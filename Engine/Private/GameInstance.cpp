@@ -45,9 +45,9 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pFont_Manager)
 		return E_FAIL;
 
-	m_pPicking = CPicking::Create(*ppDevice, *ppContext, EngineDesc.hWnd, EngineDesc.iWinSizeX, EngineDesc.iWinSizeY);
-	if (nullptr == m_pPicking)
-		return E_FAIL;
+	//m_pPicking = CPicking::Create(*ppDevice, *ppContext, EngineDesc.hWnd, EngineDesc.iWinSizeX, EngineDesc.iWinSizeY);
+	//if (nullptr == m_pPicking)
+	//	return E_FAIL;
 
 	m_pFrustum = CFrustum::Create();
 	if (nullptr == m_pFrustum)
@@ -99,7 +99,7 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 
 void CGameInstance::Update_Engine(_float fTimeDelta)
 {
-	m_pPicking->Update();
+	//m_pPicking->Update();
 
 	m_pInput_Device->Update();
 
@@ -405,10 +405,10 @@ HRESULT CGameInstance::Render_RT_Debug(CShader* pShader, CVIBuffer_Rect* pVIBuff
 
 #pragma region PICKING
 
-_bool CGameInstance::isPicked(_float3* pOut)
-{
-	return m_pPicking->isPicked(pOut);
-}
+//_bool CGameInstance::isPicked(_float3* pOut)
+//{
+//	return m_pPicking->isPicked(pOut);
+//}
 
 #pragma endregion
 
@@ -497,7 +497,7 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pJolt_Manager);
 	Safe_Release(m_pFrustum);
 	Safe_Release(m_pShadow);
-	Safe_Release(m_pPicking);
+	//Safe_Release(m_pPicking);
 	Safe_Release(m_pTarget_Manager);
 	Safe_Release(m_pFont_Manager);
 	Safe_Release(m_pLight_Manager);	

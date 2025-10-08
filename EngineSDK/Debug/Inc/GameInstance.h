@@ -122,7 +122,7 @@ public:
 #pragma endregion
 
 #pragma region PICKING 
-	_bool isPicked(_float3* pOut);
+	//_bool isPicked(_float3* pOut);
 #pragma endregion
 
 #pragma region SHADOW
@@ -157,7 +157,7 @@ private:
 	class CPrototype_Manager*	m_pPrototype_Manager = { nullptr };
 	class CRenderer*			m_pRenderer = { nullptr };
 	class CTimer_Manager*		m_pTimer_Manager = { nullptr };
-	class CPicking*				m_pPicking = { nullptr };
+	//class CPicking*				m_pPicking = { nullptr };
 	class CPipeLine*			m_pPipeLine = { nullptr };
 	class CLight_Manager*		m_pLight_Manager = { nullptr };
 	class CFont_Manager*		m_pFont_Manager = { nullptr };
