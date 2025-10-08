@@ -6,14 +6,13 @@ x64/
 *.dat
 *.png
 *.dds
-
-Client.exe
-Client.pdb
+*.cso
+*.pdb
+*.exe
 
 Engine.dll
 Engine.lib
-Engine.exp
-Engine.pdb
+
 data/
 
 *.vcxproj merge=union

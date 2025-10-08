@@ -46,15 +46,15 @@ void CPlayer::Priority_Update(_float fTimeDelta)
 
 void CPlayer::Update(_float fTimeDelta)
 {
-    //if (GetKeyState(VK_LBUTTON) & 0x8000)
-    //{
-    //    _float3     vPickedPos{};
-    //    _bool isPicked = m_pGameInstance->isPicked(&vPickedPos);
-    //    if (true == isPicked)
-    //    {
-    //        m_pTransformCom->Set_State(Engine::STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPickedPos), 1.f));
-    //    }
-    //}
+    if (GetKeyState(VK_LBUTTON) & 0x8000)
+    {
+        _float3     vPickedPos{};
+        _bool isPicked = m_pGameInstance->isPicked(&vPickedPos);
+        if (true == isPicked)
+        {
+            m_pTransformCom->Set_State(Engine::STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPickedPos), 1.f));
+        }
+    }
 
     if (GetKeyState(VK_DOWN) & 0x8000)
     {
