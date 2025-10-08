@@ -3,6 +3,9 @@ x64/
 
 *.txt
 *.json
+*.dat
+*.png
+*.dds
 
 Client.exe
 Client.pdb
