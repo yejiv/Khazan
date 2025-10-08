@@ -524,10 +524,13 @@ void CRenderer::Free()
 {
     __super::Free();
 
+#ifdef DEBUG
     for (auto& pDebugComponent : m_DebugComponent)
         Safe_Release(pDebugComponent);
     m_DebugComponent.clear();
+#endif // DEBUG
 
+    
     for (size_t i = 0; i < ENUM_CLASS(RENDERGROUP::END); i++)
     {
         for (auto& pRenderObject : m_RenderObjects[i])
