@@ -72,9 +72,7 @@ _bool CCollider::Intersect(CCollider* pTarget)
 
     return false;
 }
-
 #ifdef _DEBUG
-
 HRESULT CCollider::Render()
 {
 	/*m_pContext->GSSetShader(nullptr, nullptr, 0);
@@ -94,6 +92,7 @@ HRESULT CCollider::Render()
 
 	return S_OK;
 }
+#endif
 
 void CCollider::BuildShapes()
 {
@@ -198,8 +197,6 @@ void CCollider::SetCrouch(bool v)
 void CCollider::UseInner(bool v)
 {
 }
-
-#endif
 
 CCollider* CCollider::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, COLLIDER eType)
 {
