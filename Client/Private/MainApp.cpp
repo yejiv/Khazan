@@ -48,7 +48,6 @@ void CMainApp::Update(_float fTimeDelta)
 
 #ifdef _DEBUG
 	m_fTimeAcc += fTimeDelta;
-	
 #endif
 }
 
