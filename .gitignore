@@ -1,0 +1,18 @@
+.vs/
+x64/
+
+*.txt
+*.json
+
+Client.exe
+Client.pdb
+
+Engine.dll
+Engine.lib
+Engine.exp
+Engine.pdb
+data/
+
+*.vcxproj merge=union
+*.vcxproj.filters merge=union
+*.sln merge=union
