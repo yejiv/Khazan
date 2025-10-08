@@ -45,9 +45,9 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pFont_Manager)
 		return E_FAIL;
 
-	//m_pPicking = CPicking::Create(*ppDevice, *ppContext, EngineDesc.hWnd, EngineDesc.iWinSizeX, EngineDesc.iWinSizeY);
-	//if (nullptr == m_pPicking)
-	//	return E_FAIL;
+	m_pPicking = CPicking::Create(*ppDevice, *ppContext, EngineDesc.hWnd, EngineDesc.iWinSizeX, EngineDesc.iWinSizeY);
+	if (nullptr == m_pPicking)
+		return E_FAIL;
 
 	m_pFrustum = CFrustum::Create();
 	if (nullptr == m_pFrustum)
@@ -106,7 +106,7 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 	/* 내 게임내에서 반복적인 갱신이 필요한 객체들이 있다라면 갱신을 여기에서 모아서 수행하낟. */
 	m_pObject_Manager->Priority_Update(fTimeDelta);
 
-	/*m_pPicking->Update();*/
+	//m_pPicking->Update();
 	m_pPipeLine->Update();
 	m_pFrustum->Update();
 
@@ -405,10 +405,10 @@ HRESULT CGameInstance::Render_RT_Debug(CShader* pShader, CVIBuffer_Rect* pVIBuff
 
 #pragma region PICKING
 
-//_bool CGameInstance::isPicked(_float3* pOut)
-//{
-//	return m_pPicking->isPicked(pOut);
-//}
+_bool CGameInstance::isPicked(_float3* pOut)
+{
+	return m_pPicking->isPicked(pOut);
+}
 
 #pragma endregion
 
@@ -497,7 +497,7 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pJolt_Manager);
 	Safe_Release(m_pFrustum);
 	Safe_Release(m_pShadow);
-	//Safe_Release(m_pPicking);
+	Safe_Release(m_pPicking);
 	Safe_Release(m_pTarget_Manager);
 	Safe_Release(m_pFont_Manager);
 	Safe_Release(m_pLight_Manager);	

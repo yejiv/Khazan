@@ -69,7 +69,7 @@ struct PS_OUT
     float4 vDiffuse : SV_TARGET0;
     float4 vNormal : SV_TARGET1;
     float4 vDepth : SV_TARGET2;
-    
+    float4 vWorld : SV_TARGET3;
 };
 
 /* 만든 픽셀 각각에 대해서 픽셀 쉐이더를 수행한다. */
@@ -106,6 +106,7 @@ PS_OUT PS_MAIN(PS_IN In)
     // vector      vNormalDesc = g_NormalTexture.Sample();
     // vector vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);    
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
+    Out.vWorld = In.vWorldPos;
     return Out;
 }
 

@@ -95,9 +95,9 @@ HRESULT CLevel_Stage1::Ready_Layer_Player(const _wstring& strLayerTag)
 
 HRESULT CLevel_Stage1::Ready_Layer_BackGround(const _wstring& strLayerTag)
 {
-	/*if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
+	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
 		ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Terrain"))))
-		return E_FAIL;*/
+		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
 		ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Sky"))))
