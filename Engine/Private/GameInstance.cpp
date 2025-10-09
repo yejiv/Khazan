@@ -17,6 +17,7 @@
 #include "Frustum.h"
 #include "Imgui_Manager.h"
 #include "Jolt_Manager.h"
+#include "ThreadPool.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -87,6 +88,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 
 	m_pJolt_Manager = CJolt_Manager::Create();
 	if (nullptr == m_pJolt_Manager)
+		return E_FAIL;
+
+	m_pThreadPool = CThreadPool::Create();
+	if (nullptr == m_pThreadPool)
 		return E_FAIL;
 
 #ifdef _DEBUG
@@ -473,6 +478,21 @@ Vec3 CGameInstance::Get_Gravity() const
 }
 #pragma endregion
 
+#pragma region THREADPOOL
+future<void> CGameInstance::Enqueue(std::function<void()> job)
+{
+	return m_pThreadPool->Enqueue(job);
+}
+future<any> CGameInstance::EnqueueAny(std::function<any()> job)
+{
+	return m_pThreadPool->EnqueueAny(job);
+}
+void CGameInstance::Submit(std::function<void()> job)
+{
+	m_pThreadPool->Submit(job);
+}
+#pragma endregion
+
 //
 //void CGameInstance::Transform_Picking_ToLocalSpace(CTransform* pTransformCom)
 //{
@@ -494,6 +514,7 @@ void CGameInstance::Release_Engine()
 	m_pImgui_Manager->Shutdown();
 	Safe_Release(m_pImgui_Manager);
 #endif
+	Safe_Release(m_pThreadPool);
 	Safe_Release(m_pJolt_Manager);
 	Safe_Release(m_pFrustum);
 	Safe_Release(m_pShadow);

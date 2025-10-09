@@ -205,6 +205,9 @@
     <Filter Include="01.Utility\13.Jolt\Manager">
       <UniqueIdentifier>{134429d3-eb68-463f-af46-47e137a5124b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\14.ThreadPool">
+      <UniqueIdentifier>{42f075f1-3ac7-4b59-a22c-013712a6a958}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -404,6 +407,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Jolt_Manager.cpp">
       <Filter>01.Utility\13.Jolt\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ThreadPool.cpp">
+      <Filter>01.Utility\14.ThreadPool</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -625,6 +631,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Jolt_Manager.h">
       <Filter>01.Utility\13.Jolt\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ThreadPool.h">
+      <Filter>01.Utility\14.ThreadPool</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
