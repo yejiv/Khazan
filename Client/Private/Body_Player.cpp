@@ -196,5 +196,5 @@ void CBody_Player::Free()
 
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
-    Safe_Release(m_pColliderCom);
+    //Safe_Release(m_pColliderCom);
 }

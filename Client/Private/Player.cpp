@@ -4,6 +4,9 @@
 
 #include "Body_Player.h"
 
+#include "PhysicsBody.h"
+#include "Character.h"
+
 CPlayer::CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CContainerObject{ pDevice, pContext }
 {
@@ -88,6 +91,11 @@ void CPlayer::Update(_float fTimeDelta)
 
 
     __super::Update(fTimeDelta);
+
+    //m_pBodyCom->Update(fTimeDelta, m_pTransformCom);
+
+    m_pCharacterCom->Update(fTimeDelta, m_pBodyCom, m_pTransformCom);
+
 }
 
 void CPlayer::Late_Update(_float fTimeDelta)
@@ -113,6 +121,38 @@ HRESULT CPlayer::Render()
 
 HRESULT CPlayer::Ready_Components()
 {
+    CPhysicsBody::BODY_SHAPE_DESC tShape{};
+    tShape.eType = SHAPE::BOX;
+    tShape.fHalfHeight = 0.9f;
+    tShape.fRadius = 0.5f;
+    tShape.vHalfExtents = { 0.5f, 0.5f, 0.5f };
+    CPhysicsBody::BODY_MATERIAL_DESC tMaterial{};
+    tMaterial.fFriction = 0.8f;
+    tMaterial.fRestitution = 0.0f;
+    CPhysicsBody::BODY_DESC tBody{};
+    tBody.tShape = tShape;
+    tBody.tMat = tMaterial;
+    tBody.pTransform = m_pTransformCom;
+    tBody.eMotion = EMotionType::Static;
+    tBody.iObjectLayer = JoltLayers::CHARACTER;
+    tBody.bStartActive = true;
+    tBody.bIsTrigger = false;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_PhysicsBody"),
+        TEXT("Com_PhysicsBody"), reinterpret_cast<CComponent**>(&m_pBodyCom), &tBody)))
+        return E_FAIL;
+
+    CCharacter::CHARACTER_DESC tChar{};
+    tChar.pBody = m_pBodyCom;
+    tChar.pTransform = m_pTransformCom;
+    tChar.fMaxSlopeDeg = 50.f;
+    tChar.fStepOffset = 0.4f;
+    tChar.fGroundSnap = 0.1f;
+    tChar.fGravity = 9.81f;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Character"),
+        TEXT("Com_Character"), reinterpret_cast<CComponent**>(&m_pCharacterCom), &tChar)))
+        return E_FAIL;
 
     return S_OK;
 }

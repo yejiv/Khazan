@@ -15,7 +15,7 @@ namespace Engine
 
 		unsigned int	iWinSizeX_Imgui, iWinSizeY_Imgui;
 		list<wstring>	Menu_Imgui;
-	}ENGINE_DESC;	
+	}ENGINE_DESC;
 
 	typedef struct tagLightDesc
 	{
@@ -28,7 +28,7 @@ namespace Engine
 
 		XMFLOAT4	vDirection;
 		XMFLOAT4	vPosition;
-		float		fRange;	
+		float		fRange;
 	}LIGHT_DESC;
 
 	typedef struct tagKeyFrame
@@ -48,11 +48,11 @@ namespace Engine
 
 	typedef struct tagVertexPosition
 	{
-		XMFLOAT3		vPosition;	
+		XMFLOAT3		vPosition;
 
 		static const unsigned int	iNumElements = { 1 };
 		static constexpr D3D11_INPUT_ELEMENT_DESC	Elements[iNumElements] = {
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },			
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		};
 	}VTXPOS;
 
@@ -70,7 +70,7 @@ namespace Engine
 
 	typedef struct tagVertexPositionTexcoord
 	{
-		XMFLOAT3		vPosition;		
+		XMFLOAT3		vPosition;
 		XMFLOAT2		vTexcoord;
 
 		static const unsigned int	iNumElements = { 2 };
@@ -96,7 +96,7 @@ namespace Engine
 	{
 		XMFLOAT3		vPosition;
 		XMFLOAT3		vNormal;
-		XMFLOAT2		vTexcoord; 
+		XMFLOAT2		vTexcoord;
 
 		static const unsigned int	iNumElements = { 3 };
 		static constexpr D3D11_INPUT_ELEMENT_DESC	Elements[iNumElements] = {
@@ -152,7 +152,7 @@ namespace Engine
 		XMFLOAT4			vRight;
 		XMFLOAT4			vUp;
 		XMFLOAT4			vLook;
-		XMFLOAT4			vTranslation;		
+		XMFLOAT4			vTranslation;
 	}VTXINSTANCE_MESH;
 
 	typedef struct tagVertexInstanceParticle
@@ -165,7 +165,7 @@ namespace Engine
 		XMFLOAT2			vLifeTime;
 	}VTXINSTANCE_PARTICLE;
 
-	typedef struct tagVertexParticle		
+	typedef struct tagVertexParticle
 	{
 		static const unsigned int	iNumElements = { 7 };
 		static constexpr D3D11_INPUT_ELEMENT_DESC	Elements[iNumElements] = {
@@ -184,7 +184,7 @@ namespace Engine
 	{
 		static const unsigned int	iNumElements = { 6 };
 		static constexpr D3D11_INPUT_ELEMENT_DESC	Elements[iNumElements] = {
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },	
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 
 			{ "WORLD", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 			{ "WORLD", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 },

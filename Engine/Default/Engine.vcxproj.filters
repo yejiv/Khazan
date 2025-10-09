@@ -208,6 +208,15 @@
     <Filter Include="01.Utility\14.ThreadPool">
       <UniqueIdentifier>{42f075f1-3ac7-4b59-a22c-013712a6a958}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Component\PhysicsBody">
+      <UniqueIdentifier>{e6d7da03-00c0-4c21-be11-5d581401c62a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Component\Character">
+      <UniqueIdentifier>{abf61f2f-7a63-4c3d-86c1-d7cd132824d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\13.Jolt\DebugRenderer">
+      <UniqueIdentifier>{fb1b9529-9c53-477e-a6e8-ebb13186d288}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -410,6 +419,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\ThreadPool.cpp">
       <Filter>01.Utility\14.ThreadPool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PhysicsBody.cpp">
+      <Filter>01.Utility\03.Component\PhysicsBody</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Character.cpp">
+      <Filter>01.Utility\03.Component\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PhysicsDebugRenderer.cpp">
+      <Filter>01.Utility\13.Jolt\DebugRenderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -634,6 +652,15 @@
     </ClInclude>
     <ClInclude Include="..\Public\ThreadPool.h">
       <Filter>01.Utility\14.ThreadPool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PhysicsBody.h">
+      <Filter>01.Utility\03.Component\PhysicsBody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Character.h">
+      <Filter>01.Utility\03.Component\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PhysicsDebugRenderer.h">
+      <Filter>01.Utility\13.Jolt\DebugRenderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

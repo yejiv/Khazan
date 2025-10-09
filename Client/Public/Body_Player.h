@@ -38,7 +38,7 @@ public:
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
-	CCollider* m_pColliderCom = { nullptr };
+	//CCollider* m_pColliderCom = { nullptr };
 
 private:
 	_uint* m_pParentState = { nullptr };

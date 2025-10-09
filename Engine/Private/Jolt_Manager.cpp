@@ -1,6 +1,7 @@
 #include "EnginePch.h"
 #include "Jolt_Manager.h"
 
+
 CJolt_Manager::CJolt_Manager()
 {
 }
@@ -38,11 +39,11 @@ HRESULT CJolt_Manager::Initialize(_uint iMaxBodies, _uint iNumBodyMutexes, _uint
         m_ObjectPairFilter
     );
 
-    // 리스너 연결(원한다면)
-    m_Physics.SetContactListener(&m_ContactListener);
-
     // 기본 중력
     m_Physics.SetGravity(Vec3(0.0f, -9.81f, 0.0f));
+
+    // 리스너 연결(원한다면)
+    m_Physics.SetContactListener(&m_ContactListener);
 
     return S_OK;
 }
@@ -62,7 +63,17 @@ void CJolt_Manager::Clear()
     // 여기서는 최소 구현: Reset()로 정리
     m_Physics.OptimizeBroadPhase();
 }
+#ifdef  _DEBUG
+void CJolt_Manager::Debug_Render()
+{
+    //JPH::BodyManager::DrawSettings ds;
 
+    //m_Physics.DrawBodies(ds, &m_DebugRenderer);
+    //m_Physics.DrawConstraints(&m_DebugRenderer);
+    //m_Physics.DrawConstraintLimits(&m_DebugRenderer);
+    //m_DebugRenderer.FlushAndDraw();
+}
+#endif 
 CJolt_Manager* CJolt_Manager::Create()
 {
     CJolt_Manager* pInstance = new CJolt_Manager();
@@ -79,6 +90,7 @@ CJolt_Manager* CJolt_Manager::Create()
 void CJolt_Manager::Free()
 {
     __super::Free();
+    
     // 물리 리소스 정리
     // BodyInterface로 제거할 객체가 있으면 미리 모두 DestroyBody 필요
     // 여기서는 PhysicsSystem가 소멸되며 내부 정리를 수행.

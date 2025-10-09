@@ -102,27 +102,6 @@ namespace Engine
 
 #endif
 #endif
-//#ifdef _DEBUG
-//#define _CRTDBG_MAP_ALLOC
-//#include <crtdbg.h>
-//struct LeakDumpAtEnd {
-//	~LeakDumpAtEnd() { _CrtDumpMemoryLeaks(); }
-//} g_LeakDumpAtEnd;
-//#endif
-//#ifdef _DEBUG
-//#define _CRTDBG_MAP_ALLOC
-//#include <crtdbg.h>
-//struct LeakWatch {
-//    LeakWatch() {
-//        // 자동 누수 덤프
-//        _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-//        // 필요하면 보고 형식/대상 설정
-//        _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
-//        _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
-//        _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
-//    }
-//} gLeakWatch;
-//#endif
 
 
 using namespace Engine;
