@@ -6,6 +6,8 @@
 NS_BEGIN(Engine)
 class CCollider;
 class CNavigation;
+class CCharacter;
+class CPhysicsBody;
 NS_END
 
 NS_BEGIN(Client)
@@ -33,6 +35,8 @@ public:
 
 private:
 	_uint				m_iState = { };
+	class CPhysicsBody* m_pBodyCom = { nullptr };
+	class CCharacter* m_pCharacterCom = { nullptr };
 
 private:
 	HRESULT Ready_Components();

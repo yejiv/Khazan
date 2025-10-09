@@ -4,8 +4,10 @@
 namespace Engine
 {
 	enum class MODELTYPE { NONANIM, ANIM };
-	 enum class COLLIDER { AABB, OBB, SPHERE, END };
-	enum class COLLIDER_SHAPE { CAPSULE, CYLINDER, BOX, COMPOUND, END };
+	enum class COLLIDER { AABB, OBB, SPHERE, END };
+	enum class SHAPE { CAPSULE, SPHERE, BOX, COMPOUND, END };
+	enum class JOLT_OBJ_LAYER { MAP, DYNAMIC, CHARACTER, TRIGGER };
+	enum class JOLT_BP_LAYER { MAP, DYNAMIC, CHARACTER, TRIGGER, COUNT};
 	enum class NAV_POINT { A, B, C, END };
 	enum class NAV_LINE { AB, BC, CA, END };
 	enum class D3DTS { VIEW, PROJ, END };
@@ -15,6 +17,24 @@ namespace Engine
 	enum class WINMODE { FULL, WIN, END };	
 	enum class MOUSEKEYSTATE { LB, RB, WB, END };
 	enum class MOUSEMOVESTATE {	X, Y, WHEEL, END };
+}
+
+namespace JoltLayers
+{
+	// 너의 용도에 맞게 늘려 써도 됨
+	static constexpr ObjectLayer MAP = 0;
+	static constexpr ObjectLayer DYNAMIC = 1;
+	static constexpr ObjectLayer CHARACTER = 2;
+	static constexpr ObjectLayer TRIGGER = 3;
+	static constexpr uint32      NUM_LAYERS = 4;
+}
+
+// 브로드페이즈 레이어 (간단 매핑: 0=정적, 1=동적)
+namespace JoltBPLayers
+{
+	static constexpr BroadPhaseLayer NON_MOVING(0);
+	static constexpr BroadPhaseLayer MOVING(1);
+	static constexpr uint32          NUM_LAYERS = 2;
 }
 
 #endif // Engine_Enum_h__
