@@ -84,7 +84,7 @@
     <ClInclude Include="..\public\Camera_Free.h">
       <Filter>02.GameObject\Camera\Free</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\pch.h">
+    <ClInclude Include="..\Public\ClientPch.h">
       <Filter>96.pch</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Player.h">
@@ -135,7 +135,7 @@
     <ClCompile Include="..\private\Camera_Free.cpp">
       <Filter>02.GameObject\Camera\Free</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\pch.cpp">
+    <ClCompile Include="..\Private\ClientPch.cpp">
       <Filter>96.pch</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Player.cpp">

@@ -149,6 +149,12 @@ public:
 	Vec3    Get_Gravity() const;
 #pragma endregion
 
+#pragma region THREADPOOL
+	future<void> Enqueue(std::function<void()> job);
+	future<any> EnqueueAny(std::function<any()> job);
+	void Submit(std::function<void()> job);
+#pragma
+
 private:
 	class CGraphic_Device*		m_pGraphic_Device = { nullptr };
 	class CInput_Device*		m_pInput_Device = { nullptr };
@@ -164,8 +170,8 @@ private:
 	class CTarget_Manager*		m_pTarget_Manager = { nullptr };
 	class CShadow*				m_pShadow = { nullptr };
 	class CFrustum*				m_pFrustum = { nullptr };
-
 	class CJolt_Manager*		m_pJolt_Manager = { nullptr };
+	class CThreadPool*			m_pThreadPool = { nullptr };
 #ifdef _DEBUG
 	class CImgui_Manager* m_pImgui_Manager = { nullptr };
 #endif
