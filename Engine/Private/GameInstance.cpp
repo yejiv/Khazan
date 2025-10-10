@@ -487,10 +487,12 @@ Body* CGameInstance::CreateAndAdd_Body(const BodyCreationSettings& BodySetting, 
 {
 	return m_pJolt_Manager->CreateAndAdd_Body(BodySetting, pBodyInterface);
 }
+#ifdef _DEBUG
 void CGameInstance::Jolt_Test()
 {
 	m_pJolt_Manager->Test();
 }
+#endif
 #pragma endregion
 
 #pragma region THREADPOOL
