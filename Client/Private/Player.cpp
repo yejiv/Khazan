@@ -4,7 +4,7 @@
 
 #include "Body_Player.h"
 
-#include "PhysicsBody.h"
+#include "RigidBody.h"
 #include "Character.h"
 
 CPlayer::CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -24,7 +24,7 @@ HRESULT CPlayer::Initialize_Prototype()
     return S_OK;
 }
 
-HRESULT CPlayer::Initialize(void* pArg)
+HRESULT CPlayer::Initialize_Clone(void* pArg)
 {
     GAMEOBJECT_DESC         Desc{};
     Desc.fSpeedPerSec = 10.f;
@@ -92,9 +92,9 @@ void CPlayer::Update(_float fTimeDelta)
 
     __super::Update(fTimeDelta);
 
-    //m_pBodyCom->Update(fTimeDelta, m_pTransformCom);
+    m_pRigidBodyCom->Update(fTimeDelta, m_pTransformCom->Get_WorldMatrix());
 
-    m_pCharacterCom->Update(fTimeDelta, m_pBodyCom, m_pTransformCom);
+    //m_pCharacterCom->Update(fTimeDelta, m_pBodyCom, m_pTransformCom);
 
 }
 
@@ -119,30 +119,46 @@ HRESULT CPlayer::Render()
     return S_OK;
 }
 
+void CPlayer::Collision_Enter(JPH::ObjectLayer Layer, CGameObject* pObject, JPH::ContactManifold ContactManifold)
+{
+    int a = 10;
+}
+
+void CPlayer::Collision_Stay(JPH::ObjectLayer Layer, CGameObject* pObject, JPH::ContactManifold ContactManifold)
+{
+    int a = 10;
+}
+
 HRESULT CPlayer::Ready_Components()
 {
-    CPhysicsBody::BODY_SHAPE_DESC tShape{};
-    tShape.eType = SHAPE::BOX;
-    tShape.fHalfHeight = 0.9f;
-    tShape.fRadius = 0.5f;
-    tShape.vHalfExtents = { 0.5f, 0.5f, 0.5f };
-    CPhysicsBody::BODY_MATERIAL_DESC tMaterial{};
-    tMaterial.fFriction = 0.8f;
-    tMaterial.fRestitution = 0.0f;
-    CPhysicsBody::BODY_DESC tBody{};
-    tBody.tShape = tShape;
-    tBody.tMat = tMaterial;
-    tBody.pTransform = m_pTransformCom;
-    tBody.eMotion = EMotionType::Static;
-    tBody.iObjectLayer = JoltLayers::CHARACTER;
-    tBody.bStartActive = true;
-    tBody.bIsTrigger = false;
+    //CRigidBody::CAPSULESHAPE_DESC RigidDesc{};
+    //RigidDesc.fHeight = 1.f;
+    //RigidDesc.fRadius = 1.f;
+    CRigidBody::BOXSHAPE_DESC RigidDesc{};
+    RigidDesc.vExtent = { 0.5f, 0.5f, 0.5f };
+    RigidDesc.bIsTrigger = false;
+    RigidDesc.bStartActive = true;
+    RigidDesc.eMotion = EMotionType::Kinematic;
+    RigidDesc.eQuality = EMotionQuality::Discrete;
+    RigidDesc.eShapeType = SHAPE::BOX;
+    RigidDesc.fFriction = 0.8f;
+    RigidDesc.fMass = 1.0f;    
+    RigidDesc.fRestitution = 0.0f;
+    RigidDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
+    _float3 vPos{};
+    XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
+    _float4 vQuat{};
+    XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
+    RigidDesc.vPos = vPos;
+    RigidDesc.vQuat = vQuat;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_PhysicsBody"),
-        TEXT("Com_PhysicsBody"), reinterpret_cast<CComponent**>(&m_pBodyCom), &tBody)))
+    
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_RigidBody"),
+        TEXT("Com_RigidBody"), reinterpret_cast<CComponent**>(&m_pRigidBodyCom), &RigidDesc)))
         return E_FAIL;
 
-    CCharacter::CHARACTER_DESC tChar{};
+   /* CCharacter::CHARACTER_DESC tChar{};
     tChar.pBody = m_pBodyCom;
     tChar.pTransform = m_pTransformCom;
     tChar.fMaxSlopeDeg = 50.f;
@@ -152,7 +168,7 @@ HRESULT CPlayer::Ready_Components()
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Character"),
         TEXT("Com_Character"), reinterpret_cast<CComponent**>(&m_pCharacterCom), &tChar)))
-        return E_FAIL;
+        return E_FAIL;*/
 
     return S_OK;
 }
@@ -186,7 +202,7 @@ CGameObject* CPlayer::Clone(void* pArg)
 {
     CPlayer* pInstance = new CPlayer(*this);
 
-    if (FAILED(pInstance->Initialize(pArg)))
+    if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
         MSG_BOX(TEXT("Failed to Created : CPlayer"));
         Safe_Release(pInstance);
@@ -198,4 +214,5 @@ CGameObject* CPlayer::Clone(void* pArg)
 void CPlayer::Free()
 {
     __super::Free();
+    Safe_Release(m_pRigidBodyCom);
 }

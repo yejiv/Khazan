@@ -208,14 +208,20 @@
     <Filter Include="01.Utility\14.ThreadPool">
       <UniqueIdentifier>{42f075f1-3ac7-4b59-a22c-013712a6a958}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\03.Component\PhysicsBody">
-      <UniqueIdentifier>{e6d7da03-00c0-4c21-be11-5d581401c62a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\03.Component\Character">
       <UniqueIdentifier>{abf61f2f-7a63-4c3d-86c1-d7cd132824d0}</UniqueIdentifier>
     </Filter>
     <Filter Include="01.Utility\13.Jolt\DebugRenderer">
       <UniqueIdentifier>{fb1b9529-9c53-477e-a6e8-ebb13186d288}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\13.Jolt\Jolt_Layer">
+      <UniqueIdentifier>{75da37b4-6df6-4a6a-805f-d81b1fcab97a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\13.Jolt\ContactListener">
+      <UniqueIdentifier>{602bdd9e-79dd-482f-a825-2abf01bea11f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Component\RigidBody">
+      <UniqueIdentifier>{e6d7da03-00c0-4c21-be11-5d581401c62a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -420,14 +426,20 @@
     <ClCompile Include="..\Private\ThreadPool.cpp">
       <Filter>01.Utility\14.ThreadPool</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\PhysicsBody.cpp">
-      <Filter>01.Utility\03.Component\PhysicsBody</Filter>
+    <ClCompile Include="..\Private\RigidBody.cpp">
+      <Filter>01.Utility\03.Component\RigidBody</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Character.cpp">
       <Filter>01.Utility\03.Component\Character</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\PhysicsDebugRenderer.cpp">
+    <ClCompile Include="..\Private\Jolt_DebugRenderer.cpp">
       <Filter>01.Utility\13.Jolt\DebugRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Jolt_Layer.cpp">
+      <Filter>01.Utility\13.Jolt\Jolt_Layer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Jolt_ContactListener.cpp">
+      <Filter>01.Utility\13.Jolt\ContactListener</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -653,14 +665,20 @@
     <ClInclude Include="..\Public\ThreadPool.h">
       <Filter>01.Utility\14.ThreadPool</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\PhysicsBody.h">
-      <Filter>01.Utility\03.Component\PhysicsBody</Filter>
+    <ClInclude Include="..\Public\RigidBody.h">
+      <Filter>01.Utility\03.Component\RigidBody</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Character.h">
       <Filter>01.Utility\03.Component\Character</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\PhysicsDebugRenderer.h">
+    <ClInclude Include="..\Public\Jolt_DebugRenderer.h">
       <Filter>01.Utility\13.Jolt\DebugRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Jolt_Layer.h">
+      <Filter>01.Utility\13.Jolt\Jolt_Layer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Jolt_ContactListener.h">
+      <Filter>01.Utility\13.Jolt\ContactListener</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

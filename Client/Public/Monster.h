@@ -1,31 +1,23 @@
 #pragma once
 
 #include "Client_Defines.h"
-#include "PartObject.h"
-
-#include "Player.h"
+#include "GameObject.h"
 
 NS_BEGIN(Engine)
+class CCollider;
 class CShader;
 class CModel;
+class CRigidBody;
 NS_END
 
 NS_BEGIN(Client)
 
-class CBody_Player final : public CPartObject
+class CMonster final : public CGameObject
 {
-public:
-	typedef struct tagBodyPlayerDesc : public CPartObject::PARTOBJECT_DESC
-	{
-		_uint* pState = { nullptr };
-	}BODY_DESC;
 private:
-	CBody_Player(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CBody_Player(const CBody_Player& Prototype);
-	virtual ~CBody_Player() = default;
-
-public:
-	_float4x4* Get_BoneMatrix(const _char* pBoneName);
+	CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CMonster(const CMonster& Prototype);
+	virtual ~CMonster() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -34,21 +26,19 @@ public:
 	virtual void Update(_float fTimeDelta);
 	virtual void Late_Update(_float fTimeDelta);
 	virtual HRESULT Render();
-	virtual HRESULT Render_Shadow() override;
+
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
-	//CCollider* m_pColliderCom = { nullptr };
+	class CRigidBody* m_pRigidBodyCom = { nullptr };
 
-private:
-	_uint* m_pParentState = { nullptr };
 
 private:
 	HRESULT Ready_Components();
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CBody_Player* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CMonster* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

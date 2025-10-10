@@ -182,6 +182,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\Character.cpp" />
     <ClCompile Include="..\private\Collider.cpp" />
     <ClCompile Include="..\Private\Component.cpp" />
+    <ClCompile Include="..\Private\Jolt_ContactListener.cpp" />
     <ClCompile Include="..\private\ContainerObject.cpp" />
     <ClCompile Include="..\private\CustomFont.cpp" />
     <ClCompile Include="..\Private\DebugDraw.cpp" />
@@ -193,6 +194,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\Imgui_Manager.cpp" />
     <ClCompile Include="..\Private\Input_Device.cpp" />
     <ClCompile Include="..\Private\Input_Manager.cpp" />
+    <ClCompile Include="..\Private\Jolt_Layer.cpp" />
     <ClCompile Include="..\Private\Jolt_Manager.cpp" />
     <ClCompile Include="..\Private\Layer.cpp" />
     <ClCompile Include="..\Private\Level.cpp" />
@@ -208,14 +210,14 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\EnginePch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Private\PhysicsDebugRenderer.cpp" />
+    <ClCompile Include="..\Private\Jolt_DebugRenderer.cpp" />
     <ClCompile Include="..\private\Picking.cpp" />
     <ClCompile Include="..\private\PipeLine.cpp" />
     <ClCompile Include="..\Private\Prototype_Manager.cpp" />
     <ClCompile Include="..\private\QuadTree.cpp" />
     <ClCompile Include="..\Private\Renderer.cpp" />
     <ClCompile Include="..\private\RenderTarget.cpp" />
-    <ClCompile Include="..\Private\PhysicsBody.cpp" />
+    <ClCompile Include="..\Private\RigidBody.cpp" />
     <ClCompile Include="..\private\Shader.cpp" />
     <ClCompile Include="..\private\Shadow.cpp" />
     <ClCompile Include="..\Private\Sound_Manager.cpp" />
@@ -256,6 +258,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Character.h" />
     <ClInclude Include="..\public\Collider.h" />
     <ClInclude Include="..\Public\Component.h" />
+    <ClInclude Include="..\Public\Jolt_ContactListener.h" />
     <ClInclude Include="..\public\ContainerObject.h" />
     <ClInclude Include="..\public\CustomFont.h" />
     <ClInclude Include="..\Public\DebugDraw.h" />
@@ -281,6 +284,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Imgui_Manager.h" />
     <ClInclude Include="..\Public\Input_Device.h" />
     <ClInclude Include="..\Public\Input_Manager.h" />
+    <ClInclude Include="..\Public\Jolt_Layer.h" />
     <ClInclude Include="..\Public\Jolt_Manager.h" />
     <ClInclude Include="..\Public\Layer.h" />
     <ClInclude Include="..\Public\Level.h" />
@@ -294,14 +298,14 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Object_Manager.h" />
     <ClInclude Include="..\public\PartObject.h" />
     <ClInclude Include="..\Public\EnginePch.h" />
-    <ClInclude Include="..\Public\PhysicsDebugRenderer.h" />
+    <ClInclude Include="..\Public\Jolt_DebugRenderer.h" />
     <ClInclude Include="..\public\Picking.h" />
     <ClInclude Include="..\public\PipeLine.h" />
     <ClInclude Include="..\Public\Prototype_Manager.h" />
     <ClInclude Include="..\public\QuadTree.h" />
     <ClInclude Include="..\Public\Renderer.h" />
     <ClInclude Include="..\public\RenderTarget.h" />
-    <ClInclude Include="..\Public\PhysicsBody.h" />
+    <ClInclude Include="..\Public\RigidBody.h" />
     <ClInclude Include="..\public\Shader.h" />
     <ClInclude Include="..\public\Shadow.h" />
     <ClInclude Include="..\Public\Sound_Manager.h" />

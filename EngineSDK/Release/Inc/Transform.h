@@ -18,14 +18,21 @@ private:
 	CTransform(const CTransform& Prototype) = delete;
 	virtual ~CTransform() = default;
 
-public:	
+public:
+	virtual HRESULT Initialize_Prototype();
+	virtual HRESULT Initialize_Clone(void* pArg);
+
+public:
+	HRESULT Bind_Shader_Resource(class CShader* pShader, const _char* pConstantName);
+
+public:
 	_vector Get_State(STATE eState) const {
 		return XMLoadFloat4(reinterpret_cast<const _float4*>(&m_WorldMatrix.m[ENUM_CLASS(eState)]));
-	}	
+	}
 
 	_float3 Get_Scaled() const {
 		return _float3(
-			XMVectorGetX(XMVector3Length(Get_State(STATE::RIGHT))), 
+			XMVectorGetX(XMVector3Length(Get_State(STATE::RIGHT))),
 			XMVectorGetX(XMVector3Length(Get_State(STATE::UP))),
 			XMVectorGetX(XMVector3Length(Get_State(STATE::LOOK)))
 		);
@@ -43,19 +50,12 @@ public:
 		return XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_WorldMatrix));
 	}
 
-	_vector Get_Rotation_Quat();
-
 	void Set_State(STATE eState, _fvector vState) {
 		XMStoreFloat4(reinterpret_cast<_float4*>(&m_WorldMatrix.m[ENUM_CLASS(eState)]), vState);
 	}
 
-public:
-	virtual HRESULT Initialize_Prototype();
-	virtual HRESULT Initialize_Clone(void* pArg);
-
-public:
-	HRESULT Bind_Shader_Resource(class CShader* pShader, const _char* pConstantName);
-
+	void Set_Quaternion(_vector vQuaternion);
+	_vector Get_Rotation_Quat();
 public:
 	void Scale(_float3 vScale);
 	void Scaling(_float3 vScale);

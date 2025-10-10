@@ -22,6 +22,7 @@ HRESULT CMainApp::Initialize()
 	EngineDesc.iNumLevels = ENUM_CLASS(LEVEL::END);
 	EngineDesc.iWinSizeX_Imgui = g_iWinSizeX_Imgui;
 	EngineDesc.iWinSizeY_Imgui = g_iWinSizeY_Imgui;
+	EngineDesc.iNumJoltObjectLayer = ENUM_CLASS(COLLISION_LAYER::END);
 
 	list<_wstring> Imgui_Menu;
 	Imgui_Menu.push_back(TEXT("Client"));
@@ -37,7 +38,10 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	if (FAILED(Start_Level(LEVEL::TITLE)))
-		return E_FAIL;	
+		return E_FAIL;
+
+	if (FAILED(Ready_ObjectLayer()))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -136,15 +140,30 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxInstance_PointParticle.hlsl"), VTXPOINTPARTICLE::Elements, VTXPOINTPARTICLE::iNumElements))))
 		return E_FAIL;
 
-	/* Prototype_Component_PhysicsBody*/
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_PhysicsBody"),
-		CPhysicsBody::Create(m_pDevice, m_pContext))))
+	/* Prototype_Component_RigidBody*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_RigidBody"),
+		CRigidBody::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	/* Prototype_Component_Character*/
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Character"),
-		CCharacter::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	///* Prototype_Component_Character*/
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Character"),
+	//	CCharacter::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CMainApp::Ready_ObjectLayer()
+{
+	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
+	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
+
+	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MONSTER));
+
+	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
+	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
+
+	m_pGameInstance->Set_PhysicsSystem();
 
 	return S_OK;
 }
