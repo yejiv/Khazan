@@ -205,6 +205,18 @@
     <Filter Include="01.Utility\13.Jolt\Manager">
       <UniqueIdentifier>{134429d3-eb68-463f-af46-47e137a5124b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\02.GameObject\UIObject\MultiDelegate">
+      <UniqueIdentifier>{d87b0407-8b9f-4885-86d4-0de5d9a770a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\UIObject\Panel">
+      <UniqueIdentifier>{d4ab381e-e094-40cd-89d7-fd94e7388e98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\UIObject\Button">
+      <UniqueIdentifier>{34655975-9a25-416f-8a90-92653ca57874}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\UIObject\ProgressBar">
+      <UniqueIdentifier>{5a606f75-1f2f-4fd3-82bb-8bc4a8a9134a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -404,6 +416,18 @@
     </ClCompile>
     <ClCompile Include="..\Private\Jolt_Manager.cpp">
       <Filter>01.Utility\13.Jolt\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MultiDelegate.cpp">
+      <Filter>01.Utility\02.GameObject\UIObject\MultiDelegate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Panel.cpp">
+      <Filter>01.Utility\02.GameObject\UIObject\Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Button.cpp">
+      <Filter>01.Utility\02.GameObject\UIObject\Button</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_ProgressBar.cpp">
+      <Filter>01.Utility\02.GameObject\UIObject\ProgressBar</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -625,6 +649,18 @@
     </ClInclude>
     <ClInclude Include="..\Public\Jolt_Manager.h">
       <Filter>01.Utility\13.Jolt\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MultiDelegate.h">
+      <Filter>01.Utility\02.GameObject\UIObject\MultiDelegate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Panel.h">
+      <Filter>01.Utility\02.GameObject\UIObject\Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Button.h">
+      <Filter>01.Utility\02.GameObject\UIObject\Button</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_ProgressBar.h">
+      <Filter>01.Utility\02.GameObject\UIObject\ProgressBar</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

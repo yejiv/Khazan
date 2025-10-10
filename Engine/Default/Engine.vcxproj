@@ -201,6 +201,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\Mesh.cpp" />
     <ClCompile Include="..\private\MeshMaterial.cpp" />
     <ClCompile Include="..\private\Model.cpp" />
+    <ClCompile Include="..\Private\MultiDelegate.cpp" />
     <ClCompile Include="..\private\Navigation.cpp" />
     <ClCompile Include="..\Private\Object_Manager.cpp" />
     <ClCompile Include="..\private\PartObject.cpp" />
@@ -222,6 +223,9 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\Timer_Manager.cpp" />
     <ClCompile Include="..\private\Transform.cpp" />
     <ClCompile Include="..\private\UIObject.cpp" />
+    <ClCompile Include="..\Private\UI_Button.cpp" />
+    <ClCompile Include="..\Private\UI_Panel.cpp" />
+    <ClCompile Include="..\Private\UI_ProgressBar.cpp" />
     <ClCompile Include="..\private\VIBuffer.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Cell.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Cube.cpp" />
@@ -285,6 +289,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Mesh.h" />
     <ClInclude Include="..\public\MeshMaterial.h" />
     <ClInclude Include="..\public\Model.h" />
+    <ClInclude Include="..\Public\MultiDelegate.h" />
     <ClInclude Include="..\public\Navigation.h" />
     <ClInclude Include="..\Public\Object_Manager.h" />
     <ClInclude Include="..\public\PartObject.h" />
@@ -304,6 +309,9 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Timer_Manager.h" />
     <ClInclude Include="..\public\Transform.h" />
     <ClInclude Include="..\public\UIObject.h" />
+    <ClInclude Include="..\Public\UI_Button.h" />
+    <ClInclude Include="..\Public\UI_Panel.h" />
+    <ClInclude Include="..\Public\UI_ProgressBar.h" />
     <ClInclude Include="..\public\VIBuffer.h" />
     <ClInclude Include="..\Public\VIBuffer_Cell.h" />
     <ClInclude Include="..\Public\VIBuffer_Cube.h" />
