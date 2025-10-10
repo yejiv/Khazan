@@ -56,6 +56,9 @@ HRESULT CJolt_Manager::Initialize(_uint iNumObjectLayer)
 
 void CJolt_Manager::Update(_float fDeltaTime)
 {
+    if (!m_pPhysics)
+        return;
+
     m_pPhysics->Update(fDeltaTime, 1, m_pTempAlloc, m_pJobSystem);
 }
 
@@ -119,6 +122,9 @@ void CJolt_Manager::Test()
 }
 void CJolt_Manager::Debug_Render()
 {
+    if (!m_pPhysics)
+        return;
+
     m_pPhysics->DrawBodies(m_DrawSetting, m_pDebugRenderer);
 }
 #endif 
