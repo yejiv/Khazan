@@ -154,9 +154,6 @@
     <Filter Include="01.Utility\03.Component\VIBuffer\Instance\Rect">
       <UniqueIdentifier>{287e24af-ca6d-4fc1-9ee9-ee2def1ce9ca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\03.Component\VIBuffer\Instance\Mesh">
-      <UniqueIdentifier>{2ba653db-181c-4135-bb3f-3a615341c579}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\03.Component\VIBuffer\Instance\Point">
       <UniqueIdentifier>{b4496c2f-a764-41a5-bf48-9f374acb7cef}</UniqueIdentifier>
     </Filter>
@@ -204,6 +201,12 @@
     </Filter>
     <Filter Include="01.Utility\13.Jolt\Manager">
       <UniqueIdentifier>{134429d3-eb68-463f-af46-47e137a5124b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Component\Model\Instance">
+      <UniqueIdentifier>{62bb2252-6fc8-45d0-984f-058df548e135}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Component\Model\Mesh\Instance">
+      <UniqueIdentifier>{2ba653db-181c-4135-bb3f-3a615341c579}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -404,6 +407,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Jolt_Manager.cpp">
       <Filter>01.Utility\13.Jolt\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Mesh_Instance.cpp">
+      <Filter>01.Utility\03.Component\Model\Mesh\Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Model_Instance.cpp">
+      <Filter>01.Utility\03.Component\Model\Instance</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -625,6 +634,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\Jolt_Manager.h">
       <Filter>01.Utility\13.Jolt\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Mesh_Instance.h">
+      <Filter>01.Utility\03.Component\Model\Mesh\Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Model_Instance.h">
+      <Filter>01.Utility\03.Component\Model\Instance</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
