@@ -52,6 +52,12 @@
     <Filter Include="02.GameObject\Terrain">
       <UniqueIdentifier>{7082a03d-8466-4726-b256-cb8c528d4e44}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\JOH Test">
+      <UniqueIdentifier>{79049abe-c286-42e6-98b0-a98c711d0409}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\JOH Test\Test NonAnim Model">
+      <UniqueIdentifier>{2a2f2620-f90d-4ad0-80a5-ce65409e5eab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -101,6 +107,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Terrain.h">
       <Filter>02.GameObject\Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\JOH_Test1.h">
+      <Filter>02.GameObject\JOH Test\Test NonAnim Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -152,6 +161,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Terrain.cpp">
       <Filter>02.GameObject\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\JOH_Test1.cpp">
+      <Filter>02.GameObject\JOH Test\Test NonAnim Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

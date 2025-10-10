@@ -10,6 +10,8 @@
 #include "Sky.h"
 #include "Terrain.h"
 
+//#include "JOH_Test1.h"
+
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice{ pDevice }
 	, m_pContext { pContext }
@@ -130,6 +132,13 @@ HRESULT CLoader::Loading_For_Stage1_Level()
 		CModel::Create(m_pDevice, m_pContext, MODELTYPE::ANIM, "../Bin/Resources/Models/Fiona/Fiona.fbx", PreTransformMatrix))))
 		return E_FAIL;
 
+	/* Prototype_Component_Model_JOH_TestModel */
+	//PreTransformMatrix = XMMatrixRotationY(XMConvertToRadians(180.0f));
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_JOH_TestModel"),
+	//	CModel::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, "../Bin/Resources/Models/Test/JOH/Test1/Test.fbx", PreTransformMatrix))))
+	//	return E_FAIL;
+
+
 	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
 
 	lstrcpy(m_szLoadingText, TEXT("게임오브젝트원형를 로딩중입니다."));
@@ -158,6 +167,11 @@ HRESULT CLoader::Loading_For_Stage1_Level()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Body_Player"),
 		CBody_Player::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+
+	/* Prototype_GameObject_JOH_Test1 */
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_JOH_Test1"),
+	//	CJOH_Test1::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
 
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
