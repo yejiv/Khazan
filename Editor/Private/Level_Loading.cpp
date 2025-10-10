@@ -5,6 +5,10 @@
 #include "GameInstance.h"
 
 #include "Level_Editor.h"
+#include "Level_Map.h"
+#include "Level_Animation.h"
+#include "Level_Effect.h"
+#include "Level_UI.h"
 
 CLevel_Loading::CLevel_Loading(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
@@ -37,6 +41,18 @@ void CLevel_Loading::Update(_float fTimeDelta)
 		{
 		case LEVEL::EDITOR:
 			pNewLevel = CLevel_Editor::Create(m_pDevice, m_pContext);
+			break;
+		case LEVEL::MAP:
+			pNewLevel = CLevel_Map::Create(m_pDevice, m_pContext);
+			break;
+		case LEVEL::ANIMATION:
+			pNewLevel = CLevel_Animation::Create(m_pDevice, m_pContext);
+			break;
+		case LEVEL::EFFECT:
+			pNewLevel = CLevel_Effect::Create(m_pDevice, m_pContext);
+			break;
+		case LEVEL::UI:
+			pNewLevel = CLevel_UI::Create(m_pDevice, m_pContext);
 			break;
 		}
 

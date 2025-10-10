@@ -27,7 +27,7 @@ void CLevel_Editor::Update(_float fTimeDelta)
 
 HRESULT CLevel_Editor::Render()
 {
-	SetWindowText(g_hWnd, TEXT("로고레벨입니다."));
+	SetWindowText(g_hWnd, TEXT("에디터 메인 레벨입니다."));
 
 	return S_OK;
 }
