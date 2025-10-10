@@ -240,6 +240,11 @@ HRESULT CGameInstance::Add_GameObject_ToLayer(_uint iLayerLevelIndex, const _wst
 	return m_pObject_Manager->Add_GameObject_ToLayer(iLayerLevelIndex, strLayerTag, iPrototypeLevelIndex, strPrototypeTag, pArg);
 }
 
+HRESULT CGameInstance::Push_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CGameObject* pGameObject)
+{
+	return m_pObject_Manager->Push_GameObject_ToLayer(iLayerLevelIndex, strLayerTag, pGameObject);
+}
+
 #pragma endregion
 
 #pragma region RENDERER
