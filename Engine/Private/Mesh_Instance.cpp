@@ -1,3 +1,4 @@
+#include "EnginePch.h"
 #include "Mesh_Instance.h"
 
 #include "GameInstance.h"
@@ -54,7 +55,7 @@ HRESULT CMesh_Instance::Initialize_Prototype(MODELTYPE eType, const aiMesh* pAIM
 
 #pragma region INDEX_SETTING
 
-	HRESULT hr = m_iIndexStride == sizeof(_ushort) ? Ready_Indices_For_2Byte(pAIMesh) : Ready_Indices_For_4Byte(pAIMesh);
+	hr = m_iIndexStride == sizeof(_ushort) ? Ready_Indices_For_2Byte(pAIMesh) : Ready_Indices_For_4Byte(pAIMesh);
 
 	CHECK_FAILED_MSG(hr, TEXT("Mesh Instance - Ready Indices ½ÇÆÐ"), E_FAIL);
 
