@@ -143,10 +143,15 @@ public:
 #endif
 
 #pragma region JOLT_MANAGER
-	PhysicsSystem& Get_PhysicsSystem();
-	BodyInterface& Get_BodyInterface();
-	void    Set_Gravity(const Vec3& vGravity);
-	Vec3    Get_Gravity() const;
+	void Set_PhysicsSystem();
+	void Set_ObjectToBP(_uint iObjectLayer, _uint iBPLayer);
+	void Set_ObjectFilter(_uint iSrc, _uint iDst);
+	void Set_ObjectVsBPFilter(_uint iObjectLayer, _uint iBPLayer);
+	Body* CreateAndAdd_Body(const BodyCreationSettings& BodySetting, BodyInterface** pBodyInterface);
+
+#ifdef _DEBUG
+	void Jolt_Test();
+#endif
 #pragma endregion
 
 #pragma region THREADPOOL

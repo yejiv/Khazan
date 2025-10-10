@@ -12,6 +12,7 @@ namespace Engine
 		WINMODE			eWinMode;
 		unsigned int	iWinSizeX, iWinSizeY;
 		unsigned int	iNumLevels;
+		unsigned int	iNumJoltObjectLayer;
 
 		unsigned int	iWinSizeX_Imgui, iWinSizeY_Imgui;
 		list<wstring>	Menu_Imgui;

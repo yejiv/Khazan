@@ -11,35 +11,6 @@ CTransform::CTransform(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 }
 
-_vector CTransform::Get_Rotation_Quat()
-{
-	_matrix W = XMLoadFloat4x4(&m_WorldMatrix);
-
-	_vector S, Q, T;
-	// 비균일/음수 스케일까지 안전하게 분해
-	if (!XMMatrixDecompose(&S, &Q, &T, W))
-	{
-		// 드물게 특이행렬이면 수동 분해 (행 정규화 + 쿼터니언)
-		XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
-
-		// 행(Row) = Right/Up/Look (D3D 기본)
-		_vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
-		_vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
-		_vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
-
-		// 순수 회전행렬 구성
-		_matrix RotationMatrix(
-			r0,
-			r1,
-			r2,
-			XMVectorSet(0.f, 0.f, 0.f, 1.f)
-		);
-
-		Q = XMQuaternionRotationMatrix(RotationMatrix);
-	}
-
-	return Q;
-}
 
 HRESULT CTransform::Initialize_Prototype()
 {
@@ -64,6 +35,49 @@ HRESULT CTransform::Initialize_Clone(void* pArg)
 HRESULT CTransform::Bind_Shader_Resource(CShader* pShader, const _char* pConstantName)
 {
 	return pShader->Bind_Matrix(pConstantName, &m_WorldMatrix);
+}
+
+_vector CTransform::Get_Rotation_Quat()
+{
+	_matrix W = XMLoadFloat4x4(&m_WorldMatrix);
+
+	_vector S, Q, T;
+
+	if (!XMMatrixDecompose(&S, &Q, &T, W))
+	{
+
+		XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
+
+
+		_vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
+		_vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
+		_vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
+
+
+		_matrix RotationMatrix(
+			r0,
+			r1,
+			r2,
+			XMVectorSet(0.f, 0.f, 0.f, 1.f)
+		);
+
+		Q = XMQuaternionRotationMatrix(RotationMatrix);
+	}
+
+	return Q;
+}
+
+void CTransform::Set_Quaternion(_vector vQuaternion)
+{
+	XMMATRIX W = XMLoadFloat4x4(&m_WorldMatrix);
+
+	XMVECTOR S, Q_old, T;
+	XMMatrixDecompose(&S, &Q_old, &T, W);
+
+	XMVECTOR q = XMQuaternionNormalize(vQuaternion);
+
+	XMMATRIX W_new = XMMatrixAffineTransformation(S, XMVectorZero(), q, T);
+	XMStoreFloat4x4(&m_WorldMatrix, W_new);
 }
 
 void CTransform::Scale(_float3 vScale)

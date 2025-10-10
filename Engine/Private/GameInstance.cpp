@@ -86,7 +86,7 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pLight_Manager)
 		return E_FAIL;
 
-	m_pJolt_Manager = CJolt_Manager::Create();
+	m_pJolt_Manager = CJolt_Manager::Create(*ppDevice, *ppContext, EngineDesc.iNumJoltObjectLayer);
 	if (nullptr == m_pJolt_Manager)
 		return E_FAIL;
 
@@ -461,21 +461,29 @@ void CGameInstance::AddWidget(const _wstring Menu, const function<void()>& widge
 #endif
 
 #pragma region JOLT_MANAGER
-PhysicsSystem& CGameInstance::Get_PhysicsSystem()
+void CGameInstance::Set_PhysicsSystem()
 {
-	return m_pJolt_Manager->Get_PhysicsSystem();
+	m_pJolt_Manager->Set_PhysicsSystem();
 }
-BodyInterface& CGameInstance::Get_BodyInterface()
+void CGameInstance::Set_ObjectToBP(_uint iObjectLayer, _uint iBPLayer)
 {
-	return m_pJolt_Manager->Get_BodyInterface();
+	m_pJolt_Manager->Set_ObjectToBP(iObjectLayer, iBPLayer);
 }
-void CGameInstance::Set_Gravity(const Vec3& vGravity)
+void CGameInstance::Set_ObjectFilter(_uint iSrc, _uint iDst)
 {
-	m_pJolt_Manager->Get_PhysicsSystem();
+	m_pJolt_Manager->Set_ObjectFilter(iSrc, iDst);
 }
-Vec3 CGameInstance::Get_Gravity() const
+void CGameInstance::Set_ObjectVsBPFilter(_uint iObjectLayer, _uint iBPLayer)
 {
-	return m_pJolt_Manager->Get_Gravity();
+	m_pJolt_Manager->Set_ObjectVsBPFilter(iObjectLayer, iBPLayer);
+}
+Body* CGameInstance::CreateAndAdd_Body(const BodyCreationSettings& BodySetting, BodyInterface** pBodyInterface)
+{
+	return m_pJolt_Manager->CreateAndAdd_Body(BodySetting, pBodyInterface);
+}
+void CGameInstance::Jolt_Test()
+{
+	m_pJolt_Manager->Test();
 }
 #pragma endregion
 
@@ -516,7 +524,6 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pImgui_Manager);
 #endif
 	Safe_Release(m_pThreadPool);
-	Safe_Release(m_pJolt_Manager);
 	Safe_Release(m_pFrustum);
 	Safe_Release(m_pShadow);
 	Safe_Release(m_pPicking);
@@ -528,6 +535,7 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pRenderer);
 	Safe_Release(m_pObject_Manager);
 	Safe_Release(m_pPrototype_Manager);
+	Safe_Release(m_pJolt_Manager);
 	Safe_Release(m_pLevel_Manager);
 	Safe_Release(m_pInput_Device);
 	Safe_Release(m_pGraphic_Device);

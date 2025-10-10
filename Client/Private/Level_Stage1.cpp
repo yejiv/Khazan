@@ -25,6 +25,9 @@ HRESULT CLevel_Stage1::Initialize()
 	if (FAILED(Ready_Layer_Player(TEXT("Layer_Player"))))
 		return E_FAIL;
 
+	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -34,6 +37,11 @@ void CLevel_Stage1::Update(_float fTimeDelta)
 	//{
 	//	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::GAMEPLAY))))
 	//		return;
+	//}
+
+	//if (GetKeyState(VK_F1) & 0x8000)
+	//{
+	//	m_pGameInstance->Jolt_Test();
 	//}
 
 	return;
@@ -93,11 +101,23 @@ HRESULT CLevel_Stage1::Ready_Layer_Player(const _wstring& strLayerTag)
 	return S_OK;
 }
 
+HRESULT CLevel_Stage1::Ready_Layer_Monster(const _wstring& strLayerTag)
+{
+	for (size_t i = 0; i < 10; i++)
+	{
+		if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
+			ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Monster"))))
+			return E_FAIL;
+	}
+
+	return S_OK;
+}
+
 HRESULT CLevel_Stage1::Ready_Layer_BackGround(const _wstring& strLayerTag)
 {
-	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
+	/*if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
 		ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Terrain"))))
-		return E_FAIL;
+		return E_FAIL;*/
 
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
 		ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Sky"))))
