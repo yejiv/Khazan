@@ -28,6 +28,15 @@
     <Filter Include="01.Levels\Loading\Loader">
       <UniqueIdentifier>{0d5a345c-2601-483f-b8a3-0e1c2812da63}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Effect">
+      <UniqueIdentifier>{d433a194-b6ad-4b74-abce-fb441b9e4f20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\ParticleSystem">
+      <UniqueIdentifier>{9da261d6-4701-4ff4-8de9-4355c2f51be7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\ParticleSystem\ParticleEmitter">
+      <UniqueIdentifier>{ba2ee6f1-2a5f-4830-8ccf-6ffd577640f3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -59,6 +68,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\Level_Editor.h">
       <Filter>01.Levels\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\ParticleSystem.h">
+      <Filter>02.GameObject\Effect\ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\ParticleEmitter.h">
+      <Filter>02.GameObject\Effect\ParticleSystem\ParticleEmitter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -92,6 +107,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Level_Editor.cpp">
       <Filter>01.Levels\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ParticleSystem.cpp">
+      <Filter>02.GameObject\Effect\ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ParticleEmitter.cpp">
+      <Filter>02.GameObject\Effect\ParticleSystem\ParticleEmitter</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
