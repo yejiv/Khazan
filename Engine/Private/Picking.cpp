@@ -3,13 +3,13 @@
 #include "GameInstance.h"
 
 CPicking::CPicking(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    : m_pDevice { pDevice }
-    , m_pContext { pContext }    
-    , m_pGameInstance { CGameInstance::GetInstance() }
+    : m_pDevice{ pDevice }
+    , m_pContext{ pContext }
+    , m_pGameInstance{ CGameInstance::GetInstance() }
 {
     Safe_AddRef(m_pGameInstance);
     Safe_AddRef(m_pDevice);
-    Safe_AddRef(m_pContext); 
+    Safe_AddRef(m_pContext);
 }
 
 HRESULT CPicking::Initialize(HWND hWnd, _uint iWinSizeX, _uint iWinSizeY)
@@ -47,43 +47,33 @@ HRESULT CPicking::Initialize(HWND hWnd, _uint iWinSizeX, _uint iWinSizeY)
 
 void CPicking::Update()
 {
-    /* 매 프레임 깊이 정보를 저장한 타겟을 복사받아오자. */
+    /* 매 프레임 월드 정보를 저장한 타겟을 복사받아오자. */
     // m_pContext->CopyResource();
 
-    if (FAILED(m_pGameInstance->Copy_RT_Resource(TEXT("Target_Depth"), m_pTexture2D)))
-        return;
-
-    D3D11_MAPPED_SUBRESOURCE        SubResource{};
-    if (FAILED(m_pContext->Map(m_pTexture2D, 0, D3D11_MAP_READ, 0, &SubResource)))
-        return ;
-    
-    memcpy(m_pPixels, SubResource.pData, sizeof(_float4) * m_iWinSizeX * m_iWinSizeY);    
-
-    m_pContext->Unmap(m_pTexture2D, 0);
-
-
-    
-    GetCursorPos(&m_ptMouse);
-    ScreenToClient(m_hWnd, &m_ptMouse);
 }
 
 _bool CPicking::isPicked(_float3* pOut)
 {
-    _uint       iIndex = m_ptMouse.y * m_iWinSizeX + m_ptMouse.x;
-
-    if (0.0f == m_pPixels[iIndex].w)
+    if (FAILED(m_pGameInstance->Copy_RT_Resource(TEXT("Target_World"), m_pTexture2D)))
         return false;
 
-    _vector     vPosition = {};
+    D3D11_MAPPED_SUBRESOURCE        SubResource{};
+    if (FAILED(m_pContext->Map(m_pTexture2D, 0, D3D11_MAP_READ, 0, &SubResource)))
+        return false;
 
-    /* 투ㅠ영공간상의 좌표. */
-    vPosition = XMVectorSetX(vPosition, m_ptMouse.x / (m_iWinSizeX * 0.5f) - 1.f);
-    vPosition = XMVectorSetY(vPosition, m_ptMouse.y / (m_iWinSizeY * -0.5f) + 1.f);
-    vPosition = XMVectorSetZ(vPosition, m_pPixels[iIndex].x);
-    vPosition = XMVectorSetW(vPosition, 1.f);
+    memcpy(m_pPixels, SubResource.pData, sizeof(_float4) * m_iWinSizeX * m_iWinSizeY);
 
-    vPosition = XMVector3TransformCoord(vPosition, m_pGameInstance->Get_Transform_Matrix_Inverse(D3DTS::PROJ));
-    vPosition = XMVector3TransformCoord(vPosition, m_pGameInstance->Get_Transform_Matrix_Inverse(D3DTS::VIEW));
+    m_pContext->Unmap(m_pTexture2D, 0);
+
+    GetCursorPos(&m_ptMouse);
+    ScreenToClient(m_hWnd, &m_ptMouse);
+
+    _uint       iIndex = m_ptMouse.y * m_iWinSizeX + m_ptMouse.x;
+
+    if (0.0f == m_pPixels[iIndex].x && 0.0f == m_pPixels[iIndex].y && 0.0f == m_pPixels[iIndex].z && 0.0f == m_pPixels[iIndex].w)
+        return false;
+
+    _vector     vPosition = { m_pPixels[iIndex].x, m_pPixels[iIndex].y, m_pPixels[iIndex].z, 1.f };
 
     XMStoreFloat3(pOut, vPosition);
 

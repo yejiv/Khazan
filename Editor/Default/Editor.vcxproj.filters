@@ -28,6 +28,27 @@
     <Filter Include="01.Levels\Loading\Loader">
       <UniqueIdentifier>{0d5a345c-2601-483f-b8a3-0e1c2812da63}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Levels\Map">
+      <UniqueIdentifier>{218421f6-e6c4-438d-8352-5cc04b731f41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Animaion">
+      <UniqueIdentifier>{847d5f1b-3b70-4065-a997-cf6a69175996}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Effect">
+      <UniqueIdentifier>{324d42db-5584-4fe9-ab17-3425f37b4103}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\UI">
+      <UniqueIdentifier>{0827b30f-22d4-4821-8a1a-41dfbb4129c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect">
+      <UniqueIdentifier>{d433a194-b6ad-4b74-abce-fb441b9e4f20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\ParticleSystem">
+      <UniqueIdentifier>{9da261d6-4701-4ff4-8de9-4355c2f51be7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\ParticleSystem\ParticleEmitter">
+      <UniqueIdentifier>{ba2ee6f1-2a5f-4830-8ccf-6ffd577640f3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -59,6 +80,24 @@
     </ClInclude>
     <ClInclude Include="..\Public\Level_Editor.h">
       <Filter>01.Levels\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Animation.h">
+      <Filter>01.Levels\Animaion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Effect.h">
+      <Filter>01.Levels\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Map.h">
+      <Filter>01.Levels\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_UI.h">
+      <Filter>01.Levels\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\ParticleSystem.h">
+      <Filter>02.GameObject\Effect\ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\ParticleEmitter.h">
+      <Filter>02.GameObject\Effect\ParticleSystem\ParticleEmitter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -92,6 +131,24 @@
     </ClCompile>
     <ClCompile Include="..\Private\Level_Editor.cpp">
       <Filter>01.Levels\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Animation.cpp">
+      <Filter>01.Levels\Animaion</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Effect.cpp">
+      <Filter>01.Levels\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Map.cpp">
+      <Filter>01.Levels\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_UI.cpp">
+      <Filter>01.Levels\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ParticleSystem.cpp">
+      <Filter>02.GameObject\Effect\ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ParticleEmitter.cpp">
+      <Filter>02.GameObject\Effect\ParticleSystem\ParticleEmitter</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
