@@ -17,7 +17,7 @@ private:
 	virtual ~CEvent_Manager() = default;
 
 public:
-	_uint Subscrible(_uint iEventType, std::function<void()> fEvent);
+	_uint Subscribe(_uint iEventType, std::function<void()> fEvent);
 	void UnSubscribeAll(_uint iEventType);
 	void UnSubscribe(_uint iEventType, _uint iID);
 	HRESULT Emit(_uint iEventType);

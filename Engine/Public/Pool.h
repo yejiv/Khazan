@@ -35,7 +35,7 @@ public:
 protected:
 	_wstring	m_strTag;
 public:
-	virtual CPool* Clone(void* pArg) = 0;
+	virtual CGameObject* Clone(void* pArg) = 0;
 	virtual void Free() override;
 
 };

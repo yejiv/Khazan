@@ -6,6 +6,7 @@
 CPool_Manager::CPool_Manager()
 	: m_pGameInstance { CGameInstance::GetInstance() }
 {
+	Safe_AddRef(m_pGameInstance);
 }
 
 HRESULT CPool_Manager::Add_PoolObject(_uint iPrototypeLevelIndex, const _wstring strPrototypeTag, const _wstring& strPoolTag, void* pArg, _uint iCount)
