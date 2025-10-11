@@ -91,21 +91,26 @@ HRESULT CMesh_Instance::Bind_BoneMatrices(CShader* pShader, const _char* pConsta
 	return pShader->Bind_Matrices(pConstantName, m_BoneMatrices, m_iNumBones);
 }
 
-void CMesh_Instance::Add_Instance(_matrix SettingMatrix)
+void CMesh_Instance::Add_Instance(MESH_INSTANCE_DATA InstanceData)
 {
 	VTXINSTANCE_MESH* pNewInstance = new VTXINSTANCE_MESH[m_iNumInstance + 1];
 	ZeroMemory(pNewInstance, sizeof(VTXINSTANCE_MESH) * (m_iNumInstance + 1));
 
 	VTXINSTANCE_MESH* pVertices = reinterpret_cast<VTXINSTANCE_MESH*>(m_pInstanceVertices);
+	//CHECK_NULLPTR_MSG(pVertices, TEXT("Mesh_Instance > Add_Instance 함수 > nullptr == pVertices"));
 
 	memcpy(pNewInstance, pVertices, sizeof(VTXINSTANCE_MESH) * m_iNumInstance);
 
 	Safe_Delete_Array(m_pInstanceVertices);
 
-	XMStoreFloat4(&pNewInstance[m_iNumInstance].vRight, XMVectorSetW(SettingMatrix.r[0], 0.f));
-	XMStoreFloat4(&pNewInstance[m_iNumInstance].vUp, XMVectorSetW(SettingMatrix.r[1], 0.f));
-	XMStoreFloat4(&pNewInstance[m_iNumInstance].vLook, XMVectorSetW(SettingMatrix.r[2], 0.f));
-	XMStoreFloat4(&pNewInstance[m_iNumInstance].vTranslation, XMVectorSetW(SettingMatrix.r[3], 1.f));
+	_matrix MatrixData = InstanceData.InstanceMatrix;
+
+	XMStoreFloat4(&pNewInstance[m_iNumInstance].vRight, XMVectorSetW(MatrixData.r[0], 0.f));
+	XMStoreFloat4(&pNewInstance[m_iNumInstance].vUp, XMVectorSetW(MatrixData.r[1], 0.f));
+	XMStoreFloat4(&pNewInstance[m_iNumInstance].vLook, XMVectorSetW(MatrixData.r[2], 0.f));
+	XMStoreFloat4(&pNewInstance[m_iNumInstance].vTranslation, XMVectorSetW(MatrixData.r[3], 1.f));
+
+	pNewInstance->iID = InstanceData.InstanceID;
 
 	++m_iNumInstance;
 
@@ -122,20 +127,24 @@ void CMesh_Instance::Add_Instance(_matrix SettingMatrix)
 		return;
 }
 
-void CMesh_Instance::Fix_Instance(_matrix FixMatrix, _uint iInstanceIndex)
+void CMesh_Instance::Fix_Instance(MESH_INSTANCE_DATA InstanceData, _uint iInstanceIndex)
 {
 	D3D11_MAPPED_SUBRESOURCE SubResource = {};
 
 	VTXINSTANCE_MESH* pInstanceVertices = static_cast<VTXINSTANCE_MESH*>(m_pInstanceVertices);
+	CHECK_NULLPTR_MSG(pInstanceVertices, TEXT("Mesh_Instance > Fix_Instance 함수 > nullptr == pInstanceVertices"));
 
 	CHECK_FAILED_MSG(m_pContext->Map(m_pVBInstance, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource), TEXT("Mesh Instance - Map 실패"), );
 
 	VTXINSTANCE_MESH* pVertices = static_cast<VTXINSTANCE_MESH*>(SubResource.pData);
+	CHECK_NULLPTR_MSG(pVertices, TEXT("Mesh_Instance > Fix_Instance 함수 > nullptr == pVertices"));
 
-	XMStoreFloat4(&pVertices[iInstanceIndex - 1].vRight, XMVectorSetW(FixMatrix.r[0], 0.f));
-	XMStoreFloat4(&pVertices[iInstanceIndex - 1].vUp, XMVectorSetW(FixMatrix.r[1], 0.f));
-	XMStoreFloat4(&pVertices[iInstanceIndex - 1].vLook, XMVectorSetW(FixMatrix.r[2], 0.f));
-	XMStoreFloat4(&pVertices[iInstanceIndex - 1].vTranslation, XMVectorSetW(FixMatrix.r[3], 1.f));
+	_matrix FixMatrixData = InstanceData.InstanceMatrix;
+
+	XMStoreFloat4(&pVertices[iInstanceIndex - 1].vRight, XMVectorSetW(FixMatrixData.r[0], 0.f));
+	XMStoreFloat4(&pVertices[iInstanceIndex - 1].vUp, XMVectorSetW(FixMatrixData.r[1], 0.f));
+	XMStoreFloat4(&pVertices[iInstanceIndex - 1].vLook, XMVectorSetW(FixMatrixData.r[2], 0.f));
+	XMStoreFloat4(&pVertices[iInstanceIndex - 1].vTranslation, XMVectorSetW(FixMatrixData.r[3], 1.f));
 
 	pInstanceVertices[iInstanceIndex - 1] = pVertices[iInstanceIndex - 1];
 
