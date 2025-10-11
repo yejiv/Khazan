@@ -67,9 +67,6 @@
     <Filter Include="02.GameObject\MapObject\Prop\00.Static">
       <UniqueIdentifier>{d6e4346f-5e62-4072-b95a-6ca52ffe1423}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\푸쉬 전 지울거">
-      <UniqueIdentifier>{b1a95c3b-8315-44eb-a40a-f962a5ff950b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Levels\Map\Header">
       <UniqueIdentifier>{5e903afb-5ae0-44e4-a388-6f6c034a1f9c}</UniqueIdentifier>
     </Filter>
@@ -140,9 +137,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\Prop.h">
       <Filter>02.GameObject\MapObject\Prop</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Camera_Map.h">
-      <Filter>02.GameObject\푸쉬 전 지울거</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\MapEditor_Header.h">
       <Filter>01.Levels\Map\Header</Filter>
@@ -215,9 +209,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\Prop.cpp">
       <Filter>02.GameObject\MapObject\Prop</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Camera_Map.cpp">
-      <Filter>02.GameObject\푸쉬 전 지울거</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
