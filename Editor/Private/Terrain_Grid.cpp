@@ -88,6 +88,7 @@ HRESULT CTerrain_Grid::Bind_ShaderResources()
         return E_FAIL;
 
     if (FAILED(m_pTextureCom->Bind_Shader_Resources(m_pShaderCom, "g_DiffuseTexture")))
+        return E_FAIL;
 
     return S_OK;
 }

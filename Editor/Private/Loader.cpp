@@ -145,7 +145,7 @@ HRESULT CLoader::Loading_For_Effect_Level()
 
 	// Prototype_Component_VIBuffer_Terrain
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_VIBuffer_Terrain"),
-		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 100, 100))))
+		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 50, 50))))
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
