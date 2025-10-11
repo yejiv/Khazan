@@ -17,6 +17,7 @@
 #include "Frustum.h"
 #include "Imgui_Manager.h"
 #include "Jolt_Manager.h"
+#include "ThreadPool.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -45,9 +46,9 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pFont_Manager)
 		return E_FAIL;
 
-	//m_pPicking = CPicking::Create(*ppDevice, *ppContext, EngineDesc.hWnd, EngineDesc.iWinSizeX, EngineDesc.iWinSizeY);
-	//if (nullptr == m_pPicking)
-	//	return E_FAIL;
+	m_pPicking = CPicking::Create(*ppDevice, *ppContext, EngineDesc.hWnd, EngineDesc.iWinSizeX, EngineDesc.iWinSizeY);
+	if (nullptr == m_pPicking)
+		return E_FAIL;
 
 	m_pFrustum = CFrustum::Create();
 	if (nullptr == m_pFrustum)
@@ -85,8 +86,12 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pLight_Manager)
 		return E_FAIL;
 
-	m_pJolt_Manager = CJolt_Manager::Create();
+	m_pJolt_Manager = CJolt_Manager::Create(*ppDevice, *ppContext, EngineDesc.iNumJoltObjectLayer);
 	if (nullptr == m_pJolt_Manager)
+		return E_FAIL;
+
+	m_pThreadPool = CThreadPool::Create();
+	if (nullptr == m_pThreadPool)
 		return E_FAIL;
 
 #ifdef _DEBUG
@@ -106,7 +111,7 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 	/* 내 게임내에서 반복적인 갱신이 필요한 객체들이 있다라면 갱신을 여기에서 모아서 수행하낟. */
 	m_pObject_Manager->Priority_Update(fTimeDelta);
 
-	/*m_pPicking->Update();*/
+	//m_pPicking->Update();
 	m_pPipeLine->Update();
 	m_pFrustum->Update();
 
@@ -118,6 +123,7 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 	m_pJolt_Manager->Update(fTimeDelta);
 
 #ifdef _DEBUG
+
 #endif
 }
 
@@ -156,6 +162,7 @@ HRESULT CGameInstance::Draw()
 #ifdef _DEBUG
 	m_pImgui_Manager->BeginFrame();
 	m_pImgui_Manager->Render();
+	m_pJolt_Manager->Debug_Render();
 #endif
 
 	return S_OK;
@@ -231,6 +238,11 @@ HRESULT CGameInstance::Add_GameObject_ToLayer(_uint iLayerLevelIndex, const _wst
 		return E_FAIL;
 
 	return m_pObject_Manager->Add_GameObject_ToLayer(iLayerLevelIndex, strLayerTag, iPrototypeLevelIndex, strPrototypeTag, pArg);
+}
+
+HRESULT CGameInstance::Push_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CGameObject* pGameObject)
+{
+	return m_pObject_Manager->Push_GameObject_ToLayer(iLayerLevelIndex, strLayerTag, pGameObject);
 }
 
 #pragma endregion
@@ -405,10 +417,10 @@ HRESULT CGameInstance::Render_RT_Debug(CShader* pShader, CVIBuffer_Rect* pVIBuff
 
 #pragma region PICKING
 
-//_bool CGameInstance::isPicked(_float3* pOut)
-//{
-//	return m_pPicking->isPicked(pOut);
-//}
+_bool CGameInstance::isPicked(_float3* pOut)
+{
+	return m_pPicking->isPicked(pOut);
+}
 
 #pragma endregion
 
@@ -455,21 +467,46 @@ void CGameInstance::AddWidget(const _wstring Menu, const function<void()>& widge
 #endif
 
 #pragma region JOLT_MANAGER
-PhysicsSystem& CGameInstance::Get_PhysicsSystem()
+void CGameInstance::Set_PhysicsSystem()
 {
-	return m_pJolt_Manager->Get_PhysicsSystem();
+	m_pJolt_Manager->Set_PhysicsSystem();
 }
-BodyInterface& CGameInstance::Get_BodyInterface()
+void CGameInstance::Set_ObjectToBP(_uint iObjectLayer, _uint iBPLayer)
 {
-	return m_pJolt_Manager->Get_BodyInterface();
+	m_pJolt_Manager->Set_ObjectToBP(iObjectLayer, iBPLayer);
 }
-void CGameInstance::Set_Gravity(const Vec3& vGravity)
+void CGameInstance::Set_ObjectFilter(_uint iSrc, _uint iDst)
 {
-	m_pJolt_Manager->Get_PhysicsSystem();
+	m_pJolt_Manager->Set_ObjectFilter(iSrc, iDst);
 }
-Vec3 CGameInstance::Get_Gravity() const
+void CGameInstance::Set_ObjectVsBPFilter(_uint iObjectLayer, _uint iBPLayer)
 {
-	return m_pJolt_Manager->Get_Gravity();
+	m_pJolt_Manager->Set_ObjectVsBPFilter(iObjectLayer, iBPLayer);
+}
+Body* CGameInstance::CreateAndAdd_Body(const BodyCreationSettings& BodySetting, BodyInterface** pBodyInterface)
+{
+	return m_pJolt_Manager->CreateAndAdd_Body(BodySetting, pBodyInterface);
+}
+#ifdef _DEBUG
+void CGameInstance::Jolt_Test()
+{
+	m_pJolt_Manager->Test();
+}
+#endif
+#pragma endregion
+
+#pragma region THREADPOOL
+future<void> CGameInstance::Enqueue(std::function<void()> job)
+{
+	return m_pThreadPool->Enqueue(job);
+}
+future<any> CGameInstance::EnqueueAny(std::function<any()> job)
+{
+	return m_pThreadPool->EnqueueAny(job);
+}
+void CGameInstance::Submit(std::function<void()> job)
+{
+	m_pThreadPool->Submit(job);
 }
 #pragma endregion
 
@@ -494,10 +531,10 @@ void CGameInstance::Release_Engine()
 	m_pImgui_Manager->Shutdown();
 	Safe_Release(m_pImgui_Manager);
 #endif
-	Safe_Release(m_pJolt_Manager);
+	Safe_Release(m_pThreadPool);
 	Safe_Release(m_pFrustum);
 	Safe_Release(m_pShadow);
-	//Safe_Release(m_pPicking);
+	Safe_Release(m_pPicking);
 	Safe_Release(m_pTarget_Manager);
 	Safe_Release(m_pFont_Manager);
 	Safe_Release(m_pLight_Manager);	
@@ -506,6 +543,7 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pRenderer);
 	Safe_Release(m_pObject_Manager);
 	Safe_Release(m_pPrototype_Manager);
+	Safe_Release(m_pJolt_Manager);
 	Safe_Release(m_pLevel_Manager);
 	Safe_Release(m_pInput_Device);
 	Safe_Release(m_pGraphic_Device);

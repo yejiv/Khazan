@@ -2,19 +2,20 @@
 x64/
 
 *.txt
-*.json
-*.dat
 *.png
 *.dds
+*.cso
+*.pdb
+*.exe
 
-Client.exe
-Client.pdb
+client.exp
 
 Engine.dll
 Engine.lib
 Engine.exp
-Engine.pdb
-data/
+
+EngineSDK/Debug/Inc/
+EngineSDK/Release/Inc/
 
 *.vcxproj merge=union
 *.vcxproj.filters merge=union
