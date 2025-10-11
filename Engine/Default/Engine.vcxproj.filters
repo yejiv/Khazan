@@ -154,9 +154,6 @@
     <Filter Include="01.Utility\03.Component\VIBuffer\Instance\Rect">
       <UniqueIdentifier>{287e24af-ca6d-4fc1-9ee9-ee2def1ce9ca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\03.Component\VIBuffer\Instance\Mesh">
-      <UniqueIdentifier>{2ba653db-181c-4135-bb3f-3a615341c579}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\03.Component\VIBuffer\Instance\Point">
       <UniqueIdentifier>{b4496c2f-a764-41a5-bf48-9f374acb7cef}</UniqueIdentifier>
     </Filter>
@@ -222,6 +219,24 @@
     </Filter>
     <Filter Include="01.Utility\03.Component\RigidBody">
       <UniqueIdentifier>{e6d7da03-00c0-4c21-be11-5d581401c62a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Component\Model\Instance">
+      <UniqueIdentifier>{62bb2252-6fc8-45d0-984f-058df548e135}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Component\Model\Mesh\Instance">
+      <UniqueIdentifier>{2ba653db-181c-4135-bb3f-3a615341c579}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\UIObject\MultiDelegate">
+      <UniqueIdentifier>{d87b0407-8b9f-4885-86d4-0de5d9a770a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\UIObject\Panel">
+      <UniqueIdentifier>{d4ab381e-e094-40cd-89d7-fd94e7388e98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\UIObject\Button">
+      <UniqueIdentifier>{34655975-9a25-416f-8a90-92653ca57874}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\UIObject\ProgressBar">
+      <UniqueIdentifier>{5a606f75-1f2f-4fd3-82bb-8bc4a8a9134a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -440,6 +455,24 @@
     </ClCompile>
     <ClCompile Include="..\Private\Jolt_ContactListener.cpp">
       <Filter>01.Utility\13.Jolt\ContactListener</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Mesh_Instance.cpp">
+      <Filter>01.Utility\03.Component\Model\Mesh\Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Model_Instance.cpp">
+      <Filter>01.Utility\03.Component\Model\Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MultiDelegate.cpp">
+      <Filter>01.Utility\02.GameObject\UIObject\MultiDelegate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Panel.cpp">
+      <Filter>01.Utility\02.GameObject\UIObject\Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Button.cpp">
+      <Filter>01.Utility\02.GameObject\UIObject\Button</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_ProgressBar.cpp">
+      <Filter>01.Utility\02.GameObject\UIObject\ProgressBar</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -679,6 +712,24 @@
     </ClInclude>
     <ClInclude Include="..\Public\Jolt_ContactListener.h">
       <Filter>01.Utility\13.Jolt\ContactListener</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Mesh_Instance.h">
+      <Filter>01.Utility\03.Component\Model\Mesh\Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Model_Instance.h">
+      <Filter>01.Utility\03.Component\Model\Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MultiDelegate.h">
+      <Filter>01.Utility\02.GameObject\UIObject\MultiDelegate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Panel.h">
+      <Filter>01.Utility\02.GameObject\UIObject\Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Button.h">
+      <Filter>01.Utility\02.GameObject\UIObject\Button</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_ProgressBar.h">
+      <Filter>01.Utility\02.GameObject\UIObject\ProgressBar</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

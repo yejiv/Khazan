@@ -55,6 +55,12 @@
     <Filter Include="02.GameObject\Monster">
       <UniqueIdentifier>{f663abf4-dee0-497f-bd4b-b6469c804f8a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\JOH Test">
+      <UniqueIdentifier>{79049abe-c286-42e6-98b0-a98c711d0409}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\JOH Test\Test NonAnim Model">
+      <UniqueIdentifier>{2a2f2620-f90d-4ad0-80a5-ce65409e5eab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -107,6 +113,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Monster.h">
       <Filter>02.GameObject\Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\JOH_Test1.h">
+      <Filter>02.GameObject\JOH Test\Test NonAnim Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -161,6 +170,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Monster.cpp">
       <Filter>02.GameObject\Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\JOH_Test1.cpp">
+      <Filter>02.GameObject\JOH Test\Test NonAnim Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
