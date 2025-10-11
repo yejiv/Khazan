@@ -6,6 +6,8 @@
 NS_BEGIN(Engine)
 class CCollider;
 class CNavigation;
+class CCharacter;
+class CRigidBody;
 NS_END
 
 NS_BEGIN(Client)
@@ -13,7 +15,7 @@ NS_BEGIN(Client)
 class CPlayer final : public CContainerObject
 {
 public:
-	enum STATE {
+	enum PLAYER_STATE {
 		IDLE = 0x00000001,
 		RUN = 0x00000002,
 		ATTACK = 0x00000004,
@@ -25,14 +27,20 @@ private:
 
 public:
 	virtual HRESULT Initialize_Prototype();
-	virtual HRESULT Initialize(void* pArg);
+	virtual HRESULT Initialize_Clone(void* pArg);
 	virtual void Priority_Update(_float fTimeDelta);
 	virtual void Update(_float fTimeDelta);
 	virtual void Late_Update(_float fTimeDelta);
 	virtual HRESULT Render();
 
+public:
+	virtual void Collision_Enter(JPH::ObjectLayer Layer, CGameObject* pObject, JPH::ContactManifold ContactManifold);
+	virtual void Collision_Stay(JPH::ObjectLayer Layer, CGameObject* pObject, JPH::ContactManifold ContactManifold);
+
 private:
 	_uint				m_iState = { };
+	class CRigidBody* m_pRigidBodyCom = { nullptr };
+	//class CCharacter* m_pCharacterCom = { nullptr };
 
 private:
 	HRESULT Ready_Components();

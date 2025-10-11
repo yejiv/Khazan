@@ -23,8 +23,10 @@ HRESULT CMainApp::Initialize()
 	EngineDesc.iNumLevels = ENUM_CLASS(LEVEL::END);
 	EngineDesc.iWinSizeX_Imgui = g_iWinSizeX_Imgui;
 	EngineDesc.iWinSizeY_Imgui = g_iWinSizeY_Imgui;
+	EngineDesc.iNumJoltObjectLayer = ENUM_CLASS(COLLISION_LAYER::END);
 
 	list<_wstring> Imgui_Menu;
+	Imgui_Menu.push_back(TEXT("Default"));
 	Imgui_Menu.push_back(TEXT("Map"));
 	Imgui_Menu.push_back(TEXT("Effect"));
 	Imgui_Menu.push_back(TEXT("Model"));
@@ -40,6 +42,11 @@ HRESULT CMainApp::Initialize()
 
 	if (FAILED(Start_Level(LEVEL::EDITOR)))
 		return E_FAIL;
+
+	if (FAILED(Ready_ObjectLayer()))
+		return E_FAIL;
+	
+	Ready_DefaultImgui();
 
 	return S_OK;
 }
@@ -120,12 +127,51 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 	return S_OK;
 }
 
+HRESULT CMainApp::Ready_ObjectLayer()
+{
+	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
+	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
+
+	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MONSTER));
+
+	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
+	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
+
+	m_pGameInstance->Set_PhysicsSystem();
+
+	return S_OK;
+}
+
 HRESULT CMainApp::Start_Level(LEVEL eStartLevelID)
 {
 	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::EDITOR), CLevel_Loading::Create(m_pDevice, m_pContext, eStartLevelID))))
 		return E_FAIL;
 
 	return S_OK;
+}
+
+void CMainApp::Ready_DefaultImgui()
+{
+	m_pGameInstance->AddWidget(TEXT("Default"), [this]() {
+		ImGui::Begin("Default");
+		ImGui::Text("Select Level");
+		if (ImGui::Button("Map", ImVec2(120, 32))) { 
+			m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::MAP), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::MAP));
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Animation", ImVec2(120, 32))) {
+			m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::ANIMATION), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::ANIMATION));
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Effect", ImVec2(120, 32))) {
+			m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::EFFECT), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EFFECT));
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("UI", ImVec2(120, 32))) {
+			m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::UI), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::UI));
+		}
+		ImGui::End();
+		});
 }
 
 CMainApp* CMainApp::Create()

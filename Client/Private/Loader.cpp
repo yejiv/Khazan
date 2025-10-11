@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "ClientPch.h"
 #include "Loader.h"
 
 #include "GameInstance.h"
@@ -9,6 +9,9 @@
 #include "Camera_Free.h"
 #include "Sky.h"
 #include "Terrain.h"
+#include "Monster.h"
+
+//#include "JOH_Test1.h"
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice{ pDevice }
@@ -37,12 +40,6 @@ HRESULT CLoader::Initialize(LEVEL eNextLevelID)
 
 	InitializeCriticalSection(&m_CriticalSection);
 
-	
-
-	/* 스레드를 생성하고 */
-	/* 생성한 스레드가 로딩을 할 수 있도록 처리한다. */
-
-	/* 스택 메모리를 제외한 기타 다른 메모리공간(힙, 데이터, 코드, ) 은 스레드간 서로 공유한다. */
 	m_hThread = (HANDLE)_beginthreadex(nullptr, 0, LoadingMain, this, 0, nullptr);
 	if (0 == m_hThread)
 		return E_FAIL;
@@ -78,14 +75,13 @@ HRESULT CLoader::Loading()
 
 HRESULT CLoader::Loading_For_Title_Level()
 {
-
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
 
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
 
 	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
 
-	lstrcpy(m_szLoadingText, TEXT("게임오브젝트원형를 로딩중입니다."));
+	lstrcpy(m_szLoadingText, TEXT("게임오브젝트를 로딩중입니다."));
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 	
@@ -130,9 +126,16 @@ HRESULT CLoader::Loading_For_Stage1_Level()
 		CModel::Create(m_pDevice, m_pContext, MODELTYPE::ANIM, "../Bin/Resources/Models/Fiona/Fiona.fbx", PreTransformMatrix))))
 		return E_FAIL;
 
+	/* Prototype_Component_Model_JOH_TestModel */
+	//PreTransformMatrix = XMMatrixRotationY(XMConvertToRadians(180.0f));
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_JOH_TestModel"),
+	//	CModel::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, "../Bin/Resources/Models/Test/JOH/Test1/Test.fbx", PreTransformMatrix))))
+	//	return E_FAIL;
+
+
 	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
 
-	lstrcpy(m_szLoadingText, TEXT("게임오브젝트원형를 로딩중입니다."));
+	lstrcpy(m_szLoadingText, TEXT("게임오브젝트를 로딩중입니다."));
 
 	/* Prototype_GameObject_Terrain*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Terrain"),
@@ -158,6 +161,16 @@ HRESULT CLoader::Loading_For_Stage1_Level()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Body_Player"),
 		CBody_Player::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+
+	/* Prototype_GameObject_Monster */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Monster"),
+		CMonster::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_GameObject_JOH_Test1 */
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_JOH_Test1"),
+	//	CJOH_Test1::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
 
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));

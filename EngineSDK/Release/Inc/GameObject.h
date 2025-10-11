@@ -28,6 +28,10 @@ public:
 	virtual HRESULT Render();
 	virtual HRESULT Render_Shadow() { return S_OK; }
 
+public:
+	virtual void Collision_Enter(JPH::ObjectLayer Layer, CGameObject* pObject, JPH::ContactManifold ContactManifold) {};
+	virtual void Collision_Stay(JPH::ObjectLayer Layer, CGameObject* pObject, JPH::ContactManifold ContactManifold) {};
+
 protected:
 	ID3D11Device*				m_pDevice = { nullptr };
 	ID3D11DeviceContext*		m_pContext = { nullptr };
