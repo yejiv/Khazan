@@ -49,6 +49,12 @@
     <Filter Include="02.GameObject\Effect\ParticleSystem\ParticleEmitter">
       <UniqueIdentifier>{ba2ee6f1-2a5f-4830-8ccf-6ffd577640f3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Effect\Camera">
+      <UniqueIdentifier>{73507ee3-ca91-4db0-bb47-9b7b03480d0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Terrain">
+      <UniqueIdentifier>{81b63c04-fa83-4a3a-96f5-b9f89191f19d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -98,6 +104,12 @@
     </ClInclude>
     <ClInclude Include="..\public\ParticleEmitter.h">
       <Filter>02.GameObject\Effect\ParticleSystem\ParticleEmitter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Effect.h">
+      <Filter>02.GameObject\Effect\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Terrain_Grid.h">
+      <Filter>02.GameObject\Effect\Terrain</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -149,6 +161,12 @@
     </ClCompile>
     <ClCompile Include="..\private\ParticleEmitter.cpp">
       <Filter>02.GameObject\Effect\ParticleSystem\ParticleEmitter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Effect.cpp">
+      <Filter>02.GameObject\Effect\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Terrain_Grid.cpp">
+      <Filter>02.GameObject\Effect\Terrain</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

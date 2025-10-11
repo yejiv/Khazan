@@ -12,6 +12,21 @@ NS_BEGIN(Editor)
 
 class CParticleEmitter final : public CGameObject
 {
+public:
+	typedef struct tagParticleEmitterDesc
+	{
+		_wstring strName{};
+
+		_uint iNumInstance{};
+		_float3	vCenter{};
+		_float2	vRange{};
+		_float2	vSize{};
+		_float2	vLifeTime{};
+		_float3	vPivot{};
+		_float2	vSpeed{};
+		_bool	isLoop{};
+	}PARTICLE_EMITTER_DESC;
+
 private:
 	CParticleEmitter(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CParticleEmitter(const CParticleEmitter& Prototype);
@@ -37,6 +52,8 @@ private:
 	CVIBuffer_Point_Instance*			m_pVIBufferCom = { nullptr };
 
 	_wstring							m_strName = {};
+
+
 
 private:
 	HRESULT								Ready_Components();

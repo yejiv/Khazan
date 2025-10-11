@@ -3,7 +3,6 @@
 #include "GameInstance.h"
 #include "Level_Loading.h"
 
-
 CMainApp::CMainApp()
 	: m_pGameInstance{ CGameInstance::GetInstance() }
 {
@@ -87,18 +86,16 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 		CVIBuffer_Cube::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-
-
 	// Shader
 	///* Prototype_Component_Shader_VtxPosTex */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxPosTex"),
 	//	CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxPosTex.hlsl"), VTXPOSTEX::Elements, VTXPOSTEX::iNumElements))))
 	//	return E_FAIL;
 
-	///* Prototype_Component_Shader_VtxNorTex */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxNorTex"),
-	//	CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxNorTex.hlsl"), VTXNORTEX::Elements, VTXNORTEX::iNumElements))))
-	//	return E_FAIL;
+	/* Prototype_Component_Shader_VtxNorTex */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxNorTex"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_VtxNorTex.hlsl"), VTXNORTEX::Elements, VTXNORTEX::iNumElements))))
+		return E_FAIL;
 
 	///* Prototype_Component_Shader_VtxCube */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxCube"),
@@ -120,10 +117,11 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 	//	CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxInstance_Particle.hlsl"), VTXPARTICLE::Elements, VTXPARTICLE::iNumElements))))
 	//	return E_FAIL;
 
-	///* Prototype_Component_Shader_VtxInstance_PointParticle*/
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxInstance_PointParticle"),
-	//	CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxInstance_PointParticle.hlsl"), VTXPOINTPARTICLE::Elements, VTXPOINTPARTICLE::iNumElements))))
-	//	return E_FAIL;
+	/* Prototype_Component_Shader_VtxInstance_PointParticle*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxInstance_PointParticle"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_VtxInstance_PointParticle.hlsl"), VTXPOINTPARTICLE::Elements, VTXPOINTPARTICLE::iNumElements))))
+		return E_FAIL;
+	
 	return S_OK;
 }
 
@@ -144,7 +142,7 @@ HRESULT CMainApp::Ready_ObjectLayer()
 
 HRESULT CMainApp::Start_Level(LEVEL eStartLevelID)
 {
-	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::EDITOR), CLevel_Loading::Create(m_pDevice, m_pContext, eStartLevelID))))
+	if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::EDITOR), CLevel_Loading::Create(m_pDevice, m_pContext, eStartLevelID))))
 		return E_FAIL;
 
 	return S_OK;
@@ -156,19 +154,19 @@ void CMainApp::Ready_DefaultImgui()
 		ImGui::Begin("Default");
 		ImGui::Text("Select Level");
 		if (ImGui::Button("Map", ImVec2(120, 32))) { 
-			m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::MAP), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::MAP));
+			m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::MAP));
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Animation", ImVec2(120, 32))) {
-			m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::ANIMATION), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::ANIMATION));
+			m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::ANIMATION));
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Effect", ImVec2(120, 32))) {
-			m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::EFFECT), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EFFECT));
+			m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EFFECT));
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("UI", ImVec2(120, 32))) {
-			m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::UI), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::UI));
+			m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::UI));
 		}
 		ImGui::End();
 		});
