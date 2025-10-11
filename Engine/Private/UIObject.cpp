@@ -146,28 +146,28 @@ void CUIObject::Update_Transform(CTransform* pTargetTransform)
     }
 }
 
-_float2 CUIObject::Compute_AlignedPos(_float2 vWorldPos, _float2 vSize)
+_float2 CUIObject::Compute_AlignedPos(_float2 vPos, _float2 vSize)
 {
     switch (m_eAlignment)
     {
     case UI_Alignment::TOP_LEFT:
-        return vWorldPos;
+        return vPos;
     case UI_Alignment::TOP_CENTER:
-        return _float2(vWorldPos.x - vSize.x * 0.5f, vWorldPos.y);
+        return _float2(vPos.x - vSize.x * 0.5f, vPos.y);
     case UI_Alignment::TOP_RIGHT:
-        return _float2(vWorldPos.x - vSize.x, vWorldPos.y);
+        return _float2(vPos.x - vSize.x, vPos.y);
     case UI_Alignment::MIDDLE_LEFT:
-        return _float2(vWorldPos.x, vWorldPos.y - vSize.y * 0.5f);
+        return _float2(vPos.x, vPos.y - vSize.y * 0.5f);
     case UI_Alignment::MIDDLE_CENTER:
-        return _float2(vWorldPos.x - vSize.x * 0.5f, vWorldPos.y - vSize.y * 0.5f);
+        return _float2(vPos.x - vSize.x * 0.5f, vPos.y - vSize.y * 0.5f);
     case UI_Alignment::MIDDLE_RIGHT:
-        return _float2(vWorldPos.x - vSize.x, vWorldPos.y - vSize.y * 0.5f);
+        return _float2(vPos.x - vSize.x, vPos.y - vSize.y * 0.5f);
     case UI_Alignment::BOTTOM_LEFT:
-        return _float2(vWorldPos.x, vWorldPos.y - vSize.y);
+        return _float2(vPos.x, vPos.y - vSize.y);
     case UI_Alignment::BOTTOM_CENTER:
-        return _float2(vWorldPos.x - vSize.x * 0.5f, vWorldPos.y - vSize.y);
+        return _float2(vPos.x - vSize.x * 0.5f, vPos.y - vSize.y);
     case UI_Alignment::BOTTOM_RIGHT:
-        return _float2(vWorldPos.x - vSize.x, vWorldPos.y - vSize.y);
+        return _float2(vPos.x - vSize.x, vPos.y - vSize.y);
     }
 }
 
