@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Public\Camera_Map.h" />
     <ClInclude Include="..\Public\Editor_Defines.h" />
     <ClInclude Include="..\Public\Level_Animation.h" />
     <ClInclude Include="..\Public\Level_Editor.h" />
@@ -156,8 +157,15 @@
     <ClInclude Include="..\Public\Level_UI.h" />
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\Public\MainApp.h" />
+    <ClInclude Include="..\Public\MapEditor_Header.h" />
+    <ClInclude Include="..\Public\MapObject.h" />
     <ClInclude Include="..\public\ParticleEmitter.h" />
     <ClInclude Include="..\public\ParticleSystem.h" />
+    <ClInclude Include="..\Public\Prop.h" />
+    <ClInclude Include="..\Public\Prop_Animated.h" />
+    <ClInclude Include="..\Public\Prop_Destructible.h" />
+    <ClInclude Include="..\Public\Prop_Interactive.h" />
+    <ClInclude Include="..\Public\Prop_Static.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="EditorPch.h" />
     <ClInclude Include="framework.h" />
@@ -165,6 +173,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Private\Camera_Map.cpp" />
     <ClCompile Include="..\Private\Level_Animation.cpp" />
     <ClCompile Include="..\Private\Level_Editor.cpp" />
     <ClCompile Include="..\Private\Level_Effect.cpp" />
@@ -173,8 +182,14 @@
     <ClCompile Include="..\Private\Level_UI.cpp" />
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
+    <ClCompile Include="..\Private\MapObject.cpp" />
     <ClCompile Include="..\private\ParticleEmitter.cpp" />
     <ClCompile Include="..\private\ParticleSystem.cpp" />
+    <ClCompile Include="..\Private\Prop.cpp" />
+    <ClCompile Include="..\Private\Prop_Animated.cpp" />
+    <ClCompile Include="..\Private\Prop_Destructible.cpp" />
+    <ClCompile Include="..\Private\Prop_Interactive.cpp" />
+    <ClCompile Include="..\Private\Prop_Static.cpp" />
     <ClCompile Include="Editor.cpp" />
     <ClCompile Include="EditorPch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
