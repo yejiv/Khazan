@@ -154,9 +154,6 @@
     <Filter Include="01.Utility\03.Component\VIBuffer\Instance\Rect">
       <UniqueIdentifier>{287e24af-ca6d-4fc1-9ee9-ee2def1ce9ca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\03.Component\VIBuffer\Instance\Mesh">
-      <UniqueIdentifier>{2ba653db-181c-4135-bb3f-3a615341c579}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\03.Component\VIBuffer\Instance\Point">
       <UniqueIdentifier>{b4496c2f-a764-41a5-bf48-9f374acb7cef}</UniqueIdentifier>
     </Filter>
@@ -222,6 +219,12 @@
     </Filter>
     <Filter Include="01.Utility\03.Component\RigidBody">
       <UniqueIdentifier>{e6d7da03-00c0-4c21-be11-5d581401c62a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Component\Model\Instance">
+      <UniqueIdentifier>{62bb2252-6fc8-45d0-984f-058df548e135}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Component\Model\Mesh\Instance">
+      <UniqueIdentifier>{2ba653db-181c-4135-bb3f-3a615341c579}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -440,6 +443,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Jolt_ContactListener.cpp">
       <Filter>01.Utility\13.Jolt\ContactListener</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Mesh_Instance.cpp">
+      <Filter>01.Utility\03.Component\Model\Mesh\Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Model_Instance.cpp">
+      <Filter>01.Utility\03.Component\Model\Instance</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -679,6 +688,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\Jolt_ContactListener.h">
       <Filter>01.Utility\13.Jolt\ContactListener</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Mesh_Instance.h">
+      <Filter>01.Utility\03.Component\Model\Mesh\Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Model_Instance.h">
+      <Filter>01.Utility\03.Component\Model\Instance</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
