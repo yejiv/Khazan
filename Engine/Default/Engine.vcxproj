@@ -216,6 +216,8 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\Jolt_DebugRenderer.cpp" />
     <ClCompile Include="..\private\Picking.cpp" />
     <ClCompile Include="..\private\PipeLine.cpp" />
+    <ClCompile Include="..\Private\Pool.cpp" />
+    <ClCompile Include="..\Private\Pool_Manager.cpp" />
     <ClCompile Include="..\Private\Prototype_Manager.cpp" />
     <ClCompile Include="..\private\QuadTree.cpp" />
     <ClCompile Include="..\Private\Renderer.cpp" />
@@ -310,6 +312,8 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Jolt_DebugRenderer.h" />
     <ClInclude Include="..\public\Picking.h" />
     <ClInclude Include="..\public\PipeLine.h" />
+    <ClInclude Include="..\Public\Pool.h" />
+    <ClInclude Include="..\Public\Pool_Manager.h" />
     <ClInclude Include="..\Public\Prototype_Manager.h" />
     <ClInclude Include="..\public\QuadTree.h" />
     <ClInclude Include="..\Public\Renderer.h" />

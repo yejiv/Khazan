@@ -238,6 +238,15 @@
     <Filter Include="01.Utility\02.GameObject\UIObject\ProgressBar">
       <UniqueIdentifier>{5a606f75-1f2f-4fd3-82bb-8bc4a8a9134a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\15.Pool">
+      <UniqueIdentifier>{8029f79e-d6fa-45ce-9092-cbf66be841c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\15.Pool\Manager">
+      <UniqueIdentifier>{565e7f0a-e0b8-4a4f-b7c8-3c8d455eb800}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\Pool">
+      <UniqueIdentifier>{6599dcd5-de57-4b9b-8fc8-06b6a0cbb5ed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -473,6 +482,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\UI_ProgressBar.cpp">
       <Filter>01.Utility\02.GameObject\UIObject\ProgressBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Pool_Manager.cpp">
+      <Filter>01.Utility\15.Pool\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Pool.cpp">
+      <Filter>01.Utility\02.GameObject\Pool</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -730,6 +745,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\UI_ProgressBar.h">
       <Filter>01.Utility\02.GameObject\UIObject\ProgressBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Pool_Manager.h">
+      <Filter>01.Utility\15.Pool\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Pool.h">
+      <Filter>01.Utility\02.GameObject\Pool</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

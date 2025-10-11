@@ -18,6 +18,8 @@
 #include "Imgui_Manager.h"
 #include "Jolt_Manager.h"
 #include "ThreadPool.h"
+#include "Input_Manager.h"
+#include "Pool_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -92,6 +94,14 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 
 	m_pThreadPool = CThreadPool::Create();
 	if (nullptr == m_pThreadPool)
+		return E_FAIL;
+
+	m_pInput_Manager = CInput_Manager::Create(EngineDesc.hInst, EngineDesc.hWnd);
+	if (nullptr == m_pInput_Manager)
+		return E_FAIL;
+
+	m_pPool_Manager = CPool_Manager::Create(EngineDesc.hInst, EngineDesc.hWnd);
+	if (nullptr == m_pPool_Manager)
 		return E_FAIL;
 
 #ifdef _DEBUG
@@ -510,6 +520,56 @@ void CGameInstance::Submit(std::function<void()> job)
 }
 #pragma endregion
 
+#pragma region INPUT_MANAGER
+_bool CGameInstance::Key_Pressing(_ubyte byKeyID, _float fTimeDelta, _float* pPressingTime)
+{
+	return m_pInput_Manager->Key_Pressing(byKeyID, fTimeDelta, pPressingTime);
+}
+_bool CGameInstance::Key_Down(_ubyte byKeyID)
+{
+	return m_pInput_Manager->Key_Down(byKeyID);
+}
+_bool CGameInstance::Key_Up(_ubyte byKeyID)
+{
+	return m_pInput_Manager->Key_Up(byKeyID);
+}
+_bool CGameInstance::Mouse_Pressing(MOUSEKEYSTATE eMouse)
+{
+	return m_pInput_Manager->Mouse_Pressing(eMouse);
+}
+_bool CGameInstance::Mouse_Down(MOUSEKEYSTATE eMouse)
+{
+	return m_pInput_Manager->Mouse_Down(eMouse);
+}
+_bool CGameInstance::Mouse_Up(MOUSEKEYSTATE eMouse)
+{
+	return m_pInput_Manager->Mouse_Up(eMouse);
+}
+#pragma endregion
+
+#pragma region POOL_MANAGER
+HRESULT CGameInstance::Add_PoolObject(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint iPrototypeLevelIndex, const _wstring strPrototypeTag, const _wstring& strPoolTag, void* pArg, _uint iCount)
+{
+	return m_pPool_Manager->Add_PoolObject(iLayerLevelIndex, strLayerTag, iPrototypeLevelIndex, strPrototypeTag, strPoolTag, pArg, iCount);
+}
+CPool* CGameInstance::Pop_PoolObject(const _wstring& strPoolTag)
+{
+	return m_pPool_Manager->Pop_PoolObject(strPoolTag);
+}
+HRESULT CGameInstance::Reset_PoolObject(CPool* pPoolObject)
+{
+	return m_pPool_Manager->Reset_PoolObject(pPoolObject);
+}
+HRESULT CGameInstance::Reset_PoolObject(CGameObject* pGameObject)
+{
+	return m_pPool_Manager->Reset_PoolObject(pGameObject);
+}
+void CGameInstance::Push_PoolObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CPool* pPoolObject)
+{
+	m_pPool_Manager->Push_PoolObject_ToLayer(iLayerLevelIndex, strLayerTag, pPoolObject);
+}
+#pragma endregion
+
 //
 //void CGameInstance::Transform_Picking_ToLocalSpace(CTransform* pTransformCom)
 //{
@@ -531,6 +591,8 @@ void CGameInstance::Release_Engine()
 	m_pImgui_Manager->Shutdown();
 	Safe_Release(m_pImgui_Manager);
 #endif
+	Safe_Release(m_pPool_Manager);
+	Safe_Release(m_pInput_Manager);
 	Safe_Release(m_pThreadPool);
 	Safe_Release(m_pFrustum);
 	Safe_Release(m_pShadow);
