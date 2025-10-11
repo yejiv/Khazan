@@ -46,7 +46,7 @@ HRESULT CGameObject::Initialize_Clone(void* pArg)
 	if (FAILED(m_pTransformCom->Initialize_Clone(pArg)))
 		return E_FAIL;	
 
-	m_Components.emplace(TEXT("Com_Transform"), m_pTransformCom);		
+	m_Components.emplace(TEXT("Com_Transform"), m_pTransformCom);
 
 	Safe_AddRef(m_pTransformCom);
 
