@@ -8,8 +8,11 @@ x64/
 *.pdb
 *.exe
 
+client.exp
+
 Engine.dll
 Engine.lib
+Engine.exp
 
 EngineSDK/Debug/Inc/
 EngineSDK/Release/Inc/
