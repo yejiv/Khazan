@@ -7,6 +7,15 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CUIObject abstract : public CGameObject
 {
 public:
+	enum class UI_Alignment
+{
+	TOP_LEFT,	 TOP_CENTER,	TOP_RIGHT,
+	MIDDLE_LEFT, MIDDLE_CENTER, MIDDLE_RIGHT,
+	BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT
+};
+
+
+public:
 	typedef struct tagUIObjectDesc : public GAMEOBJECT_DESC
 	{
 		_float3			vLocalSize, vLocalPos;
@@ -25,6 +34,12 @@ public:
 	CMultiDelegate<_float, _float>	OnHover; // 마우스 위치 포함
 	CMultiDelegate<_bool>			OnVisibleChanged; // 표시 상태 변화
 
+public:
+	void						Set_Alignment(UI_Alignment eAlign) { m_eAlignment = eAlign; }
+	UI_Alignment				Get_Alignment() const { return m_eAlignment; }
+
+public:
+	class CTexture*				Set_Texture(CGameObject* pGameObject, CTexture* pTexture);
 
 public:
 	virtual HRESULT				Initialize_Prototype() override;
@@ -39,6 +54,7 @@ public:
 	void						Remove_Child(CUIObject* pChild);
 	void						Update_Visible(_bool bisVisible);
 	void						Update_Transform(class CTransform* pTargetTransform = nullptr);
+	_float2						Compute_AlignedPos(_float2 vWorldPos,_float2 vSize);
 
 
 public:
@@ -50,6 +66,12 @@ protected:
 	HRESULT						Initialize_Screen_UI(UIOBJECT_DESC* pDesc);
 	HRESULT						Initialize_World_UI(UIOBJECT_DESC* pDesc);
 
+protected:
+	// 추후에 UtiliMath 같은 클래스 만들어서 정리 예정
+	inline _float				Lerp(_float fStart, _float fEnd, _float fTimeDelta)
+	{
+		return fStart + (fEnd - fStart) * fTimeDelta;
+	}
 
 protected:
 	_float4x4					m_ViewMatrix = {};
@@ -60,11 +82,16 @@ protected:
 	_float3						m_vLocalSize = {};
 	_float3						m_vWorldSize = {};
 
+
+	_float2						m_vAnchor;   // 앵커
+	UI_Alignment				m_eAlignment = { UI_Alignment::TOP_LEFT };
+
+
 	_uint						m_iWinSizeX = {};
 	_uint						m_iWinSizeY = {};
 
-	_bool						m_bisVisible = { true };
-	_bool						m_bisHovered = { false };
+	_bool						m_isVisible = { true };
+	_bool						m_isHovered = { false };
 
 	CUIObject*					m_pParent = { nullptr };
 
