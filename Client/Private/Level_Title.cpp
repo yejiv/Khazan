@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "ClientPch.h"
 #include "Level_Title.h"
 #include "GameInstance.h"
 #include "Level_Loading.h"
@@ -10,11 +10,9 @@ CLevel_Title::CLevel_Title(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 HRESULT CLevel_Title::Initialize()
 {
-
 	/* 현재 레벨을 구성해주기 위한 객체들을 생성한다. */
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
-
 
 	return S_OK;
 }

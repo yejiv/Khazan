@@ -10,24 +10,21 @@ CLevel_Editor::CLevel_Editor(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 
 HRESULT CLevel_Editor::Initialize()
 {
-
 	/* 현재 레벨을 구성해주기 위한 객체들을 생성한다. */
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
-
 
 	return S_OK;
 }
 
 void CLevel_Editor::Update(_float fTimeDelta)
 {
-
 	return;
 }
 
 HRESULT CLevel_Editor::Render()
 {
-	SetWindowText(g_hWnd, TEXT("로고레벨입니다."));
+	SetWindowText(g_hWnd, TEXT("에디터 레벨입니다."));
 
 	return S_OK;
 }
@@ -59,7 +56,5 @@ CLevel_Editor* CLevel_Editor::Create(ID3D11Device* pDevice, ID3D11DeviceContext*
 void CLevel_Editor::Free()
 {
 	__super::Free();
-
-
 
 }

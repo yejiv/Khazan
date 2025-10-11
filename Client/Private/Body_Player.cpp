@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "ClientPch.h"
 #include "Body_Player.h"
 #include "GameInstance.h"
 
@@ -26,7 +26,7 @@ HRESULT CBody_Player::Initialize_Prototype()
     return S_OK;
 }
 
-HRESULT CBody_Player::Initialize(void* pArg)
+HRESULT CBody_Player::Initialize_Clone(void* pArg)
 {
     BODY_DESC* pDesc = static_cast<BODY_DESC*>(pArg);
     m_pParentState = pDesc->pState;
@@ -181,7 +181,7 @@ CGameObject* CBody_Player::Clone(void* pArg)
 {
     CBody_Player* pInstance = new CBody_Player(*this);
 
-    if (FAILED(pInstance->Initialize(pArg)))
+    if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
         MSG_BOX(TEXT("Failed to Created : CBody_Player"));
         Safe_Release(pInstance);
@@ -196,5 +196,5 @@ void CBody_Player::Free()
 
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
-    Safe_Release(m_pColliderCom);
+    //Safe_Release(m_pColliderCom);
 }
