@@ -33,6 +33,7 @@ private:
 
 private:
 	HRESULT Ready_Prototype_ForStatic();
+	HRESULT Ready_ObjectLayer();
 	HRESULT Start_Level(LEVEL eStartLevelID);
 
 public:
