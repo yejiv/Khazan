@@ -29,8 +29,8 @@ public:
 	void Set_Tag(_wstring strTag) { m_strTag = strTag; }
 	_wstring Get_Tag() { return m_strTag; }
 
-public:
-	virtual void Reset() { return; }
+protected:
+	virtual void Reset() = 0;
 
 protected:
 	_wstring	m_strTag;
