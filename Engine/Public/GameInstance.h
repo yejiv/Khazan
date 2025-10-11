@@ -161,6 +161,24 @@ public:
 	void Submit(std::function<void()> job);
 #pragma
 
+#pragma region INPUT_MANAGER
+	_bool		Key_Pressing(_ubyte byKeyID, _float fTimeDelta, _float* pPressingTime);
+	_bool		Key_Down(_ubyte byKeyID);
+	_bool		Key_Up(_ubyte byKeyID);
+
+	_bool		Mouse_Pressing(MOUSEKEYSTATE eMouse);
+	_bool		Mouse_Down(MOUSEKEYSTATE eMouse);
+	_bool		Mouse_Up(MOUSEKEYSTATE eMouse);
+#pragma
+
+#pragma region POOL_MANAGER
+	HRESULT Add_PoolObject(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint iPrototypeLevelIndex, const _wstring strPrototypeTag, const _wstring& strPoolTag, void* pArg, _uint iCount = 1);
+	class CPool* Pop_PoolObject(const _wstring& strPoolTag);
+	HRESULT Reset_PoolObject(class CPool* pPoolObject);
+	HRESULT Reset_PoolObject(class CGameObject* pGameObject);
+	void Push_PoolObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CPool* pPoolObject);
+#pragma
+
 private:
 	class CGraphic_Device*		m_pGraphic_Device = { nullptr };
 	class CInput_Device*		m_pInput_Device = { nullptr };
@@ -178,6 +196,8 @@ private:
 	class CFrustum*				m_pFrustum = { nullptr };
 	class CJolt_Manager*		m_pJolt_Manager = { nullptr };
 	class CThreadPool*			m_pThreadPool = { nullptr };
+	class CInput_Manager*		m_pInput_Manager = { nullptr };
+	class CPool_Manager*		m_pPool_Manager = { nullptr };
 #ifdef _DEBUG
 	class CImgui_Manager* m_pImgui_Manager = { nullptr };
 #endif
