@@ -40,6 +40,8 @@ public:
 
 public:
 	class CTexture*				Set_Texture(CGameObject* pGameObject, CTexture* pTexture);
+	void						Set_LocalPos(const _float3& vPos) { m_vLocalPos = vPos; }
+	_float3						Get_LocalSize() const { return m_vLocalSize; }
 
 public:
 	virtual HRESULT				Initialize_Prototype() override;
