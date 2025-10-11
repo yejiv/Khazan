@@ -548,9 +548,9 @@ _bool CGameInstance::Mouse_Up(MOUSEKEYSTATE eMouse)
 #pragma endregion
 
 #pragma region POOL_MANAGER
-HRESULT CGameInstance::Add_PoolObject(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint iPrototypeLevelIndex, const _wstring strPrototypeTag, const _wstring& strPoolTag, void* pArg, _uint iCount)
+HRESULT CGameInstance::Add_PoolObject(_uint iPrototypeLevelIndex, const _wstring strPrototypeTag, const _wstring& strPoolTag, void* pArg, _uint iCount)
 {
-	return m_pPool_Manager->Add_PoolObject(iLayerLevelIndex, strLayerTag, iPrototypeLevelIndex, strPrototypeTag, strPoolTag, pArg, iCount);
+	return m_pPool_Manager->Add_PoolObject(iPrototypeLevelIndex, strPrototypeTag, strPoolTag, pArg, iCount);
 }
 CPool* CGameInstance::Pop_PoolObject(const _wstring& strPoolTag)
 {

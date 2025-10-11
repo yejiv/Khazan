@@ -172,7 +172,7 @@ public:
 #pragma
 
 #pragma region POOL_MANAGER
-	HRESULT Add_PoolObject(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint iPrototypeLevelIndex, const _wstring strPrototypeTag, const _wstring& strPoolTag, void* pArg, _uint iCount = 1);
+	HRESULT Add_PoolObject(_uint iPrototypeLevelIndex, const _wstring strPrototypeTag, const _wstring& strPoolTag, void* pArg = nullptr, _uint iCount = 1);
 	class CPool* Pop_PoolObject(const _wstring& strPoolTag);
 	HRESULT Reset_PoolObject(class CPool* pPoolObject);
 	HRESULT Reset_PoolObject(class CGameObject* pGameObject);

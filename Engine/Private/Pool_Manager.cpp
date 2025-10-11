@@ -16,6 +16,8 @@ HRESULT CPool_Manager::Add_PoolObject(_uint iLayerLevelIndex, const _wstring& st
 		if (nullptr == pPoolObject)
 			return E_FAIL;
 
+		pPoolObject->Set_Tag(strPoolTag);
+
 		deque<CPool*>* pPool = Find_Pool(strPoolTag);
 		if (nullptr == pPool)
 		{
