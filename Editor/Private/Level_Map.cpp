@@ -61,6 +61,7 @@ HRESULT CLevel_Map::Ready_Lights()
 
 HRESULT CLevel_Map::Ready_Layer_Camera(const _wstring& strLayerTag)
 {
+	/*
 	CCamera_Map::CAMERA_FREE_DESC MapDesc = {};
 
 	MapDesc.fSpeedPerSec = 5.f;
@@ -78,6 +79,7 @@ HRESULT CLevel_Map::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), strLayerTag,
 		ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Camera_Map"), &MapDesc), E_FAIL);
+	*/
 
 	return S_OK;
 }
