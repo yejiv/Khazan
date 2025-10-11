@@ -49,6 +49,33 @@
     <Filter Include="02.GameObject\Effect\ParticleSystem\ParticleEmitter">
       <UniqueIdentifier>{ba2ee6f1-2a5f-4830-8ccf-6ffd577640f3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03.Utility">
+      <UniqueIdentifier>{8af11899-cd8c-4c1c-9e9c-0e1c7815e687}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Utility\00.Model">
+      <UniqueIdentifier>{f8290d34-b690-4a76-a627-22800eebfcb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Utility\00.Model\Mesh">
+      <UniqueIdentifier>{3d2e8d7a-8f71-4dfd-a290-cd57167ad382}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Utility\00.Model\Material">
+      <UniqueIdentifier>{97bc533d-459d-4a8d-9729-a3aaa5ea6321}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Utility\00.Model\Bone">
+      <UniqueIdentifier>{1993a2a4-ffd2-400b-853f-87d8dd52bd42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Utility\00.Model\Animation">
+      <UniqueIdentifier>{3cb67361-25cb-4c61-be4d-de9667c4a984}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Utility\00.Model\Animation\Channel">
+      <UniqueIdentifier>{01695c3e-bb05-486c-abe9-841d6a03417f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Animation">
+      <UniqueIdentifier>{e1a4d636-4d3d-4832-addd-a3350a40898b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Animation\99.Test Model">
+      <UniqueIdentifier>{176dafb7-64ef-446d-9e9b-d912ec4436c2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -98,6 +125,27 @@
     </ClInclude>
     <ClInclude Include="..\public\ParticleEmitter.h">
       <Filter>02.GameObject\Effect\ParticleSystem\ParticleEmitter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Editor_Model.h">
+      <Filter>03.Utility\00.Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Editor_Animation.h">
+      <Filter>03.Utility\00.Model\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Editor_Bone.h">
+      <Filter>03.Utility\00.Model\Bone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Editor_Channel.h">
+      <Filter>03.Utility\00.Model\Animation\Channel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Editor_Mesh.h">
+      <Filter>03.Utility\00.Model\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Editor_MeshMaterial.h">
+      <Filter>03.Utility\00.Model\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\JOH_EditorModelTest.h">
+      <Filter>02.GameObject\Animation\99.Test Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -149,6 +197,27 @@
     </ClCompile>
     <ClCompile Include="..\private\ParticleEmitter.cpp">
       <Filter>02.GameObject\Effect\ParticleSystem\ParticleEmitter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Editor_Model.cpp">
+      <Filter>03.Utility\00.Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Editor_Animation.cpp">
+      <Filter>03.Utility\00.Model\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Editor_Bone.cpp">
+      <Filter>03.Utility\00.Model\Bone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Editor_Channel.cpp">
+      <Filter>03.Utility\00.Model\Animation\Channel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Editor_Mesh.cpp">
+      <Filter>03.Utility\00.Model\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Editor_MeshMaterial.cpp">
+      <Filter>03.Utility\00.Model\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\JOH_EditorModelTest.cpp">
+      <Filter>02.GameObject\Animation\99.Test Model</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
