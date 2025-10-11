@@ -1,4 +1,3 @@
-#include "EditorPch.h"
 #include "ParticleSystem.h"
 #include "ParticleEmitter.h"
 

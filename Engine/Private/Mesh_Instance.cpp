@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "Mesh_Instance.h"
 
 #include "GameInstance.h"
