@@ -29,27 +29,6 @@ HRESULT CParticleEmitter::Initialize_Clone(void* pArg)
 
     m_strName = pDesc->strName;
 
-    CVIBuffer_Point_Instance::POINT_INSTANCE_DESC Desc{};
-    Desc.iNumInstance = 300;
-    Desc.vCenter = _float3(0.f, 0.f, 0.f);
-    Desc.vRange = _float3(0.2f, 0.2f, 0.2f);
-    Desc.vSize = _float2(0.05f, 0.1f);
-    Desc.vLifeTime = _float2(0.5f, 2.f);
-    Desc.vPivot = _float3(0.f, 0.f, 0.f);
-    Desc.vSpeed = _float2(0.5f, 1.f);
-    Desc.isLoop = true;
-
-    m_pVIBufferCom = CVIBuffer_Point_Instance::Create(m_pDevice, m_pContext, &Desc);
-    if (nullptr == m_pVIBufferCom)
-        return E_FAIL;
-
-    if (FAILED(m_pVIBufferCom->Initialize_Clone(pArg)))
-        return E_FAIL;
-
-    m_Components.emplace(TEXT("Com_VIBuffer"), m_pVIBufferCom);
-
-    Safe_AddRef(m_pVIBufferCom);
-
     return S_OK;
 }
 
@@ -59,7 +38,14 @@ void CParticleEmitter::Priority_Update(_float fTimeDelta)
 
 void CParticleEmitter::Update(_float fTimeDelta)
 {
-    m_pVIBufferCom->Spread(fTimeDelta);
+    if (nullptr != m_pVIBufferCom)
+    {
+        if (m_isSpread)
+            m_pVIBufferCom->Spread(fTimeDelta);
+
+        else if (m_isDrop)
+            m_pVIBufferCom->Drop(fTimeDelta);
+    }
 }
 
 void CParticleEmitter::Late_Update(_float fTimeDelta)
@@ -75,15 +61,32 @@ HRESULT CParticleEmitter::Render()
 
     m_pShaderCom->Begin(0);
 
-    m_pVIBufferCom->Bind_Resources();
-
-    m_pVIBufferCom->Render();
+    if (nullptr != m_pVIBufferCom)
+    {
+        m_pVIBufferCom->Bind_Resources();
+        m_pVIBufferCom->Render();
+    }
 
     return S_OK;
 }
 
-void CParticleEmitter::Recreate_Particle()
+HRESULT CParticleEmitter::Recreate_Particle(CVIBuffer_Point_Instance::POINT_INSTANCE_DESC PointDesc)
 {
+    if (nullptr != m_pVIBufferCom)
+        Safe_Release(m_pVIBufferCom);
+
+    m_pVIBufferCom = CVIBuffer_Point_Instance::Create(m_pDevice, m_pContext, &PointDesc);
+    if (nullptr == m_pVIBufferCom)
+        return E_FAIL;
+    
+    if (FAILED(m_pVIBufferCom->Initialize_Clone(nullptr)))
+        return E_FAIL;
+    
+    m_Components.emplace(TEXT("Com_VIBuffer"), m_pVIBufferCom);
+    
+    Safe_AddRef(m_pVIBufferCom);
+
+    return S_OK;
 }
 
 HRESULT CParticleEmitter::Ready_Components()
@@ -92,11 +95,6 @@ HRESULT CParticleEmitter::Ready_Components()
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxInstance_PointParticle"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
-
-    // 파티클 버퍼 생성 Initialize_Clone으로 옮기기
-    //  if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Particle_Snow"),
-    //      TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), nullptr)))
-    //      return E_FAIL;
 
     // Com_Texture
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_TestParticle"),

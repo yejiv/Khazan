@@ -108,9 +108,9 @@ HRESULT CLevel_Effect::Initialize()
             {
                 if (ImGui::Button("Delete System"))
                 {
+                    m_ParticleSystems[m_iSelectedSystem]->Set_IsDead(true);
                     Safe_Release(m_ParticleSystems[m_iSelectedSystem]);
                     m_ParticleSystems.erase(m_ParticleSystems.begin() + m_iSelectedSystem);
-                    m_ParticleSystems[m_iSelectedSystem]->Set_IsDead(true);
 
                     m_iSelectedSystem = -1;
                     m_iSelectedEmitter = -1;
@@ -179,33 +179,81 @@ HRESULT CLevel_Effect::Initialize()
             // ==============================
             ImGui::Begin("EmitterSettings");
 
-            if (m_iSelectedSystem >= 0 && m_iSelectedEmitter >= 0)
+            if (m_iPrevSelectedSystem != m_iSelectedSystem)
             {
-                //  CParticleEmitter* pEmitter = m_ParticleSystems[m_iSelectedSystem]->Get_Emitter(m_iSelectedEmitter);
-                //  auto& Desc = pEmitter->Get_Desc();
+                m_iSelectedEmitter = -1;
+                m_iPrevSelectedSystem = m_iSelectedSystem;
+            }
 
-                //  ImGui::InputText("Emitter Name", &Desc.strName[0], sizeof(Desc.strName));
-                //  ImGui::InputFloat3("Center", (float*)&Desc.vCenter);
-                //  ImGui::InputFloat3("Direction", (float*)&Desc.vDir);
-                //  ImGui::InputFloat("Speed", &Desc.fSpeed);
-                //  ImGui::InputFloat("Scale", &Desc.fScale);
-                //  ImGui::InputFloat("LifeTime", &Desc.fLifeTime);
-                //  
-                //  ImGui::Separator();
-                //  ImGui::Checkbox("Loop", &Desc.isLoop);
-                //  ImGui::Checkbox("Spread", &Desc.isSpread);
-                //  ImGui::Checkbox("Drop", &Desc.isDrop);
-                //  ImGui::Checkbox("Gravity", &Desc.isGravity);
-                //  
-                //  ImGui::Separator();
+            if ((m_iSelectedSystem >= 0 && m_iSelectedEmitter >= 0) && (m_iPrevSelectedSystem == m_iSelectedSystem))
+            {
+                CParticleEmitter* pEmitter = m_ParticleSystems[m_iSelectedSystem]->Get_Emitter(m_iSelectedEmitter);
+
+                if (m_iPrevSelectedEmitter != m_iSelectedEmitter)
+                {
+                    m_strEmitterName = pEmitter->Get_Name();
+                    m_PointInfo = pEmitter->Get_ParticleInfo();
+                    m_isSpread = pEmitter->Get_Spread();
+                    m_isDrop = pEmitter->Get_Drop();
+
+                    m_iPrevSelectedEmitter = m_iSelectedEmitter;
+                    // wstring -> char 변환 후 버퍼에 저장
+                    WideCharToMultiByte(CP_ACP, 0, m_strEmitterName.c_str(), -1, m_szEmitterName, sizeof(m_szEmitterName), nullptr, nullptr);
+                }
+
+                ImGui::InputText("Emitter Name", m_szEmitterName, sizeof(m_szEmitterName));
+
+                ImGui::Separator();
+                ImGui::Text("Emitter Parameters");
+                ImGui::Separator();
+
+                // 파티클 개수
+                ImGui::InputInt("Num Instance", reinterpret_cast<_int*>(&m_PointInfo.iNumInstance));
+
+                // 중심 위치
+                ImGui::InputFloat3("Center", reinterpret_cast<_float*>(&m_PointInfo.vCenter));
+
+                // 퍼지는 범위
+                ImGui::InputFloat3("Range", reinterpret_cast<_float*>(&m_PointInfo.vRange));
+
+                // 크기 (최소, 최대)
+                ImGui::InputFloat2("Size (Min/Max)", reinterpret_cast<_float*>(&m_PointInfo.vSize));
+
+                // 수명 (최소, 최대)
+                ImGui::InputFloat2("LifeTime (Min/Max)", reinterpret_cast<_float*>(&m_PointInfo.vLifeTime));
+
+                // 회전 중심 (Pivot)
+                ImGui::InputFloat3("Pivot", reinterpret_cast<_float*>(&m_PointInfo.vPivot));
+
+                // 속도 (최소, 최대)
+                ImGui::InputFloat2("Speed (Min/Max)", reinterpret_cast<_float*>(&m_PointInfo.vSpeed));
+
+                ImGui::Separator();
+                ImGui::Text("Emitter Behavior");
+                ImGui::Separator();
+
+                // 반복 여부 및 물리 효과
+                ImGui::Checkbox("Loop", &m_PointInfo.isLoop);
+                ImGui::Checkbox("Spread", &m_isSpread);
+                ImGui::Checkbox("Drop", &m_isDrop);
+                //  ImGui::Checkbox("Gravity", &m_isGravity);
+                
+                ImGui::Separator();
 
                 if (ImGui::Button("Apply Changes"))
                 {
+                    // char -> wstring 변환
+                    _int iLength = MultiByteToWideChar(CP_ACP, 0, m_szEmitterName, -1, nullptr, 0);
+                    _wstring strNewEmitterName(iLength, 0);
+                    MultiByteToWideChar(CP_ACP, 0, m_szEmitterName, -1, &strNewEmitterName[0], iLength);
+
+                    if (m_strEmitterName != strNewEmitterName)
+                        pEmitter->Set_Name(strNewEmitterName);
+
+                    pEmitter->Recreate_Particle(m_PointInfo);
+                    pEmitter->Set_Spread(m_isSpread);
+                    pEmitter->Set_Drop(m_isDrop);
                 }
-            }
-            else
-            {
-                ImGui::Text("NULL");
             }
 
             if (ImGui::Button("Add Emitter"))
@@ -310,8 +358,6 @@ HRESULT CLevel_Effect::Ready_Layer_BackGround()
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EFFECT), TEXT("Layer_BackGround"),
 		ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_Terrain_Grid"))))
 		return E_FAIL;
-
-    // 터레인 추가
 
 	return S_OK;
 }
