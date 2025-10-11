@@ -13,6 +13,24 @@ CUIObject::CUIObject(const CUIObject& Prototype)
 
 }
 
+CTexture* CUIObject::Set_Texture(CGameObject* pGameObject, CTexture* pTexture)
+{   
+    if (nullptr == pGameObject)
+        return nullptr;
+
+    if (nullptr == pTexture)
+        return nullptr;
+
+    pTexture = static_cast<CTexture*>(pGameObject->Get_Component(TEXT("Com_Texture")));
+    if (nullptr == pTexture)
+        return nullptr;
+
+    Safe_AddRef(pTexture);
+
+    return pTexture;
+
+}
+
 HRESULT CUIObject::Initialize_Prototype()
 {
     return S_OK;
@@ -81,7 +99,7 @@ void CUIObject::Remove_Child(CUIObject* pChild)
 
 void CUIObject::Update_Visible(_bool bisVisible)
 {
-    m_bisVisible = bisVisible;
+    m_isVisible = bisVisible;
 
     for (auto& pChild : m_Children)
     {
@@ -128,6 +146,30 @@ void CUIObject::Update_Transform(CTransform* pTargetTransform)
     }
 }
 
+_float2 CUIObject::Compute_AlignedPos(_float2 vWorldPos, _float2 vSize)
+{
+    switch (m_eAlignment)
+    {
+    case UI_Alignment::TOP_LEFT:
+        return vWorldPos;
+    case UI_Alignment::TOP_CENTER:
+        return _float2(vWorldPos.x - vSize.x * 0.5f, vWorldPos.y);
+    case UI_Alignment::TOP_RIGHT:
+        return _float2(vWorldPos.x - vSize.x, vWorldPos.y);
+    case UI_Alignment::MIDDLE_LEFT:
+        return _float2(vWorldPos.x, vWorldPos.y - vSize.y * 0.5f);
+    case UI_Alignment::MIDDLE_CENTER:
+        return _float2(vWorldPos.x - vSize.x * 0.5f, vWorldPos.y - vSize.y * 0.5f);
+    case UI_Alignment::MIDDLE_RIGHT:
+        return _float2(vWorldPos.x - vSize.x, vWorldPos.y - vSize.y * 0.5f);
+    case UI_Alignment::BOTTOM_LEFT:
+        return _float2(vWorldPos.x, vWorldPos.y - vSize.y);
+    case UI_Alignment::BOTTOM_CENTER:
+        return _float2(vWorldPos.x - vSize.x * 0.5f, vWorldPos.y - vSize.y);
+    case UI_Alignment::BOTTOM_RIGHT:
+        return _float2(vWorldPos.x - vSize.x, vWorldPos.y - vSize.y);
+    }
+}
 
 
 _bool CUIObject::Update_Picking(HWND hWnd)
@@ -155,11 +197,11 @@ _bool CUIObject::Update_Picking(HWND hWnd)
 
     if (PtInRect(&rc, ptMouse))
     {
-        m_bisHovered = true;
+        m_isHovered = true;
         return true;
     }
 
-    m_bisHovered = false;
+    m_isHovered = false;
     return false;
 
 }

@@ -13,6 +13,8 @@ private:
 public:
 	HRESULT Add_Font(const _wstring& strFontTag, const _tchar* pFontFilePath);
 	void DrawText(const _wstring& strFontTag, const _tchar* pText, const _float2& vPosition, _fvector vColor, _float fRadian, const _float2& vOrigin, const _float2& vScale);
+	_float2 Compute_TextSize(const _wstring& strFontTag, const _wstring& strText, _float2 vTextSize);
+
 private:
 	ID3D11Device*						m_pDevice = { nullptr };
 	ID3D11DeviceContext*				m_pContext = { nullptr };

@@ -105,6 +105,7 @@ public:
 #pragma region FONT_MANAGER
 	HRESULT Add_Font(const _wstring& strFontTag, const _tchar* pFontFilePath);
 	void DrawText(const _wstring& strFontTag, const _tchar* pText, const _float2& vPosition, _fvector vColor = XMVectorSet(1.f, 1.f, 1.f, 1.f), _float fRadian = 0.f, const _float2& vOrigin = _float2(0.f, 0.f), const _float2& vScale = _float2(1.f, 1.f));
+	_float2 Compute_TextSize(const _wstring& strFontTag, const _wstring& strText, _float2 vTextSize);
 #pragma endregion
 
 

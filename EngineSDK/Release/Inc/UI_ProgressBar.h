@@ -4,12 +4,29 @@
 class CUI_ProgressBar abstract : public CUIObject
 {
 protected:
-	enum class BAR_TYPE { FRONT, BACK, OUTLINE };
+	enum class BAR_DIRECTION { LEFT_TO_RIGHT, RIGHT_TO_LEFT, TOP_TO_BOTTOM, BOTTOM_TO_TOP, END };
+	enum class BAR_MODE { REDUCE, EXPAND, END };
+
+public:
+	typedef struct tagProgressBarDesc : public CUIObject::UIOBJECT_DESC
+	{
+		_float				fCurrentValue = {};
+		_float				fMaxValue = {};
+		BAR_DIRECTION		eDirection = {};
+		BAR_MODE			eMode = {};
+
+	}PROGRESSBAR_DESC;
 
 protected:
 	CUI_ProgressBar(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CUI_ProgressBar(const CUI_ProgressBar& Prototype);
 	virtual ~CUI_ProgressBar() = default;
+					
+//public:
+//	void						Set_Bar_Direction(BAR_DIRECTION eDirection) { m_eDirection = eDirection; }
+//	void						Set_Bar_Mode(BAR_MODE eMode) { m_eMode = eMode; }
+public:
+	void						Set_CurrentValue(_float fCurrentValue) { m_fCurrentValue = fCurrentValue; m_isChange = true; }
 
 public:
 	virtual HRESULT				Initialize_Prototype() override;
@@ -21,10 +38,26 @@ public:
 
 protected:
 	_float						Make_Rate(_float fSrc, _float fDst);
+	void						Reduce_RightToLeft(_float fRate);
+	void						Reduce_LeftToRight(_float fRate);
+	void						Expand_RightToLeft(_float fRate);
+	void						Expand_LeftToRight(_float fRate);
+
 
 protected:
 	_float3						m_vOriginSize = {};
 	_float3						m_vOriginPos = {};
+
+	_float						m_fCurrentValue = {};
+	_float						m_fMaxValue = {};
+	_float						m_fDisplayRate = {};
+
+	_float						m_fLerpSpeed = {};
+
+	_bool						m_isChange = { false };
+
+	BAR_DIRECTION				m_eDirection = { BAR_DIRECTION::END };
+	BAR_MODE					m_eMode = { BAR_MODE::END };
 
 
 public:
