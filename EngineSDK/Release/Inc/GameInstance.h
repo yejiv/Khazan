@@ -58,6 +58,7 @@ public:
 	class CComponent* Find_Component(_uint iLayerLevelIndex, const _wstring& strLayerTag, const _wstring& strComponentTag, _uint iIndex = 0);
 	class CGameObject* Find_GameObject(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint iIndex = 0);
 	HRESULT Add_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);
+	HRESULT Push_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CGameObject* pGameObject);
 #pragma endregion
 
 #pragma region RENDERER
@@ -122,7 +123,7 @@ public:
 #pragma endregion
 
 #pragma region PICKING 
-	//_bool isPicked(_float3* pOut);
+	_bool isPicked(_float3* pOut);
 #pragma endregion
 
 #pragma region SHADOW
@@ -143,11 +144,22 @@ public:
 #endif
 
 #pragma region JOLT_MANAGER
-	PhysicsSystem& Get_PhysicsSystem();
-	BodyInterface& Get_BodyInterface();
-	void    Set_Gravity(const Vec3& vGravity);
-	Vec3    Get_Gravity() const;
+	void Set_PhysicsSystem();
+	void Set_ObjectToBP(_uint iObjectLayer, _uint iBPLayer);
+	void Set_ObjectFilter(_uint iSrc, _uint iDst);
+	void Set_ObjectVsBPFilter(_uint iObjectLayer, _uint iBPLayer);
+	Body* CreateAndAdd_Body(const BodyCreationSettings& BodySetting, BodyInterface** pBodyInterface);
+
+#ifdef _DEBUG
+	void Jolt_Test();
+#endif
 #pragma endregion
+
+#pragma region THREADPOOL
+	future<void> Enqueue(std::function<void()> job);
+	future<any> EnqueueAny(std::function<any()> job);
+	void Submit(std::function<void()> job);
+#pragma
 
 private:
 	class CGraphic_Device*		m_pGraphic_Device = { nullptr };
@@ -157,15 +169,15 @@ private:
 	class CPrototype_Manager*	m_pPrototype_Manager = { nullptr };
 	class CRenderer*			m_pRenderer = { nullptr };
 	class CTimer_Manager*		m_pTimer_Manager = { nullptr };
-	//class CPicking*				m_pPicking = { nullptr };
+	class CPicking*				m_pPicking = { nullptr };
 	class CPipeLine*			m_pPipeLine = { nullptr };
 	class CLight_Manager*		m_pLight_Manager = { nullptr };
 	class CFont_Manager*		m_pFont_Manager = { nullptr };
 	class CTarget_Manager*		m_pTarget_Manager = { nullptr };
 	class CShadow*				m_pShadow = { nullptr };
 	class CFrustum*				m_pFrustum = { nullptr };
-
 	class CJolt_Manager*		m_pJolt_Manager = { nullptr };
+	class CThreadPool*			m_pThreadPool = { nullptr };
 #ifdef _DEBUG
 	class CImgui_Manager* m_pImgui_Manager = { nullptr };
 #endif
