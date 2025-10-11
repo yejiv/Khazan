@@ -29,7 +29,7 @@ public:
 	void Set_Tag(_wstring strTag) { m_strTag = strTag; }
 	_wstring Get_Tag() { return m_strTag; }
 
-protected:
+public:
 	virtual void Reset() = 0;
 
 protected:

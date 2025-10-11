@@ -169,7 +169,7 @@ public:
 	_bool		Mouse_Pressing(MOUSEKEYSTATE eMouse);
 	_bool		Mouse_Down(MOUSEKEYSTATE eMouse);
 	_bool		Mouse_Up(MOUSEKEYSTATE eMouse);
-#pragma
+#pragma endregion
 
 #pragma region POOL_MANAGER
 	HRESULT Add_PoolObject(_uint iPrototypeLevelIndex, const _wstring strPrototypeTag, const _wstring& strPoolTag, void* pArg = nullptr, _uint iCount = 1);
@@ -177,7 +177,14 @@ public:
 	HRESULT Reset_PoolObject(class CPool* pPoolObject);
 	HRESULT Reset_PoolObject(class CGameObject* pGameObject);
 	void Push_PoolObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CPool* pPoolObject);
-#pragma
+#pragma endregion
+
+#pragma region EVENT_MANAGER
+	_uint Subscrible(_uint iEventType, std::function<void()> fEvent);
+	void UnSubscribeAll(_uint iEventType);
+	void UnSubscribe(_uint iEventType, _uint iID);
+	HRESULT Emit(_uint iEventType);
+#pragma endregion
 
 private:
 	class CGraphic_Device*		m_pGraphic_Device = { nullptr };
@@ -198,6 +205,7 @@ private:
 	class CThreadPool*			m_pThreadPool = { nullptr };
 	class CInput_Manager*		m_pInput_Manager = { nullptr };
 	class CPool_Manager*		m_pPool_Manager = { nullptr };
+	class CEvent_Manager*		m_pEvent_Manager = { nullptr };
 #ifdef _DEBUG
 	class CImgui_Manager* m_pImgui_Manager = { nullptr };
 #endif

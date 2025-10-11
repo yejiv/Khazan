@@ -56,7 +56,7 @@ void CLayer::Late_Update(_float fTimeDelta)
 	{
 		if ((*it)->Get_IsDead() && !(*it)->Get_IsPool())
 		{
-			Safe_Release((*it));
+			m_DeadGameObjects.push_back((*it));
 			it = m_GameObjects.erase(it);
 		}
 		else if ((*it)->Get_IsDead() && (*it)->Get_IsPool())
@@ -81,6 +81,11 @@ CLayer* CLayer::Create()
 void CLayer::Free()
 {
 	__super::Free();
+
+	for (auto& pGameObject : m_DeadGameObjects)
+		Safe_Release(pGameObject);
+
+	m_DeadGameObjects.clear();
 
 	for (auto& pGameObject : m_GameObjects)
 		Safe_Release(pGameObject);

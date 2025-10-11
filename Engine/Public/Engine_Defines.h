@@ -1,6 +1,8 @@
 #pragma once
 
 #pragma warning(disable : 4251)
+#pragma warning(disable : 4267)
+#pragma warning(disable : 4244)
 
 #include <d3d11.h>
 #include <DirectXMath.h>

@@ -182,6 +182,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\Character.cpp" />
     <ClCompile Include="..\private\Collider.cpp" />
     <ClCompile Include="..\Private\Component.cpp" />
+    <ClCompile Include="..\Private\Event_Manager.cpp" />
     <ClCompile Include="..\Private\Jolt_ContactListener.cpp" />
     <ClCompile Include="..\private\ContainerObject.cpp" />
     <ClCompile Include="..\private\CustomFont.cpp" />
@@ -266,6 +267,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Character.h" />
     <ClInclude Include="..\public\Collider.h" />
     <ClInclude Include="..\Public\Component.h" />
+    <ClInclude Include="..\Public\Event_Manager.h" />
     <ClInclude Include="..\Public\Jolt_ContactListener.h" />
     <ClInclude Include="..\public\ContainerObject.h" />
     <ClInclude Include="..\public\CustomFont.h" />

@@ -244,6 +244,12 @@
     <Filter Include="01.Utility\02.GameObject\Pool\Manager">
       <UniqueIdentifier>{565e7f0a-e0b8-4a4f-b7c8-3c8d455eb800}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\15.Event">
+      <UniqueIdentifier>{9a9d3493-ee12-484a-97a8-7b8b7ff594b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\15.Event\Manager">
+      <UniqueIdentifier>{80f19eca-ec79-4c9d-a5d7-e89ac97234e0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -485,6 +491,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Pool_Manager.cpp">
       <Filter>01.Utility\02.GameObject\Pool\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Event_Manager.cpp">
+      <Filter>01.Utility\15.Event\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -748,6 +757,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Pool_Manager.h">
       <Filter>01.Utility\02.GameObject\Pool\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Event_Manager.h">
+      <Filter>01.Utility\15.Event\Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
