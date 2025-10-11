@@ -93,9 +93,6 @@
     <ClInclude Include="..\public\Camera_Free.h">
       <Filter>02.GameObject\Camera\Free</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\ClientPch.h">
-      <Filter>96.pch</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Player.h">
       <Filter>02.GameObject\Player</Filter>
     </ClInclude>
@@ -116,6 +113,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\JOH_Test1.h">
       <Filter>02.GameObject\JOH Test\Test NonAnim Model</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientPch.h">
+      <Filter>96.pch</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -150,9 +150,6 @@
     <ClCompile Include="..\private\Camera_Free.cpp">
       <Filter>02.GameObject\Camera\Free</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\ClientPch.cpp">
-      <Filter>96.pch</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Player.cpp">
       <Filter>02.GameObject\Player</Filter>
     </ClCompile>
@@ -173,6 +170,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\JOH_Test1.cpp">
       <Filter>02.GameObject\JOH Test\Test NonAnim Model</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientPch.cpp">
+      <Filter>96.pch</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

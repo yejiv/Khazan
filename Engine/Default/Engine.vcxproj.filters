@@ -402,9 +402,6 @@
     <ClCompile Include="..\private\QuadTree.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Terrain\QuadTree</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\EnginePch.cpp">
-      <Filter>98.pch</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Input_Manager.cpp">
       <Filter>01.Utility\10.Input</Filter>
     </ClCompile>
@@ -473,6 +470,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\UI_ProgressBar.cpp">
       <Filter>01.Utility\02.GameObject\UIObject\ProgressBar</Filter>
+    </ClCompile>
+    <ClCompile Include="EnginePch.cpp">
+      <Filter>98.pch</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -656,9 +656,6 @@
     <ClInclude Include="..\public\QuadTree.h">
       <Filter>01.Utility\03.Component\VIBuffer\Terrain\QuadTree</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\EnginePch.h">
-      <Filter>98.pch</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Input_Manager.h">
       <Filter>01.Utility\10.Input</Filter>
     </ClInclude>
@@ -730,6 +727,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\UI_ProgressBar.h">
       <Filter>01.Utility\02.GameObject\UIObject\ProgressBar</Filter>
+    </ClInclude>
+    <ClInclude Include="EnginePch.h">
+      <Filter>98.pch</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

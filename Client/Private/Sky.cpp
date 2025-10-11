@@ -1,4 +1,3 @@
-#include "ClientPch.h"
 #include "Sky.h"
 #include "GameInstance.h"
 

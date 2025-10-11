@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "PartObject.h"
 #include "Transform.h"
 

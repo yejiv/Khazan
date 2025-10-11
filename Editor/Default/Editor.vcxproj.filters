@@ -63,9 +63,6 @@
     <ClInclude Include="targetver.h">
       <Filter>98.Default</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\EditorPch.h">
-      <Filter>97.pch</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\MainApp.h">
       <Filter>00.MainApp</Filter>
     </ClInclude>
@@ -99,6 +96,9 @@
     <ClInclude Include="..\public\ParticleEmitter.h">
       <Filter>02.GameObject\Effect\ParticleSystem\ParticleEmitter</Filter>
     </ClInclude>
+    <ClInclude Include="EditorPch.h">
+      <Filter>97.pch</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -116,9 +116,6 @@
   <ItemGroup>
     <ClCompile Include="Editor.cpp">
       <Filter>98.Default</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\EditorPch.cpp">
-      <Filter>97.pch</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\MainApp.cpp">
       <Filter>00.MainApp</Filter>
@@ -149,6 +146,9 @@
     </ClCompile>
     <ClCompile Include="..\private\ParticleEmitter.cpp">
       <Filter>02.GameObject\Effect\ParticleSystem\ParticleEmitter</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorPch.cpp">
+      <Filter>97.pch</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
