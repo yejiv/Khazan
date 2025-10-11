@@ -61,6 +61,12 @@
     <Filter Include="02.GameObject\JOH Test\Test NonAnim Model">
       <UniqueIdentifier>{2a2f2620-f90d-4ad0-80a5-ce65409e5eab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Pool">
+      <UniqueIdentifier>{bee2ead6-daf6-4408-8038-aab3a62c7fa2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Pool\Dummy">
+      <UniqueIdentifier>{6e103e38-a2d6-4217-aff0-d6c4a31102c1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -116,6 +122,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\JOH_Test1.h">
       <Filter>02.GameObject\JOH Test\Test NonAnim Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Dummy.h">
+      <Filter>02.GameObject\Pool\Dummy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Event_Defines.h">
+      <Filter>99.Defines</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +185,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\JOH_Test1.cpp">
       <Filter>02.GameObject\JOH Test\Test NonAnim Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Dummy.cpp">
+      <Filter>02.GameObject\Pool\Dummy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

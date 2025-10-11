@@ -37,10 +37,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pGraphic_Device)
 		return E_FAIL;
 
-	m_pInput_Device = CInput_Device::Create(EngineDesc.hInst, EngineDesc.hWnd);
-	if (nullptr == m_pInput_Device)
+	m_pInput_Manager = CInput_Manager::Create(EngineDesc.hInst, EngineDesc.hWnd);
+	if (nullptr == m_pInput_Manager)
 		return E_FAIL;
-
+	
 	m_pShadow = CShadow::Create(EngineDesc.iWinSizeX, EngineDesc.iWinSizeY);
 	if (nullptr == m_pShadow)
 		return E_FAIL;
@@ -59,7 +59,7 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 
 	m_pLevel_Manager = CLevel_Manager::Create();
 	if (nullptr == m_pLevel_Manager)
-		return E_FAIL;	
+		return E_FAIL;
 
 	m_pPrototype_Manager = CPrototype_Manager::Create(EngineDesc.iNumLevels);
 	if (nullptr == m_pPrototype_Manager)
@@ -97,10 +97,6 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pThreadPool)
 		return E_FAIL;
 
-	m_pInput_Manager = CInput_Manager::Create(EngineDesc.hInst, EngineDesc.hWnd);
-	if (nullptr == m_pInput_Manager)
-		return E_FAIL;
-
 	m_pPool_Manager = CPool_Manager::Create();
 	if (nullptr == m_pPool_Manager)
 		return E_FAIL;
@@ -121,7 +117,7 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 {
 	//m_pPicking->Update();
 
-	m_pInput_Device->Update();
+	m_pInput_Manager->Update();
 
 	/* 내 게임내에서 반복적인 갱신이 필요한 객체들이 있다라면 갱신을 여기에서 모아서 수행하낟. */
 	m_pObject_Manager->Priority_Update(fTimeDelta);
@@ -158,15 +154,15 @@ void CGameInstance::Render_Begin(const _float4* pClearColor)
 {
 	if (nullptr == m_pGraphic_Device)
 		return;
-	
+
 	m_pGraphic_Device->Clear_BackBuffer_View(pClearColor);
-	
+
 	m_pGraphic_Device->Clear_DepthStencil_View();
 }
 
 HRESULT CGameInstance::Draw()
 {
-	if (nullptr == m_pLevel_Manager || 
+	if (nullptr == m_pLevel_Manager ||
 		nullptr == m_pRenderer)
 		return E_FAIL;
 
@@ -195,12 +191,12 @@ void CGameInstance::Render_End(HWND hWnd)
 
 _float CGameInstance::Rand_Normal()
 {
-	return static_cast<_float>(rand()) / RAND_MAX;	
+	return static_cast<_float>(rand()) / RAND_MAX;
 }
 
 _float CGameInstance::Rand(_float fMin, _float fMax)
-{	
-	return fMin + Rand_Normal() * (fMax - fMin);	
+{
+	return fMin + Rand_Normal() * (fMax - fMin);
 }
 
 #pragma endregion
@@ -232,7 +228,7 @@ CBase* CGameInstance::Clone_Prototype(PROTOTYPE ePrototype, _uint iPrototypeLeve
 	if (nullptr == m_pPrototype_Manager)
 		return nullptr;
 
-	return m_pPrototype_Manager->Clone_Prototype(ePrototype, iPrototypeLevelIndex, strPrototypeTag, pArg);	
+	return m_pPrototype_Manager->Clone_Prototype(ePrototype, iPrototypeLevelIndex, strPrototypeTag, pArg);
 }
 
 #pragma endregion
@@ -302,6 +298,10 @@ void CGameInstance::Compute_TimeDelta(const _wstring& strTimerTag)
 	m_pTimer_Manager->Compute_TimeDelta(strTimerTag);
 }
 
+#pragma endregion
+
+#pragma region TRANSFORM_MANAGER
+
 _matrix CGameInstance::Get_Transform_Matrix(D3DTS eTransformState) const
 {
 	return m_pPipeLine->Get_Transform_Matrix(eTransformState);
@@ -337,26 +337,13 @@ void CGameInstance::Set_Transform(D3DTS eTransformState, const _float4x4& Matrix
 	m_pPipeLine->Set_Transform(eTransformState, Matrix);
 }
 
-_byte CGameInstance::Get_DIKeyState(_ubyte byKeyID)
-{
-	return m_pInput_Device->Get_DIKeyState(byKeyID);
-}
-
-_byte CGameInstance::Get_DIMouseState(MOUSEKEYSTATE eMouse)
-{
-	return m_pInput_Device->Get_DIMouseState(eMouse);
-}
-
-_long CGameInstance::Get_DIMouseMove(MOUSEMOVESTATE eMouseState)
-{
-	return m_pInput_Device->Get_DIMouseMove(eMouseState);
-}
+#pragma endregion
 
 #pragma region LIGHT_MANAGER
 
 const LIGHT_DESC* CGameInstance::Get_LightDesc(_uint iIndex) const
 {
-	return m_pLight_Manager->Get_LightDesc(iIndex);	
+	return m_pLight_Manager->Get_LightDesc(iIndex);
 }
 
 HRESULT CGameInstance::Add_Light(const LIGHT_DESC& LightDesc)
@@ -552,6 +539,10 @@ _bool CGameInstance::Mouse_Up(MOUSEKEYSTATE eMouse)
 {
 	return m_pInput_Manager->Mouse_Up(eMouse);
 }
+_long CGameInstance::Mouse_Move(MOUSEMOVESTATE eMouseState)
+{
+	return m_pInput_Manager->Mouse_Move(eMouseState);
+}
 #pragma endregion
 
 #pragma region POOL_MANAGER
@@ -578,9 +569,9 @@ void CGameInstance::Push_PoolObject_ToLayer(_uint iLayerLevelIndex, const _wstri
 #pragma endregion
 
 #pragma region EVENT_MANAGER
-_uint CGameInstance::Subscrible(_uint iEventType, std::function<void()> fEvent)
+_uint CGameInstance::Subscribe(_uint iEventType, std::function<void()> fEvent)
 {
-	return m_pEvent_Manager->Subscrible(iEventType, fEvent);
+	return m_pEvent_Manager->Subscribe(iEventType, fEvent);
 }
 void CGameInstance::UnSubscribeAll(_uint iEventType)
 {
@@ -593,6 +584,10 @@ void CGameInstance::UnSubscribe(_uint iEventType, _uint iID)
 HRESULT CGameInstance::Emit(_uint iEventType)
 {
 	return m_pEvent_Manager->Emit(iEventType);
+}
+void CGameInstance::Event_Clear()
+{
+	m_pEvent_Manager->Clear();
 }
 #pragma endregion
 
@@ -618,24 +613,24 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pImgui_Manager);
 #endif
 	Safe_Release(m_pPool_Manager);
-	Safe_Release(m_pInput_Manager);
 	Safe_Release(m_pThreadPool);
-	Safe_Release(m_pFrustum);
-	Safe_Release(m_pShadow);
-	Safe_Release(m_pPicking);
+	Safe_Release(m_pJolt_Manager);
 	Safe_Release(m_pTarget_Manager);
 	Safe_Release(m_pFont_Manager);
-	Safe_Release(m_pLight_Manager);	
+	Safe_Release(m_pFrustum);
+	Safe_Release(m_pShadow);
+	Safe_Release(m_pEvent_Manager);
 	Safe_Release(m_pPipeLine);
+	Safe_Release(m_pLight_Manager);
+	Safe_Release(m_pInput_Manager);
+
+	Safe_Release(m_pPicking);
 	Safe_Release(m_pTimer_Manager);
 	Safe_Release(m_pRenderer);
 	Safe_Release(m_pObject_Manager);
 	Safe_Release(m_pPrototype_Manager);
-	Safe_Release(m_pJolt_Manager);
 	Safe_Release(m_pLevel_Manager);
-	Safe_Release(m_pInput_Device);
 	Safe_Release(m_pGraphic_Device);
-	
 }
 
 void CGameInstance::Free()

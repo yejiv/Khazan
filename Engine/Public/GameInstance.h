@@ -89,12 +89,6 @@ public:
 	void Set_Transform(D3DTS eTransformState, const _float4x4& Matrix);
 #pragma endregion
 
-#pragma region INPUT_DEVICE
-	_byte	Get_DIKeyState(_ubyte byKeyID);
-	_byte	Get_DIMouseState(MOUSEKEYSTATE eMouse);
-	_long	Get_DIMouseMove(MOUSEMOVESTATE eMouseState);
-#pragma endregion
-
 #pragma region LIGHT_MANAGER
 	const LIGHT_DESC* Get_LightDesc(_uint iIndex) const;
 	HRESULT Add_Light(const LIGHT_DESC& LightDesc);
@@ -162,13 +156,15 @@ public:
 #pragma
 
 #pragma region INPUT_MANAGER
-	_bool		Key_Pressing(_ubyte byKeyID, _float fTimeDelta, _float* pPressingTime);
+	_bool		Key_Pressing(_ubyte byKeyID, _float fTimeDelta, _float* pPressingTime = nullptr);
 	_bool		Key_Down(_ubyte byKeyID);
 	_bool		Key_Up(_ubyte byKeyID);
 
 	_bool		Mouse_Pressing(MOUSEKEYSTATE eMouse);
 	_bool		Mouse_Down(MOUSEKEYSTATE eMouse);
 	_bool		Mouse_Up(MOUSEKEYSTATE eMouse);
+
+	_long		Mouse_Move(MOUSEMOVESTATE eMouseState);
 #pragma endregion
 
 #pragma region POOL_MANAGER
@@ -180,15 +176,15 @@ public:
 #pragma endregion
 
 #pragma region EVENT_MANAGER
-	_uint Subscrible(_uint iEventType, std::function<void()> fEvent);
+	_uint Subscribe(_uint iEventType, std::function<void()> fEvent);
 	void UnSubscribeAll(_uint iEventType);
 	void UnSubscribe(_uint iEventType, _uint iID);
 	HRESULT Emit(_uint iEventType);
+	void Event_Clear();
 #pragma endregion
 
 private:
 	class CGraphic_Device*		m_pGraphic_Device = { nullptr };
-	class CInput_Device*		m_pInput_Device = { nullptr };
 	class CLevel_Manager*		m_pLevel_Manager = { nullptr };
 	class CObject_Manager*		m_pObject_Manager = { nullptr };
 	class CPrototype_Manager*	m_pPrototype_Manager = { nullptr };

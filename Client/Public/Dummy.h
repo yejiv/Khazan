@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Client_Defines.h"
-#include "GameObject.h"
+#include "Pool.h"
 
 NS_BEGIN(Engine)
 class CCollider;
@@ -12,12 +12,12 @@ NS_END
 
 NS_BEGIN(Client)
 
-class CMonster final : public CGameObject
+class CDummy final : public CPool
 {
 private:
-	CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CMonster(const CMonster& Prototype);
-	virtual ~CMonster() = default;
+	CDummy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CDummy(const CDummy& Prototype);
+	virtual ~CDummy() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -37,8 +37,11 @@ private:
 	HRESULT Ready_Components();
 	HRESULT Bind_ShaderResources();
 
+private:
+	virtual void Reset() override;
+
 public:
-	static CMonster* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CDummy* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

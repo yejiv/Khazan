@@ -7,9 +7,10 @@ _uint CEvent_Manager::iEvent_Index = 0;
 CEvent_Manager::CEvent_Manager()
 	: m_pGameInstance{ CGameInstance::GetInstance() }
 {
+	Safe_AddRef(m_pGameInstance);
 }
 
-_uint CEvent_Manager::Subscrible(_uint iEventType, std::function<void()> fEvent)
+_uint CEvent_Manager::Subscribe(_uint iEventType, std::function<void()> fEvent)
 {
 	EVENT_DESC EventDesc{};
 
@@ -71,6 +72,9 @@ void CEvent_Manager::UnSubscribe(_uint iEventType, _uint iID)
 HRESULT CEvent_Manager::Emit(_uint iEventType)
 {
 	auto iter = m_Events.find(iEventType);
+
+	if (iter == m_Events.end())
+		return E_FAIL;
 
 	for (auto& Event : iter->second)
 	{
