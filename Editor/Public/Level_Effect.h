@@ -42,9 +42,14 @@ private:
 	_bool		m_bUseGravity = {};
 	_float3		m_vGravity = {};
 
+private:
+	HRESULT Create_ParticleSystem();
+	HRESULT Create_ParticleEmitter();
+	HRESULT Delete_ParticleEmitter();
 
 private:
-	HRESULT Ready_Layer_BackGround(const _wstring& strLayerTag);
+	HRESULT Ready_Layer_BackGround();
+	HRESULT Ready_Layer_Camera();
 
 public:
 	static CLevel_Effect* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

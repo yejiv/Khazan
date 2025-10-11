@@ -74,9 +74,9 @@ HRESULT CMesh_Instance::Initialize_Prototype(MODELTYPE eType, const aiMesh* pAIM
 	return S_OK;
 }
 
-HRESULT CMesh_Instance::Initialize(void* pArg)
+HRESULT CMesh_Instance::Initialize_Clone(void* pArg)
 {
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize_Clone(pArg)))
 		return E_FAIL;
 
 	return S_OK;
@@ -401,7 +401,7 @@ CComponent* CMesh_Instance::Clone(void* pArg)
 {
 	CMesh_Instance* pInstance = new CMesh_Instance(*this);
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(pInstance->Initialize_Clone(pArg)))
 	{
 		MSG_BOX(TEXT("Failed to Cloned : CMesh_Instance"));
 		Safe_Release(pInstance);

@@ -90,7 +90,7 @@ CComponent* CVIBuffer_Cell::Clone(void* pArg)
 {
 	CVIBuffer_Cell* pInstance = new CVIBuffer_Cell(*this);
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(pInstance->Initialize_Clone(pArg)))
 	{
 		MSG_BOX(TEXT("Failed to Cloned : CVIBuffer_Cell"));
 		Safe_Release(pInstance);

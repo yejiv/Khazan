@@ -19,7 +19,7 @@ private:
 
 public:
 	virtual HRESULT Initialize_Prototype(MODELTYPE eType, const aiMesh* pAIMesh, const vector<class CBone*>& Bones, _fmatrix PreTransformMatrix);
-	virtual HRESULT Initialize(void* pArg) override;
+	virtual HRESULT Initialize_Clone(void* pArg) override;
 
 public:
 	HRESULT Bind_BoneMatrices(class CShader* pShader, const _char* pConstantName, const vector<class CBone*>& Bones);

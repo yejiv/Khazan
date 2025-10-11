@@ -32,6 +32,10 @@ public:
 	virtual void Collision_Enter(JPH::ObjectLayer Layer, CGameObject* pObject, JPH::ContactManifold ContactManifold) {};
 	virtual void Collision_Stay(JPH::ObjectLayer Layer, CGameObject* pObject, JPH::ContactManifold ContactManifold) {};
 
+public:
+	void Set_IsDead(_bool isDead) { m_isDead = isDead; }
+	_bool Get_IsDead() { return m_isDead; }
+
 protected:
 	ID3D11Device*				m_pDevice = { nullptr };
 	ID3D11DeviceContext*		m_pContext = { nullptr };
@@ -39,6 +43,8 @@ protected:
 	class CTransform*			m_pTransformCom = { nullptr };
 
 	map<const _wstring, class CComponent*>		m_Components;
+
+	_bool                        m_isDead = { false };
 
 protected:
 	/*원형컴포넌트를 찾아서 복제한다. */

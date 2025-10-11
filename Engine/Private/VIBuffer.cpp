@@ -31,7 +31,7 @@ HRESULT CVIBuffer::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CVIBuffer::Initialize(void* pArg)
+HRESULT CVIBuffer::Initialize_Clone(void* pArg)
 {
 
 	return S_OK;
