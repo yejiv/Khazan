@@ -20,6 +20,7 @@
 #include "ThreadPool.h"
 #include "Input_Manager.h"
 #include "Pool_Manager.h"
+#include "Event_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -100,8 +101,12 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pInput_Manager)
 		return E_FAIL;
 
-	m_pPool_Manager = CPool_Manager::Create(EngineDesc.hInst, EngineDesc.hWnd);
+	m_pPool_Manager = CPool_Manager::Create();
 	if (nullptr == m_pPool_Manager)
+		return E_FAIL;
+
+	m_pEvent_Manager = CEvent_Manager::Create();
+	if (nullptr == m_pEvent_Manager)
 		return E_FAIL;
 
 #ifdef _DEBUG
@@ -139,6 +144,8 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 
 HRESULT CGameInstance::Clear_Resources(_uint iClearLevelID)
 {
+	m_pPool_Manager->Clear();
+
 	/* 기존레벨용 자원들을 날린다. */
 	m_pPrototype_Manager->Clear(iClearLevelID);
 
@@ -567,6 +574,25 @@ HRESULT CGameInstance::Reset_PoolObject(CGameObject* pGameObject)
 void CGameInstance::Push_PoolObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CPool* pPoolObject)
 {
 	m_pPool_Manager->Push_PoolObject_ToLayer(iLayerLevelIndex, strLayerTag, pPoolObject);
+}
+#pragma endregion
+
+#pragma region EVENT_MANAGER
+_uint CGameInstance::Subscrible(_uint iEventType, std::function<void()> fEvent)
+{
+	return m_pEvent_Manager->Subscrible(iEventType, fEvent);
+}
+void CGameInstance::UnSubscribeAll(_uint iEventType)
+{
+	m_pEvent_Manager->UnSubscribeAll(iEventType);
+}
+void CGameInstance::UnSubscribe(_uint iEventType, _uint iID)
+{
+	m_pEvent_Manager->UnSubscribe(iEventType, iID);
+}
+HRESULT CGameInstance::Emit(_uint iEventType)
+{
+	return m_pEvent_Manager->Emit(iEventType);
 }
 #pragma endregion
 

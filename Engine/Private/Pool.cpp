@@ -12,7 +12,6 @@ CPool::CPool(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 CPool::CPool(const CPool& Prototype)
 	: CGameObject{ Prototype }
 {
-
 }
 
 HRESULT CPool::Initialize_Prototype()
@@ -24,6 +23,8 @@ HRESULT CPool::Initialize_Clone(void* pArg)
 {
 	if (FAILED(__super::Initialize_Clone(pArg)))
 		return E_FAIL;
+
+	m_isPool = true;
 
 	return S_OK;
 }

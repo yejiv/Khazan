@@ -8,7 +8,7 @@ CPool_Manager::CPool_Manager()
 {
 }
 
-HRESULT CPool_Manager::Add_PoolObject(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint iPrototypeLevelIndex, const _wstring strPrototypeTag, const _wstring& strPoolTag, void* pArg, _uint iCount)
+HRESULT CPool_Manager::Add_PoolObject(_uint iPrototypeLevelIndex, const _wstring strPrototypeTag, const _wstring& strPoolTag, void* pArg, _uint iCount)
 {
 	for (size_t i = 0; i < iCount; i++)
 	{
@@ -58,7 +58,7 @@ HRESULT CPool_Manager::Reset_PoolObject(CPool* pPoolObject)
 	deque<CPool*>* pPool = Find_Pool(pPoolObject->Get_Tag());
 
 	if (pPool == nullptr || pPool->size() <= 0)
-		return;
+		return E_FAIL;
 
 	pPool->push_back(pPoolObject);
 
@@ -77,7 +77,7 @@ HRESULT CPool_Manager::Reset_PoolObject(CGameObject* pGameObject)
 	deque<CPool*>* pPool = Find_Pool(pPoolObject->Get_Tag());
 
 	if (pPool == nullptr || pPool->size() <= 0)
-		return;
+		return E_FAIL;
 
 	pPool->push_back(pPoolObject);
 
@@ -120,7 +120,7 @@ deque<CPool*>* CPool_Manager::Find_Pool(const _wstring& strPoolTag)
 
 CPool_Manager* CPool_Manager::Create()
 {
-	return nullptr;
+	return new CPool_Manager();
 }
 
 void CPool_Manager::Free()
