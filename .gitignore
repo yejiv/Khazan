@@ -2,8 +2,6 @@
 x64/
 
 *.txt
-*.json
-*.dat
 *.png
 *.dds
 *.cso
@@ -13,7 +11,8 @@ x64/
 Engine.dll
 Engine.lib
 
-data/
+EngineSDK/Debug/Inc/
+EngineSDK/Release/Inc/
 
 *.vcxproj merge=union
 *.vcxproj.filters merge=union
