@@ -112,7 +112,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>../public/;../../EngineSDK/Debug/Inc/;../../EngineSDK/Debug/Inc/DirectXTK/;../../EngineSDK/Debug/Inc/fmod/;../../EngineSDK/Debug/Inc/Fx11/;../../EngineSDK/Debug/Inc/assimp/;../../EngineSDK/Debug/Inc/ImGui/;../../EngineSDK/Debug/Inc/Jolt/</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>ClientPch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -139,7 +139,7 @@
       <AdditionalIncludeDirectories>../public/;../../EngineSDK/Release/Inc/;../../EngineSDK/Release/Inc/DirectXTK/;../../EngineSDK/Release/Inc/fmod/;../../EngineSDK/Release/Inc/Fx11/;../../EngineSDK/Release/Inc/assimp/;../../EngineSDK/Release/Inc/ImGui/;../../EngineSDK/Release/Inc/Jolt/</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>ClientPch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -166,7 +166,8 @@
     <ClInclude Include="..\Public\Level_Title.h" />
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\Public\MainApp.h" />
-    <ClInclude Include="..\Public\pch.h" />
+    <ClInclude Include="..\Public\ClientPch.h" />
+    <ClInclude Include="..\Public\Monster.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\Terrain.h" />
@@ -184,10 +185,11 @@
     <ClCompile Include="..\Private\Level_Title.cpp" />
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
-    <ClCompile Include="..\Private\pch.cpp">
+    <ClCompile Include="..\Private\ClientPch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\Private\Monster.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
