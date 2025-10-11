@@ -45,6 +45,10 @@ private:
 
 private:
 	HRESULT Loading_For_Editor_Level();
+	HRESULT Loading_For_Map_Level();
+	HRESULT Loading_For_Animation_Level();
+	HRESULT Loading_For_Effect_Level();
+	HRESULT Loading_For_UI_Level();
 
 
 public:

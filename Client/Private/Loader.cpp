@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "ClientPch.h"
 #include "Loader.h"
 
 #include "GameInstance.h"
@@ -9,6 +9,7 @@
 #include "Camera_Free.h"
 #include "Sky.h"
 #include "Terrain.h"
+#include "Monster.h"
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice{ pDevice }
@@ -157,6 +158,11 @@ HRESULT CLoader::Loading_For_Stage1_Level()
 	/* Prototype_GameObject_Body_Player */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Body_Player"),
 		CBody_Player::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_GameObject_Monster */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Monster"),
+		CMonster::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 

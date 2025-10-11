@@ -52,6 +52,9 @@
     <Filter Include="02.GameObject\Terrain">
       <UniqueIdentifier>{7082a03d-8466-4726-b256-cb8c528d4e44}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Monster">
+      <UniqueIdentifier>{f663abf4-dee0-497f-bd4b-b6469c804f8a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -84,7 +87,7 @@
     <ClInclude Include="..\public\Camera_Free.h">
       <Filter>02.GameObject\Camera\Free</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\pch.h">
+    <ClInclude Include="..\Public\ClientPch.h">
       <Filter>96.pch</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Player.h">
@@ -101,6 +104,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Terrain.h">
       <Filter>02.GameObject\Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Monster.h">
+      <Filter>02.GameObject\Monster</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -135,7 +141,7 @@
     <ClCompile Include="..\private\Camera_Free.cpp">
       <Filter>02.GameObject\Camera\Free</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\pch.cpp">
+    <ClCompile Include="..\Private\ClientPch.cpp">
       <Filter>96.pch</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Player.cpp">
@@ -152,6 +158,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Terrain.cpp">
       <Filter>02.GameObject\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Monster.cpp">
+      <Filter>02.GameObject\Monster</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

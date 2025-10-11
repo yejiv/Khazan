@@ -50,6 +50,18 @@ HRESULT CLoader::Loading()
 	case LEVEL::EDITOR:
 		hr = Loading_For_Editor_Level();
 		break;
+	case LEVEL::MAP:
+		hr = Loading_For_Map_Level();
+		break;
+	case LEVEL::ANIMATION:
+		hr = Loading_For_Animation_Level();
+		break;
+	case LEVEL::EFFECT:
+		hr = Loading_For_Effect_Level();
+		break;
+	case LEVEL::UI:
+		hr = Loading_For_UI_Level();
+		break;
 	}
 
 	if (FAILED(hr))
@@ -62,6 +74,81 @@ HRESULT CLoader::Loading()
 
 HRESULT CLoader::Loading_For_Editor_Level()
 {
+	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("게임오브젝트원형를 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
+
+	m_isFinished = true;
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Map_Level()
+{
+	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("게임오브젝트원형를 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
+
+	m_isFinished = true;
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Animation_Level()
+{
+	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("게임오브젝트원형를 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
+
+	m_isFinished = true;
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Effect_Level()
+{
+	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("게임오브젝트원형를 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
+
+	m_isFinished = true;
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_UI_Level()
+{
+	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("게임오브젝트원형를 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
+
+	m_isFinished = true;
 	return S_OK;
 }
 
