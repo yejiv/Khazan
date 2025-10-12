@@ -1,11 +1,13 @@
-#include "EnginePch.h"
 #include "Layer.h"
-
+#include "GameInstance.h"
 #include "GameObject.h"
+#include "Pool.h"
+
 
 CLayer::CLayer()
+	: m_pGameInstance { CGameInstance::GetInstance()}
 {
-
+	Safe_AddRef(m_pGameInstance);
 }
 
 CComponent* CLayer::Get_Component(const _wstring& strComponentTag, _uint iIndex)
@@ -48,10 +50,25 @@ void CLayer::Update(_float fTimeDelta)
 
 void CLayer::Late_Update(_float fTimeDelta)
 {
-	for (auto& pGameObject : m_GameObjects)
+
+	for (auto it = m_GameObjects.begin(); it != m_GameObjects.end(); )
 	{
-		if (nullptr != pGameObject)
-			pGameObject->Late_Update(fTimeDelta);
+		if ((*it)->Get_IsDead() && !(*it)->Get_IsPool())
+		{
+			m_DeadGameObjects.push_back((*it));
+			it = m_GameObjects.erase(it);
+		}
+		else if ((*it)->Get_IsDead() && (*it)->Get_IsPool())
+		{
+			it = m_GameObjects.erase(it);
+		}
+		else
+		{
+			if (nullptr != (*it))
+				(*it)->Late_Update(fTimeDelta);
+			++it;
+		}
+
 	}
 }
 
@@ -64,9 +81,16 @@ void CLayer::Free()
 {
 	__super::Free();
 
+	for (auto& pGameObject : m_DeadGameObjects)
+		Safe_Release(pGameObject);
+
+	m_DeadGameObjects.clear();
+
 	for (auto& pGameObject : m_GameObjects)
 		Safe_Release(pGameObject);
 
 	m_GameObjects.clear();
+
+	Safe_Release(m_pGameInstance);
 	
 }

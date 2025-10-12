@@ -1,4 +1,3 @@
-#include "EditorPch.h"
 #include "JOH_EditorModelTest.h"
 #include "GameInstance.h"
 #include "Editor_Model.h"
@@ -45,15 +44,15 @@ void CJOH_EditorModelTest::Update(_float fTimeDelta)
     //if (true == m_pModelCom->Play_Animation(fTimeDelta))
     //    int a = 10;
 
-    if (m_pGameInstance->Get_DIKeyState(DIK_1) & 0x80)
+    if (m_pGameInstance->Key_Down(DIK_1))
     {
         m_pModelCom->Set_Animation(++m_iCurrentAnimIndex, true);
     }
-    if (m_pGameInstance->Get_DIKeyState(DIK_2) & 0x80)
+    if (m_pGameInstance->Key_Down(DIK_2))
     {
         m_iCurrentAnimIndex = 0;
     }
-    if (m_pGameInstance->Get_DIKeyState(DIK_3) & 0x80)
+    if (m_pGameInstance->Key_Down(DIK_3))
     {
         m_pModelCom->ExportModel();
     }
