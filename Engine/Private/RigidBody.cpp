@@ -3,13 +3,6 @@
 #include "Transform.h"
 #include "Model.h"
 
-// ====== 유틸 변환 ======
-static inline Vec3 LoadVec3(const _float3& vVector) { return Vec3(vVector.x, vVector.y, vVector.z); }
-static inline Vec3 LoadVec3(const _fvector& vVector) { return Vec3(vVector.m128_f32[0], vVector.m128_f32[1], vVector.m128_f32[2]); }
-
-static inline Quat LoadQuat(const _float4& vQuat) { return Quat(vQuat.x, vQuat.y, vQuat.z, vQuat.w); }
-static inline Quat LoadQuat(const _fvector& vQuat) { return Quat(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]); }
-
 CRigidBody::CRigidBody(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CComponent{ pDevice, pContext }
 {
@@ -119,19 +112,19 @@ void CRigidBody::Build_Shape(RIGIDBODY_DESC* pDesc, RefConst<Shape>& pShape)
     {
     case SHAPE::BOX:
     {
-        BOXSHAPE_DESC* pBoxDesc = static_cast<BOXSHAPE_DESC*>(pDesc);
+        RIGID_BOXSHAPE_DESC* pBoxDesc = static_cast<RIGID_BOXSHAPE_DESC*>(pDesc);
         pShape = new BoxShape(Vec3(pBoxDesc->vExtent.x, pBoxDesc->vExtent.y, pBoxDesc->vExtent.z));
         break;
     }
     case SHAPE::SPHERE:
     {
-        SPHERESHAPE_DESC* pSphereDesc = static_cast<SPHERESHAPE_DESC*>(pDesc);
+        RIGID_SPHERESHAPE_DESC* pSphereDesc = static_cast<RIGID_SPHERESHAPE_DESC*>(pDesc);
         pShape = new SphereShape(pSphereDesc->fRadius);
         break;
     }
     case SHAPE::CAPSULE:
     {
-        CAPSULESHAPE_DESC* pCapsuleDesc = static_cast<CAPSULESHAPE_DESC*>(pDesc);
+        RIGID_CAPSULESHAPE_DESC* pCapsuleDesc = static_cast<RIGID_CAPSULESHAPE_DESC*>(pDesc);
         pShape = new CapsuleShape(pCapsuleDesc->fHeight * 0.5f, pCapsuleDesc->fRadius);
         break;
     }

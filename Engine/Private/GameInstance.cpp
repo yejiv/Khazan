@@ -495,6 +495,10 @@ Body* CGameInstance::CreateAndAdd_Body(const BodyCreationSettings& BodySetting, 
 {
 	return m_pJolt_Manager->CreateAndAdd_Body(BodySetting, pBodyInterface);
 }
+CharacterVirtual* CGameInstance::CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData)
+{
+	return m_pJolt_Manager->CreateCharacterVirtual(inSettings, inPosition, inRotation, inUserData);
+}
 #ifdef _DEBUG
 void CGameInstance::Jolt_Test()
 {
