@@ -12,14 +12,17 @@ x64/
 Client.exp
 Client.exe
 Client.pdb
+Client/Resources/
 
 Editor.exp
 Editor.exe
 Editor.pdb
+Editor/Resources/
 
 Engine.exp
 Engine.exe
 Engine.pdb
+Engine/Resources/
 
 EngineSDK
 EngineSDK/Debug/
