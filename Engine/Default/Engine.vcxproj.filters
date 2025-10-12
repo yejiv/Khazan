@@ -238,6 +238,9 @@
     <Filter Include="01.Utility\13.Jolt\DebugDraw">
       <UniqueIdentifier>{61136c8c-9d8c-4c2e-8e9c-23cbeac14a2c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\02.GameObject\UIObject\TextBox">
+      <UniqueIdentifier>{6dd9461f-86cd-44cc-81c3-187d10c5db85}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -384,9 +387,6 @@
     <ClCompile Include="..\private\QuadTree.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Terrain\QuadTree</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\EnginePch.cpp">
-      <Filter>98.pch</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Input_Manager.cpp">
       <Filter>01.Utility\10.Input</Filter>
     </ClCompile>
@@ -467,6 +467,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\DebugDraw.cpp">
       <Filter>01.Utility\13.Jolt\DebugDraw</Filter>
+    </ClCompile>
+    <ClCompile Include="EnginePch.cpp">
+      <Filter>98.pch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_TextBox.cpp">
+      <Filter>01.Utility\02.GameObject\UIObject\TextBox</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -632,9 +638,6 @@
     <ClInclude Include="..\public\QuadTree.h">
       <Filter>01.Utility\03.Component\VIBuffer\Terrain\QuadTree</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\EnginePch.h">
-      <Filter>98.pch</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Input_Manager.h">
       <Filter>01.Utility\10.Input</Filter>
     </ClInclude>
@@ -718,6 +721,15 @@
     </ClInclude>
     <ClInclude Include="..\Public\DebugDraw.h">
       <Filter>01.Utility\13.Jolt\DebugDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Engine_Json.h">
+      <Filter>99.Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="EnginePch.h">
+      <Filter>98.pch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_TextBox.h">
+      <Filter>01.Utility\02.GameObject\UIObject\TextBox</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

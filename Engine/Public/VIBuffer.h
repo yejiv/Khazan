@@ -12,8 +12,8 @@ protected:
 	virtual ~CVIBuffer() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype();
-	virtual HRESULT Initialize(void* pArg);
+	virtual HRESULT Initialize_Prototype() override;
+	virtual HRESULT Initialize_Clone(void* pArg) override;
 
 public:
 	/* 준비된 자원을 이용하여 어떠한 기능(렌더링)을 수행하기위하여 자원을 장치에 바인딩한다. */

@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "CustomFont.h"
 
 CCustomFont::CCustomFont(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -30,6 +29,20 @@ void CCustomFont::DrawText(const _tchar* pText, const _float2& vPosition, _fvect
 	m_pFont->DrawString(m_pBatch, pText, vPosition, vColor, fRadian, vOrigin, vScale);
 
 	m_pBatch->End();
+}
+
+_float2 CCustomFont::Compute_TextSize(const _wstring& strText, _float2 vTextSize)
+{
+	if (nullptr == m_pFont)
+		return _float2(0.f,0.f);
+
+	_float2 vSize{};
+	XMStoreFloat2(&vSize, m_pFont->MeasureString(strText.c_str()));
+	
+	vSize.x *= vTextSize.x;
+	vSize.y *= vTextSize.y;
+
+	return vSize;
 }
 
 CCustomFont* CCustomFont::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _tchar* pFontFilePath)

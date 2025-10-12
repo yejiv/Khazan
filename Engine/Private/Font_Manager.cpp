@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "Font_Manager.h"
 
 #include "CustomFont.h"
@@ -32,6 +31,15 @@ void CFont_Manager::DrawText(const _wstring& strFontTag, const _tchar* pText, co
         return;
 
     pFont->DrawText(pText, vPosition, vColor, fRadian, vOrigin, vScale);
+}
+
+_float2 CFont_Manager::Compute_TextSize(const _wstring& strFontTag, const _wstring& strText, _float2 vTextSize)
+{
+    CCustomFont* pFont = Find_Font(strFontTag);
+    if (nullptr == pFont)
+        return _float2(0.f,0.f);
+
+    return pFont->Compute_TextSize(strText,vTextSize);
 }
 
 
