@@ -120,9 +120,8 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDes
 
 HRESULT CVIBuffer_Point_Instance::Initialize_Clone(void* pArg)
 {
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize_Clone(pArg)))
 		return E_FAIL;
-
 
 	return S_OK;
 }
@@ -240,7 +239,7 @@ CComponent* CVIBuffer_Point_Instance::Clone(void* pArg)
 {
 	CVIBuffer_Point_Instance* pInstance = new CVIBuffer_Point_Instance(*this);
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(pInstance->Initialize_Clone(pArg)))
 	{
 		MSG_BOX(TEXT("Failed to Cloned : CVIBuffer_Point_Instance"));
 		Safe_Release(pInstance);

@@ -27,6 +27,9 @@ public:
 
 private:
 	list<class CGameObject*>			m_GameObjects;
+	list<class CGameObject*>			m_DeadGameObjects;
+
+	class CGameInstance*				m_pGameInstance = { nullptr };
 
 public:
 	static CLayer* Create();

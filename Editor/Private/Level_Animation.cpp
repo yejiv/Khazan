@@ -9,10 +9,17 @@ CLevel_Animation::CLevel_Animation(ID3D11Device* pDevice, ID3D11DeviceContext* p
 
 HRESULT CLevel_Animation::Initialize()
 {
-
-	/* 현재 레벨을 구성해주기 위한 객체들을 생성한다. */
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
+
+	if (FAILED(Ready_Layer_Test(TEXT("Layer_Test"))))
+		return E_FAIL;
+
+	m_pGameInstance->AddWidget(TEXT("Animaition"), []() {
+		ImGui::Begin("Debug");
+		ImGui::Text("Hello, world!");
+		ImGui::End();
+		});
 
 
 	return S_OK;
@@ -33,9 +40,18 @@ HRESULT CLevel_Animation::Render()
 
 HRESULT CLevel_Animation::Ready_Layer_BackGround(const _wstring& strLayerTag)
 {
-	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::TITLE), strLayerTag,
-	//	ENUM_CLASS(LEVEL::TITLE), TEXT("Prototype_GameObject_BackGround"))))
+	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::ANIMATION), strLayerTag,
+	//	ENUM_CLASS(LEVEL::ANIMATION), TEXT("Prototype_GameObject_BackGround"))))
 	//	return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CLevel_Animation::Ready_Layer_Test(const _wstring& strLayerTag)
+{
+	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::ANIMATION), strLayerTag,
+		ENUM_CLASS(LEVEL::ANIMATION), TEXT("Prototype_GameObject_JOH_TestModel"))))
+		return E_FAIL;
 
 	return S_OK;
 }

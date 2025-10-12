@@ -1,6 +1,8 @@
 #pragma once
 
 #pragma warning(disable : 4251)
+#pragma warning(disable : 4267)
+#pragma warning(disable : 4244)
 
 #include <d3d11.h>
 #include <DirectXMath.h>
@@ -67,6 +69,7 @@ using namespace JPH;
 #include <queue>
 #include <future>
 #include <any>
+#include <deque>
 using namespace std;
 
 
@@ -86,6 +89,7 @@ namespace Engine
 #include "Engine_Struct.h"
 #include "Engine_Typedef.h"
 #include "Engine_Function.h"
+#include "Engine_Json.h"
 
 
 
