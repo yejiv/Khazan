@@ -103,6 +103,9 @@
     <Filter Include="02.GameObject\Effect\Terrain">
       <UniqueIdentifier>{81b63c04-fa83-4a3a-96f5-b9f89191f19d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Camera">
+      <UniqueIdentifier>{204d72f1-296c-4b94-ade6-47085c5a8ef9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -201,6 +204,9 @@
     <ClInclude Include="..\public\Terrain_Grid.h">
       <Filter>02.GameObject\Effect\Terrain</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Camera_Map.h">
+      <Filter>02.GameObject\MapObject\Camera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -296,6 +302,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Terrain_Grid.cpp">
       <Filter>02.GameObject\Effect\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Map.cpp">
+      <Filter>02.GameObject\MapObject\Camera</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
