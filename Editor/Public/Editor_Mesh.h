@@ -18,7 +18,7 @@ private:
 
 public:
 	virtual HRESULT Initialize_Prototype(MODELTYPE eType, const aiMesh* pAIMesh, const vector<class CEditor_Bone*>& Bones, _fmatrix PreTransformMatrix);
-	virtual HRESULT Initialize(void* pArg) override;
+	virtual HRESULT Initialize_Clone(void* pArg) override;
 
 public:
 	const _uint Get_MaterialIndex() const { return m_iMaterialIndex; }

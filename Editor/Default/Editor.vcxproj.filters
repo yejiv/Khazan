@@ -97,6 +97,12 @@
     <Filter Include="01.Levels\Map\Header">
       <UniqueIdentifier>{5e903afb-5ae0-44e4-a388-6f6c034a1f9c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Effect\Camera">
+      <UniqueIdentifier>{73507ee3-ca91-4db0-bb47-9b7b03480d0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Terrain">
+      <UniqueIdentifier>{81b63c04-fa83-4a3a-96f5-b9f89191f19d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -189,6 +195,12 @@
     <ClInclude Include="..\Public\MapEditor_Header.h">
       <Filter>01.Levels\Map\Header</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Camera_Effect.h">
+      <Filter>02.GameObject\Effect\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Terrain_Grid.h">
+      <Filter>02.GameObject\Effect\Terrain</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -278,6 +290,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Prop.cpp">
       <Filter>02.GameObject\MapObject\Prop</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Effect.cpp">
+      <Filter>02.GameObject\Effect\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Terrain_Grid.cpp">
+      <Filter>02.GameObject\Effect\Terrain</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

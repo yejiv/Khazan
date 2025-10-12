@@ -260,7 +260,7 @@ CComponent* CMesh::Clone(void* pArg)
 {
 	CMesh* pInstance = new CMesh(*this);
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(pInstance->Initialize_Clone(pArg)))
 	{
 		MSG_BOX(TEXT("Failed to Cloned : CMesh"));
 		Safe_Release(pInstance);

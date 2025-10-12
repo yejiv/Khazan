@@ -130,7 +130,7 @@ CComponent* CVIBuffer_Cube::Clone(void* pArg)
 {
 	CVIBuffer_Cube* pInstance = new CVIBuffer_Cube(*this);
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(pInstance->Initialize_Clone(pArg)))
 	{
 		MSG_BOX(TEXT("Failed to Cloned : CVIBuffer_Cube"));
 		Safe_Release(pInstance);

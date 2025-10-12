@@ -13,6 +13,7 @@ private:
 
 public:
 	virtual HRESULT Initialize_Prototype(const _tchar* pHeightMapFilePath);
+	virtual HRESULT Initialize_Prototype(_uint iNumVerticesX, _uint iNumVerticesZ);
 	virtual HRESULT Initialize_Clone(void* pArg) override;
 
 public:
@@ -26,6 +27,7 @@ private:
 
 public:
 	static CVIBuffer_Terrain* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _tchar* pHeightMapFilePath);
+	static CVIBuffer_Terrain* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iNumVerticesX, _uint iNumVerticesZ);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 };

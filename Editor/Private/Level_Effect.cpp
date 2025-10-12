@@ -3,6 +3,7 @@
 #include "Level_Loading.h"
 #include "ParticleSystem.h"
 #include "ParticleEmitter.h"
+#include "Camera_Effect.h"
 
 CLevel_Effect::CLevel_Effect(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
@@ -11,11 +12,11 @@ CLevel_Effect::CLevel_Effect(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 
 HRESULT CLevel_Effect::Initialize()
 {
+    if (FAILED(Ready_Layer_BackGround()))
+        return E_FAIL;
 
-	/* 현재 레벨을 구성해주기 위한 객체들을 생성한다. */
-	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
-		return E_FAIL;
-
+    if (FAILED(Ready_Layer_Camera()))
+        return E_FAIL;
 
     // Test Code
 
@@ -94,20 +95,24 @@ HRESULT CLevel_Effect::Initialize()
             if (ImGui::Button("Create System"))
             {
                 if (strlen(m_szSystemName) > 0)
-                {
-                    // 클론한 파티클 시스템 
-                    // 1. 파티클 시스템 컨테이너에 넣기
-                    // 2. 게임오브젝트 인자로 넣어서 Layer에 추가해주는 함수 호출하기
-                    // 
-                    // if (nullptr !=pParticleSystem)
-                    // {
-                    //      m_ParticleSystems.push_back();
-                    //      memset(newSystemName, 0, sizeof(newSystemName));
-                    // }
-                }
+                    Create_ParticleSystem();   
                 else
-                {
                     MSG_BOX(TEXT("Please enter a System name!"));
+            }
+
+            ImGui::SameLine();
+
+            // 선택된 System이 있을 때 Delete 버튼
+            if (m_iSelectedSystem >= 0)
+            {
+                if (ImGui::Button("Delete System"))
+                {
+                    m_ParticleSystems[m_iSelectedSystem]->Set_IsDead(true);
+                    Safe_Release(m_ParticleSystems[m_iSelectedSystem]);
+                    m_ParticleSystems.erase(m_ParticleSystems.begin() + m_iSelectedSystem);
+
+                    m_iSelectedSystem = -1;
+                    m_iSelectedEmitter = -1;
                 }
             }
 
@@ -117,7 +122,7 @@ HRESULT CLevel_Effect::Initialize()
             // 좌측: Particle System List
             // ==============================
             ImGui::Text("Particle Systems");
-            if (ImGui::BeginListBox("SystemList", ImVec2(200, 150)))
+            if (ImGui::BeginListBox("System List", ImVec2(200, 150)))
             {
                 for (_int i = 0; i < static_cast<_int>(m_ParticleSystems.size()); ++i)
                 {
@@ -131,18 +136,6 @@ HRESULT CLevel_Effect::Initialize()
                         m_iSelectedSystem = i;
                 }
                 ImGui::EndListBox();
-            }
-
-            // 선택된 System이 있을 때 Delete 버튼
-            if (m_iSelectedSystem >= 0)
-            {
-                if (ImGui::Button("Delete System"))
-                {
-                    Safe_Release(m_ParticleSystems[m_iSelectedSystem]);
-                    m_ParticleSystems.erase(m_ParticleSystems.begin() + m_iSelectedSystem);
-                    m_iSelectedSystem = -1;
-                    m_iSelectedEmitter = -1;
-                }
             }
 
             ImGui::Separator();
@@ -185,43 +178,94 @@ HRESULT CLevel_Effect::Initialize()
             // ==============================
             ImGui::Begin("EmitterSettings");
 
-            if (m_iSelectedSystem >= 0 && m_iSelectedEmitter >= 0)
+            if (m_iPrevSelectedSystem != m_iSelectedSystem)
             {
-                //  CParticleEmitter* pEmitter = m_ParticleSystems[m_iSelectedSystem]->Get_Emitter(m_iSelectedEmitter);
-                //  auto& Desc = pEmitter->Get_Desc();
+                m_iSelectedEmitter = -1;
+                m_iPrevSelectedSystem = m_iSelectedSystem;
+            }
 
-                //  ImGui::InputText("Emitter Name", &Desc.strName[0], sizeof(Desc.strName));
-                //  ImGui::InputFloat3("Center", (float*)&Desc.vCenter);
-                //  ImGui::InputFloat3("Direction", (float*)&Desc.vDir);
-                //  ImGui::InputFloat("Speed", &Desc.fSpeed);
-                //  ImGui::InputFloat("Scale", &Desc.fScale);
-                //  ImGui::InputFloat("LifeTime", &Desc.fLifeTime);
-                //  
-                //  ImGui::Separator();
-                //  ImGui::Checkbox("Loop", &Desc.isLoop);
-                //  ImGui::Checkbox("Spread", &Desc.isSpread);
-                //  ImGui::Checkbox("Drop", &Desc.isDrop);
-                //  ImGui::Checkbox("Gravity", &Desc.isGravity);
-                //  
-                //  ImGui::Separator();
+            if ((m_iSelectedSystem >= 0 && m_iSelectedEmitter >= 0) && (m_iPrevSelectedSystem == m_iSelectedSystem))
+            {
+                CParticleEmitter* pEmitter = m_ParticleSystems[m_iSelectedSystem]->Get_Emitter(m_iSelectedEmitter);
+
+                if (m_iPrevSelectedEmitter != m_iSelectedEmitter)
+                {
+                    m_strEmitterName = pEmitter->Get_Name();
+                    m_PointInfo = pEmitter->Get_ParticleInfo();
+                    m_isSpread = pEmitter->Get_Spread();
+                    m_isDrop = pEmitter->Get_Drop();
+
+                    m_iPrevSelectedEmitter = m_iSelectedEmitter;
+                    // wstring -> char 변환 후 버퍼에 저장
+                    WideCharToMultiByte(CP_ACP, 0, m_strEmitterName.c_str(), -1, m_szEmitterName, sizeof(m_szEmitterName), nullptr, nullptr);
+                }
+
+                ImGui::InputText("Emitter Name", m_szEmitterName, sizeof(m_szEmitterName));
+
+                ImGui::Separator();
+                ImGui::Text("Emitter Parameters");
+                ImGui::Separator();
+
+                // 파티클 개수
+                ImGui::InputInt("Num Instance", reinterpret_cast<_int*>(&m_PointInfo.iNumInstance));
+
+                // 중심 위치
+                ImGui::InputFloat3("Center", reinterpret_cast<_float*>(&m_PointInfo.vCenter));
+
+                // 퍼지는 범위
+                ImGui::InputFloat3("Range", reinterpret_cast<_float*>(&m_PointInfo.vRange));
+
+                // 크기 (최소, 최대)
+                ImGui::InputFloat2("Size (Min/Max)", reinterpret_cast<_float*>(&m_PointInfo.vSize));
+
+                // 수명 (최소, 최대)
+                ImGui::InputFloat2("LifeTime (Min/Max)", reinterpret_cast<_float*>(&m_PointInfo.vLifeTime));
+
+                // 회전 중심 (Pivot)
+                ImGui::InputFloat3("Pivot", reinterpret_cast<_float*>(&m_PointInfo.vPivot));
+
+                // 속도 (최소, 최대)
+                ImGui::InputFloat2("Speed (Min/Max)", reinterpret_cast<_float*>(&m_PointInfo.vSpeed));
+
+                ImGui::Separator();
+                ImGui::Text("Emitter Behavior");
+                ImGui::Separator();
+
+                // 반복 여부 및 물리 효과
+                ImGui::Checkbox("Loop", &m_PointInfo.isLoop);
+                ImGui::Checkbox("Spread", &m_isSpread);
+                ImGui::Checkbox("Drop", &m_isDrop);
+                //  ImGui::Checkbox("Gravity", &m_isGravity);
+                
+                ImGui::Separator();
 
                 if (ImGui::Button("Apply Changes"))
                 {
+                    // char -> wstring 변환
+                    _int iLength = MultiByteToWideChar(CP_ACP, 0, m_szEmitterName, -1, nullptr, 0);
+                    _wstring strNewEmitterName(iLength, 0);
+                    MultiByteToWideChar(CP_ACP, 0, m_szEmitterName, -1, &strNewEmitterName[0], iLength);
+
+                    if (m_strEmitterName != strNewEmitterName)
+                        pEmitter->Set_Name(strNewEmitterName);
+
+                    pEmitter->Recreate_Particle(m_PointInfo);
+                    pEmitter->Set_Spread(m_isSpread);
+                    pEmitter->Set_Drop(m_isDrop);
                 }
-            }
-            else
-            {
-                ImGui::Text("NULL");
             }
 
             if (ImGui::Button("Add Emitter"))
             {
-                // System Add Emitter
+                Create_ParticleEmitter();
             }
+
             ImGui::SameLine();
+
             if (m_iSelectedEmitter >= 0 && ImGui::Button("Delete Emitter"))
             {
-                // System Delete Emitter
+                Delete_ParticleEmitter();
+
                 m_iSelectedEmitter = -1;
             }
 
@@ -233,7 +277,6 @@ HRESULT CLevel_Effect::Initialize()
 
 void CLevel_Effect::Update(_float fTimeDelta)
 {
-
 	return;
 }
 
@@ -244,15 +287,99 @@ HRESULT CLevel_Effect::Render()
 	return S_OK;
 }
 
-HRESULT CLevel_Effect::Ready_Layer_BackGround(const _wstring& strLayerTag)
+HRESULT CLevel_Effect::Create_ParticleSystem()
 {
-	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::TITLE), strLayerTag,
-	//	ENUM_CLASS(LEVEL::TITLE), TEXT("Prototype_GameObject_BackGround"))))
-	//	return E_FAIL;
+    _tchar szWideSystemName[64] = {};
+    MultiByteToWideChar(CP_ACP, 0, m_szSystemName, -1, szWideSystemName, 128);
+    _wstring strSystemName = szWideSystemName;
+
+    CParticleSystem::PARTICLE_SYSTEM_DESC Desc{};
+    Desc.strName = strSystemName;
+
+    CGameObject* pGameObject = dynamic_cast<CGameObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::EFFECT),
+        TEXT("Prototype_GameObject_ParticleSystem"), &Desc));
+    if (nullptr == pGameObject)
+        return E_FAIL;
+
+    CParticleSystem* pSystem = dynamic_cast<CParticleSystem*>(pGameObject);
+    if (nullptr == pSystem)
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::EFFECT), TEXT("Layer_Effect"), pSystem)))
+        return E_FAIL;
+
+    m_ParticleSystems.push_back(dynamic_cast<CParticleSystem*>(pSystem));
+    Safe_AddRef(pSystem);
+    
+    memset(m_szSystemName, 0, sizeof(m_szSystemName));
+
+    return S_OK;
+}
+
+HRESULT CLevel_Effect::Create_ParticleEmitter()
+{
+    if (m_iSelectedSystem < 0)
+        return E_FAIL;
+
+    CParticleSystem* pSystem = m_ParticleSystems[m_iSelectedSystem];
+    if (nullptr == pSystem)
+        return E_FAIL;
+
+    CParticleEmitter::PARTICLE_EMITTER_DESC Desc{};
+    Desc.strName = TEXT("Emitter") + to_wstring(pSystem->Get_NumEmitters());
+
+    // Desc Editor에서 수치 조정한 멤버 변수 추가 작성 필요
+
+    if (FAILED(pSystem->Add_Emitter(Desc)))
+        MSG_BOX(TEXT("Failed to Add Emitter!"));
+
+    return S_OK;
+}
+
+HRESULT CLevel_Effect::Delete_ParticleEmitter()
+{
+    // 시스템의 Remove Emitter 호출
+    if (m_iSelectedSystem < 0 || m_iSelectedEmitter < 0)
+        return E_FAIL;
+
+    CParticleSystem* pSystem = m_ParticleSystems[m_iSelectedSystem];
+    if (nullptr == pSystem)
+        return E_FAIL;
+
+    if (FAILED(pSystem->Remove_Emitter(static_cast<_uint>(m_iSelectedEmitter))))
+        MSG_BOX(TEXT("Failed to Remove Emitter!"));
+
+    return S_OK;
+}
+
+HRESULT CLevel_Effect::Ready_Layer_BackGround()
+{
+	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EFFECT), TEXT("Layer_BackGround"),
+		ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_Terrain_Grid"))))
+		return E_FAIL;
 
 	return S_OK;
 }
 
+HRESULT CLevel_Effect::Ready_Layer_Camera()
+{
+    CCamera_Effect::CAMERA_EFFECT_DESC Desc{};
+
+    Desc.vEye = _float4(0.f, 5.f, -5.f, 1.f);
+    Desc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
+    Desc.fFovy = XMConvertToRadians(60.0f);
+    Desc.fNear = 0.1f;
+    Desc.fFar = 1000.f;
+    Desc.fSpeedPerSec = 10.f;
+    Desc.fRotationPerSec = XMConvertToRadians(90.0f);
+    Desc.fMouseSensor = 0.1f;
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EFFECT), TEXT("Layer_Camera"),
+        ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_Camera_Effect"), &Desc)))
+        return E_FAIL;
+
+    return S_OK;
+}
 
 CLevel_Effect* CLevel_Effect::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
