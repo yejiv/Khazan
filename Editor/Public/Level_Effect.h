@@ -2,6 +2,7 @@
 
 #include "Editor_Defines.h"
 #include "Level.h"
+#include "VIBuffer_Point_Instance.h"
 
 NS_BEGIN(Editor)
 
@@ -22,29 +23,34 @@ private:
 
 	// ===== GUI 관련 변수 =====
 	_char m_szSystemName[64] = {};
+	_char m_szEmitterName[64] = {};
 	vector<class CParticleSystem*> m_ParticleSystems;
 	_int m_iSelectedSystem = { -1 };
+	_int m_iPrevSelectedSystem = { -1 };
 	_int m_iSelectedEmitter = { -1 };
+	_int m_iPrevSelectedEmitter = { -1 };
+	_wstring m_strEmitterName = {};
 
 	// ===== 파티클 관련 기본 변수 =====
-	_float3		m_vCenter = {};
-	_float3		m_vDir = { 0.f, 1.f, 0.f };
-	_float		m_fSpeed = {};
-	_float		m_fScale = { 1.f };
-	_float		m_fLifeTime = {};
-	_bool		m_bLoop = {};
-	_int		m_iNumInstance = {};
+	CVIBuffer_Point_Instance::POINT_INSTANCE_DESC m_PointInfo = {};
+	_bool m_isSpread = {};
+	_bool m_isDrop = {};
 
 	// ===== 파티클 관련 확장 변수 =====
-	_bool		m_bUseRandomDir = {};
+	_bool		m_isRandomDir = {};
 	_float		m_fAngleMin = {};
 	_float		m_fAngleMax = {};
-	_bool		m_bUseGravity = {};
+	_bool		m_isGravity = {};
 	_float3		m_vGravity = {};
 
+private:
+	HRESULT Create_ParticleSystem();
+	HRESULT Create_ParticleEmitter();
+	HRESULT Delete_ParticleEmitter();
 
 private:
-	HRESULT Ready_Layer_BackGround(const _wstring& strLayerTag);
+	HRESULT Ready_Layer_BackGround();
+	HRESULT Ready_Layer_Camera();
 
 public:
 	static CLevel_Effect* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

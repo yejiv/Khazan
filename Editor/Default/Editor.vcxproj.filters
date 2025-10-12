@@ -49,6 +49,60 @@
     <Filter Include="02.GameObject\Effect\ParticleSystem\ParticleEmitter">
       <UniqueIdentifier>{ba2ee6f1-2a5f-4830-8ccf-6ffd577640f3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03.Utility">
+      <UniqueIdentifier>{8af11899-cd8c-4c1c-9e9c-0e1c7815e687}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Utility\00.Model">
+      <UniqueIdentifier>{f8290d34-b690-4a76-a627-22800eebfcb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Utility\00.Model\Mesh">
+      <UniqueIdentifier>{3d2e8d7a-8f71-4dfd-a290-cd57167ad382}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Utility\00.Model\Material">
+      <UniqueIdentifier>{97bc533d-459d-4a8d-9729-a3aaa5ea6321}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Utility\00.Model\Bone">
+      <UniqueIdentifier>{1993a2a4-ffd2-400b-853f-87d8dd52bd42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Utility\00.Model\Animation">
+      <UniqueIdentifier>{3cb67361-25cb-4c61-be4d-de9667c4a984}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Utility\00.Model\Animation\Channel">
+      <UniqueIdentifier>{01695c3e-bb05-486c-abe9-841d6a03417f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Animation">
+      <UniqueIdentifier>{e1a4d636-4d3d-4832-addd-a3350a40898b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Animation\99.Test Model">
+      <UniqueIdentifier>{176dafb7-64ef-446d-9e9b-d912ec4436c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject">
+      <UniqueIdentifier>{075ffa50-4648-46d7-8809-549850f8d418}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop">
+      <UniqueIdentifier>{7b6dad04-350e-4d24-bf0a-c068d78f35d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\02.Interactive">
+      <UniqueIdentifier>{01fa6e41-9a0b-49f9-beb2-94bb1b33d21c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\01.Animated">
+      <UniqueIdentifier>{3e57a2ee-d5f1-4f9b-98be-a3172b0aa61f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Destructible">
+      <UniqueIdentifier>{b894b6f2-b4eb-404c-a0ab-abc15884b661}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\00.Static">
+      <UniqueIdentifier>{d6e4346f-5e62-4072-b95a-6ca52ffe1423}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Map\Header">
+      <UniqueIdentifier>{5e903afb-5ae0-44e4-a388-6f6c034a1f9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Camera">
+      <UniqueIdentifier>{73507ee3-ca91-4db0-bb47-9b7b03480d0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Terrain">
+      <UniqueIdentifier>{81b63c04-fa83-4a3a-96f5-b9f89191f19d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -62,9 +116,6 @@
     </ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>98.Default</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\EditorPch.h">
-      <Filter>97.pch</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\MainApp.h">
       <Filter>00.MainApp</Filter>
@@ -99,6 +150,57 @@
     <ClInclude Include="..\public\ParticleEmitter.h">
       <Filter>02.GameObject\Effect\ParticleSystem\ParticleEmitter</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Editor_Model.h">
+      <Filter>03.Utility\00.Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Editor_Animation.h">
+      <Filter>03.Utility\00.Model\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Editor_Bone.h">
+      <Filter>03.Utility\00.Model\Bone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Editor_Channel.h">
+      <Filter>03.Utility\00.Model\Animation\Channel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Editor_Mesh.h">
+      <Filter>03.Utility\00.Model\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Editor_MeshMaterial.h">
+      <Filter>03.Utility\00.Model\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\JOH_EditorModelTest.h">
+      <Filter>02.GameObject\Animation\99.Test Model</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorPch.h">
+      <Filter>97.pch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MapObject.h">
+      <Filter>02.GameObject\MapObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Static.h">
+      <Filter>02.GameObject\MapObject\Prop\00.Static</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Animated.h">
+      <Filter>02.GameObject\MapObject\Prop\01.Animated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Interactive.h">
+      <Filter>02.GameObject\MapObject\Prop\02.Interactive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Destructible.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Destructible</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop.h">
+      <Filter>02.GameObject\MapObject\Prop</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MapEditor_Header.h">
+      <Filter>01.Levels\Map\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Effect.h">
+      <Filter>02.GameObject\Effect\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Terrain_Grid.h">
+      <Filter>02.GameObject\Effect\Terrain</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -116,9 +218,6 @@
   <ItemGroup>
     <ClCompile Include="Editor.cpp">
       <Filter>98.Default</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\EditorPch.cpp">
-      <Filter>97.pch</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\MainApp.cpp">
       <Filter>00.MainApp</Filter>
@@ -149,6 +248,54 @@
     </ClCompile>
     <ClCompile Include="..\private\ParticleEmitter.cpp">
       <Filter>02.GameObject\Effect\ParticleSystem\ParticleEmitter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Editor_Model.cpp">
+      <Filter>03.Utility\00.Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Editor_Animation.cpp">
+      <Filter>03.Utility\00.Model\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Editor_Bone.cpp">
+      <Filter>03.Utility\00.Model\Bone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Editor_Channel.cpp">
+      <Filter>03.Utility\00.Model\Animation\Channel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Editor_Mesh.cpp">
+      <Filter>03.Utility\00.Model\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Editor_MeshMaterial.cpp">
+      <Filter>03.Utility\00.Model\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\JOH_EditorModelTest.cpp">
+      <Filter>02.GameObject\Animation\99.Test Model</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorPch.cpp">
+      <Filter>97.pch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MapObject.cpp">
+      <Filter>02.GameObject\MapObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Static.cpp">
+      <Filter>02.GameObject\MapObject\Prop\00.Static</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Animated.cpp">
+      <Filter>02.GameObject\MapObject\Prop\01.Animated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Interactive.cpp">
+      <Filter>02.GameObject\MapObject\Prop\02.Interactive</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Destructible.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Destructible</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop.cpp">
+      <Filter>02.GameObject\MapObject\Prop</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Effect.cpp">
+      <Filter>02.GameObject\Effect\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Terrain_Grid.cpp">
+      <Filter>02.GameObject\Effect\Terrain</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

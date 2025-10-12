@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "Light_Manager.h"
 #include "Light.h"
 

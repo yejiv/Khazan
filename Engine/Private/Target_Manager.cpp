@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "Target_Manager.h"
 
 #include "RenderTarget.h"

@@ -7,15 +7,26 @@ x64/
 *.cso
 *.pdb
 *.exe
+*.fbx
 
-client.exp
+Client.exp
+Client.exe
+Client.pdb
+Client/Resources/
 
-Engine.dll
-Engine.lib
+Editor.exp
+Editor.exe
+Editor.pdb
+Editor/Resources/
+
 Engine.exp
+Engine.exe
+Engine.pdb
+Engine/Resources/
 
-EngineSDK/Debug/Inc/
-EngineSDK/Release/Inc/
+EngineSDK
+EngineSDK/Debug/
+EngineSDK/Release/
 
 *.vcxproj merge=union
 *.vcxproj.filters merge=union
