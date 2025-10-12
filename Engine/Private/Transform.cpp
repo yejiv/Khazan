@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "Transform.h"
 #include "Shader.h"
 

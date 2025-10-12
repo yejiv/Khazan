@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "VIBuffer_Point_Instance.h"
 
 #include "GameInstance.h"

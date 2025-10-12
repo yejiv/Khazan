@@ -69,6 +69,19 @@ namespace Engine
 		return out;
 	}
 
+	inline std::wstring AnsiToWString(const std::string& s, UINT codepage = CP_ACP)
+	{
+		if (s.empty()) return {};
+		const int size = MultiByteToWideChar(codepage, 0,
+			s.c_str(), (int)s.size(),
+			nullptr, 0);
+		std::wstring out(size, L'\0');
+		MultiByteToWideChar(codepage, 0,
+			s.c_str(), (int)s.size(),
+			out.data(), size);
+		return out;
+	}
+
 	static inline float Length3(float x, float y, float z) {
 		return sqrtf(x * x + y * y + z * z);
 	}

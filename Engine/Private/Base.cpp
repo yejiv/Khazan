@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "../Public/Base.h"
 
 CBase::CBase()
