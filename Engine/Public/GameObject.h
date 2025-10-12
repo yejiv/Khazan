@@ -29,6 +29,14 @@ public:
 	virtual HRESULT Render_Shadow() { return S_OK; }
 
 public:
+	void Set_IsPool(_bool isPool) { m_isPool = isPool; }
+	_bool Get_IsPool() { return m_isPool; }
+
+	void Set_IsDead(_bool isDead) { m_isDead = isDead; }
+	_bool Get_IsDead() { return m_isDead; }
+
+// 충돌 처리용
+public:
 	virtual void Collision_Enter(JPH::ObjectLayer Layer, CGameObject* pObject, JPH::ContactManifold ContactManifold) {};
 	virtual void Collision_Stay(JPH::ObjectLayer Layer, CGameObject* pObject, JPH::ContactManifold ContactManifold) {};
 
@@ -39,6 +47,9 @@ protected:
 	class CTransform*			m_pTransformCom = { nullptr };
 
 	map<const _wstring, class CComponent*>		m_Components;
+
+	_bool						m_isPool = { false };
+	_bool						m_isDead = { false };
 
 protected:
 	/*원형컴포넌트를 찾아서 복제한다. */

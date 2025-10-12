@@ -133,21 +133,6 @@
     <Filter Include="01.Utility\03.Component\VIBuffer\Cell">
       <UniqueIdentifier>{8ef8f590-b7ee-4d99-95c2-3336d58703dd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\03.Component\Collider">
-      <UniqueIdentifier>{ef458ebd-4a33-4e3f-a57b-ae3124f3cada}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\03.Component\Collider\Bounding">
-      <UniqueIdentifier>{ba316683-b80d-4f64-8eeb-5853fd41d94c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\03.Component\Collider\Bounding\AABB">
-      <UniqueIdentifier>{76ada6c2-37a5-4eaa-9f43-fcf911a367bf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\03.Component\Collider\Bounding\OBB">
-      <UniqueIdentifier>{aafa82f5-e089-4a2f-8ae7-9b379c0c2d79}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\03.Component\Collider\Bounding\Sphere">
-      <UniqueIdentifier>{fe81d6a9-b099-449b-ba37-faa5476c1347}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\03.Component\VIBuffer\Instance">
       <UniqueIdentifier>{d7b35455-bde5-4111-b8af-bd98d7e953d0}</UniqueIdentifier>
     </Filter>
@@ -237,6 +222,24 @@
     </Filter>
     <Filter Include="01.Utility\02.GameObject\UIObject\ProgressBar">
       <UniqueIdentifier>{5a606f75-1f2f-4fd3-82bb-8bc4a8a9134a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\Pool">
+      <UniqueIdentifier>{6599dcd5-de57-4b9b-8fc8-06b6a0cbb5ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\Pool\Manager">
+      <UniqueIdentifier>{565e7f0a-e0b8-4a4f-b7c8-3c8d455eb800}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\15.Event">
+      <UniqueIdentifier>{9a9d3493-ee12-484a-97a8-7b8b7ff594b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\15.Event\Manager">
+      <UniqueIdentifier>{80f19eca-ec79-4c9d-a5d7-e89ac97234e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\13.Jolt\DebugDraw">
+      <UniqueIdentifier>{61136c8c-9d8c-4c2e-8e9c-23cbeac14a2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\UIObject\TextBox">
+      <UniqueIdentifier>{6dd9461f-86cd-44cc-81c3-187d10c5db85}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -357,24 +360,6 @@
     <ClCompile Include="..\Private\VIBuffer_Cell.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Cell</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Collider.cpp">
-      <Filter>01.Utility\03.Component\Collider</Filter>
-    </ClCompile>
-    <ClCompile Include="..\private\Bounding.cpp">
-      <Filter>01.Utility\03.Component\Collider\Bounding</Filter>
-    </ClCompile>
-    <ClCompile Include="..\private\Bounding_AABB.cpp">
-      <Filter>01.Utility\03.Component\Collider\Bounding\AABB</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\DebugDraw.cpp">
-      <Filter>01.Utility\03.Component\Collider</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Bounding_OBB.cpp">
-      <Filter>01.Utility\03.Component\Collider\Bounding\OBB</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Bounding_Sphere.cpp">
-      <Filter>01.Utility\03.Component\Collider\Bounding\Sphere</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Instance.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Instance</Filter>
     </ClCompile>
@@ -471,8 +456,23 @@
     <ClCompile Include="..\Private\UI_ProgressBar.cpp">
       <Filter>01.Utility\02.GameObject\UIObject\ProgressBar</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Pool.cpp">
+      <Filter>01.Utility\02.GameObject\Pool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Pool_Manager.cpp">
+      <Filter>01.Utility\02.GameObject\Pool\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Event_Manager.cpp">
+      <Filter>01.Utility\15.Event\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DebugDraw.cpp">
+      <Filter>01.Utility\13.Jolt\DebugDraw</Filter>
+    </ClCompile>
     <ClCompile Include="EnginePch.cpp">
       <Filter>98.pch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_TextBox.cpp">
+      <Filter>01.Utility\02.GameObject\UIObject\TextBox</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -611,24 +611,6 @@
     <ClInclude Include="..\Public\VIBuffer_Cell.h">
       <Filter>01.Utility\03.Component\VIBuffer\Cell</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Collider.h">
-      <Filter>01.Utility\03.Component\Collider</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\Bounding.h">
-      <Filter>01.Utility\03.Component\Collider\Bounding</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\Bounding_AABB.h">
-      <Filter>01.Utility\03.Component\Collider\Bounding\AABB</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\DebugDraw.h">
-      <Filter>01.Utility\03.Component\Collider</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Bounding_OBB.h">
-      <Filter>01.Utility\03.Component\Collider\Bounding\OBB</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Bounding_Sphere.h">
-      <Filter>01.Utility\03.Component\Collider\Bounding\Sphere</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\VIBuffer_Instance.h">
       <Filter>01.Utility\03.Component\VIBuffer\Instance</Filter>
     </ClInclude>
@@ -728,8 +710,26 @@
     <ClInclude Include="..\Public\UI_ProgressBar.h">
       <Filter>01.Utility\02.GameObject\UIObject\ProgressBar</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Pool.h">
+      <Filter>01.Utility\02.GameObject\Pool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Pool_Manager.h">
+      <Filter>01.Utility\02.GameObject\Pool\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Event_Manager.h">
+      <Filter>01.Utility\15.Event\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DebugDraw.h">
+      <Filter>01.Utility\13.Jolt\DebugDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Engine_Json.h">
+      <Filter>99.Defines</Filter>
+    </ClInclude>
     <ClInclude Include="EnginePch.h">
       <Filter>98.pch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_TextBox.h">
+      <Filter>01.Utility\02.GameObject\UIObject\TextBox</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -24,6 +24,10 @@ HRESULT CParticleEmitter::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
+    PARTICLE_EMITTER_DESC* pDesc = static_cast<PARTICLE_EMITTER_DESC*>(pArg);
+
+    m_strName = pDesc->strName;
+
     return S_OK;
 }
 
@@ -33,11 +37,19 @@ void CParticleEmitter::Priority_Update(_float fTimeDelta)
 
 void CParticleEmitter::Update(_float fTimeDelta)
 {
+    if (nullptr != m_pVIBufferCom)
+    {
+        if (m_isSpread)
+            m_pVIBufferCom->Spread(fTimeDelta);
+
+        else if (m_isDrop)
+            m_pVIBufferCom->Drop(fTimeDelta);
+    }
 }
 
 void CParticleEmitter::Late_Update(_float fTimeDelta)
 {
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this)))
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::BLEND, this)))
         return;
 }
 
@@ -48,30 +60,43 @@ HRESULT CParticleEmitter::Render()
 
     m_pShaderCom->Begin(0);
 
-    m_pVIBufferCom->Bind_Resources();
-
-    m_pVIBufferCom->Render();
+    if (nullptr != m_pVIBufferCom)
+    {
+        m_pVIBufferCom->Bind_Resources();
+        m_pVIBufferCom->Render();
+    }
 
     return S_OK;
 }
 
-void CParticleEmitter::Recreate_Particle()
+HRESULT CParticleEmitter::Recreate_Particle(CVIBuffer_Point_Instance::POINT_INSTANCE_DESC PointDesc)
 {
+    if (nullptr != m_pVIBufferCom)
+        Safe_Release(m_pVIBufferCom);
+
+    m_pVIBufferCom = CVIBuffer_Point_Instance::Create(m_pDevice, m_pContext, &PointDesc);
+    if (nullptr == m_pVIBufferCom)
+        return E_FAIL;
+    
+    if (FAILED(m_pVIBufferCom->Initialize_Clone(nullptr)))
+        return E_FAIL;
+    
+    m_Components.emplace(TEXT("Com_VIBuffer"), m_pVIBufferCom);
+    
+    Safe_AddRef(m_pVIBufferCom);
+
+    return S_OK;
 }
 
 HRESULT CParticleEmitter::Ready_Components()
 {
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EDITOR), TEXT("Prototype_Component_Shader_VtxInstance_PointParticle"),
+    // Com_Shader
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxInstance_PointParticle"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
 
-    // 파티클 버퍼 생성 Initialize_Clone으로 옮기기
-    //  if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EDITOR), TEXT("Prototype_Component_Particle_Snow"),
-    //      TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), nullptr)))
-    //      return E_FAIL;
-
-    // 텍스처 컴포넌트 써야 할까?
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EDITOR), TEXT("Prototype_Component_Texture_Snow"),
+    // Com_Texture
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_TestParticle"),
         TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr)))
         return E_FAIL;
 

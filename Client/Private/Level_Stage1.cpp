@@ -1,8 +1,9 @@
 #include "Level_Stage1.h"
 #include "GameInstance.h"
 #include "Level_Loading.h"
-
+#include "Event_Defines.h"
 #include "Camera_Free.h"
+#include "Dummy.h"
 
 CLevel_Stage1::CLevel_Stage1(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
@@ -107,11 +108,14 @@ HRESULT CLevel_Stage1::Ready_Layer_Monster(const _wstring& strLayerTag)
 {
 	for (size_t i = 0; i < 10; i++)
 	{
-		if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
-			ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Monster"))))
-			return E_FAIL;
-	}
+		//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
+		//	ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Monster"))))
+		//	return E_FAIL;
 
+		CDummy* pDummy = dynamic_cast<CDummy*>(m_pGameInstance->Pop_PoolObject(TEXT("Dummy")));
+		m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag, pDummy);
+	}
+	return S_OK;
 }
 
 HRESULT CLevel_Stage1::Ready_Layer_Test(const _wstring& strLayerTag)
