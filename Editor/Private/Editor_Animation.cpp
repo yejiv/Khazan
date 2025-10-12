@@ -1,4 +1,3 @@
-#include "EditorPch.h"
 #include "Editor_Animation.h"
 #include "Editor_Channel.h"
 

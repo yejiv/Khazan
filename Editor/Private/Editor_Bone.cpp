@@ -1,4 +1,3 @@
-#include "EditorPch.h"
 #include "Editor_Bone.h"
 
 CEditor_Bone::CEditor_Bone()

@@ -76,6 +76,27 @@
     <Filter Include="02.GameObject\Animation\99.Test Model">
       <UniqueIdentifier>{176dafb7-64ef-446d-9e9b-d912ec4436c2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject">
+      <UniqueIdentifier>{075ffa50-4648-46d7-8809-549850f8d418}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop">
+      <UniqueIdentifier>{7b6dad04-350e-4d24-bf0a-c068d78f35d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\02.Interactive">
+      <UniqueIdentifier>{01fa6e41-9a0b-49f9-beb2-94bb1b33d21c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\01.Animated">
+      <UniqueIdentifier>{3e57a2ee-d5f1-4f9b-98be-a3172b0aa61f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Destructible">
+      <UniqueIdentifier>{b894b6f2-b4eb-404c-a0ab-abc15884b661}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\00.Static">
+      <UniqueIdentifier>{d6e4346f-5e62-4072-b95a-6ca52ffe1423}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Map\Header">
+      <UniqueIdentifier>{5e903afb-5ae0-44e4-a388-6f6c034a1f9c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -89,9 +110,6 @@
     </ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>98.Default</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\EditorPch.h">
-      <Filter>97.pch</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\MainApp.h">
       <Filter>00.MainApp</Filter>
@@ -147,6 +165,30 @@
     <ClInclude Include="..\public\JOH_EditorModelTest.h">
       <Filter>02.GameObject\Animation\99.Test Model</Filter>
     </ClInclude>
+    <ClInclude Include="EditorPch.h">
+      <Filter>97.pch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MapObject.h">
+      <Filter>02.GameObject\MapObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Static.h">
+      <Filter>02.GameObject\MapObject\Prop\00.Static</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Animated.h">
+      <Filter>02.GameObject\MapObject\Prop\01.Animated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Interactive.h">
+      <Filter>02.GameObject\MapObject\Prop\02.Interactive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Destructible.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Destructible</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop.h">
+      <Filter>02.GameObject\MapObject\Prop</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MapEditor_Header.h">
+      <Filter>01.Levels\Map\Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -164,9 +206,6 @@
   <ItemGroup>
     <ClCompile Include="Editor.cpp">
       <Filter>98.Default</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\EditorPch.cpp">
-      <Filter>97.pch</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\MainApp.cpp">
       <Filter>00.MainApp</Filter>
@@ -218,6 +257,27 @@
     </ClCompile>
     <ClCompile Include="..\private\JOH_EditorModelTest.cpp">
       <Filter>02.GameObject\Animation\99.Test Model</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorPch.cpp">
+      <Filter>97.pch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MapObject.cpp">
+      <Filter>02.GameObject\MapObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Static.cpp">
+      <Filter>02.GameObject\MapObject\Prop\00.Static</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Animated.cpp">
+      <Filter>02.GameObject\MapObject\Prop\01.Animated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Interactive.cpp">
+      <Filter>02.GameObject\MapObject\Prop\02.Interactive</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Destructible.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Destructible</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop.cpp">
+      <Filter>02.GameObject\MapObject\Prop</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
