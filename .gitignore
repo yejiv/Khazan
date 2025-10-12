@@ -9,7 +9,6 @@ x64/
 *.exe
 *.fbx
 
-
 Client.exp
 Client.exe
 Client.pdb
