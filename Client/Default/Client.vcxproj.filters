@@ -99,9 +99,6 @@
     <ClInclude Include="..\public\Camera_Free.h">
       <Filter>02.GameObject\Camera\Free</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\ClientPch.h">
-      <Filter>96.pch</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Player.h">
       <Filter>02.GameObject\Player</Filter>
     </ClInclude>
@@ -128,6 +125,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Event_Defines.h">
       <Filter>99.Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientPch.h">
+      <Filter>96.pch</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -162,9 +162,6 @@
     <ClCompile Include="..\private\Camera_Free.cpp">
       <Filter>02.GameObject\Camera\Free</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\ClientPch.cpp">
-      <Filter>96.pch</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Player.cpp">
       <Filter>02.GameObject\Player</Filter>
     </ClCompile>
@@ -189,6 +186,9 @@
     <ClCompile Include="..\Private\Dummy.cpp">
       <Filter>02.GameObject\Pool\Dummy</Filter>
     </ClCompile>
+    <ClCompile Include="ClientPch.cpp">
+      <Filter>96.pch</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
@@ -210,6 +210,9 @@
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxInstance_PointParticle.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_MeshInstance.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

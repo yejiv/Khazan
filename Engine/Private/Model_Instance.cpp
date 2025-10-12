@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "Model_Instance.h"
 
 #include "Mesh_Instance.h"
@@ -32,20 +31,6 @@ CModel_Instance::CModel_Instance(const CModel_Instance& Prototype)
 
     for (auto& pMaterial : m_Materials)
         Safe_AddRef(pMaterial);
-}
-
-_float4x4* CModel_Instance::Get_BoneMatrix(const _char* pBoneName)
-{
-    auto    iter = find_if(m_Bones.begin(), m_Bones.end(), [&](CBone* pBone) {
-        if (true == pBone->Compare_Name(pBoneName))
-            return true;
-        return false;
-        });
-
-    if (iter == m_Bones.end())
-        return nullptr;
-
-    return (*iter)->Get_CombinedTransformationMatrixPtr();
 }
 
 HRESULT CModel_Instance::Initialize_Prototype(MODELTYPE eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix)
@@ -89,6 +74,52 @@ HRESULT CModel_Instance::Initialize_Clone(void* pArg)
     return S_OK;
 }
 
+HRESULT CModel_Instance::Render(_uint iMeshIndex)
+{
+    if (FAILED(m_Meshes[iMeshIndex]->Bind_Resources()))
+        return E_FAIL;
+
+    if (FAILED(m_Meshes[iMeshIndex]->Render()))
+        return E_FAIL;
+
+    return S_OK;
+}
+
+_float4x4* CModel_Instance::Get_BoneMatrix(const _char* pBoneName)
+{
+    auto    iter = find_if(m_Bones.begin(), m_Bones.end(), [&](CBone* pBone) {
+        if (true == pBone->Compare_Name(pBoneName))
+            return true;
+        return false;
+        });
+
+    if (iter == m_Bones.end())
+        return nullptr;
+
+    return (*iter)->Get_CombinedTransformationMatrixPtr();
+}
+
+const _uint CModel_Instance::Get_NumInstances() const
+{
+    return m_Meshes[0]->Get_NumInstances();
+}
+
+void CModel_Instance::Add_Instance(MESH_INSTANCE_DATA InstanceData)
+{
+    for (_uint i = 0; i < m_iNumMeshes; ++i)
+    {
+        m_Meshes[i]->Add_Instance(InstanceData);
+    }
+}
+
+void CModel_Instance::Fix_Instance(MESH_INSTANCE_DATA InstanceData, _uint iInstanceIndex)
+{
+    for (_uint i = 0; i < m_iNumMeshes; ++i)
+    {
+        m_Meshes[i]->Fix_Instance(InstanceData, iInstanceIndex);
+    }
+}
+
 HRESULT CModel_Instance::Bind_Materials(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, aiTextureType eTextureType, _uint iIndex)
 {
     if (iMeshIndex >= m_iNumMeshes)
@@ -125,17 +156,6 @@ _bool CModel_Instance::Play_Animation(_float fTimeDelta)
     }
 
     return m_isFinished;
-}
-
-HRESULT CModel_Instance::Render(_uint iMeshIndex)
-{
-    if (FAILED(m_Meshes[iMeshIndex]->Bind_Resources()))
-        return E_FAIL;
-
-    if (FAILED(m_Meshes[iMeshIndex]->Render()))
-        return E_FAIL;
-
-    return S_OK;
 }
 
 void CModel_Instance::Set_Animation(_uint iIndex, _bool isLoop)
@@ -216,8 +236,6 @@ HRESULT CModel_Instance::Ready_Animations()
 
     return S_OK;
 }
-
-
 
 CModel_Instance* CModel_Instance::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, MODELTYPE eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix)
 {

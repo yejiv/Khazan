@@ -117,6 +117,7 @@
       <PrecompiledHeaderFile>EnginePch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <ForcedIncludeFiles>EnginePch.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -147,6 +148,9 @@ call Copy.bat</Command>
       <AdditionalIncludeDirectories>../public/;../public/ImGui/;../public/assimp/;../public/DirectXTK/;../public/fmod/;../public/Fx11/;../public/Jolt/</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ForcedIncludeFiles>EnginePch.h</ForcedIncludeFiles>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>EnginePch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -206,9 +210,6 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\Navigation.cpp" />
     <ClCompile Include="..\Private\Object_Manager.cpp" />
     <ClCompile Include="..\private\PartObject.cpp" />
-    <ClCompile Include="..\Private\EnginePch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="..\Private\Jolt_DebugRenderer.cpp" />
     <ClCompile Include="..\private\Picking.cpp" />
     <ClCompile Include="..\private\PipeLine.cpp" />
@@ -247,6 +248,11 @@ call Copy.bat</Command>
     <ClCompile Include="..\Public\ImGui\imgui_impl_win32.cpp" />
     <ClCompile Include="..\Public\ImGui\imgui_tables.cpp" />
     <ClCompile Include="..\Public\ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="EnginePch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">EnginePch.h</PrecompiledHeaderFile>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\public\Animation.h" />
@@ -301,7 +307,6 @@ call Copy.bat</Command>
     <ClInclude Include="..\public\Navigation.h" />
     <ClInclude Include="..\Public\Object_Manager.h" />
     <ClInclude Include="..\public\PartObject.h" />
-    <ClInclude Include="..\Public\EnginePch.h" />
     <ClInclude Include="..\Public\Jolt_DebugRenderer.h" />
     <ClInclude Include="..\public\Picking.h" />
     <ClInclude Include="..\public\PipeLine.h" />
@@ -333,6 +338,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\public\VIBuffer_Rect.h" />
     <ClInclude Include="..\Public\VIBuffer_Rect_Instance.h" />
     <ClInclude Include="..\Public\VIBuffer_Terrain.h" />
+    <ClInclude Include="EnginePch.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hlsli" />

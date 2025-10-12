@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "UI_Panel.h"
 
 CUI_Panel::CUI_Panel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

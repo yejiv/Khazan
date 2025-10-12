@@ -1,9 +1,7 @@
-#include "ClientPch.h"
-#include "Event_Defines.h"
 #include "Level_Stage1.h"
 #include "GameInstance.h"
 #include "Level_Loading.h"
-
+#include "Event_Defines.h"
 #include "Camera_Free.h"
 #include "Dummy.h"
 

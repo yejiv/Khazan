@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "ThreadPool.h"
 
 HRESULT CThreadPool::Initialize(_uint thread_count /*=0*/)

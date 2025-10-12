@@ -22,10 +22,9 @@ Engine.exp
 Engine.exe
 Engine.pdb
 
-
-
-EngineSDK/Debug/Inc/
-EngineSDK/Release/Inc/
+EngineSDK
+EngineSDK/Debug/
+EngineSDK/Release/
 
 *.vcxproj merge=union
 *.vcxproj.filters merge=union
