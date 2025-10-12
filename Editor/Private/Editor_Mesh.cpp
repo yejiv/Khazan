@@ -83,7 +83,7 @@ HRESULT CEditor_Mesh::Initialize_Prototype(MODELTYPE eType, const aiMesh* pAIMes
 	return S_OK;
 }
 
-HRESULT CEditor_Mesh::Initialize(void* pArg)
+HRESULT CEditor_Mesh::Initialize_Clone(void* pArg)
 {
 	return S_OK;
 }
@@ -449,7 +449,7 @@ CComponent* CEditor_Mesh::Clone(void* pArg)
 {
 	CEditor_Mesh* pInstance = new CEditor_Mesh(*this);
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(pInstance->Initialize_Clone(pArg)))
 	{
 		MSG_BOX(TEXT("Failed to Cloned : CEditor_Mesh"));
 		Safe_Release(pInstance);
