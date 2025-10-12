@@ -16,6 +16,17 @@
 #include "Terrain_Grid.h"
 // ===================================
 
+#pragma region UI
+
+#include "Edit_Button.h"
+#include "Edit_Panel.h"
+#include "Edit_ProgressBar.h"
+#include "Edit_TextBox.h"
+
+#pragma endregion 
+
+
+
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice{ pDevice }
 	, m_pContext{ pContext }
@@ -205,7 +216,13 @@ HRESULT CLoader::Loading_For_UI_Level()
 
 	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
 
+
 	lstrcpy(m_szLoadingText, TEXT("게임오브젝트원형를 로딩중입니다."));
+
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_UIObject_Edit_Panel"),
+		CEdit_Panel::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 
