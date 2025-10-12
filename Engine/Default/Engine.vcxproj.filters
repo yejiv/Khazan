@@ -205,12 +205,6 @@
     <Filter Include="01.Utility\03.Component\RigidBody">
       <UniqueIdentifier>{e6d7da03-00c0-4c21-be11-5d581401c62a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\03.Component\Model\Instance">
-      <UniqueIdentifier>{62bb2252-6fc8-45d0-984f-058df548e135}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\03.Component\Model\Mesh\Instance">
-      <UniqueIdentifier>{2ba653db-181c-4135-bb3f-3a615341c579}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\02.GameObject\UIObject\MultiDelegate">
       <UniqueIdentifier>{d87b0407-8b9f-4885-86d4-0de5d9a770a6}</UniqueIdentifier>
     </Filter>
@@ -240,6 +234,15 @@
     </Filter>
     <Filter Include="01.Utility\02.GameObject\UIObject\TextBox">
       <UniqueIdentifier>{6dd9461f-86cd-44cc-81c3-187d10c5db85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Component\VIBuffer\Instance\Mesh">
+      <UniqueIdentifier>{1af5f368-a22c-4b69-b0fc-ebd3ea4bbdc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Component\Model\Model_Instance">
+      <UniqueIdentifier>{62bb2252-6fc8-45d0-984f-058df548e135}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Component\Model\Model_Instance\Mesh">
+      <UniqueIdentifier>{2ba653db-181c-4135-bb3f-3a615341c579}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -438,11 +441,8 @@
     <ClCompile Include="..\Private\Jolt_ContactListener.cpp">
       <Filter>01.Utility\13.Jolt\ContactListener</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Mesh_Instance.cpp">
-      <Filter>01.Utility\03.Component\Model\Mesh\Instance</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Model_Instance.cpp">
-      <Filter>01.Utility\03.Component\Model\Instance</Filter>
+      <Filter>01.Utility\03.Component\Model\Model_Instance</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\MultiDelegate.cpp">
       <Filter>01.Utility\02.GameObject\UIObject\MultiDelegate</Filter>
@@ -473,6 +473,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\UI_TextBox.cpp">
       <Filter>01.Utility\02.GameObject\UIObject\TextBox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Mesh_Instance.cpp">
+      <Filter>01.Utility\03.Component\VIBuffer\Instance\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ModelMesh_Instance.cpp">
+      <Filter>01.Utility\03.Component\Model\Model_Instance\Mesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -692,11 +698,8 @@
     <ClInclude Include="..\Public\Jolt_ContactListener.h">
       <Filter>01.Utility\13.Jolt\ContactListener</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Mesh_Instance.h">
-      <Filter>01.Utility\03.Component\Model\Mesh\Instance</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Model_Instance.h">
-      <Filter>01.Utility\03.Component\Model\Instance</Filter>
+      <Filter>01.Utility\03.Component\Model\Model_Instance</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\MultiDelegate.h">
       <Filter>01.Utility\02.GameObject\UIObject\MultiDelegate</Filter>
@@ -730,6 +733,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\UI_TextBox.h">
       <Filter>01.Utility\02.GameObject\UIObject\TextBox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Mesh_Instance.h">
+      <Filter>01.Utility\03.Component\VIBuffer\Instance\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ModelMesh_Instance.h">
+      <Filter>01.Utility\03.Component\Model\Model_Instance\Mesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
