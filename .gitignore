@@ -31,3 +31,8 @@ EngineSDK/Release/
 *.vcxproj merge=union
 *.vcxproj.filters merge=union
 *.sln merge=union
+Client/Bin/Debug
+Client/Bin/Resources
+Engine/Bin/Debug
+Editor/Default/imgui.ini
+*.dll
