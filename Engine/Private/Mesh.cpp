@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "Mesh.h"
 #include "Bone.h"
 #include "Shader.h"

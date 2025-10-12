@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "RigidBody.h"
 #include "GameInstance.h"
 #include "Transform.h"
@@ -240,10 +239,4 @@ void CRigidBody::Free()
 {
     __super::Free();
 
-    if (m_BodyID.IsInvalid() == false)
-    {
-        m_pBodyInterface->RemoveBody(m_BodyID);
-        m_pBodyInterface->DestroyBody(m_BodyID);
-        m_BodyID = BodyID();
-    }
 }

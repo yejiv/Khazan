@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "Shadow.h"
 
 CShadow::CShadow()
