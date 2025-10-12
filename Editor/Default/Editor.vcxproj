@@ -119,7 +119,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../../EngineSDK/Debug/Lib/</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Engine.lib;DirectXTKd.lib;Joltd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Engine.lib;DirectXTKd.lib;Joltd.lib;assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -141,12 +141,19 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../../EngineSDK/Release/Lib/</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Engine.lib;DirectXTK.lib;Jolt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Engine.lib;DirectXTK.lib;Jolt.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\EditorPch.h" />
+    <ClInclude Include="..\Public\Editor_Animation.h" />
+    <ClInclude Include="..\Public\Editor_Bone.h" />
+    <ClInclude Include="..\Public\Editor_Channel.h" />
     <ClInclude Include="..\Public\Editor_Defines.h" />
+    <ClInclude Include="..\Public\Editor_Mesh.h" />
+    <ClInclude Include="..\Public\Editor_MeshMaterial.h" />
+    <ClInclude Include="..\public\Editor_Model.h" />
+    <ClInclude Include="..\public\JOH_EditorModelTest.h" />
     <ClInclude Include="..\Public\Level_Animation.h" />
     <ClInclude Include="..\Public\Level_Editor.h" />
     <ClInclude Include="..\Public\Level_Effect.h" />
@@ -167,6 +174,13 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\Private\Editor_Animation.cpp" />
+    <ClCompile Include="..\Private\Editor_Bone.cpp" />
+    <ClCompile Include="..\Private\Editor_Channel.cpp" />
+    <ClCompile Include="..\Private\Editor_Mesh.cpp" />
+    <ClCompile Include="..\Private\Editor_MeshMaterial.cpp" />
+    <ClCompile Include="..\private\Editor_Model.cpp" />
+    <ClCompile Include="..\private\JOH_EditorModelTest.cpp" />
     <ClCompile Include="..\Private\Level_Animation.cpp" />
     <ClCompile Include="..\Private\Level_Editor.cpp" />
     <ClCompile Include="..\Private\Level_Effect.cpp" />

@@ -719,6 +719,9 @@
     <ClInclude Include="..\Public\DebugDraw.h">
       <Filter>01.Utility\13.Jolt\DebugDraw</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Engine_Json.h">
+      <Filter>99.Defines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hlsli">
