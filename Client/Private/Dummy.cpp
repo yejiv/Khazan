@@ -1,35 +1,30 @@
 #include "ClientPch.h"
-#include "Monster.h"
+#include "Dummy.h"
 #include "GameInstance.h"
 #include "RigidBody.h"
 #include "ContainerObject.h"
 
-CMonster::CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    : CGameObject{ pDevice, pContext }
+CDummy::CDummy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+    : CPool{ pDevice, pContext }
 {
 
 }
 
-CMonster::CMonster(const CMonster& Prototype)
-    : CGameObject{ Prototype }
+CDummy::CDummy(const CDummy& Prototype)
+    : CPool{ Prototype }
 {
 
 }
 
-HRESULT CMonster::Initialize_Prototype()
+HRESULT CDummy::Initialize_Prototype()
 {
     return S_OK;
 }
 
-HRESULT CMonster::Initialize_Clone(void* pArg)
+HRESULT CDummy::Initialize_Clone(void* pArg)
 {
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
-
-    if (FAILED(Ready_Components()))
-        return E_FAIL;
-
-    m_pModelCom->Set_Animation(0, true);
 
     m_pTransformCom->Set_State(STATE::POSITION,
         XMVectorSet(
@@ -39,15 +34,20 @@ HRESULT CMonster::Initialize_Clone(void* pArg)
             1.f
         ));
 
+    if (FAILED(Ready_Components()))
+        return E_FAIL;
+
+    m_pModelCom->Set_Animation(0, true);
+
     return S_OK;
 }
 
-void CMonster::Priority_Update(_float fTimeDelta)
+void CDummy::Priority_Update(_float fTimeDelta)
 {
     int a = 10;
 }
 
-void CMonster::Update(_float fTimeDelta)
+void CDummy::Update(_float fTimeDelta)
 {
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
@@ -57,19 +57,17 @@ void CMonster::Update(_float fTimeDelta)
     m_pRigidBodyCom->Sync_Update(m_pTransformCom);
 }
 
-void CMonster::Late_Update(_float fTimeDelta)
+void CDummy::Late_Update(_float fTimeDelta)
 {
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this)))
         return;
 
 }
 
-HRESULT CMonster::Render()
+HRESULT CDummy::Render()
 {
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
-
-
 
     _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -93,7 +91,7 @@ HRESULT CMonster::Render()
     return S_OK;
 }
 
-HRESULT CMonster::Ready_Components()
+HRESULT CDummy::Ready_Components()
 {
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
@@ -130,7 +128,7 @@ HRESULT CMonster::Ready_Components()
     return S_OK;
 }
 
-HRESULT CMonster::Bind_ShaderResources()
+HRESULT CDummy::Bind_ShaderResources()
 {
     if (FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix")))
         return E_FAIL;
@@ -145,33 +143,38 @@ HRESULT CMonster::Bind_ShaderResources()
     return S_OK;
 }
 
-CMonster* CMonster::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+void CDummy::Reset()
 {
-    CMonster* pInstance = new CMonster(pDevice, pContext);
+
+}
+
+CDummy* CDummy::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+{
+    CDummy* pInstance = new CDummy(pDevice, pContext);
 
     if (FAILED(pInstance->Initialize_Prototype()))
     {
-        MSG_BOX(TEXT("Failed to Created : CMonster"));
+        MSG_BOX(TEXT("Failed to Created : CDummy"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-CGameObject* CMonster::Clone(void* pArg)
+CGameObject* CDummy::Clone(void* pArg)
 {
-    CMonster* pInstance = new CMonster(*this);
+    CDummy* pInstance = new CDummy(*this);
 
     if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
-        MSG_BOX(TEXT("Failed to Created : CMonster"));
+        MSG_BOX(TEXT("Failed to Created : CDummy"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-void CMonster::Free()
+void CDummy::Free()
 {
     __super::Free();
 

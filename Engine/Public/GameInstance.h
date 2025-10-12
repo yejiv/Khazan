@@ -89,12 +89,6 @@ public:
 	void Set_Transform(D3DTS eTransformState, const _float4x4& Matrix);
 #pragma endregion
 
-#pragma region INPUT_DEVICE
-	_byte	Get_DIKeyState(_ubyte byKeyID);
-	_byte	Get_DIMouseState(MOUSEKEYSTATE eMouse);
-	_long	Get_DIMouseMove(MOUSEMOVESTATE eMouseState);
-#pragma endregion
-
 #pragma region LIGHT_MANAGER
 	const LIGHT_DESC* Get_LightDesc(_uint iIndex) const;
 	HRESULT Add_Light(const LIGHT_DESC& LightDesc);
@@ -161,9 +155,36 @@ public:
 	void Submit(std::function<void()> job);
 #pragma
 
+#pragma region INPUT_MANAGER
+	_bool		Key_Pressing(_ubyte byKeyID, _float fTimeDelta, _float* pPressingTime = nullptr);
+	_bool		Key_Down(_ubyte byKeyID);
+	_bool		Key_Up(_ubyte byKeyID);
+
+	_bool		Mouse_Pressing(MOUSEKEYSTATE eMouse);
+	_bool		Mouse_Down(MOUSEKEYSTATE eMouse);
+	_bool		Mouse_Up(MOUSEKEYSTATE eMouse);
+
+	_long		Mouse_Move(MOUSEMOVESTATE eMouseState);
+#pragma endregion
+
+#pragma region POOL_MANAGER
+	HRESULT Add_PoolObject(_uint iPrototypeLevelIndex, const _wstring strPrototypeTag, const _wstring& strPoolTag, void* pArg = nullptr, _uint iCount = 1);
+	class CPool* Pop_PoolObject(const _wstring& strPoolTag);
+	HRESULT Reset_PoolObject(class CPool* pPoolObject);
+	HRESULT Reset_PoolObject(class CGameObject* pGameObject);
+	void Push_PoolObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CPool* pPoolObject);
+#pragma endregion
+
+#pragma region EVENT_MANAGER
+	_uint Subscribe(_uint iEventType, std::function<void()> fEvent);
+	void UnSubscribeAll(_uint iEventType);
+	void UnSubscribe(_uint iEventType, _uint iID);
+	HRESULT Emit(_uint iEventType);
+	void Event_Clear();
+#pragma endregion
+
 private:
 	class CGraphic_Device*		m_pGraphic_Device = { nullptr };
-	class CInput_Device*		m_pInput_Device = { nullptr };
 	class CLevel_Manager*		m_pLevel_Manager = { nullptr };
 	class CObject_Manager*		m_pObject_Manager = { nullptr };
 	class CPrototype_Manager*	m_pPrototype_Manager = { nullptr };
@@ -178,6 +199,9 @@ private:
 	class CFrustum*				m_pFrustum = { nullptr };
 	class CJolt_Manager*		m_pJolt_Manager = { nullptr };
 	class CThreadPool*			m_pThreadPool = { nullptr };
+	class CInput_Manager*		m_pInput_Manager = { nullptr };
+	class CPool_Manager*		m_pPool_Manager = { nullptr };
+	class CEvent_Manager*		m_pEvent_Manager = { nullptr };
 #ifdef _DEBUG
 	class CImgui_Manager* m_pImgui_Manager = { nullptr };
 #endif
