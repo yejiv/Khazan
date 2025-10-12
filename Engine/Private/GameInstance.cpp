@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "GameInstance.h"
 
 #include "Graphic_Device.h"
@@ -368,6 +367,11 @@ HRESULT CGameInstance::Add_Font(const _wstring& strFontTag, const _tchar* pFontF
 void CGameInstance::DrawText(const _wstring& strFontTag, const _tchar* pText, const _float2& vPosition, _fvector vColor, _float fRadian, const _float2& vOrigin, const _float2& vScale)
 {
 	m_pFont_Manager->DrawText(strFontTag, pText, vPosition, vColor, fRadian, vOrigin, vScale);
+}
+
+_float2 CGameInstance::Compute_TextSize(const _wstring& strFontTag, const _wstring& strText, _float2 vTextSize)
+{
+	return m_pFont_Manager->Compute_TextSize(strFontTag, strText, vTextSize);
 }
 
 #pragma endregion

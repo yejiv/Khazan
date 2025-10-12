@@ -2,13 +2,8 @@
 
 #include "Component.h"
 
-/* 모델이 움직인다 -> 정점이 움직인다 -> 모든 정점에 대한 움직임 정보를 저장하기가 힘들다 */
-/* -> 뼈를 움직이게끔 처리해주면 조헥싿. -> 어떤 타이밍에 어떤 상태를 가지고 어떤 뼈가 움직여야하는지에 대한 정보가 필요하다. */
-/* 앞에서 이야기한 정보들을 애니메이션이라고 부른다. */
-
-/* 1. 뼈 자체의 생성. */
-/* 2. 정점들은 대체 어떤 뼈의 정보를 따라서 갱신되야하는가에 대한 정보가 필요하다. */
-/* 3. 애니메이션정보(뼈들의 시간에 따른 상태값들)를 로드한다. */
+// 모델 인스턴싱용 클래스
+// JSON 배우고 나중에 파일입출력으로 바꾸겠습니다.
 
 NS_BEGIN(Engine)
 
@@ -20,24 +15,26 @@ private:
 	virtual ~CModel_Instance() = default;
 
 public:
-	_uint Get_NumMeshes() const {
-		return m_iNumMeshes;
-	}
-
-	_float4x4* Get_BoneMatrix(const _char* pBoneName);
-
-public:
 	virtual HRESULT Initialize_Prototype(MODELTYPE eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix);
 	virtual HRESULT Initialize_Clone(void* pArg);
 	virtual HRESULT Render(_uint iMeshIndex);
 
 public:
-	void Set_Animation(_uint iIndex, _bool isLoop = false);
+	_uint Get_NumMeshes() const { return m_iNumMeshes; }
+
+	_float4x4* Get_BoneMatrix(const _char* pBoneName);
+
+public:
+	const _uint Get_NumInstances() const;
+
+	void Add_Instance(MESH_INSTANCE_DATA InstanceData);
+	void Fix_Instance(MESH_INSTANCE_DATA InstanceData, _uint iInstanceIndex);
 
 public:
 	HRESULT Bind_Materials(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, aiTextureType eTextureType, _uint iIndex);
 	HRESULT Bind_BoneMatrices(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex);
 	_bool Play_Animation(_float fTimeDelta);
+	void Set_Animation(_uint iIndex, _bool isLoop = false);
 
 private:
 	/* 파일로부터 읽은 모든 정보를 다 저장해주는 구조체. */

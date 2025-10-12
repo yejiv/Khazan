@@ -9,15 +9,21 @@ x64/
 *.exe
 *.fbx
 
+Client.exp
+Client.exe
+Client.pdb
 
-client.exp
+Editor.exp
+Editor.exe
+Editor.pdb
 
-Engine.dll
-Engine.lib
 Engine.exp
+Engine.exe
+Engine.pdb
 
-EngineSDK/Debug/Inc/
-EngineSDK/Release/Inc/
+EngineSDK
+EngineSDK/Debug/
+EngineSDK/Release/
 
 *.vcxproj merge=union
 *.vcxproj.filters merge=union

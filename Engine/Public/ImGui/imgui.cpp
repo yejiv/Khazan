@@ -1,9 +1,3 @@
-#include "EnginePch.h"
-
-#ifdef new
-#undef new
-#endif
-
 // dear imgui, v1.91.0 WIP
 // (main code and documentation)
 

@@ -1,6 +1,5 @@
-#include "EditorPch.h"
 #include "ParticleSystem.h"
-#include "ParticleEmitter.h"
+#include "GameInstance.h"
 
 CParticleSystem::CParticleSystem(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CGameObject { pDevice, pContext }
@@ -19,6 +18,10 @@ HRESULT CParticleSystem::Initialize_Prototype()
 
 HRESULT CParticleSystem::Initialize_Clone(void* pArg)
 {
+    PARTICLE_SYSTEM_DESC* pDesc = static_cast<PARTICLE_SYSTEM_DESC*>(pArg);
+
+    m_strName = pDesc->strName;
+
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
@@ -56,17 +59,34 @@ CParticleEmitter* CParticleSystem::Get_Emitter(_uint iIndex)
     return m_Emitters[iIndex];
 }
 
-HRESULT CParticleSystem::Add_Emitter()
+HRESULT CParticleSystem::Add_Emitter(CParticleEmitter::PARTICLE_EMITTER_DESC Desc)
 {
-    // push_back
+    CGameObject* pGameObject = dynamic_cast<CGameObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::EFFECT),
+        TEXT("Prototype_GameObject_ParticleEmitter"), &Desc));
+    if (nullptr == pGameObject)
+        return E_FAIL;
+
+    CParticleEmitter* pEmitter = dynamic_cast<CParticleEmitter*>(pGameObject);
+    if (nullptr == pEmitter)
+        return E_FAIL;
+
+    m_Emitters.push_back(pEmitter);
 
     m_iNumEmitters = static_cast<_uint>(m_Emitters.size());
 
     return S_OK;
 }
 
-HRESULT CParticleSystem::Remove_Emitter()
+HRESULT CParticleSystem::Remove_Emitter(_uint iIndex)
 {
+    if (iIndex < 0 || iIndex >= m_iNumEmitters)
+        return E_FAIL;
+
+    Safe_Release(m_Emitters[iIndex]);
+    m_Emitters.erase(m_Emitters.begin() + iIndex);
+
+    m_iNumEmitters = static_cast<_uint>(m_Emitters.size());
+
     return S_OK;
 }
 

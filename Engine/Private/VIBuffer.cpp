@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "VIBuffer.h"
 
 CVIBuffer::CVIBuffer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -31,7 +30,7 @@ HRESULT CVIBuffer::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CVIBuffer::Initialize(void* pArg)
+HRESULT CVIBuffer::Initialize_Clone(void* pArg)
 {
 
 	return S_OK;
