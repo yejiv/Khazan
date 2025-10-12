@@ -2,6 +2,9 @@
 
 #include "VIBuffer_Instance.h"
 
+// 메쉬 인스턴싱용 클래스
+// JSON 배우고 나중에 파일입출력으로 바꾸겠습니다.
+
 NS_BEGIN(Engine)
 
 class CMesh_Instance final : public CVIBuffer_Instance
@@ -19,7 +22,7 @@ private:
 
 public:
 	virtual HRESULT Initialize_Prototype(MODELTYPE eType, const aiMesh* pAIMesh, const vector<class CBone*>& Bones, _fmatrix PreTransformMatrix);
-	virtual HRESULT Initialize(void* pArg) override;
+	virtual HRESULT Initialize_Clone(void* pArg) override;
 
 public:
 	HRESULT Bind_BoneMatrices(class CShader* pShader, const _char* pConstantName, const vector<class CBone*>& Bones);
@@ -28,8 +31,8 @@ public:
 public:
 	const _uint Get_NumInstances() const { return m_iNumInstance; }
 
-	void Add_Instance(_matrix SettingMatrix);
-	void Fix_Instance(_matrix FixMatrix, _uint iInstanceIndex);
+	void Add_Instance(MESH_INSTANCE_DATA  InstanceData);
+	void Fix_Instance(MESH_INSTANCE_DATA  InstanceData, _uint iInstanceIndex);
 
 private:
 	_char m_szName[MAX_PATH] = {};

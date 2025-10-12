@@ -12,6 +12,7 @@
 #include "Texture.h"
 #include "Shader.h"
 #include "Model.h"
+#include "Model_Instance.h"
 #include "RigidBody.h"
 #include "Character.h"
 

@@ -1,4 +1,3 @@
-#include "ClientPch.h"
 #include "Monster.h"
 #include "GameInstance.h"
 #include "RigidBody.h"
@@ -177,4 +176,5 @@ void CMonster::Free()
 
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
+    Safe_Release(m_pRigidBodyCom);
 }

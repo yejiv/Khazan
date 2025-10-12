@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "VIBuffer_Cube.h"
 
 CVIBuffer_Cube::CVIBuffer_Cube(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -131,7 +130,7 @@ CComponent* CVIBuffer_Cube::Clone(void* pArg)
 {
 	CVIBuffer_Cube* pInstance = new CVIBuffer_Cube(*this);
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(pInstance->Initialize_Clone(pArg)))
 	{
 		MSG_BOX(TEXT("Failed to Cloned : CVIBuffer_Cube"));
 		Safe_Release(pInstance);

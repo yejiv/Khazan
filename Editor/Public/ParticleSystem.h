@@ -1,11 +1,18 @@
 #pragma once
 #include "GameObject.h"
 #include "Editor_Defines.h"
+#include "ParticleEmitter.h"
 
 NS_BEGIN(Editor)
 
 class CParticleSystem final : public CGameObject
 {
+public:
+	typedef struct tagParticleSystemDesc
+	{
+		_wstring strName{};
+	}PARTICLE_SYSTEM_DESC;
+
 private:
 	CParticleSystem(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CParticleSystem(const CParticleSystem& Prototype);
@@ -22,15 +29,15 @@ public:
 public:
 	_wstring							Get_Name() { return m_strName; }
 	_uint								Get_NumEmitters() { return m_iNumEmitters; }
-	class CParticleEmitter*				Get_Emitter(_uint iIndex);
+	CParticleEmitter*					Get_Emitter(_uint iIndex);
 
 public:
-	HRESULT								Add_Emitter();
-	HRESULT								Remove_Emitter();
+	HRESULT								Add_Emitter(CParticleEmitter::PARTICLE_EMITTER_DESC Desc);
+	HRESULT								Remove_Emitter(_uint iIndex);
 	void								Recreate_Emitter();
 
 private:
-	vector<class CParticleEmitter*>		m_Emitters;
+	vector<CParticleEmitter*>			m_Emitters;
 	_uint								m_iNumEmitters = {};
 
 	_wstring							m_strName = {};

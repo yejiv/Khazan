@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "VIBuffer_Rect.h"
 
 CVIBuffer_Rect::CVIBuffer_Rect(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -102,7 +101,7 @@ CComponent* CVIBuffer_Rect::Clone(void* pArg)
 {
 	CVIBuffer_Rect* pInstance = new CVIBuffer_Rect(*this);
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(pInstance->Initialize_Clone(pArg)))
 	{
 		MSG_BOX(TEXT("Failed to Cloned : CVIBuffer_Rect"));
 		Safe_Release(pInstance);
