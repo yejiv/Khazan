@@ -10,11 +10,19 @@ x64/
 *.fbx
 
 
-client.exp
+Client.exp
+Client.exe
+Client.pdb
 
-Engine.dll
-Engine.lib
+Editor.exp
+Editor.exe
+Editor.pdb
+
 Engine.exp
+Engine.exe
+Engine.pdb
+
+
 
 EngineSDK/Debug/Inc/
 EngineSDK/Release/Inc/
