@@ -103,6 +103,9 @@
     <Filter Include="02.GameObject\Effect\Terrain">
       <UniqueIdentifier>{81b63c04-fa83-4a3a-96f5-b9f89191f19d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Animation\98.Temp Camera">
+      <UniqueIdentifier>{6219a60c-d70b-437e-ab90-77b6097d02bb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -201,6 +204,9 @@
     <ClInclude Include="..\public\Terrain_Grid.h">
       <Filter>02.GameObject\Effect\Terrain</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Editor_TempCamera.h">
+      <Filter>02.GameObject\Animation\98.Temp Camera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -296,6 +302,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Terrain_Grid.cpp">
       <Filter>02.GameObject\Effect\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Editor_TempCamera.cpp">
+      <Filter>02.GameObject\Animation\98.Temp Camera</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
