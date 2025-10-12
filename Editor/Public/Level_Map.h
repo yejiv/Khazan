@@ -31,13 +31,16 @@ private:
 #pragma region MAIN WINDOW
 	_bool m_isMainWindow = { true };
 
+	_bool m_isJsonWindow = { false };
+
 	_bool m_isPropWindow[ENUM_CLASS(PROP_SPECIES::END)] = { false, false, false,false };
 
 	_bool m_isLightSettingWindow = { false };
 #pragma endregion
 
-
-	_char m_szJsonPath[MAX_PATH] = {};
+	JSON m_Json = {};
+	_char m_szJsonFile[MAX_PATH] = {};
+	_bool m_isJsonOpened = { false };
 
 	vector<string> m_StaticModels;
 	_int m_iStatIndex = {};
@@ -47,6 +50,10 @@ private:
 
 private:
 	HRESULT Ready_DefaultImGui_For_MapTool();
+
+	HRESULT Ready_Prop_Edit_Window();
+
+	HRESULT Ready_Json_Edit_Window();
 #pragma endregion
 
 public:

@@ -21,7 +21,7 @@ HRESULT CLevel_Map::Initialize()
 
 	CHECK_FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround")), E_FAIL);
 
-	CHECK_FAILED(Ready_Layer_Prop_Static(TEXT("Layer_Prop_Static")), E_FAIL);
+	// CHECK_FAILED(Ready_Layer_Prop_Static(TEXT("Layer_Prop_Static")), E_FAIL);
 
 	CHECK_FAILED(Ready_DefaultImGui_For_MapTool(), E_FAIL);
 
@@ -133,27 +133,32 @@ HRESULT CLevel_Map::Ready_DefaultImGui_For_MapTool()
 		{
 			m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)];
 		} SAMELINE;
-		if (ImGui::Button("INTER"))
+		if (ImGui::Button("INTERACT"))
 		{
 			m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)];
 		} SAMELINE;
-		if (ImGui::Button("DEST"))
+		if (ImGui::Button("DESTRUCT"))
 		{
 			m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)];
-		} SAMELINE;
-
-		
+		} SEPARATOR;		
 
 		ImGui::End();
 		});
-
 #pragma endregion
 
-#pragma region PROP_STATIC EDIT WINDOW
+	Ready_Json_Edit_Window();
 
+	Ready_Prop_Edit_Window();
+
+	return S_OK;
+}
+
+HRESULT CLevel_Map::Ready_Prop_Edit_Window()
+{
+#pragma region PROP_STATIC EDIT WINDOW
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		ImGui::Begin("PROP STATIC WINDOW", &m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)], ImGuiChildFlags_AlwaysAutoResize);
-		
+
 		if (ImGui::BeginListBox("##prop_static_list"))
 		{
 			for (_uint i = 0; i < m_StaticModels.size(); ++i)
@@ -163,8 +168,8 @@ HRESULT CLevel_Map::Ready_DefaultImGui_For_MapTool()
 				{
 					m_iStatIndex = i;
 
-					m_pProp_Static = dynamic_cast<CProp_Static*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_Prop_Static"), m_iStatIndex));
-					CHECK_NULLPTR_MSG(m_pProp_Static, TEXT("pProp_Static == nullptr"), );
+					//m_pProp_Static = dynamic_cast<CProp_Static*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_Prop_Static"), m_iStatIndex));
+					//CHECK_NULLPTR_MSG(m_pProp_Static, TEXT("pProp_Static == nullptr"), );
 				}
 			}
 
@@ -174,9 +179,9 @@ HRESULT CLevel_Map::Ready_DefaultImGui_For_MapTool()
 		ImGui::Text("CURRENT INDEX : %d", m_iStatIndex);
 
 		//ImGui::Text("PATH : "); ImGui::SameLine();
-		//ImGui::InputText("##jsoninputtext", m_szJsonPath, IM_ARRAYSIZE(m_szJsonPath));
+		//ImGui::InputText("##jsoninputtext", m_szJsonFile, IM_ARRAYSIZE(m_szJsonFile));
 
-		//ImGui::Text("JSON PATH : %s", m_szJsonPath);
+		//ImGui::Text("JSON PATH : %s", m_szJsonFile);
 
 		ImGui::Text("================##0");
 
@@ -198,43 +203,115 @@ HRESULT CLevel_Map::Ready_DefaultImGui_For_MapTool()
 
 		ImGui::End();
 		});
-
 #pragma endregion
 
 #pragma region PROP_ANIMATED EDIT WINDOW
-
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
-		ImGui::Begin("Map", &m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)], ImGuiChildFlags_AlwaysAutoResize);
+		ImGui::Begin("PROP ANIMATED WINDOW", &m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)], ImGuiChildFlags_AlwaysAutoResize);
 
-		ImGui::Text("== PROP_ANIMATED_LIST");
+		//ImGui::Text("== PROP_ANIMATED_LIST");
 
 		ImGui::End();
 		});
-
 #pragma endregion
 
 #pragma region PROP_INTERACTIVE EDIT WINDOW
-
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
-		ImGui::Begin("Map", &m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)], ImGuiChildFlags_AlwaysAutoResize);
+		ImGui::Begin("PROP INTERACTIVE WINDOW", &m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)], ImGuiChildFlags_AlwaysAutoResize);
 
-		ImGui::Text("== PROP_INTERACTIVE_LIST");
+		//ImGui::Text("== PROP_INTERACTIVE_LIST");
 
 		ImGui::End();
 		});
-
 #pragma endregion
 
 #pragma region PROP_DESTRUCTIBLE EDIT WINDOW
-
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
-		ImGui::Begin("Map", &m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)], ImGuiChildFlags_AlwaysAutoResize);
+		ImGui::Begin("PROP DESTRUCTIBLE WINDOW", &m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)], ImGuiChildFlags_AlwaysAutoResize);
 
-		ImGui::Text("== PROP_DESTRUCTIBLE_LIST");
+		//ImGui::Text("== PROP_DESTRUCTIBLE_LIST");
 
 		ImGui::End();
 		});
+#pragma endregion
 
+	return S_OK;
+}
+
+HRESULT CLevel_Map::Ready_Json_Edit_Window()
+{
+#pragma region JSON CONVERT FOR ME
+	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
+		ImGui::Begin("JSON", &m_isJsonWindow, ImGuiChildFlags_AlwaysAutoResize);
+
+		ITEMWIDTH(300.f);
+		ImGui::InputText("JSON FILE NAME", m_szJsonFile, IM_ARRAYSIZE(m_szJsonFile));
+
+		SAMELINE;
+		if (ImGui::Button("LOAD##json", ImVec2(100, 0)))
+		{
+			string strPath = "../../Client/Bin/Resources/Models/Prop/Json/";
+
+			strPath += m_szJsonFile;
+			strPath += ".json";
+
+			ifstream ifs(strPath);
+			CHECK_FALSE_MSG(ifs.is_open(), TEXT("JSON ¸ø¿­À½"), E_FAIL);
+
+			ifs >> m_Json;
+			ifs.close();
+
+			m_isJsonOpened = true;
+		} SEPARATOR;
+
+		ImGui::End();
+		});
+#pragma endregion
+
+#pragma region JSON OPENED	
+	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
+		ImGui::Begin("MAIN WINDOW", &m_isJsonOpened, ImGuiChildFlags_AlwaysAutoResize);
+
+		ImGui::Text("%s", m_szJsonFile);
+
+		if (ImGui::Button("SET MAPOBJECT"))
+		{
+#pragma region TEST CODE
+
+			for (auto& Component : m_Json)
+			{
+				if (Component["Type"] == "FoliageInstancedStaticMeshComponent")
+				{
+					string strMeshName = Component["Properties"]["StaticMesh"]["ObjectName"];
+
+					size_t start = strMeshName.find('\'');
+					size_t end = strMeshName.rfind('\'');
+
+					if (start != std::string::npos && end != std::string::npos && end > start)
+						strMeshName = strMeshName.substr(start + 1, end - start - 1);
+
+					m_StaticModels.push_back(strMeshName);
+
+					auto& instances = Component["PerInstanceSMData"];
+					for (auto& inst : instances)
+					{
+						auto pos = inst["TransformData"]["Translation"];
+						auto scale = inst["TransformData"]["Scale3D"];
+						auto rot = inst["TransformData"]["Rotation"];
+						ImGui::Text("Pos: %.2f %.2f %.2f", (float)pos["X"], (float)pos["Y"], (float)pos["Z"]);
+						ImGui::Text("Scale: %.2f", (float)scale["X"]);
+						ImGui::Text("Rot(Quat): %.3f %.3f %.3f %.3f", (float)rot["X"], (float)rot["Y"], (float)rot["Z"], (float)rot["W"]);
+						ImGui::Separator();
+					}
+				}
+			}
+
+#pragma endregion
+
+		}
+
+		ImGui::End();
+		});
 #pragma endregion
 
 	return S_OK;

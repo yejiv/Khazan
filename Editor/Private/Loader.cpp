@@ -16,6 +16,11 @@
 #include "Terrain_Grid.h"
 // ===================================
 
+#pragma region MapEditor
+#include "MapEditor_Header.h"
+#pragma endregion
+
+
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice{ pDevice }
 	, m_pContext{ pContext }
@@ -105,11 +110,32 @@ HRESULT CLoader::Loading_For_Map_Level()
 {
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
 
+#pragma region 텍스쳐 원형 로딩
+	/*
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"),
+		CShader::Create(m_pDevice, m_pContext)), E_FAIL);
+	*/
+#pragma endregion
+
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
 
 	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
 
+#pragma region 쉐이더 원형 로딩
+	/*
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"),
+		CShader::Create(m_pDevice, m_pContext)), E_FAIL);
+	*/
+#pragma endregion
+
 	lstrcpy(m_szLoadingText, TEXT("게임오브젝트원형를 로딩중입니다."));
+
+#pragma region 게임오브젝트 원형 로딩
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"),
+		CProp_Static::Create(m_pDevice, m_pContext)), E_FAIL);
+
+#pragma endregion
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 
