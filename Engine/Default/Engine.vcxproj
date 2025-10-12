@@ -233,6 +233,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\UI_Button.cpp" />
     <ClCompile Include="..\Private\UI_Panel.cpp" />
     <ClCompile Include="..\Private\UI_ProgressBar.cpp" />
+    <ClCompile Include="..\Private\UI_TextBox.cpp" />
     <ClCompile Include="..\private\VIBuffer.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Cell.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Cube.cpp" />
@@ -330,6 +331,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\UI_Button.h" />
     <ClInclude Include="..\Public\UI_Panel.h" />
     <ClInclude Include="..\Public\UI_ProgressBar.h" />
+    <ClInclude Include="..\Public\UI_TextBox.h" />
     <ClInclude Include="..\public\VIBuffer.h" />
     <ClInclude Include="..\Public\VIBuffer_Cell.h" />
     <ClInclude Include="..\Public\VIBuffer_Cube.h" />

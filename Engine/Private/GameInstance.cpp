@@ -369,6 +369,11 @@ void CGameInstance::DrawText(const _wstring& strFontTag, const _tchar* pText, co
 	m_pFont_Manager->DrawText(strFontTag, pText, vPosition, vColor, fRadian, vOrigin, vScale);
 }
 
+_float2 CGameInstance::Compute_TextSize(const _wstring& strFontTag, const _wstring& strText, _float2 vTextSize)
+{
+	return m_pFont_Manager->Compute_TextSize(strFontTag, strText, vTextSize);
+}
+
 #pragma endregion
 
 #pragma region TARGET_MANAGER
