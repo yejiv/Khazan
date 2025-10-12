@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "Imgui_Manager.h"
 
 extern LRESULT WINAPI ImGui_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);

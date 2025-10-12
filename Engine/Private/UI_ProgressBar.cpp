@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "UI_ProgressBar.h"
 
 CUI_ProgressBar::CUI_ProgressBar(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
