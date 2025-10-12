@@ -56,6 +56,11 @@ CEditor_Bone* CEditor_Bone::Create(const aiNode* pAINode, _int iParentBoneIndex)
 	return pInstance;
 }
 
+CEditor_Bone* CEditor_Bone::Clone()
+{
+	return new CEditor_Bone(*this);
+}
+
 void CEditor_Bone::Free()
 {
 	__super::Free();
