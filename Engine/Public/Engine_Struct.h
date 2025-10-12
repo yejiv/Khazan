@@ -47,11 +47,11 @@ namespace Engine
 		float			fFovy, fNear, fFar;
 	}SHADOW_LIGHT_DESC;
 
-	typedef struct tagMeshInstanceData		// 메쉬 인스턴스 수정용 데이터
+	typedef struct tagMeshInstanceData		// 메쉬 인스턴스 수정용 데이터 | 구조체 데이터 : MESH_INSTANCING
 	{
-		XMMATRIX InstanceMatrix{};
+		XMMATRIX InstanceMatrix{};			// 인스턴스용 행렬
 
-		unsigned int InstanceID{};
+		unsigned int InstanceID{};			// 인스턴스 ID
 
 	}MESH_INSTANCE_DATA;
 
