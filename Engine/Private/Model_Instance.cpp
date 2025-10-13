@@ -1,6 +1,6 @@
 #include "Model_Instance.h"
 
-#include "Mesh_Instance.h"
+#include "ModelMesh_Instance.h"
 #include "Bone.h"
 #include "MeshMaterial.h"
 #include "Animation.h"
@@ -173,7 +173,7 @@ HRESULT CModel_Instance::Ready_Meshes()
 
     for (size_t i = 0; i < m_iNumMeshes; i++)
     {
-        CMesh_Instance* pMesh = CMesh_Instance::Create(m_pDevice, m_pContext, m_eModelType, m_pAIScene->mMeshes[i], m_Bones, XMLoadFloat4x4(&m_PreTransformMatrix));
+        CModelMesh_Instance* pMesh = CModelMesh_Instance::Create(m_pDevice, m_pContext, m_eModelType, m_pAIScene->mMeshes[i], m_Bones, XMLoadFloat4x4(&m_PreTransformMatrix));
         if (nullptr == pMesh)
             return E_FAIL;
 
