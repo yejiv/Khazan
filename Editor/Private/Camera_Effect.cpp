@@ -49,7 +49,7 @@ void CCamera_Effect::Priority_Update(_float fTimeDelta)
 
     _int iMouseMove = {};
 
-    if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
+    if (m_pGameInstance->Mouse_Pressing(MOUSEKEYSTATE::RB))
     {
         if (iMouseMove = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::X))
             m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * iMouseMove * m_fMouseSensor);

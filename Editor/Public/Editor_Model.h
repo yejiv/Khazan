@@ -18,7 +18,7 @@ private:
 
 public:
 	virtual HRESULT Initialize_Prototype(MODELTYPE eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix);
-	virtual HRESULT Initialize(void* pArg);
+	virtual HRESULT Initialize_Clone(void* pArg);
 	virtual HRESULT Render(_uint iMeshIndex);
 
 public:
@@ -74,6 +74,9 @@ private:
 	_bool			Export_AnimationJson(const string& strFilePath, const string& strFilePath2);
 	_bool			Export_MaterialJson(const string& strFilePath);
 	void			Export_Binary(const string& strFilePath);
+
+	string			PostProcessJSON(const string& jsonStr);
+	string			CompressArray(const string& arrayStr);
 
 public:
 	static  CEditor_Model* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, MODELTYPE eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix);

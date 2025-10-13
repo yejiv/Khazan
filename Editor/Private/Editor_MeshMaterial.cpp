@@ -110,10 +110,11 @@ HRESULT CEditor_MeshMaterial::Initialize(const _char* pModelFilePath, const aiMa
 	return S_OK;
 }
 
-HRESULT CEditor_MeshMaterial::Bind_Resources(CShader* pShader, const _char* pConstantName, _uint iTextureIndex, _uint iTextureType)
+HRESULT CEditor_MeshMaterial::Bind_Resources(CShader* pShader, const _char* pConstantName, _uint iTextureType, _uint iTextureIndex)
 {
-	if (iTextureType >= AI_TEXTURE_TYPE_MAX && iTextureIndex >= m_SRVs[iTextureType].size())
+	if (iTextureType >= AI_TEXTURE_TYPE_MAX || iTextureIndex >= m_SRVs[iTextureType].size())
 		return E_FAIL;
+
 
 	return 	pShader->Bind_SRV(pConstantName, m_SRVs[iTextureType][iTextureIndex]);
 }
