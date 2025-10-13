@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "Prototype_Manager.h"
 
@@ -12,7 +12,7 @@
 #include "imgui_impl_dx11.h"
 
 #ifdef new
-#pragma pop_macro("new") // DBG_NEW º¹¿ø
+#pragma pop_macro("new") // DBG_NEW ë³µì›
 #endif
 
 
