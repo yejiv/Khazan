@@ -32,6 +32,7 @@ private:
 
 public:
 	static CEditor_Bone* Create(const aiNode* pAINode, _int iParentBoneIndex);
+	CEditor_Bone* Clone();
 	virtual void Free() override;
 };
 

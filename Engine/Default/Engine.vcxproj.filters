@@ -190,9 +190,6 @@
     <Filter Include="01.Utility\14.ThreadPool">
       <UniqueIdentifier>{42f075f1-3ac7-4b59-a22c-013712a6a958}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\03.Component\Character">
-      <UniqueIdentifier>{abf61f2f-7a63-4c3d-86c1-d7cd132824d0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\13.Jolt\DebugRenderer">
       <UniqueIdentifier>{fb1b9529-9c53-477e-a6e8-ebb13186d288}</UniqueIdentifier>
     </Filter>
@@ -234,6 +231,9 @@
     </Filter>
     <Filter Include="01.Utility\02.GameObject\UIObject\TextBox">
       <UniqueIdentifier>{6dd9461f-86cd-44cc-81c3-187d10c5db85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Component\CharacterVirtual">
+      <UniqueIdentifier>{09e723ca-0ab0-4b34-bd76-99a5fca6d80b}</UniqueIdentifier>
     </Filter>
     <Filter Include="01.Utility\03.Component\VIBuffer\Instance\Mesh">
       <UniqueIdentifier>{1af5f368-a22c-4b69-b0fc-ebd3ea4bbdc8}</UniqueIdentifier>
@@ -429,9 +429,6 @@
     <ClCompile Include="..\Private\RigidBody.cpp">
       <Filter>01.Utility\03.Component\RigidBody</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Character.cpp">
-      <Filter>01.Utility\03.Component\Character</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Jolt_DebugRenderer.cpp">
       <Filter>01.Utility\13.Jolt\DebugRenderer</Filter>
     </ClCompile>
@@ -473,6 +470,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\UI_TextBox.cpp">
       <Filter>01.Utility\02.GameObject\UIObject\TextBox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CharacterVirtual.cpp">
+      <Filter>01.Utility\03.Component\CharacterVirtual</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Mesh_Instance.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Mesh</Filter>
@@ -686,9 +686,6 @@
     <ClInclude Include="..\Public\RigidBody.h">
       <Filter>01.Utility\03.Component\RigidBody</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Character.h">
-      <Filter>01.Utility\03.Component\Character</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Jolt_DebugRenderer.h">
       <Filter>01.Utility\13.Jolt\DebugRenderer</Filter>
     </ClInclude>
@@ -733,6 +730,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\UI_TextBox.h">
       <Filter>01.Utility\02.GameObject\UIObject\TextBox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CharacterVirtual.h">
+      <Filter>01.Utility\03.Component\CharacterVirtual</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Mesh_Instance.h">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Mesh</Filter>

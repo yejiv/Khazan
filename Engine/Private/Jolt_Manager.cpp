@@ -74,6 +74,13 @@ Body* CJolt_Manager::CreateAndAdd_Body(const BodyCreationSettings& BodySetting, 
     return body;
 }
 
+CharacterVirtual* CJolt_Manager::CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData)
+{
+    CharacterVirtual* pCharVir = new CharacterVirtual(inSettings, inPosition, inRotation, m_pPhysics);
+
+    return pCharVir;
+}
+
 void CJolt_Manager::Set_PhysicsSystem()
 {
     // PhysicsSystem √ ±‚»≠

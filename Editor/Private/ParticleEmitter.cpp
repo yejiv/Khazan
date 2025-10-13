@@ -58,7 +58,7 @@ HRESULT CParticleEmitter::Render()
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
-    m_pShaderCom->Begin(0);
+    m_pShaderCom->Begin(1);
 
     if (nullptr != m_pVIBufferCom)
     {
@@ -73,6 +73,8 @@ HRESULT CParticleEmitter::Recreate_Particle(CVIBuffer_Point_Instance::POINT_INST
 {
     if (nullptr != m_pVIBufferCom)
         Safe_Release(m_pVIBufferCom);
+
+    m_ParticleInfo = PointDesc;
 
     m_pVIBufferCom = CVIBuffer_Point_Instance::Create(m_pDevice, m_pContext, &PointDesc);
     if (nullptr == m_pVIBufferCom)
@@ -115,6 +117,9 @@ HRESULT CParticleEmitter::Bind_ShaderResources()
         return E_FAIL;
 
     if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vDiffuseColor", &m_vDiffuseColor, sizeof(_float4))))
         return E_FAIL;
 
     if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DiffuseTexture", 0)))

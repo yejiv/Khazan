@@ -6,7 +6,7 @@ HRESULT CThreadPool::Initialize(_uint thread_count /*=0*/)
 
     if (thread_count == 0) {
         _uint hc = static_cast<_uint>(thread::hardware_concurrency());
-        thread_count = (hc == 0) ? 1u : hc;
+        thread_count = (hc == 0) ? 4 : hc;
     }
 
     try {
@@ -37,7 +37,7 @@ void CThreadPool::WorkerLoop()
             task = move(m_Tasks.front());
             m_Tasks.pop();
         }
-        task(); // 예외는 각 packaged_task 내부에서 future로 전달됨
+        task();
     }
 }
 
@@ -113,13 +113,16 @@ void CThreadPool::StopNow()
     m_Workers.clear();
 }
 
-CThreadPool* CThreadPool::Create(_uint thread_count /*=0*/)
+CThreadPool* CThreadPool::Create(_uint thread_count)
 {
     CThreadPool* pInstance = new CThreadPool();
-    if (FAILED(pInstance->Initialize(thread_count))) {
-        pInstance->Free();
-        return nullptr;
+
+    if (FAILED(pInstance->Initialize(thread_count)))
+    {
+        MSG_BOX(TEXT("Failed to Created : CThreadPool"));
+        Safe_Release(pInstance);
     }
+
     return pInstance;
 }
 
