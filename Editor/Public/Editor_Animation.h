@@ -29,6 +29,7 @@ private:
 
 public:
 	static	CEditor_Animation* Create(const aiAnimation* pAIAnimation, const vector<class CEditor_Bone*>& Bones);
+	CEditor_Animation* Clone();
 	virtual void Free();
 };
 
