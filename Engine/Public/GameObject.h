@@ -57,6 +57,7 @@ protected:
 	/*자식의 멤버변수에도 저장한다. */
 	HRESULT Add_Component(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, 
 		const _wstring& strComponentTag, CComponent** ppOut, void* pArg = nullptr);
+	HRESULT Remove_Component(const _wstring& strComponentTag, CComponent* OwnerComponent);
 
 public:	
 	virtual CGameObject* Clone(void* pArg) = 0;

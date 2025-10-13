@@ -87,6 +87,22 @@ HRESULT CGameObject::Add_Component(_uint iPrototypeLevelIndex, const _wstring& s
 	return S_OK;
 }
 
+HRESULT CGameObject::Remove_Component(const _wstring& strComponentTag, CComponent* OwnerComponent)
+{
+	CComponent* pComponent = Get_Component(strComponentTag);
+
+	if (nullptr == pComponent)
+		return E_FAIL;
+
+	Safe_Release(pComponent);
+
+	m_Components.erase(strComponentTag);
+
+	Safe_Release(OwnerComponent);
+
+	return S_OK;
+}
+
 void CGameObject::Free()
 {
 	__super::Free();

@@ -17,7 +17,7 @@
 
 NS_BEGIN(Engine)
 
-class ENGINE_DLL CCharacterContactListener final : public JPH::CharacterContactListener
+class ENGINE_DLL CCharacterContactListener final : public CharacterContactListener
 {
 public:
     typedef struct Config
