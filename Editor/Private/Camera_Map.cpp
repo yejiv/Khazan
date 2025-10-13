@@ -55,7 +55,7 @@ void CCamera_Map::Input(_float fTimeDelta)
     _float fSpeed = fTimeDelta;
 
     if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta))
-        fSpeed *= 10.f;
+        fSpeed *= 20.f;
 
     if (m_pGameInstance->Key_Pressing(DIK_W, fTimeDelta))   m_pTransformCom->Go_Straight(fSpeed);
     if (m_pGameInstance->Key_Pressing(DIK_S, fTimeDelta))   m_pTransformCom->Go_Backward(fSpeed);

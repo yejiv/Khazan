@@ -14,7 +14,7 @@ CMesh_Instance::CMesh_Instance(const CMesh_Instance& Prototype)
 {
 }
 
-HRESULT CMesh_Instance::Initialize_Prototype(const aiMesh* pAIMesh, const MESH_INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix)
+HRESULT CMesh_Instance::Initialize_Prototype(const aiMesh* pAIMesh, const INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix)
 {
 	const MESH_INSTANCE_DESC* pMeshDesc = static_cast<const MESH_INSTANCE_DESC*>(pDesc);
 
@@ -285,7 +285,7 @@ HRESULT CMesh_Instance::Ready_Indices_For_4Byte(const aiMesh* pAIMesh)
 	return S_OK;
 }
 
-CMesh_Instance* CMesh_Instance::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const aiMesh* pAIMesh, const MESH_INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix)
+CMesh_Instance* CMesh_Instance::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const aiMesh* pAIMesh, const INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix)
 {
 	CMesh_Instance* pInstance = new CMesh_Instance(pDevice, pContext);
 

@@ -464,15 +464,15 @@ _bool CGameInstance::isIn_Frustum_LocalSpace(_fvector vLocalPos, _float fRange)
 
 #pragma endregion
 
-#ifdef _DEBUG
 #pragma region IMGUI_MANAGER
 void CGameInstance::AddWidget(const _wstring Menu, const function<void()>& widget)
 {
+#ifdef _DEBUG
 	m_pImgui_Manager->AddWidget(Menu, widget);
+#endif
 }
 
 #pragma endregion
-#endif
 
 #pragma region JOLT_MANAGER
 void CGameInstance::Set_PhysicsSystem()
