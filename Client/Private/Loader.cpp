@@ -11,7 +11,7 @@
 #include "Monster.h"
 #include "Dummy.h"
 
-//#include "JOH_Test1.h"
+#include "JOH_Test1.h"
 
 //static mutex g_GpuGate;
 
@@ -190,19 +190,15 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 
 	//lock_guard<mutex> gpu_lock(g_GpuGate);
 
-	_matrix		PreTransformMatrix = XMMatrixIdentity();
-
-	/* Prototype_Component_Model_Fiona */
-	PreTransformMatrix = XMMatrixRotationY(XMConvertToRadians(180.0f));
+	///* Prototype_Component_Model_Fiona */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_Fiona"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Data/Fiona/Fiona.dat"))))
 		return E_FAIL;
 
 	/* Prototype_Component_Model_JOH_TestModel */
-	//PreTransformMatrix = XMMatrixRotationY(XMConvertToRadians(180.0f));
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_JOH_TestModel"),
-	//	CModel::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, "../Bin/Resources/Models/Test/JOH/Test1/Test.fbx", PreTransformMatrix))))
-	//	return E_FAIL;
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_JOH_TestModel"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Data/Test/Test.dat"))))
+		return E_FAIL;
 
 
 	return S_OK;
@@ -259,9 +255,9 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 		return E_FAIL;
 
 	/* Prototype_GameObject_JOH_Test1 */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_JOH_Test1"),
-	//	CJOH_Test1::Create(m_pDevice, m_pContext))))
-	//	return E_FAIL;
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_JOH_Test1"),
+		CJOH_Test1::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 	return S_OK;
 }

@@ -26,10 +26,10 @@ HRESULT CJOH_Test1::Initialize(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-  //  m_pModelCom->Set_Animation(3, true);
+    m_pModelCom->Set_Animation(3, true);
 
    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-    m_pTransformCom->Scale(_float3(10.f, 10.f, 10.f));
+   m_pTransformCom->Scale(_float3(0.01f, 0.01f, 0.01f));
 
     return S_OK;
 }
@@ -41,12 +41,23 @@ void CJOH_Test1::Priority_Update(_float fTimeDelta)
 
 void CJOH_Test1::Update(_float fTimeDelta)
 {
+    if (true == m_pModelCom->Play_Animation(fTimeDelta))
+        int a = 10;
 
+    if (m_pGameInstance->Key_Down(DIK_1))
+    {
+        m_pModelCom->Set_Animation(++m_iCurrentAnimIndex, true);
+    }
+    if (m_pGameInstance->Key_Down(DIK_2))
+    {
+        m_iCurrentAnimIndex = 2;
+        m_pModelCom->Set_Animation(m_iCurrentAnimIndex, true);
+    }
 }
 
 void CJOH_Test1::Late_Update(_float fTimeDelta)
 {
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this)))
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONLIGHT, this)))
         return;
 
 #ifdef _DEBUG
@@ -64,13 +75,15 @@ HRESULT CJOH_Test1::Render()
 
     for (size_t i = 0; i < iNumMeshes; i++)
     {
-        if (FAILED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0)))
-            return E_FAIL;
-        /*if (FAILED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_DIFFUSE, 0)))
-            return E_FAIL;        */
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
+        m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
-            return E_FAIL;
+        //if (FAILED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0)))
+        //    return E_FAIL;
+        ///*if (FAILED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_DIFFUSE, 0)))
+        //    return E_FAIL;        */
+        //if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
+        //    return E_FAIL;
 
         m_pShaderCom->Begin(0);
 
@@ -86,7 +99,7 @@ HRESULT CJOH_Test1::Render()
 HRESULT CJOH_Test1::Ready_Components()
 {
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
 
