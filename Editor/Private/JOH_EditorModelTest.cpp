@@ -18,7 +18,7 @@ HRESULT CJOH_EditorModelTest::Initialize_Prototype()
 
 }
 
-HRESULT CJOH_EditorModelTest::Initialize(void* pArg)
+HRESULT CJOH_EditorModelTest::Initialize_Clone(void* pArg)
 {
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
@@ -41,8 +41,8 @@ void CJOH_EditorModelTest::Priority_Update(_float fTimeDelta)
 void CJOH_EditorModelTest::Update(_float fTimeDelta)
 {
 
-    //if (true == m_pModelCom->Play_Animation(fTimeDelta))
-    //    int a = 10;
+    if (true == m_pModelCom->Play_Animation(fTimeDelta))
+        int a = 10;
 
     if (m_pGameInstance->Key_Down(DIK_1))
     {
@@ -51,17 +51,21 @@ void CJOH_EditorModelTest::Update(_float fTimeDelta)
     if (m_pGameInstance->Key_Down(DIK_2))
     {
         m_iCurrentAnimIndex = 0;
+        m_pModelCom->Set_Animation(m_iCurrentAnimIndex, true);
     }
     if (m_pGameInstance->Key_Down(DIK_3))
     {
         m_pModelCom->ExportModel();
     }
-
+    if (m_pGameInstance->Key_Down(DIK_4))
+    {
+        m_pModelCom->Update_DAT_From_JSON();
+    }
 }
 
 void CJOH_EditorModelTest::Late_Update(_float fTimeDelta)
 {
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this)))
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONLIGHT, this)))
         return;
 }
 
@@ -131,7 +135,7 @@ CGameObject* CJOH_EditorModelTest::Clone(void* pArg)
 {
     CJOH_EditorModelTest* pInstance = new CJOH_EditorModelTest(*this);
 
-    if (FAILED(pInstance->Initialize(pArg)))
+    if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
         MSG_BOX(TEXT("Failed to Created : CJOH_EditorModelTest"));
         Safe_Release(pInstance);

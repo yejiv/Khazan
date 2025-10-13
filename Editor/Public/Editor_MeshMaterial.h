@@ -18,7 +18,7 @@ public:
 	HRESULT Initialize(const _char* pModelFilePath, const aiMaterial* pAIMaterial);
 	
 public:
-	HRESULT Bind_Resources(CShader* pShader, const _char* pConstantName, _uint iTextureIndex, _uint iTextureType);
+	HRESULT Bind_Resources(CShader* pShader, const _char* pConstantName, _uint iTextureType, _uint iTextureIndex);
 	void Get_Data(MATERIAL_DATA& data) { data = m_Material_Data; }
 
 private:
