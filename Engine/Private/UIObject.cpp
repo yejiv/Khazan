@@ -47,6 +47,7 @@ HRESULT CUIObject::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     m_eSpaceType = pDesc->eSpaceTeype;
+    strcpy_s(m_szName, pDesc->szName);
 
     if (UISPACETYPE::SCREEN == m_eSpaceType)
         Initialize_Screen_UI(pDesc);

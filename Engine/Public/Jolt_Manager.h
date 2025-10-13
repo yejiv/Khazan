@@ -18,7 +18,7 @@
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
 #include <Jolt/Physics/Collision/Shape/StaticCompoundShape.h>
 #include <Jolt/Physics/Collision/Shape/MeshShape.h>
-
+#include <Jolt/Physics/Character//CharacterVirtual.h>
 #ifdef new
 #pragma pop_macro("new") // DBG_NEW º¹¿ø
 #endif
@@ -41,6 +41,7 @@ public:
     void    Update(_float fDeltaTime);
 
     Body* CreateAndAdd_Body(const BodyCreationSettings& BodySetting, BodyInterface** pBodyInterface);
+    CharacterVirtual* CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData);
 
 
     void				Set_PhysicsSystem();
