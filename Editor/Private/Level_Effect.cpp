@@ -194,6 +194,7 @@ HRESULT CLevel_Effect::Initialize()
                     m_PointInfo = pEmitter->Get_ParticleInfo();
                     m_isSpread = pEmitter->Get_Spread();
                     m_isDrop = pEmitter->Get_Drop();
+                    m_vPaletteColor = pEmitter->Get_DiffuseColor();
 
                     m_iPrevSelectedEmitter = m_iSelectedEmitter;
                     // wstring -> char 변환 후 버퍼에 저장
@@ -238,6 +239,11 @@ HRESULT CLevel_Effect::Initialize()
                 //  ImGui::Checkbox("Gravity", &m_isGravity);
                 
                 ImGui::Separator();
+                ImGui::Text("Particle Color");
+                ImGui::Separator();
+
+                ImGui::ColorEdit4("", reinterpret_cast<_float*>(&m_vPaletteColor));
+                ImGui::Separator();
 
                 if (ImGui::Button("Apply Changes"))
                 {
@@ -252,6 +258,7 @@ HRESULT CLevel_Effect::Initialize()
                     pEmitter->Recreate_Particle(m_PointInfo);
                     pEmitter->Set_Spread(m_isSpread);
                     pEmitter->Set_Drop(m_isDrop);
+                    pEmitter->Set_DiffuseColor(m_vPaletteColor);
                 }
             }
 

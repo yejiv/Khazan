@@ -1,6 +1,6 @@
 #include "Model_Instance.h"
 
-#include "Mesh_Instance.h"
+#include "ModelMesh_Instance.h"
 #include "Bone.h"
 #include "MeshMaterial.h"
 #include "Animation.h"

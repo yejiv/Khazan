@@ -19,9 +19,9 @@ HRESULT CLevel_Map::Initialize()
 
 	CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera_Map")), E_FAIL);
 
-	CHECK_FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround")), E_FAIL);
+	// CHECK_FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround")), E_FAIL);
 
-	CHECK_FAILED(Ready_Layer_Prop_Static(TEXT("Layer_Prop_Static")), E_FAIL);
+	// CHECK_FAILED(Ready_Layer_Prop_Static(TEXT("Layer_Prop_Static")), E_FAIL);
 
 	CHECK_FAILED(Ready_DefaultImGui_For_MapTool(), E_FAIL);
 
@@ -61,8 +61,7 @@ HRESULT CLevel_Map::Ready_Lights()
 
 HRESULT CLevel_Map::Ready_Layer_Camera(const _wstring& strLayerTag)
 {
-	/*
-	CCamera_Map::CAMERA_FREE_DESC MapDesc = {};
+	CCamera_Map::CAMERA_MAP_DESC MapDesc = {};
 
 	MapDesc.fSpeedPerSec = 5.f;
 	MapDesc.fRotationPerSec = XMConvertToRadians(30.f);
@@ -79,16 +78,6 @@ HRESULT CLevel_Map::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), strLayerTag,
 		ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Camera_Map"), &MapDesc), E_FAIL);
-	*/
-
-	return S_OK;
-}
-
-HRESULT CLevel_Map::Ready_Layer_BackGround(const _wstring& strLayerTag)
-{
-	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::TITLE), strLayerTag,
-	//	ENUM_CLASS(LEVEL::TITLE), TEXT("Prototype_GameObject_BackGround"))))
-	//	return E_FAIL;
 
 	return S_OK;
 }
@@ -105,7 +94,7 @@ HRESULT CLevel_Map::Ready_Layer_Prop_Static(const _wstring& strLayerTag)
 	m_StaticModels.push_back(strModelName);
 
 	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), strLayerTag,
-														 ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"), &StaticDesc), E_FAIL);
+		ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"), &StaticDesc), E_FAIL);
 
 	lstrcpy(StaticDesc.szModelName, TEXT("Prototype_Component_Model_"));
 	lstrcat(StaticDesc.szModelName, TEXT("Bantu_Brick"));
@@ -114,127 +103,225 @@ HRESULT CLevel_Map::Ready_Layer_Prop_Static(const _wstring& strLayerTag)
 	m_StaticModels.push_back(strModelName);
 
 	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), strLayerTag,
-														 ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"), &StaticDesc), E_FAIL);
+		ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"), &StaticDesc), E_FAIL);
 
 	return S_OK;
 }
 
 HRESULT CLevel_Map::Ready_DefaultImGui_For_MapTool()
 {
-#pragma region MAIN WINDOW
+	CHECK_FAILED(Ready_Main_Window(), E_FAIL);
+
+	CHECK_FAILED(Ready_Prop_Edit_Window(), E_FAIL);
+
+	CHECK_FAILED(Ready_Json_Edit_Window(), E_FAIL);
+
+	return S_OK;
+}
+
+HRESULT CLevel_Map::Ready_Main_Window()
+{
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
-		ImGui::Begin("MAIN WINDOW", &m_isMainWindow, ImGuiChildFlags_AlwaysAutoResize);
+		if (m_isMainWindow)
+		{
+			ImGui::Begin("MAIN WINDOW", &m_isMainWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
-		if (ImGui::Button("STAT"))
-		{
-			m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)];
-		} SAMELINE;
-		if (ImGui::Button("ANIM"))
-		{
-			m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)];
-		} SAMELINE;
-		if (ImGui::Button("INTER"))
-		{
-			m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)];
-		} SAMELINE;
-		if (ImGui::Button("DEST"))
-		{
-			m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)];
-		} SAMELINE;
+			if (ImGui::Button("STATIC")) m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)];
+			SAMELINE;
+			if (ImGui::Button("ANIMATED")) m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)];
+			SAMELINE;
+			if (ImGui::Button("INTERACTIVE")) m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)];
+			SAMELINE;
+			if (ImGui::Button("DESTRUCTIBLE")) m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)];
+			SEPARATOR;
 
-		
+			ImGui::Text("INFORMATION");
+			ImGui::Text("Hi-ing");
 
-		ImGui::End();
+			ImGui::End();
+		}
 		});
 
-#pragma endregion
+	return S_OK;
+}
 
+HRESULT CLevel_Map::Ready_Prop_Edit_Window()
+{
 #pragma region PROP_STATIC EDIT WINDOW
-
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
-		ImGui::Begin("PROP STATIC WINDOW", &m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)], ImGuiChildFlags_AlwaysAutoResize);
-		
-		if (ImGui::BeginListBox("##prop_static_list"))
+		if (m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)])
 		{
-			for (_uint i = 0; i < m_StaticModels.size(); ++i)
-			{
-				_bool isSelectPrototype = (m_iStatIndex == i);
-				if (ImGui::Selectable(m_StaticModels[i].c_str(), isSelectPrototype))
-				{
-					m_iStatIndex = i;
+			ImGui::Begin("PROP STATIC WINDOW", &m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)], ImGuiWindowFlags_AlwaysAutoResize);
 
-					m_pProp_Static = dynamic_cast<CProp_Static*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_Prop_Static"), m_iStatIndex));
-					CHECK_NULLPTR_MSG(m_pProp_Static, TEXT("pProp_Static == nullptr"), );
+			if (ImGui::BeginListBox("##prop_static_list"))
+			{
+				for (_uint i = 0; i < m_StaticModels.size(); ++i)
+				{
+					_bool isSelectPrototype = (m_iStatIndex == i);
+					if (ImGui::Selectable(m_StaticModels[i].c_str(), isSelectPrototype))
+					{
+						m_iStatIndex = i;
+
+						//m_pProp_Static = dynamic_cast<CProp_Static*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_Prop_Static"), m_iStatIndex));
+						//CHECK_NULLPTR_MSG(m_pProp_Static, TEXT("pProp_Static == nullptr"), );
+					}
 				}
+
+				ImGui::EndListBox();
 			}
 
-			ImGui::EndListBox();
+			ImGui::Text("CURRENT INDEX : %d", m_iStatIndex);
+
+			//ImGui::Text("PATH : "); ImGui::SameLine();
+			//ImGui::InputText("##jsoninputtext", m_szJsonFile, IM_ARRAYSIZE(m_szJsonFile));
+
+			//ImGui::Text("JSON PATH : %s", m_szJsonFile);
+
+			ImGui::Text("================##0");
+
+			if (ImGui::Button("ADD INSTANCE"))
+			{
+				MESH_INSTANCE_DATA AddInstanceData = {};
+
+				AddInstanceData.InstanceMatrix = XMMatrixIdentity();
+
+				AddInstanceData.InstanceMatrix.r[3] = XMVectorSetW(XMLoadFloat4(m_pGameInstance->Get_CamPosition()), 1.f);
+				AddInstanceData.InstanceID = 0;
+
+				m_pProp_Static->Add_Instance(AddInstanceData);
+			} SAMELINE;
+			if (ImGui::Button("FIX INSTANCE"))
+			{
+
+			}
+
+			ImGui::End();
 		}
-
-		ImGui::Text("CURRENT INDEX : %d", m_iStatIndex);
-
-		//ImGui::Text("PATH : "); ImGui::SameLine();
-		//ImGui::InputText("##jsoninputtext", m_szJsonPath, IM_ARRAYSIZE(m_szJsonPath));
-
-		//ImGui::Text("JSON PATH : %s", m_szJsonPath);
-
-		ImGui::Text("================##0");
-
-		if (ImGui::Button("ADD INSTANCE"))
-		{
-			MESH_INSTANCE_DATA AddInstanceData = {};
-
-			AddInstanceData.InstanceMatrix = XMMatrixIdentity();
-
-			AddInstanceData.InstanceMatrix.r[3] = XMVectorSetW(XMLoadFloat4(m_pGameInstance->Get_CamPosition()), 1.f);
-			AddInstanceData.InstanceID = 0;
-
-			m_pProp_Static->Add_Instance(AddInstanceData);
-		} SAMELINE;
-		if (ImGui::Button("FIX INSTANCE"))
-		{
-
-		}
-
-		ImGui::End();
 		});
-
 #pragma endregion
 
 #pragma region PROP_ANIMATED EDIT WINDOW
-
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
-		ImGui::Begin("Map", &m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)], ImGuiChildFlags_AlwaysAutoResize);
+		if (m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)])
+		{
+			ImGui::Begin("PROP ANIMATED WINDOW", &m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)], ImGuiWindowFlags_AlwaysAutoResize);
 
-		ImGui::Text("== PROP_ANIMATED_LIST");
+			//ImGui::Text("== PROP_ANIMATED_LIST");
 
-		ImGui::End();
+			ImGui::End();
+		}
 		});
-
 #pragma endregion
 
 #pragma region PROP_INTERACTIVE EDIT WINDOW
-
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
-		ImGui::Begin("Map", &m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)], ImGuiChildFlags_AlwaysAutoResize);
+		if (m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)])
+		{
+			ImGui::Begin("PROP INTERACTIVE WINDOW", &m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)], ImGuiWindowFlags_AlwaysAutoResize);
 
-		ImGui::Text("== PROP_INTERACTIVE_LIST");
+			//ImGui::Text("== PROP_INTERACTIVE_LIST");
 
-		ImGui::End();
+			ImGui::End();
+		}
 		});
-
 #pragma endregion
 
 #pragma region PROP_DESTRUCTIBLE EDIT WINDOW
-
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
-		ImGui::Begin("Map", &m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)], ImGuiChildFlags_AlwaysAutoResize);
+		if (m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)])
+		{
+			ImGui::Begin("PROP DESTRUCTIBLE WINDOW", &m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)], ImGuiWindowFlags_AlwaysAutoResize);
 
-		ImGui::Text("== PROP_DESTRUCTIBLE_LIST");
+			//ImGui::Text("== PROP_DESTRUCTIBLE_LIST");
+
+			ImGui::End();
+		}
+		});
+#pragma endregion
+
+	return S_OK;
+}
+
+HRESULT CLevel_Map::Ready_Json_Edit_Window()
+{
+#pragma region JSON CONVERT FOR ME
+	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
+		ImGui::Begin("JSON", &m_isJsonWindow, ImGuiWindowFlags_AlwaysAutoResize);
+
+		ImGui::Text("JSON FILE NAME : ");
+		SAMELINE; ITEMWIDTH(300.f);
+		ImGui::InputText("##json_file_name", m_szJsonFile, IM_ARRAYSIZE(m_szJsonFile));
+
+		SAMELINE;
+		if (ImGui::Button("LOAD##json"))
+		{
+			string strPath = "../../Client/Bin/Resources/Models/Prop/Json/";
+
+			strPath += m_szJsonFile;
+			strPath += ".json";
+
+			ifstream ifs(strPath);
+
+			if (true == ifs.is_open())
+			{
+				ifs >> m_Json;
+				ifs.close();
+
+				m_isJsonOpened = true;
+			}
+			else
+			{
+				MSG_BOX(TEXT("JSON ¸ø¿­À½"));
+			}
+
+		} SEPARATOR;
 
 		ImGui::End();
 		});
+#pragma endregion
 
+#pragma region JSON OPENED	
+	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
+		ImGui::Begin("MAIN WINDOW", &m_isJsonOpened, ImGuiWindowFlags_AlwaysAutoResize);
+
+		if (true == m_isJsonOpened)
+		{
+			ImGui::Text("%s", m_szJsonFile);
+
+			if (ImGui::Button("SET MAPOBJECT"))
+			{
+				for (auto& Component : m_Json)
+				{
+					if (Component["Type"] == "FoliageInstancedStaticMeshComponent")
+					{
+						string strMeshName = Component["Properties"]["StaticMesh"]["ObjectName"];
+
+						size_t start = strMeshName.find('\'');
+						size_t end = strMeshName.rfind('\'');
+
+						if (start != std::string::npos && end != std::string::npos && end > start)
+							strMeshName = strMeshName.substr(start + 1, end - start - 1);
+
+						m_StaticModels.push_back(strMeshName);
+
+						auto& instances = Component["PerInstanceSMData"];
+						for (auto& inst : instances)
+						{
+							auto pos = inst["TransformData"]["Translation"];
+							auto scale = inst["TransformData"]["Scale3D"];
+							auto rot = inst["TransformData"]["Rotation"];
+							ImGui::Text("Pos: %.2f %.2f %.2f", (float)pos["X"], (float)pos["Y"], (float)pos["Z"]);
+							ImGui::Text("Scale: %.2f", (float)scale["X"]);
+							ImGui::Text("Rot(Quat): %.3f %.3f %.3f %.3f", (float)rot["X"], (float)rot["Y"], (float)rot["Z"], (float)rot["W"]);
+							ImGui::Separator();
+						}
+					}
+				}
+			}
+		}
+
+		ImGui::End();
+		});
 #pragma endregion
 
 	return S_OK;
