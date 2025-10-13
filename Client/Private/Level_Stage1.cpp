@@ -106,6 +106,8 @@ HRESULT CLevel_Stage1::Ready_Layer_Player(const _wstring& strLayerTag)
 
 HRESULT CLevel_Stage1::Ready_Layer_Monster(const _wstring& strLayerTag)
 {
+	m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Dummy"), TEXT("Dummy"), nullptr, 10);
+
 	for (size_t i = 0; i < 10; i++)
 	{
 		//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,

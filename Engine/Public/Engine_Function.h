@@ -179,6 +179,13 @@ namespace Engine
 		return true;
 	}
 
+	// JPH
+	static inline Vec3 LoadVec3(const _float3& vVector) { return Vec3(vVector.x, vVector.y, vVector.z); }
+	static inline Vec3 LoadVec3(const _fvector& vVector) { return Vec3(vVector.m128_f32[0], vVector.m128_f32[1], vVector.m128_f32[2]); }
+
+	static inline Quat LoadQuat(const _float4& vQuat) { return Quat(vQuat.x, vQuat.y, vQuat.z, vQuat.w); }
+	static inline Quat LoadQuat(const _fvector& vQuat) { return Quat(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]); }
+
 	/* 오현 : iIndex 값에서 최하위 비트( "right" )부터 시작하여 연속된 0 비트의 개수를 반환 */
 	inline constexpr unsigned int GetBitPosition(unsigned int iIndex)
 	{
@@ -217,6 +224,7 @@ namespace Engine
 
 		return result;
 	}
+
 }
 
 #endif // Engine_Function_h__
