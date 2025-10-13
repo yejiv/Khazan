@@ -243,6 +243,12 @@
     </Filter>
     <Filter Include="01.Utility\03.Component\Model\Model_Instance\Mesh">
       <UniqueIdentifier>{2ba653db-181c-4135-bb3f-3a615341c579}</UniqueIdentifier>
+	</Filter>
+    <Filter Include="01.Utility\16.ComputeShader">
+      <UniqueIdentifier>{0bb4192a-acd8-4388-8ab8-4daae5dadf14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\16.ComputeShader\Manager">
+      <UniqueIdentifier>{e1676e71-8485-4521-bb8f-356adfd967ca}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -480,6 +486,12 @@
     <ClCompile Include="..\Private\ModelMesh_Instance.cpp">
       <Filter>01.Utility\03.Component\Model\Model_Instance\Mesh</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\ComputeShader.cpp">
+      <Filter>01.Utility\16.ComputeShader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ComputeShader_Manager.cpp">
+	  <Filter>01.Utility\16.ComputeShader\Manager</Filter>
+	</ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -740,6 +752,12 @@
     <ClInclude Include="..\Public\ModelMesh_Instance.h">
       <Filter>01.Utility\03.Component\Model\Model_Instance\Mesh</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\ComputeShader.h">
+      <Filter>01.Utility\16.ComputeShader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\ComputeShader_Manager.h">
+	<Filter>01.Utility\16.ComputeShader\Manager</Filter>
+	</ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hlsli">

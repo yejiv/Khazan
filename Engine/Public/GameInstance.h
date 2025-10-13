@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Prototype_Manager.h"
+#include "ComputeShader_Manager.h"
 
 #ifdef new
 #pragma push_macro("new")
@@ -185,25 +186,32 @@ public:
 	void Event_Clear();
 #pragma endregion
 
+#pragma region COMPUTESHADER_MANAGER
+	void		Add_Job(COMPUTEJOP eJobTag, const CComputeShader_Manager::COMPUTE_JOB_DESC& Desc, _bool isExecuteNow = false);
+	void		Execute_Job(COMPUTEJOP eJobTag);
+#pragma endregion
+
 private:
-	class CGraphic_Device*		m_pGraphic_Device = { nullptr };
-	class CLevel_Manager*		m_pLevel_Manager = { nullptr };
-	class CObject_Manager*		m_pObject_Manager = { nullptr };
-	class CPrototype_Manager*	m_pPrototype_Manager = { nullptr };
-	class CRenderer*			m_pRenderer = { nullptr };
-	class CTimer_Manager*		m_pTimer_Manager = { nullptr };
-	class CPicking*				m_pPicking = { nullptr };
-	class CPipeLine*			m_pPipeLine = { nullptr };
-	class CLight_Manager*		m_pLight_Manager = { nullptr };
-	class CFont_Manager*		m_pFont_Manager = { nullptr };
-	class CTarget_Manager*		m_pTarget_Manager = { nullptr };
-	class CShadow*				m_pShadow = { nullptr };
-	class CFrustum*				m_pFrustum = { nullptr };
-	class CJolt_Manager*		m_pJolt_Manager = { nullptr };
-	class CThreadPool*			m_pThreadPool = { nullptr };
-	class CInput_Manager*		m_pInput_Manager = { nullptr };
-	class CPool_Manager*		m_pPool_Manager = { nullptr };
-	class CEvent_Manager*		m_pEvent_Manager = { nullptr };
+	class CGraphic_Device*			m_pGraphic_Device = { nullptr };
+	class CLevel_Manager*			m_pLevel_Manager = { nullptr };
+	class CObject_Manager*			m_pObject_Manager = { nullptr };
+	class CPrototype_Manager*		m_pPrototype_Manager = { nullptr };
+	class CRenderer*				m_pRenderer = { nullptr };
+	class CTimer_Manager*			m_pTimer_Manager = { nullptr };
+	class CPicking*					m_pPicking = { nullptr };
+	class CPipeLine*				m_pPipeLine = { nullptr };
+	class CLight_Manager*			m_pLight_Manager = { nullptr };
+	class CFont_Manager*			m_pFont_Manager = { nullptr };
+	class CTarget_Manager*			m_pTarget_Manager = { nullptr };
+	class CShadow*					m_pShadow = { nullptr };
+	class CFrustum*					m_pFrustum = { nullptr };
+	class CJolt_Manager*			m_pJolt_Manager = { nullptr };
+	class CThreadPool*				m_pThreadPool = { nullptr };
+	class CInput_Manager*			m_pInput_Manager = { nullptr };
+	class CPool_Manager*			m_pPool_Manager = { nullptr };
+	class CEvent_Manager*			m_pEvent_Manager = { nullptr };
+	class CComputeShader_Manager*	m_pComputeShader_Manager = { nullptr };
+
 #ifdef _DEBUG
 	class CImgui_Manager* m_pImgui_Manager = { nullptr };
 #endif

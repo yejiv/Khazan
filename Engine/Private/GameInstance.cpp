@@ -20,6 +20,7 @@
 #include "Input_Manager.h"
 #include "Pool_Manager.h"
 #include "Event_Manager.h"
+#include "ComputeShader_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -104,6 +105,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pEvent_Manager)
 		return E_FAIL;
 
+	m_pComputeShader_Manager = CComputeShader_Manager::Create();
+	if (nullptr == m_pComputeShader_Manager)
+		return E_FAIL;
+
 #ifdef _DEBUG
 	m_pImgui_Manager = CImgui_Manager::Create(EngineDesc.iWinSizeX_Imgui, EngineDesc.iWinSizeY_Imgui, EngineDesc.Menu_Imgui);
 	if (nullptr == m_pImgui_Manager)
@@ -131,6 +136,8 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 	m_pLevel_Manager->Update(fTimeDelta);
 
 	m_pJolt_Manager->Update(fTimeDelta);
+
+	m_pComputeShader_Manager->Execute_Job(COMPUTEJOP::UPDATE);
 
 #ifdef _DEBUG
 
@@ -599,6 +606,17 @@ void CGameInstance::Event_Clear()
 }
 #pragma endregion
 
+#pragma region COMPUTESHADER_MANAGER
+void CGameInstance::Add_Job(COMPUTEJOP eJobTag, const CComputeShader_Manager::COMPUTE_JOB_DESC& Desc, _bool isExecuteNow)
+{
+	m_pComputeShader_Manager->Add_Job(eJobTag, Desc, isExecuteNow);
+}
+void CGameInstance::Execute_Job(COMPUTEJOP eJobTag)
+{
+	m_pComputeShader_Manager->Execute_Job(eJobTag);
+}
+#pragma endregion
+
 //
 //void CGameInstance::Transform_Picking_ToLocalSpace(CTransform* pTransformCom)
 //{
@@ -610,8 +628,6 @@ void CGameInstance::Event_Clear()
 //	return m_pPicking->isPicked_InLocalSpace(vPointA, vPointB, vPointC, pOut);
 //}
 
-
-
 void CGameInstance::Release_Engine()
 {
 	Release();
@@ -620,6 +636,8 @@ void CGameInstance::Release_Engine()
 	m_pImgui_Manager->Shutdown();
 	Safe_Release(m_pImgui_Manager);
 #endif
+
+	Safe_Release(m_pComputeShader_Manager);
 	Safe_Release(m_pPool_Manager);
 	Safe_Release(m_pThreadPool);
 	Safe_Release(m_pJolt_Manager);

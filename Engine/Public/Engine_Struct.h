@@ -55,11 +55,22 @@ namespace Engine
 
 	}MESH_INSTANCE_DATA;
 
+
 	typedef struct tagCoInitGuard {
 		HRESULT hr = S_OK;
 		tagCoInitGuard(DWORD coinit = COINIT_MULTITHREADED) { hr = CoInitializeEx(nullptr, coinit); }
 		~tagCoInitGuard() { if (SUCCEEDED(hr)) CoUninitialize(); }
 	}CO_INIT_GUARD;
+
+	typedef struct tagComputePassDesc		// 컴퓨트 셰이더용 데이터
+	{
+		vector<ID3D11ShaderResourceView*>	SRVs;					// 읽기 전용
+		vector<ID3D11UnorderedAccessView*>	UAVs;					// 읽기 / 쓰기
+		vector<ID3D11Buffer*>				ConstantBuffers;		// 상수 버퍼
+		vector<unsigned int>				UAVInitialCounts;		// 각 UAV 초기 카운트(필요 시 사용)
+
+		unsigned int						x = 1, y = 1, z = 1;	// 디스패치할 스레드 그룹 개수
+	}COMPUTE_PASS_DESC;
 
 	typedef struct tagVertexPosition
 	{
