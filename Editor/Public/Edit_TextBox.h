@@ -18,13 +18,6 @@ private:
 	CEdit_TextBox(const CEdit_TextBox& Prototype);
 	virtual ~CEdit_TextBox() = default;
 
-//public:
-//	void						Set_LocalPos(const _float3& vPos) { m_vLocalPos = vPos; }
-//	void						Set_LocalSize(const _float3& vSize) { m_vLocalSize = vSize; }
-//	_float3						Get_LocalPos() const { return m_vLocalPos; }
-//	_float3						Get_LocalSize() const { return m_vLocalSize; }
-
-
 public:
 	virtual HRESULT				Initialize_Prototype() override;
 	virtual HRESULT				Initialize_Clone(void* pArg) override;
