@@ -133,7 +133,7 @@ HRESULT CPlayer::Ready_Components()
     //CRigidBody::CAPSULESHAPE_DESC RigidDesc{};
     //RigidDesc.fHeight = 1.f;
     //RigidDesc.fRadius = 1.f;
-    CRigidBody::BOXSHAPE_DESC RigidDesc{};
+    CRigidBody::RIGID_BOXSHAPE_DESC RigidDesc{};
     RigidDesc.vExtent = { 0.5f, 0.5f, 0.5f };
     RigidDesc.bIsTrigger = false;
     RigidDesc.bStartActive = true;

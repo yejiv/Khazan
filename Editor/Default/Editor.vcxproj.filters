@@ -106,6 +106,9 @@
     <Filter Include="02.GameObject\MapObject\Camera">
       <UniqueIdentifier>{204d72f1-296c-4b94-ade6-47085c5a8ef9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Animation\98.Temp Camera">
+      <UniqueIdentifier>{6219a60c-d70b-437e-ab90-77b6097d02bb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -207,6 +210,9 @@
     <ClInclude Include="..\Public\Camera_Map.h">
       <Filter>02.GameObject\MapObject\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Editor_TempCamera.h">
+      <Filter>02.GameObject\Animation\98.Temp Camera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -305,6 +311,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Camera_Map.cpp">
       <Filter>02.GameObject\MapObject\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Editor_TempCamera.cpp">
+      <Filter>02.GameObject\Animation\98.Temp Camera</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
