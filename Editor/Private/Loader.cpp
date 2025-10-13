@@ -10,12 +10,13 @@
 #pragma endregion
 
 
-// ========== Effect Header ==========
+#pragma region Effect
 #include "ParticleSystem.h"
 #include "ParticleEmitter.h"
 #include "Camera_Effect.h"
 #include "Terrain_Grid.h"
-// ===================================
+#include "TestParticle.h"
+#pragma endregion
 
 #pragma region MapEditor
 #include "MapEditor_Header.h"
@@ -223,6 +224,20 @@ HRESULT CLoader::Loading_For_Effect_Level()
 		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 50, 50))))
 		return E_FAIL;
 
+	// Prototype_Component_Particle_Spread
+	CVIBuffer_Point_Instance::POINT_INSTANCE_DESC SpreadDesc{};
+	SpreadDesc.iNumInstance = 100;
+	SpreadDesc.vCenter = _float3(0.f, 0.f, 0.f);
+	SpreadDesc.vRange = _float3(2.f, 4.f, 2.f);
+	SpreadDesc.vSize = _float2(0.5f, 1.f);
+	SpreadDesc.vLifeTime = _float2(0.5f, 2.f);
+	SpreadDesc.vPivot = _float3(0.f, 0.f, 0.f);
+	SpreadDesc.vSpeed = _float2(0.5f, 1.f);
+	SpreadDesc.isLoop = true;
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Particle_Spread"),
+		CVIBuffer_Point_Instance::Create(m_pDevice, m_pContext, &SpreadDesc))))
+		return E_FAIL;
+
 	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
 
 	lstrcpy(m_szLoadingText, TEXT("게임오브젝트를 로딩중입니다."));
@@ -245,6 +260,11 @@ HRESULT CLoader::Loading_For_Effect_Level()
 	// Prototype_GameObject_Terrain_Grid
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_Terrain_Grid"),
 		CTerrain_Grid::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	// Prototype_GameObject_TestParticle
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_TestParticle"),
+		CTestParticle::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));

@@ -20,8 +20,8 @@ public:
 	HRESULT		Initialize();
 
 public:
-	void		Add_Job(COMPUTEJOP eJobTag, const COMPUTE_JOB_DESC& Desc, _bool isExecuteNow);
-	void		Execute_Job(COMPUTEJOP eJobTag);
+	void		Add_Job(COMPUTEJOB eJobTag, const COMPUTE_JOB_DESC& Desc, _bool isExecuteNow);
+	void		Execute_Job(COMPUTEJOB eJobTag);
 
 private:
 	vector<vector<COMPUTE_JOB_DESC>>	m_Jobs;

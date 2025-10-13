@@ -59,7 +59,7 @@ public:
 	class CComponent* Find_Component(_uint iLayerLevelIndex, const _wstring& strLayerTag, const _wstring& strComponentTag, _uint iIndex = 0);
 	class CGameObject* Find_GameObject(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint iIndex = 0);
 	HRESULT Add_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);
-	HRESULT Push_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CGameObject* pGameObject);
+	HRESULT Push_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, class CGameObject* pGameObject);
 #pragma endregion
 
 #pragma region RENDERER
@@ -187,8 +187,8 @@ public:
 #pragma endregion
 
 #pragma region COMPUTESHADER_MANAGER
-	void		Add_Job(COMPUTEJOP eJobTag, const CComputeShader_Manager::COMPUTE_JOB_DESC& Desc, _bool isExecuteNow = false);
-	void		Execute_Job(COMPUTEJOP eJobTag);
+	void		Add_Job(COMPUTEJOB eJobTag, const CComputeShader_Manager::COMPUTE_JOB_DESC& Desc, _bool isExecuteNow = false);
+	void		Execute_Job(COMPUTEJOB eJobTag);
 #pragma endregion
 
 private:
