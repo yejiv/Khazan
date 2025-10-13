@@ -181,6 +181,8 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\Channel.cpp" />
     <ClCompile Include="..\Private\CharacterVirtual.cpp" />
     <ClCompile Include="..\Private\Component.cpp" />
+    <ClCompile Include="..\private\ComputeShader.cpp" />
+    <ClCompile Include="..\private\ComputeShader_Manager.cpp" />
     <ClCompile Include="..\Private\DebugDraw.cpp" />
     <ClCompile Include="..\Private\Event_Manager.cpp" />
     <ClCompile Include="..\Private\Jolt_ContactListener.cpp" />
@@ -265,6 +267,8 @@ call Copy.bat</Command>
     <ClInclude Include="..\public\Channel.h" />
     <ClInclude Include="..\Public\CharacterVirtual.h" />
     <ClInclude Include="..\Public\Component.h" />
+    <ClInclude Include="..\public\ComputeShader.h" />
+    <ClInclude Include="..\public\ComputeShader_Manager.h" />
     <ClInclude Include="..\Public\DebugDraw.h" />
     <ClInclude Include="..\Public\Event_Manager.h" />
     <ClInclude Include="..\Public\Engine_Json.h" />
