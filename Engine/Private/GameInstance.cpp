@@ -137,7 +137,7 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 
 	m_pJolt_Manager->Update(fTimeDelta);
 
-	m_pComputeShader_Manager->Execute_Job(COMPUTEJOP::UPDATE);
+	m_pComputeShader_Manager->Execute_Job(COMPUTEJOB::UPDATE);
 
 #ifdef _DEBUG
 
@@ -607,11 +607,11 @@ void CGameInstance::Event_Clear()
 #pragma endregion
 
 #pragma region COMPUTESHADER_MANAGER
-void CGameInstance::Add_Job(COMPUTEJOP eJobTag, const CComputeShader_Manager::COMPUTE_JOB_DESC& Desc, _bool isExecuteNow)
+void CGameInstance::Add_Job(COMPUTEJOB eJobTag, const CComputeShader_Manager::COMPUTE_JOB_DESC& Desc, _bool isExecuteNow)
 {
 	m_pComputeShader_Manager->Add_Job(eJobTag, Desc, isExecuteNow);
 }
-void CGameInstance::Execute_Job(COMPUTEJOP eJobTag)
+void CGameInstance::Execute_Job(COMPUTEJOB eJobTag)
 {
 	m_pComputeShader_Manager->Execute_Job(eJobTag);
 }

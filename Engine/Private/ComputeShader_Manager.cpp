@@ -7,12 +7,12 @@ CComputeShader_Manager::CComputeShader_Manager()
 
 HRESULT CComputeShader_Manager::Initialize()
 {
-	m_Jobs.resize(ENUM_CLASS(COMPUTEJOP::END));
+	m_Jobs.resize(ENUM_CLASS(COMPUTEJOB::END));
 
     return S_OK;
 }
 
-void CComputeShader_Manager::Add_Job(COMPUTEJOP eJobTag, const COMPUTE_JOB_DESC& Desc, _bool isExecuteNow) // Default Parameter false
+void CComputeShader_Manager::Add_Job(COMPUTEJOB eJobTag, const COMPUTE_JOB_DESC& Desc, _bool isExecuteNow) // Default Parameter false
 {
 	if (isExecuteNow)
 	{
@@ -32,7 +32,7 @@ void CComputeShader_Manager::Add_Job(COMPUTEJOP eJobTag, const COMPUTE_JOB_DESC&
 	m_Jobs[ENUM_CLASS(eJobTag)].emplace_back(Desc);
 }
 
-void CComputeShader_Manager::Execute_Job(COMPUTEJOP eJobTag)
+void CComputeShader_Manager::Execute_Job(COMPUTEJOB eJobTag)
 {
 	for (auto& Job : m_Jobs[ENUM_CLASS(eJobTag)])
 	{
