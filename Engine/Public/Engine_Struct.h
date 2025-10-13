@@ -55,6 +55,12 @@ namespace Engine
 
 	}MESH_INSTANCE_DATA;
 
+	typedef struct tagCoInitGuard {
+		HRESULT hr = S_OK;
+		tagCoInitGuard(DWORD coinit = COINIT_MULTITHREADED) { hr = CoInitializeEx(nullptr, coinit); }
+		~tagCoInitGuard() { if (SUCCEEDED(hr)) CoUninitialize(); }
+	}CO_INIT_GUARD;
+
 	typedef struct tagVertexPosition
 	{
 		XMFLOAT3		vPosition;

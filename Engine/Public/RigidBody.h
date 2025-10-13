@@ -50,28 +50,28 @@ public:
 	typedef struct tagBoxShape : RIGIDBODY_DESC
 	{
 		_float3 vExtent = _float3(0.5f, 0.5f, 0.5f);
-	}BOXSHAPE_DESC;
+	}RIGID_BOXSHAPE_DESC;
 
 	typedef struct tagSphereShape : RIGIDBODY_DESC
 	{
 		_float fRadius = 0.5f;
-	}SPHERESHAPE_DESC;
+	}RIGID_SPHERESHAPE_DESC;
 
 	typedef struct tagCapsuleShape : RIGIDBODY_DESC
 	{
 		_float				fHeight;
 		_float				fRadius;
-	}CAPSULESHAPE_DESC;
+	}RIGID_CAPSULESHAPE_DESC;
 
 	typedef struct tagMeshShape : RIGIDBODY_DESC
 	{
 		class CModel* pModel = { nullptr };
-	}MESHSHAPE_DESC;
+	}RIGID_MESHSHAPE_DESC;
 
 	typedef struct tagConvexShape : RIGIDBODY_DESC
 	{
 		class CModel* pModel = { nullptr };
-	}CONVEXSHAPE_DESC;
+	}RIGID_CONVEXSHAPE_DESC;
 private:
 	CRigidBody(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CRigidBody(const CRigidBody& Prototype);

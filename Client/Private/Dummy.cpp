@@ -101,7 +101,7 @@ HRESULT CDummy::Ready_Components()
         return E_FAIL;
 
 
-    CRigidBody::BOXSHAPE_DESC RigidDesc{};
+    CRigidBody::RIGID_BOXSHAPE_DESC RigidDesc{};
     RigidDesc.vExtent = { 0.5f, 0.5f, 0.5f };
     RigidDesc.bIsTrigger = false;
     RigidDesc.bStartActive = true;
