@@ -42,10 +42,10 @@ void CLevel_Stage1::Update(_float fTimeDelta)
 	//		return;
 	//}
 
-	//if (GetKeyState(VK_F1) & 0x8000)
-	//{
-	//	m_pGameInstance->Jolt_Test();
-	//}
+	if (GetKeyState(VK_F1) & 0x8000)
+	{
+		m_pGameInstance->Jolt_Test();
+	}
 
 	return;
 }
