@@ -47,13 +47,19 @@ namespace Engine
 		float			fFovy, fNear, fFar;
 	}SHADOW_LIGHT_DESC;
 
-	typedef struct tagMeshInstanceData		// 메쉬 인스턴스 수정용 데이터
+	typedef struct tagMeshInstanceData		// 메쉬 인스턴스 수정용 데이터 | 구조체 데이터 : MESH_INSTANCING
 	{
-		XMMATRIX InstanceMatrix{};
+		XMMATRIX InstanceMatrix{};			// 인스턴스용 행렬
 
-		unsigned int InstanceID{};
+		unsigned int InstanceID{};			// 인스턴스 ID
 
 	}MESH_INSTANCE_DATA;
+
+	typedef struct tagCoInitGuard {
+		HRESULT hr = S_OK;
+		tagCoInitGuard(DWORD coinit = COINIT_MULTITHREADED) { hr = CoInitializeEx(nullptr, coinit); }
+		~tagCoInitGuard() { if (SUCCEEDED(hr)) CoUninitialize(); }
+	}CO_INIT_GUARD;
 
 	typedef struct tagVertexPosition
 	{

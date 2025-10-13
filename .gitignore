@@ -8,26 +8,33 @@ x64/
 *.pdb
 *.exe
 *.fbx
+*.ini
+*.exp
+*.dll
 
 Client.exp
 Client.exe
 Client.pdb
-Client/Resources/
+Client/Bin/Debug
+Client/Bin/Resources/.*
 
 Editor.exp
 Editor.exe
 Editor.pdb
-Editor/Resources/
 
 Engine.exp
 Engine.exe
 Engine.pdb
-Engine/Resources/
+Engine/Bin/Debug
 
-EngineSDK
+EngineSDK/
 EngineSDK/Debug/
 EngineSDK/Release/
+
+Editor/Default/imgui.ini
 
 *.vcxproj merge=union
 *.vcxproj.filters merge=union
 *.sln merge=union
+
+
