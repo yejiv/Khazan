@@ -207,13 +207,11 @@
     <ClInclude Include="..\public\Terrain_Grid.h">
       <Filter>02.GameObject\Effect\Terrain</Filter>
     </ClInclude>
-<<<<<<< HEAD
     <ClInclude Include="..\Public\Camera_Map.h">
       <Filter>02.GameObject\MapObject\Camera</Filter>
-=======
+    </ClInclude>
     <ClInclude Include="..\public\Editor_TempCamera.h">
       <Filter>02.GameObject\Animation\98.Temp Camera</Filter>
->>>>>>> feature/joh
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -311,13 +309,11 @@
     <ClCompile Include="..\private\Terrain_Grid.cpp">
       <Filter>02.GameObject\Effect\Terrain</Filter>
     </ClCompile>
-<<<<<<< HEAD
     <ClCompile Include="..\Private\Camera_Map.cpp">
       <Filter>02.GameObject\MapObject\Camera</Filter>
-=======
+    </ClCompile>
     <ClCompile Include="..\private\Editor_TempCamera.cpp">
       <Filter>02.GameObject\Animation\98.Temp Camera</Filter>
->>>>>>> feature/joh
     </ClCompile>
   </ItemGroup>
 </Project>
