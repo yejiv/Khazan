@@ -179,6 +179,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\Camera.cpp" />
     <ClCompile Include="..\private\Cell.cpp" />
     <ClCompile Include="..\private\Channel.cpp" />
+    <ClCompile Include="..\Private\CharacterContactListener.cpp" />
     <ClCompile Include="..\Private\CharacterVirtual.cpp" />
     <ClCompile Include="..\Private\Component.cpp" />
     <ClCompile Include="..\Private\DebugDraw.cpp" />
@@ -263,6 +264,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\public\Camera.h" />
     <ClInclude Include="..\public\Cell.h" />
     <ClInclude Include="..\public\Channel.h" />
+    <ClInclude Include="..\Public\CharacterContactListener.h" />
     <ClInclude Include="..\Public\CharacterVirtual.h" />
     <ClInclude Include="..\Public\Component.h" />
     <ClInclude Include="..\Public\DebugDraw.h" />

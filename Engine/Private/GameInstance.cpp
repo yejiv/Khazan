@@ -495,10 +495,16 @@ Body* CGameInstance::CreateAndAdd_Body(const BodyCreationSettings& BodySetting, 
 {
 	return m_pJolt_Manager->CreateAndAdd_Body(BodySetting, pBodyInterface);
 }
-CharacterVirtual* CGameInstance::CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData)
+CharacterVirtual* CGameInstance::CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData, BodyInterface** pBodyInterface)
 {
-	return m_pJolt_Manager->CreateCharacterVirtual(inSettings, inPosition, inRotation, inUserData);
+	return m_pJolt_Manager->CreateCharacterVirtual(inSettings, inPosition, inRotation, inUserData, pBodyInterface);
 }
+
+void CGameInstance::CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter)
+{
+	m_pJolt_Manager->CharVir_Update(fTimeDelta, pCharVir, vGravity, iObjectLayer, pBodyFilter, pShapeFilter);
+}
+
 #ifdef _DEBUG
 void CGameInstance::Jolt_Test()
 {
@@ -622,7 +628,6 @@ void CGameInstance::Release_Engine()
 #endif
 	Safe_Release(m_pPool_Manager);
 	Safe_Release(m_pThreadPool);
-	Safe_Release(m_pJolt_Manager);
 	Safe_Release(m_pTarget_Manager);
 	Safe_Release(m_pFont_Manager);
 	Safe_Release(m_pFrustum);
@@ -637,6 +642,7 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pRenderer);
 	Safe_Release(m_pObject_Manager);
 	Safe_Release(m_pPrototype_Manager);
+	Safe_Release(m_pJolt_Manager);
 	Safe_Release(m_pLevel_Manager);
 	Safe_Release(m_pGraphic_Device);
 }
