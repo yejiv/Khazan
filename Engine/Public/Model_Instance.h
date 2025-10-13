@@ -46,23 +46,23 @@ private:
 	// m_pAIScene = m_Importer.ReadFile(°æ·Î);
 
 private:
-	_uint							m_iNumMeshes = {};
-	vector<class CMesh_Instance*>	m_Meshes;
+	_uint								m_iNumMeshes = {};
+	vector<class CModelMesh_Instance*>	m_Meshes;
 
 private:
 	/* Diffuse, Ambient, Specular */
-	_uint							m_iNumMaterials = {};
-	vector<class CMeshMaterial*>	m_Materials;
+	_uint								m_iNumMaterials = {};
+	vector<class CMeshMaterial*>		m_Materials;
 
 private:
-	vector<class CBone*>			m_Bones;
+	vector<class CBone*>				m_Bones;
 
 private:
-	_uint							m_iCurrentAnimIndex = { 0 };
-	_uint							m_iNumAnimations = { 0 };
-	vector<class CAnimation*>		m_Animations;
-	_bool							m_isLoop = {};
-	_bool							m_isFinished = {};
+	_uint								m_iCurrentAnimIndex = { 0 };
+	_uint								m_iNumAnimations = { 0 };
+	vector<class CAnimation*>			m_Animations;
+	_bool								m_isLoop = {};
+	_bool								m_isFinished = {};
 
 private:
 	HRESULT Ready_Meshes();

@@ -7,6 +7,7 @@
 
 #include "Shader.h"
 
+#include <regex>
 #include <fstream>
 #include <filesystem>
 #include "../../Engine/Public/assimp/postprocess.h"
@@ -20,19 +21,32 @@ CEditor_Model::CEditor_Model(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 
 CEditor_Model::CEditor_Model(const CEditor_Model& Prototype)
     : CComponent{ Prototype }
-    , m_iNumMaterials{ Prototype.m_iNumMaterials }
-    , m_Materials{ Prototype.m_Materials }
-    , m_iNumMeshes{ Prototype.m_iNumMeshes }
-    , m_Meshes{ Prototype.m_Meshes }
     , m_eModelType{ Prototype.m_eModelType }
     , m_PreTransformMatrix{ Prototype.m_PreTransformMatrix }
-    , m_Bones{ Prototype.m_Bones }
     , m_pModelFilePath{ Prototype.m_pModelFilePath }
     , m_Model_Data(Prototype.m_Model_Data)
+
+    , m_iNumMeshes{ Prototype.m_iNumMeshes }
+    , m_Meshes{ Prototype.m_Meshes }
+
+    , m_iNumMaterials{ Prototype.m_iNumMaterials }
+    , m_Materials{ Prototype.m_Materials }
+
+   // , m_Bones{ Prototype.m_Bones }
+	, m_iNumAnimations{ Prototype.m_iNumAnimations }
+
 {
+    for (auto& pPrototypeAnimation : Prototype.m_Animations)
+        m_Animations.push_back(pPrototypeAnimation->Clone());
+
+    for (auto& pPrototypeBone : Prototype.m_Bones)
+        m_Bones.push_back(pPrototypeBone->Clone());
 
     for (auto& pAinmation : m_Animations)
         Safe_AddRef(pAinmation);
+
+    for (auto& pBone : m_Bones)
+        Safe_AddRef(pBone);
 
     for (auto& pMesh : m_Meshes)
         Safe_AddRef(pMesh);
@@ -40,8 +54,7 @@ CEditor_Model::CEditor_Model(const CEditor_Model& Prototype)
     for (auto& pMaterial : m_Materials)
         Safe_AddRef(pMaterial);
 
-    for (auto& pBone : m_Bones)
-        Safe_AddRef(pBone);
+
 }
 
 HRESULT CEditor_Model::Initialize_Prototype(MODELTYPE eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix)
@@ -138,7 +151,7 @@ HRESULT CEditor_Model::Initialize_Prototype(MODELTYPE eModelType, const _char* p
     return S_OK;
 }
 
-HRESULT CEditor_Model::Initialize(void* pArg)
+HRESULT CEditor_Model::Initialize_Clone(void* pArg)
 {
 
     return S_OK;
@@ -164,7 +177,7 @@ HRESULT CEditor_Model::Bind_Materials(CShader* pShader, const _char* pConstantNa
 
 	if (m_iNumMaterials <= iMaterialIndex)
 		return E_FAIL;
-	m_Materials[iMaterialIndex]->Bind_Resources(pShader, pConstantName, iTextureIndex, iTextureType);
+	m_Materials[iMaterialIndex]->Bind_Resources(pShader, pConstantName, iTextureType, iTextureIndex);
 
 	return   S_OK;
 }
@@ -199,12 +212,10 @@ void CEditor_Model::Set_Animation(_uint iIndex, _bool isLoop)
     m_iCurrentAnimIndex = iIndex;
 }
 
-string strJsonExportPath = "../bin/Resources/Data/";
-
 void CEditor_Model::ExportModel()
 {
     // 기본 경로 설정
-    string strBasePath = "../Bin/Resources/Data/";
+    string strBasePath = "../../Client/Bin/Resources/Data/";
 
     // 모델 이름으로 폴더 경로 생성
     string strModelFolder = strBasePath + m_Model_Data.strModelName + "/";
@@ -264,10 +275,12 @@ void CEditor_Model::ExportModel()
     Export_Binary(strDatPath);
 
     // 2. Animation JSON 저장
-    if (!Export_AnimationJson(strAnimJsonPath, strSummayAnimJsonPath))
-    {
-        MSG_BOX(TEXT("Animation JSON 저장 실패"));
-        return;
+    if (m_eModelType == MODELTYPE::ANIM) {
+        if (!Export_AnimationJson(strAnimJsonPath, strSummayAnimJsonPath))
+        {
+            MSG_BOX(TEXT("Animation JSON 저장 실패"));
+            return;
+        }
     }
 
     // 3. Material JSON 저장
@@ -281,7 +294,7 @@ void CEditor_Model::ExportModel()
     _wstring successMsg = TEXT("Export 완료!\n\n");
     successMsg += TEXT("폴더: ") + AnsiToWString(strModelFolder) + TEXT("\n");
     successMsg += AnsiToWString(m_Model_Data.strModelName) + TEXT(".dat (전체)\n");
-    successMsg += AnsiToWString(m_Model_Data.strModelName) + TEXT("_Anim.json\n");
+    if (m_eModelType == MODELTYPE::ANIM) successMsg += AnsiToWString(m_Model_Data.strModelName) + TEXT("_Anim.json\n");
     successMsg += AnsiToWString(m_Model_Data.strModelName) + TEXT("_Material.json");
 
     MessageBox(nullptr, successMsg.c_str(), TEXT("Success"), MB_OK | MB_ICONINFORMATION);
@@ -292,7 +305,7 @@ void CEditor_Model::ExportModel()
 void CEditor_Model::LoadModel(_wstring strModelName)
 {
 
-    string strDatPath = "../Bin/Resources/Data/" + WStringToAnsi(strModelName) + "/" + WStringToAnsi(strModelName) + ".dat";;
+    string strDatPath = "../../Client/Bin/Resources/Data/" + WStringToAnsi(strModelName) + "/" + WStringToAnsi(strModelName) + ".dat";;
 
     if (!filesystem::exists(strDatPath))
     {
@@ -313,7 +326,7 @@ void CEditor_Model::LoadModel(_wstring strModelName)
 
 void CEditor_Model::Update_DAT_From_JSON()
 {
-    string strBasePath = "../Bin/Resources/Data/";
+    string strBasePath = "../../Client/Bin/Resources/Data/";
     string strModelFolder = strBasePath + m_Model_Data.strModelName + "/";
 
     string strDatPath = strModelFolder + m_Model_Data.strModelName + ".dat";
@@ -529,7 +542,10 @@ _bool CEditor_Model::Export_MaterialJson(const string& strFilePath)
     ofstream ofs(strFilePath);
     if (ofs.is_open())
     {
-        ofs << j.dump(4);
+        //string jsonStr = j.dump(4);
+        //jsonStr = PostProcessJSON(jsonStr);
+        //ofs << jsonStr;
+		ofs << j.dump(4);
         if (!ofs.good())
             isSuccess = false;
 
@@ -559,6 +575,64 @@ void CEditor_Model::Export_Binary(const string& strFilePath)
     MSG_BOX(TEXT("Binary 파일 저장 성공"));
 }
 
+string CEditor_Model::PostProcessJSON(const string& jsonStr)
+{
+    istringstream iss(jsonStr);
+    ostringstream oss;
+    string line;
+    string arrayBuffer;
+    bool inShortArray = false;
+
+    while (std::getline(iss, line))
+    {
+        // 배열 시작 감지
+        if (line.find('[') != string::npos &&
+            line.find(']') == string::npos)
+        {
+            // 다음 몇 줄을 확인해서 짧은 배열인지 판단
+            arrayBuffer = line;
+            inShortArray = true;
+            continue;
+        }
+
+        if (inShortArray)
+        {
+            arrayBuffer += line;
+
+            // 배열 끝 감지
+            if (line.find(']') != string::npos)
+            {
+                // 한 줄로 압축
+                string compressed = CompressArray(arrayBuffer);
+                oss << compressed << "\n";
+                inShortArray = false;
+                arrayBuffer.clear();
+                continue;
+            }
+        }
+        else
+        {
+            oss << line << "\n";
+        }
+    }
+
+    return oss.str();
+}
+
+string CEditor_Model::CompressArray(const string& arrayStr)
+{
+    string result = arrayStr;
+
+    // 줄바꿈 제거
+    result.erase(remove(result.begin(), result.end(), '\n'), result.end());
+    result.erase(remove(result.begin(), result.end(), '\r'), result.end());
+
+    // 연속된 공백을 하나로
+    result = regex_replace(result, regex(R"(\s+)"), " ");
+
+    return result;
+}
+
 
 CEditor_Model* CEditor_Model::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, MODELTYPE eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix)
 {
@@ -577,7 +651,7 @@ CComponent* CEditor_Model::Clone(void* pArg)
 {
     CEditor_Model* pInstance = new CEditor_Model(*this);
 
-    if (FAILED(pInstance->Initialize(pArg)))
+    if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
         MSG_BOX(TEXT("Failed to Created : CEditor_Model"));
         Safe_Release(pInstance);

@@ -80,6 +80,11 @@ CEditor_Animation* CEditor_Animation::Create(const aiAnimation* pAIAnimation, co
     return pInstance;
 }
 
+CEditor_Animation* CEditor_Animation::Clone()
+{
+    return new CEditor_Animation(*this);
+}
+
 void CEditor_Animation::Free()
 {
     __super::Free();

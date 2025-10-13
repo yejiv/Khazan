@@ -179,7 +179,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\Camera.cpp" />
     <ClCompile Include="..\private\Cell.cpp" />
     <ClCompile Include="..\private\Channel.cpp" />
-    <ClCompile Include="..\Private\Character.cpp" />
+    <ClCompile Include="..\Private\CharacterVirtual.cpp" />
     <ClCompile Include="..\Private\Component.cpp" />
     <ClCompile Include="..\Private\DebugDraw.cpp" />
     <ClCompile Include="..\Private\Event_Manager.cpp" />
@@ -205,6 +205,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\MeshMaterial.cpp" />
     <ClCompile Include="..\Private\Mesh_Instance.cpp" />
     <ClCompile Include="..\private\Model.cpp" />
+    <ClCompile Include="..\Private\ModelMesh_Instance.cpp" />
     <ClCompile Include="..\Private\Model_Instance.cpp" />
     <ClCompile Include="..\Private\MultiDelegate.cpp" />
     <ClCompile Include="..\private\Navigation.cpp" />
@@ -262,7 +263,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\public\Camera.h" />
     <ClInclude Include="..\public\Cell.h" />
     <ClInclude Include="..\public\Channel.h" />
-    <ClInclude Include="..\Public\Character.h" />
+    <ClInclude Include="..\Public\CharacterVirtual.h" />
     <ClInclude Include="..\Public\Component.h" />
     <ClInclude Include="..\Public\DebugDraw.h" />
     <ClInclude Include="..\Public\Event_Manager.h" />
@@ -303,6 +304,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\public\MeshMaterial.h" />
     <ClInclude Include="..\Public\Mesh_Instance.h" />
     <ClInclude Include="..\public\Model.h" />
+    <ClInclude Include="..\Public\ModelMesh_Instance.h" />
     <ClInclude Include="..\Public\Model_Instance.h" />
     <ClInclude Include="..\Public\MultiDelegate.h" />
     <ClInclude Include="..\public\Navigation.h" />

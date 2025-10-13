@@ -42,6 +42,7 @@ using namespace DirectX;
 #include <Core/JobSystemThreadPool.h>
 #include <Physics/PhysicsSystem.h>
 #include <Physics/Body/BodyInterface.h>
+#include <Physics/Character/CharacterVirtual.h>
 #include <RegisterTypes.h>
 #include <Core/TempAllocator.h>
 

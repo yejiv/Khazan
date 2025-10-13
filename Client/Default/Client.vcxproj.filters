@@ -215,5 +215,8 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_MeshInstance.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_ModelMeshInstance.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
