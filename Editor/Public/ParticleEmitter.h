@@ -44,6 +44,9 @@ public:
 
 	CVIBuffer_Point_Instance::POINT_INSTANCE_DESC Get_ParticleInfo() { return m_ParticleInfo; }
 
+	_float4						Get_DiffuseColor() { return m_vDiffuseColor; }
+	void						Set_DiffuseColor(const _float4& vColor) { m_vDiffuseColor = vColor; }
+
 public:
 	HRESULT						Recreate_Particle(CVIBuffer_Point_Instance::POINT_INSTANCE_DESC PointDesc);
 
@@ -59,6 +62,8 @@ private:
 	_bool						m_isGravity = {};
 
 	CVIBuffer_Point_Instance::POINT_INSTANCE_DESC	m_ParticleInfo = {};
+	
+	_float4						m_vDiffuseColor = { 1.f, 1.f, 1.f, 1.f };
 
 private:
 	HRESULT								Ready_Components();
