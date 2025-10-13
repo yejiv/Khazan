@@ -13,14 +13,19 @@ NS_BEGIN(Client)
 
 class CLoader final : public CBase
 {
+public:
+	struct CoInitGuard {
+		HRESULT hr = S_OK;
+		CoInitGuard(DWORD opt = COINIT_MULTITHREADED) { hr = CoInitializeEx(nullptr, opt); }
+		~CoInitGuard() { if (SUCCEEDED(hr)) CoUninitialize(); }
+	};
 private:
 	CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual ~CLoader() = default;
 
-	/* 세마포어 , 뮤텍스, 크리티컬섹션 */
-
 public:
 	HRESULT Initialize(LEVEL eNextLevelID);
+	void Update();
 	HRESULT Loading();
 
 	_bool isFinished() {
@@ -35,17 +40,38 @@ private:
 	ID3D11Device*					m_pDevice = { nullptr }; 
 	ID3D11DeviceContext*			m_pContext = { nullptr };
 	LEVEL							m_eNextLevelID = { LEVEL::END };
-	HANDLE							m_hThread = {};
 	_tchar							m_szLoadingText[MAX_PATH] = {};
-	_bool							m_isFinished = { false };
 	CGameInstance*					m_pGameInstance = { nullptr };
-	CRITICAL_SECTION				m_CriticalSection = {};
 
+	vector<future<any>> m_futures;
+	atomic<_bool> m_isFinished = { false };
+	atomic<int> m_progress = { 0 };
 
+	mutex	m_CommitMutex;
+	vector<function<void()>> m_Commits;
+
+private:
+	void EnqueueCommit(function<void()> fn) {
+		lock_guard<mutex> lg(m_CommitMutex);
+		m_Commits.emplace_back(move(fn));
+	}
+	void FlushCommits() {
+		vector<function<void()>> local;
+		{
+			lock_guard<mutex> lg(m_CommitMutex);
+			local.swap(m_Commits);
+		}
+		for (auto& fn : local) fn();
+	}
 
 private:
 	HRESULT Loading_For_Title_Level();
+
 	HRESULT Loading_For_Stage1_Level();
+	HRESULT Loading_For_Stage1_Texture();
+	HRESULT Loading_For_Stage1_Model();
+	HRESULT Loading_For_Stage1_Shader();
+	HRESULT Loading_For_Stage1_GameObject();
 
 
 
