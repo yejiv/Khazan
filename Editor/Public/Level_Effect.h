@@ -30,6 +30,7 @@ private:
 	_int m_iSelectedEmitter = { -1 };
 	_int m_iPrevSelectedEmitter = { -1 };
 	_wstring m_strEmitterName = {};
+	_float4 m_vPaletteColor = { 1.f, 1.f, 1.f, 1.f };
 
 	// ===== 파티클 관련 기본 변수 =====
 	CVIBuffer_Point_Instance::POINT_INSTANCE_DESC m_PointInfo = {};

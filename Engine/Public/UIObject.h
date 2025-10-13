@@ -19,8 +19,9 @@ public:
 	typedef struct tagUIObjectDesc : public GAMEOBJECT_DESC
 	{
 		_float3			vLocalSize, vLocalPos;
-		UISPACETYPE		eSpaceTeype;
 		_uint			iUIType;
+		UISPACETYPE		eSpaceTeype;
+		_char			szName[26];
 
 	}UIOBJECT_DESC;
 
@@ -40,8 +41,13 @@ public:
 
 public:
 	class CTexture*				Set_Texture(CGameObject* pGameObject, CTexture* pTexture);
+	const _char*				Get_Name() { return m_szName; }
 	void						Set_LocalPos(const _float3& vPos) { m_vLocalPos = vPos; }
+	void						Set_LocalSize(const _float3& vSize) { m_vLocalSize = vSize; }
+	_float3						Get_LocalPos() const { return m_vLocalPos; }
 	_float3						Get_LocalSize() const { return m_vLocalSize; }
+
+
 
 public:
 	virtual HRESULT				Initialize_Prototype() override;
@@ -94,6 +100,9 @@ protected:
 
 	_bool						m_isVisible = { true };
 	_bool						m_isHovered = { false };
+
+	_char						m_szName[26] = {};
+
 
 	CUIObject*					m_pParent = { nullptr };
 

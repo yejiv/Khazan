@@ -144,6 +144,7 @@ public:
 	void Set_ObjectFilter(_uint iSrc, _uint iDst);
 	void Set_ObjectVsBPFilter(_uint iObjectLayer, _uint iBPLayer);
 	Body* CreateAndAdd_Body(const BodyCreationSettings& BodySetting, BodyInterface** pBodyInterface);
+	CharacterVirtual* CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData);
 
 #ifdef _DEBUG
 	void Jolt_Test();
