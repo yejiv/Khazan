@@ -86,11 +86,13 @@ public:
 	virtual HRESULT Initialize_Clone(void* pArg) override;
 	void Update(_float fTimeDelta, class CTransform* pTransform);
 
-//private:
-//	void    Update_Kinematic(_float fTimeDelta, class CPhysicsBody* pBody, class CTransform* pTransform);
+public:
+	void    Set_Position(_vector vPos);
+	void	Set_Velocity(_vector vVelocity);
+	void	Set_Rotation(_vector vRotation);
 
 private:
-	JPH::CharacterVirtual* m_pCharacterVir = { nullptr };
+	JPH::CharacterVirtual* m_pCharVir = { nullptr };
 
 	JPH::BodyID m_BodyId;
 	JPH::BodyInterface* m_pBodyInterface = { nullptr };

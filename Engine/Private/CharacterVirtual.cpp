@@ -74,13 +74,13 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 		SettingDesc.mUp = Vec3::sAxisZ();
 	SettingDesc.mInnerBodyLayer = m_iNumObjectLayer;
 
-	m_pCharacterVir = m_pGameInstance->CreateCharacterVirtual(&SettingDesc, RVec3Arg(LoadVec3(pDesc->vPos)), QuatArg(LoadQuat(pDesc->vQuat)), 0, &m_pBodyInterface);
-	m_BodyId = m_pCharacterVir->GetInnerBodyID();
+	m_pCharVir = m_pGameInstance->CreateCharacterVirtual(&SettingDesc, RVec3Arg(LoadVec3(pDesc->vPos)), QuatArg(LoadQuat(pDesc->vQuat)), 0, &m_pBodyInterface);
+	m_BodyId = m_pCharVir->GetInnerBodyID();
 
 	if (!m_BodyId.IsInvalid())
 	{
 		//m_pBodyInterface->SetObjectLayer(m_BodyId, m_iNumObjectLayer);
-		m_pBodyInterface->SetIsSensor(m_BodyId, false);                     
+		m_pBodyInterface->SetIsSensor(m_BodyId, false);
 
 	}
 
@@ -91,7 +91,7 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 	CCharacterContactListener::CONFIG_DESC ConfigDesc{};
 
 	m_pContactListener = new CCharacterContactListener(ConfigDesc);
-	m_pCharacterVir->SetListener(m_pContactListener);
+	m_pCharVir->SetListener(m_pContactListener);
 
 	m_pBodyFilter = new BodyFilter();
 	m_pShapeFilter = new ShapeFilter();
@@ -100,14 +100,14 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 }
 void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform)
 {
-	
-	if (!m_pCharacterVir) return;
+
+	if (!m_pCharVir) return;
 
 	// 1) 수평 입력 속도 (지금은 0; 필요 시 여기서 만들어 더해주면 됨)
 	JPH::Vec3 vHorizontal = JPH::Vec3::sZero();
 
 	// 2) 접지 상태 확인 + 중력 처리
-	const bool onGround = (m_pCharacterVir->GetGroundState() == JPH::CharacterVirtual::EGroundState::OnGround);
+	const bool onGround = (m_pCharVir->GetGroundState() == JPH::CharacterVirtual::EGroundState::OnGround);
 	if (onGround)
 	{
 		// 바닥에 있을 때는 하강 속도 제거해 '붙이기'
@@ -115,7 +115,7 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform)
 			m_vVelocity.SetY(0.0f);
 
 		// (선택) 이동 플랫폼 위라면 플랫폼 속도 보정
-		vHorizontal += m_pCharacterVir->GetGroundVelocity();
+		vHorizontal += m_pCharVir->GetGroundVelocity();
 	}
 	else
 	{
@@ -125,14 +125,14 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform)
 
 	// 3) 최종 의도 속도 구성 후 캐릭터에 세팅
 	const JPH::Vec3 desired(vHorizontal.GetX(), m_vVelocity.GetY(), vHorizontal.GetZ());
-	m_pCharacterVir->SetLinearVelocity(desired);
+	m_pCharVir->SetLinearVelocity(desired);
 
 	// 4) 캐릭터 업데이트 (네 버전 시그니처)
-	m_pGameInstance->CharVir_Update(fTimeDelta, m_pCharacterVir, m_vGravity, m_iNumObjectLayer, m_pBodyFilter, m_pShapeFilter);
+	m_pGameInstance->CharVir_Update(fTimeDelta, m_pCharVir, m_vGravity, m_iNumObjectLayer, m_pBodyFilter, m_pShapeFilter);
 
 	// 5) 결과 Transform 반영
-	const JPH::RVec3 pos = m_pCharacterVir->GetPosition();
-	const JPH::Quat  rot = m_pCharacterVir->GetRotation();
+	const JPH::RVec3 pos = m_pCharVir->GetPosition();
+	const JPH::Quat  rot = m_pCharVir->GetRotation();
 
 	// TODO: 너희 엔진 API에 맞게 치환
 	_vector vPos = XMVectorSet(pos.GetX(), pos.GetY(), pos.GetZ(), 1.f);
@@ -140,6 +140,21 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform)
 	pTransform->Set_State(STATE::POSITION, vPos);
 	pTransform->Set_Quaternion(vRot);
 
+}
+
+void CCharacterVirtual::Set_Position(_vector vPos)
+{
+	m_pCharVir->SetPosition(LoadVec3(vPos));
+}
+
+void CCharacterVirtual::Set_Velocity(_vector vVelocity)
+{
+	m_vVelocity = LoadVec3(vVelocity);
+}
+
+void CCharacterVirtual::Set_Rotation(_vector vRotation)
+{
+	m_pCharVir->SetRotation(LoadQuat(vRotation));
 }
 
 CCharacterVirtual* CCharacterVirtual::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -173,7 +188,7 @@ void CCharacterVirtual::Free()
 {
 	__super::Free();
 
-	Safe_Delete(m_pCharacterVir);
+	Safe_Delete(m_pCharVir);
 	Safe_Delete(m_pBodyFilter);
 	Safe_Delete(m_pShapeFilter);
 	Safe_Delete(m_pContactListener);

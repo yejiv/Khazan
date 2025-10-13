@@ -139,13 +139,13 @@ void CJolt_Manager::Test()
 
     m_pPhysics->GetBodyInterface().AddBody(floor->GetID(), EActivation::DontActivate);
 
-    for (_uint i = 0; i < 5; i++)
+   /* for (_uint i = 0; i < 5; i++)
     {
         BodyCreationSettings sphere_settings(new SphereShape(0.5f), RVec3(Real(0.1), Real(i * 5), Real(0.0)), Quat::sIdentity(), EMotionType::Dynamic, ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
         BodyID sphere_id = m_pPhysics->GetBodyInterface().CreateAndAddBody(sphere_settings, EActivation::Activate);
 
         m_pPhysics->GetBodyInterface().SetLinearVelocity(sphere_id, Vec3(0.0f, 0.0f, 0.0f));
-    }
+    }*/
 
     m_pPhysics->OptimizeBroadPhase();
 }
