@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Public\Camera_Map.h" />
     <ClInclude Include="..\Public\Editor_Animation.h" />
     <ClInclude Include="..\Public\Editor_Bone.h" />
     <ClInclude Include="..\Public\Editor_Channel.h" />
@@ -155,6 +156,7 @@
     <ClInclude Include="..\Public\Editor_Mesh.h" />
     <ClInclude Include="..\Public\Editor_MeshMaterial.h" />
     <ClInclude Include="..\public\Editor_Model.h" />
+    <ClInclude Include="..\public\Editor_TempCamera.h" />
     <ClInclude Include="..\Public\Edit_Button.h" />
     <ClInclude Include="..\Public\Edit_Panel.h" />
     <ClInclude Include="..\Public\Edit_ProgressBar.h" />
@@ -185,12 +187,14 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Private\Camera_Map.cpp" />
     <ClCompile Include="..\Private\Editor_Animation.cpp" />
     <ClCompile Include="..\Private\Editor_Bone.cpp" />
     <ClCompile Include="..\Private\Editor_Channel.cpp" />
     <ClCompile Include="..\Private\Editor_Mesh.cpp" />
     <ClCompile Include="..\Private\Editor_MeshMaterial.cpp" />
     <ClCompile Include="..\private\Editor_Model.cpp" />
+    <ClCompile Include="..\private\Editor_TempCamera.cpp" />
     <ClCompile Include="..\Private\Edit_Button.cpp" />
     <ClCompile Include="..\Private\Edit_Panel.cpp" />
     <ClCompile Include="..\Private\Edit_ProgressBar.cpp" />
@@ -218,6 +222,8 @@
     <ClCompile Include="EditorPch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">EditorPch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">EditorPch.h</PrecompiledHeaderFile>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

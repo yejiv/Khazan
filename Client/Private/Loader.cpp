@@ -13,6 +13,8 @@
 
 //#include "JOH_Test1.h"
 
+//static mutex g_GpuGate;
+
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice{ pDevice }
 	, m_pContext { pContext }
@@ -38,27 +40,75 @@ HRESULT CLoader::Initialize(LEVEL eNextLevelID)
 {
 	m_eNextLevelID = eNextLevelID;
 
-	InitializeCriticalSection(&m_CriticalSection);
+	//InitializeCriticalSection(&m_CriticalSection);
 
-	m_hThread = (HANDLE)_beginthreadex(nullptr, 0, LoadingMain, this, 0, nullptr);
-	if (0 == m_hThread)
-		return E_FAIL;
+	//m_hThread = (HANDLE)_beginthreadex(nullptr, 0, LoadingMain, this, 0, nullptr);
+	//if (0 == m_hThread)
+	//	return E_FAIL;
 
-	return S_OK;
+	return Loading();
+}
+
+void CLoader::Update()
+{
+	if (m_isFinished.load()) return;
+
+	FlushCommits();
+
+	bool all_done = true;
+	HRESULT first_fail = S_OK;
+
+	for (auto& f : m_futures)
+	{
+		if (!f.valid()) continue;
+		using namespace chrono_literals;
+		auto st = f.wait_for(0ms);
+		if (st == future_status::ready) {
+			HRESULT hr = any_cast<HRESULT>(f.get());
+			if (FAILED(hr) && SUCCEEDED(first_fail)) first_fail = hr;
+		}
+		else {
+			all_done = false;
+		}
+	}
+
+	bool commit_empty = false;
+	{
+		lock_guard<mutex> lg(m_CommitMutex);
+		commit_empty = m_Commits.empty();
+	}
+
+	if (all_done && commit_empty)
+	{
+		if (SUCCEEDED(first_fail))
+			lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
+		else
+			lstrcpy(m_szLoadingText, TEXT("로딩 실패"));
+
+		m_isFinished = true;
+	}
 }
 
 HRESULT CLoader::Loading()
 {
-	EnterCriticalSection(&m_CriticalSection);
+	//EnterCriticalSection(&m_CriticalSection);
 
-	CoInitializeEx(nullptr, 0);
+	//CoInitializeEx(nullptr, 0);
+
+	m_isFinished = false;
+	m_futures.clear();
 
 	HRESULT			hr = {};
 
 	switch(m_eNextLevelID)
 	{
 	case LEVEL::TITLE:
-		hr = Loading_For_Title_Level();
+		m_futures.emplace_back(
+			m_pGameInstance->EnqueueAny([this]() -> any {
+				CoInitGuard co;
+				return any(Loading_For_Title_Level());
+				})
+		);
 		break;
 	case LEVEL::STAGE1:
 		hr = Loading_For_Stage1_Level();
@@ -68,10 +118,11 @@ HRESULT CLoader::Loading()
 	if (FAILED(hr))
 		return E_FAIL;
 
-	LeaveCriticalSection(&m_CriticalSection);
+	//LeaveCriticalSection(&m_CriticalSection);
 
 	return S_OK;
 }
+
 
 HRESULT CLoader::Loading_For_Title_Level()
 {
@@ -92,7 +143,23 @@ HRESULT CLoader::Loading_For_Title_Level()
 
 HRESULT CLoader::Loading_For_Stage1_Level()
 {
-	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
+	
+	m_futures.emplace_back(m_pGameInstance->EnqueueAny([this]() -> any { return any(Loading_For_Stage1_Texture()); }));
+
+	m_futures.emplace_back(m_pGameInstance->EnqueueAny([this]() -> any { return any(Loading_For_Stage1_Model()); }));
+
+	m_futures.emplace_back(m_pGameInstance->EnqueueAny([this]() -> any { return any(Loading_For_Stage1_Shader()); }));
+
+	m_futures.emplace_back(m_pGameInstance->EnqueueAny([this]() -> any { return any(Loading_For_Stage1_GameObject()); }));
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Stage1_Texture()
+{
+	CoInitGuard co;
+
+	//lock_guard<mutex> gpu_lock(g_GpuGate);
 
 	/* Prototype_Component_Texture_Sky */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Texture_Sky"),
@@ -114,9 +181,14 @@ HRESULT CLoader::Loading_For_Stage1_Level()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Brush.png"), 1))))
 		return E_FAIL;
 
+	return S_OK;
+}
 
+HRESULT CLoader::Loading_For_Stage1_Model()
+{
+	CoInitGuard co;
 
-	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
+	//lock_guard<mutex> gpu_lock(g_GpuGate);
 
 	_matrix		PreTransformMatrix = XMMatrixIdentity();
 
@@ -133,9 +205,23 @@ HRESULT CLoader::Loading_For_Stage1_Level()
 	//	return E_FAIL;
 
 
-	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
+	return S_OK;
+}
 
-	lstrcpy(m_szLoadingText, TEXT("게임오브젝트를 로딩중입니다."));
+HRESULT CLoader::Loading_For_Stage1_Shader()
+{
+	CoInitGuard co;
+
+	//lock_guard<mutex> gpu_lock(g_GpuGate);
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Stage1_GameObject()
+{
+	CoInitGuard co;
+
+	//lock_guard<mutex> gpu_lock(g_GpuGate);
 
 	/* Prototype_GameObject_Terrain*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Terrain"),
@@ -172,17 +258,10 @@ HRESULT CLoader::Loading_For_Stage1_Level()
 		CDummy::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Dummy"), TEXT("Dummy"), nullptr, 10);
-
 	/* Prototype_GameObject_JOH_Test1 */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_JOH_Test1"),
 	//	CJOH_Test1::Create(m_pDevice, m_pContext))))
 	//	return E_FAIL;
-
-
-	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
-
-	m_isFinished = true;
 
 	return S_OK;
 }
@@ -203,12 +282,6 @@ CLoader* CLoader::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, L
 void CLoader::Free()
 {
 	__super::Free();
-	
-	WaitForSingleObject(m_hThread, INFINITE);
-
-	CloseHandle(m_hThread);
-
-	DeleteCriticalSection(&m_CriticalSection);
 
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pDevice);

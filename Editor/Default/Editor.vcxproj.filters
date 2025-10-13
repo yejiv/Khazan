@@ -103,20 +103,11 @@
     <Filter Include="02.GameObject\Effect\Terrain">
       <UniqueIdentifier>{81b63c04-fa83-4a3a-96f5-b9f89191f19d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\UI">
-      <UniqueIdentifier>{8b07d286-5646-4cb0-8398-87160a91be03}</UniqueIdentifier>
+    <Filter Include="02.GameObject\MapObject\Camera">
+      <UniqueIdentifier>{204d72f1-296c-4b94-ade6-47085c5a8ef9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\UI\ProgressBar">
-      <UniqueIdentifier>{03473492-0756-4f08-9ae8-a70bb80401a4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObject\UI\Button">
-      <UniqueIdentifier>{585e3d2b-cb8b-46b1-bf6e-01f77ad2976a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObject\UI\TextBox">
-      <UniqueIdentifier>{1e172727-6b5d-4c75-a4a5-f947f55f76e1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObject\UI\Panel">
-      <UniqueIdentifier>{2f6993ae-dd86-4bf3-80b7-a90cbe7ddd52}</UniqueIdentifier>
+    <Filter Include="02.GameObject\Animation\98.Temp Camera">
+      <UniqueIdentifier>{6219a60c-d70b-437e-ab90-77b6097d02bb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -216,17 +207,11 @@
     <ClInclude Include="..\public\Terrain_Grid.h">
       <Filter>02.GameObject\Effect\Terrain</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Edit_Button.h">
-      <Filter>02.GameObject\UI\Button</Filter>
+    <ClInclude Include="..\Public\Camera_Map.h">
+      <Filter>02.GameObject\MapObject\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Edit_Panel.h">
-      <Filter>02.GameObject\UI\Panel</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Edit_TextBox.h">
-      <Filter>02.GameObject\UI\TextBox</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Edit_ProgressBar.h">
-      <Filter>02.GameObject\UI\ProgressBar</Filter>
+    <ClInclude Include="..\public\Editor_TempCamera.h">
+      <Filter>02.GameObject\Animation\98.Temp Camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -324,17 +309,11 @@
     <ClCompile Include="..\private\Terrain_Grid.cpp">
       <Filter>02.GameObject\Effect\Terrain</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Edit_Button.cpp">
-      <Filter>02.GameObject\UI\Button</Filter>
+    <ClCompile Include="..\Private\Camera_Map.cpp">
+      <Filter>02.GameObject\MapObject\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Edit_Panel.cpp">
-      <Filter>02.GameObject\UI\Panel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Edit_TextBox.cpp">
-      <Filter>02.GameObject\UI\TextBox</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Edit_ProgressBar.cpp">
-      <Filter>02.GameObject\UI\ProgressBar</Filter>
+    <ClCompile Include="..\private\Editor_TempCamera.cpp">
+      <Filter>02.GameObject\Animation\98.Temp Camera</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

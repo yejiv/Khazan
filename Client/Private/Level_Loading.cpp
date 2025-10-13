@@ -28,6 +28,8 @@ HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
 
 void CLevel_Loading::Update(_float fTimeDelta)
 {
+	m_pLoader->Update();
+
 	if (true == m_pLoader->isFinished() && 
 		GetKeyState(VK_SPACE) & 0x8000)
 	{

@@ -2,6 +2,8 @@
 #include "GameInstance.h"
 #include "Level_Loading.h"
 
+#include "Editor_TempCamera.h"
+
 CLevel_Animation::CLevel_Animation(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
 {
@@ -9,6 +11,9 @@ CLevel_Animation::CLevel_Animation(ID3D11Device* pDevice, ID3D11DeviceContext* p
 
 HRESULT CLevel_Animation::Initialize()
 {
+	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
+		return E_FAIL;
+
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
 
@@ -38,6 +43,46 @@ HRESULT CLevel_Animation::Render()
 	return S_OK;
 }
 
+HRESULT CLevel_Animation::Ready_Lights()
+{
+	LIGHT_DESC LightDesc = {};
+
+	LightDesc.eType = LIGHT_DESC::DIRECTIONAL;
+
+	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
+
+	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
+	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+
+	if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CLevel_Animation::Ready_Layer_Camera(const _wstring& strLayerTag)
+{
+	CEditor_TempCamera::TEMPCAMERA_DESC		CameraDesc{};
+
+
+	CameraDesc.vEye = _float4(0.f, 20.f, -15.f, 1.f);
+	CameraDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
+	CameraDesc.fFovy = XMConvertToRadians(60.0f);
+	CameraDesc.fNear = 0.1f;
+	CameraDesc.fFar = 1000.f;
+	CameraDesc.fSpeedPerSec = 10.f;
+	CameraDesc.fRotationPerSec = XMConvertToRadians(90.0f);
+	CameraDesc.fMouseSensor = 0.2f;
+
+	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::ANIMATION), strLayerTag,
+		ENUM_CLASS(LEVEL::ANIMATION), TEXT("Prototype_GameObject_JOH_TempCamera"), &CameraDesc)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+
 HRESULT CLevel_Animation::Ready_Layer_BackGround(const _wstring& strLayerTag)
 {
 	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::ANIMATION), strLayerTag,
@@ -55,6 +100,7 @@ HRESULT CLevel_Animation::Ready_Layer_Test(const _wstring& strLayerTag)
 
 	return S_OK;
 }
+
 
 
 CLevel_Animation* CLevel_Animation::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
