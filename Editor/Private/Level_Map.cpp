@@ -84,6 +84,7 @@ HRESULT CLevel_Map::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 HRESULT CLevel_Map::Ready_Layer_Prop_Static(const _wstring& strLayerTag)
 {
+	/*
 	string strModelName = {};
 	CProp_Static::PROP_STATIC_DESC StaticDesc = {};
 
@@ -91,7 +92,7 @@ HRESULT CLevel_Map::Ready_Layer_Prop_Static(const _wstring& strLayerTag)
 	lstrcat(StaticDesc.szModelName, TEXT("Bantu_LightObj"));
 
 	strModelName = "Bantu_LightObj";
-	m_StaticModels.push_back(strModelName);
+	m_JsonList.push_back(strModelName);
 
 	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), strLayerTag,
 		ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"), &StaticDesc), E_FAIL);
@@ -100,21 +101,25 @@ HRESULT CLevel_Map::Ready_Layer_Prop_Static(const _wstring& strLayerTag)
 	lstrcat(StaticDesc.szModelName, TEXT("Bantu_Brick"));
 
 	strModelName = "Bantu_Brick";
-	m_StaticModels.push_back(strModelName);
+	m_JsonList.push_back(strModelName);
 
 	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), strLayerTag,
 		ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"), &StaticDesc), E_FAIL);
-
+	*/
 	return S_OK;
 }
 
 HRESULT CLevel_Map::Ready_DefaultImGui_For_MapTool()
 {
+	Get_Directory_Files();
+
 	CHECK_FAILED(Ready_Main_Window(), E_FAIL);
 
 	CHECK_FAILED(Ready_Prop_Edit_Window(), E_FAIL);
 
 	CHECK_FAILED(Ready_Json_Edit_Window(), E_FAIL);
+	
+	CHECK_FAILED(Ready_Json_List_Window(), E_FAIL);
 
 	return S_OK;
 }
@@ -126,17 +131,18 @@ HRESULT CLevel_Map::Ready_Main_Window()
 		{
 			ImGui::Begin("MAIN WINDOW", &m_isMainWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
-			if (ImGui::Button("STATIC")) m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)];
+			if (ImGui::Button("STATIC"))		m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)];
 			SAMELINE;
-			if (ImGui::Button("ANIMATED")) m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)];
+			if (ImGui::Button("ANIMATED"))		m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)];
 			SAMELINE;
-			if (ImGui::Button("INTERACTIVE")) m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)];
+			if (ImGui::Button("INTERACTIVE"))	m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)];
 			SAMELINE;
-			if (ImGui::Button("DESTRUCTIBLE")) m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)];
+			if (ImGui::Button("DESTRUCTIBLE"))	m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)];
 			SEPARATOR;
 
 			ImGui::Text("INFORMATION");
-			ImGui::Text("Hi-ing");
+
+			ImGui::Text("Hi-inh");
 
 			ImGui::End();
 		}
@@ -155,29 +161,30 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 
 			if (ImGui::BeginListBox("##prop_static_list"))
 			{
-				for (_uint i = 0; i < m_StaticModels.size(); ++i)
+				/*
+				for (_uint i = 0; i < m_JsonList.size(); ++i)
 				{
-					_bool isSelectPrototype = (m_iStatIndex == i);
-					if (ImGui::Selectable(m_StaticModels[i].c_str(), isSelectPrototype))
+					_bool isSelectPrototype = (m_iJsonListIndex == i);
+					if (ImGui::Selectable(m_JsonList[i].strModelName.c_str(), isSelectPrototype))
 					{
-						m_iStatIndex = i;
+						m_iJsonListIndex = i;
 
-						//m_pProp_Static = dynamic_cast<CProp_Static*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_Prop_Static"), m_iStatIndex));
+						ImGui::Text("NUM INSTANCE : %d", m_JsonList[i].iNumInstances);
+
+						//m_pProp_Static = dynamic_cast<CProp_Static*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_Prop_Static"), m_iJsonListIndex));
 						//CHECK_NULLPTR_MSG(m_pProp_Static, TEXT("pProp_Static == nullptr"), );
 					}
 				}
-
+				*/
 				ImGui::EndListBox();
 			}
-
-			ImGui::Text("CURRENT INDEX : %d", m_iStatIndex);
 
 			//ImGui::Text("PATH : "); ImGui::SameLine();
 			//ImGui::InputText("##jsoninputtext", m_szJsonFile, IM_ARRAYSIZE(m_szJsonFile));
 
 			//ImGui::Text("JSON PATH : %s", m_szJsonFile);
 
-			ImGui::Text("================##0");
+			SEPARATOR;
 
 			if (ImGui::Button("ADD INSTANCE"))
 			{
@@ -244,20 +251,62 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 
 HRESULT CLevel_Map::Ready_Json_Edit_Window()
 {
-#pragma region JSON CONVERT FOR ME
+#pragma region JSON 컨버트
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		ImGui::Begin("JSON", &m_isJsonWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
+		ImGui::Text("DEFAULT PATH : ");
+		SAMELINE; ITEMWIDTH(350.f);
+		ImGui::InputText("##json_default_path", m_szJsonDefaultPath, IM_ARRAYSIZE(m_szJsonDefaultPath));
+
+		ImGui::Text("MAP NAME : "); SAMELINE;
+
+		if (ImGui::Button("HEINMACH"))
+		{
+			m_eMapType = MAPEDIT_MAP::HEINMACH;
+			
+			Get_Directory_Files();
+		} SAMELINE;
+		if (ImGui::Button("STORMPASS"))
+		{
+			m_eMapType = MAPEDIT_MAP::STORMPASS;
+
+			Get_Directory_Files();
+		} SAMELINE;
+		if (ImGui::Button("THECREVICE"))
+		{
+			m_eMapType = MAPEDIT_MAP::THECREVICE;
+
+			Get_Directory_Files();
+		} SAMELINE;
+		if (ImGui::Button("EMBARS"))
+		{
+			m_eMapType = MAPEDIT_MAP::EMBARS;
+
+			Get_Directory_Files();
+		}
 		ImGui::Text("JSON FILE NAME : ");
-		SAMELINE; ITEMWIDTH(300.f);
-		ImGui::InputText("##json_file_name", m_szJsonFile, IM_ARRAYSIZE(m_szJsonFile));
+		SAMELINE;
+
+		vector<const _char*> JsonFileNames;
+		JsonFileNames.reserve(m_JsonFiles.size());
+		for (auto& String : m_JsonFiles)
+			JsonFileNames.push_back(String.c_str());
+
+		ImGui::Combo("##json_file_list", &m_iJsonFilesIndex, JsonFileNames.data(), static_cast<_int>(m_JsonFiles.size()));
+
+		//ImGui::InputText("##json_file_name", m_szJsonFile, IM_ARRAYSIZE(m_szJsonFile));
 
 		SAMELINE;
 		if (ImGui::Button("LOAD##json"))
 		{
-			string strPath = "../../Client/Bin/Resources/Models/Prop/Json/";
+			m_isJsonConverted = false;
+			m_JsonList.clear();
 
-			strPath += m_szJsonFile;
+			string strPath = m_szJsonDefaultPath;
+
+			strPath += m_szJsonFolderPath[ENUM_CLASS(m_eMapType)];
+			strPath += m_JsonFiles[m_iJsonFilesIndex];
 			strPath += ".json";
 
 			ifstream ifs(strPath);
@@ -270,53 +319,97 @@ HRESULT CLevel_Map::Ready_Json_Edit_Window()
 				m_isJsonOpened = true;
 			}
 			else
-			{
-				MSG_BOX(TEXT("JSON 못열음"));
-			}
+				ifs.close();
 
 		} SEPARATOR;
 
-		ImGui::End();
-		});
-#pragma endregion
-
-#pragma region JSON OPENED	
-	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
-		ImGui::Begin("MAIN WINDOW", &m_isJsonOpened, ImGuiWindowFlags_AlwaysAutoResize);
-
+		// JSON 파일 열었을때
 		if (true == m_isJsonOpened)
 		{
-			ImGui::Text("%s", m_szJsonFile);
+			ImGui::Text("OPENED JSON : %s", m_JsonFiles[m_iJsonFilesIndex].c_str());
 
-			if (ImGui::Button("SET MAPOBJECT"))
+			if (ImGui::Button("JSON CONVERT"))
 			{
 				for (auto& Component : m_Json)
 				{
+					JSON_MAP_DATA Data = {};
+
+					_uint iNumInstance = {};
+
+					size_t start = {};
+					size_t end = {};
+
+					_bool isContain = Component.contains("Properties") && Component["Properties"].contains("StaticMesh") && Component["Properties"]["StaticMesh"].contains("ObjectName") && Component["Properties"]["StaticMesh"]["ObjectName"].is_string();
+
 					if (Component["Type"] == "FoliageInstancedStaticMeshComponent")
 					{
-						string strMeshName = Component["Properties"]["StaticMesh"]["ObjectName"];
-
-						size_t start = strMeshName.find('\'');
-						size_t end = strMeshName.rfind('\'');
-
-						if (start != std::string::npos && end != std::string::npos && end > start)
-							strMeshName = strMeshName.substr(start + 1, end - start - 1);
-
-						m_StaticModels.push_back(strMeshName);
-
-						auto& instances = Component["PerInstanceSMData"];
-						for (auto& inst : instances)
+						if (true == isContain)
 						{
-							auto pos = inst["TransformData"]["Translation"];
-							auto scale = inst["TransformData"]["Scale3D"];
-							auto rot = inst["TransformData"]["Rotation"];
-							ImGui::Text("Pos: %.2f %.2f %.2f", (float)pos["X"], (float)pos["Y"], (float)pos["Z"]);
-							ImGui::Text("Scale: %.2f", (float)scale["X"]);
-							ImGui::Text("Rot(Quat): %.3f %.3f %.3f %.3f", (float)rot["X"], (float)rot["Y"], (float)rot["Z"], (float)rot["W"]);
-							ImGui::Separator();
+							Data.strModelName = Component["Properties"]["StaticMesh"]["ObjectName"];
+
+							start = Data.strModelName.find('\'');
+							end = Data.strModelName.rfind('\'');
+
+							if (start != string::npos && end != string::npos && end > start)
+								Data.strModelName = Data.strModelName.substr(start + 1, end - start - 1);
+
+							auto& instances = Component["PerInstanceSMData"];
+							for (auto& inst : instances)
+							{
+								++iNumInstance;
+
+								auto pos = inst["TransformData"]["Translation"];
+								auto scale = inst["TransformData"]["Scale3D"];
+								auto rot = inst["TransformData"]["Rotation"];
+
+								_float3 vPos = _float3((_float)pos["X"], (_float)pos["Y"], (_float)pos["Z"]);
+								_float3 vScale = _float3((_float)scale["X"], (_float)scale["Y"], (_float)scale["Z"]);
+								_float4 vRot = _float4((_float)rot["X"], (_float)rot["Y"], (_float)rot["Z"], (_float)rot["W"]);
+
+								Data.vInstancePos.push_back(vPos);
+								Data.vInstanceScale.push_back(vScale);
+								Data.vQuaternion.push_back(vRot);
+							}
+
+							Data.iNumInstances = iNumInstance;
+
+							m_JsonList.push_back(Data);
+						}
+					}
+					else if (Component["Type"] == "xxStaticMeshComponent")
+					{
+						if (isContain)
+						{
+							Data.strModelName = Component["Properties"]["StaticMesh"]["ObjectName"];
+
+							start = Data.strModelName.find('\'');
+							end = Data.strModelName.rfind('\'');
+
+							if (start != string::npos && end != string::npos && end > start)
+								Data.strModelName = Data.strModelName.substr(start + 1, end - start - 1);
+
+							auto& instances = Component["PerInstanceSMData"];
+							for (auto& inst : instances)
+							{
+								++iNumInstance;
+
+								auto pos = inst["TransformData"]["Translation"];
+								auto scale = inst["TransformData"]["Scale3D"];
+								auto rot = inst["TransformData"]["Rotation"];
+
+								Data.vInstancePos.push_back(_float3((_float)pos["X"], (_float)pos["Y"], (_float)pos["Z"]));
+								Data.vInstanceScale.push_back(_float3((_float)scale["X"], (_float)scale["Y"], (_float)scale["Z"]));
+								Data.vQuaternion.push_back(_float4((_float)pos["X"], (_float)pos["Y"], (_float)pos["Z"], (_float)pos["W"]));
+							}
+
+							Data.iNumInstances = iNumInstance;
+
+							m_JsonList.push_back(Data);
 						}
 					}
 				}
+
+				m_isJsonConverted = true;
 			}
 		}
 
@@ -325,6 +418,63 @@ HRESULT CLevel_Map::Ready_Json_Edit_Window()
 #pragma endregion
 
 	return S_OK;
+}
+
+HRESULT CLevel_Map::Ready_Json_List_Window()
+{
+		m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
+			if (true == m_isJsonConverted)
+			{
+				ImGui::Begin("JSON LIST", &m_isJsonConverted, ImGuiWindowFlags_AlwaysAutoResize);
+
+				for (_uint i = 0; i < m_JsonList.size(); ++i)
+				{
+					_bool isSelectPrototype = (m_iJsonListIndex == i);
+					if (ImGui::Selectable(m_JsonList[i].strModelName.c_str(), isSelectPrototype))
+						m_iJsonListIndex = i;
+				}
+
+				SEPARATOR;
+				for (_uint i = 0; i < m_JsonList[m_iJsonFilesIndex].iNumInstances; ++i)
+				{
+					_float3 vPos = m_JsonList[m_iJsonListIndex].vInstancePos[i];
+					_float3 vScale = m_JsonList[m_iJsonListIndex].vInstanceScale[i];
+					_float4 vRot = m_JsonList[m_iJsonListIndex].vQuaternion[i];
+
+					ImGui::Text("POSITION\nX : %.3f\nY : %.3f\nX : %.3f", vPos.x, vPos.y, vPos.z);
+					ImGui::Text("SCALE\nX : %.3f\nY : %.3f\nX : %.3f", vScale.x, vScale.y, vScale.z);
+					ImGui::Text("ROTATION\nX : %.3f\nY : %.3f\nX : %.3f", vRot.x, vRot.y, vRot.z);
+
+				}
+
+				ImGui::End();
+			}
+			});
+
+	return S_OK;
+}
+
+void CLevel_Map::Get_Directory_Files()
+{
+	m_JsonFiles.clear();
+
+	string strPath = m_szJsonDefaultPath;
+
+	strPath += m_szJsonFolderPath[ENUM_CLASS(m_eMapType)];
+
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strPath.c_str()))
+	{
+		if (!entry.is_regular_file())
+			continue;
+
+		if (entry.path().extension() != L".json")
+			continue;
+
+		// 파일 이름 (확장자 제거)
+		const string strFileName = entry.path().stem().string(); // 예: Bar_Moxxis
+
+		m_JsonFiles.push_back(strFileName);
+	}
 }
 
 CLevel_Map* CLevel_Map::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

@@ -9,6 +9,18 @@ class CLevel_Map final : public CLevel
 {
 private:
 	enum class PROP_SPECIES { STATIC, ANIMATED, INTERACTIVE, DESTRUCTIBLE, END };
+	enum class MAPEDIT_MAP { HEINMACH, STORMPASS, THECREVICE, EMBARS, END };
+
+	typedef struct tagJsonMapData
+	{
+		string strModelName{};
+
+		_uint iNumInstances{};
+		vector<_float3> vInstancePos{};
+		vector<_float3> vInstanceScale{};
+		vector<_float4> vQuaternion{};
+
+	}JSON_MAP_DATA;
 
 private:
 	CLevel_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -39,13 +51,19 @@ private:
 
 #pragma region JSON
 	JSON m_Json = {};
-	_char m_szJsonFile[MAX_PATH] = {};
+	_char m_szJsonDefaultPath[MAX_PATH] = { "../../Client/Bin/Resources/Models/Prop/Json/" };
+	_char m_szJsonFolderPath[ENUM_CLASS(MAPEDIT_MAP::END)][MAX_PATH] = { "HeinMach/", "StormPass/", "TheCrevice/", "Embars/" };
+	MAPEDIT_MAP m_eMapType = { MAPEDIT_MAP::HEINMACH };
 	_bool m_isJsonOpened = { false };
+	_bool m_isJsonConverted = { false };
 #pragma endregion
 
 #pragma region STATIC WINDOW
-	vector<string> m_StaticModels;
-	_int m_iStatIndex = {};
+	vector<string> m_JsonFiles;
+	_int m_iJsonFilesIndex = {};
+
+	vector<JSON_MAP_DATA> m_JsonList;
+	_int m_iJsonListIndex = {};
 #pragma endregion
 
 private:
@@ -59,6 +77,10 @@ private:
 	HRESULT Ready_Prop_Edit_Window();
 
 	HRESULT Ready_Json_Edit_Window();
+
+	HRESULT Ready_Json_List_Window();
+
+	void Get_Directory_Files();
 #pragma endregion
 
 public:
