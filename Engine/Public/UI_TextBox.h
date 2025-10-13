@@ -3,7 +3,7 @@
 
 NS_BEGIN(Engine)
 
-class CUI_TextBox abstract : public CUIObject
+class ENGINE_DLL CUI_TextBox abstract : public CUIObject
 {
 public:
 	typedef struct tagTextBoxDesc : CUIObject::UIOBJECT_DESC
