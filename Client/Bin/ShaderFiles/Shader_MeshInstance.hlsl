@@ -65,49 +65,6 @@ VS_OUT VS_MAIN(VS_IN In)
     return Out;
 }
 
-VS_OUT VS_MAIN_NORMAL(VS_IN In)
-{
-    VS_OUT Out = (VS_OUT) 0;
-        
-    float4x4 matWV, matWVP;
-    
-    matWV = mul(g_WorldMatrix, g_ViewMatrix);
-    matWVP = mul(matWV, g_ProjMatrix);
-    
-    Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
-    Out.vNormal = normalize(mul(float4(In.vNormal, 0.f), g_WorldMatrix));
-    Out.vTangent = normalize(mul(float4(In.vTangent, 0.f), g_WorldMatrix));
-    Out.vBinormal = normalize(mul(float4(In.vBinormal, 0.f), g_WorldMatrix));
-    Out.vTexcoord = In.vTexcoord;
-    Out.vWorldPos = mul(float4(In.vPosition, 1.f), g_WorldMatrix);
-    Out.vProjPos = Out.vPosition;
-    
-    return Out;
-}
-
-struct VS_OUT_SHADOW
-{
-    float4 vPosition : SV_POSITION;
-    float4 vProjPos  : TEXCOORD0;
-};
-
-
-VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
-{
-    VS_OUT_SHADOW Out;
-      /* 정점의 로컬위치 * 월드 * 뷰 * 투영 */ 
-    
-    float4x4 matWV, matWVP;
-    
-    matWV = mul(g_WorldMatrix, g_ViewMatrix);
-    matWVP = mul(matWV, g_ProjMatrix);
-    
-    Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP); // In.vPosition 은 float3 짜리이므로 w = 1.f 넣어서 행렬과 곱 가능하게
-    Out.vProjPos = Out.vPosition;
-    
-    return Out;
-}
-
 //============================================================================================
 //==================================== [  PIXEL SHADER  ] ====================================
 //============================================================================================
@@ -139,6 +96,7 @@ PS_OUT PS_MAIN(PS_IN In)
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
     
+    // 여기 모델 Mesh 사용했던거라 이펙트에 맞게 수정해주셔야 할듯합니다 ,, , ,
     vector vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);          // sRGB : 파란색이던디
     
     vector vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);          // Non-Color
@@ -170,26 +128,6 @@ PS_OUT PS_WIREFRAME(PS_IN In)
     return Out;
 }
 
-struct PS_IN_SHADOW
-{
-    float4 vPosition : SV_POSITION;
-    float4 vProjPos : TEXCOORD0;
-};
-
-struct PS_OUT_SHADOW
-{
-    float4 vLightDepth : SV_TARGET0;
-};
-
-PS_OUT_SHADOW PS_MAIN_SHADOW(PS_IN_SHADOW In)
-{
-    PS_OUT_SHADOW Out = (PS_OUT_SHADOW) 0;
-    
-    Out.vLightDepth = float4(In.vProjPos.w / g_fFar, 0.f, 0.f, 0.f);
-    
-    return Out;
-}
-
 //==================================================================================================
 //==================================== [  TECHNIQUE AND PASS  ] ====================================
 //==================================================================================================
@@ -216,16 +154,5 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_WIREFRAME();
-    }
-
-    pass Shadow
-    {
-        SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-
-        VertexShader = compile vs_5_0 VS_MAIN_SHADOW();
-        GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_SHADOW();
     }
 }
