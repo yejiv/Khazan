@@ -131,7 +131,14 @@ void CJolt_Manager::Debug_Render()
     if (!m_pPhysics)
         return;
 
+    // 디버그 렌더 패스 시작
+    m_pDebugRenderer->BeginFrame();
+
+    // Jolt가 내부적으로 수백/수천번 DrawLine()을 호출
     m_pPhysics->DrawBodies(m_DrawSetting, m_pDebugRenderer);
+
+    // 디버그 렌더 패스 종료
+    m_pDebugRenderer->EndFrame();
 }
 #endif 
 CJolt_Manager* CJolt_Manager::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iNumObjectLayer)
