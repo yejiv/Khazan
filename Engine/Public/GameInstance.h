@@ -132,11 +132,9 @@ public:
 	_bool isIn_Frustum_LocalSpace(_fvector vLocalPos, _float fRange = 0.f);
 #pragma endregion
 
-#ifdef _DEBUG
 #pragma region IMGUI_MANGER
 	void    AddWidget(const _wstring Menu, const function<void()>& widget);
 #pragma endregion
-#endif
 
 #pragma region JOLT_MANAGER
 	void Set_PhysicsSystem();
