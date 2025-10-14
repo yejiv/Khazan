@@ -18,7 +18,7 @@
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
 #include <Jolt/Physics/Collision/Shape/StaticCompoundShape.h>
 #include <Jolt/Physics/Collision/Shape/MeshShape.h>
-#include <Jolt/Physics/Character//CharacterVirtual.h>
+#include <Jolt/Physics/Character/CharacterVirtual.h>
 #ifdef new
 #pragma pop_macro("new") // DBG_NEW 복원
 #endif
@@ -41,12 +41,11 @@ public:
     void    Update(_float fDeltaTime);
 
     Body* CreateAndAdd_Body(const BodyCreationSettings& BodySetting, BodyInterface** pBodyInterface);
-    CharacterVirtual* CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData);
-
+    CharacterVirtual* CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData, BodyInterface** pBodyInterface);
 
     void				Set_PhysicsSystem();
     void				Set_ObjectToBP(_uint iObjectLayer, _uint iBPLayer) {
-        m_pBPLayer->SetUp_ObjectToBP(iObjectLayer, iBPLayer);
+        m_pBPLayerIF->SetUp_ObjectToBP(iObjectLayer, iBPLayer);
     };
     void				Set_ObjectFilter(_uint iSrc, _uint iDst) {
         m_pObjectLayerPairFilter->SetUp_ObjectFilter(iSrc, iDst);
@@ -55,6 +54,9 @@ public:
         m_pObjectVsBPLayerFilter->SetUp_ObjectVsBPFilter(iObjectLayer, iBPLayer);
     };
 
+
+public:
+    void CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter);
 
 
 #ifdef _DEBUG
@@ -75,7 +77,7 @@ private:
     PhysicsSettings		m_PhysicsSetting;
 
     // 레이어/필터/리스너
-    CJolt_BPLayer*                       m_pBPLayer = { nullptr };
+    CJolt_BPLayerIF*                     m_pBPLayerIF = { nullptr };
     CJolt_ObjectLayerPairFilter*         m_pObjectLayerPairFilter = { nullptr };
     CJolt_ObjectVsBPLayerFilter*         m_pObjectVsBPLayerFilter = { nullptr };
     CJolt_ContactListener*               m_pContactListener = { nullptr };
@@ -87,6 +89,8 @@ private:
     _uint m_iMaxBodyPairs = { 65536 };
     _uint m_iMaxContactConstraints = { 65536 };
     _uint m_iJobThreadCount = {};
+
+    _uint m_iNumObjectLayer = {};
 
 #ifdef _DEBUG
 private:

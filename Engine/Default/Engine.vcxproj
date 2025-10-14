@@ -179,6 +179,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\Camera.cpp" />
     <ClCompile Include="..\private\Cell.cpp" />
     <ClCompile Include="..\private\Channel.cpp" />
+    <ClCompile Include="..\Private\CharacterContactListener.cpp" />
     <ClCompile Include="..\Private\CharacterVirtual.cpp" />
     <ClCompile Include="..\Private\Component.cpp" />
     <ClCompile Include="..\private\ComputeShader.cpp" />
@@ -222,6 +223,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\QuadTree.cpp" />
     <ClCompile Include="..\Private\Renderer.cpp" />
     <ClCompile Include="..\private\RenderTarget.cpp" />
+    <ClCompile Include="..\Private\Resource_Manager.cpp" />
     <ClCompile Include="..\Private\RigidBody.cpp" />
     <ClCompile Include="..\private\Shader.cpp" />
     <ClCompile Include="..\private\Shadow.cpp" />
@@ -265,6 +267,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\public\Camera.h" />
     <ClInclude Include="..\public\Cell.h" />
     <ClInclude Include="..\public\Channel.h" />
+    <ClInclude Include="..\Public\CharacterContactListener.h" />
     <ClInclude Include="..\Public\CharacterVirtual.h" />
     <ClInclude Include="..\Public\Component.h" />
     <ClInclude Include="..\public\ComputeShader.h" />
@@ -323,6 +326,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\public\QuadTree.h" />
     <ClInclude Include="..\Public\Renderer.h" />
     <ClInclude Include="..\public\RenderTarget.h" />
+    <ClInclude Include="..\Public\Resource_Manager.h" />
     <ClInclude Include="..\Public\RigidBody.h" />
     <ClInclude Include="..\public\Shader.h" />
     <ClInclude Include="..\public\Shadow.h" />

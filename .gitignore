@@ -11,12 +11,17 @@ x64/
 *.ini
 *.exp
 *.dll
+*.pskx
 
 Client.exp
 Client.exe
 Client.pdb
 Client/Bin/Debug
 Client/Bin/Resources/.*
+
+# 박준영 개인 ignore
+Client/Bin/Resources/Models/Prop/Json/
+# =================
 
 Editor.exp
 Editor.exe
