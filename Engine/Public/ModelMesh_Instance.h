@@ -12,6 +12,7 @@ class CModelMesh_Instance final : public CVIBuffer_Instance
 public:
 	typedef struct tagModelMeshInstance : public CVIBuffer_Instance::INSTANCE_DESC
 	{
+		vector<MESH_INSTANCE_DATA> InstanceData;
 
 	}MODELMESH_INSTANCE_DESC;
 
@@ -21,7 +22,7 @@ private:
 	virtual ~CModelMesh_Instance() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(MODELTYPE eType, const aiMesh* pAIMesh, const vector<class CBone*>& Bones, _fmatrix PreTransformMatrix);
+	virtual HRESULT Initialize_Prototype(MODELTYPE eType, const aiMesh* pAIMesh, const vector<class CBone*>& Bones, const INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix);
 	virtual HRESULT Initialize_Clone(void* pArg) override;
 
 public:
@@ -54,7 +55,7 @@ private:
 	HRESULT Ready_Indices_For_4Byte(const aiMesh* pAIMesh);
 
 public:
-	static CModelMesh_Instance* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, MODELTYPE eType, const aiMesh* pAIMesh, const vector<class CBone*>& Bones, _fmatrix PreTransformMatrix);
+	static CModelMesh_Instance* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, MODELTYPE eType, const aiMesh* pAIMesh, const vector<class CBone*>& Bones, const INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 };

@@ -1,3 +1,4 @@
+Ôªø
 #include "Model.h"
 
 #include "Mesh.h"
@@ -14,15 +15,23 @@ CModel::CModel(const CModel& Prototype)
 	: CComponent{ Prototype }
     , m_iNumMeshes { Prototype.m_iNumMeshes }
     , m_Meshes { Prototype.m_Meshes }
-    , m_eModelType { Prototype.m_eModelType} 
-    , m_PreTransformMatrix{ Prototype.m_PreTransformMatrix }
+
     , m_iNumMaterials { Prototype.m_iNumMaterials }
     , m_Materials { Prototype.m_Materials }
-    , m_iNumAnimations{ Prototype.m_iNumAnimations }    
-{
-    for (auto& pPrototypeAnimation : Prototype.m_Animations)
-        m_Animations.push_back(pPrototypeAnimation->Clone());
 
+    , m_iNumAnimations{ Prototype.m_iNumAnimations }
+
+    , m_eModelType { Prototype.m_eModelType} 
+    , m_PreTransformMatrix{ Prototype.m_PreTransformMatrix }
+    , m_strModelName{ Prototype.m_strModelName }
+    , m_strModelFilePath{ Prototype.m_strModelFilePath }
+   // , m_iRootBoneIndex(Prototype.m_iRootBoneIndex)
+{
+    for (auto& pPrototypeAnimation : Prototype.m_Animations) {
+        CAnimation* pAnimation = pPrototypeAnimation->Clone();
+        m_Animations.push_back(pAnimation);
+        pAnimation->Set_TrackPositionPtr(&m_fCurrentTrackPosition);
+    }
     for (auto& pPrototypeBone : Prototype.m_Bones)
         m_Bones.push_back(pPrototypeBone->Clone());
 
@@ -33,51 +42,48 @@ CModel::CModel(const CModel& Prototype)
         Safe_AddRef(pMaterial);
 }
 
-_float4x4* CModel::Get_BoneMatrix(const _char* pBoneName)
+
+HRESULT CModel::Initialize_Prototype(const _char* pModelFilePath)
 {
-    auto    iter = find_if(m_Bones.begin(), m_Bones.end(), [&](CBone* pBone) {
-        if (true == pBone->Compare_Name(pBoneName))
-            return true;
-        return false;        
-    });
+    /* aiProcess_PreTransformVertices : Í∞ÅÍ∞ÅÏùò Î©îÏãúÎ•º Î∂ôÏó¨ÏïºÌï† ÏúÑÏπòÏóê Ï†ÅÏ†àÌûà Î∞∞ÏπòÌïúÎã§. */
+    /* Î∞∞Ïπò : Í∞Å Î©îÏãúÏùò Ï†ïÏ†êÎì§ÏùÑ Î∞∞ÏπòÎ•º ÏúÑÌïú ÏûÑÏùòÏùò ÌñâÎ†¨Í≥º Í≥±ÌïòÏó¨ Î°úÎìúÌïúÎã§. */
 
-    if (iter == m_Bones.end())
-        return nullptr;    
+    MODEL_DATA data;
 
-    return (*iter)->Get_CombinedTransformationMatrixPtr();    
-}
+    ifstream ifs(pModelFilePath, std::ios::binary);
+    if (!ifs.is_open())
+    {
+        MSG_BOX(TEXT("ÌååÏùº Ïó¥Í∏∞ Ïã§Ìå®"));
+        return E_FAIL;
+    }
 
-HRESULT CModel::Initialize_Prototype(MODELTYPE eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix)
-{
-    /* aiProcess_PreTransformVertices : ∞¢∞¢¿« ∏ﬁΩ√∏¶ ∫Ÿø©æﬂ«“ ¿ßƒ°ø° ¿˚¿˝»˜ πËƒ°«—¥Ÿ. */
-    /* πËƒ° : ∞¢ ∏ﬁΩ√¿« ¡§¡°µÈ¿ª πËƒ°∏¶ ¿ß«— ¿”¿«¿« «‡∑ƒ∞˙ ∞ˆ«œø© ∑ŒµÂ«—¥Ÿ. */
+    data.LoadBinary(ifs);
 
-    m_eModelType = eModelType;
+    ifs.close();
+    
+#ifdef _DEBUG
+    OutputDebugStringA(("Î™®Îç∏ Ïù¥Î¶Ñ : " + data.strModelName + "\n").c_str());
+#endif // _DEBUG
 
-    XMStoreFloat4x4(&m_PreTransformMatrix, PreTransformMatrix);    
+    m_strModelName = AnsiToWString(data.strModelName);
+    m_strModelFilePath = AnsiToWString(data.strModelFilePath);
+    m_eModelType = static_cast<MODELTYPE>(data.iModelType);
+    memcpy(&m_PreTransformMatrix, &data.vPreTransformMatrix, sizeof(_float4x4));
+    m_iNumMeshes = data.iNumMeshes;
+    m_iNumMaterials = data.iNumMaterials;
+    m_iNumAnimations = data.iNumAnimations;
 
-    _uint           iFlag = { aiProcess_ConvertToLeftHanded | aiProcessPreset_TargetRealtime_Fast };
 
-    if (MODELTYPE::NONANIM == m_eModelType)
-        iFlag |= aiProcess_PreTransformVertices;
-
-    m_pAIScene = m_Importer.ReadFile(pModelFilePath, iFlag);
-    if (nullptr == m_pAIScene)
+    if (FAILED(Ready_Bones(data)))
         return E_FAIL;
 
-    if (FAILED(Ready_Bones(m_pAIScene->mRootNode, -1)))
+    if (FAILED(Ready_Meshes(data)))
         return E_FAIL;
 
-    if (FAILED(Ready_Meshes()))
+    if (FAILED(Ready_Materials(data)))
         return E_FAIL;
 
-    //XMMatrixRotationQuaternion();
-    //XMMatrixRotationRollPitchYaw();
-
-    if (FAILED(Ready_Materials(pModelFilePath)))
-        return E_FAIL;
-
-    if (FAILED(Ready_Animations()))
+    if (FAILED(Ready_Animations(data)))
         return E_FAIL;
 
 	return S_OK;
@@ -86,6 +92,34 @@ HRESULT CModel::Initialize_Prototype(MODELTYPE eModelType, const _char* pModelFi
 HRESULT CModel::Initialize_Clone(void* pArg)
 {
 	return S_OK;
+}
+
+_float4x4* CModel::Get_BoneMatrix(const _char* pBoneName)
+{
+    auto    iter = find_if(m_Bones.begin(), m_Bones.end(), [&](CBone* pBone) {
+        if (true == pBone->Compare_Name(pBoneName))
+            return true;
+        return false;
+        });
+
+    if (iter == m_Bones.end())
+        return nullptr;
+
+    return (*iter)->Get_CombinedTransformationMatrixPtr();
+}
+
+_float4x4* CModel::Get_ContainNameBoneMatrix(const _char* pBoneName)
+{
+    auto iter = find_if(m_Bones.begin(), m_Bones.end(),
+        [&](CBone* pBone) {
+            if (pBone->Contains_Name(pBoneName)) return true;
+            return false;
+        });
+
+    if (iter == m_Bones.end())
+        return nullptr;
+
+    return (*iter)->Get_CombinedTransformationMatrixPtr();
 }
 
 HRESULT CModel::Bind_Materials(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, aiTextureType eTextureType, _uint iIndex)
@@ -113,11 +147,11 @@ _bool CModel::Play_Animation(_float fTimeDelta)
 {
     m_isFinished = false;
 
-    /* «ˆ¿Á Ω√∞£ø° ∏¬¥¬ ª¿¿« ªÛ≈¬¥Î∑Œ ∆Ø¡§ ª¿µÈ¿« TransformationMatrix∏¶ ∞ªΩ≈«ÿ¡ÿ¥Ÿ. */
+    /* ÌòÑÏû¨ ÏãúÍ∞ÑÏóê ÎßûÎäî ÎºàÏùò ÏÉÅÌÉúÎåÄÎ°ú ÌäπÏ†ï ÎºàÎì§Ïùò TransformationMatrixÎ•º Í∞±Ïã†Ìï¥Ï§ÄÎã§. */
     m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrices(m_Bones, m_isLoop, &m_isFinished, fTimeDelta);
 
 
-    /* πŸ≤„æﬂ«“ ª¿µÈ¿« Transforemation«‡∑ƒ¿Ã ∞ªΩ≈µ«æ˙¥Ÿ∏È, ¡§¡°µÈø°∞‘ ¡˜¡¢ ¿¸¥ﬁµ«æﬂ«“ CombindTransformationMatrix∏¶ ∏∏µÈæÓ¡ÿ¥Ÿ. */
+    /* Î∞îÍøîÏïºÌï† ÎºàÎì§Ïùò TransforemationÌñâÎ†¨Ïù¥ Í∞±Ïã†ÎêòÏóàÎã§Î©¥, Ï†ïÏ†êÎì§ÏóêÍ≤å ÏßÅÏ†ë Ï†ÑÎã¨ÎêòÏïºÌï† CombindTransformationMatrixÎ•º ÎßåÎì§Ïñ¥Ï§ÄÎã§. */
     for (auto& pBone : m_Bones)
     {
         pBone->Update_CombinedTransformationMatrix(m_PreTransformMatrix, m_Bones);
@@ -146,68 +180,60 @@ void CModel::Set_Animation(_uint iIndex, _bool isLoop)
     m_iCurrentAnimIndex = iIndex;
 }
 
-HRESULT CModel::Ready_Meshes()
+HRESULT CModel::Ready_Meshes(MODEL_DATA& data)
 {
-    m_iNumMeshes = m_pAIScene->mNumMeshes;
 
-    for (size_t i = 0; i < m_iNumMeshes; i++)
-    {
-        CMesh* pMesh = CMesh::Create(m_pDevice, m_pContext, m_eModelType, m_pAIScene->mMeshes[i], m_Bones, XMLoadFloat4x4(&m_PreTransformMatrix));
-        if (nullptr == pMesh)
-            return E_FAIL;
+	for (size_t i = 0; i < m_iNumMeshes; i++)
+	{
+		CMesh* pMesh = CMesh::Create(m_pDevice, m_pContext, m_eModelType, XMLoadFloat4x4(&m_PreTransformMatrix), data.vecMeshes[i]);
+		if (pMesh == nullptr)
+		{
+			MSG_BOX(TEXT("ÎπÑÏÉÅ CMesh::Create() Ïã§Ìå®!!!!!!"));
+			return E_FAIL;
+		}
+		m_Meshes.push_back(pMesh);
+	}
 
-        m_Meshes.push_back(pMesh);
-    }    
-
-    return S_OK;
+	return S_OK;
 }
 
-HRESULT CModel::Ready_Materials(const _char* pModelFilePath)
+HRESULT CModel::Ready_Materials(MODEL_DATA& data)
 {
-    m_iNumMaterials = m_pAIScene->mNumMaterials;
-
     for (size_t i = 0; i < m_iNumMaterials; i++)
-    {     
-
-        CMeshMaterial* pMeshMaterial = CMeshMaterial::Create(m_pDevice, m_pContext, pModelFilePath, m_pAIScene->mMaterials[i]);
+    {
+        CMeshMaterial* pMeshMaterial = CMeshMaterial::Create(m_pDevice, m_pContext, data.vecMaterials[i]);
         if (nullptr == pMeshMaterial)
             return E_FAIL;
 
         m_Materials.push_back(pMeshMaterial);
     }
- 
 
     return S_OK;
 }
 
-HRESULT CModel::Ready_Bones(const aiNode* pAINode, _int iParentIndex)
+HRESULT CModel::Ready_Bones(MODEL_DATA& data)
 {
-    CBone* pBone = CBone::Create(pAINode, iParentIndex);
-    if (nullptr == pBone)
-        return E_FAIL;
-
-    m_Bones.push_back(pBone);
-
-    _int   iIndex = m_Bones.size() - 1;
-
-    for (size_t i = 0; i < pAINode->mNumChildren; i++)
+    for (auto bone : data.vecBones)
     {
-        Ready_Bones(pAINode->mChildren[i], iIndex);
+        CBone* pBone = CBone::Create(bone);
+        if (pBone == nullptr)
+            return E_FAIL;
+
+        m_Bones.push_back(pBone);
     }
 
     return S_OK;
 }
 
-HRESULT CModel::Ready_Animations()
+HRESULT CModel::Ready_Animations(MODEL_DATA& data)
 {
-    /* Ω√∞£ø° µ˚∂Û ≥ª ª¿µÈ¿Ã æÓ∂ª∞‘ øÚ¡˜ø©æﬂ«œ¥¬∞°? ø° ¥Î«— ¡§∫∏∞° « ø‰«œ¥Ÿ.  */
-    /* ¥Î±‚µø¿€¿ª ¿ß«ÿº≠¥¬ ª¿µÈ¿Ã æÓ∂≤ Ω√∞£¥Îø° æÓ∂≤ ªÛ≈¬∏¶ √Î«œ¥¬∞°? */
-    /* ∞¯∞›µø¿€¿ª ¿ß«ÿº≠¥¬ ª¿µÈ¿Ã æÓ∂≤ Ω√∞£¥Îø° æÓ∂≤ ªÛ≈¬∏¶ √Î«œ¥¬∞°? */
-    m_iNumAnimations = m_pAIScene->mNumAnimations;
+    if (m_eModelType == MODELTYPE::NONANIM)
+        return S_OK;
 
-    for (size_t i = 0; i < m_iNumAnimations; i++)
+    for (_uint i = 0; i < m_iNumAnimations; i++)
     {
-        CAnimation* pAnimation = CAnimation::Create(m_pAIScene->mAnimations[i], m_Bones);        if (nullptr == pAnimation)
+        CAnimation* pAnimation = CAnimation::Create(m_Bones, data.vecAnimation[i], i);
+        if (nullptr == pAnimation)
             return E_FAIL;
 
         m_Animations.push_back(pAnimation);
@@ -217,12 +243,11 @@ HRESULT CModel::Ready_Animations()
 }
 
 
-
-CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, MODELTYPE eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix)
+CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _char* pModelFilePath)
 {
     CModel* pInstance = new CModel(pDevice, pContext);
 
-    if (FAILED(pInstance->Initialize_Prototype(eModelType, pModelFilePath, PreTransformMatrix)))
+    if (FAILED(pInstance->Initialize_Prototype( pModelFilePath)))
     {
         MSG_BOX(TEXT("Failed to Created : CModel"));
         Safe_Release(pInstance);
@@ -269,8 +294,6 @@ void CModel::Free()
     m_Materials.clear();
 
 
-    m_Importer.FreeScene();
-
-
+   // m_Importer.FreeScene();
 
 }

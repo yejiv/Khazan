@@ -1,3 +1,4 @@
+﻿
 #include "Channel.h"
 #include "Bone.h"
 
@@ -5,54 +6,44 @@ CChannel::CChannel()
 {
 }
 
-HRESULT CChannel::Initialize(const aiNodeAnim* pAIChannel, const vector<class CBone*>& Bones)
+HRESULT CChannel::Initialize(CHANNEL_DATA& data)
 {
-    auto	iter = find_if(Bones.begin(), Bones.end(), [&](CBone* pBone)->_bool
+    // 데이터 유효성 검사 추가
+    if (data.vecKeyFrames.empty())
     {
-        if (true == pBone->Compare_Name(pAIChannel->mNodeName.data))
-            return true;
+        OutputDebugStringA("[CChannel::Initialize] 키프레임 데이터가 비어있습니다.\n");
+        return E_FAIL;
+    }
 
-        m_iBoneIndex++;
+    // 본 인덱스 유효성 검사
+    if (data.iBoneIndex == UINT_MAX) 
+    {
+        OutputDebugStringA("[CChannel::Initialize] 유효하지 않은 본 인덱스입니다.\n");
+        return E_FAIL;
+    }
 
-        return false;
-    });    
+    /* 어떤 뼈인지 알아내기 */
+    m_iBoneIndex = data.iBoneIndex;
 
-    m_iNumKeyFrames = max(pAIChannel->mNumScalingKeys, pAIChannel->mNumRotationKeys);
-    m_iNumKeyFrames = max(m_iNumKeyFrames, pAIChannel->mNumPositionKeys);
+    /* 최대 프레임 수 알아내기  */
+    m_iNumKeyFrames = data.iNumKeyFrame;
 
-    _float3     vScale{};
-    _float4     vRotation{};
-    _float3     vTranslation{};
+    // 키프레임 수 검증
+    if (m_iNumKeyFrames != data.vecKeyFrames.size())
+    {
+        OutputDebugStringA("[CChannel::Initialize] 키프레임 수가 일치하지 않습니다.\n");
+        m_iNumKeyFrames = static_cast<_uint>(data.vecKeyFrames.size());
+    }
+
 
     for (size_t i = 0; i < m_iNumKeyFrames; i++)
     {
-        KEYFRAME            KeyFrame{};
+        KEYFRAME KeyFrame{};
 
-        if (i < pAIChannel->mNumScalingKeys)
-        {
-            memcpy(&vScale, &pAIChannel->mScalingKeys[i].mValue, sizeof(_float3));
-            KeyFrame.fTrackPosition = pAIChannel->mScalingKeys[i].mTime;
-        }
-
-        if (i < pAIChannel->mNumRotationKeys)
-        {
-            vRotation.x = pAIChannel->mRotationKeys[i].mValue.x;
-            vRotation.y = pAIChannel->mRotationKeys[i].mValue.y;
-            vRotation.z = pAIChannel->mRotationKeys[i].mValue.z;
-            vRotation.w = pAIChannel->mRotationKeys[i].mValue.w;
-
-            KeyFrame.fTrackPosition = pAIChannel->mRotationKeys[i].mTime;
-        }
-
-        if (i < pAIChannel->mNumPositionKeys)
-        {
-            memcpy(&vTranslation, &pAIChannel->mPositionKeys[i].mValue, sizeof(_float3));
-            KeyFrame.fTrackPosition = pAIChannel->mPositionKeys[i].mTime;
-        }
-
-        KeyFrame.vScale = vScale;
-        KeyFrame.vRotation = vRotation;
-        KeyFrame.vTranslation = vTranslation;
+        memcpy(&KeyFrame.vScale, &data.vecKeyFrames[i].scale, sizeof(_float3));
+        memcpy(&KeyFrame.vTranslation, &data.vecKeyFrames[i].translation, sizeof(_float3));
+        memcpy(&KeyFrame.vRotation, &data.vecKeyFrames[i].rotation, sizeof(_float4));
+        KeyFrame.fTrackPosition = data.vecKeyFrames[i].trackPostion;
 
         m_KeyFrames.push_back(KeyFrame);
     }
@@ -62,48 +53,36 @@ HRESULT CChannel::Initialize(const aiNodeAnim* pAIChannel, const vector<class CB
 }
 
 void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fCurrentTrackPosition, _uint* pCurrentKeyFrameIndex)
-{
+{   
+    /* 트랙포지션이 0으로 되돌아갈 시  키프레임 인덱스도 0으로 되돌리기 위함. */
     if (fCurrentTrackPosition == 0.f)
         *pCurrentKeyFrameIndex  = 0;
 
-    /* ���õ� �ִϸ��̼��� �̿��ϰ� �ִ� �� ��(Channel)�� ���� ����� ��ġ(fCurrrentTrackPosition)�� �´� ��������� ����� �ش�. */
+    /* 선택된 애니메이션이 이용하고 있는 이 뼈(Channel)의 현재 재생된 위치(fCurrrentTrackPosition)에 맞는 상태행렬을 만들어 준다. */
     _vector         vScale, vRotation, vTranslation;
 
-    /* ������ Ű�����ӻ��¸� ���ϳ�. */
+    /* 마지막 키프레임상태를 취한다. */
     KEYFRAME        LastKeyFrame = m_KeyFrames.back();
 
+    //마지막 프레임이 지나도 유지할 수 있도록
     if (fCurrentTrackPosition >= LastKeyFrame.fTrackPosition)
     {
         vScale = XMLoadFloat3(&LastKeyFrame.vScale);
         vRotation = XMLoadFloat4(&LastKeyFrame.vRotation);
         vTranslation = XMVectorSetW(XMLoadFloat3(&LastKeyFrame.vTranslation), 1.f);
+        m_TransformationMatrix = XMMatrixAffineTransformation(vScale, XMVectorSet(0.f, 0.f, 0.f, 1.f), vRotation, vTranslation);
     }
 
-    /* ���� Ű�����ӻ��̿����� �߰����¸� �����Ͽ� �����. */
+    /* 양쪽 키프레임사이에서의 중간상태를 보간하여 만든다. */
     else
     {
         while (fCurrentTrackPosition >= m_KeyFrames[*pCurrentKeyFrameIndex + 1].fTrackPosition)
             ++*pCurrentKeyFrameIndex;
 
-        _vector    vSourScale, vDestScale;
-        _vector    vSourRotation, vDestRotation;
-        _vector    vSourTranslation, vDestTranslation;
-
-        vSourScale = XMLoadFloat3(&m_KeyFrames[*pCurrentKeyFrameIndex].vScale);
-        vSourRotation = XMLoadFloat4(&m_KeyFrames[*pCurrentKeyFrameIndex].vRotation);
-        vSourTranslation = XMVectorSetW(XMLoadFloat3(&m_KeyFrames[*pCurrentKeyFrameIndex].vTranslation), 1.f);
-
-        vDestScale = XMLoadFloat3(&m_KeyFrames[*pCurrentKeyFrameIndex + 1].vScale);
-        vDestRotation = XMLoadFloat4(&m_KeyFrames[*pCurrentKeyFrameIndex + 1].vRotation);
-        vDestTranslation = XMVectorSetW(XMLoadFloat3(&m_KeyFrames[*pCurrentKeyFrameIndex + 1].vTranslation), 1.f);
-
-        _float      fRatio = (fCurrentTrackPosition - m_KeyFrames[*pCurrentKeyFrameIndex].fTrackPosition) / (m_KeyFrames[*pCurrentKeyFrameIndex + 1].fTrackPosition - m_KeyFrames[*pCurrentKeyFrameIndex].fTrackPosition);
-
-        vScale = XMVectorLerp(vSourScale, vDestScale, fRatio);
-        vRotation = XMQuaternionSlerp(vSourRotation, vDestRotation, fRatio);
-        vTranslation = XMVectorSetW(XMVectorLerp(vSourTranslation, vDestTranslation, fRatio), 1.f);
-        
-
+        _float fRatio = (fCurrentTrackPosition - m_KeyFrames[*pCurrentKeyFrameIndex].fTrackPosition) / (m_KeyFrames[*pCurrentKeyFrameIndex + 1].fTrackPosition - m_KeyFrames[*pCurrentKeyFrameIndex].fTrackPosition);
+        vScale = XMVectorLerp(XMLoadFloat3(&m_KeyFrames[*pCurrentKeyFrameIndex].vScale), XMLoadFloat3(&m_KeyFrames[*pCurrentKeyFrameIndex + 1].vScale), fRatio);
+        vRotation = XMQuaternionSlerp(XMLoadFloat4(&m_KeyFrames[*pCurrentKeyFrameIndex].vRotation), XMLoadFloat4(&m_KeyFrames[*pCurrentKeyFrameIndex + 1].vRotation), fRatio);
+        vTranslation = XMVectorSetW(XMVectorLerp(XMVectorSetW(XMLoadFloat3(&m_KeyFrames[*pCurrentKeyFrameIndex].vTranslation), 1.f), XMVectorSetW(XMLoadFloat3(&m_KeyFrames[*pCurrentKeyFrameIndex + 1].vTranslation), 1.f), fRatio), 1.f);
     }
 
     /*_matrix         TransformationMatrix = XMMatrixScaling() * XMMatrixRotationQuaternion() * XMMatrixTranslation();*/
@@ -112,11 +91,11 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
     Bones[m_iBoneIndex]->Set_TransformationMatrix(TransformationMatrix);
 }
 
-CChannel* CChannel::Create(const aiNodeAnim* pAIChannel, const vector<class CBone*>& Bones)
+CChannel* CChannel::Create(CHANNEL_DATA& data)
 {
     CChannel* pInstance = new CChannel();
 
-    if (FAILED(pInstance->Initialize(pAIChannel, Bones)))
+    if (FAILED(pInstance->Initialize(data)))
     {
         MSG_BOX(TEXT("Failed to Created : CChannel"));
         Safe_Release(pInstance);
@@ -127,5 +106,6 @@ CChannel* CChannel::Create(const aiNodeAnim* pAIChannel, const vector<class CBon
 
 void CChannel::Free()
 {
+    __super::Free();
 }
 

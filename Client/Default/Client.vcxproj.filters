@@ -99,9 +99,6 @@
     <ClInclude Include="..\public\Camera_Free.h">
       <Filter>02.GameObject\Camera\Free</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Player.h">
-      <Filter>02.GameObject\Player</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Body_Player.h">
       <Filter>02.GameObject\Player\Body</Filter>
     </ClInclude>
@@ -128,6 +125,9 @@
     </ClInclude>
     <ClInclude Include="ClientPch.h">
       <Filter>96.pch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Player.h">
+      <Filter>02.GameObject\Pool</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

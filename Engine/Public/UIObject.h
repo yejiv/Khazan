@@ -41,13 +41,14 @@ public:
 
 public:
 	class CTexture*				Set_Texture(CGameObject* pGameObject, CTexture* pTexture);
+	void						Set_UI_Color(_float4 vColor) { m_vColor = vColor; }
+	_float4						Get_UI_Color() const { return m_vColor; }
 	const _char*				Get_Name() { return m_szName; }
 	void						Set_LocalPos(const _float3& vPos) { m_vLocalPos = vPos; }
 	void						Set_LocalSize(const _float3& vSize) { m_vLocalSize = vSize; }
 	_float3						Get_LocalPos() const { return m_vLocalPos; }
 	_float3						Get_LocalSize() const { return m_vLocalSize; }
-
-
+	const vector<CUIObject*>&	Get_Children() { return m_Children; }
 
 public:
 	virtual HRESULT				Initialize_Prototype() override;
@@ -85,6 +86,9 @@ protected:
 	_float4x4					m_ViewMatrix = {};
 	_float4x4					m_ProjMatrix = {};
 
+	_float4						m_vColor = { 0.f,0.f,0.f,1.f };
+
+
 	_float3						m_vLocalPos = {};
 	_float3						m_vWorldPos = {};
 	_float3						m_vLocalSize = {};
@@ -102,7 +106,6 @@ protected:
 	_bool						m_isHovered = { false };
 
 	_char						m_szName[26] = {};
-
 
 	CUIObject*					m_pParent = { nullptr };
 

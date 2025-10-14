@@ -40,7 +40,7 @@ HRESULT CResource_Manager::Add_Texture(_wstring strTextureTag, _uint iPrototypeL
 
 HRESULT CResource_Manager::Add_Model(_wstring strModelTag, _uint iPrototypeLevelIndex, _wstring strPrototypeTag, MODELTYPE eModelType, _char* pModelFilePath, _matrix PreTransformMatrix, void* pArg)
 {
-    if (FAILED(m_pGameInstance->Add_Prototype(iPrototypeLevelIndex, strPrototypeTag,
+    /*if (FAILED(m_pGameInstance->Add_Prototype(iPrototypeLevelIndex, strPrototypeTag,
         CModel::Create(m_pDevice, m_pContext, eModelType, pModelFilePath, PreTransformMatrix))))
         return E_FAIL;
 
@@ -54,7 +54,7 @@ HRESULT CResource_Manager::Add_Model(_wstring strModelTag, _uint iPrototypeLevel
 
     m_pModelDescs.emplace(strModelTag, MDesc);
 
-    m_pModels.emplace(strModelTag, dynamic_cast<CModel*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::COMPONENT, MDesc.iPrototypeLevelIndex, MDesc.strPrototypeTag, MDesc.pArg)));
+    m_pModels.emplace(strModelTag, dynamic_cast<CModel*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::COMPONENT, MDesc.iPrototypeLevelIndex, MDesc.strPrototypeTag, MDesc.pArg)));*/
 
     return S_OK;
 }
@@ -71,12 +71,13 @@ CTexture* CResource_Manager::Clone_Texture(_wstring strTextureTag)
 
 CModel* CResource_Manager::Clone_Model(_wstring strModelTag)
 {
-    auto iter = m_pModelDescs.find(strModelTag);
+   /* auto iter = m_pModelDescs.find(strModelTag);
 
     if (iter == m_pModelDescs.end())
         return nullptr;
 
-    return dynamic_cast<CModel*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::COMPONENT, iter->second.iPrototypeLevelIndex, iter->second.strPrototypeTag, iter->second.pArg));
+    return dynamic_cast<CModel*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::COMPONENT, iter->second.iPrototypeLevelIndex, iter->second.strPrototypeTag, iter->second.pArg));*/
+    return nullptr;
 }
 
 CTexture* CResource_Manager::Get_Texture(_wstring strTextureTag)
@@ -91,12 +92,13 @@ CTexture* CResource_Manager::Get_Texture(_wstring strTextureTag)
 
 CModel* CResource_Manager::Get_Model(_wstring strModelTag)
 {
-    auto iter = m_pModels.find(strModelTag);
+   /* auto iter = m_pModels.find(strModelTag);
 
     if (iter == m_pModels.end())
         return nullptr;
 
-    return iter->second;
+    return iter->second;*/
+    return nullptr;
 }
 
 void CResource_Manager::Switch_Texture(_wstring strTextureTag, CGameObject* pGameObject, CTexture** pTexture, _wstring strComponentTag)
