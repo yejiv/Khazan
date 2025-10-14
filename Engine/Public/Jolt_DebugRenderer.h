@@ -20,6 +20,8 @@ public:
 	virtual ~CJolt_DebugRenderer();
 
 public:
+	void	BeginFrame();
+	void	EndFrame();
 	virtual		void		DrawLine(RVec3Arg inFrom, RVec3Arg inTo, ColorArg inColor) override;
 	virtual		void		DrawText3D(RVec3Arg inPosition, const string_view& inString, ColorArg inColor, float inHeight) override;
 
@@ -31,6 +33,11 @@ private:
 	PrimitiveBatch<VertexPositionColor>* m_pBatch = { nullptr };
 	BasicEffect* m_pEffect = { nullptr };
 	ID3D11InputLayout* m_pInputLayout = { nullptr };
+
+	bool        m_bBatchOpen = false;
+	XMMATRIX    m_matWorldIdent = XMMatrixIdentity();
+	XMMATRIX    m_matView = XMMatrixIdentity();
+	XMMATRIX    m_matProj = XMMatrixIdentity();
 };
 
 NS_END

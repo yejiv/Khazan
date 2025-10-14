@@ -1,3 +1,4 @@
+﻿
 #include "MeshMaterial.h"
 #include "Shader.h"
 
@@ -9,76 +10,94 @@ CMeshMaterial::CMeshMaterial(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 	Safe_AddRef(m_pContext);
 }
 
-HRESULT CMeshMaterial::Initialize(const _char* pModelFilePath, const aiMaterial* pAIMaterial)
-{
-	for (size_t i = 1; i < AI_TEXTURE_TYPE_MAX; i++)
-	{
-		_uint		iNumTextures = pAIMaterial->GetTextureCount(static_cast<aiTextureType>(i));
 
-		for (size_t j = 0; j < iNumTextures; j++)
+HRESULT CMeshMaterial::Initialize(MATERIAL_DATA& data)
+{
+	for (_uint i = 0; i < TEXTURETYPE_MAX; i++)
+	{
+		_uint	iNumTextures = data.iNumTextures[i];
+
+		for (_uint j = 0; j < iNumTextures; j++)
 		{
 			ID3D11ShaderResourceView* pSRV = { nullptr };
-			/* pModelFilePath : D:\Burger\153\Framework\Client\Bin\Resources\Models\Fiona\Fiona.fbx */
 
-			/* �̾Ƽ� �����ص״� ��� + �����̸� + Ȯ���� */
-			aiString	strTexturePath;
-			
-			if (FAILED(pAIMaterial->GetTexture(static_cast<aiTextureType>(i), j, &strTexturePath)))
-				break;
+			// 파일 경로 유효성 검사 추가 (유효하지 않은 경로는 건너뛰기)
+			if (data.vecFullPaths[i].empty() || j >= data.vecFullPaths[i].size())	continue;
 
-			_char			szFullPath[MAX_PATH] = {};
-			_char			szDrive[MAX_PATH] = {};
-			_char			szDir[MAX_PATH] = {};
-			_char			szFileName[MAX_PATH] = {};
-			_char			szExt[MAX_PATH] = {};
+			/* 파일주소가 있는지 */
+			string fullPath = data.vecFullPaths[i][j];
+			if (fullPath.empty()) continue;
 
-			_splitpath_s(pModelFilePath, szDrive, MAX_PATH, szDir, MAX_PATH, nullptr, 0, nullptr, 0);
-			_splitpath_s(strTexturePath.data, nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
+			/* 이미 저장한 텍스쳐인지 */
+			if (ExistTextureCache(AnsiToWString(fullPath)))continue;
 
-			strcpy_s(szFullPath, szDrive);
-			strcat_s(szFullPath, szDir);
-			strcat_s(szFullPath, szFileName);
-			strcat_s(szFullPath, szExt);
+			HRESULT     hr = {};
 
-			_tchar			szTextureFilePath[MAX_PATH] = {};
-			MultiByteToWideChar(CP_ACP, 0, szFullPath, strlen(szFullPath), szTextureFilePath, MAX_PATH);
+			_tchar			szFullPathW[MAX_PATH] = {};
+			MultiByteToWideChar(CP_ACP, 0, data.vecFullPaths[i][j].c_str(), static_cast<DWORD>(strlen(data.vecFullPaths[i][j].c_str())), szFullPathW, MAX_PATH);
 
-
-			HRESULT		hr = {};
-
-			if (false == strcmp(".tga", szExt))
-				hr = E_FAIL;
-
-			if(false == strcmp(".dds", szExt))
-				hr = CreateDDSTextureFromFile(m_pDevice, szTextureFilePath, nullptr, &pSRV);
-			else
-				hr = CreateWICTextureFromFile(m_pDevice, szTextureFilePath, nullptr, &pSRV);
-
-			if (FAILED(hr))
+			if (false == strcmp(data.vecExts[i][j].c_str(), ".dds"))
+			{
+				hr = CreateDDSTextureFromFile(m_pDevice, szFullPathW, nullptr, &pSRV);
+			}
+			else if (false == strcmp(data.vecExts[i][j].c_str(), ".tga"))
 				return E_FAIL;
 
+			else
+			{
+				try
+				{
+					hr = CreateWICTextureFromFile(m_pDevice, szFullPathW, nullptr, &pSRV);
+
+					if (FAILED(hr))
+					{
+						OutputDebugStringA((" [CMeshMaterial::Initialize] WIC 텍스처 로딩 실패: " + fullPath + "\n").c_str());
+						return hr;
+					}
+				}
+				catch (const std::exception& e)
+				{
+					OutputDebugStringA(e.what());
+				}
+
+			}
+
+			if (FAILED(hr))
+			{
+				OutputDebugStringA((" [CMeshMaterial::Initialize] 텍스처 로딩 실패: " + fullPath + "\n").c_str());
+				return E_FAIL;
+			}
+
 			m_SRVs[i].push_back(pSRV);
+			m_TextureCache.emplace(AnsiToWString(fullPath), 1);
+
 		}
 	}
-
-	
 
 	return S_OK;
 }
 
-HRESULT CMeshMaterial::Bind_Resources(CShader* pShader, const _char* pConstantName, aiTextureType eTextureType, _uint iIndex)
+HRESULT CMeshMaterial::Bind_Resources(class CShader* pShader, const _char* pConstantName, _uint iTextureType, _uint iIndex)
 {
-	if (iIndex >= m_SRVs[eTextureType].size())
+	if (iIndex >= m_SRVs[iTextureType].size())
 		return E_FAIL;
 
-	return pShader->Bind_SRV(pConstantName, m_SRVs[eTextureType][iIndex]);	
+	return pShader->Bind_SRV(pConstantName, m_SRVs[iTextureType][iIndex]);
 }
 
-CMeshMaterial* CMeshMaterial::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _char* pModelFilePath, const aiMaterial* pAIMaterial)
+_bool CMeshMaterial::ExistTextureCache(_wstring strPath)
+{
+	auto iter = m_TextureCache.find(strPath);
+	if (iter != m_TextureCache.end())
+		return true;
+	return false;
+}
+
+CMeshMaterial* CMeshMaterial::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, MATERIAL_DATA& data)
 {
 	CMeshMaterial* pInstance = new CMeshMaterial(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize(pModelFilePath, pAIMaterial)))
+	if (FAILED(pInstance->Initialize(data)))
 	{
 		MSG_BOX(TEXT("Failed to Created : CMeshMaterial"));
 		Safe_Release(pInstance);

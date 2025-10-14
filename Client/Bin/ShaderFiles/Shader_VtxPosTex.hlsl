@@ -21,9 +21,11 @@ D3D11_INPUT_ELEMENT_DESC Elements[] =
 };
 */
 
-matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
-texture2D g_Texture;
-texture2D g_DepthTexture;
+matrix      g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
+texture2D   g_Texture;
+texture2D   g_DepthTexture;
+float4      g_vColor;
+
 
 struct VS_IN
 {
@@ -88,7 +90,8 @@ PS_OUT PS_MAIN(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;    
     
-    Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+    //Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+    Out.vColor = g_vColor;
     
     return Out;    
 }
