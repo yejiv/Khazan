@@ -21,7 +21,7 @@ void CUI_TextBox::Set_Text(const _wstring& strText)
 
 void CUI_TextBox::Set_FontColor(const _float3& vColor)
 {
-	m_vColor = vColor;
+	m_vFontColor = vColor;
 	m_isChange = true;
 
 }
@@ -45,7 +45,7 @@ void CUI_TextBox::Set_FontAlpha(_float fAlpha)
 	m_isChange = true;
 }
 
-void CUI_TextBox::Set_Centered(UI_Alignment eAligment)
+void CUI_TextBox::Set_Centered(UI_ALIGNMENT eAligment)
 {
 	__super::Set_Alignment(eAligment);
 	m_isChange = true;
@@ -66,7 +66,7 @@ HRESULT CUI_TextBox::Initialize_Clone(void* pArg)
 
 	m_strText = TEXT("...");
 	m_strFontTag = pDesc->strFontTag;
-	m_vColor = pDesc->vColor;
+	m_vFontColor = pDesc->vColor;
 	m_vFontScale = pDesc->vFontScale;
 	m_fAlpha = pDesc->fAlpha;
 	m_isChange = false;
@@ -97,11 +97,11 @@ void CUI_TextBox::Late_Update(_float fTimeDelta)
 HRESULT CUI_TextBox::Render()
 {
 
-	m_pGameInstance->DrawTextW(m_strFontTag.c_str(),m_strText.c_str(), 
+	m_pGameInstance->DrawTextW(m_strFontTag.c_str(), m_strText.c_str(),
 		m_vFontPos,
-		XMVectorSet(m_vColor.x, m_vColor.y, m_vColor.z, m_fAlpha),
+		XMVectorSet(m_vFontColor.x, m_vFontColor.y, m_vFontColor.z, m_fAlpha),
 		0.f,
-		_float2(0.f,0.f),
+		_float2(m_vLocalPos.x + (m_vLocalSize.x * 0.5f + m_vFontOffset.x) , -m_vLocalPos.y + (m_vLocalSize.y * 0.5f + m_vFontOffset.y)),
 		m_vFontScale);
 	
 	return S_OK;
@@ -109,9 +109,11 @@ HRESULT CUI_TextBox::Render()
 
 void CUI_TextBox::Recalculate_TextInfo()
 {
-	_float2 vTextSize = m_pGameInstance->Compute_TextSize(m_strFontTag,m_strText,m_vFontScale);
-
-	m_vFontPos = Compute_AlignedPos(_float2(m_vWorldPos.x,m_vWorldPos.y),vTextSize);
+	//_float2 vTextSize = m_pGameInstance->Compute_TextSize(m_strFontTag,m_strText,m_vFontScale);
+	m_vFontOffset = m_pGameInstance->Compute_TextSize(m_strFontTag,m_strText,m_vFontScale);
+	//m_vFontPos = Compute_AlignedPos(_float2(m_vWorldPos.x,m_vWorldPos.y),vTextSize);
+	m_vFontPos = Compute_AlignedPos(_float2(m_vWorldPos.x,m_vWorldPos.y),_float2(m_vLocalSize.x * 0.5f,m_vLocalSize.y * 0.5f));
+	
 }
 
 void CUI_TextBox::Free()

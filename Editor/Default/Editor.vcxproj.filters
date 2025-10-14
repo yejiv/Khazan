@@ -243,18 +243,18 @@
     <ClInclude Include="..\Public\Edit_Panel.h">
       <Filter>02.GameObject\UI\00.Panel</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Edit_ProgressBar.h">
-      <Filter>02.GameObject\UI\02.ProgressBar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Edit_TextBox.h">
-      <Filter>02.GameObject\UI\03.TextBox</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Edit_Button.h" />
     <ClInclude Include="..\Public\Edit_Panel.h" />
     <ClInclude Include="..\Public\Edit_ProgressBar.h" />
     <ClInclude Include="..\Public\Edit_TextBox.h" />
     <ClInclude Include="..\public\TestParticle.h">
       <Filter>02.GameObject\Effect\Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Edit_ProgressBar.h">
+      <Filter>02.GameObject\UI\02.ProgressBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Edit_TextBox.h">
+      <Filter>02.GameObject\UI\03.TextBox</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
