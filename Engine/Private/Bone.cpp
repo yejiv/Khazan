@@ -1,3 +1,4 @@
+﻿
 #include "Bone.h"
 
 CBone::CBone()
@@ -5,17 +6,16 @@ CBone::CBone()
 
 }
 
-HRESULT CBone::Initialize(const aiNode* pAINode, _int iParentBoneIndex)
+HRESULT CBone::Initialize(BONE_DATA& data)
 {
-	strcpy_s(m_szName, pAINode->mName.data);
+	m_strName = AnsiToWString(data.strName);
 
-	memcpy(&m_TransformationMatrix, &pAINode->mTransformation, sizeof(_float4x4));
+	memcpy(&m_TransformationMatrix, &data.transformationMatrix, sizeof(_float4x4));
 
-	XMStoreFloat4x4(&m_TransformationMatrix, XMMatrixTranspose(XMLoadFloat4x4(&m_TransformationMatrix)));
-
+	/*  m_CombinedTransformationMatrix는 매 프레임마다 부모의 컴바인행렬을 곱해줘서 실제 위치를 계산 */
 	XMStoreFloat4x4(&m_CombinedTransformationMatrix, XMMatrixIdentity());
 
-	m_iParentBoneIndex = iParentBoneIndex;
+	m_iParentBoneIndex = data.iParentBoneIndex;
 
 	return S_OK;
 }
@@ -34,11 +34,11 @@ void CBone::Update_CombinedTransformationMatrix(const _float4x4& PreTransformMat
 
 }
 
-CBone* CBone::Create(const aiNode* pAINode, _int iParentBoneIndex)
+CBone* CBone::Create(BONE_DATA& data)
 {
 	CBone* pInstance = new CBone();
 
-	if (FAILED(pInstance->Initialize(pAINode, iParentBoneIndex)))
+	if (FAILED(pInstance->Initialize(data)))
 	{
 		MSG_BOX(TEXT("Failed to Created : CBone"));
 		Safe_Release(pInstance);
