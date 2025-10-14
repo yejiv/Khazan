@@ -2,6 +2,8 @@
 
 #include "Component.h"
 
+#include "ModelMesh_Instance.h"
+
 // 모델 인스턴싱용 클래스
 // JSON 배우고 나중에 파일입출력으로 바꾸겠습니다.
 
@@ -15,7 +17,7 @@ private:
 	virtual ~CModel_Instance() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(MODELTYPE eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix);
+	virtual HRESULT Initialize_Prototype(MODELTYPE eModelType, const _char* pModelFilePath, const CModelMesh_Instance::INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix);
 	virtual HRESULT Initialize_Clone(void* pArg);
 	virtual HRESULT Render(_uint iMeshIndex);
 
@@ -47,7 +49,7 @@ private:
 
 private:
 	_uint								m_iNumMeshes = {};
-	vector<class CModelMesh_Instance*>	m_Meshes;
+	vector<CModelMesh_Instance*>	m_Meshes;
 
 private:
 	/* Diffuse, Ambient, Specular */
@@ -65,13 +67,13 @@ private:
 	_bool								m_isFinished = {};
 
 private:
-	HRESULT Ready_Meshes();
+	HRESULT Ready_Meshes(const CModelMesh_Instance::INSTANCE_DESC* pDesc);
 	HRESULT Ready_Materials(const _char* pModelFilePath);
 	HRESULT Ready_Bones(const aiNode* pAINode, _int iParentIndex);
 	HRESULT Ready_Animations();
 
 public:
-	static CModel_Instance* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, MODELTYPE eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix);
+	static CModel_Instance* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, MODELTYPE eModelType, const _char* pModelFilePath, const CModelMesh_Instance::INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 
