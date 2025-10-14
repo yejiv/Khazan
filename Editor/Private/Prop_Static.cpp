@@ -78,7 +78,7 @@ HRESULT CProp_Static::Ready_Components(void* pArg)
 {
     PROP_STATIC_DESC* pDesc = static_cast<PROP_STATIC_DESC*>(pArg);
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Shader_MeshInstance"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Shader_ModelMeshInstance"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
 
