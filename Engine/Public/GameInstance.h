@@ -41,6 +41,8 @@ public:
 	_float Rand_Normal();
 	_float Rand(_float fMin, _float fMax);
 
+private:
+	void	SetupDebugMessageFilter(ID3D11Device* pDevice);
 #pragma endregion
 
 #pragma region LEVEL_MANAGER
