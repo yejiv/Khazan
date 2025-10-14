@@ -1,4 +1,4 @@
-#pragma once
+Ôªø#pragma once
 
 #include "Prototype_Manager.h"
 
@@ -12,7 +12,7 @@
 #include "imgui_impl_dx11.h"
 
 #ifdef new
-#pragma pop_macro("new") // DBG_NEW ∫πø¯
+#pragma pop_macro("new") // DBG_NEW Î≥µÏõê
 #endif
 
 
@@ -133,7 +133,9 @@ public:
 #pragma endregion
 
 #pragma region IMGUI_MANGER
+#ifdef _DEBUG
 	void    AddWidget(const _wstring Menu, const function<void()>& widget);
+#endif
 #pragma endregion
 
 #pragma region JOLT_MANAGER
