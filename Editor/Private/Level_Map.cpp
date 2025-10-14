@@ -138,15 +138,15 @@ HRESULT CLevel_Map::Ready_Temp_Prototypes()
 
 			string strLoadPath = Find_ModelPath(WStringToAnsi(strModelName));
 
-			CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), strModelName,
-				CModel_Instance::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, strLoadPath.c_str(), &ModelMeshDesc, PreTransformMatrix)), E_FAIL);
+			//CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), strModelName,
+				//CModel_Instance::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, strLoadPath.c_str(), &ModelMeshDesc, PreTransformMatrix)), E_FAIL);
 
 			CProp_Static::PROP_STATIC_DESC StaticDesc = {};
 
 			memcpy(StaticDesc.szModelName, strModelName.c_str(), sizeof(StaticDesc.szModelName));
 
-			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj"),
-				ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"), &StaticDesc), E_FAIL);
+			//CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj"),
+				//ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"), &StaticDesc), E_FAIL);
 		}
 		else if (true == isObject)				// 단일 오브젝트인 경우
 		{
@@ -699,8 +699,8 @@ HRESULT CLevel_Map::Ready_Json_List_Window()
 					FLOAT3_DATA vPos = m_JsonList[m_iJsonListIndex].vPosition;
 					FLOAT3_DATA vScale = m_JsonList[m_iJsonListIndex].vScale;
 					FLOAT3_DATA vRot = m_JsonList[m_iJsonListIndex].vRotation;
-					ImGui::Text("POSITION\nX : %.3f\nY : %.3f\nX : %.3f", vPos.x, vPos.y, vPos.z);
-					ImGui::Text("SCALE\nX : %.3f\nY : %.3f\nX : %.3f", vScale.x, vScale.y, vScale.z);
+					ImGui::Text("POSITION\nX : %.3f\nY : %.3f\nZ : %.3f", vPos.x, vPos.y, vPos.z);
+					ImGui::Text("SCALE\nX : %.3f\nY : %.3f\nZ : %.3f", vScale.x, vScale.y, vScale.z);
 					ImGui::Text("ROTATION\nPitch : %.3f\nYaw : %.3f\nRoll : %.3f", vRot.x, vRot.y, vRot.z);
 					SEPARATOR;
 				}
