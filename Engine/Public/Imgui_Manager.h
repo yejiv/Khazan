@@ -17,6 +17,9 @@ public:
     void                Render();
     void                Shutdown();
 
+
+    HRESULT             CleanMenu(_wstring strMenu);
+
 public:
 	// Widget 추가시에 메뉴 이름과 위젯 함수를 받아온다.
     void                AddWidget(const _wstring Menu, const function<void()>& widget);

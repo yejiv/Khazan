@@ -41,7 +41,7 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 	SettingDesc.mEnhancedInternalEdgeRemoval = pDesc->bEnhancedInternalEdgeRemoval;
 	SettingDesc.mShapeOffset = LoadVec3(pDesc->vShapeOffset);
 	SettingDesc.mSupportingVolume = pDesc->fSupportingVolume;
-
+	SettingDesc.mMaxSlopeAngle = DegreesToRadians(pDesc->fMaxSlopeAngle);
 	switch (pDesc->eShapeType)
 	{
 	case SHAPE::BOX:
@@ -89,12 +89,21 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 	m_vGravity = Vec3(0, -9.81f, 0);
 
 	CCharacterContactListener::CONFIG_DESC ConfigDesc{};
+	ConfigDesc.floor_dot = Cos(DegreesToRadians(pDesc->fMaxSlopeAngle));
+	ConfigDesc.cache_ground_normal = true;
 
 	m_pContactListener = new CCharacterContactListener(ConfigDesc);
 	m_pCharVir->SetListener(m_pContactListener);
 
 	m_pBodyFilter = new BodyFilter();
 	m_pShapeFilter = new ShapeFilter();
+
+	m_tEXUpdateSetting.mStickToFloorStepDown = LoadVec3(pDesc->vStickToFloorStepDown);
+	m_tEXUpdateSetting.mWalkStairsStepUp = LoadVec3(pDesc->vWalkStairsStepUp);
+	m_tEXUpdateSetting.mWalkStairsMinStepForward = pDesc->fWalkStairsMinStepForward;
+	m_tEXUpdateSetting.mWalkStairsStepForwardTest = pDesc->fWalkStairsStepForwardTest;
+	m_tEXUpdateSetting.mWalkStairsCosAngleForwardContact = Cos(DegreesToRadians(pDesc->fWalkStairsCosAngleForwardContact));
+	m_tEXUpdateSetting.mWalkStairsStepDownExtra = LoadVec3(pDesc->vWalkStairsStepDownExtra);
 
 	return S_OK;
 }
@@ -103,38 +112,30 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform)
 
 	if (!m_pCharVir) return;
 
-	// 1) 수평 입력 속도 (지금은 0; 필요 시 여기서 만들어 더해주면 됨)
 	JPH::Vec3 vHorizontal = JPH::Vec3::sZero();
 
-	// 2) 접지 상태 확인 + 중력 처리
 	const bool onGround = (m_pCharVir->GetGroundState() == JPH::CharacterVirtual::EGroundState::OnGround);
 	if (onGround)
 	{
-		// 바닥에 있을 때는 하강 속도 제거해 '붙이기'
 		if (m_vVelocity.GetY() < 0.0f)
 			m_vVelocity.SetY(0.0f);
 
-		// (선택) 이동 플랫폼 위라면 플랫폼 속도 보정
 		vHorizontal += m_pCharVir->GetGroundVelocity();
 	}
 	else
 	{
-		// 공중일 때 중력 적용
 		m_vVelocity += m_vGravity * fTimeDelta;
 	}
 
-	// 3) 최종 의도 속도 구성 후 캐릭터에 세팅
 	const JPH::Vec3 desired(vHorizontal.GetX(), m_vVelocity.GetY(), vHorizontal.GetZ());
 	m_pCharVir->SetLinearVelocity(desired);
 
-	// 4) 캐릭터 업데이트 (네 버전 시그니처)
-	m_pGameInstance->CharVir_Update(fTimeDelta, m_pCharVir, m_vGravity, m_iNumObjectLayer, m_pBodyFilter, m_pShapeFilter);
+	//m_pGameInstance->CharVir_Update(fTimeDelta, m_pCharVir, m_vGravity, m_iNumObjectLayer, m_pBodyFilter, m_pShapeFilter);
+	m_pGameInstance->CharVir_ExtendedUpdate(fTimeDelta, m_pCharVir, m_vGravity, m_iNumObjectLayer, m_pBodyFilter, m_pShapeFilter, m_tEXUpdateSetting);
 
-	// 5) 결과 Transform 반영
 	const JPH::RVec3 pos = m_pCharVir->GetPosition();
 	const JPH::Quat  rot = m_pCharVir->GetRotation();
 
-	// TODO: 너희 엔진 API에 맞게 치환
 	_vector vPos = XMVectorSet(pos.GetX(), pos.GetY(), pos.GetZ(), 1.f);
 	_vector vRot = XMVectorSet(rot.GetX(), rot.GetY(), rot.GetZ(), rot.GetW());
 	pTransform->Set_State(STATE::POSITION, vPos);

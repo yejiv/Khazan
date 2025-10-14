@@ -175,7 +175,7 @@ HRESULT CLoader::Loading_For_Animation_Level()
 	/* Prototype_Component_Model_JOH_TestModel */
 	PreTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::ANIMATION), TEXT("Prototype_Component_Model_JOH_TestModel"),
-		CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::ANIM, "../../Client/Bin/Resources/Models/Creature/Test/AnimNude_Player/Test.fbx", PreTransformMatrix))))
+		CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::ANIM, "../../Client/Bin/Models/Creature/Test/AnimNude_Player/Test.fbx", PreTransformMatrix))))
 		return E_FAIL;
 
 		/* Prototype_Component_Model_JOH_TestModel */
