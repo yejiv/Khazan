@@ -118,6 +118,8 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	m_pImgui_Manager = CImgui_Manager::Create(EngineDesc.iWinSizeX_Imgui, EngineDesc.iWinSizeY_Imgui, EngineDesc.Menu_Imgui);
 	if (nullptr == m_pImgui_Manager)
 		return E_FAIL;
+
+	SetupDebugMessageFilter(*ppDevice);
 #endif
 	return S_OK;
 }
@@ -208,6 +210,29 @@ _float CGameInstance::Rand_Normal()
 _float CGameInstance::Rand(_float fMin, _float fMax)
 {
 	return fMin + Rand_Normal() * (fMax - fMin);
+}
+
+void CGameInstance::SetupDebugMessageFilter(ID3D11Device* pDevice)
+{
+	ID3D11InfoQueue* pInfoQueue = nullptr;
+	if (SUCCEEDED(pDevice->QueryInterface(__uuidof(ID3D11InfoQueue), (void**)&pInfoQueue)))
+	{
+		// 무시할 메시지 ID 목록
+		D3D11_MESSAGE_ID hideMessages[] =
+		{
+			D3D11_MESSAGE_ID_DEVICE_OMSETRENDERTARGETS_HAZARD,
+			D3D11_MESSAGE_ID_DEVICE_PSSETSHADERRESOURCES_HAZARD,
+			D3D11_MESSAGE_ID_OMSETRENDERTARGETS_INVALIDVIEW,
+			D3D11_MESSAGE_ID_DEVICE_DRAW_RENDERTARGETVIEW_NOT_SET
+		};
+
+		D3D11_INFO_QUEUE_FILTER filter = {};
+		filter.DenyList.NumIDs = _countof(hideMessages);
+		filter.DenyList.pIDList = hideMessages;
+
+		pInfoQueue->AddStorageFilterEntries(&filter);
+		pInfoQueue->Release();
+	}
 }
 
 #pragma endregion
