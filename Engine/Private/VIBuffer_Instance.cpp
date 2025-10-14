@@ -27,7 +27,7 @@ HRESULT CVIBuffer_Instance::Initialize_Clone(void* pArg)
 	D3D11_SUBRESOURCE_DATA	InitialDesc{};
 	InitialDesc.pSysMem = m_pInstanceVertices;
 
-	if (FAILED(m_pDevice->CreateBuffer(&m_VBInstanceDesc, &InitialDesc, &m_pVBInstance)))
+    if (FAILED(m_pDevice->CreateBuffer(&m_VBInstanceDesc, &InitialDesc, &m_pVBInstance)))
 		return E_FAIL;
 
 	return S_OK;

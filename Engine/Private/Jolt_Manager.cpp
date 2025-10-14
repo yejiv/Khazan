@@ -16,6 +16,8 @@ HRESULT CJolt_Manager::Initialize(_uint iNumObjectLayer)
     Factory::sInstance = new Factory();
     RegisterTypes();
 
+    m_iNumObjectLayer = iNumObjectLayer;
+
     // Job threads
     m_iJobThreadCount = thread::hardware_concurrency();
 
@@ -30,13 +32,13 @@ HRESULT CJolt_Manager::Initialize(_uint iNumObjectLayer)
 
 
     //레이어
-      m_pBPLayer = new CJolt_BPLayer(iNumObjectLayer);
-    if (m_pBPLayer == nullptr)
+    m_pBPLayerIF = new CJolt_BPLayerIF(m_iNumObjectLayer);
+    if (m_pBPLayerIF == nullptr)
         return E_FAIL;
-    m_pObjectLayerPairFilter = new CJolt_ObjectLayerPairFilter(iNumObjectLayer);
+    m_pObjectLayerPairFilter = new CJolt_ObjectLayerPairFilter(m_iNumObjectLayer);
     if (m_pObjectLayerPairFilter == nullptr)
         return E_FAIL;
-    m_pObjectVsBPLayerFilter = new CJolt_ObjectVsBPLayerFilter(iNumObjectLayer);
+    m_pObjectVsBPLayerFilter = new CJolt_ObjectVsBPLayerFilter(m_iNumObjectLayer);
     if (m_pObjectVsBPLayerFilter == nullptr)
         return E_FAIL;
 
@@ -44,6 +46,7 @@ HRESULT CJolt_Manager::Initialize(_uint iNumObjectLayer)
     m_pContactListener = new CJolt_ContactListener();
     if (m_pContactListener == nullptr)
         return E_FAIL;
+
 
 #ifdef _DEBUG
     m_pDebugRenderer = new CJolt_DebugRenderer(m_pDevice, m_pContext);
@@ -74,12 +77,15 @@ Body* CJolt_Manager::CreateAndAdd_Body(const BodyCreationSettings& BodySetting, 
     return body;
 }
 
-CharacterVirtual* CJolt_Manager::CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData)
+CharacterVirtual* CJolt_Manager::CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData, BodyInterface** pBodyInterface)
 {
-    CharacterVirtual* pCharVir = new CharacterVirtual(inSettings, inPosition, inRotation, m_pPhysics);
+    CharacterVirtual* pCharVir = new CharacterVirtual(inSettings, inPosition, inRotation, inUserData, m_pPhysics);
+
+    *pBodyInterface = &m_pPhysics->GetBodyInterface();
 
     return pCharVir;
 }
+
 
 void CJolt_Manager::Set_PhysicsSystem()
 {
@@ -90,8 +96,9 @@ void CJolt_Manager::Set_PhysicsSystem()
         m_iNumBodyMutexes,
         m_iMaxBodyPairs,
         m_iMaxContactConstraints,
-        *m_pBPLayer,
+        *m_pBPLayerIF,
         *m_pObjectVsBPLayerFilter,
+
         *m_pObjectLayerPairFilter
     );
 
@@ -102,7 +109,23 @@ void CJolt_Manager::Set_PhysicsSystem()
     m_pPhysics->SetGravity(Vec3(0.0f, -9.81f, 0.0f));
 }
 
+void CJolt_Manager::CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter)
+{
+    pCharVir->Update(
+        fTimeDelta,
+        vGravity,
+        m_pPhysics->GetDefaultBroadPhaseLayerFilter(iObjectLayer),
+        m_pPhysics->GetDefaultLayerFilter(iObjectLayer),
+        *pBodyFilter,
+        *pShapeFilter,
+        *m_pTempAlloc
+    );
+}
+
 #ifdef  _DEBUG
+
+
+
 void CJolt_Manager::Test()
 {
     BoxShapeSettings floor_shape_settings(Vec3(10.0f, 1.0f, 10.0f));
@@ -116,13 +139,13 @@ void CJolt_Manager::Test()
 
     m_pPhysics->GetBodyInterface().AddBody(floor->GetID(), EActivation::DontActivate);
 
-    for (_uint i = 0; i < 5; i++)
+   /* for (_uint i = 0; i < 5; i++)
     {
         BodyCreationSettings sphere_settings(new SphereShape(0.5f), RVec3(Real(0.1), Real(i * 5), Real(0.0)), Quat::sIdentity(), EMotionType::Dynamic, ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
         BodyID sphere_id = m_pPhysics->GetBodyInterface().CreateAndAddBody(sphere_settings, EActivation::Activate);
 
         m_pPhysics->GetBodyInterface().SetLinearVelocity(sphere_id, Vec3(0.0f, 0.0f, 0.0f));
-    }
+    }*/
 
     m_pPhysics->OptimizeBroadPhase();
 }
@@ -131,7 +154,14 @@ void CJolt_Manager::Debug_Render()
     if (!m_pPhysics)
         return;
 
+    // 디버그 렌더 패스 시작
+    m_pDebugRenderer->BeginFrame();
+
+    // Jolt가 내부적으로 수백/수천번 DrawLine()을 호출
     m_pPhysics->DrawBodies(m_DrawSetting, m_pDebugRenderer);
+
+    // 디버그 렌더 패스 종료
+    m_pDebugRenderer->EndFrame();
 }
 #endif 
 CJolt_Manager* CJolt_Manager::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iNumObjectLayer)
@@ -154,10 +184,11 @@ void CJolt_Manager::Free()
     Safe_Delete(m_pDebugRenderer);
 #endif
 
-    Safe_Delete(m_pBPLayer);
+    Safe_Delete(m_pBPLayerIF);
+
     Safe_Delete(m_pObjectLayerPairFilter);
     Safe_Delete(m_pObjectVsBPLayerFilter);
-
+    
     Safe_Delete(m_pPhysics);
     Safe_Delete(m_pContactListener);
     Safe_Delete(m_pJobSystem);

@@ -64,6 +64,10 @@ namespace Engine
 		float x;
 		float y;
 		float z;
+
+        tagFloat3() : x(0.f), y(0.f), z(0.f) {}             // 기본 생성자
+        tagFloat3(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {}                        // 대입 생성자
+
 	}FLOAT3_DATA;
 
 	typedef struct tagFloat4
@@ -72,6 +76,10 @@ namespace Engine
 		float y;
 		float z;
 		float w;
+
+        tagFloat4() : x(0.f), y(0.f), z(0.f) {}             // 기본 생성자
+        tagFloat4(float _x, float _y, float _z, float _w) : x(_x), y(_y), z(_z), w(_w) {}       // 대입 생성자
+
 	}FLOAT4_DATA;
 
 	typedef struct tagFloat4x4
@@ -548,6 +556,24 @@ namespace Engine
 
 #pragma region Map
 
+    typedef struct tagJsonMapDataSet
+    {
+        std::string strModelName{};
+
+        unsigned int iNumInstances{};
+
+        bool isInstance = { false };
+        std::vector<FLOAT3_DATA> vInstancePosition;
+        std::vector<FLOAT3_DATA> vInstanceScale;
+        std::vector<FLOAT4_DATA> vInstanceQuaternion;
+
+        bool isObject = { false };
+        FLOAT3_DATA vPosition{};
+        FLOAT3_DATA vScale{};
+        FLOAT3_DATA vRotation{};
+
+    }JSON_MAP_DATA;
+
 #pragma endregion
 
 
@@ -611,6 +637,19 @@ namespace Engine
 		vecBones,
 		vecAnimation
 	);
+
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(JSON_MAP_DATA,
+        strModelName,
+        iNumInstances,
+        isInstance,
+        vInstancePosition,
+        vInstanceScale,
+        vInstanceQuaternion,
+        isObject,
+        vPosition,
+        vScale,
+        vRotation
+    );
 
 #pragma endregion
 

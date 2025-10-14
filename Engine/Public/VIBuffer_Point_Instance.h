@@ -7,7 +7,6 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CVIBuffer_Point_Instance final : public CVIBuffer_Instance
 {
 public:
-	/* 파티클 인ㅌ스턴싱을 위해서만 핑료한 뎅치터.  */
 	typedef struct tagPointInstanceDesc : public CVIBuffer_Instance::INSTANCE_DESC
 	{
 		_float3			vPivot;
@@ -15,6 +14,22 @@ public:
 		_float2			vLifeTime;
 		_bool			isLoop;
 	}POINT_INSTANCE_DESC;
+
+	typedef struct tagPointInstanceConstantBuffer
+	{
+		_float		fTimeDelta;
+		_float3		vPivot;
+		_uint		iNumInstances;
+		_float3		vPadding;
+	}POINT_INSTANCE_CB;
+
+	typedef struct tagParticleParams
+	{
+		_float fSpeed;
+		_float3 vPadding;
+		_float4 vInitTranslation;
+	}PARTICLE_PARAMS;
+
 private:
 	CVIBuffer_Point_Instance(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CVIBuffer_Point_Instance(const CVIBuffer_Point_Instance& Prototype);
@@ -34,6 +49,20 @@ private:
 	_float3					m_vPivot = {};
 	_float*					m_pSpeeds = {};
 	_bool					m_isLoop = {};
+
+	// Compute Shader Test
+	class CComputeShader*		m_pComputeShader = { nullptr };
+
+	ID3D11ShaderResourceView*	m_pSRV = { nullptr };
+	ID3D11UnorderedAccessView*	m_pUAV = { nullptr };
+	ID3D11Buffer*				m_pCB = { nullptr };
+	ID3D11Buffer*				m_pStructuredBuffer = { nullptr };
+
+private:
+	HRESULT Ready_ShaderResourceView(void* pSysmem);
+	HRESULT Ready_UnorderedAccessView();
+	HRESULT Ready_ConstantBuffer();
+	HRESULT Ready_ComputeShader();
 
 public:
 	static CVIBuffer_Point_Instance* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const INSTANCE_DESC* pDesc);

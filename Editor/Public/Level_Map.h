@@ -9,6 +9,7 @@ class CLevel_Map final : public CLevel
 {
 private:
 	enum class PROP_SPECIES { STATIC, ANIMATED, INTERACTIVE, DESTRUCTIBLE, END };
+	enum class MAPEDIT_MAP { HEINMACH, STORMPASS, THECREVICE, EMBARS, END };
 
 private:
 	CLevel_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -25,40 +26,84 @@ private:
 
 	HRESULT Ready_Layer_Prop_Static(const _wstring& strLayerTag);
 
-#pragma region ImGui
 private:
-#pragma region MAIN WINDOW
+	class CProp_Static* m_pProp_Static = { nullptr };
+
+	MAPEDIT_MAP m_eMapType = { MAPEDIT_MAP::HEINMACH };
+
+private:
+	// 임시 테스트용 : Prototype 생성 ( json, filesystem 이용해서 )
+	HRESULT Ready_Temp_Prototypes();
+
+	// 임시 테스트용
+	HRESULT Ready_Temp_Layers(const _wstring& strLayerTag);
+
+#pragma region ImGui 변수들
+
 	_bool m_isMainWindow = { true };
 
 	_bool m_isJsonWindow = { false };
 
+	_bool m_isCustomJsonWindow = { false };
+
 	_bool m_isPropWindow[ENUM_CLASS(PROP_SPECIES::END)] = { false, false, false,false };
 
 	_bool m_isLightSettingWindow = { false };
+
+#pragma region ImGui > JSON 관련 변수
+
+	_char m_szJsonPath[MAX_PATH] = { "../../Client/Bin/Resources/Models/Prop/Json/" };					// 오리지날 Json 기본 경로
+	_char m_szJsonCustomPath[MAX_PATH] = { "../../Client/Bin/DataFiles/Map/" };		// 커 스 텀 Json 기본 경로
+
+	_char m_szJsonFolderPath[ENUM_CLASS(MAPEDIT_MAP::END)][MAX_PATH] = { "HeinMach/", "StormPass/", "TheCrevice/", "Embars/" };		// 추출할 Json 폴더
+
+#pragma region ORIGINAL JSON 용
+
+	JSON m_Json = {};		// Json 정보 저장해놓을
+	_char m_szJsonSaveName[MAX_PATH] = {};
+	
+	_bool m_isJsonExport = { false };
+
+	_bool m_isJsonConverted = { false };
+	vector<string> m_JsonFiles;
+	_int m_iJsonFilesIndex = {};
+
+	vector<JSON_MAP_DATA> m_JsonList;
+	_int m_iJsonListIndex = {};
+
 #pragma endregion
 
-#pragma region JSON
-	JSON m_Json = {};
-	_char m_szJsonFile[MAX_PATH] = {};
-	_bool m_isJsonOpened = { false };
+#pragma region CUSTOM JSON 용
+
+	JSON m_CustomJson = {};		// Json 정보 저장해놓을
+
+	_bool m_isCustomJsonLoaded = { false };
+
 #pragma endregion
 
-#pragma region STATIC WINDOW
-	vector<string> m_StaticModels;
-	_int m_iStatIndex = {};
+
 #pragma endregion
 
-private:
-	class CProp_Static* m_pProp_Static = { nullptr };
+#pragma region ImGui > FileSystem 관련 변수
+
+
+
+#pragma endregion
 
 private:
 	HRESULT Ready_DefaultImGui_For_MapTool();
 
 	HRESULT Ready_Main_Window();
-
+	HRESULT Ready_CustomJson_Edit_Window();
 	HRESULT Ready_Prop_Edit_Window();
-
 	HRESULT Ready_Json_Edit_Window();
+	HRESULT Ready_Json_List_Window();
+
+	void Get_Directory_Files(const _char* pDirectoryPath);
+
+	// 임시 테스트용
+	void Load_ModelFolders(const string& strDefaultPath);
+
 #pragma endregion
 
 public:

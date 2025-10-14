@@ -127,6 +127,9 @@
     <Filter Include="02.GameObject\UI\99.Camera">
       <UniqueIdentifier>{fe38b2f3-d49f-4cfe-8f49-120fba3d8e6b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Effect\Test">
+      <UniqueIdentifier>{116c7f7b-14fc-4c1b-8400-a6e8848e3c5a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -246,6 +249,13 @@
     <ClInclude Include="..\Public\Edit_TextBox.h">
       <Filter>02.GameObject\UI\03.TextBox</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Edit_Button.h" />
+    <ClInclude Include="..\Public\Edit_Panel.h" />
+    <ClInclude Include="..\Public\Edit_ProgressBar.h" />
+    <ClInclude Include="..\Public\Edit_TextBox.h" />
+    <ClInclude Include="..\public\TestParticle.h">
+      <Filter>02.GameObject\Effect\Test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -362,6 +372,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Edit_TextBox.cpp">
       <Filter>02.GameObject\UI\03.TextBox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\TestParticle.cpp">
+      <Filter>02.GameObject\Effect\Test</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
