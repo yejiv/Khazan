@@ -136,6 +136,9 @@
     <Filter Include="03.Utility\00.Model\Model_Instance\Mesh">
       <UniqueIdentifier>{2d0c3b35-7725-4676-8466-84104fa198df}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Map_Terrain">
+      <UniqueIdentifier>{0b49104a-5252-4909-9887-78adc1dd0a3d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -268,6 +271,9 @@
     <ClInclude Include="..\Public\Editor_Model_Instance.h">
       <Filter>03.Utility\00.Model\Model_Instance</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Map_Terrain.h">
+      <Filter>02.GameObject\MapObject\Map_Terrain</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -393,6 +399,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Editor_Model_Instance.cpp">
       <Filter>03.Utility\00.Model\Model_Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Map_Terrain.cpp">
+      <Filter>02.GameObject\MapObject\Map_Terrain</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

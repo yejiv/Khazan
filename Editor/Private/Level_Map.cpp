@@ -15,13 +15,7 @@ CLevel_Map::CLevel_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 HRESULT CLevel_Map::Initialize()
 {
-	CHECK_FAILED(Ready_Lights(), E_FAIL);
-
-	CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera_Map")), E_FAIL);
-
-	// CHECK_FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround")), E_FAIL);
-
-	// CHECK_FAILED(Ready_Layer_Prop_Static(TEXT("Layer_Prop_Static")), E_FAIL);
+	CHECK_FAILED(Ready_Defaults(), E_FAIL);
 
 	CHECK_FAILED(Ready_DefaultImGui_For_MapTool(), E_FAIL);
 
@@ -37,6 +31,17 @@ void CLevel_Map::Update(_float fTimeDelta)
 HRESULT CLevel_Map::Render()
 {
 	SetWindowText(g_hWnd, TEXT("맵툴"));
+
+	return S_OK;
+}
+
+HRESULT CLevel_Map::Ready_Defaults()
+{
+	CHECK_FAILED(Ready_Lights(), E_FAIL);
+
+	CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Map_Camera")), E_FAIL);
+
+	CHECK_FAILED(Ready_Layer_Terrain(TEXT("Layer_Map_Terrain")), E_FAIL);
 
 	return S_OK;
 }
@@ -63,7 +68,7 @@ HRESULT CLevel_Map::Ready_Layer_Camera(const _wstring& strLayerTag)
 {
 	CCamera_Map::CAMERA_MAP_DESC MapDesc = {};
 
-	MapDesc.fSpeedPerSec = 5.f;
+	MapDesc.fSpeedPerSec = 10.f;
 	MapDesc.fRotationPerSec = XMConvertToRadians(30.f);
 
 	MapDesc.fMouseSensor = 0.2f;
@@ -82,6 +87,14 @@ HRESULT CLevel_Map::Ready_Layer_Camera(const _wstring& strLayerTag)
 	return S_OK;
 }
 
+HRESULT CLevel_Map::Ready_Layer_Terrain(const _wstring& strLayerTag)
+{
+	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), strLayerTag,
+		ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Map_Terrain")), E_FAIL);
+
+	return S_OK;
+}
+
 HRESULT CLevel_Map::Ready_Layer_Prop_Static(const _wstring& strLayerTag)
 {
 
@@ -89,7 +102,7 @@ HRESULT CLevel_Map::Ready_Layer_Prop_Static(const _wstring& strLayerTag)
 	return S_OK;
 }
 
-HRESULT CLevel_Map::Ready_Temp_Prototypes()
+HRESULT CLevel_Map::Ready_Temp_Instances()
 {
 	_uint iMapObjectID = { 0 };
 
@@ -119,9 +132,11 @@ HRESULT CLevel_Map::Ready_Temp_Prototypes()
 				FLOAT3_DATA vScale = FLOAT3_DATA((_float)scale[i]["x"], (_float)scale[i]["y"], (_float)scale[i]["z"]);
 				FLOAT4_DATA vQuaternion = FLOAT4_DATA((_float)quat[i]["x"], (_float)quat[i]["y"], (_float)quat[i]["z"], (_float)quat[i]["w"]);
 
-				XMMATRIX matScale = XMMatrixScaling(vScale.x, vScale.y, vScale.z);
-				XMMATRIX matRot = XMMatrixRotationQuaternion(XMVectorSet(vQuaternion.x, vQuaternion.y, vQuaternion.z, vQuaternion.w));
-				XMMATRIX matTrans = XMMatrixTranslation(vPos.x, vPos.y, vPos.z);
+				_matrix matScale = XMMatrixScaling(vScale.x, vScale.y, vScale.z);
+				_matrix matRot = XMMatrixRotationQuaternion(XMVectorSet(vQuaternion.x, vQuaternion.y, vQuaternion.z, vQuaternion.w));
+				_matrix matTrans = XMMatrixTranslation(vPos.x, vPos.z, vPos.y);
+
+				matTrans *= XMMatrixScaling(0.01f, 0.01f, 0.01f);
 
 				MeshInstanceData.InstanceMatrix = matScale * matRot * matTrans;
 				MeshInstanceData.InstanceID = iMapObjectID++;
@@ -133,34 +148,154 @@ HRESULT CLevel_Map::Ready_Temp_Prototypes()
 
 			_matrix PreTransformMatrix = XMMatrixIdentity();
 
-			// strModelName과 일치하는 폴더를 ../../Client/Bin/Resources/Models/Prop/Static/ 종류별 폴더 / 모델명 ( .fbx 파일명과 동일한 ) 폴더 / 모델명.fbx
-			// 알아서 찾아서 MODELTYPE::NONANIM, "여기에 넣어야함" 
+			// 스케일 변환 ( 1 / 100 )
+			PreTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 
+			// 모델명과 일치하는 경로 찾기
 			string strLoadPath = Find_ModelPath(WStringToAnsi(strModelName));
 
-			//CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), strModelName,
-				//CModel_Instance::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, strLoadPath.c_str(), &ModelMeshDesc, PreTransformMatrix)), E_FAIL);
+			if ("" == strLoadPath)
+				continue;
+
+			CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), strModelName,
+				CEditor_Model_Instance::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, strLoadPath.c_str(), PreTransformMatrix, &ModelMeshDesc)), E_FAIL);
 
 			CProp_Static::PROP_STATIC_DESC StaticDesc = {};
 
 			memcpy(StaticDesc.szModelName, strModelName.c_str(), sizeof(StaticDesc.szModelName));
 
-			//CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj"),
-				//ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"), &StaticDesc), E_FAIL);
+			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj"),
+				ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"), &StaticDesc), E_FAIL);
 		}
 		else if (true == isObject)				// 단일 오브젝트인 경우
 		{
+		}
+		else
+		{
+			MSG_BOX(TEXT("있어서는 안되는 else"));
+		}
 
+
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_Map::Ready_Temp_IndependentObjs()
+{
+	_uint iMapObjectID = { 0 };
+
+	for (auto& Component : m_CustomJson)
+	{
+		_bool isInstance = (_bool)Component["isInstance"];
+		_bool isObject = (_bool)Component["isObject"];
+
+		wstring strModelName = AnsiToWString(Component["strModelName"]);
+
+		if (true == isObject)				// 단일 오브젝트인 경우
+		{
+			++iMapObjectID;
+
+			auto& position = Component["vPosition"];
+			auto& scale = Component["vScale"];
+			auto& rot = Component["vRotation"];
+
+			FLOAT3_DATA vPosition = FLOAT3_DATA((_float)position["x"], (_float)position["y"], (_float)position["z"]);
+			FLOAT3_DATA vScale = FLOAT3_DATA((_float)scale["x"], (_float)scale["y"], (_float)scale["z"]);
+			FLOAT3_DATA vRotation = FLOAT3_DATA((_float)rot["x"], (_float)rot["y"], (_float)rot["z"]);
+
+			CProp_Animated::PROP_ANIMATED_DESC AnimatedDesc = {};
+
+			AnimatedDesc.vPosition = XMVectorSet(vPosition.x * 0.01f, vPosition.z * 0.01f, vPosition.y * 0.01f, 1.f);
+			AnimatedDesc.vScale = XMVectorSet(vScale.x, vScale.y, vScale.z, 0.f);
+			AnimatedDesc.vRotation = XMVectorSet(vRotation.x, vRotation.y, vRotation.z, 0.f);
 
 			_matrix PreTransformMatrix = XMMatrixIdentity();
 
+			// 스케일 변환 ( 1 / 100 )
+			PreTransformMatrix = XMMatrixScaling(0.0001f, 0.0001f, 0.0001f);
+
+			// 모델명과 일치하는 경로 찾기
+			string strLoadPath = Find_ModelPath(WStringToAnsi(strModelName));
+
+			if ("" == strLoadPath)
+			{
+				string error = "Can't found load path\nModelName : " + WStringToAnsi(strModelName) + "\n";
+				OutputDebugStringA(error.c_str());
+				continue;
+			}
+
+			auto iter = m_CheckPrototypes.find(strModelName);
+
+			if (iter == m_CheckPrototypes.end())
+			{
+				_uint iIncrease = { 1 };
+
+				if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), strModelName,
+					CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, strLoadPath.c_str(), PreTransformMatrix))))
+				{
+					strModelName;
+					strLoadPath;
+					int a = 10;
+					continue;
+				}
+
+				m_CheckPrototypes.emplace(strModelName, iIncrease);
+			}
+			else
+			{
+				++iter->second;
+
+				_tchar szCntMap[MAX_PATH] = {};
+
+				wsprintf(szCntMap, TEXT("%d"), iter->second);
+
+				string strExist = "Exist Model\nModelName : " + WStringToAnsi(strModelName) + "\n" + "ModelCount :" + WStringToAnsi(szCntMap) + "\n";
+				OutputDebugStringA(strExist.c_str());
+			}
+
+			AnimatedDesc.isIndependentObject = true;
+
+			memcpy(AnimatedDesc.szModelName, strModelName.c_str(), sizeof(AnimatedDesc.szModelName));
+
+			if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj"),
+				ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Test"), &AnimatedDesc)))
+			{
+				strModelName;
+				strLoadPath;
+				int a = 10;
+			}
+		}
+		else if (true == isInstance)				// 인스턴싱 모델인 경우
+		{
 
 		}
 		else
 		{
 			MSG_BOX(TEXT("있어서는 안되는 else"));
 		}
+
+		if (0 != iMapObjectID)
+		{
+			_tchar szLoadedObj[MAX_PATH] = {};
+			_tchar szMaxCnt[MAX_PATH] = {};
+
+			wsprintf(szLoadedObj, TEXT("%d"), iMapObjectID);
+			wsprintf(szMaxCnt, TEXT("%d"), m_iObjCnt);
+
+			string strExist = "\nLoaded : ( " + WStringToAnsi(szLoadedObj) + " / " + WStringToAnsi(szMaxCnt) + " )\n";
+			OutputDebugStringA(strExist.c_str());
+		}
 	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_Map::Ready_Temp_All()
+{
+	CHECK_FAILED(Ready_Temp_Instances(), E_FAIL);
+
+	CHECK_FAILED(Ready_Temp_IndependentObjs(), E_FAIL);
 
 	return S_OK;
 }
@@ -182,6 +317,8 @@ HRESULT CLevel_Map::Ready_DefaultImGui_For_MapTool()
 
 	CHECK_FAILED(Ready_CustomJson_Edit_Window(), E_FAIL);
 
+	CHECK_FAILED(Ready_CustomJson_List_Window(), E_FAIL);
+
 	CHECK_FAILED(Ready_Prop_Edit_Window(), E_FAIL);
 
 	CHECK_FAILED(Ready_Json_Edit_Window(), E_FAIL);
@@ -198,6 +335,11 @@ HRESULT CLevel_Map::Ready_Main_Window()
 		{
 			ImGui::Begin("MAIN WINDOW", &m_isMainWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
+			ImGui::Text("INFORMATION");
+			ImGui::Text("FPS : %f", 1.f / m_pGameInstance->Get_TimeDelta(TEXT("Timer_60")));
+
+			SEPARATOR;
+			ImGui::Text("JSON");
 			if (ImGui::Button("JSON TO CUSTOM"))
 			{
 				Get_Directory_Files(m_szJsonPath);
@@ -213,6 +355,7 @@ HRESULT CLevel_Map::Ready_Main_Window()
 			}
 
 			SEPARATOR;
+			ImGui::Text("PROP LIST");
 			if (ImGui::Button("STATIC"))		m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)];
 			SAMELINE;
 			if (ImGui::Button("ANIMATED"))		m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)];
@@ -234,108 +377,20 @@ HRESULT CLevel_Map::Ready_Main_Window()
 
 				m_iJsonFilesIndex = 0;
 				m_iJsonListIndex = 0;
+
+				m_CustomJsonList.clear();
+				m_iCustomJsonListIndex = 0;
+
+				m_isCustomJsonLoaded = false;
+			}
+			if (ImGui::Button("CLEAR LEVEL"))
+			{
+
 			}
 
 			ImGui::End();
 		}
 		});
-
-	return S_OK;
-}
-
-HRESULT CLevel_Map::Ready_CustomJson_Edit_Window()
-{
-#pragma region WIDGET : CumtomJson 용 위젯
-
-	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
-		if (m_isCustomJsonWindow)
-		{
-			ImGui::Begin("CUSTOM JSON WINDOW", &m_isCustomJsonWindow, ImGuiWindowFlags_AlwaysAutoResize);
-
-#pragma region CustomJson 로드
-			
-			ImGui::Text("CUSTOM JSON LOAD PATH : ");
-			SAMELINE; ITEMWIDTH(350.f);
-			ImGui::InputText("##json_custom_path", m_szJsonCustomPath, IM_ARRAYSIZE(m_szJsonCustomPath));
-
-			ImGui::Text("MAP NAME : "); SAMELINE;
-
-			if (ImGui::Button("HEINMACH"))
-			{
-				m_eMapType = MAPEDIT_MAP::HEINMACH;
-
-				Get_Directory_Files(m_szJsonCustomPath);
-			} SAMELINE;
-			if (ImGui::Button("STORMPASS"))
-			{
-				m_eMapType = MAPEDIT_MAP::STORMPASS;
-
-				Get_Directory_Files(m_szJsonCustomPath);
-			} SAMELINE;
-			if (ImGui::Button("THECREVICE"))
-			{
-				m_eMapType = MAPEDIT_MAP::THECREVICE;
-
-				Get_Directory_Files(m_szJsonCustomPath);
-			} SAMELINE;
-			if (ImGui::Button("EMBARS"))
-			{
-				m_eMapType = MAPEDIT_MAP::EMBARS;
-
-				Get_Directory_Files(m_szJsonCustomPath);
-			}
-			ImGui::Text("JSON FILE NAME : ");
-			SAMELINE;
-
-			vector<const _char*> JsonFileNames;
-			JsonFileNames.reserve(m_JsonFiles.size());
-			for (auto& String : m_JsonFiles)
-				JsonFileNames.push_back(String.c_str());
-
-			ImGui::Combo("##json_file_list", &m_iJsonFilesIndex, JsonFileNames.data(), static_cast<_int>(m_JsonFiles.size()));
-
-			SAMELINE;
-			if (ImGui::Button("LOAD##customjson"))
-			{
-				string strPath = m_szJsonCustomPath;
-
-				strPath += m_szJsonFolderPath[ENUM_CLASS(m_eMapType)];
-				strPath += m_JsonFiles[m_iJsonFilesIndex];
-				strPath += ".json";
-
-				ifstream ifs(strPath);
-
-				if (true == ifs.is_open())
-				{
-					ifs >> m_CustomJson;
-					ifs.close();
-
-					m_isCustomJsonLoaded = true;
-				}
-				else
-					ifs.close();
-			}
-
-#pragma endregion
-
-#pragma region CustomJson을 이용한 프로토 타입 및 레이어 생성
-
-			if (true == m_isCustomJsonLoaded)
-			{
-				if (ImGui::Button("CREATE TEMPS"))
-					Ready_Temp_Prototypes();
-
-				//if (ImGui::Button("CREATE LAYERS"))
-					//Ready_Temp_Layers(TEXT("Layer_MapObject"));
-			}
-
-#pragma endregion
-
-			ImGui::End();
-		}
-		});
-
-#pragma endregion
 
 	return S_OK;
 }
@@ -401,16 +456,345 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 	return S_OK;
 }
 
+HRESULT CLevel_Map::Ready_CustomJson_Edit_Window()
+{
+#pragma region WIDGET : CUSTOM JSON 로드 및 테스트용 위젯
+
+	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
+		if (m_isCustomJsonWindow)
+		{
+			ImGui::Begin("CUSTOM JSON WINDOW", &m_isCustomJsonWindow, ImGuiWindowFlags_AlwaysAutoResize);
+
+#pragma region CustomJson 로드
+			
+			ImGui::Text("CUSTOM JSON LOAD PATH : ");
+			SAMELINE; ITEMWIDTH(350.f);
+			ImGui::InputText("##json_custom_path", m_szJsonCustomPath, IM_ARRAYSIZE(m_szJsonCustomPath));
+
+			ImGui::Text("MAP NAME : "); SAMELINE;
+
+			if (ImGui::Button("HEINMACH"))
+			{
+				m_eMapType = MAPEDIT_MAP::HEINMACH;
+
+				Get_Directory_Files(m_szJsonCustomPath);
+			} SAMELINE;
+			if (ImGui::Button("STORMPASS"))
+			{
+				m_eMapType = MAPEDIT_MAP::STORMPASS;
+
+				Get_Directory_Files(m_szJsonCustomPath);
+			} SAMELINE;
+			if (ImGui::Button("THECREVICE"))
+			{
+				m_eMapType = MAPEDIT_MAP::THECREVICE;
+
+				Get_Directory_Files(m_szJsonCustomPath);
+			} SAMELINE;
+			if (ImGui::Button("EMBARS"))
+			{
+				m_eMapType = MAPEDIT_MAP::EMBARS;
+
+				Get_Directory_Files(m_szJsonCustomPath);
+			}
+			ImGui::Text("JSON FILE NAME : ");
+			SAMELINE;
+
+			vector<const _char*> JsonFileNames;
+			JsonFileNames.reserve(m_JsonFiles.size());
+			for (auto& String : m_JsonFiles)
+				JsonFileNames.push_back(String.c_str());
+
+			ImGui::Combo("##json_file_list", &m_iJsonFilesIndex, JsonFileNames.data(), static_cast<_int>(m_JsonFiles.size()));
+
+			SAMELINE;
+			if (ImGui::Button("LOAD##customjson"))
+			{
+				string strPath = m_szJsonCustomPath;
+
+				strPath += m_szJsonFolderPath[ENUM_CLASS(m_eMapType)];
+				strPath += m_JsonFiles[m_iJsonFilesIndex];
+				strPath += ".json";
+
+				ifstream ifs(strPath);
+
+				if (true == ifs.is_open())
+				{
+					ifs >> m_CustomJson;
+					ifs.close();
+
+					for (auto& Component : m_CustomJson)
+					{
+						string strModelName = {};
+
+						_uint iNumInstance = {};
+
+						size_t start = {};
+						size_t end = {};
+
+						_bool isInstance = Component["isInstance"];
+						_bool isObject = Component["isObject"];
+
+						JSON_MAP_DATA Data = {};
+
+						Data.strModelName = Component["strModelName"];
+
+						if (true == isInstance)
+						{
+							auto& positions = Component["vInstancePosition"];
+							for (auto& poses : positions)
+							{
+								++Data.iNumInstances;
+
+								auto& x = poses["x"];
+								auto& y = poses["y"];
+								auto& z = poses["z"];
+
+								FLOAT3_DATA vPos = FLOAT3_DATA((_float)x, (_float)y, (_float)z);
+
+								Data.vInstancePosition.push_back(vPos);
+							}
+
+							auto& quats = Component["vInstanceQuaternion"];
+							for (auto& quas : quats)
+							{
+								auto& x = quas["x"];
+								auto& y = quas["y"];
+								auto& z = quas["z"];
+								auto& w = quas["w"];
+
+								FLOAT4_DATA vQuat = FLOAT4_DATA((_float)x, (_float)y, (_float)z, (_float)w);
+
+								Data.vInstanceQuaternion.push_back(vQuat);
+							}
+
+							auto& scales = Component["vInstanceScale"];
+							for (auto& scas : scales)
+							{
+								auto& x = scas["x"];
+								auto& y = scas["y"];
+								auto& z = scas["z"];
+
+								FLOAT3_DATA vScale = FLOAT3_DATA((_float)x, (_float)y, (_float)z);
+
+								Data.vInstanceScale.push_back(vScale);
+							}
+
+							Data.isInstance = true;
+						}
+						else if (true == isObject)
+						{
+							auto& positions = Component["vPosition"];
+							for (auto& poses : positions)
+							{
+								auto& x = positions["x"];
+								auto& y = positions["y"];
+								auto& z = positions["z"];
+
+								FLOAT3_DATA vPos = FLOAT3_DATA((_float)x, (_float)y, (_float)z);
+
+								Data.vPosition = vPos;
+							}
+
+							auto& rotas = Component["vRotation"];
+							for (auto& rots : rotas)
+							{
+								auto& x = rotas["x"];
+								auto& y = rotas["y"];
+								auto& z = rotas["z"];
+
+								FLOAT3_DATA vRot = FLOAT3_DATA((_float)x, (_float)y, (_float)z);
+
+								Data.vRotation = vRot;
+							}
+
+							auto& scales = Component["vScale"];
+							for (auto& scas : scales)
+							{
+								auto& x = scales["x"];
+								auto& y = scales["y"];
+								auto& z = scales["z"];
+
+								FLOAT3_DATA vScale = FLOAT3_DATA((_float)x, (_float)y, (_float)z);
+
+								Data.vScale = vScale;
+							}
+
+							Data.isObject = true;
+						}
+
+						m_CustomJsonList.push_back(Data);
+					}
+
+					m_isCustomJsonLoaded = true;
+				}
+				else
+					ifs.close();
+			}
+
+#pragma endregion
+
+#pragma region CustomJson을 이용한 프로토 타입 및 레이어 생성
+
+			if (true == m_isCustomJsonLoaded)
+			{
+				SEPARATOR;
+				if (ImGui::Button("CREATE TEMP INSTANCES"))
+					CHECK_FAILED_MSG(Ready_Temp_Instances(), TEXT("임시 프로토타입 생성 실패 or 임시 Layer 생성 실패"), );
+				SAMELINE;
+				if (ImGui::Button("CREATE TEMP INDEPENDENT OBJ"))
+					CHECK_FAILED_MSG(Ready_Temp_IndependentObjs(), TEXT("임시 프로토타입 생성 실패 or 임시 Layer 생성 실패"), );
+				SEPARATOR;
+				if (ImGui::Button("CREATE ALL TEMP"))
+					CHECK_FAILED_MSG(Ready_Temp_All(), TEXT("전부 생성 실패 , , ,"), );
+
+				//if (ImGui::Button("CREATE LAYERS"))
+					//Ready_Temp_Layers(TEXT("Layer_MapObject"));
+			}
+
+#pragma endregion
+
+			ImGui::End();
+		}
+		});
+
+#pragma endregion
+
+	return S_OK;
+}
+
+HRESULT CLevel_Map::Ready_CustomJson_List_Window()
+{
+#pragma region WIDGET : CUSTOM JSON 에서 로드해온 리스트
+
+	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
+		if (true == m_isCustomJsonLoaded)
+		{
+			ImGui::Begin("JUSTOM JSON LIST", &m_isCustomJsonLoaded, ImGuiWindowFlags_AlwaysAutoResize);
+
+			_uint iJsonListSize = m_CustomJsonList.size();
+
+			ImGui::Text("LIST COUNT : %d", iJsonListSize);
+
+			_uint iInstanceCnt = {};
+			_uint iTotalInstanceCnt = {};
+			_uint iObjCnt = {};
+
+			for (_uint i = 0; i < iJsonListSize; ++i)
+			{
+				if (true == m_CustomJsonList[i].isInstance)
+				{
+					++iInstanceCnt;
+
+					iTotalInstanceCnt += m_CustomJsonList[i].iNumInstances;
+				}
+				if (true == m_CustomJsonList[i].isObject)
+					++iObjCnt;
+			}
+			SEPARATOR;
+			ImGui::Text("INSTANCE MODEL COUNT : %d", iInstanceCnt);
+
+			ImGui::Text("TOTAL INSTANCE COUNT : %d", iTotalInstanceCnt);
+			SEPARATOR;
+			ImGui::Text("INDEPENDENT OBJECT COUNT : %d", iObjCnt);
+
+			m_iObjCnt = iObjCnt;
+
+			_uint iInstanceID = {};
+			_uint iObjectID = {};
+
+			if (ImGui::BeginListBox("##prop_static_list"))
+			{
+				for (_uint i = 0; i < m_CustomJsonList.size(); ++i)
+				{
+					_bool isSelected = (m_iCustomJsonListIndex == i);
+
+					string strModelName = "ID-%d:";
+
+					strModelName += m_CustomJsonList[i].strModelName;
+
+					_char szModelName[MAX_PATH] = {};
+
+					sprintf_s(szModelName, strModelName.c_str(), i);
+
+					if (ImGui::Selectable(szModelName, isSelected))
+						m_iCustomJsonListIndex = i;
+				}
+
+				ImGui::EndListBox();
+			} SEPARATOR;
+
+			ImGui::End();
+		}
+		});
+
+#pragma endregion
+
+#pragma region WIDGET : CUSTOM JSON 에서 로드해온 리스트들의 정보
+
+	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
+		if (true == m_isCustomJsonLoaded)
+		{
+			ImGui::Begin("LIST INFO", &m_isCustomJsonLoaded, ImGuiWindowFlags_AlwaysAutoResize);
+
+			if (0 == m_CustomJsonList.size())
+			{
+
+			}
+			else
+			{
+				ImGui::Text("MODEL NAME\n%s", m_CustomJsonList[m_iCustomJsonListIndex].strModelName.c_str());
+				SEPARATOR;
+				if (true == m_CustomJsonList[m_iCustomJsonListIndex].isInstance)
+				{
+					_uint iInstCnt = m_CustomJsonList[m_iCustomJsonListIndex].iNumInstances;
+					ImGui::Text("INSTANCE COUNT : %d", iInstCnt);
+					SEPARATOR;
+					for (_uint i = 0; i < iInstCnt; ++i)
+					{
+						FLOAT3_DATA vPos = m_CustomJsonList[m_iCustomJsonListIndex].vInstancePosition[i];
+						FLOAT3_DATA vScale = m_CustomJsonList[m_iCustomJsonListIndex].vInstanceScale[i];
+						FLOAT4_DATA vQuat = m_CustomJsonList[m_iCustomJsonListIndex].vInstanceQuaternion[i];
+						ImGui::Text("POSITION\nX : %.3f\nY : %.3f\nZ : %.3f", vPos.x, vPos.y, vPos.z);
+						ImGui::Text("SCALE\nX : %.3f\nY : %.3f\nZ : %.3f", vScale.x, vScale.y, vScale.z);
+						ImGui::Text("QUATERNION\nX : %.3f\nY : %.3f\nZ : %.3f\nW : %.3f", vQuat.x, vQuat.y, vQuat.z, vQuat.w);
+						SEPARATOR;
+
+					}
+				}
+				else if (true == m_CustomJsonList[m_iCustomJsonListIndex].isObject)
+				{
+					ImGui::Text("INDEPENDENT OBJECT");
+					SEPARATOR;
+					FLOAT3_DATA vPos = m_CustomJsonList[m_iCustomJsonListIndex].vPosition;
+					FLOAT3_DATA vScale = m_CustomJsonList[m_iCustomJsonListIndex].vScale;
+					FLOAT3_DATA vRot = m_CustomJsonList[m_iCustomJsonListIndex].vRotation;
+					ImGui::Text("POSITION\nX : %.3f\nY : %.3f\nZ : %.3f", vPos.x, vPos.y, vPos.z);
+					ImGui::Text("SCALE\nX : %.3f\nY : %.3f\nZ : %.3f", vScale.x, vScale.y, vScale.z);
+					ImGui::Text("ROTATION\nPitch : %.3f\nYaw : %.3f\nRoll : %.3f", vRot.x, vRot.y, vRot.z);
+					SEPARATOR;
+				}
+			}
+
+			ImGui::End();
+		}
+		});
+
+#pragma endregion
+
+	return S_OK;
+}
+
 HRESULT CLevel_Map::Ready_Json_Edit_Window()
 {
-#pragma region WIDGET : JSON TO CUSTOM
+#pragma region WIDGET : JSON 을 CUSTOM JSON 으로 만들기
 
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (true == m_isJsonWindow)
 		{
 			ImGui::Begin("JSON LOAD", &m_isJsonWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
-#pragma region JSON 로드
+#pragma region JSON 로드 및 VECTOR에 넣기
 
 			ImGui::Text("DEFAULT LOAD PATH : ");
 			SAMELINE; ITEMWIDTH(350.f);
@@ -470,7 +854,6 @@ HRESULT CLevel_Map::Ready_Json_Edit_Window()
 					ifs >> m_Json;
 					ifs.close();
 
-#pragma region MOVE
 					for (auto& Component : m_Json)
 					{
 						string strModelName = {};
@@ -522,9 +905,9 @@ HRESULT CLevel_Map::Ready_Json_Edit_Window()
 							{
 								++Data.iNumInstances;
 
-								auto pos = Instance["TransformData"]["Translation"];
-								auto scale = Instance["TransformData"]["Scale3D"];
-								auto quat = Instance["TransformData"]["Rotation"];
+								auto& pos = Instance["TransformData"]["Translation"];
+								auto& scale = Instance["TransformData"]["Scale3D"];
+								auto& quat = Instance["TransformData"]["Rotation"];
 
 								FLOAT3_DATA vPos = FLOAT3_DATA((_float)pos["X"], (_float)pos["Y"], (_float)pos["Z"]);
 								FLOAT3_DATA vScale = FLOAT3_DATA((_float)scale["X"], (_float)scale["Y"], (_float)scale["Z"]);
@@ -539,7 +922,7 @@ HRESULT CLevel_Map::Ready_Json_Edit_Window()
 						}
 						else if (Component["Type"] == "xxStaticMeshComponent")
 						{
-							auto Prop = Component["Properties"];
+							auto& Prop = Component["Properties"];
 
 							_bool isInvalid = { false };
 
@@ -556,9 +939,9 @@ HRESULT CLevel_Map::Ready_Json_Edit_Window()
 								continue;
 							}
 
-							auto pos = Component["Properties"]["RelativeLocation"];
-							auto scale = Component["Properties"]["RelativeScale3D"];
-							auto rot = Component["Properties"]["RelativeRotation"];
+							auto& pos = Component["Properties"]["RelativeLocation"];
+							auto& scale = Component["Properties"]["RelativeScale3D"];
+							auto& rot = Component["Properties"]["RelativeRotation"];
 
 							FLOAT3_DATA vPos = FLOAT3_DATA((_float)pos["X"], (_float)pos["Y"], (_float)pos["Z"]);
 							FLOAT3_DATA vScale = FLOAT3_DATA((_float)scale["X"], (_float)scale["Y"], (_float)scale["Z"]);
@@ -573,8 +956,6 @@ HRESULT CLevel_Map::Ready_Json_Edit_Window()
 					}
 
 					m_isJsonConverted = true;
-#pragma endregion
-
 				}
 				else
 					ifs.close();
@@ -626,6 +1007,8 @@ HRESULT CLevel_Map::Ready_Json_List_Window()
 			ImGui::Text("TOTAL INSTANCE COUNT : %d", iTotalInstanceCnt);
 			SEPARATOR;
 			ImGui::Text("INDEPENDENT OBJECT COUNT : %d", iObjCnt);
+
+			m_iObjCnt = iObjCnt;
 
 			_uint iInstanceID = {};
 			_uint iObjectID = {};

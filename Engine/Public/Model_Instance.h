@@ -74,10 +74,10 @@ private:
 	//_bool								m_isFinishAnimation = { false };	/* 애니메이션이 다 끝나고 다음 애니메이션으로 넘어가는 경우*/
 
 private:
-	HRESULT Ready_Meshes(MODEL_DATA& data, const CModelMesh_Instance::INSTANCE_DESC* pDesc);
-	HRESULT Ready_Materials(MODEL_DATA& data);
-	HRESULT Ready_Bones(MODEL_DATA& data);
-	HRESULT Ready_Animations(MODEL_DATA& data);
+	HRESULT Ready_Meshes(MODEL_DATA& Data, const CModelMesh_Instance::INSTANCE_DESC* pDesc);
+	HRESULT Ready_Materials(MODEL_DATA& Data);
+	HRESULT Ready_Bones(MODEL_DATA& Data);
+	HRESULT Ready_Animations(MODEL_DATA& Data);
 
 public:
 	static CModel_Instance* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _char* pModelFilePath, const CModelMesh_Instance::INSTANCE_DESC* pDesc);
