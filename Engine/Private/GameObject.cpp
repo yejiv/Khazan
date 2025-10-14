@@ -87,7 +87,14 @@ HRESULT CGameObject::Add_Component(_uint iPrototypeLevelIndex, const _wstring& s
 	return S_OK;
 }
 
-HRESULT CGameObject::Remove_Component(const _wstring& strComponentTag, CComponent* OwnerComponent)
+HRESULT CGameObject::Add_Component(const _wstring& strComponentTag, CComponent* pComponent)
+{
+	m_Components.emplace(strComponentTag, pComponent);
+
+	return S_OK;
+}
+
+HRESULT CGameObject::Remove_Component(const _wstring& strComponentTag)
 {
 	CComponent* pComponent = Get_Component(strComponentTag);
 
@@ -97,8 +104,6 @@ HRESULT CGameObject::Remove_Component(const _wstring& strComponentTag, CComponen
 	Safe_Release(pComponent);
 
 	m_Components.erase(strComponentTag);
-
-	Safe_Release(OwnerComponent);
 
 	return S_OK;
 }
