@@ -73,7 +73,7 @@ HRESULT CLevel_Map::Ready_Layer_Camera(const _wstring& strLayerTag)
 	MapDesc.vEye = _float4(0.f, 5.f, 0.f, 1.f);
 	MapDesc.vAt = _float4(0.f, 5.f, 1.f, 1.f);
 
-	MapDesc.fFar = 10000.f;
+	MapDesc.fFar = 100000.f;
 	MapDesc.fNear = 0.1f;
 
 	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), strLayerTag,
@@ -91,10 +91,11 @@ HRESULT CLevel_Map::Ready_Layer_Prop_Static(const _wstring& strLayerTag)
 
 HRESULT CLevel_Map::Ready_Temp_Prototypes()
 {
+	_uint iMapObjectID = { 0 };
+
 	for (auto& Component : m_CustomJson)
 	{
 		_bool isInstance = (_bool)Component["isInstance"];
-
 		_bool isObject = (_bool)Component["isObject"];
 
 		wstring strModelName = AnsiToWString(Component["strModelName"]);
@@ -122,7 +123,8 @@ HRESULT CLevel_Map::Ready_Temp_Prototypes()
 				XMMATRIX matRot = XMMatrixRotationQuaternion(XMVectorSet(vQuaternion.x, vQuaternion.y, vQuaternion.z, vQuaternion.w));
 				XMMATRIX matTrans = XMMatrixTranslation(vPos.x, vPos.y, vPos.z);
 
-				MeshInstanceData.InstanceMatrix = XMMatrixTranspose(matScale * matRot * matTrans);
+				MeshInstanceData.InstanceMatrix = matScale * matRot * matTrans;
+				MeshInstanceData.InstanceID = iMapObjectID++;
 
 				ModelMeshDesc.InstanceData.push_back(MeshInstanceData);
 			}
@@ -131,17 +133,28 @@ HRESULT CLevel_Map::Ready_Temp_Prototypes()
 
 			_matrix PreTransformMatrix = XMMatrixIdentity();
 
-			//CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), strModelName,
-				//CModel_Instance::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, "../../Client/Bin/Resources/Models/Prop/Static/Plant/WP_VFS_Plants_Dry_008.fbx", &ModelMeshDesc, PreTransformMatrix)), E_FAIL);
+			// strModelName과 일치하는 폴더를 ../../Client/Bin/Resources/Models/Prop/Static/ 종류별 폴더 / 모델명 ( .fbx 파일명과 동일한 ) 폴더 / 모델명.fbx
+			// 알아서 찾아서 MODELTYPE::NONANIM, "여기에 넣어야함" 
 
-			return S_OK;
+			string strLoadPath = Find_ModelPath(WStringToAnsi(strModelName));
+
+			CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), strModelName,
+				CModel_Instance::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, strLoadPath.c_str(), &ModelMeshDesc, PreTransformMatrix)), E_FAIL);
+
+			CProp_Static::PROP_STATIC_DESC StaticDesc = {};
+
+			memcpy(StaticDesc.szModelName, strModelName.c_str(), sizeof(StaticDesc.szModelName));
+
+			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj"),
+				ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"), &StaticDesc), E_FAIL);
 		}
 		else if (true == isObject)				// 단일 오브젝트인 경우
 		{
+
+
 			_matrix PreTransformMatrix = XMMatrixIdentity();
 
-			//CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), strModelName,
-				//CModel::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, "strModelName과 일치하는 경로", PreTransformMatrix)), E_FAIL);
+
 		}
 		else
 		{
@@ -309,11 +322,11 @@ HRESULT CLevel_Map::Ready_CustomJson_Edit_Window()
 
 			if (true == m_isCustomJsonLoaded)
 			{
-				if (ImGui::Button("CREATE PROTOTYPES"))
+				if (ImGui::Button("CREATE TEMPS"))
 					Ready_Temp_Prototypes();
 
-				if (ImGui::Button("CREATE LAYERS"))
-					Ready_Temp_Layers(TEXT("Layer_MapObject"));
+				//if (ImGui::Button("CREATE LAYERS"))
+					//Ready_Temp_Layers(TEXT("Layer_MapObject"));
 			}
 
 #pragma endregion
@@ -710,6 +723,8 @@ HRESULT CLevel_Map::Ready_Json_List_Window()
 			SAMELINE; ITEMWIDTH(350.f);
 			ImGui::InputText("##json_default_save_path", m_szJsonCustomPath, IM_ARRAYSIZE(m_szJsonCustomPath));
 
+			ImGui::Text("FOLDER NAME : %s", m_szJsonFolderPath[ENUM_CLASS(m_eMapType)]);
+
 			ImGui::Text("JSON FILE NAME : ");
 			SAMELINE;
 			ImGui::InputText("##json_save_name", m_szJsonSaveName, IM_ARRAYSIZE(m_szJsonSaveName));
@@ -720,8 +735,10 @@ HRESULT CLevel_Map::Ready_Json_List_Window()
 				string strPath = m_szJsonCustomPath;
 
 				strPath += m_szJsonFolderPath[ENUM_CLASS(m_eMapType)];
+
+				filesystem::create_directories(strPath);
+
 				strPath += m_szJsonSaveName;
-				//strPath += m_JsonFiles[m_iJsonFilesIndex];
 				strPath += ".json";
 
 				ofstream ofs(strPath);
@@ -759,7 +776,9 @@ void CLevel_Map::Get_Directory_Files(const _char* pDirectoryPath)
 
 	strPath += m_szJsonFolderPath[ENUM_CLASS(m_eMapType)];
 
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(strPath.c_str()))
+	filesystem::create_directories(strPath);
+
+	for (const auto& entry : filesystem::recursive_directory_iterator(strPath.c_str()))
 	{
 		if (!entry.is_regular_file())
 			continue;
@@ -774,32 +793,20 @@ void CLevel_Map::Get_Directory_Files(const _char* pDirectoryPath)
 	}
 }
 
-void CLevel_Map::Load_ModelFolders(const string& strDefaultPath)
+string CLevel_Map::Find_ModelPath(const string& strModelName)
 {
-	try
-	{
-		for (const auto& entry : filesystem::directory_iterator(strDefaultPath))
-		{
-			if (entry.is_directory())
-			{
-				string strFolderName = entry.path().filename().string();
+	string strRoot = "../../Client/Bin/Resources/Models/Prop/Static/";
 
-				int a = 10;
-			}
+	for (auto& entry : filesystem::recursive_directory_iterator(strRoot))
+	{
+		if (entry.is_regular_file() && entry.path().extension() == ".fbx")
+		{
+			if (entry.path().stem() == strModelName)
+				return entry.path().string();
 		}
 	}
-	catch (const filesystem::filesystem_error& e)
-	{
-		wstring wMsg =
-			L"파일 시스템 에러 발생!\n\n" +
-			std::wstring(e.what(), e.what() + strlen(e.what())) + L"\n\n" +
-			L"경로 1: " + e.path1().wstring() + L"\n" +
-			(e.path2().empty() ? L"" : (L"경로 2: " + e.path2().wstring() + L"\n")) +
-			L"오류 코드: " + std::to_wstring(e.code().value()) + L" (" +
-			std::wstring(e.code().message().begin(), e.code().message().end()) + L")";
 
-		MessageBox(nullptr, wMsg.c_str(), L"파일 시스템 예외", MB_ICONERROR | MB_OK);
-	}
+	return "";
 }
 
 CLevel_Map* CLevel_Map::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

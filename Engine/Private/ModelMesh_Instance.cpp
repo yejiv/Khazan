@@ -65,6 +65,7 @@ HRESULT CModelMesh_Instance::Initialize_Prototype(MODELTYPE eType, const aiMesh*
 
 #pragma region INSTANCING_SETTING
 
+	m_VBInstanceDesc.ByteWidth = m_iNumInstance * m_iInstanceVertexStride;
 	m_VBInstanceDesc.Usage = D3D11_USAGE_DYNAMIC;
 	m_VBInstanceDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	m_VBInstanceDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
