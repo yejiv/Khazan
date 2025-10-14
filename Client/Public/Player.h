@@ -6,7 +6,7 @@
 NS_BEGIN(Engine)
 class CCollider;
 class CNavigation;
-class CCharacter;
+class CCharacterVirtual;
 class CRigidBody;
 NS_END
 
@@ -39,8 +39,8 @@ public:
 
 private:
 	_uint				m_iState = { };
-	class CRigidBody* m_pRigidBodyCom = { nullptr };
-	//class CCharacter* m_pCharacterCom = { nullptr };
+	//class CRigidBody* m_pRigidBodyCom = { nullptr };
+	class CCharacterVirtual* m_pCharVirCom = { nullptr };
 
 private:
 	HRESULT Ready_Components();
