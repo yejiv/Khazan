@@ -206,7 +206,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\Light_Manager.cpp" />
     <ClCompile Include="..\Private\Mesh.cpp" />
     <ClCompile Include="..\private\MeshMaterial.cpp" />
-    <ClCompile Include="..\Private\Mesh_Instance.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Mesh_Instance.cpp" />
     <ClCompile Include="..\private\Model.cpp" />
     <ClCompile Include="..\Private\ModelMesh_Instance.cpp" />
     <ClCompile Include="..\Private\Model_Instance.cpp" />
@@ -245,7 +245,6 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\VIBuffer_Instance.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Point_Instance.cpp" />
     <ClCompile Include="..\private\VIBuffer_Rect.cpp" />
-    <ClCompile Include="..\Private\VIBuffer_Rect_Instance.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Terrain.cpp" />
     <ClCompile Include="..\Public\ImGui\imgui.cpp" />
     <ClCompile Include="..\Public\ImGui\imgui_demo.cpp" />
@@ -310,7 +309,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\public\Light_Manager.h" />
     <ClInclude Include="..\Public\Mesh.h" />
     <ClInclude Include="..\public\MeshMaterial.h" />
-    <ClInclude Include="..\Public\Mesh_Instance.h" />
+    <ClInclude Include="..\Public\VIBuffer_Mesh_Instance.h" />
     <ClInclude Include="..\public\Model.h" />
     <ClInclude Include="..\Public\ModelMesh_Instance.h" />
     <ClInclude Include="..\Public\Model_Instance.h" />
@@ -349,7 +348,6 @@ call Copy.bat</Command>
     <ClInclude Include="..\public\VIBuffer_Instance.h" />
     <ClInclude Include="..\Public\VIBuffer_Point_Instance.h" />
     <ClInclude Include="..\public\VIBuffer_Rect.h" />
-    <ClInclude Include="..\Public\VIBuffer_Rect_Instance.h" />
     <ClInclude Include="..\Public\VIBuffer_Terrain.h" />
     <ClInclude Include="EnginePch.h" />
   </ItemGroup>

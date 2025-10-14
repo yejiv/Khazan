@@ -1,5 +1,4 @@
 #include "VIBuffer_Point_Instance.h"
-
 #include "GameInstance.h"
 #include "ComputeShader.h"
 
@@ -73,7 +72,10 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDes
 	m_VBInstanceDesc.StructureByteStride = m_iInstanceVertexStride;
 
 	m_pInstanceVertices = new VTXINSTANCE_PARTICLE[m_iNumInstance];
+	ZeroMemory(m_pInstanceVertices, sizeof(VTXINSTANCE_PARTICLE) * m_iNumInstance);
+
 	m_pSpeeds = new _float[m_iNumInstance];
+	ZeroMemory(m_pSpeeds, sizeof(_float) * m_iNumInstance);
 
 	POINT_INSTANCE_PARAMS* pParticleParams = new POINT_INSTANCE_PARAMS[m_iNumInstance];
 
