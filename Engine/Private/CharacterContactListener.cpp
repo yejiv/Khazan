@@ -1,36 +1,55 @@
 #include "CharacterContactListener.h"
 
-// 최초/유지 접촉 시 둘 다 같은 로직 사용
-static inline void ApplyWalkableOnly(const CharacterVirtual* character,
-    Vec3Arg contactNormal,
-    float floor_dot,
+// -------------------- 생성자 --------------------
+CCharacterContactListener::CCharacterContactListener(const CONFIG_DESC& cfg)
+    : m_Cfg(cfg)
+{
+}
+
+// -------------------- Validate 계열 --------------------
+bool CCharacterContactListener::OnContactValidate(const CharacterVirtual*,
+    const BodyID&,
+    const SubShapeID&)
+{
+    // 기본은 모두 허용. 필요 시 레이어/태그 기반 필터링 추가
+    return true;
+}
+
+bool CCharacterContactListener::OnCharacterContactValidate(const CharacterVirtual*,
+    const CharacterVirtual*,
+    const SubShapeID&)
+{
+    // 기본은 캐릭터-캐릭터 접촉 허용
+    return true;
+}
+
+// -------------------- Added/Persisted/Removed --------------------
+void CCharacterContactListener::OnContactAdded(const CharacterVirtual* inCharacter,
+    const BodyID&,
+    const SubShapeID&,
+    RVec3Arg,
+    Vec3Arg inContactNormal,
     CharacterContactSettings& ioSettings)
 {
-    const Vec3 up = character->GetUp();
-
-    // n·up 이 충분히 크면(= 경사 허용 범위 이내) -> '지면처럼' 그대로 둠
-    // 작으면(가파른 경사/벽/천장) -> 캐릭터에 영향 최소화
-    if (contactNormal.Dot(up) < floor_dot)
-    {
-        // 밀림/임펄스 영향 제거 → 사실상 '지면 아님'으로 취급
-        ioSettings.mCanPushCharacter = false;
-        ioSettings.mCanReceiveImpulses = false;
-        // 추가 제어 필요 없으면 여기서 끝. (슬라이딩/비접지 처리는 CharacterVirtual 내부가 담당)
-    }
+  
 }
 
-CCharacterContactListener::CCharacterContactListener(const Config& cfg)
-    : m_Cfg {cfg}
+void CCharacterContactListener::OnContactPersisted(const CharacterVirtual* inCharacter,
+    const BodyID&,
+    const SubShapeID&,
+    RVec3Arg,
+    Vec3Arg inContactNormal,
+    CharacterContactSettings& ioSettings)
 {
+   
 }
 
-void CCharacterContactListener::OnContactAdded(const JPH::CharacterVirtual* inCharacter, const JPH::BodyID& inBodyID2, const JPH::SubShapeID& inSubShapeID2, JPH::RVec3Arg inContactPosition, JPH::Vec3Arg inContactNormal, JPH::CharacterContactSettings& ioSettings)
+void CCharacterContactListener::OnContactRemoved(const CharacterVirtual*,
+    const BodyID&,
+    const SubShapeID&)
 {
-    ApplyWalkableOnly(inCharacter, inContactNormal, m_Cfg.floor_dot, ioSettings);
+    // 접촉 하나가 사라졌다는 뜻일 뿐, 아직 다른 접촉이 있을 수 있음.
+    // 간단히는 캐시를 지우지 않거나, 프레임 끝에서 m_bHasGround를 재평가(권장).
+    // 여기서는 즉시 플래그만 false로:
+    m_bHasGround = false;
 }
-
-void CCharacterContactListener::OnContactPersisted(const JPH::CharacterVirtual* inCharacter, const JPH::BodyID& inBodyID2, const JPH::SubShapeID& inSubShapeID2, JPH::RVec3Arg inContactPosition, JPH::Vec3Arg inContactNormal, JPH::CharacterContactSettings& ioSettings)
-{
-    ApplyWalkableOnly(inCharacter, inContactNormal, m_Cfg.floor_dot, ioSettings);
-}
-
