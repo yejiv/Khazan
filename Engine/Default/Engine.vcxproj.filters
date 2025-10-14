@@ -256,6 +256,12 @@
     <Filter Include="01.Utility\16.Resource\Manager">
       <UniqueIdentifier>{74ac0120-cab6-47e2-b6c0-c43dec2d10b4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\16.ComputeShader">
+      <UniqueIdentifier>{0bb4192a-acd8-4388-8ab8-4daae5dadf14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\16.ComputeShader\Manager">
+      <UniqueIdentifier>{e1676e71-8485-4521-bb8f-356adfd967ca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -497,6 +503,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Resource_Manager.cpp">
       <Filter>01.Utility\16.Resource\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ComputeShader.cpp">
+      <Filter>01.Utility\16.ComputeShader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ComputeShader_Manager.cpp">
+      <Filter>01.Utility\16.ComputeShader\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -764,6 +776,12 @@
     <ClInclude Include="..\Public\Resource_Manager.h">
       <Filter>01.Utility\16.Resource\Manager</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\ComputeShader.h">
+      <Filter>01.Utility\16.ComputeShader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\ComputeShader_Manager.h">
+      <Filter>01.Utility\16.ComputeShader\Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hlsli">
@@ -775,6 +793,9 @@
       <Filter>95.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Deferred.hlsl">
+      <Filter>95.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Compute.hlsl">
       <Filter>95.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>
