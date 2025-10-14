@@ -244,6 +244,18 @@
     <Filter Include="01.Utility\03.Component\Model\Model_Instance\Mesh">
       <UniqueIdentifier>{2ba653db-181c-4135-bb3f-3a615341c579}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Component\CharacterVirtual\ContactListener">
+      <UniqueIdentifier>{c2ee2e50-d623-407a-844e-59e945221b28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\13.Jolt\Filter">
+      <UniqueIdentifier>{6a585887-51ce-4b96-b399-47279930e43e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\16.Resource">
+      <UniqueIdentifier>{f0e7ab3f-91ea-4e92-b91d-c8b0914b35d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\16.Resource\Manager">
+      <UniqueIdentifier>{74ac0120-cab6-47e2-b6c0-c43dec2d10b4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -479,6 +491,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\ModelMesh_Instance.cpp">
       <Filter>01.Utility\03.Component\Model\Model_Instance\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CharacterContactListener.cpp">
+      <Filter>01.Utility\03.Component\CharacterVirtual\ContactListener</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Resource_Manager.cpp">
+      <Filter>01.Utility\16.Resource\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -739,6 +757,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\ModelMesh_Instance.h">
       <Filter>01.Utility\03.Component\Model\Model_Instance\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CharacterContactListener.h">
+      <Filter>01.Utility\03.Component\CharacterVirtual\ContactListener</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Resource_Manager.h">
+      <Filter>01.Utility\16.Resource\Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

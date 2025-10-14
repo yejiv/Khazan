@@ -20,6 +20,7 @@
 #include "Input_Manager.h"
 #include "Pool_Manager.h"
 #include "Event_Manager.h"
+#include "Resource_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -102,6 +103,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 
 	m_pEvent_Manager = CEvent_Manager::Create();
 	if (nullptr == m_pEvent_Manager)
+		return E_FAIL;
+
+	m_pResource_Manager = CResource_Manager::Create(*ppDevice, *ppContext);
+	if (nullptr == m_pResource_Manager)
 		return E_FAIL;
 
 #ifdef _DEBUG
@@ -495,10 +500,16 @@ Body* CGameInstance::CreateAndAdd_Body(const BodyCreationSettings& BodySetting, 
 {
 	return m_pJolt_Manager->CreateAndAdd_Body(BodySetting, pBodyInterface);
 }
-CharacterVirtual* CGameInstance::CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData)
+CharacterVirtual* CGameInstance::CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData, BodyInterface** pBodyInterface)
 {
-	return m_pJolt_Manager->CreateCharacterVirtual(inSettings, inPosition, inRotation, inUserData);
+	return m_pJolt_Manager->CreateCharacterVirtual(inSettings, inPosition, inRotation, inUserData, pBodyInterface);
 }
+
+void CGameInstance::CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter)
+{
+	m_pJolt_Manager->CharVir_Update(fTimeDelta, pCharVir, vGravity, iObjectLayer, pBodyFilter, pShapeFilter);
+}
+
 #ifdef _DEBUG
 void CGameInstance::Jolt_Test()
 {
@@ -599,6 +610,33 @@ void CGameInstance::Event_Clear()
 }
 #pragma endregion
 
+#pragma region RESOURCE_MANAGER
+HRESULT CGameInstance::Add_Texture(_wstring strTextureTag, _uint iPrototypeLevelIndex, _wstring strPrototypeTag, _tchar* pTextureFilePath, _uint iNumTexture, void* pArg)
+{
+	return m_pResource_Manager->Add_Texture(strTextureTag, iPrototypeLevelIndex, strPrototypeTag, pTextureFilePath, iNumTexture, pArg);
+}
+HRESULT CGameInstance::Add_Model(_wstring strModelTag, _uint iPrototypeLevelIndex, _wstring strPrototypeTag, MODELTYPE eModelType, _char* pModelFilePath, _matrix PreTransformMatrix, void* pArg)
+{
+	return m_pResource_Manager->Add_Model(strModelTag, iPrototypeLevelIndex, strPrototypeTag, eModelType, pModelFilePath, PreTransformMatrix, pArg);
+}
+CTexture* CGameInstance::Clone_Texture(_wstring strTextureTag)
+{
+	return m_pResource_Manager->Clone_Texture(strTextureTag);
+}
+CModel* CGameInstance::Clone_Model(_wstring strModelTag)
+{
+	return m_pResource_Manager->Clone_Model(strModelTag);
+}
+CTexture* CGameInstance::Get_Texture(_wstring strTextureTag)
+{
+	return m_pResource_Manager->Get_Texture(strTextureTag);
+}
+CModel* CGameInstance::Get_Model(_wstring strModelTag)
+{
+	return m_pResource_Manager->Get_Model(strModelTag);
+}
+#pragma endregion
+
 //
 //void CGameInstance::Transform_Picking_ToLocalSpace(CTransform* pTransformCom)
 //{
@@ -622,7 +660,6 @@ void CGameInstance::Release_Engine()
 #endif
 	Safe_Release(m_pPool_Manager);
 	Safe_Release(m_pThreadPool);
-	Safe_Release(m_pJolt_Manager);
 	Safe_Release(m_pTarget_Manager);
 	Safe_Release(m_pFont_Manager);
 	Safe_Release(m_pFrustum);
@@ -631,12 +668,14 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pPipeLine);
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pInput_Manager);
+	Safe_Release(m_pResource_Manager);
 
 	Safe_Release(m_pPicking);
 	Safe_Release(m_pTimer_Manager);
 	Safe_Release(m_pRenderer);
 	Safe_Release(m_pObject_Manager);
 	Safe_Release(m_pPrototype_Manager);
+	Safe_Release(m_pJolt_Manager);
 	Safe_Release(m_pLevel_Manager);
 	Safe_Release(m_pGraphic_Device);
 }
