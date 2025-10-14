@@ -36,7 +36,13 @@ private:
 private:
 	vector<CUIObject*>	m_EditorUIObjects;
 	CUIObject*			m_SelectedObject = { nullptr };
-	
+	CUIObject*			m_SelectedParrentObject = { nullptr };
+
+private:
+	_uint				m_iCurrentCount = { 0 };
+	_char				m_szSelectedName[MAX_PATH] = "SelectedName";
+	_bool				m_isChildSelected = { false };
+
 public:
 	static CLevel_UI*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void		Free() override;
