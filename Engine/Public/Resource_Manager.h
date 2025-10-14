@@ -41,6 +41,9 @@ public:
     class CTexture* Get_Texture(_wstring strTextureTag);
     class CModel* Get_Model(_wstring strModelTag);
 
+public:
+    void Switch_Texture(_wstring strTextureTag, class CGameObject* pGameObject, class CTexture** pTexture, _wstring strComponentTag);
+
 private:
     class CGameInstance* m_pGameInstance = { nullptr };
     ID3D11Device* m_pDevice = { nullptr };

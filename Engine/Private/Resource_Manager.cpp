@@ -99,6 +99,15 @@ CModel* CResource_Manager::Get_Model(_wstring strModelTag)
     return iter->second;
 }
 
+void CResource_Manager::Switch_Texture(_wstring strTextureTag, CGameObject* pGameObject, CTexture** pTexture, _wstring strComponentTag)
+{
+    pGameObject->Remove_Component(strComponentTag);
+
+    Safe_Release(*pTexture);
+
+    *pTexture = Clone_Texture(strTextureTag);
+}
+
 CResource_Manager* CResource_Manager::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     CResource_Manager* pInstance = new CResource_Manager(pDevice, pContext);
