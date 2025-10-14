@@ -782,6 +782,9 @@
     <ClInclude Include="..\public\ComputeShader_Manager.h">
       <Filter>01.Utility\16.ComputeShader\Manager</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Engine_ConstantBuffer.h">
+      <Filter>99.Defines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hlsli">

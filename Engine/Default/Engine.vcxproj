@@ -273,6 +273,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\public\ComputeShader.h" />
     <ClInclude Include="..\public\ComputeShader_Manager.h" />
     <ClInclude Include="..\Public\DebugDraw.h" />
+    <ClInclude Include="..\Public\Engine_ConstantBuffer.h" />
     <ClInclude Include="..\Public\Event_Manager.h" />
     <ClInclude Include="..\Public\Engine_Json.h" />
     <ClInclude Include="..\Public\Jolt_ContactListener.h" />
