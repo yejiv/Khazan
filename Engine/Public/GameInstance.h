@@ -1,6 +1,7 @@
-#pragma once
+Ôªø#pragma once
 
 #include "Prototype_Manager.h"
+#include "ComputeShader_Manager.h"
 
 #ifdef new
 #pragma push_macro("new")
@@ -12,7 +13,7 @@
 #include "imgui_impl_dx11.h"
 
 #ifdef new
-#pragma pop_macro("new") // DBG_NEW ∫πø¯
+#pragma pop_macro("new") // DBG_NEW Î≥µÏõê
 #endif
 
 
@@ -58,7 +59,7 @@ public:
 	class CComponent* Find_Component(_uint iLayerLevelIndex, const _wstring& strLayerTag, const _wstring& strComponentTag, _uint iIndex = 0);
 	class CGameObject* Find_GameObject(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint iIndex = 0);
 	HRESULT Add_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);
-	HRESULT Push_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CGameObject* pGameObject);
+	HRESULT Push_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, class CGameObject* pGameObject);
 #pragma endregion
 
 #pragma region RENDERER
@@ -132,11 +133,11 @@ public:
 	_bool isIn_Frustum_LocalSpace(_fvector vLocalPos, _float fRange = 0.f);
 #pragma endregion
 
-#ifdef _DEBUG
 #pragma region IMGUI_MANGER
+#ifdef _DEBUG
 	void    AddWidget(const _wstring Menu, const function<void()>& widget);
-#pragma endregion
 #endif
+#pragma endregion
 
 #pragma region JOLT_MANAGER
 	void Set_PhysicsSystem();
@@ -144,7 +145,9 @@ public:
 	void Set_ObjectFilter(_uint iSrc, _uint iDst);
 	void Set_ObjectVsBPFilter(_uint iObjectLayer, _uint iBPLayer);
 	Body* CreateAndAdd_Body(const BodyCreationSettings& BodySetting, BodyInterface** pBodyInterface);
-	CharacterVirtual* CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData);
+	CharacterVirtual* CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData, BodyInterface** pBodyInterface);
+
+	void CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter);
 
 #ifdef _DEBUG
 	void Jolt_Test();
@@ -185,6 +188,20 @@ public:
 	void Event_Clear();
 #pragma endregion
 
+#pragma region RESOURCE_MANAGER
+	HRESULT Add_Texture(_wstring strTextureTag, _uint iPrototypeLevelIndex, _wstring strPrototypeTag, _tchar* pTextureFilePath, _uint iNumTexture = 1, void* pArg = nullptr);
+	HRESULT Add_Model(_wstring strModelTag, _uint iPrototypeLevelIndex, _wstring strPrototypeTag, MODELTYPE eModelType, _char* pModelFilePath, _matrix PreTransformMatrix, void* pArg = nullptr);
+	class CTexture* Clone_Texture(_wstring strTextureTag);
+	class CModel* Clone_Model(_wstring strModelTag);
+	class CTexture* Get_Texture(_wstring strTextureTag);
+	class CModel* Get_Model(_wstring strModelTag);
+#pragma endregion
+
+#pragma region COMPUTESHADER_MANAGER
+	void		Add_Job(COMPUTEJOB eJobTag, const CComputeShader_Manager::COMPUTE_JOB_DESC& Desc, _bool isExecuteNow = false);
+	void		Execute_Job(COMPUTEJOB eJobTag);
+#pragma endregion
+
 private:
 	class CGraphic_Device*		m_pGraphic_Device = { nullptr };
 	class CLevel_Manager*		m_pLevel_Manager = { nullptr };
@@ -204,6 +221,8 @@ private:
 	class CInput_Manager*		m_pInput_Manager = { nullptr };
 	class CPool_Manager*		m_pPool_Manager = { nullptr };
 	class CEvent_Manager*		m_pEvent_Manager = { nullptr };
+	class CResource_Manager*	m_pResource_Manager = { nullptr };
+	class CComputeShader_Manager*	m_pComputeShader_Manager = { nullptr };
 #ifdef _DEBUG
 	class CImgui_Manager* m_pImgui_Manager = { nullptr };
 #endif
