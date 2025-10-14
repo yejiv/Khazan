@@ -18,7 +18,7 @@ namespace Engine
 	enum class MOUSEMOVESTATE {	X, Y, WHEEL, END };
 	enum class UISPACETYPE { WORLD, SCREEN, END };
 	enum class POOLSTATUS { WAIT, RESET, END};
-
+	enum class COMPUTEJOB { UPDATE, POSTPROCESS, END };
 }
 
 namespace JoltLayers
