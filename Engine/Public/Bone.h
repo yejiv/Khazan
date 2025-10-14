@@ -1,17 +1,6 @@
-#pragma once
+癤�#pragma once
 
 #include "Base.h"
-
-/*
-aiNodeAnim : 애니메이션을 위한 뼈의 상태행렬을 보관한다. 
-aiNode : 뼈들의 관계를 표현하기위한 데이터
-aiBone : 이 뼈는 몇개의 정점에게 영향을 주며 그중 어떤 정점들에게 영향을 준다!! + 얼마나 영향을 준다. 
-*/
-
-/* 
-TransformationMatrix : 이 뼈 만의 자체적인 변환행렬(원점기준(x), 부모기준)
-CombindTransformationMatrix : m_TransformationMatrix * Parent`s CombindTransformationMatrix
-*/
 
 NS_BEGIN(Engine)
 
@@ -22,34 +11,34 @@ private:
 	virtual ~CBone() = default;
 
 public:
-	_matrix Get_CombinedTransformationMatrix() const {
-		return XMLoadFloat4x4(&m_CombinedTransformationMatrix);
-	}
-	_float4x4* Get_CombinedTransformationMatrixPtr() {
-		return &m_CombinedTransformationMatrix;
-	}
+	HRESULT Initialize(BONE_DATA& data);
 
-	void Set_TransformationMatrix(_fmatrix Matrix) {
-		XMStoreFloat4x4(&m_TransformationMatrix, Matrix);
-	}
+	/* Info */
 public:
-	
-	HRESULT Initialize(const aiNode* pAINode, _int iParentBoneIndex);
+	_matrix			Get_CombinedTransformationMatrix() const { return XMLoadFloat4x4(&m_CombinedTransformationMatrix); }
+	_float4x4*		Get_CombinedTransformationMatrixPtr() { return &m_CombinedTransformationMatrix; }
+	void			Set_TransformationMatrix(_fmatrix Matrix) { XMStoreFloat4x4(&m_TransformationMatrix, Matrix); }
+
+	_bool			Compare_Name(const _wstring& pName) { return pName == m_strName; }
+	_bool			Compare_Name(const _tchar* pName) { return static_cast<_wstring>(pName) == m_strName; }
+	_bool			Compare_Name(const _char* pName) { return CharToWString(pName) == m_strName;}
+	_bool			Contains_Name(const _wstring& pName) { return m_strName.find(pName) != _wstring::npos; }
+	_bool			Contains_Name(const _tchar* pName) { return m_strName.find(static_cast<_wstring>(pName)) != _wstring::npos; }
+	_bool			Contains_Name(const _char* pName) { return 	m_strName.find(CharToWString(pName)) != _wstring::npos;}
+
+
+public:
 	void Update_CombinedTransformationMatrix(const _float4x4& PreTransformMatrix, const vector<CBone*>& Bones);
 
-	_bool Compare_Name(const _char* pName) {
-		return !strcmp(pName, m_szName);
-	}
-
 private:
-	_char				m_szName[MAX_PATH] = {};
+	_wstring			m_strName = {};
 	_float4x4			m_TransformationMatrix = {};
 	_float4x4			m_CombinedTransformationMatrix = {};
 
 	_int				m_iParentBoneIndex = { -1 };
 
 public:
-	static CBone* Create(const aiNode* pAINode, _int iParentBoneIndex);
+	static CBone* Create(BONE_DATA& data);
 	CBone* Clone();
 	virtual void Free() override;
 };

@@ -6,7 +6,6 @@ namespace Engine
 	enum class MODELTYPE { NONANIM, ANIM };
 	enum class COLLIDER { AABB, OBB, SPHERE, END };
 	enum class SHAPE { CAPSULE, SPHERE, BOX, MESH, CONVEX, END };
-	enum class JOLT_OBJ_LAYER { MAP, DYNAMIC, CHARACTER, TRIGGER, END};
 	enum class JOLT_BP_LAYER { MOVING, NON_MOVING, TRIGGER, END};
 	enum class NAV_POINT { A, B, C, END };
 	enum class NAV_LINE { AB, BC, CA, END };
@@ -19,7 +18,7 @@ namespace Engine
 	enum class MOUSEMOVESTATE {	X, Y, WHEEL, END };
 	enum class UISPACETYPE { WORLD, SCREEN, END };
 	enum class POOLSTATUS { WAIT, RESET, END};
-
+	enum class COMPUTEJOB { UPDATE, POSTPROCESS, END };
 }
 
 namespace JoltLayers

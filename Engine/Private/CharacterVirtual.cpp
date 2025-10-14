@@ -1,11 +1,11 @@
 #include "CharacterVirtual.h"
 #include "GameInstance.h"
+#include "CharacterContactListener.h"
 
 CCharacterVirtual::CCharacterVirtual(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CComponent { pDevice, pContext }
-    , m_pGameInstance { CGameInstance::GetInstance()}
 {
-    Safe_AddRef(m_pGameInstance);
+
 }
 
 CCharacterVirtual::CCharacterVirtual(const CCharacterVirtual& Prototype)
@@ -23,11 +23,11 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 {
 	CHARACTERVIRTUAL_DESC* pDesc = static_cast<CHARACTERVIRTUAL_DESC*>(pArg);
 	
+	m_iNumObjectLayer = pDesc->iObjectLayer;
+
 	CharacterVirtualSettings SettingDesc{};
 
-	SettingDesc.mInnerBodyShape;
-
-	SettingDesc.mID = CharacterID::CharacterID();
+	//SettingDesc.mID = CharacterID::CharacterID();
 	SettingDesc.mBackFaceMode = pDesc->eBackFaceMode;
 	SettingDesc.mPredictiveContactDistance = pDesc->fPredictiveContactDistance;
 	SettingDesc.mMaxCollisionIterations = pDesc->iMaxCollisionIterations;
@@ -36,7 +36,7 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 	SettingDesc.mCollisionTolerance = pDesc->fCollisionTolerance;
 	SettingDesc.mCharacterPadding = pDesc->fPadding;
 	SettingDesc.mMaxNumHits = pDesc->fMaxNumHits;
-	SettingDesc.mHitReductionCosMaxAngle = pDesc->fHitReductionCosMaxAngle;
+	SettingDesc.mHitReductionCosMaxAngle = Cos(DegreesToRadians(pDesc->fHitReductionCosMaxAngle));
 	SettingDesc.mPenetrationRecoverySpeed = pDesc->fPenetrationRecoverySpeed;
 	SettingDesc.mEnhancedInternalEdgeRemoval = pDesc->bEnhancedInternalEdgeRemoval;
 	SettingDesc.mShapeOffset = LoadVec3(pDesc->vShapeOffset);
@@ -72,14 +72,89 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 		SettingDesc.mUp = Vec3::sAxisY();
 	else if (pDesc->eUp == WORLDUP::Z)
 		SettingDesc.mUp = Vec3::sAxisZ();
+	SettingDesc.mInnerBodyLayer = m_iNumObjectLayer;
 
-	m_pCharacterVir = m_pGameInstance->CreateCharacterVirtual(&SettingDesc, RVec3Arg(LoadVec3(pDesc->vPos)), QuatArg(LoadQuat(pDesc->vQuat)), 0);
-	
+	m_pCharVir = m_pGameInstance->CreateCharacterVirtual(&SettingDesc, RVec3Arg(LoadVec3(pDesc->vPos)), QuatArg(LoadQuat(pDesc->vQuat)), 0, &m_pBodyInterface);
+	m_BodyId = m_pCharVir->GetInnerBodyID();
+
+	if (!m_BodyId.IsInvalid())
+	{
+		//m_pBodyInterface->SetObjectLayer(m_BodyId, m_iNumObjectLayer);
+		m_pBodyInterface->SetIsSensor(m_BodyId, false);
+
+	}
+
+	m_vVelocity = Vec3::sZero();
+	m_vUp = Vec3::sAxisY();
+	m_vGravity = Vec3(0, -9.81f, 0);
+
+	CCharacterContactListener::CONFIG_DESC ConfigDesc{};
+
+	m_pContactListener = new CCharacterContactListener(ConfigDesc);
+	m_pCharVir->SetListener(m_pContactListener);
+
+	m_pBodyFilter = new BodyFilter();
+	m_pShapeFilter = new ShapeFilter();
+
 	return S_OK;
 }
-void CCharacterVirtual::Update()
+void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform)
 {
 
+	if (!m_pCharVir) return;
+
+	// 1) 수평 입력 속도 (지금은 0; 필요 시 여기서 만들어 더해주면 됨)
+	JPH::Vec3 vHorizontal = JPH::Vec3::sZero();
+
+	// 2) 접지 상태 확인 + 중력 처리
+	const bool onGround = (m_pCharVir->GetGroundState() == JPH::CharacterVirtual::EGroundState::OnGround);
+	if (onGround)
+	{
+		// 바닥에 있을 때는 하강 속도 제거해 '붙이기'
+		if (m_vVelocity.GetY() < 0.0f)
+			m_vVelocity.SetY(0.0f);
+
+		// (선택) 이동 플랫폼 위라면 플랫폼 속도 보정
+		vHorizontal += m_pCharVir->GetGroundVelocity();
+	}
+	else
+	{
+		// 공중일 때 중력 적용
+		m_vVelocity += m_vGravity * fTimeDelta;
+	}
+
+	// 3) 최종 의도 속도 구성 후 캐릭터에 세팅
+	const JPH::Vec3 desired(vHorizontal.GetX(), m_vVelocity.GetY(), vHorizontal.GetZ());
+	m_pCharVir->SetLinearVelocity(desired);
+
+	// 4) 캐릭터 업데이트 (네 버전 시그니처)
+	m_pGameInstance->CharVir_Update(fTimeDelta, m_pCharVir, m_vGravity, m_iNumObjectLayer, m_pBodyFilter, m_pShapeFilter);
+
+	// 5) 결과 Transform 반영
+	const JPH::RVec3 pos = m_pCharVir->GetPosition();
+	const JPH::Quat  rot = m_pCharVir->GetRotation();
+
+	// TODO: 너희 엔진 API에 맞게 치환
+	_vector vPos = XMVectorSet(pos.GetX(), pos.GetY(), pos.GetZ(), 1.f);
+	_vector vRot = XMVectorSet(rot.GetX(), rot.GetY(), rot.GetZ(), rot.GetW());
+	pTransform->Set_State(STATE::POSITION, vPos);
+	pTransform->Set_Quaternion(vRot);
+
+}
+
+void CCharacterVirtual::Set_Position(_vector vPos)
+{
+	m_pCharVir->SetPosition(LoadVec3(vPos));
+}
+
+void CCharacterVirtual::Set_Velocity(_vector vVelocity)
+{
+	m_vVelocity = LoadVec3(vVelocity);
+}
+
+void CCharacterVirtual::Set_Rotation(_vector vRotation)
+{
+	m_pCharVir->SetRotation(LoadQuat(vRotation));
 }
 
 CCharacterVirtual* CCharacterVirtual::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -112,5 +187,9 @@ CComponent* CCharacterVirtual::Clone(void* pArg)
 void CCharacterVirtual::Free()
 {
 	__super::Free();
-    Safe_Release(m_pGameInstance);
+
+	Safe_Delete(m_pCharVir);
+	Safe_Delete(m_pBodyFilter);
+	Safe_Delete(m_pShapeFilter);
+	Safe_Delete(m_pContactListener);
 }

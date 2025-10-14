@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Base.h"
 
@@ -11,15 +11,21 @@ private:
 	virtual ~CMeshMaterial() = default;
 
 public:
-	HRESULT Initialize(const _char* pModelFilePath, const aiMaterial* pAIMaterial);
-	HRESULT Bind_Resources(class CShader* pShader, const _char* pConstantName, aiTextureType eTextureType, _uint iIndex);
+	HRESULT Initialize(MATERIAL_DATA& data);
+	HRESULT Bind_Resources(class CShader* pShader, const _char* pConstantName, _uint iTextureType, _uint iIndex);
+
 private:
 	ID3D11Device*								m_pDevice = { nullptr };
 	ID3D11DeviceContext*						m_pContext = { nullptr };
-	vector<ID3D11ShaderResourceView*>			m_SRVs[AI_TEXTURE_TYPE_MAX];
+
+	vector<ID3D11ShaderResourceView*>			m_SRVs[TEXTURETYPE_MAX];
+	map<_wstring, _uint>						m_TextureCache;
+
+private:
+	_bool		ExistTextureCache(_wstring strPath);
 
 public:
-	static CMeshMaterial* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _char* pModelFilePath, const aiMaterial* pAIMaterial);
+	static CMeshMaterial* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, MATERIAL_DATA& data);
 	virtual void Free() override;
 };
 

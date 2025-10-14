@@ -109,6 +109,27 @@
     <Filter Include="02.GameObject\Animation\98.Temp Camera">
       <UniqueIdentifier>{6219a60c-d70b-437e-ab90-77b6097d02bb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI">
+      <UniqueIdentifier>{bb5dba1f-c3b3-40d9-89e6-690cab87d409}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\00.Panel">
+      <UniqueIdentifier>{25a8b750-5ebd-4da4-ada4-c44ae5d8e78e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\01.Button">
+      <UniqueIdentifier>{0b7672c9-bb0a-4dd0-988c-dd89a81e4856}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\02.ProgressBar">
+      <UniqueIdentifier>{f588c6b9-1597-492d-8811-b8ae980b9ccf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\03.TextBox">
+      <UniqueIdentifier>{a69de961-d20e-4eb1-b127-0a7c1bfefe11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\99.Camera">
+      <UniqueIdentifier>{fe38b2f3-d49f-4cfe-8f49-120fba3d8e6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Test">
+      <UniqueIdentifier>{116c7f7b-14fc-4c1b-8400-a6e8848e3c5a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -213,6 +234,28 @@
     <ClInclude Include="..\public\Editor_TempCamera.h">
       <Filter>02.GameObject\Animation\98.Temp Camera</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Camera_UI.h">
+      <Filter>02.GameObject\UI\99.Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Edit_Button.h">
+      <Filter>02.GameObject\UI\01.Button</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Edit_Panel.h">
+      <Filter>02.GameObject\UI\00.Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Edit_ProgressBar.h">
+      <Filter>02.GameObject\UI\02.ProgressBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Edit_TextBox.h">
+      <Filter>02.GameObject\UI\03.TextBox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Edit_Button.h" />
+    <ClInclude Include="..\Public\Edit_Panel.h" />
+    <ClInclude Include="..\Public\Edit_ProgressBar.h" />
+    <ClInclude Include="..\Public\Edit_TextBox.h" />
+    <ClInclude Include="..\public\TestParticle.h">
+      <Filter>02.GameObject\Effect\Test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -314,6 +357,24 @@
     </ClCompile>
     <ClCompile Include="..\private\Editor_TempCamera.cpp">
       <Filter>02.GameObject\Animation\98.Temp Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_UI.cpp">
+      <Filter>02.GameObject\UI\99.Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Edit_Button.cpp">
+      <Filter>02.GameObject\UI\01.Button</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Edit_Panel.cpp">
+      <Filter>02.GameObject\UI\00.Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Edit_ProgressBar.cpp">
+      <Filter>02.GameObject\UI\02.ProgressBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Edit_TextBox.cpp">
+      <Filter>02.GameObject\UI\03.TextBox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\TestParticle.cpp">
+      <Filter>02.GameObject\Effect\Test</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

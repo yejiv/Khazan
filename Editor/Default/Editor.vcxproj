@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Camera_Map.h" />
+    <ClInclude Include="..\Public\Camera_UI.h" />
     <ClInclude Include="..\Public\Editor_Animation.h" />
     <ClInclude Include="..\Public\Editor_Bone.h" />
     <ClInclude Include="..\Public\Editor_Channel.h" />
@@ -180,6 +181,7 @@
     <ClInclude Include="..\Public\Prop_Interactive.h" />
     <ClInclude Include="..\Public\Prop_Static.h" />
     <ClInclude Include="..\public\Terrain_Grid.h" />
+    <ClInclude Include="..\public\TestParticle.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="EditorPch.h" />
     <ClInclude Include="framework.h" />
@@ -188,6 +190,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Camera_Map.cpp" />
+    <ClCompile Include="..\Private\Camera_UI.cpp" />
     <ClCompile Include="..\Private\Editor_Animation.cpp" />
     <ClCompile Include="..\Private\Editor_Bone.cpp" />
     <ClCompile Include="..\Private\Editor_Channel.cpp" />
@@ -218,6 +221,7 @@
     <ClCompile Include="..\Private\Prop_Interactive.cpp" />
     <ClCompile Include="..\Private\Prop_Static.cpp" />
     <ClCompile Include="..\private\Terrain_Grid.cpp" />
+    <ClCompile Include="..\private\TestParticle.cpp" />
     <ClCompile Include="Editor.cpp" />
     <ClCompile Include="EditorPch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
