@@ -102,7 +102,7 @@ private:
 	void Get_Directory_Files(const _char* pDirectoryPath);
 
 	// 임시 테스트용
-	void Load_ModelFolders(const string& strDefaultPath);
+	string Find_ModelPath(const string& strModelName);
 
 #pragma endregion
 

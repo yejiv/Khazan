@@ -139,10 +139,11 @@ HRESULT CLoader::Loading_For_Map_Level()
 #pragma region 쉐이더 원형 로딩
 
 	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
-	/*
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"),
-		CShader::Create(m_pDevice, m_pContext)), E_FAIL);
-	*/
+	
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Shader_ModelMeshInstance"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_ModelMeshInstance.hlsl"),
+			MESH_INSTANCING::Elements, MESH_INSTANCING::iNumElements)), E_FAIL);
+	
 #pragma endregion
 
 #pragma region 게임오브젝트 원형 로딩
