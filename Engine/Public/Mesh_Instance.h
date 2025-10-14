@@ -21,7 +21,7 @@ private:
 	virtual ~CMesh_Instance() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(const aiMesh* pAIMesh, const MESH_INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix);
+	virtual HRESULT Initialize_Prototype(const aiMesh* pAIMesh, const INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix);
 	virtual HRESULT Initialize_Clone(void* pArg) override;
 
 public:
@@ -44,7 +44,7 @@ private:
 	HRESULT Ready_Indices_For_4Byte(const aiMesh* pAIMesh);								// 4 Bytes Indices ¼¼ÆÃ
 
 public:
-	static CMesh_Instance* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const aiMesh* pAIMesh, const MESH_INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix = XMMatrixIdentity());
+	static CMesh_Instance* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const aiMesh* pAIMesh, const INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix = XMMatrixIdentity());
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 };

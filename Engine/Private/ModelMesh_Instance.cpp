@@ -15,8 +15,10 @@ CModelMesh_Instance::CModelMesh_Instance(const CModelMesh_Instance& Prototype)
 {
 }
 
-HRESULT CModelMesh_Instance::Initialize_Prototype(MODELTYPE eType, const aiMesh* pAIMesh, const vector<class CBone*>& Bones, _fmatrix PreTransformMatrix)
+HRESULT CModelMesh_Instance::Initialize_Prototype(MODELTYPE eType, const aiMesh* pAIMesh, const vector<class CBone*>& Bones, const INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix)
 {
+	const MODELMESH_INSTANCE_DESC* pModelMeshDesc = static_cast<const MODELMESH_INSTANCE_DESC*>(pDesc);
+
 	m_iNumVertexBuffers = 2;
 
 	strcpy_s(m_szName, pAIMesh->mName.data);
@@ -27,7 +29,7 @@ HRESULT CModelMesh_Instance::Initialize_Prototype(MODELTYPE eType, const aiMesh*
 
 	m_iNumIndices = pAIMesh->mNumFaces * 3;
 
-	if (m_iNumVertices <= UINT_MAX)
+	if (m_iNumVertices <= USHRT_MAX)
 	{
 		m_iIndexStride = 2;
 		m_eIndexFormat = DXGI_FORMAT_R16_UINT;
@@ -40,6 +42,7 @@ HRESULT CModelMesh_Instance::Initialize_Prototype(MODELTYPE eType, const aiMesh*
 
 	m_ePrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
+	m_iNumInstance = pModelMeshDesc->iNumInstance;
 	m_iNumIndexPerInstance = m_iNumIndices;
 	m_iInstanceVertexStride = sizeof(VTXINSTANCE_MESH);
 
@@ -67,6 +70,24 @@ HRESULT CModelMesh_Instance::Initialize_Prototype(MODELTYPE eType, const aiMesh*
 	m_VBInstanceDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	m_VBInstanceDesc.MiscFlags = 0;
 	m_VBInstanceDesc.StructureByteStride = m_iInstanceVertexStride;
+
+	m_pInstanceVertices = new VTXINSTANCE_MESH[m_iNumInstance];
+	ZeroMemory(m_pInstanceVertices, sizeof(VTXINSTANCE_MESH) * m_iNumInstance);
+
+	for (_uint i = 0; i < m_iNumInstance; ++i)
+	{
+		VTXINSTANCE_MESH* pInstanceVertices = static_cast<VTXINSTANCE_MESH*>(m_pInstanceVertices);
+		CHECK_NULLPTR_MSG(pInstanceVertices, TEXT("Mesh Instance - nullptr == pInstanceVertices"), E_FAIL);
+
+		_matrix InstanceData = pModelMeshDesc->InstanceData[i].InstanceMatrix;
+
+		XMStoreFloat4(&pInstanceVertices[i].vRight, XMVectorSetW(InstanceData.r[0], 0.f));
+		XMStoreFloat4(&pInstanceVertices[i].vUp, XMVectorSetW(InstanceData.r[1], 0.f));
+		XMStoreFloat4(&pInstanceVertices[i].vLook, XMVectorSetW(InstanceData.r[2], 0.f));
+		XMStoreFloat4(&pInstanceVertices[i].vTranslation, XMVectorSetW(InstanceData.r[3], 1.f));
+
+		pInstanceVertices[i].iID = i;
+	}
 
 #pragma endregion
 
@@ -392,11 +413,11 @@ HRESULT CModelMesh_Instance::Ready_Indices_For_4Byte(const aiMesh* pAIMesh)
 	return S_OK;
 }
 
-CModelMesh_Instance* CModelMesh_Instance::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, MODELTYPE eType, const aiMesh* pAIMesh, const vector<class CBone*>& Bones, _fmatrix PreTransformMatrix)
+CModelMesh_Instance* CModelMesh_Instance::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, MODELTYPE eType, const aiMesh* pAIMesh, const vector<class CBone*>& Bones, const INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix)
 {
 	CModelMesh_Instance* pInstance = new CModelMesh_Instance(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype(eType, pAIMesh, Bones, PreTransformMatrix)))
+	if (FAILED(pInstance->Initialize_Prototype(eType, pAIMesh, Bones, pDesc, PreTransformMatrix)))
 	{
 		MSG_BOX(TEXT("Failed to Created : CModelMesh_Instance"));
 		Safe_Release(pInstance);

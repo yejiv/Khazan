@@ -195,10 +195,10 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Data/Fiona/Fiona.dat"))))
 		return E_FAIL;
 
-	/* Prototype_Component_Model_JOH_TestModel */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_JOH_TestModel"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Data/Test/Test.dat"))))
-		return E_FAIL;
+	///* Prototype_Component_Model_JOH_TestModel */
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_JOH_TestModel"),
+	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Data/Test/Test.dat"))))
+	//	return E_FAIL;
 
 
 	return S_OK;
@@ -254,10 +254,10 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 		CDummy::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	/* Prototype_GameObject_JOH_Test1 */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_JOH_Test1"),
-		CJOH_Test1::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	///* Prototype_GameObject_JOH_Test1 */
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_JOH_Test1"),
+	//	CJOH_Test1::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
 
 	return S_OK;
 }

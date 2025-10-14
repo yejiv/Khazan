@@ -113,4 +113,6 @@ void CAnimation::Free()
         Safe_Release(pChannel);
 
     m_Channels.clear();
+
+    Safe_Release(m_pGameInstance);
 }

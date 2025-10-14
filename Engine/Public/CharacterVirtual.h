@@ -32,7 +32,7 @@ public:
 		_float			fPredictiveContactDistance = 0.1f; // 에측 접촉(미리 감지)
 		EBackFaceMode	eBackFaceMode = EBackFaceMode::CollideWithBackFaces; // 양면 메쉬 대응
 
-		_float			fMinTimeRemaining = 0.5f; //서브스텝 통합 중 잔여 시간 최소치.
+		_float			fMinTimeRemaining = 1e-3f; //서브스텝 통합 중 잔여 시간 최소치.
 		_float			fCollisionTolerance = 0.01f; //충돌 허용 오차
 		_uint			fMaxNumHits = 5.f; // 한 프레임 업데이트 동안 저장할 최대 충돌 히트 개수 제한.
 		_float			fHitReductionCosMaxAngle = DegreesToRadians(15.0f); // 히트 축약 기준 각도(코사인 값)
@@ -45,6 +45,9 @@ public:
 		_float			fMaxStrength = 30.f;
 
 		Plane			fSupportingVolume = Plane(Vec3::sAxisY(), 0.02f);
+
+
+		_uint			iObjectLayer;
 
 	}CHARACTERVIRTUAL_DESC;
 
@@ -81,14 +84,27 @@ private:
 public:
 	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize_Clone(void* pArg) override;
-	void Update();
+	void Update(_float fTimeDelta, class CTransform* pTransform);
 
-//private:
-//	void    Update_Kinematic(_float fTimeDelta, class CPhysicsBody* pBody, class CTransform* pTransform);
+public:
+	void    Set_Position(_vector vPos);
+	void	Set_Velocity(_vector vVelocity);
+	void	Set_Rotation(_vector vRotation);
 
 private:
-	class CGameInstance* m_pGameInstance = { nullptr };
-	JPH::CharacterVirtual* m_pCharacterVir = { nullptr };
+	JPH::CharacterVirtual* m_pCharVir = { nullptr };
+
+	JPH::BodyID m_BodyId;
+	JPH::BodyInterface* m_pBodyInterface = { nullptr };
+	JPH::BodyFilter* m_pBodyFilter = { nullptr };
+	JPH::ShapeFilter* m_pShapeFilter = { nullptr };
+	class CharacterContactListener* m_pContactListener = { nullptr };
+
+	JPH::Vec3	m_vVelocity = {};
+	JPH::Vec3	m_vUp = {};
+	JPH::Vec3	m_vGravity = {};
+
+	_uint		m_iNumObjectLayer = {};
 
 public:
 	static CCharacterVirtual* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
