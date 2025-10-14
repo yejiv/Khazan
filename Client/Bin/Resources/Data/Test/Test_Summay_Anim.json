@@ -1,0 +1,124 @@
+{
+    "vecSummaries": [
+        {
+            "fDuration": -20000000000.0,
+            "fTickPerSecond": 24.0,
+            "iNumChannels": 0,
+            "strName": "C_P_Kazan|Action"
+        },
+        {
+            "fDuration": 120.0,
+            "fTickPerSecond": 24.0,
+            "iNumChannels": 227,
+            "strName": "C_P_Kazan|CA_P_Kazan_BareHands_Run_F"
+        },
+        {
+            "fDuration": 4.0,
+            "fTickPerSecond": 24.0,
+            "iNumChannels": 227,
+            "strName": "C_P_Kazan|CA_P_Kazan_BareHands_Run_MovingTurn_L_180"
+        },
+        {
+            "fDuration": 4.0,
+            "fTickPerSecond": 24.0,
+            "iNumChannels": 227,
+            "strName": "C_P_Kazan|CA_P_Kazan_BareHands_Run_MovingTurn_R_180"
+        },
+        {
+            "fDuration": 10.0,
+            "fTickPerSecond": 24.0,
+            "iNumChannels": 227,
+            "strName": "C_P_Kazan|CA_P_Kazan_BareHands_Run_StandTurn_L_180"
+        },
+        {
+            "fDuration": 10.0,
+            "fTickPerSecond": 24.0,
+            "iNumChannels": 227,
+            "strName": "C_P_Kazan|CA_P_Kazan_BareHands_Run_StandTurn_R_180"
+        },
+        {
+            "fDuration": 59.0,
+            "fTickPerSecond": 24.0,
+            "iNumChannels": 227,
+            "strName": "C_P_Kazan|CA_P_Kazan_BareHands_Run_Stop_F_LF"
+        },
+        {
+            "fDuration": 63.0,
+            "fTickPerSecond": 24.0,
+            "iNumChannels": 227,
+            "strName": "C_P_Kazan|CA_P_Kazan_BareHands_Run_Stop_F_RF"
+        },
+        {
+            "fDuration": 216.0,
+            "fTickPerSecond": 24.0,
+            "iNumChannels": 227,
+            "strName": "C_P_Kazan|CA_P_Kazan_BareHands_Stand"
+        },
+        {
+            "fDuration": 70.0,
+            "fTickPerSecond": 24.0,
+            "iNumChannels": 227,
+            "strName": "C_P_Kazan|CA_P_Kazan_BareHands_Stand_Hard"
+        },
+        {
+            "fDuration": 120.0,
+            "fTickPerSecond": 24.0,
+            "iNumChannels": 227,
+            "strName": "C_P_Kazan|CA_P_Kazan_BareHands_Stand_Idle_01"
+        },
+        {
+            "fDuration": 180.0,
+            "fTickPerSecond": 24.0,
+            "iNumChannels": 227,
+            "strName": "C_P_Kazan|CA_P_Kazan_BareHands_Stand_Idle_02"
+        },
+        {
+            "fDuration": 30.0,
+            "fTickPerSecond": 24.0,
+            "iNumChannels": 227,
+            "strName": "C_P_Kazan|CA_P_Kazan_BareHands_Walk_F"
+        },
+        {
+            "fDuration": 24.0,
+            "fTickPerSecond": 24.0,
+            "iNumChannels": 227,
+            "strName": "C_P_Kazan|CA_P_Kazan_BareHands_Walk_StandTurn_L_180"
+        },
+        {
+            "fDuration": 24.0,
+            "fTickPerSecond": 24.0,
+            "iNumChannels": 227,
+            "strName": "C_P_Kazan|CA_P_Kazan_BareHands_Walk_StandTurn_R_180"
+        },
+        {
+            "fDuration": 43.0,
+            "fTickPerSecond": 24.0,
+            "iNumChannels": 227,
+            "strName": "C_P_Kazan|CA_P_Kazan_BareHands_Walk_Stop_F_LF"
+        },
+        {
+            "fDuration": 41.0,
+            "fTickPerSecond": 24.0,
+            "iNumChannels": 227,
+            "strName": "C_P_Kazan|CA_P_Kazan_BareHands_Walk_Stop_F_RF"
+        },
+        {
+            "fDuration": 40.0,
+            "fTickPerSecond": 24.0,
+            "iNumChannels": 227,
+            "strName": "C_P_Kazan|CA_P_Kazan_BareHandsToStand_End"
+        },
+        {
+            "fDuration": 70.0,
+            "fTickPerSecond": 24.0,
+            "iNumChannels": 227,
+            "strName": "C_P_Kazan|CA_P_Kazan_BareHandsToStand_Loop"
+        },
+        {
+            "fDuration": 40.0,
+            "fTickPerSecond": 24.0,
+            "iNumChannels": 227,
+            "strName": "C_P_Kazan|CA_P_Kazan_BareHandsToStand_Start"
+        }
+    ]
+}

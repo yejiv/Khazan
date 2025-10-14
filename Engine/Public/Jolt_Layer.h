@@ -3,14 +3,14 @@
 
 NS_BEGIN(Engine)
 
-class CJolt_BPLayer final : public BroadPhaseLayerInterface
+class CJolt_BPLayerIF final : public BroadPhaseLayerInterface
 {
 public:
-	explicit CJolt_BPLayer(_uint iNumObjectLayer) {
+	explicit CJolt_BPLayerIF(_uint iNumObjectLayer) {
 		m_iNumObjectLayer = iNumObjectLayer;
 		m_ObjectToBroadPhase = new BroadPhaseLayer[m_iNumObjectLayer];
 	}
-	virtual ~CJolt_BPLayer() {
+	virtual ~CJolt_BPLayerIF() {
 		Safe_Delete_Array(m_ObjectToBroadPhase);
 	}
 

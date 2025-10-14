@@ -19,6 +19,11 @@ CVIBuffer_Point_Instance::CVIBuffer_Point_Instance(const CVIBuffer_Point_Instanc
 	, m_pCB { Prototype.m_pCB }
 	, m_pStructuredBuffer { Prototype.m_pStructuredBuffer}
 {
+	Safe_AddRef(m_pStructuredBuffer);
+	Safe_AddRef(m_pCB);
+	Safe_AddRef(m_pSRV);
+	Safe_AddRef(m_pUAV);
+	Safe_AddRef(m_pComputeShader);
 }
 
 HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDesc)

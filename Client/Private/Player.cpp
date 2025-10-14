@@ -4,7 +4,7 @@
 #include "Body_Player.h"
 
 #include "RigidBody.h"
-#include "Character.h"
+#include "CharacterVirtual.h"
 
 CPlayer::CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CContainerObject{ pDevice, pContext }
@@ -55,25 +55,31 @@ void CPlayer::Update(_float fTimeDelta)
         if (true == isPicked)
         {
             m_pTransformCom->Set_State(Engine::STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPickedPos), 1.f));
+            m_pCharVirCom->Set_Position(XMVectorSetW(XMLoadFloat3(&vPickedPos), 1.f));
+            m_pCharVirCom->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 1.f));
         }
     }
 
     if (GetKeyState(VK_DOWN) & 0x8000)
     {
         m_pTransformCom->Go_Backward(fTimeDelta);
+        m_pCharVirCom->Set_Position(m_pTransformCom->Get_State(STATE::POSITION));
     }
     if (GetKeyState(VK_LEFT) & 0x8000)
     {
         m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * -1.f);
+        m_pCharVirCom->Set_Rotation(m_pTransformCom->Get_Rotation_Quat());
     }
     if (GetKeyState(VK_RIGHT) & 0x8000)
     {
         m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * 1.f);
+        m_pCharVirCom->Set_Rotation(m_pTransformCom->Get_Rotation_Quat());
     }
 
     if (GetKeyState(VK_UP) & 0x8000)
     {
         m_pTransformCom->Go_Straight(fTimeDelta);
+        m_pCharVirCom->Set_Position(m_pTransformCom->Get_State(STATE::POSITION));
 
         if (m_iState & IDLE)
             m_iState ^= IDLE;
@@ -91,7 +97,7 @@ void CPlayer::Update(_float fTimeDelta)
 
     __super::Update(fTimeDelta);
 
-    m_pRigidBodyCom->Update(fTimeDelta, m_pTransformCom->Get_WorldMatrix());
+    m_pCharVirCom->Update(fTimeDelta, m_pTransformCom);
 
     //m_pCharacterCom->Update(fTimeDelta, m_pBodyCom, m_pTransformCom);
 
@@ -133,41 +139,45 @@ HRESULT CPlayer::Ready_Components()
     //CRigidBody::CAPSULESHAPE_DESC RigidDesc{};
     //RigidDesc.fHeight = 1.f;
     //RigidDesc.fRadius = 1.f;
-    CRigidBody::RIGID_BOXSHAPE_DESC RigidDesc{};
-    RigidDesc.vExtent = { 0.5f, 0.5f, 0.5f };
-    RigidDesc.bIsTrigger = false;
-    RigidDesc.bStartActive = true;
-    RigidDesc.eMotion = EMotionType::Kinematic;
-    RigidDesc.eQuality = EMotionQuality::Discrete;
-    RigidDesc.eShapeType = SHAPE::BOX;
-    RigidDesc.fFriction = 0.8f;
-    RigidDesc.fMass = 1.0f;    
-    RigidDesc.fRestitution = 0.0f;
-    RigidDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
+    //CRigidBody::RIGID_BOXSHAPE_DESC RigidDesc{};
+    //RigidDesc.vExtent = { 0.5f, 0.5f, 0.5f };
+    //RigidDesc.bIsTrigger = false;
+    //RigidDesc.bStartActive = true;
+    //RigidDesc.eMotion = EMotionType::Kinematic;
+    //RigidDesc.eQuality = EMotionQuality::Discrete;
+    //RigidDesc.eShapeType = SHAPE::BOX;
+    //RigidDesc.fFriction = 0.8f;
+    //RigidDesc.fMass = 1.0f;    
+    //RigidDesc.fRestitution = 0.0f;
+    //RigidDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
+    //_float3 vPos{};
+    //XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
+    //_float4 vQuat{};
+    //XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
+    //RigidDesc.vPos = vPos;
+    //RigidDesc.vQuat = vQuat;
+
+    //
+
+    //if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_RigidBody"),
+    //    TEXT("Com_RigidBody"), reinterpret_cast<CComponent**>(&m_pRigidBodyCom), &RigidDesc)))
+    //    return E_FAIL;
+
+    CCharacterVirtual::CV_SPHERESHAPE_DESC tCharVirDesc{};
     _float3 vPos{};
-    XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
     _float4 vQuat{};
+    XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
     XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
-    RigidDesc.vPos = vPos;
-    RigidDesc.vQuat = vQuat;
+    tCharVirDesc.eShapeType = SHAPE::SPHERE;
+    tCharVirDesc.vPos = vPos;
+    tCharVirDesc.vQuat = vQuat;
+    tCharVirDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+    tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
+    tCharVirDesc.fRadius = 0.5f;
 
-    
-
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_RigidBody"),
-        TEXT("Com_RigidBody"), reinterpret_cast<CComponent**>(&m_pRigidBodyCom), &RigidDesc)))
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
+        TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
         return E_FAIL;
-
-   /* CCharacter::CHARACTER_DESC tChar{};
-    tChar.pBody = m_pBodyCom;
-    tChar.pTransform = m_pTransformCom;
-    tChar.fMaxSlopeDeg = 50.f;
-    tChar.fStepOffset = 0.4f;
-    tChar.fGroundSnap = 0.1f;
-    tChar.fGravity = 9.81f;
-
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Character"),
-        TEXT("Com_Character"), reinterpret_cast<CComponent**>(&m_pCharacterCom), &tChar)))
-        return E_FAIL;*/
 
     return S_OK;
 }
@@ -213,5 +223,6 @@ CGameObject* CPlayer::Clone(void* pArg)
 void CPlayer::Free()
 {
     __super::Free();
-    Safe_Release(m_pRigidBodyCom);
+    //Safe_Release(m_pRigidBodyCom);
+    Safe_Release(m_pCharVirCom);
 }

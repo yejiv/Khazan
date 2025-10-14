@@ -52,10 +52,15 @@ void CCamera_Map::Input(_float fTimeDelta)
 {
     CHECK_FALSE(m_pGameInstance->Mouse_Pressing(MOUSEKEYSTATE::WB), );
 
-    if (m_pGameInstance->Key_Pressing(DIK_W, fTimeDelta))   m_pTransformCom->Go_Straight(fTimeDelta);
-    if (m_pGameInstance->Key_Pressing(DIK_S, fTimeDelta))   m_pTransformCom->Go_Backward(fTimeDelta);
-    if (m_pGameInstance->Key_Pressing(DIK_A, fTimeDelta))   m_pTransformCom->Go_Left(fTimeDelta);
-    if (m_pGameInstance->Key_Pressing(DIK_D, fTimeDelta))   m_pTransformCom->Go_Right(fTimeDelta);
+    _float fSpeed = fTimeDelta;
+
+    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta))
+        fSpeed *= 20.f;
+
+    if (m_pGameInstance->Key_Pressing(DIK_W, fTimeDelta))   m_pTransformCom->Go_Straight(fSpeed);
+    if (m_pGameInstance->Key_Pressing(DIK_S, fTimeDelta))   m_pTransformCom->Go_Backward(fSpeed);
+    if (m_pGameInstance->Key_Pressing(DIK_A, fTimeDelta))   m_pTransformCom->Go_Left(fSpeed);
+    if (m_pGameInstance->Key_Pressing(DIK_D, fTimeDelta))   m_pTransformCom->Go_Right(fSpeed);
 
     _int iMouseMove = {};
 
@@ -78,13 +83,11 @@ void CCamera_Map::Input(_float fTimeDelta)
 
         if (fDeltaAngle < 0.f)
         {
-            if (fAngle > fMinAngle)
-                m_pTransformCom->Turn(m_pTransformCom->Get_State(STATE::RIGHT), fDeltaAngle);
+            if (fAngle > fMinAngle)     m_pTransformCom->Turn(m_pTransformCom->Get_State(STATE::RIGHT), fDeltaAngle);
         }
         else
         {
-            if (fAngle < fMaxAngle)
-                m_pTransformCom->Turn(m_pTransformCom->Get_State(STATE::RIGHT), fDeltaAngle);
+            if (fAngle < fMaxAngle)     m_pTransformCom->Turn(m_pTransformCom->Get_State(STATE::RIGHT), fDeltaAngle);
         }
     }
 }

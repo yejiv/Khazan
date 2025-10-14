@@ -22,23 +22,41 @@ HRESULT CEdit_Panel::Initialize_Clone(void* pArg)
 	if (FAILED(__super::Initialize_Clone(pArg)))
 		return E_FAIL;
 
+	if (FAILED(Ready_Components()))
+		return E_FAIL;
+
 	return S_OK;
 }
 
 void CEdit_Panel::Priority_Update(_float fTimeDelta)
 {
-
+	for (auto& pChild : m_Children)
+	{
+		if (nullptr != pChild)
+			pChild->Priority_Update(fTimeDelta);
+	}
 }
 
 void CEdit_Panel::Update(_float fTimeDelta)
 {
-
+	for (auto& pChild : m_Children)
+	{
+		if (nullptr != pChild)
+			pChild->Update(fTimeDelta);
+	}
 }
 
 void CEdit_Panel::Late_Update(_float fTimeDelta)
 {
 	Update_LayOut();
 	Update_Transform();
+
+
+	for (auto& pChild : m_Children)
+	{
+		if (nullptr != pChild)
+			pChild->Late_Update(fTimeDelta);
+	}
 
 	if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::UI,this)))
 		return;
@@ -47,7 +65,7 @@ void CEdit_Panel::Late_Update(_float fTimeDelta)
 
 HRESULT CEdit_Panel::Render()
 {
-	/*if (FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix")))
+	if (FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix")))
 		return E_FAIL;
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
@@ -55,14 +73,18 @@ HRESULT CEdit_Panel::Render()
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_Texture", 0)))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof(_float4))))
 		return E_FAIL;
+
+
+	/*if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_Texture", 0)))
+		return E_FAIL;*/
 
 	m_pShaderCom->Begin(0);
 
 	m_pVIBufferCom->Bind_Resources();
 
-	m_pVIBufferCom->Render();*/
+	m_pVIBufferCom->Render();
 
 
 	return S_OK;
@@ -81,6 +103,8 @@ HRESULT CEdit_Panel::Ready_Components()
 	/*if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_StartButton"),
 		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr)))
 		return E_FAIL;*/
+
+	return S_OK;
 }
 
 CEdit_Panel* CEdit_Panel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

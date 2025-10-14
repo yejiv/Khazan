@@ -42,10 +42,10 @@ void CLevel_Stage1::Update(_float fTimeDelta)
 	//		return;
 	//}
 
-	//if (GetKeyState(VK_F1) & 0x8000)
-	//{
-	//	m_pGameInstance->Jolt_Test();
-	//}
+	if (GetKeyState(VK_F1) & 0x8000)
+	{
+		m_pGameInstance->Jolt_Test();
+	}
 
 	return;
 }
@@ -122,9 +122,9 @@ HRESULT CLevel_Stage1::Ready_Layer_Monster(const _wstring& strLayerTag)
 
 HRESULT CLevel_Stage1::Ready_Layer_Test(const _wstring& strLayerTag)
 {
-	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
-	//	ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_JOH_Test1"))))
-	//	return E_FAIL;
+	/*if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
+		ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_JOH_Test1"))))
+		return E_FAIL;*/
 
 	return S_OK;
 }
