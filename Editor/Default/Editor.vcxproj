@@ -175,6 +175,7 @@
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\MapEditor_Header.h" />
     <ClInclude Include="..\Public\MapObject.h" />
+    <ClInclude Include="..\Public\Map_Terrain.h" />
     <ClInclude Include="..\public\ParticleEmitter.h" />
     <ClInclude Include="..\public\ParticleSystem.h" />
     <ClInclude Include="..\Public\Prop.h" />
@@ -217,6 +218,7 @@
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\Private\MapObject.cpp" />
+    <ClCompile Include="..\Private\Map_Terrain.cpp" />
     <ClCompile Include="..\private\ParticleEmitter.cpp" />
     <ClCompile Include="..\private\ParticleSystem.cpp" />
     <ClCompile Include="..\Private\Prop.cpp" />

@@ -1,9 +1,12 @@
 #pragma once
-
 #include "Editor_Defines.h"
 #include "Component.h"
 
 #include "Editor_ModelMesh_Instance.h"
+
+NS_BEGIN(Engine)
+class CTransform;
+NS_END
 
 NS_BEGIN(Editor)
 
@@ -15,66 +18,77 @@ private:
 	virtual ~CEditor_Model_Instance() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(MODELTYPE eModelType, const _char* pModelFilePath, const CEditor_ModelMesh_Instance::INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix);
+	virtual HRESULT Initialize_Prototype(MODELTYPE eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix, const CEditor_ModelMesh_Instance::INSTANCE_DESC* pDesc);
 	virtual HRESULT Initialize_Clone(void* pArg);
 	virtual HRESULT Render(_uint iMeshIndex);
 
 public:
-	_uint Get_NumMeshes() const { return m_iNumMeshes; }
-
-	_float4x4* Get_BoneMatrix(const _char* pBoneName);
+	HRESULT			Bind_Materials(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, _uint iTextureType, _uint iTextureIndex);
+	HRESULT			Bind_BoneMatrices(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex);
+	_bool			Play_Animation(_float fTimeDelta);
+	void			Set_Animation(_uint iIndex, _bool isLoop);
 
 public:
-	const _uint Get_NumInstances() const;
+	const char*		Get_ModelName() const { return m_Model_Data.strModelName.c_str(); }
+	const _uint		Get_NumMeshes() const { return m_iNumMeshes; }
 
+public:
 	void Add_Instance(MESH_INSTANCE_DATA InstanceData);
-	void Fix_Instance(MESH_INSTANCE_DATA InstanceData, _uint iInstanceIndex);
+	void Fix_Instance(MESH_INSTANCE_DATA InstanceData, _uint InstanceIndex);
+	uint Get_NumInstances();
+
 
 public:
-	HRESULT Bind_Materials(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, aiTextureType eTextureType, _uint iIndex);
-	HRESULT Bind_BoneMatrices(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex);
-	_bool Play_Animation(_float fTimeDelta);
-	void Set_Animation(_uint iIndex, _bool isLoop = false);
+	void			ExportModel();
+	void			LoadModel(_wstring strModelName);
+	void			Update_DAT_From_JSON();
 
 private:
-	/* 파일로부터 읽은 모든 정보를 다 저장해주는 구조체. */
-	const aiScene* m_pAIScene = { nullptr };
+	const aiScene*			m_pAIScene = { nullptr };
 	Assimp::Importer		m_Importer = {};
 	MODELTYPE				m_eModelType = {};
 	_float4x4				m_PreTransformMatrix = {};
+	const _char*			m_pModelFilePath = {};
 
-	// m_pAIScene = m_Importer.ReadFile(경로);
+	/* 파일로부터 읽은 모든 정보를 다 저장해주는 구조체. */
+	MODEL_DATA				m_Model_Data = {};
 
-private:
-	_uint								m_iNumMeshes = {};
-	vector<CEditor_ModelMesh_Instance*>	m_Meshes;
+	/* 매쉬 */
+	_uint										m_iNumMeshes = {};
+	vector<class CEditor_ModelMesh_Instance*>	m_Meshes;
 
-private:
-	/* Diffuse, Ambient, Specular */
-	_uint								m_iNumMaterials = {};
+	/* 머터리얼 */
+	_uint									m_iNumMaterials = {};
 	vector<class CEditor_MeshMaterial*>		m_Materials;
 
-private:
-	vector<class CEditor_Bone*>				m_Bones;
+	/* 뼈 */
+	vector <class CEditor_Bone*>		m_Bones;
 
-private:
-	_uint								m_iCurrentAnimIndex = { 0 };
+	/* 애니메이션 */
 	_uint								m_iNumAnimations = { 0 };
-	vector<class CEditor_Animation*>			m_Animations;
-	_bool								m_isLoop = {};
-	_bool								m_isFinished = {};
+	_uint								m_iCurrentAnimIndex = { 0 };
+	vector<class CEditor_Animation*>	m_Animations;
+
+	_bool							m_isLoop = {};
+	_bool							m_isFinished = {};
 
 private:
-	HRESULT Ready_Meshes(const CEditor_ModelMesh_Instance::INSTANCE_DESC* pDesc);
-	HRESULT Ready_Materials(const _char* pModelFilePath);
-	HRESULT Ready_Bones(const aiNode* pAINode, _int iParentIndex);
-	HRESULT Ready_Animations();
+	HRESULT			Ready_Meshes(const CEditor_ModelMesh_Instance::INSTANCE_DESC* pDesc);
+	HRESULT			Ready_Materials();
+	HRESULT			Ready_Bones(const aiNode* pAINode, _int iParentIndex);
+	HRESULT			Ready_Animation();
+
+	_bool			Export_AnimationJson(const string& strFilePath, const string& strFilePath2);
+	_bool			Export_MaterialJson(const string& strFilePath);
+	void			Export_Binary(const string& strFilePath);
+
+	string			PostProcessJSON(const string& jsonStr);
+	string			CompressArray(const string& arrayStr);
 
 public:
-	static CEditor_Model_Instance* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, MODELTYPE eModelType, const _char* pModelFilePath, const CEditor_ModelMesh_Instance::INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix);
+	static CEditor_Model_Instance* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, MODELTYPE eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix, const CEditor_ModelMesh_Instance::INSTANCE_DESC* pDesc);
 	virtual CComponent* Clone(void* pArg) override;
-	virtual void Free() override;
+	virtual void			Free() override;
 
 };
-
 NS_END

@@ -37,6 +37,8 @@ public:
 public:
 	const _uint Get_NumInstances() const { return m_iNumInstance; }
 
+	void	Get_Data(MESH_DATA& Data) { Data = m_Mesh_Data; }
+
 	void Add_Instance(MESH_INSTANCE_DATA  InstanceData);
 	void Fix_Instance(MESH_INSTANCE_DATA  InstanceData, _uint iInstanceIndex);
 
@@ -52,15 +54,16 @@ private:
 	/* 뼈의 개수만큼 OffsetMatrix 를 저장 */
 	vector<_float4x4> m_OffsetMatrices;
 
+	MESH_DATA				m_Mesh_Data = {};
+
 private:
 	HRESULT Ready_Vertices_For_NonAnim(const aiMesh* pAIMesh, _fmatrix PreTransformMatrix);
 	HRESULT Ready_Vertices_For_Anim(const aiMesh* pAIMesh, const vector<class CEditor_Bone*>& Bones);
 
-	HRESULT Ready_Indices_For_2Byte(const aiMesh* pAIMesh);
-	HRESULT Ready_Indices_For_4Byte(const aiMesh* pAIMesh);
+	HRESULT Ready_Indices(const aiMesh* pAIMesh);
 
 public:
-	static CEditor_ModelMesh_Instance* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, MODELTYPE eType, const aiMesh* pAIMesh, const vector<class CEditor_Bone*>& Bones, const INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix);
+	static CEditor_ModelMesh_Instance* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, MODELTYPE eType, const aiMesh* pAIMesh, const vector<class CEditor_Bone*>& Bones, _fmatrix PreTransformMatrix, const INSTANCE_DESC* pDesc);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 };

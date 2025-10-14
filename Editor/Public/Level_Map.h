@@ -21,8 +21,10 @@ public:
 	virtual HRESULT Render() override;
 
 private:
+	HRESULT Ready_Defaults();
 	HRESULT Ready_Lights();
 	HRESULT Ready_Layer_Camera(const _wstring& strLayerTag);
+	HRESULT Ready_Layer_Terrain(const _wstring& strLayerTag);
 
 	HRESULT Ready_Layer_Prop_Static(const _wstring& strLayerTag);
 
@@ -32,8 +34,10 @@ private:
 	MAPEDIT_MAP m_eMapType = { MAPEDIT_MAP::HEINMACH };
 
 private:
-	// 임시 테스트용 : Prototype 생성 ( json, filesystem 이용해서 )
-	HRESULT Ready_Temp_Prototypes();
+	// 임시 테스트용 : 모델 or 모델 인스턴스 Prototype 생성 > GameObject 클론 ( json, filesystem 이용해서 )
+	HRESULT Ready_Temp_Instances();
+	HRESULT Ready_Temp_IndependentObjs();
+	HRESULT Ready_Temp_All();
 
 	// 임시 테스트용
 	HRESULT Ready_Temp_Layers(const _wstring& strLayerTag);
@@ -71,13 +75,20 @@ private:
 	vector<JSON_MAP_DATA> m_JsonList;
 	_int m_iJsonListIndex = {};
 
+	_int m_iObjCnt = {};
+
 #pragma endregion
 
 #pragma region CUSTOM JSON 용
 
 	JSON m_CustomJson = {};		// Json 정보 저장해놓을
 
+	vector<JSON_MAP_DATA> m_CustomJsonList;
+	_int m_iCustomJsonListIndex = {};
+
 	_bool m_isCustomJsonLoaded = { false };
+
+	map<const _wstring, _uint> m_CheckPrototypes;
 
 #pragma endregion
 
@@ -94,8 +105,9 @@ private:
 	HRESULT Ready_DefaultImGui_For_MapTool();
 
 	HRESULT Ready_Main_Window();
-	HRESULT Ready_CustomJson_Edit_Window();
 	HRESULT Ready_Prop_Edit_Window();
+	HRESULT Ready_CustomJson_Edit_Window();
+	HRESULT Ready_CustomJson_List_Window();
 	HRESULT Ready_Json_Edit_Window();
 	HRESULT Ready_Json_List_Window();
 

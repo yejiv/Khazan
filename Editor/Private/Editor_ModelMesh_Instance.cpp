@@ -11,6 +11,7 @@ CEditor_ModelMesh_Instance::CEditor_ModelMesh_Instance(ID3D11Device* pDevice, ID
 
 CEditor_ModelMesh_Instance::CEditor_ModelMesh_Instance(const CEditor_ModelMesh_Instance& Prototype)
 	: CVIBuffer_Instance { Prototype }
+	, m_Mesh_Data { Prototype.m_Mesh_Data }
 {
 }
 
@@ -28,16 +29,8 @@ HRESULT CEditor_ModelMesh_Instance::Initialize_Prototype(MODELTYPE eType, const 
 
 	m_iNumIndices = pAIMesh->mNumFaces * 3;
 
-	if (m_iNumVertices <= USHRT_MAX)
-	{
-		m_iIndexStride = 2;
-		m_eIndexFormat = DXGI_FORMAT_R16_UINT;
-	}
-	else
-	{
-		m_iIndexStride = 4;
-		m_eIndexFormat = DXGI_FORMAT_R32_UINT;
-	}
+	m_iIndexStride = 4;
+	m_eIndexFormat = DXGI_FORMAT_R32_UINT;
 
 	m_ePrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
@@ -56,9 +49,22 @@ HRESULT CEditor_ModelMesh_Instance::Initialize_Prototype(MODELTYPE eType, const 
 
 #pragma region INDEX_SETTING
 
-	hr = m_iIndexStride == sizeof(_ushort) ? Ready_Indices_For_2Byte(pAIMesh) : Ready_Indices_For_4Byte(pAIMesh);
+	CHECK_FAILED_MSG(Ready_Indices(pAIMesh), TEXT("Mesh Instance - Ready Indices 실패"), E_FAIL);
 
-	CHECK_FAILED_MSG(hr, TEXT("Mesh Instance - Ready Indices 실패"), E_FAIL);
+#pragma endregion
+
+#pragma region 파일 입출력용
+
+	m_Mesh_Data.iMaterialIndex		= m_iMaterialIndex;
+	m_Mesh_Data.iNumVertices		= m_iNumVertices;
+	m_Mesh_Data.iVertexStride		= m_iVertexStride;
+	m_Mesh_Data.iNumIndices			= m_iNumIndices;
+	m_Mesh_Data.iIndexStride		= m_iIndexStride;
+	m_Mesh_Data.iNumVertexBuffers	= m_iNumVertexBuffers;
+	m_Mesh_Data.iIndexFormat		= m_eIndexFormat;
+	m_Mesh_Data.iPrimitiveType		= m_ePrimitiveType;
+	m_Mesh_Data.iNumFace			= pAIMesh->mNumFaces;
+	m_Mesh_Data.strName				= string(m_szName);
 
 #pragma endregion
 
@@ -347,40 +353,7 @@ HRESULT CEditor_ModelMesh_Instance::Ready_Vertices_For_Anim(const aiMesh* pAIMes
 	return S_OK;
 }
 
-HRESULT CEditor_ModelMesh_Instance::Ready_Indices_For_2Byte(const aiMesh* pAIMesh)
-{
-	_ushort* pIndices = new _ushort[m_iNumIndices];
-	ZeroMemory(pIndices, sizeof(_ushort) * m_iNumIndices);
-
-	_uint	iNumIndices = {};
-
-	for (_uint i = 0; i < pAIMesh->mNumFaces; ++i)
-	{
-		aiFace AIFace = pAIMesh->mFaces[i];
-
-		pIndices[iNumIndices++] = AIFace.mIndices[0];
-		pIndices[iNumIndices++] = AIFace.mIndices[1];
-		pIndices[iNumIndices++] = AIFace.mIndices[2];
-	}
-
-	D3D11_BUFFER_DESC		IBDesc = {};
-	IBDesc.ByteWidth = m_iNumIndices * m_iIndexStride;
-	IBDesc.Usage = D3D11_USAGE_DEFAULT;
-	IBDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	IBDesc.CPUAccessFlags = 0;
-	IBDesc.MiscFlags = 0;
-	IBDesc.StructureByteStride = m_iIndexStride;
-
-	D3D11_SUBRESOURCE_DATA	IBInitialData = {};
-	IBInitialData.pSysMem = pIndices;
-
-	if (FAILED(m_pDevice->CreateBuffer(&IBDesc, &IBInitialData, &m_pIB)))
-		return E_FAIL;
-
-	return S_OK;
-}
-
-HRESULT CEditor_ModelMesh_Instance::Ready_Indices_For_4Byte(const aiMesh* pAIMesh)
+HRESULT CEditor_ModelMesh_Instance::Ready_Indices(const aiMesh* pAIMesh)
 {
 	_uint* pIndices = new _uint[m_iNumIndices];
 	ZeroMemory(pIndices, sizeof(_uint) * m_iNumIndices);
@@ -390,10 +363,13 @@ HRESULT CEditor_ModelMesh_Instance::Ready_Indices_For_4Byte(const aiMesh* pAIMes
 	for (_uint i = 0; i < pAIMesh->mNumFaces; ++i)
 	{
 		aiFace AIFace = pAIMesh->mFaces[i];
+		UINT3_DATA Temp = {};
 
-		pIndices[iNumIndices++] = AIFace.mIndices[0];
-		pIndices[iNumIndices++] = AIFace.mIndices[1];
-		pIndices[iNumIndices++] = AIFace.mIndices[2];
+		Temp.x = pIndices[iNumIndices++] = AIFace.mIndices[0];
+		Temp.y = pIndices[iNumIndices++] = AIFace.mIndices[1];
+		Temp.z = pIndices[iNumIndices++] = AIFace.mIndices[2];
+
+		m_Mesh_Data.vecIndices.push_back(Temp);
 	}
 
 	D3D11_BUFFER_DESC		IBDesc = {};
@@ -410,10 +386,12 @@ HRESULT CEditor_ModelMesh_Instance::Ready_Indices_For_4Byte(const aiMesh* pAIMes
 	if (FAILED(m_pDevice->CreateBuffer(&IBDesc, &IBInitialData, &m_pIB)))
 		return E_FAIL;
 
+	Safe_Delete_Array(pIndices);
+
 	return S_OK;
 }
 
-CEditor_ModelMesh_Instance* CEditor_ModelMesh_Instance::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, MODELTYPE eType, const aiMesh* pAIMesh, const vector<CEditor_Bone*>& Bones, const INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix)
+CEditor_ModelMesh_Instance* CEditor_ModelMesh_Instance::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, MODELTYPE eType, const aiMesh* pAIMesh, const vector<CEditor_Bone*>& Bones, _fmatrix PreTransformMatrix, const INSTANCE_DESC* pDesc)
 {
 	CEditor_ModelMesh_Instance* pInstance = new CEditor_ModelMesh_Instance(pDevice, pContext);
 
