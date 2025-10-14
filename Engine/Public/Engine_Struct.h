@@ -55,7 +55,6 @@ namespace Engine
 
 	}MESH_INSTANCE_DATA;
 
-
 	typedef struct tagCoInitGuard {
 		HRESULT hr = S_OK;
 		tagCoInitGuard(DWORD coinit = COINIT_MULTITHREADED) { hr = CoInitializeEx(nullptr, coinit); }
@@ -71,6 +70,14 @@ namespace Engine
 
 		unsigned int						x = 1, y = 1, z = 1;	// 디스패치할 스레드 그룹 개수
 	}COMPUTE_PASS_DESC;
+
+	typedef struct tagPointInstanceParams
+	{
+		float fSpeed;
+		XMFLOAT3 vPadding;
+		XMFLOAT4 vInitTranslation;
+		XMFLOAT4 vDirection;
+	}POINT_INSTANCE_PARAMS;
 
 	typedef struct tagVertexPosition
 	{
