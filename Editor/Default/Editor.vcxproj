@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Camera_Map.h" />
+    <ClInclude Include="..\Public\Camera_UI.h" />
     <ClInclude Include="..\Public\Editor_Animation.h" />
     <ClInclude Include="..\Public\Editor_Bone.h" />
     <ClInclude Include="..\Public\Editor_Channel.h" />
@@ -188,6 +189,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Camera_Map.cpp" />
+    <ClCompile Include="..\Private\Camera_UI.cpp" />
     <ClCompile Include="..\Private\Editor_Animation.cpp" />
     <ClCompile Include="..\Private\Editor_Bone.cpp" />
     <ClCompile Include="..\Private\Editor_Channel.cpp" />
