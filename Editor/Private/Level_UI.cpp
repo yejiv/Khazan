@@ -119,7 +119,7 @@ void CLevel_UI::Show_Hierarchy_Menu(const _char* szDefaultName)
 	//	if (ImGui::Selectable(strName.c_str(), isSelected))
 	//		m_SelectedObject = pUI;
 	//}
-	 
+	
 
 	// 계층 구조를 보여주는 창
 	for (auto& pRootUI : m_EditorUIObjects)
@@ -135,12 +135,12 @@ void CLevel_UI::Show_Hierarchy_Menu(const _char* szDefaultName)
 	{
 		if (ImGui::Button("Add_Child"))
 		{
-			Add_Child(szDefaultName);
+			Add_Child(m_szSelectedName);
 		}
 		
 		if (ImGui::Button("Remove_Child"))
 		{
-			Remove_Child(szDefaultName);
+			Remove_Child(m_szSelectedName);
 		}
 	}
 
@@ -156,9 +156,16 @@ void CLevel_UI::Show_Hierachy(CUIObject* pRootUIObject)
 
 	_bool isOpen = ImGui::TreeNodeEx(pRootUIObject->Get_Name(), Flags); // 트리 노드 접힙, 펼침을 만들고, 트리 스택을 푸쉬하는 기능
 	// 반환 값을 bool 값으로 받아서 펼쳐진 상태라면 true 접힌 상태라면 false
-	if (ImGui::IsItemClicked())
+	if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+	{
 		m_SelectedObject = pRootUIObject;
-
+	}
+	if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+	{
+		m_SelectedParrentObject = pRootUIObject;
+		strcpy_s(m_szSelectedName, MAX_PATH, m_SelectedParrentObject->Get_Name());
+	}
+	
 	if (isOpen)
 	{
 		// 계층구조를 쭉 렌더시킨다.
@@ -243,9 +250,9 @@ void CLevel_UI::Show_Inspector_Menu()
 	{
 		_float4 vColor = m_SelectedObject->Get_UI_Color();
 		Colors[0] = vColor.x;
-		Colors[0] = vColor.y;
-		Colors[0] = vColor.z;
-		Colors[0] = vColor.w;
+		Colors[1] = vColor.y;
+		Colors[2] = vColor.z;
+		Colors[3] = vColor.w;
 
 		pPrevSelected = m_SelectedObject;
 	}
@@ -309,7 +316,7 @@ void CLevel_UI::Show_CreateUI_Menu(const _char* szDefaultName)
 			ENUM_CLASS(LEVEL::UI), TEXT("Prototype_UIObject_Edit_Panel"), &Desc)))
 			return;
 
-		CUIObject* pPanel = dynamic_cast<CUIObject*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::UI),TEXT("Layer_UI"),m_EditorUIObjects.size()));
+		CUIObject* pPanel = dynamic_cast<CUIObject*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::UI),TEXT("Layer_UI"), m_iCurrentCount));
 		if (nullptr == pPanel)
 		{
 			MSG_BOX(TEXT("Failed Create : Edit_Panel"));
@@ -318,6 +325,7 @@ void CLevel_UI::Show_CreateUI_Menu(const _char* szDefaultName)
 		Safe_AddRef(pPanel);
 		//m_SelectedObject = pPanel; // 자동 선택
 		//Safe_AddRef(pPanel);
+		m_iCurrentCount++;
 	}
 
 	ImGui::SameLine();
@@ -330,7 +338,7 @@ void CLevel_UI::Show_CreateUI_Menu(const _char* szDefaultName)
 			ENUM_CLASS(LEVEL::UI), TEXT("Prototype_UIObject_Edit_Button"), &Desc)))
 			return;
 
-		CUIObject* pButton = dynamic_cast<CUIObject*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::UI), TEXT("Layer_UI"), m_EditorUIObjects.size()));
+		CUIObject* pButton = dynamic_cast<CUIObject*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::UI), TEXT("Layer_UI"), m_iCurrentCount));
 		if (nullptr == pButton)
 		{
 			MSG_BOX(TEXT("Failed Create : Edit_Button"));
@@ -339,6 +347,7 @@ void CLevel_UI::Show_CreateUI_Menu(const _char* szDefaultName)
 		Safe_AddRef(pButton);
 		//m_SelectedObject = pPanel; // 자동 선택
 		//Safe_AddRef(pPanel);
+		m_iCurrentCount++;
 	}
 
 	ImGui::SameLine();
@@ -351,7 +360,7 @@ void CLevel_UI::Show_CreateUI_Menu(const _char* szDefaultName)
 			ENUM_CLASS(LEVEL::UI), TEXT("Prototype_UIObject_Edit_ProgressBar"), &Desc)))
 			return;
 
-		CUIObject* pProgressBar = dynamic_cast<CUIObject*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::UI), TEXT("Layer_UI"), m_EditorUIObjects.size()));
+		CUIObject* pProgressBar = dynamic_cast<CUIObject*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::UI), TEXT("Layer_UI"), m_iCurrentCount));
 		if (nullptr == pProgressBar)
 		{
 			MSG_BOX(TEXT("Failed Create : Edit_ProgressBar"));
@@ -361,6 +370,7 @@ void CLevel_UI::Show_CreateUI_Menu(const _char* szDefaultName)
 
 		//m_SelectedObject = pPanel; // 자동 선택
 		//Safe_AddRef(pPanel);
+		m_iCurrentCount++;
 	}
 
 	ImGui::SameLine();
@@ -374,7 +384,7 @@ void CLevel_UI::Show_CreateUI_Menu(const _char* szDefaultName)
 			ENUM_CLASS(LEVEL::UI), TEXT("Prototype_UIObject_Edit_TextBox"), &Desc)))
 			return;
 
-		CUIObject* pTextBox = dynamic_cast<CUIObject*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::UI), TEXT("Layer_UI"), m_EditorUIObjects.size()));
+		CUIObject* pTextBox = dynamic_cast<CUIObject*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::UI), TEXT("Layer_UI"), m_iCurrentCount));
 		if (nullptr == pTextBox)
 		{
 			MSG_BOX(TEXT("Failed Create : Edit_TextBox"));
@@ -384,7 +394,10 @@ void CLevel_UI::Show_CreateUI_Menu(const _char* szDefaultName)
 
 		//m_SelectedObject = pPanel; // 자동 선택
 		//Safe_AddRef(pPanel);
+		m_iCurrentCount++;
 	}
+
+	
 
 	ImGui::Separator();
 
@@ -422,4 +435,11 @@ void CLevel_UI::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_SelectedObject);
+	Safe_Release(m_SelectedParrentObject);
+	for (auto& UIObject : m_EditorUIObjects)
+	{
+		Safe_Release(UIObject);
+	}
+	m_EditorUIObjects.clear();
 }
