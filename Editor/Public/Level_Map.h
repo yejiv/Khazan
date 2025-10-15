@@ -34,15 +34,13 @@ private:
 	MAPEDIT_MAP m_eMapType = { MAPEDIT_MAP::HEINMACH };
 
 private:
-	// 임시 테스트용 : 모델 or 모델 인스턴스 Prototype 생성 > GameObject 클론 ( json, filesystem 이용해서 )
-	HRESULT Ready_Temp_Instances();
-	HRESULT Ready_Temp_IndependentObjs();
-	HRESULT Ready_Temp_All();
+	HRESULT Ready_Temp_Instances();								// 임시 테스트용
+	HRESULT Ready_Temp_IndependentObjs();						// 임시 테스트용
+	HRESULT Ready_Temp_All();									// 임시 테스트용
 
-	// 임시 테스트용
-	HRESULT Ready_Temp_Layers(const _wstring& strLayerTag);
-
-#pragma region ImGui 변수들
+#pragma region 변수
+private:
+#pragma region ImGui 윈도우 창
 
 	_bool m_isMainWindow = { true };
 
@@ -54,69 +52,75 @@ private:
 
 	_bool m_isLightSettingWindow = { false };
 
-#pragma region ImGui > JSON 관련 변수
+#pragma endregion
+
+#pragma region ImGui > JSON 관련 폴더 경로 및 파일 명
 
 	_char m_szJsonPath[MAX_PATH] = { "../../Client/Bin/Resources/Models/Prop/Json/" };					// 오리지날 Json 기본 경로
-	_char m_szJsonCustomPath[MAX_PATH] = { "../../Client/Bin/DataFiles/Map/" };		// 커 스 텀 Json 기본 경로
+	_char m_szJsonCustomPath[MAX_PATH] = { "../../Client/Bin/DataFiles/Map/" };							// 커 스 텀 Json 기본 경로
 
 	_char m_szJsonFolderPath[ENUM_CLASS(MAPEDIT_MAP::END)][MAX_PATH] = { "HeinMach/", "StormPass/", "TheCrevice/", "Embars/" };		// 추출할 Json 폴더
 
+	_char m_szJsonSaveName[MAX_PATH] = {};		// Json 이름
+
+#pragma endregion
+
+#pragma region JSON 있는 폴더의 JSON 목록
+
+	vector<string> m_JsonFiles;					// JsonFile 이름 명 ( Combo에서 볼 Json 폴더 경로의 .json 파일들 )
+	_int m_iJsonFilesIndex = {};				// ImGui::BeginListBox 용 인덱스 변수
+
+#pragma endregion
+
 #pragma region ORIGINAL JSON 용
 
-	JSON m_Json = {};		// Json 정보 저장해놓을
-	_char m_szJsonSaveName[MAX_PATH] = {};
-	
-	_bool m_isJsonExport = { false };
+	JSON m_Json = {};							// Original Json 정보 저장해놓을 JSON
+	_bool m_isJsonExport = { false };			// 추출 됬는지 확인용
 
-	_bool m_isJsonConverted = { false };
-	vector<string> m_JsonFiles;
-	_int m_iJsonFilesIndex = {};
+	_bool m_isJsonConverted = { false };		// 변환됬는지 확인 용
 
-	vector<JSON_MAP_DATA> m_JsonList;
-	_int m_iJsonListIndex = {};
+	vector<JSON_MAP_DATA> m_JsonList;			// Original Json 맵 데이터 용 벡터
+	_int m_iJsonListIndex = {};					// ImGui::BeginListBox 용 인덱스 변수
 
-	_int m_iObjCnt = {};
+	_int m_iObjCnt = {};						// 단일 객체 갯수 확인용
 
 #pragma endregion
 
 #pragma region CUSTOM JSON 용
 
-	JSON m_CustomJson = {};		// Json 정보 저장해놓을
+	JSON m_CustomJson = {};								// Custom Json 정보 저장해놓을 JSON
 
-	vector<JSON_MAP_DATA> m_CustomJsonList;
-	_int m_iCustomJsonListIndex = {};
+	vector<JSON_MAP_DATA> m_CustomJsonList;				// Custom Json 맵 데이터 용 벡터
+	_int m_iCustomJsonListIndex = {};					// ImGui::BeginListBox 용 인덱스 변수
 
-	_bool m_isCustomJsonLoaded = { false };
+	_bool m_isCustomJsonLoaded = { false };				// Custom Json 로드 됬는지 확인 용
 
-	map<const _wstring, _uint> m_CheckPrototypes;
-
-#pragma endregion
-
+	map<const _wstring, _uint> m_CheckPrototypes;		// 중복 프로토타입 체크 용
 
 #pragma endregion
 
-#pragma region ImGui > FileSystem 관련 변수
+#pragma region LAYERS PROP 용
 
 
+
+#pragma endregion
 
 #pragma endregion
 
 private:
-	HRESULT Ready_DefaultImGui_For_MapTool();
+	HRESULT Ready_DefaultImGui_For_MapTool();			// Level_Map Init 단 ImGui Widget 생성
 
-	HRESULT Ready_Main_Window();
-	HRESULT Ready_Prop_Edit_Window();
-	HRESULT Ready_CustomJson_Edit_Window();
-	HRESULT Ready_CustomJson_List_Window();
-	HRESULT Ready_Json_Edit_Window();
-	HRESULT Ready_Json_List_Window();
+	HRESULT Ready_Main_Window();						// Level_Map Default 윈도우
+	HRESULT Ready_Prop_Edit_Window();					// Level_Map Layer 수정 윈도우 ( 아직 기능 X )
+	HRESULT Ready_CustomJson_Edit_Window();				// Level_Map Custom Json 수정 윈도우
+	HRESULT Ready_CustomJson_List_Window();				// Level_Map Custom Json 리스트 윈도우
+	HRESULT Ready_Json_Edit_Window();					// Level_Map Original Json 수정 윈도우
+	HRESULT Ready_Json_List_Window();					// Level_Map Original Json 리스트 윈도우
 
 	void Get_Directory_Files(const _char* pDirectoryPath);
 
 	// 임시 테스트용
 	string Find_ModelPath(const string& strModelName);
-
-#pragma endregion
 
 public:
 	static CLevel_Map* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
