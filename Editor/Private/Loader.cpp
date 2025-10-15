@@ -240,7 +240,7 @@ HRESULT CLoader::Loading_For_Effect_Level()
 
 	// Prototype_Component_Particle_Spread
 	CVIBuffer_Point_Instance::POINT_INSTANCE_DESC SpreadDesc{};
-	SpreadDesc.iNumInstance = 100;
+	SpreadDesc.iNumInstance = 10000;
 	SpreadDesc.vCenter = _float3(0.f, 0.f, 0.f);
 	SpreadDesc.vRange = _float3(2.f, 4.f, 2.f);
 	SpreadDesc.vSize = _float2(0.5f, 1.f);
