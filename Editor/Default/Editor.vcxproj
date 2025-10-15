@@ -157,6 +157,8 @@
     <ClInclude Include="..\Public\Editor_Mesh.h" />
     <ClInclude Include="..\Public\Editor_MeshMaterial.h" />
     <ClInclude Include="..\public\Editor_Model.h" />
+    <ClInclude Include="..\Public\Editor_ModelMesh_Instance.h" />
+    <ClInclude Include="..\Public\Editor_Model_Instance.h" />
     <ClInclude Include="..\public\Editor_TempCamera.h" />
     <ClInclude Include="..\Public\Edit_Button.h" />
     <ClInclude Include="..\Public\Edit_Panel.h" />
@@ -173,6 +175,7 @@
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\MapEditor_Header.h" />
     <ClInclude Include="..\Public\MapObject.h" />
+    <ClInclude Include="..\Public\Map_Terrain.h" />
     <ClInclude Include="..\public\ParticleEmitter.h" />
     <ClInclude Include="..\public\ParticleSystem.h" />
     <ClInclude Include="..\Public\Prop.h" />
@@ -197,6 +200,8 @@
     <ClCompile Include="..\Private\Editor_Mesh.cpp" />
     <ClCompile Include="..\Private\Editor_MeshMaterial.cpp" />
     <ClCompile Include="..\private\Editor_Model.cpp" />
+    <ClCompile Include="..\Private\Editor_ModelMesh_Instance.cpp" />
+    <ClCompile Include="..\Private\Editor_Model_Instance.cpp" />
     <ClCompile Include="..\private\Editor_TempCamera.cpp" />
     <ClCompile Include="..\Private\Edit_Button.cpp" />
     <ClCompile Include="..\Private\Edit_Panel.cpp" />
@@ -213,6 +218,7 @@
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\Private\MapObject.cpp" />
+    <ClCompile Include="..\Private\Map_Terrain.cpp" />
     <ClCompile Include="..\private\ParticleEmitter.cpp" />
     <ClCompile Include="..\private\ParticleSystem.cpp" />
     <ClCompile Include="..\Private\Prop.cpp" />

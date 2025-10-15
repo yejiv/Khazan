@@ -31,6 +31,18 @@ private:
 	CTexture* m_pTextureCom = { nullptr };
 	CVIBuffer_Point_Instance* m_pVIBufferCom = { nullptr };
 
+#ifdef _DEBUG
+	LARGE_INTEGER	m_Freq = {};				// CPU 타이머 주파수 (초당 카운트 수)
+	LARGE_INTEGER	m_StartGpu{}, m_EndGpu{};	// GPU 구간 측정용
+	LARGE_INTEGER	m_StartCpu{}, m_EndCpu{};	// CPU 구간 측정용
+
+	_float			m_TotalGpuTime = {};		// GPU 누적 시간(ms)
+	_float			m_TotalCpuTime = {};		// CPU 누적 시간(ms)
+	_int			m_FrameCount = {};			// 누적 프레임 수
+
+	_int			m_iPrintInterval = { 60 };		// 성능 출력 간격 (ex. 60프레임마다)
+#endif
+
 private:
 	HRESULT Ready_Components();
 	HRESULT Bind_ShaderResources();
