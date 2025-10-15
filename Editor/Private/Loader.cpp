@@ -188,7 +188,7 @@ HRESULT CLoader::Loading_For_Animation_Level()
 	/* Prototype_Component_Model_JOH_TestModel */
 	PreTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::ANIMATION), TEXT("Prototype_Component_Model_JOH_TestModel"),
-		CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::ANIM, "../../Client/Bin/Resources/Models/Creature/Test/AnimNude_Player/Test.fbx", PreTransformMatrix))))
+		CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::ANIM, "../../Client/Bin/Models/Creature/Test/AnimNude_Player/Test.fbx", PreTransformMatrix))))
 		return E_FAIL;
 
 		/* Prototype_Component_Model_JOH_TestModel */
@@ -240,7 +240,7 @@ HRESULT CLoader::Loading_For_Effect_Level()
 
 	// Prototype_Component_Particle_Spread
 	CVIBuffer_Point_Instance::POINT_INSTANCE_DESC SpreadDesc{};
-	SpreadDesc.iNumInstance = 100;
+	SpreadDesc.iNumInstance = 10000;
 	SpreadDesc.vCenter = _float3(0.f, 0.f, 0.f);
 	SpreadDesc.vRange = _float3(2.f, 4.f, 2.f);
 	SpreadDesc.vSize = _float2(0.5f, 1.f);
