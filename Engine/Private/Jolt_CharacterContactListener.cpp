@@ -1,4 +1,5 @@
 #include "Jolt_CharacterContactListener.h"
+#include "GameObject.h"
 
 // -------------------- 생성자 --------------------
 CJolt_CharacterContactListener::CJolt_CharacterContactListener(const CONFIG_DESC& cfg)
@@ -6,56 +7,39 @@ CJolt_CharacterContactListener::CJolt_CharacterContactListener(const CONFIG_DESC
 {
 }
 
-// -------------------- Validate 계열 --------------------
-bool CJolt_CharacterContactListener::OnContactValidate(const CharacterVirtual*,
-    const BodyID&,
-    const SubShapeID&)
+bool CJolt_CharacterContactListener::OnContactValidate(const JPH::CharacterVirtual* inCharacter, const JPH::BodyID& inBodyID2, const JPH::SubShapeID& inSubShapeID2)
 {
-    // 기본은 모두 허용. 필요 시 레이어/태그 기반 필터링 추가
     return true;
 }
 
-bool CJolt_CharacterContactListener::OnCharacterContactValidate(const CharacterVirtual*,
-    const CharacterVirtual*,
-    const SubShapeID&)
+bool CJolt_CharacterContactListener::OnCharacterContactValidate(const JPH::CharacterVirtual* inCharacter, const JPH::CharacterVirtual* inOtherCharacter, const JPH::SubShapeID& inSubShapeID2)
 {
-    // 기본은 캐릭터-캐릭터 접촉 허용
     return true;
 }
 
-// -------------------- Added/Persisted/Removed --------------------
-void CJolt_CharacterContactListener::OnContactAdded(const CharacterVirtual* inCharacter,
-    const BodyID&,
-    const SubShapeID&,
-    RVec3Arg,
-    Vec3Arg inContactNormal,
-    CharacterContactSettings& ioSettings)
+void CJolt_CharacterContactListener::OnContactAdded(const JPH::CharacterVirtual* inCharacter, const JPH::BodyID& inBodyID2, const JPH::SubShapeID& inSubShapeID2, JPH::RVec3Arg inContactPosition, JPH::Vec3Arg inContactNormal, JPH::CharacterContactSettings& ioSettings)
 {
-
+    CGameObject* pGameObject1 = reinterpret_cast<CGameObject*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
 }
 
-void CJolt_CharacterContactListener::OnContactPersisted(const CharacterVirtual* inCharacter,
-    const BodyID&,
-    const SubShapeID&,
-    RVec3Arg,
-    Vec3Arg inContactNormal,
-    CharacterContactSettings& ioSettings)
+void CJolt_CharacterContactListener::OnContactPersisted(const JPH::CharacterVirtual* inCharacter, const JPH::BodyID& inBodyID2, const JPH::SubShapeID& inSubShapeID2, JPH::RVec3Arg inContactPosition, JPH::Vec3Arg inContactNormal, JPH::CharacterContactSettings& ioSettings)
 {
-
+    CGameObject* pGameObject1 = reinterpret_cast<CGameObject*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
 }
 
-void CJolt_CharacterContactListener::OnContactRemoved(const CharacterVirtual*,
-    const BodyID&,
-    const SubShapeID&)
+void CJolt_CharacterContactListener::OnContactRemoved(const JPH::CharacterVirtual* inCharacter, const JPH::BodyID& inBodyID2, const JPH::SubShapeID& inSubShapeID2)
 {
-    // 접촉 하나가 사라졌다는 뜻일 뿐, 아직 다른 접촉이 있을 수 있음.
-    // 간단히는 캐시를 지우지 않거나, 프레임 끝에서 m_bHasGround를 재평가(권장).
-    // 여기서는 즉시 플래그만 false로:
-    m_bHasGround = false;
+    CGameObject* pGameObject1 = reinterpret_cast<CGameObject*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
 }
 
 void CJolt_CharacterContactListener::OnCharacterContactAdded(const CharacterVirtual* inCharacter, const CharacterVirtual* inOtherCharacter, const SubShapeID& inSubShapeID2, RVec3Arg inContactPosition, Vec3Arg inContactNormal, CharacterContactSettings& ioSettings)
 {
+    CGameObject* pGameObject1 = reinterpret_cast<CGameObject*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
+    CGameObject* pGameObject2 = reinterpret_cast<CGameObject*>(static_cast<std::uintptr_t>(inOtherCharacter->GetUserData()));
+
+    pGameObject1->Collision_Enter(pGameObject2);
+    pGameObject2->Collision_Enter(pGameObject1);
+
     ioSettings.mCanPushCharacter = true;
     
     return;
@@ -63,7 +47,14 @@ void CJolt_CharacterContactListener::OnCharacterContactAdded(const CharacterVirt
 
 void CJolt_CharacterContactListener::OnCharacterContactPersisted(const CharacterVirtual* inCharacter, const CharacterVirtual* inOtherCharacter, const SubShapeID& inSubShapeID2, RVec3Arg inContactPosition, Vec3Arg inContactNormal, CharacterContactSettings& ioSettings)
 {
+    CGameObject* pGameObject1 = reinterpret_cast<CGameObject*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
+    CGameObject* pGameObject2 = reinterpret_cast<CGameObject*>(static_cast<std::uintptr_t>(inOtherCharacter->GetUserData()));
+
+    pGameObject1->Collision_Stay(pGameObject2);
+    pGameObject2->Collision_Stay(pGameObject1);
+
     ioSettings.mCanPushCharacter = true;
+
     return;
 }
 

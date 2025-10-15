@@ -60,6 +60,8 @@ public:
 
 		_uint			iObjectLayer;
 
+
+		class CGameObject* pGameObject = nullptr;
 	}CHARACTERVIRTUAL_DESC;
 
 	typedef struct tagBoxShape : CHARACTERVIRTUAL_DESC

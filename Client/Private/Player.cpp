@@ -129,14 +129,14 @@ HRESULT CPlayer::Render()
     return S_OK;
 }
 
-void CPlayer::Collision_Enter(JPH::ObjectLayer Layer, CGameObject* pObject, JPH::ContactManifold ContactManifold)
+void CPlayer::Collision_Enter(CGameObject* pObject)
 {
-    int a = 10;
+    int a = 0;
 }
 
-void CPlayer::Collision_Stay(JPH::ObjectLayer Layer, CGameObject* pObject, JPH::ContactManifold ContactManifold)
+void CPlayer::Collision_Stay(CGameObject* pObject)
 {
-    int a = 10;
+    int a = 0;
 }
 
 HRESULT CPlayer::Ready_Components()
@@ -206,6 +206,7 @@ HRESULT CPlayer::Ready_Collision()
     tCharVirDesc.fRadius = 1.f;
     tCharVirDesc.fHeight = 1.f;
     tCharVirDesc.fMaxSlopeAngle = 20.f;
+    tCharVirDesc.pGameObject = this;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))

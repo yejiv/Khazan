@@ -34,8 +34,8 @@ public:
 	virtual HRESULT Render();
 
 public:
-	virtual void Collision_Enter(JPH::ObjectLayer Layer, CGameObject* pObject, JPH::ContactManifold ContactManifold);
-	virtual void Collision_Stay(JPH::ObjectLayer Layer, CGameObject* pObject, JPH::ContactManifold ContactManifold);
+	void Collision_Enter(CGameObject* pObject) override;
+	void Collision_Stay(CGameObject* pObject) override;
 
 private:
 	_uint				m_iState = { };
