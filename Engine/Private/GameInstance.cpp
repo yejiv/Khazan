@@ -507,6 +507,10 @@ void CGameInstance::AddWidget(const _wstring Menu, const function<void()>& widge
 {
 	m_pImgui_Manager->AddWidget(Menu, widget);
 }
+HRESULT CGameInstance::CleanMenu(_wstring strMenu)
+{
+	return m_pImgui_Manager->CleanMenu(strMenu);
+}
 #endif
 #pragma endregion
 
@@ -539,6 +543,11 @@ CharacterVirtual* CGameInstance::CreateCharacterVirtual(const CharacterVirtualSe
 void CGameInstance::CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter)
 {
 	m_pJolt_Manager->CharVir_Update(fTimeDelta, pCharVir, vGravity, iObjectLayer, pBodyFilter, pShapeFilter);
+}
+
+void CGameInstance::CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter, CharacterVirtual::ExtendedUpdateSettings tSetting)
+{
+	m_pJolt_Manager->CharVir_ExtendedUpdate(fTimeDelta, pCharVir, vGravity, iObjectLayer, pBodyFilter, pShapeFilter, tSetting);
 }
 
 #ifdef _DEBUG

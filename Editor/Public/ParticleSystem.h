@@ -34,7 +34,6 @@ public:
 public:
 	HRESULT								Add_Emitter(CParticleEmitter::PARTICLE_EMITTER_DESC Desc);
 	HRESULT								Remove_Emitter(_uint iIndex);
-	void								Recreate_Emitter();
 
 private:
 	vector<CParticleEmitter*>			m_Emitters;

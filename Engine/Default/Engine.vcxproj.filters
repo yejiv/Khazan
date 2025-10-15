@@ -136,9 +136,6 @@
     <Filter Include="01.Utility\03.Component\VIBuffer\Instance">
       <UniqueIdentifier>{d7b35455-bde5-4111-b8af-bd98d7e953d0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\03.Component\VIBuffer\Instance\Rect">
-      <UniqueIdentifier>{287e24af-ca6d-4fc1-9ee9-ee2def1ce9ca}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\03.Component\VIBuffer\Instance\Point">
       <UniqueIdentifier>{b4496c2f-a764-41a5-bf48-9f374acb7cef}</UniqueIdentifier>
     </Filter>
@@ -384,9 +381,6 @@
     <ClCompile Include="..\Private\VIBuffer_Instance.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Instance</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\VIBuffer_Rect_Instance.cpp">
-      <Filter>01.Utility\03.Component\VIBuffer\Instance\Rect</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Point_Instance.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Point</Filter>
     </ClCompile>
@@ -492,7 +486,7 @@
     <ClCompile Include="..\Private\CharacterVirtual.cpp">
       <Filter>01.Utility\03.Component\CharacterVirtual</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Mesh_Instance.cpp">
+    <ClCompile Include="..\Private\VIBuffer_Mesh_Instance.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\ModelMesh_Instance.cpp">
@@ -650,9 +644,6 @@
     <ClInclude Include="..\public\VIBuffer_Instance.h">
       <Filter>01.Utility\03.Component\VIBuffer\Instance</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\VIBuffer_Rect_Instance.h">
-      <Filter>01.Utility\03.Component\VIBuffer\Instance\Rect</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Point_Instance.h">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Point</Filter>
     </ClInclude>
@@ -764,7 +755,7 @@
     <ClInclude Include="..\Public\CharacterVirtual.h">
       <Filter>01.Utility\03.Component\CharacterVirtual</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Mesh_Instance.h">
+    <ClInclude Include="..\Public\VIBuffer_Mesh_Instance.h">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ModelMesh_Instance.h">
@@ -781,6 +772,9 @@
     </ClInclude>
     <ClInclude Include="..\public\ComputeShader_Manager.h">
       <Filter>01.Utility\16.ComputeShader\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Engine_ConstantBuffer.h">
+      <Filter>99.Defines</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

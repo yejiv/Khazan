@@ -31,6 +31,8 @@ HRESULT CLevel_Stage1::Initialize()
 	if (FAILED(Ready_Layer_Test(TEXT("Layer_Test"))))
 		return E_FAIL;
 
+	m_pGameInstance->Jolt_Test();
+
 	return S_OK;
 }
 
@@ -41,11 +43,6 @@ void CLevel_Stage1::Update(_float fTimeDelta)
 	//	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::GAMEPLAY))))
 	//		return;
 	//}
-
-	if (GetKeyState(VK_F1) & 0x8000)
-	{
-		m_pGameInstance->Jolt_Test();
-	}
 
 	return;
 }

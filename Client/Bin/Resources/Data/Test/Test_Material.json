@@ -66,7 +66,7 @@
             [],
             [],
             [
-                "../../Client/Bin/Resources/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Eye001_E.png"
+                "../../Client/Bin/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Eye001_E.png"
             ],
             [],
             [],
@@ -158,14 +158,14 @@
         "vecFullPaths": [
             [],
             [
-                "../../Client/Bin/Resources/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Nude_FaceV2_D.png"
+                "../../Client/Bin/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Nude_FaceV2_D.png"
             ],
             [],
             [],
             [],
             [],
             [
-                "../../Client/Bin/Resources/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Nude_Face_N.png"
+                "../../Client/Bin/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Nude_Face_N.png"
             ],
             [],
             [],
@@ -346,16 +346,16 @@
         "vecFullPaths": [
             [],
             [
-                "../../Client/Bin/Resources/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Nude_Hair010_D.png"
+                "../../Client/Bin/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Nude_Hair010_D.png"
             ],
             [],
             [],
             [
-                "../../Client/Bin/Resources/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Nude_Hair010_E.png"
+                "../../Client/Bin/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Nude_Hair010_E.png"
             ],
             [],
             [
-                "../../Client/Bin/Resources/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Nude_Hair010_N.png"
+                "../../Client/Bin/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Nude_Hair010_N.png"
             ],
             [],
             [],
@@ -447,113 +447,16 @@
         "vecFullPaths": [
             [],
             [
-                "../../Client/Bin/Resources/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Nude_UpperV2_D.png"
+                "../../Client/Bin/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Nude_UpperV2_D.png"
             ],
             [],
             [],
             [
-                "../../Client/Bin/Resources/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Nude_UpperV2_E.png"
+                "../../Client/Bin/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Nude_UpperV2_E.png"
             ],
             [],
             [
-                "../../Client/Bin/Resources/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Nude_Upper_N.png"
-            ],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            []
-        ]
-    },
-    {
-        "iNumTextures": [
-            0,
-            1,
-            0,
-            0,
-            0,
-            0,
-            1,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-        ],
-        "vecExts": [
-            [],
-            [
-                ".png"
-            ],
-            [],
-            [],
-            [],
-            [],
-            [
-                ".png"
-            ],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            []
-        ],
-        "vecFullPaths": [
-            [],
-            [
-                "../../Client/Bin/Resources/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Nude_LowerV2_D.png"
-            ],
-            [],
-            [],
-            [],
-            [],
-            [
-                "../../Client/Bin/Resources/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Nude_Lower_N.png"
+                "../../Client/Bin/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Nude_Upper_N.png"
             ],
             [],
             [],
@@ -643,14 +546,111 @@
         "vecFullPaths": [
             [],
             [
-                "../../Client/Bin/Resources/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Nude_InnerWear_D.png"
+                "../../Client/Bin/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Nude_LowerV2_D.png"
             ],
             [],
             [],
             [],
             [],
             [
-                "../../Client/Bin/Resources/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Nude_InnerWear_N.png"
+                "../../Client/Bin/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Nude_Lower_N.png"
+            ],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "iNumTextures": [
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "vecExts": [
+            [],
+            [
+                ".png"
+            ],
+            [],
+            [],
+            [],
+            [],
+            [
+                ".png"
+            ],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            []
+        ],
+        "vecFullPaths": [
+            [],
+            [
+                "../../Client/Bin/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Nude_InnerWear_D.png"
+            ],
+            [],
+            [],
+            [],
+            [],
+            [
+                "../../Client/Bin/Models/Creature/Test/AnimNude_Player/CT_P_Kazan_Nude_InnerWear_N.png"
             ],
             [],
             [],

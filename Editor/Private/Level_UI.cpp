@@ -284,10 +284,130 @@ void CLevel_UI::Show_Inspector_Menu()
 	else if (CEdit_ProgressBar* pProgressBar = dynamic_cast<CEdit_ProgressBar*>(m_SelectedObject))
 	{
 		ImGui::Text("Test_ProgressBar");
+
+		static _int iBarDirType = 0;
+		if (ImGui::Combo("ProgresBar Type", &iBarDirType, "L->R\0R->L\0"))
+		{
+			pProgressBar->Set_Bar_Direction(static_cast<CEdit_ProgressBar::BAR_DIRECTION>(iBarDirType));
+		}
+
+		static _int iBarMode = 0;
+		if (ImGui::Combo("ProgresBar Mode", &iBarMode, "REDUCE\0EXPAND\0"))
+		{
+			pProgressBar->Set_Bar_Mode(static_cast<CEdit_ProgressBar::BAR_MODE>(iBarMode));
+		}
+
+		// Lerp 속도 조절
+		static _float fLerpSpeed = pProgressBar->Get_LerpSpeed();
+		if (ImGui::SliderFloat("Lerp Speed", &fLerpSpeed, 0.0f, 10.0f, "%.2f"))
+		{
+			pProgressBar->Set_LerpSpeed(fLerpSpeed);
+
+		}
+
+		// 현재값 / 최대값 조절
+		static _float fCurrent = pProgressBar->Get_CurrentValue();
+		static _float fMax = pProgressBar->Get_MaxValue();
+
+		if (ImGui::SliderFloat("Current Value", &fCurrent, 0.0f, fMax, "%.2f"))
+		{
+			pProgressBar->Set_CurrentValue(fCurrent);
+		}
+		if (ImGui::InputFloat("Max Value", &fMax))
+		{
+			pProgressBar->Set_MaxValue(fMax);
+		}
+
 	}
 	else if (CEdit_TextBox* pTextBox = dynamic_cast<CEdit_TextBox*>(m_SelectedObject))
 	{
-		ImGui::Text("Test_TextBox");
+		ImGui::Text("TextBox Inspector");
+		ImGui::Separator();
+
+		static char szText[256] = {};
+		static bool bInit = true;
+		if (bInit)
+		{
+			WideCharToMultiByte(CP_ACP, 0, pTextBox->Get_Text().c_str(), -1, szText, sizeof(szText), nullptr, nullptr);
+			bInit = false;
+		}
+		if (ImGui::InputText("Text", szText, IM_ARRAYSIZE(szText)))
+		{
+			_wstring wText(szText, szText + strlen(szText));
+			pTextBox->Set_Text(wText);
+		}
+
+		static char szFont[128] = {};
+		if (ImGui::InputText("Font Tag", szFont, IM_ARRAYSIZE(szFont)))
+		{
+			pTextBox->Set_FontTag(_wstring(szFont, szFont + strlen(szFont)));
+		}
+
+		_float3 vColor = pTextBox->Get_FontColor(); 
+		if (ImGui::ColorEdit3("Font Color", (_float*)&vColor))
+		{
+			pTextBox->Set_FontColor(vColor);
+		}
+		_float fAlpha = pTextBox->Get_FontAlpha(); 
+		if (ImGui::SliderFloat("Alpha", &fAlpha, 0.f, 1.f))
+		{
+			pTextBox->Set_FontAlpha(fAlpha);
+		}
+
+		_float2 vScale = pTextBox->Get_FontScale();
+		if (ImGui::InputFloat2("Font Scale", (_float*)&vScale))
+		{
+			pTextBox->Set_FontScale(vScale);
+		}
+
+		ImGui::Separator();
+
+		ImGui::Text("Alignment");
+
+		CEdit_TextBox::UI_ALIGNMENT currentAlign = pTextBox->Get_Alignment();
+
+		// 9개 버튼 이름
+		const char* alignNames[9] = {
+			"Top Left", "Top Center", "Top Right",
+			"Middle Left", "Middle Center", "Middle Right",
+			"Bottom Left", "Bottom Center", "Bottom Right"
+		};
+
+		CEdit_TextBox::UI_ALIGNMENT alignEnums[9] = {
+			CEdit_TextBox::UI_ALIGNMENT::TOP_LEFT,
+			CEdit_TextBox::UI_ALIGNMENT::TOP_CENTER,
+			CEdit_TextBox::UI_ALIGNMENT::TOP_RIGHT,
+			CEdit_TextBox::UI_ALIGNMENT::MIDDLE_LEFT,
+			CEdit_TextBox::UI_ALIGNMENT::MIDDLE_CENTER,
+			CEdit_TextBox::UI_ALIGNMENT::MIDDLE_RIGHT,
+			CEdit_TextBox::UI_ALIGNMENT::BOTTOM_LEFT,
+			CEdit_TextBox::UI_ALIGNMENT::BOTTOM_CENTER,
+			CEdit_TextBox::UI_ALIGNMENT::BOTTOM_RIGHT
+		};
+
+		for (_int i = 0; i < 9; ++i)
+		{
+			_bool isSelected = (currentAlign == alignEnums[i]);
+
+
+			if (ImGui::Button(alignNames[i], ImVec2(100, 25)))
+			{
+				pTextBox->Set_Centered(alignEnums[i]);
+			}
+
+			if ((i + 1) % 3 != 0)
+				ImGui::SameLine();
+		}
+
+		ImGui::Separator();
+		ImGui::Text("Position / Size");
+		_float3 vPos = pTextBox->Get_LocalPos();
+		_float3 vSize = pTextBox->Get_LocalSize();
+
+		if (ImGui::InputFloat3("Position", (_float*)&vPos))
+			pTextBox->Set_LocalPos(vPos);
+		if (ImGui::InputFloat3("Size", (_float*)&vSize))
+			pTextBox->Set_LocalSize(vSize);
 	}
 
 }
@@ -352,52 +472,146 @@ void CLevel_UI::Show_CreateUI_Menu(const _char* szDefaultName)
 
 	ImGui::SameLine();
 
-	if (ImGui::Button("Create ProgressBar"))
+	
+	static CUI_ProgressBar::PROGRESSBAR_DESC ProgressBarDesc{};
+	static _bool bShowProgressBarSettings = false;
+
+	if (ImGui::Button("ProgressBar"))
 	{
-		Desc.eSpaceTeype = isWorld_UIObject ? UISPACETYPE::WORLD : UISPACETYPE::SCREEN;
-
-		if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::UI), TEXT("Layer_UI"),
-			ENUM_CLASS(LEVEL::UI), TEXT("Prototype_UIObject_Edit_ProgressBar"), &Desc)))
-			return;
-
-		CUIObject* pProgressBar = dynamic_cast<CUIObject*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::UI), TEXT("Layer_UI"), m_iCurrentCount));
-		if (nullptr == pProgressBar)
-		{
-			MSG_BOX(TEXT("Failed Create : Edit_ProgressBar"));
-		}
-		m_EditorUIObjects.push_back(pProgressBar);
-		Safe_AddRef(pProgressBar);
-
-		//m_SelectedObject = pPanel; // 자동 선택
-		//Safe_AddRef(pPanel);
-		m_iCurrentCount++;
+		bShowProgressBarSettings = !bShowProgressBarSettings;
 	}
+
+	if (bShowProgressBarSettings)
+	{
+		ImGui::Text("ProgressBar Settings");
+		ImGui::Separator();
+		static _float3 vPos = { 0.f, 0.f, 0.f };
+		static _float3 vSize = { 200.f, 20.f, 0.f };
+
+		ImGui::InputFloat3("Position", (_float*)&vPos);
+		ImGui::InputFloat3("Size", (_float*)&vSize);
+
+
+		static int iDirType = 0;
+		const char* DirItems[] = { "LEFT_TO_RIGHT", "RIGHT_TO_LEFT", "TOP_TO_BOTTOM", "BOTTOM_TO_TOP" };
+		if (ImGui::Combo("Bar Direction", &iDirType, DirItems, IM_ARRAYSIZE(DirItems)))
+		{
+			ProgressBarDesc.eDirection = static_cast<CUI_ProgressBar::BAR_DIRECTION>(iDirType);
+		}
+
+		static int iModeType = 0;
+		const char* ModeItems[] = { "REDUCE", "EXPAND" };
+		if (ImGui::Combo("Bar Mode", &iModeType, ModeItems, IM_ARRAYSIZE(ModeItems)))
+		{
+			ProgressBarDesc.eMode = static_cast<CUI_ProgressBar::BAR_MODE>(iModeType);
+		}
+
+		if (ImGui::Button("Create ProgressBar"))
+		{
+			ProgressBarDesc.eSpaceTeype = isWorld_UIObject ? UISPACETYPE::WORLD : UISPACETYPE::SCREEN;
+			strcpy_s(ProgressBarDesc.szName, sizeof(ProgressBarDesc.szName), szDefaultName);
+			ProgressBarDesc.vLocalPos = vPos;
+			ProgressBarDesc.vLocalSize = vSize;
+			if (FAILED(m_pGameInstance->Add_GameObject_ToLayer( ENUM_CLASS(LEVEL::UI), TEXT("Layer_UI"),
+				ENUM_CLASS(LEVEL::UI), TEXT("Prototype_UIObject_Edit_ProgressBar"), &ProgressBarDesc)))
+			{
+				MSG_BOX(TEXT("Failed to Create ProgressBar"));
+				return;
+			}
+
+			CUIObject* pProgressBar = dynamic_cast<CUIObject*>(
+				m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::UI), TEXT("Layer_UI"), m_iCurrentCount));
+
+			if (nullptr == pProgressBar)
+			{
+				MSG_BOX(TEXT("Failed Create : Edit_ProgressBar"));
+			}
+			else
+			{
+				m_EditorUIObjects.push_back(pProgressBar);
+				Safe_AddRef(pProgressBar);
+				//m_SelectedObject = pProgressBar;
+				//Safe_AddRef(pProgressBar);
+				m_iCurrentCount++;
+			}
+		}
+	}
+
 
 	ImGui::SameLine();
 
+	CEdit_TextBox::TEXTBOX_DESC TextBoxDesc{};
+	static _bool bShowTextBoxSettings = false;
 
-	if (ImGui::Button("Create TextBox"))
+	if (ImGui::Button("TextBox"))
 	{
-		Desc.eSpaceTeype = isWorld_UIObject ? UISPACETYPE::WORLD : UISPACETYPE::SCREEN;
-
-		if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::UI), TEXT("Layer_UI"),
-			ENUM_CLASS(LEVEL::UI), TEXT("Prototype_UIObject_Edit_TextBox"), &Desc)))
-			return;
-
-		CUIObject* pTextBox = dynamic_cast<CUIObject*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::UI), TEXT("Layer_UI"), m_iCurrentCount));
-		if (nullptr == pTextBox)
-		{
-			MSG_BOX(TEXT("Failed Create : Edit_TextBox"));
-		}
-		m_EditorUIObjects.push_back(pTextBox);
-		Safe_AddRef(pTextBox);
-
-		//m_SelectedObject = pPanel; // 자동 선택
-		//Safe_AddRef(pPanel);
-		m_iCurrentCount++;
+		bShowTextBoxSettings = !bShowTextBoxSettings;
 	}
 
-	
+	if (bShowTextBoxSettings)
+	{
+		ImGui::Text("TextBox Settings");
+		ImGui::Separator();
+
+		static _float3 vPos = { 0.f, 0.f, 0.f };
+		static _float3 vSize = { 100.f, 100.f, 1.f };
+		static _float2 vFontSize = { 10.f,10.f };
+
+		ImGui::InputFloat3("Position", (_float*)&vPos);
+		ImGui::InputFloat3("Size", (_float*)&vSize);
+		ImGui::InputFloat2("FontSize", (_float*)&vFontSize);
+
+		ImGui::Separator();
+
+		/*static _char szText[MAX_PATH] = "Sample";
+		if (ImGui::InputText("Text", szText, sizeof(szText)))
+		{
+			TextBoxDesc.strText = std::wstring(szText, szText + strlen(szText));
+		}*/
+
+		static _char szFont[MAX_PATH] = "DefaultFont";
+		ImGui::InputText("Font Tag", szFont, sizeof(szFont));
+
+		ImGui::Separator();
+
+		static _float Colors[3] = { TextBoxDesc.vColor.x, TextBoxDesc.vColor.y, TextBoxDesc.vColor.z };
+		if (ImGui::ColorEdit3("Color", Colors))
+		{
+			TextBoxDesc.vColor.x = Colors[0];
+			TextBoxDesc.vColor.y = Colors[1];
+			TextBoxDesc.vColor.z = Colors[2];
+		}
+		static _float fAlpha = 1.f;
+		ImGui::SliderFloat("Alpha", &fAlpha, 0.f, 1.f);
+
+		if (ImGui::Button("Create TextBox"))
+		{
+			TextBoxDesc.eSpaceTeype = isWorld_UIObject ? UISPACETYPE::WORLD : UISPACETYPE::SCREEN;
+			strcpy_s(TextBoxDesc.szName, sizeof(TextBoxDesc.szName), szDefaultName);
+			TextBoxDesc.vLocalPos = vPos;
+			TextBoxDesc.vLocalSize = vSize;
+			TextBoxDesc.vFontScale = vFontSize;
+			TextBoxDesc.strFontTag = _wstring(szFont, szFont + strlen(szFont));
+
+			if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::UI), TEXT("Layer_UI"),
+				ENUM_CLASS(LEVEL::UI), TEXT("Prototype_UIObject_Edit_TextBox"), &TextBoxDesc)))
+				return;
+
+			CUIObject* pTextBox = dynamic_cast<CUIObject*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::UI), TEXT("Layer_UI"), m_iCurrentCount));
+			if (nullptr == pTextBox)
+			{
+				MSG_BOX(TEXT("Failed Create : Edit_TextBox"));
+			}
+			m_EditorUIObjects.push_back(pTextBox);
+			Safe_AddRef(pTextBox);
+
+			//m_SelectedObject = pPanel; // 자동 선택
+			//Safe_AddRef(pPanel);
+			m_iCurrentCount++;
+		}
+
+
+	}
 
 	ImGui::Separator();
 
