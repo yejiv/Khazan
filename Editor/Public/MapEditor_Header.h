@@ -12,4 +12,12 @@
 #include "Prop_Interactive.h"
 #include "Prop_Destructible.h"
 
+// Terrain
+#include "Map_Terrain.h"
+
+// Model ฐüทร
+#include "Editor_Model.h"
+#include "Editor_Model_Instance.h"
+#include "Editor_ModelMesh_Instance.h"
+
 #endif // MapEditor_Header_h__
