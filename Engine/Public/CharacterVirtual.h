@@ -109,8 +109,6 @@ private:
 	JPH::BodyInterface* m_pBodyInterface = { nullptr };
 	JPH::BodyFilter* m_pBodyFilter = { nullptr };
 	JPH::ShapeFilter* m_pShapeFilter = { nullptr };
-	CharacterContactListener* m_pContactListener = { nullptr };
-	
 
 	JPH::Vec3	m_vVelocity = {};
 	JPH::Vec3	m_vUp = {};

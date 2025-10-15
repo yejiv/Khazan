@@ -39,8 +39,8 @@ public:
 
 private:
 	_uint				m_iState = { };
-	class CRigidBody* m_pRigidBodyCom = { nullptr };
-	//class CCharacterVirtual* m_pCharVirCom = { nullptr };
+	//class CRigidBody* m_pRigidBodyCom = { nullptr };
+	class CCharacterVirtual* m_pCharVirCom = { nullptr };
 
 private:
 	HRESULT Ready_Components();

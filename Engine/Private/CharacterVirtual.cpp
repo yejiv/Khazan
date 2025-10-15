@@ -1,6 +1,5 @@
 #include "CharacterVirtual.h"
 #include "GameInstance.h"
-#include "CharacterContactListener.h"
 
 CCharacterVirtual::CCharacterVirtual(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CComponent { pDevice, pContext }
@@ -87,13 +86,6 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 	m_vVelocity = Vec3::sZero();
 	m_vUp = Vec3::sAxisY();
 	m_vGravity = Vec3(0, -9.81f, 0);
-
-	CCharacterContactListener::CONFIG_DESC ConfigDesc{};
-	ConfigDesc.floor_dot = Cos(DegreesToRadians(pDesc->fMaxSlopeAngle));
-	ConfigDesc.cache_ground_normal = true;
-
-	m_pContactListener = new CCharacterContactListener(ConfigDesc);
-	m_pCharVir->SetListener(m_pContactListener);
 
 	m_pBodyFilter = new BodyFilter();
 	m_pShapeFilter = new ShapeFilter();
@@ -192,5 +184,4 @@ void CCharacterVirtual::Free()
 	Safe_Delete(m_pCharVir);
 	Safe_Delete(m_pBodyFilter);
 	Safe_Delete(m_pShapeFilter);
-	Safe_Delete(m_pContactListener);
 }
