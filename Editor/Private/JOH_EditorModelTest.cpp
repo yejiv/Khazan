@@ -29,7 +29,7 @@ HRESULT CJOH_EditorModelTest::Initialize_Clone(void* pArg)
     m_pModelCom->Set_Animation(3, true);
 
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-    //m_pTransformCom->Scale(_float3(10.f, 10.f, 10.f));
+    m_pTransformCom->Scale(_float3(0.001f, 0.001f, 0.001f));
 
     return S_OK;
 }
@@ -50,7 +50,7 @@ void CJOH_EditorModelTest::Update(_float fTimeDelta)
     }
     if (m_pGameInstance->Key_Down(DIK_2))
     {
-        m_iCurrentAnimIndex = 0;
+        m_iCurrentAnimIndex = 1;
         m_pModelCom->Set_Animation(m_iCurrentAnimIndex, true);
     }
     if (m_pGameInstance->Key_Down(DIK_3))
