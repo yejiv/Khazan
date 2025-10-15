@@ -26,7 +26,7 @@ HRESULT CMap_Terrain::Initialize_Clone(void* pArg)
 
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(-50.f, 0.f, -50.f, 1.f));
 
-    m_pTransformCom->Scale(_float3(100.f, 100.f, 100.f));
+    m_pTransformCom->Scale(_float3(100.f, 0.f, 100.f));
 
     return S_OK;
 }

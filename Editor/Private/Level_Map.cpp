@@ -206,14 +206,9 @@ HRESULT CLevel_Map::Ready_Temp_IndependentObjs()
 
 			CProp_Animated::PROP_ANIMATED_DESC AnimatedDesc = {};
 
-			AnimatedDesc.vPosition = XMVectorSet(vPosition.x * 0.01f, vPosition.z * 0.01f, vPosition.y * 0.01f, 1.f);
-			AnimatedDesc.vScale = XMVectorSet(vScale.x, vScale.y, vScale.z, 0.f);
-			AnimatedDesc.vRotation = XMVectorSet(vRotation.x, vRotation.y, vRotation.z, 0.f);
-
-			_matrix PreTransformMatrix = XMMatrixIdentity();
-
-			// 스케일 변환 ( 1 / 100 )
-			PreTransformMatrix = XMMatrixScaling(0.0001f, 0.0001f, 0.0001f);
+			AnimatedDesc.vPosition = _float3(vPosition.x * 0.01f, vPosition.z * 0.01f, vPosition.y * 0.01f);
+			AnimatedDesc.vScale = _float3(vScale.x, vScale.y, vScale.z);
+			AnimatedDesc.vRotation = _float3(vRotation.x, vRotation.y, vRotation.z);
 
 			// 모델명과 일치하는 경로 찾기
 			string strLoadPath = Find_ModelPath(WStringToAnsi(strModelName));
@@ -230,6 +225,11 @@ HRESULT CLevel_Map::Ready_Temp_IndependentObjs()
 			if (iter == m_CheckPrototypes.end())
 			{
 				_uint iIncrease = { 1 };
+
+				_matrix PreTransformMatrix = XMMatrixIdentity();
+
+				// 스케일 변환 ( 1 / 100 )
+				PreTransformMatrix = XMMatrixScaling(0.001f, 0.001f, 0.001f);
 
 				if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), strModelName,
 					CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, strLoadPath.c_str(), PreTransformMatrix))))
@@ -250,7 +250,7 @@ HRESULT CLevel_Map::Ready_Temp_IndependentObjs()
 
 				wsprintf(szCntMap, TEXT("%d"), iter->second);
 
-				string strExist = "Exist Model\nModelName : " + WStringToAnsi(strModelName) + "\n" + "ModelCount :" + WStringToAnsi(szCntMap) + "\n";
+				string strExist = "Exist Model! : " + WStringToAnsi(strModelName) + "\n" + "ModelCount :" + WStringToAnsi(szCntMap);
 				OutputDebugStringA(strExist.c_str());
 			}
 
@@ -261,9 +261,8 @@ HRESULT CLevel_Map::Ready_Temp_IndependentObjs()
 			if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj"),
 				ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Test"), &AnimatedDesc)))
 			{
-				strModelName;
-				strLoadPath;
-				int a = 10;
+				string strFailedAddLayer = "Failed Add Layer! : " + WStringToAnsi(strModelName);
+				OutputDebugStringA(strFailedAddLayer.c_str());
 			}
 		}
 		else if (true == isInstance)				// 인스턴싱 모델인 경우
