@@ -55,7 +55,6 @@ namespace Engine
 
 	}MESH_INSTANCE_DATA;
 
-
 	typedef struct tagCoInitGuard {
 		HRESULT hr = S_OK;
 		tagCoInitGuard(DWORD coinit = COINIT_MULTITHREADED) { hr = CoInitializeEx(nullptr, coinit); }
@@ -71,6 +70,14 @@ namespace Engine
 
 		unsigned int						x = 1, y = 1, z = 1;	// 디스패치할 스레드 그룹 개수
 	}COMPUTE_PASS_DESC;
+
+	typedef struct tagPointInstanceParams
+	{
+		float fSpeed;
+		XMFLOAT3 vPadding;
+		XMFLOAT4 vInitTranslation;
+		XMFLOAT4 vDirection;
+	}POINT_INSTANCE_PARAMS;
 
 	typedef struct tagVertexPosition
 	{
@@ -193,21 +200,6 @@ namespace Engine
 		XMFLOAT2			vLifeTime;
 	}VTXINSTANCE_PARTICLE;
 
-	typedef struct tagVertexParticle
-	{
-		static const unsigned int	iNumElements = { 7 };
-		static constexpr D3D11_INPUT_ELEMENT_DESC	Elements[iNumElements] = {
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-
-			{ "TEXCOORD", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-			{ "TEXCOORD", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-			{ "TEXCOORD", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-			{ "TEXCOORD", 4, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-			{ "TEXCOORD", 5, DXGI_FORMAT_R32G32_FLOAT, 1, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		};
-	}VTXPARTICLE;
-
 	typedef struct tagVertexPointParticle
 	{
 		static const unsigned int	iNumElements = { 6 };
@@ -222,6 +214,25 @@ namespace Engine
 			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 1, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 		};
 	}VTXPOINTPARTICLE;
+
+	typedef struct tagVertexMeshParticle
+	{
+		static const unsigned int	iNumElements = { 10 };
+		static constexpr D3D11_INPUT_ELEMENT_DESC	Elements[iNumElements] = {
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "BINORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 48, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+
+			{ "WORLD", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{ "WORLD", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{ "WORLD", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{ "WORLD", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 1, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+		};
+	}VTXMESHPARTICLE;
 
 	typedef struct tagMeshInstancing							// 메쉬 인스턴싱 쉐이더용 구조체
 	{
