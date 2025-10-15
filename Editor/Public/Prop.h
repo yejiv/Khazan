@@ -3,10 +3,6 @@
 #include "Editor_Defines.h"
 #include "MapObject.h"
 
-NS_BEGIN(Engine)
-class CModel_Instance;
-NS_END
-
 NS_BEGIN(Editor)
 
 class CProp abstract : public CMapObject
@@ -36,7 +32,7 @@ protected:
 	_tchar m_szModelName[MAX_PATH] = {};
 
 protected:
-	virtual HRESULT Bind_Instance_Materials(CModel_Instance* pModelCom, _uint iMeshIndex);
+	virtual HRESULT Bind_Instance_Materials(class CEditor_Model_Instance* pModelCom, _uint iMeshIndex);
 
 public:
 	virtual CGameObject* Clone(void* pArg) = 0;

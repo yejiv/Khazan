@@ -10,6 +10,8 @@ CUI_ProgressBar::CUI_ProgressBar(const CUI_ProgressBar& Prototype)
 {
 }
 
+
+
 HRESULT CUI_ProgressBar::Initialize_Prototype()
 {
 	return S_OK;
@@ -28,6 +30,9 @@ HRESULT CUI_ProgressBar::Initialize_Clone(void* pArg)
 	m_eMode = pDesc->eMode;
 	m_fLerpSpeed = 1.f;
 	m_fDisplayRate = 1.f;
+
+	// Test
+	m_fMaxValue = 100.f;
 
 	return S_OK;
 }
@@ -124,11 +129,12 @@ void CUI_ProgressBar::Reduce_RightToLeft(_float fRate)
 
 	m_pTransformCom->Scaling(_float3(m_vLocalSize.x, m_vLocalSize.y, 1.f));
 
-	m_vLocalPos.x = m_vOriginPos.x + (m_vOriginPos.x- m_vLocalSize.x) * 0.5f;
+	m_vLocalPos.x = m_vOriginPos.x - (m_vOriginSize.x - m_vLocalSize.x) * 0.5f;
 }
 
 void CUI_ProgressBar::Reduce_LeftToRight(_float fRate)
 {
+
 	m_vLocalSize.x = m_vOriginSize.x * fRate;
 
 	if (m_vLocalSize.x <= 0.001f)
@@ -136,7 +142,9 @@ void CUI_ProgressBar::Reduce_LeftToRight(_float fRate)
 
 	m_pTransformCom->Scaling(_float3(m_vLocalSize.x, m_vLocalSize.y, 1.f));
 
-	m_vLocalPos.x = m_vOriginPos.x - (m_vOriginPos.x - m_vLocalSize.x) * 0.5f;
+	m_vLocalPos.x = m_vOriginPos.x + (m_vOriginSize.x - m_vLocalSize.x) * 0.5f;
+
+
 
 }
 
@@ -144,24 +152,24 @@ void CUI_ProgressBar::Expand_RightToLeft(_float fRate)
 {
 	m_vLocalSize.x = m_vOriginSize.x * fRate;
 
-	if (m_vLocalSize.x < m_vOriginSize.x)
+	if (m_vLocalSize.x > m_vOriginSize.x)
 		m_vLocalSize.x = m_vOriginSize.x;
 
 	m_pTransformCom->Scaling(_float3(m_vLocalSize.x, m_vLocalSize.y, 1.f));
 
-	m_vLocalPos.x = m_vOriginPos.x + (m_vOriginPos.x - m_vLocalSize.x) * 0.5f;
+	m_vLocalPos.x = m_vOriginPos.x + (m_vOriginSize.x - m_vLocalSize.x) * 0.5f;
 }
 
 void CUI_ProgressBar::Expand_LeftToRight(_float fRate)
 {
 	m_vLocalSize.x = m_vOriginSize.x * fRate;
 
-	if (m_vLocalSize.x < m_vOriginSize.x)
+	if (m_vLocalSize.x > m_vOriginSize.x)
 		m_vLocalSize.x = m_vOriginSize.x;
 
 	m_pTransformCom->Scaling(_float3(m_vLocalSize.x, m_vLocalSize.y, 1.f));
 
-	m_vLocalPos.x = m_vOriginPos.x - (m_vOriginPos.x - m_vLocalSize.x) * 0.5f;
+	m_vLocalPos.x = m_vOriginPos.x - (m_vOriginSize.x - m_vLocalSize.x) * 0.5f;
 }
 
 void CUI_ProgressBar::Free()
