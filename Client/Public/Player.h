@@ -39,12 +39,13 @@ public:
 
 private:
 	_uint				m_iState = { };
-	//class CRigidBody* m_pRigidBodyCom = { nullptr };
-	class CCharacterVirtual* m_pCharVirCom = { nullptr };
+	class CRigidBody* m_pRigidBodyCom = { nullptr };
+	//class CCharacterVirtual* m_pCharVirCom = { nullptr };
 
 private:
 	HRESULT Ready_Components();
 	HRESULT Ready_PartObjects();
+	HRESULT Ready_Collision();
 
 public:
 	static CPlayer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

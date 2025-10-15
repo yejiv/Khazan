@@ -52,8 +52,12 @@ HRESULT CRigidBody::Initialize_Clone(void* pArg)
         BCS.mMassPropertiesOverride.mMass = pDesc->fMass;
     }
 
-    m_pBody = m_pGameInstance->CreateAndAdd_Body(BCS, &m_pBodyInterface);
-    m_BodyID = m_pBody->GetID();
+    if (pDesc->eShapeType != SHAPE::MESH)
+    {
+        m_pBody = m_pGameInstance->CreateAndAdd_Body(BCS, &m_pBodyInterface);
+        m_BodyID = m_pBody->GetID();
+    }
+    
 
     //// 머티리얼 반영
     //{
@@ -131,8 +135,8 @@ void CRigidBody::Build_Shape(RIGIDBODY_DESC* pDesc, RefConst<Shape>& pShape)
 
     case SHAPE::MESH:
     {
-        //Make_MeshShape(pArg);
-        //return S_OK;
+        RIGID_MESHSHAPE_DESC* pMeshDesc = static_cast<RIGID_MESHSHAPE_DESC*>(pDesc);
+        Make_MeshShape(pMeshDesc);
         break;
     }
     case SHAPE::CONVEX:
@@ -150,56 +154,72 @@ void CRigidBody::Build_Shape(RIGIDBODY_DESC* pDesc, RefConst<Shape>& pShape)
     }
 }
 
-//const JPH::Array<Vec3> CRigidBody::ModelVec3(CModel* pModel)
-//{
-//    //JPH::Array<Vec3> Vertices;
-//
-//    //vector<_float3> ModelVertices = pModel->Get_VerticesPos(0);
-//
-//    //for (size_t i = 0; i < ModelVertices.size(); ++i)
-//    //    Vertices.push_back(LoadVec3(ModelVertices[i]));
-//
-//    //return Vertices;
-//}
-//
-//const JPH::Array<Float3> CRigidBody::ModelFloat3(CModel* pModel, _uint iIndex)
-//{
-//    //JPH::Array<IndexedTriangle> Indices;
-//
-//    //vector<_uint> ModelIndices = pModel->Get_Indices(iIndex);
-//
-//    //for (size_t i = 0; i < ModelIndices.size(); i += 3)
-//    //    Indices.push_back(IndexedTriangle(ModelIndices[i], ModelIndices[i + 1], ModelIndices[i + 2]));
-//
-//    //return Indices;
-//}
-//
-//const JPH::Array<IndexedTriangle> CRigidBody::ModelTri(CModel* pModel, _uint iIndex)
-//{
-//    //MESHBODY_DESC* pDesc = static_cast<MESHBODY_DESC*>(pArg);
-//
-//    //_uint iNumMesh = pDesc->pModel->Get_NumMesh();
-//
-//    //for (_uint i = 0; i < iNumMesh; ++i)
-//    //{
-//    //    RefConst<Shape> BodyShape;
-//
-//    //    Ref<MeshShapeSettings> MeshSetting;
-//    //    MeshSetting = new MeshShapeSettings(ConvertToArrayFloat3(pDesc->pModel, i), ConvertToArrayTri(pDesc->pModel, i));
-//    //    BodyShape = MeshSetting->Create().Get();
-//
-//    //    BodyCreationSettings bodySetting(
-//    //        BodyShape,																					// Shape
-//    //        Vec3(pDesc->vPos.x, pDesc->vPos.y, pDesc->vPos.z),								// Position
-//    //        Quat(pDesc->vQuat.x, pDesc->vQuat.y, pDesc->vQuat.z, pDesc->vQuat.w),	// Quat
-//    //        pDesc->eType,																				// Motion Type
-//    //        ObjectLayer(pDesc->iLayer)																// Collision Layer
-//    //    );
-//
-//    //    ASSERT_CRASH(m_pGameInstance->Register_Body(bodySetting, &m_pBodyInterface));
-//    //}
-//    return JPH::Array<IndexedTriangle>;
-//}
+const JPH::Array<Vec3> CRigidBody::ConvertToArrayVec3(CModel* pModel)
+{
+    JPH::Array<Vec3> Vertices;
+
+    vector<_float3> ModelVertices = pModel->Get_VerticesPos(0);
+
+    for (size_t i = 0; i < ModelVertices.size(); ++i)
+        Vertices.push_back(LoadVec3(ModelVertices[i]));
+
+    return Vertices;
+}
+
+const JPH::Array<Float3> CRigidBody::ConvertToArrayFloat3(CModel* pModel, _uint iIndex)
+{
+    JPH::Array<Float3> Vertices;
+
+    vector<_float3> ModelVertices = pModel->Get_VerticesPos(iIndex);
+
+    for (size_t i = 0; i < ModelVertices.size(); ++i)
+        Vertices.push_back(Float3(ModelVertices[i].x, ModelVertices[i].y, ModelVertices[i].z));
+
+    return Vertices;
+}
+
+const JPH::Array<IndexedTriangle> CRigidBody::ConvertToArrayTri(CModel* pModel, _uint iIndex)
+{
+    JPH::Array<IndexedTriangle> Indices;
+
+    vector<_uint> ModelIndices = pModel->Get_Indices(iIndex);
+
+    for (size_t i = 0; i < ModelIndices.size(); i += 3)
+        Indices.push_back(IndexedTriangle(ModelIndices[i], ModelIndices[i + 1], ModelIndices[i + 2]));
+
+    return Indices;
+}
+
+void CRigidBody::Make_MeshShape(RIGID_MESHSHAPE_DESC* pDesc)
+{
+    _uint iNumMesh = pDesc->pModel->Get_NumMeshes();
+
+    for (_uint i = 0; i < iNumMesh; ++i)
+    {
+        RefConst<Shape> BodyShape;
+
+        MeshShapeSettings MeshSetting{};
+        MeshSetting = MeshShapeSettings(ConvertToArrayFloat3(pDesc->pModel, i), ConvertToArrayTri(pDesc->pModel, i));
+        BodyShape = MeshSetting.Create().Get();
+
+        BodyCreationSettings bodySetting(
+            BodyShape,											
+            Vec3(pDesc->vPos.x, pDesc->vPos.y, pDesc->vPos.z),
+            Quat(pDesc->vQuat.x, pDesc->vQuat.y, pDesc->vQuat.z, pDesc->vQuat.w),
+            pDesc->eMotion,															
+            ObjectLayer(pDesc->iObjectLayer)										
+        );
+
+        bodySetting.mOverrideMassProperties = EOverrideMassProperties::MassAndInertiaProvided;
+        MassProperties mp;
+        mp.mMass = 50.0f; // 예: 50kg, 상황에 맞게 조정
+
+        bodySetting.mMassPropertiesOverride = mp;
+
+
+        m_pGameInstance->CreateAndAdd_Body(bodySetting, &m_pBodyInterface);
+    }
+}
 
 CRigidBody* CRigidBody::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
