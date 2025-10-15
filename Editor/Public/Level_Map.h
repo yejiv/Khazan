@@ -8,7 +8,7 @@ NS_BEGIN(Editor)
 class CLevel_Map final : public CLevel
 {
 private:
-	enum class PROP_SPECIES { STATIC, ANIMATED, INTERACTIVE, DESTRUCTIBLE, END };
+	enum class PROP_SPECIES { OBJECT, STATIC, ANIMATED, INTERACTIVE, DESTRUCTIBLE, END };
 	enum class MAPEDIT_MAP { HEINMACH, STORMPASS, THECREVICE, EMBARS, END };
 
 private:
@@ -34,12 +34,17 @@ private:
 	MAPEDIT_MAP m_eMapType = { MAPEDIT_MAP::HEINMACH };
 
 private:
-	HRESULT Ready_Temp_Instances();								// 임시 테스트용
-	HRESULT Ready_Temp_IndependentObjs();						// 임시 테스트용
-	HRESULT Ready_Temp_All();									// 임시 테스트용
+	// JSON으로부터 읽어와서 Prototype 세팅
+	HRESULT Add_Prototypes_FromJson();
 
 #pragma region 변수
 private:
+#pragma region 호옹이
+
+
+
+#pragma endregion
+
 #pragma region ImGui 윈도우 창
 
 	_bool m_isMainWindow = { true };
@@ -48,7 +53,9 @@ private:
 
 	_bool m_isCustomJsonWindow = { false };
 
-	_bool m_isPropWindow[ENUM_CLASS(PROP_SPECIES::END)] = { false, false, false,false };
+	_bool m_isPrototypeWindow = { false };
+
+	_bool m_isPropWindow[ENUM_CLASS(PROP_SPECIES::END)] = { false, false, false, false,false };
 
 	_bool m_isLightSettingWindow = { false };
 
@@ -57,7 +64,7 @@ private:
 #pragma region ImGui > JSON 관련 폴더 경로 및 파일 명
 
 	_char m_szJsonPath[MAX_PATH] = { "../../Client/Bin/Resources/Models/Prop/Json/" };					// 오리지날 Json 기본 경로
-	_char m_szJsonCustomPath[MAX_PATH] = { "../../Client/Bin/DataFiles/Map/" };							// 커 스 텀 Json 기본 경로
+	_char m_szJsonCustomPath[MAX_PATH] = { "../../Client/Bin/Resources/Models/Prop/Json/CustomJson/" };							// 커 스 텀 Json 기본 경로
 
 	_char m_szJsonFolderPath[ENUM_CLASS(MAPEDIT_MAP::END)][MAX_PATH] = { "HeinMach/", "StormPass/", "TheCrevice/", "Embars/" };		// 추출할 Json 폴더
 
@@ -94,14 +101,19 @@ private:
 	_int m_iCustomJsonListIndex = {};					// ImGui::BeginListBox 용 인덱스 변수
 
 	_bool m_isCustomJsonLoaded = { false };				// Custom Json 로드 됬는지 확인 용
+	_bool m_isCustomJsonInfoList = { false };			// List Info 창 ON/OFF
 
-	map<const _wstring, _uint> m_CheckPrototypes;		// 중복 프로토타입 체크 용
+	map<const string, const string> m_CheckPrototypes;	// 중복 프로토타입 체크 및 리스트 출력용
 
 #pragma endregion
 
-#pragma region LAYERS PROP 용
+#pragma region PROTOTYPE LIST 용
 
+	vector<string> m_Prototypes_Inst;					// Prototype 목록 ( Instance 용 모델 )
+	_int m_iIndex_PrtInst = {};							// Prototype Instance 용 인덱스
 
+	vector<string> m_Prototypes_Obj;					// Prototype 목록 ( Object 용 모델 )
+	_int m_iIndex_PrtObj = {};							// Prototype Object 용 인덱스
 
 #pragma endregion
 
@@ -110,13 +122,20 @@ private:
 private:
 	HRESULT Ready_DefaultImGui_For_MapTool();			// Level_Map Init 단 ImGui Widget 생성
 
-	HRESULT Ready_Main_Window();						// Level_Map Default 윈도우
-	HRESULT Ready_Prop_Edit_Window();					// Level_Map Layer 수정 윈도우 ( 아직 기능 X )
-	HRESULT Ready_CustomJson_Edit_Window();				// Level_Map Custom Json 수정 윈도우
-	HRESULT Ready_CustomJson_List_Window();				// Level_Map Custom Json 리스트 윈도우
-	HRESULT Ready_Json_Edit_Window();					// Level_Map Original Json 수정 윈도우
-	HRESULT Ready_Json_List_Window();					// Level_Map Original Json 리스트 윈도우
+	// Level_Map Default 윈도우
+	HRESULT Ready_Main_Window();
+	// Level_Map Layer 수정 윈도우 ( 아직 기능 X )
+	HRESULT Ready_Prop_Edit_Window();
+	// Level_Map Custom Json 수정 윈도우
+	HRESULT Ready_CustomJson_Edit_Window();
+	// Level_Map Custom Json 리스트 윈도우
+	HRESULT Ready_CustomJson_List_Window();
+	// Level_Map Original Json 수정 윈도우
+	HRESULT Ready_Json_Edit_Window();
+	// Level_Map Original Json 리스트 윈도우
+	HRESULT Ready_Json_List_Window();
 
+	// Directory에 파일들 불러오는용 ( Json 한정 함수 )
 	void Get_Directory_Files(const _char* pDirectoryPath);
 
 	// 임시 테스트용

@@ -29,24 +29,16 @@ HRESULT CProp_Object::Initialize_Clone(void* pArg)
 
     PROP_OBJECT_DESC* pDesc = static_cast<PROP_OBJECT_DESC*>(pArg);
 
-    if (true == pDesc->isIndependentObject)
-    {
-        _float3 vScale = {};
+    _float3 vScale = {};
+    XMStoreFloat3(&vScale, XMLoadFloat3(&pDesc->vScale));
 
-        XMStoreFloat3(&vScale, XMLoadFloat3(&pDesc->vScale));
+    _float3 vRotation = _float3(pDesc->vRotation.x, pDesc->vRotation.y, pDesc->vRotation.z);
 
-        //_float3 vRotation = _float3(XMConvertToRadians(pDesc->vRotation.x), XMConvertToRadians(pDesc->vRotation.y), XMConvertToRadians(pDesc->vRotation.z));
-        _float3 vRotation = _float3(pDesc->vRotation.x, pDesc->vRotation.y, pDesc->vRotation.z);
-        _float3 vPosition = pDesc->vPosition;
+    _float3 vPosition = pDesc->vPosition;
 
-        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPosition), 1.f));
-        m_pTransformCom->Scale(vScale);
-        m_pTransformCom->Rotation(vRotation.x, vRotation.y, vRotation.z);
-
-        _vector test = m_pTransformCom->Get_Rotation_Quat();
-
-        int a = 10;
-    }
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPosition), 1.f));
+    m_pTransformCom->Scale(vScale);
+    m_pTransformCom->Rotation(vRotation.x, vRotation.y, vRotation.z);
 
     return S_OK;
 }
@@ -57,6 +49,10 @@ void CProp_Object::Priority_Update(_float fTimeDelta)
 
 void CProp_Object::Update(_float fTimeDelta)
 {
+    if (m_pGameInstance->Key_Down(DIK_8))
+        m_eShaderPass = SHADER_PASS::WIREFRAME;
+    if (m_pGameInstance->Key_Down(DIK_9))
+        m_eShaderPass = SHADER_PASS::MAPOBJECT;
 }
 
 void CProp_Object::Late_Update(_float fTimeDelta)
@@ -74,7 +70,7 @@ HRESULT CProp_Object::Render()
     {
         Bind_Materials(i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(0), E_FAIL);
+        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(ENUM_CLASS(m_eShaderPass)), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }

@@ -12,14 +12,13 @@ class CProp_Object final : public CProp
 public:
 	typedef struct tagPropObjectDesc : public CProp::PROP_DESC
 	{
-		_bool isIndependentObject{ false };
 		_float3 vPosition{};
 		_float3 vRotation{};
 		_float3 vScale{};
 
 	}PROP_OBJECT_DESC;
 
-	enum class SHADER_PASS { AB, BC, END };			// 수정 예정
+	enum class SHADER_PASS { MAIN, WIREFRAME, MAPOBJECT, END };			// 수정 예정
 
 private:
 	CProp_Object(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -36,6 +35,9 @@ public:
 
 private:
 	class CEditor_Model* m_pModelCom = { nullptr };
+
+private:
+	SHADER_PASS m_eShaderPass = { SHADER_PASS::MAPOBJECT };
 
 private:
 	HRESULT Ready_Components(void* pArg);

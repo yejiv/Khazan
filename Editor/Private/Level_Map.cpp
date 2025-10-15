@@ -30,7 +30,7 @@ void CLevel_Map::Update(_float fTimeDelta)
 
 HRESULT CLevel_Map::Render()
 {
-	SetWindowText(g_hWnd, TEXT("맵툴"));
+	SetWindowText(g_hWnd, TEXT("맵 툴"));
 
 	return S_OK;
 }
@@ -102,203 +102,80 @@ HRESULT CLevel_Map::Ready_Layer_Prop_Static(const _wstring& strLayerTag)
 	return S_OK;
 }
 
-HRESULT CLevel_Map::Ready_Temp_Instances()
+HRESULT CLevel_Map::Add_Prototypes_FromJson()
 {
-	_uint iMapObjectID = { 0 };
+	_matrix PreTransformMatrix = XMMatrixIdentity();
+
+	// 스케일 변환 ( 1 / 100 )
+	PreTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 
 	for (auto& Component : m_CustomJson)
 	{
 		_bool isInstance = (_bool)Component["isInstance"];
 		_bool isObject = (_bool)Component["isObject"];
 
-		wstring strModelName = AnsiToWString(Component["strModelName"]);
+		string strModelName = Component["strModelName"];
 				
 		if (true == isInstance)				// 인스턴싱 모델인 경우
 		{
-			_uint iNumInstances = (_uint)Component["iNumInstances"];
-
-			CModelMesh_Instance::MODELMESH_INSTANCE_DESC ModelMeshDesc = {};
-			ModelMeshDesc.InstanceData.reserve(iNumInstances);
-
-			auto& position = Component["vInstancePosition"];
-			auto& scale = Component["vInstanceScale"];
-			auto& quat = Component["vInstanceQuaternion"];
-
-			for (_uint i = 0; i < iNumInstances; ++i)
-			{
-				MESH_INSTANCE_DATA MeshInstanceData = {};
-
-				FLOAT3_DATA vPos = FLOAT3_DATA((_float)position[i]["x"], (_float)position[i]["y"], (_float)position[i]["z"]);
-				FLOAT3_DATA vScale = FLOAT3_DATA((_float)scale[i]["x"], (_float)scale[i]["y"], (_float)scale[i]["z"]);
-				FLOAT4_DATA vQuaternion = FLOAT4_DATA((_float)quat[i]["x"], (_float)quat[i]["y"], (_float)quat[i]["z"], (_float)quat[i]["w"]);
-
-				_matrix matScale = XMMatrixScaling(vScale.x, vScale.y, vScale.z);
-				_matrix matRot = XMMatrixRotationQuaternion(XMVectorSet(vQuaternion.w, vQuaternion.x, vQuaternion.y, vQuaternion.z));
-				_matrix matTrans = XMMatrixTranslation(vPos.x, vPos.z * -1.f, vPos.y);
-
-				matTrans *= XMMatrixScaling(0.01f, 0.01f, 0.01f);
-
-				MeshInstanceData.InstanceMatrix = matScale * matRot * matTrans;
-				MeshInstanceData.InstanceID = iMapObjectID++;
-
-				ModelMeshDesc.InstanceData.push_back(MeshInstanceData);
-			}
-
-			ModelMeshDesc.iNumInstance = iNumInstances;
-
-			_matrix PreTransformMatrix = XMMatrixIdentity();
-
-			// 스케일 변환 ( 1 / 100 )
-			PreTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f);
-
 			// 모델명과 일치하는 경로 찾기
-			string strLoadPath = Find_ModelPath(WStringToAnsi(strModelName));
+			string strLoadPath = Find_ModelPath(strModelName);
 
 			if ("NOTFOUND" == strLoadPath)
 			{
-				string error = "Can't found load path\nModelName : " + WStringToAnsi(strModelName);
+				string error = "Can't found load path\nModelName : " + strModelName;
 				OutputDebugStringA(error.c_str());
 				continue;
 			}
 
-			CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), strModelName,
-				CEditor_Model_Instance::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, strLoadPath.c_str(), PreTransformMatrix, &ModelMeshDesc)), E_FAIL);
+			CEditor_ModelMesh_Instance::EDITOR_MODELMESH_INSTANCE_DESC InstanceDesc = {};
+
+			InstanceDesc.iNumInstance = 0;
+
+			// Instance 모델 프로토타입 등록
+			CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), AnsiToWString(strModelName),
+				CEditor_Model_Instance::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, strLoadPath.c_str(), PreTransformMatrix, &InstanceDesc)), E_FAIL);
 
 			CProp_Static::PROP_STATIC_DESC StaticDesc = {};
 
-			memcpy(StaticDesc.szModelName, strModelName.c_str(), sizeof(StaticDesc.szModelName));
+			memcpy(StaticDesc.szModelName, AnsiToWString(strModelName).c_str(), sizeof(StaticDesc.szModelName));
 
-			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj"),
+			// Instance 는 바로 Layer 등록
+			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_InstObj"),
 				ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"), &StaticDesc), E_FAIL);
+
+			m_CheckPrototypes.emplace(strModelName, strLoadPath);
+			m_Prototypes_Inst.push_back(strModelName);
 		}
 		else if (true == isObject)				// 단일 오브젝트인 경우
 		{
-		}
-		else
-		{
-			MSG_BOX(TEXT("있어서는 안되는 else"));
-		}
-
-
-	}
-
-	return S_OK;
-}
-
-HRESULT CLevel_Map::Ready_Temp_IndependentObjs()
-{
-	_uint iMapObjectID = { 0 };
-
-	for (auto& Component : m_CustomJson)
-	{
-		_bool isInstance = (_bool)Component["isInstance"];
-		_bool isObject = (_bool)Component["isObject"];
-
-		wstring strModelName = AnsiToWString(Component["strModelName"]);
-
-		if (true == isObject)				// 단일 오브젝트인 경우
-		{
-			++iMapObjectID;
-
-			auto& position = Component["vPosition"];
-			auto& scale = Component["vScale"];
-			auto& rot = Component["vRotation"];
-
-			FLOAT3_DATA vPosition = FLOAT3_DATA((_float)position["x"], (_float)position["y"], (_float)position["z"]);
-			FLOAT3_DATA vScale = FLOAT3_DATA((_float)scale["x"], (_float)scale["y"], (_float)scale["z"]);
-			FLOAT3_DATA vRotation = FLOAT3_DATA((_float)rot["x"], (_float)rot["y"], (_float)rot["z"]);
-
-			CProp_Object::PROP_OBJECT_DESC ObjectDesc = {};
-
-			ObjectDesc.vPosition = _float3(vPosition.x, vPosition.z * -1.f, vPosition.y);
-			ObjectDesc.vScale = _float3(vScale.x, vScale.y, vScale.z);
-			ObjectDesc.vRotation = _float3(vRotation.x, vRotation.y, vRotation.z);
-
-			// 모델명과 일치하는 경로 찾기
-			string strLoadPath = Find_ModelPath(WStringToAnsi(strModelName));
-
-			if ("NOTFOUND" == strLoadPath)
-			{
-				string error = "Can't found load path\nModelName : " + WStringToAnsi(strModelName) + "\n";
-				OutputDebugStringA(error.c_str());
-				continue;
-			}
-
 			auto iter = m_CheckPrototypes.find(strModelName);
 
 			if (iter == m_CheckPrototypes.end())
 			{
-				_uint iIncrease = { 1 };
+				// 모델명과 일치하는 경로 찾기
+				string strLoadPath = Find_ModelPath(strModelName);
 
-				_matrix PreTransformMatrix = XMMatrixIdentity();
-
-				// 스케일 변환 ( 1 / 100 )
-				PreTransformMatrix = XMMatrixScaling(0.001f, 0.001f, 0.001f);
-
-				if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), strModelName,
-					CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, strLoadPath.c_str(), PreTransformMatrix))))
+				if ("NOTFOUND" == strLoadPath)
 				{
-					strModelName;
-					strLoadPath;
-					int a = 10;
+					string error = "Can't found load path\nModelName : " + strModelName + "\n";
+					OutputDebugStringA(error.c_str());
 					continue;
 				}
 
-				m_CheckPrototypes.emplace(strModelName, iIncrease);
+				// 단일 오브젝트는 바로 인스턴스 등록
+				CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), AnsiToWString(strModelName),
+					CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, strLoadPath.c_str(), PreTransformMatrix)), E_FAIL);
+
+				m_CheckPrototypes.emplace(strModelName, strLoadPath);
+				m_Prototypes_Obj.push_back(strModelName);
 			}
-			else
-			{
-				++iter->second;
-
-				_tchar szCntMap[MAX_PATH] = {};
-
-				wsprintf(szCntMap, TEXT("%d"), iter->second);
-
-				string strExist = "Exist Model! : " + WStringToAnsi(strModelName) + "\n" + "ModelCount :" + WStringToAnsi(szCntMap);
-				OutputDebugStringA(strExist.c_str());
-			}
-
-			ObjectDesc.isIndependentObject = true;
-
-			memcpy(ObjectDesc.szModelName, strModelName.c_str(), sizeof(ObjectDesc.szModelName));
-
-			if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj"),
-				ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc)))
-			{
-				string strFailedAddLayer = "Failed Add Layer! : " + WStringToAnsi(strModelName);
-				OutputDebugStringA(strFailedAddLayer.c_str());
-			}
-		}
-		else if (true == isInstance)				// 인스턴싱 모델인 경우
-		{
-
 		}
 		else
 		{
 			MSG_BOX(TEXT("있어서는 안되는 else"));
 		}
-
-		if (0 != iMapObjectID)
-		{
-			_tchar szLoadedObj[MAX_PATH] = {};
-			_tchar szMaxCnt[MAX_PATH] = {};
-
-			wsprintf(szLoadedObj, TEXT("%d"), iMapObjectID);
-			wsprintf(szMaxCnt, TEXT("%d"), m_iObjCnt);
-
-			string strExist = "\nLoaded : ( " + WStringToAnsi(szLoadedObj) + " / " + WStringToAnsi(szMaxCnt) + " )\n";
-			OutputDebugStringA(strExist.c_str());
-		}
 	}
-
-	return S_OK;
-}
-
-HRESULT CLevel_Map::Ready_Temp_All()
-{
-	CHECK_FAILED(Ready_Temp_Instances(), E_FAIL);
-
-	CHECK_FAILED(Ready_Temp_IndependentObjs(), E_FAIL);
 
 	return S_OK;
 }
@@ -328,7 +205,7 @@ HRESULT CLevel_Map::Ready_Main_Window()
 			ImGui::Begin("MAIN WINDOW", &m_isMainWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
 			ImGui::Text("INFORMATION");
-			ImGui::Text("FPS : %f", 1.f / m_pGameInstance->Get_TimeDelta(TEXT("Timer_60")));
+			ImGui::Text("NONE");
 
 			SEPARATOR;
 			ImGui::Text("JSON");
@@ -348,36 +225,68 @@ HRESULT CLevel_Map::Ready_Main_Window()
 
 			SEPARATOR;
 			ImGui::Text("PROP LIST");
-			if (ImGui::Button("STATIC"))		m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)];
+			if (ImGui::Button("OBJECT##active"))		m_isPropWindow[ENUM_CLASS(PROP_SPECIES::OBJECT)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::OBJECT)];
 			SAMELINE;
-			if (ImGui::Button("ANIMATED"))		m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)];
+			if (ImGui::Button("STATIC##active"))		m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)];
 			SAMELINE;
-			if (ImGui::Button("INTERACTIVE"))	m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)];
+			if (ImGui::Button("ANIMATED##active"))		m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)];
 			SAMELINE;
-			if (ImGui::Button("DESTRUCTIBLE"))	m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)];
+			if (ImGui::Button("INTERACTIVE##active"))	m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)];
+			SAMELINE;
+			if (ImGui::Button("DESTRUCTIBLE##active"))	m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)];
 			SEPARATOR;
 
 			ImGui::Text("ETC FUNC");
 
 			if (ImGui::Button("CLEAR JSON LIST"))
 			{
-				m_isJsonExport = false;
-				m_isJsonConverted = false;
+				m_isMainWindow = { true };
 
-				m_JsonList.clear();
-				m_JsonFiles.clear();
+				m_isJsonWindow = { false };
 
-				m_iJsonFilesIndex = 0;
-				m_iJsonListIndex = 0;
+				m_isCustomJsonWindow = { false };
 
-				m_CustomJsonList.clear();
-				m_iCustomJsonListIndex = 0;
+				m_isPrototypeWindow = { false };
 
-				m_isCustomJsonLoaded = false;
+				for (auto& bProp : m_isPropWindow)
+					bProp = false;
+
+				m_isLightSettingWindow = { false };
+
+				m_szJsonSaveName[MAX_PATH] = {};	// Json 이름
+
+				m_JsonFiles.clear();				// JsonFile 이름 명 ( Combo에서 볼 Json 폴더 경로의 .json 파일들 )
+				m_iJsonFilesIndex = {};				// ImGui::BeginListBox 용 인덱스 변수
+
+				m_Json = {};						// Original Json 정보 저장해놓을 JSON
+				m_isJsonExport = { false };			// 추출 됬는지 확인용
+
+				m_isJsonConverted = { false };		// 변환됬는지 확인 용
+
+				m_JsonList.clear();					// Original Json 맵 데이터 용 벡터
+				m_iJsonListIndex = {};				// ImGui::BeginListBox 용 인덱스 변수
+
+				m_iObjCnt = {};						// 단일 객체 갯수 확인용
+
+				m_CustomJson = {};					// Custom Json 정보 저장해놓을 JSON
+
+				m_CustomJsonList.clear();			// Custom Json 맵 데이터 용 벡터
+				m_iCustomJsonListIndex = {};		// ImGui::BeginListBox 용 인덱스 변수
+				m_isCustomJsonInfoList = false;		// List Info 창 ON/OFF
+
+				m_isCustomJsonLoaded = { false };	// Custom Json 로드 됬는지 확인 용
+
+				m_CheckPrototypes.clear();			// 중복 프로토타입 체크 및 리스트 출력용
+
+				m_Prototypes_Inst.clear();			// Prototype 목록 ( Instance 용 모델 )
+				m_iIndex_PrtInst = {};				// Prototype Instance 용 인덱스
+
+				m_Prototypes_Obj.clear();			// Prototype 목록 ( Object 용 모델 )
+				m_iIndex_PrtObj = {};				// Prototype Object 용 인덱스
 			}
 			if (ImGui::Button("CLEAR LEVEL"))
 			{
-
+				CHECK_FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::MAP)), );
 			}
 
 			ImGui::End();
@@ -389,6 +298,128 @@ HRESULT CLevel_Map::Ready_Main_Window()
 
 HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 {
+#pragma region MODEL_PROTOTYPE LIST
+
+	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
+		if (m_isPrototypeWindow)
+		{
+			ImGui::Begin("PROTOTYPE WINDOW", &m_isPrototypeWindow, ImGuiWindowFlags_AlwaysAutoResize);
+
+			ImGui::Text("MODEL_PROTOTYPES_INSTANCE");
+			if (ImGui::BeginListBox("##prototype_instance_list"))
+			{
+				for (_uint i = 0; i < m_Prototypes_Inst.size(); ++i)
+				{
+					_bool isSelected = (m_iIndex_PrtInst == i);
+
+					if (ImGui::Selectable(m_Prototypes_Inst[i].c_str(), isSelected))
+						m_iIndex_PrtInst = i;
+				}
+
+				ImGui::EndListBox();
+			} SEPARATOR;
+			if (ImGui::Button("ADD (T)") || m_pGameInstance->Key_Down(DIK_T))
+			{
+				CEditor_Model_Instance* pModelInst = static_cast<CEditor_Model_Instance*>(m_pGameInstance->Find_Component(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_InstObj"), TEXT("Com_Model"), m_iIndex_PrtInst));
+				CHECK_NULLPTR(pModelInst, );
+
+				MESH_INSTANCE_DATA TempData = {};
+
+				TempData.InstanceMatrix = XMMatrixIdentity();
+
+				if (m_pGameInstance->Mouse_Pressing(MOUSEKEYSTATE::LB))
+				{
+					_float3 vPickedPos = {};
+
+					if (m_pGameInstance->isPicked(&vPickedPos))
+						TempData.InstanceMatrix.r[3] = XMVectorSetW(XMLoadFloat3(&vPickedPos), 1.f);
+					else
+						TempData.InstanceMatrix.r[3] = XMLoadFloat4(m_pGameInstance->Get_CamPosition());
+				}
+				else
+					TempData.InstanceMatrix.r[3] = XMLoadFloat4(m_pGameInstance->Get_CamPosition());
+
+				pModelInst->Add_Instance(TempData);
+			} SAMELINE;
+			if (ImGui::Button("FIX"))
+			{
+				CEditor_Model_Instance* pModelInst = static_cast<CEditor_Model_Instance*>(m_pGameInstance->Find_Component(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_InstObj"), TEXT("Com_Model"), m_iIndex_PrtInst));
+				CHECK_NULLPTR(pModelInst, );
+
+				MESH_INSTANCE_DATA TempData = {};
+
+				TempData.InstanceMatrix = XMMatrixIdentity();
+
+				TempData.InstanceMatrix.r[3] = XMLoadFloat4(m_pGameInstance->Get_CamPosition());
+
+				pModelInst->Add_Instance(TempData);
+			} SEPARATOR;
+
+			ImGui::Text("MODEL_PROTOTYPES_OBJECT");
+			if (ImGui::BeginListBox("##prototype_object_list"))
+			{
+				for (_uint i = 0; i < m_Prototypes_Obj.size(); ++i)
+				{
+					_bool isSelected = (m_iIndex_PrtObj == i);
+
+					if (ImGui::Selectable(m_Prototypes_Obj[i].c_str(), isSelected))
+						m_iIndex_PrtObj = i;
+				}
+
+				ImGui::EndListBox();
+			} SEPARATOR;
+
+			if (ImGui::Button("ADD (Y)") || m_pGameInstance->Key_Down(DIK_Y))
+			{
+				CProp_Object::PROP_OBJECT_DESC ObjectDesc = {};
+
+				memcpy(ObjectDesc.szModelName, AnsiToWString(m_Prototypes_Obj[m_iIndex_PrtObj]).c_str(), sizeof(ObjectDesc.szModelName));
+
+				_float4 vPos = {};
+
+				if (m_pGameInstance->Mouse_Pressing(MOUSEKEYSTATE::LB))
+				{
+					_float3 vPickedPos = {};
+
+					if (m_pGameInstance->isPicked(&vPickedPos))
+						vPos = _float4(vPickedPos.x, vPickedPos.y, vPickedPos.z, 1.f);
+					else
+						vPos = *m_pGameInstance->Get_CamPosition();
+				}
+				else
+					vPos = *m_pGameInstance->Get_CamPosition();
+
+				ObjectDesc.vPosition = _float3(vPos.x, vPos.y, vPos.z);
+				ObjectDesc.vScale = _float3(0.01f, 0.01f, 0.01f);
+
+				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj"),
+					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), );
+
+			} SEPARATOR;
+
+			ImGui::End();
+		}
+		});
+
+#pragma endregion
+
+#pragma region PROP_OBJECT EDIT WINDOW
+	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
+		if (m_isPropWindow[ENUM_CLASS(PROP_SPECIES::OBJECT)])
+		{
+			ImGui::Begin("PROP OBJECT WINDOW", &m_isPropWindow[ENUM_CLASS(PROP_SPECIES::OBJECT)], ImGuiWindowFlags_AlwaysAutoResize);
+
+			if (ImGui::BeginListBox("##prop_object_list"))
+			{
+
+				ImGui::EndListBox();
+			}
+
+			ImGui::End();
+		}
+		});
+#pragma endregion
+
 #pragma region PROP_STATIC EDIT WINDOW
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)])
@@ -412,7 +443,11 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 		{
 			ImGui::Begin("PROP ANIMATED WINDOW", &m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)], ImGuiWindowFlags_AlwaysAutoResize);
 
-			//ImGui::Text("== PROP_ANIMATED_LIST");
+			if (ImGui::BeginListBox("##prop_animated_list"))
+			{
+
+				ImGui::EndListBox();
+			}
 
 			ImGui::End();
 		}
@@ -425,7 +460,11 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 		{
 			ImGui::Begin("PROP INTERACTIVE WINDOW", &m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)], ImGuiWindowFlags_AlwaysAutoResize);
 
-			//ImGui::Text("== PROP_INTERACTIVE_LIST");
+			if (ImGui::BeginListBox("##prop_interactive_list"))
+			{
+
+				ImGui::EndListBox();
+			}
 
 			ImGui::End();
 		}
@@ -438,7 +477,11 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 		{
 			ImGui::Begin("PROP DESTRUCTIBLE WINDOW", &m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)], ImGuiWindowFlags_AlwaysAutoResize);
 
-			//ImGui::Text("== PROP_DESTRUCTIBLE_LIST");
+			if (ImGui::BeginListBox("##prop_destructible_list"))
+			{
+
+				ImGui::EndListBox();
+			}
 
 			ImGui::End();
 		}
@@ -631,17 +674,12 @@ HRESULT CLevel_Map::Ready_CustomJson_Edit_Window()
 			if (true == m_isCustomJsonLoaded)
 			{
 				SEPARATOR;
-				if (ImGui::Button("CREATE TEMP INSTANCES"))
-					CHECK_FAILED_MSG(Ready_Temp_Instances(), TEXT("임시 프로토타입 생성 실패 or 임시 Layer 생성 실패"), );
-				SAMELINE;
-				if (ImGui::Button("CREATE TEMP INDEPENDENT OBJ"))
-					CHECK_FAILED_MSG(Ready_Temp_IndependentObjs(), TEXT("임시 프로토타입 생성 실패 or 임시 Layer 생성 실패"), );
+				if (ImGui::Button("CREATE PROTOTYPES"))
+				{
+					CHECK_FAILED_MSG(Add_Prototypes_FromJson(), TEXT("임시 프로토타입 생성 실패 or 임시 Layer 생성 실패"), );
+					m_isPrototypeWindow = true;
+				}
 				SEPARATOR;
-				if (ImGui::Button("CREATE ALL TEMP"))
-					CHECK_FAILED_MSG(Ready_Temp_All(), TEXT("전부 생성 실패 , , ,"), );
-
-				//if (ImGui::Button("CREATE LAYERS"))
-					//Ready_Temp_Layers(TEXT("Layer_MapObject"));
 			}
 
 #pragma endregion
@@ -662,7 +700,7 @@ HRESULT CLevel_Map::Ready_CustomJson_List_Window()
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (true == m_isCustomJsonLoaded)
 		{
-			ImGui::Begin("JUSTOM JSON LIST", &m_isCustomJsonLoaded, ImGuiWindowFlags_AlwaysAutoResize);
+			ImGui::Begin("CUSTOM JSON LIST", &m_isCustomJsonLoaded, ImGuiWindowFlags_AlwaysAutoResize);
 
 			_uint iJsonListSize = m_CustomJsonList.size();
 
@@ -695,7 +733,7 @@ HRESULT CLevel_Map::Ready_CustomJson_List_Window()
 			_uint iInstanceID = {};
 			_uint iObjectID = {};
 
-			if (ImGui::BeginListBox("##prop_static_list"))
+			if (ImGui::BeginListBox("##custom_json_list"))
 			{
 				for (_uint i = 0; i < m_CustomJsonList.size(); ++i)
 				{
@@ -716,6 +754,9 @@ HRESULT CLevel_Map::Ready_CustomJson_List_Window()
 				ImGui::EndListBox();
 			} SEPARATOR;
 
+			if (ImGui::Button("LIST##custom"))
+				m_isCustomJsonInfoList = !m_isCustomJsonInfoList;
+
 			ImGui::End();
 		}
 		});
@@ -725,9 +766,9 @@ HRESULT CLevel_Map::Ready_CustomJson_List_Window()
 #pragma region WIDGET : CUSTOM JSON 에서 로드해온 리스트들의 정보
 
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
-		if (true == m_isCustomJsonLoaded)
+		if (true == m_isCustomJsonInfoList)
 		{
-			ImGui::Begin("LIST INFO", &m_isCustomJsonLoaded, ImGuiWindowFlags_AlwaysAutoResize);
+			ImGui::Begin("LIST INFO##custom", &m_isCustomJsonInfoList, ImGuiWindowFlags_AlwaysAutoResize);
 
 			if (0 == m_CustomJsonList.size())
 			{
@@ -1040,7 +1081,7 @@ HRESULT CLevel_Map::Ready_Json_List_Window()
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (true == m_isJsonConverted)
 		{
-			ImGui::Begin("LIST INFO", &m_isJsonConverted, ImGuiWindowFlags_AlwaysAutoResize);
+			ImGui::Begin("LIST INFO##original", &m_isJsonConverted, ImGuiWindowFlags_AlwaysAutoResize);
 
 			if (0 == m_JsonList.size())
 			{
