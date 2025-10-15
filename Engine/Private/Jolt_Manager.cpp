@@ -21,7 +21,7 @@ HRESULT CJolt_Manager::Initialize(_uint iNumObjectLayer)
     // Job threads
     m_iJobThreadCount = thread::hardware_concurrency();
 
-    m_pTempAlloc = new TempAllocatorImpl(64 * 1024 * 1024);
+    m_pTempAlloc = new TempAllocatorImpl(16 * 1024 * 1024);
     if (m_pTempAlloc == nullptr)
         return E_FAIL;
 
@@ -46,6 +46,14 @@ HRESULT CJolt_Manager::Initialize(_uint iNumObjectLayer)
     m_pContactListener = new CJolt_ContactListener();
     if (m_pContactListener == nullptr)
         return E_FAIL;
+
+    CJolt_CharacterContactListener::CONFIG_DESC ConfigDesc{};
+    ConfigDesc.floor_dot = Cos(DegreesToRadians(45.f));
+    ConfigDesc.cache_ground_normal = true;
+
+    m_pCharContactListener = new CJolt_CharacterContactListener(ConfigDesc);
+
+    m_pCharVsCharCollision = new CharacterVsCharacterCollisionSimple();
 
 
 #ifdef _DEBUG
@@ -82,6 +90,11 @@ CharacterVirtual* CJolt_Manager::CreateCharacterVirtual(const CharacterVirtualSe
     CharacterVirtual* pCharVir = new CharacterVirtual(inSettings, inPosition, inRotation, inUserData, m_pPhysics);
 
     *pBodyInterface = &m_pPhysics->GetBodyInterface();
+
+    pCharVir->SetListener(m_pCharContactListener);
+
+    m_pCharVsCharCollision->Add(pCharVir);
+    pCharVir->SetCharacterVsCharacterCollision(m_pCharVsCharCollision);
 
     return pCharVir;
 }
@@ -156,14 +169,6 @@ void CJolt_Manager::Test()
     m_pPhysics->GetBodyInterface().AddBody(floor->GetID(), EActivation::DontActivate);
     m_pPhysics->GetBodyInterface().AddBody(floor2->GetID(), EActivation::DontActivate);
 
-   /* for (_uint i = 0; i < 5; i++)
-    {
-        BodyCreationSettings sphere_settings(new SphereShape(0.5f), RVec3(Real(0.1), Real(i * 5), Real(0.0)), Quat::sIdentity(), EMotionType::Dynamic, ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
-        BodyID sphere_id = m_pPhysics->GetBodyInterface().CreateAndAddBody(sphere_settings, EActivation::Activate);
-
-        m_pPhysics->GetBodyInterface().SetLinearVelocity(sphere_id, Vec3(0.0f, 0.0f, 0.0f));
-    }*/
-
     m_pPhysics->OptimizeBroadPhase();
 }
 void CJolt_Manager::Debug_Render()
@@ -208,6 +213,8 @@ void CJolt_Manager::Free()
     
     Safe_Delete(m_pPhysics);
     Safe_Delete(m_pContactListener);
+    Safe_Delete(m_pCharContactListener);
+    Safe_Delete(m_pCharVsCharCollision);
     Safe_Delete(m_pJobSystem);
     Safe_Delete(m_pTempAlloc);
     Safe_Delete(Factory::sInstance);

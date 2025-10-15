@@ -2,6 +2,7 @@
 #include "Base.h"
 #include "Jolt_Layer.h"
 #include "Jolt_ContactListener.h"
+#include "Jolt_CharacterContactListener.h"
 
 #ifdef new
 #pragma push_macro("new")
@@ -82,13 +83,14 @@ private:
     CJolt_ObjectLayerPairFilter*         m_pObjectLayerPairFilter = { nullptr };
     CJolt_ObjectVsBPLayerFilter*         m_pObjectVsBPLayerFilter = { nullptr };
     CJolt_ContactListener*               m_pContactListener = { nullptr };
-
+    CJolt_CharacterContactListener*      m_pCharContactListener = { nullptr };
+    CharacterVsCharacterCollisionSimple* m_pCharVsCharCollision = { nullptr };
 private:
     // 생성 파라미터 보관(선택)
-    _uint m_iMaxBodies = { 10240 };
+    _uint m_iMaxBodies = { 2048 };
     _uint m_iNumBodyMutexes = {};
-    _uint m_iMaxBodyPairs = { 65536 };
-    _uint m_iMaxContactConstraints = { 65536 };
+    _uint m_iMaxBodyPairs = { 10240 };
+    _uint m_iMaxContactConstraints = { 10240 };
     _uint m_iJobThreadCount = {};
 
     _uint m_iNumObjectLayer = {};

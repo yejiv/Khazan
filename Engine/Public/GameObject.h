@@ -35,10 +35,9 @@ public:
 	void Set_IsDead(_bool isDead) { m_isDead = isDead; }
 	_bool Get_IsDead() { return m_isDead; }
 
-// 충돌 처리용
 public:
-	virtual void Collision_Enter(JPH::ObjectLayer Layer, CGameObject* pObject, JPH::ContactManifold ContactManifold) {};
-	virtual void Collision_Stay(JPH::ObjectLayer Layer, CGameObject* pObject, JPH::ContactManifold ContactManifold) {};
+	virtual void Collision_Enter(CGameObject* pOther) {};
+	virtual void Collision_Stay(CGameObject* pOther) {};
 
 protected:
 	ID3D11Device*				m_pDevice = { nullptr };
