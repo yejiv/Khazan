@@ -26,16 +26,16 @@ public:
 		_float3			vPos; // 초기 위치
 		_float4			vQuat; // 초기 회전
 		WORLDUP			eUp = WORLDUP::Y; // 월드 Up
-		_float			fMaxSlopeAngle = DegreesToRadians(45.0f); // 오를 수 있는 경사
+		_float			fMaxSlopeAngle = 50.0f; // 오를 수 있는 경사
 		_float			fPadding = 0.02f; // 벽/바닥과 여유 거리
 		_float			fPenetrationRecoverySpeed = 1.0f; // 겹침 복구 속도
 		_float			fPredictiveContactDistance = 0.1f; // 에측 접촉(미리 감지)
-		EBackFaceMode	eBackFaceMode = EBackFaceMode::CollideWithBackFaces; // 양면 메쉬 대응
+		EBackFaceMode	eBackFaceMode = EBackFaceMode::IgnoreBackFaces; // 양면 메쉬 대응
 
 		_float			fMinTimeRemaining = 1e-3f; //서브스텝 통합 중 잔여 시간 최소치.
 		_float			fCollisionTolerance = 0.01f; //충돌 허용 오차
-		_uint			fMaxNumHits = 5.f; // 한 프레임 업데이트 동안 저장할 최대 충돌 히트 개수 제한.
-		_float			fHitReductionCosMaxAngle = DegreesToRadians(15.0f); // 히트 축약 기준 각도(코사인 값)
+		_uint			fMaxNumHits = 5; // 한 프레임 업데이트 동안 저장할 최대 충돌 히트 개수 제한.
+		_float			fHitReductionCosMaxAngle = 15.f; // 히트 축약 기준 각도(코사인 값)
 		_float3			vShapeOffset;
 		_bool			bEnhancedInternalEdgeRemoval = true;
 		_uint			iMaxCollisionIterations = 10;
@@ -44,8 +44,19 @@ public:
 		_float			fMass = 70.f;
 		_float			fMaxStrength = 30.f;
 
-		Plane			fSupportingVolume = Plane(Vec3::sAxisY(), 0.02f);
+		Plane			fSupportingVolume = Plane(Vec3::sAxisY(), -0.02f);
 
+		// 바닥으로 ‘내려 붙잡기’ 벡터 (월드기준 하향)
+		_float3			vStickToFloorStepDown = _float3(0.0f, -0.3f, 0.0f);   // 최대 0.5m까지 아래로 붙잡기
+		// 계단 ‘올라가기’ 허용 벡터 (월드기준 상향)
+		_float3			vWalkStairsStepUp = _float3(0.0f, 0.2f, 0.0f);   // 0.3m까지 허용
+		// 앞으로 얼마나 전진하고 ‘계단/턱’을 시험할지
+		_float			fWalkStairsMinStepForward = 0.02f;                      // 최소 전진량
+		_float			fWalkStairsStepForwardTest = 0.12f;                      // 테스트 전진량
+		// 전방 벡터와 지면 법선(수평면 사영)의 허용 각 (코사인 값)
+		_float			fWalkStairsCosAngleForwardContact = 75.0f;
+		// 추가로 더 내려 붙잡고 싶을 때 사용 (없으면 Zero)
+		_float3			vWalkStairsStepDownExtra = _float3(0.0f, 0.0f, 0.0f);
 
 		_uint			iObjectLayer;
 
@@ -98,13 +109,16 @@ private:
 	JPH::BodyInterface* m_pBodyInterface = { nullptr };
 	JPH::BodyFilter* m_pBodyFilter = { nullptr };
 	JPH::ShapeFilter* m_pShapeFilter = { nullptr };
-	class CharacterContactListener* m_pContactListener = { nullptr };
+	CharacterContactListener* m_pContactListener = { nullptr };
+	
 
 	JPH::Vec3	m_vVelocity = {};
 	JPH::Vec3	m_vUp = {};
 	JPH::Vec3	m_vGravity = {};
+	CharacterVirtual::ExtendedUpdateSettings m_tEXUpdateSetting{};
 
 	_uint		m_iNumObjectLayer = {};
+
 
 public:
 	static CCharacterVirtual* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

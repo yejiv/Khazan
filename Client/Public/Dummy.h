@@ -8,6 +8,7 @@ class CCollider;
 class CShader;
 class CModel;
 class CRigidBody;
+class CCharacterVirtual;
 NS_END
 
 NS_BEGIN(Client)
@@ -30,7 +31,8 @@ public:
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
-	CRigidBody* m_pRigidBodyCom = { nullptr };
+	//CRigidBody* m_pRigidBodyCom = { nullptr };
+	class CCharacterVirtual* m_pCharVirCom = { nullptr };
 
 
 private:
