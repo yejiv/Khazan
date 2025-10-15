@@ -5,7 +5,7 @@ NS_BEGIN(Engine)
 
 class ENGINE_DLL CUI_ProgressBar abstract : public CUIObject
 {
-protected:
+public:
 	enum class BAR_DIRECTION { LEFT_TO_RIGHT, RIGHT_TO_LEFT, TOP_TO_BOTTOM, BOTTOM_TO_TOP, END };
 	enum class BAR_MODE { REDUCE, EXPAND, END };
 
@@ -24,11 +24,17 @@ protected:
 	CUI_ProgressBar(const CUI_ProgressBar& Prototype);
 	virtual ~CUI_ProgressBar() = default;
 					
-//public:
-//	void						Set_Bar_Direction(BAR_DIRECTION eDirection) { m_eDirection = eDirection; }
-//	void						Set_Bar_Mode(BAR_MODE eMode) { m_eMode = eMode; }
+public:
+	_float						Get_LerpSpeed() const { return m_fLerpSpeed; }
+	_float						Get_CurrentValue() const { return m_fCurrentValue; }
+	_float						Get_MaxValue() const { return m_fMaxValue; }
+
+	void						Set_Bar_Direction(BAR_DIRECTION eDirection) { m_eDirection = eDirection; }
+	void						Set_Bar_Mode(BAR_MODE eMode) { m_eMode = eMode; }
+	void						Set_LerpSpeed(_float fLerpSpeed) { m_fLerpSpeed = fLerpSpeed; }
 public:
 	void						Set_CurrentValue(_float fCurrentValue) { m_fCurrentValue = fCurrentValue; m_isChange = true; }
+	void						Set_MaxValue(_float fMaxValue) { m_fMaxValue = fMaxValue; m_isChange = true; }
 
 public:
 	virtual HRESULT				Initialize_Prototype() override;
