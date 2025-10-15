@@ -113,7 +113,7 @@ void CUIObject::Update_Transform(CTransform* pTargetTransform)
     {
         m_vWorldPos.x = m_pParent->m_vWorldPos.x + m_vLocalPos.x;
         m_vWorldPos.y = m_pParent->m_vWorldPos.y + m_vLocalPos.y;
-        m_vWorldPos.z = m_pParent->m_vWorldPos.z + m_vLocalPos.z;
+        //m_vWorldPos.z = m_pParent->m_vWorldPos.z + m_vLocalPos.z;
     }
     else
         m_vWorldPos = m_vLocalPos;
@@ -150,24 +150,24 @@ _float2 CUIObject::Compute_AlignedPos(_float2 vPos, _float2 vSize)
 {
     switch (m_eAlignment)
     {
-    case UI_Alignment::TOP_LEFT:
+    case UI_ALIGNMENT::TOP_LEFT:
         return vPos;
-    case UI_Alignment::TOP_CENTER:
-        return _float2(vPos.x - vSize.x * 0.5f, vPos.y);
-    case UI_Alignment::TOP_RIGHT:
-        return _float2(vPos.x - vSize.x, vPos.y);
-    case UI_Alignment::MIDDLE_LEFT:
-        return _float2(vPos.x, vPos.y - vSize.y * 0.5f);
-    case UI_Alignment::MIDDLE_CENTER:
-        return _float2(vPos.x - vSize.x * 0.5f, vPos.y - vSize.y * 0.5f);
-    case UI_Alignment::MIDDLE_RIGHT:
-        return _float2(vPos.x - vSize.x, vPos.y - vSize.y * 0.5f);
-    case UI_Alignment::BOTTOM_LEFT:
-        return _float2(vPos.x, vPos.y - vSize.y);
-    case UI_Alignment::BOTTOM_CENTER:
-        return _float2(vPos.x - vSize.x * 0.5f, vPos.y - vSize.y);
-    case UI_Alignment::BOTTOM_RIGHT:
-        return _float2(vPos.x - vSize.x, vPos.y - vSize.y);
+    case UI_ALIGNMENT::TOP_CENTER:
+        return _float2(vPos.x + vSize.x * 0.5f, vPos.y);
+    case UI_ALIGNMENT::TOP_RIGHT:
+        return _float2(vPos.x + vSize.x, vPos.y);
+    case UI_ALIGNMENT::MIDDLE_LEFT:
+        return _float2(vPos.x, vPos.y + vSize.y * 0.5f);
+    case UI_ALIGNMENT::MIDDLE_CENTER:
+        return _float2(vPos.x + vSize.x * 0.5f, vPos.y + vSize.y * 0.5f);
+    case UI_ALIGNMENT::MIDDLE_RIGHT:
+        return _float2(vPos.x + vSize.x, vPos.y + vSize.y * 0.5f);
+    case UI_ALIGNMENT::BOTTOM_LEFT:
+        return _float2(vPos.x, vPos.y + vSize.y);
+    case UI_ALIGNMENT::BOTTOM_CENTER:
+        return _float2(vPos.x + vSize.x * 0.5f, vPos.y + vSize.y);
+    case UI_ALIGNMENT::BOTTOM_RIGHT:
+        return _float2(vPos.x + vSize.x, vPos.y + vSize.y);
     }
 }
 

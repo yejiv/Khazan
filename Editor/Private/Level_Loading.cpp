@@ -33,6 +33,7 @@ void CLevel_Loading::Update(_float fTimeDelta)
 {
 	if (true == m_pLoader->isFinished())
 	{
+		CleanImgui();
 		CLevel* pNewLevel = { nullptr };
 
 		switch (m_eNextLevelID)
@@ -77,6 +78,16 @@ HRESULT CLevel_Loading::Ready_LoadingThread()
 	m_pLoader = CLoader::Create(m_pDevice, m_pContext, m_eNextLevelID);
 	if (nullptr == m_pLoader)
 		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CLevel_Loading::CleanImgui()
+{
+	m_pGameInstance->CleanMenu(TEXT("Animation"));
+	m_pGameInstance->CleanMenu(TEXT("Map"));
+	m_pGameInstance->CleanMenu(TEXT("Effect"));
+	m_pGameInstance->CleanMenu(TEXT("UI"));
 
 	return S_OK;
 }

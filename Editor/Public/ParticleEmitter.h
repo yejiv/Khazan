@@ -36,12 +36,6 @@ public:
 	_wstring					Get_Name() { return m_strName; }
 	void						Set_Name(_wstring strName) { m_strName = strName; }
 
-	_bool						Get_Spread() { return m_isSpread; }
-	void						Set_Spread(_bool isEnable) { m_isSpread = isEnable; }
-
-	_bool						Get_Drop() { return m_isDrop; }
-	void						Set_Drop(_bool isEnable) { m_isDrop = isEnable; }
-
 	CVIBuffer_Point_Instance::POINT_INSTANCE_DESC Get_ParticleInfo() { return m_ParticleInfo; }
 
 	_float4						Get_DiffuseColor() { return m_vDiffuseColor; }
@@ -51,19 +45,15 @@ public:
 	HRESULT						Recreate_Particle(CVIBuffer_Point_Instance::POINT_INSTANCE_DESC PointDesc);
 
 private:
-	CShader*					m_pShaderCom = { nullptr };
-	CTexture*					m_pTextureCom = { nullptr };
-	CVIBuffer_Point_Instance*	m_pVIBufferCom = { nullptr };
+	CShader*							m_pShaderCom = { nullptr };
+	CTexture*							m_pTextureCom = { nullptr };
+	CVIBuffer_Point_Instance*			m_pVIBufferCom = { nullptr };
 
-	_wstring					m_strName = {};
-	
-	_bool						m_isSpread = {};
-	_bool						m_isDrop = {};
-	_bool						m_isGravity = {};
+	_wstring							m_strName = {};
 
 	CVIBuffer_Point_Instance::POINT_INSTANCE_DESC	m_ParticleInfo = {};
 	
-	_float4						m_vDiffuseColor = { 1.f, 1.f, 1.f, 1.f };
+	_float4								m_vDiffuseColor = { 1.f, 1.f, 1.f, 1.f };
 
 private:
 	HRESULT								Ready_Components();

@@ -138,6 +138,7 @@ public:
 #pragma region IMGUI_MANGER
 #ifdef _DEBUG
 	void    AddWidget(const _wstring Menu, const function<void()>& widget);
+	HRESULT CleanMenu(_wstring strMenu);
 #endif
 #pragma endregion
 
@@ -150,6 +151,7 @@ public:
 	CharacterVirtual* CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData, BodyInterface** pBodyInterface);
 
 	void CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter);
+	void CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter, CharacterVirtual::ExtendedUpdateSettings tSetting);
 
 #ifdef _DEBUG
 	void Jolt_Test();
