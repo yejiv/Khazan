@@ -133,8 +133,8 @@ HRESULT CLevel_Map::Ready_Temp_Instances()
 				FLOAT4_DATA vQuaternion = FLOAT4_DATA((_float)quat[i]["x"], (_float)quat[i]["y"], (_float)quat[i]["z"], (_float)quat[i]["w"]);
 
 				_matrix matScale = XMMatrixScaling(vScale.x, vScale.y, vScale.z);
-				_matrix matRot = XMMatrixRotationQuaternion(XMVectorSet(vQuaternion.x, vQuaternion.y, vQuaternion.z, vQuaternion.w));
-				_matrix matTrans = XMMatrixTranslation(vPos.x, vPos.z, vPos.y);
+				_matrix matRot = XMMatrixRotationQuaternion(XMVectorSet(vQuaternion.w, vQuaternion.x, vQuaternion.y, vQuaternion.z));
+				_matrix matTrans = XMMatrixTranslation(vPos.x, vPos.z * -1.f, vPos.y);
 
 				matTrans *= XMMatrixScaling(0.01f, 0.01f, 0.01f);
 
@@ -154,8 +154,12 @@ HRESULT CLevel_Map::Ready_Temp_Instances()
 			// 모델명과 일치하는 경로 찾기
 			string strLoadPath = Find_ModelPath(WStringToAnsi(strModelName));
 
-			if ("" == strLoadPath)
+			if ("NOTFOUND" == strLoadPath)
+			{
+				string error = "Can't found load path\nModelName : " + WStringToAnsi(strModelName);
+				OutputDebugStringA(error.c_str());
 				continue;
+			}
 
 			CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), strModelName,
 				CEditor_Model_Instance::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, strLoadPath.c_str(), PreTransformMatrix, &ModelMeshDesc)), E_FAIL);
@@ -204,16 +208,16 @@ HRESULT CLevel_Map::Ready_Temp_IndependentObjs()
 			FLOAT3_DATA vScale = FLOAT3_DATA((_float)scale["x"], (_float)scale["y"], (_float)scale["z"]);
 			FLOAT3_DATA vRotation = FLOAT3_DATA((_float)rot["x"], (_float)rot["y"], (_float)rot["z"]);
 
-			CProp_Animated::PROP_ANIMATED_DESC AnimatedDesc = {};
+			CProp_Object::PROP_OBJECT_DESC ObjectDesc = {};
 
-			AnimatedDesc.vPosition = _float3(vPosition.x * 0.01f, vPosition.z * 0.01f, vPosition.y * 0.01f);
-			AnimatedDesc.vScale = _float3(vScale.x, vScale.y, vScale.z);
-			AnimatedDesc.vRotation = _float3(vRotation.x, vRotation.y, vRotation.z);
+			ObjectDesc.vPosition = _float3(vPosition.x, vPosition.z * -1.f, vPosition.y);
+			ObjectDesc.vScale = _float3(vScale.x, vScale.y, vScale.z);
+			ObjectDesc.vRotation = _float3(vRotation.x, vRotation.y, vRotation.z);
 
 			// 모델명과 일치하는 경로 찾기
 			string strLoadPath = Find_ModelPath(WStringToAnsi(strModelName));
 
-			if ("" == strLoadPath)
+			if ("NOTFOUND" == strLoadPath)
 			{
 				string error = "Can't found load path\nModelName : " + WStringToAnsi(strModelName) + "\n";
 				OutputDebugStringA(error.c_str());
@@ -254,12 +258,12 @@ HRESULT CLevel_Map::Ready_Temp_IndependentObjs()
 				OutputDebugStringA(strExist.c_str());
 			}
 
-			AnimatedDesc.isIndependentObject = true;
+			ObjectDesc.isIndependentObject = true;
 
-			memcpy(AnimatedDesc.szModelName, strModelName.c_str(), sizeof(AnimatedDesc.szModelName));
+			memcpy(ObjectDesc.szModelName, strModelName.c_str(), sizeof(ObjectDesc.szModelName));
 
 			if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj"),
-				ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Test"), &AnimatedDesc)))
+				ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc)))
 			{
 				string strFailedAddLayer = "Failed Add Layer! : " + WStringToAnsi(strModelName);
 				OutputDebugStringA(strFailedAddLayer.c_str());
@@ -295,17 +299,6 @@ HRESULT CLevel_Map::Ready_Temp_All()
 	CHECK_FAILED(Ready_Temp_Instances(), E_FAIL);
 
 	CHECK_FAILED(Ready_Temp_IndependentObjs(), E_FAIL);
-
-	return S_OK;
-}
-
-HRESULT CLevel_Map::Ready_Temp_Layers(const _wstring& strLayerTag)
-{
-	CProp_Static::PROP_STATIC_DESC StaticDesc = {};
-	//StaticDesc.szModelName = TEXT("WP_VFS_Plants_Dry_008");
-
-	//CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), strLayerTag,
-		//ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static")), E_FAIL);
 
 	return S_OK;
 }
@@ -859,8 +852,8 @@ HRESULT CLevel_Map::Ready_Json_Edit_Window()
 
 						_uint iNumInstance = {};
 
-						size_t start = {};
-						size_t end = {};
+						size_t Start = {};
+						size_t End = {};
 
 						string Type = Component["Type"];
 
@@ -877,11 +870,11 @@ HRESULT CLevel_Map::Ready_Json_Edit_Window()
 
 						strModelName = Component["Properties"]["StaticMesh"]["ObjectName"];
 
-						start = strModelName.find('\'');
-						end = strModelName.rfind('\'');
+						Start = strModelName.find('\'');
+						End = strModelName.rfind('\'');
 
-						if (start != string::npos && end != string::npos && end > start)
-							strModelName = strModelName.substr(start + 1, end - start - 1);
+						if (Start != string::npos && End != string::npos && End > Start)
+							strModelName = strModelName.substr(Start + 1, End - Start - 1);
 
 						auto iter = find_if(m_JsonList.begin(), m_JsonList.end(), [&](const JSON_MAP_DATA& CheckData) {
 							return CheckData.strModelName == strModelName;
@@ -1177,7 +1170,7 @@ void CLevel_Map::Get_Directory_Files(const _char* pDirectoryPath)
 
 string CLevel_Map::Find_ModelPath(const string& strModelName)
 {
-	string strRoot = "../../Client/Bin/Resources/Models/Prop/Static/";
+	string strRoot = "../../Client/Bin/Resources/Models/Prop/";
 
 	for (auto& entry : filesystem::recursive_directory_iterator(strRoot))
 	{
@@ -1188,7 +1181,7 @@ string CLevel_Map::Find_ModelPath(const string& strModelName)
 		}
 	}
 
-	return "";
+	return "NOTFOUND";
 }
 
 CLevel_Map* CLevel_Map::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
