@@ -57,10 +57,32 @@ void CCamera_Map::Input(_float fTimeDelta)
     if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta))
         fSpeed *= 20.f;
 
+    if (m_pGameInstance->Key_Pressing(DIK_TAB, fTimeDelta))
+        fSpeed *= 10.f;
+
     if (m_pGameInstance->Key_Pressing(DIK_W, fTimeDelta))   m_pTransformCom->Go_Straight(fSpeed);
     if (m_pGameInstance->Key_Pressing(DIK_S, fTimeDelta))   m_pTransformCom->Go_Backward(fSpeed);
     if (m_pGameInstance->Key_Pressing(DIK_A, fTimeDelta))   m_pTransformCom->Go_Left(fSpeed);
     if (m_pGameInstance->Key_Pressing(DIK_D, fTimeDelta))   m_pTransformCom->Go_Right(fSpeed);
+
+    if (m_pGameInstance->Key_Pressing(DIK_SPACE, fTimeDelta))
+    {
+        _vector		vPosition = m_pTransformCom->Get_State(STATE::POSITION);
+        _vector		vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+
+        vPosition += XMVector3Normalize(vUp) * 10.f * fSpeed;
+
+        m_pTransformCom->Set_State(STATE::POSITION, vPosition);
+    }
+    if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta))
+    {
+        _vector		vPosition = m_pTransformCom->Get_State(STATE::POSITION);
+        _vector		vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+
+        vPosition -= XMVector3Normalize(vUp) * 10.f * fSpeed;
+
+        m_pTransformCom->Set_State(STATE::POSITION, vPosition);
+    }
 
     _int iMouseMove = {};
 

@@ -5,10 +5,6 @@
 
 // 정적 맵 오브젝트 ( 인스턴싱 O )
 
-NS_BEGIN(Engine)
-class CModel_Instance;
-NS_END
-
 NS_BEGIN(Editor)
 
 class CProp_Static final : public CProp
@@ -16,6 +12,10 @@ class CProp_Static final : public CProp
 public:
 	typedef struct tagPropStaticDesc : public CProp::PROP_DESC
 	{
+		_bool isIndependentObject{ false };
+		_vector vPosition{};
+		_vector vRotation{};
+		_vector vScale{};
 
 	}PROP_STATIC_DESC;
 
@@ -44,7 +44,7 @@ public:
 	void Fix_Instance(MESH_INSTANCE_DATA InstanceData, _uint InstanceIndex);
 
 private:
-	CModel_Instance* m_pModelCom = { nullptr };
+	class CEditor_Model_Instance* m_pModelCom = { nullptr };
 
 private:
 	HRESULT Ready_Components(void* pArg);
