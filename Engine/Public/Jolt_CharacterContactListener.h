@@ -49,16 +49,16 @@ public:
     void OnContactAdded(const JPH::CharacterVirtual* inCharacter,
         const JPH::BodyID& inBodyID2,
         const JPH::SubShapeID& inSubShapeID2,
-        JPH::RVec3Arg                inContactPosition,
-        JPH::Vec3Arg                 inContactNormal,
+        JPH::RVec3Arg inContactPosition,
+        JPH::Vec3Arg inContactNormal,
         JPH::CharacterContactSettings& ioSettings) override;
 
     // (4) ¡¢√À ¿Ø¡ˆ
     void OnContactPersisted(const JPH::CharacterVirtual* inCharacter,
         const JPH::BodyID& inBodyID2,
         const JPH::SubShapeID& inSubShapeID2,
-        JPH::RVec3Arg                inContactPosition,
-        JPH::Vec3Arg                 inContactNormal,
+        JPH::RVec3Arg inContactPosition,
+        JPH::Vec3Arg inContactNormal,
         JPH::CharacterContactSettings& ioSettings) override;
 
     // (5) ¡¢√À ¡æ∑·
