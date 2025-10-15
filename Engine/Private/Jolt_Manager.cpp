@@ -21,7 +21,7 @@ HRESULT CJolt_Manager::Initialize(_uint iNumObjectLayer)
     // Job threads
     m_iJobThreadCount = thread::hardware_concurrency();
 
-    m_pTempAlloc = new TempAllocatorImpl(64 * 1024 * 1024);
+    m_pTempAlloc = new TempAllocatorImpl(16 * 1024 * 1024);
     if (m_pTempAlloc == nullptr)
         return E_FAIL;
 
