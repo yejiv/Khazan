@@ -47,6 +47,7 @@ void CEdit_TextBox::Late_Update(_float fTimeDelta)
 
 HRESULT CEdit_TextBox::Render()
 {
+	
 	if (FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix")))
 		return E_FAIL;
 
@@ -67,6 +68,10 @@ HRESULT CEdit_TextBox::Render()
 	m_pVIBufferCom->Bind_Resources();
 
 	m_pVIBufferCom->Render();
+
+
+	if (FAILED(__super::Render()))
+		return E_FAIL;
 
 
 	return S_OK;

@@ -23,12 +23,18 @@ protected:
 	virtual ~CUI_TextBox() = default;
 
 public:
+	_wstring					Get_Text() const { return m_strText; }
+	_wstring					Get_FontTag() const { return m_strFontTag; }
+	_float3						Get_FontColor() const { return m_vFontColor; }
+	_float						Get_FontAlpha() const { return m_fAlpha; }
+	_float2						Get_FontScale() const { return m_vFontScale; }
+
 	void						Set_Text(const _wstring& strText);
 	void						Set_FontColor(const _float3& vColor);
 	void						Set_FontTag(const _wstring& strFontTag);
 	void						Set_FontScale(const _float2& vScale);
 	void						Set_FontAlpha(_float fAlpha);
-	void						Set_Centered(UI_Alignment eAligment);
+	void						Set_Centered(UI_ALIGNMENT eAligment);
 
 
 
@@ -48,11 +54,13 @@ public:
 protected:
 	_wstring					m_strText = {};
 	_wstring					m_strFontTag = {};
-	_float3						m_vColor = {};
+	_float3						m_vFontColor = {};
 	_float2						m_vFontScale = {};
 	_float2						m_vFontPos = {};
 	_float						m_fAlpha = {};
 	_bool						m_isChange = false;
+
+	_float2						m_vFontOffset = {};
 
 public:
 	virtual CGameObject*		Clone(void* pArg) = 0;

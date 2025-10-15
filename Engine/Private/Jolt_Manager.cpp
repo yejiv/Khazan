@@ -122,6 +122,20 @@ void CJolt_Manager::CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir
     );
 }
 
+void CJolt_Manager::CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter, CharacterVirtual::ExtendedUpdateSettings tSetting)
+{
+    pCharVir->ExtendedUpdate(
+        fTimeDelta,
+        vGravity,
+        tSetting,
+        m_pPhysics->GetDefaultBroadPhaseLayerFilter(iObjectLayer),
+        m_pPhysics->GetDefaultLayerFilter(iObjectLayer),
+        *pBodyFilter,
+        *pShapeFilter,
+        *m_pTempAlloc
+    );
+}
+
 #ifdef  _DEBUG
 
 
@@ -137,7 +151,10 @@ void CJolt_Manager::Test()
     BodyCreationSettings floor_settings(floor_shape, RVec3(Real(0.0), Real(-1.0), Real(0.0)), Quat::sIdentity(), EMotionType::Static, ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
     Body* floor = m_pPhysics->GetBodyInterface().CreateBody(floor_settings); // Note that if we run out of bodies this can return nullptr
 
+    BodyCreationSettings floor_settings2(floor_shape, RVec3(Real(0.0), Real(-1.0), Real(0.0)), Quat::sRotation(Vec3::sAxisX(), DegreesToRadians(45.0f)), EMotionType::Static, ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
+    Body* floor2 = m_pPhysics->GetBodyInterface().CreateBody(floor_settings2); // Note that if we run out of bodies this can return nullptr
     m_pPhysics->GetBodyInterface().AddBody(floor->GetID(), EActivation::DontActivate);
+    m_pPhysics->GetBodyInterface().AddBody(floor2->GetID(), EActivation::DontActivate);
 
    /* for (_uint i = 0; i < 5; i++)
     {

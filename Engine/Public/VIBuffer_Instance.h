@@ -13,7 +13,7 @@ public:
 		_uint			iNumInstance;
 		_float3			vCenter;
 		_float3			vRange;
-		_float2			vSize;
+		_float2			vSize = { 1.f, 1.f };
 
 	}INSTANCE_DESC;
 protected:

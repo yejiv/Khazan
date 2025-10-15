@@ -25,6 +25,17 @@ HRESULT CEdit_Button::Initialize_Clone(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	OnClick.Add([this]() { 
+		MSG_BOX(TEXT("Button_Clicked"));
+		});
+
+	OnHover.Add([this](_float fX, _float fY) { 
+		if (BUTTON_STATE::HOVERED == m_eState)
+			m_vColor = _float4(1.f, 1.f, 1.f, 1.f);
+		else if (m_eState == BUTTON_STATE::NORMAL)
+			m_vColor = _float4(1.f, 1.f, 0.f, 1.f);
+		});
+
 	return S_OK;
 }
 
@@ -35,7 +46,7 @@ void CEdit_Button::Priority_Update(_float fTimeDelta)
 
 void CEdit_Button::Update(_float fTimeDelta)
 {
-
+	__super::Update_Picking(g_hWnd);
 }
 
 void CEdit_Button::Late_Update(_float fTimeDelta)
