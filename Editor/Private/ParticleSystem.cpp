@@ -90,10 +90,6 @@ HRESULT CParticleSystem::Remove_Emitter(_uint iIndex)
     return S_OK;
 }
 
-void CParticleSystem::Recreate_Emitter()
-{
-}
-
 CParticleSystem* CParticleSystem::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     CParticleSystem* pInstance = new CParticleSystem(pDevice, pContext);

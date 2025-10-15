@@ -122,27 +122,34 @@ HRESULT CLoader::Loading_For_Map_Level()
 #pragma region 텍스쳐 원형 로딩
 
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
-	/*
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"),
-		CShader::Create(m_pDevice, m_pContext)), E_FAIL);
-	*/
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Texture_Terrain_Grid"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Textures/Terrain/Tile0.jpg"), 1)), E_FAIL);
+
 #pragma endregion
 
 #pragma region 모델 원형 로딩
 
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
 
-
+	// Prototype_Component_VIBuffer_Terrain
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_VIBuffer_Terrain"),
+		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 100, 100)), E_FAIL);
 
 #pragma endregion
 
 #pragma region 쉐이더 원형 로딩
 
 	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
-	/*
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"),
-		CShader::Create(m_pDevice, m_pContext)), E_FAIL);
-	*/
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Shader_ModelMeshInstance"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_ModelMeshInstance.hlsl"),
+			MESH_INSTANCING::Elements, MESH_INSTANCING::iNumElements)), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Shader_VtxMesh"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_VtxMesh.hlsl"),
+			VTXMESH::Elements, VTXMESH::iNumElements)), E_FAIL);
+	
 #pragma endregion
 
 #pragma region 게임오브젝트 원형 로딩
@@ -152,8 +159,14 @@ HRESULT CLoader::Loading_For_Map_Level()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"),
 		CProp_Static::Create(m_pDevice, m_pContext)), E_FAIL);
 
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Test"),
+		CProp_Animated::Create(m_pDevice, m_pContext)), E_FAIL);
+
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Camera_Map"),
 		CCamera_Map::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Map_Terrain"),
+		CMap_Terrain::Create(m_pDevice, m_pContext)), E_FAIL);
 
 #pragma endregion
 
@@ -175,7 +188,7 @@ HRESULT CLoader::Loading_For_Animation_Level()
 	/* Prototype_Component_Model_JOH_TestModel */
 	PreTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::ANIMATION), TEXT("Prototype_Component_Model_JOH_TestModel"),
-		CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::ANIM, "../../Client/Bin/Resources/Models/Creature/Test/AnimNude_Player/Test.fbx", PreTransformMatrix))))
+		CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::ANIM, "../../Client/Bin/Models/Creature/Test/AnimNude_Player/Test.fbx", PreTransformMatrix))))
 		return E_FAIL;
 
 		/* Prototype_Component_Model_JOH_TestModel */
@@ -227,7 +240,7 @@ HRESULT CLoader::Loading_For_Effect_Level()
 
 	// Prototype_Component_Particle_Spread
 	CVIBuffer_Point_Instance::POINT_INSTANCE_DESC SpreadDesc{};
-	SpreadDesc.iNumInstance = 100;
+	SpreadDesc.iNumInstance = 10000;
 	SpreadDesc.vCenter = _float3(0.f, 0.f, 0.f);
 	SpreadDesc.vRange = _float3(2.f, 4.f, 2.f);
 	SpreadDesc.vSize = _float2(0.5f, 1.f);

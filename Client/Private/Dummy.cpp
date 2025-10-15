@@ -53,7 +53,8 @@ void CDummy::Update(_float fTimeDelta)
         int a = 10;
 
 
-    m_pRigidBodyCom->Sync_Update(m_pTransformCom);
+    //m_pRigidBodyCom->Sync_Update(m_pTransformCom);
+    m_pCharVirCom->Update(fTimeDelta, m_pTransformCom);
 }
 
 void CDummy::Late_Update(_float fTimeDelta)
@@ -101,7 +102,7 @@ HRESULT CDummy::Ready_Components()
         return E_FAIL;
 
 
-    CRigidBody::RIGID_BOXSHAPE_DESC RigidDesc{};
+    /*CRigidBody::RIGID_BOXSHAPE_DESC RigidDesc{};
     RigidDesc.vExtent = { 0.5f, 0.5f, 0.5f };
     RigidDesc.bIsTrigger = false;
     RigidDesc.bStartActive = true;
@@ -121,6 +122,22 @@ HRESULT CDummy::Ready_Components()
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_RigidBody"),
         TEXT("Com_RigidBody"), reinterpret_cast<CComponent**>(&m_pRigidBodyCom), &RigidDesc)))
+        return E_FAIL;*/
+
+    CCharacterVirtual::CV_BOXSHAPE_DESC tCharVirDesc{};
+    _float3 vPos{};
+    _float4 vQuat{};
+    XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
+    XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
+    tCharVirDesc.eShapeType = SHAPE::BOX;
+    tCharVirDesc.vPos = vPos;
+    tCharVirDesc.vQuat = vQuat;
+    tCharVirDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+    tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
+    //tCharVirDesc.vExtent = _float3(1.f, 1.f, 1.f);
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
+        TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
         return E_FAIL;
 
 
@@ -179,5 +196,6 @@ void CDummy::Free()
 
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
-    Safe_Release(m_pRigidBodyCom);
+    //Safe_Release(m_pRigidBodyCom);
+    Safe_Release(m_pCharVirCom);
 }
