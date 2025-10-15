@@ -139,6 +139,9 @@
     <Filter Include="02.GameObject\MapObject\Map_Terrain">
       <UniqueIdentifier>{0b49104a-5252-4909-9887-78adc1dd0a3d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Animation\00.Tool">
+      <UniqueIdentifier>{4e0957cc-3379-4f01-8418-eb13b3a25d11}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -274,6 +277,9 @@
     <ClInclude Include="..\Public\Edit_TextBox.h">
       <Filter>02.GameObject\UI\03.TextBox</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\AnimationTool.h">
+      <Filter>02.GameObject\Animation\00.Tool</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -402,6 +408,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Map_Terrain.cpp">
       <Filter>02.GameObject\MapObject\Map_Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AnimationTool.cpp">
+      <Filter>02.GameObject\Animation\00.Tool</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
