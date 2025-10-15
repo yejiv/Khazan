@@ -182,6 +182,7 @@
     <ClInclude Include="..\Public\Prop_Animated.h" />
     <ClInclude Include="..\Public\Prop_Destructible.h" />
     <ClInclude Include="..\Public\Prop_Interactive.h" />
+    <ClInclude Include="..\Public\Prop_Object.h" />
     <ClInclude Include="..\Public\Prop_Static.h" />
     <ClInclude Include="..\public\Terrain_Grid.h" />
     <ClInclude Include="..\public\TestParticle.h" />
@@ -225,6 +226,7 @@
     <ClCompile Include="..\Private\Prop_Animated.cpp" />
     <ClCompile Include="..\Private\Prop_Destructible.cpp" />
     <ClCompile Include="..\Private\Prop_Interactive.cpp" />
+    <ClCompile Include="..\Private\Prop_Object.cpp" />
     <ClCompile Include="..\Private\Prop_Static.cpp" />
     <ClCompile Include="..\private\Terrain_Grid.cpp" />
     <ClCompile Include="..\private\TestParticle.cpp" />

@@ -7,6 +7,7 @@
 #include "Camera_Map.h"
 
 // Properties
+#include "Prop_Object.h"
 #include "Prop_Static.h"
 #include "Prop_Animated.h"
 #include "Prop_Interactive.h"
