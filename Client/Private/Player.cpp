@@ -62,7 +62,7 @@ void CPlayer::Update(_float fTimeDelta)
 
     if (GetKeyState(VK_DOWN) & 0x8000)
     {
-        m_pTransformCom->Go_Backward(fTimeDelta);
+        m_pTransformCom->Go_Backward(fTimeDelta * 0.5);
         m_pCharVirCom->Set_Position(m_pTransformCom->Get_State(STATE::POSITION));
     }
     if (GetKeyState(VK_LEFT) & 0x8000)
@@ -78,7 +78,7 @@ void CPlayer::Update(_float fTimeDelta)
 
     if (GetKeyState(VK_UP) & 0x8000)
     {
-        m_pTransformCom->Go_Straight(fTimeDelta);
+        m_pTransformCom->Go_Straight(fTimeDelta * 0.5);
         m_pCharVirCom->Set_Position(m_pTransformCom->Get_State(STATE::POSITION));
 
         if (m_iState & IDLE)
@@ -163,17 +163,19 @@ HRESULT CPlayer::Ready_Components()
     //    TEXT("Com_RigidBody"), reinterpret_cast<CComponent**>(&m_pRigidBodyCom), &RigidDesc)))
     //    return E_FAIL;
 
-    CCharacterVirtual::CV_SPHERESHAPE_DESC tCharVirDesc{};
+    CCharacterVirtual::CV_CAPSULESHAPE_DESC tCharVirDesc{};
     _float3 vPos{};
     _float4 vQuat{};
     XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
     XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
-    tCharVirDesc.eShapeType = SHAPE::SPHERE;
+    tCharVirDesc.eShapeType = SHAPE::CAPSULE;
     tCharVirDesc.vPos = vPos;
     tCharVirDesc.vQuat = vQuat;
     tCharVirDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
-    tCharVirDesc.fRadius = 0.5f;
+    tCharVirDesc.fRadius = 1.f;
+    tCharVirDesc.fHeight = 1.f;
+    tCharVirDesc.fMaxSlopeAngle = 20.f;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))

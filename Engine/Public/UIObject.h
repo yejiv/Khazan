@@ -7,12 +7,12 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CUIObject abstract : public CGameObject
 {
 public:
-	enum class UI_Alignment
-{
-	TOP_LEFT,	 TOP_CENTER,	TOP_RIGHT,
-	MIDDLE_LEFT, MIDDLE_CENTER, MIDDLE_RIGHT,
-	BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT
-};
+	enum class UI_ALIGNMENT
+	{
+		TOP_LEFT, TOP_CENTER, TOP_RIGHT,
+		MIDDLE_LEFT, MIDDLE_CENTER, MIDDLE_RIGHT,
+		BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT
+	};
 
 
 public:
@@ -36,8 +36,8 @@ public:
 	CMultiDelegate<_bool>			OnVisibleChanged; // 표시 상태 변화
 
 public:
-	void						Set_Alignment(UI_Alignment eAlign) { m_eAlignment = eAlign; }
-	UI_Alignment				Get_Alignment() const { return m_eAlignment; }
+	void						Set_Alignment(UI_ALIGNMENT eAlign) { m_eAlignment = eAlign; }
+	UI_ALIGNMENT				Get_Alignment() const { return m_eAlignment; }
 
 public:
 	class CTexture*				Set_Texture(CGameObject* pGameObject, CTexture* pTexture);
@@ -96,7 +96,7 @@ protected:
 
 
 	_float2						m_vAnchor;   // 앵커
-	UI_Alignment				m_eAlignment = { UI_Alignment::TOP_LEFT };
+	UI_ALIGNMENT				m_eAlignment = { UI_ALIGNMENT::TOP_LEFT };
 
 
 	_uint						m_iWinSizeX = {};
