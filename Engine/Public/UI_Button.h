@@ -30,6 +30,8 @@ public:
 
 protected:
 	BUTTON_STATE				m_eState = { BUTTON_STATE::NORMAL };
+	_bool						m_isPrevMouseDown = { false };
+
 
 public:
 	virtual CGameObject*		Clone(void* pArg) = 0;
