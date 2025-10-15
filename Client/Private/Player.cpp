@@ -58,31 +58,31 @@ void CPlayer::Update(_float fTimeDelta)
         if (true == isPicked)
         {
             m_pTransformCom->Set_State(Engine::STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPickedPos), 1.f));
-            /*m_pCharVirCom->Set_Position(XMVectorSetW(XMLoadFloat3(&vPickedPos), 1.f));
-            m_pCharVirCom->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 1.f));*/
+            m_pCharVirCom->Set_Position(XMVectorSetW(XMLoadFloat3(&vPickedPos), 1.f));
+            m_pCharVirCom->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 1.f));
         }
     }
 
     if (GetKeyState(VK_DOWN) & 0x8000)
     {
         m_pTransformCom->Go_Backward(fTimeDelta * 0.5);
-        //m_pCharVirCom->Set_Position(m_pTransformCom->Get_State(STATE::POSITION));
+        m_pCharVirCom->Set_Position(m_pTransformCom->Get_State(STATE::POSITION));
     }
     if (GetKeyState(VK_LEFT) & 0x8000)
     {
         m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * -1.f);
-        //m_pCharVirCom->Set_Rotation(m_pTransformCom->Get_Rotation_Quat());
+        m_pCharVirCom->Set_Rotation(m_pTransformCom->Get_Rotation_Quat());
     }
     if (GetKeyState(VK_RIGHT) & 0x8000)
     {
         m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * 1.f);
-        //m_pCharVirCom->Set_Rotation(m_pTransformCom->Get_Rotation_Quat());
+        m_pCharVirCom->Set_Rotation(m_pTransformCom->Get_Rotation_Quat());
     }
 
     if (GetKeyState(VK_UP) & 0x8000)
     {
         m_pTransformCom->Go_Straight(fTimeDelta * 0.5);
-        //m_pCharVirCom->Set_Position(m_pTransformCom->Get_State(STATE::POSITION));
+        m_pCharVirCom->Set_Position(m_pTransformCom->Get_State(STATE::POSITION));
 
         if (m_iState & IDLE)
             m_iState ^= IDLE;
@@ -100,9 +100,9 @@ void CPlayer::Update(_float fTimeDelta)
 
     __super::Update(fTimeDelta);
 
-    m_pRigidBodyCom->Update(fTimeDelta, m_pTransformCom->Get_WorldMatrix());
+    //m_pRigidBodyCom->Update(fTimeDelta, m_pTransformCom->Get_WorldMatrix());
 
-    //m_pCharVirCom->Update(fTimeDelta, m_pTransformCom);
+    m_pCharVirCom->Update(fTimeDelta, m_pTransformCom);
 
     //m_pCharacterCom->Update(fTimeDelta, m_pBodyCom, m_pTransformCom);
 
@@ -166,7 +166,7 @@ HRESULT CPlayer::Ready_Collision()
     RigidDesc.vExtent = { 0.5f, 0.5f, 0.5f };*/
 
     //CRigidBody::RIGID_MESHSHAPE_DESC RigidDesc{};
-    CRigidBody::RIGID_CONVEXSHAPE_DESC RigidDesc{};
+   /* CRigidBody::RIGID_CONVEXSHAPE_DESC RigidDesc{};
     CBody_Player* pBody = dynamic_cast<CBody_Player*>(Find_PartObject(TEXT("Part_Body")));
 
     RigidDesc.pModel = pBody->Get_Model();
@@ -191,9 +191,9 @@ HRESULT CPlayer::Ready_Collision()
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_RigidBody"),
         TEXT("Com_RigidBody"), reinterpret_cast<CComponent**>(&m_pRigidBodyCom), &RigidDesc)))
-        return E_FAIL;
+        return E_FAIL;*/
 
-    /*CCharacterVirtual::CV_CAPSULESHAPE_DESC tCharVirDesc{};
+    CCharacterVirtual::CV_CAPSULESHAPE_DESC tCharVirDesc{};
     _float3 vPos{};
     _float4 vQuat{};
     XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
@@ -209,7 +209,7 @@ HRESULT CPlayer::Ready_Collision()
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
-        return E_FAIL;*/
+        return E_FAIL;
 
     return S_OK;
 }
@@ -243,6 +243,6 @@ CGameObject* CPlayer::Clone(void* pArg)
 void CPlayer::Free()
 {
     __super::Free();
-    Safe_Release(m_pRigidBodyCom);
-    //Safe_Release(m_pCharVirCom);
+    //Safe_Release(m_pRigidBodyCom);
+    Safe_Release(m_pCharVirCom);
 }
