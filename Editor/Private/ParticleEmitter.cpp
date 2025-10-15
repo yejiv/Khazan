@@ -39,11 +39,7 @@ void CParticleEmitter::Update(_float fTimeDelta)
 {
     if (nullptr != m_pVIBufferCom)
     {
-        if (m_isSpread)
-            m_pVIBufferCom->Spread(fTimeDelta);
-
-        else if (m_isDrop)
-            m_pVIBufferCom->Drop(fTimeDelta);
+        m_pVIBufferCom->Move(fTimeDelta);
     }
 }
 

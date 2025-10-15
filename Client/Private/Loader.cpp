@@ -181,6 +181,17 @@ HRESULT CLoader::Loading_For_Stage1_Texture()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Brush.png"), 1))))
 		return E_FAIL;
 
+
+	vector<const _tchar*> TextureList;
+	TextureList.reserve(2);
+	TextureList.push_back(TEXT("T_BG_GrandFlores.png"));
+	TextureList.push_back(TEXT("T_BG_ValleyOfTheFallenSouls.png"));
+
+	/* Prototype_Component_Texture_Test */
+   	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Texture_Test"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Textures/UI/BackGround/"), TextureList))))
+		return E_FAIL;
+
 	return S_OK;
 }
 

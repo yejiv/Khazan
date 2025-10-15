@@ -13,6 +13,7 @@ private:
 
 public:
 	virtual HRESULT Initialize_Prototype(const _tchar* pTextureFilePath, _uint iNumTextures);
+	virtual HRESULT Initialize_Prototype(const _tchar* pTextureFilePath, vector<const _tchar*> VecTexture);
 	virtual HRESULT Initialize_Clone(void* pArg) override;
 
 public:
@@ -25,6 +26,7 @@ private:
 
 public:
 	static CTexture* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _tchar* pTextureFilePath, _uint iNumTextures);
+	static CTexture* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _tchar* pTextureFilePath, vector<const _tchar*> VecTexture);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 

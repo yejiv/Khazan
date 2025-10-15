@@ -28,6 +28,26 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_ LPWSTR    lpCmdLine,
                      _In_ int       nCmdShow)
 {
+#ifdef _DEBUG
+    AllocConsole();     // Console Create
+
+    FILE* pOut = { nullptr };
+    FILE* pIn = { nullptr };
+    freopen_s(&pOut, "CONOUT$", "w", stdout);
+    freopen_s(&pOut, "CONOUT$", "w", stderr);
+    freopen_s(&pIn, "CONIN$", "r", stdin);
+
+    HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
+    DWORD prev_mode;
+    GetConsoleMode(hInput, &prev_mode);
+
+    prev_mode &= ~ENABLE_QUICK_EDIT_MODE;
+    prev_mode &= ~ENABLE_INSERT_MODE;
+    prev_mode |= ENABLE_EXTENDED_FLAGS;
+
+    SetConsoleMode(hInput, prev_mode);
+#endif
+
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 

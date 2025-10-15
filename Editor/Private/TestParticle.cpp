@@ -24,6 +24,9 @@ HRESULT CTestParticle::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
+    // Compute Shader Performance Test
+    QueryPerformanceFrequency(&m_Freq);
+
     return S_OK;
 }
 
@@ -33,7 +36,57 @@ void CTestParticle::Priority_Update(_float fTimeDelta)
 
 void CTestParticle::Update(_float fTimeDelta)
 {
-    m_pVIBufferCom->Spread(fTimeDelta);
+    // =============== GPU Spread ===============
+
+    //  QueryPerformanceCounter(&m_StartGpu);
+    //  
+    //  m_pVIBufferCom->Spread(fTimeDelta);
+    //  
+    //  QueryPerformanceCounter(&m_EndGpu);
+    //  
+    //  _float fGPUElapsed = (m_EndGpu.QuadPart - m_StartGpu.QuadPart) * 1000.0f / static_cast<_float>(m_Freq.QuadPart);
+    //  m_TotalGpuTime += fGPUElapsed;
+    //  m_FrameCount++;
+    //  
+    //  if (m_FrameCount >= m_iPrintInterval)
+    //  {
+    //      double avgGpu = m_TotalGpuTime / m_FrameCount;
+    //  
+    //      std::wcout.setf(std::ios::fixed, std::ios::floatfield);
+    //      std::wcout.precision(3);
+    //      std::wcout << L"[Avg over " << m_FrameCount << L" frames] "
+    //          << L"GPU Drop: " << avgGpu << L" ms"
+    //          << std::endl;
+    //  
+    //      m_FrameCount = 0;
+    //      m_TotalGpuTime = 0.0;
+    //  }
+
+    // =============== CPU Spread ===============
+
+    //  QueryPerformanceCounter(&m_StartCpu);
+    //  
+    //  m_pVIBufferCom->Spread(fTimeDelta);
+    //  
+    //  QueryPerformanceCounter(&m_EndCpu);
+    //  
+    //  _float fCPUElapsed = (m_EndCpu.QuadPart - m_StartCpu.QuadPart) * 1000.0f / static_cast<_float>(m_Freq.QuadPart);
+    //  m_TotalCpuTime += fCPUElapsed;
+    //  m_FrameCount++;
+    //  
+    //  if (m_FrameCount >= m_iPrintInterval)
+    //  {
+    //      double avgCpu = m_TotalCpuTime / m_FrameCount;
+    //  
+    //      std::wcout.setf(std::ios::fixed, std::ios::floatfield);
+    //      std::wcout.precision(3);
+    //      std::wcout << L"[Avg over " << m_FrameCount << L" frames] "
+    //          << L"CPU Drop: " << avgCpu << L" ms"
+    //          << std::endl;
+    //  
+    //      m_FrameCount = 0;
+    //      m_TotalCpuTime = 0.0;
+    //  }
 }
 
 void CTestParticle::Late_Update(_float fTimeDelta)

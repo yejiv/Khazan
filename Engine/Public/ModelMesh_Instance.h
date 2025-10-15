@@ -22,7 +22,7 @@ private:
 	virtual ~CModelMesh_Instance() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(MODELTYPE eType, const aiMesh* pAIMesh, const vector<class CBone*>& Bones, const INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix);
+	virtual HRESULT Initialize_Prototype(MODELTYPE eType, _fmatrix PreTransformMatrix, MESH_DATA& Data, const INSTANCE_DESC* pDesc);
 	virtual HRESULT Initialize_Clone(void* pArg) override;
 
 public:
@@ -36,9 +36,9 @@ public:
 	void Fix_Instance(MESH_INSTANCE_DATA  InstanceData, _uint iInstanceIndex);
 
 private:
-	_char m_szName[MAX_PATH] = {};
-	_uint m_iMaterialIndex = {};
-	_uint m_iNumBones = {};
+	_wstring				m_strName;
+	_uint					m_iMaterialIndex = {};
+	_uint					m_iNumBones = {};
 
 	/* 전체 뼈 기준으로 이 메시에 영향을 주는 뼈들의 인덱스를 저장 ( 전체 뼈 기준 영향을 주는 뼈의 인덱스 ) */
 	vector<_int> m_BoneIndices;
@@ -48,14 +48,13 @@ private:
 	vector<_float4x4> m_OffsetMatrices;
 
 private:
-	HRESULT Ready_Vertices_For_NonAnim(const aiMesh* pAIMesh, _fmatrix PreTransformMatrix);
-	HRESULT Ready_Vertices_For_Anim(const aiMesh* pAIMesh, const vector<class CBone*>& Bones);
+	HRESULT Ready_Vertices_For_NonAnim(MESH_DATA& Data);
+	HRESULT Ready_Vertices_For_Anim(MESH_DATA& Data);
 
-	HRESULT Ready_Indices_For_2Byte(const aiMesh* pAIMesh);
-	HRESULT Ready_Indices_For_4Byte(const aiMesh* pAIMesh);
+	HRESULT Ready_Indices(MESH_DATA& Data);
 
 public:
-	static CModelMesh_Instance* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, MODELTYPE eType, const aiMesh* pAIMesh, const vector<class CBone*>& Bones, const INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix);
+	static CModelMesh_Instance* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, MODELTYPE eType, _fmatrix PreTransformMatrix, MESH_DATA& Data, const INSTANCE_DESC* pDesc);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 };

@@ -34,15 +34,6 @@ private:
 
 	// ===== 파티클 관련 기본 변수 =====
 	CVIBuffer_Point_Instance::POINT_INSTANCE_DESC m_PointInfo = {};
-	_bool m_isSpread = {};
-	_bool m_isDrop = {};
-
-	// ===== 파티클 관련 확장 변수 =====
-	_bool		m_isRandomDir = {};
-	_float		m_fAngleMin = {};
-	_float		m_fAngleMax = {};
-	_bool		m_isGravity = {};
-	_float3		m_vGravity = {};
 
 private:
 	HRESULT Create_ParticleSystem();

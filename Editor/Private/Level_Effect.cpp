@@ -13,9 +13,9 @@ CLevel_Effect::CLevel_Effect(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 HRESULT CLevel_Effect::Initialize()
 {
     // Compute Shader Test
-    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EFFECT), TEXT("Layer_Effect"),
-        ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_TestParticle"))))
-        return E_FAIL;
+    //if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EFFECT), TEXT("Layer_Effect"),
+    //    ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_TestParticle"))))
+    //    return E_FAIL;
 
     if (FAILED(Ready_Layer_BackGround()))
         return E_FAIL;
@@ -197,8 +197,6 @@ HRESULT CLevel_Effect::Initialize()
                 {
                     m_strEmitterName = pEmitter->Get_Name();
                     m_PointInfo = pEmitter->Get_ParticleInfo();
-                    m_isSpread = pEmitter->Get_Spread();
-                    m_isDrop = pEmitter->Get_Drop();
                     m_vPaletteColor = pEmitter->Get_DiffuseColor();
 
                     m_iPrevSelectedEmitter = m_iSelectedEmitter;
@@ -227,22 +225,40 @@ HRESULT CLevel_Effect::Initialize()
                 // 수명 (최소, 최대)
                 ImGui::InputFloat2("LifeTime (Min/Max)", reinterpret_cast<_float*>(&m_PointInfo.vLifeTime));
 
-                // 회전 중심 (Pivot)
-                ImGui::InputFloat3("Pivot", reinterpret_cast<_float*>(&m_PointInfo.vPivot));
-
                 // 속도 (최소, 최대)
                 ImGui::InputFloat2("Speed (Min/Max)", reinterpret_cast<_float*>(&m_PointInfo.vSpeed));
+
+                // 방향 벡터
+                ImGui::InputFloat3("Direction", reinterpret_cast<_float*>(&m_PointInfo.vDirection));
+
+                // 벡터 스케일 (각 축별 스케일)
+                ImGui::InputFloat3("Vector Scale", reinterpret_cast<_float*>(&m_PointInfo.vVectorScale));
 
                 ImGui::Separator();
                 ImGui::Text("Emitter Behavior");
                 ImGui::Separator();
 
-                // 반복 여부 및 물리 효과
+                // 루프 여부
                 ImGui::Checkbox("Loop", &m_PointInfo.isLoop);
-                ImGui::Checkbox("Spread", &m_isSpread);
-                ImGui::Checkbox("Drop", &m_isDrop);
-                //  ImGui::Checkbox("Gravity", &m_isGravity);
-                
+
+                // 랜덤 방향 사용 여부
+                ImGui::Checkbox("Random Vector", &m_PointInfo.isRandomVector);
+
+                if (m_PointInfo.isRandomVector)
+                {
+                    // 최소/최대 각도 (랜덤 벡터 회전 범위)
+                    ImGui::InputFloat3("Min Angle", reinterpret_cast<_float*>(&m_PointInfo.vMinAngle));
+                    ImGui::InputFloat3("Max Angle", reinterpret_cast<_float*>(&m_PointInfo.vMaxAngle));
+                }
+
+                // Pivot 사용 여부
+                ImGui::Checkbox("Use Pivot", &m_PointInfo.isUsePivot);
+
+                if (m_PointInfo.isUsePivot)
+                {
+                    ImGui::InputFloat3("Pivot", reinterpret_cast<_float*>(&m_PointInfo.vPivot));
+                }
+
                 ImGui::Separator();
                 ImGui::Text("Particle Color");
                 ImGui::Separator();
@@ -261,8 +277,6 @@ HRESULT CLevel_Effect::Initialize()
                         pEmitter->Set_Name(strNewEmitterName);
 
                     pEmitter->Recreate_Particle(m_PointInfo);
-                    pEmitter->Set_Spread(m_isSpread);
-                    pEmitter->Set_Drop(m_isDrop);
                     pEmitter->Set_DiffuseColor(m_vPaletteColor);
                 }
             }
@@ -339,8 +353,6 @@ HRESULT CLevel_Effect::Create_ParticleEmitter()
 
     CParticleEmitter::PARTICLE_EMITTER_DESC Desc{};
     Desc.strName = TEXT("Emitter") + to_wstring(pSystem->Get_NumEmitters());
-
-    // Desc Editor에서 수치 조정한 멤버 변수 추가 작성 필요
 
     if (FAILED(pSystem->Add_Emitter(Desc)))
         MSG_BOX(TEXT("Failed to Add Emitter!"));
