@@ -209,10 +209,15 @@ HRESULT CLoader::Loading_For_Effect_Level()
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
 
 	// Prototype_Component_Texture_TestParticle
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_TestParticle"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Textures/Effect/TestParticle.png"), 1))))
-		return E_FAIL;
+	//	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_TestParticle"),
+	//		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Textures/Effect/TestParticle.png"), 1))))
+	//		return E_FAIL;
 	
+	// Prototype_Component_Texture_TestParticle
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_TestParticle"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Models/Effect/LowPolyFoodLiteTexture_01.png"), 1))))
+		return E_FAIL;
+
 	// Prototype_Component_Texture_Terrain_Grid
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_Terrain_Grid"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Textures/Terrain/Tile0.jpg"), 1))))
@@ -226,17 +231,36 @@ HRESULT CLoader::Loading_For_Effect_Level()
 		return E_FAIL;
 
 	// Prototype_Component_Particle_Spread
-	CVIBuffer_Point_Instance::POINT_INSTANCE_DESC SpreadDesc{};
-	SpreadDesc.iNumInstance = 10000;
-	SpreadDesc.vCenter = _float3(0.f, 0.f, 0.f);
-	SpreadDesc.vRange = _float3(2.f, 4.f, 2.f);
-	SpreadDesc.vSize = _float2(0.5f, 1.f);
-	SpreadDesc.vLifeTime = _float2(0.5f, 2.f);
-	SpreadDesc.vPivot = _float3(0.f, 0.f, 0.f);
-	SpreadDesc.vSpeed = _float2(0.5f, 1.f);
-	SpreadDesc.isLoop = true;
+	//	CVIBuffer_Point_Instance::POINT_INSTANCE_DESC SpreadDesc{};
+	//	SpreadDesc.iNumInstance = 10000;
+	//	SpreadDesc.vCenter = _float3(0.f, 0.f, 0.f);
+	//	SpreadDesc.vRange = _float3(0.f, 0.f, 0.f);
+	//	SpreadDesc.vSize = _float2(0.5f, 1.f);
+	//	SpreadDesc.vLifeTime = _float2(0.5f, 2.f);
+	//	SpreadDesc.vPivot = _float3(0.f, 0.f, 0.f);
+	//	SpreadDesc.vSpeed = _float2(0.5f, 1.f);
+	//	SpreadDesc.isLoop = true;
+	//	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Particle_Spread"),
+	//		CVIBuffer_Point_Instance::Create(m_pDevice, m_pContext, &SpreadDesc))))
+	//		return E_FAIL;
+
+	CVIBuffer_Mesh_Instance::MESH_INSTANCE_DESC MeshDesc{};
+	MeshDesc.iNumInstance = 100;
+	MeshDesc.vCenter = _float3(0.f, 0.f, 0.f);
+	MeshDesc.vRange = _float3(0.f, 0.f, 0.f);
+	MeshDesc.vSize = _float2(1.f, 2.f);
+	MeshDesc.vDirection = _float3(0.f, 1.f, 0.f);
+	MeshDesc.vVectorScale = _float3(1.f, 1.f, 1.f);
+	MeshDesc.vSpeed = _float2(1.f, 2.f);
+	MeshDesc.vLifeTime = _float2(1.f, 2.f);
+	MeshDesc.isLoop = true;
+	MeshDesc.isRandomVector = true;
+	MeshDesc.vMinAngle = _float3(0.f, 0.f, 0.f);
+	MeshDesc.vMaxAngle = _float3(360.f, 360.f, 360.f);
+
+	_matrix PreTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Particle_Spread"),
-		CVIBuffer_Point_Instance::Create(m_pDevice, m_pContext, &SpreadDesc))))
+		CVIBuffer_Mesh_Instance::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/Models/Effect/TestMesh.fbx", &MeshDesc, PreTransformMatrix))))
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
