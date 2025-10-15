@@ -13,9 +13,9 @@ public:
 	typedef struct tagPropAnimatedDesc : public CProp::PROP_DESC
 	{
 		_bool isIndependentObject{ false };
-		_vector vPosition{};
-		_vector vRotation{};
-		_vector vScale{};
+		_float3 vPosition{};
+		_float3 vRotation{};
+		_float3 vScale{};
 
 	}PROP_ANIMATED_DESC;
 
