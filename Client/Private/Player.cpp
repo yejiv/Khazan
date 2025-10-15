@@ -165,7 +165,8 @@ HRESULT CPlayer::Ready_Collision()
     /*CRigidBody::RIGID_BOXSHAPE_DESC RigidDesc{};
     RigidDesc.vExtent = { 0.5f, 0.5f, 0.5f };*/
 
-    CRigidBody::RIGID_MESHSHAPE_DESC RigidDesc{};
+    //CRigidBody::RIGID_MESHSHAPE_DESC RigidDesc{};
+    CRigidBody::RIGID_CONVEXSHAPE_DESC RigidDesc{};
     CBody_Player* pBody = dynamic_cast<CBody_Player*>(Find_PartObject(TEXT("Part_Body")));
 
     RigidDesc.pModel = pBody->Get_Model();

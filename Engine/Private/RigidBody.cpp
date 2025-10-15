@@ -141,16 +141,15 @@ void CRigidBody::Build_Shape(RIGIDBODY_DESC* pDesc, RefConst<Shape>& pShape)
     }
     case SHAPE::CONVEX:
     {
-       /* CONVEXSHAPE_DESC* pConvexHullDesc = static_cast<CONVEXSHAPE_DESC*>(pDesc);
+        RIGID_CONVEXSHAPE_DESC* pConvexHullDesc = static_cast<RIGID_CONVEXSHAPE_DESC*>(pDesc);
         if (pConvexHullDesc->pModel == nullptr)
-            return E_FAIL;*/
-        /*Ref<ConvexHullShapeSettings> ConvexHullSetting = new ConvexHullShapeSettings(ConvertToArrayVec3(pConvexHullDesc->pModel));
-        BodyShape = ConvexHullSetting->Create().Get();*/
+            return;
+        Ref<ConvexHullShapeSettings> ConvexHullSetting = new ConvexHullShapeSettings(ConvertToArrayVec3(pConvexHullDesc->pModel));
+        pShape = ConvexHullSetting->Create().Get();
         break;
     }
     default:
         break;
-        //return E_FAIL;
     }
 }
 
