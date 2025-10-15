@@ -1,6 +1,5 @@
 #include "CharacterVirtual.h"
 #include "GameInstance.h"
-#include "CharacterContactListener.h"
 
 CCharacterVirtual::CCharacterVirtual(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CComponent { pDevice, pContext }
@@ -77,6 +76,7 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 	m_pCharVir = m_pGameInstance->CreateCharacterVirtual(&SettingDesc, RVec3Arg(LoadVec3(pDesc->vPos)), QuatArg(LoadQuat(pDesc->vQuat)), 0, &m_pBodyInterface);
 	m_BodyId = m_pCharVir->GetInnerBodyID();
 
+	m_pCharVir->SetUserData(static_cast<uint64>(reinterpret_cast<uintptr_t>(pDesc->pGameObject)));
 	if (!m_BodyId.IsInvalid())
 	{
 		//m_pBodyInterface->SetObjectLayer(m_BodyId, m_iNumObjectLayer);
@@ -87,13 +87,6 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 	m_vVelocity = Vec3::sZero();
 	m_vUp = Vec3::sAxisY();
 	m_vGravity = Vec3(0, -9.81f, 0);
-
-	CCharacterContactListener::CONFIG_DESC ConfigDesc{};
-	ConfigDesc.floor_dot = Cos(DegreesToRadians(pDesc->fMaxSlopeAngle));
-	ConfigDesc.cache_ground_normal = true;
-
-	m_pContactListener = new CCharacterContactListener(ConfigDesc);
-	m_pCharVir->SetListener(m_pContactListener);
 
 	m_pBodyFilter = new BodyFilter();
 	m_pShapeFilter = new ShapeFilter();
@@ -192,5 +185,4 @@ void CCharacterVirtual::Free()
 	Safe_Delete(m_pCharVir);
 	Safe_Delete(m_pBodyFilter);
 	Safe_Delete(m_pShapeFilter);
-	Safe_Delete(m_pContactListener);
 }

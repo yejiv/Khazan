@@ -45,11 +45,16 @@ HRESULT CMesh::Initialize_Prototype(MODELTYPE eType, _fmatrix PreTransformMatrix
 
 	_uint	iNumIndices = {};
 
+	m_vIndices.reserve(data.iNumFace * 3);
+
 	for (size_t i = 0; i < data.iNumFace; i++)
 	{
 		pIndices[iNumIndices++] = data.vecIndices[i].x;
+		m_vIndices.push_back(data.vecIndices[i].x);
 		pIndices[iNumIndices++] = data.vecIndices[i].y;
+		m_vIndices.push_back(data.vecIndices[i].y);
 		pIndices[iNumIndices++] = data.vecIndices[i].z;
+		m_vIndices.push_back(data.vecIndices[i].z);
 	}
 
 	D3D11_SUBRESOURCE_DATA	IBInitialData{};
@@ -95,9 +100,12 @@ HRESULT CMesh::Ready_Vertices_For_NonAnim(MESH_DATA& data)
 	VTXMESH* pVertices = new VTXMESH[m_iNumVertices];
 	ZeroMemory(pVertices, sizeof(VTXMESH) * m_iNumVertices);
 
+	m_vVerticesPos.reserve(m_iNumVertices);
+
 	for (size_t i = 0; i < m_iNumVertices; i++)
 	{
 		memcpy(&pVertices[i].vPosition, &data.vecVertices[i].position, sizeof(_float3));
+		m_vVerticesPos.push_back(pVertices[i].vPosition);
 		memcpy(&pVertices[i].vNormal, &data.vecVertices[i].normal, sizeof(_float3));
 		memcpy(&pVertices[i].vTangent, &data.vecVertices[i].tangent, sizeof(_float3));
 		memcpy(&pVertices[i].vBinormal, &data.vecVertices[i].binormal, sizeof(_float3));
@@ -133,6 +141,7 @@ HRESULT CMesh::Ready_Vertices_For_Anim(MESH_DATA& data)
 	for (size_t i = 0; i < m_iNumVertices; i++)
 	{
 		memcpy(&pVertices[i].vPosition, &data.vecVertices[i].position, sizeof(_float3));
+		m_vVerticesPos.push_back(pVertices[i].vPosition);
 		memcpy(&pVertices[i].vNormal, &data.vecVertices[i].normal, sizeof(_float3));
 		memcpy(&pVertices[i].vTangent, &data.vecVertices[i].tangent, sizeof(_float3));
 		memcpy(&pVertices[i].vBinormal, &data.vecVertices[i].binormal, sizeof(_float3));

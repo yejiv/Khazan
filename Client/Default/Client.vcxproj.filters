@@ -127,7 +127,7 @@
       <Filter>96.pch</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Player.h">
-      <Filter>02.GameObject\Pool</Filter>
+      <Filter>02.GameObject\Player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
