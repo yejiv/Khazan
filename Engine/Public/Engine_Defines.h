@@ -71,6 +71,8 @@ using namespace JPH;
 #include <future>
 #include <any>
 #include <deque>
+#include <filesystem>
+#include <strsafe.h>
 #include <iostream>
 
 using namespace std;

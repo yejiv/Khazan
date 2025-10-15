@@ -39,18 +39,13 @@ void CEdit_Panel::Priority_Update(_float fTimeDelta)
 
 void CEdit_Panel::Update(_float fTimeDelta)
 {
-	for (auto& pChild : m_Children)
-	{
-		if (nullptr != pChild)
-			pChild->Update(fTimeDelta);
-	}
+
 }
 
 void CEdit_Panel::Late_Update(_float fTimeDelta)
 {
 	Update_LayOut();
 	Update_Transform();
-
 
 	for (auto& pChild : m_Children)
 	{

@@ -13,14 +13,23 @@ CModel_Instance::CModel_Instance(const CModel_Instance& Prototype)
     : CComponent { Prototype }
     , m_iNumMeshes{ Prototype.m_iNumMeshes }
     , m_Meshes{ Prototype.m_Meshes }
-    , m_eModelType{ Prototype.m_eModelType }
-    , m_PreTransformMatrix{ Prototype.m_PreTransformMatrix }
+
     , m_iNumMaterials{ Prototype.m_iNumMaterials }
     , m_Materials{ Prototype.m_Materials }
+
     , m_iNumAnimations{ Prototype.m_iNumAnimations }
+
+    , m_eModelType{ Prototype.m_eModelType }
+    , m_PreTransformMatrix{ Prototype.m_PreTransformMatrix }
+    , m_strModelName{ Prototype.m_strModelName }
+    , m_strModelFilePath{ Prototype.m_strModelFilePath }
 {
     for (auto& pPrototypeAnimation : Prototype.m_Animations)
-        m_Animations.push_back(pPrototypeAnimation->Clone());
+    {
+        CAnimation* pAnimation = pPrototypeAnimation->Clone();
+        m_Animations.push_back(pAnimation);
+        pAnimation->Set_TrackPositionPtr(&m_fCurrentTrackPosition);
+    }
 
     for (auto& pPrototypeBone : Prototype.m_Bones)
         m_Bones.push_back(pPrototypeBone->Clone());
@@ -32,38 +41,38 @@ CModel_Instance::CModel_Instance(const CModel_Instance& Prototype)
         Safe_AddRef(pMaterial);
 }
 
-HRESULT CModel_Instance::Initialize_Prototype(MODELTYPE eModelType, const _char* pModelFilePath, const CModelMesh_Instance::INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix)
+HRESULT CModel_Instance::Initialize_Prototype(const _char* pModelFilePath, const CModelMesh_Instance::INSTANCE_DESC* pDesc)
 {
-    /* aiProcess_PreTransformVertices : 각각의 메시를 붙여야할 위치에 적절히 배치한다. */
-    /* 배치 : 각 메시의 정점들을 배치를 위한 임의의 행렬과 곱하여 로드한다. */
+    MODEL_DATA Data = {};
 
-    m_eModelType = eModelType;
-
-    XMStoreFloat4x4(&m_PreTransformMatrix, PreTransformMatrix);
-
-    _uint           iFlag = { aiProcess_ConvertToLeftHanded | aiProcessPreset_TargetRealtime_Fast };
-
-    if (MODELTYPE::NONANIM == m_eModelType)
-        iFlag |= aiProcess_PreTransformVertices;
-
-    m_pAIScene = m_Importer.ReadFile(pModelFilePath, iFlag);
-    if (nullptr == m_pAIScene)
+    ifstream ifs(pModelFilePath, std::ios::binary);
+    if (!ifs.is_open())
+    {
+        MSG_BOX(TEXT("파일 열기 실패"));
         return E_FAIL;
+    }
 
-    if (FAILED(Ready_Bones(m_pAIScene->mRootNode, -1)))
-        return E_FAIL;
+    Data.LoadBinary(ifs);
 
-    if (FAILED(Ready_Meshes(pDesc)))
-        return E_FAIL;
+    ifs.close();
 
-    //XMMatrixRotationQuaternion();
-    //XMMatrixRotationRollPitchYaw();
+    m_strModelName = AnsiToWString(Data.strModelName);
+    m_strModelFilePath = AnsiToWString(Data.strModelFilePath);
 
-    if (FAILED(Ready_Materials(pModelFilePath)))
-        return E_FAIL;
+    m_eModelType = static_cast<MODELTYPE>(Data.iModelType);
+    memcpy(&m_PreTransformMatrix, &Data.vPreTransformMatrix, sizeof(_float4x4));
 
-    if (FAILED(Ready_Animations()))
-        return E_FAIL;
+    m_iNumMeshes = Data.iNumMeshes;
+    m_iNumMaterials = Data.iNumMaterials;
+    m_iNumAnimations = Data.iNumAnimations;
+
+    CHECK_FAILED(Ready_Bones(Data), E_FAIL);
+
+    CHECK_FAILED(Ready_Meshes(Data, pDesc), E_FAIL);
+
+    CHECK_FAILED(Ready_Materials(Data), E_FAIL);
+
+    CHECK_FAILED(Ready_Animations(Data), E_FAIL);
 
     return S_OK;
 }
@@ -75,11 +84,9 @@ HRESULT CModel_Instance::Initialize_Clone(void* pArg)
 
 HRESULT CModel_Instance::Render(_uint iMeshIndex)
 {
-    if (FAILED(m_Meshes[iMeshIndex]->Bind_Resources()))
-        return E_FAIL;
+    CHECK_FAILED(m_Meshes[iMeshIndex]->Bind_Resources(), E_FAIL);
 
-    if (FAILED(m_Meshes[iMeshIndex]->Render()))
-        return E_FAIL;
+    CHECK_FAILED(m_Meshes[iMeshIndex]->Render(), E_FAIL);
 
     return S_OK;
 }
@@ -166,81 +173,69 @@ void CModel_Instance::Set_Animation(_uint iIndex, _bool isLoop)
     m_iCurrentAnimIndex = iIndex;
 }
 
-HRESULT CModel_Instance::Ready_Meshes(const CModelMesh_Instance::INSTANCE_DESC* pDesc)
+HRESULT CModel_Instance::Ready_Meshes(MODEL_DATA& Data, const CModelMesh_Instance::INSTANCE_DESC* pDesc)
 {
-    //m_iNumMeshes = m_pAIScene->mNumMeshes;
-
-    //for (size_t i = 0; i < m_iNumMeshes; i++)
-    //{
-    //    CMesh_Instance* pMesh = CMesh_Instance::Create(m_pDevice, m_pContext, m_eModelType, m_pAIScene->mMeshes[i], m_Bones, XMLoadFloat4x4(&m_PreTransformMatrix));
-    //    if (nullptr == pMesh)
-    //        return E_FAIL;
-
-    //    m_Meshes.push_back(pMesh);
-    //}
+    for (_uint i = 0; i < m_iNumMeshes; ++i)
+    {
+        CModelMesh_Instance* pMesh = CModelMesh_Instance::Create(m_pDevice, m_pContext, m_eModelType, XMLoadFloat4x4(&m_PreTransformMatrix), Data.vecMeshes[i], pDesc);
+        if (pMesh == nullptr)
+        {
+            MSG_BOX(TEXT("비상 CMesh::Create() 실패!!!!!!"));
+            return E_FAIL;
+        }
+        m_Meshes.push_back(pMesh);
+    }
 
     return S_OK;
 }
 
-HRESULT CModel_Instance::Ready_Materials(const _char* pModelFilePath)
+HRESULT CModel_Instance::Ready_Materials(MODEL_DATA& Data)
 {
-    //m_iNumMaterials = m_pAIScene->mNumMaterials;
+    for (_uint i = 0; i < m_iNumMaterials; ++i)
+    {
+        CMeshMaterial* pMeshMaterial = CMeshMaterial::Create(m_pDevice, m_pContext, Data.vecMaterials[i]);
+        CHECK_NULLPTR(pMeshMaterial, E_FAIL);
 
-    //for (size_t i = 0; i < m_iNumMaterials; i++)
-    //{
-
-    //    CMeshMaterial* pMeshMaterial = CMeshMaterial::Create(m_pDevice, m_pContext, m_Model_Data.vecMaterials[i]);
-    //    if (nullptr == pMeshMaterial)
-    //        return E_FAIL;
-
-    //    m_Materials.push_back(pMeshMaterial);
-    //}
-
+        m_Materials.push_back(pMeshMaterial);
+    }
 
     return S_OK;
 }
 
-HRESULT CModel_Instance::Ready_Bones(const aiNode* pAINode, _int iParentIndex)
+HRESULT CModel_Instance::Ready_Bones(MODEL_DATA& Data)
 {
-    //CBone* pBone = CBone::Create(pAINode, iParentIndex);
-    //if (nullptr == pBone)
-    //    return E_FAIL;
+    for (auto bone : Data.vecBones)
+    {
+        CBone* pBone = CBone::Create(bone);
+        CHECK_NULLPTR(pBone, E_FAIL);
 
-    //m_Bones.push_back(pBone);
-
-    //_int   iIndex = m_Bones.size() - 1;
-
-    //for (size_t i = 0; i < pAINode->mNumChildren; i++)
-    //{
-    //    Ready_Bones(pAINode->mChildren[i], iIndex);
-    //}
+        m_Bones.push_back(pBone);
+    }
 
     return S_OK;
 }
 
-HRESULT CModel_Instance::Ready_Animations()
+HRESULT CModel_Instance::Ready_Animations(MODEL_DATA& Data)
 {
-    /* 시간에 따라 내 뼈들이 어떻게 움직여야하는가? 에 대한 정보가 필요하다.  */
-    /* 대기동작을 위해서는 뼈들이 어떤 시간대에 어떤 상태를 취하는가? */
-    /* 공격동작을 위해서는 뼈들이 어떤 시간대에 어떤 상태를 취하는가? */
-    //m_iNumAnimations = m_pAIScene->mNumAnimations;
+    if (m_eModelType == MODELTYPE::NONANIM)
+        return S_OK;
 
-    //for (size_t i = 0; i < m_iNumAnimations; i++)
-    //{
-    //    CAnimation* pAnimation = CAnimation::Create(m_pAIScene->mAnimations[i], m_Bones);        if (nullptr == pAnimation)
-    //        return E_FAIL;
+    for (_uint i = 0; i < m_iNumAnimations; i++)
+    {
+        CAnimation* pAnimation = CAnimation::Create(m_Bones, Data.vecAnimation[i], i);
+        CHECK_NULLPTR(pAnimation, E_FAIL);
 
-    //    m_Animations.push_back(pAnimation);
-    //}
+        m_Animations.push_back(pAnimation);
+    }
 
     return S_OK;
 }
 
-CModel_Instance* CModel_Instance::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, MODELTYPE eModelType, const _char* pModelFilePath, const CModelMesh_Instance::INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix)
+CModel_Instance* CModel_Instance::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _char* pModelFilePath, const CModelMesh_Instance::INSTANCE_DESC* pDesc)
 {
     CModel_Instance* pInstance = new CModel_Instance(pDevice, pContext);
 
-    if (FAILED(pInstance->Initialize_Prototype(eModelType, pModelFilePath, pDesc, PreTransformMatrix)))
+    if (FAILED(pInstance->Initialize_Prototype(pModelFilePath, pDesc)))
     {
         MSG_BOX(TEXT("Failed to Created : CModel_Instance"));
         Safe_Release(pInstance);
@@ -285,10 +280,4 @@ void CModel_Instance::Free()
         Safe_Release(pMaterial);
 
     m_Materials.clear();
-
-
-    m_Importer.FreeScene();
-
-
-
 }
