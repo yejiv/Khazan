@@ -97,7 +97,7 @@ HRESULT CProp_Static::Ready_Components(void* pArg)
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::MAP), pDesc->szModelName,
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::MAP), m_szModelName,
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
 
