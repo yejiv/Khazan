@@ -71,13 +71,9 @@ using namespace JPH;
 #include <future>
 #include <any>
 #include <deque>
-<<<<<<< HEAD
 #include <filesystem>
 #include <strsafe.h>
-using namespace std;
-=======
 #include <iostream>
->>>>>>> feature/ldb
 
 using namespace std;
 
