@@ -135,6 +135,16 @@ void CImgui_Manager::Shutdown()
     ::UnregisterClassW(wc.lpszClassName, wc.hInstance);
 }
 
+HRESULT CImgui_Manager::CleanMenu(_wstring strMenu)
+{
+    auto iter = m_Widgets.find(strMenu);
+
+    if (iter == m_Widgets.end())
+        return E_FAIL;
+
+    iter->second.clear();
+}
+
 void CImgui_Manager::AddWidget(const _wstring Menu, const function<void()>& widget)
 {
 	m_Widgets[Menu].push_back(widget);

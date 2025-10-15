@@ -37,30 +37,30 @@ HRESULT CEditor_TempCamera::Initialize_Clone(void* pArg)
 
 void CEditor_TempCamera::Priority_Update(_float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_W) )
+    if (m_pGameInstance->Key_Pressing(DIK_W, fTimeDelta) )
     {
-        m_pTransformCom->Go_Straight(fTimeDelta*10.f);
+        m_pTransformCom->Go_Straight(fTimeDelta* 2.f);
         _float3 temp;
         XMStoreFloat3(&temp, m_pTransformCom->Get_State(STATE::POSITION));
         OutputDebugStringA((std::to_string(temp.x) + " " + std::to_string(temp.y) + " " + std::to_string(temp.z) + "\n").c_str());
     }
-    if (m_pGameInstance->Key_Down(DIK_S) )
+    if (m_pGameInstance->Key_Pressing(DIK_S, fTimeDelta) )
     {
-        m_pTransformCom->Go_Backward(fTimeDelta * 10.f);
+        m_pTransformCom->Go_Backward(fTimeDelta * 2.f);
         _float3 temp;
         XMStoreFloat3(&temp, m_pTransformCom->Get_State(STATE::POSITION));
         OutputDebugStringA((std::to_string(temp.x) + " " + std::to_string(temp.y) + " " + std::to_string(temp.z) + "\n").c_str());
     }
-    if (m_pGameInstance->Key_Down(DIK_A))
+    if (m_pGameInstance->Key_Pressing(DIK_A, fTimeDelta))
     {
-        m_pTransformCom->Go_Left(fTimeDelta * 10.f);
+        m_pTransformCom->Go_Left(fTimeDelta * 2.f);
         _float3 temp;
         XMStoreFloat3(&temp, m_pTransformCom->Get_State(STATE::POSITION));
         OutputDebugStringA((std::to_string(temp.x) + " " + std::to_string(temp.y) + " " + std::to_string(temp.z) + "\n").c_str());
     }
-    if (m_pGameInstance->Key_Down(DIK_D))
+    if (m_pGameInstance->Key_Pressing(DIK_D, fTimeDelta))
     {
-        m_pTransformCom->Go_Right(fTimeDelta * 10.f);
+        m_pTransformCom->Go_Right(fTimeDelta * 2.f);
         _float3 temp;
         XMStoreFloat3(&temp, m_pTransformCom->Get_State(STATE::POSITION));
         OutputDebugStringA((std::to_string(temp.x) + " " + std::to_string(temp.y) + " " + std::to_string(temp.z) + "\n").c_str());

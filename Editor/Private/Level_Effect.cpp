@@ -13,9 +13,9 @@ CLevel_Effect::CLevel_Effect(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 HRESULT CLevel_Effect::Initialize()
 {
     // Compute Shader Test
-    //  if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EFFECT), TEXT("Layer_Effect"),
-    //      ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_TestParticle"))))
-    //      return E_FAIL;
+    //if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EFFECT), TEXT("Layer_Effect"),
+    //    ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_TestParticle"))))
+    //    return E_FAIL;
 
     if (FAILED(Ready_Layer_BackGround()))
         return E_FAIL;

@@ -2,6 +2,8 @@
 
 #include "GameInstance.h"
 
+#include "Editor_Model_Instance.h"
+
 CProp_Static::CProp_Static(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp { pDevice, pContext }
 {
@@ -24,6 +26,19 @@ HRESULT CProp_Static::Initialize_Clone(void* pArg)
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 
     CHECK_FAILED(Ready_Components(pArg), E_FAIL);
+
+    PROP_STATIC_DESC* pDesc = static_cast<PROP_STATIC_DESC*>(pArg);
+
+    if (true == pDesc->isIndependentObject)
+    {
+        _float3 vScale = {};
+
+        XMStoreFloat3(&vScale, pDesc->vScale);
+
+        m_pTransformCom->Set_State(STATE::POSITION, pDesc->vPosition);
+        //m_pTransformCom->Set_Quaternion();
+        m_pTransformCom->Scale(vScale);
+    }
 
     return S_OK;
 }
@@ -49,7 +64,7 @@ HRESULT CProp_Static::Render()
 
     for (_uint i = 0; i < iNumMeshes; ++i)
     {
-        CHECK_FAILED_ASSERT(Bind_Instance_Materials(m_pModelCom, i), S_OK);
+        Bind_Instance_Materials(m_pModelCom, i);
 
         CHECK_FAILED_ASSERT(m_pShaderCom->Begin(0), E_FAIL);
 
@@ -78,7 +93,7 @@ HRESULT CProp_Static::Ready_Components(void* pArg)
 {
     PROP_STATIC_DESC* pDesc = static_cast<PROP_STATIC_DESC*>(pArg);
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Shader_MeshInstance"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Shader_ModelMeshInstance"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
 
