@@ -1,4 +1,5 @@
 #include "UI_Button.h"
+#include "GameInstance.h"
 
 CUI_Button::CUI_Button(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CUIObject{ pDevice,pContext }
@@ -68,14 +69,27 @@ _bool CUI_Button::Update_Picking(HWND hWnd)
 
         _bool bisPicked = IsPicked(hWnd);
 
-        if (bisPicked && m_eState == BUTTON_STATE::NORMAL)
+        if (bisPicked)
         {
             m_eState = BUTTON_STATE::HOVERED;
-            //OnHover.Broadcast((_float)ptMouse.x, (_float)ptMouse.y);
-            Broadcast_Hover(static_cast<_float>(ptMouse.x),static_cast<_float>(ptMouse.y));
+            Broadcast_Hover(static_cast<_float>(ptMouse.x), static_cast<_float>(ptMouse.y));
+
+            _bool isMouseDown = m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB);
+            if (isMouseDown && !m_isPrevMouseDown)
+            {
+                m_eState = BUTTON_STATE::PRESSED;
+                Broadcast_Click();
+            }
+
+            m_isPrevMouseDown = isMouseDown;
+        }
+        else
+        {
+            m_eState = BUTTON_STATE::NORMAL;
+            m_isPrevMouseDown = false;
         }
 
-        if (bisPicked && (GetAsyncKeyState(VK_LBUTTON) & 0x8000))
+        /*if (bisPicked && (GetAsyncKeyState(VK_LBUTTON) & 0x8000))
         {
             m_eState = BUTTON_STATE::PRESSED;
             Broadcast_Click();
@@ -83,7 +97,7 @@ _bool CUI_Button::Update_Picking(HWND hWnd)
         else if (!bisPicked)
         {
             m_eState = BUTTON_STATE::NORMAL;
-        }
+        }*/
 
         return bisPicked;
     }
