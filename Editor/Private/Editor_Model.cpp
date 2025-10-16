@@ -90,6 +90,11 @@ HRESULT CEditor_Model::Initialize_Prototype(MODELTYPE eModelType, const _char* p
         m_Importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, false);
     }
 
+    _char currentDir[MAX_PATH];
+    GetCurrentDirectoryA(MAX_PATH, currentDir);
+    OutputDebugStringA(("[Current Working Directory] " + string(currentDir) + "\n").c_str());
+    OutputDebugStringA(("[Model Path] " + filePath + "\n").c_str());
+
 	if (filesystem::exists(filePath))
 	{
 		string message = "Model file exists: " + filePath + "\n";
@@ -254,14 +259,14 @@ void CEditor_Model::Set_Animation(_uint iIndex, _bool isLoop)
     if (m_iPrevAnimIndex >= 0 &&  m_iCurrentAnimIndex != m_iPrevAnimIndex)
         m_isChangedAnimation = true;
 }
-
-void CEditor_Model::ExportModel()
+void CEditor_Model::ExportModel(string& strPath)
 {
-    // 기본 경로 설정
-    string strBasePath = "../Data/";
+    filesystem::path fullPath(strPath);
+    string strDirectory = fullPath.parent_path().string();
+    string strFileName = fullPath.stem().string();  // 확장자 제외
 
     // 모델 이름으로 폴더 경로 생성
-    string strModelFolder = strBasePath + m_Model_Data.strModelName + "/";
+    string strModelFolder = strDirectory + "/" + strFileName + "/";
 
     // 폴더가 없으면 생성
     if (!filesystem::exists(strModelFolder))
@@ -278,26 +283,27 @@ void CEditor_Model::ExportModel()
         }
     }
 
-    // 파일 경로 생성
-    string strDatPath = strModelFolder + m_Model_Data.strModelName + ".dat";
-    string strAnimJsonPath = strModelFolder + m_Model_Data.strModelName + "_Anim.json";
-    string strSummayAnimJsonPath = strModelFolder + m_Model_Data.strModelName + "_Summay_Anim.json";
-    string strMaterialJsonPath = strModelFolder + m_Model_Data.strModelName + "_Material.json";
+    // 파일 경로 생성 (strFileName 사용)
+    string strDatPath = strModelFolder + strFileName + ".dat";
+    string strAnimJsonPath = strModelFolder + strFileName + "_Anim.json";
+    string strSummayAnimJsonPath = strModelFolder + strFileName + "_Summary_Anim.json";
+    string strMaterialJsonPath = strModelFolder + strFileName + "_Material.json";
 
     // 덮어쓰기 확인
     _bool bDatExists = filesystem::exists(strDatPath);
     _bool bAnimExists = filesystem::exists(strAnimJsonPath);
     _bool bMaterialExists = filesystem::exists(strMaterialJsonPath);
 
-  if (bDatExists || bAnimExists || bMaterialExists)
+    if (bDatExists || bAnimExists || bMaterialExists)
     {
         wstring msg = TEXT("다음 파일이 이미 존재합니다:\n\n");
         if (bDatExists)
-            msg += AnsiToWString(m_Model_Data.strModelName) + TEXT(".dat\n");
+            msg += AnsiToWString(strFileName) + TEXT(".dat\n");
         if (bAnimExists)
-            msg += AnsiToWString(m_Model_Data.strModelName) + TEXT("_Anim.json\n");
+            msg += AnsiToWString(strFileName) + TEXT("_Anim.json\n");
         if (bMaterialExists)
-            msg += AnsiToWString(m_Model_Data.strModelName) + TEXT("_Material.json\n");
+            msg += AnsiToWString(strFileName) + TEXT("_Material.json\n");
+
         msg += L"\n덮어쓰시겠습니까?";
 
         _int result = MessageBox(
@@ -318,7 +324,8 @@ void CEditor_Model::ExportModel()
     Export_Binary(strDatPath);
 
     // 2. Animation JSON 저장
-    if (m_eModelType == MODELTYPE::ANIM) {
+    if (m_eModelType == MODELTYPE::ANIM)
+    {
         if (!Export_AnimationJson(strAnimJsonPath, strSummayAnimJsonPath))
         {
             MSG_BOX(TEXT("Animation JSON 저장 실패"));
@@ -336,56 +343,62 @@ void CEditor_Model::ExportModel()
     // 성공 메시지
     _wstring successMsg = TEXT("Export 완료!\n\n");
     successMsg += TEXT("폴더: ") + AnsiToWString(strModelFolder) + TEXT("\n");
-    successMsg += AnsiToWString(m_Model_Data.strModelName) + TEXT(".dat (전체)\n");
-    if (m_eModelType == MODELTYPE::ANIM) successMsg += AnsiToWString(m_Model_Data.strModelName) + TEXT("_Anim.json\n");
-    successMsg += AnsiToWString(m_Model_Data.strModelName) + TEXT("_Material.json");
+    successMsg += AnsiToWString(strFileName) + TEXT(".dat (전체)\n");
+    if (m_eModelType == MODELTYPE::ANIM)
+        successMsg += AnsiToWString(strFileName) + TEXT("_Anim.json\n");
+    successMsg += AnsiToWString(strFileName) + TEXT("_Material.json");
 
     MessageBox(nullptr, successMsg.c_str(), TEXT("Success"), MB_OK | MB_ICONINFORMATION);
-
-
 }
 
 void CEditor_Model::LoadModel(_wstring strModelName)
 {
+    //string strBasePath = "../Data/";
+    //string strDatPath = "../Data/" + WStringToAnsi(strModelName) + "/" + WStringToAnsi(strModelName) + ".dat";;
 
-    string strDatPath = "../Data/" + WStringToAnsi(strModelName) + "/" + WStringToAnsi(strModelName) + ".dat";;
+    //if (!filesystem::exists(strDatPath))
+    //{
+    //    MSG_BOX(TEXT(".dat 파일이 존재하지 않습니다."));
+    //    return;
+    //}
 
-    if (!filesystem::exists(strDatPath))
-    {
-        MSG_BOX(TEXT(".dat 파일이 존재하지 않습니다."));
-        return;
-    }
+    //std::ifstream ifs(strDatPath, std::ios::binary);
+    //if (!ifs.is_open())
+    //{
+    //    MSG_BOX(TEXT("binary 파일 열기 실패"));
+    //    return;
+    //}
 
-    std::ifstream ifs(strDatPath, std::ios::binary);
-    if (!ifs.is_open())
-    {
-        MSG_BOX(TEXT("binary 파일 열기 실패"));
-        return;
-    }
-
-    m_Model_Data.LoadBinary(ifs);
-    ifs.close();
+    //m_Model_Data.LoadBinary(ifs);
+    //ifs.close();
 }
-
-void CEditor_Model::Update_DAT_From_JSON()
+void CEditor_Model::Update_DAT_From_JSON(string& strPath)
 {
-    string strBasePath = "../Data/";
-    string strModelFolder = strBasePath + m_Model_Data.strModelName + "/";
+    filesystem::path fullPath(strPath);
+    string strDirectory = fullPath.parent_path().string();
+    string strFileName = fullPath.stem().string();  // 확장자 제외
 
-    string strDatPath = strModelFolder + m_Model_Data.strModelName + ".dat";
-    string strAnimJsonPath = strModelFolder + m_Model_Data.strModelName + "_Anim.json";
-    string strMaterialJsonPath = strModelFolder + m_Model_Data.strModelName + "_Material.json";
+    // 모델 폴더 경로
+    string strModelFolder = strDirectory + "/" + strFileName + "/";
 
-    // 파일 존재 확인
+    // 파일 경로 생성
+    string strDatPath = strModelFolder + strFileName + ".dat";
+    string strAnimJsonPath = strModelFolder + strFileName + "_Anim.json";
+    string strMaterialJsonPath = strModelFolder + strFileName + "_Material.json";
+
+    // .dat 파일 존재 확인
     if (!filesystem::exists(strDatPath))
     {
-        MSG_BOX(TEXT(".dat 파일이 존재하지 않습니다."));
+        _tchar szMessage[MAX_PATH] = {};
+        swprintf_s(szMessage, TEXT(".dat 파일이 존재하지 않습니다!\n경로: %S"),
+            strDatPath.c_str());
+        MessageBox(nullptr, szMessage, TEXT("Error"), MB_OK | MB_ICONERROR);
         return;
     }
 
     // 1. 기존 .dat 파일 로드
     {
-        std::ifstream ifs(strDatPath, std::ios::binary);
+        ifstream ifs(strDatPath, ios::binary);
         if (!ifs.is_open())
         {
             MSG_BOX(TEXT(".dat 파일 열기 실패"));
@@ -398,7 +411,7 @@ void CEditor_Model::Update_DAT_From_JSON()
     // 2. Animation JSON 로드 (파일이 있으면)
     if (filesystem::exists(strAnimJsonPath))
     {
-        std::ifstream ifs(strAnimJsonPath);
+        ifstream ifs(strAnimJsonPath);
         if (!ifs.is_open())
         {
             MSG_BOX(TEXT("Animation JSON 파일 열기 실패"));
@@ -410,14 +423,14 @@ void CEditor_Model::Update_DAT_From_JSON()
         ifs.close();
 
         // 애니메이션 교체
-        m_Model_Data.vecAnimation = j.get<std::vector<ANIMATION_DATA>>();
+        m_Model_Data.vecAnimation = j.get<vector<ANIMATION_DATA>>();
         m_Model_Data.iNumAnimations = static_cast<_uint>(m_Model_Data.vecAnimation.size());
     }
 
     // 3. Material JSON 로드 (파일이 있으면)
     if (filesystem::exists(strMaterialJsonPath))
     {
-        std::ifstream ifs(strMaterialJsonPath);
+        ifstream ifs(strMaterialJsonPath);
         if (!ifs.is_open())
         {
             MSG_BOX(TEXT("Material JSON 파일 열기 실패"));
@@ -429,13 +442,13 @@ void CEditor_Model::Update_DAT_From_JSON()
         ifs.close();
 
         // 머티리얼 교체
-        m_Model_Data.vecMaterials = j.get<std::vector<MATERIAL_DATA>>();
+        m_Model_Data.vecMaterials = j.get<vector<MATERIAL_DATA>>();
         m_Model_Data.iNumMaterials = static_cast<_uint>(m_Model_Data.vecMaterials.size());
     }
 
     // 4. 업데이트된 데이터를 .dat에 다시 저장
     {
-        std::ofstream ofs(strDatPath, std::ios::binary);
+        ofstream ofs(strDatPath, ios::binary);
         if (!ofs.is_open())
         {
             MSG_BOX(TEXT(".dat 파일 쓰기 실패"));
@@ -445,9 +458,12 @@ void CEditor_Model::Update_DAT_From_JSON()
         ofs.close();
     }
 
-    MSG_BOX(TEXT(".dat 파일 업데이트 완료!"));
+    // 성공 메시지
+    _tchar szMessage[MAX_PATH] = {};
+    swprintf_s(szMessage, TEXT(".dat 파일 업데이트 완료!\n\n폴더: %S\n파일: %S.dat"),
+        strModelFolder.c_str(), strFileName.c_str());
+    MessageBox(nullptr, szMessage, TEXT("Success"), MB_OK | MB_ICONINFORMATION);
 }
-
 
 HRESULT CEditor_Model::Ready_Meshes()
 {
@@ -562,7 +578,7 @@ _bool CEditor_Model::Export_AnimationJson(const string& strFilePath, const strin
 	/* 전체 애니메이션 JSON 저장*/
 
 	JSON j = m_Model_Data.vecAnimation;
-	std::ofstream ofs(strFilePath);
+	ofstream ofs(strFilePath);
 	if (!ofs.is_open())
 		return false;
 
@@ -589,7 +605,7 @@ _bool CEditor_Model::Export_AnimationJson(const string& strFilePath, const strin
 	}
 
 	JSON j2 = AnimSummaries;
-	std::ofstream ofs2(strFilePath2);
+	ofstream ofs2(strFilePath2);
 	if (!ofs2.is_open())
 		return false;
 
@@ -630,7 +646,7 @@ _bool CEditor_Model::Export_MaterialJson(const string& strFilePath)
 
 void CEditor_Model::Export_Binary(const string& strFilePath)
 {
-    std::ofstream ofs(strFilePath, std::ios::binary);
+    ofstream ofs(strFilePath, ios::binary);
     if (!ofs.is_open())
     {
         MSG_BOX(TEXT("binary 파일 열기 실패"));
@@ -644,6 +660,7 @@ void CEditor_Model::Export_Binary(const string& strFilePath)
     MSG_BOX(TEXT("Binary 파일 저장 성공"));
 }
 
+
 string CEditor_Model::PostProcessJSON(const string& jsonStr)
 {
     istringstream iss(jsonStr);
@@ -652,7 +669,7 @@ string CEditor_Model::PostProcessJSON(const string& jsonStr)
     string arrayBuffer;
     bool inShortArray = false;
 
-    while (std::getline(iss, line))
+    while (getline(iss, line))
     {
         // 배열 시작 감지
         if (line.find('[') != string::npos &&

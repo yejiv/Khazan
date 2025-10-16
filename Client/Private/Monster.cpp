@@ -53,7 +53,7 @@ void CMonster::Update(_float fTimeDelta)
         int a = 10;
 
 
-    m_pRigidBodyCom->Sync_Update(m_pTransformCom);
+    //m_pRigidBodyCom->Sync_Update(m_pTransformCom);
 }
 
 void CMonster::Late_Update(_float fTimeDelta)
@@ -103,7 +103,7 @@ HRESULT CMonster::Ready_Components()
         return E_FAIL;
 
 
-    CRigidBody::RIGID_BOXSHAPE_DESC RigidDesc{};
+   /* CRigidBody::RIGID_BOXSHAPE_DESC RigidDesc{};
     RigidDesc.vExtent = { 0.5f, 0.5f, 0.5f };
     RigidDesc.bIsTrigger = false;
     RigidDesc.bStartActive = true;
@@ -123,7 +123,7 @@ HRESULT CMonster::Ready_Components()
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_RigidBody"),
         TEXT("Com_RigidBody"), reinterpret_cast<CComponent**>(&m_pRigidBodyCom), &RigidDesc)))
-        return E_FAIL;
+        return E_FAIL;*/
 
 
     return S_OK;
@@ -176,5 +176,5 @@ void CMonster::Free()
 
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
-    Safe_Release(m_pRigidBodyCom);
+    //Safe_Release(m_pRigidBodyCom);
 }
