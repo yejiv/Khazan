@@ -100,18 +100,6 @@
     <Filter Include="02.GameObject\UI">
       <UniqueIdentifier>{bb5dba1f-c3b3-40d9-89e6-690cab87d409}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\UI\00.Panel">
-      <UniqueIdentifier>{25a8b750-5ebd-4da4-ada4-c44ae5d8e78e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObject\UI\01.Button">
-      <UniqueIdentifier>{0b7672c9-bb0a-4dd0-988c-dd89a81e4856}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObject\UI\02.ProgressBar">
-      <UniqueIdentifier>{f588c6b9-1597-492d-8811-b8ae980b9ccf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObject\UI\03.TextBox">
-      <UniqueIdentifier>{a69de961-d20e-4eb1-b127-0a7c1bfefe11}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\UI\99.Camera">
       <UniqueIdentifier>{fe38b2f3-d49f-4cfe-8f49-120fba3d8e6b}</UniqueIdentifier>
     </Filter>
@@ -150,6 +138,21 @@
     </Filter>
     <Filter Include="02.GameObject\MapObject\Prop\99.Test">
       <UniqueIdentifier>{8d549d97-64bc-4532-b39f-57afcbe1b890}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\UIObject">
+      <UniqueIdentifier>{ae99f8d7-25ec-468b-ae68-1f418b765720}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\UIObject\Edit_UIBase">
+      <UniqueIdentifier>{eccd855e-251f-4aa4-8664-e62a1a78fbb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\UIObject\Edit_UI_BackGround">
+      <UniqueIdentifier>{8d7aefd8-cecd-4523-9c0c-54e03365f10b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\UIObject\Edit_Interface_UI">
+      <UniqueIdentifier>{c2874f68-5968-4ffe-a9ee-ed6978d80911}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96.ShaderFiles">
+      <UniqueIdentifier>{02932267-8bb3-4b5a-89a9-63274f4f484e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -258,16 +261,6 @@
     <ClInclude Include="..\Public\Camera_UI.h">
       <Filter>02.GameObject\UI\99.Camera</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Edit_Button.h">
-      <Filter>02.GameObject\UI\01.Button</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Edit_Panel.h">
-      <Filter>02.GameObject\UI\00.Panel</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Edit_Button.h" />
-    <ClInclude Include="..\Public\Edit_Panel.h" />
-    <ClInclude Include="..\Public\Edit_ProgressBar.h" />
-    <ClInclude Include="..\Public\Edit_TextBox.h" />
     <ClInclude Include="..\public\TestParticle.h">
       <Filter>02.GameObject\Effect\Test</Filter>
     </ClInclude>
@@ -297,6 +290,15 @@
     </ClInclude>
     <ClInclude Include="..\Public\Prop_Test.h">
       <Filter>02.GameObject\MapObject\Prop\99.Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Edit_UIBackGround.h">
+      <Filter>02.GameObject\UI\UIObject\Edit_UI_BackGround</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Edit_Interface_UI.h">
+      <Filter>02.GameObject\UI\UIObject\Edit_Interface_UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Edit_UIBase.h">
+      <Filter>02.GameObject\UI\UIObject\Edit_UIBase</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -403,18 +405,6 @@
     <ClCompile Include="..\Private\Camera_UI.cpp">
       <Filter>02.GameObject\UI\99.Camera</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Edit_Button.cpp">
-      <Filter>02.GameObject\UI\01.Button</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Edit_Panel.cpp">
-      <Filter>02.GameObject\UI\00.Panel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Edit_ProgressBar.cpp">
-      <Filter>02.GameObject\UI\02.ProgressBar</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Edit_TextBox.cpp">
-      <Filter>02.GameObject\UI\03.TextBox</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\TestParticle.cpp">
       <Filter>02.GameObject\Effect\Test</Filter>
     </ClCompile>
@@ -439,5 +429,19 @@
     <ClCompile Include="..\Private\Prop_Test.cpp">
       <Filter>02.GameObject\MapObject\Prop\99.Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Edit_UIBackGround.cpp">
+      <Filter>02.GameObject\UI\UIObject\Edit_UI_BackGround</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Edit_Interface_UI.cpp">
+      <Filter>02.GameObject\UI\UIObject\Edit_Interface_UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Edit_UIBase.cpp">
+      <Filter>02.GameObject\UI\UIObject\Edit_UIBase</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_Edit_UI.hlsl">
+      <Filter>96.ShaderFiles</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

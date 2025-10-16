@@ -16,7 +16,6 @@ namespace Engine
 	enum class WINMODE { FULL, WIN, END };	
 	enum class MOUSEKEYSTATE { LB, RB, WB, END };
 	enum class MOUSEMOVESTATE {	X, Y, WHEEL, END };
-	enum class UISPACETYPE { WORLD, SCREEN, END };
 	enum class POOLSTATUS { WAIT, RESET, END};
 	enum class COMPUTEJOB { UPDATE, POSTPROCESS, END };
 	enum class ANIM_DIRECTION { 

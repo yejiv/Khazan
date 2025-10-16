@@ -18,11 +18,12 @@ public:
 public:
 	typedef struct tagUIObjectDesc : public GAMEOBJECT_DESC
 	{
-		_float3			vLocalSize, vLocalPos;
-		_uint			iUIType;
-		UISPACETYPE		eSpaceTeype;
-		_char			szName[26];
+		_float2			vLocalSize, vLocalPos;
+		_float			fDepth;
+		_int			iUIType;
+		string			szName;
 
+		function<void()> BubbleEvent = nullptr;
 	}UIOBJECT_DESC;
 
 protected:
@@ -40,15 +41,11 @@ public:
 	UI_ALIGNMENT				Get_Alignment() const { return m_eAlignment; }
 
 public:
-	class CTexture*				Set_Texture(CGameObject* pGameObject, CTexture* pTexture);
-	void						Set_UI_Color(_float4 vColor) { m_vColor = vColor; }
-	_float4						Get_UI_Color() const { return m_vColor; }
-	const _char*				Get_Name() { return m_szName; }
-	void						Set_LocalPos(const _float3& vPos) { m_vLocalPos = vPos; }
-	void						Set_LocalSize(const _float3& vSize) { m_vLocalSize = vSize; }
-	_float3						Get_LocalPos() const { return m_vLocalPos; }
-	_float3						Get_LocalSize() const { return m_vLocalSize; }
-	const vector<CUIObject*>&	Get_Children() { return m_Children; }
+	const string&				Get_Name() { return m_szName; }
+	const _float2&				Get_WolrdPos() { return m_vWorldPos ; }
+	const _int&					Get_UIType() { return m_iUIType; }
+	const _float&				Get_Depth() { return m_fDepth; }
+
 
 public:
 	virtual HRESULT				Initialize_Prototype() override;
@@ -59,59 +56,43 @@ public:
 	virtual HRESULT				Render() override;
 
 public:
-	void						Add_Child(CUIObject* pChild);
-	void						Remove_Child(CUIObject* pChild);
-	void						Update_Visible(_bool bisVisible);
-	void						Update_Transform(class CTransform* pTargetTransform = nullptr);
-	_float2						Compute_AlignedPos(_float2 vWorldPos,_float2 vSize);
-
+	virtual void				Add_Child(CUIObject* pChild);
+	virtual void				Remove_Child(CUIObject* pChild);
+	virtual void				Update_Visible(_bool bisVisible);
+	virtual void				Update_Transform(CUIObject* pParent, _float2 vPos);
+	_float2						Compute_AlignedPos(_float2 vWorldPos, _float2 vSize);
 
 public:
-	_bool						Update_Picking(HWND hWnd);
-	virtual void				Broadcast_Click();
-	virtual void				Broadcast_Hover(_float fMousePosX, _float fMousePosY);
-
-protected:
-	HRESULT						Initialize_Screen_UI(UIOBJECT_DESC* pDesc);
-	HRESULT						Initialize_World_UI(UIOBJECT_DESC* pDesc);
-
-protected:
-	// 추후에 UtiliMath 같은 클래스 만들어서 정리 예정
-	inline _float				Lerp(_float fStart, _float fEnd, _float fTimeDelta)
-	{
-		return fStart + (fEnd - fStart) * fTimeDelta;
-	}
-
+	virtual _bool				IsPick(HWND hWnd);
+	
 protected:
 	_float4x4					m_ViewMatrix = {};
 	_float4x4					m_ProjMatrix = {};
-
-	_float4						m_vColor = { 0.f,0.f,0.f,1.f };
-
-
-	_float3						m_vLocalPos = {};
-	_float3						m_vWorldPos = {};
-	_float3						m_vLocalSize = {};
-	_float3						m_vWorldSize = {};
-
-
-	_float2						m_vAnchor;   // 앵커
-	UI_ALIGNMENT				m_eAlignment = { UI_ALIGNMENT::TOP_LEFT };
-
-
 	_uint						m_iWinSizeX = {};
 	_uint						m_iWinSizeY = {};
 
+	string						m_szName;
+
+	_float2						m_vLocalPos = {};
+	_float2						m_vWorldPos = {};
+	_float						m_fDepth = {};
+
+	_float2						m_vLocalSize = {};
+	_float2						m_vWorldSize = {};
+
+	_float2						m_vAnchor;
+	UI_ALIGNMENT				m_eAlignment = { UI_ALIGNMENT::TOP_LEFT };
+
+	_int						m_iUIType = { -1 };
+	
 	_bool						m_isVisible = { true };
-	_bool						m_isHovered = { false };
-
-	_char						m_szName[26] = {};
-
-	CUIObject*					m_pParent = { nullptr };
 
 	vector<CUIObject*>			m_Children = {};
 
-	UISPACETYPE					m_eSpaceType = { UISPACETYPE::END };
+	std::function<void()>		m_UIBubbleCallBack;
+	vector<UIKEYFRAME>			m_Track;
+	_int						m_iShaderPass = {};
+	vector<_float4>				m_vUVMinMax = {};
 
 public:
 	virtual CGameObject*		Clone(void* pArg) = 0;
