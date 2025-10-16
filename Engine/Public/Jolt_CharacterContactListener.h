@@ -18,7 +18,7 @@ NS_BEGIN(Engine)
 // JPH 네임스페이스를 자주 쓰면 using 해도 OK
 // using namespace JPH;
 
-class ENGINE_DLL CJolt_CharacterContactListener final : public JPH::CharacterContactListener
+class CJolt_CharacterContactListener final : public JPH::CharacterContactListener
 {
 public:
     struct CONFIG_DESC
