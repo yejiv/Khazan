@@ -19,6 +19,15 @@ namespace Engine
 	enum class UISPACETYPE { WORLD, SCREEN, END };
 	enum class POOLSTATUS { WAIT, RESET, END};
 	enum class COMPUTEJOB { UPDATE, POSTPROCESS, END };
+	enum class ANIM_DIRECTION { 
+		F, B, L, R, U, D, 
+		LF, LB, RF, RB, 
+		F_RF, F_LF, B_RB, B_LB,
+		U_F, U_B, U_L, U_R, 
+		D_F, D_B, D_L, D_R,
+		BBL, BLL,
+		END,
+	};
 }
 
 namespace JoltLayers

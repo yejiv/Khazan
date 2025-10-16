@@ -87,6 +87,8 @@ void CTestParticle::Update(_float fTimeDelta)
     //      m_FrameCount = 0;
     //      m_TotalCpuTime = 0.0;
     //  }
+
+    m_pVIBufferCom->Move(fTimeDelta);
 }
 
 void CTestParticle::Late_Update(_float fTimeDelta)
@@ -97,10 +99,36 @@ void CTestParticle::Late_Update(_float fTimeDelta)
 
 HRESULT CTestParticle::Render()
 {
+    //  if (FAILED(Bind_ShaderResources()))
+    //      return E_FAIL;
+    //  
+    //  m_pShaderCom->Begin(0);
+    //  
+    //  m_pVIBufferCom->Bind_Resources();
+    //  
+    //  m_pVIBufferCom->Render();
+
+    //  _uint           iNumMeshes = m_pVIBufferCom->Get_NumMeshes();
+    //  
+    //  for (size_t i = 0; i < iNumMeshes; i++)
+    //  {
+    //      if (FAILED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0)))
+    //          return E_FAIL;
+    //  
+    //      m_pShaderCom->Begin(0);
+    //  
+    //      m_pModelCom->Render(i);
+    //  }
+
+
+    // 텍스처 컴포넌트 바인드
+    //  if (FAILED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0)))
+    //      return E_FAIL;
+
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
-    m_pShaderCom->Begin(1);
+    m_pShaderCom->Begin(0);
 
     m_pVIBufferCom->Bind_Resources();
 
@@ -111,7 +139,11 @@ HRESULT CTestParticle::Render()
 
 HRESULT CTestParticle::Ready_Components()
 {
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxInstance_PointParticle"),
+    //  if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxInstance_PointParticle"),
+    //      TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
+    //      return E_FAIL;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxInstance_MeshParticle"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
 
@@ -137,8 +169,8 @@ HRESULT CTestParticle::Bind_ShaderResources()
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
         return E_FAIL;
 
-    if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
-        return E_FAIL;
+    //  if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
+    //      return E_FAIL;
 
     if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DiffuseTexture", 0)))
         return E_FAIL;
