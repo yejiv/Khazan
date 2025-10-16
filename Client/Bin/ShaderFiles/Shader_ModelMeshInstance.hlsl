@@ -151,6 +151,9 @@ PS_OUT PS_MAIN(PS_IN In)
     
     // float fNoise = g_NoiseTexture.Sample(DefaultSampler, In.vTexcoord);          // 나중에 플레이어 안가려지게 하는 용도로 쓸수있나??
     
+    if (0.5f > vMtrlDiffuse.a)
+        discard;
+    
     Out.vDiffuse = vMtrlDiffuse;
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);

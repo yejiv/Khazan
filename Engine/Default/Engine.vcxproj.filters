@@ -241,9 +241,6 @@
     <Filter Include="01.Utility\03.Component\Model\Model_Instance\Mesh">
       <UniqueIdentifier>{2ba653db-181c-4135-bb3f-3a615341c579}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\03.Component\CharacterVirtual\ContactListener">
-      <UniqueIdentifier>{c2ee2e50-d623-407a-844e-59e945221b28}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\13.Jolt\Filter">
       <UniqueIdentifier>{6a585887-51ce-4b96-b399-47279930e43e}</UniqueIdentifier>
     </Filter>
@@ -258,6 +255,9 @@
     </Filter>
     <Filter Include="01.Utility\16.ComputeShader\Manager">
       <UniqueIdentifier>{e1676e71-8485-4521-bb8f-356adfd967ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\13.Jolt\CharacterVirtualContactListener">
+      <UniqueIdentifier>{cc15051d-c1d3-4f03-98af-3c2ed7cf5938}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -492,9 +492,6 @@
     <ClCompile Include="..\Private\ModelMesh_Instance.cpp">
       <Filter>01.Utility\03.Component\Model\Model_Instance\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\CharacterContactListener.cpp">
-      <Filter>01.Utility\03.Component\CharacterVirtual\ContactListener</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Resource_Manager.cpp">
       <Filter>01.Utility\16.Resource\Manager</Filter>
     </ClCompile>
@@ -503,6 +500,9 @@
     </ClCompile>
     <ClCompile Include="..\private\ComputeShader_Manager.cpp">
       <Filter>01.Utility\16.ComputeShader\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Jolt_CharacterContactListener.cpp">
+      <Filter>01.Utility\13.Jolt\CharacterVirtualContactListener</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -761,9 +761,6 @@
     <ClInclude Include="..\Public\ModelMesh_Instance.h">
       <Filter>01.Utility\03.Component\Model\Model_Instance\Mesh</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\CharacterContactListener.h">
-      <Filter>01.Utility\03.Component\CharacterVirtual\ContactListener</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Resource_Manager.h">
       <Filter>01.Utility\16.Resource\Manager</Filter>
     </ClInclude>
@@ -775,6 +772,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Engine_ConstantBuffer.h">
       <Filter>99.Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Jolt_CharacterContactListener.h">
+      <Filter>01.Utility\13.Jolt\CharacterVirtualContactListener</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
