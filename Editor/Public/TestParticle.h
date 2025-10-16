@@ -7,6 +7,7 @@ NS_BEGIN(Engine)
 class CShader;
 class CTexture;
 class CVIBuffer_Point_Instance;
+class CVIBuffer_Mesh_Instance;
 NS_END
 
 NS_BEGIN(Editor)
@@ -29,7 +30,8 @@ public:
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CTexture* m_pTextureCom = { nullptr };
-	CVIBuffer_Point_Instance* m_pVIBufferCom = { nullptr };
+	//	CVIBuffer_Point_Instance* m_pVIBufferCom = { nullptr };
+	CVIBuffer_Mesh_Instance* m_pVIBufferCom = { nullptr };
 
 #ifdef _DEBUG
 	LARGE_INTEGER	m_Freq = {};				// CPU 타이머 주파수 (초당 카운트 수)

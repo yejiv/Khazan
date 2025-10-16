@@ -32,17 +32,16 @@ private:
 	virtual ~CVIBuffer_Mesh_Instance() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(const aiMesh* pAIMesh, const INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix);
+	virtual HRESULT Initialize_Prototype(const _char* pMeshFilePath, const INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix);
 	virtual HRESULT Initialize_Clone(void* pArg) override;
 
 public:
 	void Move(_float fTimeDelta);
 
-public:
-	const _uint Get_MaterialIndex() const { return m_iMaterialIndex; }
-	const _uint Get_NumInstances() const { return m_iNumInstance; }
-
 private:
+	const aiScene*		m_pAIScene = { nullptr };
+	Assimp::Importer	m_Importer = {};
+
 	_char		m_szName[MAX_PATH] = {};
 	_uint		m_iMaterialIndex = {};
 
@@ -60,7 +59,6 @@ private:
 
 private:
 	HRESULT Ready_Vertices(const aiMesh* pAIMesh, _fmatrix PreTransformMatrix);			// Vertices 세팅
-	HRESULT Ready_Indices_For_2Byte(const aiMesh* pAIMesh);								// 2 Bytes Indices 세팅
 	HRESULT Ready_Indices_For_4Byte(const aiMesh* pAIMesh);								// 4 Bytes Indices 세팅
 
 private:
@@ -70,7 +68,7 @@ private:
 	HRESULT Ready_ComputeShader();
 
 public:
-	static CVIBuffer_Mesh_Instance* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const aiMesh* pAIMesh, const INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix = XMMatrixIdentity());
+	static CVIBuffer_Mesh_Instance* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _char* pMeshFilePath, const INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix = XMMatrixIdentity());
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 };

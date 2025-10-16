@@ -17,7 +17,7 @@ public:
 	virtual HRESULT Render(_uint iMeshIndex);
 
 public:
-	HRESULT Bind_Materials(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, aiTextureType eTextureType, _uint iIndex);
+	HRESULT Bind_Materials(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, _uint iTextureType, _uint iIndex);
 	HRESULT Bind_BoneMatrices(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex);
 
 
@@ -26,6 +26,8 @@ public:
 	_uint Get_NumMeshes() const { return m_iNumMeshes; }
 	_float4x4* Get_BoneMatrix(const _char* pBoneName);
 	_float4x4* Get_ContainNameBoneMatrix(const _char* pBoneName);
+	vector<_float3> Get_VerticesPos(_uint iIndex);
+	vector<_uint> Get_Indices(_uint iIndex);
 
 	/* 애니메이션 기능  */
 	_bool Play_Animation(_float fTimeDelta);
