@@ -170,8 +170,20 @@
     <ClInclude Include="..\Public\Level_Title.h" />
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\Public\MainApp.h" />
+    <ClInclude Include="..\Public\MapObject.h" />
+    <ClInclude Include="..\Public\MapObject_Header.h" />
     <ClInclude Include="..\Public\Monster.h" />
     <ClInclude Include="..\Public\Player.h" />
+    <ClInclude Include="..\Public\Prop.h" />
+    <ClInclude Include="..\Public\Prop_Animated.h" />
+    <ClInclude Include="..\Public\Prop_Destructible.h" />
+    <ClInclude Include="..\Public\Prop_Interactive.h" />
+    <ClInclude Include="..\Public\Prop_Object.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Static.h" />
+    <ClInclude Include="..\Public\Prop_Test.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="Client.h" />
@@ -190,8 +202,19 @@
     <ClCompile Include="..\Private\Level_Title.cpp" />
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
+    <ClCompile Include="..\Private\MapObject.cpp" />
     <ClCompile Include="..\Private\Monster.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
+    <ClCompile Include="..\Private\Prop.cpp" />
+    <ClCompile Include="..\Private\Prop_Animated.cpp" />
+    <ClCompile Include="..\Private\Prop_Destructible.cpp" />
+    <ClCompile Include="..\Private\Prop_Interactive.cpp" />
+    <ClCompile Include="..\Private\Prop_Object.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Static.cpp" />
+    <ClCompile Include="..\Private\Prop_Test.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="Client.cpp" />

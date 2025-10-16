@@ -1,27 +1,25 @@
-#include "Prop_Object.h"
+#include "Prop_Test.h"
 
 #include "GameInstance.h"
 
-#include "Editor_Model.h"
-
-CProp_Object::CProp_Object(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CProp_Test::CProp_Test(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp { pDevice, pContext }
 {
 }
 
-CProp_Object::CProp_Object(const CProp_Object& Prototype)
+CProp_Test::CProp_Test(const CProp_Test& Prototype)
     : CProp { Prototype }
 {
 }
 
-HRESULT CProp_Object::Initialize_Prototype()
+HRESULT CProp_Test::Initialize_Prototype()
 {
     CHECK_FAILED(__super::Initialize_Prototype(), E_FAIL);
 
     return S_OK;
 }
 
-HRESULT CProp_Object::Initialize_Clone(void* pArg)
+HRESULT CProp_Test::Initialize_Clone(void* pArg)
 {
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 
@@ -43,26 +41,22 @@ HRESULT CProp_Object::Initialize_Clone(void* pArg)
     return S_OK;
 }
 
-void CProp_Object::Priority_Update(_float fTimeDelta)
+void CProp_Test::Priority_Update(_float fTimeDelta)
 {
 }
 
-void CProp_Object::Update(_float fTimeDelta)
+void CProp_Test::Update(_float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_8))
-        m_eShaderPass = SHADER_PASS::WIREFRAME;
-    if (m_pGameInstance->Key_Down(DIK_9))
-        m_eShaderPass = SHADER_PASS::MAPOBJECT;
 }
 
-void CProp_Object::Late_Update(_float fTimeDelta)
+void CProp_Test::Late_Update(_float fTimeDelta)
 {
     m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
 }
 
-HRESULT CProp_Object::Render()
+HRESULT CProp_Test::Render()
 {
-    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources 함수 E_FAIL"), E_FAIL);
+    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Test : Bind_ShaderResources 함수 E_FAIL"), E_FAIL);
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -78,7 +72,7 @@ HRESULT CProp_Object::Render()
     return S_OK;
 }
 
-HRESULT CProp_Object::Ready_Components(void* pArg)
+HRESULT CProp_Test::Ready_Components(void* pArg)
 {
     PROP_OBJECT_DESC* pDesc = static_cast<PROP_OBJECT_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
@@ -86,7 +80,7 @@ HRESULT CProp_Object::Ready_Components(void* pArg)
     LEVEL eLevel = pDesc->eLevel;
     CHECK_EQUAL(LEVEL::END, eLevel, E_FAIL);
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Shader_VtxMesh"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
 
@@ -97,7 +91,7 @@ HRESULT CProp_Object::Ready_Components(void* pArg)
     return S_OK;
 }
 
-HRESULT CProp_Object::Bind_ShaderResources()
+HRESULT CProp_Test::Bind_ShaderResources()
 {
     // 월드 행렬 쉐이더에 바인딩
     CHECK_FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix"), E_FAIL);
@@ -111,7 +105,7 @@ HRESULT CProp_Object::Bind_ShaderResources()
     return S_OK;
 }
 
-HRESULT CProp_Object::Bind_Materials(_uint iMeshIndex)
+HRESULT CProp_Test::Bind_Materials(_uint iMeshIndex)
 {
     m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0);
     m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", iMeshIndex, aiTextureType_NORMALS, 0);
@@ -121,33 +115,33 @@ HRESULT CProp_Object::Bind_Materials(_uint iMeshIndex)
     return S_OK;
 }
 
-CProp_Object* CProp_Object::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CProp_Test* CProp_Test::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-    CProp_Object* pInstance = new CProp_Object(pDevice, pContext);
+    CProp_Test* pInstance = new CProp_Test(pDevice, pContext);
 
     if (FAILED(pInstance->Initialize_Prototype()))
     {
-        MSG_BOX(TEXT("Failed to Created : CProp_Object"));
+        MSG_BOX(TEXT("Failed to Created : CProp_Test"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-CGameObject* CProp_Object::Clone(void* pArg)
+CGameObject* CProp_Test::Clone(void* pArg)
 {
-    CProp_Object* pInstance = new CProp_Object(*this);
+    CProp_Test* pInstance = new CProp_Test(*this);
 
     if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
-        MSG_BOX(TEXT("Failed to Cloned : CProp_Object"));
+        MSG_BOX(TEXT("Failed to Cloned : CProp_Test"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-void CProp_Object::Free()
+void CProp_Test::Free()
 {
     __super::Free();
 
