@@ -49,6 +49,7 @@ private:
 	HRESULT Loading_For_Animation_Level();
 	HRESULT Loading_For_Effect_Level();
 	HRESULT Loading_For_UI_Level();
+	HRESULT Loading_For_Shader_Level();
 
 
 public:

@@ -29,6 +29,7 @@ HRESULT CMainApp::Initialize()
 	Imgui_Menu.push_back(TEXT("Effect"));
 	Imgui_Menu.push_back(TEXT("Model"));
 	Imgui_Menu.push_back(TEXT("UI"));
+	Imgui_Menu.push_back(TEXT("Shader"));
 
 	EngineDesc.Menu_Imgui = Imgui_Menu;
 
@@ -120,6 +121,11 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 		CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_VtxInstance_PointParticle.hlsl"), VTXPOINTPARTICLE::Elements, VTXPOINTPARTICLE::iNumElements))))
 		return E_FAIL;
 	
+	/* Prototype_Component_Shader_VtxInstance_MeshParticle*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxInstance_MeshParticle"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_VtxInstance_MeshParticle.hlsl"), VTXMESHPARTICLE::Elements, VTXMESHPARTICLE::iNumElements))))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -165,6 +171,10 @@ void CMainApp::Ready_DefaultImgui()
 		ImGui::SameLine();
 		if (ImGui::Button("UI", ImVec2(120, 32))) {
 			m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::UI));
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Shader", ImVec2(120, 32))) {
+			m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::SHADER));
 		}
 		ImGui::End();
 		});
