@@ -196,11 +196,11 @@ HRESULT CPlayer::Ready_Collision()
     tCharVirDesc.eShapeType = SHAPE::CAPSULE;
     tCharVirDesc.vPos = vPos;
     tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+    tCharVirDesc.vShapeOffset = _float3(0.f, 0.7f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
-    tCharVirDesc.fRadius = 1.f;
-    tCharVirDesc.fHeight = 1.f;
-    tCharVirDesc.fMaxSlopeAngle = 20.f;
+    tCharVirDesc.fRadius = 0.35f;
+    tCharVirDesc.fHeight = 0.5f;
+    tCharVirDesc.fMaxSlopeAngle = 45.f;
     tCharVirDesc.pGameObject = this;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),

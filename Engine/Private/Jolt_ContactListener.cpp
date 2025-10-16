@@ -18,24 +18,28 @@ ValidateResult CJolt_ContactListener::OnContactValidate(const Body& inBody1, con
 
 void CJolt_ContactListener::OnContactAdded(const Body& inBody1, const Body& inBody2, const ContactManifold& inManifold, ContactSettings& ioSettings)
 {
-	//CGameObject* pSrc = reinterpret_cast<CGameObject*>(inBody1.GetUserData());
-	//CGameObject* pDst = reinterpret_cast<CGameObject*>(inBody2.GetUserData());
+	CGameObject* pSrc = reinterpret_cast<CGameObject*>(inBody1.GetUserData());
+	CGameObject* pDst = reinterpret_cast<CGameObject*>(inBody2.GetUserData());
 
-	//if (nullptr != pSrc)
-	//	pSrc->Collision_Enter(pDst);
-	//if (nullptr != pDst)
-	//	pDst->Collision_Enter(pDst);
+	if (nullptr != pSrc && nullptr != pDst)
+	{
+		pSrc->Collision_Enter(pDst, JOLT_COLLSION_TYPE::BODY);
+		pDst->Collision_Enter(pDst, JOLT_COLLSION_TYPE::BODY);
+	}
+		
 }
 
 void CJolt_ContactListener::OnContactPersisted(const Body& inBody1, const Body& inBody2, const ContactManifold& inManifold, ContactSettings& ioSettings)
 {
-	//CGameObject* pSrc = reinterpret_cast<CGameObject*>(inBody1.GetUserData());
-	//CGameObject* pDst = reinterpret_cast<CGameObject*>(inBody2.GetUserData());
+	CGameObject* pSrc = reinterpret_cast<CGameObject*>(inBody1.GetUserData());
+	CGameObject* pDst = reinterpret_cast<CGameObject*>(inBody2.GetUserData());
 
-	//if (nullptr != pSrc)
-	//	pSrc->Collision_Stay(pDst);
-	//if (nullptr != pDst)
-	//	pDst->Collision_Stay(pSrc);
+	if (nullptr != pSrc && nullptr != pDst)
+	{
+		pSrc->Collision_Stay(pDst, JOLT_COLLSION_TYPE::BODY);
+		pDst->Collision_Stay(pSrc, JOLT_COLLSION_TYPE::BODY);
+	}
+		
 }
 
 void CJolt_ContactListener::OnContactRemoved(const SubShapeIDPair& inSubShapePair)
