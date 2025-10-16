@@ -148,6 +148,9 @@
     <Filter Include="02.GameObject\Animation\00.Tool">
       <UniqueIdentifier>{4e0957cc-3379-4f01-8418-eb13b3a25d11}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\99.Test">
+      <UniqueIdentifier>{8d549d97-64bc-4532-b39f-57afcbe1b890}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -292,6 +295,9 @@
     <ClInclude Include="..\public\AnimationTool.h">
       <Filter>02.GameObject\Animation\00.Tool</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Prop_Test.h">
+      <Filter>02.GameObject\MapObject\Prop\99.Test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -429,6 +435,9 @@
     </ClCompile>
     <ClCompile Include="..\private\AnimationTool.cpp">
       <Filter>02.GameObject\Animation\00.Tool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Test.cpp">
+      <Filter>02.GameObject\MapObject\Prop\99.Test</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
