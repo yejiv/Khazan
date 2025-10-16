@@ -43,9 +43,14 @@ public:
 		_bool		bStartActive = true;
 		_bool		bIsTrigger = false;
 
+		_float3		vShapeOffset = { 0.f, 0.f, 0.f };
+		_float4		vShapeRotation = { 0.f, 0.f, 0.f, 1.f };
 		// Dynamic 전용 옵션
 		_float          fMass = 1.0f; // 필요 시 사용
 		EMotionQuality  eQuality = EMotionQuality::Discrete;
+		_float		fAngularDamping = 0.5;
+
+		class CGameObject* pGameObject = nullptr;
 	}BODY_DESC;
 
 	typedef struct tagBoxShape : BODY_DESC
@@ -90,9 +95,14 @@ public:
 public:
 	void	Activate(_bool isActivate) { true == isActivate ? m_pBodyInterface->ActivateBody(m_BodyID) : m_pBodyInterface->DeactivateBody(m_BodyID); }
 	void	OnGravity(_bool isGravity) { m_pBodyInterface->SetGravityFactor(m_BodyID, isGravity); }
+
+public:
 	void	Add_Force(const _float3& fForce);
 	void	Add_Torque(const _float3& vTorque);
-	void	Add_Impulse(const _float3& vImpulse);
+	void	Add_Impulse(_vector vDir, _float3 vVelocity, _float fMass);
+
+public:
+	void	Set_Velocity(const _float3& vVelocity);
 
 public:
 	virtual void	Set_PosRot(_vector vPos, _vector vRot);

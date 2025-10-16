@@ -9,6 +9,7 @@ class CShader;
 class CModel;
 class CRigidBody;
 class CCharacterVirtual;
+class CBody;
 NS_END
 
 NS_BEGIN(Client)
@@ -31,9 +32,12 @@ public:
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
-	//CRigidBody* m_pRigidBodyCom = { nullptr };
-	class CCharacterVirtual* m_pCharVirCom = { nullptr };
-
+	CBody* m_pBodyCom = { nullptr };
+	//class CCharacterVirtual* m_pCharVirCom = { nullptr };
+	
+public:
+	void Collision_Enter(CGameObject* pObject, JOLT_COLLSION_TYPE eType) override;
+	void Collision_Stay(CGameObject* pObject, JOLT_COLLSION_TYPE eType) override;
 
 private:
 	HRESULT Ready_Components();

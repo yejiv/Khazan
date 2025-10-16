@@ -43,12 +43,13 @@ HRESULT CBody::Initialize_Clone(void* pArg)
 
     // Trigger(센서) 처리
     BCS.mIsSensor = pDesc->bIsTrigger;
-
+    BCS.mUserData = static_cast<uint64>(reinterpret_cast<uintptr_t>(pDesc->pGameObject));
     // Dynamic 질량/관성(필요 시 주석 해제하여 특정 질량/관성 지정)
     if (m_eMotion == EMotionType::Dynamic)
     {
         // 예시) 질량만 오버라이드
-        BCS.mOverrideMassProperties = EOverrideMassProperties::CalculateInertia;
+        BCS.mAngularDamping = pDesc->fAngularDamping;
+        BCS.mOverrideMassProperties = EOverrideMassProperties::CalculateMassAndInertia;
         BCS.mMassPropertiesOverride.mMass = pDesc->fMass;
     }
 
@@ -57,8 +58,6 @@ HRESULT CBody::Initialize_Clone(void* pArg)
         m_pBody = m_pGameInstance->CreateAndAdd_Body(BCS, &m_pBodyInterface);
         m_BodyID = m_pBody->GetID();
     }
-
-
     //// 머티리얼 반영
     //{
     //    BodyLockWrite lock(m_pPhysics->GetBodyLockInterface(), m_BodyID);
@@ -74,11 +73,18 @@ HRESULT CBody::Initialize_Clone(void* pArg)
 
 void CBody::Update(_float fTimeDelta, class CTransform* pTransform)
 {
-    _vector vScale{}, vRotation{}, vTranslation{};
+    if(!m_pBodyInterface->IsActive(m_BodyID))
+        m_pBodyInterface->ActivateBody(m_BodyID);
 
-    XMMatrixDecompose(&vScale, &vRotation, &vTranslation, pTransform->Get_WorldMatrix());
+    if (m_pBody->GetMotionType() == EMotionType::Kinematic)
+    {
+        _vector vScale{}, vRotation{}, vTranslation{};
 
-    m_pBodyInterface->MoveKinematic(m_BodyID, LoadVec3(vTranslation), LoadQuat(vRotation), fTimeDelta);
+        XMMatrixDecompose(&vScale, &vRotation, &vTranslation, pTransform->Get_WorldMatrix());
+
+        m_pBodyInterface->MoveKinematic(m_BodyID, LoadVec3(vTranslation), LoadQuat(vRotation), fTimeDelta);
+
+    }
 
     Vec3 vPos;
     Quat qRotation;
@@ -87,11 +93,13 @@ void CBody::Update(_float fTimeDelta, class CTransform* pTransform)
     _vector vQuaternion = XMVectorSet(qRotation.GetX(), qRotation.GetY(), qRotation.GetZ(), qRotation.GetW());
     pTransform->Set_Quaternion(vQuaternion);
     pTransform->Set_State(STATE::POSITION, XMVectorSet(vPos.GetX(), vPos.GetY(), vPos.GetZ(), 1.f));
+    
 }
 
 void CBody::Sync_Update(CTransform* pTransform)
 {
-    Set_PosRot(pTransform->Get_State(STATE::POSITION), pTransform->Get_Rotation_Quat());
+    if (m_pBody->GetMotionType() == EMotionType::Kinematic)
+        Set_PosRot(pTransform->Get_State(STATE::POSITION), pTransform->Get_Rotation_Quat());
 }
 
 
@@ -112,10 +120,15 @@ void CBody::Add_Torque(const _float3& vTorque)
     m_pBodyInterface->AddTorque(m_BodyID, Vec3(vTorque.x, vTorque.y, vTorque.z));
 }
 
-void CBody::Add_Impulse(const _float3& vImpulse)
+void CBody::Add_Impulse(_vector vDir, _float3 vVelocity, _float fMass)
 {
     if (m_BodyID.IsInvalid()) return;
-    m_pBodyInterface->AddImpulse(m_BodyID, Vec3(vImpulse.x, vImpulse.y, vImpulse.z));
+    m_pBody->SetLinearVelocity(LoadQuat(vDir) * LoadVec3(vVelocity));
+    m_pBodyInterface->AddImpulse(m_BodyID, m_pBody->GetLinearVelocity() * fMass);
+}
+
+void CBody::Set_Velocity(const _float3& vVelocity)
+{
 }
 
 void CBody::Build_Shape(BODY_DESC* pDesc, RefConst<Shape>& pShape)
@@ -126,18 +139,21 @@ void CBody::Build_Shape(BODY_DESC* pDesc, RefConst<Shape>& pShape)
     {
         BODY_BOXSHAPE_DESC* pBoxDesc = static_cast<BODY_BOXSHAPE_DESC*>(pDesc);
         pShape = new BoxShape(Vec3(pBoxDesc->vExtent.x, pBoxDesc->vExtent.y, pBoxDesc->vExtent.z));
+        pShape = new RotatedTranslatedShape(LoadVec3(pBoxDesc->vShapeOffset), LoadQuat(pBoxDesc->vShapeRotation), pShape);
         break;
     }
     case SHAPE::SPHERE:
     {
         BODY_SPHERESHAPE_DESC* pSphereDesc = static_cast<BODY_SPHERESHAPE_DESC*>(pDesc);
         pShape = new SphereShape(pSphereDesc->fRadius);
+        pShape = new RotatedTranslatedShape(LoadVec3(pSphereDesc->vShapeOffset), LoadQuat(pSphereDesc->vShapeRotation), pShape);
         break;
     }
     case SHAPE::CAPSULE:
     {
         BODY_CAPSULESHAPE_DESC* pCapsuleDesc = static_cast<BODY_CAPSULESHAPE_DESC*>(pDesc);
         pShape = new CapsuleShape(pCapsuleDesc->fHeight * 0.5f, pCapsuleDesc->fRadius);
+        pShape = new RotatedTranslatedShape(LoadVec3(pCapsuleDesc->vShapeOffset), LoadQuat(pCapsuleDesc->vShapeRotation), pShape);
         break;
     }
 

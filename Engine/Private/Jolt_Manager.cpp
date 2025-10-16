@@ -162,10 +162,10 @@ void CJolt_Manager::Test()
     ShapeSettings::ShapeResult floor_shape_result = floor_shape_settings.Create();
     ShapeRefC floor_shape = floor_shape_result.Get(); // We don't expect an error here, but you can check floor_shape_result for HasError() / GetError()
 
-    BodyCreationSettings floor_settings(floor_shape, RVec3(Real(0.0), Real(-1.0), Real(0.0)), Quat::sIdentity(), EMotionType::Static, ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
+    BodyCreationSettings floor_settings(floor_shape, RVec3(Real(0.0), Real(-5.0), Real(0.0)), Quat::sIdentity(), EMotionType::Static, ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
     Body* floor = m_pPhysics->GetBodyInterface().CreateBody(floor_settings); // Note that if we run out of bodies this can return nullptr
 
-    BodyCreationSettings floor_settings2(floor_shape, RVec3(Real(0.0), Real(-1.0), Real(0.0)), Quat::sRotation(Vec3::sAxisX(), DegreesToRadians(45.0f)), EMotionType::Static, ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
+    BodyCreationSettings floor_settings2(floor_shape, RVec3(Real(0.0), Real(-5.0), Real(0.0)), Quat::sRotation(Vec3::sAxisX(), DegreesToRadians(45.0f)), EMotionType::Static, ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
     Body* floor2 = m_pPhysics->GetBodyInterface().CreateBody(floor_settings2); // Note that if we run out of bodies this can return nullptr
     m_pPhysics->GetBodyInterface().AddBody(floor->GetID(), EActivation::DontActivate);
     m_pPhysics->GetBodyInterface().AddBody(floor2->GetID(), EActivation::DontActivate);
