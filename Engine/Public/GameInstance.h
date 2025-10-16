@@ -48,6 +48,7 @@ private:
 #pragma region LEVEL_MANAGER
 public:
 	HRESULT Open_Level(_uint iLevelID, class CLevel* pNewLevel);
+	_uint Get_CurrentLevelID();
 #pragma endregion
 
 #pragma region PROTOTYPE_MANAGER
@@ -94,11 +95,13 @@ public:
 #pragma endregion
 
 #pragma region LIGHT_MANAGER
-	const LIGHT_DESC* Get_LightDesc(_uint iIndex) const;
-	HRESULT Add_Light(const LIGHT_DESC& LightDesc);
-	HRESULT Render_Lights(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
+	const LIGHT_DESC* Get_LightDesc(const _wstring& strLightTag, _uint iLevelIndex);
+	HRESULT Add_Light(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_DESC& LightDesc, _bool isEnable = true);
+	void Set_LightDesc(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_DESC& LightDesc);
+	void Set_LightPosition(const _wstring& strLightTag, _uint iLevelIndex, const _float4& vPosition);
+	void Set_LightEnable(const _wstring& strLightTag, _uint iLevelIndex, _bool isEnable);
+	HRESULT Render_Lights(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer, _uint iLevelIndex);
 #pragma endregion
-
 
 #pragma region FONT_MANAGER
 	HRESULT Add_Font(const _wstring& strFontTag, const _tchar* pFontFilePath);

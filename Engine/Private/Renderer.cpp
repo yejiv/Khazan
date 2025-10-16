@@ -281,7 +281,7 @@ HRESULT CRenderer::Render_Lights()
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
         return E_FAIL;
 
-    m_pGameInstance->Render_Lights(m_pShader, m_pVIBuffer);
+    m_pGameInstance->Render_Lights(m_pShader, m_pVIBuffer, m_pGameInstance->Get_CurrentLevelID());
 
     if (FAILED(m_pGameInstance->End_MRT()))
         return E_FAIL;

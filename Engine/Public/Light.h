@@ -11,9 +11,11 @@ private:
 	virtual ~CLight() = default;
 
 public:
-	const LIGHT_DESC* Get_LightDesc() const {
-		return &m_LightDesc;
-	}
+	const LIGHT_DESC* Get_LightDesc() const { return &m_LightDesc; }
+	void Set_LightDesc(const LIGHT_DESC& LightDesc) { m_LightDesc = LightDesc; }
+	void Set_Position(const _float4& vPosition) { m_LightDesc.vPosition = vPosition; }
+	void Set_Enable(_bool isEnable) { m_isEnable = isEnable; }
+	_bool isEnable() { return m_isEnable; }
 
 public:
 	HRESULT Initialize(const LIGHT_DESC& LightDesc);
@@ -21,6 +23,7 @@ public:
 
 private:
 	LIGHT_DESC				m_LightDesc = {};
+	_bool					m_isEnable = {};
 
 public:
 	static CLight* Create(const LIGHT_DESC& LightDesc);
