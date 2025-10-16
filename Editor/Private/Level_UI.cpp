@@ -2,10 +2,6 @@
 #include "GameInstance.h"
 #include "Level_Loading.h"
 #include "Camera_UI.h"
-#include "Edit_Panel.h"
-#include "Edit_Button.h"
-#include "Edit_ProgressBar.h"
-#include "Edit_TextBox.h"
 
 
 CLevel_UI::CLevel_UI(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -19,7 +15,7 @@ HRESULT CLevel_UI::Initialize()
 	/* 현재 레벨을 구성해주기 위한 객체들을 생성한다. */
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera_UI"))))
 		return E_FAIL;
-
+	/*
 	m_pGameInstance->AddWidget(TEXT("UI"), [&]() {
 
 		ImGui::Begin("UI TOOL", nullptr, ImGuiWindowFlags_MenuBar);
@@ -65,7 +61,7 @@ HRESULT CLevel_UI::Initialize()
 
 		ImGui::End();
 		});
-
+		*/
 	return S_OK;
 }
 
@@ -102,7 +98,7 @@ HRESULT CLevel_UI::Ready_Layer_Camera(const _wstring& strLayerTag)
 	return S_OK;
 }
 
-void CLevel_UI::Show_Hierarchy_Menu(const _char* szDefaultName)
+/*void CLevel_UI::Show_Hierarchy_Menu(const _char* szDefaultName)
 {
 	ImGui::Text("UI Hierarchy");
 	ImGui::Separator();
@@ -149,32 +145,32 @@ void CLevel_UI::Show_Hierarchy_Menu(const _char* szDefaultName)
 void CLevel_UI::Show_Hierachy(CUIObject* pRootUIObject)
 {
 
-	ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_OpenOnArrow; // ImGui 에서 트리 노드를 화살표로 클릭으로만 열리게 하는 플래그
+	//ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_OpenOnArrow; // ImGui 에서 트리 노드를 화살표로 클릭으로만 열리게 하는 플래그
 
-	if (m_SelectedObject == pRootUIObject)
-		Flags |= ImGuiTreeNodeFlags_Selected; // 해당 트리 (아이템) 을 선택 상태로 렌더시켜준다.
+	//if (m_SelectedObject == pRootUIObject)
+	//	Flags |= ImGuiTreeNodeFlags_Selected; // 해당 트리 (아이템) 을 선택 상태로 렌더시켜준다.
 
-	_bool isOpen = ImGui::TreeNodeEx(pRootUIObject->Get_Name(), Flags); // 트리 노드 접힙, 펼침을 만들고, 트리 스택을 푸쉬하는 기능
-	// 반환 값을 bool 값으로 받아서 펼쳐진 상태라면 true 접힌 상태라면 false
-	if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-	{
-		m_SelectedObject = pRootUIObject;
-	}
-	if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
-	{
-		m_SelectedParrentObject = pRootUIObject;
-		strcpy_s(m_szSelectedName, MAX_PATH, m_SelectedParrentObject->Get_Name());
-	}
-	
-	if (isOpen)
-	{
-		// 계층구조를 쭉 렌더시킨다.
-		for (auto& pChild : pRootUIObject->Get_Children())
-		{
-			Show_Hierachy(pChild);
-		}
-		ImGui::TreePop(); // TreeNodeEx()로 열었던 트리 노드의 스택을 정리하는 함수이다.트리의 끝을 정의?
-	}
+	//_bool isOpen = ImGui::TreeNodeEx(pRootUIObject->Get_Name(), Flags); // 트리 노드 접힙, 펼침을 만들고, 트리 스택을 푸쉬하는 기능
+	//// 반환 값을 bool 값으로 받아서 펼쳐진 상태라면 true 접힌 상태라면 false
+	//if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+	//{
+	//	m_SelectedObject = pRootUIObject;
+	//}
+	//if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+	//{
+	//	m_SelectedParrentObject = pRootUIObject;
+	//	strcpy_s(m_szSelectedName, MAX_PATH, m_SelectedParrentObject->Get_Name());
+	//}
+	//
+	//if (isOpen)
+	//{
+	//	// 계층구조를 쭉 렌더시킨다.
+	//	for (auto& pChild : pRootUIObject->Get_Children())
+	//	{
+	//		Show_Hierachy(pChild);
+	//	}
+	//	ImGui::TreePop(); // TreeNodeEx()로 열었던 트리 노드의 스택을 정리하는 함수이다.트리의 끝을 정의?
+	//}
 
 }
 
@@ -563,11 +559,11 @@ void CLevel_UI::Show_CreateUI_Menu(const _char* szDefaultName)
 
 		ImGui::Separator();
 
-		/*static _char szText[MAX_PATH] = "Sample";
+		static _char szText[MAX_PATH] = "Sample";
 		if (ImGui::InputText("Text", szText, sizeof(szText)))
 		{
 			TextBoxDesc.strText = std::wstring(szText, szText + strlen(szText));
-		}*/
+		}
 
 		static _char szFont[MAX_PATH] = "DefaultFont";
 		ImGui::InputText("Font Tag", szFont, sizeof(szFont));
@@ -630,7 +626,7 @@ CUIObject* CLevel_UI::Find_UIObject(const _char* szUIObjectName)
 	return nullptr;
 }
 
-
+*/
 CLevel_UI* CLevel_UI::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	CLevel_UI* pInstance = new CLevel_UI(pDevice, pContext);
@@ -649,11 +645,4 @@ void CLevel_UI::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_SelectedObject);
-	Safe_Release(m_SelectedParrentObject);
-	for (auto& UIObject : m_EditorUIObjects)
-	{
-		Safe_Release(UIObject);
-	}
-	m_EditorUIObjects.clear();
 }

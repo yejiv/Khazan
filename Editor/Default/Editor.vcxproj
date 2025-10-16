@@ -161,8 +161,6 @@
     <ClInclude Include="..\Public\Editor_ModelMesh_Instance.h" />
     <ClInclude Include="..\Public\Editor_Model_Instance.h" />
     <ClInclude Include="..\public\Editor_TempCamera.h" />
-    <ClInclude Include="..\Public\Edit_Button.h" />
-    <ClInclude Include="..\Public\Edit_Panel.h" />
     <ClInclude Include="..\Public\Edit_ProgressBar.h" />
     <ClInclude Include="..\Public\Edit_TextBox.h" />
     <ClInclude Include="..\public\JOH_EditorModelTest.h" />
@@ -208,10 +206,6 @@
     <ClCompile Include="..\Private\Editor_ModelMesh_Instance.cpp" />
     <ClCompile Include="..\Private\Editor_Model_Instance.cpp" />
     <ClCompile Include="..\private\Editor_TempCamera.cpp" />
-    <ClCompile Include="..\Private\Edit_Button.cpp" />
-    <ClCompile Include="..\Private\Edit_Panel.cpp" />
-    <ClCompile Include="..\Private\Edit_ProgressBar.cpp" />
-    <ClCompile Include="..\Private\Edit_TextBox.cpp" />
     <ClCompile Include="..\private\JOH_EditorModelTest.cpp" />
     <ClCompile Include="..\Private\Camera_Effect.cpp" />
     <ClCompile Include="..\Private\Level_Animation.cpp" />
