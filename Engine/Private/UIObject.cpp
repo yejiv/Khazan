@@ -123,6 +123,14 @@ void CUIObject::Update_Transform(CUIObject* pParent, _float2 vPos)
     }
 }
 
+void CUIObject::Update_Scaling(_float fSize)
+{
+    m_pTransformCom->Scale(_float3{ m_vLocalSize.x * fSize, m_vLocalSize.y * fSize, 1.f });
+
+    for (auto& pChild : m_Children)
+        pChild->Update_Scaling(fSize);
+}
+
 _float2 CUIObject::Compute_AlignedPos(_float2 vPos, _float2 vSize)
 {
     switch (m_eAlignment)

@@ -518,14 +518,34 @@ _bool CEdit_UIBase::Get_LastTime(string& szSeleteUIName, _float& fOutTime)
     return false;
 }
 
-_bool CEdit_UIBase::Play_Animation(string& szSeleteUIName, _float& fAccTime, _float fParentX, _float fParentY)
+_bool CEdit_UIBase::Play_Animation(string& szSeleteUIName, _float& fAccTime)
 {
-    return _bool();
+    if (m_szName == szSeleteUIName)
+    {
+        Update_Track(fAccTime);
+        return true;
+    }
+    for (auto& pChild : m_Children)
+    {
+        if (static_cast<CEdit_UIBase*>(pChild)->Play_Animation(szSeleteUIName, fAccTime))
+            return true;
+    }
+    return false;
 }
 
 _bool CEdit_UIBase::ReSet_Track(string& szSeleteUIName)
 {
-    return _bool();
+    if (m_szName == szSeleteUIName)
+    {
+        m_iCurrentKeyFrameIndex = 0;
+        return true;
+    }
+    for (auto& pChild : m_Children)
+    {
+        if (static_cast<CEdit_UIBase*>(pChild)->ReSet_Track(szSeleteUIName))
+            return true;
+    }
+    return false;
 }
 
 HRESULT CEdit_UIBase::Initialize_Prototype()
@@ -621,6 +641,63 @@ HRESULT CEdit_UIBase::Ready_Component()
         return E_FAIL;
 
     return S_OK;
+}
+
+void CEdit_UIBase::Update_Track(_float& fAccTime)
+{
+    if (fAccTime >= m_Track.back().fTrackPosition)
+    {
+        fAccTime = 0.f;
+        m_iCurrentKeyFrameIndex = 0;
+    }
+    if (fAccTime == 0.f)
+        m_iCurrentKeyFrameIndex = 0;
+
+    while (fAccTime >= m_Track[m_iCurrentKeyFrameIndex + 1].fTrackPosition)
+        m_iCurrentKeyFrameIndex++;
+
+    _float fRatio = (fAccTime - m_Track[m_iCurrentKeyFrameIndex].fTrackPosition) /
+        (m_Track[m_iCurrentKeyFrameIndex + 1].fTrackPosition - m_Track[m_iCurrentKeyFrameIndex].fTrackPosition);
+
+    //((1.f - fRatio) * First) + (fRatio * Second);
+    //Size
+    _float fSize = ((1.f - fRatio) * m_Track[m_iCurrentKeyFrameIndex].fSize) + (fRatio * m_Track[m_iCurrentKeyFrameIndex + 1].fSize);
+    __super::Update_Scaling(fSize);
+
+    //Alpha
+    _float fAlpha = ((1.f - fRatio) * m_Track[m_iCurrentKeyFrameIndex].fAlpha) + (fRatio * m_Track[m_iCurrentKeyFrameIndex + 1].fAlpha);
+    Set_Alpha(fAlpha);
+
+    //Pos
+    _int iTrackIndex[4] = {};
+
+    if (m_iCurrentKeyFrameIndex <= 0)
+        iTrackIndex[0] = 0;
+    else
+        iTrackIndex[0] = m_iCurrentKeyFrameIndex - 1;
+
+    iTrackIndex[1] = m_iCurrentKeyFrameIndex;
+    iTrackIndex[2] = m_iCurrentKeyFrameIndex + 1;
+
+    if (m_iCurrentKeyFrameIndex + 1 >= m_Track.size() - 1)
+        iTrackIndex[3] = m_iCurrentKeyFrameIndex + 1;
+    else
+        iTrackIndex[3] = m_iCurrentKeyFrameIndex + 2;
+
+    _vector p0 = { m_Track[iTrackIndex[0]].vTransloation.x, m_Track[iTrackIndex[0]].vTransloation.y, 1.f };
+    _vector p1 = { m_Track[iTrackIndex[1]].vTransloation.x, m_Track[iTrackIndex[1]].vTransloation.y, 1.f };
+    _vector p2 = { m_Track[iTrackIndex[2]].vTransloation.x, m_Track[iTrackIndex[2]].vTransloation.y, 1.f };
+    _vector p3 = { m_Track[iTrackIndex[3]].vTransloation.x, m_Track[iTrackIndex[3]].vTransloation.y, 1.f };
+
+    _float2 fPos = {};
+    XMStoreFloat2(&fPos, XMVectorCatmullRom(p0, p1, p2, p3, fRatio));
+
+    m_vLocalPos.x = ((m_vWorldPos.x - m_vLocalPos.x) - fPos.x) * -1.f;
+    m_vLocalPos.y = ((m_vWorldPos.y - m_vLocalPos.y) - fPos.y) * -1.f;
+    m_vWorldPos.x = m_vLocalPos.x;
+    m_vWorldPos.y = m_vLocalPos.y;
+    
+    Update_Transform(nullptr, m_vWorldPos);
 }
 
 CEdit_UIBase* CEdit_UIBase::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

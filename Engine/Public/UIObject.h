@@ -60,6 +60,7 @@ public:
 	virtual void				Remove_Child(CUIObject* pChild);
 	virtual void				Update_Visible(_bool bisVisible);
 	virtual void				Update_Transform(CUIObject* pParent, _float2 vPos);
+	virtual void				Update_Scaling(_float fSize);
 	_float2						Compute_AlignedPos(_float2 vWorldPos, _float2 vSize);
 
 public:

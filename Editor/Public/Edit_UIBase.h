@@ -50,7 +50,7 @@ public:
 	_bool					Set_Anim(string& szSeleteUIName);
 	_bool					Set_AnimPos(string& szSeleteUIName);
 	_bool					Get_LastTime(string& szSeleteUIName, _float& fOutTime);
-	_bool					Play_Animation(string& szSeleteUIName, _float& fAccTime, _float fParentX = 0, _float fParentY = 0);
+	_bool					Play_Animation(string& szSeleteUIName, _float& fAccTime);
 	_bool					ReSet_Track(string& szSeleteUIName);
 
 public:
@@ -85,9 +85,12 @@ private:
 	//Event
 	_char					m_szTrackEvent[MAX_PATH] = {};
 	_int					m_iSeleteTrackIndex = {};
+	_uint					m_iCurrentKeyFrameIndex = {};
 
 private:
 	HRESULT					Ready_Component();
+	void					Update_Track(_float& fAccTime);
+
 public:
 	static CEdit_UIBase*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject*	Clone(void* pArg);

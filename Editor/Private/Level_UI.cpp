@@ -70,7 +70,7 @@ HRESULT CLevel_UI::Initialize()
 
 void CLevel_UI::Update(_float fTimeDelta)
 {
-
+	m_fTimeDelta = fTimeDelta;
 	return;
 }
 

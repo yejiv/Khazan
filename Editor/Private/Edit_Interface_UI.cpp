@@ -122,6 +122,7 @@ void CEdit_Interface_UI::Create_UI()
 {
 	if (ImGui::CollapsingHeader("Create_UI"))
 	{
+
 		ImGui::InputText("UIName", m_szUIName, MAX_PATH);
 
 		ImGui::RadioButton("PANEL", &m_iUIType, 0);
@@ -142,35 +143,45 @@ void CEdit_Interface_UI::Create_UI()
 
 		if (ImGui::Button("Create_Parent"))
 		{
-			CUIObject::UIOBJECT_DESC UIDesc{};
-			UIDesc.szName = m_szUIName;
-			UIDesc.iUIType = m_iUIType;
-			UIDesc.vLocalSize = { (_float)m_iUISize[0],(_float)m_iUISize[1] };
-			UIDesc.fDepth = 0;
-			UIDesc.vLocalPos = { g_iWinSizeX >> 1 , g_iWinSizeY >> 1 };
-			
-			CEdit_UIBase* pRootUI = static_cast<CEdit_UIBase*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(m_eLevel), TEXT("Prototype_GameObject_UI_Base"), &UIDesc));
-
-			if (pRootUI != nullptr)
-			{
-				m_szSeleteUIName = m_szUIName;
-				m_pRootUIs.push_back(pRootUI);
-				m_iSeletRootUI = m_pRootUIs.size() -1;
-			}
-		}
-		if (ImGui::Button("Create_Chiled"))
-		{
-			if (m_iSeletRootUI > -1)
+			if (m_szUIName != string("").c_str())
 			{
 				CUIObject::UIOBJECT_DESC UIDesc{};
 				UIDesc.szName = m_szUIName;
 				UIDesc.iUIType = m_iUIType;
 				UIDesc.vLocalSize = { (_float)m_iUISize[0],(_float)m_iUISize[1] };
-				UIDesc.vLocalPos = { 0.f, 0.f };
-				m_pRootUIs[m_iSeletRootUI]->Create_Child(ENUM_CLASS(m_eLevel), TEXT("Prototype_GameObject_UI_Base"), &UIDesc, m_szSeleteUIName)  ;
+				UIDesc.fDepth = 0;
+				UIDesc.vLocalPos = { g_iWinSizeX >> 1 , g_iWinSizeY >> 1 };
+
+				CEdit_UIBase* pRootUI = static_cast<CEdit_UIBase*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(m_eLevel), TEXT("Prototype_GameObject_UI_Base"), &UIDesc));
+
+				if (pRootUI != nullptr)
+				{
+					m_szSeleteUIName = m_szUIName;
+					m_pRootUIs.push_back(pRootUI);
+					m_iSeletRootUI = m_pRootUIs.size() - 1;
+				}
 			}
 			else
-				MSG_BOX(TEXT("RootUI 선택점"));
+				MSG_BOX(TEXT("이름 입력!!"));
+		}
+		if (ImGui::Button("Create_Chiled"))
+		{
+			if (m_iSeletRootUI > -1)
+			{
+				if (m_szUIName != string("").c_str())
+				{
+					CUIObject::UIOBJECT_DESC UIDesc{};
+					UIDesc.szName = m_szUIName;
+					UIDesc.iUIType = m_iUIType;
+					UIDesc.vLocalSize = { (_float)m_iUISize[0],(_float)m_iUISize[1] };
+					UIDesc.vLocalPos = { 0.f, 0.f };
+					m_pRootUIs[m_iSeletRootUI]->Create_Child(ENUM_CLASS(m_eLevel), TEXT("Prototype_GameObject_UI_Base"), &UIDesc, m_szSeleteUIName);
+				}
+				else
+					MSG_BOX(TEXT("이름 입력!!"));
+			}
+			else
+				MSG_BOX(TEXT("RootUI 선택 필요!!"));
 		}
 		if (ImGui::Button("Clear_Panel"))
 		{
