@@ -142,6 +142,9 @@
     <Filter Include="02.GameObject\MapObject\Prop\00.Object">
       <UniqueIdentifier>{bec6786b-1289-42dc-b5b7-86382507e079}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Levels\Shader">
+      <UniqueIdentifier>{a549f4c0-e8c1-476c-9791-1cd9bb77ed65}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -280,6 +283,9 @@
     <ClInclude Include="..\Public\Prop_Object.h">
       <Filter>02.GameObject\MapObject\Prop\00.Object</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Level_Shader.h">
+      <Filter>01.Levels\Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -411,6 +417,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Prop_Object.cpp">
       <Filter>02.GameObject\MapObject\Prop\00.Object</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Shader.cpp">
+      <Filter>01.Levels\Shader</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
