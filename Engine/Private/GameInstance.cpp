@@ -281,6 +281,11 @@ CGameObject* CGameInstance::Find_GameObject(_uint iLayerLevelIndex, const _wstri
 	return m_pObject_Manager->Get_GameObject(iLayerLevelIndex, strLayerTag, iIndex);
 }
 
+CGameObject* CGameInstance::Get_BackGameObject(_uint iLayerLevelIndex, const _wstring& strLayerTag)
+{
+	return m_pObject_Manager->Get_BackGameObject(iLayerLevelIndex, strLayerTag);
+}
+
 HRESULT CGameInstance::Add_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, void* pArg)
 {
 	if (nullptr == m_pObject_Manager)
