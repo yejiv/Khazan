@@ -91,6 +91,9 @@ HRESULT CLoader::Loading()
 	case LEVEL::UI:
 		hr = Loading_For_UI_Level();
 		break;
+	case LEVEL::SHADER:
+		hr = Loading_For_Shader_Level();
+		break;
 	}
 
 	if (FAILED(hr))
@@ -156,11 +159,11 @@ HRESULT CLoader::Loading_For_Map_Level()
 
 	lstrcpy(m_szLoadingText, TEXT("게임오브젝트원형를 로딩중입니다."));
 
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"),
+		CProp_Object::Create(m_pDevice, m_pContext)), E_FAIL);
+
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"),
 		CProp_Static::Create(m_pDevice, m_pContext)), E_FAIL);
-
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Test"),
-		CProp_Animated::Create(m_pDevice, m_pContext)), E_FAIL);
 
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Camera_Map"),
 		CCamera_Map::Create(m_pDevice, m_pContext)), E_FAIL);
@@ -185,15 +188,15 @@ HRESULT CLoader::Loading_For_Animation_Level()
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
 	_matrix		PreTransformMatrix = XMMatrixIdentity();
 
-	/* Prototype_Component_Model_JOH_TestModel */
-	PreTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::ANIMATION), TEXT("Prototype_Component_Model_JOH_TestModel"),
-		CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::ANIM, "../../Client/Bin/Models/Creature/Test/AnimNude_Player/Test.fbx", PreTransformMatrix))))
-		return E_FAIL;
+	/* Prototype_Component_Editor_Model_Test */
+	//PreTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::ANIMATION), TEXT("Prototype_Component_Editor_Model_Test"),
+	//	CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::ANIM, "../../Client/Bin/Resources/Models/Creature/Test/AnimNude_Player/Test.fbx", PreTransformMatrix))))
+	//	return E_FAIL;
 
-		/* Prototype_Component_Model_JOH_TestModel */
+	/* Prototype_Component_Editor_Model_Test */
 	//PreTransformMatrix = XMMatrixRotationY(XMConvertToRadians(180.0f));
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::ANIMATION), TEXT("Prototype_Component_Model_JOH_TestModel"),
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::ANIMATION), TEXT("Prototype_Component_Editor_Model_Test"),
 	//	CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::ANIM, "../../Client/Bin/Resources/Models/Fiona/Fiona.fbx", PreTransformMatrix))))
 		//return E_FAIL;
 
@@ -201,8 +204,8 @@ HRESULT CLoader::Loading_For_Animation_Level()
 
 	lstrcpy(m_szLoadingText, TEXT("게임오브젝트원형를 로딩중입니다."));
 	
-	/* Prototype_GameObject_JOH_TestModel */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::ANIMATION), TEXT("Prototype_GameObject_JOH_TestModel"),
+	/* Prototype_GameObject_Editor_Animation_TestModel */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::ANIMATION), TEXT("Prototype_GameObject_Editor_Animation_TestModel"),
 		CJOH_EditorModelTest::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
@@ -346,6 +349,23 @@ HRESULT CLoader::Loading_For_UI_Level()
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 
 	m_isFinished = true;
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Shader_Level()
+{
+	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("게임오브젝트원형를 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
+
+	m_isFinished = true;
+
 	return S_OK;
 }
 

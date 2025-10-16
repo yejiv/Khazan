@@ -67,6 +67,33 @@
     <Filter Include="02.GameObject\Pool\Dummy">
       <UniqueIdentifier>{6e103e38-a2d6-4217-aff0-d6c4a31102c1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject">
+      <UniqueIdentifier>{d0a49871-c562-494c-8f06-0484c2365f54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop">
+      <UniqueIdentifier>{1cfff3ac-6659-4304-a933-0dd29de33235}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\00.Object">
+      <UniqueIdentifier>{02e66005-10a9-4448-8c68-8a59d69853cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\04.Destructible">
+      <UniqueIdentifier>{793f3e60-e849-4e56-833a-595a71a59c84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\01.Static">
+      <UniqueIdentifier>{96a780a7-4c8c-4cc3-8a38-7fc9717dbf8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\02.Animated">
+      <UniqueIdentifier>{0720e62d-6697-4e09-b15e-98b542f160b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive">
+      <UniqueIdentifier>{434e87f8-9706-4262-98ef-82dc5c515e49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\99.Header">
+      <UniqueIdentifier>{c4885ae7-b4f3-4736-82ce-cf10cdbfc9a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\99.Test">
+      <UniqueIdentifier>{6cebfa6b-a112-4eee-bb93-809f30e16c2c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -127,7 +154,34 @@
       <Filter>96.pch</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Player.h">
-      <Filter>02.GameObject\Pool</Filter>
+      <Filter>02.GameObject\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop.h">
+      <Filter>02.GameObject\MapObject\00.Prop</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Object.h">
+      <Filter>02.GameObject\MapObject\00.Prop\00.Object</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Animated.h">
+      <Filter>02.GameObject\MapObject\00.Prop\02.Animated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Destructible.h">
+      <Filter>02.GameObject\MapObject\00.Prop\04.Destructible</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Interactive.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Static.h">
+      <Filter>02.GameObject\MapObject\00.Prop\01.Static</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MapObject.h">
+      <Filter>02.GameObject\MapObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MapObject_Header.h">
+      <Filter>02.GameObject\MapObject\99.Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Test.h">
+      <Filter>02.GameObject\MapObject\00.Prop\99.Test</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -188,6 +242,30 @@
     </ClCompile>
     <ClCompile Include="ClientPch.cpp">
       <Filter>96.pch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Object.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\00.Object</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Animated.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\02.Animated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Destructible.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\04.Destructible</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Interactive.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Static.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\01.Static</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MapObject.cpp">
+      <Filter>02.GameObject\MapObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Test.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\99.Test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

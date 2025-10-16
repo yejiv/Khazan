@@ -20,16 +20,18 @@ HRESULT CJOH_EditorModelTest::Initialize_Prototype()
 
 HRESULT CJOH_EditorModelTest::Initialize_Clone(void* pArg)
 {
+    _wstring* strModelTag = static_cast<_wstring*>(pArg);
+
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
-    if (FAILED(Ready_Components()))
+    if (FAILED(Ready_Components(*strModelTag)))
         return E_FAIL;
 
     m_pModelCom->Set_Animation(3, true);
 
-    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-    m_pTransformCom->Scale(_float3(0.001f, 0.001f, 0.001f));
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(1.f, 0.f, 0.f, 1.f));
+    m_pTransformCom->Scale(_float3(0.01f, 0.01f, 0.01f));
 
     return S_OK;
 }
@@ -40,6 +42,7 @@ void CJOH_EditorModelTest::Priority_Update(_float fTimeDelta)
 
 void CJOH_EditorModelTest::Update(_float fTimeDelta)
 {
+    if (!m_isEnble) return;
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
         int a = 10;
@@ -53,18 +56,20 @@ void CJOH_EditorModelTest::Update(_float fTimeDelta)
         m_iCurrentAnimIndex = 1;
         m_pModelCom->Set_Animation(m_iCurrentAnimIndex, true);
     }
-    if (m_pGameInstance->Key_Down(DIK_3))
-    {
-        m_pModelCom->ExportModel();
-    }
-    if (m_pGameInstance->Key_Down(DIK_4))
-    {
-        m_pModelCom->Update_DAT_From_JSON();
-    }
+    //if (m_pGameInstance->Key_Down(DIK_3))
+    //{
+    //    m_pModelCom->ExportModel();
+    //}
+    //if (m_pGameInstance->Key_Down(DIK_4))
+    //{
+    //    m_pModelCom->Update_DAT_From_JSON();
+    //}
 }
 
 void CJOH_EditorModelTest::Late_Update(_float fTimeDelta)
 {
+    if (!m_isEnble) return;
+
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONLIGHT, this)))
         return;
 }
@@ -90,13 +95,13 @@ HRESULT CJOH_EditorModelTest::Render()
     return S_OK;
 }
 
-HRESULT CJOH_EditorModelTest::Ready_Components()
+HRESULT CJOH_EditorModelTest::Ready_Components(const _wstring& strModelTag)
 {
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::ANIMATION), TEXT("Prototype_Component_Model_JOH_TestModel"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::ANIMATION), strModelTag,
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
 

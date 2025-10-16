@@ -34,10 +34,15 @@ CEditor_Model::CEditor_Model(const CEditor_Model& Prototype)
 
    // , m_Bones{ Prototype.m_Bones }
 	, m_iNumAnimations{ Prototype.m_iNumAnimations }
+    , m_iRootBoneIndex{Prototype.m_iRootBoneIndex }
+    , m_fRootMotionBlendTime{Prototype.m_fRootMotionBlendTime }
 
 {
-    for (auto& pPrototypeAnimation : Prototype.m_Animations)
-        m_Animations.push_back(pPrototypeAnimation->Clone());
+    for (auto& pPrototypeAnimation : Prototype.m_Animations) {
+        CEditor_Animation* pAnimation = pPrototypeAnimation->Clone();
+        m_Animations.push_back(pAnimation);
+        pAnimation->Set_TrackPositionPtr(&m_fCurrentTrackPosition);
+    }
 
     for (auto& pPrototypeBone : Prototype.m_Bones)
         m_Bones.push_back(pPrototypeBone->Clone());
@@ -148,6 +153,25 @@ HRESULT CEditor_Model::Initialize_Prototype(MODELTYPE eModelType, const _char* p
 
     memcpy(&m_Model_Data.vPreTransformMatrix, &m_PreTransformMatrix, sizeof(_float4x4));
 
+    if (m_eModelType == MODELTYPE::ANIM)
+    {
+        auto it = find_if(m_Bones.begin(), m_Bones.end(),
+            [&](CEditor_Bone* pBone) {
+                if (pBone->Compare_Name("Root"))
+                    return true;
+                return false;
+            });
+
+        if (it == m_Bones.end())
+        {
+            OutputDebugStringA(("!!!!!!!!1!!!!!!! 루트본 못 찾음!!!!!!!!!!!!!!!!!!!!!!!!!"));
+        }
+
+        m_iRootBoneIndex = static_cast<_uint>(distance(m_Bones.begin(), it));
+        OutputDebugStringA(("[Root Boon Index] : " + to_string(m_iRootBoneIndex) + "\n").c_str());
+
+    }
+
     return S_OK;
 }
 
@@ -195,10 +219,24 @@ _bool CEditor_Model::Play_Animation(_float fTimeDelta)
 {
     m_isFinished = false;
 
+    if (m_isChangedAnimation)
+    {
+        if (m_iPrevAnimIndex != m_iCurrentAnimIndex)
+        {
+            OnRootMotion();
+            m_Animations[m_iCurrentAnimIndex]->OnAnimationBlend(move(m_Animations[m_iPrevAnimIndex]->Get_ChannelMatrices()));
+
+        }
+        m_isChangedAnimation = false;
+    }
+
     m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrices(m_Bones, m_isLoop, &m_isFinished, fTimeDelta);
 
     for (auto& pBone : m_Bones)
         pBone->Update_CombinedTransformationMatrix(m_PreTransformMatrix, m_Bones);
+
+    if (m_isRootMotion)
+        Update_RootMotion(fTimeDelta);
 
     return m_isFinished;
 }
@@ -209,13 +247,18 @@ void CEditor_Model::Set_Animation(_uint iIndex, _bool isLoop)
         return;
 
     m_isLoop = isLoop;
+
+    m_iPrevAnimIndex = m_iCurrentAnimIndex;
     m_iCurrentAnimIndex = iIndex;
+
+    if (m_iPrevAnimIndex >= 0 &&  m_iCurrentAnimIndex != m_iPrevAnimIndex)
+        m_isChangedAnimation = true;
 }
 
 void CEditor_Model::ExportModel()
 {
     // 기본 경로 설정
-    string strBasePath = "../../Client/Bin/Resources/Data/";
+    string strBasePath = "../Data/";
 
     // 모델 이름으로 폴더 경로 생성
     string strModelFolder = strBasePath + m_Model_Data.strModelName + "/";
@@ -305,7 +348,7 @@ void CEditor_Model::ExportModel()
 void CEditor_Model::LoadModel(_wstring strModelName)
 {
 
-    string strDatPath = "../../Client/Bin/Resources/Data/" + WStringToAnsi(strModelName) + "/" + WStringToAnsi(strModelName) + ".dat";;
+    string strDatPath = "../Data/" + WStringToAnsi(strModelName) + "/" + WStringToAnsi(strModelName) + ".dat";;
 
     if (!filesystem::exists(strDatPath))
     {
@@ -326,7 +369,7 @@ void CEditor_Model::LoadModel(_wstring strModelName)
 
 void CEditor_Model::Update_DAT_From_JSON()
 {
-    string strBasePath = "../../Client/Bin/Resources/Data/";
+    string strBasePath = "../Data/";
     string strModelFolder = strBasePath + m_Model_Data.strModelName + "/";
 
     string strDatPath = strModelFolder + m_Model_Data.strModelName + ".dat";
@@ -367,7 +410,7 @@ void CEditor_Model::Update_DAT_From_JSON()
         ifs.close();
 
         // 애니메이션 교체
-        m_Model_Data.vecAnimation = j["Animations"].get<std::vector<ANIMATION_DATA>>();
+        m_Model_Data.vecAnimation = j.get<std::vector<ANIMATION_DATA>>();
         m_Model_Data.iNumAnimations = static_cast<_uint>(m_Model_Data.vecAnimation.size());
     }
 
@@ -386,7 +429,7 @@ void CEditor_Model::Update_DAT_From_JSON()
         ifs.close();
 
         // 머티리얼 교체
-        m_Model_Data.vecMaterials = j["Materials"].get<std::vector<MATERIAL_DATA>>();
+        m_Model_Data.vecMaterials = j.get<std::vector<MATERIAL_DATA>>();
         m_Model_Data.iNumMaterials = static_cast<_uint>(m_Model_Data.vecMaterials.size());
     }
 
@@ -486,6 +529,32 @@ HRESULT CEditor_Model::Ready_Animation()
     }
 
     return S_OK;
+}
+
+
+void CEditor_Model::OnRootMotion()
+{
+    m_isRootMotion = true;
+    m_fCurRootMotionBlendTime = 0.f;
+    m_PreRootMatrix = m_Bones[m_iRootBoneIndex]->Get_CombinedTransformationMatrix();
+}
+
+void CEditor_Model::Update_RootMotion(_float fTimeDelta)
+{
+    _matrix CurrentRootMatrix = m_Bones[m_iRootBoneIndex]->Get_CombinedTransformationMatrix();
+
+    m_fCurRootMotionBlendTime += fTimeDelta;
+
+    if(m_fCurRootMotionBlendTime >= m_fRootMotionBlendTime)
+        m_isRootMotion = false;
+    else
+    {
+        _float fRatio = m_fCurRootMotionBlendTime / m_fRootMotionBlendTime;
+
+        CurrentRootMatrix.r[3] = XMVectorLerp(m_PreRootMatrix.r[3], CurrentRootMatrix.r[3], fRatio);
+
+        m_Bones[m_iRootBoneIndex]->Set_TransformationMatrix(CurrentRootMatrix);
+    }
 }
 
 _bool CEditor_Model::Export_AnimationJson(const string& strFilePath, const string& strFilePath2)
