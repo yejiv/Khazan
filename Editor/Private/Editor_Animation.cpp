@@ -1,4 +1,4 @@
-#include "Editor_Animation.h"
+ï»¿#include "Editor_Animation.h"
 #include "Editor_Channel.h"
 #include "GameInstance.h"
 
@@ -58,11 +58,11 @@ void CEditor_Animation::Update_TransformationMatrices(const vector<class CEditor
 
     if (m_pGameInstance->Key_Pressing(DIK_SPACE, fTimeDelta) && m_pGameInstance->Key_Down(DIK_LCONTROL))
     {
-        OutputDebugStringA(("------[ Æ®·¢ À§Ä¡  : " + to_string(*m_fCurrentTrackPosition) + "  ]-------\n").c_str());
+        OutputDebugStringA(("------[ íŠ¸ë™ ìœ„ì¹˜  : " + to_string(*m_fCurrentTrackPosition) + "  ]-------\n").c_str());
     }
 
-
-   *m_fCurrentTrackPosition += m_fTickPerSecond * fTimeDelta;
+    if(!m_isEnbleAnimTool)
+        *m_fCurrentTrackPosition += m_fTickPerSecond * fTimeDelta;
 
     if (*m_fCurrentTrackPosition >= m_fDuration)
     {
@@ -112,7 +112,7 @@ void CEditor_Animation::Set_TrackPositionPtr(_float* pTrackPosition)
 
 void CEditor_Animation::Update_AnimationBlend(const vector<class CEditor_Bone*>& Bones, _float fTimeDelta)
 {
-    /* ratio °è»ê */
+    /* ratio ê³„ì‚° */
     m_fCurBlendTime += fTimeDelta;
 
     if (m_fCurBlendTime > m_fBlendTime)
@@ -120,7 +120,7 @@ void CEditor_Animation::Update_AnimationBlend(const vector<class CEditor_Bone*>&
 
     _float fRatio = m_fCurBlendTime / m_fBlendTime;
 
-    /* Ã¤³Î¿¡ º¸°£¿¡ »ç¿ë ÇÒ ÀÌÀü »À Çà·Ä ¼¼ÆÃÇÏ±â */
+    /* ì±„ë„ì— ë³´ê°„ì— ì‚¬ìš© í•  ì´ì „ ë¼ˆ í–‰ë ¬ ì„¸íŒ…í•˜ê¸° */
     for (_uint i = 0; i < m_iNumChannels; ++i)
     {
         _uint iBoneIndex = m_Channels[i]->Get_BoneIndex();
@@ -135,7 +135,7 @@ void CEditor_Animation::Update_AnimationBlend(const vector<class CEditor_Bone*>&
 _uint CEditor_Animation::GetAnimDirection(const string& animName)
 {
     string name = animName;
-    transform(name.begin(), name.end(), name.begin(), ::toupper); //´ë¹®ÀÚ ÅëÀÏ 
+    transform(name.begin(), name.end(), name.begin(), ::toupper); //ëŒ€ë¬¸ì í†µì¼ 
 
     struct DirectionMatch {
         const char* key1;
