@@ -199,18 +199,6 @@
     <Filter Include="01.Utility\03.Component\RigidBody">
       <UniqueIdentifier>{e6d7da03-00c0-4c21-be11-5d581401c62a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\02.GameObject\UIObject\MultiDelegate">
-      <UniqueIdentifier>{d87b0407-8b9f-4885-86d4-0de5d9a770a6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\02.GameObject\UIObject\Panel">
-      <UniqueIdentifier>{d4ab381e-e094-40cd-89d7-fd94e7388e98}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\02.GameObject\UIObject\Button">
-      <UniqueIdentifier>{34655975-9a25-416f-8a90-92653ca57874}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\02.GameObject\UIObject\ProgressBar">
-      <UniqueIdentifier>{5a606f75-1f2f-4fd3-82bb-8bc4a8a9134a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\02.GameObject\Pool">
       <UniqueIdentifier>{6599dcd5-de57-4b9b-8fc8-06b6a0cbb5ed}</UniqueIdentifier>
     </Filter>
@@ -225,9 +213,6 @@
     </Filter>
     <Filter Include="01.Utility\13.Jolt\DebugDraw">
       <UniqueIdentifier>{61136c8c-9d8c-4c2e-8e9c-23cbeac14a2c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\02.GameObject\UIObject\TextBox">
-      <UniqueIdentifier>{6dd9461f-86cd-44cc-81c3-187d10c5db85}</UniqueIdentifier>
     </Filter>
     <Filter Include="01.Utility\03.Component\CharacterVirtual">
       <UniqueIdentifier>{09e723ca-0ab0-4b34-bd76-99a5fca6d80b}</UniqueIdentifier>
@@ -453,18 +438,6 @@
     <ClCompile Include="..\Private\Model_Instance.cpp">
       <Filter>01.Utility\03.Component\Model\Model_Instance</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\MultiDelegate.cpp">
-      <Filter>01.Utility\02.GameObject\UIObject\MultiDelegate</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\UI_Panel.cpp">
-      <Filter>01.Utility\02.GameObject\UIObject\Panel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\UI_Button.cpp">
-      <Filter>01.Utility\02.GameObject\UIObject\Button</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\UI_ProgressBar.cpp">
-      <Filter>01.Utility\02.GameObject\UIObject\ProgressBar</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Pool.cpp">
       <Filter>01.Utility\02.GameObject\Pool</Filter>
     </ClCompile>
@@ -479,9 +452,6 @@
     </ClCompile>
     <ClCompile Include="EnginePch.cpp">
       <Filter>98.pch</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\UI_TextBox.cpp">
-      <Filter>01.Utility\02.GameObject\UIObject\TextBox</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\CharacterVirtual.cpp">
       <Filter>01.Utility\03.Component\CharacterVirtual</Filter>
@@ -719,18 +689,6 @@
     <ClInclude Include="..\Public\Model_Instance.h">
       <Filter>01.Utility\03.Component\Model\Model_Instance</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\MultiDelegate.h">
-      <Filter>01.Utility\02.GameObject\UIObject\MultiDelegate</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\UI_Panel.h">
-      <Filter>01.Utility\02.GameObject\UIObject\Panel</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\UI_Button.h">
-      <Filter>01.Utility\02.GameObject\UIObject\Button</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\UI_ProgressBar.h">
-      <Filter>01.Utility\02.GameObject\UIObject\ProgressBar</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Pool.h">
       <Filter>01.Utility\02.GameObject\Pool</Filter>
     </ClInclude>
@@ -748,9 +706,6 @@
     </ClInclude>
     <ClInclude Include="EnginePch.h">
       <Filter>98.pch</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\UI_TextBox.h">
-      <Filter>01.Utility\02.GameObject\UIObject\TextBox</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\CharacterVirtual.h">
       <Filter>01.Utility\03.Component\CharacterVirtual</Filter>

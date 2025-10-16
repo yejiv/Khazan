@@ -24,10 +24,6 @@
 
 #pragma region UI
 #include "Camera_UI.h"
-#include "Edit_Button.h"
-#include "Edit_Panel.h"
-#include "Edit_ProgressBar.h"
-#include "Edit_TextBox.h"
 #pragma endregion 
 
 
@@ -329,21 +325,21 @@ HRESULT CLoader::Loading_For_UI_Level()
 		CCamera_UI::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_UIObject_Edit_Panel"),
-		CEdit_Panel::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_UIObject_Edit_Panel"),
+	//	CEdit_Panel::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
 
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_UIObject_Edit_Button"),
-		CEdit_Button::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_UIObject_Edit_Button"),
+	//	CEdit_Button::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
 
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_UIObject_Edit_ProgressBar"),
-		CEdit_ProgressBar::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
-	
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_UIObject_Edit_TextBox"),
-		CEdit_TextBox::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_UIObject_Edit_ProgressBar"),
+	//	CEdit_ProgressBar::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
+	//
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_UIObject_Edit_TextBox"),
+	//	CEdit_TextBox::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
 
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
