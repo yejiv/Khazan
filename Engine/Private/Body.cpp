@@ -112,9 +112,10 @@ void CBody::Add_Torque(const _float3& vTorque)
     m_pBodyInterface->AddTorque(m_BodyID, Vec3(vTorque.x, vTorque.y, vTorque.z));
 }
 
-void CBody::Set_MeshShape(void* pArg)
+void CBody::Add_Impulse(const _float3& vImpulse)
 {
-
+    if (m_BodyID.IsInvalid()) return;
+    m_pBodyInterface->AddImpulse(m_BodyID, Vec3(vImpulse.x, vImpulse.y, vImpulse.z));
 }
 
 void CBody::Build_Shape(BODY_DESC* pDesc, RefConst<Shape>& pShape)

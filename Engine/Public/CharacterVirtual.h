@@ -117,6 +117,11 @@ public:
 	virtual void	Set_Velocity(_vector vVelocity);
 	virtual void	Set_Rotation(_vector vRotation);
 
+public:
+	virtual void Add_Force(const _float3& fForce) override;
+	virtual void Add_Torque(const _float3& fForce) override;
+	virtual void Add_Impulse(const _float3& fForce) override;
+
 private:
 	JPH::CharacterVirtual* m_pCharVir = { nullptr };
 

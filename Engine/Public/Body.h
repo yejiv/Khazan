@@ -87,25 +87,18 @@ public:
 	virtual void Update(_float fTimeDelta, class CTransform* pTransform) override;
 	virtual void Sync_Update(class CTransform* pTransform) override;
 
+public:
 	void	Activate(_bool isActivate) { true == isActivate ? m_pBodyInterface->ActivateBody(m_BodyID) : m_pBodyInterface->DeactivateBody(m_BodyID); }
 	void	OnGravity(_bool isGravity) { m_pBodyInterface->SetGravityFactor(m_BodyID, isGravity); }
+	void	Add_Force(const _float3& fForce);
+	void	Add_Torque(const _float3& vTorque);
+	void	Add_Impulse(const _float3& vImpulse);
 
+public:
 	virtual void	Set_PosRot(_vector vPos, _vector vRot);
-	// 즉시 제어
-	void Add_Force(const _float3& fForce);
-	void Add_Torque(const _float3& vTorque);
-
-	// 속성
 	BodyID           Get_BodyID() const { return m_BodyID; }
 	EMotionType      Get_Motion() const { return m_eMotion; }
 
-public:
-	//RefConst<Shape>  Build_Shape(const BODY_SHAPE_DESC& BodyDesc);
-	//void             Apply_Material(Body& Body, const BODY_MATERIAL_DESC& MaterialDesc);
-	//void             Fetch_To_Transform(class CTransform* pTransform); // Dynamic → Transform
-
-private:
-	void			Set_MeshShape(void* pArg);
 
 private:
 	Body* m_pBody = { nullptr };

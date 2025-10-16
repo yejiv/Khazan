@@ -20,7 +20,7 @@ public:
 	// 그이후 물리 연산값을 계산에 CTransform값에 더해준다.
 	virtual void Update(_float fTimeDelta, class CTransform* pTransform) {};
 
-public:
+protected:
 	virtual void Set_PosRot(_vector vPos, _vector vRot) {};
 	virtual void Set_Position(_vector vPos) {};
 	virtual void Set_Rotation(_vector vRot) {};
