@@ -382,6 +382,174 @@ namespace Engine
 
     }CHANNEL_DATA;
 
+    typedef struct tagAnimationSetUp
+    {
+        /* 기본 설정 */
+        std::string             strName = { "DefaultAnim" };
+        bool                    isLoop = { false };
+        unsigned int            iDirection = { 0 }; // 방향이 없으면 0, 1~24 방향이 있음 클라에서 enum class 만들어서 적용
+
+        /* 구간 별 시간 조절*/
+        bool                    isAnimTimeControl = { false };
+        vector<FLOAT3_DATA>     vecAnimTimeControlFrame;   // x: 시작 프레임, y: 끝 프레임, z: 배속
+
+        /* 애니메이션 세트  */
+        bool                    isAnimSet = { false };   //애니메이션 세트임?
+        std::string             strAnimSetName = { "DefaultAnimSet" }; //애니메이션 세트 이름 (이걸로 관리)
+        vector<std::string>     vecAnimSet; // 자신을 포함한 세트 애니메이션 이름들 순서대로 저장
+        unsigned int            iAnimSetSelfIndex = {}; // vecAnimSet의 자신의 인덱스
+        unsigned int            iTransitionType = {}; //다음 페이즈로 넘어가는 조건  0 : Auto, 1 : Flag, 2 : Input, 3 : Manual (클라에 enum class 만들자)
+        bool                    isWaitForComplete = { true };   //애니메이션 전부 끝나고 다음으로 넘어가? / 즉시 넘어가?
+        // bool                    isAnimSetImmediatelyNext; //즉시 넘어가?
+        float                   fAnimSetBlendOutTime = { 0.15f };   //끝나고 애니메이션 간 블랜딩 시간
+        float                   fAnimSetBlendInTime = { 0.15f };    //시작 시 애니메이션 간 블랜딩 시간
+
+        /* 루트 모션 */
+        bool                    isRootMotion = { false };    //루트모션 사용할거야?
+        bool                    isApplyRootRotation = { false };     // 회전도 적용?
+        bool                    isApplyRootPosition = { false };      // 위치도 적용?
+        FLOAT3_DATA             RootMitionScale;     //(x,y,z,)축 어떤것만 적용할건지 
+
+        /* 이벤트 */
+        bool                    isEvent = { false }; // 이벤트가 있는지
+        bool                    isTriggerOnce = { false };    // 루프 시 한번만? (기본 false)
+        bool                    isTriggerOnExit = { false };  // 블렌드 아웃 시에도 발동?
+        vector<FLOAT2_DATA>     vecEventFrames; //x : start, y: end(단발성이면 0)
+        vector<std::string>     vecEventKeys;
+
+        void SaveBinary(std::ofstream& ofs) const
+        {
+            auto write_string = [&](const std::string& s) {
+                uint32_t len = static_cast<uint32_t>(s.size());
+                ofs.write((char*)&len, sizeof(len));
+                ofs.write(s.data(), len);
+                };
+
+            // 기본 설정
+            write_string(strName);
+            ofs.write((char*)&isLoop, sizeof(isLoop));
+            ofs.write((char*)&iDirection, sizeof(iDirection));
+
+            // 구간 별 시간 조절
+            ofs.write((char*)&isAnimTimeControl, sizeof(isAnimTimeControl));
+            uint32_t count = static_cast<uint32_t>(vecAnimTimeControlFrame.size());
+            ofs.write((char*)&count, sizeof(count));
+            for (const auto& frame : vecAnimTimeControlFrame)
+            {
+                ofs.write((char*)&frame, sizeof(FLOAT3_DATA));
+            }
+
+            // 애니메이션 세트
+            ofs.write((char*)&isAnimSet, sizeof(isAnimSet));
+            write_string(strAnimSetName);
+
+            count = static_cast<uint32_t>(vecAnimSet.size());
+            ofs.write((char*)&count, sizeof(count));
+            for (const auto& animName : vecAnimSet)
+            {
+                write_string(animName);
+            }
+
+            ofs.write((char*)&iAnimSetSelfIndex, sizeof(iAnimSetSelfIndex));
+            ofs.write((char*)&iTransitionType, sizeof(iTransitionType));
+            ofs.write((char*)&isWaitForComplete, sizeof(isWaitForComplete));
+            ofs.write((char*)&fAnimSetBlendOutTime, sizeof(fAnimSetBlendOutTime));
+            ofs.write((char*)&fAnimSetBlendInTime, sizeof(fAnimSetBlendInTime));
+
+            // 루트 모션
+            ofs.write((char*)&isRootMotion, sizeof(isRootMotion));
+            ofs.write((char*)&isApplyRootRotation, sizeof(isApplyRootRotation));
+            ofs.write((char*)&isApplyRootPosition, sizeof(isApplyRootPosition));
+            ofs.write((char*)&RootMitionScale, sizeof(FLOAT3_DATA));
+
+            // 이벤트
+            ofs.write((char*)&isEvent, sizeof(isEvent));
+            ofs.write((char*)&isTriggerOnce, sizeof(isTriggerOnce));
+            ofs.write((char*)&isTriggerOnExit, sizeof(isTriggerOnExit));
+
+            count = static_cast<uint32_t>(vecEventFrames.size());
+            ofs.write((char*)&count, sizeof(count));
+            for (const auto& frame : vecEventFrames)
+            {
+                ofs.write((char*)&frame, sizeof(FLOAT2_DATA));
+            }
+
+            count = static_cast<uint32_t>(vecEventKeys.size());
+            ofs.write((char*)&count, sizeof(count));
+            for (const auto& key : vecEventKeys)
+            {
+                write_string(key);
+            }
+        }
+        void LoadBinary(std::ifstream& ifs)
+        {
+            auto read_string = [&]() -> std::string {
+                uint32_t len;
+                ifs.read((char*)&len, sizeof(len));
+                std::string s(static_cast<size_t>(len), '\0');
+                ifs.read(&s[0], len);
+                return s;
+                };
+
+            // 기본 설정
+            strName = read_string();
+            ifs.read((char*)&isLoop, sizeof(isLoop));
+            ifs.read((char*)&iDirection, sizeof(iDirection));
+
+            // 구간 별 시간 조절
+            ifs.read((char*)&isAnimTimeControl, sizeof(isAnimTimeControl));
+            uint32_t count;
+            ifs.read((char*)&count, sizeof(count));
+            vecAnimTimeControlFrame.resize(static_cast<size_t>(count));
+            for (auto& frame : vecAnimTimeControlFrame)
+            {
+                ifs.read((char*)&frame, sizeof(FLOAT3_DATA));
+            }
+
+            // 애니메이션 세트
+            ifs.read((char*)&isAnimSet, sizeof(isAnimSet));
+            strAnimSetName = read_string();
+
+            ifs.read((char*)&count, sizeof(count));
+            vecAnimSet.resize(static_cast<size_t>(count));
+            for (auto& animName : vecAnimSet)
+            {
+                animName = read_string();
+            }
+
+            ifs.read((char*)&iAnimSetSelfIndex, sizeof(iAnimSetSelfIndex));
+            ifs.read((char*)&iTransitionType, sizeof(iTransitionType));
+            ifs.read((char*)&isWaitForComplete, sizeof(isWaitForComplete));
+            ifs.read((char*)&fAnimSetBlendOutTime, sizeof(fAnimSetBlendOutTime));
+            ifs.read((char*)&fAnimSetBlendInTime, sizeof(fAnimSetBlendInTime));
+
+            // 루트 모션
+            ifs.read((char*)&isRootMotion, sizeof(isRootMotion));
+            ifs.read((char*)&isApplyRootRotation, sizeof(isApplyRootRotation));
+            ifs.read((char*)&isApplyRootPosition, sizeof(isApplyRootPosition));
+            ifs.read((char*)&RootMitionScale, sizeof(FLOAT3_DATA));
+
+            // 이벤트
+            ifs.read((char*)&isEvent, sizeof(isEvent));
+            ifs.read((char*)&isTriggerOnce, sizeof(isTriggerOnce));
+            ifs.read((char*)&isTriggerOnExit, sizeof(isTriggerOnExit));
+
+            ifs.read((char*)&count, sizeof(count));
+            vecEventFrames.resize(static_cast<size_t>(count));
+            for (auto& frame : vecEventFrames)
+            {
+                ifs.read((char*)&frame, sizeof(FLOAT2_DATA));
+            }
+
+            ifs.read((char*)&count, sizeof(count));
+            vecEventKeys.resize(static_cast<size_t>(count));
+            for (auto& key : vecEventKeys)
+            {
+                key = read_string();
+            }
+        }
+    }ANIMATION_SETUP_DATA;
+
     typedef struct tagAnimationDataSet
     {
         std::string		strName;
@@ -390,6 +558,8 @@ namespace Engine
         unsigned int    iNumChannels;
 
         std::vector< CHANNEL_DATA> vecChannels;
+
+        ANIMATION_SETUP_DATA    animSetup;
 
         void SaveBinary(std::ofstream& ofs) const
         {
@@ -404,6 +574,7 @@ namespace Engine
             ofs.write((char*)&count, sizeof(count));
             for (auto& ch : vecChannels)
                 ch.SaveBinary(ofs);
+            animSetup.SaveBinary(ofs);
         }
         void LoadBinary(std::ifstream& ifs)
         {
@@ -421,6 +592,7 @@ namespace Engine
             vecChannels.resize(static_cast<size_t>(count));
             for (auto& ch : vecChannels)
                 ch.LoadBinary(ifs);
+            animSetup.LoadBinary(ifs);
         }
 
     }ANIMATION_DATA;
@@ -431,6 +603,7 @@ namespace Engine
         float			fDuration;
         float			fTickPerSecond;
         unsigned int    iNumChannels;
+        ANIMATION_SETUP_DATA    animSetup;
     }ANIMATION_SUMMARY_DATA;
 
     typedef struct tagAnimationSummariesDataSet
@@ -621,9 +794,17 @@ namespace Engine
 	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MATERIAL_DATA, iNumTextures, vecExts, vecFullPaths);
 	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BONE_DATA, iParentBoneIndex, strName, transformationMatrix);
 	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(CHANNEL_DATA, strName, iBoneIndex, iNumKeyFrame, vecKeyFrames);
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_DATA, strName, fDuration, fTickPerSecond, iNumChannels, vecChannels);
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_SUMMARY_DATA, strName, fDuration, fTickPerSecond, iNumChannels);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_DATA, strName, fDuration, fTickPerSecond, iNumChannels, vecChannels, animSetup);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_SUMMARY_DATA, strName, fDuration, fTickPerSecond, iNumChannels, animSetup);
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_SUMMARIES_DATA, vecSummaries);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_SETUP_DATA,
+        strName, isLoop, iDirection,
+        isAnimTimeControl, vecAnimTimeControlFrame,
+        isAnimSet, strAnimSetName, vecAnimSet, iAnimSetSelfIndex, iTransitionType,
+        isWaitForComplete, fAnimSetBlendOutTime, fAnimSetBlendInTime,
+        isRootMotion, isApplyRootRotation, isApplyRootPosition, RootMitionScale,
+        isEvent, isTriggerOnce, isTriggerOnExit, vecEventFrames, vecEventKeys
+    );
 	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MODEL_DATA,
 		strModelFilePath,
 		strModelName,
