@@ -2,8 +2,7 @@
 #include "GameInstance.h"
 #include "Level_Loading.h"
 #include "Camera_UI.h"
-
-
+#include "Edit_Interface_UI.h"
 CLevel_UI::CLevel_UI(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
 {
@@ -11,57 +10,61 @@ CLevel_UI::CLevel_UI(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 HRESULT CLevel_UI::Initialize()
 {
-
-	/* 현재 레벨을 구성해주기 위한 객체들을 생성한다. */
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera_UI"))))
 		return E_FAIL;
-	/*
-	m_pGameInstance->AddWidget(TEXT("UI"), [&]() {
 
-		ImGui::Begin("UI TOOL", nullptr, ImGuiWindowFlags_MenuBar);
+	if (FAILED(Ready_Obejct()))
+		return E_FAIL;
+	
+	m_pUIInterface = CEdit_Interface_UI::Create(m_pDevice, m_pContext, LEVEL::UI);
 
-		static _char szDefaultName[MAX_PATH] = "DefaultName.dat";
-		ImGui::InputText("FilePath", szDefaultName, IM_ARRAYSIZE(szDefaultName));
+	m_pGameInstance->AddWidget(TEXT("UI"), [this]() { this->Update_Interface(); });
+	//m_pGameInstance->AddWidget(TEXT("UI"), [&]() {
 
-		ImGui::Separator();
+	//	ImGui::Begin("UI TOOL", nullptr, ImGuiWindowFlags_MenuBar);
 
-		if (ImGui::BeginMenuBar())
-		{
-			if (ImGui::BeginMenu("File"))
-			{
-				if (ImGui::MenuItem("Save Layout")) {}
-				if (ImGui::MenuItem("Load Layout")) {}
-				ImGui::EndMenu();
-			}
-			ImGui::EndMenuBar();
-		}
+	//	static _char szDefaultName[MAX_PATH] = "DefaultName.dat";
+	//	ImGui::InputText("FilePath", szDefaultName, IM_ARRAYSIZE(szDefaultName));
 
-		if (ImGui::BeginTabBar("UITabs"))
-		{
-			if (ImGui::BeginTabItem("Hierarchy"))
-			{
-				Show_Hierarchy_Menu(szDefaultName);
-				ImGui::EndTabItem();
-			}
+	//	ImGui::Separator();
 
-			if (ImGui::BeginTabItem("Inspector"))
-			{
-				Show_Inspector_Menu();
-				ImGui::EndTabItem();
-			}
+	//	if (ImGui::BeginMenuBar())
+	//	{
+	//		if (ImGui::BeginMenu("File"))
+	//		{
+	//			if (ImGui::MenuItem("Save Layout")) {}
+	//			if (ImGui::MenuItem("Load Layout")) {}
+	//			ImGui::EndMenu();
+	//		}
+	//		ImGui::EndMenuBar();
+	//	}
 
-			if (ImGui::BeginTabItem("Create UI"))
-			{
-				Show_CreateUI_Menu(szDefaultName);
-				ImGui::EndTabItem();
-			}
+	//	if (ImGui::BeginTabBar("UITabs"))
+	//	{
+	//		//if (ImGui::BeginTabItem("Hierarchy"))
+	//		//{
+	//		//	Show_Hierarchy_Menu(szDefaultName);
+	//		//	ImGui::EndTabItem();
+	//		//}
 
-			ImGui::EndTabBar();
-		}
+	//		//if (ImGui::BeginTabItem("Inspector"))
+	//		//{
+	//		//	Show_Inspector_Menu();
+	//		//	ImGui::EndTabItem();
+	//		//}
 
-		ImGui::End();
-		});
-		*/
+	//		//if (ImGui::BeginTabItem("Create UI"))
+	//		//{
+	//		//	Show_CreateUI_Menu(szDefaultName);
+	//		//	ImGui::EndTabItem();
+	//		//}
+
+	//		ImGui::EndTabBar();
+	//	}
+
+	//	ImGui::End();
+	//	});
+		
 	return S_OK;
 }
 
@@ -95,6 +98,11 @@ HRESULT CLevel_UI::Ready_Layer_Camera(const _wstring& strLayerTag)
 		ENUM_CLASS(LEVEL::UI), TEXT("Prototype_GameObject_Camera_UI"), &CameraDesc)))
 		return E_FAIL;
 
+	return S_OK;
+}
+
+HRESULT CLevel_UI::Ready_Obejct()
+{
 	return S_OK;
 }
 
@@ -627,6 +635,10 @@ CUIObject* CLevel_UI::Find_UIObject(const _char* szUIObjectName)
 }
 
 */
+void CLevel_UI::Update_Interface()
+{
+	m_pUIInterface->Update_UIInterface(m_fTimeDelta);
+}
 CLevel_UI* CLevel_UI::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	CLevel_UI* pInstance = new CLevel_UI(pDevice, pContext);
@@ -644,5 +656,6 @@ CLevel_UI* CLevel_UI::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 void CLevel_UI::Free()
 {
 	__super::Free();
+	Safe_Release(m_pUIInterface);
 
 }

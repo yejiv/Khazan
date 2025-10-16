@@ -206,6 +206,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\Light_Manager.cpp" />
     <ClCompile Include="..\Private\Mesh.cpp" />
     <ClCompile Include="..\private\MeshMaterial.cpp" />
+    <ClCompile Include="..\private\Texture_Atlas.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Mesh_Instance.cpp" />
     <ClCompile Include="..\private\Model.cpp" />
     <ClCompile Include="..\Private\ModelMesh_Instance.cpp" />
@@ -304,6 +305,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\public\Light_Manager.h" />
     <ClInclude Include="..\Public\Mesh.h" />
     <ClInclude Include="..\public\MeshMaterial.h" />
+    <ClInclude Include="..\public\Texture_Atlas.h" />
     <ClInclude Include="..\Public\VIBuffer_Mesh_Instance.h" />
     <ClInclude Include="..\public\Model.h" />
     <ClInclude Include="..\Public\ModelMesh_Instance.h" />

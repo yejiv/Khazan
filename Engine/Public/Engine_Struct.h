@@ -43,7 +43,7 @@ namespace Engine
 
 	typedef struct tagUIKeyFrame
 	{
-		XMFLOAT2	m_fTransloation;
+		XMFLOAT2	vTransloation;
 		float		fSize;
 		float		fAlpha;
 		string		szEvent;
