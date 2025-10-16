@@ -7,7 +7,7 @@
 
 NS_BEGIN(Editor)
 
-class CProp_Object final : public CProp
+class CProp_Test final : public CProp
 {
 public:
 	typedef struct tagPropObjectDesc : public CProp::PROP_DESC
@@ -21,9 +21,9 @@ public:
 	enum class SHADER_PASS { MAIN, WIREFRAME, MAPOBJECT, END };			// 수정 예정
 
 private:
-	CProp_Object(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CProp_Object(const CProp_Object& Prototype);
-	virtual ~CProp_Object() = default;
+	CProp_Test(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CProp_Test(const CProp_Test& Prototype);
+	virtual ~CProp_Test() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -46,7 +46,7 @@ private:
 	HRESULT Bind_Materials(_uint iMeshIndex);
 
 public:
-	static CProp_Object* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CProp_Test* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

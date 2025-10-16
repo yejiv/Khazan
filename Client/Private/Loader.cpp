@@ -13,6 +13,10 @@
 
 #include "JOH_Test1.h"
 
+#pragma region MAP OBJECT
+#include "MapObject_Header.h"
+#pragma endregion
+
 //static mutex g_GpuGate;
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

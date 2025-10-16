@@ -1,17 +1,23 @@
 #pragma once
 
-#include "Editor_Defines.h"
+#include "Client_Defines.h"
 #include "Prop.h"
 
-// 정적 맵 오브젝트 ( 인스턴싱 O )
+// 단일 맵 오브젝트
 
-NS_BEGIN(Editor)
+NS_BEGIN(Engine)
+class CModel;
+NS_END
 
-class CProp_Object final : public CProp
+NS_BEGIN(Client)
+
+class CProp_Test final : public CProp
 {
 public:
 	typedef struct tagPropObjectDesc : public CProp::PROP_DESC
 	{
+		LEVEL eLevel{ LEVEL::END };
+
 		_float3 vPosition{};
 		_float3 vRotation{};
 		_float3 vScale{ 1.f, 1.f, 1.f };
@@ -21,9 +27,9 @@ public:
 	enum class SHADER_PASS { MAIN, WIREFRAME, MAPOBJECT, END };			// 수정 예정
 
 private:
-	CProp_Object(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CProp_Object(const CProp_Object& Prototype);
-	virtual ~CProp_Object() = default;
+	CProp_Test(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CProp_Test(const CProp_Test& Prototype);
+	virtual ~CProp_Test() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -34,7 +40,7 @@ public:
 	virtual HRESULT Render() override;
 
 private:
-	class CEditor_Model* m_pModelCom = { nullptr };
+	CModel* m_pModelCom = { nullptr };
 
 private:
 	SHADER_PASS m_eShaderPass = { SHADER_PASS::MAPOBJECT };
@@ -46,7 +52,7 @@ private:
 	HRESULT Bind_Materials(_uint iMeshIndex);
 
 public:
-	static CProp_Object* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CProp_Test* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

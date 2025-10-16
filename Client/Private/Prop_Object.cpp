@@ -2,8 +2,6 @@
 
 #include "GameInstance.h"
 
-#include "Editor_Model.h"
-
 CProp_Object::CProp_Object(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp { pDevice, pContext }
 {
@@ -49,10 +47,6 @@ void CProp_Object::Priority_Update(_float fTimeDelta)
 
 void CProp_Object::Update(_float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_8))
-        m_eShaderPass = SHADER_PASS::WIREFRAME;
-    if (m_pGameInstance->Key_Down(DIK_9))
-        m_eShaderPass = SHADER_PASS::MAPOBJECT;
 }
 
 void CProp_Object::Late_Update(_float fTimeDelta)
@@ -86,7 +80,7 @@ HRESULT CProp_Object::Ready_Components(void* pArg)
     LEVEL eLevel = pDesc->eLevel;
     CHECK_EQUAL(LEVEL::END, eLevel, E_FAIL);
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Shader_VtxMesh"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
 

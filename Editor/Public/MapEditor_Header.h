@@ -13,6 +13,9 @@
 #include "Prop_Interactive.h"
 #include "Prop_Destructible.h"
 
+// Properties Test
+#include "Prop_Test.h"
+
 // Terrain
 #include "Map_Terrain.h"
 

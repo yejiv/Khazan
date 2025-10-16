@@ -186,6 +186,7 @@
     <ClInclude Include="..\Public\Prop_Interactive.h" />
     <ClInclude Include="..\Public\Prop_Object.h" />
     <ClInclude Include="..\Public\Prop_Static.h" />
+    <ClInclude Include="..\Public\Prop_Test.h" />
     <ClInclude Include="..\public\Terrain_Grid.h" />
     <ClInclude Include="..\public\TestParticle.h" />
     <ClInclude Include="Editor.h" />
@@ -232,6 +233,7 @@
     <ClCompile Include="..\Private\Prop_Interactive.cpp" />
     <ClCompile Include="..\Private\Prop_Object.cpp" />
     <ClCompile Include="..\Private\Prop_Static.cpp" />
+    <ClCompile Include="..\Private\Prop_Test.cpp" />
     <ClCompile Include="..\private\Terrain_Grid.cpp" />
     <ClCompile Include="..\private\TestParticle.cpp" />
     <ClCompile Include="Editor.cpp" />
