@@ -92,6 +92,7 @@ void CEditor_Channel::Update_TransformationMatrix(const vector<CEditor_Bone*>& B
         vScale = XMLoadFloat3(&LastKeyFrame.vScale);
         vRotation = XMLoadFloat4(&LastKeyFrame.vRotation);
         vTranslation = XMVectorSetW(XMLoadFloat3(&LastKeyFrame.vTranslation), 1.f);
+        m_TransformationMatrix = XMMatrixAffineTransformation(vScale, XMVectorSet(0.f, 0.f, 0.f, 1.f), vRotation, vTranslation);
     }
 
     /* 양쪽 키프레임사이에서의 중간상태를 보간하여 만든다. */
@@ -121,10 +122,26 @@ void CEditor_Channel::Update_TransformationMatrix(const vector<CEditor_Bone*>& B
 
     }
 
-    /*_matrix         TransformationMatrix = XMMatrixScaling() * XMMatrixRotationQuaternion() * XMMatrixTranslation();*/
-    _matrix         TransformationMatrix = XMMatrixAffineTransformation(vScale, XMVectorSet(0.f, 0.f, 0.f, 1.f), vRotation, vTranslation);
+    if (m_isBlendPreAnimation)
+    {
+        // 이전 애니메이션과의 보간 처리 
+        vScale = XMVectorLerp(m_vPrevScale, vScale, m_fAnimationRatio);
+        vRotation = XMQuaternionSlerp(m_vPrevRotQuat, vRotation, m_fAnimationRatio);
+        vTranslation = XMVectorLerp(m_vPrevPositon, vTranslation, m_fAnimationRatio);
+    }
 
-    Bones[m_iBoneIndex]->Set_TransformationMatrix(TransformationMatrix);
+
+    /*_matrix         TransformationMatrix = XMMatrixScaling() * XMMatrixRotationQuaternion() * XMMatrixTranslation();*/
+    m_TransformationMatrix = XMMatrixAffineTransformation(vScale, XMVectorSet(0.f, 0.f, 0.f, 1.f), vRotation, vTranslation);
+
+    Bones[m_iBoneIndex]->Set_TransformationMatrix(m_TransformationMatrix);
+}
+
+void CEditor_Channel::Set_PrevAnimationBlend(const _float& fAnimationRatio, _matrix& PreAnimationMatrix)
+{
+    XMMatrixDecompose(&m_vPrevScale, &m_vPrevRotQuat, &m_vPrevPositon, PreAnimationMatrix);
+    m_fAnimationRatio = fAnimationRatio;
+    m_isBlendPreAnimation = true;
 }
 
 CEditor_Channel* CEditor_Channel::Create(const aiNodeAnim* pAIChannel, const vector<class CEditor_Bone*>& Bones)

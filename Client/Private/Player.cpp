@@ -38,6 +38,9 @@ HRESULT CPlayer::Initialize_Clone(void* pArg)
     if (FAILED(Ready_PartObjects()))
         return E_FAIL;
 
+    if (FAILED(Ready_Collision()))
+        return E_FAIL;
+
     return S_OK;
 }
 
@@ -97,6 +100,8 @@ void CPlayer::Update(_float fTimeDelta)
 
     __super::Update(fTimeDelta);
 
+    //m_pRigidBodyCom->Update(fTimeDelta, m_pTransformCom->Get_WorldMatrix());
+
     m_pCharVirCom->Update(fTimeDelta, m_pTransformCom);
 
     //m_pCharacterCom->Update(fTimeDelta, m_pBodyCom, m_pTransformCom);
@@ -124,44 +129,69 @@ HRESULT CPlayer::Render()
     return S_OK;
 }
 
-void CPlayer::Collision_Enter(JPH::ObjectLayer Layer, CGameObject* pObject, JPH::ContactManifold ContactManifold)
+void CPlayer::Collision_Enter(CGameObject* pObject)
 {
-    int a = 10;
+    int a = 0;
 }
 
-void CPlayer::Collision_Stay(JPH::ObjectLayer Layer, CGameObject* pObject, JPH::ContactManifold ContactManifold)
+void CPlayer::Collision_Stay(CGameObject* pObject)
 {
-    int a = 10;
+    int a = 0;
 }
 
 HRESULT CPlayer::Ready_Components()
 {
-    //CRigidBody::CAPSULESHAPE_DESC RigidDesc{};
-    //RigidDesc.fHeight = 1.f;
-    //RigidDesc.fRadius = 1.f;
-    //CRigidBody::RIGID_BOXSHAPE_DESC RigidDesc{};
-    //RigidDesc.vExtent = { 0.5f, 0.5f, 0.5f };
-    //RigidDesc.bIsTrigger = false;
-    //RigidDesc.bStartActive = true;
-    //RigidDesc.eMotion = EMotionType::Kinematic;
-    //RigidDesc.eQuality = EMotionQuality::Discrete;
-    //RigidDesc.eShapeType = SHAPE::BOX;
-    //RigidDesc.fFriction = 0.8f;
-    //RigidDesc.fMass = 1.0f;    
-    //RigidDesc.fRestitution = 0.0f;
-    //RigidDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
-    //_float3 vPos{};
-    //XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
-    //_float4 vQuat{};
-    //XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
-    //RigidDesc.vPos = vPos;
-    //RigidDesc.vQuat = vQuat;
 
-    //
+    return S_OK;
+}
 
-    //if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_RigidBody"),
-    //    TEXT("Com_RigidBody"), reinterpret_cast<CComponent**>(&m_pRigidBodyCom), &RigidDesc)))
-    //    return E_FAIL;
+HRESULT CPlayer::Ready_PartObjects()
+{
+    CBody_Player::BODY_DESC         BodyDesc{};
+    BodyDesc.pState = &m_iState;
+    BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
+
+    if (FAILED(__super::Add_PartObject(TEXT("Part_Body"), ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Body_Player"), &BodyDesc)))
+        return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CPlayer::Ready_Collision()
+{
+    /*CRigidBody::RIGID_CAPSULESHAPE_DESC RigidDesc{};
+    RigidDesc.fHeight = 1.f;
+    RigidDesc.fRadius = 1.f;*/
+    /*CRigidBody::RIGID_BOXSHAPE_DESC RigidDesc{};
+    RigidDesc.vExtent = { 0.5f, 0.5f, 0.5f };*/
+
+    //CRigidBody::RIGID_MESHSHAPE_DESC RigidDesc{};
+   /* CRigidBody::RIGID_CONVEXSHAPE_DESC RigidDesc{};
+    CBody_Player* pBody = dynamic_cast<CBody_Player*>(Find_PartObject(TEXT("Part_Body")));
+
+    RigidDesc.pModel = pBody->Get_Model();
+
+    RigidDesc.bIsTrigger = false;
+    RigidDesc.bStartActive = true;
+    RigidDesc.eMotion = EMotionType::Kinematic;
+    RigidDesc.eQuality = EMotionQuality::Discrete;
+    RigidDesc.eShapeType = SHAPE::MESH;
+    RigidDesc.fFriction = 0.8f;
+    RigidDesc.fMass = 0.0f;
+    RigidDesc.fRestitution = 0.0f;
+    RigidDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
+    _float3 vPos{};
+    XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
+    _float4 vQuat{};
+    XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
+    RigidDesc.vPos = vPos;
+    RigidDesc.vQuat = vQuat;
+
+
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_RigidBody"),
+        TEXT("Com_RigidBody"), reinterpret_cast<CComponent**>(&m_pRigidBodyCom), &RigidDesc)))
+        return E_FAIL;*/
 
     CCharacterVirtual::CV_CAPSULESHAPE_DESC tCharVirDesc{};
     _float3 vPos{};
@@ -176,21 +206,10 @@ HRESULT CPlayer::Ready_Components()
     tCharVirDesc.fRadius = 1.f;
     tCharVirDesc.fHeight = 1.f;
     tCharVirDesc.fMaxSlopeAngle = 20.f;
+    tCharVirDesc.pGameObject = this;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
-        return E_FAIL;
-
-    return S_OK;
-}
-
-HRESULT CPlayer::Ready_PartObjects()
-{
-    CBody_Player::BODY_DESC         BodyDesc{};
-    BodyDesc.pState = &m_iState;
-    BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
-
-    if (FAILED(__super::Add_PartObject(TEXT("Part_Body"), ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Body_Player"), &BodyDesc)))
         return E_FAIL;
 
     return S_OK;

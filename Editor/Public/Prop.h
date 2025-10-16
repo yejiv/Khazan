@@ -10,6 +10,8 @@ class CProp abstract : public CMapObject
 public:
 	typedef struct tagPropDesc : public CMapObject::MAPOBJECT_DESC
 	{
+		LEVEL eLevel{ LEVEL::END };
+
 		_tchar szModelName[MAX_PATH] = {};
 
 	}PROP_DESC;

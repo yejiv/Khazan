@@ -17,7 +17,7 @@ CVIBuffer_Point_Instance::CVIBuffer_Point_Instance(const CVIBuffer_Point_Instanc
 	, m_pCB { Prototype.m_pCB }
 	, m_pStructuredBuffer { Prototype.m_pStructuredBuffer }
 {
-	for (_uint i = 0; ENUM_CLASS(CS_PASS::END); ++i)
+	for (_uint i = 0; i < ENUM_CLASS(CS_PASS::END); ++i)
 	{
 		m_ComputeShaders[i] = Prototype.m_ComputeShaders[i];
 		Safe_AddRef(m_ComputeShaders[i]);

@@ -35,6 +35,10 @@ public:
 	virtual void Late_Update(_float fTimeDelta);
 	virtual HRESULT Render();
 	virtual HRESULT Render_Shadow() override;
+
+public:
+	CModel* Get_Model() { return m_pModelCom; }
+
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };

@@ -26,6 +26,8 @@ CAnimation::CAnimation(const CAnimation& Prototype)
 
 HRESULT CAnimation::Initialize(const vector<class CBone*>& Bones, ANIMATION_DATA& data, _uint iCurAnimation)
 {
+   // OutputDebugStringA(("[CAnimation::Initialize] 애니 이름 : " + data.strName + "\n").c_str());
+
     m_fDuration = data.fDuration;
     m_iNumChannels = data.iNumChannels;
     m_fTickPerSecond = data.fTickPerSecond;

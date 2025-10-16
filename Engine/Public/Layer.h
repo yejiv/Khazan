@@ -13,6 +13,7 @@ private:
 public:
 	class CComponent* Get_Component(const _wstring& strComponentTag, _uint iIndex);
 	class CGameObject* Get_GameObject(_uint iIndex);
+	class CGameObject* Get_BackGameObject() { return m_GameObjects.back(); }
 
 public:
 	HRESULT Add_GameObject(class CGameObject* pGameObject) {
