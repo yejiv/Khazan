@@ -1,76 +1,59 @@
-#pragma once
+癤�#pragma once
 #include "VIBuffer_Instance.h"
 
 NS_BEGIN(Engine)
 
 class ENGINE_DLL CVIBuffer_Mesh_Instance final : public CVIBuffer_Instance
 {
-private:
-	enum CS_PASS { MOVE, END };
-
 public:
-	typedef struct tagMeshInstance : public CVIBuffer_Instance::INSTANCE_DESC
-	{
-		_float3			vDirection = { 0.f, 1.f, 0.f };
-		_float3			vVectorScale = { 1.f, 1.f, 1.f };
-		_float2			vSpeed = { 1.f, 1.f };
-		_float2			vLifeTime = { 1.f, 1.f };
-		_bool			isLoop;
-		_bool			isRandomVector;
-		_float3			vMinAngle;
-		_float3			vMaxAngle = { 360.f, 360.f, 360.f };
+	enum class SPEED_VALUE { SPREAD_SPEED, ROTATION_SPEED, UPWARD_SPEED, SCALE_SPEED, SPEED_END };
 
-		// 필요 시 사용(동적인 Pivot을 따라가는 Particle)
-		// Pivot 쓸 거면 플래그 같이 CB에 넘겨줘서 현재 위치에서부터 Pivot 빼서 Direction 대신하기
-		_bool			isUsePivot;
-		_float3			vPivot;
-	}MESH_INSTANCE_DESC;
+	typedef struct tagPointInstanceDesc : public INSTANCE_DESC
+	{
+		_float3 vPivot;
+		_float2 vSpeed{ 0.f, 0.f };
+		_float2 vLifeTime;
+		_float	fOffset;
+		const _char* pFilePath;
+	}POINT_MESH_DESC;
 
 private:
-	CVIBuffer_Mesh_Instance(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CVIBuffer_Mesh_Instance(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	CVIBuffer_Mesh_Instance(const CVIBuffer_Mesh_Instance& Prototype);
 	virtual ~CVIBuffer_Mesh_Instance() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(const _char* pMeshFilePath, const INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix);
-	virtual HRESULT Initialize_Clone(void* pArg) override;
+	void					Reset(); 
 
 public:
-	void Move(_float fTimeDelta);
-
-private:
-	const aiScene*		m_pAIScene = { nullptr };
-	Assimp::Importer	m_Importer = {};
-
-	_char		m_szName[MAX_PATH] = {};
-	_uint		m_iMaterialIndex = {};
-
-	_float3		m_vPivot = {};
-	_float*		m_pSpeeds = {};
-	_bool		m_isLoop = {};
-
-	// Compute Shader
-	class CComputeShader* m_ComputeShaders[ENUM_CLASS(CS_PASS::END)] = {};
-
-	ID3D11ShaderResourceView* m_pSRV = { nullptr };
-	ID3D11UnorderedAccessView* m_pUAV = { nullptr };
-	ID3D11Buffer* m_pCB = { nullptr };
-	ID3D11Buffer* m_pStructuredBuffer = { nullptr };
-
-private:
-	HRESULT Ready_Vertices(const aiMesh* pAIMesh, _fmatrix PreTransformMatrix);			// Vertices 세팅
-	HRESULT Ready_Indices_For_4Byte(const aiMesh* pAIMesh);								// 4 Bytes Indices 세팅
-
-private:
-	HRESULT Ready_ShaderResourceView(void* pSysmem);
-	HRESULT Ready_UnorderedAccessView();
-	HRESULT Ready_ConstantBuffer();
-	HRESULT Ready_ComputeShader();
+	virtual HRESULT			Initialize_Prototype(INSTANCE_DESC* pArg);
+	virtual HRESULT			Initialize(void* pArg); 
 
 public:
-	static CVIBuffer_Mesh_Instance* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _char* pMeshFilePath, const INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix = XMMatrixIdentity());
-	virtual CComponent* Clone(void* pArg) override;
-	virtual void Free() override;
+	void					Update(_float fTimeDelta);
+	void					Setting_Speed(SPEED_VALUE type, _float2 range);
+	void					Remove_Speed(SPEED_VALUE type);
+	void					Remove_Speed();
+	void					Setting_Pivot(_float3 pivot);
+	void					Setting_Loop(_bool isLoop) { m_IsLoop = isLoop; };
+
+private:
+	_float3					m_vPivot = {};
+	_float*					m_fSpeed[ENUM_CLASS(SPEED_VALUE::SPEED_END)];
+	_bool					m_IsLoop = {};
+	_float					m_fRotationPerSec = {};
+	_float					m_fOffset = {};
+	_float3					m_fRange = {};
+	_float2					m_fScale = {};
+	_float3*				m_pVertexPositions = { nullptr };
+
+public:
+	static CVIBuffer_Mesh_Instance*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, void* pDesc);
+	virtual CComponent*				Clone(void* pArg) override;
+	virtual void					Free() override;
 };
 
 NS_END
+
+
+

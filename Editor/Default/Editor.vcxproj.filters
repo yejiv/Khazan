@@ -43,12 +43,6 @@
     <Filter Include="02.GameObject\Effect">
       <UniqueIdentifier>{d433a194-b6ad-4b74-abce-fb441b9e4f20}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Effect\ParticleSystem">
-      <UniqueIdentifier>{9da261d6-4701-4ff4-8de9-4355c2f51be7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObject\Effect\ParticleSystem\ParticleEmitter">
-      <UniqueIdentifier>{ba2ee6f1-2a5f-4830-8ccf-6ffd577640f3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03.Utility">
       <UniqueIdentifier>{8af11899-cd8c-4c1c-9e9c-0e1c7815e687}</UniqueIdentifier>
     </Filter>
@@ -115,9 +109,6 @@
     <Filter Include="02.GameObject\UI\99.Camera">
       <UniqueIdentifier>{fe38b2f3-d49f-4cfe-8f49-120fba3d8e6b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Effect\Test">
-      <UniqueIdentifier>{116c7f7b-14fc-4c1b-8400-a6e8848e3c5a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03.Utility\00.Model\Model_Instance">
       <UniqueIdentifier>{9eb5cf18-0fa7-4e8d-8cb0-24ca18f5cc48}</UniqueIdentifier>
     </Filter>
@@ -150,6 +141,18 @@
     </Filter>
     <Filter Include="02.GameObject\MapObject\Prop\99.Test">
       <UniqueIdentifier>{8d549d97-64bc-4532-b39f-57afcbe1b890}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab">
+      <UniqueIdentifier>{a38f577c-e541-4184-89f1-841bf12cc6b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element">
+      <UniqueIdentifier>{30fa168a-dc2c-42a1-8d51-a24135657190}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Mesh_Instance">
+      <UniqueIdentifier>{135bad33-cab5-41ae-8e98-9d7c864a932d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Point_Instance">
+      <UniqueIdentifier>{d1137416-3acf-4abb-98cb-c18a7e984b53}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -191,12 +194,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\Level_UI.h">
       <Filter>01.Levels\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\ParticleSystem.h">
-      <Filter>02.GameObject\Effect\ParticleSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\ParticleEmitter.h">
-      <Filter>02.GameObject\Effect\ParticleSystem\ParticleEmitter</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Editor_Model.h">
       <Filter>03.Utility\00.Model</Filter>
@@ -268,9 +265,6 @@
     <ClInclude Include="..\Public\Edit_Panel.h" />
     <ClInclude Include="..\Public\Edit_ProgressBar.h" />
     <ClInclude Include="..\Public\Edit_TextBox.h" />
-    <ClInclude Include="..\public\TestParticle.h">
-      <Filter>02.GameObject\Effect\Test</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Editor_ModelMesh_Instance.h">
       <Filter>03.Utility\00.Model\Model_Instance\Mesh</Filter>
     </ClInclude>
@@ -297,6 +291,15 @@
     </ClInclude>
     <ClInclude Include="..\Public\Prop_Test.h">
       <Filter>02.GameObject\MapObject\Prop\99.Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Prefab.h">
+      <Filter>02.GameObject\Effect\Effect_Prefab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Element.h">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Point_Instance.h">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Point_Instance</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -339,12 +342,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\Level_UI.cpp">
       <Filter>01.Levels\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\private\ParticleSystem.cpp">
-      <Filter>02.GameObject\Effect\ParticleSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\private\ParticleEmitter.cpp">
-      <Filter>02.GameObject\Effect\ParticleSystem\ParticleEmitter</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Editor_Model.cpp">
       <Filter>03.Utility\00.Model</Filter>
@@ -415,9 +412,6 @@
     <ClCompile Include="..\Private\Edit_TextBox.cpp">
       <Filter>02.GameObject\UI\03.TextBox</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\TestParticle.cpp">
-      <Filter>02.GameObject\Effect\Test</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Editor_ModelMesh_Instance.cpp">
       <Filter>03.Utility\00.Model\Model_Instance\Mesh</Filter>
     </ClCompile>
@@ -438,6 +432,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\Prop_Test.cpp">
       <Filter>02.GameObject\MapObject\Prop\99.Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Prefab.cpp">
+      <Filter>02.GameObject\Effect\Effect_Prefab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Element.cpp">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Point_Instance.cpp">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Point_Instance</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
