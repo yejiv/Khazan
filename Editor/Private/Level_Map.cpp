@@ -24,6 +24,10 @@ HRESULT CLevel_Map::Initialize()
 
 void CLevel_Map::Update(_float fTimeDelta)
 {
+	Clear_ObjectList();
+
+	Select_Fix_Object(fTimeDelta);
+	Select_Fix_Instance(fTimeDelta);
 
 	return;
 }
@@ -138,7 +142,8 @@ HRESULT CLevel_Map::Add_Prototypes_FromJson()
 
 			CProp_Static::PROP_STATIC_DESC StaticDesc = {};
 
-			memcpy(StaticDesc.szModelName, AnsiToWString(strModelName).c_str(), sizeof(StaticDesc.szModelName));
+			_wstring strTempName = AnsiToWString(strModelName);
+			memcpy(StaticDesc.szModelName, strTempName.c_str(), sizeof(StaticDesc.szModelName));
 
 			// Instance 는 바로 Layer 등록
 			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_InstObj"),
@@ -180,6 +185,94 @@ HRESULT CLevel_Map::Add_Prototypes_FromJson()
 	return S_OK;
 }
 
+void CLevel_Map::Clear_ObjectList()
+{
+	for (_uint i = 0; i < m_ObjectList.size(); )
+	{
+		if (nullptr == m_ObjectList[i])
+		{
+			swap(m_ObjectList[i], m_ObjectList.back());
+			m_ObjectList.pop_back();
+		}
+		else
+			++i;
+	}
+}
+
+void CLevel_Map::Select_Fix_Object(_float fTimeDelta)
+{
+	if (true == m_isFixObjectWindow)
+		return;
+
+	if (m_pGameInstance->Key_Pressing(DIK_F1, fTimeDelta) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+	{
+		_float3 vPosition = {};
+		_uint iObjectID = {};
+
+		if (m_pGameInstance->isPicked(&vPosition, &iObjectID))
+		{
+			for (auto& pObject : m_ObjectList)
+			{
+				if (nullptr != pObject)
+				{
+					if (iObjectID == pObject->Get_MapObjectID())
+					{
+						m_pFixPropObj = pObject;
+						m_pFixTransformCom = static_cast<CTransform*>(pObject->Get_Component(TEXT("Com_Transform")));
+						CHECK_NULLPTR_MSG(m_pFixTransformCom, TEXT("Fix Transform == nullptr"), );
+
+						m_vFixScale = m_pFixTransformCom->Get_Scaled();
+						XMStoreFloat3(&m_vFixPosition, m_pFixTransformCom->Get_State(STATE::POSITION));
+						//m_vFixRotation = m_pFixTransformCom->Get_Rotation_Quat();
+
+						m_isFixObjectWindow = true;
+
+						break;
+					}
+				}
+			}
+
+		}
+	}
+}
+
+void CLevel_Map::Select_Fix_Instance(_float fTimeDelta)
+{
+	if (true == m_isFixObjectWindow)
+		return;
+
+	if (m_pGameInstance->Key_Pressing(DIK_F2, fTimeDelta) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+	{
+		_float3 vPosition = {};
+		_uint iInstanceID = {};
+
+		if (m_pGameInstance->isPicked(&vPosition, &iInstanceID))
+		{
+			for (auto& pObject : m_ObjectList)
+			{
+				if (nullptr != pObject)
+				{
+					//if (iObjectID == pObject->Get_MapObjectID())
+					//{
+					//	m_pFixPropObj = pObject;
+					//	m_pFixTransformCom = static_cast<CTransform*>(pObject->Get_Component(TEXT("Com_Transform")));
+					//	CHECK_NULLPTR_MSG(m_pFixTransformCom, TEXT("Fix Transform == nullptr"), );
+
+					//	m_vFixScale = m_pFixTransformCom->Get_Scaled();
+					//	XMStoreFloat3(&m_vFixPosition, m_pFixTransformCom->Get_State(STATE::POSITION));
+					//	//m_vFixRotation = m_pFixTransformCom->Get_Rotation_Quat();
+
+					//	m_isFixObjectWindow = true;
+
+					//	break;
+					//}
+				}
+			}
+
+		}
+	}
+}
+
 HRESULT CLevel_Map::Ready_DefaultImGui_For_MapTool()
 {
 	CHECK_FAILED(Ready_Main_Window(), E_FAIL);
@@ -204,90 +297,106 @@ HRESULT CLevel_Map::Ready_Main_Window()
 		{
 			ImGui::Begin("MAIN WINDOW", &m_isMainWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
-			ImGui::Text("INFORMATION");
-			ImGui::Text("NONE");
+			if (ImGui::Button("INFORMATION"))
+				m_isInformation = !m_isInformation;
 
-			SEPARATOR;
-			ImGui::Text("JSON");
-			if (ImGui::Button("JSON TO CUSTOM"))
-			{
-				Get_Directory_Files(m_szJsonPath);
+				if (true == m_isInformation)
+				{
+					ImGui::Text("F1 + LB      : SELECT OBJECT");
+					ImGui::Text("F2 + LB      : SELECT INSTANCE");
+					ImGui::Text("FF + FF      : ");
+					ImGui::Text("F4 + LB      : SELECTED OBJECT MOVE");
 
-				m_isJsonWindow = !m_isJsonWindow;
-			}
-			SAMELINE;
-			if (ImGui::Button("CUSTOMJSON WINDOW"))
-			{
-				Get_Directory_Files(m_szJsonCustomPath);
+					ImGui::Text("3      : EXPORT MODEL");
+					ImGui::Text("4      : UPDATE JSON TO DAT");
+					ImGui::Text("5      : DELETE");
+					ImGui::Text("8      : MAPOBJECT WIREFRAME");
+					ImGui::Text("9      : MAPOBJECT SOLID");
+				}
+				else
+				{
+					SEPARATOR;
+					ImGui::Text("JSON");
+					if (ImGui::Button("JSON TO CUSTOM"))
+					{
+						Get_Directory_Files(m_szJsonPath);
 
-				m_isCustomJsonWindow = !m_isCustomJsonWindow;
-			}
+						m_isJsonWindow = !m_isJsonWindow;
+					}
+					SAMELINE;
+					if (ImGui::Button("CUSTOMJSON WINDOW"))
+					{
+						Get_Directory_Files(m_szJsonCustomPath);
 
-			SEPARATOR;
-			ImGui::Text("PROP LIST");
-			if (ImGui::Button("OBJECT##active"))		m_isPropWindow[ENUM_CLASS(PROP_SPECIES::OBJECT)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::OBJECT)];
-			SAMELINE;
-			if (ImGui::Button("STATIC##active"))		m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)];
-			SAMELINE;
-			if (ImGui::Button("ANIMATED##active"))		m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)];
-			SAMELINE;
-			if (ImGui::Button("INTERACTIVE##active"))	m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)];
-			SAMELINE;
-			if (ImGui::Button("DESTRUCTIBLE##active"))	m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)];
-			SEPARATOR;
+						m_isCustomJsonWindow = !m_isCustomJsonWindow;
+					}
 
-			ImGui::Text("ETC FUNC");
+					SEPARATOR;
+					ImGui::Text("PROP LIST");
+					if (ImGui::Button("OBJECT##active"))		m_isPropWindow[ENUM_CLASS(PROP_SPECIES::OBJECT)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::OBJECT)];
+					SAMELINE;
+					if (ImGui::Button("STATIC##active"))		m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)];
+					SAMELINE;
+					if (ImGui::Button("ANIMATED##active"))		m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)];
+					SAMELINE;
+					if (ImGui::Button("INTERACTIVE##active"))	m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)];
+					SAMELINE;
+					if (ImGui::Button("DESTRUCTIBLE##active"))	m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)];
+					SEPARATOR;
 
-			if (ImGui::Button("CLEAR JSON LIST"))
-			{
-				m_isMainWindow = { true };
+					ImGui::Text("ETC FUNC");
 
-				m_isJsonWindow = { false };
+					if (ImGui::Button("CLEAR JSON LIST"))
+					{
+						m_isMainWindow = { true };
 
-				m_isCustomJsonWindow = { false };
+						m_isJsonWindow = { false };
 
-				m_isPrototypeWindow = { false };
+						m_isCustomJsonWindow = { false };
 
-				for (auto& bProp : m_isPropWindow)
-					bProp = false;
+						m_isPrototypeWindow = { false };
 
-				m_isLightSettingWindow = { false };
+						for (auto& bProp : m_isPropWindow)
+							bProp = false;
 
-				m_szJsonSaveName[MAX_PATH] = {};	// Json 이름
+						m_isLightSettingWindow = { false };
 
-				m_JsonFiles.clear();				// JsonFile 이름 명 ( Combo에서 볼 Json 폴더 경로의 .json 파일들 )
-				m_iJsonFilesIndex = {};				// ImGui::BeginListBox 용 인덱스 변수
+						ZeroMemory(m_szJsonSaveName, sizeof(m_szJsonSaveName));		// Json 이름
 
-				m_Json = {};						// Original Json 정보 저장해놓을 JSON
-				m_isJsonExport = { false };			// 추출 됬는지 확인용
+						m_JsonFiles.clear();				// JsonFile 이름 명 ( Combo에서 볼 Json 폴더 경로의 .json 파일들 )
+						m_iJsonFilesIndex = {};				// ImGui::BeginListBox 용 인덱스 변수
 
-				m_isJsonConverted = { false };		// 변환됬는지 확인 용
+						m_Json = {};						// Original Json 정보 저장해놓을 JSON
+						m_isJsonExport = { false };			// 추출 됬는지 확인용
 
-				m_JsonList.clear();					// Original Json 맵 데이터 용 벡터
-				m_iJsonListIndex = {};				// ImGui::BeginListBox 용 인덱스 변수
+						m_isJsonConverted = { false };		// 변환됬는지 확인 용
 
-				m_iObjCnt = {};						// 단일 객체 갯수 확인용
+						m_JsonList.clear();					// Original Json 맵 데이터 용 벡터
+						m_iJsonListIndex = {};				// ImGui::BeginListBox 용 인덱스 변수
 
-				m_CustomJson = {};					// Custom Json 정보 저장해놓을 JSON
+						m_iObjCnt = {};						// 단일 객체 갯수 확인용
 
-				m_CustomJsonList.clear();			// Custom Json 맵 데이터 용 벡터
-				m_iCustomJsonListIndex = {};		// ImGui::BeginListBox 용 인덱스 변수
-				m_isCustomJsonInfoList = false;		// List Info 창 ON/OFF
+						m_CustomJson = {};					// Custom Json 정보 저장해놓을 JSON
 
-				m_isCustomJsonLoaded = { false };	// Custom Json 로드 됬는지 확인 용
+						m_CustomJsonList.clear();			// Custom Json 맵 데이터 용 벡터
+						m_iCustomJsonListIndex = {};		// ImGui::BeginListBox 용 인덱스 변수
+						m_isCustomJsonInfoList = false;		// List Info 창 ON/OFF
 
-				m_CheckPrototypes.clear();			// 중복 프로토타입 체크 및 리스트 출력용
+						m_isCustomJsonLoaded = { false };	// Custom Json 로드 됬는지 확인 용
 
-				m_Prototypes_Inst.clear();			// Prototype 목록 ( Instance 용 모델 )
-				m_iIndex_PrtInst = {};				// Prototype Instance 용 인덱스
+						m_CheckPrototypes.clear();			// 중복 프로토타입 체크 및 리스트 출력용
 
-				m_Prototypes_Obj.clear();			// Prototype 목록 ( Object 용 모델 )
-				m_iIndex_PrtObj = {};				// Prototype Object 용 인덱스
-			}
-			if (ImGui::Button("CLEAR LEVEL"))
-			{
-				CHECK_FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::MAP)), );
-			}
+						m_Prototypes_Inst.clear();			// Prototype 목록 ( Instance 용 모델 )
+						m_iIndex_PrtInst = {};				// Prototype Instance 용 인덱스
+
+						m_Prototypes_Obj.clear();			// Prototype 목록 ( Object 용 모델 )
+						m_iIndex_PrtObj = {};				// Prototype Object 용 인덱스
+					}
+					if (ImGui::Button("CLEAR LEVEL"))
+					{
+						CHECK_FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::MAP)), );
+					}
+				}
 
 			ImGui::End();
 		}
@@ -298,7 +407,7 @@ HRESULT CLevel_Map::Ready_Main_Window()
 
 HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 {
-#pragma region MODEL_PROTOTYPE LIST
+#pragma region WIDGET : 모델 프로토타입 리스트 위젯
 
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (m_isPrototypeWindow)
@@ -318,7 +427,9 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 
 				ImGui::EndListBox();
 			} SEPARATOR;
-			if (ImGui::Button("ADD (T)") || m_pGameInstance->Key_Down(DIK_T))
+
+			// 인스턴스 행렬 추가
+			if (false == m_isFixObjectWindow && ImGui::Button("ADD (T)") || m_pGameInstance->Key_Down(DIK_T))
 			{
 				CEditor_Model_Instance* pModelInst = static_cast<CEditor_Model_Instance*>(m_pGameInstance->Find_Component(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_InstObj"), TEXT("Com_Model"), m_iIndex_PrtInst));
 				CHECK_NULLPTR(pModelInst, );
@@ -326,6 +437,7 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				MESH_INSTANCE_DATA TempData = {};
 
 				TempData.InstanceMatrix = XMMatrixIdentity();
+				TempData.InstanceID = m_iMapObjectCnt++;
 
 				if (m_pGameInstance->Mouse_Pressing(MOUSEKEYSTATE::LB))
 				{
@@ -338,19 +450,6 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				}
 				else
 					TempData.InstanceMatrix.r[3] = XMLoadFloat4(m_pGameInstance->Get_CamPosition());
-
-				pModelInst->Add_Instance(TempData);
-			} SAMELINE;
-			if (ImGui::Button("FIX"))
-			{
-				CEditor_Model_Instance* pModelInst = static_cast<CEditor_Model_Instance*>(m_pGameInstance->Find_Component(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_InstObj"), TEXT("Com_Model"), m_iIndex_PrtInst));
-				CHECK_NULLPTR(pModelInst, );
-
-				MESH_INSTANCE_DATA TempData = {};
-
-				TempData.InstanceMatrix = XMMatrixIdentity();
-
-				TempData.InstanceMatrix.r[3] = XMLoadFloat4(m_pGameInstance->Get_CamPosition());
 
 				pModelInst->Add_Instance(TempData);
 			} SEPARATOR;
@@ -369,10 +468,13 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				ImGui::EndListBox();
 			} SEPARATOR;
 
-			if (ImGui::Button("ADD (Y)") || m_pGameInstance->Key_Down(DIK_Y))
+			// 단일 오브젝트 Layer 추가
+			if (false == m_isFixObjectWindow && ImGui::Button("ADD (Y)") || m_pGameInstance->Key_Down(DIK_Y))
 			{
 				CProp_Object::PROP_OBJECT_DESC ObjectDesc = {};
 
+				ObjectDesc.iMapObjectID = m_iMapObjectCnt++;
+				ObjectDesc.eLevel = LEVEL::MAP;
 				memcpy(ObjectDesc.szModelName, AnsiToWString(m_Prototypes_Obj[m_iIndex_PrtObj]).c_str(), sizeof(ObjectDesc.szModelName));
 
 				_float4 vPos = {};
@@ -395,6 +497,11 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj"),
 					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), );
 
+				CProp* pObject_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj")));
+				CHECK_NULLPTR_MSG(pObject_Prop, TEXT("엥"), );
+
+				m_ObjectList.push_back(pObject_Prop);
+
 			} SEPARATOR;
 
 			ImGui::End();
@@ -403,6 +510,132 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 
 #pragma endregion
 
+#pragma region WIDGET : 오브젝트 수정 위젯
+
+	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
+		if (m_isFixObjectWindow)
+		{
+			ImGui::Begin("OBJECT FIX WINDOW", &m_isFixObjectWindow, ImGuiWindowFlags_AlwaysAutoResize);
+
+			if (nullptr != m_pFixPropObj)
+			{
+				_char szModelName[MAX_PATH] = {};
+				WideCharToMultiByte(CP_ACP, 0, m_pFixPropObj->Get_ModelName(), -1, szModelName, MAX_PATH, nullptr, nullptr);
+				ImGui::Text("MODEL NAME : %s", szModelName); SEPARATOR;
+			}
+
+			if (ImGui::Button("DETAIL SCALE"))
+			{
+				m_eFixType = FIX_OBJECT::SCALE_DETAIL;
+
+			} SAMELINE;
+			if (ImGui::Button("SCALE ROTATION POSITION"))
+			{
+				m_eFixType = FIX_OBJECT::FIX_ALL;
+
+			} SEPARATOR;
+
+			if (FIX_OBJECT::SCALE_DETAIL == m_eFixType)
+			{
+				ImGui::Text("DETAIL SCALE FIX");
+				SEPARATOR;
+
+				ImGui::Text("X : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##scalex", &m_vFixScale.x);
+				ImGui::SliderFloat("##sliderdetailscalex", &m_vFixScale.x, 0.001f, 10.f);
+				ImGui::Text("Y : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##scaley", &m_vFixScale.y);
+				ImGui::SliderFloat("##sliderdetailscaley", &m_vFixScale.y, 0.001f, 10.f);
+				ImGui::Text("Z : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##scalez", &m_vFixScale.z);
+				ImGui::SliderFloat("##sliderdetailscalez", &m_vFixScale.z, 0.001f, 10.f);
+
+				if (0.001f > m_vFixScale.x) m_vFixScale.x = 0.001f;
+				if (0.001f > m_vFixScale.y) m_vFixScale.y = 0.001f;
+				if (0.001f > m_vFixScale.z) m_vFixScale.z = 0.001f;
+				SEPARATOR;
+
+				m_pFixTransformCom->Scale(m_vFixScale);
+			}
+			if (FIX_OBJECT::FIX_ALL == m_eFixType)
+			{
+				ImGui::Text("SCALE FIX");
+				SEPARATOR;
+
+				ImGui::Text("SCALE : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##scalex", &m_vFixScale.x, 0.001f, 0.01f);
+				ImGui::SliderFloat("##sliderscale", &m_vFixScale.z, 0.001f, 10.f);
+				if (0.001f > m_vFixScale.x) m_vFixScale.x = 0.001f;
+
+				m_vFixScale.y = m_vFixScale.z = m_vFixScale.x;
+				SEPARATOR;
+
+				m_pFixTransformCom->Scale(m_vFixScale);
+
+				ImGui::Text("ROTATION FIX");
+				SEPARATOR;
+
+				ImGui::Text("X : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##rotationx", &m_vFixRotation.x, 1.f, 5.f);
+				ImGui::SliderFloat("##sliderrotationx", &m_vFixRotation.x, 0.f, 360.f);
+				ImGui::Text("Y : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##rotationy", &m_vFixRotation.y, 1.f, 5.f);
+				ImGui::SliderFloat("##sliderrotationy", &m_vFixRotation.y, 0.f, 360.f);
+				ImGui::Text("Z : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##rotationz", &m_vFixRotation.z, 1.f, 5.f);
+				ImGui::SliderFloat("##sliderrotationz", &m_vFixRotation.z, 0.f, 360.f);
+				SEPARATOR;
+
+				m_pFixTransformCom->Rotation(XMConvertToRadians(m_vFixRotation.x), XMConvertToRadians(m_vFixRotation.y), XMConvertToRadians(m_vFixRotation.z));
+
+				ImGui::Text("POSITION FIX");
+				SEPARATOR;
+
+				_bool isPicked = { false };
+
+				if (m_pGameInstance->Key_Pressing(DIK_F4, 0.001f) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+				{
+					_float3 vPos = {};
+
+					if (m_pGameInstance->isPicked(&vPos))
+					{
+						m_vFixPosition = vPos;
+					}
+				}
+
+				ImGui::Text("X : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##positionx", &m_vFixPosition.x, 0.2f, 1.f);
+				ImGui::Text("Y : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##positiony", &m_vFixPosition.y, 0.2f, 1.f);
+				ImGui::Text("Z : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##positionz", &m_vFixPosition.z, 0.2f, 1.f);
+				SEPARATOR;
+
+				m_pFixTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&m_vFixPosition), 1.f));
+			}
+
+			if (ImGui::Button("DONE"))
+			{
+				ZeroMemory(m_szModelName, sizeof(m_szModelName));
+				m_pFixPropObj = nullptr;
+				m_pFixTransformCom = nullptr;
+				m_isFixObjectWindow = false;
+				m_eFixType = FIX_OBJECT::END;
+
+			} SAMELINE;
+			if (FIX_OBJECT::FIX_ALL != m_eFixType && FIX_OBJECT::SCALE_DETAIL != m_eFixType &&
+				ImGui::Button("DELETE") || m_pGameInstance->Key_Down(DIK_DELETE))
+			{
+				if (nullptr != m_pFixPropObj)
+				{
+					m_pFixPropObj->Set_IsDead(true);
+					m_pFixPropObj = nullptr;
+				}
+
+				ZeroMemory(m_szModelName, sizeof(m_szModelName));
+				m_pFixTransformCom = nullptr;
+				m_isFixObjectWindow = false;
+				m_eFixType = FIX_OBJECT::END;
+			}
+
+			ImGui::End();
+		}
+		});
+
+#pragma endregion
+
+#pragma region 주석
+		/*
 #pragma region PROP_OBJECT EDIT WINDOW
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (m_isPropWindow[ENUM_CLASS(PROP_SPECIES::OBJECT)])
@@ -486,6 +719,8 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 			ImGui::End();
 		}
 		});
+#pragma endregion
+*/
 #pragma endregion
 
 	return S_OK;
@@ -1211,7 +1446,7 @@ void CLevel_Map::Get_Directory_Files(const _char* pDirectoryPath)
 
 string CLevel_Map::Find_ModelPath(const string& strModelName)
 {
-	string strRoot = "../../Client/Bin/Resources/Models/Prop/";
+	string strRoot = "../../Client/Bin/Resources/Models/Environment/Prop/";
 
 	for (auto& entry : filesystem::recursive_directory_iterator(strRoot))
 	{

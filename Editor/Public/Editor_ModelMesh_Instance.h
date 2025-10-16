@@ -39,8 +39,9 @@ public:
 
 	void	Get_Data(MESH_DATA& Data) { Data = m_Mesh_Data; }
 
-	void Add_Instance(MESH_INSTANCE_DATA  InstanceData);
-	void Fix_Instance(MESH_INSTANCE_DATA  InstanceData, _uint iInstanceIndex);
+	void Add_Instance(MESH_INSTANCE_DATA InstanceData);
+	void Delete_Instance(_uint iInstanceID);
+	void Fix_Instance(MESH_INSTANCE_DATA InstanceData, _uint iInstanceIndex);
 
 private:
 	_char m_szName[MAX_PATH] = {};

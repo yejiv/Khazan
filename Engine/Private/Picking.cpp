@@ -67,6 +67,9 @@ _bool CPicking::isPicked(_float3* pOut)
     GetCursorPos(&m_ptMouse);
     ScreenToClient(m_hWnd, &m_ptMouse);
 
+    if (0 > m_ptMouse.x || m_iWinSizeX < m_ptMouse.x || 0 > m_ptMouse.y || m_iWinSizeY < m_ptMouse.y)
+        return false;
+
     _uint       iIndex = m_ptMouse.y * m_iWinSizeX + m_ptMouse.x;
 
     if (0.0f == m_pPixels[iIndex].x && 0.0f == m_pPixels[iIndex].y && 0.0f == m_pPixels[iIndex].z && 0.0f == m_pPixels[iIndex].w)
@@ -74,6 +77,39 @@ _bool CPicking::isPicked(_float3* pOut)
 
     _vector     vPosition = { m_pPixels[iIndex].x, m_pPixels[iIndex].y, m_pPixels[iIndex].z, 1.f };
 
+    XMStoreFloat3(pOut, vPosition);
+
+    return true;
+}
+
+_bool CPicking::isPicked(_float3* pOut, _uint* iObjectID)
+{
+    if (FAILED(m_pGameInstance->Copy_RT_Resource(TEXT("Target_World"), m_pTexture2D)))
+        return false;
+
+    D3D11_MAPPED_SUBRESOURCE        SubResource{};
+    if (FAILED(m_pContext->Map(m_pTexture2D, 0, D3D11_MAP_READ, 0, &SubResource)))
+        return false;
+
+    memcpy(m_pPixels, SubResource.pData, sizeof(_float4) * m_iWinSizeX * m_iWinSizeY);
+
+    m_pContext->Unmap(m_pTexture2D, 0);
+
+    GetCursorPos(&m_ptMouse);
+    ScreenToClient(m_hWnd, &m_ptMouse);
+
+    // 화면밖으로 나가있을때 피킹 예외처리
+    if (0 > m_ptMouse.x || m_iWinSizeX < m_ptMouse.x || 0 > m_ptMouse.y || m_iWinSizeY < m_ptMouse.y)
+        return false;
+
+    _uint       iIndex = m_ptMouse.y * m_iWinSizeX + m_ptMouse.x;
+
+    if (0.0f == m_pPixels[iIndex].x && 0.0f == m_pPixels[iIndex].y && 0.0f == m_pPixels[iIndex].z && 0.0f == m_pPixels[iIndex].w)
+        return false;
+
+    _vector     vPosition = { m_pPixels[iIndex].x, m_pPixels[iIndex].y, m_pPixels[iIndex].z, m_pPixels[iIndex].w };
+
+    *iObjectID = static_cast<_uint>(m_pPixels[iIndex].w);
     XMStoreFloat3(pOut, vPosition);
 
     return true;
