@@ -42,20 +42,6 @@ HRESULT CJolt_Manager::Initialize(_uint iNumObjectLayer)
     if (m_pObjectVsBPLayerFilter == nullptr)
         return E_FAIL;
 
-    //리스너
-    m_pContactListener = new CJolt_ContactListener();
-    if (m_pContactListener == nullptr)
-        return E_FAIL;
-
-    CJolt_CharacterContactListener::CONFIG_DESC ConfigDesc{};
-    ConfigDesc.floor_dot = Cos(DegreesToRadians(45.f));
-    ConfigDesc.cache_ground_normal = true;
-
-    m_pCharContactListener = new CJolt_CharacterContactListener(ConfigDesc);
-
-    m_pCharVsCharCollision = new CharacterVsCharacterCollisionSimple();
-
-
 #ifdef _DEBUG
     m_pDebugRenderer = new CJolt_DebugRenderer(m_pDevice, m_pContext);
 
@@ -100,7 +86,7 @@ CharacterVirtual* CJolt_Manager::CreateCharacterVirtual(const CharacterVirtualSe
 }
 
 
-void CJolt_Manager::Set_PhysicsSystem()
+HRESULT CJolt_Manager::Set_PhysicsSystem()
 {
     // PhysicsSystem 초기화
     m_pPhysics = new PhysicsSystem();
@@ -111,15 +97,30 @@ void CJolt_Manager::Set_PhysicsSystem()
         m_iMaxContactConstraints,
         *m_pBPLayerIF,
         *m_pObjectVsBPLayerFilter,
-
         *m_pObjectLayerPairFilter
     );
 
     m_pPhysics->SetPhysicsSettings(m_PhysicsSetting);
+
+    //리스너
+    m_pContactListener = new CJolt_ContactListener(&m_pPhysics->GetBodyInterface());
+    if (m_pContactListener == nullptr)
+        return E_FAIL;
+
+    m_pCharVsCharCollision = new CharacterVsCharacterCollisionSimple();
+    if (m_pCharVsCharCollision == nullptr)
+        return E_FAIL;
+
+    m_pCharContactListener = new CJolt_CharacterContactListener(&m_pPhysics->GetBodyInterface());
+    if (m_pCharContactListener == nullptr)
+        return E_FAIL;
+
     m_pPhysics->SetContactListener(m_pContactListener);
 
     // 기본 중력
     m_pPhysics->SetGravity(Vec3(0.0f, -9.81f, 0.0f));
+
+    return S_OK;
 }
 
 void CJolt_Manager::CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter)
