@@ -122,7 +122,17 @@ _float4x4* CModel::Get_ContainNameBoneMatrix(const _char* pBoneName)
     return (*iter)->Get_CombinedTransformationMatrixPtr();
 }
 
-HRESULT CModel::Bind_Materials(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, aiTextureType eTextureType, _uint iIndex)
+vector<_float3> CModel::Get_VerticesPos(_uint iIndex)
+{
+    return m_Meshes[iIndex]->Get_VerticesPos();
+}
+
+vector<_uint> CModel::Get_Indices(_uint iIndex)
+{
+    return m_Meshes[iIndex]->Get_Indices();
+}
+
+HRESULT CModel::Bind_Materials(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, _uint iTextureType, _uint iIndex)
 {
     if (iMeshIndex >= m_iNumMeshes)
         return E_FAIL;
@@ -132,7 +142,7 @@ HRESULT CModel::Bind_Materials(class CShader* pShader, const _char* pConstantNam
     if (m_iNumMaterials <= iMaterialIndex)
         return E_FAIL;
 
-    return m_Materials[iMaterialIndex]->Bind_Resources(pShader, pConstantName, eTextureType, iIndex);
+    return m_Materials[iMaterialIndex]->Bind_Resources(pShader, pConstantName, iTextureType, iIndex);
 }
 
 HRESULT CModel::Bind_BoneMatrices(CShader* pShader, const _char* pConstantName, _uint iMeshIndex)

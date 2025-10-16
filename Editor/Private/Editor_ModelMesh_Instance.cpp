@@ -102,8 +102,9 @@ HRESULT CEditor_ModelMesh_Instance::Initialize_Prototype(MODELTYPE eType, const 
 
 HRESULT CEditor_ModelMesh_Instance::Initialize_Clone(void* pArg)
 {
-	if (FAILED(__super::Initialize_Clone(pArg)))
-		return E_FAIL;
+	CHECK_EQUAL(0, m_iNumInstance, S_OK);
+
+	CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 
 	return S_OK;
 }

@@ -18,7 +18,7 @@ CVIBuffer_Mesh_Instance::CVIBuffer_Mesh_Instance(const CVIBuffer_Mesh_Instance& 
 	, m_pCB{ Prototype.m_pCB }
 	, m_pStructuredBuffer{ Prototype.m_pStructuredBuffer }
 {
-	for (_uint i = 0; ENUM_CLASS(CS_PASS::END); ++i)
+	for (_uint i = 0; i < ENUM_CLASS(CS_PASS::END); ++i)
 	{
 		m_ComputeShaders[i] = Prototype.m_ComputeShaders[i];
 		Safe_AddRef(m_ComputeShaders[i]);
@@ -30,33 +30,29 @@ CVIBuffer_Mesh_Instance::CVIBuffer_Mesh_Instance(const CVIBuffer_Mesh_Instance& 
 	Safe_AddRef(m_pStructuredBuffer);
 }
 
-HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(const aiMesh* pAIMesh, const INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix)
+HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(const _char* pMeshFilePath, const INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix)
 {
 	const MESH_INSTANCE_DESC* pMeshDesc = static_cast<const MESH_INSTANCE_DESC*>(pDesc);
 
-	strcpy_s(m_szName, pAIMesh->mName.data);
-	m_iMaterialIndex = pAIMesh->mMaterialIndex;
+	_uint iFlag = { aiProcess_ConvertToLeftHanded | aiProcessPreset_TargetRealtime_Fast | aiProcess_PreTransformVertices };
+
+	m_pAIScene = m_Importer.ReadFile(pMeshFilePath, iFlag);
+	if (nullptr == m_pAIScene)
+		return E_FAIL;
+
+	strcpy_s(m_szName, m_pAIScene->mMeshes[0]->mName.data);
+	m_iMaterialIndex = m_pAIScene->mMeshes[0]->mMaterialIndex;
 
 	m_vPivot = pMeshDesc->vPivot;
 	m_isLoop = pMeshDesc->isLoop;
 
 	m_iInstanceVertexStride = sizeof(VTXINSTANCE_PARTICLE);
-	m_iNumIndices = pAIMesh->mNumFaces * 3;
-	m_iNumVertices = pAIMesh->mNumVertices;
+	m_iNumIndices = m_pAIScene->mMeshes[0]->mNumFaces * 3;
+	m_iNumVertices = m_pAIScene->mMeshes[0]->mNumVertices;
 	m_iNumVertexBuffers = 2;
 	m_ePrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-
-	// Vertex 개수에 따라 인덱스 사이즈 설정
-	if (m_iNumVertices <= USHRT_MAX)
-	{
-		m_iIndexStride = 2;
-		m_eIndexFormat = DXGI_FORMAT_R16_UINT;
-	}
-	else
-	{
-		m_iIndexStride = 4;
-		m_eIndexFormat = DXGI_FORMAT_R32_UINT;
-	}
+	m_iIndexStride = 4;
+	m_eIndexFormat = DXGI_FORMAT_R32_UINT;
 
 	// 인스턴스용 데이터 세팅
 	m_iNumInstance = pMeshDesc->iNumInstance;
@@ -64,25 +60,17 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(const aiMesh* pAIMesh, con
 
 #pragma region VERTEX_SETTING
 
-	CHECK_FAILED_MSG(Ready_Vertices(pAIMesh, PreTransformMatrix), TEXT("Mesh Instance - Ready Vertices 실패"), E_FAIL);
+	CHECK_FAILED_MSG(Ready_Vertices(m_pAIScene->mMeshes[0], PreTransformMatrix), TEXT("Mesh Instance - Ready Vertices 실패"), E_FAIL);
 
 #pragma endregion
 
 #pragma region INDEX_SETTING
 
-	HRESULT hr = m_iIndexStride == sizeof(_ushort) ? Ready_Indices_For_2Byte(pAIMesh) : Ready_Indices_For_4Byte(pAIMesh);
-
-	CHECK_FAILED_MSG(hr, TEXT("Mesh Instance - Ready Indices 실패"), E_FAIL);
+	CHECK_FAILED_MSG(Ready_Indices_For_4Byte(m_pAIScene->mMeshes[0]), TEXT("Mesh Instance - Ready Indices 실패"), E_FAIL);
 
 #pragma endregion
 
 #pragma region INSTANCING_SETTING
-
-	//	m_VBInstanceDesc.Usage = D3D11_USAGE_DYNAMIC;
-	//	m_VBInstanceDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	//	m_VBInstanceDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	//	m_VBInstanceDesc.MiscFlags = 0;
-	//	m_VBInstanceDesc.StructureByteStride = m_iInstanceVertexStride;
 
 	m_VBInstanceDesc.ByteWidth = m_iNumInstance * m_iInstanceVertexStride;
 	m_VBInstanceDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -96,6 +84,8 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(const aiMesh* pAIMesh, con
 
 	m_pSpeeds = new _float[m_iNumInstance];
 	ZeroMemory(m_pSpeeds, sizeof(_float) * m_iNumInstance);
+
+	POINT_INSTANCE_PARAMS* pParticleParams = new POINT_INSTANCE_PARAMS[m_iNumInstance];
 
 	for (_uint i = 0; i < m_iNumInstance; ++i)
 	{
@@ -140,17 +130,13 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(const aiMesh* pAIMesh, con
 		pInstanceVertices[i].vLifeTime = _float2(0.f, fLifeTime);
 
 		// Compute Shader SRV Structured Buffer
-		//	pParticleParams[i].fSpeed = m_pSpeeds[i];
-		//	pParticleParams[i].vInitTranslation = pInstanceVertices[i].vTranslation;
-		//	pParticleParams[i].vDirection = vFinalDirection;
-
-		// 상수 버퍼 필요
+		pParticleParams[i].fSpeed = m_pSpeeds[i];
+		pParticleParams[i].vInitTranslation = pInstanceVertices[i].vTranslation;
+		pParticleParams[i].vDirection = vFinalDirection;
 	}
 
-#pragma endregion
-
-	//	if (FAILED(Ready_ShaderResourceView(pParticleParams)))
-	//		return E_FAIL;
+	if (FAILED(Ready_ShaderResourceView(pParticleParams)))
+		return E_FAIL;
 
 	if (FAILED(Ready_UnorderedAccessView()))
 		return E_FAIL;
@@ -170,6 +156,39 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Clone(void* pArg)
 		return E_FAIL;
 
 	return S_OK;
+}
+
+void CVIBuffer_Mesh_Instance::Move(_float fTimeDelta)
+{
+	D3D11_MAPPED_SUBRESOURCE SubResource;
+	if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
+	{
+		POINT_INSTANCE_CB* pPointInstanceCB = reinterpret_cast<POINT_INSTANCE_CB*>(SubResource.pData);
+		pPointInstanceCB->vPivot = m_vPivot;
+		pPointInstanceCB->fTimeDelta = fTimeDelta;
+		pPointInstanceCB->iNumInstances = m_iNumInstance;
+		m_pContext->Unmap(m_pCB, 0);
+	}
+
+	// 컴퓨트 실행 단위 추가
+	COMPUTE_PASS_DESC PassDesc{};
+	PassDesc.SRVs.push_back(m_pSRV);
+	PassDesc.UAVs.push_back(m_pUAV);
+	//	PassDesc.UAVInitialCounts.push_back(0);		// 나중에 Append / Consume 사용할 때 추가하기
+	PassDesc.ConstantBuffers.push_back(m_pCB);
+	_uint iNumThreadPerGroup = 256;
+	_uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
+	PassDesc.x = iNumGroups;
+	PassDesc.y = 1;
+	PassDesc.z = 1;
+
+	CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
+	JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::MOVE)];
+	JobDesc.PassDesc = PassDesc;
+
+	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
+
+	m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
 }
 
 HRESULT CVIBuffer_Mesh_Instance::Ready_Vertices(const aiMesh* pAIMesh, _fmatrix PreTransformMatrix)
@@ -220,39 +239,6 @@ HRESULT CVIBuffer_Mesh_Instance::Ready_Vertices(const aiMesh* pAIMesh, _fmatrix 
 	return S_OK;
 }
 
-HRESULT CVIBuffer_Mesh_Instance::Ready_Indices_For_2Byte(const aiMesh* pAIMesh)
-{
-	_ushort* pIndices = new _ushort[m_iNumIndices];
-	ZeroMemory(pIndices, sizeof(_ushort) * m_iNumIndices);
-
-	_uint	iNumIndices = {};
-
-	for (_uint i = 0; i < pAIMesh->mNumFaces; ++i)
-	{
-		aiFace AIFace = pAIMesh->mFaces[i];
-
-		pIndices[iNumIndices++] = AIFace.mIndices[0];
-		pIndices[iNumIndices++] = AIFace.mIndices[1];
-		pIndices[iNumIndices++] = AIFace.mIndices[2];
-	}
-
-	D3D11_BUFFER_DESC		IBDesc = {};
-	IBDesc.ByteWidth = m_iNumIndices * m_iIndexStride;
-	IBDesc.Usage = D3D11_USAGE_DEFAULT;
-	IBDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	IBDesc.CPUAccessFlags = 0;
-	IBDesc.MiscFlags = 0;
-	IBDesc.StructureByteStride = m_iIndexStride;
-
-	D3D11_SUBRESOURCE_DATA	IBInitialData = {};
-	IBInitialData.pSysMem = pIndices;
-
-	if (FAILED(m_pDevice->CreateBuffer(&IBDesc, &IBInitialData, &m_pIB)))
-		return E_FAIL;
-
-	return S_OK;
-}
-
 HRESULT CVIBuffer_Mesh_Instance::Ready_Indices_For_4Byte(const aiMesh* pAIMesh)
 {
 	_uint* pIndices = new _uint[m_iNumIndices];
@@ -288,16 +274,77 @@ HRESULT CVIBuffer_Mesh_Instance::Ready_Indices_For_4Byte(const aiMesh* pAIMesh)
 
 HRESULT CVIBuffer_Mesh_Instance::Ready_ShaderResourceView(void* pSysmem)
 {
+	// 1. SRV로 쓸 파티클 파라미터 버퍼 만들기
+	ID3D11Buffer* pBuffer = { nullptr };
+
+	D3D11_BUFFER_DESC ParticleParamsBufferDesc{};
+	ParticleParamsBufferDesc.ByteWidth = sizeof(POINT_INSTANCE_PARAMS) * m_iNumInstance;
+	ParticleParamsBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	ParticleParamsBufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	ParticleParamsBufferDesc.CPUAccessFlags = 0;
+	ParticleParamsBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	ParticleParamsBufferDesc.StructureByteStride = sizeof(POINT_INSTANCE_PARAMS);
+
+	D3D11_SUBRESOURCE_DATA ParticleParamsInitialData{};
+	ParticleParamsInitialData.pSysMem = pSysmem;
+
+	if (FAILED(m_pDevice->CreateBuffer(&ParticleParamsBufferDesc, &ParticleParamsInitialData, &pBuffer)))
+		return E_FAIL;
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc{};
+	SRVDesc.Format = DXGI_FORMAT_UNKNOWN;
+	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+	SRVDesc.Buffer.FirstElement = 0;
+	SRVDesc.Buffer.NumElements = m_iNumInstance;
+
+	if (FAILED(m_pDevice->CreateShaderResourceView(pBuffer, &SRVDesc, &m_pSRV)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
 HRESULT CVIBuffer_Mesh_Instance::Ready_UnorderedAccessView()
 {
+	// 2. UAV 생성 (CS에서 구조체 버퍼로 쓸 VBInstance와 같은 크기와 정보의 버퍼 만들기)
+	D3D11_BUFFER_DESC StructuredBufferDesc{};
+	StructuredBufferDesc.ByteWidth = m_iNumInstance * m_iInstanceVertexStride; // stride * count
+	StructuredBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	StructuredBufferDesc.BindFlags = D3D11_BIND_UNORDERED_ACCESS;
+	StructuredBufferDesc.CPUAccessFlags = 0;
+	StructuredBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	StructuredBufferDesc.StructureByteStride = m_iInstanceVertexStride;
+
+	D3D11_SUBRESOURCE_DATA InitData{};
+	InitData.pSysMem = m_pInstanceVertices; // 초기 데이터가 있으면
+	if (FAILED(m_pDevice->CreateBuffer(&StructuredBufferDesc, &InitData, &m_pStructuredBuffer)))
+		return E_FAIL;
+
+	D3D11_UNORDERED_ACCESS_VIEW_DESC UAVDesc{};
+	UAVDesc.Format = DXGI_FORMAT_UNKNOWN;
+	UAVDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
+	UAVDesc.Buffer.FirstElement = 0;
+	UAVDesc.Buffer.NumElements = m_iNumInstance;
+
+	if (FAILED(m_pDevice->CreateUnorderedAccessView(m_pStructuredBuffer, &UAVDesc, &m_pUAV)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
 HRESULT CVIBuffer_Mesh_Instance::Ready_ConstantBuffer()
 {
+	// 3. 상수 버퍼 생성
+	D3D11_BUFFER_DESC CBDesc{};
+	CBDesc.ByteWidth = sizeof(POINT_INSTANCE_CB);
+	CBDesc.Usage = D3D11_USAGE_DYNAMIC;
+	CBDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	CBDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	CBDesc.MiscFlags = 0;
+	CBDesc.StructureByteStride = 0;
+
+	if (FAILED(m_pDevice->CreateBuffer(&CBDesc, nullptr, &m_pCB)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -311,13 +358,13 @@ HRESULT CVIBuffer_Mesh_Instance::Ready_ComputeShader()
 	return S_OK;
 }
 
-CVIBuffer_Mesh_Instance* CVIBuffer_Mesh_Instance::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const aiMesh* pAIMesh, const INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix)
+CVIBuffer_Mesh_Instance* CVIBuffer_Mesh_Instance::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _char* pMeshFilePath, const INSTANCE_DESC* pDesc, _fmatrix PreTransformMatrix)
 {
 	CVIBuffer_Mesh_Instance* pInstance = new CVIBuffer_Mesh_Instance(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype(pAIMesh, pDesc, PreTransformMatrix)))
+	if (FAILED(pInstance->Initialize_Prototype(pMeshFilePath, pDesc, PreTransformMatrix)))
 	{
-		MSG_BOX(TEXT("Failed to Created : CVIBuffer_Mesh_Instance"));
+		MSG_BOX(TEXT("Failed to Create : CVIBuffer_Mesh_Instance"));
 		Safe_Release(pInstance);
 	}
 
@@ -330,7 +377,7 @@ CComponent* CVIBuffer_Mesh_Instance::Clone(void* pArg)
 
 	if (FAILED(pInstance->Initialize_Clone(pArg)))
 	{
-		MSG_BOX(TEXT("Failed to Cloned : CVIBuffer_Mesh_Instance"));
+		MSG_BOX(TEXT("Failed to Clone : CVIBuffer_Mesh_Instance"));
 		Safe_Release(pInstance);
 	}
 
