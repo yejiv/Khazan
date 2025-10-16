@@ -143,6 +143,8 @@ HRESULT CImgui_Manager::CleanMenu(_wstring strMenu)
         return E_FAIL;
 
     iter->second.clear();
+
+    return true;
 }
 
 void CImgui_Manager::AddWidget(const _wstring Menu, const function<void()>& widget)

@@ -34,8 +34,8 @@ public:
 	virtual HRESULT Render();
 
 public:
-	virtual void Collision_Enter(JPH::ObjectLayer Layer, CGameObject* pObject, JPH::ContactManifold ContactManifold);
-	virtual void Collision_Stay(JPH::ObjectLayer Layer, CGameObject* pObject, JPH::ContactManifold ContactManifold);
+	void Collision_Enter(CGameObject* pObject) override;
+	void Collision_Stay(CGameObject* pObject) override;
 
 private:
 	_uint				m_iState = { };
@@ -45,6 +45,7 @@ private:
 private:
 	HRESULT Ready_Components();
 	HRESULT Ready_PartObjects();
+	HRESULT Ready_Collision();
 
 public:
 	static CPlayer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
