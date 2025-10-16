@@ -17,6 +17,26 @@ CAnimationTool::CAnimationTool(ID3D11Device* pDevice, ID3D11DeviceContext* pCont
 
 HRESULT CAnimationTool::Initialize_Prototype()
 {
+    /* 파일시스템에서 실행파일 위치를 .exe로 고정 */
+    _char exePath[MAX_PATH];
+    GetModuleFileNameA(NULL, exePath, MAX_PATH);
+    string exeDir = exePath;
+    size_t lastSlash = exeDir.find_last_of("\\/");
+    if (lastSlash != string::npos)
+        exeDir = exeDir.substr(0, lastSlash);
+      
+    filesystem::path projectRoot = filesystem::path(exeDir).parent_path().parent_path() / "Default";
+
+    string projectRootStr = projectRoot.string();
+    SetCurrentDirectoryA(projectRootStr.c_str());
+
+    OutputDebugStringA(("[Working Directory Set] " + projectRootStr + "\n").c_str());
+
+    // 확인
+    _char currentDir[MAX_PATH];
+    GetCurrentDirectoryA(MAX_PATH, currentDir);
+    OutputDebugStringA(("[Current Working Directory] " + string(currentDir) + "\n").c_str());
+
 
 	Widget();
 
@@ -80,13 +100,13 @@ void CAnimationTool::Remove_Model()
 {
     if (m_GameObjects.empty())
     {
-        MSG_BOX(TEXT("삭제할 모델이 없습니다!"));
+        MSG_BOX(TEXT("[Remove_Model]삭제할 모델이 없습니다"));
         return;
     }
 
     if (m_iSelectedIndex < 0 || m_iSelectedIndex >= (_int)m_GameObjects.size())
     {
-        MSG_BOX(TEXT("유효하지 않은 선택입니다!"));
+        MSG_BOX(TEXT("[Remove_Model]유효하지 않은 선택입니다"));
         m_iSelectedIndex = -1;
         return;
     }
@@ -95,7 +115,7 @@ void CAnimationTool::Remove_Model()
 
     if (pObject == nullptr)
     {
-        MSG_BOX(TEXT("선택된 오브젝트가 유효하지 않습니다!"));
+        MSG_BOX(TEXT("[Remove_Model]선택된 오브젝트가 nullptr 입니다"));
         m_GameObjects.erase(m_GameObjects.begin() + m_iSelectedIndex);
         m_iSelectedIndex = -1;
         return;
@@ -151,7 +171,6 @@ void CAnimationTool::Widget()
 
 
 }
-
 void CAnimationTool::OpenModel_Widget()
 {
     // PreScale 조절 
@@ -168,7 +187,9 @@ void CAnimationTool::OpenModel_Widget()
     // 파일 선택 버튼
     if (ImGui::Button("Browse Model File...", ImVec2(200, 0)))
     {
-        // Windows 파일 다이얼로그 열기
+        _char savedDir[MAX_PATH];
+        GetCurrentDirectoryA(MAX_PATH, savedDir);
+
         OPENFILENAMEA ofn;
         char szFile[260] = { 0 };
 
@@ -186,8 +207,8 @@ void CAnimationTool::OpenModel_Widget()
 
         if (GetOpenFileNameA(&ofn) == TRUE)
         {
-            // 경로 저장
-            m_strModelPath = szFile;
+            string absolutePath = szFile;
+            m_strModelPath = ConvertToRelativePath(absolutePath);
 
             // 파일 이름 추출 (확장자 제외)
             string fullPath = szFile;
@@ -197,11 +218,11 @@ void CAnimationTool::OpenModel_Widget()
             if (lastSlash != string::npos && lastDot != string::npos && lastDot > lastSlash)
             {
                 string fileName = fullPath.substr(lastSlash + 1, lastDot - lastSlash - 1);
-
-                // string을 wstring으로 변환
                 m_strModelName = wstring(fileName.begin(), fileName.end());
             }
         }
+
+        SetCurrentDirectoryA(savedDir);
     }
 
     ImGui::Spacing();
@@ -217,7 +238,7 @@ void CAnimationTool::OpenModel_Widget()
         string modelNameStr(m_strModelName.begin(), m_strModelName.end());
         ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "%s", modelNameStr.c_str());
 
-        // 모델 경로 표시
+        // 모델 경로 표시 (이제 상대 경로)
         ImGui::Text("Model Path:");
         ImGui::SameLine();
         ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "%s", m_strModelPath.c_str());
@@ -236,7 +257,8 @@ void CAnimationTool::OpenModel_Widget()
 
     // 모델이 선택되지 않았으면 버튼 비활성화
     if (bDisabled)  ImGui::BeginDisabled();
-    if (ImGui::Button("Add Model to Scene", ImVec2(200, 25)))  Add_Model();
+    if (ImGui::Button("Add Model to Scene", ImVec2(200, 25)))
+        Add_Model();
     if (bDisabled) ImGui::EndDisabled();
 
     ImGui::Spacing();
@@ -274,7 +296,6 @@ void CAnimationTool::OpenModel_Widget()
         if (bRemoveDisabled)  ImGui::EndDisabled();
     }
 }
-
 void CAnimationTool::Tool_Widget()
 {
     ImGui::SeparatorText("Loaded Models");
@@ -309,7 +330,6 @@ void CAnimationTool::Tool_Widget()
     Tool_Export_Update_Widget();
 
 }
-
 void CAnimationTool::Tool_Export_Update_Widget()
 {
     // 선택된 모델이 있을 때만 버튼 활성화
@@ -323,48 +343,182 @@ void CAnimationTool::Tool_Export_Update_Widget()
 
         ImGui::Spacing();
 
-        // Export Model 버튼
+        _bool bIsValid = (m_GameObjects[m_iSelectedIndex] != nullptr &&
+            m_GameObjects[m_iSelectedIndex]->get_Model() != nullptr);
+
+        ImGui::BeginDisabled(!bIsValid);
+
+        // ===== Export Model 버튼 =====
         if (ImGui::Button("Export Model", ImVec2(200, 25)))
         {
-            if (m_GameObjects[m_iSelectedIndex] != nullptr &&
-                m_GameObjects[m_iSelectedIndex]->get_Model() != nullptr)
+            _char savedDir[MAX_PATH];
+            GetCurrentDirectoryA(MAX_PATH, savedDir);
+
+            OPENFILENAMEA ofn;
+            char szFile[260] = { 0 };
+
+            // 기본 파일명
+            string defaultName = WStringToAnsi(m_ObjectNames[m_iSelectedIndex]);
+            strcpy_s(szFile, defaultName.c_str());
+
+            ZeroMemory(&ofn, sizeof(ofn));
+            ofn.lStructSize = sizeof(ofn);
+            ofn.hwndOwner = NULL;
+            ofn.lpstrFile = szFile;
+            ofn.nMaxFile = sizeof(szFile);
+            ofn.lpstrFilter = "Model Files\0*.model\0All Files\0*.*\0";
+            ofn.nFilterIndex = 1;
+            ofn.lpstrInitialDir = "../../Client/Bin/Data/"; 
+            ofn.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
+
+            if (GetSaveFileNameA(&ofn) == TRUE)
             {
-                m_GameObjects[m_iSelectedIndex]->get_Model()->ExportModel();
+                string absolutePath = szFile;
+                string savePath = ConvertToClientRelativePath(absolutePath);
+
+                m_GameObjects[m_iSelectedIndex]->get_Model()->ExportModel(savePath);
+
+               // MSG_BOX(TEXT("모델 Export 완료!"));
             }
-            else
-            {
-                MSG_BOX(TEXT("유효하지 않은 모델입니다!"));
-            }
+
+            SetCurrentDirectoryA(savedDir);
+        }
+
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("Save to: Client/Bin/Data/");
         }
 
         ImGui::Spacing();
 
-        // Update DAT From JSON 버튼
+        // ===== Update DAT From JSON 버튼 =====
         if (ImGui::Button("Update DAT From JSON", ImVec2(200, 25)))
         {
-            if (m_GameObjects[m_iSelectedIndex] != nullptr &&
-                m_GameObjects[m_iSelectedIndex]->get_Model() != nullptr)
+            _char savedDir[MAX_PATH];
+            GetCurrentDirectoryA(MAX_PATH, savedDir);
+
+            OPENFILENAMEA ofn;
+            char szFile[260] = { 0 };
+
+            // 기본 파일명
+            string defaultName = WStringToAnsi(m_ObjectNames[m_iSelectedIndex]);
+            strcpy_s(szFile, defaultName.c_str());
+
+            ZeroMemory(&ofn, sizeof(ofn));
+            ofn.lStructSize = sizeof(ofn);
+            ofn.hwndOwner = NULL;
+            ofn.lpstrFile = szFile;
+            ofn.nMaxFile = sizeof(szFile);
+            ofn.lpstrFilter = "Model Files\0*.model\0All Files\0*.*\0";
+            ofn.nFilterIndex = 1;
+            ofn.lpstrInitialDir = "../../Client/Bin/Data/";
+            ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+            if (GetOpenFileNameA(&ofn) == TRUE)
             {
-                m_GameObjects[m_iSelectedIndex]->get_Model()->Update_DAT_From_JSON();
+                string absolutePath = szFile;
+                string savePath = ConvertToClientRelativePath(absolutePath);
+
+                m_GameObjects[m_iSelectedIndex]->get_Model()->Update_DAT_From_JSON(savePath);
+
+                //MSG_BOX(TEXT("DAT 파일 업데이트 완료!"));
             }
-            else
-            {
-                MSG_BOX(TEXT("유효하지 않은 모델입니다!"));
-            }
+
+            SetCurrentDirectoryA(savedDir);
         }
+
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("Save to: Client/Bin/Data/");
+        }
+
+        ImGui::EndDisabled();
 
         ImGui::Spacing();
         ImGui::Separator();
         ImGui::Spacing();
-
-
     }
     else
     {
         // 선택된 모델이 없을 때
         ImGui::Spacing();
-        ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f),
-            "Please select a model from the list above");
+        ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f), "Please select a model from the list above");
+    }
+}
+// Editor.exe 기준 상대 경로로 변환 (모델 로드용)
+string CAnimationTool::ConvertToRelativePath(const string& absolutePath)
+{
+    namespace fs = std::filesystem;
+
+    try
+    { 
+        // 결과: C:\...\Khazan\Editor\Bin\Debug
+        _char exePath[MAX_PATH];
+        GetModuleFileNameA(NULL, exePath, MAX_PATH);
+        fs::path exeDir = fs::path(exePath).parent_path();
+      
+        // Editor\Bin\Debug -> Editor\Bin -> Editor -> Editor\Default
+        fs::path editorDefaultDir = exeDir.parent_path().parent_path() / "Default";
+
+        OutputDebugStringA(("[Editor Default Dir] " + editorDefaultDir.string() + "\n").c_str());
+
+        // 절대 경로
+        fs::path absPath = fs::absolute(absolutePath);
+        OutputDebugStringA(("[Absolute Path] " + absPath.string() + "\n").c_str());
+
+        // Editor/Default 기준 상대 경로 계산
+        fs::path relativePath = fs::relative(absPath, editorDefaultDir);
+
+        string result = relativePath.string();
+        replace(result.begin(), result.end(), '\\', '/');
+
+        OutputDebugStringA(("[Editor Relative Path] " + result + "\n").c_str());
+
+        return result;
+    }
+    catch (const fs::filesystem_error& e)
+    {
+        OutputDebugStringA(("[Path Error] " + string(e.what()) + "\n").c_str());
+        return absolutePath;
+    }
+}
+// Client.exe 기준 상대 경로로 변환 (저장용)
+string CAnimationTool::ConvertToClientRelativePath(const string& absolutePath)
+{
+    namespace fs = std::filesystem;
+
+    try
+    { 
+        // 결과: C:\...\Khazan\Editor\Bin\Debug
+        _char exePath[MAX_PATH];
+        GetModuleFileNameA(NULL, exePath, MAX_PATH);
+        fs::path exeDir = fs::path(exePath).parent_path();
+
+
+        // Editor\Bin\Debug -> Editor\Bin -> Editor -> Khazan -> Client\Default
+        fs::path clientDefaultDir = exeDir.parent_path().parent_path() / "Client" / "Default";
+
+        OutputDebugStringA(("[Editor.exe Dir] " + exeDir.string() + "\n").c_str());
+        OutputDebugStringA(("[Client Default] " + clientDefaultDir.string() + "\n").c_str());
+
+        // 절대 경로
+        fs::path absPath = fs::absolute(absolutePath);
+        OutputDebugStringA(("[Absolute Path] " + absPath.string() + "\n").c_str());
+
+        // Client/Default 기준 상대 경로 계산
+        fs::path relativePath = fs::relative(absPath, clientDefaultDir);
+
+        string result = relativePath.string();
+        replace(result.begin(), result.end(), '\\', '/');
+
+        OutputDebugStringA(("[Client Relative Path] " + result + "\n").c_str());
+
+        return result;
+    }
+    catch (const fs::filesystem_error& e)
+    {
+        OutputDebugStringA(("[Path Error] " + string(e.what()) + "\n").c_str());
+        return absolutePath;
     }
 }
 
