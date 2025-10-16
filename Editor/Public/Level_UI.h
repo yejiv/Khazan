@@ -20,29 +20,26 @@ public:
 
 private:
 	HRESULT				Ready_Layer_Camera(const _wstring& strLayerTag);
+	HRESULT				Ready_Obejct();
 
 private:
-	void				Show_Hierarchy_Menu(const _char* szDefaultName);
-	void				Show_Hierachy(class CUIObject* pRootUIObject);
-	void				Add_Child(const _char* szDefaultName);
-	void				Remove_Child(const _char* szDefaultName);
+	//void				Show_Hierarchy_Menu(const _char* szDefaultName);
+	//void				Show_Hierachy(class CUIObject* pRootUIObject);
+	//void				Add_Child(const _char* szDefaultName);
+	//void				Remove_Child(const _char* szDefaultName);
 
-	void				Show_Inspector_Menu();
+	//void				Show_Inspector_Menu();
 
-	void				Show_CreateUI_Menu(const _char* szDefaultName);
-	
-	CUIObject*			Find_UIObject(const _char* szUIObjectName);
-
-private:
-	vector<CUIObject*>	m_EditorUIObjects;
-	CUIObject*			m_SelectedObject = { nullptr };
-	CUIObject*			m_SelectedParrentObject = { nullptr };
+	//void				Show_CreateUI_Menu(const _char* szDefaultName);
+	//
+	//CUIObject*			Find_UIObject(const _char* szUIObjectName);
 
 private:
-	_uint				m_iCurrentCount = { 0 };
-	_char				m_szSelectedName[MAX_PATH] = "SelectedName";
-	_bool				m_isChildSelected = { false };
+	class CEdit_Interface_UI*	m_pUIInterface = { nullptr };
+	_float						m_fTimeDelta = {};
 
+private:
+	void				Update_Interface();
 public:
 	static CLevel_UI*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void		Free() override;
