@@ -29,19 +29,14 @@ HRESULT CUIObject::Initialize_Clone(void* pArg)
     if (m_iUIType < 0)
         return E_FAIL;
 
-    m_vLocalPos = { pDesc->vLocalPos.x, pDesc->vLocalPos.y, 0.f };
-    m_vLocalSize = { pDesc->vLocalSize.x, pDesc->vLocalSize.y, 1.f };
+    m_vLocalPos = pDesc->vLocalPos;
+    m_vLocalSize = pDesc->vLocalSize;
     m_szName = pDesc->szName;
     m_UIBubbleCallBack = pDesc->BubbleEvent;
     m_fDepth = pDesc->fDepth;
 
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
-
-
-    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(
-        m_vLocalPos.x - m_iWinSizeX * 0.5f,
-        -m_vLocalPos.y + m_iWinSizeY * 0.5f, m_vLocalPos.z, 1.f));
 
     D3D11_VIEWPORT			Viewport{};
     _uint			iNumViewports = { 1 };
@@ -53,20 +48,31 @@ HRESULT CUIObject::Initialize_Clone(void* pArg)
 
     m_iWinSizeX = static_cast<const _uint>(Viewport.Width);
     m_iWinSizeY = static_cast<const _uint>(Viewport.Height);
-    
+
+    m_pTransformCom->Scale(_float3{ m_vLocalSize.x, m_vLocalSize.y, 1.f });
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(
+        m_vLocalPos.x - m_iWinSizeX * 0.5f,
+        -m_vLocalPos.y + m_iWinSizeY * 0.5f, 0.f, 1.f));
+
     return S_OK;
 }
 
 void CUIObject::Priority_Update(_float fTimeDelta)
 {
+    for (auto Childe : m_Children)
+        Childe->Priority_Update(fTimeDelta);
 }
 
 void CUIObject::Update(_float fTimeDelta)
 {
+    for (auto Childe : m_Children)
+        Childe->Update(fTimeDelta);
 }
 
 void CUIObject::Late_Update(_float fTimeDelta)
 {
+    for (auto Childe : m_Children)
+        Childe->Late_Update(fTimeDelta);
 }
 
 HRESULT CUIObject::Render()
@@ -81,7 +87,6 @@ void CUIObject::Add_Child(CUIObject* pChild)
 
     m_Children.push_back(pChild);
 
-    Update_Transform(this, _float2{m_vWorldPos.x, m_vWorldPos.y});
 }
 
 void CUIObject::Remove_Child(CUIObject* pChild)
@@ -103,18 +108,18 @@ void CUIObject::Update_Transform(CUIObject* pParent, _float2 vPos)
 {
     if (pParent == nullptr)
     {
-        m_vLocalPos.x = vPos.x;
-        m_vLocalPos.y = vPos.y;
+        m_vWorldPos.x = vPos.x;
+        m_vWorldPos.y = vPos.y;
     }
     else
     {
-        m_vLocalPos.x = pParent->Get_LocalPos().x - vPos.x;
-        m_vLocalPos.y = pParent->Get_LocalPos().y - vPos.y;
+        m_vWorldPos.x = pParent->Get_WolrdPos().x + m_vLocalPos.x;
+        m_vWorldPos.y = pParent->Get_WolrdPos().y + m_vLocalPos.y;
     }
-    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(m_vWorldPos.x - m_iWinSizeX * 0.5f, -m_vWorldPos.y + m_iWinSizeY * 0.5f, m_vWorldPos.z, 1.f));
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(m_vWorldPos.x - m_iWinSizeX * 0.5f, -m_vWorldPos.y + m_iWinSizeY * 0.5f, 0.f, 1.f));
     for (auto& pChild : m_Children)
     {
-        pChild->Update_Transform(this, vPos);
+        pChild->Update_Transform(this, m_vWorldPos);
     }
 }
 

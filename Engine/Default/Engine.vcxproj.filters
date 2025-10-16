@@ -474,6 +474,9 @@
     <ClCompile Include="..\Private\Jolt_CharacterContactListener.cpp">
       <Filter>01.Utility\13.Jolt\CharacterVirtualContactListener</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Texture_Atlas.cpp">
+      <Filter>01.Utility\03.Component\Texture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -730,6 +733,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Jolt_CharacterContactListener.h">
       <Filter>01.Utility\13.Jolt\CharacterVirtualContactListener</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Texture_Atlas.h">
+      <Filter>01.Utility\03.Component\Texture</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -42,7 +42,7 @@ public:
 
 public:
 	const string&				Get_Name() { return m_szName; }
-	const _float3&				Get_LocalPos() { return m_vWorldPos ; }
+	const _float2&				Get_WolrdPos() { return m_vWorldPos ; }
 	const _int&					Get_UIType() { return m_iUIType; }
 	const _float&				Get_Depth() { return m_fDepth; }
 
@@ -66,13 +66,6 @@ public:
 	virtual _bool				IsPick(HWND hWnd);
 	
 protected:
-	// 추후에 UtiliMath 같은 클래스 만들어서 정리 예정
-	inline _float				Lerp(_float fStart, _float fEnd, _float fTimeDelta)
-	{
-		return fStart + (fEnd - fStart) * fTimeDelta;
-	}
-
-protected:
 	_float4x4					m_ViewMatrix = {};
 	_float4x4					m_ProjMatrix = {};
 	_uint						m_iWinSizeX = {};
@@ -80,12 +73,12 @@ protected:
 
 	string						m_szName;
 
-	_float3						m_vLocalPos = {};
-	_float3						m_vWorldPos = {};
+	_float2						m_vLocalPos = {};
+	_float2						m_vWorldPos = {};
 	_float						m_fDepth = {};
 
-	_float3						m_vLocalSize = {};
-	_float3						m_vWorldSize = {};
+	_float2						m_vLocalSize = {};
+	_float2						m_vWorldSize = {};
 
 	_float2						m_vAnchor;
 	UI_ALIGNMENT				m_eAlignment = { UI_ALIGNMENT::TOP_LEFT };
