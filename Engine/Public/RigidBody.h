@@ -18,6 +18,7 @@
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
 #include <Jolt/Physics/Collision/Shape/StaticCompoundShape.h>
 #include <Jolt/Physics/Collision/Shape/MeshShape.h>
+#include <Jolt/Physics/Collision/Shape/ConvexHullShape.h>
 
 #ifdef new
 #pragma pop_macro("new") // DBG_NEW º¹¿ø
@@ -114,9 +115,10 @@ private:
 	_uint					m_iObjectLayer = 0;
 
 private:
-	//const JPH::Array<Vec3>				ModelVec3(class CModel* pModel);
-	//const JPH::Array<Float3>			ModelFloat3(class CModel* pModel, _uint iIndex);
-	//const JPH::Array<IndexedTriangle>	ModelTri(class CModel* pModel, _uint iIndex);
+	const JPH::Array<Vec3> ConvertToArrayVec3(CModel* pModel);
+	const JPH::Array<Float3> ConvertToArrayFloat3(CModel* pModel, _uint iIndex);
+	const JPH::Array<IndexedTriangle> ConvertToArrayTri(CModel* pModel, _uint iIndex);
+	void Make_MeshShape(RIGID_MESHSHAPE_DESC* pDesc);
 
 public:
 	static CRigidBody* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

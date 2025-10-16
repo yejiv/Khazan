@@ -169,6 +169,8 @@ _float2 CUIObject::Compute_AlignedPos(_float2 vPos, _float2 vSize)
     case UI_ALIGNMENT::BOTTOM_RIGHT:
         return _float2(vPos.x + vSize.x, vPos.y + vSize.y);
     }
+
+    return _float2(0.f, 0.f);
 }
 
 

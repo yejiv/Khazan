@@ -31,7 +31,7 @@ HRESULT CCamera_UI::Initialize_Clone(void* pArg)
 
 void CCamera_UI::Priority_Update(_float fTimeDelta)
 {
-    if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB) & 0x80)
+    if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
     {
         if (m_pGameInstance->Key_Pressing(DIK_W, fTimeDelta))
             m_pTransformCom->Go_Straight(fTimeDelta);
