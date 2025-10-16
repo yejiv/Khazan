@@ -139,6 +139,9 @@
     <Filter Include="02.GameObject\MapObject\Map_Terrain">
       <UniqueIdentifier>{0b49104a-5252-4909-9887-78adc1dd0a3d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Levels\Shader">
+      <UniqueIdentifier>{a549f4c0-e8c1-476c-9791-1cd9bb77ed65}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -274,6 +277,9 @@
     <ClInclude Include="..\Public\Edit_TextBox.h">
       <Filter>02.GameObject\UI\03.TextBox</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Level_Shader.h">
+      <Filter>01.Levels\Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -402,6 +408,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Map_Terrain.cpp">
       <Filter>02.GameObject\MapObject\Map_Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Shader.cpp">
+      <Filter>01.Levels\Shader</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
