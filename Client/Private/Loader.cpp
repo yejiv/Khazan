@@ -210,6 +210,11 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Data/Fiona/Fiona.dat"))))
 		return E_FAIL;*/
 
+	///* Prototype_Component_Model_WP_WOD_Ground_Base_004 */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Environment/Prop/Ground/WP_WOD_Ground_Base_004.dat"))))
+		return E_FAIL;
+
 	///* Prototype_Component_Model_JOH_TestModel */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_JOH_TestModel"),
 	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Data/Test/Test.dat"))))
@@ -268,6 +273,11 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Dummy"),
 	//	CDummy::Create(m_pDevice, m_pContext))))
 	//	return E_FAIL;
+
+	///* Prototype_GameObject_Prop_Test */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_Test"),
+		CProp_Test::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 	///* Prototype_GameObject_JOH_Test1 */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_JOH_Test1"),
