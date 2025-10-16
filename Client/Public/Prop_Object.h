@@ -1,11 +1,15 @@
 #pragma once
 
-#include "Editor_Defines.h"
+#include "Client_Defines.h"
 #include "Prop.h"
 
-// 정적 맵 오브젝트 ( 인스턴싱 O )
+// 단일 맵 오브젝트
 
-NS_BEGIN(Editor)
+NS_BEGIN(Engine)
+class CModel;
+NS_END
+
+NS_BEGIN(Client)
 
 class CProp_Object final : public CProp
 {
@@ -14,7 +18,7 @@ public:
 	{
 		_float3 vPosition{};
 		_float3 vRotation{};
-		_float3 vScale{ 1.f, 1.f, 1.f };
+		_float3 vScale{1.f, 1.f, 1.f};
 
 	}PROP_OBJECT_DESC;
 
@@ -34,7 +38,7 @@ public:
 	virtual HRESULT Render() override;
 
 private:
-	class CEditor_Model* m_pModelCom = { nullptr };
+	CModel* m_pModelCom = { nullptr };
 
 private:
 	SHADER_PASS m_eShaderPass = { SHADER_PASS::MAPOBJECT };
