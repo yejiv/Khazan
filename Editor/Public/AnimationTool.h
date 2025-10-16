@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Editor_Defines.h"
 #include "Base.h"
 
@@ -17,10 +17,6 @@ public:
 	//virtual HRESULT Initialize_Clone(void* pArg);
 	void Update(_float fTimeDelta);
 
-public:
-	void	Add_Model();
-	void	Remove_Model();
-
 private:
 	class CGameInstance* m_pGameInstance = { nullptr };
 	ID3D11Device* m_pDevice = { nullptr };
@@ -33,21 +29,48 @@ private:
 	_wstring			m_strModelName = {};
 	string				m_strModelPath = {};
 
-	// ¼±ÅÃµÈ °ÔÀÓ ¿ÀºêÁ§Æ® ÀÎµ¦½º
-	_int m_iSelectedIndex = -1;
+	// ì„ íƒëœ ê²Œì„ ì˜¤ë¸Œì íŠ¸ ì¸ë±ìŠ¤
+	_int				m_iSelectedIndex = -1;
 
 
-	// À§Á¬ Ç¥½Ã ÇÃ·¡±×
-	_bool m_bShowOpenModel = { false };
-	_bool m_bShowTool = { false };
+	// ìœ„ì ¯ í‘œì‹œ í”Œë˜ê·¸
+	_bool				m_isShowOpenModel = { false };
+	_bool				m_isShowTool = { false };
+	_bool				m_isShowTool_Control = { false };
+	_bool				m_isShowTool_ExportUpdate = { false };
+	_bool				m_isShowTool_AnimationList = { false };
+
+	_bool				m_isEnble_AnimTimeControl = { false };
+	_bool				m_isEnble_AnimSetControl = { false };
+	_bool				m_isEnble_AnimEventControl = { false };
+
+	/*ì• ë‹ˆë©”ì´ì…˜ */
+	_int				m_iSelectedAnimIndex = { -1 };
+	_char				m_szAnimSearchBuffer[256] = "";
+	// êµ¬ê°„ë³„ ì†ë„ ì œì–´
+	_float				m_fCurrentFrame = 0.f;
+	_bool				m_isPlating = { false };
 
 private:
 	void	Widget();
+
+	/* ëª¨ë¸ ì—´ê¸° */
 	void	OpenModel_Widget();
-	void	Tool_Widget();
+
+	/* ì •ë³´ ì¶”ì¶œ ë° ì •ë³´ ì—…ë°ì´íŠ¸ */
 	void	Tool_Export_Update_Widget();
 
+	/* íˆ´ */
+	void	Tool_Widget();
+	void	Tool_AnimationControl_Widget();
+	void	Tool_AnimationList_Widget();
+	void	Tool_AnimationInfo_Widget();
+
+
+
 private:
+	void	Add_Model();
+	void	Remove_Model();
 	string  ConvertToRelativePath(const string& absolutePath);
 	string  ConvertToClientRelativePath(const string& absolutePath);
 
