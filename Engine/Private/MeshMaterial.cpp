@@ -13,6 +13,16 @@ CMeshMaterial::CMeshMaterial(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 
 HRESULT CMeshMaterial::Initialize(MATERIAL_DATA& data)
 {
+	//_char currentDir[MAX_PATH];
+	//GetCurrentDirectoryA(MAX_PATH, currentDir);
+	//OutputDebugStringA(("[Current Working Directory] " + string(currentDir) + "\n").c_str());
+
+	//char exePath[MAX_PATH];
+	//GetModuleFileNameA(NULL, exePath, MAX_PATH);
+	//std::filesystem::path editorExeDir = std::filesystem::path(exePath).parent_path();
+
+	//OutputDebugStringA(("[Client.exe Dir] " + editorExeDir.string() + "\n").c_str());
+
 	for (_uint i = 0; i < TEXTURETYPE_MAX; i++)
 	{
 		_uint	iNumTextures = data.iNumTextures[i];

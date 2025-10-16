@@ -46,9 +46,15 @@ private:
 	void	OpenModel_Widget();
 	void	Tool_Widget();
 	void	Tool_Export_Update_Widget();
+
+private:
+	string  ConvertToRelativePath(const string& absolutePath);
+	string  ConvertToClientRelativePath(const string& absolutePath);
+
 public:
 	static CAnimationTool* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;
 };
 
 NS_END
+

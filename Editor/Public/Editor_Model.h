@@ -33,9 +33,9 @@ public:
 	void			Get_ModelData(MODEL_DATA* data) { data = &m_Model_Data; }
 
 public:
-	void			ExportModel();
+	void			ExportModel(string& strPath);
 	void			LoadModel(_wstring strModelName);
-	void			Update_DAT_From_JSON();
+	void			Update_DAT_From_JSON(string& strPath);
 
 private:
 	const aiScene*			m_pAIScene = { nullptr };
@@ -90,8 +90,6 @@ private:
 	_bool			Export_AnimationJson(const string& strFilePath, const string& strFilePath2);
 	_bool			Export_MaterialJson(const string& strFilePath);
 	void			Export_Binary(const string& strFilePath);
-
-
 
 	/* Json에 이쁘게 쓰기  */
 	string			PostProcessJSON(const string& jsonStr);
