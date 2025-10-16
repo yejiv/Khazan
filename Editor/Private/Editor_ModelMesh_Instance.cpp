@@ -155,6 +155,42 @@ void CEditor_ModelMesh_Instance::Add_Instance(MESH_INSTANCE_DATA InstanceData)
 		return;
 }
 
+void CEditor_ModelMesh_Instance::Delete_Instance(_uint iInstanceID)
+{
+	//VTXINSTANCE_MESH* pNewInstance = new VTXINSTANCE_MESH[m_iNumInstance + 1];
+	//ZeroMemory(pNewInstance, sizeof(VTXINSTANCE_MESH) * (m_iNumInstance + 1));
+
+	//VTXINSTANCE_MESH* pVertices = reinterpret_cast<VTXINSTANCE_MESH*>(m_pInstanceVertices);
+	////CHECK_NULLPTR_MSG(pVertices, TEXT("Mesh_Instance > Add_Instance ÇÔ¼ö > nullptr == pVertices"));
+
+	//memcpy(pNewInstance, pVertices, sizeof(VTXINSTANCE_MESH) * m_iNumInstance);
+
+	//Safe_Delete_Array(m_pInstanceVertices);
+
+	//_matrix MatrixData = InstanceData.InstanceMatrix;
+
+	//XMStoreFloat4(&pNewInstance[m_iNumInstance].vRight, XMVectorSetW(MatrixData.r[0], 0.f));
+	//XMStoreFloat4(&pNewInstance[m_iNumInstance].vUp, XMVectorSetW(MatrixData.r[1], 0.f));
+	//XMStoreFloat4(&pNewInstance[m_iNumInstance].vLook, XMVectorSetW(MatrixData.r[2], 0.f));
+	//XMStoreFloat4(&pNewInstance[m_iNumInstance].vTranslation, XMVectorSetW(MatrixData.r[3], 1.f));
+
+	//pNewInstance->iID = InstanceData.InstanceID;
+
+	//++m_iNumInstance;
+
+	//m_pInstanceVertices = pNewInstance;
+
+	//Safe_Release(m_pVBInstance);
+
+	//D3D11_SUBRESOURCE_DATA	InitialDesc{};
+	//InitialDesc.pSysMem = m_pInstanceVertices;
+
+	//m_VBInstanceDesc.ByteWidth = m_iNumInstance * m_iInstanceVertexStride;
+
+	//if (FAILED(m_pDevice->CreateBuffer(&m_VBInstanceDesc, &InitialDesc, &m_pVBInstance)))
+	//	return;
+}
+
 void CEditor_ModelMesh_Instance::Fix_Instance(MESH_INSTANCE_DATA InstanceData, _uint iInstanceIndex)
 {
 	D3D11_MAPPED_SUBRESOURCE SubResource = {};

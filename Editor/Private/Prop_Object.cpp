@@ -49,6 +49,12 @@ void CProp_Object::Priority_Update(_float fTimeDelta)
 
 void CProp_Object::Update(_float fTimeDelta)
 {
+    if (m_pGameInstance->Key_Down(DIK_3))
+        m_pModelCom->ExportModel();
+    if (m_pGameInstance->Key_Down(DIK_4))
+        m_pModelCom->Update_DAT_From_JSON();
+    if (m_pGameInstance->Key_Down(DIK_5))
+        m_isDead = true;
     if (m_pGameInstance->Key_Down(DIK_8))
         m_eShaderPass = SHADER_PASS::WIREFRAME;
     if (m_pGameInstance->Key_Down(DIK_9))
@@ -107,6 +113,9 @@ HRESULT CProp_Object::Bind_ShaderResources()
 
     // 투영 행렬 쉐이더에 바인딩
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ)), E_FAIL);
+
+    // 맵 오브젝트 ID 쉐이더에 바인딩
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_iMapObjectID", &m_iMapObjectID, sizeof(_uint)), E_FAIL);
 
     return S_OK;
 }

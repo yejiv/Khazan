@@ -37,8 +37,6 @@ struct VS_OUT
     float2 vTexcoord : TEXCOORD0;
     float4 vWorldPos : TEXCOORD1;
     float4 vProjPos  : TEXCOORD2;
-    
-    unsigned int iID : ID;
 };
 
 VS_OUT VS_MAIN(VS_IN In)
@@ -58,9 +56,8 @@ VS_OUT VS_MAIN(VS_IN In)
     Out.vBinormal = normalize(mul(float4(In.vBinormal, 0.f), g_WorldMatrix));
     Out.vTexcoord = In.vTexcoord;
     Out.vWorldPos = mul(float4(In.vPosition, 1.f), g_WorldMatrix);
+    Out.vWorldPos.w = float(In.iID);
     Out.vProjPos = Out.vPosition;
-    
-    Out.iID = In.iID;
     
     return Out;
 }
@@ -120,9 +117,7 @@ struct PS_IN
     float4 vBinormal : BINORMAL;
     float2 vTexcoord : TEXCOORD0;
     float4 vWorldPos : TEXCOORD1;
-    float4 vProjPos  : TEXCOORD2;    
-    
-    unsigned int iID : ID;
+    float4 vProjPos  : TEXCOORD2;
 };
 
 struct PS_OUT

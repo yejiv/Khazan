@@ -14,6 +14,7 @@ class CMapObject abstract : public CGameObject
 public:
 	typedef struct tagMapObjectDesc : public CGameObject::GAMEOBJECT_DESC
 	{
+		_uint iMapObjectID{};
 
 	}MAPOBJECT_DESC;
 
@@ -31,8 +32,14 @@ public:
 	virtual HRESULT Render() override;
 	virtual HRESULT Render_Shadow() { return S_OK; }
 
+public:
+	const _uint Get_MapObjectID() const { return m_iMapObjectID; }
+
 protected:
 	CShader* m_pShaderCom = { nullptr };
+
+protected:
+	_uint m_iMapObjectID = {};
 
 public:
 	virtual CGameObject* Clone(void* pArg) = 0;

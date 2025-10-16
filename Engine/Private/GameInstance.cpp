@@ -472,6 +472,11 @@ _bool CGameInstance::isPicked(_float3* pOut)
 	return m_pPicking->isPicked(pOut);
 }
 
+_bool CGameInstance::isPicked(_float3* pOut, _uint* iObjectID)
+{
+	return m_pPicking->isPicked(pOut, iObjectID);
+}
+
 #pragma endregion
 
 #pragma region SHADOW
