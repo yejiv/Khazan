@@ -16,16 +16,34 @@ public:
 
 public:
 	void	Get_Data(ANIMATION_DATA& data) { data = m_Animation_Data; }
+
+public:
+	void					OnAnimationBlend(map<_uint, _matrix>&& outChannelMatrices);
+	map<_uint, _matrix>&	Get_ChannelMatrices();
+	void					Set_TrackPositionPtr(_float* pTrackPosition);
+
 private:
 	string								m_strName = {};
 	_float								m_fDuration = {};				
 	_float								m_fTickPerSecond = {};			
-	_float								m_fCurrentTrackPosition = {};	
+	_float*								m_fCurrentTrackPosition = {nullptr};	
 	_uint								m_iNumChannels = {};			
 	vector< class CEditor_Channel* >	m_Channels;
 	vector<_uint>						m_CurrentKeyFrameIndices;
 
 	ANIMATION_DATA						m_Animation_Data{};
+
+	/* 애니메이션 블랜딩 */
+	_bool							m_isAnimationBlend = { false }; // 이전 애니메이션과의 보간 여부
+	_float							m_fCurBlendTime = {};
+	_float							m_fBlendTime = { 0.3f }; //애니메이션 사이 보간에 사용할 시간
+	map<_uint, _matrix>				m_PreAnimationChannelMatrices;	//<뼈 번호, 뼈 행렬>	 // 애니메이션 전환용 마지막 프레임 뼈 행렬 모음. (다시 사용하면 안됨.  move로 넘겨줌)
+
+	class CGameInstance* m_pGameInstance = { nullptr };
+
+private:
+	void		Update_AnimationBlend(const vector<class CEditor_Bone*>& Bones, _float fTimeDelta);	/* 애니메이션 블랜딩  */
+	_uint		GetAnimDirection(const string& animName);
 
 public:
 	static	CEditor_Animation* Create(const aiAnimation* pAIAnimation, const vector<class CEditor_Bone*>& Bones);

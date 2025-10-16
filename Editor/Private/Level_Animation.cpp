@@ -3,10 +3,15 @@
 #include "Level_Loading.h"
 
 #include "Editor_TempCamera.h"
+#include "AnimationTool.h"
 
 CLevel_Animation::CLevel_Animation(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
+	, m_pDevice{ pDevice }
+	, m_pContext{ pContext }
 {
+	Safe_AddRef(m_pDevice);
+	Safe_AddRef(m_pContext);
 }
 
 HRESULT CLevel_Animation::Initialize()
@@ -17,15 +22,10 @@ HRESULT CLevel_Animation::Initialize()
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
 
-	if (FAILED(Ready_Layer_Test(TEXT("Layer_Test"))))
-		return E_FAIL;
+	//if (FAILED(Ready_Layer_Test(TEXT("Layer_Test"))))
+	//	return E_FAIL;
 
-	m_pGameInstance->AddWidget(TEXT("Animaition"), []() {
-		ImGui::Begin("Debug");
-		ImGui::Text("Hello, world!");
-		ImGui::End();
-		});
-
+	tool = CAnimationTool::Create(m_pDevice, m_pContext);
 
 	return S_OK;
 }
@@ -95,7 +95,7 @@ HRESULT CLevel_Animation::Ready_Layer_BackGround(const _wstring& strLayerTag)
 HRESULT CLevel_Animation::Ready_Layer_Test(const _wstring& strLayerTag)
 {
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::ANIMATION), strLayerTag,
-		ENUM_CLASS(LEVEL::ANIMATION), TEXT("Prototype_GameObject_JOH_TestModel"))))
+		ENUM_CLASS(LEVEL::ANIMATION), TEXT("Prototype_GameObject_Editor_Animation_TestModel"))))
 		return E_FAIL;
 
 	return S_OK;
@@ -121,6 +121,7 @@ void CLevel_Animation::Free()
 {
 	__super::Free();
 
-
+	Safe_Release(m_pDevice);
+	Safe_Release(m_pContext);
 
 }

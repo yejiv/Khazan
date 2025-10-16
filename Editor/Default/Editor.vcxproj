@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\public\AnimationTool.h" />
     <ClInclude Include="..\Public\Camera_Map.h" />
     <ClInclude Include="..\Public\Camera_UI.h" />
     <ClInclude Include="..\Public\Editor_Animation.h" />
@@ -194,6 +195,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\private\AnimationTool.cpp" />
     <ClCompile Include="..\Private\Camera_Map.cpp" />
     <ClCompile Include="..\Private\Camera_UI.cpp" />
     <ClCompile Include="..\Private\Editor_Animation.cpp" />
