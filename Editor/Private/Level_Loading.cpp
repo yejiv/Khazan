@@ -8,6 +8,7 @@
 #include "Level_Animation.h"
 #include "Level_Effect.h"
 #include "Level_UI.h"
+#include "Level_Shader.h"
 
 CLevel_Loading::CLevel_Loading(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
@@ -53,6 +54,9 @@ void CLevel_Loading::Update(_float fTimeDelta)
 		case LEVEL::UI:
 			pNewLevel = CLevel_UI::Create(m_pDevice, m_pContext);
 			break;
+		case LEVEL::SHADER:
+			pNewLevel = CLevel_Shader::Create(m_pDevice, m_pContext);
+			break;
 		}
 
 		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(m_eNextLevelID), pNewLevel)))
@@ -88,6 +92,7 @@ HRESULT CLevel_Loading::CleanImgui()
 	m_pGameInstance->CleanMenu(TEXT("Map"));
 	m_pGameInstance->CleanMenu(TEXT("Effect"));
 	m_pGameInstance->CleanMenu(TEXT("UI"));
+	m_pGameInstance->CleanMenu(TEXT("Shader"));
 
 	return S_OK;
 }

@@ -18,7 +18,8 @@ public:
 
 public:
 	_uint Get_MaterialIndex() const { return m_iMaterialIndex; }
-
+	vector<_float3> Get_VerticesPos() { return m_vVerticesPos; }
+	vector<_uint> Get_Indices() { return m_vIndices; }
 
 public:
 	HRESULT Bind_BoneMatrices(class CShader* pShader, const _char* pConstantName, const vector<class CBone*>& Bones);
@@ -31,6 +32,8 @@ private:
 	vector<_int>			m_BoneIndices;	
 	_float4x4				m_BoneMatrices[g_iMaxNumBones] = {};
 	vector<_float4x4>		m_OffsetMatrices;
+	vector<_float3>			m_vVerticesPos;
+	vector<_uint>			m_vIndices;
 
 private:
 	HRESULT  Ready_Vertices_For_NonAnim(MESH_DATA& data);

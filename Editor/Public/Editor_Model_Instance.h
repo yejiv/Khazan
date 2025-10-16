@@ -88,7 +88,7 @@ private:
 public:
 	static CEditor_Model_Instance* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, MODELTYPE eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix, const CEditor_ModelMesh_Instance::INSTANCE_DESC* pDesc);
 	virtual CComponent* Clone(void* pArg) override;
-	virtual void			Free() override;
+	virtual void Free() override;
 
 };
 NS_END
