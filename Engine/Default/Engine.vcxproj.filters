@@ -229,9 +229,6 @@
     <Filter Include="01.Utility\02.GameObject\UIObject\TextBox">
       <UniqueIdentifier>{6dd9461f-86cd-44cc-81c3-187d10c5db85}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\03.Component\CharacterVirtual">
-      <UniqueIdentifier>{09e723ca-0ab0-4b34-bd76-99a5fca6d80b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\03.Component\VIBuffer\Instance\Mesh">
       <UniqueIdentifier>{1af5f368-a22c-4b69-b0fc-ebd3ea4bbdc8}</UniqueIdentifier>
     </Filter>
@@ -258,6 +255,27 @@
     </Filter>
     <Filter Include="01.Utility\13.Jolt\CharacterVirtualContactListener">
       <UniqueIdentifier>{cc15051d-c1d3-4f03-98af-3c2ed7cf5938}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\PhysicsObject">
+      <UniqueIdentifier>{0c472c91-c800-4492-a0c9-288ca786694d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\PhysicsObject\Static">
+      <UniqueIdentifier>{43c839b3-838d-46df-8b9b-27819e335010}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\PhysicsObject\Dynamic">
+      <UniqueIdentifier>{30e277be-72de-4a89-9e67-3479d8cbaccb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\PhysicsObject\Character">
+      <UniqueIdentifier>{dc7d18f7-9f0a-4930-b930-2aed121554f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\PhysicsObject\Kinematic">
+      <UniqueIdentifier>{0a4ee3ae-9a5b-48b3-813c-d9a36b616810}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Component\RigidBody\CharacterVirtual">
+      <UniqueIdentifier>{09e723ca-0ab0-4b34-bd76-99a5fca6d80b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Component\RigidBody\Body">
+      <UniqueIdentifier>{234491fb-0a84-4d47-983d-5d177c16d1f4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -484,7 +502,7 @@
       <Filter>01.Utility\02.GameObject\UIObject\TextBox</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\CharacterVirtual.cpp">
-      <Filter>01.Utility\03.Component\CharacterVirtual</Filter>
+      <Filter>01.Utility\03.Component\RigidBody\CharacterVirtual</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Mesh_Instance.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Mesh</Filter>
@@ -503,6 +521,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Jolt_CharacterContactListener.cpp">
       <Filter>01.Utility\13.Jolt\CharacterVirtualContactListener</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Body.cpp">
+      <Filter>01.Utility\03.Component\RigidBody\Body</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -753,7 +774,7 @@
       <Filter>01.Utility\02.GameObject\UIObject\TextBox</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\CharacterVirtual.h">
-      <Filter>01.Utility\03.Component\CharacterVirtual</Filter>
+      <Filter>01.Utility\03.Component\RigidBody\CharacterVirtual</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Mesh_Instance.h">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Mesh</Filter>
@@ -775,6 +796,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Jolt_CharacterContactListener.h">
       <Filter>01.Utility\13.Jolt\CharacterVirtualContactListener</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Body.h">
+      <Filter>01.Utility\03.Component\RigidBody\Body</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

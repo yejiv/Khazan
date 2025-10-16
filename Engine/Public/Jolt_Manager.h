@@ -44,7 +44,7 @@ public:
     Body* CreateAndAdd_Body(const BodyCreationSettings& BodySetting, BodyInterface** pBodyInterface);
     CharacterVirtual* CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData, BodyInterface** pBodyInterface);
 
-    void				Set_PhysicsSystem();
+    HRESULT				Set_PhysicsSystem();
     void				Set_ObjectToBP(_uint iObjectLayer, _uint iBPLayer) {
         m_pBPLayerIF->SetUp_ObjectToBP(iObjectLayer, iBPLayer);
     };

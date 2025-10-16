@@ -58,7 +58,6 @@ void CPlayer::Update(_float fTimeDelta)
         if (true == isPicked)
         {
             m_pTransformCom->Set_State(Engine::STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPickedPos), 1.f));
-            m_pCharVirCom->Set_Position(XMVectorSetW(XMLoadFloat3(&vPickedPos), 1.f));
             m_pCharVirCom->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 1.f));
         }
     }
@@ -66,23 +65,19 @@ void CPlayer::Update(_float fTimeDelta)
     if (GetKeyState(VK_DOWN) & 0x8000)
     {
         m_pTransformCom->Go_Backward(fTimeDelta * 0.5);
-        m_pCharVirCom->Set_Position(m_pTransformCom->Get_State(STATE::POSITION));
     }
     if (GetKeyState(VK_LEFT) & 0x8000)
     {
         m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * -1.f);
-        m_pCharVirCom->Set_Rotation(m_pTransformCom->Get_Rotation_Quat());
     }
     if (GetKeyState(VK_RIGHT) & 0x8000)
     {
         m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * 1.f);
-        m_pCharVirCom->Set_Rotation(m_pTransformCom->Get_Rotation_Quat());
     }
 
     if (GetKeyState(VK_UP) & 0x8000)
     {
         m_pTransformCom->Go_Straight(fTimeDelta * 0.5);
-        m_pCharVirCom->Set_Position(m_pTransformCom->Get_State(STATE::POSITION));
 
         if (m_iState & IDLE)
             m_iState ^= IDLE;
@@ -102,8 +97,8 @@ void CPlayer::Update(_float fTimeDelta)
 
     //m_pRigidBodyCom->Update(fTimeDelta, m_pTransformCom->Get_WorldMatrix());
 
+    m_pCharVirCom->Sync_Update(m_pTransformCom);
     m_pCharVirCom->Update(fTimeDelta, m_pTransformCom);
-
     //m_pCharacterCom->Update(fTimeDelta, m_pBodyCom, m_pTransformCom);
 
 }
@@ -129,12 +124,12 @@ HRESULT CPlayer::Render()
     return S_OK;
 }
 
-void CPlayer::Collision_Enter(CGameObject* pObject)
+void CPlayer::Collision_Enter(CGameObject* pObject, JOLT_COLLSION_TYPE eType)
 {
     int a = 0;
 }
 
-void CPlayer::Collision_Stay(CGameObject* pObject)
+void CPlayer::Collision_Stay(CGameObject* pObject, JOLT_COLLSION_TYPE eType)
 {
     int a = 0;
 }
