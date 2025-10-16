@@ -1,22 +1,22 @@
-#include "Terrain_Grid.h"
+#include "Terrain_Shader.h"
 #include "GameInstance.h"
 
-CTerrain_Grid::CTerrain_Grid(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CTerrain_Shader::CTerrain_Shader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CGameObject{ pDevice, pContext }
 {
 }
 
-CTerrain_Grid::CTerrain_Grid(const CTerrain_Grid& Prototype)
+CTerrain_Shader::CTerrain_Shader(const CTerrain_Shader& Prototype)
     : CGameObject(Prototype)
 {
 }
 
-HRESULT CTerrain_Grid::Initialize_Prototype()
+HRESULT CTerrain_Shader::Initialize_Prototype()
 {
     return S_OK;
 }
 
-HRESULT CTerrain_Grid::Initialize_Clone(void* pArg)
+HRESULT CTerrain_Shader::Initialize_Clone(void* pArg)
 {
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
@@ -24,32 +24,30 @@ HRESULT CTerrain_Grid::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(-25.f, 0.f, -25.f, 1.f));
-
     return S_OK;
 }
 
-void CTerrain_Grid::Priority_Update(_float fTimeDelta)
+void CTerrain_Shader::Priority_Update(_float fTimeDelta)
 {
 
 }
 
-void CTerrain_Grid::Update(_float fTimeDelta)
+void CTerrain_Shader::Update(_float fTimeDelta)
 {
 }
 
-void CTerrain_Grid::Late_Update(_float fTimeDelta)
+void CTerrain_Shader::Late_Update(_float fTimeDelta)
 {
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this)))
         return;
 }
 
-HRESULT CTerrain_Grid::Render()
+HRESULT CTerrain_Shader::Render()
 {
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
-    m_pShaderCom->Begin(1);
+    m_pShaderCom->Begin(0);
 
     m_pVIBufferCom->Bind_Resources();
 
@@ -58,24 +56,24 @@ HRESULT CTerrain_Grid::Render()
     return S_OK;
 }
 
-HRESULT CTerrain_Grid::Ready_Components()
+HRESULT CTerrain_Shader::Ready_Components()
 {
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxNorTex"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_VIBuffer_Terrain"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_VIBuffer_Terrain"),
         TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), nullptr)))
         return E_FAIL;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_Terrain_Grid"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Texture_Terrain_Shader"),
         TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr)))
         return E_FAIL;
 
     return S_OK;
 }
 
-HRESULT CTerrain_Grid::Bind_ShaderResources()
+HRESULT CTerrain_Shader::Bind_ShaderResources()
 {
     if (FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix")))
         return E_FAIL;
@@ -92,33 +90,33 @@ HRESULT CTerrain_Grid::Bind_ShaderResources()
     return S_OK;
 }
 
-CTerrain_Grid* CTerrain_Grid::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CTerrain_Shader* CTerrain_Shader::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-    CTerrain_Grid* pInstance = new CTerrain_Grid(pDevice, pContext);
+    CTerrain_Shader* pInstance = new CTerrain_Shader(pDevice, pContext);
 
     if (FAILED(pInstance->Initialize_Prototype()))
     {
-        MSG_BOX(TEXT("Failed to Create : CTerrain_Grid"));
+        MSG_BOX(TEXT("Failed to Create : CTerrain_Shader"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-CGameObject* CTerrain_Grid::Clone(void* pArg)
+CGameObject* CTerrain_Shader::Clone(void* pArg)
 {
-    CTerrain_Grid* pInstance = new CTerrain_Grid(*this);
+    CTerrain_Shader* pInstance = new CTerrain_Shader(*this);
 
     if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
-        MSG_BOX(TEXT("Failed to Clone : CTerrain_Grid"));
+        MSG_BOX(TEXT("Failed to Clone : CTerrain_Shader"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-void CTerrain_Grid::Free()
+void CTerrain_Shader::Free()
 {
     __super::Free();
 

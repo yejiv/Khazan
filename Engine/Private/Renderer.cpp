@@ -106,15 +106,14 @@ HRESULT CRenderer::Initialize()
         return E_FAIL;
 
 #ifdef _DEBUG
-    /*   if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Diffuse"), 150.0f, 150.0f, 300.f, 300.f)))
-           return E_FAIL;
-       if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Normal"), 150.0f, 450.0f, 300.f, 300.f)))
-           return E_FAIL;
-       if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Shade"), 450.0f, 150.0f, 300.f, 300.f)))
-           return E_FAIL;
-       if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Specular"), 450.0f, 450.0f, 300.f, 300.f)))
-           return E_FAIL;*/
-
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Diffuse"), 150.0f, 150.0f, 300.f, 300.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Normal"), 150.0f, 450.0f, 300.f, 300.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Shade"), 450.0f, 150.0f, 300.f, 300.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Specular"), 450.0f, 450.0f, 300.f, 300.f)))
+        return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_LightDepth"), ViewportDesc.Width - 250.0f, 250.0f, 500.f, 500.f)))
         return E_FAIL;
 #endif
@@ -166,8 +165,14 @@ HRESULT CRenderer::Draw()
 
 
 #ifdef _DEBUG
-    if (FAILED(Render_Debug()))
-        return E_FAIL;
+    if (m_pGameInstance->Key_Down(DIK_PRIOR))
+        m_isRenderDebug = true;
+    else if (m_pGameInstance->Key_Down(DIK_NEXT))
+        m_isRenderDebug = false;
+
+    if (m_isRenderDebug)
+        if (FAILED(Render_Debug()))
+            return E_FAIL;
 #endif
 
     return S_OK;
@@ -504,7 +509,7 @@ HRESULT CRenderer::Render_Debug()
     if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
         return E_FAIL;
 
-    //  m_pGameInstance->Render_RT_Debug(m_pShader, m_pVIBuffer);
+    m_pGameInstance->Render_RT_Debug(m_pShader, m_pVIBuffer);
 
     return S_OK;
 }

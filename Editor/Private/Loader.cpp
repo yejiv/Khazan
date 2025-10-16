@@ -13,8 +13,6 @@
 #pragma region Effect
 #include "ParticleSystem.h"
 #include "ParticleEmitter.h"
-#include "Camera_Effect.h"
-#include "Terrain_Grid.h"
 #include "TestParticle.h"
 #pragma endregion
 
@@ -30,7 +28,10 @@
 #include "Edit_TextBox.h"
 #pragma endregion 
 
-
+#pragma region Shader
+#include "Camera_Shader.h"
+#include "Terrain_Shader.h"
+#pragma endregion
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice{ pDevice }
@@ -234,17 +235,11 @@ HRESULT CLoader::Loading_For_Effect_Level()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Models/Effect/LowPolyFoodLiteTexture_01.png"), 1))))
 		return E_FAIL;
 
-	// Prototype_Component_Texture_Terrain_Grid
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_Terrain_Grid"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Textures/Terrain/Tile0.jpg"), 1))))
-		return E_FAIL;
+
 
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
 
-	// Prototype_Component_VIBuffer_Terrain
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_VIBuffer_Terrain"),
-		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 50, 50))))
-		return E_FAIL;
+
 
 	// Prototype_Component_Particle_Spread
 	//	CVIBuffer_Point_Instance::POINT_INSTANCE_DESC SpreadDesc{};
@@ -291,16 +286,6 @@ HRESULT CLoader::Loading_For_Effect_Level()
 	// Prototype_GameObject_ParticleEmitter
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_ParticleEmitter"),
 		CParticleEmitter::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
-	
-	// Prototype_GameObject_Camera_Effect
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_Camera_Effect"),
-		CCamera_Effect::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
-
-	// Prototype_GameObject_Terrain_Grid
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_Terrain_Grid"),
-		CTerrain_Grid::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 	// Prototype_GameObject_TestParticle
@@ -356,11 +341,31 @@ HRESULT CLoader::Loading_For_Shader_Level()
 {
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
 
+	// Prototype_Component_Texture_Terrain_Shader
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Texture_Terrain_Shader"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Textures/Terrain/Tile0.jpg"), 1))))
+		return E_FAIL;
+
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
+
+	// Prototype_Component_VIBuffer_Terrain
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_VIBuffer_Terrain"),
+		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 50, 50))))
+		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
 
 	lstrcpy(m_szLoadingText, TEXT("게임오브젝트원형를 로딩중입니다."));
+
+	// Prototype_GameObject_Camera_Shader
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Camera_Shader"),
+		CCamera_Shader::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	// Prototype_GameObject_Terrain_Shader
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Terrain_Shader"),
+		CTerrain_Shader::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 

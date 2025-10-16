@@ -4,7 +4,7 @@
 
 NS_BEGIN(Editor)
 
-class CCamera_Effect final : public CCamera
+class CCamera_Shader final : public CCamera
 {
 public:
 	typedef struct tagCameraEffectDesc : public CCamera::CAMERA_DESC
@@ -13,9 +13,9 @@ public:
 	}CAMERA_EFFECT_DESC;
 
 private:
-	CCamera_Effect(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CCamera_Effect(const CCamera_Effect& Prototype);
-	virtual ~CCamera_Effect() = default;
+	CCamera_Shader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CCamera_Shader(const CCamera_Shader& Prototype);
+	virtual ~CCamera_Shader() = default;
 
 public:
 	virtual HRESULT			Initialize_Prototype() override;
@@ -29,7 +29,7 @@ private:
 	_float					m_fMouseSensor = { };
 
 public:
-	static CCamera_Effect*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CCamera_Shader*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject*	Clone(void* pArg)override;
 	virtual void			Free() override;
 };

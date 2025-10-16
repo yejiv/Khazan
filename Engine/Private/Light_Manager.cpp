@@ -1,8 +1,11 @@
 #include "Light_Manager.h"
 #include "Light.h"
+#include "GameInstance.h"
 
 CLight_Manager::CLight_Manager()
+	: m_pGameInstance { CGameInstance::GetInstance() }
 {
+	Safe_AddRef(m_pGameInstance);
 }
 
 HRESULT CLight_Manager::Initialize(_uint iNumLevels)
@@ -61,7 +64,13 @@ HRESULT CLight_Manager::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer, _uin
 	for (auto& pLight : m_pLights[iLevelIndex])
 	{
 		if (true == pLight.second->isEnable())
+		{
+			if (!m_pGameInstance->isIn_Frustum_WorldSpace(XMLoadFloat4(&pLight.second->Get_LightDesc()->vPosition), 3.f) &&
+				LIGHT_DESC::POINT == pLight.second->Get_LightDesc()->eType)
+				continue;
+
 			pLight.second->Render(pShader, pVIBuffer);
+		}
 	}
 
 	return S_OK;
@@ -122,4 +131,6 @@ void CLight_Manager::Free()
 	}
 
 	Safe_Delete_Array(m_pLights);
+
+	Safe_Release(m_pGameInstance);
 }

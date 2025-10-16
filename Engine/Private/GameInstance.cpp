@@ -160,6 +160,8 @@ HRESULT CGameInstance::Clear_Resources(_uint iClearLevelID)
 
 	m_pObject_Manager->Clear(iClearLevelID);
 
+	m_pLight_Manager->Clear(iClearLevelID);
+
 	return S_OK;
 }
 

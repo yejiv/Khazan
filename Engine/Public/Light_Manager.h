@@ -25,6 +25,8 @@ public:
 	const LIGHT_DESC* Get_LightDesc(const _wstring& strLightTag, _uint iLevelIndex);
 
 private:
+	class CGameInstance* m_pGameInstance = { nullptr };
+
 	unordered_map<_wstring, class CLight*>* m_pLights = { nullptr };
 	_uint m_iNumLevels = {};
 
