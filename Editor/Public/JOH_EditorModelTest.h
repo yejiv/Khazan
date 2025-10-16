@@ -23,13 +23,17 @@ public:
 	virtual void Late_Update(_float fTimeDelta);
 	virtual HRESULT Render();
 
+	void	OnUnEnble() { m_isEnble = false; }
+	class CEditor_Model* get_Model() { return m_pModelCom; }
+
 private:
 	CShader*	m_pShaderCom = { nullptr };
 	class CEditor_Model*		m_pModelCom = { nullptr };
 
 	_uint		m_iCurrentAnimIndex = { 0 };
+	_bool		m_isEnble = { true };
 private:
-	HRESULT Ready_Components();
+	HRESULT Ready_Components(const _wstring& strModelTag);
 	HRESULT Bind_ShaderResources();
 
 public:

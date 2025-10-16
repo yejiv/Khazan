@@ -35,11 +35,13 @@ HRESULT CProp_Animated::Initialize_Clone(void* pArg)
 
         XMStoreFloat3(&vScale, XMLoadFloat3(&pDesc->vScale));
 
-        _float3 vRotation = _float3(XMConvertToRadians(pDesc->vRotation.x), XMConvertToRadians(pDesc->vRotation.y), XMConvertToRadians(pDesc->vRotation.z));
+        //_float3 vRotation = _float3(XMConvertToRadians(pDesc->vRotation.x), XMConvertToRadians(pDesc->vRotation.y), XMConvertToRadians(pDesc->vRotation.z));
+        _float3 vRotation = _float3(pDesc->vRotation.x, pDesc->vRotation.y, pDesc->vRotation.z);
+        _float3 vPosition = pDesc->vPosition;
         
-        m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat3(&pDesc->vPosition));
+        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPosition), 1.f));
         m_pTransformCom->Scale(vScale);
-        m_pTransformCom->Rotation(vRotation.x, vRotation.y, vRotation.z);
+        //m_pTransformCom->Rotation(vRotation.x, vRotation.y, vRotation.z);
     }
 
     return S_OK;
