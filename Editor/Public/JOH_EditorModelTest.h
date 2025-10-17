@@ -22,6 +22,7 @@ public:
 	virtual void Update(_float fTimeDelta);
 	virtual void Late_Update(_float fTimeDelta);
 	virtual HRESULT Render();
+	virtual HRESULT Render_Shadow() override;
 
 	void	OnUnEnble() { m_isEnble = false; }
 	class CEditor_Model* get_Model() { return m_pModelCom; }
