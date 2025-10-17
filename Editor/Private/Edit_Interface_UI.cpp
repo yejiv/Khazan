@@ -33,7 +33,7 @@ HRESULT CEdit_Interface_UI::Initialize(LEVEL eLevel)
 	m_eLevel = eLevel;
 
 	strcpy_s(m_szPrototypePath, "Prototype_Component_");
-	strcpy_s(m_szFilePath, "../../Client/Bin/Resources/UI/UIData/");
+	strcpy_s(m_szFilePath, "../../Client/Bin/Resources/Textures/UI/UIData");
 
 	CHECK_FAILED(Ready_Object(eLevel), E_FAIL);
 
@@ -79,13 +79,11 @@ void CEdit_Interface_UI::Update_BackColor(_float fTimeDelta)
 
 void CEdit_Interface_UI::SaveLoad_UI()
 {
-	if (m_iSeletRootUI < 0)
-		return;
 
 	if (ImGui::CollapsingHeader("SaveLoad_UI"))
 	{
 		ImGui::InputText("UIFilePath", m_szFilePath, MAX_PATH);
-		if (ImGui::Button("Save_UI"))
+		if (ImGui::Button("Save_UI") && m_iSeletRootUI >= 0)
 		{
 			string filePath = m_szFilePath;
 			filePath += ".json";
@@ -104,10 +102,47 @@ void CEdit_Interface_UI::SaveLoad_UI()
 				Out.close();
 			}
 		}
+
 		ImGui::SameLine();
 		if (ImGui::Button("Load_UI"))
 		{
-			
+			string filePath = m_szFilePath;
+			filePath += ".json";
+			ifstream In(filePath);
+			if (!In.is_open())
+			{
+				MSG_BOX(TEXT("UI JSON 파일 불러오기 실패"));
+				In.close();
+			}
+			else
+			{
+				nlohmann::json jsonData;
+				In >> jsonData;
+
+				CUIObject::UIOBJECT_DESC UIDesc{};
+				UIDesc.szName = "";
+				UIDesc.iUIType = 0;
+				UIDesc.vLocalSize = { 1.f, 1.f };
+				UIDesc.fDepth = 0;
+				UIDesc.vLocalPos = { g_iWinSizeX >> 1 , g_iWinSizeY >> 1 };
+
+				CEdit_UIBase* pRootUI = static_cast<CEdit_UIBase*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(m_eLevel), TEXT("Prototype_GameObject_UI_Base"), &UIDesc));
+				
+				if (pRootUI != nullptr)
+				{
+					if(FAILED(pRootUI->Load_UI(jsonData, ENUM_CLASS(m_eLevel))))
+						MSG_BOX(TEXT("UI Load 실패"));
+					else
+					{
+						m_szSeleteUIName = jsonData.value("name", "");
+						m_pRootUIs.push_back(pRootUI);
+						MSG_BOX(TEXT("UI Load 성공"));
+						m_iSeletRootUI = m_pRootUIs.size() - 1;
+					}
+				}
+			}
+
+			nlohmann::json SaveData;
 		}
 	}
 }

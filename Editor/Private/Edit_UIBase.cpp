@@ -11,13 +11,15 @@ CEdit_UIBase::CEdit_UIBase(const CEdit_UIBase& Prototype)
 {
 }
 
-HRESULT CEdit_UIBase::Create_Child(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, CUIObject::UIOBJECT_DESC* UIChildDesc, string szSeleteUIName)
+HRESULT CEdit_UIBase::Create_Child(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, CUIObject::UIOBJECT_DESC* UIChildDesc, string szSeleteUIName, CUIObject* pParent)
 {
     _bool isCreated = false;
     if (m_szName == szSeleteUIName)
     {
         UIChildDesc->fDepth = m_fDepth;        
         Add_Child(static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelIndex, strPrototypeTag, UIChildDesc)));
+        Update_Transform(pParent, m_vLocalPos);
+        return S_OK;
     }
     else
     {
@@ -31,7 +33,7 @@ HRESULT CEdit_UIBase::Create_Child(_uint iPrototypeLevelIndex, const _wstring& s
         }
     }
 
-    Update_Transform(nullptr, m_vLocalPos);
+    Update_Transform(pParent, m_vLocalPos);
 
     return E_FAIL;
 }
@@ -45,8 +47,12 @@ HRESULT CEdit_UIBase::Save_UI(nlohmann::json& pOutData)
 
     string szType = UIType_EnumToString();
     Data["type"] = szType;
-    Data["TexTag"] = m_szTexTag;
+    if(m_eRenderType == UI_RENDER_TYPE::DEFAULT)
+        Data["TexType"] = "Tex";
+    else
+        Data["TexType"] = "Atlas";
 
+    Data["TexTag"] = m_szTexTag;
     Data["shaderPass"] = m_iShaderPass;
     Data["depth"] = m_fDepth;
 
@@ -96,6 +102,130 @@ HRESULT CEdit_UIBase::Save_UI(nlohmann::json& pOutData)
 
     pOutData = Data;
 
+    return S_OK;
+}
+
+HRESULT CEdit_UIBase::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
+{
+    m_szName = pInData.value("name", "");
+    m_szClassName = pInData.value("class", "");
+    
+    string TexType = {};
+    if (TexType == "Tex")
+        m_eRenderType = UI_RENDER_TYPE::DEFAULT;
+    else
+        m_eRenderType = UI_RENDER_TYPE::ATLAS;
+    m_szTexTag = pInData.value("TexTag", "");
+    
+    if (m_szTexTag != "")
+    {
+        if (m_eRenderType == UI_RENDER_TYPE::DEFAULT)
+        {
+            _int size_needed = MultiByteToWideChar(CP_ACP, 0, m_szTexTag.c_str(), -1, nullptr, 0);
+            _wstring szPrototypeTag(size_needed, 0);
+
+            MultiByteToWideChar(CP_ACP, 0, m_szTexTag.c_str(), -1, &szPrototypeTag[0], size_needed);
+            if (!szPrototypeTag.empty() && szPrototypeTag.back() == L'\0')
+                szPrototypeTag.pop_back();
+
+            m_pTexture = static_cast<CTexture*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::COMPONENT, iPrototypeLevelID, szPrototypeTag.c_str(), nullptr));
+        }
+        else
+        {
+            _int size_needed = MultiByteToWideChar(CP_ACP, 0, m_szTexTag.c_str(), -1, nullptr, 0);
+            _wstring szPrototypeTag(size_needed, 0);
+
+            MultiByteToWideChar(CP_ACP, 0, m_szTexTag.c_str(), -1, &szPrototypeTag[0], size_needed);
+            if (!szPrototypeTag.empty() && szPrototypeTag.back() == L'\0')
+                szPrototypeTag.pop_back();
+
+            m_pTexture_AtlasCom = static_cast<CTexture_Atlas*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::COMPONENT, iPrototypeLevelID, szPrototypeTag.c_str(), nullptr));
+        }
+    }
+
+    string szType = pInData.value("type", "");
+    m_iUIType = UIType_StringToEnum(szType); // ← 직접 만든 변환 함수
+
+    m_iShaderPass = pInData.value("shaderPass", -1);
+    m_fDepth = pInData.value("depth", 0.f);
+
+    if (pInData.contains("LocalPos"))
+    {
+        m_vLocalPos.x = pInData["LocalPos"].value("x", 0.f);
+        m_vLocalPos.y = pInData["LocalPos"].value("y", 0.f);
+    }
+
+    if (pInData.contains("LocalSize"))
+    {
+        m_vLocalSize.x = pInData["LocalSize"].value("x", 0.f);
+        m_vLocalSize.y = pInData["LocalSize"].value("y", 0.f);
+    }
+
+    if (pInData.contains("UV"))
+    {
+        m_vUVMinMax.clear();
+        for (auto& uv : pInData["UV"])
+        {
+            _float4 uvData;
+            uvData.x = uv.value("MinX", 0.f);
+            uvData.y = uv.value("MinY", 0.f);
+            uvData.z = uv.value("MaxX", 0.f);
+            uvData.w = uv.value("MaxY", 0.f);
+            m_vUVMinMax.push_back(uvData);
+        }
+    }
+
+    if (pInData.contains("Events"))
+    {
+        m_EventNames.clear();
+        for (auto& Event : pInData["Events"])
+            m_EventNames.push_back(Event.get<string>());
+    }
+
+    if (pInData.contains("Anime"))
+    {
+        m_Track.clear();
+        for (auto& t : pInData["Anime"])
+        {
+            UIKEYFRAME track;
+            track.fTrackPosition = t.value("TrackPosition", 0.f);
+            track.fAlpha = t.value("Alpha", 1.f);
+            track.fAngle = t.value("Angle", 0.f);
+            track.fSize = t.value("Size", 1.f);
+            track.szEvent = t.value("Event", "");
+
+            if (t.contains("Transloation"))
+            {
+                track.vTransloation.x = t["Transloation"].value("x", 0.f);
+                track.vTransloation.y = t["Transloation"].value("y", 0.f);
+            }
+
+            m_Track.push_back(track);
+        }
+    }
+
+    m_pTransformCom->Scale(_float3{ m_vLocalSize.x, m_vLocalSize.y, 1.f });
+
+
+    if (pInData.contains("Children"))
+    {
+        for (auto& child : pInData["Children"])
+        {
+            CUIObject::UIOBJECT_DESC UIDesc{};
+            UIDesc.szName = "";
+            UIDesc.iUIType = 0;
+            UIDesc.vLocalSize = {1.f, 1.f };
+            UIDesc.fDepth = 0;
+            UIDesc.vLocalPos = { g_iWinSizeX >> 1 , g_iWinSizeY >> 1 };
+
+            CEdit_UIBase* pChild = static_cast<CEdit_UIBase*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelID, TEXT("Prototype_GameObject_UI_Base"), &UIDesc));
+
+            pChild->Load_UI(child, iPrototypeLevelID);
+            m_Children.push_back(pChild);
+        }
+    }
+
+    __super::Update_Transform(nullptr, m_vLocalPos);
     return S_OK;
 }
 
@@ -378,6 +508,7 @@ HRESULT CEdit_UIBase::Set_AtlasTextTure(string& szSeleteUIName, _uint iPrototype
 {
     if (m_szName == szSeleteUIName)
     {
+        m_iTexType = iTexType;
         if (static_cast<UI_RENDER_TYPE>(iTexType) == UI_RENDER_TYPE::ATLAS)
         {
             Safe_Release(m_pTexture_AtlasCom);
@@ -438,7 +569,6 @@ _bool CEdit_UIBase::Set_UVTexSet(string& szSeleteUIName, const string pFrameName
     if (m_szName == szSeleteUIName)
     {
         m_vUVMinMax[m_iUiState] = m_pTexture_AtlasCom->FindTexFrame(pFrameName);
-        Set_AtlasTexSize(szSeleteUIName, pFrameName, 1.f);
         return true;
     }
 
@@ -460,7 +590,8 @@ HRESULT CEdit_UIBase::Set_AtlasTexSize(string& szSeleteUIName, const string pFra
         {
             _float2 vSize = m_pTexture_AtlasCom->FindTexSize(pFrameName);
 
-            m_vLocalSize = vSize;
+            m_vLocalSize.x = vSize.x * fSize;
+            m_vLocalSize.y = vSize.y * fSize;
 
             m_pTransformCom->Scale(_float3{ m_vLocalSize.x, m_vLocalSize.y, 1.f });
         }
@@ -836,7 +967,7 @@ string CEdit_UIBase::UIType_EnumToString()
 
 }
 
-CEdit_UIBase::UITYPE CEdit_UIBase::UIType_StringToEnum(string szUIType)
+_uint CEdit_UIBase::UIType_StringToEnum(string szUIType)
 {
     UITYPE eUIType = {};
 
@@ -853,7 +984,7 @@ CEdit_UIBase::UITYPE CEdit_UIBase::UIType_StringToEnum(string szUIType)
     if (szUIType == "SCROLLBAR")
         eUIType = UITYPE::SCROLLBAR;
 
-    return eUIType;
+    return ENUM_CLASS(eUIType);
 }
 
 CEdit_UIBase* CEdit_UIBase::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

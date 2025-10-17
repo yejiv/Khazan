@@ -22,10 +22,11 @@ private:
 	virtual ~CEdit_UIBase() = default;
 
 public:
-	HRESULT					Create_Child(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, CUIObject::UIOBJECT_DESC* UIChildDesc, string szSeleteUIName);
+	HRESULT					Create_Child(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, CUIObject::UIOBJECT_DESC* UIChildDesc, string szSeleteUIName, CUIObject* pParent = nullptr);
 	
 	//Save/Load
 	HRESULT					Save_UI(nlohmann::json& pOutData);
+	virtual HRESULT			Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID);
 
 	//IMGUI
 	void					Root_SeleteButton(string& szSeleteUIName, _int iNum, _int& iSeletRootUI, _int& iPosX, _int& iPosY, _int& iSizeX, _int& iSizeY);
@@ -72,6 +73,7 @@ private:
 	
 	string					m_szClassName = {};
 	string					m_szTexTag = {};
+	_int					m_iTexType = {};
 
 	_float4					m_vFrameColor = {};
 	_float					m_fAlpha = {};
@@ -96,7 +98,7 @@ private:
 
 	//Convert
 	string					UIType_EnumToString();
-	UITYPE					UIType_StringToEnum(string szUIType);
+	_uint					UIType_StringToEnum(string szUIType);
 
 public:
 	static CEdit_UIBase*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
