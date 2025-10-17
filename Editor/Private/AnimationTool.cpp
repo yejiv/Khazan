@@ -1,4 +1,4 @@
-#include "AnimationTool.h"
+ï»¿#include "AnimationTool.h"
 #include "GameInstance.h"
 #include "Editor_Model.h"
 #include "JOH_EditorModelTest.h"
@@ -17,6 +17,26 @@ CAnimationTool::CAnimationTool(ID3D11Device* pDevice, ID3D11DeviceContext* pCont
 
 HRESULT CAnimationTool::Initialize_Prototype()
 {
+    /* íŒŒì¼ì‹œìŠ¤í…œì—ì„œ ì‹¤í–‰íŒŒì¼ ìœ„ì¹˜ë¥¼ .exeë¡œ ê³ ì • */
+    _char exePath[MAX_PATH];
+    GetModuleFileNameA(NULL, exePath, MAX_PATH);
+    string exeDir = exePath;
+    size_t lastSlash = exeDir.find_last_of("\\/");
+    if (lastSlash != string::npos)
+        exeDir = exeDir.substr(0, lastSlash);
+      
+    filesystem::path projectRoot = filesystem::path(exeDir).parent_path().parent_path() / "Default";
+
+    string projectRootStr = projectRoot.string();
+    SetCurrentDirectoryA(projectRootStr.c_str());
+
+    OutputDebugStringA(("[Working Directory Set] " + projectRootStr + "\n").c_str());
+
+    // í™•ì¸
+    _char currentDir[MAX_PATH];
+    GetCurrentDirectoryA(MAX_PATH, currentDir);
+    OutputDebugStringA(("[Current Working Directory] " + string(currentDir) + "\n").c_str());
+
 
 	Widget();
 
@@ -27,148 +47,84 @@ void CAnimationTool::Update(_float fTimeDelta)
 {
 }
 
-
-
-void CAnimationTool::Add_Model()
-{
-	_wstring prototypeTag = TEXT("Prototype_Component_Editor_Model_") + m_strModelName;
-
-	/* Prototype_Component_Editor_Model_xxxx */
-	_matrix		PreTransformMatrix = XMMatrixIdentity();
-	PreTransformMatrix = XMMatrixScaling(m_vPreScale.x, m_vPreScale.y, m_vPreScale.z) * XMMatrixRotationY(XMConvertToRadians(180.0f));
-
-    // ÇÁ·ÎÅäÅ¸ÀÔ Ãß°¡
-    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::ANIMATION), prototypeTag,
-        CEditor_Model::Create(m_pDevice, m_pContext,
-            m_isAnim ? MODELTYPE::ANIM : MODELTYPE::NONANIM,
-            m_strModelPath.c_str(), PreTransformMatrix))))
-    {
-        MSG_BOX(TEXT("¸ğµ¨ ·Îµå ½ÇÆĞ!"));
-        return;
-    }
-
-    // °ÔÀÓ ¿ÀºêÁ§Æ® »ı¼º
-    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(
-        ENUM_CLASS(LEVEL::ANIMATION), TEXT("Layer_Model"),
-        ENUM_CLASS(LEVEL::ANIMATION),
-        TEXT("Prototype_GameObject_Editor_Animation_TestModel"),
-        &prototypeTag)))
-    {
-        MSG_BOX(TEXT("°ÔÀÓ ¿ÀºêÁ§Æ® Å¬·Ğ ½ÇÆĞ!"));
-        return;
-    }
-    CGameObject* pGameObject = m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::ANIMATION), TEXT("Layer_Model"));
-
-    if (pGameObject)
-    {
-        CJOH_EditorModelTest* pModelTest = dynamic_cast<CJOH_EditorModelTest*>(pGameObject);
-        if (pModelTest)
-        {
-            m_GameObjects.emplace_back(pModelTest);
-            m_ObjectNames.emplace_back(m_strModelName);
-            m_strModelName = L"";
-            m_strModelPath = "";
-        }
-        else
-        {
-            MSG_BOX(TEXT("Å¸ÀÔ º¯È¯ ½ÇÆĞ!"));
-        }
-    }
-}
-
-void CAnimationTool::Remove_Model()
-{
-    if (m_GameObjects.empty())
-    {
-        MSG_BOX(TEXT("»èÁ¦ÇÒ ¸ğµ¨ÀÌ ¾ø½À´Ï´Ù!"));
-        return;
-    }
-
-    if (m_iSelectedIndex < 0 || m_iSelectedIndex >= (_int)m_GameObjects.size())
-    {
-        MSG_BOX(TEXT("À¯È¿ÇÏÁö ¾ÊÀº ¼±ÅÃÀÔ´Ï´Ù!"));
-        m_iSelectedIndex = -1;
-        return;
-    }
-
-    CJOH_EditorModelTest* pObject = m_GameObjects[m_iSelectedIndex];
-
-    if (pObject == nullptr)
-    {
-        MSG_BOX(TEXT("¼±ÅÃµÈ ¿ÀºêÁ§Æ®°¡ À¯È¿ÇÏÁö ¾Ê½À´Ï´Ù!"));
-        m_GameObjects.erase(m_GameObjects.begin() + m_iSelectedIndex);
-        m_iSelectedIndex = -1;
-        return;
-    }
-
-    // ¿ÀºêÁ§Æ® ºñÈ°¼ºÈ­
-    pObject->OnUnEnble();
-
-    // º¤ÅÍ¿¡¼­ Á¦°Å
-    m_GameObjects.erase(m_GameObjects.begin() + m_iSelectedIndex);
-    m_ObjectNames.erase(m_ObjectNames.begin() + m_iSelectedIndex);
-
-    // ÀÎµ¦½º ÀçÁ¶Á¤
-    m_iSelectedIndex = -1;
-
-}
-
 void CAnimationTool::Widget()
 {
 	m_pGameInstance->AddWidget(TEXT("Animatiaon"), [this]() {
 		ImGui::Begin("Anim Tool");
 
         /* Open Model */
-        if (ImGui::Button("Open Model Manager", ImVec2(150, 25))) m_bShowOpenModel = !m_bShowOpenModel;
+        if (ImGui::Button("Open Model Manager", ImVec2(150, 25))) {
+            m_isShowOpenModel = !m_isShowOpenModel;
+            m_isShowTool = false;
+            m_isShowTool_Control = false;
+        }
         ImGui::SameLine();
-        if (m_bShowOpenModel) ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "[OPEN]");
+        if (m_isShowOpenModel) ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "[OPEN]");
         else ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "[CLOSED]");
         ImGui::Spacing(); ImGui::Separator();  ImGui::Spacing();
-        if (m_bShowOpenModel) OpenModel_Widget();
+        if (m_isShowOpenModel) OpenModel_Widget();
+
 
         /* Tool  */
-        if (ImGui::Button("Tool Manager", ImVec2(150, 25))) m_bShowTool = !m_bShowTool;
+        if (ImGui::Button("Tool Manager", ImVec2(150, 25))) { 
+            m_isShowTool = !m_isShowTool;
+            m_isShowOpenModel = false;
+            m_isShowTool_Control = false;
+
+        }
         ImGui::SameLine();
-        if (m_bShowTool) ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "[OPEN]");
+        if (m_isShowTool) ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "[OPEN]");
         else ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "[CLOSED]");
         ImGui::Spacing(); ImGui::Separator();  ImGui::Spacing();
-        if (m_bShowTool) Tool_Widget();
+        if (m_isShowTool) Tool_Widget();
 
+        /* Animation Control */
+        if (!m_GameObjects.empty())
+        {
+            if (ImGui::Button("Animation Controler", ImVec2(150, 25))) {
+                m_isShowTool_Control = !m_isShowTool_Control;
+                m_isShowTool = false;
+                m_isShowOpenModel = false;
+            }
+            ImGui::SameLine();
+            if (m_isShowTool_Control) ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "[OPEN]");
+            else ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "[CLOSED]");
+            ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing();
+            if (m_isShowTool_Control) Tool_AnimationControl_Widget();
+        }
 
         /* Info */
-        if(!m_bShowOpenModel && !m_bShowTool)
+        if(!m_isShowOpenModel && !m_isShowTool)
         {
             ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "Click 'Open Model Manager' to load models");
             ImGui::Spacing();
             ImGui::Text("Current Loaded Models: %d", (_int)m_GameObjects.size());
         }
 
-        
-
-
 		ImGui::End();
 		});
 
 
 }
-
 void CAnimationTool::OpenModel_Widget()
 {
-    // PreScale Á¶Àı 
+    // PreScale ì¡°ì ˆ 
     ImGui::SeparatorText("Model Scale");
     ImGui::DragFloat3("Pre-Scale", (_float*)&m_vPreScale, 0.001f, 0.001f, 10.0f, "%.3f");
 
-    // ¾Ö´Ï¸ŞÀÌ¼Ç Å¸ÀÔ ¼±ÅÃ 
+    // ì• ë‹ˆë©”ì´ì…˜ íƒ€ì… ì„ íƒ 
     ImGui::SeparatorText("Model Type");
     ImGui::Checkbox("Is Animated Model", &m_isAnim);
 
-    // ÆÄÀÏ ¼±ÅÃ 
+    // íŒŒì¼ ì„ íƒ 
     ImGui::SeparatorText("Load Model");
 
-    // ÆÄÀÏ ¼±ÅÃ ¹öÆ°
+    // íŒŒì¼ ì„ íƒ ë²„íŠ¼
     if (ImGui::Button("Browse Model File...", ImVec2(200, 0)))
     {
-        // Windows ÆÄÀÏ ´ÙÀÌ¾ó·Î±× ¿­±â
+        _char savedDir[MAX_PATH];
+        GetCurrentDirectoryA(MAX_PATH, savedDir);
+
         OPENFILENAMEA ofn;
         char szFile[260] = { 0 };
 
@@ -186,10 +142,10 @@ void CAnimationTool::OpenModel_Widget()
 
         if (GetOpenFileNameA(&ofn) == TRUE)
         {
-            // °æ·Î ÀúÀå
-            m_strModelPath = szFile;
+            string absolutePath = szFile;
+            m_strModelPath = ConvertToRelativePath(absolutePath);
 
-            // ÆÄÀÏ ÀÌ¸§ ÃßÃâ (È®ÀåÀÚ Á¦¿Ü)
+            // íŒŒì¼ ì´ë¦„ ì¶”ì¶œ (í™•ì¥ì ì œì™¸)
             string fullPath = szFile;
             size_t lastSlash = fullPath.find_last_of("\\/");
             size_t lastDot = fullPath.find_last_of(".");
@@ -197,27 +153,27 @@ void CAnimationTool::OpenModel_Widget()
             if (lastSlash != string::npos && lastDot != string::npos && lastDot > lastSlash)
             {
                 string fileName = fullPath.substr(lastSlash + 1, lastDot - lastSlash - 1);
-
-                // stringÀ» wstringÀ¸·Î º¯È¯
                 m_strModelName = wstring(fileName.begin(), fileName.end());
             }
         }
+
+        SetCurrentDirectoryA(savedDir);
     }
 
     ImGui::Spacing();
 
-    // ¼±ÅÃµÈ ÆÄÀÏ Á¤º¸ Ç¥½Ã
+    // ì„ íƒëœ íŒŒì¼ ì •ë³´ í‘œì‹œ
     if (!m_strModelPath.empty())
     {
         ImGui::BeginGroup();
 
-        // ¸ğµ¨ ÀÌ¸§ Ç¥½Ã
+        // ëª¨ë¸ ì´ë¦„ í‘œì‹œ
         ImGui::Text("Model Name:");
         ImGui::SameLine();
         string modelNameStr(m_strModelName.begin(), m_strModelName.end());
         ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "%s", modelNameStr.c_str());
 
-        // ¸ğµ¨ °æ·Î Ç¥½Ã
+        // ëª¨ë¸ ê²½ë¡œ í‘œì‹œ (ì´ì œ ìƒëŒ€ ê²½ë¡œ)
         ImGui::Text("Model Path:");
         ImGui::SameLine();
         ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "%s", m_strModelPath.c_str());
@@ -234,20 +190,21 @@ void CAnimationTool::OpenModel_Widget()
 
     _bool bDisabled = m_strModelPath.empty();
 
-    // ¸ğµ¨ÀÌ ¼±ÅÃµÇÁö ¾Ê¾ÒÀ¸¸é ¹öÆ° ºñÈ°¼ºÈ­
+    // ëª¨ë¸ì´ ì„ íƒë˜ì§€ ì•Šì•˜ìœ¼ë©´ ë²„íŠ¼ ë¹„í™œì„±í™”
     if (bDisabled)  ImGui::BeginDisabled();
-    if (ImGui::Button("Add Model to Scene", ImVec2(200, 25)))  Add_Model();
+    if (ImGui::Button("Add Model to Scene", ImVec2(200, 25)))
+        Add_Model();
     if (bDisabled) ImGui::EndDisabled();
 
     ImGui::Spacing();
 
-    // ·ÎµåµÈ ¸ğµ¨ ¸ñ·Ï
+    // ë¡œë“œëœ ëª¨ë¸ ëª©ë¡
     ImGui::SeparatorText("Loaded Models");
     ImGui::Text("Model Count: %d", (_int)m_GameObjects.size());
 
     if (!m_GameObjects.empty())
     {
-        // ¸®½ºÆ®¹Ú½º·Î ¸ğµ¨ ¼±ÅÃ
+        // ë¦¬ìŠ¤íŠ¸ë°•ìŠ¤ë¡œ ëª¨ë¸ ì„ íƒ
         if (ImGui::BeginListBox("##ModelList", ImVec2(-1, 150)))
         {
             for (_int i = 0; i < (_int)m_GameObjects.size(); ++i)
@@ -263,7 +220,7 @@ void CAnimationTool::OpenModel_Widget()
             ImGui::EndListBox();
         }
 
-        // ¼±ÅÃµÈ ¸ğµ¨ Á¦°Å ¹öÆ°
+        // ì„ íƒëœ ëª¨ë¸ ì œê±° ë²„íŠ¼
         _bool bRemoveDisabled = (m_iSelectedIndex < 0);
         if (bRemoveDisabled) ImGui::BeginDisabled();
 
@@ -272,6 +229,122 @@ void CAnimationTool::OpenModel_Widget()
             Remove_Model();
         }
         if (bRemoveDisabled)  ImGui::EndDisabled();
+    }
+}
+
+void CAnimationTool::Tool_Export_Update_Widget()
+{
+    // ì„ íƒëœ ëª¨ë¸ì´ ìˆì„ ë•Œë§Œ ë²„íŠ¼ í™œì„±í™”
+    if (m_iSelectedIndex >= 0 && m_iSelectedIndex < (_int)m_GameObjects.size())
+    {
+        ImGui::SeparatorText("Model Tools");
+
+        // ì„ íƒëœ ëª¨ë¸ ì •ë³´ í‘œì‹œ
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f),
+            "Selected: %s", WStringToAnsi(m_ObjectNames[m_iSelectedIndex]).c_str());
+
+        ImGui::Spacing();
+
+        _bool bIsValid = (m_GameObjects[m_iSelectedIndex] != nullptr &&
+            m_GameObjects[m_iSelectedIndex]->get_Model() != nullptr);
+
+        ImGui::BeginDisabled(!bIsValid);
+
+        // ===== Export Model ë²„íŠ¼ =====
+        if (ImGui::Button("Export Model", ImVec2(200, 25)))
+        {
+            _char savedDir[MAX_PATH];
+            GetCurrentDirectoryA(MAX_PATH, savedDir);
+
+            OPENFILENAMEA ofn;
+            char szFile[260] = { 0 };
+
+            // ê¸°ë³¸ íŒŒì¼ëª…
+            string defaultName = WStringToAnsi(m_ObjectNames[m_iSelectedIndex]);
+            strcpy_s(szFile, defaultName.c_str());
+
+            ZeroMemory(&ofn, sizeof(ofn));
+            ofn.lStructSize = sizeof(ofn);
+            ofn.hwndOwner = NULL;
+            ofn.lpstrFile = szFile;
+            ofn.nMaxFile = sizeof(szFile);
+            ofn.lpstrFilter = "Model Files\0*.model\0All Files\0*.*\0";
+            ofn.nFilterIndex = 1;
+            ofn.lpstrInitialDir = "../../Client/Bin/Data/";
+            ofn.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
+
+            if (GetSaveFileNameA(&ofn) == TRUE)
+            {
+                string absolutePath = szFile;
+                string savePath = ConvertToClientRelativePath(absolutePath);
+
+                m_GameObjects[m_iSelectedIndex]->get_Model()->ExportModel(savePath);
+
+                // MSG_BOX(TEXT("ëª¨ë¸ Export ì™„ë£Œ!"));
+            }
+
+            SetCurrentDirectoryA(savedDir);
+        }
+
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("Save to: Client/Bin/Data/");
+        }
+
+        ImGui::Spacing();
+
+        // ===== Update DAT From JSON ë²„íŠ¼ =====
+        if (ImGui::Button("Update DAT From JSON", ImVec2(200, 25)))
+        {
+            _char savedDir[MAX_PATH];
+            GetCurrentDirectoryA(MAX_PATH, savedDir);
+
+            OPENFILENAMEA ofn;
+            char szFile[260] = { 0 };
+
+            // ê¸°ë³¸ íŒŒì¼ëª…
+            string defaultName = WStringToAnsi(m_ObjectNames[m_iSelectedIndex]);
+            strcpy_s(szFile, defaultName.c_str());
+
+            ZeroMemory(&ofn, sizeof(ofn));
+            ofn.lStructSize = sizeof(ofn);
+            ofn.hwndOwner = NULL;
+            ofn.lpstrFile = szFile;
+            ofn.nMaxFile = sizeof(szFile);
+            ofn.lpstrFilter = "Model Files\0*.model\0All Files\0*.*\0";
+            ofn.nFilterIndex = 1;
+            ofn.lpstrInitialDir = "../../Client/Bin/Data/";
+            ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+            if (GetOpenFileNameA(&ofn) == TRUE)
+            {
+                string absolutePath = szFile;
+                string savePath = ConvertToClientRelativePath(absolutePath);
+
+                m_GameObjects[m_iSelectedIndex]->get_Model()->Update_DAT_From_JSON(savePath);
+
+                //MSG_BOX(TEXT("DAT íŒŒì¼ ì—…ë°ì´íŠ¸ ì™„ë£Œ!"));
+            }
+
+            SetCurrentDirectoryA(savedDir);
+        }
+
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("Save to: Client/Bin/Data/");
+        }
+
+        ImGui::EndDisabled();
+
+        ImGui::Spacing();
+        ImGui::Separator();
+        ImGui::Spacing();
+    }
+    else
+    {
+        // ì„ íƒëœ ëª¨ë¸ì´ ì—†ì„ ë•Œ
+        ImGui::Spacing();
+        ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f), "Please select a model from the list above");
     }
 }
 
@@ -285,7 +358,7 @@ void CAnimationTool::Tool_Widget()
         ImGui::Text("Current Selected Index: %d", m_iSelectedIndex);
         ImGui::Spacing();
 
-        // ¸®½ºÆ®¹Ú½º·Î ¸ğµ¨ ¼±ÅÃ
+        // ë¦¬ìŠ¤íŠ¸ë°•ìŠ¤ë¡œ ëª¨ë¸ ì„ íƒ
         if (ImGui::BeginListBox("##ModelList", ImVec2(-1, 100)))
         {
             for (_int i = 0; i < (_int)m_GameObjects.size(); ++i)
@@ -306,65 +379,579 @@ void CAnimationTool::Tool_Widget()
         ImGui::Spacing();
     }
 
-    Tool_Export_Update_Widget();
+    /* Export Update */
+    if (ImGui::Button("Export and Update", ImVec2(250, 25))) {
+        m_isShowTool_ExportUpdate = !m_isShowTool_ExportUpdate;
+    }
+    if(m_isShowTool_ExportUpdate)Tool_Export_Update_Widget();
+
+    /* Animation time Controler*/
+    if (ImGui::Button("Animation time Controler", ImVec2(250, 25))) {
+        m_isShowTool_Control = !m_isShowTool_Control;
+    }
+    if (m_isShowTool_Control && m_iSelectedIndex > -1)Tool_AnimationControl_Widget();
+
+    
+}
+
+void CAnimationTool::Tool_AnimationControl_Widget()
+{
+    ANIMATION_SETUP_DATA* animSetupData{};
+    animSetupData = m_GameObjects[m_iSelectedIndex]->get_Model()->Get_CurAnimSet();
+    ImGui::Text(("Cur Animation : " + animSetupData->strName).c_str());
+    ImGui::Checkbox("Animation Time Control", &animSetupData->isAnimTimeControl);
+    ImGui::Spacing();   ImGui::Separator();    ImGui::Spacing();
+
+    _float leftWidth = 300.0f;
+    _float middleWidth = 400.0f;
+
+    // === ì™¼ìª½: ì• ë‹ˆë©”ì´ì…˜ ë¦¬ìŠ¤íŠ¸ ===
+    ImGui::BeginChild("LeftPanel", ImVec2(leftWidth, 0), true);
+    {
+        Tool_AnimationList_Widget();
+    }
+    ImGui::EndChild();
+    // === ì¤‘ê°„: ì• ë‹ˆë©”ì´ì…˜ ì •ë³´ ===
+	ImGui::SameLine();
+	ImGui::BeginChild("MiddlePanel", ImVec2(middleWidth, 0), true);
+	{
+        /* ì• ë‹ˆë©”ì´ì…˜ ì •ë³´  */
+        Tool_AnimationInfo_Widget();
+	}
+	ImGui::EndChild();
+
+	// === ì˜¤ë¥¸ìª½:  ì»¨íŠ¸ë¡¤ ===
+	ImGui::SameLine();
+	ImGui::BeginChild("RightPanel", ImVec2(0, 0), true);
+	{
+        /* ì‹œê°„ ì¡°ì ˆ */
+        /* ì• ë‹ˆë©”ì´ì…˜ ì„¸íŠ¸ */
+        /* ì´ë²¤íŠ¸  */
+
+	}
+	ImGui::EndChild();
 
 }
 
-void CAnimationTool::Tool_Export_Update_Widget()
+void CAnimationTool::Tool_AnimationList_Widget()
 {
-    // ¼±ÅÃµÈ ¸ğµ¨ÀÌ ÀÖÀ» ¶§¸¸ ¹öÆ° È°¼ºÈ­
-    if (m_iSelectedIndex >= 0 && m_iSelectedIndex < (_int)m_GameObjects.size())
+	// ImGui::Begin("Animation List", &m_isShowTool_AnimationList);
+
+	 // ëª¨ë¸ ì„ íƒ í™•ì¸
+	if (m_iSelectedIndex < 0 || m_iSelectedIndex >= (_int)m_GameObjects.size())
+	{
+		ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f), "Please select a model first!");
+		ImGui::End();
+		return;
+	}
+
+	CEditor_Model* pModel = m_GameObjects[m_iSelectedIndex]->get_Model();
+	if (pModel == nullptr)
+	{
+		ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "CEditor_Model == nullptr");
+		ImGui::End();
+		return;
+	}
+
+	MODEL_DATA* modelData = pModel->Get_ModelData();
+	_uint iNumAnimations = modelData->iNumAnimations;
+
+	/* ì• ë‹ˆë©”ì´ì…˜ì´ ì—†ìŒ */
+	if (iNumAnimations == 0)
+	{
+		ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "This model has no animations!");
+		ImGui::End();
+		return;
+	}
+
+	// í—¤ë” ì •ë³´
+	ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "Model: %s", WStringToAnsi(m_ObjectNames[m_iSelectedIndex]).c_str());
+	ImGui::Text("Total Animations: %d", iNumAnimations);
+	ImGui::Separator();  ImGui::Spacing();
+
+	_float leftWidth = 300.0f;
+	_float middleWidth = 400.0f;
+
+	ImGui::SeparatorText("Animation List");
+
+	// ê²€ìƒ‰
+	ImGui::SetNextItemWidth(-1);
+	ImGui::InputTextWithHint("##Search", "Search...", m_szAnimSearchBuffer, sizeof(m_szAnimSearchBuffer));
+
+	ImGui::Spacing();
+
+	// ë¦¬ìŠ¤íŠ¸
+	if (ImGui::BeginChild("AnimListScroll", ImVec2(0, -30), true))
+	{
+		for (_uint i = 0; i < iNumAnimations; ++i)
+		{
+			const ANIMATION_DATA& animData = modelData->vecAnimation[i];
+			string animName = animData.strName;
+
+			// ê²€ìƒ‰ í•„í„°
+			if (strlen(m_szAnimSearchBuffer) > 0)
+			{
+				if (animName.find(m_szAnimSearchBuffer) == string::npos)
+					continue;
+			}
+
+			ImGui::PushID(i);
+
+			_bool isSelected = (m_iSelectedAnimIndex == (_int)i);
+			_int currentAnimIndex = pModel->Get_CurAnimIndex();
+			_bool isPlaying = (currentAnimIndex == (_int)i);
+
+			// ì¬ìƒ ì¤‘ì´ë©´ ì´ˆë¡ìƒ‰
+			if (isPlaying)
+				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+
+			if (ImGui::Selectable(animName.c_str(), isSelected))
+			{
+				m_iSelectedAnimIndex = i;
+			}
+
+			if (isPlaying)
+				ImGui::PopStyleColor();
+
+			// ë”ë¸”í´ë¦­ìœ¼ë¡œ ì¬ìƒ
+			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
+			{
+				pModel->Set_Animation(i, animData.animSetup.isLoop);
+				m_iSelectedAnimIndex = i;
+			}
+
+			// í˜¸ë²„ ì‹œ ê°„ë‹¨í•œ ì •ë³´
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				ImGui::Text("Animation: %s", animName.c_str());
+				ImGui::Text("Duration: %.2f sec", animData.fDuration / animData.fTickPerSecond);
+				ImGui::Text("Frames: %.0f", animData.fDuration);
+				ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "Double-click to play");
+				ImGui::EndTooltip();
+			}
+
+			ImGui::PopID();
+		}
+
+	}
+	ImGui::EndChild();
+
+	// í•˜ë‹¨ ì •ë³´
+	if (m_iSelectedAnimIndex >= 0)
+	{
+		ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f),"Selected: %d", m_iSelectedAnimIndex);
+	}
+
+}
+
+void CAnimationTool::Tool_AnimationInfo_Widget()
+{
+    if (m_iSelectedIndex < 0 || m_iSelectedAnimIndex < 0)
     {
-        ImGui::SeparatorText("Model Tools");
-
-        // ¼±ÅÃµÈ ¸ğµ¨ Á¤º¸ Ç¥½Ã
-        ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f),
-            "Selected: %s", WStringToAnsi(m_ObjectNames[m_iSelectedIndex]).c_str());
-
-        ImGui::Spacing();
-
-        // Export Model ¹öÆ°
-        if (ImGui::Button("Export Model", ImVec2(200, 25)))
-        {
-            if (m_GameObjects[m_iSelectedIndex] != nullptr &&
-                m_GameObjects[m_iSelectedIndex]->get_Model() != nullptr)
-            {
-                m_GameObjects[m_iSelectedIndex]->get_Model()->ExportModel();
-            }
-            else
-            {
-                MSG_BOX(TEXT("À¯È¿ÇÏÁö ¾ÊÀº ¸ğµ¨ÀÔ´Ï´Ù!"));
-            }
-        }
-
-        ImGui::Spacing();
-
-        // Update DAT From JSON ¹öÆ°
-        if (ImGui::Button("Update DAT From JSON", ImVec2(200, 25)))
-        {
-            if (m_GameObjects[m_iSelectedIndex] != nullptr &&
-                m_GameObjects[m_iSelectedIndex]->get_Model() != nullptr)
-            {
-                m_GameObjects[m_iSelectedIndex]->get_Model()->Update_DAT_From_JSON();
-            }
-            else
-            {
-                MSG_BOX(TEXT("À¯È¿ÇÏÁö ¾ÊÀº ¸ğµ¨ÀÔ´Ï´Ù!"));
-            }
-        }
-
-        ImGui::Spacing();
-        ImGui::Separator();
-        ImGui::Spacing();
-
-
+        ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f),"Select an animation");
+        return;
     }
-    else
+
+    CEditor_Model* pModel = m_GameObjects[m_iSelectedIndex]->get_Model();
+    if (!pModel) return;
+
+    MODEL_DATA* modelData = pModel->Get_ModelData();
+    ANIMATION_DATA* animData = &modelData->vecAnimation[m_iSelectedAnimIndex];
+    ANIMATION_SETUP_DATA* setup = pModel->Get_CurAnimSet();
+
+    ImGui::SeparatorText("Animation Information");
+
+    // ê¸°ë³¸ ì •ë³´
+    ImGui::Text("strName: %s", setup->strName.c_str());
+    //ImGui::Text("isLoop: %s", (setup->isLoop ? "true" : "false"));
+    ImGui::Checkbox("isLoop", &setup->isLoop);
+    ImGui::Text("iDirection: %s", to_string(setup->iDirection).c_str());
+    _int iTemp= setup->iDirection;
+    ImGui::DragInt("iDirection", &iTemp, 1, 0, 24);
+    setup->iDirection = iTemp;
+
+    ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing();
+
+    // êµ¬ê°„ ë³„ ì‹œê°„ ì¡°ì ˆ
+    ImGui::SeparatorText("Setup Time Control");
+    //ImGui::Text("isAnimTimeControl: %s", (setup->isAnimTimeControl ? "true" : "false"));
+    //ImGui::SeparatorText("Time Control");
+    ImGui::Checkbox("isAnimTimeControl", &setup->isAnimTimeControl);
+
+    if (setup->isAnimTimeControl)
     {
-        // ¼±ÅÃµÈ ¸ğµ¨ÀÌ ¾øÀ» ¶§
-        ImGui::Spacing();
-        ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f),
-            "Please select a model from the list above");
+        ImGui::Indent();
+        ImGui::Text("Sections: %d", (_int)setup->vecAnimTimeControlFrame.size());
+
+        // ê° êµ¬ê°„ í‘œì‹œ
+        for (size_t i = 0; i < setup->vecAnimTimeControlFrame.size(); ++i)
+        {
+            ImGui::PushID((_int)i);
+
+            FLOAT3_DATA& frame = setup->vecAnimTimeControlFrame[i];
+
+            if (ImGui::TreeNode(("Section " + to_string(i)).c_str()))
+            {
+                ImGui::Text("Start Frame:");
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(150);
+                ImGui::DragFloat("##start", &frame.x, 1.0f, 0.0f, animData->fDuration, "%.0f");
+
+                ImGui::Text("End Frame:  ");
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(150);
+                ImGui::DragFloat("##end", &frame.y, 1.0f, frame.x, animData->fDuration, "%.0f");
+
+                ImGui::Text("Speed:      ");
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(150);
+                ImGui::DragFloat("##speed", &frame.z, 0.1f, 0.1f, 10.0f, "%.1fx");
+
+                if (ImGui::Button("Remove Section", ImVec2(150, 0)))
+                {
+                    setup->vecAnimTimeControlFrame.erase(
+                        setup->vecAnimTimeControlFrame.begin() + i);
+                    ImGui::TreePop();
+                    ImGui::PopID();
+                    break;
+                }
+
+                ImGui::TreePop();
+            }
+            else
+            {
+                // ì ‘í˜€ìˆì„ ë•Œ ê°„ëµ ì •ë³´
+                ImGui::SameLine();
+                ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f),
+                    "(%.0f-%.0f, %.1fx)", frame.x, frame.y, frame.z);
+            }
+
+            ImGui::PopID();
+        }
+
+        //if (ImGui::Button("Add Section", ImVec2(150, 25)))
+        //{
+        //    FLOAT3_DATA newFrame(0.0f, animData->fDuration, 1.0f);
+        //    setup->vecAnimTimeControlFrame.push_back(newFrame);
+        //}
+
+        ImGui::Unindent();
+    }
+
+    ImGui::Spacing();    ImGui::Separator();   ImGui::Spacing();
+
+    // ===== ì• ë‹ˆë©”ì´ì…˜ ì„¸íŠ¸ =====
+    //ImGui::SeparatorText("Animation Set");
+    ImGui::Checkbox("isAnimSet", &setup->isAnimSet);
+
+    if (setup->isAnimSet)
+    {
+        ImGui::Indent();
+
+        ImGui::Text("strAnimSetName: %s", setup->strAnimSetName.c_str());
+
+        ImGui::Text("vecAnimSet: %d animations", (_int)setup->vecAnimSet.size());
+        if (ImGui::TreeNode("Animation Set List"))
+        {
+            for (size_t i = 0; i < setup->vecAnimSet.size(); ++i)
+            {
+                ImGui::BulletText("[%d] %s", (_int)i, setup->vecAnimSet[i].c_str());
+            }
+            ImGui::TreePop();
+        }
+
+        ImGui::Text("iAnimSetSelfIndex: %d", setup->iAnimSetSelfIndex);
+
+        ImGui::Text("iTransitionType: %d", setup->iTransitionType);
+        ImGui::SameLine();
+        const char* transitionTypes[] = { "Auto", "Flag", "Input", "Manual" };
+        if (setup->iTransitionType < 4)
+            ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f),
+                "(%s)", transitionTypes[setup->iTransitionType]);
+
+        ImGui::Checkbox("isWaitForComplete", &setup->isWaitForComplete);
+
+        ImGui::Text("fAnimSetBlendOutTime: %.2f", setup->fAnimSetBlendOutTime);
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(100);
+        ImGui::DragFloat("##blendOut", &setup->fAnimSetBlendOutTime, 0.01f, 0.0f, 2.0f, "%.2f");
+
+        ImGui::Text("fAnimSetBlendInTime:  %.2f", setup->fAnimSetBlendInTime);
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(100);
+        ImGui::DragFloat("##blendIn", &setup->fAnimSetBlendInTime, 0.01f, 0.0f, 2.0f, "%.2f");
+
+        ImGui::Unindent();
+    }
+
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+
+    // ===== ë£¨íŠ¸ ëª¨ì…˜ =====
+    ImGui::SeparatorText("Root Motion");
+
+    ImGui::Checkbox("isRootMotion", &setup->isRootMotion);
+
+    if (setup->isRootMotion)
+    {
+        ImGui::Indent();
+
+        ImGui::Checkbox("isApplyRootRotation", &setup->isApplyRootRotation);
+        ImGui::Checkbox("isApplyRootPosition", &setup->isApplyRootPosition);
+
+        ImGui::Text("RootMotionScale:");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(200);
+        ImGui::DragFloat3("##rootScale",
+            &setup->RootMitionScale.x, 0.1f, 0.0f, 10.0f, "%.1f");
+
+        ImGui::Unindent();
+    }
+
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+
+    // ===== ì´ë²¤íŠ¸ =====
+    ImGui::SeparatorText("Events");
+
+    ImGui::Checkbox("isEvent", &setup->isEvent);
+
+    if (setup->isEvent)
+    {
+        ImGui::Indent();
+
+        ImGui::Checkbox("isTriggerOnce", &setup->isTriggerOnce);
+        ImGui::Checkbox("isTriggerOnExit", &setup->isTriggerOnExit);
+
+        ImGui::Text("Events: %d", (_int)setup->vecEventKeys.size());
+
+        for (size_t i = 0; i < setup->vecEventKeys.size(); ++i)
+        {
+            ImGui::PushID((_int)i);
+
+            if (ImGui::TreeNode(("Event " + to_string(i)).c_str()))
+            {
+                ImGui::Text("Key: %s", setup->vecEventKeys[i].c_str());
+
+                ImGui::Text("Start Frame:");
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(150);
+                ImGui::DragFloat("##eventStart",
+                    &setup->vecEventFrames[i].x, 1.0f, 0.0f, animData->fDuration, "%.0f");
+
+                ImGui::Text("End Frame:  ");
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(150);
+                ImGui::DragFloat("##eventEnd",
+                    &setup->vecEventFrames[i].y, 1.0f, 0.0f, animData->fDuration, "%.0f");
+
+                if (ImGui::Button("Remove Event", ImVec2(150, 0)))
+                {
+                    setup->vecEventKeys.erase(setup->vecEventKeys.begin() + i);
+                    setup->vecEventFrames.erase(setup->vecEventFrames.begin() + i);
+                    ImGui::TreePop();
+                    ImGui::PopID();
+                    break;
+                }
+
+                ImGui::TreePop();
+            }
+            else
+            {
+                // ì ‘í˜€ìˆì„ ë•Œ ê°„ëµ ì •ë³´
+                ImGui::SameLine();
+                ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f),
+                    "(%s: %.0f-%.0f)",
+                    setup->vecEventKeys[i].c_str(),
+                    setup->vecEventFrames[i].x,
+                    setup->vecEventFrames[i].y);
+            }
+
+            ImGui::PopID();
+        }
+
+        if (ImGui::Button("Add Event", ImVec2(150, 25)))
+        {
+            setup->vecEventKeys.push_back("NewEvent");
+            setup->vecEventFrames.push_back(FLOAT2_DATA{ 0.0f, 0.0f });
+        }
+
+        ImGui::Unindent();
+    }
+
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+
+    // ===== ì €ì¥ ë²„íŠ¼ =====
+    //if (ImGui::Button("Save Changes", ImVec2(-1, 30)))
+    //{
+    //    MSG_BOX(TEXT("ë³€ê²½ì‚¬í•­ì´ ì ìš©ë˜ì—ˆìŠµë‹ˆë‹¤!\nExportë¥¼ í†µí•´ íŒŒì¼ë¡œ ì €ì¥í•˜ì„¸ìš”."));
+    //}
+
+}
+
+void CAnimationTool::Add_Model()
+{
+    _wstring prototypeTag = TEXT("Prototype_Component_Editor_Model_") + m_strModelName;
+
+    /* Prototype_Component_Editor_Model_xxxx */
+    _matrix		PreTransformMatrix = XMMatrixIdentity();
+    PreTransformMatrix = XMMatrixScaling(m_vPreScale.x, m_vPreScale.y, m_vPreScale.z) * XMMatrixRotationY(XMConvertToRadians(180.0f));
+
+    // í”„ë¡œí† íƒ€ì… ì¶”ê°€
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::ANIMATION), prototypeTag,
+        CEditor_Model::Create(m_pDevice, m_pContext,
+            m_isAnim ? MODELTYPE::ANIM : MODELTYPE::NONANIM,
+            m_strModelPath.c_str(), PreTransformMatrix))))
+    {
+        MSG_BOX(TEXT("ëª¨ë¸ ë¡œë“œ ì‹¤íŒ¨!"));
+        return;
+    }
+
+    // ê²Œì„ ì˜¤ë¸Œì íŠ¸ ìƒì„±
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(
+        ENUM_CLASS(LEVEL::ANIMATION), TEXT("Layer_Model"),
+        ENUM_CLASS(LEVEL::ANIMATION),
+        TEXT("Prototype_GameObject_Editor_Animation_TestModel"),
+        &prototypeTag)))
+    {
+        MSG_BOX(TEXT("ê²Œì„ ì˜¤ë¸Œì íŠ¸ í´ë¡  ì‹¤íŒ¨!"));
+        return;
+    }
+    CGameObject* pGameObject = m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::ANIMATION), TEXT("Layer_Model"));
+
+    if (pGameObject)
+    {
+        CJOH_EditorModelTest* pModelTest = dynamic_cast<CJOH_EditorModelTest*>(pGameObject);
+        if (pModelTest)
+        {
+            m_GameObjects.emplace_back(pModelTest);
+            m_ObjectNames.emplace_back(m_strModelName);
+            m_strModelName = L"";
+            m_strModelPath = "";
+        }
+        else
+        {
+            MSG_BOX(TEXT("íƒ€ì… ë³€í™˜ ì‹¤íŒ¨!"));
+        }
+    }
+}
+
+void CAnimationTool::Remove_Model()
+{
+    if (m_GameObjects.empty())
+    {
+        MSG_BOX(TEXT("[Remove_Model]ì‚­ì œí•  ëª¨ë¸ì´ ì—†ìŠµë‹ˆë‹¤"));
+        return;
+    }
+
+    if (m_iSelectedIndex < 0 || m_iSelectedIndex >= (_int)m_GameObjects.size())
+    {
+        MSG_BOX(TEXT("[Remove_Model]ìœ íš¨í•˜ì§€ ì•Šì€ ì„ íƒì…ë‹ˆë‹¤"));
+        m_iSelectedIndex = -1;
+        return;
+    }
+
+    CJOH_EditorModelTest* pObject = m_GameObjects[m_iSelectedIndex];
+
+    if (pObject == nullptr)
+    {
+        MSG_BOX(TEXT("[Remove_Model]ì„ íƒëœ ì˜¤ë¸Œì íŠ¸ê°€ nullptr ì…ë‹ˆë‹¤"));
+        m_GameObjects.erase(m_GameObjects.begin() + m_iSelectedIndex);
+        m_iSelectedIndex = -1;
+        return;
+    }
+
+    // ì˜¤ë¸Œì íŠ¸ ë¹„í™œì„±í™”
+    pObject->OnUnEnble();
+
+    // ë²¡í„°ì—ì„œ ì œê±°
+    m_GameObjects.erase(m_GameObjects.begin() + m_iSelectedIndex);
+    m_ObjectNames.erase(m_ObjectNames.begin() + m_iSelectedIndex);
+
+    // ì¸ë±ìŠ¤ ì¬ì¡°ì •
+    m_iSelectedIndex = -1;
+
+}
+
+// Editor.exe ê¸°ì¤€ ìƒëŒ€ ê²½ë¡œë¡œ ë³€í™˜ (ëª¨ë¸ ë¡œë“œìš©)
+string CAnimationTool::ConvertToRelativePath(const string& absolutePath)
+{
+    namespace fs = std::filesystem;
+
+    try
+    { 
+        // ê²°ê³¼: C:\...\Khazan\Editor\Bin\Debug
+        _char exePath[MAX_PATH];
+        GetModuleFileNameA(NULL, exePath, MAX_PATH);
+        fs::path exeDir = fs::path(exePath).parent_path();
+      
+        // Editor\Bin\Debug -> Editor\Bin -> Editor -> Editor\Default
+        fs::path editorDefaultDir = exeDir.parent_path().parent_path() / "Default";
+
+        OutputDebugStringA(("[Editor Default Dir] " + editorDefaultDir.string() + "\n").c_str());
+
+        // ì ˆëŒ€ ê²½ë¡œ
+        fs::path absPath = fs::absolute(absolutePath);
+        OutputDebugStringA(("[Absolute Path] " + absPath.string() + "\n").c_str());
+
+        // Editor/Default ê¸°ì¤€ ìƒëŒ€ ê²½ë¡œ ê³„ì‚°
+        fs::path relativePath = fs::relative(absPath, editorDefaultDir);
+
+        string result = relativePath.string();
+        replace(result.begin(), result.end(), '\\', '/');
+
+        OutputDebugStringA(("[Editor Relative Path] " + result + "\n").c_str());
+
+        return result;
+    }
+    catch (const fs::filesystem_error& e)
+    {
+        OutputDebugStringA(("[Path Error] " + string(e.what()) + "\n").c_str());
+        return absolutePath;
+    }
+}
+// Client.exe ê¸°ì¤€ ìƒëŒ€ ê²½ë¡œë¡œ ë³€í™˜ (ì €ì¥ìš©)
+string CAnimationTool::ConvertToClientRelativePath(const string& absolutePath)
+{
+    namespace fs = std::filesystem;
+
+    try
+    { 
+        // ê²°ê³¼: C:\...\Khazan\Editor\Bin\Debug
+        _char exePath[MAX_PATH];
+        GetModuleFileNameA(NULL, exePath, MAX_PATH);
+        fs::path exeDir = fs::path(exePath).parent_path();
+
+
+        // Editor\Bin\Debug -> Editor\Bin -> Editor -> Khazan -> Client\Default
+        fs::path clientDefaultDir = exeDir.parent_path().parent_path() / "Client" / "Default";
+
+        OutputDebugStringA(("[Editor.exe Dir] " + exeDir.string() + "\n").c_str());
+        OutputDebugStringA(("[Client Default] " + clientDefaultDir.string() + "\n").c_str());
+
+        // ì ˆëŒ€ ê²½ë¡œ
+        fs::path absPath = fs::absolute(absolutePath);
+        OutputDebugStringA(("[Absolute Path] " + absPath.string() + "\n").c_str());
+
+        // Client/Default ê¸°ì¤€ ìƒëŒ€ ê²½ë¡œ ê³„ì‚°
+        fs::path relativePath = fs::relative(absPath, clientDefaultDir);
+
+        string result = relativePath.string();
+        replace(result.begin(), result.end(), '\\', '/');
+
+        OutputDebugStringA(("[Client Relative Path] " + result + "\n").c_str());
+
+        return result;
+    }
+    catch (const fs::filesystem_error& e)
+    {
+        OutputDebugStringA(("[Path Error] " + string(e.what()) + "\n").c_str());
+        return absolutePath;
     }
 }
 

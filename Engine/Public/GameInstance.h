@@ -126,6 +126,8 @@ public:
 
 #pragma region PICKING 
 	_bool isPicked(_float3* pOut);
+	// Target_World의 W도 추가로 값 빼오는 용도 ( 맵 오브젝트 ID용으로 사용 )
+	_bool isPicked(_float3* pOut, _uint* iObjectID);
 #pragma endregion
 
 #pragma region SHADOW

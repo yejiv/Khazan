@@ -7,7 +7,7 @@ CCamera_UI::CCamera_UI(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 }
 
 CCamera_UI::CCamera_UI(const CCamera_UI& Prototype)
-    :CCamera{ Prototype }
+    :CCamera( Prototype )
 {
 }
 

@@ -179,6 +179,29 @@ namespace Engine
 		return true;
 	}
 
+	// 클램프
+	inline float Clamp(float fA)
+	{
+		if (fA < 0.0f)
+			return 0.0f;
+		else if (fA > 1.0f) 
+			return 1.0f;
+	}
+
+	// 기본 Lerp (Unclamped): t가 0~1 밖이어도 그대로 계산
+	inline float Lerp(float fA, float fB, float fT) noexcept
+	{
+		return fA + (fB - fA) * fT;
+	}
+
+	// 안전 Lerp + 클램프 (t를 0~1로 제한)
+	inline float LerpClamped(float fA, float fB, float fT) noexcept
+	{
+		fT = Clamp(fT);
+
+		return fA + (fB - fA) * fT;
+	}
+
 	// JPH
 	static inline Vec3 LoadVec3(const _float3& vVector) { return Vec3(vVector.x, vVector.y, vVector.z); }
 	static inline Vec3 LoadVec3(const _fvector& vVector) { return Vec3(vVector.m128_f32[0], vVector.m128_f32[1], vVector.m128_f32[2]); }

@@ -20,7 +20,7 @@ Client/Bin/Debug
 Client/Bin/Resources/.*
 
 # 박준영 개인 ignore
-Client/Bin/Resources/Models/Prop/Json/
+Client/Bin/Resources/Models/Environment/Prop/Json/
 # =================
 
 Editor.exp

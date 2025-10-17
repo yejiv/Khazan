@@ -1,13 +1,24 @@
 #pragma once
 
-#include "Component.h"
+#include "RigidBody.h"
 #ifdef new
 #pragma push_macro("new")
 #undef new
 #endif
 
 #include <Jolt/Physics/PhysicsSystem.h>
-#include <Jolt/Physics/Character/CharacterVirtual.h>
+#include <Jolt/Physics/Body/BodyID.h>
+#include <Jolt/Physics/Body/BodyInterface.h>
+
+#include <Jolt/Physics/PhysicsScene.h>
+#include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
+#include <Jolt/Physics/Collision/Shape/CylinderShape.h>
+#include <Jolt/Physics/Collision/Shape/RotatedTranslatedShape.h>
+#include <Jolt/Physics/Collision/Shape/BoxShape.h>
+#include <Jolt/Physics/Collision/Shape/SphereShape.h>
+#include <Jolt/Physics/Collision/Shape/StaticCompoundShape.h>
+#include <Jolt/Physics/Collision/Shape/MeshShape.h>
+#include <Jolt/Physics/Collision/Shape/ConvexHullShape.h>
 
 #ifdef new
 #pragma pop_macro("new") // DBG_NEW º¹¿ø
@@ -15,7 +26,7 @@
 
 NS_BEGIN(Engine)
 
-class ENGINE_DLL CCharacterVirtual final : public CComponent
+class ENGINE_DLL CCharacterVirtual final : public CRigidBody
 {
 public:
 	enum class WORLDUP { X, Y, Z, END};
@@ -95,14 +106,16 @@ private:
 	virtual ~CCharacterVirtual() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype();
+	virtual HRESULT Initialize_Prototype() override;
 	virtual HRESULT Initialize_Clone(void* pArg) override;
-	void Update(_float fTimeDelta, class CTransform* pTransform);
+	virtual void Sync_Update(class CTransform* pTransform) override;
+	virtual void Update(_float fTimeDelta, class CTransform* pTransform);
 
 public:
-	void    Set_Position(_vector vPos);
-	void	Set_Velocity(_vector vVelocity);
-	void	Set_Rotation(_vector vRotation);
+	virtual void	Set_PosRot(_vector vPos, _vector vRot);
+	virtual void    Set_Position(_vector vPos);
+	virtual void	Set_Velocity(_vector vVelocity);
+	virtual void	Set_Rotation(_vector vRotation);
 
 private:
 	JPH::CharacterVirtual* m_pCharVir = { nullptr };

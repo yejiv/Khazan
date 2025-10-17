@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "../Default/framework.h"
 #include <process.h>
@@ -12,6 +12,9 @@ namespace Editor
 
 	const unsigned int			g_iWinSizeX_Imgui_JJH = 1600;
 	const unsigned int			g_iWinSizeY_Imgui_JJH = 900;
+
+	const unsigned int			g_iWinSizeX_Imgui_JOH = 1000;
+	const unsigned int			g_iWinSizeY_Imgui_JOH = 1600;
 
 	enum class LEVEL { STATIC, LOADING, EDITOR, MAP, ANIMATION, EFFECT, UI, SHADER, END };
 	enum class COLLISION_LAYER { MAP, PLAYER, MONSTER, ITEM, EFFECT, SKILL, END };

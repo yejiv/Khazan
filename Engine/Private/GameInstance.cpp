@@ -128,8 +128,6 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 {
 	//m_pPicking->Update();
 
-	m_pInput_Manager->Update();
-
 	/* 내 게임내에서 반복적인 갱신이 필요한 객체들이 있다라면 갱신을 여기에서 모아서 수행하낟. */
 	m_pObject_Manager->Priority_Update(fTimeDelta);
 
@@ -145,6 +143,8 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 	m_pJolt_Manager->Update(fTimeDelta);
 
 	m_pComputeShader_Manager->Execute_Job(COMPUTEJOB::UPDATE);
+
+	m_pInput_Manager->Update();
 
 #ifdef _DEBUG
 
@@ -492,6 +492,11 @@ HRESULT CGameInstance::Render_RT_Debug(CShader* pShader, CVIBuffer_Rect* pVIBuff
 _bool CGameInstance::isPicked(_float3* pOut)
 {
 	return m_pPicking->isPicked(pOut);
+}
+
+_bool CGameInstance::isPicked(_float3* pOut, _uint* iObjectID)
+{
+	return m_pPicking->isPicked(pOut, iObjectID);
 }
 
 #pragma endregion

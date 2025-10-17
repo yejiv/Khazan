@@ -6,7 +6,7 @@ NS_BEGIN(Engine)
 class CJolt_ContactListener : public ContactListener
 {
 public:
-	explicit CJolt_ContactListener();
+	explicit CJolt_ContactListener(class BodyInterface* pBodyInterface);
 	virtual ~CJolt_ContactListener();
 
 public:
@@ -14,6 +14,9 @@ public:
 	virtual		void			OnContactAdded(const Body& BodyA, const Body& BodyB, const ContactManifold& Manifold, ContactSettings& Settings) override;
 	virtual		void			OnContactPersisted(const Body& BodyA, const Body& BodyB, const ContactManifold& Manifold, ContactSettings& Settings) override;
 	virtual		void			OnContactRemoved(const SubShapeIDPair& SubShapePair) override;
+
+private:
+	class BodyInterface* m_pBodyInterface = { nullptr };
 };
 
 NS_END

@@ -34,8 +34,8 @@ public:
 	virtual HRESULT Render();
 
 public:
-	void Collision_Enter(CGameObject* pObject) override;
-	void Collision_Stay(CGameObject* pObject) override;
+	void Collision_Enter(CGameObject* pObject, JOLT_COLLSION_TYPE eType) override;
+	void Collision_Stay(CGameObject* pObject, JOLT_COLLSION_TYPE eType) override;
 
 private:
 	_uint				m_iState = { };
