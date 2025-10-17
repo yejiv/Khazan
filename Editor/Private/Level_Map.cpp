@@ -42,9 +42,26 @@ HRESULT CLevel_Map::Render()
 
 HRESULT CLevel_Map::Ready_Defaults()
 {
+	CHECK_FAILED(Ready_Default_Lights(), E_FAIL);
+
 	CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Map_Camera")), E_FAIL);
 
 	CHECK_FAILED(Ready_Layer_Terrain(TEXT("Layer_Map_Terrain")), E_FAIL);
+
+	return S_OK;
+}
+
+HRESULT CLevel_Map::Ready_Default_Lights()
+{
+	// Shadow_Light
+	SHADOW_LIGHT_DESC ShadowLightDesc{};
+	ShadowLightDesc.vEye = _float4(-20.f, 20.f, -20.f, 1.f);
+	ShadowLightDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
+	ShadowLightDesc.fFovy = XMConvertToRadians(60.f);
+	ShadowLightDesc.fNear = 0.1f;
+	ShadowLightDesc.fFar = 1000.f;
+
+	CHECK_FAILED(m_pGameInstance->Ready_ShadowLight(ShadowLightDesc), E_FAIL);
 
 	return S_OK;
 }
@@ -296,7 +313,14 @@ void CLevel_Map::Select_Fix_Object(_float fTimeDelta)
 
 						m_vFixScale = m_pFixTransformCom->Get_Scaled();
 						XMStoreFloat3(&m_vFixPosition, m_pFixTransformCom->Get_State(STATE::POSITION));
-						//m_vFixRotation = m_pFixTransformCom->Get_Rotation_Quat();
+
+						_vector vScale = {};
+						_vector vRotation = {};
+						_vector vTranslation = {};
+
+						XMMatrixDecompose(&vScale, &vRotation, &vTranslation, m_pFixTransformCom->Get_WorldMatrix());
+
+						XMStoreFloat3(&m_vFixRotation, vRotation);
 
 						m_isFixObjectWindow = true;
 
@@ -642,7 +666,7 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				m_eFixType = FIX_OBJECT::SCALE_DETAIL;
 
 			} SAMELINE;
-			if (ImGui::Button("SCALE ROTATION POSITION"))
+			if (ImGui::Button("ROTATION POSITION"))
 			{
 				m_eFixType = FIX_OBJECT::FIX_ALL;
 
@@ -669,18 +693,6 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 			}
 			if (FIX_OBJECT::FIX_ALL == m_eFixType)
 			{
-				ImGui::Text("SCALE FIX");
-				SEPARATOR;
-
-				ImGui::Text("SCALE : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##scalex", &m_vFixScale.x, 0.001f, 0.01f);
-				ImGui::SliderFloat("##sliderscale", &m_vFixScale.z, 0.001f, 10.f);
-				if (0.001f > m_vFixScale.x) m_vFixScale.x = 0.001f;
-
-				m_vFixScale.y = m_vFixScale.z = m_vFixScale.x;
-				SEPARATOR;
-
-				m_pFixTransformCom->Scale(m_vFixScale);
-
 				ImGui::Text("ROTATION FIX");
 				SEPARATOR;
 
@@ -1650,6 +1662,24 @@ HRESULT CLevel_Map::Ready_Light_Window()
 
 					ImGui::EndListBox();
 				} SEPARATOR;
+				if (0 != m_LightTags.size() && ImGui::Button("TURN ON"))
+				{
+					m_isFixLight = false;
+					m_isAddLight = false;
+					m_LightDesc.eType = LIGHT_DESC::END;
+
+					m_pGameInstance->Set_LightEnable(AnsiToWString(m_LightTags[m_iLightTagIndex]), ENUM_CLASS(LEVEL::MAP), true);
+
+				} SAMELINE;;
+				if (0 != m_LightTags.size() && ImGui::Button("TURN OFF"))
+				{
+					m_isFixLight = false;
+					m_isAddLight = false;
+					m_LightDesc.eType = LIGHT_DESC::END;
+
+					m_pGameInstance->Set_LightEnable(AnsiToWString(m_LightTags[m_iLightTagIndex]), ENUM_CLASS(LEVEL::MAP), false);
+
+				} SEPARATOR;
 				if (ImGui::Button("ADD LIGHT"))
 				{
 					m_isAddLight = !m_isAddLight;
@@ -1686,8 +1716,8 @@ HRESULT CLevel_Map::Ready_Light_Window()
 						m_LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
 
 						m_LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-						m_LightDesc.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
-						m_LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+						m_LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
+						m_LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 1.f);
 					}
 					if (LIGHT_DESC::POINT == m_LightDesc.eType)
 					{
@@ -1695,8 +1725,8 @@ HRESULT CLevel_Map::Ready_Light_Window()
 						m_LightDesc.fRange = 10.f;
 
 						m_LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-						m_LightDesc.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
-						m_LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+						m_LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
+						m_LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 1.f);
 					}
 
 					if (LIGHT_DESC::END != m_LightDesc.eType)
