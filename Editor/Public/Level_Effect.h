@@ -13,15 +13,56 @@ private:
 	virtual ~CLevel_Effect() = default;
 
 public:
-	virtual HRESULT Initialize() override;
-	virtual void Update(_float fTimeDelta) override;
-	virtual HRESULT Render() override;
+	virtual HRESULT					Initialize() override;
+	virtual void					Update(_float fTimeDelta) override;
+	virtual HRESULT					Render() override;
 
 
 private:
-	class CEffect_Prefab* m_PrefabPrototype;
+	class CEffect_Prefab*			m_PrefabPrototype;
 
 private:
+	void							Edit_Options();
+	void							Create_Box_Spawn();
+	void							Create_Circle_Spawn();
+	void							GetParticleColor();
+
+	void							Control_Elements();
+	void							Control_TimeTrack();
+
+	void							Create_PointInstance_Element();
+	void							Create_MeshInstance_Element();
+
+private :
+
+	//[Type]
+	_int							m_SpawnType;
+	_int							m_EffectType;
+	_bool							m_bLoop;
+
+	//[Basic Data]
+	_uint							m_iInstanceNum;
+	_float							m_fSize[2];
+	_float							m_fSizeRatio;
+	_float							m_fLifeTime[2];
+	_float2							m_fScrollSpeed;
+
+	//[BoundingBox Spawn Data]
+	_float							m_fCenter[3];
+	_float							m_fRange[3];
+
+	//[Circle Spawn Data]
+	_float							m_fOffset;
+
+	//[Color Data]
+	_float4							m_fColor;
+	_int							m_iTextureIdx;
+	_int							m_iMeshTypeIdx;
+
+	CEffect_Prefab::EFFECT_EVENT	m_WorkingTrackData;
+
+	_int							m_iChildrenIdx;
+	_int							m_iPrevChildrenIdx;
 
 private:
 	HRESULT Ready_Layer_BackGround();
