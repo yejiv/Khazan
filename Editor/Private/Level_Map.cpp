@@ -320,11 +320,18 @@ void CLevel_Map::Select_Fix_Object(_float fTimeDelta)
 
 						XMMatrixDecompose(&vScale, &vRotation, &vTranslation, m_pFixTransformCom->Get_WorldMatrix());
 
-						XMStoreFloat3(&m_vFixRotation, vRotation);
+						_float3 vRadian = {};
+						XMStoreFloat3(&vRadian, vRotation);
+
+						vRadian.x = XMConvertToDegrees(vRadian.x);
+						vRadian.y = XMConvertToDegrees(vRadian.y);
+						vRadian.z = XMConvertToDegrees(vRadian.z);
+
+						m_vFixRotation = vRadian;
 
 						m_isFixObjectWindow = true;
 
-						break;
+						return;
 					}
 				}
 			}
@@ -1564,30 +1571,49 @@ HRESULT CLevel_Map::Ready_Light_Window()
 					SEPARATOR;
 
 					ImGui::Text("DIRECTION"); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("X##DIRdirx", &m_FixLightDesc.vDirection.x); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("Y##DIRdiry", &m_FixLightDesc.vDirection.y); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("Z##DIRdirz", &m_FixLightDesc.vDirection.z); SAMELINE;
+
+					if (ImGui::Button("NORMALIZE"))
+						XMStoreFloat4(&m_FixLightDesc.vDirection, XMVector3Normalize(XMLoadFloat4(&m_FixLightDesc.vDirection)));
+
+					ImGui::Text("Axis X : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRdirx", &m_FixLightDesc.vDirection.x);
+					ImGui::Text("Axis Y : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRdiry", &m_FixLightDesc.vDirection.y);
+					ImGui::Text("Axis Z : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRdirz", &m_FixLightDesc.vDirection.z);
 					SEPARATOR;
 
-					ImGui::Text("DIFFUSE"); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("R##DIRdifx", &m_FixLightDesc.vDiffuse.x); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("G##DIRdify", &m_FixLightDesc.vDiffuse.y); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("B##DIRdifz", &m_FixLightDesc.vDiffuse.z); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("A##DIRdifw", &m_FixLightDesc.vDiffuse.w); SAMELINE;
+					ImGui::Text("DIFFUSE");
+					ImGui::Text("R : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRdifx", &m_FixLightDesc.vDiffuse.x);
+					ImGui::Text("G : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRdify", &m_FixLightDesc.vDiffuse.y);
+					ImGui::Text("B : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRdifz", &m_FixLightDesc.vDiffuse.z);
+					ImGui::Text("A : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRdifw", &m_FixLightDesc.vDiffuse.w);
 					SEPARATOR;
 
-					ImGui::Text("AMBIENT"); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("R##DIRambx", &m_FixLightDesc.vAmbient.x); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("G##DIRamby", &m_FixLightDesc.vAmbient.y); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("B##DIRambz", &m_FixLightDesc.vAmbient.z); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("A##DIRambw", &m_FixLightDesc.vAmbient.w); SAMELINE;
+					ImGui::Text("AMBIENT");
+					ImGui::Text("R : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRambx", &m_FixLightDesc.vAmbient.x);
+					ImGui::Text("G : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRamby", &m_FixLightDesc.vAmbient.y);
+					ImGui::Text("B : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRambz", &m_FixLightDesc.vAmbient.z);
+					ImGui::Text("A : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRambw", &m_FixLightDesc.vAmbient.w);
 					SEPARATOR;
 
-					ImGui::Text("SPECULAR"); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("R##DIRspecx", &m_FixLightDesc.vSpecular.x); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("G##DIRspecy", &m_FixLightDesc.vSpecular.y); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("B##DIRspecz", &m_FixLightDesc.vSpecular.z); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("A##DIRspecw", &m_FixLightDesc.vSpecular.w); SAMELINE;
+					ImGui::Text("SPECULAR");
+					ImGui::Text("R : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRspecx", &m_FixLightDesc.vSpecular.x);
+					ImGui::Text("G : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRspecy", &m_FixLightDesc.vSpecular.y);
+					ImGui::Text("B : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRspecz", &m_FixLightDesc.vSpecular.z);
+					ImGui::Text("A : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRspecw", &m_FixLightDesc.vSpecular.w);
 					SEPARATOR;
 				}
 				else if (LIGHT_DESC::POINT == m_FixLightDesc.eType)
@@ -1595,10 +1621,13 @@ HRESULT CLevel_Map::Ready_Light_Window()
 					ImGui::Text("POINT");
 					SEPARATOR;
 
-					ImGui::Text("POSITION"); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("X##POIposx", &m_FixLightDesc.vPosition.x); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("Y##POIposy", &m_FixLightDesc.vPosition.y); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("Z##POIposz", &m_FixLightDesc.vPosition.z); SAMELINE;
+					ImGui::Text("POSITION");
+					ImGui::Text("X : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIposx", &m_FixLightDesc.vPosition.x, 1.f, 5.f);
+					ImGui::Text("Y : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIposy", &m_FixLightDesc.vPosition.y, 1.f, 5.f);
+					ImGui::Text("Z : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIposz", &m_FixLightDesc.vPosition.z, 1.f, 5.f);
 
 					if (true == m_isAddLightPoint)
 					{
@@ -1611,34 +1640,45 @@ HRESULT CLevel_Map::Ready_Light_Window()
 
 					SEPARATOR;
 
-					ImGui::Text("RANGE"); SAMELINE; ITEMWIDTH(80.f); ImGui::InputFloat("##POIrange", &m_FixLightDesc.fRange); SAMELINE;
+					ImGui::Text("RANGE"); SAMELINE; ITEMWIDTH(80.f); ImGui::InputFloat("##POIrange", &m_FixLightDesc.fRange);
 					SEPARATOR;
 
-					ImGui::Text("DIFFUSE"); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("R##POIdifx", &m_FixLightDesc.vDiffuse.x); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("G##POIdify", &m_FixLightDesc.vDiffuse.y); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("B##POIdifz", &m_FixLightDesc.vDiffuse.z); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("A##POIdifw", &m_FixLightDesc.vDiffuse.w); SAMELINE;
+					ImGui::Text("DIFFUSE");
+					ImGui::Text("R : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIdifx", &m_FixLightDesc.vDiffuse.x);
+					ImGui::Text("G : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIdify", &m_FixLightDesc.vDiffuse.y);
+					ImGui::Text("B : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIdifz", &m_FixLightDesc.vDiffuse.z);
+					ImGui::Text("A : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIdifw", &m_FixLightDesc.vDiffuse.w);
 					SEPARATOR;
 
-					ImGui::Text("AMBIENT"); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("R##POIambx", &m_FixLightDesc.vAmbient.x); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("G##POIamby", &m_FixLightDesc.vAmbient.y); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("B##POIambz", &m_FixLightDesc.vAmbient.z); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("A##POIambw", &m_FixLightDesc.vAmbient.w); SAMELINE;
+					ImGui::Text("AMBIENT");
+					ImGui::Text("R : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIambx", &m_FixLightDesc.vAmbient.x);
+					ImGui::Text("G : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIamby", &m_FixLightDesc.vAmbient.y);
+					ImGui::Text("B : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIambz", &m_FixLightDesc.vAmbient.z);
+					ImGui::Text("A : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIambw", &m_FixLightDesc.vAmbient.w);
 					SEPARATOR;
 
-					ImGui::Text("SPECULAR"); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("R##POIspecx", &m_FixLightDesc.vSpecular.x); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("G##POIspecy", &m_FixLightDesc.vSpecular.y); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("B##POIspecz", &m_FixLightDesc.vSpecular.z); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("A##POIspecw", &m_FixLightDesc.vSpecular.w); SAMELINE;
+					ImGui::Text("SPECULAR");
+					ImGui::Text("R : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIspecx", &m_FixLightDesc.vSpecular.x);
+					ImGui::Text("G : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIspecy", &m_FixLightDesc.vSpecular.y);
+					ImGui::Text("B : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIspecz", &m_FixLightDesc.vSpecular.z);
+					ImGui::Text("A : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIspecw", &m_FixLightDesc.vSpecular.w);
 					SEPARATOR;
 				}
-				if (ImGui::Button("APPLY"))
-				{
-					m_pGameInstance->Set_LightDesc(AnsiToWString(m_LightTags[m_iLightTagIndex]), ENUM_CLASS(LEVEL::MAP), m_FixLightDesc);
-				} SAMELINE;
+
+				m_pGameInstance->Set_LightDesc(AnsiToWString(m_LightTags[m_iLightTagIndex]), ENUM_CLASS(LEVEL::MAP), m_FixLightDesc);
+
 				if (ImGui::Button("DONE"))
 				{
 					m_strFixLightTag.clear();
@@ -1698,16 +1738,17 @@ HRESULT CLevel_Map::Ready_Light_Window()
 				{
 					if (ImGui::Button("DIRECTIONAL"))
 						m_LightDesc.eType = LIGHT_DESC::DIRECTIONAL;
+					SAMELINE;
 					if (ImGui::Button("POINT"))
 						m_LightDesc.eType = LIGHT_DESC::POINT;
-
+					SEPARATOR;
 					if (LIGHT_DESC::DIRECTIONAL == m_LightDesc.eType)
 					ImGui::Text("CURRENT LIGHT TYPE : DIRECTIONAL");
 
 					if (LIGHT_DESC::POINT == m_LightDesc.eType)
 					ImGui::Text("CURRENT LIGHT TYPE : POINT");
 
-					ImGui::Text("LIGHT TAG : ");
+					ImGui::Text("LIGHT TAG : "); SAMELINE;
 					ImGui::InputText("##light_tag", m_szLightTag, IM_ARRAYSIZE(m_szLightTag));
 					m_strLightTag = m_szLightTag;
 
@@ -1731,12 +1772,13 @@ HRESULT CLevel_Map::Ready_Light_Window()
 
 					if (LIGHT_DESC::END != m_LightDesc.eType)
 					{
-						if (ImGui::Button("LIGHT ADD"))
+						if (0 != m_strLightTag.size() && ImGui::Button("LIGHT ADD"))
 						{
 							m_pGameInstance->Add_Light(AnsiToWString(m_strLightTag), ENUM_CLASS(LEVEL::MAP), m_LightDesc);
 							m_LightTags.push_back(m_strLightTag);
 
 							ZeroMemory(&m_szLightTag, sizeof(m_szLightTag));
+							m_strLightTag.clear();
 							ZeroMemory(&m_LightDesc, sizeof(LIGHT_DESC));
 							m_LightDesc.eType = LIGHT_DESC::END;
 

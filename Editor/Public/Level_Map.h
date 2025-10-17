@@ -181,22 +181,22 @@ private:
 #pragma endregion
 
 private:
-	// Level_Map Init 단 ImGui Widget 생성
+	// MapEditor Init 단 ImGui Widget 생성
 	HRESULT Ready_DefaultImGui_For_MapTool();
 
-	// Level_Map Default 윈도우
+	// MapEditor Default 윈도우
 	HRESULT Ready_Main_Window();
-	// Level_Map Layer 수정 윈도우 ( 아직 기능 X )
+	// MapEditor Layer 수정 윈도우 ( 아직 기능 X )
 	HRESULT Ready_Prop_Edit_Window();
-	// Level_Map Custom Json 수정 윈도우
+	// MapEditor Custom Json 수정 윈도우
 	HRESULT Ready_CustomJson_Edit_Window();
-	// Level_Map Custom Json 리스트 윈도우
+	// MapEditor Custom Json 리스트 윈도우
 	HRESULT Ready_CustomJson_List_Window();
-	// Level_Map Original Json 수정 윈도우
+	// MapEditor Original Json 수정 윈도우
 	HRESULT Ready_Json_Edit_Window();
-	// Level_Map Original Json 리스트 윈도우
+	// MapEditor Original Json 리스트 윈도우
 	HRESULT Ready_Json_List_Window();
-	// Level_Map Light 세팅 윈도우
+	// MapEditor Light 세팅 윈도우
 	HRESULT Ready_Light_Window();
 
 	// Directory에 파일들 불러오는용 ( Json 한정 함수 )
