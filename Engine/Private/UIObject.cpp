@@ -7,7 +7,7 @@ CUIObject::CUIObject(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 }
 
 CUIObject::CUIObject(const CUIObject& Prototype)
-    :CGameObject( Prototype )
+    :CGameObject(Prototype)
 {
 
 }
@@ -121,6 +121,22 @@ void CUIObject::Update_Transform(CUIObject* pParent, _float2 vPos)
     {
         pChild->Update_Transform(this, m_vWorldPos);
     }
+}
+
+void CUIObject::Update_Scaling(_float fSize)
+{
+    m_pTransformCom->Scale(_float3{ m_vLocalSize.x * fSize, m_vLocalSize.y * fSize, 1.f });
+
+    for (auto& pChild : m_Children)
+        pChild->Update_Scaling(fSize);
+}
+
+void CUIObject::Update_Rotation(_float fAngle)
+{
+    m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), XMConvertToRadians(fAngle));
+
+    for (auto& pChild : m_Children)
+        pChild->Update_Rotation(fAngle);
 }
 
 _float2 CUIObject::Compute_AlignedPos(_float2 vPos, _float2 vSize)

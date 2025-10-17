@@ -35,13 +35,13 @@ private:
 	//CUIObject*			Find_UIObject(const _char* szUIObjectName);
 
 private:
-	class CEdit_Interface_UI*	m_pUIInterface = { nullptr };
+	class CEdit_Interface_UI* m_pUIInterface = { nullptr };
 	_float						m_fTimeDelta = {};
 
 private:
 	void				Update_Interface();
 public:
-	static CLevel_UI*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CLevel_UI* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void		Free() override;
 };
 
