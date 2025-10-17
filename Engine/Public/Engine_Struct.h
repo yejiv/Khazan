@@ -41,6 +41,16 @@ namespace Engine
 		float		fTrackPosition;
 	}KEYFRAME;
 
+	typedef struct tagUIKeyFrame
+	{
+		XMFLOAT2	vTransloation;
+		float		fSize;
+		float		fAlpha;
+		string		szEvent;
+
+		float		fTrackPosition;
+	}UIKEYFRAME;
+
 	typedef struct tagShadowLightDesc
 	{
 		XMFLOAT4		vEye, vAt;

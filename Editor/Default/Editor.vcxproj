@@ -122,6 +122,12 @@
       <AdditionalLibraryDirectories>../../EngineSDK/Debug/Lib/</AdditionalLibraryDirectories>
       <AdditionalDependencies>Engine.lib;DirectXTKd.lib;Joltd.lib;assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <FxCompile>
+      <ShaderType>Effect</ShaderType>
+    </FxCompile>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -145,6 +151,12 @@
       <AdditionalLibraryDirectories>../../EngineSDK/Release/Lib/</AdditionalLibraryDirectories>
       <AdditionalDependencies>Engine.lib;DirectXTK.lib;Jolt.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <FxCompile>
+      <ShaderType>Effect</ShaderType>
+    </FxCompile>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\public\AnimationTool.h" />
@@ -153,7 +165,7 @@
     <ClInclude Include="..\Public\Editor_Animation.h" />
     <ClInclude Include="..\Public\Editor_Bone.h" />
     <ClInclude Include="..\Public\Editor_Channel.h" />
-    <ClInclude Include="..\Public\Camera_Effect.h" />
+    <ClInclude Include="..\Public\Camera_Shader.h" />
     <ClInclude Include="..\Public\Editor_Defines.h" />
     <ClInclude Include="..\Public\Editor_Mesh.h" />
     <ClInclude Include="..\Public\Editor_MeshMaterial.h" />
@@ -161,10 +173,9 @@
     <ClInclude Include="..\Public\Editor_ModelMesh_Instance.h" />
     <ClInclude Include="..\Public\Editor_Model_Instance.h" />
     <ClInclude Include="..\public\Editor_TempCamera.h" />
-    <ClInclude Include="..\Public\Edit_Button.h" />
-    <ClInclude Include="..\Public\Edit_Panel.h" />
-    <ClInclude Include="..\Public\Edit_ProgressBar.h" />
-    <ClInclude Include="..\Public\Edit_TextBox.h" />
+    <ClInclude Include="..\public\Edit_Interface_UI.h" />
+    <ClInclude Include="..\public\Edit_UIBackGround.h" />
+    <ClInclude Include="..\public\Edit_UIBase.h" />
     <ClInclude Include="..\Public\Effect_Element.h" />
     <ClInclude Include="..\Public\Effect_Point_Instance.h" />
     <ClInclude Include="..\Public\Effect_Prefab.h" />
@@ -188,7 +199,8 @@
     <ClInclude Include="..\Public\Prop_Object.h" />
     <ClInclude Include="..\Public\Prop_Static.h" />
     <ClInclude Include="..\Public\Prop_Test.h" />
-    <ClInclude Include="..\public\Terrain_Grid.h" />
+    <ClInclude Include="..\public\Terrain_Shader.h" />
+    <ClInclude Include="..\public\TestParticle.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="EditorPch.h" />
     <ClInclude Include="framework.h" />
@@ -208,15 +220,14 @@
     <ClCompile Include="..\Private\Editor_ModelMesh_Instance.cpp" />
     <ClCompile Include="..\Private\Editor_Model_Instance.cpp" />
     <ClCompile Include="..\private\Editor_TempCamera.cpp" />
-    <ClCompile Include="..\Private\Edit_Button.cpp" />
-    <ClCompile Include="..\Private\Edit_Panel.cpp" />
-    <ClCompile Include="..\Private\Edit_ProgressBar.cpp" />
-    <ClCompile Include="..\Private\Edit_TextBox.cpp" />
+    <ClCompile Include="..\private\Edit_Interface_UI.cpp" />
+    <ClCompile Include="..\private\Edit_UIBackGround.cpp" />
+    <ClCompile Include="..\private\Edit_UIBase.cpp" />
     <ClCompile Include="..\Private\Effect_Element.cpp" />
     <ClCompile Include="..\Private\Effect_Point_Instance.cpp" />
     <ClCompile Include="..\Private\Effect_Prefab.cpp" />
     <ClCompile Include="..\private\JOH_EditorModelTest.cpp" />
-    <ClCompile Include="..\Private\Camera_Effect.cpp" />
+    <ClCompile Include="..\Private\Camera_Shader.cpp" />
     <ClCompile Include="..\Private\Level_Animation.cpp" />
     <ClCompile Include="..\Private\Level_Editor.cpp" />
     <ClCompile Include="..\Private\Level_Effect.cpp" />
@@ -235,7 +246,7 @@
     <ClCompile Include="..\Private\Prop_Object.cpp" />
     <ClCompile Include="..\Private\Prop_Static.cpp" />
     <ClCompile Include="..\Private\Prop_Test.cpp" />
-    <ClCompile Include="..\private\Terrain_Grid.cpp" />
+    <ClCompile Include="..\private\Terrain_Shader.cpp" />
     <ClCompile Include="Editor.cpp" />
     <ClCompile Include="EditorPch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -250,6 +261,9 @@
   <ItemGroup>
     <Image Include="Editor.ico" />
     <Image Include="small.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_Edit_UI.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

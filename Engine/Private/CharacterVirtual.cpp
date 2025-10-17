@@ -2,13 +2,13 @@
 #include "GameInstance.h"
 
 CCharacterVirtual::CCharacterVirtual(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: CComponent { pDevice, pContext }
+	: CRigidBody { pDevice, pContext }
 {
 
 }
 
 CCharacterVirtual::CCharacterVirtual(const CCharacterVirtual& Prototype)
-	: CComponent{ Prototype }
+	: CRigidBody{ Prototype }
 {
 
 }
@@ -100,6 +100,10 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 
 	return S_OK;
 }
+void CCharacterVirtual::Sync_Update(CTransform* pTransform)
+{
+	Set_PosRot(pTransform->Get_State(STATE::POSITION), pTransform->Get_Rotation_Quat());
+}
 void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform)
 {
 
@@ -134,6 +138,12 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform)
 	pTransform->Set_State(STATE::POSITION, vPos);
 	pTransform->Set_Quaternion(vRot);
 
+}
+
+void CCharacterVirtual::Set_PosRot(_vector vPos, _vector vRot)
+{
+	m_pCharVir->SetPosition(LoadVec3(vPos));
+	m_pCharVir->SetRotation(LoadQuat(vRot));
 }
 
 void CCharacterVirtual::Set_Position(_vector vPos)

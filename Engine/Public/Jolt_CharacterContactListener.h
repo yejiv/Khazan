@@ -21,17 +21,7 @@ NS_BEGIN(Engine)
 class CJolt_CharacterContactListener final : public JPH::CharacterContactListener
 {
 public:
-    struct CONFIG_DESC
-    {
-        // n·up >= floor_dot 이면 '지면(워커블)'로 간주
-        // 보통 floor_dot = cos(max_slope_rad)
-        float floor_dot = JPH::Cos(JPH::DegreesToRadians(45.0f));
-        // (옵션) 워커블로 판정될 때 캐시할지 여부
-        bool  cache_ground_normal = true;
-    };
-
-public:
-    explicit CJolt_CharacterContactListener(const CONFIG_DESC& cfg);
+    explicit CJolt_CharacterContactListener(class BodyInterface* pBodyInterface);
     ~CJolt_CharacterContactListener() override = default;
 
     // ---- CharacterContactListener 인터페이스 ----
@@ -78,9 +68,7 @@ public:
 
 
 private:
-    CONFIG_DESC m_Cfg;
-    bool        m_bHasGround = false;
-    JPH::Vec3   m_vGroundNormal = JPH::Vec3::sZero();
+    class BodyInterface* m_pBodyInterface = { nullptr };
 };
 
 NS_END // Engine

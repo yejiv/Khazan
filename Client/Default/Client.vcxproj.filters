@@ -94,6 +94,12 @@
     <Filter Include="02.GameObject\MapObject\00.Prop\99.Test">
       <UniqueIdentifier>{6cebfa6b-a112-4eee-bb93-809f30e16c2c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="95.SuperClass">
+      <UniqueIdentifier>{fe0eb4af-82a7-4074-b5d7-a589badbe846}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95.SuperClass\UI">
+      <UniqueIdentifier>{9ef03780-85dc-46e5-ad98-28a16e1cec36}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">

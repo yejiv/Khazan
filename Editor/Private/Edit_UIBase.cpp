@@ -1,0 +1,659 @@
+#include "Edit_UIBase.h"
+#include "GameInstance.h"
+
+CEdit_UIBase::CEdit_UIBase(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+    : CUIObject{pDevice, pContext}
+{
+}
+
+CEdit_UIBase::CEdit_UIBase(const CEdit_UIBase& Prototype)
+    : CUIObject(Prototype)
+{
+}
+
+HRESULT CEdit_UIBase::Create_Child(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, CUIObject::UIOBJECT_DESC* UIChildDesc, string szSeleteUIName)
+{
+    _bool isCreated = false;
+    if (m_szName == szSeleteUIName)
+    {
+        UIChildDesc->fDepth = m_fDepth;        
+        Add_Child(static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelIndex, strPrototypeTag, UIChildDesc)));
+        return S_OK;
+    }
+    else
+    {
+        for (auto& pChild : m_Children)
+        {
+            if (SUCCEEDED(static_cast<CEdit_UIBase*>(pChild)->Create_Child(iPrototypeLevelIndex, strPrototypeTag, UIChildDesc, szSeleteUIName)))
+            {
+                isCreated = true;
+                break;
+            }
+        }
+    }
+
+    Update_Transform(nullptr, m_vLocalPos);
+
+    return E_FAIL;
+}
+
+void CEdit_UIBase::Root_SeleteButton(string& szSeleteUIName, _int iNum, _int& iSeletRootUI, _int& iPosX, _int& iPosY, _int& iSizeX, _int& iSizeY)
+{
+    if (ImGui::Button(m_szName.c_str()))
+    {
+        iSeletRootUI = iNum;
+        szSeleteUIName = m_szName;
+        iPosX = (_int)m_vWorldPos.x;
+        iPosY = (_int)m_vWorldPos.y;
+        iSizeX = (_int)m_vWorldSize.x;
+        iSizeY = (_int)m_vWorldSize.y;
+    }
+}
+
+void CEdit_UIBase::SeleteButton(string& szSeleteUIName, _int iNum, _int& iPosX, _int& iPosY, _int& iSizeX, _int& iSizeY)
+{
+    _int iSpacing = iNum + 1;
+    for (_int i = 0; i < iSpacing; ++i)
+    {
+        ImGui::Dummy(ImVec2(10.0f, 0.0f));
+        ImGui::SameLine();
+    }
+    if (m_szName == szSeleteUIName)
+    {
+        ImVec2 pos = ImGui::GetCursorScreenPos();
+        ImVec2 text_size = ImGui::CalcTextSize(m_szName.c_str());
+
+        ImGui::GetWindowDrawList()->AddRectFilled(
+            pos, ImVec2(pos.x + text_size.x, pos.y + text_size.y),
+            IM_COL32(200, 200, 200, 100));
+
+        ImGui::TextUnformatted(m_szName.c_str());
+    }
+    else
+        if (ImGui::Button(m_szName.c_str()))
+        {
+            szSeleteUIName = m_szName;
+            iPosX = (_int)m_vWorldPos.x;
+            iPosY = (_int)m_vWorldPos.y;
+            iSizeX = (_int)m_vWorldSize.x;
+            iSizeY = (_int)m_vWorldSize.y;
+        }
+    for (auto& pChild : m_Children)
+        static_cast<CEdit_UIBase*>(pChild)->SeleteButton(szSeleteUIName, iSpacing, iPosX, iPosY, iSizeX, iSizeY);
+
+}
+
+void CEdit_UIBase::Update_Option(string& szSeleteUIName, const string pFrameName)
+{
+    if (m_szName == szSeleteUIName)
+    {
+        switch (static_cast<UITYPE>(m_iUIType))
+        {
+        case UITYPE::BUTTON:
+            ImGui::RadioButton("Disable", &m_iUiState, 0);
+            ImGui::SameLine();
+            ImGui::RadioButton("Enable", &m_iUiState, 1);
+            ImGui::SameLine();
+            ImGui::RadioButton("Over", &m_iUiState, 2);
+            ImGui::SameLine();
+            ImGui::RadioButton("Selete", &m_iUiState, 3);
+
+            ImGui::Text("Min : %.2f, %.2f", m_vUVMinMax[m_iUiState].x, m_vUVMinMax[m_iUiState].y);
+            ImGui::SameLine();
+            ImGui::Text("Max : %.2f, %.2f", m_vUVMinMax[m_iUiState].z, m_vUVMinMax[m_iUiState].w);
+
+            if (ImGui::Button("SetUV"))
+                Set_UVTexSet(szSeleteUIName, pFrameName);
+
+            ImGui::Text("EventName : ");
+            ImGui::SameLine();
+            ImGui::Text(m_EventNames[m_iUiState].c_str());
+            ImGui::InputText("##UIEventLabel", m_szEvent, MAX_PATH);
+            ImGui::SameLine();
+            if (ImGui::Button("EventSet"))
+                m_EventNames[m_iUiState] = m_szEvent;
+            break;
+
+        case UITYPE::SLOT:
+            ImGui::RadioButton("Disable", &m_iUiState, 0);
+            ImGui::SameLine();
+            ImGui::RadioButton("Enable", &m_iUiState, 1);
+            ImGui::SameLine();
+            ImGui::RadioButton("Over", &m_iUiState, 2);
+            ImGui::SameLine();
+            ImGui::RadioButton("Selete", &m_iUiState, 3);
+
+            ImGui::Text("Min : %.2f, %.2f", m_vUVMinMax[m_iUiState].x, m_vUVMinMax[m_iUiState].y);
+            ImGui::SameLine();
+            ImGui::Text("Max : %.2f, %.2f", m_vUVMinMax[m_iUiState].z, m_vUVMinMax[m_iUiState].w);
+
+            if (ImGui::Button("SetUV"))
+                Set_UVTexSet(szSeleteUIName, pFrameName);
+
+            ImGui::Text(m_EventNames[m_iUiState].c_str());
+            ImGui::InputText("##UIEventLabel", m_szEvent, MAX_PATH);
+            ImGui::SameLine();
+            if (ImGui::Button("EventSet"))
+                m_EventNames[m_iUiState] = m_szEvent;
+            break;
+
+        case UITYPE::PROGRESSBAR:
+            ImGui::Text("Min : %.2f, %.2f", m_vUVMinMax[0].x, m_vUVMinMax[0].y);
+            ImGui::SameLine();
+            ImGui::Text("Max : %.2f, %.2f", m_vUVMinMax[0].z, m_vUVMinMax[0].w);
+
+            ImGui::InputFloat("Value", &m_fUiState, 0.01f, 0.01f);
+
+            ImGui::Text(m_EventNames[0].c_str());
+            ImGui::InputText("##UIEventLabel", m_szEvent, MAX_PATH);
+            ImGui::SameLine();
+            if (ImGui::Button("EventSet"))
+                m_EventNames[0] = m_szEvent;
+            break;
+
+        case UITYPE::SCROLLBAR:
+            ImGui::Text("Min : %.2f, %.2f", m_vUVMinMax[0].x, m_vUVMinMax[0].y);
+            ImGui::SameLine();
+            ImGui::Text("Max : %.2f, %.2f", m_vUVMinMax[0].z, m_vUVMinMax[0].w);
+
+            ImGui::RadioButton("Up", &m_iUpDownState, 0);
+            ImGui::RadioButton("Down", &m_iUpDownState, 1);
+
+            ImGui::Text(m_EventNames[m_iUpDownState].c_str());
+            ImGui::InputText("##UIEventLabel", m_szEvent, MAX_PATH);
+            ImGui::SameLine();
+            if (ImGui::Button("EventSet"))
+                m_EventNames[m_iUpDownState] = m_szEvent;
+
+            break;
+        }
+    }
+
+    for (auto& pChild : m_Children)
+    {
+        static_cast<CEdit_UIBase*>(pChild)->Update_Option(szSeleteUIName, pFrameName);
+    }
+}
+
+_bool CEdit_UIBase::Update_ClassName(string& szSeleteUIName)
+{
+    if (m_szName == szSeleteUIName)
+    {
+        ImGui::Text("UI_ClassName : ");
+        ImGui::SameLine();
+        ImGui::Text(m_szClassName.c_str());
+        return true;
+    }
+
+    for (auto& pChild : m_Children)
+        if (static_cast<CEdit_UIBase*>(pChild)->Update_ClassName(szSeleteUIName) == true)
+            return true;
+
+    return false;
+}
+
+_bool CEdit_UIBase::ReName(string& szSeleteUIName, string szChangeUIName)
+{
+    if (m_szName == szSeleteUIName)
+    {
+        m_szName = szChangeUIName;
+        return true;
+    }
+
+    for (auto& pChild : m_Children)
+        if (static_cast<CEdit_UIBase*>(pChild)->ReName(szSeleteUIName, szChangeUIName) == true)
+            return true;
+
+    return false;
+}
+
+_bool CEdit_UIBase::Set_ClassName(string& szSeleteUIName, string szChangeUIName)
+{
+    if (m_szName == szSeleteUIName)
+    {
+        m_szClassName = szChangeUIName;
+        return true;
+    }
+
+    for (auto& pChild : m_Children)
+        if (static_cast<CEdit_UIBase*>(pChild)->Set_ClassName(szSeleteUIName, szChangeUIName) == true)
+            return true;
+
+    return false;
+}
+
+_bool CEdit_UIBase::Move_UI(string& szSeleteUIName, _float fSetX, _float fSetY, CUIObject* pParent, _bool isParent)
+{
+    if (m_szName == szSeleteUIName && isParent)
+    {
+        m_vLocalPos = { fSetX, fSetY };
+        Update_Transform(nullptr, m_vLocalPos);
+        return true;
+    }
+    else if (m_szName == szSeleteUIName)
+    {
+        m_vLocalPos.x = (pParent->Get_WolrdPos().x - fSetX) * -1.f;
+        m_vLocalPos.y = (pParent->Get_WolrdPos().y - fSetY) * -1.f;
+        m_vWorldPos.x = m_vLocalPos.x;
+        m_vWorldPos.y = m_vLocalPos.y;
+        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(m_vWorldPos.x - m_iWinSizeX * 0.5f, -m_vWorldPos.y + m_iWinSizeY * 0.5f, 0.f, 1.f));
+        return true;
+    }
+
+    for (auto& pChild : m_Children)
+    {
+        static_cast<CEdit_UIBase*>(pChild)->Move_UI(szSeleteUIName, fSetX, fSetY, this, false);
+    }
+
+    Update_Transform(nullptr, m_vLocalPos);
+    return false;
+
+}
+
+_bool CEdit_UIBase::Scaling_UI(string& szSeleteUIName, _float fSizeX, _float fSizeY)
+{
+    if (m_szName == szSeleteUIName)
+    {
+        m_vLocalPos = { fSizeX , fSizeY };
+        
+        m_pTransformCom->Scale(_float3{ m_vLocalPos.x, m_vLocalPos.y, 1.f });
+        return true;
+    }
+
+    for (auto& pChild : m_Children)
+    {
+        if (static_cast<CEdit_UIBase*>(pChild)->Scaling_UI(szSeleteUIName, fSizeX, fSizeY))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+void CEdit_UIBase::Set_Alpha(_float fAlpha)
+{
+    m_fAlpha = fAlpha;
+
+    for (auto& pChild : m_Children)
+        static_cast<CEdit_UIBase*>(pChild)->Set_Alpha(fAlpha);
+}
+
+HRESULT CEdit_UIBase::Set_AtlasTextTure(string& szSeleteUIName, _uint iPrototypeLevelID, const _wstring& strPrototypeTag, const string pFrameName, _int iTexType)
+{
+    if (m_szName == szSeleteUIName)
+    {
+        if (static_cast<UI_RENDER_TYPE>(iTexType) == UI_RENDER_TYPE::ATLAS)
+        {
+            Safe_Release(m_pTexture_AtlasCom);
+
+            int size_needed = WideCharToMultiByte(CP_ACP, 0, strPrototypeTag.c_str(), -1, nullptr, 0, nullptr, nullptr);
+            string result(size_needed, 0);
+
+            WideCharToMultiByte(CP_ACP, 0, strPrototypeTag.c_str(), -1, &result[0], size_needed, nullptr, nullptr);
+
+            if (!result.empty() && result.back() == '\0')
+                result.pop_back();
+
+            m_szTexTag = result;
+            m_pTexture_AtlasCom = static_cast<CTexture_Atlas*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::COMPONENT, iPrototypeLevelID, strPrototypeTag, nullptr));
+
+            if (m_pTexture_AtlasCom != nullptr)
+            {
+                m_vUVMinMax[0] = m_pTexture_AtlasCom->FindTexFrame(pFrameName);
+                m_iShaderPass = 1;
+                m_eRenderType = UI_RENDER_TYPE::ATLAS;
+            }
+        }
+        else
+        {
+            Safe_Release(m_pTexture);
+            int size_needed = WideCharToMultiByte(CP_ACP, 0, strPrototypeTag.c_str(), -1, nullptr, 0, nullptr, nullptr);
+            string result(size_needed, 0);
+
+            WideCharToMultiByte(CP_ACP, 0, strPrototypeTag.c_str(), -1, &result[0], size_needed, nullptr, nullptr);
+
+            if (!result.empty() && result.back() == '\0')
+                result.pop_back();
+
+            m_szTexTag = result;
+            m_pTexture = static_cast<CTexture*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::COMPONENT, iPrototypeLevelID, strPrototypeTag, nullptr));
+            if (m_pTexture != nullptr)
+            {
+                m_vUVMinMax[0] = { 0.f, 0.f, 1.f, 1.f };
+                m_iShaderPass = 1;
+                m_eRenderType = UI_RENDER_TYPE::DEFAULT;
+            }
+        }
+        return S_OK;
+    }
+
+    for (auto& pChild : m_Children)
+    {
+        if (SUCCEEDED(static_cast<CEdit_UIBase*>(pChild)->Set_AtlasTextTure(szSeleteUIName, iPrototypeLevelID, strPrototypeTag, pFrameName, iTexType)))
+        {
+            return S_OK;
+        }
+    }
+    return E_FAIL;
+}
+
+_bool CEdit_UIBase::Set_UVTexSet(string& szSeleteUIName, const string pFrameName)
+{
+    if (m_szName == szSeleteUIName)
+    {
+        m_vUVMinMax[m_iUiState] = m_pTexture_AtlasCom->FindTexFrame(pFrameName);
+        Set_AtlasTexSize(szSeleteUIName, pFrameName, 1.f);
+        return true;
+    }
+
+    for (auto& pChild : m_Children)
+    {
+        if (static_cast<CEdit_UIBase*>(pChild)->Set_UVTexSet(szSeleteUIName, pFrameName))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+HRESULT CEdit_UIBase::Set_AtlasTexSize(string& szSeleteUIName, const string pFrameName, _float fSize)
+{
+    if (m_szName == szSeleteUIName)
+    {
+        if (m_pTexture_AtlasCom != nullptr)
+        {
+            _float2 vSize = m_pTexture_AtlasCom->FindTexSize(pFrameName);
+
+            m_vLocalSize = vSize;
+
+            m_pTransformCom->Scale(_float3{ m_vLocalSize.x, m_vLocalSize.y, 1.f });
+        }
+        return S_OK;
+    }
+
+    for (auto& pChild : m_Children)
+    {
+        if (SUCCEEDED(static_cast<CEdit_UIBase*>(pChild)->Set_AtlasTexSize(szSeleteUIName, pFrameName, fSize)))
+        {
+            return S_OK;
+        }
+    }
+    return E_FAIL;
+}
+
+_bool CEdit_UIBase::Anim_Empty(string& szSeleteUIName)
+{
+    if (m_szName == szSeleteUIName)
+    {
+        if (m_Track.empty())
+            return true;
+        else
+            return false;
+    }
+    for (auto& pChild : m_Children)
+    {
+        if (static_cast<CEdit_UIBase*>(pChild)->Anim_Empty(szSeleteUIName))
+            return true;
+    }
+    return false;
+}
+
+_bool CEdit_UIBase::Create_Anim(string& szSeleteUIName)
+{
+    if (m_szName == szSeleteUIName)
+    {
+        for (_int i = 0; i < 2; ++i)
+        {
+            UIKEYFRAME Desc = {};
+            Desc.fAlpha = 1.f;
+            Desc.fSize = 1.f;
+            Desc.vTransloation = m_vWorldPos;
+            Desc.fTrackPosition = (_float)i;
+            m_Track.push_back(Desc);
+        }
+        return true;
+    }
+    for (auto& pChild : m_Children)
+    {
+        if (static_cast<CEdit_UIBase*>(pChild)->Create_Anim(szSeleteUIName))
+            return true;
+    }
+    return false;
+}
+
+_bool CEdit_UIBase::Add_Anim(string& szSeleteUIName)
+{
+    if (m_szName == szSeleteUIName)
+    {
+        UIKEYFRAME Desc = {};
+        Desc.fAlpha = 1.f;
+        Desc.fSize = 1.f;
+        Desc.vTransloation = m_vWorldPos;
+        Desc.fTrackPosition = m_Track.back().fTrackPosition + 1.f;
+        m_Track.push_back(Desc);
+        return true;
+    }
+    for (auto& pChild : m_Children)
+    {
+        if (static_cast<CEdit_UIBase*>(pChild)->Add_Anim(szSeleteUIName))
+            return true;
+    }
+    return false;
+}
+
+_bool CEdit_UIBase::Set_Anim(string& szSeleteUIName)
+{
+    if (m_szName == szSeleteUIName)
+    {
+        for (_int i = 0; i < m_Track.size(); ++i)
+        {
+            ImGui::BeginGroup();
+            ImGui::PushID(i);
+            ImGui::Text("Track %d", i);
+
+            _float fTimeDelta = m_Track[i].fTrackPosition;
+            ImGui::SameLine();
+            ImGui::RadioButton("##SeleteTrack", &m_iSeleteTrackIndex, i);
+            if (ImGui::InputFloat("Time", &fTimeDelta))
+            {
+                if (i == 0)
+                    m_Track[i].fTrackPosition = fTimeDelta;
+                else if (fTimeDelta > m_Track[i - 1].fTrackPosition)
+                    m_Track[i].fTrackPosition = fTimeDelta;
+            }
+            ImGui::InputFloat("Size", &m_Track[i].fSize);
+            ImGui::InputFloat("Alpha", &m_Track[i].fAlpha);
+
+            ImGui::InputFloat("PosX", &m_Track[i].vTransloation.x);
+            ImGui::InputFloat("PosY", &m_Track[i].vTransloation.y);
+
+            ImGui::Text("EventName : ");
+            ImGui::SameLine();
+            ImGui::Text(m_Track[i].szEvent.c_str());
+            ImGui::InputText("##UITrackEventLabel", m_szTrackEvent, MAX_PATH);
+            if (ImGui::Button("TrackEventSet"))
+                m_Track[i].szEvent = m_szTrackEvent;
+
+            ImGui::PopID();
+            ImGui::EndGroup();
+            ImGui::Separator();
+        }
+        return true;
+    }
+    for (auto& pChild : m_Children)
+    {
+        if (static_cast<CEdit_UIBase*>(pChild)->Set_Anim(szSeleteUIName))
+            return true;
+    }
+    return false;
+}
+
+_bool CEdit_UIBase::Set_AnimPos(string& szSeleteUIName)
+{
+    if (m_szName == szSeleteUIName)
+    {
+        m_Track[m_iSeleteTrackIndex].vTransloation = m_vWorldPos;
+        return true;
+    }
+    for (auto& pChild : m_Children)
+    {
+        if (static_cast<CEdit_UIBase*>(pChild)->Set_AnimPos(szSeleteUIName))
+            return true;
+    }
+    return false;
+}
+
+_bool CEdit_UIBase::Get_LastTime(string& szSeleteUIName, _float& fOutTime)
+{
+    if (m_szName == szSeleteUIName)
+    {
+        fOutTime = m_Track.back().fTrackPosition;
+        return true;
+    }
+    for (auto& pChild : m_Children)
+    {
+        if (static_cast<CEdit_UIBase*>(pChild)->Get_LastTime(szSeleteUIName, fOutTime))
+            return true;
+    }
+    return false;
+}
+
+_bool CEdit_UIBase::Play_Animation(string& szSeleteUIName, _float& fAccTime, _float fParentX, _float fParentY)
+{
+    return _bool();
+}
+
+_bool CEdit_UIBase::ReSet_Track(string& szSeleteUIName)
+{
+    return _bool();
+}
+
+HRESULT CEdit_UIBase::Initialize_Prototype()
+{
+    return S_OK;
+}
+
+HRESULT CEdit_UIBase::Initialize_Clone(void* pArg)
+{
+    m_vFrameColor = { 0.f, 1.f, 0.f, 1.f };
+    m_fAlpha = 1.f;
+    CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
+    CHECK_FAILED(Ready_Component(), E_FAIL);
+
+    switch (static_cast<UITYPE>(m_iUIType))
+    {
+    case UITYPE::BUTTON:
+        m_vUVMinMax.resize(4);
+        m_EventNames.resize(4);
+        break;
+    case UITYPE::SLOT:
+        m_vUVMinMax.resize(4);
+        m_EventNames.resize(4);
+        break;
+    case UITYPE::PROGRESSBAR:
+        m_vUVMinMax.resize(1);
+        m_EventNames.resize(1);
+        break;
+    case UITYPE::SCROLLBAR:
+        m_vUVMinMax.resize(1);
+        m_EventNames.resize(2);
+        break;
+    default:
+        m_vUVMinMax.resize(1);
+        m_EventNames.resize(1);
+        break;
+    }
+    return S_OK;
+}
+
+void CEdit_UIBase::Priority_Update(_float fTimeDelta)
+{
+    __super::Priority_Update(fTimeDelta);
+}
+
+void CEdit_UIBase::Update(_float fTimeDelta)
+{
+    __super::Update(fTimeDelta);
+}
+
+void CEdit_UIBase::Late_Update(_float fTimeDelta)
+{
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::UI, this)))
+        return;
+
+    __super::Late_Update(fTimeDelta);
+}
+
+HRESULT CEdit_UIBase::Render()
+{
+    CHECK_FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix"), E_FAIL);
+
+    CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix), E_FAIL);
+    CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix), E_FAIL);
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vFrameColor, sizeof(_float4)), E_FAIL);
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
+    
+    if (m_iShaderPass == 1)
+    {
+        CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vUVMinMax", &m_vUVMinMax[m_iUiState], sizeof(_float4)), E_FAIL);
+        if(m_eRenderType == UI_RENDER_TYPE::ATLAS)
+            CHECK_FAILED(m_pTexture_AtlasCom->Bind_Shader_Texture(m_pShaderCom, "g_Texture"), E_FAIL);
+        else
+            CHECK_FAILED(m_pTexture->Bind_Shader_Resource(m_pShaderCom, "g_Texture", m_iTexIndex), E_FAIL);
+
+    }
+    CHECK_FAILED(m_pShaderCom->Begin(m_iShaderPass), E_FAIL);
+
+    CHECK_FAILED(m_pVIBufferCom->Bind_Resources(), E_FAIL);
+    CHECK_FAILED(m_pVIBufferCom->Render(), E_FAIL);
+
+    return S_OK;
+}
+
+HRESULT CEdit_UIBase::Ready_Component()
+{
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxPosTex_Edit_UI"),
+        TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
+        return E_FAIL;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Rect"),
+        TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), nullptr)))
+        return E_FAIL;
+
+    return S_OK;
+}
+
+CEdit_UIBase* CEdit_UIBase::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+{
+    CEdit_UIBase* pInstance = new CEdit_UIBase(pDevice, pContext);
+
+    if (FAILED(pInstance->Initialize_Prototype()))
+    {
+        MSG_BOX(TEXT("Failed to Created : CEdit_UIBase"));
+        Safe_Release(pInstance);
+    }
+
+    return pInstance;
+}
+
+CGameObject* CEdit_UIBase::Clone(void* pArg)
+{
+    CEdit_UIBase* pInstance = new CEdit_UIBase(*this);
+
+    if (FAILED(pInstance->Initialize_Clone(pArg)))
+    {
+        MSG_BOX(TEXT("Failed to Created : CEdit_UIBase"));
+        Safe_Release(pInstance);
+    }
+
+    return pInstance;
+}
+
+void CEdit_UIBase::Free()
+{
+    __super::Free();
+    Safe_Release(m_pShaderCom);
+    Safe_Release(m_pVIBufferCom);
+    Safe_Release(m_pTexture_AtlasCom);
+    Safe_Release(m_pTexture);
+}

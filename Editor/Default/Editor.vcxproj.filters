@@ -79,12 +79,6 @@
     <Filter Include="01.Levels\Map\Header">
       <UniqueIdentifier>{5e903afb-5ae0-44e4-a388-6f6c034a1f9c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Effect\Camera">
-      <UniqueIdentifier>{73507ee3-ca91-4db0-bb47-9b7b03480d0a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObject\Effect\Terrain">
-      <UniqueIdentifier>{81b63c04-fa83-4a3a-96f5-b9f89191f19d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\MapObject\Camera">
       <UniqueIdentifier>{204d72f1-296c-4b94-ade6-47085c5a8ef9}</UniqueIdentifier>
     </Filter>
@@ -93,18 +87,6 @@
     </Filter>
     <Filter Include="02.GameObject\UI">
       <UniqueIdentifier>{bb5dba1f-c3b3-40d9-89e6-690cab87d409}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObject\UI\00.Panel">
-      <UniqueIdentifier>{25a8b750-5ebd-4da4-ada4-c44ae5d8e78e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObject\UI\01.Button">
-      <UniqueIdentifier>{0b7672c9-bb0a-4dd0-988c-dd89a81e4856}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObject\UI\02.ProgressBar">
-      <UniqueIdentifier>{f588c6b9-1597-492d-8811-b8ae980b9ccf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObject\UI\03.TextBox">
-      <UniqueIdentifier>{a69de961-d20e-4eb1-b127-0a7c1bfefe11}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObject\UI\99.Camera">
       <UniqueIdentifier>{fe38b2f3-d49f-4cfe-8f49-120fba3d8e6b}</UniqueIdentifier>
@@ -142,6 +124,21 @@
     <Filter Include="02.GameObject\MapObject\Prop\99.Test">
       <UniqueIdentifier>{8d549d97-64bc-4532-b39f-57afcbe1b890}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\UIObject">
+      <UniqueIdentifier>{ae99f8d7-25ec-468b-ae68-1f418b765720}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\UIObject\Edit_UIBase">
+      <UniqueIdentifier>{eccd855e-251f-4aa4-8664-e62a1a78fbb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\UIObject\Edit_UI_BackGround">
+      <UniqueIdentifier>{8d7aefd8-cecd-4523-9c0c-54e03365f10b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\UIObject\Edit_Interface_UI">
+      <UniqueIdentifier>{c2874f68-5968-4ffe-a9ee-ed6978d80911}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96.ShaderFiles">
+      <UniqueIdentifier>{02932267-8bb3-4b5a-89a9-63274f4f484e}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObject\Effect\Effect_Prefab">
       <UniqueIdentifier>{a38f577c-e541-4184-89f1-841bf12cc6b7}</UniqueIdentifier>
     </Filter>
@@ -153,6 +150,15 @@
     </Filter>
     <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Point_Instance">
       <UniqueIdentifier>{d1137416-3acf-4abb-98cb-c18a7e984b53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Shader">
+      <UniqueIdentifier>{b98c614c-025a-41eb-a67a-7f8bc46825fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Shader\Camera">
+      <UniqueIdentifier>{73507ee3-ca91-4db0-bb47-9b7b03480d0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Shader\Terrain">
+      <UniqueIdentifier>{81b63c04-fa83-4a3a-96f5-b9f89191f19d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -240,11 +246,11 @@
     <ClInclude Include="..\Public\MapEditor_Header.h">
       <Filter>01.Levels\Map\Header</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Camera_Effect.h">
-      <Filter>02.GameObject\Effect\Camera</Filter>
+    <ClInclude Include="..\Public\Camera_Shader.h">
+      <Filter>02.GameObject\Shader\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Terrain_Grid.h">
-      <Filter>02.GameObject\Effect\Terrain</Filter>
+    <ClInclude Include="..\public\Terrain_Shader.h">
+      <Filter>02.GameObject\Shader\Terrain</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Camera_Map.h">
       <Filter>02.GameObject\MapObject\Camera</Filter>
@@ -255,16 +261,6 @@
     <ClInclude Include="..\Public\Camera_UI.h">
       <Filter>02.GameObject\UI\99.Camera</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Edit_Button.h">
-      <Filter>02.GameObject\UI\01.Button</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Edit_Panel.h">
-      <Filter>02.GameObject\UI\00.Panel</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Edit_Button.h" />
-    <ClInclude Include="..\Public\Edit_Panel.h" />
-    <ClInclude Include="..\Public\Edit_ProgressBar.h" />
-    <ClInclude Include="..\Public\Edit_TextBox.h" />
     <ClInclude Include="..\Public\Editor_ModelMesh_Instance.h">
       <Filter>03.Utility\00.Model\Model_Instance\Mesh</Filter>
     </ClInclude>
@@ -273,12 +269,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\Map_Terrain.h">
       <Filter>02.GameObject\MapObject\Map_Terrain</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Edit_ProgressBar.h">
-      <Filter>02.GameObject\UI\02.ProgressBar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Edit_TextBox.h">
-      <Filter>02.GameObject\UI\03.TextBox</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Prop_Object.h">
       <Filter>02.GameObject\MapObject\Prop\00.Object</Filter>
@@ -291,6 +281,15 @@
     </ClInclude>
     <ClInclude Include="..\Public\Prop_Test.h">
       <Filter>02.GameObject\MapObject\Prop\99.Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Edit_UIBackGround.h">
+      <Filter>02.GameObject\UI\UIObject\Edit_UI_BackGround</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Edit_Interface_UI.h">
+      <Filter>02.GameObject\UI\UIObject\Edit_Interface_UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Edit_UIBase.h">
+      <Filter>02.GameObject\UI\UIObject\Edit_UIBase</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Effect_Prefab.h">
       <Filter>02.GameObject\Effect\Effect_Prefab</Filter>
@@ -385,11 +384,11 @@
     <ClCompile Include="..\Private\Prop.cpp">
       <Filter>02.GameObject\MapObject\Prop</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Camera_Effect.cpp">
-      <Filter>02.GameObject\Effect\Camera</Filter>
+    <ClCompile Include="..\Private\Camera_Shader.cpp">
+      <Filter>02.GameObject\Shader\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Terrain_Grid.cpp">
-      <Filter>02.GameObject\Effect\Terrain</Filter>
+    <ClCompile Include="..\private\Terrain_Shader.cpp">
+      <Filter>02.GameObject\Shader\Terrain</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Camera_Map.cpp">
       <Filter>02.GameObject\MapObject\Camera</Filter>
@@ -399,18 +398,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\Camera_UI.cpp">
       <Filter>02.GameObject\UI\99.Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Edit_Button.cpp">
-      <Filter>02.GameObject\UI\01.Button</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Edit_Panel.cpp">
-      <Filter>02.GameObject\UI\00.Panel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Edit_ProgressBar.cpp">
-      <Filter>02.GameObject\UI\02.ProgressBar</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Edit_TextBox.cpp">
-      <Filter>02.GameObject\UI\03.TextBox</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Editor_ModelMesh_Instance.cpp">
       <Filter>03.Utility\00.Model\Model_Instance\Mesh</Filter>
@@ -433,6 +420,15 @@
     <ClCompile Include="..\Private\Prop_Test.cpp">
       <Filter>02.GameObject\MapObject\Prop\99.Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Edit_UIBackGround.cpp">
+      <Filter>02.GameObject\UI\UIObject\Edit_UI_BackGround</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Edit_Interface_UI.cpp">
+      <Filter>02.GameObject\UI\UIObject\Edit_Interface_UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Edit_UIBase.cpp">
+      <Filter>02.GameObject\UI\UIObject\Edit_UIBase</Filter>
+    </ClCompile>
     <ClCompile Include="..\Private\Effect_Prefab.cpp">
       <Filter>02.GameObject\Effect\Effect_Prefab</Filter>
     </ClCompile>
@@ -442,5 +438,10 @@
     <ClCompile Include="..\Private\Effect_Point_Instance.cpp">
       <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Point_Instance</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_Edit_UI.hlsl">
+      <Filter>96.ShaderFiles</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
