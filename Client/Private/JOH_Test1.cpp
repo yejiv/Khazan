@@ -29,7 +29,8 @@ HRESULT CJOH_Test1::Initialize(void* pArg)
     m_pModelCom->Set_Animation(3, true);
 
    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-   m_pTransformCom->Scale(_float3(0.01f, 0.01f, 0.01f));
+   // m_pTransformCom->Scale(_float3(0.01f, 0.01f, 0.01f));
+    //m_pTransformCom->Scale(_float3(10.f, 10.f, 10.f));
 
     return S_OK;
 }
@@ -103,11 +104,13 @@ HRESULT CJOH_Test1::Ready_Components()
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_JOH_TestModel"),
+    //if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_JOH_TestModel"),
+    //    TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
+    //    return E_FAIL;
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_Fiona"),
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
-
-
+    
     return S_OK;
 }
 

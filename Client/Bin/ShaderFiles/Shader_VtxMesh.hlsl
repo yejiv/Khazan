@@ -20,6 +20,8 @@ vector    g_vMtrlSpecular = 1.f;
 
 vector    g_vColor = vector(0.f, 1.f, 0.f, 1.f);
 
+unsigned int g_iMapObjectID;
+
 struct VS_IN
 {
     float3 vPosition : POSITION;
@@ -60,6 +62,29 @@ VS_OUT VS_MAIN(VS_IN In)
     Out.vBinormal = normalize(mul(float4(In.vBinormal, 0.f), g_WorldMatrix));
     Out.vTexcoord = In.vTexcoord;
     Out.vWorldPos = mul(float4(In.vPosition, 1.f), g_WorldMatrix);
+    Out.vProjPos = Out.vPosition;
+    
+    return Out;
+}
+
+VS_OUT VS_MAPOBJECT(VS_IN In)
+{
+    VS_OUT Out = (VS_OUT) 0;
+    
+    /* 정점의 로컬위치 * 월드 * 뷰 * 투영 */ 
+        
+    float4x4 matWV, matWVP;
+    
+    matWV = mul(g_WorldMatrix, g_ViewMatrix);
+    matWVP = mul(matWV, g_ProjMatrix);
+    
+    Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
+    Out.vNormal = normalize(mul(float4(In.vNormal, 0.f), g_WorldMatrix));
+    Out.vTangent = normalize(mul(float4(In.vTangent, 0.f), g_WorldMatrix));
+    Out.vBinormal = normalize(mul(float4(In.vBinormal, 0.f), g_WorldMatrix));
+    Out.vTexcoord = In.vTexcoord;
+    Out.vWorldPos = mul(float4(In.vPosition, 1.f), g_WorldMatrix);
+    Out.vWorldPos.w = float(g_iMapObjectID);
     Out.vProjPos = Out.vPosition;
     
     return Out;
@@ -175,13 +200,13 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_WIREFRAME();
     }
-    pass MapObjectPass                      // 맵 오브젝트용 패스 ( 2번 )
+    pass MapEditorPass                      // 맵 오브젝트용 패스 ( 2번 )
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-        VertexShader = compile vs_5_0 VS_MAIN();
+        VertexShader = compile vs_5_0 VS_MAPOBJECT();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAPOBJECT();
     }

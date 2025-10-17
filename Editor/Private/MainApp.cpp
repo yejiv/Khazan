@@ -1,4 +1,4 @@
-#include "MainApp.h"
+﻿#include "MainApp.h"
 #include "GameInstance.h"
 #include "Level_Loading.h"
 
@@ -19,8 +19,8 @@ HRESULT CMainApp::Initialize()
 	EngineDesc.iWinSizeX = g_iWinSizeX;
 	EngineDesc.iWinSizeY = g_iWinSizeY;
 	EngineDesc.iNumLevels = ENUM_CLASS(LEVEL::END);
-	EngineDesc.iWinSizeX_Imgui = g_iWinSizeX_Imgui_JJH;
-	EngineDesc.iWinSizeY_Imgui = g_iWinSizeY_Imgui_JJH;
+	EngineDesc.iWinSizeX_Imgui = g_iWinSizeX_Imgui_JOH;
+	EngineDesc.iWinSizeY_Imgui = g_iWinSizeY_Imgui_JOH;
 	EngineDesc.iNumJoltObjectLayer = ENUM_CLASS(COLLISION_LAYER::END);
 
 	list<_wstring> Imgui_Menu;
@@ -91,6 +91,11 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 		return E_FAIL;
 
 	// Shader
+	/* Prototype_Component_Shader_VtxPosTex_Edit_UI */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxPosTex_Edit_UI"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxPosTex_Edit_UI.hlsl"), VTXPOSTEX::Elements, VTXPOSTEX::iNumElements))))
+		return E_FAIL;
+
 	/* Prototype_Component_Shader_VtxPosTex */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxPosTex"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_VtxPosTex.hlsl"), VTXPOSTEX::Elements, VTXPOSTEX::iNumElements))))
