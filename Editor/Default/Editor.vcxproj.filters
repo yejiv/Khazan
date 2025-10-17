@@ -300,6 +300,7 @@
     <ClInclude Include="..\Public\Effect_Point_Instance.h">
       <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Point_Instance</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\TestParticle.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">

@@ -86,7 +86,7 @@ HRESULT CProp_Test::Ready_Components(void* pArg)
     LEVEL eLevel = pDesc->eLevel;
     CHECK_EQUAL(LEVEL::END, eLevel, E_FAIL);
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Shader_VtxMesh"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
 

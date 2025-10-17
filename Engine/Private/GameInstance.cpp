@@ -514,6 +514,16 @@ HRESULT CGameInstance::Ready_ShadowLight(SHADOW_LIGHT_DESC LightDesc)
 	return m_pShadow->Ready_ShadowLight(LightDesc);
 }
 
+SHADOW_LIGHT_DESC CGameInstance::Get_ShadowLight()
+{
+	return m_pShadow->Get_ShadowLight();
+}
+
+void CGameInstance::Set_ShadowLight(SHADOW_LIGHT_DESC LightDesc)
+{
+	m_pShadow->Set_ShadowLight(LightDesc);
+}
+
 #pragma endregion
 
 #pragma region FRUSTUM
