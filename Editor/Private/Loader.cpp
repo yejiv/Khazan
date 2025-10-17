@@ -11,11 +11,8 @@
 
 
 #pragma region Effect
-#include "ParticleSystem.h"
-#include "ParticleEmitter.h"
 #include "Camera_Effect.h"
 #include "Terrain_Grid.h"
-#include "TestParticle.h"
 #pragma endregion
 
 #pragma region MapEditor
@@ -226,8 +223,8 @@ HRESULT CLoader::Loading_For_Effect_Level()
 	//		return E_FAIL;
 	
 	// Prototype_Component_Texture_TestParticle
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_TestParticle"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Models/Effect/LowPolyFoodLiteTexture_01.png"), 1))))
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_Particle_Prototype"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Textures/Effect/particle/particle%d.png"), 2))))
 		return E_FAIL;
 
 	// Prototype_Component_Texture_Terrain_Grid
@@ -256,39 +253,10 @@ HRESULT CLoader::Loading_For_Effect_Level()
 	//		CVIBuffer_Point_Instance::Create(m_pDevice, m_pContext, &SpreadDesc))))
 	//		return E_FAIL;
 
-	CVIBuffer_Mesh_Instance::MESH_INSTANCE_DESC MeshDesc{};
-	MeshDesc.iNumInstance = 100;
-	MeshDesc.vCenter = _float3(0.f, 0.f, 0.f);
-	MeshDesc.vRange = _float3(0.f, 0.f, 0.f);
-	MeshDesc.vSize = _float2(1.f, 2.f);
-	MeshDesc.vDirection = _float3(0.f, 1.f, 0.f);
-	MeshDesc.vVectorScale = _float3(1.f, 1.f, 1.f);
-	MeshDesc.vSpeed = _float2(1.f, 2.f);
-	MeshDesc.vLifeTime = _float2(1.f, 2.f);
-	MeshDesc.isLoop = true;
-	MeshDesc.isRandomVector = true;
-	MeshDesc.vMinAngle = _float3(0.f, 0.f, 0.f);
-	MeshDesc.vMaxAngle = _float3(360.f, 360.f, 360.f);
-
-	_matrix PreTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f);
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Particle_Spread"),
-		CVIBuffer_Mesh_Instance::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/Models/Effect/TestMesh.fbx", &MeshDesc, PreTransformMatrix))))
-		return E_FAIL;
-
 	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
 
 	lstrcpy(m_szLoadingText, TEXT("게임오브젝트를 로딩중입니다."));
 
-	// Prototype_GameObject_ParticleSystem
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_ParticleSystem"),
-		CParticleSystem::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
-
-	// Prototype_GameObject_ParticleEmitter
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_ParticleEmitter"),
-		CParticleEmitter::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
-	
 	// Prototype_GameObject_Camera_Effect
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_Camera_Effect"),
 		CCamera_Effect::Create(m_pDevice, m_pContext))))
@@ -297,11 +265,6 @@ HRESULT CLoader::Loading_For_Effect_Level()
 	// Prototype_GameObject_Terrain_Grid
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_Terrain_Grid"),
 		CTerrain_Grid::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
-
-	// Prototype_GameObject_TestParticle
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_TestParticle"),
-		CTestParticle::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
