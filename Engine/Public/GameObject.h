@@ -36,8 +36,8 @@ public:
 	_bool Get_IsDead() { return m_isDead; }
 
 public:
-	virtual void Collision_Enter(CGameObject* pOther, JOLT_COLLSION_TYPE eType) {};
-	virtual void Collision_Stay(CGameObject* pOther, JOLT_COLLSION_TYPE eType) {};
+	virtual void Collision_Enter(CGameObject* pOther, _uint	iOtherObjectLayer) {};
+	virtual void Collision_Stay(CGameObject* pOther, _uint iOtherObjectLayer) {};
 
 protected:
 	ID3D11Device*				m_pDevice = { nullptr };

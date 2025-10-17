@@ -91,11 +91,11 @@ HRESULT CDummy::Render()
     return S_OK;
 }
 
-void CDummy::Collision_Enter(CGameObject* pObject, JOLT_COLLSION_TYPE eType)
+void CDummy::Collision_Enter(CGameObject* pObject, _uint iOtherObjectLayer)
 {
     //m_pBodyCom->Add_Impulse(_float3(0.f, 100.f, 0.f));
 
-    if (eType == JOLT_COLLSION_TYPE::CHARVIR)
+    if (ENUM_CLASS(COLLISION_LAYER::PLAYER) == iOtherObjectLayer)
     {
         CTransform* pTransform = dynamic_cast<CTransform*>(pObject->Get_Component(TEXT("Com_Transform")));
 
@@ -105,11 +105,14 @@ void CDummy::Collision_Enter(CGameObject* pObject, JOLT_COLLSION_TYPE eType)
         _vector vDir = vPos - vOtherPos;
         XMVector4Normalize(vDir);
 
-        m_pBodyCom->Add_Impulse(XMVector4Normalize(XMVectorSet(vDir.m128_f32[0], vDir.m128_f32[1], vDir.m128_f32[2], vDir.m128_f32[3])), _float3(20.f, 20.f, 0.f), 5);
+        m_pBodyCom->Set_Velocity(_float3(vDir.m128_f32[0] * 5, vDir.m128_f32[1] * 5, vDir.m128_f32[2] * 5));
+        m_pBodyCom->Add_Impulse(1);
+        m_pBodyCom->Add_Torque(1);
+        m_pBodyCom->Add_Force(1);
     }
 }
 
-void CDummy::Collision_Stay(CGameObject* pObject, JOLT_COLLSION_TYPE eType)
+void CDummy::Collision_Stay(CGameObject* pObject, _uint iOtherObjectLayer)
 {
 }
 

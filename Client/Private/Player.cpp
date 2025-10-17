@@ -124,12 +124,12 @@ HRESULT CPlayer::Render()
     return S_OK;
 }
 
-void CPlayer::Collision_Enter(CGameObject* pObject, JOLT_COLLSION_TYPE eType)
+void CPlayer::Collision_Enter(CGameObject* pObject, _uint iOtherObjectLayer)
 {
     int a = 0;
 }
 
-void CPlayer::Collision_Stay(CGameObject* pObject, JOLT_COLLSION_TYPE eType)
+void CPlayer::Collision_Stay(CGameObject* pObject, _uint iOtherObjectLayer)
 {
     int a = 0;
 }

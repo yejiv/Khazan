@@ -108,27 +108,27 @@ void CBody::Set_PosRot(_vector vPos, _vector vRot)
     m_pBodyInterface->SetPositionAndRotation(m_BodyID, LoadVec3(vPos), LoadQuat(vRot), EActivation::Activate);
 }
 
-void CBody::Add_Force(const _float3& fForce)
+void CBody::Add_Force(_float fMass)
 {
     if (m_BodyID.IsInvalid()) return;
-    m_pBodyInterface->AddForce(m_BodyID, Vec3(fForce.x, fForce.y, fForce.z));
+    m_pBodyInterface->AddForce(m_BodyID, m_pBody->GetLinearVelocity() * fMass);
 }
 
-void CBody::Add_Torque(const _float3& vTorque)
+void CBody::Add_Torque(_float fMass)
 {
     if (m_BodyID.IsInvalid()) return;
-    m_pBodyInterface->AddTorque(m_BodyID, Vec3(vTorque.x, vTorque.y, vTorque.z));
+    m_pBodyInterface->AddTorque(m_BodyID, m_pBody->GetLinearVelocity() * fMass);
 }
 
-void CBody::Add_Impulse(_vector vDir, _float3 vVelocity, _float fMass)
+void CBody::Add_Impulse(_float fMass)
 {
     if (m_BodyID.IsInvalid()) return;
-    m_pBody->SetLinearVelocity(LoadQuat(vDir) * LoadVec3(vVelocity));
     m_pBodyInterface->AddImpulse(m_BodyID, m_pBody->GetLinearVelocity() * fMass);
 }
 
 void CBody::Set_Velocity(const _float3& vVelocity)
 {
+    m_pBody->SetLinearVelocity(LoadVec3(vVelocity));
 }
 
 void CBody::Build_Shape(BODY_DESC* pDesc, RefConst<Shape>& pShape)
