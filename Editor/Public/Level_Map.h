@@ -73,30 +73,26 @@ private:
 #pragma endregion
 
 #pragma region LIGHT 수정 변수
-	///////
-	// ADD
-	///////
-	LIGHT_DESC m_LightDesc = {};
 
-	_char m_szLightTag[MAX_PATH] = {};
-	string m_strLightTag = {};
+	LIGHT_DESC m_LightDesc = {};				// 추가할 조명 구조체
 
-	vector<string> m_LightTags;
+	_char m_szLightTag[MAX_PATH] = {};			// 추가할 조명 태그
+	string m_strLightTag = {};					// 변환용
 
-	_bool m_isAddLight = { false };
-	_bool m_isFixLight = { false };
-	_bool m_isFindFixLight = { false };
+	vector<string> m_LightTags;					// 조명 태그 모음 ( ADD 한 애들 )
+	_int m_iLightTagIndex = {};					// 조명 벡터 인덱스
 
-	///////
-	// FIX
-	///////
-	LIGHT_DESC m_FixLightDesc = {};
+	_bool m_isAddLight = { false };				// 조명 추가 시 활성화
+	_bool m_isFixLight = { false };				// 조명 수정 시 활성화
+	_bool m_isFindFixLight = { false };			// FIX 할거 찾으면 활성화
 
-	_char m_szFixLightTag[MAX_PATH] = {};
-	string m_strFixLightTag = {};
+	LIGHT_DESC m_FixLightDesc = {};				// 수정할 조명 구조체
 
-	_bool m_isAddLightPoint = { false };
-	_float3 m_vLightPoint = {};
+	_char m_szFixLightTag[MAX_PATH] = {};		// 수정할 조명 태그
+	string m_strFixLightTag = {};				// 변환용
+
+	_bool m_isAddLightPoint = { false };		// 피킹 조명 위치용 BOOL
+	_float3 m_vLightPoint = {};					// 피킹 조명 위치용 XMFLOAT3
 
 #pragma endregion
 

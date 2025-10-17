@@ -447,17 +447,32 @@ HRESULT CLevel_Map::Ready_Main_Window()
 					if (ImGui::Button("CLEAR JSON LIST"))
 					{
 						m_isMainWindow = { true };
-
 						m_isJsonWindow = { false };
-
 						m_isCustomJsonWindow = { false };
-
 						m_isPrototypeWindow = { false };
-
 						for (auto& bProp : m_isPropWindow)
 							bProp = false;
-
 						m_isLightSettingWindow = { false };
+
+						ZeroMemory(&m_LightDesc, sizeof(LIGHT_DESC));
+						m_LightDesc.eType = LIGHT_DESC::END;
+
+						m_strLightTag.clear();
+
+						m_LightTags.clear();
+						m_iLightTagIndex = {};
+
+						m_isAddLight = { false };
+						m_isFixLight = { false };
+						m_isFindFixLight = { false };
+
+						ZeroMemory(&m_FixLightDesc, sizeof(LIGHT_DESC));
+
+						m_szFixLightTag[MAX_PATH] = {};
+						m_strFixLightTag.clear();
+
+						m_isAddLightPoint = { false };
+						m_vLightPoint = {};
 
 						ZeroMemory(m_szJsonSaveName, sizeof(m_szJsonSaveName));		// Json 이름
 
@@ -527,7 +542,7 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 			} SEPARATOR;
 
 			// 인스턴스 행렬 추가
-			if (false == m_isLightSettingWindow && false == m_isFixObjectWindow && ImGui::Button("ADD (T)") || m_pGameInstance->Key_Down(DIK_T))
+			if (false == m_isLightSettingWindow && false == m_isFixObjectWindow && (ImGui::Button("ADD (T)") || m_pGameInstance->Key_Down(DIK_T)))
 			{
 				CEditor_Model_Instance* pModelInst = static_cast<CEditor_Model_Instance*>(m_pGameInstance->Find_Component(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_InstObj"), TEXT("Com_Model"), m_iIndex_PrtInst));
 				CHECK_NULLPTR(pModelInst, );
@@ -567,7 +582,7 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 			} SEPARATOR;
 
 			// 단일 오브젝트 Layer 추가
-			if (false == m_isLightSettingWindow && false == m_isFixObjectWindow && ImGui::Button("ADD (Y)") || m_pGameInstance->Key_Down(DIK_Y))
+			if (false == m_isLightSettingWindow && false == m_isFixObjectWindow && (ImGui::Button("ADD (Y)") || m_pGameInstance->Key_Down(DIK_Y)))
 			{
 				CProp_Object::PROP_OBJECT_DESC ObjectDesc = {};
 
@@ -1610,7 +1625,7 @@ HRESULT CLevel_Map::Ready_Light_Window()
 				}
 				if (ImGui::Button("APPLY"))
 				{
-					m_pGameInstance->Set_LightDesc(AnsiToWString(m_strFixLightTag), ENUM_CLASS(LEVEL::MAP), m_FixLightDesc);
+					m_pGameInstance->Set_LightDesc(AnsiToWString(m_LightTags[m_iLightTagIndex]), ENUM_CLASS(LEVEL::MAP), m_FixLightDesc);
 				} SAMELINE;
 				if (ImGui::Button("DONE"))
 				{
@@ -1622,12 +1637,25 @@ HRESULT CLevel_Map::Ready_Light_Window()
 			}
 			else
 			{
+				ImGui::Text("LIGHT LIST");
+				if (ImGui::BeginListBox("##light_list"))
+				{
+					for (_uint i = 0; i < m_LightTags.size(); ++i)
+					{
+						_bool isSelected = (m_iLightTagIndex == i);
+
+						if (ImGui::Selectable(m_LightTags[i].c_str(), isSelected))
+							m_iLightTagIndex = i;
+					}
+
+					ImGui::EndListBox();
+				} SEPARATOR;
 				if (ImGui::Button("ADD LIGHT"))
 				{
 					m_isAddLight = !m_isAddLight;
 					m_isFixLight = false;
 					m_LightDesc.eType = LIGHT_DESC::END;
-				}
+				} SAMELINE;
 				if (ImGui::Button("FIX LIGHT"))
 				{
 					m_isFixLight = !m_isFixLight;
@@ -1690,28 +1718,23 @@ HRESULT CLevel_Map::Ready_Light_Window()
 				// Fix Light 띄우기
 				if (true == m_isFixLight)
 				{
-					ImGui::Text("LIGHT TAG");
-					ImGui::InputText("##fix_light_tag", m_szFixLightTag, IM_ARRAYSIZE(m_szFixLightTag));
-					if (ImGui::Button("SEARCH"))
+					m_isFindFixLight = false;
+					ZeroMemory(&m_FixLightDesc, sizeof(LIGHT_DESC));
+
+					m_strFixLightTag = m_szFixLightTag;
+
+					const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(AnsiToWString(m_LightTags[m_iLightTagIndex]), ENUM_CLASS(LEVEL::MAP));
+					if (nullptr == pLightDesc)
 					{
-						m_isFindFixLight = false;
-						ZeroMemory(&m_FixLightDesc, sizeof(LIGHT_DESC));
 
-						m_strFixLightTag = m_szFixLightTag;
+					}
+					else
+					{
+						m_FixLightDesc = *pLightDesc;
+						m_isFindFixLight = true;
 
-						const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(AnsiToWString(m_strFixLightTag), ENUM_CLASS(LEVEL::MAP));
-						if (nullptr == pLightDesc)
-						{
-							//;;
-						}
-						else
-						{
-							m_FixLightDesc = *pLightDesc;
-							m_isFindFixLight = true;
-
-							m_isAddLight = false;
-							m_isFixLight = false;
-						}
+						m_isAddLight = false;
+						m_isFixLight = false;
 					}
 				}
 			}
