@@ -7,6 +7,7 @@ namespace Engine
 	enum class COLLIDER { AABB, OBB, SPHERE, END };
 	enum class SHAPE { CAPSULE, SPHERE, BOX, MESH, CONVEX, END };
 	enum class JOLT_BP_LAYER { MOVING, NON_MOVING, TRIGGER, END};
+	enum class JOLT_COLLSION_TYPE { BODY, CHAR, CHARVIR, END };
 	enum class NAV_POINT { A, B, C, END };
 	enum class NAV_LINE { AB, BC, CA, END };
 	enum class D3DTS { VIEW, PROJ, END };

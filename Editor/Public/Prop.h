@@ -30,6 +30,9 @@ public:
 	virtual HRESULT Render() override;
 	virtual HRESULT Render_Shadow() { return S_OK; }
 
+public:
+	const _tchar* Get_ModelName() const { return m_szModelName; }
+
 protected:
 	_tchar m_szModelName[MAX_PATH] = {};
 

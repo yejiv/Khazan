@@ -16,6 +16,16 @@ CLevel_Animation::CLevel_Animation(ID3D11Device* pDevice, ID3D11DeviceContext* p
 
 HRESULT CLevel_Animation::Initialize()
 {
+	//_char currentDir[MAX_PATH];
+	//GetCurrentDirectoryA(MAX_PATH, currentDir);
+	//OutputDebugStringA(("[Current Working Directory] " + string(currentDir) + "\n").c_str());
+
+	//char exePath[MAX_PATH];
+	//GetModuleFileNameA(NULL, exePath, MAX_PATH);
+	//std::filesystem::path editorExeDir = std::filesystem::path(exePath).parent_path();
+
+	//OutputDebugStringA(("[Editor.exe Dir] " + editorExeDir.string() + "\n").c_str());
+
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 		return E_FAIL;
 
@@ -55,7 +65,7 @@ HRESULT CLevel_Animation::Ready_Lights()
 	LightDesc.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
-	if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
+	if (FAILED(m_pGameInstance->Add_Light(TEXT("Directional_Animation"), ENUM_CLASS(LEVEL::ANIMATION), LightDesc)))
 		return E_FAIL;
 
 	return S_OK;

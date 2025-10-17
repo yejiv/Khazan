@@ -144,6 +144,11 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 		CCharacterVirtual::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	///* Prototype_Component_Body*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+		CBody::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -174,6 +179,7 @@ HRESULT CMainApp::Ready_ObjectLayer()
 	// MONSTER
 	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
 	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
+	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::TRIGGER));
 	// ITEM/EFFECT/SKILL
 	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::ITEM), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
 	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::EFFECT), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
