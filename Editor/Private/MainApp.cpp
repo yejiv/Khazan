@@ -19,8 +19,8 @@ HRESULT CMainApp::Initialize()
 	EngineDesc.iWinSizeX = g_iWinSizeX;
 	EngineDesc.iWinSizeY = g_iWinSizeY;
 	EngineDesc.iNumLevels = ENUM_CLASS(LEVEL::END);
-	EngineDesc.iWinSizeX_Imgui = g_iWinSizeX_Imgui_JOH;
-	EngineDesc.iWinSizeY_Imgui = g_iWinSizeY_Imgui_JOH;
+	EngineDesc.iWinSizeX_Imgui = g_iWinSizeX_Imgui;
+	EngineDesc.iWinSizeY_Imgui = g_iWinSizeY_Imgui;
 	EngineDesc.iNumJoltObjectLayer = ENUM_CLASS(COLLISION_LAYER::END);
 
 	list<_wstring> Imgui_Menu;
@@ -90,6 +90,11 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 		CVIBuffer_Cube::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	/* Prototype_Component_VIBuffer_Terrain */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Terrain"),
+		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Textures/Terrain/Height.bmp")))))
+		return E_FAIL;
+
 	// Shader
 	/* Prototype_Component_Shader_VtxPosTex_Edit_UI */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxPosTex_Edit_UI"),
@@ -127,8 +132,8 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 		return E_FAIL;
 	
 	/* Prototype_Component_Shader_VtxInstance_MeshParticle*/
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxInstance_MeshParticle"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_VtxInstance_MeshParticle.hlsl"), VTXMESHPARTICLE::Elements, VTXMESHPARTICLE::iNumElements))))
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxInstance_Particle"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_VtxInstance_Particle.hlsl"), VTXPARTICLE::Elements, VTXPARTICLE::iNumElements))))
 		return E_FAIL;
 
 	return S_OK;

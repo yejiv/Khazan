@@ -1,22 +1,22 @@
-#include "Terrain_Shader.h"
+#include "Effect_Terrain.h"
 #include "GameInstance.h"
 
-CTerrain_Shader::CTerrain_Shader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    : CGameObject{ pDevice, pContext }
+CEffect_Terrain::CEffect_Terrain(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+    : CGameObject { pDevice, pContext }
 {
 }
 
-CTerrain_Shader::CTerrain_Shader(const CTerrain_Shader& Prototype)
-    : CGameObject(Prototype)
+CEffect_Terrain::CEffect_Terrain(const CEffect_Terrain& Prototype)
+    : CGameObject (Prototype)
 {
 }
 
-HRESULT CTerrain_Shader::Initialize_Prototype()
+HRESULT CEffect_Terrain::Initialize_Prototype()
 {
     return S_OK;
 }
 
-HRESULT CTerrain_Shader::Initialize_Clone(void* pArg)
+HRESULT CEffect_Terrain::Initialize_Clone(void* pArg)
 {
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
@@ -27,27 +27,27 @@ HRESULT CTerrain_Shader::Initialize_Clone(void* pArg)
     return S_OK;
 }
 
-void CTerrain_Shader::Priority_Update(_float fTimeDelta)
+void CEffect_Terrain::Priority_Update(_float fTimeDelta)
 {
 
 }
 
-void CTerrain_Shader::Update(_float fTimeDelta)
+void CEffect_Terrain::Update(_float fTimeDelta)
 {
 }
 
-void CTerrain_Shader::Late_Update(_float fTimeDelta)
+void CEffect_Terrain::Late_Update(_float fTimeDelta)
 {
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this)))
         return;
 }
 
-HRESULT CTerrain_Shader::Render()
+HRESULT CEffect_Terrain::Render()
 {
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
-    m_pShaderCom->Begin(0);
+    m_pShaderCom->Begin(1);
 
     m_pVIBufferCom->Bind_Resources();
 
@@ -56,24 +56,24 @@ HRESULT CTerrain_Shader::Render()
     return S_OK;
 }
 
-HRESULT CTerrain_Shader::Ready_Components()
+HRESULT CEffect_Terrain::Ready_Components()
 {
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxNorTex"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Terrain"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_VIBuffer_Terrain"),
         TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), nullptr)))
         return E_FAIL;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Texture_Terrain_Shader"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_Terrain_Effect"),
         TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr)))
         return E_FAIL;
 
     return S_OK;
 }
 
-HRESULT CTerrain_Shader::Bind_ShaderResources()
+HRESULT CEffect_Terrain::Bind_ShaderResources()
 {
     if (FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix")))
         return E_FAIL;
@@ -90,33 +90,33 @@ HRESULT CTerrain_Shader::Bind_ShaderResources()
     return S_OK;
 }
 
-CTerrain_Shader* CTerrain_Shader::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CEffect_Terrain* CEffect_Terrain::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-    CTerrain_Shader* pInstance = new CTerrain_Shader(pDevice, pContext);
+    CEffect_Terrain* pInstance = new CEffect_Terrain(pDevice, pContext);
 
     if (FAILED(pInstance->Initialize_Prototype()))
     {
-        MSG_BOX(TEXT("Failed to Create : CTerrain_Shader"));
+        MSG_BOX(TEXT("Failed to Create : CEffect_Terrain"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-CGameObject* CTerrain_Shader::Clone(void* pArg)
+CGameObject* CEffect_Terrain::Clone(void* pArg)
 {
-    CTerrain_Shader* pInstance = new CTerrain_Shader(*this);
+    CEffect_Terrain* pInstance = new CEffect_Terrain(*this);
 
     if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
-        MSG_BOX(TEXT("Failed to Clone : CTerrain_Shader"));
+        MSG_BOX(TEXT("Failed to Clone : CEffect_Terrain"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-void CTerrain_Shader::Free()
+void CEffect_Terrain::Free()
 {
     __super::Free();
 

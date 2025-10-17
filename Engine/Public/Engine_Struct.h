@@ -46,6 +46,7 @@ namespace Engine
 		XMFLOAT2	vTransloation;
 		float		fSize;
 		float		fAlpha;
+		float		fAngle;
 		string		szEvent;
 
 		float		fTrackPosition;
@@ -211,6 +212,12 @@ namespace Engine
 		float				bDead;
 	}VTXINSTANCE_PARTICLE;
 
+	typedef struct tagVertexMeshInstanceParticle
+	{
+		XMFLOAT3		vPosition;
+		XMFLOAT2		vTexcoord;
+	}MESHINSTANCE_PARTICLE;
+
 	typedef struct tagVertexPointParticle
 	{
 		static const unsigned int	iNumElements = { 7 };
@@ -227,15 +234,12 @@ namespace Engine
 		};
 	}VTXPOINTPARTICLE;
 
-	typedef struct tagVertexMeshParticle
+	typedef struct tagVertexParticle
 	{
-		static const unsigned int	iNumElements = { 10 };
+		static const unsigned int	iNumElements = { 8 };
 		static constexpr D3D11_INPUT_ELEMENT_DESC	Elements[iNumElements] = {
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "BINORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 48, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 
 			{ "WORLD", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 			{ "WORLD", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
@@ -243,8 +247,9 @@ namespace Engine
 			{ "WORLD", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 
 			{ "TEXCOORD", 1, DXGI_FORMAT_R32G32_FLOAT, 1, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{ "TEXCOORD", 2, DXGI_FORMAT_R32_FLOAT, 1, 72, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 		};
-	}VTXMESHPARTICLE;
+	}VTXPARTICLE;
 
 	typedef struct tagMeshInstancing							// 메쉬 인스턴싱 쉐이더용 구조체
 	{

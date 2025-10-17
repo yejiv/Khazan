@@ -41,11 +41,10 @@ public:
 	UI_ALIGNMENT				Get_Alignment() const { return m_eAlignment; }
 
 public:
-	const string&				Get_Name() { return m_szName; }
-	const _float2&				Get_WolrdPos() { return m_vWorldPos ; }
-	const _int&					Get_UIType() { return m_iUIType; }
-	const _float&				Get_Depth() { return m_fDepth; }
-
+	const string& Get_Name() { return m_szName; }
+	const _float2& Get_WolrdPos() { return m_vWorldPos; }
+	const _int& Get_UIType() { return m_iUIType; }
+	const _float& Get_Depth() { return m_fDepth; }
 
 public:
 	virtual HRESULT				Initialize_Prototype() override;
@@ -60,11 +59,13 @@ public:
 	virtual void				Remove_Child(CUIObject* pChild);
 	virtual void				Update_Visible(_bool bisVisible);
 	virtual void				Update_Transform(CUIObject* pParent, _float2 vPos);
+	virtual void				Update_Scaling(_float fSize);
+	virtual void				Update_Rotation(_float fAngle);
 	_float2						Compute_AlignedPos(_float2 vWorldPos, _float2 vSize);
 
 public:
 	virtual _bool				IsPick(HWND hWnd);
-	
+
 protected:
 	_float4x4					m_ViewMatrix = {};
 	_float4x4					m_ProjMatrix = {};
@@ -84,7 +85,7 @@ protected:
 	UI_ALIGNMENT				m_eAlignment = { UI_ALIGNMENT::TOP_LEFT };
 
 	_int						m_iUIType = { -1 };
-	
+
 	_bool						m_isVisible = { true };
 
 	vector<CUIObject*>			m_Children = {};
@@ -95,7 +96,7 @@ protected:
 	vector<_float4>				m_vUVMinMax = {};
 
 public:
-	virtual CGameObject*		Clone(void* pArg) = 0;
+	virtual CGameObject* Clone(void* pArg) = 0;
 	virtual void				Free() override;
 
 
