@@ -40,9 +40,16 @@ private:
 	_bool				m_isShowTool_ExportUpdate = { false };
 	_bool				m_isShowTool_AnimationList = { false };
 
-	_bool				m_isEnble_AnimTimeControl = { false };
-	_bool				m_isEnble_AnimSetControl = { false };
-	_bool				m_isEnble_AnimEventControl = { false };
+	_bool				m_isEnble_AnimList = { true };
+
+	//ANIMATION_SETUP_DATA
+	_bool				m_isEnble_AnimInfo = { false };
+	_bool				m_isEnble_AnimTime = { false };
+	_bool				m_isEnble_AnimSet = { false };
+	_bool				m_isEnble_AnimRootMotion = { false };
+	_bool				m_isEnble_AnimEvent = { false };
+
+	_bool				m_isLevelBtnPress = { false };
 
 	/*애니메이션 */
 	_int				m_iSelectedAnimIndex = { -1 };
@@ -51,6 +58,12 @@ private:
 	_float				m_fCurrentFrame = 0.f;
 	_bool				m_isPlating = { false };
 
+
+	/* 위젯 */
+	_float m_pannelLeftWidth = 400.0f;
+	_float m_pannelMiddleWidth = 500.0f;
+
+	_float	m_AnimInfo_Btn_Width = 120.f;
 private:
 	void	Widget();
 
@@ -69,7 +82,7 @@ private:
 
 
 private:
-	void	Add_Model();
+	void	Add_Model(_uint iLevelIndex);
 	void	Remove_Model();
 	string  ConvertToRelativePath(const string& absolutePath);
 	string  ConvertToClientRelativePath(const string& absolutePath);

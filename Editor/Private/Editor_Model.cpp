@@ -162,7 +162,7 @@ HRESULT CEditor_Model::Initialize_Prototype(MODELTYPE eModelType, const _char* p
     {
         auto it = find_if(m_Bones.begin(), m_Bones.end(),
             [&](CEditor_Bone* pBone) {
-                if (pBone->Compare_Name("Root"))
+                if (pBone->Compare_Name("Root")|| pBone->Compare_Name("Fiona"))
                     return true;
                 return false;
             });

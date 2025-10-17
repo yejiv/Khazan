@@ -79,19 +79,19 @@ void CAnimationTool::Widget()
         if (m_isShowTool) Tool_Widget();
 
         /* Animation Control */
-        if (!m_GameObjects.empty())
-        {
-            if (ImGui::Button("Animation Controler", ImVec2(150, 25))) {
-                m_isShowTool_Control = !m_isShowTool_Control;
-                m_isShowTool = false;
-                m_isShowOpenModel = false;
-            }
-            ImGui::SameLine();
-            if (m_isShowTool_Control) ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "[OPEN]");
-            else ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "[CLOSED]");
-            ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing();
-            if (m_isShowTool_Control) Tool_AnimationControl_Widget();
-        }
+        //if (!m_GameObjects.empty())
+        //{
+        //    if (ImGui::Button("Animation Controler", ImVec2(150, 25))) {
+        //        m_isShowTool_Control = !m_isShowTool_Control;
+        //        m_isShowTool = false;
+        //        m_isShowOpenModel = false;
+        //    }
+        //    ImGui::SameLine();
+        //    if (m_isShowTool_Control) ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "[OPEN]");
+        //    else ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "[CLOSED]");
+        //    ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing();
+        //    if (m_isShowTool_Control) Tool_AnimationControl_Widget();
+        //}
 
         /* Info */
         if(!m_isShowOpenModel && !m_isShowTool)
@@ -192,8 +192,28 @@ void CAnimationTool::OpenModel_Widget()
 
     // 모델이 선택되지 않았으면 버튼 비활성화
     if (bDisabled)  ImGui::BeginDisabled();
-    if (ImGui::Button("Add Model to Scene", ImVec2(200, 25)))
-        Add_Model();
+
+    // 버튼 
+    _uint iLevelIndex = {};
+    ImGui::BeginChild("AnimPanel", ImVec2(0, 30), true);
+    {
+        if (ImGui::Button("MAP", ImVec2(60, 0))) { iLevelIndex = ENUM_CLASS(LEVEL::MAP); m_isLevelBtnPress = true;  }
+        ImGui::SameLine();
+        if (ImGui::Button("ANIMATION", ImVec2(60, 0))){iLevelIndex = ENUM_CLASS(LEVEL::ANIMATION); m_isLevelBtnPress = true;  }
+        ImGui::SameLine();
+        if (ImGui::Button("EFFECT", ImVec2(60, 0))){iLevelIndex = ENUM_CLASS(LEVEL::EFFECT); m_isLevelBtnPress = true;}
+        ImGui::SameLine();
+        if (ImGui::Button("UI", ImVec2(60, 0))){iLevelIndex = ENUM_CLASS(LEVEL::UI); m_isLevelBtnPress = true;}
+        ImGui::SameLine();
+        if (ImGui::Button("SHADER", ImVec2(60, 0))){ iLevelIndex = ENUM_CLASS(LEVEL::SHADER); m_isLevelBtnPress = true; }
+
+    }
+    ImGui::EndChild();
+    if(m_isLevelBtnPress)
+        if (ImGui::Button("Add Model to Scene", ImVec2(200, 25))) {
+            Add_Model(iLevelIndex);
+            m_isLevelBtnPress = !m_isLevelBtnPress;
+        }
     if (bDisabled) ImGui::EndDisabled();
 
     ImGui::Spacing();
@@ -353,7 +373,7 @@ void CAnimationTool::Tool_Widget()
     ImGui::SeparatorText("Loaded Models");
     ImGui::Text("Model Count: %d", (_int)m_GameObjects.size());
 
-    if (!m_GameObjects.empty())
+    if (m_isEnble_AnimList && !m_GameObjects.empty())
     {
         ImGui::Text("Current Selected Index: %d", m_iSelectedIndex);
         ImGui::Spacing();
@@ -388,6 +408,7 @@ void CAnimationTool::Tool_Widget()
     /* Animation time Controler*/
     if (ImGui::Button("Animation time Controler", ImVec2(250, 25))) {
         m_isShowTool_Control = !m_isShowTool_Control;
+        m_isEnble_AnimList = !m_isEnble_AnimList;
     }
     if (m_isShowTool_Control && m_iSelectedIndex > -1)Tool_AnimationControl_Widget();
 
@@ -399,21 +420,18 @@ void CAnimationTool::Tool_AnimationControl_Widget()
     ANIMATION_SETUP_DATA* animSetupData{};
     animSetupData = m_GameObjects[m_iSelectedIndex]->get_Model()->Get_CurAnimSet();
     ImGui::Text(("Cur Animation : " + animSetupData->strName).c_str());
-    ImGui::Checkbox("Animation Time Control", &animSetupData->isAnimTimeControl);
     ImGui::Spacing();   ImGui::Separator();    ImGui::Spacing();
 
-    _float leftWidth = 300.0f;
-    _float middleWidth = 400.0f;
 
     // === 왼쪽: 애니메이션 리스트 ===
-    ImGui::BeginChild("LeftPanel", ImVec2(leftWidth, 0), true);
+    ImGui::BeginChild("LeftPanel", ImVec2(m_pannelLeftWidth, 0), true);
     {
         Tool_AnimationList_Widget();
     }
     ImGui::EndChild();
     // === 중간: 애니메이션 정보 ===
 	ImGui::SameLine();
-	ImGui::BeginChild("MiddlePanel", ImVec2(middleWidth, 0), true);
+	ImGui::BeginChild("MiddlePanel", ImVec2(m_pannelMiddleWidth, 0), true);
 	{
         /* 애니메이션 정보  */
         Tool_AnimationInfo_Widget();
@@ -469,11 +487,7 @@ void CAnimationTool::Tool_AnimationList_Widget()
 	ImGui::Text("Total Animations: %d", iNumAnimations);
 	ImGui::Separator();  ImGui::Spacing();
 
-	_float leftWidth = 300.0f;
-	_float middleWidth = 400.0f;
-
 	ImGui::SeparatorText("Animation List");
-
 	// 검색
 	ImGui::SetNextItemWidth(-1);
 	ImGui::InputTextWithHint("##Search", "Search...", m_szAnimSearchBuffer, sizeof(m_szAnimSearchBuffer));
@@ -547,6 +561,21 @@ void CAnimationTool::Tool_AnimationList_Widget()
 
 void CAnimationTool::Tool_AnimationInfo_Widget()
 {
+    // 버튼 
+    ImGui::BeginChild("AnimPanel", ImVec2(0, 30), true);
+    {
+        if (ImGui::Button("Info", ImVec2(60, 0))) m_isEnble_AnimInfo = !m_isEnble_AnimInfo;
+        ImGui::SameLine();
+        if (ImGui::Button("Time", ImVec2(60, 0))) m_isEnble_AnimTime = !m_isEnble_AnimTime;
+        ImGui::SameLine();
+        if (ImGui::Button("Set", ImVec2(60, 0))) m_isEnble_AnimSet = !m_isEnble_AnimSet;
+        ImGui::SameLine();
+        if (ImGui::Button("Root", ImVec2(60, 0))) m_isEnble_AnimRootMotion = !m_isEnble_AnimRootMotion;
+        ImGui::SameLine();
+        if (ImGui::Button("Event", ImVec2(60, 0))) m_isEnble_AnimEvent = !m_isEnble_AnimEvent;
+    }
+    ImGui::EndChild();
+
     if (m_iSelectedIndex < 0 || m_iSelectedAnimIndex < 0)
     {
         ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f),"Select an animation");
@@ -560,231 +589,230 @@ void CAnimationTool::Tool_AnimationInfo_Widget()
     ANIMATION_DATA* animData = &modelData->vecAnimation[m_iSelectedAnimIndex];
     ANIMATION_SETUP_DATA* setup = pModel->Get_CurAnimSet();
 
-    ImGui::SeparatorText("Animation Information");
-
     // 기본 정보
-    ImGui::Text("strName: %s", setup->strName.c_str());
-    //ImGui::Text("isLoop: %s", (setup->isLoop ? "true" : "false"));
-    ImGui::Checkbox("isLoop", &setup->isLoop);
-    ImGui::Text("iDirection: %s", to_string(setup->iDirection).c_str());
-    _int iTemp= setup->iDirection;
-    ImGui::DragInt("iDirection", &iTemp, 1, 0, 24);
-    setup->iDirection = iTemp;
-
+    ImGui::SeparatorText("Animation Information");
+    if (m_isEnble_AnimInfo)
+    {
+        ImGui::Text("strName: %s", setup->strName.c_str());                     //strName
+        ImGui::Checkbox("isLoop", &setup->isLoop);                              //isLoop
+        ImGui::Text("iDirection: %s", to_string(setup->iDirection).c_str());    //iDirection
+        _int iTemp = setup->iDirection;
+        ImGui::DragInt("iDirection", &iTemp, 1, 0, 24);
+        setup->iDirection = iTemp;
+    }
     ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing();
 
     // 구간 별 시간 조절
     ImGui::SeparatorText("Setup Time Control");
-    //ImGui::Text("isAnimTimeControl: %s", (setup->isAnimTimeControl ? "true" : "false"));
-    //ImGui::SeparatorText("Time Control");
-    ImGui::Checkbox("isAnimTimeControl", &setup->isAnimTimeControl);
-
-    if (setup->isAnimTimeControl)
+    if (m_isEnble_AnimTime)
     {
-        ImGui::Indent();
-        ImGui::Text("Sections: %d", (_int)setup->vecAnimTimeControlFrame.size());
-
-        // 각 구간 표시
-        for (size_t i = 0; i < setup->vecAnimTimeControlFrame.size(); ++i)
+        ImGui::Checkbox("isAnimTimeControl", &setup->isAnimTimeControl);        //isAnimTimeControl
+        if (setup->isAnimTimeControl)                                           //vecAnimTimeControlFrame
         {
-            ImGui::PushID((_int)i);
+            ImGui::Indent();
+            ImGui::Text("Sections: %d", (_int)setup->vecAnimTimeControlFrame.size());
 
-            FLOAT3_DATA& frame = setup->vecAnimTimeControlFrame[i];
-
-            if (ImGui::TreeNode(("Section " + to_string(i)).c_str()))
+            // 각 구간 표시
+            for (size_t i = 0; i < setup->vecAnimTimeControlFrame.size(); ++i)
             {
-                ImGui::Text("Start Frame:");
-                ImGui::SameLine();
-                ImGui::SetNextItemWidth(150);
-                ImGui::DragFloat("##start", &frame.x, 1.0f, 0.0f, animData->fDuration, "%.0f");
+                ImGui::PushID((_int)i);
 
-                ImGui::Text("End Frame:  ");
-                ImGui::SameLine();
-                ImGui::SetNextItemWidth(150);
-                ImGui::DragFloat("##end", &frame.y, 1.0f, frame.x, animData->fDuration, "%.0f");
+                FLOAT3_DATA& frame = setup->vecAnimTimeControlFrame[i];
 
-                ImGui::Text("Speed:      ");
-                ImGui::SameLine();
-                ImGui::SetNextItemWidth(150);
-                ImGui::DragFloat("##speed", &frame.z, 0.1f, 0.1f, 10.0f, "%.1fx");
-
-                if (ImGui::Button("Remove Section", ImVec2(150, 0)))
+                if (ImGui::TreeNode(("Section " + to_string(i)).c_str()))
                 {
-                    setup->vecAnimTimeControlFrame.erase(
-                        setup->vecAnimTimeControlFrame.begin() + i);
+                    ImGui::Text("Start Frame:");
+                    ImGui::SameLine();
+                    ImGui::SetNextItemWidth(150);
+                    ImGui::DragFloat("##start", &frame.x, 1.0f, 0.0f, animData->fDuration, "%.0f");
+
+                    ImGui::Text("End Frame:  ");
+                    ImGui::SameLine();
+                    ImGui::SetNextItemWidth(150);
+                    ImGui::DragFloat("##end", &frame.y, 1.0f, frame.x, animData->fDuration, "%.0f");
+
+                    ImGui::Text("Speed:      ");
+                    ImGui::SameLine();
+                    ImGui::SetNextItemWidth(150);
+                    ImGui::DragFloat("##speed", &frame.z, 0.1f, 0.1f, 10.0f, "%.1fx");
+
+                    if (ImGui::Button("Remove Section", ImVec2(150, 0)))
+                    {
+                        setup->vecAnimTimeControlFrame.erase(
+                            setup->vecAnimTimeControlFrame.begin() + i);
+                        ImGui::TreePop();
+                        ImGui::PopID();
+                        break;
+                    }
+
                     ImGui::TreePop();
-                    ImGui::PopID();
-                    break;
+                }
+                else
+                {
+                    // 접혀있을 때 간략 정보
+                    ImGui::SameLine();
+                    ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f),
+                        "(%.0f-%.0f, %.1fx)", frame.x, frame.y, frame.z);
                 }
 
-                ImGui::TreePop();
-            }
-            else
-            {
-                // 접혀있을 때 간략 정보
-                ImGui::SameLine();
-                ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f),
-                    "(%.0f-%.0f, %.1fx)", frame.x, frame.y, frame.z);
+                ImGui::PopID();
             }
 
-            ImGui::PopID();
+            //if (ImGui::Button("Add Section", ImVec2(150, 25)))
+            //{
+            //    FLOAT3_DATA newFrame(0.0f, animData->fDuration, 1.0f);
+            //    setup->vecAnimTimeControlFrame.push_back(newFrame);
+            //}
+
+            ImGui::Unindent();
         }
-
-        //if (ImGui::Button("Add Section", ImVec2(150, 25)))
-        //{
-        //    FLOAT3_DATA newFrame(0.0f, animData->fDuration, 1.0f);
-        //    setup->vecAnimTimeControlFrame.push_back(newFrame);
-        //}
-
-        ImGui::Unindent();
     }
-
     ImGui::Spacing();    ImGui::Separator();   ImGui::Spacing();
 
     // ===== 애니메이션 세트 =====
-    //ImGui::SeparatorText("Animation Set");
-    ImGui::Checkbox("isAnimSet", &setup->isAnimSet);
-
-    if (setup->isAnimSet)
+    ImGui::SeparatorText("Animation Set");
+    if (m_isEnble_AnimSet)
     {
-        ImGui::Indent();
-
-        ImGui::Text("strAnimSetName: %s", setup->strAnimSetName.c_str());
-
-        ImGui::Text("vecAnimSet: %d animations", (_int)setup->vecAnimSet.size());
-        if (ImGui::TreeNode("Animation Set List"))
+        ImGui::Checkbox("isAnimSet", &setup->isAnimSet);                                //isAnimSet
+        if (setup->isAnimSet)
         {
-            for (size_t i = 0; i < setup->vecAnimSet.size(); ++i)
+            ImGui::Indent();
+
+            ImGui::Text("strAnimSetName: %s", setup->strAnimSetName.c_str());           //strAnimSetName
+
+            ImGui::Text("vecAnimSet: %d animations", (_int)setup->vecAnimSet.size());   //vecAnimSet
+            if (ImGui::TreeNode("Animation Set List"))
             {
-                ImGui::BulletText("[%d] %s", (_int)i, setup->vecAnimSet[i].c_str());
+                for (size_t i = 0; i < setup->vecAnimSet.size(); ++i)
+                {
+                    ImGui::BulletText("[%d] %s", (_int)i, setup->vecAnimSet[i].c_str());
+                }
+                ImGui::TreePop();
             }
-            ImGui::TreePop();
+
+            ImGui::Text("iAnimSetSelfIndex: %d", setup->iAnimSetSelfIndex);             //iAnimSetSelfIndex
+            _int iTemp1 = setup->iAnimSetSelfIndex;
+            ImGui::DragInt("iAnimSetSelfIndex", &iTemp1, 1, 0, 24);
+            setup->iAnimSetSelfIndex = iTemp1;
+
+            ImGui::Text("iTransitionType: %d", setup->iTransitionType);                 //iTransitionType
+            _int iTemp2 = setup->iTransitionType;
+            ImGui::DragInt("iTransitionType", &iTemp2, 1, 0, 24);
+            setup->iTransitionType = iTemp2;
+            ImGui::SameLine();
+            const char* transitionTypes[] = { "Auto", "Flag", "Input", "Manual" };
+            if (setup->iTransitionType < 4)
+                ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f),
+                    "(%s)", transitionTypes[setup->iTransitionType]);
+
+            ImGui::Checkbox("isWaitForComplete", &setup->isWaitForComplete);            //isWaitForComplete
+
+            ImGui::Text("fAnimSetBlendOutTime: %.2f", setup->fAnimSetBlendOutTime);     //fAnimSetBlendOutTime
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(100);
+            ImGui::DragFloat("##blendOut", &setup->fAnimSetBlendOutTime, 0.01f, 0.0f, 2.0f, "%.2f");
+
+            ImGui::Text("fAnimSetBlendInTime:  %.2f", setup->fAnimSetBlendInTime);      //fAnimSetBlendInTime
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(100);
+            ImGui::DragFloat("##blendIn", &setup->fAnimSetBlendInTime, 0.01f, 0.0f, 2.0f, "%.2f");
+
+            ImGui::Unindent();
         }
-
-        ImGui::Text("iAnimSetSelfIndex: %d", setup->iAnimSetSelfIndex);
-
-        ImGui::Text("iTransitionType: %d", setup->iTransitionType);
-        ImGui::SameLine();
-        const char* transitionTypes[] = { "Auto", "Flag", "Input", "Manual" };
-        if (setup->iTransitionType < 4)
-            ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f),
-                "(%s)", transitionTypes[setup->iTransitionType]);
-
-        ImGui::Checkbox("isWaitForComplete", &setup->isWaitForComplete);
-
-        ImGui::Text("fAnimSetBlendOutTime: %.2f", setup->fAnimSetBlendOutTime);
-        ImGui::SameLine();
-        ImGui::SetNextItemWidth(100);
-        ImGui::DragFloat("##blendOut", &setup->fAnimSetBlendOutTime, 0.01f, 0.0f, 2.0f, "%.2f");
-
-        ImGui::Text("fAnimSetBlendInTime:  %.2f", setup->fAnimSetBlendInTime);
-        ImGui::SameLine();
-        ImGui::SetNextItemWidth(100);
-        ImGui::DragFloat("##blendIn", &setup->fAnimSetBlendInTime, 0.01f, 0.0f, 2.0f, "%.2f");
-
-        ImGui::Unindent();
     }
-
-    ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
+    ImGui::Spacing();    ImGui::Separator();    ImGui::Spacing();
 
     // ===== 루트 모션 =====
     ImGui::SeparatorText("Root Motion");
-
-    ImGui::Checkbox("isRootMotion", &setup->isRootMotion);
-
-    if (setup->isRootMotion)
+    if (m_isEnble_AnimRootMotion)
     {
-        ImGui::Indent();
+        ImGui::Checkbox("isRootMotion", &setup->isRootMotion);                          //isRootMotion
+        if (setup->isRootMotion)
+        {
+            ImGui::Indent();
 
-        ImGui::Checkbox("isApplyRootRotation", &setup->isApplyRootRotation);
-        ImGui::Checkbox("isApplyRootPosition", &setup->isApplyRootPosition);
+            ImGui::Checkbox("isApplyRootRotation", &setup->isApplyRootRotation);        //isApplyRootRotation
+            ImGui::Checkbox("isApplyRootPosition", &setup->isApplyRootPosition);        //isApplyRootPosition
 
-        ImGui::Text("RootMotionScale:");
-        ImGui::SameLine();
-        ImGui::SetNextItemWidth(200);
-        ImGui::DragFloat3("##rootScale",
-            &setup->RootMitionScale.x, 0.1f, 0.0f, 10.0f, "%.1f");
+            ImGui::Text("RootMotionScale:");                                            //RootMitionScale
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(200);
+            ImGui::DragFloat3("##rootScale", &setup->RootMitionScale.x, 0.1f, 0.0f, 10.0f, "%.1f");
 
-        ImGui::Unindent();
+            ImGui::Unindent();
+        }
     }
-
-    ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
+    ImGui::Spacing();    ImGui::Separator();    ImGui::Spacing();
 
     // ===== 이벤트 =====
     ImGui::SeparatorText("Events");
-
-    ImGui::Checkbox("isEvent", &setup->isEvent);
-
-    if (setup->isEvent)
+    if (m_isEnble_AnimEvent)
     {
-        ImGui::Indent();
-
-        ImGui::Checkbox("isTriggerOnce", &setup->isTriggerOnce);
-        ImGui::Checkbox("isTriggerOnExit", &setup->isTriggerOnExit);
-
-        ImGui::Text("Events: %d", (_int)setup->vecEventKeys.size());
-
-        for (size_t i = 0; i < setup->vecEventKeys.size(); ++i)
+        ImGui::Checkbox("isEvent", &setup->isEvent);                                    //isEvent
+        if (setup->isEvent)
         {
-            ImGui::PushID((_int)i);
+            ImGui::Indent();
 
-            if (ImGui::TreeNode(("Event " + to_string(i)).c_str()))
+            ImGui::Checkbox("isTriggerOnce", &setup->isTriggerOnce);                    //isTriggerOnce
+            ImGui::Checkbox("isTriggerOnExit", &setup->isTriggerOnExit);                //isTriggerOnExit
+
+            ImGui::Text("Events: %d", (_int)setup->vecEventKeys.size());
+
+            for (size_t i = 0; i < setup->vecEventKeys.size(); ++i)                     //vecEventFrames, vecEventKeys
             {
-                ImGui::Text("Key: %s", setup->vecEventKeys[i].c_str());
+                ImGui::PushID((_int)i);
 
-                ImGui::Text("Start Frame:");
-                ImGui::SameLine();
-                ImGui::SetNextItemWidth(150);
-                ImGui::DragFloat("##eventStart",
-                    &setup->vecEventFrames[i].x, 1.0f, 0.0f, animData->fDuration, "%.0f");
-
-                ImGui::Text("End Frame:  ");
-                ImGui::SameLine();
-                ImGui::SetNextItemWidth(150);
-                ImGui::DragFloat("##eventEnd",
-                    &setup->vecEventFrames[i].y, 1.0f, 0.0f, animData->fDuration, "%.0f");
-
-                if (ImGui::Button("Remove Event", ImVec2(150, 0)))
+                if (ImGui::TreeNode(("Event " + to_string(i)).c_str()))
                 {
-                    setup->vecEventKeys.erase(setup->vecEventKeys.begin() + i);
-                    setup->vecEventFrames.erase(setup->vecEventFrames.begin() + i);
+                    ImGui::Text("Key: %s", setup->vecEventKeys[i].c_str());
+
+                    ImGui::Text("Start Frame:");
+                    ImGui::SameLine();
+                    ImGui::SetNextItemWidth(150);
+                    ImGui::DragFloat("##eventStart",
+                        &setup->vecEventFrames[i].x, 1.0f, 0.0f, animData->fDuration, "%.0f");
+
+                    ImGui::Text("End Frame:  ");
+                    ImGui::SameLine();
+                    ImGui::SetNextItemWidth(150);
+                    ImGui::DragFloat("##eventEnd",
+                        &setup->vecEventFrames[i].y, 1.0f, 0.0f, animData->fDuration, "%.0f");
+
+                    if (ImGui::Button("Remove Event", ImVec2(150, 0)))
+                    {
+                        setup->vecEventKeys.erase(setup->vecEventKeys.begin() + i);
+                        setup->vecEventFrames.erase(setup->vecEventFrames.begin() + i);
+                        ImGui::TreePop();
+                        ImGui::PopID();
+                        break;
+                    }
+
                     ImGui::TreePop();
-                    ImGui::PopID();
-                    break;
+                }
+                else
+                {
+                    // 접혀있을 때 간략 정보
+                    ImGui::SameLine();
+                    ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f),
+                        "(%s: %.0f-%.0f)",
+                        setup->vecEventKeys[i].c_str(),
+                        setup->vecEventFrames[i].x,
+                        setup->vecEventFrames[i].y);
                 }
 
-                ImGui::TreePop();
+                ImGui::PopID();
             }
-            else
+
+            if (ImGui::Button("Add Event", ImVec2(150, 25)))
             {
-                // 접혀있을 때 간략 정보
-                ImGui::SameLine();
-                ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f),
-                    "(%s: %.0f-%.0f)",
-                    setup->vecEventKeys[i].c_str(),
-                    setup->vecEventFrames[i].x,
-                    setup->vecEventFrames[i].y);
+                setup->vecEventKeys.push_back("NewEvent");
+                setup->vecEventFrames.push_back(FLOAT2_DATA{ 0.0f, 0.0f });
             }
 
-            ImGui::PopID();
+            ImGui::Unindent();
         }
-
-        if (ImGui::Button("Add Event", ImVec2(150, 25)))
-        {
-            setup->vecEventKeys.push_back("NewEvent");
-            setup->vecEventFrames.push_back(FLOAT2_DATA{ 0.0f, 0.0f });
-        }
-
-        ImGui::Unindent();
     }
-
-    ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
+    ImGui::Spacing();    ImGui::Separator();    ImGui::Spacing();
 
     // ===== 저장 버튼 =====
     //if (ImGui::Button("Save Changes", ImVec2(-1, 30)))
@@ -794,7 +822,7 @@ void CAnimationTool::Tool_AnimationInfo_Widget()
 
 }
 
-void CAnimationTool::Add_Model()
+void CAnimationTool::Add_Model(_uint iLevelIndex)
 {
     _wstring prototypeTag = TEXT("Prototype_Component_Editor_Model_") + m_strModelName;
 
@@ -803,7 +831,7 @@ void CAnimationTool::Add_Model()
     PreTransformMatrix = XMMatrixScaling(m_vPreScale.x, m_vPreScale.y, m_vPreScale.z) * XMMatrixRotationY(XMConvertToRadians(180.0f));
 
     // 프로토타입 추가
-    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::ANIMATION), prototypeTag,
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), prototypeTag,
         CEditor_Model::Create(m_pDevice, m_pContext,
             m_isAnim ? MODELTYPE::ANIM : MODELTYPE::NONANIM,
             m_strModelPath.c_str(), PreTransformMatrix))))
@@ -813,16 +841,13 @@ void CAnimationTool::Add_Model()
     }
 
     // 게임 오브젝트 생성
-    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(
-        ENUM_CLASS(LEVEL::ANIMATION), TEXT("Layer_Model"),
-        ENUM_CLASS(LEVEL::ANIMATION),
-        TEXT("Prototype_GameObject_Editor_Animation_TestModel"),
-        &prototypeTag)))
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(iLevelIndex, TEXT("Layer_Model"),
+        iLevelIndex, TEXT("Prototype_GameObject_Editor_Animation_TestModel"),  &prototypeTag)))
     {
         MSG_BOX(TEXT("게임 오브젝트 클론 실패!"));
         return;
     }
-    CGameObject* pGameObject = m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::ANIMATION), TEXT("Layer_Model"));
+    CGameObject* pGameObject = m_pGameInstance->Get_BackGameObject(iLevelIndex, TEXT("Layer_Model"));
 
     if (pGameObject)
     {
