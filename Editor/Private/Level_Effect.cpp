@@ -1,7 +1,6 @@
 #include "Level_Effect.h"
 #include "GameInstance.h"
 #include "Level_Loading.h"
-#include "Camera_Effect.h"
 
 CLevel_Effect::CLevel_Effect(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
@@ -19,7 +18,7 @@ HRESULT CLevel_Effect::Initialize()
     if (FAILED(Ready_Layer_GameObejct()))
         return E_FAIL;
 
-    m_pGameInstance->AddWidget(TEXT("Effect"), [&]()
+    /*m_pGameInstance->AddWidget(TEXT("Effect"), [&]()
         {
             ImGui::Begin("Particle System Editor");
 
@@ -32,7 +31,7 @@ HRESULT CLevel_Effect::Initialize()
 
 
             ImGui::End();
-        });
+        });*/
 
 	return S_OK;
 }
@@ -55,30 +54,12 @@ HRESULT CLevel_Effect::Render()
 
 HRESULT CLevel_Effect::Ready_Layer_BackGround()
 {
-	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EFFECT), TEXT("Layer_BackGround"),
-		ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_Terrain_Grid"))))
-		return E_FAIL;
 
 	return S_OK;
 }
 
 HRESULT CLevel_Effect::Ready_Layer_Camera()
 {
-    CCamera_Effect::CAMERA_EFFECT_DESC Desc{};
-
-    Desc.vEye = _float4(0.f, 5.f, -5.f, 1.f);
-    Desc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
-    Desc.fFovy = XMConvertToRadians(60.0f);
-    Desc.fNear = 0.1f;
-    Desc.fFar = 1000.f;
-    Desc.fSpeedPerSec = 10.f;
-    Desc.fRotationPerSec = XMConvertToRadians(90.0f);
-    Desc.fMouseSensor = 0.1f;
-
-    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EFFECT), TEXT("Layer_Camera"),
-        ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_Camera_Effect"), &Desc)))
-        return E_FAIL;
-
     return S_OK;
 }
 

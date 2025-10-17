@@ -1,22 +1,22 @@
-#include "Camera_Effect.h"
+#include "Camera_Shader.h"
 #include "GameInstance.h"
 
-CCamera_Effect::CCamera_Effect(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CCamera_Shader::CCamera_Shader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CCamera{ pDevice, pContext }
 {
 }
 
-CCamera_Effect::CCamera_Effect(const CCamera_Effect& Prototype)
+CCamera_Shader::CCamera_Shader(const CCamera_Shader& Prototype)
     : CCamera(Prototype)
 {
 }
 
-HRESULT CCamera_Effect::Initialize_Prototype()
+HRESULT CCamera_Shader::Initialize_Prototype()
 {
     return S_OK;
 }
 
-HRESULT CCamera_Effect::Initialize_Clone(void* pArg)
+HRESULT CCamera_Shader::Initialize_Clone(void* pArg)
 {
     CAMERA_EFFECT_DESC* pDesc = static_cast<CAMERA_EFFECT_DESC*>(pArg);
 
@@ -28,7 +28,7 @@ HRESULT CCamera_Effect::Initialize_Clone(void* pArg)
     return S_OK;
 }
 
-void CCamera_Effect::Priority_Update(_float fTimeDelta)
+void CCamera_Shader::Priority_Update(_float fTimeDelta)
 {
     if (m_pGameInstance->Key_Pressing(DIK_W, fTimeDelta))
     {
@@ -61,46 +61,46 @@ void CCamera_Effect::Priority_Update(_float fTimeDelta)
     __super::Update_PipeLines();
 }
 
-void CCamera_Effect::Update(_float fTimeDelta)
+void CCamera_Shader::Update(_float fTimeDelta)
 {
 }
 
-void CCamera_Effect::Late_Update(_float fTimeDelta)
+void CCamera_Shader::Late_Update(_float fTimeDelta)
 {
 }
 
-HRESULT CCamera_Effect::Render()
+HRESULT CCamera_Shader::Render()
 {
     return S_OK;
 }
 
-CCamera_Effect* CCamera_Effect::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CCamera_Shader* CCamera_Shader::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-    CCamera_Effect* pInstance = new CCamera_Effect(pDevice, pContext);
+    CCamera_Shader* pInstance = new CCamera_Shader(pDevice, pContext);
 
     if (FAILED(pInstance->Initialize_Prototype()))
     {
-        MSG_BOX(TEXT("Failed to Create : CCamera_Effect"));
+        MSG_BOX(TEXT("Failed to Create : CCamera_Shader"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-CGameObject* CCamera_Effect::Clone(void* pArg)
+CGameObject* CCamera_Shader::Clone(void* pArg)
 {
-    CCamera_Effect* pInstance = new CCamera_Effect(*this);
+    CCamera_Shader* pInstance = new CCamera_Shader(*this);
 
     if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
-        MSG_BOX(TEXT("Failed to Clone : CCamera_Effect"));
+        MSG_BOX(TEXT("Failed to Clone : CCamera_Shader"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-void CCamera_Effect::Free()
+void CCamera_Shader::Free()
 {
     __super::Free();
 }

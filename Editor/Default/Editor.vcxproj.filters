@@ -79,12 +79,6 @@
     <Filter Include="01.Levels\Map\Header">
       <UniqueIdentifier>{5e903afb-5ae0-44e4-a388-6f6c034a1f9c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Effect\Camera">
-      <UniqueIdentifier>{73507ee3-ca91-4db0-bb47-9b7b03480d0a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObject\Effect\Terrain">
-      <UniqueIdentifier>{81b63c04-fa83-4a3a-96f5-b9f89191f19d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\MapObject\Camera">
       <UniqueIdentifier>{204d72f1-296c-4b94-ade6-47085c5a8ef9}</UniqueIdentifier>
     </Filter>
@@ -156,6 +150,15 @@
     </Filter>
     <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Point_Instance">
       <UniqueIdentifier>{d1137416-3acf-4abb-98cb-c18a7e984b53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Shader">
+      <UniqueIdentifier>{b98c614c-025a-41eb-a67a-7f8bc46825fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Shader\Camera">
+      <UniqueIdentifier>{73507ee3-ca91-4db0-bb47-9b7b03480d0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Shader\Terrain">
+      <UniqueIdentifier>{81b63c04-fa83-4a3a-96f5-b9f89191f19d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -243,11 +246,11 @@
     <ClInclude Include="..\Public\MapEditor_Header.h">
       <Filter>01.Levels\Map\Header</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Camera_Effect.h">
-      <Filter>02.GameObject\Effect\Camera</Filter>
+    <ClInclude Include="..\Public\Camera_Shader.h">
+      <Filter>02.GameObject\Shader\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Terrain_Grid.h">
-      <Filter>02.GameObject\Effect\Terrain</Filter>
+    <ClInclude Include="..\public\Terrain_Shader.h">
+      <Filter>02.GameObject\Shader\Terrain</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Camera_Map.h">
       <Filter>02.GameObject\MapObject\Camera</Filter>
@@ -381,11 +384,11 @@
     <ClCompile Include="..\Private\Prop.cpp">
       <Filter>02.GameObject\MapObject\Prop</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Camera_Effect.cpp">
-      <Filter>02.GameObject\Effect\Camera</Filter>
+    <ClCompile Include="..\Private\Camera_Shader.cpp">
+      <Filter>02.GameObject\Shader\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Terrain_Grid.cpp">
-      <Filter>02.GameObject\Effect\Terrain</Filter>
+    <ClCompile Include="..\private\Terrain_Shader.cpp">
+      <Filter>02.GameObject\Shader\Terrain</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Camera_Map.cpp">
       <Filter>02.GameObject\MapObject\Camera</Filter>
