@@ -190,7 +190,7 @@ HRESULT CGameInstance::Draw()
 #ifdef _DEBUG
 	m_pImgui_Manager->BeginFrame();
 	m_pImgui_Manager->Render();
-	m_pJolt_Manager->Debug_Render();
+	//m_pJolt_Manager->Debug_Render();
 #endif
 
 	return S_OK;

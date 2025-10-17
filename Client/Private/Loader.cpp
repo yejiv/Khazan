@@ -170,31 +170,31 @@ HRESULT CLoader::Loading_For_Stage1_Texture()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/SkyBox/Sky_%d.dds"), 4))))
 		return E_FAIL;
 
-	/* Prototype_Component_Texture_Terrain */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Texture_Terrain"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Tile%d.dds"), 2))))
-		return E_FAIL;
+	///* Prototype_Component_Texture_Terrain */
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Texture_Terrain"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Tile%d.dds"), 2))))
+	//	return E_FAIL;
 
-	/* Prototype_Component_Texture_Mask_Terrain */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Texture_Mask_Terrain"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/TerrainMask.dds"), 1))))
-		return E_FAIL;
+	///* Prototype_Component_Texture_Mask_Terrain */
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Texture_Mask_Terrain"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/TerrainMask.dds"), 1))))
+	//	return E_FAIL;
 
-	/* Prototype_Component_Texture_Brush */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Texture_Brush"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Brush.png"), 1))))
-		return E_FAIL;
+	///* Prototype_Component_Texture_Brush */
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Texture_Brush"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Brush.png"), 1))))
+	//	return E_FAIL;
 
 
-	vector<const _tchar*> TextureList;
-	TextureList.reserve(2);
-	TextureList.push_back(TEXT("T_BG_GrandFlores.png"));
-	TextureList.push_back(TEXT("T_BG_ValleyOfTheFallenSouls.png"));
+	//vector<const _tchar*> TextureList;
+	//TextureList.reserve(2);
+	//TextureList.push_back(TEXT("T_BG_GrandFlores.png"));
+	//TextureList.push_back(TEXT("T_BG_ValleyOfTheFallenSouls.png"));
 
-	/* Prototype_Component_Texture_Test */
-   	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Texture_Test"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Textures/UI/BackGround/"), TextureList))))
-		return E_FAIL;
+	///* Prototype_Component_Texture_Test */
+ //  	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Texture_Test"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Textures/UI/BackGround/"), TextureList))))
+	//	return E_FAIL;
 
 	return S_OK;
 }
@@ -210,10 +210,10 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Fiona/Fiona.dat"))))
 		return E_FAIL;
 
-	/////* Prototype_Component_Model_WP_WOD_Ground_Base_004 */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"),
-	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Environment/Prop/Ground/WP_WOD_Ground_Base_004.dat"))))
-	//	return E_FAIL;
+	///* Prototype_Component_Model_WP_WOD_Ground_Base_004 */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Environment/Prop/Ground/WP_WOD_Ground_Base_004.dat"))))
+		return E_FAIL;
 
 	///* Prototype_Component_Model_JOH_TestModel */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_JOH_TestModel"),
@@ -274,10 +274,10 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 		CDummy::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	/////* Prototype_GameObject_Prop_Test */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_Test"),
-	//	CProp_Test::Create(m_pDevice, m_pContext))))
-	//	return E_FAIL;
+	///* Prototype_GameObject_Prop_Test */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_Test"),
+		CProp_Test::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 	///* Prototype_GameObject_JOH_Test1 */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_JOH_Test1"),
