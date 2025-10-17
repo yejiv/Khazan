@@ -166,6 +166,9 @@
     <Filter Include="02.GameObject\Effect\Terrain">
       <UniqueIdentifier>{2471b629-34a2-4ea1-9a72-0a4b0cebb5d9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\98.Export">
+      <UniqueIdentifier>{c9c828e3-489d-4584-850d-ef3ebe71f812}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -313,6 +316,9 @@
     <ClInclude Include="..\Public\Effect_Terrain.h">
       <Filter>02.GameObject\Effect\Terrain</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Prop_Export.h">
+      <Filter>02.GameObject\MapObject\Prop\98.Export</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -456,6 +462,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Effect_Terrain.cpp">
       <Filter>02.GameObject\Effect\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Export.cpp">
+      <Filter>02.GameObject\MapObject\Prop\98.Export</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
