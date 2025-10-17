@@ -88,8 +88,6 @@ HRESULT CDummy::Render()
         m_pModelCom->Render(i);
     }
 
-
-
     return S_OK;
 }
 
@@ -99,7 +97,15 @@ void CDummy::Collision_Enter(CGameObject* pObject, JOLT_COLLSION_TYPE eType)
 
     if (eType == JOLT_COLLSION_TYPE::CHARVIR)
     {
-        m_pBodyCom->Add_Impulse(XMVector4Normalize(XMVectorSet(0.5f, 0.5f, 0.f, 0.f)), _float3(20.f, 20.f, 0.f), 5);
+        CTransform* pTransform = dynamic_cast<CTransform*>(pObject->Get_Component(TEXT("Com_Transform")));
+
+        _vector vOtherPos = pTransform->Get_State(STATE::POSITION);
+        _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
+
+        _vector vDir = vPos - vOtherPos;
+        XMVector4Normalize(vDir);
+
+        m_pBodyCom->Add_Impulse(XMVector4Normalize(XMVectorSet(vDir.m128_f32[0], vDir.m128_f32[1], vDir.m128_f32[2], vDir.m128_f32[3])), _float3(20.f, 20.f, 0.f), 5);
     }
 }
 

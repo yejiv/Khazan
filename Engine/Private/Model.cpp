@@ -209,6 +209,7 @@ HRESULT CModel::Ready_Meshes(MODEL_DATA& data)
 
 HRESULT CModel::Ready_Materials(MODEL_DATA& data)
 {
+
     for (size_t i = 0; i < m_iNumMaterials; i++)
     {
         CMeshMaterial* pMeshMaterial = CMeshMaterial::Create(m_pDevice, m_pContext, data.vecMaterials[i]);

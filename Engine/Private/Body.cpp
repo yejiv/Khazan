@@ -239,8 +239,8 @@ void CBody::Make_MeshShape(BODY_MESHSHAPE_DESC* pDesc)
 
         bodySetting.mMassPropertiesOverride = mp;
 
-
-        m_pGameInstance->CreateAndAdd_Body(bodySetting, &m_pBodyInterface);
+        m_pBody = m_pGameInstance->CreateAndAdd_Body(bodySetting, &m_pBodyInterface);
+        m_BodyID = m_pBody->GetID();
     }
 }
 
