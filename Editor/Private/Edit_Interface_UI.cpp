@@ -18,51 +18,10 @@ void CEdit_Interface_UI::Update_UIInterface(_float fTimeDelta)
 	ImGui::Begin("UI_InterFace");
 	Update_BackColor(fTimeDelta);
 	Create_UI();
+	SaveLoad_UI();
 	ImGui::End();
 
-	if (m_iSeletRootUI >= 0)
-	{
-		ImGui::Begin("Root_List");
-		for(_int i = 0; i < m_pRootUIs.size(); ++i)
-			m_pRootUIs[i]->Root_SeleteButton(m_szSeleteUIName, i, m_iSeletRootUI, m_iMovePos[0], m_iMovePos[1], m_iScalingSize[0], m_iScalingSize[1]);
-		ImGui::End();
-
-		ImGui::Begin("UI_List");
-		m_pRootUIs[m_iSeletRootUI]->SeleteButton(m_szSeleteUIName, -1, m_iMovePos[0], m_iMovePos[1], m_iScalingSize[0], m_iScalingSize[1]);
-		ImGui::End();
-		ImGui::Begin("UI_Option");
-		
-		ImGui::Text("UI_Name : ");
-		ImGui::SameLine();
-		ImGui::Text(m_szSeleteUIName.c_str());
-
-		ImGui::InputText("##UINameLabel", m_szUIReName, MAX_PATH);
-		ImGui::SameLine();
-		if (ImGui::Button("ReName"))
-		{
-			m_pRootUIs[m_iSeletRootUI]->ReName(m_szSeleteUIName, m_szUIReName);
-			m_szSeleteUIName = m_szUIReName;
-		}
-		m_pRootUIs[m_iSeletRootUI]->Update_ClassName(m_szSeleteUIName);
-		ImGui::InputText("##ClassName", m_szClassName, MAX_PATH);
-		ImGui::SameLine();
-		if (ImGui::Button("Class(Down:P)") || m_pGameInstance->Key_Down(DIK_P))
-		{
-			m_pRootUIs[m_iSeletRootUI]->Set_ClassName(m_szSeleteUIName, m_szClassName);
-		}
-		SizePos_UI(fTimeDelta);
-		
-		SetTexture_UI();
-		_bool AnimCehck = m_pRootUIs[m_iSeletRootUI]->Anim_Empty(m_szSeleteUIName);
-		Anime_Option(fTimeDelta, AnimCehck);
-		ImGui::End();
-		if (!AnimCehck)
-		{
-			ImGui::Begin("Animation_List");
-			Animation_UI(fTimeDelta);
-			ImGui::End();
-		}
-	}
+	Selete_UI(fTimeDelta);
 	for (auto pRootUi : m_pRootUIs)
 		pRootUi->Late_Update(fTimeDelta);
 }
@@ -118,6 +77,41 @@ void CEdit_Interface_UI::Update_BackColor(_float fTimeDelta)
 		m_pBackGround->Late_Update(fTimeDelta);
 }
 
+void CEdit_Interface_UI::SaveLoad_UI()
+{
+	if (m_iSeletRootUI < 0)
+		return;
+
+	if (ImGui::CollapsingHeader("SaveLoad_UI"))
+	{
+		ImGui::InputText("UIFilePath", m_szFilePath, MAX_PATH);
+		if (ImGui::Button("Save_UI"))
+		{
+			string filePath = m_szFilePath;
+			filePath += ".json";
+			nlohmann::json SaveData;
+			m_pRootUIs[m_iSeletRootUI]->Save_UI(SaveData);
+			ofstream Out(filePath, ios::out | ios::trunc);
+			if (!Out.is_open())
+			{
+				MSG_BOX(TEXT("Json 파일 저장 실패"));
+				Out.close();
+			}
+			else
+			{
+				MSG_BOX(TEXT("Json 파일 저장 성공"));
+				Out << SaveData.dump(4);
+				Out.close();
+			}
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Load_UI"))
+		{
+			
+		}
+	}
+}
+
 void CEdit_Interface_UI::Create_UI()
 {
 	if (ImGui::CollapsingHeader("Create_UI"))
@@ -125,21 +119,19 @@ void CEdit_Interface_UI::Create_UI()
 
 		ImGui::InputText("UIName", m_szUIName, MAX_PATH);
 
-		ImGui::RadioButton("PANEL", &m_iUIType, 0);
+		ImGui::RadioButton("PANEL", &m_iUIType, ENUM_CLASS(CEdit_UIBase::UITYPE::PANEL));
 		ImGui::SameLine();
-		ImGui::RadioButton("TEX", &m_iUIType, 1);
+		ImGui::RadioButton("TAP", &m_iUIType, ENUM_CLASS(CEdit_UIBase::UITYPE::TAP));
 		ImGui::SameLine();
-		ImGui::RadioButton("NONTEX", &m_iUIType, 2);
+		ImGui::RadioButton("BUTTON", &m_iUIType, ENUM_CLASS(CEdit_UIBase::UITYPE::BUTTON));
 		ImGui::SameLine();
-		ImGui::RadioButton("BUTTON", &m_iUIType, 3);
+		ImGui::RadioButton("SLOT", &m_iUIType, ENUM_CLASS(CEdit_UIBase::UITYPE::SLOT));
 		ImGui::SameLine();
-		ImGui::RadioButton("SLOT", &m_iUIType, 4);
-		ImGui::RadioButton("PROGRESSBAR", &m_iUIType, 5);
+		ImGui::RadioButton("SCROLLBAR", &m_iUIType, ENUM_CLASS(CEdit_UIBase::UITYPE::SCROLLBAR));
 		ImGui::SameLine();
-		ImGui::RadioButton("SCROLLBAR", &m_iUIType, 6);
+		ImGui::RadioButton("PROGRESSBAR", &m_iUIType, ENUM_CLASS(CEdit_UIBase::UITYPE::PROGRESSBAR));
 
 		ImGui::InputInt2("Size", m_iUISize, 0);
-
 
 		if (ImGui::Button("Create_Parent"))
 		{
@@ -194,9 +186,34 @@ void CEdit_Interface_UI::Create_UI()
 	}
 }
 
-void CEdit_Interface_UI::Selete_UI()
+void CEdit_Interface_UI::Selete_UI(_float fTimeDelta)
 {
+	if (m_iSeletRootUI >= 0)
+	{
+		ImGui::Begin("Root_List");
+		for (_int i = 0; i < m_pRootUIs.size(); ++i)
+			m_pRootUIs[i]->Root_SeleteButton(m_szSeleteUIName, i, m_iSeletRootUI, m_iMovePos[0], m_iMovePos[1], m_iScalingSize[0], m_iScalingSize[1]);
+		ImGui::End();
 
+		ImGui::Begin("UI_List");
+		m_pRootUIs[m_iSeletRootUI]->SeleteButton(m_szSeleteUIName, -1, m_iMovePos[0], m_iMovePos[1], m_iScalingSize[0], m_iScalingSize[1]);
+		ImGui::End();
+
+		ImGui::Begin("UI_Option");
+		SetName_UI();
+		SizePos_UI(fTimeDelta);
+
+		SetTexture_UI();
+		_bool AnimCehck = m_pRootUIs[m_iSeletRootUI]->Anim_Empty(m_szSeleteUIName);
+		Anime_Option(fTimeDelta, AnimCehck);
+		ImGui::End();
+		if (!AnimCehck)
+		{
+			ImGui::Begin("Animation_List");
+			Animation_UI(fTimeDelta);
+			ImGui::End();
+		}
+	}
 }
 
 void CEdit_Interface_UI::Animation_UI(_float fTimeDelta)
@@ -205,6 +222,28 @@ void CEdit_Interface_UI::Animation_UI(_float fTimeDelta)
 	if (ImGui::Button("AddTrack"))
 	{
 		m_pRootUIs[m_iSeletRootUI]->Add_Anim(m_szSeleteUIName);
+	}
+}
+
+void CEdit_Interface_UI::SetName_UI()
+{
+	ImGui::Text("UI_Name : ");
+	ImGui::SameLine();
+	ImGui::Text(m_szSeleteUIName.c_str());
+
+	ImGui::InputText("##UINameLabel", m_szUIReName, MAX_PATH);
+	ImGui::SameLine();
+	if (ImGui::Button("ReName"))
+	{
+		m_pRootUIs[m_iSeletRootUI]->ReName(m_szSeleteUIName, m_szUIReName);
+		m_szSeleteUIName = m_szUIReName;
+	}
+	m_pRootUIs[m_iSeletRootUI]->Update_ClassName(m_szSeleteUIName);
+	ImGui::InputText("##ClassName", m_szClassName, MAX_PATH);
+	ImGui::SameLine();
+	if (ImGui::Button("Class(Down:P)") || m_pGameInstance->Key_Down(DIK_P))
+	{
+		m_pRootUIs[m_iSeletRootUI]->Set_ClassName(m_szSeleteUIName, m_szClassName);
 	}
 }
 
@@ -275,9 +314,8 @@ void CEdit_Interface_UI::SetTexture_UI()
 
 				m_pRootUIs[m_iSeletRootUI]->Set_AtlasTexSize(m_szSeleteUIName, m_szFrameName, m_fTexSize);
 			}
-			m_pRootUIs[m_iSeletRootUI]->Update_Option(m_szSeleteUIName, m_szFrameName);
 		}
-		m_pRootUIs[m_iSeletRootUI]->Update_Option(m_szSeleteUIName, m_szFrameName);
+		m_pRootUIs[m_iSeletRootUI]->Update_Option(m_szSeleteUIName, m_szFrameName, m_iTexType);
 	}
 }
 

@@ -131,6 +131,14 @@ void CUIObject::Update_Scaling(_float fSize)
         pChild->Update_Scaling(fSize);
 }
 
+void CUIObject::Update_Rotation(_float fAngle)
+{
+    m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), XMConvertToRadians(fAngle));
+
+    for (auto& pChild : m_Children)
+        pChild->Update_Rotation(fAngle);
+}
+
 _float2 CUIObject::Compute_AlignedPos(_float2 vPos, _float2 vSize)
 {
     switch (m_eAlignment)

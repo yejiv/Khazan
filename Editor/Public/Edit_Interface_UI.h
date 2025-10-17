@@ -54,10 +54,12 @@ private:
 private:
 	HRESULT						Ready_Object(LEVEL eLevel);
 	void						Update_BackColor(_float fTimeDelta);
+	void						SaveLoad_UI();
 	void						Create_UI();
-	void						Selete_UI();
+	void						Selete_UI(_float fTimeDelta);
 	void						Animation_UI(_float fTimeDelta);
 
+	void						SetName_UI();
 	void						SizePos_UI(_float fTimeDelta);
 	void						SetTexture_UI();
 	void						Anime_Option(_float fTimeDelta, _bool bAnimCehck);

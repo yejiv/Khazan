@@ -14,7 +14,7 @@ class CEdit_UIBase : public CUIObject
 {
 public:
 	enum class UI_RENDER_TYPE { DEFAULT, ATLAS, END};
-	enum class UITYPE { PANEL, TEX, NONTEX, BUTTON, SLOT, PROGRESSBAR, SCROLLBAR, END };
+	enum class UITYPE { PANEL, TAP, BUTTON, SLOT, SCROLLBAR, PROGRESSBAR, END };
 
 private:
 	CEdit_UIBase(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -24,10 +24,13 @@ private:
 public:
 	HRESULT					Create_Child(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, CUIObject::UIOBJECT_DESC* UIChildDesc, string szSeleteUIName);
 	
+	//Save/Load
+	HRESULT					Save_UI(nlohmann::json& pOutData);
+
 	//IMGUI
 	void					Root_SeleteButton(string& szSeleteUIName, _int iNum, _int& iSeletRootUI, _int& iPosX, _int& iPosY, _int& iSizeX, _int& iSizeY);
 	void					SeleteButton(string& szSeleteUIName, _int iNum, _int& iPosX, _int& iPosY, _int& iSizeX, _int& iSIzeY);
-	void					Update_Option(string& szSeleteUIName, const string pFrameName);
+	void					Update_Option(string& szSeleteUIName, const string pFrameName, _int iTexType);
 	_bool					Update_ClassName(string& szSeleteUIName);
 
 	//UI
@@ -72,7 +75,7 @@ private:
 
 	_float4					m_vFrameColor = {};
 	_float					m_fAlpha = {};
-
+	
 	_int					m_iUiState = {};
 	UI_RENDER_TYPE			m_eRenderType = {};
 	_int					m_iTexIndex = {};
@@ -90,6 +93,10 @@ private:
 private:
 	HRESULT					Ready_Component();
 	void					Update_Track(_float& fAccTime);
+
+	//Convert
+	string					UIType_EnumToString();
+	UITYPE					UIType_StringToEnum(string szUIType);
 
 public:
 	static CEdit_UIBase*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

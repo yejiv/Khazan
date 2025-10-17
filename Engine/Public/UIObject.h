@@ -46,7 +46,6 @@ public:
 	const _int&					Get_UIType() { return m_iUIType; }
 	const _float&				Get_Depth() { return m_fDepth; }
 
-
 public:
 	virtual HRESULT				Initialize_Prototype() override;
 	virtual HRESULT				Initialize_Clone(void* pArg) override;
@@ -61,6 +60,7 @@ public:
 	virtual void				Update_Visible(_bool bisVisible);
 	virtual void				Update_Transform(CUIObject* pParent, _float2 vPos);
 	virtual void				Update_Scaling(_float fSize);
+	virtual void				Update_Rotation(_float fAngle);
 	_float2						Compute_AlignedPos(_float2 vWorldPos, _float2 vSize);
 
 public:

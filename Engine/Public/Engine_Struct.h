@@ -46,6 +46,7 @@ namespace Engine
 		XMFLOAT2	vTransloation;
 		float		fSize;
 		float		fAlpha;
+		float		fAngle;
 		string		szEvent;
 
 		float		fTrackPosition;

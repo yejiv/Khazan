@@ -18,7 +18,6 @@ HRESULT CEdit_UIBase::Create_Child(_uint iPrototypeLevelIndex, const _wstring& s
     {
         UIChildDesc->fDepth = m_fDepth;        
         Add_Child(static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelIndex, strPrototypeTag, UIChildDesc)));
-        return S_OK;
     }
     else
     {
@@ -35,6 +34,69 @@ HRESULT CEdit_UIBase::Create_Child(_uint iPrototypeLevelIndex, const _wstring& s
     Update_Transform(nullptr, m_vLocalPos);
 
     return E_FAIL;
+}
+
+HRESULT CEdit_UIBase::Save_UI(nlohmann::json& pOutData)
+{
+    nlohmann::json Data;
+
+    Data["name"] = m_szName;
+    Data["class"] = m_szClassName;
+
+    string szType = UIType_EnumToString();
+    Data["type"] = szType;
+    Data["TexTag"] = m_szTexTag;
+
+    Data["shaderPass"] = m_iShaderPass;
+    Data["depth"] = m_fDepth;
+
+    Data["LocalPos"]["x"] = m_vLocalPos.x;
+    Data["LocalPos"]["y"] = m_vLocalPos.y;
+
+    Data["LocalSize"]["x"] = m_vLocalSize.x;
+    Data["LocalSize"]["y"] = m_vLocalSize.y;
+
+    for (_int i = 0; i < m_vUVMinMax.size(); ++i)
+    {
+        nlohmann::json UVArray;
+        UVArray["MinX"] = m_vUVMinMax[i].x;
+        UVArray["MinY"] = m_vUVMinMax[i].y;
+        UVArray["MaxX"] = m_vUVMinMax[i].z;
+        UVArray["MaxY"] = m_vUVMinMax[i].w;
+
+        Data["UV"].push_back(UVArray);
+    }
+
+    for (_int i = 0; i < m_EventNames.size(); ++i)
+    {
+        Data["Events"].push_back(m_EventNames[i]);
+    }
+
+    for (_int i = 0; i < m_Track.size(); ++i)
+    {
+        nlohmann::json Track;
+        Track["TrackPosition"] = m_Track[i].fTrackPosition;
+        Track["Alpha"] = m_Track[i].fAlpha;
+        Track["Angle"] = m_Track[i].fAngle;
+        Track["Size"] = m_Track[i].fSize;
+        Track["Event"] = m_Track[i].szEvent;
+
+        Track["Transloation"]["x"] = m_Track[i].vTransloation.x;
+        Track["Transloation"]["y"] = m_Track[i].vTransloation.y;
+
+        Data["Anime"].push_back(Track);
+    }
+    for (auto& pChild : m_Children)
+    {
+        nlohmann::json ChildData;
+        static_cast<CEdit_UIBase*>(pChild)->Save_UI(ChildData);
+
+        Data["Children"].push_back(ChildData);
+    }
+
+    pOutData = Data;
+
+    return S_OK;
 }
 
 void CEdit_UIBase::Root_SeleteButton(string& szSeleteUIName, _int iNum, _int& iSeletRootUI, _int& iPosX, _int& iPosY, _int& iSizeX, _int& iSizeY)
@@ -83,12 +145,40 @@ void CEdit_UIBase::SeleteButton(string& szSeleteUIName, _int iNum, _int& iPosX, 
 
 }
 
-void CEdit_UIBase::Update_Option(string& szSeleteUIName, const string pFrameName)
+void CEdit_UIBase::Update_Option(string& szSeleteUIName, const string pFrameName, _int iTexType)
 {
     if (m_szName == szSeleteUIName)
     {
         switch (static_cast<UITYPE>(m_iUIType))
         {
+        case UITYPE::TAP:
+            ImGui::RadioButton("Disable", &m_iUiState, 0);
+            ImGui::SameLine();
+            ImGui::RadioButton("Enable", &m_iUiState, 1);
+            ImGui::SameLine();
+            ImGui::RadioButton("Over", &m_iUiState, 2);
+            ImGui::SameLine();
+            ImGui::RadioButton("Selete", &m_iUiState, 3);
+
+            ImGui::Text("Min : %.2f, %.2f", m_vUVMinMax[m_iUiState].x, m_vUVMinMax[m_iUiState].y);
+            ImGui::SameLine();
+            ImGui::Text("Max : %.2f, %.2f", m_vUVMinMax[m_iUiState].z, m_vUVMinMax[m_iUiState].w);
+
+            if (ImGui::Button("SetUV"))
+            {
+                if (iTexType == ENUM_CLASS(UI_RENDER_TYPE::ATLAS))
+                    Set_UVTexSet(szSeleteUIName, pFrameName);
+                else
+                    m_vUVMinMax[m_iUiState] = { 0.f, 0.f, 1.f, 1.f };
+            }
+            ImGui::Text("EventName : ");
+            ImGui::SameLine();
+            ImGui::Text(m_EventNames[m_iUiState].c_str());
+            ImGui::InputText("##UIEventLabel", m_szEvent, MAX_PATH);
+            ImGui::SameLine();
+            if (ImGui::Button("EventSet"))
+                m_EventNames[m_iUiState] = m_szEvent;
+            break;
         case UITYPE::BUTTON:
             ImGui::RadioButton("Disable", &m_iUiState, 0);
             ImGui::SameLine();
@@ -103,8 +193,12 @@ void CEdit_UIBase::Update_Option(string& szSeleteUIName, const string pFrameName
             ImGui::Text("Max : %.2f, %.2f", m_vUVMinMax[m_iUiState].z, m_vUVMinMax[m_iUiState].w);
 
             if (ImGui::Button("SetUV"))
-                Set_UVTexSet(szSeleteUIName, pFrameName);
-
+            {
+                if (iTexType == ENUM_CLASS(UI_RENDER_TYPE::ATLAS))
+                    Set_UVTexSet(szSeleteUIName, pFrameName);
+                else
+                    m_vUVMinMax[m_iUiState] = { 0.f, 0.f, 1.f, 1.f };
+            }
             ImGui::Text("EventName : ");
             ImGui::SameLine();
             ImGui::Text(m_EventNames[m_iUiState].c_str());
@@ -128,29 +222,18 @@ void CEdit_UIBase::Update_Option(string& szSeleteUIName, const string pFrameName
             ImGui::Text("Max : %.2f, %.2f", m_vUVMinMax[m_iUiState].z, m_vUVMinMax[m_iUiState].w);
 
             if (ImGui::Button("SetUV"))
-                Set_UVTexSet(szSeleteUIName, pFrameName);
-
+            {
+                if (iTexType == ENUM_CLASS(UI_RENDER_TYPE::ATLAS))
+                    Set_UVTexSet(szSeleteUIName, pFrameName);
+                else
+                    m_vUVMinMax[m_iUiState] = { 0.f, 0.f, 1.f, 1.f };
+            }
             ImGui::Text(m_EventNames[m_iUiState].c_str());
             ImGui::InputText("##UIEventLabel", m_szEvent, MAX_PATH);
             ImGui::SameLine();
             if (ImGui::Button("EventSet"))
                 m_EventNames[m_iUiState] = m_szEvent;
             break;
-
-        case UITYPE::PROGRESSBAR:
-            ImGui::Text("Min : %.2f, %.2f", m_vUVMinMax[0].x, m_vUVMinMax[0].y);
-            ImGui::SameLine();
-            ImGui::Text("Max : %.2f, %.2f", m_vUVMinMax[0].z, m_vUVMinMax[0].w);
-
-            ImGui::InputFloat("Value", &m_fUiState, 0.01f, 0.01f);
-
-            ImGui::Text(m_EventNames[0].c_str());
-            ImGui::InputText("##UIEventLabel", m_szEvent, MAX_PATH);
-            ImGui::SameLine();
-            if (ImGui::Button("EventSet"))
-                m_EventNames[0] = m_szEvent;
-            break;
-
         case UITYPE::SCROLLBAR:
             ImGui::Text("Min : %.2f, %.2f", m_vUVMinMax[0].x, m_vUVMinMax[0].y);
             ImGui::SameLine();
@@ -166,12 +249,25 @@ void CEdit_UIBase::Update_Option(string& szSeleteUIName, const string pFrameName
                 m_EventNames[m_iUpDownState] = m_szEvent;
 
             break;
+        case UITYPE::PROGRESSBAR:
+            ImGui::Text("Min : %.2f, %.2f", m_vUVMinMax[0].x, m_vUVMinMax[0].y);
+            ImGui::SameLine();
+            ImGui::Text("Max : %.2f, %.2f", m_vUVMinMax[0].z, m_vUVMinMax[0].w);
+
+            ImGui::InputFloat("Value", &m_fUiState, 0.01f, 0.01f);
+
+            ImGui::Text(m_EventNames[0].c_str());
+            ImGui::InputText("##UIEventLabel", m_szEvent, MAX_PATH);
+            ImGui::SameLine();
+            if (ImGui::Button("EventSet"))
+                m_EventNames[0] = m_szEvent;
+            break;
         }
     }
 
     for (auto& pChild : m_Children)
     {
-        static_cast<CEdit_UIBase*>(pChild)->Update_Option(szSeleteUIName, pFrameName);
+        static_cast<CEdit_UIBase*>(pChild)->Update_Option(szSeleteUIName, pFrameName, iTexType);
     }
 }
 
@@ -406,9 +502,11 @@ _bool CEdit_UIBase::Create_Anim(string& szSeleteUIName)
         {
             UIKEYFRAME Desc = {};
             Desc.fAlpha = 1.f;
+            Desc.fAngle = 0.f;
             Desc.fSize = 1.f;
             Desc.vTransloation = m_vWorldPos;
             Desc.fTrackPosition = (_float)i;
+           
             m_Track.push_back(Desc);
         }
         return true;
@@ -428,6 +526,7 @@ _bool CEdit_UIBase::Add_Anim(string& szSeleteUIName)
         UIKEYFRAME Desc = {};
         Desc.fAlpha = 1.f;
         Desc.fSize = 1.f;
+        Desc.fAngle = 0.f;
         Desc.vTransloation = m_vWorldPos;
         Desc.fTrackPosition = m_Track.back().fTrackPosition + 1.f;
         m_Track.push_back(Desc);
@@ -463,6 +562,7 @@ _bool CEdit_UIBase::Set_Anim(string& szSeleteUIName)
             }
             ImGui::InputFloat("Size", &m_Track[i].fSize);
             ImGui::InputFloat("Alpha", &m_Track[i].fAlpha);
+            ImGui::InputFloat("Angle", &m_Track[i].fAngle);
 
             ImGui::InputFloat("PosX", &m_Track[i].vTransloation.x);
             ImGui::InputFloat("PosY", &m_Track[i].vTransloation.y);
@@ -562,6 +662,10 @@ HRESULT CEdit_UIBase::Initialize_Clone(void* pArg)
 
     switch (static_cast<UITYPE>(m_iUIType))
     {
+    case UITYPE::TAP:
+        m_vUVMinMax.resize(4);
+        m_EventNames.resize(4);
+        break;
     case UITYPE::BUTTON:
         m_vUVMinMax.resize(4);
         m_EventNames.resize(4);
@@ -570,17 +674,16 @@ HRESULT CEdit_UIBase::Initialize_Clone(void* pArg)
         m_vUVMinMax.resize(4);
         m_EventNames.resize(4);
         break;
-    case UITYPE::PROGRESSBAR:
-        m_vUVMinMax.resize(1);
-        m_EventNames.resize(1);
-        break;
     case UITYPE::SCROLLBAR:
         m_vUVMinMax.resize(1);
         m_EventNames.resize(2);
         break;
-    default:
+    case UITYPE::PROGRESSBAR:
         m_vUVMinMax.resize(1);
         m_EventNames.resize(1);
+        break;
+    default:
+        m_vUVMinMax.resize(1);
         break;
     }
     return S_OK;
@@ -667,6 +770,10 @@ void CEdit_UIBase::Update_Track(_float& fAccTime)
     //Alpha
     _float fAlpha = ((1.f - fRatio) * m_Track[m_iCurrentKeyFrameIndex].fAlpha) + (fRatio * m_Track[m_iCurrentKeyFrameIndex + 1].fAlpha);
     Set_Alpha(fAlpha);
+    
+    //Angle
+    _float fAngle = ((1.f - fRatio) * m_Track[m_iCurrentKeyFrameIndex].fAngle) + (fRatio * m_Track[m_iCurrentKeyFrameIndex + 1].fAngle);
+    __super::Update_Rotation(fAngle);
 
     //Pos
     _int iTrackIndex[4] = {};
@@ -698,6 +805,55 @@ void CEdit_UIBase::Update_Track(_float& fAccTime)
     m_vWorldPos.y = m_vLocalPos.y;
     
     Update_Transform(nullptr, m_vWorldPos);
+}
+
+string CEdit_UIBase::UIType_EnumToString()
+{
+    string szUIType = {};
+
+    switch (static_cast<UITYPE>(m_iUIType))
+    {
+    case UITYPE::PANEL:
+        szUIType = "PANEL";
+        break;
+    case UITYPE::TAP:
+        szUIType = "TAP";
+        break;
+    case UITYPE::BUTTON:
+        szUIType = "BUTTON";
+        break;
+    case UITYPE::SLOT:
+        szUIType = "SLOT";
+        break;
+    case UITYPE::SCROLLBAR:
+        szUIType = "SCROLLBAR";
+        break;
+    case UITYPE::PROGRESSBAR:
+        szUIType = "PROGRESSBAR";
+        break;
+    }
+    return szUIType;
+
+}
+
+CEdit_UIBase::UITYPE CEdit_UIBase::UIType_StringToEnum(string szUIType)
+{
+    UITYPE eUIType = {};
+
+    if (szUIType == "PANEL")
+        eUIType = UITYPE::PANEL;
+    if (szUIType == "TAP")
+        eUIType = UITYPE::TAP;
+    if (szUIType == "BUTTON")
+        eUIType = UITYPE::BUTTON;
+    if (szUIType == "SLOT")
+        eUIType = UITYPE::SLOT;
+    if (szUIType == "PROGRESSBAR")
+        eUIType = UITYPE::PROGRESSBAR;
+    if (szUIType == "SCROLLBAR")
+        eUIType = UITYPE::SCROLLBAR;
+
+    return eUIType;
 }
 
 CEdit_UIBase* CEdit_UIBase::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
