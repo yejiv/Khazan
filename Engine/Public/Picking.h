@@ -15,6 +15,8 @@ public:
 	void Update(); /* 후처리 에서 그려준 픽킹을 위한 뎁스정보를 현재 텍스쳐에 복사해준다., */
 
 	_bool isPicked(_float3* pOut);
+	// 맵 오브젝트 ( Props ) MapObjectID 쉐이더에 바인딩한거 꺼내오는 용도의 함수 ( VtxMesh )
+	_bool isPicked(_float3* pOut, _uint* iObjectID);
 
 private:
 	HWND					m_hWnd = {};

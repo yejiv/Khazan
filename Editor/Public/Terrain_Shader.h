@@ -11,12 +11,12 @@ NS_END
 
 NS_BEGIN(Editor)
 
-class CTerrain_Grid final : public CGameObject
+class CTerrain_Shader final : public CGameObject
 {
 private:
-	CTerrain_Grid(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CTerrain_Grid(const CTerrain_Grid& Prototype);
-	virtual ~CTerrain_Grid() = default;
+	CTerrain_Shader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CTerrain_Shader(const CTerrain_Shader& Prototype);
+	virtual ~CTerrain_Shader() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -36,7 +36,7 @@ private:
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CTerrain_Grid* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CTerrain_Shader* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

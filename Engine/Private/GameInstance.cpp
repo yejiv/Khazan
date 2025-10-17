@@ -86,7 +86,7 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pPipeLine)
 		return E_FAIL;
 
-	m_pLight_Manager = CLight_Manager::Create();
+	m_pLight_Manager = CLight_Manager::Create(EngineDesc.iNumLevels);
 	if (nullptr == m_pLight_Manager)
 		return E_FAIL;
 
@@ -128,8 +128,6 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 {
 	//m_pPicking->Update();
 
-	m_pInput_Manager->Update();
-
 	/* 내 게임내에서 반복적인 갱신이 필요한 객체들이 있다라면 갱신을 여기에서 모아서 수행하낟. */
 	m_pObject_Manager->Priority_Update(fTimeDelta);
 
@@ -146,6 +144,8 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 
 	m_pComputeShader_Manager->Execute_Job(COMPUTEJOB::UPDATE);
 
+	m_pInput_Manager->Update();
+
 #ifdef _DEBUG
 
 #endif
@@ -159,6 +159,8 @@ HRESULT CGameInstance::Clear_Resources(_uint iClearLevelID)
 	m_pPrototype_Manager->Clear(iClearLevelID);
 
 	m_pObject_Manager->Clear(iClearLevelID);
+
+	m_pLight_Manager->Clear(iClearLevelID);
 
 	return S_OK;
 }
@@ -245,6 +247,11 @@ HRESULT CGameInstance::Open_Level(_uint iLevelID, CLevel* pNewLevel)
 		return E_FAIL;
 
 	return m_pLevel_Manager->Open_Level(iLevelID, pNewLevel);
+}
+
+_uint CGameInstance::Get_CurrentLevelID()
+{
+	return m_pLevel_Manager->Get_CurrentLevelID();
 }
 
 #pragma endregion
@@ -382,19 +389,34 @@ void CGameInstance::Set_Transform(D3DTS eTransformState, const _float4x4& Matrix
 
 #pragma region LIGHT_MANAGER
 
-const LIGHT_DESC* CGameInstance::Get_LightDesc(_uint iIndex) const
+const LIGHT_DESC* CGameInstance::Get_LightDesc(const _wstring& strLightTag, _uint iLevelIndex)
 {
-	return m_pLight_Manager->Get_LightDesc(iIndex);
+	return m_pLight_Manager->Get_LightDesc(strLightTag, iLevelIndex);
 }
 
-HRESULT CGameInstance::Add_Light(const LIGHT_DESC& LightDesc)
+HRESULT CGameInstance::Add_Light(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_DESC& LightDesc, _bool isEnable)
 {
-	return m_pLight_Manager->Add_Light(LightDesc);
+	return m_pLight_Manager->Add_Light(strLightTag, iLevelIndex, LightDesc, isEnable);
 }
 
-HRESULT CGameInstance::Render_Lights(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
+void CGameInstance::Set_LightDesc(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_DESC& LightDesc)
 {
-	return m_pLight_Manager->Render(pShader, pVIBuffer);
+	m_pLight_Manager->Set_LightDesc(strLightTag, iLevelIndex, LightDesc);
+}
+
+void CGameInstance::Set_LightPosition(const _wstring& strLightTag, _uint iLevelIndex, const _float4& vPosition)
+{
+	m_pLight_Manager->Set_LightPosition(strLightTag, iLevelIndex, vPosition);
+}
+
+void CGameInstance::Set_LightEnable(const _wstring& strLightTag, _uint iLevelIndex, _bool isEnable)
+{
+	m_pLight_Manager->Set_LightEnable(strLightTag, iLevelIndex, isEnable);
+}
+
+HRESULT CGameInstance::Render_Lights(CShader* pShader, CVIBuffer_Rect* pVIBuffer, _uint iLevelIndex)
+{
+	return m_pLight_Manager->Render(pShader, pVIBuffer, iLevelIndex);
 }
 
 #pragma endregion
@@ -470,6 +492,11 @@ HRESULT CGameInstance::Render_RT_Debug(CShader* pShader, CVIBuffer_Rect* pVIBuff
 _bool CGameInstance::isPicked(_float3* pOut)
 {
 	return m_pPicking->isPicked(pOut);
+}
+
+_bool CGameInstance::isPicked(_float3* pOut, _uint* iObjectID)
+{
+	return m_pPicking->isPicked(pOut, iObjectID);
 }
 
 #pragma endregion
