@@ -527,7 +527,7 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 			} SEPARATOR;
 
 			// 인스턴스 행렬 추가
-			if (false == m_isFixLight && false == m_isFixObjectWindow && ImGui::Button("ADD (T)") || m_pGameInstance->Key_Down(DIK_T))
+			if (false == m_isLightSettingWindow && false == m_isFixObjectWindow && ImGui::Button("ADD (T)") || m_pGameInstance->Key_Down(DIK_T))
 			{
 				CEditor_Model_Instance* pModelInst = static_cast<CEditor_Model_Instance*>(m_pGameInstance->Find_Component(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_InstObj"), TEXT("Com_Model"), m_iIndex_PrtInst));
 				CHECK_NULLPTR(pModelInst, );
@@ -567,7 +567,7 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 			} SEPARATOR;
 
 			// 단일 오브젝트 Layer 추가
-			if (false == m_isFixLight && false == m_isFixObjectWindow && ImGui::Button("ADD (Y)") || m_pGameInstance->Key_Down(DIK_Y))
+			if (false == m_isLightSettingWindow && false == m_isFixObjectWindow && ImGui::Button("ADD (Y)") || m_pGameInstance->Key_Down(DIK_Y))
 			{
 				CProp_Object::PROP_OBJECT_DESC ObjectDesc = {};
 
@@ -1537,30 +1537,30 @@ HRESULT CLevel_Map::Ready_Light_Window()
 					SEPARATOR;
 
 					ImGui::Text("DIRECTION"); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("DIRdirx", &m_FixLightDesc.vDirection.x); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("DIRdiry", &m_FixLightDesc.vDirection.y); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("DIRdirz", &m_FixLightDesc.vDirection.z); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("X##DIRdirx", &m_FixLightDesc.vDirection.x); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("Y##DIRdiry", &m_FixLightDesc.vDirection.y); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("Z##DIRdirz", &m_FixLightDesc.vDirection.z); SAMELINE;
 					SEPARATOR;
 
 					ImGui::Text("DIFFUSE"); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("DIRdifx", &m_FixLightDesc.vDiffuse.x); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("DIRdify", &m_FixLightDesc.vDiffuse.y); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("DIRdifz", &m_FixLightDesc.vDiffuse.z); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("DIRdifw", &m_FixLightDesc.vDiffuse.w); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("R##DIRdifx", &m_FixLightDesc.vDiffuse.x); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("G##DIRdify", &m_FixLightDesc.vDiffuse.y); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("B##DIRdifz", &m_FixLightDesc.vDiffuse.z); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("A##DIRdifw", &m_FixLightDesc.vDiffuse.w); SAMELINE;
 					SEPARATOR;
 
 					ImGui::Text("AMBIENT"); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("DIRambx", &m_FixLightDesc.vAmbient.x); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("DIRamby", &m_FixLightDesc.vAmbient.y); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("DIRambz", &m_FixLightDesc.vAmbient.z); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("DIRambw", &m_FixLightDesc.vAmbient.w); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("R##DIRambx", &m_FixLightDesc.vAmbient.x); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("G##DIRamby", &m_FixLightDesc.vAmbient.y); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("B##DIRambz", &m_FixLightDesc.vAmbient.z); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("A##DIRambw", &m_FixLightDesc.vAmbient.w); SAMELINE;
 					SEPARATOR;
 
 					ImGui::Text("SPECULAR"); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("DIRspecx", &m_FixLightDesc.vSpecular.x); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("DIRspecy", &m_FixLightDesc.vSpecular.y); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("DIRspecz", &m_FixLightDesc.vSpecular.z); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("DIRspecw", &m_FixLightDesc.vSpecular.w); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("R##DIRspecx", &m_FixLightDesc.vSpecular.x); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("G##DIRspecy", &m_FixLightDesc.vSpecular.y); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("B##DIRspecz", &m_FixLightDesc.vSpecular.z); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("A##DIRspecw", &m_FixLightDesc.vSpecular.w); SAMELINE;
 					SEPARATOR;
 				}
 				else if (LIGHT_DESC::POINT == m_FixLightDesc.eType)
@@ -1569,9 +1569,9 @@ HRESULT CLevel_Map::Ready_Light_Window()
 					SEPARATOR;
 
 					ImGui::Text("POSITION"); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("POIposx", &m_FixLightDesc.vPosition.x); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("POIposy", &m_FixLightDesc.vPosition.y); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("POIposz", &m_FixLightDesc.vPosition.z); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("X##POIposx", &m_FixLightDesc.vPosition.x); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("Y##POIposy", &m_FixLightDesc.vPosition.y); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("Z##POIposz", &m_FixLightDesc.vPosition.z); SAMELINE;
 
 					if (true == m_isAddLightPoint)
 					{
@@ -1584,29 +1584,28 @@ HRESULT CLevel_Map::Ready_Light_Window()
 
 					SEPARATOR;
 
-					ImGui::Text("RANGE"); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("POIrange", &m_FixLightDesc.fRange); SAMELINE;
+					ImGui::Text("RANGE"); SAMELINE; ITEMWIDTH(80.f); ImGui::InputFloat("##POIrange", &m_FixLightDesc.fRange); SAMELINE;
 					SEPARATOR;
 
 					ImGui::Text("DIFFUSE"); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("POIdifx", &m_FixLightDesc.vDiffuse.x); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("POIdify", &m_FixLightDesc.vDiffuse.y); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("POIdifz", &m_FixLightDesc.vDiffuse.z); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("POIdifw", &m_FixLightDesc.vDiffuse.w); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("R##POIdifx", &m_FixLightDesc.vDiffuse.x); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("G##POIdify", &m_FixLightDesc.vDiffuse.y); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("B##POIdifz", &m_FixLightDesc.vDiffuse.z); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("A##POIdifw", &m_FixLightDesc.vDiffuse.w); SAMELINE;
 					SEPARATOR;
 
 					ImGui::Text("AMBIENT"); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("POIambx", &m_FixLightDesc.vAmbient.x); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("POIamby", &m_FixLightDesc.vAmbient.y); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("POIambz", &m_FixLightDesc.vAmbient.z); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("POIambw", &m_FixLightDesc.vAmbient.w); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("R##POIambx", &m_FixLightDesc.vAmbient.x); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("G##POIamby", &m_FixLightDesc.vAmbient.y); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("B##POIambz", &m_FixLightDesc.vAmbient.z); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("A##POIambw", &m_FixLightDesc.vAmbient.w); SAMELINE;
 					SEPARATOR;
 
 					ImGui::Text("SPECULAR"); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("POIspecx", &m_FixLightDesc.vSpecular.x); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("POIspecy", &m_FixLightDesc.vSpecular.y); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("POIspecz", &m_FixLightDesc.vSpecular.z); SAMELINE;
-					ITEMWIDTH(50.f); ImGui::InputFloat("POIspecw", &m_FixLightDesc.vSpecular.w); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("R##POIspecx", &m_FixLightDesc.vSpecular.x); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("G##POIspecy", &m_FixLightDesc.vSpecular.y); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("B##POIspecz", &m_FixLightDesc.vSpecular.z); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("A##POIspecw", &m_FixLightDesc.vSpecular.w); SAMELINE;
 					SEPARATOR;
 				}
 				if (ImGui::Button("APPLY"))
@@ -1682,6 +1681,9 @@ HRESULT CLevel_Map::Ready_Light_Window()
 							ZeroMemory(&m_szLightTag, sizeof(m_szLightTag));
 							ZeroMemory(&m_LightDesc, sizeof(LIGHT_DESC));
 							m_LightDesc.eType = LIGHT_DESC::END;
+
+							m_isAddLight = !m_isAddLight;
+							m_isFixLight = false;
 						}
 					}
 				};
@@ -1706,6 +1708,9 @@ HRESULT CLevel_Map::Ready_Light_Window()
 						{
 							m_FixLightDesc = *pLightDesc;
 							m_isFindFixLight = true;
+
+							m_isAddLight = false;
+							m_isFixLight = false;
 						}
 					}
 				}
