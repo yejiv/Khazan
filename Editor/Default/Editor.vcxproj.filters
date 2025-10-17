@@ -160,6 +160,9 @@
     <Filter Include="02.GameObject\Shader\Terrain">
       <UniqueIdentifier>{81b63c04-fa83-4a3a-96f5-b9f89191f19d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\98.Export">
+      <UniqueIdentifier>{c9c828e3-489d-4584-850d-ef3ebe71f812}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -300,6 +303,10 @@
     <ClInclude Include="..\Public\Effect_Point_Instance.h">
       <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Point_Instance</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\TestParticle.h" />
+    <ClInclude Include="..\Public\Prop_Export.h">
+      <Filter>02.GameObject\MapObject\Prop\98.Export</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -437,6 +444,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Effect_Point_Instance.cpp">
       <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Point_Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Export.cpp">
+      <Filter>02.GameObject\MapObject\Prop\98.Export</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

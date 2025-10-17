@@ -41,12 +41,14 @@ private:
 private:
 	// JSON으로부터 읽어와서 Prototype 세팅
 	HRESULT Add_Prototypes_FromJson();
+	HRESULT Convert_Json_To_Data();
 
 	// 맵 오브젝트 배치하면서 vector에 개별로 push_back 한거 nullptr 시 정리용
-	void Clear_ObjectList();
+	void Clear_List();
 
 	void Select_Fix_Object(_float fTimeDelta);
 	void Select_Fix_Instance(_float fTimeDelta);
+	void Select_Add_LightPoint(_float fTimeDelta);
 
 #pragma region 변수
 private:
@@ -67,6 +69,34 @@ private:
 	_float3 m_vFixScale = {};
 	_float3 m_vFixRotation = {};
 	_float3 m_vFixPosition = {};
+
+#pragma endregion
+
+#pragma region LIGHT 수정 변수
+	///////
+	// ADD
+	///////
+	LIGHT_DESC m_LightDesc = {};
+
+	_char m_szLightTag[MAX_PATH] = {};
+	string m_strLightTag = {};
+
+	vector<string> m_LightTags;
+
+	_bool m_isAddLight = { false };
+	_bool m_isFixLight = { false };
+	_bool m_isFindFixLight = { false };
+
+	///////
+	// FIX
+	///////
+	LIGHT_DESC m_FixLightDesc = {};
+
+	_char m_szFixLightTag[MAX_PATH] = {};
+	string m_strFixLightTag = {};
+
+	_bool m_isAddLightPoint = { false };
+	_float3 m_vLightPoint = {};
 
 #pragma endregion
 
@@ -170,6 +200,8 @@ private:
 	HRESULT Ready_Json_Edit_Window();
 	// Level_Map Original Json 리스트 윈도우
 	HRESULT Ready_Json_List_Window();
+	// Level_Map Light 세팅 윈도우
+	HRESULT Ready_Light_Window();
 
 	// Directory에 파일들 불러오는용 ( Json 한정 함수 )
 	void Get_Directory_Files(const _char* pDirectoryPath);

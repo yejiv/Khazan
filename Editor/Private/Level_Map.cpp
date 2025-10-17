@@ -24,10 +24,11 @@ HRESULT CLevel_Map::Initialize()
 
 void CLevel_Map::Update(_float fTimeDelta)
 {
-	Clear_ObjectList();
+	Clear_List();
 
 	Select_Fix_Object(fTimeDelta);
 	Select_Fix_Instance(fTimeDelta);
+	Select_Add_LightPoint(fTimeDelta);
 
 	return;
 }
@@ -41,29 +42,9 @@ HRESULT CLevel_Map::Render()
 
 HRESULT CLevel_Map::Ready_Defaults()
 {
-	CHECK_FAILED(Ready_Lights(), E_FAIL);
-
 	CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Map_Camera")), E_FAIL);
 
 	CHECK_FAILED(Ready_Layer_Terrain(TEXT("Layer_Map_Terrain")), E_FAIL);
-
-	return S_OK;
-}
-
-HRESULT CLevel_Map::Ready_Lights()
-{
-	LIGHT_DESC LightDesc = {};
-
-	LightDesc.eType = LIGHT_DESC::DIRECTIONAL;
-
-	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
-
-	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
-	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
-
-	if (FAILED(m_pGameInstance->Add_Light(TEXT("Directional_Map"), ENUM_CLASS(LEVEL::MAP), LightDesc)))
-		return E_FAIL;
 
 	return S_OK;
 }
@@ -185,7 +166,99 @@ HRESULT CLevel_Map::Add_Prototypes_FromJson()
 	return S_OK;
 }
 
-void CLevel_Map::Clear_ObjectList()
+HRESULT CLevel_Map::Convert_Json_To_Data()
+{
+	_matrix PreTransformMatrix = XMMatrixIdentity();
+
+	// 스케일 변환 ( 1 / 100 )
+	PreTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+
+	for (auto& Component : m_CustomJson)
+	{
+		_bool isInstance = (_bool)Component["isInstance"];
+		_bool isObject = (_bool)Component["isObject"];
+
+		string strModelName = Component["strModelName"];
+
+		if (true == isInstance)				// 인스턴싱 모델인 경우
+		{
+			// 모델명과 일치하는 경로 찾기
+			string strLoadPath = Find_ModelPath(strModelName);
+
+			if ("NOTFOUND" == strLoadPath)
+			{
+				string error = "Can't found load path\nModelName : " + strModelName;
+				OutputDebugStringA(error.c_str());
+				continue;
+			}
+
+			CEditor_ModelMesh_Instance::EDITOR_MODELMESH_INSTANCE_DESC InstanceDesc = {};
+
+			InstanceDesc.iNumInstance = 0;
+
+			// Instance 모델 프로토타입 등록
+			CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), AnsiToWString(strModelName),
+				CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, strLoadPath.c_str(), PreTransformMatrix)), E_FAIL);
+
+			CProp_Export::PROP_EXPORT_DESC ExportDesc = {};
+
+			_wstring strTempName = AnsiToWString(strModelName);
+			memcpy(ExportDesc.szModelName, strTempName.c_str(), sizeof(ExportDesc.szModelName));
+
+			ExportDesc.eLevel = LEVEL::MAP;
+
+			// 추출할거는 바로 Layer 등록
+			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_ExportObj"),
+				ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Export"), &ExportDesc), E_FAIL);
+
+			m_CheckPrototypes.emplace(strModelName, strLoadPath);
+			m_Prototypes_Inst.push_back(strModelName);
+		}
+		else if (true == isObject)				// 단일 오브젝트인 경우
+		{
+			auto iter = m_CheckPrototypes.find(strModelName);
+
+			if (iter == m_CheckPrototypes.end())
+			{
+				// 모델명과 일치하는 경로 찾기
+				string strLoadPath = Find_ModelPath(strModelName);
+
+				if ("NOTFOUND" == strLoadPath)
+				{
+					string error = "Can't found load path\nModelName : " + strModelName + "\n";
+					OutputDebugStringA(error.c_str());
+					continue;
+				}
+
+				// 단일 오브젝트는 바로 인스턴스 등록
+				CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), AnsiToWString(strModelName),
+					CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, strLoadPath.c_str(), PreTransformMatrix)), E_FAIL);
+
+				CProp_Export::PROP_EXPORT_DESC ExportDesc = {};
+
+				_wstring strTempName = AnsiToWString(strModelName);
+				memcpy(ExportDesc.szModelName, strTempName.c_str(), sizeof(ExportDesc.szModelName));
+
+				ExportDesc.eLevel = LEVEL::MAP;
+
+				// 추출할거는 바로 Layer 등록
+				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_ExportObj"),
+					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Export"), &ExportDesc), E_FAIL);
+
+				m_CheckPrototypes.emplace(strModelName, strLoadPath);
+				m_Prototypes_Obj.push_back(strModelName);
+			}
+		}
+		else
+		{
+			MSG_BOX(TEXT("있어서는 안되는 else"));
+		}
+	}
+
+	return S_OK;
+}
+
+void CLevel_Map::Clear_List()
 {
 	for (_uint i = 0; i < m_ObjectList.size(); )
 	{
@@ -273,6 +346,23 @@ void CLevel_Map::Select_Fix_Instance(_float fTimeDelta)
 	}
 }
 
+void CLevel_Map::Select_Add_LightPoint(_float fTimeDelta)
+{
+	if (false == m_isLightSettingWindow)
+		return;
+
+	if (m_pGameInstance->Key_Pressing(DIK_F3, fTimeDelta) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+	{
+		_float3 vPosition = {};
+
+		if (m_pGameInstance->isPicked(&vPosition))
+		{
+			m_isAddLightPoint = true;
+			m_vLightPoint = vPosition;
+		}
+	}
+}
+
 HRESULT CLevel_Map::Ready_DefaultImGui_For_MapTool()
 {
 	CHECK_FAILED(Ready_Main_Window(), E_FAIL);
@@ -286,6 +376,8 @@ HRESULT CLevel_Map::Ready_DefaultImGui_For_MapTool()
 	CHECK_FAILED(Ready_Json_Edit_Window(), E_FAIL);
 
 	CHECK_FAILED(Ready_Json_List_Window(), E_FAIL);
+
+	CHECK_FAILED(Ready_Light_Window(), E_FAIL);
 
 	return S_OK;
 }
@@ -304,7 +396,7 @@ HRESULT CLevel_Map::Ready_Main_Window()
 				{
 					ImGui::Text("F1 + LB      : SELECT OBJECT");
 					ImGui::Text("F2 + LB      : SELECT INSTANCE");
-					ImGui::Text("FF + FF      : ");
+					ImGui::Text("F3 + LB      : ADD LIGHT POSITION");
 					ImGui::Text("F4 + LB      : SELECTED OBJECT MOVE");
 
 					ImGui::Text("3      : EXPORT MODEL");
@@ -315,6 +407,12 @@ HRESULT CLevel_Map::Ready_Main_Window()
 				}
 				else
 				{
+					SEPARATOR;
+					ImGui::Text("LIGHT");
+					if (ImGui::Button("LIGHT EDIT"))
+					{
+						m_isLightSettingWindow = !m_isLightSettingWindow;
+					}
 					SEPARATOR;
 					ImGui::Text("JSON");
 					if (ImGui::Button("JSON TO CUSTOM"))
@@ -429,7 +527,7 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 			} SEPARATOR;
 
 			// 인스턴스 행렬 추가
-			if (false == m_isFixObjectWindow && ImGui::Button("ADD (T)") || m_pGameInstance->Key_Down(DIK_T))
+			if (false == m_isFixLight && false == m_isFixObjectWindow && ImGui::Button("ADD (T)") || m_pGameInstance->Key_Down(DIK_T))
 			{
 				CEditor_Model_Instance* pModelInst = static_cast<CEditor_Model_Instance*>(m_pGameInstance->Find_Component(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_InstObj"), TEXT("Com_Model"), m_iIndex_PrtInst));
 				CHECK_NULLPTR(pModelInst, );
@@ -469,7 +567,7 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 			} SEPARATOR;
 
 			// 단일 오브젝트 Layer 추가
-			if (false == m_isFixObjectWindow && ImGui::Button("ADD (Y)") || m_pGameInstance->Key_Down(DIK_Y))
+			if (false == m_isFixLight && false == m_isFixObjectWindow && ImGui::Button("ADD (Y)") || m_pGameInstance->Key_Down(DIK_Y))
 			{
 				CProp_Object::PROP_OBJECT_DESC ObjectDesc = {};
 
@@ -908,6 +1006,11 @@ HRESULT CLevel_Map::Ready_CustomJson_Edit_Window()
 
 			if (true == m_isCustomJsonLoaded)
 			{
+				SEPARATOR;
+				if (ImGui::Button("CONVERT JSON TO DAT"))
+				{
+					CHECK_FAILED_MSG(Convert_Json_To_Data(), TEXT("추출 실패"), );
+				}
 				SEPARATOR;
 				if (ImGui::Button("CREATE PROTOTYPES"))
 				{
@@ -1409,6 +1512,204 @@ HRESULT CLevel_Map::Ready_Json_List_Window()
 					ofs.close();
 
 			} SEPARATOR;
+
+			ImGui::End();
+		}
+		});
+
+#pragma endregion
+
+	return S_OK;
+}
+
+HRESULT CLevel_Map::Ready_Light_Window()
+{
+	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
+		if (true == m_isLightSettingWindow)
+		{
+			ImGui::Begin("LIGHT WINDOW", &m_isLightSettingWindow, ImGuiWindowFlags_AlwaysAutoResize);
+
+			if (true == m_isFindFixLight)
+			{
+				if (LIGHT_DESC::DIRECTIONAL == m_FixLightDesc.eType)
+				{
+					ImGui::Text("DIRECTIONAL");
+					SEPARATOR;
+
+					ImGui::Text("DIRECTION"); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("DIRdirx", &m_FixLightDesc.vDirection.x); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("DIRdiry", &m_FixLightDesc.vDirection.y); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("DIRdirz", &m_FixLightDesc.vDirection.z); SAMELINE;
+					SEPARATOR;
+
+					ImGui::Text("DIFFUSE"); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("DIRdifx", &m_FixLightDesc.vDiffuse.x); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("DIRdify", &m_FixLightDesc.vDiffuse.y); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("DIRdifz", &m_FixLightDesc.vDiffuse.z); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("DIRdifw", &m_FixLightDesc.vDiffuse.w); SAMELINE;
+					SEPARATOR;
+
+					ImGui::Text("AMBIENT"); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("DIRambx", &m_FixLightDesc.vAmbient.x); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("DIRamby", &m_FixLightDesc.vAmbient.y); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("DIRambz", &m_FixLightDesc.vAmbient.z); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("DIRambw", &m_FixLightDesc.vAmbient.w); SAMELINE;
+					SEPARATOR;
+
+					ImGui::Text("SPECULAR"); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("DIRspecx", &m_FixLightDesc.vSpecular.x); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("DIRspecy", &m_FixLightDesc.vSpecular.y); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("DIRspecz", &m_FixLightDesc.vSpecular.z); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("DIRspecw", &m_FixLightDesc.vSpecular.w); SAMELINE;
+					SEPARATOR;
+				}
+				else if (LIGHT_DESC::POINT == m_FixLightDesc.eType)
+				{
+					ImGui::Text("POINT");
+					SEPARATOR;
+
+					ImGui::Text("POSITION"); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("POIposx", &m_FixLightDesc.vPosition.x); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("POIposy", &m_FixLightDesc.vPosition.y); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("POIposz", &m_FixLightDesc.vPosition.z); SAMELINE;
+
+					if (true == m_isAddLightPoint)
+					{
+						m_isAddLightPoint = false;
+
+						m_FixLightDesc.vPosition.x = m_vLightPoint.x;
+						m_FixLightDesc.vPosition.y = m_vLightPoint.y;
+						m_FixLightDesc.vPosition.z = m_vLightPoint.z;
+					}
+
+					SEPARATOR;
+
+					ImGui::Text("RANGE"); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("POIrange", &m_FixLightDesc.fRange); SAMELINE;
+					SEPARATOR;
+
+					ImGui::Text("DIFFUSE"); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("POIdifx", &m_FixLightDesc.vDiffuse.x); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("POIdify", &m_FixLightDesc.vDiffuse.y); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("POIdifz", &m_FixLightDesc.vDiffuse.z); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("POIdifw", &m_FixLightDesc.vDiffuse.w); SAMELINE;
+					SEPARATOR;
+
+					ImGui::Text("AMBIENT"); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("POIambx", &m_FixLightDesc.vAmbient.x); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("POIamby", &m_FixLightDesc.vAmbient.y); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("POIambz", &m_FixLightDesc.vAmbient.z); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("POIambw", &m_FixLightDesc.vAmbient.w); SAMELINE;
+					SEPARATOR;
+
+					ImGui::Text("SPECULAR"); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("POIspecx", &m_FixLightDesc.vSpecular.x); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("POIspecy", &m_FixLightDesc.vSpecular.y); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("POIspecz", &m_FixLightDesc.vSpecular.z); SAMELINE;
+					ITEMWIDTH(50.f); ImGui::InputFloat("POIspecw", &m_FixLightDesc.vSpecular.w); SAMELINE;
+					SEPARATOR;
+				}
+				if (ImGui::Button("APPLY"))
+				{
+					m_pGameInstance->Set_LightDesc(AnsiToWString(m_strFixLightTag), ENUM_CLASS(LEVEL::MAP), m_FixLightDesc);
+				} SAMELINE;
+				if (ImGui::Button("DONE"))
+				{
+					m_strFixLightTag.clear();
+					m_isFindFixLight = false;
+					ZeroMemory(&m_FixLightDesc, sizeof(LIGHT_DESC));
+				}
+				
+			}
+			else
+			{
+				if (ImGui::Button("ADD LIGHT"))
+				{
+					m_isAddLight = !m_isAddLight;
+					m_isFixLight = false;
+					m_LightDesc.eType = LIGHT_DESC::END;
+				}
+				if (ImGui::Button("FIX LIGHT"))
+				{
+					m_isFixLight = !m_isFixLight;
+					m_isAddLight = false;
+					m_LightDesc.eType = LIGHT_DESC::END;
+				} SEPARATOR;
+
+				// Add Light 띄우기
+				if (true == m_isAddLight)
+				{
+					if (ImGui::Button("DIRECTIONAL"))
+						m_LightDesc.eType = LIGHT_DESC::DIRECTIONAL;
+					if (ImGui::Button("POINT"))
+						m_LightDesc.eType = LIGHT_DESC::POINT;
+
+					if (LIGHT_DESC::DIRECTIONAL == m_LightDesc.eType)
+					ImGui::Text("CURRENT LIGHT TYPE : DIRECTIONAL");
+
+					if (LIGHT_DESC::POINT == m_LightDesc.eType)
+					ImGui::Text("CURRENT LIGHT TYPE : POINT");
+
+					ImGui::Text("LIGHT TAG : ");
+					ImGui::InputText("##light_tag", m_szLightTag, IM_ARRAYSIZE(m_szLightTag));
+					m_strLightTag = m_szLightTag;
+
+					if (LIGHT_DESC::DIRECTIONAL == m_LightDesc.eType)
+					{
+						m_LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
+
+						m_LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+						m_LightDesc.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
+						m_LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+					}
+					if (LIGHT_DESC::POINT == m_LightDesc.eType)
+					{
+						m_LightDesc.vPosition = _float4(1.f, -1.f, 1.f, 0.f);
+						m_LightDesc.fRange = 10.f;
+
+						m_LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+						m_LightDesc.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
+						m_LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+					}
+
+					if (LIGHT_DESC::END != m_LightDesc.eType)
+					{
+						if (ImGui::Button("LIGHT ADD"))
+						{
+							m_pGameInstance->Add_Light(AnsiToWString(m_strLightTag), ENUM_CLASS(LEVEL::MAP), m_LightDesc);
+							m_LightTags.push_back(m_strLightTag);
+
+							ZeroMemory(&m_szLightTag, sizeof(m_szLightTag));
+							ZeroMemory(&m_LightDesc, sizeof(LIGHT_DESC));
+							m_LightDesc.eType = LIGHT_DESC::END;
+						}
+					}
+				};
+				// Fix Light 띄우기
+				if (true == m_isFixLight)
+				{
+					ImGui::Text("LIGHT TAG");
+					ImGui::InputText("##fix_light_tag", m_szFixLightTag, IM_ARRAYSIZE(m_szFixLightTag));
+					if (ImGui::Button("SEARCH"))
+					{
+						m_isFindFixLight = false;
+						ZeroMemory(&m_FixLightDesc, sizeof(LIGHT_DESC));
+
+						m_strFixLightTag = m_szFixLightTag;
+
+						const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(AnsiToWString(m_strFixLightTag), ENUM_CLASS(LEVEL::MAP));
+						if (nullptr == pLightDesc)
+						{
+							//;;
+						}
+						else
+						{
+							m_FixLightDesc = *pLightDesc;
+							m_isFindFixLight = true;
+						}
+					}
+				}
+			}
 
 			ImGui::End();
 		}

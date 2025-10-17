@@ -195,6 +195,7 @@
     <ClInclude Include="..\Public\Prop.h" />
     <ClInclude Include="..\Public\Prop_Animated.h" />
     <ClInclude Include="..\Public\Prop_Destructible.h" />
+    <ClInclude Include="..\Public\Prop_Export.h" />
     <ClInclude Include="..\Public\Prop_Interactive.h" />
     <ClInclude Include="..\Public\Prop_Object.h" />
     <ClInclude Include="..\Public\Prop_Static.h" />
@@ -242,6 +243,7 @@
     <ClCompile Include="..\Private\Prop.cpp" />
     <ClCompile Include="..\Private\Prop_Animated.cpp" />
     <ClCompile Include="..\Private\Prop_Destructible.cpp" />
+    <ClCompile Include="..\Private\Prop_Export.cpp" />
     <ClCompile Include="..\Private\Prop_Interactive.cpp" />
     <ClCompile Include="..\Private\Prop_Object.cpp" />
     <ClCompile Include="..\Private\Prop_Static.cpp" />
