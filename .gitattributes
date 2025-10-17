@@ -1,4 +1,2 @@
 *.json filter=lfs diff=lfs merge=lfs -text
-POSData_Embars_SubMission02_All.json filter=lfs diff=lfs merge=lfs -text
-POSData_Embars_SubMission01_All.json filter=lfs diff=lfs merge=lfs -text
 Client/Bin/Resources/Models/Prop/Json/** filter=lfs diff=lfs merge=lfs -text
