@@ -17,10 +17,10 @@ HRESULT CLevel_Effect::Initialize()
     if (FAILED(Ready_Layer_Camera()))
         return E_FAIL;
 
-    if (FAILED(Ready_Layer_GameObejct()))
+    if (FAILED(Ready_Layer_GameObject()))
         return E_FAIL;
 
-    /*m_pGameInstance->AddWidget(TEXT("Effect"), [&]()
+    m_pGameInstance->AddWidget(TEXT("Effect"), [&]()
         {
             ImGui::Begin("[Create Effect to Prefab]");
 
@@ -270,9 +270,27 @@ HRESULT CLevel_Effect::Ready_Layer_Camera()
     return S_OK;
 }
 
-HRESULT CLevel_Effect::Ready_Layer_GameObejct()
+HRESULT CLevel_Effect::Ready_Layer_GameObject()
 {
-    m_PrefabPrototype = CEffect_Prefab::Create(m_pDevice, m_pContext);
+    m_PrefabPrototype = CEffect_Prefab::Create(m_pDevice, m_pContext); 
+
+	CCamera_Effect::CAMERA_EFFECT_DESC Desc{};
+
+	Desc.vEye = _float4(0.f, 20.f, -20.f, 1.f);
+	Desc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
+	Desc.fFovy = XMConvertToRadians(60.0f);
+	Desc.fNear = 0.1f;
+	Desc.fFar = 1000.f;
+	Desc.fSpeedPerSec = 10.f;
+	Desc.fRotationPerSec = XMConvertToRadians(90.0f);
+	Desc.fMouseSensor = 0.1f;
+
+	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EFFECT), TEXT("Layer_Camera"),
+		ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_Camera_Effect"), &Desc), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EFFECT), TEXT("Effect_Terrain"),
+		ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_Effect_Terrain")), E_FAIL);
+
     return S_OK;
 }
 

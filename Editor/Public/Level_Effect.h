@@ -67,7 +67,7 @@ private :
 private:
 	HRESULT Ready_Layer_BackGround();
 	HRESULT Ready_Layer_Camera();
-	HRESULT Ready_Layer_GameObejct();
+	HRESULT Ready_Layer_GameObject();
 
 public:
 	static CLevel_Effect* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
