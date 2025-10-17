@@ -5,6 +5,11 @@
 #include "Camera_Free.h"
 #include "Dummy.h"
 
+#pragma region MAP OBJECT
+#include "MapObject_Header.h"
+#pragma endregion
+
+
 CLevel_Stage1::CLevel_Stage1(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
 {
@@ -30,6 +35,8 @@ HRESULT CLevel_Stage1::Initialize()
 
 	/*if (FAILED(Ready_Layer_Test(TEXT("Layer_Test"))))
 		return E_FAIL;*/
+
+	CHECK_FAILED(Ready_Layer_MapObject_Test(TEXT("Layer_Test")), E_FAIL);
 
 	m_pGameInstance->Jolt_Test();
 
@@ -65,7 +72,7 @@ HRESULT CLevel_Stage1::Ready_Lights()
 	LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
-	if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
+	if (FAILED(m_pGameInstance->Add_Light(TEXT("Directional_Stage1"), ENUM_CLASS(LEVEL::STAGE1), LightDesc)))
 		return E_FAIL;
 
 	return S_OK;
@@ -122,6 +129,19 @@ HRESULT CLevel_Stage1::Ready_Layer_Test(const _wstring& strLayerTag)
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
 		ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_JOH_Test1"))))
 		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CLevel_Stage1::Ready_Layer_MapObject_Test(const _wstring& strLayerTag)
+{
+	CProp_Test::PROP_OBJECT_DESC ObjectDesc = {};
+
+	memcpy(ObjectDesc.szModelName, TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"), sizeof(ObjectDesc.szModelName));
+	ObjectDesc.eLevel = LEVEL::STAGE1;
+
+	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
+		ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_Test"), &ObjectDesc), E_FAIL);
 
 	return S_OK;
 }
