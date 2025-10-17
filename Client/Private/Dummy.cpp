@@ -1,6 +1,6 @@
 #include "Dummy.h"
 #include "GameInstance.h"
-#include "RigidBody.h"
+#include "Body.h"
 #include "ContainerObject.h"
 
 CDummy::CDummy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -53,8 +53,10 @@ void CDummy::Update(_float fTimeDelta)
         int a = 10;
 
 
-    //m_pRigidBodyCom->Sync_Update(m_pTransformCom);
-    m_pCharVirCom->Update(fTimeDelta, m_pTransformCom);
+    //m_pBodyCom->Sync_Update(m_pTransformCom);
+    m_pBodyCom->Update(fTimeDelta, m_pTransformCom);
+    /*m_pCharVirCom->Sync_Update(m_pTransformCom);
+    m_pCharVirCom->Update(fTimeDelta, m_pTransformCom);*/
 }
 
 void CDummy::Late_Update(_float fTimeDelta)
@@ -91,6 +93,20 @@ HRESULT CDummy::Render()
     return S_OK;
 }
 
+void CDummy::Collision_Enter(CGameObject* pObject, JOLT_COLLSION_TYPE eType)
+{
+    //m_pBodyCom->Add_Impulse(_float3(0.f, 100.f, 0.f));
+
+    if (eType == JOLT_COLLSION_TYPE::CHARVIR)
+    {
+        m_pBodyCom->Add_Impulse(XMVector4Normalize(XMVectorSet(0.5f, 0.5f, 0.f, 0.f)), _float3(20.f, 20.f, 0.f), 5);
+    }
+}
+
+void CDummy::Collision_Stay(CGameObject* pObject, JOLT_COLLSION_TYPE eType)
+{
+}
+
 HRESULT CDummy::Ready_Components()
 {
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
@@ -102,44 +118,48 @@ HRESULT CDummy::Ready_Components()
         return E_FAIL;
 
 
-    /*CRigidBody::RIGID_BOXSHAPE_DESC RigidDesc{};
-    RigidDesc.vExtent = { 0.5f, 0.5f, 0.5f };
-    RigidDesc.bIsTrigger = false;
-    RigidDesc.bStartActive = true;
-    RigidDesc.eMotion = EMotionType::Static;
-    RigidDesc.eQuality = EMotionQuality::Discrete;
-    RigidDesc.eShapeType = SHAPE::BOX;
-    RigidDesc.fFriction = 0.8f;
-    RigidDesc.fMass = 1.0f;
-    RigidDesc.fRestitution = 0.0f;
-    RigidDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
+    /*CBody::BODY_BOXSHAPE_DESC BodyDesc{};
+    BodyDesc.vExtent = { 0.5f, 0.5f, 0.5f };*/
+    CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
+    BodyDesc.fRadius = 1.f;
+    BodyDesc.bIsTrigger = false;
+    BodyDesc.bStartActive = true;
+    BodyDesc.eMotion = EMotionType::Dynamic;
+    BodyDesc.eQuality = EMotionQuality::LinearCast;
+    BodyDesc.eShapeType = SHAPE::SPHERE;
+    BodyDesc.fFriction = 0.8f;
+    BodyDesc.fMass = 1.0f;
+    BodyDesc.fRestitution = 0.0f;
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP);
     _float3 vPos{};
     XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
     _float4 vQuat{};
     XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
-    RigidDesc.vPos = vPos;
-    RigidDesc.vQuat = vQuat;
+    BodyDesc.vPos = vPos;
+    BodyDesc.vQuat = vQuat;
+    BodyDesc.vShapeOffset = _float3(0.f, 0.5f, 0.f);
+    BodyDesc.pGameObject = this;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_RigidBody"),
-        TEXT("Com_RigidBody"), reinterpret_cast<CComponent**>(&m_pRigidBodyCom), &RigidDesc)))
-        return E_FAIL;*/
-
-    CCharacterVirtual::CV_BOXSHAPE_DESC tCharVirDesc{};
-    _float3 vPos{};
-    _float4 vQuat{};
-    XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
-    XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
-    tCharVirDesc.eShapeType = SHAPE::BOX;
-    tCharVirDesc.vPos = vPos;
-    tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
-    tCharVirDesc.pGameObject = this;
-    //tCharVirDesc.vExtent = _float3(1.f, 1.f, 1.f);
-
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
-        TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+        TEXT("Com_Body"), reinterpret_cast<CComponent**>(&m_pBodyCom), &BodyDesc)))
         return E_FAIL;
+
+    //CCharacterVirtual::CV_BOXSHAPE_DESC tCharVirDesc{};
+    //_float3 vPos{};
+    //_float4 vQuat{};
+    //XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
+    //XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
+    //tCharVirDesc.eShapeType = SHAPE::BOX;
+    //tCharVirDesc.vPos = vPos;
+    //tCharVirDesc.vQuat = vQuat;
+    //tCharVirDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+    //tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
+    //tCharVirDesc.pGameObject = this;
+    ////tCharVirDesc.vExtent = _float3(1.f, 1.f, 1.f);
+
+    //if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
+    //    TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
+    //    return E_FAIL;
 
 
     return S_OK;
@@ -197,6 +217,6 @@ void CDummy::Free()
 
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
-    //Safe_Release(m_pRigidBodyCom);
-    Safe_Release(m_pCharVirCom);
+    Safe_Release(m_pBodyCom);
+    //Safe_Release(m_pCharVirCom);
 }

@@ -30,7 +30,7 @@ public:
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
-	CRigidBody* m_pRigidBodyCom = { nullptr };
+	//CRigidBody* m_pRigidBodyCom = { nullptr };
 
 
 private:

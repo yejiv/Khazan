@@ -19,6 +19,7 @@ struct VS_IN
     //float4 vTranslation : TEXCOORD4;
     
     float2 vLifeTime : TEXCOORD0;
+    float bDead : TEXCOORD1;
 };
 
 struct VS_OUT

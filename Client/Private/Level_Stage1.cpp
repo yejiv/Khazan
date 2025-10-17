@@ -27,16 +27,16 @@ HRESULT CLevel_Stage1::Initialize()
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
 
-	//if (FAILED(Ready_Layer_Player(TEXT("Layer_Player"))))
-	//	return E_FAIL;
+	if (FAILED(Ready_Layer_Player(TEXT("Layer_Player"))))
+		return E_FAIL;
 
-	//if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
-	//	return E_FAIL;
+	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
+		return E_FAIL;
 
-	//if (FAILED(Ready_Layer_Test(TEXT("Layer_Test"))))
-	//	return E_FAIL;
+	/*if (FAILED(Ready_Layer_Test(TEXT("Layer_Test"))))
+		return E_FAIL;*/
 
-	CHECK_FAILED(Ready_Layer_MapObject_Test(TEXT("Layer_Test")), E_FAIL);
+	//CHECK_FAILED(Ready_Layer_MapObject_Test(TEXT("Layer_Test")), E_FAIL);
 
 	m_pGameInstance->Jolt_Test();
 
@@ -72,7 +72,7 @@ HRESULT CLevel_Stage1::Ready_Lights()
 	LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
-	if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
+	if (FAILED(m_pGameInstance->Add_Light(TEXT("Directional_Stage1"), ENUM_CLASS(LEVEL::STAGE1), LightDesc)))
 		return E_FAIL;
 
 	return S_OK;
@@ -126,9 +126,9 @@ HRESULT CLevel_Stage1::Ready_Layer_Monster(const _wstring& strLayerTag)
 
 HRESULT CLevel_Stage1::Ready_Layer_Test(const _wstring& strLayerTag)
 {
-	/*if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
+	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
 		ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_JOH_Test1"))))
-		return E_FAIL;*/
+		return E_FAIL;
 
 	return S_OK;
 }

@@ -49,10 +49,11 @@ void CProp_Object::Priority_Update(_float fTimeDelta)
 
 void CProp_Object::Update(_float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_3))
+   // 수정필요 : 파일 입출력 함수 변경으로 인한 주석처리 확인필요~
+   /* if (m_pGameInstance->Key_Down(DIK_3))
         m_pModelCom->ExportModel();
     if (m_pGameInstance->Key_Down(DIK_4))
-        m_pModelCom->Update_DAT_From_JSON();
+        m_pModelCom->Update_DAT_From_JSON();*/
     if (m_pGameInstance->Key_Down(DIK_5))
         m_isDead = true;
     if (m_pGameInstance->Key_Down(DIK_8))
