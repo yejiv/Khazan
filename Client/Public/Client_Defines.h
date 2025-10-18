@@ -14,6 +14,9 @@ namespace Client
 
 	enum class LEVEL { STATIC, LOADING, TITLE, STAGE1, END };
 	enum class COLLISION_LAYER { MAP, PLAYER, MONSTER, ITEM, EFFECT, SKILL, END };
+
+	enum class UI_RENDER_TYPE { DEFAULT, ATLAS, END };
+	enum class UITYPE { PANEL, TAP, BUTTON, SLOT, SCROLLBAR, PROGRESSBAR, END };
 }
 
 extern HWND g_hWnd;

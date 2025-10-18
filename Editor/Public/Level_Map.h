@@ -27,7 +27,7 @@ public:
 
 private:
 	HRESULT Ready_Defaults();
-	HRESULT Ready_Lights();
+	HRESULT Ready_Default_Lights();
 	HRESULT Ready_Layer_Camera(const _wstring& strLayerTag);
 	HRESULT Ready_Layer_Terrain(const _wstring& strLayerTag);
 
@@ -41,12 +41,14 @@ private:
 private:
 	// JSON으로부터 읽어와서 Prototype 세팅
 	HRESULT Add_Prototypes_FromJson();
+	HRESULT Convert_Json_To_Data();
 
 	// 맵 오브젝트 배치하면서 vector에 개별로 push_back 한거 nullptr 시 정리용
-	void Clear_ObjectList();
+	void Clear_List();
 
 	void Select_Fix_Object(_float fTimeDelta);
 	void Select_Fix_Instance(_float fTimeDelta);
+	void Select_Add_LightPoint(_float fTimeDelta);
 
 #pragma region 변수
 private:
@@ -67,6 +69,30 @@ private:
 	_float3 m_vFixScale = {};
 	_float3 m_vFixRotation = {};
 	_float3 m_vFixPosition = {};
+
+#pragma endregion
+
+#pragma region LIGHT 수정 변수
+
+	LIGHT_DESC m_LightDesc = {};				// 추가할 조명 구조체
+
+	_char m_szLightTag[MAX_PATH] = {};			// 추가할 조명 태그
+	string m_strLightTag = {};					// 변환용
+
+	vector<string> m_LightTags;					// 조명 태그 모음 ( ADD 한 애들 )
+	_int m_iLightTagIndex = {};					// 조명 벡터 인덱스
+
+	_bool m_isAddLight = { false };				// 조명 추가 시 활성화
+	_bool m_isFixLight = { false };				// 조명 수정 시 활성화
+	_bool m_isFindFixLight = { false };			// FIX 할거 찾으면 활성화
+
+	LIGHT_DESC m_FixLightDesc = {};				// 수정할 조명 구조체
+
+	_char m_szFixLightTag[MAX_PATH] = {};		// 수정할 조명 태그
+	string m_strFixLightTag = {};				// 변환용
+
+	_bool m_isAddLightPoint = { false };		// 피킹 조명 위치용 BOOL
+	_float3 m_vLightPoint = {};					// 피킹 조명 위치용 XMFLOAT3
 
 #pragma endregion
 
@@ -98,8 +124,8 @@ private:
 
 #pragma region ImGui > JSON 관련 폴더 경로 및 파일 명
 
-	_char m_szJsonPath[MAX_PATH] = { "../../Client/Bin/Resources/Models/Environment/Prop/Json/" };					// 오리지날 Json 기본 경로
-	_char m_szJsonCustomPath[MAX_PATH] = { "../../Client/Bin/Resources/Models/Environment/Prop/Json/CustomJson/" };							// 커 스 텀 Json 기본 경로
+	_char m_szJsonPath[MAX_PATH] = { "../../Client/Bin/Resources/Map/Json/" };						// 오리지날 Json 기본 경로
+	_char m_szJsonCustomPath[MAX_PATH] = { "../../Client/Bin/Resources/Map/Json/CustomJson/" };		// 커 스 텀 Json 기본 경로
 
 	_char m_szJsonFolderPath[ENUM_CLASS(MAPEDIT_MAP::END)][MAX_PATH] = { "HeinMach/", "StormPass/", "TheCrevice/", "Embars/" };		// 추출할 Json 폴더
 
@@ -140,6 +166,9 @@ private:
 
 	map<const string, const string> m_CheckPrototypes;	// 중복 프로토타입 체크 및 리스트 출력용
 
+	_char m_szDatSavePath[MAX_PATH] = { "../../Client/Bin/Data/Map/" };			// .dat 추출용 폴더 경로
+	string m_strDatSavePath = {};
+
 #pragma endregion
 
 #pragma region PROTOTYPE LIST 용
@@ -155,27 +184,29 @@ private:
 #pragma endregion
 
 private:
-	// Level_Map Init 단 ImGui Widget 생성
+	// MapEditor Init 단 ImGui Widget 생성
 	HRESULT Ready_DefaultImGui_For_MapTool();
 
-	// Level_Map Default 윈도우
+	// MapEditor Default 윈도우
 	HRESULT Ready_Main_Window();
-	// Level_Map Layer 수정 윈도우 ( 아직 기능 X )
+	// MapEditor Layer 수정 윈도우 ( 아직 기능 X )
 	HRESULT Ready_Prop_Edit_Window();
-	// Level_Map Custom Json 수정 윈도우
+	// MapEditor Custom Json 수정 윈도우
 	HRESULT Ready_CustomJson_Edit_Window();
-	// Level_Map Custom Json 리스트 윈도우
+	// MapEditor Custom Json 리스트 윈도우
 	HRESULT Ready_CustomJson_List_Window();
-	// Level_Map Original Json 수정 윈도우
+	// MapEditor Original Json 수정 윈도우
 	HRESULT Ready_Json_Edit_Window();
-	// Level_Map Original Json 리스트 윈도우
+	// MapEditor Original Json 리스트 윈도우
 	HRESULT Ready_Json_List_Window();
+	// MapEditor Light 세팅 윈도우
+	HRESULT Ready_Light_Window();
 
 	// Directory에 파일들 불러오는용 ( Json 한정 함수 )
 	void Get_Directory_Files(const _char* pDirectoryPath);
 
 	// 임시 테스트용
-	string Find_ModelPath(const string& strModelName);
+	string Find_FBX_ModelPath(const string& strModelName);
 
 public:
 	static CLevel_Map* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

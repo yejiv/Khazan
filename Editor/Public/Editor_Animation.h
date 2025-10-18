@@ -22,7 +22,8 @@ public:
 	map<_uint, _matrix>&	Get_ChannelMatrices();
 	void					Set_TrackPositionPtr(_float* pTrackPosition);
 
-	void					EnbleTrackPosition(_bool isEnble) { m_isEnbleAnimTool = isEnble; }
+	void					EnbleTrackPosition(_bool isEnble) { m_isEnbleTrackPosition = isEnble; }
+	const _float&			Get_Duration() const { return m_fDuration; }
 
 private:
 	string								m_strName = {};
@@ -42,7 +43,7 @@ private:
 	map<_uint, _matrix>				m_PreAnimationChannelMatrices;	//<뼈 번호, 뼈 행렬>	 // 애니메이션 전환용 마지막 프레임 뼈 행렬 모음. (다시 사용하면 안됨.  move로 넘겨줌)
 
 	/* anim tool  */
-	_bool							m_isEnbleAnimTool = { false };
+	_bool							m_isEnbleTrackPosition = { true };
 
 	class CGameInstance* m_pGameInstance = { nullptr };
 

@@ -22,10 +22,13 @@ void CJolt_CharacterContactListener::OnContactAdded(const JPH::CharacterVirtual*
     CGameObject* pCharGameObject = reinterpret_cast<CGameObject*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
     CGameObject* pBodyGameObject = reinterpret_cast<CGameObject*>(static_cast<std::uintptr_t>(m_pBodyInterface->GetUserData(inBodyID2)));
 
+    ObjectLayer CharObj = m_pBodyInterface->GetObjectLayer(inCharacter->GetInnerBodyID());
+    ObjectLayer BodyObj = m_pBodyInterface->GetObjectLayer(inBodyID2);
+
     if (pCharGameObject != nullptr && pBodyGameObject != nullptr)
     {
-        pCharGameObject->Collision_Enter(pBodyGameObject, JOLT_COLLSION_TYPE::BODY);
-        pBodyGameObject->Collision_Enter(pCharGameObject, JOLT_COLLSION_TYPE::CHARVIR);
+        pCharGameObject->Collision_Enter(pBodyGameObject, static_cast<_uint>(BodyObj));
+        pBodyGameObject->Collision_Enter(pCharGameObject, static_cast<_uint>(CharObj));
     }
 }
 
@@ -35,10 +38,15 @@ void CJolt_CharacterContactListener::OnContactPersisted(const JPH::CharacterVirt
     CGameObject* pCharGameObject = reinterpret_cast<CGameObject*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
     CGameObject* pBodyGameObject = reinterpret_cast<CGameObject*>(static_cast<std::uintptr_t>(m_pBodyInterface->GetUserData(inBodyID2)));
 
+
+    ObjectLayer CharObj = m_pBodyInterface->GetObjectLayer(inCharacter->GetInnerBodyID());
+    ObjectLayer BodyObj = m_pBodyInterface->GetObjectLayer(inBodyID2);
+
+
     if (pCharGameObject != nullptr && pBodyGameObject != nullptr)
     {
-        pCharGameObject->Collision_Stay(pBodyGameObject, JOLT_COLLSION_TYPE::BODY);
-        pBodyGameObject->Collision_Stay(pCharGameObject, JOLT_COLLSION_TYPE::CHARVIR);
+        pCharGameObject->Collision_Stay(pBodyGameObject, static_cast<_uint>(BodyObj));
+        pBodyGameObject->Collision_Stay(pCharGameObject, static_cast<_uint>(CharObj));
     }
         
 }
@@ -52,10 +60,13 @@ void CJolt_CharacterContactListener::OnCharacterContactAdded(const CharacterVirt
     CGameObject* pGameObject1 = reinterpret_cast<CGameObject*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
     CGameObject* pGameObject2 = reinterpret_cast<CGameObject*>(static_cast<std::uintptr_t>(inOtherCharacter->GetUserData()));
 
+    ObjectLayer CharObj1 = m_pBodyInterface->GetObjectLayer(inCharacter->GetInnerBodyID());
+    ObjectLayer CharObj2 = m_pBodyInterface->GetObjectLayer(inOtherCharacter->GetInnerBodyID());
+
     if (pGameObject1 != nullptr && pGameObject2 != nullptr)
     {
-        pGameObject1->Collision_Enter(pGameObject2, JOLT_COLLSION_TYPE::CHARVIR);
-        pGameObject2->Collision_Enter(pGameObject1, JOLT_COLLSION_TYPE::CHARVIR);
+        pGameObject1->Collision_Enter(pGameObject2, static_cast<_uint>(CharObj2));
+        pGameObject2->Collision_Enter(pGameObject1, static_cast<_uint>(CharObj1));
     }
         
 
@@ -69,11 +80,13 @@ void CJolt_CharacterContactListener::OnCharacterContactPersisted(const Character
     CGameObject* pGameObject1 = reinterpret_cast<CGameObject*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
     CGameObject* pGameObject2 = reinterpret_cast<CGameObject*>(static_cast<std::uintptr_t>(inOtherCharacter->GetUserData()));
 
+    ObjectLayer CharObj1 = m_pBodyInterface->GetObjectLayer(inCharacter->GetInnerBodyID());
+    ObjectLayer CharObj2 = m_pBodyInterface->GetObjectLayer(inOtherCharacter->GetInnerBodyID());
 
     if (pGameObject1 != nullptr && pGameObject2 != nullptr)
     {
-        pGameObject1->Collision_Stay(pGameObject2, JOLT_COLLSION_TYPE::CHARVIR);
-        pGameObject2->Collision_Stay(pGameObject1, JOLT_COLLSION_TYPE::CHARVIR);
+        pGameObject1->Collision_Stay(pGameObject2, static_cast<_uint>(CharObj2));
+        pGameObject2->Collision_Stay(pGameObject1, static_cast<_uint>(CharObj1));
     }
     ioSettings.mCanPushCharacter = true;
 

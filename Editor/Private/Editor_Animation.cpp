@@ -61,7 +61,7 @@ void CEditor_Animation::Update_TransformationMatrices(const vector<class CEditor
         OutputDebugStringA(("------[ 트랙 위치  : " + to_string(*m_fCurrentTrackPosition) + "  ]-------\n").c_str());
     }
 
-    if(!m_isEnbleAnimTool)
+    if(m_isEnbleTrackPosition)
         *m_fCurrentTrackPosition += m_fTickPerSecond * fTimeDelta;
 
     if (*m_fCurrentTrackPosition >= m_fDuration)

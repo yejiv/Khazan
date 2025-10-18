@@ -124,12 +124,12 @@ HRESULT CPlayer::Render()
     return S_OK;
 }
 
-void CPlayer::Collision_Enter(CGameObject* pObject, JOLT_COLLSION_TYPE eType)
+void CPlayer::Collision_Enter(CGameObject* pObject, _uint iOtherObjectLayer)
 {
     int a = 0;
 }
 
-void CPlayer::Collision_Stay(CGameObject* pObject, JOLT_COLLSION_TYPE eType)
+void CPlayer::Collision_Stay(CGameObject* pObject, _uint iOtherObjectLayer)
 {
     int a = 0;
 }
@@ -196,7 +196,7 @@ HRESULT CPlayer::Ready_Collision()
     tCharVirDesc.eShapeType = SHAPE::CAPSULE;
     tCharVirDesc.vPos = vPos;
     tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 0.7f, 0.f);
+    tCharVirDesc.vShapeOffset = _float3(0.f, 0.5f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
     tCharVirDesc.fRadius = 0.35f;
     tCharVirDesc.fHeight = 0.5f;
