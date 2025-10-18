@@ -26,6 +26,11 @@ private:
 	_float4x4			m_Matrices[ENUM_CLASS(D3DTS::END)];
 	SHADOW_LIGHT_DESC	m_ShadowLight = {};
 
+	// Cascade Test
+	_uint m_iNumCascade = {};
+	vector<_float> m_Splits;
+	//	vector<>
+
 public:
 	static CShadow* Create(_uint iWinSizeX, _uint iWinSizeY);
 	virtual void Free();
