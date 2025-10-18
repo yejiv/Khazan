@@ -41,10 +41,6 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	m_pInput_Manager = CInput_Manager::Create(EngineDesc.hInst, EngineDesc.hWnd);
 	if (nullptr == m_pInput_Manager)
 		return E_FAIL;
-	
-	m_pShadow = CShadow::Create(EngineDesc.iWinSizeX, EngineDesc.iWinSizeY);
-	if (nullptr == m_pShadow)
-		return E_FAIL;
 
 	m_pFont_Manager = CFont_Manager::Create(*ppDevice, *ppContext);
 	if (nullptr == m_pFont_Manager)
@@ -84,6 +80,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 
 	m_pPipeLine = CPipeLine::Create();
 	if (nullptr == m_pPipeLine)
+		return E_FAIL;
+
+	m_pShadow = CShadow::Create(EngineDesc.iWinSizeX, EngineDesc.iWinSizeY);
+	if (nullptr == m_pShadow)
 		return E_FAIL;
 
 	m_pLight_Manager = CLight_Manager::Create(EngineDesc.iNumLevels);
@@ -522,6 +522,26 @@ SHADOW_LIGHT_DESC CGameInstance::Get_ShadowLight()
 void CGameInstance::Set_ShadowLight(SHADOW_LIGHT_DESC LightDesc)
 {
 	m_pShadow->Set_ShadowLight(LightDesc);
+}
+
+_uint CGameInstance::Get_NumCascades()
+{
+	return m_pShadow->Get_NumCascades();
+}
+
+void CGameInstance::Set_CurrentCascade(_uint iIndex)
+{
+	m_pShadow->Set_CurrentCascade(iIndex);
+}
+
+HRESULT CGameInstance::Bind_LightViewProjMatrix(CShader* pShader, _uint iIndex)
+{
+	return m_pShadow->Bind_LightViewProjMatrix(pShader, iIndex);
+}
+
+const _float4x4* CGameInstance::Get_CurrentLightViewProjMatrix() const
+{
+	return m_pShadow->Get_CurrentLightViewProjMatrix();
 }
 
 #pragma endregion

@@ -68,8 +68,8 @@ void CJOH_EditorModelTest::Late_Update(_float fTimeDelta)
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this)))
         return;
 
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
-        return;
+    //  if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
+    //      return;
 }
 
 HRESULT CJOH_EditorModelTest::Render()

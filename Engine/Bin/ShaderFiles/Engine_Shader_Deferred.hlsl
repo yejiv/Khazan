@@ -26,6 +26,8 @@ texture2D g_LightDepthTexture;
 texture2D g_BackBufferTexture;
 texture2D g_BlurXTexture;
 
+matrix g_LightViewProjMatrices[3];
+
 struct VS_IN
 {
     float3 vPosition : POSITION;

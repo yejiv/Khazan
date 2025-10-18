@@ -172,6 +172,9 @@
     <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite">
       <UniqueIdentifier>{4bce57e8-b335-4b18-86b0-70fd515a5461}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Shader\Player">
+      <UniqueIdentifier>{b9c07b19-01a4-4a39-988f-659175d6709c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -327,6 +330,8 @@
     <ClInclude Include="..\Public\Effect_Sprite.h">
       <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\TestParticle.h" />
+    <ClInclude Include="..\public\Player_Shader.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -480,6 +485,7 @@
     <ClCompile Include="..\Private\Effect_Sprite.cpp">
       <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Player_Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_Edit_UI.hlsl">
