@@ -13,8 +13,8 @@ namespace Editor
 	const unsigned int			g_iWinSizeX_Imgui_JJH = 1920;
 	const unsigned int			g_iWinSizeY_Imgui_JJH = 1080;
 
-	const unsigned int			g_iWinSizeX_Imgui_JOH = 1000;
-	const unsigned int			g_iWinSizeY_Imgui_JOH = 1600;
+	const unsigned int			g_iWinSizeX_Imgui_JOH = 2200;
+	const unsigned int			g_iWinSizeY_Imgui_JOH = 1200;
 
 	const unsigned int			g_iWinSizeX_Imgui_TYJ = 1280;
 	const unsigned int			g_iWinSizeY_Imgui_TYJ = 720;

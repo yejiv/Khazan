@@ -2,6 +2,8 @@
 #include "GameInstance.h"
 #include "Level_Loading.h"
 
+#include "JOH_EditorModelTest.h"
+
 CMainApp::CMainApp()
 	: m_pGameInstance{ CGameInstance::GetInstance() }
 {
@@ -134,6 +136,12 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 	/* Prototype_Component_Shader_VtxInstance_MeshParticle*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxInstance_Particle"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_VtxInstance_Particle.hlsl"), VTXPARTICLE::Elements, VTXPARTICLE::iNumElements))))
+		return E_FAIL;
+
+
+	/* Prototype_GameObject_Editor_Animation_TestModel */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Editor_Animation_TestModel"),
+		CJOH_EditorModelTest::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 	return S_OK;

@@ -35,7 +35,9 @@ public:
 	ANIMATION_SETUP_DATA*		Get_CurAnimSet() { return &m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup; }
 	class CEditor_Animation*	Get_CurAnimtion();
 	_int						Get_CurAnimIndex() { return m_iCurrentAnimIndex; }
-	
+	_float*						Get_CurTrackPosition() { return &m_fCurrentTrackPosition; }
+
+
 public:
 	void			ExportModel(string& strPath);
 	// 확인 창 말고 디버그 창에 띄우는 추출 함수

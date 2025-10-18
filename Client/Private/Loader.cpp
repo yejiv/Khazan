@@ -205,10 +205,10 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 
 	//lock_guard<mutex> gpu_lock(g_GpuGate);
 
-	/////* Prototype_Component_Model_Fiona */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_Fiona"),
-	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Fiona/Fiona.dat"))))
-	//	return E_FAIL;
+	///* Prototype_Component_Model_Fiona */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_Fiona"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Test/Fiona/Fiona.dat"))))
+		return E_FAIL;
 
 	/////* Prototype_Component_Model_WP_WOD_Ground_Base_004 */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"),
@@ -217,7 +217,7 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 
 	///* Prototype_Component_Model_JOH_TestModel */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_JOH_TestModel"),
-	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Test/Test.dat"))))
+	//	CModel::Create(m_pDevice, m_pContext, "../Data/Test/Test_Player/Test_Player.dat"))))
 	//	return E_FAIL;
 
 
@@ -279,10 +279,10 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 	//	CProp_Test::Create(m_pDevice, m_pContext))))
 	//	return E_FAIL;
 
-	///* Prototype_GameObject_JOH_Test1 */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_JOH_Test1"),
-	//	CJOH_Test1::Create(m_pDevice, m_pContext))))
-	//	return E_FAIL;
+	/* Prototype_GameObject_JOH_Test1 */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_JOH_Test1"),
+		CJOH_Test1::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 	return S_OK;
 }
