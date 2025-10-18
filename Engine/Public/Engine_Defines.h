@@ -86,6 +86,8 @@ namespace Engine
 
 	const unsigned int g_iMaxWidth = 8192;
 	const unsigned int g_iMaxHeight = 4608;
+
+	const float g_fGravity = -9.81f;
 }
 
 #include "Engine_Enum.h"

@@ -14,7 +14,6 @@ protected:
 public:
 	class CComponent* Get_Component(const _wstring& strPartTag, const _wstring& strComponentTag);
 
-
 public:
 	virtual HRESULT Initialize_Prototype() override;
 	virtual HRESULT Initialize_Clone(void* pArg) override;

@@ -162,6 +162,7 @@
     <ClInclude Include="..\public\Atlas_RenderGroup.h" />
     <ClInclude Include="..\Public\Body_Player.h" />
     <ClInclude Include="..\public\Camera_Free.h" />
+    <ClInclude Include="..\Public\Camera_Compre.h" />
     <ClInclude Include="..\Public\ClientInstance.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\Public\Dummy.h" />
@@ -206,6 +207,7 @@
     <ClCompile Include="..\private\Atlas_RenderGroup.cpp" />
     <ClCompile Include="..\Private\Body_Player.cpp" />
     <ClCompile Include="..\private\Camera_Free.cpp" />
+    <ClCompile Include="..\Private\Camera_Compre.cpp" />
     <ClCompile Include="..\Private\ClientInstance.cpp" />
     <ClCompile Include="..\Private\Dummy.cpp" />
     <ClCompile Include="..\Private\JOH_Test1.cpp" />

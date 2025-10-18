@@ -214,9 +214,6 @@
     <Filter Include="01.Utility\13.Jolt\DebugDraw">
       <UniqueIdentifier>{61136c8c-9d8c-4c2e-8e9c-23cbeac14a2c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\03.Component\CharacterVirtual">
-      <UniqueIdentifier>{09e723ca-0ab0-4b34-bd76-99a5fca6d80b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\03.Component\Model\Model_Instance">
       <UniqueIdentifier>{62bb2252-6fc8-45d0-984f-058df548e135}</UniqueIdentifier>
     </Filter>
