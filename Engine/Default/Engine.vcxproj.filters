@@ -253,6 +253,9 @@
     <Filter Include="01.Utility\03.Component\VIBuffer\Instance\UI">
       <UniqueIdentifier>{4d49d96d-a532-4f2a-81c6-c554d0f4a230}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Component\VIBuffer\Instance\Mesh">
+      <UniqueIdentifier>{2b9ab067-39b0-4d29-bbf5-98929792d67e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">

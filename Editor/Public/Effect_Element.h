@@ -19,6 +19,7 @@ protected:
 		_uint	EventType;
 
 	}TRACK_DATA;
+
 protected:
 	CEffect_Element(ID3D11Device* pDevice,ID3D11DeviceContext* pDeviceContext);
 	CEffect_Element(const CEffect_Element& Prototype);
@@ -33,21 +34,23 @@ public:
 	virtual HRESULT			Render() override;
 
 public: 
-	virtual void			SetSpreadData(void* pArg)	PURE;
-	virtual void			SetRotateData(void* pArg)	PURE;
-	virtual void			SetTwinkleData(void* pArg)	PURE;
-	virtual void			SetUpwardData(void* pArg)	PURE;
-	virtual void			SetScrollData(void* pArg)	PURE;
+	virtual void			SetSpreadData(void* pArg);
+	virtual void			SetRotateData(void* pArg);
+	virtual void			SetTwinkleData(void* pArg);
+	virtual void			SetUpwardData(void* pArg);
+	virtual void			SetScrollData(void* pArg);
 	void					SetData(_uint eventType, _float fDurTime);
 	void					Active();
 	_bool					IsActive() { return (m_TimeTracks.size() > 0) ? true : false; }
 	void					SetParentsMatrix(const _float4x4* pMatrix) { m_pParentMatrix = pMatrix; }
+	virtual void			Reset();
 
 	/* [Edit] */
 	virtual void			Save_Data(ofstream& os)		PURE;
 	virtual void			Edit_Element()				PURE;
 	virtual void			RevertChanges()				PURE;
-	virtual void			Reset();
+	_uint					Get_EffectType()			{return m_iEffect_Type;};
+	void					Set_EffectType(_uint type)	{ m_iEffect_Type = type; };
 
 protected:
 	virtual HRESULT			Ready_Component();
