@@ -5,6 +5,10 @@
 
 // 정적 맵 오브젝트 ( 인스턴싱 O )
 
+NS_BEGIN(Engine)
+class CModel;
+NS_END
+
 NS_BEGIN(Editor)
 
 class CProp_Object final : public CProp
@@ -34,7 +38,7 @@ public:
 	virtual HRESULT Render() override;
 
 private:
-	class CEditor_Model* m_pModelCom = { nullptr };
+	CModel* m_pModelCom = { nullptr };
 
 private:
 	SHADER_PASS m_eShaderPass = { SHADER_PASS::MAPOBJECT };

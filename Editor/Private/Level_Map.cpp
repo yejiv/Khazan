@@ -4,6 +4,8 @@
 
 #include "MapEditor_Header.h"
 
+#include <iostream>
+
 #define SAMELINE ImGui::SameLine()
 #define ITEMWIDTH(_float) ImGui::SetNextItemWidth(_float)
 #define SEPARATOR ImGui::Separator()
@@ -44,6 +46,8 @@ HRESULT CLevel_Map::Ready_Defaults()
 {
 	CHECK_FAILED(Ready_Default_Lights(), E_FAIL);
 
+	//CHECK_FAILED(Ready_Preview_Model_RanderTargets(), E_FAIL);
+
 	CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Map_Camera")), E_FAIL);
 
 	CHECK_FAILED(Ready_Layer_Terrain(TEXT("Layer_Map_Terrain")), E_FAIL);
@@ -62,6 +66,14 @@ HRESULT CLevel_Map::Ready_Default_Lights()
 	ShadowLightDesc.fFar = 1000.f;
 
 	CHECK_FAILED(m_pGameInstance->Ready_ShadowLight(ShadowLightDesc), E_FAIL);
+
+	return S_OK;
+}
+
+HRESULT CLevel_Map::Ready_Preview_Model_RanderTargets()
+{
+	/* For.Dif_RT_MapEditor */
+	//CHECK_FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Dif_RT_MapEditor"), 200, 200, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 0.f)), E_FAIL);
 
 	return S_OK;
 }
@@ -97,13 +109,6 @@ HRESULT CLevel_Map::Ready_Layer_Terrain(const _wstring& strLayerTag)
 	return S_OK;
 }
 
-HRESULT CLevel_Map::Ready_Layer_Prop_Static(const _wstring& strLayerTag)
-{
-
-
-	return S_OK;
-}
-
 HRESULT CLevel_Map::Add_Prototypes_FromJson()
 {
 	_matrix PreTransformMatrix = XMMatrixIdentity();
@@ -117,16 +122,18 @@ HRESULT CLevel_Map::Add_Prototypes_FromJson()
 		_bool isObject = (_bool)Component["isObject"];
 
 		string strModelName = Component["strModelName"];
-				
+
 		if (true == isInstance)				// 인스턴싱 모델인 경우
 		{
 			// 모델명과 일치하는 경로 찾기
-			string strLoadPath = Find_FBX_ModelPath(strModelName);
+			string strLoadPath = Find_ModelPath(strModelName, ".dat");
 
 			if ("NOTFOUND" == strLoadPath)
 			{
 				string error = "Can't found load path\nModelName : " + strModelName;
+#ifdef _DEBUG
 				OutputDebugStringA(error.c_str());
+#endif // _DEBUG
 				continue;
 			}
 
@@ -136,7 +143,7 @@ HRESULT CLevel_Map::Add_Prototypes_FromJson()
 
 			// Instance 모델 프로토타입 등록
 			CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), AnsiToWString(strModelName),
-				CEditor_Model_Instance::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, strLoadPath.c_str(), PreTransformMatrix, &InstanceDesc)), E_FAIL);
+				CModel_Instance::Create(m_pDevice, m_pContext, strLoadPath.c_str(), &InstanceDesc)), E_FAIL);
 
 			CProp_Static::PROP_STATIC_DESC StaticDesc = {};
 
@@ -157,18 +164,20 @@ HRESULT CLevel_Map::Add_Prototypes_FromJson()
 			if (iter == m_CheckPrototypes.end())
 			{
 				// 모델명과 일치하는 경로 찾기
-				string strLoadPath = Find_FBX_ModelPath(strModelName);
+				string strLoadPath = Find_ModelPath(strModelName, ".dat");
 
 				if ("NOTFOUND" == strLoadPath)
 				{
 					string error = "Can't found load path\nModelName : " + strModelName + "\n";
+#ifdef _DEBUG
 					OutputDebugStringA(error.c_str());
+#endif // _DEBUG
 					continue;
 				}
 
 				// 단일 오브젝트는 바로 인스턴스 등록
 				CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), AnsiToWString(strModelName),
-					CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, strLoadPath.c_str(), PreTransformMatrix)), E_FAIL);
+					CModel::Create(m_pDevice, m_pContext, strLoadPath.c_str())), E_FAIL);
 
 				m_CheckPrototypes.emplace(strModelName, strLoadPath);
 				m_Prototypes_Obj.push_back(strModelName);
@@ -202,12 +211,14 @@ HRESULT CLevel_Map::Convert_Json_To_Data()
 		if (true == isInstance)				// 인스턴싱 모델인 경우
 		{
 			// 모델명과 일치하는 경로 찾기
-			string strLoadPath = Find_FBX_ModelPath(strModelName);
+			string strLoadPath = Find_ModelPath(strModelName, ".fbx");
 
 			if ("NOTFOUND" == strLoadPath)
 			{
 				string error = "Can't found load path\nModelName : " + strModelName;
+#ifdef _DEBUG
 				OutputDebugStringA(error.c_str());
+#endif // _DEBUG
 				continue;
 			}
 
@@ -234,12 +245,14 @@ HRESULT CLevel_Map::Convert_Json_To_Data()
 			if (iter == m_CheckPrototypes.end())
 			{
 				// 모델명과 일치하는 경로 찾기
-				string strLoadPath = Find_FBX_ModelPath(strModelName);
+				string strLoadPath = Find_ModelPath(strModelName, ".fbx");
 
 				if ("NOTFOUND" == strLoadPath)
 				{
 					string error = "Can't found load path\nModelName : " + strModelName + "\n";
+#ifdef _DEBUG
 					OutputDebugStringA(error.c_str());
+#endif // _DEBUG
 					continue;
 				}
 
@@ -408,6 +421,8 @@ HRESULT CLevel_Map::Ready_DefaultImGui_For_MapTool()
 
 	CHECK_FAILED(Ready_Light_Window(), E_FAIL);
 
+	CHECK_FAILED(Ready_Object_SaveLoad_Window(), E_FAIL);
+
 	return S_OK;
 }
 
@@ -443,6 +458,27 @@ HRESULT CLevel_Map::Ready_Main_Window()
 						m_isLightSettingWindow = !m_isLightSettingWindow;
 					}
 					SEPARATOR;
+					ImGui::Text("OBJECT SAVE & LOAD");
+					if (ImGui::Button("SAVE"))
+					{
+						m_isSaveObjectWindow = !m_isSaveObjectWindow;
+					} SAMELINE;
+					if (ImGui::Button("LOAD"))
+					{
+						m_isLoadObjectWindow = !m_isLoadObjectWindow;
+					}
+					SEPARATOR;
+					ImGui::Text("PROP LIST");
+					if (ImGui::Button("OBJECT##active"))		m_isPropWindow[ENUM_CLASS(PROP_SPECIES::OBJECT)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::OBJECT)];
+					SAMELINE;
+					if (ImGui::Button("STATIC##active"))		m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)];
+					SAMELINE;
+					if (ImGui::Button("ANIMATED##active"))		m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)];
+					SAMELINE;
+					if (ImGui::Button("INTERACTIVE##active"))	m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)];
+					SAMELINE;
+					if (ImGui::Button("DESTRUCTIBLE##active"))	m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)];
+					SEPARATOR;
 					ImGui::Text("JSON");
 					if (ImGui::Button("JSON TO CUSTOM WINDOW"))
 					{
@@ -457,18 +493,6 @@ HRESULT CLevel_Map::Ready_Main_Window()
 
 						m_isCustomJsonWindow = !m_isCustomJsonWindow;
 					}
-
-					SEPARATOR;
-					ImGui::Text("PROP LIST");
-					if (ImGui::Button("OBJECT##active"))		m_isPropWindow[ENUM_CLASS(PROP_SPECIES::OBJECT)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::OBJECT)];
-					SAMELINE;
-					if (ImGui::Button("STATIC##active"))		m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)];
-					SAMELINE;
-					if (ImGui::Button("ANIMATED##active"))		m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)];
-					SAMELINE;
-					if (ImGui::Button("INTERACTIVE##active"))	m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)];
-					SAMELINE;
-					if (ImGui::Button("DESTRUCTIBLE##active"))	m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)];
 					SEPARATOR;
 
 					ImGui::Text("ETC FUNC");
@@ -573,7 +597,7 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 			// 인스턴스 행렬 추가
 			if (false == m_isLightSettingWindow && false == m_isFixObjectWindow && (ImGui::Button("ADD (T)") || m_pGameInstance->Key_Down(DIK_T)))
 			{
-				CEditor_Model_Instance* pModelInst = static_cast<CEditor_Model_Instance*>(m_pGameInstance->Find_Component(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_InstObj"), TEXT("Com_Model"), m_iIndex_PrtInst));
+				CModel_Instance* pModelInst = static_cast<CModel_Instance*>(m_pGameInstance->Find_Component(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_InstObj"), TEXT("Com_Model"), m_iIndex_PrtInst));
 				CHECK_NULLPTR(pModelInst, );
 
 				MESH_INSTANCE_DATA TempData = {};
@@ -682,11 +706,11 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				ImGui::Text("DETAIL SCALE FIX");
 				SEPARATOR;
 
-				ImGui::Text("X : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##scalex", &m_vFixScale.x);
+				ImGui::Text("X : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##scalex", &m_vFixScale.x, 0.001f, 0.01f);
 				ImGui::SliderFloat("##sliderdetailscalex", &m_vFixScale.x, 0.001f, 10.f);
-				ImGui::Text("Y : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##scaley", &m_vFixScale.y);
+				ImGui::Text("Y : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##scaley", &m_vFixScale.y, 0.001f, 0.01f);
 				ImGui::SliderFloat("##sliderdetailscaley", &m_vFixScale.y, 0.001f, 10.f);
-				ImGui::Text("Z : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##scalez", &m_vFixScale.z);
+				ImGui::Text("Z : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##scalez", &m_vFixScale.z, 0.001f, 0.01f);
 				ImGui::SliderFloat("##sliderdetailscalez", &m_vFixScale.z, 0.001f, 10.f);
 
 				if (0.001f > m_vFixScale.x) m_vFixScale.x = 0.001f;
@@ -764,9 +788,8 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 
 #pragma endregion
 
-#pragma region 주석
-		/*
-#pragma region PROP_OBJECT EDIT WINDOW
+#pragma region WIDGET : 단일 오브젝트 리스트
+
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (m_isPropWindow[ENUM_CLASS(PROP_SPECIES::OBJECT)])
 		{
@@ -774,16 +797,54 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 
 			if (ImGui::BeginListBox("##prop_object_list"))
 			{
+				if (m_iObjectListIndex >= m_ObjectList.size())
+					m_iObjectListIndex = m_ObjectList.size() - 1;
+
+				for (_uint i = 0; i < m_ObjectList.size(); ++i)
+				{
+					_bool isSelected = (m_iObjectListIndex == i);
+
+					string strModelName = WStringToAnsi(m_ObjectList[i]->Get_ModelName()) + "##id_%d";
+
+					_char szModelName[MAX_PATH] = {};
+
+					sprintf_s(szModelName, strModelName.c_str(), i);
+
+					if (ImGui::Selectable(szModelName, isSelected))
+						m_iObjectListIndex = i;
+				}
 
 				ImGui::EndListBox();
+			} SEPARATOR;
+
+			if (0 != m_ObjectList.size() && m_iObjectListIndex >= m_ObjectList.size())
+			{
+				_wstring strModelName = m_ObjectList[m_iObjectListIndex]->Get_ModelName();
+
+				ImGui::Text("MODEL NAME : %s", WStringToAnsi(strModelName).c_str());
+				SEPARATOR;
+
+				CTransform* pTransform = static_cast<CTransform*>(m_ObjectList[m_iObjectListIndex]->Get_Component(TEXT("Com_Transform")));
+				CHECK_NULLPTR(pTransform, );
+
+				_float3 vPosition = {};
+
+				XMStoreFloat3(&vPosition, pTransform->Get_State(STATE::POSITION));
+
+				ImGui::Text("POSITION");
+				ImGui::Text("X : %.3f", vPosition.x);
+				ImGui::Text("Y : %.3f", vPosition.y);
+				ImGui::Text("Z : %.3f", vPosition.z);
+				SEPARATOR;
 			}
 
 			ImGui::End();
 		}
 		});
+
 #pragma endregion
 
-#pragma region PROP_STATIC EDIT WINDOW
+#pragma region WIDGET : 정적 인스턴싱 오브젝트 리스트
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)])
 		{
@@ -849,8 +910,6 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 			ImGui::End();
 		}
 		});
-#pragma endregion
-*/
 #pragma endregion
 
 	return S_OK;
@@ -1046,12 +1105,12 @@ HRESULT CLevel_Map::Ready_CustomJson_Edit_Window()
 				{
 					CHECK_FAILED_MSG(Convert_Json_To_Data(), TEXT("추출 실패"), );
 				}
-				//SEPARATOR;
-				//if (ImGui::Button("CREATE PROTOTYPES"))
-				//{
-					//CHECK_FAILED_MSG(Add_Prototypes_FromJson(), TEXT("임시 프로토타입 생성 실패 or 임시 Layer 생성 실패"), );
-					//m_isPrototypeWindow = true;
-				//}
+				SEPARATOR;
+				if (ImGui::Button("CREATE PROTOTYPES"))
+				{
+					CHECK_FAILED_MSG(Add_Prototypes_FromJson(), TEXT("임시 프로토타입 생성 실패 or 임시 Layer 생성 실패"), );
+					m_isPrototypeWindow = true;
+				}
 				SEPARATOR;
 			}
 
@@ -1821,6 +1880,113 @@ HRESULT CLevel_Map::Ready_Light_Window()
 	return S_OK;
 }
 
+HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
+{
+#pragma region WIDGET : OBJECT SAVE 윈도우
+
+	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
+		if (true == m_isSaveObjectWindow)
+		{
+			ImGui::Begin("OBJECT SAVE WINDOW", &m_isSaveObjectWindow, ImGuiWindowFlags_AlwaysAutoResize);
+
+			ImGui::Text("MAP INFO SAVE FILE PATH : "); ITEMWIDTH(350.f);
+			ImGui::InputText("##map_info_save_path", m_szMapInfoFilePath, IM_ARRAYSIZE(m_szMapInfoFilePath));
+			ImGui::Text("MAP INFO FILE NAME : "); ITEMWIDTH(350.f);
+			ImGui::InputText("##map_info_save_name", m_szMapInfoFileName, IM_ARRAYSIZE(m_szMapInfoFileName));
+
+			SEPARATOR;
+
+			if (ImGui::Button("SAVE"))
+			{
+				// m_strMapInfoFilePath : 뒤에 _prototypes.dat, _objs.dat, insts.dat 이런식으로 ㄱㄱ
+				m_strMapInfoFilePath = m_szMapInfoFilePath;
+				m_strMapInfoFilePath += m_szMapInfoFileName;
+
+#pragma region 프로토타입 일괄 저장
+
+				if (false == Prototypes_Save_Binary())
+				{
+#ifdef _DEBUG
+					OutputDebugStringA("프로토 타입 정보 바이너리화 실패");
+#endif // _DEBUG
+					return;
+				}
+
+#pragma endregion
+
+#pragma region 오브젝트 일괄 저장
+
+				if (false == Objects_Save_Binary())
+				{
+#ifdef _DEBUG
+					OutputDebugStringA("단일 오브젝트 정보 바이너리화 실패");
+#endif // _DEBUG
+					return;
+				}
+
+#pragma endregion
+			}
+
+			ImGui::End();
+		}
+		});
+
+#pragma endregion
+
+#pragma region WIDGET : OBJECT LOAD 윈도우
+
+	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
+		if (true == m_isLoadObjectWindow)
+		{
+			ImGui::Begin("OBJECT LOAD WINDOW", &m_isLoadObjectWindow, ImGuiWindowFlags_AlwaysAutoResize);
+
+			ImGui::Text("MAP INFO LOAD FILE PATH : "); ITEMWIDTH(350.f);
+			ImGui::InputText("##map_info_load_path", m_szMapInfoFilePath, IM_ARRAYSIZE(m_szMapInfoFilePath));
+			ImGui::Text("MAP INFO FILE NAME : "); ITEMWIDTH(350.f);
+			ImGui::InputText("##map_info_load_name", m_szMapInfoFileName, IM_ARRAYSIZE(m_szMapInfoFileName));
+
+			SEPARATOR;
+
+			if (ImGui::Button("LOAD"))
+			{
+				// m_strMapInfoFilePath : 뒤에 _prototypes.dat, _objs.dat, insts.dat 이런식으로 ㄱㄱ
+				m_strMapInfoFilePath += m_szMapInfoFilePath;
+				m_strMapInfoFilePath += m_szMapInfoFileName;
+
+#pragma region 프로토타입 일괄 불러오기
+
+				if (false == Prototypes_Load_Binary())
+				{
+#ifdef _DEBUG
+					OutputDebugStringA("프로토 타입 정보 바이너리 불러오기 실패");
+#endif // _DEBUG
+					return;
+				}
+
+#pragma endregion
+
+#pragma region 오브젝트 일괄 저장
+
+				if (false == Objects_Load_Binary())
+				{
+#ifdef _DEBUG
+					OutputDebugStringA("단일 오브젝트 정보 바이너리 불러오기 실패");
+#endif // _DEBUG
+					return;
+				}
+
+#pragma endregion
+			}
+
+			ImGui::End();
+		}
+		});
+
+#pragma endregion
+
+	return S_OK;
+}
+
 void CLevel_Map::Get_Directory_Files(const _char* pDirectoryPath)
 {
 	m_JsonFiles.clear();
@@ -1846,13 +2012,21 @@ void CLevel_Map::Get_Directory_Files(const _char* pDirectoryPath)
 	}
 }
 
-string CLevel_Map::Find_FBX_ModelPath(const string& strModelName)
+string CLevel_Map::Find_ModelPath(const string& strModelName, const string& strFileExtern)
 {
-	string strRoot = "../../Client/Bin/Resources/Map/Prop/";
+	string strRoot = {};
+
+	if (".fbx" != strFileExtern && ".dat" != strFileExtern)
+		return "NOTFOUND";
+
+	if (".fbx" == strFileExtern)
+		strRoot = "../../Client/Bin/Resources/Map/Prop/";
+	else if (".dat" == strFileExtern)
+		strRoot = "../../Client/Bin/Data/Map/";
 
 	for (auto& entry : filesystem::recursive_directory_iterator(strRoot))
 	{
-		if (entry.is_regular_file() && entry.path().extension() == ".fbx")
+		if (entry.is_regular_file() && entry.path().extension() == strFileExtern.c_str())
 		{
 			if (entry.path().stem() == strModelName)
 				return entry.path().string();
@@ -1860,6 +2034,278 @@ string CLevel_Map::Find_FBX_ModelPath(const string& strModelName)
 	}
 
 	return "NOTFOUND";
+}
+
+_bool CLevel_Map::Prototypes_Save_Binary()
+{
+	// 프로토 타입 저장할때는 인스턴스용 모델인지, 아니면 일반 모델인지 구분해서 저장을 해야한다.
+	// Object로 사용한 Model만 프로토타입 등록
+	_wstring strPrototypeInfoPath = AnsiToWString(m_strMapInfoFilePath);
+
+	strPrototypeInfoPath += TEXT("_prototypes.dat");
+
+	DWORD dwByte = {};
+	
+	// 폴더가 존재하지 않으면 생성
+	if (false == filesystem::exists(m_szMapInfoFilePath))
+	{
+		if (false == filesystem::create_directories(m_szMapInfoFilePath))
+		{
+#ifdef _DEBUG
+			OutputDebugStringA("폴더 생성 실패");
+#endif // _DEBUg
+			return false;
+		}
+	}
+
+	// 프로토타입 핸들 개방
+	HANDLE hPrototypeFile = CreateFile(strPrototypeInfoPath.c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (INVALID_HANDLE_VALUE == hPrototypeFile)
+	{
+		CloseHandle(hPrototypeFile);
+		return false;
+	}
+	else
+	{
+		// 프로토 타입 개수 카운트
+		_uint iPrototypeCnt = {};
+
+		map<const _wstring, SAVE_PROTOTYPE> Prototypes;
+
+#pragma region 인스턴스 주석
+
+		/*	인스턴스는 따로 가야될 것 같음 ( Instance 개수, 행렬도 때와고 해야 할 것 같음 )
+		// Json 불러오면서 불러온 Inst용 모델들 프로토 타입
+		for (auto pProp : m_Prototypes_Inst)
+		{
+			// 기본 양식 지키기 ( Prototype_Component_Model_모델파일명 )
+			_wstring strModelName = TEXT("Prototype_Component_Model_");
+			strModelName += AnsiToWString(pProp);
+
+			auto iter = Prototypes.find(strModelName);
+
+			if (iter == Prototypes.end())
+			{
+				string strModelPath = Find_ModelPath(WStringToAnsi(strModelName.c_str()), ".dat");
+
+				CHECK_EQUAL_MSG("NOTFOUND", strModelPath, TEXT("모델 경로 못찾음"), false);
+
+				SAVE_PROTOTYPE Save_Proto = {};
+				Save_Proto.eType = MAPOBJECT_TYPE::STATIC_INST;
+				Save_Proto.strModelPath = AnsiToWString(strModelPath);
+
+				Prototypes.emplace(strModelName, Save_Proto);
+
+				++iPrototypeCnt;
+			}
+		}
+		*/
+
+#pragma endregion
+
+		// 단일 오브젝트 순회하면서 모델 이름 알아오기 ( Prototype 태그로 사용할 것 )
+		for (auto& pProp : m_ObjectList)
+		{
+			// 기본 양식 지키기 ( Prototype_Component_Model_모델파일명 )
+			_wstring strPrototypeTag = TEXT("Prototype_Component_Model_");
+
+			// 기존 모델 명
+			wstring strModelName = pProp->Get_ModelName();
+
+			strPrototypeTag += strModelName;
+
+			auto iter = Prototypes.find(strPrototypeTag);
+
+			if (iter == Prototypes.end())
+			{
+				string strModelPath = Find_ModelPath(WStringToAnsi(strModelName).c_str(), ".dat");
+
+				CHECK_EQUAL_MSG("NOTFOUND", strModelPath, TEXT("모델 경로 못찾음"), false);
+
+				replace(strModelPath.begin(), strModelPath.end(), '\\', '/');
+
+				SAVE_PROTOTYPE Save_Proto = {};
+				Save_Proto.eType = MAPOBJECT_TYPE::OBJECT;
+				Save_Proto.strModelPath = strModelPath;
+
+				Prototypes.emplace(strPrototypeTag, Save_Proto);
+
+				// 중복 아닐때만 Count 증가
+				++iPrototypeCnt;
+			}
+		}
+		// 단일 오브젝트 이외의 것들 추가 예정
+		//
+		//
+		//
+		
+		// 1. 프로토 타입의 총 개수 저장 ( 이만큼 루프 돌릴거 )
+		WriteFile(hPrototypeFile, &iPrototypeCnt, sizeof(_uint), &dwByte, nullptr);
+
+		for (auto& pPrototype : Prototypes)
+		{
+			// 2. 어떤 타입인지 저장 ( Object, Instance, Dynamic, Interactive ) , enum class MAPOBJECT_TYPE은 unsigned short 사용으로 조금 메모리 절약
+			_ushort sMapObjType = static_cast<_ushort>(pPrototype.second.eType);
+			WriteFile(hPrototypeFile, &sMapObjType, sizeof(_ushort), &dwByte, nullptr);
+
+			// 프로토 타입 태그 길이
+			_uint iPrototypeTagLen = pPrototype.first.size();
+			// 모델 경로 길이
+			_uint iModelPathLen = pPrototype.second.strModelPath.size();
+
+			// 3. 프로토 타입 태그 길이 저장
+			WriteFile(hPrototypeFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr);
+			// 4. 프로토 타입 태그 이름 저장
+			WriteFile(hPrototypeFile, pPrototype.first.c_str(), sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr);
+
+			// 5. 모델 경로 길이 저장
+			WriteFile(hPrototypeFile, &iModelPathLen, sizeof(_uint), &dwByte, nullptr);
+			// 6. 모델 경로 이름 저장
+			WriteFile(hPrototypeFile, pPrototype.second.strModelPath.c_str(), sizeof(_char) * iModelPathLen, &dwByte, nullptr);
+		}
+
+		// 검사용 map clear;
+		Prototypes.clear();
+	}
+
+	// 프로토타입 핸들 닫기
+	CloseHandle(hPrototypeFile);
+
+	return true;
+}
+
+_bool CLevel_Map::Objects_Save_Binary()
+{
+	_wstring strObjectInfoPath = AnsiToWString(m_strMapInfoFilePath);
+
+	strObjectInfoPath += TEXT("_objects.dat");
+
+	DWORD dwByte = {};
+
+	// 프로토타입 핸들 개방
+	HANDLE hObjectFile = CreateFile(strObjectInfoPath.c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (INVALID_HANDLE_VALUE == hObjectFile)
+	{
+		CloseHandle(hObjectFile);
+		return false;
+	}
+	else
+	{
+		// 오브젝트 총 개수 카운트
+		_uint iObjectCnt = {};
+
+		for (auto& pProp : m_ObjectList)
+			++iObjectCnt;
+
+		// 1. 오브젝트의 총 개수 저장
+		WriteFile(hObjectFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr);
+
+		// 단일 오브젝트 순회하면서 모델 이름 알아오기 ( Prototype 태그로 사용할 것 )
+		for (auto& pProp : m_ObjectList)
+		{
+			// 기본 양식 지키기 ( Prototype_Component_Model_모델파일명 ) ( Layer 추가에 사용할 것, 모델명 던져주기 )
+			_wstring strPrototypeTag = TEXT("Prototype_Component_Model_");
+			strPrototypeTag += pProp->Get_ModelName();
+
+			// 모델 이름 길이
+			_uint iPrototypeLen = strPrototypeTag.size();
+
+			// 2. 프로토 타입 태그 길이 저장
+			WriteFile(hObjectFile, &iPrototypeLen, sizeof(_uint), &dwByte, nullptr);
+			// 3. 프로토 타입 태그 이름 저장
+			WriteFile(hObjectFile, strPrototypeTag.c_str(), sizeof(_tchar) * iPrototypeLen, &dwByte, nullptr);
+
+			// 객체당 월드행렬 빼오기
+			CTransform* pTransform = static_cast<CTransform*>(pProp->Get_Component(TEXT("Com_Transform")));
+			CHECK_NULLPTR_MSG(pTransform, TEXT("nullptr == pTransform"), false);
+
+			_float4x4 WorldMatrix = {};
+
+			XMStoreFloat4x4(&WorldMatrix, pTransform->Get_WorldMatrix());
+
+			// 4. 객체당 월드행렬 저장
+			WriteFile(hObjectFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr);
+		}
+		// 단일 오브젝트 이외의 것들 추가 예정
+	}
+
+	// 프로토타입 핸들 닫기
+	CloseHandle(hObjectFile);
+
+	return true;
+}
+
+_bool CLevel_Map::Prototypes_Load_Binary()
+{
+	_wstring strPrototypeInfoPath = AnsiToWString(m_strMapInfoFilePath);
+
+	strPrototypeInfoPath += TEXT("_prototypes.dat");
+
+	DWORD dwByte = {};
+
+	// 프로토타입 핸들 개방
+	HANDLE hPrototypeFile = CreateFile(strPrototypeInfoPath.c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (INVALID_HANDLE_VALUE == hPrototypeFile)
+	{
+		CloseHandle(hPrototypeFile);
+		return false;
+	}
+	else
+	{
+		// 프로토 타입 개수 카운트
+		_uint iPrototypeCnt = {};
+
+		map<const _wstring, const _wstring> Prototypes;
+
+		// 단일 오브젝트 순회하면서 모델 이름 알아오기 ( Prototype 태그로 사용할 것 )
+		for (auto& pProp : m_ObjectList)
+		{
+			// 기본 양식 지키기 ( Prototype_Component_Model_모델파일명 )
+			_wstring strModelName = TEXT("Prototype_Component_Model_");
+			strModelName += pProp->Get_ModelName();
+
+			auto iter = Prototypes.find(strModelName);
+
+			if (iter == Prototypes.end())
+			{
+				string strModelPath = Find_ModelPath(WStringToAnsi(strModelName.c_str()), ".dat");
+
+				Prototypes.emplace(strModelName, AnsiToWString(strModelPath));
+
+				++iPrototypeCnt;
+			}
+		}
+		// 단일 오브젝트 이외의 것들 추가 예정
+
+		for (auto& pPrototype : Prototypes)
+		{
+			// 모델 이름 길이
+			_uint iModelNameLen = pPrototype.first.size();
+			// 모델 경로 길이
+			_uint iModelPathLen = pPrototype.second.size();
+
+			// 모델 이름 길이, 이름 저장
+			WriteFile(hPrototypeFile, &iModelNameLen, sizeof(_uint), &dwByte, nullptr);
+			WriteFile(hPrototypeFile, pPrototype.first.c_str(), sizeof(_tchar) * iModelNameLen, &dwByte, nullptr);
+
+			// 모델 경로 길이, 이름 저장
+			WriteFile(hPrototypeFile, &iModelPathLen, sizeof(_uint), &dwByte, nullptr);
+			WriteFile(hPrototypeFile, pPrototype.second.c_str(), sizeof(_tchar) * iModelPathLen, &dwByte, nullptr);
+		}
+
+		// 검사용 map clear;
+		Prototypes.clear();
+	}
+
+	// 프로토타입 핸들 닫기
+	CloseHandle(hPrototypeFile);
+
+	return true;
+}
+
+_bool CLevel_Map::Objects_Load_Binary()
+{
+	return true;
 }
 
 CLevel_Map* CLevel_Map::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
