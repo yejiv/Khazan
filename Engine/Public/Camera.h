@@ -11,6 +11,8 @@ public:
 	{
 		_float4		vEye, vAt;
 		_float		fFovy, fNear, fFar;
+
+		_uint		iCameraType = {};
 	}CAMERA_DESC;
 protected:
 	CCamera(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -26,12 +28,17 @@ public:
 	virtual HRESULT Render();
 
 public:
+	_uint Get_CameraType() { return m_iCameraType; }
+
+public:
 	void Update_PipeLines();
 
 protected:
 	_float				m_fFovy = { };
 	_float				m_fAspect = {};
 	_float				m_fNear{}, m_fFar{};
+
+	_uint				m_iCameraType = {};
 public:
 	virtual CGameObject* Clone(void* pArg) = 0;
 	virtual void Free() override;

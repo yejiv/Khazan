@@ -1,14 +1,11 @@
 #pragma once
 #include "UIObject.h"
+#include "Client_Defines.h"
 
-NS_BEGIN(Engine)
+NS_BEGIN(Client)
 
-class ENGINE_DLL CUI_Button abstract : public CUIObject
+class CUI_Button abstract : public CUIObject
 {
-protected:
-	enum class BUTTON_STATE { HOVERED, PRESSED, NORMAL };
-
-
 protected:
 	CUI_Button(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CUI_Button(const CUI_Button& Prototype);
@@ -22,16 +19,6 @@ public:
 	virtual void				Update(_float fTimeDelta) override;
 	virtual void				Late_Update(_float fTimeDelta) override;
 	virtual HRESULT				Render() override;
-
-public:
-	_bool						IsPicked(HWND hWnd);
-	_bool						Update_Picking(HWND hWnd);
-
-
-protected:
-	BUTTON_STATE				m_eState = { BUTTON_STATE::NORMAL };
-	_bool						m_isPrevMouseDown = { false };
-
 
 public:
 	virtual CGameObject*		Clone(void* pArg) = 0;

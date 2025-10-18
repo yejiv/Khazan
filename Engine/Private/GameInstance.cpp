@@ -190,7 +190,7 @@ HRESULT CGameInstance::Draw()
 #ifdef _DEBUG
 	m_pImgui_Manager->BeginFrame();
 	m_pImgui_Manager->Render();
-	m_pJolt_Manager->Debug_Render();
+	//m_pJolt_Manager->Debug_Render();
 #endif
 
 	return S_OK;
@@ -512,6 +512,16 @@ const _float4x4* CGameInstance::Get_ShadowLight_Transform_Float4x4(D3DTS eTransf
 HRESULT CGameInstance::Ready_ShadowLight(SHADOW_LIGHT_DESC LightDesc)
 {
 	return m_pShadow->Ready_ShadowLight(LightDesc);
+}
+
+SHADOW_LIGHT_DESC CGameInstance::Get_ShadowLight()
+{
+	return m_pShadow->Get_ShadowLight();
+}
+
+void CGameInstance::Set_ShadowLight(SHADOW_LIGHT_DESC LightDesc)
+{
+	m_pShadow->Set_ShadowLight(LightDesc);
 }
 
 #pragma endregion
