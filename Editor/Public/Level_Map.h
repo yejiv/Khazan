@@ -166,6 +166,9 @@ private:
 
 	map<const string, const string> m_CheckPrototypes;	// 중복 프로토타입 체크 및 리스트 출력용
 
+	_char m_szDatSavePath[MAX_PATH] = { "../../Client/Bin/Data/Map/" };			// .dat 추출용 폴더 경로
+	string m_strDatSavePath = {};
+
 #pragma endregion
 
 #pragma region PROTOTYPE LIST 용
