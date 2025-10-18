@@ -58,9 +58,6 @@
     <Filter Include="02.GameObject\JOH Test">
       <UniqueIdentifier>{79049abe-c286-42e6-98b0-a98c711d0409}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\JOH Test\Test NonAnim Model">
-      <UniqueIdentifier>{2a2f2620-f90d-4ad0-80a5-ce65409e5eab}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\Pool">
       <UniqueIdentifier>{bee2ead6-daf6-4408-8038-aab3a62c7fa2}</UniqueIdentifier>
     </Filter>
@@ -99,6 +96,9 @@
     </Filter>
     <Filter Include="95.SuperClass\UI">
       <UniqueIdentifier>{9ef03780-85dc-46e5-ad98-28a16e1cec36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\JOH Test\Test Anim Model">
+      <UniqueIdentifier>{2a2f2620-f90d-4ad0-80a5-ce65409e5eab}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -148,7 +148,7 @@
       <Filter>02.GameObject\Monster</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\JOH_Test1.h">
-      <Filter>02.GameObject\JOH Test\Test NonAnim Model</Filter>
+      <Filter>02.GameObject\JOH Test\Test Anim Model</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Dummy.h">
       <Filter>02.GameObject\Pool\Dummy</Filter>
@@ -241,7 +241,7 @@
       <Filter>02.GameObject\Monster</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\JOH_Test1.cpp">
-      <Filter>02.GameObject\JOH Test\Test NonAnim Model</Filter>
+      <Filter>02.GameObject\JOH Test\Test Anim Model</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Dummy.cpp">
       <Filter>02.GameObject\Pool\Dummy</Filter>

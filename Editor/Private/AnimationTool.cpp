@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "Editor_Model.h"
 #include "JOH_EditorModelTest.h"
+#include "Editor_Animation.h"
 #include <commdlg.h>
 
 
@@ -22,21 +23,21 @@ HRESULT CAnimationTool::Initialize_Prototype()
     GetModuleFileNameA(NULL, exePath, MAX_PATH);
     string exeDir = exePath;
     size_t lastSlash = exeDir.find_last_of("\\/");
-    if (lastSlash != string::npos)
-        exeDir = exeDir.substr(0, lastSlash);
-      
-    filesystem::path projectRoot = filesystem::path(exeDir).parent_path().parent_path() / "Default";
+    if (lastSlash != string::npos) exeDir = exeDir.substr(0, lastSlash);
+    SetCurrentDirectoryA(exeDir.c_str());
+    OutputDebugStringA(("[Working Directory Set] " + string(exePath)+ "\n").c_str());
 
-    string projectRootStr = projectRoot.string();
-    SetCurrentDirectoryA(projectRootStr.c_str());
+    //filesystem::path projectRoot = filesystem::path(exeDir).parent_path().parent_path() / "Default";
 
-    OutputDebugStringA(("[Working Directory Set] " + projectRootStr + "\n").c_str());
+    //string projectRootStr = projectRoot.string();
+    //SetCurrentDirectoryA(projectRootStr.c_str());
+
+    //OutputDebugStringA(("[Working Directory Set] " + projectRootStr + "\n").c_str());
 
     // 확인
     _char currentDir[MAX_PATH];
     GetCurrentDirectoryA(MAX_PATH, currentDir);
     OutputDebugStringA(("[Current Working Directory] " + string(currentDir) + "\n").c_str());
-
 
 	Widget();
 
@@ -137,7 +138,7 @@ void CAnimationTool::OpenModel_Widget()
         ofn.nFilterIndex = 1;
         ofn.lpstrFileTitle = NULL;
         ofn.nMaxFileTitle = 0;
-        ofn.lpstrInitialDir = "../../Client/Bin/Resources/Models/";
+        ofn.lpstrInitialDir = "../../../Client/Bin/Resources/Models/";
         ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
         if (GetOpenFileNameA(&ofn) == TRUE)
@@ -319,12 +320,18 @@ void CAnimationTool::Tool_Export_Update_Widget()
             _char savedDir[MAX_PATH];
             GetCurrentDirectoryA(MAX_PATH, savedDir);
 
+            OutputDebugStringA(savedDir);
+            OutputDebugStringA("\n");
+
             OPENFILENAMEA ofn;
-            char szFile[260] = { 0 };
+            _char szFile[260] = { 0 };
 
             // 기본 파일명
             string defaultName = WStringToAnsi(m_ObjectNames[m_iSelectedIndex]);
             strcpy_s(szFile, defaultName.c_str());
+
+
+
 
             ZeroMemory(&ofn, sizeof(ofn));
             ofn.lStructSize = sizeof(ofn);
@@ -405,8 +412,8 @@ void CAnimationTool::Tool_Widget()
     }
     if(m_isShowTool_ExportUpdate)Tool_Export_Update_Widget();
 
-    /* Animation time Controler*/
-    if (ImGui::Button("Animation time Controler", ImVec2(250, 25))) {
+    /* Animation Controler*/
+    if (ImGui::Button("Animation Controler", ImVec2(250, 25))) {
         m_isShowTool_Control = !m_isShowTool_Control;
         m_isEnble_AnimList = !m_isEnble_AnimList;
     }
@@ -445,7 +452,7 @@ void CAnimationTool::Tool_AnimationControl_Widget()
         /* 시간 조절 */
         /* 애니메이션 세트 */
         /* 이벤트  */
-
+        if(m_isEnble_AnimSlider)Tool_AnimationSlider_Widget();
 	}
 	ImGui::EndChild();
 
@@ -532,6 +539,11 @@ void CAnimationTool::Tool_AnimationList_Widget()
 			{
 				pModel->Set_Animation(i, animData.animSetup.isLoop);
 				m_iSelectedAnimIndex = i;
+
+                m_fCurrentFrame = m_GameObjects[m_iSelectedIndex]->get_Model()->Get_CurTrackPosition();
+                m_pCurAnimaion = m_GameObjects[m_iSelectedIndex]->get_Model()->Get_CurAnimtion();
+                m_fCurrentDuration = m_pCurAnimaion->Get_Duration();
+                m_isEnble_AnimSlider = true;
 			}
 
 			// 호버 시 간단한 정보
@@ -822,6 +834,109 @@ void CAnimationTool::Tool_AnimationInfo_Widget()
 
 }
 
+void CAnimationTool::Tool_AnimationSlider_Widget()
+{
+    if (ImGui::Button("begin")) {
+        *m_fCurrentFrame = 0;
+        m_isPlaying = false;
+        m_pCurAnimaion->EnbleTrackPosition(m_isPlaying);
+    }
+    ImGui::SameLine();
+    if (ImGui::Button(m_isPlaying ? "pause" : "start")) {
+        m_isPlaying = !m_isPlaying;
+        m_pCurAnimaion->EnbleTrackPosition(m_isPlaying);
+    }
+    ImGui::SameLine(); 
+    if (ImGui::Button("end")){
+        *m_fCurrentFrame = m_fCurrentDuration;
+        m_isPlaying = false;
+        m_pCurAnimaion->EnbleTrackPosition(m_isPlaying);
+    }
+    ImGui::SameLine();
+    ImGui::Text("Frame : %f / %f", *m_fCurrentFrame, m_fCurrentDuration);
+    ImGui::SliderFloat("##frame_slider", m_fCurrentFrame, 0, m_fCurrentDuration, "");
+
+    ImGui::Spacing();    ImGui::Separator();    ImGui::Spacing();
+
+
+    ImGui::Text("Event Key:");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(200); 
+    ImGui::InputText("##EventKeyInput", m_szEventKeyInputText, IM_ARRAYSIZE(m_szEventKeyInputText));
+
+    if (ImGui::Button("Frame X Store"))
+    {
+        m_vTempFrames.x = *m_fCurrentFrame;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Frame Y Store"))
+    {
+        m_vTempFrames.y = *m_fCurrentFrame;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Once Event ( Frame Y = 0)"))
+    {
+        m_vTempFrames.y = 0.f;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Clear Frame (X = 0, Y = 0)"))
+    {
+        m_vTempFrames.x = 0.f;
+        m_vTempFrames.y = 0.f;
+    }
+    ImGui::Text("Frame Key : ");
+    ImGui::SameLine();
+    ImGui::Text(m_szEventKeyInputText);
+    ImGui::Text("Frame X : %f", m_vTempFrames.x);
+    ImGui::Text("Frame Y : %f", m_vTempFrames.y);
+
+    if (ImGui::Button("Vector Frame Data Store"))
+    {
+        m_vecEventFrames.emplace_back(m_vTempFrames);
+        m_vecEventKeys.emplace_back(string(m_szEventKeyInputText));
+
+    }
+    //todo 벡터 삭제기능, 벡터 보이기 기능 , 진짜 모델 데이터에 적용기능 
+    ImGui::Text("Event List");
+    ImGui::BeginChild("EventList", ImVec2(0, 150), true);
+    {
+        for (_int i = 0; i < (_int)m_vecEventFrames.size(); ++i)
+        {
+            const _bool isSelected = (m_iAnimSliderListSelectedIndex == i);
+
+            // 각 항목을 Selectable로 표시
+            std::string label = "[" + std::to_string(i) + "] " + m_vecEventKeys[i] +
+                " (X:" + std::to_string(m_vecEventFrames[i].x) +
+                ", Y:" + std::to_string(m_vecEventFrames[i].y) + ")";
+
+            if (ImGui::Selectable(label.c_str(), isSelected))
+                m_iAnimSliderListSelectedIndex = i;
+        }
+    }
+    ImGui::EndChild();
+
+    // 선택된 항목이 있을 때만 삭제 버튼 표시
+    if (m_iAnimSliderListSelectedIndex >= 0 && m_iAnimSliderListSelectedIndex < (int)m_vecEventFrames.size())
+    {
+        ImGui::Text("Selected: %s", m_vecEventKeys[m_iAnimSliderListSelectedIndex].c_str());
+        if (ImGui::Button("Delete Selected"))
+        {
+            m_vecEventFrames.erase(m_vecEventFrames.begin() + m_iAnimSliderListSelectedIndex);
+            m_vecEventKeys.erase(m_vecEventKeys.begin() + m_iAnimSliderListSelectedIndex);
+            m_iAnimSliderListSelectedIndex = -1; // 선택 해제
+        }
+    }
+
+    if (ImGui::Button("Save to Real Model Data"))
+    {
+        MODEL_DATA* data = m_GameObjects[m_iSelectedIndex]->get_Model()->Get_ModelData();
+        data->vecAnimation[m_iSelectedAnimIndex].animSetup.vecEventFrames = m_vecEventFrames;
+        data->vecAnimation[m_iSelectedAnimIndex].animSetup.vecEventKeys = m_vecEventKeys;
+        data->vecAnimation[m_iSelectedAnimIndex].animSetup.isEvent = true;
+    }
+
+}
+
 void CAnimationTool::Add_Model(_uint iLevelIndex)
 {
     _wstring prototypeTag = TEXT("Prototype_Component_Editor_Model_") + m_strModelName;
@@ -840,9 +955,13 @@ void CAnimationTool::Add_Model(_uint iLevelIndex)
         return;
     }
 
+    CJOH_EditorModelTest::EDITORTESTMODEL_DESC desc;
+    desc.strPrototypeTag = prototypeTag;
+    desc.isAnim = m_isAnim;
+
     // 게임 오브젝트 생성
     if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(iLevelIndex, TEXT("Layer_Model"),
-        iLevelIndex, TEXT("Prototype_GameObject_Editor_Animation_TestModel"),  &prototypeTag)))
+        iLevelIndex, TEXT("Prototype_GameObject_Editor_Animation_TestModel"),  &desc)))
     {
         MSG_BOX(TEXT("게임 오브젝트 클론 실패!"));
         return;
@@ -914,18 +1033,19 @@ string CAnimationTool::ConvertToRelativePath(const string& absolutePath)
         _char exePath[MAX_PATH];
         GetModuleFileNameA(NULL, exePath, MAX_PATH);
         fs::path exeDir = fs::path(exePath).parent_path();
-      
-        // Editor\Bin\Debug -> Editor\Bin -> Editor -> Editor\Default
-        fs::path editorDefaultDir = exeDir.parent_path().parent_path() / "Default";
+         OutputDebugStringA(("[Editor .exe Dir] " + exeDir.string() + "\n").c_str());
 
-        OutputDebugStringA(("[Editor Default Dir] " + editorDefaultDir.string() + "\n").c_str());
+        // Editor\Bin\Debug -> Editor\Bin -> Editor -> Editor\Default
+       // fs::path editorDefaultDir = exeDir.parent_path().parent_path() / "Default";
+
+       // OutputDebugStringA(("[Editor Default Dir] " + editorDefaultDir.string() + "\n").c_str());
 
         // 절대 경로
         fs::path absPath = fs::absolute(absolutePath);
         OutputDebugStringA(("[Absolute Path] " + absPath.string() + "\n").c_str());
 
         // Editor/Default 기준 상대 경로 계산
-        fs::path relativePath = fs::relative(absPath, editorDefaultDir);
+        fs::path relativePath = fs::relative(absPath, exeDir);
 
         string result = relativePath.string();
         replace(result.begin(), result.end(), '\\', '/');
@@ -954,17 +1074,17 @@ string CAnimationTool::ConvertToClientRelativePath(const string& absolutePath)
 
 
         // Editor\Bin\Debug -> Editor\Bin -> Editor -> Khazan -> Client\Default
-        fs::path clientDefaultDir = exeDir.parent_path().parent_path() / "Client" / "Default";
+       // fs::path clientDefaultDir = exeDir.parent_path().parent_path() / "Client" / "Default";
 
         OutputDebugStringA(("[Editor.exe Dir] " + exeDir.string() + "\n").c_str());
-        OutputDebugStringA(("[Client Default] " + clientDefaultDir.string() + "\n").c_str());
+       // OutputDebugStringA(("[Client Default] " + clientDefaultDir.string() + "\n").c_str());
 
         // 절대 경로
         fs::path absPath = fs::absolute(absolutePath);
         OutputDebugStringA(("[Absolute Path] " + absPath.string() + "\n").c_str());
 
         // Client/Default 기준 상대 경로 계산
-        fs::path relativePath = fs::relative(absPath, clientDefaultDir);
+        fs::path relativePath = fs::relative(absPath, exeDir);
 
         string result = relativePath.string();
         replace(result.begin(), result.end(), '\\', '/');

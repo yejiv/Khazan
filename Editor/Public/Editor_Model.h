@@ -35,7 +35,9 @@ public:
 	ANIMATION_SETUP_DATA*		Get_CurAnimSet() { return &m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup; }
 	class CEditor_Animation*	Get_CurAnimtion();
 	_int						Get_CurAnimIndex() { return m_iCurrentAnimIndex; }
-	
+	_float*						Get_CurTrackPosition() { return &m_fCurrentTrackPosition; }
+
+
 public:
 	void			ExportModel(string& strPath);
 	void			LoadModel(_wstring strModelName);

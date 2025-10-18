@@ -162,7 +162,7 @@ HRESULT CEditor_Model::Initialize_Prototype(MODELTYPE eModelType, const _char* p
     {
         auto it = find_if(m_Bones.begin(), m_Bones.end(),
             [&](CEditor_Bone* pBone) {
-                if (pBone->Compare_Name("Root")|| pBone->Compare_Name("Fiona"))
+                if (pBone->Compare_Name("Root")|| pBone->Compare_Name("Bip001"))
                     return true;
                 return false;
             });
@@ -262,13 +262,21 @@ void CEditor_Model::Set_Animation(_uint iIndex, _bool isLoop)
 
 CEditor_Animation* CEditor_Model::Get_CurAnimtion()
 {
-    if (m_iPrevAnimIndex > 0) m_Animations[m_iPrevAnimIndex]->EnbleTrackPosition(false);
+    if (m_iPrevAnimIndex > 0) m_Animations[m_iPrevAnimIndex]->EnbleTrackPosition(true);
     m_Animations[m_iCurrentAnimIndex]->EnbleTrackPosition(true);
     return m_Animations[m_iCurrentAnimIndex];
 }
 
 void CEditor_Model::ExportModel(string& strPath)
 {
+    /* 파일시스템에서 실행파일 위치를 .exe로 고정 */
+    _char exePath[MAX_PATH];
+    GetModuleFileNameA(NULL, exePath, MAX_PATH);
+    string exeDir = exePath;
+    size_t lastSlash = exeDir.find_last_of("\\/");
+    if (lastSlash != string::npos) exeDir = exeDir.substr(0, lastSlash);
+    SetCurrentDirectoryA(exeDir.c_str());
+
     filesystem::path fullPath(strPath);
     string strDirectory = fullPath.parent_path().string();
     string strFileName = fullPath.stem().string();  // 확장자 제외
@@ -382,20 +390,28 @@ void CEditor_Model::LoadModel(_wstring strModelName)
 }
 void CEditor_Model::Update_DAT_From_JSON(string& strPath)
 {
+    /* 파일시스템에서 실행파일 위치를 .exe로 고정 */
+    _char exePath[MAX_PATH];
+    GetModuleFileNameA(NULL, exePath, MAX_PATH);
+    string exeDir = exePath;
+    size_t lastSlash = exeDir.find_last_of("\\/");
+    if (lastSlash != string::npos) exeDir = exeDir.substr(0, lastSlash);
+    SetCurrentDirectoryA(exeDir.c_str());
+
     filesystem::path fullPath(strPath);
-    string strDirectory = fullPath.parent_path().string();
+    string strDirectory = fullPath.parent_path().string()+ "/";
     string strFileName = fullPath.stem().string();  // 확장자 제외
 
     // 모델 폴더 경로
-    string strModelFolder = strDirectory + "/" + strFileName + "/";
+    //string strModelFolder = strDirectory + "/" + strFileName + "/";
 
     // 파일 경로 생성
-    string strDatPath = strModelFolder + strFileName + ".dat";
-    string strAnimJsonPath = strModelFolder + strFileName + "_Anim.json";
-    string strMaterialJsonPath = strModelFolder + strFileName + "_Material.json";
+    string strDatPath = strDirectory + strFileName + ".dat";
+    string strAnimJsonPath = strDirectory + strFileName + "_Anim.json";
+    string strMaterialJsonPath = strDirectory + strFileName + "_Material.json";
 
     // .dat 파일 존재 확인
-    if (!filesystem::exists(strDatPath))
+    if (!filesystem::exists(strDirectory))
     {
         _tchar szMessage[MAX_PATH] = {};
         swprintf_s(szMessage, TEXT(".dat 파일이 존재하지 않습니다!\n경로: %S"),
@@ -469,7 +485,7 @@ void CEditor_Model::Update_DAT_From_JSON(string& strPath)
     // 성공 메시지
     _tchar szMessage[MAX_PATH] = {};
     swprintf_s(szMessage, TEXT(".dat 파일 업데이트 완료!\n\n폴더: %S\n파일: %S.dat"),
-        strModelFolder.c_str(), strFileName.c_str());
+        strDirectory.c_str(), strFileName.c_str());
     MessageBox(nullptr, szMessage, TEXT("Success"), MB_OK | MB_ICONINFORMATION);
 }
 
@@ -654,6 +670,14 @@ _bool CEditor_Model::Export_MaterialJson(const string& strFilePath)
 
 void CEditor_Model::Export_Binary(const string& strFilePath)
 {
+    // 현재 작업 디렉터리 확인
+    filesystem::path currentDir = filesystem::current_path();
+    OutputDebugStringA(("[Current Directory] " + currentDir.string() + "\n").c_str());
+
+    // 실제로 열리는 절대 경로 계산
+    filesystem::path absolutePath = filesystem::absolute(strFilePath);
+    OutputDebugStringA(("[Full Binary Path] " + absolutePath.string() + "\n").c_str());
+
     ofstream ofs(strFilePath, ios::binary);
     if (!ofs.is_open())
     {

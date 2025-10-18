@@ -33,8 +33,8 @@ HRESULT CLevel_Stage1::Initialize()
 	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
 		return E_FAIL;
 
-	/*if (FAILED(Ready_Layer_Test(TEXT("Layer_Test"))))
-		return E_FAIL;*/
+	//if (FAILED(Ready_Layer_Test(TEXT("Layer_Test"))))
+	//	return E_FAIL;
 
 	//CHECK_FAILED(Ready_Layer_MapObject_Test(TEXT("Layer_Test")), E_FAIL);
 
