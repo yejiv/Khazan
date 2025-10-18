@@ -4,7 +4,7 @@
 
 NS_BEGIN(Client)
 
-class CUI_Button abstract : public CUIObject
+class CUI_Button abstract : public Engine::CUIObject
 {
 protected:
 	CUI_Button(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -19,6 +19,11 @@ public:
 	virtual void				Update(_float fTimeDelta) override;
 	virtual void				Late_Update(_float fTimeDelta) override;
 	virtual HRESULT				Render() override;
+
+	virtual HRESULT				Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID) override;
+
+protected:
+	class CClientInstance* m_pClientInstance = { nullptr };
 
 public:
 	virtual CGameObject*		Clone(void* pArg) = 0;

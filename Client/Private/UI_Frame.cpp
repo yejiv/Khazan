@@ -1,27 +1,24 @@
-#include "UI_ScrollBar.h"
+#include "UI_Frame.h"
 #include "GameInstance.h"
 #include "ClientInstance.h"
 
-CUI_ScrollBar::CUI_ScrollBar(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CUI_Frame::CUI_Frame(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUIObject{ pDevice, pContext }
-	, m_pClientInstance{ CClientInstance::GetInstance() }
 {
-	Safe_AddRef(m_pClientInstance);
 }
 
-CUI_ScrollBar::CUI_ScrollBar(const CUI_ScrollBar& Prototype)
-	: CUIObject(Prototype)
-	, m_pClientInstance{ Prototype.m_pClientInstance }
+CUI_Frame::CUI_Frame(const CUI_Frame& Prototype)
+	:CUIObject(Prototype)
 {
-	Safe_AddRef(m_pClientInstance);
 }
 
-HRESULT CUI_ScrollBar::Initialize_Prototype()
+HRESULT CUI_Frame::Initialize_Prototype()
 {
+
 	return S_OK;
 }
 
-HRESULT CUI_ScrollBar::Initialize_Clone(void* pArg)
+HRESULT CUI_Frame::Initialize_Clone(void* pArg)
 {
 	if (FAILED(__super::Initialize_Clone(pArg)))
 		return E_FAIL;
@@ -29,24 +26,27 @@ HRESULT CUI_ScrollBar::Initialize_Clone(void* pArg)
 	return S_OK;
 }
 
-void CUI_ScrollBar::Priority_Update(_float fTimeDelta)
+void CUI_Frame::Priority_Update(_float fTimeDelta)
 {
+	__super::Priority_Update(fTimeDelta);
 }
 
-void CUI_ScrollBar::Update(_float fTimeDelta)
+void CUI_Frame::Update(_float fTimeDelta)
 {
+	__super::Update(fTimeDelta);
 }
 
-void CUI_ScrollBar::Late_Update(_float fTimeDelta)
+void CUI_Frame::Late_Update(_float fTimeDelta)
 {
+	__super::Late_Update(fTimeDelta);
 }
 
-HRESULT CUI_ScrollBar::Render()
+HRESULT CUI_Frame::Render()
 {
 	return S_OK;
 }
 
-HRESULT CUI_ScrollBar::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
+HRESULT CUI_Frame::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
 {
 	m_szName = pInData.value("name", "");
 	string strTexType = pInData.value("TexType", "");
@@ -55,13 +55,13 @@ HRESULT CUI_ScrollBar::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
 	{
 		string strTexTag = pInData.value("TexTag", "");
 
-		m_iTexPass = m_pClientInstance->UI_TexTag_Maping(strTexTag);
+		m_iTexPass = CClientInstance::GetInstance()->UI_TexTag_Maping(strTexTag);
 		if (m_iTexPass == -1)
 			return E_FAIL;
 	}
-
+	
 	string szType = pInData.value("type", "");
-	m_iUIType = m_pClientInstance->UIType_StringToEnum(szType);
+	m_iUIType = CClientInstance::GetInstance()->UIType_StringToEnum(szType);
 
 	m_iShaderPass = pInData.value("shaderPass", -1);
 	if (m_iShaderPass == -1)
@@ -149,8 +149,7 @@ HRESULT CUI_ScrollBar::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
 	return S_OK;
 }
 
-void CUI_ScrollBar::Free()
+void CUI_Frame::Free()
 {
 	__super::Free();
-	Safe_Release(m_pClientInstance);
 }

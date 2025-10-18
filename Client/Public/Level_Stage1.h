@@ -25,6 +25,8 @@ private:
 	HRESULT Ready_Layer_Test(const _wstring& strLayerTag);
 	HRESULT Ready_Layer_MapObject_Test(const _wstring& strLayerTag);
 
+private:
+	class CClientInstance* m_pClientInstance = { nullptr };
 public:
 	static CLevel_Stage1* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;

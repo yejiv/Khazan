@@ -18,6 +18,11 @@ public:
 	virtual void				Late_Update(_float fTimeDelta) override;
 	virtual HRESULT				Render() override;
 
+	virtual HRESULT				Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID) override;
+
+protected:
+	class CClientInstance*		m_pClientInstance = { nullptr };
+
 public:
 	virtual CGameObject*		Clone(void* pArg) = 0;
 	virtual void				Free() override;

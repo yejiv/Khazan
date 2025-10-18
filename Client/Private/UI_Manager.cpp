@@ -2,14 +2,15 @@
 #include "GameInstance.h"
 #include "Atlas_RenderGroup.h"
 #include "UI_Layer.h"
+#include "UIObject.h"
 
 CUI_Manager::CUI_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: m_pDevice{ pDevice }
-	, m_pDeviceContext{ pDeviceContext }
+	, m_pContext{ pDeviceContext }
 	, m_pGameInstance{ CGameInstance::GetInstance() }
 {
 	Safe_AddRef(m_pDevice);
-	Safe_AddRef(m_pDeviceContext);
+	Safe_AddRef(m_pContext);
 	Safe_AddRef(m_pGameInstance);
 }
 
@@ -23,6 +24,9 @@ HRESULT CUI_Manager::Initialize()
 		CAtlas_RenderGroup::ATLASGROUP_DESC Desc = {};
 		Desc.fDepth = (_float)i;
 		Desc.iShdaerPass = 0;
+		Desc.szName = "";
+		Desc.iUIType = ENUM_CLASS(UITYPE::RENDER_GROUP);
+	
 		CAtlas_RenderGroup* pRenderGroup = static_cast<CAtlas_RenderGroup*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_AtlasRenderGroup"), &Desc));
 
 		if (pRenderGroup == nullptr)
@@ -35,7 +39,16 @@ HRESULT CUI_Manager::Initialize()
 
 HRESULT CUI_Manager::UI_UpdateSwitch(const _wstring& strUITag, void* pArg)
 {
-	return S_OK;
+	CUIObject* pRootUI = Find_RootUI(strUITag);
+
+	if (pRootUI == nullptr)
+	{
+		_wstring Failed = TEXT("Failed to Update_Switch : ") + strUITag;
+		MSG_BOX(Failed.c_str());
+		return E_FAIL;
+	}
+
+	return pRootUI->Update_Switch(pArg);
 }
 
 HRESULT CUI_Manager::Add_Event(const _wstring& strLayerTag, const _wstring& strEventTag, std::function<void()> Event)
@@ -108,28 +121,110 @@ HRESULT CUI_Manager::Erase_EventLayer(const _wstring& strLayerTag)
 	return S_OK;
 }
 
-HRESULT CUI_Manager::Load_UIData(_uint iLayerLevelID, const _wstring& strLayerTag, _uint iPrototypeLevelID, const _tchar* pTextureFilePath)
+HRESULT CUI_Manager::Load_UIData(_uint iLayerLevelID, const _wstring& strLayerTag, _uint iPrototypeLevelID, const _tchar* pFilePath)
 {
+	ifstream In(pFilePath);
+	if (!In.is_open())
+	{
+		MSG_BOX(TEXT("UI JSON 파일 불러오기 실패"));
+		In.close();
+		return E_FAIL;
+	}
+	else
+	{
+		nlohmann::json jsonData;
+		In >> jsonData;
+
+		string strClass = jsonData.value("class", "");
+		_wstring wstrClass = AnsiToWString(strClass);
+
+		CUIObject::UIOBJECT_DESC UIDesc{};
+		UIDesc.szName = "";
+		UIDesc.iUIType = 0;
+		UIDesc.vLocalSize = { 1.f, 1.f };
+		UIDesc.fDepth = 0;
+		UIDesc.vLocalPos = { g_iWinSizeX >> 1 , g_iWinSizeY >> 1 };
+
+		CUIObject* pRootUI = static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelID, wstrClass.c_str(), &UIDesc));
+
+		if (pRootUI == nullptr)
+		{
+			MSG_BOX(TEXT("UI Load : 클론 실패"));
+			return E_FAIL;
+		}
+		
+		if (FAILED(pRootUI->Load_UI(jsonData, iPrototypeLevelID)))
+		{
+			MSG_BOX(TEXT("UI Load : 데이터 로드 실패"));
+			return E_FAIL;
+		}
+
+		m_pGameInstance->Push_GameObject_ToLayer(iLayerLevelID, strLayerTag, pRootUI);
+
+		string strName = jsonData.value("class", "");
+		_wstring wstrName = AnsiToWString(strClass);
+
+		m_pRootUI.emplace(wstrName.c_str(), pRootUI);
+		Safe_AddRef(pRootUI);
+	}
+
 	return S_OK;
 }
 
-UITYPE CUI_Manager::UIType_StringToEnum(string szUIType)
+_int CUI_Manager::UIType_StringToEnum(string szUIType)
 {
-	return UITYPE();
+	UITYPE eUIType = {};
+
+	if (szUIType == "PANEL")
+		eUIType = UITYPE::PANEL;
+	if (szUIType == "TAP")
+		eUIType = UITYPE::TAP;
+	if (szUIType == "BUTTON")
+		eUIType = UITYPE::BUTTON;
+	if (szUIType == "SLOT")
+		eUIType = UITYPE::SLOT;
+	if (szUIType == "PROGRESSBAR")
+		eUIType = UITYPE::PROGRESSBAR;
+	if (szUIType == "SCROLLBAR")
+		eUIType = UITYPE::SCROLLBAR;
+
+	return ENUM_CLASS(eUIType);
 }
 
-_float CUI_Manager::Convert_LocalToWinSize(_float fPos, _float fWinSize)
+HRESULT CUI_Manager::Add_UIRender(UI_RENDER_TYPE eRender, CUIObject* pUIObject)
 {
-	return _float();
+	if (pUIObject == nullptr)
+		return E_FAIL;
+	if (UI_RENDER_TYPE::ATLAS == eRender)
+	{
+		VTXINSTANCE_UI UIInstanceDesc = {};
+		pUIObject->Get_Data(UIInstanceDesc);
+		m_pAtlasRenderGroup[(_uint)pUIObject->Get_Depth()]->Add_UIInstance(&UIInstanceDesc);
+	}
+	else
+	{
+		m_pRenderUI.push_back(pUIObject);
+		Safe_AddRef(m_pRenderUI.back());
+	}
+	return S_OK;
 }
 
-HRESULT CUI_Manager::Add_UIInstance(_matrix Worldmat, _float fDepth, _float4 vUV, string szTexTag, _uint iShaderPass)
+void CUI_Manager::UIObjectToRenderer()
 {
-	return E_NOTIMPL;
-}
+	for (_int i = 0; i < (_int)m_pAtlasRenderGroup.size(); ++i)
+	{
+		m_pRenderUI.push_back(m_pAtlasRenderGroup[i]);
+		Safe_AddRef(m_pAtlasRenderGroup[i]);
+	}
 
-void CUI_Manager::Add_AtlasToRenderer(_float fTimeDelta)
-{
+	sort(m_pRenderUI.begin(), m_pRenderUI.end(), [](CUIObject* pSour, CUIObject* pDest) { return pSour->Get_Depth() > pDest->Get_Depth(); });
+
+	for (_int i = 0; i < (_int)m_pRenderUI.size(); ++i)
+	{
+		m_pRenderUI[i]->Add_Renderer();
+		Safe_Release(m_pRenderUI[i]);
+	}
+	m_pRenderUI.clear();
 }
 
 CUI_Layer* CUI_Manager::Find_Layer(const _wstring& strLayerTag)
@@ -154,14 +249,36 @@ CUIObject* CUI_Manager::Find_RootUI(const _wstring& strUITag)
 
 HRESULT CUI_Manager::Ready_Prototype()
 {
-	return E_NOTIMPL;
+	/* Prototype_Component_VIBuffer_Instance_UI */
+	CVIBuffer_Instance_UI::INSTANCE_DESC UIInstanceDesc = {};
+	UIInstanceDesc.iNumInstance = 100;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Instance_UI"),
+		CVIBuffer_Instance_UI::Create(m_pDevice, m_pContext, &UIInstanceDesc))))
+		return E_FAIL;
+
+	/* Prototype_Component_Shader_VtxPosTex_UI*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxPosTex_UI"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxPosTex_UI.hlsl"), VTXPOSTEX::Elements, VTXPOSTEX::iNumElements))))
+		return E_FAIL;
+
+	/* Prototype_Component_Shader_VtxPosTex_UI*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_UI_Atlas"),
+		CTexture_Atlas::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Atlas/Atlas_%d.json"), 2))))
+		return E_FAIL;
+
+	//GameObject_AtlasRenderGroup
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_AtlasRenderGroup"),
+		CAtlas_RenderGroup::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	return S_OK;
 }
 
 _uint CUI_Manager::TexTag_Maping(string szTextag)
 {
-	if ("Prototype_Component_Atlas_Base" == szTextag)
+	if ("Prototype_Component_Atlas_SlotTest" == szTextag)
 		return 0;
-	else if ("Prototype_Component_Atlas_Main" == szTextag)
+	else if ("Prototype_Component_Atlas_Test" == szTextag)
 		return 1;
 
 	return -1;
@@ -182,8 +299,12 @@ void CUI_Manager::Free()
 {
 	__super::Free();
 	Safe_Release(m_pDevice);
-	Safe_Release(m_pDeviceContext);
+	Safe_Release(m_pContext);
 	Safe_Release(m_pGameInstance);
+
+	for (auto UIObject : m_pRenderUI)
+		Safe_Release(UIObject);
+	m_pRenderUI.clear();
 
 	for (auto Root : m_pRootUI)
 		Safe_Release(Root.second);

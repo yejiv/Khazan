@@ -45,6 +45,8 @@ public:
 	virtual void				Late_Update(_float fTimeDelta) override;
 	virtual HRESULT				Render() override;
 
+	virtual HRESULT				Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID) override;
+
 protected:
 	_float						Make_Rate(_float fSrc, _float fDst);
 	void						Reduce_RightToLeft(_float fRate);
@@ -68,6 +70,8 @@ protected:
 	BAR_DIRECTION				m_eDirection = { BAR_DIRECTION::END };
 	BAR_MODE					m_eMode = { BAR_MODE::END };
 
+protected:
+	class CClientInstance* m_pClientInstance = { nullptr };
 
 public:
 	virtual CGameObject*		Clone(void* pArg) = 0;

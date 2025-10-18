@@ -14,7 +14,7 @@ class CEdit_UIBase : public CUIObject
 {
 public:
 	enum class UI_RENDER_TYPE { DEFAULT, ATLAS, END };
-	enum class UITYPE { PANEL, TAP, BUTTON, SLOT, SCROLLBAR, PROGRESSBAR, END };
+	enum class UITYPE { PANEL, TAP, BUTTON, SLOT, SCROLLBAR, PROGRESSBAR, FRAME, END };
 
 private:
 	CEdit_UIBase(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -25,7 +25,7 @@ public:
 	HRESULT					Create_Child(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, CUIObject::UIOBJECT_DESC* UIChildDesc, string szSeleteUIName, CUIObject* pParent = nullptr);
 
 	//Save/Load
-	HRESULT					Save_UI(nlohmann::json& pOutData);
+	HRESULT					Save_UI(nlohmann::ordered_json& pOutData);
 	virtual HRESULT			Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID);
 
 	//IMGUI

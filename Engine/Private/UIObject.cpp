@@ -12,6 +12,19 @@ CUIObject::CUIObject(const CUIObject& Prototype)
 
 }
 
+void CUIObject::Get_Data(VTXINSTANCE_UI& pOutData)
+{
+    XMStoreFloat4(&pOutData.vRight, m_pTransformCom->Get_WorldMatrix().r[0]);
+    XMStoreFloat4(&pOutData.vUp, m_pTransformCom->Get_WorldMatrix().r[1]);
+    XMStoreFloat4(&pOutData.vLook, m_pTransformCom->Get_WorldMatrix().r[2]);
+    XMStoreFloat4(&pOutData.vPosition, m_pTransformCom->Get_WorldMatrix().r[3]);
+
+    pOutData.iTexPass = m_iTexPass;
+    pOutData.iShaderPass = m_iShaderPass;
+    pOutData.fAlpha = m_fAlpha;
+    pOutData.vUV = m_vUVMinMax[m_iUVState];
+}
+
 HRESULT CUIObject::Initialize_Prototype()
 {
     return S_OK;
@@ -78,6 +91,12 @@ void CUIObject::Late_Update(_float fTimeDelta)
 HRESULT CUIObject::Render()
 {
     return S_OK;
+}
+
+void CUIObject::Add_Renderer()
+{
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::UI, this)))
+        return;
 }
 
 void CUIObject::Add_Child(CUIObject* pChild)
@@ -164,6 +183,30 @@ _float2 CUIObject::Compute_AlignedPos(_float2 vPos, _float2 vSize)
     }
 
     return _float2(0.f, 0.f);
+}
+
+HRESULT CUIObject::Update_Switch(void* pArg)
+{
+    m_IsUpdate ? m_IsUpdate = false : m_IsUpdate = true;
+    return S_OK;
+}
+
+void CUIObject::Bubble_EventCall()
+{
+    if (m_UIBubbleCallBack == nullptr)
+        return;
+
+    m_UIBubbleCallBack();
+}
+
+HRESULT CUIObject::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
+{
+    return S_OK;
+}
+
+void CUIObject::Insert_Bubble(std::function<void()> BubbleEvent)
+{
+    m_UIBubbleCallBack = BubbleEvent;
 }
 
 _bool CUIObject::IsPick(HWND hWnd)

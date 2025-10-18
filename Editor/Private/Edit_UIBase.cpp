@@ -38,9 +38,9 @@ HRESULT CEdit_UIBase::Create_Child(_uint iPrototypeLevelIndex, const _wstring& s
     return E_FAIL;
 }
 
-HRESULT CEdit_UIBase::Save_UI(nlohmann::json& pOutData)
+HRESULT CEdit_UIBase::Save_UI(nlohmann::ordered_json& pOutData)
 {
-    nlohmann::json Data;
+    nlohmann::ordered_json Data;
 
     Data["name"] = m_szName;
     Data["class"] = m_szClassName;
@@ -64,7 +64,7 @@ HRESULT CEdit_UIBase::Save_UI(nlohmann::json& pOutData)
 
     for (_int i = 0; i < m_vUVMinMax.size(); ++i)
     {
-        nlohmann::json UVArray;
+        nlohmann::ordered_json UVArray;
         UVArray["MinX"] = m_vUVMinMax[i].x;
         UVArray["MinY"] = m_vUVMinMax[i].y;
         UVArray["MaxX"] = m_vUVMinMax[i].z;
@@ -80,7 +80,7 @@ HRESULT CEdit_UIBase::Save_UI(nlohmann::json& pOutData)
 
     for (_int i = 0; i < m_Track.size(); ++i)
     {
-        nlohmann::json Track;
+        nlohmann::ordered_json Track;
         Track["TrackPosition"] = m_Track[i].fTrackPosition;
         Track["Alpha"] = m_Track[i].fAlpha;
         Track["Angle"] = m_Track[i].fAngle;
@@ -94,7 +94,7 @@ HRESULT CEdit_UIBase::Save_UI(nlohmann::json& pOutData)
     }
     for (auto& pChild : m_Children)
     {
-        nlohmann::json ChildData;
+        nlohmann::ordered_json ChildData;
         static_cast<CEdit_UIBase*>(pChild)->Save_UI(ChildData);
 
         Data["Children"].push_back(ChildData);
@@ -110,7 +110,8 @@ HRESULT CEdit_UIBase::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
     m_szName = pInData.value("name", "");
     m_szClassName = pInData.value("class", "");
 
-    string TexType = {};
+    string TexType = pInData.value("TexType", "");
+
     if (TexType == "Tex")
         m_eRenderType = UI_RENDER_TYPE::DEFAULT;
     else
@@ -968,6 +969,9 @@ string CEdit_UIBase::UIType_EnumToString()
     case UITYPE::PROGRESSBAR:
         szUIType = "PROGRESSBAR";
         break;
+    case UITYPE::FRAME:
+        szUIType = "FRAME";
+        break;
     }
     return szUIType;
 
@@ -989,6 +993,8 @@ _uint CEdit_UIBase::UIType_StringToEnum(string szUIType)
         eUIType = UITYPE::PROGRESSBAR;
     if (szUIType == "SCROLLBAR")
         eUIType = UITYPE::SCROLLBAR;
+    if (szUIType == "FRAME")
+        eUIType = UITYPE::FRAME;
 
     return ENUM_CLASS(eUIType);
 }

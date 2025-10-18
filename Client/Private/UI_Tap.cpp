@@ -1,122 +1,162 @@
 #include "UI_Tap.h"
 #include "GameInstance.h"
+#include "ClientInstance.h"
 
-CUI_TextBox::CUI_TextBox(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CUI_Tap::CUI_Tap(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CUIObject{pDevice,pContext}
 {
 
 }
 
-CUI_TextBox::CUI_TextBox(const CUI_TextBox& Prototype)
+CUI_Tap::CUI_Tap(const CUI_Tap& Prototype)
 	:CUIObject ( Prototype )
 {
 
 }
 
-void CUI_TextBox::Set_Text(const _wstring& strText)
-{
-	m_strText = strText;
-	m_isChange = true;
-}
-
-void CUI_TextBox::Set_FontColor(const _float3& vColor)
-{
-	m_vFontColor = vColor;
-	m_isChange = true;
-
-}
-
-void CUI_TextBox::Set_FontTag(const _wstring& strFontTag)
-{
-	m_strFontTag = strFontTag;
-	m_isChange = true;
-}
-
-void CUI_TextBox::Set_FontScale(const _float2& vScale)
-{
-	m_vFontScale = vScale;
-	m_isChange = true;
-
-}
-
-void CUI_TextBox::Set_FontAlpha(_float fAlpha)
-{
-	m_fAlpha = fAlpha;
-	m_isChange = true;
-}
-
-void CUI_TextBox::Set_Centered(UI_ALIGNMENT eAligment)
-{
-	__super::Set_Alignment(eAligment);
-	m_isChange = true;
-
-}
-
-HRESULT CUI_TextBox::Initialize_Prototype()
+HRESULT CUI_Tap::Initialize_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CUI_TextBox::Initialize_Clone(void* pArg)
+HRESULT CUI_Tap::Initialize_Clone(void* pArg)
 {
-	TEXTBOX_DESC* pDesc = static_cast<TEXTBOX_DESC*>(pArg);
-
 	if (FAILED(__super::Initialize_Clone(pArg)))
 		return E_FAIL;
 
-	m_strText = TEXT("...");
-	m_strFontTag = pDesc->strFontTag;
-	m_vFontColor = pDesc->vColor;
-	m_vFontScale = pDesc->vFontScale;
-	m_fAlpha = pDesc->fAlpha;
-	m_isChange = false;
-
 	return S_OK;
 }
 
-void CUI_TextBox::Priority_Update(_float fTimeDelta)
+void CUI_Tap::Priority_Update(_float fTimeDelta)
 {
-
+	if (m_eState == STATE::DISABLE)
+		return;
+	__super::Priority_Update(fTimeDelta);
 }
 
-void CUI_TextBox::Update(_float fTimeDelta)
+void CUI_Tap::Update(_float fTimeDelta)
 {
-	if (m_isChange)
+	if (m_eState == STATE::DISABLE)
+		return;
+	__super::Update(fTimeDelta);
+}
+
+void CUI_Tap::Late_Update(_float fTimeDelta)
+{
+	if (m_eState == STATE::DISABLE)
+		return;
+	__super::Late_Update(fTimeDelta);
+}
+
+HRESULT CUI_Tap::Render()
+{
+	return S_OK;
+}
+
+HRESULT CUI_Tap::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
+{
+	m_szName = pInData.value("name", "");
+	string strTexType = pInData.value("TexType", "");
+
+	if ("Atlas" == strTexType)
 	{
-		// TextBox 정보를 바꿨을때 초기화 하는 함수.
-		Recalculate_TextInfo();
-		m_isChange = false;
+		string strTexTag = pInData.value("TexTag", "");
+
+		m_iTexPass = CClientInstance::GetInstance()->UI_TexTag_Maping(strTexTag);
+		if (m_iTexPass == -1)
+			return E_FAIL;
 	}
-}
 
-void CUI_TextBox::Late_Update(_float fTimeDelta)
-{
+	string szType = pInData.value("type", "");
+	m_iUIType = CClientInstance::GetInstance()->UIType_StringToEnum(szType);
 
-}
+	m_iShaderPass = pInData.value("shaderPass", -1);
+	if (m_iShaderPass == -1)
+		return E_FAIL;
 
-HRESULT CUI_TextBox::Render()
-{
+	m_fDepth = pInData.value("depth", 0.f);
 
-	m_pGameInstance->DrawTextW(m_strFontTag.c_str(), m_strText.c_str(),
-		m_vFontPos,
-		XMVectorSet(m_vFontColor.x, m_vFontColor.y, m_vFontColor.z, m_fAlpha),
-		0.f,
-		_float2(m_vLocalPos.x + (m_vLocalSize.x * 0.5f + m_vFontOffset.x) , -m_vLocalPos.y + (m_vLocalSize.y * 0.5f + m_vFontOffset.y)),
-		m_vFontScale);
-	
+	if (pInData.contains("LocalPos"))
+	{
+		m_vLocalPos.x = pInData["LocalPos"].value("x", 0.f);
+		m_vLocalPos.y = pInData["LocalPos"].value("y", 0.f);
+	}
+
+	if (pInData.contains("LocalSize"))
+	{
+		m_vLocalSize.x = pInData["LocalSize"].value("x", 0.f);
+		m_vLocalSize.y = pInData["LocalSize"].value("y", 0.f);
+	}
+	if (pInData.contains("UV"))
+	{
+		m_vUVMinMax.clear();
+		for (auto& uv : pInData["UV"])
+		{
+			_float4 uvData;
+			uvData.x = uv.value("MinX", 0.f);
+			uvData.y = uv.value("MinY", 0.f);
+			uvData.z = uv.value("MaxX", 0.f);
+			uvData.w = uv.value("MaxY", 0.f);
+			m_vUVMinMax.push_back(uvData);
+		}
+	}
+	if (pInData.contains("Anime"))
+	{
+		m_Track.clear();
+		for (auto& t : pInData["Anime"])
+		{
+			UIKEYFRAME track;
+			track.fTrackPosition = t.value("TrackPosition", 0.f);
+			track.fAlpha = t.value("Alpha", 1.f);
+			track.fAngle = t.value("Angle", 0.f);
+			track.fSize = t.value("Size", 1.f);
+			track.szEvent = t.value("Event", "");
+
+			if (t.contains("Transloation"))
+			{
+				track.vTransloation.x = t["Transloation"].value("x", 0.f);
+				track.vTransloation.y = t["Transloation"].value("y", 0.f);
+			}
+
+			m_Track.push_back(track);
+		}
+	}
+	m_pTransformCom->Scale(_float3{ m_vLocalSize.x, m_vLocalSize.y, 1.f });
+
+	if (pInData.contains("Children"))
+	{
+		for (auto& child : pInData["Children"])
+		{
+			string strClass = child.value("class", "");
+			_wstring wstrClass = AnsiToWString(strClass);
+
+			CUIObject::UIOBJECT_DESC UIDesc{};
+			UIDesc.szName = "";
+			UIDesc.iUIType = 0;
+			UIDesc.vLocalSize = { 1.f, 1.f };
+			UIDesc.fDepth = 0;
+			UIDesc.vLocalPos = { g_iWinSizeX >> 1 , g_iWinSizeY >> 1 };
+
+			CUIObject* pChild = static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelID, wstrClass.c_str(), &UIDesc));
+
+			if (pChild == nullptr)
+			{
+				MSG_BOX(TEXT("자식 클론 생성 실패"));
+				return E_FAIL;
+			}
+			if (pChild->Load_UI(child, iPrototypeLevelID))
+				return E_FAIL;
+
+			pChild->Insert_Bubble([this]() {this->Bubble_EventCall(); });
+			m_Children.push_back(pChild);
+		}
+	}
+
+	__super::Update_Transform(nullptr, m_vLocalPos);
 	return S_OK;
 }
 
-void CUI_TextBox::Recalculate_TextInfo()
-{
-	//_float2 vTextSize = m_pGameInstance->Compute_TextSize(m_strFontTag,m_strText,m_vFontScale);
-	m_vFontOffset = m_pGameInstance->Compute_TextSize(m_strFontTag,m_strText,m_vFontScale);
-	//m_vFontPos = Compute_AlignedPos(_float2(m_vWorldPos.x,m_vWorldPos.y),vTextSize);
-	m_vFontPos = Compute_AlignedPos(_float2(m_vWorldPos.x,m_vWorldPos.y),_float2(m_vLocalSize.x * 0.5f,m_vLocalSize.y * 0.5f));
-	
-}
-
-void CUI_TextBox::Free()
+void CUI_Tap::Free()
 {
 	__super::Free();
 }

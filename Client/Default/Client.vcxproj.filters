@@ -100,18 +100,6 @@
     <Filter Include="94. ClientInstance">
       <UniqueIdentifier>{7a63893c-daa7-4abb-bec1-4e58e468f354}</UniqueIdentifier>
     </Filter>
-    <Filter Include="94.Manager">
-      <UniqueIdentifier>{8bf082ee-9f57-4b74-8252-4c326fc95616}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="94.Manager\UI">
-      <UniqueIdentifier>{1a84dd5b-c59f-474d-8847-7c1b26d43f75}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="94.Manager\UI\Layer">
-      <UniqueIdentifier>{18f4177d-5a3a-4e0a-b041-3f5e4008009c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="94.Manager\UI\Atlas_RenderGroup">
-      <UniqueIdentifier>{57ad347e-b1e7-4c06-9ec6-ab0fe2033e5c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="95.SuperClass\UI\UI_Panel">
       <UniqueIdentifier>{1d758443-e437-494e-ade1-487dd1e7798e}</UniqueIdentifier>
     </Filter>
@@ -132,6 +120,30 @@
     </Filter>
     <Filter Include="02.GameObject\JOH Test\Test Anim Model">
       <UniqueIdentifier>{2a2f2620-f90d-4ad0-80a5-ce65409e5eab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94. ClientInstance\UI_Manager">
+      <UniqueIdentifier>{1a84dd5b-c59f-474d-8847-7c1b26d43f75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94. ClientInstance\UI_Manager\Layer">
+      <UniqueIdentifier>{18f4177d-5a3a-4e0a-b041-3f5e4008009c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94. ClientInstance\UI_Manager\Atlas_RenderGroup">
+      <UniqueIdentifier>{57ad347e-b1e7-4c06-9ec6-ab0fe2033e5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI">
+      <UniqueIdentifier>{345178cf-31b2-40a0-894a-34250de6668a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\ETC">
+      <UniqueIdentifier>{ca1e6c2f-7f6b-4669-bc5c-ffcfcfc1fc3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95.SuperClass\UI\UI_Frame">
+      <UniqueIdentifier>{335cbc17-dd70-4f17-88c7-3d2cba540719}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Test">
+      <UniqueIdentifier>{3ccbec7f-b270-4c00-8269-dfd5f71a505a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="93.HeaderGroup">
+      <UniqueIdentifier>{fcdfc65f-4a69-427a-9d02-54723db0f34f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -226,13 +238,13 @@
       <Filter>94. ClientInstance</Filter>
     </ClInclude>
     <ClInclude Include="..\public\UI_Manager.h">
-      <Filter>94.Manager\UI</Filter>
+      <Filter>94. ClientInstance\UI_Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\public\UI_Layer.h">
-      <Filter>94.Manager\UI\Layer</Filter>
+      <Filter>94. ClientInstance\UI_Manager\Layer</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Atlas_RenderGroup.h">
-      <Filter>94.Manager\UI\Atlas_RenderGroup</Filter>
+      <Filter>94. ClientInstance\UI_Manager\Atlas_RenderGroup</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\UI_Button.h">
       <Filter>95.SuperClass\UI\UI_Button</Filter>
@@ -251,6 +263,21 @@
     </ClInclude>
     <ClInclude Include="..\public\UI_Slot.h">
       <Filter>95.SuperClass\UI\UI_Slot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Atlas_Icon.h">
+      <Filter>02.GameObject\UI\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Frame.h">
+      <Filter>95.SuperClass\UI\UI_Frame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_BackGround.h">
+      <Filter>02.GameObject\UI\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_TapTest.h">
+      <Filter>02.GameObject\UI\Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\HeaderGroup_UI.h">
+      <Filter>93.HeaderGroup</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -340,13 +367,13 @@
       <Filter>94. ClientInstance</Filter>
     </ClCompile>
     <ClCompile Include="..\private\UI_Manager.cpp">
-      <Filter>94.Manager\UI</Filter>
+      <Filter>94. ClientInstance\UI_Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\private\UI_Layer.cpp">
-      <Filter>94.Manager\UI\Layer</Filter>
+      <Filter>94. ClientInstance\UI_Manager\Layer</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Atlas_RenderGroup.cpp">
-      <Filter>94.Manager\UI\Atlas_RenderGroup</Filter>
+      <Filter>94. ClientInstance\UI_Manager\Atlas_RenderGroup</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\UI_Button.cpp">
       <Filter>95.SuperClass\UI\UI_Button</Filter>
@@ -365,6 +392,18 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_Slot.cpp">
       <Filter>95.SuperClass\UI\UI_Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Atlas_Icon.cpp">
+      <Filter>02.GameObject\UI\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Frame.cpp">
+      <Filter>95.SuperClass\UI\UI_Frame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_BackGround.cpp">
+      <Filter>02.GameObject\UI\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_TapTest.cpp">
+      <Filter>02.GameObject\UI\Test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

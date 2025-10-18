@@ -4,12 +4,12 @@
 
 NS_BEGIN(Client)
 
-class CUI_Panel abstract : public CUIObject
+class CUI_Frame abstract : public CUIObject
 {
 protected:
-	CUI_Panel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);
-	CUI_Panel(const CUI_Panel& Prototype);
-	virtual ~CUI_Panel() = default;
+	CUI_Frame(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CUI_Frame(const CUI_Frame& Prototype);
+	virtual ~CUI_Frame() = default;
 
 public:
 	virtual HRESULT				Initialize_Prototype() override;
@@ -21,11 +21,8 @@ public:
 
 	virtual HRESULT				Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID) override;
 
-protected:
-	class CClientInstance* m_pClientInstance = { nullptr };
-
 public:
-	virtual CGameObject*		Clone(void* pArg) = 0;
+	virtual CGameObject* Clone(void* pArg) = 0;
 	virtual void				Free() override;
 };
 
