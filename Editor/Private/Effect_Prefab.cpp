@@ -136,7 +136,9 @@ void CEffect_Prefab::Add_Effect_Element(_uint EffectType, void* pArg)
         return;
         break;
     case ENUM_CLASS(EffectType::SPRITE):
-        return;
+        newEffect = CEffect_Sprite::Create(m_pDevice, m_pContext, pArg);
+        newEffect->Set_EffectType(EffectType);
+        break;
     default :
         MSG_BOX(TEXT("Effect Type Error"));
         return;
@@ -184,7 +186,7 @@ void CEffect_Prefab::Edit_TimeTrack(_uint ChildIdx)
         ImGui::RadioButton("Rotate",&EventType,ENUM_CLASS(CEffect_Prefab::EffectEventType::ANIMATE_ROTATE));
         ImGui::RadioButton("Twinkle",&EventType,ENUM_CLASS(CEffect_Prefab::EffectEventType::ANIMATE_TWINLKE));
         ImGui::RadioButton("Up",&EventType,ENUM_CLASS(CEffect_Prefab::EffectEventType::ANIMATE_LINEAR_MOVE));
-        ImGui::RadioButton("Distortion",&EventType,ENUM_CLASS(CEffect_Prefab::EffectEventType::DISTORTION));
+        ImGui::RadioButton("Dissolve",&EventType,ENUM_CLASS(CEffect_Prefab::EffectEventType::DISSOLVE));
 
         m_sEditingData.eEventType = (CEffect_Prefab::EffectEventType)EventType;
 
@@ -235,9 +237,10 @@ void CEffect_Prefab::Add_TimeTrack(EFFECT_EVENT TrackData)
         return;
     }
 
-    if (m_Children[TrackData.iElementIdx]->Get_EffectType() == ENUM_CLASS(EffectType::SPRITE))
+    if (m_Children[TrackData.iElementIdx]->Get_EffectType() == ENUM_CLASS(EffectType::SPRITE)
+        && TrackData.eEventType != EffectEventType::ACTIVATE && TrackData.eEventType != EffectEventType::DISSOLVE)
     {
-        MSG_BOX(TEXT("Only Sprite can be added Active, End"));
+        MSG_BOX(TEXT("Only Sprite can be added Active, Dissolve"));
         return;
     }
 

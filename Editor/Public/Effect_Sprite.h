@@ -11,6 +11,19 @@ NS_BEGIN(Editor)
 
 class CEffect_Sprite : public CEffect_Element
 {
+public:
+	typedef struct tagSpriteDesc
+	{
+		_bool	IsLoop;
+		_uint	iCol, iRow;
+		_float	fSpriteSpeed;
+		_float4 vColor;
+		_float	fSize;
+		_float	fSizeRatio;
+		_float	ScalingValue;
+		_uint	iTextureIdx;
+	}SPRITE_DESC;
+
 private:
 	CEffect_Sprite(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	CEffect_Sprite(const CEffect_Sprite& Prototype);
@@ -29,7 +42,7 @@ public:
 	virtual void			RevertChanges() override;
 	virtual void			Reset() override;
 
-	void					SetSpriteData();
+	void					Active() override;
 
 private:
 	HRESULT					Ready_Component() override;
@@ -41,10 +54,10 @@ private:
 	CVIBuffer_Rect*			m_pVIBufferCom = { nullptr };
 
 private :
-	_float					m_pSpriteSpeed;
 	_float					m_fCurTime;
 	_uint					m_iUVIdx;
-	_uint					m_iCol, m_iRow;
+	SPRITE_DESC				m_sData;
+	SPRITE_DESC				m_sEditingData; 
 	
 public:
 	static CEffect_Sprite*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, void* pArg);
