@@ -1,4 +1,4 @@
-#include "UI_TextBox.h"
+#include "UI_Tap.h"
 #include "GameInstance.h"
 
 CUI_TextBox::CUI_TextBox(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -8,7 +8,7 @@ CUI_TextBox::CUI_TextBox(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 }
 
 CUI_TextBox::CUI_TextBox(const CUI_TextBox& Prototype)
-	:CUIObject{Prototype}
+	:CUIObject ( Prototype )
 {
 
 }

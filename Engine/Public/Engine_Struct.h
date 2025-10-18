@@ -299,13 +299,14 @@ namespace Engine
 		XMFLOAT4		vPosition;
 
 		XMFLOAT4		vUV;
+		float			fAlpha;
 		unsigned int	iTexPass;
 		unsigned int	iShaderPass;
 	}VTXINSTANCE_UI;
 
 	typedef struct tagUI_INSTANCING
 	{
-		static const unsigned int	iNumElements = { 7 };
+		static const unsigned int	iNumElements = { 8 };
 		static constexpr D3D11_INPUT_ELEMENT_DESC	Elements[iNumElements] = {
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 
@@ -315,7 +316,8 @@ namespace Engine
 			{ "WORLD", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 
 			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-			{ "TEXCOORD", 1, DXGI_FORMAT_R8G8_UINT, 1, 80, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{ "TEXCOORD", 1, DXGI_FORMAT_R32_FLOAT, 1, 80, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{ "TEXCOORD", 2, DXGI_FORMAT_R8G8_UINT, 1, 84, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 		};
 	}UI_INSTANCING;
 }

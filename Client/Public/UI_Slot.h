@@ -3,13 +3,12 @@
 #include "Client_Defines.h"
 
 NS_BEGIN(Client)
-
-class CUI_Panel abstract : public CUIObject
+class CUI_Slot abstract : public CUIObject
 {
 protected:
-	CUI_Panel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);
-	CUI_Panel(const CUI_Panel& Prototype);
-	virtual ~CUI_Panel() = default;
+	CUI_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CUI_Slot(const CUI_Slot& Prototype);
+	virtual ~CUI_Slot() = default;
 
 public:
 	virtual HRESULT				Initialize_Prototype() override;

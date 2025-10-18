@@ -247,6 +247,9 @@
     <Filter Include="01.Utility\03.Component\RigidBody\Body">
       <UniqueIdentifier>{234491fb-0a84-4d47-983d-5d177c16d1f4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Component\VIBuffer\Instance\UI">
+      <UniqueIdentifier>{4d49d96d-a532-4f2a-81c6-c554d0f4a230}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -479,6 +482,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Point_Instance.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Point</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\VIBuffer_Instance_UI.cpp">
+      <Filter>01.Utility\03.Component\VIBuffer\Instance\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -739,6 +745,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Point_Instance.h">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Point</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\VIBuffer_Instance_UI.h">
+      <Filter>01.Utility\03.Component\VIBuffer\Instance\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -159,6 +159,7 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\public\Atlas_RenderGroup.h" />
     <ClInclude Include="..\Public\Body_Player.h" />
     <ClInclude Include="..\public\Camera_Free.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
@@ -186,6 +187,14 @@
     <ClInclude Include="..\Public\Prop_Test.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\Terrain.h" />
+    <ClInclude Include="..\Public\UI_Button.h" />
+    <ClInclude Include="..\public\UI_Layer.h" />
+    <ClInclude Include="..\public\UI_Manager.h" />
+    <ClInclude Include="..\Public\UI_Panel.h" />
+    <ClInclude Include="..\Public\UI_ProgressBar.h" />
+    <ClInclude Include="..\public\UI_ScrollBar.h" />
+    <ClInclude Include="..\public\UI_Slot.h" />
+    <ClInclude Include="..\Public\UI_Tap.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="ClientPch.h" />
     <ClInclude Include="framework.h" />
@@ -193,6 +202,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\private\Atlas_RenderGroup.cpp" />
     <ClCompile Include="..\Private\Body_Player.cpp" />
     <ClCompile Include="..\private\Camera_Free.cpp" />
     <ClCompile Include="..\Private\Dummy.cpp" />
@@ -217,6 +227,14 @@
     <ClCompile Include="..\Private\Prop_Test.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
+    <ClCompile Include="..\Private\UI_Button.cpp" />
+    <ClCompile Include="..\private\UI_Layer.cpp" />
+    <ClCompile Include="..\private\UI_Manager.cpp" />
+    <ClCompile Include="..\Private\UI_Panel.cpp" />
+    <ClCompile Include="..\Private\UI_ProgressBar.cpp" />
+    <ClCompile Include="..\private\UI_ScrollBar.cpp" />
+    <ClCompile Include="..\private\UI_Slot.cpp" />
+    <ClCompile Include="..\Private\UI_Tap.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="ClientPch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

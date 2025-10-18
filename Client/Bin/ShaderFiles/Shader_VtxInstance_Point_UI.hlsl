@@ -31,15 +31,17 @@ struct VS_IN
     float3 vPosition                    : POSITION;
     row_major float4x4 TransformMatrix  : WORLD;
     float4 vUV                          : TEXCOORD0;
-    uint2  vPass                        : TEXCOORD1;
+    float  vAlpha                       : TEXCOORD1;
+    uint2  vPass                        : TEXCOORD2;
 };
 
 struct VS_DEFAULT_OUT
 {
     float4 vPosition : SV_POSITION;
-    float2 fSize : PSIZE;
+    float2 fSize     : PSIZE;
     float4 vUV       : TEXCOORD0;
-    uint2  vPass     : TEXCOORD1;
+    float  vAlpha    : TEXCOORD1;
+    uint2  vPass     : TEXCOORD2;
 };
 
 VS_DEFAULT_OUT VS_MAIN(VS_IN In)
@@ -64,9 +66,10 @@ VS_DEFAULT_OUT VS_MAIN(VS_IN In)
 struct GS_IN
 {
     float4 vPosition : SV_POSITION;
-    float2 fSize : PSIZE;
+    float2 fSize     : PSIZE;
     float4 vUV       : TEXCOORD0;
-    uint2 vPass      : TEXCOORD1;
+    float  vAlpha    : TEXCOORD1;
+    uint2  vPass     : TEXCOORD2;
 };
 
 struct GS_OUT
@@ -74,7 +77,8 @@ struct GS_OUT
     float4 vPosition : SV_POSITION;
     float2 vTexcoord : TEXCOORD0;
     float4 vUV       : TEXCOORD1;
-    uint2 vPass      : TEXCOORD2;
+    float vAlpha     : TEXCOORD2;
+    uint2 vPass      : TEXCOORD3;
 };
 
 [maxvertexcount(6)]
@@ -123,7 +127,8 @@ struct PS_IN
     float4 vPosition : SV_POSITION;
     float2 vTexcoord : TEXCOORD0;
     float4 vUV       : TEXCOORD1;
-    uint2 vPass      : TEXCOORD2;
+    float vAlpha     : TEXCOORD2;
+    uint2 vPass      : TEXCOORD3;
 };
 
 struct PS_OUT

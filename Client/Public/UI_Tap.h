@@ -1,9 +1,10 @@
 #pragma once
 #include "UIObject.h"
+#include "Client_Defines.h"
 
-NS_BEGIN(Engine)
+NS_BEGIN(Client)
 
-class ENGINE_DLL CUI_TextBox abstract : public CUIObject
+class CUI_TextBox abstract : public CUIObject
 {
 public:
 	typedef struct tagTextBoxDesc : CUIObject::UIOBJECT_DESC
