@@ -237,8 +237,8 @@ void CEdit_UIBase::Root_SeleteButton(string& szSeleteUIName, _int iNum, _int& iS
         szSeleteUIName = m_szName;
         iPosX = (_int)m_vWorldPos.x;
         iPosY = (_int)m_vWorldPos.y;
-        iSizeX = (_int)m_vWorldSize.x;
-        iSizeY = (_int)m_vWorldSize.y;
+        iSizeX = (_int)m_vLocalSize.x;
+        iSizeY = (_int)m_vLocalSize.y;
     }
 }
 
@@ -267,8 +267,8 @@ void CEdit_UIBase::SeleteButton(string& szSeleteUIName, _int iNum, _int& iPosX, 
             szSeleteUIName = m_szName;
             iPosX = (_int)m_vWorldPos.x;
             iPosY = (_int)m_vWorldPos.y;
-            iSizeX = (_int)m_vWorldSize.x;
-            iSizeY = (_int)m_vWorldSize.y;
+            iSizeX = (_int)m_vLocalSize.x;
+            iSizeY = (_int)m_vLocalSize.y;
         }
     for (auto& pChild : m_Children)
         static_cast<CEdit_UIBase*>(pChild)->SeleteButton(szSeleteUIName, iSpacing, iPosX, iPosY, iSizeX, iSizeY);
@@ -480,9 +480,9 @@ _bool CEdit_UIBase::Scaling_UI(string& szSeleteUIName, _float fSizeX, _float fSi
 {
     if (m_szName == szSeleteUIName)
     {
-        m_vLocalPos = { fSizeX , fSizeY };
+        m_vLocalSize = { fSizeX , fSizeY };
 
-        m_pTransformCom->Scale(_float3{ m_vLocalPos.x, m_vLocalPos.y, 1.f });
+        m_pTransformCom->Scale(_float3{ m_vLocalSize.x, m_vLocalSize.y, 1.f });
         return true;
     }
 
@@ -835,6 +835,12 @@ void CEdit_UIBase::Late_Update(_float fTimeDelta)
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::UI, this)))
         return;
 
+    if (m_iUIType == ENUM_CLASS(UITYPE::SLOT) && m_iUiState == 0)
+        return;
+
+    if (m_iUIType == ENUM_CLASS(UITYPE::TAP) && m_iUiState == 0)
+        return;
+
     __super::Late_Update(fTimeDelta);
 }
 
@@ -930,12 +936,12 @@ void CEdit_UIBase::Update_Track(_float& fAccTime)
     _float2 fPos = {};
     XMStoreFloat2(&fPos, XMVectorCatmullRom(p0, p1, p2, p3, fRatio));
 
-    m_vLocalPos.x = ((m_vWorldPos.x - m_vLocalPos.x) - fPos.x) * -1.f;
-    m_vLocalPos.y = ((m_vWorldPos.y - m_vLocalPos.y) - fPos.y) * -1.f;
-    m_vWorldPos.x = m_vLocalPos.x;
-    m_vWorldPos.y = m_vLocalPos.y;
+    //m_vLocalPos.x = ((m_vWorldPos.x - m_vLocalPos.x) - fPos.x) * -1.f;
+    //m_vLocalPos.y = ((m_vWorldPos.y - m_vLocalPos.y) - fPos.y) * -1.f;
+    //m_vWorldPos.x = m_vLocalPos.x;
+    //m_vWorldPos.y = m_vLocalPos.y;
 
-    Update_Transform(nullptr, m_vWorldPos);
+    Update_Transform(nullptr, fPos);
 }
 
 string CEdit_UIBase::UIType_EnumToString()

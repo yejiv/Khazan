@@ -3,13 +3,12 @@
 #include "Client_Defines.h"
 
 NS_BEGIN(Client)
-
-class CUI_Panel abstract : public CUIObject
+class CUI_ScrollBar abstract : public CUIObject
 {
 protected:
-	CUI_Panel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);
-	CUI_Panel(const CUI_Panel& Prototype);
-	virtual ~CUI_Panel() = default;
+	CUI_ScrollBar(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CUI_ScrollBar(const CUI_ScrollBar& Prototype);
+	virtual ~CUI_ScrollBar() = default;
 
 public:
 	virtual HRESULT				Initialize_Prototype() override;
