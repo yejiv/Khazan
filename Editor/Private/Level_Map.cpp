@@ -192,6 +192,8 @@ HRESULT CLevel_Map::Convert_Json_To_Data()
 
 	for (auto& Component : m_CustomJson)
 	{
+		m_strDatSavePath = m_szDatSavePath;
+
 		_bool isInstance = (_bool)Component["isInstance"];
 		_bool isObject = (_bool)Component["isObject"];
 
@@ -209,24 +211,18 @@ HRESULT CLevel_Map::Convert_Json_To_Data()
 				continue;
 			}
 
-			CEditor_ModelMesh_Instance::EDITOR_MODELMESH_INSTANCE_DESC InstanceDesc = {};
+			replace(strLoadPath.begin(), strLoadPath.end(), '\\', '/');
 
-			InstanceDesc.iNumInstance = 0;
+			m_strDatSavePath += '/' + strModelName + ".fbx";
 
-			// Instance 모델 프로토타입 등록
-			CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), AnsiToWString(strModelName),
-				CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, strLoadPath.c_str(), PreTransformMatrix)), E_FAIL);
+			replace(m_strDatSavePath.begin(), m_strDatSavePath.end(), '\\', '/');
 
-			CProp_Export::PROP_EXPORT_DESC ExportDesc = {};
+			CEditor_Model* pModel = CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, strLoadPath.c_str(), PreTransformMatrix);
+			CHECK_NULLPTR(pModel, E_FAIL);
 
-			_wstring strTempName = AnsiToWString(strModelName);
-			memcpy(ExportDesc.szModelName, strTempName.c_str(), sizeof(ExportDesc.szModelName));
+			pModel->ExportModel_NoMsg(m_strDatSavePath);
 
-			ExportDesc.eLevel = LEVEL::MAP;
-
-			// 추출할거는 바로 Layer 등록
-			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_ExportObj"),
-				ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Export"), &ExportDesc), E_FAIL);
+			Safe_Release(pModel);
 
 			m_CheckPrototypes.emplace(strModelName, strLoadPath);
 			m_Prototypes_Inst.push_back(strModelName);
@@ -247,20 +243,18 @@ HRESULT CLevel_Map::Convert_Json_To_Data()
 					continue;
 				}
 
-				// 단일 오브젝트는 바로 인스턴스 등록
-				CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), AnsiToWString(strModelName),
-					CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, strLoadPath.c_str(), PreTransformMatrix)), E_FAIL);
+				replace(strLoadPath.begin(), strLoadPath.end(), '\\', '/');
 
-				CProp_Export::PROP_EXPORT_DESC ExportDesc = {};
+				m_strDatSavePath += '/' + strModelName + ".fbx";
 
-				_wstring strTempName = AnsiToWString(strModelName);
-				memcpy(ExportDesc.szModelName, strTempName.c_str(), sizeof(ExportDesc.szModelName));
+				replace(m_strDatSavePath.begin(), m_strDatSavePath.end(), '\\', '/');
 
-				ExportDesc.eLevel = LEVEL::MAP;
+				CEditor_Model* pModel = CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, strLoadPath.c_str(), PreTransformMatrix);
+				CHECK_NULLPTR(pModel, E_FAIL);
 
-				// 추출할거는 바로 Layer 등록
-				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_ExportObj"),
-					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Export"), &ExportDesc), E_FAIL);
+				pModel->ExportModel_NoMsg(m_strDatSavePath);
+
+				Safe_Release(pModel);
 
 				m_CheckPrototypes.emplace(strModelName, strLoadPath);
 				m_Prototypes_Obj.push_back(strModelName);
@@ -271,6 +265,10 @@ HRESULT CLevel_Map::Convert_Json_To_Data()
 			MSG_BOX(TEXT("있어서는 안되는 else"));
 		}
 	}
+
+	m_CheckPrototypes.clear();
+	m_Prototypes_Inst.clear();
+	m_Prototypes_Obj.clear();
 
 	return S_OK;
 }
@@ -446,14 +444,14 @@ HRESULT CLevel_Map::Ready_Main_Window()
 					}
 					SEPARATOR;
 					ImGui::Text("JSON");
-					if (ImGui::Button("JSON TO CUSTOM"))
+					if (ImGui::Button("JSON TO CUSTOM WINDOW"))
 					{
 						Get_Directory_Files(m_szJsonPath);
 
 						m_isJsonWindow = !m_isJsonWindow;
 					}
 					SAMELINE;
-					if (ImGui::Button("CUSTOMJSON WINDOW"))
+					if (ImGui::Button("CUSTOM JSON WINDOW"))
 					{
 						Get_Directory_Files(m_szJsonCustomPath);
 
@@ -1036,21 +1034,24 @@ HRESULT CLevel_Map::Ready_CustomJson_Edit_Window()
 
 #pragma endregion
 
-#pragma region CustomJson을 이용한 프로토 타입 및 레이어 생성
+#pragma region CustomJson을 이용한 프로토 타입 및 레이어 생성, 파일 추출
 
 			if (true == m_isCustomJsonLoaded)
 			{
 				SEPARATOR;
+				ImGui::Text("DAT SAVE PATH : "); SAMELINE; ITEMWIDTH(300.f);
+				ImGui::InputText("##dat_save_path", m_szDatSavePath, IM_ARRAYSIZE(m_szDatSavePath));
+
 				if (ImGui::Button("CONVERT JSON TO DAT"))
 				{
 					CHECK_FAILED_MSG(Convert_Json_To_Data(), TEXT("추출 실패"), );
 				}
-				SEPARATOR;
-				if (ImGui::Button("CREATE PROTOTYPES"))
-				{
-					CHECK_FAILED_MSG(Add_Prototypes_FromJson(), TEXT("임시 프로토타입 생성 실패 or 임시 Layer 생성 실패"), );
-					m_isPrototypeWindow = true;
-				}
+				//SEPARATOR;
+				//if (ImGui::Button("CREATE PROTOTYPES"))
+				//{
+					//CHECK_FAILED_MSG(Add_Prototypes_FromJson(), TEXT("임시 프로토타입 생성 실패 or 임시 Layer 생성 실패"), );
+					//m_isPrototypeWindow = true;
+				//}
 				SEPARATOR;
 			}
 
@@ -1136,7 +1137,7 @@ HRESULT CLevel_Map::Ready_CustomJson_List_Window()
 #pragma endregion
 
 #pragma region WIDGET : CUSTOM JSON 에서 로드해온 리스트들의 정보
-
+	/*
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (true == m_isCustomJsonInfoList)
 		{
@@ -1184,7 +1185,7 @@ HRESULT CLevel_Map::Ready_CustomJson_List_Window()
 			ImGui::End();
 		}
 		});
-
+	*/
 #pragma endregion
 
 	return S_OK;
@@ -1847,7 +1848,7 @@ void CLevel_Map::Get_Directory_Files(const _char* pDirectoryPath)
 
 string CLevel_Map::Find_ModelPath(const string& strModelName)
 {
-	string strRoot = "../../Client/Bin/Resources/Models/Environment/Prop/";
+	string strRoot = "../../Client/Bin/Resources/Map/Prop/";
 
 	for (auto& entry : filesystem::recursive_directory_iterator(strRoot))
 	{
