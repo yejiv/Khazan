@@ -3,6 +3,7 @@
 #include "Level_Loading.h"
 #include "Camera_Effect.h"
 #include "Effect_Point_Instance.h"
+#include "Effect_Mesh_Instance.h"
 #include "Effect_Sprite.h"
 
 CLevel_Effect::CLevel_Effect(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -263,22 +264,22 @@ void CLevel_Effect::Create_PointInstance_Element()
 
 void CLevel_Effect::Create_MeshInstance_Element()
 {
-	//CEffect_Mesh_Instance::PARTICLE_DESC data;
-	//
-	//data.IsCircle = m_SpawnType;
-	//data.iNumInstance = m_iInstanceNum;
-	//data.vSize = _float2(m_fSize[0], m_fSize[1]);
-	//data.fSizeRatio = m_fSizeRatio;
-	//data.vLifeTime = _float2(m_fLifeTime[0], m_fLifeTime[1]);
-	//data.vCenter = _float3(m_fCenter[0], m_fCenter[1], m_fCenter[2]);
-	//data.vRange = _float3(m_fRange[0], m_fRange[1], m_fRange[2]);
-	//data.fOffset = m_fOffset;
-	//data.vColor = m_fColor;
-	//data.iTextureIdx = m_iTextureIdx;
-	//data.iMeshTypeIdx = m_iMeshTypeIdx;
-	//data.iScrollSpeed = m_fScrollSpeed;
-	//
-	//m_PrefabPrototype->Add_Effect_Element(m_EffectType, &data);
+	CEffect_Mesh_Instance::PARTICLE_DESC data;
+	
+	data.IsCircle = m_SpawnType;
+	data.iNumInstance = m_iInstanceNum;
+	data.vSize = _float2(m_fSize[0], m_fSize[1]);
+	data.fSizeRatio = m_fSizeRatio;
+	data.vLifeTime = _float2(m_fLifeTime[0], m_fLifeTime[1]);
+	data.vCenter = _float3(m_fCenter[0], m_fCenter[1], m_fCenter[2]);
+	data.vRange = _float3(m_fRange[0], m_fRange[1], m_fRange[2]);
+	data.fOffset = m_fOffset;
+	data.vColor = m_fColor;
+	data.iTextureIdx = m_iTextureIdx;
+	data.iMeshTypeIdx = m_iMeshTypeIdx;
+	data.iScrollSpeed = m_fScrollSpeed;
+	
+	m_PrefabPrototype->Add_Effect_Element(m_EffectType, &data);
 }
 
 void CLevel_Effect::Create_Sprite_Element()

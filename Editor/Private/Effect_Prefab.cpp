@@ -131,9 +131,8 @@ void CEffect_Prefab::Add_Effect_Element(_uint EffectType, void* pArg)
         newEffect->Set_EffectType(EffectType);
         break;
     case ENUM_CLASS(EffectType::MESH_INSTANCE):
-        //newEffect = CEffect_Mesh_Instance::Create(m_pDevice, m_pContext, pArg);
-        //newEffect->Set_EffectType(EffectType);
-        return;
+        newEffect = CEffect_Mesh_Instance::Create(m_pDevice, m_pContext, pArg);
+        newEffect->Set_EffectType(EffectType);
         break;
     case ENUM_CLASS(EffectType::SPRITE):
         newEffect = CEffect_Sprite::Create(m_pDevice, m_pContext, pArg);
