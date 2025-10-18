@@ -118,9 +118,19 @@ HRESULT CJolt_Manager::Set_PhysicsSystem()
     m_pPhysics->SetContactListener(m_pContactListener);
 
     // 기본 중력
-    m_pPhysics->SetGravity(Vec3(0.0f, -9.81f, 0.0f));
+    m_pPhysics->SetGravity(Vec3(0.0f, g_fGravity, 0.0f));
 
     return S_OK;
+}
+
+void CJolt_Manager::Set_Gravity(_vector vGravity)
+{
+    m_pPhysics->SetGravity(vGravity);
+}
+
+void CJolt_Manager::Reset_Gravity()
+{
+    m_pPhysics->SetGravity(Vec3(0.0f, g_fGravity, 0.0f));
 }
 
 void CJolt_Manager::CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter)

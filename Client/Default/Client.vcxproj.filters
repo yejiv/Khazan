@@ -133,6 +133,9 @@
     <Filter Include="02.GameObject\JOH Test\Test Anim Model">
       <UniqueIdentifier>{2a2f2620-f90d-4ad0-80a5-ce65409e5eab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Camera\Comprehension">
+      <UniqueIdentifier>{a4512566-30cc-4793-8f82-d5663d8f2874}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -252,6 +255,9 @@
     <ClInclude Include="..\public\UI_Slot.h">
       <Filter>95.SuperClass\UI\UI_Slot</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Camera_Compre.h">
+      <Filter>02.GameObject\Camera\Comprehension</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -365,6 +371,9 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_Slot.cpp">
       <Filter>95.SuperClass\UI\UI_Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Compre.cpp">
+      <Filter>02.GameObject\Camera\Comprehension</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
