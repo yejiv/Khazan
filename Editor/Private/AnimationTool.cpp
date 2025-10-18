@@ -18,7 +18,7 @@ CAnimationTool::CAnimationTool(ID3D11Device* pDevice, ID3D11DeviceContext* pCont
 
 HRESULT CAnimationTool::Initialize_Prototype()
 {
-    /* 파일시스템에서 실행파일 위치를 .exe로 고정 */
+    /* 파일시스템에서 실행파일 위치를 .vcxproj로 고정 */
     _char exePath[MAX_PATH];
     GetModuleFileNameA(NULL, exePath, MAX_PATH);
     string exeDir = exePath;
@@ -27,12 +27,12 @@ HRESULT CAnimationTool::Initialize_Prototype()
     SetCurrentDirectoryA(exeDir.c_str());
     OutputDebugStringA(("[Working Directory Set] " + string(exePath)+ "\n").c_str());
 
-    //filesystem::path projectRoot = filesystem::path(exeDir).parent_path().parent_path() / "Default";
+    filesystem::path projectRoot = filesystem::path(exeDir).parent_path().parent_path() / "Default";
 
-    //string projectRootStr = projectRoot.string();
-    //SetCurrentDirectoryA(projectRootStr.c_str());
+    string projectRootStr = projectRoot.string();
+    SetCurrentDirectoryA(projectRootStr.c_str());
 
-    //OutputDebugStringA(("[Working Directory Set] " + projectRootStr + "\n").c_str());
+    OutputDebugStringA(("[Working Directory Set] " + projectRootStr + "\n").c_str());
 
     // 확인
     _char currentDir[MAX_PATH];
@@ -895,6 +895,9 @@ void CAnimationTool::Tool_AnimationSlider_Widget()
         m_vecEventFrames.emplace_back(m_vTempFrames);
         m_vecEventKeys.emplace_back(string(m_szEventKeyInputText));
 
+        m_vTempFrames.x = 0.f;
+        m_vTempFrames.y = 0.f;
+
     }
     //todo 벡터 삭제기능, 벡터 보이기 기능 , 진짜 모델 데이터에 적용기능 
     ImGui::Text("Event List");
@@ -905,9 +908,9 @@ void CAnimationTool::Tool_AnimationSlider_Widget()
             const _bool isSelected = (m_iAnimSliderListSelectedIndex == i);
 
             // 각 항목을 Selectable로 표시
-            std::string label = "[" + std::to_string(i) + "] " + m_vecEventKeys[i] +
-                " (X:" + std::to_string(m_vecEventFrames[i].x) +
-                ", Y:" + std::to_string(m_vecEventFrames[i].y) + ")";
+            string label = "[" + to_string(i) + "] " + m_vecEventKeys[i] +
+                " (X:" + to_string(m_vecEventFrames[i].x) +
+                ", Y:" + to_string(m_vecEventFrames[i].y) + ")";
 
             if (ImGui::Selectable(label.c_str(), isSelected))
                 m_iAnimSliderListSelectedIndex = i;
@@ -926,7 +929,7 @@ void CAnimationTool::Tool_AnimationSlider_Widget()
             m_iAnimSliderListSelectedIndex = -1; // 선택 해제
         }
     }
-
+    //모델 데이터에 저장 
     if (ImGui::Button("Save to Real Model Data"))
     {
         MODEL_DATA* data = m_GameObjects[m_iSelectedIndex]->get_Model()->Get_ModelData();
@@ -1035,17 +1038,17 @@ string CAnimationTool::ConvertToRelativePath(const string& absolutePath)
         fs::path exeDir = fs::path(exePath).parent_path();
          OutputDebugStringA(("[Editor .exe Dir] " + exeDir.string() + "\n").c_str());
 
-        // Editor\Bin\Debug -> Editor\Bin -> Editor -> Editor\Default
-       // fs::path editorDefaultDir = exeDir.parent_path().parent_path() / "Default";
+         //Editor\Bin\Debug -> Editor\Bin -> Editor -> Editor\Default
+        fs::path editorDefaultDir = exeDir.parent_path().parent_path() / "Default";
 
-       // OutputDebugStringA(("[Editor Default Dir] " + editorDefaultDir.string() + "\n").c_str());
+        OutputDebugStringA(("[Editor Default Dir] " + editorDefaultDir.string() + "\n").c_str());
 
         // 절대 경로
         fs::path absPath = fs::absolute(absolutePath);
         OutputDebugStringA(("[Absolute Path] " + absPath.string() + "\n").c_str());
 
         // Editor/Default 기준 상대 경로 계산
-        fs::path relativePath = fs::relative(absPath, exeDir);
+        fs::path relativePath = fs::relative(absPath, editorDefaultDir);
 
         string result = relativePath.string();
         replace(result.begin(), result.end(), '\\', '/');
@@ -1074,17 +1077,17 @@ string CAnimationTool::ConvertToClientRelativePath(const string& absolutePath)
 
 
         // Editor\Bin\Debug -> Editor\Bin -> Editor -> Khazan -> Client\Default
-       // fs::path clientDefaultDir = exeDir.parent_path().parent_path() / "Client" / "Default";
+        fs::path clientDefaultDir = exeDir.parent_path().parent_path() / "Client" / "Default";
 
         OutputDebugStringA(("[Editor.exe Dir] " + exeDir.string() + "\n").c_str());
-       // OutputDebugStringA(("[Client Default] " + clientDefaultDir.string() + "\n").c_str());
+        OutputDebugStringA(("[Client Default] " + clientDefaultDir.string() + "\n").c_str());
 
         // 절대 경로
         fs::path absPath = fs::absolute(absolutePath);
         OutputDebugStringA(("[Absolute Path] " + absPath.string() + "\n").c_str());
 
         // Client/Default 기준 상대 경로 계산
-        fs::path relativePath = fs::relative(absPath, exeDir);
+        fs::path relativePath = fs::relative(absPath, clientDefaultDir);
 
         string result = relativePath.string();
         replace(result.begin(), result.end(), '\\', '/');
