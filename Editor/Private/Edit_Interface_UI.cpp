@@ -33,7 +33,7 @@ HRESULT CEdit_Interface_UI::Initialize(LEVEL eLevel)
 	m_eLevel = eLevel;
 
 	strcpy_s(m_szPrototypePath, "Prototype_Component_");
-	strcpy_s(m_szFilePath, "../../Client/Bin/Resources/Textures/UI/UIData/");
+	strcpy_s(m_szFilePath, "../../Client/Bin/Resources/UI/UIData/");
 
 	CHECK_FAILED(Ready_Object(eLevel), E_FAIL);
 
