@@ -226,12 +226,6 @@
     <Filter Include="01.Utility\13.Jolt\Filter">
       <UniqueIdentifier>{6a585887-51ce-4b96-b399-47279930e43e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\16.Resource">
-      <UniqueIdentifier>{f0e7ab3f-91ea-4e92-b91d-c8b0914b35d9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\16.Resource\Manager">
-      <UniqueIdentifier>{74ac0120-cab6-47e2-b6c0-c43dec2d10b4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\16.ComputeShader">
       <UniqueIdentifier>{0bb4192a-acd8-4388-8ab8-4daae5dadf14}</UniqueIdentifier>
     </Filter>
@@ -246,6 +240,15 @@
     </Filter>
     <Filter Include="01.Utility\03.Component\RigidBody\Body">
       <UniqueIdentifier>{234491fb-0a84-4d47-983d-5d177c16d1f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\Camera\Manager">
+      <UniqueIdentifier>{42338772-b84f-41a6-a319-aa1cd95ab3f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\17.Resource">
+      <UniqueIdentifier>{f0e7ab3f-91ea-4e92-b91d-c8b0914b35d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\17.Resource\Manager">
+      <UniqueIdentifier>{74ac0120-cab6-47e2-b6c0-c43dec2d10b4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -460,7 +463,7 @@
       <Filter>01.Utility\03.Component\Model\Model_Instance\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Resource_Manager.cpp">
-      <Filter>01.Utility\16.Resource\Manager</Filter>
+      <Filter>01.Utility\17.Resource\Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\private\ComputeShader.cpp">
       <Filter>01.Utility\16.ComputeShader</Filter>
@@ -480,8 +483,9 @@
     <ClCompile Include="..\Private\VIBuffer_Point_Instance.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Point</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\VIBuffer_Mesh_Instance.cpp">
-      <Filter>01.Utility\03.Component\VIBuffer\Instance\Mesh</Filter>
+    <ClCompile Include="..\Private\VIBuffer_Mesh_Instance.cpp" />
+    <ClCompile Include="..\Private\Camera_Manager.cpp">
+      <Filter>01.Utility\02.GameObject\Camera\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -720,7 +724,7 @@
       <Filter>01.Utility\03.Component\Model\Model_Instance\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Resource_Manager.h">
-      <Filter>01.Utility\16.Resource\Manager</Filter>
+      <Filter>01.Utility\17.Resource\Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\public\ComputeShader.h">
       <Filter>01.Utility\16.ComputeShader</Filter>
@@ -743,8 +747,9 @@
     <ClInclude Include="..\Public\VIBuffer_Point_Instance.h">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Point</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\VIBuffer_Mesh_Instance.h">
-      <Filter>01.Utility\03.Component\VIBuffer\Instance\Mesh</Filter>
+    <ClInclude Include="..\Public\VIBuffer_Mesh_Instance.h" />
+    <ClInclude Include="..\Public\Camera_Manager.h">
+      <Filter>01.Utility\02.GameObject\Camera\Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

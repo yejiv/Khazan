@@ -36,6 +36,8 @@ HRESULT CMainApp::Initialize()
 	if (FAILED(Ready_Prototype_ForStatic()))
 		return E_FAIL;
 
+	CHECK_FAILED(Ready_ClientInstance(&m_pDevice, &m_pContext), E_FAIL);
+
 	if (FAILED(Start_Level(LEVEL::TITLE)))
 		return E_FAIL;
 
@@ -48,6 +50,7 @@ HRESULT CMainApp::Initialize()
 void CMainApp::Update(_float fTimeDelta)
 {
 	m_pGameInstance->Update_Engine(fTimeDelta);
+	m_pClientInstance->Update(fTimeDelta);
 
 #ifdef _DEBUG
 	m_fTimeAcc += fTimeDelta;
@@ -73,8 +76,6 @@ HRESULT CMainApp::Render()
 	}
 	m_pGameInstance->DrawText(TEXT("Font_153"), m_szFPS, _float2(100.f, 0.f), XMVectorSet(1.f, 0.f, 0.f, 1.f));
 #endif
-
-
 
 	m_pGameInstance->Render_End();
 
@@ -177,6 +178,15 @@ HRESULT CMainApp::Ready_ObjectLayer()
 	return S_OK;
 }
 
+HRESULT CMainApp::Ready_ClientInstance(ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext)
+{
+	m_pClientInstance = CClientInstance::GetInstance();
+
+	m_pClientInstance->Initialize(ppDevice, ppContext);
+
+	return S_OK;
+}
+
 HRESULT CMainApp::Start_Level(LEVEL eStartLevelID)
 {
 	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, eStartLevelID))))
@@ -204,6 +214,7 @@ void CMainApp::Free()
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
+	Safe_Release(m_pClientInstance);
 
 	m_pGameInstance->Release_Engine();
 

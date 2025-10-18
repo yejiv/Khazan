@@ -35,6 +35,9 @@ public:
 	void Set_IsDead(_bool isDead) { m_isDead = isDead; }
 	_bool Get_IsDead() { return m_isDead; }
 
+	void Set_IsActive(_bool isActive) { m_isActive = isActive; }
+	_bool Get_IsActive() { return m_isDead; }
+
 public:
 	virtual void Collision_Enter(CGameObject* pOther, _uint	iOtherObjectLayer) {};
 	virtual void Collision_Stay(CGameObject* pOther, _uint iOtherObjectLayer) {};
@@ -49,6 +52,7 @@ protected:
 
 	_bool						m_isPool = { false };
 	_bool						m_isDead = { false };
+	_bool						m_isActive = { true };
 
 protected:
 	HRESULT Add_Component(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, 

@@ -1,5 +1,4 @@
 #include "Camera.h"
-
 #include "GameInstance.h"
 
 CCamera::CCamera(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -39,6 +38,8 @@ HRESULT CCamera::Initialize_Clone(void* pArg)
 	m_fNear = pDesc->fNear;
 	m_fFar = pDesc->fFar;
 
+	m_iCameraType = pDesc->iCameraType;
+
 	return S_OK;
 }
 
@@ -61,6 +62,9 @@ HRESULT CCamera::Render()
 
 void CCamera::Update_PipeLines()
 {
+	if (!m_isActive)
+		return;
+
 	m_pGameInstance->Set_Transform(D3DTS::VIEW, m_pTransformCom->Get_WorldMatrix_Inverse());
 	m_pGameInstance->Set_Transform(D3DTS::PROJ, XMMatrixPerspectiveFovLH(m_fFovy, m_fAspect, m_fNear, m_fFar));
 }

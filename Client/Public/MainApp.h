@@ -2,6 +2,7 @@
 
 #include "Client_Defines.h"
 #include "Base.h"
+#include "ClientInstance.h"
 
 NS_BEGIN(Engine)
 class CGameInstance;
@@ -22,6 +23,7 @@ public:
 
 private:
 	CGameInstance*			m_pGameInstance = { nullptr };
+	CClientInstance*		m_pClientInstance = { nullptr };
 	ID3D11Device*			m_pDevice = { nullptr };
 	ID3D11DeviceContext*	m_pContext = { nullptr };
 
@@ -34,6 +36,7 @@ private:
 private:
 	HRESULT Ready_Prototype_ForStatic();
 	HRESULT Ready_ObjectLayer();
+	HRESULT Ready_ClientInstance(ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext);
 	HRESULT Start_Level(LEVEL eStartLevelID);
 
 public:
