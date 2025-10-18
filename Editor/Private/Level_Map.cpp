@@ -42,9 +42,26 @@ HRESULT CLevel_Map::Render()
 
 HRESULT CLevel_Map::Ready_Defaults()
 {
+	CHECK_FAILED(Ready_Default_Lights(), E_FAIL);
+
 	CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Map_Camera")), E_FAIL);
 
 	CHECK_FAILED(Ready_Layer_Terrain(TEXT("Layer_Map_Terrain")), E_FAIL);
+
+	return S_OK;
+}
+
+HRESULT CLevel_Map::Ready_Default_Lights()
+{
+	// Shadow_Light
+	SHADOW_LIGHT_DESC ShadowLightDesc{};
+	ShadowLightDesc.vEye = _float4(-20.f, 20.f, -20.f, 1.f);
+	ShadowLightDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
+	ShadowLightDesc.fFovy = XMConvertToRadians(60.f);
+	ShadowLightDesc.fNear = 0.1f;
+	ShadowLightDesc.fFar = 1000.f;
+
+	CHECK_FAILED(m_pGameInstance->Ready_ShadowLight(ShadowLightDesc), E_FAIL);
 
 	return S_OK;
 }
@@ -104,7 +121,7 @@ HRESULT CLevel_Map::Add_Prototypes_FromJson()
 		if (true == isInstance)				// 인스턴싱 모델인 경우
 		{
 			// 모델명과 일치하는 경로 찾기
-			string strLoadPath = Find_ModelPath(strModelName);
+			string strLoadPath = Find_FBX_ModelPath(strModelName);
 
 			if ("NOTFOUND" == strLoadPath)
 			{
@@ -140,7 +157,7 @@ HRESULT CLevel_Map::Add_Prototypes_FromJson()
 			if (iter == m_CheckPrototypes.end())
 			{
 				// 모델명과 일치하는 경로 찾기
-				string strLoadPath = Find_ModelPath(strModelName);
+				string strLoadPath = Find_FBX_ModelPath(strModelName);
 
 				if ("NOTFOUND" == strLoadPath)
 				{
@@ -175,6 +192,8 @@ HRESULT CLevel_Map::Convert_Json_To_Data()
 
 	for (auto& Component : m_CustomJson)
 	{
+		m_strDatSavePath = m_szDatSavePath;
+
 		_bool isInstance = (_bool)Component["isInstance"];
 		_bool isObject = (_bool)Component["isObject"];
 
@@ -183,7 +202,7 @@ HRESULT CLevel_Map::Convert_Json_To_Data()
 		if (true == isInstance)				// 인스턴싱 모델인 경우
 		{
 			// 모델명과 일치하는 경로 찾기
-			string strLoadPath = Find_ModelPath(strModelName);
+			string strLoadPath = Find_FBX_ModelPath(strModelName);
 
 			if ("NOTFOUND" == strLoadPath)
 			{
@@ -192,24 +211,18 @@ HRESULT CLevel_Map::Convert_Json_To_Data()
 				continue;
 			}
 
-			CEditor_ModelMesh_Instance::EDITOR_MODELMESH_INSTANCE_DESC InstanceDesc = {};
+			replace(strLoadPath.begin(), strLoadPath.end(), '\\', '/');
 
-			InstanceDesc.iNumInstance = 0;
+			m_strDatSavePath += '/' + strModelName + ".fbx";
 
-			// Instance 모델 프로토타입 등록
-			CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), AnsiToWString(strModelName),
-				CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, strLoadPath.c_str(), PreTransformMatrix)), E_FAIL);
+			replace(m_strDatSavePath.begin(), m_strDatSavePath.end(), '\\', '/');
 
-			CProp_Export::PROP_EXPORT_DESC ExportDesc = {};
+			CEditor_Model* pModel = CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, strLoadPath.c_str(), PreTransformMatrix);
+			CHECK_NULLPTR(pModel, E_FAIL);
 
-			_wstring strTempName = AnsiToWString(strModelName);
-			memcpy(ExportDesc.szModelName, strTempName.c_str(), sizeof(ExportDesc.szModelName));
+			pModel->ExportModel_NoMsg(m_strDatSavePath);
 
-			ExportDesc.eLevel = LEVEL::MAP;
-
-			// 추출할거는 바로 Layer 등록
-			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_ExportObj"),
-				ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Export"), &ExportDesc), E_FAIL);
+			Safe_Release(pModel);
 
 			m_CheckPrototypes.emplace(strModelName, strLoadPath);
 			m_Prototypes_Inst.push_back(strModelName);
@@ -221,7 +234,7 @@ HRESULT CLevel_Map::Convert_Json_To_Data()
 			if (iter == m_CheckPrototypes.end())
 			{
 				// 모델명과 일치하는 경로 찾기
-				string strLoadPath = Find_ModelPath(strModelName);
+				string strLoadPath = Find_FBX_ModelPath(strModelName);
 
 				if ("NOTFOUND" == strLoadPath)
 				{
@@ -230,20 +243,18 @@ HRESULT CLevel_Map::Convert_Json_To_Data()
 					continue;
 				}
 
-				// 단일 오브젝트는 바로 인스턴스 등록
-				CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), AnsiToWString(strModelName),
-					CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, strLoadPath.c_str(), PreTransformMatrix)), E_FAIL);
+				replace(strLoadPath.begin(), strLoadPath.end(), '\\', '/');
 
-				CProp_Export::PROP_EXPORT_DESC ExportDesc = {};
+				m_strDatSavePath += '/' + strModelName + ".fbx";
 
-				_wstring strTempName = AnsiToWString(strModelName);
-				memcpy(ExportDesc.szModelName, strTempName.c_str(), sizeof(ExportDesc.szModelName));
+				replace(m_strDatSavePath.begin(), m_strDatSavePath.end(), '\\', '/');
 
-				ExportDesc.eLevel = LEVEL::MAP;
+				CEditor_Model* pModel = CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, strLoadPath.c_str(), PreTransformMatrix);
+				CHECK_NULLPTR(pModel, E_FAIL);
 
-				// 추출할거는 바로 Layer 등록
-				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_ExportObj"),
-					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Export"), &ExportDesc), E_FAIL);
+				pModel->ExportModel_NoMsg(m_strDatSavePath);
+
+				Safe_Release(pModel);
 
 				m_CheckPrototypes.emplace(strModelName, strLoadPath);
 				m_Prototypes_Obj.push_back(strModelName);
@@ -254,6 +265,10 @@ HRESULT CLevel_Map::Convert_Json_To_Data()
 			MSG_BOX(TEXT("있어서는 안되는 else"));
 		}
 	}
+
+	m_CheckPrototypes.clear();
+	m_Prototypes_Inst.clear();
+	m_Prototypes_Obj.clear();
 
 	return S_OK;
 }
@@ -296,11 +311,25 @@ void CLevel_Map::Select_Fix_Object(_float fTimeDelta)
 
 						m_vFixScale = m_pFixTransformCom->Get_Scaled();
 						XMStoreFloat3(&m_vFixPosition, m_pFixTransformCom->Get_State(STATE::POSITION));
-						//m_vFixRotation = m_pFixTransformCom->Get_Rotation_Quat();
+
+						_vector vScale = {};
+						_vector vRotation = {};
+						_vector vTranslation = {};
+
+						XMMatrixDecompose(&vScale, &vRotation, &vTranslation, m_pFixTransformCom->Get_WorldMatrix());
+
+						_float3 vRadian = {};
+						XMStoreFloat3(&vRadian, vRotation);
+
+						vRadian.x = XMConvertToDegrees(vRadian.x);
+						vRadian.y = XMConvertToDegrees(vRadian.y);
+						vRadian.z = XMConvertToDegrees(vRadian.z);
+
+						m_vFixRotation = vRadian;
 
 						m_isFixObjectWindow = true;
 
-						break;
+						return;
 					}
 				}
 			}
@@ -415,14 +444,14 @@ HRESULT CLevel_Map::Ready_Main_Window()
 					}
 					SEPARATOR;
 					ImGui::Text("JSON");
-					if (ImGui::Button("JSON TO CUSTOM"))
+					if (ImGui::Button("JSON TO CUSTOM WINDOW"))
 					{
 						Get_Directory_Files(m_szJsonPath);
 
 						m_isJsonWindow = !m_isJsonWindow;
 					}
 					SAMELINE;
-					if (ImGui::Button("CUSTOMJSON WINDOW"))
+					if (ImGui::Button("CUSTOM JSON WINDOW"))
 					{
 						Get_Directory_Files(m_szJsonCustomPath);
 
@@ -642,7 +671,7 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				m_eFixType = FIX_OBJECT::SCALE_DETAIL;
 
 			} SAMELINE;
-			if (ImGui::Button("SCALE ROTATION POSITION"))
+			if (ImGui::Button("ROTATION POSITION"))
 			{
 				m_eFixType = FIX_OBJECT::FIX_ALL;
 
@@ -669,18 +698,6 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 			}
 			if (FIX_OBJECT::FIX_ALL == m_eFixType)
 			{
-				ImGui::Text("SCALE FIX");
-				SEPARATOR;
-
-				ImGui::Text("SCALE : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##scalex", &m_vFixScale.x, 0.001f, 0.01f);
-				ImGui::SliderFloat("##sliderscale", &m_vFixScale.z, 0.001f, 10.f);
-				if (0.001f > m_vFixScale.x) m_vFixScale.x = 0.001f;
-
-				m_vFixScale.y = m_vFixScale.z = m_vFixScale.x;
-				SEPARATOR;
-
-				m_pFixTransformCom->Scale(m_vFixScale);
-
 				ImGui::Text("ROTATION FIX");
 				SEPARATOR;
 
@@ -1017,21 +1034,24 @@ HRESULT CLevel_Map::Ready_CustomJson_Edit_Window()
 
 #pragma endregion
 
-#pragma region CustomJson을 이용한 프로토 타입 및 레이어 생성
+#pragma region CustomJson을 이용한 프로토 타입 및 레이어 생성, 파일 추출
 
 			if (true == m_isCustomJsonLoaded)
 			{
 				SEPARATOR;
+				ImGui::Text("DAT SAVE PATH : "); SAMELINE; ITEMWIDTH(300.f);
+				ImGui::InputText("##dat_save_path", m_szDatSavePath, IM_ARRAYSIZE(m_szDatSavePath));
+
 				if (ImGui::Button("CONVERT JSON TO DAT"))
 				{
 					CHECK_FAILED_MSG(Convert_Json_To_Data(), TEXT("추출 실패"), );
 				}
-				SEPARATOR;
-				if (ImGui::Button("CREATE PROTOTYPES"))
-				{
-					CHECK_FAILED_MSG(Add_Prototypes_FromJson(), TEXT("임시 프로토타입 생성 실패 or 임시 Layer 생성 실패"), );
-					m_isPrototypeWindow = true;
-				}
+				//SEPARATOR;
+				//if (ImGui::Button("CREATE PROTOTYPES"))
+				//{
+					//CHECK_FAILED_MSG(Add_Prototypes_FromJson(), TEXT("임시 프로토타입 생성 실패 or 임시 Layer 생성 실패"), );
+					//m_isPrototypeWindow = true;
+				//}
 				SEPARATOR;
 			}
 
@@ -1117,7 +1137,7 @@ HRESULT CLevel_Map::Ready_CustomJson_List_Window()
 #pragma endregion
 
 #pragma region WIDGET : CUSTOM JSON 에서 로드해온 리스트들의 정보
-
+	/*
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (true == m_isCustomJsonInfoList)
 		{
@@ -1165,7 +1185,7 @@ HRESULT CLevel_Map::Ready_CustomJson_List_Window()
 			ImGui::End();
 		}
 		});
-
+	*/
 #pragma endregion
 
 	return S_OK;
@@ -1552,30 +1572,49 @@ HRESULT CLevel_Map::Ready_Light_Window()
 					SEPARATOR;
 
 					ImGui::Text("DIRECTION"); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("X##DIRdirx", &m_FixLightDesc.vDirection.x); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("Y##DIRdiry", &m_FixLightDesc.vDirection.y); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("Z##DIRdirz", &m_FixLightDesc.vDirection.z); SAMELINE;
+
+					if (ImGui::Button("NORMALIZE"))
+						XMStoreFloat4(&m_FixLightDesc.vDirection, XMVector3Normalize(XMLoadFloat4(&m_FixLightDesc.vDirection)));
+
+					ImGui::Text("Axis X : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRdirx", &m_FixLightDesc.vDirection.x);
+					ImGui::Text("Axis Y : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRdiry", &m_FixLightDesc.vDirection.y);
+					ImGui::Text("Axis Z : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRdirz", &m_FixLightDesc.vDirection.z);
 					SEPARATOR;
 
-					ImGui::Text("DIFFUSE"); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("R##DIRdifx", &m_FixLightDesc.vDiffuse.x); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("G##DIRdify", &m_FixLightDesc.vDiffuse.y); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("B##DIRdifz", &m_FixLightDesc.vDiffuse.z); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("A##DIRdifw", &m_FixLightDesc.vDiffuse.w); SAMELINE;
+					ImGui::Text("DIFFUSE");
+					ImGui::Text("R : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRdifx", &m_FixLightDesc.vDiffuse.x);
+					ImGui::Text("G : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRdify", &m_FixLightDesc.vDiffuse.y);
+					ImGui::Text("B : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRdifz", &m_FixLightDesc.vDiffuse.z);
+					ImGui::Text("A : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRdifw", &m_FixLightDesc.vDiffuse.w);
 					SEPARATOR;
 
-					ImGui::Text("AMBIENT"); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("R##DIRambx", &m_FixLightDesc.vAmbient.x); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("G##DIRamby", &m_FixLightDesc.vAmbient.y); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("B##DIRambz", &m_FixLightDesc.vAmbient.z); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("A##DIRambw", &m_FixLightDesc.vAmbient.w); SAMELINE;
+					ImGui::Text("AMBIENT");
+					ImGui::Text("R : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRambx", &m_FixLightDesc.vAmbient.x);
+					ImGui::Text("G : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRamby", &m_FixLightDesc.vAmbient.y);
+					ImGui::Text("B : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRambz", &m_FixLightDesc.vAmbient.z);
+					ImGui::Text("A : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRambw", &m_FixLightDesc.vAmbient.w);
 					SEPARATOR;
 
-					ImGui::Text("SPECULAR"); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("R##DIRspecx", &m_FixLightDesc.vSpecular.x); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("G##DIRspecy", &m_FixLightDesc.vSpecular.y); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("B##DIRspecz", &m_FixLightDesc.vSpecular.z); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("A##DIRspecw", &m_FixLightDesc.vSpecular.w); SAMELINE;
+					ImGui::Text("SPECULAR");
+					ImGui::Text("R : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRspecx", &m_FixLightDesc.vSpecular.x);
+					ImGui::Text("G : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRspecy", &m_FixLightDesc.vSpecular.y);
+					ImGui::Text("B : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRspecz", &m_FixLightDesc.vSpecular.z);
+					ImGui::Text("A : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRspecw", &m_FixLightDesc.vSpecular.w);
 					SEPARATOR;
 				}
 				else if (LIGHT_DESC::POINT == m_FixLightDesc.eType)
@@ -1583,10 +1622,13 @@ HRESULT CLevel_Map::Ready_Light_Window()
 					ImGui::Text("POINT");
 					SEPARATOR;
 
-					ImGui::Text("POSITION"); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("X##POIposx", &m_FixLightDesc.vPosition.x); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("Y##POIposy", &m_FixLightDesc.vPosition.y); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("Z##POIposz", &m_FixLightDesc.vPosition.z); SAMELINE;
+					ImGui::Text("POSITION");
+					ImGui::Text("X : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIposx", &m_FixLightDesc.vPosition.x, 1.f, 5.f);
+					ImGui::Text("Y : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIposy", &m_FixLightDesc.vPosition.y, 1.f, 5.f);
+					ImGui::Text("Z : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIposz", &m_FixLightDesc.vPosition.z, 1.f, 5.f);
 
 					if (true == m_isAddLightPoint)
 					{
@@ -1599,34 +1641,45 @@ HRESULT CLevel_Map::Ready_Light_Window()
 
 					SEPARATOR;
 
-					ImGui::Text("RANGE"); SAMELINE; ITEMWIDTH(80.f); ImGui::InputFloat("##POIrange", &m_FixLightDesc.fRange); SAMELINE;
+					ImGui::Text("RANGE"); SAMELINE; ITEMWIDTH(80.f); ImGui::InputFloat("##POIrange", &m_FixLightDesc.fRange);
 					SEPARATOR;
 
-					ImGui::Text("DIFFUSE"); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("R##POIdifx", &m_FixLightDesc.vDiffuse.x); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("G##POIdify", &m_FixLightDesc.vDiffuse.y); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("B##POIdifz", &m_FixLightDesc.vDiffuse.z); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("A##POIdifw", &m_FixLightDesc.vDiffuse.w); SAMELINE;
+					ImGui::Text("DIFFUSE");
+					ImGui::Text("R : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIdifx", &m_FixLightDesc.vDiffuse.x);
+					ImGui::Text("G : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIdify", &m_FixLightDesc.vDiffuse.y);
+					ImGui::Text("B : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIdifz", &m_FixLightDesc.vDiffuse.z);
+					ImGui::Text("A : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIdifw", &m_FixLightDesc.vDiffuse.w);
 					SEPARATOR;
 
-					ImGui::Text("AMBIENT"); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("R##POIambx", &m_FixLightDesc.vAmbient.x); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("G##POIamby", &m_FixLightDesc.vAmbient.y); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("B##POIambz", &m_FixLightDesc.vAmbient.z); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("A##POIambw", &m_FixLightDesc.vAmbient.w); SAMELINE;
+					ImGui::Text("AMBIENT");
+					ImGui::Text("R : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIambx", &m_FixLightDesc.vAmbient.x);
+					ImGui::Text("G : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIamby", &m_FixLightDesc.vAmbient.y);
+					ImGui::Text("B : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIambz", &m_FixLightDesc.vAmbient.z);
+					ImGui::Text("A : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIambw", &m_FixLightDesc.vAmbient.w);
 					SEPARATOR;
 
-					ImGui::Text("SPECULAR"); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("R##POIspecx", &m_FixLightDesc.vSpecular.x); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("G##POIspecy", &m_FixLightDesc.vSpecular.y); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("B##POIspecz", &m_FixLightDesc.vSpecular.z); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("A##POIspecw", &m_FixLightDesc.vSpecular.w); SAMELINE;
+					ImGui::Text("SPECULAR");
+					ImGui::Text("R : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIspecx", &m_FixLightDesc.vSpecular.x);
+					ImGui::Text("G : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIspecy", &m_FixLightDesc.vSpecular.y);
+					ImGui::Text("B : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIspecz", &m_FixLightDesc.vSpecular.z);
+					ImGui::Text("A : "); SAMELINE;
+					ITEMWIDTH(80.f); ImGui::InputFloat("##POIspecw", &m_FixLightDesc.vSpecular.w);
 					SEPARATOR;
 				}
-				if (ImGui::Button("APPLY"))
-				{
-					m_pGameInstance->Set_LightDesc(AnsiToWString(m_LightTags[m_iLightTagIndex]), ENUM_CLASS(LEVEL::MAP), m_FixLightDesc);
-				} SAMELINE;
+
+				m_pGameInstance->Set_LightDesc(AnsiToWString(m_LightTags[m_iLightTagIndex]), ENUM_CLASS(LEVEL::MAP), m_FixLightDesc);
+
 				if (ImGui::Button("DONE"))
 				{
 					m_strFixLightTag.clear();
@@ -1650,6 +1703,24 @@ HRESULT CLevel_Map::Ready_Light_Window()
 
 					ImGui::EndListBox();
 				} SEPARATOR;
+				if (0 != m_LightTags.size() && ImGui::Button("TURN ON"))
+				{
+					m_isFixLight = false;
+					m_isAddLight = false;
+					m_LightDesc.eType = LIGHT_DESC::END;
+
+					m_pGameInstance->Set_LightEnable(AnsiToWString(m_LightTags[m_iLightTagIndex]), ENUM_CLASS(LEVEL::MAP), true);
+
+				} SAMELINE;;
+				if (0 != m_LightTags.size() && ImGui::Button("TURN OFF"))
+				{
+					m_isFixLight = false;
+					m_isAddLight = false;
+					m_LightDesc.eType = LIGHT_DESC::END;
+
+					m_pGameInstance->Set_LightEnable(AnsiToWString(m_LightTags[m_iLightTagIndex]), ENUM_CLASS(LEVEL::MAP), false);
+
+				} SEPARATOR;
 				if (ImGui::Button("ADD LIGHT"))
 				{
 					m_isAddLight = !m_isAddLight;
@@ -1668,16 +1739,17 @@ HRESULT CLevel_Map::Ready_Light_Window()
 				{
 					if (ImGui::Button("DIRECTIONAL"))
 						m_LightDesc.eType = LIGHT_DESC::DIRECTIONAL;
+					SAMELINE;
 					if (ImGui::Button("POINT"))
 						m_LightDesc.eType = LIGHT_DESC::POINT;
-
+					SEPARATOR;
 					if (LIGHT_DESC::DIRECTIONAL == m_LightDesc.eType)
 					ImGui::Text("CURRENT LIGHT TYPE : DIRECTIONAL");
 
 					if (LIGHT_DESC::POINT == m_LightDesc.eType)
 					ImGui::Text("CURRENT LIGHT TYPE : POINT");
 
-					ImGui::Text("LIGHT TAG : ");
+					ImGui::Text("LIGHT TAG : "); SAMELINE;
 					ImGui::InputText("##light_tag", m_szLightTag, IM_ARRAYSIZE(m_szLightTag));
 					m_strLightTag = m_szLightTag;
 
@@ -1686,8 +1758,8 @@ HRESULT CLevel_Map::Ready_Light_Window()
 						m_LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
 
 						m_LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-						m_LightDesc.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
-						m_LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+						m_LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
+						m_LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 1.f);
 					}
 					if (LIGHT_DESC::POINT == m_LightDesc.eType)
 					{
@@ -1695,18 +1767,19 @@ HRESULT CLevel_Map::Ready_Light_Window()
 						m_LightDesc.fRange = 10.f;
 
 						m_LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-						m_LightDesc.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
-						m_LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+						m_LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
+						m_LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 1.f);
 					}
 
 					if (LIGHT_DESC::END != m_LightDesc.eType)
 					{
-						if (ImGui::Button("LIGHT ADD"))
+						if (0 != m_strLightTag.size() && ImGui::Button("LIGHT ADD"))
 						{
 							m_pGameInstance->Add_Light(AnsiToWString(m_strLightTag), ENUM_CLASS(LEVEL::MAP), m_LightDesc);
 							m_LightTags.push_back(m_strLightTag);
 
 							ZeroMemory(&m_szLightTag, sizeof(m_szLightTag));
+							m_strLightTag.clear();
 							ZeroMemory(&m_LightDesc, sizeof(LIGHT_DESC));
 							m_LightDesc.eType = LIGHT_DESC::END;
 
@@ -1773,9 +1846,9 @@ void CLevel_Map::Get_Directory_Files(const _char* pDirectoryPath)
 	}
 }
 
-string CLevel_Map::Find_ModelPath(const string& strModelName)
+string CLevel_Map::Find_FBX_ModelPath(const string& strModelName)
 {
-	string strRoot = "../../Client/Bin/Resources/Models/Environment/Prop/";
+	string strRoot = "../../Client/Bin/Resources/Map/Prop/";
 
 	for (auto& entry : filesystem::recursive_directory_iterator(strRoot))
 	{

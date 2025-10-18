@@ -124,7 +124,7 @@ HRESULT CLoader::Loading_For_Map_Level()
 
 	// Prototype_Component_Texture_Terrain_Grid
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Texture_Terrain_Grid"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Textures/Terrain/Tile0.jpg"), 1)), E_FAIL);
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Terrain/Tile0.dds"), 1)), E_FAIL);
 
 #pragma endregion
 
@@ -193,30 +193,11 @@ HRESULT CLoader::Loading_For_Animation_Level()
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
 
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
-	_matrix		PreTransformMatrix = XMMatrixIdentity();
-
-	/* Prototype_Component_Editor_Model_Test */
-	//PreTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::ANIMATION), TEXT("Prototype_Component_Editor_Model_Test"),
-	//	CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::ANIM, "../../Client/Bin/Resources/Models/Creature/Test/AnimNude_Player/Test.fbx", PreTransformMatrix))))
-	//	return E_FAIL;
-
-	/* Prototype_Component_Editor_Model_Test */
-	//PreTransformMatrix = XMMatrixRotationY(XMConvertToRadians(180.0f));
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::ANIMATION), TEXT("Prototype_Component_Editor_Model_Test"),
-	//	CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::ANIM, "../../Client/Bin/Resources/Models/Fiona/Fiona.fbx", PreTransformMatrix))))
-		//return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
 
 	lstrcpy(m_szLoadingText, TEXT("게임오브젝트원형를 로딩중입니다."));
 	
-	/* Prototype_GameObject_Editor_Animation_TestModel */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::ANIMATION), TEXT("Prototype_GameObject_Editor_Animation_TestModel"),
-		CJOH_EditorModelTest::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
-
-	/* Prototype_GameObject_JOH_TempCamera*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::ANIMATION), TEXT("Prototype_GameObject_JOH_TempCamera"),
 		CEditor_TempCamera::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
@@ -233,12 +214,12 @@ HRESULT CLoader::Loading_For_Effect_Level()
 
 	// Prototype_Component_Texture_TestParticle
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_Particle_Prototype"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Textures/Effect/particle/particle%d.png"), 2))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/particle/particle%d.png"), 2))))
 		return E_FAIL;
 	
 	// Prototype_Component_Texture_Terrain_Shader
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_Terrain_Effect"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Textures/Terrain/Tile0.jpg"), 1))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/Tile0.jpg"), 1))))
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
@@ -269,21 +250,21 @@ HRESULT CLoader::Loading_For_UI_Level()
 {
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
 
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_Atlas_Test"),
+		CTexture_Atlas::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Test/Test.json"), 1))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_Atlas_SlotTest"),
+		CTexture_Atlas::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Test/SlotTest.json"), 1))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_Tex_Background"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Test/T_Hud_BG_Deco_Pathfinder_01.png"), 1))))
+		return E_FAIL;
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
 
 	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
 
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_Atlas_Test"),
-	//	CTexture_Atlas::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Textures/UI/Test/Test.json"), 1))))
-	//	return E_FAIL;
-
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_Atlas_SlotTest"),
-	//	CTexture_Atlas::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Textures/UI/Test/SlotTest.json"), 1))))
-	//	return E_FAIL;
-
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_Tex_Background"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Textures/UI/Test/T_Hud_BG_Deco_Pathfinder_01.png"), 1))))
-	//	return E_FAIL;
 
 
 	lstrcpy(m_szLoadingText, TEXT("게임오브젝트원형를 로딩중입니다."));
@@ -303,27 +284,27 @@ HRESULT CLoader::Loading_For_Shader_Level()
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
 
 	// Prototype_Component_Texture_Terrain_Shader
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Texture_Terrain_Shader"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Textures/Terrain/Tile0.jpg"), 1))))
-		return E_FAIL;
+	//	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Texture_Terrain_Shader"),
+	//		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Terrain/Tile0.jpg"), 1))))
+	//		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
 
 	// Prototype_Component_VIBuffer_Terrain
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_VIBuffer_Terrain"),
-		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 50, 50))))
-		return E_FAIL;
+	//	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_VIBuffer_Terrain"),
+	//		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 50, 50))))
+	//		return E_FAIL;
 
 	// Prototype_Component_Model_WP_WOD_Ground_Base_004
 	_matrix PreTransformMatrix = XMMatrixScaling(0.0001f, 0.0001f, 0.0001f);
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"),
-		CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, "../../Client/Bin/Resources/Models/Environment/Prop/Ground/WP_WOD_Ground_Base_004.fbx", PreTransformMatrix))))
+		CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, "../../Client/Bin/Resources/Map/Prop/Ground/WP_WOD_Ground_Base_004.fbx", PreTransformMatrix))))
 		return E_FAIL;
 	
 	// Prototype_Component_Editor_Model_Test
 	PreTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Editor_Model_Test"),
-		CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::ANIM, "../../Client/Bin/Resources/Models/Creature/Test/AnimNude_Player/Test.fbx", PreTransformMatrix))))
+		CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::ANIM, "../../Client/Bin/Resources/Test_Models/Test_Player/Test.fbx", PreTransformMatrix))))
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
@@ -336,9 +317,9 @@ HRESULT CLoader::Loading_For_Shader_Level()
 		return E_FAIL;
 
 	// Prototype_GameObject_Terrain_Shader
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Terrain_Shader"),
-		CTerrain_Shader::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	//	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Terrain_Shader"),
+	//		CTerrain_Shader::Create(m_pDevice, m_pContext))))
+	//		return E_FAIL;
 
 	// Prototype_GameObject_Prop_Test
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Prop_Test"),

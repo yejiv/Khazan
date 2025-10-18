@@ -2,6 +2,8 @@
 #include "GameInstance.h"
 #include "Level_Loading.h"
 
+#include "JOH_EditorModelTest.h"
+
 CMainApp::CMainApp()
 	: m_pGameInstance{ CGameInstance::GetInstance() }
 {
@@ -76,7 +78,7 @@ HRESULT CMainApp::Render()
 HRESULT CMainApp::Ready_Prototype_ForStatic()
 {
 
-	if (FAILED(m_pGameInstance->Add_Font(TEXT("Font_153"), TEXT("../../Client/Bin/Resources/Fonts/153ex.SpriteFont"))))
+	if (FAILED(m_pGameInstance->Add_Font(TEXT("Font_153"), TEXT("../../Client/Bin/Resources/Font/153ex.SpriteFont"))))
 		return E_FAIL;
 
 	// VIBuffer
@@ -92,7 +94,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 
 	/* Prototype_Component_VIBuffer_Terrain */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Terrain"),
-		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Textures/Terrain/Height.bmp")))))
+		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Terrain/Height.bmp")))))
 		return E_FAIL;
 
 	// Shader
@@ -104,6 +106,11 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 	/* Prototype_Component_Shader_VtxPosTex */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxPosTex"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_VtxPosTex.hlsl"), VTXPOSTEX::Elements, VTXPOSTEX::iNumElements))))
+		return E_FAIL;
+
+	/* Prototype_Component_Shader_VtxPosTex */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxPosSpriteTex"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_VtxPosSpriteTex.hlsl"), VTXPOSTEX::Elements, VTXPOSTEX::iNumElements))))
 		return E_FAIL;
 
 	/* Prototype_Component_Shader_VtxNorTex */
@@ -134,6 +141,11 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 	/* Prototype_Component_Shader_VtxInstance_MeshParticle*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxInstance_Particle"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_VtxInstance_Particle.hlsl"), VTXPARTICLE::Elements, VTXPARTICLE::iNumElements))))
+		return E_FAIL;
+
+	/* Prototype_GameObject_Editor_Animation_TestModel */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Editor_Animation_TestModel"),
+		CJOH_EditorModelTest::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 	return S_OK;

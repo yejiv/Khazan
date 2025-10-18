@@ -138,7 +138,7 @@ void CLevel_Effect::Update(_float fTimeDelta)
 
 HRESULT CLevel_Effect::Render()
 {
-	SetWindowText(g_hWnd, TEXT("����Ʈ��"));
+	SetWindowText(g_hWnd, TEXT("이펙트툴"));
 
 	return S_OK;
 }
