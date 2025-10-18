@@ -26,18 +26,14 @@ HRESULT CProp_Test::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Components(pArg), E_FAIL);
 
-    PROP_OBJECT_DESC* pDesc = static_cast<PROP_OBJECT_DESC*>(pArg);
+    PROP_TEST_DESC* pDesc = static_cast<PROP_TEST_DESC*>(pArg);
 
-    _float3 vScale = {};
-    XMStoreFloat3(&vScale, XMLoadFloat3(&pDesc->vScale));
+    _matrix matWorld = XMLoadFloat4x4(&pDesc->WorldMatrix);
 
-    _float3 vRotation = _float3(pDesc->vRotation.x, pDesc->vRotation.y, pDesc->vRotation.z);
-
-    _float3 vPosition = pDesc->vPosition;
-
-    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPosition), 1.f));
-    m_pTransformCom->Scale(vScale);
-    m_pTransformCom->Rotation(vRotation.x, vRotation.y, vRotation.z);
+    m_pTransformCom->Set_State(STATE::RIGHT, matWorld.r[0]);
+    m_pTransformCom->Set_State(STATE::UP, matWorld.r[1]);
+    m_pTransformCom->Set_State(STATE::LOOK, matWorld.r[2]);
+    m_pTransformCom->Set_State(STATE::POSITION, matWorld.r[3]);
 
     CHECK_FAILED(Ready_Collision(pArg), E_FAIL);
 
@@ -78,7 +74,7 @@ HRESULT CProp_Test::Render()
 
 HRESULT CProp_Test::Ready_Components(void* pArg)
 {
-    PROP_OBJECT_DESC* pDesc = static_cast<PROP_OBJECT_DESC*>(pArg);
+    PROP_TEST_DESC* pDesc = static_cast<PROP_TEST_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
     LEVEL eLevel = pDesc->eLevel;

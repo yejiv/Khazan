@@ -179,7 +179,7 @@
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\Prop.h" />
     <ClInclude Include="..\Public\Prop_Animated.h" />
-    <ClInclude Include="..\Public\Prop_Destructible.h" />
+    <ClInclude Include="..\Public\Prop_Dynamic.h" />
     <ClInclude Include="..\Public\Prop_Interactive.h" />
     <ClInclude Include="..\Public\Prop_Object.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
@@ -221,7 +221,7 @@
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\Prop.cpp" />
     <ClCompile Include="..\Private\Prop_Animated.cpp" />
-    <ClCompile Include="..\Private\Prop_Destructible.cpp" />
+    <ClCompile Include="..\Private\Prop_Dynamic.cpp" />
     <ClCompile Include="..\Private\Prop_Interactive.cpp" />
     <ClCompile Include="..\Private\Prop_Object.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>

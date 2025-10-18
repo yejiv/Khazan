@@ -16,6 +16,13 @@ private:
 	enum class MAPEDIT_MAP { HEINMACH, STORMPASS, THECREVICE, EMBARS, END };
 	enum class FIX_OBJECT { SCALE_DETAIL, FIX_ALL, SCALE, ROTATION, POSITION, END };
 
+	typedef struct tagSavePrototype
+	{
+		MAPOBJECT_TYPE eType{};
+		string strModelPath{};
+
+	}SAVE_PROTOTYPE;
+
 private:
 	CLevel_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual ~CLevel_Map() = default;
@@ -28,10 +35,9 @@ public:
 private:
 	HRESULT Ready_Defaults();
 	HRESULT Ready_Default_Lights();
+	HRESULT Ready_Preview_Model_RanderTargets();
 	HRESULT Ready_Layer_Camera(const _wstring& strLayerTag);
 	HRESULT Ready_Layer_Terrain(const _wstring& strLayerTag);
-
-	HRESULT Ready_Layer_Prop_Static(const _wstring& strLayerTag);
 
 private:
 	class CProp_Static* m_pProp_Static = { nullptr };
@@ -58,6 +64,7 @@ private:
 	_uint m_iMapObjectCnt = {};				// ObjectID 부여용 ( ++로 부여 )
 
 	vector<class CProp*> m_ObjectList;		// 오브젝트 리스트 ( 수정 편하게 할려고 )
+	_int m_iObjectListIndex = {};			// 오브젝트 리스트 인덱스
 
 	CProp* m_pFixPropObj = { nullptr };		// 피킹 시 받아올거 오브젝트 리스트 참고해서
 	CTransform* m_pFixTransformCom = { nullptr };		// 픽스할 오브젝트의 트랜스폼
@@ -69,6 +76,16 @@ private:
 	_float3 m_vFixScale = {};
 	_float3 m_vFixRotation = {};
 	_float3 m_vFixPosition = {};
+
+#pragma endregion
+
+#pragma region OBJECT SAVE, LOAD 변수
+
+	_char m_szMapInfoFilePath[MAX_PATH] = { "../../Client/Bin/Data/Map/MapData/" };
+	string m_strMapInfoFilePath = {};
+
+	_char m_szMapInfoFileName[MAX_PATH] = {};				// 오브젝트 배치 정보 파일 저장, 로드할 파일 이름
+	string m_strMapInfoFileName = {};
 
 #pragma endregion
 
@@ -113,6 +130,10 @@ private:
 	_bool m_isFixObjectWindow = { false };
 
 	_bool m_isLightSettingWindow = { false };
+
+	_bool m_isSaveObjectWindow = { false };
+
+	_bool m_isLoadObjectWindow = { false };
 
 #pragma endregion
 
@@ -201,12 +222,25 @@ private:
 	HRESULT Ready_Json_List_Window();
 	// MapEditor Light 세팅 윈도우
 	HRESULT Ready_Light_Window();
+	// MapEditor Object Save, Load 윈도우
+	HRESULT Ready_Object_SaveLoad_Window();
 
 	// Directory에 파일들 불러오는용 ( Json 한정 함수 )
 	void Get_Directory_Files(const _char* pDirectoryPath);
 
 	// 임시 테스트용
-	string Find_FBX_ModelPath(const string& strModelName);
+	string Find_ModelPath(const string& strModelName, const string& strFileExtern);
+
+private:
+	// Loader 에서 사용할 바이너리 파일
+	_bool Prototypes_Save_Binary();
+
+	// Layer 에서 사용할 바이너리 파일
+	_bool Objects_Save_Binary();
+
+	// MapEditor에서 불러오기
+	_bool Prototypes_Load_Binary();
+	_bool Objects_Load_Binary();
 
 public:
 	static CLevel_Map* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -214,3 +248,89 @@ public:
 };
 
 NS_END
+
+
+
+#pragma region CODE 확인용
+/*
+_matrix PreTransformMatrix = XMMatrixIdentity();
+
+// 스케일 변환 ( 1 / 100 )
+PreTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+
+for (auto& Component : m_CustomJson)
+{
+	_bool isInstance = (_bool)Component["isInstance"];
+	_bool isObject = (_bool)Component["isObject"];
+
+	string strModelName = Component["strModelName"];
+
+	if (true == isInstance)				// 인스턴싱 모델인 경우
+	{
+		// 모델명과 일치하는 경로 찾기
+		string strLoadPath = Find_ModelPath(strModelName, ".dat");
+
+		if ("NOTFOUND" == strLoadPath)
+		{
+			string error = "Can't found load path\nModelName : " + strModelName;
+#ifdef _DEBUG
+				OutputDebugStringA(error.c_str());
+#endif // _DEBUG
+				continue;
+			}
+
+			CEditor_ModelMesh_Instance::EDITOR_MODELMESH_INSTANCE_DESC InstanceDesc = {};
+
+			InstanceDesc.iNumInstance = 0;
+
+			// Instance 모델 프로토타입 등록
+			CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), AnsiToWString(strModelName),
+				CModel_Instance::Create(m_pDevice, m_pContext, strLoadPath.c_str(), &InstanceDesc)), E_FAIL);
+
+			CProp_Static::PROP_STATIC_DESC StaticDesc = {};
+
+			_wstring strTempName = AnsiToWString(strModelName);
+			memcpy(StaticDesc.szModelName, strTempName.c_str(), sizeof(StaticDesc.szModelName));
+
+			// Instance 는 바로 Layer 등록
+			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_InstObj"),
+				ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"), &StaticDesc), E_FAIL);
+
+			m_CheckPrototypes.emplace(strModelName, strLoadPath);
+			m_Prototypes_Inst.push_back(strModelName);
+		}
+		else if (true == isObject)				// 단일 오브젝트인 경우
+		{
+			auto iter = m_CheckPrototypes.find(strModelName);
+
+			if (iter == m_CheckPrototypes.end())
+			{
+				// 모델명과 일치하는 경로 찾기
+				string strLoadPath = Find_ModelPath(strModelName, ".dat");
+
+				if ("NOTFOUND" == strLoadPath)
+				{
+					string error = "Can't found load path\nModelName : " + strModelName + "\n";
+#ifdef _DEBUG
+					OutputDebugStringA(error.c_str());
+#endif // _DEBUG
+					continue;
+				}
+
+				// 단일 오브젝트는 바로 인스턴스 등록
+				CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), AnsiToWString(strModelName),
+					CModel::Create(m_pDevice, m_pContext, strLoadPath.c_str())), E_FAIL);
+
+				m_CheckPrototypes.emplace(strModelName, strLoadPath);
+				m_Prototypes_Obj.push_back(strModelName);
+			}
+		}
+		else
+		{
+			MSG_BOX(TEXT("있어서는 안되는 else"));
+		}
+	}
+
+	return S_OK;
+	*/
+#pragma endregion

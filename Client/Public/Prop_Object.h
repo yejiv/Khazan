@@ -16,9 +16,7 @@ class CProp_Object final : public CProp
 public:
 	typedef struct tagPropObjectDesc : public CProp::PROP_DESC
 	{
-		_float3 vPosition{};
-		_float3 vRotation{};
-		_float3 vScale{1.f, 1.f, 1.f};
+		_float4x4 WorldMatrix{};
 
 	}PROP_OBJECT_DESC;
 

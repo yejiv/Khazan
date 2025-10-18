@@ -54,7 +54,7 @@ HRESULT CProp::Render()
     return S_OK;
 }
 
-HRESULT CProp::Bind_Instance_Materials(CEditor_Model_Instance* pModelCom, _uint iMeshIndex)
+HRESULT CProp::Bind_Instance_Materials(CModel_Instance* pModelCom, _uint iMeshIndex)
 {
     pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0);
     pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", iMeshIndex, aiTextureType_NORMALS, 0);
