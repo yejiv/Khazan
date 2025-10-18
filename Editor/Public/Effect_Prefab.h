@@ -9,7 +9,7 @@ class CEffect_Element;
 class CEffect_Prefab : public CGameObject
 {
 public :
-	enum class EffectType { POINT_INSTANCE, MESH_INSTANCE  };
+	enum class EffectType { POINT_INSTANCE, MESH_INSTANCE, SPRITE };
 	enum class EffectEventType {	ACTIVATE,
 									ANIMATE_SPREAD, ANIMATE_ROTATE, ANIMATE_TWINLKE, ANIMATE_LINEAR_MOVE,
 									SCROLL_SPEAD,

@@ -166,6 +166,9 @@
     <Filter Include="02.GameObject\Effect\Terrain">
       <UniqueIdentifier>{2471b629-34a2-4ea1-9a72-0a4b0cebb5d9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite">
+      <UniqueIdentifier>{4bce57e8-b335-4b18-86b0-70fd515a5461}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -316,6 +319,9 @@
     <ClInclude Include="..\Public\Effect_Mesh_Instance.h">
       <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Mesh_Instance</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Effect_Sprite.h">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -462,6 +468,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Effect_Mesh_Instance.cpp">
       <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Mesh_Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Sprite.cpp">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

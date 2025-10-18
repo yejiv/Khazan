@@ -48,6 +48,26 @@ HRESULT CEffect_Element::Render()
     return S_OK;
 }
 
+void CEffect_Element::SetSpreadData(void* pArg)
+{
+}
+
+void CEffect_Element::SetRotateData(void* pArg)
+{
+}
+
+void CEffect_Element::SetTwinkleData(void* pArg)
+{
+}
+
+void CEffect_Element::SetUpwardData(void* pArg)
+{
+}
+
+void CEffect_Element::SetScrollData(void* pArg)
+{
+}
+
 void CEffect_Element::SetData(_uint eventType,_float fDurTime)
 {
     TRACK_DATA data;

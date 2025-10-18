@@ -302,5 +302,8 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxInstance_Particle.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosSpriteTex.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
