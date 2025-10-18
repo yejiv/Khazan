@@ -91,15 +91,6 @@ public:
 		_float				fRadius;
 	}CV_CAPSULESHAPE_DESC;
 
-	typedef struct tagMeshShape : CHARACTERVIRTUAL_DESC
-	{
-		class CModel* pModel = { nullptr };
-	}CV_MESHSHAPE_DESC;
-
-	typedef struct tagConvexShape : CHARACTERVIRTUAL_DESC
-	{
-		class CModel* pModel = { nullptr };
-	}CV_CONVEXSHAPE_DESC;
 private:
 	CCharacterVirtual(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CCharacterVirtual(const CCharacterVirtual& Prototype);
