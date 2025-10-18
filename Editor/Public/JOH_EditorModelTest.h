@@ -10,6 +10,13 @@ NS_BEGIN(Editor)
 
 class CJOH_EditorModelTest final : public CGameObject
 {
+public:
+	typedef struct tagEditorTestModel : GAMEOBJECT_DESC
+	{
+		_wstring strPrototypeTag;
+		_bool	 isAnim;
+	}EDITORTESTMODEL_DESC;
+
 private:
 	CJOH_EditorModelTest(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CJOH_EditorModelTest(const CJOH_EditorModelTest& Prototype);
@@ -29,10 +36,14 @@ public:
 
 private:
 	CShader*	m_pShaderCom = { nullptr };
+	CShader*	m_pShaderCom_NonAnim = { nullptr };
 	class CEditor_Model*		m_pModelCom = { nullptr };
 
 	_uint		m_iCurrentAnimIndex = { 0 };
 	_bool		m_isEnble = { true };
+
+	_bool		m_isAnim = { false };
+
 private:
 	HRESULT Ready_Components(const _wstring& strModelTag);
 	HRESULT Bind_ShaderResources();

@@ -18,27 +18,33 @@ ValidateResult CJolt_ContactListener::OnContactValidate(const Body& inBody1, con
 
 void CJolt_ContactListener::OnContactAdded(const Body& inBody1, const Body& inBody2, const ContactManifold& inManifold, ContactSettings& ioSettings)
 {
-	CGameObject* pSrc = reinterpret_cast<CGameObject*>(inBody1.GetUserData());
-	CGameObject* pDst = reinterpret_cast<CGameObject*>(inBody2.GetUserData());
+	/*CGameObject* pGameObject1 = reinterpret_cast<CGameObject*>(inBody1.GetUserData());
+	CGameObject* pGameObject2 = reinterpret_cast<CGameObject*>(inBody2.GetUserData());
 
-	if (nullptr != pSrc && nullptr != pDst)
+	ObjectLayer Obj1 = inBody1.GetObjectLayer();
+	ObjectLayer Obj2 = inBody2.GetObjectLayer();
+
+	if (nullptr != pGameObject1 && nullptr != pGameObject2)
 	{
-		pSrc->Collision_Enter(pDst, JOLT_COLLSION_TYPE::BODY);
-		pDst->Collision_Enter(pDst, JOLT_COLLSION_TYPE::BODY);
-	}
+		pGameObject1->Collision_Enter(pGameObject2, Obj2);
+		pGameObject2->Collision_Enter(pGameObject1, Obj1);
+	}*/
 		
 }
 
 void CJolt_ContactListener::OnContactPersisted(const Body& inBody1, const Body& inBody2, const ContactManifold& inManifold, ContactSettings& ioSettings)
 {
-	CGameObject* pSrc = reinterpret_cast<CGameObject*>(inBody1.GetUserData());
-	CGameObject* pDst = reinterpret_cast<CGameObject*>(inBody2.GetUserData());
+	/*CGameObject* pGameObject1 = reinterpret_cast<CGameObject*>(inBody1.GetUserData());
+	CGameObject* pGameObject2 = reinterpret_cast<CGameObject*>(inBody2.GetUserData());
 
-	if (nullptr != pSrc && nullptr != pDst)
+	ObjectLayer Obj1 = inBody1.GetObjectLayer();
+	ObjectLayer Obj2 = inBody2.GetObjectLayer();
+
+	if (nullptr != pGameObject1 && nullptr != pGameObject2)
 	{
-		pSrc->Collision_Stay(pDst, JOLT_COLLSION_TYPE::BODY);
-		pDst->Collision_Stay(pSrc, JOLT_COLLSION_TYPE::BODY);
-	}
+		pGameObject1->Collision_Stay(pGameObject2, Obj2);
+		pGameObject2->Collision_Stay(pGameObject1, Obj1);
+	}*/
 		
 }
 

@@ -6,7 +6,7 @@ CUI_ProgressBar::CUI_ProgressBar(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 }
 
 CUI_ProgressBar::CUI_ProgressBar(const CUI_ProgressBar& Prototype)
-	:CUIObject{Prototype}
+	:CUIObject ( Prototype )
 {
 }
 
@@ -24,12 +24,12 @@ HRESULT CUI_ProgressBar::Initialize_Clone(void* pArg)
 	if (FAILED(__super::Initialize_Clone(pArg)))
 		return E_FAIL;
 
-	m_vOriginPos = _float3(pDesc->vLocalPos.x, pDesc->vLocalPos.y, 0.1f);
-	m_vOriginSize = pDesc->vLocalSize;
-	m_eDirection = pDesc->eDirection;
-	m_eMode = pDesc->eMode;
-	m_fLerpSpeed = 1.f;
-	m_fDisplayRate = 1.f;
+	//m_vOriginPos = _float3(pDesc->vLocalPos.x, pDesc->vLocalPos.y, 0.1f);
+	//m_vOriginSize = pDesc->vLocalSize;
+	//m_eDirection = pDesc->eDirection;
+	//m_eMode = pDesc->eMode;
+	//m_fLerpSpeed = 1.f;
+	//m_fDisplayRate = 1.f;
 
 	// Test
 	m_fMaxValue = 100.f;

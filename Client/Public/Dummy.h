@@ -36,8 +36,8 @@ private:
 	//class CCharacterVirtual* m_pCharVirCom = { nullptr };
 	
 public:
-	void Collision_Enter(CGameObject* pObject, JOLT_COLLSION_TYPE eType) override;
-	void Collision_Stay(CGameObject* pObject, JOLT_COLLSION_TYPE eType) override;
+	void Collision_Enter(CGameObject* pObject, _uint iOtherObjectLayer) override;
+	void Collision_Stay(CGameObject* pObject, _uint iOtherObjectLayer) override;
 
 private:
 	HRESULT Ready_Components();

@@ -15,7 +15,7 @@ HRESULT CLevel_UI::Initialize()
 
 	if (FAILED(Ready_Obejct()))
 		return E_FAIL;
-	
+
 	m_pUIInterface = CEdit_Interface_UI::Create(m_pDevice, m_pContext, LEVEL::UI);
 
 	m_pGameInstance->AddWidget(TEXT("UI"), [this]() { this->Update_Interface(); });
@@ -64,13 +64,13 @@ HRESULT CLevel_UI::Initialize()
 
 	//	ImGui::End();
 	//	});
-		
+
 	return S_OK;
 }
 
 void CLevel_UI::Update(_float fTimeDelta)
 {
-
+	m_fTimeDelta = fTimeDelta;
 	return;
 }
 
@@ -114,7 +114,7 @@ HRESULT CLevel_UI::Ready_Obejct()
 	if (m_EditorUIObjects.empty())
 		return;
 
-	
+
 	//// Test 계층 리스트 출력
 	//for (auto& pUI : m_EditorUIObjects)
 	//{
@@ -123,14 +123,14 @@ HRESULT CLevel_UI::Ready_Obejct()
 	//	if (ImGui::Selectable(strName.c_str(), isSelected))
 	//		m_SelectedObject = pUI;
 	//}
-	
+
 
 	// 계층 구조를 보여주는 창
 	for (auto& pRootUI : m_EditorUIObjects)
 	{
 		Show_Hierachy(pRootUI);
 	}
-		
+
 	ImGui::Separator();
 
 	// 자식 추가 하는 기능
@@ -141,7 +141,7 @@ HRESULT CLevel_UI::Ready_Obejct()
 		{
 			Add_Child(m_szSelectedName);
 		}
-		
+
 		if (ImGui::Button("Remove_Child"))
 		{
 			Remove_Child(m_szSelectedName);
@@ -193,7 +193,7 @@ void CLevel_UI::Add_Child(const _char* szDefaultName)
 		return;
 
 	pParent->Add_Child(m_SelectedObject);
-	
+
 	// 자식을 추가했으면 에디터 UIObjects에서 선택된 오브젝트를 빼주도록한다.
 	auto iter = find(m_EditorUIObjects.begin(), m_EditorUIObjects.end(), m_SelectedObject);
 	if (iter != m_EditorUIObjects.end())
@@ -235,7 +235,7 @@ void CLevel_UI::Show_Inspector_Menu()
 	ImGui::Separator();
 
 	// 공용
-	
+
 	// 위치
 	_float3 vPos = m_SelectedObject->Get_LocalPos();
 	if (ImGui::DragFloat3("Local Position", (_float*)&vPos, 0.1f))
@@ -245,7 +245,7 @@ void CLevel_UI::Show_Inspector_Menu()
 	_float3 vSize = m_SelectedObject->Get_LocalSize();
 	if (ImGui::DragFloat3("Local Size", (_float*)&vSize, 0.1f))
 		m_SelectedObject->Set_LocalSize(vSize);
-	
+
 	// 색상
 	static _float Colors[4] = { 1.f,1.f,1.f,1.f };
 	static CUIObject* pPrevSelected = { nullptr };
@@ -347,12 +347,12 @@ void CLevel_UI::Show_Inspector_Menu()
 			pTextBox->Set_FontTag(_wstring(szFont, szFont + strlen(szFont)));
 		}
 
-		_float3 vColor = pTextBox->Get_FontColor(); 
+		_float3 vColor = pTextBox->Get_FontColor();
 		if (ImGui::ColorEdit3("Font Color", (_float*)&vColor))
 		{
 			pTextBox->Set_FontColor(vColor);
 		}
-		_float fAlpha = pTextBox->Get_FontAlpha(); 
+		_float fAlpha = pTextBox->Get_FontAlpha();
 		if (ImGui::SliderFloat("Alpha", &fAlpha, 0.f, 1.f))
 		{
 			pTextBox->Set_FontAlpha(fAlpha);
@@ -436,7 +436,7 @@ void CLevel_UI::Show_CreateUI_Menu(const _char* szDefaultName)
 	{
 		Desc.eSpaceTeype = isWorld_UIObject ? UISPACETYPE::WORLD : UISPACETYPE::SCREEN;
 
-		if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::UI), TEXT("Layer_UI"), 
+		if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::UI), TEXT("Layer_UI"),
 			ENUM_CLASS(LEVEL::UI), TEXT("Prototype_UIObject_Edit_Panel"), &Desc)))
 			return;
 
@@ -476,7 +476,7 @@ void CLevel_UI::Show_CreateUI_Menu(const _char* szDefaultName)
 
 	ImGui::SameLine();
 
-	
+
 	static CUI_ProgressBar::PROGRESSBAR_DESC ProgressBarDesc{};
 	static _bool bShowProgressBarSettings = false;
 

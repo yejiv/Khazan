@@ -1,6 +1,7 @@
 ﻿#include "Effect_Prefab.h"
 #include "Effect_Point_Instance.h"
-//#include "Effect_Mesh_Instance.h"
+#include "Effect_Sprite.h"
+#include "Effect_Mesh_Instance.h"
 #include "GameInstance.h"
 
 CEffect_Prefab::CEffect_Prefab(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
@@ -36,8 +37,6 @@ HRESULT CEffect_Prefab::Initialize_Prototype()
 
 HRESULT CEffect_Prefab::Initialize_Clone(void* pArg)
 {
-   
-
     return S_OK;
 }
 
@@ -129,10 +128,15 @@ void CEffect_Prefab::Add_Effect_Element(_uint EffectType, void* pArg)
     {
     case ENUM_CLASS(EffectType::POINT_INSTANCE):
         newEffect = CEffect_Point_Instance::Create(m_pDevice, m_pContext, pArg);
+        newEffect->Set_EffectType(EffectType);
         break;
-    //case ENUM_CLASS(EffectType::MESH_INSTANCE):
-    //    newEffect = CEffect_Mesh_Instance::Create(m_pDevice, m_pDeviceContext, pArg);
-    //    break;
+    case ENUM_CLASS(EffectType::MESH_INSTANCE):
+        //newEffect = CEffect_Mesh_Instance::Create(m_pDevice, m_pContext, pArg);
+        //newEffect->Set_EffectType(EffectType);
+        return;
+        break;
+    case ENUM_CLASS(EffectType::SPRITE):
+        return;
     default :
         MSG_BOX(TEXT("Effect Type Error"));
         return;
@@ -227,9 +231,16 @@ void CEffect_Prefab::Add_TimeTrack(EFFECT_EVENT TrackData)
 {
     if(TrackData.iElementIdx + 1 > m_Children.size())
     {
-        MSG_BOX(TEXT("Element Idx???대떦?섎뒗 Effect Element媛 ?놁뒿?덈떎."));
+        MSG_BOX(TEXT("Element Idx Error."));
         return;
     }
+
+    if (m_Children[TrackData.iElementIdx]->Get_EffectType() == ENUM_CLASS(EffectType::SPRITE))
+    {
+        MSG_BOX(TEXT("Only Sprite can be added Active, End"));
+        return;
+    }
+
     m_eEventTracks.push_back(TrackData);
     m_bEventTriggered.push_back(false);
 }
