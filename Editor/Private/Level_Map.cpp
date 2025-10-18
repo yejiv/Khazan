@@ -326,19 +326,24 @@ void CLevel_Map::Select_Fix_Object(_float fTimeDelta)
 						XMStoreFloat3(&m_vFixPosition, m_pFixTransformCom->Get_State(STATE::POSITION));
 
 						_vector vScale = {};
-						_vector vRotation = {};
+						_vector vQuaternion = {};
 						_vector vTranslation = {};
 
-						XMMatrixDecompose(&vScale, &vRotation, &vTranslation, m_pFixTransformCom->Get_WorldMatrix());
+						XMMatrixDecompose(&vScale, &vQuaternion, &vTranslation, m_pFixTransformCom->Get_WorldMatrix());
 
-						_float3 vRadian = {};
-						XMStoreFloat3(&vRadian, vRotation);
+						_matrix RotationMatrix = XMMatrixRotationQuaternion(vQuaternion);
 
-						vRadian.x = XMConvertToDegrees(vRadian.x);
-						vRadian.y = XMConvertToDegrees(vRadian.y);
-						vRadian.z = XMConvertToDegrees(vRadian.z);
+						_float3 vDegree = {};
+						
+						vDegree.x = atan2f(RotationMatrix.r[2].m128_f32[1], RotationMatrix.r[2].m128_f32[2]);
+						vDegree.y = asinf(RotationMatrix.r[2].m128_f32[0] * -1.f);
+						vDegree.z = atan2f(RotationMatrix.r[1].m128_f32[0], RotationMatrix.r[0].m128_f32[0]);
 
-						m_vFixRotation = vRadian;
+						vDegree.x = XMConvertToDegrees(vDegree.x);
+						vDegree.y = XMConvertToDegrees(vDegree.y);
+						vDegree.z = XMConvertToDegrees(vDegree.z);
+
+						m_vFixRotation = vDegree;
 
 						m_isFixObjectWindow = true;
 
@@ -657,8 +662,12 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				else
 					vPos = *m_pGameInstance->Get_CamPosition();
 
-				ObjectDesc.vPosition = _float3(vPos.x, vPos.y, vPos.z);
-				ObjectDesc.vScale = _float3(0.01f, 0.01f, 0.01f);
+				_matrix WorldMatrix = XMMatrixIdentity();
+
+				WorldMatrix.r[0] *= 0.01f;
+				WorldMatrix.r[1] *= 0.01f;
+				WorldMatrix.r[2] *= 0.01f;
+				WorldMatrix.r[3] = XMVectorSetW(XMLoadFloat4(&vPos), 1.f);
 
 				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj"),
 					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), );

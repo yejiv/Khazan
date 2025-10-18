@@ -367,11 +367,7 @@ HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDa
 	DWORD dwByte = {};
 
 	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (INVALID_HANDLE_VALUE == hFile)
-	{
-		CloseHandle(hFile);
-		return E_FAIL;
-	}
+	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("[DAT ERROR] 바이너리 파일 오픈 문제"), E_FAIL);
 
 	// 1. 프로토 타입의 총 개수
 	_uint iPrototypeCnt = {};
@@ -411,7 +407,7 @@ HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDa
 				CModel::Create(m_pDevice, m_pContext, szModelPath))))
 			{
 				CloseHandle(hFile);
-				MSG_BOX(TEXT("맵 오브젝트 DAT 읽는 중 프로토타입 등록 문제 ( 모델 )"));
+				MSG_BOX(TEXT("[DAT ERROR] 맵 오브젝트 프로토타입 등록 실패 ( CModel )"));
 				return E_FAIL;
 			}
 		}
@@ -457,14 +453,14 @@ HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDa
 				CModel_Instance::Create(m_pDevice, m_pContext, szModelPath, &InstanceDesc))))
 			{
 				CloseHandle(hFile);
-				MSG_BOX(TEXT("맵 오브젝트 DAT 읽는 중 프로토타입 등록 문제 ( 인스턴스 모델 )"));
+				MSG_BOX(TEXT("[DAT ERROR] 맵 오브젝트 프로토타입 등록 실패 ( CModel_Instance )"));
 				return E_FAIL;
 			}
 		}
 		else
 		{
 			CloseHandle(hFile);
-			MSG_BOX(TEXT("DAT 파일 읽는중 TYPE 문제 발견 ( 박준영 문제 )"));
+			MSG_BOX(TEXT("[DAT ERROR] DAT 파일 읽는중 TYPE 문제 ( 박준영 문제 )"));
 			return E_FAIL;
 		}
 	}

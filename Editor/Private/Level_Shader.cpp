@@ -157,7 +157,7 @@ HRESULT CLevel_Shader::Ready_Layer_BackGround()
 	//		ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Terrain_Shader"))))
 	//		return E_FAIL;
 
-	CProp_Test::PROP_OBJECT_DESC ObjectDesc = {};
+	CProp_Test::PROP_TEST_DESC ObjectDesc = {};
 	memcpy(ObjectDesc.szModelName, TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"), sizeof(ObjectDesc.szModelName));
 	ObjectDesc.eLevel = LEVEL::SHADER;
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_MapObject"),

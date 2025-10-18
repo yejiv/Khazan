@@ -17,7 +17,7 @@ class CProp_Test final : public CProp
 public:
 	typedef struct tagPropTestDesc : public CProp::PROP_DESC
 	{
-		_float4x4 WorldMatrix = {};
+		_float4x4 WorldMatrix{};
 
 	}PROP_TEST_DESC;
 
