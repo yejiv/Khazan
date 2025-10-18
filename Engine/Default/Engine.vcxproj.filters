@@ -214,9 +214,6 @@
     <Filter Include="01.Utility\13.Jolt\DebugDraw">
       <UniqueIdentifier>{61136c8c-9d8c-4c2e-8e9c-23cbeac14a2c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\02.GameObject\UIObject\TextBox">
-      <UniqueIdentifier>{6dd9461f-86cd-44cc-81c3-187d10c5db85}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\03.Component\CharacterVirtual">
       <UniqueIdentifier>{09e723ca-0ab0-4b34-bd76-99a5fca6d80b}</UniqueIdentifier>
     </Filter>
@@ -228,12 +225,6 @@
     </Filter>
     <Filter Include="01.Utility\13.Jolt\Filter">
       <UniqueIdentifier>{6a585887-51ce-4b96-b399-47279930e43e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\16.Resource">
-      <UniqueIdentifier>{f0e7ab3f-91ea-4e92-b91d-c8b0914b35d9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\16.Resource\Manager">
-      <UniqueIdentifier>{74ac0120-cab6-47e2-b6c0-c43dec2d10b4}</UniqueIdentifier>
     </Filter>
     <Filter Include="01.Utility\16.ComputeShader">
       <UniqueIdentifier>{0bb4192a-acd8-4388-8ab8-4daae5dadf14}</UniqueIdentifier>
@@ -249,6 +240,21 @@
     </Filter>
     <Filter Include="01.Utility\03.Component\RigidBody\Body">
       <UniqueIdentifier>{234491fb-0a84-4d47-983d-5d177c16d1f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\Camera\Manager">
+      <UniqueIdentifier>{42338772-b84f-41a6-a319-aa1cd95ab3f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\17.Resource">
+      <UniqueIdentifier>{f0e7ab3f-91ea-4e92-b91d-c8b0914b35d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\17.Resource\Manager">
+      <UniqueIdentifier>{74ac0120-cab6-47e2-b6c0-c43dec2d10b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Component\VIBuffer\Instance\UI">
+      <UniqueIdentifier>{4d49d96d-a532-4f2a-81c6-c554d0f4a230}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Component\VIBuffer\Instance\Mesh">
+      <UniqueIdentifier>{2b9ab067-39b0-4d29-bbf5-98929792d67e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -463,7 +469,7 @@
       <Filter>01.Utility\03.Component\Model\Model_Instance\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Resource_Manager.cpp">
-      <Filter>01.Utility\16.Resource\Manager</Filter>
+      <Filter>01.Utility\17.Resource\Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\private\ComputeShader.cpp">
       <Filter>01.Utility\16.ComputeShader</Filter>
@@ -482,6 +488,13 @@
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Point_Instance.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Point</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Mesh_Instance.cpp" />
+    <ClCompile Include="..\Private\Camera_Manager.cpp">
+      <Filter>01.Utility\02.GameObject\Camera\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\VIBuffer_Instance_UI.cpp">
+      <Filter>01.Utility\03.Component\VIBuffer\Instance\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -720,7 +733,7 @@
       <Filter>01.Utility\03.Component\Model\Model_Instance\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Resource_Manager.h">
-      <Filter>01.Utility\16.Resource\Manager</Filter>
+      <Filter>01.Utility\17.Resource\Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\public\ComputeShader.h">
       <Filter>01.Utility\16.ComputeShader</Filter>
@@ -742,6 +755,13 @@
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Point_Instance.h">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Point</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Mesh_Instance.h" />
+    <ClInclude Include="..\Public\Camera_Manager.h">
+      <Filter>01.Utility\02.GameObject\Camera\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\VIBuffer_Instance_UI.h">
+      <Filter>01.Utility\03.Component\VIBuffer\Instance\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,9 +1,10 @@
 #pragma once
 #include "UIObject.h"
+#include "Client_Defines.h"
 
-NS_BEGIN(Engine)
+NS_BEGIN(Client)
 
-class ENGINE_DLL CUI_ProgressBar abstract : public CUIObject
+class CUI_ProgressBar abstract : public CUIObject
 {
 public:
 	enum class BAR_DIRECTION { LEFT_TO_RIGHT, RIGHT_TO_LEFT, TOP_TO_BOTTOM, BOTTOM_TO_TOP, END };
