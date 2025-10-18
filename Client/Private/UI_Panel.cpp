@@ -3,17 +3,13 @@
 #include "ClientInstance.h"
 
 CUI_Panel::CUI_Panel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	:CUIObject{ pDevice, pContext }
-	, m_pClientInstance{ CClientInstance::GetInstance() }
+	:CUIParent{ pDevice, pContext }
 {
-	Safe_AddRef(m_pClientInstance);
 }
 
 CUI_Panel::CUI_Panel(const CUI_Panel& Prototype)
-	:CUIObject( Prototype )
-	, m_pClientInstance{ Prototype.m_pClientInstance }
+	:CUIParent( Prototype )
 {
-	Safe_AddRef(m_pClientInstance);
 }
 
 HRESULT CUI_Panel::Initialize_Prototype()
@@ -50,7 +46,7 @@ HRESULT CUI_Panel::Render()
 	return S_OK;
 }
 
-HRESULT CUI_Panel::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
+HRESULT CUI_Panel::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
 {
 	m_szName = pInData.value("name", "");
 	string strTexType = pInData.value("TexType", "");
@@ -59,13 +55,13 @@ HRESULT CUI_Panel::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
 	{
 		string strTexTag = pInData.value("TexTag", "");
 
-		m_iTexPass = m_pClientInstance->UI_TexTag_Maping(strTexTag);
+		m_iTexPass = CClientInstance::GetInstance()->UI_TexTag_Maping(strTexTag);
 		if (m_iTexPass == -1)
 			return E_FAIL;
 	}
 
 	string szType = pInData.value("type", "");
-	m_iUIType = m_pClientInstance->UIType_StringToEnum(szType);
+	m_iUIType = CClientInstance::GetInstance()->UIType_StringToEnum(szType);
 
 	m_iShaderPass = pInData.value("shaderPass", -1);
 	if (m_iShaderPass == -1)
@@ -86,7 +82,7 @@ HRESULT CUI_Panel::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
 	}
 	if (pInData.contains("UV"))
 	{
-		m_vUVMinMax.clear();
+		m_vUV.clear();
 		for (auto& uv : pInData["UV"])
 		{
 			_float4 uvData;
@@ -94,7 +90,7 @@ HRESULT CUI_Panel::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
 			uvData.y = uv.value("MinY", 0.f);
 			uvData.z = uv.value("MaxX", 0.f);
 			uvData.w = uv.value("MaxY", 0.f);
-			m_vUVMinMax.push_back(uvData);
+			m_vUV.push_back(uvData);
 		}
 	}
 	if (pInData.contains("Anime"))
@@ -141,7 +137,7 @@ HRESULT CUI_Panel::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
 				MSG_BOX(TEXT("자식 클론 생성 실패"));
 				return E_FAIL;
 			}
-			if (pChild->Load_UI(child, iPrototypeLevelID))
+			if (pChild->Load_UI(child, iPrototypeLevelID, pArg))
 				return E_FAIL;
 
 			pChild->Insert_Bubble([this]() {this->Bubble_EventCall(); });
@@ -156,5 +152,4 @@ HRESULT CUI_Panel::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
 void CUI_Panel::Free()
 {
 	__super::Free();
-	Safe_Release(m_pClientInstance);
 }

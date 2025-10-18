@@ -45,7 +45,7 @@ public:
 	virtual void				Late_Update(_float fTimeDelta) override;
 	virtual HRESULT				Render() override;
 
-	virtual HRESULT				Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID) override;
+	virtual HRESULT				Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
 
 protected:
 	_float						Make_Rate(_float fSrc, _float fDst);

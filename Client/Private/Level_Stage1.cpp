@@ -13,7 +13,7 @@
 #pragma region UI OBJECT
 #include "UI_Atlas_Icon.h"
 #include "UI_BackGround.h"
-#include "UI_TapTest.h"
+#include "UI_SlotTest.h"
 #pragma endregion
 
 CLevel_Stage1::CLevel_Stage1(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

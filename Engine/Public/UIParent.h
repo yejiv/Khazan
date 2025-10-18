@@ -1,18 +1,14 @@
 #pragma once
-#include "UIParent.h"
-#include "Client_Defines.h"
+#include "UIObject.h"
 
-NS_BEGIN(Client)
+NS_BEGIN(Engine)
 
-class CUI_Tap abstract : public CUIParent
+class ENGINE_DLL CUIParent abstract : public CUIObject
 {
-public:
-	enum class STATE { DISABLE, ENABLE, OVER, SELETE, END };
-
 protected:
-	CUI_Tap(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CUI_Tap(const CUI_Tap& Prototype);
-	virtual ~CUI_Tap() = default;
+	CUIParent(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CUIParent(const CUIParent& Prototype);
+	virtual ~CUIParent() = default;
 
 public:
 	virtual HRESULT				Initialize_Prototype() override;
@@ -22,14 +18,23 @@ public:
 	virtual void				Late_Update(_float fTimeDelta) override;
 	virtual HRESULT				Render() override;
 
+public:
+	virtual void				Add_Child(CUIObject* pChild);
+	virtual void				Remove_Child(CUIObject* pChild);
+	virtual void				Update_Transform(CUIObject* pParent, _float2 vPos) override;
+	virtual void				Update_Scaling(_float fSize) override;
+	virtual void				Update_Rotation(_float fAngle) override;
+
 	virtual HRESULT				Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
 
 protected:
-	vector<std::function<void()>>	m_Events;
+	vector<CUIObject*>			m_Children = {};
 
 public:
 	virtual CGameObject*		Clone(void* pArg) = 0;
 	virtual void				Free() override;
+
+
 };
 
 NS_END

@@ -1,9 +1,9 @@
 #pragma once
-#include "UI_Frame.h"
+#include "UI_Texture.h"
 #include "Client_Defines.h"
 
 NS_BEGIN(Client)
-class CUI_Atlas_Icon final : public CUI_Frame
+class CUI_Atlas_Icon final : public CUI_Texture
 {
 private:
 	CUI_Atlas_Icon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

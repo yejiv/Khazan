@@ -4,16 +4,12 @@
 
 CUI_Button::CUI_Button(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CUIObject{ pDevice,pContext }
-    , m_pClientInstance{ CClientInstance::GetInstance() }
 {
-    Safe_AddRef(m_pClientInstance);
 }
 
 CUI_Button::CUI_Button(const CUI_Button& Prototype)
     :CUIObject( Prototype )
-    , m_pClientInstance{ Prototype.m_pClientInstance }
 {
-    Safe_AddRef(m_pClientInstance);
 }
 
 HRESULT CUI_Button::Initialize_Prototype()
@@ -49,7 +45,7 @@ HRESULT CUI_Button::Render()
     return S_OK;
 }
 
-HRESULT CUI_Button::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
+HRESULT CUI_Button::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
 {
 	m_szName = pInData.value("name", "");
 	string strTexType = pInData.value("TexType", "");
@@ -58,13 +54,13 @@ HRESULT CUI_Button::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
 	{
 		string strTexTag = pInData.value("TexTag", "");
 
-		m_iTexPass = m_pClientInstance->UI_TexTag_Maping(strTexTag);
+		m_iTexPass = CClientInstance::GetInstance()->UI_TexTag_Maping(strTexTag);
 		if (m_iTexPass == -1)
 			return E_FAIL;
 	}
 
 	string szType = pInData.value("type", "");
-	m_iUIType = m_pClientInstance->UIType_StringToEnum(szType);
+	m_iUIType = CClientInstance::GetInstance()->UIType_StringToEnum(szType);
 
 	m_iShaderPass = pInData.value("shaderPass", -1);
 	if (m_iShaderPass == -1)
@@ -85,7 +81,7 @@ HRESULT CUI_Button::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
 	}
 	if (pInData.contains("UV"))
 	{
-		m_vUVMinMax.clear();
+		m_vUV.clear();
 		for (auto& uv : pInData["UV"])
 		{
 			_float4 uvData;
@@ -93,7 +89,7 @@ HRESULT CUI_Button::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
 			uvData.y = uv.value("MinY", 0.f);
 			uvData.z = uv.value("MaxX", 0.f);
 			uvData.w = uv.value("MaxY", 0.f);
-			m_vUVMinMax.push_back(uvData);
+			m_vUV.push_back(uvData);
 		}
 	}
 	if (pInData.contains("Anime"))
@@ -117,43 +113,29 @@ HRESULT CUI_Button::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
 			m_Track.push_back(track);
 		}
 	}
-	m_pTransformCom->Scale(_float3{ m_vLocalSize.x, m_vLocalSize.y, 1.f });
 
-	if (pInData.contains("Children"))
+	if (pInData.contains("Events"))
 	{
-		for (auto& child : pInData["Children"])
+		m_Events.clear();
+		m_Events.resize(4);
+		for (_int i = 0; i < 4; ++i)
 		{
-			string strClass = child.value("class", "");
-			_wstring wstrClass = AnsiToWString(strClass);
+			UIOBJECT_DESC* pDesc = static_cast<UIOBJECT_DESC*>(pArg);
+			string strEvent = pInData["Events"][i].get<string>();
 
-			CUIObject::UIOBJECT_DESC UIDesc{};
-			UIDesc.szName = "";
-			UIDesc.iUIType = 0;
-			UIDesc.vLocalSize = { 1.f, 1.f };
-			UIDesc.fDepth = 0;
-			UIDesc.vLocalPos = { g_iWinSizeX >> 1 , g_iWinSizeY >> 1 };
-
-			CUIObject* pChild = static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelID, wstrClass.c_str(), &UIDesc));
-
-			if (pChild == nullptr)
-			{
-				MSG_BOX(TEXT("자식 클론 생성 실패"));
-				return E_FAIL;
-			}
-			if (pChild->Load_UI(child, iPrototypeLevelID))
-				return E_FAIL;
-
-			pChild->Insert_Bubble([this]() {this->Bubble_EventCall(); });
-			m_Children.push_back(pChild);
+			_wstring wstrLayer = AnsiToWString(pDesc->szName);
+			_wstring wstrEvent = AnsiToWString(strEvent);
+			m_Events[i] = CClientInstance::GetInstance()->Pop_UIEvent(wstrLayer, wstrEvent);
 		}
 	}
 
+	m_pTransformCom->Scale(_float3{ m_vLocalSize.x, m_vLocalSize.y, 1.f });
 	__super::Update_Transform(nullptr, m_vLocalPos);
+
 	return S_OK;
 }
 
 void CUI_Button::Free()
 {
     __super::Free();
-    Safe_Release(m_pClientInstance);
 }

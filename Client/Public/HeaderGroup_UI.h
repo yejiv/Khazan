@@ -3,4 +3,4 @@
 #include "UI_BackGround.h"
 
 //Å×½ºÆ®
-#include "UI_TapTest.h"
+#include "UI_SlotTest.h"

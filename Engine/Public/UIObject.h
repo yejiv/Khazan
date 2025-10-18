@@ -1,20 +1,10 @@
 #pragma once
 #include "GameObject.h"
-#include "MultiDelegate.h"
 
 NS_BEGIN(Engine)
 
 class ENGINE_DLL CUIObject abstract : public CGameObject
 {
-public:
-	enum class UI_ALIGNMENT
-	{
-		TOP_LEFT, TOP_CENTER, TOP_RIGHT,
-		MIDDLE_LEFT, MIDDLE_CENTER, MIDDLE_RIGHT,
-		BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT
-	};
-
-
 public:
 	typedef struct tagUIObjectDesc : public GAMEOBJECT_DESC
 	{
@@ -30,15 +20,6 @@ protected:
 	CUIObject(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CUIObject(const CUIObject& Prototype);
 	virtual ~CUIObject() = default;
-
-public:
-	CMultiDelegate<>				OnClick; // 클릭시 호출
-	CMultiDelegate<_float, _float>	OnHover; // 마우스 위치 포함
-	CMultiDelegate<_bool>			OnVisibleChanged; // 표시 상태 변화
-
-public:
-	void						Set_Alignment(UI_ALIGNMENT eAlign) { m_eAlignment = eAlign; }
-	UI_ALIGNMENT				Get_Alignment() const { return m_eAlignment; }
 
 public:
 	const string&				Get_Name() { return m_szName; }
@@ -57,18 +38,14 @@ public:
 
 public:
 	virtual void				Add_Renderer();
-
-	virtual void				Add_Child(CUIObject* pChild);
-	virtual void				Remove_Child(CUIObject* pChild);
 	virtual void				Update_Visible(_bool bisVisible);
 	virtual void				Update_Transform(CUIObject* pParent, _float2 vPos);
 	virtual void				Update_Scaling(_float fSize);
 	virtual void				Update_Rotation(_float fAngle);
-	_float2						Compute_AlignedPos(_float2 vWorldPos, _float2 vSize);
 
 	virtual	HRESULT				Update_Switch(void* pArg);
 
-	virtual HRESULT				Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID);
+	virtual HRESULT				Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg);
 	virtual void				Bubble_EventCall();
 	virtual void				Insert_Bubble(std::function<void()> BubbleEvent);
 
@@ -90,14 +67,9 @@ protected:
 	_float2						m_vLocalSize = {};
 	_float2						m_vWorldSize = {};
 
-	_float2						m_vAnchor;
-	UI_ALIGNMENT				m_eAlignment = { UI_ALIGNMENT::TOP_LEFT };
-
 	_int						m_iUIType = { -1 };
 
 	_bool						m_isVisible = { true };
-
-	vector<CUIObject*>			m_Children = {};
 
 	std::function<void()>		m_UIBubbleCallBack;
 	vector<UIKEYFRAME>			m_Track;
@@ -105,12 +77,12 @@ protected:
 	_int						m_iTexPass = {};
 	_float						m_fAlpha = {};
 
-	vector<_float4>				m_vUVMinMax = {};
-	_int						m_iUVState = {};
+	vector<_float4>				m_vUV = {};
+	_int						m_iState = {};
 
 	_bool						m_IsUpdate = { false };
 public:
-	virtual CGameObject* Clone(void* pArg) = 0;
+	virtual CGameObject*		Clone(void* pArg) = 0;
 	virtual void				Free() override;
 
 

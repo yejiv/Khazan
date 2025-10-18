@@ -175,7 +175,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 		return E_FAIL;
 	
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_TapTest"),
-		CUI_TapTest::Create(m_pDevice, m_pContext))))
+		CUI_SlotTest::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 	return S_OK;

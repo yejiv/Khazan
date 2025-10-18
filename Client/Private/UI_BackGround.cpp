@@ -3,12 +3,12 @@
 #include "ClientInstance.h"
 
 CUI_BackGround::CUI_BackGround(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: CUI_Frame{ pDevice, pContext }
+	: CUI_Panel{ pDevice, pContext }
 {
 }
 
 CUI_BackGround::CUI_BackGround(const CUI_BackGround& Prototype)
-	: CUI_Frame(Prototype)
+	: CUI_Panel(Prototype)
 {
 }
 

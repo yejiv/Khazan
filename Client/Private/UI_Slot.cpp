@@ -3,17 +3,13 @@
 #include "ClientInstance.h"
 
 CUI_Slot::CUI_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: CUIObject{ pDevice, pContext }
-	, m_pClientInstance{ CClientInstance::GetInstance() }
+	: CUIParent{ pDevice, pContext }
 {
-	Safe_AddRef(m_pClientInstance);
 }
 
 CUI_Slot::CUI_Slot(const CUI_Slot& Prototype)
-	: CUIObject( Prototype )
-	, m_pClientInstance{ Prototype.m_pClientInstance }
+	: CUIParent( Prototype )
 {
-	Safe_AddRef(m_pClientInstance);
 }
 
 HRESULT CUI_Slot::Initialize_Prototype()
@@ -31,14 +27,23 @@ HRESULT CUI_Slot::Initialize_Clone(void* pArg)
 
 void CUI_Slot::Priority_Update(_float fTimeDelta)
 {
+	if (m_iState == ENUM_CLASS(STATE::DISABLE))
+		return;
+	__super::Priority_Update(fTimeDelta);
 }
 
 void CUI_Slot::Update(_float fTimeDelta)
 {
+	if (m_iState == ENUM_CLASS(STATE::DISABLE))
+		return;
+	__super::Update(fTimeDelta);
 }
 
 void CUI_Slot::Late_Update(_float fTimeDelta)
 {
+	if (m_iState == ENUM_CLASS(STATE::DISABLE))
+		return;
+	__super::Late_Update(fTimeDelta);
 }
 
 HRESULT CUI_Slot::Render()
@@ -46,7 +51,7 @@ HRESULT CUI_Slot::Render()
 	return S_OK;
 }
 
-HRESULT CUI_Slot::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
+HRESULT CUI_Slot::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
 {
 	m_szName = pInData.value("name", "");
 	string strTexType = pInData.value("TexType", "");
@@ -55,13 +60,13 @@ HRESULT CUI_Slot::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
 	{
 		string strTexTag = pInData.value("TexTag", "");
 
-		m_iTexPass = m_pClientInstance->UI_TexTag_Maping(strTexTag);
+		m_iTexPass = CClientInstance::GetInstance()->UI_TexTag_Maping(strTexTag);
 		if (m_iTexPass == -1)
 			return E_FAIL;
 	}
 
 	string szType = pInData.value("type", "");
-	m_iUIType = m_pClientInstance->UIType_StringToEnum(szType);
+	m_iUIType = CClientInstance::GetInstance()->UIType_StringToEnum(szType);
 
 	m_iShaderPass = pInData.value("shaderPass", -1);
 	if (m_iShaderPass == -1)
@@ -82,7 +87,7 @@ HRESULT CUI_Slot::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
 	}
 	if (pInData.contains("UV"))
 	{
-		m_vUVMinMax.clear();
+		m_vUV.clear();
 		for (auto& uv : pInData["UV"])
 		{
 			_float4 uvData;
@@ -90,7 +95,7 @@ HRESULT CUI_Slot::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
 			uvData.y = uv.value("MinY", 0.f);
 			uvData.z = uv.value("MaxX", 0.f);
 			uvData.w = uv.value("MaxY", 0.f);
-			m_vUVMinMax.push_back(uvData);
+			m_vUV.push_back(uvData);
 		}
 	}
 	if (pInData.contains("Anime"))
@@ -114,6 +119,22 @@ HRESULT CUI_Slot::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
 			m_Track.push_back(track);
 		}
 	}
+
+	if (pInData.contains("Events"))
+	{
+		m_Events.clear();
+		m_Events.resize(4);
+		for (_int i = 0; i < 4; ++i)
+		{
+			UIOBJECT_DESC* pDesc = static_cast<UIOBJECT_DESC*>(pArg);
+			string strEvent = pInData["Events"][i].get<string>();
+
+			_wstring wstrLayer = AnsiToWString(pDesc->szName);
+			_wstring wstrEvent = AnsiToWString(strEvent);
+			m_Events[i] =CClientInstance::GetInstance()->Pop_UIEvent(wstrLayer, wstrEvent);
+		}
+	}
+
 	m_pTransformCom->Scale(_float3{ m_vLocalSize.x, m_vLocalSize.y, 1.f });
 
 	if (pInData.contains("Children"))
@@ -137,7 +158,7 @@ HRESULT CUI_Slot::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
 				MSG_BOX(TEXT("자식 클론 생성 실패"));
 				return E_FAIL;
 			}
-			if (pChild->Load_UI(child, iPrototypeLevelID))
+			if (pChild->Load_UI(child, iPrototypeLevelID, pArg))
 				return E_FAIL;
 
 			pChild->Insert_Bubble([this]() {this->Bubble_EventCall(); });
@@ -152,5 +173,4 @@ HRESULT CUI_Slot::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
 void CUI_Slot::Free()
 {
 	__super::Free();
-	Safe_Release(m_pClientInstance);
 }

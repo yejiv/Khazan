@@ -22,7 +22,7 @@ void CUIObject::Get_Data(VTXINSTANCE_UI& pOutData)
     pOutData.iTexPass = m_iTexPass;
     pOutData.iShaderPass = m_iShaderPass;
     pOutData.fAlpha = m_fAlpha;
-    pOutData.vUV = m_vUVMinMax[m_iUVState];
+    pOutData.vUV = m_vUV[m_iState];
 }
 
 HRESULT CUIObject::Initialize_Prototype()
@@ -72,20 +72,14 @@ HRESULT CUIObject::Initialize_Clone(void* pArg)
 
 void CUIObject::Priority_Update(_float fTimeDelta)
 {
-    for (auto Childe : m_Children)
-        Childe->Priority_Update(fTimeDelta);
 }
 
 void CUIObject::Update(_float fTimeDelta)
 {
-    for (auto Childe : m_Children)
-        Childe->Update(fTimeDelta);
 }
 
 void CUIObject::Late_Update(_float fTimeDelta)
 {
-    for (auto Childe : m_Children)
-        Childe->Late_Update(fTimeDelta);
 }
 
 HRESULT CUIObject::Render()
@@ -99,28 +93,9 @@ void CUIObject::Add_Renderer()
         return;
 }
 
-void CUIObject::Add_Child(CUIObject* pChild)
-{
-    if (nullptr == pChild)
-        return;
-
-    m_Children.push_back(pChild);
-
-}
-
-void CUIObject::Remove_Child(CUIObject* pChild)
-{
-    m_Children.erase(remove(m_Children.begin(), m_Children.end(), pChild), m_Children.end());
-}
-
 void CUIObject::Update_Visible(_bool bisVisible)
 {
     m_isVisible = bisVisible;
-
-    for (auto& pChild : m_Children)
-    {
-        pChild->Update_Visible(bisVisible);
-    }
 }
 
 void CUIObject::Update_Transform(CUIObject* pParent, _float2 vPos)
@@ -136,53 +111,16 @@ void CUIObject::Update_Transform(CUIObject* pParent, _float2 vPos)
         m_vWorldPos.y = pParent->Get_WolrdPos().y + m_vLocalPos.y;
     }
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(m_vWorldPos.x - m_iWinSizeX * 0.5f, -m_vWorldPos.y + m_iWinSizeY * 0.5f, 0.f, 1.f));
-    for (auto& pChild : m_Children)
-    {
-        pChild->Update_Transform(this, m_vWorldPos);
-    }
 }
 
 void CUIObject::Update_Scaling(_float fSize)
 {
     m_pTransformCom->Scale(_float3{ m_vLocalSize.x * fSize, m_vLocalSize.y * fSize, 1.f });
-
-    for (auto& pChild : m_Children)
-        pChild->Update_Scaling(fSize);
 }
 
 void CUIObject::Update_Rotation(_float fAngle)
 {
     m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), XMConvertToRadians(fAngle));
-
-    for (auto& pChild : m_Children)
-        pChild->Update_Rotation(fAngle);
-}
-
-_float2 CUIObject::Compute_AlignedPos(_float2 vPos, _float2 vSize)
-{
-    switch (m_eAlignment)
-    {
-    case UI_ALIGNMENT::TOP_LEFT:
-        return vPos;
-    case UI_ALIGNMENT::TOP_CENTER:
-        return _float2(vPos.x + vSize.x * 0.5f, vPos.y);
-    case UI_ALIGNMENT::TOP_RIGHT:
-        return _float2(vPos.x + vSize.x, vPos.y);
-    case UI_ALIGNMENT::MIDDLE_LEFT:
-        return _float2(vPos.x, vPos.y + vSize.y * 0.5f);
-    case UI_ALIGNMENT::MIDDLE_CENTER:
-        return _float2(vPos.x + vSize.x * 0.5f, vPos.y + vSize.y * 0.5f);
-    case UI_ALIGNMENT::MIDDLE_RIGHT:
-        return _float2(vPos.x + vSize.x, vPos.y + vSize.y * 0.5f);
-    case UI_ALIGNMENT::BOTTOM_LEFT:
-        return _float2(vPos.x, vPos.y + vSize.y);
-    case UI_ALIGNMENT::BOTTOM_CENTER:
-        return _float2(vPos.x + vSize.x * 0.5f, vPos.y + vSize.y);
-    case UI_ALIGNMENT::BOTTOM_RIGHT:
-        return _float2(vPos.x + vSize.x, vPos.y + vSize.y);
-    }
-
-    return _float2(0.f, 0.f);
 }
 
 HRESULT CUIObject::Update_Switch(void* pArg)
@@ -199,7 +137,7 @@ void CUIObject::Bubble_EventCall()
     m_UIBubbleCallBack();
 }
 
-HRESULT CUIObject::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
+HRESULT CUIObject::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
 {
     return S_OK;
 }
@@ -226,13 +164,4 @@ _bool CUIObject::IsPick(HWND hWnd)
 void CUIObject::Free()
 {
     __super::Free();
-
-    for (auto& pChild : m_Children)
-    {
-        if (pChild != nullptr)
-        {
-            Safe_Release(pChild);
-        }
-    }
-    m_Children.clear();
 }

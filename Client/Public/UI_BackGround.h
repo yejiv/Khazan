@@ -1,5 +1,5 @@
 #pragma once
-#include "UI_Frame.h"
+#include "UI_Panel.h"
 #include "Client_Defines.h"
 
 NS_BEGIN(Engine)
@@ -9,7 +9,7 @@ class CVIBuffer_Rect;
 NS_END
 
 NS_BEGIN(Client)
-class CUI_BackGround final : public CUI_Frame
+class CUI_BackGround final : public CUI_Panel
 {
 private:
 	CUI_BackGround(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

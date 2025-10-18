@@ -2,12 +2,12 @@
 #include "GameInstance.h"
 
 CEdit_UIBase::CEdit_UIBase(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    : CUIObject{ pDevice, pContext }
+    : CUIParent{ pDevice, pContext }
 {
 }
 
 CEdit_UIBase::CEdit_UIBase(const CEdit_UIBase& Prototype)
-    : CUIObject(Prototype)
+    : CUIParent(Prototype)
 {
 }
 
@@ -62,13 +62,13 @@ HRESULT CEdit_UIBase::Save_UI(nlohmann::ordered_json& pOutData)
     Data["LocalSize"]["x"] = m_vLocalSize.x;
     Data["LocalSize"]["y"] = m_vLocalSize.y;
 
-    for (_int i = 0; i < m_vUVMinMax.size(); ++i)
+    for (_int i = 0; i < m_vUV.size(); ++i)
     {
         nlohmann::ordered_json UVArray;
-        UVArray["MinX"] = m_vUVMinMax[i].x;
-        UVArray["MinY"] = m_vUVMinMax[i].y;
-        UVArray["MaxX"] = m_vUVMinMax[i].z;
-        UVArray["MaxY"] = m_vUVMinMax[i].w;
+        UVArray["MinX"] = m_vUV[i].x;
+        UVArray["MinY"] = m_vUV[i].y;
+        UVArray["MaxX"] = m_vUV[i].z;
+        UVArray["MaxY"] = m_vUV[i].w;
 
         Data["UV"].push_back(UVArray);
     }
@@ -164,7 +164,7 @@ HRESULT CEdit_UIBase::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
 
     if (pInData.contains("UV"))
     {
-        m_vUVMinMax.clear();
+        m_vUV.clear();
         for (auto& uv : pInData["UV"])
         {
             _float4 uvData;
@@ -172,7 +172,7 @@ HRESULT CEdit_UIBase::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
             uvData.y = uv.value("MinY", 0.f);
             uvData.z = uv.value("MaxX", 0.f);
             uvData.w = uv.value("MaxY", 0.f);
-            m_vUVMinMax.push_back(uvData);
+            m_vUV.push_back(uvData);
         }
     }
 
@@ -291,16 +291,16 @@ void CEdit_UIBase::Update_Option(string& szSeleteUIName, const string pFrameName
             ImGui::SameLine();
             ImGui::RadioButton("Selete", &m_iUiState, 3);
 
-            ImGui::Text("Min : %.2f, %.2f", m_vUVMinMax[m_iUiState].x, m_vUVMinMax[m_iUiState].y);
+            ImGui::Text("Min : %.2f, %.2f", m_vUV[m_iUiState].x, m_vUV[m_iUiState].y);
             ImGui::SameLine();
-            ImGui::Text("Max : %.2f, %.2f", m_vUVMinMax[m_iUiState].z, m_vUVMinMax[m_iUiState].w);
+            ImGui::Text("Max : %.2f, %.2f", m_vUV[m_iUiState].z, m_vUV[m_iUiState].w);
 
             if (ImGui::Button("SetUV"))
             {
                 if (iTexType == ENUM_CLASS(UI_RENDER_TYPE::ATLAS))
                     Set_UVTexSet(szSeleteUIName, pFrameName);
                 else
-                    m_vUVMinMax[m_iUiState] = { 0.f, 0.f, 1.f, 1.f };
+                    m_vUV[m_iUiState] = { 0.f, 0.f, 1.f, 1.f };
             }
             ImGui::Text("EventName : ");
             ImGui::SameLine();
@@ -319,16 +319,16 @@ void CEdit_UIBase::Update_Option(string& szSeleteUIName, const string pFrameName
             ImGui::SameLine();
             ImGui::RadioButton("Selete", &m_iUiState, 3);
 
-            ImGui::Text("Min : %.2f, %.2f", m_vUVMinMax[m_iUiState].x, m_vUVMinMax[m_iUiState].y);
+            ImGui::Text("Min : %.2f, %.2f", m_vUV[m_iUiState].x, m_vUV[m_iUiState].y);
             ImGui::SameLine();
-            ImGui::Text("Max : %.2f, %.2f", m_vUVMinMax[m_iUiState].z, m_vUVMinMax[m_iUiState].w);
+            ImGui::Text("Max : %.2f, %.2f", m_vUV[m_iUiState].z, m_vUV[m_iUiState].w);
 
             if (ImGui::Button("SetUV"))
             {
                 if (iTexType == ENUM_CLASS(UI_RENDER_TYPE::ATLAS))
                     Set_UVTexSet(szSeleteUIName, pFrameName);
                 else
-                    m_vUVMinMax[m_iUiState] = { 0.f, 0.f, 1.f, 1.f };
+                    m_vUV[m_iUiState] = { 0.f, 0.f, 1.f, 1.f };
             }
             ImGui::Text("EventName : ");
             ImGui::SameLine();
@@ -348,16 +348,16 @@ void CEdit_UIBase::Update_Option(string& szSeleteUIName, const string pFrameName
             ImGui::SameLine();
             ImGui::RadioButton("Selete", &m_iUiState, 3);
 
-            ImGui::Text("Min : %.2f, %.2f", m_vUVMinMax[m_iUiState].x, m_vUVMinMax[m_iUiState].y);
+            ImGui::Text("Min : %.2f, %.2f", m_vUV[m_iUiState].x, m_vUV[m_iUiState].y);
             ImGui::SameLine();
-            ImGui::Text("Max : %.2f, %.2f", m_vUVMinMax[m_iUiState].z, m_vUVMinMax[m_iUiState].w);
+            ImGui::Text("Max : %.2f, %.2f", m_vUV[m_iUiState].z, m_vUV[m_iUiState].w);
 
             if (ImGui::Button("SetUV"))
             {
                 if (iTexType == ENUM_CLASS(UI_RENDER_TYPE::ATLAS))
                     Set_UVTexSet(szSeleteUIName, pFrameName);
                 else
-                    m_vUVMinMax[m_iUiState] = { 0.f, 0.f, 1.f, 1.f };
+                    m_vUV[m_iUiState] = { 0.f, 0.f, 1.f, 1.f };
             }
             ImGui::Text(m_EventNames[m_iUiState].c_str());
             ImGui::InputText("##UIEventLabel", m_szEvent, MAX_PATH);
@@ -366,9 +366,9 @@ void CEdit_UIBase::Update_Option(string& szSeleteUIName, const string pFrameName
                 m_EventNames[m_iUiState] = m_szEvent;
             break;
         case UITYPE::SCROLLBAR:
-            ImGui::Text("Min : %.2f, %.2f", m_vUVMinMax[0].x, m_vUVMinMax[0].y);
+            ImGui::Text("Min : %.2f, %.2f", m_vUV[0].x, m_vUV[0].y);
             ImGui::SameLine();
-            ImGui::Text("Max : %.2f, %.2f", m_vUVMinMax[0].z, m_vUVMinMax[0].w);
+            ImGui::Text("Max : %.2f, %.2f", m_vUV[0].z, m_vUV[0].w);
 
             ImGui::RadioButton("Up", &m_iUpDownState, 0);
             ImGui::RadioButton("Down", &m_iUpDownState, 1);
@@ -381,9 +381,9 @@ void CEdit_UIBase::Update_Option(string& szSeleteUIName, const string pFrameName
 
             break;
         case UITYPE::PROGRESSBAR:
-            ImGui::Text("Min : %.2f, %.2f", m_vUVMinMax[0].x, m_vUVMinMax[0].y);
+            ImGui::Text("Min : %.2f, %.2f", m_vUV[0].x, m_vUV[0].y);
             ImGui::SameLine();
-            ImGui::Text("Max : %.2f, %.2f", m_vUVMinMax[0].z, m_vUVMinMax[0].w);
+            ImGui::Text("Max : %.2f, %.2f", m_vUV[0].z, m_vUV[0].w);
 
             ImGui::InputFloat("Value", &m_fUiState, 0.01f, 0.01f);
 
@@ -527,7 +527,7 @@ HRESULT CEdit_UIBase::Set_AtlasTextTure(string& szSeleteUIName, _uint iPrototype
 
             if (m_pTexture_AtlasCom != nullptr)
             {
-                m_vUVMinMax[0] = m_pTexture_AtlasCom->FindTexFrame(pFrameName);
+                m_vUV[0] = m_pTexture_AtlasCom->FindTexFrame(pFrameName);
                 m_iShaderPass = 1;
                 m_eRenderType = UI_RENDER_TYPE::ATLAS;
             }
@@ -547,7 +547,7 @@ HRESULT CEdit_UIBase::Set_AtlasTextTure(string& szSeleteUIName, _uint iPrototype
             m_pTexture = static_cast<CTexture*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::COMPONENT, iPrototypeLevelID, strPrototypeTag, nullptr));
             if (m_pTexture != nullptr)
             {
-                m_vUVMinMax[0] = { 0.f, 0.f, 1.f, 1.f };
+                m_vUV[0] = { 0.f, 0.f, 1.f, 1.f };
                 m_iShaderPass = 1;
                 m_eRenderType = UI_RENDER_TYPE::DEFAULT;
             }
@@ -569,7 +569,7 @@ _bool CEdit_UIBase::Set_UVTexSet(string& szSeleteUIName, const string pFrameName
 {
     if (m_szName == szSeleteUIName)
     {
-        m_vUVMinMax[m_iUiState] = m_pTexture_AtlasCom->FindTexFrame(pFrameName);
+        m_vUV[m_iUiState] = m_pTexture_AtlasCom->FindTexFrame(pFrameName);
         return true;
     }
 
@@ -795,27 +795,27 @@ HRESULT CEdit_UIBase::Initialize_Clone(void* pArg)
     switch (static_cast<UITYPE>(m_iUIType))
     {
     case UITYPE::TAP:
-        m_vUVMinMax.resize(4);
+        m_vUV.resize(4);
         m_EventNames.resize(4);
         break;
     case UITYPE::BUTTON:
-        m_vUVMinMax.resize(4);
+        m_vUV.resize(4);
         m_EventNames.resize(4);
         break;
     case UITYPE::SLOT:
-        m_vUVMinMax.resize(4);
+        m_vUV.resize(4);
         m_EventNames.resize(4);
         break;
     case UITYPE::SCROLLBAR:
-        m_vUVMinMax.resize(1);
+        m_vUV.resize(1);
         m_EventNames.resize(2);
         break;
     case UITYPE::PROGRESSBAR:
-        m_vUVMinMax.resize(1);
+        m_vUV.resize(1);
         m_EventNames.resize(1);
         break;
     default:
-        m_vUVMinMax.resize(1);
+        m_vUV.resize(1);
         break;
     }
     return S_OK;
@@ -856,7 +856,7 @@ HRESULT CEdit_UIBase::Render()
 
     if (m_iShaderPass == 1)
     {
-        CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vUVMinMax", &m_vUVMinMax[m_iUiState], sizeof(_float4)), E_FAIL);
+        CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vUVMinMax", &m_vUV[m_iUiState], sizeof(_float4)), E_FAIL);
         if (m_eRenderType == UI_RENDER_TYPE::ATLAS)
             CHECK_FAILED(m_pTexture_AtlasCom->Bind_Shader_Texture(m_pShaderCom, "g_Texture"), E_FAIL);
         else
@@ -969,8 +969,11 @@ string CEdit_UIBase::UIType_EnumToString()
     case UITYPE::PROGRESSBAR:
         szUIType = "PROGRESSBAR";
         break;
-    case UITYPE::FRAME:
-        szUIType = "FRAME";
+    case UITYPE::TEXTURE:
+        szUIType = "TEXTURE";
+        break;
+    case UITYPE::TEXT:
+        szUIType = "TEXT";
         break;
     }
     return szUIType;
@@ -993,8 +996,10 @@ _uint CEdit_UIBase::UIType_StringToEnum(string szUIType)
         eUIType = UITYPE::PROGRESSBAR;
     if (szUIType == "SCROLLBAR")
         eUIType = UITYPE::SCROLLBAR;
-    if (szUIType == "FRAME")
-        eUIType = UITYPE::FRAME;
+    if (szUIType == "TEXTURE")
+        eUIType = UITYPE::TEXTURE;
+    if (szUIType == "TEXT")
+        eUIType = UITYPE::TEXT;
 
     return ENUM_CLASS(eUIType);
 }

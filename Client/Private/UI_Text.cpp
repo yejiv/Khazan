@@ -1,25 +1,23 @@
-#include "UI_Tap.h"
+#include "UI_Text.h"
 #include "GameInstance.h"
 #include "ClientInstance.h"
 
-CUI_Tap::CUI_Tap(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	:CUIParent{pDevice,pContext}
+CUI_Text::CUI_Text(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+	: CUIObject{ pDevice, pContext }
 {
-
 }
 
-CUI_Tap::CUI_Tap(const CUI_Tap& Prototype)
-	:CUIParent( Prototype )
+CUI_Text::CUI_Text(const CUI_Text& Prototype)
+	:CUIObject(Prototype)
 {
-
 }
 
-HRESULT CUI_Tap::Initialize_Prototype()
+HRESULT CUI_Text::Initialize_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CUI_Tap::Initialize_Clone(void* pArg)
+HRESULT CUI_Text::Initialize_Clone(void* pArg)
 {
 	if (FAILED(__super::Initialize_Clone(pArg)))
 		return E_FAIL;
@@ -27,33 +25,27 @@ HRESULT CUI_Tap::Initialize_Clone(void* pArg)
 	return S_OK;
 }
 
-void CUI_Tap::Priority_Update(_float fTimeDelta)
+void CUI_Text::Priority_Update(_float fTimeDelta)
 {
-	if (m_iState == ENUM_CLASS(STATE::DISABLE))
-		return;
 	__super::Priority_Update(fTimeDelta);
 }
 
-void CUI_Tap::Update(_float fTimeDelta)
+void CUI_Text::Update(_float fTimeDelta)
 {
-	if (m_iState == ENUM_CLASS(STATE::DISABLE))
-		return;
 	__super::Update(fTimeDelta);
 }
 
-void CUI_Tap::Late_Update(_float fTimeDelta)
+void CUI_Text::Late_Update(_float fTimeDelta)
 {
-	if (m_iState == ENUM_CLASS(STATE::DISABLE))
-		return;
 	__super::Late_Update(fTimeDelta);
 }
 
-HRESULT CUI_Tap::Render()
+HRESULT CUI_Text::Render()
 {
 	return S_OK;
 }
 
-HRESULT CUI_Tap::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
+HRESULT CUI_Text::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
 {
 	m_szName = pInData.value("name", "");
 	string strTexType = pInData.value("TexType", "");
@@ -121,58 +113,13 @@ HRESULT CUI_Tap::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void*
 			m_Track.push_back(track);
 		}
 	}
-
-	if (pInData.contains("Events"))
-	{
-		m_Events.clear();
-		m_Events.resize(4);
-		for (_int i = 0; i < 4; ++i)
-		{
-			UIOBJECT_DESC* pDesc = static_cast<UIOBJECT_DESC*>(pArg);
-			string strEvent = pInData["Events"][i].get<string>();
-
-			_wstring wstrLayer = AnsiToWString(pDesc->szName);
-			_wstring wstrEvent = AnsiToWString(strEvent);
-			m_Events[i] = CClientInstance::GetInstance()->Pop_UIEvent(wstrLayer, wstrEvent);
-		}
-	}
-
 	m_pTransformCom->Scale(_float3{ m_vLocalSize.x, m_vLocalSize.y, 1.f });
-
-	if (pInData.contains("Children"))
-	{
-		for (auto& child : pInData["Children"])
-		{
-			string strClass = child.value("class", "");
-			_wstring wstrClass = AnsiToWString(strClass);
-
-			CUIObject::UIOBJECT_DESC UIDesc{};
-			UIDesc.szName = "";
-			UIDesc.iUIType = 0;
-			UIDesc.vLocalSize = { 1.f, 1.f };
-			UIDesc.fDepth = 0;
-			UIDesc.vLocalPos = { g_iWinSizeX >> 1 , g_iWinSizeY >> 1 };
-
-			CUIObject* pChild = static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelID, wstrClass.c_str(), &UIDesc));
-
-			if (pChild == nullptr)
-			{
-				MSG_BOX(TEXT("자식 클론 생성 실패"));
-				return E_FAIL;
-			}
-			if (pChild->Load_UI(child, iPrototypeLevelID, pArg))
-				return E_FAIL;
-
-			pChild->Insert_Bubble([this]() {this->Bubble_EventCall(); });
-			m_Children.push_back(pChild);
-		}
-	}
-
 	__super::Update_Transform(nullptr, m_vLocalPos);
+
 	return S_OK;
 }
 
-void CUI_Tap::Free()
+void CUI_Text::Free()
 {
 	__super::Free();
 }

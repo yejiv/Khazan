@@ -110,7 +110,7 @@ HRESULT CUI_ProgressBar::Render()
 	return S_OK;
 }
 
-HRESULT CUI_ProgressBar::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
+HRESULT CUI_ProgressBar::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
 {
 	m_szName = pInData.value("name", "");
 	string strTexType = pInData.value("TexType", "");
@@ -119,13 +119,13 @@ HRESULT CUI_ProgressBar::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelI
 	{
 		string strTexTag = pInData.value("TexTag", "");
 
-		m_iTexPass = m_pClientInstance->UI_TexTag_Maping(strTexTag);
+		m_iTexPass = CClientInstance::GetInstance()->UI_TexTag_Maping(strTexTag);
 		if (m_iTexPass == -1)
 			return E_FAIL;
 	}
 
 	string szType = pInData.value("type", "");
-	m_iUIType = m_pClientInstance->UIType_StringToEnum(szType);
+	m_iUIType = CClientInstance::GetInstance()->UIType_StringToEnum(szType);
 
 	m_iShaderPass = pInData.value("shaderPass", -1);
 	if (m_iShaderPass == -1)
@@ -146,7 +146,7 @@ HRESULT CUI_ProgressBar::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelI
 	}
 	if (pInData.contains("UV"))
 	{
-		m_vUVMinMax.clear();
+		m_vUV.clear();
 		for (auto& uv : pInData["UV"])
 		{
 			_float4 uvData;
@@ -154,7 +154,7 @@ HRESULT CUI_ProgressBar::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelI
 			uvData.y = uv.value("MinY", 0.f);
 			uvData.z = uv.value("MaxX", 0.f);
 			uvData.w = uv.value("MaxY", 0.f);
-			m_vUVMinMax.push_back(uvData);
+			m_vUV.push_back(uvData);
 		}
 	}
 	if (pInData.contains("Anime"))
@@ -179,37 +179,8 @@ HRESULT CUI_ProgressBar::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelI
 		}
 	}
 	m_pTransformCom->Scale(_float3{ m_vLocalSize.x, m_vLocalSize.y, 1.f });
-
-	if (pInData.contains("Children"))
-	{
-		for (auto& child : pInData["Children"])
-		{
-			string strClass = child.value("class", "");
-			_wstring wstrClass = AnsiToWString(strClass);
-
-			CUIObject::UIOBJECT_DESC UIDesc{};
-			UIDesc.szName = "";
-			UIDesc.iUIType = 0;
-			UIDesc.vLocalSize = { 1.f, 1.f };
-			UIDesc.fDepth = 0;
-			UIDesc.vLocalPos = { g_iWinSizeX >> 1 , g_iWinSizeY >> 1 };
-
-			CUIObject* pChild = static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelID, wstrClass.c_str(), &UIDesc));
-
-			if (pChild == nullptr)
-			{
-				MSG_BOX(TEXT("자식 클론 생성 실패"));
-				return E_FAIL;
-			}
-			if (pChild->Load_UI(child, iPrototypeLevelID))
-				return E_FAIL;
-
-			pChild->Insert_Bubble([this]() {this->Bubble_EventCall(); });
-			m_Children.push_back(pChild);
-		}
-	}
-
 	__super::Update_Transform(nullptr, m_vLocalPos);
+
 	return S_OK;
 }
 

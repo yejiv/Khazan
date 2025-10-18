@@ -4,12 +4,12 @@
 
 NS_BEGIN(Client)
 
-class CUI_Frame abstract : public CUIObject
+class CUI_Text abstract : public CUIObject
 {
 protected:
-	CUI_Frame(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CUI_Frame(const CUI_Frame& Prototype);
-	virtual ~CUI_Frame() = default;
+	CUI_Text(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CUI_Text(const CUI_Text& Prototype);
+	virtual ~CUI_Text() = default;
 
 public:
 	virtual HRESULT				Initialize_Prototype() override;
@@ -19,7 +19,7 @@ public:
 	virtual void				Late_Update(_float fTimeDelta) override;
 	virtual HRESULT				Render() override;
 
-	virtual HRESULT				Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID) override;
+	virtual HRESULT				Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
 
 public:
 	virtual CGameObject* Clone(void* pArg) = 0;

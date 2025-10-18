@@ -3,12 +3,12 @@
 #include "ClientInstance.h"
 
 CUI_Atlas_Icon::CUI_Atlas_Icon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: CUI_Frame{pDevice, pContext}
+	: CUI_Texture{pDevice, pContext}
 {
 }
 
 CUI_Atlas_Icon::CUI_Atlas_Icon(const CUI_Atlas_Icon& Prototype)
-	: CUI_Frame( Prototype )
+	: CUI_Texture( Prototype )
 {
 }
 

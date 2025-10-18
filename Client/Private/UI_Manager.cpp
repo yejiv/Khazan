@@ -139,7 +139,7 @@ HRESULT CUI_Manager::Load_UIData(_uint iLayerLevelID, const _wstring& strLayerTa
 		_wstring wstrClass = AnsiToWString(strClass);
 
 		CUIObject::UIOBJECT_DESC UIDesc{};
-		UIDesc.szName = "";
+		UIDesc.szName = jsonData.value("name", "");
 		UIDesc.iUIType = 0;
 		UIDesc.vLocalSize = { 1.f, 1.f };
 		UIDesc.fDepth = 0;
@@ -153,7 +153,7 @@ HRESULT CUI_Manager::Load_UIData(_uint iLayerLevelID, const _wstring& strLayerTa
 			return E_FAIL;
 		}
 		
-		if (FAILED(pRootUI->Load_UI(jsonData, iPrototypeLevelID)))
+		if (FAILED(pRootUI->Load_UI(jsonData, iPrototypeLevelID, &UIDesc)))
 		{
 			MSG_BOX(TEXT("UI Load : 데이터 로드 실패"));
 			return E_FAIL;
