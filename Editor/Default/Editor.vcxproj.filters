@@ -313,6 +313,9 @@
     <ClInclude Include="..\Public\Effect_Terrain.h">
       <Filter>02.GameObject\Effect\Terrain</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Effect_Mesh_Instance.h">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Mesh_Instance</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -456,6 +459,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Effect_Terrain.cpp">
       <Filter>02.GameObject\Effect\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Mesh_Instance.cpp">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Mesh_Instance</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
