@@ -38,6 +38,8 @@ public:
 	
 public:
 	void			ExportModel(string& strPath);
+	// 확인 창 말고 디버그 창에 띄우는 추출 함수
+	void			ExportModel_NoMsg(string& strPath);
 	void			LoadModel(_wstring strModelName);
 	void			Update_DAT_From_JSON(string& strPath);
 
@@ -93,7 +95,11 @@ private:
 	/* Export */
 	_bool			Export_AnimationJson(const string& strFilePath, const string& strFilePath2);
 	_bool			Export_MaterialJson(const string& strFilePath);
+	// png 말고 바로 dds로 뽑는 함수
+	_bool			Export_MaterialJson_ForDDS(const string& strFilePath);
 	void			Export_Binary(const string& strFilePath);
+	// 확인 창 말고 디버그 창에 띄우는 추출 함수
+	void			Export_Binary_NoMsg(const string& strFilePath);
 
 	/* Json에 이쁘게 쓰기  */
 	string			PostProcessJSON(const string& jsonStr);

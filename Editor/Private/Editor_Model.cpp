@@ -359,6 +359,108 @@ void CEditor_Model::ExportModel(string& strPath)
     MessageBox(nullptr, successMsg.c_str(), TEXT("Success"), MB_OK | MB_ICONINFORMATION);
 }
 
+void CEditor_Model::ExportModel_NoMsg(string& strPath)
+{
+    filesystem::path fullPath(strPath);
+    string strDirectory = fullPath.parent_path().string();
+    string strFileName = fullPath.stem().string();  // 확장자 제외
+
+    // 모델 이름으로 폴더 경로 생성
+    string strModelFolder = strDirectory + "/" + strFileName + "/";
+
+    // 폴더가 없으면 생성
+    if (!filesystem::exists(strModelFolder))
+    {
+        try
+        {
+            filesystem::create_directories(strModelFolder);
+        }
+        catch (const filesystem::filesystem_error& e)
+        {
+            string errorMsg = "폴더 생성 실패: " + string(e.what());
+            OutputDebugStringA(errorMsg.c_str());
+            return;
+        }
+    }
+
+    // 파일 경로 생성 (strFileName 사용)
+    string strDatPath = strModelFolder + strFileName + ".dat";
+    string strAnimJsonPath = strModelFolder + strFileName + "_Anim.json";
+    string strSummayAnimJsonPath = strModelFolder + strFileName + "_Summary_Anim.json";
+    string strMaterialJsonPath = strModelFolder + strFileName + "_Material.json";
+
+    // 덮어쓰기 확인
+    _bool bDatExists = filesystem::exists(strDatPath);
+    _bool bAnimExists = filesystem::exists(strAnimJsonPath);
+    _bool bMaterialExists = filesystem::exists(strMaterialJsonPath);
+
+    if (bDatExists || bAnimExists || bMaterialExists)
+    {
+        wstring msg = TEXT("다음 파일이 이미 존재합니다:\n\n");
+        if (bDatExists)
+            msg += AnsiToWString(strFileName) + TEXT(".dat\n");
+        if (bAnimExists)
+            msg += AnsiToWString(strFileName) + TEXT("_Anim.json\n");
+        if (bMaterialExists)
+            msg += AnsiToWString(strFileName) + TEXT("_Material.json\n");
+
+        msg += L"\n덮어쓰시겠습니까?";
+
+        _int result = MessageBox(
+            nullptr,
+            msg.c_str(),
+            TEXT("파일 덮어쓰기 확인"),
+            MB_YESNO | MB_ICONQUESTION
+        );
+
+        if (result == IDNO)
+        {
+            MSG_BOX(TEXT("저장을 취소했습니다."));
+            return;
+        }
+    }
+
+    // 1. Binary 저장 (.dat) - 전체 데이터
+    Export_Binary_NoMsg(strDatPath);
+
+    // 2. Animation JSON 저장
+    if (m_eModelType == MODELTYPE::ANIM)
+    {
+        if (!Export_AnimationJson(strAnimJsonPath, strSummayAnimJsonPath))
+        {
+            OutputDebugStringA("Animation JSON 저장 실패");
+            OutputDebugStringA("Animation JSON 저장 실패");
+            OutputDebugStringA("Animation JSON 저장 실패");
+            OutputDebugStringA("Animation JSON 저장 실패");
+            OutputDebugStringA("Animation JSON 저장 실패");
+            return;
+        }
+    }
+
+    // 3. Material JSON 저장
+    if (!Export_MaterialJson_ForDDS(strMaterialJsonPath))
+    {
+        OutputDebugStringA("Material JSON 저장 실패");
+        OutputDebugStringA("Material JSON 저장 실패");
+        OutputDebugStringA("Material JSON 저장 실패");
+        OutputDebugStringA("Material JSON 저장 실패");
+        OutputDebugStringA("Material JSON 저장 실패");
+        return;
+    }
+
+    // 성공 메시지
+    _wstring successMsg = TEXT("Export 완료!\n\n");
+    successMsg += TEXT("폴더: ") + AnsiToWString(strModelFolder) + TEXT("\n");
+    successMsg += AnsiToWString(strFileName) + TEXT(".dat (전체)\n");
+    if (m_eModelType == MODELTYPE::ANIM)
+        successMsg += AnsiToWString(strFileName) + TEXT("_Anim.json\n");
+    successMsg += AnsiToWString(strFileName) + TEXT("_Material.json");
+
+    successMsg += TEXT("\n!!! Success !!!");
+
+    OutputDebugStringA(WStringToAnsi(successMsg).c_str());
+}
+
 void CEditor_Model::LoadModel(_wstring strModelName)
 {
     //string strBasePath = "../Data/";
@@ -652,6 +754,60 @@ _bool CEditor_Model::Export_MaterialJson(const string& strFilePath)
     return isSuccess;
 }
 
+_bool CEditor_Model::Export_MaterialJson_ForDDS(const string& strFilePath)
+{
+    _bool    isSuccess = true;
+
+    for (auto& pMaterial : m_Model_Data.vecMaterials)
+    {
+        for (auto& Exts : pMaterial.vecExts)
+        {
+            for (auto& pExt : Exts)
+                pExt = ".dds";
+        }
+        for (auto& FullPaths : pMaterial.vecFullPaths)
+        {
+            for (auto& pFullPath : FullPaths)
+            {
+                string strFixFullPath = {};
+
+                _char szDrive[MAX_PATH] = {};
+                _char szDirectory[MAX_PATH] = {};
+                _char szFileName[MAX_PATH] = {};
+                _char szExtern[MAX_PATH] = {};
+
+                _splitpath_s(pFullPath.c_str(), szDrive, MAX_PATH, szDirectory, MAX_PATH, szFileName, MAX_PATH, szExtern, MAX_PATH);
+
+                pFullPath = szDrive;
+                pFullPath += szDirectory;
+                pFullPath += szFileName;
+                pFullPath += ".dds";
+            }
+        }
+    }
+
+    JSON j = m_Model_Data.vecMaterials;
+
+    ofstream ofs(strFilePath);
+    if (ofs.is_open())
+    {
+        //string jsonStr = j.dump(4);
+        //jsonStr = PostProcessJSON(jsonStr);
+        //ofs << jsonStr;
+        ofs << j.dump(4);
+        if (!ofs.good())
+            isSuccess = false;
+
+        ofs.close();
+    }
+    else
+    {
+        isSuccess = false;
+    }
+
+    return isSuccess;
+}
+
 void CEditor_Model::Export_Binary(const string& strFilePath)
 {
     ofstream ofs(strFilePath, ios::binary);
@@ -668,6 +824,21 @@ void CEditor_Model::Export_Binary(const string& strFilePath)
     MSG_BOX(TEXT("Binary 파일 저장 성공"));
 }
 
+void CEditor_Model::Export_Binary_NoMsg(const string& strFilePath)
+{
+    ofstream ofs(strFilePath, ios::binary);
+    if (!ofs.is_open())
+    {
+        OutputDebugStringA("Binary 파일 열기 실패");
+        return;
+    }
+
+    m_Model_Data.SaveBinary(ofs);
+
+    ofs.close();
+
+    OutputDebugStringA("Binary 파일 저장 성공");
+}
 
 string CEditor_Model::PostProcessJSON(const string& jsonStr)
 {

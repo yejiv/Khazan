@@ -27,7 +27,7 @@ public:
 
 private:
 	HRESULT Ready_Defaults();
-	HRESULT Ready_Lights();
+	HRESULT Ready_Default_Lights();
 	HRESULT Ready_Layer_Camera(const _wstring& strLayerTag);
 	HRESULT Ready_Layer_Terrain(const _wstring& strLayerTag);
 
@@ -124,8 +124,8 @@ private:
 
 #pragma region ImGui > JSON 관련 폴더 경로 및 파일 명
 
-	_char m_szJsonPath[MAX_PATH] = { "../../Client/Bin/Resources/Models/Environment/Prop/Json/" };					// 오리지날 Json 기본 경로
-	_char m_szJsonCustomPath[MAX_PATH] = { "../../Client/Bin/Resources/Models/Environment/Prop/Json/CustomJson/" };							// 커 스 텀 Json 기본 경로
+	_char m_szJsonPath[MAX_PATH] = { "../../Client/Bin/Resources/Map/Json/" };						// 오리지날 Json 기본 경로
+	_char m_szJsonCustomPath[MAX_PATH] = { "../../Client/Bin/Resources/Map/Json/CustomJson/" };		// 커 스 텀 Json 기본 경로
 
 	_char m_szJsonFolderPath[ENUM_CLASS(MAPEDIT_MAP::END)][MAX_PATH] = { "HeinMach/", "StormPass/", "TheCrevice/", "Embars/" };		// 추출할 Json 폴더
 
@@ -166,6 +166,9 @@ private:
 
 	map<const string, const string> m_CheckPrototypes;	// 중복 프로토타입 체크 및 리스트 출력용
 
+	_char m_szDatSavePath[MAX_PATH] = { "../../Client/Bin/Data/Map/" };			// .dat 추출용 폴더 경로
+	string m_strDatSavePath = {};
+
 #pragma endregion
 
 #pragma region PROTOTYPE LIST 용
@@ -181,29 +184,29 @@ private:
 #pragma endregion
 
 private:
-	// Level_Map Init 단 ImGui Widget 생성
+	// MapEditor Init 단 ImGui Widget 생성
 	HRESULT Ready_DefaultImGui_For_MapTool();
 
-	// Level_Map Default 윈도우
+	// MapEditor Default 윈도우
 	HRESULT Ready_Main_Window();
-	// Level_Map Layer 수정 윈도우 ( 아직 기능 X )
+	// MapEditor Layer 수정 윈도우 ( 아직 기능 X )
 	HRESULT Ready_Prop_Edit_Window();
-	// Level_Map Custom Json 수정 윈도우
+	// MapEditor Custom Json 수정 윈도우
 	HRESULT Ready_CustomJson_Edit_Window();
-	// Level_Map Custom Json 리스트 윈도우
+	// MapEditor Custom Json 리스트 윈도우
 	HRESULT Ready_CustomJson_List_Window();
-	// Level_Map Original Json 수정 윈도우
+	// MapEditor Original Json 수정 윈도우
 	HRESULT Ready_Json_Edit_Window();
-	// Level_Map Original Json 리스트 윈도우
+	// MapEditor Original Json 리스트 윈도우
 	HRESULT Ready_Json_List_Window();
-	// Level_Map Light 세팅 윈도우
+	// MapEditor Light 세팅 윈도우
 	HRESULT Ready_Light_Window();
 
 	// Directory에 파일들 불러오는용 ( Json 한정 함수 )
 	void Get_Directory_Files(const _char* pDirectoryPath);
 
 	// 임시 테스트용
-	string Find_ModelPath(const string& strModelName);
+	string Find_FBX_ModelPath(const string& strModelName);
 
 public:
 	static CLevel_Map* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
