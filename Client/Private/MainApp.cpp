@@ -84,7 +84,7 @@ HRESULT CMainApp::Render()
 
 HRESULT CMainApp::Ready_Prototype_ForStatic()
 {
-	if (FAILED(m_pGameInstance->Add_Font(TEXT("Font_153"), TEXT("../Bin/Resources/Fonts/153ex.SpriteFont"))))
+	if (FAILED(m_pGameInstance->Add_Font(TEXT("Font_153"), TEXT("../Bin/Resources/Font/153ex.SpriteFont"))))
 		return E_FAIL;
 
 	// VIBuffer
@@ -96,7 +96,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 
 	/* Prototype_Component_VIBuffer_Terrain */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Terrain"),
-		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Height.bmp")))))
+		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Terrain/Height.bmp")))))
 		return E_FAIL;
 
 	/* Prototype_Component_VIBuffer_Cube */
@@ -128,11 +128,6 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 	/* Prototype_Component_Shader_VtxAnimMesh */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxAnimMesh.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
-		return E_FAIL;
-
-	/* Prototype_Component_Shader_VtxInstance_PointParticle*/
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxInstance_PointParticle"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxInstance_PointParticle.hlsl"), VTXPOINTPARTICLE::Elements, VTXPOINTPARTICLE::iNumElements))))
 		return E_FAIL;
 
 	/* Prototype_Component_Shader_VtxInstance_PointParticle*/

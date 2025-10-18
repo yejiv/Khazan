@@ -124,7 +124,7 @@ HRESULT CLoader::Loading_For_Map_Level()
 
 	// Prototype_Component_Texture_Terrain_Grid
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Texture_Terrain_Grid"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Textures/Terrain/Tile0.jpg"), 1)), E_FAIL);
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Terrain/Tile0.dds"), 1)), E_FAIL);
 
 #pragma endregion
 

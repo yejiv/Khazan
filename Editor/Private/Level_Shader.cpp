@@ -3,6 +3,7 @@
 #include "Level_Loading.h"
 #include "Camera_Shader.h"
 #include "Prop_Test.h"
+#include "JOH_EditorModelTest.h"
 
 CLevel_Shader::CLevel_Shader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
@@ -170,10 +171,10 @@ HRESULT CLevel_Shader::Ready_Layer_BackGround()
 
 HRESULT CLevel_Shader::Ready_Layer_Player()
 {
-	_wstring strModelTag = TEXT("Prototype_Component_Editor_Model_Test");
+	/*_wstring strModelTag = TEXT("Prototype_Component_Editor_Model_Test");
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_Player"),
 		ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Editor_Animation_TestModel"), &strModelTag)))
-		return E_FAIL;
+		return E_FAIL;*/
 
 	return S_OK;
 }
