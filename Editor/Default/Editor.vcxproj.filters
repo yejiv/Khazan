@@ -166,6 +166,9 @@
     <Filter Include="02.GameObject\Effect\Terrain">
       <UniqueIdentifier>{2471b629-34a2-4ea1-9a72-0a4b0cebb5d9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\98.Export">
+      <UniqueIdentifier>{c9c828e3-489d-4584-850d-ef3ebe71f812}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite">
       <UniqueIdentifier>{4bce57e8-b335-4b18-86b0-70fd515a5461}</UniqueIdentifier>
     </Filter>
@@ -309,12 +312,14 @@
     <ClInclude Include="..\Public\Effect_Point_Instance.h">
       <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Point_Instance</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\TestParticle.h" />
     <ClInclude Include="..\Public\Camera_Effect.h">
       <Filter>02.GameObject\Effect\Camera</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Effect_Terrain.h">
       <Filter>02.GameObject\Effect\Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Export.h">
+      <Filter>02.GameObject\MapObject\Prop\98.Export</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Effect_Mesh_Instance.h">
       <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Mesh_Instance</Filter>
@@ -465,6 +470,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Effect_Terrain.cpp">
       <Filter>02.GameObject\Effect\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Export.cpp">
+      <Filter>02.GameObject\MapObject\Prop\98.Export</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Effect_Mesh_Instance.cpp">
       <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Mesh_Instance</Filter>

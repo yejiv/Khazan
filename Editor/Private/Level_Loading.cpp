@@ -91,6 +91,7 @@ HRESULT CLevel_Loading::CleanImgui()
 	m_pGameInstance->CleanMenu(TEXT("Animation"));
 	m_pGameInstance->CleanMenu(TEXT("Map"));
 	m_pGameInstance->CleanMenu(TEXT("Effect"));
+	m_pGameInstance->CleanMenu(TEXT("Model"));
 	m_pGameInstance->CleanMenu(TEXT("UI"));
 	m_pGameInstance->CleanMenu(TEXT("Shader"));
 

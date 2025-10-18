@@ -20,14 +20,17 @@ private:
 	HRESULT Ready_Lights();
 	HRESULT Ready_Layer_Camera();
 	HRESULT Ready_Layer_BackGround();
+	HRESULT Ready_Layer_Player();
 
 #ifdef _DEBUG
 private:
 	// Frame Check
-	_tchar					m_szFPS[MAX_PATH] = {};
+	_char					m_szFPS[MAX_PATH] = {};
 	_uint					m_iRenderCount = {};
 	_float					m_fTimeAcc = {};
 #endif
+
+	_bool					m_isChanged = {};
 
 public:
 	static CLevel_Shader* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

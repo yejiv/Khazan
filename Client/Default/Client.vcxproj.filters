@@ -58,9 +58,6 @@
     <Filter Include="02.GameObject\JOH Test">
       <UniqueIdentifier>{79049abe-c286-42e6-98b0-a98c711d0409}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\JOH Test\Test NonAnim Model">
-      <UniqueIdentifier>{2a2f2620-f90d-4ad0-80a5-ce65409e5eab}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\Pool">
       <UniqueIdentifier>{bee2ead6-daf6-4408-8038-aab3a62c7fa2}</UniqueIdentifier>
     </Filter>
@@ -99,6 +96,42 @@
     </Filter>
     <Filter Include="95.SuperClass\UI">
       <UniqueIdentifier>{9ef03780-85dc-46e5-ad98-28a16e1cec36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94. ClientInstance">
+      <UniqueIdentifier>{7a63893c-daa7-4abb-bec1-4e58e468f354}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.Manager">
+      <UniqueIdentifier>{8bf082ee-9f57-4b74-8252-4c326fc95616}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.Manager\UI">
+      <UniqueIdentifier>{1a84dd5b-c59f-474d-8847-7c1b26d43f75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.Manager\UI\Layer">
+      <UniqueIdentifier>{18f4177d-5a3a-4e0a-b041-3f5e4008009c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.Manager\UI\Atlas_RenderGroup">
+      <UniqueIdentifier>{57ad347e-b1e7-4c06-9ec6-ab0fe2033e5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95.SuperClass\UI\UI_Panel">
+      <UniqueIdentifier>{1d758443-e437-494e-ade1-487dd1e7798e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95.SuperClass\UI\UI_Button">
+      <UniqueIdentifier>{747be9c8-35a2-4a28-b498-bf30104a31ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95.SuperClass\UI\UI_Tap">
+      <UniqueIdentifier>{1a54812a-265a-40aa-8e80-d8707a500be0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95.SuperClass\UI\UI_Slot">
+      <UniqueIdentifier>{3f56c3a2-85b2-47b9-951b-918a85603473}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95.SuperClass\UI\UI_ProgressBar">
+      <UniqueIdentifier>{2257c2ff-0761-462b-8a92-2012c0dc41ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95.SuperClass\UI\UI_ScrollBar">
+      <UniqueIdentifier>{f77a1634-954f-45de-83ee-a3207dcd9896}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\JOH Test\Test Anim Model">
+      <UniqueIdentifier>{2a2f2620-f90d-4ad0-80a5-ce65409e5eab}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -148,7 +181,7 @@
       <Filter>02.GameObject\Monster</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\JOH_Test1.h">
-      <Filter>02.GameObject\JOH Test\Test NonAnim Model</Filter>
+      <Filter>02.GameObject\JOH Test\Test Anim Model</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Dummy.h">
       <Filter>02.GameObject\Pool\Dummy</Filter>
@@ -188,6 +221,36 @@
     </ClInclude>
     <ClInclude Include="..\Public\Prop_Test.h">
       <Filter>02.GameObject\MapObject\00.Prop\99.Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ClientInstance.h">
+      <Filter>94. ClientInstance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Manager.h">
+      <Filter>94.Manager\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Layer.h">
+      <Filter>94.Manager\UI\Layer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Atlas_RenderGroup.h">
+      <Filter>94.Manager\UI\Atlas_RenderGroup</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Button.h">
+      <Filter>95.SuperClass\UI\UI_Button</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Panel.h">
+      <Filter>95.SuperClass\UI\UI_Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_ProgressBar.h">
+      <Filter>95.SuperClass\UI\UI_ProgressBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Tap.h">
+      <Filter>95.SuperClass\UI\UI_Tap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_ScrollBar.h">
+      <Filter>95.SuperClass\UI\UI_ScrollBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Slot.h">
+      <Filter>95.SuperClass\UI\UI_Slot</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -241,7 +304,7 @@
       <Filter>02.GameObject\Monster</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\JOH_Test1.cpp">
-      <Filter>02.GameObject\JOH Test\Test NonAnim Model</Filter>
+      <Filter>02.GameObject\JOH Test\Test Anim Model</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Dummy.cpp">
       <Filter>02.GameObject\Pool\Dummy</Filter>
@@ -273,6 +336,36 @@
     <ClCompile Include="..\Private\Prop_Test.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\99.Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\ClientInstance.cpp">
+      <Filter>94. ClientInstance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Manager.cpp">
+      <Filter>94.Manager\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Layer.cpp">
+      <Filter>94.Manager\UI\Layer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Atlas_RenderGroup.cpp">
+      <Filter>94.Manager\UI\Atlas_RenderGroup</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Button.cpp">
+      <Filter>95.SuperClass\UI\UI_Button</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Panel.cpp">
+      <Filter>95.SuperClass\UI\UI_Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_ProgressBar.cpp">
+      <Filter>95.SuperClass\UI\UI_ProgressBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Tap.cpp">
+      <Filter>95.SuperClass\UI\UI_Tap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_ScrollBar.cpp">
+      <Filter>95.SuperClass\UI\UI_ScrollBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Slot.cpp">
+      <Filter>95.SuperClass\UI\UI_Slot</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
@@ -300,6 +393,12 @@
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxInstance_Particle.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxInstance_Point_UI.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_UI.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosSpriteTex.hlsl">

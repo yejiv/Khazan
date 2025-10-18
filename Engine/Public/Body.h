@@ -97,9 +97,9 @@ public:
 	void	OnGravity(_bool isGravity) { m_pBodyInterface->SetGravityFactor(m_BodyID, isGravity); }
 
 public:
-	void	Add_Force(const _float3& fForce);
-	void	Add_Torque(const _float3& vTorque);
-	void	Add_Impulse(_vector vDir, _float3 vVelocity, _float fMass);
+	void	Add_Force(_float fMass);
+	void	Add_Torque(_float fMass);
+	void	Add_Impulse(_float fMass);
 
 public:
 	void	Set_Velocity(const _float3& vVelocity);
