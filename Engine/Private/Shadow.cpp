@@ -19,6 +19,8 @@ HRESULT CShadow::Initialize(_uint iWinSizeX, _uint iWinSizeY)
 
 HRESULT CShadow::Ready_ShadowLight(SHADOW_LIGHT_DESC LightDesc)
 {
+	m_ShadowLight = LightDesc;
+
 	XMStoreFloat4x4(&m_Matrices[ENUM_CLASS(D3DTS::VIEW)],
 		XMMatrixLookAtLH(XMLoadFloat4(&LightDesc.vEye), XMLoadFloat4(&LightDesc.vAt), XMVectorSet(0.f, 1.f, 0.f, 0.f)));
 

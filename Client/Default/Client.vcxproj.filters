@@ -58,9 +58,6 @@
     <Filter Include="02.GameObject\JOH Test">
       <UniqueIdentifier>{79049abe-c286-42e6-98b0-a98c711d0409}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\JOH Test\Test NonAnim Model">
-      <UniqueIdentifier>{2a2f2620-f90d-4ad0-80a5-ce65409e5eab}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\Pool">
       <UniqueIdentifier>{bee2ead6-daf6-4408-8038-aab3a62c7fa2}</UniqueIdentifier>
     </Filter>
@@ -100,6 +97,9 @@
     <Filter Include="95.SuperClass\UI">
       <UniqueIdentifier>{9ef03780-85dc-46e5-ad98-28a16e1cec36}</UniqueIdentifier>
     </Filter>
+    <Filter Include="94. ClientInstance">
+      <UniqueIdentifier>{7a63893c-daa7-4abb-bec1-4e58e468f354}</UniqueIdentifier>
+    </Filter>
     <Filter Include="94.Manager">
       <UniqueIdentifier>{8bf082ee-9f57-4b74-8252-4c326fc95616}</UniqueIdentifier>
     </Filter>
@@ -129,6 +129,9 @@
     </Filter>
     <Filter Include="95.SuperClass\UI\UI_ScrollBar">
       <UniqueIdentifier>{f77a1634-954f-45de-83ee-a3207dcd9896}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\JOH Test\Test Anim Model">
+      <UniqueIdentifier>{2a2f2620-f90d-4ad0-80a5-ce65409e5eab}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -178,7 +181,7 @@
       <Filter>02.GameObject\Monster</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\JOH_Test1.h">
-      <Filter>02.GameObject\JOH Test\Test NonAnim Model</Filter>
+      <Filter>02.GameObject\JOH Test\Test Anim Model</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Dummy.h">
       <Filter>02.GameObject\Pool\Dummy</Filter>
@@ -218,6 +221,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Prop_Test.h">
       <Filter>02.GameObject\MapObject\00.Prop\99.Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ClientInstance.h">
+      <Filter>94. ClientInstance</Filter>
     </ClInclude>
     <ClInclude Include="..\public\UI_Manager.h">
       <Filter>94.Manager\UI</Filter>
@@ -298,7 +304,7 @@
       <Filter>02.GameObject\Monster</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\JOH_Test1.cpp">
-      <Filter>02.GameObject\JOH Test\Test NonAnim Model</Filter>
+      <Filter>02.GameObject\JOH Test\Test Anim Model</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Dummy.cpp">
       <Filter>02.GameObject\Pool\Dummy</Filter>
@@ -329,6 +335,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Prop_Test.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\99.Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ClientInstance.cpp">
+      <Filter>94. ClientInstance</Filter>
     </ClCompile>
     <ClCompile Include="..\private\UI_Manager.cpp">
       <Filter>94.Manager\UI</Filter>
@@ -383,13 +392,16 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_ModelMeshInstance.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxInstance_MeshParticle.hlsl">
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxInstance_Particle.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxInstance_Point_UI.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_UI.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosSpriteTex.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

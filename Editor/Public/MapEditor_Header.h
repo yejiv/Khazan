@@ -16,6 +16,9 @@
 // Properties Test
 #include "Prop_Test.h"
 
+// Property Export
+#include "Prop_Export.h"
+
 // Terrain
 #include "Map_Terrain.h"
 

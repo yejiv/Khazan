@@ -29,8 +29,7 @@ private:
 	_wstring			m_strModelName = {};
 	string				m_strModelPath = {};
 
-	// 선택된 게임 오브젝트 인덱스
-	_int				m_iSelectedIndex = -1;
+	_int				m_iSelectedIndex = -1;	// 선택된 게임 오브젝트 인덱스
 
 
 	// 위젯 표시 플래그
@@ -40,16 +39,39 @@ private:
 	_bool				m_isShowTool_ExportUpdate = { false };
 	_bool				m_isShowTool_AnimationList = { false };
 
-	_bool				m_isEnble_AnimTimeControl = { false };
-	_bool				m_isEnble_AnimSetControl = { false };
-	_bool				m_isEnble_AnimEventControl = { false };
+	_bool				m_isEnble_AnimList = { true };
+
+	//ANIMATION_SETUP_DATA
+	_bool				m_isEnble_AnimInfo = { true };
+	_bool				m_isEnble_AnimTime = { true };
+	_bool				m_isEnble_AnimSet = { true };
+	_bool				m_isEnble_AnimRootMotion = { true };
+	_bool				m_isEnble_AnimEvent = { true };
+	_bool				m_isEnble_AnimSlider = { false };
+
+	_bool				m_isLevelBtnPress = { false };
 
 	/*애니메이션 */
-	_int				m_iSelectedAnimIndex = { -1 };
+	_int				m_iSelectedAnimIndex = { -1 };  //선택된 애니메이션 인덱스 
 	_char				m_szAnimSearchBuffer[256] = "";
-	// 구간별 속도 제어
-	_float				m_fCurrentFrame = 0.f;
-	_bool				m_isPlating = { false };
+	vector<FLOAT2_DATA> m_vecEventFrames; //x : start, y: end(단발성이면 0)
+	FLOAT2_DATA			m_vTempFrames;
+	vector<string>      m_vecEventKeys;
+	_char				m_szEventKeyInputText[256];
+
+
+	// 애니메이션 프레임 제어
+	class CEditor_Animation* m_pCurAnimaion = { nullptr };
+	_bool				m_isPlaying = { false };
+	_float*				m_fCurrentFrame = { nullptr };
+	_float				m_fCurrentDuration = {};
+
+	_int				m_iAnimSliderListSelectedIndex = -1;  //애니메이션 슬라이더에서 리스트 목록 인덱스
+
+	/* 위젯 */
+	_float m_pannelLeftWidth = 400.0f;
+	_float m_pannelMiddleWidth = 500.0f;
+	//_float	m_AnimInfo_Btn_Width = 120.f;
 
 private:
 	void	Widget();
@@ -65,11 +87,11 @@ private:
 	void	Tool_AnimationControl_Widget();
 	void	Tool_AnimationList_Widget();
 	void	Tool_AnimationInfo_Widget();
-
+	void	Tool_AnimationSlider_Widget();
 
 
 private:
-	void	Add_Model();
+	void	Add_Model(_uint iLevelIndex);
 	void	Remove_Model();
 	string  ConvertToRelativePath(const string& absolutePath);
 	string  ConvertToClientRelativePath(const string& absolutePath);

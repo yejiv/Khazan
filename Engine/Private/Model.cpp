@@ -48,6 +48,10 @@ HRESULT CModel::Initialize_Prototype(const _char* pModelFilePath)
     /* aiProcess_PreTransformVertices : 각각의 메시를 붙여야할 위치에 적절히 배치한다. */
     /* 배치 : 각 메시의 정점들을 배치를 위한 임의의 행렬과 곱하여 로드한다. */
 
+    _char currentDir[MAX_PATH];
+    GetCurrentDirectoryA(MAX_PATH, currentDir);
+    OutputDebugStringA(("[Current Working Directory] " + string(currentDir) + "\n").c_str());
+
     MODEL_DATA data;
 
     ifstream ifs(pModelFilePath, std::ios::binary);
@@ -209,6 +213,7 @@ HRESULT CModel::Ready_Meshes(MODEL_DATA& data)
 
 HRESULT CModel::Ready_Materials(MODEL_DATA& data)
 {
+
     for (size_t i = 0; i < m_iNumMaterials; i++)
     {
         CMeshMaterial* pMeshMaterial = CMeshMaterial::Create(m_pDevice, m_pContext, data.vecMaterials[i]);
