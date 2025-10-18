@@ -121,7 +121,7 @@ HRESULT CLevel_Map::Add_Prototypes_FromJson()
 		if (true == isInstance)				// 인스턴싱 모델인 경우
 		{
 			// 모델명과 일치하는 경로 찾기
-			string strLoadPath = Find_ModelPath(strModelName);
+			string strLoadPath = Find_FBX_ModelPath(strModelName);
 
 			if ("NOTFOUND" == strLoadPath)
 			{
@@ -157,7 +157,7 @@ HRESULT CLevel_Map::Add_Prototypes_FromJson()
 			if (iter == m_CheckPrototypes.end())
 			{
 				// 모델명과 일치하는 경로 찾기
-				string strLoadPath = Find_ModelPath(strModelName);
+				string strLoadPath = Find_FBX_ModelPath(strModelName);
 
 				if ("NOTFOUND" == strLoadPath)
 				{
@@ -200,7 +200,7 @@ HRESULT CLevel_Map::Convert_Json_To_Data()
 		if (true == isInstance)				// 인스턴싱 모델인 경우
 		{
 			// 모델명과 일치하는 경로 찾기
-			string strLoadPath = Find_ModelPath(strModelName);
+			string strLoadPath = Find_FBX_ModelPath(strModelName);
 
 			if ("NOTFOUND" == strLoadPath)
 			{
@@ -238,7 +238,7 @@ HRESULT CLevel_Map::Convert_Json_To_Data()
 			if (iter == m_CheckPrototypes.end())
 			{
 				// 모델명과 일치하는 경로 찾기
-				string strLoadPath = Find_ModelPath(strModelName);
+				string strLoadPath = Find_FBX_ModelPath(strModelName);
 
 				if ("NOTFOUND" == strLoadPath)
 				{
@@ -1845,9 +1845,9 @@ void CLevel_Map::Get_Directory_Files(const _char* pDirectoryPath)
 	}
 }
 
-string CLevel_Map::Find_ModelPath(const string& strModelName)
+string CLevel_Map::Find_FBX_ModelPath(const string& strModelName)
 {
-	string strRoot = "../../Client/Bin/Resources/Models/Environment/Prop/";
+	string strRoot = "../../Client/Bin/Resources/Map/Prop/";
 
 	for (auto& entry : filesystem::recursive_directory_iterator(strRoot))
 	{

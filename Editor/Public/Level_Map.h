@@ -124,8 +124,8 @@ private:
 
 #pragma region ImGui > JSON 관련 폴더 경로 및 파일 명
 
-	_char m_szJsonPath[MAX_PATH] = { "../../Client/Bin/Resources/Models/Environment/Prop/Json/" };					// 오리지날 Json 기본 경로
-	_char m_szJsonCustomPath[MAX_PATH] = { "../../Client/Bin/Resources/Models/Environment/Prop/Json/CustomJson/" };							// 커 스 텀 Json 기본 경로
+	_char m_szJsonPath[MAX_PATH] = { "../../Client/Bin/Resources/Map/Json/" };						// 오리지날 Json 기본 경로
+	_char m_szJsonCustomPath[MAX_PATH] = { "../../Client/Bin/Resources/Map/Json/CustomJson/" };		// 커 스 텀 Json 기본 경로
 
 	_char m_szJsonFolderPath[ENUM_CLASS(MAPEDIT_MAP::END)][MAX_PATH] = { "HeinMach/", "StormPass/", "TheCrevice/", "Embars/" };		// 추출할 Json 폴더
 
@@ -203,7 +203,7 @@ private:
 	void Get_Directory_Files(const _char* pDirectoryPath);
 
 	// 임시 테스트용
-	string Find_ModelPath(const string& strModelName);
+	string Find_FBX_ModelPath(const string& strModelName);
 
 public:
 	static CLevel_Map* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
