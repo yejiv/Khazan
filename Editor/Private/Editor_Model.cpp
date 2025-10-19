@@ -176,6 +176,12 @@ HRESULT CEditor_Model::Initialize_Prototype(MODELTYPE eModelType, const _char* p
         OutputDebugStringA(("[Root Boon Index] : " + to_string(m_iRootBoneIndex) + "\n").c_str());
 
     }
+    for (size_t i = 0; i < m_iNumAnimations; i++)
+    {
+        m_Model_Data.vecAnimation[i].animSetup.vecEventKeys = { "" };
+
+    }
+
 
     return S_OK;
 }
@@ -482,36 +488,21 @@ void CEditor_Model::ExportModel_NoMsg(string& strPath)
     _bool bAnimExists = filesystem::exists(strAnimJsonPath);
     _bool bMaterialExists = filesystem::exists(strMaterialJsonPath);
 
-    if (bDatExists || bAnimExists || bMaterialExists)
+    // 1. Material JSON 저장 ( .dds로 무조건 확정 )
+    if (!Export_MaterialJson_ForDDS(strMaterialJsonPath))
     {
-        wstring msg = TEXT("다음 파일이 이미 존재합니다:\n\n");
-        if (bDatExists)
-            msg += AnsiToWString(strFileName) + TEXT(".dat\n");
-        if (bAnimExists)
-            msg += AnsiToWString(strFileName) + TEXT("_Anim.json\n");
-        if (bMaterialExists)
-            msg += AnsiToWString(strFileName) + TEXT("_Material.json\n");
-
-        msg += L"\n덮어쓰시겠습니까?";
-
-        _int result = MessageBox(
-            nullptr,
-            msg.c_str(),
-            TEXT("파일 덮어쓰기 확인"),
-            MB_YESNO | MB_ICONQUESTION
-        );
-
-        if (result == IDNO)
-        {
-            MSG_BOX(TEXT("저장을 취소했습니다."));
-            return;
-        }
+        OutputDebugStringA("Material JSON 저장 실패");
+        OutputDebugStringA("Material JSON 저장 실패");
+        OutputDebugStringA("Material JSON 저장 실패");
+        OutputDebugStringA("Material JSON 저장 실패");
+        OutputDebugStringA("Material JSON 저장 실패");
+        return;
     }
 
-    // 1. Binary 저장 (.dat) - 전체 데이터
+    // 2. Binary 저장 (.dat) - 전체 데이터
     Export_Binary_NoMsg(strDatPath);
 
-    // 2. Animation JSON 저장
+    // 3. Animation JSON 저장
     if (m_eModelType == MODELTYPE::ANIM)
     {
         if (!Export_AnimationJson(strAnimJsonPath, strSummayAnimJsonPath))
@@ -523,17 +514,6 @@ void CEditor_Model::ExportModel_NoMsg(string& strPath)
             OutputDebugStringA("Animation JSON 저장 실패");
             return;
         }
-    }
-
-    // 3. Material JSON 저장
-    if (!Export_MaterialJson_ForDDS(strMaterialJsonPath))
-    {
-        OutputDebugStringA("Material JSON 저장 실패");
-        OutputDebugStringA("Material JSON 저장 실패");
-        OutputDebugStringA("Material JSON 저장 실패");
-        OutputDebugStringA("Material JSON 저장 실패");
-        OutputDebugStringA("Material JSON 저장 실패");
-        return;
     }
 
     // 성공 메시지

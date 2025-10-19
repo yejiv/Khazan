@@ -10,7 +10,6 @@ x64/
 *.fbx
 *.ini
 *.exp
-*.dll
 *.pskx
 
 Client.exp
@@ -32,6 +31,7 @@ Editor.pdb
 Engine.exp
 Engine.exe
 Engine.pdb
+Engine.dll
 Engine/Bin/Debug
 
 EngineSDK/

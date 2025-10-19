@@ -99,24 +99,24 @@ HRESULT CLevel_Shader::Ready_Lights()
 		return E_FAIL;
 
 	// Point_Green
-	LightDesc.eType = LIGHT_DESC::POINT;
-	LightDesc.vPosition = _float4(20.f, 2.f, 10.f, 1.f);
-	LightDesc.fRange = 10.f;
-	LightDesc.vDiffuse = _float4(0.f, 1.f, 0.f, 1.f);
-	LightDesc.vAmbient = _float4(0.1f, 0.6f, 0.1f, 1.f);
-	LightDesc.vSpecular = LightDesc.vDiffuse;
-	if (FAILED(m_pGameInstance->Add_Light(TEXT("Point_Green"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
-		return E_FAIL;
-
-	// Point_Red
-	LightDesc.eType = LIGHT_DESC::POINT;
-	LightDesc.vPosition = _float4(10.f, 2.f, 10.f, 1.f);
-	LightDesc.fRange = 10.f;
-	LightDesc.vDiffuse = _float4(1.f, 0.f, 0.f, 1.f);
-	LightDesc.vAmbient = _float4(0.6f, 0.1f, 0.1f, 1.f);
-	LightDesc.vSpecular = LightDesc.vDiffuse;
-	if (FAILED(m_pGameInstance->Add_Light(TEXT("Point_Red"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
-		return E_FAIL;
+	//	LightDesc.eType = LIGHT_DESC::POINT;
+	//	LightDesc.vPosition = _float4(20.f, 2.f, 10.f, 1.f);
+	//	LightDesc.fRange = 10.f;
+	//	LightDesc.vDiffuse = _float4(0.f, 1.f, 0.f, 1.f);
+	//	LightDesc.vAmbient = _float4(0.1f, 0.6f, 0.1f, 1.f);
+	//	LightDesc.vSpecular = LightDesc.vDiffuse;
+	//	if (FAILED(m_pGameInstance->Add_Light(TEXT("Point_Green"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
+	//		return E_FAIL;
+	//	
+	//	// Point_Red
+	//	LightDesc.eType = LIGHT_DESC::POINT;
+	//	LightDesc.vPosition = _float4(10.f, 2.f, 10.f, 1.f);
+	//	LightDesc.fRange = 10.f;
+	//	LightDesc.vDiffuse = _float4(1.f, 0.f, 0.f, 1.f);
+	//	LightDesc.vAmbient = _float4(0.6f, 0.1f, 0.1f, 1.f);
+	//	LightDesc.vSpecular = LightDesc.vDiffuse;
+	//	if (FAILED(m_pGameInstance->Add_Light(TEXT("Point_Red"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
+	//		return E_FAIL;
 
 	// Shadow_Light
 	SHADOW_LIGHT_DESC ShadowLightDesc{};
@@ -153,28 +153,32 @@ HRESULT CLevel_Shader::Ready_Layer_Camera()
 
 HRESULT CLevel_Shader::Ready_Layer_BackGround()
 {
-	//	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_BackGround"),
-	//		ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Terrain_Shader"))))
-	//		return E_FAIL;
-
-	CProp_Test::PROP_OBJECT_DESC ObjectDesc = {};
-	memcpy(ObjectDesc.szModelName, TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"), sizeof(ObjectDesc.szModelName));
-	ObjectDesc.eLevel = LEVEL::SHADER;
-	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_MapObject"),
-		ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Prop_Test"), &ObjectDesc)))
+	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_BackGround"),
+		ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Terrain_Shader"))))
 		return E_FAIL;
 
-	return S_OK;
+	//	CProp_Test::PROP_OBJECT_DESC ObjectDesc = {};
+	//	memcpy(ObjectDesc.szModelName, TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"), sizeof(ObjectDesc.szModelName));
+	//	ObjectDesc.eLevel = LEVEL::SHADER;
+	//	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_MapObject"),
+	//		ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Prop_Test"), &ObjectDesc)))
+	//		return E_FAIL;
 
 	return S_OK;
 }
 
 HRESULT CLevel_Shader::Ready_Layer_Player()
 {
-	/*_wstring strModelTag = TEXT("Prototype_Component_Editor_Model_Test");
+	//	CJOH_EditorModelTest::EDITORTESTMODEL_DESC Desc{};
+	//	Desc.isAnim = true;
+	//	Desc.strPrototypeTag = TEXT("Prototype_Component_Editor_Model_Test");
+	//	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_Player"),
+	//		ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Editor_Animation_TestModel"), &Desc)))
+	//		return E_FAIL;
+
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_Player"),
-		ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Editor_Animation_TestModel"), &strModelTag)))
-		return E_FAIL;*/
+		ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Player_Shader"))))
+		return E_FAIL;
 
 	return S_OK;
 }
