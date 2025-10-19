@@ -190,6 +190,7 @@ void CVIBuffer_Point_Instance::Update(_float fTimeDelta)
 
 	for (size_t i = 0; i < m_iNumInstance; i++)
 	{
+		pVertices[i].vPrevPosition = XMFLOAT3(pVertices[i].vTranslation.x, pVertices[i].vTranslation.y, pVertices[i].vTranslation.z);
 		//Scale
 		pVertices[i].vRight.x += m_fSpeed[ENUM_CLASS(SPEED_VALUE::SCALE_SPEED)][i];
 		pVertices[i].vUp.y += m_fSpeed[ENUM_CLASS(SPEED_VALUE::SCALE_SPEED)][i];
