@@ -1240,10 +1240,12 @@ string CAnimationTool::ConvertToClientRelativePath(const string& absolutePath)
         _char exePath[MAX_PATH];
         GetModuleFileNameA(NULL, exePath, MAX_PATH);
         fs::path exeDir = fs::path(exePath).parent_path();
-
-        fs::path clientDefaultDir = exeDir.parent_path().parent_path().parent_path() / "Client" / "Default";
-
         OutputDebugStringA(("[Editor.exe Dir] " + exeDir.string() + "\n").c_str());
+
+        fs::path editorDefaultDir = exeDir.parent_path().parent_path() / "Default";
+        OutputDebugStringA(("[Editor Default Dir] " + editorDefaultDir.string() + "\n").c_str());
+
+        fs::path clientDefaultDir = editorDefaultDir.parent_path().parent_path()/ "Client" / "Default";
         OutputDebugStringA(("[Client Default] " + clientDefaultDir.string() + "\n").c_str());
 
         fs::path absPath = fs::absolute(absolutePath);

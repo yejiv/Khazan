@@ -334,13 +334,31 @@ CEditor_Animation* CEditor_Model::Get_CurAnimtion()
 
 void CEditor_Model::ExportModel(string& strPath)
 {
-    /* 파일시스템에서 실행파일 위치를 .exe로 고정 */
+    ///* 파일시스템에서 실행파일 위치를 .exe로 고정 */
+    //_char exePath[MAX_PATH];
+    //GetModuleFileNameA(NULL, exePath, MAX_PATH);
+    //string exeDir = exePath;
+    //size_t lastSlash = exeDir.find_last_of("\\/");
+    //if (lastSlash != string::npos) exeDir = exeDir.substr(0, lastSlash);
+    //SetCurrentDirectoryA(exeDir.c_str());
+
+    /* 현재 실행파일 저장 */
+    _char savedDir[MAX_PATH];
+    GetCurrentDirectoryA(MAX_PATH, savedDir);
+
+    /* 실행파일 위치 Client/default 로 고정  */
     _char exePath[MAX_PATH];
     GetModuleFileNameA(NULL, exePath, MAX_PATH);
-    string exeDir = exePath;
-    size_t lastSlash = exeDir.find_last_of("\\/");
-    if (lastSlash != string::npos) exeDir = exeDir.substr(0, lastSlash);
-    SetCurrentDirectoryA(exeDir.c_str());
+    filesystem::path exeDir = filesystem::path(exePath).parent_path();
+    //OutputDebugStringA(("[Editor.exe Dir] " + exeDir.string() + "\n").c_str());
+
+    filesystem::path editorDefaultDir = exeDir.parent_path().parent_path() / "Default";
+    //OutputDebugStringA(("[Editor Default Dir] " + editorDefaultDir.string() + "\n").c_str());
+
+    filesystem::path clientDefaultDir = editorDefaultDir.parent_path().parent_path() / "Client" / "Default";
+   // OutputDebugStringA(("[Client Default] " + clientDefaultDir.string() + "\n").c_str());
+
+    SetCurrentDirectoryA(clientDefaultDir.string().c_str());
 
     filesystem::path fullPath(strPath);
     string strDirectory = fullPath.parent_path().string();
@@ -430,6 +448,9 @@ void CEditor_Model::ExportModel(string& strPath)
     successMsg += AnsiToWString(strFileName) + TEXT("_Material.json");
 
     MessageBox(nullptr, successMsg.c_str(), TEXT("Success"), MB_OK | MB_ICONINFORMATION);
+
+    //이전 실행파일로 복귀
+    SetCurrentDirectoryA(savedDir);
 }
 
 void CEditor_Model::ExportModel_NoMsg(string& strPath)
@@ -531,13 +552,31 @@ void CEditor_Model::LoadModel(_wstring strModelName)
 }
 void CEditor_Model::Update_DAT_From_JSON(string& strPath)
 {
-    /* 파일시스템에서 실행파일 위치를 .exe로 고정 */
+    ///* 파일시스템에서 실행파일 위치를 .exe로 고정 */
+    //_char exePath[MAX_PATH];
+    //GetModuleFileNameA(NULL, exePath, MAX_PATH);
+    //string exeDir = exePath;
+    //size_t lastSlash = exeDir.find_last_of("\\/");
+    //if (lastSlash != string::npos) exeDir = exeDir.substr(0, lastSlash);
+    //SetCurrentDirectoryA(exeDir.c_str());
+
+       /* 현재 실행파일 저장 */
+    _char savedDir[MAX_PATH];
+    GetCurrentDirectoryA(MAX_PATH, savedDir);
+
+    /* 실행파일 위치 Client/default 로 고정  */
     _char exePath[MAX_PATH];
     GetModuleFileNameA(NULL, exePath, MAX_PATH);
-    string exeDir = exePath;
-    size_t lastSlash = exeDir.find_last_of("\\/");
-    if (lastSlash != string::npos) exeDir = exeDir.substr(0, lastSlash);
-    SetCurrentDirectoryA(exeDir.c_str());
+    filesystem::path exeDir = filesystem::path(exePath).parent_path();
+    //OutputDebugStringA(("[Editor.exe Dir] " + exeDir.string() + "\n").c_str());
+
+    filesystem::path editorDefaultDir = exeDir.parent_path().parent_path() / "Default";
+    //OutputDebugStringA(("[Editor Default Dir] " + editorDefaultDir.string() + "\n").c_str());
+
+    filesystem::path clientDefaultDir = editorDefaultDir.parent_path().parent_path() / "Client" / "Default";
+    // OutputDebugStringA(("[Client Default] " + clientDefaultDir.string() + "\n").c_str());
+
+    SetCurrentDirectoryA(clientDefaultDir.string().c_str());
 
     filesystem::path fullPath(strPath);
     string strDirectory = fullPath.parent_path().string()+ "/";
@@ -628,6 +667,10 @@ void CEditor_Model::Update_DAT_From_JSON(string& strPath)
     swprintf_s(szMessage, TEXT(".dat 파일 업데이트 완료!\n\n폴더: %S\n파일: %S.dat"),
         strDirectory.c_str(), strFileName.c_str());
     MessageBox(nullptr, szMessage, TEXT("Success"), MB_OK | MB_ICONINFORMATION);
+
+    //실행파일 위치 복귀
+    SetCurrentDirectoryA(savedDir);
+
 }
 
 HRESULT CEditor_Model::Ready_Meshes()
