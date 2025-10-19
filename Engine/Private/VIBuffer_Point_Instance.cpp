@@ -36,6 +36,7 @@ void CVIBuffer_Point_Instance::Reset()
 	}
 
 	Remove_Speed();
+	ZeroMemory(m_fvelocityY, sizeof(_float) * m_iNumInstance);
 
 	m_pContext->Unmap(m_pVBInstance, 0);
 }
@@ -85,6 +86,8 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDes
 	m_VBInstanceDesc.StructureByteStride = m_iInstanceVertexStride;
 
 	m_pInstanceVertices = new VTXINSTANCE_PARTICLE[m_iNumInstance]; 
+	m_fvelocityY = new _float[m_iNumInstance];
+	ZeroMemory(m_fvelocityY, sizeof(_float) * m_iNumInstance);
 	for (_uint i = 0; i < ENUM_CLASS(SPEED_VALUE::SPEED_END); ++i)
 	{
 		m_fSpeed[i] = new _float[m_iNumInstance];
@@ -206,8 +209,8 @@ void CVIBuffer_Point_Instance::Update(_float fTimeDelta)
 		}
 		
 		//Spread
-		_vector	vMoveDir = XMVector3Normalize(XMVectorSetW(XMLoadFloat4(&pVertices[i].vTranslation) - XMLoadFloat3(&m_vPivot), 0.f));
-		XMStoreFloat4(&pVertices[i].vTranslation, XMLoadFloat4(&pVertices[i].vTranslation) + vMoveDir * m_fSpeed[ENUM_CLASS(SPEED_VALUE::SPREAD_SPEED)][i] * fTimeDelta);
+		_vector	vMoveDir = XMVectorSetW(XMLoadFloat4(&pVertices[i].vTranslation) - XMLoadFloat3(&m_vPivot), 0.f);
+		XMStoreFloat4(&pVertices[i].vTranslation, XMLoadFloat4(&pVertices[i].vTranslation) + XMVector3Normalize(vMoveDir) * m_fSpeed[ENUM_CLASS(SPEED_VALUE::SPREAD_SPEED)][i] * fTimeDelta);
 
 		//MoveLinear
 		vMoveDir = XMVectorSet(0.f, 1.f, 0.f, 0.f);
@@ -215,7 +218,8 @@ void CVIBuffer_Point_Instance::Update(_float fTimeDelta)
 
 		pVertices[i].vLifeTime.x += fTimeDelta;
 
-		if (pVertices[i].vLifeTime.x >= pVertices[i].vLifeTime.y)
+		if (pVertices[i].vLifeTime.x >= pVertices[i].vLifeTime.y
+			|| (m_fSpeed[ENUM_CLASS(SPEED_VALUE::SPREAD_SPEED)][i] < 0 && XMVectorGetX(XMVector3Length(vMoveDir)) < 0.1f))
 		{
 			pVertices[i].vLifeTime.x = 0.f;
 			pVertices[i].vTranslation = pInstanceVertices[i].vTranslation;
@@ -229,6 +233,30 @@ void CVIBuffer_Point_Instance::Update(_float fTimeDelta)
 			pVertices[i].vUp = _float4(0.f, fScale, 0.f, 0.f);
 			pVertices[i].vLook = _float4(0.f, 0.f, fScale, 0.f);
 		}
+	}
+
+	m_pContext->Unmap(m_pVBInstance, 0);
+}
+
+void CVIBuffer_Point_Instance::UpdateGravity(_float fTimeDelta)
+{
+	D3D11_MAPPED_SUBRESOURCE SubResource = {};
+
+	VTXINSTANCE_PARTICLE* pInstanceVertices = static_cast<VTXINSTANCE_PARTICLE*>(m_pInstanceVertices);
+
+	m_pContext->Map(m_pVBInstance, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
+
+	VTXINSTANCE_PARTICLE* pVertices = static_cast<VTXINSTANCE_PARTICLE*>(SubResource.pData);
+
+	for (size_t i = 0; i < m_iNumInstance; i++)
+	{
+		if (pVertices[i].bDead == true)
+		{
+			m_fvelocityY[i] = 0.f;
+			continue;
+		}
+		m_fvelocityY[i] += fTimeDelta;
+		pVertices[i].vTranslation.y -= 2.2f * m_fvelocityY[i] * fTimeDelta;
 	}
 
 	m_pContext->Unmap(m_pVBInstance, 0);
@@ -358,6 +386,7 @@ void CVIBuffer_Point_Instance::Free()
 	{
 		for (_uint i = 0; i < ENUM_CLASS(SPEED_VALUE::SPEED_END); ++i) 
 			Safe_Delete(m_fSpeed[i]);  
+		Safe_Delete_Array(m_fvelocityY);
 	}
 }
 
