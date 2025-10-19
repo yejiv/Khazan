@@ -34,6 +34,8 @@ void CDebug_Controller::Update()
 {
 	if (m_pGameInstance->Key_Down(DIK_Q))
 	{
+		_float3 vPos = {};
+		m_pGameInstance->isPicked(&vPos);
 		m_vRenderTargetValue = m_pGameInstance->isPickRenderTargetPixel(CharToWString(m_szSelectRenderTarget));
 	}
 	

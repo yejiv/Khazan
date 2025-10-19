@@ -66,6 +66,23 @@ namespace Engine
 
 	}MESH_INSTANCE_DATA;
 
+	typedef struct tagCameraAnimation
+	{
+		float fTrackPosition;
+		XMFLOAT4 fTranslation;
+		float fTranslation_Speed;
+		XMFLOAT4 vLookAt;
+		float fLookAt_Speed;
+		unsigned int iMoveType;
+	}CAMERA_ANIMATION_DATA;
+
+	typedef struct tagCameraEvent
+	{
+		float fTrackPosition;
+		wstring strEventKey;
+		bool isComplete;
+	}CAMERA_EVENT_DATA;
+
 	typedef struct tagCoInitGuard {
 		HRESULT hr = S_OK;
 		tagCoInitGuard(DWORD coinit = COINIT_MULTITHREADED) { hr = CoInitializeEx(nullptr, coinit); }

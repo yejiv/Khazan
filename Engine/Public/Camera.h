@@ -12,6 +12,9 @@ public:
 		_float4		vEye, vAt;
 		_float		fFovy, fNear, fFar;
 
+		_float		fMouseSensor = {};
+
+		_wstring	strCameraTag = {};
 		_uint		iCameraType = {};
 	}CAMERA_DESC;
 protected:
@@ -28,16 +31,62 @@ public:
 	virtual HRESULT Render();
 
 public:
+	virtual void PlayAnimation() {};
+
+public:
+	void Add_Animation(_wstring strAnimationTag, CAMERA_ANIMATION_DATA tAnimation);
+	void Add_Event(_wstring strAnimationTag, CAMERA_EVENT_DATA tEvent);
+
+public:
+	HRESULT Remove_Animation(_wstring strAnimationTag, _uint iIndex);
+	HRESULT Remove_AllAnimation(_wstring strAnimationTag);
+	HRESULT Remove_Event(_wstring strAnimationTag, _uint iIndex);
+	HRESULT Remove_AllEvent(_wstring strAnimationTag);
+
+public:
 	_uint Get_CameraType() { return m_iCameraType; }
+	_wstring Get_CameraTag() { return m_strCameraTag; }
+
+	vector<CAMERA_ANIMATION_DATA>* Get_Animations(_wstring strAnimationTag);
+	vector<CAMERA_EVENT_DATA>* Get_Events(_wstring strAnimationTag);
+
+public:
+	void Set_ObjMatrix(const _float4x4* pObjMatrix) { m_pObjMatrix = pObjMatrix; }
+	void Set_SocketMatrix(const _float4x4* pSocketMatrix) { m_pSocketMatrix = pSocketMatrix; }
 
 public:
 	void Update_PipeLines();
 
 protected:
-	_float				m_fFovy = { };
+	_float				m_fMouseSensor = {};
+
+	_float				m_fFovy = {};
 	_float				m_fAspect = {};
 	_float				m_fNear{}, m_fFar{};
 
+	_float				m_fYaw = 0.f;
+	_float				m_fPitch = 0.6f;
+	_float				m_fRadius = 25.f;
+
+	_float				m_fPitchMin = -1.2f;
+	_float				m_fPitchMax = 0.7f;
+	_float				m_fRadiusMin = 2.f;
+	_float				m_fRadiusMax = 12.f;
+	_float				m_fSkin = 0.02f;
+
+	_float				m_fFollowValue = 4.f;
+	_vector				m_vLerpMove = { 0.f, 0.f, 0.f, 1.f };
+
+	const _float4x4* m_pObjMatrix = { nullptr };
+	const _float4x4* m_pSocketMatrix = { nullptr };
+
+	map<_wstring, vector<CAMERA_ANIMATION_DATA>> m_Animations;
+	map<_wstring, vector<CAMERA_EVENT_DATA>> m_Events;
+
+	_wstring			m_strCurrentAnimation;
+	_bool				m_isAnimation;
+
+	_wstring			m_strCameraTag = {};
 	_uint				m_iCameraType = {};
 public:
 	virtual CGameObject* Clone(void* pArg) = 0;

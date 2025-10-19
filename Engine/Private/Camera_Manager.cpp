@@ -31,7 +31,24 @@ void CCamera_Manager::Change_Camera(_uint iLevelIndex, _uint iCameraType)
 	for (auto& pCamera : m_pCameras[iLevelIndex])
 	{
 		if (pCamera->Get_CameraType() == iCameraType)
+		{
 			pCamera->Set_IsActive(true);
+			m_pActiveCamera = pCamera;
+		}
+		else
+			pCamera->Set_IsActive(false);
+	}
+}
+
+void CCamera_Manager::Change_Camera(_uint iLevelIndex, _wstring strCameraTag)
+{
+	for (auto& pCamera : m_pCameras[iLevelIndex])
+	{
+		if (pCamera->Get_CameraTag() == strCameraTag)
+		{
+			pCamera->Set_IsActive(true);
+			m_pActiveCamera = pCamera;
+		}
 		else
 			pCamera->Set_IsActive(false);
 	}

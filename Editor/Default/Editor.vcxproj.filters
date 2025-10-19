@@ -178,6 +178,18 @@
     <Filter Include="02.GameObject\Debug">
       <UniqueIdentifier>{8a110978-4120-468f-a7af-916b749bdac2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Levels\Camera">
+      <UniqueIdentifier>{8cb9fb9c-e1e4-4801-b84e-9828dcd0bfbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Camera">
+      <UniqueIdentifier>{c074dc76-9d87-44b7-a131-1bc504dbef6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Camera\Controller">
+      <UniqueIdentifier>{d76d4605-256c-4c58-b06f-2f1d05a6b210}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Camera\Compre">
+      <UniqueIdentifier>{d84468eb-f793-43e3-9c4a-a7dc03bc2177}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -334,6 +346,15 @@
     <ClInclude Include="..\Public\Debug_Controller.h">
       <Filter>02.GameObject\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Level_Camera.h">
+      <Filter>01.Levels\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Controller.h">
+      <Filter>02.GameObject\Camera\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Compre.h">
+      <Filter>02.GameObject\Camera\Compre</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -487,6 +508,15 @@
     <ClCompile Include="..\private\Player_Shader.cpp" />
     <ClCompile Include="..\Private\Debug_Controller.cpp">
       <Filter>02.GameObject\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Camera.cpp">
+      <Filter>01.Levels\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Controller.cpp">
+      <Filter>02.GameObject\Camera\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Compre.cpp">
+      <Filter>02.GameObject\Camera\Compre</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

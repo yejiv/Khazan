@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Editor_Defines.h"
 #include "Base.h"
 
 NS_BEGIN(Engine)

@@ -35,6 +35,7 @@ HRESULT CMainApp::Initialize()
 	Imgui_Menu.push_back(TEXT("Model"));
 	Imgui_Menu.push_back(TEXT("UI"));
 	Imgui_Menu.push_back(TEXT("Shader"));
+	Imgui_Menu.push_back(TEXT("Camera"));
 
 	EngineDesc.Menu_Imgui = Imgui_Menu;
 
@@ -202,6 +203,10 @@ void CMainApp::Ready_DefaultImgui()
 		ImGui::SameLine();
 		if (ImGui::Button("Shader", ImVec2(120, 32))) {
 			m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::SHADER));
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Camera", ImVec2(120, 32))) {
+			m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::CAMERA));
 		}
 		ImGui::End();
 		});

@@ -224,6 +224,9 @@ public:
 #pragma region CAMERA_MANAGER
 	HRESULT Add_Camera(_uint iLevelIndex, class CCamera* pCamera);
 	void Change_Camera(_uint iLevelIndex, _uint iCameraType);
+	void Change_Camera(_uint iLevelIndex, _wstring strCameraTag);
+	vector<class CCamera*> Get_pCameras(_uint iNumLevel);
+	class CCamera* Get_ActiveCamera();
 #pragma endregion
 
 private:

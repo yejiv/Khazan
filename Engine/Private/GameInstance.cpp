@@ -781,6 +781,18 @@ void CGameInstance::Change_Camera(_uint iLevelIndex, _uint iCameraType)
 {
 	m_pCamera_Manager->Change_Camera(iLevelIndex, iCameraType);
 }
+void CGameInstance::Change_Camera(_uint iLevelIndex, _wstring strCameraTag)
+{
+	m_pCamera_Manager->Change_Camera(iLevelIndex, strCameraTag);
+}
+vector<class CCamera*> CGameInstance::Get_pCameras(_uint iNumLevel)
+{
+	return m_pCamera_Manager->Get_pCameras(iNumLevel);
+}
+CCamera* CGameInstance::Get_ActiveCamera()
+{
+	return m_pCamera_Manager->Get_ActiveCamera();
+}
 #pragma endregion
 
 //
