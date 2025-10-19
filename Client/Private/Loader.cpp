@@ -63,16 +63,39 @@ void CLoader::Update()
 	bool all_done = true;
 	HRESULT first_fail = S_OK;
 
-	for (auto& f : m_futures)
-	{
-		if (!f.valid()) continue;
-		using namespace chrono_literals;
-		auto st = f.wait_for(0ms);
-		if (st == future_status::ready) {
-			HRESULT hr = any_cast<HRESULT>(f.get());
-			if (FAILED(hr) && SUCCEEDED(first_fail)) first_fail = hr;
+	for (auto it = m_futures.begin(); it != m_futures.end(); ) {
+		auto& f = *it;
+		if (!f.valid()) { it = m_futures.erase(it); continue; }
+
+		if (f.wait_for(0ms) == future_status::ready) {
+			try {
+				any result = f.get();
+
+				if (auto pHr = any_cast<HRESULT>(&result)) {
+					if (FAILED(*pHr) && SUCCEEDED(first_fail)) first_fail = *pHr;
+				}
+				else {
+					// 타입 불일치도 실패로 간주
+					if (SUCCEEDED(first_fail)) first_fail = E_UNEXPECTED;
+				}
+			}
+			catch (const bad_alloc&) {
+				// 바로 여기에 찍히면 태스크 쪽 과다할당/개수버그 의심
+				if (SUCCEEDED(first_fail)) first_fail = E_OUTOFMEMORY;
+				// TODO: 로그로 태스크 이름/파일/라인 남기기
+			}
+			catch (const exception& e) {
+				if (SUCCEEDED(first_fail)) first_fail = E_FAIL;
+				// TODO: e.what() 로깅
+			}
+			catch (...) {
+				if (SUCCEEDED(first_fail)) first_fail = E_FAIL;
+			}
+
+			it = m_futures.erase(it);
 		}
 		else {
+			++it;
 			all_done = false;
 		}
 	}

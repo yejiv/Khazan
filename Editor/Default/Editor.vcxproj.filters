@@ -172,6 +172,9 @@
     <Filter Include="02.GameObject\UI\Camera">
       <UniqueIdentifier>{fe38b2f3-d49f-4cfe-8f49-120fba3d8e6b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Shader\Player">
+      <UniqueIdentifier>{b9c07b19-01a4-4a39-988f-659175d6709c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -324,6 +327,7 @@
     <ClInclude Include="..\Public\Prop_Dynamic.h">
       <Filter>02.GameObject\MapObject\Prop\04.Dynamic</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Player_Shader.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -474,6 +478,7 @@
     <ClCompile Include="..\Private\Prop_Dynamic.cpp">
       <Filter>02.GameObject\MapObject\Prop\04.Dynamic</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Player_Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_Edit_UI.hlsl">

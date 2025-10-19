@@ -176,6 +176,12 @@ HRESULT CEditor_Model::Initialize_Prototype(MODELTYPE eModelType, const _char* p
         OutputDebugStringA(("[Root Boon Index] : " + to_string(m_iRootBoneIndex) + "\n").c_str());
 
     }
+    for (size_t i = 0; i < m_iNumAnimations; i++)
+    {
+        m_Model_Data.vecAnimation[i].animSetup.vecEventKeys = { "" };
+
+    }
+
 
     return S_OK;
 }

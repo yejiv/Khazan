@@ -135,6 +135,10 @@ public:
 	HRESULT Ready_ShadowLight(SHADOW_LIGHT_DESC LightDesc);
 	SHADOW_LIGHT_DESC Get_ShadowLight();
 	void Set_ShadowLight(SHADOW_LIGHT_DESC LightDesc);
+	_uint Get_NumCascades();
+	void Set_CurrentCascade(_uint iIndex);
+	HRESULT Bind_LightViewProjMatrix(class CShader* pShader, _uint iIndex);
+	const _float4x4* Get_CurrentLightViewProjMatrix() const;
 #pragma endregion
 
 #pragma region FRUSTUM
