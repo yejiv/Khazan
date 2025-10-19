@@ -6,15 +6,23 @@
 #include "Player.h"
 #include "Camera_Compre.h"
 #include "Dummy.h"
+#include "ClientInstance.h"
 
 #pragma region MAP OBJECT
 #include "MapObject_Header.h"
 #pragma endregion
 
+#pragma region UI OBJECT
+#include "UI_Atlas_Icon.h"
+#include "UI_BackGround.h"
+#include "UI_SlotTest.h"
+#pragma endregion
 
 CLevel_Stage1::CLevel_Stage1(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
+	, m_pClientInstance(CClientInstance::GetInstance())
 {
+	Safe_AddRef(m_pClientInstance);
 }
 
 HRESULT CLevel_Stage1::Initialize()
@@ -39,6 +47,8 @@ HRESULT CLevel_Stage1::Initialize()
 		return E_FAIL;*/
 
 	CHECK_FAILED(Ready_Layer_MapObject_Test(TEXT("Layer_Test")), E_FAIL);
+
+	//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject_Test"), TEXT("Test")), E_FAIL);
 
 	m_pGameInstance->Jolt_Test();
 
@@ -171,18 +181,92 @@ HRESULT CLevel_Stage1::Ready_Layer_Test(const _wstring& strLayerTag)
 		ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_JOH_Test1"))))
 		return E_FAIL;
 
+	if (FAILED(m_pClientInstance->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+		TEXT("../Bin/Resources/UI/UIData/Test.json"))))
+		return E_FAIL;
+
 	return S_OK;
 }
 
 HRESULT CLevel_Stage1::Ready_Layer_MapObject_Test(const _wstring& strLayerTag)
 {
-	CProp_Test::PROP_OBJECT_DESC ObjectDesc = {};
+	CProp_Test::PROP_TEST_DESC ObjectDesc = {};
 
 	memcpy(ObjectDesc.szModelName, TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"), sizeof(ObjectDesc.szModelName));
 	ObjectDesc.eLevel = LEVEL::STAGE1;
 
 	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
 		ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_Test"), &ObjectDesc), E_FAIL);
+
+	return S_OK;
+}
+
+HRESULT CLevel_Stage1::Ready_Layer_MapObject(const _wstring& strLayerTag, const _tchar* pObjectDataFileName, KHAZAN_MAP eMap)
+{
+	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+
+	switch (eMap)
+	{
+	case KHAZAN_MAP::HEINMACH:
+		pDataFilePath += TEXT("HeinMach/");
+		break;
+	case KHAZAN_MAP::YETUGA:
+		pDataFilePath += TEXT("Yetuga/");
+		break;
+	case KHAZAN_MAP::THECREVICE:
+		pDataFilePath += TEXT("TheCrevice/");
+		break;
+	case KHAZAN_MAP::EMBARS:
+		pDataFilePath += TEXT("Embars/");
+		break;
+	case KHAZAN_MAP::VIPER:
+		pDataFilePath += TEXT("Viper/");
+		break;
+	default:
+		break;
+	}
+
+	pDataFilePath += pObjectDataFileName;
+
+	pDataFilePath += TEXT("_objects.dat");
+
+	DWORD dwByte = {};
+
+	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	CHECK_EQUAL(INVALID_HANDLE_VALUE, hFile, E_FAIL);
+
+	// 1. 오브젝트의 총 개수
+	_uint iObjectCnt = {};
+	CHECK_FALSE(ReadFile(hFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr), E_FAIL);
+
+	// 오브젝트 총 개수만큼 순회
+	for (_uint i = 0; i < iObjectCnt; ++i)
+	{
+		CProp_Object::PROP_OBJECT_DESC ObjectDesc = {};
+
+		// 2. 프로토 타입 태그 길이 불러오기
+		_uint iPrototypeTagLen = {};
+		CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
+
+		// 3. 프로토 타입 태그 이름 불러오기
+		_tchar szPrototypeTag[MAX_PATH] = {};
+		CHECK_FALSE(ReadFile(hFile, &szPrototypeTag, sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr), E_FAIL);
+
+		// 불러온 태그 카피
+		memcpy(ObjectDesc.szModelName, szPrototypeTag, sizeof(ObjectDesc.szModelName));
+
+		// 현재 이 레벨을 넘겨줌
+		ObjectDesc.eLevel = LEVEL::STAGE1;
+
+		// 4. 객체당 월드 행렬 때오기
+		_float4x4 WorldMatrix = {};
+		CHECK_FALSE(ReadFile(hFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr), E_FAIL);
+
+		ObjectDesc.WorldMatrix = WorldMatrix;
+
+		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
+			ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), E_FAIL);
+	}
 
 	return S_OK;
 }
@@ -220,5 +304,5 @@ void CLevel_Stage1::Free()
 	__super::Free();
 
 
-
+	Safe_Release(m_pClientInstance);
 }

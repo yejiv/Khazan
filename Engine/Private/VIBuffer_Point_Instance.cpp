@@ -15,10 +15,7 @@ CVIBuffer_Point_Instance::CVIBuffer_Point_Instance(const CVIBuffer_Point_Instanc
 	, m_fOffset{ Prototype.m_fOffset }
 	, m_fRange{ Prototype.m_fRange }
 	, m_fScale{ Prototype.m_fScale }
-	//, m_eType { Prototype.m_eType }
-//#ifdef _DEBUG
-//	, m_Desc{ Prototype.m_Desc }
-//#endif
+
 {
 }
 

@@ -52,6 +52,22 @@ HRESULT CRenderer::Initialize()
     if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_LightDepth"), g_iMaxWidth, g_iMaxHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.0f, 1.0f, 1.0f, 1.0f))))
         return E_FAIL;
 
+#pragma region CASCADE_TEST
+
+    /* For.Target_LightDepth_0 */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_LightDepth_0"), g_iMaxWidth, g_iMaxHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.0f, 1.0f, 1.0f, 1.0f))))
+        return E_FAIL;
+
+    /* For.Target_LightDepth_1 */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_LightDepth_1"), g_iMaxWidth, g_iMaxHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.0f, 1.0f, 1.0f, 1.0f))))
+        return E_FAIL;
+
+    /* For.Target_LightDepth_2 */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_LightDepth_2"), g_iMaxWidth, g_iMaxHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.0f, 1.0f, 1.0f, 1.0f))))
+        return E_FAIL;
+
+#pragma endregion
+
     /* For.Target_BackBuffer */
     if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_BackBuffer"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.0f, 0.0f, 0.0f, 0.0f))))
         return E_FAIL;
@@ -79,6 +95,17 @@ HRESULT CRenderer::Initialize()
     /* For.MRT_Shadow : 광원기준으로 보여지는 장면을 그려준다.  */
     if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Shadow"), TEXT("Target_LightDepth"))))
         return E_FAIL;
+
+#pragma region CASCADE_TEST
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Shadow_0"), TEXT("Target_LightDepth_0"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Shadow_1"), TEXT("Target_LightDepth_1"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Shadow_2"), TEXT("Target_LightDepth_2"))))
+        return E_FAIL;
+#pragma endregion
 
     /* For.MRT_BackBuffer : 원래 백버퍼에 그렸어야할 최종 장면을 그려놓는 타겟  */
     if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_BackBuffer"), TEXT("Target_BackBuffer"))))
@@ -114,7 +141,13 @@ HRESULT CRenderer::Initialize()
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Specular"), 450.0f, 450.0f, 300.f, 300.f)))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_LightDepth"), ViewportDesc.Width - 300.0f, 300.0f, 600.f, 600.f)))
+    //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_LightDepth"), ViewportDesc.Width - 300.0f, 300.0f, 600.f, 600.f)))
+    //      return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_LightDepth_0"), ViewportDesc.Width - 100.0f, 100.0f, 200.f, 200.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_LightDepth_1"), ViewportDesc.Width - 100.0f, 300.0f, 200.f, 200.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_LightDepth_2"), ViewportDesc.Width - 100.0f, 500.0f, 200.f, 200.f)))
         return E_FAIL;
 #endif
 
@@ -212,28 +245,61 @@ HRESULT CRenderer::Render_Priority()
 
 HRESULT CRenderer::Render_Shadow()
 {
-    /* LightDepth */
-    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Shadow"), m_pShadowDSV)))
-        return E_FAIL;
+    //  /* LightDepth */
+    //  if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Shadow"), m_pShadowDSV)))
+    //      return E_FAIL;
+    //  
+    //  if (FAILED(SetUp_Viewport(g_iMaxWidth, g_iMaxHeight)))
+    //      return E_FAIL;
+    //  
+    //  for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::SHADOW)])
+    //  {
+    //      if (nullptr != pRenderObject)
+    //          pRenderObject->Render_Shadow();
+    //  
+    //      Safe_Release(pRenderObject);
+    //  }
+    //  
+    //  m_RenderObjects[ENUM_CLASS(RENDERGROUP::SHADOW)].clear();
+    //  
+    //  if (FAILED(m_pGameInstance->End_MRT()))
+    //      return E_FAIL;
+    //  
+    //  if (FAILED(SetUp_Viewport(m_fViewportWidth, m_fViewportHeight)))
+    //      return E_FAIL;
 
-    if (FAILED(SetUp_Viewport(g_iMaxWidth, g_iMaxHeight)))
-        return E_FAIL;
+#pragma region CASCADE_TEST
 
-    for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::SHADOW)])
+    _uint iNumCascades = m_pGameInstance->Get_NumCascades();
+
+    for (_uint i = 0; i < iNumCascades; ++i)
     {
-        if (nullptr != pRenderObject)
-            pRenderObject->Render_Shadow();
+        m_pGameInstance->Set_CurrentCascade(i);
 
-        Safe_Release(pRenderObject);
+        m_pGameInstance->Begin_MRT(TEXT("MRT_Shadow_") + to_wstring(i), m_pShadowDSV);
+        
+        if (FAILED(SetUp_Viewport(g_iMaxWidth, g_iMaxHeight)))
+            return E_FAIL;
+        
+        //  m_pGameInstance->Bind_LightViewProjMatrix(m_pShader, i);
+
+        for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::SHADOW)])
+        {
+            if (nullptr != pRenderObject)
+                pRenderObject->Render_Shadow();
+
+            Safe_Release(pRenderObject);
+        }
+        
+        m_RenderObjects[ENUM_CLASS(RENDERGROUP::SHADOW)].clear();
+
+        if (FAILED(m_pGameInstance->End_MRT()))
+            return E_FAIL;
     }
-
-    m_RenderObjects[ENUM_CLASS(RENDERGROUP::SHADOW)].clear();
-
-    if (FAILED(m_pGameInstance->End_MRT()))
-        return E_FAIL;
 
     if (FAILED(SetUp_Viewport(m_fViewportWidth, m_fViewportHeight)))
         return E_FAIL;
+#pragma endregion
 
     return S_OK;
 }
@@ -329,7 +395,12 @@ HRESULT CRenderer::Render_Combined()
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_LightDepth"), m_pShader, "g_LightDepthTexture")))
+    // Cascade Test
+
+    //  if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_LightDepth"), m_pShader, "g_LightDepthTexture")))
+    //      return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_LightDepth_0"), m_pShader, "g_LightDepthTexture")))
         return E_FAIL;
 
     m_pShader->Begin(3);

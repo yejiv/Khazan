@@ -172,11 +172,11 @@ HRESULT CEffect_Mesh_Instance::Ready_Component()
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Slash"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_Slash"),
         TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr)))
         return E_FAIL;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MeshEffect_Masking"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_MeshEffect_Masking"),
         TEXT("Com_TextureMask"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom), nullptr)))
         return E_FAIL;
 
@@ -215,7 +215,7 @@ HRESULT CEffect_Mesh_Instance::Bind_ShaderResources()
 void CEffect_Mesh_Instance::Apply(void* pArg)
 {
     m_sData = *static_cast<PARTICLE_DESC*>(pArg);
-    const char* format = "../../Client/Bin/Resources/Model/Data/untitled%d_Mesh.dat";
+    const char* format = "../../Client/Bin/Data/Effect/untitled%d.dat";
 
     char finalPathBuffer[MAX_PATH] = {};
     sprintf_s(finalPathBuffer, MAX_PATH, format, m_sData.iMeshTypeIdx);
@@ -224,7 +224,7 @@ void CEffect_Mesh_Instance::Apply(void* pArg)
     Safe_Release(m_pVIBufferCom);
     m_pVIBufferCom = CVIBuffer_Mesh_Instance::Create(m_pDevice, m_pContext, &m_sData);
     m_pVIBufferCom->Initialize_Clone(nullptr);
-    m_iEffect_Type = 0;
+    m_iEffect_Type = 1;
 
     m_sEditingData = m_sData;
     m_fScrollSpeed = m_sData.iScrollSpeed;

@@ -28,6 +28,7 @@ namespace Engine
 		BBL, BLL,
 		END,
 	};
+	enum class MAPOBJECT_TYPE : unsigned short { OBJECT, STATIC_INST, ANIMATED_INST, INTERACTIVE, DYNAMIC, END };
 }
 
 namespace JoltLayers

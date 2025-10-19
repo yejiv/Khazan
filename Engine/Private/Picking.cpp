@@ -67,7 +67,7 @@ _bool CPicking::isPicked(_float3* pOut)
     GetCursorPos(&m_ptMouse);
     ScreenToClient(m_hWnd, &m_ptMouse);
 
-    if (0 > m_ptMouse.x || m_iWinSizeX < m_ptMouse.x || 0 > m_ptMouse.y || m_iWinSizeY < m_ptMouse.y)
+    if (0 > m_ptMouse.x || static_cast<_long>(m_iWinSizeX) < m_ptMouse.x || 0 > m_ptMouse.y || static_cast<_long>(m_iWinSizeY) < m_ptMouse.y)
         return false;
 
     _uint       iIndex = m_ptMouse.y * m_iWinSizeX + m_ptMouse.x;
@@ -99,7 +99,7 @@ _bool CPicking::isPicked(_float3* pOut, _uint* iObjectID)
     ScreenToClient(m_hWnd, &m_ptMouse);
 
     // 화면밖으로 나가있을때 피킹 예외처리
-    if (0 > m_ptMouse.x || m_iWinSizeX < m_ptMouse.x || 0 > m_ptMouse.y || m_iWinSizeY < m_ptMouse.y)
+    if (0 > m_ptMouse.x || static_cast<_long>(m_iWinSizeX) < m_ptMouse.x || 0 > m_ptMouse.y || static_cast<_long>(m_iWinSizeY) < m_ptMouse.y)
         return false;
 
     _uint       iIndex = m_ptMouse.y * m_iWinSizeX + m_ptMouse.x;

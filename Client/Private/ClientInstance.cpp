@@ -1,4 +1,6 @@
 #include "ClientInstance.h"
+#include "UI_Manager.h"
+#include "GameInstance.h"
 
 IMPLEMENT_SINGLETON(CClientInstance)
 
@@ -17,14 +19,65 @@ HRESULT CClientInstance::Initialize(ID3D11Device** ppDevice, ID3D11DeviceContext
 	Safe_AddRef(m_pDevice);
 	Safe_AddRef(m_pContext);
 
+	m_pUI_Manager = CUI_Manager::Create(m_pDevice, m_pContext);
 
 	return S_OK;
 }
 
 void CClientInstance::Update(_float fTimeDelta)
 {
+	m_pUI_Manager->UIObjectToRenderer();
+}
 
+#pragma region UI_MANGER
+HRESULT CClientInstance::Add_UIEvent(const _wstring& strLayerTag, const _wstring& strEventTag, std::function<void()> Event)
+{
+	return m_pUI_Manager->Add_Event(strLayerTag, strEventTag, Event);
+}
 
+HRESULT CClientInstance::Add_UIParamEvent(const _wstring& strLayerTag, const _wstring& strEventTag, std::function<void(void*)> Event)
+{
+	return m_pUI_Manager->Add_ParamEvent(strLayerTag, strEventTag, Event);
+}
+
+function<void()> CClientInstance::Pop_UIEvent(const _wstring& strLayerTag, const _wstring& strEventTag)
+{
+	return m_pUI_Manager->Pop_Event(strLayerTag, strEventTag);
+}
+
+function<void(void*)> CClientInstance::Pop_UIParamEvent(const _wstring& strLayerTag, const _wstring& strEventTag)
+{
+	return m_pUI_Manager->Pop_ParamEvent(strLayerTag, strEventTag);
+}
+
+HRESULT CClientInstance::Erase_UIEventLayer(const _wstring& strLayerTag)
+{
+	return m_pUI_Manager->Erase_EventLayer(strLayerTag);
+}
+
+HRESULT CClientInstance::Load_UIData(_uint iLayerLevelID, const _wstring& strLayerTag, _uint iPrototypeLevelID, const _tchar* pUIFilePath)
+{
+	return m_pUI_Manager->Load_UIData(iLayerLevelID, strLayerTag, iPrototypeLevelID, pUIFilePath);
+}
+
+_int CClientInstance::UIType_StringToEnum(string szUIType)
+{
+	return m_pUI_Manager->UIType_StringToEnum(szUIType);
+}
+
+_uint CClientInstance::UI_TexTag_Maping(string szTextag)
+{
+	return m_pUI_Manager->TexTag_Maping(szTextag);
+}
+
+HRESULT CClientInstance::Add_UIRender(UI_RENDER_TYPE eRender, CUIObject* pUIObject)
+{
+	return m_pUI_Manager->Add_UIRender(eRender, pUIObject);
+}
+
+HRESULT CClientInstance::UI_UpdateSwitch(const _wstring& strUITag, void* pArg)
+{
+	return m_pUI_Manager->UI_UpdateSwitch(strUITag, pArg);
 }
 
 #pragma endregion
@@ -33,6 +86,7 @@ void CClientInstance::Free()
 {
 	__super::Free();
 	
+	Safe_Release(m_pUI_Manager);
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
 }
