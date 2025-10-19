@@ -19,7 +19,10 @@ HRESULT CEffect_Sprite::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Component()))
         return E_FAIL;
 
-    //Apply(pArg);
+    Apply(pArg);
+
+    m_pTransformCom->Scale(_float3(2.f, 2.f, 2.f));
+    //m_pTransformCom->Scale(_float3(m_sData.fSize, m_sData.fSize * m_sData.fSizeRatio, m_sData.fSize));
 
     return S_OK;
 }
@@ -31,25 +34,27 @@ void CEffect_Sprite::Priority_Update(_float fTimeDelta)
 
 void CEffect_Sprite::Update(_float fTimeDelta)
 {
-    //for(auto it = m_TimeTracks.begin(); it != m_TimeTracks.end();)
-    //{
-    //    it->fCurTime += fTimeDelta;
-    //
-    //    if(it->fCurTime > it->fDurTime && it->EventType != 0)
-    //    {
-    //        dynamic_cast<CVIBuffer_Point_Instance*>(m_pVIBufferCom)->Remove_Speed(CVIBuffer_Point_Instance::SPEED_VALUE(it->EventType - 1));
-    //        it = m_TimeTracks.erase(it);
-    //    }
-    //    else
-    //        ++it;
-    //}
-    //
-    //m_pVIBufferCom->Update(fTimeDelta);
-    __super::Update(fTimeDelta);
+    m_fCurTime += fTimeDelta * 10.f;
 
-    /* Edit */
-    //if(m_TimeTracks.size() == 0)
-    //    m_pVIBufferCom->Remove_Speed();
+    if (m_fCurTime > m_sData.fSpriteSpeed)
+    {
+        ++ m_iUVIdx;
+        m_fCurTime = 0.f;
+    }
+
+    m_pTransformCom->Scaling(_float3(m_sData.ScalingValue, m_sData.ScalingValue, m_sData.ScalingValue));
+    const _float4* CamPos = m_pGameInstance->Get_CamPosition();
+    m_pTransformCom->LookAt(XMLoadFloat4(CamPos));
+ 
+    if (m_iUVIdx == (m_sData.iCol * m_sData.iRow))
+    {
+        if (m_sData.IsLoop == false)
+            m_TimeTracks.pop_back(); 
+        m_iUVIdx = 0;
+    }
+    //(뭔가 끝내라는 이벤트 -> 이거 루프 세팅 false로 바꿔주기)
+        
+    __super::Update(fTimeDelta);
 }
 
 void CEffect_Sprite::Late_Update(_float fTimeDelta)
@@ -78,62 +83,57 @@ void CEffect_Sprite::Save_Data(ofstream& os)
 
 void CEffect_Sprite::Edit_Element()
 {
-    //_int            isCircle = (_int)m_sEditingData.IsCircle;
-    //
-    //ImGui::RadioButton("Spawn_BoundingBox", &isCircle, 0);
-    //ImGui::RadioButton("Spawn_Circle", &isCircle, 1);
-    //
-    //if(isCircle == 0)
-    //{
-    //    ImGui::InputFloat3("Center : ",reinterpret_cast<_float*>(&m_sEditingData.vCenter));
-    //    ImGui::InputFloat3("Range : ",reinterpret_cast<_float*>(&m_sEditingData.vRange));
-    //}
-    //else 
-    //    ImGui::InputFloat("Circle Offset  : ",&m_sEditingData.fOffset); 
-    //
-    //ImGui::InputScalar("Instance Num : ", ImGuiDataType_U32, &m_sEditingData.iNumInstance);
-    //
-    //ImGui::InputFloat2("Size : ", reinterpret_cast<_float*>(&m_sEditingData.vSize));
-    //ImGui::InputFloat("Size Ratio : ", &m_sEditingData.fSizeRatio);
-    //ImGui::InputFloat2("LifeTime : ", reinterpret_cast<_float*>(&m_sEditingData.vLifeTime));
-    //
-    //ImGui::ColorEdit4("MyColorWithAlpha",(float*)&m_sEditingData.vColor);
-    //
-    //const char* textures[] = {"test0","test1","test2","test3","test4","test5"};
-    //ImGui::ListBox("Particles",reinterpret_cast<int*>(&m_sEditingData.iTextureIdx), textures,IM_ARRAYSIZE(textures));
-    //
-    //m_sEditingData.IsCircle = isCircle;
-    //
-    //if (ImGui::Button("Apply"))
-    //    Apply(&m_sEditingData);
-    //if (ImGui::Button("Revert"))
-    //    RevertChanges();
+    //checkBox - isloop
+    ImGui::InputFloat("Size : ", reinterpret_cast<_float*>(&m_sEditingData.fSize));
+    ImGui::InputFloat("Size Ratio : ", &m_sEditingData.fSizeRatio);
+    ImGui::InputFloat("Sprite Speed : ", reinterpret_cast<_float*>(&m_sEditingData.fSpriteSpeed));
+
+    ImGui::ColorEdit4("MyColorWithAlpha",(float*)&m_sEditingData.vColor);
+    
+    const char* textures[] = {"test0","test1"};
+    ImGui::ListBox("Particles",reinterpret_cast<int*>(&m_sEditingData.iTextureIdx), textures,IM_ARRAYSIZE(textures));
+    ImGui::InputFloat("Scaling Value : ", reinterpret_cast<_float*>(&m_sEditingData.ScalingValue));
+    ImGui::InputInt("Col : ", reinterpret_cast<int*>(&m_sEditingData.iCol));
+    ImGui::InputInt("Row : ", reinterpret_cast<int*>(&m_sEditingData.iRow));
+    ImGui::Checkbox("Sprite Loop", &m_sEditingData.IsLoop);
+
+    if (ImGui::Button("Apply"))
+        Apply(&m_sEditingData);
+    if (ImGui::Button("Revert"))
+        RevertChanges();
 }
 
 void CEffect_Sprite::RevertChanges()
 {
-    //m_sEditingData = m_sData;
+    m_sEditingData = m_sData;
 }
 
 void CEffect_Sprite::Reset()
 {
-    //__super::Reset();
+    __super::Reset();
     //m_pVIBufferCom->Reset();
 }
 
-void CEffect_Sprite::SetSpriteData()
+void CEffect_Sprite::Active()
 {
+    __super::Active();
 
+    m_fCurTime = 0.f;
+    m_iUVIdx = 0;
 }
 
 HRESULT CEffect_Sprite::Ready_Component()
 {
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxInstance_PointParticle"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxPosSpriteTex"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_VIBuffer_Rect"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_Sprite_Effect"),
         TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr)))
+        return E_FAIL;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Rect"),
+        TEXT("Com_Buffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), nullptr)))
         return E_FAIL;
 
     return S_OK;
@@ -141,6 +141,10 @@ HRESULT CEffect_Sprite::Ready_Component()
 
 HRESULT CEffect_Sprite::Bind_ShaderResources()
 {
+    _float iCol = static_cast<_float>(m_sData.iCol);
+    _float iRow = static_cast<_float>(m_sData.iRow);
+    _float UVIdx = static_cast<_float>(m_iUVIdx);
+
     if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix)))
         return E_FAIL;
 
@@ -150,27 +154,34 @@ HRESULT CEffect_Sprite::Bind_ShaderResources()
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
         return E_FAIL;
 
-    if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
+    if(FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_sData.vColor, sizeof(_float4))))
         return E_FAIL;
 
-    //if(FAILED(m_pShaderCom->Bind_RawValue("g_vSourceColor", &m_sEditingData.vColor, sizeof(_float4))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DiffuseTexture", m_sData.iTextureIdx)))
-    //    return E_FAIL;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_numCols", &iCol, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_numRows", &iRow, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_FrameIdx", &UVIdx, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_Texture", m_sData.iTextureIdx)))
+        return E_FAIL;
+
 
     return S_OK;
 }
 
 void CEffect_Sprite::Apply(void* pArg)
 {
-    //m_sData = *static_cast<PARTICLE_DESC*>(pArg);
+    m_sData = *static_cast<SPRITE_DESC*>(pArg);
     //Safe_Release(m_pVIBufferCom);
     //m_pVIBufferCom = CVIBuffer_Point_Instance::Create(m_pDevice, m_pContext, &m_sData);
     //m_pVIBufferCom->Initialize_Clone(nullptr);
     //m_iEffect_Type = 0;
     //
-    //m_sEditingData = m_sData;
+    m_sEditingData = m_sData;
 }
 
 CEffect_Sprite* CEffect_Sprite::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, void* pArg)

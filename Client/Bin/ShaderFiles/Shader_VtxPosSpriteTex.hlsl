@@ -2,7 +2,6 @@
 
 matrix      g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D   g_Texture;
-texture2D   g_DepthTexture;
 float4      g_vColor;
 
 float       g_numCols, g_numRows;
@@ -33,9 +32,17 @@ VS_OUT VS_MAIN(VS_IN In)
     matWVP = mul(matWV, g_ProjMatrix);
     
     Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);    
-    Out.vTexcoord = In.vTexcoord;
     Out.vWorldPos = mul(float4(In.vPosition, 1.f), g_WorldMatrix);
     Out.vProjPos = Out.vPosition;
+    
+    float Width = 1.0f / g_numCols;
+    float Height = 1.0f / g_numRows;
+    
+    float startU = (g_FrameIdx % g_numCols) * Width;
+    float startV = floor(g_FrameIdx / g_numCols) * Height;
+    float2 finalUV = float2(startU, startV) + (In.vTexcoord * float2(Width, Height));
+    
+    Out.vTexcoord = finalUV;
     
     return Out;     
 }
@@ -57,22 +64,16 @@ struct PS_OUT
 PS_OUT PS_MAIN_BLEND(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
+    //Out.vColor = g_Texture.Sample(PointSampler, In.vTexcoord);
     
-    float Width = 1.0f / g_numCols;
-    float Height = 1.0f / g_numRows;
+    vector vMask = g_Texture.Sample(PointSampler, In.vTexcoord);
+    vector vFinalColor = float4(g_vColor.xyz, min(vMask.r, g_vColor.a));
+
+    float vDestAlpha = max(max(vMask.r, vMask.g), vMask.b);
     
-    float startU = (g_FrameIdx % g_numCols) * Width;
-    float startV = floor(g_FrameIdx / g_numRows) * Height;
-    float2 finalUV = float2(startU, startV) + (In.vTexcoord * float2(Width, Height));
+    vFinalColor.a = 1.f * vDestAlpha;
     
-    Out.vColor = g_Texture.Sample(DefaultSampler, finalUV);
-    
-    //float2 vTexcoord;
-    //vTexcoord.x = (In.vProjPos.x / In.vProjPos.w) * 0.5f + 0.5f;
-    //vTexcoord.y = (In.vProjPos.y / In.vProjPos.w) * -0.5f + 0.5f;
-    vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, finalUV);
-    
-    Out.vColor.a = Out.vColor.a * saturate(vDepthDesc.y - In.vProjPos.w);
+    Out.vColor = vFinalColor;
     
     return Out;
 }
@@ -81,7 +82,7 @@ technique11 DefaultTechnique
 {
     pass DefaultPass
     {
-        SetRasterizerState(RS_Default);
+        SetRasterizerState(RS_Cull_None);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();

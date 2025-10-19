@@ -87,7 +87,7 @@ void CEdit_Interface_UI::SaveLoad_UI()
 		{
 			string filePath = m_szFilePath;
 			filePath += ".json";
-			nlohmann::json SaveData;
+			nlohmann::ordered_json SaveData;
 			m_pRootUIs[m_iSeletRootUI]->Save_UI(SaveData);
 			ofstream Out(filePath, ios::out | ios::trunc);
 			if (!Out.is_open())

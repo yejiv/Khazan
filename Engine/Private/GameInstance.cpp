@@ -22,6 +22,7 @@
 #include "Event_Manager.h"
 #include "Resource_Manager.h"
 #include "ComputeShader_Manager.h"
+#include "Camera_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -114,6 +115,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pComputeShader_Manager)
 		return E_FAIL;
 
+	m_pCamera_Manager = CCamera_Manager::Create(EngineDesc.iNumLevels);
+	if (nullptr == m_pCamera_Manager)
+		return E_FAIL;
+
 #ifdef _DEBUG
 	m_pImgui_Manager = CImgui_Manager::Create(EngineDesc.iWinSizeX_Imgui, EngineDesc.iWinSizeY_Imgui, EngineDesc.Menu_Imgui);
 	if (nullptr == m_pImgui_Manager)
@@ -162,6 +167,8 @@ HRESULT CGameInstance::Clear_Resources(_uint iClearLevelID)
 
 	m_pLight_Manager->Clear(iClearLevelID);
 
+	m_pCamera_Manager->Clear(iClearLevelID);
+
 	return S_OK;
 }
 
@@ -190,7 +197,7 @@ HRESULT CGameInstance::Draw()
 #ifdef _DEBUG
 	m_pImgui_Manager->BeginFrame();
 	m_pImgui_Manager->Render();
-	//m_pJolt_Manager->Debug_Render();
+	m_pJolt_Manager->Debug_Render();
 #endif
 
 	return S_OK;
@@ -612,6 +619,16 @@ void CGameInstance::CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* 
 	m_pJolt_Manager->CharVir_ExtendedUpdate(fTimeDelta, pCharVir, vGravity, iObjectLayer, pBodyFilter, pShapeFilter, tSetting);
 }
 
+void CGameInstance::Set_Gravity(_vector vGravity)
+{
+	m_pJolt_Manager->Set_Gravity(vGravity);
+}
+
+void CGameInstance::Reset_Gravity()
+{
+	m_pJolt_Manager->Reset_Gravity();
+}
+
 #ifdef _DEBUG
 void CGameInstance::Jolt_Test()
 {
@@ -750,6 +767,17 @@ void CGameInstance::Execute_Job(COMPUTEJOB eJobTag)
 }
 #pragma endregion
 
+#pragma region CAMERA_MANAGER
+HRESULT CGameInstance::Add_Camera(_uint iLevelIndex, CCamera* pCamera)
+{
+	return m_pCamera_Manager->Add_Camera(iLevelIndex, pCamera);
+}
+void CGameInstance::Change_Camera(_uint iLevelIndex, _uint iCameraType)
+{
+	m_pCamera_Manager->Change_Camera(iLevelIndex, iCameraType);
+}
+#pragma endregion
+
 //
 //void CGameInstance::Transform_Picking_ToLocalSpace(CTransform* pTransformCom)
 //{
@@ -782,6 +810,7 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pInput_Manager);
 	Safe_Release(m_pResource_Manager);
+	Safe_Release(m_pCamera_Manager);
 
 	Safe_Release(m_pPicking);
 	Safe_Release(m_pTimer_Manager);

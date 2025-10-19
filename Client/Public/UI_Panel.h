@@ -1,10 +1,10 @@
 #pragma once
-#include "UIObject.h"
+#include "UIParent.h"
 #include "Client_Defines.h"
 
 NS_BEGIN(Client)
 
-class CUI_Panel abstract : public CUIObject
+class CUI_Panel abstract : public CUIParent
 {
 protected:
 	CUI_Panel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);
@@ -18,6 +18,8 @@ public:
 	virtual void				Update(_float fTimeDelta) override;
 	virtual void				Late_Update(_float fTimeDelta) override;
 	virtual HRESULT				Render() override;
+
+	virtual HRESULT				Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
 
 public:
 	virtual CGameObject*		Clone(void* pArg) = 0;

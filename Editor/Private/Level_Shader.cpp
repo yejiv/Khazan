@@ -165,8 +165,6 @@ HRESULT CLevel_Shader::Ready_Layer_BackGround()
 	//		return E_FAIL;
 
 	return S_OK;
-
-	return S_OK;
 }
 
 HRESULT CLevel_Shader::Ready_Layer_Player()

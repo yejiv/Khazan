@@ -1,7 +1,9 @@
 #pragma once
 #include "Client_Defines.h"
 #include "Base.h"
-
+NS_BEGIN(Engine)
+class CUIObject;
+NS_END
 NS_BEGIN(Client)
 
 class CClientInstance final : public CBase
@@ -17,9 +19,31 @@ public:
 	void Update(_float fTimeDelta);
 #pragma endregion
 
+#pragma region UI_MANGER
+	//Event 관련
+	HRESULT						Add_UIEvent(const _wstring& strLayerTag, const _wstring& strEventTag, std::function<void()> Event);
+	HRESULT						Add_UIParamEvent(const _wstring& strLayerTag, const _wstring& strEventTag, std::function<void(void*)> Event);
+	function<void()>			Pop_UIEvent(const _wstring& strLayerTag, const _wstring& strEventTag);
+	function<void(void*)>		Pop_UIParamEvent(const _wstring& strLayerTag, const _wstring& strEventTag);
+	HRESULT						Erase_UIEventLayer(const _wstring& strLayerTag);
+
+	//UI JSON 로드
+	HRESULT						Load_UIData(_uint iLayerLevelID, const _wstring& strLayerTag, _uint iPrototypeLevelID, const _tchar* pTextureFilePath);
+	_int						UIType_StringToEnum(string szUIType);
+	_uint						UI_TexTag_Maping(string szTextag);
+
+	//UI 랜더 그룹에 추가
+	HRESULT						Add_UIRender(UI_RENDER_TYPE eRender, class CUIObject* pUIObject);
+
+	//UI 스위치
+	HRESULT						UI_UpdateSwitch(const _wstring& strUITag, void* pArg = nullptr);
+
+#pragma endregion
 private:
 	ID3D11Device* m_pDevice = { nullptr };
 	ID3D11DeviceContext* m_pContext = { nullptr };
+	
+	class CUI_Manager* m_pUI_Manager = { nullptr };
 
 public:
 	virtual void Free() override;

@@ -13,7 +13,7 @@ public :
 	enum class EffectEventType {	ACTIVATE,
 									ANIMATE_SPREAD, ANIMATE_ROTATE, ANIMATE_TWINLKE, ANIMATE_LINEAR_MOVE,
 									SCROLL_SPEAD,
-									DISTORTION, };
+									DISSOLVE, };
 
 public:
 	typedef struct tagEffectEvent

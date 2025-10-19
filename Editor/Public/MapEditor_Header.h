@@ -11,13 +11,10 @@
 #include "Prop_Static.h"
 #include "Prop_Animated.h"
 #include "Prop_Interactive.h"
-#include "Prop_Destructible.h"
+#include "Prop_Dynamic.h"
 
 // Properties Test
 #include "Prop_Test.h"
-
-// Property Export
-#include "Prop_Export.h"
 
 // Terrain
 #include "Map_Terrain.h"
