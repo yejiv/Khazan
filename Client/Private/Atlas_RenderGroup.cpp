@@ -19,11 +19,12 @@ HRESULT CAtlas_RenderGroup::Initialize_Prototype()
 HRESULT CAtlas_RenderGroup::Initialize_Clone(void* pArg)
 {
 	CUIObject::UIOBJECT_DESC Desc = {};
-	__super::Initialize_Clone(nullptr);
 
-	ATLASGROUP_DESC* pDesc = static_cast<ATLASGROUP_DESC*>(pArg);
-	m_fDepth = pDesc->fDepth;
-	m_iShaderPass = pDesc->iShdaerPass;
+	__super::Initialize_Clone(pArg);
+
+	//ATLASGROUP_DESC* pDesc = static_cast<ATLASGROUP_DESC*>(pArg);
+	//m_fDepth = pDesc->fDepth;
+	//m_iShaderPass = pDesc->iShdaerPass;
 
 	if (FAILED(Ready_Component()))
 		return E_FAIL;
@@ -40,12 +41,6 @@ void CAtlas_RenderGroup::Update(_float fTimeDelta)
 
 void CAtlas_RenderGroup::Late_Update(_float fTimeDelta)
 {
-	if (!m_isRender)
-		return;
-
-	m_pVIBufferCom->Update_Buffer();
-	if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::UI, this)))
-		return;
 }
 
 HRESULT CAtlas_RenderGroup::Render()
@@ -69,6 +64,16 @@ HRESULT CAtlas_RenderGroup::Render()
 	return S_OK;
 }
 
+void CAtlas_RenderGroup::Add_Renderer()
+{
+	if (!m_isRender)
+		return;
+
+	m_pVIBufferCom->Update_Buffer();
+	if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::UI, this)))
+		return;
+}
+
 HRESULT CAtlas_RenderGroup::Add_UIInstance(const VTXINSTANCE_UI* pUIData)
 {
 	m_isRender = true;
@@ -77,15 +82,15 @@ HRESULT CAtlas_RenderGroup::Add_UIInstance(const VTXINSTANCE_UI* pUIData)
 
 HRESULT CAtlas_RenderGroup::Ready_Component()
 {
-	if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Shader_VtxInstance_PointUI"),
+	if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxInstance_Point_UI"),
 		TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
 		return E_FAIL;
 
-	if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_VIBuffer_UIInstance"),
+	if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Instance_UI"),
 		TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), nullptr)))
 		return E_FAIL;
 
-	if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Texture_UI_Atlas"),
+	if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_UI_Atlas"),
 		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr)))
 		return E_FAIL;
 

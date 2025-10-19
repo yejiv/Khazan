@@ -3,6 +3,7 @@
 #include "Level_Loading.h"
 
 #include "JOH_EditorModelTest.h"
+#include "Editor_Model.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance{ CGameInstance::GetInstance() }
@@ -144,9 +145,9 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 		return E_FAIL;
 
 	/* Prototype_GameObject_Editor_Animation_TestModel */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Editor_Animation_TestModel"),
-		CJOH_EditorModelTest::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+		if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Editor_Animation_TestModel"),
+			CJOH_EditorModelTest::Create(m_pDevice, m_pContext))))
+			return E_FAIL;
 
 	return S_OK;
 }

@@ -22,6 +22,7 @@
 #include "Event_Manager.h"
 #include "Resource_Manager.h"
 #include "ComputeShader_Manager.h"
+#include "Camera_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -40,10 +41,6 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 
 	m_pInput_Manager = CInput_Manager::Create(EngineDesc.hInst, EngineDesc.hWnd);
 	if (nullptr == m_pInput_Manager)
-		return E_FAIL;
-	
-	m_pShadow = CShadow::Create(EngineDesc.iWinSizeX, EngineDesc.iWinSizeY);
-	if (nullptr == m_pShadow)
 		return E_FAIL;
 
 	m_pFont_Manager = CFont_Manager::Create(*ppDevice, *ppContext);
@@ -86,6 +83,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pPipeLine)
 		return E_FAIL;
 
+	m_pShadow = CShadow::Create(EngineDesc.iWinSizeX, EngineDesc.iWinSizeY);
+	if (nullptr == m_pShadow)
+		return E_FAIL;
+
 	m_pLight_Manager = CLight_Manager::Create(EngineDesc.iNumLevels);
 	if (nullptr == m_pLight_Manager)
 		return E_FAIL;
@@ -112,6 +113,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 
 	m_pComputeShader_Manager = CComputeShader_Manager::Create();
 	if (nullptr == m_pComputeShader_Manager)
+		return E_FAIL;
+
+	m_pCamera_Manager = CCamera_Manager::Create(EngineDesc.iNumLevels);
+	if (nullptr == m_pCamera_Manager)
 		return E_FAIL;
 
 #ifdef _DEBUG
@@ -162,6 +167,8 @@ HRESULT CGameInstance::Clear_Resources(_uint iClearLevelID)
 
 	m_pLight_Manager->Clear(iClearLevelID);
 
+	m_pCamera_Manager->Clear(iClearLevelID);
+
 	return S_OK;
 }
 
@@ -190,7 +197,7 @@ HRESULT CGameInstance::Draw()
 #ifdef _DEBUG
 	m_pImgui_Manager->BeginFrame();
 	m_pImgui_Manager->Render();
-	//m_pJolt_Manager->Debug_Render();
+	m_pJolt_Manager->Debug_Render();
 #endif
 
 	return S_OK;
@@ -524,6 +531,26 @@ void CGameInstance::Set_ShadowLight(SHADOW_LIGHT_DESC LightDesc)
 	m_pShadow->Set_ShadowLight(LightDesc);
 }
 
+_uint CGameInstance::Get_NumCascades()
+{
+	return m_pShadow->Get_NumCascades();
+}
+
+void CGameInstance::Set_CurrentCascade(_uint iIndex)
+{
+	m_pShadow->Set_CurrentCascade(iIndex);
+}
+
+HRESULT CGameInstance::Bind_LightViewProjMatrix(CShader* pShader, _uint iIndex)
+{
+	return m_pShadow->Bind_LightViewProjMatrix(pShader, iIndex);
+}
+
+const _float4x4* CGameInstance::Get_CurrentLightViewProjMatrix() const
+{
+	return m_pShadow->Get_CurrentLightViewProjMatrix();
+}
+
 #pragma endregion
 
 #pragma region FRUSTUM
@@ -590,6 +617,16 @@ void CGameInstance::CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir
 void CGameInstance::CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter, CharacterVirtual::ExtendedUpdateSettings tSetting)
 {
 	m_pJolt_Manager->CharVir_ExtendedUpdate(fTimeDelta, pCharVir, vGravity, iObjectLayer, pBodyFilter, pShapeFilter, tSetting);
+}
+
+void CGameInstance::Set_Gravity(_vector vGravity)
+{
+	m_pJolt_Manager->Set_Gravity(vGravity);
+}
+
+void CGameInstance::Reset_Gravity()
+{
+	m_pJolt_Manager->Reset_Gravity();
 }
 
 #ifdef _DEBUG
@@ -730,6 +767,17 @@ void CGameInstance::Execute_Job(COMPUTEJOB eJobTag)
 }
 #pragma endregion
 
+#pragma region CAMERA_MANAGER
+HRESULT CGameInstance::Add_Camera(_uint iLevelIndex, CCamera* pCamera)
+{
+	return m_pCamera_Manager->Add_Camera(iLevelIndex, pCamera);
+}
+void CGameInstance::Change_Camera(_uint iLevelIndex, _uint iCameraType)
+{
+	m_pCamera_Manager->Change_Camera(iLevelIndex, iCameraType);
+}
+#pragma endregion
+
 //
 //void CGameInstance::Transform_Picking_ToLocalSpace(CTransform* pTransformCom)
 //{
@@ -762,6 +810,7 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pInput_Manager);
 	Safe_Release(m_pResource_Manager);
+	Safe_Release(m_pCamera_Manager);
 
 	Safe_Release(m_pPicking);
 	Safe_Release(m_pTimer_Manager);

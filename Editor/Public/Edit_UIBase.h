@@ -1,6 +1,6 @@
 #pragma once
 #include "Editor_Defines.h"
-#include "UIObject.h"
+#include "UIParent.h"
 
 NS_BEGIN(Engine)
 class CVIBuffer_Rect;
@@ -10,11 +10,11 @@ class CTexture_Atlas;
 NS_END
 
 NS_BEGIN(Editor)
-class CEdit_UIBase : public CUIObject
+class CEdit_UIBase : public CUIParent
 {
 public:
 	enum class UI_RENDER_TYPE { DEFAULT, ATLAS, END };
-	enum class UITYPE { PANEL, TAP, BUTTON, SLOT, SCROLLBAR, PROGRESSBAR, END };
+	enum class UITYPE { PANEL, TAP, SLOT, BUTTON, SCROLLBAR, PROGRESSBAR, TEXTURE, TEXT, RENDER_GROUP, END };
 
 private:
 	CEdit_UIBase(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -25,7 +25,7 @@ public:
 	HRESULT					Create_Child(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, CUIObject::UIOBJECT_DESC* UIChildDesc, string szSeleteUIName, CUIObject* pParent = nullptr);
 
 	//Save/Load
-	HRESULT					Save_UI(nlohmann::json& pOutData);
+	HRESULT					Save_UI(nlohmann::ordered_json& pOutData);
 	virtual HRESULT			Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID);
 
 	//IMGUI
@@ -66,17 +66,16 @@ public:
 	virtual HRESULT			Render() override;
 
 private:
-	CShader* m_pShaderCom = { nullptr };
-	CVIBuffer_Rect* m_pVIBufferCom = { nullptr };
-	CTexture* m_pTexture = { nullptr };
-	CTexture_Atlas* m_pTexture_AtlasCom = { nullptr };
+	CShader*				m_pShaderCom = { nullptr };
+	CVIBuffer_Rect*			m_pVIBufferCom = { nullptr };
+	CTexture*				m_pTexture = { nullptr };
+	CTexture_Atlas*			m_pTexture_AtlasCom = { nullptr };
 
 	string					m_szClassName = {};
 	string					m_szTexTag = {};
 	_int					m_iTexType = {};
 
 	_float4					m_vFrameColor = {};
-	_float					m_fAlpha = {};
 
 	_int					m_iUiState = {};
 	UI_RENDER_TYPE			m_eRenderType = {};

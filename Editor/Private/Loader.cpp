@@ -26,6 +26,7 @@
 #pragma region Shader
 #include "Camera_Shader.h"
 #include "Terrain_Shader.h"
+#include "Player_Shader.h"
 #pragma endregion
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -166,10 +167,6 @@ HRESULT CLoader::Loading_For_Map_Level()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"),
 		CProp_Static::Create(m_pDevice, m_pContext)), E_FAIL);
 
-	// Prototype_GameObject_Prop_Export
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Export"),
-		CProp_Export::Create(m_pDevice, m_pContext)), E_FAIL);
-
 	// Prototype_GameObject_Camera_Map
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Camera_Map"),
 		CCamera_Map::Create(m_pDevice, m_pContext)), E_FAIL);
@@ -299,27 +296,33 @@ HRESULT CLoader::Loading_For_Shader_Level()
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
 
 	// Prototype_Component_Texture_Terrain_Shader
-	//	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Texture_Terrain_Shader"),
-	//		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Terrain/Tile0.jpg"), 1))))
-	//		return E_FAIL;
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Texture_Terrain_Shader"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Terrain/Tile0.dds"), 1))))
+		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
 
 	// Prototype_Component_VIBuffer_Terrain
-	//	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_VIBuffer_Terrain"),
-	//		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 50, 50))))
-	//		return E_FAIL;
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_VIBuffer_Terrain"),
+		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 50, 50))))
+		return E_FAIL;
 
 	// Prototype_Component_Model_WP_WOD_Ground_Base_004
-	_matrix PreTransformMatrix = XMMatrixScaling(0.0001f, 0.0001f, 0.0001f);
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"),
-		CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, "../../Client/Bin/Resources/Map/Prop/Ground/WP_WOD_Ground_Base_004.fbx", PreTransformMatrix))))
-		return E_FAIL;
+	//	_matrix PreTransformMatrix = XMMatrixScaling(0.0001f, 0.0001f, 0.0001f);
+	//	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"),
+	//		CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::NONANIM, "../../Client/Bin/Resources/Map/Prop/Ground/WP_WOD_Ground_Base_004.fbx", PreTransformMatrix))))
+	//		return E_FAIL;
 	
 	// Prototype_Component_Editor_Model_Test
-	PreTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
+	//	PreTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
+	//	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Editor_Model_Test"),
+	//		CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::ANIM, "../../Client/Bin/Resources/Test_Models/Test_Player/Test.fbx", PreTransformMatrix))))
+	//		return E_FAIL;
+
+	/* Prototype_Component_Editor_Model_Test */
+	_matrix PreTransformMatrix = XMMatrixScaling(0.0001f, 0.0001f, 0.0001f);
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Editor_Model_Test"),
-		CEditor_Model::Create(m_pDevice, m_pContext, MODELTYPE::ANIM, "../../Client/Bin/Resources/Test_Models/Test_Player/Test.fbx", PreTransformMatrix))))
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Test/Test_Player/Test_Player.dat"))))
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
@@ -332,24 +335,164 @@ HRESULT CLoader::Loading_For_Shader_Level()
 		return E_FAIL;
 
 	// Prototype_GameObject_Terrain_Shader
-	//	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Terrain_Shader"),
-	//		CTerrain_Shader::Create(m_pDevice, m_pContext))))
-	//		return E_FAIL;
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Terrain_Shader"),
+		CTerrain_Shader::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	// Prototype_GameObject_Player_Shader
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Player_Shader"),
+		CPlayer_Shader::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 	// Prototype_GameObject_Prop_Test
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Prop_Test"),
-		CProp_Test::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	//	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Prop_Test"),
+	//		CProp_Test::Create(m_pDevice, m_pContext))))
+	//		return E_FAIL;
 
 	// Prototype_GameObject_Editor_Animation_TestModel
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Editor_Animation_TestModel"),
-		CJOH_EditorModelTest::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	//	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Editor_Animation_TestModel"),
+	//		CJOH_EditorModelTest::Create(m_pDevice, m_pContext))))
+	//		return E_FAIL;
 
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 
 	m_isFinished = true;
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDataFileName, LEVEL eLevel, KHAZAN_MAP eMap)
+{
+	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+
+	switch (eMap)
+	{
+	case KHAZAN_MAP::HEINMACH:
+		pDataFilePath += TEXT("HeinMach/");
+		break;
+	case KHAZAN_MAP::YETUGA:
+		pDataFilePath += TEXT("Yetuga/");
+		break;
+	case KHAZAN_MAP::THECREVICE:
+		pDataFilePath += TEXT("TheCrevice/");
+		break;
+	case KHAZAN_MAP::EMBARS:
+		pDataFilePath += TEXT("Embars/");
+		break;
+	case KHAZAN_MAP::VIPER:
+		pDataFilePath += TEXT("Viper/");
+		break;
+	default:
+		break;
+	}
+
+	pDataFilePath += pPrototypeDataFileName;
+
+	pDataFilePath += TEXT("_prototypes.dat");
+
+	DWORD dwByte = {};
+
+	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("[DAT ERROR] 바이너리 파일 오픈 문제"), E_FAIL);
+
+	// 1. 프로토 타입의 총 개수
+	_uint iPrototypeCnt = {};
+	CHECK_FALSE(ReadFile(hFile, &iPrototypeCnt, sizeof(_uint), &dwByte, nullptr), E_FAIL);
+
+	// 프로토 타입의 총 개수만큼 순회
+	for (_uint i = 0; i < iPrototypeCnt; ++i)
+	{
+		// 2. MapObject 타입 가져오기 ( _ushort형으로 저장해서 형변환 후 사용 )
+		_ushort sMapObjectType = {};
+		CHECK_FALSE(ReadFile(hFile, &sMapObjectType, sizeof(_ushort), &dwByte, nullptr), E_FAIL);
+
+		MAPOBJECT_TYPE eMapObjType = static_cast<MAPOBJECT_TYPE>(sMapObjectType);
+
+		// MapObject 타입에 따른 조건문
+		if (MAPOBJECT_TYPE::OBJECT == eMapObjType ||
+			MAPOBJECT_TYPE::INTERACTIVE == eMapObjType ||
+			MAPOBJECT_TYPE::DYNAMIC == eMapObjType)
+		{
+			// 3. 프로토 타입 태그 길이 저장
+			_uint iPrototypeTagLen = {};
+			CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
+
+			// 4. 프로토 타입 태그 이름 저장
+			_tchar szPrototypeTag[MAX_PATH] = {};
+			CHECK_FALSE(ReadFile(hFile, &szPrototypeTag, sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr), E_FAIL);
+
+			// 5. 모델 경로 길이 저장
+			_uint iModelPathLen = {};
+			CHECK_FALSE(ReadFile(hFile, &iModelPathLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
+
+			// 6. 모델 경로 이름 저장
+			_char szModelPath[MAX_PATH] = {};
+			CHECK_FALSE(ReadFile(hFile, &szModelPath, sizeof(_char) * iModelPathLen, &dwByte, nullptr), E_FAIL);
+
+			if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(eLevel), szPrototypeTag,
+				CModel::Create(m_pDevice, m_pContext, szModelPath))))
+			{
+				CloseHandle(hFile);
+				MSG_BOX(TEXT("[DAT ERROR] 맵 오브젝트 프로토타입 등록 실패 ( CModel )"));
+				return E_FAIL;
+			}
+		}
+		else if (MAPOBJECT_TYPE::STATIC_INST == eMapObjType || MAPOBJECT_TYPE::ANIMATED_INST == eMapObjType)
+		{
+			// 3. 프로토 타입 태그 길이 저장
+			_uint iPrototypeTagLen = {};
+			CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
+
+			// 4. 프로토 타입 태그 이름 저장
+			_tchar szPrototypeTag[MAX_PATH] = {};
+			CHECK_FALSE(ReadFile(hFile, &szPrototypeTag, sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr), E_FAIL);
+
+			// 5. 모델 경로 길이 저장
+			_uint iModelPathLen = {};
+			CHECK_FALSE(ReadFile(hFile, &iModelPathLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
+
+			// 6. 모델 경로 이름 저장
+			_char szModelPath[MAX_PATH] = {};
+			CHECK_FALSE(ReadFile(hFile, &szModelPath, sizeof(_char) * iModelPathLen, &dwByte, nullptr), E_FAIL);
+
+			// 추후에 인스턴스 추가해야하는 코드 부분 ( vector<MESH_INSTANCE_DATA> )
+			CModelMesh_Instance::MODELMESH_INSTANCE_DESC InstanceDesc = {};
+
+			// 7. 인스턴스 개수
+			_uint iNumInstance = {};
+			CHECK_FALSE(ReadFile(hFile, &iNumInstance, sizeof(_uint), &dwByte, nullptr), E_FAIL);
+
+			for (_uint j = 0; j < InstanceDesc.iNumInstance; ++j)
+			{
+				// 8. 인스턴스 개수 만큼 순회하면서 벡터에 Push_Back ( MapEditor에서 사용한 InstanceID는 빼고 파일 입출력해도 괜찮을 거 같음 )
+				_matrix InstanceMatrix = {};
+				CHECK_FALSE(ReadFile(hFile, &InstanceMatrix, sizeof(_matrix), &dwByte, nullptr), E_FAIL);
+
+				MESH_INSTANCE_DATA InstanceData = {};
+				InstanceData.InstanceMatrix = InstanceMatrix;
+				InstanceData.InstanceID = j;
+
+				InstanceDesc.InstanceData.push_back(InstanceData);
+			}
+
+			if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(eLevel), szPrototypeTag,
+				CModel_Instance::Create(m_pDevice, m_pContext, szModelPath, &InstanceDesc))))
+			{
+				CloseHandle(hFile);
+				MSG_BOX(TEXT("[DAT ERROR] 맵 오브젝트 프로토타입 등록 실패 ( CModel_Instance )"));
+				return E_FAIL;
+			}
+		}
+		else
+		{
+			CloseHandle(hFile);
+			MSG_BOX(TEXT("[DAT ERROR] DAT 파일 읽는중 TYPE 문제 ( 박준영 문제 )"));
+			return E_FAIL;
+		}
+	}
+
+	CloseHandle(hFile);
 
 	return S_OK;
 }

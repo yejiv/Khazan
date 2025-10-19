@@ -156,10 +156,10 @@ _uint CEditor_Animation::GetAnimDirection(const string& animName)
         {"_RF", "_FR", ANIM_DIRECTION::RF},
         {"_RB", "_BR", ANIM_DIRECTION::RB},
 
-        {"_F_RF", "_F_FR", ANIM_DIRECTION::F_RF},
-        {"_F_LF", "_F_FL", ANIM_DIRECTION::F_LF},
-        {"_B_RB", "_B_BR", ANIM_DIRECTION::B_RB},
-        {"_B_LB", "_B_BL", ANIM_DIRECTION::B_LB},
+       // {"_F_RF", "_F_FR", ANIM_DIRECTION::F_RF},
+       // {"_F_LF", "_F_FL", ANIM_DIRECTION::F_LF},
+       // {"_B_RB", "_B_BR", ANIM_DIRECTION::B_RB},
+       // {"_B_LB", "_B_BL", ANIM_DIRECTION::B_LB},
 
         {"_U_F", nullptr, ANIM_DIRECTION::U_F},
         {"_U_B", nullptr, ANIM_DIRECTION::U_B},

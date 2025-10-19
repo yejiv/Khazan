@@ -7,13 +7,13 @@
 
 
 CAnimationTool::CAnimationTool(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: m_pGameInstance{ CGameInstance::GetInstance() }
-	, m_pDevice{ pDevice }
-	, m_pContext{ pContext }
+    : m_pGameInstance{ CGameInstance::GetInstance() }
+    , m_pDevice{ pDevice }
+    , m_pContext{ pContext }
 {
-	Safe_AddRef(m_pDevice);
-	Safe_AddRef(m_pContext);
-	Safe_AddRef(m_pGameInstance);
+    Safe_AddRef(m_pDevice);
+    Safe_AddRef(m_pContext);
+    Safe_AddRef(m_pGameInstance);
 }
 
 HRESULT CAnimationTool::Initialize_Prototype()
@@ -25,7 +25,7 @@ HRESULT CAnimationTool::Initialize_Prototype()
     size_t lastSlash = exeDir.find_last_of("\\/");
     if (lastSlash != string::npos) exeDir = exeDir.substr(0, lastSlash);
     SetCurrentDirectoryA(exeDir.c_str());
-    OutputDebugStringA(("[Working Directory Set] " + string(exePath)+ "\n").c_str());
+    OutputDebugStringA(("[Working Directory Set] " + string(exePath) + "\n").c_str());
 
     filesystem::path projectRoot = filesystem::path(exeDir).parent_path().parent_path() / "Default";
 
@@ -39,9 +39,9 @@ HRESULT CAnimationTool::Initialize_Prototype()
     GetCurrentDirectoryA(MAX_PATH, currentDir);
     OutputDebugStringA(("[Current Working Directory] " + string(currentDir) + "\n").c_str());
 
-	Widget();
+    Widget();
 
-	return S_OK;
+    return S_OK;
 }
 
 void CAnimationTool::Update(_float fTimeDelta)
@@ -50,8 +50,8 @@ void CAnimationTool::Update(_float fTimeDelta)
 
 void CAnimationTool::Widget()
 {
-	m_pGameInstance->AddWidget(TEXT("Animatiaon"), [this]() {
-		ImGui::Begin("Anim Tool");
+    m_pGameInstance->AddWidget(TEXT("Animatiaon"), [this]() {
+        ImGui::Begin("Anim Tool");
 
         /* Open Model */
         if (ImGui::Button("Open Model Manager", ImVec2(150, 25))) {
@@ -67,7 +67,7 @@ void CAnimationTool::Widget()
 
 
         /* Tool  */
-        if (ImGui::Button("Tool Manager", ImVec2(150, 25))) { 
+        if (ImGui::Button("Tool Manager", ImVec2(150, 25))) {
             m_isShowTool = !m_isShowTool;
             m_isShowOpenModel = false;
             m_isShowTool_Control = false;
@@ -79,34 +79,20 @@ void CAnimationTool::Widget()
         ImGui::Spacing(); ImGui::Separator();  ImGui::Spacing();
         if (m_isShowTool) Tool_Widget();
 
-        /* Animation Control */
-        //if (!m_GameObjects.empty())
-        //{
-        //    if (ImGui::Button("Animation Controler", ImVec2(150, 25))) {
-        //        m_isShowTool_Control = !m_isShowTool_Control;
-        //        m_isShowTool = false;
-        //        m_isShowOpenModel = false;
-        //    }
-        //    ImGui::SameLine();
-        //    if (m_isShowTool_Control) ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "[OPEN]");
-        //    else ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "[CLOSED]");
-        //    ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing();
-        //    if (m_isShowTool_Control) Tool_AnimationControl_Widget();
-        //}
-
         /* Info */
-        if(!m_isShowOpenModel && !m_isShowTool)
+        if (!m_isShowOpenModel && !m_isShowTool)
         {
             ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "Click 'Open Model Manager' to load models");
             ImGui::Spacing();
             ImGui::Text("Current Loaded Models: %d", (_int)m_GameObjects.size());
         }
 
-		ImGui::End();
-		});
+        ImGui::End();
+        });
 
 
 }
+
 void CAnimationTool::OpenModel_Widget()
 {
     // PreScale 조절 
@@ -116,6 +102,15 @@ void CAnimationTool::OpenModel_Widget()
     // 애니메이션 타입 선택 
     ImGui::SeparatorText("Model Type");
     ImGui::Checkbox("Is Animated Model", &m_isAnim);
+
+	//랜더 그룹 선택 
+	ImGui::SeparatorText("RenderGroup");
+    const _char* renderGroupNames[] = {"PRIORITY", "SHADOW", "NONBLEND", "NONLIGHT", "BLEND", "UI"};
+    if (ImGui::Combo("##RenderGroupCombo", &m_iCurrentRenderGroup, renderGroupNames, IM_ARRAYSIZE(renderGroupNames)))
+    {
+        //m_iCurrentRenderGroup = 3;
+    }
+    ImGui::Text("Selected: %s", renderGroupNames[m_iCurrentRenderGroup]);
 
     // 파일 선택 
     ImGui::SeparatorText("Load Model");
@@ -198,19 +193,19 @@ void CAnimationTool::OpenModel_Widget()
     _uint iLevelIndex = {};
     ImGui::BeginChild("AnimPanel", ImVec2(0, 30), true);
     {
-        if (ImGui::Button("MAP", ImVec2(60, 0))) { iLevelIndex = ENUM_CLASS(LEVEL::MAP); m_isLevelBtnPress = true;  }
+        if (ImGui::Button("MAP", ImVec2(60, 0))) { iLevelIndex = ENUM_CLASS(LEVEL::MAP); m_isLevelBtnPress = true; }
         ImGui::SameLine();
-        if (ImGui::Button("ANIMATION", ImVec2(60, 0))){iLevelIndex = ENUM_CLASS(LEVEL::ANIMATION); m_isLevelBtnPress = true;  }
+        if (ImGui::Button("ANIMATION", ImVec2(60, 0))) { iLevelIndex = ENUM_CLASS(LEVEL::ANIMATION); m_isLevelBtnPress = true; }
         ImGui::SameLine();
-        if (ImGui::Button("EFFECT", ImVec2(60, 0))){iLevelIndex = ENUM_CLASS(LEVEL::EFFECT); m_isLevelBtnPress = true;}
+        if (ImGui::Button("EFFECT", ImVec2(60, 0))) { iLevelIndex = ENUM_CLASS(LEVEL::EFFECT); m_isLevelBtnPress = true; }
         ImGui::SameLine();
-        if (ImGui::Button("UI", ImVec2(60, 0))){iLevelIndex = ENUM_CLASS(LEVEL::UI); m_isLevelBtnPress = true;}
+        if (ImGui::Button("UI", ImVec2(60, 0))) { iLevelIndex = ENUM_CLASS(LEVEL::UI); m_isLevelBtnPress = true; }
         ImGui::SameLine();
-        if (ImGui::Button("SHADER", ImVec2(60, 0))){ iLevelIndex = ENUM_CLASS(LEVEL::SHADER); m_isLevelBtnPress = true; }
+        if (ImGui::Button("SHADER", ImVec2(60, 0))) { iLevelIndex = ENUM_CLASS(LEVEL::SHADER); m_isLevelBtnPress = true; }
 
     }
     ImGui::EndChild();
-    if(m_isLevelBtnPress)
+    if (m_isLevelBtnPress)
         if (ImGui::Button("Add Model to Scene", ImVec2(200, 25))) {
             Add_Model(iLevelIndex);
             m_isLevelBtnPress = !m_isLevelBtnPress;
@@ -300,8 +295,6 @@ void CAnimationTool::Tool_Export_Update_Widget()
                 string savePath = ConvertToClientRelativePath(absolutePath);
 
                 m_GameObjects[m_iSelectedIndex]->get_Model()->ExportModel(savePath);
-
-                // MSG_BOX(TEXT("모델 Export 완료!"));
             }
 
             SetCurrentDirectoryA(savedDir);
@@ -320,18 +313,12 @@ void CAnimationTool::Tool_Export_Update_Widget()
             _char savedDir[MAX_PATH];
             GetCurrentDirectoryA(MAX_PATH, savedDir);
 
-            OutputDebugStringA(savedDir);
-            OutputDebugStringA("\n");
-
             OPENFILENAMEA ofn;
             _char szFile[260] = { 0 };
 
             // 기본 파일명
             string defaultName = WStringToAnsi(m_ObjectNames[m_iSelectedIndex]);
             strcpy_s(szFile, defaultName.c_str());
-
-
-
 
             ZeroMemory(&ofn, sizeof(ofn));
             ofn.lStructSize = sizeof(ofn);
@@ -349,8 +336,6 @@ void CAnimationTool::Tool_Export_Update_Widget()
                 string savePath = ConvertToClientRelativePath(absolutePath);
 
                 m_GameObjects[m_iSelectedIndex]->get_Model()->Update_DAT_From_JSON(savePath);
-
-                //MSG_BOX(TEXT("DAT 파일 업데이트 완료!"));
             }
 
             SetCurrentDirectoryA(savedDir);
@@ -410,7 +395,7 @@ void CAnimationTool::Tool_Widget()
     if (ImGui::Button("Export and Update", ImVec2(250, 25))) {
         m_isShowTool_ExportUpdate = !m_isShowTool_ExportUpdate;
     }
-    if(m_isShowTool_ExportUpdate)Tool_Export_Update_Widget();
+    if (m_isShowTool_ExportUpdate)Tool_Export_Update_Widget();
 
     /* Animation Controler*/
     if (ImGui::Button("Animation Controler", ImVec2(250, 25))) {
@@ -419,13 +404,12 @@ void CAnimationTool::Tool_Widget()
     }
     if (m_isShowTool_Control && m_iSelectedIndex > -1)Tool_AnimationControl_Widget();
 
-    
+
 }
 
 void CAnimationTool::Tool_AnimationControl_Widget()
 {
-    ANIMATION_SETUP_DATA* animSetupData{};
-    animSetupData = m_GameObjects[m_iSelectedIndex]->get_Model()->Get_CurAnimSet();
+    ANIMATION_SETUP_DATA* animSetupData = m_GameObjects[m_iSelectedIndex]->get_Model()->Get_CurAnimSet();
     ImGui::Text(("Cur Animation : " + animSetupData->strName).c_str());
     ImGui::Spacing();   ImGui::Separator();    ImGui::Spacing();
 
@@ -436,138 +420,131 @@ void CAnimationTool::Tool_AnimationControl_Widget()
         Tool_AnimationList_Widget();
     }
     ImGui::EndChild();
-    // === 중간: 애니메이션 정보 ===
-	ImGui::SameLine();
-	ImGui::BeginChild("MiddlePanel", ImVec2(m_pannelMiddleWidth, 0), true);
-	{
-        /* 애니메이션 정보  */
-        Tool_AnimationInfo_Widget();
-	}
-	ImGui::EndChild();
 
-	// === 오른쪽:  컨트롤 ===
-	ImGui::SameLine();
-	ImGui::BeginChild("RightPanel", ImVec2(0, 0), true);
-	{
-        /* 시간 조절 */
-        /* 애니메이션 세트 */
-        /* 이벤트  */
-        if(m_isEnble_AnimSlider)Tool_AnimationSlider_Widget();
-	}
-	ImGui::EndChild();
+    // === 중간: 애니메이션 정보 ===
+    ImGui::SameLine();
+    ImGui::BeginChild("MiddlePanel", ImVec2(m_pannelMiddleWidth, 0), true);
+    {
+        Tool_AnimationInfo_Widget();
+    }
+    ImGui::EndChild();
+
+    // === 오른쪽: 컨트롤 ===
+    ImGui::SameLine();
+    ImGui::BeginChild("RightPanel", ImVec2(0, 0), true);
+    {
+        if (m_isEnble_MakeAnimSet) Tool_MakeAnimSet_Widget();
+        if  (m_isEnble_AnimSlider&& m_isEnble_MakeAnimEvent)Tool_MakeAnimEvent_Widget();
+    }
+    ImGui::EndChild();
 
 }
 
 void CAnimationTool::Tool_AnimationList_Widget()
 {
-	// ImGui::Begin("Animation List", &m_isShowTool_AnimationList);
+    // 모델 선택 확인
+    if (m_iSelectedIndex < 0 || m_iSelectedIndex >= (_int)m_GameObjects.size())
+    {
+        ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f), "Please select a model first!");
+        return;
+    }
 
-	 // 모델 선택 확인
-	if (m_iSelectedIndex < 0 || m_iSelectedIndex >= (_int)m_GameObjects.size())
-	{
-		ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f), "Please select a model first!");
-		ImGui::End();
-		return;
-	}
+    CEditor_Model* pModel = m_GameObjects[m_iSelectedIndex]->get_Model();
+    if (pModel == nullptr)
+    {
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "CEditor_Model == nullptr");
+        return;
+    }
 
-	CEditor_Model* pModel = m_GameObjects[m_iSelectedIndex]->get_Model();
-	if (pModel == nullptr)
-	{
-		ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "CEditor_Model == nullptr");
-		ImGui::End();
-		return;
-	}
+    MODEL_DATA* modelData = pModel->Get_ModelData();
+    _uint iNumAnimations = modelData->iNumAnimations;
 
-	MODEL_DATA* modelData = pModel->Get_ModelData();
-	_uint iNumAnimations = modelData->iNumAnimations;
+    /* 애니메이션이 없음 */
+    if (iNumAnimations == 0)
+    {
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "This model has no animations!");
+        return;
+    }
 
-	/* 애니메이션이 없음 */
-	if (iNumAnimations == 0)
-	{
-		ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "This model has no animations!");
-		ImGui::End();
-		return;
-	}
+    // 헤더 정보
+    ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "Model: %s", WStringToAnsi(m_ObjectNames[m_iSelectedIndex]).c_str());
+    ImGui::Text("Total Animations: %d", iNumAnimations);
+    ImGui::Separator();  ImGui::Spacing();
 
-	// 헤더 정보
-	ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "Model: %s", WStringToAnsi(m_ObjectNames[m_iSelectedIndex]).c_str());
-	ImGui::Text("Total Animations: %d", iNumAnimations);
-	ImGui::Separator();  ImGui::Spacing();
+    ImGui::SeparatorText("Animation List");
+    // 검색
+    ImGui::SetNextItemWidth(-1);
+    ImGui::InputTextWithHint("##Search", "Search...", m_szAnimSearchBuffer, sizeof(m_szAnimSearchBuffer));
 
-	ImGui::SeparatorText("Animation List");
-	// 검색
-	ImGui::SetNextItemWidth(-1);
-	ImGui::InputTextWithHint("##Search", "Search...", m_szAnimSearchBuffer, sizeof(m_szAnimSearchBuffer));
+    ImGui::Spacing();
 
-	ImGui::Spacing();
+    // 리스트
+    if (ImGui::BeginChild("AnimListScroll", ImVec2(0, -30), true))
+    {
+        for (_uint i = 0; i < iNumAnimations; ++i)
+        {
+            const ANIMATION_DATA& animData = modelData->vecAnimation[i];
+            string animName = animData.strName;
 
-	// 리스트
-	if (ImGui::BeginChild("AnimListScroll", ImVec2(0, -30), true))
-	{
-		for (_uint i = 0; i < iNumAnimations; ++i)
-		{
-			const ANIMATION_DATA& animData = modelData->vecAnimation[i];
-			string animName = animData.strName;
+            // 검색 필터
+            if (strlen(m_szAnimSearchBuffer) > 0)
+            {
+                if (animName.find(m_szAnimSearchBuffer) == string::npos)
+                    continue;
+            }
 
-			// 검색 필터
-			if (strlen(m_szAnimSearchBuffer) > 0)
-			{
-				if (animName.find(m_szAnimSearchBuffer) == string::npos)
-					continue;
-			}
+            ImGui::PushID(i);
 
-			ImGui::PushID(i);
+            _bool isSelected = (m_iSelectedAnimIndex == (_int)i);
+            _int currentAnimIndex = pModel->Get_CurAnimIndex();
+            _bool isPlaying = (currentAnimIndex == (_int)i);
 
-			_bool isSelected = (m_iSelectedAnimIndex == (_int)i);
-			_int currentAnimIndex = pModel->Get_CurAnimIndex();
-			_bool isPlaying = (currentAnimIndex == (_int)i);
+            // 재생 중이면 초록색
+            if (isPlaying)
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
 
-			// 재생 중이면 초록색
-			if (isPlaying)
-				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+            if (ImGui::Selectable(animName.c_str(), isSelected))
+            {
+                m_iSelectedAnimIndex = i;
+            }
 
-			if (ImGui::Selectable(animName.c_str(), isSelected))
-			{
-				m_iSelectedAnimIndex = i;
-			}
+            if (isPlaying)
+                ImGui::PopStyleColor();
 
-			if (isPlaying)
-				ImGui::PopStyleColor();
-
-			// 더블클릭으로 재생
-			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
-			{
-				pModel->Set_Animation(i, animData.animSetup.isLoop);
-				m_iSelectedAnimIndex = i;
+            // 더블클릭으로 재생
+            if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
+            {
+                pModel->Set_Animation(i, animData.animSetup.isLoop);
+                m_iSelectedAnimIndex = i;
 
                 m_fCurrentFrame = m_GameObjects[m_iSelectedIndex]->get_Model()->Get_CurTrackPosition();
                 m_pCurAnimaion = m_GameObjects[m_iSelectedIndex]->get_Model()->Get_CurAnimtion();
                 m_fCurrentDuration = m_pCurAnimaion->Get_Duration();
                 m_isEnble_AnimSlider = true;
-			}
+            }
 
-			// 호버 시 간단한 정보
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::BeginTooltip();
-				ImGui::Text("Animation: %s", animName.c_str());
-				ImGui::Text("Duration: %.2f sec", animData.fDuration / animData.fTickPerSecond);
-				ImGui::Text("Frames: %.0f", animData.fDuration);
-				ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "Double-click to play");
-				ImGui::EndTooltip();
-			}
+            // 호버 시 간단한 정보
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::BeginTooltip();
+                ImGui::Text("Animation: %s", animName.c_str());
+                ImGui::Text("Duration: %.5f sec", animData.fDuration / animData.fTickPerSecond);
+                ImGui::Text("Frames: %.0f", animData.fDuration);
+                ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "Double-click to play");
+                ImGui::EndTooltip();
+            }
 
-			ImGui::PopID();
-		}
+            ImGui::PopID();
+        }
 
-	}
-	ImGui::EndChild();
+    }
+    ImGui::EndChild();
 
-	// 하단 정보
-	if (m_iSelectedAnimIndex >= 0)
-	{
-		ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f),"Selected: %d", m_iSelectedAnimIndex);
-	}
+    // 하단 정보
+    if (m_iSelectedAnimIndex >= 0)
+    {
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "Selected: %d", m_iSelectedAnimIndex);
+    }
 
 }
 
@@ -578,19 +555,27 @@ void CAnimationTool::Tool_AnimationInfo_Widget()
     {
         if (ImGui::Button("Info", ImVec2(60, 0))) m_isEnble_AnimInfo = !m_isEnble_AnimInfo;
         ImGui::SameLine();
-        if (ImGui::Button("Time", ImVec2(60, 0))) m_isEnble_AnimTime = !m_isEnble_AnimTime;
-        ImGui::SameLine();
         if (ImGui::Button("Set", ImVec2(60, 0))) m_isEnble_AnimSet = !m_isEnble_AnimSet;
         ImGui::SameLine();
         if (ImGui::Button("Root", ImVec2(60, 0))) m_isEnble_AnimRootMotion = !m_isEnble_AnimRootMotion;
         ImGui::SameLine();
         if (ImGui::Button("Event", ImVec2(60, 0))) m_isEnble_AnimEvent = !m_isEnble_AnimEvent;
+        ImGui::SameLine();
+        if (ImGui::Button("Make Event", ImVec2(80, 0))) {
+            m_isEnble_MakeAnimEvent = !m_isEnble_MakeAnimEvent;
+            m_isEnble_MakeAnimSet = false;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Make Set", ImVec2(80, 0))) {
+            m_isEnble_MakeAnimSet = !m_isEnble_MakeAnimSet;
+            m_isEnble_MakeAnimEvent = false;
+        }
     }
     ImGui::EndChild();
 
     if (m_iSelectedIndex < 0 || m_iSelectedAnimIndex < 0)
     {
-        ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f),"Select an animation");
+        ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "Select an animation");
         return;
     }
 
@@ -599,64 +584,152 @@ void CAnimationTool::Tool_AnimationInfo_Widget()
 
     MODEL_DATA* modelData = pModel->Get_ModelData();
     ANIMATION_DATA* animData = &modelData->vecAnimation[m_iSelectedAnimIndex];
-    ANIMATION_SETUP_DATA* setup = pModel->Get_CurAnimSet();
+    ANIMATION_SETUP_DATA* setup = &animData->animSetup;
 
     // 기본 정보
     ImGui::SeparatorText("Animation Information");
     if (m_isEnble_AnimInfo)
     {
-        ImGui::Text("strName: %s", setup->strName.c_str());                     //strName
-        ImGui::Checkbox("isLoop", &setup->isLoop);                              //isLoop
-        ImGui::Text("iDirection: %s", to_string(setup->iDirection).c_str());    //iDirection
+        ImGui::Text("strName: %s", setup->strName.c_str());
+        ImGui::Checkbox("isLoop", &setup->isLoop);
+        ImGui::Text("iDirection: %d", setup->iDirection);
         _int iTemp = setup->iDirection;
-        ImGui::DragInt("iDirection", &iTemp, 1, 0, 24);
+        ImGui::DragInt("##iDirection", &iTemp, 1, 0, 24);
         setup->iDirection = iTemp;
+
+        ImGui::Spacing();
+
+        // 애니메이션 전환 설정
+        ImGui::Text("=== Transition Settings ===");
+
+        const char* transitionTypes[] = { "Auto", "Flag", "Input", "Manual" };
+        _int currentType = setup->iTransitionType;
+        ImGui::Text("Transition Type:");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(150);
+        if (ImGui::Combo("##TransitionType", &currentType, transitionTypes, IM_ARRAYSIZE(transitionTypes)))
+        {
+            setup->iTransitionType = currentType;
+        }
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("이 애니메이션에서 다음 애니메이션으로 전환하는 조건");
+        }
+
+        ImGui::Checkbox("Wait For Complete", &setup->isWaitForComplete);
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("애니메이션이 끝난 후 다음으로 넘어갈지 여부");
+        }
+
+        ImGui::Text("Blend Out Time:");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(150);
+        ImGui::DragFloat("##BlendOut", &setup->fBlendOutTime, 0.01f, 0.0f, 5.0f, "%.2f");
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("이 애니메이션이 종료될 때 블렌드 시간");
+        }
+
+        ImGui::Text("Blend In Time: ");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(150);
+        ImGui::DragFloat("##BlendIn", &setup->fBlendInTime, 0.01f, 0.0f, 5.0f, "%.2f");
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("이 애니메이션이 시작될 때 블렌드 시간");
+        }
     }
     ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing();
 
-    // 구간 별 시간 조절
-    ImGui::SeparatorText("Setup Time Control");
-    if (m_isEnble_AnimTime)
+    // ===== 애니메이션 세트 (MODEL_DATA 레벨) =====
+    ImGui::SeparatorText("Animation Sets (Model Level)");
+    if (m_isEnble_AnimSet)
     {
-        ImGui::Checkbox("isAnimTimeControl", &setup->isAnimTimeControl);        //isAnimTimeControl
-        if (setup->isAnimTimeControl)                                           //vecAnimTimeControlFrame
+        if (modelData->vecAnimationSets.size() > 0)
         {
-            ImGui::Indent();
-            ImGui::Text("Sections: %d", (_int)setup->vecAnimTimeControlFrame.size());
+            ImGui::Text("Total Animation Sets: %d", (_int)modelData->vecAnimationSets.size());
+            ImGui::Spacing();
 
-            // 각 구간 표시
-            for (size_t i = 0; i < setup->vecAnimTimeControlFrame.size(); ++i)
+            for (_int i = 0; i < (_int)modelData->vecAnimationSets.size(); ++i)
             {
-                ImGui::PushID((_int)i);
+                ANIMATION_SET_DATA& animSet = modelData->vecAnimationSets[i];
 
-                FLOAT3_DATA& frame = setup->vecAnimTimeControlFrame[i];
+                ImGui::PushID(i);
 
-                if (ImGui::TreeNode(("Section " + to_string(i)).c_str()))
+                if (ImGui::TreeNode(("Set [" + to_string(i) + "] " + animSet.strAnimSetName).c_str()))
                 {
-                    ImGui::Text("Start Frame:");
-                    ImGui::SameLine();
-                    ImGui::SetNextItemWidth(150);
-                    ImGui::DragFloat("##start", &frame.x, 1.0f, 0.0f, animData->fDuration, "%.0f");
+                    ImGui::Indent();
 
-                    ImGui::Text("End Frame:  ");
+                    // strAnimSetName 변경
+                    ImGui::Text("Set Name:");
                     ImGui::SameLine();
-                    ImGui::SetNextItemWidth(150);
-                    ImGui::DragFloat("##end", &frame.y, 1.0f, frame.x, animData->fDuration, "%.0f");
-
-                    ImGui::Text("Speed:      ");
-                    ImGui::SameLine();
-                    ImGui::SetNextItemWidth(150);
-                    ImGui::DragFloat("##speed", &frame.z, 0.1f, 0.1f, 10.0f, "%.1fx");
-
-                    if (ImGui::Button("Remove Section", ImVec2(150, 0)))
+                    _char szSetNameBuffer[256];
+                    strcpy_s(szSetNameBuffer, animSet.strAnimSetName.c_str());
+                    ImGui::SetNextItemWidth(200);
+                    if (ImGui::InputText("##SetName", szSetNameBuffer, sizeof(szSetNameBuffer)))
                     {
-                        setup->vecAnimTimeControlFrame.erase(
-                            setup->vecAnimTimeControlFrame.begin() + i);
+                        animSet.strAnimSetName = string(szSetNameBuffer);
+                    }
+
+                    ImGui::Spacing();
+
+                    // vecAnimIndices - 애니메이션 리스트
+                    ImGui::Text("Animations in Set: %d", (_int)animSet.vecAnimIndices.size());
+                    if (ImGui::BeginChild(("AnimSetList" + to_string(i)).c_str(), ImVec2(0, 150), true))
+                    {
+                        for (_int j = 0; j < (_int)animSet.vecAnimIndices.size(); ++j)
+                        {
+                            _int animIdx = animSet.vecAnimIndices[j];
+                            if (animIdx >= 0 && animIdx < (_int)modelData->vecAnimation.size())
+                            {
+                                string animName = modelData->vecAnimation[animIdx].strName;
+                                ImGui::Text("[%d] Anim[%d]: %s", j, animIdx, animName.c_str());
+
+                                ImGui::SameLine();
+                                ImGui::PushID(j);
+                                if (ImGui::SmallButton("Remove"))
+                                {
+                                    animSet.vecAnimIndices.erase(animSet.vecAnimIndices.begin() + j);
+                                    ImGui::PopID();
+                                    break;
+                                }
+                                ImGui::PopID();
+                            }
+                            else
+                            {
+                                ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f),
+                                    "[%d] Invalid Index: %d", j, animIdx);
+                            }
+                        }
+                    }
+                    ImGui::EndChild();
+
+                    ImGui::Spacing();
+
+                    //플레이 버튼  todo
+                    if (ImGui::Button("Play. This Set", ImVec2(150, 0)))
+                    {
+                        m_GameObjects[m_iSelectedIndex]->get_Model()->Set_SetAnimation(modelData->vecAnimationSets[i].strAnimSetName);
+                        ImGui::Unindent();
                         ImGui::TreePop();
                         ImGui::PopID();
                         break;
                     }
 
+                    ImGui::Spacing();
+
+                    // 세트 삭제 버튼
+                    if (ImGui::Button("Delete This Set", ImVec2(150, 0)))
+                    {
+                        modelData->vecAnimationSets.erase(modelData->vecAnimationSets.begin() + i);
+                        ImGui::Unindent();
+                        ImGui::TreePop();
+                        ImGui::PopID();
+                        break;
+                    }
+
+                    ImGui::Unindent();
                     ImGui::TreePop();
                 }
                 else
@@ -664,131 +737,96 @@ void CAnimationTool::Tool_AnimationInfo_Widget()
                     // 접혀있을 때 간략 정보
                     ImGui::SameLine();
                     ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f),
-                        "(%.0f-%.0f, %.1fx)", frame.x, frame.y, frame.z);
+                        "(%d animations)", (_int)animSet.vecAnimIndices.size());
                 }
 
                 ImGui::PopID();
+                ImGui::Spacing();
             }
-
-            //if (ImGui::Button("Add Section", ImVec2(150, 25)))
-            //{
-            //    FLOAT3_DATA newFrame(0.0f, animData->fDuration, 1.0f);
-            //    setup->vecAnimTimeControlFrame.push_back(newFrame);
-            //}
-
-            ImGui::Unindent();
         }
-    }
-    ImGui::Spacing();    ImGui::Separator();   ImGui::Spacing();
-
-    // ===== 애니메이션 세트 =====
-    ImGui::SeparatorText("Animation Set");
-    if (m_isEnble_AnimSet)
-    {
-        ImGui::Checkbox("isAnimSet", &setup->isAnimSet);                                //isAnimSet
-        if (setup->isAnimSet)
+        else
         {
-            ImGui::Indent();
-
-            ImGui::Text("strAnimSetName: %s", setup->strAnimSetName.c_str());           //strAnimSetName
-
-            ImGui::Text("vecAnimSet: %d animations", (_int)setup->vecAnimSet.size());   //vecAnimSet
-            if (ImGui::TreeNode("Animation Set List"))
-            {
-                for (size_t i = 0; i < setup->vecAnimSet.size(); ++i)
-                {
-                    ImGui::BulletText("[%d] %s", (_int)i, setup->vecAnimSet[i].c_str());
-                }
-                ImGui::TreePop();
-            }
-
-            ImGui::Text("iAnimSetSelfIndex: %d", setup->iAnimSetSelfIndex);             //iAnimSetSelfIndex
-            _int iTemp1 = setup->iAnimSetSelfIndex;
-            ImGui::DragInt("iAnimSetSelfIndex", &iTemp1, 1, 0, 24);
-            setup->iAnimSetSelfIndex = iTemp1;
-
-            ImGui::Text("iTransitionType: %d", setup->iTransitionType);                 //iTransitionType
-            _int iTemp2 = setup->iTransitionType;
-            ImGui::DragInt("iTransitionType", &iTemp2, 1, 0, 24);
-            setup->iTransitionType = iTemp2;
-            ImGui::SameLine();
-            const char* transitionTypes[] = { "Auto", "Flag", "Input", "Manual" };
-            if (setup->iTransitionType < 4)
-                ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f),
-                    "(%s)", transitionTypes[setup->iTransitionType]);
-
-            ImGui::Checkbox("isWaitForComplete", &setup->isWaitForComplete);            //isWaitForComplete
-
-            ImGui::Text("fAnimSetBlendOutTime: %.2f", setup->fAnimSetBlendOutTime);     //fAnimSetBlendOutTime
-            ImGui::SameLine();
-            ImGui::SetNextItemWidth(100);
-            ImGui::DragFloat("##blendOut", &setup->fAnimSetBlendOutTime, 0.01f, 0.0f, 2.0f, "%.2f");
-
-            ImGui::Text("fAnimSetBlendInTime:  %.2f", setup->fAnimSetBlendInTime);      //fAnimSetBlendInTime
-            ImGui::SameLine();
-            ImGui::SetNextItemWidth(100);
-            ImGui::DragFloat("##blendIn", &setup->fAnimSetBlendInTime, 0.01f, 0.0f, 2.0f, "%.2f");
-
-            ImGui::Unindent();
+            ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "No Animation Sets");
         }
+
+        ImGui::Spacing();    ImGui::Separator();    ImGui::Spacing();
+
+        // 새 애니메이션 세트 추가
+        //if (ImGui::Button("Create New Animation Set", ImVec2(200, 25)))
+        //{
+        //    ANIMATION_SET_DATA newSet;
+        //    newSet.strAnimSetName = "NewAnimSet_" + to_string(modelData->vecAnimationSets.size());
+        //    modelData->vecAnimationSets.push_back(newSet);
+        //}
     }
-    ImGui::Spacing();    ImGui::Separator();    ImGui::Spacing();
+    ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing();
 
     // ===== 루트 모션 =====
     ImGui::SeparatorText("Root Motion");
     if (m_isEnble_AnimRootMotion)
     {
-        ImGui::Checkbox("isRootMotion", &setup->isRootMotion);                          //isRootMotion
+        ImGui::Checkbox("isRootMotion", &setup->isRootMotion);
         if (setup->isRootMotion)
         {
             ImGui::Indent();
 
-            ImGui::Checkbox("isApplyRootRotation", &setup->isApplyRootRotation);        //isApplyRootRotation
-            ImGui::Checkbox("isApplyRootPosition", &setup->isApplyRootPosition);        //isApplyRootPosition
+            ImGui::Checkbox("isApplyRootRotation", &setup->isApplyRootRotation);
+            ImGui::Checkbox("isApplyRootPosition", &setup->isApplyRootPosition);
 
-            ImGui::Text("RootMotionScale:");                                            //RootMitionScale
+            ImGui::Text("RootMotionScale:");
             ImGui::SameLine();
             ImGui::SetNextItemWidth(200);
             ImGui::DragFloat3("##rootScale", &setup->RootMitionScale.x, 0.1f, 0.0f, 10.0f, "%.1f");
+            if (ImGui::Button("Fast Choice[1.f, 1.f, 1.f]")) setup->RootMitionScale = FLOAT3_DATA(1.f, 1.f, 1.f);
+            if (ImGui::Button("Fast Choice[0.f, 1.f, 1.f]")) setup->RootMitionScale = FLOAT3_DATA(0.f, 1.f, 1.f);
+            if (ImGui::Button("Fast Choice[1.f, 0.f, 1.f]")) setup->RootMitionScale = FLOAT3_DATA(1.f, 0.f, 1.f);
+            if (ImGui::Button("Fast Choice[1.f, 1.f, 0.f]")) setup->RootMitionScale = FLOAT3_DATA(1.f, 1.f, 0.f);
 
             ImGui::Unindent();
         }
     }
-    ImGui::Spacing();    ImGui::Separator();    ImGui::Spacing();
+    ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing();
 
     // ===== 이벤트 =====
     ImGui::SeparatorText("Events");
     if (m_isEnble_AnimEvent)
     {
-        ImGui::Checkbox("isEvent", &setup->isEvent);                                    //isEvent
+        ImGui::Checkbox("isEvent", &setup->isEvent);
         if (setup->isEvent)
         {
             ImGui::Indent();
 
-            ImGui::Checkbox("isTriggerOnce", &setup->isTriggerOnce);                    //isTriggerOnce
-            ImGui::Checkbox("isTriggerOnExit", &setup->isTriggerOnExit);                //isTriggerOnExit
+            ImGui::Checkbox("isTriggerOnce", &setup->isTriggerOnce);
+            ImGui::Checkbox("isTriggerOnExit", &setup->isTriggerOnExit);
 
             ImGui::Text("Events: %d", (_int)setup->vecEventKeys.size());
 
-            for (size_t i = 0; i < setup->vecEventKeys.size(); ++i)                     //vecEventFrames, vecEventKeys
+            for (size_t i = 0; i < setup->vecEventKeys.size(); ++i)
             {
                 ImGui::PushID((_int)i);
 
                 if (ImGui::TreeNode(("Event " + to_string(i)).c_str()))
                 {
                     ImGui::Text("Key: %s", setup->vecEventKeys[i].c_str());
+                    ImGui::Text("Event Key Change:");
+                    ImGui::SameLine();
+                    ImGui::SetNextItemWidth(200);
+                    _char szKeyBuffer[256];
+                    strcpy_s(szKeyBuffer, setup->vecEventKeys[i].c_str());
+                    if (ImGui::InputText("##EventKeyChange", szKeyBuffer, sizeof(szKeyBuffer)))
+                    {
+                        setup->vecEventKeys[i] = string(szKeyBuffer);
+                    }
 
                     ImGui::Text("Start Frame:");
                     ImGui::SameLine();
                     ImGui::SetNextItemWidth(150);
-                    ImGui::DragFloat("##eventStart",
-                        &setup->vecEventFrames[i].x, 1.0f, 0.0f, animData->fDuration, "%.0f");
+                    ImGui::DragFloat("##eventStart", &setup->vecEventFrames[i].x, 0.1f, 0.0f, animData->fDuration, "%.5f");
 
                     ImGui::Text("End Frame:  ");
                     ImGui::SameLine();
                     ImGui::SetNextItemWidth(150);
-                    ImGui::DragFloat("##eventEnd",
-                        &setup->vecEventFrames[i].y, 1.0f, 0.0f, animData->fDuration, "%.0f");
+                    ImGui::DragFloat("##eventEnd", &setup->vecEventFrames[i].y, 0.1f, 0.0f, animData->fDuration, "%.5f");
 
                     if (ImGui::Button("Remove Event", ImVec2(150, 0)))
                     {
@@ -806,7 +844,7 @@ void CAnimationTool::Tool_AnimationInfo_Widget()
                     // 접혀있을 때 간략 정보
                     ImGui::SameLine();
                     ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f),
-                        "(%s: %.0f-%.0f)",
+                        "(%s: %.2f-%.2f)",
                         setup->vecEventKeys[i].c_str(),
                         setup->vecEventFrames[i].x,
                         setup->vecEventFrames[i].y);
@@ -824,17 +862,10 @@ void CAnimationTool::Tool_AnimationInfo_Widget()
             ImGui::Unindent();
         }
     }
-    ImGui::Spacing();    ImGui::Separator();    ImGui::Spacing();
-
-    // ===== 저장 버튼 =====
-    //if (ImGui::Button("Save Changes", ImVec2(-1, 30)))
-    //{
-    //    MSG_BOX(TEXT("변경사항이 적용되었습니다!\nExport를 통해 파일로 저장하세요."));
-    //}
-
+    ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing();
 }
 
-void CAnimationTool::Tool_AnimationSlider_Widget()
+void CAnimationTool::Tool_MakeAnimEvent_Widget()
 {
     if (ImGui::Button("begin")) {
         *m_fCurrentFrame = 0;
@@ -846,22 +877,21 @@ void CAnimationTool::Tool_AnimationSlider_Widget()
         m_isPlaying = !m_isPlaying;
         m_pCurAnimaion->EnbleTrackPosition(m_isPlaying);
     }
-    ImGui::SameLine(); 
-    if (ImGui::Button("end")){
+    ImGui::SameLine();
+    if (ImGui::Button("end")) {
         *m_fCurrentFrame = m_fCurrentDuration;
         m_isPlaying = false;
         m_pCurAnimaion->EnbleTrackPosition(m_isPlaying);
     }
     ImGui::SameLine();
-    ImGui::Text("Frame : %f / %f", *m_fCurrentFrame, m_fCurrentDuration);
+    ImGui::Text("Frame : %.5f / %.5f", *m_fCurrentFrame, m_fCurrentDuration);
     ImGui::SliderFloat("##frame_slider", m_fCurrentFrame, 0, m_fCurrentDuration, "");
 
-    ImGui::Spacing();    ImGui::Separator();    ImGui::Spacing();
-
+    ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing();
 
     ImGui::Text("Event Key:");
     ImGui::SameLine();
-    ImGui::SetNextItemWidth(200); 
+    ImGui::SetNextItemWidth(200);
     ImGui::InputText("##EventKeyInput", m_szEventKeyInputText, IM_ARRAYSIZE(m_szEventKeyInputText));
 
     if (ImGui::Button("Frame X Store"))
@@ -884,11 +914,10 @@ void CAnimationTool::Tool_AnimationSlider_Widget()
         m_vTempFrames.x = 0.f;
         m_vTempFrames.y = 0.f;
     }
-    ImGui::Text("Frame Key : ");
-    ImGui::SameLine();
-    ImGui::Text(m_szEventKeyInputText);
-    ImGui::Text("Frame X : %f", m_vTempFrames.x);
-    ImGui::Text("Frame Y : %f", m_vTempFrames.y);
+
+    ImGui::Text("Frame Key : %s", m_szEventKeyInputText);
+    ImGui::Text("Frame X : %.5f", m_vTempFrames.x);
+    ImGui::Text("Frame Y : %.5f", m_vTempFrames.y);
 
     if (ImGui::Button("Vector Frame Data Store"))
     {
@@ -897,9 +926,9 @@ void CAnimationTool::Tool_AnimationSlider_Widget()
 
         m_vTempFrames.x = 0.f;
         m_vTempFrames.y = 0.f;
-
     }
-    //todo 벡터 삭제기능, 벡터 보이기 기능 , 진짜 모델 데이터에 적용기능 
+
+    ImGui::Spacing();
     ImGui::Text("Event List");
     ImGui::BeginChild("EventList", ImVec2(0, 150), true);
     {
@@ -919,36 +948,184 @@ void CAnimationTool::Tool_AnimationSlider_Widget()
     ImGui::EndChild();
 
     // 선택된 항목이 있을 때만 삭제 버튼 표시
-    if (m_iAnimSliderListSelectedIndex >= 0 && m_iAnimSliderListSelectedIndex < (int)m_vecEventFrames.size())
+    if (m_iAnimSliderListSelectedIndex >= 0 && m_iAnimSliderListSelectedIndex < (_int)m_vecEventFrames.size())
     {
         ImGui::Text("Selected: %s", m_vecEventKeys[m_iAnimSliderListSelectedIndex].c_str());
         if (ImGui::Button("Delete Selected"))
         {
             m_vecEventFrames.erase(m_vecEventFrames.begin() + m_iAnimSliderListSelectedIndex);
             m_vecEventKeys.erase(m_vecEventKeys.begin() + m_iAnimSliderListSelectedIndex);
-            m_iAnimSliderListSelectedIndex = -1; // 선택 해제
+            m_iAnimSliderListSelectedIndex = -1;
         }
     }
-    //모델 데이터에 저장 
-    if (ImGui::Button("Save to Real Model Data"))
+
+    ImGui::Spacing();
+
+    // 모델 데이터에 저장
+    if (ImGui::Button("Save to Real Model Data", ImVec2(200, 25)))
     {
         MODEL_DATA* data = m_GameObjects[m_iSelectedIndex]->get_Model()->Get_ModelData();
         data->vecAnimation[m_iSelectedAnimIndex].animSetup.vecEventFrames = m_vecEventFrames;
         data->vecAnimation[m_iSelectedAnimIndex].animSetup.vecEventKeys = m_vecEventKeys;
         data->vecAnimation[m_iSelectedAnimIndex].animSetup.isEvent = true;
+
+        // 저장 후 초기화
+        m_vecEventFrames.clear();
+        m_vecEventKeys.clear();
+        m_iAnimSliderListSelectedIndex = -1;
+    }
+}
+
+void CAnimationTool::Tool_MakeAnimSet_Widget()
+{
+    if (m_iSelectedIndex < 0) return;
+
+    CEditor_Model* pModel = m_GameObjects[m_iSelectedIndex]->get_Model();
+    if (!pModel) return;
+
+    MODEL_DATA* modelData = pModel->Get_ModelData();
+
+    ImGui::SeparatorText("Create New Animation Set");
+
+    // 애니메이션 세트 이름 입력
+    ImGui::Text("Set Name:");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(250);
+    ImGui::InputText("##NewSetName", m_szAnimSetNameInputText, sizeof(m_szAnimSetNameInputText));
+
+    ImGui::Spacing();
+
+
+    // 현재 추가된 애니메이션 리스트
+    ImGui::Text("Animations to Add: %d", (_int)m_AnimSet.size());
+    if (ImGui::BeginChild("TempAnimSetList", ImVec2(0, 200), true))
+    {
+        for (_int i = 0; i < (_int)m_AnimSet.size(); ++i)
+        {
+            ImGui::Text("[%d] Anim[%d]: %s", i, m_AnimSet[i].first, m_AnimSet[i].second.c_str());
+
+            ImGui::SameLine();
+            ImGui::PushID(i);
+            if (ImGui::SmallButton("Remove"))
+            {
+                m_AnimSet.erase(m_AnimSet.begin() + i);
+                ImGui::PopID();
+                break;
+            }
+            if (ImGui::SmallButton("Up") && i > 0)
+            {
+                swap(m_AnimSet[i], m_AnimSet[i - 1]);
+            }
+            ImGui::SameLine();
+            if (ImGui::SmallButton("Down") && i < (_int)m_AnimSet.size() - 1)
+            {
+                swap(m_AnimSet[i], m_AnimSet[i + 1]);
+            }
+            ImGui::PopID();
+        }
+    }
+    ImGui::EndChild();
+
+    ImGui::Spacing();
+
+    // 애니메이션 추가 섹션
+    ImGui::SeparatorText("Add Animation to Set");
+
+    // 검색
+    ImGui::SetNextItemWidth(-1);
+    ImGui::InputTextWithHint("##Search", "Search...", m_szAnimSetSearchBuffer, sizeof(m_szAnimSetSearchBuffer));
+
+    // 모든 애니메이션 리스트
+    if (ImGui::BeginChild("AllAnimListForSet", ImVec2(0, 200), true))
+    {
+        for (_uint i = 0; i < modelData->iNumAnimations; ++i)
+        {
+            const ANIMATION_DATA& animData = modelData->vecAnimation[i];
+            string animName = animData.strName;
+
+            // 검색 필터
+            if (strlen(m_szAnimSetSearchBuffer) > 0)
+            {
+                if (animName.find(m_szAnimSetSearchBuffer) == string::npos)
+                    continue;
+            }
+
+            ImGui::PushID(i);
+
+            // 이미 추가된 애니메이션인지 체크
+            _bool alreadyAdded = false;
+            for (const auto& pair : m_AnimSet)
+            {
+                if (pair.first == (_int)i)
+                {
+                    alreadyAdded = true;
+                    break;
+                }
+            }
+
+            if (alreadyAdded)
+                ImGui::BeginDisabled();
+
+            if (ImGui::Selectable(animName.c_str(), false))
+            {
+                m_AnimSet.push_back({ (_int)i, animName });
+            }
+
+            if (alreadyAdded)
+            {
+                ImGui::EndDisabled();
+                ImGui::SameLine();
+                ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "[Added]");
+            }
+
+            ImGui::PopID();
+        }
+    }
+    ImGui::EndChild();
+
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+
+    // 세트 생성 버튼
+    _bool bCanCreate = (strlen(m_szAnimSetNameInputText) > 0 && !m_AnimSet.empty());
+
+    if (!bCanCreate) ImGui::BeginDisabled();
+
+    if (ImGui::Button("Create Animation Set", ImVec2(200, 30)))
+    {
+        ANIMATION_SET_DATA newSet;
+        newSet.strAnimSetName = string(m_szAnimSetNameInputText);
+
+        for (const auto& pair : m_AnimSet)
+        {
+            newSet.vecAnimIndices.push_back(pair.first);
+        }
+
+        modelData->vecAnimationSets.push_back(newSet);
+
+        // 초기화
+        m_AnimSet.clear();
+        memset(m_szAnimSetNameInputText, 0, sizeof(m_szAnimSetNameInputText));
     }
 
+    if (!bCanCreate) ImGui::EndDisabled();
+
+    ImGui::SameLine();
+    if (ImGui::Button("Clear All", ImVec2(100, 30)))
+    {
+        m_AnimSet.clear();
+        memset(m_szAnimSetNameInputText, 0, sizeof(m_szAnimSetNameInputText));
+    }
 }
 
 void CAnimationTool::Add_Model(_uint iLevelIndex)
 {
     _wstring prototypeTag = TEXT("Prototype_Component_Editor_Model_") + m_strModelName;
 
-    /* Prototype_Component_Editor_Model_xxxx */
-    _matrix		PreTransformMatrix = XMMatrixIdentity();
+    _matrix PreTransformMatrix = XMMatrixIdentity();
     PreTransformMatrix = XMMatrixScaling(m_vPreScale.x, m_vPreScale.y, m_vPreScale.z) * XMMatrixRotationY(XMConvertToRadians(180.0f));
 
-    // 프로토타입 추가
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), prototypeTag,
         CEditor_Model::Create(m_pDevice, m_pContext,
             m_isAnim ? MODELTYPE::ANIM : MODELTYPE::NONANIM,
@@ -961,14 +1138,14 @@ void CAnimationTool::Add_Model(_uint iLevelIndex)
     CJOH_EditorModelTest::EDITORTESTMODEL_DESC desc;
     desc.strPrototypeTag = prototypeTag;
     desc.isAnim = m_isAnim;
-
-    // 게임 오브젝트 생성
+    desc.renderGroup = static_cast<RENDERGROUP>(m_iCurrentRenderGroup);
     if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(iLevelIndex, TEXT("Layer_Model"),
-        iLevelIndex, TEXT("Prototype_GameObject_Editor_Animation_TestModel"),  &desc)))
+        iLevelIndex, TEXT("Prototype_GameObject_Editor_Animation_TestModel"), &desc)))
     {
         MSG_BOX(TEXT("게임 오브젝트 클론 실패!"));
         return;
     }
+
     CGameObject* pGameObject = m_pGameInstance->Get_BackGameObject(iLevelIndex, TEXT("Layer_Model"));
 
     if (pGameObject)
@@ -1013,41 +1190,31 @@ void CAnimationTool::Remove_Model()
         return;
     }
 
-    // 오브젝트 비활성화
     pObject->OnUnEnble();
 
-    // 벡터에서 제거
     m_GameObjects.erase(m_GameObjects.begin() + m_iSelectedIndex);
     m_ObjectNames.erase(m_ObjectNames.begin() + m_iSelectedIndex);
 
-    // 인덱스 재조정
     m_iSelectedIndex = -1;
-
 }
 
-// Editor.exe 기준 상대 경로로 변환 (모델 로드용)
 string CAnimationTool::ConvertToRelativePath(const string& absolutePath)
 {
     namespace fs = std::filesystem;
 
     try
-    { 
-        // 결과: C:\...\Khazan\Editor\Bin\Debug
+    {
         _char exePath[MAX_PATH];
         GetModuleFileNameA(NULL, exePath, MAX_PATH);
         fs::path exeDir = fs::path(exePath).parent_path();
-         OutputDebugStringA(("[Editor .exe Dir] " + exeDir.string() + "\n").c_str());
+        OutputDebugStringA(("[Editor .exe Dir] " + exeDir.string() + "\n").c_str());
 
-         //Editor\Bin\Debug -> Editor\Bin -> Editor -> Editor\Default
         fs::path editorDefaultDir = exeDir.parent_path().parent_path() / "Default";
-
         OutputDebugStringA(("[Editor Default Dir] " + editorDefaultDir.string() + "\n").c_str());
 
-        // 절대 경로
         fs::path absPath = fs::absolute(absolutePath);
         OutputDebugStringA(("[Absolute Path] " + absPath.string() + "\n").c_str());
 
-        // Editor/Default 기준 상대 경로 계산
         fs::path relativePath = fs::relative(absPath, editorDefaultDir);
 
         string result = relativePath.string();
@@ -1063,30 +1230,27 @@ string CAnimationTool::ConvertToRelativePath(const string& absolutePath)
         return absolutePath;
     }
 }
-// Client.exe 기준 상대 경로로 변환 (저장용)
+
 string CAnimationTool::ConvertToClientRelativePath(const string& absolutePath)
 {
     namespace fs = std::filesystem;
 
     try
-    { 
-        // 결과: C:\...\Khazan\Editor\Bin\Debug
+    {
         _char exePath[MAX_PATH];
         GetModuleFileNameA(NULL, exePath, MAX_PATH);
         fs::path exeDir = fs::path(exePath).parent_path();
-
-
-        // Editor\Bin\Debug -> Editor\Bin -> Editor -> Khazan -> Client\Default
-        fs::path clientDefaultDir = exeDir.parent_path().parent_path() / "Client" / "Default";
-
         OutputDebugStringA(("[Editor.exe Dir] " + exeDir.string() + "\n").c_str());
+
+        fs::path editorDefaultDir = exeDir.parent_path().parent_path() / "Default";
+        OutputDebugStringA(("[Editor Default Dir] " + editorDefaultDir.string() + "\n").c_str());
+
+        fs::path clientDefaultDir = editorDefaultDir.parent_path().parent_path()/ "Client" / "Default";
         OutputDebugStringA(("[Client Default] " + clientDefaultDir.string() + "\n").c_str());
 
-        // 절대 경로
         fs::path absPath = fs::absolute(absolutePath);
         OutputDebugStringA(("[Absolute Path] " + absPath.string() + "\n").c_str());
 
-        // Client/Default 기준 상대 경로 계산
         fs::path relativePath = fs::relative(absPath, clientDefaultDir);
 
         string result = relativePath.string();
@@ -1105,22 +1269,22 @@ string CAnimationTool::ConvertToClientRelativePath(const string& absolutePath)
 
 CAnimationTool* CAnimationTool::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-	CAnimationTool* pInstance = new CAnimationTool(pDevice, pContext);
+    CAnimationTool* pInstance = new CAnimationTool(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype()))
-	{
-		MSG_BOX(TEXT("Failed to Created : CAnimationTool"));
-		Safe_Release(pInstance);
-	}
+    if (FAILED(pInstance->Initialize_Prototype()))
+    {
+        MSG_BOX(TEXT("Failed to Created : CAnimationTool"));
+        Safe_Release(pInstance);
+    }
 
-	return pInstance;
+    return pInstance;
 }
 
 void CAnimationTool::Free()
 {
-	__super::Free();
+    __super::Free();
 
-	Safe_Release(m_pGameInstance);
-	Safe_Release(m_pDevice);
-	Safe_Release(m_pContext);
+    Safe_Release(m_pGameInstance);
+    Safe_Release(m_pDevice);
+    Safe_Release(m_pContext);
 }
