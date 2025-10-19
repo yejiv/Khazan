@@ -489,7 +489,6 @@
     <ClCompile Include="..\Private\VIBuffer_Point_Instance.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Point</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\VIBuffer_Mesh_Instance.cpp" />
     <ClCompile Include="..\Private\Camera_Manager.cpp">
       <Filter>01.Utility\02.GameObject\Camera\Manager</Filter>
     </ClCompile>
@@ -498,6 +497,9 @@
     </ClCompile>
     <ClCompile Include="..\private\UIParent.cpp">
       <Filter>01.Utility\02.GameObject\UIObject\Parent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Mesh_Instance.cpp">
+      <Filter>01.Utility\03.Component\VIBuffer\Instance\Mesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -759,7 +761,6 @@
     <ClInclude Include="..\Public\VIBuffer_Point_Instance.h">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Point</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\VIBuffer_Mesh_Instance.h" />
     <ClInclude Include="..\Public\Camera_Manager.h">
       <Filter>01.Utility\02.GameObject\Camera\Manager</Filter>
     </ClInclude>
@@ -768,6 +769,9 @@
     </ClInclude>
     <ClInclude Include="..\public\UIParent.h">
       <Filter>01.Utility\02.GameObject\UIObject\Parent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Mesh_Instance.h">
+      <Filter>01.Utility\03.Component\VIBuffer\Instance\Mesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

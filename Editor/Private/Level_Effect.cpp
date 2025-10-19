@@ -3,6 +3,8 @@
 #include "Level_Loading.h"
 #include "Camera_Effect.h"
 #include "Effect_Point_Instance.h"
+#include "Effect_Mesh_Instance.h"
+#include "Effect_Sprite.h"
 
 CLevel_Effect::CLevel_Effect(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
@@ -84,7 +86,7 @@ HRESULT CLevel_Effect::Initialize()
 			ImGui::RadioButton("Rotate", &EventType, ENUM_CLASS(CEffect_Prefab::EffectEventType::ANIMATE_ROTATE));
 			ImGui::RadioButton("Twinkle", &EventType, ENUM_CLASS(CEffect_Prefab::EffectEventType::ANIMATE_TWINLKE));
 			ImGui::RadioButton("Up", &EventType, ENUM_CLASS(CEffect_Prefab::EffectEventType::ANIMATE_LINEAR_MOVE));
-			ImGui::RadioButton("Distortion", &EventType, ENUM_CLASS(CEffect_Prefab::EffectEventType::DISTORTION));
+			ImGui::RadioButton("Dissolve", &EventType, ENUM_CLASS(CEffect_Prefab::EffectEventType::DISSOLVE));
 
 			m_WorkingTrackData.eEventType = (CEffect_Prefab::EffectEventType)EventType;
 
@@ -147,21 +149,38 @@ void CLevel_Effect::Edit_Options()
 {
 	ImGui::RadioButton("Point Effect", &m_EffectType, 0);
 	ImGui::RadioButton("Mesh Effect", &m_EffectType, 1);
-	ImGui::Separator();
-	ImGui::RadioButton("Spawn_BoundingBox", &m_SpawnType, 0);
-	ImGui::RadioButton("Spawn_Circle", &m_SpawnType, 1);
+	ImGui::RadioButton("Sprite Effect", &m_EffectType, 2);
 	ImGui::Separator();
 
-	if (m_SpawnType == 0)
-		Create_Box_Spawn();
-	else if (m_SpawnType == 1)
-		Create_Circle_Spawn();
+	if (m_EffectType != 2)
+	{
+		ImGui::RadioButton("Spawn_BoundingBox", &m_SpawnType, 0);
+		ImGui::RadioButton("Spawn_Circle", &m_SpawnType, 1);
+		ImGui::Separator();
 
-	ImGui::InputScalar("Instance Num : ", ImGuiDataType_U32, &m_iInstanceNum);
+		if (m_SpawnType == 0)
+			Create_Box_Spawn();
+		else if (m_SpawnType == 1)
+			Create_Circle_Spawn();
+
+		ImGui::InputScalar("Instance Num : ", ImGuiDataType_U32, &m_iInstanceNum);
+		ImGui::InputFloat2("LifeTime : ", m_fLifeTime);
+		ImGui::InputFloat2("Scrolling Speed : ", reinterpret_cast<_float*>(&m_fScrollSpeed));
+	}
+	else
+	{
+		const char* textures[] = { "test0","test1" };
+		ImGui::ListBox("Particles", reinterpret_cast<int*>(&m_iTextureIdx), textures, IM_ARRAYSIZE(textures));
+
+		ImGui::InputFloat("Sprite Speed : ", reinterpret_cast<_float*>(&m_fSpriteSpeed));
+		ImGui::InputInt("Scaling Value : ", reinterpret_cast<int*>(&m_fScalingValue));
+		ImGui::InputInt("Col : ", reinterpret_cast<int*>(&m_iCol));
+		ImGui::InputInt("Row : ", reinterpret_cast<int*>(&m_iRow));
+		ImGui::Checkbox("Sprite Loop", &m_bLoop);
+	}
+
 	ImGui::InputFloat2("Size : ", m_fSize);
 	ImGui::InputFloat("Size Ratio : ", &m_fSizeRatio);
-	ImGui::InputFloat2("LifeTime : ", m_fLifeTime);
-	ImGui::InputFloat2("Scrolling Speed : ", reinterpret_cast<_float*>(&m_fScrollSpeed));
 
 	GetParticleColor();
 
@@ -173,8 +192,12 @@ void CLevel_Effect::Edit_Options()
 			Create_PointInstance_Element();
 			break;
 
-		//case ENUM_CLASS(CEffect_Prefab::EffectType::MESH_INSTANCE):
-		//	Create_MeshInstance_Element();
+		case ENUM_CLASS(CEffect_Prefab::EffectType::MESH_INSTANCE):
+			Create_MeshInstance_Element();
+			break;
+
+		case ENUM_CLASS(CEffect_Prefab::EffectType::SPRITE):
+			Create_Sprite_Element();
 			break;
 
 		default:
@@ -241,22 +264,39 @@ void CLevel_Effect::Create_PointInstance_Element()
 
 void CLevel_Effect::Create_MeshInstance_Element()
 {
-	//CEffect_Mesh_Instance::PARTICLE_DESC data;
-	//
-	//data.IsCircle = m_SpawnType;
-	//data.iNumInstance = m_iInstanceNum;
-	//data.vSize = _float2(m_fSize[0], m_fSize[1]);
-	//data.fSizeRatio = m_fSizeRatio;
-	//data.vLifeTime = _float2(m_fLifeTime[0], m_fLifeTime[1]);
-	//data.vCenter = _float3(m_fCenter[0], m_fCenter[1], m_fCenter[2]);
-	//data.vRange = _float3(m_fRange[0], m_fRange[1], m_fRange[2]);
-	//data.fOffset = m_fOffset;
-	//data.vColor = m_fColor;
-	//data.iTextureIdx = m_iTextureIdx;
-	//data.iMeshTypeIdx = m_iMeshTypeIdx;
-	//data.iScrollSpeed = m_fScrollSpeed;
-	//
-	//m_PrefabPrototype->Add_Effect_Element(m_EffectType, &data);
+	CEffect_Mesh_Instance::PARTICLE_DESC data;
+	
+	data.IsCircle = m_SpawnType;
+	data.iNumInstance = m_iInstanceNum;
+	data.vSize = _float2(m_fSize[0], m_fSize[1]);
+	data.fSizeRatio = m_fSizeRatio;
+	data.vLifeTime = _float2(m_fLifeTime[0], m_fLifeTime[1]);
+	data.vCenter = _float3(m_fCenter[0], m_fCenter[1], m_fCenter[2]);
+	data.vRange = _float3(m_fRange[0], m_fRange[1], m_fRange[2]);
+	data.fOffset = m_fOffset;
+	data.vColor = m_fColor;
+	data.iTextureIdx = m_iTextureIdx;
+	data.iMeshTypeIdx = m_iMeshTypeIdx;
+	data.iScrollSpeed = m_fScrollSpeed;
+	
+	m_PrefabPrototype->Add_Effect_Element(m_EffectType, &data);
+}
+
+void CLevel_Effect::Create_Sprite_Element()
+{
+	CEffect_Sprite::SPRITE_DESC data;
+
+	data.IsLoop = m_bLoop;
+	data.iCol = m_iCol;
+	data.iRow = m_iRow;
+	data.fSpriteSpeed = m_fSpriteSpeed;
+	data.vColor = m_fColor;
+	data.fSize = m_fSize[0];
+	data.fSizeRatio = m_fSizeRatio;
+	data.ScalingValue = 1.f; //tmp;
+	data.iTextureIdx = m_iTextureIdx;
+
+	m_PrefabPrototype->Add_Effect_Element(m_EffectType, &data);
 }
 
 HRESULT CLevel_Effect::Ready_Layer_BackGround()
