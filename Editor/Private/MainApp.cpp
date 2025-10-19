@@ -22,13 +22,10 @@ HRESULT CMainApp::Initialize()
 	EngineDesc.iWinSizeX = g_iWinSizeX;
 	EngineDesc.iWinSizeY = g_iWinSizeY;
 	EngineDesc.iNumLevels = ENUM_CLASS(LEVEL::END);
-<<<<<<< Updated upstream
+
 	EngineDesc.iWinSizeX_Imgui = g_iWinSizeX_Imgui_TYJ;
 	EngineDesc.iWinSizeY_Imgui = g_iWinSizeY_Imgui_TYJ;
-=======
-	EngineDesc.iWinSizeX_Imgui = g_iWinSizeX_Imgui_KBS;
-	EngineDesc.iWinSizeY_Imgui = g_iWinSizeY_Imgui_KBS;
->>>>>>> Stashed changes
+
 	EngineDesc.iNumJoltObjectLayer = ENUM_CLASS(COLLISION_LAYER::END);
 
 	list<_wstring> Imgui_Menu;
