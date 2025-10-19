@@ -74,6 +74,22 @@ PS_OUT PS_ATLAS_TEX(PS_DEFAULT_IN In)
     return Out;
 }
 
+PS_OUT PS_TEX_CLOOR(PS_DEFAULT_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    float2 vMinUV = { g_vUVMinMax.x, g_vUVMinMax.y };
+    float2 vMaxUV = { g_vUVMinMax.z, g_vUVMinMax.w };
+    
+    In.vTexcoord = vMinUV + (vMaxUV - vMinUV) * In.vTexcoord;
+     
+    Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
+    Out.vColor.rgb = (1 - Out.vColor.r) * g_vColor.rgb;
+    
+    Out.vColor.a = Out.vColor.a * g_fAlpha;
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     pass DefaultPass
@@ -87,13 +103,23 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_PANAL();
     }
 
-    pass UI_AtlasTex_Pass_0
+    pass UI_AtlasTex_1
     {
-        SetRasterizerState(RS_Default);
+        SetRasterizerState(RS_Cull_None);
         SetDepthStencilState(DSS_None, 0);
         SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
   
         VertexShader = compile vs_5_0 VS_MAIN();
         PixelShader = compile ps_5_0 PS_ATLAS_TEX();
+    }
+
+    pass UI_Tex_2
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+  
+        VertexShader = compile vs_5_0 VS_MAIN();
+        PixelShader = compile ps_5_0 PS_TEX_CLOOR();
     }
 }
