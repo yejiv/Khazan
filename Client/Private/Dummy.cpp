@@ -27,9 +27,9 @@ HRESULT CDummy::Initialize_Clone(void* pArg)
 
     m_pTransformCom->Set_State(STATE::POSITION,
         XMVectorSet(
-            m_pGameInstance->Rand(0.f, 10.f),
+            m_pGameInstance->Rand(0.f, 100.f),
             0.f,
-            m_pGameInstance->Rand(0.f, 10.f),
+            m_pGameInstance->Rand(0.f, 100.f),
             1.f
         ));
 
@@ -91,7 +91,7 @@ HRESULT CDummy::Render()
     return S_OK;
 }
 
-void CDummy::Collision_Enter(CGameObject* pObject, _uint iOtherObjectLayer)
+void CDummy::Collision_Enter(CGameObject* pObject, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
     //m_pBodyCom->Add_Impulse(_float3(0.f, 100.f, 0.f));
 
@@ -112,7 +112,7 @@ void CDummy::Collision_Enter(CGameObject* pObject, _uint iOtherObjectLayer)
     }
 }
 
-void CDummy::Collision_Stay(CGameObject* pObject, _uint iOtherObjectLayer)
+void CDummy::Collision_Stay(CGameObject* pObject, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
 }
 
@@ -130,7 +130,7 @@ HRESULT CDummy::Ready_Components()
     /*CBody::BODY_BOXSHAPE_DESC BodyDesc{};
     BodyDesc.vExtent = { 0.5f, 0.5f, 0.5f };*/
     CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
-    BodyDesc.fRadius = 1.f;
+    BodyDesc.fRadius = 6.f;
     BodyDesc.bIsTrigger = false;
     BodyDesc.bStartActive = true;
     BodyDesc.eMotion = EMotionType::Dynamic;
@@ -146,7 +146,7 @@ HRESULT CDummy::Ready_Components()
     XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
     BodyDesc.vPos = vPos;
     BodyDesc.vQuat = vQuat;
-    BodyDesc.vShapeOffset = _float3(0.f, 0.5f, 0.f);
+    BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
     BodyDesc.pGameObject = this;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),

@@ -80,16 +80,11 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 	MESHINSTANCE_PARTICLE* pVertices = new MESHINSTANCE_PARTICLE[m_iNumVertices];
 	m_pVertexPositions = new _float3[m_iNumVertices];
 	ZeroMemory(m_pVertexPositions, sizeof(_float3) * m_iNumVertices);
-
 	for (_uint i = 0; i < m_iNumVertices; ++i)
 	{
-		VTXMESH VtxData{};
-		is.read(reinterpret_cast<char*>(&VtxData), sizeof(VTXMESH));
+		memcpy(&pVertices[i].vPosition, &tMeshInfo.vecVertices[i].position, sizeof(_float3));
+		memcpy(&pVertices[i].vTexcoord, &tMeshInfo.vecVertices[i].texcoord, sizeof(_float2));
 
-		memcpy(&pVertices[i].vPosition, &VtxData.vPosition, sizeof(_float3));
-		//memcpy(&pVertices[i].vTangent, &VtxData.vTangent, sizeof(_float3));
-		//memcpy(&pVertices[i].vBinormal, &VtxData.vBinormal, sizeof(_float3));
-		memcpy(&pVertices[i].vTexcoord, &VtxData.vTexcoord, sizeof(_float2));
 		m_pVertexPositions[i] = pVertices[i].vPosition;
 	}
 
@@ -114,9 +109,9 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 
 	for (_uint i = 0; i < tMeshInfo.iNumFace; i++)
 	{
-		is.read(reinterpret_cast<_char*>(&pIndices[iIndex++]), sizeof(_uint));
-		is.read(reinterpret_cast<_char*>(&pIndices[iIndex++]), sizeof(_uint));
-		is.read(reinterpret_cast<_char*>(&pIndices[iIndex++]), sizeof(_uint));
+		memcpy(&pIndices[iIndex++], &tMeshInfo.vecIndices[i].x, sizeof(_uint));
+		memcpy(&pIndices[iIndex++], &tMeshInfo.vecIndices[i].y, sizeof(_uint));
+		memcpy(&pIndices[iIndex++], &tMeshInfo.vecIndices[i].z, sizeof(_uint));
 	}
 
 	D3D11_SUBRESOURCE_DATA	IBInitialData{};

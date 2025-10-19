@@ -91,15 +91,6 @@ public:
 		_float				fRadius;
 	}CV_CAPSULESHAPE_DESC;
 
-	typedef struct tagMeshShape : CHARACTERVIRTUAL_DESC
-	{
-		class CModel* pModel = { nullptr };
-	}CV_MESHSHAPE_DESC;
-
-	typedef struct tagConvexShape : CHARACTERVIRTUAL_DESC
-	{
-		class CModel* pModel = { nullptr };
-	}CV_CONVEXSHAPE_DESC;
 private:
 	CCharacterVirtual(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CCharacterVirtual(const CCharacterVirtual& Prototype);
@@ -109,13 +100,14 @@ public:
 	virtual HRESULT Initialize_Prototype() override;
 	virtual HRESULT Initialize_Clone(void* pArg) override;
 	virtual void Sync_Update(class CTransform* pTransform) override;
-	virtual void Update(_float fTimeDelta, class CTransform* pTransform);
+	virtual void Update(_float fTimeDelta, class CTransform* pTransform, _vector vGravity = XMVectorSet(0.f, g_fGravity, 0.f, 0.f));
 
 public:
 	virtual void	Set_PosRot(_vector vPos, _vector vRot);
 	virtual void    Set_Position(_vector vPos);
 	virtual void	Set_Velocity(_vector vVelocity);
 	virtual void	Set_Rotation(_vector vRotation);
+	virtual void	Set_Gravity(_float fGravity);
 
 private:
 	JPH::CharacterVirtual* m_pCharVir = { nullptr };

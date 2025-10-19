@@ -35,6 +35,7 @@ private:
 
 private:
 	HRESULT Ready_Prototype_ForStatic();
+	HRESULT Ready_Prototype_ForStatic_UI();
 	HRESULT Ready_ObjectLayer();
 	HRESULT Ready_ClientInstance(ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext);
 	HRESULT Start_Level(LEVEL eStartLevelID);

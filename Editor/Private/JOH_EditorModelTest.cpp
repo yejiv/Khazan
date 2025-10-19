@@ -23,7 +23,7 @@ HRESULT CJOH_EditorModelTest::Initialize_Clone(void* pArg)
 
     EDITORTESTMODEL_DESC* pDesc = static_cast<EDITORTESTMODEL_DESC*>(pArg);
     m_isAnim = pDesc->isAnim;
-
+    m_RenderGroup = pDesc->renderGroup;
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
@@ -65,17 +65,23 @@ void CJOH_EditorModelTest::Late_Update(_float fTimeDelta)
 {
     if (!m_isEnble) return;
 
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this)))
+    if (FAILED(m_pGameInstance->Add_RenderGroup(m_RenderGroup, this)))
         return;
 
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
-        return;
+    //  if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
+    //      return;
 }
 
 HRESULT CJOH_EditorModelTest::Render()
 {
-    if (FAILED(Bind_ShaderResources()))
-        return E_FAIL;
+    if (m_isAnim) {
+        if (FAILED(Bind_ShaderResources()))
+            return E_FAIL;
+    }
+    else {
+        if (FAILED(Bind_ShaderResources_NonAnim()))
+            return E_FAIL;
+    }
 
     _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -151,13 +157,28 @@ HRESULT CJOH_EditorModelTest::Ready_Components(const _wstring& strModelTag)
 
 HRESULT CJOH_EditorModelTest::Bind_ShaderResources()
 {
-    if (FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix")))
+    if (FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom_NonAnim, "g_WorldMatrix")))
         return E_FAIL;
 
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
+    if (FAILED(m_pShaderCom_NonAnim->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
         return E_FAIL;
 
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
+    if (FAILED(m_pShaderCom_NonAnim->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
+        return E_FAIL;
+
+
+    return S_OK;
+}
+
+HRESULT CJOH_EditorModelTest::Bind_ShaderResources_NonAnim()
+{
+    if (FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom_NonAnim, "g_WorldMatrix")))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom_NonAnim->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom_NonAnim->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
         return E_FAIL;
 
 

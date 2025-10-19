@@ -214,9 +214,6 @@
     <Filter Include="01.Utility\13.Jolt\DebugDraw">
       <UniqueIdentifier>{61136c8c-9d8c-4c2e-8e9c-23cbeac14a2c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\03.Component\CharacterVirtual">
-      <UniqueIdentifier>{09e723ca-0ab0-4b34-bd76-99a5fca6d80b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\03.Component\Model\Model_Instance">
       <UniqueIdentifier>{62bb2252-6fc8-45d0-984f-058df548e135}</UniqueIdentifier>
     </Filter>
@@ -255,6 +252,9 @@
     </Filter>
     <Filter Include="01.Utility\03.Component\VIBuffer\Instance\Mesh">
       <UniqueIdentifier>{2b9ab067-39b0-4d29-bbf5-98929792d67e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\UIObject\Parent">
+      <UniqueIdentifier>{54f95aaf-6316-4314-94d9-df09f0191430}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -489,12 +489,17 @@
     <ClCompile Include="..\Private\VIBuffer_Point_Instance.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Point</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\VIBuffer_Mesh_Instance.cpp" />
     <ClCompile Include="..\Private\Camera_Manager.cpp">
       <Filter>01.Utility\02.GameObject\Camera\Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\private\VIBuffer_Instance_UI.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UIParent.cpp">
+      <Filter>01.Utility\02.GameObject\UIObject\Parent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Mesh_Instance.cpp">
+      <Filter>01.Utility\03.Component\VIBuffer\Instance\Mesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -756,12 +761,17 @@
     <ClInclude Include="..\Public\VIBuffer_Point_Instance.h">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Point</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\VIBuffer_Mesh_Instance.h" />
     <ClInclude Include="..\Public\Camera_Manager.h">
       <Filter>01.Utility\02.GameObject\Camera\Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\public\VIBuffer_Instance_UI.h">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UIParent.h">
+      <Filter>01.Utility\02.GameObject\UIObject\Parent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Mesh_Instance.h">
+      <Filter>01.Utility\03.Component\VIBuffer\Instance\Mesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

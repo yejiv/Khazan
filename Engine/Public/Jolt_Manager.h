@@ -55,6 +55,9 @@ public:
         m_pObjectVsBPLayerFilter->SetUp_ObjectVsBPFilter(iObjectLayer, iBPLayer);
     };
 
+    void Set_Gravity(_vector vGravity);
+    void Reset_Gravity(); 
+
 
 public:
     void CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter);

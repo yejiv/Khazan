@@ -27,8 +27,12 @@ void CJolt_CharacterContactListener::OnContactAdded(const JPH::CharacterVirtual*
 
     if (pCharGameObject != nullptr && pBodyGameObject != nullptr)
     {
-        pCharGameObject->Collision_Enter(pBodyGameObject, static_cast<_uint>(BodyObj));
-        pBodyGameObject->Collision_Enter(pCharGameObject, static_cast<_uint>(CharObj));
+        pCharGameObject->Collision_Enter(pBodyGameObject, static_cast<_uint>(BodyObj), 
+            _float3(inContactPosition.GetX(), inContactPosition.GetY(), inContactPosition.GetZ()),
+            _float3(inContactNormal.GetX(), inContactNormal.GetY(), inContactNormal.GetZ()));
+        pBodyGameObject->Collision_Enter(pCharGameObject, static_cast<_uint>(CharObj),
+            _float3(inContactPosition.GetX(), inContactPosition.GetY(), inContactPosition.GetZ()),
+            _float3(inContactNormal.GetX(), inContactNormal.GetY(), inContactNormal.GetZ()));
     }
 }
 
@@ -45,8 +49,12 @@ void CJolt_CharacterContactListener::OnContactPersisted(const JPH::CharacterVirt
 
     if (pCharGameObject != nullptr && pBodyGameObject != nullptr)
     {
-        pCharGameObject->Collision_Stay(pBodyGameObject, static_cast<_uint>(BodyObj));
-        pBodyGameObject->Collision_Stay(pCharGameObject, static_cast<_uint>(CharObj));
+        pCharGameObject->Collision_Stay(pBodyGameObject, static_cast<_uint>(BodyObj),
+            _float3(inContactPosition.GetX(), inContactPosition.GetY(), inContactPosition.GetZ()),
+            _float3(inContactNormal.GetX(), inContactNormal.GetY(), inContactNormal.GetZ()));
+        pBodyGameObject->Collision_Stay(pCharGameObject, static_cast<_uint>(CharObj), 
+            _float3(inContactPosition.GetX(), inContactPosition.GetY(), inContactPosition.GetZ()),
+            _float3(inContactNormal.GetX(), inContactNormal.GetY(), inContactNormal.GetZ()));
     }
         
 }
@@ -65,8 +73,12 @@ void CJolt_CharacterContactListener::OnCharacterContactAdded(const CharacterVirt
 
     if (pGameObject1 != nullptr && pGameObject2 != nullptr)
     {
-        pGameObject1->Collision_Enter(pGameObject2, static_cast<_uint>(CharObj2));
-        pGameObject2->Collision_Enter(pGameObject1, static_cast<_uint>(CharObj1));
+        pGameObject1->Collision_Enter(pGameObject2, static_cast<_uint>(CharObj2),
+            _float3(inContactPosition.GetX(), inContactPosition.GetY(), inContactPosition.GetZ()),
+            _float3(inContactNormal.GetX(), inContactNormal.GetY(), inContactNormal.GetZ()));
+        pGameObject2->Collision_Enter(pGameObject1, static_cast<_uint>(CharObj1),
+            _float3(inContactPosition.GetX(), inContactPosition.GetY(), inContactPosition.GetZ()),
+            _float3(inContactNormal.GetX(), inContactNormal.GetY(), inContactNormal.GetZ()));
     }
         
 
@@ -85,8 +97,12 @@ void CJolt_CharacterContactListener::OnCharacterContactPersisted(const Character
 
     if (pGameObject1 != nullptr && pGameObject2 != nullptr)
     {
-        pGameObject1->Collision_Stay(pGameObject2, static_cast<_uint>(CharObj2));
-        pGameObject2->Collision_Stay(pGameObject1, static_cast<_uint>(CharObj1));
+        pGameObject1->Collision_Stay(pGameObject2, static_cast<_uint>(CharObj2),
+            _float3(inContactPosition.GetX(), inContactPosition.GetY(), inContactPosition.GetZ()),
+            _float3(inContactNormal.GetX(), inContactNormal.GetY(), inContactNormal.GetZ()));
+        pGameObject2->Collision_Stay(pGameObject1, static_cast<_uint>(CharObj1),
+            _float3(inContactPosition.GetX(), inContactPosition.GetY(), inContactPosition.GetZ()),
+            _float3(inContactNormal.GetX(), inContactNormal.GetY(), inContactNormal.GetZ()));
     }
     ioSettings.mCanPushCharacter = true;
 

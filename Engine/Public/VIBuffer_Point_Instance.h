@@ -6,7 +6,6 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CVIBuffer_Point_Instance final : public CVIBuffer_Instance
 {
 public:
-	//enum class FX_POINT_TYPE { SPREAD, DROP, LOOP, END };
 	enum class SPEED_VALUE { SPREAD_SPEED, ROTATION_SPEED, UPWARD_SPEED, SCALE_SPEED, SPEED_END };
 
 	typedef struct tagPointInstanceDesc : public INSTANCE_DESC
@@ -19,7 +18,6 @@ public:
 		_float3 vSourceColor = _float3(1.f, 1.f, 1.f);
 		_float	fRotationPerSec;
 		_float	fSizeRatio;
-		//FX_POINT_TYPE eType;
 	}POINT_INSTANCE_DESC;
 
 private:
@@ -43,6 +41,7 @@ public:
 	void					Remove_Speed();
 	void					Setting_Pivot(_float3 pivot);
 	void					Setting_Loop(_bool isLoop) { m_IsLoop = isLoop; };
+	//void					Update_
 
 private:
 	_float3					m_vPivot = {};

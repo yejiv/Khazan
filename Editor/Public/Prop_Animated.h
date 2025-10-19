@@ -5,6 +5,10 @@
 
 // 정적 맵 오브젝트 ( 인스턴싱 O )
 
+NS_BEGIN(Engine)
+class CModel_Instance;
+NS_END
+
 NS_BEGIN(Editor)
 
 class CProp_Animated final : public CProp
@@ -44,7 +48,7 @@ public:
 	void Fix_Instance(MESH_INSTANCE_DATA InstanceData, _uint InstanceIndex);
 
 private:
-	class CEditor_Model* m_pModelCom = { nullptr };
+	CModel_Instance* m_pModelCom = { nullptr };
 
 private:
 	HRESULT Ready_Components(void* pArg);
