@@ -281,6 +281,14 @@ CBase* CGameInstance::Clone_Prototype(PROTOTYPE ePrototype, _uint iPrototypeLeve
 	return m_pPrototype_Manager->Clone_Prototype(ePrototype, iPrototypeLevelIndex, strPrototypeTag, pArg);
 }
 
+_bool CGameInstance::Already_Registered_Prototype(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag)
+{
+	if (nullptr == m_pPrototype_Manager)
+		return false;
+
+	return m_pPrototype_Manager->Already_Registered_Prototype(iPrototypeLevelIndex, strPrototypeTag);
+}
+
 #pragma endregion
 
 #pragma region OBJECT_MANAGER

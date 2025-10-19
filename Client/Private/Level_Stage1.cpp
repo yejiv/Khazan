@@ -48,7 +48,7 @@ HRESULT CLevel_Stage1::Initialize()
 
 	CHECK_FAILED(Ready_Layer_MapObject_Test(TEXT("Layer_Test")), E_FAIL);
 
-	//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject_Test"), TEXT("Test")), E_FAIL);
+	//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject_Test"), TEXT("HeinMach"), KHAZAN_MAP::HEINMACH), E_FAIL);
 
 	m_pGameInstance->Jolt_Test();
 
