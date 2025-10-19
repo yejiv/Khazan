@@ -88,9 +88,6 @@
     <Filter Include="02.GameObject\UI">
       <UniqueIdentifier>{bb5dba1f-c3b3-40d9-89e6-690cab87d409}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\UI\99.Camera">
-      <UniqueIdentifier>{fe38b2f3-d49f-4cfe-8f49-120fba3d8e6b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03.Utility\00.Model\Model_Instance">
       <UniqueIdentifier>{9eb5cf18-0fa7-4e8d-8cb0-24ca18f5cc48}</UniqueIdentifier>
     </Filter>
@@ -171,6 +168,12 @@
     </Filter>
     <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite">
       <UniqueIdentifier>{4bce57e8-b335-4b18-86b0-70fd515a5461}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Camera">
+      <UniqueIdentifier>{fe38b2f3-d49f-4cfe-8f49-120fba3d8e6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Shader\Player">
+      <UniqueIdentifier>{b9c07b19-01a4-4a39-988f-659175d6709c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -268,7 +271,7 @@
       <Filter>02.GameObject\Animation\98.Temp Camera</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Camera_UI.h">
-      <Filter>02.GameObject\UI\99.Camera</Filter>
+      <Filter>02.GameObject\UI\Camera</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Editor_ModelMesh_Instance.h">
       <Filter>03.Utility\00.Model\Model_Instance\Mesh</Filter>
@@ -324,6 +327,7 @@
     <ClInclude Include="..\Public\Prop_Dynamic.h">
       <Filter>02.GameObject\MapObject\Prop\04.Dynamic</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Player_Shader.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -418,7 +422,7 @@
       <Filter>02.GameObject\Animation\98.Temp Camera</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Camera_UI.cpp">
-      <Filter>02.GameObject\UI\99.Camera</Filter>
+      <Filter>02.GameObject\UI\Camera</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Editor_ModelMesh_Instance.cpp">
       <Filter>03.Utility\00.Model\Model_Instance\Mesh</Filter>
@@ -474,6 +478,7 @@
     <ClCompile Include="..\Private\Prop_Dynamic.cpp">
       <Filter>02.GameObject\MapObject\Prop\04.Dynamic</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Player_Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_Edit_UI.hlsl">

@@ -104,11 +104,11 @@ void CCharacterVirtual::Sync_Update(CTransform* pTransform)
 {
 	Set_PosRot(pTransform->Get_State(STATE::POSITION), pTransform->Get_Rotation_Quat());
 }
-void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform)
+void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vector vGravity)
 {
-
 	if (!m_pCharVir) return;
 
+	m_vGravity = LoadVec3(vGravity);
 	JPH::Vec3 vHorizontal = JPH::Vec3::sZero();
 
 	const bool onGround = (m_pCharVir->GetGroundState() == JPH::CharacterVirtual::EGroundState::OnGround);
@@ -159,6 +159,11 @@ void CCharacterVirtual::Set_Velocity(_vector vVelocity)
 void CCharacterVirtual::Set_Rotation(_vector vRotation)
 {
 	m_pCharVir->SetRotation(LoadQuat(vRotation));
+}
+
+void CCharacterVirtual::Set_Gravity(_float fGravity)
+{
+	m_pBodyInterface->SetGravityFactor(m_pCharVir->GetInnerBodyID(), fGravity);
 }
 
 CCharacterVirtual* CCharacterVirtual::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

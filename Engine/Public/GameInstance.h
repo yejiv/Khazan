@@ -135,6 +135,10 @@ public:
 	HRESULT Ready_ShadowLight(SHADOW_LIGHT_DESC LightDesc);
 	SHADOW_LIGHT_DESC Get_ShadowLight();
 	void Set_ShadowLight(SHADOW_LIGHT_DESC LightDesc);
+	_uint Get_NumCascades();
+	void Set_CurrentCascade(_uint iIndex);
+	HRESULT Bind_LightViewProjMatrix(class CShader* pShader, _uint iIndex);
+	const _float4x4* Get_CurrentLightViewProjMatrix() const;
 #pragma endregion
 
 #pragma region FRUSTUM
@@ -161,6 +165,8 @@ public:
 	void CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter);
 	void CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter, CharacterVirtual::ExtendedUpdateSettings tSetting);
 
+	void Set_Gravity(_vector vGravity);
+	void Reset_Gravity();
 #ifdef _DEBUG
 	void Jolt_Test();
 #endif
@@ -214,6 +220,11 @@ public:
 	void		Execute_Job(COMPUTEJOB eJobTag);
 #pragma endregion
 
+#pragma region CAMERA_MANAGER
+	HRESULT Add_Camera(_uint iLevelIndex, class CCamera* pCamera);
+	void Change_Camera(_uint iLevelIndex, _uint iCameraType);
+#pragma endregion
+
 private:
 	class CGraphic_Device*		m_pGraphic_Device = { nullptr };
 	class CLevel_Manager*		m_pLevel_Manager = { nullptr };
@@ -235,6 +246,7 @@ private:
 	class CEvent_Manager*		m_pEvent_Manager = { nullptr };
 	class CResource_Manager*	m_pResource_Manager = { nullptr };
 	class CComputeShader_Manager*	m_pComputeShader_Manager = { nullptr };
+	class CCamera_Manager*		m_pCamera_Manager = { nullptr };
 #ifdef _DEBUG
 	class CImgui_Manager* m_pImgui_Manager = { nullptr };
 #endif

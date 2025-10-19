@@ -5,7 +5,8 @@
 
 #include "Player.h"
 #include "Body_Player.h"
-#include "Camera_Free.h"
+//#include "Camera_Free.h"
+#include "Camera_Compre.h"
 #include "Sky.h"
 #include "Terrain.h"
 #include "Monster.h"
@@ -62,16 +63,39 @@ void CLoader::Update()
 	bool all_done = true;
 	HRESULT first_fail = S_OK;
 
-	for (auto& f : m_futures)
-	{
-		if (!f.valid()) continue;
-		using namespace chrono_literals;
-		auto st = f.wait_for(0ms);
-		if (st == future_status::ready) {
-			HRESULT hr = any_cast<HRESULT>(f.get());
-			if (FAILED(hr) && SUCCEEDED(first_fail)) first_fail = hr;
+	for (auto it = m_futures.begin(); it != m_futures.end(); ) {
+		auto& f = *it;
+		if (!f.valid()) { it = m_futures.erase(it); continue; }
+
+		if (f.wait_for(0ms) == future_status::ready) {
+			try {
+				any result = f.get();
+
+				if (auto pHr = any_cast<HRESULT>(&result)) {
+					if (FAILED(*pHr) && SUCCEEDED(first_fail)) first_fail = *pHr;
+				}
+				else {
+					// 타입 불일치도 실패로 간주
+					if (SUCCEEDED(first_fail)) first_fail = E_UNEXPECTED;
+				}
+			}
+			catch (const bad_alloc&) {
+				// 바로 여기에 찍히면 태스크 쪽 과다할당/개수버그 의심
+				if (SUCCEEDED(first_fail)) first_fail = E_OUTOFMEMORY;
+				// TODO: 로그로 태스크 이름/파일/라인 남기기
+			}
+			catch (const exception& e) {
+				if (SUCCEEDED(first_fail)) first_fail = E_FAIL;
+				// TODO: e.what() 로깅
+			}
+			catch (...) {
+				if (SUCCEEDED(first_fail)) first_fail = E_FAIL;
+			}
+
+			it = m_futures.erase(it);
 		}
 		else {
+			++it;
 			all_done = false;
 		}
 	}
@@ -185,6 +209,10 @@ HRESULT CLoader::Loading_For_Stage1_Texture()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Terrain/Brush.png"), 1))))
 		return E_FAIL;
 
+	/* Prototype_Component_Texture_Brush */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Texture_BackGround"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/BG/T_Hud_BG_Deco_Pathfinder_01.png"), 1))))
+		return E_FAIL;
 
 	//vector<const _tchar*> TextureList;
 	//TextureList.reserve(2);
@@ -210,10 +238,10 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Test/Fiona/Fiona.dat"))))
 		return E_FAIL;
 
-	/////* Prototype_Component_Model_WP_WOD_Ground_Base_004 */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"),
-	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Environment/Prop/Ground/WP_WOD_Ground_Base_004.dat"))))
-	//	return E_FAIL;
+	///* Prototype_Component_Model_WP_WOD_Ground_Base_004 */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Map/Test/WP_WOD_Ground_Base_004/WP_WOD_Ground_Base_004.dat"))))
+		return E_FAIL;
 
 	///* Prototype_Component_Model_JOH_TestModel */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_JOH_TestModel"),
@@ -251,20 +279,25 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 		CSky::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	/* Prototype_GameObject_Camera_Free */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Camera_Free"),
-		CCamera_Free::Create(m_pDevice, m_pContext))))
+	///* Prototype_GameObject_Camera_Free */
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Camera_Free"),
+	//	CCamera_Free::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
+
+	/* Prototype_GameObject_Camera_Compre */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Camera_Compre"),
+		CCamera_Compre::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	///* Prototype_GameObject_Player */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Player"),
-	//	CPlayer::Create(m_pDevice, m_pContext))))
-	//	return E_FAIL;
+	/* Prototype_GameObject_Player */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Player"),
+		CPlayer::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
-	///* Prototype_GameObject_Body_Player */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Body_Player"),
-	//	CBody_Player::Create(m_pDevice, m_pContext))))
-	//	return E_FAIL;
+	/* Prototype_GameObject_Body_Player */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Body_Player"),
+		CBody_Player::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 	///* Prototype_GameObject_Monster */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Monster"),
@@ -276,19 +309,19 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 	//	CDummy::Create(m_pDevice, m_pContext))))
 	//	return E_FAIL;
 
-	/////* Prototype_GameObject_Prop_Test */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_Test"),
-	//	CProp_Test::Create(m_pDevice, m_pContext))))
-	//	return E_FAIL;
+	///* Prototype_GameObject_Prop_Test */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_Test"),
+		CProp_Test::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 	/* Prototype_GameObject_Prop_Object */
 	//CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_Object"),
 	//	CProp_Object::Create(m_pDevice, m_pContext)), E_FAIL);
 
-	/* Prototype_GameObject_JOH_Test1 */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_JOH_Test1"),
-		CJOH_Test1::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	///* Prototype_GameObject_JOH_Test1 */
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_JOH_Test1"),
+	//	CJOH_Test1::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
 
 	return S_OK;
 }
