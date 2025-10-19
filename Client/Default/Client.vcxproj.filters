@@ -73,9 +73,6 @@
     <Filter Include="02.GameObject\MapObject\00.Prop\00.Object">
       <UniqueIdentifier>{02e66005-10a9-4448-8c68-8a59d69853cf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\MapObject\00.Prop\04.Destructible">
-      <UniqueIdentifier>{793f3e60-e849-4e56-833a-595a71a59c84}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\MapObject\00.Prop\01.Static">
       <UniqueIdentifier>{96a780a7-4c8c-4cc3-8a38-7fc9717dbf8b}</UniqueIdentifier>
     </Filter>
@@ -102,6 +99,12 @@
     </Filter>
     <Filter Include="02.GameObject\JOH Test\Test Anim Model">
       <UniqueIdentifier>{2a2f2620-f90d-4ad0-80a5-ce65409e5eab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Camera\Comprehension">
+      <UniqueIdentifier>{a4512566-30cc-4793-8f82-d5663d8f2874}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\04.Dynamic">
+      <UniqueIdentifier>{793f3e60-e849-4e56-833a-595a71a59c84}</UniqueIdentifier>
     </Filter>
     <Filter Include="94. ClientInstance\UI_Manager">
       <UniqueIdentifier>{1a84dd5b-c59f-474d-8847-7c1b26d43f75}</UniqueIdentifier>
@@ -225,9 +228,6 @@
     <ClInclude Include="..\Public\Prop_Animated.h">
       <Filter>02.GameObject\MapObject\00.Prop\02.Animated</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Prop_Destructible.h">
-      <Filter>02.GameObject\MapObject\00.Prop\04.Destructible</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Prop_Interactive.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive</Filter>
     </ClInclude>
@@ -290,6 +290,12 @@
     </ClInclude>
     <ClInclude Include="..\public\UI_Text.h">
       <Filter>95.SuperClass\UI\UIPart\UI_Text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Compre.h">
+      <Filter>02.GameObject\Camera\Comprehension</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Dynamic.h">
+      <Filter>02.GameObject\MapObject\00.Prop\04.Dynamic</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -360,9 +366,6 @@
     <ClCompile Include="..\Private\Prop_Animated.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\02.Animated</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Prop_Destructible.cpp">
-      <Filter>02.GameObject\MapObject\00.Prop\04.Destructible</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Prop_Interactive.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive</Filter>
     </ClCompile>
@@ -419,6 +422,12 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_Text.cpp">
       <Filter>95.SuperClass\UI\UIPart\UI_Text</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Compre.cpp">
+      <Filter>02.GameObject\Camera\Comprehension</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Dynamic.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\04.Dynamic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -26,6 +26,7 @@ public:
 	HRESULT			Bind_BoneMatrices(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex);
 	_bool			Play_Animation(_float fTimeDelta);
 	void			Set_Animation(_uint iIndex, _bool isLoop);
+	void			Set_SetAnimation(const string& strKey);
 
 public:
 	const char*					Get_ModelName() const { return m_Model_Data.strModelName.c_str(); }
@@ -72,16 +73,26 @@ private:
 	_float							m_fCurrentTrackPosition = { 0.f }; /* 현재 애니메이션 재생 위치 */
 	vector< class CEditor_Animation* >		m_Animations;
 
-	_bool							m_isLoop = {};
-	_bool							m_isFinished = {};
-	_bool							m_isChangedAnimation = {};
-
 	/* 루트모션 */
 	_uint							m_iRootBoneIndex = { 0 }; // 루트 모션을 적용할 뼈의 인덱스	
 	_bool							m_isRootMotion = { false }; // 루트 모션 사용 여부
 	_float							m_fCurRootMotionBlendTime = {};
 	_float							m_fRootMotionBlendTime = { 0.15f }; // 루트 모션 보간에 사용할 시간
 	_matrix							m_PreRootMatrix = {}; // 이전 루트 모션 행렬	
+
+	_bool							m_isLoop = {};
+	_bool							m_isFinished = {};
+	_bool							m_isChangedAnimation = {};
+
+	//set Anim
+	_bool							m_isSetAnimPlaying = { false };
+	_bool							m_isSetAnimNextPlay = {false};
+	_bool							m_isSetAnimFinished = { false };
+	_uint							m_iCurSetAnimIndex = { 0 };// 애님세트가 진행중인데 몇번째인지? 
+	_uint							m_iCurSetAnimMaxIndex = { 0 }; //애님 세트에서 총 몇개의 애님이 있는지
+	_uint							m_iCurSelectSetAnimIndex = { 0 }; // 키값에 해당하는 애니메이션 세트
+	//string							m_strSetAnimKey = "";
+
 
 private:
 	HRESULT			Ready_Meshes();

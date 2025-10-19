@@ -27,18 +27,32 @@ HRESULT CProp_Test::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Components(pArg), E_FAIL);
 
-    PROP_OBJECT_DESC* pDesc = static_cast<PROP_OBJECT_DESC*>(pArg);
+    PROP_TEST_DESC* pDesc = static_cast<PROP_TEST_DESC*>(pArg);
 
-    _float3 vScale = {};
-    XMStoreFloat3(&vScale, XMLoadFloat3(&pDesc->vScale));
+    _matrix matWorld = XMLoadFloat4x4(&pDesc->WorldMatrix);
 
-    _float3 vRotation = _float3(pDesc->vRotation.x, pDesc->vRotation.y, pDesc->vRotation.z);
+#pragma region 코드 임시 조치
 
-    _float3 vPosition = pDesc->vPosition;
+    _uint iCnt = {};
 
-    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPosition), 1.f));
-    m_pTransformCom->Scale(vScale);
-    m_pTransformCom->Rotation(vRotation.x, vRotation.y, vRotation.z);
+    for (_uint i = 0; i < 4; ++i)
+    {
+        for (_uint j = 0; j < 4; ++j)
+        {
+            if (0.f == pDesc->WorldMatrix.m[i][j])
+                ++iCnt;
+        }
+    }
+
+    if (16 == iCnt)
+        matWorld = XMMatrixIdentity();
+
+#pragma endregion
+
+    m_pTransformCom->Set_State(STATE::RIGHT, matWorld.r[0]);
+    m_pTransformCom->Set_State(STATE::UP, matWorld.r[1]);
+    m_pTransformCom->Set_State(STATE::LOOK, matWorld.r[2]);
+    m_pTransformCom->Set_State(STATE::POSITION, matWorld.r[3]);
 
     return S_OK;
 }
@@ -80,7 +94,7 @@ HRESULT CProp_Test::Render()
 
 HRESULT CProp_Test::Ready_Components(void* pArg)
 {
-    PROP_OBJECT_DESC* pDesc = static_cast<PROP_OBJECT_DESC*>(pArg);
+    PROP_TEST_DESC* pDesc = static_cast<PROP_TEST_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
     LEVEL eLevel = pDesc->eLevel;

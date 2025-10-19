@@ -11,126 +11,125 @@ namespace Engine
 
 #pragma region BASE
 
-	typedef struct tagInt2
-	{
-		int x;
-		int y;
-	}INT2_DATA;
+    typedef struct tagInt2
+    {
+        int x;
+        int y;
+    }INT2_DATA;
 
-	typedef struct tagInt3
-	{
-		int x;
-		int y;
-		int z;
-	}INT3_DATA;
+    typedef struct tagInt3
+    {
+        int x;
+        int y;
+        int z;
+    }INT3_DATA;
 
-	typedef struct tagInt4
-	{
-		int x;
-		int y;
-		int z;
-		int w;
-	}INT4_DATA;
+    typedef struct tagInt4
+    {
+        int x;
+        int y;
+        int z;
+        int w;
+    }INT4_DATA;
 
-	typedef struct tagUInt2
-	{
-		unsigned int x;
-		unsigned int y;
-	}UINT2_DATA;
+    typedef struct tagUInt2
+    {
+        unsigned int x;
+        unsigned int y;
+    }UINT2_DATA;
 
-	typedef struct tagUInt3
-	{
-		unsigned int x;
-		unsigned int y;
-		unsigned int z;
-	}UINT3_DATA;
+    typedef struct tagUInt3
+    {
+        unsigned int x;
+        unsigned int y;
+        unsigned int z;
+    }UINT3_DATA;
 
-	typedef struct tagUInt4
-	{
-		unsigned int x;
-		unsigned int y;
-		unsigned int z;
-		unsigned int w;
-	}UINT4_DATA;
+    typedef struct tagUInt4
+    {
+        unsigned int x;
+        unsigned int y;
+        unsigned int z;
+        unsigned int w;
+    }UINT4_DATA;
 
-	typedef struct tagFloat2
-	{
-		float x;
-		float y;
-	}FLOAT2_DATA;
+    typedef struct tagFloat2
+    {
+        float x;
+        float y;
+    }FLOAT2_DATA;
 
-	typedef struct tagFloat3
-	{
-		float x;
-		float y;
-		float z;
+    typedef struct tagFloat3
+    {
+        float x;
+        float y;
+        float z;
 
-        tagFloat3() : x(0.f), y(0.f), z(0.f) {}             // 기본 생성자
-        tagFloat3(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {}                        // 대입 생성자
+        tagFloat3() : x(0.f), y(0.f), z(0.f) {}
+        tagFloat3(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {}
 
-	}FLOAT3_DATA;
+    }FLOAT3_DATA;
 
-	typedef struct tagFloat4
-	{
-		float x;
-		float y;
-		float z;
-		float w;
+    typedef struct tagFloat4
+    {
+        float x;
+        float y;
+        float z;
+        float w;
 
-        tagFloat4() : x(0.f), y(0.f), z(0.f) {}             // 기본 생성자
-        tagFloat4(float _x, float _y, float _z, float _w) : x(_x), y(_y), z(_z), w(_w) {}       // 대입 생성자
+        tagFloat4() : x(0.f), y(0.f), z(0.f) {}
+        tagFloat4(float _x, float _y, float _z, float _w) : x(_x), y(_y), z(_z), w(_w) {}
 
-	}FLOAT4_DATA;
+    }FLOAT4_DATA;
 
-	typedef struct tagFloat4x4
-	{
-		FLOAT4_DATA m1;
-		FLOAT4_DATA m2;
-		FLOAT4_DATA m3;
-		FLOAT4_DATA m4;
+    typedef struct tagFloat4x4
+    {
+        FLOAT4_DATA m1;
+        FLOAT4_DATA m2;
+        FLOAT4_DATA m3;
+        FLOAT4_DATA m4;
 
-		//  배열처럼 접근 가능하게 만듦
-		FLOAT4_DATA& operator[](int index){return *(&m1 + index);}
-		const FLOAT4_DATA& operator[](int index) const{return *(&m1 + index);}
+        FLOAT4_DATA& operator[](int index) { return *(&m1 + index); }
+        const FLOAT4_DATA& operator[](int index) const { return *(&m1 + index); }
 
-		void SaveBinary(std::ofstream& ofs) const { ofs.write((char*)this, sizeof(*this)); }
-		void LoadBinary(std::ifstream& ifs) { ifs.read((char*)this, sizeof(*this)); }
+        void SaveBinary(std::ofstream& ofs) const { ofs.write((char*)this, sizeof(*this)); }
+        void LoadBinary(std::ifstream& ifs) { ifs.read((char*)this, sizeof(*this)); }
 
-	}FLOAT4X4_DATA;
+    }FLOAT4X4_DATA;
 
 #pragma endregion
 
 #pragma region Animation
 
-	typedef struct tagVertexMeshSet
-	{
-		FLOAT3_DATA					position;
-		FLOAT3_DATA					normal;
-		FLOAT3_DATA					tangent;
-		FLOAT3_DATA					binormal;
-		FLOAT2_DATA					texcoord;
+    typedef struct tagVertexMeshSet
+    {
+        FLOAT3_DATA					position;
+        FLOAT3_DATA					normal;
+        FLOAT3_DATA					tangent;
+        FLOAT3_DATA					binormal;
+        FLOAT2_DATA					texcoord;
 
-		//ANIM
-		UINT4_DATA					blendIndex;
-		FLOAT4_DATA					blendWeight;
+        //ANIM
+        UINT4_DATA					blendIndex;
+        FLOAT4_DATA					blendWeight;
 
-		void SaveBinary(std::ofstream& ofs) const { ofs.write((char*)this, sizeof(*this)); }
-		void LoadBinary(std::ifstream& ifs) { ifs.read((char*)this, sizeof(*this)); }
+        void SaveBinary(std::ofstream& ofs) const { ofs.write((char*)this, sizeof(*this)); }
+        void LoadBinary(std::ifstream& ifs) { ifs.read((char*)this, sizeof(*this)); }
 
-	}MESH_VERTEX_DATA;
+    }MESH_VERTEX_DATA;
 
 
-	typedef struct tagKeyFrameDataSet
-	{
-		FLOAT3_DATA  scale;
-		FLOAT4_DATA  rotation;
-		FLOAT3_DATA  translation;
-		float		 trackPostion;
+    typedef struct tagKeyFrameDataSet
+    {
+        FLOAT3_DATA  scale;
+        FLOAT4_DATA  rotation;
+        FLOAT3_DATA  translation;
+        float		 trackPostion;
 
-		void SaveBinary(std::ofstream& ofs) const { ofs.write((char*)this, sizeof(*this)); }
-		void LoadBinary(std::ifstream& ifs) { ifs.read((char*)this, sizeof(*this)); }
+        void SaveBinary(std::ofstream& ofs) const { ofs.write((char*)this, sizeof(*this)); }
+        void LoadBinary(std::ifstream& ifs) { ifs.read((char*)this, sizeof(*this)); }
 
-	}KEYFRAME_DATA;
+    }KEYFRAME_DATA;
 
     typedef struct tagMeshDataSet
     {
@@ -382,40 +381,74 @@ namespace Engine
 
     }CHANNEL_DATA;
 
+    // 애니메이션 세트 데이터 (MODEL_DATA가 관리)
+    typedef struct tagAnimationSetData
+    {
+        std::string             strAnimSetName = { "DefaultAnimSet" };      // 애니메이션 세트 이름
+        std::vector<int>        vecAnimIndices;                             // 세트에 포함된 애니메이션 인덱스들 (실행 순서대로)
+
+        void SaveBinary(std::ofstream& ofs) const
+        {
+            auto write_string = [&](const std::string& s) {
+                uint32_t len = static_cast<uint32_t>(s.size());
+                ofs.write((char*)&len, sizeof(len));
+                ofs.write(s.data(), len);
+                };
+
+            write_string(strAnimSetName);
+
+            uint32_t count = static_cast<uint32_t>(vecAnimIndices.size());
+            ofs.write((char*)&count, sizeof(count));
+            for (int idx : vecAnimIndices)
+                ofs.write((char*)&idx, sizeof(int));
+        }
+        void LoadBinary(std::ifstream& ifs)
+        {
+            auto read_string = [&]() -> std::string {
+                uint32_t len;
+                ifs.read((char*)&len, sizeof(len));
+                std::string s(static_cast<size_t>(len), '\0');
+                ifs.read(&s[0], len);
+                return s;
+                };
+
+            strAnimSetName = read_string();
+
+            uint32_t count;
+            ifs.read((char*)&count, sizeof(count));
+            vecAnimIndices.resize(static_cast<size_t>(count));
+            for (auto& idx : vecAnimIndices)
+                ifs.read((char*)&idx, sizeof(int));
+        }
+
+    }ANIMATION_SET_DATA;
+
+    // 개별 애니메이션 설정 (각 애니메이션이 관리)
     typedef struct tagAnimationSetUp
     {
         /* 기본 설정 */
         std::string             strName = { "DefaultAnim" };
         bool                    isLoop = { false };
-        unsigned int            iDirection = { 0 }; // 방향이 없으면 0, 1~24 방향이 있음 클라에서 enum class 만들어서 적용
+        unsigned int            iDirection = { 0 };                         // 방향 (0: 방향 없음, 1~24: 방향)
 
-        /* 구간 별 시간 조절*/
-        bool                    isAnimTimeControl = { false };
-        vector<FLOAT3_DATA>     vecAnimTimeControlFrame;   // x: 시작 프레임, y: 끝 프레임, z: 배속
-
-        /* 애니메이션 세트  */
-        bool                    isAnimSet = { false };   //애니메이션 세트임?
-        std::string             strAnimSetName = { "DefaultAnimSet" }; //애니메이션 세트 이름 (이걸로 관리)
-        vector<std::string>     vecAnimSet; // 자신을 포함한 세트 애니메이션 이름들 순서대로 저장
-        unsigned int            iAnimSetSelfIndex = {}; // vecAnimSet의 자신의 인덱스
-        unsigned int            iTransitionType = {}; //다음 페이즈로 넘어가는 조건  0 : Auto, 1 : Flag, 2 : Input, 3 : Manual (클라에 enum class 만들자)
-        bool                    isWaitForComplete = { true };   //애니메이션 전부 끝나고 다음으로 넘어가? / 즉시 넘어가?
-        // bool                    isAnimSetImmediatelyNext; //즉시 넘어가?
-        float                   fAnimSetBlendOutTime = { 0.15f };   //끝나고 애니메이션 간 블랜딩 시간
-        float                   fAnimSetBlendInTime = { 0.15f };    //시작 시 애니메이션 간 블랜딩 시간
+        /* 애니메이션 전환 설정 (애니메이션 세트에 사용할 예정) */
+        unsigned int            iTransitionType = { 0 };                    // 전환 조건 (0:Auto, 1:Flag, 2:Input, 3:Manual)
+        bool                    isWaitForComplete = { true };               // 완료 대기 여부
+        float                   fBlendOutTime = { 0.15f };                  // 블렌드 아웃 시간
+        float                   fBlendInTime = { 0.15f };                   // 블렌드 인 시간
 
         /* 루트 모션 */
-        bool                    isRootMotion = { false };    //루트모션 사용할거야?
-        bool                    isApplyRootRotation = { false };     // 회전도 적용?
-        bool                    isApplyRootPosition = { false };      // 위치도 적용?
-        FLOAT3_DATA             RootMitionScale;     //(x,y,z,)축 어떤것만 적용할건지 
+        bool                    isRootMotion = { false };                   // 루트 모션 사용 여부
+        bool                    isApplyRootRotation = { false };            // 회전 적용 여부
+        bool                    isApplyRootPosition = { false };            // 위치 적용 여부
+        FLOAT3_DATA             RootMitionScale;                            // 축별 적용 스케일
 
         /* 이벤트 */
-        bool                    isEvent = { false }; // 이벤트가 있는지
-        bool                    isTriggerOnce = { false };    // 루프 시 한번만? (기본 false)
-        bool                    isTriggerOnExit = { false };  // 블렌드 아웃 시에도 발동?
-        vector<FLOAT2_DATA>     vecEventFrames; //x : start, y: end(단발성이면 0)
-        vector<std::string>     vecEventKeys;
+        bool                    isEvent = { false };                        // 이벤트 존재 여부
+        bool                    isTriggerOnce = { false };                  // 루프 시 한 번만 발동
+        bool                    isTriggerOnExit = { false };                // 블렌드 아웃 시 발동
+        std::vector<FLOAT2_DATA>    vecEventFrames;                         // 이벤트 프레임 (x: start, y: end)
+        std::vector<std::string>    vecEventKeys;                           // 이벤트 키
 
         void SaveBinary(std::ofstream& ofs) const
         {
@@ -430,31 +463,11 @@ namespace Engine
             ofs.write((char*)&isLoop, sizeof(isLoop));
             ofs.write((char*)&iDirection, sizeof(iDirection));
 
-            // 구간 별 시간 조절
-            ofs.write((char*)&isAnimTimeControl, sizeof(isAnimTimeControl));
-            uint32_t count = static_cast<uint32_t>(vecAnimTimeControlFrame.size());
-            ofs.write((char*)&count, sizeof(count));
-            for (const auto& frame : vecAnimTimeControlFrame)
-            {
-                ofs.write((char*)&frame, sizeof(FLOAT3_DATA));
-            }
-
-            // 애니메이션 세트
-            ofs.write((char*)&isAnimSet, sizeof(isAnimSet));
-            write_string(strAnimSetName);
-
-            count = static_cast<uint32_t>(vecAnimSet.size());
-            ofs.write((char*)&count, sizeof(count));
-            for (const auto& animName : vecAnimSet)
-            {
-                write_string(animName);
-            }
-
-            ofs.write((char*)&iAnimSetSelfIndex, sizeof(iAnimSetSelfIndex));
+            // 애니메이션 전환 설정
             ofs.write((char*)&iTransitionType, sizeof(iTransitionType));
             ofs.write((char*)&isWaitForComplete, sizeof(isWaitForComplete));
-            ofs.write((char*)&fAnimSetBlendOutTime, sizeof(fAnimSetBlendOutTime));
-            ofs.write((char*)&fAnimSetBlendInTime, sizeof(fAnimSetBlendInTime));
+            ofs.write((char*)&fBlendOutTime, sizeof(fBlendOutTime));
+            ofs.write((char*)&fBlendInTime, sizeof(fBlendInTime));
 
             // 루트 모션
             ofs.write((char*)&isRootMotion, sizeof(isRootMotion));
@@ -467,7 +480,7 @@ namespace Engine
             ofs.write((char*)&isTriggerOnce, sizeof(isTriggerOnce));
             ofs.write((char*)&isTriggerOnExit, sizeof(isTriggerOnExit));
 
-            count = static_cast<uint32_t>(vecEventFrames.size());
+            uint32_t count = static_cast<uint32_t>(vecEventFrames.size());
             ofs.write((char*)&count, sizeof(count));
             for (const auto& frame : vecEventFrames)
             {
@@ -496,32 +509,11 @@ namespace Engine
             ifs.read((char*)&isLoop, sizeof(isLoop));
             ifs.read((char*)&iDirection, sizeof(iDirection));
 
-            // 구간 별 시간 조절
-            ifs.read((char*)&isAnimTimeControl, sizeof(isAnimTimeControl));
-            uint32_t count;
-            ifs.read((char*)&count, sizeof(count));
-            vecAnimTimeControlFrame.resize(static_cast<size_t>(count));
-            for (auto& frame : vecAnimTimeControlFrame)
-            {
-                ifs.read((char*)&frame, sizeof(FLOAT3_DATA));
-            }
-
-            // 애니메이션 세트
-            ifs.read((char*)&isAnimSet, sizeof(isAnimSet));
-            strAnimSetName = read_string();
-
-            ifs.read((char*)&count, sizeof(count));
-            vecAnimSet.resize(static_cast<size_t>(count));
-            for (auto& animName : vecAnimSet)
-            {
-                animName = read_string();
-            }
-
-            ifs.read((char*)&iAnimSetSelfIndex, sizeof(iAnimSetSelfIndex));
+            // 애니메이션 전환 설정
             ifs.read((char*)&iTransitionType, sizeof(iTransitionType));
             ifs.read((char*)&isWaitForComplete, sizeof(isWaitForComplete));
-            ifs.read((char*)&fAnimSetBlendOutTime, sizeof(fAnimSetBlendOutTime));
-            ifs.read((char*)&fAnimSetBlendInTime, sizeof(fAnimSetBlendInTime));
+            ifs.read((char*)&fBlendOutTime, sizeof(fBlendOutTime));
+            ifs.read((char*)&fBlendInTime, sizeof(fBlendInTime));
 
             // 루트 모션
             ifs.read((char*)&isRootMotion, sizeof(isRootMotion));
@@ -534,6 +526,7 @@ namespace Engine
             ifs.read((char*)&isTriggerOnce, sizeof(isTriggerOnce));
             ifs.read((char*)&isTriggerOnExit, sizeof(isTriggerOnExit));
 
+            uint32_t count;
             ifs.read((char*)&count, sizeof(count));
             vecEventFrames.resize(static_cast<size_t>(count));
             for (auto& frame : vecEventFrames)
@@ -608,7 +601,8 @@ namespace Engine
 
     typedef struct tagAnimationSummariesDataSet
     {
-		std::vector<ANIMATION_SUMMARY_DATA> vecSummaries;
+        std::vector<ANIMATION_SUMMARY_DATA> vecSummaries;
+        std::vector<Engine::ANIMATION_SET_DATA>     vecAnimationSets;  // 애니메이션 세트 (추가됨)
 
     }ANIMATION_SUMMARIES_DATA;
 
@@ -624,18 +618,20 @@ namespace Engine
         unsigned int				iNumAnimations;
         FLOAT4X4_DATA				vPreTransformMatrix;
 
-        std::vector<Engine::MESH_DATA>			vecMeshes;
-        std::vector<Engine::MATERIAL_DATA>		vecMaterials;
+        std::vector<Engine::MESH_DATA>			    vecMeshes;
+        std::vector<Engine::MATERIAL_DATA>		    vecMaterials;
 
         //ANIM
-        std::vector<Engine::BONE_DATA>			vecBones;
-        std::vector<Engine::ANIMATION_DATA>		vecAnimation;
+        std::vector<Engine::BONE_DATA>			    vecBones;
+        std::vector<Engine::ANIMATION_DATA>		    vecAnimation;
+        std::vector<Engine::ANIMATION_SET_DATA>     vecAnimationSets;  // 애니메이션 세트 (추가됨)
 
         ~tagModelDataSet() {
             vecMeshes.clear();
             vecMaterials.clear();
             vecBones.clear();
             vecAnimation.clear();
+            vecAnimationSets.clear();
         };
 
         void SaveBinary(std::ofstream& ofs) const
@@ -673,6 +669,11 @@ namespace Engine
             ofs.write((char*)&count, sizeof(count));
             for (auto& anim : vecAnimation)
                 anim.SaveBinary(ofs);
+
+            count = static_cast<uint32_t>(vecAnimationSets.size());
+            ofs.write((char*)&count, sizeof(count));
+            for (auto& animSet : vecAnimationSets)
+                animSet.SaveBinary(ofs);
         }
         void LoadBinary(std::ifstream& ifs)
         {
@@ -712,6 +713,11 @@ namespace Engine
             vecAnimation.resize(static_cast<size_t>(count));
             for (auto& anim : vecAnimation)
                 anim.LoadBinary(ifs);
+
+            ifs.read((char*)&count, sizeof(count));
+            vecAnimationSets.resize(static_cast<size_t>(count));
+            for (auto& animSet : vecAnimationSets)
+                animSet.LoadBinary(ifs);
         }
 
     }MODEL_DATA;
@@ -758,66 +764,87 @@ namespace Engine
 
 #pragma region Serialization / Deserialization
 
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(INT2_DATA, x, y);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(INT3_DATA, x, y, z);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(INT4_DATA, x, y, z, w);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(INT2_DATA, x, y);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(INT3_DATA, x, y, z);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(INT4_DATA, x, y, z, w);
 
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(UINT2_DATA, x, y);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(UINT3_DATA, x, y, z);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(UINT4_DATA, x, y, z, w);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(UINT2_DATA, x, y);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(UINT3_DATA, x, y, z);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(UINT4_DATA, x, y, z, w);
 
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FLOAT2_DATA, x, y);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FLOAT3_DATA, x, y, z);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FLOAT4_DATA, x, y, z, w);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FLOAT2_DATA, x, y);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FLOAT3_DATA, x, y, z);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FLOAT4_DATA, x, y, z, w);
 
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FLOAT4X4_DATA, m1, m2, m3, m4);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FLOAT4X4_DATA, m1, m2, m3, m4);
 
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MESH_VERTEX_DATA, position, normal, tangent, binormal, texcoord, blendIndex, blendWeight);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(KEYFRAME_DATA, scale, rotation, translation, trackPostion);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MESH_DATA,
-		iMaterialIndex,
-		iNumVertices,
-		iVertexStride,
-		iNumIndices,
-		iIndexStride,
-		iNumVertexBuffers,
-		iIndexFormat,
-		iPrimitiveType,
-		iNumFace,
-		strName,
-		iNumBones,
-		vecBoneIndices,
-		vecOffsetMatrices,
-		vecVertices,
-		vecIndices
-	);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MATERIAL_DATA, iNumTextures, vecExts, vecFullPaths);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BONE_DATA, iParentBoneIndex, strName, transformationMatrix);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(CHANNEL_DATA, strName, iBoneIndex, iNumKeyFrame, vecKeyFrames);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MESH_VERTEX_DATA, position, normal, tangent, binormal, texcoord, blendIndex, blendWeight);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(KEYFRAME_DATA, scale, rotation, translation, trackPostion);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MESH_DATA,
+        iMaterialIndex,
+        iNumVertices,
+        iVertexStride,
+        iNumIndices,
+        iIndexStride,
+        iNumVertexBuffers,
+        iIndexFormat,
+        iPrimitiveType,
+        iNumFace,
+        strName,
+        iNumBones,
+        vecBoneIndices,
+        vecOffsetMatrices,
+        vecVertices,
+        vecIndices
+    );
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MATERIAL_DATA, iNumTextures, vecExts, vecFullPaths);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BONE_DATA, iParentBoneIndex, strName, transformationMatrix);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(CHANNEL_DATA, strName, iBoneIndex, iNumKeyFrame, vecKeyFrames);
+
+    // 애니메이션 세트 직렬화
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_SET_DATA,
+        strAnimSetName,
+        vecAnimIndices
+    );
+
+    // 애니메이션 설정 직렬화
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_SETUP_DATA,
+        strName,
+        isLoop,
+        iDirection,
+        iTransitionType,
+        isWaitForComplete,
+        fBlendOutTime,
+        fBlendInTime,
+        isRootMotion,
+        isApplyRootRotation,
+        isApplyRootPosition,
+        RootMitionScale,
+        isEvent,
+        isTriggerOnce,
+        isTriggerOnExit,
+        vecEventFrames,
+        vecEventKeys
+    );
+
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_DATA, strName, fDuration, fTickPerSecond, iNumChannels, vecChannels, animSetup);
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_SUMMARY_DATA, strName, fDuration, fTickPerSecond, iNumChannels, animSetup);
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_SUMMARIES_DATA, vecSummaries);
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_SETUP_DATA,
-        strName, isLoop, iDirection,
-        isAnimTimeControl, vecAnimTimeControlFrame,
-        isAnimSet, strAnimSetName, vecAnimSet, iAnimSetSelfIndex, iTransitionType,
-        isWaitForComplete, fAnimSetBlendOutTime, fAnimSetBlendInTime,
-        isRootMotion, isApplyRootRotation, isApplyRootPosition, RootMitionScale,
-        isEvent, isTriggerOnce, isTriggerOnExit, vecEventFrames, vecEventKeys
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_SUMMARIES_DATA, vecSummaries, vecAnimationSets);
+
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MODEL_DATA,
+        strModelFilePath,
+        strModelName,
+        iModelType,
+        iNumMeshes,
+        iNumMaterials,
+        iNumAnimations,
+        vPreTransformMatrix,
+        vecMeshes,
+        vecMaterials,
+        vecBones,
+        vecAnimation,
+        vecAnimationSets
     );
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MODEL_DATA,
-		strModelFilePath,
-		strModelName,
-		iModelType,
-		iNumMeshes,
-		iNumMaterials,
-		iNumAnimations,
-		vPreTransformMatrix,
-		vecMeshes,
-		vecMaterials,
-		vecBones,
-		vecAnimation
-	);
 
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(JSON_MAP_DATA,
         strModelName,

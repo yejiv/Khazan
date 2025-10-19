@@ -24,6 +24,8 @@ HRESULT CUI_BackGround::Initialize_Clone(void* pArg)
 
 	if (FAILED(Ready_Component()))
 		return E_FAIL;
+
+	return S_OK;
 }
 void CUI_BackGround::Priority_Update(_float fTimeDelta)
 {

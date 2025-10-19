@@ -34,13 +34,13 @@ public:
 	virtual HRESULT			Render() override;
 
 public: 
+	virtual void			Active();
 	virtual void			SetSpreadData(void* pArg);
 	virtual void			SetRotateData(void* pArg);
 	virtual void			SetTwinkleData(void* pArg);
 	virtual void			SetUpwardData(void* pArg);
 	virtual void			SetScrollData(void* pArg);
 	void					SetData(_uint eventType, _float fDurTime);
-	void					Active();
 	_bool					IsActive() { return (m_TimeTracks.size() > 0) ? true : false; }
 	void					SetParentsMatrix(const _float4x4* pMatrix) { m_pParentMatrix = pMatrix; }
 	virtual void			Reset();

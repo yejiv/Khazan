@@ -2,6 +2,9 @@
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 
+// Cascade Test
+matrix g_LightViewProjMatrix;
+
 /*재질*/
 texture2D g_DiffuseTexture;
 
@@ -96,10 +99,30 @@ VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
 
 }
 
+VS_OUT_SHADOW VS_MAIN_CASCADE(VS_IN In)
+{
+    VS_OUT_SHADOW Out;
+      /* 정점의 로컬위치 * 월드 * 뷰 * 투영 */ 
+    
+    float fWeightW = 1.f - (In.vBlendWeight.x + In.vBlendWeight.y + In.vBlendWeight.z);
+    
+    matrix BoneMatrix =
+        g_BoneMatrices[In.vBlendIndex.x] * In.vBlendWeight.x +
+        g_BoneMatrices[In.vBlendIndex.y] * In.vBlendWeight.y +
+        g_BoneMatrices[In.vBlendIndex.z] * In.vBlendWeight.z +
+        g_BoneMatrices[In.vBlendIndex.w] * fWeightW;
+    
+    vector vPosition = mul(float4(In.vPosition, 1.f), BoneMatrix);
+    
+    float4x4 matWVP;
 
-/* /W을 수행한다. 투영스페이스로 변환 */
-/* 뷰포트로 변환하고.*/
-/* 래스터라이즈 : 픽셀을 만든다. */
+    matWVP = mul(g_WorldMatrix, g_LightViewProjMatrix);
+    
+    Out.vPosition = mul(vPosition, matWVP);
+    Out.vProjPos = Out.vPosition;
+    
+    return Out;
+}
 
 struct PS_IN
 {
@@ -211,6 +234,17 @@ technique11 DefaultTechnique
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_MAIN_SHADOW();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_SHADOW();
+    }
+
+    pass Cascade
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN_CASCADE();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_SHADOW();
     }

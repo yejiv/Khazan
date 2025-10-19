@@ -32,6 +32,7 @@ private:
 
 	void							Create_PointInstance_Element();
 	void							Create_MeshInstance_Element();
+	void							Create_Sprite_Element();
 
 private :
 
@@ -58,6 +59,11 @@ private :
 	_float4							m_fColor;
 	_int							m_iTextureIdx;
 	_int							m_iMeshTypeIdx;
+
+	//[Sprite Data]
+	_uint							m_iCol, m_iRow;
+	_float							m_fSpriteSpeed;
+	_float							m_fScalingValue;
 
 	CEffect_Prefab::EFFECT_EVENT	m_WorkingTrackData;
 

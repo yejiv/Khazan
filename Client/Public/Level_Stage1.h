@@ -24,6 +24,7 @@ private:
 	HRESULT Ready_Layer_Monster(const _wstring& strLayerTag);
 	HRESULT Ready_Layer_Test(const _wstring& strLayerTag);
 	HRESULT Ready_Layer_MapObject_Test(const _wstring& strLayerTag);
+	HRESULT Ready_Layer_MapObject(const _wstring& strLayerTag, const _tchar* pObjectDataFileName, KHAZAN_MAP eMap = KHAZAN_MAP::END);
 
 private:
 	class CClientInstance* m_pClientInstance = { nullptr };

@@ -162,6 +162,7 @@
     <ClInclude Include="..\public\Atlas_RenderGroup.h" />
     <ClInclude Include="..\Public\Body_Player.h" />
     <ClInclude Include="..\public\Camera_Free.h" />
+    <ClInclude Include="..\Public\Camera_Compre.h" />
     <ClInclude Include="..\Public\ClientInstance.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\Public\Dummy.h" />
@@ -179,7 +180,7 @@
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\Prop.h" />
     <ClInclude Include="..\Public\Prop_Animated.h" />
-    <ClInclude Include="..\Public\Prop_Destructible.h" />
+    <ClInclude Include="..\Public\Prop_Dynamic.h" />
     <ClInclude Include="..\Public\Prop_Interactive.h" />
     <ClInclude Include="..\Public\Prop_Object.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
@@ -212,6 +213,7 @@
     <ClCompile Include="..\private\Atlas_RenderGroup.cpp" />
     <ClCompile Include="..\Private\Body_Player.cpp" />
     <ClCompile Include="..\private\Camera_Free.cpp" />
+    <ClCompile Include="..\Private\Camera_Compre.cpp" />
     <ClCompile Include="..\Private\ClientInstance.cpp" />
     <ClCompile Include="..\Private\Dummy.cpp" />
     <ClCompile Include="..\Private\JOH_Test1.cpp" />
@@ -225,7 +227,7 @@
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\Prop.cpp" />
     <ClCompile Include="..\Private\Prop_Animated.cpp" />
-    <ClCompile Include="..\Private\Prop_Destructible.cpp" />
+    <ClCompile Include="..\Private\Prop_Dynamic.cpp" />
     <ClCompile Include="..\Private\Prop_Interactive.cpp" />
     <ClCompile Include="..\Private\Prop_Object.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>

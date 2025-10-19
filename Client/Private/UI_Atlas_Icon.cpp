@@ -21,6 +21,8 @@ HRESULT CUI_Atlas_Icon::Initialize_Clone(void* pArg)
 {
 	if (FAILED(__super::Initialize_Clone(pArg)))
 		return E_FAIL;
+
+	return S_OK;
 }
 void CUI_Atlas_Icon::Priority_Update(_float fTimeDelta)
 {
