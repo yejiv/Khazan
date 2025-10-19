@@ -224,11 +224,24 @@ _bool CEditor_Model::Play_Animation(_float fTimeDelta)
 {
     m_isFinished = false;
 
+    if (m_isSetAnimNextPlay/* && m_isSetAnimPlaying && !m_isSetAnimFinished*/)
+    {
+        _uint iIndex = static_cast<_uint>(m_Model_Data.vecAnimationSets[m_iCurSelectSetAnimIndex].vecAnimIndices[m_iCurSetAnimIndex]);
+        
+        Set_Animation(iIndex, m_Model_Data.vecAnimation[m_iCurSelectSetAnimIndex].animSetup.isLoop);
+
+        m_isSetAnimNextPlay = false;
+    }
+
+
     if (m_isChangedAnimation)
     {
         if (m_iPrevAnimIndex != m_iCurrentAnimIndex)
         {
-            OnRootMotion();
+            //루트 모션 적용된 것만 실행 
+            if(m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isRootMotion)
+                OnRootMotion();
+
             m_Animations[m_iCurrentAnimIndex]->OnAnimationBlend(move(m_Animations[m_iPrevAnimIndex]->Get_ChannelMatrices()));
 
         }
@@ -243,6 +256,17 @@ _bool CEditor_Model::Play_Animation(_float fTimeDelta)
     if (m_isRootMotion)
         Update_RootMotion(fTimeDelta);
 
+    if (m_isSetAnimPlaying && m_isFinished)
+    {
+        ++m_iCurSetAnimIndex;
+        m_isSetAnimNextPlay = true;
+        if (m_iCurSetAnimIndex == m_iCurSetAnimMaxIndex)
+        {
+            m_isSetAnimPlaying = false;
+            m_isSetAnimFinished = true;
+            m_isSetAnimNextPlay = false;
+        }
+    }
     return m_isFinished;
 }
 
@@ -258,6 +282,41 @@ void CEditor_Model::Set_Animation(_uint iIndex, _bool isLoop)
 
     if (m_iPrevAnimIndex >= 0 &&  m_iCurrentAnimIndex != m_iPrevAnimIndex)
         m_isChangedAnimation = true;
+}
+
+void CEditor_Model::Set_SetAnimation(const string& strKey)
+{
+    m_iCurSetAnimIndex = 0;
+
+    // vecAnimationSets에서 strKey와 일치하는 세트 찾기
+    auto iter = find_if(m_Model_Data.vecAnimationSets.begin(),
+        m_Model_Data.vecAnimationSets.end(),
+        [&strKey](const ANIMATION_SET_DATA& set) {
+            return set.strAnimSetName == strKey;
+        });
+
+    if (iter != m_Model_Data.vecAnimationSets.end())
+    {
+        m_isSetAnimPlaying = true;
+        m_isSetAnimNextPlay = true;
+        m_isSetAnimFinished = false;
+        m_iCurSelectSetAnimIndex = static_cast<_uint>(distance(m_Model_Data.vecAnimationSets.begin(), iter));
+        m_iCurSetAnimMaxIndex = static_cast<_uint>(iter->vecAnimIndices.size());
+
+        OutputDebugStringA(("[Animation Set Selected] " + strKey +
+            "\n - Set Index: " + to_string(m_iCurSelectSetAnimIndex) +
+            "\n - Total Animations: " + to_string(m_iCurSetAnimMaxIndex) + "\n").c_str());
+
+    }
+    else
+    {
+        m_isSetAnimPlaying = false;
+        m_isSetAnimNextPlay = false;
+        m_isSetAnimFinished = false;
+        m_iCurSelectSetAnimIndex = 0;
+        m_iCurSetAnimMaxIndex = 0;
+        OutputDebugStringA(("[Error] Invalid Animation Set Key: " + strKey + "\n").c_str());
+    }
 }
 
 CEditor_Animation* CEditor_Model::Get_CurAnimtion()
@@ -703,6 +762,7 @@ _bool CEditor_Model::Export_AnimationJson(const string& strFilePath, const strin
 
 		AnimSummaries.vecSummaries.push_back(summary);
 	}
+    AnimSummaries.vecAnimationSets = m_Model_Data.vecAnimationSets;
 
 	JSON j2 = AnimSummaries;
 	ofstream ofs2(strFilePath2);
