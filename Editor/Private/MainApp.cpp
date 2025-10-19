@@ -4,6 +4,7 @@
 
 #include "JOH_EditorModelTest.h"
 #include "Editor_Model.h"
+#include "Debug_Controller.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance{ CGameInstance::GetInstance() }
@@ -28,6 +29,7 @@ HRESULT CMainApp::Initialize()
 
 	list<_wstring> Imgui_Menu;
 	Imgui_Menu.push_back(TEXT("Default"));
+	Imgui_Menu.push_back(TEXT("Debug"));
 	Imgui_Menu.push_back(TEXT("Map"));
 	Imgui_Menu.push_back(TEXT("Effect"));
 	Imgui_Menu.push_back(TEXT("Model"));
@@ -50,13 +52,15 @@ HRESULT CMainApp::Initialize()
 	
 	Ready_DefaultImgui();
 
+	Ready_Debug();
+
 	return S_OK;
 }
 
 void CMainApp::Update(_float fTimeDelta)
 {
 	m_pGameInstance->Update_Engine(fTimeDelta);
-
+	m_pDebug->Update();
 #ifdef _DEBUG
 	m_fTimeAcc += fTimeDelta;
 
@@ -203,6 +207,11 @@ void CMainApp::Ready_DefaultImgui()
 		});
 }
 
+void CMainApp::Ready_Debug()
+{
+	m_pDebug = CDebug_Controller::Create();
+}
+
 CMainApp* CMainApp::Create()
 {
 	CMainApp* pInstance = new CMainApp();
@@ -222,7 +231,7 @@ void CMainApp::Free()
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
-
+	Safe_Release(m_pDebug);
 	m_pGameInstance->Release_Engine();
 
 	Safe_Release(m_pGameInstance);

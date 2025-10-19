@@ -506,6 +506,11 @@ _bool CGameInstance::isPicked(_float3* pOut, _uint* iObjectID)
 	return m_pPicking->isPicked(pOut, iObjectID);
 }
 
+_float4 CGameInstance::isPickRenderTargetPixel(_wstring strRenderTargetTag)
+{
+	return m_pPicking->isPickRenderTargetPixel(strRenderTargetTag);
+}
+
 #pragma endregion
 
 #pragma region SHADOW

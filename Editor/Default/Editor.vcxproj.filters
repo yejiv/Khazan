@@ -175,6 +175,9 @@
     <Filter Include="02.GameObject\Shader\Player">
       <UniqueIdentifier>{b9c07b19-01a4-4a39-988f-659175d6709c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Debug">
+      <UniqueIdentifier>{8a110978-4120-468f-a7af-916b749bdac2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -328,6 +331,9 @@
       <Filter>02.GameObject\MapObject\Prop\04.Dynamic</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Player_Shader.h" />
+    <ClInclude Include="..\Public\Debug_Controller.h">
+      <Filter>02.GameObject\Debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -479,6 +485,9 @@
       <Filter>02.GameObject\MapObject\Prop\04.Dynamic</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Player_Shader.cpp" />
+    <ClCompile Include="..\Private\Debug_Controller.cpp">
+      <Filter>02.GameObject\Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_Edit_UI.hlsl">
