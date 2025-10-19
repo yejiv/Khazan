@@ -23,6 +23,7 @@
 #include "Resource_Manager.h"
 #include "ComputeShader_Manager.h"
 #include "Camera_Manager.h"
+#include "BlackBoard.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -117,6 +118,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 
 	m_pCamera_Manager = CCamera_Manager::Create(EngineDesc.iNumLevels);
 	if (nullptr == m_pCamera_Manager)
+		return E_FAIL;
+
+	m_pBlackBoard = CBlackBoard::Create();
+	if (nullptr == m_pBlackBoard)
 		return E_FAIL;
 
 #ifdef _DEBUG
@@ -811,6 +816,7 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pInput_Manager);
 	Safe_Release(m_pResource_Manager);
 	Safe_Release(m_pCamera_Manager);
+	Safe_Release(m_pBlackBoard);
 
 	Safe_Release(m_pPicking);
 	Safe_Release(m_pTimer_Manager);

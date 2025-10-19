@@ -21,6 +21,8 @@ namespace Client
 	enum class UITYPE { PANEL, TAP, SLOT, BUTTON, SCROLLBAR, PROGRESSBAR, TEXTURE, TEXT, RENDER_GROUP, END };
 	
 	enum class CAMERATYPE { FREE, SPRING, END };
+
+	enum class TEAM { GOBLIN, YETI, END };
 }
 
 extern HWND g_hWnd;
