@@ -9,12 +9,11 @@ class CVIBuffer_Instance_UI;
 NS_END
 
 NS_BEGIN(Client)
-class CAtlas_RenderGroup final : public CUIObject
+class CAtlas_RenderGroup final : public Engine::CUIObject
 {
 public:
-	typedef struct AtlasRenderGrouptag
+	typedef struct AtlasRenderGrouptag : public CUIObject::UIOBJECT_DESC
 	{
-		_float fDepth = {};
 		_int  iShdaerPass = {};
 	}ATLASGROUP_DESC;
 private:
@@ -30,6 +29,7 @@ public:
 	virtual void					Late_Update(_float fTimeDelta) override;
 	virtual HRESULT					Render() override;
 
+	virtual void					Add_Renderer() override;
 public:
 	HRESULT							Add_UIInstance(const VTXINSTANCE_UI* pUIData);
 

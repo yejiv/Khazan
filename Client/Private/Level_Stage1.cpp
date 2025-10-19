@@ -6,15 +6,23 @@
 #include "Player.h"
 #include "Camera_Compre.h"
 #include "Dummy.h"
+#include "ClientInstance.h"
 
 #pragma region MAP OBJECT
 #include "MapObject_Header.h"
 #pragma endregion
 
+#pragma region UI OBJECT
+#include "UI_Atlas_Icon.h"
+#include "UI_BackGround.h"
+#include "UI_SlotTest.h"
+#pragma endregion
 
 CLevel_Stage1::CLevel_Stage1(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
+	, m_pClientInstance(CClientInstance::GetInstance())
 {
+	Safe_AddRef(m_pClientInstance);
 }
 
 HRESULT CLevel_Stage1::Initialize()
@@ -173,6 +181,10 @@ HRESULT CLevel_Stage1::Ready_Layer_Test(const _wstring& strLayerTag)
 		ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_JOH_Test1"))))
 		return E_FAIL;
 
+	if (FAILED(m_pClientInstance->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+		TEXT("../Bin/Resources/UI/UIData/Test.json"))))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -292,5 +304,5 @@ void CLevel_Stage1::Free()
 	__super::Free();
 
 
-
+	Safe_Release(m_pClientInstance);
 }
