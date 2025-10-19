@@ -143,6 +143,9 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 	m_pObject_Manager->Update(fTimeDelta);
 	m_pObject_Manager->Late_Update(fTimeDelta);
 
+	// Cascade Test
+	m_pShadow->Update();
+
 	m_pLevel_Manager->Update(fTimeDelta);
 
 	m_pJolt_Manager->Update(fTimeDelta);
@@ -541,14 +544,19 @@ void CGameInstance::Set_CurrentCascade(_uint iIndex)
 	m_pShadow->Set_CurrentCascade(iIndex);
 }
 
-HRESULT CGameInstance::Bind_LightViewProjMatrix(CShader* pShader, _uint iIndex)
+const _float4x4* CGameInstance::Get_CurrentLightViewMatrix() const
 {
-	return m_pShadow->Bind_LightViewProjMatrix(pShader, iIndex);
+	return m_pShadow->Get_CurrentLightViewMatrix();
 }
 
-const _float4x4* CGameInstance::Get_CurrentLightViewProjMatrix() const
+const _float4x4* CGameInstance::Get_CurrentLightProjMatrix() const
 {
-	return m_pShadow->Get_CurrentLightViewProjMatrix();
+	return m_pShadow->Get_CurrentLightProjMatrix();
+}
+
+HRESULT CGameInstance::Ready_Cascade()
+{
+	return m_pShadow->Ready_Cascade();
 }
 
 #pragma endregion
@@ -566,6 +574,11 @@ _bool CGameInstance::isIn_Frustum_WorldSpace(_fvector vWorldPos, _float fRange)
 _bool CGameInstance::isIn_Frustum_LocalSpace(_fvector vLocalPos, _float fRange)
 {
 	return m_pFrustum->isIn_LocalSpace(vLocalPos, fRange);
+}
+
+const _float4* CGameInstance::Get_WorldPoints() const
+{
+	return m_pFrustum->Get_WorldPoints();
 }
 
 #pragma endregion
