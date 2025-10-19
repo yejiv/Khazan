@@ -138,7 +138,7 @@ void CLevel_Effect::Update(_float fTimeDelta)
 
 HRESULT CLevel_Effect::Render()
 {
-	SetWindowText(g_hWnd, TEXT("ì´í™íŠ¸íˆ´"));
+	SetWindowText(g_hWnd, TEXT("ÀÌÆåÆ® Åø"));
 
 	return S_OK;
 }
