@@ -42,7 +42,9 @@ public:
 	virtual void				Update_Transform(CUIObject* pParent, _float2 vPos);
 	virtual void				Update_Scaling(_float fSize);
 	virtual void				Update_Rotation(_float fAngle);
+	virtual void				Update_Alpha(_float fAlpha);
 
+	virtual void				Update_Track(_float fAccTime);
 	virtual	HRESULT				Update_Switch(void* pArg);
 
 	virtual HRESULT				Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg);
@@ -53,12 +55,15 @@ public:
 	virtual _bool				IsPick(HWND hWnd);
 
 protected:
+	_uint						m_iLevel = {};
 	_float4x4					m_ViewMatrix = {};
 	_float4x4					m_ProjMatrix = {};
 	_uint						m_iWinSizeX = {};
 	_uint						m_iWinSizeY = {};
 
 	string						m_szName;
+	_int						m_iUIType = { -1 };
+	std::function<void()>		m_UIBubbleCallBack;
 
 	_float2						m_vLocalPos = {};
 	_float2						m_vWorldPos = {};
@@ -67,19 +72,19 @@ protected:
 	_float2						m_vLocalSize = {};
 	_float2						m_vWorldSize = {};
 
-	_int						m_iUIType = { -1 };
-
-	_bool						m_isVisible = { true };
-
-	std::function<void()>		m_UIBubbleCallBack;
-	vector<UIKEYFRAME>			m_Track;
 	_int						m_iShaderPass = {};
 	_int						m_iTexPass = {};
-	_float						m_fAlpha = {};
+	_float						m_fAlpha = { 1.f};
+	_float3						m_vAngle = {};
+	_float4						m_vColor = {};
+
+	vector<UIKEYFRAME>			m_Track;
+	_uint						m_iCurrentKeyFrameIndex = {};
 
 	vector<_float4>				m_vUV = {};
 	_int						m_iState = {};
 
+	_bool						m_isVisible = { true };
 	_bool						m_IsUpdate = { false };
 public:
 	virtual CGameObject*		Clone(void* pArg) = 0;

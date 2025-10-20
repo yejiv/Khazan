@@ -24,6 +24,7 @@ public:
 	virtual void				Update_Transform(CUIObject* pParent, _float2 vPos) override;
 	virtual void				Update_Scaling(_float fSize) override;
 	virtual void				Update_Rotation(_float fAngle) override;
+	virtual void				Update_Alpha(_float fAlpha) override;
 
 	virtual HRESULT				Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
 

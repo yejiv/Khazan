@@ -7,6 +7,7 @@
 
 NS_BEGIN(Engine)
 class CModel;
+class CTexture;
 NS_END
 
 NS_BEGIN(Client)
@@ -20,7 +21,7 @@ public:
 
 	}PROP_OBJECT_DESC;
 
-	enum class SHADER_PASS { MAIN, WIREFRAME, MAPOBJECT, END };			// 수정 예정
+	enum class SHADER_PASS { MAIN, WIREFRAME, MAP, MAP_BLEND, SNOWMAP, SNOWMAP_BLEND, END };			// 수정 예정
 
 private:
 	CProp_Object(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -37,9 +38,10 @@ public:
 
 private:
 	CModel* m_pModelCom = { nullptr };
+	CTexture* m_pTextureCom = { nullptr };
 
 private:
-	SHADER_PASS m_eShaderPass = { SHADER_PASS::MAPOBJECT };
+	SHADER_PASS m_eShaderPass = { SHADER_PASS::MAP };
 
 private:
 	HRESULT Ready_Components(void* pArg);
