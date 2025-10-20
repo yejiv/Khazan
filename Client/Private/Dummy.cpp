@@ -36,7 +36,8 @@ HRESULT CDummy::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    m_pModelCom->Set_Animation(0, true);
+    m_pModelCom->Set_AnimationLoop(true);
+    m_pModelCom->Set_Animation(0);
 
     return S_OK;
 }

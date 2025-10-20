@@ -26,7 +26,8 @@ HRESULT CJOH_Test1::Initialize(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    m_pModelCom->Set_Animation(3, true);
+    m_pModelCom->Set_AnimationLoop(true);
+    m_pModelCom->Set_Animation(3);
 
    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
    // m_pTransformCom->Scale(_float3(0.01f, 0.01f, 0.01f));
@@ -47,12 +48,14 @@ void CJOH_Test1::Update(_float fTimeDelta)
 
     if (m_pGameInstance->Key_Down(DIK_1))
     {
-        m_pModelCom->Set_Animation(++m_iCurrentAnimIndex, true);
+        m_pModelCom->Set_AnimationLoop(true);
+        m_pModelCom->Set_Animation(++m_iCurrentAnimIndex);
     }
     if (m_pGameInstance->Key_Down(DIK_2))
     {
         m_iCurrentAnimIndex = 2;
-        m_pModelCom->Set_Animation(m_iCurrentAnimIndex, true);
+        m_pModelCom->Set_AnimationLoop(true);
+        m_pModelCom->Set_Animation(m_iCurrentAnimIndex);
     }
 }
 
@@ -107,6 +110,7 @@ HRESULT CJOH_Test1::Ready_Components()
     //if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_JOH_TestModel"),
     //    TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
     //    return E_FAIL;
+
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_Fiona"),
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
