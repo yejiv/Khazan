@@ -33,6 +33,11 @@ public:
 	HRESULT Add_Prototype(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, class CBase* pPrototype);
 	class CBase* Clone_Prototype(PROTOTYPE ePrototype, _uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, void* pArg);
 	void Clear(_uint iLevelIndex);
+
+public:
+	// 맵 툴에서 사용하는 용도입니다 . . . ( 프로토 타입 등록되어있나 확인 여부 ) ( BOOL 값 반환 )
+	_bool Already_Registered_Prototype(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag);
+
 private:
 	_uint											m_iNumLevels = {  };
 	map<const _wstring, class CBase*>*				m_pPrototypes = { nullptr };
@@ -40,7 +45,7 @@ private:
 	
 
 private:
-	class CBase* Find_Prototype(_uint iPrototpyeLevelIndex, const _wstring& strPrototypeTag);
+	class CBase* Find_Prototype(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag);
 
 
 public:

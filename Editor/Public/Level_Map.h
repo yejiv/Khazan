@@ -58,6 +58,8 @@ private:
 
 #pragma region 변수
 private:
+	_char m_szFolderName[MAX_PATH] = {};	// 폴더 경로로 Prototype 등록하는 변수
+
 #pragma region Object 수정 변수
 
 	_uint m_iInstObjectCnt = {};			// InstanceID 부여용 ( 아직 미수정 )
@@ -76,6 +78,8 @@ private:
 	_float3 m_vFixScale = {};
 	_float3 m_vFixRotation = {};
 	_float3 m_vFixPosition = {};
+
+	_uint m_iMapObjectShaderPass = { 2 };
 
 #pragma endregion
 
@@ -187,8 +191,8 @@ private:
 
 	map<const string, const string> m_CheckPrototypes;	// 중복 프로토타입 체크 및 리스트 출력용
 
-	_char m_szDatSavePath[MAX_PATH] = { "../../Client/Bin/Data/Map/" };			// .dat 추출용 폴더 경로
-	string m_strDatSavePath = {};
+	_char m_szDataSavePath[MAX_PATH] = { "../../Client/Bin/Data/Map/" };			// .dat 추출용 폴더 경로
+	string m_strDataSavePath = {};
 
 #pragma endregion
 
@@ -199,6 +203,8 @@ private:
 
 	vector<string> m_Prototypes_Obj;					// Prototype 목록 ( Object 용 모델 )
 	_int m_iIndex_PrtObj = {};							// Prototype Object 용 인덱스
+
+	_char m_szSearchModelName[MAX_PATH] = {};
 
 #pragma endregion
 
@@ -227,6 +233,10 @@ private:
 
 	// Directory에 파일들 불러오는용 ( Json 한정 함수 )
 	void Get_Directory_Files(const _char* pDirectoryPath);
+
+	void Fbxs_Convert_To_Dat(const _char* pFolderName);
+
+	void Add_Prototype_ByFolder(const _char* pFolderName);
 
 	// 임시 테스트용
 	string Find_ModelPath(const string& strModelName, const string& strFileExtern);

@@ -214,6 +214,11 @@ HRESULT CLoader::Loading_For_Stage1_Texture()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/BG/T_Hud_BG_Deco_Pathfinder_01.png"), 1))))
 		return E_FAIL;
 
+	///* Prototype_Component_Texture_Map_Snow */ // >> 눈 맵인경우 해당 프로토타입 텍스쳐 추가
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Texture_Map_Snow"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Map/Textures/WT_Base_D.dds"), 1))))
+	//	return E_FAIL;
+
 	//vector<const _tchar*> TextureList;
 	//TextureList.reserve(2);
 	//TextureList.push_back(TEXT("T_BG_GrandFlores.png"));
@@ -248,8 +253,8 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 	//	CModel::Create(m_pDevice, m_pContext, "../Data/Test/Test_Player/Test_Player.dat"))))
 	//	return E_FAIL;
 
-	///* Prototype_Component_Model_파일명 */
-	//CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("Test"), LEVEL::STAGE1), E_FAIL);
+	/* Prototype_Component_Model_파일명 */
+	//CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
 
 	return S_OK;
 }
@@ -309,14 +314,14 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 	//	CDummy::Create(m_pDevice, m_pContext))))
 	//	return E_FAIL;
 
-	///* Prototype_GameObject_Prop_Test */
+	/* Prototype_GameObject_Prop_Test */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_Test"),
 		CProp_Test::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 	/* Prototype_GameObject_Prop_Object */
-	//CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_Object"),
-	//	CProp_Object::Create(m_pDevice, m_pContext)), E_FAIL);
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_Object"),
+		CProp_Object::Create(m_pDevice, m_pContext)), E_FAIL);
 
 	///* Prototype_GameObject_JOH_Test1 */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_JOH_Test1"),
