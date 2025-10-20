@@ -160,9 +160,6 @@
     <Filter Include="02.GameObject\Effect\Terrain">
       <UniqueIdentifier>{2471b629-34a2-4ea1-9a72-0a4b0cebb5d9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\MapObject\Prop\98.Export">
-      <UniqueIdentifier>{c9c828e3-489d-4584-850d-ef3ebe71f812}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\MapObject\Prop\04.Dynamic">
       <UniqueIdentifier>{b894b6f2-b4eb-404c-a0ab-abc15884b661}</UniqueIdentifier>
     </Filter>
@@ -177,6 +174,9 @@
     </Filter>
     <Filter Include="02.GameObject\MapObject\Test">
       <UniqueIdentifier>{e0b884a2-65ea-4277-996f-ccd58319de93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\98.Preview">
+      <UniqueIdentifier>{c9c828e3-489d-4584-850d-ef3ebe71f812}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -337,6 +337,9 @@
     <ClInclude Include="..\Public\Map_TestPlayer.h">
       <Filter>02.GameObject\MapObject\Test</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Prop_Preview.h">
+      <Filter>02.GameObject\MapObject\Prop\98.Preview</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -493,6 +496,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Map_TestPlayer.cpp">
       <Filter>02.GameObject\MapObject\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Preview.cpp">
+      <Filter>02.GameObject\MapObject\Prop\98.Preview</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

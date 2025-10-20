@@ -35,10 +35,10 @@ public:
 private:
 	HRESULT Ready_Defaults();
 	HRESULT Ready_Default_Lights();
-	HRESULT Ready_Preview_Model_RanderTargets();
 	HRESULT Ready_Layer_Khazan(const _wstring& strLayerTag);
 	HRESULT Ready_Layer_Camera(const _wstring& strLayerTag);
 	HRESULT Ready_Layer_Terrain(const _wstring& strLayerTag);
+	HRESULT Ready_Layer_Preview(const _wstring& strLayerTag);
 
 private:
 	class CProp_Static* m_pProp_Static = { nullptr };
@@ -46,9 +46,13 @@ private:
 	MAPEDIT_MAP m_eMapType = { MAPEDIT_MAP::HEINMACH };
 
 private:
+	ID3D11DepthStencilView* m_pDSV_MapTool = { nullptr };
+
+private:
 	// 맵 오브젝트 배치하면서 vector에 개별로 push_back 한거 nullptr 시 정리용
 	void Clear_List();
 
+	void Test_Player_Move(_float fTimeDelta);
 	void Select_Fix_Object(_float fTimeDelta);
 	void Select_Fix_Instance(_float fTimeDelta);
 	void Select_Add_LightPoint(_float fTimeDelta);
@@ -85,6 +89,14 @@ private:
 	_float3 m_vResetPosition = {};
 
 	_uint m_iMapObjectShaderPass = { 2 };
+	
+	_float m_fAddScale = { 0.005f };
+
+	_bool m_isCameraPosAdd = { false };
+	_float m_fAddPositionY = { 0.f };
+
+	MAPOBJECT_PROPERTIES m_AddObjectProperties = {};
+
 
 #pragma endregion
 
@@ -134,7 +146,7 @@ private:
 
 	_bool m_isObjectWindow = { false };
 
-	_bool m_isPropWindow[ENUM_CLASS(PROP_SPECIES::END)] = { false, false, false, false,false };
+	_bool m_isPropWindow = { false };
 
 	_bool m_isFixObjectWindow = { false };
 
@@ -183,13 +195,11 @@ private:
 
 #pragma region PROTOTYPE LIST 용
 
-	vector<string> m_Prototypes_Inst;					// Prototype 목록 ( Instance 용 모델 )
-	_int m_iIndex_PrtInst = {};							// Prototype Instance 용 인덱스
-
 	vector<string> m_Prototypes_Obj;					// Prototype 목록 ( Object 용 모델 )
 	_int m_iIndex_PrtObj = {};							// Prototype Object 용 인덱스
 
 	_char m_szSearchModelName[MAX_PATH] = {};
+	_char m_szSearchObjectName[MAX_PATH] = {};
 
 #pragma endregion
 

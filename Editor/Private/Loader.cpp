@@ -155,11 +155,6 @@ HRESULT CLoader::Loading_For_Map_Level()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Shader_ModelMeshInstance"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_ModelMeshInstance.hlsl"),
 			MESH_INSTANCING::Elements, MESH_INSTANCING::iNumElements)), E_FAIL);
-
-	// Prototype_Component_Shader_VtxMesh
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Shader_VtxMesh"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_VtxMesh.hlsl"),
-			VTXMESH::Elements, VTXMESH::iNumElements)), E_FAIL);
 	
 #pragma endregion
 
@@ -174,6 +169,10 @@ HRESULT CLoader::Loading_For_Map_Level()
 	/* Prototype_GameObject_Prop_Static */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"),
 		CProp_Static::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	/* Prototype_GameObject_Prop_Preview */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Preview"),
+		CProp_Preview::Create(m_pDevice, m_pContext)), E_FAIL);
 
 	/* Prototype_GameObject_Camera_Map */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Camera_Map"),

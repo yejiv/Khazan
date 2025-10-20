@@ -71,6 +71,7 @@ namespace Engine
 		bool isSnow{ false };
 		bool isCollider{ false };
 		bool isBlended{ false };
+		bool isInstance{ false };
 
 	}MAPOBJECT_PROPERTIES;
 

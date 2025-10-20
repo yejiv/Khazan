@@ -297,6 +297,14 @@ _bool CGameInstance::Already_Registered_Prototype(_uint iPrototypeLevelIndex, co
 	return m_pPrototype_Manager->Already_Registered_Prototype(iPrototypeLevelIndex, strPrototypeTag);
 }
 
+CBase* CGameInstance::Find_Prototype_ForPreview(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag)
+{
+	if (nullptr == m_pPrototype_Manager)
+		return nullptr;
+
+	return m_pPrototype_Manager->Find_Prototype_ForPreview(iPrototypeLevelIndex, strPrototypeTag);
+}
+
 #pragma endregion
 
 #pragma region OBJECT_MANAGER

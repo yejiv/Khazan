@@ -49,16 +49,16 @@ void CProp_Object::Priority_Update(_float fTimeDelta)
 
 void CProp_Object::Update(_float fTimeDelta)
 {
-    if (true == m_isSnow)
+    if (true == m_Properties.isSnow)
     {
-        if (true == m_isBlended)
+        if (true == m_Properties.isBlended)
             m_eShaderPass = SHADER_PASS::SNOWMAP_BLEND;
         else
             m_eShaderPass = SHADER_PASS::SNOWMAP;
     }
     else
     {
-        if (true == m_isBlended)
+        if (true == m_Properties.isBlended)
             m_eShaderPass = SHADER_PASS::MAP_BLEND;
         else
             m_eShaderPass = SHADER_PASS::MAP;
@@ -67,7 +67,7 @@ void CProp_Object::Update(_float fTimeDelta)
 
 void CProp_Object::Late_Update(_float fTimeDelta)
 {
-    if (true == m_isBlended)
+    if (true == m_Properties.isBlended)
         m_pGameInstance->Add_RenderGroup(RENDERGROUP::BLEND, this);
     else
         m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
@@ -102,7 +102,7 @@ HRESULT CProp_Object::Ready_Components(void* pArg)
     LEVEL eLevel = pDesc->eLevel;
     CHECK_EQUAL(LEVEL::END, eLevel, E_FAIL);
 
-    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Shader_VtxMesh"),
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr), E_FAIL);
 
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), m_szModelName,

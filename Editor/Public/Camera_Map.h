@@ -31,6 +31,12 @@ private:
 	_float					m_fMouseSensor = { };
 
 private:
+	_bool m_isPreviewPos = { false };
+	_bool m_isHwakDae = { false };
+
+	_float3 m_vPrevPos = {};
+
+private:
 	void Input(_float fTimeDelta);
 
 public:

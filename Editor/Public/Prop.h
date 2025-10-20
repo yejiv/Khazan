@@ -17,9 +17,7 @@ public:
 	{
 		LEVEL eLevel{ LEVEL::END };
 
-		_bool isSnow{ false };
-		_bool isCollider{ false };
-		_bool isBlended{ false };
+		MAPOBJECT_PROPERTIES Properties{};
 
 		_tchar szModelName[MAX_PATH] = {};
 
@@ -44,13 +42,9 @@ public:
 public:
 	const _tchar* Get_ModelName() const { return m_szModelName; }
 
-	const _bool Get_isSnow() const { return m_isSnow; }
-	const _bool Get_isCollider() const { return m_isCollider; }
-	const _bool Get_isBlended() const { return m_isBlended; }
+	const MAPOBJECT_PROPERTIES Get_Properties() const { return m_Properties; }
 
-	void Set_isSnow(_bool isSnow) { m_isSnow = isSnow; }
-	void Set_isCollider(_bool isCollider) { m_isCollider = isCollider; }
-	void Set_isBlended(_bool isBlended) { m_isBlended = isBlended; }
+	void Set_Properties(MAPOBJECT_PROPERTIES Properties) { m_Properties = Properties; }
 
 	const _uint Get_ShaderPass() const { return static_cast<_uint>(m_eShaderPass); };
 	void Set_ShaderPass(_uint iShaderPass);
@@ -61,9 +55,7 @@ protected:
 protected:
 	_tchar m_szModelName[MAX_PATH] = {};
 
-	_bool m_isSnow = { false };
-	_bool m_isCollider = { false };
-	_bool m_isBlended = { false };
+	MAPOBJECT_PROPERTIES m_Properties = {};
 
 protected:
 	_float m_fSnowAmount = { 0.8f };
