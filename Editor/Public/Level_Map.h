@@ -45,10 +45,6 @@ private:
 	MAPEDIT_MAP m_eMapType = { MAPEDIT_MAP::HEINMACH };
 
 private:
-	// JSON으로부터 읽어와서 Prototype 세팅
-	HRESULT Add_Prototypes_FromJson();
-	HRESULT Convert_Json_To_Data();
-
 	// 맵 오브젝트 배치하면서 vector에 개별로 push_back 한거 nullptr 시 정리용
 	void Clear_List();
 
@@ -165,29 +161,9 @@ private:
 
 #pragma endregion
 
-#pragma region ORIGINAL JSON 용
-
-	JSON m_Json = {};							// Original Json 정보 저장해놓을 JSON
-	_bool m_isJsonExport = { false };			// 추출 됬는지 확인용
-
-	_bool m_isJsonConverted = { false };		// 변환됬는지 확인 용
-
-	vector<JSON_MAP_DATA> m_JsonList;			// Original Json 맵 데이터 용 벡터
-	_int m_iJsonListIndex = {};					// ImGui::BeginListBox 용 인덱스 변수
+#pragma region 변수 ( 아직 이름 못 붙임 )
 
 	_int m_iObjCnt = {};						// 단일 객체 갯수 확인용
-
-#pragma endregion
-
-#pragma region CUSTOM JSON 용
-
-	JSON m_CustomJson = {};								// Custom Json 정보 저장해놓을 JSON
-
-	vector<JSON_MAP_DATA> m_CustomJsonList;				// Custom Json 맵 데이터 용 벡터
-	_int m_iCustomJsonListIndex = {};					// ImGui::BeginListBox 용 인덱스 변수
-
-	_bool m_isCustomJsonLoaded = { false };				// Custom Json 로드 됬는지 확인 용
-	_bool m_isCustomJsonInfoList = { false };			// List Info 창 ON/OFF
 
 	map<const string, const string> m_CheckPrototypes;	// 중복 프로토타입 체크 및 리스트 출력용
 
@@ -218,14 +194,6 @@ private:
 	HRESULT Ready_Main_Window();
 	// MapEditor Layer 수정 윈도우 ( 아직 기능 X )
 	HRESULT Ready_Prop_Edit_Window();
-	// MapEditor Custom Json 수정 윈도우
-	HRESULT Ready_CustomJson_Edit_Window();
-	// MapEditor Custom Json 리스트 윈도우
-	HRESULT Ready_CustomJson_List_Window();
-	// MapEditor Original Json 수정 윈도우
-	HRESULT Ready_Json_Edit_Window();
-	// MapEditor Original Json 리스트 윈도우
-	HRESULT Ready_Json_List_Window();
 	// MapEditor Light 세팅 윈도우
 	HRESULT Ready_Light_Window();
 	// MapEditor Object Save, Load 윈도우
@@ -236,7 +204,7 @@ private:
 
 	void Fbxs_Convert_To_Dat(const _char* pFolderName);
 
-	void Add_Prototype_ByFolder(const _char* pFolderName);
+	void Add_Prototype_ByFolder(const _char* pFolderName, _bool isAnim = false);
 
 	// 임시 테스트용
 	string Find_ModelPath(const string& strModelName, const string& strFileExtern);
@@ -258,89 +226,3 @@ public:
 };
 
 NS_END
-
-
-
-#pragma region CODE 확인용
-/*
-_matrix PreTransformMatrix = XMMatrixIdentity();
-
-// 스케일 변환 ( 1 / 100 )
-PreTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f);
-
-for (auto& Component : m_CustomJson)
-{
-	_bool isInstance = (_bool)Component["isInstance"];
-	_bool isObject = (_bool)Component["isObject"];
-
-	string strModelName = Component["strModelName"];
-
-	if (true == isInstance)				// 인스턴싱 모델인 경우
-	{
-		// 모델명과 일치하는 경로 찾기
-		string strLoadPath = Find_ModelPath(strModelName, ".dat");
-
-		if ("NOTFOUND" == strLoadPath)
-		{
-			string error = "Can't found load path\nModelName : " + strModelName;
-#ifdef _DEBUG
-				OutputDebugStringA(error.c_str());
-#endif // _DEBUG
-				continue;
-			}
-
-			CEditor_ModelMesh_Instance::EDITOR_MODELMESH_INSTANCE_DESC InstanceDesc = {};
-
-			InstanceDesc.iNumInstance = 0;
-
-			// Instance 모델 프로토타입 등록
-			CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), AnsiToWString(strModelName),
-				CModel_Instance::Create(m_pDevice, m_pContext, strLoadPath.c_str(), &InstanceDesc)), E_FAIL);
-
-			CProp_Static::PROP_STATIC_DESC StaticDesc = {};
-
-			_wstring strTempName = AnsiToWString(strModelName);
-			memcpy(StaticDesc.szModelName, strTempName.c_str(), sizeof(StaticDesc.szModelName));
-
-			// Instance 는 바로 Layer 등록
-			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_InstObj"),
-				ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"), &StaticDesc), E_FAIL);
-
-			m_CheckPrototypes.emplace(strModelName, strLoadPath);
-			m_Prototypes_Inst.push_back(strModelName);
-		}
-		else if (true == isObject)				// 단일 오브젝트인 경우
-		{
-			auto iter = m_CheckPrototypes.find(strModelName);
-
-			if (iter == m_CheckPrototypes.end())
-			{
-				// 모델명과 일치하는 경로 찾기
-				string strLoadPath = Find_ModelPath(strModelName, ".dat");
-
-				if ("NOTFOUND" == strLoadPath)
-				{
-					string error = "Can't found load path\nModelName : " + strModelName + "\n";
-#ifdef _DEBUG
-					OutputDebugStringA(error.c_str());
-#endif // _DEBUG
-					continue;
-				}
-
-				// 단일 오브젝트는 바로 인스턴스 등록
-				CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), AnsiToWString(strModelName),
-					CModel::Create(m_pDevice, m_pContext, strLoadPath.c_str())), E_FAIL);
-
-				m_CheckPrototypes.emplace(strModelName, strLoadPath);
-				m_Prototypes_Obj.push_back(strModelName);
-			}
-		}
-		else
-		{
-			MSG_BOX(TEXT("있어서는 안되는 else"));
-		}
-	}
-
-	return S_OK;
-	*/
-#pragma endregion
