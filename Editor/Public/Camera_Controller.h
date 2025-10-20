@@ -53,6 +53,8 @@ private:
 	_int m_iListSelectCamera = {};
 	_wstring m_strListSelectAnimation = {};
 
+	_char m_szFilePath[MAX_PATH] = "";
+
 public:
 	static CCamera_Controller* Create();
 	virtual void Free() override;

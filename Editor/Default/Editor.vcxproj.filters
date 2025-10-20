@@ -190,6 +190,12 @@
     <Filter Include="02.GameObject\Camera\Compre">
       <UniqueIdentifier>{d84468eb-f793-43e3-9c4a-a7dc03bc2177}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Camera\Test">
+      <UniqueIdentifier>{4efa9ab4-02ad-43dc-908c-6f03c81d9744}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Camera\Terrain">
+      <UniqueIdentifier>{01458dd6-27f2-4b31-81df-e886a4485da0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -357,6 +363,12 @@
     <ClInclude Include="..\public\Player_Shader.h">
       <Filter>02.GameObject\Shader\Player</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Player_Camera.h">
+      <Filter>02.GameObject\Camera\Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Terrain.h">
+      <Filter>02.GameObject\Camera\Terrain</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -521,6 +533,12 @@
     </ClCompile>
     <ClCompile Include="..\private\Player_Shader.cpp">
       <Filter>02.GameObject\Shader\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Player_Camera.cpp">
+      <Filter>02.GameObject\Camera\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Terrain.cpp">
+      <Filter>02.GameObject\Camera\Terrain</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

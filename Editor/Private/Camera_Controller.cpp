@@ -81,7 +81,6 @@ HRESULT CCamera_Controller::Ready_ImGui_Create()
 		Create_Camera();
 	};
 
-
 	ImGui::End();
 
 
@@ -147,11 +146,48 @@ HRESULT CCamera_Controller::Ready_ImGui_List()
 			pCamera->Set_DefaultData(m_tEditCameraDesc);
 		}
 
+		ImGui::InputText("UIFilePath", m_szFilePath, MAX_PATH);
+		if (ImGui::Button("Save_Camera"))
+		{
+			string filePath = m_szFilePath;
+			filePath += ".json";
+			nlohmann::ordered_json SaveData;
+			Cameras[m_iListSelectCamera]->Save_Json(SaveData);
+			ofstream Out(filePath, ios::out | ios::trunc);
+			if (!Out.is_open())
+			{
+				MSG_BOX(TEXT("Json 파일 저장 실패"));
+				Out.close();
+			}
+			else
+			{
+				MSG_BOX(TEXT("Json 파일 저장 성공"));
+				Out << SaveData.dump(4);
+				Out.close();
+			}
+		}
+		/*if (ImGui::Button("Load_Camera"))
+		{
+			string filePath = m_szFilePath;
+			filePath += ".json";
+			nlohmann::ordered_json SaveData;
+			Cameras[m_iListSelectCamera]->Save_Json(SaveData);
+			ofstream Out(filePath, ios::out | ios::trunc);
+			if (!Out.is_open())
+			{
+				MSG_BOX(TEXT("Json 파일 저장 실패"));
+				Out.close();
+			}
+			else
+			{
+				MSG_BOX(TEXT("Json 파일 저장 성공"));
+				Out << SaveData.dump(4);
+				Out.close();
+			}
+		}*/
+
 		ImGui::End();
 	}
-
-
-	
 	return S_OK;
 }
 
@@ -369,8 +405,9 @@ void CCamera_Controller::Create_Camera()
 	Desc.fRotationPerSec = XMConvertToRadians(m_tCreateCameraDesc.fRotationPerSec);
 	Desc.fMouseSensor = m_tCreateCameraDesc.fMouseSensor;
 	Desc.iCameraType = m_tCreateCameraDesc.iCameraType;
+	Desc.strCameraTag = m_tCreateCameraDesc.strCameraTag;
 
-	CCamera_Compre* pCamera = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::CAMERA), TEXT("Prototype_GameObject_Camera_Compre"), &m_tCreateCameraDesc));
+	CCamera_Compre* pCamera = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::CAMERA), TEXT("Prototype_GameObject_Camera_Compre"), &Desc));
 	pCamera->Set_IsActive(false);
 
 	m_pGameInstance->Add_Camera(ENUM_CLASS(LEVEL::CAMERA), pCamera);

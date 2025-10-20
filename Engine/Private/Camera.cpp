@@ -33,6 +33,8 @@ HRESULT CCamera::Initialize_Clone(void* pArg)
 
 	m_pContext->RSGetViewports(&iNumViewports, &ViewportDesc);
 
+	m_vEye = pDesc->vEye;
+	m_vAt = pDesc->vAt;
 	m_fFovy = pDesc->fFovy;
 	m_fAspect = ViewportDesc.Width / ViewportDesc.Height;
 	m_fNear = pDesc->fNear;
@@ -65,33 +67,50 @@ HRESULT CCamera::Render()
 
 void CCamera::Set_Animation(_wstring strAnimationTag)
 {
+	m_pCurrentAnimation = Get_Animations(strAnimationTag);
+	if ((*m_pCurrentAnimation).size() < 3)
+	{
+		m_pCurrentAnimation = nullptr;
+		return;
+	}
+		
+
 	m_isAnimation = true;
-	m_tCurrentAnimation = Get_Animations(strAnimationTag);
 	m_iAnimationIndex = 0;
 	m_vOldLook = m_pTransformCom->Get_State(STATE::LOOK);
 
-	m_tPosCatmullrom.v1 = m_pTransformCom->Get_State(STATE::POSITION);
-	m_tPosCatmullrom.v2 = m_pTransformCom->Get_State(STATE::POSITION);
+	m_tPosCatmullrom.v1 = XMVectorSet(
+		(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.x,
+		(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.y,
+		(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.z,
+		1.f
+	);
+	m_tPosCatmullrom.v2 = XMVectorSet(
+		(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.x,
+		(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.y,
+		(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.z,
+		1.f
+	);
 	m_tPosCatmullrom.v3 = XMVectorSet(
-		(*m_tCurrentAnimation)[m_iAnimationIndex].vTranslation.x,
-		(*m_tCurrentAnimation)[m_iAnimationIndex].vTranslation.y,
-		(*m_tCurrentAnimation)[m_iAnimationIndex].vTranslation.z,
+		(*m_pCurrentAnimation)[m_iAnimationIndex + 1].vTranslation.x,
+		(*m_pCurrentAnimation)[m_iAnimationIndex + 1].vTranslation.y,
+		(*m_pCurrentAnimation)[m_iAnimationIndex + 1].vTranslation.z,
 		1.f
 	);
 	m_tPosCatmullrom.v4 = XMVectorSet(
-		(*m_tCurrentAnimation)[m_iAnimationIndex].vTranslation.x,
-		(*m_tCurrentAnimation)[m_iAnimationIndex].vTranslation.y,
-		(*m_tCurrentAnimation)[m_iAnimationIndex].vTranslation.z,
+		(*m_pCurrentAnimation)[m_iAnimationIndex + 2].vTranslation.x,
+		(*m_pCurrentAnimation)[m_iAnimationIndex + 2].vTranslation.y,
+		(*m_pCurrentAnimation)[m_iAnimationIndex + 2].vTranslation.z,
 		1.f
 	);
 }
 
 void CCamera::Play_Animation(_float fTimeDelta)
 {
-	if (m_isAnimation && m_tCurrentAnimation)
+	if (m_isAnimation && m_pCurrentAnimation)
 	{
-		m_fCurrentTrackPosition = fTimeDelta * (*m_tCurrentAnimation)[m_iAnimationIndex].fSpeed;
-		m_fAnimationRatio += m_fCurrentTrackPosition / (*m_tCurrentAnimation)[m_iAnimationIndex].fTrackPosition;
+		m_fCurrentTrackPosition = fTimeDelta * (*m_pCurrentAnimation)[m_iAnimationIndex].fSpeed;
+		m_fAnimationRatio += m_fCurrentTrackPosition / (*m_pCurrentAnimation)[m_iAnimationIndex].fTrackPosition;
 
 		XMVECTOR vPos = XMVectorCatmullRom(
 			m_tPosCatmullrom.v1,
@@ -101,7 +120,7 @@ void CCamera::Play_Animation(_float fTimeDelta)
 			m_fAnimationRatio
 		);
 
-		_vector vLook = XMVector3Normalize(XMVectorLerp(m_vOldLook, XMLoadFloat4(&(*m_tCurrentAnimation)[m_iAnimationIndex].vLookAt), m_fAnimationRatio));
+		_vector vLook = XMVector3Normalize(XMVectorLerp(m_vOldLook, XMLoadFloat4(&(*m_pCurrentAnimation)[m_iAnimationIndex].vLookAt), m_fAnimationRatio));
 
 		_vector vUp = XMVectorSet(0, 1, 0, 0);
 		_vector vRight = XMVector3Normalize(XMVector3Cross(vUp, vLook));
@@ -115,27 +134,37 @@ void CCamera::Play_Animation(_float fTimeDelta)
 		if (m_fAnimationRatio >= 1.f)
 		{
 			m_iAnimationIndex++;
-			if ((*m_tCurrentAnimation).size() <= m_iAnimationIndex)
+			if ((*m_pCurrentAnimation).size() <= m_iAnimationIndex + 2)
 			{
 				m_iAnimationIndex = 0;
 				m_fCurrentTrackPosition = 0.f;
-				m_tCurrentAnimation = nullptr;
+				m_pCurrentAnimation = nullptr;
 				m_isAnimation = false;
 			}
 			else {
 				m_vOldLook = m_pTransformCom->Get_State(STATE::LOOK);
-				m_tPosCatmullrom.v1 = m_pTransformCom->Get_State(STATE::POSITION);
-				m_tPosCatmullrom.v2 = m_pTransformCom->Get_State(STATE::POSITION);
+				m_tPosCatmullrom.v1 = XMVectorSet(
+					(*m_pCurrentAnimation)[m_iAnimationIndex - 1].vTranslation.x,
+					(*m_pCurrentAnimation)[m_iAnimationIndex - 1].vTranslation.y,
+					(*m_pCurrentAnimation)[m_iAnimationIndex - 1].vTranslation.z,
+					1.f
+				);
+				m_tPosCatmullrom.v2 = XMVectorSet(
+					(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.x,
+					(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.y,
+					(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.z,
+					1.f
+				);
 				m_tPosCatmullrom.v3 = XMVectorSet(
-					(*m_tCurrentAnimation)[m_iAnimationIndex].vTranslation.x,
-					(*m_tCurrentAnimation)[m_iAnimationIndex].vTranslation.y,
-					(*m_tCurrentAnimation)[m_iAnimationIndex].vTranslation.z,
+					(*m_pCurrentAnimation)[m_iAnimationIndex + 1].vTranslation.x,
+					(*m_pCurrentAnimation)[m_iAnimationIndex + 1].vTranslation.y,
+					(*m_pCurrentAnimation)[m_iAnimationIndex + 1].vTranslation.z,
 					1.f
 				);
 				m_tPosCatmullrom.v4 = XMVectorSet(
-					(*m_tCurrentAnimation)[m_iAnimationIndex].vTranslation.x,
-					(*m_tCurrentAnimation)[m_iAnimationIndex].vTranslation.y,
-					(*m_tCurrentAnimation)[m_iAnimationIndex].vTranslation.z,
+					(*m_pCurrentAnimation)[m_iAnimationIndex + 2].vTranslation.x,
+					(*m_pCurrentAnimation)[m_iAnimationIndex + 2].vTranslation.y,
+					(*m_pCurrentAnimation)[m_iAnimationIndex + 2].vTranslation.z,
 					1.f
 				);
 			}
@@ -354,6 +383,76 @@ void CCamera::Update_PipeLines()
 
 	m_pGameInstance->Set_Transform(D3DTS::VIEW, m_pTransformCom->Get_WorldMatrix_Inverse());
 	m_pGameInstance->Set_Transform(D3DTS::PROJ, XMMatrixPerspectiveFovLH(m_fFovy, m_fAspect, m_fNear, m_fFar));
+}
+
+void CCamera::Save_Dat()
+{
+}
+
+void CCamera::Load_Dat()
+{
+}
+
+void CCamera::Save_Json(nlohmann::ordered_json& pOutData)
+{
+	nlohmann::ordered_json Data;
+
+	Data["Name"] = m_strCameraTag.c_str();
+	Data["Eye"]["x"] = m_vEye.x;
+	Data["Eye"]["y"] = m_vEye.y;
+	Data["Eye"]["z"] = m_vEye.z;
+	Data["Eye"]["w"] = m_vEye.w;
+	Data["At"]["x"] = m_vAt.x;
+	Data["At"]["y"] = m_vAt.y;
+	Data["At"]["z"] = m_vAt.z;
+	Data["At"]["w"] = m_vAt.w;
+	Data["Fovy"] = m_fFovy;
+	Data["Near"] = m_fNear;
+	Data["Far"] = m_fFar;
+	Data["SpeedPerSec"] = m_pTransformCom->Get_SpeedPerSec();
+	Data["RotationPerSec"] = m_pTransformCom->Get_RotationPerSec();
+	Data["MouseSensor"] = m_fMouseSensor;
+	Data["CameraType"] = m_iCameraType;
+
+	for (auto Animation : m_Animations)
+	{
+		nlohmann::ordered_json AnimationData;
+		AnimationData["Name"] = Animation.first.c_str();
+		for (auto Ani : Animation.second)
+		{
+			nlohmann::ordered_json AniData;
+			AniData["Translation"]["x"] = Ani.vTranslation.x;
+			AniData["Translation"]["y"] = Ani.vTranslation.y;
+			AniData["Translation"]["z"] = Ani.vTranslation.z;
+			AniData["LookAt"]["x"] = Ani.vLookAt.x;
+			AniData["LookAt"]["y"] = Ani.vLookAt.y;
+			AniData["LookAt"]["z"] = Ani.vLookAt.z;
+			AniData["LookAt"]["w"] = Ani.vLookAt.w;
+			AniData["Speed"] = Ani.fSpeed;
+			AniData["TrackPosition"] = Ani.fTrackPosition;
+
+			AnimationData["Animations"].push_back(AniData);
+		}
+		Data["Animation"].push_back(AnimationData);
+	}
+
+	for (auto Event : m_Events)
+	{
+		nlohmann::ordered_json EventData;
+		EventData["Name"] = Event.first.c_str();
+		for (auto Eve : Event.second)
+		{
+			nlohmann::ordered_json EveData;
+			EveData["EventType"] = Eve.iEventType;
+			EveData["EventKey"] = Eve.strEventKey.c_str();
+			EveData["isComplete"] = Eve.isComplete;
+			EveData["TrackPosition"] = Eve.fTrackPosition;
+
+			EventData["Events"].push_back(EveData);
+		}
+		Data["Event"].push_back(EventData);
+	}
+	pOutData = Data;
 }
 
 

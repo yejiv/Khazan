@@ -31,6 +31,8 @@
 
 #pragma region Camera
 #include "Camera_Compre.h"
+#include "Player_Camera.h"
+#include "Camera_Terrain.h"
 #pragma endregion
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -392,9 +394,16 @@ HRESULT CLoader::Loading_For_Shader_Level()
 
 HRESULT CLoader::Loading_For_Camera_Level()
 {
-	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
+	// Prototype_Component_Texture_Terrain_Camera
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CAMERA), TEXT("Prototype_Component_Texture_Terrain_Camera"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/Tile0.jpg"), 1))))
+		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
+
+	// Prototype_Component_Buffer_Terrain
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CAMERA), TEXT("Prototype_Component_VIBuffer_Terrain"),
+		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 100, 100)), E_FAIL);
 
 	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
 
@@ -404,6 +413,15 @@ HRESULT CLoader::Loading_For_Camera_Level()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CAMERA), TEXT("Prototype_GameObject_Camera_Compre"),
 		CCamera_Compre::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+
+	// Prototype_GameObject_Terrain_Effect
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CAMERA), TEXT("Prototype_GameObject_Camera_Terrain"),
+		CCamera_Terrain::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	// Prototype_GameObject_Player_Shader
+	/*if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CAMERA), TEXT("Prototype_GameObject_Player_Camera"),
+		CPlayer_Camera::Create(m_pDevice, m_pContext))))
+		return E_FAIL;*/
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 

@@ -95,16 +95,20 @@ void CCamera_Compre::Update_Free(_float fTimeDelta)
 
     _int    iMouseMove = {};
 
-    if (iMouseMove = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::X))
-    {
-        m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * iMouseMove * m_fMouseSensor);
-    }
 
-    if (iMouseMove = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::Y))
+    if (m_pGameInstance->Mouse_Pressing(MOUSEKEYSTATE::RB))
     {
-        m_pTransformCom->Turn(m_pTransformCom->Get_State(STATE::RIGHT), fTimeDelta * iMouseMove * m_fMouseSensor);
-    }
+        if (iMouseMove = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::X))
+        {
+            m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * iMouseMove * m_fMouseSensor);
+        }
 
+        if (iMouseMove = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::Y))
+        {
+            m_pTransformCom->Turn(m_pTransformCom->Get_State(STATE::RIGHT), fTimeDelta * iMouseMove * m_fMouseSensor);
+        }
+    }
+    
 }
 
 void CCamera_Compre::Update_Spring(_float fTimeDelta)

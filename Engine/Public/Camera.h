@@ -69,13 +69,19 @@ public:
 
 public:
 	void Update_PipeLines();
+public:
+	void Save_Dat();
+	void Load_Dat();
 
+	void Save_Json(nlohmann::ordered_json& pOutData);
 protected:
 	_wstring			m_strCameraTag = {};
 	_uint				m_iCameraType = {};
 
 	_float				m_fMouseSensor = {};
 
+	_float4				m_vEye = {};
+	_float4				m_vAt = {};
 	_float				m_fFovy = {};
 	_float				m_fAspect = {};
 	_float				m_fNear{}, m_fFar{};
@@ -100,7 +106,7 @@ protected:
 	map<_wstring, vector<CAMERA_EVENT_DATA>> m_Events;
 
 	_bool							m_isAnimation = {false};
-	vector<CAMERA_KEYFRAME>*		m_tCurrentAnimation = { nullptr };
+	vector<CAMERA_KEYFRAME>*		m_pCurrentAnimation = { nullptr };
 	_uint							m_iAnimationIndex = {};
 	_float							m_fCurrentTrackPosition = {};
 	_float							m_fAnimationRatio = {};

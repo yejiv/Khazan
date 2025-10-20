@@ -107,7 +107,7 @@ HRESULT CLevel_Stage1::Ready_Layer_Camera(const _wstring& strLayerTag)
 {
 	CCamera_Compre::CAMERA_COMPRE_DESC	CameraFreeDesc{};
 
-	CameraFreeDesc.vEye = _float4(0.f, 20.f, -15.f, 1.f);
+ 	CameraFreeDesc.vEye = _float4(0.f, 20.f, -15.f, 1.f);
 	CameraFreeDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
 	CameraFreeDesc.fFovy = XMConvertToRadians(60.0f);
 	CameraFreeDesc.fNear = 0.1f;
