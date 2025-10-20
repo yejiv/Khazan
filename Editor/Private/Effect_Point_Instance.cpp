@@ -45,6 +45,9 @@ void CEffect_Point_Instance::Update(_float fTimeDelta)
     }
 
     m_pVIBufferCom->Update(fTimeDelta);
+    if (m_sData.bGravity == true)
+        m_pVIBufferCom->UpdateGravity(fTimeDelta);
+
     __super::Update(fTimeDelta);
 
     /* Edit */
@@ -126,6 +129,7 @@ void CEffect_Point_Instance::SetSpreadData(void* pArg)
     CEffect_Prefab::EFFECT_EVENT data = *static_cast<CEffect_Prefab::EFFECT_EVENT*>(pArg);
     m_pVIBufferCom->Setting_Speed(CVIBuffer_Point_Instance::SPEED_VALUE::SPREAD_SPEED, data.fSpreadSpeed);
     m_pVIBufferCom->Setting_Pivot(data.fPivot);
+    m_sData.bGravity = data.bGravity;
     SetData(ENUM_CLASS(data.eEventType), data.fDuration); 
 }
 

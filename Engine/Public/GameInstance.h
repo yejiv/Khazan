@@ -55,6 +55,8 @@ public:
 public:
 	HRESULT Add_Prototype(_uint iPrototpyeLevelIndex, const _wstring& strPrototypeTag, class CBase* pPrototype);
 	class CBase* Clone_Prototype(PROTOTYPE ePrototype, _uint iPrototpyeLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);
+	// 프로토 타입 등록 여부 검사 함수
+	_bool Already_Registered_Prototype(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag);
 #pragma endregion
 
 #pragma region OBJECT_MANAGER
@@ -227,6 +229,11 @@ public:
 	void Change_Camera(_uint iLevelIndex, _uint iCameraType);
 #pragma endregion
 
+#pragma region CAMERA_MANAGER
+	class CBlackBoard* Get_BlackBoard() { return m_pBlackBoard; }
+#pragma endregion
+
+
 private:
 	class CGraphic_Device*		m_pGraphic_Device = { nullptr };
 	class CLevel_Manager*		m_pLevel_Manager = { nullptr };
@@ -249,6 +256,8 @@ private:
 	class CResource_Manager*	m_pResource_Manager = { nullptr };
 	class CComputeShader_Manager*	m_pComputeShader_Manager = { nullptr };
 	class CCamera_Manager*		m_pCamera_Manager = { nullptr };
+	class CBlackBoard*			m_pBlackBoard = { nullptr };
+
 #ifdef _DEBUG
 	class CImgui_Manager* m_pImgui_Manager = { nullptr };
 #endif

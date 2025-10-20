@@ -7,6 +7,7 @@
 
 NS_BEGIN(Engine)
 class CModel;
+class CTexture;
 NS_END
 
 NS_BEGIN(Editor)
@@ -19,8 +20,6 @@ public:
 		_float4x4 WorldMatrix{};
 
 	}PROP_OBJECT_DESC;
-
-	enum class SHADER_PASS { MAIN, WIREFRAME, MAPOBJECT, END };			// 수정 예정
 
 private:
 	CProp_Object(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -37,9 +36,7 @@ public:
 
 private:
 	CModel* m_pModelCom = { nullptr };
-
-private:
-	SHADER_PASS m_eShaderPass = { SHADER_PASS::MAPOBJECT };
+	CTexture* m_pTextureCom = { nullptr };
 
 private:
 	HRESULT Ready_Components(void* pArg);

@@ -40,15 +40,20 @@ HRESULT CProp_Object::Initialize_Clone(void* pArg)
 
 #pragma endregion
 
-#pragma region TYPE 2
-    /*
-    _vector vScale = {};
-    _vector vRotation = {};
-    _vector vTranslation = {};
+    m_eShaderPass = SHADER_PASS::MAP;
 
-    XMMatrixDecompose(&vScale, &vRotation, &vTranslation, matWorld);
-    */
-#pragma endregion
+    //if (true == m_isSnowMap)
+    //{
+        //m_eShaderPass = SHADER_PASS::SNOWMAP;
+        //if (true == m_isBlended)
+            //m_eShaderPass = SHADER_PASS::SNOWMAP_BLEND;
+    //}
+    //else
+    //{
+        //m_eShaderPass = SHADER_PASS::MAP;
+        //if (true == m_isBlended)
+            //m_eShaderPass = SHADER_PASS::MAP_BLEND;
+    //}
 
     return S_OK;
 }
@@ -59,22 +64,24 @@ void CProp_Object::Priority_Update(_float fTimeDelta)
 
 void CProp_Object::Update(_float fTimeDelta)
 {
-   // 수정필요 : 파일 입출력 함수 변경으로 인한 주석처리 확인필요~
-   /* if (m_pGameInstance->Key_Down(DIK_3))
-        m_pModelCom->ExportModel();
-    if (m_pGameInstance->Key_Down(DIK_4))
-        m_pModelCom->Update_DAT_From_JSON();*/
-    if (m_pGameInstance->Key_Down(DIK_5))
-        m_isDead = true;
-    if (m_pGameInstance->Key_Down(DIK_8))
-        m_eShaderPass = SHADER_PASS::WIREFRAME;
-    if (m_pGameInstance->Key_Down(DIK_9))
-        m_eShaderPass = SHADER_PASS::MAPOBJECT;
+    if (SHADER_PASS::MAP == m_eShaderPass)
+    {
+        if (true == m_isBlended)
+            m_eShaderPass = SHADER_PASS::MAP_BLEND;
+    }
+    else if (SHADER_PASS::SNOWMAP == m_eShaderPass)
+    {
+        if (true == m_isBlended)
+            m_eShaderPass = SHADER_PASS::SNOWMAP_BLEND;
+    }
 }
 
 void CProp_Object::Late_Update(_float fTimeDelta)
 {
-    m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
+    if (true == m_isBlended)
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::BLEND, this);
+    else
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
 }
 
 HRESULT CProp_Object::Render()
@@ -86,6 +93,9 @@ HRESULT CProp_Object::Render()
     for (_uint i = 0; i < iNumMeshes; ++i)
     {
         Bind_Materials(i);
+
+        if (SHADER_PASS::SNOWMAP == m_eShaderPass || SHADER_PASS::SNOWMAP_BLEND == m_eShaderPass)
+            CHECK_FAILED(Bind_ShaderResources_ForSnowMap(m_pTextureCom, i), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pShaderCom->Begin(ENUM_CLASS(m_eShaderPass)), E_FAIL);
 
@@ -110,6 +120,13 @@ HRESULT CProp_Object::Ready_Components(void* pArg)
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), m_szModelName,
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
+
+    if (true)
+    {
+        if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), TEXT("Prototype_Component_Texture_Map_Snow"),
+            TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr)))
+            return E_FAIL;
+    }
 
     return S_OK;
 }
@@ -172,4 +189,5 @@ void CProp_Object::Free()
     __super::Free();
 
     Safe_Release(m_pModelCom);
+    Safe_Release(m_pTextureCom);
 }

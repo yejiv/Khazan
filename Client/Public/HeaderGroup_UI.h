@@ -1,6 +1,6 @@
 #pragma once
 #include "UI_Atlas_Icon.h"
 #include "UI_BackGround.h"
+#include "UI_Gague_Tip.h"
 
-//Å×½ºÆ®
-#include "UI_SlotTest.h"
+#include "UI_HUD.h"

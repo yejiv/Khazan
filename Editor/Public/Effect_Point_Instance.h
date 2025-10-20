@@ -17,6 +17,7 @@ public:
 		_float4		vColor;
 		_uint		iTextureIdx;
 		_float2		iScrollSpeed;
+		_bool		bGravity = false;
 	}PARTICLE_DESC;
 
 private:
