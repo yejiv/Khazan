@@ -105,7 +105,7 @@ HRESULT CLevel_Stage1::Ready_Lights()
 
 HRESULT CLevel_Stage1::Ready_Layer_Camera(const _wstring& strLayerTag)
 {
-	CCamera_Compre::CAMERA_FREE_DESC	CameraFreeDesc{};
+	CCamera_Compre::CAMERA_COMPRE_DESC	CameraFreeDesc{};
 
 	CameraFreeDesc.vEye = _float4(0.f, 20.f, -15.f, 1.f);
 	CameraFreeDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
@@ -124,7 +124,7 @@ HRESULT CLevel_Stage1::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 	m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag, pCamera_Free);
 
-	CCamera_Compre::CAMERA_SPRING_DESC	CameraSpringDesc{};
+	CCamera_Compre::CAMERA_COMPRE_DESC	CameraSpringDesc{};
 
 	CameraSpringDesc.vEye = _float4(0.f, 20.f, -15.f, 1.f);
 	CameraSpringDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
@@ -136,12 +136,11 @@ HRESULT CLevel_Stage1::Ready_Layer_Camera(const _wstring& strLayerTag)
 	CameraSpringDesc.fMouseSensor = 0.2f;
 	CameraSpringDesc.iCameraType = ENUM_CLASS(CAMERATYPE::SPRING);
 
-	CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::STAGE1), TEXT("Layer_Player"));
-	CameraSpringDesc.pObjMatrix = dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr();
-
+	
 	CCamera_Compre* pCamera_Spring = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Camera_Compre"), &CameraSpringDesc));
 	pCamera_Spring->Set_IsActive(false);
-
+	CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::STAGE1), TEXT("Layer_Player"));
+	pCamera_Spring->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
 	m_pGameInstance->Add_Camera(ENUM_CLASS(LEVEL::STAGE1), pCamera_Spring);
 
 	m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag, pCamera_Spring);

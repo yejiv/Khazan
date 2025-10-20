@@ -17,18 +17,6 @@ public:
 
 	}CAMERA_COMPRE_DESC;
 
-	typedef struct tagCameraFreeDesc : public CCamera::CAMERA_DESC
-	{
-		_float			fMouseSensor;
-	}CAMERA_FREE_DESC;
-
-	typedef struct tagCameraSpringDesc : CAMERA_COMPRE_DESC
-	{
-		_float			fMouseSensor;
-		const _float4x4*		pObjMatrix;
-		const _float4x4*		pSocketMatrix;
-	}CAMERA_SPRING_DESC;
-
 	typedef struct tagCameraContactDesc {
 		_float3 vNormal;
 		_float3 vPoint;
@@ -60,12 +48,10 @@ public:
 public:
 	HRESULT Ready_Camera(void* pArg);
 	HRESULT Ready_Body();
+
+public:
+	CAMERA_COMPRE_DESC Get_Desc();
 private:
-	_float			m_fMouseSensor = { };
-
-	const _float4x4*		m_pObjMatrix = {};
-	const _float4x4*		m_pSocketMatrix = {};
-
 	CCharacterVirtual* m_pCharVirCom = { nullptr };
 
 	CAMERA_CONTACT_DESC m_CCDesc;
