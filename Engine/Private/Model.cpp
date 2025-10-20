@@ -214,6 +214,9 @@ _bool CModel::Play_Animation(_float fTimeDelta)
         /* 루트 모션 체크 */
 		Check_RootMotion();
 
+        /* 완료 대기 여부 체크*/
+        Check_WaitForComplete();
+
         /* 애니메이션 블랜딩할 이전 애니메이션 뼈 넘겨주기 */
 		m_Animations[m_iCurrentAnimIndex]->OnAnimationBlend(move(m_Animations[m_iPrevAnimIndex]->Get_ChannelMatrices()));
 
@@ -230,6 +233,17 @@ _bool CModel::Play_Animation(_float fTimeDelta)
     /* 루트모션 진행 */
     if (Has_State(ROOTMOTION))
         Update_RootMotion(fTimeDelta);
+
+    /* 대기중인 애니메이션이 있으면 실행 */
+    if (Has_State(WAITFORCOMPLETE) && m_isFinished)
+    {
+        Remove_State(WAITFORCOMPLETE);
+        if (m_OnWaitForComplete != nullptr) {
+            m_OnWaitForComplete();
+            m_OnWaitForComplete = nullptr;
+            return m_isFinished;
+        }
+    }
 
     /* 애니메이션 세트 다음동작 및 끝났는지 */
     if (Has_State(ANIMSET_PLAYING) && m_isFinished)
@@ -252,9 +266,21 @@ void CModel::Set_Animation(_uint iIndex)
 {
     if (iIndex >= m_iNumAnimations)
         return;
+    
+    if (Has_State(WAITFORCOMPLETE))
+    {
+        m_iReserveAnimIndex = iIndex;
+
+        OnWaitForComplete([this]() {
+            Set_Animation(m_iReserveAnimIndex);
+            });
+
+        return;
+    }
 
     m_iPrevAnimIndex = m_iCurrentAnimIndex;
     m_iCurrentAnimIndex = iIndex;
+
 
     if (m_iPrevAnimIndex >= 0 && m_iCurrentAnimIndex != m_iPrevAnimIndex) {
         if(!Has_State(ANIMSET_PLAYING)) Clear_State();
@@ -432,6 +458,12 @@ void CModel::Update_RootMotion(_float fTimeDelta)
     
         m_Bones[m_iRootBoneIndex]->Set_TransformationMatrix(CurrentRootMatrix);
     }
+}
+
+void CModel::Check_WaitForComplete()
+{
+    if (m_AnimationsSetup[m_iCurrentAnimIndex].isWaitForComplete)
+        Add_State(WAITFORCOMPLETE);
 }
 
 HRESULT CModel::Ready_Meshes(MODEL_DATA& data)

@@ -22,6 +22,7 @@ private:
 		ROOTMOTION_POSITION = 1 << 7,
 		ROOTMOTION_ROTATION = 1 << 8,
 
+		WAITFORCOMPLETE = 1 << 9,	//애니메이션 완료되어야 다음 애니메이션 전환 가능 
 	};
 
 private:
@@ -80,6 +81,7 @@ private:
 	_bool								m_isFinished = { false };			/* 루프가 아닌 애니메이션이 끝났는지 여부  */
 	_uint								m_iNumAnimations = { 0 };			/* 애니메이션 수 */
 	_int								m_iCurrentAnimIndex = { -1 };		/* 현재 애니메이션 인덱스 */
+	_int								m_iReserveAnimIndex = {};			/* 애니메이션 끝나고 전환해야 할 때 다음 애니메이션 인덱스가 들어오는것을 예약*/
 	_float								m_fCurrentTrackPosition = { 0.f };  /* 현재 애니메이션 재생 위치 */
 	_int								m_iPrevAnimIndex = { -1 };			/* 이전 애니메이션 인덱스 */
 	vector< class CAnimation* >			m_Animations;						/* 애니메이션 클래스 저장  */
@@ -92,18 +94,21 @@ private:
 	_uint								m_iCurrentAnimSetIndex = { 0 };		/* 애니메이션 세트에서 어떤 애니메이션의 인덱스 */
 
 	/* 루트 모션 */
-	_uint							m_iRootBoneIndex = {};				/* 루트 모션을 적용할 뼈의 인덱스(루트 본) */
+	_uint							m_iRootBoneIndex = {};					/* 루트 모션을 적용할 뼈의 인덱스(루트 본) */
 	_vector							m_vRootMotionScale = {};				/* 어떤 축에 적용할건지 */ 
 	_float							m_fCurrentRootMotionBlendTime = {0.f};	/* 현재 루트모션 블랜딩 시간*/
 	_float							m_fRootMotionBlendTime = { 0.15f };		/* 루트모션 블랜딩 총 시간 */
 	const _float					m_fBaseRootMotionBlendTime = {0.15f};   /* 만약 블랜딩 시간이 안써져있으면 사용할 기본 블랜딩 시간 */
 	_matrix							m_PreRootMatrix = {}; 					/* 이전 루트 모션 행렬 */
 
-
+	/* 애니메이션 완료 후 다음 애니메이션으로 */
+	function<void()>				m_OnWaitForComplete = { nullptr };
 
 private:
 	void			Check_RootMotion();
 	void			Update_RootMotion(_float fTimeDelta);
+	void			Check_WaitForComplete();
+	void			OnWaitForComplete(function<void()> onEvent) { m_OnWaitForComplete = onEvent; }
 
 private:
 	HRESULT Ready_Meshes(MODEL_DATA& data);
