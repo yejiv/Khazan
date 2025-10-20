@@ -28,6 +28,8 @@ HRESULT CProp::Initialize_Clone(void* pArg)
     CHECK_NULLPTR(pDesc, E_FAIL);
 
     memcpy(m_szModelName, pDesc->szModelName, MAX_PATH);
+    m_isSnow = pDesc->isSnow;
+    m_isCollider = pDesc->isCollider;
     m_isBlended = pDesc->isBlended;
 
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);

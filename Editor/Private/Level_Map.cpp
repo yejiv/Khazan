@@ -44,9 +44,11 @@ HRESULT CLevel_Map::Render()
 
 HRESULT CLevel_Map::Ready_Defaults()
 {
-	CHECK_FAILED(Ready_Default_Lights(), E_FAIL);
+	//CHECK_FAILED(Ready_Default_Lights(), E_FAIL);
 
 	//CHECK_FAILED(Ready_Preview_Model_RanderTargets(), E_FAIL);
+
+	CHECK_FAILED(Ready_Layer_Khazan(TEXT("Layer_Khazan")), E_FAIL);
 
 	CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Map_Camera")), E_FAIL);
 
@@ -76,6 +78,19 @@ HRESULT CLevel_Map::Ready_Preview_Model_RanderTargets()
 	//CHECK_FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Dif_RT_MapEditor"), 200, 200, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 0.f)), E_FAIL);
 
 	return S_OK;
+}
+
+HRESULT CLevel_Map::Ready_Layer_Khazan(const _wstring& strLayerTag)
+{
+	// Prototype_GameObject_Map_TestPlayer
+
+	CMap_TestPlayer::GAMEOBJECT_DESC ObjDesc = {};
+
+	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), strLayerTag,
+		ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Map_TestPlayer")), E_FAIL);
+
+	return S_OK;
+
 }
 
 HRESULT CLevel_Map::Ready_Layer_Camera(const _wstring& strLayerTag)
@@ -145,8 +160,9 @@ void CLevel_Map::Select_Fix_Object(_float fTimeDelta)
 						m_pFixTransformCom = static_cast<CTransform*>(pObject->Get_Component(TEXT("Com_Transform")));
 						CHECK_NULLPTR_MSG(m_pFixTransformCom, TEXT("Fix Transform == nullptr"), );
 
-						m_vFixScale = m_pFixTransformCom->Get_Scaled();
+						m_vResetScale = m_vFixScale = m_pFixTransformCom->Get_Scaled();
 						XMStoreFloat3(&m_vFixPosition, m_pFixTransformCom->Get_State(STATE::POSITION));
+						m_vResetPosition = m_vFixPosition;
 
 						_float4x4 WorldMatrix = {};
 						XMStoreFloat4x4(&WorldMatrix, m_pFixTransformCom->Get_WorldMatrix());
@@ -178,6 +194,7 @@ void CLevel_Map::Select_Fix_Object(_float fTimeDelta)
 						// Degree 변환 및 보정
 						m_vFixRotation.x = XMConvertToDegrees(fPitch);
 						m_vFixRotation.y = XMConvertToDegrees(fYaw);
+						if (0.f > m_vFixRotation.y) m_vFixRotation.y *= -1.f;
 						m_vFixRotation.z = XMConvertToDegrees(fRoll);
 
 						auto Clamp180 = [](float deg)
@@ -191,11 +208,13 @@ void CLevel_Map::Select_Fix_Object(_float fTimeDelta)
 						m_vFixRotation.y = Clamp180(m_vFixRotation.y);
 						m_vFixRotation.z = Clamp180(m_vFixRotation.z);
 
+						m_vResetRotation = m_vFixRotation;
+
 						// ======================================================
 						// ======================================================
 
 						m_isFixObjectWindow = true;
-						m_eFixType = FIX_OBJECT::FIX_ALL;
+						m_eFixType = FIX_OBJECT::FIX;
 						return;
 					}
 				}
@@ -326,10 +345,22 @@ HRESULT CLevel_Map::Ready_Main_Window()
 					ImGui::Text("FOLDER : "); SAMELINE;
 					ImGui::InputText("##folder_name_convert", m_szFolderName, IM_ARRAYSIZE(m_szFolderName));
 
-					if (ImGui::Button("PROTOTYPES ADD")) Add_Prototype_ByFolder(m_szFolderName);
+					_uint iFolderNameLen = strlen(m_szFolderName);
 
-					if (ImGui::Button("FBX FILE CONVERT ( .fbx > .dat )")) Fbxs_Convert_To_Dat(m_szFolderName);
+					if (0 != iFolderNameLen)
+					{
+						if (ImGui::Button("PROTOTYPES ADD"))
+						{
+							Add_Prototype_ByFolder(m_szFolderName);
+							ZeroMemory(m_szFolderName, sizeof(m_szFolderName));
+						}
 
+						if (ImGui::Button("FBX FILE CONVERT ( .fbx > .dat )"))
+						{
+							Fbxs_Convert_To_Dat(m_szFolderName);
+							ZeroMemory(m_szFolderName, sizeof(m_szFolderName));
+						}
+					}
 					SEPARATOR;
 
 					ImGui::Text("DON'T USE");
@@ -401,7 +432,8 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 		{
 			ImGui::Begin("PROTOTYPE WINDOW", &m_isPrototypeWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
-			ImGui::Text("MODEL_PROTOTYPES_INSTANCE");
+			ImGui::Text("MODEL PROTOTYPES INSTANCE");
+
 			if (ImGui::BeginListBox("##prototype_instance_list"))
 			{
 				for (_uint i = 0; i < m_Prototypes_Inst.size(); ++i)
@@ -448,12 +480,22 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				pModelInst->Add_Instance(TempData);
 			} SEPARATOR;
 
-			ImGui::Text("MODEL_PROTOTYPES_OBJECT");
+			ImGui::Text("MODEL PROTOTYPES OBJECT");
 			ImGui::Text("SEARCH : "); SAMELINE;
 			ImGui::InputText("##search_model_name", m_szSearchModelName, IM_ARRAYSIZE(m_szSearchModelName)); SAMELINE;
 
 			if (ImGui::Button("CLEAR"))
 				ZeroMemory(m_szSearchModelName, sizeof(m_szSearchModelName));
+
+			ImGuiIO& io = ImGui::GetIO();
+
+			if (io.MouseWheel < 0.f) ++m_iIndex_PrtObj;
+			else if (io.MouseWheel > 0.f) --m_iIndex_PrtObj;
+
+			if (0 > m_iIndex_PrtObj)
+				m_iIndex_PrtObj = 0;
+			if (m_Prototypes_Obj.size() <= m_iIndex_PrtObj)
+				m_iIndex_PrtObj = m_Prototypes_Obj.size() - 1;
 
 			if (ImGui::BeginListBox("##prototype_object_list"))
 			{
@@ -508,10 +550,10 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 
 				_matrix WorldMatrix = XMMatrixIdentity();
 
-				// 스케일 0.01, 위치는 마우스 피킹 위치 혹은 카메라 위치
-				WorldMatrix.r[0] *= 0.01f;
-				WorldMatrix.r[1] *= 0.01f;
-				WorldMatrix.r[2] *= 0.01f;
+				// 스케일 0.005f, 위치는 마우스 피킹 위치 혹은 카메라 위치
+				WorldMatrix.r[0] *= 0.005f;
+				WorldMatrix.r[1] *= 0.005f;
+				WorldMatrix.r[2] *= 0.005f;
 				WorldMatrix.r[3] = XMVectorSetW(XMLoadFloat3(&vPos), 1.f);
 
 				XMStoreFloat4x4(&ObjectDesc.WorldMatrix, WorldMatrix);
@@ -569,21 +611,11 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				ImGui::InputText("##copy_batch_modelname", szModelName, IM_ARRAYSIZE(szModelName)); SEPARATOR;
 			}
 
-			if (ImGui::Button("DETAIL SCALE"))
+			if (FIX_OBJECT::FIX == m_eFixType)
 			{
-				m_eFixType = FIX_OBJECT::SCALE_DETAIL;
-
-			} SAMELINE;
-			if (ImGui::Button("ROTATION POSITION"))
-			{
-				m_eFixType = FIX_OBJECT::FIX_ALL;
-
-			} SEPARATOR;
-
-			if (FIX_OBJECT::SCALE_DETAIL == m_eFixType)
-			{
-				ImGui::Text("DETAIL SCALE FIX");
-				SEPARATOR;
+				ImGui::Text("SCALE FIX"); SAMELINE;
+				if (ImGui::Button("-")) { m_vFixScale.x -= 0.001f; m_vFixScale.y -= 0.001f; m_vFixScale.z -= 0.001f; } SAMELINE;
+				if (ImGui::Button("+")) { m_vFixScale.x += 0.001f; m_vFixScale.y += 0.001f; m_vFixScale.z += 0.001f; } SEPARATOR;
 
 				ImGui::Text("X : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##scalex", &m_vFixScale.x, 0.001f, 0.01f);
 				ImGui::SliderFloat("##sliderdetailscalex", &m_vFixScale.x, 0.001f, 10.f);
@@ -595,12 +627,11 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				if (0.001f > m_vFixScale.x) m_vFixScale.x = 0.001f;
 				if (0.001f > m_vFixScale.y) m_vFixScale.y = 0.001f;
 				if (0.001f > m_vFixScale.z) m_vFixScale.z = 0.001f;
-				SEPARATOR;
 
 				m_pFixTransformCom->Scale(m_vFixScale);
-			}
-			if (FIX_OBJECT::FIX_ALL == m_eFixType)
-			{
+				SEPARATOR;
+				SEPARATOR;
+
 				ImGui::Text("ROTATION FIX");
 				SEPARATOR;
 
@@ -610,9 +641,11 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				ImGui::SliderFloat("##sliderrotationy", &m_vFixRotation.y, -180.f, 180.f);
 				ImGui::Text("Z : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##rotationz", &m_vFixRotation.z, 1.f, 5.f);
 				ImGui::SliderFloat("##sliderrotationz", &m_vFixRotation.z, -180.f, 180.f);
-				SEPARATOR;
 
 				m_pFixTransformCom->Rotation(XMConvertToRadians(m_vFixRotation.x), XMConvertToRadians(m_vFixRotation.y), XMConvertToRadians(m_vFixRotation.z));
+
+				SEPARATOR;
+				SEPARATOR;
 
 				ImGui::Text("POSITION FIX");
 				SEPARATOR;
@@ -632,10 +665,34 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				ImGui::Text("X : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##positionx", &m_vFixPosition.x, 0.1f, 0.5f);
 				ImGui::Text("Y : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##positiony", &m_vFixPosition.y, 0.1f, 0.5f);
 				ImGui::Text("Z : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##positionz", &m_vFixPosition.z, 0.1f, 0.5f);
-				SEPARATOR;
 
 				m_pFixTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&m_vFixPosition), 1.f));
+
+				SEPARATOR;
+				SEPARATOR;
 			}
+
+#pragma region 속성 설정
+
+			ImGui::Text("SETTING");
+			_bool isSnow = m_pFixPropObj->Get_isSnow();
+
+			if (ImGui::Checkbox("SNOW", &isSnow))
+				m_pFixPropObj->Set_isSnow(isSnow);
+			SAMELINE;
+			_bool isCollider = m_pFixPropObj->Get_isCollider();
+
+			if (ImGui::Checkbox("COLLIDER", &isCollider))
+				m_pFixPropObj->Set_isCollider(isCollider);
+			SAMELINE;
+			_bool isBlended = m_pFixPropObj->Get_isBlended();
+
+			if (ImGui::Checkbox("BLENDED", &isBlended))
+				m_pFixPropObj->Set_isBlended(isBlended);
+			SEPARATOR;
+			SEPARATOR;
+
+#pragma endregion
 
 			if (ImGui::Button("DONE") || m_pGameInstance->Key_Down(DIK_RETURN) || m_pGameInstance->Key_Down(DIK_NUMPADENTER))
 			{
@@ -646,8 +703,21 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				m_eFixType = FIX_OBJECT::END;
 
 			} SAMELINE;
-			if (FIX_OBJECT::FIX_ALL != m_eFixType && FIX_OBJECT::SCALE_DETAIL != m_eFixType &&
-				ImGui::Button("DELETE") || m_pGameInstance->Key_Down(DIK_DELETE))
+			if (ImGui::Button("RESET"))
+			{
+				m_pFixTransformCom->Scale(m_vResetScale);
+				m_pFixTransformCom->Rotation(XMConvertToRadians(m_vResetRotation.x), XMConvertToRadians(m_vResetRotation.y), XMConvertToRadians(m_vResetRotation.z));
+				m_pFixTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&m_vFixPosition), 1.f));
+
+				ZeroMemory(m_szModelName, sizeof(m_szModelName));
+				m_pFixPropObj = nullptr;
+				m_pFixTransformCom = nullptr;
+				m_isFixObjectWindow = false;
+				m_eFixType = FIX_OBJECT::END;
+			}
+			SEPARATOR;
+			SEPARATOR;
+			if (ImGui::Button("DELETE (DELETE)") || m_pGameInstance->Key_Down(DIK_DELETE))
 			{
 				if (nullptr != m_pFixPropObj)
 				{
@@ -667,9 +737,9 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 
 					m_pFixPropObj = nullptr;
 				}
-				
-				m_pFixPropObj = nullptr;
+
 				ZeroMemory(m_szModelName, sizeof(m_szModelName));
+				m_pFixPropObj = nullptr;
 				m_pFixTransformCom = nullptr;
 				m_isFixObjectWindow = false;
 				m_eFixType = FIX_OBJECT::END;
@@ -712,27 +782,49 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 
 			if (0 != m_ObjectList.size())
 			{
-				ImGui::Text("%d", m_ObjectList.size());
+				ImGui::Text("OBJECT NUM : %d", m_ObjectList.size());
 				SEPARATOR;
 			}
 
-			if (ImGui::Button("SNOW ON"))
+			if (ImGui::Button("ALL SNOW ON"))
 			{
 				for (auto& pObj : m_ObjectList)
-					pObj->Set_ShaderPass(4);
+					pObj->Set_isSnow(true);
 			} SAMELINE;
-			if (ImGui::Button("SNOW OFF"))
+			if (ImGui::Button("ALL SNOW OFF"))
 			{
 				for (auto& pObj : m_ObjectList)
-					pObj->Set_ShaderPass(2);
+					pObj->Set_isSnow(false);
 			} SEPARATOR;
 
 			if (0 != m_ObjectList.size() && m_iObjectListIndex < m_ObjectList.size())
 			{
+				CProp* pObjProp = m_ObjectList[m_iObjectListIndex];
+
 				_wstring strModelName = m_ObjectList[m_iObjectListIndex]->Get_ModelName();
 
 				ImGui::Text("MODEL NAME : %s", WStringToAnsi(strModelName).c_str());
 				SEPARATOR;
+
+#pragma region 속성 설정
+
+				_bool isSnow = pObjProp->Get_isSnow();
+
+				if (ImGui::Checkbox("SNOW", &isSnow))
+					pObjProp->Set_isSnow(isSnow);
+				SAMELINE;
+				_bool isCollider = pObjProp->Get_isCollider();
+
+				if (ImGui::Checkbox("COLLIDER", &isCollider))
+					pObjProp->Set_isCollider(isCollider);
+				SAMELINE;
+				_bool isBlended = pObjProp->Get_isBlended();
+
+				if (ImGui::Checkbox("BLENDED", &isBlended))
+					pObjProp->Set_isBlended(isBlended);
+				SEPARATOR;
+
+#pragma endregion
 
 				CTransform* pTransform = static_cast<CTransform*>(m_ObjectList[m_iObjectListIndex]->Get_Component(TEXT("Com_Transform")));
 				CHECK_NULLPTR(pTransform, );
@@ -782,7 +874,7 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 
 						m_isFixObjectWindow = true;
 						
-						m_eFixType = FIX_OBJECT::FIX_ALL;
+						m_eFixType = FIX_OBJECT::FIX;
 					}
 				}
 				SAMELINE;
@@ -1191,13 +1283,14 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 				if (false == Prototypes_Load_Binary())
 				{
 #ifdef _DEBUG
-					OutputDebugStringA("단일 오브젝트 정보 바이너리 불러오기 실패");
+					OutputDebugStringA("프로토타입 정보 바이너리 불러오기 실패");
 #endif // _DEBUG
-					return;
 				}
-
-				// 프로토타입 윈도우 띄우기
-				m_isPrototypeWindow = true;
+				else
+				{
+					// 프로토타입 윈도우 띄우기
+					m_isPrototypeWindow = true;
+				}
 
 #pragma endregion
 
@@ -1208,12 +1301,15 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 #ifdef _DEBUG
 					OutputDebugStringA("단일 오브젝트 정보 바이너리 불러오기 실패");
 #endif // _DEBUG
-					return;
+				}
+				else
+				{
+					// 오브젝트 리스트 윈도우 띄우기
+					m_isLoadObjectWindow = false;
 				}
 
 #pragma endregion
 
-				m_isLoadObjectWindow = false;
 
 			}
 
@@ -1544,6 +1640,9 @@ _bool CLevel_Map::Objects_Save_Binary()
 
 			// 4. 객체당 월드행렬 저장
 			WriteFile(hObjectFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr);
+
+			// 5. 객체당 속성 저장
+			MAPOBJECT_PROPERTIES PropDesc = {};
 		}
 		// 단일 오브젝트 이외의 것들 추가 예정
 	}
@@ -1563,7 +1662,7 @@ _bool CLevel_Map::Prototypes_Load_Binary()
 	DWORD dwByte = {};
 
 	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("[DAT ERROR] 바이너리 파일 오픈 문제"), false);
+	CHECK_EQUAL(INVALID_HANDLE_VALUE, hFile, false);
 
 	// 1. 프로토 타입의 총 개수
 	_uint iPrototypeCnt = {};
@@ -1601,9 +1700,6 @@ _bool CLevel_Map::Prototypes_Load_Binary()
 			_char szModelPath[MAX_PATH] = {};
 			CHECK_FALSE(ReadFile(hFile, &szModelPath, sizeof(_char) * iModelPathLen, &dwByte, nullptr), false);
 
-			if (true == m_pGameInstance->Already_Registered_Prototype(ENUM_CLASS(LEVEL::MAP), szPrototypeTag))
-				continue;
-
 			// Prototype_Component_Model_ 자르기 시작
 			_wstring strFullPrototypeTag = szPrototypeTag;
 			_wstring strPreFix = { TEXT("Prototype_Component_Model_") };
@@ -1617,6 +1713,9 @@ _bool CLevel_Map::Prototypes_Load_Binary()
 
 			wcscpy_s(szPrototypeTag, strFullPrototypeTag.c_str());
 			// Prototype_Component_Model_ 자르기 끝
+
+			if (true == m_pGameInstance->Already_Registered_Prototype(ENUM_CLASS(LEVEL::MAP), szPrototypeTag))
+				continue;
 
 			if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), szPrototypeTag,
 				CModel::Create(m_pDevice, m_pContext, szModelPath))))
@@ -1677,7 +1776,6 @@ _bool CLevel_Map::Prototypes_Load_Binary()
 				CModel_Instance::Create(m_pDevice, m_pContext, szModelPath, &InstanceDesc))))
 			{
 				CloseHandle(hFile);
-				MSG_BOX(TEXT("[DAT ERROR] 맵 오브젝트 프로토타입 등록 실패 ( CModel_Instance )"));
 				return false;
 			}
 
@@ -1686,7 +1784,6 @@ _bool CLevel_Map::Prototypes_Load_Binary()
 		else
 		{
 			CloseHandle(hFile);
-			MSG_BOX(TEXT("[DAT ERROR] DAT 파일 읽는중 TYPE 문제 ( 박준영 문제 )"));
 			return false;
 		}
 	}
@@ -1767,6 +1864,28 @@ _bool CLevel_Map::Objects_Load_Binary()
 	return true;
 }
 
+void CLevel_Map::MapEditor_Close_Windows()
+{
+	m_isJsonWindow = false;
+
+	m_isCustomJsonWindow = false;
+
+	m_isPrototypeWindow = false;
+
+	m_isObjectWindow = false;
+
+	for (auto& Window : m_isPropWindow)
+		Window = false;
+
+	m_isFixObjectWindow = false;
+
+	m_isLightSettingWindow = false;
+
+	m_isSaveObjectWindow = false;
+
+	m_isLoadObjectWindow = false;
+}
+
 CLevel_Map* CLevel_Map::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	CLevel_Map* pInstance = new CLevel_Map(pDevice, pContext);
@@ -1782,5 +1901,7 @@ CLevel_Map* CLevel_Map::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pCont
 
 void CLevel_Map::Free()
 {
+	MapEditor_Close_Windows();
+
 	__super::Free();
 }

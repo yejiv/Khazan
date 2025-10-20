@@ -16,6 +16,9 @@
 // Properties Test
 #include "Prop_Test.h"
 
+// 플레이어 모델 테스트
+#include "Map_TestPlayer.h"
+
 // Terrain
 #include "Map_Terrain.h"
 

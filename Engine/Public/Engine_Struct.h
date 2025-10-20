@@ -66,6 +66,14 @@ namespace Engine
 
 	}MESH_INSTANCE_DATA;
 
+	typedef struct tagMapObjectProperties
+	{
+		bool isSnow{ false };
+		bool isCollider{ false };
+		bool isBlended{ false };
+
+	}MAPOBJECT_PROPERTIES;
+
 	typedef struct tagCoInitGuard {
 		HRESULT hr = S_OK;
 		tagCoInitGuard(DWORD coinit = COINIT_MULTITHREADED) { hr = CoInitializeEx(nullptr, coinit); }

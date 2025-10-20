@@ -14,7 +14,7 @@ class CLevel_Map final : public CLevel
 private:
 	enum class PROP_SPECIES { OBJECT, STATIC, ANIMATED, INTERACTIVE, DESTRUCTIBLE, END };
 	enum class MAPEDIT_MAP { HEINMACH, STORMPASS, THECREVICE, EMBARS, END };
-	enum class FIX_OBJECT { SCALE_DETAIL, FIX_ALL, SCALE, ROTATION, POSITION, END };
+	enum class FIX_OBJECT { FIX, END };
 
 	typedef struct tagSavePrototype
 	{
@@ -36,6 +36,7 @@ private:
 	HRESULT Ready_Defaults();
 	HRESULT Ready_Default_Lights();
 	HRESULT Ready_Preview_Model_RanderTargets();
+	HRESULT Ready_Layer_Khazan(const _wstring& strLayerTag);
 	HRESULT Ready_Layer_Camera(const _wstring& strLayerTag);
 	HRESULT Ready_Layer_Terrain(const _wstring& strLayerTag);
 
@@ -64,6 +65,10 @@ private:
 	vector<class CProp*> m_ObjectList;		// 오브젝트 리스트 ( 수정 편하게 할려고 )
 	_int m_iObjectListIndex = {};			// 오브젝트 리스트 인덱스
 
+	_bool m_isSnow = { false };
+	_bool m_isCollider = { false };
+	_bool m_isBlend = { false };
+
 	CProp* m_pFixPropObj = { nullptr };		// 피킹 시 받아올거 오브젝트 리스트 참고해서
 	CTransform* m_pFixTransformCom = { nullptr };		// 픽스할 오브젝트의 트랜스폼
 
@@ -74,6 +79,10 @@ private:
 	_float3 m_vFixScale = {};
 	_float3 m_vFixRotation = {};
 	_float3 m_vFixPosition = {};
+
+	_float3 m_vResetScale = {};
+	_float3 m_vResetRotation = {};
+	_float3 m_vResetPosition = {};
 
 	_uint m_iMapObjectShaderPass = { 2 };
 
@@ -219,6 +228,9 @@ private:
 	// MapEditor에서 불러오기
 	_bool Prototypes_Load_Binary();
 	_bool Objects_Load_Binary();
+
+private:
+	void MapEditor_Close_Windows();
 
 public:
 	static CLevel_Map* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

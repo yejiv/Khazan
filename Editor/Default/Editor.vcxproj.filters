@@ -175,6 +175,9 @@
     <Filter Include="02.GameObject\Shader\Player">
       <UniqueIdentifier>{b9c07b19-01a4-4a39-988f-659175d6709c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Test">
+      <UniqueIdentifier>{e0b884a2-65ea-4277-996f-ccd58319de93}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -328,9 +331,11 @@
       <Filter>02.GameObject\MapObject\Prop\04.Dynamic</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Player_Shader.h" />
-    <ClInclude Include="..\public\TestParticle.h" />
     <ClInclude Include="..\public\Player_Shader.h">
       <Filter>02.GameObject\Shader\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Map_TestPlayer.h">
+      <Filter>02.GameObject\MapObject\Test</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -485,6 +490,9 @@
     <ClCompile Include="..\private\Player_Shader.cpp" />
     <ClCompile Include="..\private\Player_Shader.cpp">
       <Filter>02.GameObject\Shader\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Map_TestPlayer.cpp">
+      <Filter>02.GameObject\MapObject\Test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
