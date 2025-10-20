@@ -5,7 +5,6 @@ float4 g_vColor, g_fProgressValue;
 float g_fAlpha;
 texture2D g_Texture;
 
-
 struct VS_IN
 {
     float3 vPosition : POSITION;

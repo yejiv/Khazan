@@ -259,7 +259,7 @@ HRESULT CUI_Manager::Ready_Prototype()
 
 	/* Prototype_Component_Shader_VtxPosTex_UI*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_UI_Atlas"),
-		CTexture_Atlas::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Atlas/Atlas_%d.json"), 1))))
+		CTexture_Atlas::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Atlas/Atlas_%d.json"), 2))))
 		return E_FAIL;
 
 	//GameObject_AtlasRenderGroup
@@ -273,7 +273,8 @@ _uint CUI_Manager::TexTag_Maping(string szTextag)
 {
 	if ("Prototype_Component_Atlas_Hud" == szTextag)
 		return 0;
-
+	else if ("Prototype_Component_Atlas_Inven" == szTextag)
+		return 1;
 	return -1;
 }
 

@@ -45,23 +45,28 @@ void CUI_QuickSlot_Item::Priority_Update(_float fTimeDelta)
 void CUI_QuickSlot_Item::Update(_float fTimeDelta)
 {
     //Test
-    if (m_pGameInstance->Key_Down(DIK_1) )
+    if (m_pGameInstance->Key_Down(DIK_1))
     {
         m_iState = ENUM_CLASS(QUICKITMESLOTSTATE::NONITEM);
+        m_vColor.w = 0.5f;
     }
-    if (m_pGameInstance->Key_Down(DIK_2))
+    else if (m_pGameInstance->Key_Down(DIK_2))
     {
         m_iState = ENUM_CLASS(QUICKITMESLOTSTATE::DISABLE);
+        m_vColor.w = 1.f;
+        m_vFxColor.w = 0.5f;
+        m_pDisableFX->Update_Color(m_vFxColor);
     }
-    if (m_pGameInstance->Key_Down(DIK_3))
+    else if (m_pGameInstance->Key_Down(DIK_3))
     {
         m_iState = ENUM_CLASS(QUICKITMESLOTSTATE::ENABLE);
+        m_vColor.w = 1.f;
     }
-    if (m_pGameInstance->Key_Down(DIK_Q) && m_iState == ENUM_CLASS(QUICKITMESLOTSTATE::DISABLE))
+    else if (m_pGameInstance->Key_Down(DIK_Q) && m_iState == ENUM_CLASS(QUICKITMESLOTSTATE::DISABLE))
     {
-        m_iState = ENUM_CLASS(QUICKITMESLOTSTATE::DISABLE);
         m_vFxColor.w = 1.f;
     }
+ 
 }
 
 void CUI_QuickSlot_Item::Late_Update(_float fTimeDelta)
