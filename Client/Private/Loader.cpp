@@ -214,11 +214,6 @@ HRESULT CLoader::Loading_For_Stage1_Texture()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/BG/T_Hud_BG_Deco_Pathfinder_01.png"), 1))))
 		return E_FAIL;
 
-	///* Prototype_Component_Texture_Map_Snow */ // >> 눈 맵인경우 해당 프로토타입 텍스쳐 추가
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Texture_Map_Snow"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Map/Textures/WT_Base_D.dds"), 1))))
-	//	return E_FAIL;
-
 	//vector<const _tchar*> TextureList;
 	//TextureList.reserve(2);
 	//TextureList.push_back(TEXT("T_BG_GrandFlores.png"));
