@@ -9,7 +9,7 @@
 #include "Camera_Compre.h"
 #include "Sky.h"
 #include "Terrain.h"
-#include "Monster.h"
+#include "Yetuga.h"
 #include "Dummy.h"
 
 #include "JOH_Test1.h"
@@ -304,10 +304,10 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 		CBody_Player::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	///* Prototype_GameObject_Monster */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Monster"),
-	//	CMonster::Create(m_pDevice, m_pContext))))
-	//	return E_FAIL;
+	/* Prototype_GameObject_Monster */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Monster_Yetuga"),
+		CYetuga::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 	///* Prototype_GameObject_Dummy */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Dummy"),

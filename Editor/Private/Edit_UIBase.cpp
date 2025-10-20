@@ -52,6 +52,12 @@ HRESULT CEdit_UIBase::Save_UI(nlohmann::ordered_json& pOutData)
     else
         Data["TexType"] = "Atlas";
 
+    Data["Color"]["x"] = m_vFrameColor.x;
+    Data["Color"]["y"] = m_vFrameColor.y;
+    Data["Color"]["z"] = m_vFrameColor.z;
+    Data["Color"]["w"] = m_vFrameColor.w;
+
+    Data["TexIndex"] = m_iTexIndex;
     Data["TexTag"] = m_szTexTag;
     Data["shaderPass"] = m_iShaderPass;
     Data["depth"] = m_fDepth;
@@ -61,6 +67,10 @@ HRESULT CEdit_UIBase::Save_UI(nlohmann::ordered_json& pOutData)
 
     Data["LocalSize"]["x"] = m_vLocalSize.x;
     Data["LocalSize"]["y"] = m_vLocalSize.y;
+
+    Data["Angle"]["x"] = m_vAngle.x;
+    Data["Angle"]["y"] = m_vAngle.y;
+    Data["Angle"]["z"] = m_vAngle.z;
 
     for (_int i = 0; i < m_vUV.size(); ++i)
     {
@@ -117,7 +127,8 @@ HRESULT CEdit_UIBase::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
     else
         m_eRenderType = UI_RENDER_TYPE::ATLAS;
     m_szTexTag = pInData.value("TexTag", "");
-
+    
+    m_iTexIndex = pInData.value("TexIndex", 0);
     if (m_szTexTag != "")
     {
         if (m_eRenderType == UI_RENDER_TYPE::DEFAULT)
@@ -160,6 +171,21 @@ HRESULT CEdit_UIBase::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
     {
         m_vLocalSize.x = pInData["LocalSize"].value("x", 0.f);
         m_vLocalSize.y = pInData["LocalSize"].value("y", 0.f);
+    }
+  
+    if (pInData.contains("Angle"))
+    {
+        m_vAngle.x = pInData["Angle"].value("x", 0.f);
+        m_vAngle.y = pInData["Angle"].value("y", 0.f);
+        m_vAngle.z = pInData["Angle"].value("z", 0.f);
+    }
+
+    if (pInData.contains("Color"))
+    {
+        m_vFrameColor.x = pInData["Color"].value("x", 0.f);
+        m_vFrameColor.y = pInData["Color"].value("y", 0.f);
+        m_vFrameColor.z = pInData["Color"].value("z", 0.f);
+        m_vFrameColor.w = pInData["Color"].value("w", 0.f);
     }
 
     if (pInData.contains("UV"))
@@ -204,7 +230,7 @@ HRESULT CEdit_UIBase::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
             m_Track.push_back(track);
         }
     }
-
+    __super::Update_Rotation(0.f);
     m_pTransformCom->Scale(_float3{ m_vLocalSize.x, m_vLocalSize.y, 1.f });
 
 
@@ -394,6 +420,11 @@ void CEdit_UIBase::Update_Option(string& szSeleteUIName, const string pFrameName
                 m_EventNames[0] = m_szEvent;
             break;
         }
+
+        if (m_iShaderPass == 2)
+        {
+            ImGui::ColorEdit3("Back_Color", (_float*)&m_vFrameColor);
+        }
     }
 
     for (auto& pChild : m_Children)
@@ -505,6 +536,29 @@ void CEdit_UIBase::Set_Alpha(_float fAlpha)
         static_cast<CEdit_UIBase*>(pChild)->Set_Alpha(fAlpha);
 }
 
+_bool CEdit_UIBase::Set_Rotation(string& szSeleteUIName, _float3 vAngle)
+{
+    if (m_szName == szSeleteUIName)
+    {
+        m_vAngle = vAngle;
+        m_pTransformCom->Set_Quaternion(XMQuaternionRotationRollPitchYaw
+            (XMConvertToRadians(vAngle.x)
+            , XMConvertToRadians(vAngle.y)
+            , XMConvertToRadians(vAngle.z)
+            ));
+        return true;
+    }
+
+    for (auto& pChild : m_Children)
+    {
+        if (static_cast<CEdit_UIBase*>(pChild)->Set_Rotation(szSeleteUIName, vAngle))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 HRESULT CEdit_UIBase::Set_AtlasTextTure(string& szSeleteUIName, _uint iPrototypeLevelID, const _wstring& strPrototypeTag, const string pFrameName, _int iTexType)
 {
     if (m_szName == szSeleteUIName)
@@ -602,6 +656,42 @@ HRESULT CEdit_UIBase::Set_AtlasTexSize(string& szSeleteUIName, const string pFra
     for (auto& pChild : m_Children)
     {
         if (SUCCEEDED(static_cast<CEdit_UIBase*>(pChild)->Set_AtlasTexSize(szSeleteUIName, pFrameName, fSize)))
+        {
+            return S_OK;
+        }
+    }
+    return E_FAIL;
+}
+
+HRESULT CEdit_UIBase::Set_TexIndex(string& szSeleteUIName, _int iTexIndex)
+{
+    if (m_szName == szSeleteUIName)
+    {
+        m_iTexIndex = iTexIndex;
+        return S_OK;
+    }
+
+    for (auto& pChild : m_Children)
+    {
+        if (SUCCEEDED(static_cast<CEdit_UIBase*>(pChild)->Set_TexIndex(szSeleteUIName, iTexIndex)))
+        {
+            return S_OK;
+        }
+    }
+    return E_FAIL;
+}
+
+HRESULT CEdit_UIBase::Set_ShaderPass(string& szSeleteUIName, _int iShaderIndex)
+{
+    if (m_szName == szSeleteUIName)
+    {
+        m_iShaderPass = iShaderIndex;
+        return S_OK;
+    }
+
+    for (auto& pChild : m_Children)
+    {
+        if (SUCCEEDED(static_cast<CEdit_UIBase*>(pChild)->Set_ShaderPass(szSeleteUIName, iShaderIndex)))
         {
             return S_OK;
         }
@@ -854,15 +944,7 @@ HRESULT CEdit_UIBase::Render()
     CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vFrameColor, sizeof(_float4)), E_FAIL);
     CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
 
-    if (m_iShaderPass == 1)
-    {
-        CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vUVMinMax", &m_vUV[m_iUiState], sizeof(_float4)), E_FAIL);
-        if (m_eRenderType == UI_RENDER_TYPE::ATLAS)
-            CHECK_FAILED(m_pTexture_AtlasCom->Bind_Shader_Texture(m_pShaderCom, "g_Texture"), E_FAIL);
-        else
-            CHECK_FAILED(m_pTexture->Bind_Shader_Resource(m_pShaderCom, "g_Texture", m_iTexIndex), E_FAIL);
-
-    }
+    Render_ShaderPassSet();
     CHECK_FAILED(m_pShaderCom->Begin(m_iShaderPass), E_FAIL);
 
     CHECK_FAILED(m_pVIBufferCom->Bind_Resources(), E_FAIL);
@@ -936,13 +1018,30 @@ void CEdit_UIBase::Update_Track(_float& fAccTime)
 
     _float2 fPos = {};
     XMStoreFloat2(&fPos, XMVectorCatmullRom(p0, p1, p2, p3, fRatio));
-
-    //m_vLocalPos.x = ((m_vWorldPos.x - m_vLocalPos.x) - fPos.x) * -1.f;
-    //m_vLocalPos.y = ((m_vWorldPos.y - m_vLocalPos.y) - fPos.y) * -1.f;
-    //m_vWorldPos.x = m_vLocalPos.x;
-    //m_vWorldPos.y = m_vLocalPos.y;
-
     Update_Transform(nullptr, fPos);
+}
+
+HRESULT CEdit_UIBase::Render_ShaderPassSet()
+{
+    if (m_iShaderPass == 1)
+    {
+        CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vUVMinMax", &m_vUV[m_iUiState], sizeof(_float4)), E_FAIL);
+        if (m_eRenderType == UI_RENDER_TYPE::ATLAS)
+            CHECK_FAILED(m_pTexture_AtlasCom->Bind_Shader_Texture(m_pShaderCom, "g_Texture"), E_FAIL);
+        else
+            CHECK_FAILED(m_pTexture->Bind_Shader_Resource(m_pShaderCom, "g_Texture", m_iTexIndex), E_FAIL);
+
+    }
+    if (m_iShaderPass == 2)
+    {
+        CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vUVMinMax", &m_vUV[m_iUiState], sizeof(_float4)), E_FAIL);
+        if (m_eRenderType == UI_RENDER_TYPE::ATLAS)
+            CHECK_FAILED(m_pTexture_AtlasCom->Bind_Shader_Texture(m_pShaderCom, "g_Texture"), E_FAIL);
+        else
+            CHECK_FAILED(m_pTexture->Bind_Shader_Resource(m_pShaderCom, "g_Texture", m_iTexIndex), E_FAIL);
+
+    }
+    return S_OK;
 }
 
 string CEdit_UIBase::UIType_EnumToString()

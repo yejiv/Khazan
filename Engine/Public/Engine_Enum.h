@@ -19,16 +19,36 @@ namespace Engine
 	enum class MOUSEMOVESTATE {	X, Y, WHEEL, END };
 	enum class POOLSTATUS { WAIT, RESET, END};
 	enum class COMPUTEJOB { UPDATE, POSTPROCESS, END };
-	enum class ANIM_DIRECTION { 
-		F, B, L, R, U, D, 
-		LF, LB, RF, RB, 
-		F_RF, F_LF, B_RB, B_LB,
-		U_F, U_B, U_L, U_R, 
-		D_F, D_B, D_L, D_R,
-		BBL, BLL,
+	//enum class ANIM_DIRECTION { 
+	//	NONE = 0,
+	//	F, B, L, R, U, D,
+	//	FL, FR, BL, BR,
+	//	UL, UR, DL, DR,
+	//	U_F, U_B, U_L, U_R,
+	//	D_F, D_B, D_L, D_R,
+	//	BBL, BLL,
+	//	ALL, CC, CD, CU, LC, LD, LU, RC, RD, RU,
+	//	END,
+	//};
+	enum class ANIM_DIRECTION : uint32_t {
+		NONE = 0,
+		F = 1 << 0,
+		B = 1 << 1,
+		L = 1 << 2,
+		R = 1 << 3,
+		U = 1 << 4,
+		D = 1 << 5,
+		C = 1 << 6,
+		CC = 1 << 7,
+		ALL = 1 << 8,
+
+		BBL = 1 << 9,
+		BLL	= 1 << 10,
+
 		END,
 	};
 	enum class MAPOBJECT_TYPE : unsigned short { OBJECT, STATIC_INST, ANIMATED_INST, INTERACTIVE, DYNAMIC, END };
+	enum class BTNODESTATE { RUNNING, SUCCESS, FAILURE, END };
 }
 
 namespace JoltLayers

@@ -4,16 +4,12 @@
 
 CUI_ProgressBar::CUI_ProgressBar(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CUIObject{pDevice,pContext}
-	, m_pClientInstance{ CClientInstance::GetInstance() }
 {
-	Safe_AddRef(m_pClientInstance);
 }
 
 CUI_ProgressBar::CUI_ProgressBar(const CUI_ProgressBar& Prototype)
 	:CUIObject ( Prototype )
-	, m_pClientInstance{ Prototype.m_pClientInstance }
 {
-	Safe_AddRef(m_pClientInstance);
 }
 
 
@@ -25,20 +21,8 @@ HRESULT CUI_ProgressBar::Initialize_Prototype()
 
 HRESULT CUI_ProgressBar::Initialize_Clone(void* pArg)
 {
-	PROGRESSBAR_DESC* pDesc = static_cast<PROGRESSBAR_DESC*>(pArg);
-
 	if (FAILED(__super::Initialize_Clone(pArg)))
 		return E_FAIL;
-
-	//m_vOriginPos = _float3(pDesc->vLocalPos.x, pDesc->vLocalPos.y, 0.1f);
-	//m_vOriginSize = pDesc->vLocalSize;
-	//m_eDirection = pDesc->eDirection;
-	//m_eMode = pDesc->eMode;
-	//m_fLerpSpeed = 1.f;
-	//m_fDisplayRate = 1.f;
-
-	// Test
-	m_fMaxValue = 100.f;
 
 	return S_OK;
 }
@@ -49,55 +33,10 @@ void CUI_ProgressBar::Priority_Update(_float fTimeDelta)
 
 void CUI_ProgressBar::Update(_float fTimeDelta)
 {
-	if (!m_isChange)
-		return;
-
-	_float fTargetRate = Make_Rate(m_fCurrentValue, m_fMaxValue);
-
-	m_fDisplayRate = Lerp(m_fDisplayRate, fTargetRate, fTimeDelta * m_fLerpSpeed);
-
-	switch (m_eMode)
-	{
-	case BAR_MODE::REDUCE:
-		switch (m_eDirection)
-		{
-		case BAR_DIRECTION::LEFT_TO_RIGHT:
-			Reduce_LeftToRight(m_fDisplayRate);
-			break;
-		case BAR_DIRECTION::RIGHT_TO_LEFT:
-			Reduce_RightToLeft(m_fDisplayRate);
-			break;
-		case BAR_DIRECTION::TOP_TO_BOTTOM:
-			// 필요시 세로 버전 함수 추가
-			break;
-		case BAR_DIRECTION::BOTTOM_TO_TOP:
-			// 필요시 세로 버전 함수 추가
-			break;
-		}
-		break;
-
-	case BAR_MODE::EXPAND:
-		switch (m_eDirection)
-		{
-		case BAR_DIRECTION::LEFT_TO_RIGHT:
-			Expand_LeftToRight(m_fDisplayRate);
-			break;
-		case BAR_DIRECTION::RIGHT_TO_LEFT:
-			Expand_RightToLeft(m_fDisplayRate);
-			break;
-		case BAR_DIRECTION::TOP_TO_BOTTOM:
-			// 필요시 세로 버전 함수 추가
-			break;
-		case BAR_DIRECTION::BOTTOM_TO_TOP:
-			// 필요시 세로 버전 함수 추가
-			break;
-		}
-		break;
-	}
-
-	// Lerp가 끝나면 Update를 막는다.
-	if (fabs(m_fDisplayRate - fTargetRate) < 0.001f)
-		m_isChange = false;
+	if (m_fLerpValue <= m_fProgress_Value)
+		m_fLerpValue = m_fProgress_Value;
+	else
+		m_fLerpValue -= fTimeDelta * m_fLerpSpeed;
 
 }
 
@@ -127,9 +66,8 @@ HRESULT CUI_ProgressBar::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelI
 	string szType = pInData.value("type", "");
 	m_iUIType = CClientInstance::GetInstance()->UIType_StringToEnum(szType);
 
-	m_iShaderPass = pInData.value("shaderPass", -1);
-	if (m_iShaderPass == -1)
-		return E_FAIL;
+	m_iTexPass = pInData.value("TexIndex", 0);
+	m_iShaderPass = pInData.value("shaderPass", 0);
 
 	m_fDepth = pInData.value("depth", 0.f);
 
@@ -144,6 +82,22 @@ HRESULT CUI_ProgressBar::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelI
 		m_vLocalSize.x = pInData["LocalSize"].value("x", 0.f);
 		m_vLocalSize.y = pInData["LocalSize"].value("y", 0.f);
 	}
+
+	if (pInData.contains("Angle"))
+	{
+		m_vAngle.x = pInData["Angle"].value("x", 0.f);
+		m_vAngle.y = pInData["Angle"].value("y", 0.f);
+		m_vAngle.z = pInData["Angle"].value("z", 0.f);
+	}
+
+	if (pInData.contains("Color"))
+	{
+		m_vColor.x = pInData["Color"].value("x", 0.f);
+		m_vColor.y = pInData["Color"].value("y", 0.f);
+		m_vColor.z = pInData["Color"].value("z", 0.f);
+		m_vColor.w = pInData["Color"].value("w", 0.f);
+	}
+
 	if (pInData.contains("UV"))
 	{
 		m_vUV.clear();
@@ -178,82 +132,24 @@ HRESULT CUI_ProgressBar::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelI
 			m_Track.push_back(track);
 		}
 	}
+
 	m_pTransformCom->Scale(_float3{ m_vLocalSize.x, m_vLocalSize.y, 1.f });
+	__super::Update_Rotation(0.f);
 	__super::Update_Transform(nullptr, m_vLocalPos);
 
 	return S_OK;
 }
 
-_float CUI_ProgressBar::Make_Rate(_float fSrc, _float fDst)
+void CUI_ProgressBar::Progress_Update()
 {
+	if (m_fCurrentValue == m_fPreValue)
+		return;
 
-	if (fDst <= 0.f)
-		return 0.f;
-
-	_float fRate = fSrc / fDst;
-
-	if (fRate <= 0.001f)
-		fRate = 0.001f;
-	if (fRate > 1.f)
-		fRate = 1.f;
-
-	return fRate;
-}
-
-void CUI_ProgressBar::Reduce_RightToLeft(_float fRate)
-{
-	m_vLocalSize.x = m_vOriginSize.x * fRate;
-
-	if (m_vLocalSize.x <= 0.001f)
-		m_vLocalSize.x = 0.001f;
-
-	m_pTransformCom->Scaling(_float3(m_vLocalSize.x, m_vLocalSize.y, 1.f));
-
-	m_vLocalPos.x = m_vOriginPos.x - (m_vOriginSize.x - m_vLocalSize.x) * 0.5f;
-}
-
-void CUI_ProgressBar::Reduce_LeftToRight(_float fRate)
-{
-
-	m_vLocalSize.x = m_vOriginSize.x * fRate;
-
-	if (m_vLocalSize.x <= 0.001f)
-		m_vLocalSize.x = 0.001f;
-
-	m_pTransformCom->Scaling(_float3(m_vLocalSize.x, m_vLocalSize.y, 1.f));
-
-	m_vLocalPos.x = m_vOriginPos.x + (m_vOriginSize.x - m_vLocalSize.x) * 0.5f;
-
-
-
-}
-
-void CUI_ProgressBar::Expand_RightToLeft(_float fRate)
-{
-	m_vLocalSize.x = m_vOriginSize.x * fRate;
-
-	if (m_vLocalSize.x > m_vOriginSize.x)
-		m_vLocalSize.x = m_vOriginSize.x;
-
-	m_pTransformCom->Scaling(_float3(m_vLocalSize.x, m_vLocalSize.y, 1.f));
-
-	m_vLocalPos.x = m_vOriginPos.x + (m_vOriginSize.x - m_vLocalSize.x) * 0.5f;
-}
-
-void CUI_ProgressBar::Expand_LeftToRight(_float fRate)
-{
-	m_vLocalSize.x = m_vOriginSize.x * fRate;
-
-	if (m_vLocalSize.x > m_vOriginSize.x)
-		m_vLocalSize.x = m_vOriginSize.x;
-
-	m_pTransformCom->Scaling(_float3(m_vLocalSize.x, m_vLocalSize.y, 1.f));
-
-	m_vLocalPos.x = m_vOriginPos.x - (m_vOriginSize.x - m_vLocalSize.x) * 0.5f;
+	m_fProgress_Value = m_fCurrentValue / m_fMaxValue;
+	m_fPreValue = m_fCurrentValue;
 }
 
 void CUI_ProgressBar::Free()
 {
 	__super::Free();
-	Safe_Release(m_pClientInstance);
 }

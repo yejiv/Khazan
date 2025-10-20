@@ -40,6 +40,7 @@ private:
 
 	_int						m_iMovePos[2] = {};
 	_int						m_iScalingSize[2] = {};
+	_float						m_fRotation[3] = {};
 
 	_char						m_szFilePath[MAX_PATH] = {};
 
@@ -48,6 +49,9 @@ private:
 	_char						m_szFrameName[MAX_PATH] = {};
 	_float						m_fTexSize = { 1.f };
 	_int						m_iTexType = {};
+	_int						m_iTexIndex = {};
+	_int						m_iShaderIndex = {};
+
 
 	_float						m_fAccTime = {};
 	_bool						m_isAnime = { false };
@@ -60,7 +64,7 @@ private:
 	void						Animation_UI(_float fTimeDelta);
 
 	void						SetName_UI();
-	void						SizePos_UI(_float fTimeDelta);
+	void						Transform_UI(_float fTimeDelta);
 	void						SetTexture_UI();
 	void						Anime_Option(_float fTimeDelta, _bool bAnimCehck);
 public:

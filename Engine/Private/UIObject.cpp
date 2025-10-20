@@ -120,7 +120,70 @@ void CUIObject::Update_Scaling(_float fSize)
 
 void CUIObject::Update_Rotation(_float fAngle)
 {
-    m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), XMConvertToRadians(fAngle));
+    m_pTransformCom->Set_Quaternion(XMQuaternionRotationRollPitchYaw
+    (XMConvertToRadians(m_vAngle.x)
+        , XMConvertToRadians(m_vAngle.y)
+        , XMConvertToRadians(m_vAngle.z + fAngle)
+    ));
+}
+
+void CUIObject::Update_Alpha(_float fAlpha)
+{
+    m_fAlpha = fAlpha;
+}
+
+void CUIObject::Update_Track(_float fAccTime)
+{
+    if (fAccTime >= m_Track.back().fTrackPosition)
+    {
+        return;
+    }
+    if (fAccTime == 0.f)
+        m_iCurrentKeyFrameIndex = 0;
+
+    while (fAccTime >= m_Track[m_iCurrentKeyFrameIndex + 1].fTrackPosition)
+        m_iCurrentKeyFrameIndex++;
+
+    _float fRatio = (fAccTime - m_Track[m_iCurrentKeyFrameIndex].fTrackPosition) /
+        (m_Track[m_iCurrentKeyFrameIndex + 1].fTrackPosition - m_Track[m_iCurrentKeyFrameIndex].fTrackPosition);
+
+    //((1.f - fRatio) * First) + (fRatio * Second);
+    //Size
+    _float fSize = ((1.f - fRatio) * m_Track[m_iCurrentKeyFrameIndex].fSize) + (fRatio * m_Track[m_iCurrentKeyFrameIndex + 1].fSize);
+    Update_Scaling(fSize);
+
+    //Alpha
+    _float fAlpha = ((1.f - fRatio) * m_Track[m_iCurrentKeyFrameIndex].fAlpha) + (fRatio * m_Track[m_iCurrentKeyFrameIndex + 1].fAlpha);
+    Update_Alpha(fAlpha);
+
+    //Angle
+    _float fAngle = ((1.f - fRatio) * m_Track[m_iCurrentKeyFrameIndex].fAngle) + (fRatio * m_Track[m_iCurrentKeyFrameIndex + 1].fAngle);
+    Update_Rotation(fAngle);
+
+    //Pos
+    _int iTrackIndex[4] = {};
+
+    if (m_iCurrentKeyFrameIndex <= 0)
+        iTrackIndex[0] = 0;
+    else
+        iTrackIndex[0] = m_iCurrentKeyFrameIndex - 1;
+
+    iTrackIndex[1] = m_iCurrentKeyFrameIndex;
+    iTrackIndex[2] = m_iCurrentKeyFrameIndex + 1;
+
+    if (m_iCurrentKeyFrameIndex + 1 >= m_Track.size() - 1)
+        iTrackIndex[3] = m_iCurrentKeyFrameIndex + 1;
+    else
+        iTrackIndex[3] = m_iCurrentKeyFrameIndex + 2;
+
+    _vector p0 = { m_Track[iTrackIndex[0]].vTransloation.x, m_Track[iTrackIndex[0]].vTransloation.y, 1.f };
+    _vector p1 = { m_Track[iTrackIndex[1]].vTransloation.x, m_Track[iTrackIndex[1]].vTransloation.y, 1.f };
+    _vector p2 = { m_Track[iTrackIndex[2]].vTransloation.x, m_Track[iTrackIndex[2]].vTransloation.y, 1.f };
+    _vector p3 = { m_Track[iTrackIndex[3]].vTransloation.x, m_Track[iTrackIndex[3]].vTransloation.y, 1.f };
+
+    _float2 fPos = {};
+    XMStoreFloat2(&fPos, XMVectorCatmullRom(p0, p1, p2, p3, fRatio));
+    Update_Transform(nullptr, fPos);
 }
 
 HRESULT CUIObject::Update_Switch(void* pArg)

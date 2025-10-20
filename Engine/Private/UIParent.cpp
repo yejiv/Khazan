@@ -122,10 +122,22 @@ void CUIParent::Update_Scaling(_float fSize)
 
 void CUIParent::Update_Rotation(_float fAngle)
 {
-    m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), XMConvertToRadians(fAngle));
+    m_pTransformCom->Set_Quaternion(XMQuaternionRotationRollPitchYaw
+    (XMConvertToRadians(m_vAngle.x)
+        , XMConvertToRadians(m_vAngle.y)
+        , XMConvertToRadians(m_vAngle.z + fAngle)
+    ));
 
     for (auto& pChild : m_Children)
         pChild->Update_Rotation(fAngle);
+}
+
+void CUIParent::Update_Alpha(_float fAlpha)
+{
+    m_fAlpha = fAlpha;
+
+    for (auto& pChild : m_Children)
+        static_cast<CUIObject*>(pChild)->Update_Alpha(fAlpha);
 }
 
 HRESULT CUIParent::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)

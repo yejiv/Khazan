@@ -22,6 +22,10 @@ namespace Editor
 	const unsigned int			g_iWinSizeX_Imgui_JYP = 1600;
 	const unsigned int			g_iWinSizeY_Imgui_JYP = 900;
 
+	const unsigned int			g_iWinSizeX_Imgui_KBS = 1600;
+	const unsigned int			g_iWinSizeY_Imgui_KBS = 900;
+
+
 	enum class LEVEL { STATIC, LOADING, EDITOR, MAP, ANIMATION, EFFECT, UI, SHADER, END };
 	enum class COLLISION_LAYER { MAP, PLAYER, MONSTER, ITEM, EFFECT, SKILL, END };
 

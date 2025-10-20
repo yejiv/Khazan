@@ -153,18 +153,23 @@ void CEdit_Interface_UI::Create_UI()
 	{
 
 		ImGui::InputText("UIName", m_szUIName, MAX_PATH);
+		enum class UITYPE { PANEL, TAP, SLOT, BUTTON, SCROLLBAR, PROGRESSBAR, TEXTURE, TEXT, RENDER_GROUP, END };
 
 		ImGui::RadioButton("PANEL", &m_iUIType, ENUM_CLASS(CEdit_UIBase::UITYPE::PANEL));
 		ImGui::SameLine();
 		ImGui::RadioButton("TAP", &m_iUIType, ENUM_CLASS(CEdit_UIBase::UITYPE::TAP));
 		ImGui::SameLine();
-		ImGui::RadioButton("BUTTON", &m_iUIType, ENUM_CLASS(CEdit_UIBase::UITYPE::BUTTON));
-		ImGui::SameLine();
 		ImGui::RadioButton("SLOT", &m_iUIType, ENUM_CLASS(CEdit_UIBase::UITYPE::SLOT));
 		ImGui::SameLine();
-		ImGui::RadioButton("SCROLLBAR", &m_iUIType, ENUM_CLASS(CEdit_UIBase::UITYPE::SCROLLBAR));
+		ImGui::RadioButton("BUTTON", &m_iUIType, ENUM_CLASS(CEdit_UIBase::UITYPE::BUTTON));
 		ImGui::SameLine();
+		ImGui::RadioButton("SCROLLBAR", &m_iUIType, ENUM_CLASS(CEdit_UIBase::UITYPE::SCROLLBAR));
+
 		ImGui::RadioButton("PROGRESSBAR", &m_iUIType, ENUM_CLASS(CEdit_UIBase::UITYPE::PROGRESSBAR));
+		ImGui::SameLine();
+		ImGui::RadioButton("TEXTURE", &m_iUIType, ENUM_CLASS(CEdit_UIBase::UITYPE::TEXTURE));
+		ImGui::SameLine();
+		ImGui::RadioButton("TEXT", &m_iUIType, ENUM_CLASS(CEdit_UIBase::UITYPE::TEXT));
 
 		ImGui::InputInt2("Size", m_iUISize, 0);
 
@@ -236,7 +241,7 @@ void CEdit_Interface_UI::Selete_UI(_float fTimeDelta)
 
 		ImGui::Begin("UI_Option");
 		SetName_UI();
-		SizePos_UI(fTimeDelta);
+		Transform_UI(fTimeDelta);
 
 		SetTexture_UI();
 		_bool AnimCehck = m_pRootUIs[m_iSeletRootUI]->Anim_Empty(m_szSeleteUIName);
@@ -282,7 +287,7 @@ void CEdit_Interface_UI::SetName_UI()
 	}
 }
 
-void CEdit_Interface_UI::SizePos_UI(_float fTimeDelta)
+void CEdit_Interface_UI::Transform_UI(_float fTimeDelta)
 {
 	_bool isMoveUI = false;
 	if (m_pGameInstance->Key_Pressing(DIK_Q, fTimeDelta, nullptr))
@@ -298,20 +303,27 @@ void CEdit_Interface_UI::SizePos_UI(_float fTimeDelta)
 			m_pRootUIs[m_iSeletRootUI]->Move_UI(m_szSeleteUIName, (_float)ptMouse.x, (_float)ptMouse.y, nullptr, true);
 		}
 	}
-	if (ImGui::CollapsingHeader("Size&Move"))
+	if (ImGui::CollapsingHeader("Transform"))
 	{
 		ImGui::InputInt2("##UIMoveButton", m_iMovePos);
 		ImGui::SameLine();
-		if (ImGui::Button("UIMove"))
+		if (ImGui::Button("Move"))
 		{
 			m_pRootUIs[m_iSeletRootUI]->Move_UI(m_szSeleteUIName, (_float)m_iMovePos[0], (_float)m_iMovePos[1], nullptr, true);
 		}
 
 		ImGui::InputInt2("##UISizeButton", m_iScalingSize);
 		ImGui::SameLine();
-		if (ImGui::Button("UISize"))
+		if (ImGui::Button("Size"))
 		{
 			m_pRootUIs[m_iSeletRootUI]->Scaling_UI(m_szSeleteUIName, (_float)m_iScalingSize[0], (_float)m_iScalingSize[1]);
+		}
+
+		ImGui::InputFloat3("##UIRotationButton", m_fRotation);
+		ImGui::SameLine();
+		if (ImGui::Button("Rotation"))
+		{
+			m_pRootUIs[m_iSeletRootUI]->Set_Rotation(m_szSeleteUIName, _float3{ m_fRotation[0], m_fRotation[1], m_fRotation[2] });
 		}
 	}
 }
@@ -337,6 +349,22 @@ void CEdit_Interface_UI::SetTexture_UI()
 
 			m_pRootUIs[m_iSeletRootUI]->Set_AtlasTextTure(m_szSeleteUIName, ENUM_CLASS(m_eLevel), szPrototypePath.c_str(), m_szFrameName, m_iTexType);
 		}
+		if (m_iTexType == 0)
+		{
+			ImGui::InputInt("##TexIndx", &m_iTexIndex);
+			ImGui::SameLine();
+			if (ImGui::Button("SetTexPass"))
+			{
+				m_pRootUIs[m_iSeletRootUI]->Set_TexIndex(m_szSeleteUIName, m_iTexIndex);
+			}
+
+			ImGui::InputInt("##Shader", &m_iShaderIndex);
+			ImGui::SameLine();
+			if (ImGui::Button("SetShader"))
+			{
+				m_pRootUIs[m_iSeletRootUI]->Set_ShaderPass(m_szSeleteUIName, m_iShaderIndex);
+			}
+		}
 		if (m_iTexType == 1)
 		{
 			ImGui::InputFloat("TexSize", &m_fTexSize, 0.1f, 0.1f);
@@ -349,6 +377,7 @@ void CEdit_Interface_UI::SetTexture_UI()
 
 				m_pRootUIs[m_iSeletRootUI]->Set_AtlasTexSize(m_szSeleteUIName, m_szFrameName, m_fTexSize);
 			}
+
 		}
 		m_pRootUIs[m_iSeletRootUI]->Update_Option(m_szSeleteUIName, m_szFrameName, m_iTexType);
 	}
