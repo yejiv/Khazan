@@ -62,9 +62,8 @@ HRESULT CUI_Text::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void
 	string szType = pInData.value("type", "");
 	m_iUIType = CClientInstance::GetInstance()->UIType_StringToEnum(szType);
 
-	m_iShaderPass = pInData.value("shaderPass", -1);
-	if (m_iShaderPass == -1)
-		return E_FAIL;
+	m_iTexPass = pInData.value("TexIndex", 0);
+	m_iShaderPass = pInData.value("shaderPass", 0);
 
 	m_fDepth = pInData.value("depth", 0.f);
 
@@ -79,6 +78,22 @@ HRESULT CUI_Text::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void
 		m_vLocalSize.x = pInData["LocalSize"].value("x", 0.f);
 		m_vLocalSize.y = pInData["LocalSize"].value("y", 0.f);
 	}
+
+	if (pInData.contains("Angle"))
+	{
+		m_vAngle.x = pInData["Angle"].value("x", 0.f);
+		m_vAngle.y = pInData["Angle"].value("y", 0.f);
+		m_vAngle.z = pInData["Angle"].value("z", 0.f);
+	}
+
+	if (pInData.contains("Color"))
+	{
+		m_vColor.x = pInData["Color"].value("x", 0.f);
+		m_vColor.y = pInData["Color"].value("y", 0.f);
+		m_vColor.z = pInData["Color"].value("z", 0.f);
+		m_vColor.w = pInData["Color"].value("w", 0.f);
+	}
+
 	if (pInData.contains("UV"))
 	{
 		m_vUV.clear();
@@ -113,7 +128,9 @@ HRESULT CUI_Text::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void
 			m_Track.push_back(track);
 		}
 	}
+
 	m_pTransformCom->Scale(_float3{ m_vLocalSize.x, m_vLocalSize.y, 1.f });
+	__super::Update_Rotation(0.f);
 	__super::Update_Transform(nullptr, m_vLocalPos);
 
 	return S_OK;

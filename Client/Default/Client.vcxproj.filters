@@ -121,9 +121,6 @@
     <Filter Include="02.GameObject\UI\ETC">
       <UniqueIdentifier>{ca1e6c2f-7f6b-4669-bc5c-ffcfcfc1fc3c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\UI\Test">
-      <UniqueIdentifier>{3ccbec7f-b270-4c00-8269-dfd5f71a505a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="93.HeaderGroup">
       <UniqueIdentifier>{fcdfc65f-4a69-427a-9d02-54723db0f34f}</UniqueIdentifier>
     </Filter>
@@ -156,6 +153,30 @@
     </Filter>
     <Filter Include="95.SuperClass\UI\UIPart\UI_Text">
       <UniqueIdentifier>{6ae1e038-5a08-455c-a1af-92947ca14ebb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD">
+      <UniqueIdentifier>{2647a99d-0662-4e39-b1e4-9bb67db823bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State">
+      <UniqueIdentifier>{5941d4dd-09f9-494b-84aa-1e95999927f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\ComBatSpirit">
+      <UniqueIdentifier>{293d8c35-6a6e-49e9-b3bf-814584c67530}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\ComBatSpirit\Slot">
+      <UniqueIdentifier>{2a653d30-5675-43b9-b60a-49ce05f9b1e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\ComBatSpirit\Slot\Gauge">
+      <UniqueIdentifier>{18135a4a-5158-4947-b55f-df5dad10e7f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\HP">
+      <UniqueIdentifier>{864ff948-e5b0-499b-b455-ff56e7430a37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\HP\Gauge">
+      <UniqueIdentifier>{ddd5736b-1744-4d5e-a5f5-b981984e6736}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\HP\BG">
+      <UniqueIdentifier>{8b9aa6a8-6a2a-4a7d-91d8-ed2951bfeb22}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -282,9 +303,6 @@
     <ClInclude Include="..\public\UI_BackGround.h">
       <Filter>02.GameObject\UI\ETC</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\UI_SlotTest.h">
-      <Filter>02.GameObject\UI\Test</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\HeaderGroup_UI.h">
       <Filter>93.HeaderGroup</Filter>
     </ClInclude>
@@ -296,6 +314,33 @@
     </ClInclude>
     <ClInclude Include="..\Public\Prop_Dynamic.h">
       <Filter>02.GameObject\MapObject\00.Prop\04.Dynamic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_PlayerHP_Gauge.h">
+      <Filter>02.GameObject\UI\HUD\State\HP\Gauge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_PlayerHP_Penal.h">
+      <Filter>02.GameObject\UI\HUD\State</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_PlayerHP_BG.h">
+      <Filter>02.GameObject\UI\HUD\State\HP\BG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_CombatSpirit_Penal.h">
+      <Filter>02.GameObject\UI\HUD\State\ComBatSpirit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_ComBatSpirit_Slot.h">
+      <Filter>02.GameObject\UI\HUD\State\ComBatSpirit\Slot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_ComBatSpirit_Gauge.h">
+      <Filter>02.GameObject\UI\HUD\State\ComBatSpirit\Slot\Gauge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_HUD.h">
+      <Filter>02.GameObject\UI\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_PlayerStamina_Gauge.h">
+      <Filter>02.GameObject\UI\HUD\State\HP\Gauge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Gague_Tip.h">
+      <Filter>02.GameObject\UI\ETC</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -417,9 +462,6 @@
     <ClCompile Include="..\private\UI_BackGround.cpp">
       <Filter>02.GameObject\UI\ETC</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\UI_SlotTest.cpp">
-      <Filter>02.GameObject\UI\Test</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\UI_Text.cpp">
       <Filter>95.SuperClass\UI\UIPart\UI_Text</Filter>
     </ClCompile>
@@ -428,6 +470,33 @@
     </ClCompile>
     <ClCompile Include="..\Private\Prop_Dynamic.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\04.Dynamic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_PlayerHP_Gauge.cpp">
+      <Filter>02.GameObject\UI\HUD\State\HP\Gauge</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_PlayerHP_Penal.cpp">
+      <Filter>02.GameObject\UI\HUD\State</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_PlayerHP_BG.cpp">
+      <Filter>02.GameObject\UI\HUD\State\HP\BG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_CombatSpirit_Penal.cpp">
+      <Filter>02.GameObject\UI\HUD\State\ComBatSpirit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_ComBatSpirit_Slot.cpp">
+      <Filter>02.GameObject\UI\HUD\State\ComBatSpirit\Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_ComBatSpirit_Gauge.cpp">
+      <Filter>02.GameObject\UI\HUD\State\ComBatSpirit\Slot\Gauge</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_HUD.cpp">
+      <Filter>02.GameObject\UI\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_PlayerStamina_Gauge.cpp">
+      <Filter>02.GameObject\UI\HUD\State\HP\Gauge</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Gague_Tip.cpp">
+      <Filter>02.GameObject\UI\ETC</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

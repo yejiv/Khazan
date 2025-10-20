@@ -41,11 +41,14 @@ public:
 	_bool					Move_UI(string& szSeleteUIName, _float fSetX, _float fSetY, CUIObject* pParent, _bool isParent);
 	_bool					Scaling_UI(string& szSeleteUIName, _float fSizeX, _float fSizeY);
 	void					Set_Alpha(_float fAlpha);
+	_bool					Set_Rotation(string& szSeleteUIName, _float3 vAngle);
 
 	//Texture
 	HRESULT					Set_AtlasTextTure(string& szSeleteUIName, _uint iPrototypeLevelID, const _wstring& strPrototypeTag, const string pFrameName, _int iTexType);
 	_bool					Set_UVTexSet(string& szSeleteUIName, const string pFrameName);
 	HRESULT					Set_AtlasTexSize(string& szSeleteUIName, const string pFrameName, _float fSize);
+	HRESULT					Set_TexIndex(string& szSeleteUIName, _int iTexIndex);
+	HRESULT					Set_ShaderPass(string& szSeleteUIName, _int iShaderIndex);
 
 	//Anime
 	_bool					Anim_Empty(string& szSeleteUIName);
@@ -95,6 +98,7 @@ private:
 	HRESULT					Ready_Component();
 	void					Update_Track(_float& fAccTime);
 
+	HRESULT					Render_ShaderPassSet();
 	//Convert
 	string					UIType_EnumToString();
 	_uint					UIType_StringToEnum(string szUIType);
