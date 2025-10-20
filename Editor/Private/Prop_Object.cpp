@@ -121,7 +121,7 @@ HRESULT CProp_Object::Ready_Components(void* pArg)
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
 
-    if (true)
+    if (false) // 수정 예정
     {
         if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), TEXT("Prototype_Component_Texture_Map_Snow"),
             TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr)))
