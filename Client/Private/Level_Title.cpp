@@ -1,5 +1,7 @@
 #include "Level_Title.h"
 #include "GameInstance.h"
+#include "ClientInstance.h"
+
 #include "Level_Loading.h"
 
 CLevel_Title::CLevel_Title(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -13,6 +15,7 @@ HRESULT CLevel_Title::Initialize()
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
 
+	CHECK_FAILED(Ready_Layer_UI(), E_FAIL);
 	return S_OK;
 }
 
@@ -39,6 +42,15 @@ HRESULT CLevel_Title::Ready_Layer_BackGround(const _wstring& strLayerTag)
 	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::TITLE), strLayerTag,
 	//	ENUM_CLASS(LEVEL::TITLE), TEXT("Prototype_GameObject_BackGround"))))
 	//	return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CLevel_Title::Ready_Layer_UI()
+{
+	if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+		TEXT("../Bin/Resources/UI/UIData/HUD.json"))))
+		return E_FAIL;
 
 	return S_OK;
 }

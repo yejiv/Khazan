@@ -218,7 +218,6 @@
     <ClInclude Include="..\Public\UI_Tap.h" />
     <ClInclude Include="..\public\UI_BackGround.h" />
     <ClInclude Include="..\public\UI_Atlas_Icon.h" />
-    <ClInclude Include="..\public\UI_SlotTest.h" />
     <ClInclude Include="..\Public\Yetuga.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="ClientPch.h" />

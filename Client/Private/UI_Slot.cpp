@@ -27,21 +27,21 @@ HRESULT CUI_Slot::Initialize_Clone(void* pArg)
 
 void CUI_Slot::Priority_Update(_float fTimeDelta)
 {
-	if (m_iState == ENUM_CLASS(STATE::DISABLE))
+	if (m_iState == ENUM_CLASS(UISTATE::DISABLE))
 		return;
 	__super::Priority_Update(fTimeDelta);
 }
 
 void CUI_Slot::Update(_float fTimeDelta)
 {
-	if (m_iState == ENUM_CLASS(STATE::DISABLE))
+	if (m_iState == ENUM_CLASS(UISTATE::DISABLE))
 		return;
 	__super::Update(fTimeDelta);
 }
 
 void CUI_Slot::Late_Update(_float fTimeDelta)
 {
-	if (m_iState == ENUM_CLASS(STATE::DISABLE))
+	if (m_iState == ENUM_CLASS(UISTATE::DISABLE))
 		return;
 	__super::Late_Update(fTimeDelta);
 }

@@ -126,11 +126,15 @@ PS_OUT PS_TEX_PROGRESS_BOTTOMDOWN(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
     
-    if (In.vTexcoord.y < 1.f - g_fProgressValue.x)
+    if (g_fProgressValue.x == 1.f)
+        Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);       
+    else if (In.vTexcoord.y < 1.f - g_fProgressValue.x)
         discard;
-        
-    Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
-    
+    else
+    {
+        Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
+        Out.vColor.rgb *= 0.5f;
+    }
     Out.vColor.a = Out.vColor.a * g_fAlpha;
     return Out;
 }

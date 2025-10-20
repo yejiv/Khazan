@@ -19,7 +19,8 @@ void CUI_PlayerHP_Penal::On_Penal()
 {
 	m_isAnim = true;
 	m_IsUpdate ? m_eAnimState = UIANIMSTATE::OFF : m_eAnimState = UIANIMSTATE::ON;
-	m_eAnimState == UIANIMSTATE::ON ? m_fAccTime = 0.f : m_fAccTime = m_Track.back().fTrackPosition;
+	m_iCurrentKeyFrameIndex = 0;
+	m_eAnimState == UIANIMSTATE::ON ? m_fAccTime = 0.f : m_fAccTime = 1.f;
 	m_IsUpdate = true;
 }
 
@@ -70,7 +71,7 @@ void CUI_PlayerHP_Penal::Update(_float fTimeDelta)
 		else if (m_eAnimState == UIANIMSTATE::OFF)
 		{
 			m_fAccTime -= fTimeDelta;
-			Update_Track(m_fAccTime);
+			__super::Update_Alpha(m_fAccTime);
 
 			if (m_fAccTime <= 0.f)
 			{

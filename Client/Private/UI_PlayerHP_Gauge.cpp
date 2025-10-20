@@ -120,6 +120,12 @@ HRESULT CUI_PlayerHP_Gauge::Load_UI(nlohmann::json& pInData, _uint iPrototypeLev
 	return S_OK;
 }
 
+void CUI_PlayerHP_Gauge::Update_Alpha(_float fAlpha)
+{
+	__super::Update_Alpha(fAlpha);
+	m_pUITip->Update_Alpha(fAlpha);
+}
+
 HRESULT CUI_PlayerHP_Gauge::Ready_Component()
 {
 	if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxPosTex_UI"),
@@ -146,6 +152,7 @@ HRESULT CUI_PlayerHP_Gauge::Ready_Childer()
 	
 	if (m_pUITip == nullptr)
 		return E_FAIL;
+
 	return S_OK;
 }
 
