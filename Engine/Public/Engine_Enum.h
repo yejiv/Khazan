@@ -1,4 +1,4 @@
-#ifndef Engine_Enum_h__
+ï»¿#ifndef Engine_Enum_h__
 #define Engine_Enum_h__
 
 namespace Engine
@@ -47,13 +47,14 @@ namespace Engine
 
 		END,
 	};
+	enum class ANIM_TRANSITIONTYPE { AUTO, FLAG, INPUT, MANUAL, END};	//ì• ë‹ˆë©”ì´ì…˜ ì „í™˜ ì¡°ê±´
 	enum class MAPOBJECT_TYPE : unsigned short { OBJECT, STATIC_INST, ANIMATED_INST, INTERACTIVE, DYNAMIC, END };
 	enum class BTNODESTATE { RUNNING, SUCCESS, FAILURE, END };
 }
 
 namespace JoltLayers
 {
-	// ³ÊÀÇ ¿ëµµ¿¡ ¸Â°Ô ´Ã·Á ½áµµ µÊ
+	// ë„ˆì˜ ìš©ë„ì— ë§ê²Œ ëŠ˜ë ¤ ì¨ë„ ë¨
 	static constexpr ObjectLayer MAP = 0;
 	static constexpr ObjectLayer DYNAMIC = 1;
 	static constexpr ObjectLayer CHARACTER = 2;
@@ -61,7 +62,7 @@ namespace JoltLayers
 	static constexpr uint32      NUM_LAYERS = 4;
 }
 
-// ºê·ÎµåÆäÀÌÁî ·¹ÀÌ¾î (°£´Ü ¸ÅÇÎ: 0=Á¤Àû, 1=µ¿Àû)
+// ë¸Œë¡œë“œí˜ì´ì¦ˆ ë ˆì´ì–´ (ê°„ë‹¨ ë§¤í•‘: 0=ì •ì , 1=ë™ì )
 namespace JoltBPLayers
 {
 	static constexpr BroadPhaseLayer NON_MOVING(0);
