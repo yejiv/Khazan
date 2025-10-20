@@ -14,7 +14,7 @@ CAI_Controller_Yetuga::CAI_Controller_Yetuga()
 HRESULT CAI_Controller_Yetuga::Initialize(void* pArg)
 {
 	SIGHT_DESC SightDesc = {};
-	SightDesc.fRadius = 100.f;
+	SightDesc.fRadius = 600.f;
 	SightDesc.fLoseSightTime = 2.f;
 	SightDesc.fFov = 90.f;
 	SightDesc.fFovCos = cosf(XMConvertToRadians(SightDesc.fFov * 0.5f));
@@ -51,7 +51,8 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 	m_pPerception->Update(pOwner, fTimeDelta);
 
 	m_pBT->Update();
-	m_pFSM->Update(fTimeDelta, pOwner);
+
+	m_pFSM->Update(pOwner,fTimeDelta);
 
 }
 
@@ -63,10 +64,10 @@ HRESULT CAI_Controller_Yetuga::Ready_BlackBoard()
 	m_pBB->Set_Value("Yetuga", "isMove", false);
 	m_pBB->Set_Value("Yetuga", "isAttack", false);
 	m_pBB->Set_Value("Yetuga", "isDead", false);
-
-	m_pBB->Set_Value("Yetuga", "AttackCoolDown", 3.f);
-	m_pBB->Set_Value("Yetuga", "AttackRange", 3.f);
-	m_pBB->Set_Value("Yetuga", "ChaseRange", 3.f);
+	m_pBB->Set_Value("Yetuga", "isAttackAnimFinish", false);
+	m_pBB->Set_Value("Yetuga", "AttackCoolDown", 8.f);
+	m_pBB->Set_Value("Yetuga", "AttackRange", 350.f);
+	m_pBB->Set_Value("Yetuga", "ChaseRange", 2000.f);
 
 	return S_OK;
 }
@@ -85,7 +86,9 @@ HRESULT CAI_Controller_Yetuga::Ready_Perception()
 				else
 				{
 					//m_pBB->Set_Value("Yetuga", "Target", nullptr);
-					m_pBB->Set_Value("Yetuga", "isDetected", false);
+					//m_pBB->Set_Value("Yetuga", "isDetected", false);
+					if (!m_pBB->Get_Value<_bool>("Yetuga", "isAttack"))
+						m_pBB->Set_Value("Yetuga", "isDetected", false);
 				}
 			}
 		});

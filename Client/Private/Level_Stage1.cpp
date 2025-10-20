@@ -6,7 +6,7 @@
 #include "Player.h"
 #include "Camera_Compre.h"
 #include "Dummy.h"
-#include "Monster.h"
+#include "Yetuga.h"
 #include "ClientInstance.h"
 
 #pragma region MAP OBJECT
@@ -173,14 +173,17 @@ HRESULT CLevel_Stage1::Ready_Layer_Monster(const _wstring& strLayerTag)
 	//	m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag, pDummy);
 	//}
 
-	//CMonster::MONSTER_DESC MonsterDesc{};
-	/*MonsterDesc.fAttack = 10.f;
+	CYetuga::CREATURE_DESC MonsterDesc{};
+	MonsterDesc.fAttack = 10.f;
 	MonsterDesc.fMaxHP = 100.f;
 	MonsterDesc.fMaxStamina = 100.f;
-	MonsterDesc.fMoveSpeed = 10.f;*/
+	//MonsterDesc.fMoveSpeed = 10.f;
+	MonsterDesc.fSpeedPerSec = 3.f;
+	MonsterDesc.fRotationPerSec = 180.f;
+	
 
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
-			ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Monster_Yetuga"),nullptr)))
+			ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Monster_Yetuga"),&MonsterDesc)))
 			return E_FAIL;
 
 	return S_OK;
