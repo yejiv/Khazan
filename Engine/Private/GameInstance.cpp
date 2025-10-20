@@ -495,6 +495,16 @@ HRESULT CGameInstance::Copy_RT_Resource(const _wstring& strTargetTag, ID3D11Text
 	return m_pTarget_Manager->Copy_Resource(strTargetTag, pSourTexture);
 }
 
+void CGameInstance::Begin_RT()
+{
+	m_pTarget_Manager->Begin_RT();
+}
+
+void CGameInstance::End_RT()
+{
+	m_pTarget_Manager->End_RT();
+}
+
 #ifdef _DEBUG
 
 HRESULT CGameInstance::Ready_RT_Debug(const _wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY)
@@ -567,9 +577,19 @@ const _float4x4* CGameInstance::Get_CurrentLightProjMatrix() const
 	return m_pShadow->Get_CurrentLightProjMatrix();
 }
 
-HRESULT CGameInstance::Ready_Cascade()
+const _float* CGameInstance::Get_Splits() const
 {
-	return m_pShadow->Ready_Cascade();
+	return m_pShadow->Get_Splits();
+}
+
+const _float4x4* CGameInstance::Get_LightViewMatrices() const
+{
+	return m_pShadow->Get_LightViewMatrices();
+}
+
+const _float4x4* CGameInstance::Get_LightProjMatrices() const
+{
+	return m_pShadow->Get_LightProjMatrices();
 }
 
 #pragma endregion

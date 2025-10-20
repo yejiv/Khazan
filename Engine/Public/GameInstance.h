@@ -119,7 +119,8 @@ public:
 	HRESULT End_MRT();
 	HRESULT Bind_RT_ShaderResource(const _wstring& strTargetTag, class CShader* pShader, const _char* pConstantName);
 	HRESULT Copy_RT_Resource(const _wstring& strTargetTag, ID3D11Texture2D* pSourTexture);
-
+	void Begin_RT();
+	void End_RT();
 #ifdef _DEBUG
 	HRESULT Ready_RT_Debug(const _wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY);
 	HRESULT Render_RT_Debug(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
@@ -141,7 +142,9 @@ public:
 	void Set_CurrentCascade(_uint iIndex);
 	const _float4x4* Get_CurrentLightViewMatrix() const;
 	const _float4x4* Get_CurrentLightProjMatrix() const;
-	HRESULT Ready_Cascade();
+	const _float* Get_Splits() const;
+	const _float4x4* Get_LightViewMatrices() const;
+	const _float4x4* Get_LightProjMatrices() const;
 #pragma endregion
 
 #pragma region FRUSTUM

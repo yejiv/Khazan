@@ -8,7 +8,7 @@ CPlayer_Shader::CPlayer_Shader(ID3D11Device* pDevice, ID3D11DeviceContext* pCont
 }
 
 CPlayer_Shader::CPlayer_Shader(const CPlayer_Shader& Prototype)
-    : CGameObject{ Prototype }
+    : CGameObject(Prototype)
 {
 
 }
@@ -29,7 +29,7 @@ HRESULT CPlayer_Shader::Initialize_Clone(void* pArg)
     m_pModelCom->Set_Animation(8, true);
 
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-    m_pTransformCom->Scaling(_float3(0.1f, 0.1f, 0.1f));
+    m_pTransformCom->Scaling(_float3(0.5f, 0.5f, 0.5f));
 
     return S_OK;
 }
@@ -99,27 +99,13 @@ HRESULT CPlayer_Shader::Render()
 HRESULT CPlayer_Shader::Render_Shadow()
 {
     if (FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix")))
-        return E_FAIL;
+        return E_FAIL;;
 
-    //  if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_ShadowLight_Transform_Float4x4(D3DTS::VIEW))))
-    //      return E_FAIL;
-    //  
-    //  if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_ShadowLight_Transform_Float4x4(D3DTS::PROJ))))
-    //      return E_FAIL;
-
-    const _float4x4 LightViewMatrix = *m_pGameInstance->Get_CurrentLightViewMatrix();
-    const _float4x4 LightProjMatrix = *m_pGameInstance->Get_CurrentLightProjMatrix();
-
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &LightViewMatrix)))
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_CurrentLightViewMatrix())))
         return E_FAIL;
     
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &LightProjMatrix)))
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_CurrentLightProjMatrix())))
         return E_FAIL;
-
-    //  const _float4x4 LightViewProjMatrix = *m_pGameInstance->Get_CurrentLightViewProjMatrix();
-
-    //  if (FAILED(m_pShaderCom->Bind_Matrix("g_LightViewProjMatrix", &LightViewProjMatrix)))
-    //      return E_FAIL;
 
     _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -128,7 +114,7 @@ HRESULT CPlayer_Shader::Render_Shadow()
         if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;
 
-        m_pShaderCom->Begin(2);
+        m_pShaderCom->Begin(3);
 
         m_pModelCom->Render(i);
     }
@@ -139,14 +125,9 @@ HRESULT CPlayer_Shader::Render_Shadow()
 
 HRESULT CPlayer_Shader::Ready_Components()
 {
-
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
-
-    //if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_JOH_TestModel"),
-    //    TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
-    //    return E_FAIL;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Editor_Model_Test"),
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
@@ -165,7 +146,6 @@ HRESULT CPlayer_Shader::Bind_ShaderResources()
 
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
         return E_FAIL;
-
 
     return S_OK;
 }
@@ -202,5 +182,4 @@ void CPlayer_Shader::Free()
 
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
-
 }
