@@ -173,14 +173,21 @@ call Copy.bat</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Private\Action_Node.cpp" />
+    <ClCompile Include="..\Private\AI_Controller.cpp" />
+    <ClCompile Include="..\Private\AI_State.cpp" />
     <ClCompile Include="..\private\Animation.cpp" />
     <ClCompile Include="..\Private\Base.cpp" />
+    <ClCompile Include="..\Private\BehaviorTree.cpp" />
+    <ClCompile Include="..\Private\BlackBoard.cpp" />
     <ClCompile Include="..\Private\Body.cpp" />
     <ClCompile Include="..\private\Bone.cpp" />
+    <ClCompile Include="..\Private\BTNode.cpp" />
     <ClCompile Include="..\private\Camera.cpp" />
     <ClCompile Include="..\Private\Camera_Manager.cpp" />
     <ClCompile Include="..\private\Cell.cpp" />
     <ClCompile Include="..\private\Channel.cpp" />
+    <ClCompile Include="..\Private\Composite_Node.cpp" />
     <ClCompile Include="..\Private\Jolt_CharacterContactListener.cpp" />
     <ClCompile Include="..\Private\CharacterVirtual.cpp" />
     <ClCompile Include="..\Private\Component.cpp" />
@@ -208,6 +215,10 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\Light_Manager.cpp" />
     <ClCompile Include="..\Private\Mesh.cpp" />
     <ClCompile Include="..\private\MeshMaterial.cpp" />
+    <ClCompile Include="..\Private\Perception.cpp" />
+    <ClCompile Include="..\Private\Selector_Node.cpp" />
+    <ClCompile Include="..\Private\Sequence_Node.cpp" />
+    <ClCompile Include="..\Private\StateMachine.cpp" />
     <ClCompile Include="..\private\Texture_Atlas.cpp" />
     <ClCompile Include="..\private\Model.cpp" />
     <ClCompile Include="..\Private\ModelMesh_Instance.cpp" />
@@ -260,14 +271,21 @@ call Copy.bat</Command>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Public\Action_Node.h" />
+    <ClInclude Include="..\Public\AI_Controller.h" />
+    <ClInclude Include="..\Public\AI_State.h" />
     <ClInclude Include="..\public\Animation.h" />
     <ClInclude Include="..\Public\Base.h" />
+    <ClInclude Include="..\Public\BehaviorTree.h" />
+    <ClInclude Include="..\Public\BlackBoard.h" />
     <ClInclude Include="..\Public\Body.h" />
     <ClInclude Include="..\public\Bone.h" />
+    <ClInclude Include="..\Public\BTNode.h" />
     <ClInclude Include="..\public\Camera.h" />
     <ClInclude Include="..\Public\Camera_Manager.h" />
     <ClInclude Include="..\public\Cell.h" />
     <ClInclude Include="..\public\Channel.h" />
+    <ClInclude Include="..\Public\Composite_Node.h" />
     <ClInclude Include="..\Public\Jolt_CharacterContactListener.h" />
     <ClInclude Include="..\Public\CharacterVirtual.h" />
     <ClInclude Include="..\Public\Component.h" />
@@ -311,6 +329,11 @@ call Copy.bat</Command>
     <ClInclude Include="..\public\Light_Manager.h" />
     <ClInclude Include="..\Public\Mesh.h" />
     <ClInclude Include="..\public\MeshMaterial.h" />
+    <ClInclude Include="..\Public\Perception.h" />
+    <ClInclude Include="..\Public\Perception_Defines.h" />
+    <ClInclude Include="..\Public\Selector_Node.h" />
+    <ClInclude Include="..\Public\Sequence_Node.h" />
+    <ClInclude Include="..\Public\StateMachine.h" />
     <ClInclude Include="..\public\Texture_Atlas.h" />
     <ClInclude Include="..\public\Model.h" />
     <ClInclude Include="..\Public\ModelMesh_Instance.h" />
