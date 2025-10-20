@@ -31,10 +31,17 @@ public:
 	virtual HRESULT Render();
 
 public:
-	virtual void PlayAnimation() {};
+	void Set_Animation(_wstring strAnimationTag);
+	void Play_Animation(_float fTimeDelta);
 
 public:
-	void Add_Animation(_wstring strAnimationTag, CAMERA_ANIMATION_DATA tAnimation);
+	void Create_Animation(_wstring strAnimationTag);
+	void Create_Event(_wstring strAnimationTag);
+	void Create_Animation_Item(_wstring strAnimationTag);
+	void Create_Event_Item(_wstring strAnimationTag);
+	void Set_Animation_Item(_wstring strAnimationTag, CAMERA_KEYFRAME tAnimation, _uint iIndex);
+	void Set_Event_Item(_wstring strAnimationTag, CAMERA_EVENT_DATA tEvent, _uint iIndex);
+	void Add_Animation(_wstring strAnimationTag, CAMERA_KEYFRAME tAnimation);
 	void Add_Event(_wstring strAnimationTag, CAMERA_EVENT_DATA tEvent);
 
 public:
@@ -47,8 +54,14 @@ public:
 	_uint Get_CameraType() { return m_iCameraType; }
 	_wstring Get_CameraTag() { return m_strCameraTag; }
 
-	vector<CAMERA_ANIMATION_DATA>* Get_Animations(_wstring strAnimationTag);
+	map<_wstring, vector<CAMERA_KEYFRAME>>* Get_AllAnimations() { return &m_Animations; }
+	map<_wstring, vector<CAMERA_EVENT_DATA>>* Get_AllEvents() { return &m_Events; }
+
+	vector<CAMERA_KEYFRAME>* Get_Animations(_wstring strAnimationTag);
 	vector<CAMERA_EVENT_DATA>* Get_Events(_wstring strAnimationTag);
+
+public:
+	HRESULT Set_DefaultData(CAMERA_DESC tDesc);
 
 public:
 	void Set_ObjMatrix(const _float4x4* pObjMatrix) { m_pObjMatrix = pObjMatrix; }
@@ -58,6 +71,9 @@ public:
 	void Update_PipeLines();
 
 protected:
+	_wstring			m_strCameraTag = {};
+	_uint				m_iCameraType = {};
+
 	_float				m_fMouseSensor = {};
 
 	_float				m_fFovy = {};
@@ -77,17 +93,20 @@ protected:
 	_float				m_fFollowValue = 4.f;
 	_vector				m_vLerpMove = { 0.f, 0.f, 0.f, 1.f };
 
-	const _float4x4* m_pObjMatrix = { nullptr };
-	const _float4x4* m_pSocketMatrix = { nullptr };
+	const _float4x4*	m_pObjMatrix = { nullptr };
+	const _float4x4*	m_pSocketMatrix = { nullptr };
 
-	map<_wstring, vector<CAMERA_ANIMATION_DATA>> m_Animations;
+	map<_wstring, vector<CAMERA_KEYFRAME>> m_Animations;
 	map<_wstring, vector<CAMERA_EVENT_DATA>> m_Events;
 
-	_wstring			m_strCurrentAnimation;
-	_bool				m_isAnimation;
-
-	_wstring			m_strCameraTag = {};
-	_uint				m_iCameraType = {};
+	_bool							m_isAnimation = {false};
+	vector<CAMERA_KEYFRAME>*		m_tCurrentAnimation = { nullptr };
+	_uint							m_iAnimationIndex = {};
+	_float							m_fCurrentTrackPosition = {};
+	_float							m_fAnimationRatio = {};
+	CATMULLROM						m_tPosCatmullrom{};
+	_vector							m_vOldLook = {};
+	
 public:
 	virtual CGameObject* Clone(void* pArg) = 0;
 	virtual void Free() override;

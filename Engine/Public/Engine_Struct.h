@@ -66,21 +66,30 @@ namespace Engine
 
 	}MESH_INSTANCE_DATA;
 
-	typedef struct tagCameraAnimation
+	typedef struct tagCatmullrom
 	{
-		float fTrackPosition;
-		XMFLOAT4 fTranslation;
-		float fTranslation_Speed;
+		XMVECTOR v1;
+		XMVECTOR v2;
+		XMVECTOR v3;
+		XMVECTOR v4;
+	}CATMULLROM;
+
+	typedef struct tagCameraKeyFrame
+	{
+		XMFLOAT3 vTranslation;
 		XMFLOAT4 vLookAt;
-		float fLookAt_Speed;
-		unsigned int iMoveType;
-	}CAMERA_ANIMATION_DATA;
+		float fSpeed;
+
+		float fTrackPosition;
+	}CAMERA_KEYFRAME;
 
 	typedef struct tagCameraEvent
 	{
-		float fTrackPosition;
 		wstring strEventKey;
+		unsigned int iEventType;
 		bool isComplete;
+
+		float fTrackPosition;
 	}CAMERA_EVENT_DATA;
 
 	typedef struct tagCoInitGuard {

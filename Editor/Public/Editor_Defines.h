@@ -22,7 +22,7 @@ namespace Editor
 	const unsigned int			g_iWinSizeX_Imgui_JYP = 1600;
 	const unsigned int			g_iWinSizeY_Imgui_JYP = 900;
 
-		const unsigned int			g_iWinSizeX_Imgui_KBS = 1600;
+		const unsigned int		g_iWinSizeX_Imgui_KBS = 1600;
 	const unsigned int			g_iWinSizeY_Imgui_KBS = 900;
 
 
@@ -33,6 +33,7 @@ namespace Editor
 	enum class KHAZAN_MAP { HEINMACH, YETUGA, THECREVICE, EMBARS, VIPER, END };
 
 	enum class CAMERATYPE { FREE, SPRING, END };
+	enum class CAMERA_EVENTTYPE { A, B, C, END};
 }
 
 extern HWND g_hWnd;

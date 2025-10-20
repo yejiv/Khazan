@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Editor_Defines.h"
 #include "Camera.h"
 
 NS_BEGIN(Engine)
@@ -47,6 +48,9 @@ public:
 public:
 	HRESULT Ready_Camera(void* pArg);
 	HRESULT Ready_Body();
+
+public:
+	CAMERA_COMPRE_DESC Get_Desc();
 private:
 	CCharacterVirtual* m_pCharVirCom = { nullptr };
 

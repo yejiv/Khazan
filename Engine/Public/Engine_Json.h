@@ -57,6 +57,9 @@ namespace Engine
     {
         float x;
         float y;
+
+        tagFloat2() : x(0.f), y(0.f) {}
+        tagFloat2(float _x, float _y) : x(_x), y(_y) {}
     }FLOAT2_DATA;
 
     typedef struct tagFloat3
@@ -429,19 +432,19 @@ namespace Engine
         /* 기본 설정 */
         std::string             strName = { "DefaultAnim" };
         bool                    isLoop = { false };
-        unsigned int            iDirection = { 0 };                         // 방향 (0: 방향 없음, 1~24: 방향)
+        unsigned int            iDirection = { 0 };                         // 방향 ANIM_DIRECTION
 
         /* 애니메이션 전환 설정 (애니메이션 세트에 사용할 예정) */
         unsigned int            iTransitionType = { 0 };                    // 전환 조건 (0:Auto, 1:Flag, 2:Input, 3:Manual)
-        bool                    isWaitForComplete = { true };               // 완료 대기 여부
+        bool                    isWaitForComplete = { false };               // 완료 대기 여부 true: 전환할 때 애니메이션이 다 끝나고 전환하겠다. / false : 바로 전환하겠다.
         float                   fBlendOutTime = { 0.15f };                  // 블렌드 아웃 시간
         float                   fBlendInTime = { 0.15f };                   // 블렌드 인 시간
 
         /* 루트 모션 */
-        bool                    isRootMotion = { false };                   // 루트 모션 사용 여부
+        bool                    isRootMotion = { true };                   // 루트 모션 사용 여부
         bool                    isApplyRootRotation = { false };            // 회전 적용 여부
-        bool                    isApplyRootPosition = { false };            // 위치 적용 여부
-        FLOAT3_DATA             RootMitionScale;                            // 축별 적용 스케일
+        bool                    isApplyRootPosition = { true };            // 위치 적용 여부
+        FLOAT3_DATA             RootMitionScale = FLOAT3_DATA(1.f, 1.f, 1.f);  // 축별 적용 스케일
 
         /* 이벤트 */
         bool                    isEvent = { false };                        // 이벤트 존재 여부
@@ -548,6 +551,7 @@ namespace Engine
         std::string		strName;
         float			fDuration;
         float			fTickPerSecond;
+        float           fAnimationBlendTime = { 0.25f };
         unsigned int    iNumChannels;
 
         std::vector< CHANNEL_DATA> vecChannels;
@@ -561,6 +565,7 @@ namespace Engine
             ofs.write(strName.data(), len);
             ofs.write((char*)&fDuration, sizeof(fDuration));
             ofs.write((char*)&fTickPerSecond, sizeof(fTickPerSecond));
+            ofs.write((char*)&fAnimationBlendTime, sizeof(fAnimationBlendTime));
             ofs.write((char*)&iNumChannels, sizeof(iNumChannels));
 
             uint32_t count = static_cast<uint32_t>(vecChannels.size());
@@ -578,6 +583,7 @@ namespace Engine
 
             ifs.read((char*)&fDuration, sizeof(fDuration));
             ifs.read((char*)&fTickPerSecond, sizeof(fTickPerSecond));
+            ifs.read((char*)&fAnimationBlendTime, sizeof(fAnimationBlendTime));
             ifs.read((char*)&iNumChannels, sizeof(iNumChannels));
 
             uint32_t count;
@@ -753,14 +759,6 @@ namespace Engine
 
     }JSON_MAP_DATA;
 
-    typedef struct tagJsonPrototypeDataSet
-    {
-        std::string PrototypeTag{};
-        std::string FileName{};
-        std::string FilePath{};
-
-    }JSON_MAP_PROTOTYPE_DATA;
-
 #pragma endregion
 
 
@@ -866,8 +864,6 @@ namespace Engine
         vScale,
         vRotation
     );
-    // 프로토타입 관련 태그, 이름, 경로 직렬화
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(JSON_MAP_PROTOTYPE_DATA, PrototypeTag, FileName, FilePath);
 
 #pragma endregion
 
