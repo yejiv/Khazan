@@ -76,7 +76,6 @@ HRESULT CCamera_Compre::Render()
 
 void CCamera_Compre::Update_Free(_float fTimeDelta)
 {
-
     if (m_pGameInstance->Key_Pressing(DIK_W, fTimeDelta))
     {
         m_pTransformCom->Go_Straight(fTimeDelta);

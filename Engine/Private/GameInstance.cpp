@@ -138,6 +138,8 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 {
 	//m_pPicking->Update();
 
+	m_pInput_Manager->Update();
+
 	/* 내 게임내에서 반복적인 갱신이 필요한 객체들이 있다라면 갱신을 여기에서 모아서 수행하낟. */
 	m_pObject_Manager->Priority_Update(fTimeDelta);
 
@@ -156,8 +158,6 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 	m_pJolt_Manager->Update(fTimeDelta);
 
 	m_pComputeShader_Manager->Execute_Job(COMPUTEJOB::UPDATE);
-
-	m_pInput_Manager->Update();
 
 #ifdef _DEBUG
 
@@ -684,33 +684,37 @@ void CGameInstance::Submit(std::function<void()> job)
 #pragma endregion
 
 #pragma region INPUT_MANAGER
-_bool CGameInstance::Key_Pressing(_ubyte byKeyID, _float fTimeDelta, _float* pPressingTime)
+_bool CGameInstance::Key_Pressing(_ubyte byKeyID, _float fTimeDelta, INPUT_TYPE eType, _float* pPressingTime)
 {
-	return m_pInput_Manager->Key_Pressing(byKeyID, fTimeDelta, pPressingTime);
+	return m_pInput_Manager->Key_Pressing(byKeyID, fTimeDelta, eType, pPressingTime);
 }
-_bool CGameInstance::Key_Down(_ubyte byKeyID)
+_bool CGameInstance::Key_Down(_ubyte byKeyID, INPUT_TYPE eType)
 {
-	return m_pInput_Manager->Key_Down(byKeyID);
+	return m_pInput_Manager->Key_Down(byKeyID, eType);
 }
-_bool CGameInstance::Key_Up(_ubyte byKeyID)
+_bool CGameInstance::Key_Up(_ubyte byKeyID, INPUT_TYPE eType)
 {
-	return m_pInput_Manager->Key_Up(byKeyID);
+	return m_pInput_Manager->Key_Up(byKeyID, eType);
 }
-_bool CGameInstance::Mouse_Pressing(MOUSEKEYSTATE eMouse)
+_bool CGameInstance::Mouse_Pressing(MOUSEKEYSTATE eMouse, INPUT_TYPE eType)
 {
-	return m_pInput_Manager->Mouse_Pressing(eMouse);
+	return m_pInput_Manager->Mouse_Pressing(eMouse, eType);
 }
-_bool CGameInstance::Mouse_Down(MOUSEKEYSTATE eMouse)
+_bool CGameInstance::Mouse_Down(MOUSEKEYSTATE eMouse, INPUT_TYPE eType)
 {
-	return m_pInput_Manager->Mouse_Down(eMouse);
+	return m_pInput_Manager->Mouse_Down(eMouse, eType);
 }
-_bool CGameInstance::Mouse_Up(MOUSEKEYSTATE eMouse)
+_bool CGameInstance::Mouse_Up(MOUSEKEYSTATE eMouse, INPUT_TYPE eType)
 {
-	return m_pInput_Manager->Mouse_Up(eMouse);
+	return m_pInput_Manager->Mouse_Up(eMouse, eType);
 }
-_long CGameInstance::Mouse_Move(MOUSEMOVESTATE eMouseState)
+_long CGameInstance::Mouse_Move(MOUSEMOVESTATE eMouseState, INPUT_TYPE eType)
 {
-	return m_pInput_Manager->Mouse_Move(eMouseState);
+	return m_pInput_Manager->Mouse_Move(eMouseState, eType);
+}
+void CGameInstance::Change_InputType(INPUT_TYPE eType)
+{
+	m_pInput_Manager->Change_InputType(eType);
 }
 #pragma endregion
 

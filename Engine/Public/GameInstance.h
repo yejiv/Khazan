@@ -184,15 +184,17 @@ public:
 #pragma
 
 #pragma region INPUT_MANAGER
-	_bool		Key_Pressing(_ubyte byKeyID, _float fTimeDelta, _float* pPressingTime = nullptr);
-	_bool		Key_Down(_ubyte byKeyID);
-	_bool		Key_Up(_ubyte byKeyID);
+	_bool		Key_Pressing(_ubyte byKeyID, _float fTimeDelta, INPUT_TYPE eType = INPUT_TYPE::GAMEPLAY, _float* pPressingTime = nullptr);
+	_bool		Key_Down(_ubyte byKeyID, INPUT_TYPE eType = INPUT_TYPE::GAMEPLAY);
+	_bool		Key_Up(_ubyte byKeyID, INPUT_TYPE eType = INPUT_TYPE::GAMEPLAY);
 
-	_bool		Mouse_Pressing(MOUSEKEYSTATE eMouse);
-	_bool		Mouse_Down(MOUSEKEYSTATE eMouse);
-	_bool		Mouse_Up(MOUSEKEYSTATE eMouse);
+	_bool		Mouse_Pressing(MOUSEKEYSTATE eMouse, INPUT_TYPE eType = INPUT_TYPE::GAMEPLAY);
+	_bool		Mouse_Down(MOUSEKEYSTATE eMouse, INPUT_TYPE eType = INPUT_TYPE::GAMEPLAY);
+	_bool		Mouse_Up(MOUSEKEYSTATE eMouse, INPUT_TYPE eType = INPUT_TYPE::GAMEPLAY);
 
-	_long		Mouse_Move(MOUSEMOVESTATE eMouseState);
+	_long		Mouse_Move(MOUSEMOVESTATE eMouseState, INPUT_TYPE eType = INPUT_TYPE::GAMEPLAY);
+
+	void		Change_InputType(INPUT_TYPE eType);
 #pragma endregion
 
 #pragma region POOL_MANAGER
