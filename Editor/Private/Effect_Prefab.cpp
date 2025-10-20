@@ -196,12 +196,13 @@ void CEffect_Prefab::Edit_TimeTrack(_uint ChildIdx)
         {
         case CEffect_Prefab::EffectEventType::ANIMATE_SPREAD:
             ImGui::InputFloat2("Spread speed : ",reinterpret_cast<_float*>(&m_sEditingData.fSpreadSpeed));
-            ImGui::InputFloat3("Rotate pivot : ",reinterpret_cast<_float*>(&m_sEditingData.fPivot));
+            ImGui::InputFloat3("pivot : ",reinterpret_cast<_float*>(&m_sEditingData.fPivot));
+            ImGui::Checkbox("Gravity", &m_sEditingData.bGravity);
             break;
 
         case CEffect_Prefab::EffectEventType::ANIMATE_ROTATE:
             ImGui::InputFloat2("Rotate speed : ",reinterpret_cast<_float*>(&m_sEditingData.fRotationSpeed));
-            ImGui::InputFloat3("Rotate pivot : ",reinterpret_cast<_float*>(&m_sEditingData.fPivot));
+            ImGui::InputFloat3("pivot : ",reinterpret_cast<_float*>(&m_sEditingData.fPivot));
             break;
 
         case CEffect_Prefab::EffectEventType::ANIMATE_TWINLKE:

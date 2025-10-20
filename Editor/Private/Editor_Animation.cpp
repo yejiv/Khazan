@@ -134,54 +134,97 @@ void CEditor_Animation::Update_AnimationBlend(const vector<class CEditor_Bone*>&
 
 _uint CEditor_Animation::GetAnimDirection(const string& animName)
 {
-    string name = animName;
-    transform(name.begin(), name.end(), name.begin(), ::toupper); //대문자 통일 
+    //string name = animName;
+    //transform(name.begin(), name.end(), name.begin(), ::toupper); 
+
+    if (animName.find("_F_LF") != string::npos )
+        return ENUM_CLASS(ANIM_DIRECTION::F) + ENUM_CLASS(ANIM_DIRECTION::L);
+
+    if (animName.find("_F_RF") != string::npos)
+        return ENUM_CLASS(ANIM_DIRECTION::F) + ENUM_CLASS(ANIM_DIRECTION::R);
+
+    if (animName.find("_ALL") != string::npos)
+        return ENUM_CLASS(ANIM_DIRECTION::ALL);
+
+    if (animName.find("_BLL") != string::npos)
+        return ENUM_CLASS(ANIM_DIRECTION::BLL);
+
+    if (animName.find("_BBL") != string::npos)
+        return ENUM_CLASS(ANIM_DIRECTION::BBL);
+
+    if (animName.find("_CC") != string::npos)
+        return ENUM_CLASS(ANIM_DIRECTION::CC);
 
     struct DirectionMatch {
         const char* key1;
         const char* key2;
-        ANIM_DIRECTION dir;
+        ANIM_DIRECTION dir1;
+        ANIM_DIRECTION dir2;
     };
 
     static const DirectionMatch table[] = {
-        {"_F",  nullptr, ANIM_DIRECTION::F},
-        {"_B",  nullptr, ANIM_DIRECTION::B},
-        {"_L",  nullptr, ANIM_DIRECTION::L},
-        {"_R",  nullptr, ANIM_DIRECTION::R},
-        {"_U",  nullptr, ANIM_DIRECTION::U},
-        {"_D",  nullptr, ANIM_DIRECTION::D},
+        {"_F",  nullptr, ANIM_DIRECTION::F, ANIM_DIRECTION::NONE },
+        {"_B",  nullptr, ANIM_DIRECTION::B, ANIM_DIRECTION::NONE },
+        {"_L",  nullptr, ANIM_DIRECTION::L, ANIM_DIRECTION::NONE },
+        {"_R",  nullptr, ANIM_DIRECTION::R, ANIM_DIRECTION::NONE },
+        {"_U",  nullptr, ANIM_DIRECTION::U, ANIM_DIRECTION::NONE },
+        {"_D",  nullptr, ANIM_DIRECTION::D, ANIM_DIRECTION::NONE },
 
-        {"_LF", "_FL", ANIM_DIRECTION::LF},
-        {"_LB", "_BL", ANIM_DIRECTION::LB},
-        {"_RF", "_FR", ANIM_DIRECTION::RF},
-        {"_RB", "_BR", ANIM_DIRECTION::RB},
+        {"_LF", "_FL", ANIM_DIRECTION::L, ANIM_DIRECTION::F},
+        {"_LB", "_BL", ANIM_DIRECTION::L, ANIM_DIRECTION::B},
+        {"_RF", "_FR", ANIM_DIRECTION::R, ANIM_DIRECTION::F},
+        {"_RB", "_BR", ANIM_DIRECTION::R, ANIM_DIRECTION::B},
 
-       // {"_F_RF", "_F_FR", ANIM_DIRECTION::F_RF},
-       // {"_F_LF", "_F_FL", ANIM_DIRECTION::F_LF},
-       // {"_B_RB", "_B_BR", ANIM_DIRECTION::B_RB},
-       // {"_B_LB", "_B_BL", ANIM_DIRECTION::B_LB},
+        {"_UL", "_LU", ANIM_DIRECTION::U, ANIM_DIRECTION::L},
+        {"_UR", "_RU", ANIM_DIRECTION::U, ANIM_DIRECTION::R},
+        {"_DL", "_LD", ANIM_DIRECTION::D, ANIM_DIRECTION::L},
+        {"_DR", "_RD", ANIM_DIRECTION::D, ANIM_DIRECTION::R},
 
-        {"_U_F", nullptr, ANIM_DIRECTION::U_F},
-        {"_U_B", nullptr, ANIM_DIRECTION::U_B},
-        {"_U_L", nullptr, ANIM_DIRECTION::U_L},
-        {"_U_R", nullptr, ANIM_DIRECTION::U_R},
+        {"_U_F", nullptr, ANIM_DIRECTION::U, ANIM_DIRECTION::F},
+        {"_U_B", nullptr, ANIM_DIRECTION::U, ANIM_DIRECTION::B},
+        {"_U_L", nullptr, ANIM_DIRECTION::U, ANIM_DIRECTION::L},
+        {"_U_R", nullptr, ANIM_DIRECTION::U, ANIM_DIRECTION::R},
 
-        {"_D_F", nullptr, ANIM_DIRECTION::D_F},
-        {"_D_B", nullptr, ANIM_DIRECTION::D_B},
-        {"_D_L", nullptr, ANIM_DIRECTION::D_L},
-        {"_D_R", nullptr, ANIM_DIRECTION::D_R},
+        {"_D_F", nullptr, ANIM_DIRECTION::D, ANIM_DIRECTION::F},
+        {"_D_B", nullptr, ANIM_DIRECTION::D, ANIM_DIRECTION::B},
+        {"_D_L", nullptr, ANIM_DIRECTION::D, ANIM_DIRECTION::L},
+        {"_D_R", nullptr, ANIM_DIRECTION::D, ANIM_DIRECTION::R},
 
-        {"_BBL", nullptr, ANIM_DIRECTION::BBL},
-        {"_BLL", nullptr, ANIM_DIRECTION::BLL},
+        {"_CD", nullptr, ANIM_DIRECTION::C, ANIM_DIRECTION::D},
+        {"_CU", nullptr, ANIM_DIRECTION::C, ANIM_DIRECTION::U},
+        {"_LC", nullptr, ANIM_DIRECTION::L, ANIM_DIRECTION::C},
+        {"_LD", nullptr, ANIM_DIRECTION::L, ANIM_DIRECTION::D},
+        {"_LU", nullptr, ANIM_DIRECTION::L, ANIM_DIRECTION::U},
+        {"_RC", nullptr, ANIM_DIRECTION::R, ANIM_DIRECTION::C},
+        {"_RD", nullptr, ANIM_DIRECTION::R, ANIM_DIRECTION::D},
+        {"_RU", nullptr, ANIM_DIRECTION::R, ANIM_DIRECTION::U},
+
     };
 
-    for (size_t i = 0; i < size(table); ++i)
-    {
-        if (name.find(table[i].key1) != std::string::npos)
-            return static_cast<unsigned int>(table[i].dir);
-        if (table[i].key2 && name.find(table[i].key2) != std::string::npos)
-            return static_cast<unsigned int>(table[i].dir);
-    }
+	auto IsValidDirectionToken = [&](const string& key) -> bool
+		{
+			size_t pos = animName.find(key);
+			while (pos != string::npos)
+			{
+				size_t endPos = pos + key.length();
+
+				if (endPos >= animName.size() || !isalpha(animName[endPos]))
+					return true;
+
+				pos = animName.find(key, pos + 1);
+			}
+
+			return false;
+		};
+
+	for (size_t i = 0; i < size(table); ++i)
+	{
+		if (IsValidDirectionToken(table[i].key1))
+			return ENUM_CLASS(table[i].dir1) + ENUM_CLASS(table[i].dir2);
+		if (table[i].key2 != nullptr && IsValidDirectionToken(table[i].key2))
+			return ENUM_CLASS(table[i].dir1) + ENUM_CLASS(table[i].dir2);
+	}
+
 
     return 0;
 }
