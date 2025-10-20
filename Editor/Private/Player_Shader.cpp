@@ -73,6 +73,9 @@ HRESULT CPlayer_Shader::Render()
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
+    // Color Debug
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_Splits", m_pGameInstance->Get_Splits(), sizeof(_float) * g_iNumCascades)))
+        return E_FAIL;
 
     _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -101,10 +104,10 @@ HRESULT CPlayer_Shader::Render_Shadow()
     if (FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix")))
         return E_FAIL;;
 
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_CurrentLightViewMatrix())))
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_LightViewMatrix", m_pGameInstance->Get_CurrentLightViewMatrix())))
         return E_FAIL;
     
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_CurrentLightProjMatrix())))
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_LightProjMatrix", m_pGameInstance->Get_CurrentLightProjMatrix())))
         return E_FAIL;
 
     _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
