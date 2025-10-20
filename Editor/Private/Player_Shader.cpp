@@ -107,10 +107,19 @@ HRESULT CPlayer_Shader::Render_Shadow()
     //  if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_ShadowLight_Transform_Float4x4(D3DTS::PROJ))))
     //      return E_FAIL;
 
-    const _float4x4 LightViewProjMatrix = *m_pGameInstance->Get_CurrentLightViewProjMatrix();
+    const _float4x4 LightViewMatrix = *m_pGameInstance->Get_CurrentLightViewMatrix();
+    const _float4x4 LightProjMatrix = *m_pGameInstance->Get_CurrentLightProjMatrix();
 
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_LightViewProjMatrix", &LightViewProjMatrix)))
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &LightViewMatrix)))
         return E_FAIL;
+    
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &LightProjMatrix)))
+        return E_FAIL;
+
+    //  const _float4x4 LightViewProjMatrix = *m_pGameInstance->Get_CurrentLightViewProjMatrix();
+
+    //  if (FAILED(m_pShaderCom->Bind_Matrix("g_LightViewProjMatrix", &LightViewProjMatrix)))
+    //      return E_FAIL;
 
     _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -119,7 +128,7 @@ HRESULT CPlayer_Shader::Render_Shadow()
         if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;
 
-        m_pShaderCom->Begin(3);
+        m_pShaderCom->Begin(2);
 
         m_pModelCom->Render(i);
     }

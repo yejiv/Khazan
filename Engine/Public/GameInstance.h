@@ -139,14 +139,16 @@ public:
 	void Set_ShadowLight(SHADOW_LIGHT_DESC LightDesc);
 	_uint Get_NumCascades();
 	void Set_CurrentCascade(_uint iIndex);
-	HRESULT Bind_LightViewProjMatrix(class CShader* pShader, _uint iIndex);
-	const _float4x4* Get_CurrentLightViewProjMatrix() const;
+	const _float4x4* Get_CurrentLightViewMatrix() const;
+	const _float4x4* Get_CurrentLightProjMatrix() const;
+	HRESULT Ready_Cascade();
 #pragma endregion
 
 #pragma region FRUSTUM
 	void Transform_Frustum_ToLocalSpace(_fmatrix WorldMatrix);
 	_bool isIn_Frustum_WorldSpace(_fvector vWorldPos, _float fRange = 0.f);
 	_bool isIn_Frustum_LocalSpace(_fvector vLocalPos, _float fRange = 0.f);
+	const _float4* Get_WorldPoints() const;
 #pragma endregion
 
 #pragma region IMGUI_MANGER
