@@ -31,7 +31,7 @@ public:
 		_float2			fScrollSpeed;
 
 		_float3			fPivot;
-
+		_bool			bGravity;
 		//_float				fScaleDelta;
 		//PARTICLE_MOVE_TYPE	MoveDirection; 
 		//PARTICLE_MOVE_TYPE	MoveType;

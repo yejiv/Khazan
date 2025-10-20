@@ -23,6 +23,7 @@
 #include "Resource_Manager.h"
 #include "ComputeShader_Manager.h"
 #include "Camera_Manager.h"
+#include "BlackBoard.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -119,6 +120,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pCamera_Manager)
 		return E_FAIL;
 
+	m_pBlackBoard = CBlackBoard::Create();
+	if (nullptr == m_pBlackBoard)
+		return E_FAIL;
+
 #ifdef _DEBUG
 	m_pImgui_Manager = CImgui_Manager::Create(EngineDesc.iWinSizeX_Imgui, EngineDesc.iWinSizeY_Imgui, EngineDesc.Menu_Imgui);
 	if (nullptr == m_pImgui_Manager)
@@ -142,6 +147,9 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 
 	m_pObject_Manager->Update(fTimeDelta);
 	m_pObject_Manager->Late_Update(fTimeDelta);
+
+	// Cascade Test
+	m_pShadow->Update();
 
 	m_pLevel_Manager->Update(fTimeDelta);
 
@@ -279,6 +287,14 @@ CBase* CGameInstance::Clone_Prototype(PROTOTYPE ePrototype, _uint iPrototypeLeve
 		return nullptr;
 
 	return m_pPrototype_Manager->Clone_Prototype(ePrototype, iPrototypeLevelIndex, strPrototypeTag, pArg);
+}
+
+_bool CGameInstance::Already_Registered_Prototype(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag)
+{
+	if (nullptr == m_pPrototype_Manager)
+		return false;
+
+	return m_pPrototype_Manager->Already_Registered_Prototype(iPrototypeLevelIndex, strPrototypeTag);
 }
 
 #pragma endregion
@@ -546,14 +562,19 @@ void CGameInstance::Set_CurrentCascade(_uint iIndex)
 	m_pShadow->Set_CurrentCascade(iIndex);
 }
 
-HRESULT CGameInstance::Bind_LightViewProjMatrix(CShader* pShader, _uint iIndex)
+const _float4x4* CGameInstance::Get_CurrentLightViewMatrix() const
 {
-	return m_pShadow->Bind_LightViewProjMatrix(pShader, iIndex);
+	return m_pShadow->Get_CurrentLightViewMatrix();
 }
 
-const _float4x4* CGameInstance::Get_CurrentLightViewProjMatrix() const
+const _float4x4* CGameInstance::Get_CurrentLightProjMatrix() const
 {
-	return m_pShadow->Get_CurrentLightViewProjMatrix();
+	return m_pShadow->Get_CurrentLightProjMatrix();
+}
+
+HRESULT CGameInstance::Ready_Cascade()
+{
+	return m_pShadow->Ready_Cascade();
 }
 
 #pragma endregion
@@ -571,6 +592,11 @@ _bool CGameInstance::isIn_Frustum_WorldSpace(_fvector vWorldPos, _float fRange)
 _bool CGameInstance::isIn_Frustum_LocalSpace(_fvector vLocalPos, _float fRange)
 {
 	return m_pFrustum->isIn_LocalSpace(vLocalPos, fRange);
+}
+
+const _float4* CGameInstance::Get_WorldPoints() const
+{
+	return m_pFrustum->Get_WorldPoints();
 }
 
 #pragma endregion
@@ -828,6 +854,7 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pInput_Manager);
 	Safe_Release(m_pResource_Manager);
 	Safe_Release(m_pCamera_Manager);
+	Safe_Release(m_pBlackBoard);
 
 	Safe_Release(m_pPicking);
 	Safe_Release(m_pTimer_Manager);

@@ -24,13 +24,11 @@ HRESULT CProp::Initialize_Prototype()
 
 HRESULT CProp::Initialize_Clone(void* pArg)
 {
-    if (nullptr != pArg)
-    {
-        PROP_DESC* pDesc = static_cast<PROP_DESC*>(pArg);
-        CHECK_NULLPTR(pDesc, E_FAIL);
+    PROP_DESC* pDesc = static_cast<PROP_DESC*>(pArg);
+    CHECK_NULLPTR(pDesc, E_FAIL);
 
-        memcpy(m_szModelName, pDesc->szModelName, MAX_PATH);
-    }
+    memcpy(m_szModelName, pDesc->szModelName, MAX_PATH);
+    m_isBlended = pDesc->isBlended;
 
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 
@@ -51,6 +49,22 @@ void CProp::Late_Update(_float fTimeDelta)
 
 HRESULT CProp::Render()
 {
+    return S_OK;
+}
+
+void CProp::Set_ShaderPass(_uint iShaderPass)
+{
+    m_eShaderPass = static_cast<SHADER_PASS>(iShaderPass);
+}
+
+HRESULT CProp::Bind_ShaderResources_ForSnowMap(CTexture* pTextureCom, _uint iMeshIndex)
+{
+    CHECK_FAILED(pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_SnowTexture", 0), E_FAIL);
+
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fSnowAmount", &m_fSnowAmount, sizeof(_float)), E_FAIL);
+
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vSnowColor", &m_vSnowColor, sizeof(_float3)), E_FAIL);
+
     return S_OK;
 }
 

@@ -7,6 +7,13 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CModel final : public CComponent
 {
 private:
+	enum MODEL_STATE
+	{
+		ANIM_LOOP = 1 << 0,
+
+
+	};
+private:
 	CModel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CModel(const CModel& Prototype);
 	virtual ~CModel() = default;
@@ -23,11 +30,11 @@ public:
 
 public:
 	/* 정보 */
-	_uint Get_NumMeshes() const { return m_iNumMeshes; }
-	_float4x4* Get_BoneMatrix(const _char* pBoneName);
-	_float4x4* Get_ContainNameBoneMatrix(const _char* pBoneName);
-	vector<_float3> Get_VerticesPos(_uint iIndex);
-	vector<_uint> Get_Indices(_uint iIndex);
+	_uint				Get_NumMeshes() const { return m_iNumMeshes; }
+	_float4x4*			Get_BoneMatrix(const _char* pBoneName);
+	_float4x4*			Get_ContainNameBoneMatrix(const _char* pBoneName);
+	vector<_float3>		Get_VerticesPos(_uint iIndex);		//졸트
+	vector<_uint>		Get_Indices(_uint iIndex);			//졸트
 
 	/* 애니메이션 기능  */
 	_bool Play_Animation(_float fTimeDelta);
@@ -58,7 +65,7 @@ private:
 	_float								m_fCurrentTrackPosition = { 0.f };  /* 현재 애니메이션 재생 위치 */
 	_uint								m_iPrevAnimIndex = { 0 };			/* 이전 애니메이션 인덱스 */
 	vector< class CAnimation* >			m_Animations;						/* 애니메이션 클래스 저장  */
-	_bool								m_isLoop = { false };				/* 애니메이션 루프 여부 */
+	//_bool								m_isLoop = { false };				/* 애니메이션 루프 여부 */
 	_bool								m_isFinished = { false };			/* 루프가 아닌 애니메이션이 끝났는지 여부  */
 	//_bool								m_isRepeatAnimation = { false };	/* 루프가 아닌 애니메이션이 반복되는 경우 애니메이션 끝났는지*/
 	//_bool								m_isChangedAnimation = { false };	/* 애니메이션이 변경된 경우*/
@@ -66,11 +73,20 @@ private:
 	//_bool								m_isForceAnimation = { false };		/* 강제로 애니메이션을 바꾸는 경우*/
 	//_bool								m_isFinishAnimation = { false };	/* 애니메이션이 다 끝나고 다음 애니메이션으로 넘어가는 경우*/
 
+	/* State*/
+	_uint								m_iState = { 0 };
+
 private:
 	HRESULT Ready_Meshes(MODEL_DATA& data);
 	HRESULT Ready_Materials(MODEL_DATA& data);
 	HRESULT Ready_Bones(MODEL_DATA& data);
 	HRESULT Ready_Animations(MODEL_DATA& data);
+
+private:
+	inline void		Add_State(MODEL_STATE s) { m_iState |= s; }
+	inline void		Remove_State(MODEL_STATE s) { m_iState &= ~s; }
+	inline _bool	Has_State(MODEL_STATE s) { return (m_iState & s) != 0; }
+	inline void		Clear_States() { m_iState = 0; }
 
 public:
 	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _char* pModelFilePath);

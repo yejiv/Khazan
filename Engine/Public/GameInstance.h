@@ -55,6 +55,8 @@ public:
 public:
 	HRESULT Add_Prototype(_uint iPrototpyeLevelIndex, const _wstring& strPrototypeTag, class CBase* pPrototype);
 	class CBase* Clone_Prototype(PROTOTYPE ePrototype, _uint iPrototpyeLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);
+	// 프로토 타입 등록 여부 검사 함수
+	_bool Already_Registered_Prototype(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag);
 #pragma endregion
 
 #pragma region OBJECT_MANAGER
@@ -138,14 +140,16 @@ public:
 	void Set_ShadowLight(SHADOW_LIGHT_DESC LightDesc);
 	_uint Get_NumCascades();
 	void Set_CurrentCascade(_uint iIndex);
-	HRESULT Bind_LightViewProjMatrix(class CShader* pShader, _uint iIndex);
-	const _float4x4* Get_CurrentLightViewProjMatrix() const;
+	const _float4x4* Get_CurrentLightViewMatrix() const;
+	const _float4x4* Get_CurrentLightProjMatrix() const;
+	HRESULT Ready_Cascade();
 #pragma endregion
 
 #pragma region FRUSTUM
 	void Transform_Frustum_ToLocalSpace(_fmatrix WorldMatrix);
 	_bool isIn_Frustum_WorldSpace(_fvector vWorldPos, _float fRange = 0.f);
 	_bool isIn_Frustum_LocalSpace(_fvector vLocalPos, _float fRange = 0.f);
+	const _float4* Get_WorldPoints() const;
 #pragma endregion
 
 #pragma region IMGUI_MANGER
@@ -229,6 +233,11 @@ public:
 	class CCamera* Get_ActiveCamera();
 #pragma endregion
 
+#pragma region CAMERA_MANAGER
+	class CBlackBoard* Get_BlackBoard() { return m_pBlackBoard; }
+#pragma endregion
+
+
 private:
 	class CGraphic_Device*		m_pGraphic_Device = { nullptr };
 	class CLevel_Manager*		m_pLevel_Manager = { nullptr };
@@ -251,6 +260,8 @@ private:
 	class CResource_Manager*	m_pResource_Manager = { nullptr };
 	class CComputeShader_Manager*	m_pComputeShader_Manager = { nullptr };
 	class CCamera_Manager*		m_pCamera_Manager = { nullptr };
+	class CBlackBoard*			m_pBlackBoard = { nullptr };
+
 #ifdef _DEBUG
 	class CImgui_Manager* m_pImgui_Manager = { nullptr };
 #endif

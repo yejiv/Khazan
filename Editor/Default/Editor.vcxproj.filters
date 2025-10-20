@@ -342,7 +342,6 @@
     <ClInclude Include="..\Public\Prop_Dynamic.h">
       <Filter>02.GameObject\MapObject\Prop\04.Dynamic</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Player_Shader.h" />
     <ClInclude Include="..\Public\Debug_Controller.h">
       <Filter>02.GameObject\Debug</Filter>
     </ClInclude>
@@ -354,6 +353,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Camera_Compre.h">
       <Filter>02.GameObject\Camera\Compre</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Player_Shader.h">
+      <Filter>02.GameObject\Shader\Player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -505,7 +507,6 @@
     <ClCompile Include="..\Private\Prop_Dynamic.cpp">
       <Filter>02.GameObject\MapObject\Prop\04.Dynamic</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Player_Shader.cpp" />
     <ClCompile Include="..\Private\Debug_Controller.cpp">
       <Filter>02.GameObject\Debug</Filter>
     </ClCompile>
@@ -517,6 +518,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Camera_Compre.cpp">
       <Filter>02.GameObject\Camera\Compre</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Player_Shader.cpp">
+      <Filter>02.GameObject\Shader\Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
