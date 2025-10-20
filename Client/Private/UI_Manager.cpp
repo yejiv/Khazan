@@ -259,7 +259,7 @@ HRESULT CUI_Manager::Ready_Prototype()
 
 	/* Prototype_Component_Shader_VtxPosTex_UI*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_UI_Atlas"),
-		CTexture_Atlas::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Atlas/Atlas_%d.json"), 2))))
+		CTexture_Atlas::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Atlas/Atlas_%d.json"), 1))))
 		return E_FAIL;
 
 	//GameObject_AtlasRenderGroup
@@ -271,12 +271,15 @@ HRESULT CUI_Manager::Ready_Prototype()
 
 _uint CUI_Manager::TexTag_Maping(string szTextag)
 {
-	if ("Prototype_Component_Atlas_SlotTest" == szTextag)
+	if ("Prototype_Component_Atlas_Hud" == szTextag)
 		return 0;
-	else if ("Prototype_Component_Atlas_Test" == szTextag)
-		return 1;
 
 	return -1;
+}
+
+_float4 CUI_Manager::Get_AtlasUV(const string pFrameName, _uint iTextureIndex)
+{
+	return m_pAtlasRenderGroup[0]->Get_AtlasUV(pFrameName, iTextureIndex);
 }
 
 CUI_Manager* CUI_Manager::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)

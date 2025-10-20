@@ -23,6 +23,7 @@ void CUIObject::Get_Data(VTXINSTANCE_UI& pOutData)
     pOutData.iShaderPass = m_iShaderPass;
     pOutData.fAlpha = m_fAlpha;
     pOutData.vUV = m_vUV[m_iState];
+    pOutData.vColor = m_vColor;
 }
 
 HRESULT CUIObject::Initialize_Prototype()

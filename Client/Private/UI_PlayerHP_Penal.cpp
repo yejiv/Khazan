@@ -4,6 +4,8 @@
 #include "UI_PlayerHP_BG.h"
 #include "UI_PlayerHP_Gauge.h"
 #include "UI_PlayerStamina_Gauge.h"
+#include "UI_QuickSlot_Skill_Panel.h"
+#include "UI_QuickSlot_Item_Panel.h"
 
 CUI_PlayerHP_Penal::CUI_PlayerHP_Penal(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
@@ -70,7 +72,7 @@ void CUI_PlayerHP_Penal::Update(_float fTimeDelta)
 		}
 		else if (m_eAnimState == UIANIMSTATE::OFF)
 		{
-			m_fAccTime -= fTimeDelta;
+			m_fAccTime -= fTimeDelta * 2.f;
 			__super::Update_Alpha(m_fAccTime);
 
 			if (m_fAccTime <= 0.f)
@@ -113,6 +115,12 @@ HRESULT CUI_PlayerHP_Penal::Ready_Prototype()
 
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_PlayerStamina_Gauge"),
 		CUI_PlayerStamina_Gauge::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Quick_Item_Panel"),
+		CUI_QuickSlot_Item_Panel::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Quick_Skill_Panel"),
+		CUI_QuickSlot_Skill_Panel::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
 
 	return S_OK;
 }

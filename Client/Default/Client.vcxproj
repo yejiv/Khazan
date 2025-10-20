@@ -207,6 +207,10 @@
     <ClInclude Include="..\public\UI_PlayerHP_BG.h" />
     <ClInclude Include="..\public\UI_PlayerHP_Gauge.h" />
     <ClInclude Include="..\public\UI_PlayerStamina_Gauge.h" />
+    <ClInclude Include="..\public\UI_QuickSlot_Item.h" />
+    <ClInclude Include="..\public\UI_QuickSlot_Item_Panel.h" />
+    <ClInclude Include="..\public\UI_QuickSlot_Skill.h" />
+    <ClInclude Include="..\public\UI_QuickSlot_Skill_Panel.h" />
     <ClInclude Include="..\public\UI_Text.h" />
     <ClInclude Include="..\public\UI_Texture.h" />
     <ClInclude Include="..\public\UI_Layer.h" />
@@ -270,6 +274,10 @@
     <ClCompile Include="..\private\UI_PlayerHP_BG.cpp" />
     <ClCompile Include="..\private\UI_PlayerHP_Gauge.cpp" />
     <ClCompile Include="..\private\UI_PlayerStamina_Gauge.cpp" />
+    <ClCompile Include="..\private\UI_QuickSlot_Item.cpp" />
+    <ClCompile Include="..\private\UI_QuickSlot_Item_Panel.cpp" />
+    <ClCompile Include="..\private\UI_QuickSlot_Skill.cpp" />
+    <ClCompile Include="..\private\UI_QuickSlot_Skill_Panel.cpp" />
     <ClCompile Include="..\private\UI_Text.cpp" />
     <ClCompile Include="..\private\UI_Texture.cpp" />
     <ClCompile Include="..\private\UI_Layer.cpp" />

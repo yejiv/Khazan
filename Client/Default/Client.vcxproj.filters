@@ -220,6 +220,18 @@
     <Filter Include="02.GameObject\Creature\Monster\Yetuga">
       <UniqueIdentifier>{985c2727-eace-4eab-933f-dd5fc5515f2d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\QuickSlot_Skill">
+      <UniqueIdentifier>{80f25ebd-14c3-4a66-a01f-9b08770b9269}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\QuickSlot_Item">
+      <UniqueIdentifier>{447348cf-58ce-457c-b766-0d237236e034}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\QuickSlot_Skill\Slot">
+      <UniqueIdentifier>{2f5efab5-4aa4-49dc-8e3e-fe075f4915f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\QuickSlot_Item\Slot">
+      <UniqueIdentifier>{0c740405-db99-4238-9752-df7c18f522ed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -408,6 +420,18 @@
     <ClInclude Include="..\Public\AttackState_Yetuga.h">
       <Filter>92.AI\State\Yetuga\02.Attack</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\UI_QuickSlot_Skill_Panel.h">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Skill</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_QuickSlot_Item_Panel.h">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Item</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_QuickSlot_Skill.h">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Skill\Slot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_QuickSlot_Item.h">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Item\Slot</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -587,6 +611,18 @@
     </ClCompile>
     <ClCompile Include="..\Private\AttackState_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\02.Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_QuickSlot_Skill_Panel.cpp">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Skill</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_QuickSlot_Item_Panel.cpp">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Item</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_QuickSlot_Skill.cpp">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Skill\Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_QuickSlot_Item.cpp">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Item\Slot</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

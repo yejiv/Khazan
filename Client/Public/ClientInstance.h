@@ -38,6 +38,8 @@ public:
 	//UI ½ºÀ§Ä¡
 	HRESULT						UI_UpdateSwitch(const _wstring& strUITag, void* pArg = nullptr);
 
+	//ETC
+	_float4						Get_AtlasUV(const string pFrameName, _uint iTextureIndex);
 #pragma endregion
 private:
 	ID3D11Device* m_pDevice = { nullptr };

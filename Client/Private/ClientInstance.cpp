@@ -80,6 +80,11 @@ HRESULT CClientInstance::UI_UpdateSwitch(const _wstring& strUITag, void* pArg)
 	return m_pUI_Manager->UI_UpdateSwitch(strUITag, pArg);
 }
 
+_float4 CClientInstance::Get_AtlasUV(const string pFrameName, _uint iTextureIndex)
+{
+	return m_pUI_Manager->Get_AtlasUV(pFrameName, iTextureIndex);
+}
+
 #pragma endregion
 
 void CClientInstance::Free()
