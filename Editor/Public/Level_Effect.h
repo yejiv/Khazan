@@ -27,9 +27,6 @@ private:
 	void							Create_Circle_Spawn();
 	void							GetParticleColor();
 
-	void							Control_Elements();
-	void							Control_TimeTrack();
-
 	void							Create_PointInstance_Element();
 	void							Create_MeshInstance_Element();
 	void							Create_Sprite_Element();

@@ -16,9 +16,10 @@ Client.exp
 Client.exe
 Client.pdb
 Client/Bin/Debug
+Client/Bin/Release
 Client/Bin/Resources/.*
 
-# ¹ÚÁØ¿µ °³ÀÎ ignore
+# ï¿½ï¿½ï¿½Ø¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ignore
 Client/Bin/Resources/Models/Environment/Prop/Json/
 Client/Bin/Resources/Map/
 Client/Bin/Data/Map/
@@ -27,12 +28,15 @@ Client/Bin/Data/Map/
 Editor.exp
 Editor.exe
 Editor.pdb
+Editor/Bin/Debug
+Editor/Bin/Release
 
 Engine.exp
 Engine.exe
 Engine.pdb
 Engine.dll
 Engine/Bin/Debug
+Engine/Bin/Release
 
 EngineSDK/
 EngineSDK/Debug/

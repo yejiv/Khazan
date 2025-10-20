@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "Camera_Compre.h"
 #include "Dummy.h"
+#include "Monster.h"
 #include "ClientInstance.h"
 
 #pragma region MAP OBJECT
@@ -39,15 +40,15 @@ HRESULT CLevel_Stage1::Initialize()
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 		return E_FAIL;
 
-	/*if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
-		return E_FAIL;*/
+	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
+		return E_FAIL;
 
 	/*if (FAILED(Ready_Layer_Test(TEXT("Layer_Test"))))
 		return E_FAIL;*/
 
 	CHECK_FAILED(Ready_Layer_MapObject_Test(TEXT("Layer_Test")), E_FAIL);
 
-	//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject_Test"), TEXT("Test")), E_FAIL);
+	//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject_Test"), TEXT("HeinMach"), KHAZAN_MAP::HEINMACH), E_FAIL);
 
 	m_pGameInstance->Jolt_Test();
 
@@ -160,17 +161,28 @@ HRESULT CLevel_Stage1::Ready_Layer_Player(const _wstring& strLayerTag)
 
 HRESULT CLevel_Stage1::Ready_Layer_Monster(const _wstring& strLayerTag)
 {
-	m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Dummy"), TEXT("Dummy"), nullptr, 10);
+	//m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Dummy"), TEXT("Dummy"), nullptr, 10);
 
-	for (size_t i = 0; i < 10; i++)
-	{
-		//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
-		//	ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Monster"))))
-		//	return E_FAIL;
+	//for (size_t i = 0; i < 10; i++)
+	//{
+	//	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
+	//	//	ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Monster"))))
+	//	//	return E_FAIL;
 
-		CDummy* pDummy = dynamic_cast<CDummy*>(m_pGameInstance->Pop_PoolObject(TEXT("Dummy")));
-		m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag, pDummy);
-	}
+	//	CDummy* pDummy = dynamic_cast<CDummy*>(m_pGameInstance->Pop_PoolObject(TEXT("Dummy")));
+	//	m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag, pDummy);
+	//}
+
+	//CMonster::MONSTER_DESC MonsterDesc{};
+	/*MonsterDesc.fAttack = 10.f;
+	MonsterDesc.fMaxHP = 100.f;
+	MonsterDesc.fMaxStamina = 100.f;
+	MonsterDesc.fMoveSpeed = 10.f;*/
+
+	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
+			ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Monster_Yetuga"),nullptr)))
+			return E_FAIL;
+
 	return S_OK;
 }
 

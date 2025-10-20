@@ -52,9 +52,6 @@
     <Filter Include="02.GameObject\Terrain">
       <UniqueIdentifier>{7082a03d-8466-4726-b256-cb8c528d4e44}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Monster">
-      <UniqueIdentifier>{f663abf4-dee0-497f-bd4b-b6469c804f8a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\JOH Test">
       <UniqueIdentifier>{79049abe-c286-42e6-98b0-a98c711d0409}</UniqueIdentifier>
     </Filter>
@@ -178,6 +175,51 @@
     <Filter Include="02.GameObject\UI\HUD\State\HP\BG">
       <UniqueIdentifier>{8b9aa6a8-6a2a-4a7d-91d8-ed2951bfeb22}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Creature">
+      <UniqueIdentifier>{ced99d93-e9ce-4e31-936f-2345f9915fae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\NPC">
+      <UniqueIdentifier>{dc33e1ba-0277-4f48-8e7e-80476f636755}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI">
+      <UniqueIdentifier>{525f2b25-a5a9-4878-be49-2473421350b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\Controller">
+      <UniqueIdentifier>{bc606f12-55a8-4f0a-acea-b53d7acff4a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State">
+      <UniqueIdentifier>{15dfcdd3-aacc-4ca4-86d4-23c2d02fa4d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\StateMachine">
+      <UniqueIdentifier>{06e1e624-0c6b-4d9a-87e0-efd2b7a01474}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\BehaviorTree">
+      <UniqueIdentifier>{fbb33a30-a10b-4aaf-b67c-175b6b223f29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga">
+      <UniqueIdentifier>{ddb519c7-0195-4f46-a087-c6565a3ee48d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\00.Idle">
+      <UniqueIdentifier>{7793d821-0d4c-4cb7-a8ec-2e1b75f6dd0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\01.Move">
+      <UniqueIdentifier>{18b13cd6-b131-4437-b081-0aa90cea4da2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\02.Attack">
+      <UniqueIdentifier>{c25254d0-a6e9-4367-aa81-2a0d6ea83f5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\StateMachine\Yetuga">
+      <UniqueIdentifier>{3b2940b3-2471-487e-9fde-8fbadf285963}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\Controller\Yetuga">
+      <UniqueIdentifier>{d0264db1-b95b-485b-ac28-e78edee9ec14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster">
+      <UniqueIdentifier>{f663abf4-dee0-497f-bd4b-b6469c804f8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Yetuga">
+      <UniqueIdentifier>{985c2727-eace-4eab-933f-dd5fc5515f2d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -223,7 +265,7 @@
       <Filter>02.GameObject\Terrain</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Monster.h">
-      <Filter>02.GameObject\Monster</Filter>
+      <Filter>02.GameObject\Creature\Monster</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\JOH_Test1.h">
       <Filter>02.GameObject\JOH Test\Test Anim Model</Filter>
@@ -342,6 +384,30 @@
     <ClInclude Include="..\public\UI_Gague_Tip.h">
       <Filter>02.GameObject\UI\ETC</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Yetuga.h">
+      <Filter>02.GameObject\Creature\Monster\Yetuga</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Creature.h">
+      <Filter>02.GameObject\Creature</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BT_Yetuga.h">
+      <Filter>92.AI\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\IdleState_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\00.Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FSM_Yetuga.h">
+      <Filter>92.AI\StateMachine\Yetuga</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AI_Controller_Yetuga.h">
+      <Filter>92.AI\Controller\Yetuga</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MoveState_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\01.Move</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AttackState_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\02.Attack</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -391,7 +457,7 @@
       <Filter>02.GameObject\Terrain</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Monster.cpp">
-      <Filter>02.GameObject\Monster</Filter>
+      <Filter>02.GameObject\Creature\Monster</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\JOH_Test1.cpp">
       <Filter>02.GameObject\JOH Test\Test Anim Model</Filter>
@@ -497,6 +563,30 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_Gague_Tip.cpp">
       <Filter>02.GameObject\UI\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Yetuga.cpp">
+      <Filter>02.GameObject\Creature\Monster\Yetuga</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Creature.cpp">
+      <Filter>02.GameObject\Creature</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BT_Yetuga.cpp">
+      <Filter>92.AI\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\IdleState_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\00.Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FSM_Yetuga.cpp">
+      <Filter>92.AI\StateMachine\Yetuga</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AI_Controller_Yetuga.cpp">
+      <Filter>92.AI\Controller\Yetuga</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MoveState_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\01.Move</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AttackState_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\02.Attack</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

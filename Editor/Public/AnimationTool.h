@@ -92,6 +92,8 @@ private:
 	string	ConvertToRelativePath(const string& absolutePath);
 	string	ConvertToClientRelativePath(const string& absolutePath);
 
+	string	DirectionToString(_uint iDir);
+
 public:
 	static CAnimationTool* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;

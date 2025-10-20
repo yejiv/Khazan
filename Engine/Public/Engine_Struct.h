@@ -210,6 +210,8 @@ namespace Engine
 
 		XMFLOAT2			vLifeTime;
 		float				bDead;
+		XMFLOAT3			vPrevPosition;
+
 	}VTXINSTANCE_PARTICLE;
 
 	typedef struct tagVertexMeshInstanceParticle
@@ -220,7 +222,7 @@ namespace Engine
 
 	typedef struct tagVertexPointParticle
 	{
-		static const unsigned int	iNumElements = { 7 };
+		static const unsigned int	iNumElements = { 8 };
 		static constexpr D3D11_INPUT_ELEMENT_DESC	Elements[iNumElements] = {
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 
@@ -231,6 +233,7 @@ namespace Engine
 
 			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 1, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 			{ "TEXCOORD", 1, DXGI_FORMAT_R32_FLOAT, 1, 72, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{ "TEXCOORD", 2, DXGI_FORMAT_R32G32B32_FLOAT, 1, 76, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 		};
 	}VTXPOINTPARTICLE;
 

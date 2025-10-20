@@ -4,6 +4,7 @@
 #include "JOH_EditorModelTest.h"
 #include "Editor_Animation.h"
 #include <commdlg.h>
+#include <intrin.h>
 
 
 CAnimationTool::CAnimationTool(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -593,9 +594,24 @@ void CAnimationTool::Tool_AnimationInfo_Widget()
         ImGui::Text("strName: %s", setup->strName.c_str());
         ImGui::Checkbox("isLoop", &setup->isLoop);
         ImGui::Text("iDirection: %d", setup->iDirection);
-        _int iTemp = setup->iDirection;
-        ImGui::DragInt("##iDirection", &iTemp, 1, 0, 24);
-        setup->iDirection = iTemp;
+        ImGui::SameLine();
+        string  strDir = "  ->  " + DirectionToString(setup->iDirection);
+        ImGui::Text(strDir.c_str());
+        if (ImGui::Button("Clear", ImVec2(70.f, 0.f))) setup->iDirection = 0;  ImGui::SameLine();
+        if (ImGui::Button("F", ImVec2(20.f, 0.f))) setup->iDirection += ENUM_CLASS(ANIM_DIRECTION::F);  ImGui::SameLine();
+        if (ImGui::Button("B", ImVec2(20.f, 0.f))) setup->iDirection += ENUM_CLASS(ANIM_DIRECTION::B);  ImGui::SameLine();
+        if (ImGui::Button("L", ImVec2(20.f, 0.f))) setup->iDirection += ENUM_CLASS(ANIM_DIRECTION::L);  ImGui::SameLine();
+        if (ImGui::Button("R", ImVec2(20.f, 0.f))) setup->iDirection += ENUM_CLASS(ANIM_DIRECTION::R);  ImGui::SameLine();
+        if (ImGui::Button("U", ImVec2(20.f, 0.f))) setup->iDirection += ENUM_CLASS(ANIM_DIRECTION::U);  ImGui::SameLine();
+        if (ImGui::Button("D", ImVec2(20.f, 0.f))) setup->iDirection += ENUM_CLASS(ANIM_DIRECTION::D);  ImGui::SameLine();
+        if (ImGui::Button("C", ImVec2(20.f, 0.f))) setup->iDirection += ENUM_CLASS(ANIM_DIRECTION::C);  ImGui::SameLine();
+        if (ImGui::Button("CC", ImVec2(20.f, 0.f))) setup->iDirection += ENUM_CLASS(ANIM_DIRECTION::CC);  ImGui::SameLine();
+        if (ImGui::Button("ALL", ImVec2(25.f, 0.f))) setup->iDirection  += ENUM_CLASS(ANIM_DIRECTION::ALL);  ImGui::SameLine();
+        if (ImGui::Button("BBL", ImVec2(25.f, 0.f))) setup->iDirection  += ENUM_CLASS(ANIM_DIRECTION::BBL);  ImGui::SameLine();
+        if (ImGui::Button("BLL", ImVec2(25.f, 0.f))) setup->iDirection  += ENUM_CLASS(ANIM_DIRECTION::BLL);  ImGui::SameLine();
+        //_int iTemp = setup->iDirection;
+        //ImGui::DragInt("##iDirection", &iTemp, 1, 0, 24);
+        //setup->iDirection = iTemp;
 
         ImGui::Spacing();
 
@@ -1265,6 +1281,41 @@ string CAnimationTool::ConvertToClientRelativePath(const string& absolutePath)
         OutputDebugStringA(("[Path Error] " + string(e.what()) + "\n").c_str());
         return absolutePath;
     }
+}
+
+string CAnimationTool::DirectionToString(_uint iDir)
+{
+    if (iDir == 0)
+        return  "NONE";
+
+    string result = "";
+
+    static string StrDir[] =
+    {
+        "F"    ,
+        "B"    ,
+        "L"    ,
+        "R"    ,
+        "U"    ,
+        "D"    ,
+        "C"    ,
+        "CC"   ,
+        "ALL"  ,
+        "BBL"  ,
+        "BLL"  ,
+        "END"  ,
+    };
+
+    unsigned long   mask = iDir;
+
+    unsigned long  iIndex; // 결과 비트 위치
+    while (mask != 0) {
+        _BitScanForward(&iIndex, mask); // 오른쪽에서 첫 번째 1 위치
+        result += StrDir[iIndex] + " ";
+        mask &= mask - 1; // 가장 오른쪽 1 제거
+    }
+
+    return result;
 }
 
 CAnimationTool* CAnimationTool::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

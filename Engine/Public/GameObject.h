@@ -38,6 +38,9 @@ public:
 	void Set_IsActive(_bool isActive) { m_isActive = isActive; }
 	_bool Get_IsActive() { return m_isDead; }
 
+	// Team 관련
+	_uint				Get_Team() { return m_iTeam; }
+
 public:
 	virtual void Collision_Enter(CGameObject* pOther, _uint	iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) {};
 	virtual void Collision_Stay(CGameObject* pOther, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) {};
@@ -53,6 +56,9 @@ protected:
 	_bool						m_isPool = { false };
 	_bool						m_isDead = { false };
 	_bool						m_isActive = { true };
+
+	// 추후에 파생 클래스 나눠지게 되면 옮기거나 다른 방법으로 바꿔보겠습니다.
+	_uint						m_iTeam = {};
 
 protected:
 	HRESULT Add_Component(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, 

@@ -256,6 +256,45 @@
     <Filter Include="01.Utility\02.GameObject\UIObject\Parent">
       <UniqueIdentifier>{54f95aaf-6316-4314-94d9-df09f0191430}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\95.AI">
+      <UniqueIdentifier>{131fd22b-e9d4-4072-9982-a851e9e8a3e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\95.AI\BlackBoard">
+      <UniqueIdentifier>{7a5dea83-1671-4c2f-8bcd-ded947b3d0a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\95.AI\State_Machine">
+      <UniqueIdentifier>{b380d505-c925-4960-8c69-5c041ba02e75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\95.AI\State">
+      <UniqueIdentifier>{015e6b91-84aa-4158-80b3-65f9771b6c33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\95.AI\Perception">
+      <UniqueIdentifier>{1f1eb65d-0dea-40c9-a50e-f4848e5d8f0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\95.AI\BehaviorTree">
+      <UniqueIdentifier>{67d8ad5b-8c7b-4ecb-a3bf-6612b0051cac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\95.AI\BehaviorTree\Node">
+      <UniqueIdentifier>{cbc64236-8e5e-4fe4-9074-affe5830db55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\95.AI\BehaviorTree\Node\Action">
+      <UniqueIdentifier>{e9bb55c2-5717-4426-877a-83401ad0be23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\95.AI\Perception\Defines">
+      <UniqueIdentifier>{af6d097c-4c14-4237-9d40-74ef0a27deba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\95.AI\BehaviorTree\Node\Composite">
+      <UniqueIdentifier>{7553b867-4e72-40d2-8765-59762de9b3c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\95.AI\BehaviorTree\Node\Composite\Selector">
+      <UniqueIdentifier>{76a91df9-9701-43cf-94a7-63a61c86b70c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\95.AI\BehaviorTree\Node\Composite\Sequence">
+      <UniqueIdentifier>{314340b6-6e63-44d8-b3d6-ab1b28fc21c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\95.AI\Controller">
+      <UniqueIdentifier>{0852f827-122b-49e9-a52b-a6ef29e6a352}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -500,6 +539,39 @@
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Mesh_Instance.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\StateMachine.cpp">
+      <Filter>01.Utility\95.AI\State_Machine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AI_State.cpp">
+      <Filter>01.Utility\95.AI\State</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BlackBoard.cpp">
+      <Filter>01.Utility\95.AI\BlackBoard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Perception.cpp">
+      <Filter>01.Utility\95.AI\Perception</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Action_Node.cpp">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Action</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BTNode.cpp">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Composite_Node.cpp">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Composite</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_Node.cpp">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Composite\Sequence</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Selector_Node.cpp">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Composite\Selector</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BehaviorTree.cpp">
+      <Filter>01.Utility\95.AI\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AI_Controller.cpp">
+      <Filter>01.Utility\95.AI\Controller</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -772,6 +844,42 @@
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Mesh_Instance.h">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\StateMachine.h">
+      <Filter>01.Utility\95.AI\State_Machine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AI_State.h">
+      <Filter>01.Utility\95.AI\State</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BlackBoard.h">
+      <Filter>01.Utility\95.AI\BlackBoard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Perception.h">
+      <Filter>01.Utility\95.AI\Perception</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Perception_Defines.h">
+      <Filter>01.Utility\95.AI\Perception\Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Action_Node.h">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BTNode.h">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Composite_Node.h">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Composite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sequence_Node.h">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Composite\Sequence</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Selector_Node.h">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Composite\Selector</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BehaviorTree.h">
+      <Filter>01.Utility\95.AI\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AI_Controller.h">
+      <Filter>01.Utility\95.AI\Controller</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

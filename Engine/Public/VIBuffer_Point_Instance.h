@@ -36,16 +36,17 @@ public:
 
 public:
 	void					Update(_float fTimeDelta);
+	void					UpdateGravity(_float fTimeDelta);
 	void					Setting_Speed(SPEED_VALUE type, _float2 range);
 	void					Remove_Speed(SPEED_VALUE type);
 	void					Remove_Speed();
 	void					Setting_Pivot(_float3 pivot);
 	void					Setting_Loop(_bool isLoop) { m_IsLoop = isLoop; };
-	//void					Update_
 
 private:
 	_float3					m_vPivot = {};
 	_float*					m_fSpeed[ENUM_CLASS(SPEED_VALUE::SPEED_END)];
+	_float*					m_fvelocityY;
 	_bool					m_IsLoop = {};
 	_float					m_fRotationPerSec = {};
 	_float					m_fOffset = {};
