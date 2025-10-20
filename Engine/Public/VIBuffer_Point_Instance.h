@@ -6,6 +6,7 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CVIBuffer_Point_Instance final : public CVIBuffer_Instance
 {
 public:
+	enum CS_PASS { MOVE, GRAVITY, END };
 	enum class SPEED_VALUE { SPREAD_SPEED, ROTATION_SPEED, UPWARD_SPEED, SCALE_SPEED, SPEED_END };
 
 	typedef struct tagPointInstanceDesc : public INSTANCE_DESC
@@ -26,35 +27,54 @@ private:
 	virtual ~CVIBuffer_Point_Instance() = default;
 
 public:
-	void					Reset();
+	void						Reset();
 
 public:
-	virtual HRESULT			Initialize_Prototype(const INSTANCE_DESC* pDesc) override;
-	virtual HRESULT			Initialize_Clone(void* pArg) override;
-	virtual HRESULT			Bind_Resources() override;
-	virtual HRESULT			Render() override;
+	virtual HRESULT				Initialize_Prototype(const INSTANCE_DESC* pDesc) override;
+	virtual HRESULT				Initialize_Clone(void* pArg) override;
+	virtual HRESULT				Bind_Resources() override;
+	virtual HRESULT				Render() override;
 
 public:
-	void					Update(_float fTimeDelta);
-	void					UpdateGravity(_float fTimeDelta);
-	void					Setting_Speed(SPEED_VALUE type, _float2 range);
-	void					Remove_Speed(SPEED_VALUE type);
-	void					Remove_Speed();
-	void					Setting_Pivot(_float3 pivot);
-	void					Setting_Loop(_bool isLoop) { m_IsLoop = isLoop; };
+	void						Update(_float fTimeDelta);
+	void						UpdateGravity(_float fTimeDelta);
+	void						Setting_Speed(SPEED_VALUE type, _float2 range);
+	void						Remove_Speed(SPEED_VALUE type);
+	void						Remove_Speed();
+	void						Setting_Pivot(_float3 pivot);
+	void						Setting_Loop(_bool isLoop) { m_IsLoop = isLoop; };
 
 private:
-	_float3					m_vPivot = {};
-	_float*					m_fSpeed[ENUM_CLASS(SPEED_VALUE::SPEED_END)];
-	_float*					m_fvelocityY;
-	_bool					m_IsLoop = {};
-	_float					m_fRotationPerSec = {};
-	_float					m_fOffset = {};
-	_float3					m_fRange = {};
-	_float2					m_fScale = {};
+	HRESULT						Ready_SRV(void* pSysmem);
+	HRESULT						Ready_UAV();
+	HRESULT						Ready_CB();
+	HRESULT						Ready_ComputeShader();
 
-	_float3					m_vSourceColor = {};
-	_bool					m_bIsCircle = {};
+private :
+	class CComputeShader*		m_ComputeShaders[ENUM_CLASS(CS_PASS::END)] = {};
+	ID3D11ShaderResourceView*	m_pSRV = { nullptr };
+	ID3D11UnorderedAccessView*	m_pUAV = { nullptr };
+	ID3D11Buffer*				m_pCB = { nullptr };
+	ID3D11Buffer*				m_pStructuredBuffer = { nullptr };
+	POINT_INSTANCE_PARAMS*		m_pParticleParams;
+
+	ID3D11Buffer*				m_pSRVBuffer = { nullptr };	//나중에 없앨 거
+
+	ID3D11UnorderedAccessView*	m_pUAV_Gravity = { nullptr };
+	ID3D11Buffer*				m_pVelocityBuffer = { nullptr };
+
+private:
+	_float3						m_vPivot = {};
+	_float*						m_fSpeed[ENUM_CLASS(SPEED_VALUE::SPEED_END)];
+	_float*						m_fVelocityY;
+	_bool						m_IsLoop = {};
+	_float						m_fRotationPerSec = {};
+	_float						m_fOffset = {};
+	_float3						m_fRange = {};
+	_float2						m_fScale = {};
+
+	_float3						m_vSourceColor = {};
+	_bool						m_bIsCircle = {};
 
 public:
 	static CVIBuffer_Point_Instance*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const INSTANCE_DESC* pDesc);
