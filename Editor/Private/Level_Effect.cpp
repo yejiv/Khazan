@@ -99,6 +99,7 @@ HRESULT CLevel_Effect::Initialize()
 			case CEffect_Prefab::EffectEventType::ANIMATE_SPREAD:
 				ImGui::InputFloat2("Spread speed : ", reinterpret_cast<_float*>(&m_WorkingTrackData.fSpreadSpeed));
 				ImGui::InputFloat3("pivot : ", reinterpret_cast<_float*>(&m_WorkingTrackData.fPivot));
+				ImGui::Checkbox("Gravity", &m_WorkingTrackData.bGravity);
 				break;
 
 			case CEffect_Prefab::EffectEventType::ANIMATE_ROTATE:

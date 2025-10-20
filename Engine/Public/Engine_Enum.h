@@ -48,6 +48,7 @@ namespace Engine
 		END,
 	};
 	enum class MAPOBJECT_TYPE : unsigned short { OBJECT, STATIC_INST, ANIMATED_INST, INTERACTIVE, DYNAMIC, END };
+	enum class BTNODESTATE { RUNNING, SUCCESS, FAILURE, END };
 }
 
 namespace JoltLayers

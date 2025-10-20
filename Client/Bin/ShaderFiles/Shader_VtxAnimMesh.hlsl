@@ -188,13 +188,20 @@ struct PS_IN_SHADOW
 struct PS_OUT_SHADOW
 {
     float4 vLightDepth : SV_TARGET0;
+
+    //  float4 vLightDepth0 : SV_TARGET0;
+    //  float4 vLightDepth1 : SV_TARGET1;
+    //  float4 vLightDepth2 : SV_TARGET2;
 };
 
 PS_OUT_SHADOW PS_MAIN_SHADOW(PS_IN_SHADOW In)
 {
     PS_OUT_SHADOW Out;
     
-    Out.vLightDepth = float4(In.vProjPos.w / 1000.0f, 0.f, 0.f, 0.f);    
+    //  Out.vLightDepth0 = float4(In.vProjPos.w / 1000.0f, 0.f, 0.f, 0.f);
+    //  Out.vLightDepth1 = float4(0.f, In.vProjPos.w / 1000.0f, 0.f, 0.f);
+    //  Out.vLightDepth2 = float4(0.f, 0.f, In.vProjPos.w / 1000.0f, 0.f);
+    Out.vLightDepth = float4(In.vProjPos.w / 1000.0f, 0.f, 0.f, 0.f);
     
     return Out;
 }

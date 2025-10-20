@@ -4,6 +4,7 @@
 #include "MapObject.h"
 
 NS_BEGIN(Engine)
+class CTexture;
 class CModel_Instance;
 NS_END
 
@@ -36,8 +37,12 @@ public:
 
 protected:
 	_tchar m_szModelName[MAX_PATH] = {};
+	_bool m_isSnowMap = { true };
+	_float m_fSnowAmount = { 0.5f };
+	_float3 m_vSnowColor = { 0.92f, 0.94f, 1.f };
 
 protected:
+	virtual HRESULT Bind_ShaderResources_ForSnowMap(class CTexture* pTextureCom, _uint iMeshIndex);
 	virtual HRESULT Bind_Instance_Materials(CModel_Instance* pModelCom, _uint iMeshIndex);
 
 public:

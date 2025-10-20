@@ -194,6 +194,14 @@ namespace Engine
 		return fA + (fB - fA) * fT;
 	}
 
+	inline XMFLOAT4 Lerp(XMFLOAT4 fA, XMFLOAT4 fB, float fT) noexcept
+	{
+		fT = Clamp(fT);
+		XMFLOAT4 vLerp = {};
+		XMStoreFloat4(&vLerp, XMLoadFloat4(&fA) + (XMLoadFloat4(&fB) - XMLoadFloat4(&fA)) * fT);
+		return vLerp;
+	}
+
 	// 안전 Lerp + 클램프 (t를 0~1로 제한)
 	inline float LerpClamped(float fA, float fB, float fT) noexcept
 	{

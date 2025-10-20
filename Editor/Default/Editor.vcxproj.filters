@@ -328,6 +328,10 @@
       <Filter>02.GameObject\MapObject\Prop\04.Dynamic</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Player_Shader.h" />
+    <ClInclude Include="..\public\TestParticle.h" />
+    <ClInclude Include="..\public\Player_Shader.h">
+      <Filter>02.GameObject\Shader\Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -479,6 +483,9 @@
       <Filter>02.GameObject\MapObject\Prop\04.Dynamic</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Player_Shader.cpp" />
+    <ClCompile Include="..\private\Player_Shader.cpp">
+      <Filter>02.GameObject\Shader\Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_Edit_UI.hlsl">

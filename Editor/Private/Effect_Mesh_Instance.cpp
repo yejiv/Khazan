@@ -206,7 +206,7 @@ HRESULT CEffect_Mesh_Instance::Bind_ShaderResources()
     if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DiffuseTexture", m_sData.iTextureIdx)))
         return E_FAIL;
 
-    if (FAILED(m_pMaskTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_MaskTexture", 0)))
+    if (FAILED(m_pMaskTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_MaskTexture", 6)))
         return E_FAIL;
 
     return S_OK;
@@ -215,7 +215,7 @@ HRESULT CEffect_Mesh_Instance::Bind_ShaderResources()
 void CEffect_Mesh_Instance::Apply(void* pArg)
 {
     m_sData = *static_cast<PARTICLE_DESC*>(pArg);
-    const char* format = "../../Client/Bin/Data/Effect/untitled%d.dat";
+    const char* format = "../../Client/Bin/Data/Effect/MeshTrail/MeshTrail%d.dat";
 
     char finalPathBuffer[MAX_PATH] = {};
     sprintf_s(finalPathBuffer, MAX_PATH, format, m_sData.iMeshTypeIdx);
