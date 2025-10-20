@@ -34,17 +34,19 @@ HRESULT CProp_Object::Initialize_Clone(void* pArg)
     m_pTransformCom->Set_State(STATE::LOOK, matWorld.r[2]);
     m_pTransformCom->Set_State(STATE::POSITION, matWorld.r[3]);
 
-    if (true == m_isSnowMap)
+    if (isSnow())
     {
-        m_eShaderPass = SHADER_PASS::SNOWMAP;
-        //if (블렌드 모델인 조건)
-        //m_eShaderPass = SHADER_PASS::SNOWMAP_BLEND;
+        if (isBlended())
+            m_eShaderPass = SHADER_PASS::SNOWMAP_BLEND;
+        else
+            m_eShaderPass = SHADER_PASS::SNOWMAP;
     }
     else
     {
-        m_eShaderPass = SHADER_PASS::MAP;
-        //if (블렌드 모델인 조건)
-        //m_eShaderPass = SHADER_PASS::MAP_BLEND;
+        if (isBlended())
+            m_eShaderPass = SHADER_PASS::MAP_BLEND;
+        else
+            m_eShaderPass = SHADER_PASS::MAP;
     }
 
     return S_OK;
@@ -60,7 +62,10 @@ void CProp_Object::Update(_float fTimeDelta)
 
 void CProp_Object::Late_Update(_float fTimeDelta)
 {
-    m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
+    if (isBlended())
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::BLEND, this);
+    else
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
 }
 
 HRESULT CProp_Object::Render()
@@ -73,8 +78,8 @@ HRESULT CProp_Object::Render()
     {
         Bind_Materials(i);
 
-        if (true == m_isSnowMap)
-            CHECK_FAILED(Bind_ShaderResources_ForSnowMap(m_pTextureCom, i), E_FAIL);
+        if (isSnow())
+            CHECK_FAILED(Bind_ShaderResources_ForSnowMap(i), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pShaderCom->Begin(ENUM_CLASS(m_eShaderPass)), E_FAIL);
 
@@ -92,22 +97,11 @@ HRESULT CProp_Object::Ready_Components(void* pArg)
     LEVEL eLevel = pDesc->eLevel;
     CHECK_EQUAL(LEVEL::END, eLevel, E_FAIL);
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
-        TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
-        return E_FAIL;
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
+        TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr), E_FAIL);
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), m_szModelName,
-        TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
-        return E_FAIL;
-
-    // 텍스쳐가 있다 == 스노우 맵인경우 ( 제일 마지막에 넣어줘야 )
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), TEXT("Prototype_Component_Texture_Map_Snow"),
-        TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr)))
-    {
-        m_isSnowMap = false;
-
-        return S_OK;
-    }
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), m_szModelName,
+        TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr), E_FAIL);
 
     return S_OK;
 }
@@ -167,5 +161,4 @@ void CProp_Object::Free()
     __super::Free();
 
     Safe_Release(m_pModelCom);
-    Safe_Release(m_pTextureCom);
 }

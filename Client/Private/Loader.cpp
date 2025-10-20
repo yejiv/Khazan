@@ -239,9 +239,9 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 		return E_FAIL;
 
 	///* Prototype_Component_Model_WP_WOD_Ground_Base_004 */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Map/Test/WP_WOD_Ground_Base_004/WP_WOD_Ground_Base_004.dat"))))
-		return E_FAIL;
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"),
+		//CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Map/Test/WP_WOD_Ground_Base_004/WP_WOD_Ground_Base_004.dat"))))
+		//return E_FAIL;
 
 	///* Prototype_Component_Model_JOH_TestModel */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_JOH_TestModel"),
@@ -249,7 +249,7 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 	//	return E_FAIL;
 
 	/* Prototype_Component_Model_파일명 */
-	//CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+	CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
 
 	return S_OK;
 }
@@ -374,9 +374,7 @@ HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDa
 		MAPOBJECT_TYPE eMapObjType = static_cast<MAPOBJECT_TYPE>(sMapObjectType);
 
 		// MapObject 타입에 따른 조건문
-		if (MAPOBJECT_TYPE::OBJECT == eMapObjType ||
-			MAPOBJECT_TYPE::INTERACTIVE == eMapObjType ||
-			MAPOBJECT_TYPE::DYNAMIC == eMapObjType)
+		if (MAPOBJECT_TYPE::OBJECT == eMapObjType || MAPOBJECT_TYPE::INTERACTIVE == eMapObjType || MAPOBJECT_TYPE::DYNAMIC == eMapObjType)
 		{
 			// CModel 을 열어야 하는 경우 ( Instance X )
 

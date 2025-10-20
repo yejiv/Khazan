@@ -21,13 +21,13 @@ HRESULT CProp::Initialize_Prototype()
 
 HRESULT CProp::Initialize_Clone(void* pArg)
 {
-    if (nullptr != pArg)
-    {
-        PROP_DESC* pDesc = static_cast<PROP_DESC*>(pArg);
-        CHECK_NULLPTR(pDesc, E_FAIL);
+    CHECK_NULLPTR(pArg, E_FAIL);
 
-        memcpy(m_szModelName, pDesc->szModelName, MAX_PATH);
-    }
+    PROP_DESC* pDesc = static_cast<PROP_DESC*>(pArg);
+    CHECK_NULLPTR(pDesc, E_FAIL);
+
+    m_Properties = pDesc->Properties;
+    memcpy(m_szModelName, pDesc->szModelName, MAX_PATH);
 
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 
@@ -51,10 +51,8 @@ HRESULT CProp::Render()
     return S_OK;
 }
 
-HRESULT CProp::Bind_ShaderResources_ForSnowMap(CTexture* pTextureCom, _uint iMeshIndex)
+HRESULT CProp::Bind_ShaderResources_ForSnowMap(_uint iMeshIndex)
 {
-    CHECK_FAILED(pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_SnowTexture", 0), E_FAIL);
-
     CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fSnowAmount", &m_fSnowAmount, sizeof(_float)), E_FAIL);
 
     CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vSnowColor", &m_vSnowColor, sizeof(_float3)), E_FAIL);

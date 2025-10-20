@@ -207,18 +207,17 @@ void CLevel_Map::Select_Fix_Object(_float fTimeDelta)
 						_float fPitch, fYaw, fRoll;
 
 						// Pitch(X)
-						fPitch = atan2f(-RotMatrix._32, RotMatrix._33);
+						fPitch = atan2f(-RotMatrix._23, RotMatrix._33);
 
 						// Yaw(Y)
-						fYaw = asinf(RotMatrix._31);
+						fYaw = asinf(clamp(RotMatrix._13, -1.f, 1.f));
 
 						// Roll(Z)
-						fRoll = atan2f(-RotMatrix._21, RotMatrix._11);
+						fRoll = atan2f(-RotMatrix._12, RotMatrix._11);
 
 						// Degree 변환 및 보정
 						m_vFixRotation.x = XMConvertToDegrees(fPitch);
 						m_vFixRotation.y = XMConvertToDegrees(fYaw);
-						if (0.f > m_vFixRotation.y) m_vFixRotation.y *= -1.f;
 						m_vFixRotation.z = XMConvertToDegrees(fRoll);
 
 						auto Clamp180 = [](float deg)
@@ -628,7 +627,11 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				ImGui::Text("ROT Z : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##rotationz", &m_vFixRotation.z, 1.f, 5.f);
 				ImGui::SliderFloat("##sliderrotationz", &m_vFixRotation.z, -180.f, 180.f);
 
-				m_pFixTransformCom->Rotation(XMConvertToRadians(m_vFixRotation.x), XMConvertToRadians(m_vFixRotation.y), XMConvertToRadians(m_vFixRotation.z));
+				_float fPitch = XMConvertToRadians(m_vFixRotation.x);
+				_float fYaw = XMConvertToRadians(m_vFixRotation.y);
+				_float fRoll = XMConvertToRadians(m_vFixRotation.z);
+
+				m_pFixTransformCom->Rotation(fPitch, fYaw, fRoll);
 
 				SEPARATOR;
 				SEPARATOR;
@@ -1525,6 +1528,8 @@ _bool CLevel_Map::Prototypes_Save_Binary()
 
 		map<const _wstring, SAVE_PROTOTYPE> Prototypes;
 
+		JSON_MAP_PROTOTYPE_DATA PrototypeJson = {};
+
 		// 단일 오브젝트 순회하면서 모델 이름 알아오기 ( Prototype 태그로 사용할 것 )
 		for (auto& pProp : m_ObjectList)
 		{
@@ -1544,6 +1549,10 @@ _bool CLevel_Map::Prototypes_Save_Binary()
 
 				CHECK_EQUAL_MSG("NOTFOUND", strModelPath, TEXT("모델 경로 못찾음"), false);
 
+				JSON_MAP_PROTOTYPE_DATA PrtData = {};
+
+				PrototypeJson.FileName.push_back(WStringToAnsi(strModelName));
+
 				replace(strModelPath.begin(), strModelPath.end(), '\\', '/');
 
 				SAVE_PROTOTYPE Save_Proto = {};
@@ -1560,6 +1569,8 @@ _bool CLevel_Map::Prototypes_Save_Binary()
 		// 1. 프로토 타입의 총 개수 저장 ( 이만큼 루프 돌릴거 )
 		WriteFile(hPrototypeFile, &iPrototypeCnt, sizeof(_uint), &dwByte, nullptr);
 
+		PrototypeJson.iNumPrototypes = iPrototypeCnt;
+
 		for (auto& pPrototype : Prototypes)
 		{
 			// 2. 어떤 타입인지 저장 ( Object, Instance, Dynamic, Interactive ) , enum class MAPOBJECT_TYPE은 unsigned short 사용으로 조금 메모리 절약
@@ -1571,6 +1582,10 @@ _bool CLevel_Map::Prototypes_Save_Binary()
 			// 모델 경로 길이
 			_uint iModelPathLen = pPrototype.second.strModelPath.size();
 
+			PrototypeJson.PrototypeTag.push_back(WStringToAnsi(pPrototype.first));
+
+			PrototypeJson.FilePath.push_back(pPrototype.second.strModelPath);
+
 			// 3. 프로토 타입 태그 길이 저장
 			WriteFile(hPrototypeFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr);
 			// 4. 프로토 타입 태그 이름 저장
@@ -1581,6 +1596,22 @@ _bool CLevel_Map::Prototypes_Save_Binary()
 			// 6. 모델 경로 이름 저장
 			WriteFile(hPrototypeFile, pPrototype.second.strModelPath.c_str(), sizeof(_char) * iModelPathLen, &dwByte, nullptr);
 		}
+
+		JSON j = PrototypeJson;
+
+		_wstring strJsonFilePath = AnsiToWString(m_strMapInfoFilePath);
+
+		strJsonFilePath += TEXT("_prototypes.json");
+
+		ofstream ofs(strJsonFilePath);
+
+		if (!ofs.is_open())
+		{
+			OutputDebugStringA("프로토타입 Json 파일입출력 실패");
+		}
+
+		ofs << j.dump(4);
+		ofs.close();
 
 		// 검사용 map clear;
 		Prototypes.clear();

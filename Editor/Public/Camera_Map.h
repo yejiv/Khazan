@@ -32,7 +32,8 @@ private:
 
 private:
 	_bool m_isPreviewPos = { false };
-	_bool m_isHwakDae = { false };
+
+	_uint m_iPhase = { 0 };
 
 	_float3 m_vPrevPos = {};
 

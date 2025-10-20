@@ -275,6 +275,12 @@ HRESULT CLevel_Stage1::Ready_Layer_MapObject(const _wstring& strLayerTag, const 
 
 		ObjectDesc.WorldMatrix = WorldMatrix;
 
+		// 5. 객체의 속성 불러오기
+		MAPOBJECT_PROPERTIES PropProperties = {};
+		CHECK_FALSE(ReadFile(hFile, &PropProperties, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr), false);
+
+		ObjectDesc.Properties = PropProperties;
+
 		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
 			ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), E_FAIL);
 	}

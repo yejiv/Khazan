@@ -761,9 +761,11 @@ namespace Engine
 
     typedef struct tagJsonPrototypeDataSet
     {
-        std::string PrototypeTag{};
-        std::string FileName{};
-        std::string FilePath{};
+        unsigned int iNumPrototypes{};
+
+        std::vector<string> PrototypeTag{};
+        std::vector<string> FileName{};
+        std::vector<string> FilePath{};
 
     }JSON_MAP_PROTOTYPE_DATA;
 
@@ -876,7 +878,7 @@ namespace Engine
     );
 
     // 프로토타입 관련 태그, 이름, 경로 직렬화
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(JSON_MAP_PROTOTYPE_DATA, PrototypeTag, FileName, FilePath);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(JSON_MAP_PROTOTYPE_DATA, iNumPrototypes, PrototypeTag, FileName, FilePath);
 
 #pragma endregion
 

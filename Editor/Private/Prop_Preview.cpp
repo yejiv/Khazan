@@ -31,7 +31,7 @@ HRESULT CProp_Preview::Initialize_Clone(void* pArg)
 
     m_pTransformCom->Scale(_float3(0.005f, 0.005f, 0.005f));
 
-    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 1000.f, 0.f, 1.f));
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 10000.f, 0.f, 1.f));
 
     m_ResetMatrix.r[0] = m_pTransformCom->Get_State(STATE::RIGHT);
     m_ResetMatrix.r[1] = m_pTransformCom->Get_State(STATE::UP);

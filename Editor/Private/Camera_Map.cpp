@@ -37,22 +37,33 @@ void CCamera_Map::Priority_Update(_float fTimeDelta)
 
         m_isPreviewPos = true;
 
-        if (false == m_isHwakDae)
+        switch (m_iPhase)
         {
-            m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 1020.f, -40.f, 1.f));
-            m_pTransformCom->LookAt(XMVectorSet(0.f, 1000.f, 0.f, 1.f));
-            m_isHwakDae = true;
-        }
-        else if (true == m_isHwakDae)
-        {
-            m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 1005.f, -10.f, 1.f));
-            m_pTransformCom->LookAt(XMVectorSet(0.f, 1000.f, 0.f, 1.f));
-            m_isHwakDae = false;
+        case 0:
+            m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 10040.f, -80.f, 1.f));
+            m_pTransformCom->LookAt(XMVectorSet(0.f, 10000.f, 0.f, 1.f));
+            ++m_iPhase;
+            break;
+        case 1:
+            m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 10020.f, -40.f, 1.f));
+            m_pTransformCom->LookAt(XMVectorSet(0.f, 10000.f, 0.f, 1.f));
+            ++m_iPhase;
+            break;
+        case 2:
+            m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 10010.f, -20.f, 1.f));
+            m_pTransformCom->LookAt(XMVectorSet(0.f, 10000.f, 0.f, 1.f));
+            ++m_iPhase;
+            break;
+        case 3:
+            m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 10005.f, -10.f, 1.f));
+            m_pTransformCom->LookAt(XMVectorSet(0.f, 10000.f, 0.f, 1.f));
+            m_iPhase = 0;
+            break;
         }
     }
     if (true == m_isPreviewPos && m_pGameInstance->Key_Down(DIK_NUMPAD9))
     {
-        m_isHwakDae = false;
+        m_iPhase = 0;
         m_isPreviewPos = false;
         m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&m_vPrevPos), 1.f));
     }
