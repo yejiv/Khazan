@@ -31,8 +31,8 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
     if (nullptr == m_pController)
         return E_FAIL;
 
-
-    m_pModelCom->Set_Animation(0, true);
+    m_pModelCom->Set_AnimationLoop(true);
+    m_pModelCom->Set_Animation(0);
 
 
     m_pTransformCom->Set_State(STATE::POSITION,

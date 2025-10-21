@@ -33,6 +33,12 @@ HRESULT CJOH_Test1::Initialize(void* pArg)
    // m_pTransformCom->Scale(_float3(0.01f, 0.01f, 0.01f));
     //m_pTransformCom->Scale(_float3(10.f, 10.f, 10.f));
 
+   m_pGameInstance->AddWidget(TEXT("Client"), [this]() {
+       ImGui::Begin("CJOH_Test1");
+       m_pModelCom->Debug_RanderState();
+       ImGui::End();
+       });
+
     return S_OK;
 }
 
@@ -46,16 +52,28 @@ void CJOH_Test1::Update(_float fTimeDelta)
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
         int a = 10;
 
-    if (m_pGameInstance->Key_Down(DIK_1))
+    if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
     {
-        m_pModelCom->Set_AnimationLoop(true);
+        //m_pModelCom->Set_AnimationLoop(true);
         m_pModelCom->Set_Animation(++m_iCurrentAnimIndex);
     }
-    if (m_pGameInstance->Key_Down(DIK_2))
+    if (m_pGameInstance->Key_Pressing(DIK_LCONTROL,fTimeDelta) && m_pGameInstance->Key_Down(DIK_2))
     {
         m_iCurrentAnimIndex = 2;
-        m_pModelCom->Set_AnimationLoop(true);
+      // m_pModelCom->Set_AnimationLoop(true);
         m_pModelCom->Set_Animation(m_iCurrentAnimIndex);
+    }
+    if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_3))
+    {
+        m_pModelCom->Set_AnimationSet("Set1");
+    }
+    if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_4))
+    {
+        m_pModelCom->Set_AnimationSet("Set2");
+    }
+    if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_5))
+    {
+        m_pModelCom->Set_Animation(3);
     }
 }
 
