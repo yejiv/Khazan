@@ -7,7 +7,7 @@ NS_BEGIN(Client)
 class CCreature abstract : public CContainerObject
 {
 public:
-	typedef struct tagCreatureDesc : public CGameObject
+	typedef struct tagCreatureDesc : public CGameObject::GAMEOBJECT_DESC
 	{
 		_float				fMaxHP = {};
 		_float				fMaxStamina = {};
@@ -30,6 +30,9 @@ public:
 	_float						Get_MoveSpeed() const{ return m_fMoveSpeed; }
 
 	// Set함수는 다르게 작동할수도 있을 것 같아서  일단 Get만 만들었습니다.
+
+public:
+	virtual void				Take_Damage(CCreature* pGameObject, _float fDamage) {};
 
 public:
 	virtual HRESULT				Initialize_Prototype() override;

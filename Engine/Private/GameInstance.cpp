@@ -297,6 +297,14 @@ _bool CGameInstance::Already_Registered_Prototype(_uint iPrototypeLevelIndex, co
 	return m_pPrototype_Manager->Already_Registered_Prototype(iPrototypeLevelIndex, strPrototypeTag);
 }
 
+CBase* CGameInstance::Find_Prototype_ForPreview(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag)
+{
+	if (nullptr == m_pPrototype_Manager)
+		return nullptr;
+
+	return m_pPrototype_Manager->Find_Prototype_ForPreview(iPrototypeLevelIndex, strPrototypeTag);
+}
+
 #pragma endregion
 
 #pragma region OBJECT_MANAGER
@@ -437,6 +445,11 @@ void CGameInstance::Set_LightEnable(const _wstring& strLightTag, _uint iLevelInd
 	m_pLight_Manager->Set_LightEnable(strLightTag, iLevelIndex, isEnable);
 }
 
+_bool CGameInstance::Is_LightEnable(const _wstring& strLightTag, _uint iLevelIndex)
+{
+	return m_pLight_Manager->Is_LightEnable(strLightTag, iLevelIndex);
+}
+
 HRESULT CGameInstance::Render_Lights(CShader* pShader, CVIBuffer_Rect* pVIBuffer, _uint iLevelIndex)
 {
 	return m_pLight_Manager->Render(pShader, pVIBuffer, iLevelIndex);
@@ -493,6 +506,16 @@ HRESULT CGameInstance::Bind_RT_ShaderResource(const _wstring& strTargetTag, CSha
 HRESULT CGameInstance::Copy_RT_Resource(const _wstring& strTargetTag, ID3D11Texture2D* pSourTexture)
 {
 	return m_pTarget_Manager->Copy_Resource(strTargetTag, pSourTexture);
+}
+
+void CGameInstance::Begin_RT()
+{
+	m_pTarget_Manager->Begin_RT();
+}
+
+void CGameInstance::End_RT()
+{
+	m_pTarget_Manager->End_RT();
 }
 
 #ifdef _DEBUG
@@ -572,9 +595,19 @@ const _float4x4* CGameInstance::Get_CurrentLightProjMatrix() const
 	return m_pShadow->Get_CurrentLightProjMatrix();
 }
 
-HRESULT CGameInstance::Ready_Cascade()
+const _float* CGameInstance::Get_Splits() const
 {
-	return m_pShadow->Ready_Cascade();
+	return m_pShadow->Get_Splits();
+}
+
+const _float4x4* CGameInstance::Get_LightViewMatrices() const
+{
+	return m_pShadow->Get_LightViewMatrices();
+}
+
+const _float4x4* CGameInstance::Get_LightProjMatrices() const
+{
+	return m_pShadow->Get_LightProjMatrices();
 }
 
 #pragma endregion

@@ -17,7 +17,6 @@ HRESULT CFSM_Yetuga::Initialize()
     if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::ATTACK), CAttackState_Yetuga::Create())))
         return E_FAIL;
 
-
     m_pCurrentState = m_States[ENUM_CLASS(YETUGA_STATE::IDLE)];
     if (nullptr == m_pCurrentState)
         return E_FAIL;
@@ -25,9 +24,9 @@ HRESULT CFSM_Yetuga::Initialize()
     return S_OK;
 }
 
-void CFSM_Yetuga::Update(_float fTimeDelta, CGameObject* pOwner)
+void CFSM_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 {
-    __super::Update(fTimeDelta, pOwner);
+    __super::Update(pOwner, fTimeDelta);
 }
 
 

@@ -32,7 +32,7 @@ public:
 	virtual void					Add_Renderer() override;
 public:
 	HRESULT							Add_UIInstance(const VTXINSTANCE_UI* pUIData);
-
+	_float4							Get_AtlasUV(const string pFrameName, _uint iTextureIndex);
 private:
 	CShader*						m_pShaderCom = { nullptr };
 	CVIBuffer_Instance_UI*			m_pVIBufferCom = { nullptr };

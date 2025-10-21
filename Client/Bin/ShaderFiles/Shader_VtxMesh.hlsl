@@ -220,7 +220,9 @@ PS_OUT PS_SNOWMAP(PS_IN In)                       // ¸Ê ¿ÀºêÁ§Æ®¿ë ÇÈ¼¿ ½¦ÀÌ´õ
     float3 vWorldNormal = normalize(In.vNormal.rgb);
     float upFactor = saturate(dot(vWorldNormal, float3(0.f, 1.f, 0.f)));
     
-    float fSnowMask = g_SnowTexture.Sample(DefaultSampler, In.vTexcoord * 4.f).r;
+    //float fSnowMask = g_SnowTexture.Sample(DefaultSampler, In.vTexcoord * 8.f).r;
+    
+    float fSnowMask = 0.8f;
     
     float fSnowBlend = saturate(upFactor * fSnowMask * g_fSnowAmount);
     
@@ -252,11 +254,13 @@ PS_OUT PS_SNOWMAP_BLEND(PS_IN In)                       // ¸Ê ¿ÀºêÁ§Æ®¿ë ÇÈ¼¿ ½¦
     float3 vWorldNormal = normalize(In.vNormal.rgb);
     float upFactor = saturate(dot(vWorldNormal, float3(0.f, 1.f, 0.f)));
     
-    float fSnowMask = g_SnowTexture.Sample(DefaultSampler, In.vTexcoord * 4.f).r;
+    //float fSnowMask = g_SnowTexture.Sample(DefaultSampler, In.vTexcoord * 8.f).r;
     
-    float fSnowBlend = saturate(upFactor * fSnowMask * 5.f);
+    float fSnowMask = 0.8f;
     
-    float3 vSnowColor = float3(0.92f, 0.94f, 1.f);
+    float fSnowBlend = saturate(upFactor * fSnowMask * g_fSnowAmount);
+    
+    float3 vSnowColor = g_vSnowColor;
     
     float3 vFinalColor = lerp(vMtrlDiffuse.rgb, vSnowColor, fSnowBlend);
     

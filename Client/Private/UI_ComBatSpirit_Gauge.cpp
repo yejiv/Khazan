@@ -12,6 +12,11 @@ CUI_CombatSpirit_Gauge::CUI_CombatSpirit_Gauge(const CUI_CombatSpirit_Gauge& Pro
 {
 }
 
+void CUI_CombatSpirit_Gauge::Setting_Gauge(_float* pCulGauge)
+{
+	m_fCulGauge = pCulGauge;
+}
+
 HRESULT CUI_CombatSpirit_Gauge::Initialize_Prototype(_uint iLevel)
 {
 	m_iLevel = iLevel;
@@ -36,11 +41,6 @@ void CUI_CombatSpirit_Gauge::Priority_Update(_float fTimeDelta)
 
 void CUI_CombatSpirit_Gauge::Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Pressing(DIK_O, 0))
-		m_fCurrentValue -= fTimeDelta * 100.f;
-	if (m_pGameInstance->Key_Pressing(DIK_P, 0))
-		m_fCurrentValue += fTimeDelta * 100.f;
-
 	if (m_fCurrentValue < 0)
 		m_fCurrentValue = 0;
 	if (m_fCurrentValue > m_fMaxValue)
@@ -69,7 +69,7 @@ HRESULT CUI_CombatSpirit_Gauge::Render()
 		return E_FAIL;
 
 	CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
-	CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fProgressValue", &m_fProgress_Value, sizeof(_float)), E_FAIL);
+	CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fProgressValue", m_fCulGauge, sizeof(_float)), E_FAIL);
 
 	m_pShaderCom->Begin(5);
 	m_pVIBufferCom->Bind_Resources();

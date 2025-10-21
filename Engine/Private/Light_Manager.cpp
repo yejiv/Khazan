@@ -59,20 +59,20 @@ void CLight_Manager::Set_LightEnable(const _wstring& strLightTag, _uint iLevelIn
 	pLight->Set_Enable(isEnable);
 }
 
+_bool CLight_Manager::Is_LightEnable(const _wstring& strLightTag, _uint iLevelIndex)
+{
+	CLight* pLight = Find_Light(strLightTag, iLevelIndex);
+	CHECK_NULLPTR(pLight, false);
+
+	return pLight->isEnable();
+}
+
 HRESULT CLight_Manager::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer, _uint iLevelIndex)
 {
 	for (auto& pLight : m_pLights[iLevelIndex])
 	{
 		if (true == pLight.second->isEnable())
 		{
-#pragma region 단비가 친 야매 코드래요
-
-			// if (!m_pGameInstance->isIn_Frustum_WorldSpace(XMLoadFloat4(&pLight.second->Get_LightDesc()->vPosition), 3.f) &&
-			// 	LIGHT_DESC::POINT == pLight.second->Get_LightDesc()->eType)
-			// 	continue;
-
-#pragma endregion
-
 			pLight.second->Render(pShader, pVIBuffer);
 		}
 	}

@@ -377,7 +377,12 @@ void CEdit_Interface_UI::SetTexture_UI()
 
 				m_pRootUIs[m_iSeletRootUI]->Set_AtlasTexSize(m_szSeleteUIName, m_szFrameName, m_fTexSize);
 			}
-
+			ImGui::InputInt("##Shader", &m_iShaderIndex);
+			ImGui::SameLine();
+			if (ImGui::Button("SetShader"))
+			{
+				m_pRootUIs[m_iSeletRootUI]->Set_ShaderPass(m_szSeleteUIName, m_iShaderIndex);
+			}
 		}
 		m_pRootUIs[m_iSeletRootUI]->Update_Option(m_szSeleteUIName, m_szFrameName, m_iTexType);
 	}

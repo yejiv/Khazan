@@ -28,6 +28,7 @@ void CLevel_Map::Update(_float fTimeDelta)
 {
 	Clear_List();
 
+	Test_Player_Move(fTimeDelta);
 	Select_Fix_Object(fTimeDelta);
 	Select_Fix_Instance(fTimeDelta);
 	Select_Add_LightPoint(fTimeDelta);
@@ -44,13 +45,15 @@ HRESULT CLevel_Map::Render()
 
 HRESULT CLevel_Map::Ready_Defaults()
 {
-	CHECK_FAILED(Ready_Default_Lights(), E_FAIL);
+	//CHECK_FAILED(Ready_Default_Lights(), E_FAIL);
 
-	//CHECK_FAILED(Ready_Preview_Model_RanderTargets(), E_FAIL);
+	CHECK_FAILED(Ready_Layer_Khazan(TEXT("Layer_Khazan")), E_FAIL);
 
 	CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Map_Camera")), E_FAIL);
 
 	CHECK_FAILED(Ready_Layer_Terrain(TEXT("Layer_Map_Terrain")), E_FAIL);
+	
+	CHECK_FAILED(Ready_Layer_Preview(TEXT("Layer_Preview")), E_FAIL);
 
 	return S_OK;
 }
@@ -70,19 +73,24 @@ HRESULT CLevel_Map::Ready_Default_Lights()
 	return S_OK;
 }
 
-HRESULT CLevel_Map::Ready_Preview_Model_RanderTargets()
+HRESULT CLevel_Map::Ready_Layer_Khazan(const _wstring& strLayerTag)
 {
-	/* For.Dif_RT_MapEditor */
-	//CHECK_FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Dif_RT_MapEditor"), 200, 200, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 0.f)), E_FAIL);
+	// Prototype_GameObject_Map_TestPlayer
+
+	CMap_TestPlayer::GAMEOBJECT_DESC ObjDesc = {};
+
+	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), strLayerTag,
+		ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Map_TestPlayer")), E_FAIL);
 
 	return S_OK;
+
 }
 
 HRESULT CLevel_Map::Ready_Layer_Camera(const _wstring& strLayerTag)
 {
 	CCamera_Map::CAMERA_MAP_DESC MapDesc = {};
 
-	MapDesc.fSpeedPerSec = 10.f;
+	MapDesc.fSpeedPerSec = 5.f;
 	MapDesc.fRotationPerSec = XMConvertToRadians(30.f);
 
 	MapDesc.fMouseSensor = 0.2f;
@@ -109,6 +117,18 @@ HRESULT CLevel_Map::Ready_Layer_Terrain(const _wstring& strLayerTag)
 	return S_OK;
 }
 
+HRESULT CLevel_Map::Ready_Layer_Preview(const _wstring& strLayerTag)
+{
+	CProp::PROP_DESC Desc = {};
+
+	Desc.fRotationPerSec = XMConvertToRadians(90.f);
+
+	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), strLayerTag,
+		ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Preview"), &Desc), E_FAIL);
+
+	return S_OK;
+}
+
 void CLevel_Map::Clear_List()
 {
 	for (_uint i = 0; i < m_ObjectList.size(); )
@@ -120,6 +140,25 @@ void CLevel_Map::Clear_List()
 		}
 		else
 			++i;
+	}
+}
+
+void CLevel_Map::Test_Player_Move(_float fTimeDelta)
+{
+	if (true == m_isFixObjectWindow)
+		return;
+
+	if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
+	{
+		_float3 vPosition = {};
+
+		if (m_pGameInstance->isPicked(&vPosition))
+		{
+			CTransform* pKhazan = static_cast<CTransform*>(m_pGameInstance->Find_Component(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_Khazan"), TEXT("Com_Transform")));
+			CHECK_NULLPTR(pKhazan, );
+
+			pKhazan->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPosition), 1.f));
+		}
 	}
 }
 
@@ -145,8 +184,9 @@ void CLevel_Map::Select_Fix_Object(_float fTimeDelta)
 						m_pFixTransformCom = static_cast<CTransform*>(pObject->Get_Component(TEXT("Com_Transform")));
 						CHECK_NULLPTR_MSG(m_pFixTransformCom, TEXT("Fix Transform == nullptr"), );
 
-						m_vFixScale = m_pFixTransformCom->Get_Scaled();
+						m_vResetScale = m_vFixScale = m_pFixTransformCom->Get_Scaled();
 						XMStoreFloat3(&m_vFixPosition, m_pFixTransformCom->Get_State(STATE::POSITION));
+						m_vResetPosition = m_vFixPosition;
 
 						_float4x4 WorldMatrix = {};
 						XMStoreFloat4x4(&WorldMatrix, m_pFixTransformCom->Get_WorldMatrix());
@@ -167,13 +207,13 @@ void CLevel_Map::Select_Fix_Object(_float fTimeDelta)
 						_float fPitch, fYaw, fRoll;
 
 						// Pitch(X)
-						fPitch = atan2f(-RotMatrix._32, RotMatrix._33);
+						fPitch = atan2f(-RotMatrix._23, RotMatrix._33);
 
 						// Yaw(Y)
-						fYaw = asinf(RotMatrix._31);
+						fYaw = asinf(clamp(RotMatrix._13, -1.f, 1.f));
 
 						// Roll(Z)
-						fRoll = atan2f(-RotMatrix._21, RotMatrix._11);
+						fRoll = atan2f(-RotMatrix._12, RotMatrix._11);
 
 						// Degree 변환 및 보정
 						m_vFixRotation.x = XMConvertToDegrees(fPitch);
@@ -191,11 +231,13 @@ void CLevel_Map::Select_Fix_Object(_float fTimeDelta)
 						m_vFixRotation.y = Clamp180(m_vFixRotation.y);
 						m_vFixRotation.z = Clamp180(m_vFixRotation.z);
 
+						m_vResetRotation = m_vFixRotation;
+
 						// ======================================================
 						// ======================================================
 
 						m_isFixObjectWindow = true;
-						m_eFixType = FIX_OBJECT::FIX_ALL;
+						m_eFixType = FIX_OBJECT::FIX;
 						return;
 					}
 				}
@@ -278,7 +320,7 @@ HRESULT CLevel_Map::Ready_Main_Window()
 		{
 			ImGui::Begin("MAIN WINDOW", &m_isMainWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
-			if (ImGui::Button("INFORMATION"))
+			if (ImGui::Button("INFORMATION OR MAIN"))
 				m_isInformation = !m_isInformation;
 
 				if (true == m_isInformation)
@@ -288,11 +330,12 @@ HRESULT CLevel_Map::Ready_Main_Window()
 					ImGui::Text("F3 + LB      : ADD LIGHT POSITION");
 					ImGui::Text("F4 + LB      : SELECTED OBJECT MOVE");
 
-					ImGui::Text("3      : EXPORT MODEL");
-					ImGui::Text("4      : UPDATE JSON TO DAT");
-					ImGui::Text("5      : DELETE");
-					ImGui::Text("8      : MAPOBJECT WIREFRAME");
-					ImGui::Text("9      : MAPOBJECT SOLID");
+					_float4 vCamPos = *m_pGameInstance->Get_CamPosition();
+
+					ImGui::Text("CAMERA POS");
+					ImGui::Text("X : %.3f", vCamPos.x);
+					ImGui::Text("Y : %.3f", vCamPos.y);
+					ImGui::Text("Z : %.3f", vCamPos.z);
 				}
 				else
 				{
@@ -311,25 +354,29 @@ HRESULT CLevel_Map::Ready_Main_Window()
 					SEPARATOR;
 					
 					ImGui::Text("PROP LIST");
-					if (ImGui::Button("OBJECT##active"))		m_isPropWindow[ENUM_CLASS(PROP_SPECIES::OBJECT)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::OBJECT)];
-					SAMELINE;
-					if (ImGui::Button("STATIC##active"))		m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)];
-					SAMELINE;
-					if (ImGui::Button("ANIMATED##active"))		m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::ANIMATED)];
-					SAMELINE;
-					if (ImGui::Button("INTERACTIVE##active"))	m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::INTERACTIVE)];
-					SAMELINE;
-					if (ImGui::Button("DESTRUCTIBLE##active"))	m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)] = !m_isPropWindow[ENUM_CLASS(PROP_SPECIES::DESTRUCTIBLE)];
+					if (ImGui::Button("OBJECT##active"))		m_isPropWindow = !m_isPropWindow;
 					SEPARATOR;
 
 					ImGui::Text("ADD PROTOTYPES");
 					ImGui::Text("FOLDER : "); SAMELINE;
 					ImGui::InputText("##folder_name_convert", m_szFolderName, IM_ARRAYSIZE(m_szFolderName));
 
-					if (ImGui::Button("PROTOTYPES ADD")) Add_Prototype_ByFolder(m_szFolderName);
+					_uint iFolderNameLen = strlen(m_szFolderName);
 
-					if (ImGui::Button("FBX FILE CONVERT ( .fbx > .dat )")) Fbxs_Convert_To_Dat(m_szFolderName);
+					if (0 != iFolderNameLen)
+					{
+						if (ImGui::Button("PROTOTYPES ADD"))
+						{
+							Add_Prototype_ByFolder(m_szFolderName);
+							ZeroMemory(m_szFolderName, sizeof(m_szFolderName));
+						}
 
+						if (ImGui::Button("FBX FILE CONVERT ( .fbx > .dat )"))
+						{
+							Fbxs_Convert_To_Dat(m_szFolderName);
+							ZeroMemory(m_szFolderName, sizeof(m_szFolderName));
+						}
+					}
 					SEPARATOR;
 
 					ImGui::Text("DON'T USE");
@@ -340,8 +387,8 @@ HRESULT CLevel_Map::Ready_Main_Window()
 						m_isJsonWindow = { false };
 						m_isCustomJsonWindow = { false };
 						m_isPrototypeWindow = { false };
-						for (auto& bProp : m_isPropWindow)
-							bProp = false;
+						m_isPropWindow = { false };
+
 						m_isLightSettingWindow = { false };
 
 						ZeroMemory(&m_LightDesc, sizeof(LIGHT_DESC));
@@ -373,9 +420,6 @@ HRESULT CLevel_Map::Ready_Main_Window()
 
 						m_CheckPrototypes.clear();			// 중복 프로토타입 체크 및 리스트 출력용
 
-						m_Prototypes_Inst.clear();			// Prototype 목록 ( Instance 용 모델 )
-						m_iIndex_PrtInst = {};				// Prototype Instance 용 인덱스
-
 						m_Prototypes_Obj.clear();			// Prototype 목록 ( Object 용 모델 )
 						m_iIndex_PrtObj = {};				// Prototype Object 용 인덱스
 					}
@@ -401,59 +445,22 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 		{
 			ImGui::Begin("PROTOTYPE WINDOW", &m_isPrototypeWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
-			ImGui::Text("MODEL_PROTOTYPES_INSTANCE");
-			if (ImGui::BeginListBox("##prototype_instance_list"))
-			{
-				for (_uint i = 0; i < m_Prototypes_Inst.size(); ++i)
-				{
-					_bool isSelected = (m_iIndex_PrtInst == i);
-
-					if (ImGui::Selectable(m_Prototypes_Inst[i].c_str(), isSelected))
-						m_iIndex_PrtInst = i;
-				}
-
-				ImGui::EndListBox();
-			} SEPARATOR;
-
-			// 인스턴스 행렬 추가
-			if (0 != m_Prototypes_Inst.size() && false == m_isLightSettingWindow && false == m_isFixObjectWindow &&
-				(ImGui::Button("ADD (T)") || m_pGameInstance->Key_Down(DIK_T)))
-			{
-				CModel_Instance* pModelInst = static_cast<CModel_Instance*>(m_pGameInstance->Find_Component(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_InstObj"), TEXT("Com_Model"), m_iIndex_PrtInst));
-				CHECK_NULLPTR(pModelInst, );
-
-				MESH_INSTANCE_DATA TempData = {};
-
-				TempData.InstanceMatrix = XMMatrixIdentity();
-				TempData.InstanceID = m_iMapObjectCnt++;
-
-				if (m_pGameInstance->Mouse_Pressing(MOUSEKEYSTATE::LB))
-				{
-					_float3 vPickedPos = {};
-
-					if (m_pGameInstance->isPicked(&vPickedPos))
-						TempData.InstanceMatrix.r[3] = XMVectorSetW(XMLoadFloat3(&vPickedPos), 1.f);
-					else
-					{
-						TempData.InstanceMatrix.r[3] = XMLoadFloat4(m_pGameInstance->Get_CamPosition());
-						TempData.InstanceMatrix.r[3].m128_f32[1] = 0.f;
-					}
-				}
-				else
-				{
-					TempData.InstanceMatrix.r[3] = XMLoadFloat4(m_pGameInstance->Get_CamPosition());
-					TempData.InstanceMatrix.r[3].m128_f32[1] = 0.f;
-				}
-
-				pModelInst->Add_Instance(TempData);
-			} SEPARATOR;
-
-			ImGui::Text("MODEL_PROTOTYPES_OBJECT");
+			ImGui::Text("MODEL PROTOTYPES");
 			ImGui::Text("SEARCH : "); SAMELINE;
 			ImGui::InputText("##search_model_name", m_szSearchModelName, IM_ARRAYSIZE(m_szSearchModelName)); SAMELINE;
 
 			if (ImGui::Button("CLEAR"))
 				ZeroMemory(m_szSearchModelName, sizeof(m_szSearchModelName));
+
+			ImGuiIO& io = ImGui::GetIO();
+
+			if (io.MouseWheel < 0.f) ++m_iIndex_PrtObj;
+			else if (io.MouseWheel > 0.f) --m_iIndex_PrtObj;
+
+			if (0 > m_iIndex_PrtObj)
+				m_iIndex_PrtObj = 0;
+			if (m_Prototypes_Obj.size() <= m_iIndex_PrtObj)
+				m_iIndex_PrtObj = m_Prototypes_Obj.size() - 1;
 
 			if (ImGui::BeginListBox("##prototype_object_list"))
 			{
@@ -470,12 +477,48 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 						_bool isSelected = (m_iIndex_PrtObj == i);
 
 						if (ImGui::Selectable(m_Prototypes_Obj[i].c_str(), isSelected))
+						{
 							m_iIndex_PrtObj = i;
+							CProp_Preview* pProp = static_cast<CProp_Preview*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_Preview")));
+							if (nullptr == pProp)
+							{
+								OutputDebugStringA("프리뷰 == nullptr");
+							}
+							else
+							{
+								pProp->Reset_Preview();
+
+								CModel* pModel = static_cast<CModel*>(m_pGameInstance->Find_Prototype_ForPreview(ENUM_CLASS(LEVEL::MAP), AnsiToWString(m_Prototypes_Obj[m_iIndex_PrtObj])));
+								if (nullptr == pModel)
+									pProp->Set_PrototypeModel(nullptr);
+								else
+									pProp->Set_PrototypeModel(pModel);
+							}
+						}
 					}
 				}
 
 				ImGui::EndListBox();
 			} SEPARATOR;
+
+			ImGui::Text("SCALE SIZE : "); SAMELINE;
+			ImGui::InputFloat("##input_scale_add", &m_fAddScale, 0.001f, 0.005f); SAMELINE;
+			if (ImGui::Button("RESET")) m_fAddScale = 0.005f;
+			SEPARATOR;
+
+			ImGui::Checkbox("CAMERA POS ADD", &m_isCameraPosAdd); SEPARATOR;
+
+			if (false == m_isCameraPosAdd)
+			{
+				ImGui::Text("ADD POS Y : "); SAMELINE;
+				ImGui::InputFloat("##add_pos_y", &m_fAddPositionY, 0.1f, 1.f); SEPARATOR;
+			}
+
+			ImGui::Checkbox("SNOW", &m_AddObjectProperties.isSnow); SAMELINE;
+			ImGui::Checkbox("COLLIDER", &m_AddObjectProperties.isCollider); SAMELINE;
+			ImGui::Checkbox("BLENDED", &m_AddObjectProperties.isBlended); SAMELINE;
+			ImGui::Checkbox("INSTANCE", &m_AddObjectProperties.isInstance); SEPARATOR;
+			ImGui::Checkbox("SHADOW", &m_AddObjectProperties.isShadow); SEPARATOR;
 
 			// 단일 오브젝트 Layer 추가
 			if (false == m_isLightSettingWindow && false == m_isFixObjectWindow && (ImGui::Button("ADD (Y)") || m_pGameInstance->Key_Down(DIK_Y)))
@@ -497,43 +540,28 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 					else
 					{
 						XMStoreFloat3(&vPos, XMLoadFloat4(m_pGameInstance->Get_CamPosition()));
-						vPos.y = 0.f;
+						if (false == m_isCameraPosAdd)
+							vPos.y = m_fAddPositionY;
 					}
 				}
 				else
 				{
 					XMStoreFloat3(&vPos, XMLoadFloat4(m_pGameInstance->Get_CamPosition()));
-					vPos.y = 0.f;
+					if (false == m_isCameraPosAdd)
+						vPos.y = m_fAddPositionY;
 				}
 
 				_matrix WorldMatrix = XMMatrixIdentity();
 
-				// 스케일 0.01, 위치는 마우스 피킹 위치 혹은 카메라 위치
-				WorldMatrix.r[0] *= 0.01f;
-				WorldMatrix.r[1] *= 0.01f;
-				WorldMatrix.r[2] *= 0.01f;
+				// 스케일 기존 0.005f, 위치는 마우스 피킹 위치 혹은 카메라 위치
+				WorldMatrix.r[0] *= m_fAddScale;
+				WorldMatrix.r[1] *= m_fAddScale;
+				WorldMatrix.r[2] *= m_fAddScale;
 				WorldMatrix.r[3] = XMVectorSetW(XMLoadFloat3(&vPos), 1.f);
 
 				XMStoreFloat4x4(&ObjectDesc.WorldMatrix, WorldMatrix);
 
-#pragma region ICE 있는지 검사
-
-				_wstring strSearchName = TEXT("ice");
-				transform(strSearchName.begin(), strSearchName.end(), strSearchName.begin(), ::tolower);
-
-				_wstring strModelName = ObjectDesc.szModelName;
-				transform(strModelName.begin(), strModelName.end(), strModelName.begin(), ::tolower);		// 찾을 모델을 소문자로 변환
-
-				if (strModelName.find(strSearchName) != string::npos)
-				{
-					ObjectDesc.isBlended = true;
-				}
-				else
-				{
-					ObjectDesc.isBlended = false;
-				}
-
-#pragma endregion
+				ObjectDesc.Properties = m_AddObjectProperties;
 
 				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj"),
 					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), );
@@ -569,50 +597,45 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				ImGui::InputText("##copy_batch_modelname", szModelName, IM_ARRAYSIZE(szModelName)); SEPARATOR;
 			}
 
-			if (ImGui::Button("DETAIL SCALE"))
+			if (FIX_OBJECT::FIX == m_eFixType)
 			{
-				m_eFixType = FIX_OBJECT::SCALE_DETAIL;
+				ImGui::Text("SCALE FIX"); SAMELINE;
+				if (ImGui::Button("-")) { m_vFixScale.x -= 0.001f; m_vFixScale.y -= 0.001f; m_vFixScale.z -= 0.001f; } SAMELINE;
+				if (ImGui::Button("+")) { m_vFixScale.x += 0.001f; m_vFixScale.y += 0.001f; m_vFixScale.z += 0.001f; } SEPARATOR;
 
-			} SAMELINE;
-			if (ImGui::Button("ROTATION POSITION"))
-			{
-				m_eFixType = FIX_OBJECT::FIX_ALL;
-
-			} SEPARATOR;
-
-			if (FIX_OBJECT::SCALE_DETAIL == m_eFixType)
-			{
-				ImGui::Text("DETAIL SCALE FIX");
-				SEPARATOR;
-
-				ImGui::Text("X : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##scalex", &m_vFixScale.x, 0.001f, 0.01f);
+				ImGui::Text("SCALE X : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##scalex", &m_vFixScale.x, 0.001f, 0.01f);
 				ImGui::SliderFloat("##sliderdetailscalex", &m_vFixScale.x, 0.001f, 10.f);
-				ImGui::Text("Y : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##scaley", &m_vFixScale.y, 0.001f, 0.01f);
+				ImGui::Text("SCALE Y : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##scaley", &m_vFixScale.y, 0.001f, 0.01f);
 				ImGui::SliderFloat("##sliderdetailscaley", &m_vFixScale.y, 0.001f, 10.f);
-				ImGui::Text("Z : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##scalez", &m_vFixScale.z, 0.001f, 0.01f);
+				ImGui::Text("SCALE Z : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##scalez", &m_vFixScale.z, 0.001f, 0.01f);
 				ImGui::SliderFloat("##sliderdetailscalez", &m_vFixScale.z, 0.001f, 10.f);
 
 				if (0.001f > m_vFixScale.x) m_vFixScale.x = 0.001f;
 				if (0.001f > m_vFixScale.y) m_vFixScale.y = 0.001f;
 				if (0.001f > m_vFixScale.z) m_vFixScale.z = 0.001f;
-				SEPARATOR;
 
 				m_pFixTransformCom->Scale(m_vFixScale);
-			}
-			if (FIX_OBJECT::FIX_ALL == m_eFixType)
-			{
+				SEPARATOR;
+				SEPARATOR;
+
 				ImGui::Text("ROTATION FIX");
 				SEPARATOR;
 
-				ImGui::Text("X : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##rotationx", &m_vFixRotation.x, 1.f, 5.f);
+				ImGui::Text("ROT X : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##rotationx", &m_vFixRotation.x, 1.f, 5.f);
 				ImGui::SliderFloat("##sliderrotationx", &m_vFixRotation.x, -180.f, 180.f);
-				ImGui::Text("Y : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##rotationy", &m_vFixRotation.y, 1.f, 5.f);
+				ImGui::Text("ROT Y : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##rotationy", &m_vFixRotation.y, 1.f, 5.f);
 				ImGui::SliderFloat("##sliderrotationy", &m_vFixRotation.y, -180.f, 180.f);
-				ImGui::Text("Z : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##rotationz", &m_vFixRotation.z, 1.f, 5.f);
+				ImGui::Text("ROT Z : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##rotationz", &m_vFixRotation.z, 1.f, 5.f);
 				ImGui::SliderFloat("##sliderrotationz", &m_vFixRotation.z, -180.f, 180.f);
-				SEPARATOR;
 
-				m_pFixTransformCom->Rotation(XMConvertToRadians(m_vFixRotation.x), XMConvertToRadians(m_vFixRotation.y), XMConvertToRadians(m_vFixRotation.z));
+				_float fPitch = XMConvertToRadians(m_vFixRotation.x);
+				_float fYaw = XMConvertToRadians(m_vFixRotation.y);
+				_float fRoll = XMConvertToRadians(m_vFixRotation.z);
+
+				m_pFixTransformCom->Rotation(fPitch, fYaw, fRoll);
+
+				SEPARATOR;
+				SEPARATOR;
 
 				ImGui::Text("POSITION FIX");
 				SEPARATOR;
@@ -629,13 +652,42 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 					}
 				}
 
-				ImGui::Text("X : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##positionx", &m_vFixPosition.x, 0.1f, 0.5f);
-				ImGui::Text("Y : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##positiony", &m_vFixPosition.y, 0.1f, 0.5f);
-				ImGui::Text("Z : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##positionz", &m_vFixPosition.z, 0.1f, 0.5f);
-				SEPARATOR;
+				ImGui::Text("POS X : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##positionx", &m_vFixPosition.x, 0.1f, 0.5f);
+				ImGui::Text("POS Y : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##positiony", &m_vFixPosition.y, 0.1f, 0.5f);
+				ImGui::Text("POS Z : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##positionz", &m_vFixPosition.z, 0.1f, 0.5f);
 
 				m_pFixTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&m_vFixPosition), 1.f));
+
+				SEPARATOR;
+				SEPARATOR;
 			}
+
+#pragma region 속성 설정
+
+			ImGui::Text("SETTING");
+
+			MAPOBJECT_PROPERTIES PropProperties = m_pFixPropObj->Get_Properties();
+
+			ImGui::Checkbox("SNOW", &PropProperties.isSnow);
+			SAMELINE;
+
+			ImGui::Checkbox("COLLIDER", &PropProperties.isCollider);
+			SAMELINE;
+
+			ImGui::Checkbox("BLENDED", &PropProperties.isBlended);
+			SAMELINE;
+
+			ImGui::Checkbox("INSTANCE", &PropProperties.isInstance);
+			SEPARATOR;
+
+			ImGui::Checkbox("SHADOW", &PropProperties.isShadow);
+
+			m_pFixPropObj->Set_Properties(PropProperties);
+
+			SEPARATOR;
+			SEPARATOR;
+
+#pragma endregion
 
 			if (ImGui::Button("DONE") || m_pGameInstance->Key_Down(DIK_RETURN) || m_pGameInstance->Key_Down(DIK_NUMPADENTER))
 			{
@@ -646,8 +698,21 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				m_eFixType = FIX_OBJECT::END;
 
 			} SAMELINE;
-			if (FIX_OBJECT::FIX_ALL != m_eFixType && FIX_OBJECT::SCALE_DETAIL != m_eFixType &&
-				ImGui::Button("DELETE") || m_pGameInstance->Key_Down(DIK_DELETE))
+			if (ImGui::Button("RESET"))
+			{
+				m_pFixTransformCom->Scale(m_vResetScale);
+				m_pFixTransformCom->Rotation(XMConvertToRadians(m_vResetRotation.x), XMConvertToRadians(m_vResetRotation.y), XMConvertToRadians(m_vResetRotation.z));
+				m_pFixTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&m_vResetPosition), 1.f));
+
+				ZeroMemory(m_szModelName, sizeof(m_szModelName));
+				m_pFixPropObj = nullptr;
+				m_pFixTransformCom = nullptr;
+				m_isFixObjectWindow = false;
+				m_eFixType = FIX_OBJECT::END;
+			}
+			SEPARATOR;
+			SEPARATOR;
+			if (ImGui::Button("DELETE (DELETE)") || m_pGameInstance->Key_Down(DIK_DELETE))
 			{
 				if (nullptr != m_pFixPropObj)
 				{
@@ -667,9 +732,9 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 
 					m_pFixPropObj = nullptr;
 				}
-				
-				m_pFixPropObj = nullptr;
+
 				ZeroMemory(m_szModelName, sizeof(m_szModelName));
+				m_pFixPropObj = nullptr;
 				m_pFixTransformCom = nullptr;
 				m_isFixObjectWindow = false;
 				m_eFixType = FIX_OBJECT::END;
@@ -684,27 +749,43 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 #pragma region WIDGET : 단일 오브젝트 리스트
 
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
-		if (m_isPropWindow[ENUM_CLASS(PROP_SPECIES::OBJECT)])
+		if (m_isPropWindow)
 		{
-			ImGui::Begin("PROP OBJECT WINDOW", &m_isPropWindow[ENUM_CLASS(PROP_SPECIES::OBJECT)], ImGuiWindowFlags_AlwaysAutoResize);
+			ImGui::Begin("PROP OBJECT WINDOW", &m_isPropWindow, ImGuiWindowFlags_AlwaysAutoResize);
+
+			ImGui::Text("OBJECT LIST");
+			ImGui::Text("SEARCH : "); SAMELINE;
+			ImGui::InputText("##search_object_name", m_szSearchObjectName, IM_ARRAYSIZE(m_szSearchObjectName)); SAMELINE;
+
+			if (ImGui::Button("CLEAR"))
+				ZeroMemory(m_szSearchObjectName, sizeof(m_szSearchObjectName));
 
 			if (ImGui::BeginListBox("##prop_object_list"))
 			{
 				if (m_iObjectListIndex >= m_ObjectList.size())
 					m_iObjectListIndex = m_ObjectList.size() - 1;
 
+				string strSearchName = m_szSearchObjectName;
+				transform(strSearchName.begin(), strSearchName.end(), strSearchName.begin(), ::tolower);		// 검색할 모델을 소문자로 변환
+
 				for (_uint i = 0; i < m_ObjectList.size(); ++i)
 				{
-					_bool isSelected = (m_iObjectListIndex == i);
+					_wstring strModelName = m_ObjectList[i]->Get_ModelName();
+					transform(strModelName.begin(), strModelName.end(), strModelName.begin(), ::tolower);		// 찾을 모델을 소문자로 변환
 
-					string strModelName = WStringToAnsi(m_ObjectList[i]->Get_ModelName()) + "##id_%d";
+					if (true == strSearchName.empty() || strModelName.find(AnsiToWString(strSearchName)) != string::npos)
+					{
+						_bool isSelected = (m_iObjectListIndex == i);
 
-					_char szModelName[MAX_PATH] = {};
+						string strModelName = WStringToAnsi(m_ObjectList[i]->Get_ModelName()) + "##id_%d";
 
-					sprintf_s(szModelName, strModelName.c_str(), i);
+						_char szModelName[MAX_PATH] = {};
 
-					if (ImGui::Selectable(szModelName, isSelected))
-						m_iObjectListIndex = i;
+						sprintf_s(szModelName, strModelName.c_str(), i);
+
+						if (ImGui::Selectable(szModelName, isSelected))
+							m_iObjectListIndex = i;
+					}
 				}
 
 				ImGui::EndListBox();
@@ -712,27 +793,69 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 
 			if (0 != m_ObjectList.size())
 			{
-				ImGui::Text("%d", m_ObjectList.size());
+				ImGui::Text("OBJECT NUM : %d", m_ObjectList.size());
 				SEPARATOR;
 			}
 
-			if (ImGui::Button("SNOW ON"))
+			if (ImGui::Button("ALL SNOW ON"))
 			{
+				MAPOBJECT_PROPERTIES PropProperties = {};
+
 				for (auto& pObj : m_ObjectList)
-					pObj->Set_ShaderPass(4);
+				{
+					PropProperties = pObj->Get_Properties();
+					PropProperties.isSnow = true;
+					pObj->Set_Properties(PropProperties);
+				}
 			} SAMELINE;
-			if (ImGui::Button("SNOW OFF"))
+			if (ImGui::Button("ALL SNOW OFF"))
 			{
+				MAPOBJECT_PROPERTIES PropProperties = {};
+
 				for (auto& pObj : m_ObjectList)
-					pObj->Set_ShaderPass(2);
+				{
+					PropProperties = pObj->Get_Properties();
+					PropProperties.isSnow = false;
+					pObj->Set_Properties(PropProperties);
+				}
 			} SEPARATOR;
 
 			if (0 != m_ObjectList.size() && m_iObjectListIndex < m_ObjectList.size())
 			{
+				CProp* pObjProp = m_ObjectList[m_iObjectListIndex];
+
 				_wstring strModelName = m_ObjectList[m_iObjectListIndex]->Get_ModelName();
 
-				ImGui::Text("MODEL NAME : %s", WStringToAnsi(strModelName).c_str());
+				_char szModelName[MAX_PATH] = {};
+				memcpy(szModelName, WStringToAnsi(strModelName).c_str(), sizeof(szModelName));
+
+				ImGui::Text("MODEL NAME : ");
+				ImGui::InputText("##model_name_by_list", szModelName, IM_ARRAYSIZE(szModelName));
 				SEPARATOR;
+
+#pragma region 속성 설정
+
+				MAPOBJECT_PROPERTIES PropProperties = m_ObjectList[m_iObjectListIndex]->Get_Properties();
+
+				ImGui::Checkbox("SNOW", &PropProperties.isSnow);
+				SAMELINE;
+
+				ImGui::Checkbox("COLLIDER", &PropProperties.isCollider);
+				SAMELINE;
+
+				ImGui::Checkbox("BLENDED", &PropProperties.isBlended);
+				SAMELINE;
+
+				ImGui::Checkbox("INSTANCE", &PropProperties.isInstance);
+				SEPARATOR;
+
+				ImGui::Checkbox("SHADOW", &PropProperties.isShadow);
+
+				m_ObjectList[m_iObjectListIndex]->Set_Properties(PropProperties);
+
+				SEPARATOR;
+
+#pragma endregion
 
 				CTransform* pTransform = static_cast<CTransform*>(m_ObjectList[m_iObjectListIndex]->Get_Component(TEXT("Com_Transform")));
 				CHECK_NULLPTR(pTransform, );
@@ -757,32 +880,60 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 						m_pFixTransformCom = static_cast<CTransform*>(m_ObjectList[m_iObjectListIndex]->Get_Component(TEXT("Com_Transform")));
 						CHECK_NULLPTR_MSG(m_pFixTransformCom, TEXT("Fix Transform == nullptr"), );
 
-						m_vFixScale = m_pFixTransformCom->Get_Scaled();
+						m_vResetScale = m_vFixScale = m_pFixTransformCom->Get_Scaled();
 						XMStoreFloat3(&m_vFixPosition, m_pFixTransformCom->Get_State(STATE::POSITION));
+						m_vResetPosition = m_vFixPosition;
 
-						_vector vScale = {};
-						_vector vQuaternion = {};
-						_vector vTranslation = {};
+						_float4x4 WorldMatrix = {};
+						XMStoreFloat4x4(&WorldMatrix, m_pFixTransformCom->Get_WorldMatrix());
 
-						XMMatrixDecompose(&vScale, &vQuaternion, &vTranslation, m_pFixTransformCom->Get_WorldMatrix());
+						_vector vRight = XMVector3Normalize(XMLoadFloat3(reinterpret_cast<XMFLOAT3*>(&WorldMatrix._11)));
+						_vector vUp = XMVector3Normalize(XMLoadFloat3(reinterpret_cast<XMFLOAT3*>(&WorldMatrix._21)));
+						_vector vLook = XMVector3Normalize(XMLoadFloat3(reinterpret_cast<XMFLOAT3*>(&WorldMatrix._31)));
 
-						_matrix RotationMatrix = XMMatrixRotationQuaternion(vQuaternion);
+						_matrix RotationMatrix = {};
+						RotationMatrix.r[0] = XMVectorSetW(vRight, 0.f);
+						RotationMatrix.r[1] = XMVectorSetW(vUp, 0.f);
+						RotationMatrix.r[2] = XMVectorSetW(vLook, 0.f);
+						RotationMatrix.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
-						_float3 vDegree = {};
+						_float4x4 RotMatrix = {};
+						XMStoreFloat4x4(&RotMatrix, RotationMatrix);
 
-						vDegree.x = atan2f(RotationMatrix.r[2].m128_f32[1], RotationMatrix.r[2].m128_f32[2]);
-						vDegree.y = asinf(RotationMatrix.r[2].m128_f32[0]);
-						vDegree.z = atan2f(RotationMatrix.r[1].m128_f32[0], RotationMatrix.r[0].m128_f32[0]);
+						_float fPitch, fYaw, fRoll;
 
-						vDegree.x = XMConvertToDegrees(vDegree.x);
-						vDegree.y = XMConvertToDegrees(vDegree.y);
-						vDegree.z = XMConvertToDegrees(vDegree.z);
+						// Pitch(X)
+						fPitch = atan2f(-RotMatrix._23, RotMatrix._33);
 
-						m_vFixRotation = vDegree;
+						// Yaw(Y)
+						fYaw = asinf(clamp(RotMatrix._13, -1.f, 1.f));
+
+						// Roll(Z)
+						fRoll = atan2f(-RotMatrix._12, RotMatrix._11);
+
+						// Degree 변환 및 보정
+						m_vFixRotation.x = XMConvertToDegrees(fPitch);
+						m_vFixRotation.y = XMConvertToDegrees(fYaw);
+						m_vFixRotation.z = XMConvertToDegrees(fRoll);
+
+						auto Clamp180 = [](float deg)
+							{
+								while (deg > 180.f) deg -= 360.f;
+								while (deg < -180.f) deg += 360.f;
+								return deg;
+							};
+
+						m_vFixRotation.x = Clamp180(m_vFixRotation.x);
+						m_vFixRotation.y = Clamp180(m_vFixRotation.y);
+						m_vFixRotation.z = Clamp180(m_vFixRotation.z);
+
+						m_vResetRotation = m_vFixRotation;
+
+						// ======================================================
+						// ======================================================
 
 						m_isFixObjectWindow = true;
-						
-						m_eFixType = FIX_OBJECT::FIX_ALL;
+						m_eFixType = FIX_OBJECT::FIX;
 					}
 				}
 				SAMELINE;
@@ -817,25 +968,6 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 					m_eFixType = FIX_OBJECT::END;
 				}
 			}
-			ImGui::End();
-		}
-		});
-
-#pragma endregion
-
-#pragma region WIDGET : 정적 인스턴싱 오브젝트 리스트
-
-	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
-		if (m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)])
-		{
-			ImGui::Begin("PROP STATIC WINDOW", &m_isPropWindow[ENUM_CLASS(PROP_SPECIES::STATIC)], ImGuiWindowFlags_AlwaysAutoResize);
-
-			if (ImGui::BeginListBox("##prop_static_list"))
-			{
-
-				ImGui::EndListBox();
-			}
-
 			ImGui::End();
 		}
 		});
@@ -1063,18 +1195,33 @@ HRESULT CLevel_Map::Ready_Light_Window()
 					{
 						if (0 != m_strLightTag.size() && ImGui::Button("LIGHT ADD"))
 						{
-							m_pGameInstance->Add_Light(AnsiToWString(m_strLightTag), ENUM_CLASS(LEVEL::MAP), m_LightDesc);
-							m_LightTags.push_back(m_strLightTag);
+							_bool isCheckSameTag = { false };
 
-							m_iLightTagIndex = m_LightTags.size() - 1;
+							for (auto& pLightTag : m_LightTags)
+							{
+								if (pLightTag == m_strLightTag)
+									isCheckSameTag = true;
+							}
 
-							ZeroMemory(&m_szLightTag, sizeof(m_szLightTag));
-							m_strLightTag.clear();
-							ZeroMemory(&m_LightDesc, sizeof(LIGHT_DESC));
-							m_LightDesc.eType = LIGHT_DESC::END;
+							if (true == isCheckSameTag)
+							{
+								OutputDebugStringA("조명 태그 중복");
+							}
+							else
+							{
+								m_pGameInstance->Add_Light(AnsiToWString(m_strLightTag), ENUM_CLASS(LEVEL::MAP), m_LightDesc);
+								m_LightTags.push_back(m_strLightTag);
 
-							m_isAddLight = !m_isAddLight;
-							m_isFixLight = false;
+								m_iLightTagIndex = m_LightTags.size() - 1;
+
+								ZeroMemory(&m_szLightTag, sizeof(m_szLightTag));
+								m_strLightTag.clear();
+								ZeroMemory(&m_LightDesc, sizeof(LIGHT_DESC));
+								m_LightDesc.eType = LIGHT_DESC::END;
+
+								m_isAddLight = !m_isAddLight;
+								m_isFixLight = false;
+							}
 						}
 					}
 				};
@@ -1157,6 +1304,18 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 
 #pragma endregion
 
+#pragma region 조명 일괄 저장
+
+				if (false == Lights_Save_Binary())
+				{
+#ifdef _DEBUG
+					OutputDebugStringA("단일 오브젝트 정보 바이너리화 실패");
+#endif // _DEBUG
+					return;
+				}
+
+#pragma endregion
+
 				m_isSaveObjectWindow = false;
 			}
 
@@ -1186,34 +1345,54 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 				m_strMapInfoFilePath = m_szMapInfoFilePath;
 				m_strMapInfoFilePath += m_szMapInfoFileName;
 				
-#pragma region 프로토타입 데이터 통해 일괄 등록
+#pragma region 프로토타입 일괄 불러오기
 
 				if (false == Prototypes_Load_Binary())
 				{
 #ifdef _DEBUG
-					OutputDebugStringA("단일 오브젝트 정보 바이너리 불러오기 실패");
+					OutputDebugStringA("프로토타입 정보 바이너리 불러오기 실패");
 #endif // _DEBUG
-					return;
 				}
-
-				// 프로토타입 윈도우 띄우기
-				m_isPrototypeWindow = true;
+				else
+				{
+					// 프로토타입 윈도우 띄우기
+					m_isPrototypeWindow = true;
+				}
 
 #pragma endregion
 
-#pragma region 오브젝트 일괄 저장
+#pragma region 오브젝트 일괄 불러오기
 
 				if (false == Objects_Load_Binary())
 				{
 #ifdef _DEBUG
 					OutputDebugStringA("단일 오브젝트 정보 바이너리 불러오기 실패");
 #endif // _DEBUG
-					return;
+				}
+				else
+				{
+					// 오브젝트 리스트 윈도우 띄우기
+					//m_isLoadObjectWindow = true;
 				}
 
 #pragma endregion
 
-				m_isLoadObjectWindow = false;
+#pragma region 조명 일괄 불러오기
+
+				if (false == Lights_Load_Binary())
+				{
+#ifdef _DEBUG
+					OutputDebugStringA("조명 정보 바이너리 불러오기 실패");
+#endif // _DEBUG
+				}
+				else
+				{
+					// 조명 윈도우 띄우기
+					//m_isLightSettingWindow = true;
+				}
+
+#pragma endregion
+
 
 			}
 
@@ -1390,6 +1569,7 @@ string CLevel_Map::Find_ModelPath(const string& strModelName, const string& strF
 	return "NOTFOUND";
 }
 
+// 나중에 Json 추가해서 파일 옮겨야함
 _bool CLevel_Map::Prototypes_Save_Binary()
 {
 	// 프로토 타입 저장할때는 인스턴스용 모델인지, 아니면 일반 모델인지 구분해서 저장을 해야한다.
@@ -1426,6 +1606,8 @@ _bool CLevel_Map::Prototypes_Save_Binary()
 
 		map<const _wstring, SAVE_PROTOTYPE> Prototypes;
 
+		JSON_MAP_PROTOTYPE_DATA PrototypeJson = {};
+
 		// 단일 오브젝트 순회하면서 모델 이름 알아오기 ( Prototype 태그로 사용할 것 )
 		for (auto& pProp : m_ObjectList)
 		{
@@ -1445,6 +1627,10 @@ _bool CLevel_Map::Prototypes_Save_Binary()
 
 				CHECK_EQUAL_MSG("NOTFOUND", strModelPath, TEXT("모델 경로 못찾음"), false);
 
+				JSON_MAP_PROTOTYPE_DATA PrtData = {};
+
+				PrototypeJson.FileName.push_back(WStringToAnsi(strModelName));
+
 				replace(strModelPath.begin(), strModelPath.end(), '\\', '/');
 
 				SAVE_PROTOTYPE Save_Proto = {};
@@ -1461,6 +1647,8 @@ _bool CLevel_Map::Prototypes_Save_Binary()
 		// 1. 프로토 타입의 총 개수 저장 ( 이만큼 루프 돌릴거 )
 		WriteFile(hPrototypeFile, &iPrototypeCnt, sizeof(_uint), &dwByte, nullptr);
 
+		PrototypeJson.iNumPrototypes = iPrototypeCnt;
+
 		for (auto& pPrototype : Prototypes)
 		{
 			// 2. 어떤 타입인지 저장 ( Object, Instance, Dynamic, Interactive ) , enum class MAPOBJECT_TYPE은 unsigned short 사용으로 조금 메모리 절약
@@ -1472,6 +1660,10 @@ _bool CLevel_Map::Prototypes_Save_Binary()
 			// 모델 경로 길이
 			_uint iModelPathLen = pPrototype.second.strModelPath.size();
 
+			PrototypeJson.PrototypeTag.push_back(WStringToAnsi(pPrototype.first));
+
+			PrototypeJson.FilePath.push_back(pPrototype.second.strModelPath);
+
 			// 3. 프로토 타입 태그 길이 저장
 			WriteFile(hPrototypeFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr);
 			// 4. 프로토 타입 태그 이름 저장
@@ -1482,6 +1674,22 @@ _bool CLevel_Map::Prototypes_Save_Binary()
 			// 6. 모델 경로 이름 저장
 			WriteFile(hPrototypeFile, pPrototype.second.strModelPath.c_str(), sizeof(_char) * iModelPathLen, &dwByte, nullptr);
 		}
+
+		JSON j = PrototypeJson;
+
+		_wstring strJsonFilePath = AnsiToWString(m_strMapInfoFilePath);
+
+		strJsonFilePath += TEXT("_prototypes.json");
+
+		ofstream ofs(strJsonFilePath);
+
+		if (!ofs.is_open())
+		{
+			OutputDebugStringA("프로토타입 Json 파일입출력 실패");
+		}
+
+		ofs << j.dump(4);
+		ofs.close();
 
 		// 검사용 map clear;
 		Prototypes.clear();
@@ -1544,12 +1752,71 @@ _bool CLevel_Map::Objects_Save_Binary()
 
 			// 4. 객체당 월드행렬 저장
 			WriteFile(hObjectFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr);
+
+			// 5. 객체당 속성 저장
+			MAPOBJECT_PROPERTIES PropDesc = pProp->Get_Properties();
+			WriteFile(hObjectFile, &PropDesc, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr);
 		}
 		// 단일 오브젝트 이외의 것들 추가 예정
 	}
 
 	// 프로토타입 핸들 닫기
 	CloseHandle(hObjectFile);
+
+	return true;
+}
+
+_bool CLevel_Map::Lights_Save_Binary()
+{
+	_wstring strLightInfoPath = AnsiToWString(m_strMapInfoFilePath);
+
+	strLightInfoPath += TEXT("_lights.dat");
+
+	DWORD dwByte = {};
+
+	// 프로토타입 핸들 개방
+	HANDLE hLightFile = CreateFile(strLightInfoPath.c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (INVALID_HANDLE_VALUE == hLightFile)
+	{
+		CloseHandle(hLightFile);
+		return false;
+	}
+	else
+	{
+		_uint iLightCnt = {};
+
+		for (auto& pLightTag : m_LightTags)
+		{
+			if (true == m_pGameInstance->Is_LightEnable(AnsiToWString(pLightTag), ENUM_CLASS(LEVEL::MAP)))
+				++iLightCnt;
+		}
+
+		// 1. 프로토 타입의 총 개수 저장 ( 이만큼 루프 돌릴거 )
+		WriteFile(hLightFile, &iLightCnt, sizeof(_uint), &dwByte, nullptr);
+
+		for (auto& pLightTag : m_LightTags)
+		{
+			if (false == m_pGameInstance->Is_LightEnable(AnsiToWString(pLightTag), ENUM_CLASS(LEVEL::MAP)))
+				continue;
+
+			const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(AnsiToWString(pLightTag), ENUM_CLASS(LEVEL::MAP));
+			CHECK_NULLPTR(pLightDesc, false);
+
+			_uint iLightTagLen = static_cast<_uint>(pLightTag.size());
+
+			// 2. 조명 태그 길이 저장
+			WriteFile(hLightFile, &iLightTagLen, sizeof(_uint), &dwByte, nullptr);
+
+			// 3. 조명 태그 저장 ( _wstring으로 넣을수있게 바로 변환 )
+			WriteFile(hLightFile, AnsiToWString(pLightTag).c_str(), sizeof(_tchar) * iLightTagLen, &dwByte, nullptr);
+
+			// 4. 조명 구조체 저장
+			WriteFile(hLightFile, pLightDesc, sizeof(LIGHT_DESC), &dwByte, nullptr);
+		}
+	}
+
+	// 프로토타입 핸들 닫기
+	CloseHandle(hLightFile);
 
 	return true;
 }
@@ -1563,7 +1830,7 @@ _bool CLevel_Map::Prototypes_Load_Binary()
 	DWORD dwByte = {};
 
 	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("[DAT ERROR] 바이너리 파일 오픈 문제"), false);
+	CHECK_EQUAL(INVALID_HANDLE_VALUE, hFile, false);
 
 	// 1. 프로토 타입의 총 개수
 	_uint iPrototypeCnt = {};
@@ -1601,9 +1868,6 @@ _bool CLevel_Map::Prototypes_Load_Binary()
 			_char szModelPath[MAX_PATH] = {};
 			CHECK_FALSE(ReadFile(hFile, &szModelPath, sizeof(_char) * iModelPathLen, &dwByte, nullptr), false);
 
-			if (true == m_pGameInstance->Already_Registered_Prototype(ENUM_CLASS(LEVEL::MAP), szPrototypeTag))
-				continue;
-
 			// Prototype_Component_Model_ 자르기 시작
 			_wstring strFullPrototypeTag = szPrototypeTag;
 			_wstring strPreFix = { TEXT("Prototype_Component_Model_") };
@@ -1617,6 +1881,9 @@ _bool CLevel_Map::Prototypes_Load_Binary()
 
 			wcscpy_s(szPrototypeTag, strFullPrototypeTag.c_str());
 			// Prototype_Component_Model_ 자르기 끝
+
+			if (true == m_pGameInstance->Already_Registered_Prototype(ENUM_CLASS(LEVEL::MAP), szPrototypeTag))
+				continue;
 
 			if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), szPrototypeTag,
 				CModel::Create(m_pDevice, m_pContext, szModelPath))))
@@ -1677,7 +1944,6 @@ _bool CLevel_Map::Prototypes_Load_Binary()
 				CModel_Instance::Create(m_pDevice, m_pContext, szModelPath, &InstanceDesc))))
 			{
 				CloseHandle(hFile);
-				MSG_BOX(TEXT("[DAT ERROR] 맵 오브젝트 프로토타입 등록 실패 ( CModel_Instance )"));
 				return false;
 			}
 
@@ -1686,7 +1952,6 @@ _bool CLevel_Map::Prototypes_Load_Binary()
 		else
 		{
 			CloseHandle(hFile);
-			MSG_BOX(TEXT("[DAT ERROR] DAT 파일 읽는중 TYPE 문제 ( 박준영 문제 )"));
 			return false;
 		}
 	}
@@ -1753,6 +2018,12 @@ _bool CLevel_Map::Objects_Load_Binary()
 
 		ObjectDesc.WorldMatrix = WorldMatrix;
 
+		// 5. 객체의 속성 불러오기
+		MAPOBJECT_PROPERTIES PropProperties = {};
+		CHECK_FALSE(ReadFile(hFile, &PropProperties, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr), false);
+
+		ObjectDesc.Properties = PropProperties;
+
 		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj"),
 			ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), false);
 
@@ -1765,6 +2036,81 @@ _bool CLevel_Map::Objects_Load_Binary()
 	CloseHandle(hFile);
 
 	return true;
+}
+
+_bool CLevel_Map::Lights_Load_Binary()
+{
+	_wstring strLightInfoPath = AnsiToWString(m_strMapInfoFilePath);
+
+	strLightInfoPath += TEXT("_lights.dat");
+
+	DWORD dwByte = {};
+
+	HANDLE hFile = CreateFile(strLightInfoPath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	CHECK_EQUAL(INVALID_HANDLE_VALUE, hFile, false);
+
+	// 1. 오브젝트의 총 개수
+	_uint iLightCnt = {};
+	CHECK_FALSE(ReadFile(hFile, &iLightCnt, sizeof(_uint), &dwByte, nullptr), false);
+
+	// 오브젝트 총 개수만큼 순회
+	for (_uint i = 0; i < iLightCnt; ++i)
+	{
+		LIGHT_DESC LightDesc = {};
+
+		// 2. 조명 태그 길이 불러오기
+		_uint iLightTagLen = {};
+		CHECK_FALSE(ReadFile(hFile, &iLightTagLen, sizeof(_uint), &dwByte, nullptr), false);
+
+		// 3. 조명 태그 이름 불러오기
+		_tchar szLightTag[MAX_PATH] = {};
+		CHECK_FALSE(ReadFile(hFile, &szLightTag, sizeof(_tchar) * iLightTagLen, &dwByte, nullptr), false);
+
+		// 4. 조명 구조체 불러오기
+		CHECK_FALSE(ReadFile(hFile, &LightDesc, sizeof(LIGHT_DESC), &dwByte, nullptr), false);
+
+		m_pGameInstance->Add_Light(szLightTag, ENUM_CLASS(LEVEL::MAP), LightDesc, true);
+
+		_wstring strLightTag = szLightTag;
+		m_LightTags.push_back(WStringToAnsi(strLightTag));
+
+		m_iLightTagIndex = m_LightTags.size() - 1;
+
+		ZeroMemory(&m_szLightTag, sizeof(m_szLightTag));
+		m_strLightTag.clear();
+		ZeroMemory(&m_LightDesc, sizeof(LIGHT_DESC));
+		m_LightDesc.eType = LIGHT_DESC::END;
+
+		m_isAddLight = !m_isAddLight;
+		m_isFixLight = false;
+
+		
+	}
+
+	CloseHandle(hFile);
+
+	return true;
+}
+
+void CLevel_Map::MapEditor_Close_Windows()
+{
+	m_isJsonWindow = false;
+
+	m_isCustomJsonWindow = false;
+
+	m_isPrototypeWindow = false;
+
+	m_isObjectWindow = false;
+
+	m_isPropWindow = false;
+
+	m_isFixObjectWindow = false;
+
+	m_isLightSettingWindow = false;
+
+	m_isSaveObjectWindow = false;
+
+	m_isLoadObjectWindow = false;
 }
 
 CLevel_Map* CLevel_Map::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -1782,5 +2128,9 @@ CLevel_Map* CLevel_Map::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pCont
 
 void CLevel_Map::Free()
 {
+	MapEditor_Close_Windows();
+
+	Safe_Release(m_pDSV_MapTool);
+
 	__super::Free();
 }

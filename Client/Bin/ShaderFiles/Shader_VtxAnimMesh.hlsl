@@ -1,11 +1,9 @@
 #include "Engine_Shader_Defines.hlsli"
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
+matrix g_LightViewMatrix, g_LightProjMatrix;
+float g_Splits[4];
 
-// Cascade Test
-matrix g_LightViewProjMatrix;
-
-/*재질*/
 texture2D g_DiffuseTexture;
 
 /* 모델 전체 뼈기준(x) */
@@ -89,39 +87,14 @@ VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
     
     float4x4 matWV, matWVP;
     
-    matWV = mul(g_WorldMatrix, g_ViewMatrix);
-    matWVP = mul(matWV, g_ProjMatrix);
+    matWV = mul(g_WorldMatrix, g_LightViewMatrix);
+    matWVP = mul(matWV, g_LightProjMatrix);
     
     Out.vPosition = mul(vPosition, matWVP);
     Out.vProjPos = Out.vPosition;
     
     return Out;
 
-}
-
-VS_OUT_SHADOW VS_MAIN_CASCADE(VS_IN In)
-{
-    VS_OUT_SHADOW Out;
-      /* 정점의 로컬위치 * 월드 * 뷰 * 투영 */ 
-    
-    float fWeightW = 1.f - (In.vBlendWeight.x + In.vBlendWeight.y + In.vBlendWeight.z);
-    
-    matrix BoneMatrix =
-        g_BoneMatrices[In.vBlendIndex.x] * In.vBlendWeight.x +
-        g_BoneMatrices[In.vBlendIndex.y] * In.vBlendWeight.y +
-        g_BoneMatrices[In.vBlendIndex.z] * In.vBlendWeight.z +
-        g_BoneMatrices[In.vBlendIndex.w] * fWeightW;
-    
-    vector vPosition = mul(float4(In.vPosition, 1.f), BoneMatrix);
-    
-    float4x4 matWVP;
-
-    matWVP = mul(g_WorldMatrix, g_LightViewProjMatrix);
-    
-    Out.vPosition = mul(vPosition, matWVP);
-    Out.vProjPos = Out.vPosition;
-    
-    return Out;
 }
 
 struct PS_IN
@@ -142,10 +115,6 @@ struct PS_OUT
     float4 vWorld : SV_TARGET3;
 };
 
-/* 만든 픽셀 각각에 대해서 픽셀 쉐이더를 수행한다. */
-/* 픽셀의 색을 결정한다. */
-
-
 PS_OUT PS_MAIN(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
@@ -155,7 +124,32 @@ PS_OUT PS_MAIN(PS_IN In)
     if (vMtrlDiffuse.a < 0.3f)
         discard;
     
-    Out.vDiffuse = vMtrlDiffuse;
+    // Debug Color
+    float fCameraViewDepth = In.vProjPos.w;
+    uint iCascadeIndex = 0;
+
+    // float Array
+    if (fCameraViewDepth < g_Splits[0])
+        iCascadeIndex = 0;
+    else if (fCameraViewDepth < g_Splits[1])
+        iCascadeIndex = 1;
+    else if (fCameraViewDepth < g_Splits[2])
+        iCascadeIndex = 2;
+    else
+        iCascadeIndex = 3;
+
+    if (0 == iCascadeIndex)
+        Out.vDiffuse = float4(1.f, 0.f, 0.f, 1.f); // Red
+    else if (1 == iCascadeIndex)
+        Out.vDiffuse = float4(1.f, 1.f, 0.f, 1.f); // Yellow
+    else if (2 == iCascadeIndex)
+        Out.vDiffuse = float4(0.f, 1.f, 0.f, 1.f); // Green
+    else if (3 == iCascadeIndex)
+        Out.vDiffuse = float4(0.f, 0.f, 1.f, 1.f); // Blue
+    else
+        Out.vDiffuse = vMtrlDiffuse;
+
+    //  Out.vDiffuse = vMtrlDiffuse;
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = In.vWorldPos;
@@ -188,7 +182,6 @@ struct PS_IN_SHADOW
 struct PS_OUT_SHADOW
 {
     float4 vLightDepth : SV_TARGET0;
-
     //  float4 vLightDepth0 : SV_TARGET0;
     //  float4 vLightDepth1 : SV_TARGET1;
     //  float4 vLightDepth2 : SV_TARGET2;
@@ -245,14 +238,14 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN_SHADOW();
     }
 
-    pass Cascade
+    pass Cascade // Depth Only
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-        VertexShader = compile vs_5_0 VS_MAIN_CASCADE();
+        VertexShader = compile vs_5_0 VS_MAIN_SHADOW();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_SHADOW();
+        PixelShader = NULL;
     }
 }

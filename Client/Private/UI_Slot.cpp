@@ -27,21 +27,21 @@ HRESULT CUI_Slot::Initialize_Clone(void* pArg)
 
 void CUI_Slot::Priority_Update(_float fTimeDelta)
 {
-	if (m_iState == ENUM_CLASS(STATE::DISABLE))
+	if (m_iState == ENUM_CLASS(UISTATE::DISABLE))
 		return;
 	__super::Priority_Update(fTimeDelta);
 }
 
 void CUI_Slot::Update(_float fTimeDelta)
 {
-	if (m_iState == ENUM_CLASS(STATE::DISABLE))
+	if (m_iState == ENUM_CLASS(UISTATE::DISABLE))
 		return;
 	__super::Update(fTimeDelta);
 }
 
 void CUI_Slot::Late_Update(_float fTimeDelta)
 {
-	if (m_iState == ENUM_CLASS(STATE::DISABLE))
+	if (m_iState == ENUM_CLASS(UISTATE::DISABLE))
 		return;
 	__super::Late_Update(fTimeDelta);
 }
@@ -177,7 +177,7 @@ HRESULT CUI_Slot::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void
 			if (pChild->Load_UI(child, iPrototypeLevelID, pArg))
 				return E_FAIL;
 
-			pChild->Insert_Bubble([this]() {this->Bubble_EventCall(); });
+			pChild->Insert_Bubble([this](BUBBLEEVENT* pArg) {this->Bubble_EventCall(pArg); });
 			m_Children.push_back(pChild);
 		}
 	}

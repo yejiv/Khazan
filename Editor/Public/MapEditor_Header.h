@@ -12,9 +12,13 @@
 #include "Prop_Animated.h"
 #include "Prop_Interactive.h"
 #include "Prop_Dynamic.h"
+#include "Prop_Preview.h"
 
 // Properties Test
 #include "Prop_Test.h"
+
+// 플레이어 모델 테스트
+#include "Map_TestPlayer.h"
 
 // Terrain
 #include "Map_Terrain.h"

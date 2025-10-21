@@ -92,10 +92,6 @@ HRESULT CUI_PlayerHP_Gauge::Render()
 	return S_OK;
 }
 
-void CUI_PlayerHP_Gauge::Bubble_EventCall()
-{
-}
-
 HRESULT CUI_PlayerHP_Gauge::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
 {
 	string strTexType = pInData.value("TexType", "");
@@ -118,6 +114,12 @@ HRESULT CUI_PlayerHP_Gauge::Load_UI(nlohmann::json& pInData, _uint iPrototypeLev
 		return E_FAIL;
 
 	return S_OK;
+}
+
+void CUI_PlayerHP_Gauge::Update_Alpha(_float fAlpha)
+{
+	__super::Update_Alpha(fAlpha);
+	m_pUITip->Update_Alpha(fAlpha);
 }
 
 HRESULT CUI_PlayerHP_Gauge::Ready_Component()
@@ -146,6 +148,7 @@ HRESULT CUI_PlayerHP_Gauge::Ready_Childer()
 	
 	if (m_pUITip == nullptr)
 		return E_FAIL;
+
 	return S_OK;
 }
 
