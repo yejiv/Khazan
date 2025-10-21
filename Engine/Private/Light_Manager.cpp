@@ -59,6 +59,14 @@ void CLight_Manager::Set_LightEnable(const _wstring& strLightTag, _uint iLevelIn
 	pLight->Set_Enable(isEnable);
 }
 
+_bool CLight_Manager::Is_LightEnable(const _wstring& strLightTag, _uint iLevelIndex)
+{
+	CLight* pLight = Find_Light(strLightTag, iLevelIndex);
+	CHECK_NULLPTR(pLight, false);
+
+	pLight->isEnable();
+}
+
 HRESULT CLight_Manager::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer, _uint iLevelIndex)
 {
 	for (auto& pLight : m_pLights[iLevelIndex])

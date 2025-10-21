@@ -104,6 +104,7 @@ public:
 	void Set_LightDesc(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_DESC& LightDesc);
 	void Set_LightPosition(const _wstring& strLightTag, _uint iLevelIndex, const _float4& vPosition);
 	void Set_LightEnable(const _wstring& strLightTag, _uint iLevelIndex, _bool isEnable);
+	_bool Is_LightEnable(const _wstring& strLightTag, _uint iLevelIndex);
 	HRESULT Render_Lights(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer, _uint iLevelIndex);
 #pragma endregion
 

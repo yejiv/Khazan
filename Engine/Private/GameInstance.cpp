@@ -445,6 +445,11 @@ void CGameInstance::Set_LightEnable(const _wstring& strLightTag, _uint iLevelInd
 	m_pLight_Manager->Set_LightEnable(strLightTag, iLevelIndex, isEnable);
 }
 
+_bool CGameInstance::Is_LightEnable(const _wstring& strLightTag, _uint iLevelIndex)
+{
+	return m_pLight_Manager->Is_LightEnable(strLightTag, iLevelIndex);
+}
+
 HRESULT CGameInstance::Render_Lights(CShader* pShader, CVIBuffer_Rect* pVIBuffer, _uint iLevelIndex)
 {
 	return m_pLight_Manager->Render(pShader, pVIBuffer, iLevelIndex);

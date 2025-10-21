@@ -228,16 +228,24 @@ private:
 	// 임시 테스트용
 	string Find_ModelPath(const string& strModelName, const string& strFileExtern);
 
+#pragma region 파일 입출력
+
 private:
 	// Loader 에서 사용할 바이너리 파일
 	_bool Prototypes_Save_Binary();
 
-	// Layer 에서 사용할 바이너리 파일
+	// Layer 에서 사용할 오브젝트 바이너리 파일
 	_bool Objects_Save_Binary();
+
+	// Layer 에서 사용할 라이트 바이너리 파일
+	_bool Lights_Save_Binary();
 
 	// MapEditor에서 불러오기
 	_bool Prototypes_Load_Binary();
 	_bool Objects_Load_Binary();
+	_bool Lights_Load_Binary();
+
+#pragma endregion
 
 private:
 	void MapEditor_Close_Windows();

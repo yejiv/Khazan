@@ -103,6 +103,11 @@ HRESULT CProp_Object::Ready_Components(void* pArg)
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), m_szModelName,
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr), E_FAIL);
 
+    if (isCollider())
+    {
+
+    }
+
     return S_OK;
 }
 

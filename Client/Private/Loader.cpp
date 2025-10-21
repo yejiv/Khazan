@@ -328,6 +328,7 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 
 HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDataFileName, LEVEL eLevel, KHAZAN_MAP eMap)
 {
+	// Dat 파일 기본 경로
 	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
 
 	switch (eMap)

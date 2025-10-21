@@ -30,7 +30,7 @@ HRESULT CCamera_Map::Initialize_Clone(void* pArg)
 
 void CCamera_Map::Priority_Update(_float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD7))
+    if (m_pGameInstance->Key_Down(DIK_MINUS))
     {
         if (false == m_isPreviewPos)
             XMStoreFloat3(&m_vPrevPos, m_pTransformCom->Get_State(STATE::POSITION));
@@ -61,7 +61,7 @@ void CCamera_Map::Priority_Update(_float fTimeDelta)
             break;
         }
     }
-    if (true == m_isPreviewPos && m_pGameInstance->Key_Down(DIK_NUMPAD9))
+    if (true == m_isPreviewPos && m_pGameInstance->Key_Down(DIK_EQUALS))
     {
         m_iPhase = 0;
         m_isPreviewPos = false;

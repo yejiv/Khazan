@@ -392,6 +392,7 @@ HRESULT CLoader::Loading_For_Shader_Level()
 
 HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDataFileName, LEVEL eLevel, KHAZAN_MAP eMap)
 {
+	// Dat 파일 기본 경로
 	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
 
 	switch (eMap)
@@ -438,10 +439,10 @@ HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDa
 		MAPOBJECT_TYPE eMapObjType = static_cast<MAPOBJECT_TYPE>(sMapObjectType);
 
 		// MapObject 타입에 따른 조건문
-		if (MAPOBJECT_TYPE::OBJECT == eMapObjType ||
-			MAPOBJECT_TYPE::INTERACTIVE == eMapObjType ||
-			MAPOBJECT_TYPE::DYNAMIC == eMapObjType)
+		if (MAPOBJECT_TYPE::OBJECT == eMapObjType || MAPOBJECT_TYPE::INTERACTIVE == eMapObjType || MAPOBJECT_TYPE::DYNAMIC == eMapObjType)
 		{
+			// CModel 을 열어야 하는 경우 ( Instance X )
+
 			// 3. 프로토 타입 태그 길이 저장
 			_uint iPrototypeTagLen = {};
 			CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
@@ -468,6 +469,8 @@ HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDa
 		}
 		else if (MAPOBJECT_TYPE::STATIC_INST == eMapObjType || MAPOBJECT_TYPE::ANIMATED_INST == eMapObjType)
 		{
+			// CModel_Instance 를 열어야 하는 경우 ( Instance O )
+			// 
 			// 3. 프로토 타입 태그 길이 저장
 			_uint iPrototypeTagLen = {};
 			CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);

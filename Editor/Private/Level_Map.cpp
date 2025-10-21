@@ -1160,18 +1160,33 @@ HRESULT CLevel_Map::Ready_Light_Window()
 					{
 						if (0 != m_strLightTag.size() && ImGui::Button("LIGHT ADD"))
 						{
-							m_pGameInstance->Add_Light(AnsiToWString(m_strLightTag), ENUM_CLASS(LEVEL::MAP), m_LightDesc);
-							m_LightTags.push_back(m_strLightTag);
+							_bool isCheckSameTag = { false };
 
-							m_iLightTagIndex = m_LightTags.size() - 1;
+							for (auto& pLightTag : m_LightTags)
+							{
+								if (pLightTag == m_strLightTag)
+									isCheckSameTag = true;
+							}
 
-							ZeroMemory(&m_szLightTag, sizeof(m_szLightTag));
-							m_strLightTag.clear();
-							ZeroMemory(&m_LightDesc, sizeof(LIGHT_DESC));
-							m_LightDesc.eType = LIGHT_DESC::END;
+							if (true == isCheckSameTag)
+							{
+								OutputDebugStringA("조명 태그 중복");
+							}
+							else
+							{
+								m_pGameInstance->Add_Light(AnsiToWString(m_strLightTag), ENUM_CLASS(LEVEL::MAP), m_LightDesc);
+								m_LightTags.push_back(m_strLightTag);
 
-							m_isAddLight = !m_isAddLight;
-							m_isFixLight = false;
+								m_iLightTagIndex = m_LightTags.size() - 1;
+
+								ZeroMemory(&m_szLightTag, sizeof(m_szLightTag));
+								m_strLightTag.clear();
+								ZeroMemory(&m_LightDesc, sizeof(LIGHT_DESC));
+								m_LightDesc.eType = LIGHT_DESC::END;
+
+								m_isAddLight = !m_isAddLight;
+								m_isFixLight = false;
+							}
 						}
 					}
 				};
@@ -1254,6 +1269,18 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 
 #pragma endregion
 
+#pragma region 조명 일괄 저장
+
+				if (false == Lights_Save_Binary())
+				{
+#ifdef _DEBUG
+					OutputDebugStringA("단일 오브젝트 정보 바이너리화 실패");
+#endif // _DEBUG
+					return;
+				}
+
+#pragma endregion
+
 				m_isSaveObjectWindow = false;
 			}
 
@@ -1283,7 +1310,7 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 				m_strMapInfoFilePath = m_szMapInfoFilePath;
 				m_strMapInfoFilePath += m_szMapInfoFileName;
 				
-#pragma region 프로토타입 데이터 통해 일괄 등록
+#pragma region 프로토타입 일괄 불러오기
 
 				if (false == Prototypes_Load_Binary())
 				{
@@ -1299,7 +1326,7 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 
 #pragma endregion
 
-#pragma region 오브젝트 일괄 저장
+#pragma region 오브젝트 일괄 불러오기
 
 				if (false == Objects_Load_Binary())
 				{
@@ -1310,7 +1337,23 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 				else
 				{
 					// 오브젝트 리스트 윈도우 띄우기
-					m_isLoadObjectWindow = false;
+					//m_isLoadObjectWindow = true;
+				}
+
+#pragma endregion
+
+#pragma region 조명 일괄 불러오기
+
+				if (false == Lights_Load_Binary())
+				{
+#ifdef _DEBUG
+					OutputDebugStringA("조명 정보 바이너리 불러오기 실패");
+#endif // _DEBUG
+				}
+				else
+				{
+					// 조명 윈도우 띄우기
+					//m_isLightSettingWindow = true;
 				}
 
 #pragma endregion
@@ -1688,6 +1731,61 @@ _bool CLevel_Map::Objects_Save_Binary()
 	return true;
 }
 
+_bool CLevel_Map::Lights_Save_Binary()
+{
+	_wstring strLightInfoPath = AnsiToWString(m_strMapInfoFilePath);
+
+	strLightInfoPath += TEXT("_lights.dat");
+
+	DWORD dwByte = {};
+
+	// 프로토타입 핸들 개방
+	HANDLE hLightFile = CreateFile(strLightInfoPath.c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (INVALID_HANDLE_VALUE == hLightFile)
+	{
+		CloseHandle(hLightFile);
+		return false;
+	}
+	else
+	{
+		_uint iLightCnt = {};
+
+		for (auto& pLightTag : m_LightTags)
+		{
+			if (true == m_pGameInstance->Is_LightEnable(AnsiToWString(pLightTag), ENUM_CLASS(LEVEL::MAP)))
+				++iLightCnt;
+		}
+
+		// 1. 프로토 타입의 총 개수 저장 ( 이만큼 루프 돌릴거 )
+		WriteFile(hLightFile, &iLightCnt, sizeof(_uint), &dwByte, nullptr);
+
+		for (auto& pLightTag : m_LightTags)
+		{
+			if (false == m_pGameInstance->Is_LightEnable(AnsiToWString(pLightTag), ENUM_CLASS(LEVEL::MAP)))
+				continue;
+
+			const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(AnsiToWString(pLightTag), ENUM_CLASS(LEVEL::MAP));
+			CHECK_NULLPTR(pLightDesc, false);
+
+			_uint iLightTagLen = static_cast<_uint>(pLightTag.size());
+
+			// 2. 조명 태그 길이 저장
+			WriteFile(hLightFile, &iLightTagLen, sizeof(_uint), &dwByte, nullptr);
+
+			// 3. 조명 태그 저장 ( _wstring으로 넣을수있게 바로 변환 )
+			WriteFile(hLightFile, AnsiToWString(pLightTag).c_str(), sizeof(_tchar) * iLightTagLen, &dwByte, nullptr);
+
+			// 4. 조명 구조체 저장
+			WriteFile(hLightFile, pLightDesc, sizeof(LIGHT_DESC), &dwByte, nullptr);
+		}
+	}
+
+	// 프로토타입 핸들 닫기
+	CloseHandle(hLightFile);
+
+	return true;
+}
+
 _bool CLevel_Map::Prototypes_Load_Binary()
 {
 	_wstring pDataFilePath = AnsiToWString(m_strMapInfoFilePath);
@@ -1898,6 +1996,60 @@ _bool CLevel_Map::Objects_Load_Binary()
 		CHECK_NULLPTR_MSG(pProp, TEXT("[OBJECT LOAD] 오브젝트 찾기 실패"), false);
 
 		m_ObjectList.push_back(pProp);
+	}
+
+	CloseHandle(hFile);
+
+	return true;
+}
+
+_bool CLevel_Map::Lights_Load_Binary()
+{
+	_wstring strLightInfoPath = AnsiToWString(m_strMapInfoFilePath);
+
+	strLightInfoPath += TEXT("_lights.dat");
+
+	DWORD dwByte = {};
+
+	HANDLE hFile = CreateFile(strLightInfoPath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	CHECK_EQUAL(INVALID_HANDLE_VALUE, hFile, false);
+
+	// 1. 오브젝트의 총 개수
+	_uint iLightCnt = {};
+	CHECK_FALSE(ReadFile(hFile, &iLightCnt, sizeof(_uint), &dwByte, nullptr), false);
+
+	// 오브젝트 총 개수만큼 순회
+	for (_uint i = 0; i < iLightCnt; ++i)
+	{
+		LIGHT_DESC LightDesc = {};
+
+		// 2. 조명 태그 길이 불러오기
+		_uint iLightTagLen = {};
+		CHECK_FALSE(ReadFile(hFile, &iLightTagLen, sizeof(_uint), &dwByte, nullptr), false);
+
+		// 3. 조명 태그 이름 불러오기
+		_tchar szLightTag[MAX_PATH] = {};
+		CHECK_FALSE(ReadFile(hFile, &szLightTag, sizeof(_tchar) * iLightTagLen, &dwByte, nullptr), false);
+
+		// 4. 조명 구조체 불러오기
+		CHECK_FALSE(ReadFile(hFile, &LightDesc, sizeof(LIGHT_DESC), &dwByte, nullptr), false);
+
+		m_pGameInstance->Add_Light(szLightTag, ENUM_CLASS(LEVEL::MAP), LightDesc, true);
+
+		_wstring strLightTag = szLightTag;
+		m_LightTags.push_back(WStringToAnsi(strLightTag));
+
+		m_iLightTagIndex = m_LightTags.size() - 1;
+
+		ZeroMemory(&m_szLightTag, sizeof(m_szLightTag));
+		m_strLightTag.clear();
+		ZeroMemory(&m_LightDesc, sizeof(LIGHT_DESC));
+		m_LightDesc.eType = LIGHT_DESC::END;
+
+		m_isAddLight = !m_isAddLight;
+		m_isFixLight = false;
+
+		
 	}
 
 	CloseHandle(hFile);
