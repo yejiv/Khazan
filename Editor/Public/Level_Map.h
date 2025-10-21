@@ -73,20 +73,19 @@ private:
 	_bool m_isCollider = { false };
 	_bool m_isBlend = { false };
 
-	CProp* m_pFixPropObj = { nullptr };		// 피킹 시 받아올거 오브젝트 리스트 참고해서
+	CProp* m_pFixPropObj = { nullptr };					// 피킹 시 받아올거 오브젝트 리스트 참고해서
 	CTransform* m_pFixTransformCom = { nullptr };		// 픽스할 오브젝트의 트랜스폼
 
 	FIX_OBJECT m_eFixType = { FIX_OBJECT::END };		// 픽스 타입
 
 	_char m_szModelName[MAX_PATH] = {};
 
-	_float3 m_vFixScale = {};
-	_float3 m_vFixRotation = {};
-	_float3 m_vFixPosition = {};
+	_float3 m_vFixScale = {};			// ImGui 행렬 편집용
+	_float3 m_vFixRotation = {};		// ImGui 행렬 편집용
+	_float3 m_vFixPosition = {};		// ImGui 행렬 편집용
 
-	_float3 m_vResetScale = {};
-	_float3 m_vResetRotation = {};
-	_float3 m_vResetPosition = {};
+	_matrix m_FixBaseMatrix = { XMMatrixIdentity() };		// 피킹, Fix 오브젝트의 원본 행렬 ( 유지 )
+	_matrix m_FixWorldMatrix = {};							// 피킹, Fix 오브젝트의 월드 행렬
 
 	_uint m_iMapObjectShaderPass = { 2 };
 	
@@ -155,6 +154,7 @@ private:
 	_bool m_isSaveObjectWindow = { false };
 
 	_bool m_isLoadObjectWindow = { false };
+	_bool m_isLoaded = { false };
 
 #pragma endregion
 

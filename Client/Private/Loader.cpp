@@ -249,7 +249,7 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 		//return E_FAIL;
 
 	/* Prototype_Component_Model_ÆÄÀÏ¸í */
-	CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+	//CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("test"), LEVEL::STAGE1), E_FAIL);
 
 	return S_OK;
 }
