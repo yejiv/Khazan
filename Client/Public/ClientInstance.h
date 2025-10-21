@@ -1,6 +1,8 @@
 #pragma once
 #include "Client_Defines.h"
 #include "Base.h"
+#include "DB_Manager.h"
+
 NS_BEGIN(Engine)
 class CUIObject;
 NS_END
@@ -9,6 +11,7 @@ NS_BEGIN(Client)
 class CClientInstance final : public CBase
 {
 	DECLARE_SINGLETON(CClientInstance)
+
 private:
 	CClientInstance();
 	virtual ~CClientInstance() = default;
@@ -17,6 +20,13 @@ private:
 public:
 	HRESULT Initialize(ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext);
 	void Update(_float fTimeDelta);
+#pragma endregion
+
+#pragma region DB_MANGER
+	HRESULT						Load_Data(DATATYPE eType, const _tchar* pFilePath);
+	template <typename T>
+	const T* Get_Data(_uint iID) const;
+
 #pragma endregion
 
 #pragma region UI_MANGER
@@ -30,7 +40,6 @@ public:
 	//UI JSON ·Îµå
 	HRESULT						Load_UIData(_uint iLayerLevelID, const _wstring& strLayerTag, _uint iPrototypeLevelID, const _tchar* pTextureFilePath);
 	CUIObject*					Load_UIObject(_uint iPrototypeLevelID, const _tchar* pFilePath);
-
 	
 	_int						UIType_StringToEnum(string szUIType);
 	_uint						UI_TexTag_Maping(string szTextag);
@@ -48,10 +57,15 @@ private:
 	ID3D11Device* m_pDevice = { nullptr };
 	ID3D11DeviceContext* m_pContext = { nullptr };
 	
-	class CUI_Manager* m_pUI_Manager = { nullptr };
-
+	class CUI_Manager*	m_pUI_Manager = { nullptr };
+	CDB_Manager*		m_pDB_Manager = { nullptr };
 public:
 	virtual void Free() override;
 };
 
+template<typename T>
+inline const T* CClientInstance::Get_Data(_uint iID) const
+{
+	return m_pDB_Manager->Get_Data<T>(iID);;
+}
 NS_END

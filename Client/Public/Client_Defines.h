@@ -2,6 +2,7 @@
 
 #include "../Default/framework.h"
 #include <process.h>
+#include "Client_Struct.h"
 
 /* 클라이언트에서 사용할 수 있는 공통적인 정의를 모아놓은 파일 */
 namespace Client
@@ -23,6 +24,8 @@ namespace Client
 	enum class CAMERATYPE { FREE, SPRING, END };
 
 	enum class TEAM { GOBLIN, YETI, END };
+
+	enum class DATATYPE { ITEM, EQUIPEFFECT, OTHEREFFECT, END };
 }
 
 extern HWND g_hWnd;
