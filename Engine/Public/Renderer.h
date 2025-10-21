@@ -26,27 +26,29 @@ public:
 #endif
 
 private:
-	ID3D11Device* m_pDevice = { nullptr };
-	ID3D11DeviceContext* m_pContext = { nullptr };
-	class CGameInstance* m_pGameInstance = { nullptr };
+	ID3D11Device*				m_pDevice = { nullptr };
+	ID3D11DeviceContext*		m_pContext = { nullptr };
+	class CGameInstance*		m_pGameInstance = { nullptr };
 
-	list<class CGameObject*>				m_RenderObjects[ENUM_CLASS(RENDERGROUP::END)];
-
-
+	list<class CGameObject*>	m_RenderObjects[ENUM_CLASS(RENDERGROUP::END)];
 
 private:
-	class CShader* m_pShader = { nullptr };
-	class CVIBuffer_Rect* m_pVIBuffer = { nullptr };
+	class CShader*				m_pShader = { nullptr };
+	class CVIBuffer_Rect*		m_pVIBuffer = { nullptr };
 
-	_float4x4		m_WorldMatrix{}, m_ViewMatrix{}, m_ProjMatrix{};
-	ID3D11DepthStencilView* m_pShadowDSV = { nullptr };
+	_float4x4					m_WorldMatrix{}, m_ViewMatrix{}, m_ProjMatrix{};
 
-	_float									m_fViewportWidth{}, m_fViewportHeight{};
+	_float						m_fViewportWidth{}, m_fViewportHeight{};
+
+	// Cascade
+	ID3D11DepthStencilView*		m_CascadeShadowDSVs[g_iNumCascades];
+	ID3D11ShaderResourceView*	m_pCascadeShadowSRVArray = { nullptr };
 
 #ifdef _DEBUG
 private:
-	list<class CComponent*>					m_DebugComponent;
-	_bool									m_isRenderDebug = {};
+	list<class CComponent*>		m_DebugComponent;
+	_bool						m_isRenderDebug = {};
+	vector<class CGameObject*>	m_CascadeObjects;
 #endif
 
 
@@ -62,8 +64,8 @@ private:
 	HRESULT Render_UI();
 
 private:
-	HRESULT Ready_Shadow_Depth_Stencil_View();
 	HRESULT SetUp_Viewport(_float fWidth, _float fHeight);
+	HRESULT Ready_Cascade_Shadow_Resources();
 
 #ifdef _DEBUG
 	HRESULT Render_Debug();
