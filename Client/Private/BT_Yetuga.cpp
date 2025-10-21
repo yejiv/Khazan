@@ -27,48 +27,58 @@ HRESULT CBT_Yetuga::Initialize(void* pArg)
     CSequence_Node* pAttackSequence = CSequence_Node::Create();
 
     CAction_Node* pAttackCondition = CAction_Node::Create(
-        [pOwner](CBlackBoard* BB) 
+        [pOwner](CBlackBoard* BB)
         {
+            cout << "Attack Conditon " << endl;
+
             if (BB->Get_Value<_bool>("Yetuga", "isDead")) return BTNODESTATE::FAILURE;
+
             _float fDist = BB->Get_Value<_float>("Yetuga", "TargetDist");
-
-            //cout << "Attack Condition" << endl;
-
-            if (pOwner->AI_IsReadyCoolDown("Attack") 
-                && 0 != fDist && fDist <= BB->Get_Value<_float>("Yetuga", "AttackRange"))
+            if (fDist != 0 && pOwner->AI_IsReadyCoolDown("Attack") && fDist < BB->Get_Value<_float>("Yetuga", "AttackRange"))
+            {
+                cout << "AttackConditionSuccess" << endl;
                 return BTNODESTATE::SUCCESS;
+            }
             else
+            {
                 return BTNODESTATE::FAILURE;
+            }
 
-        },nullptr
-    );
+        }, nullptr);
 
     CAction_Node* pAttackAction = CAction_Node::Create(
         [pOwner](CBlackBoard* BB)
         {
             if (!BB->Get_Value<_bool>("Yetuga", "isAttack"))
             {
-                cout << " Action RUNNING !!!!!!!!" << endl;
-
                 BB->Set_Value<_bool>("Yetuga", "isAttack", true);
-                pOwner->AI_Set_CoolDown("Attack",BB->Get_Value<_float>("Yetuga", "AttackCoolDown"));
+                BB->Set_Value<_bool>("Yetuga", "isAttackFinished", false);
+
+                pOwner->AI_Set_CoolDown("Attack", BB->Get_Value<_float>("Yetuga", "AttackCoolDown"));
                 pOwner->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::ATTACK), pOwner);
+
                 return BTNODESTATE::RUNNING;
+
             }
-            if (BB->Get_Value<_bool>("Yetuga", "isAttackAnimFinish"))
+            if (BB->Get_Value<_bool>("Yetuga", "isAttackFinished"))
+            {
                 return BTNODESTATE::SUCCESS;
-        }, 
+            }
+            // 아직 애니메이션 진행 중
+            return BTNODESTATE::RUNNING;
+        },
         [pOwner](CBlackBoard* BB, BTNODESTATE eState)
         {
             if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
             {
-                //pOwner->AI_Reset_CoolDown("Attack");
                 BB->Set_Value<_bool>("Yetuga", "isAttack", false);
-                BB->Set_Value<_bool>("Yetuga", "isAttackAnimFinish", false);
-                cout << "Terminate_Attack" << endl;
+                BB->Set_Value<_bool>("Yetuga", "isAttackFinished", false);
+
+                pOwner->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pOwner);
             }
         }
     );
+
 
     pAttackSequence->Add_Child(pAttackCondition);
     pAttackSequence->Add_Child(pAttackAction);
@@ -84,21 +94,17 @@ HRESULT CBT_Yetuga::Initialize(void* pArg)
     CAction_Node* pMoveCondition = CAction_Node::Create(
         [pOwner](CBlackBoard* BB)
         {
-            cout << " MoveCondition  1111111111111111111" << endl;
             if (BB->Get_Value<_bool>("Yetuga", "isDead")) return BTNODESTATE::FAILURE;
+            cout << "Chase Condition" << endl;
             if (!BB->Get_Value<_bool>("Yetuga", "isDetected")) return BTNODESTATE::FAILURE;
-            cout << " MoveCondition  2222222222222222222222222" << endl;
-
 
             _float fDist = BB->Get_Value<_float>("Yetuga", "TargetDist");
 
-            if (fDist != 0 && fDist <= BB->Get_Value<_float>("Yetuga", "ChaseRange"))
+            if (fDist >= BB->Get_Value<_float>("Yetuga","AttackRange") 
+                && fDist != 0 && fDist <= BB->Get_Value<_float>("Yetuga", "ChaseRange"))
             {
-                cout << " MoveCondition SUCCESS !!!!!!!!" << endl;
-
                 return BTNODESTATE::SUCCESS;
             }
-
             return BTNODESTATE::FAILURE;
         },
         nullptr
@@ -108,8 +114,6 @@ HRESULT CBT_Yetuga::Initialize(void* pArg)
     CAction_Node* pMoveAction = CAction_Node::Create(
         [pOwner](CBlackBoard* BB)
         {
-            cout << " MoveAction RUNNING !!!!!!!!" << endl;
-
             if (BB->Get_Value<_float>("Yetuga", "TargetDist") <= BB->Get_Value<_float>("Yetuga", "AttackRange"))
                 return BTNODESTATE::SUCCESS;
 
@@ -138,7 +142,6 @@ HRESULT CBT_Yetuga::Initialize(void* pArg)
             if (BB->Get_Value<_bool>("Yetuga", "isDead")) return BTNODESTATE::FAILURE;
             if (BB->Get_Value<_bool>("Yetuga", "isDetected")) return BTNODESTATE::FAILURE;
 
-            cout << "IdleAction!!!!!!!!!!!!" << endl;
             pOwner->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE),pOwner);
             return BTNODESTATE::RUNNING;
         },

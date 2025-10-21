@@ -17,9 +17,10 @@ void CMoveState_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 void CMoveState_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
     
+
     CBlackBoard* pBB = m_pGameInstance->Get_BlackBoard();
     static_cast<CYetuga*>(pOwner)->Get_Controller()->AI_MoveTo(pOwner,
-        pBB->Get_Value<CGameObject*>("Yetuga", "Target"),0.f, fTimeDelta);
+        pBB->Get_Value<CGameObject*>("Yetuga", "Target"),pBB->Get_Value<_float>("Yetuga","AttackRange"), fTimeDelta);
 
     CModel* pModel = static_cast<CModel*>(pOwner->Get_Component(TEXT("Com_Model")));
     if (pModel->Play_Animation(fTimeDelta))

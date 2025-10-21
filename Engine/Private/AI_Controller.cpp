@@ -19,7 +19,7 @@ void CAI_Controller::AI_MoveTo(CGameObject* pOwner, CGameObject* pTarget, _float
     _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
 
     pOwnerTransform->LookAt(vTargetPos);
-    pOwnerTransform->Chase(vTargetPos, fTimeDelta, fLimit);
+    pOwnerTransform->AI_Chase(vTargetPos, fTimeDelta, fLimit);
 }
 
 HRESULT CAI_Controller::Initialize()
