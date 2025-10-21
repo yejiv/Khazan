@@ -290,7 +290,7 @@ void CEdit_Interface_UI::SetName_UI()
 void CEdit_Interface_UI::Transform_UI(_float fTimeDelta)
 {
 	_bool isMoveUI = false;
-	if (m_pGameInstance->Key_Pressing(DIK_Q, fTimeDelta, nullptr))
+	if (m_pGameInstance->Key_Pressing(DIK_Q, fTimeDelta))
 		isMoveUI = true;
 	ImGui::Checkbox("Move(Hold:Q)", &isMoveUI);
 	if (isMoveUI)
@@ -377,7 +377,12 @@ void CEdit_Interface_UI::SetTexture_UI()
 
 				m_pRootUIs[m_iSeletRootUI]->Set_AtlasTexSize(m_szSeleteUIName, m_szFrameName, m_fTexSize);
 			}
-
+			ImGui::InputInt("##Shader", &m_iShaderIndex);
+			ImGui::SameLine();
+			if (ImGui::Button("SetShader"))
+			{
+				m_pRootUIs[m_iSeletRootUI]->Set_ShaderPass(m_szSeleteUIName, m_iShaderIndex);
+			}
 		}
 		m_pRootUIs[m_iSeletRootUI]->Update_Option(m_szSeleteUIName, m_szFrameName, m_iTexType);
 	}

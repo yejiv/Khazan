@@ -28,7 +28,8 @@ HRESULT CProp::Initialize_Clone(void* pArg)
     CHECK_NULLPTR(pDesc, E_FAIL);
 
     memcpy(m_szModelName, pDesc->szModelName, MAX_PATH);
-    m_isBlended = pDesc->isBlended;
+
+    m_Properties = pDesc->Properties;
 
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 

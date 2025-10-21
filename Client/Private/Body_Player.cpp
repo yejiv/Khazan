@@ -36,7 +36,9 @@ HRESULT CBody_Player::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    m_pModelCom->Set_Animation(3, true);
+    //m_pModelCom->Set_Animation(3, true);
+    m_pModelCom->Set_AnimationLoop(true);
+    m_pModelCom->Set_Animation(3);
 
     return S_OK;
 }
@@ -50,12 +52,14 @@ void CBody_Player::Update(_float fTimeDelta)
 {
     if (*m_pParentState & CPlayer::RUN)
     {
-        m_pModelCom->Set_Animation(4, true);
+        m_pModelCom->Set_AnimationLoop(true);
+        m_pModelCom->Set_Animation(4);
     }
 
     if (*m_pParentState & CPlayer::IDLE)
     {
-        m_pModelCom->Set_Animation(3, true);
+        m_pModelCom->Set_AnimationLoop(true);
+        m_pModelCom->Set_Animation(3);
     }
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))

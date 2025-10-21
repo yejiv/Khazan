@@ -171,6 +171,48 @@ HRESULT CUI_Manager::Load_UIData(_uint iLayerLevelID, const _wstring& strLayerTa
 	return S_OK;
 }
 
+CUIObject* CUI_Manager::Load_UIObject(_uint iPrototypeLevelID, const _tchar* pFilePath)
+{
+	ifstream In(pFilePath);
+	if (!In.is_open())
+	{
+		MSG_BOX(TEXT("UI JSON 파일 불러오기 실패"));
+		In.close();
+		return nullptr;
+	}
+	else
+	{
+		nlohmann::json jsonData;
+		In >> jsonData;
+
+		string strClass = jsonData.value("class", "");
+		_wstring wstrClass = AnsiToWString(strClass);
+
+		CUIObject::UIOBJECT_DESC UIDesc{};
+		UIDesc.szName = jsonData.value("name", "");
+		UIDesc.iUIType = 0;
+		UIDesc.vLocalSize = { 1.f, 1.f };
+		UIDesc.fDepth = 0;
+		UIDesc.vLocalPos = { g_iWinSizeX >> 1 , g_iWinSizeY >> 1 };
+
+		CUIObject* pRootUI = static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelID, wstrClass.c_str(), &UIDesc));
+
+		if (pRootUI == nullptr)
+		{
+			MSG_BOX(TEXT("UI Load : 클론 실패"));
+			return nullptr;
+		}
+
+		if (FAILED(pRootUI->Load_UI(jsonData, iPrototypeLevelID, &UIDesc)))
+		{
+			MSG_BOX(TEXT("UI Load : 데이터 로드 실패"));
+			return nullptr;
+		}
+
+		return pRootUI;
+	}
+}
+
 _int CUI_Manager::UIType_StringToEnum(string szUIType)
 {
 	UITYPE eUIType = {};
@@ -271,12 +313,16 @@ HRESULT CUI_Manager::Ready_Prototype()
 
 _uint CUI_Manager::TexTag_Maping(string szTextag)
 {
-	if ("Prototype_Component_Atlas_SlotTest" == szTextag)
+	if ("Prototype_Component_Atlas_Hud" == szTextag)
 		return 0;
-	else if ("Prototype_Component_Atlas_Test" == szTextag)
+	else if ("Prototype_Component_Atlas_Inven" == szTextag)
 		return 1;
-
 	return -1;
+}
+
+_float4 CUI_Manager::Get_AtlasUV(const string pFrameName, _uint iTextureIndex)
+{
+	return m_pAtlasRenderGroup[0]->Get_AtlasUV(pFrameName, iTextureIndex);
 }
 
 CUI_Manager* CUI_Manager::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)

@@ -29,6 +29,7 @@ public:
 
 	//로드
 	HRESULT						Load_UIData(_uint iLayerLevelID, const _wstring& strLayerTag, _uint iPrototypeLevelID, const _tchar* pFilePath);
+	CUIObject*					Load_UIObject(_uint iPrototypeLevelID, const _tchar* pFilePath);
 
 	//랜더 관련
 	HRESULT						Add_UIRender(UI_RENDER_TYPE eRender, CUIObject* pUIObject);
@@ -37,7 +38,7 @@ public:
 	HRESULT						UI_UpdateSwitch(const _wstring& strUITag, void* pArg);
 	_int						UIType_StringToEnum(string szUIType);
 	_uint						TexTag_Maping(string szTextag);
-
+	_float4						Get_AtlasUV(const string pFrameName, _uint iTextureIndex);
 private:
 	class CGameInstance*		m_pGameInstance = { nullptr };
 	ID3D11Device*				m_pDevice = { nullptr };

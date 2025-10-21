@@ -138,6 +138,8 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 {
 	//m_pPicking->Update();
 
+	m_pInput_Manager->Update();
+
 	/* 내 게임내에서 반복적인 갱신이 필요한 객체들이 있다라면 갱신을 여기에서 모아서 수행하낟. */
 	m_pObject_Manager->Priority_Update(fTimeDelta);
 
@@ -156,8 +158,6 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 	m_pJolt_Manager->Update(fTimeDelta);
 
 	m_pComputeShader_Manager->Execute_Job(COMPUTEJOB::UPDATE);
-
-	m_pInput_Manager->Update();
 
 #ifdef _DEBUG
 
@@ -295,6 +295,14 @@ _bool CGameInstance::Already_Registered_Prototype(_uint iPrototypeLevelIndex, co
 		return false;
 
 	return m_pPrototype_Manager->Already_Registered_Prototype(iPrototypeLevelIndex, strPrototypeTag);
+}
+
+CBase* CGameInstance::Find_Prototype_ForPreview(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag)
+{
+	if (nullptr == m_pPrototype_Manager)
+		return nullptr;
+
+	return m_pPrototype_Manager->Find_Prototype_ForPreview(iPrototypeLevelIndex, strPrototypeTag);
 }
 
 #pragma endregion
@@ -437,6 +445,11 @@ void CGameInstance::Set_LightEnable(const _wstring& strLightTag, _uint iLevelInd
 	m_pLight_Manager->Set_LightEnable(strLightTag, iLevelIndex, isEnable);
 }
 
+_bool CGameInstance::Is_LightEnable(const _wstring& strLightTag, _uint iLevelIndex)
+{
+	return m_pLight_Manager->Is_LightEnable(strLightTag, iLevelIndex);
+}
+
 HRESULT CGameInstance::Render_Lights(CShader* pShader, CVIBuffer_Rect* pVIBuffer, _uint iLevelIndex)
 {
 	return m_pLight_Manager->Render(pShader, pVIBuffer, iLevelIndex);
@@ -530,6 +543,11 @@ _bool CGameInstance::isPicked(_float3* pOut)
 _bool CGameInstance::isPicked(_float3* pOut, _uint* iObjectID)
 {
 	return m_pPicking->isPicked(pOut, iObjectID);
+}
+
+_float4 CGameInstance::isPickRenderTargetPixel(_wstring strRenderTargetTag)
+{
+	return m_pPicking->isPickRenderTargetPixel(strRenderTargetTag);
 }
 
 #pragma endregion
@@ -676,6 +694,10 @@ void CGameInstance::Reset_Gravity()
 }
 
 #ifdef _DEBUG
+void CGameInstance::Change_DebugRender()
+{
+	m_pJolt_Manager->Change_DebugRender();
+}
 void CGameInstance::Jolt_Test()
 {
 	m_pJolt_Manager->Test();
@@ -699,33 +721,37 @@ void CGameInstance::Submit(std::function<void()> job)
 #pragma endregion
 
 #pragma region INPUT_MANAGER
-_bool CGameInstance::Key_Pressing(_ubyte byKeyID, _float fTimeDelta, _float* pPressingTime)
+_bool CGameInstance::Key_Pressing(_ubyte byKeyID, _float fTimeDelta, INPUT_TYPE eType, _float* pPressingTime)
 {
-	return m_pInput_Manager->Key_Pressing(byKeyID, fTimeDelta, pPressingTime);
+	return m_pInput_Manager->Key_Pressing(byKeyID, fTimeDelta, eType, pPressingTime);
 }
-_bool CGameInstance::Key_Down(_ubyte byKeyID)
+_bool CGameInstance::Key_Down(_ubyte byKeyID, INPUT_TYPE eType)
 {
-	return m_pInput_Manager->Key_Down(byKeyID);
+	return m_pInput_Manager->Key_Down(byKeyID, eType);
 }
-_bool CGameInstance::Key_Up(_ubyte byKeyID)
+_bool CGameInstance::Key_Up(_ubyte byKeyID, INPUT_TYPE eType)
 {
-	return m_pInput_Manager->Key_Up(byKeyID);
+	return m_pInput_Manager->Key_Up(byKeyID, eType);
 }
-_bool CGameInstance::Mouse_Pressing(MOUSEKEYSTATE eMouse)
+_bool CGameInstance::Mouse_Pressing(MOUSEKEYSTATE eMouse, INPUT_TYPE eType)
 {
-	return m_pInput_Manager->Mouse_Pressing(eMouse);
+	return m_pInput_Manager->Mouse_Pressing(eMouse, eType);
 }
-_bool CGameInstance::Mouse_Down(MOUSEKEYSTATE eMouse)
+_bool CGameInstance::Mouse_Down(MOUSEKEYSTATE eMouse, INPUT_TYPE eType)
 {
-	return m_pInput_Manager->Mouse_Down(eMouse);
+	return m_pInput_Manager->Mouse_Down(eMouse, eType);
 }
-_bool CGameInstance::Mouse_Up(MOUSEKEYSTATE eMouse)
+_bool CGameInstance::Mouse_Up(MOUSEKEYSTATE eMouse, INPUT_TYPE eType)
 {
-	return m_pInput_Manager->Mouse_Up(eMouse);
+	return m_pInput_Manager->Mouse_Up(eMouse, eType);
 }
-_long CGameInstance::Mouse_Move(MOUSEMOVESTATE eMouseState)
+_long CGameInstance::Mouse_Move(MOUSEMOVESTATE eMouseState, INPUT_TYPE eType)
 {
-	return m_pInput_Manager->Mouse_Move(eMouseState);
+	return m_pInput_Manager->Mouse_Move(eMouseState, eType);
+}
+void CGameInstance::Change_InputType(INPUT_TYPE eType)
+{
+	m_pInput_Manager->Change_InputType(eType);
 }
 #pragma endregion
 
@@ -821,6 +847,22 @@ HRESULT CGameInstance::Add_Camera(_uint iLevelIndex, CCamera* pCamera)
 void CGameInstance::Change_Camera(_uint iLevelIndex, _uint iCameraType)
 {
 	m_pCamera_Manager->Change_Camera(iLevelIndex, iCameraType);
+}
+void CGameInstance::Change_Camera(_uint iLevelIndex, _wstring strCameraTag)
+{
+	m_pCamera_Manager->Change_Camera(iLevelIndex, strCameraTag);
+}
+vector<class CCamera*> CGameInstance::Get_pCameras(_uint iNumLevel)
+{
+	return m_pCamera_Manager->Get_pCameras(iNumLevel);
+}
+CCamera* CGameInstance::Get_ActiveCamera()
+{
+	return m_pCamera_Manager->Get_ActiveCamera();
+}
+void CGameInstance::Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData)
+{
+	m_pCamera_Manager->Save_Json(iLevelIndex, strCameraTag, pOutData);
 }
 #pragma endregion
 

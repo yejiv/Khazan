@@ -17,6 +17,12 @@ CMonster::CMonster(const CMonster& Prototype)
 
 }
 
+void CMonster::Take_Damage(CCreature* pGameObject, _float fDamage)
+{
+    m_fCurrentHP -= fDamage;
+    m_pController->AI_ApplyDamage(pGameObject,fDamage);
+}
+
 HRESULT CMonster::Initialize_Prototype()
 {
     return S_OK;
@@ -66,6 +72,36 @@ HRESULT CMonster::Render()
 {
   
     return S_OK;
+}
+
+void CMonster::AI_Set_CoolDown(const string& strName, _float fDelay)
+{
+    m_CoolDowns[strName] = m_fCoolTimeAcc + fDelay;
+}
+
+_bool CMonster::AI_IsReadyCoolDown(const string& strName)
+{
+    auto iter = m_CoolDowns.find(strName);
+    if (iter == m_CoolDowns.end())
+        return true;
+
+    if (m_fCoolTimeAcc >= iter->second)
+    {
+        m_CoolDowns.erase(iter);
+        return true;
+    }
+
+    return false;
+}
+
+void CMonster::AI_Reset_CoolDown(const string& strName)
+{
+    m_CoolDowns.erase(strName);
+}
+
+void CMonster::AI_Reset_AllCoolDown()
+{
+    m_CoolDowns.clear();
 }
 
 //HRESULT CMonster::Ready_Components()

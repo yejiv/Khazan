@@ -17,6 +17,8 @@ public:
 	{
 		LEVEL eLevel{ LEVEL::END };
 
+		MAPOBJECT_PROPERTIES Properties{};
+
 		_tchar szModelName[MAX_PATH] = {};
 
 	}PROP_DESC;
@@ -35,14 +37,23 @@ public:
 	virtual HRESULT Render() override;
 	virtual HRESULT Render_Shadow() { return S_OK; }
 
+public:
+	_bool isSnow() { return m_Properties.isSnow; }
+	_bool isCollider() { return m_Properties.isCollider; }
+	_bool isBlended() { return m_Properties.isBlended; }
+	_bool isInstance() { return m_Properties.isInstance; }
+	_bool isShadow() { return m_Properties.isShadow; }
+
 protected:
 	_tchar m_szModelName[MAX_PATH] = {};
-	_bool m_isSnowMap = { true };
+
+	MAPOBJECT_PROPERTIES m_Properties = {};
+
 	_float m_fSnowAmount = { 0.5f };
 	_float3 m_vSnowColor = { 0.92f, 0.94f, 1.f };
 
 protected:
-	virtual HRESULT Bind_ShaderResources_ForSnowMap(class CTexture* pTextureCom, _uint iMeshIndex);
+	virtual HRESULT Bind_ShaderResources_ForSnowMap(_uint iMeshIndex);
 	virtual HRESULT Bind_Instance_Materials(CModel_Instance* pModelCom, _uint iMeshIndex);
 
 public:

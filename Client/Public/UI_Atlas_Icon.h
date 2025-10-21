@@ -5,10 +5,21 @@
 NS_BEGIN(Client)
 class CUI_Atlas_Icon final : public CUI_Texture
 {
+public:
+	typedef struct UI_Atlas_Icon_tag : public CUIObject::UIOBJECT_DESC
+	{
+		_int iTexPass = {};
+		_int iShaderPass = {};
+		_float4 vUV = {};
+		_float4 vColor = {};
+	}UIATLASICON_DESC;
 private:
 	CUI_Atlas_Icon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CUI_Atlas_Icon(const CUI_Atlas_Icon& Prototype);
 	virtual ~CUI_Atlas_Icon() = default;
+
+public:
+	void					Update_Color(_float4 vColor);
 
 public:
 	virtual HRESULT			Initialize_Prototype() override;

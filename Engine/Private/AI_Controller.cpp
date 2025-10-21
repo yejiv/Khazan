@@ -12,6 +12,33 @@ CAI_Controller::CAI_Controller()
     Safe_AddRef(m_pGameInstance);
 }
 
+void CAI_Controller::AI_MoveTo(CGameObject* pOwner, CGameObject* pTarget, _float fLimit, _float fTimeDelta)
+{
+    CTransform* pTargetTransform = static_cast<CTransform*>(pTarget->Get_Component(TEXT("Com_Transform")));
+    CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+    _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+
+    pOwnerTransform->LookAt(vTargetPos);
+    pOwnerTransform->AI_Chase(vTargetPos, fTimeDelta, fLimit);
+}
+
+void CAI_Controller::AI_ApplyDamage(CGameObject* pAttacker, _float fDamage)
+{
+    if (nullptr == m_pPerception)
+        return;
+    
+    STIMULUS DamageStim{};
+    DamageStim.bSensed = true;
+    DamageStim.eType = SENSETYPE::DAMAGE;
+    DamageStim.fStrength = fDamage;
+    DamageStim.dTimeStamp = m_pPerception->Get_CurrentTime();
+    _vector vTempLocation = static_cast<CTransform*>(pAttacker->Get_Component(TEXT("Com_Transform")))->Get_State(STATE::POSITION);
+    XMStoreFloat3(&DamageStim.vLocation, vTempLocation);
+
+    m_pPerception->Notify_Damage(pAttacker,DamageStim);
+
+}
+
 HRESULT CAI_Controller::Initialize()
 {
 

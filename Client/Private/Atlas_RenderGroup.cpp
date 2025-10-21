@@ -80,6 +80,11 @@ HRESULT CAtlas_RenderGroup::Add_UIInstance(const VTXINSTANCE_UI* pUIData)
 	return m_pVIBufferCom->Add_UIInstance(pUIData);
 }
 
+_float4 CAtlas_RenderGroup::Get_AtlasUV(const string pFrameName, _uint iTextureIndex)
+{
+	return m_pTextureCom->FindTexFrame(pFrameName, iTextureIndex);
+}
+
 HRESULT CAtlas_RenderGroup::Ready_Component()
 {
 	if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxInstance_Point_UI"),

@@ -57,6 +57,8 @@ public:
 	class CBase* Clone_Prototype(PROTOTYPE ePrototype, _uint iPrototpyeLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);
 	// 프로토 타입 등록 여부 검사 함수
 	_bool Already_Registered_Prototype(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag);
+	CBase* Find_Prototype_ForPreview(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag);
+
 #pragma endregion
 
 #pragma region OBJECT_MANAGER
@@ -102,6 +104,7 @@ public:
 	void Set_LightDesc(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_DESC& LightDesc);
 	void Set_LightPosition(const _wstring& strLightTag, _uint iLevelIndex, const _float4& vPosition);
 	void Set_LightEnable(const _wstring& strLightTag, _uint iLevelIndex, _bool isEnable);
+	_bool Is_LightEnable(const _wstring& strLightTag, _uint iLevelIndex);
 	HRESULT Render_Lights(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer, _uint iLevelIndex);
 #pragma endregion
 
@@ -131,6 +134,7 @@ public:
 	_bool isPicked(_float3* pOut);
 	// Target_World의 W도 추가로 값 빼오는 용도 ( 맵 오브젝트 ID용으로 사용 )
 	_bool isPicked(_float3* pOut, _uint* iObjectID);
+	_float4 isPickRenderTargetPixel(_wstring strRenderTargetTag);
 #pragma endregion
 
 #pragma region SHADOW
@@ -175,6 +179,7 @@ public:
 	void Set_Gravity(_vector vGravity);
 	void Reset_Gravity();
 #ifdef _DEBUG
+	void Change_DebugRender();
 	void Jolt_Test();
 #endif
 #pragma endregion
@@ -186,15 +191,17 @@ public:
 #pragma
 
 #pragma region INPUT_MANAGER
-	_bool		Key_Pressing(_ubyte byKeyID, _float fTimeDelta, _float* pPressingTime = nullptr);
-	_bool		Key_Down(_ubyte byKeyID);
-	_bool		Key_Up(_ubyte byKeyID);
+	_bool		Key_Pressing(_ubyte byKeyID, _float fTimeDelta, INPUT_TYPE eType = INPUT_TYPE::GAMEPLAY, _float* pPressingTime = nullptr);
+	_bool		Key_Down(_ubyte byKeyID, INPUT_TYPE eType = INPUT_TYPE::GAMEPLAY);
+	_bool		Key_Up(_ubyte byKeyID, INPUT_TYPE eType = INPUT_TYPE::GAMEPLAY);
 
-	_bool		Mouse_Pressing(MOUSEKEYSTATE eMouse);
-	_bool		Mouse_Down(MOUSEKEYSTATE eMouse);
-	_bool		Mouse_Up(MOUSEKEYSTATE eMouse);
+	_bool		Mouse_Pressing(MOUSEKEYSTATE eMouse, INPUT_TYPE eType = INPUT_TYPE::GAMEPLAY);
+	_bool		Mouse_Down(MOUSEKEYSTATE eMouse, INPUT_TYPE eType = INPUT_TYPE::GAMEPLAY);
+	_bool		Mouse_Up(MOUSEKEYSTATE eMouse, INPUT_TYPE eType = INPUT_TYPE::GAMEPLAY);
 
-	_long		Mouse_Move(MOUSEMOVESTATE eMouseState);
+	_long		Mouse_Move(MOUSEMOVESTATE eMouseState, INPUT_TYPE eType = INPUT_TYPE::GAMEPLAY);
+
+	void		Change_InputType(INPUT_TYPE eType);
 #pragma endregion
 
 #pragma region POOL_MANAGER
@@ -230,6 +237,11 @@ public:
 #pragma region CAMERA_MANAGER
 	HRESULT Add_Camera(_uint iLevelIndex, class CCamera* pCamera);
 	void Change_Camera(_uint iLevelIndex, _uint iCameraType);
+	void Change_Camera(_uint iLevelIndex, _wstring strCameraTag);
+	vector<class CCamera*> Get_pCameras(_uint iNumLevel);
+	class CCamera* Get_ActiveCamera();
+
+	void Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
 #pragma endregion
 
 #pragma region CAMERA_MANAGER
