@@ -15,6 +15,9 @@ public:
 	virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner) = 0;
 
 
+protected:
+	class CGameInstance*		m_pGameInstance = { nullptr };
+
 public:
 	virtual void Free() override;
 

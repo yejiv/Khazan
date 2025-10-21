@@ -40,14 +40,15 @@ HRESULT CCamera_Compre::Initialize_Clone(void* pArg)
 void CCamera_Compre::Priority_Update(_float fTimeDelta)
 {
     if (!m_isActive)
-        return;   
+        return;
 
-    if (m_iCameraType == ENUM_CLASS(CAMERATYPE::FREE))
-        Update_Free(fTimeDelta);
-    else if (m_iCameraType == ENUM_CLASS(CAMERATYPE::SPRING))
-        Update_Spring(fTimeDelta);
-
-
+    if (!m_isAnimation)
+    {
+        if (m_iCameraType == ENUM_CLASS(CAMERATYPE::FREE))
+            Update_Free(fTimeDelta);
+        else if (m_iCameraType == ENUM_CLASS(CAMERATYPE::SPRING))
+            Update_Spring(fTimeDelta);
+    }
     __super::Update_PipeLines();
 }
 
@@ -55,6 +56,8 @@ void CCamera_Compre::Update(_float fTimeDelta)
 {
     if (!m_isActive)
         return;
+
+    __super::Play_Animation(fTimeDelta);
 }
 
 void CCamera_Compre::Late_Update(_float fTimeDelta)
@@ -107,6 +110,9 @@ void CCamera_Compre::Update_Free(_float fTimeDelta)
 
 void CCamera_Compre::Update_Spring(_float fTimeDelta)
 {
+    if (m_pObjMatrix == nullptr)
+        return;
+
     _int iMouseMoveX = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::X);
     _int iMouseMoveY = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::Y);
 
@@ -167,7 +173,7 @@ void CCamera_Compre::Update_Spring(_float fTimeDelta)
     m_pTransformCom->Set_State(STATE::POSITION, vCamPos);
 
     //m_pCharVirCom->Set_PosRot(vCamPos, m_pTransformCom->Get_Rotation_Quat());
-    
+
     //m_pGameInstance->Set_Gravity(XMVectorSet(0.f, 0.f, 0.f, 0.f));
     m_pCharVirCom->Sync_Update(m_pTransformCom);
     m_pCharVirCom->Update(fTimeDelta, m_pTransformCom, XMVectorSet(0.f, 0.f, 0.f, 0.f));
@@ -196,17 +202,8 @@ HRESULT CCamera_Compre::Ready_Camera(void* pArg)
 {
     CAMERA_COMPRE_DESC* pDesc = static_cast<CAMERA_COMPRE_DESC*>(pArg);
 
-    if (pDesc->iCameraType == ENUM_CLASS(CAMERATYPE::FREE))
+    if (pDesc->iCameraType == ENUM_CLASS(CAMERATYPE::SPRING))
     {
-        CAMERA_FREE_DESC* pFreeDesc = static_cast<CAMERA_FREE_DESC*>(pArg);
-        m_fMouseSensor = pFreeDesc->fMouseSensor;
-    }
-    else if (pDesc->iCameraType == ENUM_CLASS(CAMERATYPE::SPRING))
-    {
-        CAMERA_SPRING_DESC* pSpringDesc = static_cast<CAMERA_SPRING_DESC*>(pArg);
-        m_fMouseSensor = pSpringDesc->fMouseSensor;
-        m_pObjMatrix = pSpringDesc->pObjMatrix;
-        
         CHECK_FAILED(Ready_Body(), E_FAIL);
     }
 
@@ -235,6 +232,22 @@ HRESULT CCamera_Compre::Ready_Body()
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc), E_FAIL);
 
     return S_OK;
+}
+
+CCamera_Compre::CAMERA_COMPRE_DESC CCamera_Compre::Get_Desc()
+{
+    CAMERA_COMPRE_DESC tDesc{};
+
+    tDesc.fFar = m_fFar;
+    tDesc.fFovy = m_fFovy;
+    tDesc.fMouseSensor = m_fMouseSensor;
+    tDesc.fNear = m_fNear;
+    tDesc.iCameraType = m_iCameraType;
+    tDesc.strCameraTag = m_strCameraTag;
+    XMStoreFloat4(&tDesc.vEye, m_pTransformCom->Get_State(STATE::POSITION));
+    XMStoreFloat4(&tDesc.vAt, m_pTransformCom->Get_State(STATE::LOOK));
+
+    return tDesc;
 }
 
 CCamera_Compre* CCamera_Compre::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

@@ -11,8 +11,8 @@ CTexture_Atlas::CTexture_Atlas(const CTexture_Atlas& Prototype)
 	, m_iNumTextures{ Prototype.m_iNumTextures }
 	, m_SRVs{ Prototype.m_SRVs }
 	, m_AtlasDatas{Prototype.m_AtlasDatas}
-	, m_iTexSizeX{ Prototype.m_iTexSizeX }
-	, m_iTexSizeY{ Prototype.m_iTexSizeY }
+	, m_TexSizeX{ Prototype.m_TexSizeX }
+	, m_TexSizeY{ Prototype.m_TexSizeY }
 {
 	for (auto& pSRV : m_SRVs)
 		Safe_AddRef(pSRV);
@@ -60,8 +60,11 @@ HRESULT CTexture_Atlas::Initialize_Prototype(const _tchar* pAtlasDataFilePath, _
 		m_AtlasDatas.push_back(mapAtlasDatas);
 
 		string szImageName = jsonData["meta"]["image"].get<string>();
-		m_iTexSizeX = jsonData["meta"]["size"]["w"].get<_int>();
-		m_iTexSizeY = jsonData["meta"]["size"]["h"].get<_int>();
+		_int iTexSizeX = jsonData["meta"]["size"]["w"].get<_int>();
+		_int iTexSizeY = jsonData["meta"]["size"]["h"].get<_int>();
+
+		m_TexSizeX.push_back(iTexSizeX);
+		m_TexSizeY.push_back(iTexSizeY);
 
 		_wstring szFileFullName = {};
 		szFileFullName = CharToWString(szImageName.c_str());
@@ -122,14 +125,14 @@ _float4 CTexture_Atlas::FindTexFrame(const string pFrameName, _uint iTextureInde
 		return vFrame;
 
 	ATLASFRAMEDATA TextUV = vFindFrame->second;
-	_float fTexelx = (1.0f / m_iTexSizeX) * 3.f;
-	_float fTexely = (1.0f / m_iTexSizeY) * 3.f;
+	_float fTexelx = (1.0f / m_TexSizeX[iTextureIndex]) * 3.f;
+	_float fTexely = (1.0f / m_TexSizeY[iTextureIndex]) * 3.f;
 
 
-	vFrame.x = _float(TextUV.iLeft) / m_iTexSizeX - fTexelx;
-	vFrame.y = _float(TextUV.iTop) / m_iTexSizeY - fTexely;
-	vFrame.z = (_float(TextUV.iLeft) + TextUV.iSizeX) / m_iTexSizeX + fTexelx;
-	vFrame.w = (_float(TextUV.iTop) + TextUV.iSizeY) / m_iTexSizeY + fTexely;
+	vFrame.x = _float(TextUV.iLeft) / m_TexSizeX[iTextureIndex] - fTexelx;
+	vFrame.y = _float(TextUV.iTop) / m_TexSizeY[iTextureIndex] - fTexely;
+	vFrame.z = (_float(TextUV.iLeft) + TextUV.iSizeX) / m_TexSizeX[iTextureIndex] + fTexelx;
+	vFrame.w = (_float(TextUV.iTop) + TextUV.iSizeY) / m_TexSizeY[iTextureIndex] + fTexely;
 
 	return vFrame;
 

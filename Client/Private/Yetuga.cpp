@@ -31,9 +31,8 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
     if (nullptr == m_pController)
         return E_FAIL;
 
-
-    m_pModelCom->Set_Animation(0, true);
-
+     m_pModelCom->Set_Animation(3);
+     m_pModelCom->Set_AnimationLoop(true);
 
     m_pTransformCom->Set_State(STATE::POSITION,
         XMVectorSet(
@@ -52,10 +51,12 @@ void CYetuga::Priority_Update(_float fTimeDelta)
 
 void CYetuga::Update(_float fTimeDelta)
 {
+    m_fCoolTimeAcc += fTimeDelta;
+
     m_pController->Update(this, fTimeDelta);
 
-    if (true == m_pModelCom->Play_Animation(fTimeDelta))
-        int a = 10;
+    /*if (true == m_pModelCom->Play_Animation(fTimeDelta))
+        int a = 10;*/
 }
 
 void CYetuga::Late_Update(_float fTimeDelta)

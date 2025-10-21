@@ -19,8 +19,11 @@ void CInput_Manager::Update()
     m_pInput_Device->Update();
 }
 
-_bool CInput_Manager::Key_Pressing(_ubyte byKeyID, _float fTimeDelta, _float* pPressingTime)
+_bool CInput_Manager::Key_Pressing(_ubyte byKeyID, _float fTimeDelta, INPUT_TYPE eType, _float* pPressingTime)
 {
+    if (m_eInputType != eType)
+        return false;
+
     if ((m_pInput_Device->Get_DIKeyState(byKeyID)) & 0x8000)
     {
         m_fPressingTime[byKeyID] += fTimeDelta;
@@ -31,8 +34,11 @@ _bool CInput_Manager::Key_Pressing(_ubyte byKeyID, _float fTimeDelta, _float* pP
     return false;
 }
 
-_bool CInput_Manager::Key_Down(_ubyte byKeyID)
+_bool CInput_Manager::Key_Down(_ubyte byKeyID, INPUT_TYPE eType)
 {
+    if (m_eInputType != eType)
+        return false;
+
     if (!(m_bKeyState_Down[byKeyID]) && ((m_pInput_Device->Get_DIKeyState(byKeyID)) & 0x8000))
     {
         m_bKeyState_Down[byKeyID] = !m_bKeyState_Down[byKeyID];
@@ -49,8 +55,10 @@ _bool CInput_Manager::Key_Down(_ubyte byKeyID)
     return false;
 }
 
-_bool CInput_Manager::Key_Up(_ubyte byKeyID)
+_bool CInput_Manager::Key_Up(_ubyte byKeyID, INPUT_TYPE eType)
 {
+    if (m_eInputType != eType)
+        return false;
 
     if (!m_bKeyState_Up[byKeyID] && ((m_pInput_Device->Get_DIKeyState(byKeyID)) & 0x8000))
     {
@@ -66,16 +74,22 @@ _bool CInput_Manager::Key_Up(_ubyte byKeyID)
 
 }
 
-_bool CInput_Manager::Mouse_Pressing(MOUSEKEYSTATE eMouse)
+_bool CInput_Manager::Mouse_Pressing(MOUSEKEYSTATE eMouse, INPUT_TYPE eType)
 {
+    if (m_eInputType != eType)
+        return false;
+
     if ((m_pInput_Device->Get_DIMouseState(eMouse)) & 0x8000)
         return true;
 
     return false;
 }
 
-_bool CInput_Manager::Mouse_Down(MOUSEKEYSTATE eMouse)
+_bool CInput_Manager::Mouse_Down(MOUSEKEYSTATE eMouse, INPUT_TYPE eType)
 {
+    if (m_eInputType != eType)
+        return false;
+
     if (!(m_bMouseState_Down[ENUM_CLASS(eMouse)]) && ((m_pInput_Device->Get_DIMouseState(eMouse)) & 0x8000))
     {
         m_bMouseState_Down[ENUM_CLASS(eMouse)] = !m_bMouseState_Down[ENUM_CLASS(eMouse)];
@@ -91,8 +105,11 @@ _bool CInput_Manager::Mouse_Down(MOUSEKEYSTATE eMouse)
     return false;
 }
 
-_bool CInput_Manager::Mouse_Up(MOUSEKEYSTATE eMouse)
+_bool CInput_Manager::Mouse_Up(MOUSEKEYSTATE eMouse, INPUT_TYPE eType)
 {
+    if (m_eInputType != eType)
+        return false;
+
     if (!(m_bMouseState_Up[ENUM_CLASS(eMouse)]) && ((m_pInput_Device->Get_DIMouseState(eMouse)) & 0x8000))
     {
         m_bMouseState_Up[ENUM_CLASS(eMouse)] = !m_bMouseState_Up[ENUM_CLASS(eMouse)];
@@ -108,9 +125,17 @@ _bool CInput_Manager::Mouse_Up(MOUSEKEYSTATE eMouse)
     return false;
 }
 
-_long CInput_Manager::Mouse_Move(MOUSEMOVESTATE eMouseState)
+_long CInput_Manager::Mouse_Move(MOUSEMOVESTATE eMouseState, INPUT_TYPE eType)
 {
+    if (m_eInputType != eType)
+        return 0;
+
     return m_pInput_Device->Get_DIMouseMove(eMouseState);
+}
+
+void CInput_Manager::Change_InputType(INPUT_TYPE eType)
+{
+    m_eInputType = eType;
 }
 
 CInput_Manager* CInput_Manager::Create(HINSTANCE hInst, HWND hWnd)

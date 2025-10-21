@@ -17,6 +17,9 @@ private:
 	virtual ~CUI_ComBatSpirit_Slot() = default;
 
 public:
+	void					Update_Pos(_float2 vPos, _float fOffSetX, _int iMaxIndex);
+	void					Update_Gauge(_float fValue);
+public:
 	virtual HRESULT			Initialize_Prototype(_uint iLevel);
 	virtual HRESULT			Initialize_Clone(void* pArg) override;
 	virtual void			Priority_Update(_float fTimeDelta) override;
@@ -25,12 +28,14 @@ public:
 	virtual HRESULT			Render() override;
 
 	virtual void			Bubble_EventCall();
+	virtual HRESULT			Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
 
 private:
-	CShader* m_pShaderCom = { nullptr };
-	CTexture* m_pTextureCom = { nullptr };
-	CVIBuffer_Rect* m_pVIBufferCom = { nullptr };
+	CShader*				m_pShaderCom = { nullptr };
+	CTexture*				m_pTextureCom = { nullptr };
+	CVIBuffer_Rect*			m_pVIBufferCom = { nullptr };
 
+	_float					m_fCulGauge = {};
 private:
 	HRESULT					Ready_Component();
 

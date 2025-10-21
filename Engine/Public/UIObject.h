@@ -6,6 +6,10 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CUIObject abstract : public CGameObject
 {
 public:
+	typedef struct tagBubbleEventTag
+	{
+		string szName;
+	}BUBBLEEVENT;
 	typedef struct tagUIObjectDesc : public GAMEOBJECT_DESC
 	{
 		_float2			vLocalSize, vLocalPos;
@@ -13,7 +17,7 @@ public:
 		_int			iUIType;
 		string			szName;
 
-		function<void()> BubbleEvent = nullptr;
+		function<void(BUBBLEEVENT*)> BubbleEvent = nullptr;
 	}UIOBJECT_DESC;
 
 protected:
@@ -28,6 +32,7 @@ public:
 	const _float&				Get_Depth() { return m_fDepth; }
 	void						Get_Data(VTXINSTANCE_UI& pOutData);
 
+	void						Set_Color(_float4 vColor) { m_vColor = vColor; }
 public:
 	virtual HRESULT				Initialize_Prototype() override;
 	virtual HRESULT				Initialize_Clone(void* pArg) override;
@@ -48,8 +53,8 @@ public:
 	virtual	HRESULT				Update_Switch(void* pArg);
 
 	virtual HRESULT				Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg);
-	virtual void				Bubble_EventCall();
-	virtual void				Insert_Bubble(std::function<void()> BubbleEvent);
+	virtual void				Bubble_EventCall(BUBBLEEVENT* pArg);
+	virtual void				Insert_Bubble(std::function<void(BUBBLEEVENT*)> BubbleEvent);
 
 public:
 	virtual _bool				IsPick(HWND hWnd);
@@ -63,8 +68,7 @@ protected:
 
 	string						m_szName;
 	_int						m_iUIType = { -1 };
-	std::function<void()>		m_UIBubbleCallBack;
-
+	std::function<void(BUBBLEEVENT*)>	m_UIBubbleCallBack;
 	_float2						m_vLocalPos = {};
 	_float2						m_vWorldPos = {};
 	_float						m_fDepth = {};

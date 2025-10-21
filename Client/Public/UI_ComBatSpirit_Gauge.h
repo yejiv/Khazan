@@ -16,6 +16,8 @@ private:
 	virtual ~CUI_CombatSpirit_Gauge() = default;
 
 public:
+	void							Setting_Gauge(_float* pCulGauge);
+public:
 	virtual HRESULT					Initialize_Prototype(_uint iLevel);
 	virtual HRESULT					Initialize_Clone(void* pArg) override;
 	virtual void					Priority_Update(_float fTimeDelta) override;
@@ -29,6 +31,8 @@ private:
 	CShader*						m_pShaderCom = { nullptr };
 	CTexture*						m_pTextureCom = { nullptr };
 	CVIBuffer_Rect*					m_pVIBufferCom = { nullptr };
+
+	_float*							m_fCulGauge = { nullptr };
 
 private:
 	HRESULT							Ready_Component();

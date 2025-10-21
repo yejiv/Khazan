@@ -36,7 +36,8 @@ HRESULT CDummy::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    m_pModelCom->Set_Animation(0, true);
+    m_pModelCom->Set_AnimationLoop(true);
+    m_pModelCom->Set_Animation(0);
 
     return S_OK;
 }
@@ -53,7 +54,7 @@ void CDummy::Update(_float fTimeDelta)
         int a = 10;
 
 
-    //m_pBodyCom->Sync_Update(m_pTransformCom);
+    m_pBodyCom->Sync_Update(m_pTransformCom);
     m_pBodyCom->Update(fTimeDelta, m_pTransformCom);
     /*m_pCharVirCom->Sync_Update(m_pTransformCom);
     m_pCharVirCom->Update(fTimeDelta, m_pTransformCom);*/

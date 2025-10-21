@@ -43,7 +43,7 @@ public:
 	void			ExportModel(string& strPath);
 	// 확인 창 말고 디버그 창에 띄우는 추출 함수
 	void			ExportModel_NoMsg(string& strPath);
-	void			LoadModel(_wstring strModelName);
+	void			LoadModel(string& strPath);
 	void			Update_DAT_From_JSON(string& strPath);
 
 private:
@@ -76,6 +76,9 @@ private:
 	/* 루트모션 */
 	_uint							m_iRootBoneIndex = { 0 }; // 루트 모션을 적용할 뼈의 인덱스	
 	_bool							m_isRootMotion = { false }; // 루트 모션 사용 여부
+	_bool							m_isRootMotion_Pos = { false };
+	_bool							m_isRootMotion_Rot = { false };
+	_vector							m_vRootMotionScale = {};
 	_float							m_fCurRootMotionBlendTime = {};
 	_float							m_fRootMotionBlendTime = { 0.15f }; // 루트 모션 보간에 사용할 시간
 	_matrix							m_PreRootMatrix = {}; // 이전 루트 모션 행렬	

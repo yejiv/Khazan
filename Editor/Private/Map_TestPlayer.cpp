@@ -26,7 +26,7 @@ HRESULT CMap_TestPlayer::Initialize(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    m_pModelCom->Set_Animation(12, true);
+    //m_pModelCom->Set_Animation(12, true);
 
     m_pTransformCom->Scale(_float3(0.1f, 0.1f, 0.1f));
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));

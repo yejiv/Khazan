@@ -10,9 +10,22 @@ private:
 	enum MODEL_STATE
 	{
 		ANIM_LOOP = 1 << 0,
+		USED_ANIM_LOOP = 1 << 1,
 
+		CHANGE_ANIMATION = 1 << 2,
+
+		ANIMSET_PLAYING = 1 << 3,
+		ANIMSET_NEXT = 1 << 4,
+		//ANIMSET_FINISHED = 1 << 5,
+
+		ROOTMOTION = 1 << 6,
+		ROOTMOTION_POSITION = 1 << 7,
+		ROOTMOTION_ROTATION = 1 << 8,
+
+		WAITFORCOMPLETE = 1 << 9,	//애니메이션 완료되어야 다음 애니메이션 전환 가능 
 
 	};
+
 private:
 	CModel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CModel(const CModel& Prototype);
@@ -37,11 +50,24 @@ public:
 	vector<_uint>		Get_Indices(_uint iIndex);			//졸트
 
 	/* 애니메이션 기능  */
-	_bool Play_Animation(_float fTimeDelta);
-	void Set_Animation(_uint iIndex, _bool isLoop = false);
+	_bool			Play_Animation(_float fTimeDelta);
+	void			Set_Animation(_uint iIndex);
+	void			Set_AnimationSet(const string& strKey);
+	void			Set_AnimationLoop(_bool isLoop);
 
+	/* 이벤트 */
+	void			Register_Event(const string& strEventKey, function<void()> OnEvent);
+	void			UnRegister_Event(const string& strEventKey);
+	void			Clear_AllEvent();
+
+#ifdef _DEBUG
+	void			Debug_RanderState();
+#endif // _DEBUG
 
 private:
+	/* State*/
+	_uint								m_iState = { 0 };
+
 	/* 모델 */
 	_wstring							m_strModelName{};
 	_wstring							m_strModelFilePath{};
@@ -60,21 +86,51 @@ private:
 	vector<class CBone*>				m_Bones;
 
 	/* 애니메이션 */
-	_uint								m_iNumAnimations = { 0 };			/* 애니메이션 수 */
-	_uint								m_iCurrentAnimIndex = { 0 };		/* 현재 애니메이션 인덱스 */
-	_float								m_fCurrentTrackPosition = { 0.f };  /* 현재 애니메이션 재생 위치 */
-	_uint								m_iPrevAnimIndex = { 0 };			/* 이전 애니메이션 인덱스 */
-	vector< class CAnimation* >			m_Animations;						/* 애니메이션 클래스 저장  */
-	//_bool								m_isLoop = { false };				/* 애니메이션 루프 여부 */
 	_bool								m_isFinished = { false };			/* 루프가 아닌 애니메이션이 끝났는지 여부  */
-	//_bool								m_isRepeatAnimation = { false };	/* 루프가 아닌 애니메이션이 반복되는 경우 애니메이션 끝났는지*/
-	//_bool								m_isChangedAnimation = { false };	/* 애니메이션이 변경된 경우*/
-	//_bool								m_isFixedAnimation = { false };		/* 애니메이션이 끝나기 전까지 다른 애니메이션 금지	*/
-	//_bool								m_isForceAnimation = { false };		/* 강제로 애니메이션을 바꾸는 경우*/
-	//_bool								m_isFinishAnimation = { false };	/* 애니메이션이 다 끝나고 다음 애니메이션으로 넘어가는 경우*/
+	_uint								m_iNumAnimations = { 0 };			/* 애니메이션 수 */
+	_int								m_iCurrentAnimIndex = { -1 };		/* 현재 애니메이션 인덱스 */
+	_int								m_iReserveAnimIndex = {};			/* 애니메이션 끝나고 전환해야 할 때 다음 애니메이션 인덱스가 들어오는것을 예약*/
+	_float								m_fCurrentTrackPosition = { 0.f };  /* 현재 애니메이션 재생 위치 */
+	_int								m_iPrevAnimIndex = { -1 };			/* 이전 애니메이션 인덱스 */
+	vector< class CAnimation* >			m_Animations;						/* 애니메이션 클래스 저장  */
+	vector<ANIMATION_SETUP_DATA>		m_AnimationsSetup;					/* 애니메이션들 정보 */
 
-	/* State*/
-	_uint								m_iState = { 0 };
+	/* 애니메이션 세트 */
+	vector< ANIMATION_SET_DATA >		m_AnimationSets;					/* 애니메이션 세트 */
+	_uint								m_iCurrentAnimSetsIndex = { 0 };	/* 선택된 애니메이션 세트 */
+	_uint								m_iCurrentAnimSetsMaxIndex = { 0 };	/* 선택된 애니메이션 세트에서 애니메이션 수*/
+	_uint								m_iCurrentAnimSetIndex = { 0 };		/* 애니메이션 세트에서 어떤 애니메이션의 인덱스 */
+
+	/* 루트 모션 */
+	_uint							m_iRootBoneIndex = {};					/* 루트 모션을 적용할 뼈의 인덱스(루트 본) */
+	_vector							m_vRootMotionScale = {};				/* 어떤 축에 적용할건지 */ 
+	_float							m_fCurrentRootMotionBlendTime = {0.f};	/* 현재 루트모션 블랜딩 시간*/
+	_float							m_fRootMotionBlendTime = { 0.15f };		/* 루트모션 블랜딩 총 시간 */
+	const _float					m_fBaseRootMotionBlendTime = {0.15f};   /* 만약 블랜딩 시간이 안써져있으면 사용할 기본 블랜딩 시간 */
+	_matrix							m_PreRootMatrix = {}; 					/* 이전 루트 모션 행렬 */
+
+	/* 애니메이션 완료 후 다음 애니메이션으로 */
+	function<void()>				m_OnWaitForComplete = { nullptr };
+
+	/* 이벤트  */
+	unordered_map<string, function<void()>> m_EventCallbacks;	//콜백 관리
+	vector<ANIM_EVENT>						m_CurrentEvents;	//현재 이벤트 상태 추적
+	vector<_bool>							m_PrevFrameInRange;	//이전 프레임에 이벤트 발동 했는지
+
+private:
+	/* 루트 모션 */
+	void			Check_RootMotion();
+	void			Update_RootMotion(_float fTimeDelta);
+
+	/* 완료 여부 */
+	void			Check_WaitForComplete();
+	void			OnWaitForComplete(function<void()> onEvent) { m_OnWaitForComplete = onEvent; }
+
+	/* 이벤트 */
+	void			Setup_Events();
+	void			Check_Event(_float fTimeDelta);
+	void			Trigger_Event(string strEventKey);
+	void			Reset_EventTrigger();
 
 private:
 	HRESULT Ready_Meshes(MODEL_DATA& data);
@@ -84,9 +140,12 @@ private:
 
 private:
 	inline void		Add_State(MODEL_STATE s) { m_iState |= s; }
+	inline void		Add_State(_uint i) { m_iState |= i; }
 	inline void		Remove_State(MODEL_STATE s) { m_iState &= ~s; }
+	inline void		Remove_State(_uint i) { m_iState &= ~i; }
 	inline _bool	Has_State(MODEL_STATE s) { return (m_iState & s) != 0; }
-	inline void		Clear_States() { m_iState = 0; }
+	inline _bool	Has_State(_uint i) { return (m_iState & i) != 0; }
+	inline void		Clear_State() { m_iState = 0; }
 
 public:
 	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _char* pModelFilePath);

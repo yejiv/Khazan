@@ -114,6 +114,19 @@ HRESULT CTarget_Manager::Copy_Resource(const _wstring& strTargetTag, ID3D11Textu
 	return pRenderTarget->Copy_Resource(pSourTexture);
 }
 
+void CTarget_Manager::Begin_RT()
+{
+	m_pContext->OMGetRenderTargets(1, &m_pBackBuffer, &m_pOriginalDSV);
+}
+
+void CTarget_Manager::End_RT()
+{
+	m_pContext->OMSetRenderTargets(1, &m_pBackBuffer, m_pOriginalDSV);
+
+	Safe_Release(m_pOriginalDSV);
+	Safe_Release(m_pBackBuffer);
+}
+
 #ifdef _DEBUG
 
 HRESULT CTarget_Manager::Ready_Debug(const _wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY)

@@ -138,6 +138,8 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 {
 	//m_pPicking->Update();
 
+	m_pInput_Manager->Update();
+
 	/* 내 게임내에서 반복적인 갱신이 필요한 객체들이 있다라면 갱신을 여기에서 모아서 수행하낟. */
 	m_pObject_Manager->Priority_Update(fTimeDelta);
 
@@ -156,8 +158,6 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 	m_pJolt_Manager->Update(fTimeDelta);
 
 	m_pComputeShader_Manager->Execute_Job(COMPUTEJOB::UPDATE);
-
-	m_pInput_Manager->Update();
 
 #ifdef _DEBUG
 
@@ -508,6 +508,16 @@ HRESULT CGameInstance::Copy_RT_Resource(const _wstring& strTargetTag, ID3D11Text
 	return m_pTarget_Manager->Copy_Resource(strTargetTag, pSourTexture);
 }
 
+void CGameInstance::Begin_RT()
+{
+	m_pTarget_Manager->Begin_RT();
+}
+
+void CGameInstance::End_RT()
+{
+	m_pTarget_Manager->End_RT();
+}
+
 #ifdef _DEBUG
 
 HRESULT CGameInstance::Ready_RT_Debug(const _wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY)
@@ -533,6 +543,11 @@ _bool CGameInstance::isPicked(_float3* pOut)
 _bool CGameInstance::isPicked(_float3* pOut, _uint* iObjectID)
 {
 	return m_pPicking->isPicked(pOut, iObjectID);
+}
+
+_float4 CGameInstance::isPickRenderTargetPixel(_wstring strRenderTargetTag)
+{
+	return m_pPicking->isPickRenderTargetPixel(strRenderTargetTag);
 }
 
 #pragma endregion
@@ -580,9 +595,19 @@ const _float4x4* CGameInstance::Get_CurrentLightProjMatrix() const
 	return m_pShadow->Get_CurrentLightProjMatrix();
 }
 
-HRESULT CGameInstance::Ready_Cascade()
+const _float* CGameInstance::Get_Splits() const
 {
-	return m_pShadow->Ready_Cascade();
+	return m_pShadow->Get_Splits();
+}
+
+const _float4x4* CGameInstance::Get_LightViewMatrices() const
+{
+	return m_pShadow->Get_LightViewMatrices();
+}
+
+const _float4x4* CGameInstance::Get_LightProjMatrices() const
+{
+	return m_pShadow->Get_LightProjMatrices();
 }
 
 #pragma endregion
@@ -669,6 +694,10 @@ void CGameInstance::Reset_Gravity()
 }
 
 #ifdef _DEBUG
+void CGameInstance::Change_DebugRender()
+{
+	m_pJolt_Manager->Change_DebugRender();
+}
 void CGameInstance::Jolt_Test()
 {
 	m_pJolt_Manager->Test();
@@ -692,33 +721,37 @@ void CGameInstance::Submit(std::function<void()> job)
 #pragma endregion
 
 #pragma region INPUT_MANAGER
-_bool CGameInstance::Key_Pressing(_ubyte byKeyID, _float fTimeDelta, _float* pPressingTime)
+_bool CGameInstance::Key_Pressing(_ubyte byKeyID, _float fTimeDelta, INPUT_TYPE eType, _float* pPressingTime)
 {
-	return m_pInput_Manager->Key_Pressing(byKeyID, fTimeDelta, pPressingTime);
+	return m_pInput_Manager->Key_Pressing(byKeyID, fTimeDelta, eType, pPressingTime);
 }
-_bool CGameInstance::Key_Down(_ubyte byKeyID)
+_bool CGameInstance::Key_Down(_ubyte byKeyID, INPUT_TYPE eType)
 {
-	return m_pInput_Manager->Key_Down(byKeyID);
+	return m_pInput_Manager->Key_Down(byKeyID, eType);
 }
-_bool CGameInstance::Key_Up(_ubyte byKeyID)
+_bool CGameInstance::Key_Up(_ubyte byKeyID, INPUT_TYPE eType)
 {
-	return m_pInput_Manager->Key_Up(byKeyID);
+	return m_pInput_Manager->Key_Up(byKeyID, eType);
 }
-_bool CGameInstance::Mouse_Pressing(MOUSEKEYSTATE eMouse)
+_bool CGameInstance::Mouse_Pressing(MOUSEKEYSTATE eMouse, INPUT_TYPE eType)
 {
-	return m_pInput_Manager->Mouse_Pressing(eMouse);
+	return m_pInput_Manager->Mouse_Pressing(eMouse, eType);
 }
-_bool CGameInstance::Mouse_Down(MOUSEKEYSTATE eMouse)
+_bool CGameInstance::Mouse_Down(MOUSEKEYSTATE eMouse, INPUT_TYPE eType)
 {
-	return m_pInput_Manager->Mouse_Down(eMouse);
+	return m_pInput_Manager->Mouse_Down(eMouse, eType);
 }
-_bool CGameInstance::Mouse_Up(MOUSEKEYSTATE eMouse)
+_bool CGameInstance::Mouse_Up(MOUSEKEYSTATE eMouse, INPUT_TYPE eType)
 {
-	return m_pInput_Manager->Mouse_Up(eMouse);
+	return m_pInput_Manager->Mouse_Up(eMouse, eType);
 }
-_long CGameInstance::Mouse_Move(MOUSEMOVESTATE eMouseState)
+_long CGameInstance::Mouse_Move(MOUSEMOVESTATE eMouseState, INPUT_TYPE eType)
 {
-	return m_pInput_Manager->Mouse_Move(eMouseState);
+	return m_pInput_Manager->Mouse_Move(eMouseState, eType);
+}
+void CGameInstance::Change_InputType(INPUT_TYPE eType)
+{
+	m_pInput_Manager->Change_InputType(eType);
 }
 #pragma endregion
 
@@ -814,6 +847,22 @@ HRESULT CGameInstance::Add_Camera(_uint iLevelIndex, CCamera* pCamera)
 void CGameInstance::Change_Camera(_uint iLevelIndex, _uint iCameraType)
 {
 	m_pCamera_Manager->Change_Camera(iLevelIndex, iCameraType);
+}
+void CGameInstance::Change_Camera(_uint iLevelIndex, _wstring strCameraTag)
+{
+	m_pCamera_Manager->Change_Camera(iLevelIndex, strCameraTag);
+}
+vector<class CCamera*> CGameInstance::Get_pCameras(_uint iNumLevel)
+{
+	return m_pCamera_Manager->Get_pCameras(iNumLevel);
+}
+CCamera* CGameInstance::Get_ActiveCamera()
+{
+	return m_pCamera_Manager->Get_ActiveCamera();
+}
+void CGameInstance::Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData)
+{
+	m_pCamera_Manager->Save_Json(iLevelIndex, strCameraTag, pOutData);
 }
 #pragma endregion
 

@@ -6,8 +6,12 @@ NS_BEGIN(Client)
 class CUI_Slot abstract : public CUIParent
 {
 public:
-	enum class STATE { DISABLE, ENABLE, OVER, SELETE, END };
+	enum class UISTATE { DISABLE, ENABLE, OVER, SELETE, END };
 
+	typedef struct UI_Slot_Tag : public CUIObject::tagUIObjectDesc
+	{
+		_int iIndex;
+	}UISLOTDESC;
 protected:
 	CUI_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CUI_Slot(const CUI_Slot& Prototype);
@@ -25,7 +29,7 @@ public:
 	
 protected:
 	vector<std::function<void()>>	m_Events;
-
+	_int							m_iIndex = { -1 };
 public:
 	virtual CGameObject*			Clone(void* pArg) = 0;
 	virtual void					Free() override;

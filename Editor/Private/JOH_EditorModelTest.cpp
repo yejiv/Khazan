@@ -49,11 +49,11 @@ void CJOH_EditorModelTest::Update(_float fTimeDelta)
     if (m_isAnim && true == m_pModelCom->Play_Animation(fTimeDelta))
         int a = 10;
 
-    if (m_isAnim && m_pGameInstance->Key_Down(DIK_1))
+    if (m_isAnim && m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
     {
         m_pModelCom->Set_Animation(++m_iCurrentAnimIndex, true);
     }
-    if (m_isAnim && m_pGameInstance->Key_Down(DIK_2))
+    if (m_isAnim && m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_2))
     {
         m_iCurrentAnimIndex = 1;
         m_pModelCom->Set_Animation(m_iCurrentAnimIndex, true);
@@ -157,13 +157,13 @@ HRESULT CJOH_EditorModelTest::Ready_Components(const _wstring& strModelTag)
 
 HRESULT CJOH_EditorModelTest::Bind_ShaderResources()
 {
-    if (FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom_NonAnim, "g_WorldMatrix")))
+    if (FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix")))
         return E_FAIL;
 
-    if (FAILED(m_pShaderCom_NonAnim->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
         return E_FAIL;
 
-    if (FAILED(m_pShaderCom_NonAnim->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
         return E_FAIL;
 
 
