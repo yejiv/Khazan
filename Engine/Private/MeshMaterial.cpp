@@ -92,12 +92,6 @@ HRESULT CMeshMaterial::Bind_Resources(class CShader* pShader, const _char* pCons
 	if (iIndex >= m_SRVs[iTextureType].size())
 		return E_FAIL;
 
-	OutputDebugStringA(to_string(iIndex).c_str());
-	for (auto cache : m_TextureCache)
-		OutputDebugStringW(cache.first.c_str());
-	OutputDebugStringA("\n");
-
-
 	return pShader->Bind_SRV(pConstantName, m_SRVs[iTextureType][iIndex]);
 }
 

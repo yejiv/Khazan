@@ -647,9 +647,9 @@ namespace Engine
 
         std::vector<Engine::MESH_DATA>			    vecMeshes;
         std::vector<Engine::MATERIAL_DATA>		    vecMaterials;
+        std::vector<Engine::BONE_DATA>			    vecBones;
 
         //ANIM
-        std::vector<Engine::BONE_DATA>			    vecBones;
         std::vector<Engine::ANIMATION_DATA>		    vecAnimation;
         std::vector<Engine::ANIMATION_SET_DATA>     vecAnimationSets;  // 애니메이션 세트 (추가됨)
 

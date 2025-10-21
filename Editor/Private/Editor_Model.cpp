@@ -530,26 +530,41 @@ void CEditor_Model::ExportModel_NoMsg(string& strPath)
     OutputDebugStringA(WStringToAnsi(successMsg).c_str());
 }
 
-void CEditor_Model::LoadModel(_wstring strModelName)
+void CEditor_Model::LoadModel(string& strPath)
 {
-    //string strBasePath = "../Data/";
-    //string strDatPath = "../Data/" + WStringToAnsi(strModelName) + "/" + WStringToAnsi(strModelName) + ".dat";;
+    _char exePath[MAX_PATH];
+    GetModuleFileNameA(NULL, exePath, MAX_PATH);
+    filesystem::path exeDir = filesystem::path(exePath).parent_path();
+    //OutputDebugStringA(("[Editor.exe Dir] " + exeDir.string() + "\n").c_str());
 
-    //if (!filesystem::exists(strDatPath))
-    //{
-    //    MSG_BOX(TEXT(".dat 파일이 존재하지 않습니다."));
-    //    return;
-    //}
+    filesystem::path editorDefaultDir = exeDir.parent_path().parent_path() / "Default";
+    //OutputDebugStringA(("[Editor Default Dir] " + editorDefaultDir.string() + "\n").c_str());
 
-    //std::ifstream ifs(strDatPath, std::ios::binary);
-    //if (!ifs.is_open())
-    //{
-    //    MSG_BOX(TEXT("binary 파일 열기 실패"));
-    //    return;
-    //}
+    filesystem::path clientDefaultDir = editorDefaultDir.parent_path().parent_path() / "Client" / "Default";
+    // OutputDebugStringA(("[Client Default] " + clientDefaultDir.string() + "\n").c_str());
 
-    //m_Model_Data.LoadBinary(ifs);
-    //ifs.close();
+    SetCurrentDirectoryA(clientDefaultDir.string().c_str());
+
+
+    _char currentDir[MAX_PATH];
+    //GetCurrentDirectoryA(MAX_PATH, currentDir);
+    OutputDebugStringA(("[Current Working Directory] " + clientDefaultDir.string() + "\n").c_str());
+
+    if (!filesystem::exists(strPath))
+    {
+        MSG_BOX(TEXT(".dat 파일이 존재하지 않습니다."));
+        return;
+    }
+
+    std::ifstream ifs(strPath, std::ios::binary);
+    if (!ifs.is_open())
+    {
+        MSG_BOX(TEXT("binary 파일 열기 실패"));
+        return;
+    }
+
+    m_Model_Data.LoadBinary(ifs);
+    ifs.close();
 }
 void CEditor_Model::Update_DAT_From_JSON(string& strPath)
 {

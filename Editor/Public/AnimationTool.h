@@ -98,6 +98,7 @@ private:
 	// === 유틸리티 함수 ===
 	void	Add_Model(_uint iLevelIndex);
 	void	Remove_Model();
+	void	Update_DataModel(const string& strPath);
 	string	ConvertToRelativePath(const string& absolutePath);
 	string	ConvertToClientRelativePath(const string& absolutePath);
 

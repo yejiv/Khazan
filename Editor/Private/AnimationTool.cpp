@@ -213,7 +213,7 @@ void CAnimationTool::OpenModel_Widget()
         }
     if (bDisabled) ImGui::EndDisabled();
 
-    ImGui::Spacing();
+    ImGui::Spacing();   ImGui::Separator();    ImGui::Spacing();
 
     // 로드된 모델 목록
     ImGui::SeparatorText("Loaded Models");
@@ -247,6 +247,50 @@ void CAnimationTool::OpenModel_Widget()
         }
         if (bRemoveDisabled)  ImGui::EndDisabled();
     }
+
+
+    ImGui::Spacing();   ImGui::Separator();    ImGui::Spacing();
+
+
+    ImGui::SeparatorText("Update Data ( fixed .json -> dat )");
+    if (ImGui::Button("Browse Model File....", ImVec2(200, 0)))
+    {
+        _char savedDir[MAX_PATH];
+        GetCurrentDirectoryA(MAX_PATH, savedDir);
+
+        OPENFILENAMEA ofn;
+        char szFile[260] = { 0 };
+
+        ZeroMemory(&ofn, sizeof(ofn));
+        ofn.lStructSize = sizeof(ofn);
+        ofn.hwndOwner = NULL;
+        ofn.lpstrFile = szFile;
+        ofn.nMaxFile = sizeof(szFile);
+        ofn.lpstrFilter = "FBX Files\0*.dat\0All Files\0*.*\0";
+        ofn.nFilterIndex = 1;
+        ofn.lpstrFileTitle = NULL;
+        ofn.nMaxFileTitle = 0;
+        ofn.lpstrInitialDir = "../../../Client/Bin/Data/";
+        ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+        if (GetOpenFileNameA(&ofn) == TRUE)
+        {
+            string absolutePath = szFile;
+
+            string relativePath = ConvertToClientRelativePath(absolutePath);
+
+            Update_DataModel(relativePath);
+        }
+
+        SetCurrentDirectoryA(savedDir);
+    }
+    /* 설명  */
+    ImGui::TextWrapped("Select a .dat file to update it with modified JSON files.");
+    ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f),
+        "This will merge changes from _Anim.json, _Summary_Anim.json, and _Material.json back into the .dat file.");
+
+    ImGui::Spacing();   ImGui::Separator();    ImGui::Spacing();
+
 }
 
 void CAnimationTool::Tool_Export_Update_Widget()
@@ -309,7 +353,7 @@ void CAnimationTool::Tool_Export_Update_Widget()
         ImGui::Spacing();
 
         // ===== Update DAT From JSON 버튼 =====
-        if (ImGui::Button("Update DAT From JSON", ImVec2(200, 25)))
+        if (ImGui::Button("Update DAT From JSON ( Apply Model !! )", ImVec2(200, 25)))
         {
             _char savedDir[MAX_PATH];
             GetCurrentDirectoryA(MAX_PATH, savedDir);
@@ -326,7 +370,7 @@ void CAnimationTool::Tool_Export_Update_Widget()
             ofn.hwndOwner = NULL;
             ofn.lpstrFile = szFile;
             ofn.nMaxFile = sizeof(szFile);
-            ofn.lpstrFilter = "Model Files\0*.model\0All Files\0*.*\0";
+            ofn.lpstrFilter = "Model Files\0*.dat\0All Files\0*.*\0";
             ofn.nFilterIndex = 1;
             ofn.lpstrInitialDir = "../../Client/Bin/Data/";
             ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
@@ -334,7 +378,7 @@ void CAnimationTool::Tool_Export_Update_Widget()
             if (GetOpenFileNameA(&ofn) == TRUE)
             {
                 string absolutePath = szFile;
-                string savePath = ConvertToClientRelativePath(absolutePath);
+                string savePath = ConvertToRelativePath(absolutePath);
 
                 m_GameObjects[m_iSelectedIndex]->get_Model()->Update_DAT_From_JSON(savePath);
             }
@@ -342,11 +386,44 @@ void CAnimationTool::Tool_Export_Update_Widget()
             SetCurrentDirectoryA(savedDir);
         }
 
+
+        // ===== Road Data  버튼 =====
+        if (ImGui::Button(" Load Model Data (.dat)", ImVec2(200, 25)))
+        {
+            _char savedDir[MAX_PATH];
+            GetCurrentDirectoryA(MAX_PATH, savedDir);
+
+            OPENFILENAMEA ofn;
+            _char szFile[260] = { 0 };
+
+            // 기본 파일명
+            string defaultName = WStringToAnsi(m_ObjectNames[m_iSelectedIndex]);
+            strcpy_s(szFile, defaultName.c_str());
+
+            ZeroMemory(&ofn, sizeof(ofn));
+            ofn.lStructSize = sizeof(ofn);
+            ofn.hwndOwner = NULL;
+            ofn.lpstrFile = szFile;
+            ofn.nMaxFile = sizeof(szFile);
+            ofn.lpstrFilter = "Model Files\0*.dat\0All Files\0*.*\0";
+            ofn.nFilterIndex = 1;
+            ofn.lpstrInitialDir = "../../Client/Bin/Data/";
+            ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+            if (GetOpenFileNameA(&ofn) == TRUE)
+            {
+                string absolutePath = szFile;
+                string savePath = ConvertToRelativePath(absolutePath);
+
+                m_GameObjects[m_iSelectedIndex]->get_Model()->LoadModel(savePath);
+            }
+
+            SetCurrentDirectoryA(savedDir);
+        }
         if (ImGui::IsItemHovered())
         {
-            ImGui::SetTooltip("Save to: Client/Bin/Data/");
+            ImGui::SetTooltip("Load .dat file after exporting model");
         }
-
         ImGui::EndDisabled();
 
         ImGui::Spacing();
@@ -1333,6 +1410,143 @@ void CAnimationTool::Remove_Model()
     m_ObjectNames.erase(m_ObjectNames.begin() + m_iSelectedIndex);
 
     m_iSelectedIndex = -1;
+}
+
+void CAnimationTool::Update_DataModel(const string& strPath)
+{
+
+    /* 현재 실행파일 저장 */
+    _char savedDir[MAX_PATH];
+    GetCurrentDirectoryA(MAX_PATH, savedDir);
+
+    /* 실행파일 위치 Client/default 로 고정  */
+    _char exePath[MAX_PATH];
+    GetModuleFileNameA(NULL, exePath, MAX_PATH);
+    filesystem::path exeDir = filesystem::path(exePath).parent_path();
+    //OutputDebugStringA(("[Editor.exe Dir] " + exeDir.string() + "\n").c_str());
+
+    filesystem::path editorDefaultDir = exeDir.parent_path().parent_path() / "Default";
+    //OutputDebugStringA(("[Editor Default Dir] " + editorDefaultDir.string() + "\n").c_str());
+
+    filesystem::path clientDefaultDir = editorDefaultDir.parent_path().parent_path() / "Client" / "Default";
+    // OutputDebugStringA(("[Client Default] " + clientDefaultDir.string() + "\n").c_str());
+
+    SetCurrentDirectoryA(clientDefaultDir.string().c_str());
+
+    filesystem::path fullPath(strPath);
+    string strDirectory = fullPath.parent_path().string() + "/";
+    string strFileName = fullPath.stem().string();  // 확장자 제외
+
+    // 모델 폴더 경로
+    //string strModelFolder = strDirectory + "/" + strFileName + "/";
+
+    // 파일 경로 생성
+    string strDatPath = strDirectory + strFileName + ".dat";
+    string strAnimJsonPath = strDirectory + strFileName + "_Anim.json";
+    string strAnimSummaryJsonPath = strDirectory + strFileName + "_Summary_Anim.json";
+    string strMaterialJsonPath = strDirectory + strFileName + "_Material.json";
+
+    // .dat 파일 존재 확인
+    if (!filesystem::exists(strDirectory))
+    {
+        _tchar szMessage[MAX_PATH] = {};
+        swprintf_s(szMessage, TEXT(".dat 파일이 존재하지 않습니다!\n경로: %S"),
+            strDatPath.c_str());
+        MessageBox(nullptr, szMessage, TEXT("Error"), MB_OK | MB_ICONERROR);
+        return;
+    }
+
+    MODEL_DATA tempModelData;
+
+    // 1. 기존 .dat 파일 로드
+    {
+        ifstream ifs(strDatPath, ios::binary);
+        if (!ifs.is_open())
+        {
+            MSG_BOX(TEXT(".dat 파일 열기 실패"));
+            return;
+        }
+        tempModelData.LoadBinary(ifs);
+        ifs.close();
+    }
+
+    // 2. Animation JSON 로드 (파일이 있으면)
+    if (filesystem::exists(strAnimJsonPath))
+    {
+        ifstream ifs(strAnimJsonPath);
+        if (!ifs.is_open())
+        {
+            MSG_BOX(TEXT("Animation JSON 파일 열기 실패"));
+            return;
+        }
+
+        JSON j;
+        ifs >> j;
+        ifs.close();
+
+        // 애니메이션 교체
+        tempModelData.vecAnimation = j.get<vector<ANIMATION_DATA>>();
+        tempModelData.iNumAnimations = static_cast<_uint>(tempModelData.vecAnimation.size());
+    }
+
+    // 3. Summary Animation JSON 로드 (파일이 있으면)
+    if (filesystem::exists(strAnimSummaryJsonPath))
+    {
+        ifstream ifs(strAnimSummaryJsonPath);
+        if (!ifs.is_open())
+        {
+            MSG_BOX(TEXT("Summary Animation JSON 파일 열기 실패"));
+            return;
+        }
+
+        JSON j;
+        ifs >> j;
+        ifs.close();
+
+        // 애니메이션 세트 교체
+        tempModelData.vecAnimationSets = j.get<ANIMATION_SUMMARIES_DATA>().vecAnimationSets;
+    }
+
+
+    // 4. Material JSON 로드 (파일이 있으면)
+    if (filesystem::exists(strMaterialJsonPath))
+    {
+        ifstream ifs(strMaterialJsonPath);
+        if (!ifs.is_open())
+        {
+            MSG_BOX(TEXT("Material JSON 파일 열기 실패"));
+            return;
+        }
+
+        JSON j;
+        ifs >> j;
+        ifs.close();
+
+        // 머티리얼 교체
+        tempModelData.vecMaterials = j.get<vector<MATERIAL_DATA>>();
+        tempModelData.iNumMaterials = static_cast<_uint>(tempModelData.vecMaterials.size());
+    }
+
+    // 4. 업데이트된 데이터를 .dat에 다시 저장
+    {
+        ofstream ofs(strDatPath, ios::binary);
+        if (!ofs.is_open())
+        {
+            MSG_BOX(TEXT(".dat 파일 쓰기 실패"));
+            return;
+        }
+        tempModelData.SaveBinary(ofs);
+        ofs.close();
+    }
+
+    // 성공 메시지
+    _tchar szMessage[MAX_PATH] = {};
+    swprintf_s(szMessage, TEXT(".dat 파일 업데이트 완료!\n\n폴더: %S\n파일: %S.dat"),
+        strDirectory.c_str(), strFileName.c_str());
+    MessageBox(nullptr, szMessage, TEXT("Success"), MB_OK | MB_ICONINFORMATION);
+
+    //실행파일 위치 복귀
+    SetCurrentDirectoryA(savedDir);
 }
 
 string CAnimationTool::ConvertToRelativePath(const string& absolutePath)
