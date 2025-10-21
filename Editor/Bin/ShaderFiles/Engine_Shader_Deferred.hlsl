@@ -218,10 +218,10 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
     vWorldPos = vWorldPos * vDepthDesc.y;
     /* 로컬위치 * 월드행렬 * 뷰행렬 */
     vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
+    float fCameraViewDepth = vWorldPos.z;
     
     /* 월드공간상의 좌표를 구한다. */
     vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
-    float fCameraViewDepth = vWorldPos.z;
     
     uint iCascadeIndex = 0;
     

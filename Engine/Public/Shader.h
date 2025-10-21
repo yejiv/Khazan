@@ -19,6 +19,11 @@ public:
 	HRESULT Begin(_uint iPassIndex);
 
 	HRESULT Bind_RawValue(const _char* pConstantName, const void* pData, _uint iLength);
+	HRESULT Bind_FloatArray(const _char* pConstantName, const _float* pData, _uint iCount);
+	HRESULT Bind_IntArray(const _char* pConstantName, const _int* pData, _uint iCount);
+	HRESULT Bind_BoolArray(const _char* pConstantName, const _bool* pData, _uint iCount);
+	HRESULT Bind_VectorArray(const _char* pConstantName, const _float4* pData, _uint iCount);
+
 	HRESULT Bind_Matrix(const _char* pConstantName, const _float4x4* pMatrix);
 	HRESULT Bind_Matrices(const _char* pConstantName, const _float4x4* pMatrix, _uint iNumMatrices);
 	HRESULT Bind_SRV(const _char* pConstantName, ID3D11ShaderResourceView* pSRV);
