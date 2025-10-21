@@ -7,7 +7,7 @@ NS_BEGIN(Client)
 class CCreature abstract : public CContainerObject
 {
 public:
-	typedef struct tagCreatureDesc : public CGameObject
+	typedef struct tagCreatureDesc : public CGameObject::GAMEOBJECT_DESC
 	{
 		_float				fMaxHP = {};
 		_float				fMaxStamina = {};

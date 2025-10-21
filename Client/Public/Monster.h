@@ -15,12 +15,6 @@ NS_BEGIN(Client)
 
 class CMonster abstract : public CCreature
 {
-public:
-	typedef struct tagMonsterDesc : public CREATURE_DESC
-	{
-		
-	}MONSTER_DESC;
-
 
 protected:
 	CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -29,7 +23,7 @@ protected:
 
 public:
 	CAI_Controller*				Get_Controller() const { return m_pController; }
-
+	_float						Get_CoolTimeAcc() const { return m_fCoolTimeAcc; }
 
 public:
 	virtual HRESULT				Initialize_Prototype() override;
@@ -40,6 +34,13 @@ public:
 	virtual HRESULT				Render() override;
 	virtual HRESULT				Render_Shadow() { return S_OK; }
 
+	// ÄðÅ¸ÀÓ
+public:
+	void						AI_Set_CoolDown(const string& strName, _float fDelay);
+	_bool						AI_IsReadyCoolDown(const string& strName);
+	void						AI_Reset_CoolDown(const string& strName);
+	void						AI_Reset_AllCoolDown();
+
 protected:
 	CShader*					m_pShaderCom = { nullptr };
 	CModel*						m_pModelCom = { nullptr };
@@ -49,6 +50,9 @@ protected:
 	class CAI_Controller*		m_pController = { nullptr };
 	class CGameObject*			m_pTarget = { nullptr };
 
+protected:
+	unordered_map<string, _float>	m_CoolDowns;
+	_float							m_fCoolTimeAcc = {};
 
 //private:
 //	HRESULT Ready_Components();

@@ -13,6 +13,9 @@ protected:
 public:
 	class CStateMachine* Get_State_Machine() const { return m_pFSM; }
 
+public:
+	void				AI_MoveTo(class CGameObject* pOwner, class CGameObject* pTarget, _float fLimit, _float fTimeDelta);
+
 
 public:
 	virtual HRESULT		Initialize();

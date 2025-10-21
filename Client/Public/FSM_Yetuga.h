@@ -10,6 +10,7 @@ enum class YETUGA_STATE
 	HIT,
 	DEAD,
 	SLEEP,
+	END,
 };
 
 
@@ -21,7 +22,7 @@ private:
 
 public:
 	virtual HRESULT				Initialize();
-	virtual void				Update(_float fTimeDelta, class CGameObject* pOwner) override;
+	virtual void				Update(class CGameObject* pOwner, _float fTimeDelta) override;
 
 public:
 	static CFSM_Yetuga*			Create();
