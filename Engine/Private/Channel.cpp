@@ -108,12 +108,12 @@ void CChannel::Set_PrevAnimationBlend(const _float& fAnimationRatio, _matrix& Pr
     XMMatrixDecompose(&m_vPrevScale, &m_vPrevRotQuat, &m_vPrevPositon, PreAnimationMatrix);
 
 
-    _float3 scale;
-    XMStoreFloat3(&scale, m_vPrevScale);
-    char debugMsg[256];
-    sprintf_s(debugMsg, "[Channel %d] PrevScale: (%.4f, %.4f, %.4f), Ratio: %.4f\n",
-        m_iBoneIndex, scale.x, scale.y, scale.z, fAnimationRatio);
-    OutputDebugStringA(debugMsg);
+    //_float3 scale;
+    //XMStoreFloat3(&scale, m_vPrevScale);
+    //char debugMsg[256];
+    //sprintf_s(debugMsg, "[Channel %d] PrevScale: (%.4f, %.4f, %.4f), Ratio: %.4f\n",
+    //    m_iBoneIndex, scale.x, scale.y, scale.z, fAnimationRatio);
+    //OutputDebugStringA(debugMsg);
 
 
     m_fAnimationRatio = fAnimationRatio;

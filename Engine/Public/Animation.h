@@ -22,6 +22,7 @@ public:
 public:
 	void		Set_TrackPositionPtr(_float* pTrackPosition);
 	void		Set_AnimBlendTime(_float fBlendTime) { m_fBlendTime = fBlendTime; } //클라에서 바꾸고 싶을 때
+	_float		Get_TickPerSecond() { return m_fTickPerSecond; }
 
 	/* Animation Blend*/
 public:

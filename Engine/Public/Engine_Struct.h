@@ -338,7 +338,7 @@ namespace Engine
 		float fMaxPlayTime = 999.f;         // 최대 재생 시간 (타임아웃)
 
 		/* Flag */
-		_wstring strflagName = L"";	//체크할 플래그 키 값 ex) "isRunning" : Walk -> Run
+		wstring strflagName = L"";	//체크할 플래그 키 값 ex) "isRunning" : Walk -> Run
 		//bool	isFlag =  true;		//원하는 전환 조건 true: 전환하겠다.
 
 		/* Input */
@@ -349,6 +349,19 @@ namespace Engine
 		string			strNextAnimSet=""; //전환 시 다음 애니메이션 세트 키값(비어 있으면 사용 x )
 
 	}ANIM_TRANSITION;
+
+	/* 애니메이션 이벤트 데이터*/
+	typedef struct tagAnimationEventDesc
+	{
+		string					strEventKey = "";					// 이벤트 키
+		XMFLOAT2				vFrameRange = { 0.f, 0.f };			// x: start, y: end
+		bool					isTriggered = false;                // 이번 재생에서 발동했는지
+
+		bool                    isTriggerOnce = { false };          // 루프 시 한 번만 발동
+		bool					isTriggerOnEnter = { true };        // 범위 진입 시 발동
+		bool					isTriggerOnExit = { false };        // 범위 탈출 시 발동
+		bool					isTriggerContinuous = { false };    // 범위 내에서 계속 발동
+	}ANIM_EVENT;
 }
 
 

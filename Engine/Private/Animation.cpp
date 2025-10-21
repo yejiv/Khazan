@@ -79,7 +79,7 @@ void CAnimation::Update_TransformationMatrices(const vector<class CBone*>& Bones
     if (*m_fCurrentTrackPosition >= m_fDuration)
     {
 
-        if ((isUsedLoop && false == isLoop) || m_isLoop)
+        if ((isUsedLoop && false == isLoop) || !m_isLoop)
         {
             *pFinished = true;
             *m_fCurrentTrackPosition = m_fDuration;

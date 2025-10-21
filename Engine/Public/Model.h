@@ -23,6 +23,7 @@ private:
 		ROOTMOTION_ROTATION = 1 << 8,
 
 		WAITFORCOMPLETE = 1 << 9,	//애니메이션 완료되어야 다음 애니메이션 전환 가능 
+
 	};
 
 private:
@@ -54,11 +55,18 @@ public:
 	void			Set_AnimationSet(const string& strKey);
 	void			Set_AnimationLoop(_bool isLoop);
 
+	/* 이벤트 */
+	void			Register_Event(const string& strEventKey, function<void()> OnEvent);
+	void			UnRegister_Event(const string& strEventKey);
+	void			Clear_AllEvent();
+
+#ifdef _DEBUG
+	void			Debug_RanderState();
+#endif // _DEBUG
 
 private:
 	/* State*/
 	_uint								m_iState = { 0 };
-
 
 	/* 모델 */
 	_wstring							m_strModelName{};
@@ -104,11 +112,25 @@ private:
 	/* 애니메이션 완료 후 다음 애니메이션으로 */
 	function<void()>				m_OnWaitForComplete = { nullptr };
 
+	/* 이벤트  */
+	unordered_map<string, function<void()>> m_EventCallbacks;	//콜백 관리
+	vector<ANIM_EVENT>						m_CurrentEvents;	//현재 이벤트 상태 추적
+	vector<_bool>							m_PrevFrameInRange;	//이전 프레임에 이벤트 발동 했는지
+
 private:
+	/* 루트 모션 */
 	void			Check_RootMotion();
 	void			Update_RootMotion(_float fTimeDelta);
+
+	/* 완료 여부 */
 	void			Check_WaitForComplete();
 	void			OnWaitForComplete(function<void()> onEvent) { m_OnWaitForComplete = onEvent; }
+
+	/* 이벤트 */
+	void			Setup_Events();
+	void			Check_Event(_float fTimeDelta);
+	void			Trigger_Event(string strEventKey);
+	void			Reset_EventTrigger();
 
 private:
 	HRESULT Ready_Meshes(MODEL_DATA& data);

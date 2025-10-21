@@ -5,6 +5,7 @@
 #include "Bone.h"
 #include "MeshMaterial.h"
 #include "Animation.h"
+#include "GameInstance.h"
 
 CModel::CModel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CComponent{ pDevice ,pContext }
@@ -217,11 +218,17 @@ _bool CModel::Play_Animation(_float fTimeDelta)
         /* 완료 대기 여부 체크*/
         Check_WaitForComplete();
 
+        /* 이벤트 초기화 */
+        Setup_Events();
+
         /* 애니메이션 블랜딩할 이전 애니메이션 뼈 넘겨주기 */
 		m_Animations[m_iCurrentAnimIndex]->OnAnimationBlend(move(m_Animations[m_iPrevAnimIndex]->Get_ChannelMatrices()));
 
 		Remove_State(CHANGE_ANIMATION);
 	}
+
+    _bool a = Has_State(USED_ANIM_LOOP);
+    _bool b = Has_State(ANIM_LOOP);
 
     /* 애니메이션의 현재 시간에 맞는 뼈의 상태대로 특정 뼈들을 갱신*/
     m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrices(m_Bones, Has_State(USED_ANIM_LOOP), Has_State(ANIM_LOOP), &m_isFinished, fTimeDelta);
@@ -234,29 +241,45 @@ _bool CModel::Play_Animation(_float fTimeDelta)
     if (Has_State(ROOTMOTION))
         Update_RootMotion(fTimeDelta);
 
-    /* 대기중인 애니메이션이 있으면 실행 */
-    if (Has_State(WAITFORCOMPLETE) && m_isFinished)
-    {
-        Remove_State(WAITFORCOMPLETE);
-        if (m_OnWaitForComplete != nullptr) {
-            m_OnWaitForComplete();
-            m_OnWaitForComplete = nullptr;
-            return m_isFinished;
-        }
-    }
+    /* 이벤트 체크 */
+    Check_Event(fTimeDelta);
 
-    /* 애니메이션 세트 다음동작 및 끝났는지 */
-    if (Has_State(ANIMSET_PLAYING) && m_isFinished)
+    if (m_isFinished)
     {
-        ++m_iCurrentAnimSetIndex;
-        if (m_iCurrentAnimSetIndex == m_iCurrentAnimSetsMaxIndex)
+        if (Has_State(ANIM_LOOP))
         {
-            Remove_State(ANIMSET_PLAYING | ANIMSET_NEXT);
-            return true;
+            Reset_EventTrigger();
         }
 
-        Add_State(ANIMSET_NEXT);
-        return false;
+        /* 대기중인 애니메이션이 있으면 실행 - Set_Animation(예약 인덱스)*/
+        if (Has_State(WAITFORCOMPLETE))
+        {
+            Remove_State(WAITFORCOMPLETE);
+            if (m_OnWaitForComplete != nullptr) {
+                m_OnWaitForComplete();
+                m_OnWaitForComplete = nullptr;
+                return m_isFinished;
+            }
+        }
+
+        /* 애니메이션 세트 다음동작 및 끝났는지 */
+        if (Has_State(ANIMSET_PLAYING))
+        {
+            ++m_iCurrentAnimSetIndex;
+
+            if (m_iCurrentAnimSetIndex == m_iCurrentAnimSetsMaxIndex)
+            {
+                OutputDebugStringA(("[Set_AnimationSet End !! \n]"));
+
+                Remove_State(ANIMSET_PLAYING | ANIMSET_NEXT);
+                return true;
+            }
+
+            OutputDebugStringA(("[Set_AnimationSet N E X T \n]"));
+            Add_State(ANIMSET_NEXT);
+            return false;
+        }
+
     }
 
     return m_isFinished;
@@ -303,6 +326,8 @@ void CModel::Set_AnimationSet(const string& strKey)
 
         m_iCurrentAnimSetsIndex = static_cast<_uint>(distance(m_AnimationSets.begin(), iter));
         m_iCurrentAnimSetsMaxIndex = static_cast<_uint>(iter->vecAnimIndices.size());
+        OutputDebugStringA(("[CModel::Set_AnimationSet() Success] Animation Set Key: " + strKey + "\n").c_str());
+
     }
     else
     {
@@ -321,6 +346,124 @@ void CModel::Set_AnimationLoop(_bool isLoop)
         Add_State(ANIM_LOOP);
 }
 
+void CModel::Register_Event(const string& strEventKey, function<void()> OnEvent)
+{
+    m_EventCallbacks[strEventKey] = OnEvent;
+}
+
+void CModel::UnRegister_Event(const string& strEventKey)
+{
+    auto it = m_EventCallbacks.find(strEventKey);
+    if (it != m_EventCallbacks.end())
+        m_EventCallbacks.erase(it);
+
+}
+
+void CModel::Clear_AllEvent()
+{
+    m_EventCallbacks.clear();
+}
+
+#ifdef _DEBUG
+void CModel::Debug_RanderState()
+{
+    ImGui::SeparatorText("Model State");
+
+    // 전체 State 값 표시
+    ImGui::Text("State Value: 0x%08X", m_iState);
+    ImGui::Spacing();
+
+    // 각 상태별 표시
+    struct StateInfo {
+        MODEL_STATE flag;
+        const char* name;
+        ImVec4 activeColor;
+    };
+
+    StateInfo states[] = {
+        {ANIM_LOOP,         "ANIM_LOOP",            ImVec4(0.0f, 1.0f, 0.0f, 1.0f)},
+        {USED_ANIM_LOOP,    "USED_ANIM_LOOP",       ImVec4(0.0f, 0.8f, 0.0f, 1.0f)},
+        {CHANGE_ANIMATION,  "CHANGE_ANIMATION",     ImVec4(1.0f, 1.0f, 0.0f, 1.0f)},
+        {ANIMSET_PLAYING,   "ANIMSET_PLAYING",      ImVec4(0.0f, 1.0f, 1.0f, 1.0f)},
+        {ANIMSET_NEXT,      "ANIMSET_NEXT",         ImVec4(0.5f, 0.5f, 1.0f, 1.0f)},
+        {ROOTMOTION,        "ROOTMOTION",           ImVec4(1.0f, 0.5f, 0.0f, 1.0f)},
+        {ROOTMOTION_POSITION, "ROOTMOTION_POSITION", ImVec4(1.0f, 0.3f, 0.0f, 1.0f)},
+        {ROOTMOTION_ROTATION, "ROOTMOTION_ROTATION", ImVec4(1.0f, 0.3f, 0.3f, 1.0f)},
+        {WAITFORCOMPLETE,   "WAITFORCOMPLETE",      ImVec4(1.0f, 0.0f, 1.0f, 1.0f)}
+    };
+
+    ImGui::BeginChild("StateFlags", ImVec2(0, 200), true);
+    {
+        for (const auto& state : states)
+        {
+            bool isActive = Has_State(state.flag);
+
+            if (isActive)
+                ImGui::TextColored(state.activeColor, "[ON]  %s", state.name);
+            else
+                ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "[OFF] %s", state.name);
+        }
+    }
+    ImGui::EndChild();
+
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+
+    // 애니메이션 관련 정보
+    ImGui::SeparatorText("Animation Info");
+    ImGui::Text("Current Anim Index: %d", m_iCurrentAnimIndex);
+    ImGui::Text("Prev Anim Index: %d", m_iPrevAnimIndex);
+    ImGui::Text("Reserve Anim Index: %d", m_iReserveAnimIndex);
+    ImGui::Text("Track Position: %.2f", m_fCurrentTrackPosition);
+    ImGui::Text("Is Finished: %s", m_isFinished ? "YES" : "NO");
+
+    ImGui::Spacing();
+
+    // 애니메이션 세트 정보
+    if (Has_State(ANIMSET_PLAYING))
+    {
+        ImGui::SeparatorText("Animation Set Info");
+        ImGui::Text("Current Set Index: %d", m_iCurrentAnimSetsIndex);
+        ImGui::Text("Set Max Index: %d", m_iCurrentAnimSetsMaxIndex);
+        ImGui::Text("Current Anim in Set: %d", m_iCurrentAnimSetIndex);
+    }
+
+    ImGui::Spacing();
+
+    // 루트 모션 정보
+    //if (Has_State(ROOTMOTION))
+    //{
+        ImGui::SeparatorText("Root Motion Info");
+        ImGui::Text("Root Bone Index: %d", m_iRootBoneIndex);
+        ImGui::Text("Blend Time: %.2f / %.2f",m_fCurrentRootMotionBlendTime, m_fRootMotionBlendTime);
+
+        _float4 scale;
+        XMStoreFloat4(&scale, m_vRootMotionScale);
+        ImGui::Text("Scale: (%.1f, %.1f, %.1f)", scale.x, scale.y, scale.z);
+    //}
+
+    ImGui::Spacing();
+
+    // 이벤트 정보
+    ImGui::SeparatorText("Event Info");
+    ImGui::Text("Registered Events: %d", (_int)m_EventCallbacks.size());
+    ImGui::Text("Current Events: %d", (_int)m_CurrentEvents.size());
+
+    if (!m_EventCallbacks.empty())
+    {
+        if (ImGui::TreeNode("Registered Event Keys"))
+        {
+            for (const auto& pair : m_EventCallbacks)
+            {
+                ImGui::BulletText("%s", pair.first.c_str());
+            }
+            ImGui::TreePop();
+        }
+    }
+
+}
+#endif
 
 HRESULT CModel::Render(_uint iMeshIndex)
 {    
@@ -464,6 +607,115 @@ void CModel::Check_WaitForComplete()
 {
     if (m_AnimationsSetup[m_iCurrentAnimIndex].isWaitForComplete)
         Add_State(WAITFORCOMPLETE);
+}
+
+void CModel::Setup_Events()
+{
+    if (!m_AnimationsSetup[m_iCurrentAnimIndex].isEvent)
+        return;
+
+    m_CurrentEvents.clear();
+    m_PrevFrameInRange.clear();
+
+    for (size_t i = 0; i < m_AnimationsSetup[m_iCurrentAnimIndex].vecEventFrames.size(); i++)
+    {
+        ANIM_EVENT event;
+        
+        event.strEventKey = m_AnimationsSetup[m_iCurrentAnimIndex].vecEventKeys[i];
+        event.vFrameRange = _float2(m_AnimationsSetup[m_iCurrentAnimIndex].vecEventFrames[i].x, m_AnimationsSetup[m_iCurrentAnimIndex].vecEventFrames[i].y);
+        event.isTriggered = false;
+
+        //event.isTriggerOnce = m_AnimationsSetup[m_iCurrentAnimIndex].isTriggerOnce;
+        //event.isTriggerOnEnter = m_AnimationsSetup[m_iCurrentAnimIndex].isTriggerOnEnter;
+        //event.isTriggerOnExit = m_AnimationsSetup[m_iCurrentAnimIndex].isTriggerOnExit;
+        //event.isTriggerContinuous = m_AnimationsSetup[m_iCurrentAnimIndex].isTriggerContinuous;
+
+        m_CurrentEvents.push_back(event);
+        m_PrevFrameInRange.push_back(false);
+    }
+
+}
+
+void CModel::Check_Event(_float fTimeDelta)
+{
+    if (m_CurrentEvents.empty())
+        return;
+
+    _float fPrevTime = m_fCurrentTrackPosition - (m_Animations[m_iCurrentAnimIndex]->Get_TickPerSecond() * fTimeDelta);
+
+
+
+    for (size_t i = 0; i < m_CurrentEvents.size(); i++)
+    {
+        ANIM_EVENT& event = m_CurrentEvents[i];
+
+        if (event.isTriggered && event.isTriggerOnce)
+            continue;
+
+       //단일 프레임 이벤트
+        if (event.vFrameRange.y == 0.f )
+        {
+            if (fPrevTime < event.vFrameRange.x && event.vFrameRange.x <= m_fCurrentTrackPosition)
+            {
+                Trigger_Event(event.strEventKey);
+                event.isTriggered = true;
+            }
+
+        }
+        // 구간 이벤트 
+        else
+        {
+            _bool  isInRange = (event.vFrameRange.x <= m_fCurrentTrackPosition && m_fCurrentTrackPosition <= event.vFrameRange.y);
+            _bool  wasInRange = m_PrevFrameInRange[i];
+
+            // 진입
+            if (isInRange && !wasInRange && event.isTriggerOnEnter)
+            {
+                Trigger_Event(event.strEventKey);
+                event.isTriggered = true;
+            }
+            //탈출
+            else if (!isInRange && wasInRange && event.isTriggerOnExit)
+            {
+                Trigger_Event(event.strEventKey);
+                event.isTriggered = true;
+            }
+            //범위 내에 계속 발동
+            else if (isInRange && event.isTriggerContinuous)
+            {
+                Trigger_Event(event.strEventKey);
+            }
+
+            m_PrevFrameInRange[i] = isInRange;
+
+        }
+
+    }
+
+}
+
+void CModel::Trigger_Event(string strEventKey)
+{
+    auto it = m_EventCallbacks.find(strEventKey);
+
+    if (it != m_EventCallbacks.end())
+        it->second();
+#ifdef _DEBUG
+    else
+    {
+        OutputDebugStringA(("[CModel::Trigger_Event] No callback registered for: " + strEventKey + "\n").c_str());
+    }
+#endif
+
+}
+
+void CModel::Reset_EventTrigger()
+{
+    for (auto event : m_CurrentEvents)
+        event.isTriggered = false;
+
+    fill(m_PrevFrameInRange.begin(), m_PrevFrameInRange.end(), false);
+
 }
 
 HRESULT CModel::Ready_Meshes(MODEL_DATA& data)
