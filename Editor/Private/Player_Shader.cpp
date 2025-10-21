@@ -26,7 +26,8 @@ HRESULT CPlayer_Shader::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    m_pModelCom->Set_Animation(8, true);
+    m_pModelCom->Set_AnimationLoop(true);
+    m_pModelCom->Set_Animation(8);
 
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
     m_pTransformCom->Scaling(_float3(0.1f, 0.1f, 0.1f));
@@ -46,12 +47,14 @@ void CPlayer_Shader::Update(_float fTimeDelta)
 
     if (m_pGameInstance->Key_Down(DIK_MINUS))
     {
-        m_pModelCom->Set_Animation(--m_iCurrentAnimIndex, true);
+        m_pModelCom->Set_AnimationLoop(true);
+        m_pModelCom->Set_Animation(--m_iCurrentAnimIndex);
     }
     if (m_pGameInstance->Key_Down(DIK_EQUALS))
     {
         //  m_iCurrentAnimIndex = 2;
-        m_pModelCom->Set_Animation(++m_iCurrentAnimIndex, true);
+        m_pModelCom->Set_AnimationLoop(true);
+        m_pModelCom->Set_Animation(++m_iCurrentAnimIndex);
     }
 }
 

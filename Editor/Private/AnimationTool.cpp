@@ -811,10 +811,6 @@ void CAnimationTool::Tool_AnimationInfo_Widget()
         if (setup->isEvent)
         {
             ImGui::Indent();
-
-            ImGui::Checkbox("isTriggerOnce", &setup->isTriggerOnce);
-            ImGui::Checkbox("isTriggerOnExit", &setup->isTriggerOnExit);
-
             ImGui::Text("Events: %d", (_int)setup->vecEventKeys.size());
 
             for (size_t i = 0; i < setup->vecEventKeys.size(); ++i)
@@ -843,6 +839,53 @@ void CAnimationTool::Tool_AnimationInfo_Widget()
                     ImGui::SameLine();
                     ImGui::SetNextItemWidth(150);
                     ImGui::DragFloat("##eventEnd", &setup->vecEventFrames[i].y, 0.1f, 0.0f, animData->fDuration, "%.5f");
+
+
+                    // 트리거 상태 표시
+                    _uint& trigger = setup->vecEventTriggers[i];
+
+                    // 트리거 버튼 정보 배열
+                    struct TriggerButton {
+                        const char* label;
+                        int bit;
+                        float width;
+                    };
+
+                    TriggerButton buttons[] = {
+                        {"[Once]", 0, 60.f},
+                        {"[OnEnter]", 1, 70.f},
+                        {"[OnExit]", 2, 70.f},
+                        {"[Continuous]", 3, 90.f}
+                    };
+
+                    for (int j = 0; j < 4; ++j)
+                    {
+                       // bool isActive = (trigger & (1 << buttons[j].bit)) != 0;
+
+                        string buttonLabel = buttons[j].label;
+
+                        if (ImGui::Button(buttonLabel.c_str(), ImVec2(buttons[j].width, 0.f)))
+                        {
+                            trigger ^= (1 << buttons[j].bit);  // XOR로 비트 토글
+                        }
+
+                        if (j < 3) ImGui::SameLine();
+                    }
+
+                    ImGui::Spacing();
+
+                    // 현재 트리거 상태 표시
+                    ImGui::Text("Triggers: ");
+                    ImGui::SameLine();
+                    string triggerStr;
+                    if (trigger & (1 << 0)) triggerStr += "[Once] ";
+                    if (trigger & (1 << 1)) triggerStr += "[Enter] ";
+                    if (trigger & (1 << 2)) triggerStr += "[Exit] ";
+                    if (trigger & (1 << 3)) triggerStr += "[Continuous] ";
+                    if (triggerStr.empty()) triggerStr = "None";
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", triggerStr.c_str());
+
+
 
                     if (ImGui::Button("Remove Event", ImVec2(150, 0)))
                     {
@@ -931,34 +974,108 @@ void CAnimationTool::Tool_MakeAnimEvent_Widget()
         m_vTempFrames.y = 0.f;
     }
 
-    ImGui::Text("Frame Key : %s", m_szEventKeyInputText);
-    ImGui::Text("Frame X : %.5f", m_vTempFrames.x);
-    ImGui::Text("Frame Y : %.5f", m_vTempFrames.y);
+    //CEditor_Model* pModel = m_GameObjects[m_iSelectedIndex]->get_Model()->Get_ModelData()->vecAnimation[m_iSelectedAnimIndex]->animSetup;
+    //MODEL_DATA* modelData = pModel->Get_ModelData();
+    //ANIMATION_DATA* animData = &modelData->vecAnimation[m_iSelectedAnimIndex];
+    //ANIMATION_SETUP_DATA* setup = m_GameObjects[m_iSelectedIndex]->get_Model()->Get_CurAnimSet();
 
-    if (ImGui::Button("Vector Frame Data Store"))
+    ImGui::Checkbox("isTriggerOnce", &m_isTriggerOnce); ImGui::SameLine();
+    ImGui::Checkbox("isTriggerOnEnter", &m_isTriggerOnEnter); ImGui::SameLine();
+    ImGui::Checkbox("isTriggerOnExit", &m_isTriggerOnExit); ImGui::SameLine();
+    ImGui::Checkbox("isTriggerContinuous", &m_isTriggerContinuous);
+
+    // ===== 현재 설정 정보 =====
+    ImGui::BeginChild("CurrentEventInfo", ImVec2(0, 80), true);
+    {
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "Current Event Setup:");
+        ImGui::Text("Event Key: %s", m_szEventKeyInputText);
+        ImGui::Text("Frame X: %.5f, Frame Y: %.5f", m_vTempFrames.x, m_vTempFrames.y);
+
+        // 트리거 상태 표시
+        ImGui::Text("Triggers: ");
+        ImGui::SameLine();
+        string triggerStr;
+        if (m_isTriggerOnce) triggerStr += "[Once] ";
+        if (m_isTriggerOnEnter) triggerStr += "[Enter] ";
+        if (m_isTriggerOnExit) triggerStr += "[Exit] ";
+        if (m_isTriggerContinuous) triggerStr += "[Continuous] ";
+        if (triggerStr.empty()) triggerStr = "None";
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", triggerStr.c_str());
+    }
+    ImGui::EndChild();
+
+
+    if (ImGui::Button("Add Event to List"))
     {
         m_vecEventFrames.emplace_back(m_vTempFrames);
         m_vecEventKeys.emplace_back(string(m_szEventKeyInputText));
 
         m_vTempFrames.x = 0.f;
         m_vTempFrames.y = 0.f;
+
+        _uint   iTrigger = {};
+        if (m_isTriggerOnce)iTrigger += (1 << 0);
+        if (m_isTriggerOnEnter)iTrigger += (1 << 1);
+        if (m_isTriggerOnExit)iTrigger += (1 << 2);
+        if (m_isTriggerContinuous)iTrigger += (1 << 3);
+        m_vecTriggers.emplace_back(iTrigger);
     }
 
     ImGui::Spacing();
-    ImGui::Text("Event List");
-    ImGui::BeginChild("EventList", ImVec2(0, 150), true);
+    ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Event List (%d)", (_int)m_vecEventFrames.size());
+    ImGui::BeginChild("EventList", ImVec2(0, 200), true);
     {
         for (_int i = 0; i < (_int)m_vecEventFrames.size(); ++i)
         {
             const _bool isSelected = (m_iAnimSliderListSelectedIndex == i);
 
-            // 각 항목을 Selectable로 표시
-            string label = "[" + to_string(i) + "] " + m_vecEventKeys[i] +
-                " (X:" + to_string(m_vecEventFrames[i].x) +
-                ", Y:" + to_string(m_vecEventFrames[i].y) + ")";
+            ImGui::PushID(i);
+
+            // 트리거 플래그 파싱
+            _uint trigger = m_vecTriggers[i];
+            string triggerText;
+            ImVec4 triggerColor = ImVec4(0.7f, 0.7f, 0.7f, 1.0f);
+
+            if (trigger & (1 << 0)) { // Once
+                triggerText += "[Once]";
+                triggerColor = ImVec4(1.0f, 0.5f, 0.0f, 1.0f);
+            }
+            if (trigger & (1 << 1)) { // Enter
+                if (!triggerText.empty()) triggerText += " ";
+                triggerText += "[Enter]";
+                triggerColor = ImVec4(0.0f, 1.0f, 0.5f, 1.0f);
+            }
+            if (trigger & (1 << 2)) { // Exit
+                if (!triggerText.empty()) triggerText += " ";
+                triggerText += "[Exit]";
+                triggerColor = ImVec4(1.0f, 0.0f, 0.5f, 1.0f);
+            }
+            if (trigger & (1 << 3)) { // Continuous
+                if (!triggerText.empty()) triggerText += " ";
+                triggerText += "[Cont]";
+                triggerColor = ImVec4(0.5f, 0.5f, 1.0f, 1.0f);
+            }
+            if (triggerText.empty()) {
+                triggerText = "[None]";
+            }
+
+            // 이벤트 정보 라벨
+            string label = "[" + to_string(i) + "] " + m_vecEventKeys[i];
 
             if (ImGui::Selectable(label.c_str(), isSelected))
+            {
                 m_iAnimSliderListSelectedIndex = i;
+            }
+
+            // 같은 줄에 프레임과 트리거 정보 표시
+            ImGui::SameLine(250);
+            ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f),
+                "X:%.3f Y:%.3f", m_vecEventFrames[i].x, m_vecEventFrames[i].y);
+
+            ImGui::SameLine(350);
+            ImGui::TextColored(triggerColor, "%s", triggerText.c_str());
+
+            ImGui::PopID();
         }
     }
     ImGui::EndChild();
@@ -971,6 +1088,7 @@ void CAnimationTool::Tool_MakeAnimEvent_Widget()
         {
             m_vecEventFrames.erase(m_vecEventFrames.begin() + m_iAnimSliderListSelectedIndex);
             m_vecEventKeys.erase(m_vecEventKeys.begin() + m_iAnimSliderListSelectedIndex);
+            m_vecTriggers.erase(m_vecTriggers.begin() + m_iAnimSliderListSelectedIndex);
             m_iAnimSliderListSelectedIndex = -1;
         }
     }
@@ -980,14 +1098,17 @@ void CAnimationTool::Tool_MakeAnimEvent_Widget()
     // 모델 데이터에 저장
     if (ImGui::Button("Save to Real Model Data", ImVec2(200, 25)))
     {
-        MODEL_DATA* data = m_GameObjects[m_iSelectedIndex]->get_Model()->Get_ModelData();
-        data->vecAnimation[m_iSelectedAnimIndex].animSetup.vecEventFrames = m_vecEventFrames;
-        data->vecAnimation[m_iSelectedAnimIndex].animSetup.vecEventKeys = m_vecEventKeys;
-        data->vecAnimation[m_iSelectedAnimIndex].animSetup.isEvent = true;
+        //MODEL_DATA* data = m_GameObjects[m_iSelectedIndex]->get_Model()->Get_ModelData();
+        ANIMATION_SETUP_DATA* data = m_GameObjects[m_iSelectedIndex]->get_Model()->Get_CurAnimSet();
+        data->vecEventFrames = m_vecEventFrames;
+        data->vecEventKeys = m_vecEventKeys;
+        data->vecEventTriggers = m_vecTriggers;
+        data->isEvent = true;
 
         // 저장 후 초기화
         m_vecEventFrames.clear();
         m_vecEventKeys.clear();
+        m_vecTriggers.clear();
         m_iAnimSliderListSelectedIndex = -1;
     }
 }

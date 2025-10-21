@@ -448,8 +448,11 @@ namespace Engine
 
         /* 이벤트 */
         bool                    isEvent = { false };                        // 이벤트 존재 여부
-        bool                    isTriggerOnce = { false };                  // 루프 시 한 번만 발동
-        bool                    isTriggerOnExit = { false };                // 블렌드 아웃 시 발동
+        //bool                  isTriggerOnce = { false };       =1<<0      // 루프 시 한 번만 발동
+        //bool					isTriggerOnEnter = { true };     =1<<1      // 범위 진입 시 발동
+        //bool					isTriggerOnExit = { false };     =1<<2      // 범위 탈출 시 발동
+        //bool					isTriggerContinuous = { false }; =1<<3      // 범위 내에서 계속 발동
+        std::vector<unsigned int>   vecEventTriggers;                       // 이벤트 발동 조건 모음
         std::vector<FLOAT2_DATA>    vecEventFrames;                         // 이벤트 프레임 (x: start, y: end)
         std::vector<std::string>    vecEventKeys;                           // 이벤트 키
 
@@ -480,10 +483,18 @@ namespace Engine
 
             // 이벤트
             ofs.write((char*)&isEvent, sizeof(isEvent));
-            ofs.write((char*)&isTriggerOnce, sizeof(isTriggerOnce));
-            ofs.write((char*)&isTriggerOnExit, sizeof(isTriggerOnExit));
+            //ofs.write((char*)&isTriggerOnce, sizeof(isTriggerOnce));
+            //ofs.write((char*)&isTriggerOnEnter, sizeof(isTriggerOnEnter));
+            //ofs.write((char*)&isTriggerOnExit, sizeof(isTriggerOnExit));
+            //ofs.write((char*)&isTriggerContinuous, sizeof(isTriggerContinuous));
+            uint32_t count = static_cast<uint32_t>(vecEventTriggers.size());
+            ofs.write((char*)&count, sizeof(count));
+            for (const auto& frame : vecEventTriggers)
+            {
+                ofs.write((char*)&frame, sizeof(unsigned int));
+            }
 
-            uint32_t count = static_cast<uint32_t>(vecEventFrames.size());
+            count = static_cast<uint32_t>(vecEventFrames.size());
             ofs.write((char*)&count, sizeof(count));
             for (const auto& frame : vecEventFrames)
             {
@@ -526,10 +537,20 @@ namespace Engine
 
             // 이벤트
             ifs.read((char*)&isEvent, sizeof(isEvent));
-            ifs.read((char*)&isTriggerOnce, sizeof(isTriggerOnce));
-            ifs.read((char*)&isTriggerOnExit, sizeof(isTriggerOnExit));
+            //ifs.read((char*)&isTriggerOnce, sizeof(isTriggerOnce));
+            //ifs.read((char*)&isTriggerOnEnter, sizeof(isTriggerOnEnter));
+            //ifs.read((char*)&isTriggerOnExit, sizeof(isTriggerOnExit));
+            //ifs.read((char*)&isTriggerContinuous, sizeof(isTriggerContinuous));
 
             uint32_t count;
+
+            ifs.read((char*)&count, sizeof(count));
+            vecEventTriggers.resize(static_cast<size_t>(count));
+            for (auto& frame : vecEventTriggers)
+            {
+                ifs.read((char*)&frame, sizeof(unsigned int));
+            }
+
             ifs.read((char*)&count, sizeof(count));
             vecEventFrames.resize(static_cast<size_t>(count));
             for (auto& frame : vecEventFrames)
@@ -827,8 +848,11 @@ namespace Engine
         isApplyRootPosition,
         RootMitionScale,
         isEvent,
-        isTriggerOnce,
-        isTriggerOnExit,
+        //isTriggerOnce,
+        //isTriggerOnEnter,
+        //isTriggerOnExit,
+        //isTriggerContinuous,
+        vecEventTriggers,
         vecEventFrames,
         vecEventKeys
     );

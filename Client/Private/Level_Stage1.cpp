@@ -43,10 +43,9 @@ HRESULT CLevel_Stage1::Initialize()
 	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
 		return E_FAIL;
 
-	/*if (FAILED(Ready_Layer_Test(TEXT("Layer_Test"))))
-		return E_FAIL;*/
+	CHECK_FAILED(Ready_Layer_Test(TEXT("Layer_Test")), E_FAIL);
 
-	CHECK_FAILED(Ready_Layer_MapObject_Test(TEXT("Layer_Test")), E_FAIL);
+	//CHECK_FAILED(Ready_Layer_MapObject_Test(TEXT("Layer_Test")), E_FAIL);
 
 	//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject_Test"), TEXT("HeinMach"), KHAZAN_MAP::HEINMACH), E_FAIL);
 
@@ -195,9 +194,9 @@ HRESULT CLevel_Stage1::Ready_Layer_Test(const _wstring& strLayerTag)
 		ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_JOH_Test1"))))
 		return E_FAIL;
 
-	if (FAILED(m_pClientInstance->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
-		TEXT("../Bin/Resources/UI/UIData/HUD.json"))))
-		return E_FAIL;
+	//if (FAILED(m_pClientInstance->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+	//	TEXT("../Bin/Resources/UI/UIData/Test.json"))))
+	//	return E_FAIL;
 
 	return S_OK;
 }
