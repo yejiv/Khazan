@@ -80,6 +80,95 @@ HRESULT CCamera_Controller::Ready_ImGui_Create()
 	{
 		Create_Camera();
 	};
+	ImGui::InputText("CameraLoadFilePath", m_szLoadFilePath, MAX_PATH);
+	if (ImGui::Button("Load_Camera"))
+	{
+		string filePath = m_szLoadFilePath;
+		filePath += ".json";
+		ifstream In(filePath);
+		if (!In.is_open())
+		{
+			MSG_BOX(TEXT("UI JSON 파일 불러오기 실패"));
+			In.close();
+		}
+		else
+		{
+			nlohmann::json jsonData;
+			In >> jsonData;
+
+			CCamera_Compre::CAMERA_COMPRE_DESC CameraDesc{};
+
+			CameraDesc.strCameraTag = AnsiToWString(jsonData["Name"]);
+			CameraDesc.vEye.x = jsonData["Eye"]["x"];
+			CameraDesc.vEye.y = jsonData["Eye"]["y"];
+			CameraDesc.vEye.z = jsonData["Eye"]["z"];
+			CameraDesc.vEye.w = jsonData["Eye"]["w"];
+			CameraDesc.vAt.x = jsonData["At"]["x"];
+			CameraDesc.vAt.y = jsonData["At"]["y"];
+			CameraDesc.vAt.z = jsonData["At"]["z"];
+			CameraDesc.vAt.w = jsonData["At"]["w"];
+			CameraDesc.fFovy = jsonData["Fovy"];
+			CameraDesc.fNear = jsonData["Near"];
+			CameraDesc.fFar = jsonData["Far"];
+			CameraDesc.fSpeedPerSec = jsonData["SpeedPerSec"];
+			CameraDesc.fRotationPerSec = jsonData["RotationPerSec"];
+			CameraDesc.fMouseSensor = jsonData["MouseSensor"];
+			CameraDesc.iCameraType = jsonData["CameraType"];
+
+			map<_wstring, vector<CAMERA_KEYFRAME>> Animations;
+			for (auto Animation : jsonData["Animation"])
+			{
+				vector<CAMERA_KEYFRAME> KeyFrames;
+				for (auto Ani : Animation["Animations"])
+				{
+					CAMERA_KEYFRAME KeyFrame{};
+					KeyFrame.vTranslation.x = Ani["Translation"]["x"];
+					KeyFrame.vTranslation.y = Ani["Translation"]["y"];
+					KeyFrame.vTranslation.z = Ani["Translation"]["z"];
+					KeyFrame.vLookAt.x = Ani["LookAt"]["x"];
+					KeyFrame.vLookAt.y = Ani["LookAt"]["y"];
+					KeyFrame.vLookAt.z = Ani["LookAt"]["z"];
+					KeyFrame.vLookAt.w = Ani["LookAt"]["w"];
+					KeyFrame.fSpeed = Ani["Speed"];
+					KeyFrame.fTrackPosition = Ani["TrackPosition"];
+
+					KeyFrames.push_back(KeyFrame);
+				}
+
+				Animations.emplace(AnsiToWString(Animation["Name"]), KeyFrames);
+			}
+
+			map<_wstring, vector<CAMERA_EVENT_DATA>> Events;
+			for (auto Event : jsonData["Event"])
+			{
+				vector<CAMERA_EVENT_DATA> EventDatas;
+				for (auto EveData : Event["Events"])
+				{
+					CAMERA_EVENT_DATA Event{};
+					Event.iEventType = EveData["EventType"];
+					Event.strEventKey = AnsiToWString(EveData["EventKey"]);
+					Event.isComplete = EveData["isComplete"];
+					Event.fTrackPosition = EveData["TrackPosition"];
+
+
+					EventDatas.push_back(Event);
+				}
+
+				Events.emplace(AnsiToWString(Event["Name"]), EventDatas);
+			}
+
+			CCamera_Compre* pCamera = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::CAMERA), TEXT("Prototype_GameObject_Camera_Compre"), &CameraDesc));
+			pCamera->Set_IsActive(false);
+			pCamera->Load(Animations, Events);
+
+			m_pGameInstance->Add_Camera(ENUM_CLASS(LEVEL::CAMERA), pCamera);
+
+			m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::CAMERA), TEXT("Layer_Camera"), pCamera);
+
+		}
+		
+
+	}
 
 	ImGui::End();
 
@@ -129,7 +218,7 @@ HRESULT CCamera_Controller::Ready_ImGui_List()
 		}
 		if (ImGui::Button("Active", ImVec2(60.f, 30.f)))
 		{
-			m_pGameInstance->Change_Camera(ENUM_CLASS(LEVEL::CAMERA), m_tCreateCameraDesc.strCameraTag);
+			m_pGameInstance->Change_Camera(ENUM_CLASS(LEVEL::CAMERA), Cameras[m_iListSelectCamera]->Get_CameraTag());
 
 			CCamera* pCamera = m_pGameInstance->Get_ActiveCamera();
 
@@ -146,13 +235,13 @@ HRESULT CCamera_Controller::Ready_ImGui_List()
 			pCamera->Set_DefaultData(m_tEditCameraDesc);
 		}
 
-		ImGui::InputText("UIFilePath", m_szFilePath, MAX_PATH);
+		ImGui::InputText("CameraSaveFilePath", m_szSaveFilePath, MAX_PATH);
 		if (ImGui::Button("Save_Camera"))
 		{
-			string filePath = m_szFilePath;
+			string filePath = m_szSaveFilePath;
 			filePath += ".json";
 			nlohmann::ordered_json SaveData;
-			Cameras[m_iListSelectCamera]->Save_Json(SaveData);
+			m_pGameInstance->Save_Json_Camera(ENUM_CLASS(LEVEL::CAMERA), Cameras[m_iListSelectCamera]->Get_CameraTag(), SaveData);
 			ofstream Out(filePath, ios::out | ios::trunc);
 			if (!Out.is_open())
 			{
@@ -166,25 +255,6 @@ HRESULT CCamera_Controller::Ready_ImGui_List()
 				Out.close();
 			}
 		}
-		/*if (ImGui::Button("Load_Camera"))
-		{
-			string filePath = m_szFilePath;
-			filePath += ".json";
-			nlohmann::ordered_json SaveData;
-			Cameras[m_iListSelectCamera]->Save_Json(SaveData);
-			ofstream Out(filePath, ios::out | ios::trunc);
-			if (!Out.is_open())
-			{
-				MSG_BOX(TEXT("Json 파일 저장 실패"));
-				Out.close();
-			}
-			else
-			{
-				MSG_BOX(TEXT("Json 파일 저장 성공"));
-				Out << SaveData.dump(4);
-				Out.close();
-			}
-		}*/
 
 		ImGui::End();
 	}

@@ -54,6 +54,7 @@ public:
 	_uint Get_CameraType() { return m_iCameraType; }
 	_wstring Get_CameraTag() { return m_strCameraTag; }
 
+	CCamera::CAMERA_DESC Get_CameraDesc();
 	map<_wstring, vector<CAMERA_KEYFRAME>>* Get_AllAnimations() { return &m_Animations; }
 	map<_wstring, vector<CAMERA_EVENT_DATA>>* Get_AllEvents() { return &m_Events; }
 
@@ -62,6 +63,7 @@ public:
 
 public:
 	HRESULT Set_DefaultData(CAMERA_DESC tDesc);
+	HRESULT Load(map<_wstring, vector<CAMERA_KEYFRAME>> Animations, map<_wstring, vector<CAMERA_EVENT_DATA>> Events);
 
 public:
 	void Set_ObjMatrix(const _float4x4* pObjMatrix) { m_pObjMatrix = pObjMatrix; }
@@ -69,11 +71,7 @@ public:
 
 public:
 	void Update_PipeLines();
-public:
-	void Save_Dat();
-	void Load_Dat();
 
-	void Save_Json(nlohmann::ordered_json& pOutData);
 protected:
 	_wstring			m_strCameraTag = {};
 	_uint				m_iCameraType = {};

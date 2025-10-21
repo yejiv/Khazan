@@ -16,11 +16,18 @@ public:
 	void Change_Camera(_uint iLevelIndex, _uint iCameraType);
 	void Change_Camera(_uint iLevelIndex, _wstring strCameraTag);
 	class CCamera* Find_Camera(_uint iLevelIndex, _uint iCameraType);
+	class CCamera* Find_Camera(_uint iLevelIndex, _wstring strCameraTag);
 	void Clear(_uint iNumLevels);
 
 public:
 	vector<class CCamera*> Get_pCameras(_uint iNumLevel) { return m_pCameras[iNumLevel]; }
 	class CCamera* Get_ActiveCamera() { return m_pActiveCamera; }
+
+public:
+	void Save_Dat();
+	void Load_Dat();
+
+	void Save_Json(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
 
 private:
 	class CGameInstance* m_pGameInstance = { nullptr };

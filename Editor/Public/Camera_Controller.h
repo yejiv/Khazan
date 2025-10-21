@@ -53,7 +53,8 @@ private:
 	_int m_iListSelectCamera = {};
 	_wstring m_strListSelectAnimation = {};
 
-	_char m_szFilePath[MAX_PATH] = "";
+	_char m_szLoadFilePath[MAX_PATH] = "../../Client/Bin/Data/Camera";
+	_char m_szSaveFilePath[MAX_PATH] = "../../Client/Bin/Data/Camera";
 
 public:
 	static CCamera_Controller* Create();

@@ -823,6 +823,10 @@ CCamera* CGameInstance::Get_ActiveCamera()
 {
 	return m_pCamera_Manager->Get_ActiveCamera();
 }
+void CGameInstance::Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData)
+{
+	m_pCamera_Manager->Save_Json(iLevelIndex, strCameraTag, pOutData);
+}
 #pragma endregion
 
 //

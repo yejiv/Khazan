@@ -334,6 +334,23 @@ HRESULT CCamera::Remove_AllEvent(_wstring strAnimationTag)
 	return S_OK;
 }
 
+CCamera::CAMERA_DESC CCamera::Get_CameraDesc()
+{
+	CAMERA_DESC Desc{};
+	Desc.fFar = m_fFar;
+	Desc.fFovy = m_fFovy;
+	Desc.fMouseSensor = m_fMouseSensor;
+	Desc.fNear = m_fNear;
+	Desc.fRotationPerSec = m_pTransformCom->Get_RotationPerSec();
+	Desc.fSpeedPerSec = m_pTransformCom->Get_SpeedPerSec();
+	Desc.iCameraType = m_iCameraType;
+	Desc.strCameraTag = m_strCameraTag;
+	Desc.vAt = m_vAt;
+	Desc.vEye = m_vEye;
+
+	return Desc;
+}
+
 vector<CAMERA_KEYFRAME>* CCamera::Get_Animations(_wstring strAnimationTag)
 {
 	auto iter = m_Animations.find(strAnimationTag);
@@ -376,6 +393,14 @@ HRESULT CCamera::Set_DefaultData(CAMERA_DESC tDesc)
 	return S_OK;
 }
 
+HRESULT CCamera::Load(map<_wstring, vector<CAMERA_KEYFRAME>> Animations, map<_wstring, vector<CAMERA_EVENT_DATA>> Events)
+{
+	m_Animations = Animations;
+	m_Events = Events;
+
+	return S_OK;
+}
+
 void CCamera::Update_PipeLines()
 {
 	if (!m_isActive)
@@ -384,77 +409,6 @@ void CCamera::Update_PipeLines()
 	m_pGameInstance->Set_Transform(D3DTS::VIEW, m_pTransformCom->Get_WorldMatrix_Inverse());
 	m_pGameInstance->Set_Transform(D3DTS::PROJ, XMMatrixPerspectiveFovLH(m_fFovy, m_fAspect, m_fNear, m_fFar));
 }
-
-void CCamera::Save_Dat()
-{
-}
-
-void CCamera::Load_Dat()
-{
-}
-
-void CCamera::Save_Json(nlohmann::ordered_json& pOutData)
-{
-	nlohmann::ordered_json Data;
-
-	Data["Name"] = m_strCameraTag.c_str();
-	Data["Eye"]["x"] = m_vEye.x;
-	Data["Eye"]["y"] = m_vEye.y;
-	Data["Eye"]["z"] = m_vEye.z;
-	Data["Eye"]["w"] = m_vEye.w;
-	Data["At"]["x"] = m_vAt.x;
-	Data["At"]["y"] = m_vAt.y;
-	Data["At"]["z"] = m_vAt.z;
-	Data["At"]["w"] = m_vAt.w;
-	Data["Fovy"] = m_fFovy;
-	Data["Near"] = m_fNear;
-	Data["Far"] = m_fFar;
-	Data["SpeedPerSec"] = m_pTransformCom->Get_SpeedPerSec();
-	Data["RotationPerSec"] = m_pTransformCom->Get_RotationPerSec();
-	Data["MouseSensor"] = m_fMouseSensor;
-	Data["CameraType"] = m_iCameraType;
-
-	for (auto Animation : m_Animations)
-	{
-		nlohmann::ordered_json AnimationData;
-		AnimationData["Name"] = Animation.first.c_str();
-		for (auto Ani : Animation.second)
-		{
-			nlohmann::ordered_json AniData;
-			AniData["Translation"]["x"] = Ani.vTranslation.x;
-			AniData["Translation"]["y"] = Ani.vTranslation.y;
-			AniData["Translation"]["z"] = Ani.vTranslation.z;
-			AniData["LookAt"]["x"] = Ani.vLookAt.x;
-			AniData["LookAt"]["y"] = Ani.vLookAt.y;
-			AniData["LookAt"]["z"] = Ani.vLookAt.z;
-			AniData["LookAt"]["w"] = Ani.vLookAt.w;
-			AniData["Speed"] = Ani.fSpeed;
-			AniData["TrackPosition"] = Ani.fTrackPosition;
-
-			AnimationData["Animations"].push_back(AniData);
-		}
-		Data["Animation"].push_back(AnimationData);
-	}
-
-	for (auto Event : m_Events)
-	{
-		nlohmann::ordered_json EventData;
-		EventData["Name"] = Event.first.c_str();
-		for (auto Eve : Event.second)
-		{
-			nlohmann::ordered_json EveData;
-			EveData["EventType"] = Eve.iEventType;
-			EveData["EventKey"] = Eve.strEventKey.c_str();
-			EveData["isComplete"] = Eve.isComplete;
-			EveData["TrackPosition"] = Eve.fTrackPosition;
-
-			EventData["Events"].push_back(EveData);
-		}
-		Data["Event"].push_back(EventData);
-	}
-	pOutData = Data;
-}
-
 
 void CCamera::Free()
 {

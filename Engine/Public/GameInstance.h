@@ -233,6 +233,8 @@ public:
 	void Change_Camera(_uint iLevelIndex, _wstring strCameraTag);
 	vector<class CCamera*> Get_pCameras(_uint iNumLevel);
 	class CCamera* Get_ActiveCamera();
+
+	void Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
 #pragma endregion
 
 #pragma region CAMERA_MANAGER
