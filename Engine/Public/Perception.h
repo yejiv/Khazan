@@ -14,14 +14,19 @@ public:
     {
         m_PerceptionCallBack = CallBack;
     }
-
+public:
+    _float          Get_CurrentTime() const { return m_fCurrnetTime; }
 
 public:
     HRESULT         Initialize(const string& strName, const SIGHT_DESC& Desc, _uint iTeamID);
     void            Update(class CGameObject* pOwner, _float fTimeDelta);
 
+public:
+    // 데미지 이벤트
+    void            Notify_Damage(class CGameObject* pAttacker, const STIMULUS& Stim);
 
 private:
+    // 시야 감지
     void            Check_Sight(class CGameObject* pOwner);
     void            Forget();
 
