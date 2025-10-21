@@ -26,6 +26,9 @@ public:
 	_float						Get_CoolTimeAcc() const { return m_fCoolTimeAcc; }
 
 public:
+	virtual void				Take_Damage(CCreature* pGameObject, _float fDamage) override;
+
+public:
 	virtual HRESULT				Initialize_Prototype() override;
 	virtual HRESULT				Initialize_Clone(void* pArg) override;
 	virtual void				Priority_Update(_float fTimeDelta) override;
