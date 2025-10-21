@@ -70,10 +70,6 @@ HRESULT CUI_QuickSlot_Skill::Render()
     return S_OK;
 }
 
-void CUI_QuickSlot_Skill::Bubble_EventCall()
-{
-}
-
 HRESULT CUI_QuickSlot_Skill::Ready_Prototype()
 {
     return S_OK;

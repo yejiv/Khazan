@@ -52,10 +52,6 @@ HRESULT CUI_QuickSlot_Item_Panel::Render()
 	return S_OK;
 }
 
-void CUI_QuickSlot_Item_Panel::Bubble_EventCall()
-{
-}
-
 HRESULT CUI_QuickSlot_Item_Panel::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
 {
 	__super::Load_UI(pInData, iPrototypeLevelID, pArg);

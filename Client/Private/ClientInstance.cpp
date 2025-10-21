@@ -60,6 +60,11 @@ HRESULT CClientInstance::Load_UIData(_uint iLayerLevelID, const _wstring& strLay
 	return m_pUI_Manager->Load_UIData(iLayerLevelID, strLayerTag, iPrototypeLevelID, pUIFilePath);
 }
 
+CUIObject* CClientInstance::Load_UIObject(_uint iPrototypeLevelID, const _tchar* pFilePath)
+{
+	return m_pUI_Manager->Load_UIObject(iPrototypeLevelID, pFilePath);
+}
+
 _int CClientInstance::UIType_StringToEnum(string szUIType)
 {
 	return m_pUI_Manager->UIType_StringToEnum(szUIType);

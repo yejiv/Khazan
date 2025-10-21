@@ -1,11 +1,13 @@
 #include "UI_Inven.h"
 #include "GameInstance.h"
+#include "ClientInstance.h"
 
 #include "Inven_Panel.h"
 #include "Inven_Tap.h"
 
 #include "Inven_OtherItem.h"
 #include "UI_BackGround.h"
+#include "UI_Panel.h"
 
 CUI_Inven::CUI_Inven(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
@@ -17,11 +19,18 @@ CUI_Inven::CUI_Inven(const CUI_Inven& Prototype)
 {
 }
 
+void CUI_Inven::On_Panel()
+{
+	m_IsUpdate ? m_eAnimState = UIANIMSTATE::OFF : m_eAnimState = UIANIMSTATE::ON;
+	m_eAnimState == UIANIMSTATE::ON ? m_fAccTime = 0.f : m_fAccTime = 1.f;
+	m_IsUpdate = true;
+}
+
 HRESULT CUI_Inven::Initialize_Prototype(_uint iLevel)
 {
 	m_iLevel = iLevel;
 
-	FAILED_CHECK(Ready_Prototype(), E_FAIL);
+	CHECK_FAILED(Ready_Prototype(), E_FAIL);
 	
 	return S_OK;
 }
@@ -31,24 +40,55 @@ HRESULT CUI_Inven::Initialize_Clone(void* pArg)
 	if (FAILED(__super::Initialize_Clone(pArg)))
 		return E_FAIL;
 
-	FAILED_CHECK(Ready_Object(), E_FAIL);
+	CHECK_FAILED(Ready_Object(), E_FAIL);
 	return S_OK;
 }
 
 void CUI_Inven::Priority_Update(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_8))
+		On_Panel();
+
+	if (m_eAnimState == UIANIMSTATE::ON)
+	{
+		m_fAccTime += fTimeDelta;
+		__super::Update_Alpha(m_fAccTime);
+
+		if (m_fAccTime >= 1.f)
+		{
+			m_fAccTime = 1.f;
+			m_eAnimState = UIANIMSTATE::END;
+		}
+	}
+	else if (m_eAnimState == UIANIMSTATE::OFF)
+	{
+		m_fAccTime -= fTimeDelta * 2.f;
+		__super::Update_Alpha(m_fAccTime);
+
+		if (m_fAccTime <= 0.f)
+		{
+			m_fAccTime = 0.f;
+			m_eAnimState = UIANIMSTATE::END;
+			m_IsUpdate = false;
+		}
+	}
+	if (!m_IsUpdate)
+		return;
 	__super::Priority_Update(fTimeDelta);
 }
 
 void CUI_Inven::Update(_float fTimeDelta)
 {
+	if (!m_IsUpdate)
+		return;
 	__super::Update(fTimeDelta);
 }
 
 void CUI_Inven::Late_Update(_float fTimeDelta)
 {
+	if (!m_IsUpdate)
+		return;
 	__super::Late_Update(fTimeDelta);
-	m_pBackGround->Late_Update(fTimeDelta);
 }
 
 HRESULT CUI_Inven::Render()
@@ -56,9 +96,6 @@ HRESULT CUI_Inven::Render()
 	return S_OK;
 }
 
-void CUI_Inven::Bubble_EventCall()
-{
-}
 
 HRESULT CUI_Inven::Ready_Prototype()
 {
@@ -85,6 +122,18 @@ HRESULT CUI_Inven::Ready_Object()
 	if (m_pBackGround == nullptr)
 		return E_FAIL;
 	m_pBackGround->Setting_BG(CUI_BackGround::UIBGTYPE::ITEM);
+	m_Children.push_back(m_pBackGround);
+	Safe_AddRef(m_pBackGround);
+
+	CUIObject* pObject = CClientInstance::GetInstance()->Load_UIObject(ENUM_CLASS(LEVEL::STATIC), TEXT("../Bin/Resources/UI/UIData/Inven_Other.json"));
+	
+	if (pObject == nullptr)
+		return E_FAIL;
+
+	m_Children.push_back(pObject);
+	m_pPanel.emplace(TEXT("Inven_OtherItem"), static_cast<CUI_Panel*>(pObject));
+
+	Safe_AddRef(pObject);
 	return S_OK;
 }
 
@@ -113,5 +162,10 @@ CGameObject* CUI_Inven::Clone(void* pArg)
 void CUI_Inven::Free()
 {
 	__super::Free();
+
+	for (auto pPanel : m_pPanel)
+		Safe_Release(pPanel.second);
+	m_pPanel.clear();
+
 	Safe_Release(m_pBackGround);
 }

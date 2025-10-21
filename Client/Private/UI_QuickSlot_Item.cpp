@@ -45,19 +45,19 @@ void CUI_QuickSlot_Item::Priority_Update(_float fTimeDelta)
 void CUI_QuickSlot_Item::Update(_float fTimeDelta)
 {
     //Test
-    if (m_pGameInstance->Key_Down(DIK_1))
+    if (m_pGameInstance->Key_Pressing(DIK_1, 0, nullptr))
     {
         m_iState = ENUM_CLASS(QUICKITMESLOTSTATE::NONITEM);
         m_vColor.w = 0.5f;
     }
-    else if (m_pGameInstance->Key_Down(DIK_2))
+    else if (m_pGameInstance->Key_Pressing(DIK_2, 0, nullptr))
     {
         m_iState = ENUM_CLASS(QUICKITMESLOTSTATE::DISABLE);
         m_vColor.w = 1.f;
         m_vFxColor.w = 0.5f;
         m_pDisableFX->Update_Color(m_vFxColor);
     }
-    else if (m_pGameInstance->Key_Down(DIK_3))
+    else if (m_pGameInstance->Key_Pressing(DIK_3, 0, nullptr))
     {
         m_iState = ENUM_CLASS(QUICKITMESLOTSTATE::ENABLE);
         m_vColor.w = 1.f;
@@ -81,14 +81,10 @@ HRESULT CUI_QuickSlot_Item::Render()
     return S_OK;
 }
 
-void CUI_QuickSlot_Item::Bubble_EventCall()
-{
-}
-
 HRESULT CUI_QuickSlot_Item::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
 {
-    FAILED_CHECK(__super::Load_UI(pInData, iPrototypeLevelID, pArg), E_FAIL);
-    FAILED_CHECK(Ready_Childer(), E_FAIL);
+    FAILED_CHECK_RETURN(__super::Load_UI(pInData, iPrototypeLevelID, pArg), E_FAIL);
+    FAILED_CHECK_RETURN(Ready_Childer(), E_FAIL);
 
     Update_State();
     return S_OK;

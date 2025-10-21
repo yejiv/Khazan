@@ -29,6 +29,9 @@ public:
 
 	//UI JSON ·Îµå
 	HRESULT						Load_UIData(_uint iLayerLevelID, const _wstring& strLayerTag, _uint iPrototypeLevelID, const _tchar* pTextureFilePath);
+	CUIObject*					Load_UIObject(_uint iPrototypeLevelID, const _tchar* pFilePath);
+
+	
 	_int						UIType_StringToEnum(string szUIType);
 	_uint						UI_TexTag_Maping(string szTextag);
 

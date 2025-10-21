@@ -89,10 +89,6 @@ HRESULT CUI_CombatSpirit_Penal::Render()
 	return S_OK;
 }
 
-void CUI_CombatSpirit_Penal::Bubble_EventCall()
-{
-}
-
 HRESULT CUI_CombatSpirit_Penal::Ready_Prototype()
 {
 	if(FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_CombatSpirit_Slot"),
@@ -225,7 +221,7 @@ HRESULT CUI_CombatSpirit_Penal::Load_UI(nlohmann::json& pInData, _uint iPrototyp
 				if (pChild->Load_UI(child, iPrototypeLevelID, pArg))
 					return E_FAIL;
 
-				pChild->Insert_Bubble([this]() {this->Bubble_EventCall(); });
+				pChild->Insert_Bubble([this](BUBBLEEVENT* pArg) {this->Bubble_EventCall(pArg); });
 				m_pSlot.push_back(pChild);
 				
 				m_Children.push_back(pChild);

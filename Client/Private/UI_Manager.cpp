@@ -171,6 +171,48 @@ HRESULT CUI_Manager::Load_UIData(_uint iLayerLevelID, const _wstring& strLayerTa
 	return S_OK;
 }
 
+CUIObject* CUI_Manager::Load_UIObject(_uint iPrototypeLevelID, const _tchar* pFilePath)
+{
+	ifstream In(pFilePath);
+	if (!In.is_open())
+	{
+		MSG_BOX(TEXT("UI JSON 파일 불러오기 실패"));
+		In.close();
+		return nullptr;
+	}
+	else
+	{
+		nlohmann::json jsonData;
+		In >> jsonData;
+
+		string strClass = jsonData.value("class", "");
+		_wstring wstrClass = AnsiToWString(strClass);
+
+		CUIObject::UIOBJECT_DESC UIDesc{};
+		UIDesc.szName = jsonData.value("name", "");
+		UIDesc.iUIType = 0;
+		UIDesc.vLocalSize = { 1.f, 1.f };
+		UIDesc.fDepth = 0;
+		UIDesc.vLocalPos = { g_iWinSizeX >> 1 , g_iWinSizeY >> 1 };
+
+		CUIObject* pRootUI = static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelID, wstrClass.c_str(), &UIDesc));
+
+		if (pRootUI == nullptr)
+		{
+			MSG_BOX(TEXT("UI Load : 클론 실패"));
+			return nullptr;
+		}
+
+		if (FAILED(pRootUI->Load_UI(jsonData, iPrototypeLevelID, &UIDesc)))
+		{
+			MSG_BOX(TEXT("UI Load : 데이터 로드 실패"));
+			return nullptr;
+		}
+
+		return pRootUI;
+	}
+}
+
 _int CUI_Manager::UIType_StringToEnum(string szUIType)
 {
 	UITYPE eUIType = {};

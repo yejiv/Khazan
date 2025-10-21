@@ -53,19 +53,15 @@ HRESULT CLevel_Title::Ready_Layer_UI()
 		TEXT("../Bin/Resources/UI/UIData/HUD.json"))))
 		return E_FAIL;
 
-	//if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
-	//	TEXT("../Bin/Resources/UI/UIData/Inven_Other.json"))))
-	//	return E_FAIL;
-
 	CUIObject::UIOBJECT_DESC Desc = {};
 	Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
 	Desc.szName = "";
 	Desc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
 	Desc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
 
-	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
-	//	ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Inven"), &Desc)))
-	//	return E_FAIL;
+	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
+		ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Inven"), &Desc)))
+		return E_FAIL;
 	return S_OK;
 }
 

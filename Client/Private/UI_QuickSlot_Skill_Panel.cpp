@@ -51,10 +51,6 @@ HRESULT CUI_QuickSlot_Skill_Panel::Render()
 	return S_OK;
 }
 
-void CUI_QuickSlot_Skill_Panel::Bubble_EventCall()
-{
-}
-
 HRESULT CUI_QuickSlot_Skill_Panel::Ready_Prototype()
 {
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Quick_Skill_Slot"),

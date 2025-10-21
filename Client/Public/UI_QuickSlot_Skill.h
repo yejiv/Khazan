@@ -21,8 +21,6 @@ public:
 	virtual void						Late_Update(_float fTimeDelta) override;
 	virtual HRESULT						Render() override;
 
-	virtual void						Bubble_EventCall();
-
 private:
 	virtual	HRESULT						Ready_Prototype();
 

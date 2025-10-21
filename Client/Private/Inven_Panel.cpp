@@ -46,10 +46,6 @@ HRESULT CInven_Panel::Render()
 	return S_OK;
 }
 
-void CInven_Panel::Bubble_EventCall()
-{
-}
-
 CInven_Panel* CInven_Panel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)
 {
 	CInven_Panel* pInstance = new CInven_Panel(pDevice, pContext);

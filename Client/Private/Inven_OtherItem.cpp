@@ -1,6 +1,9 @@
 #include "Inven_OtherItem.h"
 #include "GameInstance.h"
 
+#include "UI_Inven.h"
+#include "Inven_Tap.h"
+
 CInven_OtherItem::CInven_OtherItem(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
 {
@@ -46,8 +49,46 @@ HRESULT CInven_OtherItem::Render()
 	return S_OK;
 }
 
-void CInven_OtherItem::Bubble_EventCall()
+HRESULT CInven_OtherItem::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
 {
+	__super::Load_UI(pInData, iPrototypeLevelID, pArg);
+
+	for (auto pChild : m_Children)
+	{
+		m_pInvenTap.push_back(static_cast<CInven_Tap*>(pChild));
+		Safe_AddRef(pChild);
+	}
+
+	m_pInvenTap[0]->Tap_Enable();
+	return S_OK;
+}
+
+void CInven_OtherItem::Bubble_EventCall(BUBBLEEVENT* pArg)
+{
+	_int iOnTap = -1;
+	if (pArg->szName == "Inven_OtherItem_Active")
+	{
+		iOnTap = 0;
+	}
+	else if (pArg->szName == "Inven_OtherItem_Collection")
+	{
+		iOnTap = 1;
+	}
+	else if (pArg->szName == "Inven_OtherItem_material")
+	{
+		iOnTap = 2;
+	}
+	
+	if (iOnTap < 0)
+		return;
+
+	for (_int i = 0; i < (_int)m_pInvenTap.size(); ++i)
+	{
+		if (iOnTap == i)
+			m_pInvenTap[i]->Tap_Enable();
+		else
+			m_pInvenTap[i]->Tap_Disable();
+	}
 }
 
 CInven_OtherItem* CInven_OtherItem::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)
@@ -75,4 +116,10 @@ CGameObject* CInven_OtherItem::Clone(void* pArg)
 void CInven_OtherItem::Free()
 {
 	__super::Free();
+
+	for (auto pTap : m_pInvenTap)
+	{
+		Safe_Release(pTap);
+	}
+	m_pInvenTap.clear();
 }

@@ -18,8 +18,6 @@ public:
 	virtual void						Late_Update(_float fTimeDelta) override;
 	virtual HRESULT						Render() override;
 
-	virtual void						Bubble_EventCall();
-
 	virtual HRESULT						Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
 
 private:

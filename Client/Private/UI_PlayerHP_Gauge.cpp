@@ -92,10 +92,6 @@ HRESULT CUI_PlayerHP_Gauge::Render()
 	return S_OK;
 }
 
-void CUI_PlayerHP_Gauge::Bubble_EventCall()
-{
-}
-
 HRESULT CUI_PlayerHP_Gauge::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
 {
 	string strTexType = pInData.value("TexType", "");

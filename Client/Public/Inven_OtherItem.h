@@ -18,8 +18,13 @@ public:
 	virtual void						Late_Update(_float fTimeDelta) override;
 	virtual HRESULT						Render() override;
 
-	virtual void						Bubble_EventCall();
+	virtual HRESULT						Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
+	virtual void						Bubble_EventCall(BUBBLEEVENT* pArg) override;
 
+private:
+	vector<class CInven_Tap*>			m_pInvenTap;
+	_int								m_iSeleteTap = {};
+	
 public:
 	static CInven_OtherItem*			Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
 	virtual CGameObject*				Clone(void* pArg) override;

@@ -19,7 +19,7 @@ void CUI_BackGround::Setting_BG(UIBGTYPE eType)
 
 HRESULT CUI_BackGround::Initialize_Prototype()
 {
-	FAILED_CHECK(Ready_Prototype(), E_FAIL);
+	CHECK_FAILED(Ready_Prototype(), E_FAIL);
 	return S_OK;
 }
 
@@ -59,6 +59,7 @@ HRESULT CUI_BackGround::Render()
 
 	if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_Texture", 0)))
 		return E_FAIL;
+	CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
 
 	Bind_Mask();
 	m_pVIBufferCom->Bind_Resources();
@@ -114,9 +115,7 @@ HRESULT CUI_BackGround::Bind_Mask()
 	}
 	else if (m_eBGType == UIBGTYPE::ITEM)
 	{
-		if (FAILED(m_pMaskTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_MaskTexture", 1)))
-			return E_FAIL;
-		m_pShaderCom->Begin(0);
+		m_pShaderCom->Begin(1);
 	}
 	else
 	{

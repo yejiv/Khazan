@@ -177,7 +177,7 @@ HRESULT CUI_Slot::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void
 			if (pChild->Load_UI(child, iPrototypeLevelID, pArg))
 				return E_FAIL;
 
-			pChild->Insert_Bubble([this]() {this->Bubble_EventCall(); });
+			pChild->Insert_Bubble([this](BUBBLEEVENT* pArg) {this->Bubble_EventCall(pArg); });
 			m_Children.push_back(pChild);
 		}
 	}

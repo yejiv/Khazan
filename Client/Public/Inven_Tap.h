@@ -11,6 +11,10 @@ private:
 	virtual ~CInven_Tap() = default;
 
 public:
+	void								Tap_Enable();
+	void								Tap_Disable();
+
+public:
 	virtual HRESULT						Initialize_Prototype(_uint iLevel);
 	virtual HRESULT						Initialize_Clone(void* pArg) override;
 	virtual void						Priority_Update(_float fTimeDelta) override;
@@ -18,7 +22,8 @@ public:
 	virtual void						Late_Update(_float fTimeDelta) override;
 	virtual HRESULT						Render() override;
 
-	virtual void						Bubble_EventCall();
+public:
+	virtual HRESULT						Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
 
 public:
 	static CInven_Tap* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);

@@ -18,8 +18,6 @@ public:
 	virtual void						Late_Update(_float fTimeDelta) override;
 	virtual HRESULT						Render() override;
 
-	virtual void						Bubble_EventCall();
-
 public:
 	static CInven_Panel*				Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
 	virtual CGameObject*				Clone(void* pArg) override;

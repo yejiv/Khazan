@@ -193,12 +193,12 @@ HRESULT CUIObject::Update_Switch(void* pArg)
     return S_OK;
 }
 
-void CUIObject::Bubble_EventCall()
+void CUIObject::Bubble_EventCall(BUBBLEEVENT* pArg)
 {
     if (m_UIBubbleCallBack == nullptr)
         return;
 
-    m_UIBubbleCallBack();
+    m_UIBubbleCallBack(pArg);
 }
 
 HRESULT CUIObject::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
@@ -206,7 +206,7 @@ HRESULT CUIObject::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, voi
     return S_OK;
 }
 
-void CUIObject::Insert_Bubble(std::function<void()> BubbleEvent)
+void CUIObject::Insert_Bubble(std::function<void(BUBBLEEVENT* pArg)> BubbleEvent)
 {
     m_UIBubbleCallBack = BubbleEvent;
 }
@@ -216,7 +216,7 @@ _bool CUIObject::IsPick(HWND hWnd)
     _float fX = m_vWorldPos.x;
     _float fY = m_vWorldPos.y;
 
-    RECT	rcRect = { LONG(fX - (m_vWorldSize.x * 0.5f)), LONG(fY - (m_vWorldSize.y * 0.5f)), LONG(fX + (m_vWorldSize.x * 0.5f)), LONG(fY + (m_vWorldSize.y * 0.5f)) };
+    RECT	rcRect = { LONG(fX - (m_vLocalSize.x * 0.5f)), LONG(fY - (m_vLocalSize.y * 0.5f)), LONG(fX + (m_vLocalSize.x * 0.5f)), LONG(fY + (m_vLocalSize.y * 0.5f)) };
 
     POINT ptMouse{};
     GetCursorPos(&ptMouse);
