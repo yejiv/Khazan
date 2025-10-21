@@ -55,17 +55,11 @@ void CPlayer::Update(_float fTimeDelta)
     {
         _float3     vPickedPos{};
         _bool isPicked = m_pGameInstance->isPicked(&vPickedPos);
-        /*if (true == isPicked)
+        if (true == isPicked)
         {
             m_pTransformCom->Set_State(Engine::STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPickedPos), 1.f));
             m_pCharVirCom->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 1.f));
-        }*/
-
-        _float4 vPick{};
-
-        vPick = m_pGameInstance->isPickRenderTargetPixel(TEXT("Target_LightDepth"));
-
-        int a = 0;
+        }
     }
 
     if (GetKeyState(VK_DOWN) & 0x8000)
@@ -202,10 +196,10 @@ HRESULT CPlayer::Ready_Collision()
     tCharVirDesc.eShapeType = SHAPE::CAPSULE;
     tCharVirDesc.vPos = vPos;
     tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 7.f, 0.f);
+    tCharVirDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
-    tCharVirDesc.fRadius = 7.f;
-    tCharVirDesc.fHeight = 1.5f;
+    tCharVirDesc.fRadius = 1.f;
+    tCharVirDesc.fHeight = 1.f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
     tCharVirDesc.pGameObject = this;
 
