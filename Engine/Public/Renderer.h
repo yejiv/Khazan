@@ -50,7 +50,7 @@ private:
 	_bool						m_isRenderDebug = {};
 	vector<class CGameObject*>	m_CascadeObjects;
 #endif
-
+	
 
 private:
 	HRESULT Render_Priority();

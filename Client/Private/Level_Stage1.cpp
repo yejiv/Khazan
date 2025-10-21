@@ -28,10 +28,10 @@ CLevel_Stage1::CLevel_Stage1(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 HRESULT CLevel_Stage1::Initialize()
 {
 
-	if (FAILED(Ready_Lights()))
-		return E_FAIL;
+	/*if (FAILED(Ready_Lights()))
+		return E_FAIL;*/
 
-	//CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+	CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
 
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
@@ -42,16 +42,16 @@ HRESULT CLevel_Stage1::Initialize()
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 		return E_FAIL;
 
-	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
-		return E_FAIL;
+	/*if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
+		return E_FAIL;*/
 
-	CHECK_FAILED(Ready_Layer_Test(TEXT("Layer_Test")), E_FAIL);
+	//CHECK_FAILED(Ready_Layer_Test(TEXT("Layer_Test")), E_FAIL);
 
 	//CHECK_FAILED(Ready_Layer_MapObject_Test(TEXT("Layer_Test")), E_FAIL);
 
-	//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject_Test"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+	CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject_Test"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
 
-	m_pGameInstance->Jolt_Test();
+	//m_pGameInstance->Jolt_Test();
 
 	return S_OK;
 }
@@ -125,26 +125,26 @@ HRESULT CLevel_Stage1::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 	m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag, pCamera_Free);
 
-	CCamera_Compre::CAMERA_COMPRE_DESC	CameraSpringDesc{};
+	//CCamera_Compre::CAMERA_COMPRE_DESC	CameraSpringDesc{};
 
-	CameraSpringDesc.vEye = _float4(0.f, 20.f, -15.f, 1.f);
-	CameraSpringDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
-	CameraSpringDesc.fFovy = XMConvertToRadians(60.0f);
-	CameraSpringDesc.fNear = 0.1f;
-	CameraSpringDesc.fFar = 500.f;
-	CameraSpringDesc.fSpeedPerSec = 10.f;
-	CameraSpringDesc.fRotationPerSec = XMConvertToRadians(90.0f);
-	CameraSpringDesc.fMouseSensor = 0.2f;
-	CameraSpringDesc.iCameraType = ENUM_CLASS(CAMERATYPE::SPRING);
+	//CameraSpringDesc.vEye = _float4(0.f, 20.f, -15.f, 1.f);
+	//CameraSpringDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
+	//CameraSpringDesc.fFovy = XMConvertToRadians(60.0f);
+	//CameraSpringDesc.fNear = 0.1f;
+	//CameraSpringDesc.fFar = 500.f;
+	//CameraSpringDesc.fSpeedPerSec = 10.f;
+	//CameraSpringDesc.fRotationPerSec = XMConvertToRadians(90.0f);
+	//CameraSpringDesc.fMouseSensor = 0.2f;
+	//CameraSpringDesc.iCameraType = ENUM_CLASS(CAMERATYPE::SPRING);
 
-	
-	CCamera_Compre* pCamera_Spring = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Camera_Compre"), &CameraSpringDesc));
-	pCamera_Spring->Set_IsActive(false);
-	CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::STAGE1), TEXT("Layer_Player"));
-	pCamera_Spring->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
-	m_pGameInstance->Add_Camera(ENUM_CLASS(LEVEL::STAGE1), pCamera_Spring);
+	//
+	//CCamera_Compre* pCamera_Spring = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Camera_Compre"), &CameraSpringDesc));
+	//pCamera_Spring->Set_IsActive(false);
+	//CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::STAGE1), TEXT("Layer_Player"));
+	//pCamera_Spring->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
+	//m_pGameInstance->Add_Camera(ENUM_CLASS(LEVEL::STAGE1), pCamera_Spring);
 
-	m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag, pCamera_Spring);
+	//m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag, pCamera_Spring);
 
 	m_pGameInstance->Change_Camera(ENUM_CLASS(LEVEL::STAGE1), ENUM_CLASS(CAMERATYPE::FREE));
 
@@ -204,13 +204,13 @@ HRESULT CLevel_Stage1::Ready_Layer_Test(const _wstring& strLayerTag)
 
 HRESULT CLevel_Stage1::Ready_Layer_MapObject_Test(const _wstring& strLayerTag)
 {
-	CProp_Test::PROP_TEST_DESC ObjectDesc = {};
+	//CProp_Test::PROP_TEST_DESC ObjectDesc = {};
 
-	memcpy(ObjectDesc.szModelName, TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"), sizeof(ObjectDesc.szModelName));
-	ObjectDesc.eLevel = LEVEL::STAGE1;
+	//memcpy(ObjectDesc.szModelName, TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"), sizeof(ObjectDesc.szModelName));
+	//ObjectDesc.eLevel = LEVEL::STAGE1;
 
-	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
-		ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_Test"), &ObjectDesc), E_FAIL);
+	//CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
+	//	ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_Test"), &ObjectDesc), E_FAIL);
 
 	return S_OK;
 }

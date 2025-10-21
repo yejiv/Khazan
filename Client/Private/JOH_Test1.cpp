@@ -33,12 +33,14 @@ HRESULT CJOH_Test1::Initialize(void* pArg)
    // m_pTransformCom->Scale(_float3(0.01f, 0.01f, 0.01f));
     //m_pTransformCom->Scale(_float3(10.f, 10.f, 10.f));
 
+#ifdef _DEBUG
    m_pGameInstance->AddWidget(TEXT("Client"), [this]() {
        ImGui::Begin("CJOH_Test1");
        m_pModelCom->Debug_RanderState();
        ImGui::End();
        });
 
+#endif
     return S_OK;
 }
 
