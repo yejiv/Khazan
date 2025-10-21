@@ -57,6 +57,8 @@ public:
 	class CBase* Clone_Prototype(PROTOTYPE ePrototype, _uint iPrototpyeLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);
 	// 프로토 타입 등록 여부 검사 함수
 	_bool Already_Registered_Prototype(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag);
+	CBase* Find_Prototype_ForPreview(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag);
+
 #pragma endregion
 
 #pragma region OBJECT_MANAGER
@@ -102,6 +104,7 @@ public:
 	void Set_LightDesc(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_DESC& LightDesc);
 	void Set_LightPosition(const _wstring& strLightTag, _uint iLevelIndex, const _float4& vPosition);
 	void Set_LightEnable(const _wstring& strLightTag, _uint iLevelIndex, _bool isEnable);
+	_bool Is_LightEnable(const _wstring& strLightTag, _uint iLevelIndex);
 	HRESULT Render_Lights(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer, _uint iLevelIndex);
 #pragma endregion
 

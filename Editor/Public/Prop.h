@@ -16,7 +16,8 @@ public:
 	typedef struct tagPropDesc : public CMapObject::MAPOBJECT_DESC
 	{
 		LEVEL eLevel{ LEVEL::END };
-		_bool isBlended{ false };
+
+		MAPOBJECT_PROPERTIES Properties{};
 
 		_tchar szModelName[MAX_PATH] = {};
 
@@ -40,7 +41,10 @@ public:
 
 public:
 	const _tchar* Get_ModelName() const { return m_szModelName; }
-	const _bool Get_isBlended() const { return m_isBlended; }
+
+	const MAPOBJECT_PROPERTIES Get_Properties() const { return m_Properties; }
+
+	void Set_Properties(MAPOBJECT_PROPERTIES Properties) { m_Properties = Properties; }
 
 	const _uint Get_ShaderPass() const { return static_cast<_uint>(m_eShaderPass); };
 	void Set_ShaderPass(_uint iShaderPass);
@@ -50,7 +54,8 @@ protected:
 
 protected:
 	_tchar m_szModelName[MAX_PATH] = {};
-	_bool m_isBlended = { false };
+
+	MAPOBJECT_PROPERTIES m_Properties = {};
 
 protected:
 	_float m_fSnowAmount = { 0.8f };

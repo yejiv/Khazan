@@ -780,6 +780,16 @@ namespace Engine
 
     }JSON_MAP_DATA;
 
+    typedef struct tagJsonPrototypeDataSet
+    {
+        unsigned int iNumPrototypes{};
+
+        std::vector<string> PrototypeTag{};
+        std::vector<string> FileName{};
+        std::vector<string> FilePath{};
+
+    }JSON_MAP_PROTOTYPE_DATA;
+
 #pragma endregion
 
 
@@ -876,6 +886,8 @@ namespace Engine
         vecAnimationSets
     );
 
+#pragma region Map
+
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(JSON_MAP_DATA,
         strModelName,
         iNumInstances,
@@ -888,6 +900,10 @@ namespace Engine
         vScale,
         vRotation
     );
+    
+    // 프로토타입 관련 태그, 이름, 경로 직렬화
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(JSON_MAP_PROTOTYPE_DATA, iNumPrototypes, PrototypeTag, FileName, FilePath);
+
 
 #pragma endregion
 

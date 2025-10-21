@@ -31,6 +31,8 @@ HRESULT CLevel_Stage1::Initialize()
 	if (FAILED(Ready_Lights()))
 		return E_FAIL;
 
+	//CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
 
@@ -47,7 +49,7 @@ HRESULT CLevel_Stage1::Initialize()
 
 	//CHECK_FAILED(Ready_Layer_MapObject_Test(TEXT("Layer_Test")), E_FAIL);
 
-	//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject_Test"), TEXT("HeinMach"), KHAZAN_MAP::HEINMACH), E_FAIL);
+	//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject_Test"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
 
 	m_pGameInstance->Jolt_Test();
 
@@ -214,7 +216,7 @@ HRESULT CLevel_Stage1::Ready_Layer_MapObject_Test(const _wstring& strLayerTag)
 	return S_OK;
 }
 
-HRESULT CLevel_Stage1::Ready_Layer_MapObject(const _wstring& strLayerTag, const _tchar* pObjectDataFileName, KHAZAN_MAP eMap)
+HRESULT CLevel_Stage1::Ready_Layer_MapObject(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
 {
 	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
 
@@ -239,8 +241,9 @@ HRESULT CLevel_Stage1::Ready_Layer_MapObject(const _wstring& strLayerTag, const 
 		break;
 	}
 
-	pDataFilePath += pObjectDataFileName;
+	pDataFilePath += pDataFileName;
 
+	// 동일한 파일명의 _objects.dat 불러오기
 	pDataFilePath += TEXT("_objects.dat");
 
 	DWORD dwByte = {};
@@ -277,9 +280,80 @@ HRESULT CLevel_Stage1::Ready_Layer_MapObject(const _wstring& strLayerTag, const 
 
 		ObjectDesc.WorldMatrix = WorldMatrix;
 
-		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
-			ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), E_FAIL);
+		// 5. 객체의 속성 불러오기
+		MAPOBJECT_PROPERTIES PropProperties = {};
+		CHECK_FALSE(ReadFile(hFile, &PropProperties, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr), false);
+
+		ObjectDesc.Properties = PropProperties;
+
+		// 일단 단일 오브젝트로 배치하고 추후에 인스턴스, 인터렉티브, 다이나믹 으로 나누겠습니다.
+		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), E_FAIL);
 	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_Stage1::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
+{
+	// Dat 기본 경로
+	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+
+	switch (eMap)
+	{
+	case KHAZAN_MAP::HEINMACH:
+		pDataFilePath += TEXT("HeinMach/");
+		break;
+	case KHAZAN_MAP::YETUGA:
+		pDataFilePath += TEXT("Yetuga/");
+		break;
+	case KHAZAN_MAP::THECREVICE:
+		pDataFilePath += TEXT("TheCrevice/");
+		break;
+	case KHAZAN_MAP::EMBARS:
+		pDataFilePath += TEXT("Embars/");
+		break;
+	case KHAZAN_MAP::VIPER:
+		pDataFilePath += TEXT("Viper/");
+		break;
+	default:
+		break;
+	}
+
+	pDataFilePath += pDataFileName;
+
+	pDataFilePath += TEXT("_lights.dat");
+
+	DWORD dwByte = {};
+
+	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	CHECK_EQUAL(INVALID_HANDLE_VALUE, hFile, E_FAIL);
+
+	// 1. 조명의 총 개수
+	_uint iLightCnt = {};
+	CHECK_FALSE(ReadFile(hFile, &iLightCnt, sizeof(_uint), &dwByte, nullptr), false);
+
+	// 조명 총 개수만큼 순회
+	for (_uint i = 0; i < iLightCnt; ++i)
+	{
+		LIGHT_DESC LightDesc = {};
+
+		// 2. 조명 태그 길이 불러오기
+		_uint iLightTagLen = {};
+		CHECK_FALSE(ReadFile(hFile, &iLightTagLen, sizeof(_uint), &dwByte, nullptr), false);
+
+		// 3. 조명 태그 이름 불러오기
+		_tchar szLightTag[MAX_PATH] = {};
+		CHECK_FALSE(ReadFile(hFile, &szLightTag, sizeof(_tchar) * iLightTagLen, &dwByte, nullptr), false);
+
+		// 4. 조명 구조체 불러오기
+		CHECK_FALSE(ReadFile(hFile, &LightDesc, sizeof(LIGHT_DESC), &dwByte, nullptr), false);
+
+		// 조명 등록
+		m_pGameInstance->Add_Light(szLightTag, ENUM_CLASS(eCurrentLevel), LightDesc, true);
+	}
+
+	CloseHandle(hFile);
 
 	return S_OK;
 }

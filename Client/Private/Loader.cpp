@@ -249,7 +249,7 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 		return E_FAIL;
 
 	/* Prototype_Component_Model_파일명 */
-	//CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+	CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
 
 	return S_OK;
 }
@@ -328,6 +328,7 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 
 HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDataFileName, LEVEL eLevel, KHAZAN_MAP eMap)
 {
+	// Dat 파일 기본 경로
 	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
 
 	switch (eMap)
@@ -374,9 +375,7 @@ HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDa
 		MAPOBJECT_TYPE eMapObjType = static_cast<MAPOBJECT_TYPE>(sMapObjectType);
 
 		// MapObject 타입에 따른 조건문
-		if (MAPOBJECT_TYPE::OBJECT == eMapObjType ||
-			MAPOBJECT_TYPE::INTERACTIVE == eMapObjType ||
-			MAPOBJECT_TYPE::DYNAMIC == eMapObjType)
+		if (MAPOBJECT_TYPE::OBJECT == eMapObjType || MAPOBJECT_TYPE::INTERACTIVE == eMapObjType || MAPOBJECT_TYPE::DYNAMIC == eMapObjType)
 		{
 			// CModel 을 열어야 하는 경우 ( Instance X )
 

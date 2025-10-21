@@ -66,6 +66,16 @@ namespace Engine
 
 	}MESH_INSTANCE_DATA;
 
+	typedef struct tagMapObjectProperties
+	{
+		bool isSnow{ false };
+		bool isCollider{ false };
+		bool isBlended{ false };
+		bool isInstance{ false };
+		bool isShadow{ false };
+
+	}MAPOBJECT_PROPERTIES;
+
 	typedef struct tagCatmullrom
 	{
 		XMVECTOR v1;

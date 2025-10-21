@@ -132,13 +132,13 @@ HRESULT CLoader::Loading_For_Map_Level()
 
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
 
-	// Prototype_Component_Texture_Terrain_Grid
+	/* Prototype_Component_Texture_Terrain_Grid */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Texture_Terrain_Grid"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Terrain/Tile0.dds"), 1)), E_FAIL);
 
 	/* Prototype_Component_Texture_Map_Snow */
-	//CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Texture_Map_Snow"),
-		//CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Map/Textures/WT_Base_D.dds"), 1)), E_FAIL);
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Texture_Map_Snow"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Map/Textures/WT_Base_D.dds"), 1)), E_FAIL);
 
 #pragma endregion
 
@@ -146,9 +146,13 @@ HRESULT CLoader::Loading_For_Map_Level()
 
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
 
-	// Prototype_Component_VIBuffer_Terrain
+	/* Prototype_Component_VIBuffer_Terrain */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_VIBuffer_Terrain"),
 		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 100, 100)), E_FAIL);
+
+	/* Prototype_Component_Model_PlayerTest */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_PlayerTest"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Test/Test/Test.dat")), E_FAIL);
 
 #pragma endregion
 
@@ -160,11 +164,6 @@ HRESULT CLoader::Loading_For_Map_Level()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Shader_ModelMeshInstance"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_ModelMeshInstance.hlsl"),
 			MESH_INSTANCING::Elements, MESH_INSTANCING::iNumElements)), E_FAIL);
-
-	// Prototype_Component_Shader_VtxMesh
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Shader_VtxMesh"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_VtxMesh.hlsl"),
-			VTXMESH::Elements, VTXMESH::iNumElements)), E_FAIL);
 	
 #pragma endregion
 
@@ -172,21 +171,29 @@ HRESULT CLoader::Loading_For_Map_Level()
 
 	lstrcpy(m_szLoadingText, TEXT("게임오브젝트원형를 로딩중입니다."));
 
-	// Prototype_GameObject_Prop_Object
+	/* Prototype_GameObject_Prop_Object */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"),
 		CProp_Object::Create(m_pDevice, m_pContext)), E_FAIL);
 
-	// Prototype_GameObject_Prop_Static
+	/* Prototype_GameObject_Prop_Static */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Static"),
 		CProp_Static::Create(m_pDevice, m_pContext)), E_FAIL);
 
-	// Prototype_GameObject_Camera_Map
+	/* Prototype_GameObject_Prop_Preview */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Preview"),
+		CProp_Preview::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	/* Prototype_GameObject_Camera_Map */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Camera_Map"),
 		CCamera_Map::Create(m_pDevice, m_pContext)), E_FAIL);
 
-	// Prototype_GameObject_Map_Terrain
+	/* Prototype_GameObject_Map_Terrain */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Map_Terrain"),
 		CMap_Terrain::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	/* Prototype_GameObject_Map_TestPlayer */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Map_TestPlayer"),
+		CMap_TestPlayer::Create(m_pDevice, m_pContext)), E_FAIL);
 
 #pragma endregion
 
@@ -431,6 +438,7 @@ HRESULT CLoader::Loading_For_Camera_Level()
 
 HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDataFileName, LEVEL eLevel, KHAZAN_MAP eMap)
 {
+	// Dat 파일 기본 경로
 	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
 
 	switch (eMap)
@@ -477,10 +485,10 @@ HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDa
 		MAPOBJECT_TYPE eMapObjType = static_cast<MAPOBJECT_TYPE>(sMapObjectType);
 
 		// MapObject 타입에 따른 조건문
-		if (MAPOBJECT_TYPE::OBJECT == eMapObjType ||
-			MAPOBJECT_TYPE::INTERACTIVE == eMapObjType ||
-			MAPOBJECT_TYPE::DYNAMIC == eMapObjType)
+		if (MAPOBJECT_TYPE::OBJECT == eMapObjType || MAPOBJECT_TYPE::INTERACTIVE == eMapObjType || MAPOBJECT_TYPE::DYNAMIC == eMapObjType)
 		{
+			// CModel 을 열어야 하는 경우 ( Instance X )
+
 			// 3. 프로토 타입 태그 길이 저장
 			_uint iPrototypeTagLen = {};
 			CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
@@ -507,6 +515,8 @@ HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDa
 		}
 		else if (MAPOBJECT_TYPE::STATIC_INST == eMapObjType || MAPOBJECT_TYPE::ANIMATED_INST == eMapObjType)
 		{
+			// CModel_Instance 를 열어야 하는 경우 ( Instance O )
+			// 
 			// 3. 프로토 타입 태그 길이 저장
 			_uint iPrototypeTagLen = {};
 			CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);

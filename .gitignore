@@ -19,10 +19,13 @@ Client/Bin/Debug
 Client/Bin/Release
 Client/Bin/Resources/.*
 
-# ���ؿ� ���� ignore
+# JYP IGNORE
 Client/Bin/Resources/Models/Environment/Prop/Json/
 Client/Bin/Resources/Map/
 Client/Bin/Data/Map/
+Client/Bin/MapResources/
+Client/Bin/*.bat
+Client/Bin/*.ps1
 # =================
 
 Editor.exp

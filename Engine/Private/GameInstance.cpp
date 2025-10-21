@@ -297,6 +297,14 @@ _bool CGameInstance::Already_Registered_Prototype(_uint iPrototypeLevelIndex, co
 	return m_pPrototype_Manager->Already_Registered_Prototype(iPrototypeLevelIndex, strPrototypeTag);
 }
 
+CBase* CGameInstance::Find_Prototype_ForPreview(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag)
+{
+	if (nullptr == m_pPrototype_Manager)
+		return nullptr;
+
+	return m_pPrototype_Manager->Find_Prototype_ForPreview(iPrototypeLevelIndex, strPrototypeTag);
+}
+
 #pragma endregion
 
 #pragma region OBJECT_MANAGER
@@ -435,6 +443,11 @@ void CGameInstance::Set_LightPosition(const _wstring& strLightTag, _uint iLevelI
 void CGameInstance::Set_LightEnable(const _wstring& strLightTag, _uint iLevelIndex, _bool isEnable)
 {
 	m_pLight_Manager->Set_LightEnable(strLightTag, iLevelIndex, isEnable);
+}
+
+_bool CGameInstance::Is_LightEnable(const _wstring& strLightTag, _uint iLevelIndex)
+{
+	return m_pLight_Manager->Is_LightEnable(strLightTag, iLevelIndex);
 }
 
 HRESULT CGameInstance::Render_Lights(CShader* pShader, CVIBuffer_Rect* pVIBuffer, _uint iLevelIndex)
