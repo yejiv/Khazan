@@ -43,7 +43,7 @@ public:
 	void			ExportModel(string& strPath);
 	// 확인 창 말고 디버그 창에 띄우는 추출 함수
 	void			ExportModel_NoMsg(string& strPath);
-	void			LoadModel(_wstring strModelName);
+	void			LoadModel(string& strPath);
 	void			Update_DAT_From_JSON(string& strPath);
 
 private:

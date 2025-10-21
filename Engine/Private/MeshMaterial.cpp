@@ -97,7 +97,6 @@ HRESULT CMeshMaterial::Bind_Resources(class CShader* pShader, const _char* pCons
 		OutputDebugStringW(cache.first.c_str());*/
 	//OutputDebugStringA("\n");
 
-
 	return pShader->Bind_SRV(pConstantName, m_SRVs[iTextureType][iIndex]);
 }
 
