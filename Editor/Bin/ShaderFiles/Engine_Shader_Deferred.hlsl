@@ -26,7 +26,13 @@ texture2D g_LightDepthTexture;
 texture2D g_BackBufferTexture;
 texture2D g_BlurXTexture;
 
-matrix g_LightViewProjMatrices[3];
+int g_iTextureArrayIndex;
+Texture2DArray<float> g_TextureArray;
+
+uint g_iNumCascades;
+float g_Splits[4];
+matrix g_LightViewMatrices[4];
+matrix g_LightProjMatrices[4];
 
 struct VS_IN
 {
@@ -75,6 +81,16 @@ PS_OUT_BACKBUFFER PS_MAIN_DEBUG(PS_IN In)
     return Out;
 }
 
+PS_OUT_BACKBUFFER PS_MAIN_DEBUG_ARRAY(PS_IN In)
+{
+    PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
+    
+    float fSlice = (float) g_iTextureArrayIndex;
+    Out.vColor = g_TextureArray.Sample(DefaultSampler, float3(In.vTexcoord, fSlice));
+    
+    return Out;
+}
+
 struct PS_OUT_LIGHT
 {
     vector vShade : SV_TARGET0;
@@ -115,8 +131,7 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
     vector vLook = vWorldPos - g_vCamPosition;
     
     float fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), 50.f);
-    
-    
+
     Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient));
     Out.vSpecular = (g_vLightSpecular * g_vMtrlSpecular) * fSpecular;
     
@@ -203,12 +218,24 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
     vWorldPos = vWorldPos * vDepthDesc.y;
     /* 로컬위치 * 월드행렬 * 뷰행렬 */
     vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
+    float fCameraViewDepth = vWorldPos.z;
     
     /* 월드공간상의 좌표를 구한다. */
     vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
     
-    vector vPosition = mul(vWorldPos, g_LightViewMatrix);
-    vPosition = mul(vPosition, g_LightProjMatrix);
+    uint iCascadeIndex = 0;
+    
+    if (fCameraViewDepth < g_Splits[0])
+        iCascadeIndex = 0;
+    else if (fCameraViewDepth < g_Splits[1])
+        iCascadeIndex = 1;
+    else if (fCameraViewDepth < g_Splits[2])
+        iCascadeIndex = 2;
+    else
+        iCascadeIndex = 3;
+    
+    vector vPosition = mul(vWorldPos, g_LightViewMatrices[iCascadeIndex]);
+    vPosition = mul(vPosition, g_LightProjMatrices[iCascadeIndex]);
     
     /* 광원기준으로 표현됐을때 그려져있어야할 위치에 이미 그려져있떤 누군가의 깊이 */
     float2 vTexcoord;
@@ -219,10 +246,10 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
     /* 1 ~ -1 -> 0 ~ 1 */ 
     vTexcoord.y = (vPosition.y / vPosition.w) * -0.5f + 0.5f;
     
-    vector vLightDepth = g_LightDepthTexture.Sample(DefaultSampler, vTexcoord);
-    float fViewZ = vLightDepth.x * 1000.0f;
+    vector vShadowDepth = g_TextureArray.Sample(DefaultSampler, float3(vTexcoord, iCascadeIndex));
+    float fLightDepth = vPosition.z / vPosition.w;
     
-    if (vPosition.w - 0.1f > fViewZ)
+    if (fLightDepth - 0.001f > vShadowDepth.x)
         Out.vColor = Out.vColor * 0.3f;
     
     return Out;
@@ -347,6 +374,15 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN_BLUR_Y();
     }
 
+    pass DebugArray
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_DEBUG_ARRAY();
+    }
 
 }

@@ -58,6 +58,7 @@ HRESULT CVIBuffer_Instance_UI::Initialize_Prototype(const INSTANCE_DESC* pDesc)
 		pInstanceVertices[i].vLook = _float4(0.f, 0.f, 1.f, 0.f);
 		pInstanceVertices[i].vPosition = _float4(0.f, 0.f, 0.f, 1.f);
 		pInstanceVertices[i].vUV = _float4(0.f, 0.f, 1.f, 1.f);
+		pInstanceVertices[i].vColor = _float4{ 1.f, 1.f, 1.f, 1.f };
 		pInstanceVertices[i].fAlpha = 1.f;
 		pInstanceVertices[i].iShaderPass = 0;
 		pInstanceVertices[i].iTexPass = 0;
@@ -130,6 +131,7 @@ HRESULT CVIBuffer_Instance_UI::Reset()
 		pInstanceVertices[i].vLook = _float4(0.f, 0.f, 1.f, 0.f);
 		pInstanceVertices[i].vPosition = _float4(0.f, 0.f, 0.f, 1.f);
 		pInstanceVertices[i].vUV = _float4(0.f, 0.f, 1.f, 1.f);
+		pInstanceVertices[i].vColor = _float4(1.f, 0.f, 1.f, 1.f);
 		pInstanceVertices[i].fAlpha = 1.f;
 		pInstanceVertices[i].iShaderPass = 0;
 		pInstanceVertices[i].iTexPass = 0;

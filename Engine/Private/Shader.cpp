@@ -91,6 +91,58 @@ HRESULT CShader::Bind_RawValue(const _char* pConstantName, const void* pData, _u
 	return pVariable->SetRawValue(pData, 0, iLength);	
 }
 
+HRESULT CShader::Bind_FloatArray(const _char* pConstantName, const _float* pData, _uint iCount)
+{
+	ID3DX11EffectVariable* pVariable = m_pEffect->GetVariableByName(pConstantName);
+	if (nullptr == pVariable)
+		return E_FAIL;
+
+	ID3DX11EffectScalarVariable* pScalar = pVariable->AsScalar();
+	if (nullptr == pScalar)
+		return E_FAIL;
+
+	return pScalar->SetFloatArray(pData, 0, iCount);
+}
+
+HRESULT CShader::Bind_IntArray(const _char* pConstantName, const _int* pData, _uint iCount)
+{
+	ID3DX11EffectVariable* pVariable = m_pEffect->GetVariableByName(pConstantName);
+	if (nullptr == pVariable)
+		return E_FAIL;
+
+	ID3DX11EffectScalarVariable* pScalar = pVariable->AsScalar();
+	if (nullptr == pScalar)
+		return E_FAIL;
+
+	return pScalar->SetIntArray(pData, 0, iCount);
+}
+
+HRESULT CShader::Bind_BoolArray(const _char* pConstantName, const _bool* pData, _uint iCount)
+{
+	ID3DX11EffectVariable* pVariable = m_pEffect->GetVariableByName(pConstantName);
+	if (nullptr == pVariable)
+		return E_FAIL;
+
+	ID3DX11EffectScalarVariable* pScalar = pVariable->AsScalar();
+	if (nullptr == pScalar)
+		return E_FAIL;
+
+	return pScalar->SetBoolArray(pData, 0, iCount);
+}
+
+HRESULT CShader::Bind_VectorArray(const _char* pConstantName, const _float4* pData, _uint iCount)
+{
+	ID3DX11EffectVariable* pVariable = m_pEffect->GetVariableByName(pConstantName);
+	if (nullptr == pVariable)
+		return E_FAIL;
+
+	ID3DX11EffectVectorVariable* pVector = pVariable->AsVector();
+	if (nullptr == pVector)
+		return E_FAIL;
+
+	return pVector->SetFloatVectorArray(reinterpret_cast<const _float*>(pData), 0, iCount);
+}
+
 HRESULT CShader::Bind_Matrix(const _char* pConstantName, const _float4x4* pMatrix)
 {
 	ID3DX11EffectVariable*	pVariable = m_pEffect->GetVariableByName(pConstantName);

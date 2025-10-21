@@ -220,6 +220,36 @@
     <Filter Include="02.GameObject\Creature\Monster\Yetuga">
       <UniqueIdentifier>{985c2727-eace-4eab-933f-dd5fc5515f2d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\QuickSlot_Skill">
+      <UniqueIdentifier>{80f25ebd-14c3-4a66-a01f-9b08770b9269}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\QuickSlot_Item">
+      <UniqueIdentifier>{447348cf-58ce-457c-b766-0d237236e034}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\QuickSlot_Skill\Slot">
+      <UniqueIdentifier>{2f5efab5-4aa4-49dc-8e3e-fe075f4915f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\QuickSlot_Item\Slot">
+      <UniqueIdentifier>{0c740405-db99-4238-9752-df7c18f522ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\MainMenu">
+      <UniqueIdentifier>{244221f0-40f7-4b8c-9cd4-d9881e4cd49f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Inven">
+      <UniqueIdentifier>{bf77453f-04e7-4354-93fa-9c62f443d060}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Inven\ETC">
+      <UniqueIdentifier>{a35136d7-7ad3-4580-b681-c029de6c4006}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Inven\ETC\Tap">
+      <UniqueIdentifier>{f963ed35-50bf-4b47-8cd0-654a0d22a79e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Inven\ETC\Panel">
+      <UniqueIdentifier>{99b24549-339c-48be-9c6c-dc1e503be929}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Inven\OtherItem">
+      <UniqueIdentifier>{ce73b693-5a75-45cf-8e7e-fee337310e6d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -342,9 +372,6 @@
     <ClInclude Include="..\public\UI_Texture.h">
       <Filter>95.SuperClass\UI\UIPart\UI_Frame</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\UI_BackGround.h">
-      <Filter>02.GameObject\UI\ETC</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\HeaderGroup_UI.h">
       <Filter>93.HeaderGroup</Filter>
     </ClInclude>
@@ -407,6 +434,33 @@
     </ClInclude>
     <ClInclude Include="..\Public\AttackState_Yetuga.h">
       <Filter>92.AI\State\Yetuga\02.Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_QuickSlot_Skill_Panel.h">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Skill</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_QuickSlot_Item_Panel.h">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Item</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_QuickSlot_Skill.h">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Skill\Slot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_QuickSlot_Item.h">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Item\Slot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_BackGround.h">
+      <Filter>02.GameObject\UI\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Inven_Tap.h">
+      <Filter>02.GameObject\UI\Inven\ETC\Tap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Inven_Panel.h">
+      <Filter>02.GameObject\UI\Inven\ETC\Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Inven.h">
+      <Filter>02.GameObject\UI\Inven</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Inven_OtherItem.h">
+      <Filter>02.GameObject\UI\Inven\OtherItem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -525,9 +579,6 @@
     <ClCompile Include="..\private\UI_Texture.cpp">
       <Filter>95.SuperClass\UI\UIPart\UI_Frame</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\UI_BackGround.cpp">
-      <Filter>02.GameObject\UI\ETC</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\UI_Text.cpp">
       <Filter>95.SuperClass\UI\UIPart\UI_Text</Filter>
     </ClCompile>
@@ -588,6 +639,33 @@
     <ClCompile Include="..\Private\AttackState_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\02.Attack</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\UI_QuickSlot_Skill_Panel.cpp">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Skill</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_QuickSlot_Item_Panel.cpp">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Item</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_QuickSlot_Skill.cpp">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Skill\Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_QuickSlot_Item.cpp">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Item\Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_BackGround.cpp">
+      <Filter>02.GameObject\UI\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Inven_Tap.cpp">
+      <Filter>02.GameObject\UI\Inven\ETC\Tap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Inven_Panel.cpp">
+      <Filter>02.GameObject\UI\Inven\ETC\Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Inven.cpp">
+      <Filter>02.GameObject\UI\Inven</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Inven_OtherItem.cpp">
+      <Filter>02.GameObject\UI\Inven\OtherItem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
@@ -624,6 +702,9 @@
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosSpriteTex.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_UIMask.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

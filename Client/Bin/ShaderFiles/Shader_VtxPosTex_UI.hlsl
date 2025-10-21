@@ -5,7 +5,6 @@ float4 g_vColor, g_fProgressValue;
 float g_fAlpha;
 texture2D g_Texture;
 
-
 struct VS_IN
 {
     float3 vPosition : POSITION;
@@ -126,11 +125,15 @@ PS_OUT PS_TEX_PROGRESS_BOTTOMDOWN(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
     
-    if (In.vTexcoord.y < 1.f - g_fProgressValue.x)
+    if (g_fProgressValue.x == 1.f)
+        Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);       
+    else if (In.vTexcoord.y < 1.f - g_fProgressValue.x)
         discard;
-        
-    Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
-    
+    else
+    {
+        Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
+        Out.vColor.rgb *= 0.5f;
+    }
     Out.vColor.a = Out.vColor.a * g_fAlpha;
     return Out;
 }
@@ -140,7 +143,7 @@ technique11 DefaultTechnique
     pass DefaultPass
     {
         SetRasterizerState(RS_Cull_None);
-        SetDepthStencilState(DSS_Default, 0);
+        SetDepthStencilState(DSS_None, 0);
         SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_MAIN();
@@ -151,7 +154,7 @@ technique11 DefaultTechnique
     pass HP_PASS
     {
         SetRasterizerState(RS_Cull_None);
-        SetDepthStencilState(DSS_Default, 0);
+        SetDepthStencilState(DSS_None, 0);
         SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_MAIN();
@@ -162,7 +165,7 @@ technique11 DefaultTechnique
     pass COMBATSPIRIT_PASS
     {
         SetRasterizerState(RS_Cull_None);
-        SetDepthStencilState(DSS_Default, 0);
+        SetDepthStencilState(DSS_None, 0);
         SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_MAIN();
@@ -173,7 +176,7 @@ technique11 DefaultTechnique
     pass PS_PROGRESS_PASS_LEFTDOWN //3
     {
         SetRasterizerState(RS_Cull_None);
-        SetDepthStencilState(DSS_Default, 0);
+        SetDepthStencilState(DSS_None, 0);
         SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_MAIN();
@@ -184,7 +187,7 @@ technique11 DefaultTechnique
     pass PS_PROGRESS_PASS_LEFTDOWN_COLOR //4
     {
         SetRasterizerState(RS_Cull_None);
-        SetDepthStencilState(DSS_Default, 0);
+        SetDepthStencilState(DSS_None, 0);
         SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_MAIN();
@@ -195,7 +198,7 @@ technique11 DefaultTechnique
     pass PS_PROGRESS_PASS_BOTTOMDOWN//5
     {
         SetRasterizerState(RS_Cull_None);
-        SetDepthStencilState(DSS_Default, 0);
+        SetDepthStencilState(DSS_None, 0);
         SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_MAIN();

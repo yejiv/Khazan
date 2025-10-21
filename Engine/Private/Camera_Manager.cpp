@@ -31,7 +31,24 @@ void CCamera_Manager::Change_Camera(_uint iLevelIndex, _uint iCameraType)
 	for (auto& pCamera : m_pCameras[iLevelIndex])
 	{
 		if (pCamera->Get_CameraType() == iCameraType)
+		{
 			pCamera->Set_IsActive(true);
+			m_pActiveCamera = pCamera;
+		}
+		else
+			pCamera->Set_IsActive(false);
+	}
+}
+
+void CCamera_Manager::Change_Camera(_uint iLevelIndex, _wstring strCameraTag)
+{
+	for (auto& pCamera : m_pCameras[iLevelIndex])
+	{
+		if (pCamera->Get_CameraTag() == strCameraTag)
+		{
+			pCamera->Set_IsActive(true);
+			m_pActiveCamera = pCamera;
+		}
 		else
 			pCamera->Set_IsActive(false);
 	}
@@ -48,12 +65,92 @@ CCamera* CCamera_Manager::Find_Camera(_uint iLevelIndex, _uint iCameraType)
 	return nullptr;
 }
 
+CCamera* CCamera_Manager::Find_Camera(_uint iLevelIndex, _wstring strCameraTag)
+{
+	for (auto& pCamera : m_pCameras[iLevelIndex])
+	{
+		if (pCamera->Get_CameraTag() == strCameraTag)
+			return pCamera;
+	}
+
+	return nullptr;
+}
+
 void CCamera_Manager::Clear(_uint iLevelIndex)
 {
 	if (iLevelIndex >= m_iNumLevels)
 		return;
 
 	m_pCameras[iLevelIndex].clear();
+}
+
+void CCamera_Manager::Save_Json(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData)
+{
+	CCamera* pCamera = Find_Camera(iLevelIndex, strCameraTag);
+	CCamera::CAMERA_DESC CameraDesc = pCamera->Get_CameraDesc();
+
+	nlohmann::ordered_json Data;
+
+	Data["Name"] = WStringToAnsi(CameraDesc.strCameraTag);
+	Data["Eye"]["x"] = CameraDesc.vEye.x;
+	Data["Eye"]["y"] = CameraDesc.vEye.y;
+	Data["Eye"]["z"] = CameraDesc.vEye.z;
+	Data["Eye"]["w"] = CameraDesc.vEye.w;
+	Data["At"]["x"] = CameraDesc.vAt.x;
+	Data["At"]["y"] = CameraDesc.vAt.y;
+	Data["At"]["z"] = CameraDesc.vAt.z;
+	Data["At"]["w"] = CameraDesc.vAt.w;
+	Data["Fovy"] = CameraDesc.fFovy;
+	Data["Near"] = CameraDesc.fNear;
+	Data["Far"] = CameraDesc.fFar;
+	Data["SpeedPerSec"] = CameraDesc.fSpeedPerSec;
+	Data["RotationPerSec"] = CameraDesc.fRotationPerSec;
+	Data["MouseSensor"] = CameraDesc.fMouseSensor;
+	Data["CameraType"] = CameraDesc.iCameraType;
+
+	map<_wstring, vector<CAMERA_KEYFRAME>>* Animations = pCamera->Get_AllAnimations();
+
+	for (auto Animation : *Animations)
+	{
+		nlohmann::ordered_json AnimationData;
+		AnimationData["Name"] = Animation.first.c_str();
+		for (auto Ani : Animation.second)
+		{
+			nlohmann::ordered_json AniData;
+			AniData["Translation"]["x"] = Ani.vTranslation.x;
+			AniData["Translation"]["y"] = Ani.vTranslation.y;
+			AniData["Translation"]["z"] = Ani.vTranslation.z;
+			AniData["LookAt"]["x"] = Ani.vLookAt.x;
+			AniData["LookAt"]["y"] = Ani.vLookAt.y;
+			AniData["LookAt"]["z"] = Ani.vLookAt.z;
+			AniData["LookAt"]["w"] = Ani.vLookAt.w;
+			AniData["Speed"] = Ani.fSpeed;
+			AniData["TrackPosition"] = Ani.fTrackPosition;
+
+			AnimationData["Animations"].push_back(AniData);
+		}
+		Data["Animation"].push_back(AnimationData);
+	}
+
+	map<_wstring, vector<CAMERA_EVENT_DATA>>* Events = pCamera->Get_AllEvents();
+
+	for (auto Event : *Events)
+	{
+		nlohmann::ordered_json EventData;
+		EventData["Name"] = Event.first.c_str();
+		for (auto Eve : Event.second)
+		{
+			nlohmann::ordered_json EveData;
+			EveData["EventType"] = Eve.iEventType;
+			EveData["EventKey"] = Eve.strEventKey.c_str();
+			EveData["isComplete"] = Eve.isComplete;
+			EveData["TrackPosition"] = Eve.fTrackPosition;
+
+			EventData["Events"].push_back(EveData);
+		}
+		Data["Event"].push_back(EventData);
+	}
+	pOutData = Data;
 }
 
 CCamera_Manager* CCamera_Manager::Create(_uint iNumLevels)

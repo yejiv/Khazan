@@ -11,7 +11,8 @@ CMoveState_Yetuga::CMoveState_Yetuga()
 void CMoveState_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
     CModel* pModel = static_cast<CModel*>(pOwner->Get_Component(TEXT("Com_Model")));
-    pModel->Set_Animation(4, true);
+    pModel->Set_Animation(4);
+    pModel->Set_AnimationLoop(true);
 }
 
 void CMoveState_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

@@ -5,6 +5,7 @@
 NS_BEGIN(Client)
 class CUI_PlayerHP_Penal final : public CUI_Panel
 {
+private:
 	enum class UIANIMSTATE { ON, OFF, END};
 
 private:
@@ -27,7 +28,6 @@ public:
 
 private:
 	_float						m_fAccTime = {};
-	_bool						m_isAnim = { false };
 	UIANIMSTATE					m_eAnimState = { UIANIMSTATE::END };
 private:
 	virtual	HRESULT				Ready_Prototype();

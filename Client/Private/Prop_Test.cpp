@@ -30,10 +30,10 @@ HRESULT CProp_Test::Initialize_Clone(void* pArg)
 
     _matrix matWorld = XMLoadFloat4x4(&pDesc->WorldMatrix);
 
-    /*m_pTransformCom->Set_State(STATE::RIGHT, matWorld.r[0]);
-    m_pTransformCom->Set_State(STATE::UP, matWorld.r[1]);
-    m_pTransformCom->Set_State(STATE::LOOK, matWorld.r[2]);
-    m_pTransformCom->Set_State(STATE::POSITION, matWorld.r[3]);*/
+    //m_pTransformCom->Set_State(STATE::RIGHT, matWorld.r[0]);
+    //m_pTransformCom->Set_State(STATE::UP, matWorld.r[1]);
+    //m_pTransformCom->Set_State(STATE::LOOK, matWorld.r[2]);
+    //m_pTransformCom->Set_State(STATE::POSITION, matWorld.r[3]);
 
     CHECK_FAILED(Ready_Collision(pArg), E_FAIL);
 

@@ -11,7 +11,7 @@ CIdleState_Yetuga::CIdleState_Yetuga()
 void CIdleState_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
     CModel* pModel = static_cast<CModel*>(pOwner->Get_Component(TEXT("Com_Model")));
-    pModel->Set_Animation(3, true);
+    //pModel->Set_Animation(3, true);
 
 }
 
