@@ -7,6 +7,7 @@
 
 NS_BEGIN(Engine)
 class CModel;
+class CBody;
 NS_END
 
 NS_BEGIN(Client)
@@ -37,12 +38,13 @@ public:
 
 private:
 	CModel* m_pModelCom = { nullptr };
-
+	CBody* m_pBodyCom = { nullptr };
 private:
 	SHADER_PASS m_eShaderPass = { SHADER_PASS::MAP };
 
 private:
 	HRESULT Ready_Components(void* pArg);
+	HRESULT Ready_Collision(void* pArg);
 	virtual HRESULT Bind_ShaderResources();
 
 	HRESULT Bind_Materials(_uint iMeshIndex);
