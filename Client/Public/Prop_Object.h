@@ -7,7 +7,6 @@
 
 NS_BEGIN(Engine)
 class CModel;
-class CTexture;
 NS_END
 
 NS_BEGIN(Client)
@@ -38,7 +37,6 @@ public:
 
 private:
 	CModel* m_pModelCom = { nullptr };
-	CTexture* m_pTextureCom = { nullptr };
 
 private:
 	SHADER_PASS m_eShaderPass = { SHADER_PASS::MAP };

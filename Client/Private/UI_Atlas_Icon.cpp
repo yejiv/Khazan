@@ -12,6 +12,11 @@ CUI_Atlas_Icon::CUI_Atlas_Icon(const CUI_Atlas_Icon& Prototype)
 {
 }
 
+void CUI_Atlas_Icon::Update_Color(_float4 vColor)
+{
+	m_vColor = vColor;
+}
+
 HRESULT CUI_Atlas_Icon::Initialize_Prototype()
 {
 	return S_OK;
@@ -19,6 +24,13 @@ HRESULT CUI_Atlas_Icon::Initialize_Prototype()
 
 HRESULT CUI_Atlas_Icon::Initialize_Clone(void* pArg)
 {
+	UIATLASICON_DESC* pDesc = static_cast<UIATLASICON_DESC*>(pArg);
+
+	m_vUV.push_back(pDesc->vUV);
+	m_iShaderPass = pDesc->iShaderPass;
+	m_iTexPass = pDesc->iTexPass;
+	m_vColor = pDesc->vColor;
+
 	if (FAILED(__super::Initialize_Clone(pArg)))
 		return E_FAIL;
 
@@ -34,10 +46,6 @@ void CUI_Atlas_Icon::Update(_float fTimeDelta)
 
 void CUI_Atlas_Icon::Late_Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_O))
-	{
-		m_UIBubbleCallBack();
-	}
 	CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::ATLAS, this);
 }
 

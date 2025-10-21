@@ -209,10 +209,10 @@ HRESULT CLoader::Loading_For_Stage1_Texture()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Terrain/Brush.png"), 1))))
 		return E_FAIL;
 
-	/* Prototype_Component_Texture_Brush */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Texture_BackGround"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/BG/T_Hud_BG_Deco_Pathfinder_01.png"), 1))))
-		return E_FAIL;
+	///* Prototype_Component_Texture_Brush */
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Texture_BackGround"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/BG/T_Hud_BG_Deco_Pathfinder_01.png"), 1))))
+	//	return E_FAIL;
 
 	//vector<const _tchar*> TextureList;
 	//TextureList.reserve(2);
@@ -244,12 +244,12 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 	//	return E_FAIL;
 
 	/* Prototype_Component_Model_JOH_TestModel */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_JOH_TestModel"),
-		CModel::Create(m_pDevice, m_pContext, "../Data/Test/Test_Player/Test_Player.dat"))))
-		return E_FAIL;
+ 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_JOH_TestModel"),
+		//CModel::Create(m_pDevice, m_pContext, "../Data/Test/Test_Player/Test_Player.dat"))))
+		//return E_FAIL;
 
 	/* Prototype_Component_Model_파일명 */
-	//CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+	CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
 
 	return S_OK;
 }
@@ -328,6 +328,7 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 
 HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDataFileName, LEVEL eLevel, KHAZAN_MAP eMap)
 {
+	// Dat 파일 기본 경로
 	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
 
 	switch (eMap)
@@ -374,9 +375,7 @@ HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDa
 		MAPOBJECT_TYPE eMapObjType = static_cast<MAPOBJECT_TYPE>(sMapObjectType);
 
 		// MapObject 타입에 따른 조건문
-		if (MAPOBJECT_TYPE::OBJECT == eMapObjType ||
-			MAPOBJECT_TYPE::INTERACTIVE == eMapObjType ||
-			MAPOBJECT_TYPE::DYNAMIC == eMapObjType)
+		if (MAPOBJECT_TYPE::OBJECT == eMapObjType || MAPOBJECT_TYPE::INTERACTIVE == eMapObjType || MAPOBJECT_TYPE::DYNAMIC == eMapObjType)
 		{
 			// CModel 을 열어야 하는 경우 ( Instance X )
 

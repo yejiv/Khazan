@@ -91,6 +91,17 @@ void CPerception::Check_Sight(CGameObject* pOwner)
 		m_PerceptionCallBack(pTarget, Stim);
 }
 
+void CPerception::Notify_Damage(CGameObject* pAttacker, const STIMULUS& Stim)
+{
+	PERCEIVED_DESC& Perceived = m_Perceived[pAttacker];
+	Perceived.LastStimulus[SENSETYPE::DAMAGE] = Stim;
+	Perceived.fLastUpdated = m_fCurrnetTime;
+	Perceived.isCurrentlySensed = Stim.bSensed;
+
+	if (m_PerceptionCallBack)
+		m_PerceptionCallBack(pAttacker, Stim);
+}
+
 void CPerception::Forget()
 {
 	// ¸Á°¢

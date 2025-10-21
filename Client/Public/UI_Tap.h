@@ -7,7 +7,7 @@ NS_BEGIN(Client)
 class CUI_Tap abstract : public CUIParent
 {
 public:
-	enum class STATE { DISABLE, ENABLE, OVER, SELETE, END };
+	enum class UISTATE { DISABLE, ENABLE, OVER, SELETE, END };
 
 protected:
 	CUI_Tap(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -26,6 +26,10 @@ public:
 
 protected:
 	vector<std::function<void()>>	m_Events;
+
+protected:
+	virtual _bool				ButtonOver(HWND hWnd);
+	virtual _bool				ButtonClick(HWND hWnd, _bool IsRight, _bool IsDonw);
 
 public:
 	virtual CGameObject*		Clone(void* pArg) = 0;

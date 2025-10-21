@@ -18,11 +18,17 @@ public:
 	virtual void					Late_Update(_float fTimeDelta) override;
 	virtual HRESULT					Render() override;
 
-	virtual void					Bubble_EventCall();
-
 private:
 	virtual	HRESULT					Ready_Prototype();
+	virtual HRESULT					Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
 
+private:
+	vector<class CUI_ComBatSpirit_Slot*>	m_pSlot;
+	_int									m_iMaxSlotNum = {};
+	_int									m_iCulSlotNum = {};
+	_float									m_fOffsetX = {};
+
+	_float									m_fCulGaugeValue = {};
 public:
 	static CUI_CombatSpirit_Penal*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
 	virtual CGameObject*			Clone(void* pArg) override;

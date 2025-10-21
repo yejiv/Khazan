@@ -11,7 +11,7 @@ protected:
 
 public:
 	virtual HRESULT		Initialize(class CAI_State* pCurrentState);
-	virtual void		Update(_float fTimeDelta, class CGameObject* pOwner);
+	virtual void		Update(class CGameObject* pOwner, _float fTimeDelta);
 
 public:
 	void				Add_Flag(_uint iFlag) { m_iStateFlag |= iFlag; }
@@ -21,16 +21,17 @@ public:
 
 
 public:
-	HRESULT				Change_State(_uint iStateIndex);
+	HRESULT				Change_State(_uint iStateIndex, class CGameObject* pOwner);
 protected:
 	HRESULT				Add_State(_uint iStateIndex, class CAI_State* pState);
 	class CAI_State*	Find_State(_uint iStateIndex);
-	HRESULT				Set_State(class CAI_State* pNextState, class CGameObject* pOwner = nullptr);
+	HRESULT				Set_State(class CAI_State* pNextState, class CGameObject* pOwner);
 
 protected:
-	_uint				m_iStateFlag = {};
+	_uint					m_iStateFlag = {};
 
-	class CAI_State* m_pCurrentState = { nullptr };
+	class CAI_State*		m_pCurrentState = { nullptr };
+
 
 	unordered_map<_uint, class CAI_State*> m_States;
 

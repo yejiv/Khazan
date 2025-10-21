@@ -160,9 +160,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\public\AnimationTool.h" />
+    <ClInclude Include="..\Public\Camera_Compre.h" />
+    <ClInclude Include="..\Public\Camera_Controller.h" />
     <ClInclude Include="..\Public\Camera_Effect.h" />
     <ClInclude Include="..\Public\Camera_Map.h" />
     <ClInclude Include="..\Public\Camera_UI.h" />
+    <ClInclude Include="..\Public\Debug_Controller.h" />
     <ClInclude Include="..\Public\Editor_Animation.h" />
     <ClInclude Include="..\Public\Editor_Bone.h" />
     <ClInclude Include="..\Public\Editor_Channel.h" />
@@ -185,6 +188,7 @@
     <ClInclude Include="..\Public\Effect_Terrain.h" />
     <ClInclude Include="..\public\JOH_EditorModelTest.h" />
     <ClInclude Include="..\Public\Level_Animation.h" />
+    <ClInclude Include="..\Public\Level_Camera.h" />
     <ClInclude Include="..\Public\Level_Editor.h" />
     <ClInclude Include="..\Public\Level_Effect.h" />
     <ClInclude Include="..\Public\Level_Loading.h" />
@@ -196,14 +200,18 @@
     <ClInclude Include="..\Public\MapEditor_Header.h" />
     <ClInclude Include="..\Public\MapObject.h" />
     <ClInclude Include="..\Public\Map_Terrain.h" />
+    <ClInclude Include="..\Public\Player_Camera.h" />
+    <ClInclude Include="..\Public\Map_TestPlayer.h" />
     <ClInclude Include="..\public\Player_Shader.h" />
     <ClInclude Include="..\Public\Prop.h" />
     <ClInclude Include="..\Public\Prop_Animated.h" />
     <ClInclude Include="..\Public\Prop_Dynamic.h" />
     <ClInclude Include="..\Public\Prop_Interactive.h" />
     <ClInclude Include="..\Public\Prop_Object.h" />
+    <ClInclude Include="..\Public\Prop_Preview.h" />
     <ClInclude Include="..\Public\Prop_Static.h" />
     <ClInclude Include="..\Public\Prop_Test.h" />
+    <ClInclude Include="..\Public\Camera_Terrain.h" />
     <ClInclude Include="..\public\Terrain_Shader.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="EditorPch.h" />
@@ -213,9 +221,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\AnimationTool.cpp" />
+    <ClCompile Include="..\Private\Camera_Compre.cpp" />
+    <ClCompile Include="..\Private\Camera_Controller.cpp" />
     <ClCompile Include="..\Private\Camera_Effect.cpp" />
     <ClCompile Include="..\Private\Camera_Map.cpp" />
     <ClCompile Include="..\Private\Camera_UI.cpp" />
+    <ClCompile Include="..\Private\Debug_Controller.cpp" />
     <ClCompile Include="..\Private\Editor_Animation.cpp" />
     <ClCompile Include="..\Private\Editor_Bone.cpp" />
     <ClCompile Include="..\Private\Editor_Channel.cpp" />
@@ -237,6 +248,7 @@
     <ClCompile Include="..\private\JOH_EditorModelTest.cpp" />
     <ClCompile Include="..\Private\Camera_Shader.cpp" />
     <ClCompile Include="..\Private\Level_Animation.cpp" />
+    <ClCompile Include="..\Private\Level_Camera.cpp" />
     <ClCompile Include="..\Private\Level_Editor.cpp" />
     <ClCompile Include="..\Private\Level_Effect.cpp" />
     <ClCompile Include="..\Private\Level_Loading.cpp" />
@@ -247,14 +259,18 @@
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\Private\MapObject.cpp" />
     <ClCompile Include="..\Private\Map_Terrain.cpp" />
+    <ClCompile Include="..\Private\Player_Camera.cpp" />
+    <ClCompile Include="..\Private\Map_TestPlayer.cpp" />
     <ClCompile Include="..\private\Player_Shader.cpp" />
     <ClCompile Include="..\Private\Prop.cpp" />
     <ClCompile Include="..\Private\Prop_Animated.cpp" />
     <ClCompile Include="..\Private\Prop_Dynamic.cpp" />
     <ClCompile Include="..\Private\Prop_Interactive.cpp" />
     <ClCompile Include="..\Private\Prop_Object.cpp" />
+    <ClCompile Include="..\Private\Prop_Preview.cpp" />
     <ClCompile Include="..\Private\Prop_Static.cpp" />
     <ClCompile Include="..\Private\Prop_Test.cpp" />
+    <ClCompile Include="..\Private\Camera_Terrain.cpp" />
     <ClCompile Include="..\private\Terrain_Shader.cpp" />
     <ClCompile Include="Editor.cpp" />
     <ClCompile Include="EditorPch.cpp">

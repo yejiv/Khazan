@@ -184,9 +184,8 @@ void CJolt_Manager::Test()
 }
 void CJolt_Manager::Debug_Render()
 {
-    if (!m_pPhysics)
+    if (!m_pPhysics || !m_isDebugRender)
         return;
-
     // 디버그 렌더 패스 시작
     m_pDebugRenderer->BeginFrame();
 
@@ -195,6 +194,10 @@ void CJolt_Manager::Debug_Render()
 
     // 디버그 렌더 패스 종료
     m_pDebugRenderer->EndFrame();
+}
+void CJolt_Manager::Change_DebugRender()
+{
+    m_isDebugRender = !m_isDebugRender;
 }
 #endif 
 CJolt_Manager* CJolt_Manager::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iNumObjectLayer)

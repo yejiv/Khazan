@@ -66,6 +66,42 @@ namespace Engine
 
 	}MESH_INSTANCE_DATA;
 
+	typedef struct tagMapObjectProperties
+	{
+		bool isSnow{ false };
+		bool isCollider{ false };
+		bool isBlended{ false };
+		bool isInstance{ false };
+		bool isShadow{ false };
+
+	}MAPOBJECT_PROPERTIES;
+
+	typedef struct tagCatmullrom
+	{
+		XMVECTOR v1;
+		XMVECTOR v2;
+		XMVECTOR v3;
+		XMVECTOR v4;
+	}CATMULLROM;
+
+	typedef struct tagCameraKeyFrame
+	{
+		XMFLOAT3 vTranslation;
+		XMFLOAT4 vLookAt;
+		float fSpeed;
+
+		float fTrackPosition;
+	}CAMERA_KEYFRAME;
+
+	typedef struct tagCameraEvent
+	{
+		wstring strEventKey;
+		unsigned int iEventType;
+		bool isComplete;
+
+		float fTrackPosition;
+	}CAMERA_EVENT_DATA;
+
 	typedef struct tagCoInitGuard {
 		HRESULT hr = S_OK;
 		tagCoInitGuard(DWORD coinit = COINIT_MULTITHREADED) { hr = CoInitializeEx(nullptr, coinit); }
@@ -84,10 +120,8 @@ namespace Engine
 
 	typedef struct tagPointInstanceParams
 	{
-		float fSpeed;
-		XMFLOAT3 vPadding;
+		XMFLOAT4 fSpeed;
 		XMFLOAT4 vInitTranslation;
-		XMFLOAT4 vDirection;
 	}POINT_INSTANCE_PARAMS;
 
 	typedef struct tagVertexPosition
@@ -208,9 +242,9 @@ namespace Engine
 		XMFLOAT4			vLook;
 		XMFLOAT4			vTranslation;
 
-		XMFLOAT2			vLifeTime;
-		float				bDead;
 		XMFLOAT3			vPrevPosition;
+		float				bDead;
+		XMFLOAT2			vLifeTime;
 
 	}VTXINSTANCE_PARTICLE;
 
@@ -231,9 +265,12 @@ namespace Engine
 			{ "WORLD", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 			{ "WORLD", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 
-			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 1, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-			{ "TEXCOORD", 1, DXGI_FORMAT_R32_FLOAT, 1, 72, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-			{ "TEXCOORD", 2, DXGI_FORMAT_R32G32B32_FLOAT, 1, 76, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			//{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 1, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			//{ "TEXCOORD", 1, DXGI_FORMAT_R32_FLOAT, 1, 72, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			//{ "TEXCOORD", 2, DXGI_FORMAT_R32G32B32_FLOAT, 1, 76, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1 }, 
+			{ "TEXCOORD", 1, DXGI_FORMAT_R32_FLOAT, 1, 76, D3D11_INPUT_PER_INSTANCE_DATA, 1 }, 
+			{ "TEXCOORD", 2, DXGI_FORMAT_R32G32_FLOAT, 1, 80, D3D11_INPUT_PER_INSTANCE_DATA, 1 }, 
 		};
 	}VTXPOINTPARTICLE;
 
@@ -306,6 +343,7 @@ namespace Engine
 		XMFLOAT4		vPosition;
 
 		XMFLOAT4		vUV;
+		XMFLOAT4		vColor;
 		float			fAlpha;
 		unsigned int	iTexPass;
 		unsigned int	iShaderPass;
@@ -313,7 +351,7 @@ namespace Engine
 
 	typedef struct tagUI_INSTANCING
 	{
-		static const unsigned int	iNumElements = { 8 };
+		static const unsigned int	iNumElements = { 9 };
 		static constexpr D3D11_INPUT_ELEMENT_DESC	Elements[iNumElements] = {
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 
@@ -323,8 +361,9 @@ namespace Engine
 			{ "WORLD", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 
 			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-			{ "TEXCOORD", 1, DXGI_FORMAT_R32_FLOAT, 1, 80, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-			{ "TEXCOORD", 2, DXGI_FORMAT_R8G8_UINT, 1, 84, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{ "TEXCOORD", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 80, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{ "TEXCOORD", 2, DXGI_FORMAT_R32_FLOAT, 1, 96, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{ "TEXCOORD", 3, DXGI_FORMAT_R32G32_UINT, 1, 100, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 		};
 	}UI_INSTANCING;
 

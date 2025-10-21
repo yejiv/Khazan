@@ -4,6 +4,7 @@
 
 #include "JOH_EditorModelTest.h"
 #include "Editor_Model.h"
+#include "Debug_Controller.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance{ CGameInstance::GetInstance() }
@@ -28,11 +29,13 @@ HRESULT CMainApp::Initialize()
 
 	list<_wstring> Imgui_Menu;
 	Imgui_Menu.push_back(TEXT("Default"));
+	Imgui_Menu.push_back(TEXT("Debug"));
 	Imgui_Menu.push_back(TEXT("Map"));
 	Imgui_Menu.push_back(TEXT("Effect"));
 	Imgui_Menu.push_back(TEXT("Model"));
 	Imgui_Menu.push_back(TEXT("UI"));
 	Imgui_Menu.push_back(TEXT("Shader"));
+	Imgui_Menu.push_back(TEXT("Camera"));
 
 	EngineDesc.Menu_Imgui = Imgui_Menu;
 
@@ -50,13 +53,15 @@ HRESULT CMainApp::Initialize()
 	
 	Ready_DefaultImgui();
 
+	Ready_Debug();
+
 	return S_OK;
 }
 
 void CMainApp::Update(_float fTimeDelta)
 {
 	m_pGameInstance->Update_Engine(fTimeDelta);
-
+	m_pDebug->Update();
 #ifdef _DEBUG
 	m_fTimeAcc += fTimeDelta;
 
@@ -199,8 +204,17 @@ void CMainApp::Ready_DefaultImgui()
 		if (ImGui::Button("Shader", ImVec2(120, 32))) {
 			m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::SHADER));
 		}
+		ImGui::SameLine();
+		if (ImGui::Button("Camera", ImVec2(120, 32))) {
+			m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::CAMERA));
+		}
 		ImGui::End();
 		});
+}
+
+void CMainApp::Ready_Debug()
+{
+	m_pDebug = CDebug_Controller::Create();
 }
 
 CMainApp* CMainApp::Create()
@@ -222,7 +236,7 @@ void CMainApp::Free()
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
-
+	Safe_Release(m_pDebug);
 	m_pGameInstance->Release_Engine();
 
 	Safe_Release(m_pGameInstance);
