@@ -63,6 +63,15 @@ private:
 	FLOAT2_DATA								m_vTempFrames = { 0.f, 0.f };
 	vector<string>							m_vecEventKeys;
 	_char									m_szEventKeyInputText[256] = "";
+	vector<_uint>							m_vecTriggers;
+	_bool									m_isTriggerOnce = { false };
+	_bool									m_isTriggerOnEnter = { true };
+	_bool									m_isTriggerOnExit = { false };
+	_bool									m_isTriggerContinuous = { false };
+	_bool									m_isTriggerOnce2 = { false };
+	_bool									m_isTriggerOnEnter2 = { true };
+	_bool									m_isTriggerOnExit2 = { false };
+	_bool									m_isTriggerContinuous2 = { false };
 
 	// === 애니메이션 세트 제작 (임시 저장용) ===
 	_char									m_szAnimSetNameInputText[256] = "";

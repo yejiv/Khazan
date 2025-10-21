@@ -98,9 +98,9 @@ void CEditor_Animation::OnAnimationBlend(map<_uint, _matrix>&& outChannelMatrice
 map<_uint, _matrix>& CEditor_Animation::Get_ChannelMatrices()
 {
     m_PreAnimationChannelMatrices.clear();
-    for (_uint i = 0; i < m_iNumChannels; ++i)
+    for (_uint i = 0; i < m_iNumChannels; ++i) {
         m_PreAnimationChannelMatrices.emplace(m_Channels[i]->Get_BoneIndex(), m_Channels[i]->Get_TransformationMatrix());
-
+    }
     return m_PreAnimationChannelMatrices;
 }
 

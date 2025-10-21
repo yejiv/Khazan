@@ -22,8 +22,8 @@ public:
 	map<_uint, _matrix>&	Get_ChannelMatrices();
 	void					Set_TrackPositionPtr(_float* pTrackPosition);
 
-	void					EnbleTrackPosition(_bool isEnble) { m_isEnbleTrackPosition = isEnble; }
-	const _float&			Get_Duration() const { return m_fDuration; }
+	void					EnbleTrackPosition(_bool isEnble) { m_isEnbleTrackPosition = isEnble; }//tool
+	const _float&			Get_Duration() const { return m_fDuration; } //tool
 
 private:
 	string								m_strName = {};

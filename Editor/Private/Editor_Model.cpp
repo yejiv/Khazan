@@ -176,11 +176,12 @@ HRESULT CEditor_Model::Initialize_Prototype(MODELTYPE eModelType, const _char* p
         OutputDebugStringA(("[Root Boon Index] : " + to_string(m_iRootBoneIndex) + "\n").c_str());
 
     }
-    for (size_t i = 0; i < m_iNumAnimations; i++)
-    {
-        m_Model_Data.vecAnimation[i].animSetup.vecEventKeys = { "" };
 
-    }
+    //for (size_t i = 0; i < m_iNumAnimations; i++)
+    //{
+    //    m_Model_Data.vecAnimation[i].animSetup.vecEventFrames = { FLOAT2_DATA(0.f,0.f)};
+    //    m_Model_Data.vecAnimation[i].animSetup.vecEventKeys = { "" };
+    //}
 
 
     return S_OK;
@@ -758,7 +759,16 @@ HRESULT CEditor_Model::Ready_Animation()
 
 void CEditor_Model::OnRootMotion()
 {
-    m_isRootMotion = true;
+    m_isRootMotion = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isRootMotion;
+    if (m_isRootMotion)
+    {
+        m_isRootMotion_Pos = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isApplyRootPosition;
+        m_isRootMotion_Rot = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isApplyRootRotation;
+        FLOAT3_DATA data = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.RootMitionScale;
+        m_vRootMotionScale = XMVectorSet(data.x, data.y, data.z, 1.f);
+    }
+
+
     m_fCurRootMotionBlendTime = 0.f;
     m_PreRootMatrix = m_Bones[m_iRootBoneIndex]->Get_CombinedTransformationMatrix();
 }
@@ -775,7 +785,36 @@ void CEditor_Model::Update_RootMotion(_float fTimeDelta)
     {
         _float fRatio = m_fCurRootMotionBlendTime / m_fRootMotionBlendTime;
 
-        CurrentRootMatrix.r[3] = XMVectorLerp(m_PreRootMatrix.r[3], CurrentRootMatrix.r[3], fRatio);
+        //위치 적용
+        if (m_isRootMotion_Pos)
+        {
+            _vector vCurrentPos = CurrentRootMatrix.r[3];
+            _vector vPrePos = m_PreRootMatrix.r[3];
+
+            _vector vLerpedPos = XMVectorLerp(vPrePos, vCurrentPos, fRatio);
+            _vector vDelta = XMVectorSubtract(vLerpedPos, vPrePos);
+            vDelta = XMVectorMultiply(vDelta, m_vRootMotionScale);
+            _vector vFinalPos = XMVectorAdd(vPrePos, vDelta);
+
+            CurrentRootMatrix.r[3] = vFinalPos;
+        }
+        else
+        {
+            CurrentRootMatrix.r[3] = m_PreRootMatrix.r[3];
+        }
+
+        //회전 적용
+        if (m_isRootMotion_Rot)
+        {
+            _vector vCurrentQuat = XMQuaternionRotationMatrix(CurrentRootMatrix);
+            _vector vPreQuat = XMQuaternionRotationMatrix(m_PreRootMatrix);
+            _vector vLerpedQuat = XMQuaternionSlerp(vPreQuat, vCurrentQuat, fRatio);
+
+            _matrix RotationMatrix = XMMatrixRotationQuaternion(vLerpedQuat);
+            CurrentRootMatrix.r[0] = RotationMatrix.r[0];
+            CurrentRootMatrix.r[1] = RotationMatrix.r[1];
+            CurrentRootMatrix.r[2] = RotationMatrix.r[2];
+        }
 
         m_Bones[m_iRootBoneIndex]->Set_TransformationMatrix(CurrentRootMatrix);
     }
