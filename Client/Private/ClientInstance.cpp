@@ -60,6 +60,11 @@ HRESULT CClientInstance::Load_UIData(_uint iLayerLevelID, const _wstring& strLay
 	return m_pUI_Manager->Load_UIData(iLayerLevelID, strLayerTag, iPrototypeLevelID, pUIFilePath);
 }
 
+CUIObject* CClientInstance::Load_UIObject(_uint iPrototypeLevelID, const _tchar* pFilePath)
+{
+	return m_pUI_Manager->Load_UIObject(iPrototypeLevelID, pFilePath);
+}
+
 _int CClientInstance::UIType_StringToEnum(string szUIType)
 {
 	return m_pUI_Manager->UIType_StringToEnum(szUIType);
@@ -78,6 +83,11 @@ HRESULT CClientInstance::Add_UIRender(UI_RENDER_TYPE eRender, CUIObject* pUIObje
 HRESULT CClientInstance::UI_UpdateSwitch(const _wstring& strUITag, void* pArg)
 {
 	return m_pUI_Manager->UI_UpdateSwitch(strUITag, pArg);
+}
+
+_float4 CClientInstance::Get_AtlasUV(const string pFrameName, _uint iTextureIndex)
+{
+	return m_pUI_Manager->Get_AtlasUV(pFrameName, iTextureIndex);
 }
 
 #pragma endregion

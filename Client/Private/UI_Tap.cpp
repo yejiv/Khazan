@@ -29,21 +29,21 @@ HRESULT CUI_Tap::Initialize_Clone(void* pArg)
 
 void CUI_Tap::Priority_Update(_float fTimeDelta)
 {
-	if (m_iState == ENUM_CLASS(STATE::DISABLE))
+	if (m_iState == ENUM_CLASS(UISTATE::DISABLE))
 		return;
 	__super::Priority_Update(fTimeDelta);
 }
 
 void CUI_Tap::Update(_float fTimeDelta)
 {
-	if (m_iState == ENUM_CLASS(STATE::DISABLE))
+	if (m_iState == ENUM_CLASS(UISTATE::DISABLE))
 		return;
 	__super::Update(fTimeDelta);
 }
 
 void CUI_Tap::Late_Update(_float fTimeDelta)
 {
-	if (m_iState == ENUM_CLASS(STATE::DISABLE))
+	if (m_iState == ENUM_CLASS(UISTATE::DISABLE))
 		return;
 	__super::Late_Update(fTimeDelta);
 }
@@ -180,13 +180,52 @@ HRESULT CUI_Tap::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void*
 			if (pChild->Load_UI(child, iPrototypeLevelID, pArg))
 				return E_FAIL;
 
-			pChild->Insert_Bubble([this]() {this->Bubble_EventCall(); });
+			pChild->Insert_Bubble([this](BUBBLEEVENT* pArg) {this->Bubble_EventCall(pArg); });
 			m_Children.push_back(pChild);
 		}
 	}
 
 	__super::Update_Transform(nullptr, m_vLocalPos);
 	return S_OK;
+}
+
+_bool CUI_Tap::ButtonOver(HWND hWnd)
+{
+	return __super::IsPick(hWnd);
+}
+
+_bool CUI_Tap::ButtonClick(HWND hWnd, _bool IsRight, _bool IsDown)
+{
+	if (__super::IsPick(hWnd))
+	{
+		if (IsRight)
+		{
+			if (IsDown)
+			{
+				if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
+					return true;
+			}
+			else
+			{
+				if (m_pGameInstance->Mouse_Up(MOUSEKEYSTATE::RB))
+					return true;
+			}
+		}
+		else
+		{
+			if (IsDown)
+			{
+				if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+					return true;
+			}
+			else
+			{
+				if (m_pGameInstance->Mouse_Up(MOUSEKEYSTATE::LB))
+					return true;
+			}
+		}
+	}
+	return false;
 }
 
 void CUI_Tap::Free()

@@ -84,9 +84,9 @@ PS_OUT PS_TEX_CLOOR(PS_DEFAULT_IN In)
     In.vTexcoord = vMinUV + (vMaxUV - vMinUV) * In.vTexcoord;
      
     Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
-    Out.vColor.rgb = (1 - Out.vColor.r) * g_vColor.rgb;
+    Out.vColor.rgb = (Out.vColor.r) * g_vColor.rgb;
     
-    Out.vColor.a = Out.vColor.a * g_fAlpha;
+    Out.vColor.a = Out.vColor.a * g_vColor.a * g_fAlpha;
     return Out;
 }
 

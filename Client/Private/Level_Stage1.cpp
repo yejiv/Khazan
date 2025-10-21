@@ -196,10 +196,6 @@ HRESULT CLevel_Stage1::Ready_Layer_Test(const _wstring& strLayerTag)
 		ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_JOH_Test1"))))
 		return E_FAIL;
 
-	//if (FAILED(m_pClientInstance->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
-	//	TEXT("../Bin/Resources/UI/UIData/Test.json"))))
-	//	return E_FAIL;
-
 	return S_OK;
 }
 

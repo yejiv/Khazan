@@ -31,8 +31,9 @@ struct VS_IN
     float3 vPosition                    : POSITION;
     row_major float4x4 TransformMatrix  : WORLD;
     float4 vUV                          : TEXCOORD0;
-    float  vAlpha                       : TEXCOORD1;
-    uint2  vPass                        : TEXCOORD2;
+    float4 vColor                       : TEXCOORD1;
+    float  vAlpha                       : TEXCOORD2;
+    nointerpolation uint2 vPass         : TEXCOORD3;
 };
 
 struct VS_DEFAULT_OUT
@@ -40,8 +41,9 @@ struct VS_DEFAULT_OUT
     float4 vPosition : SV_POSITION;
     float2 fSize     : PSIZE;
     float4 vUV       : TEXCOORD0;
-    float  vAlpha    : TEXCOORD1;
-    uint2  vPass     : TEXCOORD2;
+    float4 vColor    : TEXCOORD1;
+    float  vAlpha    : TEXCOORD2;
+    nointerpolation uint2 vPass : TEXCOORD3;
 };
 
 VS_DEFAULT_OUT VS_MAIN(VS_IN In)
@@ -54,10 +56,9 @@ VS_DEFAULT_OUT VS_MAIN(VS_IN In)
     Out.fSize.x = length(In.TransformMatrix._11_12_13);
     Out.fSize.y = length(In.TransformMatrix._21_22_23);
     
-    //Out.fSize.x = In.TransformMatrix._11;
-    //Out.fSize.y = In.TransformMatrix._22;
-    
     Out.vUV = In.vUV;
+    Out.vColor = In.vColor;
+    Out.vAlpha = In.vAlpha;
     Out.vPass = In.vPass;
     
     return Out;
@@ -68,8 +69,9 @@ struct GS_IN
     float4 vPosition : SV_POSITION;
     float2 fSize     : PSIZE;
     float4 vUV       : TEXCOORD0;
-    float  vAlpha    : TEXCOORD1;
-    uint2  vPass     : TEXCOORD2;
+    float4 vColor    : TEXCOORD1;
+    float vAlpha     : TEXCOORD2;
+    nointerpolation uint2 vPass : TEXCOORD3;
 };
 
 struct GS_OUT
@@ -77,8 +79,9 @@ struct GS_OUT
     float4 vPosition : SV_POSITION;
     float2 vTexcoord : TEXCOORD0;
     float4 vUV       : TEXCOORD1;
-    float vAlpha     : TEXCOORD2;
-    uint2 vPass      : TEXCOORD3;
+    float4 vColor    : TEXCOORD2;
+    float vAlpha     : TEXCOORD3;
+    nointerpolation uint2 vPass : TEXCOORD4;
 };
 
 [maxvertexcount(6)]
@@ -94,21 +97,29 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
     Out[0].vPosition = mul(In[0].vPosition + vRight + vUp, matVP);
     Out[0].vTexcoord = float2(0.f, 0.f);
     Out[0].vUV = In[0].vUV;
+    Out[0].vColor = In[0].vColor;
+    Out[0].vAlpha = In[0].vAlpha;
     Out[0].vPass = In[0].vPass;
     
     Out[1].vPosition = mul(In[0].vPosition - vRight + vUp, matVP);
     Out[1].vTexcoord = float2(1.f, 0.f);
     Out[1].vUV = In[0].vUV;
+    Out[1].vColor = In[0].vColor;
+    Out[1].vAlpha = In[0].vAlpha;
     Out[1].vPass = In[0].vPass;
     
     Out[2].vPosition = mul(In[0].vPosition - vRight - vUp, matVP);
     Out[2].vTexcoord = float2(1.f, 1.f);
     Out[2].vUV = In[0].vUV;
+    Out[2].vColor = In[0].vColor;
+    Out[2].vAlpha = In[0].vAlpha;
     Out[2].vPass = In[0].vPass;
     
     Out[3].vPosition = mul(In[0].vPosition + vRight - vUp, matVP);
     Out[3].vTexcoord = float2(0.f, 1.f);
     Out[3].vUV = In[0].vUV;
+    Out[3].vColor = In[0].vColor;
+    Out[3].vAlpha = In[0].vAlpha;
     Out[3].vPass = In[0].vPass;
     
     Vertices.Append(Out[0]);
@@ -127,8 +138,9 @@ struct PS_IN
     float4 vPosition : SV_POSITION;
     float2 vTexcoord : TEXCOORD0;
     float4 vUV       : TEXCOORD1;
-    float vAlpha     : TEXCOORD2;
-    uint2 vPass      : TEXCOORD3;
+    float4 vColor    : TEXCOORD2;
+    float vAlpha     : TEXCOORD3;
+    nointerpolation uint2 vPass : TEXCOORD4;
 };
 
 struct PS_OUT
@@ -136,20 +148,33 @@ struct PS_OUT
     float4 vColor : SV_TARGET0;
 };
 
+float4 ShaderPass_2(float4 vColor, PS_IN In)
+{
+    vColor.rgb = (vColor.r) * In.vColor.rgb;
+    vColor.a = vColor.a * In.vColor.a * In.vAlpha;
+    return vColor;
+}
+
 PS_OUT PS_MAIN(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
     In.vTexcoord = In.vUV.xy + (In.vUV.zw - In.vUV.xy) * In.vTexcoord;
     Out.vColor = TexMaping(In.vPass.x, In.vTexcoord);
-    //Out.vColor = 1.f;
+    
+
+    if (In.vPass.y == 2)
+        Out.vColor = ShaderPass_2(Out.vColor, In);
+    else
+        Out.vColor.a = Out.vColor.a * In.vColor.a * In.vAlpha;
+    
     return Out;
 }
 
 technique11 DefaultTechnique
 {
-    pass DefaultPass            // 0
+    pass DefaultPass
     {
-        SetRasterizerState(RS_Default);
+        SetRasterizerState(RS_Cull_None);
         SetDepthStencilState(DSS_None, 0);
         SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
