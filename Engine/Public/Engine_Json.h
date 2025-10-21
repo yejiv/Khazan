@@ -57,6 +57,9 @@ namespace Engine
     {
         float x;
         float y;
+
+        tagFloat2() : x(0.f), y(0.f) {}
+        tagFloat2(float _x, float _y) : x(_x), y(_y) {}
     }FLOAT2_DATA;
 
     typedef struct tagFloat3
@@ -381,11 +384,11 @@ namespace Engine
 
     }CHANNEL_DATA;
 
-    // 애니메이션 세트 데이터 (MODEL_DATA가 관리)
+    // ?좊땲硫붿씠???명듃 ?곗씠??(MODEL_DATA媛? 愿?由?
     typedef struct tagAnimationSetData
     {
-        std::string             strAnimSetName = { "DefaultAnimSet" };      // 애니메이션 세트 이름
-        std::vector<int>        vecAnimIndices;                             // 세트에 포함된 애니메이션 인덱스들 (실행 순서대로)
+        std::string             strAnimSetName = { "DefaultAnimSet" };      // ?좊땲硫붿씠???명듃 ?대쫫
+        std::vector<int>        vecAnimIndices;                             // ?명듃???ы븿???좊땲硫붿씠???몃뜳?ㅻ뱾 (?ㅽ뻾 ?쒖꽌??濡?
 
         void SaveBinary(std::ofstream& ofs) const
         {
@@ -423,33 +426,35 @@ namespace Engine
 
     }ANIMATION_SET_DATA;
 
-    // 개별 애니메이션 설정 (각 애니메이션이 관리)
+    // 媛쒕퀎 ?좊땲硫붿씠???ㅼ젙 (媛??좊땲硫붿씠?섏씠 愿?由?
     typedef struct tagAnimationSetUp
     {
-        /* 기본 설정 */
+        /* 湲곕낯 ?ㅼ젙 */
         std::string             strName = { "DefaultAnim" };
         bool                    isLoop = { false };
-        unsigned int            iDirection = { 0 };                         // 방향 (0: 방향 없음, 1~24: 방향)
+        unsigned int            iDirection = { 0 };                         // 방향 ANIM_DIRECTION
 
         /* 애니메이션 전환 설정 (애니메이션 세트에 사용할 예정) */
         unsigned int            iTransitionType = { 0 };                    // 전환 조건 (0:Auto, 1:Flag, 2:Input, 3:Manual)
-        bool                    isWaitForComplete = { true };               // 완료 대기 여부
+        bool                    isWaitForComplete = { false };               // 완료 대기 여부 true: 전환할 때 애니메이션이 다 끝나고 전환하겠다. / false : 바로 전환하겠다.
         float                   fBlendOutTime = { 0.15f };                  // 블렌드 아웃 시간
         float                   fBlendInTime = { 0.15f };                   // 블렌드 인 시간
 
         /* 루트 모션 */
-        bool                    isRootMotion = { false };                   // 루트 모션 사용 여부
+        bool                    isRootMotion = { true };                   // 루트 모션 사용 여부
         bool                    isApplyRootRotation = { false };            // 회전 적용 여부
-        bool                    isApplyRootPosition = { false };            // 위치 적용 여부
-        FLOAT3_DATA             RootMitionScale;                            // 축별 적용 스케일
+        bool                    isApplyRootPosition = { true };            // 위치 적용 여부
+        FLOAT3_DATA             RootMitionScale = FLOAT3_DATA(1.f, 1.f, 1.f);  // 축별 적용 스케일
 
         /* 이벤트 */
         bool                    isEvent = { false };                        // 이벤트 존재 여부
-        bool                    isTriggerOnce = { false };                  // 루프 시 한 번만 발동
-        bool                    isTriggerOnExit = { false };                // 블렌드 아웃 시 발동
+        //bool                  isTriggerOnce = { false };       =1<<0      // 루프 시 한 번만 발동
+        //bool					isTriggerOnEnter = { true };     =1<<1      // 범위 진입 시 발동
+        //bool					isTriggerOnExit = { false };     =1<<2      // 범위 탈출 시 발동
+        //bool					isTriggerContinuous = { false }; =1<<3      // 범위 내에서 계속 발동
+        std::vector<unsigned int>   vecEventTriggers;                       // 이벤트 발동 조건 모음
         std::vector<FLOAT2_DATA>    vecEventFrames;                         // 이벤트 프레임 (x: start, y: end)
         std::vector<std::string>    vecEventKeys;                           // 이벤트 키
-
         void SaveBinary(std::ofstream& ofs) const
         {
             auto write_string = [&](const std::string& s) {
@@ -458,29 +463,36 @@ namespace Engine
                 ofs.write(s.data(), len);
                 };
 
-            // 기본 설정
+            // 湲곕낯 ?ㅼ젙
             write_string(strName);
             ofs.write((char*)&isLoop, sizeof(isLoop));
             ofs.write((char*)&iDirection, sizeof(iDirection));
 
-            // 애니메이션 전환 설정
+            // ?좊땲硫붿씠???꾪솚 ?ㅼ젙
             ofs.write((char*)&iTransitionType, sizeof(iTransitionType));
             ofs.write((char*)&isWaitForComplete, sizeof(isWaitForComplete));
             ofs.write((char*)&fBlendOutTime, sizeof(fBlendOutTime));
             ofs.write((char*)&fBlendInTime, sizeof(fBlendInTime));
 
-            // 루트 모션
+            // 猷⑦듃 紐⑥뀡
             ofs.write((char*)&isRootMotion, sizeof(isRootMotion));
             ofs.write((char*)&isApplyRootRotation, sizeof(isApplyRootRotation));
             ofs.write((char*)&isApplyRootPosition, sizeof(isApplyRootPosition));
             ofs.write((char*)&RootMitionScale, sizeof(FLOAT3_DATA));
 
-            // 이벤트
-            ofs.write((char*)&isEvent, sizeof(isEvent));
-            ofs.write((char*)&isTriggerOnce, sizeof(isTriggerOnce));
-            ofs.write((char*)&isTriggerOnExit, sizeof(isTriggerOnExit));
+            // ?대깽??            ofs.write((char*)&isEvent, sizeof(isEvent));
+            //ofs.write((char*)&isTriggerOnce, sizeof(isTriggerOnce));
+            //ofs.write((char*)&isTriggerOnEnter, sizeof(isTriggerOnEnter));
+            //ofs.write((char*)&isTriggerOnExit, sizeof(isTriggerOnExit));
+            //ofs.write((char*)&isTriggerContinuous, sizeof(isTriggerContinuous));
+            uint32_t count = static_cast<uint32_t>(vecEventTriggers.size());
+            ofs.write((char*)&count, sizeof(count));
+            for (const auto& frame : vecEventTriggers)
+            {
+                ofs.write((char*)&frame, sizeof(unsigned int));
+            }
 
-            uint32_t count = static_cast<uint32_t>(vecEventFrames.size());
+            count = static_cast<uint32_t>(vecEventFrames.size());
             ofs.write((char*)&count, sizeof(count));
             for (const auto& frame : vecEventFrames)
             {
@@ -504,29 +516,38 @@ namespace Engine
                 return s;
                 };
 
-            // 기본 설정
+            // 湲곕낯 ?ㅼ젙
             strName = read_string();
             ifs.read((char*)&isLoop, sizeof(isLoop));
             ifs.read((char*)&iDirection, sizeof(iDirection));
 
-            // 애니메이션 전환 설정
+            // ?좊땲硫붿씠???꾪솚 ?ㅼ젙
             ifs.read((char*)&iTransitionType, sizeof(iTransitionType));
             ifs.read((char*)&isWaitForComplete, sizeof(isWaitForComplete));
             ifs.read((char*)&fBlendOutTime, sizeof(fBlendOutTime));
             ifs.read((char*)&fBlendInTime, sizeof(fBlendInTime));
 
-            // 루트 모션
+            // 猷⑦듃 紐⑥뀡
             ifs.read((char*)&isRootMotion, sizeof(isRootMotion));
             ifs.read((char*)&isApplyRootRotation, sizeof(isApplyRootRotation));
             ifs.read((char*)&isApplyRootPosition, sizeof(isApplyRootPosition));
             ifs.read((char*)&RootMitionScale, sizeof(FLOAT3_DATA));
 
-            // 이벤트
-            ifs.read((char*)&isEvent, sizeof(isEvent));
-            ifs.read((char*)&isTriggerOnce, sizeof(isTriggerOnce));
-            ifs.read((char*)&isTriggerOnExit, sizeof(isTriggerOnExit));
+            // ?대깽??            ifs.read((char*)&isEvent, sizeof(isEvent));
+            //ifs.read((char*)&isTriggerOnce, sizeof(isTriggerOnce));
+            //ifs.read((char*)&isTriggerOnEnter, sizeof(isTriggerOnEnter));
+            //ifs.read((char*)&isTriggerOnExit, sizeof(isTriggerOnExit));
+            //ifs.read((char*)&isTriggerContinuous, sizeof(isTriggerContinuous));
 
             uint32_t count;
+
+            ifs.read((char*)&count, sizeof(count));
+            vecEventTriggers.resize(static_cast<size_t>(count));
+            for (auto& frame : vecEventTriggers)
+            {
+                ifs.read((char*)&frame, sizeof(unsigned int));
+            }
+
             ifs.read((char*)&count, sizeof(count));
             vecEventFrames.resize(static_cast<size_t>(count));
             for (auto& frame : vecEventFrames)
@@ -548,6 +569,7 @@ namespace Engine
         std::string		strName;
         float			fDuration;
         float			fTickPerSecond;
+        float           fAnimationBlendTime = { 0.25f };
         unsigned int    iNumChannels;
 
         std::vector< CHANNEL_DATA> vecChannels;
@@ -561,6 +583,7 @@ namespace Engine
             ofs.write(strName.data(), len);
             ofs.write((char*)&fDuration, sizeof(fDuration));
             ofs.write((char*)&fTickPerSecond, sizeof(fTickPerSecond));
+            ofs.write((char*)&fAnimationBlendTime, sizeof(fAnimationBlendTime));
             ofs.write((char*)&iNumChannels, sizeof(iNumChannels));
 
             uint32_t count = static_cast<uint32_t>(vecChannels.size());
@@ -578,6 +601,7 @@ namespace Engine
 
             ifs.read((char*)&fDuration, sizeof(fDuration));
             ifs.read((char*)&fTickPerSecond, sizeof(fTickPerSecond));
+            ifs.read((char*)&fAnimationBlendTime, sizeof(fAnimationBlendTime));
             ifs.read((char*)&iNumChannels, sizeof(iNumChannels));
 
             uint32_t count;
@@ -602,7 +626,7 @@ namespace Engine
     typedef struct tagAnimationSummariesDataSet
     {
         std::vector<ANIMATION_SUMMARY_DATA> vecSummaries;
-        std::vector<Engine::ANIMATION_SET_DATA>     vecAnimationSets;  // 애니메이션 세트 (추가됨)
+        std::vector<Engine::ANIMATION_SET_DATA>     vecAnimationSets;  // ?좊땲硫붿씠???명듃 (異붽???
 
     }ANIMATION_SUMMARIES_DATA;
 
@@ -620,11 +644,11 @@ namespace Engine
 
         std::vector<Engine::MESH_DATA>			    vecMeshes;
         std::vector<Engine::MATERIAL_DATA>		    vecMaterials;
+        std::vector<Engine::BONE_DATA>			    vecBones;
 
         //ANIM
-        std::vector<Engine::BONE_DATA>			    vecBones;
         std::vector<Engine::ANIMATION_DATA>		    vecAnimation;
-        std::vector<Engine::ANIMATION_SET_DATA>     vecAnimationSets;  // 애니메이션 세트 (추가됨)
+        std::vector<Engine::ANIMATION_SET_DATA>     vecAnimationSets;  // ?좊땲硫붿씠???명듃 (異붽???
 
         ~tagModelDataSet() {
             vecMeshes.clear();
@@ -755,11 +779,14 @@ namespace Engine
 
     typedef struct tagJsonPrototypeDataSet
     {
-        std::string PrototypeTag{};
-        std::string FileName{};
-        std::string FilePath{};
+        unsigned int iNumPrototypes{};
+
+        std::vector<string> PrototypeTag{};
+        std::vector<string> FileName{};
+        std::vector<string> FilePath{};
 
     }JSON_MAP_PROTOTYPE_DATA;
+
 
 #pragma endregion
 
@@ -809,13 +836,10 @@ namespace Engine
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BONE_DATA, iParentBoneIndex, strName, transformationMatrix);
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(CHANNEL_DATA, strName, iBoneIndex, iNumKeyFrame, vecKeyFrames);
 
-    // 애니메이션 세트 직렬화
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_SET_DATA,
-        strAnimSetName,
-        vecAnimIndices
-    );
+    // ?좊땲硫붿씠???명듃 吏곷젹??    
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_SET_DATA,strAnimSetName,vecAnimIndices);
 
-    // 애니메이션 설정 직렬화
+    // ?좊땲硫붿씠???ㅼ젙 吏곷젹??    
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_SETUP_DATA,
         strName,
         isLoop,
@@ -829,8 +853,11 @@ namespace Engine
         isApplyRootPosition,
         RootMitionScale,
         isEvent,
-        isTriggerOnce,
-        isTriggerOnExit,
+        //isTriggerOnce,
+        //isTriggerOnEnter,
+        //isTriggerOnExit,
+        //isTriggerContinuous,
+        vecEventTriggers,
         vecEventFrames,
         vecEventKeys
     );
@@ -854,6 +881,8 @@ namespace Engine
         vecAnimationSets
     );
 
+#pragma region Map
+
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(JSON_MAP_DATA,
         strModelName,
         iNumInstances,
@@ -867,7 +896,8 @@ namespace Engine
         vRotation
     );
     // 프로토타입 관련 태그, 이름, 경로 직렬화
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(JSON_MAP_PROTOTYPE_DATA, PrototypeTag, FileName, FilePath);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(JSON_MAP_PROTOTYPE_DATA, iNumPrototypes, PrototypeTag, FileName, FilePath);
+
 
 #pragma endregion
 

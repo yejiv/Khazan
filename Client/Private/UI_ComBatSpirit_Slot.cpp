@@ -2,6 +2,8 @@
 #include "GameInstance.h"
 #include "ClientInstance.h"
 
+#include "UI_ComBatSpirit_Gauge.h"
+
 CUI_ComBatSpirit_Slot::CUI_ComBatSpirit_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Slot{ pDevice, pContext }
 {
@@ -12,6 +14,20 @@ CUI_ComBatSpirit_Slot::CUI_ComBatSpirit_Slot(const CUI_ComBatSpirit_Slot& Protot
 {
 }
 
+void CUI_ComBatSpirit_Slot::Update_Pos(_float2 vPos, _float fOffSetX, _int iMaxIndex)
+{
+	m_vWorldPos.x = vPos.x + m_iIndex * fOffSetX - (iMaxIndex -1) * fOffSetX / 2 ;
+	m_vWorldPos.y = vPos.y;
+
+	m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(m_vWorldPos.x - m_iWinSizeX * 0.5f, -m_vWorldPos.y + m_iWinSizeY * 0.5f, 0.f, 1.f));
+	__super::Update_Transform(nullptr, m_vWorldPos);
+}
+
+void CUI_ComBatSpirit_Slot::Update_Gauge(_float fValue)
+{
+	m_fCulGauge = fValue;
+}
+
 HRESULT CUI_ComBatSpirit_Slot::Initialize_Prototype(_uint iLevel)
 {
 	m_iLevel = iLevel;
@@ -20,12 +36,15 @@ HRESULT CUI_ComBatSpirit_Slot::Initialize_Prototype(_uint iLevel)
 
 HRESULT CUI_ComBatSpirit_Slot::Initialize_Clone(void* pArg)
 {
+	UISLOTDESC* pDesc = static_cast<UISLOTDESC*>(pArg);
+
+	m_iIndex = pDesc->iIndex;
 	if (FAILED(__super::Initialize_Clone(pArg)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Component()))
 		return E_FAIL;
-	m_iState = ENUM_CLASS(STATE::ENABLE);
+	m_iState = ENUM_CLASS(UISTATE::ENABLE);
 	return S_OK;
 }
 
@@ -70,6 +89,14 @@ HRESULT CUI_ComBatSpirit_Slot::Render()
 
 void CUI_ComBatSpirit_Slot::Bubble_EventCall()
 {
+}
+
+HRESULT CUI_ComBatSpirit_Slot::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
+{
+	__super::Load_UI(pInData, iPrototypeLevelID, pArg);
+
+	static_cast<CUI_CombatSpirit_Gauge*>(m_Children[0])->Setting_Gauge(&m_fCulGauge);
+	return S_OK;
 }
 
 HRESULT CUI_ComBatSpirit_Slot::Ready_Component()

@@ -30,6 +30,44 @@ HRESULT CCamera_Map::Initialize_Clone(void* pArg)
 
 void CCamera_Map::Priority_Update(_float fTimeDelta)
 {
+    if (m_pGameInstance->Key_Down(DIK_MINUS))
+    {
+        if (false == m_isPreviewPos)
+            XMStoreFloat3(&m_vPrevPos, m_pTransformCom->Get_State(STATE::POSITION));
+
+        m_isPreviewPos = true;
+
+        switch (m_iPhase)
+        {
+        case 0:
+            m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 10040.f, -80.f, 1.f));
+            m_pTransformCom->LookAt(XMVectorSet(0.f, 10000.f, 0.f, 1.f));
+            ++m_iPhase;
+            break;
+        case 1:
+            m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 10020.f, -40.f, 1.f));
+            m_pTransformCom->LookAt(XMVectorSet(0.f, 10000.f, 0.f, 1.f));
+            ++m_iPhase;
+            break;
+        case 2:
+            m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 10010.f, -20.f, 1.f));
+            m_pTransformCom->LookAt(XMVectorSet(0.f, 10000.f, 0.f, 1.f));
+            ++m_iPhase;
+            break;
+        case 3:
+            m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 10005.f, -10.f, 1.f));
+            m_pTransformCom->LookAt(XMVectorSet(0.f, 10000.f, 0.f, 1.f));
+            m_iPhase = 0;
+            break;
+        }
+    }
+    if (true == m_isPreviewPos && m_pGameInstance->Key_Down(DIK_EQUALS))
+    {
+        m_iPhase = 0;
+        m_isPreviewPos = false;
+        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&m_vPrevPos), 1.f));
+    }
+
     Input(fTimeDelta);
 
     __super::Update_PipeLines();
@@ -55,13 +93,39 @@ void CCamera_Map::Input(_float fTimeDelta)
     _float fSpeed = fTimeDelta;
 
     if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta))
-        fSpeed *= 20.f;
+        fSpeed *= 5.f;
 
     if (m_pGameInstance->Key_Pressing(DIK_TAB, fTimeDelta))
-        fSpeed *= 10.f;
+        fSpeed *= 5.f;
 
-    if (m_pGameInstance->Key_Pressing(DIK_W, fTimeDelta))   m_pTransformCom->Go_Straight(fSpeed);
-    if (m_pGameInstance->Key_Pressing(DIK_S, fTimeDelta))   m_pTransformCom->Go_Backward(fSpeed);
+    if (m_pGameInstance->Key_Pressing(DIK_W, fTimeDelta))
+    {
+        _vector		vPosition = m_pTransformCom->Get_State(STATE::POSITION);
+        _float3		vLook = {};
+
+        XMStoreFloat3(&vLook, m_pTransformCom->Get_State(STATE::LOOK));
+
+        vLook.y = 0.f;
+
+        _vector vMoveDir = XMVector3Normalize(XMLoadFloat3(&vLook));
+        vPosition += vMoveDir * 5.f * fSpeed;
+
+        m_pTransformCom->Set_State(STATE::POSITION, vPosition);
+    }
+    if (m_pGameInstance->Key_Pressing(DIK_S, fTimeDelta))
+    {
+        _vector		vPosition = m_pTransformCom->Get_State(STATE::POSITION);
+        _float3		vLook = {};
+
+        XMStoreFloat3(&vLook, m_pTransformCom->Get_State(STATE::LOOK));
+
+        vLook.y = 0.f;
+
+        _vector vMoveDir = XMVector3Normalize(XMLoadFloat3(&vLook));
+        vPosition -= vMoveDir * 5.f * fSpeed;
+
+        m_pTransformCom->Set_State(STATE::POSITION, vPosition);
+    }
     if (m_pGameInstance->Key_Pressing(DIK_A, fTimeDelta))   m_pTransformCom->Go_Left(fSpeed);
     if (m_pGameInstance->Key_Pressing(DIK_D, fTimeDelta))   m_pTransformCom->Go_Right(fSpeed);
 
@@ -70,7 +134,7 @@ void CCamera_Map::Input(_float fTimeDelta)
         _vector		vPosition = m_pTransformCom->Get_State(STATE::POSITION);
         _vector		vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
 
-        vPosition += XMVector3Normalize(vUp) * 10.f * fSpeed;
+        vPosition += XMVector3Normalize(vUp) * 5.f * fSpeed;
 
         m_pTransformCom->Set_State(STATE::POSITION, vPosition);
     }
@@ -79,7 +143,7 @@ void CCamera_Map::Input(_float fTimeDelta)
         _vector		vPosition = m_pTransformCom->Get_State(STATE::POSITION);
         _vector		vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
 
-        vPosition -= XMVector3Normalize(vUp) * 10.f * fSpeed;
+        vPosition -= XMVector3Normalize(vUp) * 5.f * fSpeed;
 
         m_pTransformCom->Set_State(STATE::POSITION, vPosition);
     }

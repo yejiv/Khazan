@@ -85,10 +85,49 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
         vTranslation = XMVectorSetW(XMVectorLerp(XMVectorSetW(XMLoadFloat3(&m_KeyFrames[*pCurrentKeyFrameIndex].vTranslation), 1.f), XMVectorSetW(XMLoadFloat3(&m_KeyFrames[*pCurrentKeyFrameIndex + 1].vTranslation), 1.f), fRatio), 1.f);
     }
 
-    /*_matrix         TransformationMatrix = XMMatrixScaling() * XMMatrixRotationQuaternion() * XMMatrixTranslation();*/
-    _matrix         TransformationMatrix = XMMatrixAffineTransformation(vScale, XMVectorSet(0.f, 0.f, 0.f, 1.f), vRotation, vTranslation);
+    _float3 scaleBeforeBlend;//
+    XMStoreFloat3(&scaleBeforeBlend, vScale);//
 
-    Bones[m_iBoneIndex]->Set_TransformationMatrix(TransformationMatrix);
+    // 이전 애니메이션과의 보간 처리 
+	if (m_isBlendPreAnimation)
+	{
+
+		vScale = XMVectorLerp(m_vPrevScale, vScale, m_fAnimationRatio);
+		vRotation = XMQuaternionSlerp(m_vPrevRotQuat, vRotation, m_fAnimationRatio);
+		vTranslation = XMVectorLerp(m_vPrevPositon, vTranslation, m_fAnimationRatio);
+	}
+
+    /*_matrix         TransformationMatrix = XMMatrixScaling() * XMMatrixRotationQuaternion() * XMMatrixTranslation();*/
+    m_TransformationMatrix = XMMatrixAffineTransformation(vScale, XMVectorSet(0.f, 0.f, 0.f, 1.f), vRotation, vTranslation);
+
+    Bones[m_iBoneIndex]->Set_TransformationMatrix(m_TransformationMatrix);
+}
+
+void CChannel::Set_PrevAnimationBlend(const _float& fAnimationRatio, _matrix& PreAnimationMatrix)
+{
+    XMMatrixDecompose(&m_vPrevScale, &m_vPrevRotQuat, &m_vPrevPositon, PreAnimationMatrix);
+
+
+    //_float3 scale;
+    //XMStoreFloat3(&scale, m_vPrevScale);
+    //char debugMsg[256];
+    //sprintf_s(debugMsg, "[Channel %d] PrevScale: (%.4f, %.4f, %.4f), Ratio: %.4f\n",
+    //    m_iBoneIndex, scale.x, scale.y, scale.z, fAnimationRatio);
+    //OutputDebugStringA(debugMsg);
+
+
+    m_fAnimationRatio = fAnimationRatio;
+    m_isBlendPreAnimation = true;
+}
+
+void CChannel::Reset_AnimationBlend()
+{
+    m_isBlendPreAnimation = false;
+    m_fAnimationRatio = 0.f;
+    m_vPrevScale = XMVectorSet(1.f, 1.f, 1.f, 0.f);
+    m_vPrevRotQuat = XMQuaternionIdentity();
+    m_vPrevPositon = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+
 }
 
 CChannel* CChannel::Create(CHANNEL_DATA& data)
@@ -102,6 +141,11 @@ CChannel* CChannel::Create(CHANNEL_DATA& data)
     }
 
     return pInstance;
+}
+
+CChannel* CChannel::Clone()
+{
+    return new CChannel(*this);
 }
 
 void CChannel::Free()

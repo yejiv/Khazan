@@ -18,7 +18,7 @@ HRESULT CStateMachine::Initialize(CAI_State* pCurrentState)
     return S_OK;
 }
 
-void CStateMachine::Update(_float fTimeDelta, class CGameObject* pOwner)
+void CStateMachine::Update(CGameObject* pOwner, _float fTimeDelta)
 {
     if (nullptr == m_pCurrentState)
         return;
@@ -33,25 +33,22 @@ HRESULT CStateMachine::Set_State(CAI_State* pNextState, CGameObject* pOwner)
         return E_FAIL;
 
     if (m_pCurrentState)
-    {
         m_pCurrentState->Exit(this, pOwner);
-        Safe_Release(m_pCurrentState);
-    }
 
     m_pCurrentState = pNextState;
-    Safe_AddRef(m_pCurrentState);
+
     m_pCurrentState->Enter(this, pOwner);
 
     return S_OK;
 }
 
-HRESULT CStateMachine::Change_State(_uint iStateIndex)
+HRESULT CStateMachine::Change_State(_uint iStateIndex, CGameObject* pOwner)
 {
     CAI_State* pNext = Find_State(iStateIndex);
     if (!pNext)
         return E_FAIL;
 
-    return Set_State(pNext);
+    return Set_State(pNext, pOwner);
 }
 
 HRESULT CStateMachine::Add_State(_uint iStateIndex, CAI_State* pState)

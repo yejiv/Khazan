@@ -176,11 +176,12 @@ HRESULT CEditor_Model::Initialize_Prototype(MODELTYPE eModelType, const _char* p
         OutputDebugStringA(("[Root Boon Index] : " + to_string(m_iRootBoneIndex) + "\n").c_str());
 
     }
-    for (size_t i = 0; i < m_iNumAnimations; i++)
-    {
-        m_Model_Data.vecAnimation[i].animSetup.vecEventKeys = { "" };
 
-    }
+    //for (size_t i = 0; i < m_iNumAnimations; i++)
+    //{
+    //    m_Model_Data.vecAnimation[i].animSetup.vecEventFrames = { FLOAT2_DATA(0.f,0.f)};
+    //    m_Model_Data.vecAnimation[i].animSetup.vecEventKeys = { "" };
+    //}
 
 
     return S_OK;
@@ -529,26 +530,41 @@ void CEditor_Model::ExportModel_NoMsg(string& strPath)
     OutputDebugStringA(WStringToAnsi(successMsg).c_str());
 }
 
-void CEditor_Model::LoadModel(_wstring strModelName)
+void CEditor_Model::LoadModel(string& strPath)
 {
-    //string strBasePath = "../Data/";
-    //string strDatPath = "../Data/" + WStringToAnsi(strModelName) + "/" + WStringToAnsi(strModelName) + ".dat";;
+    _char exePath[MAX_PATH];
+    GetModuleFileNameA(NULL, exePath, MAX_PATH);
+    filesystem::path exeDir = filesystem::path(exePath).parent_path();
+    //OutputDebugStringA(("[Editor.exe Dir] " + exeDir.string() + "\n").c_str());
 
-    //if (!filesystem::exists(strDatPath))
-    //{
-    //    MSG_BOX(TEXT(".dat 파일이 존재하지 않습니다."));
-    //    return;
-    //}
+    filesystem::path editorDefaultDir = exeDir.parent_path().parent_path() / "Default";
+    //OutputDebugStringA(("[Editor Default Dir] " + editorDefaultDir.string() + "\n").c_str());
 
-    //std::ifstream ifs(strDatPath, std::ios::binary);
-    //if (!ifs.is_open())
-    //{
-    //    MSG_BOX(TEXT("binary 파일 열기 실패"));
-    //    return;
-    //}
+    filesystem::path clientDefaultDir = editorDefaultDir.parent_path().parent_path() / "Client" / "Default";
+    // OutputDebugStringA(("[Client Default] " + clientDefaultDir.string() + "\n").c_str());
 
-    //m_Model_Data.LoadBinary(ifs);
-    //ifs.close();
+    SetCurrentDirectoryA(clientDefaultDir.string().c_str());
+
+
+    _char currentDir[MAX_PATH];
+    //GetCurrentDirectoryA(MAX_PATH, currentDir);
+    OutputDebugStringA(("[Current Working Directory] " + clientDefaultDir.string() + "\n").c_str());
+
+    if (!filesystem::exists(strPath))
+    {
+        MSG_BOX(TEXT(".dat 파일이 존재하지 않습니다."));
+        return;
+    }
+
+    std::ifstream ifs(strPath, std::ios::binary);
+    if (!ifs.is_open())
+    {
+        MSG_BOX(TEXT("binary 파일 열기 실패"));
+        return;
+    }
+
+    m_Model_Data.LoadBinary(ifs);
+    ifs.close();
 }
 void CEditor_Model::Update_DAT_From_JSON(string& strPath)
 {
@@ -758,7 +774,16 @@ HRESULT CEditor_Model::Ready_Animation()
 
 void CEditor_Model::OnRootMotion()
 {
-    m_isRootMotion = true;
+    m_isRootMotion = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isRootMotion;
+    if (m_isRootMotion)
+    {
+        m_isRootMotion_Pos = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isApplyRootPosition;
+        m_isRootMotion_Rot = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isApplyRootRotation;
+        FLOAT3_DATA data = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.RootMitionScale;
+        m_vRootMotionScale = XMVectorSet(data.x, data.y, data.z, 1.f);
+    }
+
+
     m_fCurRootMotionBlendTime = 0.f;
     m_PreRootMatrix = m_Bones[m_iRootBoneIndex]->Get_CombinedTransformationMatrix();
 }
@@ -775,7 +800,36 @@ void CEditor_Model::Update_RootMotion(_float fTimeDelta)
     {
         _float fRatio = m_fCurRootMotionBlendTime / m_fRootMotionBlendTime;
 
-        CurrentRootMatrix.r[3] = XMVectorLerp(m_PreRootMatrix.r[3], CurrentRootMatrix.r[3], fRatio);
+        //위치 적용
+        if (m_isRootMotion_Pos)
+        {
+            _vector vCurrentPos = CurrentRootMatrix.r[3];
+            _vector vPrePos = m_PreRootMatrix.r[3];
+
+            _vector vLerpedPos = XMVectorLerp(vPrePos, vCurrentPos, fRatio);
+            _vector vDelta = XMVectorSubtract(vLerpedPos, vPrePos);
+            vDelta = XMVectorMultiply(vDelta, m_vRootMotionScale);
+            _vector vFinalPos = XMVectorAdd(vPrePos, vDelta);
+
+            CurrentRootMatrix.r[3] = vFinalPos;
+        }
+        else
+        {
+            CurrentRootMatrix.r[3] = m_PreRootMatrix.r[3];
+        }
+
+        //회전 적용
+        if (m_isRootMotion_Rot)
+        {
+            _vector vCurrentQuat = XMQuaternionRotationMatrix(CurrentRootMatrix);
+            _vector vPreQuat = XMQuaternionRotationMatrix(m_PreRootMatrix);
+            _vector vLerpedQuat = XMQuaternionSlerp(vPreQuat, vCurrentQuat, fRatio);
+
+            _matrix RotationMatrix = XMMatrixRotationQuaternion(vLerpedQuat);
+            CurrentRootMatrix.r[0] = RotationMatrix.r[0];
+            CurrentRootMatrix.r[1] = RotationMatrix.r[1];
+            CurrentRootMatrix.r[2] = RotationMatrix.r[2];
+        }
 
         m_Bones[m_iRootBoneIndex]->Set_TransformationMatrix(CurrentRootMatrix);
     }

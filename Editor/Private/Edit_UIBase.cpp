@@ -423,7 +423,7 @@ void CEdit_UIBase::Update_Option(string& szSeleteUIName, const string pFrameName
 
         if (m_iShaderPass == 2)
         {
-            ImGui::ColorEdit3("Back_Color", (_float*)&m_vFrameColor);
+            ImGui::ColorEdit4("Back_Color", (_float*)&m_vFrameColor);
         }
     }
 

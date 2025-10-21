@@ -14,7 +14,7 @@ class CLevel_Map final : public CLevel
 private:
 	enum class PROP_SPECIES { OBJECT, STATIC, ANIMATED, INTERACTIVE, DESTRUCTIBLE, END };
 	enum class MAPEDIT_MAP { HEINMACH, STORMPASS, THECREVICE, EMBARS, END };
-	enum class FIX_OBJECT { SCALE_DETAIL, FIX_ALL, SCALE, ROTATION, POSITION, END };
+	enum class FIX_OBJECT { FIX, END };
 
 	typedef struct tagSavePrototype
 	{
@@ -35,9 +35,10 @@ public:
 private:
 	HRESULT Ready_Defaults();
 	HRESULT Ready_Default_Lights();
-	HRESULT Ready_Preview_Model_RanderTargets();
+	HRESULT Ready_Layer_Khazan(const _wstring& strLayerTag);
 	HRESULT Ready_Layer_Camera(const _wstring& strLayerTag);
 	HRESULT Ready_Layer_Terrain(const _wstring& strLayerTag);
+	HRESULT Ready_Layer_Preview(const _wstring& strLayerTag);
 
 private:
 	class CProp_Static* m_pProp_Static = { nullptr };
@@ -45,9 +46,13 @@ private:
 	MAPEDIT_MAP m_eMapType = { MAPEDIT_MAP::HEINMACH };
 
 private:
+	ID3D11DepthStencilView* m_pDSV_MapTool = { nullptr };
+
+private:
 	// 맵 오브젝트 배치하면서 vector에 개별로 push_back 한거 nullptr 시 정리용
 	void Clear_List();
 
+	void Test_Player_Move(_float fTimeDelta);
 	void Select_Fix_Object(_float fTimeDelta);
 	void Select_Fix_Instance(_float fTimeDelta);
 	void Select_Add_LightPoint(_float fTimeDelta);
@@ -64,6 +69,10 @@ private:
 	vector<class CProp*> m_ObjectList;		// 오브젝트 리스트 ( 수정 편하게 할려고 )
 	_int m_iObjectListIndex = {};			// 오브젝트 리스트 인덱스
 
+	_bool m_isSnow = { false };
+	_bool m_isCollider = { false };
+	_bool m_isBlend = { false };
+
 	CProp* m_pFixPropObj = { nullptr };		// 피킹 시 받아올거 오브젝트 리스트 참고해서
 	CTransform* m_pFixTransformCom = { nullptr };		// 픽스할 오브젝트의 트랜스폼
 
@@ -75,7 +84,19 @@ private:
 	_float3 m_vFixRotation = {};
 	_float3 m_vFixPosition = {};
 
+	_float3 m_vResetScale = {};
+	_float3 m_vResetRotation = {};
+	_float3 m_vResetPosition = {};
+
 	_uint m_iMapObjectShaderPass = { 2 };
+	
+	_float m_fAddScale = { 0.005f };
+
+	_bool m_isCameraPosAdd = { false };
+	_float m_fAddPositionY = { 0.f };
+
+	MAPOBJECT_PROPERTIES m_AddObjectProperties = {};
+
 
 #pragma endregion
 
@@ -125,7 +146,7 @@ private:
 
 	_bool m_isObjectWindow = { false };
 
-	_bool m_isPropWindow[ENUM_CLASS(PROP_SPECIES::END)] = { false, false, false, false,false };
+	_bool m_isPropWindow = { false };
 
 	_bool m_isFixObjectWindow = { false };
 
@@ -174,13 +195,11 @@ private:
 
 #pragma region PROTOTYPE LIST 용
 
-	vector<string> m_Prototypes_Inst;					// Prototype 목록 ( Instance 용 모델 )
-	_int m_iIndex_PrtInst = {};							// Prototype Instance 용 인덱스
-
 	vector<string> m_Prototypes_Obj;					// Prototype 목록 ( Object 용 모델 )
 	_int m_iIndex_PrtObj = {};							// Prototype Object 용 인덱스
 
 	_char m_szSearchModelName[MAX_PATH] = {};
+	_char m_szSearchObjectName[MAX_PATH] = {};
 
 #pragma endregion
 
@@ -209,16 +228,27 @@ private:
 	// 임시 테스트용
 	string Find_ModelPath(const string& strModelName, const string& strFileExtern);
 
+#pragma region 파일 입출력
+
 private:
 	// Loader 에서 사용할 바이너리 파일
 	_bool Prototypes_Save_Binary();
 
-	// Layer 에서 사용할 바이너리 파일
+	// Layer 에서 사용할 오브젝트 바이너리 파일
 	_bool Objects_Save_Binary();
+
+	// Layer 에서 사용할 라이트 바이너리 파일
+	_bool Lights_Save_Binary();
 
 	// MapEditor에서 불러오기
 	_bool Prototypes_Load_Binary();
 	_bool Objects_Load_Binary();
+	_bool Lights_Load_Binary();
+
+#pragma endregion
+
+private:
+	void MapEditor_Close_Windows();
 
 public:
 	static CLevel_Map* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

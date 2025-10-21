@@ -69,6 +69,7 @@ public:
 public:
     void Test();
     void Debug_Render();
+    void Change_DebugRender();
 #endif
 private:
     ID3D11Device* m_pDevice = { nullptr };
@@ -102,6 +103,7 @@ private:
 private:
     CJolt_DebugRenderer* m_pDebugRenderer = { nullptr };
     BodyManager::DrawSettings m_DrawSetting;
+    _bool   m_isDebugRender = { false };
 #endif
 
 public:

@@ -29,6 +29,9 @@ public:
 
 	//UI JSON 로드
 	HRESULT						Load_UIData(_uint iLayerLevelID, const _wstring& strLayerTag, _uint iPrototypeLevelID, const _tchar* pTextureFilePath);
+	CUIObject*					Load_UIObject(_uint iPrototypeLevelID, const _tchar* pFilePath);
+
+	
 	_int						UIType_StringToEnum(string szUIType);
 	_uint						UI_TexTag_Maping(string szTextag);
 
@@ -38,6 +41,8 @@ public:
 	//UI 스위치
 	HRESULT						UI_UpdateSwitch(const _wstring& strUITag, void* pArg = nullptr);
 
+	//ETC
+	_float4						Get_AtlasUV(const string pFrameName, _uint iTextureIndex);
 #pragma endregion
 private:
 	ID3D11Device* m_pDevice = { nullptr };

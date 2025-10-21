@@ -216,6 +216,30 @@ void CTransform::Chase(_fvector vTargetPos, _float fTimeDelta, _float fLimit)
 
 }
 
+void CTransform::AI_Chase(_fvector vTargetPos, _float fTimeDelta, _float fLimit)
+{
+	// 거리 제곱 기반으로 사용되는 추적 함수
+	_vector vPosition = Get_State(STATE::POSITION);
+	_vector vMoveDir = vTargetPos - vPosition;
+	_float fDistSq = XMVectorGetX(XMVector3LengthSq(vMoveDir));
+	if (fDistSq <= fLimit)
+		return;
+
+	//_vector vDirNorm = XMVector3Normalize(vMoveDir);
+	// 목표까지 남은거리와 프레임당 이동거리를 비교해서 더 작은거리로 선택해서 이동
+	// 오버 슈팅을 방지시킬 수 있음.
+	//_float fMove = min(sqrt(fDistSq) - fLimit, m_fSpeedPerSec * fTimeDelta);
+	//vPosition += vDirNorm * fMove;
+
+	if (fDistSq >= fLimit)
+		vPosition += XMVector3Normalize(vMoveDir) * m_fSpeedPerSec * fTimeDelta;
+
+
+	Set_State(STATE::POSITION, vPosition);
+
+
+}
+
 CTransform* CTransform::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	CTransform* pInstance = new CTransform(pDevice, pContext);

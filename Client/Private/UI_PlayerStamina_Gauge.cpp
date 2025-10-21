@@ -37,9 +37,9 @@ void CUI_PlayerStamina_Gauge::Priority_Update(_float fTimeDelta)
 
 void CUI_PlayerStamina_Gauge::Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Pressing(DIK_O, 0, nullptr))
+	if (m_pGameInstance->Key_Pressing(DIK_O, 0))
 		m_fCurrentValue -= fTimeDelta * 100.f;
-	if (m_pGameInstance->Key_Pressing(DIK_P, 0, nullptr))
+	if (m_pGameInstance->Key_Pressing(DIK_P, 0))
 		m_fCurrentValue += fTimeDelta * 100.f;
 
 	if (m_fCurrentValue < 0)
@@ -78,10 +78,6 @@ HRESULT CUI_PlayerStamina_Gauge::Render()
 	m_pVIBufferCom->Render();
 
 	return S_OK;
-}
-
-void CUI_PlayerStamina_Gauge::Bubble_EventCall()
-{
 }
 
 HRESULT CUI_PlayerStamina_Gauge::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)

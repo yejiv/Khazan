@@ -18,6 +18,8 @@ public:
 	// 맵 오브젝트 ( Props ) MapObjectID 쉐이더에 바인딩한거 꺼내오는 용도의 함수 ( VtxMesh )
 	_bool isPicked(_float3* pOut, _uint* iObjectID);
 
+	_float4 isPickRenderTargetPixel(_wstring strRenderTargetTag);
+
 private:
 	HWND					m_hWnd = {};
 	ID3D11Device*			m_pDevice = { nullptr };
