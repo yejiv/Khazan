@@ -43,6 +43,7 @@ public:
 	_bool isBlended() { return m_Properties.isBlended; }
 	_bool isInstance() { return m_Properties.isInstance; }
 	_bool isShadow() { return m_Properties.isShadow; }
+	_bool isBackGround() { return m_Properties.isBackGround; }
 
 protected:
 	_tchar m_szModelName[MAX_PATH] = {};

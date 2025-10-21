@@ -7,7 +7,6 @@
 
 NS_BEGIN(Engine)
 class CModel;
-class CTexture;
 NS_END
 
 NS_BEGIN(Editor)
@@ -36,7 +35,6 @@ public:
 
 private:
 	CModel* m_pModelCom = { nullptr };
-	CTexture* m_pTextureCom = { nullptr };
 
 private:
 	HRESULT Ready_Components(void* pArg);

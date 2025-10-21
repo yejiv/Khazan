@@ -184,54 +184,16 @@ void CLevel_Map::Select_Fix_Object(_float fTimeDelta)
 						m_pFixTransformCom = static_cast<CTransform*>(pObject->Get_Component(TEXT("Com_Transform")));
 						CHECK_NULLPTR_MSG(m_pFixTransformCom, TEXT("Fix Transform == nullptr"), );
 
-						m_vResetScale = m_vFixScale = m_pFixTransformCom->Get_Scaled();
+						m_FixBaseMatrix = XMMatrixIdentity();
+
+						ZeroMemory(&m_vFixScale, sizeof(_float3));
+						ZeroMemory(&m_vFixRotation, sizeof(_float3));
+						ZeroMemory(&m_vFixPosition, sizeof(_float3));
+
+						m_vFixScale = m_pFixTransformCom->Get_Scaled();
 						XMStoreFloat3(&m_vFixPosition, m_pFixTransformCom->Get_State(STATE::POSITION));
-						m_vResetPosition = m_vFixPosition;
 
-						_float4x4 WorldMatrix = {};
-						XMStoreFloat4x4(&WorldMatrix, m_pFixTransformCom->Get_WorldMatrix());
-
-						_vector vRight = XMVector3Normalize(XMLoadFloat3(reinterpret_cast<XMFLOAT3*>(&WorldMatrix._11)));
-						_vector vUp = XMVector3Normalize(XMLoadFloat3(reinterpret_cast<XMFLOAT3*>(&WorldMatrix._21)));
-						_vector vLook = XMVector3Normalize(XMLoadFloat3(reinterpret_cast<XMFLOAT3*>(&WorldMatrix._31)));
-
-						_matrix RotationMatrix = {};
-						RotationMatrix.r[0] = XMVectorSetW(vRight, 0.f);
-						RotationMatrix.r[1] = XMVectorSetW(vUp, 0.f);
-						RotationMatrix.r[2] = XMVectorSetW(vLook, 0.f);
-						RotationMatrix.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
-
-						_float4x4 RotMatrix = {};
-						XMStoreFloat4x4(&RotMatrix, RotationMatrix);
-
-						_float fPitch, fYaw, fRoll;
-
-						// Pitch(X)
-						fPitch = atan2f(-RotMatrix._23, RotMatrix._33);
-
-						// Yaw(Y)
-						fYaw = asinf(clamp(RotMatrix._13, -1.f, 1.f));
-
-						// Roll(Z)
-						fRoll = atan2f(-RotMatrix._12, RotMatrix._11);
-
-						// Degree 변환 및 보정
-						m_vFixRotation.x = XMConvertToDegrees(fPitch);
-						m_vFixRotation.y = XMConvertToDegrees(fYaw);
-						m_vFixRotation.z = XMConvertToDegrees(fRoll);
-
-						auto Clamp180 = [](float deg)
-							{
-								while (deg > 180.f) deg -= 360.f;
-								while (deg < -180.f) deg += 360.f;
-								return deg;
-							};
-
-						m_vFixRotation.x = Clamp180(m_vFixRotation.x);
-						m_vFixRotation.y = Clamp180(m_vFixRotation.y);
-						m_vFixRotation.z = Clamp180(m_vFixRotation.z);
-
-						m_vResetRotation = m_vFixRotation;
+						m_FixBaseMatrix = m_FixWorldMatrix = m_pFixTransformCom->Get_WorldMatrix();
 
 						// ======================================================
 						// ======================================================
@@ -350,7 +312,7 @@ HRESULT CLevel_Map::Ready_Main_Window()
 					ImGui::Text("OBJECT SAVE & LOAD");
 					if (ImGui::Button("SAVE")) m_isSaveObjectWindow = !m_isSaveObjectWindow;
 					SAMELINE;
-					if (ImGui::Button("LOAD")) m_isLoadObjectWindow = !m_isLoadObjectWindow;
+					if (false == m_isLoaded && ImGui::Button("LOAD")) m_isLoadObjectWindow = !m_isLoadObjectWindow;
 					SEPARATOR;
 					
 					ImGui::Text("PROP LIST");
@@ -518,7 +480,8 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 			ImGui::Checkbox("COLLIDER", &m_AddObjectProperties.isCollider); SAMELINE;
 			ImGui::Checkbox("BLENDED", &m_AddObjectProperties.isBlended); SAMELINE;
 			ImGui::Checkbox("INSTANCE", &m_AddObjectProperties.isInstance); SEPARATOR;
-			ImGui::Checkbox("SHADOW", &m_AddObjectProperties.isShadow); SEPARATOR;
+			ImGui::Checkbox("SHADOW", &m_AddObjectProperties.isShadow); SAMELINE;
+			ImGui::Checkbox("BACKGROUND", &m_AddObjectProperties.isBackGround); SEPARATOR;
 
 			// 단일 오브젝트 Layer 추가
 			if (false == m_isLightSettingWindow && false == m_isFixObjectWindow && (ImGui::Button("ADD (Y)") || m_pGameInstance->Key_Down(DIK_Y)))
@@ -614,7 +577,6 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				if (0.001f > m_vFixScale.y) m_vFixScale.y = 0.001f;
 				if (0.001f > m_vFixScale.z) m_vFixScale.z = 0.001f;
 
-				m_pFixTransformCom->Scale(m_vFixScale);
 				SEPARATOR;
 				SEPARATOR;
 
@@ -631,8 +593,22 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				_float fPitch = XMConvertToRadians(m_vFixRotation.x);
 				_float fYaw = XMConvertToRadians(m_vFixRotation.y);
 				_float fRoll = XMConvertToRadians(m_vFixRotation.z);
+				
+				_matrix DeltaRotMatirx = XMMatrixRotationZ(fRoll) * XMMatrixRotationX(fPitch) * XMMatrixRotationY(fYaw);
 
-				m_pFixTransformCom->Rotation(fPitch, fYaw, fRoll);
+				_vector vScale = {};
+				_vector vRotation = {};
+				_vector vTranslation = {};
+
+				XMMatrixDecompose(&vScale, &vRotation, &vTranslation, m_FixBaseMatrix);
+
+				_matrix BaseRotMatrix = XMMatrixRotationQuaternion(vRotation);
+
+				_matrix AddRotMatrix = DeltaRotMatirx * BaseRotMatrix;
+
+				_matrix NewWorldMatrix = XMMatrixScaling(m_vFixScale.x, m_vFixScale.y, m_vFixScale.z) * AddRotMatrix * XMMatrixTranslation(m_vFixPosition.x, m_vFixPosition.y, m_vFixPosition.z);
+
+				m_FixWorldMatrix = NewWorldMatrix;
 
 				SEPARATOR;
 				SEPARATOR;
@@ -652,14 +628,24 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 					}
 				}
 
-				ImGui::Text("POS X : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##positionx", &m_vFixPosition.x, 0.1f, 0.5f);
-				ImGui::Text("POS Y : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##positiony", &m_vFixPosition.y, 0.1f, 0.5f);
-				ImGui::Text("POS Z : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##positionz", &m_vFixPosition.z, 0.1f, 0.5f);
+				_float fPosMove = { 0.01f };
 
-				m_pFixTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&m_vFixPosition), 1.f));
+				if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, 0.f)) fPosMove *= 10.f;
+
+				ImGui::Text("POS X : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##positionx", &m_vFixPosition.x, fPosMove, fPosMove * 5.f);
+				ImGui::Text("POS Y : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##positiony", &m_vFixPosition.y, fPosMove, fPosMove * 5.f);
+				ImGui::Text("POS Z : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##positionz", &m_vFixPosition.z, fPosMove, fPosMove * 5.f);
+				
+				m_FixWorldMatrix.r[3] = XMVectorSetW(XMLoadFloat3(&m_vFixPosition), 1.f);
+
+				m_pFixTransformCom->Set_State(STATE::RIGHT, m_FixWorldMatrix.r[0]);
+				m_pFixTransformCom->Set_State(STATE::UP, m_FixWorldMatrix.r[1]);
+				m_pFixTransformCom->Set_State(STATE::LOOK, m_FixWorldMatrix.r[2]);
+				m_pFixTransformCom->Set_State(STATE::POSITION, m_FixWorldMatrix.r[3]);
 
 				SEPARATOR;
 				SEPARATOR;
+
 			}
 
 #pragma region 속성 설정
@@ -681,6 +667,10 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 			SEPARATOR;
 
 			ImGui::Checkbox("SHADOW", &PropProperties.isShadow);
+			SAMELINE;
+
+			ImGui::Checkbox("BACKGROUND", &PropProperties.isBackGround);
+			SEPARATOR;
 
 			m_pFixPropObj->Set_Properties(PropProperties);
 
@@ -691,7 +681,14 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 
 			if (ImGui::Button("DONE") || m_pGameInstance->Key_Down(DIK_RETURN) || m_pGameInstance->Key_Down(DIK_NUMPADENTER))
 			{
+				m_FixBaseMatrix = XMMatrixIdentity();
+
+				ZeroMemory(&m_vFixScale, sizeof(_float3));
+				ZeroMemory(&m_vFixRotation, sizeof(_float3));
+				ZeroMemory(&m_vFixPosition, sizeof(_float3));
+
 				ZeroMemory(m_szModelName, sizeof(m_szModelName));
+
 				m_pFixPropObj = nullptr;
 				m_pFixTransformCom = nullptr;
 				m_isFixObjectWindow = false;
@@ -700,9 +697,16 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 			} SAMELINE;
 			if (ImGui::Button("RESET"))
 			{
-				m_pFixTransformCom->Scale(m_vResetScale);
-				m_pFixTransformCom->Rotation(XMConvertToRadians(m_vResetRotation.x), XMConvertToRadians(m_vResetRotation.y), XMConvertToRadians(m_vResetRotation.z));
-				m_pFixTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&m_vResetPosition), 1.f));
+				m_pFixTransformCom->Set_State(STATE::RIGHT, m_FixBaseMatrix.r[0]);
+				m_pFixTransformCom->Set_State(STATE::UP, m_FixBaseMatrix.r[1]);
+				m_pFixTransformCom->Set_State(STATE::LOOK, m_FixBaseMatrix.r[2]);
+				m_pFixTransformCom->Set_State(STATE::POSITION, m_FixBaseMatrix.r[3]);
+
+				m_FixBaseMatrix = XMMatrixIdentity();
+
+				ZeroMemory(&m_vFixScale, sizeof(_float3));
+				ZeroMemory(&m_vFixRotation, sizeof(_float3));
+				ZeroMemory(&m_vFixPosition, sizeof(_float3));
 
 				ZeroMemory(m_szModelName, sizeof(m_szModelName));
 				m_pFixPropObj = nullptr;
@@ -850,6 +854,10 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				SEPARATOR;
 
 				ImGui::Checkbox("SHADOW", &PropProperties.isShadow);
+				SAMELINE;
+
+				ImGui::Checkbox("BACKGROUND", &PropProperties.isBackGround);
+				SEPARATOR;
 
 				m_ObjectList[m_iObjectListIndex]->Set_Properties(PropProperties);
 
@@ -874,60 +882,22 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 			{
 				if (ImGui::Button("FIX"))
 				{
-					if (nullptr != m_ObjectList[m_iObjectListIndex])
+					if (nullptr != m_ObjectList[m_iObjectListIndex] && false == m_isFixObjectWindow)
 					{
 						m_pFixPropObj = m_ObjectList[m_iObjectListIndex];
 						m_pFixTransformCom = static_cast<CTransform*>(m_ObjectList[m_iObjectListIndex]->Get_Component(TEXT("Com_Transform")));
 						CHECK_NULLPTR_MSG(m_pFixTransformCom, TEXT("Fix Transform == nullptr"), );
 
-						m_vResetScale = m_vFixScale = m_pFixTransformCom->Get_Scaled();
+						m_FixBaseMatrix = XMMatrixIdentity();
+
+						ZeroMemory(&m_vFixScale, sizeof(_float3));
+						ZeroMemory(&m_vFixRotation, sizeof(_float3));
+						ZeroMemory(&m_vFixPosition, sizeof(_float3));
+
+						m_vFixScale = m_pFixTransformCom->Get_Scaled();
 						XMStoreFloat3(&m_vFixPosition, m_pFixTransformCom->Get_State(STATE::POSITION));
-						m_vResetPosition = m_vFixPosition;
 
-						_float4x4 WorldMatrix = {};
-						XMStoreFloat4x4(&WorldMatrix, m_pFixTransformCom->Get_WorldMatrix());
-
-						_vector vRight = XMVector3Normalize(XMLoadFloat3(reinterpret_cast<XMFLOAT3*>(&WorldMatrix._11)));
-						_vector vUp = XMVector3Normalize(XMLoadFloat3(reinterpret_cast<XMFLOAT3*>(&WorldMatrix._21)));
-						_vector vLook = XMVector3Normalize(XMLoadFloat3(reinterpret_cast<XMFLOAT3*>(&WorldMatrix._31)));
-
-						_matrix RotationMatrix = {};
-						RotationMatrix.r[0] = XMVectorSetW(vRight, 0.f);
-						RotationMatrix.r[1] = XMVectorSetW(vUp, 0.f);
-						RotationMatrix.r[2] = XMVectorSetW(vLook, 0.f);
-						RotationMatrix.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
-
-						_float4x4 RotMatrix = {};
-						XMStoreFloat4x4(&RotMatrix, RotationMatrix);
-
-						_float fPitch, fYaw, fRoll;
-
-						// Pitch(X)
-						fPitch = atan2f(-RotMatrix._23, RotMatrix._33);
-
-						// Yaw(Y)
-						fYaw = asinf(clamp(RotMatrix._13, -1.f, 1.f));
-
-						// Roll(Z)
-						fRoll = atan2f(-RotMatrix._12, RotMatrix._11);
-
-						// Degree 변환 및 보정
-						m_vFixRotation.x = XMConvertToDegrees(fPitch);
-						m_vFixRotation.y = XMConvertToDegrees(fYaw);
-						m_vFixRotation.z = XMConvertToDegrees(fRoll);
-
-						auto Clamp180 = [](float deg)
-							{
-								while (deg > 180.f) deg -= 360.f;
-								while (deg < -180.f) deg += 360.f;
-								return deg;
-							};
-
-						m_vFixRotation.x = Clamp180(m_vFixRotation.x);
-						m_vFixRotation.y = Clamp180(m_vFixRotation.y);
-						m_vFixRotation.z = Clamp180(m_vFixRotation.z);
-
-						m_vResetRotation = m_vFixRotation;
+						m_FixBaseMatrix = m_FixWorldMatrix = m_pFixTransformCom->Get_WorldMatrix();
 
 						// ======================================================
 						// ======================================================
@@ -997,44 +967,44 @@ HRESULT CLevel_Map::Ready_Light_Window()
 						XMStoreFloat4(&m_FixLightDesc.vDirection, XMVector3Normalize(XMLoadFloat4(&m_FixLightDesc.vDirection)));
 
 					ImGui::Text("Axis X : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRdirx", &m_FixLightDesc.vDirection.x);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRdirx", &m_FixLightDesc.vDirection.x);
 					ImGui::Text("Axis Y : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRdiry", &m_FixLightDesc.vDirection.y);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRdiry", &m_FixLightDesc.vDirection.y);
 					ImGui::Text("Axis Z : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRdirz", &m_FixLightDesc.vDirection.z);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRdirz", &m_FixLightDesc.vDirection.z);
 					SEPARATOR;
 
 					ImGui::Text("DIFFUSE");
 					ImGui::Text("R : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRdifx", &m_FixLightDesc.vDiffuse.x);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRdifx", &m_FixLightDesc.vDiffuse.x, 0.01f, 0.05f);
 					ImGui::Text("G : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRdify", &m_FixLightDesc.vDiffuse.y);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRdify", &m_FixLightDesc.vDiffuse.y, 0.01f, 0.05f);
 					ImGui::Text("B : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRdifz", &m_FixLightDesc.vDiffuse.z);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRdifz", &m_FixLightDesc.vDiffuse.z, 0.01f, 0.05f);
 					ImGui::Text("A : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRdifw", &m_FixLightDesc.vDiffuse.w);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRdifw", &m_FixLightDesc.vDiffuse.w, 0.01f, 0.05f);
 					SEPARATOR;
 
 					ImGui::Text("AMBIENT");
 					ImGui::Text("R : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRambx", &m_FixLightDesc.vAmbient.x);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRambx", &m_FixLightDesc.vAmbient.x, 0.01f, 0.05f);
 					ImGui::Text("G : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRamby", &m_FixLightDesc.vAmbient.y);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRamby", &m_FixLightDesc.vAmbient.y, 0.01f, 0.05f);
 					ImGui::Text("B : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRambz", &m_FixLightDesc.vAmbient.z);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRambz", &m_FixLightDesc.vAmbient.z, 0.01f, 0.05f);
 					ImGui::Text("A : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRambw", &m_FixLightDesc.vAmbient.w);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRambw", &m_FixLightDesc.vAmbient.w, 0.01f, 0.05f);
 					SEPARATOR;
 
 					ImGui::Text("SPECULAR");
 					ImGui::Text("R : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRspecx", &m_FixLightDesc.vSpecular.x);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRspecx", &m_FixLightDesc.vSpecular.x, 0.01f, 0.05f);
 					ImGui::Text("G : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRspecy", &m_FixLightDesc.vSpecular.y);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRspecy", &m_FixLightDesc.vSpecular.y, 0.01f, 0.05f);
 					ImGui::Text("B : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRspecz", &m_FixLightDesc.vSpecular.z);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRspecz", &m_FixLightDesc.vSpecular.z, 0.01f, 0.05f);
 					ImGui::Text("A : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##DIRspecw", &m_FixLightDesc.vSpecular.w);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRspecw", &m_FixLightDesc.vSpecular.w, 0.01f, 0.05f);
 					SEPARATOR;
 				}
 				else if (LIGHT_DESC::POINT == m_FixLightDesc.eType)
@@ -1044,11 +1014,11 @@ HRESULT CLevel_Map::Ready_Light_Window()
 
 					ImGui::Text("POSITION");
 					ImGui::Text("X : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##POIposx", &m_FixLightDesc.vPosition.x, 1.f, 5.f);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##POIposx", &m_FixLightDesc.vPosition.x, 0.1f, 0.5f);
 					ImGui::Text("Y : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##POIposy", &m_FixLightDesc.vPosition.y, 1.f, 5.f);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##POIposy", &m_FixLightDesc.vPosition.y, 0.1f, 0.5f);
 					ImGui::Text("Z : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##POIposz", &m_FixLightDesc.vPosition.z, 1.f, 5.f);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##POIposz", &m_FixLightDesc.vPosition.z, 0.1f, 0.5f);
 
 					if (true == m_isAddLightPoint)
 					{
@@ -1061,40 +1031,40 @@ HRESULT CLevel_Map::Ready_Light_Window()
 
 					SEPARATOR;
 
-					ImGui::Text("RANGE"); SAMELINE; ITEMWIDTH(80.f); ImGui::InputFloat("##POIrange", &m_FixLightDesc.fRange);
+					ImGui::Text("RANGE"); SAMELINE; ITEMWIDTH(160.f); ImGui::InputFloat("##POIrange", &m_FixLightDesc.fRange, 0.1f, 0.5f);
 					SEPARATOR;
 
 					ImGui::Text("DIFFUSE");
 					ImGui::Text("R : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##POIdifx", &m_FixLightDesc.vDiffuse.x);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##POIdifx", &m_FixLightDesc.vDiffuse.x, 0.01f, 0.05f);
 					ImGui::Text("G : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##POIdify", &m_FixLightDesc.vDiffuse.y);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##POIdify", &m_FixLightDesc.vDiffuse.y, 0.01f, 0.05f);
 					ImGui::Text("B : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##POIdifz", &m_FixLightDesc.vDiffuse.z);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##POIdifz", &m_FixLightDesc.vDiffuse.z, 0.01f, 0.05f);
 					ImGui::Text("A : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##POIdifw", &m_FixLightDesc.vDiffuse.w);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##POIdifw", &m_FixLightDesc.vDiffuse.w, 0.01f, 0.05f);
 					SEPARATOR;
 
 					ImGui::Text("AMBIENT");
 					ImGui::Text("R : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##POIambx", &m_FixLightDesc.vAmbient.x);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##POIambx", &m_FixLightDesc.vAmbient.x, 0.01f, 0.05f);
 					ImGui::Text("G : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##POIamby", &m_FixLightDesc.vAmbient.y);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##POIamby", &m_FixLightDesc.vAmbient.y, 0.01f, 0.05f);
 					ImGui::Text("B : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##POIambz", &m_FixLightDesc.vAmbient.z);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##POIambz", &m_FixLightDesc.vAmbient.z, 0.01f, 0.05f);
 					ImGui::Text("A : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##POIambw", &m_FixLightDesc.vAmbient.w);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##POIambw", &m_FixLightDesc.vAmbient.w, 0.01f, 0.05f);
 					SEPARATOR;
 
 					ImGui::Text("SPECULAR");
 					ImGui::Text("R : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##POIspecx", &m_FixLightDesc.vSpecular.x);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##POIspecx", &m_FixLightDesc.vSpecular.x, 0.01f, 0.05f);
 					ImGui::Text("G : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##POIspecy", &m_FixLightDesc.vSpecular.y);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##POIspecy", &m_FixLightDesc.vSpecular.y, 0.01f, 0.05f);
 					ImGui::Text("B : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##POIspecz", &m_FixLightDesc.vSpecular.z);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##POIspecz", &m_FixLightDesc.vSpecular.z, 0.01f, 0.05f);
 					ImGui::Text("A : "); SAMELINE;
-					ITEMWIDTH(80.f); ImGui::InputFloat("##POIspecw", &m_FixLightDesc.vSpecular.w);
+					ITEMWIDTH(160.f); ImGui::InputFloat("##POIspecw", &m_FixLightDesc.vSpecular.w, 0.01f, 0.05f);
 					SEPARATOR;
 				}
 
@@ -1372,7 +1342,7 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 				else
 				{
 					// 오브젝트 리스트 윈도우 띄우기
-					//m_isLoadObjectWindow = true;
+					m_isPropWindow = true;
 				}
 
 #pragma endregion
@@ -1393,7 +1363,8 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 
 #pragma endregion
 
-
+				m_isLoadObjectWindow = false;
+				m_isLoaded = true;
 			}
 
 			ImGui::End();
@@ -1494,9 +1465,12 @@ void CLevel_Map::Add_Prototype_ByFolder(const _char* pFolderName, _bool isAnim)
 	else
 		strRootPath += "NonAnim/";
 
-	strRootPath += pFolderName;
+	if (strcmp("ALL", pFolderName))
+	{
+		strRootPath += pFolderName;
 
-	strRootPath += '/';
+		strRootPath += '/';
+	}
 
 	try
 	{
@@ -1868,7 +1842,7 @@ _bool CLevel_Map::Prototypes_Load_Binary()
 			_char szModelPath[MAX_PATH] = {};
 			CHECK_FALSE(ReadFile(hFile, &szModelPath, sizeof(_char) * iModelPathLen, &dwByte, nullptr), false);
 
-			// Prototype_Component_Model_ 자르기 시작
+			// Prototype_Component_Model_ 자르기 시작 ( 에디터에서 보기 편하게 태그 제거 )
 			_wstring strFullPrototypeTag = szPrototypeTag;
 			_wstring strPreFix = { TEXT("Prototype_Component_Model_") };
 
@@ -1995,7 +1969,7 @@ _bool CLevel_Map::Objects_Load_Binary()
 		// 불러온 태그 카피
 		memcpy(ObjectDesc.szModelName, szPrototypeTag, sizeof(ObjectDesc.szModelName));
 
-		// Prototype_Component_Model_ 자르기 시작
+		// Prototype_Component_Model_ 자르기 시작 ( 에디터에서 보기 편하게 태그 제거 )
 		_wstring strFullPrototypeTag = ObjectDesc.szModelName;
 		_wstring strPreFix = { TEXT("Prototype_Component_Model_") };
 
