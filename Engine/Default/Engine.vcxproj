@@ -177,6 +177,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\AI_Controller.cpp" />
     <ClCompile Include="..\Private\AI_State.cpp" />
     <ClCompile Include="..\private\Animation.cpp" />
+    <ClCompile Include="..\private\AnimationTransitionManager.cpp" />
     <ClCompile Include="..\Private\Base.cpp" />
     <ClCompile Include="..\Private\BehaviorTree.cpp" />
     <ClCompile Include="..\Private\BlackBoard.cpp" />
@@ -275,6 +276,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\AI_Controller.h" />
     <ClInclude Include="..\Public\AI_State.h" />
     <ClInclude Include="..\public\Animation.h" />
+    <ClInclude Include="..\public\AnimationTransitionManager.h" />
     <ClInclude Include="..\Public\Base.h" />
     <ClInclude Include="..\Public\BehaviorTree.h" />
     <ClInclude Include="..\Public\BlackBoard.h" />

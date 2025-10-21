@@ -213,7 +213,7 @@ void CAnimationTool::OpenModel_Widget()
         }
     if (bDisabled) ImGui::EndDisabled();
 
-    ImGui::Spacing();
+    ImGui::Spacing();   ImGui::Separator();    ImGui::Spacing();
 
     // 로드된 모델 목록
     ImGui::SeparatorText("Loaded Models");
@@ -247,6 +247,50 @@ void CAnimationTool::OpenModel_Widget()
         }
         if (bRemoveDisabled)  ImGui::EndDisabled();
     }
+
+
+    ImGui::Spacing();   ImGui::Separator();    ImGui::Spacing();
+
+
+    ImGui::SeparatorText("Update Data ( fixed .json -> dat )");
+    if (ImGui::Button("Browse Model File....", ImVec2(200, 0)))
+    {
+        _char savedDir[MAX_PATH];
+        GetCurrentDirectoryA(MAX_PATH, savedDir);
+
+        OPENFILENAMEA ofn;
+        char szFile[260] = { 0 };
+
+        ZeroMemory(&ofn, sizeof(ofn));
+        ofn.lStructSize = sizeof(ofn);
+        ofn.hwndOwner = NULL;
+        ofn.lpstrFile = szFile;
+        ofn.nMaxFile = sizeof(szFile);
+        ofn.lpstrFilter = "FBX Files\0*.dat\0All Files\0*.*\0";
+        ofn.nFilterIndex = 1;
+        ofn.lpstrFileTitle = NULL;
+        ofn.nMaxFileTitle = 0;
+        ofn.lpstrInitialDir = "../../../Client/Bin/Data/";
+        ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+        if (GetOpenFileNameA(&ofn) == TRUE)
+        {
+            string absolutePath = szFile;
+
+            string relativePath = ConvertToClientRelativePath(absolutePath);
+
+            Update_DataModel(relativePath);
+        }
+
+        SetCurrentDirectoryA(savedDir);
+    }
+    /* 설명  */
+    ImGui::TextWrapped("Select a .dat file to update it with modified JSON files.");
+    ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f),
+        "This will merge changes from _Anim.json, _Summary_Anim.json, and _Material.json back into the .dat file.");
+
+    ImGui::Spacing();   ImGui::Separator();    ImGui::Spacing();
+
 }
 
 void CAnimationTool::Tool_Export_Update_Widget()
@@ -309,7 +353,7 @@ void CAnimationTool::Tool_Export_Update_Widget()
         ImGui::Spacing();
 
         // ===== Update DAT From JSON 버튼 =====
-        if (ImGui::Button("Update DAT From JSON", ImVec2(200, 25)))
+        if (ImGui::Button("Update DAT From JSON ( Apply Model !! )", ImVec2(200, 25)))
         {
             _char savedDir[MAX_PATH];
             GetCurrentDirectoryA(MAX_PATH, savedDir);
@@ -326,7 +370,7 @@ void CAnimationTool::Tool_Export_Update_Widget()
             ofn.hwndOwner = NULL;
             ofn.lpstrFile = szFile;
             ofn.nMaxFile = sizeof(szFile);
-            ofn.lpstrFilter = "Model Files\0*.model\0All Files\0*.*\0";
+            ofn.lpstrFilter = "Model Files\0*.dat\0All Files\0*.*\0";
             ofn.nFilterIndex = 1;
             ofn.lpstrInitialDir = "../../Client/Bin/Data/";
             ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
@@ -334,7 +378,7 @@ void CAnimationTool::Tool_Export_Update_Widget()
             if (GetOpenFileNameA(&ofn) == TRUE)
             {
                 string absolutePath = szFile;
-                string savePath = ConvertToClientRelativePath(absolutePath);
+                string savePath = ConvertToRelativePath(absolutePath);
 
                 m_GameObjects[m_iSelectedIndex]->get_Model()->Update_DAT_From_JSON(savePath);
             }
@@ -342,11 +386,44 @@ void CAnimationTool::Tool_Export_Update_Widget()
             SetCurrentDirectoryA(savedDir);
         }
 
+
+        // ===== Road Data  버튼 =====
+        if (ImGui::Button(" Load Model Data (.dat)", ImVec2(200, 25)))
+        {
+            _char savedDir[MAX_PATH];
+            GetCurrentDirectoryA(MAX_PATH, savedDir);
+
+            OPENFILENAMEA ofn;
+            _char szFile[260] = { 0 };
+
+            // 기본 파일명
+            string defaultName = WStringToAnsi(m_ObjectNames[m_iSelectedIndex]);
+            strcpy_s(szFile, defaultName.c_str());
+
+            ZeroMemory(&ofn, sizeof(ofn));
+            ofn.lStructSize = sizeof(ofn);
+            ofn.hwndOwner = NULL;
+            ofn.lpstrFile = szFile;
+            ofn.nMaxFile = sizeof(szFile);
+            ofn.lpstrFilter = "Model Files\0*.dat\0All Files\0*.*\0";
+            ofn.nFilterIndex = 1;
+            ofn.lpstrInitialDir = "../../Client/Bin/Data/";
+            ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+            if (GetOpenFileNameA(&ofn) == TRUE)
+            {
+                string absolutePath = szFile;
+                string savePath = ConvertToRelativePath(absolutePath);
+
+                m_GameObjects[m_iSelectedIndex]->get_Model()->LoadModel(savePath);
+            }
+
+            SetCurrentDirectoryA(savedDir);
+        }
         if (ImGui::IsItemHovered())
         {
-            ImGui::SetTooltip("Save to: Client/Bin/Data/");
+            ImGui::SetTooltip("Load .dat file after exporting model");
         }
-
         ImGui::EndDisabled();
 
         ImGui::Spacing();
@@ -811,10 +888,6 @@ void CAnimationTool::Tool_AnimationInfo_Widget()
         if (setup->isEvent)
         {
             ImGui::Indent();
-
-            ImGui::Checkbox("isTriggerOnce", &setup->isTriggerOnce);
-            ImGui::Checkbox("isTriggerOnExit", &setup->isTriggerOnExit);
-
             ImGui::Text("Events: %d", (_int)setup->vecEventKeys.size());
 
             for (size_t i = 0; i < setup->vecEventKeys.size(); ++i)
@@ -843,6 +916,53 @@ void CAnimationTool::Tool_AnimationInfo_Widget()
                     ImGui::SameLine();
                     ImGui::SetNextItemWidth(150);
                     ImGui::DragFloat("##eventEnd", &setup->vecEventFrames[i].y, 0.1f, 0.0f, animData->fDuration, "%.5f");
+
+
+                    // 트리거 상태 표시
+                    _uint& trigger = setup->vecEventTriggers[i];
+
+                    // 트리거 버튼 정보 배열
+                    struct TriggerButton {
+                        const char* label;
+                        int bit;
+                        float width;
+                    };
+
+                    TriggerButton buttons[] = {
+                        {"[Once]", 0, 60.f},
+                        {"[OnEnter]", 1, 70.f},
+                        {"[OnExit]", 2, 70.f},
+                        {"[Continuous]", 3, 90.f}
+                    };
+
+                    for (int j = 0; j < 4; ++j)
+                    {
+                       // bool isActive = (trigger & (1 << buttons[j].bit)) != 0;
+
+                        string buttonLabel = buttons[j].label;
+
+                        if (ImGui::Button(buttonLabel.c_str(), ImVec2(buttons[j].width, 0.f)))
+                        {
+                            trigger ^= (1 << buttons[j].bit);  // XOR로 비트 토글
+                        }
+
+                        if (j < 3) ImGui::SameLine();
+                    }
+
+                    ImGui::Spacing();
+
+                    // 현재 트리거 상태 표시
+                    ImGui::Text("Triggers: ");
+                    ImGui::SameLine();
+                    string triggerStr;
+                    if (trigger & (1 << 0)) triggerStr += "[Once] ";
+                    if (trigger & (1 << 1)) triggerStr += "[Enter] ";
+                    if (trigger & (1 << 2)) triggerStr += "[Exit] ";
+                    if (trigger & (1 << 3)) triggerStr += "[Continuous] ";
+                    if (triggerStr.empty()) triggerStr = "None";
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", triggerStr.c_str());
+
+
 
                     if (ImGui::Button("Remove Event", ImVec2(150, 0)))
                     {
@@ -931,34 +1051,108 @@ void CAnimationTool::Tool_MakeAnimEvent_Widget()
         m_vTempFrames.y = 0.f;
     }
 
-    ImGui::Text("Frame Key : %s", m_szEventKeyInputText);
-    ImGui::Text("Frame X : %.5f", m_vTempFrames.x);
-    ImGui::Text("Frame Y : %.5f", m_vTempFrames.y);
+    //CEditor_Model* pModel = m_GameObjects[m_iSelectedIndex]->get_Model()->Get_ModelData()->vecAnimation[m_iSelectedAnimIndex]->animSetup;
+    //MODEL_DATA* modelData = pModel->Get_ModelData();
+    //ANIMATION_DATA* animData = &modelData->vecAnimation[m_iSelectedAnimIndex];
+    //ANIMATION_SETUP_DATA* setup = m_GameObjects[m_iSelectedIndex]->get_Model()->Get_CurAnimSet();
 
-    if (ImGui::Button("Vector Frame Data Store"))
+    ImGui::Checkbox("isTriggerOnce", &m_isTriggerOnce); ImGui::SameLine();
+    ImGui::Checkbox("isTriggerOnEnter", &m_isTriggerOnEnter); ImGui::SameLine();
+    ImGui::Checkbox("isTriggerOnExit", &m_isTriggerOnExit); ImGui::SameLine();
+    ImGui::Checkbox("isTriggerContinuous", &m_isTriggerContinuous);
+
+    // ===== 현재 설정 정보 =====
+    ImGui::BeginChild("CurrentEventInfo", ImVec2(0, 80), true);
+    {
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "Current Event Setup:");
+        ImGui::Text("Event Key: %s", m_szEventKeyInputText);
+        ImGui::Text("Frame X: %.5f, Frame Y: %.5f", m_vTempFrames.x, m_vTempFrames.y);
+
+        // 트리거 상태 표시
+        ImGui::Text("Triggers: ");
+        ImGui::SameLine();
+        string triggerStr;
+        if (m_isTriggerOnce) triggerStr += "[Once] ";
+        if (m_isTriggerOnEnter) triggerStr += "[Enter] ";
+        if (m_isTriggerOnExit) triggerStr += "[Exit] ";
+        if (m_isTriggerContinuous) triggerStr += "[Continuous] ";
+        if (triggerStr.empty()) triggerStr = "None";
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", triggerStr.c_str());
+    }
+    ImGui::EndChild();
+
+
+    if (ImGui::Button("Add Event to List"))
     {
         m_vecEventFrames.emplace_back(m_vTempFrames);
         m_vecEventKeys.emplace_back(string(m_szEventKeyInputText));
 
         m_vTempFrames.x = 0.f;
         m_vTempFrames.y = 0.f;
+
+        _uint   iTrigger = {};
+        if (m_isTriggerOnce)iTrigger += (1 << 0);
+        if (m_isTriggerOnEnter)iTrigger += (1 << 1);
+        if (m_isTriggerOnExit)iTrigger += (1 << 2);
+        if (m_isTriggerContinuous)iTrigger += (1 << 3);
+        m_vecTriggers.emplace_back(iTrigger);
     }
 
     ImGui::Spacing();
-    ImGui::Text("Event List");
-    ImGui::BeginChild("EventList", ImVec2(0, 150), true);
+    ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Event List (%d)", (_int)m_vecEventFrames.size());
+    ImGui::BeginChild("EventList", ImVec2(0, 200), true);
     {
         for (_int i = 0; i < (_int)m_vecEventFrames.size(); ++i)
         {
             const _bool isSelected = (m_iAnimSliderListSelectedIndex == i);
 
-            // 각 항목을 Selectable로 표시
-            string label = "[" + to_string(i) + "] " + m_vecEventKeys[i] +
-                " (X:" + to_string(m_vecEventFrames[i].x) +
-                ", Y:" + to_string(m_vecEventFrames[i].y) + ")";
+            ImGui::PushID(i);
+
+            // 트리거 플래그 파싱
+            _uint trigger = m_vecTriggers[i];
+            string triggerText;
+            ImVec4 triggerColor = ImVec4(0.7f, 0.7f, 0.7f, 1.0f);
+
+            if (trigger & (1 << 0)) { // Once
+                triggerText += "[Once]";
+                triggerColor = ImVec4(1.0f, 0.5f, 0.0f, 1.0f);
+            }
+            if (trigger & (1 << 1)) { // Enter
+                if (!triggerText.empty()) triggerText += " ";
+                triggerText += "[Enter]";
+                triggerColor = ImVec4(0.0f, 1.0f, 0.5f, 1.0f);
+            }
+            if (trigger & (1 << 2)) { // Exit
+                if (!triggerText.empty()) triggerText += " ";
+                triggerText += "[Exit]";
+                triggerColor = ImVec4(1.0f, 0.0f, 0.5f, 1.0f);
+            }
+            if (trigger & (1 << 3)) { // Continuous
+                if (!triggerText.empty()) triggerText += " ";
+                triggerText += "[Cont]";
+                triggerColor = ImVec4(0.5f, 0.5f, 1.0f, 1.0f);
+            }
+            if (triggerText.empty()) {
+                triggerText = "[None]";
+            }
+
+            // 이벤트 정보 라벨
+            string label = "[" + to_string(i) + "] " + m_vecEventKeys[i];
 
             if (ImGui::Selectable(label.c_str(), isSelected))
+            {
                 m_iAnimSliderListSelectedIndex = i;
+            }
+
+            // 같은 줄에 프레임과 트리거 정보 표시
+            ImGui::SameLine(250);
+            ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f),
+                "X:%.3f Y:%.3f", m_vecEventFrames[i].x, m_vecEventFrames[i].y);
+
+            ImGui::SameLine(350);
+            ImGui::TextColored(triggerColor, "%s", triggerText.c_str());
+
+            ImGui::PopID();
         }
     }
     ImGui::EndChild();
@@ -971,6 +1165,7 @@ void CAnimationTool::Tool_MakeAnimEvent_Widget()
         {
             m_vecEventFrames.erase(m_vecEventFrames.begin() + m_iAnimSliderListSelectedIndex);
             m_vecEventKeys.erase(m_vecEventKeys.begin() + m_iAnimSliderListSelectedIndex);
+            m_vecTriggers.erase(m_vecTriggers.begin() + m_iAnimSliderListSelectedIndex);
             m_iAnimSliderListSelectedIndex = -1;
         }
     }
@@ -980,14 +1175,17 @@ void CAnimationTool::Tool_MakeAnimEvent_Widget()
     // 모델 데이터에 저장
     if (ImGui::Button("Save to Real Model Data", ImVec2(200, 25)))
     {
-        MODEL_DATA* data = m_GameObjects[m_iSelectedIndex]->get_Model()->Get_ModelData();
-        data->vecAnimation[m_iSelectedAnimIndex].animSetup.vecEventFrames = m_vecEventFrames;
-        data->vecAnimation[m_iSelectedAnimIndex].animSetup.vecEventKeys = m_vecEventKeys;
-        data->vecAnimation[m_iSelectedAnimIndex].animSetup.isEvent = true;
+        //MODEL_DATA* data = m_GameObjects[m_iSelectedIndex]->get_Model()->Get_ModelData();
+        ANIMATION_SETUP_DATA* data = m_GameObjects[m_iSelectedIndex]->get_Model()->Get_CurAnimSet();
+        data->vecEventFrames = m_vecEventFrames;
+        data->vecEventKeys = m_vecEventKeys;
+        data->vecEventTriggers = m_vecTriggers;
+        data->isEvent = true;
 
         // 저장 후 초기화
         m_vecEventFrames.clear();
         m_vecEventKeys.clear();
+        m_vecTriggers.clear();
         m_iAnimSliderListSelectedIndex = -1;
     }
 }
@@ -1212,6 +1410,143 @@ void CAnimationTool::Remove_Model()
     m_ObjectNames.erase(m_ObjectNames.begin() + m_iSelectedIndex);
 
     m_iSelectedIndex = -1;
+}
+
+void CAnimationTool::Update_DataModel(const string& strPath)
+{
+
+    /* 현재 실행파일 저장 */
+    _char savedDir[MAX_PATH];
+    GetCurrentDirectoryA(MAX_PATH, savedDir);
+
+    /* 실행파일 위치 Client/default 로 고정  */
+    _char exePath[MAX_PATH];
+    GetModuleFileNameA(NULL, exePath, MAX_PATH);
+    filesystem::path exeDir = filesystem::path(exePath).parent_path();
+    //OutputDebugStringA(("[Editor.exe Dir] " + exeDir.string() + "\n").c_str());
+
+    filesystem::path editorDefaultDir = exeDir.parent_path().parent_path() / "Default";
+    //OutputDebugStringA(("[Editor Default Dir] " + editorDefaultDir.string() + "\n").c_str());
+
+    filesystem::path clientDefaultDir = editorDefaultDir.parent_path().parent_path() / "Client" / "Default";
+    // OutputDebugStringA(("[Client Default] " + clientDefaultDir.string() + "\n").c_str());
+
+    SetCurrentDirectoryA(clientDefaultDir.string().c_str());
+
+    filesystem::path fullPath(strPath);
+    string strDirectory = fullPath.parent_path().string() + "/";
+    string strFileName = fullPath.stem().string();  // 확장자 제외
+
+    // 모델 폴더 경로
+    //string strModelFolder = strDirectory + "/" + strFileName + "/";
+
+    // 파일 경로 생성
+    string strDatPath = strDirectory + strFileName + ".dat";
+    string strAnimJsonPath = strDirectory + strFileName + "_Anim.json";
+    string strAnimSummaryJsonPath = strDirectory + strFileName + "_Summary_Anim.json";
+    string strMaterialJsonPath = strDirectory + strFileName + "_Material.json";
+
+    // .dat 파일 존재 확인
+    if (!filesystem::exists(strDirectory))
+    {
+        _tchar szMessage[MAX_PATH] = {};
+        swprintf_s(szMessage, TEXT(".dat 파일이 존재하지 않습니다!\n경로: %S"),
+            strDatPath.c_str());
+        MessageBox(nullptr, szMessage, TEXT("Error"), MB_OK | MB_ICONERROR);
+        return;
+    }
+
+    MODEL_DATA tempModelData;
+
+    // 1. 기존 .dat 파일 로드
+    {
+        ifstream ifs(strDatPath, ios::binary);
+        if (!ifs.is_open())
+        {
+            MSG_BOX(TEXT(".dat 파일 열기 실패"));
+            return;
+        }
+        tempModelData.LoadBinary(ifs);
+        ifs.close();
+    }
+
+    // 2. Animation JSON 로드 (파일이 있으면)
+    if (filesystem::exists(strAnimJsonPath))
+    {
+        ifstream ifs(strAnimJsonPath);
+        if (!ifs.is_open())
+        {
+            MSG_BOX(TEXT("Animation JSON 파일 열기 실패"));
+            return;
+        }
+
+        JSON j;
+        ifs >> j;
+        ifs.close();
+
+        // 애니메이션 교체
+        tempModelData.vecAnimation = j.get<vector<ANIMATION_DATA>>();
+        tempModelData.iNumAnimations = static_cast<_uint>(tempModelData.vecAnimation.size());
+    }
+
+    // 3. Summary Animation JSON 로드 (파일이 있으면)
+    if (filesystem::exists(strAnimSummaryJsonPath))
+    {
+        ifstream ifs(strAnimSummaryJsonPath);
+        if (!ifs.is_open())
+        {
+            MSG_BOX(TEXT("Summary Animation JSON 파일 열기 실패"));
+            return;
+        }
+
+        JSON j;
+        ifs >> j;
+        ifs.close();
+
+        // 애니메이션 세트 교체
+        tempModelData.vecAnimationSets = j.get<ANIMATION_SUMMARIES_DATA>().vecAnimationSets;
+    }
+
+
+    // 4. Material JSON 로드 (파일이 있으면)
+    if (filesystem::exists(strMaterialJsonPath))
+    {
+        ifstream ifs(strMaterialJsonPath);
+        if (!ifs.is_open())
+        {
+            MSG_BOX(TEXT("Material JSON 파일 열기 실패"));
+            return;
+        }
+
+        JSON j;
+        ifs >> j;
+        ifs.close();
+
+        // 머티리얼 교체
+        tempModelData.vecMaterials = j.get<vector<MATERIAL_DATA>>();
+        tempModelData.iNumMaterials = static_cast<_uint>(tempModelData.vecMaterials.size());
+    }
+
+    // 4. 업데이트된 데이터를 .dat에 다시 저장
+    {
+        ofstream ofs(strDatPath, ios::binary);
+        if (!ofs.is_open())
+        {
+            MSG_BOX(TEXT(".dat 파일 쓰기 실패"));
+            return;
+        }
+        tempModelData.SaveBinary(ofs);
+        ofs.close();
+    }
+
+    // 성공 메시지
+    _tchar szMessage[MAX_PATH] = {};
+    swprintf_s(szMessage, TEXT(".dat 파일 업데이트 완료!\n\n폴더: %S\n파일: %S.dat"),
+        strDirectory.c_str(), strFileName.c_str());
+    MessageBox(nullptr, szMessage, TEXT("Success"), MB_OK | MB_ICONINFORMATION);
+
+    //실행파일 위치 복귀
+    SetCurrentDirectoryA(savedDir);
 }
 
 string CAnimationTool::ConvertToRelativePath(const string& absolutePath)

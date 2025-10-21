@@ -115,6 +115,37 @@ _bool CPicking::isPicked(_float3* pOut, _uint* iObjectID)
     return true;
 }
 
+_float4 CPicking::isPickRenderTargetPixel(_wstring strRenderTargetTag)
+{
+    if (FAILED(m_pGameInstance->Copy_RT_Resource(strRenderTargetTag, m_pTexture2D)))
+        return _float4(0.f, 0.f, 0.f, 0.f);
+
+    D3D11_MAPPED_SUBRESOURCE        SubResource{};
+    if (FAILED(m_pContext->Map(m_pTexture2D, 0, D3D11_MAP_READ, 0, &SubResource)))
+        return _float4(0.f, 0.f, 0.f, 0.f);
+
+    memcpy(m_pPixels, SubResource.pData, sizeof(_float4) * m_iWinSizeX * m_iWinSizeY);
+
+    m_pContext->Unmap(m_pTexture2D, 0);
+
+    GetCursorPos(&m_ptMouse);
+    ScreenToClient(m_hWnd, &m_ptMouse);
+
+    // 화면밖으로 나가있을때 피킹 예외처리
+    if (0 > m_ptMouse.x || static_cast<_long>(m_iWinSizeX) < m_ptMouse.x || 0 > m_ptMouse.y || static_cast<_long>(m_iWinSizeY) < m_ptMouse.y)
+    {
+        MSG_BOX(TEXT("화면 밖입니다."));
+
+        return _float4(0.f, 0.f, 0.f, 0.f);
+    }
+
+    _uint       iIndex = m_ptMouse.y * m_iWinSizeX + m_ptMouse.x;
+
+    _float4     vPixel = { m_pPixels[iIndex].x, m_pPixels[iIndex].y, m_pPixels[iIndex].z, m_pPixels[iIndex].w };
+
+    return vPixel;
+}
+
 CPicking* CPicking::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, HWND hWnd, _uint iWinSizeX, _uint iWinSizeY)
 {
     CPicking* pInstance = new CPicking(pDevice, pContext);

@@ -295,6 +295,9 @@
     <Filter Include="01.Utility\95.AI\Controller">
       <UniqueIdentifier>{0852f827-122b-49e9-a52b-a6ef29e6a352}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Component\Model\Manager">
+      <UniqueIdentifier>{49e1f034-2450-4ae5-ac04-70146ca4a622}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -572,6 +575,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\AI_Controller.cpp">
       <Filter>01.Utility\95.AI\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AnimationTransitionManager.cpp">
+      <Filter>01.Utility\03.Component\Model\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -880,6 +886,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\AI_Controller.h">
       <Filter>01.Utility\95.AI\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AnimationTransitionManager.h">
+      <Filter>01.Utility\03.Component\Model\Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
