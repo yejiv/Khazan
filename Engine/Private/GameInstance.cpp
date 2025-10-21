@@ -760,21 +760,17 @@ HRESULT CGameInstance::Add_PoolObject(_uint iPrototypeLevelIndex, const _wstring
 {
 	return m_pPool_Manager->Add_PoolObject(iPrototypeLevelIndex, strPrototypeTag, strPoolTag, pArg, iCount);
 }
-CPool* CGameInstance::Pop_PoolObject(const _wstring& strPoolTag)
+CGameObject* CGameInstance::Pop_PoolObject(const _wstring& strPoolTag)
 {
 	return m_pPool_Manager->Pop_PoolObject(strPoolTag);
-}
-HRESULT CGameInstance::Reset_PoolObject(CPool* pPoolObject)
-{
-	return m_pPool_Manager->Reset_PoolObject(pPoolObject);
 }
 HRESULT CGameInstance::Reset_PoolObject(CGameObject* pGameObject)
 {
 	return m_pPool_Manager->Reset_PoolObject(pGameObject);
 }
-void CGameInstance::Push_PoolObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CPool* pPoolObject)
+void CGameInstance::Push_PoolObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CGameObject* pGameObject)
 {
-	m_pPool_Manager->Push_PoolObject_ToLayer(iLayerLevelIndex, strLayerTag, pPoolObject);
+	m_pPool_Manager->Push_PoolObject_ToLayer(iLayerLevelIndex, strLayerTag, pGameObject);
 }
 #pragma endregion
 

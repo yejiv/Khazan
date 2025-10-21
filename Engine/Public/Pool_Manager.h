@@ -12,20 +12,19 @@ private:
 
 public:
 	HRESULT Add_PoolObject(_uint iPrototypeLevelIndex, const _wstring strPrototypeTag, const _wstring& strPoolTag, void* pArg, _uint iCount = 1);
-	class CPool* Pop_PoolObject(const _wstring& strPoolTag);
-	HRESULT Reset_PoolObject(class CPool* pPoolObject);
+	class CGameObject* Pop_PoolObject(const _wstring& strPoolTag);
 	HRESULT Reset_PoolObject(class CGameObject* pGameObject);
 
-	void Push_PoolObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CPool* pPoolObject);
+	void Push_PoolObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CGameObject* pGameObject);
 
 	void Clear();
 
 private:
 	class CGameInstance* m_pGameInstance = { nullptr };
-	map<const _wstring, deque<class CPool*>>			m_Pools;
+	map<const _wstring, deque<class CGameObject*>>			m_Pools;
 
 private:
-	deque<class CPool*>* Find_Pool(const _wstring& strPoolTag);
+	deque<class CGameObject*>* Find_Pool(const _wstring& strPoolTag);
 
 public:
 	static CPool_Manager* Create();
