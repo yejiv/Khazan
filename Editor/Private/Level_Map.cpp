@@ -518,6 +518,7 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 			ImGui::Checkbox("COLLIDER", &m_AddObjectProperties.isCollider); SAMELINE;
 			ImGui::Checkbox("BLENDED", &m_AddObjectProperties.isBlended); SAMELINE;
 			ImGui::Checkbox("INSTANCE", &m_AddObjectProperties.isInstance); SEPARATOR;
+			ImGui::Checkbox("SHADOW", &m_AddObjectProperties.isShadow); SEPARATOR;
 
 			// 단일 오브젝트 Layer 추가
 			if (false == m_isLightSettingWindow && false == m_isFixObjectWindow && (ImGui::Button("ADD (Y)") || m_pGameInstance->Key_Down(DIK_Y)))
@@ -677,6 +678,9 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 			SAMELINE;
 
 			ImGui::Checkbox("INSTANCE", &PropProperties.isInstance);
+			SEPARATOR;
+
+			ImGui::Checkbox("SHADOW", &PropProperties.isShadow);
 
 			m_pFixPropObj->Set_Properties(PropProperties);
 
@@ -843,6 +847,9 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				SAMELINE;
 
 				ImGui::Checkbox("INSTANCE", &PropProperties.isInstance);
+				SEPARATOR;
+
+				ImGui::Checkbox("SHADOW", &PropProperties.isShadow);
 
 				m_ObjectList[m_iObjectListIndex]->Set_Properties(PropProperties);
 
@@ -873,31 +880,59 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 						m_pFixTransformCom = static_cast<CTransform*>(m_ObjectList[m_iObjectListIndex]->Get_Component(TEXT("Com_Transform")));
 						CHECK_NULLPTR_MSG(m_pFixTransformCom, TEXT("Fix Transform == nullptr"), );
 
-						m_vFixScale = m_pFixTransformCom->Get_Scaled();
+						m_vResetScale = m_vFixScale = m_pFixTransformCom->Get_Scaled();
 						XMStoreFloat3(&m_vFixPosition, m_pFixTransformCom->Get_State(STATE::POSITION));
+						m_vResetPosition = m_vFixPosition;
 
-						_vector vScale = {};
-						_vector vQuaternion = {};
-						_vector vTranslation = {};
+						_float4x4 WorldMatrix = {};
+						XMStoreFloat4x4(&WorldMatrix, m_pFixTransformCom->Get_WorldMatrix());
 
-						XMMatrixDecompose(&vScale, &vQuaternion, &vTranslation, m_pFixTransformCom->Get_WorldMatrix());
+						_vector vRight = XMVector3Normalize(XMLoadFloat3(reinterpret_cast<XMFLOAT3*>(&WorldMatrix._11)));
+						_vector vUp = XMVector3Normalize(XMLoadFloat3(reinterpret_cast<XMFLOAT3*>(&WorldMatrix._21)));
+						_vector vLook = XMVector3Normalize(XMLoadFloat3(reinterpret_cast<XMFLOAT3*>(&WorldMatrix._31)));
 
-						_matrix RotationMatrix = XMMatrixRotationQuaternion(vQuaternion);
+						_matrix RotationMatrix = {};
+						RotationMatrix.r[0] = XMVectorSetW(vRight, 0.f);
+						RotationMatrix.r[1] = XMVectorSetW(vUp, 0.f);
+						RotationMatrix.r[2] = XMVectorSetW(vLook, 0.f);
+						RotationMatrix.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
-						_float3 vDegree = {};
+						_float4x4 RotMatrix = {};
+						XMStoreFloat4x4(&RotMatrix, RotationMatrix);
 
-						vDegree.x = atan2f(RotationMatrix.r[2].m128_f32[1], RotationMatrix.r[2].m128_f32[2]);
-						vDegree.y = asinf(RotationMatrix.r[2].m128_f32[0]);
-						vDegree.z = atan2f(RotationMatrix.r[1].m128_f32[0], RotationMatrix.r[0].m128_f32[0]);
+						_float fPitch, fYaw, fRoll;
 
-						vDegree.x = XMConvertToDegrees(vDegree.x);
-						vDegree.y = XMConvertToDegrees(vDegree.y);
-						vDegree.z = XMConvertToDegrees(vDegree.z);
+						// Pitch(X)
+						fPitch = atan2f(-RotMatrix._23, RotMatrix._33);
 
-						m_vFixRotation = vDegree;
+						// Yaw(Y)
+						fYaw = asinf(clamp(RotMatrix._13, -1.f, 1.f));
+
+						// Roll(Z)
+						fRoll = atan2f(-RotMatrix._12, RotMatrix._11);
+
+						// Degree 변환 및 보정
+						m_vFixRotation.x = XMConvertToDegrees(fPitch);
+						m_vFixRotation.y = XMConvertToDegrees(fYaw);
+						m_vFixRotation.z = XMConvertToDegrees(fRoll);
+
+						auto Clamp180 = [](float deg)
+							{
+								while (deg > 180.f) deg -= 360.f;
+								while (deg < -180.f) deg += 360.f;
+								return deg;
+							};
+
+						m_vFixRotation.x = Clamp180(m_vFixRotation.x);
+						m_vFixRotation.y = Clamp180(m_vFixRotation.y);
+						m_vFixRotation.z = Clamp180(m_vFixRotation.z);
+
+						m_vResetRotation = m_vFixRotation;
+
+						// ======================================================
+						// ======================================================
 
 						m_isFixObjectWindow = true;
-						
 						m_eFixType = FIX_OBJECT::FIX;
 					}
 				}

@@ -42,6 +42,7 @@ public:
 	_bool isCollider() { return m_Properties.isCollider; }
 	_bool isBlended() { return m_Properties.isBlended; }
 	_bool isInstance() { return m_Properties.isInstance; }
+	_bool isShadow() { return m_Properties.isShadow; }
 
 protected:
 	_tchar m_szModelName[MAX_PATH] = {};

@@ -72,6 +72,7 @@ namespace Engine
 		bool isCollider{ false };
 		bool isBlended{ false };
 		bool isInstance{ false };
+		bool isShadow{ false };
 
 	}MAPOBJECT_PROPERTIES;
 
