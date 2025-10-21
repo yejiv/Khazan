@@ -19,6 +19,7 @@ namespace Engine
 	enum class MOUSEMOVESTATE {	X, Y, WHEEL, END };
 	enum class POOLSTATUS { WAIT, RESET, END};
 	enum class COMPUTEJOB { UPDATE, POSTPROCESS, END };
+	enum class INPUT_TYPE { GAMEPLAY, UI, END };
 	//enum class ANIM_DIRECTION { 
 	//	NONE = 0,
 	//	F, B, L, R, U, D,

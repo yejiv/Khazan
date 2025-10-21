@@ -175,6 +175,27 @@
     <Filter Include="02.GameObject\Shader\Player">
       <UniqueIdentifier>{b9c07b19-01a4-4a39-988f-659175d6709c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Debug">
+      <UniqueIdentifier>{8a110978-4120-468f-a7af-916b749bdac2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Camera">
+      <UniqueIdentifier>{8cb9fb9c-e1e4-4801-b84e-9828dcd0bfbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Camera">
+      <UniqueIdentifier>{c074dc76-9d87-44b7-a131-1bc504dbef6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Camera\Controller">
+      <UniqueIdentifier>{d76d4605-256c-4c58-b06f-2f1d05a6b210}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Camera\Compre">
+      <UniqueIdentifier>{d84468eb-f793-43e3-9c4a-a7dc03bc2177}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Camera\Test">
+      <UniqueIdentifier>{4efa9ab4-02ad-43dc-908c-6f03c81d9744}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Camera\Terrain">
+      <UniqueIdentifier>{01458dd6-27f2-4b31-81df-e886a4485da0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -327,10 +348,26 @@
     <ClInclude Include="..\Public\Prop_Dynamic.h">
       <Filter>02.GameObject\MapObject\Prop\04.Dynamic</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Player_Shader.h" />
-    <ClInclude Include="..\public\TestParticle.h" />
+    <ClInclude Include="..\Public\Debug_Controller.h">
+      <Filter>02.GameObject\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Camera.h">
+      <Filter>01.Levels\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Controller.h">
+      <Filter>02.GameObject\Camera\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Compre.h">
+      <Filter>02.GameObject\Camera\Compre</Filter>
+    </ClInclude>
     <ClInclude Include="..\public\Player_Shader.h">
       <Filter>02.GameObject\Shader\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Player_Camera.h">
+      <Filter>02.GameObject\Camera\Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Terrain.h">
+      <Filter>02.GameObject\Camera\Terrain</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -482,9 +519,26 @@
     <ClCompile Include="..\Private\Prop_Dynamic.cpp">
       <Filter>02.GameObject\MapObject\Prop\04.Dynamic</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Player_Shader.cpp" />
+    <ClCompile Include="..\Private\Debug_Controller.cpp">
+      <Filter>02.GameObject\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Camera.cpp">
+      <Filter>01.Levels\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Controller.cpp">
+      <Filter>02.GameObject\Camera\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Compre.cpp">
+      <Filter>02.GameObject\Camera\Compre</Filter>
+    </ClCompile>
     <ClCompile Include="..\private\Player_Shader.cpp">
       <Filter>02.GameObject\Shader\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Player_Camera.cpp">
+      <Filter>02.GameObject\Camera\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Terrain.cpp">
+      <Filter>02.GameObject\Camera\Terrain</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -56,6 +56,9 @@ public:
 
 	void Set_Quaternion(_vector vQuaternion);
 	_vector Get_Rotation_Quat();
+
+	_float Get_RotationPerSec() { return m_fRotationPerSec; }
+	_float Get_SpeedPerSec() { return m_fSpeedPerSec; }
 public:
 	void Scale(_float3 vScale);
 	void Scaling(_float3 vScale);

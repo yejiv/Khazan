@@ -53,7 +53,7 @@ void CDummy::Update(_float fTimeDelta)
         int a = 10;
 
 
-    //m_pBodyCom->Sync_Update(m_pTransformCom);
+    m_pBodyCom->Sync_Update(m_pTransformCom);
     m_pBodyCom->Update(fTimeDelta, m_pTransformCom);
     /*m_pCharVirCom->Sync_Update(m_pTransformCom);
     m_pCharVirCom->Update(fTimeDelta, m_pTransformCom);*/
