@@ -32,29 +32,29 @@ HRESULT CCamera_Controller::Initialize()
 void CCamera_Controller::Update(_float fTimeDelta)
 {
 	
+	if (m_pGameInstance->Key_Down(DIK_LCONTROL))
+	{
+		_float3 vPos{};
+		m_pGameInstance->isPicked(&vPos);
+		int a = 1;
+	}
+	
 }
 
 HRESULT CCamera_Controller::Ready_ImGui()
 {
 	m_pGameInstance->AddWidget(TEXT("Camera"), [this]() {
-
-		FAILED_CHECK(Ready_ImGui_Create(), E_FAIL);
-
-		FAILED_CHECK(Ready_ImGui_List(), E_FAIL);
-
-		FAILED_CHECK(Ready_ImGui_Active_Camera_Info(), E_FAIL);
-
-		FAILED_CHECK(Ready_ImGui_Active_Camera_Animation(), E_FAIL);
-
-		FAILED_CHECK(Ready_ImGui_Active_Camera_Animation_Item(), E_FAIL);
-
-		FAILED_CHECK(Ready_ImGui_Active_Camera_Event_Item(), E_FAIL);
-
+		Ready_ImGui_Create();
+		Ready_ImGui_List();
+		Ready_ImGui_Active_Camera_Info();
+		Ready_ImGui_Active_Camera_Animation();
+		Ready_ImGui_Active_Camera_Animation_Item();
+		Ready_ImGui_Active_Camera_Event_Item();
 	});
 	return S_OK;
 }
 
-HRESULT CCamera_Controller::Ready_ImGui_Create()
+void CCamera_Controller::Ready_ImGui_Create()
 {
 	ImGui::Begin("Create Camera");
 	ImGui::InputText("Name", m_szCreate_CameraName, sizeof(MAX_PATH));
@@ -172,11 +172,9 @@ HRESULT CCamera_Controller::Ready_ImGui_Create()
 
 	ImGui::End();
 
-
-	return S_OK;
 }
 
-HRESULT CCamera_Controller::Ready_ImGui_List()
+void CCamera_Controller::Ready_ImGui_List()
 {
 	vector<CCamera*> Cameras = m_pGameInstance->Get_pCameras(ENUM_CLASS(LEVEL::CAMERA));
 	if (Cameras.size() > 0)
@@ -258,10 +256,9 @@ HRESULT CCamera_Controller::Ready_ImGui_List()
 
 		ImGui::End();
 	}
-	return S_OK;
 }
 
-HRESULT CCamera_Controller::Ready_ImGui_Active_Camera_Info()
+void CCamera_Controller::Ready_ImGui_Active_Camera_Info()
 {
 	CCamera* pCamera = m_pGameInstance->Get_ActiveCamera();
 	if (pCamera != nullptr)
@@ -283,10 +280,8 @@ HRESULT CCamera_Controller::Ready_ImGui_Active_Camera_Info()
 
 	}
 
-	return S_OK;
-
 }
-HRESULT CCamera_Controller::Ready_ImGui_Active_Camera_Animation()
+void CCamera_Controller::Ready_ImGui_Active_Camera_Animation()
 {
 	CCamera* pCamera = m_pGameInstance->Get_ActiveCamera();
 	if (pCamera != nullptr)
@@ -322,10 +317,9 @@ HRESULT CCamera_Controller::Ready_ImGui_Active_Camera_Animation()
 		ImGui::End();
 	}
 
-	return S_OK;
 }
 
-HRESULT CCamera_Controller::Ready_ImGui_Active_Camera_Animation_Item()
+void CCamera_Controller::Ready_ImGui_Active_Camera_Animation_Item()
 {
 	CCamera* pCamera = m_pGameInstance->Get_ActiveCamera();
 	if (pCamera != nullptr)
@@ -375,10 +369,9 @@ HRESULT CCamera_Controller::Ready_ImGui_Active_Camera_Animation_Item()
 		
 	}
 
-	return S_OK;
 }
 
-HRESULT CCamera_Controller::Ready_ImGui_Active_Camera_Event_Item()
+void CCamera_Controller::Ready_ImGui_Active_Camera_Event_Item()
 {
 	CCamera* pCamera = m_pGameInstance->Get_ActiveCamera();
 	if (pCamera != nullptr)
@@ -451,7 +444,6 @@ HRESULT CCamera_Controller::Ready_ImGui_Active_Camera_Event_Item()
 		}
 	}
 
-	return S_OK;
 }
 
 

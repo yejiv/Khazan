@@ -661,6 +661,10 @@ void CGameInstance::Reset_Gravity()
 }
 
 #ifdef _DEBUG
+void CGameInstance::Change_DebugRender()
+{
+	m_pJolt_Manager->Change_DebugRender();
+}
 void CGameInstance::Jolt_Test()
 {
 	m_pJolt_Manager->Test();

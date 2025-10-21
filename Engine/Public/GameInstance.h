@@ -173,6 +173,7 @@ public:
 	void Set_Gravity(_vector vGravity);
 	void Reset_Gravity();
 #ifdef _DEBUG
+	void Change_DebugRender();
 	void Jolt_Test();
 #endif
 #pragma endregion

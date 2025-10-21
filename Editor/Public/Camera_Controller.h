@@ -31,12 +31,12 @@ public:
 public:
 	HRESULT Ready_ImGui();
 
-	HRESULT Ready_ImGui_Create();
-	HRESULT Ready_ImGui_List();
-	HRESULT Ready_ImGui_Active_Camera_Info();
-	HRESULT Ready_ImGui_Active_Camera_Animation();
-	HRESULT Ready_ImGui_Active_Camera_Animation_Item();
-	HRESULT Ready_ImGui_Active_Camera_Event_Item();
+	void Ready_ImGui_Create();
+	void Ready_ImGui_List();
+	void Ready_ImGui_Active_Camera_Info();
+	void Ready_ImGui_Active_Camera_Animation();
+	void Ready_ImGui_Active_Camera_Animation_Item();
+	void Ready_ImGui_Active_Camera_Event_Item();
 
 private:
 	_char m_szCreate_CameraName[MAX_PATH];
