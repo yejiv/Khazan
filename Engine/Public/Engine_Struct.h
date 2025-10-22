@@ -138,6 +138,15 @@ namespace Engine
 		unsigned int						x = 1, y = 1, z = 1;	// 디스패치할 스레드 그룹 개수
 	}COMPUTE_PASS_DESC;
 
+	typedef struct tagCascadeData
+	{
+		unsigned int						iNumCascades;
+
+		vector<float>						Splits;
+		vector<XMFLOAT4X4>					LightViewMatrices;
+		vector<XMFLOAT4X4>					LightProjMatrices;
+	}CASCADE_DATA;
+
 	typedef struct tagPointInstanceParams
 	{
 		XMFLOAT4 vInitTranslation;

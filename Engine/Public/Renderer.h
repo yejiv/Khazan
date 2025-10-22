@@ -19,14 +19,10 @@ public:
 	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pRenderObject);
 	HRESULT Draw();
 
-	// Test
-public:
-	void Set_ShadowBias(_float fBias) { m_fBias = fBias; }
-
 #ifdef _DEBUG
 public:
 	HRESULT Add_DebugComponent(class CComponent* pComponent);
-
+	void Set_EnableShadow(_bool isEnable) { m_isEnableShadow = isEnable; }
 #endif
 
 private:
@@ -41,24 +37,15 @@ private:
 	class CVIBuffer_Rect*		m_pVIBuffer = { nullptr };
 
 	_float4x4					m_WorldMatrix{}, m_ViewMatrix{}, m_ProjMatrix{};
-
 	_float						m_fViewportWidth{}, m_fViewportHeight{};
-
-	// Cascade
-	ID3D11DepthStencilView*		m_CascadeShadowDSVs[g_iNumCascades];
-	ID3D11ShaderResourceView*	m_pCascadeShadowSRVArray = { nullptr };
-
-	// PCF
-	ID3D11SamplerState*			m_pComparisonSampler = { nullptr };
-	_float						m_fBias = { 0.001f };
 
 #ifdef _DEBUG
 private:
 	list<class CComponent*>		m_DebugComponent;
-	_bool						m_isRenderDebug = {};
 	vector<class CGameObject*>	m_CascadeObjects;
+	_bool						m_isEnableDebugRender = {};
+	_bool						m_isEnableShadow = { true };
 #endif
-	
 
 private:
 	HRESULT Render_Priority();
@@ -73,18 +60,14 @@ private:
 
 private:
 	HRESULT SetUp_Viewport(_float fWidth, _float fHeight);
-	HRESULT Ready_Cascade_Shadow_Resources();
-	HRESULT Ready_Comparison_Sampler();
 
 #ifdef _DEBUG
 	HRESULT Render_Debug();
 #endif
 
-
 public:
 	static CRenderer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;
-
 };
 
 NS_END

@@ -68,24 +68,12 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pObject_Manager)
 		return E_FAIL;
 
-	m_pTarget_Manager = CTarget_Manager::Create(*ppDevice, *ppContext);
-	if (nullptr == m_pTarget_Manager)
-		return E_FAIL;
-
-	m_pRenderer = CRenderer::Create(*ppDevice, *ppContext);
-	if (nullptr == m_pRenderer)
-		return E_FAIL;
-
 	m_pTimer_Manager = CTimer_Manager::Create();
 	if (nullptr == m_pTimer_Manager)
 		return E_FAIL;
 
 	m_pPipeLine = CPipeLine::Create();
 	if (nullptr == m_pPipeLine)
-		return E_FAIL;
-
-	m_pShadow = CShadow::Create(EngineDesc.iWinSizeX, EngineDesc.iWinSizeY);
-	if (nullptr == m_pShadow)
 		return E_FAIL;
 
 	m_pLight_Manager = CLight_Manager::Create(EngineDesc.iNumLevels);
@@ -118,6 +106,18 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 
 	m_pCamera_Manager = CCamera_Manager::Create(EngineDesc.iNumLevels);
 	if (nullptr == m_pCamera_Manager)
+		return E_FAIL;
+
+	m_pShadow = CShadow::Create(*ppDevice, *ppContext);
+	if (nullptr == m_pShadow)
+		return E_FAIL;
+
+	m_pTarget_Manager = CTarget_Manager::Create(*ppDevice, *ppContext);
+	if (nullptr == m_pTarget_Manager)
+		return E_FAIL;
+
+	m_pRenderer = CRenderer::Create(*ppDevice, *ppContext);
+	if (nullptr == m_pRenderer)
 		return E_FAIL;
 
 	m_pBlackBoard = CBlackBoard::Create();
@@ -348,16 +348,16 @@ HRESULT CGameInstance::Add_RenderGroup(RENDERGROUP eRenderGroup, CGameObject* pR
 	return m_pRenderer->Add_RenderGroup(eRenderGroup, pRenderObject);
 }
 
-void CGameInstance::Set_ShadowBias(_float fBias)
-{
-	m_pRenderer->Set_ShadowBias(fBias);
-}
-
 #ifdef _DEBUG
 
 HRESULT CGameInstance::Add_DebugComponent(CComponent* pComponent)
 {
 	return m_pRenderer->Add_DebugComponent(pComponent);
+}
+
+void CGameInstance::Set_EnableShadow(_bool isEnable)
+{
+	m_pRenderer->Set_EnableShadow(isEnable);
 }
 
 #endif
@@ -513,14 +513,14 @@ HRESULT CGameInstance::Copy_RT_Resource(const _wstring& strTargetTag, ID3D11Text
 	return m_pTarget_Manager->Copy_Resource(strTargetTag, pSourTexture);
 }
 
-void CGameInstance::Begin_RT()
+void CGameInstance::Backup_RT()
 {
-	m_pTarget_Manager->Begin_RT();
+	m_pTarget_Manager->Backup_RT();
 }
 
-void CGameInstance::End_RT()
+void CGameInstance::Restore_RT()
 {
-	m_pTarget_Manager->End_RT();
+	m_pTarget_Manager->Restore_RT();
 }
 
 #ifdef _DEBUG
@@ -559,27 +559,6 @@ _float4 CGameInstance::isPickRenderTargetPixel(_wstring strRenderTargetTag)
 
 #pragma region SHADOW
 
-
-const _float4x4* CGameInstance::Get_ShadowLight_Transform_Float4x4(D3DTS eTransformState) const
-{
-	return m_pShadow->Get_Transform_Float4x4(eTransformState);
-}
-
-HRESULT CGameInstance::Ready_ShadowLight(SHADOW_LIGHT_DESC LightDesc)
-{
-	return m_pShadow->Ready_ShadowLight(LightDesc);
-}
-
-SHADOW_LIGHT_DESC CGameInstance::Get_ShadowLight()
-{
-	return m_pShadow->Get_ShadowLight();
-}
-
-void CGameInstance::Set_ShadowLight(SHADOW_LIGHT_DESC LightDesc)
-{
-	m_pShadow->Set_ShadowLight(LightDesc);
-}
-
 _uint CGameInstance::Get_NumCascades()
 {
 	return m_pShadow->Get_NumCascades();
@@ -590,29 +569,74 @@ void CGameInstance::Set_CurrentCascade(_uint iIndex)
 	m_pShadow->Set_CurrentCascade(iIndex);
 }
 
-const _float4x4* CGameInstance::Get_CurrentLightViewMatrix() const
+const _float4x4* CGameInstance::Get_CurrentShadowLightViewMatrix() const
 {
 	return m_pShadow->Get_CurrentLightViewMatrix();
 }
 
-const _float4x4* CGameInstance::Get_CurrentLightProjMatrix() const
+const _float4x4* CGameInstance::Get_CurrentShadowLightProjMatrix() const
 {
 	return m_pShadow->Get_CurrentLightProjMatrix();
 }
 
-const _float* CGameInstance::Get_Splits() const
+const _float* CGameInstance::Get_CascadeSplits() const
 {
 	return m_pShadow->Get_Splits();
 }
 
-const _float4x4* CGameInstance::Get_LightViewMatrices() const
+void CGameInstance::Set_CascadeSplits(const _float* pSplits)
+{
+	m_pShadow->Set_Splits(pSplits);
+}
+
+const _float4x4* CGameInstance::Get_ShadowLightViewMatrices() const
 {
 	return m_pShadow->Get_LightViewMatrices();
 }
 
-const _float4x4* CGameInstance::Get_LightProjMatrices() const
+const _float4x4* CGameInstance::Get_ShadowLightProjMatrices() const
 {
 	return m_pShadow->Get_LightProjMatrices();
+}
+
+HRESULT CGameInstance::Bind_ShadowDSV(_uint iIndex)
+{
+	return m_pShadow->Bind_ShadowDSV(iIndex);
+}
+
+HRESULT CGameInstance::Bind_ShadowSRVArray(CShader* pShader, const _char* pConstantName)
+{
+	return m_pShadow->Bind_ShadowSRVArray(pShader, pConstantName);
+}
+
+_float CGameInstance::Get_ShadowBias()
+{
+	return m_pShadow->Get_Bias();
+}
+
+void CGameInstance::Set_ShadowBias(_float fBias)
+{
+	m_pShadow->Set_Bias(fBias);
+}
+
+_float CGameInstance::Get_ShadowLamda()
+{
+	return m_pShadow->Get_Lamda();
+}
+
+void CGameInstance::Set_ShadowLamda(_float fLamda)
+{
+	m_pShadow->Set_Lamda(fLamda);
+}
+
+_float4 CGameInstance::Get_ShadowLightDir()
+{
+	return m_pShadow->Get_ShadowLightDir();
+}
+
+void CGameInstance::Set_ShadowLightDir(const _float4 vLightDir)
+{
+	m_pShadow->Set_ShadowLightDir(vLightDir);
 }
 
 #pragma endregion

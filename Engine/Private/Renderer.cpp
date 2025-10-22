@@ -100,12 +100,6 @@ HRESULT CRenderer::Initialize()
     XMStoreFloat4x4(&m_ViewMatrix, XMMatrixIdentity());
     XMStoreFloat4x4(&m_ProjMatrix, XMMatrixOrthographicLH(ViewportDesc.Width, ViewportDesc.Height, 0.f, 1.f));
 
-    if (FAILED(Ready_Cascade_Shadow_Resources()))
-        return E_FAIL;
-
-    if (FAILED(Ready_Comparison_Sampler()))
-        return E_FAIL;
-
 #ifdef _DEBUG
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Diffuse"), 150.0f, 150.0f, 300.f, 300.f)))
         return E_FAIL;
@@ -145,8 +139,14 @@ HRESULT CRenderer::Draw()
     if (FAILED(Render_Priority()))
         return E_FAIL;
 
+#ifdef _DEBUG
+    if (m_isEnableShadow)
+        if (FAILED(Render_Shadow()))
+            return E_FAIL;
+#else
     if (FAILED(Render_Shadow()))
         return E_FAIL;
+#endif
 
     if (FAILED(Render_NonBlend()))
         return E_FAIL;
@@ -172,11 +172,11 @@ HRESULT CRenderer::Draw()
 
 #ifdef _DEBUG
     if (m_pGameInstance->Key_Down(DIK_PRIOR))
-        m_isRenderDebug = true;
+        m_isEnableDebugRender = true;
     else if (m_pGameInstance->Key_Down(DIK_NEXT))
-        m_isRenderDebug = false;
+        m_isEnableDebugRender = false;
 
-    if (m_isRenderDebug)
+    if (m_isEnableDebugRender)
         if (FAILED(Render_Debug()))
             return E_FAIL;
 #endif
@@ -223,25 +223,24 @@ HRESULT CRenderer::Render_Shadow()
         m_CascadeObjects.push_back(pRenderObject);
         Safe_AddRef(pRenderObject);
     }
-    
-    for (_uint i = 0; i < g_iNumCascades; ++i)
+
+    for (_uint i = 0; i < m_pGameInstance->Get_NumCascades(); ++i)
     {
-        m_pGameInstance->Begin_RT();
+        m_pGameInstance->Backup_RT();
 
         m_pGameInstance->Set_CurrentCascade(i);
     
         if (FAILED(SetUp_Viewport(g_iMaxWidth, g_iMaxHeight)))
             return E_FAIL;
-    
-        m_pContext->OMSetRenderTargets(0, nullptr, m_CascadeShadowDSVs[i]);
-        m_pContext->ClearDepthStencilView(m_CascadeShadowDSVs[i], D3D11_CLEAR_DEPTH, 1.f, 0);
-    
+
+        m_pGameInstance->Bind_ShadowDSV(i);
+
         for (auto& pShadowObject : m_CascadeObjects)
         {
             pShadowObject->Render_Shadow();
         }
 
-        m_pGameInstance->End_RT();
+        m_pGameInstance->Restore_RT();
     }
     
     for (auto& pShadowObject : m_CascadeObjects)
@@ -330,11 +329,6 @@ HRESULT CRenderer::Render_Combined()
     if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::PROJ))))
         return E_FAIL;
 
-    if (FAILED(m_pShader->Bind_Matrix("g_LightViewMatrix", m_pGameInstance->Get_ShadowLight_Transform_Float4x4(D3DTS::VIEW))))
-        return E_FAIL;
-    if (FAILED(m_pShader->Bind_Matrix("g_LightProjMatrix", m_pGameInstance->Get_ShadowLight_Transform_Float4x4(D3DTS::PROJ))))
-        return E_FAIL;
-
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Diffuse"), m_pShader, "g_DiffuseTexture")))
         return E_FAIL;
 
@@ -347,26 +341,30 @@ HRESULT CRenderer::Render_Combined()
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
         return E_FAIL;
 
-    if (FAILED(m_pShader->Bind_FloatArray("g_Splits", m_pGameInstance->Get_Splits(), g_iNumCascades)))
+    _uint iNumCascades = m_pGameInstance->Get_NumCascades();
+
+    if (FAILED(m_pShader->Bind_FloatArray("g_Splits", m_pGameInstance->Get_CascadeSplits(), iNumCascades)))
         return E_FAIL;
 
-    if (FAILED(m_pShader->Bind_RawValue("g_iNumCascades", &g_iNumCascades, sizeof(_uint))))
+    if (FAILED(m_pShader->Bind_RawValue("g_iNumCascades", &iNumCascades, sizeof(_uint))))
         return E_FAIL;
 
-    if (FAILED(m_pShader->Bind_Matrices("g_LightViewMatrices", m_pGameInstance->Get_LightViewMatrices(), g_iNumCascades)))
+    if (FAILED(m_pShader->Bind_Matrices("g_LightViewMatrices", m_pGameInstance->Get_ShadowLightViewMatrices(), iNumCascades)))
         return E_FAIL;
 
-    if (FAILED(m_pShader->Bind_Matrices("g_LightProjMatrices", m_pGameInstance->Get_LightProjMatrices(), g_iNumCascades)))
+    if (FAILED(m_pShader->Bind_Matrices("g_LightProjMatrices", m_pGameInstance->Get_ShadowLightProjMatrices(), iNumCascades)))
         return E_FAIL;
 
-    if (FAILED(m_pShader->Bind_SRV("g_TextureArray", m_pCascadeShadowSRVArray)))
+    if (FAILED(m_pGameInstance->Bind_ShadowSRVArray(m_pShader, "g_TextureArray")))
         return E_FAIL;
 
-    if (FAILED(m_pShader->Bind_RawValue("g_fBias", &m_fBias, sizeof(_float))))
+    _float fBias = m_pGameInstance->Get_ShadowBias();
+    if (FAILED(m_pShader->Bind_RawValue("g_fBias", &fBias, sizeof(_float))))
         return E_FAIL;
 
-    // PCF
-    //  m_pContext->PSSetSamplers(1, 1, &m_pComparisonSampler);
+    _float2 vShadowMapSize = _float2(g_iMaxWidth, g_iMaxHeight);
+    if (FAILED(m_pShader->Bind_RawValue("g_vShadowMapSize", &vShadowMapSize, sizeof(_float2))))
+        return E_FAIL;
 
     m_pShader->Begin(3);
 
@@ -482,76 +480,6 @@ HRESULT CRenderer::SetUp_Viewport(_float fWidth, _float fHeight)
     return S_OK;
 }
 
-HRESULT CRenderer::Ready_Cascade_Shadow_Resources()
-{
-    ID3D11Texture2D* pDepthStencilTexture = { nullptr };
-
-    D3D11_TEXTURE2D_DESC Desc{};
-    Desc.Width = g_iMaxWidth;
-    Desc.Height = g_iMaxHeight;
-    Desc.MipLevels = 1;
-    Desc.ArraySize = g_iNumCascades;
-    Desc.Format = DXGI_FORMAT_R32_TYPELESS;
-    Desc.SampleDesc.Count = 1;
-    Desc.SampleDesc.Quality = 0;
-    Desc.Usage = D3D11_USAGE_DEFAULT;
-    Desc.CPUAccessFlags = 0;
-    Desc.MiscFlags = 0;
-    Desc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
-
-    if (FAILED(m_pDevice->CreateTexture2D(&Desc, nullptr, &pDepthStencilTexture)))
-        return E_FAIL;
-
-    for (_uint i = 0; i < g_iNumCascades; ++i)
-    {
-        D3D11_DEPTH_STENCIL_VIEW_DESC DSVDesc{};
-        DSVDesc.Format = DXGI_FORMAT_D32_FLOAT;
-        DSVDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
-        DSVDesc.Texture2DArray.MipSlice = 0;
-        DSVDesc.Texture2DArray.FirstArraySlice = i;
-        DSVDesc.Texture2DArray.ArraySize = 1;
-        if (FAILED(m_pDevice->CreateDepthStencilView(pDepthStencilTexture, &DSVDesc, &m_CascadeShadowDSVs[i])))
-            return E_FAIL;
-    }
-
-    D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc{};
-    SRVDesc.Format = DXGI_FORMAT_R32_FLOAT;
-    SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
-    SRVDesc.Texture2DArray.MostDetailedMip = 0;
-    SRVDesc.Texture2DArray.MipLevels = 1;
-    SRVDesc.Texture2DArray.FirstArraySlice = 0;
-    SRVDesc.Texture2DArray.ArraySize = g_iNumCascades;
-    if (FAILED(m_pDevice->CreateShaderResourceView(pDepthStencilTexture, &SRVDesc, &m_pCascadeShadowSRVArray)))
-        return E_FAIL;
-
-    Safe_Release(pDepthStencilTexture);
-
-    return S_OK;
-}
-
-HRESULT CRenderer::Ready_Comparison_Sampler()
-{
-    D3D11_SAMPLER_DESC Desc{};
-    Desc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
-    Desc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
-    Desc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
-    Desc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
-    Desc.BorderColor[0] = 1.f;
-    Desc.BorderColor[1] = 1.f;
-    Desc.BorderColor[2] = 1.f;
-    Desc.BorderColor[3] = 1.f;
-    Desc.MipLODBias = 0.f;
-    Desc.MaxAnisotropy = 1;
-    Desc.ComparisonFunc = D3D11_COMPARISON_LESS;
-    Desc.MinLOD = 0;
-    Desc.MaxLOD = D3D11_FLOAT32_MAX;
-
-    if (FAILED(m_pDevice->CreateSamplerState(&Desc, &m_pComparisonSampler)))
-        return E_FAIL;
-
-    return S_OK;
-}
-
 #ifdef _DEBUG
 
 HRESULT CRenderer::Render_Debug()
@@ -576,8 +504,10 @@ HRESULT CRenderer::Render_Debug()
 
     // Texture2DArrayRender
 
+    _uint iNumCascades = m_pGameInstance->Get_NumCascades();
+
     _int iCol = 1;
-    _int iRow = (g_iNumCascades + iCol - 1) / iCol;
+    _int iRow = (iNumCascades + iCol - 1) / iCol;
 
     _float fWidth = 300.f;
     _float fHeight = 300.f;
@@ -590,7 +520,7 @@ HRESULT CRenderer::Render_Debug()
     _float fX = ViewportDesc.Width - 150.0f;
     _float fY = 150.f;
 
-    for (_uint i = 0; i < g_iNumCascades; ++i)
+    for (_uint i = 0; i < iNumCascades; ++i)
     {
         _int iCX = i % iCol;
         _int iCY = i / iCol;
@@ -613,7 +543,7 @@ HRESULT CRenderer::Render_Debug()
         if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
             return E_FAIL;
 
-        if (FAILED(m_pShader->Bind_SRV("g_TextureArray", m_pCascadeShadowSRVArray)))
+        if (FAILED(m_pGameInstance->Bind_ShadowSRVArray(m_pShader, "g_TextureArray")))
             return E_FAIL;
 
         if (FAILED(m_pShader->Bind_RawValue("g_iTextureArrayIndex", &i, sizeof(_int))))
@@ -655,11 +585,6 @@ void CRenderer::Free()
         Safe_Release(pDebugComponent);
     m_DebugComponent.clear();
 #endif // DEBUG
-
-    for (auto& pDSV : m_CascadeShadowDSVs)
-        Safe_Release(pDSV);
-
-    Safe_Release(m_pCascadeShadowSRVArray);
     
     for (size_t i = 0; i < ENUM_CLASS(RENDERGROUP::END); i++)
     {

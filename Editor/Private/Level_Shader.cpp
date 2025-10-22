@@ -24,35 +24,81 @@ HRESULT CLevel_Shader::Initialize()
 	if (FAILED(Ready_Lights()))
 		return E_FAIL;
 
+	m_iNumCascades = m_pGameInstance->Get_NumCascades();
+
 	m_pGameInstance->AddWidget(TEXT("Shader"), [&]()
 	{
-		ImGui::Begin("Shadow Light Settings");
-
-		if (ImGui::CollapsingHeader("Frame Per Second"), ImGuiTreeNodeFlags_DefaultOpen)
+		if (!m_isInitShadow)
 		{
-			ImGui::SetWindowFontScale(2.f);
-			ImGui::Text("%s", m_szFPS);
-			ImGui::SetWindowFontScale(1.f);
+			m_CascadeSplits.resize(m_iNumCascades);
+			memcpy(m_CascadeSplits.data(), m_pGameInstance->Get_CascadeSplits(), sizeof(_float) * m_iNumCascades);
+			m_fShadowBias = m_pGameInstance->Get_ShadowBias();
+			m_fShadowLamda = m_pGameInstance->Get_ShadowLamda();
+			m_vLightDir = m_pGameInstance->Get_ShadowLightDir();
+			m_isInitShadow = true;
 		}
 
-		if (ImGui::CollapsingHeader("Shadow Light"), ImGuiTreeNodeFlags_DefaultOpen)
+		ImGui::Begin("Shadow Settings");
+
+		// isRenderShadow true일 때만 아래 애들 띄우기
+		// true일 때만 렌더러에서 기록하는 거 켜주기
+		// 컴바인드에서 안 켜지면 기본 명암 정도만 나타내도록 후처리 셰이더에 플래그 넘겨서 써야 할지도?
+		//	_bool bCopyFlag = m_isRenderShadow;
+
+		if (ImGui::Checkbox("Shadow", &m_isRenderShadow))
 		{
-			SHADOW_LIGHT_DESC Desc = m_pGameInstance->Get_ShadowLight();
+			//	if (bCopyFlag != m_isRenderShadow)
+			//	{
+			//		m_isRenderShadow = bCopyFlag;
+			//		m_pGameInstance->Set_EnableShadow(m_isRenderShadow);
+			//	}
 
-			m_isChanged |= ImGui::DragFloat3("Light Eye", (float*)&Desc.vEye, 0.1f);
-			m_isChanged |= ImGui::DragFloat3("Light At", (float*)&Desc.vAt, 0.1f);
-			m_isChanged |= ImGui::SliderFloat("FOV", &Desc.fFovy, 1.f, 180.f);
-			m_isChanged |= ImGui::InputFloat("Near Plane", &Desc.fNear, 0.1f, 1.f);
-			m_isChanged |= ImGui::InputFloat("Far Plane", &Desc.fFar, 1.f, 1000.f);
-
-			if (m_isChanged)
+			if (ImGui::CollapsingHeader("Frame Per Second"), ImGuiTreeNodeFlags_DefaultOpen)
 			{
-				m_pGameInstance->Ready_ShadowLight(Desc);
+				ImGui::SetWindowFontScale(2.f);
+				ImGui::Text("%s", m_szFPS);
+				ImGui::SetWindowFontScale(1.f);
+			}
+
+			if (ImGui::CollapsingHeader("Shadow Light"), ImGuiTreeNodeFlags_DefaultOpen)
+			{
+				if (ImGui::SliderFloat3("Direction", reinterpret_cast<_float*>(&m_vLightDir), -1.f, 1.f))
+					m_pGameInstance->Set_ShadowLightDir(m_vLightDir);
+			}
+
+			if (ImGui::CollapsingHeader("Cascade"), ImGuiTreeNodeFlags_DefaultOpen)
+			{
+				ImGui::Text("Manual Split Adjustment");
+				ImGui::Separator();
+
+				for (_uint i = 0; i < m_iNumCascades; ++i)
+				{
+					_float fMin = (i == 0) ? m_fCameraNear : m_CascadeSplits[i - 1];
+					_float fMax = (i == (m_iNumCascades - 1)) ? m_fCameraFar : m_CascadeSplits[i + 1];
+
+					_char szLabel[64] = {};
+					sprintf_s(szLabel, "Cascade %d Split Far", i);
+
+					if (ImGui::SliderFloat(szLabel, &m_CascadeSplits[i], fMin, fMax))
+						m_pGameInstance->Set_CascadeSplits(m_CascadeSplits.data());
+				}
+
+				ImGui::Separator();
+				ImGui::Text("Auto Split Calculation");
+
+				if (ImGui::SliderFloat("Cascade Mix Lamda", &m_fShadowLamda, 0.f, 1.f))
+					m_pGameInstance->Set_ShadowLamda(m_fShadowLamda);
+
+				ImGui::Separator();
+
+				if (ImGui::SliderFloat("Shadow Bias", &m_fShadowBias, 0.0001f, 0.005f, "%.4f"))
+					m_pGameInstance->Set_ShadowBias(m_fShadowBias);
+
+				ImGui::Separator();
 			}
 		}
 
-		ImGui::SliderFloat("Shadow Bias", &m_fShadowBias, 0.0001f, 1.f);
-		m_pGameInstance->Set_ShadowBias(m_fShadowBias);
+		m_pGameInstance->Set_EnableShadow(m_isRenderShadow);
 
 		ImGui::End();
 	});
@@ -65,8 +111,6 @@ void CLevel_Shader::Update(_float fTimeDelta)
 #ifdef _DEBUG
 	m_fTimeAcc += fTimeDelta;
 #endif
-
-	return;
 }
 
 HRESULT CLevel_Shader::Render()
@@ -82,8 +126,6 @@ HRESULT CLevel_Shader::Render()
 		m_fTimeAcc = 0.f;
 		m_iRenderCount = 0;
 	}
-	
-	//	m_pGameInstance->DrawText(TEXT("Font_153"), m_szFPS, _float2(100.f, 0.f), XMVectorSet(1.f, 0.f, 0.f, 1.f));
 #endif
 
 	return S_OK;
@@ -99,36 +141,6 @@ HRESULT CLevel_Shader::Ready_Lights()
 	LightDesc.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
 	LightDesc.vSpecular = LightDesc.vDiffuse;
 	if (FAILED(m_pGameInstance->Add_Light(TEXT("Directional_Shader"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
-		return E_FAIL;
-
-	// Point_Green
-	//	LightDesc.eType = LIGHT_DESC::POINT;
-	//	LightDesc.vPosition = _float4(20.f, 2.f, 10.f, 1.f);
-	//	LightDesc.fRange = 10.f;
-	//	LightDesc.vDiffuse = _float4(0.f, 1.f, 0.f, 1.f);
-	//	LightDesc.vAmbient = _float4(0.1f, 0.6f, 0.1f, 1.f);
-	//	LightDesc.vSpecular = LightDesc.vDiffuse;
-	//	if (FAILED(m_pGameInstance->Add_Light(TEXT("Point_Green"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
-	//		return E_FAIL;
-	//	
-	//	// Point_Red
-	//	LightDesc.eType = LIGHT_DESC::POINT;
-	//	LightDesc.vPosition = _float4(10.f, 2.f, 10.f, 1.f);
-	//	LightDesc.fRange = 10.f;
-	//	LightDesc.vDiffuse = _float4(1.f, 0.f, 0.f, 1.f);
-	//	LightDesc.vAmbient = _float4(0.6f, 0.1f, 0.1f, 1.f);
-	//	LightDesc.vSpecular = LightDesc.vDiffuse;
-	//	if (FAILED(m_pGameInstance->Add_Light(TEXT("Point_Red"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
-	//		return E_FAIL;
-
-	// Shadow_Light
-	SHADOW_LIGHT_DESC ShadowLightDesc{};
-	ShadowLightDesc.vEye = _float4(-20.f, 20.f, -20.f, 1.f);
-	ShadowLightDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
-	ShadowLightDesc.fFovy = XMConvertToRadians(60.f);
-	ShadowLightDesc.fNear = 0.1f;
-	ShadowLightDesc.fFar = 1000.f;
-	if (FAILED(m_pGameInstance->Ready_ShadowLight(ShadowLightDesc)))
 		return E_FAIL;
 
 	return S_OK;
