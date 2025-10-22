@@ -179,7 +179,6 @@
     <ClInclude Include="..\public\Inven_OtherItem.h" />
     <ClInclude Include="..\public\Inven_Panel.h" />
     <ClInclude Include="..\public\Inven_Tap.h" />
-    <ClInclude Include="..\public\Item_Icon.h" />
     <ClInclude Include="..\public\Item_Slot.h" />
     <ClInclude Include="..\Public\JOH_Test1.h" />
     <ClInclude Include="..\Public\Level_Loading.h" />
@@ -254,7 +253,6 @@
     <ClCompile Include="..\private\Inven_OtherItem.cpp" />
     <ClCompile Include="..\private\Inven_Panel.cpp" />
     <ClCompile Include="..\private\Inven_Tap.cpp" />
-    <ClCompile Include="..\private\Item_Icon.cpp" />
     <ClCompile Include="..\private\Item_Slot.cpp" />
     <ClCompile Include="..\Private\JOH_Test1.cpp" />
     <ClCompile Include="..\Private\Level_Loading.cpp" />

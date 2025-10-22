@@ -256,9 +256,6 @@
     <Filter Include="02.GameObject\UI\Item">
       <UniqueIdentifier>{5a375172-cf57-4494-aa11-36f0c266d20c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\UI\Item\Item_Slot">
-      <UniqueIdentifier>{bbb8a5c3-6a58-40d2-af29-55f3c721f83e}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -477,11 +474,8 @@
     <ClInclude Include="..\Public\Client_Struct.h">
       <Filter>99.Defines</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Item_Icon.h">
-      <Filter>02.GameObject\UI\Item</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\Item_Slot.h">
-      <Filter>02.GameObject\UI\Item\Item_Slot</Filter>
+      <Filter>02.GameObject\UI\Item</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -690,11 +684,8 @@
     <ClCompile Include="..\private\DB_Manager.cpp">
       <Filter>94. ClientInstance\DB</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Item_Icon.cpp">
-      <Filter>02.GameObject\UI\Item</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\Item_Slot.cpp">
-      <Filter>02.GameObject\UI\Item\Item_Slot</Filter>
+      <Filter>02.GameObject\UI\Item</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

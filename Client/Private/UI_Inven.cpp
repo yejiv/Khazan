@@ -9,6 +9,8 @@
 #include "UI_BackGround.h"
 #include "UI_Panel.h"
 
+#include "Item_Slot.h"
+
 CUI_Inven::CUI_Inven(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
 {
@@ -134,6 +136,34 @@ HRESULT CUI_Inven::Ready_Object()
 	m_pPanel.emplace(TEXT("Inven_OtherItem"), static_cast<CUI_Panel*>(pObject));
 
 	Safe_AddRef(pObject);
+	Ready_SlotSet();
+	return S_OK;
+}
+
+HRESULT CUI_Inven::Ready_SlotSet()
+{
+	CUIObject::UIOBJECT_DESC Desc = {};
+	
+	_float2 vPos = { 320.f , 577.f };
+	Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
+	Desc.szName = "Item";
+	Desc.vLocalPos = vPos;
+	Desc.vLocalSize = { 103.f , 103.f };
+
+	for (_int i = 0; i < 28; ++i)
+	{
+		CItem_Slot* pSlot = static_cast<CItem_Slot*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Item"), &Desc));
+
+		if (pSlot == nullptr)
+			return E_FAIL;
+
+		m_pActiveItem.push_back(pSlot);
+		m_Children.push_back(pSlot);
+		Safe_AddRef(pSlot);
+
+		m_pActiveItem[i]->Update_Pos(i, vPos, 110.f, 4, 7);
+	}
+
 	return S_OK;
 }
 
@@ -162,6 +192,10 @@ CGameObject* CUI_Inven::Clone(void* pArg)
 void CUI_Inven::Free()
 {
 	__super::Free();
+
+	for (auto pSlot : m_pActiveItem)
+		Safe_Release(pSlot);
+	m_pActiveItem.clear();
 
 	for (auto pPanel : m_pPanel)
 		Safe_Release(pPanel.second);
