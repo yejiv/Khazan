@@ -296,6 +296,18 @@ HRESULT CLevel_Map::Ready_Main_Window()
 					ImGui::Text("F3 + LB      : ADD LIGHT POSITION");
 					ImGui::Text("F4 + LB      : SELECTED OBJECT MOVE");
 
+					SEPARATOR;
+
+					ImGui::Text("[            : PREVIEW");
+					ImGui::Text("]            : CANCEL PREVIEW");
+
+					SEPARATOR;
+
+					ImGui::Text("F5           : MOVE TERRAIN");
+					ImGui::Text("F6           : TERRAIN RENDER");
+
+					SEPARATOR;
+
 					_float4 vCamPos = *m_pGameInstance->Get_CamPosition();
 
 					ImGui::Text("CAMERA POS");
@@ -313,10 +325,13 @@ HRESULT CLevel_Map::Ready_Main_Window()
 					}
 					SEPARATOR;
 					
-					ImGui::Text("OBJECT SAVE & LOAD");
+					ImGui::Text("MAP DATA SAVE & LOAD");
 					if (ImGui::Button("SAVE")) m_isSaveObjectWindow = !m_isSaveObjectWindow;
-					SAMELINE;
-					if (false == m_isLoaded && ImGui::Button("LOAD")) m_isLoadObjectWindow = !m_isLoadObjectWindow;
+					if (false == m_isLoaded)
+					{
+						SAMELINE;
+						if (ImGui::Button("LOAD")) m_isLoadObjectWindow = !m_isLoadObjectWindow;
+					}
 					SEPARATOR;
 					
 					ImGui::Text("PROP LIST");
@@ -403,16 +418,6 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 
 			if (ImGui::Button("CLEAR"))
 				ZeroMemory(m_szSearchPrototypeName, sizeof(m_szSearchPrototypeName));
-
-			ImGuiIO& io = ImGui::GetIO();
-
-			if (io.MouseWheel < 0.f) ++m_iIndex_PrtObj;
-			else if (io.MouseWheel > 0.f) --m_iIndex_PrtObj;
-
-			if (0 > m_iIndex_PrtObj)
-				m_iIndex_PrtObj = 0;
-			if (m_Prototypes_Obj.size() <= m_iIndex_PrtObj)
-				m_iIndex_PrtObj = m_Prototypes_Obj.size() - 1;
 
 			if (ImGui::BeginListBox("##prototype_object_list"))
 			{
@@ -745,50 +750,52 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 		{
 			ImGui::Begin("PROP OBJECT WINDOW", &m_isObjectWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
-			ImGui::Text("OBJECT LIST");
-			ImGui::Text("SEARCH : "); SAMELINE;
-			ImGui::InputText("##search_object_name", m_szSearchObjectName, IM_ARRAYSIZE(m_szSearchObjectName)); SAMELINE;
-
-			if (ImGui::Button("CLEAR"))
-				ZeroMemory(m_szSearchObjectName, sizeof(m_szSearchObjectName));
-
-			if (ImGui::BeginListBox("##prop_object_list"))
+			if (false == m_isCheckRender)
 			{
-				if (m_iObjectListIndex >= m_ObjectList.size())
-					m_iObjectListIndex = m_ObjectList.size() - 1;
+				ImGui::Text("OBJECT LIST");
+				ImGui::Text("SEARCH : "); SAMELINE;
+				ImGui::InputText("##search_object_name", m_szSearchObjectName, IM_ARRAYSIZE(m_szSearchObjectName)); SAMELINE;
 
-				string strSearchName = m_szSearchObjectName;
-				transform(strSearchName.begin(), strSearchName.end(), strSearchName.begin(), ::tolower);		// 검색할 모델을 소문자로 변환
+				if (ImGui::Button("CLEAR"))
+					ZeroMemory(m_szSearchObjectName, sizeof(m_szSearchObjectName));
 
-				for (_uint i = 0; i < m_ObjectList.size(); ++i)
+				if (ImGui::BeginListBox("##prop_object_list"))
 				{
-					_wstring strModelName = m_ObjectList[i]->Get_ModelName();
-					transform(strModelName.begin(), strModelName.end(), strModelName.begin(), ::tolower);		// 찾을 모델을 소문자로 변환
+					if (m_iObjectListIndex >= m_ObjectList.size())
+						m_iObjectListIndex = m_ObjectList.size() - 1;
 
-					if (true == strSearchName.empty() || strModelName.find(AnsiToWString(strSearchName)) != string::npos)
+					string strSearchName = m_szSearchObjectName;
+					transform(strSearchName.begin(), strSearchName.end(), strSearchName.begin(), ::tolower);		// 검색할 모델을 소문자로 변환
+
+					for (_uint i = 0; i < m_ObjectList.size(); ++i)
 					{
-						_bool isSelected = (m_iObjectListIndex == i);
+						_wstring strModelName = m_ObjectList[i]->Get_ModelName();
+						transform(strModelName.begin(), strModelName.end(), strModelName.begin(), ::tolower);		// 찾을 모델을 소문자로 변환
 
-						string strModelName = WStringToAnsi(m_ObjectList[i]->Get_ModelName()) + "##id_%d";
+						if (true == strSearchName.empty() || strModelName.find(AnsiToWString(strSearchName)) != string::npos)
+						{
+							_bool isSelected = (m_iObjectListIndex == i);
 
-						_char szModelName[MAX_PATH] = {};
+							string strModelName = WStringToAnsi(m_ObjectList[i]->Get_ModelName()) + "##id_%d";
 
-						sprintf_s(szModelName, strModelName.c_str(), i);
+							_char szModelName[MAX_PATH] = {};
 
-						if (ImGui::Selectable(szModelName, isSelected))
-							m_iObjectListIndex = i;
+							sprintf_s(szModelName, strModelName.c_str(), i);
+
+							if (ImGui::Selectable(szModelName, isSelected))
+								m_iObjectListIndex = i;
+						}
 					}
+
+					ImGui::EndListBox();
+				} SEPARATOR;
+
+				if (0 != m_ObjectList.size())
+				{
+					ImGui::Text("OBJECT NUM : %d", m_ObjectList.size());
+					SEPARATOR;
 				}
-
-				ImGui::EndListBox();
-			} SEPARATOR;
-
-			if (0 != m_ObjectList.size())
-			{
-				ImGui::Text("OBJECT NUM : %d", m_ObjectList.size());
-				SEPARATOR;
 			}
-
 			if (ImGui::Button("ALL SNOW ON"))
 			{
 				MAPOBJECT_PROPERTIES PropProperties = {};
@@ -812,118 +819,175 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 				}
 			} SEPARATOR;
 
-			if (0 != m_ObjectList.size() && m_iObjectListIndex < m_ObjectList.size())
+			if (ImGui::Button("CHECK RENDER ON"))
 			{
-				CProp* pObjProp = m_ObjectList[m_iObjectListIndex];
+				m_isCheckRender = true;
 
-				_wstring strModelName = m_ObjectList[m_iObjectListIndex]->Get_ModelName();
+				for (auto& pProp : m_ObjectList)
+				{
+					pProp->Set_CheckRender(true);
+					pProp->Set_RenderProperties(&m_RenderProperties);
+				}
+			}
+			SAMELINE;
+			if (ImGui::Button("CHECK RENDER OFF"))
+			{
+				m_isCheckRender = false;
 
-				_char szModelName[MAX_PATH] = {};
-				memcpy(szModelName, WStringToAnsi(strModelName).c_str(), sizeof(szModelName));
+				for (auto& pProp : m_ObjectList)
+					pProp->Set_CheckRender(false);
 
-				ImGui::Text("MODEL NAME : ");
-				ImGui::InputText("##model_name_by_list", szModelName, IM_ARRAYSIZE(szModelName));
+				m_RenderProperties.isSnow = false;
+				m_RenderProperties.isCollider = false;
+				m_RenderProperties.isBlended = false;
+				m_RenderProperties.isInstance = false;
+				m_RenderProperties.isShadow = false;
+				m_RenderProperties.isBackGround = false;
+			}
+			SEPARATOR;
+
+			if (true == m_isCheckRender)
+			{
+				ImGui::Text("PLEASE CHECK RENDER");
+
+				ImGui::Checkbox("SNOW", &m_RenderProperties.isSnow);
+				SAMELINE;
+
+				ImGui::Checkbox("COLLIDER", &m_RenderProperties.isCollider);
+				SAMELINE;
+
+				ImGui::Checkbox("BLENDED", &m_RenderProperties.isBlended);
+				SAMELINE;
+
+				ImGui::Checkbox("INSTANCE", &m_RenderProperties.isInstance);
 				SEPARATOR;
+
+				ImGui::Checkbox("SHADOW", &m_RenderProperties.isShadow);
+				SAMELINE;
+
+				ImGui::Checkbox("BACKGROUND", &m_RenderProperties.isBackGround);
+				SEPARATOR;
+
+				SEPARATOR;
+			}
+			else
+			{
+				if (0 != m_ObjectList.size() && m_iObjectListIndex < m_ObjectList.size())
+				{
+					CProp* pObjProp = m_ObjectList[m_iObjectListIndex];
+
+					_wstring strModelName = m_ObjectList[m_iObjectListIndex]->Get_ModelName();
+
+					_char szModelName[MAX_PATH] = {};
+					memcpy(szModelName, WStringToAnsi(strModelName).c_str(), sizeof(szModelName));
+
+					ImGui::Text("MODEL NAME : ");
+					ImGui::InputText("##model_name_by_list", szModelName, IM_ARRAYSIZE(szModelName));
+					SEPARATOR;
 
 #pragma region 속성 설정
 
-				MAPOBJECT_PROPERTIES PropProperties = m_ObjectList[m_iObjectListIndex]->Get_Properties();
+					if (false == m_isCheckRender)
+					{
+						MAPOBJECT_PROPERTIES PropProperties = m_ObjectList[m_iObjectListIndex]->Get_Properties();
 
-				ImGui::Checkbox("SNOW", &PropProperties.isSnow);
-				SAMELINE;
+						ImGui::Checkbox("SNOW", &PropProperties.isSnow);
+						SAMELINE;
 
-				ImGui::Checkbox("COLLIDER", &PropProperties.isCollider);
-				SAMELINE;
+						ImGui::Checkbox("COLLIDER", &PropProperties.isCollider);
+						SAMELINE;
 
-				ImGui::Checkbox("BLENDED", &PropProperties.isBlended);
-				SAMELINE;
+						ImGui::Checkbox("BLENDED", &PropProperties.isBlended);
+						SAMELINE;
 
-				ImGui::Checkbox("INSTANCE", &PropProperties.isInstance);
-				SEPARATOR;
+						ImGui::Checkbox("INSTANCE", &PropProperties.isInstance);
+						SEPARATOR;
 
-				ImGui::Checkbox("SHADOW", &PropProperties.isShadow);
-				SAMELINE;
+						ImGui::Checkbox("SHADOW", &PropProperties.isShadow);
+						SAMELINE;
 
-				ImGui::Checkbox("BACKGROUND", &PropProperties.isBackGround);
-				SEPARATOR;
+						ImGui::Checkbox("BACKGROUND", &PropProperties.isBackGround);
+						SEPARATOR;
 
-				m_ObjectList[m_iObjectListIndex]->Set_Properties(PropProperties);
+						m_ObjectList[m_iObjectListIndex]->Set_Properties(PropProperties);
 
-				SEPARATOR;
+						SEPARATOR;
+					}
 
 #pragma endregion
 
-				CTransform* pTransform = static_cast<CTransform*>(m_ObjectList[m_iObjectListIndex]->Get_Component(TEXT("Com_Transform")));
-				CHECK_NULLPTR(pTransform, );
+					CTransform* pTransform = static_cast<CTransform*>(m_ObjectList[m_iObjectListIndex]->Get_Component(TEXT("Com_Transform")));
+					CHECK_NULLPTR(pTransform, );
 
-				_float3 vPosition = {};
+					_float3 vPosition = {};
 
-				XMStoreFloat3(&vPosition, pTransform->Get_State(STATE::POSITION));
+					XMStoreFloat3(&vPosition, pTransform->Get_State(STATE::POSITION));
 
-				ImGui::Text("POSITION");
-				ImGui::Text("X : %.3f", vPosition.x);
-				ImGui::Text("Y : %.3f", vPosition.y);
-				ImGui::Text("Z : %.3f", vPosition.z);
-				SEPARATOR;
-			}
-			if (0 != m_ObjectList.size())
-			{
-				if (ImGui::Button("FIX"))
-				{
-					if (nullptr != m_ObjectList[m_iObjectListIndex] && false == m_isFixObjectWindow)
-					{
-						m_pFixPropObj = m_ObjectList[m_iObjectListIndex];
-						m_pFixTransformCom = static_cast<CTransform*>(m_ObjectList[m_iObjectListIndex]->Get_Component(TEXT("Com_Transform")));
-						CHECK_NULLPTR_MSG(m_pFixTransformCom, TEXT("Fix Transform == nullptr"), );
-
-						m_FixBaseMatrix = XMMatrixIdentity();
-
-						ZeroMemory(&m_vFixScale, sizeof(_float3));
-						ZeroMemory(&m_vFixRotation, sizeof(_float3));
-						ZeroMemory(&m_vFixPosition, sizeof(_float3));
-
-						m_vFixScale = m_pFixTransformCom->Get_Scaled();
-						XMStoreFloat3(&m_vFixPosition, m_pFixTransformCom->Get_State(STATE::POSITION));
-
-						m_FixBaseMatrix = m_FixWorldMatrix = m_pFixTransformCom->Get_WorldMatrix();
-
-						// ======================================================
-						// ======================================================
-
-						m_isFixObjectWindow = true;
-						m_eFixType = FIX_OBJECT::FIX;
-					}
+					ImGui::Text("POSITION");
+					ImGui::Text("X : %.3f", vPosition.x);
+					ImGui::Text("Y : %.3f", vPosition.y);
+					ImGui::Text("Z : %.3f", vPosition.z);
+					SEPARATOR;
 				}
-				SAMELINE;
-				if (ImGui::Button("DELETE"))
+				if (0 != m_ObjectList.size())
 				{
-					m_isFixObjectWindow = false;
-
-					if (nullptr != m_ObjectList[m_iObjectListIndex])
+					if (ImGui::Button("FIX"))
 					{
-						m_ObjectList[m_iObjectListIndex]->Set_IsDead(true);
-
-						for (_uint i = 0; i < m_ObjectList.size(); )
+						if (nullptr != m_ObjectList[m_iObjectListIndex] && false == m_isFixObjectWindow)
 						{
-							if (m_ObjectList[m_iObjectListIndex] == m_ObjectList[i])
+							m_pFixPropObj = m_ObjectList[m_iObjectListIndex];
+							m_pFixTransformCom = static_cast<CTransform*>(m_ObjectList[m_iObjectListIndex]->Get_Component(TEXT("Com_Transform")));
+							CHECK_NULLPTR_MSG(m_pFixTransformCom, TEXT("Fix Transform == nullptr"), );
+
+							m_FixBaseMatrix = XMMatrixIdentity();
+
+							ZeroMemory(&m_vFixScale, sizeof(_float3));
+							ZeroMemory(&m_vFixRotation, sizeof(_float3));
+							ZeroMemory(&m_vFixPosition, sizeof(_float3));
+
+							m_vFixScale = m_pFixTransformCom->Get_Scaled();
+							XMStoreFloat3(&m_vFixPosition, m_pFixTransformCom->Get_State(STATE::POSITION));
+
+							m_FixBaseMatrix = m_FixWorldMatrix = m_pFixTransformCom->Get_WorldMatrix();
+
+							// ======================================================
+							// ======================================================
+
+							m_isFixObjectWindow = true;
+							m_eFixType = FIX_OBJECT::FIX;
+						}
+					}
+					SAMELINE;
+					if (ImGui::Button("DELETE"))
+					{
+						m_isFixObjectWindow = false;
+
+						if (nullptr != m_ObjectList[m_iObjectListIndex])
+						{
+							m_ObjectList[m_iObjectListIndex]->Set_IsDead(true);
+
+							for (_uint i = 0; i < m_ObjectList.size(); )
 							{
-								swap(m_ObjectList[m_iObjectListIndex], m_ObjectList.back());
-								m_ObjectList.pop_back();
-								break;
+								if (m_ObjectList[m_iObjectListIndex] == m_ObjectList[i])
+								{
+									swap(m_ObjectList[m_iObjectListIndex], m_ObjectList.back());
+									m_ObjectList.pop_back();
+									break;
+								}
+								else
+									++i;
 							}
-							else
-								++i;
+
+							if (m_iObjectListIndex >= m_ObjectList.size())
+								m_iObjectListIndex = m_ObjectList.size() - 1;
+
+							m_pFixPropObj = nullptr;
 						}
 
-						if (m_iObjectListIndex >= m_ObjectList.size())
-							m_iObjectListIndex = m_ObjectList.size() - 1;
-
 						m_pFixPropObj = nullptr;
+						m_pFixTransformCom = nullptr;
+						m_eFixType = FIX_OBJECT::END;
 					}
-
-					m_pFixPropObj = nullptr;
-					m_pFixTransformCom = nullptr;
-					m_eFixType = FIX_OBJECT::END;
 				}
 			}
 			ImGui::End();

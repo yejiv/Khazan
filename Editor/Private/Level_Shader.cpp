@@ -51,6 +51,9 @@ HRESULT CLevel_Shader::Initialize()
 			}
 		}
 
+		ImGui::SliderFloat("Shadow Bias", &m_fShadowBias, 0.0001f, 1.f);
+		m_pGameInstance->Set_ShadowBias(m_fShadowBias);
+
 		ImGui::End();
 	});
 
