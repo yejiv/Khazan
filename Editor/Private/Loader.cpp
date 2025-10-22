@@ -136,10 +136,6 @@ HRESULT CLoader::Loading_For_Map_Level()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Texture_Terrain_Grid"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Terrain/Tile0.dds"), 1)), E_FAIL);
 
-	/* Prototype_Component_Texture_Map_Snow */
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Texture_Map_Snow"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Map/Textures/WT_Base_D.dds"), 1)), E_FAIL);
-
 #pragma endregion
 
 #pragma region 모델 원형 로딩
@@ -151,8 +147,8 @@ HRESULT CLoader::Loading_For_Map_Level()
 		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 100, 100)), E_FAIL);
 
 	/* Prototype_Component_Model_PlayerTest */
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_PlayerTest"),
-		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Test/Test/Test.dat")), E_FAIL);
+	//CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_PlayerTest"),
+		//CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Test/Test/Test.dat")), E_FAIL);
 
 #pragma endregion
 
