@@ -75,6 +75,14 @@ namespace Engine
 		bool isShadow{ false };
 		bool isBackGround{ false };
 
+		tagMapObjectProperties() = default;
+
+		operator bool() const noexcept
+		{
+			return isSnow || isCollider || isBlended ||
+				isInstance || isShadow || isBackGround;
+		}
+
 	}MAPOBJECT_PROPERTIES;
 
 	typedef struct tagCatmullrom
