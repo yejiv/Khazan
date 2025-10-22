@@ -47,7 +47,7 @@ HRESULT CLevel_Map::Ready_Defaults()
 {
 	//CHECK_FAILED(Ready_Default_Lights(), E_FAIL);
 
-	CHECK_FAILED(Ready_Layer_Khazan(TEXT("Layer_Khazan")), E_FAIL);
+	//CHECK_FAILED(Ready_Layer_Khazan(TEXT("Layer_Khazan")), E_FAIL);
 
 	CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Map_Camera")), E_FAIL);
 
@@ -266,7 +266,11 @@ HRESULT CLevel_Map::Ready_DefaultImGui_For_MapTool()
 {
 	CHECK_FAILED(Ready_Main_Window(), E_FAIL);
 
-	CHECK_FAILED(Ready_Prop_Edit_Window(), E_FAIL);
+	CHECK_FAILED(Ready_Prototype_List_Window(), E_FAIL);
+
+	CHECK_FAILED(Ready_Prop_Fix_Window(), E_FAIL);
+
+	CHECK_FAILED(Ready_Prop_List_Window(), E_FAIL);
 
 	CHECK_FAILED(Ready_Light_Window(), E_FAIL);
 
@@ -316,7 +320,7 @@ HRESULT CLevel_Map::Ready_Main_Window()
 					SEPARATOR;
 					
 					ImGui::Text("PROP LIST");
-					if (ImGui::Button("OBJECT##active"))		m_isPropWindow = !m_isPropWindow;
+					if (ImGui::Button("OBJECT##active"))		m_isObjectWindow = !m_isObjectWindow;
 					SEPARATOR;
 
 					ImGui::Text("ADD PROTOTYPES");
@@ -346,10 +350,7 @@ HRESULT CLevel_Map::Ready_Main_Window()
 					if (ImGui::Button("CLEAR JSON LIST"))
 					{
 						m_isMainWindow = { true };
-						m_isJsonWindow = { false };
-						m_isCustomJsonWindow = { false };
 						m_isPrototypeWindow = { false };
-						m_isPropWindow = { false };
 
 						m_isLightSettingWindow = { false };
 
@@ -373,15 +374,6 @@ HRESULT CLevel_Map::Ready_Main_Window()
 						m_isAddLightPoint = { false };
 						m_vLightPoint = {};
 
-						ZeroMemory(m_szJsonSaveName, sizeof(m_szJsonSaveName));		// Json 이름
-
-						m_JsonFiles.clear();				// JsonFile 이름 명 ( Combo에서 볼 Json 폴더 경로의 .json 파일들 )
-						m_iJsonFilesIndex = {};				// ImGui::BeginListBox 용 인덱스 변수
-
-						m_iObjCnt = {};						// 단일 객체 갯수 확인용
-
-						m_CheckPrototypes.clear();			// 중복 프로토타입 체크 및 리스트 출력용
-
 						m_Prototypes_Obj.clear();			// Prototype 목록 ( Object 용 모델 )
 						m_iIndex_PrtObj = {};				// Prototype Object 용 인덱스
 					}
@@ -398,10 +390,8 @@ HRESULT CLevel_Map::Ready_Main_Window()
 	return S_OK;
 }
 
-HRESULT CLevel_Map::Ready_Prop_Edit_Window()
+HRESULT CLevel_Map::Ready_Prototype_List_Window()
 {
-#pragma region WIDGET : 모델 프로토타입 리스트 위젯
-
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (m_isPrototypeWindow)
 		{
@@ -409,10 +399,10 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 
 			ImGui::Text("MODEL PROTOTYPES");
 			ImGui::Text("SEARCH : "); SAMELINE;
-			ImGui::InputText("##search_model_name", m_szSearchModelName, IM_ARRAYSIZE(m_szSearchModelName)); SAMELINE;
+			ImGui::InputText("##search_model_name", m_szSearchPrototypeName, IM_ARRAYSIZE(m_szSearchPrototypeName)); SAMELINE;
 
 			if (ImGui::Button("CLEAR"))
-				ZeroMemory(m_szSearchModelName, sizeof(m_szSearchModelName));
+				ZeroMemory(m_szSearchPrototypeName, sizeof(m_szSearchPrototypeName));
 
 			ImGuiIO& io = ImGui::GetIO();
 
@@ -426,7 +416,7 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 
 			if (ImGui::BeginListBox("##prototype_object_list"))
 			{
-				string strSearchName = m_szSearchModelName;
+				string strSearchName = m_szSearchPrototypeName;
 				transform(strSearchName.begin(), strSearchName.end(), strSearchName.begin(), ::tolower);		// 검색할 모델을 소문자로 변환
 
 				for (_uint i = 0; i < m_Prototypes_Obj.size(); ++i)
@@ -542,10 +532,11 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 		}
 		});
 
-#pragma endregion
+	return S_OK;
+}
 
-#pragma region WIDGET : 오브젝트 수정 위젯
-
+HRESULT CLevel_Map::Ready_Prop_Fix_Window()
+{
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (m_isFixObjectWindow)
 		{
@@ -593,7 +584,7 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				_float fPitch = XMConvertToRadians(m_vFixRotation.x);
 				_float fYaw = XMConvertToRadians(m_vFixRotation.y);
 				_float fRoll = XMConvertToRadians(m_vFixRotation.z);
-				
+
 				_matrix DeltaRotMatirx = XMMatrixRotationZ(fRoll) * XMMatrixRotationX(fPitch) * XMMatrixRotationY(fYaw);
 
 				_vector vScale = {};
@@ -635,7 +626,7 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				ImGui::Text("POS X : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##positionx", &m_vFixPosition.x, fPosMove, fPosMove * 5.f);
 				ImGui::Text("POS Y : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##positiony", &m_vFixPosition.y, fPosMove, fPosMove * 5.f);
 				ImGui::Text("POS Z : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##positionz", &m_vFixPosition.z, fPosMove, fPosMove * 5.f);
-				
+
 				m_FixWorldMatrix.r[3] = XMVectorSetW(XMLoadFloat3(&m_vFixPosition), 1.f);
 
 				m_pFixTransformCom->Set_State(STATE::RIGHT, m_FixWorldMatrix.r[0]);
@@ -687,8 +678,6 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				ZeroMemory(&m_vFixRotation, sizeof(_float3));
 				ZeroMemory(&m_vFixPosition, sizeof(_float3));
 
-				ZeroMemory(m_szModelName, sizeof(m_szModelName));
-
 				m_pFixPropObj = nullptr;
 				m_pFixTransformCom = nullptr;
 				m_isFixObjectWindow = false;
@@ -708,7 +697,6 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 				ZeroMemory(&m_vFixRotation, sizeof(_float3));
 				ZeroMemory(&m_vFixPosition, sizeof(_float3));
 
-				ZeroMemory(m_szModelName, sizeof(m_szModelName));
 				m_pFixPropObj = nullptr;
 				m_pFixTransformCom = nullptr;
 				m_isFixObjectWindow = false;
@@ -737,7 +725,6 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 					m_pFixPropObj = nullptr;
 				}
 
-				ZeroMemory(m_szModelName, sizeof(m_szModelName));
 				m_pFixPropObj = nullptr;
 				m_pFixTransformCom = nullptr;
 				m_isFixObjectWindow = false;
@@ -748,14 +735,15 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 		}
 		});
 
-#pragma endregion
+	return S_OK;
+}
 
-#pragma region WIDGET : 단일 오브젝트 리스트
-
+HRESULT CLevel_Map::Ready_Prop_List_Window()
+{
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
-		if (m_isPropWindow)
+		if (m_isObjectWindow)
 		{
-			ImGui::Begin("PROP OBJECT WINDOW", &m_isPropWindow, ImGuiWindowFlags_AlwaysAutoResize);
+			ImGui::Begin("PROP OBJECT WINDOW", &m_isObjectWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
 			ImGui::Text("OBJECT LIST");
 			ImGui::Text("SEARCH : "); SAMELINE;
@@ -941,8 +929,6 @@ HRESULT CLevel_Map::Ready_Prop_Edit_Window()
 			ImGui::End();
 		}
 		});
-
-#pragma endregion
 
 	return S_OK;
 }
@@ -1342,7 +1328,7 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 				else
 				{
 					// 오브젝트 리스트 윈도우 띄우기
-					m_isPropWindow = true;
+					m_isObjectWindow = true;
 				}
 
 #pragma endregion
@@ -1374,31 +1360,6 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 #pragma endregion
 
 	return S_OK;
-}
-
-void CLevel_Map::Get_Directory_Files(const _char* pDirectoryPath)
-{
-	m_JsonFiles.clear();
-
-	string strPath = pDirectoryPath;
-
-	strPath += m_szJsonFolderPath[ENUM_CLASS(m_eMapType)];
-
-	filesystem::create_directories(strPath);
-
-	for (const auto& entry : filesystem::recursive_directory_iterator(strPath.c_str()))
-	{
-		if (!entry.is_regular_file())
-			continue;
-
-		if (entry.path().extension() != L".json")
-			continue;
-
-		// 파일 이름 (확장자 제거)
-		const string strFileName = entry.path().stem().string(); // 예: Bar_Moxxis
-
-		m_JsonFiles.push_back(strFileName);
-	}
 }
 
 void CLevel_Map::Fbxs_Convert_To_Dat(const _char* pFolderName)
@@ -2068,15 +2029,9 @@ _bool CLevel_Map::Lights_Load_Binary()
 
 void CLevel_Map::MapEditor_Close_Windows()
 {
-	m_isJsonWindow = false;
-
-	m_isCustomJsonWindow = false;
-
 	m_isPrototypeWindow = false;
 
 	m_isObjectWindow = false;
-
-	m_isPropWindow = false;
 
 	m_isFixObjectWindow = false;
 
@@ -2103,8 +2058,6 @@ CLevel_Map* CLevel_Map::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pCont
 void CLevel_Map::Free()
 {
 	MapEditor_Close_Windows();
-
-	Safe_Release(m_pDSV_MapTool);
 
 	__super::Free();
 }
