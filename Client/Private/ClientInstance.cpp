@@ -1,7 +1,8 @@
 #include "ClientInstance.h"
-#include "UI_Manager.h"
 #include "GameInstance.h"
 
+#include "UI_Manager.h"
+#include "DB_Manager.h"
 IMPLEMENT_SINGLETON(CClientInstance)
 
 CClientInstance::CClientInstance()
@@ -20,6 +21,7 @@ HRESULT CClientInstance::Initialize(ID3D11Device** ppDevice, ID3D11DeviceContext
 	Safe_AddRef(m_pContext);
 
 	m_pUI_Manager = CUI_Manager::Create(m_pDevice, m_pContext);
+	m_pDB_Manager = CDB_Manager::Create();
 
 	return S_OK;
 }
@@ -27,6 +29,11 @@ HRESULT CClientInstance::Initialize(ID3D11Device** ppDevice, ID3D11DeviceContext
 void CClientInstance::Update(_float fTimeDelta)
 {
 	m_pUI_Manager->UIObjectToRenderer();
+}
+
+HRESULT CClientInstance::Load_Data(DATATYPE eType, const _tchar* pFilePath)
+{
+	return m_pDB_Manager->Load_Data(eType, pFilePath);
 }
 
 #pragma region UI_MANGER
@@ -97,6 +104,7 @@ void CClientInstance::Free()
 	__super::Free();
 	
 	Safe_Release(m_pUI_Manager);
+	Safe_Release(m_pDB_Manager);
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
 }

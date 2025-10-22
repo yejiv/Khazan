@@ -1,6 +1,7 @@
 #include "Prop_Object.h"
 
 #include "GameInstance.h"
+#include "Body.h"
 
 CProp_Object::CProp_Object(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp { pDevice, pContext }
@@ -30,6 +31,11 @@ HRESULT CProp_Object::Initialize_Clone(void* pArg)
 
     m_pTransformCom->Set_WorldMatrix_4x4(pDesc->WorldMatrix);
 
+    if (pDesc->Properties.isCollider)
+    {
+        CHECK_FAILED(Ready_Collision(pArg), E_FAIL);
+    }
+    
     if (isSnow())
     {
         if (isBlended())
@@ -113,6 +119,36 @@ HRESULT CProp_Object::Ready_Components(void* pArg)
     return S_OK;
 }
 
+HRESULT CProp_Object::Ready_Collision(void* pArg)
+{
+    CBody::BODY_MESHSHAPE_DESC BodyDesc{};
+    BodyDesc.pModel = m_pModelCom;
+    BodyDesc.pTransform = m_pTransformCom;
+    BodyDesc.bIsTrigger = false;
+    BodyDesc.bStartActive = true;
+    BodyDesc.eMotion = EMotionType::Static;
+    BodyDesc.eQuality = EMotionQuality::Discrete;
+    BodyDesc.eShapeType = SHAPE::MESH;
+    BodyDesc.fFriction = 0.8f;
+    BodyDesc.fMass = 1.0f;
+    BodyDesc.fRestitution = 0.0f;
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP);
+    _float3 vPos{};
+    XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
+    _float4 vQuat{};
+    XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
+    BodyDesc.vPos = vPos;
+    BodyDesc.vQuat = vQuat;
+    BodyDesc.vShapeOffset = _float3(0.f, 0.0f, 0.f);
+    BodyDesc.pGameObject = this;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+        TEXT("Com_Body"), reinterpret_cast<CComponent**>(&m_pBodyCom), &BodyDesc)))
+        return E_FAIL;
+
+    return S_OK;
+}
+
 HRESULT CProp_Object::Bind_ShaderResources()
 {
     // 월드 행렬 쉐이더에 바인딩
@@ -168,4 +204,5 @@ void CProp_Object::Free()
     __super::Free();
 
     Safe_Release(m_pModelCom);
+    Safe_Release(m_pBodyCom);
 }
