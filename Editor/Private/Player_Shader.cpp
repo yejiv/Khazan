@@ -30,7 +30,7 @@ HRESULT CPlayer_Shader::Initialize_Clone(void* pArg)
     m_pModelCom->Set_Animation(8);
 
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-    m_pTransformCom->Scaling(_float3(0.5f, 0.5f, 0.5f));
+    //m_pTransformCom->Scaling(_float3(0.5f, 0.5f, 0.5f));
 
     return S_OK;
 }

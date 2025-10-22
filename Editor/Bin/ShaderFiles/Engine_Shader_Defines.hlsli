@@ -1,4 +1,12 @@
 
+SamplerComparisonState ComparisonSampler
+{
+    filter = min_mag_mip_linear;
+    AddressU = clamp;
+    AddressV = clamp;
+    ComparisonFunc = less;
+};
+
 sampler ClampSampler = sampler_state
 {
     filter = min_mag_mip_linear;

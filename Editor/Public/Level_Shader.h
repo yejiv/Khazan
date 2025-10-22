@@ -32,6 +32,8 @@ private:
 
 	_bool					m_isChanged = {};
 
+	_float					m_fShadowBias = {};
+
 public:
 	static CLevel_Shader* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;

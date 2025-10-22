@@ -103,6 +103,9 @@ HRESULT CRenderer::Initialize()
     if (FAILED(Ready_Cascade_Shadow_Resources()))
         return E_FAIL;
 
+    if (FAILED(Ready_Comparison_Sampler()))
+        return E_FAIL;
+
 #ifdef _DEBUG
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Diffuse"), 150.0f, 150.0f, 300.f, 300.f)))
         return E_FAIL;
@@ -344,7 +347,7 @@ HRESULT CRenderer::Render_Combined()
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
         return E_FAIL;
 
-    if (FAILED(m_pShader->Bind_RawValue("g_Splits", m_pGameInstance->Get_Splits(), sizeof(_float) * g_iNumCascades)))
+    if (FAILED(m_pShader->Bind_FloatArray("g_Splits", m_pGameInstance->Get_Splits(), g_iNumCascades)))
         return E_FAIL;
 
     if (FAILED(m_pShader->Bind_RawValue("g_iNumCascades", &g_iNumCascades, sizeof(_uint))))
@@ -358,6 +361,12 @@ HRESULT CRenderer::Render_Combined()
 
     if (FAILED(m_pShader->Bind_SRV("g_TextureArray", m_pCascadeShadowSRVArray)))
         return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_RawValue("g_fBias", &m_fBias, sizeof(_float))))
+        return E_FAIL;
+
+    // PCF
+    //  m_pContext->PSSetSamplers(1, 1, &m_pComparisonSampler);
 
     m_pShader->Begin(3);
 
@@ -516,6 +525,29 @@ HRESULT CRenderer::Ready_Cascade_Shadow_Resources()
         return E_FAIL;
 
     Safe_Release(pDepthStencilTexture);
+
+    return S_OK;
+}
+
+HRESULT CRenderer::Ready_Comparison_Sampler()
+{
+    D3D11_SAMPLER_DESC Desc{};
+    Desc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
+    Desc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+    Desc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+    Desc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+    Desc.BorderColor[0] = 1.f;
+    Desc.BorderColor[1] = 1.f;
+    Desc.BorderColor[2] = 1.f;
+    Desc.BorderColor[3] = 1.f;
+    Desc.MipLODBias = 0.f;
+    Desc.MaxAnisotropy = 1;
+    Desc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+    Desc.MinLOD = 0;
+    Desc.MaxLOD = D3D11_FLOAT32_MAX;
+
+    if (FAILED(m_pDevice->CreateSamplerState(&Desc, &m_pComparisonSampler)))
+        return E_FAIL;
 
     return S_OK;
 }
