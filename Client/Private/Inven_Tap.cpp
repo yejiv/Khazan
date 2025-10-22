@@ -2,6 +2,8 @@
 #include "ClientInstance.h"
 #include "GameInstance.h"
 
+#include "UI_Inven.h"
+
 CInven_Tap::CInven_Tap(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Tap{ pDevice, pContext }
 {
@@ -58,9 +60,9 @@ void CInven_Tap::Update(_float fTimeDelta)
 	{
 		if (ButtonClick(g_hWnd, false, true))
 		{
-			CUIObject::BUBBLEEVENT Desc = {};
+			CUI_Inven::INVENBUBBLE_DESC Desc = {};
 			Desc.szName = m_szName;
-
+			Desc.eBubbleType = CUI_Inven::EVENT_TYPE::TAP;
 			Bubble_EventCall(&Desc);
 		}
 
