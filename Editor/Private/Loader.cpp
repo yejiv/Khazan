@@ -445,7 +445,7 @@ HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDa
 
 	pDataFilePath += pPrototypeDataFileName;
 
-	pDataFilePath += TEXT("_prototypes.dat");
+	pDataFilePath += TEXT("_prototype.dat");
 
 	DWORD dwByte = {};
 
@@ -459,45 +459,123 @@ HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDa
 	// 프로토 타입의 총 개수만큼 순회
 	for (_uint i = 0; i < iPrototypeCnt; ++i)
 	{
-		// 2. MapObject 타입 가져오기 ( _ushort형으로 저장해서 형변환 후 사용 )
-		_ushort sMapObjectType = {};
-		CHECK_FALSE(ReadFile(hFile, &sMapObjectType, sizeof(_ushort), &dwByte, nullptr), E_FAIL);
+		// CModel 을 열어야 하는 경우 ( Instance X )
+		// 2. 프로토 타입 태그 길이 저장
+		_uint iPrototypeTagLen = {};
+		CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
 
-		MAPOBJECT_TYPE eMapObjType = static_cast<MAPOBJECT_TYPE>(sMapObjectType);
+		// 3. 프로토 타입 태그 이름 저장
+		_tchar szPrototypeTag[MAX_PATH] = {};
+		CHECK_FALSE(ReadFile(hFile, &szPrototypeTag, sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr), E_FAIL);
 
-		// MapObject 타입에 따른 조건문
-		if (MAPOBJECT_TYPE::OBJECT == eMapObjType || MAPOBJECT_TYPE::INTERACTIVE == eMapObjType || MAPOBJECT_TYPE::DYNAMIC == eMapObjType)
-		{
-			// CModel 을 열어야 하는 경우 ( Instance X )
+		// 4. 모델 경로 길이 저장
+		_uint iModelPathLen = {};
+		CHECK_FALSE(ReadFile(hFile, &iModelPathLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
 
-			// 3. 프로토 타입 태그 길이 저장
-			_uint iPrototypeTagLen = {};
-			CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
+		// 5. 모델 경로 이름 저장
+		_char szModelPath[MAX_PATH] = {};
+		CHECK_FALSE(ReadFile(hFile, &szModelPath, sizeof(_char) * iModelPathLen, &dwByte, nullptr), E_FAIL);
 
-			// 4. 프로토 타입 태그 이름 저장
-			_tchar szPrototypeTag[MAX_PATH] = {};
-			CHECK_FALSE(ReadFile(hFile, &szPrototypeTag, sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr), E_FAIL);
-
-			// 5. 모델 경로 길이 저장
-			_uint iModelPathLen = {};
-			CHECK_FALSE(ReadFile(hFile, &iModelPathLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
-
-			// 6. 모델 경로 이름 저장
-			_char szModelPath[MAX_PATH] = {};
-			CHECK_FALSE(ReadFile(hFile, &szModelPath, sizeof(_char) * iModelPathLen, &dwByte, nullptr), E_FAIL);
-
-			if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(eLevel), szPrototypeTag,
-				CModel::Create(m_pDevice, m_pContext, szModelPath))))
-			{
-				CloseHandle(hFile);
-				MSG_BOX(TEXT("[DAT ERROR] 맵 오브젝트 프로토타입 등록 실패 ( CModel )"));
-				return E_FAIL;
-			}
-		}
-		else
+		if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(eLevel), szPrototypeTag,
+			CModel::Create(m_pDevice, m_pContext, szModelPath))))
 		{
 			CloseHandle(hFile);
-			MSG_BOX(TEXT("[DAT ERROR] DAT 파일 읽는중 TYPE 문제 ( 박준영 문제 )"));
+			MSG_BOX(TEXT("[DAT ERROR] 맵 오브젝트 프로토타입 등록 실패 ( CModel )"));
+			return E_FAIL;
+		}
+	}
+
+	CloseHandle(hFile);
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_Prototype_MapObject_Inst_From_DAT(const _tchar* pPrototypeDataFileName, LEVEL eLevel, KHAZAN_MAP eMap)
+{
+	// Dat 파일 기본 경로
+	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+
+	switch (eMap)
+	{
+	case KHAZAN_MAP::HEINMACH:
+		pDataFilePath += TEXT("HeinMach/");
+		break;
+	case KHAZAN_MAP::YETUGA:
+		pDataFilePath += TEXT("Yetuga/");
+		break;
+	case KHAZAN_MAP::THECREVICE:
+		pDataFilePath += TEXT("TheCrevice/");
+		break;
+	case KHAZAN_MAP::EMBARS:
+		pDataFilePath += TEXT("Embars/");
+		break;
+	case KHAZAN_MAP::VIPER:
+		pDataFilePath += TEXT("Viper/");
+		break;
+	default:
+		break;
+	}
+
+	pDataFilePath += pPrototypeDataFileName;
+
+	pDataFilePath += TEXT("_prototype_inst.dat");
+
+	DWORD dwByte = {};
+
+	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("[DAT ERROR] 바이너리 파일 오픈 문제"), E_FAIL);
+
+	// 1. 프로토 타입의 총 개수
+	_uint iPrototypeCnt = {};
+	CHECK_FALSE(ReadFile(hFile, &iPrototypeCnt, sizeof(_uint), &dwByte, nullptr), E_FAIL);
+
+	// 프로토 타입의 총 개수만큼 순회
+	for (_uint i = 0; i < iPrototypeCnt; ++i)
+	{
+		// CModel 을 열어야 하는 경우 ( Instance X )
+
+		// 2. 프로토 타입 태그 길이 저장
+		_uint iPrototypeTagLen = {};
+		CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
+
+		// 3. 프로토 타입 태그 이름 저장
+		_tchar szPrototypeTag[MAX_PATH] = {};
+		CHECK_FALSE(ReadFile(hFile, &szPrototypeTag, sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr), E_FAIL);
+
+		// 4. 모델 경로 길이 저장
+		_uint iModelPathLen = {};
+		CHECK_FALSE(ReadFile(hFile, &iModelPathLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
+
+		// 5. 모델 경로 이름 저장
+		_char szModelPath[MAX_PATH] = {};
+		CHECK_FALSE(ReadFile(hFile, &szModelPath, sizeof(_char) * iModelPathLen, &dwByte, nullptr), E_FAIL);
+
+		// 6. 인스턴스 행렬 총 개수 저장
+		_uint iNumInstances = {};
+		CHECK_FALSE(ReadFile(hFile, &iNumInstances, sizeof(_uint), &dwByte, nullptr), E_FAIL);
+
+		// 인스턴스 정보 넘기기
+		CModelMesh_Instance::MODELMESH_INSTANCE_DESC MeshInstanceDesc = {};
+
+		MeshInstanceDesc.iNumInstance = iNumInstances;
+
+		// 7. 행렬 개수만큼 벡터 resize 및 read file
+		MeshInstanceDesc.InstanceData.resize(static_cast<size_t>(iNumInstances));
+
+		for (_uint i = 0; i < iNumInstances; ++i)
+		{
+			CHECK_FALSE(ReadFile(hFile, &MeshInstanceDesc.InstanceData[i].vRight, sizeof(_float4), &dwByte, nullptr), E_FAIL);
+			CHECK_FALSE(ReadFile(hFile, &MeshInstanceDesc.InstanceData[i].vUp, sizeof(_float4), &dwByte, nullptr), E_FAIL);
+			CHECK_FALSE(ReadFile(hFile, &MeshInstanceDesc.InstanceData[i].vLook, sizeof(_float4), &dwByte, nullptr), E_FAIL);
+			CHECK_FALSE(ReadFile(hFile, &MeshInstanceDesc.InstanceData[i].vTranslation, sizeof(_float4), &dwByte, nullptr), E_FAIL);
+			CHECK_FALSE(ReadFile(hFile, &MeshInstanceDesc.InstanceData[i].iID, sizeof(_uint), &dwByte, nullptr), E_FAIL);
+		}
+
+		if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(eLevel), szPrototypeTag,
+			CModel_Instance::Create(m_pDevice, m_pContext, szModelPath, &MeshInstanceDesc))))
+		{
+			CloseHandle(hFile);
+			MSG_BOX(TEXT("[DAT ERROR] 맵 오브젝트 프로토타입 등록 실패 ( CModel )"));
 			return E_FAIL;
 		}
 	}
