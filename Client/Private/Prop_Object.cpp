@@ -31,7 +31,7 @@ HRESULT CProp_Object::Initialize_Clone(void* pArg)
 
     m_pTransformCom->Set_WorldMatrix_4x4(pDesc->WorldMatrix);
 
-    if (pDesc->Properties.isCollider)
+    if (isCollider())
     {
         CHECK_FAILED(Ready_Collision(pArg), E_FAIL);
     }

@@ -494,54 +494,6 @@ HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDa
 				return E_FAIL;
 			}
 		}
-		else if (MAPOBJECT_TYPE::STATIC_INST == eMapObjType || MAPOBJECT_TYPE::ANIMATED_INST == eMapObjType)
-		{
-			// CModel_Instance 를 열어야 하는 경우 ( Instance O )
-			// 
-			// 3. 프로토 타입 태그 길이 저장
-			_uint iPrototypeTagLen = {};
-			CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
-
-			// 4. 프로토 타입 태그 이름 저장
-			_tchar szPrototypeTag[MAX_PATH] = {};
-			CHECK_FALSE(ReadFile(hFile, &szPrototypeTag, sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr), E_FAIL);
-
-			// 5. 모델 경로 길이 저장
-			_uint iModelPathLen = {};
-			CHECK_FALSE(ReadFile(hFile, &iModelPathLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
-
-			// 6. 모델 경로 이름 저장
-			_char szModelPath[MAX_PATH] = {};
-			CHECK_FALSE(ReadFile(hFile, &szModelPath, sizeof(_char) * iModelPathLen, &dwByte, nullptr), E_FAIL);
-
-			// 추후에 인스턴스 추가해야하는 코드 부분 ( vector<MESH_INSTANCE_DATA> )
-			CModelMesh_Instance::MODELMESH_INSTANCE_DESC InstanceDesc = {};
-
-			// 7. 인스턴스 개수
-			_uint iNumInstance = {};
-			CHECK_FALSE(ReadFile(hFile, &iNumInstance, sizeof(_uint), &dwByte, nullptr), E_FAIL);
-
-			for (_uint j = 0; j < InstanceDesc.iNumInstance; ++j)
-			{
-				// 8. 인스턴스 개수 만큼 순회하면서 벡터에 Push_Back ( MapEditor에서 사용한 InstanceID는 빼고 파일 입출력해도 괜찮을 거 같음 )
-				_matrix InstanceMatrix = {};
-				CHECK_FALSE(ReadFile(hFile, &InstanceMatrix, sizeof(_matrix), &dwByte, nullptr), E_FAIL);
-
-				MESH_INSTANCE_DATA InstanceData = {};
-				InstanceData.InstanceMatrix = InstanceMatrix;
-				InstanceData.InstanceID = j;
-
-				InstanceDesc.InstanceData.push_back(InstanceData);
-			}
-
-			if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(eLevel), szPrototypeTag,
-				CModel_Instance::Create(m_pDevice, m_pContext, szModelPath, &InstanceDesc))))
-			{
-				CloseHandle(hFile);
-				MSG_BOX(TEXT("[DAT ERROR] 맵 오브젝트 프로토타입 등록 실패 ( CModel_Instance )"));
-				return E_FAIL;
-			}
-		}
 		else
 		{
 			CloseHandle(hFile);

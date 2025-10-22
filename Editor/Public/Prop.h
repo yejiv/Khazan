@@ -23,7 +23,7 @@ public:
 
 	}PROP_DESC;
 
-	enum class SHADER_PASS { MAIN, WIREFRAME, MAP, MAP_BLEND, SNOWMAP, SNOWMAP_BLEND, END };			// 수정 예정
+	enum class SHADER_PASS { MAIN, WIREFRAME, SHADOW, MAP, MAP_BLEND, SNOWMAP, SNOWMAP_BLEND, END };
 
 protected:
 	CProp(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
