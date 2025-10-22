@@ -27,12 +27,17 @@ texture2D g_BackBufferTexture;
 texture2D g_BlurXTexture;
 
 int g_iTextureArrayIndex;
-Texture2DArray<float> g_TextureArray;
 
 uint g_iNumCascades;
 float g_Splits[4];
 matrix g_LightViewMatrices[4];
 matrix g_LightProjMatrices[4];
+
+// PCF
+Texture2DArray<float> g_TextureArray;
+//  SamplerComparisonState g_ComparisonSampler : register(s1);
+
+float g_fBias;
 
 struct VS_IN
 {
@@ -245,13 +250,20 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
     
     /* 1 ~ -1 -> 0 ~ 1 */ 
     vTexcoord.y = (vPosition.y / vPosition.w) * -0.5f + 0.5f;
-    
-    vector vShadowDepth = g_TextureArray.Sample(DefaultSampler, float3(vTexcoord, iCascadeIndex));
+
     float fLightDepth = vPosition.z / vPosition.w;
+    //  vector vShadowDepth = g_TextureArray.Sample(DefaultSampler, float3(vTexcoord, iCascadeIndex));
+    //  
+    //  if (fLightDepth - g_fBias > vShadowDepth.x)
+    //      Out.vColor = Out.vColor * 0.3f;
+
+    // PCF
+    // Shadow Map Pixel Depth > Light Depth
+    float fShadow = g_TextureArray.SampleCmpLevelZero(ComparisonSampler, float3(vTexcoord, iCascadeIndex), fLightDepth - g_fBias);
     
-    if (fLightDepth - 0.001f > vShadowDepth.x)
-        Out.vColor = Out.vColor * 0.3f;
-    
+    // 비교 샘플링이 정상적으로 되면 보간하여 그림자 그림
+    Out.vColor = lerp(Out.vColor * 0.3f, Out.vColor, fShadow);
+
     return Out;
 }
 

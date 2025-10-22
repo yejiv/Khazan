@@ -125,29 +125,29 @@ PS_OUT PS_MAIN(PS_IN In)
         discard;
     
     // Debug Color
-    float fCameraViewDepth = In.vProjPos.w;
-    uint iCascadeIndex = 0;
-
-    // float Array
-    if (fCameraViewDepth < g_Splits[0])
-        iCascadeIndex = 0;
-    else if (fCameraViewDepth < g_Splits[1])
-        iCascadeIndex = 1;
-    else if (fCameraViewDepth < g_Splits[2])
-        iCascadeIndex = 2;
-    else
-        iCascadeIndex = 3;
-
-    if (0 == iCascadeIndex)
-        Out.vDiffuse = float4(1.f, 0.f, 0.f, 1.f); // Red
-    else if (1 == iCascadeIndex)
-        Out.vDiffuse = float4(1.f, 1.f, 0.f, 1.f); // Yellow
-    else if (2 == iCascadeIndex)
-        Out.vDiffuse = float4(0.f, 1.f, 0.f, 1.f); // Green
-    else if (3 == iCascadeIndex)
-        Out.vDiffuse = float4(0.f, 0.f, 1.f, 1.f); // Blue
-    else
-        Out.vDiffuse = vMtrlDiffuse;
+    //  float fCameraViewDepth = In.vProjPos.w;
+    //  uint iCascadeIndex = 0;
+    //  
+    //  // float Array
+    //  if (fCameraViewDepth < g_Splits[0])
+    //      iCascadeIndex = 0;
+    //  else if (fCameraViewDepth < g_Splits[1])
+    //      iCascadeIndex = 1;
+    //  else if (fCameraViewDepth < g_Splits[2])
+    //      iCascadeIndex = 2;
+    //  else
+    //      iCascadeIndex = 3;
+    //  
+    //  if (0 == iCascadeIndex)
+    //      Out.vDiffuse = float4(1.f, 0.f, 0.f, 1.f); // Red
+    //  else if (1 == iCascadeIndex)
+    //      Out.vDiffuse = float4(1.f, 1.f, 0.f, 1.f); // Yellow
+    //  else if (2 == iCascadeIndex)
+    //      Out.vDiffuse = float4(0.f, 1.f, 0.f, 1.f); // Green
+    //  else if (3 == iCascadeIndex)
+    //      Out.vDiffuse = float4(0.f, 0.f, 1.f, 1.f); // Blue
+    //  else
+    //      Out.vDiffuse = vMtrlDiffuse;
 
     Out.vDiffuse = vMtrlDiffuse;
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
