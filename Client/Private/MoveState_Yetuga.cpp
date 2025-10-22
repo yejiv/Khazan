@@ -12,12 +12,11 @@ void CMoveState_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
     CModel* pModel = static_cast<CModel*>(pOwner->Get_Component(TEXT("Com_Model")));
     pModel->Set_Animation(4);
-    pModel->Set_AnimationLoop(true);
+    pModel->Set_AnimationLoop(false);
 }
 
 void CMoveState_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
-    
 
     CBlackBoard* pBB = m_pGameInstance->Get_BlackBoard();
     static_cast<CYetuga*>(pOwner)->Get_Controller()->AI_MoveTo(pOwner,
@@ -33,6 +32,7 @@ void CMoveState_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 
 void CMoveState_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
+
 }
 
 CMoveState_Yetuga* CMoveState_Yetuga::Create()
