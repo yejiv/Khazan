@@ -6,6 +6,7 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CVIBuffer_Mesh_Instance final : public CVIBuffer_Instance
 {
 public:
+	enum CS_PASS { MOVE, GRAVITY, UPDATE_SPEED, RESET, END };
 	enum class SPEED_VALUE { SPREAD_SPEED, ROTATION_SPEED, UPWARD_SPEED, SCALE_SPEED, SPEED_END };
 
 	typedef struct tagPointInstanceDesc : public INSTANCE_DESC
@@ -40,6 +41,22 @@ public:
 	void					Remove_Speed();
 	void					Setting_Pivot(_float3 pivot);
 	void					Setting_Loop(_bool isLoop) { m_IsLoop = isLoop; };
+
+
+private:
+	HRESULT						Ready_SRV(void* pSysmem);
+	HRESULT						Ready_UAV();
+	HRESULT						Ready_CB();
+	HRESULT						Ready_ComputeShader();
+
+private:
+	class CComputeShader* m_ComputeShaders[ENUM_CLASS(CS_PASS::END)] = {};
+	ID3D11ShaderResourceView* m_pSRV = { nullptr };
+	ID3D11UnorderedAccessView* m_pUAV = { nullptr };
+	ID3D11UnorderedAccessView* m_pUAVSpeed = { nullptr };
+	ID3D11Buffer* m_pCB = { nullptr };
+	ID3D11Buffer* m_pStructuredBuffer = { nullptr };
+	POINT_INSTANCE_PARAMS* m_pParticleParams; 
 
 private:
 	_float3					m_vPivot = {};

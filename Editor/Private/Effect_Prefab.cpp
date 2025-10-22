@@ -43,6 +43,7 @@ HRESULT CEffect_Prefab::Initialize_Clone(void* pArg)
 void CEffect_Prefab::Priority_Update(_float fTimeDelta)
 {
     //if (!m_bPlaying) return;
+
     if(!m_bPlaying && m_IsLoop)
         ResetChildren();
     else if (!m_bPlaying)

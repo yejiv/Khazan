@@ -951,7 +951,10 @@
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Deferred.hlsl">
       <Filter>95.ShaderFiles</Filter>
     </FxCompile>
-    <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Compute.hlsl">
+    <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Point_Instance_Compute.hlsl">
+      <Filter>95.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Model_Instance_Compute.hlsl">
       <Filter>95.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

@@ -60,15 +60,10 @@ private :
 	POINT_INSTANCE_PARAMS*		m_pParticleParams;
 
 private:
-	_float3						m_vPivot = {};
-	//_float*						m_fSpeed[ENUM_CLASS(SPEED_VALUE::SPEED_END)];
-	//_float*						m_fVelocityY;
-	_bool						m_IsLoop = {};
-	//_float						m_fRotationPerSec = {};
+	_float3						m_vPivot = {}; 
+	_bool						m_IsLoop = {}; 
 	_float						m_fOffset = {};	//없애기
 	_float3						m_fRange = {};
-	//_float2						m_fScale = {};
-
 	_float3						m_vSourceColor = {};
 	_bool						m_bIsCircle = {};
 

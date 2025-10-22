@@ -10,12 +10,9 @@ CVIBuffer_Point_Instance::CVIBuffer_Point_Instance(ID3D11Device* pDevice, ID3D11
 CVIBuffer_Point_Instance::CVIBuffer_Point_Instance(const CVIBuffer_Point_Instance& Prototype)
 	: CVIBuffer_Instance { Prototype }
 	, m_vPivot{ Prototype.m_vPivot }
-	//, m_pSpeeds{ Prototype.m_pSpeeds }
 	, m_IsLoop{ Prototype.m_IsLoop }
-	//, m_fRotationPerSec{ Prototype.m_fRotationPerSec }
 	, m_fOffset{ Prototype.m_fOffset }
 	, m_fRange{ Prototype.m_fRange }
-	//, m_fScale{ Prototype.m_fScale }
 
 {
 }
@@ -58,7 +55,6 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDes
 	m_fRange = pPointDesc->vRange;
 	m_bIsCircle = pPointDesc->IsCircle;
 	m_vSourceColor = pPointDesc->vSourceColor;
-	//m_fRotationPerSec = pPointDesc->fRotationPerSec;
 	m_fOffset = pPointDesc->fOffset;
 
 	m_iInstanceVertexStride = sizeof(VTXINSTANCE_PARTICLE);
@@ -136,8 +132,7 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDes
 
 		pInstanceVertices[i].vLifeTime = _float2(0.f, fLifeTime);
 		m_fRange = pPointDesc->vRange;
-		m_pParticleParams[i].fSize = pPointDesc->vSize;
-
+		m_pParticleParams[i].fSize = pPointDesc->vSize; 
 		m_pParticleParams[i].vInitTranslation = pInstanceVertices[i].vTranslation;
 	}
 
@@ -377,19 +372,19 @@ HRESULT CVIBuffer_Point_Instance::Ready_CB()
 
 HRESULT CVIBuffer_Point_Instance::Ready_ComputeShader()
 {
-	m_ComputeShaders[ENUM_CLASS(CS_PASS::MOVE)] = CComputeShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Compute.hlsl"), "CS_MOVE");
+	m_ComputeShaders[ENUM_CLASS(CS_PASS::MOVE)] = CComputeShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Point_Instance_Compute.hlsl"), "CS_MOVE");
 	if (nullptr == m_ComputeShaders[ENUM_CLASS(CS_PASS::MOVE)])
 		return E_FAIL;
 
-	m_ComputeShaders[ENUM_CLASS(CS_PASS::GRAVITY)] = CComputeShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Compute.hlsl"), "CS_UPDATE_GRAVITY");
+	m_ComputeShaders[ENUM_CLASS(CS_PASS::GRAVITY)] = CComputeShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Point_Instance_Compute.hlsl"), "CS_UPDATE_GRAVITY");
 	if (nullptr == m_ComputeShaders[ENUM_CLASS(CS_PASS::GRAVITY)])
 		return E_FAIL;
 
-	m_ComputeShaders[ENUM_CLASS(CS_PASS::UPDATE_SPEED)] = CComputeShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Compute.hlsl"), "CS_UPDATE_SPEED");
+	m_ComputeShaders[ENUM_CLASS(CS_PASS::UPDATE_SPEED)] = CComputeShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Point_Instance_Compute.hlsl"), "CS_UPDATE_SPEED");
 	if (nullptr == m_ComputeShaders[ENUM_CLASS(CS_PASS::UPDATE_SPEED)])
 		return E_FAIL;
 
-	m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET)] = CComputeShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Compute.hlsl"), "CS_RESET");
+	m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET)] = CComputeShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Point_Instance_Compute.hlsl"), "CS_RESET");
 	if (nullptr == m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET)])
 		return E_FAIL;
 
