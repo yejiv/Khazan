@@ -56,13 +56,11 @@ void CJOH_Test1::Update(_float fTimeDelta)
 
     if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
     {
-        //m_pModelCom->Set_AnimationLoop(true);
         m_pModelCom->Set_Animation(++m_iCurrentAnimIndex);
     }
     if (m_pGameInstance->Key_Pressing(DIK_LCONTROL,fTimeDelta) && m_pGameInstance->Key_Down(DIK_2))
     {
         m_iCurrentAnimIndex = 2;
-      // m_pModelCom->Set_AnimationLoop(true);
         m_pModelCom->Set_Animation(m_iCurrentAnimIndex);
     }
     if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_3))
@@ -76,6 +74,13 @@ void CJOH_Test1::Update(_float fTimeDelta)
     if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_5))
     {
         m_pModelCom->Set_Animation(3);
+    }
+    if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_6))
+    {
+        m_iCurrentAnimIndex = 3;
+
+        m_pModelCom->Set_Animation(m_iCurrentAnimIndex);
+        m_pModelCom->Set_AnimationLoop(true);
     }
 }
 
