@@ -58,10 +58,8 @@ void CProp::Set_ShaderPass(_uint iShaderPass)
     m_eShaderPass = static_cast<SHADER_PASS>(iShaderPass);
 }
 
-HRESULT CProp::Bind_ShaderResources_ForSnowMap(CTexture* pTextureCom, _uint iMeshIndex)
+HRESULT CProp::Bind_ShaderResources_ForSnowMap(_uint iMeshIndex)
 {
-    CHECK_FAILED(pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_SnowTexture", 0), E_FAIL);
-
     CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fSnowAmount", &m_fSnowAmount, sizeof(_float)), E_FAIL);
 
     CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vSnowColor", &m_vSnowColor, sizeof(_float3)), E_FAIL);

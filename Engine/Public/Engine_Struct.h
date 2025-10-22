@@ -73,6 +73,15 @@ namespace Engine
 		bool isBlended{ false };
 		bool isInstance{ false };
 		bool isShadow{ false };
+		bool isBackGround{ false };
+
+		tagMapObjectProperties() = default;
+
+		operator bool() const noexcept
+		{
+			return isSnow || isCollider || isBlended ||
+				isInstance || isShadow || isBackGround;
+		}
 
 	}MAPOBJECT_PROPERTIES;
 
@@ -120,9 +129,16 @@ namespace Engine
 
 	typedef struct tagPointInstanceParams
 	{
-		XMFLOAT4 fSpeed;
 		XMFLOAT4 vInitTranslation;
+		XMFLOAT2 fSize;
 	}POINT_INSTANCE_PARAMS;
+
+	typedef struct tagPointInstanceSpeedParams
+	{
+		XMFLOAT4			fSpeed;
+		float				fGravity;
+		XMFLOAT3			padding;
+	}POINT_INSTANCE_SPEED_PARAMS;
 
 	typedef struct tagVertexPosition
 	{
@@ -245,7 +261,6 @@ namespace Engine
 		XMFLOAT3			vPrevPosition;
 		float				bDead;
 		XMFLOAT2			vLifeTime;
-
 	}VTXINSTANCE_PARTICLE;
 
 	typedef struct tagVertexMeshInstanceParticle

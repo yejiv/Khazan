@@ -4,13 +4,13 @@
 #include "ContainerObject.h"
 
 CDummy::CDummy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    : CPool{ pDevice, pContext }
+    : CGameObject{ pDevice, pContext }
 {
 
 }
 
 CDummy::CDummy(const CDummy& Prototype)
-    : CPool{ Prototype }
+    : CGameObject{ Prototype }
 {
 
 }

@@ -6,7 +6,7 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CVIBuffer_Point_Instance final : public CVIBuffer_Instance
 {
 public:
-	enum CS_PASS { MOVE, GRAVITY, END };
+	enum CS_PASS { MOVE, GRAVITY, UPDATE_SPEED, RESET, END };
 	enum class SPEED_VALUE { SPREAD_SPEED, ROTATION_SPEED, UPWARD_SPEED, SCALE_SPEED, SPEED_END };
 
 	typedef struct tagPointInstanceDesc : public INSTANCE_DESC
@@ -54,24 +54,20 @@ private :
 	class CComputeShader*		m_ComputeShaders[ENUM_CLASS(CS_PASS::END)] = {};
 	ID3D11ShaderResourceView*	m_pSRV = { nullptr };
 	ID3D11UnorderedAccessView*	m_pUAV = { nullptr };
+	ID3D11UnorderedAccessView*	m_pUAVSpeed = { nullptr };
 	ID3D11Buffer*				m_pCB = { nullptr };
 	ID3D11Buffer*				m_pStructuredBuffer = { nullptr };
 	POINT_INSTANCE_PARAMS*		m_pParticleParams;
 
-	ID3D11Buffer*				m_pSRVBuffer = { nullptr };	//나중에 없앨 거
-
-	ID3D11UnorderedAccessView*	m_pUAV_Gravity = { nullptr };
-	ID3D11Buffer*				m_pVelocityBuffer = { nullptr };
-
 private:
 	_float3						m_vPivot = {};
-	_float*						m_fSpeed[ENUM_CLASS(SPEED_VALUE::SPEED_END)];
-	_float*						m_fVelocityY;
+	//_float*						m_fSpeed[ENUM_CLASS(SPEED_VALUE::SPEED_END)];
+	//_float*						m_fVelocityY;
 	_bool						m_IsLoop = {};
-	_float						m_fRotationPerSec = {};
-	_float						m_fOffset = {};
+	//_float						m_fRotationPerSec = {};
+	_float						m_fOffset = {};	//없애기
 	_float3						m_fRange = {};
-	_float2						m_fScale = {};
+	//_float2						m_fScale = {};
 
 	_float3						m_vSourceColor = {};
 	_bool						m_bIsCircle = {};

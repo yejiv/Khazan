@@ -95,6 +95,7 @@ HRESULT CProp_Test::Ready_Collision(void* pArg)
 {
     CBody::BODY_MESHSHAPE_DESC BodyDesc{};
     BodyDesc.pModel = m_pModelCom;
+    BodyDesc.pTransform = m_pTransformCom;
     BodyDesc.bIsTrigger = false;
     BodyDesc.bStartActive = true;
     BodyDesc.eMotion = EMotionType::Static;
