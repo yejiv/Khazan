@@ -253,6 +253,9 @@
     <Filter Include="94. ClientInstance\DB">
       <UniqueIdentifier>{dffd0957-694b-48a5-a2e0-c30d199869c1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Item">
+      <UniqueIdentifier>{5a375172-cf57-4494-aa11-36f0c266d20c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -471,6 +474,9 @@
     <ClInclude Include="..\Public\Client_Struct.h">
       <Filter>99.Defines</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Item_Slot.h">
+      <Filter>02.GameObject\UI\Item</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -677,6 +683,9 @@
     </ClCompile>
     <ClCompile Include="..\private\DB_Manager.cpp">
       <Filter>94. ClientInstance\DB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Item_Slot.cpp">
+      <Filter>02.GameObject\UI\Item</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

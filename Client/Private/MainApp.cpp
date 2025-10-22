@@ -180,6 +180,20 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 
 HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 {
+	//플레이어 HUD 텍스처
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Hud_HPGauge"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Hud/State/T_Hud_Gauge_HP_0%d.png"), 7))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Hud_HPGauge_BG"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Hud/State/T_Hud_Gauge_HP_BG_0%d.png"), 10))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Hud_Player_HPGauge_BG"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Hud/State/T_Hud_Hp_Bg_0%d.png"), 5))))
+		return E_FAIL;
+
+	//UI 객체
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Atlas_Icon"),
 		CUI_Atlas_Icon::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
@@ -200,17 +214,8 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 		CUI_Inven::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC)))))
 		return E_FAIL;
 
-	//플레이어 HUD 텍스처
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Hud_HPGauge"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Hud/State/T_Hud_Gauge_HP_0%d.png"), 7))))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Hud_HPGauge_BG"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Hud/State/T_Hud_Gauge_HP_BG_0%d.png"), 10))))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Hud_Player_HPGauge_BG"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Hud/State/T_Hud_Hp_Bg_0%d.png"), 5))))
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Item"),
+		CItem_Slot::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC)))))
 		return E_FAIL;
 
 	return S_OK;
@@ -221,11 +226,7 @@ HRESULT CMainApp::Ready_DB()
 	CHECK_FAILED(m_pClientInstance->Load_Data(DATATYPE::ITEM, TEXT("../Bin/Data/DB/Item_DB.csv")),E_FAIL);
 	CHECK_FAILED(m_pClientInstance->Load_Data(DATATYPE::EQUIPEFFECT, TEXT("../Bin/Data/DB/EquipItem_DB.csv")), E_FAIL);
 	CHECK_FAILED(m_pClientInstance->Load_Data(DATATYPE::OTHEREFFECT, TEXT("../Bin/Data/DB/OtherItem_DB.csv")), E_FAIL);
-	
-	_wstring test = m_pClientInstance->Get_Data<ITEM_DATA>(1010)->strName;
-	
-	MSG_BOX(test.c_str());
-	
+		
 	return S_OK;
 }
 

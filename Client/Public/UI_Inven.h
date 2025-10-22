@@ -30,10 +30,12 @@ private:
 
 	_float								m_fAccTime = {};
 	UIANIMSTATE							m_eAnimState = { UIANIMSTATE::END };
+	vector<class CItem_Slot*>			m_pActiveItem;
+
 private:
 	virtual	HRESULT						Ready_Prototype();
 	HRESULT								Ready_Object();
-
+	HRESULT								Ready_SlotSet();
 public:
 	static CUI_Inven*					Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
 	virtual CGameObject*				Clone(void* pArg) override;
