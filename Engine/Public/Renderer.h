@@ -19,6 +19,10 @@ public:
 	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pRenderObject);
 	HRESULT Draw();
 
+	// Test
+public:
+	void Set_ShadowBias(_float fBias) { m_fBias = fBias; }
+
 #ifdef _DEBUG
 public:
 	HRESULT Add_DebugComponent(class CComponent* pComponent);
@@ -44,6 +48,10 @@ private:
 	ID3D11DepthStencilView*		m_CascadeShadowDSVs[g_iNumCascades];
 	ID3D11ShaderResourceView*	m_pCascadeShadowSRVArray = { nullptr };
 
+	// PCF
+	ID3D11SamplerState*			m_pComparisonSampler = { nullptr };
+	_float						m_fBias = { 0.001f };
+
 #ifdef _DEBUG
 private:
 	list<class CComponent*>		m_DebugComponent;
@@ -66,6 +74,7 @@ private:
 private:
 	HRESULT SetUp_Viewport(_float fWidth, _float fHeight);
 	HRESULT Ready_Cascade_Shadow_Resources();
+	HRESULT Ready_Comparison_Sampler();
 
 #ifdef _DEBUG
 	HRESULT Render_Debug();

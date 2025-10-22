@@ -73,6 +73,7 @@ public:
 #pragma region RENDERER
 public:
 	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pRenderObject);
+	void Set_ShadowBias(_float fBias);
 
 #ifdef _DEBUG
 public:

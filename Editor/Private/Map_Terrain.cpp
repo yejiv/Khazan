@@ -24,7 +24,7 @@ HRESULT CMap_Terrain::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    //m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(-50.f, 0.f, -50.f, 1.f));
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(-50.f, 0.f, -50.f, 1.f));
 
     //m_pTransformCom->Scale(_float3(100.f, 0.f, 100.f));
 
@@ -38,12 +38,22 @@ void CMap_Terrain::Priority_Update(_float fTimeDelta)
 
 void CMap_Terrain::Update(_float fTimeDelta)
 {
+    if (m_pGameInstance->Key_Down(DIK_F5))
+    {
+        _float4 vCamPos = *m_pGameInstance->Get_CamPosition();
+        vCamPos.x -= 50.f;
+        vCamPos.y = 0.f;
+        vCamPos.z -= 50.f;
+        vCamPos.w = 1.f;
+        m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&vCamPos));
+    }
+    if (m_pGameInstance->Key_Down(DIK_F6)) m_isRender = !m_isRender;
 }
 
 void CMap_Terrain::Late_Update(_float fTimeDelta)
 {
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this)))
-        return;
+    if (true == m_isRender)
+        CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this), );
 }
 
 HRESULT CMap_Terrain::Render()

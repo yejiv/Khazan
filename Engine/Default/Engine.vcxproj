@@ -189,6 +189,10 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\Cell.cpp" />
     <ClCompile Include="..\private\Channel.cpp" />
     <ClCompile Include="..\Private\Composite_Node.cpp" />
+    <ClCompile Include="..\Private\Condition_Node.cpp" />
+    <ClCompile Include="..\Private\CoolDown_Nodel.cpp" />
+    <ClCompile Include="..\Private\Decorator_Node.cpp" />
+    <ClCompile Include="..\Private\Inverter_Node.cpp" />
     <ClCompile Include="..\Private\Jolt_CharacterContactListener.cpp" />
     <ClCompile Include="..\Private\CharacterVirtual.cpp" />
     <ClCompile Include="..\Private\Component.cpp" />
@@ -217,6 +221,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\Mesh.cpp" />
     <ClCompile Include="..\private\MeshMaterial.cpp" />
     <ClCompile Include="..\Private\Perception.cpp" />
+    <ClCompile Include="..\Private\Repeater_Node.cpp" />
     <ClCompile Include="..\Private\Selector_Node.cpp" />
     <ClCompile Include="..\Private\Sequence_Node.cpp" />
     <ClCompile Include="..\Private\StateMachine.cpp" />
@@ -257,6 +262,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\VIBuffer_Point_Instance.cpp" />
     <ClCompile Include="..\private\VIBuffer_Rect.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Terrain.cpp" />
+    <ClCompile Include="..\Private\Wait_Node.cpp" />
     <ClCompile Include="..\Public\ImGui\imgui.cpp" />
     <ClCompile Include="..\Public\ImGui\imgui_demo.cpp" />
     <ClCompile Include="..\Public\ImGui\imgui_draw.cpp" />
@@ -287,6 +293,10 @@ call Copy.bat</Command>
     <ClInclude Include="..\public\Cell.h" />
     <ClInclude Include="..\public\Channel.h" />
     <ClInclude Include="..\Public\Composite_Node.h" />
+    <ClInclude Include="..\Public\Condition_Node.h" />
+    <ClInclude Include="..\Public\CoolDown_Nodel.h" />
+    <ClInclude Include="..\Public\Decorator_Node.h" />
+    <ClInclude Include="..\Public\Inverter_Node.h" />
     <ClInclude Include="..\Public\Jolt_CharacterContactListener.h" />
     <ClInclude Include="..\Public\CharacterVirtual.h" />
     <ClInclude Include="..\Public\Component.h" />
@@ -332,6 +342,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\public\MeshMaterial.h" />
     <ClInclude Include="..\Public\Perception.h" />
     <ClInclude Include="..\Public\Perception_Defines.h" />
+    <ClInclude Include="..\Public\Repeater_Node.h" />
     <ClInclude Include="..\Public\Selector_Node.h" />
     <ClInclude Include="..\Public\Sequence_Node.h" />
     <ClInclude Include="..\Public\StateMachine.h" />
@@ -372,6 +383,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\VIBuffer_Point_Instance.h" />
     <ClInclude Include="..\public\VIBuffer_Rect.h" />
     <ClInclude Include="..\Public\VIBuffer_Terrain.h" />
+    <ClInclude Include="..\Public\Wait_Node.h" />
     <ClInclude Include="EnginePch.h" />
   </ItemGroup>
   <ItemGroup>
