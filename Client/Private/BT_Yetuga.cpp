@@ -29,14 +29,14 @@ HRESULT CBT_Yetuga::Initialize(void* pArg)
     CAction_Node* pAttackCondition = CAction_Node::Create(
         [pOwner](CBlackBoard* BB)
         {
-            cout << "Attack Conditon " << endl;
+            //cout << "Attack Conditon " << endl;
 
             if (BB->Get_Value<_bool>("Yetuga", "isDead")) return BTNODESTATE::FAILURE;
 
             _float fDist = BB->Get_Value<_float>("Yetuga", "TargetDist");
             if (fDist != 0 && pOwner->AI_IsReadyCoolDown("Attack") && fDist < BB->Get_Value<_float>("Yetuga", "AttackRange"))
             {
-                cout << "AttackConditionSuccess" << endl;
+                //cout << "AttackConditionSuccess" << endl;
                 return BTNODESTATE::SUCCESS;
             }
             else
@@ -57,11 +57,13 @@ HRESULT CBT_Yetuga::Initialize(void* pArg)
                 pOwner->AI_Set_CoolDown("Attack", BB->Get_Value<_float>("Yetuga", "AttackCoolDown"));
                 pOwner->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::ATTACK), pOwner);
 
+                cout << "Attack_Running" << endl;
                 return BTNODESTATE::RUNNING;
 
             }
             if (BB->Get_Value<_bool>("Yetuga", "isAttackFinished"))
             {
+                cout << "Attack_Success" << endl;
                 return BTNODESTATE::SUCCESS;
             }
             // 아직 애니메이션 진행 중
@@ -73,7 +75,7 @@ HRESULT CBT_Yetuga::Initialize(void* pArg)
             {
                 BB->Set_Value<_bool>("Yetuga", "isAttack", false);
                 BB->Set_Value<_bool>("Yetuga", "isAttackFinished", false);
-
+                cout << "기모띠" << endl;
                 pOwner->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pOwner);
             }
         }
@@ -95,10 +97,12 @@ HRESULT CBT_Yetuga::Initialize(void* pArg)
         [pOwner](CBlackBoard* BB)
         {
             if (BB->Get_Value<_bool>("Yetuga", "isDead")) return BTNODESTATE::FAILURE;
-            cout << "Chase Condition" << endl;
             if (!BB->Get_Value<_bool>("Yetuga", "isDetected")) return BTNODESTATE::FAILURE;
-
             _float fDist = BB->Get_Value<_float>("Yetuga", "TargetDist");
+
+            cout << "Chase Condition SUCCESS" << endl;
+
+
 
             if (fDist >= BB->Get_Value<_float>("Yetuga","AttackRange") 
                 && fDist != 0 && fDist <= BB->Get_Value<_float>("Yetuga", "ChaseRange"))
@@ -124,7 +128,7 @@ HRESULT CBT_Yetuga::Initialize(void* pArg)
         {
             if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
             {
-                cout << " MoveAction Terminated" << endl;
+                //cout << " MoveAction Terminated" << endl;
             }
         }
     );
@@ -141,7 +145,6 @@ HRESULT CBT_Yetuga::Initialize(void* pArg)
         {
             if (BB->Get_Value<_bool>("Yetuga", "isDead")) return BTNODESTATE::FAILURE;
             if (BB->Get_Value<_bool>("Yetuga", "isDetected")) return BTNODESTATE::FAILURE;
-
             pOwner->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE),pOwner);
             return BTNODESTATE::RUNNING;
         },
