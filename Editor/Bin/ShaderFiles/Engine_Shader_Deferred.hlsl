@@ -251,48 +251,18 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
     /* 1 ~ -1 -> 0 ~ 1 */ 
     vTexcoord.y = (vPosition.y / vPosition.w) * -0.5f + 0.5f;
 
-    vector vShadowDepth = g_TextureArray.Sample(DefaultSampler, float3(vTexcoord, iCascadeIndex));
     float fLightDepth = vPosition.z / vPosition.w;
-    
-    if (fLightDepth - 0.001f > vShadowDepth.x)
-        Out.vColor = Out.vColor * 0.3f;
+    //  vector vShadowDepth = g_TextureArray.Sample(DefaultSampler, float3(vTexcoord, iCascadeIndex));
+    //  
+    //  if (fLightDepth - g_fBias > vShadowDepth.x)
+    //      Out.vColor = Out.vColor * 0.3f;
 
     // PCF
-    
-    // 기존 식
-    // Shadow Map Pixel Depth > Light Depth - bias -> Pass
-    //  float fShadow = g_TextureArray.SampleCmpLevelZero(ComparisonSampler, float3(vTexcoord, iCascadeIndex), 0);
-    
-    // 디버깅 위해 샘플링한 셰도우 맵의 깊이 값이 0보다 작아도 참이 나오는지 비교
-    //  float fShadow = g_TextureArray.SampleCmpLevelZero(ComparisonSampler, float3(vTexcoord, iCascadeIndex), 0);
-    //  Out.vColor = float4(fShadow, g_fBias, 0.f, 1.f);
+    // Shadow Map Pixel Depth > Light Depth
+    float fShadow = g_TextureArray.SampleCmpLevelZero(ComparisonSampler, float3(vTexcoord, iCascadeIndex), fLightDepth - g_fBias);
     
     // 비교 샘플링이 정상적으로 되면 보간하여 그림자 그림
-    //  Out.vColor = lerp(Out.vColor * 0.3f, Out.vColor, fShadow);
-
-    // LightDepth, ShadowDepth -> 0 ~ 1 범위 확인 O
-    //  if (fLightDepth > 1.f || fLightDepth < 0.f)
-    //      Out.vColor = float4(0.f, 1.f, 0.f, 1.f);
-    //  else if (vShadowDepth.x > 1.f || vShadowDepth.x < 0.f)
-    //      Out.vColor = float4(0.f, 0.f, 1.f, 1.f);
-    
-    // Texcoord -> 0 ~ 1 범위 확인 O
-    //  if (vTexcoord.x > 1.f || vTexcoord.x < 0.f)
-    //      Out.vColor = float4(1.f, 0.f, 0.f, 1.f);
-    //  else if (vTexcoord.y > 1.f || vTexcoord.y < 0.f)
-    //      Out.vColor = float4(0.f, 1.f, 0.f, 1.f);
-    
-    // Cascade Index -> 총 4개 개수여서 0 ~ 3 범위 확인 O
-    //  if (0 == iCascadeIndex)
-    //      Out.vColor = float4(1.f, 0.f, 0.f, 1.f); // Red
-    //  else if (1 == iCascadeIndex)
-    //      Out.vColor = float4(1.f, 1.f, 0.f, 1.f); // Yellow
-    //  else if (2 == iCascadeIndex)
-    //      Out.vColor = float4(0.f, 1.f, 0.f, 1.f); // Green
-    //  else if (3 == iCascadeIndex)
-    //      Out.vColor = float4(0.f, 0.f, 1.f, 1.f); // Blue
-    //  else
-    //      Out.vColor = float4(1.f, 1.f, 1.f, 1.f); // White
+    Out.vColor = lerp(Out.vColor * 0.3f, Out.vColor, fShadow);
 
     return Out;
 }

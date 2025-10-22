@@ -1,7 +1,7 @@
 
 SamplerComparisonState ComparisonSampler
 {
-    filter = min_mag_mip_linear;
+    filter = comparison_min_mag_linear_mip_point;
     AddressU = clamp;
     AddressV = clamp;
     ComparisonFunc = less;

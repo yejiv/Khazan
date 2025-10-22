@@ -50,7 +50,7 @@ private:
 
 	// PCF
 	ID3D11SamplerState*			m_pComparisonSampler = { nullptr };
-	_float						m_fBias = {};
+	_float						m_fBias = { 0.001f };
 
 #ifdef _DEBUG
 private:

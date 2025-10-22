@@ -542,7 +542,7 @@ HRESULT CRenderer::Ready_Comparison_Sampler()
     Desc.BorderColor[3] = 1.f;
     Desc.MipLODBias = 0.f;
     Desc.MaxAnisotropy = 1;
-    Desc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+    Desc.ComparisonFunc = D3D11_COMPARISON_LESS;
     Desc.MinLOD = 0;
     Desc.MaxLOD = D3D11_FLOAT32_MAX;
 

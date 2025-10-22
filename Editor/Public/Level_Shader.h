@@ -32,7 +32,7 @@ private:
 
 	_bool					m_isChanged = {};
 
-	_float					m_fShadowBias = {};
+	_float					m_fShadowBias = { 0.001f };
 
 public:
 	static CLevel_Shader* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
