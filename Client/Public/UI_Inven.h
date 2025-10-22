@@ -23,14 +23,22 @@ public:
 	virtual void						Late_Update(_float fTimeDelta) override;
 	virtual HRESULT						Render() override;
 
+	virtual HRESULT						Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
+	virtual void						Bubble_EventCall(BUBBLEEVENT* pArg) override;
+
 private:
 	class CUI_BackGround*				m_pBackGround = { nullptr };
-	unordered_map<_wstring,
-		class CUI_Panel*>				m_pPanel = {};
 
 	_float								m_fAccTime = {};
 	UIANIMSTATE							m_eAnimState = { UIANIMSTATE::END };
 	vector<class CItem_Slot*>			m_pActiveItem;
+	vector<class CItem_Slot*>			m_pCollection;
+	vector<class CItem_Slot*>			m_pMaterial;
+
+
+	vector<class CInven_Tap*>			m_pInvenTap;
+	_int								m_iSeleteTap = {};
+
 
 private:
 	virtual	HRESULT						Ready_Prototype();

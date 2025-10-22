@@ -176,7 +176,6 @@
     <ClInclude Include="..\Public\FSM_Yetuga.h" />
     <ClInclude Include="..\Public\HeaderGroup_UI.h" />
     <ClInclude Include="..\Public\IdleState_Yetuga.h" />
-    <ClInclude Include="..\public\Inven_OtherItem.h" />
     <ClInclude Include="..\public\Inven_Panel.h" />
     <ClInclude Include="..\public\Inven_Tap.h" />
     <ClInclude Include="..\public\Item_Slot.h" />
@@ -250,7 +249,6 @@
     <ClCompile Include="..\Private\Dummy.cpp" />
     <ClCompile Include="..\Private\FSM_Yetuga.cpp" />
     <ClCompile Include="..\Private\IdleState_Yetuga.cpp" />
-    <ClCompile Include="..\private\Inven_OtherItem.cpp" />
     <ClCompile Include="..\private\Inven_Panel.cpp" />
     <ClCompile Include="..\private\Inven_Tap.cpp" />
     <ClCompile Include="..\private\Item_Slot.cpp" />
