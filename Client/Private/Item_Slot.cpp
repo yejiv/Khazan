@@ -21,7 +21,7 @@ void CItem_Slot::Input_Slot()
 
 void CItem_Slot::Update_Pos(_int iIndex, _float2 vPos, _float fOffSet, _int iMaxIndexX, _int iMaxIndexY)
 {
-    _int iCol = iIndex % iMaxIndexX;  // 열 인덱스 (x방향)
+    _int iCol = iIndex % iMaxIndexX;
     _int iRow = iIndex / iMaxIndexX;
 
     m_vWorldPos.x = vPos.x + iCol * fOffSet - (iMaxIndexX - 1) * fOffSet / 2;
@@ -121,7 +121,7 @@ HRESULT CItem_Slot::Ready_Childer()
     AtlasDesc.vLocalSize = { 130.f, 130.f };
 
     AtlasDesc.vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_Hover.png", 1);
-    AtlasDesc.iShaderPass = 1;
+    AtlasDesc.iShaderPass = 3;
     AtlasDesc.iTexPass = 1;
     AtlasDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
     m_pOverFx = static_cast<CUI_Atlas_Icon*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Atlas_Icon"), &AtlasDesc));
@@ -138,7 +138,7 @@ HRESULT CItem_Slot::Ready_Childer()
     AtlasDesc.vLocalSize = { 131.f, 131.f };
 
     AtlasDesc.vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_Select.png", 1);
-    AtlasDesc.iShaderPass = 1;
+    AtlasDesc.iShaderPass = 3;
     AtlasDesc.iTexPass = 1;
     AtlasDesc.vColor = { 1.f, 0.7f, 0.6f, 1.f };
     m_pSeleteFx = static_cast<CUI_Atlas_Icon*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Atlas_Icon"), &AtlasDesc));

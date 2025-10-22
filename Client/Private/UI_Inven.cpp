@@ -30,17 +30,17 @@ void CUI_Inven::On_Panel()
 HRESULT CUI_Inven::Initialize_Prototype(_uint iLevel)
 {
 	m_iLevel = iLevel;
-
 	CHECK_FAILED(Ready_Prototype(), E_FAIL);
-	
 	return S_OK;
 }
 
 HRESULT CUI_Inven::Initialize_Clone(void* pArg)
 {
+	m_pItems.resize(ENUM_CLASS(TAPTYPE::END));
+
 	if (FAILED(__super::Initialize_Clone(pArg)))
 		return E_FAIL;
-
+	Ready_Grouping();
 	return S_OK;
 }
 
@@ -49,50 +49,27 @@ void CUI_Inven::Priority_Update(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_8))
 		On_Panel();
 
-	if (m_eAnimState == UIANIMSTATE::ON)
+	if (m_pGameInstance->Key_Down(DIK_L))
 	{
-		m_fAccTime += fTimeDelta;
-		__super::Update_Alpha(m_fAccTime);
+		++m_iTapGroupIndex;
+		if (m_iTapGroupIndex >= ENUM_CLASS(TapGroup::END))
+			m_iTapGroupIndex = 0;
 
-		if (m_fAccTime >= 1.f)
-		{
-			m_fAccTime = 1.f;
-			m_eAnimState = UIANIMSTATE::END;
-		}
+		Change_Tap();
 	}
-	else if (m_eAnimState == UIANIMSTATE::OFF)
-	{
-		m_fAccTime -= fTimeDelta * 2.f;
-		__super::Update_Alpha(m_fAccTime);
 
-		if (m_fAccTime <= 0.f)
-		{
-			m_fAccTime = 0.f;
-			m_eAnimState = UIANIMSTATE::END;
-			m_IsUpdate = false;
-		}
-	}
+	UI_Animation(fTimeDelta);
+	
 	if (!m_IsUpdate)
 		return;
-	m_pBackGround->Priority_Update(fTimeDelta);
-	for (auto Tap : m_pInvenTap)
-		Tap->Priority_Update(fTimeDelta);
 
-	if (m_iSeleteTap == 0)
-	{
-		for (auto Item : m_pActiveItem)
-			Item->Priority_Update(fTimeDelta);
-	}
-	else if (m_iSeleteTap == 1)
-	{
-		for (auto Item : m_pCollection)
-			Item->Priority_Update(fTimeDelta);
-	}
-	else if (m_iSeleteTap == 2)
-	{
-		for (auto Item : m_pMaterial)
-			Item->Priority_Update(fTimeDelta);
-	}
+	m_pBackGround->Priority_Update(fTimeDelta);
+
+	for (auto TapIndex : m_UpdateGroup[m_iTapGroupIndex])
+		m_pInvenTap[TapIndex]->Priority_Update(fTimeDelta);
+
+	for (auto Item : m_pItems[m_iSeleteTap])
+		Item->Priority_Update(fTimeDelta);
 }
 
 void CUI_Inven::Update(_float fTimeDelta)
@@ -100,24 +77,11 @@ void CUI_Inven::Update(_float fTimeDelta)
 	if (!m_IsUpdate)
 		return;
 	m_pBackGround->Update(fTimeDelta);
-	for (auto Tap : m_pInvenTap)
-		Tap->Update(fTimeDelta);
+	for (auto TapIndex : m_UpdateGroup[m_iTapGroupIndex])
+		m_pInvenTap[TapIndex]->Update(fTimeDelta);
 
-	if (m_iSeleteTap == 0)
-	{
-		for (auto Item : m_pActiveItem)
-			Item->Update(fTimeDelta);
-	}
-	else if (m_iSeleteTap == 1)
-	{
-		for (auto Item : m_pCollection)
-			Item->Update(fTimeDelta);
-	}
-	else if (m_iSeleteTap == 2)
-	{
-		for (auto Item : m_pMaterial)
-			Item->Update(fTimeDelta);
-	}
+	for (auto Item : m_pItems[m_iSeleteTap])
+		Item->Update(fTimeDelta);
 }
 
 void CUI_Inven::Late_Update(_float fTimeDelta)
@@ -125,24 +89,12 @@ void CUI_Inven::Late_Update(_float fTimeDelta)
 	if (!m_IsUpdate)
 		return;
 	m_pBackGround->Late_Update(fTimeDelta);
-	for (auto Tap : m_pInvenTap)
-		Tap->Late_Update(fTimeDelta);
+	
+	for (auto TapIndex : m_UpdateGroup[m_iTapGroupIndex])
+		m_pInvenTap[TapIndex]->Late_Update(fTimeDelta);
 
-	if (m_iSeleteTap == 0)
-	{
-		for (auto Item : m_pActiveItem)
-			Item->Late_Update(fTimeDelta);
-	}
-	else if (m_iSeleteTap == 1)
-	{
-		for (auto Item : m_pCollection)
-			Item->Late_Update(fTimeDelta);
-	}
-	else if (m_iSeleteTap == 2)
-	{
-		for (auto Item : m_pMaterial)
-			Item->Late_Update(fTimeDelta);
-	}
+	for (auto Item : m_pItems[m_iSeleteTap])
+		Item->Late_Update(fTimeDelta);
 }
 
 HRESULT CUI_Inven::Render()
@@ -167,20 +119,7 @@ HRESULT CUI_Inven::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, voi
 
 void CUI_Inven::Bubble_EventCall(BUBBLEEVENT* pArg)
 {
-	m_iSeleteTap = -1;
-	if (pArg->szName == "Inven_OtherItem_Active")
-	{
-		m_iSeleteTap = 0;
-	}
-	else if (pArg->szName == "Inven_OtherItem_Collection")
-	{
-		m_iSeleteTap = 1;
-	}
-	else if (pArg->szName == "Inven_OtherItem_material")
-	{
-		m_iSeleteTap = 2;
-	}
-
+	TapType_Mapping(pArg->szName);
 	if (m_iSeleteTap < 0)
 		return;
 
@@ -234,34 +173,126 @@ HRESULT CUI_Inven::Ready_SlotSet()
 	Desc.vLocalPos = vPos;
 	Desc.vLocalSize = { 103.f , 103.f };
 
-	for (_int i = 0; i < 28; ++i)
+	for (_int i = 0; i < ENUM_CLASS(TAPTYPE::END); ++i)
 	{
-		CItem_Slot* pActiveItemSlot = static_cast<CItem_Slot*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Item"), &Desc));
-		CItem_Slot* pCollectionSlot = static_cast<CItem_Slot*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Item"), &Desc));
-		CItem_Slot* pMaterialSlot = static_cast<CItem_Slot*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Item"), &Desc));
+		vector<CItem_Slot*> pItemGroup;
+		for (_int j = 0; j < 28; ++j)
+		{
+			CItem_Slot* pItemSlot = static_cast<CItem_Slot*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Item"), &Desc));
 
-		if (pActiveItemSlot == nullptr || pCollectionSlot == nullptr || pMaterialSlot == nullptr)
-			return E_FAIL;
+			if (pItemSlot == nullptr)
+				return E_FAIL;
 
-		m_pActiveItem.push_back(pActiveItemSlot);
-		m_pCollection.push_back(pCollectionSlot);
-		m_pMaterial.push_back(pMaterialSlot);
+			m_Children.push_back(pItemSlot);
 
-		m_Children.push_back(pActiveItemSlot);
-		m_Children.push_back(pCollectionSlot);
-		m_Children.push_back(pMaterialSlot);
+			Safe_AddRef(pItemSlot);
 
-		Safe_AddRef(pActiveItemSlot);
-		Safe_AddRef(pCollectionSlot);
-		Safe_AddRef(pMaterialSlot);
+			pItemGroup.push_back(pItemSlot);
+			pItemGroup[j]->Update_Pos(j, vPos, 110.f, 4, 7);
+		}
+		m_pItems[i] = pItemGroup;
 
-		m_pActiveItem[i]->Update_Pos(i, vPos, 110.f, 4, 7);
-		m_pCollection[i]->Update_Pos(i, vPos, 110.f, 4, 7);
-		m_pMaterial[i]->Update_Pos(i, vPos, 110.f, 4, 7);
 	}
 
-
 	return S_OK;
+}
+
+void CUI_Inven::TapType_Mapping(string szName)
+{
+	m_iSeleteTap = -1;
+	if (szName == "SPEAR")
+		m_iSeleteTap = ENUM_CLASS(TAPTYPE::SPEAR);
+	else if (szName == "GREATE")
+		m_iSeleteTap = ENUM_CLASS(TAPTYPE::GREATE);
+	else if (szName == "HEAD")
+		m_iSeleteTap = ENUM_CLASS(TAPTYPE::HEAD);
+	else if (szName == "TOP")
+		m_iSeleteTap = ENUM_CLASS(TAPTYPE::TOP);
+	else if (szName == "GLOVES")
+		m_iSeleteTap = ENUM_CLASS(TAPTYPE::GLOVES);
+	else if (szName == "BOTTOM")
+		m_iSeleteTap = ENUM_CLASS(TAPTYPE::BOTTOM);
+	else if (szName == "SHOES")
+		m_iSeleteTap = ENUM_CLASS(TAPTYPE::SHOES);
+	else if (szName == "NECK")
+		m_iSeleteTap = ENUM_CLASS(TAPTYPE::NECK);
+	else if (szName == "RING")
+		m_iSeleteTap = ENUM_CLASS(TAPTYPE::RING);
+	else if (szName == "ATIVE")
+		m_iSeleteTap = ENUM_CLASS(TAPTYPE::ATIVE);
+	else if (szName == "COLLECTION")
+		m_iSeleteTap = ENUM_CLASS(TAPTYPE::COLLECTION);
+	else if (szName == "MATERIAL")
+		m_iSeleteTap = ENUM_CLASS(TAPTYPE::MATERIAL);
+	if (m_iSeleteTap < 0)
+		return;
+}
+
+void CUI_Inven::Ready_Grouping()
+{
+	m_UpdateGroup.resize(ENUM_CLASS(TapGroup::END));
+
+	m_UpdateGroup[ENUM_CLASS(TapGroup::WEAPON)].push_back(ENUM_CLASS(TAPTYPE::SPEAR));
+	m_UpdateGroup[ENUM_CLASS(TapGroup::WEAPON)].push_back(ENUM_CLASS(TAPTYPE::GREATE));
+
+	m_UpdateGroup[ENUM_CLASS(TapGroup::ARMOR)].push_back(ENUM_CLASS(TAPTYPE::HEAD));
+	m_UpdateGroup[ENUM_CLASS(TapGroup::ARMOR)].push_back(ENUM_CLASS(TAPTYPE::TOP));
+	m_UpdateGroup[ENUM_CLASS(TapGroup::ARMOR)].push_back(ENUM_CLASS(TAPTYPE::GLOVES));
+	m_UpdateGroup[ENUM_CLASS(TapGroup::ARMOR)].push_back(ENUM_CLASS(TAPTYPE::BOTTOM));
+	m_UpdateGroup[ENUM_CLASS(TapGroup::ARMOR)].push_back(ENUM_CLASS(TAPTYPE::SHOES));
+
+	m_UpdateGroup[ENUM_CLASS(TapGroup::ACC)].push_back(ENUM_CLASS(TAPTYPE::NECK));
+	m_UpdateGroup[ENUM_CLASS(TapGroup::ACC)].push_back(ENUM_CLASS(TAPTYPE::RING));
+
+	m_UpdateGroup[ENUM_CLASS(TapGroup::OTHER)].push_back(ENUM_CLASS(TAPTYPE::ATIVE));
+	m_UpdateGroup[ENUM_CLASS(TapGroup::OTHER)].push_back(ENUM_CLASS(TAPTYPE::COLLECTION));
+	m_UpdateGroup[ENUM_CLASS(TapGroup::OTHER)].push_back(ENUM_CLASS(TAPTYPE::MATERIAL));
+}
+
+void CUI_Inven::UI_Animation(_float fTimeDelta)
+{
+	if (m_eAnimState == UIANIMSTATE::ON)
+	{
+		m_fAccTime += fTimeDelta;
+		__super::Update_Alpha(m_fAccTime);
+
+		if (m_fAccTime >= 1.f)
+		{
+			m_fAccTime = 1.f;
+			m_eAnimState = UIANIMSTATE::END;
+		}
+	}
+	else if (m_eAnimState == UIANIMSTATE::OFF)
+	{
+		m_fAccTime -= fTimeDelta * 2.f;
+		__super::Update_Alpha(m_fAccTime);
+
+		if (m_fAccTime <= 0.f)
+		{
+			m_fAccTime = 0.f;
+			m_eAnimState = UIANIMSTATE::END;
+			m_IsUpdate = false;
+		}
+	}
+}
+
+void CUI_Inven::Change_Tap()
+{
+	for (_int i = 0; i < (_int)m_UpdateGroup[m_iTapGroupIndex].size(); ++i)
+	{
+		if (i == 0)
+		{
+			m_iSeleteTap = m_UpdateGroup[m_iTapGroupIndex][i];
+			for (_int i = 0; i < (_int)m_pInvenTap.size(); ++i)
+			{
+				if (m_iSeleteTap == i)
+					m_pInvenTap[i]->Tap_Enable();
+				else
+					m_pInvenTap[i]->Tap_Disable();
+			}
+		}
+		m_pInvenTap[m_UpdateGroup[m_iTapGroupIndex][i]]->Update_Pos(i, { 185.f, 135.f }, 80.f, (_int)m_UpdateGroup[m_iTapGroupIndex].size());
+	}
 }
 
 CUI_Inven* CUI_Inven::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)
@@ -290,17 +321,15 @@ void CUI_Inven::Free()
 {
 	__super::Free();
 
-	for (auto pSlot : m_pActiveItem)
-		Safe_Release(pSlot);
-	m_pActiveItem.clear();
-
-	for (auto pSlot : m_pMaterial)
-		Safe_Release(pSlot);
-	m_pMaterial.clear();
-
-	for (auto pSlot : m_pCollection)
-		Safe_Release(pSlot);
-	m_pCollection.clear();
+	for (auto pTap : m_pItems)
+	{
+		for (auto pItem : pTap)
+		{
+			Safe_Release(pItem);
+		}
+		pTap.clear();
+	}
+	m_pItems.clear();
 
 	for (auto pTap : m_pInvenTap)
 		Safe_Release(pTap);

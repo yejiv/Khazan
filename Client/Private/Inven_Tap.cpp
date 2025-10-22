@@ -22,6 +22,15 @@ void CInven_Tap::Tap_Disable()
 	m_iState = ENUM_CLASS(UISTATE::DISABLE);
 }
 
+void CInven_Tap::Update_Pos(_int iIndex, _float2 vPos, _float fOffSetX, _int iMaxIndex)
+{
+	m_vWorldPos.x = vPos.x + iIndex * fOffSetX;
+	m_vWorldPos.y = vPos.y;
+
+	m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(m_vWorldPos.x - m_iWinSizeX * 0.5f, -m_vWorldPos.y + m_iWinSizeY * 0.5f, 0.f, 1.f));
+	__super::Update_Transform(nullptr, m_vWorldPos);
+}
+
 HRESULT CInven_Tap::Initialize_Prototype(_uint iLevel)
 {
 	m_iLevel = iLevel;

@@ -77,11 +77,6 @@ _int CClientInstance::UIType_StringToEnum(string szUIType)
 	return m_pUI_Manager->UIType_StringToEnum(szUIType);
 }
 
-_uint CClientInstance::UI_TexTag_Maping(string szTextag)
-{
-	return m_pUI_Manager->TexTag_Maping(szTextag);
-}
-
 HRESULT CClientInstance::Add_UIRender(UI_RENDER_TYPE eRender, CUIObject* pUIObject)
 {
 	return m_pUI_Manager->Add_UIRender(eRender, pUIObject);
