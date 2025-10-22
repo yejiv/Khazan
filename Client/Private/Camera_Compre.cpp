@@ -119,7 +119,7 @@ void CCamera_Compre::Update_Spring(_float fTimeDelta)
     m_fYaw = WrapAngle(m_fYaw - fTimeDelta * iMouseMoveX * m_fMouseSensor);
     m_fPitch = Clamp(m_fPitch - fTimeDelta * iMouseMoveY * m_fMouseSensor, m_fPitchMin, m_fPitchMax);
 
-    _vector vTargetPos = XMVectorSet(m_pObjMatrix->_41, m_pObjMatrix->_42 + 0.5f, m_pObjMatrix->_43, 1.f);
+    _vector vTargetPos = XMVectorSet(m_pObjMatrix->_41, m_pObjMatrix->_42 + 1.5f, m_pObjMatrix->_43, 1.f);
     _vector vDir = XMVectorSet(cosf(m_fPitch) * cosf(m_fYaw), sinf(m_fPitch), cosf(m_fPitch) * sinf(m_fYaw), 0.f);
     _vector vCamPosDes = XMVectorMultiplyAdd(XMVectorSet(-m_fRadius, -m_fRadius, -m_fRadius, 0.f), vDir, vTargetPos);
 
