@@ -14,9 +14,9 @@ CAI_Controller_Yetuga::CAI_Controller_Yetuga()
 HRESULT CAI_Controller_Yetuga::Initialize(void* pArg)
 {
 	SIGHT_DESC SightDesc = {};
-	SightDesc.fRadius = 600.f;
+	SightDesc.fRadius = 50.f;
 	SightDesc.fLoseSightTime = 0.1f;
-	SightDesc.fFov = 90.f;
+	SightDesc.fFov = 120.f;
 	SightDesc.fFovCos = cosf(XMConvertToRadians(SightDesc.fFov * 0.5f));
 	m_pPerception = CPerception::Create("Yetuga", SightDesc, ENUM_CLASS(TEAM::YETI));
 
@@ -49,7 +49,7 @@ HRESULT CAI_Controller_Yetuga::Initialize(void* pArg)
 void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 {
 	m_pPerception->Update(pOwner, fTimeDelta);
-
+	//cout << "fDist : " << m_pBB->Get_Value<_float>("Yetuga","TargetDist") << endl;
 	m_pBT->Update();
 
 	m_pFSM->Update(pOwner,fTimeDelta);
@@ -66,8 +66,8 @@ HRESULT CAI_Controller_Yetuga::Ready_BlackBoard()
 	m_pBB->Set_Value("Yetuga", "isDead", false);
 	m_pBB->Set_Value("Yetuga", "isAttackAnimFinish", false);
 	m_pBB->Set_Value("Yetuga", "AttackCoolDown", 8.f);
-	m_pBB->Set_Value("Yetuga", "AttackRange", 150.f);
-	m_pBB->Set_Value("Yetuga", "ChaseRange", 2000.f);
+	m_pBB->Set_Value("Yetuga", "AttackRange", 3.f);
+	m_pBB->Set_Value("Yetuga", "ChaseRange", 50.f);
 
 	return S_OK;
 }
