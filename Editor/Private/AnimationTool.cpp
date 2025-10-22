@@ -54,6 +54,11 @@ void CAnimationTool::Widget()
     m_pGameInstance->AddWidget(TEXT("Animatiaon"), [this]() {
         ImGui::Begin("Anim Tool");
 
+        if (!m_GameObjects.empty())
+        {
+            m_GameObjects[0]->Debug_RenderState();
+        }
+
         /* Open Model */
         if (ImGui::Button("Open Model Manager", ImVec2(150, 25))) {
             m_isShowOpenModel = !m_isShowOpenModel;
@@ -98,7 +103,10 @@ void CAnimationTool::OpenModel_Widget()
 {
     // PreScale 조절 
     ImGui::SeparatorText("Model Scale");
-    ImGui::DragFloat3("Pre-Scale", (_float*)&m_vPreScale, 0.001f, 0.001f, 10.0f, "%.3f");
+    ImGui::DragFloat3("Pre-Scale", (_float*)&m_vPreScale, 0.001f, 0.001f, 10.0f, "%.5f");
+    if (ImGui::Button("Fast 0.0001")) m_vPreScale = _float3(0.0001f, 0.0001f, 0.0001f);
+    ImGui::SameLine();
+    if (ImGui::Button("Fast 1.0")) m_vPreScale = _float3(1.f, 1.f, 1.f);
 
     // 애니메이션 타입 선택 
     ImGui::SeparatorText("Model Type");
