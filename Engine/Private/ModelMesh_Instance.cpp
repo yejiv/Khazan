@@ -27,7 +27,6 @@ HRESULT CModelMesh_Instance::Initialize_Prototype(MODELTYPE eType, _fmatrix PreT
 	m_iNumVertices = Data.iNumVertices;
 	m_iNumIndices = Data.iNumIndices;
 	m_iIndexStride = Data.iIndexStride;
-	m_iNumVertexBuffers = Data.iNumVertexBuffers;
 
 	m_iIndexStride = 4;
 	m_eIndexFormat = DXGI_FORMAT_R32_UINT;
@@ -69,14 +68,12 @@ HRESULT CModelMesh_Instance::Initialize_Prototype(MODELTYPE eType, _fmatrix PreT
 		VTXINSTANCE_MESH* pInstanceVertices = static_cast<VTXINSTANCE_MESH*>(m_pInstanceVertices);
 		CHECK_NULLPTR_MSG(pInstanceVertices, TEXT("Mesh Instance - nullptr == pInstanceVertices"), E_FAIL);
 
-		_matrix InstanceData = pModelMeshDesc->InstanceData[i].InstanceMatrix;
+		XMStoreFloat4(&pInstanceVertices[i].vRight, XMLoadFloat4(&pModelMeshDesc->InstanceData[i].vRight));
+		XMStoreFloat4(&pInstanceVertices[i].vUp, XMLoadFloat4(&pModelMeshDesc->InstanceData[i].vUp));
+		XMStoreFloat4(&pInstanceVertices[i].vLook, XMLoadFloat4(&pModelMeshDesc->InstanceData[i].vLook));
+		XMStoreFloat4(&pInstanceVertices[i].vTranslation, XMLoadFloat4(&pModelMeshDesc->InstanceData[i].vTranslation));
 
-		XMStoreFloat4(&pInstanceVertices[i].vRight, XMVectorSetW(InstanceData.r[0], 0.f));
-		XMStoreFloat4(&pInstanceVertices[i].vUp, XMVectorSetW(InstanceData.r[1], 0.f));
-		XMStoreFloat4(&pInstanceVertices[i].vLook, XMVectorSetW(InstanceData.r[2], 0.f));
-		XMStoreFloat4(&pInstanceVertices[i].vTranslation, XMVectorSetW(InstanceData.r[3], 1.f));
-
-		pInstanceVertices[i].iID = pModelMeshDesc->InstanceData[i].InstanceID;
+		pInstanceVertices[i].iID = pModelMeshDesc->InstanceData[i].iID;
 	}
 
 #pragma endregion
@@ -100,66 +97,6 @@ HRESULT CModelMesh_Instance::Bind_BoneMatrices(CShader* pShader, const _char* pC
 	}
 
 	return pShader->Bind_Matrices(pConstantName, m_BoneMatrices, m_iNumBones);
-}
-
-void CModelMesh_Instance::Add_Instance(MESH_INSTANCE_DATA InstanceData)
-{
-	VTXINSTANCE_MESH* pNewInstance = new VTXINSTANCE_MESH[m_iNumInstance + 1];
-	ZeroMemory(pNewInstance, sizeof(VTXINSTANCE_MESH) * (m_iNumInstance + 1));
-
-	VTXINSTANCE_MESH* pVertices = reinterpret_cast<VTXINSTANCE_MESH*>(m_pInstanceVertices);
-	CHECK_NULLPTR_MSG(pVertices, TEXT("Mesh_Instance > Add_Instance 함수 > nullptr == pVertices"), );
-
-	memcpy(pNewInstance, pVertices, sizeof(VTXINSTANCE_MESH) * m_iNumInstance);
-
-	Safe_Delete_Array(m_pInstanceVertices);
-
-	_matrix MatrixData = InstanceData.InstanceMatrix;
-
-	XMStoreFloat4(&pNewInstance[m_iNumInstance].vRight, XMVectorSetW(MatrixData.r[0], 0.f));
-	XMStoreFloat4(&pNewInstance[m_iNumInstance].vUp, XMVectorSetW(MatrixData.r[1], 0.f));
-	XMStoreFloat4(&pNewInstance[m_iNumInstance].vLook, XMVectorSetW(MatrixData.r[2], 0.f));
-	XMStoreFloat4(&pNewInstance[m_iNumInstance].vTranslation, XMVectorSetW(MatrixData.r[3], 1.f));
-
-	pNewInstance->iID = InstanceData.InstanceID;
-
-	++m_iNumInstance;
-
-	m_pInstanceVertices = pNewInstance;
-
-	Safe_Release(m_pVBInstance);
-
-	D3D11_SUBRESOURCE_DATA	InitialDesc{};
-	InitialDesc.pSysMem = m_pInstanceVertices;
-
-	m_VBInstanceDesc.ByteWidth = m_iNumInstance * m_iInstanceVertexStride;
-
-	if (FAILED(m_pDevice->CreateBuffer(&m_VBInstanceDesc, &InitialDesc, &m_pVBInstance)))
-		return;
-}
-
-void CModelMesh_Instance::Fix_Instance(MESH_INSTANCE_DATA InstanceData, _uint iInstanceIndex)
-{
-	D3D11_MAPPED_SUBRESOURCE SubResource = {};
-
-	VTXINSTANCE_MESH* pInstanceVertices = static_cast<VTXINSTANCE_MESH*>(m_pInstanceVertices);
-	CHECK_NULLPTR_MSG(pInstanceVertices, TEXT("Mesh_Instance > Fix_Instance 함수 > nullptr == pInstanceVertices"), );
-
-	CHECK_FAILED_MSG(m_pContext->Map(m_pVBInstance, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource), TEXT("Mesh Instance - Map 실패"), );
-
-	VTXINSTANCE_MESH* pVertices = static_cast<VTXINSTANCE_MESH*>(SubResource.pData);
-	CHECK_NULLPTR_MSG(pVertices, TEXT("Mesh_Instance > Fix_Instance 함수 > nullptr == pVertices"), );
-
-	_matrix FixMatrixData = InstanceData.InstanceMatrix;
-
-	XMStoreFloat4(&pVertices[iInstanceIndex - 1].vRight, XMVectorSetW(FixMatrixData.r[0], 0.f));
-	XMStoreFloat4(&pVertices[iInstanceIndex - 1].vUp, XMVectorSetW(FixMatrixData.r[1], 0.f));
-	XMStoreFloat4(&pVertices[iInstanceIndex - 1].vLook, XMVectorSetW(FixMatrixData.r[2], 0.f));
-	XMStoreFloat4(&pVertices[iInstanceIndex - 1].vTranslation, XMVectorSetW(FixMatrixData.r[3], 1.f));
-
-	pInstanceVertices[iInstanceIndex - 1] = pVertices[iInstanceIndex - 1];
-
-	m_pContext->Unmap(m_pVBInstance, 0);
 }
 
 HRESULT CModelMesh_Instance::Ready_Vertices_For_NonAnim(MESH_DATA& Data)
@@ -188,6 +125,7 @@ HRESULT CModelMesh_Instance::Ready_Vertices_For_NonAnim(MESH_DATA& Data)
 	}
 
 	D3D11_BUFFER_DESC		VBDesc = {};
+
 	VBDesc.ByteWidth = m_iNumVertices * m_iVertexStride;
 	VBDesc.Usage = D3D11_USAGE_DEFAULT;
 	VBDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -282,6 +220,8 @@ HRESULT CModelMesh_Instance::Ready_Indices(MESH_DATA& Data)
 
 	if (FAILED(m_pDevice->CreateBuffer(&IBDesc, &IBInitialData, &m_pIB)))
 		return E_FAIL;
+
+	Safe_Delete_Array(pIndices);
 
 	return S_OK;
 }

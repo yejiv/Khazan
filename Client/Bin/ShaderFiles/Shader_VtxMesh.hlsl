@@ -2,13 +2,6 @@
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 
-vector g_vLightDir = vector(1.f, -1.f, 1.f, 0.f);
-vector g_vLightDiffuse = vector(1.f, 1.f, 1.f, 1.f);
-vector g_vLightAmbient = vector(0.4f, 0.4f, 0.4f, 1.f);
-vector g_vLightSpecular = vector(1.f, 1.f, 1.f, 1.f);
-
-vector g_vCamPosition;
-
 /*재질*/
 texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
@@ -20,8 +13,9 @@ texture2D g_SnowTexture;
 float g_fSnowAmount = float(0.5f);
 float3 g_vSnowColor = float3(0.92f, 0.94f, 1.f);
 
-vector    g_vMtrlAmbient = 1.f;
-vector    g_vMtrlSpecular = 1.f;
+vector g_vCamPosition;
+
+float g_fFar = 1000.f;
 
 vector    g_vColor = vector(0.f, 1.f, 0.f, 1.f);
 
@@ -95,6 +89,29 @@ VS_OUT VS_MAPOBJECT(VS_IN In)
     return Out;
 }
 
+struct VS_OUT_SHADOW
+{
+    float4 vPosition : SV_POSITION;
+    float4 vProjPos : TEXCOORD0;
+};
+
+
+VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
+{
+    VS_OUT_SHADOW Out;
+      /* 정점의 로컬위치 * 월드 * 뷰 * 투영 */ 
+    
+    float4x4 matWV, matWVP;
+    
+    matWV = mul(g_WorldMatrix, g_ViewMatrix);
+    matWVP = mul(matWV, g_ProjMatrix);
+    
+    Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP); // In.vPosition 은 float3 짜리이므로 w = 1.f 넣어서 행렬과 곱 가능하게
+    Out.vProjPos = Out.vPosition;
+    
+    return Out;
+}
+
 /* /W을 수행한다. 투영스페이스로 변환 */
 /* 뷰포트로 변환하고.*/
 /* 래스터라이즈 : 픽셀을 만든다. */
@@ -152,6 +169,26 @@ PS_OUT PS_WIREFRAME(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐이더
     PS_OUT Out = (PS_OUT) 0;
     
     Out.vDiffuse = g_vColor;
+    
+    return Out;
+}
+
+struct PS_IN_SHADOW
+{
+    float4 vPosition : SV_POSITION;
+    float4 vProjPos : TEXCOORD0;
+};
+
+struct PS_OUT_SHADOW
+{
+    float4 vLightDepth : SV_TARGET0;
+};
+
+PS_OUT_SHADOW PS_MAIN_SHADOW(PS_IN_SHADOW In)
+{
+    PS_OUT_SHADOW Out = (PS_OUT_SHADOW) 0;
+    
+    Out.vLightDepth = float4(In.vProjPos.w / g_fFar, 0.f, 0.f, 0.f);
     
     return Out;
 }
@@ -277,7 +314,7 @@ technique11 DefaultTechnique
     /* 특정 패스를 이용해서 점정을 그려냈다. */
     /* 하나의 모델을 그려냈다. */ 
     /* 모델의 상황에 따라 다른 쉐이딩 기법 세트(명암 + 림라이트 + 스펙큘러 + 노멀맵 + ssao )를 먹여주기위해서 */
-    pass DefaultPass
+    pass DefaultPass            // 기본 ( 0번 )
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -287,7 +324,8 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN();
     }
-    pass WireFrame
+
+    pass WireFrame              // 와이어프레임 ( 1번 )
     {
         SetRasterizerState(RS_Wireframe);
         SetDepthStencilState(DSS_Default, 0);
@@ -297,7 +335,19 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_WIREFRAME();
     }
-    pass MapPass                        // 맵 오브젝트용 패스 ( 2번 ) ( 눈 X )
+
+    pass Shadow             // 그림자 ( 2번 )
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN_SHADOW();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_SHADOW();
+    }
+
+    pass MapPass                        // 맵 오브젝트용 패스 ( 3번 ) ( 눈 X )
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -307,7 +357,8 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAP();
     }
-    pass MapBlendPass                   // 맵 오브젝트용 패스 ( 3번 ) ( 눈 X )
+
+    pass MapBlendPass                   // 맵 오브젝트용 패스 ( 4번 ) ( 눈 X )
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -317,7 +368,8 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAP_BLEND();
     }
-    pass SnowMapPass               // 맵 오브젝트용 패스 ( 4번 ) ( 눈 O )
+
+    pass SnowMapPass               // 맵 오브젝트용 패스 ( 5번 ) ( 눈 O )
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -327,7 +379,8 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_SNOWMAP();
     }
-    pass SnowMapBlendPass               // 맵 오브젝트용 패스 ( 5번 ) ( 눈 O )
+
+    pass SnowMapBlendPass               // 맵 오브젝트용 패스 ( 6번 ) ( 눈 O )
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
