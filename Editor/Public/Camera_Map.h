@@ -31,6 +31,9 @@ private:
 	_float					m_fMouseSensor = { };
 
 private:
+	_bool m_isControl = { false };
+
+	_vector m_vPrevLook = {};
 	_bool m_isPreviewPos = { false };
 
 	_uint m_iPhase = { 0 };
@@ -38,7 +41,11 @@ private:
 	_float3 m_vPrevPos = {};
 
 private:
+	void Preview_Setting();
+
 	void Input(_float fTimeDelta);
+
+	void Camera_Lock();
 
 public:
 	static CCamera_Map* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

@@ -102,6 +102,11 @@ void CBody::Sync_Update(CTransform* pTransform)
         Set_PosRot(pTransform->Get_State(STATE::POSITION), pTransform->Get_Rotation_Quat());
 }
 
+void CBody::MeshUpdate()
+{
+    //m_pBody->Set
+}
+
 
 void CBody::Set_PosRot(_vector vPos, _vector vRot)
 {
@@ -217,30 +222,71 @@ void CBody::Make_MeshShape(BODY_MESHSHAPE_DESC* pDesc)
 {
     _uint iNumMesh = pDesc->pModel->Get_NumMeshes();
 
+    //for (_uint i = 0; i < iNumMesh; ++i)
+    //{
+    //    RefConst<Shape> BodyShape;
+
+    //    MeshShapeSettings MeshSetting{};
+    //    MeshSetting = MeshShapeSettings(ConvertToArrayFloat3(pDesc->pModel, i), ConvertToArrayTri(pDesc->pModel, i));
+    //    BodyShape = MeshSetting.Create().Get();
+
+    //    BodyCreationSettings bodySetting(
+    //        BodyShape,
+    //        Vec3(pDesc->vPos.x, pDesc->vPos.y, pDesc->vPos.z),
+    //        Quat(pDesc->vQuat.x, pDesc->vQuat.y, pDesc->vQuat.z, pDesc->vQuat.w),
+    //        pDesc->eMotion,
+    //        ObjectLayer(pDesc->iObjectLayer)
+    //    );
+
+    //    bodySetting.mOverrideMassProperties = EOverrideMassProperties::MassAndInertiaProvided;
+    //    MassProperties mp;
+    //    mp.mMass = 50.0f; // 예: 50kg, 상황에 맞게 조정
+
+    //    bodySetting.mMassPropertiesOverride = mp;
+
+    //    m_pBody = m_pGameInstance->CreateAndAdd_Body(bodySetting, &m_pBodyInterface);
+    //    m_BodyID = m_pBody->GetID();
+    //}
+
+    iNumMesh = pDesc->pModel->Get_NumMeshes();
+
+    Vec3 vScale = Vec3(pDesc->pTransform->Get_Scaled().x, pDesc->pTransform->Get_Scaled().y, pDesc->pTransform->Get_Scaled().z); // Transform의 스케일
+
     for (_uint i = 0; i < iNumMesh; ++i)
     {
-        RefConst<Shape> BodyShape;
+        // 1) 원본 메쉬로 Shape 생성
+        MeshShapeSettings meshSettings{
+            ConvertToArrayFloat3(pDesc->pModel, i),
+            ConvertToArrayTri(pDesc->pModel, i)
+        };
+        RefConst<Shape> baseShape = meshSettings.Create().Get();
 
-        MeshShapeSettings MeshSetting{};
-        MeshSetting = MeshShapeSettings(ConvertToArrayFloat3(pDesc->pModel, i), ConvertToArrayTri(pDesc->pModel, i));
-        BodyShape = MeshSetting.Create().Get();
+        // 2) 스케일 적용 (ScaledShape)
+        RefConst<Shape> scaledShape = new ScaledShape(baseShape, vScale);
+
+        // (선택) 서브메쉬에 로컬 오프셋/회전이 있다면 RotatedTranslatedShape로 한 번 더 감쌈
+        // RMat44 local = ...; // 모델 내부에서 i번째 메쉬의 로컬 변환이 있다면
+        // scaledShape = new RotatedTranslatedShape(local.GetTranslation(), Quat::sFromMat44(local.GetRotation()), scaledShape);
 
         BodyCreationSettings bodySetting(
-            BodyShape,
+            scaledShape,
             Vec3(pDesc->vPos.x, pDesc->vPos.y, pDesc->vPos.z),
             Quat(pDesc->vQuat.x, pDesc->vQuat.y, pDesc->vQuat.z, pDesc->vQuat.w),
             pDesc->eMotion,
             ObjectLayer(pDesc->iObjectLayer)
         );
 
+        // Dynamic으로 삼각형 메쉬를 쓰는 건 비추입니다. (가능하더라도 안정성이 떨어짐)
+        // 꼭 써야 한다면 질량/관성 재정의
         bodySetting.mOverrideMassProperties = EOverrideMassProperties::MassAndInertiaProvided;
         MassProperties mp;
-        mp.mMass = 50.0f; // 예: 50kg, 상황에 맞게 조정
-
+        mp.mMass = 50.0f;
+        // 관성 텐서는 상황에 맞게 설정해야 합니다. (삼각형 메쉬는 실제 부피가 없어 비현실적일 수 있음)
         bodySetting.mMassPropertiesOverride = mp;
 
-        m_pBody = m_pGameInstance->CreateAndAdd_Body(bodySetting, &m_pBodyInterface);
-        m_BodyID = m_pBody->GetID();
+        Body* body = m_pGameInstance->CreateAndAdd_Body(bodySetting, &m_pBodyInterface);
+        // 여러 메쉬라면 BodyID를 vector에 보관하세요. 지금처럼 m_pBody에 덮어쓰면 마지막 것만 남습니다.
+        //m_BodyIDs.push_back(body->GetID());
     }
 }
 

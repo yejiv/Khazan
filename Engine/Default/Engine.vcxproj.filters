@@ -489,9 +489,6 @@
     <ClCompile Include="..\Private\Model_Instance.cpp">
       <Filter>01.Utility\03.Component\Model\Model_Instance</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Pool.cpp">
-      <Filter>01.Utility\02.GameObject\Pool</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Pool_Manager.cpp">
       <Filter>01.Utility\02.GameObject\Pool\Manager</Filter>
     </ClCompile>
@@ -790,9 +787,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\Model_Instance.h">
       <Filter>01.Utility\03.Component\Model\Model_Instance</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Pool.h">
-      <Filter>01.Utility\02.GameObject\Pool</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Pool_Manager.h">
       <Filter>01.Utility\02.GameObject\Pool\Manager</Filter>
