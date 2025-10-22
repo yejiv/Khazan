@@ -247,9 +247,6 @@
     <Filter Include="02.GameObject\UI\Inven\ETC\Panel">
       <UniqueIdentifier>{99b24549-339c-48be-9c6c-dc1e503be929}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\UI\Inven\OtherItem">
-      <UniqueIdentifier>{ce73b693-5a75-45cf-8e7e-fee337310e6d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="94. ClientInstance\DB">
       <UniqueIdentifier>{dffd0957-694b-48a5-a2e0-c30d199869c1}</UniqueIdentifier>
     </Filter>
@@ -465,9 +462,6 @@
     <ClInclude Include="..\public\UI_Inven.h">
       <Filter>02.GameObject\UI\Inven</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Inven_OtherItem.h">
-      <Filter>02.GameObject\UI\Inven\OtherItem</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\DB_Manager.h">
       <Filter>94. ClientInstance\DB</Filter>
     </ClInclude>
@@ -677,9 +671,6 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_Inven.cpp">
       <Filter>02.GameObject\UI\Inven</Filter>
-    </ClCompile>
-    <ClCompile Include="..\private\Inven_OtherItem.cpp">
-      <Filter>02.GameObject\UI\Inven\OtherItem</Filter>
     </ClCompile>
     <ClCompile Include="..\private\DB_Manager.cpp">
       <Filter>94. ClientInstance\DB</Filter>
