@@ -73,6 +73,15 @@ namespace Engine
 		bool isBlended{ false };
 		bool isInstance{ false };
 		bool isShadow{ false };
+		bool isBackGround{ false };
+
+		tagMapObjectProperties() = default;
+
+		operator bool() const noexcept
+		{
+			return isSnow || isCollider || isBlended ||
+				isInstance || isShadow || isBackGround;
+		}
 
 	}MAPOBJECT_PROPERTIES;
 

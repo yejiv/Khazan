@@ -28,17 +28,9 @@ HRESULT CProp_Object::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_Components(pArg), E_FAIL);
 
     PROP_OBJECT_DESC* pDesc = static_cast<PROP_OBJECT_DESC*>(pArg);
+    CHECK_NULLPTR(pDesc, E_FAIL);
 
-    _matrix matWorld = XMLoadFloat4x4(&pDesc->WorldMatrix);
-
-#pragma region TYPE 1
-
-    m_pTransformCom->Set_State(STATE::RIGHT, matWorld.r[0]);
-    m_pTransformCom->Set_State(STATE::UP, matWorld.r[1]);
-    m_pTransformCom->Set_State(STATE::LOOK, matWorld.r[2]);
-    m_pTransformCom->Set_State(STATE::POSITION, matWorld.r[3]);
-
-#pragma endregion
+    m_pTransformCom->Set_WorldMatrix_4x4(pDesc->WorldMatrix);
 
     return S_OK;
 }
@@ -67,10 +59,50 @@ void CProp_Object::Update(_float fTimeDelta)
 
 void CProp_Object::Late_Update(_float fTimeDelta)
 {
-    if (true == m_Properties.isBlended)
+    /*
+    if (true == m_Properties.isBackGround)
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::PRIORITY, this);
+    else if (true == m_Properties.isBlended)
         m_pGameInstance->Add_RenderGroup(RENDERGROUP::BLEND, this);
+    else if (true == m_Properties.isShadow)
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this);
     else
         m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
+    */
+    if (false == m_isCheckRender)
+    {
+        if (true == m_Properties.isBlended)
+            m_pGameInstance->Add_RenderGroup(RENDERGROUP::BLEND, this);
+        else
+            m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
+    }
+    else
+    {
+        _bool isRender = { false };
+
+        if (true == m_pRenderProperties->isSnow && m_Properties.isSnow == m_pRenderProperties->isSnow)
+            isRender = true;
+        if (true == m_pRenderProperties->isCollider && m_Properties.isCollider == m_pRenderProperties->isCollider)
+            isRender = true;
+        if (true == m_pRenderProperties->isBlended && m_Properties.isBlended == m_pRenderProperties->isBlended)
+            isRender = true;
+        if (true == m_pRenderProperties->isInstance && m_Properties.isInstance == m_pRenderProperties->isInstance)
+            isRender = true;
+        if (true == m_pRenderProperties->isShadow && m_Properties.isShadow == m_pRenderProperties->isShadow)
+            isRender = true;
+        if (true == m_pRenderProperties->isBackGround && m_Properties.isBackGround == m_pRenderProperties->isBackGround)
+            isRender = true;
+
+        _bool isRenderProperties = { false == *m_pRenderProperties };
+
+        if (true == isRenderProperties || true == isRender)
+        {
+            if (true == m_Properties.isBlended)
+                m_pGameInstance->Add_RenderGroup(RENDERGROUP::BLEND, this);
+            else
+                m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
+        }
+    }
 }
 
 HRESULT CProp_Object::Render()
@@ -84,7 +116,7 @@ HRESULT CProp_Object::Render()
         Bind_Materials(i);
 
         if (SHADER_PASS::SNOWMAP == m_eShaderPass || SHADER_PASS::SNOWMAP_BLEND == m_eShaderPass)
-            CHECK_FAILED(Bind_ShaderResources_ForSnowMap(m_pTextureCom, i), E_FAIL);
+            CHECK_FAILED(Bind_ShaderResources_ForSnowMap(i), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pShaderCom->Begin(ENUM_CLASS(m_eShaderPass)), E_FAIL);
 
@@ -107,9 +139,6 @@ HRESULT CProp_Object::Ready_Components(void* pArg)
 
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), m_szModelName,
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr), E_FAIL);
-
-    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), TEXT("Prototype_Component_Texture_Map_Snow"),
-        TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr), E_FAIL);
 
     return S_OK;
 }
@@ -172,5 +201,4 @@ void CProp_Object::Free()
     __super::Free();
 
     Safe_Release(m_pModelCom);
-    Safe_Release(m_pTextureCom);
 }

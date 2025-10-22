@@ -168,7 +168,9 @@
     <ClInclude Include="..\Public\Camera_Compre.h" />
     <ClInclude Include="..\Public\ClientInstance.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
+    <ClInclude Include="..\Public\Client_Struct.h" />
     <ClInclude Include="..\Public\Creature.h" />
+    <ClInclude Include="..\public\DB_Manager.h" />
     <ClInclude Include="..\Public\Dummy.h" />
     <ClInclude Include="..\Public\Event_Defines.h" />
     <ClInclude Include="..\Public\FSM_Yetuga.h" />
@@ -243,6 +245,7 @@
     <ClCompile Include="..\Private\Camera_Compre.cpp" />
     <ClCompile Include="..\Private\ClientInstance.cpp" />
     <ClCompile Include="..\Private\Creature.cpp" />
+    <ClCompile Include="..\private\DB_Manager.cpp" />
     <ClCompile Include="..\Private\Dummy.cpp" />
     <ClCompile Include="..\Private\FSM_Yetuga.cpp" />
     <ClCompile Include="..\Private\IdleState_Yetuga.cpp" />
