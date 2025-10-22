@@ -206,10 +206,9 @@ public:
 
 #pragma region POOL_MANAGER
 	HRESULT Add_PoolObject(_uint iPrototypeLevelIndex, const _wstring strPrototypeTag, const _wstring& strPoolTag, void* pArg = nullptr, _uint iCount = 1);
-	class CPool* Pop_PoolObject(const _wstring& strPoolTag);
-	HRESULT Reset_PoolObject(class CPool* pPoolObject);
-	HRESULT Reset_PoolObject(class CGameObject* pGameObject);
-	void Push_PoolObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CPool* pPoolObject);
+	class CGameObject* Pop_PoolObject(const _wstring& strPoolTag);
+	HRESULT Reset_PoolObject(class CGameObject* pPoolObject);
+	void Push_PoolObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CGameObject* pPoolObject);
 #pragma endregion
 
 #pragma region EVENT_MANAGER

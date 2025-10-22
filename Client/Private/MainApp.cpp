@@ -47,12 +47,18 @@ HRESULT CMainApp::Initialize()
 
 	if (FAILED(Ready_ObjectLayer()))
 		return E_FAIL;
-
+	CHECK_FAILED(Ready_DB(), E_FAIL);
 	return S_OK;
 }
 
 void CMainApp::Update(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_1))
+	{
+		m_pGameInstance->Change_DebugRender();
+	}
+	
+
 	m_pGameInstance->Update_Engine(fTimeDelta);
 	m_pClientInstance->Update(fTimeDelta);
 
@@ -207,6 +213,19 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Hud/State/T_Hud_Hp_Bg_0%d.png"), 5))))
 		return E_FAIL;
 
+	return S_OK;
+}
+
+HRESULT CMainApp::Ready_DB()
+{
+	CHECK_FAILED(m_pClientInstance->Load_Data(DATATYPE::ITEM, TEXT("../Bin/Data/DB/Item_DB.csv")),E_FAIL);
+	CHECK_FAILED(m_pClientInstance->Load_Data(DATATYPE::EQUIPEFFECT, TEXT("../Bin/Data/DB/EquipItem_DB.csv")), E_FAIL);
+	CHECK_FAILED(m_pClientInstance->Load_Data(DATATYPE::OTHEREFFECT, TEXT("../Bin/Data/DB/OtherItem_DB.csv")), E_FAIL);
+	
+	_wstring test = m_pClientInstance->Get_Data<ITEM_DATA>(1010)->strName;
+	
+	MSG_BOX(test.c_str());
+	
 	return S_OK;
 }
 
