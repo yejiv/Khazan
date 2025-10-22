@@ -41,6 +41,12 @@ public:
 	// Team ฐüทร
 	_uint				Get_Team() { return m_iTeam; }
 
+	void Set_Tag(_wstring strTag) { m_strTag = strTag; }
+	_wstring Get_Tag() { return m_strTag; }
+
+public:
+	virtual void Reset() {};
+
 public:
 	virtual void Collision_Enter(CGameObject* pOther, _uint	iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) {};
 	virtual void Collision_Stay(CGameObject* pOther, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) {};
@@ -54,6 +60,8 @@ protected:
 	map<const _wstring, class CComponent*>		m_Components;
 
 	_bool						m_isPool = { false };
+	_wstring					m_strTag;
+
 	_bool						m_isDead = { false };
 	_bool						m_isActive = { true };
 

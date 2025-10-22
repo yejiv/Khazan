@@ -19,6 +19,7 @@
 #include <Jolt/Physics/Collision/Shape/StaticCompoundShape.h>
 #include <Jolt/Physics/Collision/Shape/MeshShape.h>
 #include <Jolt/Physics/Collision/Shape/ConvexHullShape.h>
+#include <Jolt/Physics/Collision/Shape/ScaledShape.h>
 
 #ifdef new
 #pragma pop_macro("new") // DBG_NEW º¹¿ø
@@ -72,6 +73,7 @@ public:
 	typedef struct tagMeshShape : BODY_DESC
 	{
 		class CModel* pModel = { nullptr };
+		class CTransform* pTransform = { nullptr };
 	}BODY_MESHSHAPE_DESC;
 
 	typedef struct tagConvexShape : BODY_DESC
@@ -91,6 +93,7 @@ public:
 
 	virtual void Update(_float fTimeDelta, class CTransform* pTransform) override;
 	virtual void Sync_Update(class CTransform* pTransform) override;
+	void MeshUpdate();
 
 public:
 	void	Activate(_bool isActivate) { true == isActivate ? m_pBodyInterface->ActivateBody(m_BodyID) : m_pBodyInterface->DeactivateBody(m_BodyID); }

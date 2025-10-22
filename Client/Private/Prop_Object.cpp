@@ -1,6 +1,7 @@
 #include "Prop_Object.h"
 
 #include "GameInstance.h"
+#include "Body.h"
 
 CProp_Object::CProp_Object(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp { pDevice, pContext }
@@ -26,14 +27,15 @@ HRESULT CProp_Object::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_Components(pArg), E_FAIL);
 
     PROP_OBJECT_DESC* pDesc = static_cast<PROP_OBJECT_DESC*>(pArg);
+    CHECK_NULLPTR(pDesc, E_FAIL);
 
-    _matrix matWorld = XMLoadFloat4x4(&pDesc->WorldMatrix);
+    m_pTransformCom->Set_WorldMatrix_4x4(pDesc->WorldMatrix);
 
-    m_pTransformCom->Set_State(STATE::RIGHT, matWorld.r[0]);
-    m_pTransformCom->Set_State(STATE::UP, matWorld.r[1]);
-    m_pTransformCom->Set_State(STATE::LOOK, matWorld.r[2]);
-    m_pTransformCom->Set_State(STATE::POSITION, matWorld.r[3]);
-
+    if (pDesc->Properties.isCollider)
+    {
+        CHECK_FAILED(Ready_Collision(pArg), E_FAIL);
+    }
+    
     if (isSnow())
     {
         if (isBlended())
@@ -62,6 +64,13 @@ void CProp_Object::Update(_float fTimeDelta)
 
 void CProp_Object::Late_Update(_float fTimeDelta)
 {
+    /*
+    if (isBackGround())     m_pGameInstance->Add_RenderGroup(RENDERGROUP::PRIORITY, this);
+    else if (isBlended())   m_pGameInstance->Add_RenderGroup(RENDERGROUP::BLEND, this);
+    else if (isShadow())    m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this);
+    else                    m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
+    */
+
     if (isBlended())
         m_pGameInstance->Add_RenderGroup(RENDERGROUP::BLEND, this);
     else
@@ -78,8 +87,7 @@ HRESULT CProp_Object::Render()
     {
         Bind_Materials(i);
 
-        if (isSnow())
-            CHECK_FAILED(Bind_ShaderResources_ForSnowMap(i), E_FAIL);
+        if (true == isSnow()) CHECK_FAILED(Bind_ShaderResources_ForSnowMap(i), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pShaderCom->Begin(ENUM_CLASS(m_eShaderPass)), E_FAIL);
 
@@ -107,6 +115,36 @@ HRESULT CProp_Object::Ready_Components(void* pArg)
     {
 
     }
+
+    return S_OK;
+}
+
+HRESULT CProp_Object::Ready_Collision(void* pArg)
+{
+    CBody::BODY_MESHSHAPE_DESC BodyDesc{};
+    BodyDesc.pModel = m_pModelCom;
+    BodyDesc.pTransform = m_pTransformCom;
+    BodyDesc.bIsTrigger = false;
+    BodyDesc.bStartActive = true;
+    BodyDesc.eMotion = EMotionType::Static;
+    BodyDesc.eQuality = EMotionQuality::Discrete;
+    BodyDesc.eShapeType = SHAPE::MESH;
+    BodyDesc.fFriction = 0.8f;
+    BodyDesc.fMass = 1.0f;
+    BodyDesc.fRestitution = 0.0f;
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP);
+    _float3 vPos{};
+    XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
+    _float4 vQuat{};
+    XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
+    BodyDesc.vPos = vPos;
+    BodyDesc.vQuat = vQuat;
+    BodyDesc.vShapeOffset = _float3(0.f, 0.0f, 0.f);
+    BodyDesc.pGameObject = this;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+        TEXT("Com_Body"), reinterpret_cast<CComponent**>(&m_pBodyCom), &BodyDesc)))
+        return E_FAIL;
 
     return S_OK;
 }
@@ -166,4 +204,5 @@ void CProp_Object::Free()
     __super::Free();
 
     Safe_Release(m_pModelCom);
+    Safe_Release(m_pBodyCom);
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Client_Defines.h"
-#include "Pool.h"
+#include "GameObject.h"
 
 NS_BEGIN(Engine)
 class CCollider;
@@ -14,7 +14,7 @@ NS_END
 
 NS_BEGIN(Client)
 
-class CDummy final : public CPool
+class CDummy final : public CGameObject
 {
 private:
 	CDummy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -44,7 +44,7 @@ private:
 	HRESULT Bind_ShaderResources();
 
 private:
-	virtual void Reset() override;
+	virtual void Reset();
 
 public:
 	static CDummy* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
