@@ -45,6 +45,10 @@ HRESULT CJolt_Manager::Initialize(_uint iNumObjectLayer)
     if (m_pObjectVsBPLayerFilter == nullptr)
         return E_FAIL;
 
+    m_pObjectLayerFilter = new CJolt_ObjectLayerFilter(m_iNumObjectLayer);
+    if (m_pObjectLayerFilter == nullptr)
+        return E_FAIL;
+
 #ifdef _DEBUG
     m_pDebugRenderer = new CJolt_DebugRenderer(m_pDevice, m_pContext);
 
@@ -161,6 +165,39 @@ void CJolt_Manager::CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* 
         *pShapeFilter,
         *m_pTempAlloc
     );
+}
+
+_bool CJolt_Manager::CastRay(_float3 vStart, _float3 vEnd, _float& fFraction)
+{
+    Vec3 vDir = LoadVec3(vEnd) - LoadVec3(vStart);
+
+    _float fDistance = vDir.Length();
+    if (fDistance <= 1.0e-6f)
+        return false;
+
+    vDir /= fDistance;
+
+    RRayCast Ray(LoadVec3(vStart), vDir);
+
+    RayCastSettings rc;
+    rc.mBackFaceModeTriangles = EBackFaceMode::IgnoreBackFaces;
+    rc.mTreatConvexAsSolid = true;
+
+    RayCastResult out_hit;
+    
+
+    if (m_pPhysics->GetNarrowPhaseQuery().CastRay(Ray, out_hit, {}, *m_pObjectLayerFilter))
+    {
+        fFraction = out_hit.mFraction;
+        return true;
+    }
+
+    //auto& npq = m_pPhysics->GetNarrowPhaseQueryNoLock();
+    //
+
+    //npq.CastRay(Ray, rc, out_hit, BroadPhaseLayerFilter(), m_pObjectLayerFilter, {}, )
+
+    return false;
 }
 
 #ifdef  _DEBUG
