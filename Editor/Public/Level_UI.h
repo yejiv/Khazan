@@ -23,18 +23,6 @@ private:
 	HRESULT				Ready_Obejct();
 
 private:
-	//void				Show_Hierarchy_Menu(const _char* szDefaultName);
-	//void				Show_Hierachy(class CUIObject* pRootUIObject);
-	//void				Add_Child(const _char* szDefaultName);
-	//void				Remove_Child(const _char* szDefaultName);
-
-	//void				Show_Inspector_Menu();
-
-	//void				Show_CreateUI_Menu(const _char* szDefaultName);
-	//
-	//CUIObject*			Find_UIObject(const _char* szUIObjectName);
-
-private:
 	class CEdit_Interface_UI* m_pUIInterface = { nullptr };
 	_float						m_fTimeDelta = {};
 

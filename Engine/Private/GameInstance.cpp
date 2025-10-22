@@ -348,6 +348,11 @@ HRESULT CGameInstance::Add_RenderGroup(RENDERGROUP eRenderGroup, CGameObject* pR
 	return m_pRenderer->Add_RenderGroup(eRenderGroup, pRenderObject);
 }
 
+void CGameInstance::Set_ShadowBias(_float fBias)
+{
+	m_pRenderer->Set_ShadowBias(fBias);
+}
+
 #ifdef _DEBUG
 
 HRESULT CGameInstance::Add_DebugComponent(CComponent* pComponent)
