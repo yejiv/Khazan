@@ -148,7 +148,8 @@ namespace Engine
 	{
 		XMFLOAT4			fSpeed;
 		float				fGravity;
-		XMFLOAT3			padding;
+		float				bDead;
+		XMFLOAT2			padding;
 	}POINT_INSTANCE_SPEED_PARAMS;
 
 	typedef struct tagVertexPosition
@@ -262,6 +263,7 @@ namespace Engine
 		unsigned int		iID{};
 	}VTXINSTANCE_MESH;
 
+	/* Point Instancing::Instance Buffer - [Effect] */
 	typedef struct tagVertexInstanceParticle
 	{
 		XMFLOAT4			vRight;
@@ -272,13 +274,26 @@ namespace Engine
 		XMFLOAT3			vPrevPosition;
 		float				bDead;
 		XMFLOAT2			vLifeTime;
-	}VTXINSTANCE_PARTICLE;
+	}IB_POINTINSTANCE_EFFECT;
 
+	/* Mesh Instancing::Instance Buffer - [Effect] */
+	typedef struct tagMeshInstanceParticle
+	{
+		XMFLOAT4			vRight;
+		XMFLOAT4			vUp;
+		XMFLOAT4			vLook;
+		XMFLOAT4			vTranslation;
+
+		XMFLOAT2			vLifeTime;
+		float				bDead;
+	}IB_MESHINSTANCE_EFFECT;
+
+	/* Mesh Instancing::Vertex Buffer - [Effect] */
 	typedef struct tagVertexMeshInstanceParticle
 	{
 		XMFLOAT3		vPosition;
 		XMFLOAT2		vTexcoord;
-	}MESHINSTANCE_PARTICLE;
+	}VB_MESHINSTANCE_EFFECT;
 
 	typedef struct tagVertexPointParticle
 	{
@@ -291,9 +306,6 @@ namespace Engine
 			{ "WORLD", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 			{ "WORLD", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 
-			//{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 1, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-			//{ "TEXCOORD", 1, DXGI_FORMAT_R32_FLOAT, 1, 72, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-			//{ "TEXCOORD", 2, DXGI_FORMAT_R32G32B32_FLOAT, 1, 76, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1 }, 
 			{ "TEXCOORD", 1, DXGI_FORMAT_R32_FLOAT, 1, 76, D3D11_INPUT_PER_INSTANCE_DATA, 1 }, 
 			{ "TEXCOORD", 2, DXGI_FORMAT_R32G32_FLOAT, 1, 80, D3D11_INPUT_PER_INSTANCE_DATA, 1 }, 

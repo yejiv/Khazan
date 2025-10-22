@@ -10,6 +10,6 @@ namespace Engine
 		_float3		padding0;
 		_uint		iSpeedType;
 		_float2		fRange;
-		_float		padding;
+		_float		bIsLoop;
 	}POINT_INSTANCE_CB;
 }

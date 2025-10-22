@@ -6,7 +6,7 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CVIBuffer_Mesh_Instance final : public CVIBuffer_Instance
 {
 public:
-	enum CS_PASS { MOVE, GRAVITY, UPDATE_SPEED, RESET, END };
+	enum CS_PASS { MOVE, GRAVITY, UPDATE_SPEED, RESET, RESET_SPEED, END };
 	enum class SPEED_VALUE { SPREAD_SPEED, ROTATION_SPEED, UPWARD_SPEED, SCALE_SPEED, SPEED_END };
 
 	typedef struct tagPointInstanceDesc : public INSTANCE_DESC
@@ -35,7 +35,7 @@ public:
 	virtual HRESULT			Initialize_Clone(void* pArg); 
 
 public:
-	void					Update(_float fTimeDelta);
+	_bool					Update(_float fTimeDelta);
 	void					Setting_Speed(SPEED_VALUE type, _float2 range);
 	void					Remove_Speed(SPEED_VALUE type);
 	void					Remove_Speed();
@@ -50,19 +50,24 @@ private:
 	HRESULT						Ready_ComputeShader();
 
 private:
-	class CComputeShader* m_ComputeShaders[ENUM_CLASS(CS_PASS::END)] = {};
-	ID3D11ShaderResourceView* m_pSRV = { nullptr };
-	ID3D11UnorderedAccessView* m_pUAV = { nullptr };
-	ID3D11UnorderedAccessView* m_pUAVSpeed = { nullptr };
-	ID3D11Buffer* m_pCB = { nullptr };
-	ID3D11Buffer* m_pStructuredBuffer = { nullptr };
-	POINT_INSTANCE_PARAMS* m_pParticleParams; 
+	_bool						IsFinish();
+
+private:
+	class CComputeShader*		m_ComputeShaders[ENUM_CLASS(CS_PASS::END)] = {};
+	ID3D11ShaderResourceView*	m_pSRV = { nullptr };
+	ID3D11UnorderedAccessView*	m_pUAV = { nullptr };
+	ID3D11UnorderedAccessView*	m_pUAVSpeed = { nullptr };
+	ID3D11Buffer*				m_pCB = { nullptr };
+	ID3D11Buffer*				m_pStructuredBuffer = { nullptr };
+	ID3D11Buffer*				m_pSpeedBuffer = { nullptr };
+	ID3D11Buffer*				m_pStagingBuffer = { nullptr };
+	POINT_INSTANCE_PARAMS*		m_pParticleParams; 
 
 private:
 	_float3					m_vPivot = {};
 	_float*					m_fSpeed[ENUM_CLASS(SPEED_VALUE::SPEED_END)];
 	_bool					m_IsLoop = {};
-	_float					m_fRotationPerSec = {};
+	//_float					m_fRotationPerSec = {};
 	_float					m_fOffset = {};
 	_float3					m_fRange = {};
 	_float2					m_fScale = {};

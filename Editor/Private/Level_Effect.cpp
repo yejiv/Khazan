@@ -26,10 +26,10 @@ HRESULT CLevel_Effect::Initialize()
         {
             ImGui::Begin("[Create Effect to Prefab]");
 
-            //_float time = m_PrefabPrototype->Get_Time();
-            //ImGui::SliderFloat("TimeTrack", &time, 0.f, m_PrefabPrototype->Get_MaxTrack());
+            _float time = m_PrefabPrototype->Get_Time();
+            ImGui::SliderFloat("TimeTrack", &time, 0.f, m_PrefabPrototype->Get_MaxTrack());
 
-            if (ImGui::Button("Restart"))
+            if (ImGui::Button("Start"))
                 m_PrefabPrototype->ResetChildren();
             if (ImGui::Button("Stop"))
                 ;
@@ -132,7 +132,9 @@ HRESULT CLevel_Effect::Initialize()
 
 void CLevel_Effect::Update(_float fTimeDelta)
 {
-    m_PrefabPrototype->Priority_Update(fTimeDelta);
+	m_fTimeAcc += fTimeDelta;
+
+	m_PrefabPrototype->Priority_Update(fTimeDelta);
     m_PrefabPrototype->Update(fTimeDelta);
     m_PrefabPrototype->Late_Update(fTimeDelta);
 
@@ -141,7 +143,14 @@ void CLevel_Effect::Update(_float fTimeDelta)
 
 HRESULT CLevel_Effect::Render()
 {
-	SetWindowText(g_hWnd, TEXT("ÀÌÆåÆ® Åø"));
+	++m_iRenderCount;
+	if (m_fTimeAcc >= 1.f)
+	{
+		wsprintf(m_szFPS, TEXT("Effect Tool :: FPS %d"), m_iRenderCount);
+		m_fTimeAcc = 0.f;
+		m_iRenderCount = 0;
+	}
+	SetWindowText(g_hWnd, m_szFPS);
 
 	return S_OK;
 }
@@ -164,6 +173,7 @@ void CLevel_Effect::Edit_Options()
 		else if (m_SpawnType == 1)
 			Create_Circle_Spawn();
 
+		ImGui::Checkbox("Eleemnt Loop", &m_bLoop);
 		ImGui::InputScalar("Instance Num : ", ImGuiDataType_U32, &m_iInstanceNum);
 		ImGui::InputFloat2("LifeTime : ", m_fLifeTime);
 		ImGui::InputFloat2("Scrolling Speed : ", reinterpret_cast<_float*>(&m_fScrollSpeed));
@@ -259,6 +269,7 @@ void CLevel_Effect::Create_PointInstance_Element()
 	data.vColor = m_fColor;
 	data.iTextureIdx = m_iTextureIdx;
 	data.iScrollSpeed = m_fScrollSpeed;
+	data.bIsLoop = m_bLoop;
 
 	m_PrefabPrototype->Add_Effect_Element(m_EffectType, &data);
 }
@@ -279,7 +290,8 @@ void CLevel_Effect::Create_MeshInstance_Element()
 	data.iTextureIdx = m_iTextureIdx;
 	data.iMeshTypeIdx = m_iMeshTypeIdx;
 	data.iScrollSpeed = m_fScrollSpeed;
-	
+	data.bIsLoop = m_bLoop;
+
 	m_PrefabPrototype->Add_Effect_Element(m_EffectType, &data);
 }
 
