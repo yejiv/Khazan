@@ -1,6 +1,6 @@
 #include "Pool_Manager.h"
 #include "GameInstance.h"
-#include "Pool.h"
+#include "GameObject.h"
 
 CPool_Manager::CPool_Manager()
 	: m_pGameInstance { CGameInstance::GetInstance() }
@@ -12,81 +12,63 @@ HRESULT CPool_Manager::Add_PoolObject(_uint iPrototypeLevelIndex, const _wstring
 {
 	for (size_t i = 0; i < iCount; i++)
 	{
-		CPool* pPoolObject = dynamic_cast<CPool*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelIndex, strPrototypeTag, pArg));
-		if (nullptr == pPoolObject)
+		CGameObject* pGameObject = dynamic_cast<CGameObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelIndex, strPrototypeTag, pArg));
+		if (nullptr == pGameObject)
 			return E_FAIL;
 
-		pPoolObject->Set_Tag(strPoolTag);
+		pGameObject->Set_Tag(strPoolTag);
 
-		deque<CPool*>* pPool = Find_Pool(strPoolTag);
+		deque<CGameObject*>* pPool = Find_Pool(strPoolTag);
 		if (nullptr == pPool)
 		{
-			deque<CPool*> dePool;
-			dePool.push_back(pPoolObject);
+			deque<CGameObject*> dePool;
+			dePool.push_back(pGameObject);
 			m_Pools.emplace(strPoolTag, dePool);
 		}
 		else
-			pPool->push_back(pPoolObject);
+			pPool->push_back(pGameObject);
 	}
 
 
 	return S_OK;
 }
 
-CPool* CPool_Manager::Pop_PoolObject(const _wstring& strPoolTag)
+CGameObject* CPool_Manager::Pop_PoolObject(const _wstring& strPoolTag)
 {
-	deque<CPool*>* pPool = Find_Pool(strPoolTag);
+	deque<CGameObject*>* pPool = Find_Pool(strPoolTag);
 
 	if (pPool == nullptr || pPool->size() <= 0)
 		return nullptr;
 
-	CPool* pPoolObject = pPool->front();
+	CGameObject* pGameObject = pPool->front();
 
 	pPool->pop_front();
 
-	return pPoolObject;
+	return pGameObject;
 }
 
-HRESULT CPool_Manager::Reset_PoolObject(CPool* pPoolObject)
-{
-	if (!pPoolObject->Get_IsDead())
-		return E_FAIL;
-
-	pPoolObject->Set_IsDead(false);
-	pPoolObject->Reset();
-
-	deque<CPool*>* pPool = Find_Pool(pPoolObject->Get_Tag());
-
-	if (pPool == nullptr || pPool->size() <= 0)
-		return E_FAIL;
-
-	pPool->push_back(pPoolObject);
-
-	return S_OK;
-}
 
 HRESULT CPool_Manager::Reset_PoolObject(CGameObject* pGameObject)
 {
-	CPool* pPoolObject = dynamic_cast<CPool*>(pGameObject);
-	if (!pPoolObject->Get_IsDead())
+	if (!pGameObject->Get_IsDead())
 		return E_FAIL;
 
-	pPoolObject->Set_IsDead(false);
-	pPoolObject->Reset();
+	pGameObject->Set_IsDead(false);
+	pGameObject->Reset();
 
-	deque<CPool*>* pPool = Find_Pool(pPoolObject->Get_Tag());
+	deque<CGameObject*>* pPool = Find_Pool(pGameObject->Get_Tag());
 
 	if (pPool == nullptr || pPool->size() <= 0)
 		return E_FAIL;
 
-	pPool->push_back(pPoolObject);
+	pPool->push_back(pGameObject);
 
 	return S_OK;
 }
 
-void CPool_Manager::Push_PoolObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CPool* pPoolObject)
+void CPool_Manager::Push_PoolObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CGameObject* pGameObject)
 {
-	m_pGameInstance->Push_GameObject_ToLayer(iLayerLevelIndex, strLayerTag, pPoolObject);
+	m_pGameInstance->Push_GameObject_ToLayer(iLayerLevelIndex, strLayerTag, pGameObject);
 }
 
 void CPool_Manager::Clear()
@@ -103,7 +85,7 @@ void CPool_Manager::Clear()
 }
 
 
-deque<CPool*>* CPool_Manager::Find_Pool(const _wstring& strPoolTag)
+deque<CGameObject*>* CPool_Manager::Find_Pool(const _wstring& strPoolTag)
 {
 	auto	iter = m_Pools.begin();
 

@@ -13,8 +13,7 @@ public :
 	enum class EffectEventType {	ACTIVATE,
 									ANIMATE_SPREAD, ANIMATE_ROTATE, ANIMATE_TWINLKE, ANIMATE_LINEAR_MOVE,
 									SCROLL_SPEAD,
-									DISSOLVE, };
-
+									DISSOLVE, }; 
 public:
 	typedef struct tagEffectEvent
 	{
@@ -32,13 +31,6 @@ public:
 
 		_float3			fPivot;
 		_bool			bGravity;
-		//_float				fScaleDelta;
-		//PARTICLE_MOVE_TYPE	MoveDirection; 
-		//PARTICLE_MOVE_TYPE	MoveType;
-		//_bool					isBillboard;
-		//_bool					isFloor;
-		//_bool					bAlignTo_Pivot;
-		//_bool					bLookAt_Pivot;
 	}EFFECT_EVENT;
 
 private:

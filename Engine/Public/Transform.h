@@ -50,6 +50,14 @@ public:
 		return XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_WorldMatrix));
 	}
 
+	void Set_WorldMatrix_4x4(_float4x4 WorldMatrix) {
+		m_WorldMatrix = WorldMatrix;
+	}
+
+	void Set_WorldMatrix(_matrix WorldMatrix) {
+		XMStoreFloat4x4(&m_WorldMatrix, WorldMatrix);
+	}
+
 	void Set_State(STATE eState, _fvector vState) {
 		XMStoreFloat4(reinterpret_cast<_float4*>(&m_WorldMatrix.m[ENUM_CLASS(eState)]), vState);
 	}

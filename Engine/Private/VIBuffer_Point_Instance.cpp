@@ -12,34 +12,42 @@ CVIBuffer_Point_Instance::CVIBuffer_Point_Instance(const CVIBuffer_Point_Instanc
 	, m_vPivot{ Prototype.m_vPivot }
 	//, m_pSpeeds{ Prototype.m_pSpeeds }
 	, m_IsLoop{ Prototype.m_IsLoop }
-	, m_fRotationPerSec{ Prototype.m_fRotationPerSec }
+	//, m_fRotationPerSec{ Prototype.m_fRotationPerSec }
 	, m_fOffset{ Prototype.m_fOffset }
 	, m_fRange{ Prototype.m_fRange }
-	, m_fScale{ Prototype.m_fScale }
+	//, m_fScale{ Prototype.m_fScale }
 
 {
 }
 
 void CVIBuffer_Point_Instance::Reset()
 {
-	D3D11_MAPPED_SUBRESOURCE	SubResource{};
-
-	VTXINSTANCE_PARTICLE* pInstanceVertices = static_cast<VTXINSTANCE_PARTICLE*>(m_pInstanceVertices);
-
-	m_pContext->Map(m_pVBInstance, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
-
-	VTXINSTANCE_PARTICLE* pVertices = static_cast<VTXINSTANCE_PARTICLE*>(SubResource.pData);
-
-	for (size_t i = 0; i < m_iNumInstance; i++)
+	D3D11_MAPPED_SUBRESOURCE SubResource;
+	if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
 	{
-		pVertices[i].vLifeTime.x = 0.f;
-		pVertices[i].vTranslation = pInstanceVertices[i].vTranslation;
+		POINT_INSTANCE_CB* pPointInstanceCB = reinterpret_cast<POINT_INSTANCE_CB*>(SubResource.pData);
+		pPointInstanceCB->fTimeDelta = 0;
+		m_pContext->Unmap(m_pCB, 0);
 	}
 
-	Remove_Speed();
-	ZeroMemory(m_fVelocityY, sizeof(_float) * m_iNumInstance);
+	COMPUTE_PASS_DESC PassDesc{};
+	PassDesc.SRVs.push_back(m_pSRV);
+	PassDesc.UAVs.push_back(m_pUAV);
+	PassDesc.UAVs.push_back(m_pUAVSpeed);
+	PassDesc.ConstantBuffers.push_back(m_pCB);
+	_uint iNumThreadPerGroup = 256;
+	_uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
+	PassDesc.x = iNumGroups;
+	PassDesc.y = 1;
+	PassDesc.z = 1;
 
-	m_pContext->Unmap(m_pVBInstance, 0);
+	CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
+	JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET)];
+	JobDesc.PassDesc = PassDesc;
+
+	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
+
+	m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
 }
 
 HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDesc)
@@ -50,7 +58,7 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDes
 	m_fRange = pPointDesc->vRange;
 	m_bIsCircle = pPointDesc->IsCircle;
 	m_vSourceColor = pPointDesc->vSourceColor;
-	m_fRotationPerSec = pPointDesc->fRotationPerSec;
+	//m_fRotationPerSec = pPointDesc->fRotationPerSec;
 	m_fOffset = pPointDesc->fOffset;
 
 	m_iInstanceVertexStride = sizeof(VTXINSTANCE_PARTICLE);
@@ -87,13 +95,6 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDes
 	m_VBInstanceDesc.StructureByteStride = m_iInstanceVertexStride;
 
 	m_pInstanceVertices = new VTXINSTANCE_PARTICLE[m_iNumInstance]; 
-	m_fVelocityY = new _float[m_iNumInstance];
-	ZeroMemory(m_fVelocityY, sizeof(_float) * m_iNumInstance);
-	for (_uint i = 0; i < ENUM_CLASS(SPEED_VALUE::SPEED_END); ++i)
-	{
-		m_fSpeed[i] = new _float[m_iNumInstance];
-		ZeroMemory(m_fSpeed[i], sizeof(_float) * m_iNumInstance);
-	}
 	m_pParticleParams = new POINT_INSTANCE_PARAMS[m_iNumInstance];
 
 	for (size_t i = 0; i < m_iNumInstance; i++)
@@ -135,12 +136,8 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDes
 
 		pInstanceVertices[i].vLifeTime = _float2(0.f, fLifeTime);
 		m_fRange = pPointDesc->vRange;
-		m_fScale = pPointDesc->vSize;
+		m_pParticleParams[i].fSize = pPointDesc->vSize;
 
-		//m_pParticleParams[i].fSpeed.x = m_fSpeed[ENUM_CLASS(SPEED_VALUE::SPREAD_SPEED)][i];
-		//m_pParticleParams[i].fSpeed.y = m_fSpeed[ENUM_CLASS(SPEED_VALUE::ROTATION_SPEED)][i];
-		//m_pParticleParams[i].fSpeed.z = m_fSpeed[ENUM_CLASS(SPEED_VALUE::UPWARD_SPEED)][i];
-		//m_pParticleParams[i].fSpeed.w = m_fSpeed[ENUM_CLASS(SPEED_VALUE::SCALE_SPEED)][i];
 		m_pParticleParams[i].vInitTranslation = pInstanceVertices[i].vTranslation;
 	}
 
@@ -199,78 +196,6 @@ HRESULT CVIBuffer_Point_Instance::Render()
 
 void CVIBuffer_Point_Instance::Update(_float fTimeDelta)
 {
-	//D3D11_MAPPED_SUBRESOURCE SubResource = {};
-	//
-	//VTXINSTANCE_PARTICLE* pInstanceVertices = static_cast<VTXINSTANCE_PARTICLE*>(m_pInstanceVertices);
-	//
-	//m_pContext->Map(m_pVBInstance, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
-	//
-	//VTXINSTANCE_PARTICLE* pVertices = static_cast<VTXINSTANCE_PARTICLE*>(SubResource.pData);
-	//
-	//for (size_t i = 0; i < m_iNumInstance; i++)
-	//{
-	//	pVertices[i].vPrevPosition = pInstanceVertices[i].vPrevPosition;
-	//	//Scale
-	//	pVertices[i].vRight.x += m_fSpeed[ENUM_CLASS(SPEED_VALUE::SCALE_SPEED)][i];
-	//	pVertices[i].vUp.y += m_fSpeed[ENUM_CLASS(SPEED_VALUE::SCALE_SPEED)][i];
-	//	pVertices[i].vLook.z += m_fSpeed[ENUM_CLASS(SPEED_VALUE::SCALE_SPEED)][i];
-	//
-	//	//Rotation
-	//	if(m_fSpeed[ENUM_CLASS(SPEED_VALUE::ROTATION_SPEED)][i])
-	//	{
-	//		_matrix		RotationMatrix = XMMatrixRotationAxis(XMVectorSet(0.f,1.f,0.f,0.f),m_fSpeed[ENUM_CLASS(SPEED_VALUE::ROTATION_SPEED)][i] * fTimeDelta);
-	//		_vector		Pivot_Pos = XMVectorSetW(XMLoadFloat3(&m_vPivot),1.f);
-	//		_matrix		Pivot_World = XMMatrixTranslationFromVector(Pivot_Pos);
-	//
-	//		_matrix final_Matrix = RotationMatrix * Pivot_World;
-	//		_vector pos = XMLoadFloat4(&pVertices[i].vTranslation);
-	//		pos = XMVector4Transform(pos,final_Matrix);
-	//		XMStoreFloat4(&pVertices[i].vTranslation,pos);
-	//	}
-	//	
-	//	//Spread
-	//	_vector	vMoveDir = XMVectorSetW(XMLoadFloat4(&pVertices[i].vTranslation) - XMLoadFloat3(&m_vPivot), 0.f);
-	//	XMStoreFloat4(&pVertices[i].vTranslation, XMLoadFloat4(&pVertices[i].vTranslation) + XMVector3Normalize(vMoveDir) * m_fSpeed[ENUM_CLASS(SPEED_VALUE::SPREAD_SPEED)][i] * fTimeDelta);
-	//
-	//	//MoveLinear
-	//	vMoveDir = XMVectorSet(0.f, 1.f, 0.f, 0.f);
-	//	XMStoreFloat4(&pVertices[i].vTranslation, XMLoadFloat4(&pVertices[i].vTranslation) + vMoveDir * m_fSpeed[ENUM_CLASS(SPEED_VALUE::UPWARD_SPEED)][i] * fTimeDelta);
-	//
-	//	pVertices[i].vLifeTime.x += fTimeDelta;
-	//	pInstanceVertices[i].vPrevPosition = _float3(pVertices[i].vTranslation.x, pVertices[i].vTranslation.y, pVertices[i].vTranslation.z);
-	//	if (pVertices[i].vLifeTime.x >= pVertices[i].vLifeTime.y
-	//		|| (m_fSpeed[ENUM_CLASS(SPEED_VALUE::SPREAD_SPEED)][i] < 0 && XMVectorGetX(XMVector3Length(vMoveDir)) < 0.1f))
-	//	{
-	//		pVertices[i].vLifeTime.x = 0.f;
-	//		pVertices[i].vTranslation = pInstanceVertices[i].vTranslation;
-	//		pVertices[i].bDead = true;
-	//	}
-	//
-	//	if (pVertices[i].vRight.x <= 0.f)
-	//	{
-	//		_float		fScale = m_pGameInstance->Rand(m_fScale.x, m_fScale.y);
-	//		pVertices[i].vRight = _float4(fScale, 0.f, 0.f, 0.f);
-	//		pVertices[i].vUp = _float4(0.f, fScale, 0.f, 0.f);
-	//		pVertices[i].vLook = _float4(0.f, 0.f, fScale, 0.f);
-	//	}
-	//}
-	//
-	//m_pContext->Unmap(m_pVBInstance, 0);
-
-	//D3D11_MAPPED_SUBRESOURCE SubResource;
-	//if (FAILED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
-	//{
-	//	MSG_BOX(TEXT("Fail to map ConstantBuffer"));
-	//	return;
-	//}
-	//
-	//POINT_INSTANCE_CB* pPointInstanceCB = reinterpret_cast<POINT_INSTANCE_CB*>(SubResource.pData);
-	//pPointInstanceCB->fTimeDelta = fTimeDelta;
-	//pPointInstanceCB->vPivot = m_vPivot;
-	////pPointInstanceCB->fTimeDelta = fTimeDelta;
-	//pPointInstanceCB->iNumInstances = m_iNumInstance;
-	//m_pContext->Unmap(m_pCB, 0);
-
 	D3D11_MAPPED_SUBRESOURCE SubResource;
 	if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
 	{
@@ -284,7 +209,7 @@ void CVIBuffer_Point_Instance::Update(_float fTimeDelta)
 	COMPUTE_PASS_DESC PassDesc{};
 	PassDesc.SRVs.push_back(m_pSRV);
 	PassDesc.UAVs.push_back(m_pUAV);
-	//PassDesc.UAVInitialCounts.push_back(0);
+	PassDesc.UAVs.push_back(m_pUAVSpeed);
 	PassDesc.ConstantBuffers.push_back(m_pCB);
 	_uint iNumThreadPerGroup = 256;
 	_uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
@@ -303,32 +228,9 @@ void CVIBuffer_Point_Instance::Update(_float fTimeDelta)
 
 void CVIBuffer_Point_Instance::UpdateGravity(_float fTimeDelta)
 {
-	//D3D11_MAPPED_SUBRESOURCE SubResource = {};
-	//
-	//VTXINSTANCE_PARTICLE* pInstanceVertices = static_cast<VTXINSTANCE_PARTICLE*>(m_pInstanceVertices);
-	//
-	//m_pContext->Map(m_pVBInstance, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
-	//
-	//VTXINSTANCE_PARTICLE* pVertices = static_cast<VTXINSTANCE_PARTICLE*>(SubResource.pData);
-	//
-	//for (size_t i = 0; i < m_iNumInstance; i++)
-	//{
-	//	if (pVertices[i].bDead == true)
-	//	{
-	//		m_fVelocityY[i] = 0.f;
-	//		continue;
-	//	}
-	//	m_fVelocityY[i] += fTimeDelta;
-	//	pVertices[i].vTranslation.y -= 2.2f * m_fVelocityY[i] * fTimeDelta;
-	//}
-	//
-	//m_pContext->Unmap(m_pVBInstance, 0);
-
 	COMPUTE_PASS_DESC PassDesc{};
-	//PassDesc.SRVs.push_back(m_pSRV);
 	PassDesc.UAVs.push_back(m_pUAV);
-	PassDesc.UAVs.push_back(m_pUAV_Gravity);
-	//PassDesc.UAVInitialCounts.push_back(0);
+	PassDesc.UAVs.push_back(m_pUAVSpeed);
 	PassDesc.ConstantBuffers.push_back(m_pCB);
 	_uint iNumThreadPerGroup = 256;
 	_uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
@@ -347,34 +249,43 @@ void CVIBuffer_Point_Instance::UpdateGravity(_float fTimeDelta)
 
 void CVIBuffer_Point_Instance::Setting_Speed(SPEED_VALUE type, _float2 range)
 {
-	for (size_t i = 0; i < m_iNumInstance; i++)
-		m_fSpeed[ENUM_CLASS(type)][i] = m_pGameInstance->Rand(range.x, range.y);
-
 	D3D11_MAPPED_SUBRESOURCE SubResource;
-	POINT_INSTANCE_PARAMS* pInstanceVertices = m_pParticleParams;	//내가 갖고있는 값
-
-	m_pContext->Map(m_pSRVBuffer, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);			//버퍼 열기
-	POINT_INSTANCE_PARAMS* pVertices = static_cast<POINT_INSTANCE_PARAMS*>(SubResource.pData);
-
-	for (size_t i = 0; i < m_iNumInstance; i++)
+	if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
 	{
-		pVertices[i].fSpeed.x = m_fSpeed[ENUM_CLASS(SPEED_VALUE::SPREAD_SPEED)][i];
-		pVertices[i].fSpeed.y = m_fSpeed[ENUM_CLASS(SPEED_VALUE::ROTATION_SPEED)][i];
-		pVertices[i].fSpeed.z = m_fSpeed[ENUM_CLASS(SPEED_VALUE::UPWARD_SPEED)][i];
-		pVertices[i].fSpeed.w = m_fSpeed[ENUM_CLASS(SPEED_VALUE::SCALE_SPEED)][i];
+		POINT_INSTANCE_CB* pInstanceSpeedCB = reinterpret_cast<POINT_INSTANCE_CB*>(SubResource.pData);
+		pInstanceSpeedCB->iSpeedType = static_cast<_uint>(type);
+		pInstanceSpeedCB->fRange = range;
+		m_pContext->Unmap(m_pCB, 0);
 	}
-	m_pContext->Unmap(m_pSRVBuffer, 0); 
+	
+	COMPUTE_PASS_DESC PassDesc{};
+	PassDesc.UAVs.push_back(m_pUAV);
+	PassDesc.UAVs.push_back(m_pUAVSpeed);
+	PassDesc.ConstantBuffers.push_back(m_pCB);
+	_uint iNumThreadPerGroup = 256;
+	_uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
+	PassDesc.x = iNumGroups;
+	PassDesc.y = 1;
+	PassDesc.z = 1;
+	
+	CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
+	JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::UPDATE_SPEED)];
+	JobDesc.PassDesc = PassDesc;
+	
+	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
 }
 
 void CVIBuffer_Point_Instance::Remove_Speed(SPEED_VALUE type)
 {
-	ZeroMemory(m_fSpeed[ENUM_CLASS(type)], sizeof(_float) * m_iNumInstance);
+	//ZeroMemory(m_fSpeed[ENUM_CLASS(type)], sizeof(_float) * m_iNumInstance);
+	int a = 0;
 }
 
 void CVIBuffer_Point_Instance::Remove_Speed()
 {
-	for(_uint i = 0; i < ENUM_CLASS(SPEED_VALUE::SPEED_END); ++i) 
-		ZeroMemory(m_fSpeed[i],sizeof(_float) * m_iNumInstance); 
+	//for(_uint i = 0; i < ENUM_CLASS(SPEED_VALUE::SPEED_END); ++i) 
+	//	ZeroMemory(m_fSpeed[i],sizeof(_float) * m_iNumInstance); 
+	int a = 0;
 }
 
 void CVIBuffer_Point_Instance::Setting_Pivot(_float3 pivot)
@@ -384,7 +295,7 @@ void CVIBuffer_Point_Instance::Setting_Pivot(_float3 pivot)
 
 HRESULT CVIBuffer_Point_Instance::Ready_SRV(void* pSysmem)
 {
-	//ID3D11Buffer* pBuffer = { nullptr };
+	ID3D11Buffer* pBuffer = { nullptr };
 
 	D3D11_BUFFER_DESC ParticleParamsBufferDesc{};
 	ParticleParamsBufferDesc.ByteWidth = sizeof(POINT_INSTANCE_PARAMS) * m_iNumInstance;
@@ -397,7 +308,7 @@ HRESULT CVIBuffer_Point_Instance::Ready_SRV(void* pSysmem)
 	D3D11_SUBRESOURCE_DATA ParticleParamsInitialData{};
 	ParticleParamsInitialData.pSysMem = pSysmem;
 
-	if (FAILED(m_pDevice->CreateBuffer(&ParticleParamsBufferDesc, &ParticleParamsInitialData, &m_pSRVBuffer)))
+	if (FAILED(m_pDevice->CreateBuffer(&ParticleParamsBufferDesc, &ParticleParamsInitialData, &pBuffer)))
 		return E_FAIL;
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc{};
@@ -406,7 +317,7 @@ HRESULT CVIBuffer_Point_Instance::Ready_SRV(void* pSysmem)
 	SRVDesc.Buffer.FirstElement = 0;
 	SRVDesc.Buffer.NumElements = m_iNumInstance;
 
-	if (FAILED(m_pDevice->CreateShaderResourceView(m_pSRVBuffer, &SRVDesc, &m_pSRV)))
+	if (FAILED(m_pDevice->CreateShaderResourceView(pBuffer, &SRVDesc, &m_pSRV)))
 		return E_FAIL;
 
 	return S_OK;
@@ -415,7 +326,7 @@ HRESULT CVIBuffer_Point_Instance::Ready_SRV(void* pSysmem)
 HRESULT CVIBuffer_Point_Instance::Ready_UAV()
 {
 	D3D11_BUFFER_DESC StructuredBufferDesc{};
-	StructuredBufferDesc.ByteWidth = m_iNumInstance * m_iInstanceVertexStride; // stride * count
+	StructuredBufferDesc.ByteWidth = m_iNumInstance * m_iInstanceVertexStride;
 	StructuredBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	StructuredBufferDesc.BindFlags = D3D11_BIND_UNORDERED_ACCESS;
 	StructuredBufferDesc.CPUAccessFlags = 0;
@@ -423,7 +334,7 @@ HRESULT CVIBuffer_Point_Instance::Ready_UAV()
 	StructuredBufferDesc.StructureByteStride = m_iInstanceVertexStride;
 
 	D3D11_SUBRESOURCE_DATA InitData{};
-	InitData.pSysMem = m_pInstanceVertices; // 초기 데이터가 있으면
+	InitData.pSysMem = m_pInstanceVertices;
 	if (FAILED(m_pDevice->CreateBuffer(&StructuredBufferDesc, &InitData, &m_pStructuredBuffer)))
 		return E_FAIL;
 
@@ -436,15 +347,12 @@ HRESULT CVIBuffer_Point_Instance::Ready_UAV()
 	if (FAILED(m_pDevice->CreateUnorderedAccessView(m_pStructuredBuffer, &UAVDesc, &m_pUAV)))
 		return E_FAIL;
 
-
-	//ID3D11Buffer* velocityBuffer{};
-	StructuredBufferDesc.ByteWidth = m_iNumInstance * sizeof(_float); // stride * count 
-	StructuredBufferDesc.StructureByteStride = sizeof(_float);
-
-	if (FAILED(m_pDevice->CreateBuffer(&StructuredBufferDesc, nullptr, &m_pVelocityBuffer)))
+	ID3D11Buffer* buffer = { nullptr };
+	StructuredBufferDesc.ByteWidth = m_iNumInstance * sizeof(POINT_INSTANCE_SPEED_PARAMS);
+	StructuredBufferDesc.StructureByteStride = sizeof(POINT_INSTANCE_SPEED_PARAMS); 
+	if (FAILED(m_pDevice->CreateBuffer(&StructuredBufferDesc, nullptr, &buffer)))
 		return E_FAIL;
-	 
-	if (FAILED(m_pDevice->CreateUnorderedAccessView(m_pVelocityBuffer, &UAVDesc, &m_pUAV_Gravity)))
+	if (FAILED(m_pDevice->CreateUnorderedAccessView(buffer, &UAVDesc, &m_pUAVSpeed)))
 		return E_FAIL;
 
 	return S_OK;
@@ -476,6 +384,15 @@ HRESULT CVIBuffer_Point_Instance::Ready_ComputeShader()
 	m_ComputeShaders[ENUM_CLASS(CS_PASS::GRAVITY)] = CComputeShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Compute.hlsl"), "CS_UPDATE_GRAVITY");
 	if (nullptr == m_ComputeShaders[ENUM_CLASS(CS_PASS::GRAVITY)])
 		return E_FAIL;
+
+	m_ComputeShaders[ENUM_CLASS(CS_PASS::UPDATE_SPEED)] = CComputeShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Compute.hlsl"), "CS_UPDATE_SPEED");
+	if (nullptr == m_ComputeShaders[ENUM_CLASS(CS_PASS::UPDATE_SPEED)])
+		return E_FAIL;
+
+	m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET)] = CComputeShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Compute.hlsl"), "CS_RESET");
+	if (nullptr == m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET)])
+		return E_FAIL;
+
 
 	return S_OK;
 }
@@ -512,15 +429,6 @@ void CVIBuffer_Point_Instance::Free()
 
 	if (false == m_isCloned)
 	{
-		for (_uint i = 0; i < ENUM_CLASS(SPEED_VALUE::SPEED_END); ++i) 
-			Safe_Delete(m_fSpeed[i]);  
-		Safe_Delete_Array(m_fVelocityY);
 		Safe_Delete_Array(m_pParticleParams);
 	}
-
 }
-
-
-
-
-

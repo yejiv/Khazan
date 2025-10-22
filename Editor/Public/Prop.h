@@ -49,20 +49,26 @@ public:
 	const _uint Get_ShaderPass() const { return static_cast<_uint>(m_eShaderPass); };
 	void Set_ShaderPass(_uint iShaderPass);
 
+	void Set_CheckRender(_bool isCheckRender) { m_isCheckRender = isCheckRender; }
+	void Set_RenderProperties(MAPOBJECT_PROPERTIES* pRenderProperties) { m_pRenderProperties = pRenderProperties; }
+
 protected:
 	SHADER_PASS m_eShaderPass = { SHADER_PASS::MAP };
+	_bool m_isCheckRender = { false };
 
 protected:
 	_tchar m_szModelName[MAX_PATH] = {};
 
 	MAPOBJECT_PROPERTIES m_Properties = {};
 
+	MAPOBJECT_PROPERTIES* m_pRenderProperties = { nullptr };
+
 protected:
 	_float m_fSnowAmount = { 0.8f };
 	_float3 m_vSnowColor = { 0.92f, 0.94f, 1.f };
 
 protected:
-	virtual HRESULT Bind_ShaderResources_ForSnowMap(class CTexture* pTextureCom, _uint iMeshIndex);
+	virtual HRESULT Bind_ShaderResources_ForSnowMap(_uint iMeshIndex);
 	virtual HRESULT Bind_Instance_Materials(CModel_Instance* pModelCom, _uint iMeshIndex);
 
 public:
