@@ -298,6 +298,24 @@
     <Filter Include="01.Utility\03.Component\Model\Manager">
       <UniqueIdentifier>{49e1f034-2450-4ae5-ac04-70146ca4a622}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\95.AI\BehaviorTree\Node\Condition">
+      <UniqueIdentifier>{328d7608-fd2f-4720-a26b-54a668e89b52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\95.AI\BehaviorTree\Node\Decorator">
+      <UniqueIdentifier>{c49bed69-0d04-4912-90f3-c5836739a441}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\95.AI\BehaviorTree\Node\Decorator\Repeater">
+      <UniqueIdentifier>{89e6684a-a596-41a3-831f-d5c9e22b2a01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\95.AI\BehaviorTree\Node\Wait">
+      <UniqueIdentifier>{be48391f-f6dc-4d73-8201-a27f78e60f9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\95.AI\BehaviorTree\Node\Decorator\CoolDown">
+      <UniqueIdentifier>{83a9a01e-6c8a-44ae-b624-f7f6e1b00406}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\95.AI\BehaviorTree\Node\Decorator\Inverter">
+      <UniqueIdentifier>{ff7d3c95-8f9b-431a-aa13-048ee6b34835}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -575,6 +593,24 @@
     </ClCompile>
     <ClCompile Include="..\private\AnimationTransitionManager.cpp">
       <Filter>01.Utility\03.Component\Model\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Condition_Node.cpp">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Condition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Decorator_Node.cpp">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Decorator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Wait_Node.cpp">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Wait</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Repeater_Node.cpp">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Decorator\Repeater</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CoolDown_Nodel.cpp">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Decorator\CoolDown</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Inverter_Node.cpp">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Decorator\Inverter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -883,6 +919,24 @@
     </ClInclude>
     <ClInclude Include="..\public\AnimationTransitionManager.h">
       <Filter>01.Utility\03.Component\Model\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Condition_Node.h">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Condition</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Decorator_Node.h">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Decorator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Wait_Node.h">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Wait</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Repeater_Node.h">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Decorator\Repeater</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CoolDown_Nodel.h">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Decorator\CoolDown</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Inverter_Node.h">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Decorator\Inverter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

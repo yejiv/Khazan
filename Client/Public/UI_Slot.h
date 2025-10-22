@@ -30,6 +30,11 @@ public:
 protected:
 	vector<std::function<void()>>	m_Events;
 	_int							m_iIndex = { -1 };
+
+protected:
+	virtual _bool					ButtonOver(HWND hWnd);
+	virtual _bool					ButtonClick(HWND hWnd, _bool IsRight, _bool IsDonw);
+
 public:
 	virtual CGameObject*			Clone(void* pArg) = 0;
 	virtual void					Free() override;

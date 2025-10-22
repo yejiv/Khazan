@@ -13,6 +13,7 @@ void CAttackState_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
     CModel* pModel = static_cast<CModel*>(pOwner->Get_Component(TEXT("Com_Model")));
     pModel->Set_Animation(0);
+    //pModel->Set_AnimationLoop(false);
 }
 
 void CAttackState_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

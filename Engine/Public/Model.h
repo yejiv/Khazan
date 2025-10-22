@@ -88,10 +88,10 @@ private:
 	/* 애니메이션 */
 	_bool								m_isFinished = { false };			/* 루프가 아닌 애니메이션이 끝났는지 여부  */
 	_uint								m_iNumAnimations = { 0 };			/* 애니메이션 수 */
-	_int								m_iCurrentAnimIndex = { -1 };		/* 현재 애니메이션 인덱스 */
+	_int								m_iCurrentAnimIndex = { 0 };		/* 현재 애니메이션 인덱스 */
 	_int								m_iReserveAnimIndex = {};			/* 애니메이션 끝나고 전환해야 할 때 다음 애니메이션 인덱스가 들어오는것을 예약*/
 	_float								m_fCurrentTrackPosition = { 0.f };  /* 현재 애니메이션 재생 위치 */
-	_int								m_iPrevAnimIndex = { -1 };			/* 이전 애니메이션 인덱스 */
+	_int								m_iPrevAnimIndex = { 0 };			/* 이전 애니메이션 인덱스 */
 	vector< class CAnimation* >			m_Animations;						/* 애니메이션 클래스 저장  */
 	vector<ANIMATION_SETUP_DATA>		m_AnimationsSetup;					/* 애니메이션들 정보 */
 

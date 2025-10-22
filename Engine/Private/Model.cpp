@@ -305,10 +305,10 @@ void CModel::Set_Animation(_uint iIndex)
     m_iCurrentAnimIndex = iIndex;
 
 
-    if (m_iPrevAnimIndex >= 0 && m_iCurrentAnimIndex != m_iPrevAnimIndex) {
+    //if (m_iPrevAnimIndex >= 0 && m_iCurrentAnimIndex != m_iPrevAnimIndex) {
         if(!Has_State(ANIMSET_PLAYING)) Clear_State();
         Add_State(CHANGE_ANIMATION);
-    }
+    //}
 }
 
 void CModel::Set_AnimationSet(const string& strKey)
