@@ -85,6 +85,17 @@ namespace Engine
 
 	}MAPOBJECT_PROPERTIES;
 
+	typedef struct tagInteractiveDesc		// 공부하고 추가 예정
+	{
+		enum TYPE { SAVEPOINT, LADDER, LEVER, ELEVATOR, PLZADD, END };
+
+		bool isOnce{ false };				// 한번만 작동하는지
+		bool isActive{ false };				// 활성화 되었는지
+		float fInteractiveRange{};			// 상호작용 범위
+		unsigned int iTriggerID{};			// 어떤 트리거랑 연동할 지
+
+	}INTERACTIVE_DESC;
+
 	typedef struct tagCatmullrom
 	{
 		XMVECTOR v1;

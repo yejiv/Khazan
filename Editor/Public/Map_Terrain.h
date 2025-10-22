@@ -32,6 +32,9 @@ private:
 	CVIBuffer_Terrain* m_pVIBufferCom = { nullptr };
 
 private:
+	_bool m_isRender = { true };
+
+private:
 	HRESULT Ready_Components();
 	HRESULT Bind_ShaderResources();
 
