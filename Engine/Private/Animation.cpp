@@ -66,7 +66,7 @@ HRESULT CAnimation::Initialize(const vector<class CBone*>& Bones, ANIMATION_DATA
 }
 
 void CAnimation::Update_TransformationMatrices(const vector<class CBone*>& Bones, _bool isUsedLoop, _bool isLoop, _bool* pFinished, _float fTimeDelta)
-{    
+{
 #ifdef _DEBUG
     if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_SPACE))
     {
@@ -74,21 +74,35 @@ void CAnimation::Update_TransformationMatrices(const vector<class CBone*>& Bones
     }
 #endif // _DEBUG
 
-    *m_fCurrentTrackPosition += m_fTickPerSecond * fTimeDelta;
+    * m_fCurrentTrackPosition += m_fTickPerSecond * fTimeDelta;
 
     if (*m_fCurrentTrackPosition >= m_fDuration)
     {
 
-        if ((isUsedLoop && false == isLoop) || !m_isLoop)
+        if (isUsedLoop)
         {
-            *pFinished = true;
-            *m_fCurrentTrackPosition = m_fDuration;
-            return;
+            if (!isLoop)
+            {
+                *pFinished = true;
+                *m_fCurrentTrackPosition = m_fDuration;
+                return;
+            }
+            else
+                *m_fCurrentTrackPosition = 0.f;
         }
         else
-            *m_fCurrentTrackPosition = 0.f;        
+        {
+            if (!m_isLoop)
+            {
+                *pFinished = true;
+                *m_fCurrentTrackPosition = m_fDuration;
+                return;
+            }
+            else
+                *m_fCurrentTrackPosition = 0.f;
+        }
 
-    }    
+    }
 
     /* 애니메이션 블랜딩 */
     if (m_isAnimationBlend)
@@ -97,7 +111,7 @@ void CAnimation::Update_TransformationMatrices(const vector<class CBone*>& Bones
     /* 채널(뼈) 갱신 */
     for (_uint i = 0; i < m_iNumChannels; ++i)
         m_Channels[i]->Update_TransformationMatrix(Bones, *m_fCurrentTrackPosition, &m_CurrentKeyFrameIndices[i]);
-    
+
 }
 
 void CAnimation::Update_TransformationMatrices(const vector<class CBone*>& Bones, _bool isLoop, _bool* pFinished, _float fTimeDelta)

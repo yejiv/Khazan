@@ -148,6 +148,20 @@ struct PS_OUT
     float4 vColor : SV_TARGET0;
 };
 
+float4 ShaderPass_1(float4 vColor, PS_IN In)
+{
+    float exposure = 2.f;
+
+    vColor.rgb = pow(vColor.rgb, 1.0 / exposure);
+
+    vColor.rgb = saturate(vColor.rgb);
+    
+//    vColor.rgb = In.vColor.rgb * 1.2f;
+    
+    vColor.a = vColor.a * In.vAlpha;
+    return vColor;
+}
+
 float4 ShaderPass_2(float4 vColor, PS_IN In)
 {
     vColor.rgb = (vColor.r) * In.vColor.rgb;
@@ -161,7 +175,8 @@ PS_OUT PS_MAIN(PS_IN In)
     In.vTexcoord = In.vUV.xy + (In.vUV.zw - In.vUV.xy) * In.vTexcoord;
     Out.vColor = TexMaping(In.vPass.x, In.vTexcoord);
     
-
+    if(In.vPass.y == 1)
+        Out.vColor = ShaderPass_1(Out.vColor, In);
     if (In.vPass.y == 2)
         Out.vColor = ShaderPass_2(Out.vColor, In);
     else
