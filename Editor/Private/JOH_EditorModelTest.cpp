@@ -93,12 +93,12 @@ HRESULT CJOH_EditorModelTest::Render()
             // m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
             m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-            m_pShaderCom->Begin(0);
+            m_pShaderCom->Begin(1);
         }
         else
         {
             m_pModelCom->Bind_Materials(m_pShaderCom_NonAnim, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
-            m_pShaderCom_NonAnim->Begin(0);
+            m_pShaderCom_NonAnim->Begin(1);
         }
 
         m_pModelCom->Render(i);

@@ -285,21 +285,12 @@ HRESULT CLoader::Loading_For_UI_Level()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_Atlas_Inven"),
 		CTexture_Atlas::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Atlas/Atlas_1.json"), 1))))
 		return E_FAIL;
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_Atlas_SlotTest"),
-	//	CTexture_Atlas::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Test/SlotTest.json"), 1))))
-	//	return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_Hud_HPGauge"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Hud/State/T_Hud_Gauge_HP_0%d.png"), 7))))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_Atlas_SlotTest"),
-		CTexture_Atlas::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Test/SlotTest.json"), 1))))
-		return E_FAIL;
 
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_Tex_Background"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Test/T_Hud_BG_Deco_Pathfinder_01.png"), 1))))
-		return E_FAIL;
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
 
 	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));

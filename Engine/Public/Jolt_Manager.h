@@ -74,6 +74,7 @@ public:
 private:
     ID3D11Device* m_pDevice = { nullptr };
     ID3D11DeviceContext* m_pContext = { nullptr };
+    class CGameInstance* m_pGameInstance = { nullptr };
 
     // 필수 구성요소
     PhysicsSystem* m_pPhysics = { nullptr };
