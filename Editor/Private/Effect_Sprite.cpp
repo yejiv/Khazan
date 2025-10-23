@@ -51,6 +51,7 @@ void CEffect_Sprite::Update(_float fTimeDelta)
         if (m_sData.IsLoop == false)
             m_TimeTracks.pop_back(); 
         m_iUVIdx = 0;
+        m_bRunning = false;
     }
     //(뭔가 끝내라는 이벤트 -> 이거 루프 세팅 false로 바꿔주기)
         
@@ -120,6 +121,7 @@ void CEffect_Sprite::Active()
 
     m_fCurTime = 0.f;
     m_iUVIdx = 0;
+    m_bRunning = true;
 }
 
 HRESULT CEffect_Sprite::Ready_Component()
