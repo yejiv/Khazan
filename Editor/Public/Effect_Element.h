@@ -41,7 +41,7 @@ public:
 	virtual void			SetUpwardData(void* pArg);
 	virtual void			SetScrollData(void* pArg);
 	void					SetData(_uint eventType, _float fDurTime);
-	_bool					IsActive() { return (m_TimeTracks.size() > 0) ? true : false; }
+	_bool					IsActive() { return m_bRunning; }
 	void					SetParentsMatrix(const _float4x4* pMatrix) { m_pParentMatrix = pMatrix; }
 	virtual void			Reset();
 
@@ -65,6 +65,7 @@ protected:
 	_float4x4				m_CombinedWorldMatrix = {};
 	_uint					m_iEffect_Type;
 	_float2					m_fScrollSpeed;
+	_bool					m_bRunning;
 
 	list<TRACK_DATA>		m_TimeTracks;
 

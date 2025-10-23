@@ -311,15 +311,6 @@ HRESULT CUI_Manager::Ready_Prototype()
 	return S_OK;
 }
 
-_uint CUI_Manager::TexTag_Maping(string szTextag)
-{
-	if ("Prototype_Component_Atlas_Hud" == szTextag)
-		return 0;
-	else if ("Prototype_Component_Atlas_Inven" == szTextag)
-		return 1;
-	return -1;
-}
-
 _float4 CUI_Manager::Get_AtlasUV(const string pFrameName, _uint iTextureIndex)
 {
 	return m_pAtlasRenderGroup[0]->Get_AtlasUV(pFrameName, iTextureIndex);

@@ -56,6 +56,11 @@ void CProp_Preview::Update(_float fTimeDelta)
         m_pTransformCom->Turn(m_pTransformCom->Get_State(STATE::RIGHT), fTimeDelta);
     if (m_pGameInstance->Key_Pressing(DIK_NUMPAD5, fTimeDelta))
         m_pTransformCom->Turn(m_pTransformCom->Get_State(STATE::RIGHT), -fTimeDelta);
+
+    if (true == m_isMouseMove)
+    {
+        m_pTransformCom->Set_State(STATE::POSITION, m_vMousePos);
+    }
 }
 
 void CProp_Preview::Late_Update(_float fTimeDelta)
@@ -86,10 +91,14 @@ HRESULT CProp_Preview::Render()
 
 void CProp_Preview::Reset_Preview()
 {
+    m_isMouseMove = false;
+
     m_pTransformCom->Set_State(STATE::RIGHT, m_ResetMatrix.r[0]);
     m_pTransformCom->Set_State(STATE::UP, m_ResetMatrix.r[1]);
     m_pTransformCom->Set_State(STATE::LOOK, m_ResetMatrix.r[2]);
     m_pTransformCom->Set_State(STATE::POSITION, m_ResetMatrix.r[3]);
+
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 10000.f, 0.f, 1.f));
 }
 
 HRESULT CProp_Preview::Ready_Components(void* pArg)

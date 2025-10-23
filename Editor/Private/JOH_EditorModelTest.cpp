@@ -35,6 +35,9 @@ HRESULT CJOH_EditorModelTest::Initialize_Clone(void* pArg)
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(1.f, 0.f, 0.f, 1.f));
     //m_pTransformCom->Scale(_float3(0.01f, 0.01f, 0.01f));
 
+
+
+
     return S_OK;
 }
 
@@ -47,7 +50,63 @@ void CJOH_EditorModelTest::Update(_float fTimeDelta)
     if (!m_isEnble) return;
 
     if (m_isAnim && true == m_pModelCom->Play_Animation(fTimeDelta))
-        int a = 10;
+		int a = 10;
+
+	if (m_pModelCom->Test())
+	{
+		_float3 vpos;
+		XMStoreFloat3(&vpos, m_pTransformCom->Get_State(STATE::POSITION));
+		cout << vpos.x << " " << vpos.y << " " << vpos.z << "\n ";
+	}
+
+    if (m_pModelCom->isRootMotion())
+    {
+        _matrix rootMotionMatrix = m_pModelCom->Get_RootMotionDelta();
+        _matrix worldMatrix = m_pTransformCom->Get_WorldMatrix();
+
+        _vector vScale, vQuat, vTrans;
+        XMMatrixDecompose(&vScale, &vQuat, &vTrans, worldMatrix);
+
+        _vector vDelta = rootMotionMatrix.r[3];
+        //vDelta = XMVectorScale(vDelta, 0.0001f);
+
+        vDelta = XMVectorMultiply(vDelta, vScale);
+
+        vDelta = XMVector3TransformNormal(vDelta, worldMatrix);
+
+        _vector vOldPos = m_pTransformCom->Get_State(STATE::POSITION);
+        _vector vNewPos = XMVectorSetW(vOldPos + vDelta, 1.f);
+        m_pTransformCom->Set_State(STATE::POSITION, vNewPos);
+
+
+
+
+        //디버그
+
+        _float3 delta;
+        XMStoreFloat3(&delta, rootMotionMatrix.r[3]);
+
+        _float trackPos = *m_pModelCom->Get_CurTrackPosition();
+
+        char debugMsg[256];
+        sprintf_s(debugMsg, "TrackPos: %.4f, RootDelta: (%.4f, %.4f, %.4f)\n",
+            trackPos, delta.x, delta.y, delta.z);
+        OutputDebugStringA(debugMsg);
+
+        //// 델타를 월드 공간으로 변환
+        //_vector vDelta = XMVector3TransformNormal(XMVectorSetW(rootMotionMatrix.r[3], 0.f), worldMatrix);
+        //
+        //// 회전도 적용하려면:
+        //// _matrix newWorld = rootMotionMatrix * worldMatrix;
+        //// m_pTransformCom->Set_WorldMatrix(newWorld);
+
+        //    // 위치만 적용:
+        //_vector vOldPos = m_pTransformCom->Get_State(STATE::POSITION);
+
+        //_vector vNewPos = XMVectorSetW(vOldPos + XMVectorSetW(vDelta,1.f), 1.f);
+        //m_pTransformCom->Set_State(STATE::POSITION, vNewPos);
+
+    }
 
     if (m_isAnim && m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
     {
@@ -67,9 +126,6 @@ void CJOH_EditorModelTest::Late_Update(_float fTimeDelta)
 
     if (FAILED(m_pGameInstance->Add_RenderGroup(m_RenderGroup, this)))
         return;
-
-    //  if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
-    //      return;
 }
 
 HRESULT CJOH_EditorModelTest::Render()
@@ -87,11 +143,13 @@ HRESULT CJOH_EditorModelTest::Render()
 
     for (_uint i = 0; i < iNumMeshes; i++)
     {
+        HRESULT hr;
         if (m_isAnim)
         {
-            m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
+  
+            hr = m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
             // m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
-            m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+            hr = m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
             m_pShaderCom->Begin(1);
         }
@@ -101,37 +159,50 @@ HRESULT CJOH_EditorModelTest::Render()
             m_pShaderCom_NonAnim->Begin(1);
         }
 
-        m_pModelCom->Render(i);
-
+        hr = m_pModelCom->Render(i);
+        int a = 0;
     }
 
     return S_OK;
 }
 
-HRESULT CJOH_EditorModelTest::Render_Shadow()
+//HRESULT CJOH_EditorModelTest::Render_Shadow()
+//{
+//    if (FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix")))
+//        return E_FAIL;
+//
+//    if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_CurrentShadowLightViewMatrix())))
+//        return E_FAIL;
+//
+//    if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_CurrentShadowLightProjMatrix())))
+//        return E_FAIL;
+//
+//    _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
+//
+//    for (size_t i = 0; i < iNumMeshes; i++)
+//    {
+//        if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
+//            return E_FAIL;
+//
+//        m_pShaderCom->Begin(2);
+//
+//        m_pModelCom->Render(i);
+//    }
+//
+//    return S_OK;
+//}
+
+void CJOH_EditorModelTest::Debug_RenderState()
 {
-    if (FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix")))
-        return E_FAIL;
+    _float3 vpos;
+    XMStoreFloat3(&vpos, m_pTransformCom->Get_State(STATE::POSITION));
 
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_ShadowLight_Transform_Float4x4(D3DTS::VIEW))))
-        return E_FAIL;
-
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_ShadowLight_Transform_Float4x4(D3DTS::PROJ))))
-        return E_FAIL;
-
-    _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
-
-    for (size_t i = 0; i < iNumMeshes; i++)
+    ImGui::DragFloat3("pos : ", &vpos.x);
+    if (ImGui::Button("go zero "))
     {
-        if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
-            return E_FAIL;
-
-        m_pShaderCom->Begin(2);
-
-        m_pModelCom->Render(i);
+        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
     }
 
-    return S_OK;
 }
 
 HRESULT CJOH_EditorModelTest::Ready_Components(const _wstring& strModelTag)

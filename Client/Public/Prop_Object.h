@@ -17,11 +17,16 @@ class CProp_Object final : public CProp
 public:
 	typedef struct tagPropObjectDesc : public CProp::PROP_DESC
 	{
-		_float4x4 WorldMatrix{};
+		_float4x4 WorldMatrix{
+			1.f, 0.f, 0.f, 0.f,
+			0.f, 1.f, 0.f, 0.f,
+			0.f, 0.f, 1.f, 0.f,
+			0.f, 0.f, 0.f, 1.f
+		};
 
 	}PROP_OBJECT_DESC;
 
-	enum class SHADER_PASS { MAIN, WIREFRAME, MAP, MAP_BLEND, SNOWMAP, SNOWMAP_BLEND, END };			// 수정 예정
+	enum class SHADER_PASS { MAIN, WIREFRAME, SHADOW, MAP, MAP_BLEND, SNOWMAP, SNOWMAP_BLEND, END };
 
 private:
 	CProp_Object(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

@@ -2,6 +2,8 @@
 #include "ClientInstance.h"
 #include "GameInstance.h"
 
+#include "UI_Inven.h"
+
 CInven_Tap::CInven_Tap(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Tap{ pDevice, pContext }
 {
@@ -20,6 +22,15 @@ void CInven_Tap::Tap_Enable()
 void CInven_Tap::Tap_Disable()
 {
 	m_iState = ENUM_CLASS(UISTATE::DISABLE);
+}
+
+void CInven_Tap::Update_Pos(_int iIndex, _float2 vPos, _float fOffSetX, _int iMaxIndex)
+{
+	m_vWorldPos.x = vPos.x + iIndex * fOffSetX;
+	m_vWorldPos.y = vPos.y;
+
+	m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(m_vWorldPos.x - m_iWinSizeX * 0.5f, -m_vWorldPos.y + m_iWinSizeY * 0.5f, 0.f, 1.f));
+	__super::Update_Transform(nullptr, m_vWorldPos);
 }
 
 HRESULT CInven_Tap::Initialize_Prototype(_uint iLevel)
@@ -49,9 +60,9 @@ void CInven_Tap::Update(_float fTimeDelta)
 	{
 		if (ButtonClick(g_hWnd, false, true))
 		{
-			CUIObject::BUBBLEEVENT Desc = {};
+			CUI_Inven::INVENBUBBLE_DESC Desc = {};
 			Desc.szName = m_szName;
-
+			Desc.eBubbleType = CUI_Inven::EVENT_TYPE::TAP;
 			Bubble_EventCall(&Desc);
 		}
 

@@ -46,7 +46,7 @@ void CEffect_Mesh_Instance::Update(_float fTimeDelta)
 
     m_fCurTime += fTimeDelta;
 
-    m_pVIBufferCom->Update(fTimeDelta);
+    m_bRunning = (m_pVIBufferCom->Update(fTimeDelta) == true && m_TimeTracks.size() == 0) ? false : true;
     __super::Update(fTimeDelta);
 
     /* Edit */
@@ -102,6 +102,7 @@ void CEffect_Mesh_Instance::Edit_Element()
     ImGui::InputFloat("Size Ratio : ", &m_sEditingData.fSizeRatio);
     ImGui::InputFloat2("LifeTime : ", reinterpret_cast<_float*>(&m_sEditingData.vLifeTime));
     ImGui::InputFloat2("Scrolling Speed : ", reinterpret_cast<_float*>(&m_sEditingData.iScrollSpeed));
+    ImGui::Checkbox("Element Loop", &m_sEditingData.bIsLoop);
 
     ImGui::ColorEdit4("MyColorWithAlpha",(float*)&m_sEditingData.vColor);
 
@@ -127,6 +128,7 @@ void CEffect_Mesh_Instance::RevertChanges()
 void CEffect_Mesh_Instance::Reset()
 {
     __super::Reset();
+    m_fCurTime = 0.f;
     m_pVIBufferCom->Reset();
 }
 

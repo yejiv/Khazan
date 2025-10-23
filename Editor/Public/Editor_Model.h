@@ -37,7 +37,8 @@ public:
 	class CEditor_Animation*	Get_CurAnimtion();
 	_int						Get_CurAnimIndex() { return m_iCurrentAnimIndex; }
 	_float*						Get_CurTrackPosition() { return &m_fCurrentTrackPosition; }
-
+	const _matrix&				Get_RootMotionDelta()const { return m_vRootMotionDelta; }
+	_bool						isRootMotion() { return m_isRootMotion; }
 
 public:
 	void			ExportModel(string& strPath);
@@ -45,6 +46,15 @@ public:
 	void			ExportModel_NoMsg(string& strPath);
 	void			LoadModel(string& strPath);
 	void			Update_DAT_From_JSON(string& strPath);
+	_bool			Test()
+	{
+		if (m_isTest)
+		{
+			m_isTest = false;
+			return true;
+		}
+		return m_isTest;
+	}
 
 private:
 	const aiScene*			m_pAIScene = { nullptr };
@@ -68,22 +78,28 @@ private:
 
 	/* 애니메이션 */
 	_uint							m_iNumAnimations = { 0 };
-	_int							m_iCurrentAnimIndex = { -1 };
-	_int							m_iPrevAnimIndex = { -1 };
+	_int							m_iCurrentAnimIndex = { 0 };
+	_int							m_iPrevAnimIndex = { 0 };
 	_float							m_fCurrentTrackPosition = { 0.f }; /* 현재 애니메이션 재생 위치 */
 	vector< class CEditor_Animation* >		m_Animations;
 
 	/* 루트모션 */
 	_uint							m_iRootBoneIndex = { 0 }; // 루트 모션을 적용할 뼈의 인덱스	
 	_bool							m_isRootMotion = { false }; // 루트 모션 사용 여부
+	//_bool							m_isCheckRootMotion = { false };
 	_bool							m_isRootMotion_Pos = { false };
 	_bool							m_isRootMotion_Rot = { false };
 	_vector							m_vRootMotionScale = {};
-	_float							m_fCurRootMotionBlendTime = {};
-	_float							m_fRootMotionBlendTime = { 0.15f }; // 루트 모션 보간에 사용할 시간
+	//_float							m_fCurRootMotionBlendTime = {};
+	//_float							m_fRootMotionBlendTime = { 0.01f }; // 루트 모션 보간에 사용할 시간
 	_matrix							m_PreRootMatrix = {}; // 이전 루트 모션 행렬	
+	_matrix							m_vRootMotionDelta = {};// 루트모션 변화량
+	//_matrix							m_RootMotionBlendStartMatrix = {};  // 블렌딩 시작 시점의 루트 본 행렬
+	//_vector							m_vAccDelta = {};
+	_bool							m_isDebug = { false };
 
 	_bool							m_isLoop = {};
+	_bool							m_isAnimationLooped = { false };  // 이번 프레임에 애니메이션이 루프되었는지
 	_bool							m_isFinished = {};
 	_bool							m_isChangedAnimation = {};
 
@@ -97,6 +113,9 @@ private:
 	//string							m_strSetAnimKey = "";
 
 
+
+	//test
+	_bool	m_isTest = { false };
 private:
 	HRESULT			Ready_Meshes();
 	HRESULT			Ready_Materials();
