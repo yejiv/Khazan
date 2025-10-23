@@ -341,6 +341,44 @@ HRESULT CRenderer::Render_Combined()
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
         return E_FAIL;
 
+#ifdef _DEBUG
+
+    if (m_isEnableShadow)
+    {
+        _uint iNumCascades = m_pGameInstance->Get_NumCascades();
+
+        if (FAILED(m_pShader->Bind_FloatArray("g_Splits", m_pGameInstance->Get_CascadeSplits(), iNumCascades)))
+            return E_FAIL;
+
+        if (FAILED(m_pShader->Bind_RawValue("g_iNumCascades", &iNumCascades, sizeof(_uint))))
+            return E_FAIL;
+
+        if (FAILED(m_pShader->Bind_Matrices("g_LightViewMatrices", m_pGameInstance->Get_ShadowLightViewMatrices(), iNumCascades)))
+            return E_FAIL;
+
+        if (FAILED(m_pShader->Bind_Matrices("g_LightProjMatrices", m_pGameInstance->Get_ShadowLightProjMatrices(), iNumCascades)))
+            return E_FAIL;
+
+        if (FAILED(m_pGameInstance->Bind_ShadowSRVArray(m_pShader, "g_TextureArray")))
+            return E_FAIL;
+
+        _float fBias = m_pGameInstance->Get_ShadowBias();
+        if (FAILED(m_pShader->Bind_RawValue("g_fBias", &fBias, sizeof(_float))))
+            return E_FAIL;
+
+        _float2 vShadowMapSize = _float2(g_iMaxWidth, g_iMaxHeight);
+        if (FAILED(m_pShader->Bind_RawValue("g_vShadowMapSize", &vShadowMapSize, sizeof(_float2))))
+            return E_FAIL;
+
+        _int iEnableShadowFlag = static_cast<_int>(m_isEnableShadow);
+        if (FAILED(m_pShader->Bind_RawValue("g_iEnableShadowFlag", &iEnableShadowFlag, sizeof(_int))))
+            return E_FAIL;
+    }
+    else
+        m_pGameInstance->Clear_ShadowDSVs();
+
+#else
+
     _uint iNumCascades = m_pGameInstance->Get_NumCascades();
 
     if (FAILED(m_pShader->Bind_FloatArray("g_Splits", m_pGameInstance->Get_CascadeSplits(), iNumCascades)))
@@ -365,6 +403,8 @@ HRESULT CRenderer::Render_Combined()
     _float2 vShadowMapSize = _float2(g_iMaxWidth, g_iMaxHeight);
     if (FAILED(m_pShader->Bind_RawValue("g_vShadowMapSize", &vShadowMapSize, sizeof(_float2))))
         return E_FAIL;
+
+#endif
 
     m_pShader->Begin(3);
 
@@ -536,7 +576,7 @@ HRESULT CRenderer::Render_Debug()
         // 월드 뷰 투영 바인딩, SRV 바인딩, 슬라이스 인덱스 바인딩, 렌더 호출
         if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &ResultWolrdMatrix)))
             return E_FAIL;
-
+         
         if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
             return E_FAIL;
 

@@ -154,6 +154,8 @@ public:
 	_float  Get_ShadowLamda();
 	void	Set_ShadowLamda(_float fLamda);
 
+	void	Clear_ShadowDSVs();
+
 	_float4 Get_ShadowLightDir();
 	void Set_ShadowLightDir(const _float4 vLightDir);
 #pragma endregion

@@ -36,6 +36,9 @@ public:
 	_float4				Get_ShadowLightDir() { return m_vLightDir; }
 	void				Set_ShadowLightDir(const _float4 vLightDir) { m_vLightDir = vLightDir; }
 
+public:
+	void				Clear_DSVs();
+
 private:
 	ID3D11Device*						m_pDevice = { nullptr };
 	ID3D11DeviceContext*				m_pContext = { nullptr };
