@@ -187,6 +187,7 @@
     <ClInclude Include="..\Public\Effect_Sprite.h" />
     <ClInclude Include="..\Public\Effect_Terrain.h" />
     <ClInclude Include="..\public\JOH_EditorModelTest.h" />
+    <ClInclude Include="..\Public\Level_AI.h" />
     <ClInclude Include="..\Public\Level_Animation.h" />
     <ClInclude Include="..\Public\Level_Camera.h" />
     <ClInclude Include="..\Public\Level_Editor.h" />
@@ -247,6 +248,7 @@
     <ClCompile Include="..\Private\Effect_Terrain.cpp" />
     <ClCompile Include="..\private\JOH_EditorModelTest.cpp" />
     <ClCompile Include="..\Private\Camera_Shader.cpp" />
+    <ClCompile Include="..\Private\Level_AI.cpp" />
     <ClCompile Include="..\Private\Level_Animation.cpp" />
     <ClCompile Include="..\Private\Level_Camera.cpp" />
     <ClCompile Include="..\Private\Level_Editor.cpp" />

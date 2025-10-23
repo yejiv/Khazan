@@ -13,6 +13,7 @@ private:
 public:
 	void								Tap_Enable();
 	void								Tap_Disable();
+	void								Update_Pos(_int iIndex, _float2 vPos, _float fOffSetX, _int iMaxIndex);
 
 public:
 	virtual HRESULT						Initialize_Prototype(_uint iLevel);

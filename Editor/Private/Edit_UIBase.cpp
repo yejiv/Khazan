@@ -152,6 +152,9 @@ HRESULT CEdit_UIBase::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
                 szPrototypeTag.pop_back();
 
             m_pTexture_AtlasCom = static_cast<CTexture_Atlas*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::COMPONENT, iPrototypeLevelID, szPrototypeTag.c_str(), nullptr));
+
+            if (m_pTexture_AtlasCom == nullptr)
+                int a = 1;
         }
     }
 
@@ -581,7 +584,7 @@ HRESULT CEdit_UIBase::Set_AtlasTextTure(string& szSeleteUIName, _uint iPrototype
 
             if (m_pTexture_AtlasCom != nullptr)
             {
-                m_vUV[0] = m_pTexture_AtlasCom->FindTexFrame(pFrameName);
+                m_vUV[0] = m_pTexture_AtlasCom->FindTexFrame(pFrameName,m_iTexIndex);
                 m_iShaderPass = 1;
                 m_eRenderType = UI_RENDER_TYPE::ATLAS;
             }
@@ -623,7 +626,7 @@ _bool CEdit_UIBase::Set_UVTexSet(string& szSeleteUIName, const string pFrameName
 {
     if (m_szName == szSeleteUIName)
     {
-        m_vUV[m_iUiState] = m_pTexture_AtlasCom->FindTexFrame(pFrameName);
+        m_vUV[m_iUiState] = m_pTexture_AtlasCom->FindTexFrame(pFrameName, m_iTexIndex);
         return true;
     }
 
@@ -877,7 +880,7 @@ HRESULT CEdit_UIBase::Initialize_Prototype()
 
 HRESULT CEdit_UIBase::Initialize_Clone(void* pArg)
 {
-    m_vFrameColor = { 0.f, 1.f, 0.f, 1.f };
+    m_vFrameColor = { 1.f, 1.f, 1.f, 1.f };
     m_fAlpha = 1.f;
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
     CHECK_FAILED(Ready_Component(), E_FAIL);
@@ -1027,7 +1030,7 @@ HRESULT CEdit_UIBase::Render_ShaderPassSet()
     {
         CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vUVMinMax", &m_vUV[m_iUiState], sizeof(_float4)), E_FAIL);
         if (m_eRenderType == UI_RENDER_TYPE::ATLAS)
-            CHECK_FAILED(m_pTexture_AtlasCom->Bind_Shader_Texture(m_pShaderCom, "g_Texture"), E_FAIL);
+            CHECK_FAILED(m_pTexture_AtlasCom->Bind_Shader_Texture(m_pShaderCom, "g_Texture", m_iTexIndex), E_FAIL);
         else
             CHECK_FAILED(m_pTexture->Bind_Shader_Resource(m_pShaderCom, "g_Texture", m_iTexIndex), E_FAIL);
 

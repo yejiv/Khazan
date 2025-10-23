@@ -17,7 +17,7 @@ class CEditor_ModelMesh_Instance final : public CVIBuffer_Instance
 public:
 	typedef struct tagEditorModelMeshInstance : public CVIBuffer_Instance::INSTANCE_DESC
 	{
-		vector<MESH_INSTANCE_DATA> InstanceData;
+		vector<VTXINSTANCE_MESH> InstanceData;
 
 	}EDITOR_MODELMESH_INSTANCE_DESC;
 
@@ -38,10 +38,6 @@ public:
 	const _uint Get_NumInstances() const { return m_iNumInstance; }
 
 	void	Get_Data(MESH_DATA& Data) { Data = m_Mesh_Data; }
-
-	void Add_Instance(MESH_INSTANCE_DATA InstanceData);
-	void Delete_Instance(_uint iInstanceID);
-	void Fix_Instance(MESH_INSTANCE_DATA InstanceData, _uint iInstanceIndex);
 
 private:
 	_char m_szName[MAX_PATH] = {};

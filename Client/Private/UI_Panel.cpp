@@ -51,15 +51,6 @@ HRESULT CUI_Panel::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, voi
 	m_szName = pInData.value("name", "");
 	string strTexType = pInData.value("TexType", "");
 
-	if ("Atlas" == strTexType)
-	{
-		string strTexTag = pInData.value("TexTag", "");
-
-		m_iTexPass = CClientInstance::GetInstance()->UI_TexTag_Maping(strTexTag);
-		if (m_iTexPass == -1)
-			return E_FAIL;
-	}
-
 	string szType = pInData.value("type", "");
 	m_iUIType = CClientInstance::GetInstance()->UIType_StringToEnum(szType);
 	

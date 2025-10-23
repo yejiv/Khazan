@@ -79,6 +79,11 @@ HRESULT CModel_Instance::Initialize_Prototype(const _char* pModelFilePath, const
 
 HRESULT CModel_Instance::Initialize_Clone(void* pArg)
 {
+    for (_uint i = 0; i < m_iNumMeshes; ++i)
+    {
+        m_Meshes[i]->Initialize_Clone(pArg);
+    }
+
     return S_OK;
 }
 
@@ -108,22 +113,6 @@ _float4x4* CModel_Instance::Get_BoneMatrix(const _char* pBoneName)
 const _uint CModel_Instance::Get_NumInstances() const
 {
     return m_Meshes[0]->Get_NumInstances();
-}
-
-void CModel_Instance::Add_Instance(MESH_INSTANCE_DATA InstanceData)
-{
-    for (_uint i = 0; i < m_iNumMeshes; ++i)
-    {
-        m_Meshes[i]->Add_Instance(InstanceData);
-    }
-}
-
-void CModel_Instance::Fix_Instance(MESH_INSTANCE_DATA InstanceData, _uint iInstanceIndex)
-{
-    for (_uint i = 0; i < m_iNumMeshes; ++i)
-    {
-        m_Meshes[i]->Fix_Instance(InstanceData, iInstanceIndex);
-    }
 }
 
 HRESULT CModel_Instance::Bind_Materials(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, aiTextureType eTextureType, _uint iIndex)

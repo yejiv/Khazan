@@ -58,14 +58,6 @@ namespace Engine
 		float			fFovy, fNear, fFar;
 	}SHADOW_LIGHT_DESC;
 
-	typedef struct tagMeshInstanceData		// 메쉬 인스턴스 수정용 데이터 | 구조체 데이터 : MESH_INSTANCING
-	{
-		XMMATRIX InstanceMatrix{};			// 인스턴스용 행렬
-
-		unsigned int InstanceID{};			// 인스턴스 ID
-
-	}MESH_INSTANCE_DATA;
-
 	typedef struct tagMapObjectProperties
 	{
 		bool isSnow{ false };
@@ -138,6 +130,15 @@ namespace Engine
 		unsigned int						x = 1, y = 1, z = 1;	// 디스패치할 스레드 그룹 개수
 	}COMPUTE_PASS_DESC;
 
+	typedef struct tagCascadeData
+	{
+		unsigned int						iNumCascades;
+
+		vector<float>						Splits;
+		vector<XMFLOAT4X4>					LightViewMatrices;
+		vector<XMFLOAT4X4>					LightProjMatrices;
+	}CASCADE_DATA;
+
 	typedef struct tagPointInstanceParams
 	{
 		XMFLOAT4 vInitTranslation;
@@ -148,7 +149,8 @@ namespace Engine
 	{
 		XMFLOAT4			fSpeed;
 		float				fGravity;
-		XMFLOAT3			padding;
+		float				bDead;
+		XMFLOAT2			padding;
 	}POINT_INSTANCE_SPEED_PARAMS;
 
 	typedef struct tagVertexPosition
@@ -262,6 +264,7 @@ namespace Engine
 		unsigned int		iID{};
 	}VTXINSTANCE_MESH;
 
+	/* Point Instancing::Instance Buffer - [Effect] */
 	typedef struct tagVertexInstanceParticle
 	{
 		XMFLOAT4			vRight;
@@ -272,13 +275,26 @@ namespace Engine
 		XMFLOAT3			vPrevPosition;
 		float				bDead;
 		XMFLOAT2			vLifeTime;
-	}VTXINSTANCE_PARTICLE;
+	}IB_POINTINSTANCE_EFFECT;
 
+	/* Mesh Instancing::Instance Buffer - [Effect] */
+	typedef struct tagMeshInstanceParticle
+	{
+		XMFLOAT4			vRight;
+		XMFLOAT4			vUp;
+		XMFLOAT4			vLook;
+		XMFLOAT4			vTranslation;
+
+		XMFLOAT2			vLifeTime;
+		float				bDead;
+	}IB_MESHINSTANCE_EFFECT;
+
+	/* Mesh Instancing::Vertex Buffer - [Effect] */
 	typedef struct tagVertexMeshInstanceParticle
 	{
 		XMFLOAT3		vPosition;
 		XMFLOAT2		vTexcoord;
-	}MESHINSTANCE_PARTICLE;
+	}VB_MESHINSTANCE_EFFECT;
 
 	typedef struct tagVertexPointParticle
 	{
@@ -291,9 +307,6 @@ namespace Engine
 			{ "WORLD", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 			{ "WORLD", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 
-			//{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 1, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-			//{ "TEXCOORD", 1, DXGI_FORMAT_R32_FLOAT, 1, 72, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-			//{ "TEXCOORD", 2, DXGI_FORMAT_R32G32B32_FLOAT, 1, 76, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1 }, 
 			{ "TEXCOORD", 1, DXGI_FORMAT_R32_FLOAT, 1, 76, D3D11_INPUT_PER_INSTANCE_DATA, 1 }, 
 			{ "TEXCOORD", 2, DXGI_FORMAT_R32G32_FLOAT, 1, 80, D3D11_INPUT_PER_INSTANCE_DATA, 1 }, 

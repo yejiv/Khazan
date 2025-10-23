@@ -44,14 +44,15 @@ void CEffect_Point_Instance::Update(_float fTimeDelta)
             ++it;
     }
 
-    m_pVIBufferCom->Update(fTimeDelta);
+    m_bRunning = (m_pVIBufferCom->Update(fTimeDelta) == true && m_TimeTracks.size() == 0) ? false : true;
+
     if (m_sData.bGravity == true)
         m_pVIBufferCom->UpdateGravity(fTimeDelta);
 
     __super::Update(fTimeDelta);
 
     /* Edit */
-    if(m_TimeTracks.size() == 0)
+    if (m_TimeTracks.size() == 0)
         m_pVIBufferCom->Remove_Speed();
 }
 
@@ -99,6 +100,7 @@ void CEffect_Point_Instance::Edit_Element()
     ImGui::InputFloat2("Size : ", reinterpret_cast<_float*>(&m_sEditingData.vSize));
     ImGui::InputFloat("Size Ratio : ", &m_sEditingData.fSizeRatio);
     ImGui::InputFloat2("LifeTime : ", reinterpret_cast<_float*>(&m_sEditingData.vLifeTime));
+    ImGui::Checkbox("Element Loop", &m_sEditingData.bIsLoop);
 
     ImGui::ColorEdit4("MyColorWithAlpha",(float*)&m_sEditingData.vColor);
 

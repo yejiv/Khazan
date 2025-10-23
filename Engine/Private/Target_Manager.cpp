@@ -114,12 +114,12 @@ HRESULT CTarget_Manager::Copy_Resource(const _wstring& strTargetTag, ID3D11Textu
 	return pRenderTarget->Copy_Resource(pSourTexture);
 }
 
-void CTarget_Manager::Begin_RT()
+void CTarget_Manager::Backup_RT()
 {
 	m_pContext->OMGetRenderTargets(1, &m_pBackBuffer, &m_pOriginalDSV);
 }
 
-void CTarget_Manager::End_RT()
+void CTarget_Manager::Restore_RT()
 {
 	m_pContext->OMSetRenderTargets(1, &m_pBackBuffer, m_pOriginalDSV);
 

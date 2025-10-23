@@ -17,6 +17,12 @@ void CUI_Atlas_Icon::Update_Color(_float4 vColor)
 	m_vColor = vColor;
 }
 
+void CUI_Atlas_Icon::Set_Texture(_float4 vUV, _uint iTexPass)
+{
+	m_vUV[0] = vUV;
+	m_iTexPass = iTexPass;
+}
+
 HRESULT CUI_Atlas_Icon::Initialize_Prototype()
 {
 	return S_OK;

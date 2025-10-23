@@ -23,6 +23,14 @@ private:
 
 	}SAVE_PROTOTYPE;
 
+	typedef struct tagSavePrototypeInstance
+	{
+		string strModelPath{};
+
+		vector<VTXINSTANCE_MESH> InstanceData;
+
+	}SAVE_PROTOTYPE_INSTANCE;
+
 private:
 	CLevel_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual ~CLevel_Map() = default;
@@ -34,7 +42,6 @@ public:
 
 private:
 	HRESULT Ready_Defaults();
-	HRESULT Ready_Default_Lights();
 	HRESULT Ready_Layer_Khazan(const _wstring& strLayerTag);
 	HRESULT Ready_Layer_Camera(const _wstring& strLayerTag);
 	HRESULT Ready_Layer_Terrain(const _wstring& strLayerTag);
@@ -193,11 +200,27 @@ private:
 #pragma region 파일 입출력
 
 private:
-	// CLoader 에서 사용할 바이너리 파일
+	// 맵 에디터에서 사용할 바이너리 파일 ( 파일 옮기기 용 )
 	_bool Prototypes_Save_Binary();
 
 	// 특정 레벨에서 사용할 오브젝트 바이너리 파일
 	_bool Objects_Save_Binary();
+
+#pragma region 실질적인 사용할 바이너리 파일들
+
+	// CLoader 에서 사용할 모델 바이너리 파일
+	_bool Prototype_Save_Binary();
+
+	// CLoader 에서 사용할 인스턴스 모델 바이너리 파일
+	_bool Instance_Prototype_Save_Binary();
+
+	// 특정 레벨에서 사용할 모델 바이너리 파일
+	_bool Object_Save_Binary();
+
+	// 특정 레벨에서 사용할 인스턴스 모델 바이너리 파일
+	_bool Instance_Object_Save_Binary();
+
+#pragma endregion
 
 	// 특정 레벨에서 사용할 라이트 바이너리 파일
 	_bool Lights_Save_Binary();

@@ -6,7 +6,7 @@ NS_BEGIN(Client)
 class CUI_Slot abstract : public CUIParent
 {
 public:
-	enum class UISTATE { DISABLE, ENABLE, OVER, SELETE, END };
+	enum class UISTATE { DISABLE, ENABLE, END };
 
 	typedef struct UI_Slot_Tag : public CUIObject::tagUIObjectDesc
 	{
