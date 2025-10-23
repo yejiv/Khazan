@@ -10,6 +10,7 @@
 #include "Level_UI.h"
 #include "Level_Shader.h"
 #include "Level_Camera.h"
+#include "Level_AI.h"
 
 CLevel_Loading::CLevel_Loading(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
@@ -60,6 +61,9 @@ void CLevel_Loading::Update(_float fTimeDelta)
 			break;
 		case LEVEL::CAMERA:
 			pNewLevel = CLevel_Camera::Create(m_pDevice, m_pContext);
+			break;
+		case LEVEL::AI:
+			pNewLevel = CLevel_AI::Create(m_pDevice, m_pContext);
 			break;
 		}
 

@@ -42,7 +42,6 @@ public:
 	CUIObject*					Load_UIObject(_uint iPrototypeLevelID, const _tchar* pFilePath);
 	
 	_int						UIType_StringToEnum(string szUIType);
-	_uint						UI_TexTag_Maping(string szTextag);
 
 	//UI 랜더 그룹에 추가
 	HRESULT						Add_UIRender(UI_RENDER_TYPE eRender, class CUIObject* pUIObject);

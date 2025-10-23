@@ -51,6 +51,7 @@ private:
 	HRESULT Loading_For_UI_Level();
 	HRESULT Loading_For_Shader_Level();
 	HRESULT Loading_For_Camera_Level();
+	HRESULT Loading_For_AI_Level();
 
 private:
 	// 모델 : 맵 오브젝트 Dat 로 프로토 타입 불러오는 함수 ( 1. 프로토타입 데이터 파일 명 | 2. 레벨 | 3. 맵 ( 안넣으면 폴더 X ) )

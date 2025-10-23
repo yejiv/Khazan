@@ -67,6 +67,12 @@ private :
 	_int							m_iChildrenIdx;
 	_int							m_iPrevChildrenIdx;
 
+	/* [Debug] */
+private:
+	_uint					m_iRenderCount = {};
+	_float					m_fTimeAcc = {};
+	_tchar					m_szFPS[MAX_PATH] = {};
+
 private:
 	HRESULT Ready_Layer_BackGround();
 	HRESULT Ready_Layer_Camera();

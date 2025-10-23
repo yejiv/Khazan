@@ -58,21 +58,6 @@ HRESULT CLevel_Map::Ready_Defaults()
 	return S_OK;
 }
 
-HRESULT CLevel_Map::Ready_Default_Lights()
-{
-	// Shadow_Light
-	SHADOW_LIGHT_DESC ShadowLightDesc{};
-	ShadowLightDesc.vEye = _float4(-20.f, 20.f, -20.f, 1.f);
-	ShadowLightDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
-	ShadowLightDesc.fFovy = XMConvertToRadians(60.f);
-	ShadowLightDesc.fNear = 0.1f;
-	ShadowLightDesc.fFar = 1000.f;
-
-	CHECK_FAILED(m_pGameInstance->Ready_ShadowLight(ShadowLightDesc), E_FAIL);
-
-	return S_OK;
-}
-
 HRESULT CLevel_Map::Ready_Layer_Khazan(const _wstring& strLayerTag)
 {
 	// Prototype_GameObject_Map_TestPlayer

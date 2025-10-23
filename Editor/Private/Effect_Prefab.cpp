@@ -28,9 +28,9 @@ HRESULT CEffect_Prefab::Initialize_Prototype()
 
     //tmp
     m_bPlaying = true;
+    m_IsLoop = true;
     m_PrevTrackIdx = -1;
     m_TrackIdx = 0;
-    m_IsLoop = true;
 
     return S_OK;
 }
@@ -43,12 +43,12 @@ HRESULT CEffect_Prefab::Initialize_Clone(void* pArg)
 void CEffect_Prefab::Priority_Update(_float fTimeDelta)
 {
     //if (!m_bPlaying) return;
+
     if(!m_bPlaying && m_IsLoop)
         ResetChildren();
     else if (!m_bPlaying)
         return ;
 
-    m_fCurTime += fTimeDelta;
 
     for (size_t i = 0; i < m_eEventTracks.size(); ++i)
     {
@@ -79,6 +79,17 @@ void CEffect_Prefab::Priority_Update(_float fTimeDelta)
             m_bEventTriggered[i] = true;
         }
     }
+
+    /* [DEBUG] */
+    //_bool flag = false;
+    //for (_uint i = 0; m_eEventTracks.size(); ++i)
+    //{
+    //   if (m_bEventTriggered[i] == true)
+    //       flag = true;
+    //}
+    //if (flag)
+    //    m_fCurTime += fTimeDelta;
+
 }
 
 void CEffect_Prefab::Update(_float fTimeDelta)
@@ -220,6 +231,8 @@ void CEffect_Prefab::Edit_TimeTrack(_uint ChildIdx)
         if(ImGui::Button("Delete TimeTrack"))
         {
             m_eEventTracks.erase(m_eEventTracks.begin() + (SelectedElement[m_TrackIdx] - m_eEventTracks.data()));
+            auto iteratorToRemove = m_bEventTriggered.begin() + m_TrackIdx;
+            m_bEventTriggered.erase(iteratorToRemove);
             m_TrackIdx = 0;
         }
 

@@ -20,6 +20,9 @@
 #include <Jolt/Physics/Collision/Shape/StaticCompoundShape.h>
 #include <Jolt/Physics/Collision/Shape/MeshShape.h>
 #include <Jolt/Physics/Character/CharacterVirtual.h>
+#include <Jolt/Physics/Collision/RayCast.h>
+#include <Jolt/Physics/Collision/CastResult.h>
+#include <Jolt/Physics/Collision/NarrowPhaseQuery.h>
 #ifdef new
 #pragma pop_macro("new") // DBG_NEW 복원
 #endif
@@ -54,6 +57,9 @@ public:
     void				Set_ObjectVsBPFilter(_uint iObjectLayer, _uint iBPLayer) {
         m_pObjectVsBPLayerFilter->SetUp_ObjectVsBPFilter(iObjectLayer, iBPLayer);
     };
+    void				Set_ObjectLayerFilter(_uint iObjectLayer, _bool isOn) {
+        m_pObjectLayerFilter->SetUpAllow(iObjectLayer, isOn);
+    };
 
     void Set_Gravity(_vector vGravity);
     void Reset_Gravity(); 
@@ -63,6 +69,9 @@ public:
     void CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter);
     void CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter, CharacterVirtual::ExtendedUpdateSettings tSetting);
 
+
+public:
+    _bool CastRay(_float3 vStart, _float3 vEnd, _float& fFraction);
 
 #ifdef _DEBUG
 
@@ -90,6 +99,8 @@ private:
     CJolt_ContactListener*               m_pContactListener = { nullptr };
     CJolt_CharacterContactListener*      m_pCharContactListener = { nullptr };
     CharacterVsCharacterCollisionSimple* m_pCharVsCharCollision = { nullptr };
+
+    CJolt_ObjectLayerFilter*             m_pObjectLayerFilter = { nullptr };
 private:
     // 생성 파라미터 보관(선택)
     _uint m_iMaxBodies = { 2048 };

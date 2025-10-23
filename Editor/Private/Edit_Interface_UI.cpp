@@ -336,21 +336,19 @@ void CEdit_Interface_UI::SetTexture_UI()
 		ImGui::SameLine();
 		ImGui::RadioButton("ATLAS", &m_iTexType, 1);
 
-		ImGui::InputText("Prototype_Path", m_szPrototypePath, MAX_PATH);
-		if (m_iTexType == 1)
-			ImGui::InputText("Frame_Path", m_szFrameName, MAX_PATH);
-
-		if (ImGui::Button("SetTex"))
-		{
-			_tchar szText[MAX_PATH];
-			MultiByteToWideChar(CP_ACP, 0, m_szPrototypePath, -1, szText, MAX_PATH);
-
-			_wstring szPrototypePath(szText);
-
-			m_pRootUIs[m_iSeletRootUI]->Set_AtlasTextTure(m_szSeleteUIName, ENUM_CLASS(m_eLevel), szPrototypePath.c_str(), m_szFrameName, m_iTexType);
-		}
 		if (m_iTexType == 0)
 		{
+			ImGui::InputText("Prototype_Path", m_szPrototypePath, MAX_PATH);
+
+			if (ImGui::Button("SetTex"))
+			{
+				_tchar szText[MAX_PATH];
+				MultiByteToWideChar(CP_ACP, 0, m_szPrototypePath, -1, szText, MAX_PATH);
+
+				_wstring szPrototypePath(szText);
+
+				m_pRootUIs[m_iSeletRootUI]->Set_AtlasTextTure(m_szSeleteUIName, ENUM_CLASS(m_eLevel), szPrototypePath.c_str(), m_szFrameName, m_iTexType);
+			}
 			ImGui::InputInt("##TexIndx", &m_iTexIndex);
 			ImGui::SameLine();
 			if (ImGui::Button("SetTexPass"))
@@ -367,6 +365,11 @@ void CEdit_Interface_UI::SetTexture_UI()
 		}
 		if (m_iTexType == 1)
 		{
+			ImGui::InputText("Frame_Path", m_szFrameName, MAX_PATH);
+			if (ImGui::Button("SetTex"))
+			{
+				m_pRootUIs[m_iSeletRootUI]->Set_AtlasTextTure(m_szSeleteUIName, ENUM_CLASS(m_eLevel), TEXT("Prototype_Component_Atlas"), m_szFrameName, m_iTexType);
+			}
 			ImGui::InputFloat("TexSize", &m_fTexSize, 0.1f, 0.1f);
 			if (ImGui::Button("SetTexSize"))
 			{
@@ -376,6 +379,12 @@ void CEdit_Interface_UI::SetTexture_UI()
 				_wstring szPrototypePath(szText);
 
 				m_pRootUIs[m_iSeletRootUI]->Set_AtlasTexSize(m_szSeleteUIName, m_szFrameName, m_fTexSize);
+			}
+			ImGui::InputInt("##TexIndx", &m_iTexIndex);
+			ImGui::SameLine();
+			if (ImGui::Button("SetTexPass"))
+			{
+				m_pRootUIs[m_iSeletRootUI]->Set_TexIndex(m_szSeleteUIName, m_iTexIndex);
 			}
 			ImGui::InputInt("##Shader", &m_iShaderIndex);
 			ImGui::SameLine();

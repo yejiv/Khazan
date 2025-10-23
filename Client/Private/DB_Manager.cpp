@@ -85,6 +85,7 @@ HRESULT CDB_Manager::Load_ItemDB(const _tchar* pFilePath)
 		_int ID = data.iID = Read_UInt(ss);
 		data.strName = Read_WString(ss);
 		data.iType = Read_UInt(ss);
+		data.iEffect_ID = Read_UInt(ss);
 		data.iLevel = Read_UInt(ss);
 		data.iGrade = Read_UInt(ss);
 		_int isBool = Read_UInt(ss);

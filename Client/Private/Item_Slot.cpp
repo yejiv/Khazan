@@ -3,7 +3,7 @@
 #include "ClientInstance.h"
 
 #include "UI_Atlas_Icon.h"
-
+#include "UI_Inven.h"
 CItem_Slot::CItem_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Slot{ pDevice, pContext }
 {
@@ -14,14 +14,35 @@ CItem_Slot::CItem_Slot(const CItem_Slot& Prototype)
 {
 }
 
-void CItem_Slot::Input_Slot()
+_bool CItem_Slot::Add_Item(_int iItemIndex)
 {
-
+    if (m_iItemIndex < 0)
+    {
+        m_iItemIndex = iItemIndex;
+        ITEM_DATA ItemData = *CClientInstance::GetInstance()->Get_Data<ITEM_DATA>(m_iItemIndex);
+        
+        string strItemData = WStringToAnsi(ItemData.strIconName);
+        _float4 vUV = CClientInstance::GetInstance()->Get_AtlasUV(strItemData.c_str(), 2);
+        _uint iTexPass = ItemData.iTexPass;
+        
+        m_pIcon->Set_Texture(vUV, iTexPass);
+        m_iItemMaxCount = ItemData.iMaxValue;
+        ++m_iItemCount;
+        Update_State(ItemData.iGrade);
+        return true;
+    }
+    else if (m_iItemIndex == iItemIndex && m_iItemCount < m_iItemMaxCount)
+    {
+        ++m_iItemCount;
+        return true;
+    }
+    else
+        return false;
 }
 
 void CItem_Slot::Update_Pos(_int iIndex, _float2 vPos, _float fOffSet, _int iMaxIndexX, _int iMaxIndexY)
 {
-    _int iCol = iIndex % iMaxIndexX;  // 열 인덱스 (x방향)
+    _int iCol = iIndex % iMaxIndexX;
     _int iRow = iIndex / iMaxIndexX;
 
     m_vWorldPos.x = vPos.x + iCol * fOffSet - (iMaxIndexX - 1) * fOffSet / 2;
@@ -29,6 +50,14 @@ void CItem_Slot::Update_Pos(_int iIndex, _float2 vPos, _float fOffSet, _int iMax
 
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(m_vWorldPos.x - m_iWinSizeX * 0.5f, -m_vWorldPos.y + m_iWinSizeY * 0.5f, 0.f, 1.f));
     __super::Update_Transform(nullptr, m_vWorldPos);
+}
+
+_bool CItem_Slot::Off_Selete()
+{
+    if (m_iItemIndex < 0)
+        return false;
+    m_bIsSelete = false;
+    return true;
 }
 
 HRESULT CItem_Slot::Initialize_Prototype(_uint iLevel)
@@ -40,17 +69,21 @@ HRESULT CItem_Slot::Initialize_Prototype(_uint iLevel)
 
 HRESULT CItem_Slot::Initialize_Clone(void* pArg)
 {
+    ITEMSLOT_DESC* pDesc = static_cast<ITEMSLOT_DESC*>(pArg);
+    m_iIndex = pDesc->iIndex;
+    m_iItemType = pDesc->iItemType;
     m_iTexPass = 1;
+    m_iShaderPass = 0;
+    m_vColor = { 1.f,1.f,1.f,1.f };
+
     _float4 vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_01_Empty.png", m_iTexPass);
     m_vUV.push_back(vUV);
 
-    for (_int i = 0; i < 3; i++)
+    for (_int i = 0; i < 2; i++)
     {
         _float4 vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_03_UnCommon_Set.png", m_iTexPass);
         m_vUV.push_back(vUV);
     }
-    m_iShaderPass = 0;
-    m_vColor = { 1.f,1.f,1.f,1.f };
 
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
     CHECK_FAILED(Ready_Childer(), E_FAIL);
@@ -73,21 +106,13 @@ void CItem_Slot::Late_Update(_float fTimeDelta)
     CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::ATLAS, this);
     
     if (ButtonClick(g_hWnd, false, true))
-    {
-        m_iState == ENUM_CLASS(UISTATE::ENABLE) ? m_iState = ENUM_CLASS(UISTATE::DISABLE) : m_iState = ENUM_CLASS(UISTATE::ENABLE);
-    }
+        Release_Item();
+    else if (ButtonClick(g_hWnd, true, true))
+        Equip_Item();
 
-    if (ButtonClick(g_hWnd, true, true))
-    {
-        m_bIsSelete ? m_bIsSelete = false : m_bIsSelete = true;
-    }
-    if (m_iState == ENUM_CLASS(UISTATE::DISABLE))
-    {
-        m_vColor.w = 0.8f;
-    }
+
     if (m_iState == ENUM_CLASS(UISTATE::ENABLE))
     {
-        m_vColor.w = 1.f;
         if (ButtonOver(g_hWnd))
         {
             m_pOverFx->Late_Update(fTimeDelta);
@@ -121,7 +146,7 @@ HRESULT CItem_Slot::Ready_Childer()
     AtlasDesc.vLocalSize = { 130.f, 130.f };
 
     AtlasDesc.vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_Hover.png", 1);
-    AtlasDesc.iShaderPass = 1;
+    AtlasDesc.iShaderPass = 3;
     AtlasDesc.iTexPass = 1;
     AtlasDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
     m_pOverFx = static_cast<CUI_Atlas_Icon*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Atlas_Icon"), &AtlasDesc));
@@ -138,7 +163,7 @@ HRESULT CItem_Slot::Ready_Childer()
     AtlasDesc.vLocalSize = { 131.f, 131.f };
 
     AtlasDesc.vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_Select.png", 1);
-    AtlasDesc.iShaderPass = 1;
+    AtlasDesc.iShaderPass = 3;
     AtlasDesc.iTexPass = 1;
     AtlasDesc.vColor = { 1.f, 0.7f, 0.6f, 1.f };
     m_pSeleteFx = static_cast<CUI_Atlas_Icon*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Atlas_Icon"), &AtlasDesc));
@@ -155,7 +180,7 @@ HRESULT CItem_Slot::Ready_Childer()
     AtlasDesc.vLocalPos = _float2{ 0.f, 0.f };
     AtlasDesc.vLocalSize = { 93.f, 93.f };
 
-    AtlasDesc.vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Item_GSword_FallenGeneral_UI.png", 2);
+    AtlasDesc.vUV = { 0.f, 0.f, 1.f, 1.f };
     AtlasDesc.iShaderPass = 0;
     AtlasDesc.iTexPass = 2;
     AtlasDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
@@ -168,6 +193,59 @@ HRESULT CItem_Slot::Ready_Childer()
     Safe_AddRef(m_pIcon);
 
     return S_OK;
+}
+
+void CItem_Slot::Update_State(_uint iGrade)
+{
+    if (m_iItemIndex < 0)
+    {
+        m_iState = ENUM_CLASS(UISTATE::DISABLE);
+        m_vColor.w = 0.75f;
+        return;
+    }
+    else
+    {
+        m_iState = ENUM_CLASS(UISTATE::ENABLE);
+        m_vColor.w = 1.f;
+    }
+    _float4 vUv = {};
+
+    switch (iGrade)
+    {
+    case 1: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_02_Common.png", m_iTexPass);
+        return;
+    case 2: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_03_UnCommon.png", m_iTexPass);
+        return;
+    case 3: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_04_Rare.png", m_iTexPass);
+        return;
+    case 4: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_05_Unique.png", m_iTexPass);
+        return;
+    case 5: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_06_Legendary.png", m_iTexPass);
+        return;
+    case 6: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_07_Epic.png", m_iTexPass);
+        return;
+    }
+
+}
+
+void CItem_Slot::Equip_Item()
+{
+    m_bIsSelete ? m_bIsSelete = false : m_bIsSelete = true;
+
+    CUI_Inven::INVENBUBBLE_DESC Desc = {};
+    Desc.eBubbleType = CUI_Inven::EVENT_TYPE::ITEM_EQUIP;
+    Desc.iTypeIndex = m_iItemType;
+    Desc.iIndex = m_iIndex;
+
+    __super::Bubble_EventCall(&Desc);
+}
+
+void CItem_Slot::Release_Item()
+{
+    m_iItemIndex = -1;
+    m_iItemMaxCount = 0;
+    m_iItemCount = 0;
+    Update_State();
 }
 
 CItem_Slot* CItem_Slot::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)
