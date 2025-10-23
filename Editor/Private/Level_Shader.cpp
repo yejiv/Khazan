@@ -2,7 +2,7 @@
 #include "GameInstance.h"
 #include "Level_Loading.h"
 #include "Camera_Shader.h"
-#include "Prop_Test.h"
+#include "Prop_Object.h"
 #include "JOH_EditorModelTest.h"
 
 CLevel_Shader::CLevel_Shader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -14,7 +14,7 @@ HRESULT CLevel_Shader::Initialize()
 {
 	if (FAILED(Ready_Layer_BackGround()))
 		return E_FAIL;
-	
+
 	if (FAILED(Ready_Layer_Player()))
 		return E_FAIL;
 
@@ -164,29 +164,25 @@ HRESULT CLevel_Shader::Ready_Layer_Camera()
 
 HRESULT CLevel_Shader::Ready_Layer_BackGround()
 {
-	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_BackGround"),
-		ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Terrain_Shader"))))
-		return E_FAIL;
-
-	//	CProp_Test::PROP_OBJECT_DESC ObjectDesc = {};
-	//	memcpy(ObjectDesc.szModelName, TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"), sizeof(ObjectDesc.szModelName));
-	//	ObjectDesc.eLevel = LEVEL::SHADER;
-	//	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_MapObject"),
-	//		ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Prop_Test"), &ObjectDesc)))
+	//	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_BackGround"),
+	//		ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Terrain_Shader"))))
 	//		return E_FAIL;
+
+	CProp_Object::PROP_OBJECT_DESC Desc = {};
+	Desc.eLevel = LEVEL::SHADER;
+	XMStoreFloat4x4(&Desc.WorldMatrix, XMMatrixScaling(0.05f, 0.05f, 0.05f) * XMMatrixTranslation(0.f, -9.5f, 5.f));
+	_tchar szPrototypeModelTag[MAX_PATH] = TEXT("Prototype_Component_Model_Rock");
+	memcpy(Desc.szModelName, szPrototypeModelTag, MAX_PATH);
+
+	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_BackGround"),
+		ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Prop_Object"), &Desc)))
+		return E_FAIL;
 
 	return S_OK;
 }
 
 HRESULT CLevel_Shader::Ready_Layer_Player()
 {
-	//	CJOH_EditorModelTest::EDITORTESTMODEL_DESC Desc{};
-	//	Desc.isAnim = true;
-	//	Desc.strPrototypeTag = TEXT("Prototype_Component_Editor_Model_Test");
-	//	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_Player"),
-	//		ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Editor_Animation_TestModel"), &Desc)))
-	//		return E_FAIL;
-
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_Player"),
 		ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Player_Shader"))))
 		return E_FAIL;

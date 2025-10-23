@@ -347,6 +347,11 @@ HRESULT CLoader::Loading_For_Shader_Level()
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Test/Test_Player/Test_Player.dat"))))
 		return E_FAIL;
 
+	/* Prototype_Component_Model_Rock */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Model_Rock"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Rock/WP_COM_Rock_Base_001/WP_COM_Rock_Base_001.dat"))))
+		return E_FAIL;
+
 	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
 
 	lstrcpy(m_szLoadingText, TEXT("게임오브젝트를 로딩중입니다."));
@@ -366,10 +371,10 @@ HRESULT CLoader::Loading_For_Shader_Level()
 		CPlayer_Shader::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	// Prototype_GameObject_Prop_Test
-	//	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Prop_Test"),
-	//		CProp_Test::Create(m_pDevice, m_pContext))))
-	//		return E_FAIL;
+	// Prototype_GameObject_Prop_Object
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Prop_Object"),
+		CProp_Object::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 	// Prototype_GameObject_Editor_Animation_TestModel
 	//	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Editor_Animation_TestModel"),
