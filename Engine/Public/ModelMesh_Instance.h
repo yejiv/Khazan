@@ -12,7 +12,7 @@ class CModelMesh_Instance final : public CVIBuffer_Instance
 public:
 	typedef struct tagModelMeshInstance : public CVIBuffer_Instance::INSTANCE_DESC
 	{
-		vector<MESH_INSTANCE_DATA> InstanceData;
+		vector<VTXINSTANCE_MESH> InstanceData;
 
 	}MODELMESH_INSTANCE_DESC;
 
@@ -31,9 +31,6 @@ public:
 
 public:
 	const _uint Get_NumInstances() const { return m_iNumInstance; }
-
-	void Add_Instance(MESH_INSTANCE_DATA  InstanceData);
-	void Fix_Instance(MESH_INSTANCE_DATA  InstanceData, _uint iInstanceIndex);
 
 private:
 	_wstring				m_strName;

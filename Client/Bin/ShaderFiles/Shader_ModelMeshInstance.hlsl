@@ -2,9 +2,20 @@
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 
-texture2D g_DiffuseTexture, g_NormalTexture, g_EmissiveTexture, g_SpecularTexture;
+/*재질*/
+texture2D g_DiffuseTexture;
+texture2D g_NormalTexture;
+texture2D g_SpecularTexture;
+texture2D g_EmissiveTexture;
 
 texture2D g_NoiseTexture;
+
+/*눈 내리는 맵에 사용*/
+texture2D g_SnowTexture;
+float g_fSnowAmount = float(0.5f);
+float3 g_vSnowColor = float3(0.92f, 0.94f, 1.f);
+
+vector g_vCamPosition;
 
 float g_fFar = 1000.f;
 
@@ -62,21 +73,24 @@ VS_OUT VS_MAIN(VS_IN In)
     return Out;
 }
 
-VS_OUT VS_MAIN_NORMAL(VS_IN In)
+VS_OUT VS_MAPOBJECT(VS_IN In)
 {
-    VS_OUT Out = (VS_OUT) 0;
-        
+    VS_OUT Out = (VS_OUT) 0; // C 스타일의 캐스팅 가능 - 0 초기화
+ 
+    vector vPosition = mul(float4(In.vPosition, 1.f), In.TransformMatrix);
+    
     float4x4 matWV, matWVP;
     
     matWV = mul(g_WorldMatrix, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
     
-    Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
+    Out.vPosition = mul(vPosition, matWVP);
     Out.vNormal = normalize(mul(float4(In.vNormal, 0.f), g_WorldMatrix));
     Out.vTangent = normalize(mul(float4(In.vTangent, 0.f), g_WorldMatrix));
     Out.vBinormal = normalize(mul(float4(In.vBinormal, 0.f), g_WorldMatrix));
     Out.vTexcoord = In.vTexcoord;
     Out.vWorldPos = mul(float4(In.vPosition, 1.f), g_WorldMatrix);
+    Out.vWorldPos.w = float(In.iID);
     Out.vProjPos = Out.vPosition;
     
     return Out;
@@ -188,13 +202,129 @@ PS_OUT_SHADOW PS_MAIN_SHADOW(PS_IN_SHADOW In)
     return Out;
 }
 
+PS_OUT PS_MAP(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐이더
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    if (vMtrlDiffuse.a <= 0.3f)
+        discard;
+        
+    /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
+    Out.vWorld = In.vWorldPos;
+    
+    return Out;
+}
+
+PS_OUT PS_MAP_BLEND(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐이더
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+    /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
+    Out.vWorld = In.vWorldPos;
+    
+    return Out;
+}
+
+PS_OUT PS_SNOWMAP(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐이더
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    if (vMtrlDiffuse.a <= 0.3f)
+        discard;
+        
+    /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    float3 vWorldNormal = normalize(In.vNormal.rgb);
+    float upFactor = saturate(dot(vWorldNormal, float3(0.f, 1.f, 0.f)));
+    
+    //float fSnowMask = g_SnowTexture.Sample(DefaultSampler, In.vTexcoord * 8.f).r;
+    
+    float fSnowMask = 0.8f;
+    
+    float fSnowBlend = saturate(upFactor * fSnowMask * g_fSnowAmount);
+    
+    float3 vSnowColor = g_vSnowColor;
+    
+    float3 vFinalColor = lerp(vMtrlDiffuse.rgb, vSnowColor, fSnowBlend);
+    
+    Out.vDiffuse = float4(vFinalColor, vMtrlDiffuse.a);
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
+    Out.vWorld = In.vWorldPos;
+    
+    return Out;
+}
+
+PS_OUT PS_SNOWMAP_BLEND(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐이더
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+    /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    float3 vWorldNormal = normalize(In.vNormal.rgb);
+    float upFactor = saturate(dot(vWorldNormal, float3(0.f, 1.f, 0.f)));
+    
+    //float fSnowMask = g_SnowTexture.Sample(DefaultSampler, In.vTexcoord * 8.f).r;
+    
+    float fSnowMask = 0.8f;
+    
+    float fSnowBlend = saturate(upFactor * fSnowMask * g_fSnowAmount);
+    
+    float3 vSnowColor = g_vSnowColor;
+    
+    float3 vFinalColor = lerp(vMtrlDiffuse.rgb, vSnowColor, fSnowBlend);
+    
+    Out.vDiffuse = float4(vFinalColor, vMtrlDiffuse.a);
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
+    Out.vWorld = In.vWorldPos;
+    
+    return Out;
+}
+
 //==================================================================================================
 //==================================== [  TECHNIQUE AND PASS  ] ====================================
 //==================================================================================================
 
 technique11 DefaultTechnique
 {
-    pass DefaultPass
+    pass DefaultPass            // 기본 ( 0번 )
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -205,7 +335,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN();
     }
 
-    pass WireFrame
+    pass WireFrame          // 와이어프레임 ( 1번 )
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -216,7 +346,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_WIREFRAME();
     }
 
-    pass Shadow
+    pass Shadow         // 그림자 ( 2번 )
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -225,5 +355,49 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN_SHADOW();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_SHADOW();
+    }
+
+    pass MapPass // 인스턴스 : 맵 오브젝트용 패스 ( 3번 ) ( 눈 X )
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAPOBJECT();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAP();
+    }
+
+    pass MapBlendPass // 인스턴스 : 맵 오브젝트용 패스 ( 4번 ) ( 눈 X )
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAPOBJECT();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAP_BLEND();
+    }
+
+    pass SnowMapPass // 인스턴스 : 맵 오브젝트용 패스 ( 5번 ) ( 눈 O )
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAPOBJECT();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_SNOWMAP();
+    }
+
+    pass SnowMapBlendPass // 인스턴스 : 맵 오브젝트용 패스 ( 6번 ) ( 눈 O )
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAPOBJECT();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_SNOWMAP_BLEND();
     }
 }

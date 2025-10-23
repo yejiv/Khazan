@@ -37,7 +37,6 @@ public:
 	//ETC
 	HRESULT						UI_UpdateSwitch(const _wstring& strUITag, void* pArg);
 	_int						UIType_StringToEnum(string szUIType);
-	_uint						TexTag_Maping(string szTextag);
 	_float4						Get_AtlasUV(const string pFrameName, _uint iTextureIndex);
 private:
 	class CGameInstance*		m_pGameInstance = { nullptr };

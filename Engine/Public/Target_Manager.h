@@ -20,8 +20,8 @@ public:
 	HRESULT Copy_Resource(const _wstring& strTargetTag, ID3D11Texture2D* pSourTexture);
 	ID3D11RenderTargetView** Get_BackBuffer() { return &m_pBackBuffer; }
 
-	void Begin_RT();
-	void End_RT();
+	void Backup_RT();	// BackBuffer, DSV 보관(백업)
+	void Restore_RT();	// BackBuffer, DSV 복원(복구)
 
 #ifdef _DEBUG
 public:

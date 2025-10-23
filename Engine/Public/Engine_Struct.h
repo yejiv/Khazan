@@ -58,14 +58,6 @@ namespace Engine
 		float			fFovy, fNear, fFar;
 	}SHADOW_LIGHT_DESC;
 
-	typedef struct tagMeshInstanceData		// 메쉬 인스턴스 수정용 데이터 | 구조체 데이터 : MESH_INSTANCING
-	{
-		XMMATRIX InstanceMatrix{};			// 인스턴스용 행렬
-
-		unsigned int InstanceID{};			// 인스턴스 ID
-
-	}MESH_INSTANCE_DATA;
-
 	typedef struct tagMapObjectProperties
 	{
 		bool isSnow{ false };
@@ -137,6 +129,15 @@ namespace Engine
 
 		unsigned int						x = 1, y = 1, z = 1;	// 디스패치할 스레드 그룹 개수
 	}COMPUTE_PASS_DESC;
+
+	typedef struct tagCascadeData
+	{
+		unsigned int						iNumCascades;
+
+		vector<float>						Splits;
+		vector<XMFLOAT4X4>					LightViewMatrices;
+		vector<XMFLOAT4X4>					LightProjMatrices;
+	}CASCADE_DATA;
 
 	typedef struct tagPointInstanceParams
 	{

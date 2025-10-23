@@ -29,9 +29,6 @@ public:
 public:
 	const _uint Get_NumInstances() const;
 
-	void Add_Instance(MESH_INSTANCE_DATA InstanceData);
-	void Fix_Instance(MESH_INSTANCE_DATA InstanceData, _uint iInstanceIndex);
-
 public:
 	HRESULT Bind_Materials(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, aiTextureType eTextureType, _uint iIndex);
 	HRESULT Bind_BoneMatrices(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex);

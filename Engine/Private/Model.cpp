@@ -227,9 +227,6 @@ _bool CModel::Play_Animation(_float fTimeDelta)
 		Remove_State(CHANGE_ANIMATION);
 	}
 
-    _bool a = Has_State(USED_ANIM_LOOP);
-    _bool b = Has_State(ANIM_LOOP);
-
     /* 애니메이션의 현재 시간에 맞는 뼈의 상태대로 특정 뼈들을 갱신*/
     m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrices(m_Bones, Has_State(USED_ANIM_LOOP), Has_State(ANIM_LOOP), &m_isFinished, fTimeDelta);
 

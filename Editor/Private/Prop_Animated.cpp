@@ -78,16 +78,6 @@ HRESULT CProp_Animated::Render()
     return S_OK;
 }
 
-void CProp_Animated::Add_Instance(MESH_INSTANCE_DATA InstanceData)
-{
-    //m_pModelCom->Add_Instance(InstanceData);
-}
-
-void CProp_Animated::Fix_Instance(MESH_INSTANCE_DATA InstanceData, _uint InstanceIndex)
-{
-    //m_pModelCom->Fix_Instance(InstanceData, InstanceIndex);
-}
-
 const _uint CProp_Animated::Get_NumInstances() const
 {
     //return m_pModelCom->Get_NumInstances();

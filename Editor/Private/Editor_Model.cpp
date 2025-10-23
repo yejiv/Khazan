@@ -4,6 +4,7 @@
 #include "Editor_MeshMaterial.h"
 #include "Editor_Bone.h"
 #include "Editor_Animation.h"
+#include "GameInstance.h"
 
 #include "Shader.h"
 
@@ -35,7 +36,7 @@ CEditor_Model::CEditor_Model(const CEditor_Model& Prototype)
    // , m_Bones{ Prototype.m_Bones }
 	, m_iNumAnimations{ Prototype.m_iNumAnimations }
     , m_iRootBoneIndex{Prototype.m_iRootBoneIndex }
-    , m_fRootMotionBlendTime{Prototype.m_fRootMotionBlendTime }
+    //, m_fRootMotionBlendTime{Prototype.m_fRootMotionBlendTime }
 
 {
     for (auto& pPrototypeAnimation : Prototype.m_Animations) {
@@ -115,25 +116,6 @@ HRESULT CEditor_Model::Initialize_Prototype(MODELTYPE eModelType, const _char* p
         return E_FAIL;
     }
 
-    //string message = " ------------------------------------------------------------------\n";
-    //OutputDebugStringA(message.c_str());
-
-    //message = "Model loaded: " + std::string(pModelFilePath) + "\n";
-    //OutputDebugStringA(message.c_str());
-
-    //message = +"Root node: " + std::string(m_pAIScene->mRootNode->mName.data) + "\n";
-    //OutputDebugStringA(message.c_str());
-
-    //message = "Meshes: " + std::to_string(m_pAIScene->mNumMeshes) + "\n";
-    //OutputDebugStringA(message.c_str());
-
-    //message = "Materials: " + std::to_string(m_pAIScene->mNumMaterials) + "\n";
-    //OutputDebugStringA(message.c_str());
-
-    //message = "Animations: " + std::to_string(m_pAIScene->mNumAnimations) + "\n";
-    //OutputDebugStringA(message.c_str());
-
-
     if (FAILED(Ready_Bones(m_pAIScene->mRootNode, -1)))
         return E_FAIL;
 
@@ -176,13 +158,6 @@ HRESULT CEditor_Model::Initialize_Prototype(MODELTYPE eModelType, const _char* p
         OutputDebugStringA(("[Root Boon Index] : " + to_string(m_iRootBoneIndex) + "\n").c_str());
 
     }
-
-    //for (size_t i = 0; i < m_iNumAnimations; i++)
-    //{
-    //    m_Model_Data.vecAnimation[i].animSetup.vecEventFrames = { FLOAT2_DATA(0.f,0.f)};
-    //    m_Model_Data.vecAnimation[i].animSetup.vecEventKeys = { "" };
-    //}
-
 
     return S_OK;
 }
@@ -229,9 +204,10 @@ HRESULT CEditor_Model::Bind_BoneMatrices(CShader* pShader, const _char* pConstan
 
 _bool CEditor_Model::Play_Animation(_float fTimeDelta)
 {
-    m_isFinished = false;
+    m_isFinished = m_isAnimationLooped = false;
 
-    if (m_isSetAnimNextPlay/* && m_isSetAnimPlaying && !m_isSetAnimFinished*/)
+    /* 애니메이션 세트 관련 */
+    if (m_isSetAnimNextPlay)
     {
         _uint iIndex = static_cast<_uint>(m_Model_Data.vecAnimationSets[m_iCurSelectSetAnimIndex].vecAnimIndices[m_iCurSetAnimIndex]);
         
@@ -240,29 +216,58 @@ _bool CEditor_Model::Play_Animation(_float fTimeDelta)
         m_isSetAnimNextPlay = false;
     }
 
-
+    /* 애니메이션이 바뀜  */
     if (m_isChangedAnimation)
-    {
-        if (m_iPrevAnimIndex != m_iCurrentAnimIndex)
-        {
-            //루트 모션 적용된 것만 실행 
-            if(m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isRootMotion)
-                OnRootMotion();
-
-            m_Animations[m_iCurrentAnimIndex]->OnAnimationBlend(move(m_Animations[m_iPrevAnimIndex]->Get_ChannelMatrices()));
-
-        }
-        m_isChangedAnimation = false;
+	{
+        /* 애니메이션 블랜딩 (이전 애니메이션 채널 정보를 다음 애니메이션에게 넘겨주기 ) */
+		m_Animations[m_iCurrentAnimIndex]->OnAnimationBlend(move(m_Animations[m_iPrevAnimIndex]->Get_ChannelMatrices()));
     }
 
+    /* 루프 애니메이션이 재시작되는걸 알기 위한 변수  */
+    _float fPrevTrackPosition = m_fCurrentTrackPosition;
+
+    /* 애니메이션 재생 */
     m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrices(m_Bones, m_isLoop, &m_isFinished, fTimeDelta);
 
+    /* 루프 애니메이션이면 처음으로 되돌아 갔을 시 */
+    if ((m_isLoop || m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isLoop) && fPrevTrackPosition > m_fCurrentTrackPosition)
+    {
+        m_isAnimationLooped = true;
+        m_isTest = true;
+    }
+
+    /* 뼈 컴바인드 */
     for (auto& pBone : m_Bones)
         pBone->Update_CombinedTransformationMatrix(m_PreTransformMatrix, m_Bones);
 
+    /* 루프 재시작 or 애니메이션 체인지 일 때  */
+    if (m_isChangedAnimation || m_isAnimationLooped)
+    {
+        /* 해당 애니메이션이 루트모션을 할건지 체크  */
+        OnRootMotion();
+    }
+    
+    /* 루트 모션을 사용하면  */
     if (m_isRootMotion)
-        Update_RootMotion(fTimeDelta);
+    {
+        /* 루프 재시작 or 애니메이션 체인지 일 때(시점 : 시작 프레임) 변수 초기화 */
+        if ((m_isChangedAnimation || m_isAnimationLooped))
+        {
+            m_PreRootMatrix = m_Bones[m_iRootBoneIndex]->Get_CombinedTransformationMatrix();
+            m_vRootMotionDelta = XMMatrixIdentity();
+            m_isDebug = true;
+        }
+        /* 루트 모션을 사용할 애니메이션에서 한 프레임이 지난 후 부터 루트모션 업데이트 */
+        else
+            Update_RootMotion(fTimeDelta);
+    }
 
+
+    if (m_isChangedAnimation)
+        m_isChangedAnimation = false;
+
+
+    /* 애니메이션 세트 관련  */
     if (m_isSetAnimPlaying && m_isFinished)
     {
         ++m_iCurSetAnimIndex;
@@ -287,8 +292,13 @@ void CEditor_Model::Set_Animation(_uint iIndex, _bool isLoop)
     m_iPrevAnimIndex = m_iCurrentAnimIndex;
     m_iCurrentAnimIndex = iIndex;
 
-    if (m_iPrevAnimIndex >= 0 &&  m_iCurrentAnimIndex != m_iPrevAnimIndex)
+    //if (m_iPrevAnimIndex >= 0 &&  m_iCurrentAnimIndex != m_iPrevAnimIndex)
         m_isChangedAnimation = true;
+
+// 새 애니메이션이 루트모션 안 쓰면 끄기
+    //if (!m_Model_Data.vecAnimation[iIndex].animSetup.isRootMotion)
+        //m_isRootMotion = m_Model_Data.vecAnimation[iIndex].animSetup.isRootMotion;
+    
 }
 
 void CEditor_Model::Set_SetAnimation(const string& strKey)
@@ -335,14 +345,6 @@ CEditor_Animation* CEditor_Model::Get_CurAnimtion()
 
 void CEditor_Model::ExportModel(string& strPath)
 {
-    ///* 파일시스템에서 실행파일 위치를 .exe로 고정 */
-    //_char exePath[MAX_PATH];
-    //GetModuleFileNameA(NULL, exePath, MAX_PATH);
-    //string exeDir = exePath;
-    //size_t lastSlash = exeDir.find_last_of("\\/");
-    //if (lastSlash != string::npos) exeDir = exeDir.substr(0, lastSlash);
-    //SetCurrentDirectoryA(exeDir.c_str());
-
     /* 현재 실행파일 저장 */
     _char savedDir[MAX_PATH];
     GetCurrentDirectoryA(MAX_PATH, savedDir);
@@ -546,7 +548,7 @@ void CEditor_Model::LoadModel(string& strPath)
     SetCurrentDirectoryA(clientDefaultDir.string().c_str());
 
 
-    _char currentDir[MAX_PATH];
+    //_char currentDir[MAX_PATH];
     //GetCurrentDirectoryA(MAX_PATH, currentDir);
     OutputDebugStringA(("[Current Working Directory] " + clientDefaultDir.string() + "\n").c_str());
 
@@ -775,64 +777,106 @@ HRESULT CEditor_Model::Ready_Animation()
 void CEditor_Model::OnRootMotion()
 {
     m_isRootMotion = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isRootMotion;
+
     if (m_isRootMotion)
     {
         m_isRootMotion_Pos = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isApplyRootPosition;
         m_isRootMotion_Rot = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isApplyRootRotation;
         FLOAT3_DATA data = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.RootMitionScale;
         m_vRootMotionScale = XMVectorSet(data.x, data.y, data.z, 1.f);
-    }
+	}
 
-
-    m_fCurRootMotionBlendTime = 0.f;
-    m_PreRootMatrix = m_Bones[m_iRootBoneIndex]->Get_CombinedTransformationMatrix();
 }
 
 void CEditor_Model::Update_RootMotion(_float fTimeDelta)
 {
+   // _matrix CurrentRootMatrix = XMMatrixIdentity();
     _matrix CurrentRootMatrix = m_Bones[m_iRootBoneIndex]->Get_CombinedTransformationMatrix();
+    
+    // 위치 적용
+    if (m_isRootMotion_Pos)
+    {
 
-    m_fCurRootMotionBlendTime += fTimeDelta;
+        _vector vDelta;
 
-    if(m_fCurRootMotionBlendTime >= m_fRootMotionBlendTime)
-        m_isRootMotion = false;
+        /* 근데 이미 play_animation()에서 조건 처리로 안들어오잖아?  */
+        /* 애니메이션이 바꼈거나 루프 애니메이션이 처음 프레임으로 이동했을 시  */
+        //if (m_isChangedAnimation || m_isAnimationLooped)
+        //{
+        //    /* 델타값 0으로 (아니면 마지막 프레임으로 고정...?) */
+        //    vDelta = XMVectorZero();
+        //}
+        ///* 애니메이션 시작 프레임이 아닌.. 다음 프레임부터 */
+        //else
+        //{
+        //    /* 애니메이션 이전 프레임과 현재 프레임에서 루트 본끼리의 위치 차이 저장 */
+        //    //CurrentRootMatrix = m_Bones[m_iRootBoneIndex]->Get_CombinedTransformationMatrix();
+        //    vDelta = XMVectorSubtract(CurrentRootMatrix.r[3], m_PreRootMatrix.r[3]);
+        //    vDelta = XMVectorMultiply(vDelta, m_vRootMotionScale);
+
+        //}
+
+        /* 애니메이션 이전 프레임과 현재 프레임에서 루트 본끼리의 위치 차이 저장 */
+        vDelta = XMVectorSubtract(CurrentRootMatrix.r[3], m_PreRootMatrix.r[3]);
+        vDelta = XMVectorMultiply(vDelta, m_vRootMotionScale);
+
+        /* w값 0 !!! */
+        m_vRootMotionDelta.r[3] = XMVectorSetW(vDelta, 0.f);
+
+        _float3 pre, cur, del;
+        XMStoreFloat3(&pre, m_PreRootMatrix.r[3]);
+        XMStoreFloat3(&cur, CurrentRootMatrix.r[3]);
+        XMStoreFloat3(&del, vDelta);
+
+        if (m_isDebug)
+        {
+            cout << "Pre :" << pre.x << " " << pre.y << " " << pre.z << "   ";
+            cout << "Cur :" << cur.x << " " << cur.y << " " << cur.z << "   ";
+            cout << "Delta :" << del.x << " " << del.y << " " << del.z << "\n";
+            m_isDebug = false;
+        }
+        if (del.x > 1.f)
+            cout << "!!!!!!!!  del.x: " << m_fCurrentTrackPosition << "  !!!!!!!!!!\n";
+        if (del.y > 1.f)
+            cout << "!!!!!!!!  del.y: " << m_fCurrentTrackPosition << "  !!!!!!!!!!\n";
+        if (del.z > 1.f)
+            cout << "!!!!!!!!  del.z: " << m_fCurrentTrackPosition << "  !!!!!!!!!!\n";
+    }
+
+    /* 위치 적용 안한다면  */
     else
     {
-        _float fRatio = m_fCurRootMotionBlendTime / m_fRootMotionBlendTime;
-
-        //위치 적용
-        if (m_isRootMotion_Pos)
-        {
-            _vector vCurrentPos = CurrentRootMatrix.r[3];
-            _vector vPrePos = m_PreRootMatrix.r[3];
-
-            _vector vLerpedPos = XMVectorLerp(vPrePos, vCurrentPos, fRatio);
-            _vector vDelta = XMVectorSubtract(vLerpedPos, vPrePos);
-            vDelta = XMVectorMultiply(vDelta, m_vRootMotionScale);
-            _vector vFinalPos = XMVectorAdd(vPrePos, vDelta);
-
-            CurrentRootMatrix.r[3] = vFinalPos;
-        }
-        else
-        {
-            CurrentRootMatrix.r[3] = m_PreRootMatrix.r[3];
-        }
-
-        //회전 적용
-        if (m_isRootMotion_Rot)
-        {
-            _vector vCurrentQuat = XMQuaternionRotationMatrix(CurrentRootMatrix);
-            _vector vPreQuat = XMQuaternionRotationMatrix(m_PreRootMatrix);
-            _vector vLerpedQuat = XMQuaternionSlerp(vPreQuat, vCurrentQuat, fRatio);
-
-            _matrix RotationMatrix = XMMatrixRotationQuaternion(vLerpedQuat);
-            CurrentRootMatrix.r[0] = RotationMatrix.r[0];
-            CurrentRootMatrix.r[1] = RotationMatrix.r[1];
-            CurrentRootMatrix.r[2] = RotationMatrix.r[2];
-        }
-
-        m_Bones[m_iRootBoneIndex]->Set_TransformationMatrix(CurrentRootMatrix);
+        /* 전부 0 */
+        m_vRootMotionDelta.r[3] = XMVectorSet(0.f, 0.f, 0.f, 0.f);
     }
+
+    // 회전 적용
+    if (m_isRootMotion_Rot)
+    {
+        _matrix CurrentRot = CurrentRootMatrix;
+        CurrentRot.r[3] = XMVectorZero();
+
+        _matrix PrevRot = m_PreRootMatrix;
+        PrevRot.r[3] = XMVectorZero();
+
+        _matrix DeltaRot = CurrentRot * XMMatrixInverse(nullptr, PrevRot);
+
+        m_vRootMotionDelta.r[0] = DeltaRot.r[0];
+        m_vRootMotionDelta.r[1] = DeltaRot.r[1];
+        m_vRootMotionDelta.r[2] = DeltaRot.r[2];
+    }
+    else
+	{
+		// 회전 없음 = 단위 행렬
+		m_vRootMotionDelta.r[0] = XMVectorSet(1, 0, 0, 0);
+		m_vRootMotionDelta.r[1] = XMVectorSet(0, 1, 0, 0);
+		m_vRootMotionDelta.r[2] = XMVectorSet(0, 0, 1, 0);
+	}
+
+    /* m_PreRootMatrix 갱신   */
+    m_PreRootMatrix = CurrentRootMatrix;
+
+   //m_isRootMotion = false;
 }
 
 _bool CEditor_Model::Export_AnimationJson(const string& strFilePath, const string& strFilePath2)
@@ -1104,7 +1148,7 @@ void CEditor_Model::Free()
 
     for (auto& pMaterial : m_Materials)
         Safe_Release(pMaterial);
-    m_Meshes.clear();
+    m_Materials.clear();
 
     m_Importer.FreeScene();
 }

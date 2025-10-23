@@ -29,6 +29,9 @@ public:
 public:
 	void Set_PrototypeModel(CModel* pModelCom) { m_pModelCom = pModelCom; }
 
+	void Set_MouseMove(_bool isMouseMove) { m_isMouseMove = isMouseMove; }
+	void Set_MousePos(_vector vPos) { m_vMousePos = vPos; }
+
 public:
 	void Reset_Preview();
 
@@ -36,6 +39,9 @@ private:
 	CModel* m_pModelCom = { nullptr };
 
 	_matrix m_ResetMatrix = {};
+
+	_bool m_isMouseMove = { false };
+	_vector m_vMousePos = {};
 
 private:
 	HRESULT Ready_Components(void* pArg);

@@ -149,6 +149,28 @@ PS_OUT PS_MAIN(PS_IN In)
     //  else
     //      Out.vDiffuse = vMtrlDiffuse;
 
+    //if (0 == iCascadeIndex)
+    //    Out.vDiffuse = float4(1.f, 0.f, 0.f, 1.f); // Red
+    //else if (1 == iCascadeIndex)
+    //    Out.vDiffuse = float4(1.f, 1.f, 0.f, 1.f); // Yellow
+    //else if (2 == iCascadeIndex)
+    //    Out.vDiffuse = float4(0.f, 1.f, 0.f, 1.f); // Green
+    //else if (3 == iCascadeIndex)
+    //    Out.vDiffuse = float4(0.f, 0.f, 1.f, 1.f); // Blue
+    //else
+    //    Out.vDiffuse = vMtrlDiffuse;
+
+   //if (0 == iCascadeIndex)
+   //    Out.vDiffuse = float4(1.f, 0.f, 0.f, 1.f); // Red
+   //else if (1 == iCascadeIndex)
+   //    Out.vDiffuse = float4(1.f, 1.f, 0.f, 1.f); // Yellow
+   //else if (2 == iCascadeIndex)
+   //    Out.vDiffuse = float4(0.f, 1.f, 0.f, 1.f); // Green
+   //else if (3 == iCascadeIndex)
+   //    Out.vDiffuse = float4(0.f, 0.f, 1.f, 1.f); // Blue
+   //else
+   //    Out.vDiffuse = vMtrlDiffuse;
+
     Out.vDiffuse = vMtrlDiffuse;
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
