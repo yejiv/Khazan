@@ -5,7 +5,7 @@
 NS_BEGIN(Engine)
 class CShader;
 NS_END
-
+	
 NS_BEGIN(Editor)
 
 class CEffect_Element abstract: public CGameObject

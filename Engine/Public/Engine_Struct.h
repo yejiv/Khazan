@@ -141,8 +141,8 @@ namespace Engine
 
 	typedef struct tagPointInstanceParams
 	{
-		XMFLOAT4 vInitTranslation;
-		XMFLOAT2 fSize;
+		XMFLOAT4 vInitTranslation; 
+		float fSize;
 	}POINT_INSTANCE_PARAMS;
 
 	typedef struct tagPointInstanceSpeedParams
