@@ -51,10 +51,13 @@ private:
 	HRESULT Loading_For_UI_Level();
 	HRESULT Loading_For_Shader_Level();
 	HRESULT Loading_For_Camera_Level();
+	HRESULT Loading_For_AI_Level();
 
 private:
-	// 맵 오브젝트 Dat 로 프로토 타입 불러오는 함수 ( 1. 프로토타입 데이터 파일 명 | 2. 레벨 | 3. 맵 ( 안넣으면 폴더 X ) )
-	HRESULT Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDataFileName, LEVEL eLevel, KHAZAN_MAP eMap);
+	// 모델 : 맵 오브젝트 Dat 로 프로토 타입 불러오는 함수 ( 1. 프로토타입 데이터 파일 명 | 2. 레벨 | 3. 맵 ( 안넣으면 폴더 X ) )
+	HRESULT Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDataFileName, LEVEL eLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
+	// 메쉬 인스턴스 : 맵 오브젝트 Dat 로 프로토 타입 불러오는 함수 ( 1. 프로토타입 데이터 파일 명 | 2. 레벨 | 3. 맵 ( 안넣으면 폴더 X ) )
+	HRESULT Loading_Prototype_MapObject_Inst_From_DAT(const _tchar* pPrototypeDataFileName, LEVEL eLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
 
 public:
 	static CLoader* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eNextLevelID);

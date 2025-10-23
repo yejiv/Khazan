@@ -34,6 +34,8 @@ public:
 	void	OnUnEnble() { m_isEnble = false; }
 	class CEditor_Model* get_Model() { return m_pModelCom; }
 
+	void	Debug_RenderState();
+
 private:
 	CShader*	m_pShaderCom = { nullptr };
 	CShader*	m_pShaderCom_NonAnim = { nullptr };
@@ -44,6 +46,10 @@ private:
 	_bool		m_isEnble = { true };
 
 	_bool		m_isAnim = { false };
+
+	_float2		m_tempTime = { 1.f,1.f };
+	_bool		m_test1 = { false };
+	_bool		m_test2 = { false };
 
 private:
 	HRESULT Ready_Components(const _wstring& strModelTag);

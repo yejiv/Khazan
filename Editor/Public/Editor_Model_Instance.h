@@ -33,8 +33,6 @@ public:
 	const _uint		Get_NumMeshes() const { return m_iNumMeshes; }
 
 public:
-	void Add_Instance(MESH_INSTANCE_DATA InstanceData);
-	void Fix_Instance(MESH_INSTANCE_DATA InstanceData, _uint InstanceIndex);
 	uint Get_NumInstances();
 
 

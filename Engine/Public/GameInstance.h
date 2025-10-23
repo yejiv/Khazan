@@ -179,6 +179,7 @@ public:
 	void Set_ObjectToBP(_uint iObjectLayer, _uint iBPLayer);
 	void Set_ObjectFilter(_uint iSrc, _uint iDst);
 	void Set_ObjectVsBPFilter(_uint iObjectLayer, _uint iBPLayer);
+	void Set_ObjectLayerFilter(_uint iObjectLayer, _bool isOn = true);
 	Body* CreateAndAdd_Body(const BodyCreationSettings& BodySetting, BodyInterface** pBodyInterface);
 	CharacterVirtual* CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData, BodyInterface** pBodyInterface);
 
@@ -187,6 +188,8 @@ public:
 
 	void Set_Gravity(_vector vGravity);
 	void Reset_Gravity();
+
+	_bool CastRay(_float3 vStart, _float3 vEnd, _float& fFraction);
 #ifdef _DEBUG
 	void Change_DebugRender();
 	void Jolt_Test();

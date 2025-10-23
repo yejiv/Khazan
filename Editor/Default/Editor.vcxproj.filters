@@ -199,6 +199,15 @@
     <Filter Include="02.GameObject\MapObject\Prop\98.Preview">
       <UniqueIdentifier>{c9c828e3-489d-4584-850d-ef3ebe71f812}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\AI">
+      <UniqueIdentifier>{f35b6446-ec06-4177-8fb1-a85bdf8080b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\AI">
+      <UniqueIdentifier>{339ddb88-cdf0-412e-9f24-55f795efd49a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\AI\Controller">
+      <UniqueIdentifier>{f97bf7c7-5eae-45f8-ad24-12e95da56f03}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -381,6 +390,9 @@
     <ClInclude Include="..\Public\Prop_Preview.h">
       <Filter>02.GameObject\MapObject\Prop\98.Preview</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Level_AI.h">
+      <Filter>01.Levels\AI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -557,6 +569,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Prop_Preview.cpp">
       <Filter>02.GameObject\MapObject\Prop\98.Preview</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_AI.cpp">
+      <Filter>01.Levels\AI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

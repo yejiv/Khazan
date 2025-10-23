@@ -698,6 +698,10 @@ void CGameInstance::Set_ObjectVsBPFilter(_uint iObjectLayer, _uint iBPLayer)
 {
 	m_pJolt_Manager->Set_ObjectVsBPFilter(iObjectLayer, iBPLayer);
 }
+void CGameInstance::Set_ObjectLayerFilter(_uint iObjectLayer, _bool isOn)
+{
+	m_pJolt_Manager->Set_ObjectLayerFilter(iObjectLayer, isOn);
+}
 Body* CGameInstance::CreateAndAdd_Body(const BodyCreationSettings& BodySetting, BodyInterface** pBodyInterface)
 {
 	return m_pJolt_Manager->CreateAndAdd_Body(BodySetting, pBodyInterface);
@@ -725,6 +729,11 @@ void CGameInstance::Set_Gravity(_vector vGravity)
 void CGameInstance::Reset_Gravity()
 {
 	m_pJolt_Manager->Reset_Gravity();
+}
+
+_bool CGameInstance::CastRay(_float3 vStart, _float3 vEnd, _float& fFraction)
+{
+	return m_pJolt_Manager->CastRay(vStart, vEnd, fFraction);
 }
 
 #ifdef _DEBUG

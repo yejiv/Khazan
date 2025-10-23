@@ -5,13 +5,19 @@
 NS_BEGIN(Client)
 class CItem_Slot final : public CUI_Slot
 {
+public:
+	typedef struct Item_Slot_Tag : public CUI_Slot::UISLOTDESC
+	{
+		_int iItemType;
+	}ITEMSLOT_DESC;
 private:
 	CItem_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CItem_Slot(const CItem_Slot& Prototype);
 	virtual ~CItem_Slot() = default;
 public:
-	void								Input_Slot();
+	_bool								Add_Item(_int iItemIndex);
 	void								Update_Pos(_int iIndex, _float2 vPos, _float fOffSet, _int iMaxIndexX, _int iMaxIndexY);
+	_bool								Off_Selete();
 public:
 	virtual HRESULT						Initialize_Prototype(_uint iLevel);
 	virtual HRESULT						Initialize_Clone(void* pArg) override;
@@ -20,15 +26,25 @@ public:
 	virtual void						Late_Update(_float fTimeDelta) override;
 
 private:
-	virtual	HRESULT						Ready_Prototype();
-	virtual	HRESULT						Ready_Childer();
-
 	class CUI_Atlas_Icon*				m_pIcon = { nullptr };
 	class CUI_Atlas_Icon*				m_pOverFx = { nullptr };
 	class CUI_Atlas_Icon*				m_pSeleteFx = { nullptr };
 
 	_bool								m_bIsSelete = { false };
 
+	_int								m_iItemIndex = { -1 };
+	_int								m_iItemCount = {};
+	_int								m_iItemMaxCount = {};
+	_int								m_iItemType = {};
+
+private:
+	virtual	HRESULT						Ready_Prototype();
+	virtual	HRESULT						Ready_Childer();
+
+	void								Update_State(_uint iGrade = 0);
+
+	void								Equip_Item();
+	void								Release_Item();
 public:
 	static CItem_Slot*					Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
 	virtual CGameObject*				Clone(void* pArg) override;

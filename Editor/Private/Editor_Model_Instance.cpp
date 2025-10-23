@@ -218,18 +218,6 @@ void CEditor_Model_Instance::Set_Animation(_uint iIndex, _bool isLoop)
     m_iCurrentAnimIndex = iIndex;
 }
 
-void CEditor_Model_Instance::Add_Instance(MESH_INSTANCE_DATA InstanceData)
-{
-    for (auto& pMesh : m_Meshes)
-        pMesh->Add_Instance(InstanceData);
-}
-
-void CEditor_Model_Instance::Fix_Instance(MESH_INSTANCE_DATA InstanceData, _uint InstanceIndex)
-{
-    for (auto& pMesh : m_Meshes)
-        pMesh->Fix_Instance(InstanceData, InstanceIndex);
-}
-
 uint CEditor_Model_Instance::Get_NumInstances()
 {
     return uint();

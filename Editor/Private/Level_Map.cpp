@@ -426,6 +426,11 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 							{
 								OutputDebugStringA("프리뷰 == nullptr");
 							}
+							else if (m_pGameInstance->Mouse_Pressing(MOUSEKEYSTATE::LB))
+							{
+								pProp->Set_MouseMove(true);
+								pProp->Set_MouseMove(true);
+							}
 							else
 							{
 								pProp->Reset_Preview();
@@ -1309,6 +1314,28 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 
 #pragma endregion
 
+#pragma region 클라나 다른곳에서 사용할 바이너리 저장
+
+				if (false == Prototype_Save_Binary())
+				{
+					_int a = 10;
+				}
+				if (false == Instance_Prototype_Save_Binary())
+				{
+					_int a = 10;
+				}
+				if (false == Object_Save_Binary())
+				{
+					_int a = 10;
+				}
+				if (false == Instance_Object_Save_Binary())
+				{
+					_int a = 10;
+				}
+
+#pragma endregion
+
+
 #pragma region 조명 일괄 저장
 
 				if (false == Lights_Save_Binary())
@@ -1553,7 +1580,6 @@ string CLevel_Map::Find_ModelPath(const string& strModelName, const string& strF
 	return "NOTFOUND";
 }
 
-// 나중에 Json 추가해서 파일 옮겨야함
 _bool CLevel_Map::Prototypes_Save_Binary()
 {
 	// 프로토 타입 저장할때는 인스턴스용 모델인지, 아니면 일반 모델인지 구분해서 저장을 해야한다.
@@ -1610,8 +1636,6 @@ _bool CLevel_Map::Prototypes_Save_Binary()
 				string strModelPath = Find_ModelPath(WStringToAnsi(strModelName).c_str(), ".dat");
 
 				CHECK_EQUAL_MSG("NOTFOUND", strModelPath, TEXT("모델 경로 못찾음"), false);
-
-				JSON_MAP_PROTOTYPE_DATA PrtData = {};
 
 				PrototypeJson.FileName.push_back(WStringToAnsi(strModelName));
 
@@ -1739,6 +1763,405 @@ _bool CLevel_Map::Objects_Save_Binary()
 
 			// 5. 객체당 속성 저장
 			MAPOBJECT_PROPERTIES PropDesc = pProp->Get_Properties();
+			WriteFile(hObjectFile, &PropDesc, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr);
+		}
+		// 단일 오브젝트 이외의 것들 추가 예정
+	}
+
+	// 프로토타입 핸들 닫기
+	CloseHandle(hObjectFile);
+
+	return true;
+}
+
+#pragma region 실질적인 사용하는 바이너리 파일
+_bool CLevel_Map::Prototype_Save_Binary()
+{
+	// 프로토 타입 저장할때는 인스턴스용 모델인지, 아니면 일반 모델인지 구분해서 저장을 해야한다.
+	// Object로 사용한 Model만 프로토타입 등록
+	_wstring strPrototypeInfoPath = AnsiToWString(m_strMapInfoFilePath);
+
+	strPrototypeInfoPath += TEXT("_prototype.dat");
+
+	DWORD dwByte = {};
+
+	// 폴더가 존재하지 않으면 생성
+	if (false == filesystem::exists(m_szMapInfoFilePath))
+	{
+		if (false == filesystem::create_directories(m_szMapInfoFilePath))
+		{
+#ifdef _DEBUG
+			OutputDebugStringA("폴더 생성 실패");
+#endif // _DEBUg
+			return false;
+		}
+	}
+
+	// 프로토타입 핸들 개방
+	HANDLE hPrototypeFile = CreateFile(strPrototypeInfoPath.c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (INVALID_HANDLE_VALUE == hPrototypeFile)
+	{
+		CloseHandle(hPrototypeFile);
+		return false;
+	}
+	else
+	{
+		// 프로토 타입 개수 카운트
+		_uint iPrototypeCnt = {};
+
+		map<const _wstring, SAVE_PROTOTYPE> Prototypes;
+
+		// 단일 오브젝트 순회하면서 모델 이름 알아오기 ( Prototype 태그로 사용할 것 )
+		for (auto& pProp : m_ObjectList)
+		{
+			// 인스턴스 모델 프로토타입 세이브는 다른 함수에서
+			if (true == pProp->Get_Properties().isInstance)
+				continue;
+
+			// 기본 양식 지키기 ( Prototype_Component_Model_모델파일명 )
+			_wstring strPrototypeTag = TEXT("Prototype_Component_Model_");
+
+			// 기존 모델 명
+			wstring strModelName = pProp->Get_ModelName();
+
+			strPrototypeTag += strModelName;
+
+			auto iter = Prototypes.find(strPrototypeTag);
+
+			if (iter == Prototypes.end())
+			{
+				string strModelPath = Find_ModelPath(WStringToAnsi(strModelName).c_str(), ".dat");
+
+				CHECK_EQUAL_MSG("NOTFOUND", strModelPath, TEXT("모델 경로 못찾음"), false);
+
+				replace(strModelPath.begin(), strModelPath.end(), '\\', '/');
+
+				SAVE_PROTOTYPE Save_Proto = {};
+				Save_Proto.strModelPath = strModelPath;
+
+				Prototypes.emplace(strPrototypeTag, Save_Proto);
+
+				// 중복 아닐때만 Count 증가
+				++iPrototypeCnt;
+			}
+		}
+
+		// 1. 프로토 타입의 총 개수 저장 ( 이만큼 루프 돌릴거 )
+		WriteFile(hPrototypeFile, &iPrototypeCnt, sizeof(_uint), &dwByte, nullptr);
+
+		for (auto& pPrototype : Prototypes)
+		{
+			// 프로토 타입 태그 길이
+			_uint iPrototypeTagLen = pPrototype.first.size();
+			// 모델 경로 길이
+			_uint iModelPathLen = pPrototype.second.strModelPath.size();
+
+			// 2. 프로토 타입 태그 길이 저장
+			WriteFile(hPrototypeFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr);
+			// 3. 프로토 타입 태그 이름 저장
+			WriteFile(hPrototypeFile, pPrototype.first.c_str(), sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr);
+
+			// 4. 모델 경로 길이 저장
+			WriteFile(hPrototypeFile, &iModelPathLen, sizeof(_uint), &dwByte, nullptr);
+			// 5. 모델 경로 이름 저장
+			WriteFile(hPrototypeFile, pPrototype.second.strModelPath.c_str(), sizeof(_char) * iModelPathLen, &dwByte, nullptr);
+		}
+
+		// 검사용 map clear;
+		Prototypes.clear();
+	}
+
+	// 프로토타입 핸들 닫기
+	CloseHandle(hPrototypeFile);
+
+	return true;
+}
+#pragma endregion
+
+_bool CLevel_Map::Instance_Prototype_Save_Binary()
+{
+	// 프로토 타입 저장할때는 인스턴스용 모델인지, 아니면 일반 모델인지 구분해서 저장을 해야한다.
+	// Object로 사용한 Model만 프로토타입 등록
+	_wstring strPrototypeInfoPath = AnsiToWString(m_strMapInfoFilePath);
+
+	strPrototypeInfoPath += TEXT("_prototype_inst.dat");
+
+	DWORD dwByte = {};
+
+	// 폴더가 존재하지 않으면 생성
+	if (false == filesystem::exists(m_szMapInfoFilePath))
+	{
+		if (false == filesystem::create_directories(m_szMapInfoFilePath))
+		{
+#ifdef _DEBUG
+			OutputDebugStringA("폴더 생성 실패");
+#endif // _DEBUg
+			return false;
+		}
+	}
+
+	// 프로토타입 핸들 개방
+	HANDLE hPrototypeFile = CreateFile(strPrototypeInfoPath.c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (INVALID_HANDLE_VALUE == hPrototypeFile)
+	{
+		CloseHandle(hPrototypeFile);
+		return false;
+	}
+	else
+	{
+		// 프로토 타입 개수 카운트
+		_uint iPrototypeCnt = {};
+
+		map<const _wstring, SAVE_PROTOTYPE_INSTANCE> Prototypes;
+
+		_uint iInstanceCnt = {};
+
+		// 단일 오브젝트 순회하면서 모델 이름 알아오기 ( Prototype 태그로 사용할 것 )
+		for (auto& pProp : m_ObjectList)
+		{
+			// 인스턴스 아닌 모델은 다른 함수에서
+			if (false == pProp->Get_Properties().isInstance)
+				continue;
+
+			// 기본 양식 지키기 ( Prototype_Component_Model_모델파일명 )
+			_wstring strPrototypeTag = TEXT("Prototype_Component_Model_");
+
+			// 기존 모델 명
+			wstring strModelName = pProp->Get_ModelName();
+
+			strPrototypeTag += strModelName;
+
+			// 인스턴스 모델은 태그 뒤에 _Inst 붙이기
+			strPrototypeTag += TEXT("_Inst");
+
+			auto iter = Prototypes.find(strPrototypeTag);
+
+			if (iter == Prototypes.end())
+			{
+				string strModelPath = Find_ModelPath(WStringToAnsi(strModelName).c_str(), ".dat");
+
+				CHECK_EQUAL_MSG("NOTFOUND", strModelPath, TEXT("모델 경로 못찾음"), false);
+
+				replace(strModelPath.begin(), strModelPath.end(), '\\', '/');
+
+				SAVE_PROTOTYPE_INSTANCE Save_Proto_Inst = {};
+				Save_Proto_Inst.strModelPath = strModelPath;
+
+				_matrix WorldMatrix = static_cast<CTransform*>(pProp->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrix();
+
+				VTXINSTANCE_MESH InstanceData = {};
+
+				XMStoreFloat4(&InstanceData.vRight, WorldMatrix.r[0]);
+				XMStoreFloat4(&InstanceData.vUp, WorldMatrix.r[1]);
+				XMStoreFloat4(&InstanceData.vLook, WorldMatrix.r[2]);
+				XMStoreFloat4(&InstanceData.vTranslation, WorldMatrix.r[3]);
+
+				InstanceData.iID = iInstanceCnt++;
+
+				Save_Proto_Inst.InstanceData.push_back(InstanceData);
+
+				Prototypes.emplace(strPrototypeTag, Save_Proto_Inst);
+
+				// 중복 아닐때만 Count 증가
+				++iPrototypeCnt;
+			}
+			else
+			{
+				_matrix WorldMatrix = static_cast<CTransform*>(pProp->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrix();
+
+				VTXINSTANCE_MESH InstanceData = {};
+
+				XMStoreFloat4(&InstanceData.vRight, WorldMatrix.r[0]);
+				XMStoreFloat4(&InstanceData.vUp, WorldMatrix.r[1]);
+				XMStoreFloat4(&InstanceData.vLook, WorldMatrix.r[2]);
+				XMStoreFloat4(&InstanceData.vTranslation, WorldMatrix.r[3]);
+
+				InstanceData.iID = iInstanceCnt++;
+
+				iter->second.InstanceData.push_back(InstanceData);
+			}
+		}
+
+		// 1. 프로토 타입의 총 개수 저장 ( 이만큼 루프 돌릴거 )
+		WriteFile(hPrototypeFile, &iPrototypeCnt, sizeof(_uint), &dwByte, nullptr);
+
+		for (auto& pPrototype : Prototypes)
+		{
+			// 프로토 타입 태그 길이
+			_uint iPrototypeTagLen = pPrototype.first.size();
+			// 모델 경로 길이
+			_uint iModelPathLen = pPrototype.second.strModelPath.size();
+
+			// 2. 프로토 타입 태그 길이 저장
+			WriteFile(hPrototypeFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr);
+			// 3. 프로토 타입 태그 이름 저장
+			WriteFile(hPrototypeFile, pPrototype.first.c_str(), sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr);
+
+			// 4. 모델 경로 길이 저장
+			WriteFile(hPrototypeFile, &iModelPathLen, sizeof(_uint), &dwByte, nullptr);
+			// 5. 모델 경로 이름 저장
+			WriteFile(hPrototypeFile, pPrototype.second.strModelPath.c_str(), sizeof(_char) * iModelPathLen, &dwByte, nullptr);
+
+			// 6. 행렬 총 개수 저장
+			_uint iNumInstances = static_cast<_uint>(pPrototype.second.InstanceData.size());
+			WriteFile(hPrototypeFile, &iNumInstances, sizeof(_uint), &dwByte, nullptr);
+
+			// 7. 인스턴싱 개수만큼 루프
+			for (_uint i = 0; i < iNumInstances; ++i)
+			{
+				WriteFile(hPrototypeFile, &pPrototype.second.InstanceData[i].vRight, sizeof(_float4), &dwByte, nullptr);
+				WriteFile(hPrototypeFile, &pPrototype.second.InstanceData[i].vUp, sizeof(_float4), &dwByte, nullptr);
+				WriteFile(hPrototypeFile, &pPrototype.second.InstanceData[i].vLook, sizeof(_float4), &dwByte, nullptr);
+				WriteFile(hPrototypeFile, &pPrototype.second.InstanceData[i].vTranslation, sizeof(_float4), &dwByte, nullptr);
+				WriteFile(hPrototypeFile, &pPrototype.second.InstanceData[i].iID, sizeof(_uint), &dwByte, nullptr);
+			}
+		}
+
+		// 검사용 map clear;
+		Prototypes.clear();
+	}
+
+	// 프로토타입 핸들 닫기
+	CloseHandle(hPrototypeFile);
+
+	return true;
+}
+
+_bool CLevel_Map::Object_Save_Binary()
+{
+	_wstring strObjectInfoPath = AnsiToWString(m_strMapInfoFilePath);
+
+	strObjectInfoPath += TEXT("_object.dat");
+
+	DWORD dwByte = {};
+
+	// 프로토타입 핸들 개방
+	HANDLE hObjectFile = CreateFile(strObjectInfoPath.c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (INVALID_HANDLE_VALUE == hObjectFile)
+	{
+		CloseHandle(hObjectFile);
+		return false;
+	}
+	else
+	{
+		// 오브젝트 총 개수 카운트
+		_uint iObjectCnt = {};
+
+		for (auto& pProp : m_ObjectList)
+		{
+			// 인스턴스 속성이 아니면 카운트 증가 X
+			if (false == pProp->Get_Properties().isInstance)
+				++iObjectCnt;
+		}
+
+		// 1. 오브젝트의 총 개수 저장
+		WriteFile(hObjectFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr);
+
+		// 단일 오브젝트 순회하면서 모델 이름 알아오기 ( Prototype 태그로 사용할 것 )
+		for (auto& pProp : m_ObjectList)
+		{
+			// 인스턴스 속성이면 단일 오브젝트니까 다음 순회
+			if (true == pProp->Get_Properties().isInstance)
+				continue;
+
+			// 기본 양식 지키기 ( Prototype_Component_Model_모델파일명 ) ( Layer 추가에 사용할 것, 모델명 던져주기 )
+			_wstring strPrototypeTag = TEXT("Prototype_Component_Model_");
+			strPrototypeTag += pProp->Get_ModelName();
+
+			// 모델 이름 길이
+			_uint iPrototypeLen = strPrototypeTag.size();
+
+			// 2. 프로토 타입 태그 길이 저장
+			WriteFile(hObjectFile, &iPrototypeLen, sizeof(_uint), &dwByte, nullptr);
+			// 3. 프로토 타입 태그 이름 저장
+			WriteFile(hObjectFile, strPrototypeTag.c_str(), sizeof(_tchar) * iPrototypeLen, &dwByte, nullptr);
+
+			// 객체당 월드행렬 빼오기
+			CTransform* pTransform = static_cast<CTransform*>(pProp->Get_Component(TEXT("Com_Transform")));
+			CHECK_NULLPTR_MSG(pTransform, TEXT("nullptr == pTransform"), false);
+
+			_float4x4 WorldMatrix = {};
+
+			XMStoreFloat4x4(&WorldMatrix, pTransform->Get_WorldMatrix());
+
+			// 4. 객체당 월드행렬 저장
+			WriteFile(hObjectFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr);
+
+			// 5. 객체당 속성 저장
+			MAPOBJECT_PROPERTIES PropDesc = pProp->Get_Properties();
+			WriteFile(hObjectFile, &PropDesc, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr);
+		}
+		// 단일 오브젝트 이외의 것들 추가 예정
+	}
+
+	// 프로토타입 핸들 닫기
+	CloseHandle(hObjectFile);
+
+	return true;
+}
+
+_bool CLevel_Map::Instance_Object_Save_Binary()
+{
+	_wstring strObjectInfoPath = AnsiToWString(m_strMapInfoFilePath);
+
+	strObjectInfoPath += TEXT("_inst.dat");
+
+	DWORD dwByte = {};
+
+	// 프로토타입 핸들 개방
+	HANDLE hObjectFile = CreateFile(strObjectInfoPath.c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (INVALID_HANDLE_VALUE == hObjectFile)
+	{
+		CloseHandle(hObjectFile);
+		return false;
+	}
+	else
+	{
+		// 중복 모델 체크
+		map<_wstring, CProp*> InstObj;
+
+		// 오브젝트 총 개수 카운트
+		_uint iObjectCnt = {};
+
+		for (auto& pProp : m_ObjectList)
+		{
+			// 인스턴스 속성일때만
+			if (true == pProp->Get_Properties().isInstance)
+			{
+				auto iter = InstObj.find(pProp->Get_ModelName());
+
+				if (iter == InstObj.end())
+				{
+					InstObj.emplace(pProp->Get_ModelName(), pProp);
+
+					++iObjectCnt;
+				}
+			}
+		}
+
+		// 1. 인스턴스에 사용할 오브젝트의 총 개수 저장
+		WriteFile(hObjectFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr);
+
+		// 단일 오브젝트 순회하면서 모델 이름 알아오기 ( Prototype 태그로 사용할 것 )
+		for (auto& pInstProp : InstObj)
+		{
+			// 기본 양식 지키기 ( Prototype_Component_Model_모델파일명 ) ( Layer 추가에 사용할 것, 모델명 던져주기 )
+			_wstring strPrototypeTag = TEXT("Prototype_Component_Model_");
+			strPrototypeTag += pInstProp.second->Get_ModelName();
+
+			// 인스턴스는 프로토타입 세이브와 동일하게 _Inst 로 저장
+			strPrototypeTag += TEXT("_Inst");
+
+			// 모델 이름 길이
+			_uint iPrototypeLen = strPrototypeTag.size();
+
+			// 2. 프로토 타입 태그 길이 저장
+			WriteFile(hObjectFile, &iPrototypeLen, sizeof(_uint), &dwByte, nullptr);
+			// 3. 프로토 타입 태그 이름 저장
+			WriteFile(hObjectFile, strPrototypeTag.c_str(), sizeof(_tchar) * iPrototypeLen, &dwByte, nullptr);
+
+			// 4. 객체당 속성 저장
+			MAPOBJECT_PROPERTIES PropDesc = pInstProp.second->Get_Properties();
 			WriteFile(hObjectFile, &PropDesc, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr);
 		}
 		// 단일 오브젝트 이외의 것들 추가 예정
@@ -1880,58 +2303,6 @@ _bool CLevel_Map::Prototypes_Load_Binary()
 			_wstring strPrototypeTag = szPrototypeTag;
 
 			m_Prototypes_Obj.push_back(WStringToAnsi(strPrototypeTag));
-		}
-		else if (MAPOBJECT_TYPE::STATIC_INST == eMapObjType || MAPOBJECT_TYPE::ANIMATED_INST == eMapObjType)
-		{
-			// CModel_Instance 를 열어야 하는 경우 ( Instance O )
-			// 
-			// 3. 프로토 타입 태그 길이 저장
-			_uint iPrototypeTagLen = {};
-			CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), false);
-
-			// 4. 프로토 타입 태그 이름 저장
-			_tchar szPrototypeTag[MAX_PATH] = {};
-			CHECK_FALSE(ReadFile(hFile, &szPrototypeTag, sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr), false);
-
-			// 5. 모델 경로 길이 저장
-			_uint iModelPathLen = {};
-			CHECK_FALSE(ReadFile(hFile, &iModelPathLen, sizeof(_uint), &dwByte, nullptr), false);
-
-			// 6. 모델 경로 이름 저장
-			_char szModelPath[MAX_PATH] = {};
-			CHECK_FALSE(ReadFile(hFile, &szModelPath, sizeof(_char) * iModelPathLen, &dwByte, nullptr), false);
-
-			// 추후에 인스턴스 추가해야하는 코드 부분 ( vector<MESH_INSTANCE_DATA> )
-			CModelMesh_Instance::MODELMESH_INSTANCE_DESC InstanceDesc = {};
-
-			// 7. 인스턴스 개수
-			_uint iNumInstance = {};
-			CHECK_FALSE(ReadFile(hFile, &iNumInstance, sizeof(_uint), &dwByte, nullptr), false);
-
-			for (_uint j = 0; j < InstanceDesc.iNumInstance; ++j)
-			{
-				// 8. 인스턴스 개수 만큼 순회하면서 벡터에 Push_Back ( MapEditor에서 사용한 InstanceID는 빼고 파일 입출력해도 괜찮을 거 같음 )
-				_matrix InstanceMatrix = {};
-				CHECK_FALSE(ReadFile(hFile, &InstanceMatrix, sizeof(_matrix), &dwByte, nullptr), false);
-
-				MESH_INSTANCE_DATA InstanceData = {};
-				InstanceData.InstanceMatrix = InstanceMatrix;
-				InstanceData.InstanceID = j;
-
-				InstanceDesc.InstanceData.push_back(InstanceData);
-			}
-
-			if (true == m_pGameInstance->Already_Registered_Prototype(ENUM_CLASS(LEVEL::MAP), szPrototypeTag))
-				continue;
-
-			if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), szPrototypeTag,
-				CModel_Instance::Create(m_pDevice, m_pContext, szModelPath, &InstanceDesc))))
-			{
-				CloseHandle(hFile);
-				return false;
-			}
-
-			return false; // 일단 지금 되면 안됨
 		}
 		else
 		{
