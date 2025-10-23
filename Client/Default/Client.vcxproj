@@ -170,6 +170,8 @@
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\Public\Client_Struct.h" />
     <ClInclude Include="..\Public\Creature.h" />
+    <ClInclude Include="..\public\Cursor.h" />
+    <ClInclude Include="..\public\Cursor_FX.h" />
     <ClInclude Include="..\public\DB_Manager.h" />
     <ClInclude Include="..\Public\Dummy.h" />
     <ClInclude Include="..\Public\Event_Defines.h" />
@@ -245,6 +247,8 @@
     <ClCompile Include="..\Private\Camera_Compre.cpp" />
     <ClCompile Include="..\Private\ClientInstance.cpp" />
     <ClCompile Include="..\Private\Creature.cpp" />
+    <ClCompile Include="..\private\Cursor.cpp" />
+    <ClCompile Include="..\private\Cursor_FX.cpp" />
     <ClCompile Include="..\private\DB_Manager.cpp" />
     <ClCompile Include="..\Private\Dummy.cpp" />
     <ClCompile Include="..\Private\FSM_Yetuga.cpp" />
@@ -326,6 +330,7 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosSpriteTex.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_Cursor.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_UI.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_UIMask.hlsl" />
   </ItemGroup>
