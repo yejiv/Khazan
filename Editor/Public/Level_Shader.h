@@ -30,9 +30,21 @@ private:
 	_float					m_fTimeAcc = {};
 #endif
 
-	_bool					m_isChanged = {};
+	// Cascade
+	_float4					m_vLightDir = { 1.f, -1.f, 1.f, 0.f };
 
-	_float					m_fShadowBias = { 0.001f };
+	_float					m_fShadowBias = {};
+	_float					m_fShadowLamda = {};
+
+	_bool					m_isInitShadow = {};
+	_float					m_fCameraNear = { 0.1f };
+	_float					m_fCameraFar = { 1000.f };
+	vector<_float>			m_CascadeSplits = {};
+	_uint					m_iNumCascades = {};
+
+	// Render Flag
+	_bool					m_isRenderShadow = { true };
+	_bool					m_isChanged = {};
 
 public:
 	static CLevel_Shader* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

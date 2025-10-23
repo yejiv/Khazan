@@ -3,7 +3,6 @@
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 matrix g_ViewMatrixInv, g_ProjMatrixInv;
-matrix g_LightViewMatrix, g_LightProjMatrix;
 texture2D g_Texture;
 
 vector g_vCamPosition;
@@ -32,6 +31,7 @@ uint g_iNumCascades;
 float g_Splits[4];
 matrix g_LightViewMatrices[4];
 matrix g_LightProjMatrices[4];
+float2 g_vShadowMapSize;
 
 // PCF
 Texture2DArray<float> g_TextureArray;
@@ -252,18 +252,25 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
     vTexcoord.y = (vPosition.y / vPosition.w) * -0.5f + 0.5f;
 
     float fLightDepth = vPosition.z / vPosition.w;
-    //  vector vShadowDepth = g_TextureArray.Sample(DefaultSampler, float3(vTexcoord, iCascadeIndex));
-    //  
-    //  if (fLightDepth - g_fBias > vShadowDepth.x)
-    //      Out.vColor = Out.vColor * 0.3f;
-
-    // PCF
-    // Shadow Map Pixel Depth > Light Depth
-    float fShadow = g_TextureArray.SampleCmpLevelZero(ComparisonSampler, float3(vTexcoord, iCascadeIndex), fLightDepth - g_fBias);
     
-    // 비교 샘플링이 정상적으로 되면 보간하여 그림자 그림
-    Out.vColor = lerp(Out.vColor * 0.3f, Out.vColor, fShadow);
+    float fShadowSum = 0.f;
+    float2 vOffset;
 
+    for (int i = -1; i <= 1; ++i)
+    {
+        for (int j = -1; j <= i; ++j)
+        {
+            vOffset.x = j * 1.f / g_vShadowMapSize.x;
+            vOffset.y = i * 1.f / g_vShadowMapSize.y;
+            float3 vSampleCoord = saturate(float3(vTexcoord + vOffset, iCascadeIndex));
+            fShadowSum += g_TextureArray.SampleCmpLevelZero(ComparisonSampler, vSampleCoord, fLightDepth - g_fBias);
+        }
+    }
+    
+    fShadowSum /= 9.f;
+    
+    Out.vColor = lerp(Out.vColor * 0.3f, Out.vColor, fShadowSum);
+    
     return Out;
 }
 

@@ -7,56 +7,58 @@ NS_BEGIN(Engine)
 class CShadow final : public CBase
 {
 private:
-	CShadow();
+	CShadow(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual ~CShadow() = default;
 
 public:
-	const _float4x4* Get_Transform_Float4x4(D3DTS eTransformState) const;
-
-public:
-	HRESULT Initialize(_uint iWinSizeX, _uint iWinSizeY);
+	HRESULT Initialize();
 	void Update();
-	HRESULT Ready_ShadowLight(SHADOW_LIGHT_DESC LightDesc);
 
 public:
-	SHADOW_LIGHT_DESC Get_ShadowLight() { return m_ShadowLight; }
-	void Set_ShadowLight(SHADOW_LIGHT_DESC LightDesc) { m_ShadowLight = LightDesc; }
+	HRESULT				Bind_ShadowDSV(_uint iIndex);
+	HRESULT				Bind_ShadowSRVArray(class CShader* pShader, const _char* pConstantName);
 
 public:
-	void Set_CurrentCascade(_uint iIndex) { m_iCurrentCascade = iIndex; }
-	_uint Get_NumCascades() { return m_iNumCascade; }
-	const _float* Get_Splits() const { return m_Splits.data(); }
+	void				Set_CurrentCascade(_uint iIndex) { m_iCurrentCascade = iIndex; }
+	_uint				Get_NumCascades() { return m_Cascade.iNumCascades; }
+	const _float*		Get_Splits() const { return m_Cascade.Splits.data(); }
+	void				Set_Splits(const _float* pSplits);
+	const _float4x4*	Get_CurrentLightViewMatrix() const;
+	const _float4x4*	Get_CurrentLightProjMatrix() const;
+	const _float4x4*	Get_LightViewMatrices() const { return m_Cascade.LightViewMatrices.data(); }
+	const _float4x4*	Get_LightProjMatrices() const { return m_Cascade.LightProjMatrices.data(); }
+	_float				Get_Bias() { return m_fBias; }
+	void				Set_Bias(_float fBias) { m_fBias = fBias; }
+	_float				Get_Lamda() { return m_fLamda; }
+	void				Set_Lamda(_float fLamda);
 
-public:
-	const _float4x4* Get_CurrentLightViewMatrix() const;
-	const _float4x4* Get_CurrentLightProjMatrix() const;
-	const _float4x4* Get_LightViewMatrices() const { return m_LightViewMatrix.data(); }
-	const _float4x4* Get_LightProjMatrices() const { return m_LightProjMatrix.data(); }
+	// 임시로 추가
+	_float4				Get_ShadowLightDir() { return m_vLightDir; }
+	void				Set_ShadowLightDir(const _float4 vLightDir) { m_vLightDir = vLightDir; }
 
 private:
-	class CGameInstance* m_pGameInstance = { nullptr };
+	ID3D11Device*						m_pDevice = { nullptr };
+	ID3D11DeviceContext*				m_pContext = { nullptr };
+	class CGameInstance*				m_pGameInstance = { nullptr };
 
-	_float				m_fViewportWidth{}, m_fViewportHeight{};
-	_float4x4			m_Matrices[ENUM_CLASS(D3DTS::END)];
-	SHADOW_LIGHT_DESC	m_ShadowLight = {};
+	CASCADE_DATA						m_Cascade;
 
-	// Cascade
-	_uint m_iNumCascade = {};
-	vector<_float> m_Splits;
-	vector<_float4x4> m_LightViewMatrix;
-	vector<_float4x4> m_LightProjMatrix;
+	_uint								m_iCurrentCascade = {};
+	_float4								m_vLightDir = {};
+	_float								m_fLamda = {};
+	_float								m_fCameraNear{}, m_fCameraFar{};
+	_float								m_fBias = {};
 
-	vector<array<_float4, 8>> m_FustumCorners = {};
+private:
+	// Resource
+	vector<ID3D11DepthStencilView*>		m_ShadowDSVs;
+	ID3D11ShaderResourceView*			m_pShadowSRVArray = { nullptr };
 
-	_uint m_iCurrentCascade = {};
-
-	_float4 m_vLightDir = {};
-	_float m_fLamda = {};
-	_float m_fCameraNear = {};
-	_float m_fCameraFar = {};
+private:
+	HRESULT Ready_Cascade_Shadow_Resources();
 
 public:
-	static CShadow* Create(_uint iWinSizeX, _uint iWinSizeY);
+	static CShadow* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free();
 };
 

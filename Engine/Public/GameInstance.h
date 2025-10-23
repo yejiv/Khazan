@@ -73,14 +73,14 @@ public:
 #pragma region RENDERER
 public:
 	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pRenderObject);
-	void Set_ShadowBias(_float fBias);
 
 #ifdef _DEBUG
 public:
 	HRESULT Add_DebugComponent(class CComponent* pComponent);
+	void Set_EnableShadow(_bool isEnable);
 #endif
 #pragma endregion
-//
+
 #pragma region TIMER_MANAGER
 public:
 	_float	Get_TimeDelta(const _wstring& strTimerTag);
@@ -123,8 +123,8 @@ public:
 	HRESULT End_MRT();
 	HRESULT Bind_RT_ShaderResource(const _wstring& strTargetTag, class CShader* pShader, const _char* pConstantName);
 	HRESULT Copy_RT_Resource(const _wstring& strTargetTag, ID3D11Texture2D* pSourTexture);
-	void Begin_RT();
-	void End_RT();
+	void	Backup_RT();
+	void	Restore_RT();
 #ifdef _DEBUG
 	HRESULT Ready_RT_Debug(const _wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY);
 	HRESULT Render_RT_Debug(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
@@ -139,17 +139,23 @@ public:
 #pragma endregion
 
 #pragma region SHADOW
-	const _float4x4* Get_ShadowLight_Transform_Float4x4(D3DTS eTransformState) const;
-	HRESULT Ready_ShadowLight(SHADOW_LIGHT_DESC LightDesc);
-	SHADOW_LIGHT_DESC Get_ShadowLight();
-	void Set_ShadowLight(SHADOW_LIGHT_DESC LightDesc);
 	_uint Get_NumCascades();
 	void Set_CurrentCascade(_uint iIndex);
-	const _float4x4* Get_CurrentLightViewMatrix() const;
-	const _float4x4* Get_CurrentLightProjMatrix() const;
-	const _float* Get_Splits() const;
-	const _float4x4* Get_LightViewMatrices() const;
-	const _float4x4* Get_LightProjMatrices() const;
+	const _float4x4* Get_CurrentShadowLightViewMatrix() const;
+	const _float4x4* Get_CurrentShadowLightProjMatrix() const;
+	const _float* Get_CascadeSplits() const;
+	void	Set_CascadeSplits(const _float* pSplits);
+	const _float4x4* Get_ShadowLightViewMatrices() const;
+	const _float4x4* Get_ShadowLightProjMatrices() const;
+	HRESULT Bind_ShadowDSV(_uint iIndex);
+	HRESULT	Bind_ShadowSRVArray(class CShader* pShader, const _char* pConstantName);
+	_float	Get_ShadowBias();
+	void	Set_ShadowBias(_float fBias);
+	_float  Get_ShadowLamda();
+	void	Set_ShadowLamda(_float fLamda);
+
+	_float4 Get_ShadowLightDir();
+	void Set_ShadowLightDir(const _float4 vLightDir);
 #pragma endregion
 
 #pragma region FRUSTUM
