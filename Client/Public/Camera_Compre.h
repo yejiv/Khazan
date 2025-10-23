@@ -50,6 +50,10 @@ public:
 	HRESULT Ready_Body();
 
 public:
+	HRESULT Spring(_float fTimeDelta);
+	HRESULT RayCast(_float fTimeDelta);
+
+public:
 	CAMERA_COMPRE_DESC Get_Desc();
 private:
 	CCharacterVirtual* m_pCharVirCom = { nullptr };

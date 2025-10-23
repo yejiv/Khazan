@@ -731,9 +731,9 @@ void CGameInstance::Reset_Gravity()
 	m_pJolt_Manager->Reset_Gravity();
 }
 
-_bool CGameInstance::CastRay(_float3 vStart, _float3 vEnd, _float& fFraction)
+_bool CGameInstance::CastRay(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition)
 {
-	return m_pJolt_Manager->CastRay(vStart, vEnd, fFraction);
+	return m_pJolt_Manager->CastRay(vStart, vEnd, outFraction, outPosition);
 }
 
 #ifdef _DEBUG
