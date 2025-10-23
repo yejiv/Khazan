@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Editor_Defines.h"
+#include "Perception_Defines.h"
 #include "Level.h"
 
 NS_BEGIN(Editor)
@@ -16,8 +17,21 @@ public:
 	virtual void Update(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+#pragma region Perception
 private:
-	HRESULT Ready_Layer_BackGround(const _wstring& strLayerTag);
+	void				Show_Peception_Menu(const char* szDefaultFileName);
+	AIPERCEPTION_DATA	Convert_AIPerceptionData(const SIGHT_DESC& Desc, const string& MonsterType, const string& FileName, const vector<string>& Callbacks);
+	void				Save_Perception(const vector<SIGHT_DESC>& SightList, const string& MonsterType, const string& FileName, const vector<string>& Callbacks);
+	void				Load_Perception(const vector<SIGHT_DESC>& SightList, const string& FileName);
+#pragma endregion
+
+#pragma region BlackBoard
+	void				Show_BlackBoard_Menu(const char* szDefaultFileName);
+	void				Save_BlackBoard(const vector<AIBLACKBOARD_DATA>& BBList, const string& FileName);
+	void				Load_BlackBoard(vector<AIBLACKBOARD_DATA>& BBList, const string& FileName);
+#pragma endregion 
+	void				Show_BehaviorTree_Menu(const char* szDefaultFileName);
+
 
 public:
 	static CLevel_AI* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
