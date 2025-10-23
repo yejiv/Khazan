@@ -23,8 +23,8 @@ HRESULT CMainApp::Initialize()
 	EngineDesc.iWinSizeX = g_iWinSizeX;
 	EngineDesc.iWinSizeY = g_iWinSizeY;
 	EngineDesc.iNumLevels = ENUM_CLASS(LEVEL::END);
-	EngineDesc.iWinSizeX_Imgui = g_iWinSizeX_Imgui;
-	EngineDesc.iWinSizeY_Imgui = g_iWinSizeY_Imgui;
+	EngineDesc.iWinSizeX_Imgui = g_iWinSizeX_Imgui_JJH;
+	EngineDesc.iWinSizeY_Imgui = g_iWinSizeY_Imgui_JJH;
 	EngineDesc.iNumJoltObjectLayer = ENUM_CLASS(COLLISION_LAYER::END);
 
 	list<_wstring> Imgui_Menu;
@@ -36,6 +36,7 @@ HRESULT CMainApp::Initialize()
 	Imgui_Menu.push_back(TEXT("UI"));
 	Imgui_Menu.push_back(TEXT("Shader"));
 	Imgui_Menu.push_back(TEXT("Camera"));
+	Imgui_Menu.push_back(TEXT("AI"));
 
 	EngineDesc.Menu_Imgui = Imgui_Menu;
 
@@ -203,6 +204,10 @@ void CMainApp::Ready_DefaultImgui()
 		ImGui::SameLine();
 		if (ImGui::Button("Shader", ImVec2(120, 32))) {
 			m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::SHADER));
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("AI", ImVec2(120, 32))) {
+			m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::AI));
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Camera", ImVec2(120, 32))) {

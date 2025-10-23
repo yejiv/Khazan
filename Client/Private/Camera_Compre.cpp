@@ -131,37 +131,36 @@ void CCamera_Compre::Update_Spring(_float fTimeDelta)
     _vector vCamPosPrev = m_pTransformCom->Get_State(STATE::POSITION);
     _vector vCamPos = vCamPosDes;
 
-    //if (m_CCDesc.isValid)
+
+    //while (true)
     //{
-    //    // push-out: x += n * max(0, (n·c + (r+skin) - n·x))
-    //    const _float fInflate = m_fRadius + m_fSkin;
-    //    _vector vN = XMVectorSet(m_CCDesc.vNormal.x, m_CCDesc.vNormal.y, m_CCDesc.vNormal.z, 0.f);
-    //    _vector vCpt = XMVectorSet(m_CCDesc.vPoint.x, m_CCDesc.vPoint.y, m_CCDesc.vPoint.z, 0.f);
-
-    //    _float fNx = XMVectorGetX(XMVector3Dot(vN, vCamPos));
-    //    _float fNc = XMVectorGetX(XMVector3Dot(vN, vCpt));
-    //    _float fS = (fNc + fInflate) - fNx;
-
-    //    if (fS > 0.f)
-    //        vCamPos = XMVectorMultiplyAdd(vN, XMVectorReplicate(fS), vCamPos);
-
-    //    // slide: V ← V - n(n·V)  (표면 따라가기)
-    //    _vector vMove = XMVectorSubtract(vCamPos, vCamPosPrev);
-    //    _float  fVn = XMVectorGetX(XMVector3Dot(vMove, vN));
-    //    if (fVn < 0.f)
+    //    _float3 vCastDir;
+    //    _float3 vCastPos;
+    //    XMStoreFloat3(&vCastDir, vDir);
+    //    XMStoreFloat3(&vCastPos, m_pTransformCom->Get_State(STATE::POSITION));
+    //    _float fFraction;
+    //    _bool isColl = m_pGameInstance->CastRay(
+    //        vCastPos,
+    //        vCastDir,
+    //        fFraction
+    //    );
+    //    if (isColl)
     //    {
-    //        vMove = XMVectorSubtract(vMove, XMVectorScale(vN, fVn));
-    //        vCamPos = XMVectorAdd(vCamPosPrev, vMove);
+    //        const float kCamRadius = 0.30f;   // 카메라 충돌 반지름
+    //        const float kSkin = 0.06f;   // 살짝 띄우기
+    //        const float kMinDist = 0.25f;   // 너무 당겨지는 것 방지 하한
+
+    //        float hitDist = fFraction * whole;
+    //        float newDist = max(kMinDist, hitDist - (kCamRadius + kSkin));
+
+    //        vCamPos += vDir * fTimeDelta;
     //    }
-
-    //    // (선택) 한 프레임만 쓰고 끝내고 싶으면 주석 해제
-    //     //m_CCDesc.isValid = false;
+    //    else
+    //    {
+    //        break;
+    //    }
     //}
-    //else
-    //{
-    //    vCamPos = vCamPosDes;
-    //}
-
+ 
     vWorldUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
     vLook = XMVector3Normalize(XMVectorSubtract(m_vLerpMove, vCamPos));
     vRight = XMVector3Normalize(XMVector3Cross(vWorldUp, vLook));
@@ -175,9 +174,68 @@ void CCamera_Compre::Update_Spring(_float fTimeDelta)
     //m_pCharVirCom->Set_PosRot(vCamPos, m_pTransformCom->Get_Rotation_Quat());
 
     //m_pGameInstance->Set_Gravity(XMVectorSet(0.f, 0.f, 0.f, 0.f));
-    m_pCharVirCom->Sync_Update(m_pTransformCom);
-    m_pCharVirCom->Update(fTimeDelta, m_pTransformCom, XMVectorSet(0.f, 0.f, 0.f, 0.f));
+    /*m_pCharVirCom->Sync_Update(m_pTransformCom);
+    m_pCharVirCom->Update(fTimeDelta, m_pTransformCom, XMVectorSet(0.f, 0.f, 0.f, 0.f));*/
     //m_pGameInstance->Reset_Gravity();
+
+
+//// 1) 타깃과 이상 위치
+//    _vector vTargetPos = XMVectorSet(m_pObjMatrix->_41, m_pObjMatrix->_42 + 1.5f, m_pObjMatrix->_43, 1.f);
+//    _vector vDir = XMVectorSet(cosf(m_fPitch) * cosf(m_fYaw), sinf(m_fPitch), cosf(m_fPitch) * sinf(m_fYaw), 0.f);
+//    _vector vCamPosDes = XMVectorMultiplyAdd(XMVectorSet(-m_fRadius, -m_fRadius, -m_fRadius, 0.f), vDir, vTargetPos);
+//
+//    // (네 기존 보간 유지)
+//    _float fAlphaTarget = 1.f - expf(-m_fFollowValue * fTimeDelta);
+//    m_vLerpMove = XMVectorLerp(m_vLerpMove, vTargetPos, fAlphaTarget);
+//
+//    // 2) 타깃→이상위치로 레이캐스트
+//    XMVECTOR vDelta = XMVectorSubtract(vCamPosDes, m_vLerpMove);       // (end - start)
+//    float    whole = XMVectorGetX(XMVector3Length(vDelta));           // 전체 길이
+//    _vector  vCamPos = vCamPosDes;
+//
+//    if (whole > 1e-4f)
+//    {
+//        // RRayCast 스타일: delta에 '길이 포함'
+//        _float3 start, delta;
+//        XMStoreFloat3(&start, m_vLerpMove);
+//        XMStoreFloat3(&delta, vDelta);
+//
+//        float  fraction = 1.0f;   // 0~1 (히트 비율)
+//        _bool  isColl = m_pGameInstance->CastRay(start, delta, fraction);
+//        // ^^^ 네 래퍼가 단위 dir만 받는다면 CastRay_N(start, normalize(vDelta), whole, fraction) 식으로 오버로드해줘.
+//
+//        if (isColl)
+//        {
+//            // 3) 히트 지점 앞쪽으로 “반지름+스킨” 만큼 당기기
+//            const float kCamRadius = 0.30f;   // 카메라 충돌 반지름
+//            const float kSkin = 0.06f;   // 살짝 띄우기
+//            const float kMinDist = 0.25f;   // 너무 당겨지는 것 방지 하한
+//
+//            float hitDist = fraction * whole;
+//            float newDist = max(kMinDist, hitDist - (kCamRadius + kSkin));
+//
+//            XMVECTOR vDirN = XMVectorScale(vDelta, 1.0f / whole);     // 정규화 방향
+//            vCamPos = XMVectorMultiplyAdd(vDirN, XMVectorReplicate(newDist), m_vLerpMove);
+//        }
+//        else
+//        {
+//            vCamPos = vCamPosDes; // 막힌 것 없으면 이상 위치로
+//        }
+//    }
+//
+//    // 4) 뷰 축 적용 (네 기존 코드 유지)
+//    _vector vWorldUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+//    _vector vLook = XMVector3Normalize(XMVectorSubtract(m_vLerpMove, vCamPos));
+//    _vector vRight = XMVector3Normalize(XMVector3Cross(vWorldUp, vLook));
+//    _vector vUp = XMVector3Normalize(XMVector3Cross(vLook, vRight));
+//
+//    m_pTransformCom->Set_State(STATE::RIGHT, vRight);
+//    m_pTransformCom->Set_State(STATE::UP, vUp);
+//    m_pTransformCom->Set_State(STATE::LOOK, vLook);
+//    m_pTransformCom->Set_State(STATE::POSITION, vCamPos);
+//
+//    m_pCharVirCom->Sync_Update(m_pTransformCom);
+//    m_pCharVirCom->Update(fTimeDelta, m_pTransformCom, XMVectorSet(0.f, 0.f, 0.f, 0.f));
 }
 
 void CCamera_Compre::Collision_Enter(CGameObject* pObject, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
@@ -204,7 +262,7 @@ HRESULT CCamera_Compre::Ready_Camera(void* pArg)
 
     if (pDesc->iCameraType == ENUM_CLASS(CAMERATYPE::SPRING))
     {
-        CHECK_FAILED(Ready_Body(), E_FAIL);
+        //CHECK_FAILED(Ready_Body(), E_FAIL);
     }
 
     return S_OK;
@@ -280,5 +338,5 @@ void CCamera_Compre::Free()
 {
     __super::Free();
 
-    Safe_Release(m_pCharVirCom);
+    //Safe_Release(m_pCharVirCom);
 }
