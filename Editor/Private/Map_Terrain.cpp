@@ -24,7 +24,7 @@ HRESULT CMap_Terrain::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(-50.f, 0.f, -50.f, 1.f));
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(-500.f, 0.f, -500.f, 1.f));
 
     //m_pTransformCom->Scale(_float3(100.f, 0.f, 100.f));
 
@@ -41,13 +41,20 @@ void CMap_Terrain::Update(_float fTimeDelta)
     if (m_pGameInstance->Key_Down(DIK_F5))
     {
         _float4 vCamPos = *m_pGameInstance->Get_CamPosition();
-        vCamPos.x -= 50.f;
+        vCamPos.x -= 500.f;
         vCamPos.y = 0.f;
-        vCamPos.z -= 50.f;
+        vCamPos.z -= 500.f;
         vCamPos.w = 1.f;
         m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&vCamPos));
     }
     if (m_pGameInstance->Key_Down(DIK_F6)) m_isRender = !m_isRender;
+
+    if (m_pGameInstance->Key_Down(DIK_F7)) m_isWireFrame = !m_isWireFrame;
+
+    if (true == m_isWireFrame)
+        m_iShaderPass = 1;
+    else
+        m_iShaderPass = 0;
 }
 
 void CMap_Terrain::Late_Update(_float fTimeDelta)
@@ -61,7 +68,7 @@ HRESULT CMap_Terrain::Render()
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
-    m_pShaderCom->Begin(1);
+    m_pShaderCom->Begin(m_iShaderPass);
 
     m_pVIBufferCom->Bind_Resources();
 
