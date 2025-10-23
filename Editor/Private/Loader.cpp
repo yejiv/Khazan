@@ -100,6 +100,9 @@ HRESULT CLoader::Loading()
 	case LEVEL::CAMERA:
 		hr = Loading_For_Camera_Level();
 		break;
+	case LEVEL::AI:
+		hr = Loading_For_AI_Level();
+		break;
 	}
 
 	if (FAILED(hr))
@@ -410,6 +413,22 @@ HRESULT CLoader::Loading_For_Camera_Level()
 	/*if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CAMERA), TEXT("Prototype_GameObject_Player_Camera"),
 		CPlayer_Camera::Create(m_pDevice, m_pContext))))
 		return E_FAIL;*/
+
+	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
+
+	m_isFinished = true;
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_AI_Level()
+{
+	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
+
+	lstrcpy(m_szLoadingText, TEXT("게임오브젝트를 로딩중입니다."));
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 
