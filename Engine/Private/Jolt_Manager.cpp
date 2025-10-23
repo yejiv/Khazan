@@ -264,6 +264,7 @@ void CJolt_Manager::Free()
 
     Safe_Delete(m_pObjectLayerPairFilter);
     Safe_Delete(m_pObjectVsBPLayerFilter);
+    Safe_Delete(m_pObjectLayerFilter);
     
     Safe_Delete(m_pPhysics);
     Safe_Delete(m_pContactListener);
