@@ -1,43 +1,36 @@
 #include "Engine_Shader_Defines.hlsli"
 
-
+// ===== Matrix =====
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 matrix g_ViewMatrixInv, g_ProjMatrixInv;
-texture2D g_Texture;
-
+Texture2D g_Texture;
 vector g_vCamPosition;
 
-vector g_vLightDir;
-vector g_vLightPos;
+// ===== Light =====
+vector g_vLightDir, g_vLightPos;
 float g_fRange;
 vector g_vLightDiffuse;
 vector g_vLightAmbient;
 vector g_vLightSpecular;
 
-texture2D g_DiffuseTexture;
-vector g_vMtrlAmbient = vector(1.f, 1.f, 1.f, 1.f);
-vector g_vMtrlSpecular = vector(1.f, 1.f, 1.f, 1.f);
-texture2D g_NormalTexture;
-texture2D g_DepthTexture;
-texture2D g_ShadeTexture;
-texture2D g_SpecularTexture;
-texture2D g_LightDepthTexture;
-texture2D g_BackBufferTexture;
-texture2D g_BlurXTexture;
+// ===== Material =====
+vector g_vMtrlAmbient = { 1.f, 1.f, 1.f, 1.f }, g_vMtrlSpecular = { 1.f, 1.f, 1.f, 1.f };
 
+// ===== Render Target =====
+Texture2D g_DiffuseTexture, g_NormalTexture, g_DepthTexture, g_ShadeTexture, g_SpecularTexture;
+Texture2D g_LightDepthTexture, g_BackBufferTexture, g_BlurXTexture;
+
+// ===== Cascade Shadow =====
 int g_iTextureArrayIndex;
-
 uint g_iNumCascades;
 float g_Splits[4];
-matrix g_LightViewMatrices[4];
-matrix g_LightProjMatrices[4];
+matrix g_LightViewMatrices[4], g_LightProjMatrices[4];
 float2 g_vShadowMapSize;
-
-// PCF
-Texture2DArray<float> g_TextureArray;
-//  SamplerComparisonState g_ComparisonSampler : register(s1);
-
 float g_fBias;
+int g_iEnableShadowFlag;
+
+// ===== PCF =====
+Texture2DArray<float> g_TextureArray;
 
 struct VS_IN
 {
@@ -205,6 +198,9 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
     vector vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
     
     Out.vColor = vDiffuse * vShade + vSpecular;
+    
+    if (0 == g_iEnableShadowFlag)
+        return Out;
     
     /* ≥ª «»ºø¿« ±§ø¯ ±‚¡ÿ¿« ±Ì¿Ã */ 
     vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);

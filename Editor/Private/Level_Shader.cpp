@@ -45,14 +45,10 @@ HRESULT CLevel_Shader::Initialize()
 		// 컴바인드에서 안 켜지면 기본 명암 정도만 나타내도록 후처리 셰이더에 플래그 넘겨서 써야 할지도?
 		//	_bool bCopyFlag = m_isRenderShadow;
 
-		if (ImGui::Checkbox("Shadow", &m_isRenderShadow))
-		{
-			//	if (bCopyFlag != m_isRenderShadow)
-			//	{
-			//		m_isRenderShadow = bCopyFlag;
-			//		m_pGameInstance->Set_EnableShadow(m_isRenderShadow);
-			//	}
+		ImGui::Checkbox("Shadow", &m_isRenderShadow);
 
+		if (m_isRenderShadow)
+		{
 			if (ImGui::CollapsingHeader("Frame Per Second"), ImGuiTreeNodeFlags_DefaultOpen)
 			{
 				ImGui::SetWindowFontScale(2.f);

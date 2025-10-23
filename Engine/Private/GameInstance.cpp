@@ -629,6 +629,11 @@ void CGameInstance::Set_ShadowLamda(_float fLamda)
 	m_pShadow->Set_Lamda(fLamda);
 }
 
+void CGameInstance::Clear_ShadowDSVs()
+{
+	m_pShadow->Clear_DSVs();
+}
+
 _float4 CGameInstance::Get_ShadowLightDir()
 {
 	return m_pShadow->Get_ShadowLightDir();

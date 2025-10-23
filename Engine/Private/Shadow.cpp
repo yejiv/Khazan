@@ -174,6 +174,12 @@ void CShadow::Set_Lamda(_float fLamda)
 	}
 }
 
+void CShadow::Clear_DSVs()
+{
+	for (_uint i = 0; i < m_Cascade.iNumCascades; ++i)
+		m_pContext->ClearDepthStencilView(m_ShadowDSVs[i], D3D11_CLEAR_DEPTH, 1.f, 0);
+}
+
 HRESULT CShadow::Ready_Cascade_Shadow_Resources()
 {
 	ID3D11Texture2D* pDepthStencilTexture = { nullptr };
