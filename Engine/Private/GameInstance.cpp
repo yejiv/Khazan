@@ -88,7 +88,7 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pThreadPool)
 		return E_FAIL;
 
-	m_pPool_Manager = CPool_Manager::Create();
+	m_pPool_Manager = CPool_Manager::Create(EngineDesc.iNumLevels);
 	if (nullptr == m_pPool_Manager)
 		return E_FAIL;
 
@@ -166,7 +166,7 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 
 HRESULT CGameInstance::Clear_Resources(_uint iClearLevelID)
 {
-	m_pPool_Manager->Clear();
+	m_pPool_Manager->Clear(iClearLevelID);
 
 	/* 기존레벨용 자원들을 날린다. */
 	m_pPrototype_Manager->Clear(iClearLevelID);
@@ -799,13 +799,13 @@ void CGameInstance::Change_InputType(INPUT_TYPE eType)
 #pragma endregion
 
 #pragma region POOL_MANAGER
-HRESULT CGameInstance::Add_PoolObject(_uint iPrototypeLevelIndex, const _wstring strPrototypeTag, const _wstring& strPoolTag, void* pArg, _uint iCount)
+HRESULT CGameInstance::Add_PoolObject(_uint iPrototypeLevelIndex, const _wstring strPrototypeTag, _uint iLayerLevelIndex, const _wstring& strPoolTag, void* pArg, _uint iCount)
 {
-	return m_pPool_Manager->Add_PoolObject(iPrototypeLevelIndex, strPrototypeTag, strPoolTag, pArg, iCount);
+	return m_pPool_Manager->Add_PoolObject(iPrototypeLevelIndex, strPrototypeTag, iLayerLevelIndex, strPoolTag, pArg, iCount);
 }
-CGameObject* CGameInstance::Pop_PoolObject(const _wstring& strPoolTag)
+CGameObject* CGameInstance::Pop_PoolObject(_uint iLayerLevelIndex, const _wstring& strPoolTag)
 {
-	return m_pPool_Manager->Pop_PoolObject(strPoolTag);
+	return m_pPool_Manager->Pop_PoolObject(iLayerLevelIndex, strPoolTag);
 }
 HRESULT CGameInstance::Reset_PoolObject(CGameObject* pGameObject)
 {

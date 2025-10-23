@@ -4,7 +4,7 @@
 #include "Camera.h"
 
 NS_BEGIN(Engine)
-class CCharacterVirtual;
+//class CCharacterVirtual;
 NS_END
 
 NS_BEGIN(Client)
@@ -56,7 +56,7 @@ public:
 public:
 	CAMERA_COMPRE_DESC Get_Desc();
 private:
-	CCharacterVirtual* m_pCharVirCom = { nullptr };
+	//CCharacterVirtual* m_pCharVirCom = { nullptr };
 
 	CAMERA_CONTACT_DESC m_CCDesc;
 

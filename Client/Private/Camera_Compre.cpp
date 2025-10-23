@@ -148,7 +148,7 @@ HRESULT CCamera_Compre::Ready_Camera(void* pArg)
 
 HRESULT CCamera_Compre::Ready_Body()
 {
-    CCharacterVirtual::CV_SPHERESHAPE_DESC tCharVirDesc{};
+  /*  CCharacterVirtual::CV_SPHERESHAPE_DESC tCharVirDesc{};
     _float3 vPos{};
     _float4 vQuat{};
     XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
@@ -165,7 +165,7 @@ HRESULT CCamera_Compre::Ready_Body()
     tCharVirDesc.fPadding = 0.05f;
 
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
-        TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc), E_FAIL);
+        TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc), E_FAIL);*/
 
     return S_OK;
 }
