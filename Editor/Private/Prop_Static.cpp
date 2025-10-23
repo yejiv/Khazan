@@ -74,16 +74,6 @@ HRESULT CProp_Static::Render()
     return S_OK;
 }
 
-void CProp_Static::Add_Instance(MESH_INSTANCE_DATA InstanceData)
-{
-    m_pModelCom->Add_Instance(InstanceData);
-}
-
-void CProp_Static::Fix_Instance(MESH_INSTANCE_DATA InstanceData, _uint InstanceIndex)
-{
-    m_pModelCom->Fix_Instance(InstanceData, InstanceIndex);
-}
-
 const _uint CProp_Static::Get_NumInstances() const
 {
     return m_pModelCom->Get_NumInstances();

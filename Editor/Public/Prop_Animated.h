@@ -41,12 +41,6 @@ public:
 public:
 	const _uint Get_NumInstances() const;
 
-	// MapTool 에서만 사용
-	void Add_Instance(MESH_INSTANCE_DATA InstanceData);
-
-	// MapTool 에서만 사용
-	void Fix_Instance(MESH_INSTANCE_DATA InstanceData, _uint InstanceIndex);
-
 private:
 	CModel_Instance* m_pModelCom = { nullptr };
 
