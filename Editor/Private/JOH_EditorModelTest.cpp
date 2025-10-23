@@ -126,9 +126,6 @@ void CJOH_EditorModelTest::Late_Update(_float fTimeDelta)
 
     if (FAILED(m_pGameInstance->Add_RenderGroup(m_RenderGroup, this)))
         return;
-
-    //  if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
-    //      return;
 }
 
 HRESULT CJOH_EditorModelTest::Render()
@@ -169,31 +166,31 @@ HRESULT CJOH_EditorModelTest::Render()
     return S_OK;
 }
 
-HRESULT CJOH_EditorModelTest::Render_Shadow()
-{
-    if (FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix")))
-        return E_FAIL;
-
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_ShadowLight_Transform_Float4x4(D3DTS::VIEW))))
-        return E_FAIL;
-
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_ShadowLight_Transform_Float4x4(D3DTS::PROJ))))
-        return E_FAIL;
-
-    _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
-
-    for (size_t i = 0; i < iNumMeshes; i++)
-    {
-        if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
-            return E_FAIL;
-
-        m_pShaderCom->Begin(2);
-
-        m_pModelCom->Render(i);
-    }
-
-    return S_OK;
-}
+//HRESULT CJOH_EditorModelTest::Render_Shadow()
+//{
+//    if (FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix")))
+//        return E_FAIL;
+//
+//    if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_CurrentShadowLightViewMatrix())))
+//        return E_FAIL;
+//
+//    if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_CurrentShadowLightProjMatrix())))
+//        return E_FAIL;
+//
+//    _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
+//
+//    for (size_t i = 0; i < iNumMeshes; i++)
+//    {
+//        if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
+//            return E_FAIL;
+//
+//        m_pShaderCom->Begin(2);
+//
+//        m_pModelCom->Render(i);
+//    }
+//
+//    return S_OK;
+//}
 
 void CJOH_EditorModelTest::Debug_RenderState()
 {

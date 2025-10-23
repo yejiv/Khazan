@@ -10,15 +10,15 @@ struct VTXINSTANCE_PARTICLE
     float4 vUp;
     float4 vLook;
     float4 vTranslation;
-    float3 vPrevPosition;
-    float bDead;
     float2 vLifeTime;
+    float bDead;
 };
 
-struct VTXINSTANCE_PARTICLE_SPEED
+struct VTXINSTANCE_DYNAMIC_DATA
 {
     float4 fSpeed;
     float fGravity;
+    float bDead; //CPU에서 읽을 값
 };
 
 cbuffer CB_PARTICLE : register(b0)
@@ -31,12 +31,12 @@ cbuffer CB_PARTICLE : register(b0)
     
     uint g_iSpeedType;
     float2 g_fSpeedRange;
-    float Padding1;
+    float g_bIsLoop;
 };
 
 StructuredBuffer<PARTICLE_PARAMS> g_InputData : register(t0);
 RWStructuredBuffer<VTXINSTANCE_PARTICLE> g_OutputData : register(u0);
-RWStructuredBuffer<VTXINSTANCE_PARTICLE_SPEED> g_SpeedData : register(u1);
+RWStructuredBuffer<VTXINSTANCE_DYNAMIC_DATA> g_SpeedData : register(u1);
 
 uint pcg_hash(uint seed)
 {
@@ -65,10 +65,11 @@ void CS_MOVE(uint3 DTid : SV_DispatchThreadID)
         return;
     
     VTXINSTANCE_PARTICLE Particle = g_OutputData[iIndex];
-    VTXINSTANCE_PARTICLE_SPEED SpeedData = g_SpeedData[iIndex];
+    VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
 	
-    Particle.vPrevPosition = Particle.vTranslation.xyz;
-    
+    if (0 == iIndex)
+        g_SpeedData[0].bDead = 0;
+        
     //Scale
     Particle.vRight.x += SpeedData.fSpeed.w;
     Particle.vUp.y += SpeedData.fSpeed.w;
@@ -107,22 +108,26 @@ void CS_MOVE(uint3 DTid : SV_DispatchThreadID)
     Particle.vTranslation = Particle.vTranslation + normalize(vMoveDir) * SpeedData.fSpeed.x * g_fTimeDelta;    
     
 	//MoveLinear
-	vMoveDir = vector(0.f, 1.f, 0.f, 0.f);
-    Particle.vTranslation = Particle.vTranslation + vMoveDir * SpeedData.fSpeed.z * g_fTimeDelta;
+    Particle.vTranslation = Particle.vTranslation + float4(0.f, 1.f, 0.f, 0.f) * SpeedData.fSpeed.z * g_fTimeDelta;
     
     Particle.vLifeTime.x += g_fTimeDelta;
-
-	if (Particle.vLifeTime.x >= Particle.vLifeTime.y
+    //Particle.vLifeTime.y = 1.f;
+    
+    if (Particle.vLifeTime.x >= Particle.vLifeTime.y
 		|| (SpeedData.fSpeed.x < 0 && length(vMoveDir).x < 0.1f))
-	{
-		Particle.vLifeTime.x = 0.f;
+    {
+        Particle.vLifeTime.x = 0.f;
         Particle.vTranslation = g_InputData[iIndex].vInitTranslation;
-		Particle.bDead = true;
-	}
+        if (g_bIsLoop == 0)
+        {
+            Particle.bDead = true;
+            g_SpeedData[0].bDead = 1;
+        }
+    }
 	
     if (Particle.vRight.x <= 0.f)
     {
-        float fScale = (g_InputData[iIndex].fSize.x, g_InputData[iIndex].fSize.y);
+        float fScale = rand_between(g_InputData[iIndex].fSize.x, g_InputData[iIndex].fSize.y, iIndex);
         Particle.vRight = float4(fScale, 0.f, 0.f, 0.f);
         Particle.vUp = float4(0.f, fScale, 0.f, 0.f);
         Particle.vLook = float4(0.f, 0.f, fScale, 0.f);
@@ -136,7 +141,7 @@ void CS_UPDATE_SPEED(uint3 DTid : SV_DispatchThreadID)
 {
     uint iIndex = DTid.x; 
     
-    VTXINSTANCE_PARTICLE_SPEED SpeedData = g_SpeedData[iIndex];
+    VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
 
     if (g_iSpeedType == 0)
         SpeedData.fSpeed.x = rand_between(g_fSpeedRange.x, g_fSpeedRange.y, iIndex);
@@ -151,28 +156,6 @@ void CS_UPDATE_SPEED(uint3 DTid : SV_DispatchThreadID)
 }
 
 [numthreads(256, 1, 1)]
-void CS_UPDATE_GRAVITY(uint3 DTid : SV_DispatchThreadID)
-{
-    uint iIndex = DTid.x;
-    
-    if (iIndex >= g_iNumInstances)
-        return;
-    
-    VTXINSTANCE_PARTICLE Particle = g_OutputData[iIndex];
-    VTXINSTANCE_PARTICLE_SPEED SpeedData = g_SpeedData[iIndex];
-
-    if (Particle.bDead == true)
-    {
-        SpeedData.fGravity = 0.f;
-        return;
-    }
-    SpeedData.fGravity += g_fTimeDelta;
-    Particle.vTranslation.y -= 4.2f * SpeedData.fGravity * g_fTimeDelta;
-    g_OutputData[iIndex] = Particle;
-    g_SpeedData[iIndex].fGravity = SpeedData.fGravity;
-}
-
-[numthreads(256, 1, 1)]
 void CS_RESET(uint3 DTid : SV_DispatchThreadID)
 {
     uint iIndex = DTid.x;
@@ -181,13 +164,37 @@ void CS_RESET(uint3 DTid : SV_DispatchThreadID)
         return;
     
     VTXINSTANCE_PARTICLE Particle = g_OutputData[iIndex];
-    VTXINSTANCE_PARTICLE_SPEED SpeedData = g_SpeedData[iIndex];
+    VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
 
     Particle.vTranslation = g_InputData[iIndex].vInitTranslation;
-    
+    Particle.bDead = false;
     Particle.vLifeTime.x = 0.f;
     SpeedData.fGravity = 0.f;
     SpeedData.fSpeed = float4(0.f, 0.f, 0.f, 0.f);
    
     g_OutputData[iIndex] = Particle;
+    g_SpeedData[iIndex] = SpeedData;
+}
+
+
+[numthreads(256, 1, 1)]
+void CS_RESET_SPEED(uint3 DTid : SV_DispatchThreadID)
+{
+    uint iIndex = DTid.x;
+    
+    if (iIndex >= g_iNumInstances)
+        return;
+    
+    VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
+    
+    if (g_iSpeedType == 0)
+        SpeedData.fSpeed.x = 0.f;
+    else if (g_iSpeedType == 1)
+        SpeedData.fSpeed.y = 0.f;
+    else if (g_iSpeedType == 2)
+        SpeedData.fSpeed.z = 0.f;
+    else
+        SpeedData.fSpeed.w = 0.f;
+    
+    g_SpeedData[iIndex] = SpeedData;
 }

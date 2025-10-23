@@ -16,6 +16,7 @@ struct VS_IN
     float2 vTexcoord : TEXCOORD0;
     
     row_major float4x4 TransformMatrix : WORLD;
+    
     float2 vLifeTime : TEXCOORD1;
     float bDead : TEXCOORD2;
 };
@@ -75,19 +76,22 @@ PS_OUT PS_MAIN(PS_IN In)
     
     vector vEffectTexture = g_DiffuseTexture.Sample(PointSampler, fScrolledEffectUV);
     vector vFinalColor = float4(g_vSourceColor.xyz, min(vEffectTexture.r, g_vSourceColor.a));
-    
-    vFinalColor.a = 1.f * vEffectTexture.r;
-    
+      
     float safeProgress = saturate(g_RunningTime); // 0 ~ 1   그니까 0 이면 -2. 1이면 0이 되어야함
-    float maskOffset = (safeProgress * 2.0f) - 2.0f; // -1 ~ 1
+    float maskOffset = (safeProgress * 2.0f) - 2.0f; // -1 ~ 1 이거 끝까지 돌리기로수 ㅓㅇ
     float2 maskUV = float2(In.vTexcoord.x + maskOffset, In.vTexcoord.y);
     float maskValue = g_MaskTexture.Sample(ClampSampler, maskUV).r;
     vFinalColor.a = vFinalColor.a * maskValue;
     
-    float fDecreaseAlpha = (In.vLifeTime.x / In.vLifeTime.y);
+    float fDecreaseAlpha = (In.vLifeTime.x / In.vLifeTime.y);  
     
-    vFinalColor.a -= fDecreaseAlpha;
+    vFinalColor.a -= fDecreaseAlpha;  
+    
+    if (vFinalColor.a <= 0.f)
+        discard;
+    
     Out.vColor = vFinalColor;
+    
     return Out;
 }
 

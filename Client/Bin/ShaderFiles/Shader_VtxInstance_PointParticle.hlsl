@@ -74,9 +74,23 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
     vector vRight;
     vector vUp;
     vector vLook;
-    vLook = g_vCamPosition - In[0].vPosition;
-    vRight = normalize(vector(cross(float3(0.f, 1.f, 0.f), vLook.xyz), 0.f)) * In[0].fSize * 0.5f;
-    vUp = normalize(vector(cross(vLook.xyz, vRight.xyz), 0.f)) * In[0].fSize * 0.5f;
+    
+    float legnth = vector(In[0].vPosition - In[0].vPrevPosition).x;
+    
+    if (legnth > 0.01f)
+    {
+        vLook = g_vCamPosition - In[0].vPosition;
+        vRight = normalize(vector(cross(float3(0.f, 1.f, 0.f), vLook.xyz), 0.f)) * In[0].fSize * 0.5f;
+        vUp = normalize(vector(cross(vLook.xyz, vRight.xyz), 0.f)) * In[0].fSize * 0.5f;
+    }
+    else
+    {
+        vUp = normalize(In[0].vPosition - In[0].vPrevPosition) * In[0].fSize * 0.5f;
+        vLook = normalize(g_vCamPosition - In[0].vPosition);
+        vRight = normalize(vector(cross(vUp.xyz, vLook.xyz), 0.f)) * In[0].fSize * 0.5f;
+        
+        vUp += (In[0].vPosition - In[0].vPrevPosition) * 7.f;
+    }
     
     //vector vUp = normalize(In[0].vPosition - In[0].vPrevPosition) * In[0].fSize * 0.5f;
     //vector vLook = normalize(g_vCamPosition - In[0].vPosition);
@@ -140,10 +154,10 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     
     vector vMask = g_DiffuseTexture.Sample(PointSampler, In.vTexcoord);
     
-    //vector vSourColor = float4(g_vSourceColor, 1.f);
-    //vector vFinalColor = vSourColor * vMask;
+    vector vSourColor = float4(g_vSourceColor.xyz, 1.f);
+    vector vFinalColor = vSourColor * vMask;
     
-    vector vFinalColor = float4(g_vSourceColor.xyz, min(vMask.r, g_vSourceColor.a));
+    //vector vFinalColor = float4(g_vSourceColor.xyz, min(vMask.r, g_vSourceColor.a));
     
     float vDestAlpha = max(max(vMask.r, vMask.g), vMask.b);
     
