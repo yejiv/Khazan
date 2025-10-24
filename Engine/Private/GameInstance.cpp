@@ -360,6 +360,11 @@ void CGameInstance::Set_EnableShadow(_bool isEnable)
 	m_pRenderer->Set_EnableShadow(isEnable);
 }
 
+void CGameInstance::Set_EnableSSAO(_bool isEnable)
+{
+	m_pRenderer->Set_EnableSSAO(isEnable);
+}
+
 #endif
 
 

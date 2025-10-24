@@ -78,6 +78,7 @@ public:
 public:
 	HRESULT Add_DebugComponent(class CComponent* pComponent);
 	void Set_EnableShadow(_bool isEnable);
+	void Set_EnableSSAO(_bool isEnable);
 #endif
 #pragma endregion
 
