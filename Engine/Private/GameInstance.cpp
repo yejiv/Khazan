@@ -941,7 +941,6 @@ void CGameInstance::Release_Engine()
 	Release();
 
 #ifdef _DEBUG
-	m_pImgui_Manager->Shutdown();
 	Safe_Release(m_pImgui_Manager);
 #endif
 
