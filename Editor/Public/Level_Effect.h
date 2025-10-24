@@ -63,6 +63,7 @@ private :
 	_float							m_fScalingValue;
 
 	CEffect_Prefab::EFFECT_EVENT	m_WorkingTrackData;
+	_bool							m_bGravity;
 
 	_int							m_iChildrenIdx;
 	_int							m_iPrevChildrenIdx;

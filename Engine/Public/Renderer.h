@@ -47,10 +47,20 @@ private:
 	_bool						m_isEnableShadow = { true };
 #endif
 
+	// SSAO
+private:
+	_uint m_iKernelSize = {};
+	vector<_float3> m_Kernels;
+
+private:
+	HRESULT Ready_Kernel();
+	HRESULT Ready_NoiseTexture();
+
 private:
 	HRESULT Render_Priority();
 	HRESULT Render_Shadow();
 	HRESULT Render_NonBlend();
+	HRESULT Render_SSAO();
 	HRESULT Render_Lights();
 	HRESULT Render_Combined();
 	HRESULT Render_Blur();
