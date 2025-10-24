@@ -45,6 +45,11 @@ private:
 	void	SetupDebugMessageFilter(ID3D11Device* pDevice);
 #pragma endregion
 
+#pragma region Graphic_Device
+public:
+	void Present_SwapChain(_uint iSyncInterval, _uint iFlag);
+#pragma endregion
+
 #pragma region LEVEL_MANAGER
 public:
 	HRESULT Open_Level(_uint iLevelID, class CLevel* pNewLevel);
@@ -171,6 +176,8 @@ public:
 #ifdef _DEBUG
 	void    AddWidget(const _wstring Menu, const function<void()>& widget);
 	HRESULT CleanMenu(_wstring strMenu);
+
+	_bool HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 #endif
 #pragma endregion
 

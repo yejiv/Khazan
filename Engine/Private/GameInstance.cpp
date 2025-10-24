@@ -125,7 +125,7 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 		return E_FAIL;
 
 #ifdef _DEBUG
-	m_pImgui_Manager = CImgui_Manager::Create(EngineDesc.iWinSizeX_Imgui, EngineDesc.iWinSizeY_Imgui, EngineDesc.Menu_Imgui);
+	m_pImgui_Manager = CImgui_Manager::Create(*ppDevice, *ppContext, EngineDesc.Menu_Imgui, EngineDesc.hWnd);
 	if (nullptr == m_pImgui_Manager)
 		return E_FAIL;
 
@@ -250,6 +250,11 @@ void CGameInstance::SetupDebugMessageFilter(ID3D11Device* pDevice)
 		pInfoQueue->AddStorageFilterEntries(&filter);
 		pInfoQueue->Release();
 	}
+}
+
+void CGameInstance::Present_SwapChain(_uint iSyncInterval, _uint iFlag)
+{
+	m_pGraphic_Device->Present_SwapChain(iSyncInterval, iFlag);
 }
 
 #pragma endregion
@@ -677,6 +682,10 @@ void CGameInstance::AddWidget(const _wstring Menu, const function<void()>& widge
 HRESULT CGameInstance::CleanMenu(_wstring strMenu)
 {
 	return m_pImgui_Manager->CleanMenu(strMenu);
+}
+_bool CGameInstance::HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	return m_pImgui_Manager->HandleWndProc(hWnd, msg, wParam, lParam);
 }
 #endif
 #pragma endregion
