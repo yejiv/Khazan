@@ -1,5 +1,6 @@
 #include "Imgui_Manager.h"
 #include "GameInstance.h"
+#include "GameObject.h"
 CImgui_Manager::CImgui_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : m_pDevice{ pDevice }
     , m_pContext{ pContext }
@@ -10,11 +11,12 @@ CImgui_Manager::CImgui_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pCont
     Safe_AddRef(m_pGameInstance);
 }
 
-HRESULT CImgui_Manager::Initialize(list<wstring> Menu, HWND hWnd)
+HRESULT CImgui_Manager::Initialize(list<wstring> Menu, HWND hWnd, _uint iWinSizeX, _uint iWinSizeY)
 {
     m_Menu = Menu;
     m_hWnd = hWnd;
-
+    m_iWinSizeX = iWinSizeX;
+	m_iWinSizeY = iWinSizeY;
 
 	for (auto Menu : m_Menu)
 	{
@@ -68,66 +70,16 @@ void CImgui_Manager::BeginFrame()
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    // --- DockSpace Host ---
-    const ImGuiViewport* vp = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(vp->WorkPos);
-    ImGui::SetNextWindowSize(vp->WorkSize);
-    ImGui::SetNextWindowViewport(vp->ID);
-
-    ImGuiWindowFlags hostFlags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar |
-        ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
-        ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus |
-        ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_MenuBar;
-
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f);
-    ImGui::Begin("###DockSpaceHost", nullptr, hostFlags);
-    ImGui::PopStyleVar(2);
-
-    ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-    ImGuiDockNodeFlags dockFlags = ImGuiDockNodeFlags_PassthruCentralNode |
-        ImGuiDockNodeFlags_NoDockingInCentralNode;
-
-    if (ImGui::BeginMainMenuBar())
-    {
-        for (auto& widget : m_Widgets)
-        {
-            _wstring OpenMenu = Get_OpenMenu_Name();
-            if (ImGui::BeginMenu(WStringToAnsi(OpenMenu).c_str()))
-            {
-                ImGui::MenuItem(WStringToAnsi(widget.first).c_str(), nullptr, &m_MenuOpen[widget.first]);
-                ImGui::EndMenu();
-            }
-        }
-        ImGui::EndMainMenuBar();
-    }
-
-    ImGui::End();
-
-    ImGui::SetNextWindowDockID(0, ImGuiCond_Always);
-    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_FirstUseEver);
-
-    ImGuiWindowFlags testFlags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoDocking;
-
-    
-
-	for (auto& Menu : m_Widgets)
-	{
-		if (m_MenuOpen[Menu.first])
-		{
-            for (auto& Widget : Menu.second)
-            {
-                Widget();
-            }
-		}
-	}
+    Render_Docking();
+    Render_Gizmo();
+    Render_Widet();
 }
 
 void CImgui_Manager::Render()
 {
     // Rendering
     ImGui::Render();
+    auto* dd = ImGui::GetDrawData();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
     ImGuiIO& io = ImGui::GetIO();
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -189,11 +141,131 @@ _bool CImgui_Manager::HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
     return ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam);
 }
 
-CImgui_Manager* CImgui_Manager::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, list<wstring> Menu, HWND hWnd)
+void CImgui_Manager::Render_Widet()
+{
+    for (auto& Menu : m_Widgets)
+    {
+        if (m_MenuOpen[Menu.first])
+        {
+            for (auto& Widget : Menu.second)
+            {
+                Widget();
+            }
+        }
+    }
+}
+
+void CImgui_Manager::Render_Docking()
+{
+    // --- DockSpace Host ---
+    const ImGuiViewport* vp = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(vp->WorkPos);
+    ImGui::SetNextWindowSize(vp->WorkSize);
+    ImGui::SetNextWindowViewport(vp->ID);
+
+    ImGuiWindowFlags hostFlags = ImGuiWindowFlags_NoDocking |
+        ImGuiWindowFlags_NoTitleBar |
+        ImGuiWindowFlags_NoCollapse |
+        ImGuiWindowFlags_NoResize |
+        ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoBringToFrontOnFocus |
+        ImGuiWindowFlags_NoNavFocus |
+        ImGuiWindowFlags_MenuBar |
+        ImGuiWindowFlags_NoBackground;
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+
+    ImGuiDockNodeFlags dockFlags = ImGuiDockNodeFlags_PassthruCentralNode;
+
+    if (ImGui::Begin("###DockSpaceHost", nullptr, hostFlags))
+    {
+        ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+        ImGui::DockSpace(dockspace_id, ImVec2(0, 0), dockFlags);
+
+        if (ImGui::BeginMenuBar())
+        {
+            for (auto& widget : m_Widgets)
+            {
+                _wstring OpenMenu = Get_OpenMenu_Name();
+                if (ImGui::BeginMenu(WStringToAnsi(OpenMenu).c_str()))
+                {
+                    ImGui::MenuItem(WStringToAnsi(widget.first).c_str(), nullptr, &m_MenuOpen[widget.first]);
+                    ImGui::EndMenu();
+                }
+            }
+            ImGui::EndMenuBar();
+        }
+    }
+    ImGui::End();
+    ImGui::PopStyleVar(3);
+
+    ImGui::SetNextWindowDockID(0, ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_FirstUseEver);
+}
+
+void CImgui_Manager::Render_Gizmo()
+{
+    ImGuiViewport* vp = ImGui::GetMainViewport();
+    ImGuizmo::BeginFrame();
+    ImGuizmo::SetOrthographic(false);
+    ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList(vp));
+    ImGuizmo::SetRect(vp->Pos.x, vp->Pos.y, vp->Size.x, vp->Size.y);
+
+    float viewM[16];  XMStoreFloat4x4((XMFLOAT4X4*)viewM, m_pGameInstance->Get_Transform_Matrix(D3DTS::VIEW));
+    float projM[16];  XMStoreFloat4x4((XMFLOAT4X4*)projM, m_pGameInstance->Get_Transform_Matrix(D3DTS::PROJ));
+
+    if (m_pGizmoObject != nullptr)
+    {
+        CTransform* pTransform = dynamic_cast<CTransform*>(m_pGizmoObject->Get_Component(TEXT("Com_Transform")));
+
+        _matrix WorldMatrix = pTransform->Get_WorldMatrix(); 
+
+        _float objM[16];   XMStoreFloat4x4((_float4x4*)objM, WorldMatrix);
+
+        if (m_pGameInstance->Key_Down(DIK_F1)) 
+            m_GizmoOp = ImGuizmo::TRANSLATE;
+        if (m_pGameInstance->Key_Down(DIK_F2))
+            m_GizmoOp = ImGuizmo::ROTATE;
+        if (m_pGameInstance->Key_Down(DIK_F3))
+            m_GizmoOp = ImGuizmo::SCALE;
+
+        _bool useSnap = false;
+        _float snap[3] = { 0.25f, 15.0f, 0.1f };
+        _float* pSnap = nullptr;
+        if (useSnap)
+        {
+            if (m_GizmoOp == ImGuizmo::TRANSLATE) pSnap = &snap[0];
+            else if (m_GizmoOp == ImGuizmo::ROTATE) pSnap = &snap[1];
+            else if (m_GizmoOp == ImGuizmo::SCALE) pSnap = &snap[2];
+        }
+
+        _float deltaM[16];
+        ImGuizmo::SetGizmoSizeClipSpace(0.15f * vp->DpiScale);
+        _bool changed = ImGuizmo::Manipulate(
+            viewM, projM,
+            m_GizmoOp, m_GizmoMode,
+            objM, deltaM,
+            pSnap
+        );
+
+        if (changed)
+        {
+            _matrix objWorldT = XMLoadFloat4x4((_float4x4*)objM);
+            pTransform->Set_WorldMatrix(objWorldT);
+        }
+
+    }
+    
+}
+
+CImgui_Manager* CImgui_Manager::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, list<wstring> Menu, HWND hWnd, _uint iWinSizeX, _uint iWinSizeY)
 {
     CImgui_Manager* pInstance = new CImgui_Manager(pDevice, pContext);
 
-    if (FAILED(pInstance->Initialize(Menu, hWnd)))
+    if (FAILED(pInstance->Initialize(Menu, hWnd, iWinSizeX, iWinSizeY)))
     {
         MSG_BOX(TEXT("Failed to Created : CObject_Manager"));
         Safe_Release(pInstance);

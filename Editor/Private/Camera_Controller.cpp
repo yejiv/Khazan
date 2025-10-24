@@ -43,6 +43,11 @@ void CCamera_Controller::Update(_float fTimeDelta)
 
 HRESULT CCamera_Controller::Ready_ImGui()
 {
+	CGameObject* pPlayer = m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::CAMERA), TEXT("Layer_Player"));
+	CTransform* pTransform = dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")));
+
+	_matrix pMatrix = XMLoadFloat4x4(pTransform->Get_WorldMatrixPtr());
+
 	m_pGameInstance->AddWidget(TEXT("Camera"), [this]() {
 		Ready_ImGui_Create();
 		Ready_ImGui_List();
@@ -50,6 +55,7 @@ HRESULT CCamera_Controller::Ready_ImGui()
 		Ready_ImGui_Active_Camera_Animation();
 		Ready_ImGui_Active_Camera_Animation_Item();
 		Ready_ImGui_Active_Camera_Event_Item();
+		Ready_Guizmo();
 	});
 	return S_OK;
 }
@@ -444,6 +450,75 @@ void CCamera_Controller::Ready_ImGui_Active_Camera_Event_Item()
 		}
 	}
 
+}
+
+void CCamera_Controller::Ready_Guizmo()
+{
+	//CGameObject* pPlayer = m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::CAMERA), TEXT("Layer_Player"));
+	//CTransform* pTransform = dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")));
+	//// 1) 카메라 행렬 준비
+	//XMMATRIX view = m_pGameInstance->Get_Transform_Matrix(D3DTS::VIEW);
+	//XMMATRIX proj = m_pGameInstance->Get_Transform_Matrix(D3DTS::PROJ);
+	//XMMATRIX model = pTransform->Get_WorldMatrix();     // 편집할 오브젝트 월드행렬
+
+	//XMMATRIX viewT = XMMatrixTranspose(view);
+	//XMMATRIX projT = XMMatrixTranspose(proj);
+	//XMMATRIX modelT = XMMatrixTranspose(model);
+
+	//float viewM[16];  XMStoreFloat4x4((XMFLOAT4X4*)viewM, viewT);
+	//float projM[16];  XMStoreFloat4x4((XMFLOAT4X4*)projM, projT);
+	//float modelM[16]; XMStoreFloat4x4((XMFLOAT4X4*)modelM, modelT);
+
+	////// 2) 기즈모 파라미터 설정
+	//ImGuizmo::OPERATION op = ImGuizmo::TRANSLATE; // ROTATE, SCALE
+	//ImGuizmo::MODE      mode = ImGuizmo::LOCAL;     // WORLD/LOCAL
+	////bool useSnap = false;
+	////float snap[3] = { 1.f, 1.f, 1.f };            // 스냅 그리드 간격(원하면 사용)
+
+	////ImGui::Begin("Scene");
+	//////ImVec2 winPos = ImGui::GetWindowPos();
+	//////ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
+	//////ImVec2 contentMax = ImGui::GetWindowContentRegionMax();
+	//////ImVec2 gizmoPos = ImVec2(winPos.x + contentMin.x, winPos.y + contentMin.y);
+	//////ImVec2 gizmoSize = ImVec2(contentMax.x - contentMin.x, contentMax.y - contentMin.y);
+
+	////const ImGuiViewport* vp = ImGui::GetMainViewport();
+	////ImGuizmo::SetRect(vp->Pos.x, vp->Pos.y, vp->Size.x, vp->Size.y);
+
+	////// 3) 디버그: 그리드/큐브 그려보기 (카메라가 원점 안 보면 안 보일 수 있으니 모델도 같이)
+	////float I[16] = { 1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1 };
+	////ImGuizmo::DrawGrid(viewM, projM, I, 10.0f);
+	////ImGuizmo::DrawCubes(viewM, projM, modelM, 1);
+	//////// 3) 조작
+	//////ImGuizmo::Manipulate(
+	//////	viewM, projM, op, mode,
+	//////	modelM,                 // in/out
+	//////	nullptr,                // 델타행렬 필요하면 여기에
+	//////	useSnap ? snap : nullptr
+	//////);
+
+	////ImGui::End();
+
+	//// 4) 결과 되돌리기(다시 row-major로)
+	///*XMMATRIX modelT2 = XMLoadFloat4x4((XMFLOAT4X4*)modelM);
+	//XMMATRIX model2 = XMMatrixTranspose(modelT2);
+	//pTransform->Set_WorldMatrix(model2);*/
+
+	//if (ImGui::Begin("Scene"))
+	//{
+	//	ImVec2 winPos = ImGui::GetWindowPos();
+	//	ImVec2 cmin = ImGui::GetWindowContentRegionMin();
+	//	ImVec2 cmax = ImGui::GetWindowContentRegionMax();
+	//	ImVec2 pos = ImVec2(winPos.x + cmin.x, winPos.y + cmin.y);
+	//	ImVec2 size = ImVec2(cmax.x - cmin.x, cmax.y - cmin.y);
+
+	//	// 창 포그라운드(현재 뷰포트)로
+	//	ImGuizmo::SetDrawlist();                // 중요: 인자 없는 버전
+	//	ImGuizmo::SetRect(pos.x, pos.y, size.x, size.y);
+
+	//	ImGuizmo::Manipulate(viewM, projM, op, mode, modelM);
+	//}
+	//ImGui::End();
 }
 
 

@@ -11,13 +11,11 @@
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx11.h"
+#include "ImGuizmo.h"
 
 #ifdef new
 #pragma pop_macro("new") // DBG_NEW 복원
 #endif
-
-
-#define IMGUI_DEFINE_MATH_OPERATORS
 
 NS_BEGIN(Engine)
 
@@ -178,6 +176,9 @@ public:
 	HRESULT CleanMenu(_wstring strMenu);
 
 	_bool HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+	void Set_GizmoObject(class CGameObject* pGameObject);
+	void Clear_GizmoObject();
 #endif
 #pragma endregion
 

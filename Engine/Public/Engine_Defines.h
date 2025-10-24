@@ -48,6 +48,7 @@ using namespace DirectX;
 
 using namespace JPH;
 
+#define IMGUI_DEFINE_MATH_OPERATORS
 #ifdef new
 #pragma pop_macro("new") // DBG_NEW º¹¿ø
 #endif

@@ -112,7 +112,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;ENGINE_EXPORTS;JPH_FLOATING_POINT_EXCEPTIONS_ENABLED;JPH_DEBUG_RENDERER;JPH_PROFILE_ENABLED;JPH_OBJECT_STREAM;JPH_USE_AVX2;JPH_USE_AVX;JPH_USE_SSE4_1;JPH_USE_SSE4_2;JPH_USE_LZCNT;JPH_USE_TZCNT;JPH_USE_F16C;JPH_USE_FMADD;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../public/;../public/ImGui/;../public/assimp/;../public/DirectXTK/;../public/fmod/;../public/Fx11/;../public/Jolt/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../public/;../public/ImGui/;../public/assimp/;../public/DirectXTK/;../public/fmod/;../public/Fx11/;../public/Jolt/;../public/Guizmo/</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>EnginePch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -145,7 +145,7 @@ call Copy.bat</Command>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;ENGINE_EXPORTS;JPH_FLOATING_POINT_EXCEPTIONS_ENABLED;JPH_DEBUG_RENDERER;JPH_PROFILE_ENABLED;JPH_OBJECT_STREAM;JPH_USE_AVX2;JPH_USE_AVX;JPH_USE_SSE4_1;JPH_USE_SSE4_2;JPH_USE_LZCNT;JPH_USE_TZCNT;JPH_USE_F16C;JPH_USE_FMADD;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../public/;../public/ImGui/;../public/assimp/;../public/DirectXTK/;../public/fmod/;../public/Fx11/;../public/Jolt/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../public/;../public/ImGui/;../public/assimp/;../public/DirectXTK/;../public/fmod/;../public/Fx11/;../public/Jolt/;../public/Guizmo/</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <ForcedIncludeFiles>EnginePch.h</ForcedIncludeFiles>
@@ -263,6 +263,11 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\VIBuffer_Rect.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Terrain.cpp" />
     <ClCompile Include="..\Private\Wait_Node.cpp" />
+    <ClCompile Include="..\Public\Guizmo\GraphEditor.cpp" />
+    <ClCompile Include="..\Public\Guizmo\ImCurveEdit.cpp" />
+    <ClCompile Include="..\Public\Guizmo\ImGradient.cpp" />
+    <ClCompile Include="..\Public\Guizmo\ImGuizmo.cpp" />
+    <ClCompile Include="..\Public\Guizmo\ImSequencer.cpp" />
     <ClCompile Include="..\Public\ImGui\imgui.cpp" />
     <ClCompile Include="..\Public\ImGui\imgui_demo.cpp" />
     <ClCompile Include="..\Public\ImGui\imgui_draw.cpp" />
@@ -296,6 +301,12 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Condition_Node.h" />
     <ClInclude Include="..\Public\CoolDown_Nodel.h" />
     <ClInclude Include="..\Public\Decorator_Node.h" />
+    <ClInclude Include="..\Public\Guizmo\GraphEditor.h" />
+    <ClInclude Include="..\Public\Guizmo\ImCurveEdit.h" />
+    <ClInclude Include="..\Public\Guizmo\ImGradient.h" />
+    <ClInclude Include="..\Public\Guizmo\ImGuizmo.h" />
+    <ClInclude Include="..\Public\Guizmo\ImSequencer.h" />
+    <ClInclude Include="..\Public\Guizmo\ImZoomSlider.h" />
     <ClInclude Include="..\Public\ImGui\imconfig.h" />
     <ClInclude Include="..\Public\ImGui\imgui.h" />
     <ClInclude Include="..\Public\ImGui\imgui_impl_dx11.h" />

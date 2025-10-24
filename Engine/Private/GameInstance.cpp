@@ -125,7 +125,7 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 		return E_FAIL;
 
 #ifdef _DEBUG
-	m_pImgui_Manager = CImgui_Manager::Create(*ppDevice, *ppContext, EngineDesc.Menu_Imgui, EngineDesc.hWnd);
+	m_pImgui_Manager = CImgui_Manager::Create(*ppDevice, *ppContext, EngineDesc.Menu_Imgui, EngineDesc.hWnd, EngineDesc.iWinSizeX, EngineDesc.iWinSizeY);
 	if (nullptr == m_pImgui_Manager)
 		return E_FAIL;
 
@@ -166,6 +166,9 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 
 HRESULT CGameInstance::Clear_Resources(_uint iClearLevelID)
 {
+#ifdef _DEBUG
+	//m_pImgui_Manager->ClearGizmoObject();
+#endif
 	m_pPool_Manager->Clear(iClearLevelID);
 
 	/* 기존레벨용 자원들을 날린다. */
@@ -686,6 +689,14 @@ HRESULT CGameInstance::CleanMenu(_wstring strMenu)
 _bool CGameInstance::HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	return m_pImgui_Manager->HandleWndProc(hWnd, msg, wParam, lParam);
+}
+void CGameInstance::Set_GizmoObject(CGameObject* pGameObject)
+{
+	m_pImgui_Manager->Set_GizmoObject(pGameObject);
+}
+void CGameInstance::Clear_GizmoObject()
+{
+	m_pImgui_Manager->Clear_GizmoObject();
 }
 #endif
 #pragma endregion
