@@ -47,6 +47,10 @@ void CEffect_Mesh_Instance::Update(_float fTimeDelta)
     m_fCurTime += fTimeDelta;
 
     m_bRunning = (m_pVIBufferCom->Update(fTimeDelta) == true && m_TimeTracks.size() == 0) ? false : true;
+    
+    if (m_sData.bGravity)
+        m_pVIBufferCom->UpdateGravity(fTimeDelta);
+
     __super::Update(fTimeDelta);
 
     /* Edit */
@@ -79,12 +83,15 @@ HRESULT CEffect_Mesh_Instance::Render()
 
 void CEffect_Mesh_Instance::Save_Data(ofstream& os)
 {
+    os.write(reinterpret_cast<char*>(&m_iEffect_Type), sizeof(_uint));
+    os.write(reinterpret_cast<char*>(&m_sData), sizeof(PARTICLE_DESC));
 }
 
 void CEffect_Mesh_Instance::Edit_Element()
 {
     _int            isCircle = (_int)m_sEditingData.IsCircle;
     _bool            loop = (_int)m_sEditingData.bIsLoop;
+    _bool            Scroll = (_int)m_sEditingData.bScrollDir;
 
     ImGui::RadioButton("Spawn_BoundingBox", &isCircle, 0);
     ImGui::RadioButton("Spawn_Circle", &isCircle, 1);
@@ -104,17 +111,22 @@ void CEffect_Mesh_Instance::Edit_Element()
     ImGui::InputFloat2("LifeTime : ", reinterpret_cast<_float*>(&m_sEditingData.vLifeTime));
     ImGui::InputFloat2("Scrolling Speed : ", reinterpret_cast<_float*>(&m_sEditingData.iScrollSpeed));
     ImGui::Checkbox("Element Loop", &loop);
+    ImGui::Checkbox("Scroll Y", &Scroll);
 
     ImGui::ColorEdit4("MyColorWithAlpha",(float*)&m_sEditingData.vColor);
 
-    const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12" ,  "test13",  "test14" ,  "test15" ,  "test16" ,  "test17" ,  "test18" ,  "test19" ,  "test20" ,  "test21",  "test22" ,  "test23"};
+    const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19" };
     ImGui::ListBox("Mesh Textures", reinterpret_cast<int*>(&m_sEditingData.iTextureIdx), textures, IM_ARRAYSIZE(textures));
 
-    const char* Meshes[] = { "Mesh1", "Mesh2", "Mesh3",  "Mesh4",  "Mesh5",  "Mesh6" };
+    const char* Meshes[] = { "Mesh1", "Mesh2", "Mesh3",  "Mesh4",  "Mesh5",  "Mesh6",  "Mesh7",  "Mesh8",  "Mesh9",  "Mesh10",  "Mesh11",  "Mesh12",  "Mesh13",  "Mesh14",  "Mesh15",  "Mesh16",  "Mesh17",  "Mesh18",  "Mesh19" ,  "Mesh20" };
     ImGui::ListBox("Mesh Shape", reinterpret_cast<int*>(&m_sEditingData.iMeshTypeIdx), Meshes, IM_ARRAYSIZE(Meshes));
+
+    const char* MaskTexture[] = { "width0", "width1", "width2",  "width3",  "width4",  "width5",  "width6" ,  "legnth0"};
+    ImGui::ListBox("Mask Textures", reinterpret_cast<int*>(&m_sEditingData.iMaskTextureIdx), MaskTexture, IM_ARRAYSIZE(MaskTexture));
 
     m_sEditingData.IsCircle = isCircle;
     m_sEditingData.bIsLoop = loop;
+    m_sEditingData.bScrollDir = Scroll;
 
     if (ImGui::Button("Apply"))
         Apply(&m_sEditingData);
@@ -139,6 +151,7 @@ void CEffect_Mesh_Instance::SetSpreadData(void* pArg)
     CEffect_Prefab::EFFECT_EVENT data = *static_cast<CEffect_Prefab::EFFECT_EVENT*>(pArg);
     m_pVIBufferCom->Setting_Speed(CVIBuffer_Mesh_Instance::SPEED_VALUE::SPREAD_SPEED, data.fSpreadSpeed);
     m_pVIBufferCom->Setting_Pivot(data.fPivot);
+    m_sData.bGravity = data.bGravity;
     SetData(ENUM_CLASS(data.eEventType), data.fDuration); 
 }
 
@@ -161,6 +174,7 @@ void CEffect_Mesh_Instance::SetUpwardData(void* pArg)
 {
     CEffect_Prefab::EFFECT_EVENT data = *static_cast<CEffect_Prefab::EFFECT_EVENT*>(pArg);
     m_pVIBufferCom->Setting_Speed(CVIBuffer_Mesh_Instance::SPEED_VALUE::UPWARD_SPEED, data.fUpwardSpeed);
+    m_sData.bGravity = data.bGravity;
     SetData(ENUM_CLASS(data.eEventType),data.fDuration);
 }
 
@@ -207,10 +221,14 @@ HRESULT CEffect_Mesh_Instance::Bind_ShaderResources()
     if (FAILED(m_pShaderCom->Bind_RawValue("g_ScrollSpeed", &m_fScrollSpeed, sizeof(_float2))))
         return E_FAIL; 
 
+    _bool ScrollDir = m_sData.bScrollDir;
+    if (FAILED(m_pShaderCom->Bind_Bool("g_ScrollYDir", &ScrollDir)))
+        return E_FAIL;
+
     if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DiffuseTexture", m_sData.iTextureIdx)))
         return E_FAIL;
 
-    if (FAILED(m_pMaskTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_MaskTexture", 6)))
+    if (FAILED(m_pMaskTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_MaskTexture", m_sData.iMaskTextureIdx)))
         return E_FAIL;
 
     return S_OK;
@@ -223,7 +241,7 @@ void CEffect_Mesh_Instance::Apply(void* pArg)
 
     char finalPathBuffer[MAX_PATH] = {};
     sprintf_s(finalPathBuffer, MAX_PATH, format, m_sData.iMeshTypeIdx);
-    m_sData.pFilePath = finalPathBuffer;
+    strcpy_s(m_sData.pFilePath, MAX_PATH, finalPathBuffer);
 
     Safe_Release(m_pVIBufferCom);
     m_pVIBufferCom = CVIBuffer_Mesh_Instance::Create(m_pDevice, m_pContext, &m_sData);

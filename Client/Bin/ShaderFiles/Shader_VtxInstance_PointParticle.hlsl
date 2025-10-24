@@ -3,6 +3,7 @@
 float4x4 g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_DiffuseTexture;
 float4 g_vSourceColor = float4(1.f, 1.f, 1.f, 1.f);
+float g_fSizeRatio = 1.f;
 
 vector g_vCamPosition;
 bool g_IsEmissive = false;
@@ -75,20 +76,19 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
     
     float legnth = vector(In[0].vPosition - In[0].vPrevPosition).x;
     
-    //if (legnth > 0.01f)
+    if (legnth > 0.01f)
     {
         vLook = g_vCamPosition - In[0].vPosition;
         vRight = normalize(vector(cross(float3(0.f, 1.f, 0.f), vLook.xyz), 0.f)) * In[0].fSize * 0.5f;
-        vUp = normalize(vector(cross(vLook.xyz, vRight.xyz), 0.f)) * In[0].fSize * 0.5f;
+        vUp = normalize(vector(cross(vLook.xyz, vRight.xyz), 0.f)) * In[0].fSize * g_fSizeRatio * 0.5f;
     }
-    //else
-    //{
-    //    vUp = normalize(In[0].vPosition - In[0].vPrevPosition) * In[0].fSize * 0.5f;
-    //    vLook = normalize(g_vCamPosition - In[0].vPosition);
-    //    vRight = normalize(vector(cross(vUp.xyz, vLook.xyz), 0.f)) * In[0].fSize * 0.5f;
-    //    
-    //    vUp += (In[0].vPosition - In[0].vPrevPosition) * 7.f;
-    //}
+    else
+    {
+        vUp = normalize(In[0].vPosition - In[0].vPrevPosition) * In[0].fSize * g_fSizeRatio * 0.5f;
+        vLook = normalize(g_vCamPosition - In[0].vPosition);
+        vRight = normalize(vector(cross(vUp.xyz, vLook.xyz), 0.f)) * In[0].fSize * 0.5f;
+        vUp += (In[0].vPosition - In[0].vPrevPosition) * 7.f;
+    }
     
     matrix matrVP = mul(g_ViewMatrix, g_ProjMatrix);
     
