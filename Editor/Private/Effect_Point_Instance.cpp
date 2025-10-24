@@ -46,7 +46,7 @@ void CEffect_Point_Instance::Update(_float fTimeDelta)
 
     m_bRunning = (m_pVIBufferCom->Update(fTimeDelta) == true && m_TimeTracks.size() == 0) ? false : true;
 
-    if (m_sData.bGravity == true)
+    if (m_sData.bGravity)
         m_pVIBufferCom->UpdateGravity(fTimeDelta);
 
     __super::Update(fTimeDelta);
@@ -83,6 +83,7 @@ void CEffect_Point_Instance::Save_Data(ofstream& os)
 void CEffect_Point_Instance::Edit_Element()
 {
     _int            isCircle = (_int)m_sEditingData.IsCircle;
+    _bool            loop = (_int)m_sEditingData.bIsLoop;
 
     ImGui::RadioButton("Spawn_BoundingBox", &isCircle, 0);
     ImGui::RadioButton("Spawn_Circle", &isCircle, 1);
@@ -100,7 +101,7 @@ void CEffect_Point_Instance::Edit_Element()
     ImGui::InputFloat2("Size : ", reinterpret_cast<_float*>(&m_sEditingData.vSize));
     ImGui::InputFloat("Size Ratio : ", &m_sEditingData.fSizeRatio);
     ImGui::InputFloat2("LifeTime : ", reinterpret_cast<_float*>(&m_sEditingData.vLifeTime));
-    ImGui::Checkbox("Element Loop", &m_sEditingData.bIsLoop);
+    ImGui::Checkbox("Element Loop", &loop);
 
     ImGui::ColorEdit4("MyColorWithAlpha",(float*)&m_sEditingData.vColor);
 
@@ -108,6 +109,7 @@ void CEffect_Point_Instance::Edit_Element()
     ImGui::ListBox("Particles",reinterpret_cast<int*>(&m_sEditingData.iTextureIdx), textures,IM_ARRAYSIZE(textures));
 
     m_sEditingData.IsCircle = isCircle;
+    m_sEditingData.bIsLoop = loop;
 
     if (ImGui::Button("Apply"))
         Apply(&m_sEditingData);
@@ -190,7 +192,7 @@ HRESULT CEffect_Point_Instance::Bind_ShaderResources()
     if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
         return E_FAIL;
 
-    if(FAILED(m_pShaderCom->Bind_RawValue("g_vSourceColor", &m_sEditingData.vColor, sizeof(_float4))))
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vSourceColor", &m_sEditingData.vColor, sizeof(_float4))))
         return E_FAIL;
 
     if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DiffuseTexture", m_sData.iTextureIdx)))

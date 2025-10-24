@@ -92,7 +92,7 @@ PS_OUT_BACKBUFFER PS_MAIN_DEBUG_ARRAY(PS_IN In)
 struct PS_OUT_LIGHT
 {
     vector vShade : SV_TARGET0;
-    vector vSpecular : SV_TARGET1;
+    //  vector vSpecular : SV_TARGET1;
 };
 
 PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
@@ -101,13 +101,8 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
     
     vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vNormal = normalize(vector(vNormalDesc.xyz * 2.f - 1.f, 0.f));
-    
-    float fShade = max(dot(vNormal * -1.f, normalize(g_vLightDir)), 0.f);
-    
-    vector vReflect = reflect(normalize(g_vLightDir), vNormal);
-    
     vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
-    
+
     vector vWorldPos;
     
     /* 투영공간상의 좌표를 구한다. */
@@ -126,12 +121,15 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
     /* 월드공간상의 좌표를 구한다. */
     vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
     
-    vector vLook = vWorldPos - g_vCamPosition;
+    float fShade = max(dot(vNormal * -1.f, normalize(g_vLightDir)), 0.f);
     
-    float fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), 50.f);
+    //  vector vReflect = reflect(normalize(g_vLightDir), vNormal);
+    //  vector vLook = vWorldPos - g_vCamPosition;
+    //  
+    //  float fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), 50.f);
 
     Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient));
-    Out.vSpecular = (g_vLightSpecular * g_vMtrlSpecular) * fSpecular;
+    //  Out.vSpecular = (g_vLightSpecular * g_vMtrlSpecular) * fSpecular;
     
     return Out;
 }
@@ -171,16 +169,13 @@ PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
     
     float fShade = max(dot(vNormal * -1.f, normalize(vLightDir)), 0.f);
     
-    vector vReflect = reflect(normalize(vLightDir), vNormal);
-    
-   
-    vector vLook = vWorldPos - g_vCamPosition;
-    
-    float fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), 50.f);
-    
+    //  vector vReflect = reflect(normalize(vLightDir), vNormal);
+    //  vector vLook = vWorldPos - g_vCamPosition;
+    //  
+    //  float fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), 50.f);
     
     Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient)) * fAtt;
-    Out.vSpecular = (g_vLightSpecular * g_vMtrlSpecular) * fSpecular * fAtt;
+    //  Out.vSpecular = (g_vLightSpecular * g_vMtrlSpecular) * fSpecular * fAtt;
     
     return Out;
 }
@@ -195,9 +190,10 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
         discard;
     
     vector vShade = g_ShadeTexture.Sample(DefaultSampler, In.vTexcoord);
-    vector vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    //  vector vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
     
-    Out.vColor = vDiffuse * vShade + vSpecular;
+    //  Out.vColor = vDiffuse * vShade + vSpecular;
+    Out.vColor = vDiffuse * vShade;
     
     if (0 == g_iEnableShadowFlag)
         return Out;
@@ -321,6 +317,44 @@ PS_OUT_BACKBUFFER PS_MAIN_BLUR_Y(PS_IN In)
     return Out;
 }
 
+struct PS_OUT_SSAO
+{
+    float4 vSSAO : SV_TARGET0;
+};
+
+PS_OUT_SSAO PS_MAIN_SSAO(PS_IN In)
+{
+    PS_OUT_SSAO Out;
+
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormal = normalize(vector(vNormalDesc.xyz * 2.f - 1.f, 0.f));
+    
+    // View Space Normal
+    float3x3 ViewMatrix = float3x3(g_ViewMatrix._11_12_13, g_ViewMatrix._21_22_23, g_ViewMatrix._31_32_33);
+    vector vViewNormal = float4(mul(vNormal.xyz, ViewMatrix), 0.f);
+    vViewNormal = normalize(vViewNormal);
+    
+    // View Space Depth
+    vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    vector vWorldPos;
+    
+    vWorldPos.x = In.vTexcoord.x * 2.f - 1.f;
+    vWorldPos.y = In.vTexcoord.y * -2.f + 1.f;
+    vWorldPos.z = vDepthDesc.x;
+    vWorldPos.w = 1.f;
+
+    // Projection -> View
+    vWorldPos = vWorldPos * vDepthDesc.y;
+    float4 vViewDepth = mul(vWorldPos, g_ProjMatrixInv);
+    
+    
+    
+    Out.vSSAO = float4(1.f, 0.f, 0.f, 1.f);
+    
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     pass Debug
@@ -400,4 +434,14 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN_DEBUG_ARRAY();
     }
 
+    pass SSAO
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_SSAO();
+    }
 }

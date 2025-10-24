@@ -167,37 +167,45 @@ void CJolt_Manager::CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* 
     );
 }
 
-_bool CJolt_Manager::CastRay(_float3 vStart, _float3 vEnd, _float& fFraction)
+_bool CJolt_Manager::CastRay(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition)
 {
-    Vec3 vDir = LoadVec3(vEnd) - LoadVec3(vStart);
+    Vec3 origin = LoadVec3(vStart);
+    Vec3 dir = LoadVec3(vEnd) - origin;
+    if (dir.LengthSq() <= 1e-12f) return false;
 
-    _float fDistance = vDir.Length();
-    if (fDistance <= 1.0e-6f)
-        return false;
-
-    vDir /= fDistance;
-
-    RRayCast Ray(LoadVec3(vStart), vDir);
+    RRayCast ray(origin, dir);
 
     RayCastSettings rc;
-    rc.mBackFaceModeTriangles = EBackFaceMode::IgnoreBackFaces;
+    rc.mBackFaceModeTriangles = EBackFaceMode::CollideWithBackFaces;
     rc.mTreatConvexAsSolid = true;
 
-    RayCastResult out_hit;
+    ClosestHitCollisionCollector<CastRayCollector> collector;
+
+    m_pPhysics->GetNarrowPhaseQuery().CastRay(
+        ray, rc, collector,
+        BroadPhaseLayerFilter(),
+        *m_pObjectLayerFilter,
+        BodyFilter(),
+        ShapeFilter()
+    );
+
+    if (!collector.HadHit())
+        return false;
+
+    const float fraction = clamp(collector.mHit.mFraction, 0.0f, 1.0f);
+    outFraction = fraction;
+
+    // 월드 충돌 위치 & 법선
     
+    _vector vDir = XMVectorSet(dir.GetX(), dir.GetY(), dir.GetZ(), 0.f);
 
-    if (m_pPhysics->GetNarrowPhaseQuery().CastRay(Ray, out_hit, {}, *m_pObjectLayerFilter))
-    {
-        fFraction = out_hit.mFraction;
-        return true;
-    }
+    vDir = XMVector3Normalize(vDir);
 
-    //auto& npq = m_pPhysics->GetNarrowPhaseQueryNoLock();
-    //
+    const Vec3 hitPos = ray.GetPointOnRay(fraction);
 
-    //npq.CastRay(Ray, rc, out_hit, BroadPhaseLayerFilter(), m_pObjectLayerFilter, {}, )
+    outPosition = _float4(hitPos.GetX(), hitPos.GetY(), hitPos.GetZ(), 1.f);
 
-    return false;
+    return true;
 }
 
 #ifdef  _DEBUG

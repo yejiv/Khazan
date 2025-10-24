@@ -84,6 +84,7 @@ void CEffect_Mesh_Instance::Save_Data(ofstream& os)
 void CEffect_Mesh_Instance::Edit_Element()
 {
     _int            isCircle = (_int)m_sEditingData.IsCircle;
+    _bool            loop = (_int)m_sEditingData.bIsLoop;
 
     ImGui::RadioButton("Spawn_BoundingBox", &isCircle, 0);
     ImGui::RadioButton("Spawn_Circle", &isCircle, 1);
@@ -102,7 +103,7 @@ void CEffect_Mesh_Instance::Edit_Element()
     ImGui::InputFloat("Size Ratio : ", &m_sEditingData.fSizeRatio);
     ImGui::InputFloat2("LifeTime : ", reinterpret_cast<_float*>(&m_sEditingData.vLifeTime));
     ImGui::InputFloat2("Scrolling Speed : ", reinterpret_cast<_float*>(&m_sEditingData.iScrollSpeed));
-    ImGui::Checkbox("Element Loop", &m_sEditingData.bIsLoop);
+    ImGui::Checkbox("Element Loop", &loop);
 
     ImGui::ColorEdit4("MyColorWithAlpha",(float*)&m_sEditingData.vColor);
 
@@ -113,6 +114,7 @@ void CEffect_Mesh_Instance::Edit_Element()
     ImGui::ListBox("Mesh Shape", reinterpret_cast<int*>(&m_sEditingData.iMeshTypeIdx), Meshes, IM_ARRAYSIZE(Meshes));
 
     m_sEditingData.IsCircle = isCircle;
+    m_sEditingData.bIsLoop = loop;
 
     if (ImGui::Button("Apply"))
         Apply(&m_sEditingData);
@@ -203,7 +205,7 @@ HRESULT CEffect_Mesh_Instance::Bind_ShaderResources()
         return E_FAIL;
 
     if (FAILED(m_pShaderCom->Bind_RawValue("g_ScrollSpeed", &m_fScrollSpeed, sizeof(_float2))))
-        return E_FAIL;
+        return E_FAIL; 
 
     if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DiffuseTexture", m_sData.iTextureIdx)))
         return E_FAIL;
