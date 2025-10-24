@@ -40,7 +40,7 @@ public:
 public:
 	_bool isSnow() { return m_Properties.isSnow; }
 	_bool isCollider() { return m_Properties.isCollider; }
-	_bool isBlended() { return m_Properties.isBlended; }
+	_bool isIce() { return m_Properties.isIce; }
 	_bool isInstance() { return m_Properties.isInstance; }
 	_bool isShadow() { return m_Properties.isShadow; }
 	_bool isBackGround() { return m_Properties.isBackGround; }
