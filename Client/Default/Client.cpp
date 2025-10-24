@@ -198,6 +198,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+#ifdef _DEBUG
+    CGameInstance* pGameInstance = CGameInstance::GetInstance();
+    if (pGameInstance->HandleWndProc(hWnd, message, wParam, lParam))
+        return true;
+#endif
+
     switch (message)
     {
     case WM_COMMAND:
