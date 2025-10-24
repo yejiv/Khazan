@@ -44,6 +44,9 @@ public:
 	void Set_Tag(_wstring strTag) { m_strTag = strTag; }
 	_wstring Get_Tag() { return m_strTag; }
 
+	void Set_Layer(_uint iLayer) { m_iLayer = iLayer; }
+	_uint Get_Layer() { return m_iLayer; }
+
 public:
 	virtual void Reset() {};
 
@@ -61,6 +64,7 @@ protected:
 
 	_bool						m_isPool = { false };
 	_wstring					m_strTag;
+	_uint						m_iLayer = {};
 
 	_bool						m_isDead = { false };
 	_bool						m_isActive = { true };

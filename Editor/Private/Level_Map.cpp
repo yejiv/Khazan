@@ -45,9 +45,7 @@ HRESULT CLevel_Map::Render()
 
 HRESULT CLevel_Map::Ready_Defaults()
 {
-	//CHECK_FAILED(Ready_Default_Lights(), E_FAIL);
-
-	//CHECK_FAILED(Ready_Layer_Khazan(TEXT("Layer_Khazan")), E_FAIL);
+	CHECK_FAILED(Ready_Layer_Khazan(TEXT("Layer_Khazan")), E_FAIL);
 
 	CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Map_Camera")), E_FAIL);
 
@@ -290,6 +288,7 @@ HRESULT CLevel_Map::Ready_Main_Window()
 
 					ImGui::Text("F5           : MOVE TERRAIN");
 					ImGui::Text("F6           : TERRAIN RENDER");
+					ImGui::Text("F7           : TERRAIN WIREFRAME");
 
 					SEPARATOR;
 
@@ -325,7 +324,7 @@ HRESULT CLevel_Map::Ready_Main_Window()
 
 					ImGui::Text("ADD PROTOTYPES");
 					ImGui::Text("FOLDER : "); SAMELINE;
-					ImGui::InputText("##folder_name_convert", m_szFolderName, IM_ARRAYSIZE(m_szFolderName));
+					ImGui::InputText("##folder_name_addprototype_or_convert", m_szFolderName, IM_ARRAYSIZE(m_szFolderName));
 
 					_uint iFolderNameLen = strlen(m_szFolderName);
 
@@ -404,6 +403,7 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 			if (ImGui::Button("CLEAR"))
 				ZeroMemory(m_szSearchPrototypeName, sizeof(m_szSearchPrototypeName));
 
+			ITEMWIDTH(300.f);
 			if (ImGui::BeginListBox("##prototype_object_list"))
 			{
 				string strSearchName = m_szSearchPrototypeName;
@@ -521,6 +521,30 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 
 				m_iObjectListIndex = m_ObjectList.size() - 1;
 
+				if (nullptr != m_ObjectList[m_iObjectListIndex] && false == m_isFixObjectWindow)
+				{
+					m_pFixPropObj = m_ObjectList[m_iObjectListIndex];
+					m_pFixTransformCom = static_cast<CTransform*>(m_ObjectList[m_iObjectListIndex]->Get_Component(TEXT("Com_Transform")));
+					CHECK_NULLPTR_MSG(m_pFixTransformCom, TEXT("Fix Transform == nullptr"), );
+
+					m_FixBaseMatrix = XMMatrixIdentity();
+
+					ZeroMemory(&m_vFixScale, sizeof(_float3));
+					ZeroMemory(&m_vFixRotation, sizeof(_float3));
+					ZeroMemory(&m_vFixPosition, sizeof(_float3));
+
+					m_vFixScale = m_pFixTransformCom->Get_Scaled();
+					XMStoreFloat3(&m_vFixPosition, m_pFixTransformCom->Get_State(STATE::POSITION));
+
+					m_FixBaseMatrix = m_FixWorldMatrix = m_pFixTransformCom->Get_WorldMatrix();
+
+					// ======================================================
+					// ======================================================
+
+					m_isFixObjectWindow = true;
+					m_eFixType = FIX_OBJECT::FIX;
+				}
+
 			} SEPARATOR;
 
 			ImGui::End();
@@ -543,7 +567,12 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 				WideCharToMultiByte(CP_ACP, 0, m_pFixPropObj->Get_ModelName(), -1, szModelName, MAX_PATH, nullptr, nullptr);
 
 				ImGui::Text("MODEL NAME : "); SAMELINE;
-				ImGui::InputText("##copy_batch_modelname", szModelName, IM_ARRAYSIZE(szModelName)); SEPARATOR;
+				ImGui::InputText("##copy_batch_modelname", szModelName, IM_ARRAYSIZE(szModelName)); SAMELINE;
+				
+				if (ImGui::Button("COPY"))
+				{
+					memcpy(&m_szSearchPrototypeName, &szModelName, MAX_PATH);
+				} SEPARATOR;
 			}
 
 			if (FIX_OBJECT::FIX == m_eFixType)
@@ -749,6 +778,7 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 				if (ImGui::Button("CLEAR"))
 					ZeroMemory(m_szSearchObjectName, sizeof(m_szSearchObjectName));
 
+				ITEMWIDTH(300.f);
 				if (ImGui::BeginListBox("##prop_object_list"))
 				{
 					if (m_iObjectListIndex >= m_ObjectList.size())
@@ -1376,14 +1406,19 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 				// m_strMapInfoFilePath : 뒤에 _prototypes.dat, _objs.dat, insts.dat 이런식으로 ㄱㄱ
 				m_strMapInfoFilePath = m_szMapInfoFilePath;
 				m_strMapInfoFilePath += m_szMapInfoFileName;
+
+				_bool isLoadComplete = { true };
 				
 #pragma region 프로토타입 일괄 불러오기
 
 				if (false == Prototypes_Load_Binary())
 				{
 #ifdef _DEBUG
-					OutputDebugStringA("프로토타입 정보 바이너리 불러오기 실패");
+OutputDebugStringA("프로토타입 정보 바이너리 불러오기 실패");
 #endif // _DEBUG
+
+					isLoadComplete = false;
+
 				}
 				else
 				{
@@ -1398,8 +1433,11 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 				if (false == Objects_Load_Binary())
 				{
 #ifdef _DEBUG
-					OutputDebugStringA("단일 오브젝트 정보 바이너리 불러오기 실패");
+OutputDebugStringA("단일 오브젝트 정보 바이너리 불러오기 실패");
 #endif // _DEBUG
+
+					isLoadComplete = false;
+
 				}
 				else
 				{
@@ -1414,8 +1452,11 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 				if (false == Lights_Load_Binary())
 				{
 #ifdef _DEBUG
-					OutputDebugStringA("조명 정보 바이너리 불러오기 실패");
+OutputDebugStringA("조명 정보 바이너리 불러오기 실패");
 #endif // _DEBUG
+
+					isLoadComplete = false;
+
 				}
 				else
 				{
@@ -1425,8 +1466,11 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 
 #pragma endregion
 
-				m_isLoadObjectWindow = false;
-				m_isLoaded = true;
+				if (true == isLoadComplete)
+				{
+					m_isLoadObjectWindow = false;
+					m_isLoaded = true;
+				}
 			}
 
 			ImGui::End();

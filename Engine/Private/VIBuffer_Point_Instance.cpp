@@ -10,23 +10,15 @@ CVIBuffer_Point_Instance::CVIBuffer_Point_Instance(ID3D11Device* pDevice, ID3D11
 CVIBuffer_Point_Instance::CVIBuffer_Point_Instance(const CVIBuffer_Point_Instance& Prototype)
 	: CVIBuffer_Instance { Prototype }
 	, m_vPivot{ Prototype.m_vPivot }
+	, m_vRange{ Prototype.m_vRange }
 	, m_IsLoop{ Prototype.m_IsLoop }
-	, m_fOffset{ Prototype.m_fOffset }
-	, m_fRange{ Prototype.m_fRange }
+	, m_fOffset{ Prototype.m_fOffset } //나중에 필요하면 상수버퍼로 넘기기
 
 {
 }
 
 void CVIBuffer_Point_Instance::Reset()
 {
-	//D3D11_MAPPED_SUBRESOURCE SubResource;
-	//if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
-	//{
-	//	POINT_INSTANCE_CB* pPointInstanceCB = reinterpret_cast<POINT_INSTANCE_CB*>(SubResource.pData);
-	//	pPointInstanceCB->fTimeDelta = 0;
-	//	m_pContext->Unmap(m_pCB, 0);
-	//}
-
 	COMPUTE_PASS_DESC PassDesc{};
 	PassDesc.SRVs.push_back(m_pSRV);
 	PassDesc.UAVs.push_back(m_pUAV);
@@ -51,18 +43,18 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDes
 {
 	const POINT_INSTANCE_DESC* pPointDesc = static_cast<const POINT_INSTANCE_DESC*>(pDesc);
 
-	m_vPivot = pPointDesc->vPivot;
-	m_fRange = pPointDesc->vRange;
-	m_bIsCircle = pPointDesc->IsCircle;
-	m_vSourceColor = pPointDesc->vSourceColor;
-	m_fOffset = pPointDesc->fOffset;
-	m_IsLoop =  pPointDesc->bIsLoop;
 	m_iInstanceVertexStride = sizeof(IB_POINTINSTANCE_EFFECT);
 	m_iNumInstance = pPointDesc->iNumInstance;
 	m_iNumVertices = 1;
 	m_iVertexStride = sizeof(VTXPOS);
 	m_iNumVertexBuffers = 2;
 	m_ePrimitiveType = D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
+
+	m_vPivot = pPointDesc->vPivot;
+	m_bIsCircle = pPointDesc->IsCircle;
+	m_fOffset = pPointDesc->fOffset;
+	m_IsLoop = pPointDesc->bIsLoop;
+	m_vRange = pPointDesc->vRange;
 
 	D3D11_BUFFER_DESC		VBDesc{};
 	VBDesc.ByteWidth = m_iNumVertices * m_iVertexStride;
@@ -131,9 +123,8 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDes
 		}
 
 		pInstanceVertices[i].vLifeTime = _float2(0.f, fLifeTime);
-		m_fRange = pPointDesc->vRange;
-		m_pParticleParams[i].fSize = pPointDesc->vSize; 
 		m_pParticleParams[i].vInitTranslation = pInstanceVertices[i].vTranslation;
+		m_pParticleParams[i].fSize = fScale;
 	}
 
 	return S_OK;
@@ -199,6 +190,9 @@ _bool CVIBuffer_Point_Instance::Update(_float fTimeDelta)
 		pPointInstanceCB->fTimeDelta = fTimeDelta;
 		pPointInstanceCB->iNumInstances = m_iNumInstance;
 		pPointInstanceCB->bIsLoop = m_IsLoop;
+		//pPointInstanceCB->bIsFollow = m_bIsFollow;
+		//pPointInstanceCB->vPrefabPosition = PrefabPos;
+		pPointInstanceCB->vSpawnRange = m_vRange;
 		m_pContext->Unmap(m_pCB, 0);
 	}
 	
@@ -252,7 +246,7 @@ void CVIBuffer_Point_Instance::Setting_Speed(SPEED_VALUE type, _float2 range)
 	{
 		POINT_INSTANCE_CB* pInstanceSpeedCB = reinterpret_cast<POINT_INSTANCE_CB*>(SubResource.pData);
 		pInstanceSpeedCB->iSpeedType = static_cast<_uint>(type);
-		pInstanceSpeedCB->fRange = range;
+		pInstanceSpeedCB->fSpeedRange = range;
 		m_pContext->Unmap(m_pCB, 0);
 	}
 	

@@ -796,6 +796,61 @@ namespace Engine
 
 #pragma endregion
 
+#pragma region AI
+
+    typedef struct tagAI_PerceptionData
+    {
+        string strMonsterType;
+        string strFileName;
+        vector<string> CallbackTags;
+
+        float   fRadius = {};
+        float   fFov = {};
+        float   fLoseSightTime = {};
+        float   fCheckInterval = {};
+        float   fFovCos = {};
+        bool    isRequireLineOfSight = { false };
+        float   fHeightOffset = {};
+
+    }AIPERCEPTION_DATA;
+
+
+    typedef struct tagAI_BlackBoardData
+    {
+        string strMonsterType;
+        unordered_map<string, nlohmann::json> Values;
+
+    }AIBLACKBOARD_DATA;
+
+    typedef struct tagLeafNodeData
+    {
+        
+        string  NodeName;
+        string  LeafType;
+        string  CallBackFunction;
+        float   fWaitTime;
+
+    }LEAFNODE_DATA;
+
+    typedef struct tagCompositeNodeData
+    {
+        string NodeName;
+        string LeafType;
+        vector<LEAFNODE_DATA> Children;
+
+    }COMPOSITENODE_DATA;
+
+
+    typedef struct tagDecoratorNodeData
+    {
+
+    }DECORATORNODE_DATA;
+
+
+
+#pragma endregion
+
+
 
 #pragma region Serialization / Deserialization
 
@@ -897,6 +952,28 @@ namespace Engine
     );
     // 프로토타입 관련 태그, 이름, 경로 직렬화
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(JSON_MAP_PROTOTYPE_DATA, iNumPrototypes, PrototypeTag, FileName, FilePath);
+
+
+#pragma endregion
+
+#pragma region AI
+
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(AIPERCEPTION_DATA, 
+        strMonsterType,
+        strFileName,
+        CallbackTags,
+        fRadius,
+        fFov,
+        fLoseSightTime,
+        fCheckInterval,
+        fFovCos,
+        isRequireLineOfSight,
+        fHeightOffset );
+
+
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(AIBLACKBOARD_DATA,
+        strMonsterType,
+        Values);
 
 
 #pragma endregion

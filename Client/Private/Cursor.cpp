@@ -34,7 +34,7 @@ HRESULT CCursor::Initialize_Clone(void* pArg)
 	Desc.fDepth = 0.5f;
 
 	if (FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Cursor_FX"),
-		TEXT("Pool_Cursor_FX"), &Desc, 20)))
+		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Cursor_FX"), &Desc, 20)))
 		return E_FAIL;
 
 	return S_OK;
@@ -56,7 +56,7 @@ void CCursor::Update(_float fTimeDelta)
 
 	if (m_pGameInstance->Mouse_Up(MOUSEKEYSTATE::LB, INPUT_TYPE::GAMEPLAY))
 	{
-		CGameObject* pFX = m_pGameInstance->Pop_PoolObject(TEXT("Pool_Cursor_FX"));
+		CGameObject* pFX = m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Cursor_FX"));
 		if (pFX != nullptr)
 		{
 			m_pGameInstance->Reset_PoolObject(pFX);
