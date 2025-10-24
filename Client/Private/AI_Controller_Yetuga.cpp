@@ -13,7 +13,7 @@ CAI_Controller_Yetuga::CAI_Controller_Yetuga()
 
 HRESULT CAI_Controller_Yetuga::Initialize(void* pArg)
 {
-	SIGHT_DESC SightDesc = {};
+	/*SIGHT_DESC SightDesc = {};
 	SightDesc.fRadius = 50.f;
 	SightDesc.fLoseSightTime = 0.1f;
 	SightDesc.fFov = 120.f;
@@ -41,7 +41,7 @@ HRESULT CAI_Controller_Yetuga::Initialize(void* pArg)
 		return E_FAIL;
 
 	if (FAILED(Ready_BehaviorTree()))
-		return E_FAIL;
+		return E_FAIL;*/
 
 	return S_OK;
 }
@@ -50,7 +50,7 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 {
 	m_pPerception->Update(pOwner, fTimeDelta);
 	//cout << "fDist : " << m_pBB->Get_Value<_float>("Yetuga","TargetDist") << endl;
-	m_pBT->Update();
+	//m_pBT->Update();
 
 	m_pFSM->Update(pOwner,fTimeDelta);
 
@@ -97,7 +97,7 @@ HRESULT CAI_Controller_Yetuga::Ready_BehaviorTree()
 	if (nullptr == m_pBB)
 		return E_FAIL;
 
-	m_pBT->Set_BlackBoard(m_pBB);
+	//m_pBT->Set_BlackBoard(m_pBB);
 
 	if (nullptr == m_pBT)
 		return E_FAIL;

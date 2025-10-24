@@ -316,6 +316,9 @@
     <Filter Include="01.Utility\95.AI\BehaviorTree\Node\Decorator\Inverter">
       <UniqueIdentifier>{ff7d3c95-8f9b-431a-aa13-048ee6b34835}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\95.AI\BehaviorTree\Node\Defines">
+      <UniqueIdentifier>{f60db9af-175b-419d-ae6b-b02d9741a584}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -938,6 +941,10 @@
     <ClInclude Include="..\Public\Inverter_Node.h">
       <Filter>01.Utility\95.AI\BehaviorTree\Node\Decorator\Inverter</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\BTNode_Defines.h">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ENGINESDK\DEBUG\INC\COMPOSITE_NODE.H" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hlsli">

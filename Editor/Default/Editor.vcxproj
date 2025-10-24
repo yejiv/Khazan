@@ -159,6 +159,7 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Public\AIController_Edit.h" />
     <ClInclude Include="..\public\AnimationTool.h" />
     <ClInclude Include="..\Public\Camera_Compre.h" />
     <ClInclude Include="..\Public\Camera_Controller.h" />
@@ -178,6 +179,7 @@
     <ClInclude Include="..\Public\Editor_Model_Instance.h" />
     <ClInclude Include="..\public\Editor_TempCamera.h" />
     <ClInclude Include="..\public\Edit_Interface_UI.h" />
+    <ClInclude Include="..\Public\Edit_Monster.h" />
     <ClInclude Include="..\public\Edit_UIBackGround.h" />
     <ClInclude Include="..\public\Edit_UIBase.h" />
     <ClInclude Include="..\Public\Effect_Element.h" />
@@ -221,6 +223,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Private\AIController_Edit.cpp" />
     <ClCompile Include="..\private\AnimationTool.cpp" />
     <ClCompile Include="..\Private\Camera_Compre.cpp" />
     <ClCompile Include="..\Private\Camera_Controller.cpp" />
@@ -238,6 +241,7 @@
     <ClCompile Include="..\Private\Editor_Model_Instance.cpp" />
     <ClCompile Include="..\private\Editor_TempCamera.cpp" />
     <ClCompile Include="..\private\Edit_Interface_UI.cpp" />
+    <ClCompile Include="..\Private\Edit_Monster.cpp" />
     <ClCompile Include="..\private\Edit_UIBackGround.cpp" />
     <ClCompile Include="..\private\Edit_UIBase.cpp" />
     <ClCompile Include="..\Private\Effect_Element.cpp" />

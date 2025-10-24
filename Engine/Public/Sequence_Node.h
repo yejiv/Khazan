@@ -3,7 +3,7 @@
 
 NS_BEGIN(Engine)
 
-class ENGINE_DLL CSequence_Node final : public CComposite_Node<CSequence_Node>
+class ENGINE_DLL CSequence_Node final : public CComposite_Node
 {
 private:
 	CSequence_Node();

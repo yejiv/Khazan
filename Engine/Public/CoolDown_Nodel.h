@@ -3,7 +3,7 @@
 
 NS_BEGIN(Engine)
 
-class CCoolDown_Node final : public CDecorator_Node
+class ENGINE_DLL CCoolDown_Node final : public CDecorator_Node
 {
 private:
 	CCoolDown_Node(_float fCoolTime);

@@ -17,6 +17,10 @@ public:
 	virtual void Update(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+private:
+	HRESULT			Ready_Edit_Objects();
+
+
 #pragma region Perception
 private:
 	void				Show_Peception_Menu(const char* szDefaultFileName);
@@ -30,12 +34,25 @@ private:
 	void				Save_BlackBoard(const vector<AIBLACKBOARD_DATA>& BBList, const string& FileName);
 	void				Load_BlackBoard(vector<AIBLACKBOARD_DATA>& BBList, const string& FileName);
 #pragma endregion 
+
+#pragma region BehaviorTree
 	void				Show_BehaviorTree_Menu(const char* szDefaultFileName);
+	void				Show_BT_Editor(AI_BTDATA& TreeData);
+	void				Show_BTNode_Hierarchy(AIBTNODE_DATA& Node);
+
+	void				Save_BehaviorTree(const AI_BTDATA& Data, const string& FileName);
+
+	void				SaveNode(JSON& j, const AIBTNODE_DATA& Node);
+	void				LoadNode(const JSON& j, AIBTNODE_DATA& OutNode);
+
+#pragma endregion 
+
+
 
 
 public:
-	static CLevel_AI* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	virtual void Free() override;
+	static CLevel_AI*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	virtual void		Free() override;
 };
 
 NS_END
