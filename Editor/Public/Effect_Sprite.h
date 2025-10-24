@@ -22,6 +22,7 @@ public:
 		_float	fSizeRatio;
 		_float	ScalingValue;
 		_uint	iTextureIdx;
+		_bool	bFollow;
 	}SPRITE_DESC;
 
 private:

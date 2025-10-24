@@ -143,6 +143,15 @@ HRESULT CShader::Bind_VectorArray(const _char* pConstantName, const _float4* pDa
 	return pVector->SetFloatVectorArray(reinterpret_cast<const _float*>(pData), 0, iCount);
 }
 
+HRESULT CShader::Bind_Bool(const _char* pConstantName, const _bool* pData)
+{
+	ID3DX11EffectVariable* pVariable = m_pEffect->GetVariableByName(pConstantName);
+	if (nullptr == pVariable)
+		return E_FAIL;
+	
+	return pVariable->AsScalar()->SetBool(*pData);
+}
+
 HRESULT CShader::Bind_Matrix(const _char* pConstantName, const _float4x4* pMatrix)
 {
 	ID3DX11EffectVariable*	pVariable = m_pEffect->GetVariableByName(pConstantName);

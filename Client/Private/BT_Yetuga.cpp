@@ -75,7 +75,6 @@ HRESULT CBT_Yetuga::Initialize(void* pArg)
             {
                 BB->Set_Value<_bool>("Yetuga", "isAttack", false);
                 BB->Set_Value<_bool>("Yetuga", "isAttackFinished", false);
-                cout << "±â¸ð¶ì" << endl;
                 pOwner->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pOwner);
             }
         }
@@ -101,8 +100,6 @@ HRESULT CBT_Yetuga::Initialize(void* pArg)
             _float fDist = BB->Get_Value<_float>("Yetuga", "TargetDist");
 
             cout << "Chase Condition SUCCESS" << endl;
-
-
 
             if (fDist >= BB->Get_Value<_float>("Yetuga","AttackRange") 
                 && fDist != 0 && fDist <= BB->Get_Value<_float>("Yetuga", "ChaseRange"))

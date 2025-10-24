@@ -15,9 +15,7 @@ public:
 		_float2 vSpeed{ 0.f, 0.f };
 		_float2 vLifeTime;
 		_float	fOffset;
-		_bool   IsCircle;
-		_float3 vSourceColor = _float3(1.f, 1.f, 1.f);
-		_float	fRotationPerSec;
+		_uint   IsCircle;
 		_float	fSizeRatio;
 	}POINT_INSTANCE_DESC;
 
@@ -66,11 +64,13 @@ private :
 
 private:
 	_float3						m_vPivot = {}; 
+	_float3						m_vRange= {}; 
 	_bool						m_IsLoop = {}; 
-	_float						m_fOffset = {};	//없애기
-	_float3						m_fRange = {};
-	_float3						m_vSourceColor = {};
+
+	_float						m_fOffset = {};
 	_bool						m_bIsCircle = {};
+
+	_bool						m_bIsFollow;
 
 public:
 	static CVIBuffer_Point_Instance*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const INSTANCE_DESC* pDesc);

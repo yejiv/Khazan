@@ -9,7 +9,6 @@ float4 g_vSourceColor = float4(1.f, 1.f, 1.f, 1.f);
 float g_RunningTime = 1.f;
 float2 g_ScrollSpeed = 0.f;
 
-
 struct VS_IN
 {
     float3 vPosition : POSITION;
@@ -40,7 +39,7 @@ VS_OUT VS_MAIN(VS_IN In)
     matWVP = mul(matWV, g_ProjMatrix);
     float4 vPosition = mul(float4(In.vPosition, 1.f), In.TransformMatrix);
     
-    Out.vPosition = mul(vPosition, matWVP);
+    Out.vPosition = mul(vPosition, g_WorldMatrix); 
     Out.vTexcoord = In.vTexcoord;
     Out.vWorldPos = mul(vPosition, g_WorldMatrix);
     Out.vLifeTime = In.vLifeTime;
