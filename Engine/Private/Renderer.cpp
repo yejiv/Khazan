@@ -44,9 +44,13 @@ HRESULT CRenderer::Initialize()
     if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Shade"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
-    /* For.Target_Specular */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Specular"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+    /* For.Target_SSAO */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_SSAO"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16_FLOAT, _float4(1.f, 1.f, 1.f, 1.f))))
         return E_FAIL;
+
+    /* For.Target_Specular */
+    //  if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Specular"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+    //      return E_FAIL;
 
     /* For.Target_LightDepth */
     //  if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_LightDepth"), g_iMaxWidth, g_iMaxHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.0f, 1.0f, 1.0f, 1.0f))))
@@ -73,8 +77,8 @@ HRESULT CRenderer::Initialize()
     /* For.MRT_LightAcc : 빛들의 연산 결과를 누적한다. */
     if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Shade"))))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Specular"))))
-        return E_FAIL;
+    //  if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Specular"))))
+    //      return E_FAIL;
 
     /* For.MRT_Shadow : 광원기준으로 보여지는 장면을 그려준다.  */
     //  if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Shadow"), TEXT("Target_LightDepth"))))
@@ -86,6 +90,10 @@ HRESULT CRenderer::Initialize()
 
     /* For.MRT_Blur : 원래 백버퍼에 그렸어야할 최종 장면을 그려놓는 타겟  */
     if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Blur"), TEXT("Target_BlurX"))))
+        return E_FAIL;
+
+    /* For.MRT_SSAO */
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_SSAO"), TEXT("Target_SSAO"))))
         return E_FAIL;
 
     m_pVIBuffer = CVIBuffer_Rect::Create(m_pDevice, m_pContext);
@@ -107,8 +115,10 @@ HRESULT CRenderer::Initialize()
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Shade"), 450.0f, 150.0f, 300.f, 300.f)))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Specular"), 450.0f, 450.0f, 300.f, 300.f)))
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_SSAO"), 450.0f, 450.0f, 300.f, 300.f)))
         return E_FAIL;
+    //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Specular"), 450.0f, 450.0f, 300.f, 300.f)))
+    //      return E_FAIL;
     //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_LightDepth"), ViewportDesc.Width - 300.0f, 300.0f, 600.f, 600.f)))
     //      return E_FAIL;
     //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_LightDepth_0"), ViewportDesc.Width - 150.0f, 150.0f, 300.f, 300.f)))
@@ -149,6 +159,9 @@ HRESULT CRenderer::Draw()
 #endif
 
     if (FAILED(Render_NonBlend()))
+        return E_FAIL;
+
+    if (FAILED(Render_SSAO()))
         return E_FAIL;
 
     if (FAILED(Render_Lights()))
@@ -194,6 +207,43 @@ HRESULT CRenderer::Add_DebugComponent(CComponent* pComponent)
     return S_OK;
 }
 #endif
+
+HRESULT CRenderer::Ready_Kernel()
+{
+    m_iKernelSize = 16;
+
+    for (_uint i = 0; i < m_iKernelSize; ++i)
+    {
+        // 랜덤 방향 벡터 생성
+        _float3 vSample = _float3
+        (
+            m_pGameInstance->Rand(-1.f, 1.f),
+            m_pGameInstance->Rand(-1.f, 1.f),
+            m_pGameInstance->Rand(0.f, 1.f) // (로컬)표면 법선 앞쪽
+        );
+
+        // 정규화
+
+        // 스케일 i / KernelSize
+        // 0.1에서 1까지 Scale 제곱만큼의 비율로 보간하여 Scale 저장
+        // 위 랜덤 벡터와 스케일을 곱해서 벡터에 저장
+        // -> 셰이더에 상수로 바인딩
+
+        // 이후 회전은 4x4 작은 사이즈의 노이즈 텍스처를 만들고
+        
+        // Shader에서 노이즈 텍스처를 샘플러 Linear, wrap 모드 설정하고 샘플링
+        // 뷰포트 사이즈를 받아서 노이즈 텍스처를 생성했던 4픽셀만큼 나누고
+        // 이렇게 구한 노이즈 스케일을 텍스쿠드에 곱해서 화면 사이즈만큼 노이즈 텍스처가 반복되도록 함
+        // 여기서 xyz를 가져와 랜덤 벡터로 만듦
+    }
+
+    return S_OK;
+}
+
+HRESULT CRenderer::Ready_NoiseTexture()
+{
+    return S_OK;
+}
 
 HRESULT CRenderer::Render_Priority()
 {
@@ -279,6 +329,38 @@ HRESULT CRenderer::Render_NonBlend()
     return S_OK;
 }
 
+HRESULT CRenderer::Render_SSAO()
+{
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_SSAO"))))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::VIEW))))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::PROJ))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Normal"), m_pShader, "g_NormalTexture")))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
+        return E_FAIL;
+
+    m_pShader->Begin(7);
+
+    m_pVIBuffer->Bind_Resources();
+    m_pVIBuffer->Render();
+
+    if (FAILED(m_pGameInstance->End_MRT()))
+        return E_FAIL;
+
+    return S_OK;
+}
+
 HRESULT CRenderer::Render_Lights()
 {
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_LightAcc"))))
@@ -335,8 +417,8 @@ HRESULT CRenderer::Render_Combined()
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Shade"), m_pShader, "g_ShadeTexture")))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Specular"), m_pShader, "g_SpecularTexture")))
-        return E_FAIL;
+    //  if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Specular"), m_pShader, "g_SpecularTexture")))
+    //      return E_FAIL;
 
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
         return E_FAIL;

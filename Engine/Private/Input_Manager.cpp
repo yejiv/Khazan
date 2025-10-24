@@ -92,13 +92,13 @@ _bool CInput_Manager::Mouse_Down(MOUSEKEYSTATE eMouse, INPUT_TYPE eType)
 
     if (!(m_bMouseState_Down[ENUM_CLASS(eMouse)]) && ((m_pInput_Device->Get_DIMouseState(eMouse)) & 0x8000))
     {
-        m_bMouseState_Down[ENUM_CLASS(eMouse)] = !m_bMouseState_Down[ENUM_CLASS(eMouse)];
+        //m_bMouseState_Down[ENUM_CLASS(eMouse)] = !m_bMouseState_Down[ENUM_CLASS(eMouse)];
         return true;
     }
 
     if ((m_bMouseState_Down[ENUM_CLASS(eMouse)]) && !((m_pInput_Device->Get_DIMouseState(eMouse)) & 0x8000))
     {
-        m_bMouseState_Down[ENUM_CLASS(eMouse)] = !m_bMouseState_Down[ENUM_CLASS(eMouse)];
+        //m_bMouseState_Down[ENUM_CLASS(eMouse)] = !m_bMouseState_Down[ENUM_CLASS(eMouse)];
         return false;
     }
 

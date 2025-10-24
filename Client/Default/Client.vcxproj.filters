@@ -253,6 +253,12 @@
     <Filter Include="02.GameObject\UI\Item">
       <UniqueIdentifier>{5a375172-cf57-4494-aa11-36f0c266d20c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Cursor">
+      <UniqueIdentifier>{8fcc381a-8b4e-49ee-b6e8-50919dc023a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Cursor\FX">
+      <UniqueIdentifier>{40848bba-e989-47c1-8226-95cd85b5bd2c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -471,6 +477,12 @@
     <ClInclude Include="..\public\Item_Slot.h">
       <Filter>02.GameObject\UI\Item</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Cursor.h">
+      <Filter>02.GameObject\UI\Cursor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Cursor_FX.h">
+      <Filter>02.GameObject\UI\Cursor\FX</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -678,6 +690,12 @@
     <ClCompile Include="..\private\Item_Slot.cpp">
       <Filter>02.GameObject\UI\Item</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Cursor.cpp">
+      <Filter>02.GameObject\UI\Cursor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Cursor_FX.cpp">
+      <Filter>02.GameObject\UI\Cursor\FX</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
@@ -717,6 +735,9 @@
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_UIMask.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_Cursor.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

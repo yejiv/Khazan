@@ -97,6 +97,35 @@ HRESULT CProp_Object::Render()
     return S_OK;
 }
 
+HRESULT CProp_Object::Render_Shadow()
+{
+    if (false == isShadow())
+        return S_OK;
+
+    CHECK_FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix"), E_FAIL);
+
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_LightViewMatrix", m_pGameInstance->Get_CurrentShadowLightViewMatrix())))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_LightProjMatrix", m_pGameInstance->Get_CurrentShadowLightProjMatrix())))
+        return E_FAIL;
+
+    _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+    for (size_t i = 0; i < iNumMeshes; i++)
+    {
+        if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
+            return E_FAIL;
+
+        m_pShaderCom->Begin(2);
+
+        m_pModelCom->Render(i);
+    }
+
+
+    return S_OK;
+}
+
 HRESULT CProp_Object::Ready_Components(void* pArg)
 {
     PROP_OBJECT_DESC* pDesc = static_cast<PROP_OBJECT_DESC*>(pArg);

@@ -189,7 +189,7 @@ public:
 	void Set_Gravity(_vector vGravity);
 	void Reset_Gravity();
 
-	_bool CastRay(_float3 vStart, _float3 vEnd, _float& fFraction);
+	_bool CastRay(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition);
 #ifdef _DEBUG
 	void Change_DebugRender();
 	void Jolt_Test();
@@ -217,10 +217,10 @@ public:
 #pragma endregion
 
 #pragma region POOL_MANAGER
-	HRESULT Add_PoolObject(_uint iPrototypeLevelIndex, const _wstring strPrototypeTag, const _wstring& strPoolTag, void* pArg = nullptr, _uint iCount = 1);
-	class CGameObject* Pop_PoolObject(const _wstring& strPoolTag);
-	HRESULT Reset_PoolObject(class CGameObject* pPoolObject);
-	void Push_PoolObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CGameObject* pPoolObject);
+	HRESULT Add_PoolObject(_uint iPrototypeLevelIndex, const _wstring strPrototypeTag, _uint iLayerLevelIndex, const _wstring& strPoolTag, void* pArg, _uint iCount = 1);
+	class CGameObject* Pop_PoolObject(_uint iLayerLevelIndex, const _wstring& strPoolTag);
+	HRESULT Reset_PoolObject(class CGameObject* pGameObject);
+	void Push_PoolObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CGameObject* pGameObject);
 #pragma endregion
 
 #pragma region EVENT_MANAGER
