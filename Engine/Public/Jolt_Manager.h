@@ -23,6 +23,7 @@
 #include <Jolt/Physics/Collision/RayCast.h>
 #include <Jolt/Physics/Collision/CastResult.h>
 #include <Jolt/Physics/Collision/NarrowPhaseQuery.h>
+#include <Jolt/Physics//Collision/CollisionCollectorImpl.h>
 #ifdef new
 #pragma pop_macro("new") // DBG_NEW º¹¿ø
 #endif
@@ -71,7 +72,7 @@ public:
 
 
 public:
-    _bool CastRay(_float3 vStart, _float3 vEnd, _float& fFraction);
+    _bool CastRay(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition);
 
 #ifdef _DEBUG
 
