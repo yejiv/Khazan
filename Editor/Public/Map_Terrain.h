@@ -33,6 +33,9 @@ private:
 
 private:
 	_bool m_isRender = { true };
+	_bool m_isWireFrame = { false };
+
+	_uint m_iShaderPass = {};
 
 private:
 	HRESULT Ready_Components();

@@ -10,10 +10,9 @@ CVIBuffer_Mesh_Instance::CVIBuffer_Mesh_Instance(ID3D11Device* pDevice, ID3D11De
 CVIBuffer_Mesh_Instance::CVIBuffer_Mesh_Instance(const CVIBuffer_Mesh_Instance& Prototype)
 	: CVIBuffer_Instance { Prototype }
 	, m_vPivot{ Prototype.m_vPivot }
+	, m_vRange{ Prototype.m_vRange }
 	, m_IsLoop{ Prototype.m_IsLoop }
-	, m_fOffset{ Prototype.m_fOffset }
-	, m_fRange{ Prototype.m_fRange }
-	//, m_fScale{ Prototype.m_fScale } 
+	, m_fOffset{ Prototype.m_fOffset }	//나중에 필요하면 상수버퍼로 넘기기
 {
 }
 
@@ -64,11 +63,10 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 	m_ePrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 	m_vPivot = pMeshDesc->vPivot;
-	m_fRange = pMeshDesc->vRange;
 	m_bIsCircle = pMeshDesc->IsCircle;
-	//m_fRotationPerSec = pMeshDesc->fRotationPerSec;
 	m_fOffset = pMeshDesc->fOffset;
 	m_IsLoop = pMeshDesc->bIsLoop;
+	m_vRange = pMeshDesc->vRange;
 
 	D3D11_BUFFER_DESC		VBDesc{};
 	VBDesc.ByteWidth = m_iNumVertices * m_iVertexStride;
@@ -133,12 +131,6 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 	m_pInstanceVertices = new IB_MESHINSTANCE_EFFECT[m_iNumInstance];
 	m_pParticleParams = new POINT_INSTANCE_PARAMS[m_iNumInstance];
 
-	for (_uint i = 0; i < ENUM_CLASS(SPEED_VALUE::SPEED_END); ++i)
-	{
-		m_fSpeed[i] = new _float[m_iNumInstance];
-		ZeroMemory(m_fSpeed[i], sizeof(_float) * m_iNumInstance);
-	}
-
 	for (size_t i = 0; i < m_iNumInstance; i++)
 	{
 		IB_MESHINSTANCE_EFFECT* pInstanceVertices = static_cast<IB_MESHINSTANCE_EFFECT*>(m_pInstanceVertices);
@@ -168,10 +160,8 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 		}
 
 		pInstanceVertices[i].vLifeTime = _float2(0.f, fLifeTime);
-		m_fRange = pMeshDesc->vRange;	//지우기
-		//m_fScale = pMeshDesc->vSize;	//지우기
-		m_pParticleParams[i].fSize = pMeshDesc->vSize;
 		m_pParticleParams[i].vInitTranslation = pInstanceVertices[i].vTranslation;
+		m_pParticleParams[i].fSize = fScale;
 	}
 
 	return S_OK;
@@ -207,6 +197,7 @@ _bool CVIBuffer_Mesh_Instance::Update(_float fTimeDelta)
 		pPointInstanceCB->fTimeDelta = fTimeDelta;
 		pPointInstanceCB->iNumInstances = m_iNumInstance;
 		pPointInstanceCB->bIsLoop = m_IsLoop;
+		pPointInstanceCB->vSpawnRange = m_vRange;
 		m_pContext->Unmap(m_pCB, 0);
 	}
 
@@ -239,7 +230,7 @@ void CVIBuffer_Mesh_Instance::Setting_Speed(SPEED_VALUE type, _float2 range)
 	{
 		POINT_INSTANCE_CB* pInstanceSpeedCB = reinterpret_cast<POINT_INSTANCE_CB*>(SubResource.pData);
 		pInstanceSpeedCB->iSpeedType = static_cast<_uint>(type);
-		pInstanceSpeedCB->fRange = range;
+		pInstanceSpeedCB->fSpeedRange = range;
 		m_pContext->Unmap(m_pCB, 0);
 	}
 
@@ -459,10 +450,5 @@ void CVIBuffer_Mesh_Instance::Free()
 {
 	__super::Free();
 
-	if (false == m_isCloned)
-	{
-		for (_uint i = 0; i < ENUM_CLASS(SPEED_VALUE::SPEED_END); ++i) 
-			Safe_Delete(m_fSpeed[i]);  
-	}
 }
 

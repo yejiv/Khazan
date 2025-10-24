@@ -13,7 +13,7 @@ private:
 	virtual ~CCondition_Node() = default;
 
 public:
-	virtual BTNODESTATE Tick(class CBlackBoard* BB) override;
+	virtual BTNODESTATE			Tick(class CBlackBoard* BB) override;
 
 private:
 	CONDITION					m_Condition;

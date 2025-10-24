@@ -5,11 +5,15 @@ namespace Engine
 	typedef struct tagPointInstanceConstantBuffer
 	{
 		_float		fTimeDelta;
-		_float3		vPivot;
+		_float3		vPivot;				//16
 		_uint		iNumInstances;
-		_float3		padding0;
+		_float3		padding0;			//16
+
 		_uint		iSpeedType;
-		_float2		fRange;
-		_float		bIsLoop;
+		_float2		fSpeedRange;
+
+		_float		bIsLoop;			//16 
+		_float3		vSpawnRange;
+		_float		padding;
 	}POINT_INSTANCE_CB;
 }

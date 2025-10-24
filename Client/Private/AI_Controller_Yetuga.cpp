@@ -64,7 +64,6 @@ HRESULT CAI_Controller_Yetuga::Ready_BlackBoard()
 	m_pBB->Set_Value("Yetuga", "isMove", false);
 	m_pBB->Set_Value("Yetuga", "isAttack", false);
 	m_pBB->Set_Value("Yetuga", "isDead", false);
-	m_pBB->Set_Value("Yetuga", "isAttackAnimFinish", false);
 	m_pBB->Set_Value("Yetuga", "AttackCoolDown", 8.f);
 	m_pBB->Set_Value("Yetuga", "AttackRange", 3.f);
 	m_pBB->Set_Value("Yetuga", "ChaseRange", 50.f);

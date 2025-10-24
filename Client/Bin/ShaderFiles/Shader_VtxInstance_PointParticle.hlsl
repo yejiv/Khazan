@@ -31,17 +31,15 @@ VS_DEFAULT_OUT VS_MAIN(VS_IN In)
 {
     VS_DEFAULT_OUT Out = (VS_DEFAULT_OUT) 0;
     
-    //float4x4 TransformMatrix = float4x4(In.vRight, In.vUp, In.vLook, In.vTranslation);
-    
-    //vector vPrevPosition = mul(float4(In.vPrevPosition, 1.f), In.TransformMatrix);
-    vector vPosition = mul(float4(In.vPosition, 1.f), In.TransformMatrix);
+    float4 vPosition = mul(float4(In.vPosition, 1.f), In.TransformMatrix);
     
     float4x4 prevMatrix = In.TransformMatrix;
     prevMatrix._41_42_43 = float4(In.vPrevPosition, 1.f);
-    vector vPrevPosition = mul(float4(In.vPosition, 1.f), prevMatrix);
-    
+    float4 vPrevPosition = mul(float4(In.vPosition, 1.f), prevMatrix);
+
     Out.vPosition = mul(vPosition, g_WorldMatrix);
     Out.vPrevPosition = mul(vPrevPosition, g_WorldMatrix);
+        
     Out.fSize = length(In.TransformMatrix._11_12_13);
     Out.vLifeTime = In.vLifeTime;
     Out.bDead = In.bDead;
@@ -77,26 +75,20 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
     
     float legnth = vector(In[0].vPosition - In[0].vPrevPosition).x;
     
-    if (legnth > 0.01f)
+    //if (legnth > 0.01f)
     {
         vLook = g_vCamPosition - In[0].vPosition;
         vRight = normalize(vector(cross(float3(0.f, 1.f, 0.f), vLook.xyz), 0.f)) * In[0].fSize * 0.5f;
         vUp = normalize(vector(cross(vLook.xyz, vRight.xyz), 0.f)) * In[0].fSize * 0.5f;
     }
-    else
-    {
-        vUp = normalize(In[0].vPosition - In[0].vPrevPosition) * In[0].fSize * 0.5f;
-        vLook = normalize(g_vCamPosition - In[0].vPosition);
-        vRight = normalize(vector(cross(vUp.xyz, vLook.xyz), 0.f)) * In[0].fSize * 0.5f;
-        
-        vUp += (In[0].vPosition - In[0].vPrevPosition) * 7.f;
-    }
-    
-    //vector vUp = normalize(In[0].vPosition - In[0].vPrevPosition) * In[0].fSize * 0.5f;
-    //vector vLook = normalize(g_vCamPosition - In[0].vPosition);
-    //vector vRight = normalize(vector(cross(vUp.xyz, vLook.xyz), 0.f)) * In[0].fSize * 0.5f;
-    //
-    //vUp += (In[0].vPosition - In[0].vPrevPosition) * 7.f;
+    //else
+    //{
+    //    vUp = normalize(In[0].vPosition - In[0].vPrevPosition) * In[0].fSize * 0.5f;
+    //    vLook = normalize(g_vCamPosition - In[0].vPosition);
+    //    vRight = normalize(vector(cross(vUp.xyz, vLook.xyz), 0.f)) * In[0].fSize * 0.5f;
+    //    
+    //    vUp += (In[0].vPosition - In[0].vPrevPosition) * 7.f;
+    //}
     
     matrix matrVP = mul(g_ViewMatrix, g_ProjMatrix);
     

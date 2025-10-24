@@ -14,7 +14,7 @@ public:
 		_float3			vCenter;
 		_float3			vRange;
 		_float2			vSize = { 1.f, 1.f };
-		_bool			bIsLoop;
+		_uint			bIsLoop;
 	}INSTANCE_DESC;
 protected:
 	CVIBuffer_Instance(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

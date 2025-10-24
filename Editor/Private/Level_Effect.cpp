@@ -99,7 +99,7 @@ HRESULT CLevel_Effect::Initialize()
 			case CEffect_Prefab::EffectEventType::ANIMATE_SPREAD:
 				ImGui::InputFloat2("Spread speed : ", reinterpret_cast<_float*>(&m_WorkingTrackData.fSpreadSpeed));
 				ImGui::InputFloat3("pivot : ", reinterpret_cast<_float*>(&m_WorkingTrackData.fPivot));
-				ImGui::Checkbox("Gravity", &m_WorkingTrackData.bGravity);
+				ImGui::Checkbox("Gravity", &m_bGravity);
 				break;
 
 			case CEffect_Prefab::EffectEventType::ANIMATE_ROTATE:
@@ -117,7 +117,10 @@ HRESULT CLevel_Effect::Initialize()
 			}
 
 			if (ImGui::Button("Add TimeTrack"))
-				m_PrefabPrototype->Add_TimeTrack(m_WorkingTrackData);
+			{
+				m_WorkingTrackData.bGravity = m_bGravity;
+				m_PrefabPrototype->Add_TimeTrack(m_WorkingTrackData); 
+			}
 
 			ImGui::End();
 		});
@@ -162,7 +165,7 @@ void CLevel_Effect::Edit_Options()
 	ImGui::RadioButton("Sprite Effect", &m_EffectType, 2);
 	ImGui::Separator();
 
-	if (m_EffectType != 2)
+	if (m_EffectType != 2)	//Instancing Effect
 	{
 		ImGui::RadioButton("Spawn_BoundingBox", &m_SpawnType, 0);
 		ImGui::RadioButton("Spawn_Circle", &m_SpawnType, 1);
@@ -173,12 +176,12 @@ void CLevel_Effect::Edit_Options()
 		else if (m_SpawnType == 1)
 			Create_Circle_Spawn();
 
-		ImGui::Checkbox("Eleemnt Loop", &m_bLoop);
+		ImGui::Checkbox("Element Loop", &m_bLoop);
 		ImGui::InputScalar("Instance Num : ", ImGuiDataType_U32, &m_iInstanceNum);
 		ImGui::InputFloat2("LifeTime : ", m_fLifeTime);
 		ImGui::InputFloat2("Scrolling Speed : ", reinterpret_cast<_float*>(&m_fScrollSpeed));
 	}
-	else
+	else // Sprite Effect
 	{
 		const char* textures[] = { "test0","test1" };
 		ImGui::ListBox("Particles", reinterpret_cast<int*>(&m_iTextureIdx), textures, IM_ARRAYSIZE(textures));

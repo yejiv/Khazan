@@ -49,6 +49,23 @@ void CEffect_Prefab::Priority_Update(_float fTimeDelta)
     else if (!m_bPlaying)
         return ;
 
+    /* [DEBUG] */
+    if (m_pGameInstance->Key_Pressing(DIK_UP, fTimeDelta))
+    {
+        m_pTransformCom->Go_Straight(fTimeDelta);
+    }
+    if (m_pGameInstance->Key_Pressing(DIK_DOWN, fTimeDelta))
+    {
+        m_pTransformCom->Go_Backward(fTimeDelta);
+    }
+    if (m_pGameInstance->Key_Pressing(DIK_LEFT, fTimeDelta))
+    {
+        m_pTransformCom->Go_Left(fTimeDelta);
+    }
+    if (m_pGameInstance->Key_Pressing(DIK_RIGHT, fTimeDelta))
+    {
+        m_pTransformCom->Go_Right(fTimeDelta);
+    }
 
     for (size_t i = 0; i < m_eEventTracks.size(); ++i)
     {
@@ -208,7 +225,7 @@ void CEffect_Prefab::Edit_TimeTrack(_uint ChildIdx)
         case CEffect_Prefab::EffectEventType::ANIMATE_SPREAD:
             ImGui::InputFloat2("Spread speed : ",reinterpret_cast<_float*>(&m_sEditingData.fSpreadSpeed));
             ImGui::InputFloat3("pivot : ",reinterpret_cast<_float*>(&m_sEditingData.fPivot));
-            ImGui::Checkbox("Gravity", &m_sEditingData.bGravity);
+            ImGui::Checkbox("Gravity", &m_Gravity);
             break;
 
         case CEffect_Prefab::EffectEventType::ANIMATE_ROTATE:
@@ -225,8 +242,11 @@ void CEffect_Prefab::Edit_TimeTrack(_uint ChildIdx)
             break;
         }
 
-        if(ImGui::Button("Edit TimeTrack"))
+        if (ImGui::Button("Edit TimeTrack"))
+        {
             *SelectedElement[m_TrackIdx] = m_sEditingData;
+            m_sEditingData.bGravity = m_Gravity;
+        }
 
         if(ImGui::Button("Delete TimeTrack"))
         {
@@ -303,7 +323,7 @@ _float CEffect_Prefab::Get_MaxTrack()
 }
 
 void CEffect_Prefab::Setting_Loop()
-{
+{    
     ImGui::Checkbox("Loop", &m_IsLoop); 
 }
 
@@ -315,6 +335,22 @@ void CEffect_Prefab::ResetChildren()
         m_bEventTriggered[i] = false;
     for(_uint i = 0; i < m_Children.size(); ++i)
         m_Children[i]->Reset();
+}
+
+void CEffect_Prefab::Save(_wstring filename)
+{
+    std::ofstream os{ filename, std::ios::binary };
+
+    os.write(reinterpret_cast<char*>(m_Children.size()), sizeof(size_t));
+    os.write(reinterpret_cast<char*>(m_eEventTracks.size()), sizeof(size_t));
+
+    for(auto& child : m_Children)
+        child->Save_Data(os);
+
+    for(_uint i = 0; i < m_eEventTracks.size(); ++i)
+        os.write(reinterpret_cast<char*>(&m_eEventTracks[i]), sizeof(EFFECT_EVENT));
+
+    os.close();
 }
 
 CEffect_Prefab* CEffect_Prefab::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
