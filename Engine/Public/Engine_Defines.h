@@ -10,6 +10,7 @@
 #include <DirectXCollision.h>
 
 
+
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 
@@ -47,6 +48,10 @@ using namespace DirectX;
 #include <Core/TempAllocator.h>
 
 using namespace JPH;
+
+
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 #ifdef new
 #pragma pop_macro("new") // DBG_NEW º¹¿ø
