@@ -15,9 +15,7 @@ public:
 		_float2 vSpeed{ 0.f, 0.f };
 		_float2 vLifeTime;
 		_float	fOffset;
-		_bool   IsCircle;
-		_float3 vSourceColor = _float3(1.f, 1.f, 1.f);
-		_float	fRotationPerSec;
+		_uint   IsCircle;
 		_float	fSizeRatio;
 		const _char* pFilePath;
 	}POINT_MESH_DESC;
@@ -28,19 +26,19 @@ private:
 	virtual ~CVIBuffer_Mesh_Instance() = default;
 
 public:
-	void					Reset(); 
+	void						Reset(); 
 
 public:
-	virtual HRESULT			Initialize_Prototype(INSTANCE_DESC* pArg);
-	virtual HRESULT			Initialize_Clone(void* pArg); 
+	virtual HRESULT				Initialize_Prototype(INSTANCE_DESC* pArg);
+	virtual HRESULT				Initialize_Clone(void* pArg); 
 
 public:
-	_bool					Update(_float fTimeDelta);
-	void					Setting_Speed(SPEED_VALUE type, _float2 range);
-	void					Remove_Speed(SPEED_VALUE type);
-	void					Remove_Speed();
-	void					Setting_Pivot(_float3 pivot);
-	void					Setting_Loop(_bool isLoop) { m_IsLoop = isLoop; };
+	_bool						Update(_float fTimeDelta);
+	void						Setting_Speed(SPEED_VALUE type, _float2 range);
+	void						Remove_Speed(SPEED_VALUE type);
+	void						Remove_Speed();
+	void						Setting_Pivot(_float3 pivot);
+	void						Setting_Loop(_bool isLoop) { m_IsLoop = isLoop; };
 
 
 private:
@@ -64,15 +62,17 @@ private:
 	POINT_INSTANCE_PARAMS*		m_pParticleParams; 
 
 private:
-	_float3					m_vPivot = {};
-	_float*					m_fSpeed[ENUM_CLASS(SPEED_VALUE::SPEED_END)];
-	_bool					m_IsLoop = {};
-	//_float					m_fRotationPerSec = {};
-	_float					m_fOffset = {};
-	_float3					m_fRange = {};
-	_float2					m_fScale = {};
-	_float3*				m_pVertexPositions = { nullptr };
-	_bool					m_bIsCircle = {};
+	_float3*					m_pVertexPositions = { nullptr };
+
+private :
+	_float3						m_vPivot = {};
+	_float3						m_vRange = {};
+	_bool						m_IsLoop = {}; 
+
+	_float						m_fOffset = {}; 
+	_bool						m_bIsCircle = {};
+
+	_bool						m_bIsFollow;
 
 public:
 	static CVIBuffer_Mesh_Instance*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, INSTANCE_DESC* pArg);

@@ -1,7 +1,7 @@
 struct PARTICLE_PARAMS
 {
     float4 vInitTranslation;
-    float2 fSize;
+    float fSize;
 };
 
 struct VTXINSTANCE_PARTICLE
@@ -19,7 +19,7 @@ struct VTXINSTANCE_DYNAMIC_DATA
 {
     float4 fSpeed;
     float fGravity;
-    float bDead;    //CPU에서 읽을 값. 항상 0에다가 결과값 저장
+    float bDead;    //CPU에서 읽을 값.
 };
 
 cbuffer CB_PARTICLE : register(b0)
@@ -27,12 +27,13 @@ cbuffer CB_PARTICLE : register(b0)
     float g_fTimeDelta;
     float3 g_vPivot;
     uint g_iNumInstances;
-    float2 g_fScale;
-    float Padding0;
+    float3 Padding0;
     
     uint g_iSpeedType;
     float2 g_fSpeedRange;
+    
     float g_bIsLoop;
+    float3 g_SpawnRange;
 };
 
 StructuredBuffer<PARTICLE_PARAMS> g_InputData : register(t0);
@@ -55,6 +56,55 @@ float rand_between(float minVal, float maxVal, uint ID)
 {
     float t = rand_float(ID);
     return lerp(minVal, maxVal, t);
+}
+
+void RotateParticle(inout VTXINSTANCE_PARTICLE Particle, uint iIndex)
+{
+    float fAngle = g_SpeedData[iIndex].fSpeed.y * g_fTimeDelta;
+    float s, c;
+    sincos(fAngle, s, c);
+    
+    matrix RotationMatrix =
+    {
+        c, 0, s, 0,
+         0, 1, 0, 0,
+        -s, 0, c, 0,
+         0, 0, 0, 1
+    };
+    
+    matrix Pivot_World =
+    {
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        g_vPivot.x, g_vPivot.y, g_vPivot.z, 1
+    };
+    
+    matrix final_Matrix = mul(RotationMatrix, Pivot_World);
+    float4 pos = Particle.vTranslation;
+    Particle.vTranslation = mul(pos, final_Matrix);
+}
+
+void ResetParticle(inout VTXINSTANCE_PARTICLE Particle, uint iIndex)
+{
+    Particle.vLifeTime.x = 0.f;
+
+    //if (g_bIsfFollow) //true가 기본값
+    //    Particle.vTranslation = g_InputData[iIndex].vInitTranslation;
+    //else
+    //{
+    //    Particle.vTranslation.x = rand_between(g_vPrefabPosition.x - g_SpawnRange.x * 0.5f, g_vPrefabPosition.x - g_SpawnRange.x * 0.5f, iIndex);
+    //    Particle.vTranslation.y = rand_between(g_vPrefabPosition.y - g_SpawnRange.y * 0.5f, g_vPrefabPosition.y - g_SpawnRange.x * 0.5f, iIndex);
+    //    Particle.vTranslation.z = rand_between(g_vPrefabPosition.z - g_SpawnRange.z * 0.5f, g_vPrefabPosition.z - g_SpawnRange.z * 0.5f, iIndex);
+    //}
+    
+    Particle.vTranslation = g_InputData[iIndex].vInitTranslation;
+    
+    if (g_bIsLoop == 0)
+    {
+        Particle.bDead = true;
+        g_SpeedData[0].bDead = 1;
+    }
 }
 
 [numthreads(256, 1, 1)]
@@ -80,31 +130,7 @@ void CS_MOVE(uint3 DTid : SV_DispatchThreadID)
 	
 	//Rotation
     if (SpeedData.fSpeed.y)
-	{
-        float fAngle = SpeedData.fSpeed.y * g_fTimeDelta;
-        float s, c;
-        sincos(fAngle, s, c);
-    
-        matrix RotationMatrix =
-        {
-            c, 0, s, 0,
-             0, 1, 0, 0,
-            -s, 0, c, 0,
-             0, 0, 0, 1
-        };
-    
-        matrix Pivot_World =
-        {
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            g_vPivot.x, g_vPivot.y, g_vPivot.z, 1
-        };
-    
-        matrix final_Matrix = mul(RotationMatrix, Pivot_World);
-        float4 pos = Particle.vTranslation;
-        Particle.vTranslation = mul(pos, final_Matrix);
-    }
+        RotateParticle(Particle, iIndex);
 	
 	//Spread
     vector vMoveDir = vector((Particle.vTranslation.xyz - g_vPivot), 0.f);
@@ -115,24 +141,15 @@ void CS_MOVE(uint3 DTid : SV_DispatchThreadID)
     
     Particle.vLifeTime.x += g_fTimeDelta;
 
-	if (Particle.vLifeTime.x >= Particle.vLifeTime.y
-		|| (SpeedData.fSpeed.x < 0 && length(vMoveDir).x < 0.1f))
-	{
-		Particle.vLifeTime.x = 0.f;
-        Particle.vTranslation = g_InputData[iIndex].vInitTranslation;
-        if (g_bIsLoop == 0)
-        { 
-            Particle.bDead = true;
-            g_SpeedData[0].bDead = 1;
-        }
-    }
+    if (Particle.vLifeTime.x >= Particle.vLifeTime.y
+		|| (SpeedData.fSpeed.x < 0 && length(vMoveDir).x < 0.1f)) 
+        ResetParticle(Particle, iIndex);
 	
     if (Particle.vRight.x <= 0.f)
     {
-        float fScale = rand_between(g_InputData[iIndex].fSize.x, g_InputData[iIndex].fSize.y, iIndex);
-        Particle.vRight = float4(fScale, 0.f, 0.f, 0.f);
-        Particle.vUp = float4(0.f, fScale, 0.f, 0.f);
-        Particle.vLook = float4(0.f, 0.f, fScale, 0.f);
+        Particle.vRight = float4(g_InputData[iIndex].fSize, 0.f, 0.f, 0.f);
+        Particle.vUp = float4(0.f, g_InputData[iIndex].fSize, 0.f, 0.f);
+        Particle.vLook = float4(0.f, 0.f, g_InputData[iIndex].fSize, 0.f);
     }
     
     g_OutputData[iIndex] = Particle;

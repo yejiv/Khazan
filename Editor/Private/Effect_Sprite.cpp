@@ -54,7 +54,7 @@ void CEffect_Sprite::Update(_float fTimeDelta)
         m_bRunning = false;
     }
     //(뭔가 끝내라는 이벤트 -> 이거 루프 세팅 false로 바꿔주기)
-        
+    
     __super::Update(fTimeDelta);
 }
 
@@ -147,8 +147,16 @@ HRESULT CEffect_Sprite::Bind_ShaderResources()
     _float iRow = static_cast<_float>(m_sData.iRow);
     _float UVIdx = static_cast<_float>(m_iUVIdx);
 
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix)))
-        return E_FAIL;
+    if (m_sData.bFollow == true)
+    {
+        if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix)))
+            return E_FAIL;
+    }
+    else
+    {
+        if (FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix")))
+            return E_FAIL;
+    }
 
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
         return E_FAIL;

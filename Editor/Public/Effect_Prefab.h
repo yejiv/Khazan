@@ -30,7 +30,7 @@ public:
 		_float2			fScrollSpeed;
 
 		_float3			fPivot;
-		_bool			bGravity;
+		_uint			bGravity;
 	}EFFECT_EVENT;
 
 private:
@@ -59,6 +59,7 @@ public:
 	_float							Get_MaxTrack();
 	void							Setting_Loop();
 	void							ResetChildren();
+	void							Save(_wstring filename);
 
 private:
 	vector<class CEffect_Element*>	m_Children;
@@ -73,6 +74,7 @@ private:
 	EFFECT_EVENT					m_sEditingData;
 	_int							m_PrevTrackIdx;
 	_int							m_TrackIdx;
+	_bool							m_Gravity;
 	 
 public:
 	static CEffect_Prefab*			Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
