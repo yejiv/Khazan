@@ -110,7 +110,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../public/;../../EngineSDK/Debug/Inc/;../../EngineSDK/Debug/Inc/DirectXTK/;../../EngineSDK/Debug/Inc/fmod/;../../EngineSDK/Debug/Inc/Fx11/;../../EngineSDK/Debug/Inc/assimp/;../../EngineSDK/Debug/Inc/ImGui/;../../EngineSDK/Debug/Inc/Jolt/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../public/;../../EngineSDK/Debug/Inc/;../../EngineSDK/Debug/Inc/DirectXTK/;../../EngineSDK/Debug/Inc/fmod/;../../EngineSDK/Debug/Inc/Fx11/;../../EngineSDK/Debug/Inc/assimp/;../../EngineSDK/Debug/Inc/ImGui/;../../EngineSDK/Debug/Inc/Jolt/;../../EngineSDK/Debug/Inc/Guizmo/</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>ClientPch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -137,7 +137,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../public/;../../EngineSDK/Release/Inc/;../../EngineSDK/Release/Inc/DirectXTK/;../../EngineSDK/Release/Inc/fmod/;../../EngineSDK/Release/Inc/Fx11/;../../EngineSDK/Release/Inc/assimp/;../../EngineSDK/Release/Inc/ImGui/;../../EngineSDK/Release/Inc/Jolt/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../public/;../../EngineSDK/Release/Inc/;../../EngineSDK/Release/Inc/DirectXTK/;../../EngineSDK/Release/Inc/fmod/;../../EngineSDK/Release/Inc/Fx11/;../../EngineSDK/Release/Inc/assimp/;../../EngineSDK/Release/Inc/ImGui/;../../EngineSDK/Release/Inc/Jolt/;../../EngineSDK/Release/Inc/Guizmo/</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>ClientPch.h</PrecompiledHeaderFile>
@@ -331,6 +331,7 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosSpriteTex.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_Cursor.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_Font.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_UI.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_UIMask.hlsl" />
   </ItemGroup>

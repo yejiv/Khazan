@@ -45,7 +45,7 @@ HRESULT CRenderer::Initialize()
         return E_FAIL;
 
     /* For.Target_SSAO */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_SSAO"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16_FLOAT, _float4(1.f, 1.f, 1.f, 1.f))))
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_SSAO"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 1.f))))
         return E_FAIL;
 
     /* For.Target_Specular */
@@ -108,6 +108,12 @@ HRESULT CRenderer::Initialize()
     XMStoreFloat4x4(&m_ViewMatrix, XMMatrixIdentity());
     XMStoreFloat4x4(&m_ProjMatrix, XMMatrixOrthographicLH(ViewportDesc.Width, ViewportDesc.Height, 0.f, 1.f));
 
+    if (FAILED(Ready_Kernel()))
+        return E_FAIL;
+
+    if (FAILED(Ready_NoiseTexture()))
+        return E_FAIL;
+
 #ifdef _DEBUG
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Diffuse"), 150.0f, 150.0f, 300.f, 300.f)))
         return E_FAIL;
@@ -149,20 +155,25 @@ HRESULT CRenderer::Draw()
     if (FAILED(Render_Priority()))
         return E_FAIL;
 
-#ifdef _DEBUG
-    if (m_isEnableShadow)
+//#ifdef _DEBUG
+//    if (m_isEnableShadow)
+//        if (FAILED(Render_Shadow()))
+//            return E_FAIL;
+//#else
+//    if (FAILED(Render_Shadow()))
+//        return E_FAIL;
+//#endif
+
+    if (isEnableShadow())
         if (FAILED(Render_Shadow()))
             return E_FAIL;
-#else
-    if (FAILED(Render_Shadow()))
-        return E_FAIL;
-#endif
 
     if (FAILED(Render_NonBlend()))
         return E_FAIL;
 
-    if (FAILED(Render_SSAO()))
-        return E_FAIL;
+    if (isEnableSSAO())
+        if (FAILED(Render_SSAO()))
+            return E_FAIL;
 
     if (FAILED(Render_Lights()))
         return E_FAIL;
@@ -212,6 +223,7 @@ HRESULT CRenderer::Ready_Kernel()
 {
     m_iKernelSize = 16;
 
+    vector<_float3> Kernels;
     for (_uint i = 0; i < m_iKernelSize; ++i)
     {
         // 랜덤 방향 벡터 생성
@@ -223,25 +235,107 @@ HRESULT CRenderer::Ready_Kernel()
         );
 
         // 정규화
+        XMStoreFloat3(&vSample, XMVector3Normalize(XMLoadFloat3(&vSample)));
 
         // 스케일 i / KernelSize
-        // 0.1에서 1까지 Scale 제곱만큼의 비율로 보간하여 Scale 저장
-        // 위 랜덤 벡터와 스케일을 곱해서 벡터에 저장
-        // -> 셰이더에 상수로 바인딩
-
-        // 이후 회전은 4x4 작은 사이즈의 노이즈 텍스처를 만들고
+        _float fScale = static_cast<_float>(i) / static_cast<_float>(m_iKernelSize);
         
-        // Shader에서 노이즈 텍스처를 샘플러 Linear, wrap 모드 설정하고 샘플링
-        // 뷰포트 사이즈를 받아서 노이즈 텍스처를 생성했던 4픽셀만큼 나누고
-        // 이렇게 구한 노이즈 스케일을 텍스쿠드에 곱해서 화면 사이즈만큼 노이즈 텍스처가 반복되도록 함
-        // 여기서 xyz를 가져와 랜덤 벡터로 만듦
+        // 0.1에서 1까지 Scale 제곱만큼의 비율로 보간하여 Scale 저장
+        fScale = Lerp(0.1f, 1.f, fScale * fScale);
+
+        // 위 랜덤 벡터와 스케일을 곱해서 벡터에 저장
+        vSample.x *= fScale;
+        vSample.y *= fScale;
+        vSample.z *= fScale;
+
+        Kernels.push_back(vSample);
     }
+
+    D3D11_BUFFER_DESC Desc{};
+    Desc.ByteWidth = sizeof(_float3) * m_iKernelSize;
+    Desc.StructureByteStride = sizeof(_float3);
+    Desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    Desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+
+    D3D11_SUBRESOURCE_DATA InitialData{};
+    InitialData.pSysMem = Kernels.data();
+
+    if (FAILED(m_pDevice->CreateBuffer(&Desc, &InitialData, &m_pStructuredBuffer)))
+        return E_FAIL;
+
+    D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc{};
+    SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+    SRVDesc.Format = DXGI_FORMAT_UNKNOWN;
+    SRVDesc.Buffer.NumElements = m_iKernelSize;
+
+    if (FAILED(m_pDevice->CreateShaderResourceView(m_pStructuredBuffer, &SRVDesc, &m_pKernelSRV)))
+        return E_FAIL;
+
+    // Tool에서 샘플 개수 조정 시 샘플 개수 갱신 후 삭제 후 재생성
 
     return S_OK;
 }
 
 HRESULT CRenderer::Ready_NoiseTexture()
 {
+    // 회전은 4x4 작은 사이즈의 노이즈 텍스처를 만들고
+    // Shader에서 노이즈 텍스처를 샘플러 point, wrap 모드 설정하고 샘플링
+    // 뷰포트 사이즈를 받아서 노이즈 텍스처를 생성했던 4픽셀만큼 나누고
+    // 이렇게 구한 노이즈 스케일을 텍스쿠드에 곱해서 화면 사이즈만큼 노이즈 텍스처가 반복되도록 함
+    // 여기서 xyz를 가져와 랜덤 벡터로 만듦
+    
+    // 노이즈 평면 회전 정보 생성
+
+    vector<_float3> Noise;
+    Noise.reserve(m_iKernelSize);
+
+    for (_uint i = 0; i < m_iKernelSize; ++i)
+    {
+        _float fX = m_pGameInstance->Rand(-1.f, 1.f);
+        _float fY = m_pGameInstance->Rand(-1.f, 1.f);
+        _float fZ = 0.f;
+
+        _float3 vNoise = _float3(fX, fY, fZ);
+
+        XMStoreFloat3(&vNoise, XMVector3Normalize(XMLoadFloat3(&vNoise)));
+
+        Noise.push_back(vNoise);
+    }
+
+    // Noise Texture 생성
+    ID3D11Texture2D* pTexture = { nullptr };
+    D3D11_TEXTURE2D_DESC TextureDesc{};
+
+    TextureDesc.Width = 4;
+    TextureDesc.Height = 4;
+    TextureDesc.MipLevels = 1;
+    TextureDesc.ArraySize = 1;
+    TextureDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+    TextureDesc.SampleDesc.Quality = 0;
+    TextureDesc.SampleDesc.Count = 1;
+    TextureDesc.Usage = D3D11_USAGE_IMMUTABLE;  // 초기화 후 변경 X
+    TextureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    TextureDesc.CPUAccessFlags = 0;
+    TextureDesc.MiscFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA InitialData{};
+    InitialData.pSysMem = Noise.data();
+    InitialData.SysMemPitch = sizeof(_float3) * TextureDesc.Width;  // 개행 바이트 수
+    InitialData.SysMemSlicePitch = InitialData.SysMemPitch * TextureDesc.Height; // 총 바이트
+
+    if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, &InitialData, &pTexture)))
+        return E_FAIL;
+
+    // Noise SRV 생성
+    D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc{};
+    SRVDesc.Format = TextureDesc.Format;
+    SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    SRVDesc.Texture2D.MostDetailedMip = 0;
+    SRVDesc.Texture2D.MipLevels = 1;
+
+    if (FAILED(m_pDevice->CreateShaderResourceView(pTexture, &SRVDesc, &m_pNoiseSRV)))
+        return E_FAIL;
+
     return S_OK;
 }
 
@@ -350,6 +444,26 @@ HRESULT CRenderer::Render_SSAO()
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
         return E_FAIL;
 
+    // 노이즈 텍스처 바인딩
+    // 스크린 사이즈 바인딩
+    // 포인트 샘플러로 샘플링 -> 랜덤 벡터
+    // 랜덤 벡터 정규화
+    // 커널 SRV 바인딩
+    // 커널 개수 바인딩
+
+    if (FAILED(m_pShader->Bind_SRV("g_NoiseTexture", m_pNoiseSRV)))
+        return E_FAIL;
+    
+    _float2 vScreenSize = _float2(m_fViewportWidth, m_fViewportHeight);
+    if (FAILED(m_pShader->Bind_RawValue("g_vScreenSize", &vScreenSize, sizeof(_float2))))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_SRV("g_Kernels", m_pKernelSRV)))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_RawValue("g_iNumKernels", &m_iKernelSize, sizeof(_uint))))
+        return E_FAIL;
+
     m_pShader->Begin(7);
 
     m_pVIBuffer->Bind_Resources();
@@ -384,6 +498,13 @@ HRESULT CRenderer::Render_Lights()
         return E_FAIL;
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
         return E_FAIL;
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_SSAO"), m_pShader, "g_SSAOTexture")))
+        return E_FAIL;
+
+#ifdef _DEBUG
+    if (FAILED(m_pShader->Bind_Bool("g_isEnableSSAO", &m_isEnableSSAO)))
+        return E_FAIL;
+#endif
 
     m_pGameInstance->Render_Lights(m_pShader, m_pVIBuffer, m_pGameInstance->Get_CurrentLevelID());
 
@@ -423,70 +544,73 @@ HRESULT CRenderer::Render_Combined()
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
         return E_FAIL;
 
-#ifdef _DEBUG
-
-    if (m_isEnableShadow)
-    {
-        _uint iNumCascades = m_pGameInstance->Get_NumCascades();
-
-        if (FAILED(m_pShader->Bind_FloatArray("g_Splits", m_pGameInstance->Get_CascadeSplits(), iNumCascades)))
-            return E_FAIL;
-
-        if (FAILED(m_pShader->Bind_RawValue("g_iNumCascades", &iNumCascades, sizeof(_uint))))
-            return E_FAIL;
-
-        if (FAILED(m_pShader->Bind_Matrices("g_LightViewMatrices", m_pGameInstance->Get_ShadowLightViewMatrices(), iNumCascades)))
-            return E_FAIL;
-
-        if (FAILED(m_pShader->Bind_Matrices("g_LightProjMatrices", m_pGameInstance->Get_ShadowLightProjMatrices(), iNumCascades)))
-            return E_FAIL;
-
-        if (FAILED(m_pGameInstance->Bind_ShadowSRVArray(m_pShader, "g_TextureArray")))
-            return E_FAIL;
-
-        _float fBias = m_pGameInstance->Get_ShadowBias();
-        if (FAILED(m_pShader->Bind_RawValue("g_fBias", &fBias, sizeof(_float))))
-            return E_FAIL;
-
-        _float2 vShadowMapSize = _float2(g_iMaxWidth, g_iMaxHeight);
-        if (FAILED(m_pShader->Bind_RawValue("g_vShadowMapSize", &vShadowMapSize, sizeof(_float2))))
-            return E_FAIL;
-
-        _int iEnableShadowFlag = static_cast<_int>(m_isEnableShadow);
-        if (FAILED(m_pShader->Bind_RawValue("g_iEnableShadowFlag", &iEnableShadowFlag, sizeof(_int))))
-            return E_FAIL;
-    }
-    else
-        m_pGameInstance->Clear_ShadowDSVs();
-
-#else
-
-    _uint iNumCascades = m_pGameInstance->Get_NumCascades();
-
-    if (FAILED(m_pShader->Bind_FloatArray("g_Splits", m_pGameInstance->Get_CascadeSplits(), iNumCascades)))
+    if (FAILED(Bind_Shadow_ShaderResources()))
         return E_FAIL;
 
-    if (FAILED(m_pShader->Bind_RawValue("g_iNumCascades", &iNumCascades, sizeof(_uint))))
-        return E_FAIL;
-
-    if (FAILED(m_pShader->Bind_Matrices("g_LightViewMatrices", m_pGameInstance->Get_ShadowLightViewMatrices(), iNumCascades)))
-        return E_FAIL;
-
-    if (FAILED(m_pShader->Bind_Matrices("g_LightProjMatrices", m_pGameInstance->Get_ShadowLightProjMatrices(), iNumCascades)))
-        return E_FAIL;
-
-    if (FAILED(m_pGameInstance->Bind_ShadowSRVArray(m_pShader, "g_TextureArray")))
-        return E_FAIL;
-
-    _float fBias = m_pGameInstance->Get_ShadowBias();
-    if (FAILED(m_pShader->Bind_RawValue("g_fBias", &fBias, sizeof(_float))))
-        return E_FAIL;
-
-    _float2 vShadowMapSize = _float2(g_iMaxWidth, g_iMaxHeight);
-    if (FAILED(m_pShader->Bind_RawValue("g_vShadowMapSize", &vShadowMapSize, sizeof(_float2))))
-        return E_FAIL;
-
-#endif
+//  #ifdef _DEBUG
+//  
+//      if (m_isEnableShadow)
+//      {
+//          _uint iNumCascades = m_pGameInstance->Get_NumCascades();
+//  
+//          if (FAILED(m_pShader->Bind_FloatArray("g_Splits", m_pGameInstance->Get_CascadeSplits(), iNumCascades)))
+//              return E_FAIL;
+//  
+//          if (FAILED(m_pShader->Bind_RawValue("g_iNumCascades", &iNumCascades, sizeof(_uint))))
+//              return E_FAIL;
+//  
+//          if (FAILED(m_pShader->Bind_Matrices("g_LightViewMatrices", m_pGameInstance->Get_ShadowLightViewMatrices(), iNumCascades)))
+//              return E_FAIL;
+//  
+//          if (FAILED(m_pShader->Bind_Matrices("g_LightProjMatrices", m_pGameInstance->Get_ShadowLightProjMatrices(), iNumCascades)))
+//              return E_FAIL;
+//  
+//          if (FAILED(m_pGameInstance->Bind_ShadowSRVArray(m_pShader, "g_TextureArray")))
+//              return E_FAIL;
+//  
+//          _float fBias = m_pGameInstance->Get_ShadowBias();
+//          if (FAILED(m_pShader->Bind_RawValue("g_fBias", &fBias, sizeof(_float))))
+//              return E_FAIL;
+//  
+//          _float2 vShadowMapSize = _float2(g_iMaxWidth, g_iMaxHeight);
+//          if (FAILED(m_pShader->Bind_RawValue("g_vShadowMapSize", &vShadowMapSize, sizeof(_float2))))
+//              return E_FAIL;
+//  
+//          _int iEnableShadowFlag = static_cast<_int>(m_isEnableShadow);
+//          if (FAILED(m_pShader->Bind_RawValue("g_iEnableShadowFlag", &iEnableShadowFlag, sizeof(_int))))
+//              return E_FAIL;
+//      }
+//      else
+//          m_pGameInstance->Clear_ShadowDSVs();
+//  
+//  #else
+//  
+//      _uint iNumCascades = m_pGameInstance->Get_NumCascades();
+//  
+//      if (FAILED(m_pShader->Bind_FloatArray("g_Splits", m_pGameInstance->Get_CascadeSplits(), iNumCascades)))
+//          return E_FAIL;
+//  
+//      if (FAILED(m_pShader->Bind_RawValue("g_iNumCascades", &iNumCascades, sizeof(_uint))))
+//          return E_FAIL;
+//  
+//      if (FAILED(m_pShader->Bind_Matrices("g_LightViewMatrices", m_pGameInstance->Get_ShadowLightViewMatrices(), iNumCascades)))
+//          return E_FAIL;
+//  
+//      if (FAILED(m_pShader->Bind_Matrices("g_LightProjMatrices", m_pGameInstance->Get_ShadowLightProjMatrices(), iNumCascades)))
+//          return E_FAIL;
+//  
+//      if (FAILED(m_pGameInstance->Bind_ShadowSRVArray(m_pShader, "g_TextureArray")))
+//          return E_FAIL;
+//  
+//      _float fBias = m_pGameInstance->Get_ShadowBias();
+//      if (FAILED(m_pShader->Bind_RawValue("g_fBias", &fBias, sizeof(_float))))
+//          return E_FAIL;
+//  
+//      _float2 vShadowMapSize = _float2(g_iMaxWidth, g_iMaxHeight);
+//      if (FAILED(m_pShader->Bind_RawValue("g_vShadowMapSize", &vShadowMapSize, sizeof(_float2))))
+//          return E_FAIL;
+//  
+//  #endif
 
     m_pShader->Begin(3);
 
@@ -602,6 +726,47 @@ HRESULT CRenderer::SetUp_Viewport(_float fWidth, _float fHeight)
     return S_OK;
 }
 
+HRESULT CRenderer::Bind_Shadow_ShaderResources()
+{
+    if (false == isEnableShadow())
+    {
+        m_pGameInstance->Clear_ShadowDSVs();
+        return S_OK;
+    }
+
+    _uint iNumCascades = m_pGameInstance->Get_NumCascades();
+
+    if (FAILED(m_pShader->Bind_FloatArray("g_Splits", m_pGameInstance->Get_CascadeSplits(), iNumCascades)))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_RawValue("g_iNumCascades", &iNumCascades, sizeof(_uint))))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_Matrices("g_LightViewMatrices", m_pGameInstance->Get_ShadowLightViewMatrices(), iNumCascades)))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_Matrices("g_LightProjMatrices", m_pGameInstance->Get_ShadowLightProjMatrices(), iNumCascades)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_ShadowSRVArray(m_pShader, "g_TextureArray")))
+        return E_FAIL;
+
+    _float fBias = m_pGameInstance->Get_ShadowBias();
+    if (FAILED(m_pShader->Bind_RawValue("g_fBias", &fBias, sizeof(_float))))
+        return E_FAIL;
+
+    _float2 vShadowMapSize = _float2(g_iMaxWidth, g_iMaxHeight);
+    if (FAILED(m_pShader->Bind_RawValue("g_vShadowMapSize", &vShadowMapSize, sizeof(_float2))))
+        return E_FAIL;
+
+#ifdef _DEBUG
+    if (FAILED(m_pShader->Bind_Bool("g_isEnableShadow", &m_isEnableShadow)))
+        return E_FAIL;
+#endif
+
+    return S_OK;
+}
+
 #ifdef _DEBUG
 
 HRESULT CRenderer::Render_Debug()
@@ -642,6 +807,8 @@ HRESULT CRenderer::Render_Debug()
     _float fX = ViewportDesc.Width - 150.0f;
     _float fY = 150.f;
 
+    _float4x4 ResultWolrdMatrix{};
+
     for (_uint i = 0; i < iNumCascades; ++i)
     {
         _int iCX = i % iCol;
@@ -652,7 +819,6 @@ HRESULT CRenderer::Render_Debug()
         WorldMatrix.r[3] = XMVectorSetX(WorldMatrix.r[3], fX - ViewportDesc.Width * 0.5f);
         WorldMatrix.r[3] = XMVectorSetY(WorldMatrix.r[3], -fY + ViewportDesc.Height * 0.5f);
 
-        _float4x4 ResultWolrdMatrix{};
         XMStoreFloat4x4(&ResultWolrdMatrix, WorldMatrix);
 
         // 월드 뷰 투영 바인딩, SRV 바인딩, 슬라이스 인덱스 바인딩, 렌더 호출
@@ -679,10 +845,56 @@ HRESULT CRenderer::Render_Debug()
         fY += fHeight;
     }
 
+    // Noise Texture Debug Render
+
+    // x 150 y 750
+    fX = 150.0f;
+    fY = 750.f;
+
+    _matrix WorldMatrix = XMMatrixScaling(fWidth, fHeight, 1.f);
+    WorldMatrix.r[3] = XMVectorSetX(WorldMatrix.r[3], fX - ViewportDesc.Width * 0.5f);
+    WorldMatrix.r[3] = XMVectorSetY(WorldMatrix.r[3], -fY + ViewportDesc.Height * 0.5f);
+    XMStoreFloat4x4(&ResultWolrdMatrix, WorldMatrix);
+
+    if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &ResultWolrdMatrix)))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_SRV("g_Texture", m_pNoiseSRV)))
+        return E_FAIL;
+
+    m_pShader->Begin(0);
+
+    m_pVIBuffer->Bind_Resources();
+    m_pVIBuffer->Render();
+
     return S_OK;
 }
 
 #endif
+
+_bool CRenderer::isEnableShadow()
+{
+#ifdef _DEBUG
+    return m_isEnableShadow;
+#else
+    return true;
+#endif
+}
+
+_bool CRenderer::isEnableSSAO()
+{
+#ifdef _DEBUG
+    return m_isEnableSSAO;
+#else
+    return true;
+#endif
+}
 
 CRenderer* CRenderer::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {

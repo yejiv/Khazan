@@ -102,6 +102,11 @@ HRESULT CGraphic_Device::Present()
 	return m_pSwapChain->Present(0, 0);	
 }
 
+void CGraphic_Device::Present_SwapChain(_uint iSyncInterval, _uint iFlag)
+{
+	m_pSwapChain->Present(iSyncInterval, iFlag);
+}
+
 
 HRESULT CGraphic_Device::Ready_SwapChain(HWND hWnd, WINMODE isWindowed, _uint iWinCX, _uint iWinCY)
 {

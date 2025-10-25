@@ -113,7 +113,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>EditorPch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../public/;../../EngineSDK/Debug/Inc/;../../EngineSDK/Debug/Inc/DirectXTK/;../../EngineSDK/Debug/Inc/fmod/;../../EngineSDK/Debug/Inc/Fx11/;../../EngineSDK/Debug/Inc/assimp/;../../EngineSDK/Debug/Inc/ImGui/;../../EngineSDK/Debug/Inc/Jolt/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../public/;../../EngineSDK/Debug/Inc/;../../EngineSDK/Debug/Inc/DirectXTK/;../../EngineSDK/Debug/Inc/fmod/;../../EngineSDK/Debug/Inc/Fx11/;../../EngineSDK/Debug/Inc/assimp/;../../EngineSDK/Debug/Inc/ImGui/;../../EngineSDK/Debug/Inc/Jolt/;../../EngineSDK/Debug/Inc/Guizmo/</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>EditorPch.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
@@ -140,7 +140,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>EditorPch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../public/;../../EngineSDK/Release/Inc/;../../EngineSDK/Release/Inc/DirectXTK/;../../EngineSDK/Release/Inc/fmod/;../../EngineSDK/Release/Inc/Fx11/;../../EngineSDK/Release/Inc/assimp/;../../EngineSDK/Release/Inc/ImGui/;../../EngineSDK/Release/Inc/Jolt/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../public/;../../EngineSDK/Release/Inc/;../../EngineSDK/Release/Inc/DirectXTK/;../../EngineSDK/Release/Inc/fmod/;../../EngineSDK/Release/Inc/Fx11/;../../EngineSDK/Release/Inc/assimp/;../../EngineSDK/Release/Inc/ImGui/;../../EngineSDK/Release/Inc/Jolt/;../../EngineSDK/Release/Inc/Guizmo/</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>EditorPch.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>

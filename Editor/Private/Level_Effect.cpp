@@ -22,6 +22,9 @@ HRESULT CLevel_Effect::Initialize()
     if (FAILED(Ready_Layer_GameObject()))
         return E_FAIL;
 
+	strcpy_s(SavePath, sizeof(SavePath), "../../Client/Bin/Data/Effect/Baked/");
+	strcpy_s(LoadPath, sizeof(LoadPath), "../../Client/Bin/Data/Effect/Baked/");
+
     m_pGameInstance->AddWidget(TEXT("Effect"), [&]()
         {
             ImGui::Begin("[Create Effect to Prefab]");
@@ -113,6 +116,7 @@ HRESULT CLevel_Effect::Initialize()
 
 			case CEffect_Prefab::EffectEventType::ANIMATE_LINEAR_MOVE:
 				ImGui::InputFloat2("Upward speed : ", reinterpret_cast<_float*>(&m_WorkingTrackData.fUpwardSpeed));
+				ImGui::Checkbox("Gravity", &m_bGravity);
 				break;
 			}
 
@@ -128,6 +132,23 @@ HRESULT CLevel_Effect::Initialize()
 	m_pGameInstance->AddWidget(TEXT("Effect"), [&]()
 		{
 			m_PrefabPrototype->Edit_TimeTrack(m_iChildrenIdx); 
+		});
+
+	m_pGameInstance->AddWidget(TEXT("Effect"), [&]()
+		{
+			ImGui::Begin("[SAVE / LOAD]");
+
+			ImGui::InputText("Save Path : ", SavePath, IM_ARRAYSIZE(SavePath)); 
+
+			if (ImGui::Button("Save"))
+				m_PrefabPrototype->Save(SavePath);
+
+			ImGui::InputText("Load Path : ", LoadPath, IM_ARRAYSIZE(LoadPath));
+
+			if (ImGui::Button("Load"))
+				m_PrefabPrototype->Load(LoadPath);
+
+			ImGui::End();
 		});
 
 	return S_OK;
@@ -180,6 +201,9 @@ void CLevel_Effect::Edit_Options()
 		ImGui::InputScalar("Instance Num : ", ImGuiDataType_U32, &m_iInstanceNum);
 		ImGui::InputFloat2("LifeTime : ", m_fLifeTime);
 		ImGui::InputFloat2("Scrolling Speed : ", reinterpret_cast<_float*>(&m_fScrollSpeed));
+
+		if (m_EffectType == 1)
+			ImGui::Checkbox("Mask Scroll Direction", &m_bScrollDir);
 	}
 	else // Sprite Effect
 	{
@@ -242,16 +266,19 @@ void CLevel_Effect::GetParticleColor()
 
 	if (m_EffectType == 0)
 	{
-		const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5" };
+		const char* textures[] = { "test0", "test1", "test2",  "test3" };
 		ImGui::ListBox("Point Particles Textures", &m_iTextureIdx, textures, IM_ARRAYSIZE(textures));
 	}
 	else if (m_EffectType == 1)
 	{
-		const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12" ,  "test13",  "test14" ,  "test15" ,  "test16" ,  "test17" ,  "test18" ,  "test19" ,  "test20" ,  "test21",  "test22" ,  "test23" };
+		const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19" };
 		ImGui::ListBox("Mesh Textures", &m_iTextureIdx, textures, IM_ARRAYSIZE(textures));
 
-		const char* Meshes[] = { "Mesh1", "Mesh2", "Mesh3",  "Mesh4",  "Mesh5",  "Mesh6" };
+		const char* Meshes[] = { "Mesh1", "Mesh2", "Mesh3",  "Mesh4",  "Mesh5",  "Mesh6",  "Mesh7",  "Mesh8",  "Mesh9",  "Mesh10",  "Mesh11",  "Mesh12",  "Mesh13",  "Mesh14",  "Mesh15",  "Mesh16",  "Mesh17",  "Mesh18",  "Mesh19" ,  "Mesh20" };
 		ImGui::ListBox("Mesh Shape", &m_iMeshTypeIdx, Meshes, IM_ARRAYSIZE(Meshes));
+
+		const char* MaskTexture[] = { "width0", "width1", "width2",  "width3",  "width4",  "width5",  "width6" ,  "length0" };
+		ImGui::ListBox("Mask Textures", &m_iMaskTypeIdx, MaskTexture, IM_ARRAYSIZE(MaskTexture));
 	}
 
 	prevIdx = m_EffectType;
@@ -294,6 +321,8 @@ void CLevel_Effect::Create_MeshInstance_Element()
 	data.iMeshTypeIdx = m_iMeshTypeIdx;
 	data.iScrollSpeed = m_fScrollSpeed;
 	data.bIsLoop = m_bLoop;
+	data.bScrollDir = m_bScrollDir;
+	data.iMaskTextureIdx = m_iMaskTypeIdx;
 
 	m_PrefabPrototype->Add_Effect_Element(m_EffectType, &data);
 }

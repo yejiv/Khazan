@@ -125,7 +125,7 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 		return E_FAIL;
 
 #ifdef _DEBUG
-	m_pImgui_Manager = CImgui_Manager::Create(EngineDesc.iWinSizeX_Imgui, EngineDesc.iWinSizeY_Imgui, EngineDesc.Menu_Imgui);
+	m_pImgui_Manager = CImgui_Manager::Create(*ppDevice, *ppContext, EngineDesc.Menu_Imgui, EngineDesc.hWnd, EngineDesc.iWinSizeX, EngineDesc.iWinSizeY);
 	if (nullptr == m_pImgui_Manager)
 		return E_FAIL;
 
@@ -166,6 +166,9 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 
 HRESULT CGameInstance::Clear_Resources(_uint iClearLevelID)
 {
+#ifdef _DEBUG
+	//m_pImgui_Manager->ClearGizmoObject();
+#endif
 	m_pPool_Manager->Clear(iClearLevelID);
 
 	/* 기존레벨용 자원들을 날린다. */
@@ -250,6 +253,11 @@ void CGameInstance::SetupDebugMessageFilter(ID3D11Device* pDevice)
 		pInfoQueue->AddStorageFilterEntries(&filter);
 		pInfoQueue->Release();
 	}
+}
+
+void CGameInstance::Present_SwapChain(_uint iSyncInterval, _uint iFlag)
+{
+	m_pGraphic_Device->Present_SwapChain(iSyncInterval, iFlag);
 }
 
 #pragma endregion
@@ -360,6 +368,11 @@ void CGameInstance::Set_EnableShadow(_bool isEnable)
 	m_pRenderer->Set_EnableShadow(isEnable);
 }
 
+void CGameInstance::Set_EnableSSAO(_bool isEnable)
+{
+	m_pRenderer->Set_EnableSSAO(isEnable);
+}
+
 #endif
 
 
@@ -464,19 +477,19 @@ HRESULT CGameInstance::Render_Lights(CShader* pShader, CVIBuffer_Rect* pVIBuffer
 
 #pragma region FONT_MANAGER
 
-HRESULT CGameInstance::Add_Font(const _wstring& strFontTag, const _tchar* pFontFilePath)
+HRESULT CGameInstance::Font_Load(const _wstring& strFontTag, const _char* pFontFilePath, _uint iHeight, _uint iWidth)
 {
-	return m_pFont_Manager->Add_Font(strFontTag, pFontFilePath);
+	return m_pFont_Manager->Font_Load(strFontTag, pFontFilePath, iHeight, iWidth);
 }
 
-void CGameInstance::DrawText(const _wstring& strFontTag, const _tchar* pText, const _float2& vPosition, _fvector vColor, _float fRadian, const _float2& vOrigin, const _float2& vScale)
+HRESULT CGameInstance::Draw_Text(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, const _float4& vColor, TEXT_ALIGN eAlign)
 {
-	m_pFont_Manager->DrawText(strFontTag, pText, vPosition, vColor, fRadian, vOrigin, vScale);
+	return m_pFont_Manager->Draw_Text(strFontTag, strText, fX, fY, vColor, eAlign);
 }
 
-_float2 CGameInstance::Compute_TextSize(const _wstring& strFontTag, const _wstring& strText, _float2 vTextSize)
+HRESULT CGameInstance::Draw_TextBox(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, _float fMaxWidth, const _float4& vColor, TEXT_ALIGN eAlign)
 {
-	return m_pFont_Manager->Compute_TextSize(strFontTag, strText, vTextSize);
+	return m_pFont_Manager->Draw_TextBox(strFontTag, strText, fX, fY, fMaxWidth, vColor, eAlign);
 }
 
 #pragma endregion
@@ -677,6 +690,18 @@ void CGameInstance::AddWidget(const _wstring Menu, const function<void()>& widge
 HRESULT CGameInstance::CleanMenu(_wstring strMenu)
 {
 	return m_pImgui_Manager->CleanMenu(strMenu);
+}
+_bool CGameInstance::HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	return m_pImgui_Manager->HandleWndProc(hWnd, msg, wParam, lParam);
+}
+void CGameInstance::Set_GizmoObject(CGameObject* pGameObject)
+{
+	m_pImgui_Manager->Set_GizmoObject(pGameObject);
+}
+void CGameInstance::Clear_GizmoObject()
+{
+	m_pImgui_Manager->Clear_GizmoObject();
 }
 #endif
 #pragma endregion
@@ -921,7 +946,6 @@ void CGameInstance::Release_Engine()
 	Release();
 
 #ifdef _DEBUG
-	m_pImgui_Manager->Shutdown();
 	Safe_Release(m_pImgui_Manager);
 #endif
 

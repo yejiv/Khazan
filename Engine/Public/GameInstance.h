@@ -11,13 +11,11 @@
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx11.h"
+#include "ImGuizmo.h"
 
 #ifdef new
 #pragma pop_macro("new") // DBG_NEW 복원
 #endif
-
-
-#define IMGUI_DEFINE_MATH_OPERATORS
 
 NS_BEGIN(Engine)
 
@@ -43,6 +41,11 @@ public:
 
 private:
 	void	SetupDebugMessageFilter(ID3D11Device* pDevice);
+#pragma endregion
+
+#pragma region Graphic_Device
+public:
+	void Present_SwapChain(_uint iSyncInterval, _uint iFlag);
 #pragma endregion
 
 #pragma region LEVEL_MANAGER
@@ -78,6 +81,7 @@ public:
 public:
 	HRESULT Add_DebugComponent(class CComponent* pComponent);
 	void Set_EnableShadow(_bool isEnable);
+	void Set_EnableSSAO(_bool isEnable);
 #endif
 #pragma endregion
 
@@ -110,9 +114,10 @@ public:
 #pragma endregion
 
 #pragma region FONT_MANAGER
-	HRESULT Add_Font(const _wstring& strFontTag, const _tchar* pFontFilePath);
-	void DrawText(const _wstring& strFontTag, const _tchar* pText, const _float2& vPosition, _fvector vColor = XMVectorSet(1.f, 1.f, 1.f, 1.f), _float fRadian = 0.f, const _float2& vOrigin = _float2(0.f, 0.f), const _float2& vScale = _float2(1.f, 1.f));
-	_float2 Compute_TextSize(const _wstring& strFontTag, const _wstring& strText, _float2 vTextSize);
+	HRESULT	Font_Load(const _wstring& strFontTag, const _char* pFontFilePath, _uint iHeight, _uint iWidth = 0 );
+	HRESULT	Draw_Text(const _wstring& strFontTag, const _wstring& strText, _float fX = 0.f, _float fY = 0.f, const _float4& vColor = {1.f, 1.f, 1.f, 1.f}, TEXT_ALIGN eAlign = TEXT_ALIGN::LEFT_TOP);
+	HRESULT	Draw_TextBox(const _wstring& strFontTag, const _wstring& strText, _float fX = 0.f, _float fY = 0.f, _float fMaxWidth = 1000.f, const _float4& vColor = { 1.f, 1.f, 1.f, 1.f }, TEXT_ALIGN eAlign = TEXT_ALIGN::LEFT_TOP);
+
 #pragma endregion
 
 
@@ -171,6 +176,11 @@ public:
 #ifdef _DEBUG
 	void    AddWidget(const _wstring Menu, const function<void()>& widget);
 	HRESULT CleanMenu(_wstring strMenu);
+
+	_bool HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+	void Set_GizmoObject(class CGameObject* pGameObject);
+	void Clear_GizmoObject();
 #endif
 #pragma endregion
 
