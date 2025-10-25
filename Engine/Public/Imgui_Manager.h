@@ -47,6 +47,8 @@ private:
     class CGameInstance* m_pGameInstance = nullptr;
     ID3D11Device* m_pDevice = { nullptr };
     ID3D11DeviceContext* m_pContext = { nullptr };
+	ID3D11RenderTargetView* m_pImgRTV = { nullptr };
+	ID3D11DepthStencilView* m_pImgDSV = { nullptr };
 
     map<_wstring, vector<std::function<void()>>> m_Widgets;
 	map<_wstring, _bool> m_MenuOpen;
@@ -55,6 +57,8 @@ private:
     HWND m_hWnd = {};
     _uint m_iWinSizeX = {};
 	_uint m_iWinSizeY = {};
+
+    ImGuiIO* m_io = { nullptr };
 
     _bool m_bGizmoenabled = true;
 	ImGuizmo::OPERATION m_GizmoOp = ImGuizmo::TRANSLATE;
