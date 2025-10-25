@@ -16,7 +16,7 @@ vector g_vLightSpecular;
 // ===== Material =====
 vector g_vMtrlAmbient = { 1.f, 1.f, 1.f, 1.f }, g_vMtrlSpecular = { 1.f, 1.f, 1.f, 1.f };
 
-// ===== Render Target =====
+// ===== Textures =====
 Texture2D g_DiffuseTexture, g_NormalTexture, g_DepthTexture, g_ShadeTexture, g_SpecularTexture;
 Texture2D g_LightDepthTexture, g_BackBufferTexture, g_BlurXTexture;
 
@@ -27,10 +27,20 @@ float g_Splits[4];
 matrix g_LightViewMatrices[4], g_LightProjMatrices[4];
 float2 g_vShadowMapSize;
 float g_fBias;
-int g_iEnableShadowFlag;
+bool g_isEnableShadow = { true };
 
 // ===== PCF =====
 Texture2DArray<float> g_TextureArray;
+
+// ===== SSAO =====
+Texture2D g_NoiseTexture, g_SSAOTexture;
+float2 g_vScreenSize;
+StructuredBuffer<float3> g_Kernels;
+uint g_iNumKernels;
+float g_fRadius = { 1.f };
+float g_fIntensity = { 1.f }, g_fContrast = { 1.f };
+float g_fSampleBias = { 0.f };
+bool g_isEnableSSAO = { true };
 
 struct VS_IN
 {
@@ -74,7 +84,7 @@ PS_OUT_BACKBUFFER PS_MAIN_DEBUG(PS_IN In)
 {
     PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
     
-    Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+    Out.vColor = g_Texture.Sample(PointSampler, In.vTexcoord);
     
     return Out;
 }
@@ -123,12 +133,23 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
     
     float fShade = max(dot(vNormal * -1.f, normalize(g_vLightDir)), 0.f);
     
+    Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient));
+    
+    if (!g_isEnableSSAO)
+        return Out;
+    
+    // SSAO Test
+    float fAO = g_SSAOTexture.Sample(PointSampler, In.vTexcoord).r;
+    //  Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient * fAO));
+    Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient));
+    Out.vShade *= fAO;
+    
+    
     //  vector vReflect = reflect(normalize(g_vLightDir), vNormal);
     //  vector vLook = vWorldPos - g_vCamPosition;
     //  
     //  float fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), 50.f);
 
-    Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient));
     //  Out.vSpecular = (g_vLightSpecular * g_vMtrlSpecular) * fSpecular;
     
     return Out;
@@ -195,7 +216,7 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
     //  Out.vColor = vDiffuse * vShade + vSpecular;
     Out.vColor = vDiffuse * vShade;
     
-    if (0 == g_iEnableShadowFlag)
+    if (!g_isEnableShadow)
         return Out;
     
     /* 내 픽셀의 광원 기준의 깊이 */ 
@@ -326,15 +347,23 @@ PS_OUT_SSAO PS_MAIN_SSAO(PS_IN In)
 {
     PS_OUT_SSAO Out;
 
-    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
-    vector vNormal = normalize(vector(vNormalDesc.xyz * 2.f - 1.f, 0.f));
+    // Noise Texture -> RandomVector
+    float2 vNoiseScale = g_vScreenSize / 4.f;
+    float3 vRandomVector = g_NoiseTexture.Sample(PointSampler, In.vTexcoord * vNoiseScale).xyz;
+    vRandomVector = normalize(vRandomVector);
     
     // View Space Normal
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = normalize(vNormalDesc.xyz * 2.f - 1.f);
     float3x3 ViewMatrix = float3x3(g_ViewMatrix._11_12_13, g_ViewMatrix._21_22_23, g_ViewMatrix._31_32_33);
-    vector vViewNormal = float4(mul(vNormal.xyz, ViewMatrix), 0.f);
-    vViewNormal = normalize(vViewNormal);
+    vNormal = normalize(mul(vNormal.xyz, ViewMatrix));
     
-    // View Space Depth
+    // TBN
+    float3 vTangent = normalize(vRandomVector - vNormal * dot(vRandomVector, vNormal));
+    float3 vBinormal = normalize(cross(vNormal, vTangent));
+    float3x3 TBNMatrix = float3x3(vTangent, vBinormal, vNormal);
+    
+    // Depth
     vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
     
     vector vWorldPos;
@@ -345,12 +374,52 @@ PS_OUT_SSAO PS_MAIN_SSAO(PS_IN In)
     vWorldPos.w = 1.f;
 
     // Projection -> View
-    vWorldPos = vWorldPos * vDepthDesc.y;
-    float4 vViewDepth = mul(vWorldPos, g_ProjMatrixInv);
+    vWorldPos = vWorldPos * vDepthDesc.y; // View.Z
+    float4 vViewPos = mul(vWorldPos, g_ProjMatrixInv); // 현재 픽셀의 View Space 위치
     
+    // Occlusion
+    float fOcclusion = 0.f;
     
+    for (uint i = 0; i < g_iNumKernels; ++i)
+    {
+        // Kernle Vector Rotation -> View Space Dir
+        float3 vSampleDir = mul(TBNMatrix, g_Kernels[i]);
+        
+        // View Sample Position
+        float3 vSamplePos = vViewPos.xyz + vSampleDir * g_fRadius; // 주변 SampleDir 방향으로 Radius 반경만큼 떨어진 샘플 위치
+        
+        // Sample Position -> UV
+        // 샘플 포지션 투영 변환 -> 투영 행렬 곱해주고 w나누기 후 -1 ~ 1 => 0 ~ 1 범위로 변환 * 0.5 + 0.5
+        float4 vProjSamplePos = mul(g_ProjMatrix, float4(vSamplePos, 1.f));
+        vProjSamplePos.xyz /= vProjSamplePos.w;
+        float2 vSampleTexcoord = vProjSamplePos.xy * 0.5f + 0.5f;
+        
+        // 샘플 깊이 비교
+        // clamp
+        float fSampleDepth = g_DepthTexture.Sample(PointSampler, vSampleTexcoord).y; // 샘플 픽셀(주변 픽셀)의 깊이
+        
+        
+        
+        // 샘플 깊이가 현재 픽셀의 깊이보다 더 크면 차폐가 없음, 샘플 깊이가 현재 픽셀의 깊이보다 더 작으면 그 방향에 다른 오브젝트가 있어서 시야가 막힌 것
+        
+        // Smoothstep -> 갑자기 0 ~ 1 안 되게 경계를 부드럽게 만들어줌
+        // 반경 / 깊이 차이 -> 멀수록 값이 작아짐
+        // => 깊이 차이가 크면 차폐도 영향 적게, 가까우면 영향 크게 해서 부드럽게 만들어줌
+        float fRangeLerp = smoothstep(0.f, 1.f, g_fRadius / abs(vViewPos.z - fSampleDepth));
+        
+        // 차폐도 누적
+        fOcclusion += (vSamplePos.z >= fSampleDepth - g_fSampleBias ? 1.f : 0.f) * fRangeLerp;
+        //  if (vSamplePos.z >= fSampleDepth - g_fSampleBias)
+        //      fOcclusion += 1.f;
+    }
+
+    // 정규화 및 보정 -> 막힘 비율 -> 빛이 닿는 정도로 반전
+    // Occlusion = 막힌 방향의 수
+    fOcclusion = 1.f - (fOcclusion / (float)g_iNumKernels);
     
-    Out.vSSAO = float4(1.f, 0.f, 0.f, 1.f);
+    float fAO = pow(saturate(fOcclusion * g_fIntensity), g_fContrast);
+    
+    Out.vSSAO = float4(fAO, fAO, fAO, 1.f);
     
     return Out;
 }
