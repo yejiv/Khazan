@@ -58,6 +58,8 @@ private:
 
 #pragma region 변수
 private:
+	_float3 m_vPickedPos = {};
+
 #pragma region Object 수정 변수
 
 	_uint m_iInstObjectCnt = {};			// InstanceID 부여용 ( 아직 미수정 )
