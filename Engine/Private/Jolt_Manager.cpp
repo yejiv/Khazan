@@ -89,6 +89,8 @@ CharacterVirtual* CJolt_Manager::CreateCharacterVirtual(const CharacterVirtualSe
     m_pCharVsCharCollision->Add(pCharVir);
     pCharVir->SetCharacterVsCharacterCollision(m_pCharVsCharCollision);
 
+    m_CharacterVirtuals.emplace(pCharVir->GetID(), pCharVir);
+
     return pCharVir;
 }
 
@@ -165,6 +167,24 @@ void CJolt_Manager::CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* 
         *pShapeFilter,
         *m_pTempAlloc
     );
+}
+
+CharacterVirtual* CJolt_Manager::Find_CharacterVirtual(CharacterID id)
+{
+    auto iter = m_CharacterVirtuals.find(id);
+    if (iter != m_CharacterVirtuals.end())
+        return iter->second;
+    return nullptr;
+}
+
+void CJolt_Manager::Remove_CharacterVirtual(CharacterID id)
+{
+	auto iter = m_CharacterVirtuals.find(id);
+	if (iter != m_CharacterVirtuals.end())
+	{
+		m_pCharVsCharCollision->Remove(iter->second);
+		m_CharacterVirtuals.erase(iter);
+	}
 }
 
 _bool CJolt_Manager::CastRay(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition)

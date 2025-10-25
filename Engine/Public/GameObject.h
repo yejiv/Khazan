@@ -53,6 +53,7 @@ public:
 public:
 	virtual void Collision_Enter(CGameObject* pOther, _uint	iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) {};
 	virtual void Collision_Stay(CGameObject* pOther, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) {};
+	virtual void Collision_Exit(CGameObject* pOther, _uint iOtherObjectLayer) {};
 
 protected:
 	ID3D11Device*				m_pDevice = { nullptr };

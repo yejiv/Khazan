@@ -746,6 +746,16 @@ void CGameInstance::CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* 
 	m_pJolt_Manager->CharVir_ExtendedUpdate(fTimeDelta, pCharVir, vGravity, iObjectLayer, pBodyFilter, pShapeFilter, tSetting);
 }
 
+CharacterVirtual* CGameInstance::Find_CharacterVirtual(CharacterID id)
+{
+	return m_pJolt_Manager->Find_CharacterVirtual(id);
+}
+
+void CGameInstance::Remove_CharacterVirtual(CharacterID id)
+{
+	m_pJolt_Manager->Remove_CharacterVirtual(id);
+}
+
 void CGameInstance::Set_Gravity(_vector vGravity)
 {
 	m_pJolt_Manager->Set_Gravity(vGravity);
