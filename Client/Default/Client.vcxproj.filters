@@ -740,5 +740,8 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_Cursor.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_Font.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

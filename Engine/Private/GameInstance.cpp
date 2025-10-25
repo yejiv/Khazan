@@ -472,19 +472,19 @@ HRESULT CGameInstance::Render_Lights(CShader* pShader, CVIBuffer_Rect* pVIBuffer
 
 #pragma region FONT_MANAGER
 
-HRESULT CGameInstance::Add_Font(const _wstring& strFontTag, const _tchar* pFontFilePath)
+HRESULT CGameInstance::Font_Load(const _wstring& strFontTag, const _char* pFontFilePath, _uint iHeight, _uint iWidth)
 {
-	return m_pFont_Manager->Add_Font(strFontTag, pFontFilePath);
+	return m_pFont_Manager->Font_Load(strFontTag, pFontFilePath, iHeight, iWidth);
 }
 
-void CGameInstance::DrawText(const _wstring& strFontTag, const _tchar* pText, const _float2& vPosition, _fvector vColor, _float fRadian, const _float2& vOrigin, const _float2& vScale)
+HRESULT CGameInstance::Draw_Text(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, const _float4& vColor, TEXT_ALIGN eAlign)
 {
-	m_pFont_Manager->DrawText(strFontTag, pText, vPosition, vColor, fRadian, vOrigin, vScale);
+	return m_pFont_Manager->Draw_Text(strFontTag, strText, fX, fY, vColor, eAlign);
 }
 
-_float2 CGameInstance::Compute_TextSize(const _wstring& strFontTag, const _wstring& strText, _float2 vTextSize)
+HRESULT CGameInstance::Draw_TextBox(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, _float fMaxWidth, const _float4& vColor, TEXT_ALIGN eAlign)
 {
-	return m_pFont_Manager->Compute_TextSize(strFontTag, strText, vTextSize);
+	return m_pFont_Manager->Draw_TextBox(strFontTag, strText, fX, fY, fMaxWidth, vColor, eAlign);
 }
 
 #pragma endregion

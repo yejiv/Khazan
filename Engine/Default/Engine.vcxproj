@@ -123,7 +123,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>d3d11.lib;dxguid.lib;Effects11d.lib;DirectXTKd.lib;fmodL_vc.lib;dinput8.lib;assimp-vc143-mtd.lib;Joltd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxguid.lib;Effects11d.lib;DirectXTKd.lib;fmodL_vc.lib;dinput8.lib;assimp-vc143-mtd.lib;Joltd.lib;freetyped.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../ThirdPartyLib/Debug/</AdditionalLibraryDirectories>
     </Link>
     <FxCompile>
@@ -158,7 +158,7 @@ call Copy.bat</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>d3d11.lib;dxguid.lib;dinput8.lib;Effects11.lib;DirectXTK.lib;assimp-vc143-mt.lib;fmod_vc.lib;Jolt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxguid.lib;dinput8.lib;Effects11.lib;DirectXTK.lib;assimp-vc143-mt.lib;fmod_vc.lib;Jolt.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../ThirdPartyLib/Release/</AdditionalLibraryDirectories>
     </Link>
     <FxCompile>
@@ -192,6 +192,8 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\Condition_Node.cpp" />
     <ClCompile Include="..\Private\CoolDown_Nodel.cpp" />
     <ClCompile Include="..\Private\Decorator_Node.cpp" />
+    <ClCompile Include="..\private\Font_Face.cpp" />
+    <ClCompile Include="..\private\Font_Renderer.cpp" />
     <ClCompile Include="..\Private\Inverter_Node.cpp" />
     <ClCompile Include="..\Private\Jolt_CharacterContactListener.cpp" />
     <ClCompile Include="..\Private\CharacterVirtual.cpp" />
@@ -202,7 +204,6 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\Event_Manager.cpp" />
     <ClCompile Include="..\Private\Jolt_ContactListener.cpp" />
     <ClCompile Include="..\private\ContainerObject.cpp" />
-    <ClCompile Include="..\private\CustomFont.cpp" />
     <ClCompile Include="..\private\Font_Manager.cpp" />
     <ClCompile Include="..\private\Frustum.cpp" />
     <ClCompile Include="..\Private\GameInstance.cpp" />
@@ -315,6 +316,8 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\ImGui\imstb_rectpack.h" />
     <ClInclude Include="..\Public\ImGui\imstb_textedit.h" />
     <ClInclude Include="..\Public\ImGui\imstb_truetype.h" />
+    <ClInclude Include="..\public\Font_Face.h" />
+    <ClInclude Include="..\public\Font_Renderer.h" />
     <ClInclude Include="..\Public\Inverter_Node.h" />
     <ClInclude Include="..\Public\Jolt_CharacterContactListener.h" />
     <ClInclude Include="..\Public\CharacterVirtual.h" />
@@ -327,7 +330,6 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Engine_Json.h" />
     <ClInclude Include="..\Public\Jolt_ContactListener.h" />
     <ClInclude Include="..\public\ContainerObject.h" />
-    <ClInclude Include="..\public\CustomFont.h" />
     <ClInclude Include="..\Public\Engine_Defines.h" />
     <ClInclude Include="..\Public\Engine_Enum.h" />
     <ClInclude Include="..\Public\Engine_Function.h" />

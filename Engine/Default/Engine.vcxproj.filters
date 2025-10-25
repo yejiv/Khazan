@@ -423,12 +423,6 @@
     <ClCompile Include="..\Private\VIBuffer_Cube.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Cube</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Font_Manager.cpp">
-      <Filter>01.Utility\05.Fonts\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="..\private\CustomFont.cpp">
-      <Filter>01.Utility\05.Fonts</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\Navigation.cpp">
       <Filter>01.Utility\03.Component\Navigation</Filter>
     </ClCompile>
@@ -630,6 +624,15 @@
     <ClCompile Include="..\Public\Guizmo\ImSequencer.cpp">
       <Filter>01.Utility\12.ImGui\Guizmo</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Font_Manager.cpp">
+      <Filter>01.Utility\05.Fonts\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Font_Face.cpp">
+      <Filter>01.Utility\05.Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Font_Renderer.cpp">
+      <Filter>01.Utility\05.Fonts</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -751,12 +754,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Cube.h">
       <Filter>01.Utility\03.Component\VIBuffer\Cube</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\Font_Manager.h">
-      <Filter>01.Utility\05.Fonts\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\CustomFont.h">
-      <Filter>01.Utility\05.Fonts</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Navigation.h">
       <Filter>01.Utility\03.Component\Navigation</Filter>
@@ -973,6 +970,15 @@
     </ClInclude>
     <ClInclude Include="..\Public\Guizmo\ImZoomSlider.h">
       <Filter>01.Utility\12.ImGui\Guizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Font_Manager.h">
+      <Filter>01.Utility\05.Fonts\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Font_Face.h">
+      <Filter>01.Utility\05.Fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Font_Renderer.h">
+      <Filter>01.Utility\05.Fonts</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
