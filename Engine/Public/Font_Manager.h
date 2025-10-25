@@ -14,6 +14,7 @@ public:
 	HRESULT							Initialize();
 
 	HRESULT							Font_Load(const _wstring& strFontTag, const _char* pFontFilePath, _uint iWidth, _uint iHeight);
+	HRESULT							Font_Load_Data(const _char* pFontFilePath);
 	HRESULT							Draw_Text(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, const _float4& vColor, TEXT_ALIGN eAlign);
 	HRESULT							Draw_TextBox(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, _float fMaxWidth, _float fOffsetHeight, const _float4& vColor, TEXT_ALIGN eAlign);
 

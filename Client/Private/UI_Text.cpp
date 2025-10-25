@@ -129,7 +129,9 @@ HRESULT CUI_Text::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void
 
 	string strText = pInData.value("Text", "");
 	_int iSize = MultiByteToWideChar(CP_UTF8, 0, strText.c_str(), -1, nullptr, 0);
-	MultiByteToWideChar(CP_UTF8, 0, strText.c_str(), -1, &m_wstrText[0], iSize);
+	_wstring wstr(iSize, 0);
+	MultiByteToWideChar(CP_UTF8, 0, strText.c_str(), -1, &wstr[0], iSize);
+	m_wstrText = wstr;
 
 	m_iPivotX = pInData["iPivot"].value("x", 0);
 	m_iPivotY = pInData["iPivot"].value("y", 0);

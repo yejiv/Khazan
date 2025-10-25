@@ -60,23 +60,10 @@ HRESULT CUI_BackGround::Render()
 	if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_Texture", 0)))
 		return E_FAIL;
 	CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
-	CHECK_FAILED(m_pFontShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
 
 	Bind_Mask();
 	m_pVIBufferCom->Bind_Resources();
 	m_pVIBufferCom->Render();
-
-	m_pFontShaderCom->Begin(0);
-	//CHECK_FAILED(m_pGameInstance->Font_Load(TEXT("연단"), "../Bin/Resources/Font/DNFForgedBlade-Light.ttf", 10, 0),E_FAIL);
-	//m_pGameInstance->Draw_Text(TEXT("연단"), TEXT("안녕하세요"), g_iWinSizeX >> 1, g_iWinSizeY >> 1, {1.f, 1.f, 1.f, 1.f}, TEXT_ALIGN::LEFT_TOP);
-	//m_pGameInstance->Draw_Text(TEXT("연단"), TEXT("안녕하세요"), g_iWinSizeX >> 1, g_iWinSizeY >> 1, {1.f, 1.f, 1.f, 1.f}, TEXT_ALIGN::LEFT_CENTER);
-	//m_pGameInstance->Draw_Text(TEXT("연단"), TEXT("안녕하세요"), g_iWinSizeX >> 1, g_iWinSizeY >> 1, {1.f, 1.f, 1.f, 1.f}, TEXT_ALIGN::LEFT_BOTTOM);
-	//m_pGameInstance->Draw_Text(TEXT("연단"), TEXT("안녕하세요"), g_iWinSizeX >> 1, g_iWinSizeY >> 1, {1.f, 1.f, 1.f, 1.f}, TEXT_ALIGN::CENTER_TOP);
-	//m_pGameInstance->Draw_Text(TEXT("연단"), TEXT("안녕하세요"), g_iWinSizeX >> 1, g_iWinSizeY >> 1, {1.f, 1.f, 1.f, 1.f}, TEXT_ALIGN::RIGHT_TOP);
-	//m_pGameInstance->Draw_Text(TEXT("연단"), TEXT("안녕하세요"), g_iWinSizeX >> 1, g_iWinSizeY >> 1, {1.f, 1.f, 1.f, 1.f}, TEXT_ALIGN::CENTER);
-	
-	m_pGameInstance->Draw_TextBox(TEXT("연단"), TEXT("준영이형 안안녕하세요"), g_iWinSizeX >> 1, g_iWinSizeY >> 1, 200.f, 10.f, { 1.f, 1.f, 1.f, 1.f }, TEXT_ALIGN::LEFT_TOP);
-
 	
 	return S_OK;
 }
@@ -99,10 +86,6 @@ HRESULT CUI_BackGround::Ready_Prototype()
 
 HRESULT CUI_BackGround::Ready_Component()
 {
-	if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxPosTex_Font"),
-		TEXT("Com_FontShader"), reinterpret_cast<CComponent**>(&m_pFontShaderCom), nullptr)))
-		return E_FAIL;
-
 	if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxPosTex_UI_Mask"),
 		TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
 		return E_FAIL;
@@ -166,7 +149,6 @@ CGameObject* CUI_BackGround::Clone(void* pArg)
 void CUI_BackGround::Free()
 {
 	__super::Free();
-	Safe_Release(m_pFontShaderCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pMaskTextureCom);
