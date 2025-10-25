@@ -17,8 +17,11 @@ BTNODESTATE CCoolDown_Node::Tick(CBlackBoard* BB)
     if (m_pChild)
     {
         BTNODESTATE eState = m_pChild->Tick(BB);
+
         if (BTNODESTATE::SUCCESS == eState)
+        {
             m_fElapsed = 0.f;
+        }
 
         return eState;
     }
@@ -29,12 +32,13 @@ BTNODESTATE CCoolDown_Node::Tick(CBlackBoard* BB)
 
 void CCoolDown_Node::Terminate(BTNODESTATE eState)
 {
-    m_fElapsed = 0.f;
+    m_pChild->Terminate(eState);
 }
 
 void CCoolDown_Node::Abort()
 {
-    m_fElapsed = 0.f;
+    m_pChild->Abort();
+
 }
 
 CCoolDown_Node* CCoolDown_Node::Create(const string& strName, const string& strTag, _float fCoolTime)

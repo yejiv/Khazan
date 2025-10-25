@@ -362,6 +362,7 @@ void CModel::Clear_AllEvent()
 }
 
 #ifdef _DEBUG
+
 void CModel::Debug_RanderState()
 {
     ImGui::SeparatorText("Model State");
