@@ -107,8 +107,8 @@ void CEffect_Point_Instance::Edit_Element()
 
     ImGui::ColorEdit4("MyColorWithAlpha",(float*)&m_sEditingData.vColor);
 
-    const char* textures[] = {"test0","test1","test2","test3"};
-    ImGui::ListBox("Particles",reinterpret_cast<int*>(&m_sEditingData.iTextureIdx), textures,IM_ARRAYSIZE(textures));
+    const char* textures[] = { "test0", "test1", "test2",  "test3" };
+    ImGui::Combo("Point Particles Textures", reinterpret_cast<int*>(&m_sEditingData.iTextureIdx), textures, IM_ARRAYSIZE(textures));
 
     m_sEditingData.IsCircle = isCircle;
     m_sEditingData.bIsLoop = loop;

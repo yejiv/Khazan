@@ -22,7 +22,16 @@ private:
 	class CEffect_Prefab*			m_PrefabPrototype;
 
 private:
-	void							Edit_Options();
+	//[Main GUI]
+	void							Init_GUI();
+
+	//[Child GUI]
+	void							Prefab_Info();
+	void							Create_Element();
+	void							Edit_Element_List();
+	void							Edit_Time_Track();
+	void							Save_Load();
+
 	void							Create_Box_Spawn();
 	void							Create_Circle_Spawn();
 	void							GetParticleColor();
@@ -30,6 +39,8 @@ private:
 	void							Create_PointInstance_Element();
 	void							Create_MeshInstance_Element();
 	void							Create_Sprite_Element();
+
+	void							SelectFilePath();
 
 private :
 
@@ -63,8 +74,8 @@ private :
 	_float							m_fSpriteSpeed;
 	_float							m_fScalingValue;
 
-	CEffect_Prefab::EFFECT_EVENT	m_WorkingTrackData;
-	_bool							m_bGravity;
+	//CEffect_Prefab::EFFECT_EVENT	m_WorkingTrackData;
+	//_bool							m_bGravity;
 
 	_int							m_iChildrenIdx;
 	_int							m_iPrevChildrenIdx;
@@ -73,8 +84,9 @@ private :
 	_bool							m_bScrollDir;
 
 	//[Save / Load]
-	char							SavePath[128];
-	char							LoadPath[128];
+	char							FilePath[128];
+	char							SaveFileName[128] {};
+	char							LoadFileName[128] {};
 
 	/* [Debug] */
 private:
