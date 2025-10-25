@@ -14,7 +14,7 @@ class CEffect_Sprite : public CEffect_Element
 public:
 	typedef struct tagSpriteDesc
 	{
-		_bool	IsLoop;
+		_uint	IsLoop;
 		_uint	iCol, iRow;
 		_float	fSpriteSpeed;
 		_float4 vColor;
@@ -22,7 +22,6 @@ public:
 		_float	fSizeRatio;
 		_float	ScalingValue;
 		_uint	iTextureIdx;
-		_bool	bFollow;
 	}SPRITE_DESC;
 
 private:

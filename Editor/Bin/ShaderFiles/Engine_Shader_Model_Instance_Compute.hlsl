@@ -171,6 +171,30 @@ void CS_UPDATE_SPEED(uint3 DTid : SV_DispatchThreadID)
     g_SpeedData[iIndex] = SpeedData;
 }
 
+
+[numthreads(256, 1, 1)]
+void CS_UPDATE_GRAVITY(uint3 DTid : SV_DispatchThreadID)
+{
+    uint iIndex = DTid.x;
+    
+    if (iIndex >= g_iNumInstances)
+        return;
+    
+    VTXINSTANCE_PARTICLE Particle = g_OutputData[iIndex];
+    VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
+
+    if (Particle.bDead == true)
+    {
+        SpeedData.fGravity = 0.f;
+        return;
+    }
+    SpeedData.fGravity += g_fTimeDelta * 2.2f;
+    Particle.vTranslation.y -= 1.5f * SpeedData.fGravity * g_fTimeDelta;
+    g_OutputData[iIndex] = Particle;
+    g_SpeedData[iIndex].fGravity = SpeedData.fGravity;
+}
+
+
 [numthreads(256, 1, 1)]
 void CS_RESET(uint3 DTid : SV_DispatchThreadID)
 {

@@ -18,7 +18,8 @@ public:
     _float              Get_CurrentTime() const { return m_fCurrnetTime; }
 
 public:
-    HRESULT             Initialize(const string& strName, const SIGHT_DESC& Desc, _uint iTeamID);
+    //HRESULT             Initialize(const string& strName, const SIGHT_DESC& Desc, _uint iTeamID);
+    HRESULT             Initialize(const AIPERCEPTION_DATA& Desc, _uint iTeamID);
     void                Update(class CGameObject* pOwner, _float fTimeDelta);
 
 public:
@@ -32,7 +33,8 @@ private:
 
 private:
     string              m_strName = {};
-    SIGHT_DESC          m_tSightDesc{}; // 시야 센스의 설정값을 저장
+    //SIGHT_DESC          m_tSightDesc{}; // 시야 센스의 설정값을 저장
+    AIPERCEPTION_DATA   m_tSightDesc{};
     _uint               m_iTeamID = { 0 }; // 감지 대상이 아군인지 적군인지 판단
     _float              m_fCheckAcc = { 0.f }; // Update시 누적해서 CheckInterval 만큼 쌓였을때 검사 실행을 위한 변수
     _float              m_fCurrnetTime = { 0.f }; // Update시점에서 현재 시간 Stimulus 생성시 타임 스탬프 기록, PerceivedInfo갱신과 오래된 감지 제거에 사용
@@ -45,7 +47,8 @@ private:
     class CGameInstance*    m_pGameInstance = { nullptr };
 
 public:
-    static CPerception*     Create(const string& strName, const SIGHT_DESC& Desc, _uint iTeamID);
+    //static CPerception*     Create(const string& strName, const SIGHT_DESC& Desc, _uint iTeamID);
+    static CPerception*     Create(const AIPERCEPTION_DATA& Desc, _uint iTeamID);
     virtual void            Free() override;
 
 

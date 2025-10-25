@@ -44,6 +44,7 @@ private:
 
 	// Render Flag
 	_bool					m_isRenderShadow = { true };
+	_bool					m_isRenderSSAO = { true };
 
 public:
 	static CLevel_Shader* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

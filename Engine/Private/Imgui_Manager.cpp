@@ -41,12 +41,12 @@ HRESULT CImgui_Manager::Initialize(list<wstring> Menu, HWND hWnd, _uint iWinSize
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
+    m_io = &(ImGui::GetIO());
     ImGuiStyle& style = ImGui::GetStyle();
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
-    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    m_io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    m_io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+    m_io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+    if (m_io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
     {
         style.WindowRounding = 0.0f;
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
@@ -55,11 +55,11 @@ HRESULT CImgui_Manager::Initialize(list<wstring> Menu, HWND hWnd, _uint iWinSize
 
     ImGui_ImplWin32_Init(m_hWnd);
     ImGui_ImplDX11_Init(m_pDevice, m_pContext);
-    
 
-    IM_ASSERT(io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable);
-    IM_ASSERT(io.BackendFlags & ImGuiBackendFlags_PlatformHasViewports);
-    IM_ASSERT(io.BackendFlags & ImGuiBackendFlags_RendererHasViewports);
+
+    IM_ASSERT(m_io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable);
+    IM_ASSERT(m_io->BackendFlags & ImGuiBackendFlags_PlatformHasViewports);
+    IM_ASSERT(m_io->BackendFlags & ImGuiBackendFlags_RendererHasViewports);
 
     return S_OK;
 }
@@ -79,30 +79,33 @@ void CImgui_Manager::Render()
 {
     // Rendering
     ImGui::Render();
-    auto* dd = ImGui::GetDrawData();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-    ImGuiIO& io = ImGui::GetIO();
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	m_io = &(ImGui::GetIO());
+    if (m_io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
     {
-        ID3D11RenderTargetView* backup_rtv = nullptr;
-        ID3D11DepthStencilView* backup_dsv = nullptr;
-        m_pContext->OMGetRenderTargets(1, &backup_rtv, &backup_dsv);
+        m_pImgRTV = nullptr;
+        m_pImgDSV = nullptr;
+        m_pContext->OMGetRenderTargets(1, &m_pImgRTV, &m_pImgDSV);
 
         ImGui::UpdatePlatformWindows();         
         ImGui::RenderPlatformWindowsDefault(); 
 
-        m_pContext->OMSetRenderTargets(1, &backup_rtv, backup_dsv);
-        if (backup_rtv) backup_rtv->Release();
-        if (backup_dsv) backup_dsv->Release();
+        m_pContext->OMSetRenderTargets(1, &m_pImgRTV, m_pImgDSV);
+        if (m_pImgRTV) m_pImgRTV->Release();
+        if (m_pImgDSV) m_pImgDSV->Release();
     }
 
-    m_pGameInstance->Present_SwapChain(1, 0);
+    //m_pGameInstance->Present_SwapChain(1, 0);
 }
 
 void CImgui_Manager::Shutdown()
 {
     ImGui_ImplDX11_Shutdown();
     ImGui_ImplWin32_Shutdown();
+
+     if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+     ImGui::DestroyPlatformWindows();
+
     ImGui::DestroyContext();
 }
 
@@ -208,17 +211,17 @@ void CImgui_Manager::Render_Docking()
 
 void CImgui_Manager::Render_Gizmo()
 {
-    ImGuiViewport* vp = ImGui::GetMainViewport();
-    ImGuizmo::BeginFrame();
-    ImGuizmo::SetOrthographic(false);
-    ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList(vp));
-    ImGuizmo::SetRect(vp->Pos.x, vp->Pos.y, vp->Size.x, vp->Size.y);
-
-    float viewM[16];  XMStoreFloat4x4((XMFLOAT4X4*)viewM, m_pGameInstance->Get_Transform_Matrix(D3DTS::VIEW));
-    float projM[16];  XMStoreFloat4x4((XMFLOAT4X4*)projM, m_pGameInstance->Get_Transform_Matrix(D3DTS::PROJ));
-
     if (m_pGizmoObject != nullptr)
     {
+        ImGuiViewport* vp = ImGui::GetMainViewport();
+        ImGuizmo::BeginFrame();
+        ImGuizmo::SetOrthographic(false);
+        ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList(vp));
+        ImGuizmo::SetRect(vp->Pos.x, vp->Pos.y, vp->Size.x, vp->Size.y);
+
+        float viewM[16];  XMStoreFloat4x4((XMFLOAT4X4*)viewM, m_pGameInstance->Get_Transform_Matrix(D3DTS::VIEW));
+        float projM[16];  XMStoreFloat4x4((XMFLOAT4X4*)projM, m_pGameInstance->Get_Transform_Matrix(D3DTS::PROJ));
+
         CTransform* pTransform = dynamic_cast<CTransform*>(m_pGizmoObject->Get_Component(TEXT("Com_Transform")));
 
         _matrix WorldMatrix = pTransform->Get_WorldMatrix(); 
@@ -278,10 +281,16 @@ void CImgui_Manager::Free()
 {
     __super::Free();
 
+    Shutdown();
+
     for (auto Menu : m_Widgets)
     {
 		Menu.second.clear();
     }
+
+    /*if (m_pImgRTV) m_pImgRTV->Release();
+    if (m_pImgDSV) m_pImgDSV->Release();*/
+	if (m_io) { m_io = nullptr; }
 
     Safe_Release(m_pDevice);
     Safe_Release(m_pContext);
