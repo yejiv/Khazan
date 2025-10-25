@@ -316,6 +316,12 @@
     <Filter Include="01.Utility\95.AI\BehaviorTree\Node\Decorator\Inverter">
       <UniqueIdentifier>{ff7d3c95-8f9b-431a-aa13-048ee6b34835}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\12.ImGui\Guizmo">
+      <UniqueIdentifier>{5d63552c-6d32-499d-b702-54b0a148ce46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\95.AI\BehaviorTree\Node\Defines">
+      <UniqueIdentifier>{f60db9af-175b-419d-ae6b-b02d9741a584}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -459,27 +465,6 @@
     <ClCompile Include="..\Private\Imgui_Manager.cpp">
       <Filter>01.Utility\12.ImGui\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="..\Public\ImGui\imgui_demo.cpp">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Public\ImGui\imgui_draw.cpp">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Public\ImGui\imgui_impl_dx11.cpp">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Public\ImGui\imgui_impl_win32.cpp">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Public\ImGui\imgui_tables.cpp">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Public\ImGui\imgui_widgets.cpp">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Public\ImGui\imgui.cpp">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Jolt_Manager.cpp">
       <Filter>01.Utility\13.Jolt\Manager</Filter>
     </ClCompile>
@@ -605,6 +590,42 @@
     </ClCompile>
     <ClCompile Include="..\Private\Inverter_Node.cpp">
       <Filter>01.Utility\95.AI\BehaviorTree\Node\Decorator\Inverter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Public\ImGui\imgui_tables.cpp">
+      <Filter>01.Utility\12.ImGui\Define</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Public\ImGui\imgui_widgets.cpp">
+      <Filter>01.Utility\12.ImGui\Define</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Public\ImGui\imgui.cpp">
+      <Filter>01.Utility\12.ImGui\Define</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Public\ImGui\imgui_demo.cpp">
+      <Filter>01.Utility\12.ImGui\Define</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Public\ImGui\imgui_draw.cpp">
+      <Filter>01.Utility\12.ImGui\Define</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Public\ImGui\imgui_impl_dx11.cpp">
+      <Filter>01.Utility\12.ImGui\Define</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Public\ImGui\imgui_impl_win32.cpp">
+      <Filter>01.Utility\12.ImGui\Define</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Public\Guizmo\GraphEditor.cpp">
+      <Filter>01.Utility\12.ImGui\Guizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Public\Guizmo\ImCurveEdit.cpp">
+      <Filter>01.Utility\12.ImGui\Guizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Public\Guizmo\ImGradient.cpp">
+      <Filter>01.Utility\12.ImGui\Guizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Public\Guizmo\ImGuizmo.cpp">
+      <Filter>01.Utility\12.ImGui\Guizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Public\Guizmo\ImSequencer.cpp">
+      <Filter>01.Utility\12.ImGui\Guizmo</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Font_Manager.cpp">
       <Filter>01.Utility\05.Fonts\Manager</Filter>
@@ -776,30 +797,6 @@
     <ClInclude Include="..\Public\Imgui_Manager.h">
       <Filter>01.Utility\12.ImGui\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\ImGui\imgui_impl_dx11.h">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\ImGui\imgui_impl_win32.h">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\ImGui\imgui_internal.h">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\ImGui\imstb_rectpack.h">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\ImGui\imstb_textedit.h">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\ImGui\imstb_truetype.h">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\ImGui\imconfig.h">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\ImGui\imgui.h">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Jolt_Manager.h">
       <Filter>01.Utility\13.Jolt\Manager</Filter>
     </ClInclude>
@@ -935,6 +932,48 @@
     <ClInclude Include="..\Public\Inverter_Node.h">
       <Filter>01.Utility\95.AI\BehaviorTree\Node\Decorator\Inverter</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\ImGui\imstb_rectpack.h">
+      <Filter>01.Utility\12.ImGui\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ImGui\imstb_textedit.h">
+      <Filter>01.Utility\12.ImGui\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ImGui\imstb_truetype.h">
+      <Filter>01.Utility\12.ImGui\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ImGui\imconfig.h">
+      <Filter>01.Utility\12.ImGui\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ImGui\imgui.h">
+      <Filter>01.Utility\12.ImGui\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ImGui\imgui_impl_dx11.h">
+      <Filter>01.Utility\12.ImGui\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ImGui\imgui_impl_win32.h">
+      <Filter>01.Utility\12.ImGui\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ImGui\imgui_internal.h">
+      <Filter>01.Utility\12.ImGui\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Guizmo\GraphEditor.h">
+      <Filter>01.Utility\12.ImGui\Guizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Guizmo\ImCurveEdit.h">
+      <Filter>01.Utility\12.ImGui\Guizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Guizmo\ImGradient.h">
+      <Filter>01.Utility\12.ImGui\Guizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Guizmo\ImGuizmo.h">
+      <Filter>01.Utility\12.ImGui\Guizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Guizmo\ImSequencer.h">
+      <Filter>01.Utility\12.ImGui\Guizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Guizmo\ImZoomSlider.h">
+      <Filter>01.Utility\12.ImGui\Guizmo</Filter>
+    </ClInclude>
     <ClInclude Include="..\public\Font_Manager.h">
       <Filter>01.Utility\05.Fonts\Manager</Filter>
     </ClInclude>
@@ -944,6 +983,10 @@
     <ClInclude Include="..\public\Font_Renderer.h">
       <Filter>01.Utility\05.Fonts</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\BTNode_Defines.h">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ENGINESDK\DEBUG\INC\COMPOSITE_NODE.H" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hlsli">

@@ -38,15 +38,15 @@ HRESULT CProp_Object::Initialize_Clone(void* pArg)
     
     if (isSnow())
     {
-        if (isBlended())
-            m_eShaderPass = SHADER_PASS::SNOWMAP_BLEND;
+        if (isIce())
+            m_eShaderPass = SHADER_PASS::SNOWMAP_ICE;
         else
             m_eShaderPass = SHADER_PASS::SNOWMAP;
     }
     else
     {
-        if (isBlended())
-            m_eShaderPass = SHADER_PASS::MAP_BLEND;
+        if (isIce())
+            m_eShaderPass = SHADER_PASS::MAP_ICE;
         else
             m_eShaderPass = SHADER_PASS::MAP;
     }
@@ -70,11 +70,8 @@ void CProp_Object::Late_Update(_float fTimeDelta)
     else if (isShadow())    m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this);
     else                    m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
     */
-
-    if (isBlended())
-        m_pGameInstance->Add_RenderGroup(RENDERGROUP::BLEND, this);
-    else
-        m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
+    
+    m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
 }
 
 HRESULT CProp_Object::Render()
@@ -188,6 +185,9 @@ HRESULT CProp_Object::Bind_ShaderResources()
 
     // 투영 행렬 쉐이더에 바인딩
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ)), E_FAIL);
+
+    // 카메라 바인딩
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4)), E_FAIL);
 
     return S_OK;
 }

@@ -19,6 +19,9 @@ public:
 		_uint		iTextureIdx;
 		_uint		iMeshTypeIdx;
 		_float2		iScrollSpeed;
+		_uint		iMaskTextureIdx;
+		_uint		bScrollDir;
+		_uint		bGravity = false;
 	}PARTICLE_DESC;
 
 private:

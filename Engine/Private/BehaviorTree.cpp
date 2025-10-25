@@ -45,6 +45,11 @@ void CBehaviorTree::Set_BlackBoard(CBlackBoard* BB)
     }
 }
 
+CBehaviorTree* CBehaviorTree::Create()
+{
+    return new CBehaviorTree();
+}
+
 void CBehaviorTree::Free()
 {
     __super::Free();

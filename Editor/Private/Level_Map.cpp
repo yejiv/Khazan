@@ -140,6 +140,8 @@ void CLevel_Map::Test_Player_Move(_float fTimeDelta)
 			CTransform* pKhazan = static_cast<CTransform*>(m_pGameInstance->Find_Component(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_Khazan"), TEXT("Com_Transform")));
 			CHECK_NULLPTR(pKhazan, );
 
+			m_vPickedPos = vPosition;
+
 			pKhazan->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPosition), 1.f));
 		}
 	}
@@ -183,6 +185,9 @@ void CLevel_Map::Select_Fix_Object(_float fTimeDelta)
 
 						m_isFixObjectWindow = true;
 						m_eFixType = FIX_OBJECT::FIX;
+
+						m_pGameInstance->Set_GizmoObject(m_pFixPropObj);
+
 						return;
 					}
 				}
@@ -298,6 +303,13 @@ HRESULT CLevel_Map::Ready_Main_Window()
 					ImGui::Text("X : %.3f", vCamPos.x);
 					ImGui::Text("Y : %.3f", vCamPos.y);
 					ImGui::Text("Z : %.3f", vCamPos.z);
+
+					SEPARATOR;
+
+					ImGui::Text("PICKED POS");
+					ImGui::Text("X : %.3f", m_vPickedPos.x);
+					ImGui::Text("Y : %.3f", m_vPickedPos.y);
+					ImGui::Text("Z : %.3f", m_vPickedPos.z);
 				}
 				else
 				{
@@ -463,7 +475,7 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 
 			ImGui::Checkbox("SNOW", &m_AddObjectProperties.isSnow); SAMELINE;
 			ImGui::Checkbox("COLLIDER", &m_AddObjectProperties.isCollider); SAMELINE;
-			ImGui::Checkbox("BLENDED", &m_AddObjectProperties.isBlended); SAMELINE;
+			ImGui::Checkbox("ICE", &m_AddObjectProperties.isIce); SAMELINE;
 			ImGui::Checkbox("INSTANCE", &m_AddObjectProperties.isInstance); SEPARATOR;
 			ImGui::Checkbox("SHADOW", &m_AddObjectProperties.isShadow); SAMELINE;
 			ImGui::Checkbox("BACKGROUND", &m_AddObjectProperties.isBackGround); SEPARATOR;
@@ -484,7 +496,9 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 					_float3 vPickedPos = {};
 
 					if (m_pGameInstance->isPicked(&vPickedPos))
+					{
 						vPos = vPickedPos;
+					}
 					else
 					{
 						XMStoreFloat3(&vPos, XMLoadFloat4(m_pGameInstance->Get_CamPosition()));
@@ -541,6 +555,8 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 					// ======================================================
 					// ======================================================
 
+					m_pGameInstance->Set_GizmoObject(m_pFixPropObj);
+
 					m_isFixObjectWindow = true;
 					m_eFixType = FIX_OBJECT::FIX;
 				}
@@ -561,6 +577,8 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 		{
 			ImGui::Begin("OBJECT FIX WINDOW", &m_isFixObjectWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
+			_bool isReset = { false };
+
 			if (nullptr != m_pFixPropObj)
 			{
 				_char szModelName[MAX_PATH] = {};
@@ -572,95 +590,27 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 				if (ImGui::Button("COPY"))
 				{
 					memcpy(&m_szSearchPrototypeName, &szModelName, MAX_PATH);
+					isReset = true;
+
 				} SEPARATOR;
-			}
 
-			if (FIX_OBJECT::FIX == m_eFixType)
-			{
-				ImGui::Text("SCALE FIX"); SAMELINE;
-				if (ImGui::Button("-")) { m_vFixScale.x -= 0.001f; m_vFixScale.y -= 0.001f; m_vFixScale.z -= 0.001f; } SAMELINE;
-				if (ImGui::Button("+")) { m_vFixScale.x += 0.001f; m_vFixScale.y += 0.001f; m_vFixScale.z += 0.001f; } SEPARATOR;
+				_float3 vFixObjPos = {};
+				XMStoreFloat3(&vFixObjPos, m_pFixTransformCom->Get_State(STATE::POSITION));
 
-				ImGui::Text("SCALE X : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##scalex", &m_vFixScale.x, 0.001f, 0.01f);
-				ImGui::SliderFloat("##sliderdetailscalex", &m_vFixScale.x, 0.001f, 10.f);
-				ImGui::Text("SCALE Y : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##scaley", &m_vFixScale.y, 0.001f, 0.01f);
-				ImGui::SliderFloat("##sliderdetailscaley", &m_vFixScale.y, 0.001f, 10.f);
-				ImGui::Text("SCALE Z : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##scalez", &m_vFixScale.z, 0.001f, 0.01f);
-				ImGui::SliderFloat("##sliderdetailscalez", &m_vFixScale.z, 0.001f, 10.f);
+				_float3 vFixObjScale = {};
+				vFixObjScale = m_pFixTransformCom->Get_Scaled();
 
-				if (0.001f > m_vFixScale.x) m_vFixScale.x = 0.001f;
-				if (0.001f > m_vFixScale.y) m_vFixScale.y = 0.001f;
-				if (0.001f > m_vFixScale.z) m_vFixScale.z = 0.001f;
+				ImGui::Text("OBJECT SCALE");
+				ImGui::Text("SCALE X : %0.4f", vFixObjScale.x);
+				ImGui::Text("SCALE Y : %0.4f", vFixObjScale.y);
+				ImGui::Text("SCALE Z : %0.4f", vFixObjScale.z);
+
+				ImGui::Text("OBJECT POSITION");
+				ImGui::Text("POSITION X : %0.2f", vFixObjPos.x);
+				ImGui::Text("POSITION Y : %0.2f", vFixObjPos.y);
+				ImGui::Text("POSITION Z : %0.2f", vFixObjPos.z);
 
 				SEPARATOR;
-				SEPARATOR;
-
-				ImGui::Text("ROTATION FIX");
-				SEPARATOR;
-
-				ImGui::Text("ROT X : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##rotationx", &m_vFixRotation.x, 1.f, 5.f);
-				ImGui::SliderFloat("##sliderrotationx", &m_vFixRotation.x, -180.f, 180.f);
-				ImGui::Text("ROT Y : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##rotationy", &m_vFixRotation.y, 1.f, 5.f);
-				ImGui::SliderFloat("##sliderrotationy", &m_vFixRotation.y, -180.f, 180.f);
-				ImGui::Text("ROT Z : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##rotationz", &m_vFixRotation.z, 1.f, 5.f);
-				ImGui::SliderFloat("##sliderrotationz", &m_vFixRotation.z, -180.f, 180.f);
-
-				_float fPitch = XMConvertToRadians(m_vFixRotation.x);
-				_float fYaw = XMConvertToRadians(m_vFixRotation.y);
-				_float fRoll = XMConvertToRadians(m_vFixRotation.z);
-
-				_matrix DeltaRotMatirx = XMMatrixRotationZ(fRoll) * XMMatrixRotationX(fPitch) * XMMatrixRotationY(fYaw);
-
-				_vector vScale = {};
-				_vector vRotation = {};
-				_vector vTranslation = {};
-
-				XMMatrixDecompose(&vScale, &vRotation, &vTranslation, m_FixBaseMatrix);
-
-				_matrix BaseRotMatrix = XMMatrixRotationQuaternion(vRotation);
-
-				_matrix AddRotMatrix = DeltaRotMatirx * BaseRotMatrix;
-
-				_matrix NewWorldMatrix = XMMatrixScaling(m_vFixScale.x, m_vFixScale.y, m_vFixScale.z) * AddRotMatrix * XMMatrixTranslation(m_vFixPosition.x, m_vFixPosition.y, m_vFixPosition.z);
-
-				m_FixWorldMatrix = NewWorldMatrix;
-
-				SEPARATOR;
-				SEPARATOR;
-
-				ImGui::Text("POSITION FIX");
-				SEPARATOR;
-
-				_bool isPicked = { false };
-
-				if (m_pGameInstance->Key_Pressing(DIK_F4, 0.001f) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
-				{
-					_float3 vPos = {};
-
-					if (m_pGameInstance->isPicked(&vPos))
-					{
-						m_vFixPosition = vPos;
-					}
-				}
-
-				_float fPosMove = { 0.01f };
-
-				if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, 0.f)) fPosMove *= 10.f;
-
-				ImGui::Text("POS X : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##positionx", &m_vFixPosition.x, fPosMove, fPosMove * 5.f);
-				ImGui::Text("POS Y : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##positiony", &m_vFixPosition.y, fPosMove, fPosMove * 5.f);
-				ImGui::Text("POS Z : "); SAMELINE; ITEMWIDTH(100.f); ImGui::InputFloat("##positionz", &m_vFixPosition.z, fPosMove, fPosMove * 5.f);
-
-				m_FixWorldMatrix.r[3] = XMVectorSetW(XMLoadFloat3(&m_vFixPosition), 1.f);
-
-				m_pFixTransformCom->Set_State(STATE::RIGHT, m_FixWorldMatrix.r[0]);
-				m_pFixTransformCom->Set_State(STATE::UP, m_FixWorldMatrix.r[1]);
-				m_pFixTransformCom->Set_State(STATE::LOOK, m_FixWorldMatrix.r[2]);
-				m_pFixTransformCom->Set_State(STATE::POSITION, m_FixWorldMatrix.r[3]);
-
-				SEPARATOR;
-				SEPARATOR;
-
 			}
 
 #pragma region 속성 설정
@@ -675,7 +625,7 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 			ImGui::Checkbox("COLLIDER", &PropProperties.isCollider);
 			SAMELINE;
 
-			ImGui::Checkbox("BLENDED", &PropProperties.isBlended);
+			ImGui::Checkbox("ICE", &PropProperties.isIce);
 			SAMELINE;
 
 			ImGui::Checkbox("INSTANCE", &PropProperties.isInstance);
@@ -694,8 +644,10 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 
 #pragma endregion
 
-			if (ImGui::Button("DONE") || m_pGameInstance->Key_Down(DIK_RETURN) || m_pGameInstance->Key_Down(DIK_NUMPADENTER))
+			if (ImGui::Button("DONE") || m_pGameInstance->Key_Down(DIK_RETURN) || m_pGameInstance->Key_Down(DIK_NUMPADENTER) || m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
 			{
+				m_pGameInstance->Clear_GizmoObject();
+
 				m_FixBaseMatrix = XMMatrixIdentity();
 
 				ZeroMemory(&m_vFixScale, sizeof(_float3));
@@ -708,8 +660,10 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 				m_eFixType = FIX_OBJECT::END;
 
 			} SAMELINE;
-			if (ImGui::Button("RESET"))
+			if (ImGui::Button("RESET (R)") || m_pGameInstance->Key_Down(DIK_R) || true == isReset)
 			{
+				m_pGameInstance->Clear_GizmoObject();
+
 				m_pFixTransformCom->Set_State(STATE::RIGHT, m_FixBaseMatrix.r[0]);
 				m_pFixTransformCom->Set_State(STATE::UP, m_FixBaseMatrix.r[1]);
 				m_pFixTransformCom->Set_State(STATE::LOOK, m_FixBaseMatrix.r[2]);
@@ -728,7 +682,7 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 			}
 			SEPARATOR;
 			SEPARATOR;
-			if (ImGui::Button("DELETE (DELETE)") || m_pGameInstance->Key_Down(DIK_DELETE))
+			if (ImGui::Button("DELETE (DELETE)") || m_pGameInstance->Key_Down(DIK_ESCAPE))
 			{
 				if (nullptr != m_pFixPropObj)
 				{
@@ -748,6 +702,8 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 
 					m_pFixPropObj = nullptr;
 				}
+
+				m_pGameInstance->Clear_GizmoObject();
 
 				m_pFixPropObj = nullptr;
 				m_pFixTransformCom = nullptr;
@@ -816,6 +772,7 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 					SEPARATOR;
 				}
 			}
+			/*
 			if (ImGui::Button("ALL SNOW ON"))
 			{
 				MAPOBJECT_PROPERTIES PropProperties = {};
@@ -838,6 +795,7 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 					pObj->Set_Properties(PropProperties);
 				}
 			} SEPARATOR;
+			*/
 
 			if (ImGui::Button("CHECK RENDER ON"))
 			{
@@ -859,7 +817,7 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 
 				m_RenderProperties.isSnow = false;
 				m_RenderProperties.isCollider = false;
-				m_RenderProperties.isBlended = false;
+				m_RenderProperties.isIce = false;
 				m_RenderProperties.isInstance = false;
 				m_RenderProperties.isShadow = false;
 				m_RenderProperties.isBackGround = false;
@@ -876,7 +834,7 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 				ImGui::Checkbox("COLLIDER", &m_RenderProperties.isCollider);
 				SAMELINE;
 
-				ImGui::Checkbox("BLENDED", &m_RenderProperties.isBlended);
+				ImGui::Checkbox("ICE", &m_RenderProperties.isIce);
 				SAMELINE;
 
 				ImGui::Checkbox("INSTANCE", &m_RenderProperties.isInstance);
@@ -917,7 +875,7 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 						ImGui::Checkbox("COLLIDER", &PropProperties.isCollider);
 						SAMELINE;
 
-						ImGui::Checkbox("BLENDED", &PropProperties.isBlended);
+						ImGui::Checkbox("ICE", &PropProperties.isIce);
 						SAMELINE;
 
 						ImGui::Checkbox("INSTANCE", &PropProperties.isInstance);
@@ -935,19 +893,6 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 					}
 
 #pragma endregion
-
-					CTransform* pTransform = static_cast<CTransform*>(m_ObjectList[m_iObjectListIndex]->Get_Component(TEXT("Com_Transform")));
-					CHECK_NULLPTR(pTransform, );
-
-					_float3 vPosition = {};
-
-					XMStoreFloat3(&vPosition, pTransform->Get_State(STATE::POSITION));
-
-					ImGui::Text("POSITION");
-					ImGui::Text("X : %.3f", vPosition.x);
-					ImGui::Text("Y : %.3f", vPosition.y);
-					ImGui::Text("Z : %.3f", vPosition.z);
-					SEPARATOR;
 				}
 				if (0 != m_ObjectList.size())
 				{
@@ -972,6 +917,8 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 
 							// ======================================================
 							// ======================================================
+
+							m_pGameInstance->Set_GizmoObject(m_pFixPropObj);
 
 							m_isFixObjectWindow = true;
 							m_eFixType = FIX_OBJECT::FIX;
@@ -1140,7 +1087,7 @@ HRESULT CLevel_Map::Ready_Light_Window()
 
 				m_pGameInstance->Set_LightDesc(AnsiToWString(m_LightTags[m_iLightTagIndex]), ENUM_CLASS(LEVEL::MAP), m_FixLightDesc);
 
-				if (ImGui::Button("DONE") || m_pGameInstance->Key_Down(DIK_RETURN) || m_pGameInstance->Key_Down(DIK_NUMPADENTER))
+				if (ImGui::Button("DONE") || m_pGameInstance->Key_Down(DIK_RETURN) || m_pGameInstance->Key_Down(DIK_NUMPADENTER) || m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
 				{
 					m_strFixLightTag.clear();
 					m_isFindFixLight = false;

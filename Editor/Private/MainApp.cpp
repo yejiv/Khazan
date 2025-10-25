@@ -23,8 +23,8 @@ HRESULT CMainApp::Initialize()
 	EngineDesc.iWinSizeX = g_iWinSizeX;
 	EngineDesc.iWinSizeY = g_iWinSizeY;
 	EngineDesc.iNumLevels = ENUM_CLASS(LEVEL::END);
-	EngineDesc.iWinSizeX_Imgui = g_iWinSizeX_Imgui;
-	EngineDesc.iWinSizeY_Imgui = g_iWinSizeY_Imgui;
+	EngineDesc.iWinSizeX_Imgui = g_iWinSizeX_Imgui_TYJ;
+	EngineDesc.iWinSizeY_Imgui = g_iWinSizeY_Imgui_TYJ;
 	EngineDesc.iNumJoltObjectLayer = ENUM_CLASS(COLLISION_LAYER::END);
 
 	list<_wstring> Imgui_Menu;
@@ -84,9 +84,6 @@ HRESULT CMainApp::Render()
 
 HRESULT CMainApp::Ready_Prototype_ForStatic()
 {
-
-	if (FAILED(m_pGameInstance->Add_Font(TEXT("Font_153"), TEXT("../../Client/Bin/Resources/Font/153ex.SpriteFont"))))
-		return E_FAIL;
 
 	// VIBuffer
 	/* Prototype_Component_VIBuffer_Rect */

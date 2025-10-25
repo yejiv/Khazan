@@ -37,6 +37,7 @@ public:
 	void Ready_ImGui_Active_Camera_Animation();
 	void Ready_ImGui_Active_Camera_Animation_Item();
 	void Ready_ImGui_Active_Camera_Event_Item();
+	void Ready_Guizmo();
 
 private:
 	_char m_szCreate_CameraName[MAX_PATH];

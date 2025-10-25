@@ -49,6 +49,7 @@ using namespace DirectX;
 
 using namespace JPH;
 
+#define IMGUI_DEFINE_MATH_OPERATORS
 
 #include <ft2build.h>
 #include FT_FREETYPE_H

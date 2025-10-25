@@ -125,7 +125,7 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 		return E_FAIL;
 
 #ifdef _DEBUG
-	m_pImgui_Manager = CImgui_Manager::Create(EngineDesc.iWinSizeX_Imgui, EngineDesc.iWinSizeY_Imgui, EngineDesc.Menu_Imgui);
+	m_pImgui_Manager = CImgui_Manager::Create(*ppDevice, *ppContext, EngineDesc.Menu_Imgui, EngineDesc.hWnd, EngineDesc.iWinSizeX, EngineDesc.iWinSizeY);
 	if (nullptr == m_pImgui_Manager)
 		return E_FAIL;
 
@@ -166,6 +166,9 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 
 HRESULT CGameInstance::Clear_Resources(_uint iClearLevelID)
 {
+#ifdef _DEBUG
+	//m_pImgui_Manager->ClearGizmoObject();
+#endif
 	m_pPool_Manager->Clear(iClearLevelID);
 
 	/* 기존레벨용 자원들을 날린다. */
@@ -250,6 +253,11 @@ void CGameInstance::SetupDebugMessageFilter(ID3D11Device* pDevice)
 		pInfoQueue->AddStorageFilterEntries(&filter);
 		pInfoQueue->Release();
 	}
+}
+
+void CGameInstance::Present_SwapChain(_uint iSyncInterval, _uint iFlag)
+{
+	m_pGraphic_Device->Present_SwapChain(iSyncInterval, iFlag);
 }
 
 #pragma endregion
@@ -358,6 +366,11 @@ HRESULT CGameInstance::Add_DebugComponent(CComponent* pComponent)
 void CGameInstance::Set_EnableShadow(_bool isEnable)
 {
 	m_pRenderer->Set_EnableShadow(isEnable);
+}
+
+void CGameInstance::Set_EnableSSAO(_bool isEnable)
+{
+	m_pRenderer->Set_EnableSSAO(isEnable);
 }
 
 #endif
@@ -678,6 +691,18 @@ HRESULT CGameInstance::CleanMenu(_wstring strMenu)
 {
 	return m_pImgui_Manager->CleanMenu(strMenu);
 }
+_bool CGameInstance::HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	return m_pImgui_Manager->HandleWndProc(hWnd, msg, wParam, lParam);
+}
+void CGameInstance::Set_GizmoObject(CGameObject* pGameObject)
+{
+	m_pImgui_Manager->Set_GizmoObject(pGameObject);
+}
+void CGameInstance::Clear_GizmoObject()
+{
+	m_pImgui_Manager->Clear_GizmoObject();
+}
 #endif
 #pragma endregion
 
@@ -921,7 +946,6 @@ void CGameInstance::Release_Engine()
 	Release();
 
 #ifdef _DEBUG
-	m_pImgui_Manager->Shutdown();
 	Safe_Release(m_pImgui_Manager);
 #endif
 

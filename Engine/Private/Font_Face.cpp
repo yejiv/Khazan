@@ -183,6 +183,8 @@ HRESULT CFont_Face::Add_Glyphs(_tchar ch)
 
     m_iPenX += bmp.width + 1;
     m_iRowH = max(m_iRowH, (UINT)bmp.rows);
+
+    return S_OK;
 }
 
 void CFont_Face::Update_LRU(_tchar ch)

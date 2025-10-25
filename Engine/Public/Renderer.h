@@ -23,6 +23,7 @@ public:
 public:
 	HRESULT Add_DebugComponent(class CComponent* pComponent);
 	void Set_EnableShadow(_bool isEnable) { m_isEnableShadow = isEnable; }
+	void Set_EnableSSAO(_bool isEnable) { m_isEnableSSAO = isEnable; }
 #endif
 
 private:
@@ -39,18 +40,22 @@ private:
 	_float4x4					m_WorldMatrix{}, m_ViewMatrix{}, m_ProjMatrix{};
 	_float						m_fViewportWidth{}, m_fViewportHeight{};
 
+	vector<class CGameObject*>	m_CascadeObjects;
+
 #ifdef _DEBUG
 private:
 	list<class CComponent*>		m_DebugComponent;
-	vector<class CGameObject*>	m_CascadeObjects;
 	_bool						m_isEnableDebugRender = {};
 	_bool						m_isEnableShadow = { true };
+	_bool						m_isEnableSSAO = { true };
 #endif
 
 	// SSAO
 private:
-	_uint m_iKernelSize = {};
-	vector<_float3> m_Kernels;
+	_uint						m_iKernelSize = {};
+	ID3D11ShaderResourceView*	m_pNoiseSRV = { nullptr };
+	ID3D11Buffer*				m_pStructuredBuffer = { nullptr };
+	ID3D11ShaderResourceView*	m_pKernelSRV = { nullptr };
 
 private:
 	HRESULT Ready_Kernel();
@@ -70,10 +75,15 @@ private:
 
 private:
 	HRESULT SetUp_Viewport(_float fWidth, _float fHeight);
+	HRESULT Bind_Shadow_ShaderResources();
 
 #ifdef _DEBUG
 	HRESULT Render_Debug();
 #endif
+
+private:
+	_bool isEnableShadow();
+	_bool isEnableSSAO();
 
 public:
 	static CRenderer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

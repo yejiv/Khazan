@@ -38,6 +38,8 @@ private:
 
 	_uint m_iPhase = { 0 };
 
+	_uint m_iSwapSpeed = { 1 };
+
 	_float3 m_vPrevPos = {};
 
 private:
