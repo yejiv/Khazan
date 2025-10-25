@@ -19,6 +19,24 @@ public:
 	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pRenderObject);
 	HRESULT Draw();
 
+public:
+	_float Get_SSAORadius() { return m_fSampleRadius; }
+	_float Get_SSAOIntensity() { return m_fAOIntensity; }
+	_float Get_SSAOConstrast() { return m_fAOConstrast; }
+	_float Get_SSAOBias() { return m_fSampleBias; }
+
+	void Set_SSAOBias(_float fBias) { m_fSampleBias = fBias; }
+	void Set_SSAOIntensity(_float fIntensity) { m_fAOIntensity = fIntensity; }
+	void Set_SSAOConstrast(_float fConstrast) { m_fAOConstrast = fConstrast; }
+	void Set_SSAORadius(_float fRadius) { m_fSampleRadius = fRadius; }
+
+private:
+	// SSAO
+	_float					m_fSampleRadius = { 1.f };
+	_float					m_fAOIntensity = { 1.f };
+	_float					m_fAOConstrast = { 1.f };
+	_float					m_fSampleBias = { 0.f };
+
 #ifdef _DEBUG
 public:
 	HRESULT Add_DebugComponent(class CComponent* pComponent);

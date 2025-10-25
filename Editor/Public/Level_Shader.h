@@ -46,6 +46,12 @@ private:
 	_bool					m_isRenderShadow = { true };
 	_bool					m_isRenderSSAO = { true };
 
+	// SSAO
+	_float					m_fSampleRadius = { 1.f };
+	_float					m_fAOIntensity = { 1.f };
+	_float					m_fAOConstrast = { 1.f };
+	_float					m_fSampleBias = { 0.f };
+
 public:
 	static CLevel_Shader* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;
