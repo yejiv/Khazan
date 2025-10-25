@@ -37,6 +37,8 @@ private:
 	CVIBuffer_Rect*			m_pVIBufferCom = { nullptr };
 	CTexture*				m_pMaskTextureCom = { nullptr };
 
+	CShader*				m_pFontShaderCom = { nullptr };
+
 	UIBGTYPE				m_eBGType = { UIBGTYPE ::END};
 private:
 	HRESULT					Ready_Prototype();

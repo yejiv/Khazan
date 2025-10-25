@@ -59,7 +59,8 @@ public:
 	_float							Get_MaxTrack();
 	void							Setting_Loop();
 	void							ResetChildren();
-	void							Save(_wstring filename);
+	void							Save(const char* filename);
+	void							Load(const char* filename);
 
 private:
 	vector<class CEffect_Element*>	m_Children;

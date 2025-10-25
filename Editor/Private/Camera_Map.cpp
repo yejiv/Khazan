@@ -119,10 +119,23 @@ void CCamera_Map::Input(_float fTimeDelta)
         fSpeed *= 5.f;
 
     if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta))
-        fSpeed *= 5.f;
+    {
+        if (1 == m_iSwapSpeed)
+        {
+            m_iSwapSpeed = 5;
+        }
+        else if (5 == m_iSwapSpeed)
+        {
+            m_iSwapSpeed = 1;
+        }
+        //else if (10 == m_iSwapSpeed)
+        //{
+            //m_iSwapSpeed = 1;
+        //}
+    }
 
-    if (m_pGameInstance->Key_Pressing(DIK_TAB, fTimeDelta))
-        fSpeed *= 5.f;
+    fSpeed *= static_cast<_float>(m_iSwapSpeed);
+
     if (true == m_isControl)
     {
         if (m_pGameInstance->Key_Pressing(DIK_W, fTimeDelta)) m_pTransformCom->Go_Straight(fSpeed);

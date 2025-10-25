@@ -43,15 +43,15 @@ void CProp_Object::Update(_float fTimeDelta)
 {
     if (true == m_Properties.isSnow)
     {
-        if (true == m_Properties.isBlended)
-            m_eShaderPass = SHADER_PASS::SNOWMAP_BLEND;
+        if (true == m_Properties.isIce)
+            m_eShaderPass = SHADER_PASS::SNOWMAP_ICE;
         else
             m_eShaderPass = SHADER_PASS::SNOWMAP;
     }
     else
     {
-        if (true == m_Properties.isBlended)
-            m_eShaderPass = SHADER_PASS::MAP_BLEND;
+        if (true == m_Properties.isIce)
+            m_eShaderPass = SHADER_PASS::MAP_ICE;
         else
             m_eShaderPass = SHADER_PASS::MAP;
     }
@@ -64,17 +64,15 @@ void CProp_Object::Late_Update(_float fTimeDelta)
         m_pGameInstance->Add_RenderGroup(RENDERGROUP::PRIORITY, this);
     else if (true == m_Properties.isBlended)
         m_pGameInstance->Add_RenderGroup(RENDERGROUP::BLEND, this);
-    else if (true == m_Properties.isShadow)
-        m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this);
     else
         m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
+
+    if (true == m_Properties.isShadow)
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this);
     */
     if (false == m_isCheckRender)
     {
-        if (true == m_Properties.isBlended)
-            m_pGameInstance->Add_RenderGroup(RENDERGROUP::BLEND, this);
-        else
-            m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
     }
     else
     {
@@ -84,7 +82,7 @@ void CProp_Object::Late_Update(_float fTimeDelta)
             isRender = true;
         if (true == m_pRenderProperties->isCollider && m_Properties.isCollider == m_pRenderProperties->isCollider)
             isRender = true;
-        if (true == m_pRenderProperties->isBlended && m_Properties.isBlended == m_pRenderProperties->isBlended)
+        if (true == m_pRenderProperties->isIce && m_Properties.isIce == m_pRenderProperties->isIce)
             isRender = true;
         if (true == m_pRenderProperties->isInstance && m_Properties.isInstance == m_pRenderProperties->isInstance)
             isRender = true;
@@ -97,10 +95,7 @@ void CProp_Object::Late_Update(_float fTimeDelta)
 
         if (true == isRenderProperties || true == isRender)
         {
-            if (true == m_Properties.isBlended)
-                m_pGameInstance->Add_RenderGroup(RENDERGROUP::BLEND, this);
-            else
-                m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
+            m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
         }
     }
 }
@@ -115,7 +110,7 @@ HRESULT CProp_Object::Render()
     {
         Bind_Materials(i);
 
-        if (SHADER_PASS::SNOWMAP == m_eShaderPass || SHADER_PASS::SNOWMAP_BLEND == m_eShaderPass)
+        if (SHADER_PASS::SNOWMAP == m_eShaderPass || SHADER_PASS::SNOWMAP_ICE == m_eShaderPass)
             CHECK_FAILED(Bind_ShaderResources_ForSnowMap(i), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pShaderCom->Begin(ENUM_CLASS(m_eShaderPass)), E_FAIL);

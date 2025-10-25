@@ -112,7 +112,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;ENGINE_EXPORTS;JPH_FLOATING_POINT_EXCEPTIONS_ENABLED;JPH_DEBUG_RENDERER;JPH_PROFILE_ENABLED;JPH_OBJECT_STREAM;JPH_USE_AVX2;JPH_USE_AVX;JPH_USE_SSE4_1;JPH_USE_SSE4_2;JPH_USE_LZCNT;JPH_USE_TZCNT;JPH_USE_F16C;JPH_USE_FMADD;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../public/;../public/ImGui/;../public/assimp/;../public/DirectXTK/;../public/fmod/;../public/Fx11/;../public/Jolt/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../public/;../public/ImGui/;../public/assimp/;../public/DirectXTK/;../public/fmod/;../public/Fx11/;../public/Jolt/;../public/Guizmo/</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>EnginePch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -123,7 +123,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>d3d11.lib;dxguid.lib;Effects11d.lib;DirectXTKd.lib;fmodL_vc.lib;dinput8.lib;assimp-vc143-mtd.lib;Joltd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxguid.lib;Effects11d.lib;DirectXTKd.lib;fmodL_vc.lib;dinput8.lib;assimp-vc143-mtd.lib;Joltd.lib;freetyped.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../ThirdPartyLib/Debug/</AdditionalLibraryDirectories>
     </Link>
     <FxCompile>
@@ -145,7 +145,7 @@ call Copy.bat</Command>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;ENGINE_EXPORTS;JPH_FLOATING_POINT_EXCEPTIONS_ENABLED;JPH_DEBUG_RENDERER;JPH_PROFILE_ENABLED;JPH_OBJECT_STREAM;JPH_USE_AVX2;JPH_USE_AVX;JPH_USE_SSE4_1;JPH_USE_SSE4_2;JPH_USE_LZCNT;JPH_USE_TZCNT;JPH_USE_F16C;JPH_USE_FMADD;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../public/;../public/ImGui/;../public/assimp/;../public/DirectXTK/;../public/fmod/;../public/Fx11/;../public/Jolt/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../public/;../public/ImGui/;../public/assimp/;../public/DirectXTK/;../public/fmod/;../public/Fx11/;../public/Jolt/;../public/Guizmo/</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <ForcedIncludeFiles>EnginePch.h</ForcedIncludeFiles>
@@ -158,7 +158,7 @@ call Copy.bat</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>d3d11.lib;dxguid.lib;dinput8.lib;Effects11.lib;DirectXTK.lib;assimp-vc143-mt.lib;fmod_vc.lib;Jolt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxguid.lib;dinput8.lib;Effects11.lib;DirectXTK.lib;assimp-vc143-mt.lib;fmod_vc.lib;Jolt.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../ThirdPartyLib/Release/</AdditionalLibraryDirectories>
     </Link>
     <FxCompile>
@@ -192,6 +192,8 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\Condition_Node.cpp" />
     <ClCompile Include="..\Private\CoolDown_Nodel.cpp" />
     <ClCompile Include="..\Private\Decorator_Node.cpp" />
+    <ClCompile Include="..\private\Font_Face.cpp" />
+    <ClCompile Include="..\private\Font_Renderer.cpp" />
     <ClCompile Include="..\Private\Inverter_Node.cpp" />
     <ClCompile Include="..\Private\Jolt_CharacterContactListener.cpp" />
     <ClCompile Include="..\Private\CharacterVirtual.cpp" />
@@ -202,7 +204,6 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\Event_Manager.cpp" />
     <ClCompile Include="..\Private\Jolt_ContactListener.cpp" />
     <ClCompile Include="..\private\ContainerObject.cpp" />
-    <ClCompile Include="..\private\CustomFont.cpp" />
     <ClCompile Include="..\private\Font_Manager.cpp" />
     <ClCompile Include="..\private\Frustum.cpp" />
     <ClCompile Include="..\Private\GameInstance.cpp" />
@@ -263,6 +264,11 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\VIBuffer_Rect.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Terrain.cpp" />
     <ClCompile Include="..\Private\Wait_Node.cpp" />
+    <ClCompile Include="..\Public\Guizmo\GraphEditor.cpp" />
+    <ClCompile Include="..\Public\Guizmo\ImCurveEdit.cpp" />
+    <ClCompile Include="..\Public\Guizmo\ImGradient.cpp" />
+    <ClCompile Include="..\Public\Guizmo\ImGuizmo.cpp" />
+    <ClCompile Include="..\Public\Guizmo\ImSequencer.cpp" />
     <ClCompile Include="..\Public\ImGui\imgui.cpp" />
     <ClCompile Include="..\Public\ImGui\imgui_demo.cpp" />
     <ClCompile Include="..\Public\ImGui\imgui_draw.cpp" />
@@ -277,6 +283,7 @@ call Copy.bat</Command>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\ENGINESDK\DEBUG\INC\COMPOSITE_NODE.H" />
     <ClInclude Include="..\Public\Action_Node.h" />
     <ClInclude Include="..\Public\AI_Controller.h" />
     <ClInclude Include="..\Public\AI_State.h" />
@@ -288,6 +295,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Body.h" />
     <ClInclude Include="..\public\Bone.h" />
     <ClInclude Include="..\Public\BTNode.h" />
+    <ClInclude Include="..\Public\BTNode_Defines.h" />
     <ClInclude Include="..\public\Camera.h" />
     <ClInclude Include="..\Public\Camera_Manager.h" />
     <ClInclude Include="..\public\Cell.h" />
@@ -296,6 +304,22 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Condition_Node.h" />
     <ClInclude Include="..\Public\CoolDown_Nodel.h" />
     <ClInclude Include="..\Public\Decorator_Node.h" />
+    <ClInclude Include="..\Public\Guizmo\GraphEditor.h" />
+    <ClInclude Include="..\Public\Guizmo\ImCurveEdit.h" />
+    <ClInclude Include="..\Public\Guizmo\ImGradient.h" />
+    <ClInclude Include="..\Public\Guizmo\ImGuizmo.h" />
+    <ClInclude Include="..\Public\Guizmo\ImSequencer.h" />
+    <ClInclude Include="..\Public\Guizmo\ImZoomSlider.h" />
+    <ClInclude Include="..\Public\ImGui\imconfig.h" />
+    <ClInclude Include="..\Public\ImGui\imgui.h" />
+    <ClInclude Include="..\Public\ImGui\imgui_impl_dx11.h" />
+    <ClInclude Include="..\Public\ImGui\imgui_impl_win32.h" />
+    <ClInclude Include="..\Public\ImGui\imgui_internal.h" />
+    <ClInclude Include="..\Public\ImGui\imstb_rectpack.h" />
+    <ClInclude Include="..\Public\ImGui\imstb_textedit.h" />
+    <ClInclude Include="..\Public\ImGui\imstb_truetype.h" />
+    <ClInclude Include="..\public\Font_Face.h" />
+    <ClInclude Include="..\public\Font_Renderer.h" />
     <ClInclude Include="..\Public\Inverter_Node.h" />
     <ClInclude Include="..\Public\Jolt_CharacterContactListener.h" />
     <ClInclude Include="..\Public\CharacterVirtual.h" />
@@ -308,7 +332,6 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Engine_Json.h" />
     <ClInclude Include="..\Public\Jolt_ContactListener.h" />
     <ClInclude Include="..\public\ContainerObject.h" />
-    <ClInclude Include="..\public\CustomFont.h" />
     <ClInclude Include="..\Public\Engine_Defines.h" />
     <ClInclude Include="..\Public\Engine_Enum.h" />
     <ClInclude Include="..\Public\Engine_Function.h" />
@@ -320,14 +343,6 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\GameInstance.h" />
     <ClInclude Include="..\Public\GameObject.h" />
     <ClInclude Include="..\Public\Graphic_Device.h" />
-    <ClInclude Include="..\Public\ImGui\imconfig.h" />
-    <ClInclude Include="..\Public\ImGui\imgui.h" />
-    <ClInclude Include="..\Public\ImGui\imgui_impl_dx11.h" />
-    <ClInclude Include="..\Public\ImGui\imgui_impl_win32.h" />
-    <ClInclude Include="..\Public\ImGui\imgui_internal.h" />
-    <ClInclude Include="..\Public\ImGui\imstb_rectpack.h" />
-    <ClInclude Include="..\Public\ImGui\imstb_textedit.h" />
-    <ClInclude Include="..\Public\ImGui\imstb_truetype.h" />
     <ClInclude Include="..\Public\Imgui_Manager.h" />
     <ClInclude Include="..\Public\Input_Device.h" />
     <ClInclude Include="..\Public\Input_Manager.h" />

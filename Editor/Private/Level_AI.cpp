@@ -4,6 +4,8 @@
 #include "Perception.h"
 #include "BlackBoard.h"
 #include "BehaviorTree.h"
+#include "AIController_Edit.h"
+#include "Edit_Monster.h"
 
 CLevel_AI::CLevel_AI(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
@@ -14,6 +16,9 @@ HRESULT CLevel_AI::Initialize()
 {
 	/* 현재 레벨을 구성해주기 위한 객체들을 생성한다. */
 
+
+	if (FAILED(Ready_Edit_Objects()))
+		return E_FAIL;
 
 	m_pGameInstance->AddWidget(TEXT("AI"), [&]() {
 
@@ -54,6 +59,7 @@ HRESULT CLevel_AI::Initialize()
 			if (ImGui::BeginTabItem("BehaviorTree"))
 			{
 				// BehaviorTree
+				Show_BehaviorTree_Menu(szDefaultFileName);
 				ImGui::EndTabItem();
 			}
 
@@ -75,6 +81,18 @@ void CLevel_AI::Update(_float fTimeDelta)
 HRESULT CLevel_AI::Render()
 {
 	SetWindowText(g_hWnd, TEXT("AI 레벨입니다."));
+
+	return S_OK;
+}
+
+HRESULT CLevel_AI::Ready_Edit_Objects()
+{
+	CEdit_Monster::GAMEOBJECT_DESC MonsterDesc{};
+	MonsterDesc.fSpeedPerSec = 3.f;
+	MonsterDesc.fRotationPerSec = 180.f;
+
+	m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::AI),TEXT("Layer_Yeti"),
+		ENUM_CLASS(LEVEL::AI),TEXT("Prototype_GameObject_Monster"), &MonsterDesc);
 
 	return S_OK;
 }
@@ -262,7 +280,6 @@ void CLevel_AI::Load_Perception(const vector<SIGHT_DESC>& SightList, const strin
 }
 #pragma endregion
 
-
 #pragma region BlackBoard
 
 void CLevel_AI::Show_BlackBoard_Menu(const char* szDefaultFileName)
@@ -428,14 +445,316 @@ void CLevel_AI::Load_BlackBoard(vector<AIBLACKBOARD_DATA>& BBList, const string&
 {
 
 }
+
 #pragma endregion
 
 #pragma region BehaviorTree
 
+static AIBTNODE_DATA* g_SelectedNode = nullptr;
+
 void CLevel_AI::Show_BehaviorTree_Menu(const char* szDefaultFileName)
+{
+	static AI_BTDATA BTData{};
+	static char szMonsterTag[64] = "";
+	ImGui::InputText("MonsterTag", szMonsterTag, IM_ARRAYSIZE(szMonsterTag));
+	BTData.MonsterType = szMonsterTag;
+
+	ImGui::Separator();
+
+	if (ImGui::Button("New Tree"))
+	{
+		BTData = {};
+		BTData.MonsterType = szMonsterTag;
+		g_SelectedNode = nullptr;
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Load"))
+	{
+		// Load_BehaviorTree(szDefaultFileName, BTData);
+		g_SelectedNode = nullptr;
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Save"))
+	{
+		Save_BehaviorTree(BTData, szDefaultFileName);
+	}
+
+	ImGui::Separator();
+
+	Show_BT_Editor(BTData);
+}
+
+void CLevel_AI::Show_BT_Editor(AI_BTDATA& TreeData)
+{
+	ImGui::BeginChild("Hierarchy", ImVec2(300, 0), true);
+	if (TreeData.RootNode.strNodeName.empty())
+	{
+		if (ImGui::Button("Create Root Node"))
+		{
+			TreeData.RootNode.strNodeName = "Root";
+			TreeData.RootNode.strNodeType = "Composite";
+			TreeData.RootNode.strSubtype = "Selector";
+		}
+	}
+	else
+	{
+		Show_BTNode_Hierarchy(TreeData.RootNode);
+	}
+	ImGui::EndChild();
+
+	ImGui::SameLine();
+
+	ImGui::BeginChild("Inspector", ImVec2(0, 0), true);
+	if (g_SelectedNode)
+	{
+		// 이름
+		static char nameBuf[128];
+		strcpy_s(nameBuf, g_SelectedNode->strNodeName.c_str());
+		if (ImGui::InputText("Name", nameBuf, IM_ARRAYSIZE(nameBuf)))
+			g_SelectedNode->strNodeName = nameBuf;
+
+		// 노드 타입
+		const char* NodeTypes[] = { "Composite", "Decorator", "Leaf" };
+		_uint iCurrentType = 0;
+		for (_uint i = 0; i < 3; i++)
+			if (g_SelectedNode->strNodeType == NodeTypes[i]) iCurrentType = i;
+
+		if (ImGui::BeginCombo("Node Type", NodeTypes[iCurrentType]))
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				_bool isSelected = (iCurrentType == i);
+				if (ImGui::Selectable(NodeTypes[i], isSelected))
+					g_SelectedNode->strNodeType = NodeTypes[i];
+				if (isSelected) ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+
+		// 서브 타입
+
+		const char* SubTypes[] = { "Selector", "Sequence", "Repeater", "Inverter", "CoolDown","Condition","Action","Wait" };
+		_uint iCurrentSub = 0;
+		for (_uint i = 0; i < 8; i++)
+			if (g_SelectedNode->strSubtype == SubTypes[i])
+				iCurrentSub = i;
+
+		if (ImGui::BeginCombo("SubType", SubTypes[iCurrentSub]))
+		{
+			for (_uint i = 0; i < 8; i++)
+			{
+				_bool isSelected = (iCurrentSub == i);
+				if (ImGui::Selectable(SubTypes[i], isSelected))
+					g_SelectedNode->strSubtype = SubTypes[i];
+
+				if (isSelected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+
+		if (g_SelectedNode->strNodeType == "Leaf")
+		{
+			if (g_SelectedNode->strSubtype == "Wait")
+				ImGui::InputFloat("Wait Time", &g_SelectedNode->fWaitTime);
+			else
+			{
+				static char cb[128];
+				strcpy_s(cb, g_SelectedNode->strCallbackFunction.c_str());
+				if (ImGui::InputText("Callback", cb, IM_ARRAYSIZE(cb)))
+					g_SelectedNode->strCallbackFunction = cb;
+			}
+		}
+		else if (g_SelectedNode->strNodeType == "Decorator")
+		{
+			if (g_SelectedNode->strSubtype == "CoolDown")
+				ImGui::InputFloat("CoolDown", &g_SelectedNode->fCoolDownTime);
+			else if (g_SelectedNode->strSubtype == "Repeater")
+				ImGui::InputInt("Repeat Count", (int*)&g_SelectedNode->iRepeatCount);
+		}
+
+		// Children 관리
+		bool bCanAddChild = (g_SelectedNode->strNodeType != "Leaf") &&
+			(g_SelectedNode->strNodeType != "Decorator" || g_SelectedNode->Children.size() < 1);
+		if (!bCanAddChild) ImGui::BeginDisabled();
+		if (ImGui::Button("Add Child"))
+		{
+			g_SelectedNode->Children.push_back({});
+			g_SelectedNode->Children.back().strNodeName = "NewNode";
+			g_SelectedNode->Children.back().strNodeType = "Leaf";
+			g_SelectedNode->Children.back().strSubtype = "Action";
+		}
+		if (!bCanAddChild) ImGui::EndDisabled();
+
+		if (!g_SelectedNode->Children.empty())
+		{
+			if (ImGui::Button("Remove Last Child"))
+				g_SelectedNode->Children.pop_back();
+		}
+	}
+	ImGui::EndChild();
+
+}
+
+void CLevel_AI::Show_BTNode_Hierarchy(AIBTNODE_DATA& Node)
+{
+	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
+	if (&Node == g_SelectedNode) flags |= ImGuiTreeNodeFlags_Selected;
+
+	_bool isOpen = ImGui::TreeNodeEx(Node.strNodeName.c_str(), flags);
+
+	if (ImGui::IsItemClicked())
+		g_SelectedNode = &Node;
+
+	if (isOpen)
+	{
+		for (auto& child : Node.Children)
+			Show_BTNode_Hierarchy(child);
+
+		ImGui::TreePop();
+	}
+}
+
+void CLevel_AI::Save_BehaviorTree(const AI_BTDATA& Data, const string& FileName)
+{
+	JSON jRoot;
+	jRoot["MonsterType"] = Data.MonsterType;
+	JSON jNode;
+	SaveNode(jNode, Data.RootNode);
+	jRoot["RootNode"] = jNode;
+
+	_tchar szFileName[MAX_PATH] = {};
+	MultiByteToWideChar(CP_ACP, 0, FileName.c_str(), -1, szFileName, MAX_PATH);
+	wstring strFullPath = L"../../Client/Bin/Data/Monster/BehaviorTree/" + wstring(szFileName);
+
+	if (strFullPath.find(TEXT(".json")) == wstring::npos)
+		strFullPath += TEXT(".json");
+
+	_char FullPath[MAX_PATH] = {};
+	WideCharToMultiByte(CP_ACP, 0, strFullPath.c_str(), -1, FullPath, MAX_PATH, NULL, NULL);
+
+	ofstream ofs(FullPath, ios::out | ios::trunc);
+	if (ofs.is_open())
+	{
+		ofs << jRoot.dump(4);
+		ofs.close();
+	}
+
+
+}
+
+void CLevel_AI::SaveNode(JSON& j, const AIBTNODE_DATA& Node)
+{
+
+	j["NodeType"] = Node.strNodeType;
+	j["SubType"] = Node.strSubtype;
+	j["NodeName"] = Node.strNodeName;
+
+	// 노드 타입이 Leaf라면
+	if (Node.strNodeType == "Leaf")
+	{
+		// 서브 타입이 Wait 이면
+		if (Node.strSubtype == "Wait")
+		{
+			// WaitTime 을 저장하고
+			if (Node.fWaitTime > 0.f)
+				j["WaitTime"] = Node.fWaitTime;
+		}
+		// 아니면 컨디션이나 Action 이므로 두 노드는 람다를 사용하므로
+		else
+		{
+			if (!Node.strCallbackFunction.empty())
+				j["Callback"] = Node.strCallbackFunction;
+		}
+	}
+
+	// 노드 타입이 Decorator라면
+	else if (Node.strNodeType == "Decorator")
+	{
+		// CoolDown노드라면
+		if (Node.strSubtype == "CoolDown")
+		{
+			// 쿨다운 저장
+			if (Node.fCoolDownTime > 0.f)
+				j["CoolDownTime"] = Node.fCoolDownTime;
+		}
+		else if (Node.strSubtype == "RepeatCount")
+		{
+			// 반복 회수 저장
+			if (Node.iRepeatCount > 0)
+				j["RepeatCount"] = Node.iRepeatCount;
+		}
+
+		if (!Node.Children.empty())
+		{
+			if (Node.Children.size() > 1)
+			{
+				// 경고: Decorator는 자식 1개만 가능
+				std::cerr << "Warning: Decorator node '" << Node.strNodeName
+					<< "' has more than 1 child!" << std::endl;
+			}
+			// 1개라도 있으면 저장
+			JSON jChild;
+			SaveNode(jChild, Node.Children[0]);
+			j["Children"] = JSON::array({ jChild });
+		}
+
+
+	}
+
+	else if (Node.strNodeType == "Composite")
+	{
+		if (!Node.Children.empty())
+		{
+			j["Children"] = JSON::array();
+			for (const auto& child : Node.Children)
+			{
+				JSON jChild;
+				SaveNode(jChild, child);
+				j["Children"].push_back(jChild);
+			}
+		}
+	}
+
+}
+
+void CLevel_AI::LoadNode(const JSON& j, AIBTNODE_DATA& OutNode)
 {
 
 }
+
+
+
+
+
+//void LoadNode(const json& j, AIBTNODE_DATA& Node)
+//{
+//	Node.NodeType = j.value("NodeType", "");
+//	Node.SubType = j.value("SubType", "");
+//	Node.NodeName = j.value("NodeName", "");
+//	Node.Callback = j.value("Callback", "");
+//	Node.CoolDown = j.value("CoolDown", 0.0f);
+//	Node.WaitTime = j.value("WaitTime", 0u);
+//	Node.RepeatCount = j.value("RepeatCount", 0u);
+//
+//	if (j.contains("Children"))
+//	{
+//		for (auto& jc : j["Children"])
+//		{
+//			Node.Children.push_back({});
+//			LoadNode(jc, Node.Children.back());
+//		}
+//	}
+//}
+
+
+
+
+
 
 #pragma endregion
 

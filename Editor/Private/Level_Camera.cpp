@@ -13,8 +13,8 @@ HRESULT CLevel_Camera::Initialize()
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
 
-	/*if (FAILED(Ready_Layer_BackGround(TEXT("Layer_Player"))))
-		return E_FAIL;*/
+	if (FAILED(Ready_Layer_Player()))
+		return E_FAIL;
 
 	m_pCamera_Controller = CCamera_Controller::Create();
 
