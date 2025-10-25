@@ -76,7 +76,7 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 	m_pCharVir = m_pGameInstance->CreateCharacterVirtual(&SettingDesc, RVec3Arg(LoadVec3(pDesc->vPos)), QuatArg(LoadQuat(pDesc->vQuat)), 0, &m_pBodyInterface);
 	m_BodyId = m_pCharVir->GetInnerBodyID();
 
-	m_pCharVir->SetUserData(static_cast<uint64>(reinterpret_cast<uintptr_t>(pDesc->pGameObject)));
+	m_pCharVir->SetUserData(static_cast<uint64>(reinterpret_cast<uintptr_t>(pDesc->pCollisionDesc)));
 	if (!m_BodyId.IsInvalid())
 	{
 		//m_pBodyInterface->SetObjectLayer(m_BodyId, m_iNumObjectLayer);

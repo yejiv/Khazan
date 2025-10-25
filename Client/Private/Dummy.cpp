@@ -92,13 +92,13 @@ HRESULT CDummy::Render()
     return S_OK;
 }
 
-void CDummy::Collision_Enter(CGameObject* pObject, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CDummy::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
     //m_pBodyCom->Add_Impulse(_float3(0.f, 100.f, 0.f));
 
     if (ENUM_CLASS(COLLISION_LAYER::PLAYER) == iOtherObjectLayer)
     {
-        CTransform* pTransform = dynamic_cast<CTransform*>(pObject->Get_Component(TEXT("Com_Transform")));
+        CTransform* pTransform = dynamic_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")));
 
         _vector vOtherPos = pTransform->Get_State(STATE::POSITION);
         _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
@@ -113,7 +113,7 @@ void CDummy::Collision_Enter(CGameObject* pObject, _uint iOtherObjectLayer, _flo
     }
 }
 
-void CDummy::Collision_Stay(CGameObject* pObject, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CDummy::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
 }
 
@@ -148,7 +148,9 @@ HRESULT CDummy::Ready_Components()
     BodyDesc.vPos = vPos;
     BodyDesc.vQuat = vQuat;
     BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    BodyDesc.pGameObject = this;
+    m_tCollisionDesc.pGameObject = this;
+    //pCollDesc.pInfo = ?? // 작성하기
+    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body"), reinterpret_cast<CComponent**>(&m_pBodyCom), &BodyDesc)))

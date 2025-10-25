@@ -166,7 +166,9 @@ HRESULT CProp_Object::Ready_Collision(void* pArg)
     BodyDesc.vPos = vPos;
     BodyDesc.vQuat = vQuat;
     BodyDesc.vShapeOffset = _float3(0.f, 0.0f, 0.f);
-    BodyDesc.pGameObject = this;
+    m_tCollisionDesc.pGameObject = this;
+    //pCollDesc.pInfo = ?? // 작성하기
+    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body"), reinterpret_cast<CComponent**>(&m_pBodyCom), &BodyDesc)))

@@ -310,7 +310,7 @@ HRESULT CRenderer::Ready_NoiseTexture()
     TextureDesc.Height = 4;
     TextureDesc.MipLevels = 1;
     TextureDesc.ArraySize = 1;
-    TextureDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+    TextureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
     TextureDesc.SampleDesc.Quality = 0;
     TextureDesc.SampleDesc.Count = 1;
     TextureDesc.Usage = D3D11_USAGE_IMMUTABLE;  // 초기화 후 변경 X
