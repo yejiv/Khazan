@@ -438,11 +438,6 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 							{
 								OutputDebugStringA("프리뷰 == nullptr");
 							}
-							else if (m_pGameInstance->Mouse_Pressing(MOUSEKEYSTATE::LB))
-							{
-								pProp->Set_MouseMove(true);
-								pProp->Set_MouseMove(true);
-							}
 							else
 							{
 								pProp->Reset_Preview();
@@ -459,6 +454,9 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 
 				ImGui::EndListBox();
 			} SEPARATOR;
+
+			ImGui::Text("PROTOTYPE COUNT : %d", m_Prototypes_Obj.size());
+			SEPARATOR;
 
 			ImGui::Text("SCALE SIZE : "); SAMELINE;
 			ImGui::InputFloat("##input_scale_add", &m_fAddScale, 0.001f, 0.005f); SAMELINE;
@@ -600,12 +598,12 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 				_float3 vFixObjScale = {};
 				vFixObjScale = m_pFixTransformCom->Get_Scaled();
 
-				ImGui::Text("OBJECT SCALE");
+				ImGui::Text("== OBJECT SCALE ==");
 				ImGui::Text("SCALE X : %0.4f", vFixObjScale.x);
 				ImGui::Text("SCALE Y : %0.4f", vFixObjScale.y);
 				ImGui::Text("SCALE Z : %0.4f", vFixObjScale.z);
 
-				ImGui::Text("OBJECT POSITION");
+				ImGui::Text("\n== OBJECT POSITION ==");
 				ImGui::Text("POSITION X : %0.2f", vFixObjPos.x);
 				ImGui::Text("POSITION Y : %0.2f", vFixObjPos.y);
 				ImGui::Text("POSITION Z : %0.2f", vFixObjPos.z);
@@ -614,6 +612,16 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 			}
 
 #pragma region 속성 설정
+
+			if (m_pGameInstance->Key_Pressing(DIK_F4, 0.000001f) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+			{
+				_float3 vPickPos = {};
+
+				if (m_pGameInstance->isPicked(&vPickPos))
+				{
+					m_pFixTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPickPos), 1.f));
+				}
+			}
 
 			ImGui::Text("SETTING");
 
@@ -644,7 +652,7 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 
 #pragma endregion
 
-			if (ImGui::Button("DONE") || m_pGameInstance->Key_Down(DIK_RETURN) || m_pGameInstance->Key_Down(DIK_NUMPADENTER) || m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
+			if (ImGui::Button("DONE ( ENTER or MOUSE RB )") || m_pGameInstance->Key_Down(DIK_RETURN) || m_pGameInstance->Key_Down(DIK_NUMPADENTER) || m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
 			{
 				m_pGameInstance->Clear_GizmoObject();
 
@@ -682,8 +690,10 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 			}
 			SEPARATOR;
 			SEPARATOR;
-			if (ImGui::Button("DELETE (DELETE)") || m_pGameInstance->Key_Down(DIK_ESCAPE))
+			if (ImGui::Button("DELETE (ESC)") || m_pGameInstance->Key_Down(DIK_ESCAPE))
 			{
+				m_pGameInstance->Clear_GizmoObject();
+
 				if (nullptr != m_pFixPropObj)
 				{
 					m_pFixPropObj->Set_IsDead(true);
@@ -702,8 +712,6 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 
 					m_pFixPropObj = nullptr;
 				}
-
-				m_pGameInstance->Clear_GizmoObject();
 
 				m_pFixPropObj = nullptr;
 				m_pFixTransformCom = nullptr;
