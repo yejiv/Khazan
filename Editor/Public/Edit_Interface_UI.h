@@ -10,6 +10,13 @@ NS_BEGIN(Editor)
 class CEdit_Interface_UI final : public CBase
 {
 private:
+	typedef struct FontData 
+	{
+		string strFontTag;
+		string strFontFilePath;
+		_int   iFontSize;
+	}FONTDATA;
+private:
 	CEdit_Interface_UI(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual ~CEdit_Interface_UI() = default;
 public:
@@ -59,15 +66,18 @@ private:
 	_bool						m_isAnime = { false };
 
 	//폰트 관련
+	vector<FONTDATA>			m_FontData;
+	_char						m_szDataPath[MAX_PATH] = {};
 	_char						m_szTextPath[MAX_PATH] = {};
 	_char						m_szTextTag[MAX_PATH] = {};
 	_uint						m_iHeight = {};
+	_int						m_iSeleteFont = {};
 
 private:
 	HRESULT						Ready_Object(LEVEL eLevel);
 	void						Update_BackColor(_float fTimeDelta);
 	void						SaveLoad_UI();
-	void						FontSave();
+	void						SaveLoad_Font();
 	void						Create_UI();
 	void						Selete_UI(_float fTimeDelta);
 	void						Animation_UI(_float fTimeDelta);
@@ -76,6 +86,8 @@ private:
 	void						Transform_UI(_float fTimeDelta);
 	void						SetTexture_UI();
 	void						Anime_Option(_float fTimeDelta, _bool bAnimCehck);
+	
+	void						Font_List();
 public:
 	static CEdit_Interface_UI* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eLevel);
 	virtual void				Free();

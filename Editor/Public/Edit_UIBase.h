@@ -24,6 +24,7 @@ private:
 public:
 	HRESULT					Create_Child(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, CUIObject::UIOBJECT_DESC* UIChildDesc, string szSeleteUIName, CUIObject* pParent = nullptr);
 
+	_bool					Get_UIType(string& szSeleteUIName, _int& pOut);
 	//Save/Load
 	HRESULT					Save_UI(nlohmann::ordered_json& pOutData);
 	virtual HRESULT			Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID);
@@ -31,7 +32,7 @@ public:
 	//IMGUI
 	void					Root_SeleteButton(string& szSeleteUIName, _int iNum, _int& iSeletRootUI, _int& iPosX, _int& iPosY, _int& iSizeX, _int& iSizeY);
 	void					SeleteButton(string& szSeleteUIName, _int iNum, _int& iPosX, _int& iPosY, _int& iSizeX, _int& iSIzeY);
-	void					Update_Option(string& szSeleteUIName, const string pFrameName, _int iTexType);
+	void					Update_Option(string& szSeleteUIName, const string pFrameName, _int iTexType, _wstring strFontTag);
 	_bool					Update_ClassName(string& szSeleteUIName);
 
 	//UI
@@ -96,6 +97,7 @@ private:
 
 	//폰트 관련
 	CShader*				m_pFontShaderCom = { nullptr };
+
 	_bool					m_bIsTextBox = { false };
 	_int					m_iTextAlign = {};
 	_float					m_fMaxWidth = {};
@@ -103,7 +105,8 @@ private:
 	_wstring				m_wstrTexttag = {};
 	_wstring				m_wstrText = {};
 	_int					m_iPivot[2] = {};
-	
+
+	_char					m_szText[MAX_PATH] = {};
 private:
 	HRESULT					Ready_Component();
 	void					Update_Track(_float& fAccTime);
@@ -112,6 +115,8 @@ private:
 	//Convert
 	string					UIType_EnumToString();
 	_uint					UIType_StringToEnum(string szUIType);
+	
+
 public:
 	static CEdit_UIBase* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);

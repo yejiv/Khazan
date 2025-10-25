@@ -120,6 +120,20 @@ HRESULT CUI_Text::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void
 		}
 	}
 
+	m_bIsTextBox = pInData.value("TextBox", false);
+	m_iTextAlign = pInData.value("Align", ENUM_CLASS(TEXT_ALIGN::END));
+	m_fMaxWidth = pInData.value("Maxwidth", 0);
+	m_fOffsetHeight = pInData.value("offsetHeight", 0);
+	string FontTag = pInData.value("FontTag", "");
+	m_wstrTexttag = AnsiToWString(FontTag);
+
+	string strText = pInData.value("Text", "");
+	_int iSize = MultiByteToWideChar(CP_UTF8, 0, strText.c_str(), -1, nullptr, 0);
+	MultiByteToWideChar(CP_UTF8, 0, strText.c_str(), -1, &m_wstrText[0], iSize);
+
+	m_iPivotX = pInData["iPivot"].value("x", 0);
+	m_iPivotY = pInData["iPivot"].value("y", 0);
+
 	m_pTransformCom->Scale(_float3{ m_vLocalSize.x, m_vLocalSize.y, 1.f });
 	__super::Update_Rotation(0.f);
 	__super::Update_Transform(nullptr, m_vLocalPos);

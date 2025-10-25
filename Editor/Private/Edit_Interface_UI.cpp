@@ -19,9 +19,9 @@ void CEdit_Interface_UI::Update_UIInterface(_float fTimeDelta)
 	Update_BackColor(fTimeDelta);
 	Create_UI();
 	SaveLoad_UI();
-	FontSave();
-
+	SaveLoad_Font();
 	ImGui::End();
+	Font_List();
 
 	Selete_UI(fTimeDelta);
 	for (auto pRootUi : m_pRootUIs)
@@ -36,8 +36,10 @@ HRESULT CEdit_Interface_UI::Initialize(LEVEL eLevel)
 
 	strcpy_s(m_szPrototypePath, "Prototype_Component_");
 	strcpy_s(m_szFilePath, "../../Client/Bin/Resources/UI/UIData/");
-	strcpy_s(m_szTextPath, "../../Client/Bin/Resources/Font/");
+	strcpy_s(m_szTextPath, "/Bin/Resources/Font/");
+	strcpy_s(m_szDataPath, "../../Client/Bin/Data/Font/FontData");
 
+	
 	CHECK_FAILED(Ready_Object(eLevel), E_FAIL);
 
 	return S_OK;
@@ -150,19 +152,92 @@ void CEdit_Interface_UI::SaveLoad_UI()
 	}
 }
 
-void CEdit_Interface_UI::FontSave()
+void CEdit_Interface_UI::SaveLoad_Font()
 {
 	if (ImGui::CollapsingHeader("FontLoad"))
 	{
-		ImGui::InputText("UIFilePath", m_szTextPath, MAX_PATH);
-		ImGui::InputText("FontTag", m_szTextTag, MAX_PATH);
+		ImGui::InputText("UIDataPath", m_szDataPath, MAX_PATH);
 
+		if (ImGui::Button("Save_Font"))
+		{
+			string filePath = m_szDataPath;
+			filePath += ".json";
+			nlohmann::ordered_json SaveData;
+			SaveData["Font"] = nlohmann::json::array();
+			for (const auto& font : m_FontData)
+			{
+				SaveData["Font"].push_back({
+					{"tag", font.strFontTag},
+					{"path", font.strFontFilePath},
+					{"size", font.iFontSize} });
+			}
+			ofstream Out(filePath, ios::out | ios::trunc);
+			if (!Out.is_open())
+			{
+				MSG_BOX(TEXT("Json 파일 저장 실패"));
+				Out.close();
+			}
+			else
+			{
+				MSG_BOX(TEXT("Json 파일 저장 성공"));
+				Out << SaveData.dump(4);
+				Out.close();
+			}
+		}
 		if (ImGui::Button("Load_Font"))
 		{
-			string strFontTag = m_szTextPath;
-			strFontTag += m_iHeight;
+			string filePath = m_szDataPath;
+			filePath += ".json";
+			ifstream In(filePath);
+			if (!In.is_open())
+			{
+				MSG_BOX(TEXT("Font json 파일 불러오기 실패"));
+				In.close();
+			}
+			else
+			{
+				nlohmann::json jsonData;
+				In >> jsonData;
 
-			m_pGameInstance->Font_Load(AnsiToWString(strFontTag).c_str(), m_szTextPath, m_iHeight, 0);
+				for (auto& t : jsonData["Font"])
+				{
+					FONTDATA Data = {};
+					Data.strFontTag = t.value("tag", "");
+					Data.strFontFilePath = t.value("path", "");
+					Data.iFontSize = t.value("size", 0);
+
+					if (Data.strFontFilePath != "" && Data.strFontTag != "" && Data.iFontSize > 0)
+					{
+						string strTextPaths = "../../Client";
+						strTextPaths += Data.strFontFilePath;
+
+						m_FontData.push_back(Data);
+						m_pGameInstance->Font_Load(AnsiToWString(Data.strFontTag).c_str(), strTextPaths.c_str(), Data.iFontSize, 0);
+					}
+				}
+
+			}
+		}
+
+		ImGui::InputText("FontFilePath", m_szTextPath, MAX_PATH);
+		ImGui::InputText("FontTag", m_szTextTag, MAX_PATH);
+		ImGui::InputInt("FontSize", (_int*)&m_iHeight);
+
+		if (ImGui::Button("Add_Font"))
+		{
+			FONTDATA Data = {};
+			string strFontTag = m_szTextTag;
+			strFontTag += "_" + to_string(m_iHeight);
+			Data.strFontTag = strFontTag;
+			Data.strFontFilePath = m_szTextPath;
+			Data.iFontSize = m_iHeight;
+
+			string strTextPaths = "../../Client";
+			strTextPaths +=	m_szTextPath;
+			if (FAILED((m_pGameInstance->Font_Load(AnsiToWString(strFontTag).c_str(), strTextPaths.c_str(), m_iHeight, 0))))
+				MSG_BOX(TEXT("폰트 추가 실패"));
+			else
+				m_FontData.push_back(Data);
 		}
 	}
 }
@@ -352,68 +427,77 @@ void CEdit_Interface_UI::SetTexture_UI()
 {
 	if (ImGui::CollapsingHeader("SubOption"))
 	{
-		ImGui::RadioButton("TEX", &m_iTexType, 0);
-		ImGui::SameLine();
-		ImGui::RadioButton("ATLAS", &m_iTexType, 1);
+		_int iType = -1;
+		m_pRootUIs[m_iSeletRootUI]->Get_UIType(m_szSeleteUIName, iType);
 
-		if (m_iTexType == 0)
+		if (iType != ENUM_CLASS(CEdit_UIBase::UITYPE::TEXT))
 		{
-			ImGui::InputText("Prototype_Path", m_szPrototypePath, MAX_PATH);
-
-			if (ImGui::Button("SetTex"))
-			{
-				_tchar szText[MAX_PATH];
-				MultiByteToWideChar(CP_ACP, 0, m_szPrototypePath, -1, szText, MAX_PATH);
-
-				_wstring szPrototypePath(szText);
-
-				m_pRootUIs[m_iSeletRootUI]->Set_AtlasTextTure(m_szSeleteUIName, ENUM_CLASS(m_eLevel), szPrototypePath.c_str(), m_szFrameName, m_iTexType);
-			}
-			ImGui::InputInt("##TexIndx", &m_iTexIndex);
+			ImGui::RadioButton("TEX", &m_iTexType, 0);
 			ImGui::SameLine();
-			if (ImGui::Button("SetTexPass"))
-			{
-				m_pRootUIs[m_iSeletRootUI]->Set_TexIndex(m_szSeleteUIName, m_iTexIndex);
-			}
+			ImGui::RadioButton("ATLAS", &m_iTexType, 1);
 
-			ImGui::InputInt("##Shader", &m_iShaderIndex);
-			ImGui::SameLine();
-			if (ImGui::Button("SetShader"))
+			if (m_iTexType == 0)
 			{
-				m_pRootUIs[m_iSeletRootUI]->Set_ShaderPass(m_szSeleteUIName, m_iShaderIndex);
+				ImGui::InputText("Prototype_Path", m_szPrototypePath, MAX_PATH);
+
+				if (ImGui::Button("SetTex"))
+				{
+					_tchar szText[MAX_PATH];
+					MultiByteToWideChar(CP_ACP, 0, m_szPrototypePath, -1, szText, MAX_PATH);
+
+					_wstring szPrototypePath(szText);
+
+					m_pRootUIs[m_iSeletRootUI]->Set_AtlasTextTure(m_szSeleteUIName, ENUM_CLASS(m_eLevel), szPrototypePath.c_str(), m_szFrameName, m_iTexType);
+				}
+				ImGui::InputInt("##TexIndx", &m_iTexIndex);
+				ImGui::SameLine();
+				if (ImGui::Button("SetTexPass"))
+				{
+					m_pRootUIs[m_iSeletRootUI]->Set_TexIndex(m_szSeleteUIName, m_iTexIndex);
+				}
+
+				ImGui::InputInt("##Shader", &m_iShaderIndex);
+				ImGui::SameLine();
+				if (ImGui::Button("SetShader"))
+				{
+					m_pRootUIs[m_iSeletRootUI]->Set_ShaderPass(m_szSeleteUIName, m_iShaderIndex);
+				}
+			}
+			if (m_iTexType == 1)
+			{
+				ImGui::InputText("Frame_Path", m_szFrameName, MAX_PATH);
+				if (ImGui::Button("SetTex"))
+				{
+					m_pRootUIs[m_iSeletRootUI]->Set_AtlasTextTure(m_szSeleteUIName, ENUM_CLASS(m_eLevel), TEXT("Prototype_Component_Atlas"), m_szFrameName, m_iTexType);
+				}
+				ImGui::InputFloat("TexSize", &m_fTexSize, 0.1f, 0.1f);
+				if (ImGui::Button("SetTexSize"))
+				{
+					_tchar szText[MAX_PATH];
+					MultiByteToWideChar(CP_ACP, 0, m_szPrototypePath, -1, szText, MAX_PATH);
+
+					_wstring szPrototypePath(szText);
+
+					m_pRootUIs[m_iSeletRootUI]->Set_AtlasTexSize(m_szSeleteUIName, m_szFrameName, m_fTexSize);
+				}
+				ImGui::InputInt("##TexIndx", &m_iTexIndex);
+				ImGui::SameLine();
+				if (ImGui::Button("SetTexPass"))
+				{
+					m_pRootUIs[m_iSeletRootUI]->Set_TexIndex(m_szSeleteUIName, m_iTexIndex);
+				}
+				ImGui::InputInt("##Shader", &m_iShaderIndex);
+				ImGui::SameLine();
+				if (ImGui::Button("SetShader"))
+				{
+					m_pRootUIs[m_iSeletRootUI]->Set_ShaderPass(m_szSeleteUIName, m_iShaderIndex);
+				}
 			}
 		}
-		if (m_iTexType == 1)
-		{
-			ImGui::InputText("Frame_Path", m_szFrameName, MAX_PATH);
-			if (ImGui::Button("SetTex"))
-			{
-				m_pRootUIs[m_iSeletRootUI]->Set_AtlasTextTure(m_szSeleteUIName, ENUM_CLASS(m_eLevel), TEXT("Prototype_Component_Atlas"), m_szFrameName, m_iTexType);
-			}
-			ImGui::InputFloat("TexSize", &m_fTexSize, 0.1f, 0.1f);
-			if (ImGui::Button("SetTexSize"))
-			{
-				_tchar szText[MAX_PATH];
-				MultiByteToWideChar(CP_ACP, 0, m_szPrototypePath, -1, szText, MAX_PATH);
-
-				_wstring szPrototypePath(szText);
-
-				m_pRootUIs[m_iSeletRootUI]->Set_AtlasTexSize(m_szSeleteUIName, m_szFrameName, m_fTexSize);
-			}
-			ImGui::InputInt("##TexIndx", &m_iTexIndex);
-			ImGui::SameLine();
-			if (ImGui::Button("SetTexPass"))
-			{
-				m_pRootUIs[m_iSeletRootUI]->Set_TexIndex(m_szSeleteUIName, m_iTexIndex);
-			}
-			ImGui::InputInt("##Shader", &m_iShaderIndex);
-			ImGui::SameLine();
-			if (ImGui::Button("SetShader"))
-			{
-				m_pRootUIs[m_iSeletRootUI]->Set_ShaderPass(m_szSeleteUIName, m_iShaderIndex);
-			}
-		}
-		m_pRootUIs[m_iSeletRootUI]->Update_Option(m_szSeleteUIName, m_szFrameName, m_iTexType);
+		if(m_FontData.size() > 0)
+			m_pRootUIs[m_iSeletRootUI]->Update_Option(m_szSeleteUIName, m_szFrameName, m_iTexType, AnsiToWString(m_FontData[m_iSeleteFont].strFontTag));
+		else
+			m_pRootUIs[m_iSeletRootUI]->Update_Option(m_szSeleteUIName, m_szFrameName, m_iTexType, TEXT(""));
 	}
 }
 
@@ -470,6 +554,29 @@ void CEdit_Interface_UI::Anime_Option(_float fTimeDelta, _bool bAnimCehck)
 	}
 }
 
+void CEdit_Interface_UI::Font_List()
+{
+	if ((_int)m_FontData.size() == 0)
+		return;
+
+	ImGui::Begin("FontList");
+
+	for (_int i = 0; i < (_int)m_FontData.size(); ++i)
+	{
+		_bool isSelected = (m_iSeleteFont == i);
+
+		if (ImGui::Selectable(m_FontData[i].strFontTag.c_str(), isSelected))
+		{
+			m_iSeleteFont = i;
+		}
+
+		if (isSelected)
+			ImGui::SetItemDefaultFocus();
+	}
+
+	ImGui::End();
+}
+
 CEdit_Interface_UI* CEdit_Interface_UI::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eLevel)
 {
 	CEdit_Interface_UI* pInstance = new CEdit_Interface_UI(pDevice, pContext);
@@ -489,7 +596,7 @@ void CEdit_Interface_UI::Free()
 		Safe_Release(RootUI);
 
 	m_pRootUIs.clear();
-
+	m_FontData.clear();
 	Safe_Release(m_pBackGround);
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

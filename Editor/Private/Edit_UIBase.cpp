@@ -1,5 +1,6 @@
 #include "Edit_UIBase.h"
 #include "GameInstance.h"
+#include <codecvt>
 
 CEdit_UIBase::CEdit_UIBase(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUIParent{ pDevice, pContext }
@@ -36,6 +37,24 @@ HRESULT CEdit_UIBase::Create_Child(_uint iPrototypeLevelIndex, const _wstring& s
     Update_Transform(pParent, m_vLocalPos);
 
     return E_FAIL;
+}
+
+_bool CEdit_UIBase::Get_UIType(string& szSeleteUIName, _int& pOut)
+{
+    if (m_szName == szSeleteUIName)
+    {
+        pOut = m_iUIType;
+        return true;
+    }
+
+    for (auto& pChild : m_Children)
+    {
+        if (static_cast<CEdit_UIBase*>(pChild)->Get_UIType(szSeleteUIName, pOut))
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 HRESULT CEdit_UIBase::Save_UI(nlohmann::ordered_json& pOutData)
@@ -110,6 +129,17 @@ HRESULT CEdit_UIBase::Save_UI(nlohmann::ordered_json& pOutData)
         Data["Children"].push_back(ChildData);
     }
 
+    if (m_iUIType == ENUM_CLASS(UITYPE::TEXT))
+    {
+        Data["TextBox"] = m_bIsTextBox;
+        Data["Align"] = m_iTextAlign;
+        Data["Maxwidth"] = m_fMaxWidth;
+        Data["offsetHeight"] = m_fOffsetHeight;
+        Data["FontTag"] = WStringToAnsi(m_wstrTexttag);
+        Data["Text"] = WStringToAnsi(m_wstrText);
+        Data["iPivot"]["x"] = m_iPivot[0];
+        Data["iPivot"]["y"] = m_iPivot[1];
+    }
     pOutData = Data;
 
     return S_OK;
@@ -237,6 +267,28 @@ HRESULT CEdit_UIBase::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
     m_pTransformCom->Scale(_float3{ m_vLocalSize.x, m_vLocalSize.y, 1.f });
 
 
+    if (m_iUIType == ENUM_CLASS(UITYPE::TEXT))
+    {
+        m_bIsTextBox = pInData.value("TextBox", false);
+        m_iTextAlign = pInData.value("Align", ENUM_CLASS(TEXT_ALIGN::END));
+        m_fMaxWidth = pInData.value("Maxwidth", 0);
+        m_fOffsetHeight = pInData.value("offsetHeight",0);
+        string FontTag = pInData.value("FontTag", "");
+        m_wstrTexttag = AnsiToWString(FontTag);
+
+        string strText = pInData.value("Text", "");
+        _int iSize = MultiByteToWideChar(CP_UTF8, 0, strText.c_str(), -1, nullptr, 0);
+        _wstring wstr(iSize, 0);
+        MultiByteToWideChar(CP_UTF8, 0, strText.c_str(), -1, &wstr[0], iSize);
+ 
+        m_wstrText = wstr;
+
+
+        m_iPivot[0] = pInData["iPivot"].value("x", 0);
+        m_iPivot[1] = pInData["iPivot"].value("y", 0);
+  
+    }
+
     if (pInData.contains("Children"))
     {
         for (auto& child : pInData["Children"])
@@ -305,7 +357,7 @@ void CEdit_UIBase::SeleteButton(string& szSeleteUIName, _int iNum, _int& iPosX, 
 
 }
 
-void CEdit_UIBase::Update_Option(string& szSeleteUIName, const string pFrameName, _int iTexType)
+void CEdit_UIBase::Update_Option(string& szSeleteUIName, const string pFrameName, _int iTexType, _wstring strFontTag)
 {
     if (m_szName == szSeleteUIName)
     {
@@ -433,6 +485,7 @@ void CEdit_UIBase::Update_Option(string& szSeleteUIName, const string pFrameName
         }
         else
         {
+            m_wstrTexttag = strFontTag;
             //텍스트 박스
             ImGui::Checkbox("UITexBox", &m_bIsTextBox);
 
@@ -455,12 +508,14 @@ void CEdit_UIBase::Update_Option(string& szSeleteUIName, const string pFrameName
             ImGui::RadioButton("##Option8", &m_iTextAlign, ENUM_CLASS(TEXT_ALIGN::RIGHT_BOTTOM));
 
             //텍스트
-            _char szText[MAX_PATH] = {};
-            if(ImGui::InputText("##UIEventLabel", szText, MAX_PATH))
+            if(ImGui::InputText("##UIEventLabel", m_szText, MAX_PATH))
             {
-                m_wstrText.clear();
-                string strText = szText;
-                m_wstrText = AnsiToWString(strText);
+                string strText = m_szText;
+                _int iSize = MultiByteToWideChar(CP_UTF8, 0, strText.c_str(), -1, nullptr, 0);
+                _wstring wstr(iSize, 0);
+                MultiByteToWideChar(CP_UTF8, 0, strText.c_str(), -1, &wstr[0], iSize);
+
+                m_wstrText = wstr;
             }
 
             //패널 내 위치
@@ -479,7 +534,7 @@ void CEdit_UIBase::Update_Option(string& szSeleteUIName, const string pFrameName
 
     for (auto& pChild : m_Children)
     {
-        static_cast<CEdit_UIBase*>(pChild)->Update_Option(szSeleteUIName, pFrameName, iTexType);
+        static_cast<CEdit_UIBase*>(pChild)->Update_Option(szSeleteUIName, pFrameName, iTexType, strFontTag);
     }
 }
 
@@ -1002,17 +1057,34 @@ HRESULT CEdit_UIBase::Render()
         CHECK_FAILED(m_pVIBufferCom->Bind_Resources(), E_FAIL);
         CHECK_FAILED(m_pVIBufferCom->Render(), E_FAIL);
     }
-    else
+    if(m_iUIType == ENUM_CLASS(UITYPE::TEXT))
     {
+        _float4 vFream = { 1.f, 1.f, 1.f, 1.f };
+        CHECK_FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix"), E_FAIL);
+        CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix), E_FAIL);
+        CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix), E_FAIL);
+        CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vFream, sizeof(_float4)), E_FAIL);
         CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
-        m_pFontShaderCom->Begin(m_iShaderPass);
-        if (m_bIsTextBox)
+
+        Render_ShaderPassSet();
+        CHECK_FAILED(m_pShaderCom->Begin(0), E_FAIL);
+
+        CHECK_FAILED(m_pVIBufferCom->Bind_Resources(), E_FAIL);
+        CHECK_FAILED(m_pVIBufferCom->Render(), E_FAIL);
+        _wstring Tag = {};
+
+        if (m_wstrTexttag != Tag)
         {
-            m_pGameInstance->Draw_TextBox(m_wstrTexttag.c_str(), m_wstrText.c_str(), m_vWorldPos.x, m_vWorldPos.y, m_fMaxWidth, m_fOffsetHeight, m_vFrameColor, static_cast<TEXT_ALIGN>(m_iTextAlign));
-        }
-        else
-        {
-            m_pGameInstance->Draw_Text(m_wstrTexttag.c_str(), m_wstrText.c_str(), m_vWorldPos.x, m_vWorldPos.y, m_vFrameColor, static_cast<TEXT_ALIGN>(m_iTextAlign));
+            CHECK_FAILED(m_pFontShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
+            m_pFontShaderCom->Begin(m_iShaderPass);
+            if (m_bIsTextBox)
+            {
+                m_pGameInstance->Draw_TextBox(m_wstrTexttag, m_wstrText, m_vWorldPos.x + m_iPivot[0], m_vWorldPos.y + m_iPivot[1], m_fMaxWidth, m_fOffsetHeight, m_vFrameColor, static_cast<TEXT_ALIGN>(m_iTextAlign));
+            }
+            else
+            {
+                m_pGameInstance->Draw_Text(m_wstrTexttag, m_wstrText, m_vWorldPos.x + m_iPivot[0], m_vWorldPos.y + m_iPivot[1], m_vFrameColor, static_cast<TEXT_ALIGN>(m_iTextAlign));
+            }
         }
     }
     return S_OK;
@@ -1020,6 +1092,10 @@ HRESULT CEdit_UIBase::Render()
 
 HRESULT CEdit_UIBase::Ready_Component()
 {
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxPosTex_Font"),
+        TEXT("Com_FontShader"), reinterpret_cast<CComponent**>(&m_pFontShaderCom), nullptr)))
+        return E_FAIL;
+
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxPosTex_Edit_UI"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
