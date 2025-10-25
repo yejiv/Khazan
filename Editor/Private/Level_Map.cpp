@@ -30,6 +30,7 @@ void CLevel_Map::Update(_float fTimeDelta)
 
 	Test_Player_Move(fTimeDelta);
 	Select_Fix_Object(fTimeDelta);
+	Select_Multi_Fix_Object(fTimeDelta);
 	Select_Fix_Instance(fTimeDelta);
 	Select_Add_LightPoint(fTimeDelta);
 
@@ -187,6 +188,70 @@ void CLevel_Map::Select_Fix_Object(_float fTimeDelta)
 						m_eFixType = FIX_OBJECT::FIX;
 
 						m_pGameInstance->Set_GizmoObject(m_pFixPropObj);
+
+						return;
+					}
+				}
+			}
+		}
+	}
+}
+
+void CLevel_Map::Select_Multi_Fix_Object(_float fTimeDelta)
+{
+	if (true == m_isFixObjectWindow)
+		return;
+
+	return;
+
+	if (m_pGameInstance->Key_Pressing(DIK_F2, fTimeDelta) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+	{
+		_float3 vPosition = {};
+		_uint iObjectID = {};
+
+		if (m_pGameInstance->isPicked(&vPosition, &iObjectID))
+		{
+			for (auto& pObject : m_ObjectList)
+			{
+				if (nullptr != pObject)
+				{
+					if (iObjectID == pObject->Get_MapObjectID())
+					{
+						if (0 == m_MultiFixObjList.size())
+						{
+							m_pFixPropObj = pObject;
+							m_pFixTransformCom = static_cast<CTransform*>(pObject->Get_Component(TEXT("Com_Transform")));
+							CHECK_NULLPTR_MSG(m_pFixTransformCom, TEXT("Fix Transform == nullptr"), );
+
+							m_FixBaseMatrix = XMMatrixIdentity();
+
+							ZeroMemory(&m_vFixScale, sizeof(_float3));
+							ZeroMemory(&m_vFixRotation, sizeof(_float3));
+							ZeroMemory(&m_vFixPosition, sizeof(_float3));
+
+							m_vFixScale = m_pFixTransformCom->Get_Scaled();
+							XMStoreFloat3(&m_vFixPosition, m_pFixTransformCom->Get_State(STATE::POSITION));
+
+							m_FixBaseMatrix = m_FixWorldMatrix = m_pFixTransformCom->Get_WorldMatrix();
+
+							// ======================================================
+							// ======================================================
+
+							m_isFixObjectWindow = true;
+							m_eFixType = FIX_OBJECT::FIX;
+
+							m_pGameInstance->Set_GizmoObject(m_pFixPropObj);
+							m_MultiFixObjList.push_back(m_pFixPropObj);
+						}
+						else
+						{
+							auto pFound = find(m_MultiFixObjList.begin(), m_MultiFixObjList.end(), pObject);
+
+							if (pFound == m_MultiFixObjList.end())
+							{
+								m_MultiFixObjList.push_back(pObject);
+							}
+						}
 
 						return;
 					}
@@ -477,6 +542,11 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 			ImGui::Checkbox("INSTANCE", &m_AddObjectProperties.isInstance); SEPARATOR;
 			ImGui::Checkbox("SHADOW", &m_AddObjectProperties.isShadow); SAMELINE;
 			ImGui::Checkbox("BACKGROUND", &m_AddObjectProperties.isBackGround); SEPARATOR;
+
+			if (true == m_AddObjectProperties.isInstance)
+			{
+				// 인스턴스일때, 반지름, 그 안에 생길 인스턴싱 모델의 개수 넘기고 랜덤하게 생기게
+			}
 
 			// 단일 오브젝트 Layer 추가
 			if (false == m_isLightSettingWindow && false == m_isFixObjectWindow && (ImGui::Button("ADD (Y)") || m_pGameInstance->Key_Down(DIK_Y)))

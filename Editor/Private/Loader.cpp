@@ -151,7 +151,7 @@ HRESULT CLoader::Loading_For_Map_Level()
 
 	/* Prototype_Component_VIBuffer_Terrain */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_VIBuffer_Terrain"),
-		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 1000, 1000)), E_FAIL);
+		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 100, 100)), E_FAIL);
 
 	/* Prototype_Component_Model_PlayerTest */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_PlayerTest"),
