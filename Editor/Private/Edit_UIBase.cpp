@@ -309,124 +309,171 @@ void CEdit_UIBase::Update_Option(string& szSeleteUIName, const string pFrameName
 {
     if (m_szName == szSeleteUIName)
     {
-        switch (static_cast<UITYPE>(m_iUIType))
+        if (static_cast<UITYPE>(m_iUIType) != UITYPE::TEXT)
         {
-        case UITYPE::TAP:
-            ImGui::RadioButton("Disable", &m_iUiState, 0);
-            ImGui::SameLine();
-            ImGui::RadioButton("Enable", &m_iUiState, 1);
-            ImGui::SameLine();
-            ImGui::RadioButton("Over", &m_iUiState, 2);
-            ImGui::SameLine();
-            ImGui::RadioButton("Selete", &m_iUiState, 3);
-
-            ImGui::Text("Min : %.2f, %.2f", m_vUV[m_iUiState].x, m_vUV[m_iUiState].y);
-            ImGui::SameLine();
-            ImGui::Text("Max : %.2f, %.2f", m_vUV[m_iUiState].z, m_vUV[m_iUiState].w);
-
-            if (ImGui::Button("SetUV"))
+            switch (static_cast<UITYPE>(m_iUIType))
             {
-                if (iTexType == ENUM_CLASS(UI_RENDER_TYPE::ATLAS))
-                    Set_UVTexSet(szSeleteUIName, pFrameName);
-                else
-                    m_vUV[m_iUiState] = { 0.f, 0.f, 1.f, 1.f };
+            case UITYPE::TAP:
+                ImGui::RadioButton("Disable", &m_iUiState, 0);
+                ImGui::SameLine();
+                ImGui::RadioButton("Enable", &m_iUiState, 1);
+                ImGui::SameLine();
+                ImGui::RadioButton("Over", &m_iUiState, 2);
+                ImGui::SameLine();
+                ImGui::RadioButton("Selete", &m_iUiState, 3);
+
+                ImGui::Text("Min : %.2f, %.2f", m_vUV[m_iUiState].x, m_vUV[m_iUiState].y);
+                ImGui::SameLine();
+                ImGui::Text("Max : %.2f, %.2f", m_vUV[m_iUiState].z, m_vUV[m_iUiState].w);
+
+                if (ImGui::Button("SetUV"))
+                {
+                    if (iTexType == ENUM_CLASS(UI_RENDER_TYPE::ATLAS))
+                        Set_UVTexSet(szSeleteUIName, pFrameName);
+                    else
+                        m_vUV[m_iUiState] = { 0.f, 0.f, 1.f, 1.f };
+                }
+                ImGui::Text("EventName : ");
+                ImGui::SameLine();
+                ImGui::Text(m_EventNames[m_iUiState].c_str());
+                ImGui::InputText("##UIEventLabel", m_szEvent, MAX_PATH);
+                ImGui::SameLine();
+                if (ImGui::Button("EventSet"))
+                    m_EventNames[m_iUiState] = m_szEvent;
+                break;
+            case UITYPE::BUTTON:
+                ImGui::RadioButton("Disable", &m_iUiState, 0);
+                ImGui::SameLine();
+                ImGui::RadioButton("Enable", &m_iUiState, 1);
+                ImGui::SameLine();
+                ImGui::RadioButton("Over", &m_iUiState, 2);
+                ImGui::SameLine();
+                ImGui::RadioButton("Selete", &m_iUiState, 3);
+
+                ImGui::Text("Min : %.2f, %.2f", m_vUV[m_iUiState].x, m_vUV[m_iUiState].y);
+                ImGui::SameLine();
+                ImGui::Text("Max : %.2f, %.2f", m_vUV[m_iUiState].z, m_vUV[m_iUiState].w);
+
+                if (ImGui::Button("SetUV"))
+                {
+                    if (iTexType == ENUM_CLASS(UI_RENDER_TYPE::ATLAS))
+                        Set_UVTexSet(szSeleteUIName, pFrameName);
+                    else
+                        m_vUV[m_iUiState] = { 0.f, 0.f, 1.f, 1.f };
+                }
+                ImGui::Text("EventName : ");
+                ImGui::SameLine();
+                ImGui::Text(m_EventNames[m_iUiState].c_str());
+                ImGui::InputText("##UIEventLabel", m_szEvent, MAX_PATH);
+                ImGui::SameLine();
+                if (ImGui::Button("EventSet"))
+                    m_EventNames[m_iUiState] = m_szEvent;
+                break;
+
+            case UITYPE::SLOT:
+                ImGui::RadioButton("Disable", &m_iUiState, 0);
+                ImGui::SameLine();
+                ImGui::RadioButton("Enable", &m_iUiState, 1);
+                ImGui::SameLine();
+                ImGui::RadioButton("Over", &m_iUiState, 2);
+                ImGui::SameLine();
+                ImGui::RadioButton("Selete", &m_iUiState, 3);
+
+                ImGui::Text("Min : %.2f, %.2f", m_vUV[m_iUiState].x, m_vUV[m_iUiState].y);
+                ImGui::SameLine();
+                ImGui::Text("Max : %.2f, %.2f", m_vUV[m_iUiState].z, m_vUV[m_iUiState].w);
+
+                if (ImGui::Button("SetUV"))
+                {
+                    if (iTexType == ENUM_CLASS(UI_RENDER_TYPE::ATLAS))
+                        Set_UVTexSet(szSeleteUIName, pFrameName);
+                    else
+                        m_vUV[m_iUiState] = { 0.f, 0.f, 1.f, 1.f };
+                }
+                ImGui::Text(m_EventNames[m_iUiState].c_str());
+                ImGui::InputText("##UIEventLabel", m_szEvent, MAX_PATH);
+                ImGui::SameLine();
+                if (ImGui::Button("EventSet"))
+                    m_EventNames[m_iUiState] = m_szEvent;
+                break;
+            case UITYPE::SCROLLBAR:
+                ImGui::Text("Min : %.2f, %.2f", m_vUV[0].x, m_vUV[0].y);
+                ImGui::SameLine();
+                ImGui::Text("Max : %.2f, %.2f", m_vUV[0].z, m_vUV[0].w);
+
+                ImGui::RadioButton("Up", &m_iUpDownState, 0);
+                ImGui::RadioButton("Down", &m_iUpDownState, 1);
+
+                ImGui::Text(m_EventNames[m_iUpDownState].c_str());
+                ImGui::InputText("##UIEventLabel", m_szEvent, MAX_PATH);
+                ImGui::SameLine();
+                if (ImGui::Button("EventSet"))
+                    m_EventNames[m_iUpDownState] = m_szEvent;
+
+                break;
+            case UITYPE::PROGRESSBAR:
+                ImGui::Text("Min : %.2f, %.2f", m_vUV[0].x, m_vUV[0].y);
+                ImGui::SameLine();
+                ImGui::Text("Max : %.2f, %.2f", m_vUV[0].z, m_vUV[0].w);
+
+                ImGui::InputFloat("Value", &m_fUiState, 0.01f, 0.01f);
+
+                ImGui::Text(m_EventNames[0].c_str());
+                ImGui::InputText("##UIEventLabel", m_szEvent, MAX_PATH);
+                ImGui::SameLine();
+                if (ImGui::Button("EventSet"))
+                    m_EventNames[0] = m_szEvent;
+                break;
             }
-            ImGui::Text("EventName : ");
-            ImGui::SameLine();
-            ImGui::Text(m_EventNames[m_iUiState].c_str());
-            ImGui::InputText("##UIEventLabel", m_szEvent, MAX_PATH);
-            ImGui::SameLine();
-            if (ImGui::Button("EventSet"))
-                m_EventNames[m_iUiState] = m_szEvent;
-            break;
-        case UITYPE::BUTTON:
-            ImGui::RadioButton("Disable", &m_iUiState, 0);
-            ImGui::SameLine();
-            ImGui::RadioButton("Enable", &m_iUiState, 1);
-            ImGui::SameLine();
-            ImGui::RadioButton("Over", &m_iUiState, 2);
-            ImGui::SameLine();
-            ImGui::RadioButton("Selete", &m_iUiState, 3);
 
-            ImGui::Text("Min : %.2f, %.2f", m_vUV[m_iUiState].x, m_vUV[m_iUiState].y);
-            ImGui::SameLine();
-            ImGui::Text("Max : %.2f, %.2f", m_vUV[m_iUiState].z, m_vUV[m_iUiState].w);
-
-            if (ImGui::Button("SetUV"))
+            if (m_iShaderPass == 2)
             {
-                if (iTexType == ENUM_CLASS(UI_RENDER_TYPE::ATLAS))
-                    Set_UVTexSet(szSeleteUIName, pFrameName);
-                else
-                    m_vUV[m_iUiState] = { 0.f, 0.f, 1.f, 1.f };
+                ImGui::ColorEdit4("Back_Color", (_float*)&m_vFrameColor);
             }
-            ImGui::Text("EventName : ");
-            ImGui::SameLine();
-            ImGui::Text(m_EventNames[m_iUiState].c_str());
-            ImGui::InputText("##UIEventLabel", m_szEvent, MAX_PATH);
-            ImGui::SameLine();
-            if (ImGui::Button("EventSet"))
-                m_EventNames[m_iUiState] = m_szEvent;
-            break;
-
-        case UITYPE::SLOT:
-            ImGui::RadioButton("Disable", &m_iUiState, 0);
-            ImGui::SameLine();
-            ImGui::RadioButton("Enable", &m_iUiState, 1);
-            ImGui::SameLine();
-            ImGui::RadioButton("Over", &m_iUiState, 2);
-            ImGui::SameLine();
-            ImGui::RadioButton("Selete", &m_iUiState, 3);
-
-            ImGui::Text("Min : %.2f, %.2f", m_vUV[m_iUiState].x, m_vUV[m_iUiState].y);
-            ImGui::SameLine();
-            ImGui::Text("Max : %.2f, %.2f", m_vUV[m_iUiState].z, m_vUV[m_iUiState].w);
-
-            if (ImGui::Button("SetUV"))
-            {
-                if (iTexType == ENUM_CLASS(UI_RENDER_TYPE::ATLAS))
-                    Set_UVTexSet(szSeleteUIName, pFrameName);
-                else
-                    m_vUV[m_iUiState] = { 0.f, 0.f, 1.f, 1.f };
-            }
-            ImGui::Text(m_EventNames[m_iUiState].c_str());
-            ImGui::InputText("##UIEventLabel", m_szEvent, MAX_PATH);
-            ImGui::SameLine();
-            if (ImGui::Button("EventSet"))
-                m_EventNames[m_iUiState] = m_szEvent;
-            break;
-        case UITYPE::SCROLLBAR:
-            ImGui::Text("Min : %.2f, %.2f", m_vUV[0].x, m_vUV[0].y);
-            ImGui::SameLine();
-            ImGui::Text("Max : %.2f, %.2f", m_vUV[0].z, m_vUV[0].w);
-
-            ImGui::RadioButton("Up", &m_iUpDownState, 0);
-            ImGui::RadioButton("Down", &m_iUpDownState, 1);
-
-            ImGui::Text(m_EventNames[m_iUpDownState].c_str());
-            ImGui::InputText("##UIEventLabel", m_szEvent, MAX_PATH);
-            ImGui::SameLine();
-            if (ImGui::Button("EventSet"))
-                m_EventNames[m_iUpDownState] = m_szEvent;
-
-            break;
-        case UITYPE::PROGRESSBAR:
-            ImGui::Text("Min : %.2f, %.2f", m_vUV[0].x, m_vUV[0].y);
-            ImGui::SameLine();
-            ImGui::Text("Max : %.2f, %.2f", m_vUV[0].z, m_vUV[0].w);
-
-            ImGui::InputFloat("Value", &m_fUiState, 0.01f, 0.01f);
-
-            ImGui::Text(m_EventNames[0].c_str());
-            ImGui::InputText("##UIEventLabel", m_szEvent, MAX_PATH);
-            ImGui::SameLine();
-            if (ImGui::Button("EventSet"))
-                m_EventNames[0] = m_szEvent;
-            break;
         }
-
-        if (m_iShaderPass == 2)
+        else
         {
-            ImGui::ColorEdit4("Back_Color", (_float*)&m_vFrameColor);
+            //텍스트 박스
+            ImGui::Checkbox("UITexBox", &m_bIsTextBox);
+
+            ImGui::RadioButton("##Option0", &m_iTextAlign, ENUM_CLASS(TEXT_ALIGN::LEFT_TOP));
+            ImGui::SameLine();
+            ImGui::RadioButton("##Option1", &m_iTextAlign, ENUM_CLASS(TEXT_ALIGN::CENTER_TOP));
+            ImGui::SameLine();
+            ImGui::RadioButton("##Option2", &m_iTextAlign, ENUM_CLASS(TEXT_ALIGN::RIGHT_TOP));
+
+            ImGui::RadioButton("##Option3", &m_iTextAlign, ENUM_CLASS(TEXT_ALIGN::LEFT_CENTER));
+            ImGui::SameLine();
+            ImGui::RadioButton("##Option4", &m_iTextAlign, ENUM_CLASS(TEXT_ALIGN::CENTER));
+            ImGui::SameLine();
+            ImGui::RadioButton("##Option5", &m_iTextAlign, ENUM_CLASS(TEXT_ALIGN::RIGHT_CENTER));
+
+            ImGui::RadioButton("##Option6", &m_iTextAlign, ENUM_CLASS(TEXT_ALIGN::LEFT_BOTTOM));
+            ImGui::SameLine();
+            ImGui::RadioButton("##Option7", &m_iTextAlign, ENUM_CLASS(TEXT_ALIGN::CENTER_BOTTOM));
+            ImGui::SameLine();
+            ImGui::RadioButton("##Option8", &m_iTextAlign, ENUM_CLASS(TEXT_ALIGN::RIGHT_BOTTOM));
+
+            //텍스트
+            _char szText[MAX_PATH] = {};
+            if(ImGui::InputText("##UIEventLabel", szText, MAX_PATH))
+            {
+                m_wstrText.clear();
+                string strText = szText;
+                m_wstrText = AnsiToWString(strText);
+            }
+
+            //패널 내 위치
+            ImGui::InputInt2("Pivot", m_iPivot);
+
+            //색상
+            ImGui::ColorEdit4("FontColor", (_float*)&m_vFrameColor);
+
+            if (m_bIsTextBox)
+            {
+                ImGui::InputFloat("MaxWidth", &m_fMaxWidth);
+                ImGui::InputFloat("OffsetHeight", &m_fOffsetHeight);
+            }
         }
     }
 
@@ -940,19 +987,34 @@ void CEdit_UIBase::Late_Update(_float fTimeDelta)
 
 HRESULT CEdit_UIBase::Render()
 {
-    CHECK_FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix"), E_FAIL);
+    if (m_iUIType != ENUM_CLASS(UITYPE::TEXT))
+    {
+        CHECK_FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix"), E_FAIL);
 
-    CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix), E_FAIL);
-    CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix), E_FAIL);
-    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vFrameColor, sizeof(_float4)), E_FAIL);
-    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
+        CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix), E_FAIL);
+        CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix), E_FAIL);
+        CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vFrameColor, sizeof(_float4)), E_FAIL);
+        CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
 
-    Render_ShaderPassSet();
-    CHECK_FAILED(m_pShaderCom->Begin(m_iShaderPass), E_FAIL);
+        Render_ShaderPassSet();
+        CHECK_FAILED(m_pShaderCom->Begin(m_iShaderPass), E_FAIL);
 
-    CHECK_FAILED(m_pVIBufferCom->Bind_Resources(), E_FAIL);
-    CHECK_FAILED(m_pVIBufferCom->Render(), E_FAIL);
-
+        CHECK_FAILED(m_pVIBufferCom->Bind_Resources(), E_FAIL);
+        CHECK_FAILED(m_pVIBufferCom->Render(), E_FAIL);
+    }
+    else
+    {
+        CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
+        m_pFontShaderCom->Begin(m_iShaderPass);
+        if (m_bIsTextBox)
+        {
+            m_pGameInstance->Draw_TextBox(m_wstrTexttag.c_str(), m_wstrText.c_str(), m_vWorldPos.x, m_vWorldPos.y, m_fMaxWidth, m_fOffsetHeight, m_vFrameColor, static_cast<TEXT_ALIGN>(m_iTextAlign));
+        }
+        else
+        {
+            m_pGameInstance->Draw_Text(m_wstrTexttag.c_str(), m_wstrText.c_str(), m_vWorldPos.x, m_vWorldPos.y, m_vFrameColor, static_cast<TEXT_ALIGN>(m_iTextAlign));
+        }
+    }
     return S_OK;
 }
 

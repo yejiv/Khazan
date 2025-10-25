@@ -23,7 +23,7 @@ private:
 	ID3D11DeviceContext* m_pContext = { nullptr };
 	CGameInstance* m_pGameInstance = { nullptr };
 
-	class CEdit_UIBackGround* m_pBackGround = { nullptr };
+	class CEdit_UIBackGround*	m_pBackGround = { nullptr };
 	_bool						m_RenderBackGround = { false };
 	LEVEL						m_eLevel;
 
@@ -35,6 +35,7 @@ private:
 	_char						m_szUIName[MAX_PATH] = {};
 	_char						m_szClassName[MAX_PATH] = {};
 	_char						m_szUIReName[MAX_PATH] = {};
+
 	_int						m_iUIType = {};
 	_int						m_iUISize[2] = {};
 
@@ -47,6 +48,7 @@ private:
 	//Tex 관련
 	_char						m_szPrototypePath[MAX_PATH] = {};
 	_char						m_szFrameName[MAX_PATH] = {};
+
 	_float						m_fTexSize = { 1.f };
 	_int						m_iTexType = {};
 	_int						m_iTexIndex = {};
@@ -55,10 +57,17 @@ private:
 
 	_float						m_fAccTime = {};
 	_bool						m_isAnime = { false };
+
+	//폰트 관련
+	_char						m_szTextPath[MAX_PATH] = {};
+	_char						m_szTextTag[MAX_PATH] = {};
+	_uint						m_iHeight = {};
+
 private:
 	HRESULT						Ready_Object(LEVEL eLevel);
 	void						Update_BackColor(_float fTimeDelta);
 	void						SaveLoad_UI();
+	void						FontSave();
 	void						Create_UI();
 	void						Selete_UI(_float fTimeDelta);
 	void						Animation_UI(_float fTimeDelta);

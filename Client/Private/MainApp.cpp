@@ -95,8 +95,6 @@ HRESULT CMainApp::Render()
 HRESULT CMainApp::Ready_Prototype_ForStatic()
 {
 	CHECK_FAILED(m_pGameInstance->Font_Load(TEXT("¿¬´Ü"), "../Bin/Resources/Font/DNFForgedBlade-Light.ttf", 100, 0),E_FAIL);
-	//if (FAILED(m_pGameInstance->Add_Font(TEXT("Font_153"), TEXT("../Bin/Resources/Font/153ex.SpriteFont"))))
-	//	return E_FAIL;
 
 	// VIBuffer
 

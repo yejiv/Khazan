@@ -48,7 +48,7 @@ HRESULT CFont_Manager::Draw_Text(const _wstring& strFontTag, const _wstring& str
     return m_pRenderer->DrawText(pFont, strText, fX, fY, vColor, eAlign);
 }
 
-HRESULT CFont_Manager::Draw_TextBox(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, _float fMaxWidth, const _float4& vColor, TEXT_ALIGN eAlign)
+HRESULT CFont_Manager::Draw_TextBox(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, _float fMaxWidth, _float fOffsetHeight, const _float4& vColor, TEXT_ALIGN eAlign)
 {
     CFont_Face* pFont = Find_Font(strFontTag);
     if (!pFont)
@@ -57,7 +57,7 @@ HRESULT CFont_Manager::Draw_TextBox(const _wstring& strFontTag, const _wstring& 
         return E_FAIL;
     }
 
-    return m_pRenderer->DrawTextBox(pFont, strText, fX, fY, fMaxWidth, vColor, eAlign);;
+    return m_pRenderer->DrawTextBox(pFont, strText, fX, fY, fMaxWidth, fOffsetHeight, vColor, eAlign);;
 }
 
 

@@ -94,6 +94,16 @@ private:
 	_int					m_iSeleteTrackIndex = {};
 	_uint					m_iCurrentKeyFrameIndex = {};
 
+	//폰트 관련
+	CShader*				m_pFontShaderCom = { nullptr };
+	_bool					m_bIsTextBox = { false };
+	_int					m_iTextAlign = {};
+	_float					m_fMaxWidth = {};
+	_float					m_fOffsetHeight = {};
+	_wstring				m_wstrTexttag = {};
+	_wstring				m_wstrText = {};
+	_int					m_iPivot[2] = {};
+	
 private:
 	HRESULT					Ready_Component();
 	void					Update_Track(_float& fAccTime);
@@ -102,7 +112,6 @@ private:
 	//Convert
 	string					UIType_EnumToString();
 	_uint					UIType_StringToEnum(string szUIType);
-
 public:
 	static CEdit_UIBase* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);

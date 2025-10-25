@@ -15,7 +15,7 @@ public:
 
 	HRESULT							Font_Load(const _wstring& strFontTag, const _char* pFontFilePath, _uint iWidth, _uint iHeight);
 	HRESULT							Draw_Text(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, const _float4& vColor, TEXT_ALIGN eAlign);
-	HRESULT							Draw_TextBox(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, _float fMaxWidth, const _float4& vColor, TEXT_ALIGN eAlign);
+	HRESULT							Draw_TextBox(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, _float fMaxWidth, _float fOffsetHeight, const _float4& vColor, TEXT_ALIGN eAlign);
 
 private:
 	ID3D11Device*					m_pDevice = { nullptr };

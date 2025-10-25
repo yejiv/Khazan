@@ -19,6 +19,8 @@ void CEdit_Interface_UI::Update_UIInterface(_float fTimeDelta)
 	Update_BackColor(fTimeDelta);
 	Create_UI();
 	SaveLoad_UI();
+	FontSave();
+
 	ImGui::End();
 
 	Selete_UI(fTimeDelta);
@@ -34,6 +36,7 @@ HRESULT CEdit_Interface_UI::Initialize(LEVEL eLevel)
 
 	strcpy_s(m_szPrototypePath, "Prototype_Component_");
 	strcpy_s(m_szFilePath, "../../Client/Bin/Resources/UI/UIData/");
+	strcpy_s(m_szTextPath, "../../Client/Bin/Resources/Font/");
 
 	CHECK_FAILED(Ready_Object(eLevel), E_FAIL);
 
@@ -143,6 +146,23 @@ void CEdit_Interface_UI::SaveLoad_UI()
 			}
 
 			nlohmann::json SaveData;
+		}
+	}
+}
+
+void CEdit_Interface_UI::FontSave()
+{
+	if (ImGui::CollapsingHeader("FontLoad"))
+	{
+		ImGui::InputText("UIFilePath", m_szTextPath, MAX_PATH);
+		ImGui::InputText("FontTag", m_szTextTag, MAX_PATH);
+
+		if (ImGui::Button("Load_Font"))
+		{
+			string strFontTag = m_szTextPath;
+			strFontTag += m_iHeight;
+
+			m_pGameInstance->Font_Load(AnsiToWString(strFontTag).c_str(), m_szTextPath, m_iHeight, 0);
 		}
 	}
 }
@@ -330,7 +350,7 @@ void CEdit_Interface_UI::Transform_UI(_float fTimeDelta)
 
 void CEdit_Interface_UI::SetTexture_UI()
 {
-	if (ImGui::CollapsingHeader("Texture"))
+	if (ImGui::CollapsingHeader("SubOption"))
 	{
 		ImGui::RadioButton("TEX", &m_iTexType, 0);
 		ImGui::SameLine();

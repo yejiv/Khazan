@@ -75,7 +75,7 @@ HRESULT CUI_BackGround::Render()
 	//m_pGameInstance->Draw_Text(TEXT("연단"), TEXT("안녕하세요"), g_iWinSizeX >> 1, g_iWinSizeY >> 1, {1.f, 1.f, 1.f, 1.f}, TEXT_ALIGN::RIGHT_TOP);
 	//m_pGameInstance->Draw_Text(TEXT("연단"), TEXT("안녕하세요"), g_iWinSizeX >> 1, g_iWinSizeY >> 1, {1.f, 1.f, 1.f, 1.f}, TEXT_ALIGN::CENTER);
 	
-	m_pGameInstance->Draw_TextBox(TEXT("연단"), TEXT("안녕하세요"), g_iWinSizeX >> 1, g_iWinSizeY >> 1, 100.f, { 1.f, 1.f, 1.f, 1.f }, TEXT_ALIGN::LEFT_TOP);
+	m_pGameInstance->Draw_TextBox(TEXT("연단"), TEXT("준영이형 안안녕하세요"), g_iWinSizeX >> 1, g_iWinSizeY >> 1, 200.f, 10.f, { 1.f, 1.f, 1.f, 1.f }, TEXT_ALIGN::LEFT_TOP);
 
 	
 	return S_OK;

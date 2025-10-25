@@ -11,7 +11,7 @@ private:
 public:
 	HRESULT						Initialize();
 	HRESULT						DrawText(class CFont_Face* pFont, const _wstring& strText, _float fX, _float fY, const _float4& vColor, TEXT_ALIGN eAlign);
-	HRESULT						DrawTextBox(class CFont_Face* pFont, const _wstring& strText, _float fX, _float fY, _float fMaxWidth, const _float4& vColor, TEXT_ALIGN eAlign);
+	HRESULT						DrawTextBox(class CFont_Face* pFont, const _wstring& strText, _float fX, _float fY, _float fMaxWidth, _float fOffsetHeight, const _float4& vColor, TEXT_ALIGN eAlign);
 
 private:
 	ID3D11Device*				m_pDevice = { nullptr };

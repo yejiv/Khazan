@@ -117,7 +117,7 @@ HRESULT CFont_Renderer::DrawText(CFont_Face* pFont, const _wstring& strText, _fl
     return S_OK;
 }
 
-HRESULT CFont_Renderer::DrawTextBox(CFont_Face* pFont, const _wstring& strText, _float fX, _float fY, _float fMaxWidth, const _float4& vColor, TEXT_ALIGN eAlign)
+HRESULT CFont_Renderer::DrawTextBox(CFont_Face* pFont, const _wstring& strText, _float fX, _float fY, _float fMaxWidth, _float fOffsetHeight, const _float4& vColor, TEXT_ALIGN eAlign)
 {
 
     if (!pFont || strText.empty())
@@ -137,7 +137,7 @@ HRESULT CFont_Renderer::DrawTextBox(CFont_Face* pFont, const _wstring& strText, 
 
     _uint baseIndex = 0;
 
-    _float lineHeight = vSize.x + vSize.y;
+    _float lineHeight = vSize.y + fOffsetHeight;
 
     for (_tchar ch : strText)
     {
