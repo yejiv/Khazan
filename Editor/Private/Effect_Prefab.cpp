@@ -331,18 +331,27 @@ void CEffect_Prefab::ResetChildren()
 {
     m_bPlaying = true;
     m_fCurTime = 0.f;
-    for(_uint i = 0; i < m_bEventTriggered.size(); ++i)
-        m_bEventTriggered[i] = false;
-    for(_uint i = 0; i < m_Children.size(); ++i)
+    for (_uint i = 0; i < m_Children.size(); ++i)
         m_Children[i]->Reset();
+    for (_uint i = 0; i < m_bEventTriggered.size(); ++i)
+        m_bEventTriggered[i] = false;
 }
 
-void CEffect_Prefab::Save(_wstring filename)
+void CEffect_Prefab::Save(const char* filename)
 {
     std::ofstream os{ filename, std::ios::binary };
 
-    os.write(reinterpret_cast<char*>(m_Children.size()), sizeof(size_t));
-    os.write(reinterpret_cast<char*>(m_eEventTracks.size()), sizeof(size_t));
+    if (!os)
+    {
+        MSG_BOX(TEXT("Failed to open file"));
+        return;
+    }
+
+    size_t ChildrenSize = m_Children.size();
+    size_t TracksSize = m_eEventTracks.size();
+
+    os.write(reinterpret_cast<char*>(&ChildrenSize), sizeof(size_t));
+    os.write(reinterpret_cast<char*>(&TracksSize), sizeof(size_t));
 
     for(auto& child : m_Children)
         child->Save_Data(os);
@@ -351,6 +360,72 @@ void CEffect_Prefab::Save(_wstring filename)
         os.write(reinterpret_cast<char*>(&m_eEventTracks[i]), sizeof(EFFECT_EVENT));
 
     os.close();
+}
+
+void CEffect_Prefab::Load(const char* filename)
+{ 
+    for (_uint i = 0; i < m_Children.size(); ++i)
+        Safe_Release(m_Children[i]);
+    m_Children.clear();
+
+    std::ifstream is{ filename, std::ios::binary };
+    if (!is)
+    {
+        MSG_BOX(TEXT("Failed to open file"));
+        return;
+    }
+
+    size_t iNumChildren, iNumTracks;
+    _uint EffectType {};
+
+    CEffect_Point_Instance::PARTICLE_DESC PointDsc;
+    CEffect_Mesh_Instance::PARTICLE_DESC MeshDsc;
+    CEffect_Sprite::SPRITE_DESC SpriteDsc; 
+
+    class CEffect_Element* newEffect{ nullptr };
+
+    is.read(reinterpret_cast<char*>(&iNumChildren), sizeof(size_t));
+    is.read(reinterpret_cast<char*>(&iNumTracks), sizeof(size_t));
+
+    for (size_t i = 0; i < iNumChildren; ++i)
+    {
+        is.read(reinterpret_cast<char*>(&EffectType), sizeof(_uint));
+
+        switch (EffectType)
+        {
+        case ENUM_CLASS(EffectType::POINT_INSTANCE) :
+            is.read(reinterpret_cast<char*>(&PointDsc), sizeof(CEffect_Point_Instance::PARTICLE_DESC));
+            newEffect = CEffect_Point_Instance::Create(m_pDevice, m_pContext, &PointDsc);
+            break;
+
+        case ENUM_CLASS(EffectType::MESH_INSTANCE):
+            is.read(reinterpret_cast<char*>(&MeshDsc), sizeof(CEffect_Mesh_Instance::PARTICLE_DESC));
+            newEffect = CEffect_Mesh_Instance::Create(m_pDevice, m_pContext, &MeshDsc);
+            break;
+
+        case ENUM_CLASS(EffectType::SPRITE):
+            is.read(reinterpret_cast<char*>(&SpriteDsc), sizeof(CEffect_Sprite::SPRITE_DESC));
+            newEffect = CEffect_Sprite::Create(m_pDevice, m_pContext, &SpriteDsc);
+            break;
+
+        default : 
+            MSG_BOX(TEXT("Effect Type Error"));
+            return;
+        }
+
+        newEffect->SetParentsMatrix(m_pTransformCom->Get_WorldMatrixPtr());
+        m_Children.push_back(newEffect);
+    }
+
+    EFFECT_EVENT EventDsc;
+    for (size_t i = 0; i < iNumTracks; ++i)
+    {
+        is.read(reinterpret_cast<char*>(&EventDsc), sizeof(EFFECT_EVENT));
+        m_eEventTracks.push_back(EventDsc);
+        m_bEventTriggered.push_back(false);
+    }
+
+    is.close();
 }
 
 CEffect_Prefab* CEffect_Prefab::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)

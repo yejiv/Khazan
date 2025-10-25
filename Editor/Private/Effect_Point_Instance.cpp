@@ -78,6 +78,8 @@ HRESULT CEffect_Point_Instance::Render()
 
 void CEffect_Point_Instance::Save_Data(ofstream& os)
 {
+    os.write(reinterpret_cast<char*>(&m_iEffect_Type), sizeof(_uint));
+    os.write(reinterpret_cast<char*>(&m_sData), sizeof(PARTICLE_DESC));
 }
 
 void CEffect_Point_Instance::Edit_Element()
@@ -105,7 +107,7 @@ void CEffect_Point_Instance::Edit_Element()
 
     ImGui::ColorEdit4("MyColorWithAlpha",(float*)&m_sEditingData.vColor);
 
-    const char* textures[] = {"test0","test1","test2","test3","test4","test5"};
+    const char* textures[] = {"test0","test1","test2","test3"};
     ImGui::ListBox("Particles",reinterpret_cast<int*>(&m_sEditingData.iTextureIdx), textures,IM_ARRAYSIZE(textures));
 
     m_sEditingData.IsCircle = isCircle;
@@ -156,6 +158,7 @@ void CEffect_Point_Instance::SetUpwardData(void* pArg)
 {
     CEffect_Prefab::EFFECT_EVENT data = *static_cast<CEffect_Prefab::EFFECT_EVENT*>(pArg);
     m_pVIBufferCom->Setting_Speed(CVIBuffer_Point_Instance::SPEED_VALUE::UPWARD_SPEED, data.fUpwardSpeed);
+    m_sData.bGravity = data.bGravity;
     SetData(ENUM_CLASS(data.eEventType),data.fDuration);
 }
 
@@ -193,6 +196,8 @@ HRESULT CEffect_Point_Instance::Bind_ShaderResources()
         return E_FAIL;
 
     if (FAILED(m_pShaderCom->Bind_RawValue("g_vSourceColor", &m_sEditingData.vColor, sizeof(_float4))))
+        return E_FAIL;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fSizeRatio", &m_sData.fSizeRatio, sizeof(_float))))
         return E_FAIL;
 
     if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DiffuseTexture", m_sData.iTextureIdx)))

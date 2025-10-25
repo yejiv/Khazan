@@ -56,6 +56,7 @@ private :
 	_float4							m_fColor;
 	_int							m_iTextureIdx;
 	_int							m_iMeshTypeIdx;
+	_int							m_iMaskTypeIdx;
 
 	//[Sprite Data]
 	_uint							m_iCol, m_iRow;
@@ -67,6 +68,13 @@ private :
 
 	_int							m_iChildrenIdx;
 	_int							m_iPrevChildrenIdx;
+
+	//[Scroll Data] (Mesh)
+	_bool							m_bScrollDir;
+
+	//[Save / Load]
+	char							SavePath[128];
+	char							LoadPath[128];
 
 	/* [Debug] */
 private:
