@@ -140,21 +140,19 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
     
     // SSAO Test
     float fAO = g_SSAOTexture.Sample(PointSampler, In.vTexcoord).r;
-    //  Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient * fAO));
-    Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient));
-    Out.vShade *= fAO;
+    Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient * fAO));
     
+    //  Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient));
+    //  Out.vShade *= fAO;
     
+    // Specular
     //  vector vReflect = reflect(normalize(g_vLightDir), vNormal);
     //  vector vLook = vWorldPos - g_vCamPosition;
-    //  
     //  float fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), 50.f);
-
     //  Out.vSpecular = (g_vLightSpecular * g_vMtrlSpecular) * fSpecular;
     
     return Out;
 }
-
 
 PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
 {
@@ -398,6 +396,7 @@ PS_OUT_SSAO PS_MAIN_SSAO(PS_IN In)
         // clamp
         float fSampleDepth = g_DepthTexture.Sample(PointSampler, vSampleTexcoord).y; // 샘플 픽셀(주변 픽셀)의 깊이
         
+        // 여기 샘플 포지션 다시 정의해서 변환해보기
         
         
         // 샘플 깊이가 현재 픽셀의 깊이보다 더 크면 차폐가 없음, 샘플 깊이가 현재 픽셀의 깊이보다 더 작으면 그 방향에 다른 오브젝트가 있어서 시야가 막힌 것
