@@ -208,6 +208,9 @@
     <Filter Include="02.GameObject\AI\Controller">
       <UniqueIdentifier>{f97bf7c7-5eae-45f8-ad24-12e95da56f03}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\AI\Monster">
+      <UniqueIdentifier>{4218dc4b-df2a-4240-b370-b0437149faf3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -393,6 +396,12 @@
     <ClInclude Include="..\Public\Level_AI.h">
       <Filter>01.Levels\AI</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\AIController_Edit.h">
+      <Filter>02.GameObject\AI\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Edit_Monster.h">
+      <Filter>02.GameObject\AI\Monster</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -572,6 +581,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Level_AI.cpp">
       <Filter>01.Levels\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AIController_Edit.cpp">
+      <Filter>02.GameObject\AI\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Edit_Monster.cpp">
+      <Filter>02.GameObject\AI\Monster</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -283,6 +283,7 @@ call Copy.bat</Command>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\ENGINESDK\DEBUG\INC\COMPOSITE_NODE.H" />
     <ClInclude Include="..\Public\Action_Node.h" />
     <ClInclude Include="..\Public\AI_Controller.h" />
     <ClInclude Include="..\Public\AI_State.h" />
@@ -294,6 +295,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Body.h" />
     <ClInclude Include="..\public\Bone.h" />
     <ClInclude Include="..\Public\BTNode.h" />
+    <ClInclude Include="..\Public\BTNode_Defines.h" />
     <ClInclude Include="..\public\Camera.h" />
     <ClInclude Include="..\Public\Camera_Manager.h" />
     <ClInclude Include="..\public\Cell.h" />

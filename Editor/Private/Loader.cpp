@@ -3,6 +3,10 @@
 #include "GameInstance.h"
 #include "Editor_Model.h"
 
+#pragma region AI
+#include "Edit_Monster.h"
+#pragma endregion
+
 
 #pragma region Anmaition
 #include "JOH_EditorModelTest.h"
@@ -439,6 +443,11 @@ HRESULT CLoader::Loading_For_AI_Level()
 	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
 
 	lstrcpy(m_szLoadingText, TEXT("게임오브젝트를 로딩중입니다."));
+
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::AI), TEXT("Prototype_GameObject_Monster"),
+		CEdit_Monster::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 

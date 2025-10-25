@@ -316,8 +316,13 @@
     <Filter Include="01.Utility\95.AI\BehaviorTree\Node\Decorator\Inverter">
       <UniqueIdentifier>{ff7d3c95-8f9b-431a-aa13-048ee6b34835}</UniqueIdentifier>
     </Filter>
+<<<<<<< HEAD
     <Filter Include="01.Utility\12.ImGui\Guizmo">
       <UniqueIdentifier>{5d63552c-6d32-499d-b702-54b0a148ce46}</UniqueIdentifier>
+=======
+    <Filter Include="01.Utility\95.AI\BehaviorTree\Node\Defines">
+      <UniqueIdentifier>{f60db9af-175b-419d-ae6b-b02d9741a584}</UniqueIdentifier>
+>>>>>>> feature/kse
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -980,6 +985,10 @@
     <ClInclude Include="..\public\Font_Renderer.h">
       <Filter>01.Utility\05.Fonts</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\BTNode_Defines.h">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ENGINESDK\DEBUG\INC\COMPOSITE_NODE.H" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hlsli">
