@@ -822,31 +822,28 @@ namespace Engine
 
     }AIBLACKBOARD_DATA;
 
-    typedef struct tagLeafNodeData
+    typedef struct tagAI_BehaviorTreeNodeData
     {
-        
-        string  NodeName;
-        string  LeafType;
-        string  CallBackFunction;
-        float   fWaitTime;
+        string strNodeName;
+        string strNodeType;
+        string strSubtype;
 
-    }LEAFNODE_DATA;
+        vector<tagAI_BehaviorTreeNodeData>   Children;
 
-    typedef struct tagCompositeNodeData
+        float                   fCoolDownTime = {};
+        unsigned int            iRepeatCount = {};
+
+        string                  strCallbackFunction;
+        float                   fWaitTime = {};
+       
+    }AIBTNODE_DATA;
+
+    typedef struct AI_BehaviorTreeNodeData
     {
-        string NodeName;
-        string LeafType;
-        vector<LEAFNODE_DATA> Children;
+        string                  MonsterType;
+        AIBTNODE_DATA           RootNode;
 
-    }COMPOSITENODE_DATA;
-
-
-    typedef struct tagDecoratorNodeData
-    {
-
-    }DECORATORNODE_DATA;
-
-
+    }AI_BTDATA;
 
 #pragma endregion
 
@@ -936,6 +933,8 @@ namespace Engine
         vecAnimationSets
     );
 
+#pragma endregion
+
 #pragma region Map
 
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(JSON_MAP_DATA,
@@ -974,6 +973,21 @@ namespace Engine
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(AIBLACKBOARD_DATA,
         strMonsterType,
         Values);
+
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(AIBTNODE_DATA,
+        strNodeName,
+        strNodeType,
+        strSubtype,
+        Children,
+        fCoolDownTime,
+        iRepeatCount,
+        strCallbackFunction,
+        fWaitTime
+        )
+
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(AI_BTDATA,
+        MonsterType,
+        RootNode)
 
 
 #pragma endregion

@@ -38,7 +38,7 @@ HRESULT CLevel_Shader::Initialize()
 			m_isInitShadow = true;
 		}
 
-		ImGui::Begin("Shadow Settings");
+		ImGui::Begin("Shader Settings");
 
 		// isRenderShadow true일 때만 아래 애들 띄우기
 		// true일 때만 렌더러에서 기록하는 거 켜주기
@@ -94,7 +94,15 @@ HRESULT CLevel_Shader::Initialize()
 			}
 		}
 
+		ImGui::Checkbox("SSAO", &m_isRenderSSAO);
+
+		if (m_isRenderSSAO)
+		{
+
+		}
+
 		m_pGameInstance->Set_EnableShadow(m_isRenderShadow);
+		m_pGameInstance->Set_EnableSSAO(m_isRenderSSAO);
 
 		ImGui::End();
 	});

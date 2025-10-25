@@ -3,7 +3,7 @@
 
 NS_BEGIN(Engine)
 
-class ENGINE_DLL CBehaviorTree abstract : public CBase
+class ENGINE_DLL CBehaviorTree final : public CBase
 {
 protected:
 	CBehaviorTree();
@@ -23,6 +23,7 @@ protected:
 
 
 public:
+	static CBehaviorTree*		Create();
 	virtual void				Free() override;
 
 };

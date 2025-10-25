@@ -1,5 +1,6 @@
 #pragma once
 #include "Base.h"
+#include "BTNode_Defines.h"
 
 NS_BEGIN(Engine)
 

@@ -26,6 +26,7 @@ void CIdleState_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 
 void CIdleState_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
+
 }
 
 CIdleState_Yetuga* CIdleState_Yetuga::Create()
