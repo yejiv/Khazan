@@ -80,10 +80,14 @@ HRESULT CEffect_Sprite::Render()
 
 void CEffect_Sprite::Save_Data(ofstream& os)
 {
+    os.write(reinterpret_cast<char*>(&m_iEffect_Type), sizeof(_uint));
+    os.write(reinterpret_cast<char*>(&m_sData), sizeof(SPRITE_DESC));
 }
 
 void CEffect_Sprite::Edit_Element()
 {
+    _bool            loop = (_int)m_sEditingData.IsLoop;
+
     //checkBox - isloop
     ImGui::InputFloat("Size : ", reinterpret_cast<_float*>(&m_sEditingData.fSize));
     ImGui::InputFloat("Size Ratio : ", &m_sEditingData.fSizeRatio);
@@ -96,7 +100,9 @@ void CEffect_Sprite::Edit_Element()
     ImGui::InputFloat("Scaling Value : ", reinterpret_cast<_float*>(&m_sEditingData.ScalingValue));
     ImGui::InputInt("Col : ", reinterpret_cast<int*>(&m_sEditingData.iCol));
     ImGui::InputInt("Row : ", reinterpret_cast<int*>(&m_sEditingData.iRow));
-    ImGui::Checkbox("Sprite Loop", &m_sEditingData.IsLoop);
+    ImGui::Checkbox("Sprite Loop", &loop);
+
+    m_sEditingData.IsLoop = loop;
 
     if (ImGui::Button("Apply"))
         Apply(&m_sEditingData);
@@ -147,16 +153,8 @@ HRESULT CEffect_Sprite::Bind_ShaderResources()
     _float iRow = static_cast<_float>(m_sData.iRow);
     _float UVIdx = static_cast<_float>(m_iUVIdx);
 
-    if (m_sData.bFollow == true)
-    {
-        if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix)))
-            return E_FAIL;
-    }
-    else
-    {
-        if (FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix")))
-            return E_FAIL;
-    }
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix)))
+        return E_FAIL;
 
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
         return E_FAIL;

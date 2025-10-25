@@ -223,6 +223,27 @@ _bool CVIBuffer_Mesh_Instance::Update(_float fTimeDelta)
 	return m_IsLoop ? false : IsFinish();
 }
 
+void CVIBuffer_Mesh_Instance::UpdateGravity(_float fTimeDelta)
+{
+	COMPUTE_PASS_DESC PassDesc{};
+	PassDesc.UAVs.push_back(m_pUAV);
+	PassDesc.UAVs.push_back(m_pUAVSpeed);
+	PassDesc.ConstantBuffers.push_back(m_pCB);
+	_uint iNumThreadPerGroup = 256;
+	_uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
+	PassDesc.x = iNumGroups;
+	PassDesc.y = 1;
+	PassDesc.z = 1;
+
+	CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
+	JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::GRAVITY)];
+	JobDesc.PassDesc = PassDesc;
+
+	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
+
+	m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
+}
+
 void CVIBuffer_Mesh_Instance::Setting_Speed(SPEED_VALUE type, _float2 range)
 {
 	D3D11_MAPPED_SUBRESOURCE SubResource;
@@ -389,6 +410,10 @@ HRESULT CVIBuffer_Mesh_Instance::Ready_ComputeShader()
 	m_ComputeShaders[ENUM_CLASS(CS_PASS::MOVE)] = CComputeShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Model_Instance_Compute.hlsl"), "CS_MOVE");
 	if (nullptr == m_ComputeShaders[ENUM_CLASS(CS_PASS::MOVE)])
 		return E_FAIL; 
+
+	m_ComputeShaders[ENUM_CLASS(CS_PASS::GRAVITY)] = CComputeShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Point_Instance_Compute.hlsl"), "CS_UPDATE_GRAVITY");
+	if (nullptr == m_ComputeShaders[ENUM_CLASS(CS_PASS::GRAVITY)])
+		return E_FAIL;
 
 	m_ComputeShaders[ENUM_CLASS(CS_PASS::UPDATE_SPEED)] = CComputeShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Model_Instance_Compute.hlsl"), "CS_UPDATE_SPEED");
 	if (nullptr == m_ComputeShaders[ENUM_CLASS(CS_PASS::UPDATE_SPEED)])

@@ -11,15 +11,33 @@ CPerception::CPerception()
 
 
 
-HRESULT CPerception::Initialize(const string& strName, const SIGHT_DESC& Desc, _uint iTeamID)
+//HRESULT CPerception::Initialize(const string& strName, const SIGHT_DESC& Desc, _uint iTeamID)
+//{
+//	m_strName = strName;
+//	m_tSightDesc = Desc;
+//	m_iTeamID = iTeamID;
+//	m_fCurrnetTime = 0.f;
+//	m_fCheckAcc = 0.f;
+//	m_fSenseRadiusCache = m_tSightDesc.fRadius * m_tSightDesc.fRadius;
+//	m_tSightDesc.fFovCos = cosf(XMConvertToRadians(m_tSightDesc.fFov * 0.5f));
+//	m_Perceived.clear();
+//
+//
+//
+//
+//
+//
+//	return S_OK;
+//}
+
+HRESULT CPerception::Initialize(const AIPERCEPTION_DATA& Desc, _uint iTeamID)
 {
-	m_strName = strName;
+	m_strName = Desc.strMonsterType;
 	m_tSightDesc = Desc;
 	m_iTeamID = iTeamID;
 	m_fCurrnetTime = 0.f;
 	m_fCheckAcc = 0.f;
 	m_fSenseRadiusCache = m_tSightDesc.fRadius * m_tSightDesc.fRadius;
-	m_tSightDesc.fFovCos = cosf(XMConvertToRadians(m_tSightDesc.fFov * 0.5f));
 	m_Perceived.clear();
 
 	return S_OK;
@@ -139,15 +157,26 @@ void CPerception::Forget()
 
 
 
-CPerception* CPerception::Create(const string& strName, const SIGHT_DESC& Desc, _uint iTeamID)
+//CPerception* CPerception::Create(const string& strName, const SIGHT_DESC& Desc, _uint iTeamID)
+//{
+//	CPerception* pInstance = new CPerception();
+//	if (FAILED(pInstance->Initialize(strName, Desc, iTeamID)))
+//	{
+//		Safe_Release(pInstance);
+//		MSG_BOX(TEXT("Failed Create: CAI_Perception"));
+//	}
+//
+//	return pInstance;
+//}
+
+CPerception* CPerception::Create(const AIPERCEPTION_DATA& Desc, _uint iTeamID)
 {
 	CPerception* pInstance = new CPerception();
-	if (FAILED(pInstance->Initialize(strName, Desc, iTeamID)))
+	if (FAILED(pInstance->Initialize(Desc, iTeamID)))
 	{
 		Safe_Release(pInstance);
-		MSG_BOX(TEXT("Failed Create: CAI_Perception"));
+		MSG_BOX(TEXT("Failed Create : Perception"));
 	}
-
 	return pInstance;
 }
 
