@@ -17,7 +17,7 @@ public:
 		_float	fOffset;
 		_uint   IsCircle;
 		_float	fSizeRatio;
-		const _char* pFilePath;
+		_char	pFilePath[MAX_PATH];
 	}POINT_MESH_DESC;
 
 private:
@@ -34,6 +34,7 @@ public:
 
 public:
 	_bool						Update(_float fTimeDelta);
+	void						UpdateGravity(_float fTimeDelta);
 	void						Setting_Speed(SPEED_VALUE type, _float2 range);
 	void						Remove_Speed(SPEED_VALUE type);
 	void						Remove_Speed();

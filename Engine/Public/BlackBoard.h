@@ -7,7 +7,7 @@ NS_BEGIN(Engine)
 // Black Board에서 사용할 수 있는 타입을 ENUM으로 미리 정의
 enum class BBKEYTYPE { BOOL, FLOAT, UINT, VECTOR3, OBJECT, COMPONENT };
 
-class CBlackBoard final : public CBase
+class ENGINE_DLL CBlackBoard final : public CBase
 {
 public:
 	// variant : 컴파일 과정 중에 사용할 변수들을 등록할 수 있게 해준다.

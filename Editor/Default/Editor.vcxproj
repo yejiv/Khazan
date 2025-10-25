@@ -113,7 +113,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>EditorPch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../public/;../../EngineSDK/Debug/Inc/;../../EngineSDK/Debug/Inc/DirectXTK/;../../EngineSDK/Debug/Inc/fmod/;../../EngineSDK/Debug/Inc/Fx11/;../../EngineSDK/Debug/Inc/assimp/;../../EngineSDK/Debug/Inc/ImGui/;../../EngineSDK/Debug/Inc/Jolt/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../public/;../../EngineSDK/Debug/Inc/;../../EngineSDK/Debug/Inc/DirectXTK/;../../EngineSDK/Debug/Inc/fmod/;../../EngineSDK/Debug/Inc/Fx11/;../../EngineSDK/Debug/Inc/assimp/;../../EngineSDK/Debug/Inc/ImGui/;../../EngineSDK/Debug/Inc/Jolt/;../../EngineSDK/Debug/Inc/Guizmo/</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>EditorPch.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
@@ -140,7 +140,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>EditorPch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../public/;../../EngineSDK/Release/Inc/;../../EngineSDK/Release/Inc/DirectXTK/;../../EngineSDK/Release/Inc/fmod/;../../EngineSDK/Release/Inc/Fx11/;../../EngineSDK/Release/Inc/assimp/;../../EngineSDK/Release/Inc/ImGui/;../../EngineSDK/Release/Inc/Jolt/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../public/;../../EngineSDK/Release/Inc/;../../EngineSDK/Release/Inc/DirectXTK/;../../EngineSDK/Release/Inc/fmod/;../../EngineSDK/Release/Inc/Fx11/;../../EngineSDK/Release/Inc/assimp/;../../EngineSDK/Release/Inc/ImGui/;../../EngineSDK/Release/Inc/Jolt/;../../EngineSDK/Release/Inc/Guizmo/</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>EditorPch.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
@@ -159,6 +159,7 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Public\AIController_Edit.h" />
     <ClInclude Include="..\public\AnimationTool.h" />
     <ClInclude Include="..\Public\Camera_Compre.h" />
     <ClInclude Include="..\Public\Camera_Controller.h" />
@@ -178,6 +179,7 @@
     <ClInclude Include="..\Public\Editor_Model_Instance.h" />
     <ClInclude Include="..\public\Editor_TempCamera.h" />
     <ClInclude Include="..\public\Edit_Interface_UI.h" />
+    <ClInclude Include="..\Public\Edit_Monster.h" />
     <ClInclude Include="..\public\Edit_UIBackGround.h" />
     <ClInclude Include="..\public\Edit_UIBase.h" />
     <ClInclude Include="..\Public\Effect_Element.h" />
@@ -221,6 +223,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Private\AIController_Edit.cpp" />
     <ClCompile Include="..\private\AnimationTool.cpp" />
     <ClCompile Include="..\Private\Camera_Compre.cpp" />
     <ClCompile Include="..\Private\Camera_Controller.cpp" />
@@ -238,6 +241,7 @@
     <ClCompile Include="..\Private\Editor_Model_Instance.cpp" />
     <ClCompile Include="..\private\Editor_TempCamera.cpp" />
     <ClCompile Include="..\private\Edit_Interface_UI.cpp" />
+    <ClCompile Include="..\Private\Edit_Monster.cpp" />
     <ClCompile Include="..\private\Edit_UIBackGround.cpp" />
     <ClCompile Include="..\private\Edit_UIBase.cpp" />
     <ClCompile Include="..\Private\Effect_Element.cpp" />
