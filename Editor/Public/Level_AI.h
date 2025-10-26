@@ -42,14 +42,14 @@ private:
 
 	void				Save_BehaviorTree(const AI_BTDATA& Data, const string& FileName);
 	void				Load_BehaviorTree(const string& FileName, AI_BTDATA& OutData);
-	//void				SaveNode(JSON& j, const AIBTNODE_DATA& Node);
 	void				SaveNode(JSON& j, const AIBTNODE_DATA* pNode);
-	//void				LoadNode(const JSON& j, AIBTNODE_DATA& OutNode);
 	void				LoadNode(const JSON& j, AIBTNODE_DATA* pParent ,AIBTNODE_DATA& OutNode);
 	_bool				MoveNode(AIBTNODE_DATA& NewParentNode, AIBTNODE_DATA& DraggedNode);
 	_bool				RemoveNodeFromParent(AIBTNODE_DATA* pNode);
-	//void				RemoveNodeRecursive(AIBTNODE_DATA& Node);
 	void				RemoveNodeRecursive(AIBTNODE_DATA* pNode);
+	_bool				Change_Hierarchy(AIBTNODE_DATA* pNode, _uint iNewIndex);
+
+
 #pragma endregion 
 
 public:

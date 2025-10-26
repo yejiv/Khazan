@@ -642,17 +642,6 @@ void CLevel_AI::Show_BT_Editor(AI_BTDATA& TreeData)
 
 		if (ImGui::Button("Add Child"))
 		{
-			//g_SelectedNode->Children.push_back({});
-			/*g_SelectedNode->Children.back().strNodeName = "NewNode";
-			g_SelectedNode->Children.back().strNodeType = "Leaf";
-			g_SelectedNode->Children.back().strSubtype = "Action";*/
-			//AIBTNODE_DATA& NewNode = g_SelectedNode->Children.back();
-			//NewNode.strNodeName = "NewNode";
-			//NewNode.strNodeType = "Leaf";
-			//NewNode.strSubtype = "Action";
-			//// 여기서 트리 수정을 위해서 부모를 설정해준다.
-			//NewNode.Parent = g_SelectedNode;
-
 			auto* pNewNode = new AIBTNODE_DATA();
 			pNewNode->strNodeName = "NewNode";
 			pNewNode->strNodeType = "Leaf";
@@ -667,7 +656,6 @@ void CLevel_AI::Show_BT_Editor(AI_BTDATA& TreeData)
 		{
 			if (ImGui::Button("Remove Last Child"))
 			{
-				//g_SelectedNode->Children.pop_back();
 				auto* pLast = g_SelectedNode->Children.back();
 				g_SelectedNode->Children.pop_back();
 				delete pLast;
@@ -703,11 +691,27 @@ void CLevel_AI::Show_BTNode_Hierarchy(AIBTNODE_DATA& Node)
 		if (const ImGuiPayload* Payload = ImGui::AcceptDragDropPayload("BTNODE"))
 		{
 			AIBTNODE_DATA* DraggedNode = *(AIBTNODE_DATA**)Payload->Data;
-			if (DraggedNode && DraggedNode != &Node)
+
+			if (DraggedNode->Parent == Node.Parent)
 			{
-				if (false == MoveNode(Node,*DraggedNode))
+				// 같은 부모 안에서 순서 변경
+				auto& siblings = Node.Parent->Children;
+				_uint newIndex = 0;
+				for (_uint i = 0; i < siblings.size(); ++i)
+				{
+					if (siblings[i] == &Node) { newIndex = i; break; }
+				}
+				if (!Change_Hierarchy(DraggedNode, newIndex))
+					MSG_BOX(TEXT("Failed Change_Hierarchy"));
+			}
+			else
+			{
+				// 다른 부모면 이동
+				if (!MoveNode(Node, *DraggedNode))
 					MSG_BOX(TEXT("Failed MoveNode"));
 			}
+
+
 		}
 		ImGui::EndDragDropTarget();
 	}
@@ -715,7 +719,6 @@ void CLevel_AI::Show_BTNode_Hierarchy(AIBTNODE_DATA& Node)
 	if (isOpen)
 	{
 		for (auto& child : Node.Children)
-			//Show_BTNode_Hierarchy(child);
 			Show_BTNode_Hierarchy(*child);
 
 		ImGui::TreePop();
@@ -728,7 +731,6 @@ void CLevel_AI::Save_BehaviorTree(const AI_BTDATA& Data, const string& FileName)
 	JSON jRoot;
 	jRoot["MonsterType"] = Data.MonsterType;
 	JSON jNode;
-	//SaveNode(jNode, Data.RootNode);
 	SaveNode(jNode, &Data.RootNode);
 	jRoot["RootNode"] = jNode;
 
@@ -776,85 +778,8 @@ void CLevel_AI::Load_BehaviorTree(const string& FileName, AI_BTDATA& OutData)
 
 	OutData.MonsterType = jRoot.value("MonsterType", "");
 	if (jRoot.contains("RootNode"))
-		//LoadNode(jRoot["RootNode"], OutData.RootNode);
 		LoadNode(jRoot["RootNode"], nullptr, OutData.RootNode);
 }
-
-//void CLevel_AI::SaveNode(JSON& j, const AIBTNODE_DATA& Node)
-//{
-//
-//	j["NodeType"] = Node.strNodeType;
-//	j["SubType"] = Node.strSubtype;
-//	j["NodeName"] = Node.strNodeName;
-//
-//	// 노드 타입이 Leaf라면
-//	if (Node.strNodeType == "Leaf")
-//	{
-//		// 서브 타입이 Wait 이면
-//		if (Node.strSubtype == "Wait")
-//		{
-//			// WaitTime 을 저장하고
-//			if (Node.fWaitTime > 0.f)
-//				j["WaitTime"] = Node.fWaitTime;
-//		}
-//		// 아니면 컨디션이나 Action 이므로 두 노드는 람다를 사용하므로
-//		else
-//		{
-//			if (!Node.strCallbackFunction.empty())
-//				j["Callback"] = Node.strCallbackFunction;
-//		}
-//	}
-//
-//	// 노드 타입이 Decorator라면
-//	else if (Node.strNodeType == "Decorator")
-//	{
-//		// CoolDown노드라면
-//		if (Node.strSubtype == "CoolDown")
-//		{
-//			// 쿨다운 저장
-//			if (Node.fCoolDownTime > 0.f)
-//				j["CoolDownTime"] = Node.fCoolDownTime;
-//		}
-//		else if (Node.strSubtype == "RepeatCount")
-//		{
-//			// 반복 회수 저장
-//			if (Node.iRepeatCount > 0)
-//				j["RepeatCount"] = Node.iRepeatCount;
-//		}
-//
-//		if (!Node.Children.empty())
-//		{
-//			if (Node.Children.size() > 1)
-//			{
-//				// 경고: Decorator는 자식 1개만 가능
-//				cout << "Warning: Decorator node '" << Node.strNodeName
-//					<< "' has more than 1 child!" << endl;
-//			}
-//			// 1개라도 있으면 저장
-//			JSON jChild;
-//			SaveNode(jChild, Node.Children[0]);
-//			j["Children"] = JSON::array({ jChild });
-//		}
-//
-//
-//	}
-//
-//	else if (Node.strNodeType == "Composite")
-//	{
-//		if (!Node.Children.empty())
-//		{
-//			j["Children"] = JSON::array();
-//			for (const auto& child : Node.Children)
-//			{
-//				JSON jChild;
-//				SaveNode(jChild, child);
-//				j["Children"].push_back(jChild);
-//			}
-//		}
-//	}
-//
-//
-//}
 
 void CLevel_AI::SaveNode(JSON& j, const AIBTNODE_DATA* pNode)
 {
@@ -890,33 +815,6 @@ void CLevel_AI::SaveNode(JSON& j, const AIBTNODE_DATA* pNode)
 	}
 }
 
-//void CLevel_AI::LoadNode(const JSON& j, AIBTNODE_DATA& OutNode)
-//{
-//	OutNode.strNodeType = j.value("NodeType", "");
-//	OutNode.strSubtype = j.value("SubType", "");
-//	OutNode.strNodeName = j.value("NodeName", "");
-//	OutNode.strCallbackFunction = j.value("Callback", "");
-//	OutNode.fCoolDownTime = j.value("CoolDownTime", 0.f);
-//	OutNode.fWaitTime = j.value("WaitTime", 0.f);
-//	OutNode.iRepeatCount = j.value("RepeatCount", 0);
-//
-//	if (j.contains("Children"))
-//	{
-//		
-//		OutNode.Children.reserve(j["Children"].size()); // 재할당 방지하여 부모 포인터 유지
-//
-//		for (auto& jc : j["Children"])
-//		{
-//			OutNode.Children.push_back({});
-//			LoadNode(jc, OutNode.Children.back());
-//			// 로드할때 부모를 설정해준다.
-//			OutNode.Children.back().Parent = &OutNode;
-//		}
-//	}
-//
-//	int a = 10;
-//
-//}
 
 void CLevel_AI::LoadNode(const JSON& j, AIBTNODE_DATA* pParent, AIBTNODE_DATA& OutNode)
 {
@@ -1019,16 +917,35 @@ void CLevel_AI::RemoveNodeRecursive(AIBTNODE_DATA* pNode)
 	delete pNode;
 }
 
-//void CLevel_AI::RemoveNodeRecursive(AIBTNODE_DATA& Node)
-//{
-//	// 자식부터 재귀로 제거 시작
-//	for (auto& pChild : Node.Children)
-//		RemoveNodeRecursive(pChild);
-//
-//	// 부모 노드가 있다면 삭제
-//	if (Node.Parent)
-//		RemoveNodeFromParent(&Node);
-//}
+_bool CLevel_AI::Change_Hierarchy(AIBTNODE_DATA* pNode, _uint iNewIndex)
+{
+	if (!pNode || !pNode->Parent)
+		return false;
+
+	auto& siblings = pNode->Parent->Children;
+
+	_int iOldIndex = -1;
+	for (_uint i = 0; i < siblings.size(); i++)
+	{
+		if (siblings[i] == pNode)
+		{
+			iOldIndex = i;
+			break;
+		}
+	}
+	if (iOldIndex == -1 || iOldIndex == iNewIndex)
+		return false;
+
+	auto pNodePtr = siblings[iOldIndex];
+	siblings.erase(siblings.begin() + iOldIndex);
+
+	if (iNewIndex > siblings.size())
+		iNewIndex = siblings.size();
+
+	siblings.insert(siblings.begin() + iNewIndex, pNodePtr);
+
+	return true;
+}
 
 #pragma endregion
 
