@@ -44,7 +44,7 @@ public:
 		EBackFaceMode	eBackFaceMode = EBackFaceMode::IgnoreBackFaces; // 양면 메쉬 대응
 
 		_float			fMinTimeRemaining = 1e-3f; //서브스텝 통합 중 잔여 시간 최소치.
-		_float			fCollisionTolerance = 0.01f; //충돌 허용 오차
+		_float			fCollisionTolerance = 0.02f; //충돌 허용 오차
 		_uint			fMaxNumHits = 5; // 한 프레임 업데이트 동안 저장할 최대 충돌 히트 개수 제한.
 		_float			fHitReductionCosMaxAngle = 15.f; // 히트 축약 기준 각도(코사인 값)
 		_float3			vShapeOffset;
