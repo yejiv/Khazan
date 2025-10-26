@@ -1,14 +1,16 @@
 #include "Engine_Shader_Defines.hlsli"
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
-texture2D g_DiffuseTexture;
-texture2D g_MaskTexture;
-
 float4 g_vSourceColor = float4(1.f, 1.f, 1.f, 1.f);
 
-float g_RunningTime = 1.f;
-float2 g_ScrollSpeed = 0.f;
-bool g_ScrollYDir;
+float2 g_ScrollSpeed = 0.f; //Texture scroll
+bool g_MaskScrollYDir;
+bool g_MaskScrollInv;
+
+float g_MaskScrollSpeed;
+
+texture2D g_DiffuseTexture;
+texture2D g_MaskTexture;
 
 struct VS_IN
 {
@@ -64,6 +66,32 @@ struct PS_OUT
     
 };
 
+float Mask_Scrolling(float2 vLifetime, float2 vTexcoord)
+{
+    float safeProgress = saturate(vLifetime.x * g_MaskScrollSpeed / vLifetime.y) * 2;
+    float maskOffset = (safeProgress * 2.0f) - 2.0f;
+    float2 maskUV;
+    
+    if (g_MaskScrollYDir)
+    {
+        if (g_MaskScrollInv)
+            maskUV = float2(vTexcoord.x, vTexcoord.y - maskOffset);
+        else
+            maskUV = float2(vTexcoord.x, vTexcoord.y + maskOffset);
+    }
+    else
+    {
+        if (g_MaskScrollInv)
+            maskUV = float2(vTexcoord.x - maskOffset, vTexcoord.y);
+        else
+            maskUV = float2(vTexcoord.x + maskOffset, vTexcoord.y);
+    }
+
+    float maskValue = g_MaskTexture.Sample(ClampSampler, maskUV).r;
+    
+    return maskValue;
+}
+
 PS_OUT PS_MAIN(PS_IN In)
 {
     //if (In.bDead == true)
@@ -71,23 +99,14 @@ PS_OUT PS_MAIN(PS_IN In)
     
     PS_OUT Out = (PS_OUT) 0;
     
-    float2 fEffectOffset = float2(g_RunningTime * g_ScrollSpeed.x, g_RunningTime * g_ScrollSpeed.y);
+    float2 fEffectOffset = float2(In.vLifeTime.x * g_ScrollSpeed.x, In.vLifeTime.x * g_ScrollSpeed.y);
     float2 fScrolledEffectUV = In.vTexcoord + fEffectOffset;
     
     vector vEffectTexture = g_DiffuseTexture.Sample(PointSampler, fScrolledEffectUV);
     vector vFinalColor = float4(g_vSourceColor.xyz, min(vEffectTexture.r, g_vSourceColor.a));
     
-    float safeProgress = saturate(g_RunningTime); // 0 ~ 1   그니까 0 이면 -2. 1이면 0이 되어야함
-    float maskOffset = (safeProgress * 2.0f) - 2.0f; // -1 ~ 1 이거 끝까지 돌리기로수 ㅓㅇ
-    float2 maskUV;  //-2 -1
-    
-    if (g_ScrollYDir)
-        maskUV = float2(In.vTexcoord.x, In.vTexcoord.y + maskOffset);
-    else
-        maskUV = float2(In.vTexcoord.x + maskOffset, In.vTexcoord.y);
-
-    float maskValue = g_MaskTexture.Sample(ClampSampler, maskUV).r;
-    vFinalColor.a = vFinalColor.a * maskValue;
+    if (g_MaskScrollSpeed)
+        vFinalColor.a = vFinalColor.a * Mask_Scrolling(In.vLifeTime, In.vTexcoord);
     
     float fDecreaseAlpha = (In.vLifeTime.x / In.vLifeTime.y);  
     
@@ -95,9 +114,9 @@ PS_OUT PS_MAIN(PS_IN In)
     
     if (vFinalColor.a <= 0.f)
         discard;
-    
+
     Out.vColor = vFinalColor;
-    
+
     return Out;
 }
 
@@ -109,6 +128,7 @@ technique11 DefaultTechnique
         SetRasterizerState(RS_Cull_None);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN();

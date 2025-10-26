@@ -111,8 +111,8 @@ void CS_MOVE(uint3 DTid : SV_DispatchThreadID)
 {
     uint iIndex = DTid.x;
     
-    if (iIndex >= g_iNumInstances)
-        return;
+    //if (iIndex >= g_iNumInstances)
+    //    return;
     
     VTXINSTANCE_PARTICLE Particle = g_OutputData[iIndex];
     VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
@@ -177,8 +177,8 @@ void CS_UPDATE_GRAVITY(uint3 DTid : SV_DispatchThreadID)
 {
     uint iIndex = DTid.x;
     
-    if (iIndex >= g_iNumInstances)
-        return;
+    //if (iIndex >= g_iNumInstances)
+    //    return;
     
     VTXINSTANCE_PARTICLE Particle = g_OutputData[iIndex];
     VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
@@ -200,8 +200,8 @@ void CS_RESET(uint3 DTid : SV_DispatchThreadID)
 {
     uint iIndex = DTid.x;
     
-    if (iIndex >= g_iNumInstances)
-        return;
+    //if (iIndex >= g_iNumInstances)
+    //    return;
     
     VTXINSTANCE_PARTICLE Particle = g_OutputData[iIndex];
     VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
@@ -222,8 +222,8 @@ void CS_RESET_SPEED(uint3 DTid : SV_DispatchThreadID)
 {
     uint iIndex = DTid.x;
     
-    if (iIndex >= g_iNumInstances)
-        return;
+    //if (iIndex >= g_iNumInstances)
+    //    return;
     
     VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
     

@@ -7,6 +7,9 @@
 #include "Effect_Sprite.h"
 #include <shobjidl.h>
 
+
+#include "Edit_Interface_UI.h"
+
 CLevel_Effect::CLevel_Effect(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
 {
@@ -34,7 +37,6 @@ HRESULT CLevel_Effect::Initialize()
 void CLevel_Effect::Update(_float fTimeDelta)
 {
 	m_fTimeAcc += fTimeDelta;
-
 	m_PrefabPrototype->Priority_Update(fTimeDelta);
 	m_PrefabPrototype->Update(fTimeDelta);
 	m_PrefabPrototype->Late_Update(fTimeDelta);
@@ -143,6 +145,7 @@ void CLevel_Effect::Create_Element()
 			ImGui::InputFloat2("Scrolling Speed : ", reinterpret_cast<_float*>(&m_fScrollSpeed));
 			ImGui::InputFloat2("Size : ", m_fSize);
 			ImGui::InputFloat("Size Ratio : ", &m_fSizeRatio);
+			GetMaksingScrollData();
 			m_EffectType = 0;
 			ImGui::EndTabItem();
 		}
@@ -166,7 +169,7 @@ void CLevel_Effect::Create_Element()
 			ImGui::InputFloat2("Scrolling Speed : ", reinterpret_cast<_float*>(&m_fScrollSpeed));
 			ImGui::InputFloat2("Size : ", m_fSize);
 			ImGui::InputFloat("Size Ratio : ", &m_fSizeRatio);
-			ImGui::Checkbox("Mask Scroll Direction", &m_bScrollDir);
+			GetMaksingScrollData();
 			m_EffectType = 1;
 			ImGui::EndTabItem();
 		}
@@ -182,7 +185,7 @@ void CLevel_Effect::Create_Element()
 			ImGui::Checkbox("Sprite Loop", &m_bLoop);
 			ImGui::InputFloat2("Size : ", m_fSize);
 			ImGui::InputFloat("Size Ratio : ", &m_fSizeRatio);
-
+			GetMaksingScrollData();
 			m_EffectType = 2;
 			ImGui::EndTabItem();
 		}
@@ -256,7 +259,7 @@ void CLevel_Effect::Edit_Time_Track()
 
 	if (ImGui::Button("Add TimeTrack", ImVec2(300, 30)))
 	{
-		CEffect_Prefab::EFFECT_EVENT newTimeTrack;
+		CEffect_Prefab::EFFECT_EVENT newTimeTrack {};
 		newTimeTrack.iElementIdx = m_iChildrenIdx;
 		m_PrefabPrototype->Add_TimeTrack(newTimeTrack);
 	}
@@ -269,15 +272,15 @@ void CLevel_Effect::Save_Load()
 	ImGui::Text("[Save / Load]");
 	ImGui::SameLine();
 	ImGui::Separator();
-
+	
 	if (ImGui::Button("Select File Path....", ImVec2(200, 0))) 
 		SelectFilePath();
-
+	
 	ImGui::InputText("Save Path : ", SaveFileName, IM_ARRAYSIZE(SaveFileName));
 	ImGui::SameLine();
 	if (ImGui::Button("Save"))
 		m_PrefabPrototype->Save(SaveFileName);
-
+	
 	ImGui::InputText("Load Path : ", LoadFileName, IM_ARRAYSIZE(LoadFileName));
 	ImGui::SameLine();
 	if (ImGui::Button("Load"))
@@ -320,12 +323,27 @@ void CLevel_Effect::GetParticleColor()
 
 		const char* Meshes[] = { "Mesh1", "Mesh2", "Mesh3",  "Mesh4",  "Mesh5",  "Mesh6",  "Mesh7",  "Mesh8",  "Mesh9",  "Mesh10",  "Mesh11",  "Mesh12",  "Mesh13",  "Mesh14",  "Mesh15",  "Mesh16",  "Mesh17",  "Mesh18",  "Mesh19" ,  "Mesh20" };
 		ImGui::Combo("Mesh Shape", reinterpret_cast<int*>(&m_iMeshTypeIdx), Meshes, IM_ARRAYSIZE(Meshes));
-
-		const char* MaskTexture[] = { "width0", "width1", "width2",  "width3",  "width4",  "width5",  "width6" ,  "length0" };
-		ImGui::Combo("Mask Textures", reinterpret_cast<int*>(&m_iMaskTypeIdx), MaskTexture, IM_ARRAYSIZE(MaskTexture)); 
 	}
 
 	prevIdx = m_EffectType;
+}
+
+void CLevel_Effect::GetMaksingScrollData()
+{
+	ImGui::Checkbox("Do Mask Scrolling", &m_bIsMaskScrolling);
+
+	if (m_bIsMaskScrolling)
+	{
+		ImGui::Indent();
+		const char* MaskTexture[] = { "width0", "width1", "width2",  "width3",  "width4",  "width5",  "width6" ,  "length0" };
+		ImGui::Combo("Mask Textures", reinterpret_cast<int*>(&m_iMaskTextureIdx), MaskTexture, IM_ARRAYSIZE(MaskTexture));
+		ImGui::InputFloat("Mask Scroll Speed: ", &m_bMaskScrollSpeed);
+		ImGui::Checkbox("Is Vecrtical", &m_bIsScrollVertical);
+		ImGui::Checkbox("Is Inverse Direction", &m_bScrollDir);
+		ImGui::Unindent();
+	}
+	else
+		m_bMaskScrollSpeed = 0.f;
 }
 
 void CLevel_Effect::Create_PointInstance_Element()
@@ -344,6 +362,11 @@ void CLevel_Effect::Create_PointInstance_Element()
 	data.iTextureIdx = m_iTextureIdx;
 	data.iScrollSpeed = m_fScrollSpeed;
 	data.bIsLoop = m_bLoop;
+
+	data.iMaskTextureIdx = m_iMaskTextureIdx;
+	data.fMaskScrollSpeed = m_bMaskScrollSpeed;
+	data.bIsScrollVertical = m_bIsScrollVertical;
+	data.bIsScrollInverse = m_bScrollDir;
 
 	m_PrefabPrototype->Add_Effect_Element(m_EffectType, &data);
 }
@@ -365,8 +388,11 @@ void CLevel_Effect::Create_MeshInstance_Element()
 	data.iMeshTypeIdx = m_iMeshTypeIdx;
 	data.iScrollSpeed = m_fScrollSpeed;
 	data.bIsLoop = m_bLoop;
-	data.bScrollDir = m_bScrollDir;
-	data.iMaskTextureIdx = m_iMaskTypeIdx;
+	data.bIsScrollVertical = m_bIsScrollVertical;
+	data.iMaskTextureIdx = m_iMaskTextureIdx;
+	data.fMaskScrollSpeed = m_bMaskScrollSpeed;
+	data.bIsScrollVertical = m_bIsScrollVertical;
+	data.bIsScrollInverse = m_bScrollDir;
 
 	m_PrefabPrototype->Add_Effect_Element(m_EffectType, &data);
 }
@@ -384,6 +410,10 @@ void CLevel_Effect::Create_Sprite_Element()
 	data.fSizeRatio = m_fSizeRatio;
 	data.ScalingValue = 1.f; //tmp;
 	data.iTextureIdx = m_iTextureIdx;
+	data.iMaskTextureIdx = m_iMaskTextureIdx;
+	data.fMaskScrollSpeed = m_bMaskScrollSpeed;
+	data.bIsScrollVertical = m_bIsScrollVertical;
+	data.bIsScrollInverse = m_bScrollDir;
 
 	m_PrefabPrototype->Add_Effect_Element(m_EffectType, &data);
 }

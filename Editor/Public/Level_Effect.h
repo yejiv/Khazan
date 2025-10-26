@@ -35,6 +35,7 @@ private:
 	void							Create_Box_Spawn();
 	void							Create_Circle_Spawn();
 	void							GetParticleColor();
+	void							GetMaksingScrollData();
 
 	void							Create_PointInstance_Element();
 	void							Create_MeshInstance_Element();
@@ -67,7 +68,13 @@ private :
 	_float4							m_fColor;
 	_int							m_iTextureIdx;
 	_int							m_iMeshTypeIdx;
-	_int							m_iMaskTypeIdx;
+
+	//[Masking Data]
+	_bool							m_bIsMaskScrolling;
+	_int							m_iMaskTextureIdx;		//마스크 텍스쳐
+	_float							m_bMaskScrollSpeed;		//마스크 스피드
+	_bool							m_bIsScrollVertical;	//마스크 스크롤 방향 (상하 <-> 좌우)
+	_bool							m_bScrollDir;			// 왼->오, 위-> 아래가 기본인데 이거 체크되어있으면 반대로!
 
 	//[Sprite Data]
 	_uint							m_iCol, m_iRow;
@@ -80,8 +87,6 @@ private :
 	_int							m_iChildrenIdx;
 	_int							m_iPrevChildrenIdx;
 
-	//[Scroll Data] (Mesh)
-	_bool							m_bScrollDir;
 
 	//[Save / Load]
 	char							FilePath[128];
