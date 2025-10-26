@@ -87,12 +87,12 @@ HRESULT CLevel_AI::Render()
 
 HRESULT CLevel_AI::Ready_Edit_Objects()
 {
-	CEdit_Monster::GAMEOBJECT_DESC MonsterDesc{};
+	/*CEdit_Monster::GAMEOBJECT_DESC MonsterDesc{};
 	MonsterDesc.fSpeedPerSec = 3.f;
 	MonsterDesc.fRotationPerSec = 180.f;
 
 	m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::AI),TEXT("Layer_Yeti"),
-		ENUM_CLASS(LEVEL::AI),TEXT("Prototype_GameObject_Monster"), &MonsterDesc);
+		ENUM_CLASS(LEVEL::AI),TEXT("Prototype_GameObject_Monster"), &MonsterDesc);*/
 
 	return S_OK;
 }
@@ -257,7 +257,9 @@ void CLevel_AI::Save_Perception(const vector<SIGHT_DESC>& SightList, const strin
 	
 	_tchar szFileName[MAX_PATH] = {};
 	MultiByteToWideChar(CP_ACP,0,FileName.c_str(),-1,szFileName,MAX_PATH);
-	wstring strFullPath = TEXT("../../Client/Bin/Data/Monster/Perception/") + wstring(szFileName);
+	wstring basePath = TEXT("../../Client/Bin/Data/Monster/Perception/");
+
+	wstring strFullPath = basePath + szFileName + TEXT("/") + szFileName;
 
 	if (strFullPath.find(TEXT(".json")) == wstring::npos)
 		strFullPath += TEXT(".json");
@@ -274,9 +276,43 @@ void CLevel_AI::Save_Perception(const vector<SIGHT_DESC>& SightList, const strin
 	}
 }
 
-void CLevel_AI::Load_Perception(const vector<SIGHT_DESC>& SightList, const string& FilePath)
+void CLevel_AI::Load_Perception(vector<SIGHT_DESC>& SightList, const string& FileName)
 {
+	_tchar szFileName[MAX_PATH] = {};
+	MultiByteToWideChar(CP_ACP, 0, FileName.c_str(), -1, szFileName, MAX_PATH);
 
+	wstring basePath = TEXT("../../Client/Bin/Data/Monster/Perception/");
+	wstring strFullPath = basePath + szFileName + TEXT("/") + szFileName;
+
+	if (strFullPath.find(TEXT(".json")) == wstring::npos)
+		strFullPath += TEXT(".json");
+
+	_char FullPath[MAX_PATH] = {};
+	WideCharToMultiByte(CP_ACP, 0, strFullPath.c_str(), -1, FullPath, MAX_PATH, NULL, NULL);
+
+	ifstream ifs(FullPath);
+	if (!ifs.is_open())
+		return;
+
+	JSON j;
+	ifs >> j;
+	ifs.close();
+
+	SightList.clear();
+
+	for (auto& elem : j)
+	{
+		SIGHT_DESC Desc{};
+		Desc.fRadius = elem.value("fRadius", 5.f);
+		Desc.fFov = elem.value("fFov", 90.f);
+		Desc.fLoseSightTime = elem.value("fLoseSightTime", 1.f);
+		Desc.fCheckInterval = elem.value("fCheckInterval", 0.2f);
+		Desc.fHeightOffset = elem.value("fHeightOffset", 1.7f);
+		Desc.isRequireLineOfSight = elem.value("isRequireLineOfSight", true);
+		Desc.fFovCos = cosf(XMConvertToRadians(Desc.fFov * 0.5f));
+
+		SightList.push_back(Desc);
+	}
 }
 #pragma endregion
 
@@ -342,7 +378,6 @@ void CLevel_AI::Show_BlackBoard_Menu(const char* szDefaultFileName)
 				if (ImGui::DragFloat3(key.c_str(), &vec.x, 0.1f))
 					val = { vec.x, vec.y, vec.z };
 			}
-			// CGameObject*를 문자열 ID로 저장
 			else if (val.is_string()) 
 			{
 				string objName = val.get<string>();
@@ -425,7 +460,9 @@ void CLevel_AI::Save_BlackBoard(const vector<AIBLACKBOARD_DATA>& BBList, const s
 
 	_tchar szFileName[MAX_PATH] = {};
 	MultiByteToWideChar(CP_ACP, 0, FileName.c_str(), -1, szFileName, MAX_PATH);
-	wstring strFullPath = TEXT("../../Client/Bin/Data/Monster/Blackboard/") + wstring(szFileName);
+	wstring basePath = TEXT("../../Client/Bin/Data/Monster/BlackBoard/");
+
+	wstring strFullPath = basePath + szFileName + TEXT("/") + szFileName;
 
 	if (strFullPath.find(TEXT(".json")) == wstring::npos)
 		strFullPath += TEXT(".json");
@@ -443,7 +480,27 @@ void CLevel_AI::Save_BlackBoard(const vector<AIBLACKBOARD_DATA>& BBList, const s
 }
 void CLevel_AI::Load_BlackBoard(vector<AIBLACKBOARD_DATA>& BBList, const string& FileName)
 {
+	_tchar szFileName[MAX_PATH] = {};
+	MultiByteToWideChar(CP_ACP, 0, FileName.c_str(), -1, szFileName, MAX_PATH);
 
+	wstring basePath = TEXT("../../Client/Bin/Data/Monster/BlackBoard/");
+	wstring strFullPath = basePath + szFileName + TEXT("/") + szFileName;
+
+	if (strFullPath.find(TEXT(".json")) == wstring::npos)
+		strFullPath += TEXT(".json");
+
+	_char FullPath[MAX_PATH] = {};
+	WideCharToMultiByte(CP_ACP, 0, strFullPath.c_str(), -1, FullPath, MAX_PATH, NULL, NULL);
+
+	ifstream ifs(FullPath);
+	if (!ifs.is_open())
+		return;
+
+	JSON j;
+	ifs >> j;
+	ifs.close();
+
+	BBList = j.get<vector<AIBLACKBOARD_DATA>>();
 }
 
 #pragma endregion
@@ -472,7 +529,7 @@ void CLevel_AI::Show_BehaviorTree_Menu(const char* szDefaultFileName)
 
 	if (ImGui::Button("Load"))
 	{
-		// Load_BehaviorTree(szDefaultFileName, BTData);
+		 Load_BehaviorTree(szDefaultFileName, BTData);
 		g_SelectedNode = nullptr;
 	}
 
@@ -512,13 +569,13 @@ void CLevel_AI::Show_BT_Editor(AI_BTDATA& TreeData)
 	if (g_SelectedNode)
 	{
 		// 이름
-		static char nameBuf[128];
-		strcpy_s(nameBuf, g_SelectedNode->strNodeName.c_str());
-		if (ImGui::InputText("Name", nameBuf, IM_ARRAYSIZE(nameBuf)))
-			g_SelectedNode->strNodeName = nameBuf;
+		static _char name[128];
+		strcpy_s(name, g_SelectedNode->strNodeName.c_str());
+		if (ImGui::InputText("Name", name, IM_ARRAYSIZE(name)))
+			g_SelectedNode->strNodeName = name;
 
 		// 노드 타입
-		const char* NodeTypes[] = { "Composite", "Decorator", "Leaf" };
+		const _char* NodeTypes[] = { "Composite", "Decorator", "Leaf" };
 		_uint iCurrentType = 0;
 		for (_uint i = 0; i < 3; i++)
 			if (g_SelectedNode->strNodeType == NodeTypes[i]) iCurrentType = i;
@@ -578,9 +635,9 @@ void CLevel_AI::Show_BT_Editor(AI_BTDATA& TreeData)
 		}
 
 		// Children 관리
-		bool bCanAddChild = (g_SelectedNode->strNodeType != "Leaf") &&
+		_bool isCanAddChild = (g_SelectedNode->strNodeType != "Leaf") &&
 			(g_SelectedNode->strNodeType != "Decorator" || g_SelectedNode->Children.size() < 1);
-		if (!bCanAddChild) ImGui::BeginDisabled();
+		if (!isCanAddChild) ImGui::BeginDisabled();
 		if (ImGui::Button("Add Child"))
 		{
 			g_SelectedNode->Children.push_back({});
@@ -588,7 +645,7 @@ void CLevel_AI::Show_BT_Editor(AI_BTDATA& TreeData)
 			g_SelectedNode->Children.back().strNodeType = "Leaf";
 			g_SelectedNode->Children.back().strSubtype = "Action";
 		}
-		if (!bCanAddChild) ImGui::EndDisabled();
+		if (!isCanAddChild) ImGui::EndDisabled();
 
 		if (!g_SelectedNode->Children.empty())
 		{
@@ -610,6 +667,29 @@ void CLevel_AI::Show_BTNode_Hierarchy(AIBTNODE_DATA& Node)
 	if (ImGui::IsItemClicked())
 		g_SelectedNode = &Node;
 
+	/*AIBTNODE_DATA* pNodePtr = &Node;
+	if (ImGui::BeginDragDropSource())
+	{
+		ImGui::SetDragDropPayload("BTNODE", &pNodePtr, sizeof(AIBTNODE_DATA*));
+		ImGui::Text("Move: %s", Node.strNodeName.c_str());
+		ImGui::EndDragDropSource();
+	}
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("BTNODE"))
+		{
+			AIBTNODE_DATA* DraggedNode = *(AIBTNODE_DATA**)payload->Data;
+			if (DraggedNode && DraggedNode != &Node)
+			{
+				MoveNode(Node, DraggedNode);
+			}
+		}
+		ImGui::EndDragDropTarget();
+	}*/
+
+
+
 	if (isOpen)
 	{
 		for (auto& child : Node.Children)
@@ -629,7 +709,9 @@ void CLevel_AI::Save_BehaviorTree(const AI_BTDATA& Data, const string& FileName)
 
 	_tchar szFileName[MAX_PATH] = {};
 	MultiByteToWideChar(CP_ACP, 0, FileName.c_str(), -1, szFileName, MAX_PATH);
-	wstring strFullPath = L"../../Client/Bin/Data/Monster/BehaviorTree/" + wstring(szFileName);
+	wstring basePath = TEXT("../../Client/Bin/Data/Monster/BehaviorTree/");
+
+	wstring strFullPath = basePath + szFileName + TEXT("/") + szFileName;
 
 	if (strFullPath.find(TEXT(".json")) == wstring::npos)
 		strFullPath += TEXT(".json");
@@ -643,8 +725,33 @@ void CLevel_AI::Save_BehaviorTree(const AI_BTDATA& Data, const string& FileName)
 		ofs << jRoot.dump(4);
 		ofs.close();
 	}
+}
 
+void CLevel_AI::Load_BehaviorTree(const string& FileName, AI_BTDATA& OutData)
+{
+	_tchar szFileName[MAX_PATH] = {};
+	MultiByteToWideChar(CP_ACP, 0, FileName.c_str(), -1, szFileName, MAX_PATH);
 
+	wstring strBasePath = TEXT("../../Client/Bin/Data/Monster/BehaviorTree/");
+	wstring strFullPath = strBasePath + szFileName + TEXT("/") + szFileName;
+
+	if (strFullPath.find(TEXT(".json")) == wstring::npos)
+		strFullPath += TEXT(".json");
+
+	_char FullPath[MAX_PATH] = {};
+	WideCharToMultiByte(CP_ACP, 0, strFullPath.c_str(), -1, FullPath, MAX_PATH, NULL, NULL);
+
+	ifstream ifs(FullPath);
+	if (!ifs.is_open())
+		return;
+
+	JSON jRoot;
+	ifs >> jRoot;
+	ifs.close();
+
+	OutData.MonsterType = jRoot.value("MonsterType", "");
+	if (jRoot.contains("RootNode"))
+		LoadNode(jRoot["RootNode"], OutData.RootNode);
 }
 
 void CLevel_AI::SaveNode(JSON& j, const AIBTNODE_DATA& Node)
@@ -694,8 +801,8 @@ void CLevel_AI::SaveNode(JSON& j, const AIBTNODE_DATA& Node)
 			if (Node.Children.size() > 1)
 			{
 				// 경고: Decorator는 자식 1개만 가능
-				std::cerr << "Warning: Decorator node '" << Node.strNodeName
-					<< "' has more than 1 child!" << std::endl;
+				cout << "Warning: Decorator node '" << Node.strNodeName
+					<< "' has more than 1 child!" << endl;
 			}
 			// 1개라도 있으면 저장
 			JSON jChild;
@@ -724,37 +831,46 @@ void CLevel_AI::SaveNode(JSON& j, const AIBTNODE_DATA& Node)
 
 void CLevel_AI::LoadNode(const JSON& j, AIBTNODE_DATA& OutNode)
 {
+	OutNode.strNodeType = j.value("NodeType", "");
+	OutNode.strSubtype = j.value("SubType", "");
+	OutNode.strNodeName = j.value("NodeName", "");
+	OutNode.strCallbackFunction = j.value("Callback", "");
+	OutNode.fCoolDownTime = j.value("CoolDownTime", 0.f);
+	OutNode.fWaitTime = j.value("WaitTime", 0.f);
+	OutNode.iRepeatCount = j.value("RepeatCount", 0);
 
+	if (j.contains("Children"))
+	{
+		for (auto& jc : j["Children"])
+		{
+			OutNode.Children.push_back({});
+			LoadNode(jc, OutNode.Children.back());
+		}
+	}
 }
 
+void CLevel_AI::MoveNode(AIBTNODE_DATA& NewParentNode, AIBTNODE_DATA* DraggedNode)
+{
+	RemoveParent(NewParentNode,DraggedNode);
 
+	NewParentNode.Children.push_back(*DraggedNode);
+}
 
+_bool CLevel_AI::RemoveParent(AIBTNODE_DATA& ParentNode, AIBTNODE_DATA* Target)
+{
+	for (auto iter = ParentNode.Children.begin(); iter != ParentNode.Children.end(); iter++)
+	{
+		if (&(*iter) == Target)
+		{
+			ParentNode.Children.erase(iter);
+			return true;
+		}
 
-
-//void LoadNode(const json& j, AIBTNODE_DATA& Node)
-//{
-//	Node.NodeType = j.value("NodeType", "");
-//	Node.SubType = j.value("SubType", "");
-//	Node.NodeName = j.value("NodeName", "");
-//	Node.Callback = j.value("Callback", "");
-//	Node.CoolDown = j.value("CoolDown", 0.0f);
-//	Node.WaitTime = j.value("WaitTime", 0u);
-//	Node.RepeatCount = j.value("RepeatCount", 0u);
-//
-//	if (j.contains("Children"))
-//	{
-//		for (auto& jc : j["Children"])
-//		{
-//			Node.Children.push_back({});
-//			LoadNode(jc, Node.Children.back());
-//		}
-//	}
-//}
-
-
-
-
-
+		if (RemoveParent(*iter, Target))
+			return true;
+	}
+	return false;
+}
 
 #pragma endregion
 

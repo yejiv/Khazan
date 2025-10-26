@@ -76,7 +76,7 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 	m_pCharVir = m_pGameInstance->CreateCharacterVirtual(&SettingDesc, RVec3Arg(LoadVec3(pDesc->vPos)), QuatArg(LoadQuat(pDesc->vQuat)), 0, &m_pBodyInterface);
 	m_BodyId = m_pCharVir->GetInnerBodyID();
 
-	m_pCharVir->SetUserData(static_cast<uint64>(reinterpret_cast<uintptr_t>(pDesc->pGameObject)));
+	m_pCharVir->SetUserData(static_cast<uint64>(reinterpret_cast<uintptr_t>(pDesc->pCollisionDesc)));
 	if (!m_BodyId.IsInvalid())
 	{
 		//m_pBodyInterface->SetObjectLayer(m_BodyId, m_iNumObjectLayer);
@@ -91,12 +91,12 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 	m_pBodyFilter = new BodyFilter();
 	m_pShapeFilter = new ShapeFilter();
 
-	m_tEXUpdateSetting.mStickToFloorStepDown = LoadVec3(pDesc->vStickToFloorStepDown);
-	m_tEXUpdateSetting.mWalkStairsStepUp = LoadVec3(pDesc->vWalkStairsStepUp);
-	m_tEXUpdateSetting.mWalkStairsMinStepForward = pDesc->fWalkStairsMinStepForward;
-	m_tEXUpdateSetting.mWalkStairsStepForwardTest = pDesc->fWalkStairsStepForwardTest;
-	m_tEXUpdateSetting.mWalkStairsCosAngleForwardContact = Cos(DegreesToRadians(pDesc->fWalkStairsCosAngleForwardContact));
-	m_tEXUpdateSetting.mWalkStairsStepDownExtra = LoadVec3(pDesc->vWalkStairsStepDownExtra);
+	//m_tEXUpdateSetting.mStickToFloorStepDown = LoadVec3(pDesc->vStickToFloorStepDown);
+	//m_tEXUpdateSetting.mWalkStairsStepUp = LoadVec3(pDesc->vWalkStairsStepUp);
+	//m_tEXUpdateSetting.mWalkStairsMinStepForward = pDesc->fWalkStairsMinStepForward;
+	//m_tEXUpdateSetting.mWalkStairsStepForwardTest = pDesc->fWalkStairsStepForwardTest;
+	//m_tEXUpdateSetting.mWalkStairsCosAngleForwardContact = Cos(DegreesToRadians(pDesc->fWalkStairsCosAngleForwardContact));
+	//m_tEXUpdateSetting.mWalkStairsStepDownExtra = LoadVec3(pDesc->vWalkStairsStepDownExtra);
 
 	return S_OK;
 }

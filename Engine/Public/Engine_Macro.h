@@ -162,7 +162,9 @@ namespace Engine
 	#define FAILED_CHECK_RETURN_MSG( _hr, _return, _message)	if( ((HRESULT)(_hr)) < 0 )	\
 		{ MessageBoxW(NULL, _message, L"System Message",MB_OK); return _return;}
 	
-	
+	#define NUM_FRAMES_IN_FLIGHT 3
+	#define MAX_FILENAME_SIZE 100
+	#define U8STR(str) reinterpret_cast<const char*>(u8##str)
 	
 	#define NO_COPY(CLASSNAME)										\
 			private:												\
