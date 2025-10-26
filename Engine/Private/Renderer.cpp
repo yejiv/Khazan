@@ -483,9 +483,6 @@ HRESULT CRenderer::Render_SSAO()
     if (FAILED(m_pShader->Bind_RawValue("g_fContrast", &m_fAOConstrast, sizeof(_float))))
         return E_FAIL;
 
-    if (FAILED(m_pShader->Bind_RawValue("g_fSampleBias", &m_fSampleBias, sizeof(_float))))
-        return E_FAIL;
-
     m_pShader->Begin(7);
 
     m_pVIBuffer->Bind_Resources();
@@ -568,71 +565,6 @@ HRESULT CRenderer::Render_Combined()
 
     if (FAILED(Bind_Shadow_ShaderResources()))
         return E_FAIL;
-
-//  #ifdef _DEBUG
-//  
-//      if (m_isEnableShadow)
-//      {
-//          _uint iNumCascades = m_pGameInstance->Get_NumCascades();
-//  
-//          if (FAILED(m_pShader->Bind_FloatArray("g_Splits", m_pGameInstance->Get_CascadeSplits(), iNumCascades)))
-//              return E_FAIL;
-//  
-//          if (FAILED(m_pShader->Bind_RawValue("g_iNumCascades", &iNumCascades, sizeof(_uint))))
-//              return E_FAIL;
-//  
-//          if (FAILED(m_pShader->Bind_Matrices("g_LightViewMatrices", m_pGameInstance->Get_ShadowLightViewMatrices(), iNumCascades)))
-//              return E_FAIL;
-//  
-//          if (FAILED(m_pShader->Bind_Matrices("g_LightProjMatrices", m_pGameInstance->Get_ShadowLightProjMatrices(), iNumCascades)))
-//              return E_FAIL;
-//  
-//          if (FAILED(m_pGameInstance->Bind_ShadowSRVArray(m_pShader, "g_TextureArray")))
-//              return E_FAIL;
-//  
-//          _float fBias = m_pGameInstance->Get_ShadowBias();
-//          if (FAILED(m_pShader->Bind_RawValue("g_fBias", &fBias, sizeof(_float))))
-//              return E_FAIL;
-//  
-//          _float2 vShadowMapSize = _float2(g_iMaxWidth, g_iMaxHeight);
-//          if (FAILED(m_pShader->Bind_RawValue("g_vShadowMapSize", &vShadowMapSize, sizeof(_float2))))
-//              return E_FAIL;
-//  
-//          _int iEnableShadowFlag = static_cast<_int>(m_isEnableShadow);
-//          if (FAILED(m_pShader->Bind_RawValue("g_iEnableShadowFlag", &iEnableShadowFlag, sizeof(_int))))
-//              return E_FAIL;
-//      }
-//      else
-//          m_pGameInstance->Clear_ShadowDSVs();
-//  
-//  #else
-//  
-//      _uint iNumCascades = m_pGameInstance->Get_NumCascades();
-//  
-//      if (FAILED(m_pShader->Bind_FloatArray("g_Splits", m_pGameInstance->Get_CascadeSplits(), iNumCascades)))
-//          return E_FAIL;
-//  
-//      if (FAILED(m_pShader->Bind_RawValue("g_iNumCascades", &iNumCascades, sizeof(_uint))))
-//          return E_FAIL;
-//  
-//      if (FAILED(m_pShader->Bind_Matrices("g_LightViewMatrices", m_pGameInstance->Get_ShadowLightViewMatrices(), iNumCascades)))
-//          return E_FAIL;
-//  
-//      if (FAILED(m_pShader->Bind_Matrices("g_LightProjMatrices", m_pGameInstance->Get_ShadowLightProjMatrices(), iNumCascades)))
-//          return E_FAIL;
-//  
-//      if (FAILED(m_pGameInstance->Bind_ShadowSRVArray(m_pShader, "g_TextureArray")))
-//          return E_FAIL;
-//  
-//      _float fBias = m_pGameInstance->Get_ShadowBias();
-//      if (FAILED(m_pShader->Bind_RawValue("g_fBias", &fBias, sizeof(_float))))
-//          return E_FAIL;
-//  
-//      _float2 vShadowMapSize = _float2(g_iMaxWidth, g_iMaxHeight);
-//      if (FAILED(m_pShader->Bind_RawValue("g_vShadowMapSize", &vShadowMapSize, sizeof(_float2))))
-//          return E_FAIL;
-//  
-//  #endif
 
     m_pShader->Begin(3);
 

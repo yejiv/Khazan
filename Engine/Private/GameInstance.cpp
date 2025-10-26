@@ -356,11 +356,6 @@ HRESULT CGameInstance::Add_RenderGroup(RENDERGROUP eRenderGroup, CGameObject* pR
 	return m_pRenderer->Add_RenderGroup(eRenderGroup, pRenderObject);
 }
 
-void CGameInstance::Set_SSAOBias(_float fBias)
-{
-	m_pRenderer->Set_SSAOBias(fBias);
-}
-
 void CGameInstance::Set_SSAOIntensity(_float fIntensity)
 {
 	m_pRenderer->Set_SSAOIntensity(fIntensity);

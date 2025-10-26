@@ -99,16 +99,13 @@ HRESULT CLevel_Shader::Initialize()
 		if (m_isRenderSSAO)
 		{
 			if (ImGui::SliderFloat("Sample Radius", &m_fSampleRadius, 0.1f, 2.f))
-				m_pGameInstance->Set_SSAOBias(m_fSampleRadius);
+				m_pGameInstance->Set_SSAORadius(m_fSampleRadius);
 
 			if (ImGui::SliderFloat("Intensity", &m_fAOIntensity, 0.5f, 4.f))
 				m_pGameInstance->Set_SSAOIntensity(m_fAOIntensity);
 
 			if (ImGui::SliderFloat("Contrast", &m_fAOConstrast, 0.5f, 2.f))
 				m_pGameInstance->Set_SSAOConstrast(m_fAOConstrast);
-
-			if (ImGui::SliderFloat("Bias", &m_fSampleBias, 0.f, 0.05f))
-				m_pGameInstance->Set_SSAOBias(m_fSampleBias);
 		}
 
 		m_pGameInstance->Set_EnableShadow(m_isRenderShadow);
