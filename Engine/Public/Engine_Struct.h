@@ -62,7 +62,7 @@ namespace Engine
 	{
 		bool isSnow{ false };
 		bool isCollider{ false };
-		bool isBlended{ false };
+		bool isIce{ false };
 		bool isInstance{ false };
 		bool isShadow{ false };
 		bool isBackGround{ false };
@@ -71,7 +71,7 @@ namespace Engine
 
 		operator bool() const noexcept
 		{
-			return isSnow || isCollider || isBlended ||
+			return isSnow || isCollider || isIce ||
 				isInstance || isShadow || isBackGround;
 		}
 
@@ -461,6 +461,12 @@ namespace Engine
 		float u0, v0, u1, v1;
 		uint64_t lastUsedFrame = 0;
 	}GLYPH_INFO;
+
+	typedef struct tagCollsion
+	{
+		class CGameObject* pGameObject = nullptr;
+		void* pInfo = nullptr;	
+	}COLLISION_DESC;
 }
 
 

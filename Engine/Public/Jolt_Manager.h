@@ -70,6 +70,9 @@ public:
     void CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter);
     void CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter, CharacterVirtual::ExtendedUpdateSettings tSetting);
 
+public:
+    CharacterVirtual* Find_CharacterVirtual(CharacterID id);
+	void Remove_CharacterVirtual(CharacterID id);
 
 public:
     _bool CastRay(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition);
@@ -102,6 +105,9 @@ private:
     CharacterVsCharacterCollisionSimple* m_pCharVsCharCollision = { nullptr };
 
     CJolt_ObjectLayerFilter*             m_pObjectLayerFilter = { nullptr };
+
+
+	map<CharacterID, CharacterVirtual*>           m_CharacterVirtuals;
 private:
     // 생성 파라미터 보관(선택)
     _uint m_iMaxBodies = { 2048 };

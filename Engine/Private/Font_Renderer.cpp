@@ -65,7 +65,7 @@ HRESULT CFont_Renderer::DrawText(CFont_Face* pFont, const _wstring& strText, _fl
         if (!g) continue;
 
         _float xpos = cursorX + g->iBearingX;
-        _float ypos = cursorY - (g->iHeight - g->iBearingY);
+        _float ypos = cursorY - g->iBearingY;
         _float w = (_float)g->iWidth;
         _float h = (_float)g->iHeight;
 
@@ -117,7 +117,7 @@ HRESULT CFont_Renderer::DrawText(CFont_Face* pFont, const _wstring& strText, _fl
     return S_OK;
 }
 
-HRESULT CFont_Renderer::DrawTextBox(CFont_Face* pFont, const _wstring& strText, _float fX, _float fY, _float fMaxWidth, const _float4& vColor, TEXT_ALIGN eAlign)
+HRESULT CFont_Renderer::DrawTextBox(CFont_Face* pFont, const _wstring& strText, _float fX, _float fY, _float fMaxWidth, _float fOffsetHeight, const _float4& vColor, TEXT_ALIGN eAlign)
 {
 
     if (!pFont || strText.empty())
@@ -126,8 +126,14 @@ HRESULT CFont_Renderer::DrawTextBox(CFont_Face* pFont, const _wstring& strText, 
     _float2 vSize = pFont->ComputeTextSize(strText);
 
     _float2 fOffset = Offset_Align(eAlign, vSize);
+    _float fOffsetWidth = Offset_Align(eAlign, { fMaxWidth, 0.f }).x;
 
     _float cursorX = fX + fOffset.x;
+    if (eAlign == TEXT_ALIGN::LEFT_BOTTOM || eAlign == TEXT_ALIGN::LEFT_CENTER || eAlign == TEXT_ALIGN::LEFT_TOP)
+        cursorX = fX;
+    else if(eAlign == TEXT_ALIGN::CENTER_TOP || eAlign == TEXT_ALIGN::CENTER || eAlign == TEXT_ALIGN::CENTER_BOTTOM)
+        cursorX = fX + fOffsetWidth;
+    
     _float cursorY = fY + fOffset.y;
 
     vector<FONTVERTEX> verts;
@@ -137,7 +143,8 @@ HRESULT CFont_Renderer::DrawTextBox(CFont_Face* pFont, const _wstring& strText, 
 
     _uint baseIndex = 0;
 
-    _float lineHeight = vSize.x + vSize.y;
+    _float lineHeight = vSize.y + fOffsetHeight;
+    _float lineWidth = 0.f;
 
     for (_tchar ch : strText)
     {
@@ -151,10 +158,17 @@ HRESULT CFont_Renderer::DrawTextBox(CFont_Face* pFont, const _wstring& strText, 
         const GLYPH_INFO* g = pFont->GetGlyph(ch);
         if (!g) continue;
 
-        if (cursorX + g->iAdvance > fX + fMaxWidth)
+        if (lineWidth + g->iAdvance > fMaxWidth)
         {
-            cursorX = fX;
+            if (eAlign == TEXT_ALIGN::LEFT_BOTTOM || eAlign == TEXT_ALIGN::LEFT_CENTER || eAlign == TEXT_ALIGN::LEFT_TOP)
+                cursorX = fX;
+            else
+            {
+                Offset_Align(eAlign, vSize);
+                cursorX = fX + fOffsetWidth;
+            }
             cursorY += lineHeight;
+            lineWidth = 0.f;
         }
 
         _float xpos = cursorX + g->iBearingX;
@@ -170,6 +184,8 @@ HRESULT CFont_Renderer::DrawTextBox(CFont_Face* pFont, const _wstring& strText, 
         indices.insert(indices.end(), { baseIndex, baseIndex + 1, baseIndex + 2, baseIndex, baseIndex + 2, baseIndex + 3 });
         baseIndex += 4;
         cursorX += g->iAdvance;
+        lineWidth += g->iAdvance;
+        vSize.x -= g->iAdvance;
     }
 
     // VB Map/Unmap
@@ -228,19 +244,19 @@ _float2 CFont_Renderer::Offset_Align(TEXT_ALIGN eAlign, _float2 vSize)
         vAlign = { 0.f, -vSize.y * 0.5f };
         break;
     case TEXT_ALIGN::CENTER:
-        vAlign = { -vSize.x * 0.5f, vSize.y * 0.5f };
+        vAlign = { -vSize.x * 0.5f, -vSize.y * 0.5f };
         break;
     case TEXT_ALIGN::RIGHT_CENTER:
-        vAlign = { -vSize.x, vSize.y * 0.5f };
+        vAlign = { -vSize.x, -vSize.y * 0.5f };
         break;
     case TEXT_ALIGN::LEFT_BOTTOM:
-        vAlign = { 0.f, vSize.y };
+        vAlign = { 0.f, -vSize.y };
         break;
     case TEXT_ALIGN::CENTER_BOTTOM:
-        vAlign = { -vSize.x * 0.5f, vSize.y };
+        vAlign = { -vSize.x * 0.5f, -vSize.y };
         break;
     case TEXT_ALIGN::RIGHT_BOTTOM:
-        vAlign = { -vSize.x, vSize.y };
+        vAlign = { -vSize.x, -vSize.y };
         break;
 
     }

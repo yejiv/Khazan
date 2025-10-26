@@ -229,6 +229,10 @@ _int CUI_Manager::UIType_StringToEnum(string szUIType)
 		eUIType = UITYPE::PROGRESSBAR;
 	if (szUIType == "SCROLLBAR")
 		eUIType = UITYPE::SCROLLBAR;
+	if (szUIType == "TEXTURE")
+		eUIType = UITYPE::TEXTURE;
+	if (szUIType == "TEXT")
+		eUIType = UITYPE::TEXT;
 
 	return ENUM_CLASS(eUIType);
 }

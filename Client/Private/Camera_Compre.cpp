@@ -116,24 +116,6 @@ void CCamera_Compre::Update_Spring(_float fTimeDelta)
 
 }
 
-void CCamera_Compre::Collision_Enter(CGameObject* pObject, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
-{
-    _vector vNormal = XMVector3Normalize(XMLoadFloat3(&vContactPoint));
-    XMStoreFloat3(&m_CCDesc.vNormal, vNormal);
-    m_CCDesc.vPoint = vContactPoint;
-    m_CCDesc.isValid = true;
-    m_CCDesc.fTtl = 0.08f;
-}
-
-void CCamera_Compre::Collision_Stay(CGameObject* pObject, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
-{
-    _vector vNormal = XMVector3Normalize(XMLoadFloat3(&vContactPoint));
-    XMStoreFloat3(&m_CCDesc.vNormal, vNormal);
-    m_CCDesc.vPoint = vContactPoint;
-    m_CCDesc.isValid = true;
-    m_CCDesc.fTtl = 0.08f;
-}
-
 HRESULT CCamera_Compre::Ready_Camera(void* pArg)
 {
     CAMERA_COMPRE_DESC* pDesc = static_cast<CAMERA_COMPRE_DESC*>(pArg);
@@ -148,24 +130,6 @@ HRESULT CCamera_Compre::Ready_Camera(void* pArg)
 
 HRESULT CCamera_Compre::Ready_Body()
 {
-  /*  CCharacterVirtual::CV_SPHERESHAPE_DESC tCharVirDesc{};
-    _float3 vPos{};
-    _float4 vQuat{};
-    XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
-    XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
-    tCharVirDesc.eShapeType = SHAPE::SPHERE;
-    tCharVirDesc.vPos = vPos;
-    tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
-    tCharVirDesc.fRadius = 1.f;
-    tCharVirDesc.fMaxSlopeAngle = 50.f;
-    tCharVirDesc.pGameObject = this;
-    tCharVirDesc.fSupportingVolume = Plane(Vec3::sAxisY(), -0.02f);
-    tCharVirDesc.fPadding = 0.05f;
-
-    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
-        TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc), E_FAIL);*/
 
     return S_OK;
 }
