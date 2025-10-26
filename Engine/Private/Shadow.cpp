@@ -20,17 +20,11 @@ HRESULT CShadow::Initialize()
 	m_Cascade.LightProjMatrices.resize(m_Cascade.iNumCascades);
 	m_ShadowDSVs.resize(m_Cascade.iNumCascades);
 
-	// 이후 Directional Light 추가 될 시 갱신 해주기
-	m_vLightDir = { 1.f, -1.f, 1.f, 0.f };
-
-	// log, linear mix 수치
-	m_fLamda = 0.5f;
-
 	// 이후 카메라 매니저 추가 시 실제 카메라 Near, Far Get으로 가져오기 / Camera Create -> Shadow Create
 	m_fCameraNear = 0.1f;
 	m_fCameraFar = 1000.f;
 
-	if (FAILED(Ready_Cascade_Shadow_Resources()))
+	if (FAILED(Ready_ShaderResources()))
 		return E_FAIL;
 
 	for (_uint i = 1; i <= m_Cascade.iNumCascades; ++i)
@@ -38,8 +32,16 @@ HRESULT CShadow::Initialize()
 		_float fSplitIndex = static_cast<_float>(i) / static_cast<_float>(m_Cascade.iNumCascades);
 		_float fLinear = m_fCameraNear + (m_fCameraFar - m_fCameraNear) * fSplitIndex;
 		_float fLog = m_fCameraNear * powf(m_fCameraFar / m_fCameraNear, fSplitIndex);
-		m_Cascade.Splits[i - 1] = Lerp(fLinear, fLog, m_fLamda);
+		m_Cascade.Splits[i - 1] = Lerp(fLinear, fLog, m_Config.fLamda);
 	}
+
+	// 이후 Directional Light 추가 될 시 갱신 해주기
+	m_Config.vLightDir = { 1.f, -1.f, 1.f, 0.f };
+	// log, linear mix 수치
+	m_Config.fLamda = 0.5f;
+	m_Config.Splits = m_Cascade.Splits;
+	// Z-fighting 방지 수치
+	m_Config.fBias = 0.001f;
 
     return S_OK;
 }
@@ -93,7 +95,7 @@ void CShadow::Update()
 		_vector vMinExtents = -vMaxExtents;
 
 		// 4. 광원 기준 뷰 위치 만들기 == Eye
-		_vector vShadowCamPos = vCenter - XMVector3Normalize(XMLoadFloat4(&m_vLightDir)) * fRadius;
+		_vector vShadowCamPos = vCenter - XMVector3Normalize(XMLoadFloat4(&m_Config.vLightDir)) * fRadius;
 
 		_matrix LightViewMatrix = XMMatrixLookAtLH(vShadowCamPos, vCenter, XMVectorSet(0.f, 1.f, 0.f, 0.f));
 
@@ -140,14 +142,31 @@ HRESULT CShadow::Bind_ShadowDSV(_uint iIndex)
 	return S_OK;
 }
 
-HRESULT CShadow::Bind_ShadowSRVArray(CShader* pShader, const _char* pConstantName)
+HRESULT CShadow::Bind_Shadow_ShaderResources(CShader* pShader)
 {
-	return pShader->Bind_SRV(pConstantName, m_pShadowSRVArray);
-}
+	if (FAILED(pShader->Bind_FloatArray("g_Splits", m_Cascade.Splits.data(), m_Cascade.iNumCascades)))
+		return E_FAIL;
 
-void CShadow::Set_Splits(const _float* pSplits)
-{
-	memcpy(m_Cascade.Splits.data(), pSplits, sizeof(_float) * m_Cascade.iNumCascades);
+	if (FAILED(pShader->Bind_RawValue("g_iNumCascades", &m_Cascade.iNumCascades, sizeof(_uint))))
+		return E_FAIL;
+
+	if (FAILED(pShader->Bind_Matrices("g_LightViewMatrices", m_Cascade.LightViewMatrices.data(), m_Cascade.iNumCascades)))
+		return E_FAIL;
+
+	if (FAILED(pShader->Bind_Matrices("g_LightProjMatrices", m_Cascade.LightProjMatrices.data(), m_Cascade.iNumCascades)))
+		return E_FAIL;
+
+	if (FAILED(pShader->Bind_SRV("g_TextureArray", m_pShadowSRVArray)))
+		return E_FAIL;
+
+	if (FAILED(pShader->Bind_RawValue("g_fBias", &m_Config.fBias, sizeof(_float))))
+		return E_FAIL;
+
+	_float2 vShadowMapSize = _float2(g_iMaxWidth, g_iMaxHeight);
+	if (FAILED(pShader->Bind_RawValue("g_vShadowMapSize", &vShadowMapSize, sizeof(_float2))))
+		return E_FAIL;
+
+	return S_OK;
 }
 
 const _float4x4* CShadow::Get_CurrentLightViewMatrix() const
@@ -160,17 +179,25 @@ const _float4x4* CShadow::Get_CurrentLightProjMatrix() const
 	return &m_Cascade.LightProjMatrices[m_iCurrentCascade];
 }
 
-void CShadow::Set_Lamda(_float fLamda)
+void CShadow::Set_CascadeConfig(CASCADE_CONFIG Config)
 {
-	m_fLamda = fLamda;
-
-	// 스플릿 재계산
-	for (_uint i = 1; i <= m_Cascade.iNumCascades; ++i)
+	if (m_Config.fLamda != Config.fLamda)
 	{
-		_float fSplitIndex = static_cast<_float>(i) / static_cast<_float>(m_Cascade.iNumCascades);
-		_float fLinear = m_fCameraNear + (m_fCameraFar - m_fCameraNear) * fSplitIndex;
-		_float fLog = m_fCameraNear * powf(m_fCameraFar / m_fCameraNear, fSplitIndex);
-		m_Cascade.Splits[i - 1] = Lerp(fLinear, fLog, m_fLamda);
+		m_Config = Config;
+
+		// Lamda 변경 시 스플릿 자동 분할 재계산
+		for (_uint i = 1; i <= m_Cascade.iNumCascades; ++i)
+		{
+			_float fSplitIndex = static_cast<_float>(i) / static_cast<_float>(m_Cascade.iNumCascades);
+			_float fLinear = m_fCameraNear + (m_fCameraFar - m_fCameraNear) * fSplitIndex;
+			_float fLog = m_fCameraNear * powf(m_fCameraFar / m_fCameraNear, fSplitIndex);
+			m_Cascade.Splits[i - 1] = Lerp(fLinear, fLog, m_Config.fLamda);
+		}
+	}
+	else
+	{
+		m_Config = Config;
+		m_Cascade.Splits = m_Config.Splits;
 	}
 }
 
@@ -180,7 +207,52 @@ void CShadow::Clear_DSVs()
 		m_pContext->ClearDepthStencilView(m_ShadowDSVs[i], D3D11_CLEAR_DEPTH, 1.f, 0);
 }
 
-HRESULT CShadow::Ready_Cascade_Shadow_Resources()
+HRESULT CShadow::Ready_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY)
+{
+	_uint			iNumViewports = { 1 };
+	D3D11_VIEWPORT  ViewportDesc{};
+
+	m_pContext->RSGetViewports(&iNumViewports, &ViewportDesc);
+
+	m_WorldMatrices.resize(m_Cascade.iNumCascades);
+	
+	_float fStartY = fY;
+
+	for (_uint i = 0; i < m_Cascade.iNumCascades; ++i)
+	{
+		XMStoreFloat4x4(&m_WorldMatrices[i], XMMatrixScaling(fSizeX, fSizeY, 1.f));
+		m_WorldMatrices[i]._41 = fX - ViewportDesc.Width * 0.5f;
+		m_WorldMatrices[i]._42 = -fStartY + ViewportDesc.Height * 0.5f;
+
+		fStartY += fSizeY;
+	}
+
+	return S_OK;
+}
+
+HRESULT CShadow::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
+{
+	if (FAILED(pShader->Bind_SRV("g_TextureArray", m_pShadowSRVArray)))
+		return E_FAIL;
+
+	for (_uint i = 0; i < m_Cascade.iNumCascades; ++i)
+	{
+		if (FAILED(pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrices[i])))
+			return E_FAIL;
+
+		if (FAILED(pShader->Bind_RawValue("g_iTextureArrayIndex", &i, sizeof(_int))))
+			return E_FAIL;
+
+		pShader->Begin(6);
+
+		pVIBuffer->Bind_Resources();
+		pVIBuffer->Render();
+	}
+
+	return S_OK;
+}
+
+HRESULT CShadow::Ready_ShaderResources()
 {
 	ID3D11Texture2D* pDepthStencilTexture = { nullptr };
 
@@ -246,6 +318,7 @@ void CShadow::Free()
 
 	for (auto& pDSV : m_ShadowDSVs)
 		Safe_Release(pDSV);
+	m_ShadowDSVs.clear();
 
 	Safe_Release(m_pShadowSRVArray);
 

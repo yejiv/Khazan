@@ -190,6 +190,13 @@ PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
     
     Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient)) * fAtt;
     
+    if (!g_isEnableSSAO)
+        return Out;
+    
+    // SSAO
+    float fAO = g_SSAOTexture.Sample(PointSampler, In.vTexcoord).r;
+    Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient * fAO));
+    
     //  vector vReflect = reflect(normalize(vLightDir), vNormal);
     //  vector vLook = vWorldPos - g_vCamPosition;
     //  float fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), 50.f);
@@ -505,7 +512,7 @@ technique11 DefaultTechnique
     pass SSAO
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
+        SetDepthStencilState(DSS_None, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_MAIN();

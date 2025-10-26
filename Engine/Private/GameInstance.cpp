@@ -24,6 +24,7 @@
 #include "ComputeShader_Manager.h"
 #include "Camera_Manager.h"
 #include "BlackBoard.h"
+#include "SSAO.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -122,6 +123,11 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 
 	m_pBlackBoard = CBlackBoard::Create();
 	if (nullptr == m_pBlackBoard)
+		return E_FAIL;
+
+	// 임시
+	m_pSSAO = CSSAO::Create(*ppDevice, *ppContext);
+	if (nullptr == m_pSSAO)
 		return E_FAIL;
 
 #ifdef _DEBUG
@@ -349,26 +355,9 @@ HRESULT CGameInstance::Push_GameObject_ToLayer(_uint iLayerLevelIndex, const _ws
 
 #pragma region RENDERER
 
-
 HRESULT CGameInstance::Add_RenderGroup(RENDERGROUP eRenderGroup, CGameObject* pRenderObject)
 {
-
 	return m_pRenderer->Add_RenderGroup(eRenderGroup, pRenderObject);
-}
-
-void CGameInstance::Set_SSAOIntensity(_float fIntensity)
-{
-	m_pRenderer->Set_SSAOIntensity(fIntensity);
-}
-
-void CGameInstance::Set_SSAOConstrast(_float fConstrast)
-{
-	m_pRenderer->Set_SSAOConstrast(fConstrast);
-}
-
-void CGameInstance::Set_SSAORadius(_float fRadius)
-{
-	m_pRenderer->Set_SSAORadius(fRadius);
 }
 
 #ifdef _DEBUG
@@ -612,54 +601,14 @@ const _float4x4* CGameInstance::Get_CurrentShadowLightProjMatrix() const
 	return m_pShadow->Get_CurrentLightProjMatrix();
 }
 
-const _float* CGameInstance::Get_CascadeSplits() const
-{
-	return m_pShadow->Get_Splits();
-}
-
-void CGameInstance::Set_CascadeSplits(const _float* pSplits)
-{
-	m_pShadow->Set_Splits(pSplits);
-}
-
-const _float4x4* CGameInstance::Get_ShadowLightViewMatrices() const
-{
-	return m_pShadow->Get_LightViewMatrices();
-}
-
-const _float4x4* CGameInstance::Get_ShadowLightProjMatrices() const
-{
-	return m_pShadow->Get_LightProjMatrices();
-}
-
 HRESULT CGameInstance::Bind_ShadowDSV(_uint iIndex)
 {
 	return m_pShadow->Bind_ShadowDSV(iIndex);
 }
 
-HRESULT CGameInstance::Bind_ShadowSRVArray(CShader* pShader, const _char* pConstantName)
+HRESULT CGameInstance::Bind_Shadow_ShaderResources(CShader* pShader)
 {
-	return m_pShadow->Bind_ShadowSRVArray(pShader, pConstantName);
-}
-
-_float CGameInstance::Get_ShadowBias()
-{
-	return m_pShadow->Get_Bias();
-}
-
-void CGameInstance::Set_ShadowBias(_float fBias)
-{
-	m_pShadow->Set_Bias(fBias);
-}
-
-_float CGameInstance::Get_ShadowLamda()
-{
-	return m_pShadow->Get_Lamda();
-}
-
-void CGameInstance::Set_ShadowLamda(_float fLamda)
-{
-	m_pShadow->Set_Lamda(fLamda);
+	return m_pShadow->Bind_Shadow_ShaderResources(pShader);
 }
 
 void CGameInstance::Clear_ShadowDSVs()
@@ -667,15 +616,27 @@ void CGameInstance::Clear_ShadowDSVs()
 	m_pShadow->Clear_DSVs();
 }
 
-_float4 CGameInstance::Get_ShadowLightDir()
+#ifdef _DEBUG
+HRESULT CGameInstance::Ready_CSM_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY)
 {
-	return m_pShadow->Get_ShadowLightDir();
+	return m_pShadow->Ready_Debug(fX, fY, fSizeX, fSizeY);
 }
 
-void CGameInstance::Set_ShadowLightDir(const _float4 vLightDir)
+HRESULT CGameInstance::Render_CSM_Debug(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
 {
-	m_pShadow->Set_ShadowLightDir(vLightDir);
+	return m_pShadow->Render(pShader, pVIBuffer);
 }
+
+CASCADE_CONFIG CGameInstance::Get_CascadeConfig()
+{
+	return m_pShadow->Get_CascadeConfig();
+}
+
+void CGameInstance::Set_CascadeConfig(CASCADE_CONFIG Config)
+{
+	m_pShadow->Set_CascadeConfig(Config);
+}
+#endif
 
 #pragma endregion
 
@@ -960,6 +921,25 @@ void CGameInstance::Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, n
 }
 #pragma endregion
 
+#pragma region SSAO
+
+SSAO_CONFIG CGameInstance::Get_SSAOConfig()
+{
+	return m_pSSAO->Get_SSAOConfig();
+}
+
+void CGameInstance::Set_SSAOConfig(SSAO_CONFIG Config)
+{
+	m_pSSAO->Set_SSAOConfig(Config);
+}
+
+HRESULT CGameInstance::Bind_SSAO_ShaderResources(CShader* pShader)
+{
+	return m_pSSAO->Bind_SSAO_ShaderResources(pShader);
+}
+
+#pragma endregion
+
 //
 //void CGameInstance::Transform_Picking_ToLocalSpace(CTransform* pTransformCom)
 //{
@@ -978,6 +958,8 @@ void CGameInstance::Release_Engine()
 #ifdef _DEBUG
 	Safe_Release(m_pImgui_Manager);
 #endif
+
+	Safe_Release(m_pSSAO);
 
 	Safe_Release(m_pComputeShader_Manager);
 	Safe_Release(m_pPool_Manager);
@@ -1007,6 +989,4 @@ void CGameInstance::Release_Engine()
 void CGameInstance::Free()
 {
 	__super::Free();
-
-
 }

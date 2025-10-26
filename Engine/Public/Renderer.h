@@ -19,21 +19,6 @@ public:
 	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pRenderObject);
 	HRESULT Draw();
 
-public:
-	_float Get_SSAORadius() { return m_fSampleRadius; }
-	_float Get_SSAOIntensity() { return m_fAOIntensity; }
-	_float Get_SSAOConstrast() { return m_fAOConstrast; }
-
-	void Set_SSAOIntensity(_float fIntensity) { m_fAOIntensity = fIntensity; }
-	void Set_SSAOConstrast(_float fConstrast) { m_fAOConstrast = fConstrast; }
-	void Set_SSAORadius(_float fRadius) { m_fSampleRadius = fRadius; }
-
-private:
-	// SSAO
-	_float					m_fSampleRadius = { 1.f };
-	_float					m_fAOIntensity = { 1.f };
-	_float					m_fAOConstrast = { 1.f };
-
 #ifdef _DEBUG
 public:
 	HRESULT Add_DebugComponent(class CComponent* pComponent);
@@ -55,8 +40,6 @@ private:
 	_float4x4					m_WorldMatrix{}, m_ViewMatrix{}, m_ProjMatrix{};
 	_float						m_fViewportWidth{}, m_fViewportHeight{};
 
-	vector<class CGameObject*>	m_CascadeObjects;
-
 #ifdef _DEBUG
 private:
 	list<class CComponent*>		m_DebugComponent;
@@ -64,17 +47,6 @@ private:
 	_bool						m_isEnableShadow = { true };
 	_bool						m_isEnableSSAO = { true };
 #endif
-
-	// SSAO
-private:
-	_uint						m_iKernelSize = {};
-	ID3D11ShaderResourceView*	m_pNoiseSRV = { nullptr };
-	ID3D11Buffer*				m_pStructuredBuffer = { nullptr };
-	ID3D11ShaderResourceView*	m_pKernelSRV = { nullptr };
-
-private:
-	HRESULT Ready_Kernel();
-	HRESULT Ready_NoiseTexture();
 
 private:
 	HRESULT Render_Priority();
@@ -90,7 +62,6 @@ private:
 
 private:
 	HRESULT SetUp_Viewport(_float fWidth, _float fHeight);
-	HRESULT Bind_Shadow_ShaderResources();
 
 #ifdef _DEBUG
 	HRESULT Render_Debug();
@@ -99,6 +70,7 @@ private:
 private:
 	_bool isEnableShadow();
 	_bool isEnableSSAO();
+	_bool isEnableDebugRender();
 
 public:
 	static CRenderer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

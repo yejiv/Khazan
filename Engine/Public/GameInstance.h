@@ -77,11 +77,6 @@ public:
 public:
 	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pRenderObject);
 
-	void Set_SSAOBias(_float fBias);
-	void Set_SSAOIntensity(_float fIntensity);
-	void Set_SSAOConstrast(_float fConstrast);
-	void Set_SSAORadius(_float fRadius);
-
 #ifdef _DEBUG
 public:
 	HRESULT Add_DebugComponent(class CComponent* pComponent);
@@ -135,6 +130,7 @@ public:
 	HRESULT Copy_RT_Resource(const _wstring& strTargetTag, ID3D11Texture2D* pSourTexture);
 	void	Backup_RT();
 	void	Restore_RT();
+
 #ifdef _DEBUG
 	HRESULT Ready_RT_Debug(const _wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY);
 	HRESULT Render_RT_Debug(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
@@ -153,21 +149,17 @@ public:
 	void Set_CurrentCascade(_uint iIndex);
 	const _float4x4* Get_CurrentShadowLightViewMatrix() const;
 	const _float4x4* Get_CurrentShadowLightProjMatrix() const;
-	const _float* Get_CascadeSplits() const;
-	void	Set_CascadeSplits(const _float* pSplits);
-	const _float4x4* Get_ShadowLightViewMatrices() const;
-	const _float4x4* Get_ShadowLightProjMatrices() const;
 	HRESULT Bind_ShadowDSV(_uint iIndex);
-	HRESULT	Bind_ShadowSRVArray(class CShader* pShader, const _char* pConstantName);
-	_float	Get_ShadowBias();
-	void	Set_ShadowBias(_float fBias);
-	_float  Get_ShadowLamda();
-	void	Set_ShadowLamda(_float fLamda);
+	HRESULT				Bind_Shadow_ShaderResources(class CShader* pShader);
+	void				Clear_ShadowDSVs();
 
-	void	Clear_ShadowDSVs();
+#ifdef _DEBUG
+	CASCADE_CONFIG		Get_CascadeConfig();
+	void				Set_CascadeConfig(CASCADE_CONFIG Config);
+	HRESULT				Ready_CSM_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY);
+	HRESULT				Render_CSM_Debug(CShader* pShader, CVIBuffer_Rect* pVIBuffer);
+#endif
 
-	_float4 Get_ShadowLightDir();
-	void Set_ShadowLightDir(const _float4 vLightDir);
 #pragma endregion
 
 #pragma region FRUSTUM
@@ -277,6 +269,12 @@ public:
 	class CBlackBoard* Get_BlackBoard() { return m_pBlackBoard; }
 #pragma endregion
 
+#pragma region SSAO
+	SSAO_CONFIG	Get_SSAOConfig();
+	void		Set_SSAOConfig(SSAO_CONFIG Config);
+	HRESULT		Bind_SSAO_ShaderResources(class CShader* pShader);
+#pragma endregion
+
 
 private:
 	class CGraphic_Device*		m_pGraphic_Device = { nullptr };
@@ -301,6 +299,9 @@ private:
 	class CComputeShader_Manager*	m_pComputeShader_Manager = { nullptr };
 	class CCamera_Manager*		m_pCamera_Manager = { nullptr };
 	class CBlackBoard*			m_pBlackBoard = { nullptr };
+	
+	// 임시
+	class CSSAO*				m_pSSAO = { nullptr };
 
 #ifdef _DEBUG
 	class CImgui_Manager* m_pImgui_Manager = { nullptr };
