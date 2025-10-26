@@ -77,6 +77,11 @@ public:
 public:
 	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pRenderObject);
 
+	void Set_SSAOBias(_float fBias);
+	void Set_SSAOIntensity(_float fIntensity);
+	void Set_SSAOConstrast(_float fConstrast);
+	void Set_SSAORadius(_float fRadius);
+
 #ifdef _DEBUG
 public:
 	HRESULT Add_DebugComponent(class CComponent* pComponent);
@@ -116,8 +121,8 @@ public:
 #pragma region FONT_MANAGER
 	HRESULT	Font_Load(const _wstring& strFontTag, const _char* pFontFilePath, _uint iHeight, _uint iWidth = 0 );
 	HRESULT	Draw_Text(const _wstring& strFontTag, const _wstring& strText, _float fX = 0.f, _float fY = 0.f, const _float4& vColor = {1.f, 1.f, 1.f, 1.f}, TEXT_ALIGN eAlign = TEXT_ALIGN::LEFT_TOP);
-	HRESULT	Draw_TextBox(const _wstring& strFontTag, const _wstring& strText, _float fX = 0.f, _float fY = 0.f, _float fMaxWidth = 1000.f, const _float4& vColor = { 1.f, 1.f, 1.f, 1.f }, TEXT_ALIGN eAlign = TEXT_ALIGN::LEFT_TOP);
-
+	HRESULT	Draw_TextBox(const _wstring& strFontTag, const _wstring& strText, _float fX = 0.f, _float fY = 0.f, _float fMaxWidth = 1000.f, _float fOffsetHeight = 0.f, const _float4& vColor = { 1.f, 1.f, 1.f, 1.f }, TEXT_ALIGN eAlign = TEXT_ALIGN::LEFT_TOP);
+	HRESULT	Font_Load_Data(const _char* pFontFilePath);
 #pragma endregion
 
 
@@ -195,6 +200,9 @@ public:
 
 	void CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter);
 	void CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter, CharacterVirtual::ExtendedUpdateSettings tSetting);
+
+	CharacterVirtual* Find_CharacterVirtual(CharacterID id);
+	void Remove_CharacterVirtual(CharacterID id);
 
 	void Set_Gravity(_vector vGravity);
 	void Reset_Gravity();

@@ -461,6 +461,12 @@ namespace Engine
 		float u0, v0, u1, v1;
 		uint64_t lastUsedFrame = 0;
 	}GLYPH_INFO;
+
+	typedef struct tagCollsion
+	{
+		class CGameObject* pGameObject = nullptr;
+		void* pInfo = nullptr;	
+	}COLLISION_DESC;
 }
 
 

@@ -11,6 +11,7 @@ public:
 	{
 
 	}GAMEOBJECT_DESC;
+
 protected:
 	CGameObject(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CGameObject(const CGameObject& Prototype);
@@ -51,8 +52,9 @@ public:
 	virtual void Reset() {};
 
 public:
-	virtual void Collision_Enter(CGameObject* pOther, _uint	iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) {};
-	virtual void Collision_Stay(CGameObject* pOther, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) {};
+	virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint	iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) {};
+	virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) {};
+	virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) {};
 
 protected:
 	ID3D11Device*				m_pDevice = { nullptr };
@@ -71,6 +73,8 @@ protected:
 
 	// 추후에 파생 클래스 나눠지게 되면 옮기거나 다른 방법으로 바꿔보겠습니다.
 	_uint						m_iTeam = {};
+
+	COLLISION_DESC				m_tCollisionDesc = {};
 
 protected:
 	HRESULT Add_Component(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, 

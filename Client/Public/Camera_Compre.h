@@ -17,13 +17,6 @@ public:
 
 	}CAMERA_COMPRE_DESC;
 
-	typedef struct tagCameraContactDesc {
-		_float3 vNormal;
-		_float3 vPoint;
-		_bool isValid = false;
-		_float fTtl = 0.0f;
-	}CAMERA_CONTACT_DESC;
-
 private:
 	CCamera_Compre(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CCamera_Compre(const CCamera_Compre& Prototype);
@@ -42,10 +35,6 @@ public:
 	void Update_Spring(_float fTimeDelta);
 
 public:
-	void Collision_Enter(CGameObject* pObject, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
-	void Collision_Stay(CGameObject* pObject, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
-
-public:
 	HRESULT Ready_Camera(void* pArg);
 	HRESULT Ready_Body();
 
@@ -55,13 +44,6 @@ public:
 
 public:
 	CAMERA_COMPRE_DESC Get_Desc();
-private:
-	//CCharacterVirtual* m_pCharVirCom = { nullptr };
-
-	CAMERA_CONTACT_DESC m_CCDesc;
-
-	/*_vector m_fMoveLerp;
-	_vector m_fMoveLerp;*/
 
 public:
 	static CCamera_Compre* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
