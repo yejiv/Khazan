@@ -43,7 +43,7 @@ HRESULT CBody::Initialize_Clone(void* pArg)
 
     // Trigger(센서) 처리
     BCS.mIsSensor = pDesc->bIsTrigger;
-    BCS.mUserData = static_cast<uint64>(reinterpret_cast<uintptr_t>(pDesc->pGameObject));
+    BCS.mUserData = static_cast<uint64>(reinterpret_cast<uintptr_t>(pDesc->pCollisionDesc));
     // Dynamic 질량/관성(필요 시 주석 해제하여 특정 질량/관성 지정)
     if (m_eMotion == EMotionType::Dynamic)
     {
@@ -283,6 +283,7 @@ void CBody::Make_MeshShape(BODY_MESHSHAPE_DESC* pDesc)
         mp.mMass = 50.0f;
         // 관성 텐서는 상황에 맞게 설정해야 합니다. (삼각형 메쉬는 실제 부피가 없어 비현실적일 수 있음)
         bodySetting.mMassPropertiesOverride = mp;
+        bodySetting.mUserData = static_cast<uint64>(reinterpret_cast<uintptr_t>(pDesc->pCollisionDesc));
 
         Body* body = m_pGameInstance->CreateAndAdd_Body(bodySetting, &m_pBodyInterface);
         // 여러 메쉬라면 BodyID를 vector에 보관하세요. 지금처럼 m_pBody에 덮어쓰면 마지막 것만 남습니다.

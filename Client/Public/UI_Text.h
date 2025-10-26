@@ -21,8 +21,18 @@ public:
 
 	virtual HRESULT				Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
 
+protected:
+	_bool						m_bIsTextBox = { false };
+	TEXT_ALIGN					m_eTextAlign = {};
+	_float						m_fMaxWidth = {};
+	_float						m_fOffsetHeight = {};
+	_int						m_iPivotX = {};
+	_int						m_iPivotY = {};
+	_wstring					m_wstrTexttag = {};
+	_wstring					m_wstrText = {};
+
 public:
-	virtual CGameObject* Clone(void* pArg) = 0;
+	virtual CGameObject*		Clone(void* pArg) = 0;
 	virtual void				Free() override;
 };
 

@@ -16,15 +16,21 @@ private:
 	virtual ~CAI_Controller_Yetuga() = default;
 
 public:
-	virtual HRESULT					Initialize(void* pArg);
-	virtual void					Update(CGameObject* pOwner, _float fTimeDelta) override;
+	virtual HRESULT				Initialize(class CCreature* pOwner);
+	virtual void				Update(CGameObject* pOwner, _float fTimeDelta) override;
 
-	HRESULT							Ready_BlackBoard();
-	HRESULT							Ready_Perception();
-	HRESULT							Ready_BehaviorTree();
+	virtual HRESULT				Ready_Perception(const AIPERCEPTION_DATA& Desc) override;
+	virtual HRESULT				Ready_BlackBoard(class CGameObject* pOwner) override;
+	HRESULT						Ready_BehaviorTree();
+
+	virtual CONDITION			GetCallbackCondition(class CGameObject* pOwner, const string& name);
+	virtual ACTION				GetCallbackAction(CGameObject* pOwner, const string& name);
+	virtual TERMINATE			GetCallbackTeminate(CGameObject* pOwner, const string& name);
+
+
 
 public:
-	static CAI_Controller_Yetuga*	Create(void* pArg);
+	static CAI_Controller_Yetuga*	Create(class CCreature* pOwner);
 	virtual void					Free() override;
 };
 

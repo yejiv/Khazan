@@ -1,6 +1,7 @@
 #include "Imgui_Manager.h"
 #include "GameInstance.h"
 #include "GameObject.h"
+
 CImgui_Manager::CImgui_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : m_pDevice{ pDevice }
     , m_pContext{ pContext }
@@ -42,6 +43,7 @@ HRESULT CImgui_Manager::Initialize(list<wstring> Menu, HWND hWnd, _uint iWinSize
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     m_io = &(ImGui::GetIO());
+    m_io->Fonts->AddFontFromFileTTF("../../Client/Bin/Resources/Font/DNFForgedBlade-Medium.ttf", 18.f, NULL, m_io->Fonts->GetGlyphRangesKorean());
     ImGuiStyle& style = ImGui::GetStyle();
     m_io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     m_io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking

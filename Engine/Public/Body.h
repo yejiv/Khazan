@@ -51,7 +51,8 @@ public:
 		EMotionQuality  eQuality = EMotionQuality::Discrete;
 		_float		fAngularDamping = 0.5;
 
-		class CGameObject* pGameObject = nullptr;
+		//class CGameObject* pGameObject = nullptr;
+		COLLISION_DESC* pCollisionDesc = nullptr;
 	}BODY_DESC;
 
 	typedef struct tagBoxShape : BODY_DESC

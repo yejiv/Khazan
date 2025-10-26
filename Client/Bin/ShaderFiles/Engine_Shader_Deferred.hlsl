@@ -384,7 +384,6 @@ PS_OUT_SSAO PS_MAIN_SSAO(PS_IN In)
         // Kernle Vector Rotation -> View Space Dir
         float3 vSampleDir = mul(g_Kernels[i], TBNMatrix);
         
-        continue;
         // View Sample Position
         float3 vSamplePos = vViewPos.xyz + vSampleDir * g_fRadius; // 주변 SampleDir 방향으로 Radius 반경만큼 떨어진 샘플 위치
         

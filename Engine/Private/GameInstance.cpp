@@ -507,9 +507,14 @@ HRESULT CGameInstance::Draw_Text(const _wstring& strFontTag, const _wstring& str
 	return m_pFont_Manager->Draw_Text(strFontTag, strText, fX, fY, vColor, eAlign);
 }
 
-HRESULT CGameInstance::Draw_TextBox(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, _float fMaxWidth, const _float4& vColor, TEXT_ALIGN eAlign)
+HRESULT CGameInstance::Draw_TextBox(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, _float fMaxWidth, _float fOffsetHeight, const _float4& vColor, TEXT_ALIGN eAlign)
 {
-	return m_pFont_Manager->Draw_TextBox(strFontTag, strText, fX, fY, fMaxWidth, vColor, eAlign);
+	return m_pFont_Manager->Draw_TextBox(strFontTag, strText, fX, fY, fMaxWidth, fOffsetHeight, vColor, eAlign);
+}
+
+HRESULT CGameInstance::Font_Load_Data(const _char* pFontFilePath)
+{
+	return m_pFont_Manager->Font_Load_Data(pFontFilePath);
 }
 
 #pragma endregion
@@ -764,6 +769,16 @@ void CGameInstance::CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir
 void CGameInstance::CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter, CharacterVirtual::ExtendedUpdateSettings tSetting)
 {
 	m_pJolt_Manager->CharVir_ExtendedUpdate(fTimeDelta, pCharVir, vGravity, iObjectLayer, pBodyFilter, pShapeFilter, tSetting);
+}
+
+CharacterVirtual* CGameInstance::Find_CharacterVirtual(CharacterID id)
+{
+	return m_pJolt_Manager->Find_CharacterVirtual(id);
+}
+
+void CGameInstance::Remove_CharacterVirtual(CharacterID id)
+{
+	m_pJolt_Manager->Remove_CharacterVirtual(id);
 }
 
 void CGameInstance::Set_Gravity(_vector vGravity)
