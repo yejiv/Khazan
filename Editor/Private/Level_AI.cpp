@@ -190,7 +190,7 @@ void CLevel_AI::Show_Peception_Menu(const char* szDefaultFileName)
 		iSelectedIndex = (_int)SightList.size() - 1;
 	}
 
-	ImGui::SameLine();
+	/*ImGui::SameLine();
 	if (ImGui::Button("Delete Selected"))
 	{
 		if (iSelectedIndex >= 0 && iSelectedIndex < SightList.size())
@@ -198,7 +198,7 @@ void CLevel_AI::Show_Peception_Menu(const char* szDefaultFileName)
 			SightList.erase(SightList.begin() + iSelectedIndex);
 			iSelectedIndex = -1;
 		}
-	}
+	}*/
 
 	ImGui::SameLine();
 	if (ImGui::Button("Save to JSON"))
@@ -637,20 +637,41 @@ void CLevel_AI::Show_BT_Editor(AI_BTDATA& TreeData)
 		// Children 관리
 		_bool isCanAddChild = (g_SelectedNode->strNodeType != "Leaf") &&
 			(g_SelectedNode->strNodeType != "Decorator" || g_SelectedNode->Children.size() < 1);
+
 		if (!isCanAddChild) ImGui::BeginDisabled();
+
 		if (ImGui::Button("Add Child"))
 		{
-			g_SelectedNode->Children.push_back({});
-			g_SelectedNode->Children.back().strNodeName = "NewNode";
+			//g_SelectedNode->Children.push_back({});
+			/*g_SelectedNode->Children.back().strNodeName = "NewNode";
 			g_SelectedNode->Children.back().strNodeType = "Leaf";
-			g_SelectedNode->Children.back().strSubtype = "Action";
+			g_SelectedNode->Children.back().strSubtype = "Action";*/
+			//AIBTNODE_DATA& NewNode = g_SelectedNode->Children.back();
+			//NewNode.strNodeName = "NewNode";
+			//NewNode.strNodeType = "Leaf";
+			//NewNode.strSubtype = "Action";
+			//// 여기서 트리 수정을 위해서 부모를 설정해준다.
+			//NewNode.Parent = g_SelectedNode;
+
+			auto* pNewNode = new AIBTNODE_DATA();
+			pNewNode->strNodeName = "NewNode";
+			pNewNode->strNodeType = "Leaf";
+			pNewNode->strSubtype= "Action";
+			pNewNode->Parent = g_SelectedNode;
+			g_SelectedNode->Children.push_back(pNewNode);
+
 		}
 		if (!isCanAddChild) ImGui::EndDisabled();
 
 		if (!g_SelectedNode->Children.empty())
 		{
 			if (ImGui::Button("Remove Last Child"))
+			{
+				//g_SelectedNode->Children.pop_back();
+				auto* pLast = g_SelectedNode->Children.back();
 				g_SelectedNode->Children.pop_back();
+				delete pLast;
+			}
 		}
 	}
 	ImGui::EndChild();
@@ -667,44 +688,48 @@ void CLevel_AI::Show_BTNode_Hierarchy(AIBTNODE_DATA& Node)
 	if (ImGui::IsItemClicked())
 		g_SelectedNode = &Node;
 
-	/*AIBTNODE_DATA* pNodePtr = &Node;
+	// 드래그
+	AIBTNODE_DATA* pNodePtr = &Node;
 	if (ImGui::BeginDragDropSource())
 	{
 		ImGui::SetDragDropPayload("BTNODE", &pNodePtr, sizeof(AIBTNODE_DATA*));
 		ImGui::Text("Move: %s", Node.strNodeName.c_str());
 		ImGui::EndDragDropSource();
 	}
-
+	// 드롭 대상 선택
 	if (ImGui::BeginDragDropTarget())
 	{
-		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("BTNODE"))
+		// 드래그한 노드를 받아서 
+		if (const ImGuiPayload* Payload = ImGui::AcceptDragDropPayload("BTNODE"))
 		{
-			AIBTNODE_DATA* DraggedNode = *(AIBTNODE_DATA**)payload->Data;
+			AIBTNODE_DATA* DraggedNode = *(AIBTNODE_DATA**)Payload->Data;
 			if (DraggedNode && DraggedNode != &Node)
 			{
-				MoveNode(Node, DraggedNode);
+				if (false == MoveNode(Node,*DraggedNode))
+					MSG_BOX(TEXT("Failed MoveNode"));
 			}
 		}
 		ImGui::EndDragDropTarget();
-	}*/
-
-
+	}
 
 	if (isOpen)
 	{
 		for (auto& child : Node.Children)
-			Show_BTNode_Hierarchy(child);
+			//Show_BTNode_Hierarchy(child);
+			Show_BTNode_Hierarchy(*child);
 
 		ImGui::TreePop();
 	}
 }
+
 
 void CLevel_AI::Save_BehaviorTree(const AI_BTDATA& Data, const string& FileName)
 {
 	JSON jRoot;
 	jRoot["MonsterType"] = Data.MonsterType;
 	JSON jNode;
-	SaveNode(jNode, Data.RootNode);
+	//SaveNode(jNode, Data.RootNode);
+	SaveNode(jNode, &Data.RootNode);
 	jRoot["RootNode"] = jNode;
 
 	_tchar szFileName[MAX_PATH] = {};
@@ -751,85 +776,149 @@ void CLevel_AI::Load_BehaviorTree(const string& FileName, AI_BTDATA& OutData)
 
 	OutData.MonsterType = jRoot.value("MonsterType", "");
 	if (jRoot.contains("RootNode"))
-		LoadNode(jRoot["RootNode"], OutData.RootNode);
+		//LoadNode(jRoot["RootNode"], OutData.RootNode);
+		LoadNode(jRoot["RootNode"], nullptr, OutData.RootNode);
 }
 
-void CLevel_AI::SaveNode(JSON& j, const AIBTNODE_DATA& Node)
+//void CLevel_AI::SaveNode(JSON& j, const AIBTNODE_DATA& Node)
+//{
+//
+//	j["NodeType"] = Node.strNodeType;
+//	j["SubType"] = Node.strSubtype;
+//	j["NodeName"] = Node.strNodeName;
+//
+//	// 노드 타입이 Leaf라면
+//	if (Node.strNodeType == "Leaf")
+//	{
+//		// 서브 타입이 Wait 이면
+//		if (Node.strSubtype == "Wait")
+//		{
+//			// WaitTime 을 저장하고
+//			if (Node.fWaitTime > 0.f)
+//				j["WaitTime"] = Node.fWaitTime;
+//		}
+//		// 아니면 컨디션이나 Action 이므로 두 노드는 람다를 사용하므로
+//		else
+//		{
+//			if (!Node.strCallbackFunction.empty())
+//				j["Callback"] = Node.strCallbackFunction;
+//		}
+//	}
+//
+//	// 노드 타입이 Decorator라면
+//	else if (Node.strNodeType == "Decorator")
+//	{
+//		// CoolDown노드라면
+//		if (Node.strSubtype == "CoolDown")
+//		{
+//			// 쿨다운 저장
+//			if (Node.fCoolDownTime > 0.f)
+//				j["CoolDownTime"] = Node.fCoolDownTime;
+//		}
+//		else if (Node.strSubtype == "RepeatCount")
+//		{
+//			// 반복 회수 저장
+//			if (Node.iRepeatCount > 0)
+//				j["RepeatCount"] = Node.iRepeatCount;
+//		}
+//
+//		if (!Node.Children.empty())
+//		{
+//			if (Node.Children.size() > 1)
+//			{
+//				// 경고: Decorator는 자식 1개만 가능
+//				cout << "Warning: Decorator node '" << Node.strNodeName
+//					<< "' has more than 1 child!" << endl;
+//			}
+//			// 1개라도 있으면 저장
+//			JSON jChild;
+//			SaveNode(jChild, Node.Children[0]);
+//			j["Children"] = JSON::array({ jChild });
+//		}
+//
+//
+//	}
+//
+//	else if (Node.strNodeType == "Composite")
+//	{
+//		if (!Node.Children.empty())
+//		{
+//			j["Children"] = JSON::array();
+//			for (const auto& child : Node.Children)
+//			{
+//				JSON jChild;
+//				SaveNode(jChild, child);
+//				j["Children"].push_back(jChild);
+//			}
+//		}
+//	}
+//
+//
+//}
+
+void CLevel_AI::SaveNode(JSON& j, const AIBTNODE_DATA* pNode)
 {
+	j["NodeType"] = pNode->strNodeType;
+	j["SubType"] = pNode->strSubtype;
+	j["NodeName"] = pNode->strNodeName;
 
-	j["NodeType"] = Node.strNodeType;
-	j["SubType"] = Node.strSubtype;
-	j["NodeName"] = Node.strNodeName;
 
-	// 노드 타입이 Leaf라면
-	if (Node.strNodeType == "Leaf")
+	if (pNode->strNodeType == "Leaf")
 	{
-		// 서브 타입이 Wait 이면
-		if (Node.strSubtype == "Wait")
-		{
-			// WaitTime 을 저장하고
-			if (Node.fWaitTime > 0.f)
-				j["WaitTime"] = Node.fWaitTime;
-		}
-		// 아니면 컨디션이나 Action 이므로 두 노드는 람다를 사용하므로
-		else
-		{
-			if (!Node.strCallbackFunction.empty())
-				j["Callback"] = Node.strCallbackFunction;
-		}
+		if (pNode->strSubtype == "Wait" && pNode->fWaitTime > 0.f)
+			j["WaitTime"] = pNode->fWaitTime;
+		else if (!pNode->strCallbackFunction.empty())
+			j["Callback"] = pNode->strCallbackFunction;
+	}
+	else if (pNode->strNodeType == "Decorator")
+	{
+		if (pNode->strSubtype == "CoolDown" && pNode->fCoolDownTime > 0.f)
+			j["CoolDownTime"] = pNode->fCoolDownTime;
+		else if (pNode->strSubtype == "RepeatCount" && pNode->iRepeatCount > 0)
+			j["RepeatCount"] = pNode->iRepeatCount;
 	}
 
-	// 노드 타입이 Decorator라면
-	else if (Node.strNodeType == "Decorator")
+	if (!pNode->Children.empty())
 	{
-		// CoolDown노드라면
-		if (Node.strSubtype == "CoolDown")
+		j["Children"] = JSON::array();
+		for (auto* child : pNode->Children)
 		{
-			// 쿨다운 저장
-			if (Node.fCoolDownTime > 0.f)
-				j["CoolDownTime"] = Node.fCoolDownTime;
-		}
-		else if (Node.strSubtype == "RepeatCount")
-		{
-			// 반복 회수 저장
-			if (Node.iRepeatCount > 0)
-				j["RepeatCount"] = Node.iRepeatCount;
-		}
-
-		if (!Node.Children.empty())
-		{
-			if (Node.Children.size() > 1)
-			{
-				// 경고: Decorator는 자식 1개만 가능
-				cout << "Warning: Decorator node '" << Node.strNodeName
-					<< "' has more than 1 child!" << endl;
-			}
-			// 1개라도 있으면 저장
 			JSON jChild;
-			SaveNode(jChild, Node.Children[0]);
-			j["Children"] = JSON::array({ jChild });
-		}
-
-
-	}
-
-	else if (Node.strNodeType == "Composite")
-	{
-		if (!Node.Children.empty())
-		{
-			j["Children"] = JSON::array();
-			for (const auto& child : Node.Children)
-			{
-				JSON jChild;
-				SaveNode(jChild, child);
-				j["Children"].push_back(jChild);
-			}
+			SaveNode(jChild, child);
+			j["Children"].push_back(jChild);
 		}
 	}
-
 }
 
-void CLevel_AI::LoadNode(const JSON& j, AIBTNODE_DATA& OutNode)
+//void CLevel_AI::LoadNode(const JSON& j, AIBTNODE_DATA& OutNode)
+//{
+//	OutNode.strNodeType = j.value("NodeType", "");
+//	OutNode.strSubtype = j.value("SubType", "");
+//	OutNode.strNodeName = j.value("NodeName", "");
+//	OutNode.strCallbackFunction = j.value("Callback", "");
+//	OutNode.fCoolDownTime = j.value("CoolDownTime", 0.f);
+//	OutNode.fWaitTime = j.value("WaitTime", 0.f);
+//	OutNode.iRepeatCount = j.value("RepeatCount", 0);
+//
+//	if (j.contains("Children"))
+//	{
+//		
+//		OutNode.Children.reserve(j["Children"].size()); // 재할당 방지하여 부모 포인터 유지
+//
+//		for (auto& jc : j["Children"])
+//		{
+//			OutNode.Children.push_back({});
+//			LoadNode(jc, OutNode.Children.back());
+//			// 로드할때 부모를 설정해준다.
+//			OutNode.Children.back().Parent = &OutNode;
+//		}
+//	}
+//
+//	int a = 10;
+//
+//}
+
+void CLevel_AI::LoadNode(const JSON& j, AIBTNODE_DATA* pParent, AIBTNODE_DATA& OutNode)
 {
 	OutNode.strNodeType = j.value("NodeType", "");
 	OutNode.strSubtype = j.value("SubType", "");
@@ -839,38 +928,107 @@ void CLevel_AI::LoadNode(const JSON& j, AIBTNODE_DATA& OutNode)
 	OutNode.fWaitTime = j.value("WaitTime", 0.f);
 	OutNode.iRepeatCount = j.value("RepeatCount", 0);
 
+	OutNode.Parent = pParent;
+
 	if (j.contains("Children"))
 	{
 		for (auto& jc : j["Children"])
 		{
-			OutNode.Children.push_back({});
-			LoadNode(jc, OutNode.Children.back());
+			auto* newChild = new AIBTNODE_DATA();
+			LoadNode(jc, &OutNode, *newChild);
+			OutNode.Children.push_back(newChild);
 		}
 	}
 }
 
-void CLevel_AI::MoveNode(AIBTNODE_DATA& NewParentNode, AIBTNODE_DATA* DraggedNode)
+_bool CLevel_AI::MoveNode(AIBTNODE_DATA& NewParentNode, AIBTNODE_DATA& DraggedNode)
 {
-	RemoveParent(NewParentNode,DraggedNode);
 
-	NewParentNode.Children.push_back(*DraggedNode);
-}
+	// 자기 자신이나 자손을 부모로 처리하지 못하게 체크
+	AIBTNODE_DATA* iter = &NewParentNode;
 
-_bool CLevel_AI::RemoveParent(AIBTNODE_DATA& ParentNode, AIBTNODE_DATA* Target)
-{
-	for (auto iter = ParentNode.Children.begin(); iter != ParentNode.Children.end(); iter++)
+	while (iter)
 	{
-		if (&(*iter) == Target)
-		{
-			ParentNode.Children.erase(iter);
-			return true;
-		}
-
-		if (RemoveParent(*iter, Target))
-			return true;
+		if (iter == &DraggedNode)
+			return false;
+		iter = iter->Parent;
 	}
-	return false;
+
+	// Leaf는 자식 X
+	if (NewParentNode.strNodeType == "Leaf")
+		return false;
+	// Decorator일때 비어있지 않으면 false로 체크 하나만 허용
+	if (NewParentNode.strNodeType == "Decorator" && !NewParentNode.Children.empty())
+		return false;
+
+	// 기존 부모에서 제거
+	if (DraggedNode.Parent)
+		RemoveNodeFromParent(&DraggedNode);
+	
+	
+	// 새로운 부모에 붙이기
+	/*NewParentNode.Children.push_back(DraggedNode);
+	NewParentNode.Children.back().Parent = &NewParentNode;*/
+
+	NewParentNode.Children.push_back(&DraggedNode);
+	DraggedNode.Parent = &NewParentNode;
+	g_SelectedNode = &DraggedNode;
+
+	return true;
+
 }
+
+_bool CLevel_AI::RemoveNodeFromParent(AIBTNODE_DATA* pNode)
+{
+	// 부모 포인터로 접근해서 자기 자신을 지우게 하도록한다.
+	if (nullptr == pNode || nullptr == pNode->Parent)
+		return false;
+
+	if (g_SelectedNode == pNode)
+		g_SelectedNode = nullptr;
+
+	auto& Siblings = pNode->Parent->Children;
+
+	Siblings.erase(remove(Siblings.begin(), Siblings.end(), pNode), Siblings.end());
+
+	pNode->Parent = nullptr;
+
+	return true;
+}
+
+void CLevel_AI::RemoveNodeRecursive(AIBTNODE_DATA* pNode)
+{
+	if (nullptr == pNode)
+		return;
+
+	for (auto& pChild : pNode->Children)
+		RemoveNodeRecursive(pChild);
+
+	pNode->Children.clear();
+
+	// 부모와 연결 해제
+	if (pNode->Parent)
+	{
+		auto& siblings = pNode->Parent->Children;
+
+		siblings.erase(std::remove(siblings.begin(), siblings.end(), pNode), siblings.end());
+		pNode->Parent = nullptr;
+	}
+
+	//자기 자신 제거
+	delete pNode;
+}
+
+//void CLevel_AI::RemoveNodeRecursive(AIBTNODE_DATA& Node)
+//{
+//	// 자식부터 재귀로 제거 시작
+//	for (auto& pChild : Node.Children)
+//		RemoveNodeRecursive(pChild);
+//
+//	// 부모 노드가 있다면 삭제
+//	if (Node.Parent)
+//		RemoveNodeFromParent(&Node);
+//}
 
 #pragma endregion
 
