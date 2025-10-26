@@ -94,10 +94,6 @@ HRESULT CMainApp::Render()
 
 HRESULT CMainApp::Ready_Prototype_ForStatic()
 {
-	CHECK_FAILED(m_pGameInstance->Font_Load(TEXT("¿¬´Ü"), "../Bin/Resources/Font/DNFForgedBlade-Light.ttf", 100, 0),E_FAIL);
-	//if (FAILED(m_pGameInstance->Add_Font(TEXT("Font_153"), TEXT("../Bin/Resources/Font/153ex.SpriteFont"))))
-	//	return E_FAIL;
-
 	// VIBuffer
 
 	/* Prototype_Component_VIBuffer_Rect */
@@ -237,6 +233,12 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Cursor"),
 		CCursor::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+	return S_OK;
+}
+
+HRESULT CMainApp::Ready_Font()
+{
+	m_pGameInstance->Font_Load_Data("../Bin/Data/Font/FontData.json");
 	return S_OK;
 }
 

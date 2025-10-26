@@ -36,6 +36,32 @@ HRESULT CFont_Manager::Font_Load(const _wstring& strFontTag, const _char* pFontF
     return S_OK;
 }
 
+HRESULT CFont_Manager::Font_Load_Data(const _char* pFontFilePath)
+{
+    ifstream In(pFontFilePath);
+    if (!In.is_open())
+    {
+        MSG_BOX(TEXT("Font json 파일 불러오기 실패"));
+        In.close();
+    }
+    else
+    {
+        nlohmann::json jsonData;
+        In >> jsonData;
+
+        for (auto& t : jsonData["Font"])
+        {
+            string strFontTag = t.value("tag", "");
+            string strFontFilePath = ".." + t.value("path", "");
+            _int iSize = t.value("size", 0);
+
+            Font_Load(AnsiToWString(strFontTag), strFontFilePath.c_str(), 0, iSize);
+        }
+
+    }
+    return E_NOTIMPL;
+}
+
 HRESULT CFont_Manager::Draw_Text(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, const _float4& vColor, TEXT_ALIGN eAlign)
 {
     CFont_Face* pFont = Find_Font(strFontTag);
@@ -48,7 +74,7 @@ HRESULT CFont_Manager::Draw_Text(const _wstring& strFontTag, const _wstring& str
     return m_pRenderer->DrawText(pFont, strText, fX, fY, vColor, eAlign);
 }
 
-HRESULT CFont_Manager::Draw_TextBox(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, _float fMaxWidth, const _float4& vColor, TEXT_ALIGN eAlign)
+HRESULT CFont_Manager::Draw_TextBox(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, _float fMaxWidth, _float fOffsetHeight, const _float4& vColor, TEXT_ALIGN eAlign)
 {
     CFont_Face* pFont = Find_Font(strFontTag);
     if (!pFont)
@@ -57,7 +83,7 @@ HRESULT CFont_Manager::Draw_TextBox(const _wstring& strFontTag, const _wstring& 
         return E_FAIL;
     }
 
-    return m_pRenderer->DrawTextBox(pFont, strText, fX, fY, fMaxWidth, vColor, eAlign);;
+    return m_pRenderer->DrawTextBox(pFont, strText, fX, fY, fMaxWidth, fOffsetHeight, vColor, eAlign);;
 }
 
 
