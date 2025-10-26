@@ -39,19 +39,21 @@ public:
 
 private:
 	class CUI_BackGround*				m_pBackGround = { nullptr };
+	class CUI_TextBox*					m_pUIText = { nullptr };
+
+	UIANIMSTATE							m_eAnimState = { UIANIMSTATE::END };
+	
+	vector<vector<class CItem_Slot*>>	m_pItems;
+	vector<vector<_int>>				m_UpdateGroup;
+	vector<class CInven_Tap*>			m_pInvenTap;
 
 	_float								m_fAccTime = {};
-	UIANIMSTATE							m_eAnimState = { UIANIMSTATE::END };
-	vector<vector<class CItem_Slot*>>	m_pItems;
 
-	vector<vector<_int>>				m_UpdateGroup;
-
-	vector<class CInven_Tap*>			m_pInvenTap;
 	_int								m_iSeleteTap = {};
-
 	_int								m_iTapGroupIndex = {};
 
-	_bool								m_IsText = {false};
+	_bool								m_IsTest = {false};
+
 private:
 	virtual	HRESULT						Ready_Prototype();
 	HRESULT								Ready_Object();

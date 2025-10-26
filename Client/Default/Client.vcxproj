@@ -220,6 +220,7 @@
     <ClInclude Include="..\public\UI_QuickSlot_Skill.h" />
     <ClInclude Include="..\public\UI_QuickSlot_Skill_Panel.h" />
     <ClInclude Include="..\public\UI_Text.h" />
+    <ClInclude Include="..\public\UI_TextBox.h" />
     <ClInclude Include="..\public\UI_Texture.h" />
     <ClInclude Include="..\public\UI_Layer.h" />
     <ClInclude Include="..\public\UI_Manager.h" />
@@ -294,6 +295,7 @@
     <ClCompile Include="..\private\UI_QuickSlot_Skill.cpp" />
     <ClCompile Include="..\private\UI_QuickSlot_Skill_Panel.cpp" />
     <ClCompile Include="..\private\UI_Text.cpp" />
+    <ClCompile Include="..\private\UI_TextBox.cpp" />
     <ClCompile Include="..\private\UI_Texture.cpp" />
     <ClCompile Include="..\private\UI_Layer.cpp" />
     <ClCompile Include="..\private\UI_Manager.cpp" />

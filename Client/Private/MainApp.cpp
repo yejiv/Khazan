@@ -47,7 +47,9 @@ HRESULT CMainApp::Initialize()
 
 	if (FAILED(Ready_ObjectLayer()))
 		return E_FAIL;
+
 	CHECK_FAILED(Ready_DB(), E_FAIL);
+	CHECK_FAILED(Ready_Font(), E_FAIL);
 	return S_OK;
 }
 
@@ -213,6 +215,10 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_BackGround"),
 		CUI_BackGround::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_TextBox"),
+		CUI_TextBox::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 	
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Gague_Tip"),
 		CUI_Gague_Tip::Create(m_pDevice, m_pContext))))
@@ -233,12 +239,13 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Cursor"),
 		CCursor::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+	
 	return S_OK;
 }
 
 HRESULT CMainApp::Ready_Font()
 {
-	m_pGameInstance->Font_Load_Data("../Bin/Data/Font/FontData.json");
+	CHECK_FAILED(m_pGameInstance->Font_Load_Data("../Bin/Data/Font/FontData.json"), E_FAIL);
 	return S_OK;
 }
 

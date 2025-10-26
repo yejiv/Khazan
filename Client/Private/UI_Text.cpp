@@ -121,7 +121,9 @@ HRESULT CUI_Text::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void
 	}
 
 	m_bIsTextBox = pInData.value("TextBox", false);
-	m_iTextAlign = pInData.value("Align", ENUM_CLASS(TEXT_ALIGN::END));
+	_int iAlign = pInData.value("Align", ENUM_CLASS(TEXT_ALIGN::END));
+	m_eTextAlign = static_cast<TEXT_ALIGN>(iAlign);
+
 	m_fMaxWidth = pInData.value("Maxwidth", 0);
 	m_fOffsetHeight = pInData.value("offsetHeight", 0);
 	string FontTag = pInData.value("FontTag", "");
