@@ -7,4 +7,5 @@
 #include "Cursor.h"
 #include "UI_HUD.h"
 #include "UI_Inven.h"
+#include "UI_MainMenu.h"
 #include "Item_Slot.h"
