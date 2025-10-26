@@ -51,8 +51,6 @@ void CYetuga::Priority_Update(_float fTimeDelta)
 
 void CYetuga::Update(_float fTimeDelta)
 {
-
- 
     m_fCoolTimeAcc += fTimeDelta;
 
     m_pController->Update(this, fTimeDelta);

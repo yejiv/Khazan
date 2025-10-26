@@ -30,34 +30,32 @@ HRESULT CMonster::Initialize_Prototype()
 
 HRESULT CMonster::Initialize_Clone(void* pArg)
 {
+    MONSTER_DESC* pDesc = static_cast<MONSTER_DESC*>(pArg);
+
+
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
-
+    // 이름
+    m_strName = pDesc->strName;
+    // 타겟
     m_pTarget = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::STAGE1), TEXT("Layer_Player"), 0);
     if (nullptr == m_pTarget)
         return E_FAIL;
-
+    // 블랙보드에 설정
     CBlackBoard* pBlackBoard = m_pGameInstance->Get_BlackBoard();
-    pBlackBoard->Set_Value("Yetuga", "Target", m_pTarget);
+    pBlackBoard->Set_Value(m_strName, "Target", m_pTarget);
 
-
- 
     return S_OK;
 }
 
 void CMonster::Priority_Update(_float fTimeDelta)
 {
-    int a = 10;
+    
 }
 
 void CMonster::Update(_float fTimeDelta)
 {
-
-   /* if (true == m_pModelCom->Play_Animation(fTimeDelta))
-        int a = 10;*/
-
-
     //m_pRigidBodyCom->Sync_Update(m_pTransformCom);
 }
 

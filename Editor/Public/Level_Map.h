@@ -14,7 +14,7 @@ class CLevel_Map final : public CLevel
 private:
 	enum class PROP_SPECIES { OBJECT, STATIC, ANIMATED, INTERACTIVE, DESTRUCTIBLE, END };
 	enum class MAPEDIT_MAP { HEINMACH, STORMPASS, THECREVICE, EMBARS, END };
-	enum class FIX_OBJECT { FIX, END };
+	enum class FIX_OBJECT { FIX, FIX_MULTI, END };
 
 	typedef struct tagSavePrototype
 	{
@@ -53,6 +53,7 @@ private:
 
 	void Test_Player_Move(_float fTimeDelta);
 	void Select_Fix_Object(_float fTimeDelta);
+	void Select_Multi_Fix_Object(_float fTimeDelta);
 	void Select_Fix_Instance(_float fTimeDelta);
 	void Select_Add_LightPoint(_float fTimeDelta);
 
@@ -89,6 +90,12 @@ private:
 
 	_bool m_isCheckRender = { false };
 	MAPOBJECT_PROPERTIES m_RenderProperties = {};
+
+#pragma endregion
+
+#pragma region OBJECT 크기 이동 스케일 동시 수정
+
+	vector<class CProp*> m_MultiFixObjList;
 
 #pragma endregion
 

@@ -22,12 +22,12 @@ HRESULT CCreature::Initialize_Clone(void* pArg)
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
-    /*m_fMaxHP = pDesc->fMaxHP;
+    m_fMaxHP = pDesc->fMaxHP;
     m_fCurrentHP = m_fMaxHP;
     m_fMaxStamina = pDesc->fMaxStamina;
     m_fCurrentStamina = m_fMaxStamina;
     m_fAttack = pDesc->fAttack;
-    m_fMoveSpeed = pDesc->fMoveSpeed;*/
+    m_fMoveSpeed = pDesc->fMoveSpeed;
 
     return S_OK;
 }

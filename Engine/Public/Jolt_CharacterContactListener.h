@@ -22,7 +22,7 @@ class CJolt_CharacterContactListener final : public JPH::CharacterContactListene
 {
 public:
     explicit CJolt_CharacterContactListener(class BodyInterface* pBodyInterface);
-    ~CJolt_CharacterContactListener() override = default;
+    ~CJolt_CharacterContactListener() override;
 
     // ---- CharacterContactListener 인터페이스 ----
     // (1) 바디와 접촉 가능한지(필요하면 필터링)
@@ -69,6 +69,7 @@ public:
 
 private:
     class BodyInterface* m_pBodyInterface = { nullptr };
+	class CGameInstance* m_pGameInstance = { nullptr };
 };
 
 NS_END // Engine
