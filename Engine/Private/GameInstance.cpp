@@ -356,6 +356,26 @@ HRESULT CGameInstance::Add_RenderGroup(RENDERGROUP eRenderGroup, CGameObject* pR
 	return m_pRenderer->Add_RenderGroup(eRenderGroup, pRenderObject);
 }
 
+void CGameInstance::Set_SSAOBias(_float fBias)
+{
+	m_pRenderer->Set_SSAOBias(fBias);
+}
+
+void CGameInstance::Set_SSAOIntensity(_float fIntensity)
+{
+	m_pRenderer->Set_SSAOIntensity(fIntensity);
+}
+
+void CGameInstance::Set_SSAOConstrast(_float fConstrast)
+{
+	m_pRenderer->Set_SSAOConstrast(fConstrast);
+}
+
+void CGameInstance::Set_SSAORadius(_float fRadius)
+{
+	m_pRenderer->Set_SSAORadius(fRadius);
+}
+
 #ifdef _DEBUG
 
 HRESULT CGameInstance::Add_DebugComponent(CComponent* pComponent)
@@ -487,9 +507,14 @@ HRESULT CGameInstance::Draw_Text(const _wstring& strFontTag, const _wstring& str
 	return m_pFont_Manager->Draw_Text(strFontTag, strText, fX, fY, vColor, eAlign);
 }
 
-HRESULT CGameInstance::Draw_TextBox(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, _float fMaxWidth, const _float4& vColor, TEXT_ALIGN eAlign)
+HRESULT CGameInstance::Draw_TextBox(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, _float fMaxWidth, _float fOffsetHeight, const _float4& vColor, TEXT_ALIGN eAlign)
 {
-	return m_pFont_Manager->Draw_TextBox(strFontTag, strText, fX, fY, fMaxWidth, vColor, eAlign);
+	return m_pFont_Manager->Draw_TextBox(strFontTag, strText, fX, fY, fMaxWidth, fOffsetHeight, vColor, eAlign);
+}
+
+HRESULT CGameInstance::Font_Load_Data(const _char* pFontFilePath)
+{
+	return m_pFont_Manager->Font_Load_Data(pFontFilePath);
 }
 
 #pragma endregion

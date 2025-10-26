@@ -41,6 +41,7 @@ float g_fRadius = { 1.f };
 float g_fIntensity = { 1.f }, g_fContrast = { 1.f };
 float g_fSampleBias = { 0.f };
 bool g_isEnableSSAO = { true };
+matrix g_CameraViewMatrix, g_CameraProjMatrix;
 
 struct VS_IN
 {
@@ -353,7 +354,7 @@ PS_OUT_SSAO PS_MAIN_SSAO(PS_IN In)
     // View Space Normal
     vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
     float3 vNormal = normalize(vNormalDesc.xyz * 2.f - 1.f);
-    float3x3 ViewMatrix = float3x3(g_ViewMatrix._11_12_13, g_ViewMatrix._21_22_23, g_ViewMatrix._31_32_33);
+    float3x3 ViewMatrix = float3x3(g_CameraViewMatrix._11_12_13, g_CameraViewMatrix._21_22_23, g_CameraViewMatrix._31_32_33);
     vNormal = normalize(mul(vNormal.xyz, ViewMatrix));
     
     // TBN
@@ -364,40 +365,38 @@ PS_OUT_SSAO PS_MAIN_SSAO(PS_IN In)
     // Depth
     vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
     
-    vector vWorldPos;
+    vector vNDCPos;
     
-    vWorldPos.x = In.vTexcoord.x * 2.f - 1.f;
-    vWorldPos.y = In.vTexcoord.y * -2.f + 1.f;
-    vWorldPos.z = vDepthDesc.x;
-    vWorldPos.w = 1.f;
+    vNDCPos.x = In.vTexcoord.x * 2.f - 1.f;
+    vNDCPos.y = In.vTexcoord.y * -2.f + 1.f;
+    vNDCPos.z = vDepthDesc.x;
+    vNDCPos.w = 1.f;
 
     // Projection -> View
-    vWorldPos = vWorldPos * vDepthDesc.y; // View.Z
-    float4 vViewPos = mul(vWorldPos, g_ProjMatrixInv); // 현재 픽셀의 View Space 위치
+    vNDCPos = vNDCPos * vDepthDesc.y; // View.Z
+    float4 vViewPos = mul(vNDCPos, g_ProjMatrixInv); // 현재 픽셀의 View Space 위치
     
     // Occlusion
     float fOcclusion = 0.f;
-    
+ 
     for (uint i = 0; i < g_iNumKernels; ++i)
     {
         // Kernle Vector Rotation -> View Space Dir
-        float3 vSampleDir = mul(TBNMatrix, g_Kernels[i]);
+        float3 vSampleDir = mul(g_Kernels[i], TBNMatrix);
         
         // View Sample Position
         float3 vSamplePos = vViewPos.xyz + vSampleDir * g_fRadius; // 주변 SampleDir 방향으로 Radius 반경만큼 떨어진 샘플 위치
         
         // Sample Position -> UV
         // 샘플 포지션 투영 변환 -> 투영 행렬 곱해주고 w나누기 후 -1 ~ 1 => 0 ~ 1 범위로 변환 * 0.5 + 0.5
-        float4 vProjSamplePos = mul(g_ProjMatrix, float4(vSamplePos, 1.f));
-        vProjSamplePos.xyz /= vProjSamplePos.w;
-        float2 vSampleTexcoord = vProjSamplePos.xy * 0.5f + 0.5f;
+        float4 vProjSamplePos = mul(float4(vSamplePos, 1.f), g_CameraProjMatrix);
+        vProjSamplePos /= vProjSamplePos.w;
+        float2 vSampleTexcoord;
+        vSampleTexcoord.x = vProjSamplePos.x * 0.5f + 0.5f;
+        vSampleTexcoord.y = vProjSamplePos.y * -0.5f + 0.5f;
         
         // 샘플 깊이 비교
-        // clamp
-        float fSampleDepth = g_DepthTexture.Sample(PointSampler, vSampleTexcoord).y; // 샘플 픽셀(주변 픽셀)의 깊이
-        
-        // 여기 샘플 포지션 다시 정의해서 변환해보기
-        
+        float4 fSampleDepth = g_DepthTexture.Sample(PointSampler, vSampleTexcoord).y; // 샘플 픽셀(주변 픽셀)의 깊이
         
         // 샘플 깊이가 현재 픽셀의 깊이보다 더 크면 차폐가 없음, 샘플 깊이가 현재 픽셀의 깊이보다 더 작으면 그 방향에 다른 오브젝트가 있어서 시야가 막힌 것
         

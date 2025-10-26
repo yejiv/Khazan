@@ -53,6 +53,7 @@ PS_OUT PS_MAIN(PS_IN In)
     Out.vColor.rgb = color;
     
     Out.vColor.a = alpha * g_fAlpha;
+    
     return Out;    
 }
 

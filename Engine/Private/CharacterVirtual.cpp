@@ -91,12 +91,12 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 	m_pBodyFilter = new BodyFilter();
 	m_pShapeFilter = new ShapeFilter();
 
-	m_tEXUpdateSetting.mStickToFloorStepDown = LoadVec3(pDesc->vStickToFloorStepDown);
-	m_tEXUpdateSetting.mWalkStairsStepUp = LoadVec3(pDesc->vWalkStairsStepUp);
-	m_tEXUpdateSetting.mWalkStairsMinStepForward = pDesc->fWalkStairsMinStepForward;
-	m_tEXUpdateSetting.mWalkStairsStepForwardTest = pDesc->fWalkStairsStepForwardTest;
-	m_tEXUpdateSetting.mWalkStairsCosAngleForwardContact = Cos(DegreesToRadians(pDesc->fWalkStairsCosAngleForwardContact));
-	m_tEXUpdateSetting.mWalkStairsStepDownExtra = LoadVec3(pDesc->vWalkStairsStepDownExtra);
+	//m_tEXUpdateSetting.mStickToFloorStepDown = LoadVec3(pDesc->vStickToFloorStepDown);
+	//m_tEXUpdateSetting.mWalkStairsStepUp = LoadVec3(pDesc->vWalkStairsStepUp);
+	//m_tEXUpdateSetting.mWalkStairsMinStepForward = pDesc->fWalkStairsMinStepForward;
+	//m_tEXUpdateSetting.mWalkStairsStepForwardTest = pDesc->fWalkStairsStepForwardTest;
+	//m_tEXUpdateSetting.mWalkStairsCosAngleForwardContact = Cos(DegreesToRadians(pDesc->fWalkStairsCosAngleForwardContact));
+	//m_tEXUpdateSetting.mWalkStairsStepDownExtra = LoadVec3(pDesc->vWalkStairsStepDownExtra);
 
 	return S_OK;
 }
