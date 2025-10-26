@@ -59,7 +59,7 @@ HRESULT CFont_Manager::Font_Load_Data(const _char* pFontFilePath)
         }
 
     }
-    return E_NOTIMPL;
+    return S_OK;
 }
 
 HRESULT CFont_Manager::Draw_Text(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, const _float4& vColor, TEXT_ALIGN eAlign)

@@ -483,6 +483,9 @@
     <ClInclude Include="..\public\Cursor_FX.h">
       <Filter>02.GameObject\UI\Cursor\FX</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\UI_TextBox.h">
+      <Filter>02.GameObject\UI\ETC</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -695,6 +698,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Cursor_FX.cpp">
       <Filter>02.GameObject\UI\Cursor\FX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_TextBox.cpp">
+      <Filter>02.GameObject\UI\ETC</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

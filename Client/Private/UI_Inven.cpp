@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "ClientInstance.h"
 
+#include "UI_TextBox.h"
 #include "Inven_Panel.h"
 #include "Inven_Tap.h"
 
@@ -72,15 +73,15 @@ void CUI_Inven::Priority_Update(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_K))
 	{
-		if (m_IsText)
+		if (m_IsTest)
 		{
 			Add_Item(4001);
-			m_IsText = false;
+			m_IsTest = false;
 		}
 		else
 		{
 			Add_Item(5001);
-			m_IsText = true;
+			m_IsTest = true;
 		}
 	}
 	if (!m_IsUpdate)
@@ -88,6 +89,7 @@ void CUI_Inven::Priority_Update(_float fTimeDelta)
 
 	UI_Animation(fTimeDelta);
 	m_pBackGround->Priority_Update(fTimeDelta);
+	m_pUIText->Priority_Update(fTimeDelta);
 
 	for (auto TapIndex : m_UpdateGroup[m_iTapGroupIndex])
 		m_pInvenTap[TapIndex]->Priority_Update(fTimeDelta);
@@ -100,7 +102,10 @@ void CUI_Inven::Update(_float fTimeDelta)
 {
 	if (!m_IsUpdate)
 		return;
+
 	m_pBackGround->Update(fTimeDelta);
+	m_pUIText->Update(fTimeDelta);
+
 	for (auto TapIndex : m_UpdateGroup[m_iTapGroupIndex])
 		m_pInvenTap[TapIndex]->Update(fTimeDelta);
 
@@ -112,8 +117,10 @@ void CUI_Inven::Late_Update(_float fTimeDelta)
 {
 	if (!m_IsUpdate)
 		return;
+
 	m_pBackGround->Late_Update(fTimeDelta);
-	
+	m_pUIText->Late_Update(fTimeDelta);
+
 	for (auto TapIndex : m_UpdateGroup[m_iTapGroupIndex])
 		m_pInvenTap[TapIndex]->Late_Update(fTimeDelta);
 
@@ -132,8 +139,17 @@ HRESULT CUI_Inven::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, voi
 
 	for (auto pChild : m_Children)
 	{
-		m_pInvenTap.push_back(static_cast<CInven_Tap*>(pChild));
-		Safe_AddRef(pChild);
+		if (ENUM_CLASS(UITYPE::TAP) == pChild->Get_UIType())
+		{
+			m_pInvenTap.push_back(static_cast<CInven_Tap*>(pChild));
+			Safe_AddRef(pChild);
+		}
+
+		if (ENUM_CLASS(UITYPE::TEXT) == pChild->Get_UIType())
+		{
+			m_pUIText = static_cast<CUI_TextBox*>(pChild);
+			Safe_AddRef(m_pUIText);
+		}
 	}
 
 	m_pInvenTap[0]->Tap_Enable();
@@ -398,12 +414,12 @@ void CUI_Inven::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pUIText);
+
 	for (auto pTap : m_pItems)
 	{
 		for (auto pItem : pTap)
-		{
 			Safe_Release(pItem);
-		}
 		pTap.clear();
 	}
 	m_pItems.clear();
