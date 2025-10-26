@@ -77,6 +77,11 @@ public:
 public:
 	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pRenderObject);
 
+	void Set_SSAOBias(_float fBias);
+	void Set_SSAOIntensity(_float fIntensity);
+	void Set_SSAOConstrast(_float fConstrast);
+	void Set_SSAORadius(_float fRadius);
+
 #ifdef _DEBUG
 public:
 	HRESULT Add_DebugComponent(class CComponent* pComponent);
@@ -195,6 +200,9 @@ public:
 
 	void CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter);
 	void CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter, CharacterVirtual::ExtendedUpdateSettings tSetting);
+
+	CharacterVirtual* Find_CharacterVirtual(CharacterID id);
+	void Remove_CharacterVirtual(CharacterID id);
 
 	void Set_Gravity(_vector vGravity);
 	void Reset_Gravity();

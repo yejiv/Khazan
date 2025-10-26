@@ -356,6 +356,26 @@ HRESULT CGameInstance::Add_RenderGroup(RENDERGROUP eRenderGroup, CGameObject* pR
 	return m_pRenderer->Add_RenderGroup(eRenderGroup, pRenderObject);
 }
 
+void CGameInstance::Set_SSAOBias(_float fBias)
+{
+	m_pRenderer->Set_SSAOBias(fBias);
+}
+
+void CGameInstance::Set_SSAOIntensity(_float fIntensity)
+{
+	m_pRenderer->Set_SSAOIntensity(fIntensity);
+}
+
+void CGameInstance::Set_SSAOConstrast(_float fConstrast)
+{
+	m_pRenderer->Set_SSAOConstrast(fConstrast);
+}
+
+void CGameInstance::Set_SSAORadius(_float fRadius)
+{
+	m_pRenderer->Set_SSAORadius(fRadius);
+}
+
 #ifdef _DEBUG
 
 HRESULT CGameInstance::Add_DebugComponent(CComponent* pComponent)
@@ -749,6 +769,16 @@ void CGameInstance::CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir
 void CGameInstance::CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter, CharacterVirtual::ExtendedUpdateSettings tSetting)
 {
 	m_pJolt_Manager->CharVir_ExtendedUpdate(fTimeDelta, pCharVir, vGravity, iObjectLayer, pBodyFilter, pShapeFilter, tSetting);
+}
+
+CharacterVirtual* CGameInstance::Find_CharacterVirtual(CharacterID id)
+{
+	return m_pJolt_Manager->Find_CharacterVirtual(id);
+}
+
+void CGameInstance::Remove_CharacterVirtual(CharacterID id)
+{
+	m_pJolt_Manager->Remove_CharacterVirtual(id);
 }
 
 void CGameInstance::Set_Gravity(_vector vGravity)

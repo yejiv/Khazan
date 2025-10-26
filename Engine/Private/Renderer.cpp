@@ -310,7 +310,7 @@ HRESULT CRenderer::Ready_NoiseTexture()
     TextureDesc.Height = 4;
     TextureDesc.MipLevels = 1;
     TextureDesc.ArraySize = 1;
-    TextureDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+    TextureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
     TextureDesc.SampleDesc.Quality = 0;
     TextureDesc.SampleDesc.Count = 1;
     TextureDesc.Usage = D3D11_USAGE_IMMUTABLE;  // 초기화 후 변경 X
@@ -430,10 +430,20 @@ HRESULT CRenderer::Render_SSAO()
 
     if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
         return E_FAIL;
+    //  if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+    //      return E_FAIL;
+    //  if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+    //      return E_FAIL;
     if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
         return E_FAIL;
     if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
         return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_Matrix("g_CameraViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Matrix("g_CameraProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
+        return E_FAIL;
+
     if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::VIEW))))
         return E_FAIL;
     if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::PROJ))))
@@ -462,6 +472,18 @@ HRESULT CRenderer::Render_SSAO()
         return E_FAIL;
 
     if (FAILED(m_pShader->Bind_RawValue("g_iNumKernels", &m_iKernelSize, sizeof(_uint))))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_RawValue("g_fRadius", &m_fSampleRadius, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_RawValue("g_fIntensity", &m_fAOIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_RawValue("g_fContrast", &m_fAOConstrast, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_RawValue("g_fSampleBias", &m_fSampleBias, sizeof(_float))))
         return E_FAIL;
 
     m_pShader->Begin(7);

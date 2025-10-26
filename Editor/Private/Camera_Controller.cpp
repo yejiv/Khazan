@@ -82,7 +82,7 @@ void CCamera_Controller::Ready_ImGui_Create()
 	ImGui::InputFloat("Speed", &m_tCreateCameraDesc.fSpeedPerSec);
 	
 
-	if (ImGui::Button("Create", ImVec2(60.f, 30.f)))
+	if (ImGui::Button(U8STR("»ý¼º"), ImVec2(60.f, 30.f)))
 	{
 		Create_Camera();
 	};
