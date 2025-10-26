@@ -356,6 +356,26 @@ HRESULT CGameInstance::Add_RenderGroup(RENDERGROUP eRenderGroup, CGameObject* pR
 	return m_pRenderer->Add_RenderGroup(eRenderGroup, pRenderObject);
 }
 
+void CGameInstance::Set_SSAOBias(_float fBias)
+{
+	m_pRenderer->Set_SSAOBias(fBias);
+}
+
+void CGameInstance::Set_SSAOIntensity(_float fIntensity)
+{
+	m_pRenderer->Set_SSAOIntensity(fIntensity);
+}
+
+void CGameInstance::Set_SSAOConstrast(_float fConstrast)
+{
+	m_pRenderer->Set_SSAOConstrast(fConstrast);
+}
+
+void CGameInstance::Set_SSAORadius(_float fRadius)
+{
+	m_pRenderer->Set_SSAORadius(fRadius);
+}
+
 #ifdef _DEBUG
 
 HRESULT CGameInstance::Add_DebugComponent(CComponent* pComponent)
