@@ -2,6 +2,7 @@
 
 #include "Prototype_Manager.h"
 #include "ComputeShader_Manager.h"
+#include "ThreadPool.h"
 
 #ifdef new
 #pragma push_macro("new")
@@ -215,9 +216,7 @@ public:
 #pragma endregion
 
 #pragma region THREADPOOL
-	future<void> Enqueue(std::function<void()> job);
-	future<any> EnqueueAny(std::function<any()> job);
-	void Submit(std::function<void()> job);
+	future<HRESULT> Add_Task(std::function<HRESULT()> task);
 #pragma
 
 #pragma region INPUT_MANAGER
@@ -293,7 +292,7 @@ private:
 	class CShadow*				m_pShadow = { nullptr };
 	class CFrustum*				m_pFrustum = { nullptr };
 	class CJolt_Manager*		m_pJolt_Manager = { nullptr };
-	class CThreadPool*			m_pThreadPool = { nullptr };
+	CThreadPool*				m_pThreadPool = { nullptr };
 	class CInput_Manager*		m_pInput_Manager = { nullptr };
 	class CPool_Manager*		m_pPool_Manager = { nullptr };
 	class CEvent_Manager*		m_pEvent_Manager = { nullptr };

@@ -45,98 +45,56 @@ HRESULT CLoader::Initialize(LEVEL eNextLevelID)
 {
 	m_eNextLevelID = eNextLevelID;
 
-	//InitializeCriticalSection(&m_CriticalSection);
-
-	//m_hThread = (HANDLE)_beginthreadex(nullptr, 0, LoadingMain, this, 0, nullptr);
-	//if (0 == m_hThread)
-	//	return E_FAIL;
-
 	return Loading();
+}
+
+_bool CLoader::AllReady(const std::vector<std::future<HRESULT>>& futures)
+{
+	for (auto const& f : futures) {
+		if (f.wait_for(0ms) != std::future_status::ready)
+			return false; // 하나라도 준비 안 됐으면 즉시 false
+	}
+	return true;
 }
 
 void CLoader::Update()
 {
-	if (m_isFinished.load()) return;
+	if (!AllReady(m_futures)) {
+		// 아직 로딩 중
+		return;
+	}
 
-	FlushCommits();
-
-	bool all_done = true;
-	HRESULT first_fail = S_OK;
-
-	for (auto it = m_futures.begin(); it != m_futures.end(); ) {
-		auto& f = *it;
-		if (!f.valid()) { it = m_futures.erase(it); continue; }
-
-		if (f.wait_for(0ms) == future_status::ready) {
-			try {
-				any result = f.get();
-
-				if (auto pHr = any_cast<HRESULT>(&result)) {
-					if (FAILED(*pHr) && SUCCEEDED(first_fail)) first_fail = *pHr;
-				}
-				else {
-					// 타입 불일치도 실패로 간주
-					if (SUCCEEDED(first_fail)) first_fail = E_UNEXPECTED;
-				}
-			}
-			catch (const bad_alloc&) {
-				// 바로 여기에 찍히면 태스크 쪽 과다할당/개수버그 의심
-				if (SUCCEEDED(first_fail)) first_fail = E_OUTOFMEMORY;
-				// TODO: 로그로 태스크 이름/파일/라인 남기기
-			}
-			catch (const exception& e) {
-				if (SUCCEEDED(first_fail)) first_fail = E_FAIL;
-				// TODO: e.what() 로깅
-			}
-			catch (...) {
-				if (SUCCEEDED(first_fail)) first_fail = E_FAIL;
-			}
-
-			it = m_futures.erase(it);
+	_bool all_ok = true;
+	for (auto& f : m_futures) {
+		try {
+			const HRESULT hr = f.get();
+			if (FAILED(hr)) all_ok = false;
 		}
-		else {
-			++it;
-			all_done = false;
+		catch (...) {
+			all_ok = false;
 		}
 	}
+	m_futures.clear();
 
-	bool commit_empty = false;
-	{
-		lock_guard<mutex> lg(m_CommitMutex);
-		commit_empty = m_Commits.empty();
-	}
-
-	if (all_done && commit_empty)
-	{
-		if (SUCCEEDED(first_fail))
-			lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
-		else
-			lstrcpy(m_szLoadingText, TEXT("로딩 실패"));
-
-		m_isFinished = true;
-	}
+	m_isFinished = all_ok;
+	if (m_isFinished)
+		lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
+	else
+		lstrcpy(m_szLoadingText, TEXT("로딩 실패하였습니다."));
 }
 
 HRESULT CLoader::Loading()
 {
-	//EnterCriticalSection(&m_CriticalSection);
-
-	//CoInitializeEx(nullptr, 0);
-
 	m_isFinished = false;
-	m_futures.clear();
-
+	
 	HRESULT			hr = {};
 
 	switch(m_eNextLevelID)
 	{
-	case LEVEL::TITLE:
-		m_futures.emplace_back(
-			m_pGameInstance->EnqueueAny([this]() -> any {
-				CoInitGuard co;
-				return any(Loading_For_Title_Level());
-				})
-		);
+	case LEVEL::TITLE:		
+		m_futures.push_back(m_pGameInstance->Add_Task([this](){
+			return Loading_For_Title_Level();
+			}));
 		break;
 	case LEVEL::STAGE1:
 		hr = Loading_For_Stage1_Level();
@@ -147,7 +105,7 @@ HRESULT CLoader::Loading()
 		return E_FAIL;
 
 	//LeaveCriticalSection(&m_CriticalSection);
-
+	Update();
 	return S_OK;
 }
 
@@ -171,14 +129,18 @@ HRESULT CLoader::Loading_For_Title_Level()
 
 HRESULT CLoader::Loading_For_Stage1_Level()
 {
-	
-	m_futures.emplace_back(m_pGameInstance->EnqueueAny([this]() -> any { return any(Loading_For_Stage1_Texture()); }));
-
-	m_futures.emplace_back(m_pGameInstance->EnqueueAny([this]() -> any { return any(Loading_For_Stage1_Model()); }));
-
-	m_futures.emplace_back(m_pGameInstance->EnqueueAny([this]() -> any { return any(Loading_For_Stage1_Shader()); }));
-
-	m_futures.emplace_back(m_pGameInstance->EnqueueAny([this]() -> any { return any(Loading_For_Stage1_GameObject()); }));
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		return Loading_For_Stage1_Texture();
+		}));
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		return Loading_For_Stage1_Model();
+		}));
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		return Loading_For_Stage1_Shader();
+		}));
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		return Loading_For_Stage1_GameObject();
+		}));
 
 	return S_OK;
 }
@@ -254,8 +216,12 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 		//return E_FAIL;
 
 	/* Prototype_Component_Model_파일명 */
-	CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
-	CHECK_FAILED(Loading_Prototype_MapObject_Inst_From_DAT(TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+		}));
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		CHECK_FAILED(Loading_Prototype_MapObject_Inst_From_DAT(TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+		}));
 
 	return S_OK;
 }

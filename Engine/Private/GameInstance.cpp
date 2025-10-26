@@ -16,7 +16,6 @@
 #include "Frustum.h"
 #include "Imgui_Manager.h"
 #include "Jolt_Manager.h"
-#include "ThreadPool.h"
 #include "Input_Manager.h"
 #include "Pool_Manager.h"
 #include "Event_Manager.h"
@@ -809,21 +808,14 @@ void CGameInstance::Jolt_Test()
 #pragma endregion
 
 #pragma region THREADPOOL
-future<void> CGameInstance::Enqueue(std::function<void()> job)
+future<HRESULT> CGameInstance::Add_Task(std::function<HRESULT()> task)
 {
-	return m_pThreadPool->Enqueue(job);
-}
-future<any> CGameInstance::EnqueueAny(std::function<any()> job)
-{
-	return m_pThreadPool->EnqueueAny(job);
-}
-void CGameInstance::Submit(std::function<void()> job)
-{
-	m_pThreadPool->Submit(job);
+	return m_pThreadPool->Add_Task(task);
 }
 #pragma endregion
 
 #pragma region INPUT_MANAGER
+
 _bool CGameInstance::Key_Pressing(_ubyte byKeyID, _float fTimeDelta, INPUT_TYPE eType, _float* pPressingTime)
 {
 	return m_pInput_Manager->Key_Pressing(byKeyID, fTimeDelta, eType, pPressingTime);

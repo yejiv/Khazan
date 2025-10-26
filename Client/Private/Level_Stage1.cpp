@@ -47,10 +47,18 @@ HRESULT CLevel_Stage1::Initialize()
 
 	CHECK_FAILED(Ready_Layer_Test(TEXT("Layer_Test")), E_FAIL);
 
-	CHECK_FAILED(Ready_Layer_MapObject_Test(TEXT("Layer_Test")), E_FAIL);
+	m_pGameInstance->Add_Task([this]() {
+		CHECK_FAILED(Ready_Layer_MapObject_Test(TEXT("Layer_Test")), E_FAIL);
+		});
+	
+	m_pGameInstance->Add_Task([this]() {
+		CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+		});
 
-	CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
-	CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+	m_pGameInstance->Add_Task([this]() {
+		CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+		});
+	
 
 	//m_pGameInstance->Jolt_Test();
 
@@ -346,8 +354,18 @@ HRESULT CLevel_Stage1::Ready_Layer_MapObject_Inst(const _wstring& strLayerTag, c
 		ObjectDesc.Properties = PropProperties;
 
 		// ÀÎ½ºÅÏ½º °´Ã¼ ½´¿ô
-		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
-			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Static"), &ObjectDesc), E_FAIL);
+		m_pGameInstance->Add_Task([this, objDesc = ObjectDesc, curLevel = eCurrentLevel]() mutable {
+			CHECK_FAILED(
+				m_pGameInstance->Add_GameObject_ToLayer(
+					ENUM_CLASS(objDesc.eLevel),
+					TEXT("Layer_MapObject_Inst"),
+					ENUM_CLASS(curLevel),
+					TEXT("Prototype_GameObject_Prop_Static"),
+					&objDesc // Ä¸Ã³µÈ °ªÀÇ ÁÖ¼Ò -> ¾ÈÀü
+				),
+				E_FAIL
+			);
+			});
 	}
 
 	return S_OK;
@@ -409,7 +427,11 @@ HRESULT CLevel_Stage1::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurrentL
 		CHECK_FALSE(ReadFile(hFile, &LightDesc, sizeof(LIGHT_DESC), &dwByte, nullptr), false);
 
 		// Á¶¸í µî·Ï
-		m_pGameInstance->Add_Light(szLightTag, ENUM_CLASS(eCurrentLevel), LightDesc, true);
+		m_pGameInstance->Add_Task([this, szLightTag = szLightTag, eCurrentLevel = ENUM_CLASS(eCurrentLevel), LightDesc = LightDesc]() mutable {
+			m_pGameInstance->Add_Light(szLightTag, ENUM_CLASS(eCurrentLevel), LightDesc, true);
+			return S_OK;
+			});
+		
 	}
 
 	CloseHandle(hFile);
