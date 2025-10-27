@@ -3,6 +3,8 @@
 float4x4 g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 float4 g_vColor, g_fProgressValue;
 float g_fAlpha;
+float g_fValue;
+
 texture2D g_Texture;
 
 struct VS_IN
@@ -143,9 +145,20 @@ PS_OUT PS_MAINMENU_LIST(PS_IN In)
     PS_OUT Out = (PS_OUT) 0;
          
     Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
-    Out.vColor.a = Out.vColor.a * g_fAlpha;
+    
+    float fAlpha = 1.f;
+    
+    if (In.vTexcoord.x > g_fValue + 0.3)
+        discard;
+    else if (In.vTexcoord.x > g_fValue)
+    {
+        fAlpha = (In.vTexcoord.x - g_fValue) / 0.3f;
+        fAlpha = saturate(1.0f - fAlpha);
+    }
+    Out.vColor.a = Out.vColor.a * g_fAlpha * fAlpha;
     return Out;
 }
+
 
 technique11 DefaultTechnique
 {
@@ -223,6 +236,8 @@ technique11 DefaultTechnique
 
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_TEX_PROGRESS_BOTTOMDOWN();
+        PixelShader = compile ps_5_0 PS_MAINMENU_LIST();
     }
+
+
 }

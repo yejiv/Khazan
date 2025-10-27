@@ -16,7 +16,7 @@ public:
 		_float			fDepth;
 		_int			iUIType;
 		string			szName;
-
+		_float4			vColor;
 		function<void(BUBBLEEVENT*)> BubbleEvent = nullptr;
 	}UIOBJECT_DESC;
 

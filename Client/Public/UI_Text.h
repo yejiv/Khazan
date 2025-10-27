@@ -6,6 +6,20 @@ NS_BEGIN(Client)
 
 class CUI_Text abstract : public CUIObject
 {
+public:
+	typedef struct tagUITextBox
+	{
+		_bool						bIsTextBox = { false };
+		TEXT_ALIGN					eTextAlign = {};
+		_float						fMaxWidth = {};
+		_float						fOffsetHeight = {};
+		_int						iPivotX = {};
+		_int						iPivotY = {};
+		_wstring					wstrTexttag = {};
+		_wstring					wstrText = {};
+		_float4						vColor = {};
+
+	}TEXTBOX_DESC;
 protected:
 	CUI_Text(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CUI_Text(const CUI_Text& Prototype);
@@ -13,7 +27,7 @@ protected:
 
 public:
 	void						Set_Text(_wstring wstrText);
-
+	void						Setting_Text(const TEXTBOX_DESC& pDesc);
 public:
 	virtual HRESULT				Initialize_Prototype() override;
 	virtual HRESULT				Initialize_Clone(void* pArg) override;
