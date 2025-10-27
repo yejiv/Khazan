@@ -31,15 +31,16 @@ private:
 #endif
 
 	// Cascade
-	_float4					m_vLightDir = { 1.f, -1.f, 1.f, 0.f };
+	CASCADE_CONFIG			m_CascadeConfig = {};
 
-	_float					m_fShadowBias = {};
-	_float					m_fShadowLamda = {};
+	//	_float4					m_vLightDir = {};
+	//	_float					m_fShadowBias = {};
+	//	_float					m_fShadowLamda = {};
+	//	vector<_float>			m_CascadeSplits = {};
 
 	_bool					m_isInitShadow = {};
 	_float					m_fCameraNear = { 0.1f };
 	_float					m_fCameraFar = { 1000.f };
-	vector<_float>			m_CascadeSplits = {};
 	_uint					m_iNumCascades = {};
 
 	// Render Flag
@@ -47,10 +48,12 @@ private:
 	_bool					m_isRenderSSAO = { true };
 
 	// SSAO
-	_float					m_fSampleRadius = { 1.f };
-	_float					m_fAOIntensity = { 1.f };
-	_float					m_fAOConstrast = { 1.f };
-	_float					m_fSampleBias = { 0.f };
+	SSAO_CONFIG				m_SSAOConfig = {};
+	
+	//	_float					m_fSampleRadius = { 1.f };
+	//	_float					m_fAOIntensity = { 1.f };
+	//	_float					m_fAOConstrast = { 1.f };
+	//	_float					m_fSampleBias = { 0.f };
 
 public:
 	static CLevel_Shader* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
