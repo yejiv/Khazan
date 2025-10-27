@@ -63,6 +63,20 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 	m_pBB->Set_Value(m_strMonstertag, "CurrentTime", fPrevTime + fTimeDelta);
 
 	//cout << "fDist : " << m_pBB->Get_Value<_float>("Yetuga","TargetDist") << endl;
+	_uint iDirFlag = m_pBB->Get_Value<_uint>("Yetuga", "TargetDirection");
+	cout << "DirFlag : " << iDirFlag << "(";
+
+	if (iDirFlag == 5) cout << "FL";
+	if (iDirFlag == 9) cout << "FR";
+	if (iDirFlag == 6) cout << "BL";
+	if (iDirFlag == 10) cout << "BR";
+	if (iDirFlag == 1) cout << "F";
+	if (iDirFlag == 2) cout << "B";
+	if (iDirFlag == 4) cout << "L";
+	if (iDirFlag == 8) cout << "R";
+	
+	cout << ")" << endl;
+	
 	m_pBT->Update();
 
 	m_pFSM->Update(pOwner,fTimeDelta);
