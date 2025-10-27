@@ -18,7 +18,6 @@
 #include "Jolt_Manager.h"
 #include "Input_Manager.h"
 #include "Pool_Manager.h"
-#include "Event_Manager.h"
 #include "Resource_Manager.h"
 #include "ComputeShader_Manager.h"
 #include "Camera_Manager.h"
@@ -830,25 +829,17 @@ void CGameInstance::Push_PoolObject_ToLayer(_uint iLayerLevelIndex, const _wstri
 #pragma endregion
 
 #pragma region EVENT_MANAGER
-_uint CGameInstance::Subscribe(_uint iEventType, std::function<void()> fEvent)
+_bool CGameInstance::Unsubscribe_Event(_uint iEventType, _uint iListenerId)
 {
-	return m_pEvent_Manager->Subscribe(iEventType, fEvent);
+	return m_pEvent_Manager->Unsubscribe(iEventType, iListenerId);
 }
-void CGameInstance::UnSubscribeAll(_uint iEventType)
+void CGameInstance::UnsubscribeAll_Event(_uint iEventType)
 {
-	m_pEvent_Manager->UnSubscribeAll(iEventType);
+	m_pEvent_Manager->UnsubscribeAll(iEventType);
 }
-void CGameInstance::UnSubscribe(_uint iEventType, _uint iID)
+void CGameInstance::Clear_AllEvents()
 {
-	m_pEvent_Manager->UnSubscribe(iEventType, iID);
-}
-HRESULT CGameInstance::Emit(_uint iEventType)
-{
-	return m_pEvent_Manager->Emit(iEventType);
-}
-void CGameInstance::Event_Clear()
-{
-	m_pEvent_Manager->Clear();
+	m_pEvent_Manager->ClearAll();
 }
 #pragma endregion
 

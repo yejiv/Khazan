@@ -3,6 +3,7 @@
 #include "Prototype_Manager.h"
 #include "ComputeShader_Manager.h"
 #include "ThreadPool.h"
+#include "Event_Manager.h"
 
 #ifdef new
 #pragma push_macro("new")
@@ -234,11 +235,20 @@ public:
 #pragma endregion
 
 #pragma region EVENT_MANAGER
-	_uint Subscribe(_uint iEventType, std::function<void()> fEvent);
-	void UnSubscribeAll(_uint iEventType);
-	void UnSubscribe(_uint iEventType, _uint iID);
-	HRESULT Emit(_uint iEventType);
-	void Event_Clear();
+	template<typename T>
+	_uint Subscribe_Event(_uint iEventType, std::function<void(const T&)> fn) {
+		return m_pEvent_Manager ? m_pEvent_Manager->Subscribe<T>(iEventType, std::move(fn)) : 0;
+	}
+
+	template<typename T>
+	HRESULT Emit_Event(_uint iEventType, const T& payload) {
+		return m_pEvent_Manager ? m_pEvent_Manager->Emit<T>(iEventType, payload) : E_FAIL;
+	}
+
+	_bool Unsubscribe_Event(_uint iEventType, _uint iListenerId);
+	void UnsubscribeAll_Event(_uint iEventType);
+	void Clear_AllEvents();
+
 #pragma endregion
 
 #pragma region RESOURCE_MANAGER
