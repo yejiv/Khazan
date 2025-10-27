@@ -37,7 +37,7 @@ private:
 
 #pragma region BehaviorTree
 	void				Show_BehaviorTree_Menu(const char* szDefaultFileName);
-	void				Show_BT_Editor(AI_BTDATA& TreeData);
+	void				Show_BT_Editor(AI_BTDATA& TreeData); 
 	void				Show_BTNode_Hierarchy(AIBTNODE_DATA& Node);
 
 	void				Save_BehaviorTree(const AI_BTDATA& Data, const string& FileName);
