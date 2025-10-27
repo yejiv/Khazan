@@ -16,53 +16,47 @@ public:
 
 public:
 	HRESULT				Bind_ShadowDSV(_uint iIndex);
-	HRESULT				Bind_ShadowSRVArray(class CShader* pShader, const _char* pConstantName);
+	HRESULT				Bind_Shadow_ShaderResources(class CShader* pShader);
+	void				Clear_DSVs();
 
 public:
 	void				Set_CurrentCascade(_uint iIndex) { m_iCurrentCascade = iIndex; }
 	_uint				Get_NumCascades() { return m_Cascade.iNumCascades; }
-	const _float*		Get_Splits() const { return m_Cascade.Splits.data(); }
-	void				Set_Splits(const _float* pSplits);
 	const _float4x4*	Get_CurrentLightViewMatrix() const;
 	const _float4x4*	Get_CurrentLightProjMatrix() const;
-	const _float4x4*	Get_LightViewMatrices() const { return m_Cascade.LightViewMatrices.data(); }
-	const _float4x4*	Get_LightProjMatrices() const { return m_Cascade.LightProjMatrices.data(); }
-	_float				Get_Bias() { return m_fBias; }
-	void				Set_Bias(_float fBias) { m_fBias = fBias; }
-	_float				Get_Lamda() { return m_fLamda; }
-	void				Set_Lamda(_float fLamda);
 
-	// 임시로 추가
-	_float4				Get_ShadowLightDir() { return m_vLightDir; }
-	void				Set_ShadowLightDir(const _float4 vLightDir) { m_vLightDir = vLightDir; }
+	CASCADE_CONFIG		Get_CascadeConfig() { return m_Config; }
+	void				Set_CascadeConfig(CASCADE_CONFIG Config);
 
+#ifdef _DEBUG
 public:
-	void				Clear_DSVs();
+	HRESULT				Ready_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY);
+	HRESULT				Render(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
+#endif
 
 private:
 	ID3D11Device*						m_pDevice = { nullptr };
 	ID3D11DeviceContext*				m_pContext = { nullptr };
 	class CGameInstance*				m_pGameInstance = { nullptr };
 
-	CASCADE_DATA						m_Cascade;
+	CASCADE_DATA						m_Cascade = {};		// Cascade 필수 구성 요소
+	CASCADE_CONFIG						m_Config = {};		// Cascade 수치 조절용 설정 정보
 
 	_uint								m_iCurrentCascade = {};
-	_float4								m_vLightDir = {};
-	_float								m_fLamda = {};
 	_float								m_fCameraNear{}, m_fCameraFar{};
-	_float								m_fBias = {};
+
+	vector<_float4x4>					m_WorldMatrices = {};
 
 private:
-	// Resource
 	vector<ID3D11DepthStencilView*>		m_ShadowDSVs;
 	ID3D11ShaderResourceView*			m_pShadowSRVArray = { nullptr };
 
 private:
-	HRESULT Ready_Cascade_Shadow_Resources();
+	HRESULT				Ready_ShaderResources();
 
 public:
-	static CShadow* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	virtual void Free();
+	static CShadow*		Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	virtual void		Free();
 };
 
 NS_END

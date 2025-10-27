@@ -183,17 +183,36 @@ HRESULT CAI_Controller::LoadBTNode(const JSON& j, AIBTNODE_DATA& Node)
     if (j.contains("Callback"))
         Node.strCallbackFunction = j["Callback"].get<string>();
 
+    //if (j.contains("Children"))
+    //{
+    //    for (auto& childJson : j["Children"])
+    //    {
+    //        AIBTNODE_DATA childNode;
+    //        if (FAILED(LoadBTNode(childJson, childNode)))
+    //            return E_FAIL;
+
+    //        //Node.Children.push_back(childNode);
+    //        Node.Children.push_back(&childNode);
+    //    }
+    //}
+
     if (j.contains("Children"))
     {
         for (auto& childJson : j["Children"])
         {
-            AIBTNODE_DATA childNode;
-            if (FAILED(LoadBTNode(childJson, childNode)))
+            AIBTNODE_DATA* pChild = new AIBTNODE_DATA();
+            if (FAILED(LoadBTNode(childJson, *pChild)))
+            {
+                delete pChild;
                 return E_FAIL;
-
-            Node.Children.push_back(childNode);
+            }
+             //부모 포인터 설정
+            pChild->Parent = &Node;
+            Node.Children.push_back(pChild);
         }
     }
+
+
 
     return S_OK;
 }
@@ -223,7 +242,8 @@ CBTNode* CAI_Controller::CreateBTNode(CGameObject* pOwner, const AIBTNODE_DATA& 
             pDecorator = CCoolDown_Node::Create(m_strMonstertag, "CurrentTime", NodeData.fCoolDownTime);
 
         if (!NodeData.Children.empty())
-            pDecorator->Set_Child(CreateBTNode(pOwner,NodeData.Children[0]));
+            //pDecorator->Set_Child(CreateBTNode(pOwner,NodeData.Children[0]));
+            pDecorator->Set_Child(CreateBTNode(pOwner,*NodeData.Children[0]));
 
         return pDecorator;
     }
@@ -238,7 +258,8 @@ CBTNode* CAI_Controller::CreateBTNode(CGameObject* pOwner, const AIBTNODE_DATA& 
             pComposite = CSequence_Node::Create();
 
         for (auto& pChild : NodeData.Children)
-            pComposite->Add_Child(CreateBTNode(pOwner,pChild));
+            //pComposite->Add_Child(CreateBTNode(pOwner,pChild));
+            pComposite->Add_Child(CreateBTNode(pOwner,*pChild));
 
 
         return pComposite;
@@ -272,17 +293,6 @@ CONDITION CAI_Controller::GetCallbackCondition(CGameObject* pOwner,const string&
 
 ACTION CAI_Controller::GetCallbackAction(CGameObject* pOwner, const string& name)
 {
-    if (name == "AttackAction")
-    {
-        return
-            [pOwner](CBlackBoard* BB)
-            {
-                return BTNODESTATE::FAILURE;
-
-            };
-    }
-
-
 
     return ACTION();
 }
@@ -293,9 +303,25 @@ TERMINATE CAI_Controller::GetCallbackTeminate(CGameObject* pOwner, const string&
 }
 
 
+void CAI_Controller::Release_BTNode(AIBTNODE_DATA* pRootNodeData)
+{
+    if (nullptr == pRootNodeData)
+        return;
+
+    for (auto& pChild : pRootNodeData->Children)
+    {
+        Release_BTNode(pChild);
+        delete pChild;
+    }
+    pRootNodeData->Children.clear();
+}
+
 void CAI_Controller::Free()
 {
     __super::Free();
+
+  
+    Release_BTNode(&m_BTDesc.RootNode);
 
     Safe_Release(m_pBB);
     Safe_Release(m_pBT);

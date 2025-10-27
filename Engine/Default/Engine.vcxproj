@@ -225,6 +225,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\Repeater_Node.cpp" />
     <ClCompile Include="..\Private\Selector_Node.cpp" />
     <ClCompile Include="..\Private\Sequence_Node.cpp" />
+    <ClCompile Include="..\private\SSAO.cpp" />
     <ClCompile Include="..\Private\StateMachine.cpp" />
     <ClCompile Include="..\private\Texture_Atlas.cpp" />
     <ClCompile Include="..\private\Model.cpp" />
@@ -360,6 +361,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Repeater_Node.h" />
     <ClInclude Include="..\Public\Selector_Node.h" />
     <ClInclude Include="..\Public\Sequence_Node.h" />
+    <ClInclude Include="..\public\SSAO.h" />
     <ClInclude Include="..\Public\StateMachine.h" />
     <ClInclude Include="..\public\Texture_Atlas.h" />
     <ClInclude Include="..\public\Model.h" />

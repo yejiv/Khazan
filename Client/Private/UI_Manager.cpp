@@ -37,18 +37,27 @@ HRESULT CUI_Manager::Initialize()
 	return S_OK;
 }
 
-HRESULT CUI_Manager::UI_UpdateSwitch(const _wstring& strUITag, void* pArg)
+HRESULT CUI_Manager::UI_UpdateSwitch(const _wstring& szRootUIName, void* pArg)
 {
-	CUIObject* pRootUI = Find_RootUI(strUITag);
+	CUIObject* pRootUI = Find_RootUI(szRootUIName);
 
 	if (pRootUI == nullptr)
 	{
-		_wstring Failed = TEXT("Failed to Update_Switch : ") + strUITag;
+		_wstring Failed = TEXT("Failed to Update_Switch : ") + szRootUIName;
 		MSG_BOX(Failed.c_str());
 		return E_FAIL;
 	}
 
 	return pRootUI->Update_Switch(pArg);
+}
+
+CUIObject* CUI_Manager::Get_RootUI(const _wstring& szRootUIName)
+{
+	CUIObject* pRootUI = Find_RootUI(szRootUIName);
+	if (!pRootUI)
+		return nullptr;
+
+	return pRootUI;
 }
 
 HRESULT CUI_Manager::Add_Event(const _wstring& strLayerTag, const _wstring& strEventTag, std::function<void()> Event)
@@ -161,8 +170,8 @@ HRESULT CUI_Manager::Load_UIData(_uint iLayerLevelID, const _wstring& strLayerTa
 
 		m_pGameInstance->Push_GameObject_ToLayer(iLayerLevelID, strLayerTag, pRootUI);
 
-		string strName = jsonData.value("class", "");
-		_wstring wstrName = AnsiToWString(strClass);
+		string strName = jsonData.value("name", "");
+		_wstring wstrName = AnsiToWString(strName);
 
 		m_pRootUI.emplace(wstrName.c_str(), pRootUI);
 		Safe_AddRef(pRootUI);

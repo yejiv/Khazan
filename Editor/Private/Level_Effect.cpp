@@ -5,6 +5,10 @@
 #include "Effect_Point_Instance.h"
 #include "Effect_Mesh_Instance.h"
 #include "Effect_Sprite.h"
+#include <shobjidl.h>
+
+
+#include "Edit_Interface_UI.h"
 
 CLevel_Effect::CLevel_Effect(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
@@ -22,134 +26,10 @@ HRESULT CLevel_Effect::Initialize()
     if (FAILED(Ready_Layer_GameObject()))
         return E_FAIL;
 
-	strcpy_s(SavePath, sizeof(SavePath), "../../Client/Bin/Data/Effect/Baked/");
-	strcpy_s(LoadPath, sizeof(LoadPath), "../../Client/Bin/Data/Effect/Baked/");
-
-    m_pGameInstance->AddWidget(TEXT("Effect"), [&]()
-        {
-            ImGui::Begin("[Create Effect to Prefab]");
-
-            _float time = m_PrefabPrototype->Get_Time();
-            ImGui::SliderFloat("TimeTrack", &time, 0.f, m_PrefabPrototype->Get_MaxTrack());
-
-            if (ImGui::Button("Start"))
-                m_PrefabPrototype->ResetChildren();
-            if (ImGui::Button("Stop"))
-                ;
-
-            m_PrefabPrototype->Setting_Loop();
-            ImGui::Separator();
-
-            Edit_Options();
-
-            ImGui::End();
-        });
-
-    m_pGameInstance->AddWidget(TEXT("Effect"), [&]()
-        {
-			vector<string> Names;
-			vector<const char*> cstr_Names;
-
-			_uint size = m_PrefabPrototype->Get_ChildrenSize();
-
-			for (_uint i = 0; i < size; ++i)
-				Names.push_back("Element" + to_string(i));
-
-			for (const auto& name : Names)
-				cstr_Names.push_back(name.c_str());
-
-			ImGui::Begin("[Effect Elements]");
-
-			if (cstr_Names.size() > 0)
-			{
-				ImGui::ListBox("Effect Elements", &m_iChildrenIdx, cstr_Names.data(), (_int)cstr_Names.size());
-				if (m_iPrevChildrenIdx != m_iChildrenIdx)
-					m_PrefabPrototype->RevertChanges(m_iPrevChildrenIdx);
-				m_PrefabPrototype->Edit_Element(m_iChildrenIdx);
-				ImGui::Separator();
-				if (ImGui::Button("Delete"))
-				{
-					m_PrefabPrototype->RemoveEffect(m_iChildrenIdx);
-					m_iChildrenIdx = 0;
-				}
-				m_iPrevChildrenIdx = m_iChildrenIdx;
-			}
-
-			ImGui::End();
-        });
-
-	m_pGameInstance->AddWidget(TEXT("Effect"), [&]()
-		{
-			_int EventType = ENUM_CLASS(m_WorkingTrackData.eEventType);
-
-			ImGui::Begin("[Time Track]");
-
-			ImGui::RadioButton("Active", &EventType, ENUM_CLASS(CEffect_Prefab::EffectEventType::ACTIVATE));
-			ImGui::RadioButton("Spread", &EventType, ENUM_CLASS(CEffect_Prefab::EffectEventType::ANIMATE_SPREAD));
-			ImGui::RadioButton("Rotate", &EventType, ENUM_CLASS(CEffect_Prefab::EffectEventType::ANIMATE_ROTATE));
-			ImGui::RadioButton("Twinkle", &EventType, ENUM_CLASS(CEffect_Prefab::EffectEventType::ANIMATE_TWINLKE));
-			ImGui::RadioButton("Up", &EventType, ENUM_CLASS(CEffect_Prefab::EffectEventType::ANIMATE_LINEAR_MOVE));
-			ImGui::RadioButton("Dissolve", &EventType, ENUM_CLASS(CEffect_Prefab::EffectEventType::DISSOLVE));
-
-			m_WorkingTrackData.eEventType = (CEffect_Prefab::EffectEventType)EventType;
-
-			ImGui::InputInt("Element ID : ", reinterpret_cast<int*>(&m_WorkingTrackData.iElementIdx));
-			ImGui::InputFloat("StartTime : ", reinterpret_cast<_float*>(&m_WorkingTrackData.fStartTime));
-			ImGui::InputFloat("fDuration : ", reinterpret_cast<_float*>(&m_WorkingTrackData.fDuration));
-
-			switch (m_WorkingTrackData.eEventType)
-			{
-			case CEffect_Prefab::EffectEventType::ANIMATE_SPREAD:
-				ImGui::InputFloat2("Spread speed : ", reinterpret_cast<_float*>(&m_WorkingTrackData.fSpreadSpeed));
-				ImGui::InputFloat3("pivot : ", reinterpret_cast<_float*>(&m_WorkingTrackData.fPivot));
-				ImGui::Checkbox("Gravity", &m_bGravity);
-				break;
-
-			case CEffect_Prefab::EffectEventType::ANIMATE_ROTATE:
-				ImGui::InputFloat2("Rotate speed : ", reinterpret_cast<_float*>(&m_WorkingTrackData.fRotationSpeed));
-				ImGui::InputFloat3("pivot : ", reinterpret_cast<_float*>(&m_WorkingTrackData.fPivot));
-				break;
-
-			case CEffect_Prefab::EffectEventType::ANIMATE_TWINLKE:
-				ImGui::InputFloat2("Scale speed : ", reinterpret_cast<_float*>(&m_WorkingTrackData.fScaleSpeed));
-				break;
-
-			case CEffect_Prefab::EffectEventType::ANIMATE_LINEAR_MOVE:
-				ImGui::InputFloat2("Upward speed : ", reinterpret_cast<_float*>(&m_WorkingTrackData.fUpwardSpeed));
-				ImGui::Checkbox("Gravity", &m_bGravity);
-				break;
-			}
-
-			if (ImGui::Button("Add TimeTrack"))
-			{
-				m_WorkingTrackData.bGravity = m_bGravity;
-				m_PrefabPrototype->Add_TimeTrack(m_WorkingTrackData); 
-			}
-
-			ImGui::End();
-		});
-
-	m_pGameInstance->AddWidget(TEXT("Effect"), [&]()
-		{
-			m_PrefabPrototype->Edit_TimeTrack(m_iChildrenIdx); 
-		});
-
-	m_pGameInstance->AddWidget(TEXT("Effect"), [&]()
-		{
-			ImGui::Begin("[SAVE / LOAD]");
-
-			ImGui::InputText("Save Path : ", SavePath, IM_ARRAYSIZE(SavePath)); 
-
-			if (ImGui::Button("Save"))
-				m_PrefabPrototype->Save(SavePath);
-
-			ImGui::InputText("Load Path : ", LoadPath, IM_ARRAYSIZE(LoadPath));
-
-			if (ImGui::Button("Load"))
-				m_PrefabPrototype->Load(LoadPath);
-
-			ImGui::End();
-		});
+	strcpy_s(FilePath, sizeof(FilePath), "../../Client/Bin/Data/Effect/Baked/");
+	strcpy_s(SaveFileName, sizeof(SaveFileName), "../../Client/Bin/Data/Effect/Baked/");
+	strcpy_s(LoadFileName, sizeof(LoadFileName), "../../Client/Bin/Data/Effect/Baked/");
+	Init_GUI();
 
 	return S_OK;
 }
@@ -157,10 +37,9 @@ HRESULT CLevel_Effect::Initialize()
 void CLevel_Effect::Update(_float fTimeDelta)
 {
 	m_fTimeAcc += fTimeDelta;
-
 	m_PrefabPrototype->Priority_Update(fTimeDelta);
-    m_PrefabPrototype->Update(fTimeDelta);
-    m_PrefabPrototype->Late_Update(fTimeDelta);
+	m_PrefabPrototype->Update(fTimeDelta);
+	m_PrefabPrototype->Late_Update(fTimeDelta);
 
 	return;
 }
@@ -179,46 +58,139 @@ HRESULT CLevel_Effect::Render()
 	return S_OK;
 }
 
-void CLevel_Effect::Edit_Options()
+void CLevel_Effect::Init_GUI()
 {
-	ImGui::RadioButton("Point Effect", &m_EffectType, 0);
-	ImGui::RadioButton("Mesh Effect", &m_EffectType, 1);
-	ImGui::RadioButton("Sprite Effect", &m_EffectType, 2);
+	m_pGameInstance->AddWidget(TEXT("Effect"), [&]()
+		{
+			ImGui::Begin("[Edit Prefab]");
+
+			//1 Info
+			ImGui::BeginChild("PrefabPanel", ImVec2(440, 120), true);
+			Prefab_Info();
+			ImGui::EndChild();
+
+			ImGui::SameLine();
+
+			//2. Save
+			ImGui::BeginChild("Save/LoadPanel", ImVec2(0, 120), true);
+			Save_Load();
+			ImGui::EndChild();
+
+			//3 Create
+			ImGui::BeginChild("CreateElementPanel", ImVec2(440, 0), true);
+			Create_Element();
+			ImGui::EndChild();
+
+			ImGui::SameLine();
+			//4 list
+			ImGui::BeginChild("EditElementPanel", ImVec2(440, 0), true);
+			Edit_Element_List();
+			ImGui::EndChild();
+
+			ImGui::SameLine();
+			//5 timetrack
+			ImGui::BeginChild("TimeTrackPanel", ImVec2(0, 0), true);
+			Edit_Time_Track();
+			ImGui::EndChild();
+
+			ImGui::End();
+		});
+}
+
+void CLevel_Effect::Prefab_Info()
+{
+	ImGui::Text("[Effect Prefab]");
+	ImGui::SameLine();
 	ImGui::Separator();
 
-	if (m_EffectType != 2)	//Instancing Effect
+	_float time = m_PrefabPrototype->Get_Time();
+	ImGui::SliderFloat("TimeTrack", &time, 0.f, m_PrefabPrototype->Get_MaxTrack());
+
+	if (ImGui::Button("Start"))
+		m_PrefabPrototype->ResetChildren();
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Stop"))
+		;
+
+	ImGui::SameLine();
+
+	m_PrefabPrototype->Setting_Loop();
+}
+
+void CLevel_Effect::Create_Element()
+{
+	ImGui::Text("[Create Effect Element]");
+
+	if (ImGui::BeginTabBar("EffectType"))
 	{
-		ImGui::RadioButton("Spawn_BoundingBox", &m_SpawnType, 0);
-		ImGui::RadioButton("Spawn_Circle", &m_SpawnType, 1);
-		ImGui::Separator();
+		if (ImGui::BeginTabItem("Point Effect"))
+		{
+			ImGui::Checkbox("Element Loop", &m_bLoop);
+			ImGui::Text("Spwan Type");
+			ImGui::SameLine();
+			ImGui::Separator();
+			ImGui::RadioButton("Spawn_BoundingBox", &m_SpawnType, 0);
+			ImGui::RadioButton("Spawn_Circle", &m_SpawnType, 1);
+			ImGui::Separator();
 
-		if (m_SpawnType == 0)
-			Create_Box_Spawn();
-		else if (m_SpawnType == 1)
-			Create_Circle_Spawn();
+			if (m_SpawnType == 0)
+				Create_Box_Spawn();
+			else if (m_SpawnType == 1)
+				Create_Circle_Spawn();
 
-		ImGui::Checkbox("Element Loop", &m_bLoop);
-		ImGui::InputScalar("Instance Num : ", ImGuiDataType_U32, &m_iInstanceNum);
-		ImGui::InputFloat2("LifeTime : ", m_fLifeTime);
-		ImGui::InputFloat2("Scrolling Speed : ", reinterpret_cast<_float*>(&m_fScrollSpeed));
+			ImGui::InputScalar("Instance Num : ", ImGuiDataType_U32, &m_iInstanceNum);
+			ImGui::InputFloat2("LifeTime : ", m_fLifeTime);
+			ImGui::InputFloat2("Scrolling Speed : ", reinterpret_cast<_float*>(&m_fScrollSpeed));
+			ImGui::InputFloat2("Size : ", m_fSize);
+			ImGui::InputFloat("Size Ratio : ", &m_fSizeRatio);
+			GetMaksingScrollData();
+			m_EffectType = 0;
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Mesh Effect"))
+		{
+			ImGui::Checkbox("Element Loop", &m_bLoop);
+			ImGui::Text("Spwan Type");
+			ImGui::SameLine();
+			ImGui::Separator();
+			ImGui::RadioButton("Spawn_BoundingBox", &m_SpawnType, 0);
+			ImGui::RadioButton("Spawn_Circle", &m_SpawnType, 1);
+			ImGui::Separator();
 
-		if (m_EffectType == 1)
-			ImGui::Checkbox("Mask Scroll Direction", &m_bScrollDir);
+			if (m_SpawnType == 0)
+				Create_Box_Spawn();
+			else if (m_SpawnType == 1)
+				Create_Circle_Spawn();
+			
+			ImGui::InputScalar("Instance Num : ", ImGuiDataType_U32, &m_iInstanceNum);
+			ImGui::InputFloat2("LifeTime : ", m_fLifeTime);
+			ImGui::InputFloat2("Scrolling Speed : ", reinterpret_cast<_float*>(&m_fScrollSpeed));
+			ImGui::InputFloat2("Size : ", m_fSize);
+			ImGui::InputFloat("Size Ratio : ", &m_fSizeRatio);
+			GetMaksingScrollData();
+			m_EffectType = 1;
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Sprite Effect"))
+		{
+			const char* textures[] = { "test0","test1" };
+			ImGui::Combo("Textures", reinterpret_cast<int*>(&m_iTextureIdx), textures, IM_ARRAYSIZE(textures));
+
+			ImGui::InputFloat("Sprite Speed : ", reinterpret_cast<_float*>(&m_fSpriteSpeed));
+			ImGui::InputInt("Scaling Value : ", reinterpret_cast<int*>(&m_fScalingValue));
+			ImGui::InputInt("Col : ", reinterpret_cast<int*>(&m_iCol));
+			ImGui::InputInt("Row : ", reinterpret_cast<int*>(&m_iRow));
+			ImGui::Checkbox("Sprite Loop", &m_bLoop);
+			ImGui::InputFloat2("Size : ", m_fSize);
+			ImGui::InputFloat("Size Ratio : ", &m_fSizeRatio);
+			GetMaksingScrollData();
+			m_EffectType = 2;
+			ImGui::EndTabItem();
+		}
+		ImGui::EndTabBar();
 	}
-	else // Sprite Effect
-	{
-		const char* textures[] = { "test0","test1" };
-		ImGui::ListBox("Particles", reinterpret_cast<int*>(&m_iTextureIdx), textures, IM_ARRAYSIZE(textures));
-
-		ImGui::InputFloat("Sprite Speed : ", reinterpret_cast<_float*>(&m_fSpriteSpeed));
-		ImGui::InputInt("Scaling Value : ", reinterpret_cast<int*>(&m_fScalingValue));
-		ImGui::InputInt("Col : ", reinterpret_cast<int*>(&m_iCol));
-		ImGui::InputInt("Row : ", reinterpret_cast<int*>(&m_iRow));
-		ImGui::Checkbox("Sprite Loop", &m_bLoop);
-	}
-
-	ImGui::InputFloat2("Size : ", m_fSize);
-	ImGui::InputFloat("Size Ratio : ", &m_fSizeRatio);
 
 	GetParticleColor();
 
@@ -244,6 +216,77 @@ void CLevel_Effect::Edit_Options()
 	}
 }
 
+void CLevel_Effect::Edit_Element_List()
+{
+	ImGui::Text("[Edit Effect Elements]");
+	ImGui::SameLine();
+	ImGui::Separator();
+
+	vector<string> Names;
+	vector<const char*> cstr_Names;
+
+	_uint size = m_PrefabPrototype->Get_ChildrenSize();
+
+	for (_uint i = 0; i < size; ++i)
+		Names.push_back("Element" + to_string(i));
+
+	for (const auto& name : Names)
+		cstr_Names.push_back(name.c_str());
+
+	// 제목 쓰기
+
+	if (cstr_Names.size() > 0)
+	{
+		ImGui::ListBox("Effect Elements", &m_iChildrenIdx, cstr_Names.data(), (_int)cstr_Names.size());
+		if (m_iPrevChildrenIdx != m_iChildrenIdx)
+			m_PrefabPrototype->RevertChanges(m_iPrevChildrenIdx);
+		m_PrefabPrototype->Edit_Element(m_iChildrenIdx);
+		ImGui::Separator();
+		if (ImGui::Button("Delete"))
+		{
+			m_PrefabPrototype->RemoveEffect(m_iChildrenIdx);
+			m_iChildrenIdx = 0;
+		}
+		m_iPrevChildrenIdx = m_iChildrenIdx;
+	}
+}
+
+void CLevel_Effect::Edit_Time_Track()
+{
+	ImGui::Text("[Edit Time Track]");
+	ImGui::SameLine();
+	ImGui::Separator();
+
+	if (ImGui::Button("Add TimeTrack", ImVec2(300, 30)))
+	{
+		CEffect_Prefab::EFFECT_EVENT newTimeTrack {};
+		newTimeTrack.iElementIdx = m_iChildrenIdx;
+		m_PrefabPrototype->Add_TimeTrack(newTimeTrack);
+	}
+
+	m_PrefabPrototype->Edit_TimeTrack(m_iChildrenIdx);
+}
+
+void CLevel_Effect::Save_Load()
+{
+	ImGui::Text("[Save / Load]");
+	ImGui::SameLine();
+	ImGui::Separator();
+	
+	if (ImGui::Button("Select File Path....", ImVec2(200, 0))) 
+		SelectFilePath();
+	
+	ImGui::InputText("Save Path : ", SaveFileName, IM_ARRAYSIZE(SaveFileName));
+	ImGui::SameLine();
+	if (ImGui::Button("Save"))
+		m_PrefabPrototype->Save(SaveFileName);
+	
+	ImGui::InputText("Load Path : ", LoadFileName, IM_ARRAYSIZE(LoadFileName));
+	ImGui::SameLine();
+	if (ImGui::Button("Load"))
+		m_PrefabPrototype->Load(LoadFileName);
+}
+
 void CLevel_Effect::Create_Box_Spawn()
 {
 	ImGui::InputFloat3("Center : ", m_fCenter);
@@ -259,6 +302,10 @@ void CLevel_Effect::GetParticleColor()
 {
 	static _int prevIdx = 0;
 
+	ImGui::Text("Color");
+	ImGui::SameLine();
+	ImGui::Separator();
+
 	ImGui::ColorEdit4("MyColorWithAlpha", (float*)&m_fColor);
 
 	if (prevIdx != m_EffectType)
@@ -267,21 +314,36 @@ void CLevel_Effect::GetParticleColor()
 	if (m_EffectType == 0)
 	{
 		const char* textures[] = { "test0", "test1", "test2",  "test3" };
-		ImGui::ListBox("Point Particles Textures", &m_iTextureIdx, textures, IM_ARRAYSIZE(textures));
+		ImGui::Combo("Point Particles Textures", reinterpret_cast<int*>(&m_iTextureIdx), textures, IM_ARRAYSIZE(textures));
 	}
 	else if (m_EffectType == 1)
 	{
 		const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19" };
-		ImGui::ListBox("Mesh Textures", &m_iTextureIdx, textures, IM_ARRAYSIZE(textures));
+		ImGui::Combo("Mesh Textures", reinterpret_cast<int*>(&m_iTextureIdx), textures, IM_ARRAYSIZE(textures));
 
 		const char* Meshes[] = { "Mesh1", "Mesh2", "Mesh3",  "Mesh4",  "Mesh5",  "Mesh6",  "Mesh7",  "Mesh8",  "Mesh9",  "Mesh10",  "Mesh11",  "Mesh12",  "Mesh13",  "Mesh14",  "Mesh15",  "Mesh16",  "Mesh17",  "Mesh18",  "Mesh19" ,  "Mesh20" };
-		ImGui::ListBox("Mesh Shape", &m_iMeshTypeIdx, Meshes, IM_ARRAYSIZE(Meshes));
-
-		const char* MaskTexture[] = { "width0", "width1", "width2",  "width3",  "width4",  "width5",  "width6" ,  "length0" };
-		ImGui::ListBox("Mask Textures", &m_iMaskTypeIdx, MaskTexture, IM_ARRAYSIZE(MaskTexture));
+		ImGui::Combo("Mesh Shape", reinterpret_cast<int*>(&m_iMeshTypeIdx), Meshes, IM_ARRAYSIZE(Meshes));
 	}
 
 	prevIdx = m_EffectType;
+}
+
+void CLevel_Effect::GetMaksingScrollData()
+{
+	ImGui::Checkbox("Do Mask Scrolling", &m_bIsMaskScrolling);
+
+	if (m_bIsMaskScrolling)
+	{
+		ImGui::Indent();
+		const char* MaskTexture[] = { "width0", "width1", "width2",  "width3",  "width4",  "width5",  "width6" ,  "length0" };
+		ImGui::Combo("Mask Textures", reinterpret_cast<int*>(&m_iMaskTextureIdx), MaskTexture, IM_ARRAYSIZE(MaskTexture));
+		ImGui::InputFloat("Mask Scroll Speed: ", &m_bMaskScrollSpeed);
+		ImGui::Checkbox("Is Vecrtical", &m_bIsScrollVertical);
+		ImGui::Checkbox("Is Inverse Direction", &m_bScrollDir);
+		ImGui::Unindent();
+	}
+	else
+		m_bMaskScrollSpeed = 0.f;
 }
 
 void CLevel_Effect::Create_PointInstance_Element()
@@ -300,6 +362,11 @@ void CLevel_Effect::Create_PointInstance_Element()
 	data.iTextureIdx = m_iTextureIdx;
 	data.iScrollSpeed = m_fScrollSpeed;
 	data.bIsLoop = m_bLoop;
+
+	data.iMaskTextureIdx = m_iMaskTextureIdx;
+	data.fMaskScrollSpeed = m_bMaskScrollSpeed;
+	data.bIsScrollVertical = m_bIsScrollVertical;
+	data.bIsScrollInverse = m_bScrollDir;
 
 	m_PrefabPrototype->Add_Effect_Element(m_EffectType, &data);
 }
@@ -321,8 +388,11 @@ void CLevel_Effect::Create_MeshInstance_Element()
 	data.iMeshTypeIdx = m_iMeshTypeIdx;
 	data.iScrollSpeed = m_fScrollSpeed;
 	data.bIsLoop = m_bLoop;
-	data.bScrollDir = m_bScrollDir;
-	data.iMaskTextureIdx = m_iMaskTypeIdx;
+	data.bIsScrollVertical = m_bIsScrollVertical;
+	data.iMaskTextureIdx = m_iMaskTextureIdx;
+	data.fMaskScrollSpeed = m_bMaskScrollSpeed;
+	data.bIsScrollVertical = m_bIsScrollVertical;
+	data.bIsScrollInverse = m_bScrollDir;
 
 	m_PrefabPrototype->Add_Effect_Element(m_EffectType, &data);
 }
@@ -340,13 +410,56 @@ void CLevel_Effect::Create_Sprite_Element()
 	data.fSizeRatio = m_fSizeRatio;
 	data.ScalingValue = 1.f; //tmp;
 	data.iTextureIdx = m_iTextureIdx;
+	data.iMaskTextureIdx = m_iMaskTextureIdx;
+	data.fMaskScrollSpeed = m_bMaskScrollSpeed;
+	data.bIsScrollVertical = m_bIsScrollVertical;
+	data.bIsScrollInverse = m_bScrollDir;
 
 	m_PrefabPrototype->Add_Effect_Element(m_EffectType, &data);
 }
 
+void CLevel_Effect::SelectFilePath()
+{
+	_char savedDir[MAX_PATH];
+	GetCurrentDirectoryA(MAX_PATH, savedDir);
+
+	IFileOpenDialog* pfd = NULL;
+	HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd));
+
+	if (SUCCEEDED(hr))
+	{
+		DWORD dwOptions;
+		pfd->GetOptions(&dwOptions);
+		pfd->SetOptions(dwOptions | FOS_PICKFOLDERS);
+
+		if (SUCCEEDED(pfd->Show(NULL)))
+		{
+			IShellItem* psiResult;
+			if (SUCCEEDED(pfd->GetResult(&psiResult)))
+			{
+				PWSTR pszPath = NULL;
+				if (SUCCEEDED(psiResult->GetDisplayName(SIGDN_FILESYSPATH, &pszPath)))
+				{
+					char exeDirPath[MAX_PATH] = { 0 };
+					GetModuleFileNameA(NULL, exeDirPath, MAX_PATH);
+					std::filesystem::path relativePath = std::filesystem::relative(pszPath, exeDirPath);
+					strcpy_s(FilePath, sizeof(FilePath), relativePath.string().c_str());
+					strcpy_s(SaveFileName, sizeof(SaveFileName), FilePath);
+					strcpy_s(LoadFileName, sizeof(LoadFileName), FilePath);
+
+					CoTaskMemFree(pszPath); // 메모리 해제
+				}
+				psiResult->Release();
+			}
+		}
+		pfd->Release();
+	}
+
+	SetCurrentDirectoryA(savedDir);
+}
+
 HRESULT CLevel_Effect::Ready_Layer_BackGround()
 {
-
 	return S_OK;
 }
 

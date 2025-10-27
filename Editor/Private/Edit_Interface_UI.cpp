@@ -94,7 +94,7 @@ void CEdit_Interface_UI::SaveLoad_UI()
 			filePath += ".json";
 			nlohmann::ordered_json SaveData;
 			m_pRootUIs[m_iSeletRootUI]->Save_UI(SaveData);
-			ofstream Out(filePath, ios::out | ios::trunc);
+			ofstream Out(filePath, ios::binary);
 			if (!Out.is_open())
 			{
 				MSG_BOX(TEXT("Json 파일 저장 실패"));
@@ -376,7 +376,7 @@ void CEdit_Interface_UI::SetName_UI()
 	m_pRootUIs[m_iSeletRootUI]->Update_ClassName(m_szSeleteUIName);
 	ImGui::InputText("##ClassName", m_szClassName, MAX_PATH);
 	ImGui::SameLine();
-	if (ImGui::Button("Class(Down:P)") || m_pGameInstance->Key_Down(DIK_P))
+	if (ImGui::Button("Class(Down:P)"))// || m_pGameInstance->Key_Down(DIK_P))
 	{
 		m_pRootUIs[m_iSeletRootUI]->Set_ClassName(m_szSeleteUIName, m_szClassName);
 	}
