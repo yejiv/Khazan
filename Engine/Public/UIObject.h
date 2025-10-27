@@ -33,6 +33,8 @@ public:
 	void						Get_Data(VTXINSTANCE_UI& pOutData);
 
 	void						Set_Color(_float4 vColor) { m_vColor = vColor; }
+	void						Set_ShaderPass(_uint iShaderIndex) { m_iShaderPass = iShaderIndex; }
+	void						Set_TexPass(_uint iTexIndex) { m_iTexPass = iTexIndex; }
 public:
 	virtual HRESULT				Initialize_Prototype() override;
 	virtual HRESULT				Initialize_Clone(void* pArg) override;

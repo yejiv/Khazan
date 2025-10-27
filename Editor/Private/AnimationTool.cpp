@@ -57,6 +57,33 @@ void CAnimationTool::Widget()
         if (!m_GameObjects.empty())
         {
             m_GameObjects[0]->Debug_RenderState();
+            if (ImGui::CollapsingHeader("Rotation Info"))
+            {
+                _matrix worldMatrix = m_GameObjects[0]->Debug_GetTransformMatrix();
+                _vector scale, rotQ, pos;
+                XMMatrixDecompose(&scale, &rotQ, &pos, worldMatrix);
+
+                _float x = XMVectorGetX(rotQ);
+                _float y = XMVectorGetY(rotQ);
+                _float z = XMVectorGetZ(rotQ);
+                _float w = XMVectorGetW(rotQ);
+
+                // 라디안 계산
+                _float roll = atan2f(2 * (w * x + y * z), 1 - 2 * (x * x + y * y)); // X
+                _float pitch = asinf(2 * (w * y - z * x));                           // Y
+                _float yaw = atan2f(2 * (w * z + x * y), 1 - 2 * (y * y + z * z)); // Z
+
+                // 각도 변환
+                _float rollDeg = XMConvertToDegrees(roll);
+                _float pitchDeg = XMConvertToDegrees(pitch);
+                _float yawDeg = XMConvertToDegrees(yaw);
+
+                // ImGui 출력
+                ImGui::SeparatorText("Rotation (Euler)");
+                ImGui::Text("X (Roll)  : %.4f rad  |  %.2f°", roll, rollDeg);
+                ImGui::Text("Y (Pitch) : %.4f rad  |  %.2f°", pitch, pitchDeg);
+                ImGui::Text("Z (Yaw)   : %.4f rad  |  %.2f°", yaw, yawDeg);
+            }
         }
 
         /* Open Model */
@@ -678,25 +705,43 @@ void CAnimationTool::Tool_AnimationInfo_Widget()
     {
         ImGui::Text("strName: %s", setup->strName.c_str());
         ImGui::Checkbox("isLoop", &setup->isLoop);
+
         ImGui::Text("iDirection: %d", setup->iDirection);
         ImGui::SameLine();
         string  strDir = "  ->  " + DirectionToString(setup->iDirection);
         ImGui::Text(strDir.c_str());
         if (ImGui::Button("Clear", ImVec2(70.f, 0.f))) setup->iDirection = 0;  ImGui::SameLine();
-        if (ImGui::Button("F", ImVec2(20.f, 0.f))) setup->iDirection += ENUM_CLASS(ANIM_DIRECTION::F);  ImGui::SameLine();
-        if (ImGui::Button("B", ImVec2(20.f, 0.f))) setup->iDirection += ENUM_CLASS(ANIM_DIRECTION::B);  ImGui::SameLine();
-        if (ImGui::Button("L", ImVec2(20.f, 0.f))) setup->iDirection += ENUM_CLASS(ANIM_DIRECTION::L);  ImGui::SameLine();
-        if (ImGui::Button("R", ImVec2(20.f, 0.f))) setup->iDirection += ENUM_CLASS(ANIM_DIRECTION::R);  ImGui::SameLine();
-        if (ImGui::Button("U", ImVec2(20.f, 0.f))) setup->iDirection += ENUM_CLASS(ANIM_DIRECTION::U);  ImGui::SameLine();
-        if (ImGui::Button("D", ImVec2(20.f, 0.f))) setup->iDirection += ENUM_CLASS(ANIM_DIRECTION::D);  ImGui::SameLine();
-        if (ImGui::Button("C", ImVec2(20.f, 0.f))) setup->iDirection += ENUM_CLASS(ANIM_DIRECTION::C);  ImGui::SameLine();
-        if (ImGui::Button("CC", ImVec2(20.f, 0.f))) setup->iDirection += ENUM_CLASS(ANIM_DIRECTION::CC);  ImGui::SameLine();
-        if (ImGui::Button("ALL", ImVec2(25.f, 0.f))) setup->iDirection  += ENUM_CLASS(ANIM_DIRECTION::ALL);  ImGui::SameLine();
-        if (ImGui::Button("BBL", ImVec2(25.f, 0.f))) setup->iDirection  += ENUM_CLASS(ANIM_DIRECTION::BBL);  ImGui::SameLine();
-        if (ImGui::Button("BLL", ImVec2(25.f, 0.f))) setup->iDirection  += ENUM_CLASS(ANIM_DIRECTION::BLL);  ImGui::SameLine();
-        //_int iTemp = setup->iDirection;
-        //ImGui::DragInt("##iDirection", &iTemp, 1, 0, 24);
-        //setup->iDirection = iTemp;
+        if (ImGui::Button("F", ImVec2(20.f, 0.f))) setup->iDirection += ENUM_CLASS(DIRECTION::F);  ImGui::SameLine();
+        if (ImGui::Button("B", ImVec2(20.f, 0.f))) setup->iDirection += ENUM_CLASS(DIRECTION::B);  ImGui::SameLine();
+        if (ImGui::Button("L", ImVec2(20.f, 0.f))) setup->iDirection += ENUM_CLASS(DIRECTION::L);  ImGui::SameLine();
+        if (ImGui::Button("R", ImVec2(20.f, 0.f))) setup->iDirection += ENUM_CLASS(DIRECTION::R);  ImGui::SameLine();
+        if (ImGui::Button("U", ImVec2(20.f, 0.f))) setup->iDirection += ENUM_CLASS(DIRECTION::U);  ImGui::SameLine();
+        if (ImGui::Button("D", ImVec2(20.f, 0.f))) setup->iDirection += ENUM_CLASS(DIRECTION::D);  ImGui::SameLine();
+        if (ImGui::Button("C", ImVec2(20.f, 0.f))) setup->iDirection += ENUM_CLASS(DIRECTION::C);  ImGui::SameLine();
+        if (ImGui::Button("CC", ImVec2(20.f, 0.f))) setup->iDirection += ENUM_CLASS(DIRECTION::CC);  ImGui::SameLine();
+        if (ImGui::Button("ALL", ImVec2(25.f, 0.f))) setup->iDirection  += ENUM_CLASS(DIRECTION::ALL);  ImGui::SameLine();
+        if (ImGui::Button("BBL", ImVec2(25.f, 0.f))) setup->iDirection  += ENUM_CLASS(DIRECTION::BBL);  ImGui::SameLine();
+        if (ImGui::Button("BLL", ImVec2(25.f, 0.f))) setup->iDirection  += ENUM_CLASS(DIRECTION::BLL); 
+
+        ImGui::Spacing();
+
+        ImGui::Text("Rotation Type: %d", animData->iRotationType);
+        ImGui::SameLine();
+         strDir = "  ->  " + RotationToString(animData->iRotationType);
+        ImGui::Text(strDir.c_str()); ImGui::SameLine();
+        if (ImGui::Button("None", ImVec2(70.f, 0.f)))  animData->iRotationType = 0; 
+        if (ImGui::Button("L 45", ImVec2(60.f, 0.f)))  animData->iRotationType = ENUM_CLASS(ANIM_ROTATIONTYPE::ROT_L45);  ImGui::SameLine();
+        if (ImGui::Button("L 90", ImVec2(60.f, 0.f)))  animData->iRotationType = ENUM_CLASS(ANIM_ROTATIONTYPE::ROT_L90);  ImGui::SameLine();
+        if (ImGui::Button("L 135", ImVec2(60.f, 0.f))) animData->iRotationType = ENUM_CLASS(ANIM_ROTATIONTYPE::ROT_L135);  ImGui::SameLine();
+        if (ImGui::Button("L 180", ImVec2(60.f, 0.f))) animData->iRotationType = ENUM_CLASS(ANIM_ROTATIONTYPE::ROT_L180);  ImGui::SameLine();
+        if (ImGui::Button("L 225", ImVec2(60.f, 0.f))) animData->iRotationType = ENUM_CLASS(ANIM_ROTATIONTYPE::ROT_L225); 
+        if (ImGui::Button("R 45", ImVec2(60.f, 0.f)))  animData->iRotationType = ENUM_CLASS(ANIM_ROTATIONTYPE::ROT_R45);  ImGui::SameLine();
+        if (ImGui::Button("R 90", ImVec2(60.f, 0.f)))  animData->iRotationType = ENUM_CLASS(ANIM_ROTATIONTYPE::ROT_R90);  ImGui::SameLine();
+        if (ImGui::Button("R 135", ImVec2(60.f, 0.f))) animData->iRotationType = ENUM_CLASS(ANIM_ROTATIONTYPE::ROT_R135);  ImGui::SameLine();
+        if (ImGui::Button("R 180", ImVec2(60.f, 0.f))) animData->iRotationType = ENUM_CLASS(ANIM_ROTATIONTYPE::ROT_R180);  ImGui::SameLine();
+        if (ImGui::Button("R 225", ImVec2(60.f, 0.f))) animData->iRotationType = ENUM_CLASS(ANIM_ROTATIONTYPE::ROT_R225);  ImGui::SameLine();
+
+
 
         ImGui::Spacing();
 
@@ -712,34 +757,40 @@ void CAnimationTool::Tool_AnimationInfo_Widget()
         {
             setup->iTransitionType = currentType;
         }
-        if (ImGui::IsItemHovered())
-        {
-            ImGui::SetTooltip("이 애니메이션에서 다음 애니메이션으로 전환하는 조건");
-        }
+        //if (ImGui::IsItemHovered())
+        //{
+        //    ImGui::SetTooltip("이 애니메이션에서 다음 애니메이션으로 전환하는 조건");
+        //}
 
         ImGui::Checkbox("Wait For Complete", &setup->isWaitForComplete);
-        if (ImGui::IsItemHovered())
-        {
-            ImGui::SetTooltip("애니메이션이 끝난 후 다음으로 넘어갈지 여부");
-        }
+        //if (ImGui::IsItemHovered())
+        //{
+        //    ImGui::SetTooltip("애니메이션이 끝난 후 다음으로 넘어갈지 여부");
+        //}
 
-        ImGui::Text("Blend Out Time:");
+        ImGui::Text("(Single Anim)Blend Time:");
         ImGui::SameLine();
         ImGui::SetNextItemWidth(150);
-        ImGui::DragFloat("##BlendOut", &setup->fBlendOutTime, 0.01f, 0.0f, 5.0f, "%.2f");
-        if (ImGui::IsItemHovered())
-        {
-            ImGui::SetTooltip("이 애니메이션이 종료될 때 블렌드 시간");
-        }
+        ImGui::DragFloat("##BlendTime", &animData->fAnimationBlendTime, 0.01f, 0.0f, 5.0f, "%.3f");
 
-        ImGui::Text("Blend In Time: ");
+
+        ImGui::Text("(Set Anim)Blend Out Time:");
         ImGui::SameLine();
         ImGui::SetNextItemWidth(150);
-        ImGui::DragFloat("##BlendIn", &setup->fBlendInTime, 0.01f, 0.0f, 5.0f, "%.2f");
-        if (ImGui::IsItemHovered())
-        {
-            ImGui::SetTooltip("이 애니메이션이 시작될 때 블렌드 시간");
-        }
+        ImGui::DragFloat("##BlendOut", &setup->fBlendOutTime, 0.01f, 0.0f, 5.0f, "%.3f");
+        //if (ImGui::IsItemHovered())
+        //{
+        //    ImGui::SetTooltip("이 애니메이션이 종료될 때 블렌드 시간");
+        //}
+
+        ImGui::Text("(Set Anim)Blend In Time: ");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(150);
+        ImGui::DragFloat("##BlendIn", &setup->fBlendInTime, 0.01f, 0.0f, 5.0f, "%.3f");
+        //if (ImGui::IsItemHovered())
+        //{
+        //    ImGui::SetTooltip("이 애니메이션이 시작될 때 블렌드 시간");
+        //}
     }
     ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing();
 
@@ -870,10 +921,49 @@ void CAnimationTool::Tool_AnimationInfo_Widget()
         if (setup->isRootMotion)
         {
             ImGui::Indent();
-
-            ImGui::Checkbox("isApplyRootRotation", &setup->isApplyRootRotation);
-            ImGui::Checkbox("isApplyRootPosition", &setup->isApplyRootPosition);
-
+           if( ImGui::Button("Fast Standing Motion"))
+            {
+				setup->isApplyRootPosition = true;
+				setup->isIgnoreRootRot = false;
+				setup->isIgnoreRootPos = false;
+				setup->isIgnoreRootPosFirstFrame = true;
+				setup->isAbsoluteRootPosition = false;
+				setup->RootMitionScale = FLOAT3_DATA(1.f, 1.f, 1.f);
+            }
+		   ImGui::SameLine();
+           if (ImGui::Button("Fast Rotation Motion"))
+           {
+			   setup->isApplyRootPosition = true;
+			   setup->isIgnoreRootRot = true;
+			   setup->isIgnoreRootPos = true;
+			   setup->isIgnoreRootPosFirstFrame = false;
+			   setup->isAbsoluteRootPosition = false;
+			   setup->RootMitionScale = FLOAT3_DATA(1.f, 1.f, 1.f);
+           }
+           ImGui::SameLine();
+           if (ImGui::Button("Fast Rotation Motion (plz apply 2th.. )"))
+           {
+               setup->isApplyRootPosition = true;
+               setup->isIgnoreRootRot = false;
+               setup->isIgnoreRootPos = false;
+               setup->isIgnoreRootPosFirstFrame = false;
+               setup->isAbsoluteRootPosition = true;
+               setup->RootMitionScale = FLOAT3_DATA(1.f, 1.f, 1.f);
+           }
+            ImGui::Checkbox("isApplyRoot.P.o.s.ition", &setup->isApplyRootPosition);
+            ImGui::Checkbox("isIgnoreRoot_Rot", &setup->isIgnoreRootRot);
+            ImGui::Checkbox("isIgnoreRoot_Pos", &setup->isIgnoreRootPos);
+            if (ImGui::IsItemHovered())
+                ImGui::SetTooltip("Ignore root bone position every frame.\nUse for: idle rotation!! , turning in place!!");
+            
+            ImGui::Checkbox("isIgnoreRootPosFirstFrame", &setup->isIgnoreRootPosFirstFrame);
+            if (ImGui::IsItemHovered())
+                ImGui::SetTooltip("Ignore root bone position only on first frame.\nUse for: idle walk, idle run, breathing");
+            
+            ImGui::Checkbox("isAbsoluteRootPosition", &setup->isAbsoluteRootPosition);
+            if (ImGui::IsItemHovered())
+                ImGui::SetTooltip("Root bone uses absolute position from animation file.\nUse for: combo attacks (Attack2, Attack3)\nKeeps position continuous between animations");
+            
             ImGui::Text("RootMotionScale:");
             ImGui::SameLine();
             ImGui::SetNextItemWidth(200);
@@ -1659,6 +1749,39 @@ string CAnimationTool::DirectionToString(_uint iDir)
     }
 
     return result;
+}
+
+string CAnimationTool::RotationToString(_uint iDir)
+{
+	if (iDir == 0)
+		return  "NONE";
+
+	string result = "";
+
+	static string StrDir[] =
+	{
+        "L 45",
+        "L 90",
+        "L 135",
+        "L 180",
+        "L 225",
+        "R 45",
+        "R 90",
+        "R 135",
+        "R 180",
+        "R 225",
+	};
+
+	unsigned long   mask = iDir;
+
+	unsigned long  iIndex; // 결과 비트 위치
+	while (mask != 0) {
+		_BitScanForward(&iIndex, mask); // 오른쪽에서 첫 번째 1 위치
+		result += StrDir[iIndex] + " ";
+		mask &= mask - 1; // 가장 오른쪽 1 제거
+	}
+
+	return result;
 }
 
 CAnimationTool* CAnimationTool::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

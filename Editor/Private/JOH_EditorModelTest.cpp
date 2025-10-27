@@ -1,4 +1,4 @@
-#include "JOH_EditorModelTest.h"
+ï»¿#include "JOH_EditorModelTest.h"
 #include "GameInstance.h"
 #include "Editor_Model.h"
 
@@ -30,13 +30,13 @@ HRESULT CJOH_EditorModelTest::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components(pDesc->strPrototypeTag)))
         return E_FAIL;
 
-    if(m_isAnim)  m_pModelCom->Set_Animation(3, true);
+    if (m_isAnim) {
+        m_pModelCom->Set_Animation(3, true);
+        m_pModelCom->Set_OwnerTransform(&m_pTransformCom);
+    }
 
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(1.f, 0.f, 0.f, 1.f));
     //m_pTransformCom->Scale(_float3(0.01f, 0.01f, 0.01f));
-
-
-
 
     return S_OK;
 }
@@ -52,61 +52,45 @@ void CJOH_EditorModelTest::Update(_float fTimeDelta)
     if (m_isAnim && true == m_pModelCom->Play_Animation(fTimeDelta))
 		int a = 10;
 
-	if (m_pModelCom->Test())
-	{
-		_float3 vpos;
-		XMStoreFloat3(&vpos, m_pTransformCom->Get_State(STATE::POSITION));
-		cout << vpos.x << " " << vpos.y << " " << vpos.z << "\n ";
-	}
+	//if (m_pModelCom->Test())
+	//{
+	//	_float3 vpos;
+	//	XMStoreFloat3(&vpos, m_pTransformCom->Get_State(STATE::POSITION));
+	//	cout << vpos.x << " " << vpos.y << " " << vpos.z << "\n ";
+	//}
 
-    if (m_pModelCom->isRootMotion())
-    {
-        _matrix rootMotionMatrix = m_pModelCom->Get_RootMotionDelta();
-        _matrix worldMatrix = m_pTransformCom->Get_WorldMatrix();
+    //if (m_pModelCom->isRootMotion())
+    //{
+    //    _matrix rootMotionMatrix = m_pModelCom->Get_RootMotionDelta();
+    //    _matrix worldMatrix = m_pTransformCom->Get_WorldMatrix();
 
-        _vector vScale, vQuat, vTrans;
-        XMMatrixDecompose(&vScale, &vQuat, &vTrans, worldMatrix);
+    //    // ë£¨íŠ¸ëª¨ì…˜ ë¸íƒ€ì˜ ë¡œì»¬ ì´ë™ ë²¡í„° (r[3])
+    //    _vector vLocalMove = rootMotionMatrix.r[3];
 
-        _vector vDelta = rootMotionMatrix.r[3];
-        //vDelta = XMVectorScale(vDelta, 0.0001f);
+    //    // ëª¨ë¸ì˜ íšŒì „(ë°©í–¥)ë§Œ ì¶”ì¶œ
+    //    _vector vRight = XMVector3Normalize(worldMatrix.r[0]);
+    //    _vector vUp = XMVector3Normalize(worldMatrix.r[1]);
+    //    _vector vLook = XMVector3Normalize(worldMatrix.r[2]);
 
-        vDelta = XMVectorMultiply(vDelta, vScale);
+    //    _matrix rotationMatrix;
+    //    rotationMatrix.r[0] = vRight;
+    //    rotationMatrix.r[1] = vUp;
+    //    rotationMatrix.r[2] = vLook;
+    //    rotationMatrix.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
-        vDelta = XMVector3TransformNormal(vDelta, worldMatrix);
+    //    // ë£¨íŠ¸ëª¨ì…˜ ì´ë™ë²¡í„°ë¥¼ ì›”ë“œ ì¢Œí‘œê³„ë¡œ íšŒì „
+    //    _vector vDelta = XMVector3TransformNormal(vLocalMove, rotationMatrix);
 
-        _vector vOldPos = m_pTransformCom->Get_State(STATE::POSITION);
-        _vector vNewPos = XMVectorSetW(vOldPos + vDelta, 1.f);
-        m_pTransformCom->Set_State(STATE::POSITION, vNewPos);
+    //    // ëˆ„ì  ì ìš©
+    //    _vector vOldPos = m_pTransformCom->Get_State(STATE::POSITION);
+    //    _vector vNewPos = XMVectorSetW(vOldPos + vDelta, 1.f);
+    //    m_pTransformCom->Set_State(STATE::POSITION, vNewPos);
 
+    //    //ìœ„ì¹˜ + íšŒì „ ì ìš© 
+    //    //_matrix newWorld = worldMatrix * rootMotionMatrix ;
+    //    //m_pTransformCom->Set_WorldMatrix(newWorld);
 
-
-
-        //µğ¹ö±×
-
-        _float3 delta;
-        XMStoreFloat3(&delta, rootMotionMatrix.r[3]);
-
-        _float trackPos = *m_pModelCom->Get_CurTrackPosition();
-
-        char debugMsg[256];
-        sprintf_s(debugMsg, "TrackPos: %.4f, RootDelta: (%.4f, %.4f, %.4f)\n",
-            trackPos, delta.x, delta.y, delta.z);
-        OutputDebugStringA(debugMsg);
-
-        //// µ¨Å¸¸¦ ¿ùµå °ø°£À¸·Î º¯È¯
-        //_vector vDelta = XMVector3TransformNormal(XMVectorSetW(rootMotionMatrix.r[3], 0.f), worldMatrix);
-        //
-        //// È¸Àüµµ Àû¿ëÇÏ·Á¸é:
-        //// _matrix newWorld = rootMotionMatrix * worldMatrix;
-        //// m_pTransformCom->Set_WorldMatrix(newWorld);
-
-        //    // À§Ä¡¸¸ Àû¿ë:
-        //_vector vOldPos = m_pTransformCom->Get_State(STATE::POSITION);
-
-        //_vector vNewPos = XMVectorSetW(vOldPos + XMVectorSetW(vDelta,1.f), 1.f);
-        //m_pTransformCom->Set_State(STATE::POSITION, vNewPos);
-
-    }
+    //}
 
     if (m_isAnim && m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
     {
@@ -203,6 +187,18 @@ void CJOH_EditorModelTest::Debug_RenderState()
         m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
     }
 
+    ImGui::SameLine();
+
+    if (ImGui::Button("matrix identity"))
+    {
+        m_pTransformCom->Set_WorldMatrix(XMMatrixIdentity());
+    }
+
+}
+
+_matrix CJOH_EditorModelTest::Debug_GetTransformMatrix()
+{
+    return  m_pTransformCom->Get_WorldMatrix();
 }
 
 HRESULT CJOH_EditorModelTest::Ready_Components(const _wstring& strModelTag)
@@ -212,7 +208,7 @@ HRESULT CJOH_EditorModelTest::Ready_Components(const _wstring& strModelTag)
         return E_FAIL;
 
 
-    // // Å×½ºÆ®·Î ¼ÎÀÌ´õ ·¹º§·Î ¹Ù²å½À´Ï´Ù ¿ÀÇö ÇÒ¾Æ¹öÁö ¼öÁ¤ÇÏ¸é °íÃÄÁÖ¼¼¿ä..!
+    // // í…ŒìŠ¤íŠ¸ë¡œ ì…°ì´ë” ë ˆë²¨ë¡œ ë°”ê¿¨ìŠµë‹ˆë‹¤ ì˜¤í˜„ í• ì•„ë²„ì§€ ìˆ˜ì •í•˜ë©´ ê³ ì³ì£¼ì„¸ìš”..!
     // if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::SHADER), strModelTag,
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),

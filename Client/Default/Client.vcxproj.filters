@@ -244,9 +244,6 @@
     <Filter Include="02.GameObject\UI\Inven\ETC\Tap">
       <UniqueIdentifier>{f963ed35-50bf-4b47-8cd0-654a0d22a79e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\UI\Inven\ETC\Panel">
-      <UniqueIdentifier>{99b24549-339c-48be-9c6c-dc1e503be929}</UniqueIdentifier>
-    </Filter>
     <Filter Include="94. ClientInstance\DB">
       <UniqueIdentifier>{dffd0957-694b-48a5-a2e0-c30d199869c1}</UniqueIdentifier>
     </Filter>
@@ -470,9 +467,6 @@
     </ClInclude>
     <ClInclude Include="..\public\Inven_Tap.h">
       <Filter>02.GameObject\UI\Inven\ETC\Tap</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\Inven_Panel.h">
-      <Filter>02.GameObject\UI\Inven\ETC\Panel</Filter>
     </ClInclude>
     <ClInclude Include="..\public\UI_Inven.h">
       <Filter>02.GameObject\UI\Inven</Filter>
@@ -707,9 +701,6 @@
     </ClCompile>
     <ClCompile Include="..\private\Inven_Tap.cpp">
       <Filter>02.GameObject\UI\Inven\ETC\Tap</Filter>
-    </ClCompile>
-    <ClCompile Include="..\private\Inven_Panel.cpp">
-      <Filter>02.GameObject\UI\Inven\ETC\Panel</Filter>
     </ClCompile>
     <ClCompile Include="..\private\UI_Inven.cpp">
       <Filter>02.GameObject\UI\Inven</Filter>

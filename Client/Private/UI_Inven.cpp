@@ -3,7 +3,6 @@
 #include "ClientInstance.h"
 
 #include "UI_TextBox.h"
-#include "Inven_Panel.h"
 #include "Inven_Tap.h"
 
 #include "UI_BackGround.h"
@@ -78,25 +77,27 @@ HRESULT CUI_Inven::Initialize_Clone(void* pArg)
 
 void CUI_Inven::Priority_Update(_float fTimeDelta)
 {
-	//if (m_pGameInstance->Key_Down(DIK_K))
-	//{
-	//	if (m_IsTest)
-	//	{
-	//		Add_Item(4001);
-	//		m_IsTest = false;
-	//	}
-	//	else
-	//	{
-	//		Add_Item(5001);
-	//		m_IsTest = true;
-	//	}
-	//}
+	if (m_pGameInstance->Key_Down(DIK_K))
+	{
+		Add_Item(1010);
+		Add_Item(1011);
+		Add_Item(1012);
+		Add_Item(2030);
+		Add_Item(3020);
+		Add_Item(4001);
+		Add_Item(5001);
+		Add_Item(6001);
+	}
 	if (!m_IsUpdate)
 		return;
 
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
-		Off_Panel();
-
+	{
+		if (ENUM_CLASS(TapGroup::OTHER) == m_iTapGroupIndex || m_bIsEquip)
+			Off_Panel();
+		else
+			m_bIsEquip = true;
+	}
 	UI_Animation(fTimeDelta);
 	m_pBackGround->Priority_Update(fTimeDelta);
 	m_pUIText->Priority_Update(fTimeDelta);
@@ -104,7 +105,13 @@ void CUI_Inven::Priority_Update(_float fTimeDelta)
 	if (!m_bIsEquip)
 	{
 		for (auto TapIndex : m_UpdateGroup[m_iTapGroupIndex])
+		{
+			if (m_iTapGroupIndex == ENUM_CLASS(TapGroup::QUICK) && TapIndex == ENUM_CLASS(ITEMTYPE::ATIVE))
+				continue;
+
 			m_pInvenTap[TapIndex]->Priority_Update(fTimeDelta);
+		}
+		
 		for (auto Item : m_pItems[m_iSeleteTap])
 			Item->Priority_Update(fTimeDelta);
 	}
@@ -127,7 +134,13 @@ void CUI_Inven::Update(_float fTimeDelta)
 	if (!m_bIsEquip)
 	{
 		for (auto TapIndex : m_UpdateGroup[m_iTapGroupIndex])
+		{
+			if (m_iTapGroupIndex == ENUM_CLASS(TapGroup::QUICK) && TapIndex == ENUM_CLASS(ITEMTYPE::ATIVE))
+				continue;
+
 			m_pInvenTap[TapIndex]->Update(fTimeDelta);
+		}
+
 		for (auto Item : m_pItems[m_iSeleteTap])
 			Item->Update(fTimeDelta);
 	}
@@ -150,8 +163,12 @@ void CUI_Inven::Late_Update(_float fTimeDelta)
 	if (!m_bIsEquip)
 	{
 		for (auto TapIndex : m_UpdateGroup[m_iTapGroupIndex])
-			m_pInvenTap[TapIndex]->Late_Update(fTimeDelta);
+		{
+			if (m_iTapGroupIndex == ENUM_CLASS(TapGroup::QUICK) && TapIndex == ENUM_CLASS(ITEMTYPE::ATIVE))
+				continue;
 
+			m_pInvenTap[TapIndex]->Late_Update(fTimeDelta);
+		}
 		for (auto Item : m_pItems[m_iSeleteTap])
 			Item->Late_Update(fTimeDelta);
 	}
@@ -216,7 +233,7 @@ void CUI_Inven::Bubble_EventCall(BUBBLEEVENT* pArg)
 				m_pInvenTap[i]->Tap_Disable();
 		}
 	}
-	else if (pDesc->eBubbleType == EVENT_TYPE::ITEM_EQUIP)
+	else if (pDesc->eBubbleType == EVENT_TYPE::ITEM_SELETE)
 	{
 		for (_int i = 0; i < (_int)m_pItems[pDesc->iTypeIndex].size(); ++i)
 		{
@@ -224,6 +241,66 @@ void CUI_Inven::Bubble_EventCall(BUBBLEEVENT* pArg)
 				continue;
 			if (m_pItems[pDesc->iTypeIndex][i]->Off_Selete() == false)
 				break;
+		}
+	}
+	else if (pDesc->eBubbleType == EVENT_TYPE::ITEM_EQUIP)
+	{
+		for (_int i = 0; i < (_int)m_pItems[pDesc->iTypeIndex].size(); ++i)
+		{
+			if (i == pDesc->iIndex)
+				continue;
+			else if(m_pItems[pDesc->iTypeIndex][i]->Off_Equip() == false)
+				break;
+		}
+
+		if (pDesc->iTypeIndex >= 0)
+		{
+			if(pDesc->iTypeIndex <= ENUM_CLASS(ITEMTYPE::GREATE))
+				m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::WEAPON)]->Add_Item(pDesc->iItemIndex);
+			else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::HEAD))
+				m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::HEAD)]->Add_Item(pDesc->iItemIndex);
+			else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::TOP))
+				m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::TOP)]->Add_Item(pDesc->iItemIndex);
+			else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::GLOVES))
+				m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::GLOVES)]->Add_Item(pDesc->iItemIndex);
+			else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::BOTTOM))
+				m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::BOTTOM)]->Add_Item(pDesc->iItemIndex);
+			else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::SHOES))
+				m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::SHOES)]->Add_Item(pDesc->iItemIndex);
+			else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::NECK))
+				m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::NECK)]->Add_Item(pDesc->iItemIndex);
+			else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::RING))
+				m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::RING)]->Add_Item(pDesc->iItemIndex);
+			//else if (pDesc->iItemType <= ENUM_CLASS(ITEMTYPE::ATIVE))
+			//	m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::SHOES)]->Add_Item(pDesc->iItemIndex);
+		}
+	}
+	else if (pDesc->eBubbleType == EVENT_TYPE::SLOT_EQUIP)
+	{
+		EQUIPSLOT_TYPE eType = static_cast<EQUIPSLOT_TYPE>(pDesc->iIndex);
+		if (eType == EQUIPSLOT_TYPE::WEAPON)
+		{
+			m_iTapGroupIndex = ENUM_CLASS(TapGroup::WEAPON);
+			pDesc->iItemType == 2 ? Change_Tap(1) : Change_Tap(0);
+			m_bIsEquip = false;
+		}
+		else if (eType >= EQUIPSLOT_TYPE::HEAD && eType <= EQUIPSLOT_TYPE::SHOES)
+		{
+			m_iTapGroupIndex = ENUM_CLASS(TapGroup::ARMOR);
+			Change_Tap(ENUM_CLASS(eType) - ENUM_CLASS(EQUIPSLOT_TYPE::HEAD));
+			m_bIsEquip = false;
+		}
+		else if (eType == EQUIPSLOT_TYPE::NECK || eType == EQUIPSLOT_TYPE::RING)
+		{
+			m_iTapGroupIndex = ENUM_CLASS(TapGroup::ACC);
+			Change_Tap(ENUM_CLASS(eType) - ENUM_CLASS(EQUIPSLOT_TYPE::NECK));
+			m_bIsEquip = false;
+		}
+		else
+		{
+			m_iTapGroupIndex = ENUM_CLASS(TapGroup::QUICK);
+			Change_Tap(0);
+			m_bIsEquip = false;
 		}
 	}
 }
@@ -244,7 +321,7 @@ HRESULT CUI_Inven::Update_Switch(void* pArg)
 		{
 			m_iTapGroupIndex = ENUM_CLASS(TapGroup::OTHER);
 			m_pUIText->Set_Text(TEXT("¼ÒÁöÇ°"));
-			Change_Tap();
+			Change_Tap(0);
 		}
 		else
 		{
@@ -263,8 +340,6 @@ HRESULT CUI_Inven::Update_Switch(void* pArg)
 
 HRESULT CUI_Inven::Ready_Prototype()
 {
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Inven_Panel"),
-		CInven_Panel::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Inven_Tap"),
 		CInven_Tap::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Inven_Equip"),
@@ -307,40 +382,53 @@ HRESULT CUI_Inven::Ready_SlotSet()
 
 	for (_int i = 0; i < ENUM_CLASS(ITEMTYPE::END); ++i)
 	{
-		vector<CItem_Slot*> pItemGroup;
-		Desc.iItemType = i;
-		for (_int j = 0; j < 28; ++j)
+		if (i < ENUM_CLASS(ITEMTYPE::QUICK_1))
 		{
-			Desc.iIndex = j;
-			CItem_Slot* pItemSlot = static_cast<CItem_Slot*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Item"), &Desc));
+			vector<CItem_Slot*> pItemGroup;
+			Desc.iItemType = i;
+			for (_int j = 0; j < 28; ++j)
+			{
+				Desc.iIndex = j;
+				CItem_Slot* pItemSlot = static_cast<CItem_Slot*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Item"), &Desc));
 
-			if (pItemSlot == nullptr)
-				return E_FAIL;
+				if (pItemSlot == nullptr)
+					return E_FAIL;
 
-			m_Children.push_back(pItemSlot);
+				m_Children.push_back(pItemSlot);
 
-			Safe_AddRef(pItemSlot);
-			pItemSlot->Insert_Bubble([this](BUBBLEEVENT* pArg) {this->Bubble_EventCall(pArg); });
-			pItemGroup.push_back(pItemSlot);
-			pItemGroup[j]->Update_Pos(j, vPos, 110.f, 4, 7);
+				Safe_AddRef(pItemSlot);
+				pItemSlot->Insert_Bubble([this](BUBBLEEVENT* pArg) {this->Bubble_EventCall(pArg); });
+				pItemGroup.push_back(pItemSlot);
+				pItemGroup[j]->Update_Pos(j, vPos, 110.f, 4, 7);
+			}
+			m_pItems[i] = pItemGroup;
 		}
-		m_pItems[i] = pItemGroup;
+		else
+		{
+			for (_int j = 0; j < 28; ++j)
+			{
+				m_pItems[i].push_back(m_pItems[ENUM_CLASS(ITEMTYPE::ATIVE)][j]);
+				Safe_AddRef(m_pItems[ENUM_CLASS(ITEMTYPE::ATIVE)][j]);
+			}
+		}
 
 	}
 
 	CEquip_Slot::UISLOTDESC EquipDesc = {};
 
-	vPos = { -854.f , 318.f };
 	EquipDesc.iUIType = ENUM_CLASS(UITYPE::PANEL);
 	EquipDesc.szName = "Equip";
-	EquipDesc.vLocalPos = vPos;
-	EquipDesc.vLocalSize = { 103.f , 103.f };
-
-
+	EquipDesc.vLocalPos = { 0.f, 0.f };
+	
 	for (_int i = 0; i < ENUM_CLASS(EQUIPSLOT_TYPE::END); ++i)
 	{
+		if (i >= ENUM_CLASS(EQUIPSLOT_TYPE::QUICK_1) && i <= ENUM_CLASS(EQUIPSLOT_TYPE::QUICK_6))
+			EquipDesc.vLocalSize = {90.f , 90.f };
+		else
+			EquipDesc.vLocalSize = { 103.f ,103.f };
+
 		EquipDesc.iIndex = i;
-		CEquip_Slot* pEquipSlot = static_cast<CEquip_Slot*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Inven_Equip_Slot"), &Desc));
+		CEquip_Slot* pEquipSlot = static_cast<CEquip_Slot*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Inven_Equip_Slot"), &EquipDesc));
 
 		if (pEquipSlot == nullptr)
 			return E_FAIL;
@@ -350,7 +438,8 @@ HRESULT CUI_Inven::Ready_SlotSet()
 		Safe_AddRef(pEquipSlot);
 		pEquipSlot->Insert_Bubble([this](BUBBLEEVENT* pArg) {this->Bubble_EventCall(pArg); });
 		m_pEquipSlot.push_back(pEquipSlot);
-		m_pEquipSlot[i]->Update_PosX(i, vPos, 130.f);
+
+		EquipSlot_Setting(pEquipSlot, i);
 	}
 
 
@@ -384,6 +473,18 @@ void CUI_Inven::TapType_Mapping(string szName)
 		m_iSeleteTap = ENUM_CLASS(ITEMTYPE::COLLECTION);
 	else if (szName == "MATERIAL")
 		m_iSeleteTap = ENUM_CLASS(ITEMTYPE::MATERIAL);
+	else if (szName == "QUICK_1")
+		m_iSeleteTap = ENUM_CLASS(ITEMTYPE::QUICK_1);
+	else if (szName == "QUICK_2")
+		m_iSeleteTap = ENUM_CLASS(ITEMTYPE::QUICK_2);
+	else if (szName == "QUICK_3")
+		m_iSeleteTap = ENUM_CLASS(ITEMTYPE::QUICK_3);
+	else if (szName == "QUICK_4")
+		m_iSeleteTap = ENUM_CLASS(ITEMTYPE::QUICK_4);
+	else if (szName == "QUICK_5")
+		m_iSeleteTap = ENUM_CLASS(ITEMTYPE::QUICK_5);
+	else if (szName == "QUICK_6")
+		m_iSeleteTap = ENUM_CLASS(ITEMTYPE::QUICK_6);
 	if (m_iSeleteTap < 0)
 		return;
 }
@@ -407,6 +508,14 @@ void CUI_Inven::Ready_Grouping()
 	m_UpdateGroup[ENUM_CLASS(TapGroup::OTHER)].push_back(ENUM_CLASS(ITEMTYPE::ATIVE));
 	m_UpdateGroup[ENUM_CLASS(TapGroup::OTHER)].push_back(ENUM_CLASS(ITEMTYPE::COLLECTION));
 	m_UpdateGroup[ENUM_CLASS(TapGroup::OTHER)].push_back(ENUM_CLASS(ITEMTYPE::MATERIAL));
+
+	m_UpdateGroup[ENUM_CLASS(TapGroup::QUICK)].push_back(ENUM_CLASS(ITEMTYPE::QUICK_1));
+	m_UpdateGroup[ENUM_CLASS(TapGroup::QUICK)].push_back(ENUM_CLASS(ITEMTYPE::QUICK_2));
+	m_UpdateGroup[ENUM_CLASS(TapGroup::QUICK)].push_back(ENUM_CLASS(ITEMTYPE::QUICK_3));
+	m_UpdateGroup[ENUM_CLASS(TapGroup::QUICK)].push_back(ENUM_CLASS(ITEMTYPE::QUICK_4));
+	m_UpdateGroup[ENUM_CLASS(TapGroup::QUICK)].push_back(ENUM_CLASS(ITEMTYPE::QUICK_5));
+	m_UpdateGroup[ENUM_CLASS(TapGroup::QUICK)].push_back(ENUM_CLASS(ITEMTYPE::QUICK_6));
+
 }
 
 void CUI_Inven::UI_Animation(_float fTimeDelta)
@@ -436,11 +545,11 @@ void CUI_Inven::UI_Animation(_float fTimeDelta)
 	}
 }
 
-void CUI_Inven::Change_Tap()
+void CUI_Inven::Change_Tap(_int iSeleteINdex)
 {
 	for (_int i = 0; i < (_int)m_UpdateGroup[m_iTapGroupIndex].size(); ++i)
 	{
-		if (i == 0)
+		if (i == iSeleteINdex)
 		{
 			m_iSeleteTap = m_UpdateGroup[m_iTapGroupIndex][i];
 			for (_int i = 0; i < (_int)m_pInvenTap.size(); ++i)
@@ -451,6 +560,7 @@ void CUI_Inven::Change_Tap()
 					m_pInvenTap[i]->Tap_Disable();
 			}
 		}
+		
 		m_pInvenTap[m_UpdateGroup[m_iTapGroupIndex][i]]->Update_Pos(i, { 185.f, 135.f }, 80.f, (_int)m_UpdateGroup[m_iTapGroupIndex].size());
 	}
 }
@@ -489,6 +599,24 @@ CUI_Inven::ITEMTYPE CUI_Inven::Convert_UIntToITEMTYPE(_uint iItemIndex)
 	}
 
 	return ITEMTYPE::END;
+}
+
+void CUI_Inven::EquipSlot_Setting(CEquip_Slot* pSlot, _int iIndex)
+{
+	_float2 vPos = { -804.f , -318.f + 51.f };
+	if(iIndex == ENUM_CLASS(EQUIPSLOT_TYPE::WEAPON))
+		pSlot->Update_PosX(0, vPos, 130.f, 0, this);
+	else if(iIndex >= ENUM_CLASS(EQUIPSLOT_TYPE::HEAD) && iIndex <= ENUM_CLASS(EQUIPSLOT_TYPE::SHOES))
+		pSlot->Update_PosX(iIndex - ENUM_CLASS(EQUIPSLOT_TYPE::HEAD), vPos, 115.f, 155.f * 1, this);
+	else if (iIndex >= ENUM_CLASS(EQUIPSLOT_TYPE::NECK) && iIndex <= ENUM_CLASS(EQUIPSLOT_TYPE::RING))
+		pSlot->Update_PosX(iIndex - ENUM_CLASS(EQUIPSLOT_TYPE::NECK), vPos, 115.f, 155.f * 2, this);
+	else if (iIndex >= ENUM_CLASS(EQUIPSLOT_TYPE::QUICK_1) && iIndex <= ENUM_CLASS(EQUIPSLOT_TYPE::QUICK_6))
+	{
+		vPos = { -810.f , -318.f + 51.f };
+		pSlot->Update_PosX(iIndex - ENUM_CLASS(EQUIPSLOT_TYPE::QUICK_1), vPos, 95.f, 155.f * 3, this);
+	}
+	else if (iIndex >= ENUM_CLASS(EQUIPSLOT_TYPE::SOULE))
+		pSlot->Update_PosX(0, vPos, 113.f, 155.f * 4, this);
 }
 
 CUI_Inven* CUI_Inven::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)
