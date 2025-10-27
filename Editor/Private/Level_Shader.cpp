@@ -30,11 +30,15 @@ HRESULT CLevel_Shader::Initialize()
 	{
 		if (!m_isInitShadow)
 		{
-			m_CascadeSplits.resize(m_iNumCascades);
-			memcpy(m_CascadeSplits.data(), m_pGameInstance->Get_CascadeSplits(), sizeof(_float) * m_iNumCascades);
-			m_fShadowBias = m_pGameInstance->Get_ShadowBias();
-			m_fShadowLamda = m_pGameInstance->Get_ShadowLamda();
-			m_vLightDir = m_pGameInstance->Get_ShadowLightDir();
+			m_CascadeConfig.Splits.resize(m_iNumCascades);
+			m_CascadeConfig = m_pGameInstance->Get_CascadeConfig();
+			m_SSAOConfig = m_pGameInstance->Get_SSAOConfig();
+
+			//	m_CascadeSplits.resize(m_iNumCascades);
+			//	memcpy(m_CascadeSplits.data(), m_pGameInstance->Get_CascadeSplits(), sizeof(_float) * m_iNumCascades);
+			//	m_fShadowBias = m_pGameInstance->Get_ShadowBias();
+			//	m_fShadowLamda = m_pGameInstance->Get_ShadowLamda();
+			//	m_vLightDir = m_pGameInstance->Get_ShadowLightDir();
 			m_isInitShadow = true;
 		}
 
@@ -45,21 +49,22 @@ HRESULT CLevel_Shader::Initialize()
 		// 컴바인드에서 안 켜지면 기본 명암 정도만 나타내도록 후처리 셰이더에 플래그 넘겨서 써야 할지도?
 		//	_bool bCopyFlag = m_isRenderShadow;
 
+		if (ImGui::CollapsingHeader("Frame Per Second"), ImGuiTreeNodeFlags_DefaultOpen)
+		{
+			ImGui::SetWindowFontScale(2.f);
+			ImGui::Text("%s", m_szFPS);
+			ImGui::SetWindowFontScale(1.f);
+			ImGui::Separator();
+		}
+
 		ImGui::Checkbox("Shadow", &m_isRenderShadow);
 
 		if (m_isRenderShadow)
 		{
-			if (ImGui::CollapsingHeader("Frame Per Second"), ImGuiTreeNodeFlags_DefaultOpen)
-			{
-				ImGui::SetWindowFontScale(2.f);
-				ImGui::Text("%s", m_szFPS);
-				ImGui::SetWindowFontScale(1.f);
-			}
-
 			if (ImGui::CollapsingHeader("Shadow Light"), ImGuiTreeNodeFlags_DefaultOpen)
 			{
-				if (ImGui::SliderFloat3("Direction", reinterpret_cast<_float*>(&m_vLightDir), -1.f, 1.f))
-					m_pGameInstance->Set_ShadowLightDir(m_vLightDir);
+				if (ImGui::SliderFloat3("Direction", reinterpret_cast<_float*>(&m_CascadeConfig.vLightDir), -1.f, 1.f))
+					m_pGameInstance->Set_CascadeConfig(m_CascadeConfig);
 			}
 
 			if (ImGui::CollapsingHeader("Cascade"), ImGuiTreeNodeFlags_DefaultOpen)
@@ -69,26 +74,26 @@ HRESULT CLevel_Shader::Initialize()
 
 				for (_uint i = 0; i < m_iNumCascades; ++i)
 				{
-					_float fMin = (i == 0) ? m_fCameraNear : m_CascadeSplits[i - 1];
-					_float fMax = (i == (m_iNumCascades - 1)) ? m_fCameraFar : m_CascadeSplits[i + 1];
+					_float fMin = (i == 0) ? m_fCameraNear : m_CascadeConfig.Splits[i - 1];
+					_float fMax = (i == (m_iNumCascades - 1)) ? m_fCameraFar : m_CascadeConfig.Splits[i + 1];
 
 					_char szLabel[64] = {};
 					sprintf_s(szLabel, "Cascade %d Split Far", i);
 
-					if (ImGui::SliderFloat(szLabel, &m_CascadeSplits[i], fMin, fMax))
-						m_pGameInstance->Set_CascadeSplits(m_CascadeSplits.data());
+					if (ImGui::SliderFloat(szLabel, &m_CascadeConfig.Splits[i], fMin, fMax))
+						m_pGameInstance->Set_CascadeConfig(m_CascadeConfig);
 				}
 
 				ImGui::Separator();
 				ImGui::Text("Auto Split Calculation");
 
-				if (ImGui::SliderFloat("Cascade Mix Lamda", &m_fShadowLamda, 0.f, 1.f))
-					m_pGameInstance->Set_ShadowLamda(m_fShadowLamda);
+				if (ImGui::SliderFloat("Cascade Mix Lamda", &m_CascadeConfig.fLamda, 0.f, 1.f))
+					m_pGameInstance->Set_CascadeConfig(m_CascadeConfig);
 
 				ImGui::Separator();
 
-				if (ImGui::SliderFloat("Shadow Bias", &m_fShadowBias, 0.0001f, 0.005f, "%.4f"))
-					m_pGameInstance->Set_ShadowBias(m_fShadowBias);
+				if (ImGui::SliderFloat("Shadow Bias", &m_CascadeConfig.fBias, 0.0001f, 0.005f, "%.4f"))
+					m_pGameInstance->Set_CascadeConfig(m_CascadeConfig);
 
 				ImGui::Separator();
 			}
@@ -98,17 +103,23 @@ HRESULT CLevel_Shader::Initialize()
 
 		if (m_isRenderSSAO)
 		{
-			if (ImGui::SliderFloat("Sample Radius", &m_fSampleRadius, 0.1f, 2.f))
-				m_pGameInstance->Set_SSAOBias(m_fSampleRadius);
+			_int iNumKernels = static_cast<_int>(m_SSAOConfig.iNumKernels);
+			if (ImGui::InputInt("Sample Count", &iNumKernels, 4, 16))
+			{
+				m_SSAOConfig.iNumKernels = iNumKernels;
+				m_pGameInstance->Set_SSAOConfig(m_SSAOConfig);
+			}
 
-			if (ImGui::SliderFloat("Intensity", &m_fAOIntensity, 0.5f, 4.f))
-				m_pGameInstance->Set_SSAOIntensity(m_fAOIntensity);
+			if (ImGui::SliderFloat("Sample Radius", &m_SSAOConfig.fRadius, 0.1f, 2.f))
+				m_pGameInstance->Set_SSAOConfig(m_SSAOConfig);
 
-			if (ImGui::SliderFloat("Contrast", &m_fAOConstrast, 0.5f, 2.f))
-				m_pGameInstance->Set_SSAOConstrast(m_fAOConstrast);
+			if (ImGui::SliderFloat("Intensity", &m_SSAOConfig.fIntensity, 0.5f, 4.f))
+				m_pGameInstance->Set_SSAOConfig(m_SSAOConfig);
 
-			if (ImGui::SliderFloat("Bias", &m_fSampleBias, 0.f, 0.05f))
-				m_pGameInstance->Set_SSAOBias(m_fSampleBias);
+			if (ImGui::SliderFloat("Contrast", &m_SSAOConfig.fConstrast, 0.5f, 2.f))
+				m_pGameInstance->Set_SSAOConfig(m_SSAOConfig);
+
+			ImGui::Separator();
 		}
 
 		m_pGameInstance->Set_EnableShadow(m_isRenderShadow);

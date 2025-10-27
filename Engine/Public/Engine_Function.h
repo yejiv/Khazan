@@ -54,10 +54,6 @@ namespace Engine
 		return dwRefCnt;
 	}
 
-
-
-
-
 	inline string WStringToAnsi(const std::wstring& w, UINT codepage = CP_ACP)
 	{
 		if (w.empty()) return {};

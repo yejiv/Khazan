@@ -10,12 +10,22 @@ public:
 	enum class TapGroup {WEAPON, ARMOR, ACC, OTHER, END};
 	enum class ITEMTYPE { SPEAR, GREATE, HEAD, TOP, GLOVES, BOTTOM, SHOES, NECK, RING, ATIVE, COLLECTION, MATERIAL, END};
 	enum class EVENT_TYPE { TAP, ITEM_EQUIP, ITEM_RELEASE, END};
+	
+	enum class EQUIPSLOT_TYPE { WEAPON, HEAD, TOP, GLOVES, BOTTOM, SHOES, NECK, RING, QUICK_0, QUICK_1, QUICK_2, QUICK_3, QUICK_4, QUICK_5, SOULE, END };
+
 	typedef struct tagInvenBubbleEventTag : public CUIObject::BUBBLEEVENT
 	{
 		EVENT_TYPE eBubbleType = EVENT_TYPE::END;
 		_int iIndex = {};
 		_int iTypeIndex = {};
 	}INVENBUBBLE_DESC;
+
+	typedef struct tagInvenOpenTag
+	{
+		string szName;
+		_bool isOpen;
+		_bool isEquip;
+	}INVEN_ONOFF_DESC;
 
 private:
 	CUI_Inven(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -24,6 +34,7 @@ private:
 
 public:
 	void								On_Panel();
+	void								Off_Panel();
 	_bool								Add_Item(_uint iItemIndex);
 
 public:
@@ -36,6 +47,7 @@ public:
 
 	virtual HRESULT						Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
 	virtual void						Bubble_EventCall(BUBBLEEVENT* pArg) override;
+	virtual	HRESULT						Update_Switch(void* pArg);
 
 private:
 	class CUI_BackGround*				m_pBackGround = { nullptr };
@@ -47,13 +59,16 @@ private:
 	vector<vector<_int>>				m_UpdateGroup;
 	vector<class CInven_Tap*>			m_pInvenTap;
 
+	class CEquip_Panel*					m_pEquip_Panel = { nullptr };
+	vector<class CEquip_Slot*>			m_pEquipSlot;
+
 	_float								m_fAccTime = {};
 
 	_int								m_iSeleteTap = {};
 	_int								m_iTapGroupIndex = {};
 
-	_bool								m_IsTest = {false};
-
+	string								m_strReturnName = {};
+	_bool								m_bIsEquip = {};
 private:
 	virtual	HRESULT						Ready_Prototype();
 	HRESULT								Ready_Object();

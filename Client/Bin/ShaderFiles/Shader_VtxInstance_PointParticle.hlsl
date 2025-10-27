@@ -1,12 +1,19 @@
 #include "Engine_Shader_Defines.hlsli"
 
 float4x4 g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
-texture2D g_DiffuseTexture;
+vector g_vCamPosition;
+
 float4 g_vSourceColor = float4(1.f, 1.f, 1.f, 1.f);
 float g_fSizeRatio = 1.f;
 
-vector g_vCamPosition;
+bool g_MaskScrollYDir;
+bool g_MaskScrollInv;
+float g_MaskScrollSpeed;
+
 bool g_IsEmissive = false;
+
+texture2D g_DiffuseTexture;
+texture2D g_MaskTexture;
 
 struct VS_IN
 {
@@ -74,9 +81,9 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
     vector vUp;
     vector vLook;
     
-    float legnth = vector(In[0].vPosition - In[0].vPrevPosition).x;
+    float legnth = length(In[0].vPosition - In[0].vPrevPosition);
     
-    if (legnth > 0.01f)
+    if (legnth < 0.01f)
     {
         vLook = g_vCamPosition - In[0].vPosition;
         vRight = normalize(vector(cross(float3(0.f, 1.f, 0.f), vLook.xyz), 0.f)) * In[0].fSize * 0.5f;
@@ -89,7 +96,7 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
         vRight = normalize(vector(cross(vUp.xyz, vLook.xyz), 0.f)) * In[0].fSize * 0.5f;
         vUp += (In[0].vPosition - In[0].vPrevPosition) * 7.f;
     }
-    
+
     matrix matrVP = mul(g_ViewMatrix, g_ProjMatrix);
     
     Out[0].vPosition = mul(In[0].vPosition + vRight + vUp, matrVP);
@@ -137,6 +144,32 @@ struct PS_OUT
     //float4 vEmissiveColor : SV_TARGET1;
 };
 
+float Mask_Scrolling(float2 vLifetime, float2 vTexcoord)
+{
+    float safeProgress = saturate(vLifetime.x * g_MaskScrollSpeed / vLifetime.y) * 2; // 0 ~ 2   그니까 0 이면 -2. 1이면 0이 되어야함
+    float maskOffset = (safeProgress * 2.0f) - 2.0f; // -1 ~ 1 이거 끝까지 돌리기로수 ㅓㅇ
+    float2 maskUV; //-2 -1
+    
+    if (g_MaskScrollYDir)
+    {
+        if (g_MaskScrollInv)
+            maskUV = float2(vTexcoord.x, vTexcoord.y - maskOffset);
+        else
+            maskUV = float2(vTexcoord.x, vTexcoord.y + maskOffset);
+    }
+    else
+    {
+        if (g_MaskScrollInv)
+            maskUV = float2(vTexcoord.x - maskOffset, vTexcoord.y);
+        else
+            maskUV = float2(vTexcoord.x + maskOffset, vTexcoord.y);
+    }
+
+    float maskValue = g_MaskTexture.Sample(ClampSampler, maskUV).r;
+    
+    return maskValue;
+}
+
 PS_OUT PS_MAIN(PS_DEFAULT_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
@@ -149,11 +182,12 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     vector vSourColor = float4(g_vSourceColor.xyz, 1.f);
     vector vFinalColor = vSourColor * vMask;
     
-    //vector vFinalColor = float4(g_vSourceColor.xyz, min(vMask.r, g_vSourceColor.a));
-    
     float vDestAlpha = max(max(vMask.r, vMask.g), vMask.b);
     
     vFinalColor.a = 1.f * vDestAlpha;
+    
+    if (g_MaskScrollSpeed)
+        vFinalColor.a = vFinalColor.a * Mask_Scrolling(In.vLifeTime, In.vTexcoord);
     
     float fDecreaseAlpha = (In.vLifeTime.x / In.vLifeTime.y);
     
@@ -163,7 +197,7 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
         discard;
     
     Out.vBackBufferColor = vFinalColor;
-    
+
     //if(g_IsEmissive)
     //{
     //    float fLuminance = Luminance(vFinalColor.rgb);
@@ -177,7 +211,7 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     //
     //    Out.vEmissiveColor = vEmissiveColor;
     //}
-    
+        
     return Out;
 }
 

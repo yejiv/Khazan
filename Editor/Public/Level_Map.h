@@ -56,10 +56,14 @@ private:
 	void Select_Multi_Fix_Object(_float fTimeDelta);
 	void Select_Fix_Instance(_float fTimeDelta);
 	void Select_Add_LightPoint(_float fTimeDelta);
+	void Measure_Distance(_float fTimeDelta);
 
 #pragma region 변수
 private:
 	_float3 m_vPickedPos = {};
+
+	_float3 m_vDistancePos[2] = {};
+	_float m_fDistance = {};
 
 #pragma region Object 수정 변수
 

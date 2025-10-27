@@ -41,9 +41,9 @@ void CMap_Terrain::Update(_float fTimeDelta)
     if (m_pGameInstance->Key_Down(DIK_F5))
     {
         _float4 vCamPos = *m_pGameInstance->Get_CamPosition();
-        vCamPos.x -= 500.f;
+        vCamPos.x -= 50.f;
         vCamPos.y = 0.f;
-        vCamPos.z -= 500.f;
+        vCamPos.z -= 50.f;
         vCamPos.w = 1.f;
         m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&vCamPos));
     }

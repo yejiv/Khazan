@@ -25,6 +25,7 @@ private:
 
 public:
 	HRESULT Initialize(LEVEL eNextLevelID);
+	_bool AllReady(const std::vector<std::future<HRESULT>>& futures);
 	void Update();
 	HRESULT Loading();
 
@@ -43,26 +44,10 @@ private:
 	_tchar							m_szLoadingText[MAX_PATH] = {};
 	CGameInstance*					m_pGameInstance = { nullptr };
 
-	vector<future<any>> m_futures;
-	atomic<_bool> m_isFinished = { false };
-	atomic<int> m_progress = { 0 };
-
-	mutex	m_CommitMutex;
-	vector<function<void()>> m_Commits;
-
-private:
-	void EnqueueCommit(function<void()> fn) {
-		lock_guard<mutex> lg(m_CommitMutex);
-		m_Commits.emplace_back(move(fn));
-	}
-	void FlushCommits() {
-		vector<function<void()>> local;
-		{
-			lock_guard<mutex> lg(m_CommitMutex);
-			local.swap(m_Commits);
-		}
-		for (auto& fn : local) fn();
-	}
+	vector<future<HRESULT>> m_futures;
+	_bool m_isFinished = false;
+	//atomic<_bool> m_isFinished = { false };
+	
 
 private:
 	HRESULT Loading_For_Title_Level();
@@ -85,3 +70,5 @@ public:
 };
 
 NS_END
+
+
