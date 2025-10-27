@@ -183,18 +183,6 @@ HRESULT CAI_Controller::LoadBTNode(const JSON& j, AIBTNODE_DATA& Node)
     if (j.contains("Callback"))
         Node.strCallbackFunction = j["Callback"].get<string>();
 
-    //if (j.contains("Children"))
-    //{
-    //    for (auto& childJson : j["Children"])
-    //    {
-    //        AIBTNODE_DATA childNode;
-    //        if (FAILED(LoadBTNode(childJson, childNode)))
-    //            return E_FAIL;
-
-    //        //Node.Children.push_back(childNode);
-    //        Node.Children.push_back(&childNode);
-    //    }
-    //}
 
     if (j.contains("Children"))
     {

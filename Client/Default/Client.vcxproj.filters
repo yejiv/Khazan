@@ -262,6 +262,9 @@
     <Filter Include="02.GameObject\UI\Inven\Equip">
       <UniqueIdentifier>{35a3ca28-cb04-404e-a3ec-f837e14cae2d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="92.AI\State\Yetuga\03.RightHand_5Hit">
+      <UniqueIdentifier>{30ee55aa-a59a-49d5-9919-ac567853cd6a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -501,6 +504,9 @@
     <ClInclude Include="..\public\Equip_Slot.h">
       <Filter>02.GameObject\UI\Inven\Equip</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\AS_RightHand_5Hit_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\03.RightHand_5Hit</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -728,6 +734,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Equip_Slot.cpp">
       <Filter>02.GameObject\UI\Inven\Equip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_RightHand_5Hit_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\03.RightHand_5Hit</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
