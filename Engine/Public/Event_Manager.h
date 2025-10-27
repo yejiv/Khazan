@@ -12,7 +12,7 @@ public:
 		function<void(const void*)> fn_erased;
 	};
 
-	typedef struct IChannel {
+	struct IChannel {
 		virtual ~IChannel() = default;
 		virtual type_index PayloadType() const = 0;
 		virtual void Emitptr(const void* pPayload) = 0;
@@ -27,7 +27,7 @@ public:
 
 		type_index PayloadType() const override { return typeid(T); }
 
-		void EmitPtr(const void* pPayload) override {
+		void Emitptr(const void* pPayload) override {
 			const T& data = *static_cast<const T*>(pPayload);
 			for (auto& Handler : handlers) if (Handler.fn_erased) {
 				try { Handler.fn_erased(&data); }
@@ -36,7 +36,7 @@ public:
 		}
 		bool Unsubscribe(_uint iListenerId) override {
 			for (auto it = handlers.begin(); it != handlers.end(); ++it)
-				if (it->id == iListenerId) { handlers.erase(it); return true; }
+				if (it->iId == iListenerId) { handlers.erase(it); return true; }
 			return false;
 		}
 		void Clear() override { handlers.clear(); }

@@ -39,6 +39,11 @@ void CLevel_Title::Update(_float fTimeDelta)
 		m_pGameInstance->Emit_Event<EventTest>(ENUM_CLASS(EVENT_TYPE::TEST), EventTest{ 10 });
 	}
 
+	if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+	{
+		iTest++;
+	}
+
 	return;
 }
 
