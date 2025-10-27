@@ -980,9 +980,9 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pImgui_Manager);
 #endif
 
+	Safe_Release(m_pThreadPool);
 	Safe_Release(m_pComputeShader_Manager);
 	Safe_Release(m_pPool_Manager);
-	Safe_Release(m_pThreadPool);
 	Safe_Release(m_pTarget_Manager);
 	Safe_Release(m_pFont_Manager);
 	Safe_Release(m_pFrustum);

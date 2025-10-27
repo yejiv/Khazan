@@ -7,7 +7,6 @@ CThreadPool::CThreadPool()
 
 HRESULT CThreadPool::Initialize(_uint thread_count)
 {
-    CoInitializeEx(nullptr, COINIT_MULTITHREADED);
     if (thread_count == 0) {
         unsigned int hc = std::thread::hardware_concurrency();
         thread_count = (hc == 0) ? 4u : hc;
@@ -69,6 +68,8 @@ void CThreadPool::PushJob(function<void()> job)
 
 void CThreadPool::Worker_Thread()
 {
+    CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+
     while (true)
     {
         unique_lock<mutex> lock(m_Mutex);
@@ -82,6 +83,8 @@ void CThreadPool::Worker_Thread()
 
         task();
     }
+
+    CoUninitialize();
 }
 
 CThreadPool* CThreadPool::Create(_uint thread_count)
@@ -116,8 +119,6 @@ void CThreadPool::Free()
         std::queue<std::function<void()>> empty;
         m_Tasks.swap(empty);
     }
-
-    CoUninitialize();
 
     __super::Free();
 }

@@ -283,8 +283,20 @@ HRESULT CLevel_Stage1::Ready_Layer_MapObject(const _wstring& strLayerTag, const 
 		ObjectDesc.Properties = PropProperties;
 
 		// 일단 단일 오브젝트로 배치하고 추후에 인스턴스, 인터렉티브, 다이나믹 으로 나누겠습니다.
-		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
-			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), E_FAIL);
+		m_pGameInstance->Add_FireTask([this, objDesc = ObjectDesc, curLevel = eCurrentLevel]() mutable {
+			CHECK_FAILED(
+				m_pGameInstance->Add_GameObject_ToLayer(
+					ENUM_CLASS(objDesc.eLevel),
+					TEXT("Layer_MapObject"),
+					ENUM_CLASS(curLevel),
+					TEXT("Prototype_GameObject_Prop_Object"),
+					&objDesc // 캡처된 값의 주소 -> 안전
+				),
+				E_FAIL
+			);
+			});
+		/*CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), E_FAIL);*/
 	}
 
 	return S_OK;
