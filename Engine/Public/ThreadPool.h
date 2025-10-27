@@ -15,6 +15,7 @@ public:
 public:
     HRESULT Initialize(_uint thread_count = 0);
     future<HRESULT> Add_Task(std::function<HRESULT()> task);
+    void Add_FireTask(std::function<HRESULT()> task);
     void PushJob(function<void()> job);
     _uint Size() const { return static_cast<_uint>(m_Workers.size()); }
 

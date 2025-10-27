@@ -217,6 +217,7 @@ public:
 
 #pragma region THREADPOOL
 	future<HRESULT> Add_Task(std::function<HRESULT()> task);
+	void Add_FireTask(std::function<HRESULT()> task);
 #pragma
 
 #pragma region INPUT_MANAGER

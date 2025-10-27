@@ -35,6 +35,21 @@ future<HRESULT> CThreadPool::Add_Task(std::function<HRESULT()> task)
     return future;
 }
 
+void CThreadPool::Add_FireTask(std::function<HRESULT()> task)
+{
+	lock_guard<mutex> lock(m_Mutex);
+    m_Tasks.push([t = move(task)]() mutable {
+        try {
+            HRESULT hr = t();
+        }
+        catch (...) {
+            throw runtime_error("ThreadPool 문제있음");
+        }
+        });
+
+	m_CV.notify_one();
+}
+
 
 void CThreadPool::PushJob(function<void()> job)
 {

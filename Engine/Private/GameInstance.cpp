@@ -812,6 +812,10 @@ future<HRESULT> CGameInstance::Add_Task(std::function<HRESULT()> task)
 {
 	return m_pThreadPool->Add_Task(task);
 }
+void CGameInstance::Add_FireTask(std::function<HRESULT()> task)
+{
+	m_pThreadPool->Add_FireTask(task);
+}
 #pragma endregion
 
 #pragma region INPUT_MANAGER
