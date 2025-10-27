@@ -1,4 +1,4 @@
-#ifndef Engine_Json_h__
+ï»¿#ifndef Engine_Json_h__
 #define Engine_Json_h__
 
 #include "Json/json.hpp"
@@ -384,11 +384,10 @@ namespace Engine
 
     }CHANNEL_DATA;
 
-    // ? ë‹ˆë©”ì´???¸íŠ¸ ?°ì´??(MODEL_DATAê°? ê´?ë¦?
     typedef struct tagAnimationSetData
     {
-        std::string             strAnimSetName = { "DefaultAnimSet" };      // ? ë‹ˆë©”ì´???¸íŠ¸ ?´ë¦„
-        std::vector<int>        vecAnimIndices;                             // ?¸íŠ¸???¬í•¨??? ë‹ˆë©”ì´???¸ë±?¤ë“¤ (?¤í–‰ ?œì„œ??ë¡?
+        std::string             strAnimSetName = { "DefaultAnimSet" };  
+        std::vector<int>        vecAnimIndices;                           
 
         void SaveBinary(std::ofstream& ofs) const
         {
@@ -426,35 +425,37 @@ namespace Engine
 
     }ANIMATION_SET_DATA;
 
-    // ê°œë³„ ? ë‹ˆë©”ì´???¤ì • (ê°?? ë‹ˆë©”ì´?˜ì´ ê´?ë¦?
     typedef struct tagAnimationSetUp
     {
-        /* ê¸°ë³¸ ?¤ì • */
+        /* ê¸°ë³¸ì •ë³´ */
         std::string             strName = { "DefaultAnim" };
         bool                    isLoop = { false };
-        unsigned int            iDirection = { 0 };                         // ¹æÇâ ANIM_DIRECTION
+        unsigned int            iDirection = { 0 };                         // ë°©í–¥ DIRECTION
 
-        /* ¾Ö´Ï¸ŞÀÌ¼Ç ÀüÈ¯ ¼³Á¤ (¾Ö´Ï¸ŞÀÌ¼Ç ¼¼Æ®¿¡ »ç¿ëÇÒ ¿¹Á¤) */
-        unsigned int            iTransitionType = { 0 };                    // ÀüÈ¯ Á¶°Ç (0:Auto, 1:Flag, 2:Input, 3:Manual)
-        bool                    isWaitForComplete = { false };               // ¿Ï·á ´ë±â ¿©ºÎ true: ÀüÈ¯ÇÒ ¶§ ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ ´Ù ³¡³ª°í ÀüÈ¯ÇÏ°Ú´Ù. / false : ¹Ù·Î ÀüÈ¯ÇÏ°Ú´Ù.
-        float                   fBlendOutTime = { 0.15f };                  // ºí·»µå ¾Æ¿ô ½Ã°£
-        float                   fBlendInTime = { 0.15f };                   // ºí·»µå ÀÎ ½Ã°£
+        /* ì• ë‹ˆë©”ì´ì…˜ ì „í™˜ ì„¤ì • (ì• ë‹ˆë©”ì´ì…˜ ì„¸íŠ¸ì— ì‚¬ìš©í•  ì˜ˆì •) */
+        unsigned int            iTransitionType = { 0 };                    // ì „í™˜ ì¡°ê±´ (0:Auto, 1:Flag, 2:Input, 3:Manual)
+        bool                    isWaitForComplete = { false };               // ì™„ë£Œ ëŒ€ê¸° ì—¬ë¶€ true: ì „í™˜í•  ë•Œ ì• ë‹ˆë©”ì´ì…˜ì´ ë‹¤ ëë‚˜ê³  ì „í™˜í•˜ê² ë‹¤. / false : ë°”ë¡œ ì „í™˜í•˜ê² ë‹¤.
+        float                   fBlendOutTime = { 0.15f };                  // ë¸”ë Œë“œ ì•„ì›ƒ ì‹œê°„
+        float                   fBlendInTime = { 0.15f };                   // ë¸”ë Œë“œ ì¸ ì‹œê°„
 
-        /* ·çÆ® ¸ğ¼Ç */
-        bool                    isRootMotion = { true };                   // ·çÆ® ¸ğ¼Ç »ç¿ë ¿©ºÎ
-        bool                    isApplyRootRotation = { false };            // È¸Àü Àû¿ë ¿©ºÎ
-        bool                    isApplyRootPosition = { true };            // À§Ä¡ Àû¿ë ¿©ºÎ
-        FLOAT3_DATA             RootMitionScale = FLOAT3_DATA(1.f, 1.f, 1.f);  // Ãàº° Àû¿ë ½ºÄÉÀÏ
+        /* ë£¨íŠ¸ ëª¨ì…˜ */
+        bool                    isRootMotion = { true };                   // ë£¨íŠ¸ ëª¨ì…˜ ì‚¬ìš© ì—¬ë¶€
+        bool                    isIgnoreRootRot = { false };            // íšŒì „ ì ìš© ì—¬ë¶€
+        bool                    isApplyRootPosition = { true };            // ìœ„ì¹˜ ì ìš© ì—¬ë¶€
+        bool                    isIgnoreRootPos = { false };                 // ë§¤ í”„ë ˆì„ ë£¨íŠ¸ë³¸ ìœ„ì¹˜ê°’ 0
+        bool                    isIgnoreRootPosFirstFrame = { true };       //ì²« ë²ˆì§¸ í”„ë ˆì„ë§Œ ë£¨íŠ¸ë³¸ ìœ„ì¹˜ê°’ 0
+        bool                    isAbsoluteRootPosition = { false };         //ë£¨íŠ¸ë³¸ì´ ì ˆëŒ€ ìœ„ì¹˜ë¡œ ì‹œì‘í•˜ëŠ” ì• ë‚˜ë©”ì´ì…˜ì— ì‚¬ìš©(ì˜¤í”„ì…‹ í•„ìš”) (ex- ì•ìœ¼ë¡œ ê°€ëŠ” ì½¤ë³´ê³µê²© 2,3ë²ˆì§¸ê°™ì€ê²½ìš°)
+        FLOAT3_DATA             RootMitionScale = FLOAT3_DATA(1.f, 1.f, 1.f);  // ì¶•ë³„ ì ìš© ìŠ¤ì¼€ì¼
 
-        /* ÀÌº¥Æ® */
-        bool                    isEvent = { false };                        // ÀÌº¥Æ® Á¸Àç ¿©ºÎ
-        //bool                  isTriggerOnce = { false };       =1<<0      // ·çÇÁ ½Ã ÇÑ ¹ø¸¸ ¹ßµ¿
-        //bool					isTriggerOnEnter = { true };     =1<<1      // ¹üÀ§ ÁøÀÔ ½Ã ¹ßµ¿
-        //bool					isTriggerOnExit = { false };     =1<<2      // ¹üÀ§ Å»Ãâ ½Ã ¹ßµ¿
-        //bool					isTriggerContinuous = { false }; =1<<3      // ¹üÀ§ ³»¿¡¼­ °è¼Ó ¹ßµ¿
-        std::vector<unsigned int>   vecEventTriggers;                       // ÀÌº¥Æ® ¹ßµ¿ Á¶°Ç ¸ğÀ½
-        std::vector<FLOAT2_DATA>    vecEventFrames;                         // ÀÌº¥Æ® ÇÁ·¹ÀÓ (x: start, y: end)
-        std::vector<std::string>    vecEventKeys;                           // ÀÌº¥Æ® Å°
+        /* ì´ë²¤íŠ¸ */
+        bool                    isEvent = { false };                        // ì´ë²¤íŠ¸ ì¡´ì¬ ì—¬ë¶€
+        //bool                  isTriggerOnce = { false };       =1<<0      // ë£¨í”„ ì‹œ í•œ ë²ˆë§Œ ë°œë™
+        //bool					isTriggerOnEnter = { true };     =1<<1      // ë²”ìœ„ ì§„ì… ì‹œ ë°œë™
+        //bool					isTriggerOnExit = { false };     =1<<2      // ë²”ìœ„ íƒˆì¶œ ì‹œ ë°œë™
+        //bool					isTriggerContinuous = { false }; =1<<3      // ë²”ìœ„ ë‚´ì—ì„œ ê³„ì† ë°œë™
+        std::vector<unsigned int>   vecEventTriggers;                       // ì´ë²¤íŠ¸ ë°œë™ ì¡°ê±´ ëª¨ìŒ
+        std::vector<FLOAT2_DATA>    vecEventFrames;                         // ì´ë²¤íŠ¸ í”„ë ˆì„ (x: start, y: end)
+        std::vector<std::string>    vecEventKeys;                           // ì´ë²¤íŠ¸ í‚¤
         void SaveBinary(std::ofstream& ofs) const
         {
             auto write_string = [&](const std::string& s) {
@@ -463,24 +464,25 @@ namespace Engine
                 ofs.write(s.data(), len);
                 };
 
-            // ê¸°ë³¸ ?¤ì •
             write_string(strName);
             ofs.write((char*)&isLoop, sizeof(isLoop));
             ofs.write((char*)&iDirection, sizeof(iDirection));
 
-            // ? ë‹ˆë©”ì´???„í™˜ ?¤ì •
             ofs.write((char*)&iTransitionType, sizeof(iTransitionType));
             ofs.write((char*)&isWaitForComplete, sizeof(isWaitForComplete));
             ofs.write((char*)&fBlendOutTime, sizeof(fBlendOutTime));
             ofs.write((char*)&fBlendInTime, sizeof(fBlendInTime));
 
-            // ë£¨íŠ¸ ëª¨ì…˜
             ofs.write((char*)&isRootMotion, sizeof(isRootMotion));
-            ofs.write((char*)&isApplyRootRotation, sizeof(isApplyRootRotation));
+            ofs.write((char*)&isIgnoreRootRot, sizeof(isIgnoreRootRot));
             ofs.write((char*)&isApplyRootPosition, sizeof(isApplyRootPosition));
+            ofs.write((char*)&isIgnoreRootPos, sizeof(isIgnoreRootPos));
+            ofs.write((char*)&isIgnoreRootPosFirstFrame, sizeof(isIgnoreRootPosFirstFrame));
+            ofs.write((char*)&isAbsoluteRootPosition, sizeof(isAbsoluteRootPosition));
             ofs.write((char*)&RootMitionScale, sizeof(FLOAT3_DATA));
 
-            // ?´ë²¤??            ofs.write((char*)&isEvent, sizeof(isEvent));
+            // event
+            //ofs.write((char*)&isEvent, sizeof(isEvent));
             //ofs.write((char*)&isTriggerOnce, sizeof(isTriggerOnce));
             //ofs.write((char*)&isTriggerOnEnter, sizeof(isTriggerOnEnter));
             //ofs.write((char*)&isTriggerOnExit, sizeof(isTriggerOnExit));
@@ -516,24 +518,25 @@ namespace Engine
                 return s;
                 };
 
-            // ê¸°ë³¸ ?¤ì •
             strName = read_string();
             ifs.read((char*)&isLoop, sizeof(isLoop));
             ifs.read((char*)&iDirection, sizeof(iDirection));
 
-            // ? ë‹ˆë©”ì´???„í™˜ ?¤ì •
             ifs.read((char*)&iTransitionType, sizeof(iTransitionType));
             ifs.read((char*)&isWaitForComplete, sizeof(isWaitForComplete));
             ifs.read((char*)&fBlendOutTime, sizeof(fBlendOutTime));
             ifs.read((char*)&fBlendInTime, sizeof(fBlendInTime));
 
-            // ë£¨íŠ¸ ëª¨ì…˜
             ifs.read((char*)&isRootMotion, sizeof(isRootMotion));
-            ifs.read((char*)&isApplyRootRotation, sizeof(isApplyRootRotation));
+            ifs.read((char*)&isIgnoreRootRot, sizeof(isIgnoreRootRot));
             ifs.read((char*)&isApplyRootPosition, sizeof(isApplyRootPosition));
+            ifs.read((char*)&isIgnoreRootPos, sizeof(isIgnoreRootPos));
+            ifs.read((char*)&isIgnoreRootPosFirstFrame, sizeof(isIgnoreRootPosFirstFrame));
+            ifs.read((char*)&isAbsoluteRootPosition, sizeof(isAbsoluteRootPosition));
             ifs.read((char*)&RootMitionScale, sizeof(FLOAT3_DATA));
 
-            // ?´ë²¤??            ifs.read((char*)&isEvent, sizeof(isEvent));
+            // event
+            //ifs.read((char*)&isEvent, sizeof(isEvent));
             //ifs.read((char*)&isTriggerOnce, sizeof(isTriggerOnce));
             //ifs.read((char*)&isTriggerOnEnter, sizeof(isTriggerOnEnter));
             //ifs.read((char*)&isTriggerOnExit, sizeof(isTriggerOnExit));
@@ -571,7 +574,7 @@ namespace Engine
         float			fTickPerSecond;
         float           fAnimationBlendTime = { 0.25f };
         unsigned int    iNumChannels;
-
+        unsigned int    iRotationType = { 0 };
         std::vector< CHANNEL_DATA> vecChannels;
 
         ANIMATION_SETUP_DATA    animSetup;
@@ -585,6 +588,7 @@ namespace Engine
             ofs.write((char*)&fTickPerSecond, sizeof(fTickPerSecond));
             ofs.write((char*)&fAnimationBlendTime, sizeof(fAnimationBlendTime));
             ofs.write((char*)&iNumChannels, sizeof(iNumChannels));
+            ofs.write((char*)&iRotationType, sizeof(iRotationType));
 
             uint32_t count = static_cast<uint32_t>(vecChannels.size());
             ofs.write((char*)&count, sizeof(count));
@@ -603,6 +607,7 @@ namespace Engine
             ifs.read((char*)&fTickPerSecond, sizeof(fTickPerSecond));
             ifs.read((char*)&fAnimationBlendTime, sizeof(fAnimationBlendTime));
             ifs.read((char*)&iNumChannels, sizeof(iNumChannels));
+            ifs.read((char*)&iRotationType, sizeof(iRotationType));
 
             uint32_t count;
             ifs.read((char*)&count, sizeof(count));
@@ -626,7 +631,7 @@ namespace Engine
     typedef struct tagAnimationSummariesDataSet
     {
         std::vector<ANIMATION_SUMMARY_DATA> vecSummaries;
-        std::vector<Engine::ANIMATION_SET_DATA>     vecAnimationSets;  // ? ë‹ˆë©”ì´???¸íŠ¸ (ì¶”ê???
+        std::vector<Engine::ANIMATION_SET_DATA>     vecAnimationSets;  
 
     }ANIMATION_SUMMARIES_DATA;
 
@@ -648,7 +653,7 @@ namespace Engine
 
         //ANIM
         std::vector<Engine::ANIMATION_DATA>		    vecAnimation;
-        std::vector<Engine::ANIMATION_SET_DATA>     vecAnimationSets;  // ? ë‹ˆë©”ì´???¸íŠ¸ (ì¶”ê???
+        std::vector<Engine::ANIMATION_SET_DATA>     vecAnimationSets; 
 
         ~tagModelDataSet() {
             vecMeshes.clear();
@@ -829,10 +834,10 @@ namespace Engine
         string                              strSubtype;
 
         //vector<tagAI_BehaviorTreeNodeData>   Children;
-        // Æ÷ÀÎÅÍ ±â¹İÀ¸·Î º¯°æ
+        // í¬ì¸í„° ê¸°ë°˜ìœ¼ë¡œ ë³€ê²½
         vector<tagAI_BehaviorTreeNodeData*>    Children;
         
-        // ¿¡µğÅÍ¿¡¼­ Æ®¸® ³ëµå ¼öÁ¤¿ë º¯¼ö
+        // ì—ë””í„°ì—ì„œ íŠ¸ë¦¬ ë…¸ë“œ ìˆ˜ì •ìš© ë³€ìˆ˜
         tagAI_BehaviorTreeNodeData*          Parent = { nullptr };
 
         float                               fCoolDownTime = {};
@@ -893,10 +898,8 @@ namespace Engine
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BONE_DATA, iParentBoneIndex, strName, transformationMatrix);
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(CHANNEL_DATA, strName, iBoneIndex, iNumKeyFrame, vecKeyFrames);
 
-    // ? ë‹ˆë©”ì´???¸íŠ¸ ì§ë ¬??    
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_SET_DATA,strAnimSetName,vecAnimIndices);
 
-    // ? ë‹ˆë©”ì´???¤ì • ì§ë ¬??    
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_SETUP_DATA,
         strName,
         isLoop,
@@ -906,8 +909,11 @@ namespace Engine
         fBlendOutTime,
         fBlendInTime,
         isRootMotion,
-        isApplyRootRotation,
+        isIgnoreRootRot,
         isApplyRootPosition,
+        isIgnoreRootPos,
+        isIgnoreRootPosFirstFrame,
+        isAbsoluteRootPosition,
         RootMitionScale,
         isEvent,
         //isTriggerOnce,
@@ -919,7 +925,7 @@ namespace Engine
         vecEventKeys
     );
 
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_DATA, strName, fDuration, fTickPerSecond, iNumChannels, vecChannels, animSetup);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_DATA, strName, fDuration, fTickPerSecond, iNumChannels, iRotationType, vecChannels, animSetup);
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_SUMMARY_DATA, strName, fDuration, fTickPerSecond, iNumChannels, animSetup);
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_SUMMARIES_DATA, vecSummaries, vecAnimationSets);
 
@@ -954,7 +960,7 @@ namespace Engine
         vScale,
         vRotation
     );
-    // ÇÁ·ÎÅäÅ¸ÀÔ °ü·Ã ÅÂ±×, ÀÌ¸§, °æ·Î Á÷·ÄÈ­
+    // í”„ë¡œí† íƒ€ì… ê´€ë ¨ íƒœê·¸, ì´ë¦„, ê²½ë¡œ ì§ë ¬í™”
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(JSON_MAP_PROTOTYPE_DATA, iNumPrototypes, PrototypeTag, FileName, FilePath);
 
 

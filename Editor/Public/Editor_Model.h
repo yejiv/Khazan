@@ -27,6 +27,10 @@ public:
 	_bool			Play_Animation(_float fTimeDelta);
 	void			Set_Animation(_uint iIndex, _bool isLoop);
 	void			Set_SetAnimation(const string& strKey);
+	void			Set_OwnerTransform(class CTransform** pTransform) {
+		m_pOwnerTransform = *pTransform;
+		Safe_AddRef(m_pOwnerTransform);
+	}
 
 public:
 	const char*					Get_ModelName() const { return m_Model_Data.strModelName.c_str(); }
@@ -37,8 +41,10 @@ public:
 	class CEditor_Animation*	Get_CurAnimtion();
 	_int						Get_CurAnimIndex() { return m_iCurrentAnimIndex; }
 	_float*						Get_CurTrackPosition() { return &m_fCurrentTrackPosition; }
-	const _matrix&				Get_RootMotionDelta()const { return m_vRootMotionDelta; }
-	_bool						isRootMotion() { return m_isRootMotion; }
+	//const _matrix&				Get_RootMotionDelta()const { return m_vRootMotionDelta; }
+	//_bool						isRootMotion() { return m_isRootMotion; }
+
+
 
 public:
 	void			ExportModel(string& strPath);
@@ -61,6 +67,7 @@ private:
 	Assimp::Importer		m_Importer = {};
 	MODELTYPE				m_eModelType = {};
 	_float4x4				m_PreTransformMatrix = {};
+
 	const _char*			m_pModelFilePath = {};
 
 	MODEL_DATA				m_Model_Data = {};	/* 파일로부터 읽은 모든 정보를 다 저장해주는 구조체. */
@@ -84,19 +91,27 @@ private:
 	vector< class CEditor_Animation* >		m_Animations;
 
 	/* 루트모션 */
-	_uint							m_iRootBoneIndex = { 0 }; // 루트 모션을 적용할 뼈의 인덱스	
+	_uint							m_iRootBoneIndex = { 0 };      // Root (2) - 위치용
+	//_uint							m_iRotationBoneIndex = { 0 };  // Bip001 (3) - 회전용
 	_bool							m_isRootMotion = { false }; // 루트 모션 사용 여부
-	//_bool							m_isCheckRootMotion = { false };
 	_bool							m_isRootMotion_Pos = { false };
-	_bool							m_isRootMotion_Rot = { false };
-	_vector							m_vRootMotionScale = {};
-	//_float							m_fCurRootMotionBlendTime = {};
-	//_float							m_fRootMotionBlendTime = { 0.01f }; // 루트 모션 보간에 사용할 시간
+	_bool							m_isIgonreRootRot = { false };
+	_bool							m_isIgnoreRootPos = { false};             // 매 프레임 루트본 위치값 0
+	_bool							m_isIgnoreRootPosFirstFrame = { false };   //첫 번째 프레임만 루트본 위치값 0
+	_bool							m_isAbsoluteRootPosition = { true }; //루트본이 절대 위치로 시작하는 애나메이션에 사용(오프셋 필요) (ex- 앞으로 가는 콤보공격 2번째같은경우)
+	_vector							m_vRootMotionScale = {};	//루트모션 포지션 값 어디 축에만 적용할 것인지.
+	_vector							m_vFirstFrameRootOffset = {}; //첫 프레임 오프셋 저장. 콤보애니같은경우 위치값이 크므로.
+	_vector							m_vRootDeltaQuat = {};
+	_vector							m_vPreTransformQuat = {}; 
+	//_matrix							m_FirstFrameRootMatrix = {};
 	_matrix							m_PreRootMatrix = {}; // 이전 루트 모션 행렬	
+	_matrix							m_PreRotRootMatrix = {}; // 이전 루트 모션 행렬	(rotataion 용)
 	_matrix							m_vRootMotionDelta = {};// 루트모션 변화량
-	//_matrix							m_RootMotionBlendStartMatrix = {};  // 블렌딩 시작 시점의 루트 본 행렬
-	//_vector							m_vAccDelta = {};
-	_bool							m_isDebug = { false };
+	_bool							m_isFirstRootMotionFrame = { false };
+	//_vector							m_vPreRootPos = XMVectorSet(0.f, 0.f, 0.f, 1.f);  // 위치만 저장
+	//_matrix							m_BaseMatrix = {};	//초기 스케일값만 적용된 기본 매트릭스 
+
+
 
 	_bool							m_isLoop = {};
 	_bool							m_isAnimationLooped = { false };  // 이번 프레임에 애니메이션이 루프되었는지
@@ -112,10 +127,11 @@ private:
 	_uint							m_iCurSelectSetAnimIndex = { 0 }; // 키값에 해당하는 애니메이션 세트
 	//string							m_strSetAnimKey = "";
 
-
+	class CTransform* m_pOwnerTransform = nullptr;
 
 	//test
 	_bool	m_isTest = { false };
+	_int	m_iTest = { 0 };
 private:
 	HRESULT			Ready_Meshes();
 	HRESULT			Ready_Materials();
@@ -125,7 +141,8 @@ private:
 private:
 	/* 루트 모션 */
 	void			OnRootMotion();
-	void			Update_RootMotion(_float fTimeDelta);
+	void			Update_RootMotion(_float fTimeDelta, _bool isBlending);
+	void			Apply_RootMotion_To_Transform();
 
 	/* Export */
 	_bool			Export_AnimationJson(const string& strFilePath, const string& strFilePath2);
@@ -144,6 +161,8 @@ public:
 	static  CEditor_Model* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, MODELTYPE eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void			Free() override;
+
+	void DebugDumpRootBonePerFrame();
 
 };
 NS_END

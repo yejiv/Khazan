@@ -18,12 +18,15 @@ public:
 	void	Get_Data(ANIMATION_DATA& data) { data = m_Animation_Data; }
 
 public:
+	void					Set_RootBoneIndex(_uint iRootBoneIndex);
 	void					OnAnimationBlend(map<_uint, _matrix>&& outChannelMatrices);
 	map<_uint, _matrix>&	Get_ChannelMatrices();
 	void					Set_TrackPositionPtr(_float* pTrackPosition);
+	_bool					IsBlending() const { return m_isAnimationBlend; }
 
 	void					EnbleTrackPosition(_bool isEnble) { m_isEnbleTrackPosition = isEnble; }//tool
 	const _float&			Get_Duration() const { return m_fDuration; } //tool
+
 
 private:
 	string								m_strName = {};
