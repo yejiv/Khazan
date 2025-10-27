@@ -328,12 +328,6 @@
     <Filter Include="01.Utility\16.Resource\Manager">
       <UniqueIdentifier>{74ac0120-cab6-47e2-b6c0-c43dec2d10b4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\17.Octree">
-      <UniqueIdentifier>{b468bf54-5009-44d0-8ba5-7b41dae25d3e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\17.Octree\Node">
-      <UniqueIdentifier>{5bd170bd-6f71-46aa-a83a-024c541619b8}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -650,12 +644,6 @@
     </ClCompile>
     <ClCompile Include="..\private\SSAO.cpp">
       <Filter>01.Utility\94.RenderingResources\SSAO</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Octree.cpp">
-      <Filter>01.Utility\17.Octree</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\OctNode.cpp">
-      <Filter>01.Utility\17.Octree\Node</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1010,12 +998,6 @@
     <ClInclude Include="..\..\ENGINESDK\DEBUG\INC\COMPOSITE_NODE.H" />
     <ClInclude Include="..\public\SSAO.h">
       <Filter>01.Utility\94.RenderingResources\SSAO</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Octree.h">
-      <Filter>01.Utility\17.Octree</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\OctNode.h">
-      <Filter>01.Utility\17.Octree\Node</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -21,9 +21,6 @@ public:
 
 	/*XMPlaneTransform(, 월드행렬역전치)*/
 	const _float4* Get_WorldPoints() const { return m_vWorldPoints; }
-	const _float4* Get_WorldPlanes() const { return m_vWorldPlanes; }
-
-	_bool IsVisible_AABB_Wolrd(const _float3& center, const _float3& extent) const;
 
 private:
 	_float4			m_vPoints[8] = {};
