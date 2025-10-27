@@ -30,7 +30,7 @@ HRESULT CPlayer_Shader::Initialize_Clone(void* pArg)
     m_pModelCom->Set_Animation(8);
 
     m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
-    //  m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, -2.1f, -5.f, 1.f));
     //  m_pTransformCom->Scaling(_float3(5.f, 5.f, 5.f));
 
     return S_OK;
@@ -82,14 +82,12 @@ HRESULT CPlayer_Shader::Render()
     for (size_t i = 0; i < iNumMeshes; i++)
     {
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
-        m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+        
+        // Normal, Specular 텍스처가 없는 것 같음
+        //  m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
+        //  m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR, 0);
 
-        //  if (FAILED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0)))
-        //      return E_FAIL;
-        //  if (FAILED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_DIFFUSE, 0)))
-        //      return E_FAIL;
-        //  if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
-        //      return E_FAIL;
+        m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
         m_pShaderCom->Begin(0);
 

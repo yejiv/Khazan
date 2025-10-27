@@ -49,8 +49,21 @@ HRESULT CRenderer::Initialize()
         return E_FAIL;
 
     /* For.Target_Specular */
-    //  if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Specular"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
-    //      return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Specular"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+        return E_FAIL;
+
+    // Test Light Acc MRT용 Specular 렌더 타겟
+    /* For.Target_SpecularLight */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_SpecularLight"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+        return E_FAIL;
+
+    /* For.Target_Emissive */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Emissive"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
+        return E_FAIL;
+
+    /* For.Target_PostScene */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_PostScene"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+        return E_FAIL;
 
     /* For.Target_LightDepth */
     //  if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_LightDepth"), g_iMaxWidth, g_iMaxHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.0f, 1.0f, 1.0f, 1.0f))))
@@ -73,22 +86,32 @@ HRESULT CRenderer::Initialize()
         return E_FAIL;
     if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_World"))))
         return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Specular"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Emissive"))))
+        return E_FAIL;
 
     /* For.MRT_LightAcc : 빛들의 연산 결과를 누적한다. */
     if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Shade"))))
         return E_FAIL;
-    //  if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Specular"))))
-    //      return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_SpecularLight"))))
+        return E_FAIL;
 
     /* For.MRT_Shadow : 광원기준으로 보여지는 장면을 그려준다.  */
     //  if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Shadow"), TEXT("Target_LightDepth"))))
     //      return E_FAIL;
 
-    /* For.MRT_BackBuffer : 원래 백버퍼에 그렸어야할 최종 장면을 그려놓는 타겟  */
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_BackBuffer"), TEXT("Target_BackBuffer"))))
+    /* For.MRT_PostScene : 원래 백버퍼에 그렸어야할 최종 장면을 그려놓는 타겟  */
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_PostScene"), TEXT("Target_PostScene"))))
         return E_FAIL;
 
-    /* For.MRT_Blur : 원래 백버퍼에 그렸어야할 최종 장면을 그려놓는 타겟  */
+    /* For.MRT_Emissive */
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Emissive"), TEXT("Target_PostScene"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Emissive"), TEXT("Target_Emissive"))))
+        return E_FAIL;
+
     if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Blur"), TEXT("Target_BlurX"))))
         return E_FAIL;
 
@@ -117,12 +140,17 @@ HRESULT CRenderer::Initialize()
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_SSAO"), 450.0f, 450.0f, 300.f, 300.f)))
         return E_FAIL;
-
     if (FAILED(m_pGameInstance->Ready_CSM_Debug(ViewportDesc.Width - 150.0f, 150.0f, 300.f, 300.f)))
         return E_FAIL;
 
-    //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Specular"), 450.0f, 450.0f, 300.f, 300.f)))
-    //      return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Specular"), 150.0f, 750.0f, 300.f, 300.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Emissive"), 450.0f, 750.0f, 300.f, 300.f)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_PostScene"), 150.0f, 1050.0f, 300.f, 300.f)))
+        return E_FAIL;
+
     //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_LightDepth"), ViewportDesc.Width - 300.0f, 300.0f, 600.f, 600.f)))
     //      return E_FAIL;
     //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_LightDepth_0"), ViewportDesc.Width - 150.0f, 150.0f, 300.f, 300.f)))
@@ -160,18 +188,16 @@ HRESULT CRenderer::Draw()
     if (FAILED(Render_NonBlend()))
         return E_FAIL;
 
-    //if (isEnableSSAO())
-    //    if (FAILED(Render_SSAO()))
-    //        return E_FAIL;
+    if (isEnableSSAO())
+        if (FAILED(Render_SSAO()))
+            return E_FAIL;
 
     if (FAILED(Render_Lights()))
         return E_FAIL;
 
-    if (FAILED(Render_Combined()))
+    // -> Render_PostScene
+    if (FAILED(Render_PostScene()))
         return E_FAIL;
-
-    //if (FAILED(Render_Blur()))
-    //    return E_FAIL;
 
     if (FAILED(Render_NonLight()))
         return E_FAIL;
@@ -179,8 +205,18 @@ HRESULT CRenderer::Draw()
     if (FAILED(Render_Blend()))
         return E_FAIL;
 
+    // == Bloom
+    //  if (FAILED(Render_Blur()))
+    //      return E_FAIL;
+
+    //  if (FAILED(Render_Combined()))
+    //      return E_FAIL;
+
     if (FAILED(Render_UI()))
         return E_FAIL;
+
+    //  if (FAILED(Render_UI_Effect()))
+    //      return E_FAIL;
 
 #ifdef _DEBUG
     if (isEnableDebugRender())
@@ -204,7 +240,7 @@ HRESULT CRenderer::Add_DebugComponent(CComponent* pComponent)
 
 HRESULT CRenderer::Render_Priority()
 {
-    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_BackBuffer"))))
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_PostScene"))))
         return E_FAIL;
 
     for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::PRIORITY)])
@@ -346,6 +382,8 @@ HRESULT CRenderer::Render_Lights()
         return E_FAIL;
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_SSAO"), m_pShader, "g_SSAOTexture")))
         return E_FAIL;
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Specular"), m_pShader, "g_SpecularTexture")))
+        return E_FAIL;
 
 #ifdef _DEBUG
     if (FAILED(m_pShader->Bind_Bool("g_isEnableSSAO", &m_isEnableSSAO)))
@@ -353,6 +391,69 @@ HRESULT CRenderer::Render_Lights()
 #endif
 
     m_pGameInstance->Render_Lights(m_pShader, m_pVIBuffer, m_pGameInstance->Get_CurrentLevelID());
+
+    if (FAILED(m_pGameInstance->End_MRT()))
+        return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CRenderer::Render_PostScene()
+{
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_PostScene"), nullptr, false)))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::VIEW))))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::PROJ))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Diffuse"), m_pShader, "g_DiffuseTexture")))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Shade"), m_pShader, "g_ShadeTexture")))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_SpecularLight"), m_pShader, "g_SpecularTexture")))
+        return E_FAIL;
+
+    //  if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Emissive"), m_pShader, "g_EmissiveTexture")))
+    //      return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
+        return E_FAIL;
+
+    if (false == isEnableShadow())
+    {
+        m_pGameInstance->Clear_ShadowDSVs();
+
+        m_pShader->Begin(3);
+
+        m_pVIBuffer->Bind_Resources();
+        m_pVIBuffer->Render();
+
+        return S_OK;
+    }
+
+    if (FAILED(m_pGameInstance->Bind_Shadow_ShaderResources(m_pShader)))
+        return E_FAIL;
+
+#ifdef _DEBUG
+    if (FAILED(m_pShader->Bind_Bool("g_isEnableShadow", &m_isEnableShadow)))
+        return E_FAIL;
+#endif
+
+    m_pShader->Begin(3);
+
+    m_pVIBuffer->Bind_Resources();
+    m_pVIBuffer->Render();
 
     if (FAILED(m_pGameInstance->End_MRT()))
         return E_FAIL;
@@ -384,8 +485,11 @@ HRESULT CRenderer::Render_Combined()
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Shade"), m_pShader, "g_ShadeTexture")))
         return E_FAIL;
 
-    //  if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Specular"), m_pShader, "g_SpecularTexture")))
-    //      return E_FAIL;
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_SpecularLight"), m_pShader, "g_SpecularTexture")))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Emissive"), m_pShader, "g_EmissiveTexture")))
+        return E_FAIL;
 
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
         return E_FAIL;

@@ -360,6 +360,11 @@ HRESULT CLoader::Loading_For_Shader_Level()
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Rock/WP_COM_Rock_Base_001/WP_COM_Rock_Base_001.dat"))))
 		return E_FAIL;
 
+#pragma region 테스트용 ( 프로토타입 모델 생성 ) ( 박준영이 남기고간거 필요없으면 삭제 )
+	CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("Test"), LEVEL::SHADER), E_FAIL);
+	CHECK_FAILED(Loading_Prototype_MapObject_Inst_From_DAT(TEXT("Test"), LEVEL::SHADER), E_FAIL);
+#pragma endregion
+
 	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
 
 	lstrcpy(m_szLoadingText, TEXT("게임오브젝트를 로딩중입니다."));
@@ -388,7 +393,6 @@ HRESULT CLoader::Loading_For_Shader_Level()
 	//	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Editor_Animation_TestModel"),
 	//		CJOH_EditorModelTest::Create(m_pDevice, m_pContext))))
 	//		return E_FAIL;
-
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 

@@ -17,7 +17,7 @@ vector g_vLightSpecular;
 vector g_vMtrlAmbient = { 1.f, 1.f, 1.f, 1.f }, g_vMtrlSpecular = { 1.f, 1.f, 1.f, 1.f };
 
 // ===== Textures =====
-Texture2D g_DiffuseTexture, g_NormalTexture, g_DepthTexture, g_ShadeTexture, g_SpecularTexture;
+Texture2D g_DiffuseTexture, g_NormalTexture, g_DepthTexture, g_ShadeTexture, g_SpecularTexture, g_EmissiveTexture;
 Texture2D g_LightDepthTexture, g_BackBufferTexture, g_BlurXTexture;
 
 // ===== Cascade Shadow =====
@@ -102,7 +102,7 @@ PS_OUT_BACKBUFFER PS_MAIN_DEBUG_ARRAY(PS_IN In)
 struct PS_OUT_LIGHT
 {
     vector vShade : SV_TARGET0;
-    //  vector vSpecular : SV_TARGET1;
+    vector vSpecular : SV_TARGET1;
 };
 
 PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
@@ -142,14 +142,14 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
     float fAO = g_SSAOTexture.Sample(PointSampler, In.vTexcoord).r;
     Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient * fAO));
 
-    //  Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient));
-    //  Out.vShade *= fAO;
-    
     // Specular
-    //  vector vReflect = reflect(normalize(g_vLightDir), vNormal);
-    //  vector vLook = vWorldPos - g_vCamPosition;
-    //  float fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), 50.f);
-    //  Out.vSpecular = (g_vLightSpecular * g_vMtrlSpecular) * fSpecular;
+    vector vSpecularDesc = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    vector vReflect = reflect(normalize(g_vLightDir), vNormal);
+
+    vector vLook = vWorldPos - g_vCamPosition;
+    float fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), 1.f);
+    Out.vSpecular = (g_vLightSpecular * vSpecularDesc) * fSpecular;
     
     return Out;
 }
@@ -205,7 +205,7 @@ PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
     return Out;
 }
 
-PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
+PS_OUT_BACKBUFFER PS_MAIN_POSTSCENE(PS_IN In)
 {
     PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
     
@@ -215,10 +215,13 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
         discard;
     
     vector vShade = g_ShadeTexture.Sample(DefaultSampler, In.vTexcoord);
-    //  vector vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
     
-    //  Out.vColor = vDiffuse * vShade + vSpecular;
-    Out.vColor = vDiffuse * vShade;
+    // Emissive Test
+    vector vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    Out.vColor = vDiffuse * vShade + vSpecular + vEmissive;
+    //  Out.vColor = vDiffuse * vShade;
     
     if (!g_isEnableShadow)
         return Out;
@@ -465,7 +468,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN_POINT();
     }
 
-    pass Combined
+    pass PostScene
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -473,7 +476,7 @@ technique11 DefaultTechnique
 
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_COMBINED();
+        PixelShader = compile ps_5_0 PS_MAIN_POSTSCENE();
     }
 
     pass BlurX
@@ -519,4 +522,15 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_SSAO();
     }
+
+    //  pass Combined
+    //  {
+    //      SetRasterizerState(RS_Default);
+    //      SetDepthStencilState(DSS_None, 0);
+    //      SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+    //  
+    //      VertexShader = compile vs_5_0 VS_MAIN();
+    //      GeometryShader = NULL;
+    //      PixelShader = compile ps_5_0 PS_MAIN_COMBINED();
+    //  }
 }

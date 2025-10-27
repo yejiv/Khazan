@@ -21,8 +21,17 @@ HRESULT CLevel_Shader::Initialize()
 	if (FAILED(Ready_Layer_Camera()))
 		return E_FAIL;
 
-	if (FAILED(Ready_Lights()))
-		return E_FAIL;
+	//if (FAILED(Ready_Lights()))
+		//return E_FAIL;
+
+#pragma region 테스트용 ( 박준영이 남기고 간거 )
+	CHECK_FAILED(Ready_Lights(TEXT("Test"), LEVEL::SHADER), E_FAIL);
+
+	CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("Test"), LEVEL::SHADER), E_FAIL);
+
+	CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("Test"), LEVEL::SHADER), E_FAIL);
+#pragma endregion
+
 
 	m_iNumCascades = m_pGameInstance->Get_NumCascades();
 
@@ -199,7 +208,7 @@ HRESULT CLevel_Shader::Ready_Layer_BackGround()
 
 	CProp_Object::PROP_OBJECT_DESC Desc = {};
 	Desc.eLevel = LEVEL::SHADER;
-	XMStoreFloat4x4(&Desc.WorldMatrix, XMMatrixScaling(0.05f, 0.05f, 0.05f) * XMMatrixTranslation(0.f, -9.5f, 5.f));
+	XMStoreFloat4x4(&Desc.WorldMatrix, XMMatrixScaling(0.05f, 0.05f, 0.05f) * XMMatrixTranslation(0.f, -5.f, 20.f));
 	_tchar szPrototypeModelTag[MAX_PATH] = TEXT("Prototype_Component_Model_Rock");
 	memcpy(Desc.szModelName, szPrototypeModelTag, MAX_PATH);
 
@@ -215,6 +224,246 @@ HRESULT CLevel_Shader::Ready_Layer_Player()
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_Player"),
 		ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Player_Shader"))))
 		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CLevel_Shader::Ready_Layer_MapObject(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
+{
+	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+
+	switch (eMap)
+	{
+	case KHAZAN_MAP::HEINMACH:
+		pDataFilePath += TEXT("HeinMach/");
+		break;
+	case KHAZAN_MAP::YETUGA:
+		pDataFilePath += TEXT("Yetuga/");
+		break;
+	case KHAZAN_MAP::THECREVICE:
+		pDataFilePath += TEXT("TheCrevice/");
+		break;
+	case KHAZAN_MAP::EMBARS:
+		pDataFilePath += TEXT("Embars/");
+		break;
+	case KHAZAN_MAP::VIPER:
+		pDataFilePath += TEXT("Viper/");
+		break;
+	default:
+		break;
+	}
+
+	pDataFilePath += pDataFileName;
+
+	// 동일한 파일명의 _objects.dat 불러오기
+	pDataFilePath += TEXT("_object.dat");
+
+	DWORD dwByte = {};
+
+	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("데이터 파일이 없거나 박준영 문제"), E_FAIL);
+
+	// 1. 오브젝트의 총 개수
+	_uint iObjectCnt = {};
+	CHECK_FALSE(ReadFile(hFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr), E_FAIL);
+
+	// 오브젝트 총 개수만큼 순회
+	for (_uint i = 0; i < iObjectCnt; ++i)
+	{
+		CProp_Object::PROP_OBJECT_DESC ObjectDesc = {};
+
+		ObjectDesc.eLevel = eCurrentLevel;
+
+		// 2. 프로토 타입 태그 길이 불러오기
+		_uint iPrototypeTagLen = {};
+		CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
+
+		// 3. 프로토 타입 태그 이름 불러오기
+		_tchar szPrototypeTag[MAX_PATH] = {};
+		CHECK_FALSE(ReadFile(hFile, &szPrototypeTag, sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr), E_FAIL);
+
+		// 불러온 태그 카피
+		memcpy(ObjectDesc.szModelName, szPrototypeTag, sizeof(ObjectDesc.szModelName));
+
+		// 4. 객체당 월드 행렬 때오기
+		_float4x4 WorldMatrix = {};
+		CHECK_FALSE(ReadFile(hFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr), E_FAIL);
+
+		ObjectDesc.WorldMatrix = WorldMatrix;
+
+		// 5. 객체의 속성 불러오기
+		MAPOBJECT_PROPERTIES PropProperties = {};
+		CHECK_FALSE(ReadFile(hFile, &PropProperties, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr), false);
+
+		ObjectDesc.Properties = PropProperties;
+
+		// 일단 단일 오브젝트로 배치하고 추후에 인스턴스, 인터렉티브, 다이나믹 으로 나누겠습니다.
+		//	m_pGameInstance->Add_FireTask([this, objDesc = ObjectDesc, curLevel = eCurrentLevel]() mutable {
+		//		});
+
+		CHECK_FAILED(
+			m_pGameInstance->Add_GameObject_ToLayer(
+				ENUM_CLASS(ObjectDesc.eLevel),
+				TEXT("Layer_MapObject"),
+				ENUM_CLASS(eCurrentLevel),
+				TEXT("Prototype_GameObject_Prop_Object"),
+				&ObjectDesc // 캡처된 값의 주소 -> 안전
+			),
+			E_FAIL
+		);
+
+		/*CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), E_FAIL);*/
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_Shader::Ready_Layer_MapObject_Inst(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
+{
+	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+
+	switch (eMap)
+	{
+	case KHAZAN_MAP::HEINMACH:
+		pDataFilePath += TEXT("HeinMach/");
+		break;
+	case KHAZAN_MAP::YETUGA:
+		pDataFilePath += TEXT("Yetuga/");
+		break;
+	case KHAZAN_MAP::THECREVICE:
+		pDataFilePath += TEXT("TheCrevice/");
+		break;
+	case KHAZAN_MAP::EMBARS:
+		pDataFilePath += TEXT("Embars/");
+		break;
+	case KHAZAN_MAP::VIPER:
+		pDataFilePath += TEXT("Viper/");
+		break;
+	default:
+		break;
+	}
+
+	pDataFilePath += pDataFileName;
+
+	// 동일한 파일명의 _inst.dat 불러오기
+	pDataFilePath += TEXT("_inst.dat");
+
+	DWORD dwByte = {};
+
+	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("데이터 파일이 없거나 박준영 문제"), E_FAIL);
+
+	// 1. 오브젝트의 총 개수
+	_uint iObjectCnt = {};
+	CHECK_FALSE(ReadFile(hFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr), E_FAIL);
+
+	// 오브젝트 총 개수만큼 순회
+	for (_uint i = 0; i < iObjectCnt; ++i)
+	{
+		CProp_Object::PROP_OBJECT_DESC ObjectDesc = {};
+
+		ObjectDesc.eLevel = eCurrentLevel;
+
+		// 2. 프로토 타입 태그 길이 불러오기
+		_uint iPrototypeTagLen = {};
+		CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
+
+		// 3. 프로토 타입 태그 이름 불러오기
+		_tchar szPrototypeTag[MAX_PATH] = {};
+		CHECK_FALSE(ReadFile(hFile, &szPrototypeTag, sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr), E_FAIL);
+
+		// 불러온 태그 카피
+		memcpy(ObjectDesc.szModelName, szPrototypeTag, sizeof(ObjectDesc.szModelName));
+
+		// 4. 객체의 속성 불러오기
+		MAPOBJECT_PROPERTIES PropProperties = {};
+		CHECK_FALSE(ReadFile(hFile, &PropProperties, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr), false);
+
+		ObjectDesc.Properties = PropProperties;
+
+		// 인스턴스 객체 슈웃
+		m_pGameInstance->Add_FireTask([this, objDesc = ObjectDesc, curLevel = eCurrentLevel]() mutable {
+			CHECK_FAILED(
+				m_pGameInstance->Add_GameObject_ToLayer(
+					ENUM_CLASS(objDesc.eLevel),
+					TEXT("Layer_MapObject_Inst"),
+					ENUM_CLASS(curLevel),
+					TEXT("Prototype_GameObject_Prop_Static"),
+					&objDesc // 캡처된 값의 주소 -> 안전
+				),
+				E_FAIL
+			);
+			});
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_Shader::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
+{
+	// Dat 기본 경로
+	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+
+	switch (eMap)
+	{
+	case KHAZAN_MAP::HEINMACH:
+		pDataFilePath += TEXT("HeinMach/");
+		break;
+	case KHAZAN_MAP::YETUGA:
+		pDataFilePath += TEXT("Yetuga/");
+		break;
+	case KHAZAN_MAP::THECREVICE:
+		pDataFilePath += TEXT("TheCrevice/");
+		break;
+	case KHAZAN_MAP::EMBARS:
+		pDataFilePath += TEXT("Embars/");
+		break;
+	case KHAZAN_MAP::VIPER:
+		pDataFilePath += TEXT("Viper/");
+		break;
+	default:
+		break;
+	}
+
+	pDataFilePath += pDataFileName;
+
+	pDataFilePath += TEXT("_lights.dat");
+
+	DWORD dwByte = {};
+
+	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	CHECK_EQUAL(INVALID_HANDLE_VALUE, hFile, E_FAIL);
+
+	// 1. 조명의 총 개수
+	_uint iLightCnt = {};
+	CHECK_FALSE(ReadFile(hFile, &iLightCnt, sizeof(_uint), &dwByte, nullptr), false);
+
+	// 조명 총 개수만큼 순회
+	for (_uint i = 0; i < iLightCnt; ++i)
+	{
+		LIGHT_DESC LightDesc = {};
+
+		// 2. 조명 태그 길이 불러오기
+		_uint iLightTagLen = {};
+		CHECK_FALSE(ReadFile(hFile, &iLightTagLen, sizeof(_uint), &dwByte, nullptr), false);
+
+		// 3. 조명 태그 이름 불러오기
+		_tchar szLightTag[MAX_PATH] = {};
+		CHECK_FALSE(ReadFile(hFile, &szLightTag, sizeof(_tchar) * iLightTagLen, &dwByte, nullptr), false);
+
+		// 4. 조명 구조체 불러오기
+		CHECK_FALSE(ReadFile(hFile, &LightDesc, sizeof(LIGHT_DESC), &dwByte, nullptr), false);
+
+		// 조명 등록
+		m_pGameInstance->Add_FireTask([this, szLightTag = szLightTag, eCurrentLevel = ENUM_CLASS(eCurrentLevel), LightDesc = LightDesc]() mutable {
+			m_pGameInstance->Add_Light(szLightTag, ENUM_CLASS(eCurrentLevel), LightDesc, true);
+			return S_OK;
+			});
+
+	}
+
+	CloseHandle(hFile);
 
 	return S_OK;
 }

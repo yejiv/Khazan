@@ -4,7 +4,7 @@ matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 matrix g_LightViewMatrix, g_LightProjMatrix;
 float g_Splits[4];
 
-texture2D g_DiffuseTexture;
+texture2D g_DiffuseTexture, g_NormalTexture, g_SpecularTexture;
 
 /* 모델 전체 뼈기준(x) */
 /* 특정 메시에 영향ㅇ르 주는 뼈들 */
@@ -25,9 +25,17 @@ struct VS_OUT
 {
     float4 vPosition : SV_POSITION;
     float4 vNormal : NORMAL;
+    float4 vTangent : TANGENT;
+    float4 vBinormal : BINORMAL;
     float2 vTexcoord : TEXCOORD0;
     float4 vWorldPos : TEXCOORD1;
     float4 vProjPos : TEXCOORD2;
+    
+    //  float4 vPosition : SV_POSITION;
+    //  float4 vNormal : NORMAL;
+    //  float2 vTexcoord : TEXCOORD0;
+    //  float4 vWorldPos : TEXCOORD1;
+    //  float4 vProjPos : TEXCOORD2;
 };
 
 /* 정점쉐이더 : 정점 위치의 스페이스 변환(로컬 -> 월드 -> 뷰 -> 투영). */ 
@@ -57,9 +65,12 @@ VS_OUT VS_MAIN(VS_IN In)
     
     Out.vPosition = mul(vPosition, matWVP);
     Out.vNormal = normalize(mul(vNormal, g_WorldMatrix));
+    Out.vTangent = normalize(mul(float4(In.vTangent, 0.f), g_WorldMatrix));
+    Out.vBinormal = normalize(mul(float4(In.vBinormal, 0.f), g_WorldMatrix));
     Out.vTexcoord = In.vTexcoord;
     Out.vWorldPos = mul(vPosition, g_WorldMatrix);
     Out.vProjPos = Out.vPosition;
+    
     return Out;
 }
 
@@ -101,10 +112,11 @@ struct PS_IN
 {
     float4 vPosition : SV_POSITION;
     float4 vNormal : NORMAL;
+    float4 vTangent : TANGENT;
+    float4 vBinormal : BINORMAL;
     float2 vTexcoord : TEXCOORD0;
     float4 vWorldPos : TEXCOORD1;
     float4 vProjPos : TEXCOORD2;
-
 };
 
 struct PS_OUT
@@ -113,68 +125,35 @@ struct PS_OUT
     float4 vNormal : SV_TARGET1;
     float4 vDepth : SV_TARGET2;
     float4 vWorld : SV_TARGET3;
+    float4 vSpecular : SV_TARGET4;
+    float4 vEmissive : SV_TARGET5;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
     
-    vector      vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    //  vector vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    //  vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    //  float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    //  
+    //  float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    //  vNormal = mul(vNormal, WorldMatrix);
     
     if (vMtrlDiffuse.a < 0.3f)
         discard;
+
+    //  Out.vDiffuse = 1.f;
     
-    // Debug Color
-    //  float fCameraViewDepth = In.vProjPos.w;
-    //  uint iCascadeIndex = 0;
-    //  
-    //  // float Array
-    //  if (fCameraViewDepth < g_Splits[0])
-    //      iCascadeIndex = 0;
-    //  else if (fCameraViewDepth < g_Splits[1])
-    //      iCascadeIndex = 1;
-    //  else if (fCameraViewDepth < g_Splits[2])
-    //      iCascadeIndex = 2;
-    //  else
-    //      iCascadeIndex = 3;
-    //  
-    //  if (0 == iCascadeIndex)
-    //      Out.vDiffuse = float4(1.f, 0.f, 0.f, 1.f); // Red
-    //  else if (1 == iCascadeIndex)
-    //      Out.vDiffuse = float4(1.f, 1.f, 0.f, 1.f); // Yellow
-    //  else if (2 == iCascadeIndex)
-    //      Out.vDiffuse = float4(0.f, 1.f, 0.f, 1.f); // Green
-    //  else if (3 == iCascadeIndex)
-    //      Out.vDiffuse = float4(0.f, 0.f, 1.f, 1.f); // Blue
-    //  else
-    //      Out.vDiffuse = vMtrlDiffuse;
-
-    //if (0 == iCascadeIndex)
-    //    Out.vDiffuse = float4(1.f, 0.f, 0.f, 1.f); // Red
-    //else if (1 == iCascadeIndex)
-    //    Out.vDiffuse = float4(1.f, 1.f, 0.f, 1.f); // Yellow
-    //else if (2 == iCascadeIndex)
-    //    Out.vDiffuse = float4(0.f, 1.f, 0.f, 1.f); // Green
-    //else if (3 == iCascadeIndex)
-    //    Out.vDiffuse = float4(0.f, 0.f, 1.f, 1.f); // Blue
-    //else
-    //    Out.vDiffuse = vMtrlDiffuse;
-
-   //if (0 == iCascadeIndex)
-   //    Out.vDiffuse = float4(1.f, 0.f, 0.f, 1.f); // Red
-   //else if (1 == iCascadeIndex)
-   //    Out.vDiffuse = float4(1.f, 1.f, 0.f, 1.f); // Yellow
-   //else if (2 == iCascadeIndex)
-   //    Out.vDiffuse = float4(0.f, 1.f, 0.f, 1.f); // Green
-   //else if (3 == iCascadeIndex)
-   //    Out.vDiffuse = float4(0.f, 0.f, 1.f, 1.f); // Blue
-   //else
-   //    Out.vDiffuse = vMtrlDiffuse;
-
     Out.vDiffuse = vMtrlDiffuse;
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = In.vWorldPos;
+    //  Out.vSpecular = vMtrlSpecular;
+    Out.vEmissive.rgb = Out.vDiffuse * 3.f; // Intensity
+    Out.vEmissive.a = 1.f;
+    
     return Out;
 }
 
