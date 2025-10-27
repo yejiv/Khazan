@@ -16,7 +16,6 @@ class CProp_Object final : public CProp
 public:
 	typedef struct tagPropObjectDesc : public CProp::PROP_DESC
 	{
-		_float4x4 WorldMatrix{};
 
 	}PROP_OBJECT_DESC;
 
