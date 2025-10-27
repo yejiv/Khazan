@@ -12,6 +12,9 @@ protected:
 	virtual ~CUI_Text() = default;
 
 public:
+	void						Set_Text(_wstring wstrText);
+
+public:
 	virtual HRESULT				Initialize_Prototype() override;
 	virtual HRESULT				Initialize_Clone(void* pArg) override;
 	virtual void				Priority_Update(_float fTimeDelta) override;

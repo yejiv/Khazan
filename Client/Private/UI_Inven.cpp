@@ -10,6 +10,8 @@
 #include "UI_Panel.h"
 
 #include "Item_Slot.h"
+#include "Equip_Panel.h"
+#include "Equip_Slot.h"
 
 CUI_Inven::CUI_Inven(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
@@ -23,9 +25,26 @@ CUI_Inven::CUI_Inven(const CUI_Inven& Prototype)
 
 void CUI_Inven::On_Panel()
 {
-	m_IsUpdate ? m_eAnimState = UIANIMSTATE::OFF : m_eAnimState = UIANIMSTATE::ON;
-	m_eAnimState == UIANIMSTATE::ON ? m_fAccTime = 0.f : m_fAccTime = 1.f;
+	if (m_IsUpdate)
+		return;
+	m_eAnimState = UIANIMSTATE::ON;
+	m_fAccTime = 0.f;
 	m_IsUpdate = true;
+}
+
+void CUI_Inven::Off_Panel()
+{
+	if (m_strReturnName == "")
+	{
+		m_eAnimState = UIANIMSTATE::OFF;
+		m_fAccTime = 1.f;
+	}
+	else
+	{
+		m_IsUpdate = false;
+		CClientInstance::GetInstance()->UI_UpdateSwitch(AnsiToWString(m_strReturnName));
+		m_strReturnName = "";
+	}
 }
 
 _bool CUI_Inven::Add_Item(_uint iItemIndex)
@@ -59,43 +78,42 @@ HRESULT CUI_Inven::Initialize_Clone(void* pArg)
 
 void CUI_Inven::Priority_Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_8))
-		On_Panel();
-
-	if (m_pGameInstance->Key_Down(DIK_L))
-	{
-		++m_iTapGroupIndex;
-		if (m_iTapGroupIndex >= ENUM_CLASS(TapGroup::END))
-			m_iTapGroupIndex = 0;
-
-		Change_Tap();
-	}
-
-	if (m_pGameInstance->Key_Down(DIK_K))
-	{
-		if (m_IsTest)
-		{
-			Add_Item(4001);
-			m_IsTest = false;
-		}
-		else
-		{
-			Add_Item(5001);
-			m_IsTest = true;
-		}
-	}
+	//if (m_pGameInstance->Key_Down(DIK_K))
+	//{
+	//	if (m_IsTest)
+	//	{
+	//		Add_Item(4001);
+	//		m_IsTest = false;
+	//	}
+	//	else
+	//	{
+	//		Add_Item(5001);
+	//		m_IsTest = true;
+	//	}
+	//}
 	if (!m_IsUpdate)
 		return;
+
+	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
+		Off_Panel();
 
 	UI_Animation(fTimeDelta);
 	m_pBackGround->Priority_Update(fTimeDelta);
 	m_pUIText->Priority_Update(fTimeDelta);
 
-	for (auto TapIndex : m_UpdateGroup[m_iTapGroupIndex])
-		m_pInvenTap[TapIndex]->Priority_Update(fTimeDelta);
-
-	for (auto Item : m_pItems[m_iSeleteTap])
-		Item->Priority_Update(fTimeDelta);
+	if (!m_bIsEquip)
+	{
+		for (auto TapIndex : m_UpdateGroup[m_iTapGroupIndex])
+			m_pInvenTap[TapIndex]->Priority_Update(fTimeDelta);
+		for (auto Item : m_pItems[m_iSeleteTap])
+			Item->Priority_Update(fTimeDelta);
+	}
+	else
+	{
+		m_pEquip_Panel->Priority_Update(fTimeDelta);
+		for (auto Slot : m_pEquipSlot)
+			Slot->Priority_Update(fTimeDelta);
+	}
 }
 
 void CUI_Inven::Update(_float fTimeDelta)
@@ -106,11 +124,19 @@ void CUI_Inven::Update(_float fTimeDelta)
 	m_pBackGround->Update(fTimeDelta);
 	m_pUIText->Update(fTimeDelta);
 
-	for (auto TapIndex : m_UpdateGroup[m_iTapGroupIndex])
-		m_pInvenTap[TapIndex]->Update(fTimeDelta);
-
-	for (auto Item : m_pItems[m_iSeleteTap])
-		Item->Update(fTimeDelta);
+	if (!m_bIsEquip)
+	{
+		for (auto TapIndex : m_UpdateGroup[m_iTapGroupIndex])
+			m_pInvenTap[TapIndex]->Update(fTimeDelta);
+		for (auto Item : m_pItems[m_iSeleteTap])
+			Item->Update(fTimeDelta);
+	}
+	else
+	{
+		m_pEquip_Panel->Update(fTimeDelta);
+		for (auto Slot : m_pEquipSlot)
+			Slot->Update(fTimeDelta);
+	}
 }
 
 void CUI_Inven::Late_Update(_float fTimeDelta)
@@ -121,11 +147,20 @@ void CUI_Inven::Late_Update(_float fTimeDelta)
 	m_pBackGround->Late_Update(fTimeDelta);
 	m_pUIText->Late_Update(fTimeDelta);
 
-	for (auto TapIndex : m_UpdateGroup[m_iTapGroupIndex])
-		m_pInvenTap[TapIndex]->Late_Update(fTimeDelta);
+	if (!m_bIsEquip)
+	{
+		for (auto TapIndex : m_UpdateGroup[m_iTapGroupIndex])
+			m_pInvenTap[TapIndex]->Late_Update(fTimeDelta);
 
-	for (auto Item : m_pItems[m_iSeleteTap])
-		Item->Late_Update(fTimeDelta);
+		for (auto Item : m_pItems[m_iSeleteTap])
+			Item->Late_Update(fTimeDelta);
+	}
+	else
+	{
+		m_pEquip_Panel->Late_Update(fTimeDelta);
+		for (auto Slot : m_pEquipSlot)
+			Slot->Late_Update(fTimeDelta);
+	}
 }
 
 HRESULT CUI_Inven::Render()
@@ -149,6 +184,12 @@ HRESULT CUI_Inven::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, voi
 		{
 			m_pUIText = static_cast<CUI_TextBox*>(pChild);
 			Safe_AddRef(m_pUIText);
+		}
+
+		if (ENUM_CLASS(UITYPE::PANEL) == pChild->Get_UIType())
+		{
+			m_pEquip_Panel = static_cast<CEquip_Panel*>(pChild);
+			Safe_AddRef(m_pEquip_Panel);
 		}
 	}
 
@@ -187,6 +228,38 @@ void CUI_Inven::Bubble_EventCall(BUBBLEEVENT* pArg)
 	}
 }
 
+HRESULT CUI_Inven::Update_Switch(void* pArg)
+{
+	if (pArg == nullptr)
+		return E_FAIL;
+
+	INVEN_ONOFF_DESC* pDesc = static_cast<INVEN_ONOFF_DESC*>(pArg);
+	if (pDesc->isOpen)
+	{
+		On_Panel();
+
+		m_bIsEquip = pDesc->isEquip;
+		
+		if (!m_bIsEquip)
+		{
+			m_iTapGroupIndex = ENUM_CLASS(TapGroup::OTHER);
+			m_pUIText->Set_Text(TEXT("소지품"));
+			Change_Tap();
+		}
+		else
+		{
+			m_pUIText->Set_Text(TEXT("장비"));
+		}
+		m_strReturnName = pDesc->szName;
+	}
+	else
+	{
+
+	}
+
+	return S_OK;
+}
+
 
 HRESULT CUI_Inven::Ready_Prototype()
 {
@@ -194,6 +267,10 @@ HRESULT CUI_Inven::Ready_Prototype()
 		CInven_Panel::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Inven_Tap"),
 		CInven_Tap::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Inven_Equip"),
+		CEquip_Panel::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Inven_Equip_Slot"),
+		CEquip_Slot::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
 
 	return S_OK;
 }
@@ -222,7 +299,7 @@ HRESULT CUI_Inven::Ready_SlotSet()
 {
 	CItem_Slot::ITEMSLOT_DESC Desc = {};
 	
-	_float2 vPos = { 320.f , 577.f };
+	_float2 vPos = { 320.f , 590.f };
 	Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
 	Desc.szName = "Item";
 	Desc.vLocalPos = vPos;
@@ -250,6 +327,32 @@ HRESULT CUI_Inven::Ready_SlotSet()
 		m_pItems[i] = pItemGroup;
 
 	}
+
+	CEquip_Slot::UISLOTDESC EquipDesc = {};
+
+	vPos = { -854.f , 318.f };
+	EquipDesc.iUIType = ENUM_CLASS(UITYPE::PANEL);
+	EquipDesc.szName = "Equip";
+	EquipDesc.vLocalPos = vPos;
+	EquipDesc.vLocalSize = { 103.f , 103.f };
+
+
+	for (_int i = 0; i < ENUM_CLASS(EQUIPSLOT_TYPE::END); ++i)
+	{
+		EquipDesc.iIndex = i;
+		CEquip_Slot* pEquipSlot = static_cast<CEquip_Slot*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Inven_Equip_Slot"), &Desc));
+
+		if (pEquipSlot == nullptr)
+			return E_FAIL;
+
+		m_Children.push_back(pEquipSlot);
+
+		Safe_AddRef(pEquipSlot);
+		pEquipSlot->Insert_Bubble([this](BUBBLEEVENT* pArg) {this->Bubble_EventCall(pArg); });
+		m_pEquipSlot.push_back(pEquipSlot);
+		m_pEquipSlot[i]->Update_PosX(i, vPos, 130.f);
+	}
+
 
 	return S_OK;
 }
@@ -310,7 +413,7 @@ void CUI_Inven::UI_Animation(_float fTimeDelta)
 {
 	if (m_eAnimState == UIANIMSTATE::ON)
 	{
-		m_fAccTime += fTimeDelta;
+		m_fAccTime += fTimeDelta * 3.f;
 		__super::Update_Alpha(m_fAccTime);
 
 		if (m_fAccTime >= 1.f)
@@ -321,7 +424,7 @@ void CUI_Inven::UI_Animation(_float fTimeDelta)
 	}
 	else if (m_eAnimState == UIANIMSTATE::OFF)
 	{
-		m_fAccTime -= fTimeDelta * 2.f;
+		m_fAccTime -= fTimeDelta * 3.f;
 		__super::Update_Alpha(m_fAccTime);
 
 		if (m_fAccTime <= 0.f)
@@ -414,7 +517,12 @@ void CUI_Inven::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pEquip_Panel);
 	Safe_Release(m_pUIText);
+
+	for (auto pSlot : m_pEquipSlot)
+		Safe_Release(pSlot);
+	m_pEquipSlot.clear();
 
 	for (auto pTap : m_pItems)
 	{

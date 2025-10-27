@@ -65,11 +65,8 @@ HRESULT CFont_Manager::Font_Load_Data(const _char* pFontFilePath)
 HRESULT CFont_Manager::Draw_Text(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, const _float4& vColor, TEXT_ALIGN eAlign)
 {
     CFont_Face* pFont = Find_Font(strFontTag);
-    if (!pFont)
-    {
-        MSG_BOX(TEXT("Font Tag Not Found"));
+    if (!pFont)    
         return E_FAIL;
-    }
 
     return m_pRenderer->DrawText(pFont, strText, fX, fY, vColor, eAlign);
 }
@@ -78,10 +75,7 @@ HRESULT CFont_Manager::Draw_TextBox(const _wstring& strFontTag, const _wstring& 
 {
     CFont_Face* pFont = Find_Font(strFontTag);
     if (!pFont)
-    {
-        MSG_BOX(TEXT("Font Tag Not Found"));
         return E_FAIL;
-    }
 
     return m_pRenderer->DrawTextBox(pFont, strText, fX, fY, fMaxWidth, fOffsetHeight, vColor, eAlign);;
 }

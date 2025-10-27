@@ -39,7 +39,6 @@ StructuredBuffer<float3> g_Kernels;
 uint g_iNumKernels;
 float g_fRadius = { 1.f };
 float g_fIntensity = { 1.f }, g_fContrast = { 1.f };
-float g_fSampleBias = { 0.f };
 bool g_isEnableSSAO = { true };
 matrix g_CameraViewMatrix, g_CameraProjMatrix;
 
@@ -85,7 +84,7 @@ PS_OUT_BACKBUFFER PS_MAIN_DEBUG(PS_IN In)
 {
     PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
     
-    Out.vColor = g_Texture.Sample(PointSampler, In.vTexcoord);
+    Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
     
     return Out;
 }
@@ -139,10 +138,10 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
     if (!g_isEnableSSAO)
         return Out;
     
-    // SSAO Test
+    // SSAO
     float fAO = g_SSAOTexture.Sample(PointSampler, In.vTexcoord).r;
     Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient * fAO));
-    
+
     //  Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient));
     //  Out.vShade *= fAO;
     
@@ -189,12 +188,18 @@ PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
     
     float fShade = max(dot(vNormal * -1.f, normalize(vLightDir)), 0.f);
     
+    Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient)) * fAtt;
+    
+    if (!g_isEnableSSAO)
+        return Out;
+    
+    // SSAO
+    float fAO = g_SSAOTexture.Sample(PointSampler, In.vTexcoord).r;
+    Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient * fAO));
+    
     //  vector vReflect = reflect(normalize(vLightDir), vNormal);
     //  vector vLook = vWorldPos - g_vCamPosition;
-    //  
     //  float fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), 50.f);
-    
-    Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient)) * fAtt;
     //  Out.vSpecular = (g_vLightSpecular * g_vMtrlSpecular) * fSpecular * fAtt;
     
     return Out;
@@ -353,6 +358,10 @@ PS_OUT_SSAO PS_MAIN_SSAO(PS_IN In)
     
     // View Space Normal
     vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    if (vNormalDesc.w >= 1.f)
+        discard;
+    
     float3 vNormal = normalize(vNormalDesc.xyz * 2.f - 1.f);
     float3x3 ViewMatrix = float3x3(g_CameraViewMatrix._11_12_13, g_CameraViewMatrix._21_22_23, g_CameraViewMatrix._31_32_33);
     vNormal = normalize(mul(vNormal.xyz, ViewMatrix));
@@ -379,6 +388,7 @@ PS_OUT_SSAO PS_MAIN_SSAO(PS_IN In)
     // Occlusion
     float fOcclusion = 0.f;
  
+    [loop]
     for (uint i = 0; i < g_iNumKernels; ++i)
     {
         // Kernle Vector Rotation -> View Space Dir
@@ -396,7 +406,7 @@ PS_OUT_SSAO PS_MAIN_SSAO(PS_IN In)
         vSampleTexcoord.y = vProjSamplePos.y * -0.5f + 0.5f;
         
         // »ùÇÃ ±íÀÌ ºñ±³
-        float4 fSampleDepth = g_DepthTexture.Sample(PointSampler, vSampleTexcoord).y; // »ùÇÃ ÇÈ¼¿(ÁÖº¯ ÇÈ¼¿)ÀÇ ±íÀÌ
+        float fSampleDepth = g_DepthTexture.Sample(PointSampler, vSampleTexcoord).y; // »ùÇÃ ÇÈ¼¿(ÁÖº¯ ÇÈ¼¿)ÀÇ ±íÀÌ
         
         // »ùÇÃ ±íÀÌ°¡ ÇöÀç ÇÈ¼¿ÀÇ ±íÀÌº¸´Ù ´õ Å©¸é Â÷Æó°¡ ¾øÀ½, »ùÇÃ ±íÀÌ°¡ ÇöÀç ÇÈ¼¿ÀÇ ±íÀÌº¸´Ù ´õ ÀÛÀ¸¸é ±× ¹æÇâ¿¡ ´Ù¸¥ ¿ÀºêÁ§Æ®°¡ ÀÖ¾î¼­ ½Ã¾ß°¡ ¸·Èù °Í
         
@@ -406,9 +416,7 @@ PS_OUT_SSAO PS_MAIN_SSAO(PS_IN In)
         float fRangeLerp = smoothstep(0.f, 1.f, g_fRadius / abs(vViewPos.z - fSampleDepth));
         
         // Â÷Æóµµ ´©Àû
-        fOcclusion += (vSamplePos.z >= fSampleDepth - g_fSampleBias ? 1.f : 0.f) * fRangeLerp;
-        //  if (vSamplePos.z >= fSampleDepth - g_fSampleBias)
-        //      fOcclusion += 1.f;
+        fOcclusion += (vSamplePos.z >= fSampleDepth ? 1.f : 0.f) * fRangeLerp;
     }
 
     // Á¤±ÔÈ­ ¹× º¸Á¤ -> ¸·Èû ºñÀ² -> ºûÀÌ ´ê´Â Á¤µµ·Î ¹ÝÀü
@@ -504,7 +512,7 @@ technique11 DefaultTechnique
     pass SSAO
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
+        SetDepthStencilState(DSS_None, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_MAIN();

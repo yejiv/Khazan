@@ -259,6 +259,12 @@
     <Filter Include="02.GameObject\UI\Cursor\FX">
       <UniqueIdentifier>{40848bba-e989-47c1-8226-95cd85b5bd2c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\MainMenu\ETC">
+      <UniqueIdentifier>{ff3990d0-e5a1-41bc-8e47-c4b097076606}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Inven\Equip">
+      <UniqueIdentifier>{35a3ca28-cb04-404e-a3ec-f837e14cae2d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -486,6 +492,21 @@
     <ClInclude Include="..\public\UI_TextBox.h">
       <Filter>02.GameObject\UI\ETC</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\UI_MainMenu.h">
+      <Filter>02.GameObject\UI\MainMenu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\MainMenu_List.h">
+      <Filter>02.GameObject\UI\MainMenu\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\MainMenu_Deco.h">
+      <Filter>02.GameObject\UI\MainMenu\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Equip_Panel.h">
+      <Filter>02.GameObject\UI\Inven\Equip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Equip_Slot.h">
+      <Filter>02.GameObject\UI\Inven\Equip</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -701,6 +722,21 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_TextBox.cpp">
       <Filter>02.GameObject\UI\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_MainMenu.cpp">
+      <Filter>02.GameObject\UI\MainMenu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\MainMenu_List.cpp">
+      <Filter>02.GameObject\UI\MainMenu\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\MainMenu_Deco.cpp">
+      <Filter>02.GameObject\UI\MainMenu\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Equip_Panel.cpp">
+      <Filter>02.GameObject\UI\Inven\Equip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Equip_Slot.cpp">
+      <Filter>02.GameObject\UI\Inven\Equip</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

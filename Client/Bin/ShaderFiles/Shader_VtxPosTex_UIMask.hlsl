@@ -59,6 +59,7 @@ PS_OUT PS_MASK_0(PS_IN In)
         Out.vColor.a *= g_fAlpha;
     }
     else
+    {
         if (In.vTexcoord.x < 0.5f)
         {
             Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
@@ -67,13 +68,13 @@ PS_OUT PS_MASK_0(PS_IN In)
             fAlpha = clamp(fAlpha, 0.0f, 1.0f);
         
             Out.vColor.a = 1.f - fAlpha;
+            Out.vColor.a *= g_vColor.a;
             Out.vColor.a *= g_fAlpha;
-
         }
-    else
-        discard;
-   
-    return Out;
+        else
+            discard;
+    }
+        return Out;
 }
 
 PS_OUT PS_MASK_1(PS_IN In)
@@ -89,7 +90,7 @@ PS_OUT PS_MASK_1(PS_IN In)
         Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
         
         float fAlpha = (In.vTexcoord.x - 0.3f) / (0.5f - 0.3f);
-        fAlpha = clamp(1.f - fAlpha, 0.f, 1.0f);
+        fAlpha = clamp(1.f - fAlpha, 0.2f, 1.0f);
         
         Out.vColor.a = fAlpha ;
     }
@@ -98,10 +99,11 @@ PS_OUT PS_MASK_1(PS_IN In)
         Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
         
         float fAlpha = (In.vTexcoord.x - 0.5f) / (0.7f - 0.5f);
-        fAlpha = clamp(fAlpha, 0.f, 1.0f);
+        fAlpha = clamp(fAlpha, 0.2f, 1.0f);
         
         Out.vColor.a = fAlpha;
     }
+    Out.vColor.a *= g_vColor.a;
     Out.vColor.a *= g_fAlpha;
     return Out;
 }

@@ -33,6 +33,9 @@ void CLevel_Map::Update(_float fTimeDelta)
 	Select_Multi_Fix_Object(fTimeDelta);
 	Select_Fix_Instance(fTimeDelta);
 	Select_Add_LightPoint(fTimeDelta);
+	Measure_Distance(fTimeDelta);
+
+	m_fDistance = XMVectorGetX(XMVector3Length(XMLoadFloat3(&m_vDistancePos[0]) - XMLoadFloat3(&m_vDistancePos[1])));
 
 	return;
 }
@@ -315,6 +318,27 @@ void CLevel_Map::Select_Add_LightPoint(_float fTimeDelta)
 	}
 }
 
+void CLevel_Map::Measure_Distance(_float fTimeDelta)
+{
+	_float3 vPosition = {};
+
+	if (m_pGameInstance->Key_Pressing(DIK_O, fTimeDelta) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+	{
+		if (m_pGameInstance->isPicked(&vPosition))
+		{
+			m_vDistancePos[0] = vPosition;
+		}
+	}
+
+	if (m_pGameInstance->Key_Pressing(DIK_P, fTimeDelta) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+	{
+		if (m_pGameInstance->isPicked(&vPosition))
+		{
+			m_vDistancePos[1] = vPosition;
+		}
+	}
+}
+
 HRESULT CLevel_Map::Ready_DefaultImGui_For_MapTool()
 {
 	CHECK_FAILED(Ready_Main_Window(), E_FAIL);
@@ -339,7 +363,7 @@ HRESULT CLevel_Map::Ready_Main_Window()
 		{
 			ImGui::Begin("MAIN WINDOW", &m_isMainWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
-			if (ImGui::Button("INFORMATION OR MAIN"))
+			if (ImGui::Button("INFORMATION"))
 				m_isInformation = !m_isInformation;
 
 				if (true == m_isInformation)
@@ -375,91 +399,93 @@ HRESULT CLevel_Map::Ready_Main_Window()
 					ImGui::Text("X : %.3f", m_vPickedPos.x);
 					ImGui::Text("Y : %.3f", m_vPickedPos.y);
 					ImGui::Text("Z : %.3f", m_vPickedPos.z);
+
+					SEPARATOR;
+
+					ImGui::Text("O TO P DISTANCE : %.3f", m_fDistance);
 				}
-				else
+
+				SEPARATOR;
+				ImGui::Text("LIGHT");
+				if (ImGui::Button("LIGHT EDIT"))
 				{
-					SEPARATOR;
-					ImGui::Text("LIGHT");
-					if (ImGui::Button("LIGHT EDIT"))
+					m_isLightSettingWindow = !m_isLightSettingWindow;
+				}
+				SEPARATOR;
+				
+				ImGui::Text("MAP DATA SAVE & LOAD");
+				if (ImGui::Button("SAVE")) m_isSaveObjectWindow = !m_isSaveObjectWindow;
+				if (false == m_isLoaded)
+				{
+					SAMELINE;
+					if (ImGui::Button("LOAD")) m_isLoadObjectWindow = !m_isLoadObjectWindow;
+				}
+				SEPARATOR;
+				
+				ImGui::Text("PROP LIST");
+				if (ImGui::Button("OBJECT##active"))		m_isObjectWindow = !m_isObjectWindow;
+				SEPARATOR;
+
+				ImGui::Text("ADD PROTOTYPES");
+				ImGui::Text("FOLDER : "); SAMELINE;
+				ImGui::InputText("##folder_name_addprototype_or_convert", m_szFolderName, IM_ARRAYSIZE(m_szFolderName));
+
+				_uint iFolderNameLen = strlen(m_szFolderName);
+
+				if (0 != iFolderNameLen)
+				{
+					if (ImGui::Button("PROTOTYPES ADD"))
 					{
-						m_isLightSettingWindow = !m_isLightSettingWindow;
+						Add_Prototype_ByFolder(m_szFolderName);
+						ZeroMemory(m_szFolderName, sizeof(m_szFolderName));
 					}
-					SEPARATOR;
-					
-					ImGui::Text("MAP DATA SAVE & LOAD");
-					if (ImGui::Button("SAVE")) m_isSaveObjectWindow = !m_isSaveObjectWindow;
-					if (false == m_isLoaded)
+
+					if (ImGui::Button("FBX FILE CONVERT ( .fbx > .dat )"))
 					{
-						SAMELINE;
-						if (ImGui::Button("LOAD")) m_isLoadObjectWindow = !m_isLoadObjectWindow;
-					}
-					SEPARATOR;
-					
-					ImGui::Text("PROP LIST");
-					if (ImGui::Button("OBJECT##active"))		m_isObjectWindow = !m_isObjectWindow;
-					SEPARATOR;
-
-					ImGui::Text("ADD PROTOTYPES");
-					ImGui::Text("FOLDER : "); SAMELINE;
-					ImGui::InputText("##folder_name_addprototype_or_convert", m_szFolderName, IM_ARRAYSIZE(m_szFolderName));
-
-					_uint iFolderNameLen = strlen(m_szFolderName);
-
-					if (0 != iFolderNameLen)
-					{
-						if (ImGui::Button("PROTOTYPES ADD"))
-						{
-							Add_Prototype_ByFolder(m_szFolderName);
-							ZeroMemory(m_szFolderName, sizeof(m_szFolderName));
-						}
-
-						if (ImGui::Button("FBX FILE CONVERT ( .fbx > .dat )"))
-						{
-							Fbxs_Convert_To_Dat(m_szFolderName);
-							ZeroMemory(m_szFolderName, sizeof(m_szFolderName));
-						}
-					}
-					SEPARATOR;
-
-					ImGui::Text("DON'T USE");
-
-					if (ImGui::Button("CLEAR JSON LIST"))
-					{
-						m_isMainWindow = { true };
-						m_isPrototypeWindow = { false };
-
-						m_isLightSettingWindow = { false };
-
-						ZeroMemory(&m_LightDesc, sizeof(LIGHT_DESC));
-						m_LightDesc.eType = LIGHT_DESC::END;
-
-						m_strLightTag.clear();
-
-						m_LightTags.clear();
-						m_iLightTagIndex = {};
-
-						m_isAddLight = { false };
-						m_isFixLight = { false };
-						m_isFindFixLight = { false };
-
-						ZeroMemory(&m_FixLightDesc, sizeof(LIGHT_DESC));
-
-						m_szFixLightTag[MAX_PATH] = {};
-						m_strFixLightTag.clear();
-
-						m_isAddLightPoint = { false };
-						m_vLightPoint = {};
-
-						m_Prototypes_Obj.clear();			// Prototype ¸ñ·Ï ( Object ¿ë ¸ðµ¨ )
-						m_iIndex_PrtObj = {};				// Prototype Object ¿ë ÀÎµ¦½º
-					}
-					if (ImGui::Button("CLEAR LEVEL"))
-					{
-						CHECK_FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::MAP)), );
+						Fbxs_Convert_To_Dat(m_szFolderName);
+						ZeroMemory(m_szFolderName, sizeof(m_szFolderName));
 					}
 				}
+				SEPARATOR;
 
-			ImGui::End();
+				ImGui::Text("DON'T USE");
+
+				if (ImGui::Button("CLEAR JSON LIST"))
+				{
+					m_isMainWindow = { true };
+					m_isPrototypeWindow = { false };
+
+					m_isLightSettingWindow = { false };
+
+					ZeroMemory(&m_LightDesc, sizeof(LIGHT_DESC));
+					m_LightDesc.eType = LIGHT_DESC::END;
+
+					m_strLightTag.clear();
+
+					m_LightTags.clear();
+					m_iLightTagIndex = {};
+
+					m_isAddLight = { false };
+					m_isFixLight = { false };
+					m_isFindFixLight = { false };
+
+					ZeroMemory(&m_FixLightDesc, sizeof(LIGHT_DESC));
+
+					m_szFixLightTag[MAX_PATH] = {};
+					m_strFixLightTag.clear();
+
+					m_isAddLightPoint = { false };
+					m_vLightPoint = {};
+
+					m_Prototypes_Obj.clear();			// Prototype ¸ñ·Ï ( Object ¿ë ¸ðµ¨ )
+					m_iIndex_PrtObj = {};				// Prototype Object ¿ë ÀÎµ¦½º
+				}
+				if (ImGui::Button("CLEAR LEVEL"))
+				{
+					CHECK_FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::MAP)), );
+				}
+					
+				ImGui::End();
 		}
 		});
 
