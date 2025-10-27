@@ -163,6 +163,15 @@ namespace Engine
 		XMFLOAT2			padding;
 	}POINT_INSTANCE_SPEED_PARAMS;
 
+	typedef struct tagAABB
+	{
+		XMFLOAT3 vCenter{ 0.f, 0.f, 0.f };
+		XMFLOAT3 vExtents{ 0.f, 0.f, 0.f };
+
+		tagAABB() = default;
+		tagAABB(const XMFLOAT3& c, const XMFLOAT3& e) : vCenter{ c }, vExtents{ e } {}
+	}AABB_DESC;
+
 	typedef struct tagVertexPosition
 	{
 		XMFLOAT3		vPosition;

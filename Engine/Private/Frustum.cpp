@@ -79,6 +79,26 @@ _bool CFrustum::isIn_LocalSpace(_fvector vLocalPos, _float fRange)
 	return true;
 }
 
+_bool CFrustum::IsVisible_AABB_Wolrd(const _float3& center, const _float3& extent) const
+{
+	_vector vCenter = XMLoadFloat3(&center);
+	_vector vExtent = XMLoadFloat3(&extent);
+
+	for (int i = 0; i < 6; ++i)
+	{
+		const _float4& vPlane = m_vWorldPlanes[i];
+		
+		_vector N = XMVectorSet(vPlane.x, vPlane.y, vPlane.z, 0.f);
+
+		_vector absN = XMVectorAbs(N);
+		_float r = XMVectorGetX(XMVector3Dot(absN, vExtent));
+		_float s = XMVectorGetX(XMVector3Dot(N, vCenter)) + vPlane.w;
+
+		if (s + r < 0.f) return false;
+	}
+	return true;
+}
+
 void CFrustum::Make_Planes(const _float4* pPoints, _float4* pPlanes)
 {
 	XMStoreFloat4(&pPlanes[0],
