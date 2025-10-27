@@ -50,6 +50,7 @@ protected:
 	class CGameInstance*	m_pGameInstance = { nullptr };
 
 public:
+	void					Release_BTNode(AIBTNODE_DATA* pRootNodeData);
 	virtual void			Free() override;
 };
 

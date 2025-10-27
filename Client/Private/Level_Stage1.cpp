@@ -47,10 +47,18 @@ HRESULT CLevel_Stage1::Initialize()
 
 	CHECK_FAILED(Ready_Layer_Test(TEXT("Layer_Test")), E_FAIL);
 
-	CHECK_FAILED(Ready_Layer_MapObject_Test(TEXT("Layer_Test")), E_FAIL);
+	m_pGameInstance->Add_FireTask([this]() {
+		CHECK_FAILED(Ready_Layer_MapObject_Test(TEXT("Layer_Test")), E_FAIL);
+		});
+	
+	m_pGameInstance->Add_FireTask([this]() {
+		CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+		});
 
-	CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
-	CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+	m_pGameInstance->Add_FireTask([this]() {
+		CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+		});
+	
 
 	//m_pGameInstance->Jolt_Test();
 
@@ -113,7 +121,7 @@ HRESULT CLevel_Stage1::Ready_Layer_Camera(const _wstring& strLayerTag)
 	CameraFreeDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
 	CameraFreeDesc.fFovy = XMConvertToRadians(60.0f);
 	CameraFreeDesc.fNear = 0.1f;
-	CameraFreeDesc.fFar = 500.f;
+	CameraFreeDesc.fFar = 6000.f;
 	CameraFreeDesc.fSpeedPerSec = 10.f;
 	CameraFreeDesc.fRotationPerSec = XMConvertToRadians(90.0f);
 	CameraFreeDesc.fMouseSensor = 0.2f;
@@ -132,7 +140,7 @@ HRESULT CLevel_Stage1::Ready_Layer_Camera(const _wstring& strLayerTag)
 	CameraSpringDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
 	CameraSpringDesc.fFovy = XMConvertToRadians(60.0f);
 	CameraSpringDesc.fNear = 0.1f;
-	CameraSpringDesc.fFar = 500.f;
+	CameraSpringDesc.fFar = 6000.f;
 	CameraSpringDesc.fSpeedPerSec = 10.f;
 	CameraSpringDesc.fRotationPerSec = XMConvertToRadians(90.0f);
 	CameraSpringDesc.fMouseSensor = 0.2f;
@@ -275,8 +283,20 @@ HRESULT CLevel_Stage1::Ready_Layer_MapObject(const _wstring& strLayerTag, const 
 		ObjectDesc.Properties = PropProperties;
 
 		// 일단 단일 오브젝트로 배치하고 추후에 인스턴스, 인터렉티브, 다이나믹 으로 나누겠습니다.
-		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
-			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), E_FAIL);
+		m_pGameInstance->Add_FireTask([this, objDesc = ObjectDesc, curLevel = eCurrentLevel]() mutable {
+			CHECK_FAILED(
+				m_pGameInstance->Add_GameObject_ToLayer(
+					ENUM_CLASS(objDesc.eLevel),
+					TEXT("Layer_MapObject"),
+					ENUM_CLASS(curLevel),
+					TEXT("Prototype_GameObject_Prop_Object"),
+					&objDesc // 캡처된 값의 주소 -> 안전
+				),
+				E_FAIL
+			);
+			});
+		/*CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), E_FAIL);*/
 	}
 
 	return S_OK;
@@ -346,8 +366,18 @@ HRESULT CLevel_Stage1::Ready_Layer_MapObject_Inst(const _wstring& strLayerTag, c
 		ObjectDesc.Properties = PropProperties;
 
 		// 인스턴스 객체 슈웃
-		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
-			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Static"), &ObjectDesc), E_FAIL);
+		m_pGameInstance->Add_FireTask([this, objDesc = ObjectDesc, curLevel = eCurrentLevel]() mutable {
+			CHECK_FAILED(
+				m_pGameInstance->Add_GameObject_ToLayer(
+					ENUM_CLASS(objDesc.eLevel),
+					TEXT("Layer_MapObject_Inst"),
+					ENUM_CLASS(curLevel),
+					TEXT("Prototype_GameObject_Prop_Static"),
+					&objDesc // 캡처된 값의 주소 -> 안전
+				),
+				E_FAIL
+			);
+			});
 	}
 
 	return S_OK;
@@ -409,7 +439,11 @@ HRESULT CLevel_Stage1::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurrentL
 		CHECK_FALSE(ReadFile(hFile, &LightDesc, sizeof(LIGHT_DESC), &dwByte, nullptr), false);
 
 		// 조명 등록
-		m_pGameInstance->Add_Light(szLightTag, ENUM_CLASS(eCurrentLevel), LightDesc, true);
+		m_pGameInstance->Add_FireTask([this, szLightTag = szLightTag, eCurrentLevel = ENUM_CLASS(eCurrentLevel), LightDesc = LightDesc]() mutable {
+			m_pGameInstance->Add_Light(szLightTag, ENUM_CLASS(eCurrentLevel), LightDesc, true);
+			return S_OK;
+			});
+		
 	}
 
 	CloseHandle(hFile);
@@ -448,7 +482,6 @@ CLevel_Stage1* CLevel_Stage1::Create(ID3D11Device* pDevice, ID3D11DeviceContext*
 void CLevel_Stage1::Free()
 {
 	__super::Free();
-
 
 	Safe_Release(m_pClientInstance);
 }

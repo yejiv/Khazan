@@ -1,116 +1,90 @@
 #include "ThreadPool.h"
 
-HRESULT CThreadPool::Initialize(_uint thread_count /*=0*/)
+CThreadPool::CThreadPool()
 {
-    if (m_Stop.load()) return E_FAIL;
 
+}
+
+HRESULT CThreadPool::Initialize(_uint thread_count)
+{
     if (thread_count == 0) {
-        _uint hc = static_cast<_uint>(thread::hardware_concurrency());
-        thread_count = (hc == 0) ? 4 : hc;
+        unsigned int hc = std::thread::hardware_concurrency();
+        thread_count = (hc == 0) ? 4u : hc;
+    }
+    m_Workers.reserve(thread_count);
+    for (unsigned int i = 0; i < thread_count; ++i) {
+        m_Workers.emplace_back([this] { this->Worker_Thread(); });
     }
 
-    try {
-        m_Workers.reserve(thread_count);
-        for (_uint i = 0; i < thread_count; ++i) {
-            m_Workers.emplace_back([this] { WorkerLoop(); });
-        }
-    }
-    catch (...) {
-        StopNow();
-        return E_FAIL;
-    }
     return S_OK;
 }
-
-void CThreadPool::WorkerLoop()
+future<HRESULT> CThreadPool::Add_Task(std::function<HRESULT()> task)
 {
-    for (;;) {
-        std::function<void()> task;
-        {
-            unique_lock<mutex> lock(m_Mtx);
-            m_CV.wait(lock, [this] {
-                return m_Stop.load(memory_order_acquire) || !m_Tasks.empty();
-                });
-            if (m_Stop.load(memory_order_acquire) && m_Tasks.empty())
-                return;
+    auto newTask = std::make_shared<std::packaged_task<HRESULT()>>(std::move(task));
+    future<HRESULT> future = newTask->get_future();
 
-            task = move(m_Tasks.front());
-            m_Tasks.pop();
-        }
-        task();
+    {
+        std::lock_guard<std::mutex> lock(m_Mutex);
+        m_Tasks.push([newTask]() {
+            (*newTask)();
+            });
     }
+
+    m_CV.notify_one();
+    return future;
 }
+
+void CThreadPool::Add_FireTask(std::function<HRESULT()> task)
+{
+	lock_guard<mutex> lock(m_Mutex);
+    m_Tasks.push([t = move(task)]() mutable {
+        try {
+            HRESULT hr = t();
+        }
+        catch (...) {
+            throw runtime_error("ThreadPool 문제있음");
+        }
+        });
+
+	m_CV.notify_one();
+}
+
 
 void CThreadPool::PushJob(function<void()> job)
 {
+    if (m_isStopAll)
     {
-        lock_guard<mutex> lock(m_Mtx);
-        if (m_Stop.load(memory_order_acquire))
-        {
-            throw runtime_error("Enqueue on stopped CThreadPool");
-        }
-        m_Tasks.emplace(move(job));
+        throw runtime_error("ThreadPool 사용 중지됨");
     }
+
+    {
+    lock_guard<mutex> lock(m_Mutex);
+    m_Tasks.push(move(job));
+    }
+
     m_CV.notify_one();
+
 }
 
-// 1) 완료만 기다리는 형태
-future<void> CThreadPool::Enqueue(function<void()> job)
+void CThreadPool::Worker_Thread()
 {
-    auto task = make_shared<packaged_task<void()>>(move(job));
-    future<void> fut = task->get_future();
-    PushJob([task] { (*task)(); });
-    return fut;
-}
+    CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 
-// 2) any 결과 받기
-future<any> CThreadPool::EnqueueAny(function<any()> job)
-{
-    auto task = make_shared<packaged_task<any()>>(move(job));
-    future<any> fut = task->get_future();
-    PushJob([task] { (*task)(); });
-    return fut;
-}
-
-// 3) fire-and-forget
-void CThreadPool::Submit(function<void()> job)
-{
-    PushJob(move(job));
-}
-
-void CThreadPool::DrainAndStop()
-{
-    bool expected = false;
-    if (m_Stop.compare_exchange_strong(expected, true, memory_order_acq_rel)) {
-        m_CV.notify_all();
-    }
-    else {
-        m_CV.notify_all();
-    }
-
-    for (auto& t : m_Workers) if (t.joinable()) t.join();
-    m_Workers.clear();
-
-    // 남아있을 수 있는 잔여 폐기(안전조치)
+    while (true)
     {
-        lock_guard<mutex> lock(m_Mtx);
-        queue<std::function<void()>> empty;
-        swap(m_Tasks, empty);
-    }
-}
+        unique_lock<mutex> lock(m_Mutex);
+        m_CV.wait(lock, [this] { return m_isStopAll || !m_Tasks.empty(); });
+        if (m_isStopAll && m_Tasks.empty())
+            return;
 
-void CThreadPool::StopNow()
-{
-    m_Stop.store(true, memory_order_release);
-    {
-        lock_guard<mutex> lock(m_Mtx);
-        queue<std::function<void()>> empty;
-        swap(m_Tasks, empty);
-    }
-    m_CV.notify_all();
+        function<void()> task = move(m_Tasks.front());
+        m_Tasks.pop();
+        lock.unlock();
 
-    for (auto& t : m_Workers) if (t.joinable()) t.join();
-    m_Workers.clear();
+        task();
+    }
+
+    CoUninitialize();
 }
 
 CThreadPool* CThreadPool::Create(_uint thread_count)
@@ -128,7 +102,24 @@ CThreadPool* CThreadPool::Create(_uint thread_count)
 
 void CThreadPool::Free()
 {
-    DrainAndStop();
+    {
+        std::lock_guard<std::mutex> lock(m_Mutex);
+        m_isStopAll = true;
+    }
+
+    m_CV.notify_all();
+
+    for (auto& th : m_Workers) {
+        if (th.joinable()) th.join();
+    }
+    m_Workers.clear();
+
+    {
+        std::lock_guard<std::mutex> lock(m_Mutex);
+        std::queue<std::function<void()>> empty;
+        m_Tasks.swap(empty);
+    }
+
     __super::Free();
 }
 

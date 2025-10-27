@@ -12,6 +12,11 @@ CUI_Text::CUI_Text(const CUI_Text& Prototype)
 {
 }
 
+void CUI_Text::Set_Text(_wstring wstrText)
+{
+	m_wstrText = wstrText;
+}
+
 HRESULT CUI_Text::Initialize_Prototype()
 {
 	return S_OK;
@@ -128,12 +133,7 @@ HRESULT CUI_Text::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void
 	m_fOffsetHeight = pInData.value("offsetHeight", 0);
 	string FontTag = pInData.value("FontTag", "");
 	m_wstrTexttag = AnsiToWString(FontTag);
-
-	string strText = pInData.value("Text", "");
-	_int iSize = MultiByteToWideChar(CP_UTF8, 0, strText.c_str(), -1, nullptr, 0);
-	_wstring wstr(iSize, 0);
-	MultiByteToWideChar(CP_UTF8, 0, strText.c_str(), -1, &wstr[0], iSize);
-	m_wstrText = wstr;
+	m_wstrText = AnsiToWString(pInData.value("Text", ""), CP_UTF8);;
 
 	m_iPivotX = pInData["iPivot"].value("x", 0);
 	m_iPivotY = pInData["iPivot"].value("y", 0);

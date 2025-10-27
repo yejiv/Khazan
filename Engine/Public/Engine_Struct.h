@@ -52,12 +52,6 @@ namespace Engine
 		float		fTrackPosition;
 	}UIKEYFRAME;
 
-	typedef struct tagShadowLightDesc
-	{
-		XMFLOAT4		vEye, vAt;
-		float			fFovy, fNear, fFar;
-	}SHADOW_LIGHT_DESC;
-
 	typedef struct tagMapObjectProperties
 	{
 		bool isSnow{ false };
@@ -132,12 +126,28 @@ namespace Engine
 
 	typedef struct tagCascadeData
 	{
-		unsigned int						iNumCascades;
-
-		vector<float>						Splits;
-		vector<XMFLOAT4X4>					LightViewMatrices;
-		vector<XMFLOAT4X4>					LightProjMatrices;
+		unsigned int			iNumCascades;
+	
+		vector<float>			Splits;
+		vector<XMFLOAT4X4>		LightViewMatrices;
+		vector<XMFLOAT4X4>		LightProjMatrices;
 	}CASCADE_DATA;
+
+	typedef struct tagCascadeConfig
+	{
+		vector<float>	Splits;
+		float			fLamda;
+		float			fBias;
+		XMFLOAT4		vLightDir;
+	}CASCADE_CONFIG;
+
+	typedef struct tagSSAOConfig
+	{
+		unsigned int    iNumKernels;
+		float			fRadius;
+		float			fIntensity;
+		float			fConstrast;
+	}SSAO_CONFIG;
 
 	typedef struct tagPointInstanceParams
 	{

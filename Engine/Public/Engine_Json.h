@@ -824,17 +824,22 @@ namespace Engine
 
     typedef struct tagAI_BehaviorTreeNodeData
     {
-        string strNodeName;
-        string strNodeType;
-        string strSubtype;
+        string                              strNodeName;
+        string                              strNodeType;
+        string                              strSubtype;
 
-        vector<tagAI_BehaviorTreeNodeData>   Children;
+        //vector<tagAI_BehaviorTreeNodeData>   Children;
+        // 포인터 기반으로 변경
+        vector<tagAI_BehaviorTreeNodeData*>    Children;
+        
+        // 에디터에서 트리 노드 수정용 변수
+        tagAI_BehaviorTreeNodeData*          Parent = { nullptr };
 
-        float                   fCoolDownTime = {};
-        unsigned int            iRepeatCount = {};
+        float                               fCoolDownTime = {};
+        unsigned int                        iRepeatCount = {};
 
-        string                  strCallbackFunction;
-        float                   fWaitTime = {};
+        string                              strCallbackFunction;
+        float                               fWaitTime = {};
        
     }AIBTNODE_DATA;
 
@@ -978,7 +983,7 @@ namespace Engine
         strNodeName,
         strNodeType,
         strSubtype,
-        Children,
+        //Children,
         fCoolDownTime,
         iRepeatCount,
         strCallbackFunction,
