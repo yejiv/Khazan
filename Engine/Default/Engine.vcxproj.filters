@@ -148,53 +148,11 @@
     <Filter Include="01.Utility\07.Picking">
       <UniqueIdentifier>{ba05cdd8-dc67-4803-a18f-7cf384f650f5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\08.Shadow">
-      <UniqueIdentifier>{377424c4-9cdb-4e32-97de-fdc0a6cb3ce4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\09.Frustum">
-      <UniqueIdentifier>{d0100743-ade4-4084-89ee-1a5c29a311ae}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\03.Component\VIBuffer\Terrain\QuadTree">
       <UniqueIdentifier>{72774aa8-60df-485c-91f4-a6eca67b3ddc}</UniqueIdentifier>
     </Filter>
     <Filter Include="98.pch">
       <UniqueIdentifier>{107684e2-95b1-4bc3-a2e4-03ae636fec02}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\10.Input">
-      <UniqueIdentifier>{2331d8fc-7949-406e-8f5d-3ab1b6c6d0f4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\11.Sound">
-      <UniqueIdentifier>{44c6a4ba-81fa-4639-a283-83b4f54f7b06}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\11.Sound\Manager">
-      <UniqueIdentifier>{568e45ce-7d09-45e3-98e5-6ff5e3e42be0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\12.ImGui">
-      <UniqueIdentifier>{5601abf4-34c8-4fc5-a5b3-64d5b8807272}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\12.ImGui\Manager">
-      <UniqueIdentifier>{a9ef2bbd-b586-47aa-a33f-a68e1e6b0eba}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\12.ImGui\Define">
-      <UniqueIdentifier>{ab936ed2-aa07-49db-96d5-002e4a83bad3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\13.Jolt">
-      <UniqueIdentifier>{fa4da91b-c23e-4d54-8693-8317805ba505}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\13.Jolt\Manager">
-      <UniqueIdentifier>{134429d3-eb68-463f-af46-47e137a5124b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\14.ThreadPool">
-      <UniqueIdentifier>{42f075f1-3ac7-4b59-a22c-013712a6a958}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\13.Jolt\DebugRenderer">
-      <UniqueIdentifier>{fb1b9529-9c53-477e-a6e8-ebb13186d288}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\13.Jolt\Jolt_Layer">
-      <UniqueIdentifier>{75da37b4-6df6-4a6a-805f-d81b1fcab97a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\13.Jolt\ContactListener">
-      <UniqueIdentifier>{602bdd9e-79dd-482f-a825-2abf01bea11f}</UniqueIdentifier>
     </Filter>
     <Filter Include="01.Utility\03.Component\RigidBody">
       <UniqueIdentifier>{e6d7da03-00c0-4c21-be11-5d581401c62a}</UniqueIdentifier>
@@ -205,32 +163,11 @@
     <Filter Include="01.Utility\02.GameObject\Pool\Manager">
       <UniqueIdentifier>{565e7f0a-e0b8-4a4f-b7c8-3c8d455eb800}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\15.Event">
-      <UniqueIdentifier>{9a9d3493-ee12-484a-97a8-7b8b7ff594b5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\15.Event\Manager">
-      <UniqueIdentifier>{80f19eca-ec79-4c9d-a5d7-e89ac97234e0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\13.Jolt\DebugDraw">
-      <UniqueIdentifier>{61136c8c-9d8c-4c2e-8e9c-23cbeac14a2c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\03.Component\Model\Model_Instance">
       <UniqueIdentifier>{62bb2252-6fc8-45d0-984f-058df548e135}</UniqueIdentifier>
     </Filter>
     <Filter Include="01.Utility\03.Component\Model\Model_Instance\Mesh">
       <UniqueIdentifier>{2ba653db-181c-4135-bb3f-3a615341c579}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\13.Jolt\Filter">
-      <UniqueIdentifier>{6a585887-51ce-4b96-b399-47279930e43e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\16.ComputeShader">
-      <UniqueIdentifier>{0bb4192a-acd8-4388-8ab8-4daae5dadf14}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\16.ComputeShader\Manager">
-      <UniqueIdentifier>{e1676e71-8485-4521-bb8f-356adfd967ca}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\13.Jolt\CharacterVirtualContactListener">
-      <UniqueIdentifier>{cc15051d-c1d3-4f03-98af-3c2ed7cf5938}</UniqueIdentifier>
     </Filter>
     <Filter Include="01.Utility\03.Component\RigidBody\CharacterVirtual">
       <UniqueIdentifier>{09e723ca-0ab0-4b34-bd76-99a5fca6d80b}</UniqueIdentifier>
@@ -240,12 +177,6 @@
     </Filter>
     <Filter Include="01.Utility\02.GameObject\Camera\Manager">
       <UniqueIdentifier>{42338772-b84f-41a6-a319-aa1cd95ab3f0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\17.Resource">
-      <UniqueIdentifier>{f0e7ab3f-91ea-4e92-b91d-c8b0914b35d9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\17.Resource\Manager">
-      <UniqueIdentifier>{74ac0120-cab6-47e2-b6c0-c43dec2d10b4}</UniqueIdentifier>
     </Filter>
     <Filter Include="01.Utility\03.Component\VIBuffer\Instance\UI">
       <UniqueIdentifier>{4d49d96d-a532-4f2a-81c6-c554d0f4a230}</UniqueIdentifier>
@@ -316,11 +247,86 @@
     <Filter Include="01.Utility\95.AI\BehaviorTree\Node\Decorator\Inverter">
       <UniqueIdentifier>{ff7d3c95-8f9b-431a-aa13-048ee6b34835}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\12.ImGui\Guizmo">
-      <UniqueIdentifier>{5d63552c-6d32-499d-b702-54b0a148ce46}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\95.AI\BehaviorTree\Node\Defines">
       <UniqueIdentifier>{f60db9af-175b-419d-ae6b-b02d9741a584}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\94.RenderingResources">
+      <UniqueIdentifier>{bfef3783-62f0-48f0-be67-756cbc51ccef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\94.RenderingResources\SSAO">
+      <UniqueIdentifier>{1219eb8d-8d8f-4f81-ac9a-6842107d9bea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\94.RenderingResources\CSM">
+      <UniqueIdentifier>{377424c4-9cdb-4e32-97de-fdc0a6cb3ce4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\08.Frustum">
+      <UniqueIdentifier>{d0100743-ade4-4084-89ee-1a5c29a311ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\09.Input">
+      <UniqueIdentifier>{2331d8fc-7949-406e-8f5d-3ab1b6c6d0f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\10.Sound">
+      <UniqueIdentifier>{44c6a4ba-81fa-4639-a283-83b4f54f7b06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\10.Sound\Manager">
+      <UniqueIdentifier>{568e45ce-7d09-45e3-98e5-6ff5e3e42be0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\11.ImGui">
+      <UniqueIdentifier>{5601abf4-34c8-4fc5-a5b3-64d5b8807272}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\11.ImGui\Manager">
+      <UniqueIdentifier>{a9ef2bbd-b586-47aa-a33f-a68e1e6b0eba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\11.ImGui\Define">
+      <UniqueIdentifier>{ab936ed2-aa07-49db-96d5-002e4a83bad3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\11.ImGui\Guizmo">
+      <UniqueIdentifier>{5d63552c-6d32-499d-b702-54b0a148ce46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\12.Jolt">
+      <UniqueIdentifier>{fa4da91b-c23e-4d54-8693-8317805ba505}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\12.Jolt\Manager">
+      <UniqueIdentifier>{134429d3-eb68-463f-af46-47e137a5124b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\12.Jolt\DebugRenderer">
+      <UniqueIdentifier>{fb1b9529-9c53-477e-a6e8-ebb13186d288}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\12.Jolt\Jolt_Layer">
+      <UniqueIdentifier>{75da37b4-6df6-4a6a-805f-d81b1fcab97a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\12.Jolt\ContactListener">
+      <UniqueIdentifier>{602bdd9e-79dd-482f-a825-2abf01bea11f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\12.Jolt\DebugDraw">
+      <UniqueIdentifier>{61136c8c-9d8c-4c2e-8e9c-23cbeac14a2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\12.Jolt\Filter">
+      <UniqueIdentifier>{6a585887-51ce-4b96-b399-47279930e43e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\12.Jolt\CharacterVirtualContactListener">
+      <UniqueIdentifier>{cc15051d-c1d3-4f03-98af-3c2ed7cf5938}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\13.ThreadPool">
+      <UniqueIdentifier>{42f075f1-3ac7-4b59-a22c-013712a6a958}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\14.Event">
+      <UniqueIdentifier>{9a9d3493-ee12-484a-97a8-7b8b7ff594b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\14.Event\Manager">
+      <UniqueIdentifier>{80f19eca-ec79-4c9d-a5d7-e89ac97234e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\15.ComputeShader">
+      <UniqueIdentifier>{0bb4192a-acd8-4388-8ab8-4daae5dadf14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\15.ComputeShader\Manager">
+      <UniqueIdentifier>{e1676e71-8485-4521-bb8f-356adfd967ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\16.Resource">
+      <UniqueIdentifier>{f0e7ab3f-91ea-4e92-b91d-c8b0914b35d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\16.Resource\Manager">
+      <UniqueIdentifier>{74ac0120-cab6-47e2-b6c0-c43dec2d10b4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -448,40 +454,40 @@
       <Filter>01.Utility\07.Picking</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Shadow.cpp">
-      <Filter>01.Utility\08.Shadow</Filter>
+      <Filter>01.Utility\94.RenderingResources\CSM</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Frustum.cpp">
-      <Filter>01.Utility\09.Frustum</Filter>
+      <Filter>01.Utility\08.Frustum</Filter>
     </ClCompile>
     <ClCompile Include="..\private\QuadTree.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Terrain\QuadTree</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Input_Manager.cpp">
-      <Filter>01.Utility\10.Input</Filter>
+      <Filter>01.Utility\09.Input</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Sound_Manager.cpp">
-      <Filter>01.Utility\11.Sound\Manager</Filter>
+      <Filter>01.Utility\10.Sound\Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Imgui_Manager.cpp">
-      <Filter>01.Utility\12.ImGui\Manager</Filter>
+      <Filter>01.Utility\11.ImGui\Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Jolt_Manager.cpp">
-      <Filter>01.Utility\13.Jolt\Manager</Filter>
+      <Filter>01.Utility\12.Jolt\Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\ThreadPool.cpp">
-      <Filter>01.Utility\14.ThreadPool</Filter>
+      <Filter>01.Utility\13.ThreadPool</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\RigidBody.cpp">
       <Filter>01.Utility\03.Component\RigidBody</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Jolt_DebugRenderer.cpp">
-      <Filter>01.Utility\13.Jolt\DebugRenderer</Filter>
+      <Filter>01.Utility\12.Jolt\DebugRenderer</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Jolt_Layer.cpp">
-      <Filter>01.Utility\13.Jolt\Jolt_Layer</Filter>
+      <Filter>01.Utility\12.Jolt\Jolt_Layer</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Jolt_ContactListener.cpp">
-      <Filter>01.Utility\13.Jolt\ContactListener</Filter>
+      <Filter>01.Utility\12.Jolt\ContactListener</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Model_Instance.cpp">
       <Filter>01.Utility\03.Component\Model\Model_Instance</Filter>
@@ -490,10 +496,10 @@
       <Filter>01.Utility\02.GameObject\Pool\Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Event_Manager.cpp">
-      <Filter>01.Utility\15.Event\Manager</Filter>
+      <Filter>01.Utility\14.Event\Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\DebugDraw.cpp">
-      <Filter>01.Utility\13.Jolt\DebugDraw</Filter>
+      <Filter>01.Utility\12.Jolt\DebugDraw</Filter>
     </ClCompile>
     <ClCompile Include="EnginePch.cpp">
       <Filter>98.pch</Filter>
@@ -505,16 +511,16 @@
       <Filter>01.Utility\03.Component\Model\Model_Instance\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Resource_Manager.cpp">
-      <Filter>01.Utility\17.Resource\Manager</Filter>
+      <Filter>01.Utility\16.Resource\Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\private\ComputeShader.cpp">
-      <Filter>01.Utility\16.ComputeShader</Filter>
+      <Filter>01.Utility\15.ComputeShader</Filter>
     </ClCompile>
     <ClCompile Include="..\private\ComputeShader_Manager.cpp">
-      <Filter>01.Utility\16.ComputeShader\Manager</Filter>
+      <Filter>01.Utility\15.ComputeShader\Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Jolt_CharacterContactListener.cpp">
-      <Filter>01.Utility\13.Jolt\CharacterVirtualContactListener</Filter>
+      <Filter>01.Utility\12.Jolt\CharacterVirtualContactListener</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Body.cpp">
       <Filter>01.Utility\03.Component\RigidBody\Body</Filter>
@@ -592,40 +598,40 @@
       <Filter>01.Utility\95.AI\BehaviorTree\Node\Decorator\Inverter</Filter>
     </ClCompile>
     <ClCompile Include="..\Public\ImGui\imgui_tables.cpp">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
+      <Filter>01.Utility\11.ImGui\Define</Filter>
     </ClCompile>
     <ClCompile Include="..\Public\ImGui\imgui_widgets.cpp">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
+      <Filter>01.Utility\11.ImGui\Define</Filter>
     </ClCompile>
     <ClCompile Include="..\Public\ImGui\imgui.cpp">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
+      <Filter>01.Utility\11.ImGui\Define</Filter>
     </ClCompile>
     <ClCompile Include="..\Public\ImGui\imgui_demo.cpp">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
+      <Filter>01.Utility\11.ImGui\Define</Filter>
     </ClCompile>
     <ClCompile Include="..\Public\ImGui\imgui_draw.cpp">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
+      <Filter>01.Utility\11.ImGui\Define</Filter>
     </ClCompile>
     <ClCompile Include="..\Public\ImGui\imgui_impl_dx11.cpp">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
+      <Filter>01.Utility\11.ImGui\Define</Filter>
     </ClCompile>
     <ClCompile Include="..\Public\ImGui\imgui_impl_win32.cpp">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
+      <Filter>01.Utility\11.ImGui\Define</Filter>
     </ClCompile>
     <ClCompile Include="..\Public\Guizmo\GraphEditor.cpp">
-      <Filter>01.Utility\12.ImGui\Guizmo</Filter>
+      <Filter>01.Utility\11.ImGui\Guizmo</Filter>
     </ClCompile>
     <ClCompile Include="..\Public\Guizmo\ImCurveEdit.cpp">
-      <Filter>01.Utility\12.ImGui\Guizmo</Filter>
+      <Filter>01.Utility\11.ImGui\Guizmo</Filter>
     </ClCompile>
     <ClCompile Include="..\Public\Guizmo\ImGradient.cpp">
-      <Filter>01.Utility\12.ImGui\Guizmo</Filter>
+      <Filter>01.Utility\11.ImGui\Guizmo</Filter>
     </ClCompile>
     <ClCompile Include="..\Public\Guizmo\ImGuizmo.cpp">
-      <Filter>01.Utility\12.ImGui\Guizmo</Filter>
+      <Filter>01.Utility\11.ImGui\Guizmo</Filter>
     </ClCompile>
     <ClCompile Include="..\Public\Guizmo\ImSequencer.cpp">
-      <Filter>01.Utility\12.ImGui\Guizmo</Filter>
+      <Filter>01.Utility\11.ImGui\Guizmo</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Font_Manager.cpp">
       <Filter>01.Utility\05.Fonts\Manager</Filter>
@@ -635,6 +641,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Font_Renderer.cpp">
       <Filter>01.Utility\05.Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\SSAO.cpp">
+      <Filter>01.Utility\94.RenderingResources\SSAO</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -780,40 +789,40 @@
       <Filter>01.Utility\07.Picking</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Shadow.h">
-      <Filter>01.Utility\08.Shadow</Filter>
+      <Filter>01.Utility\94.RenderingResources\CSM</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Frustum.h">
-      <Filter>01.Utility\09.Frustum</Filter>
+      <Filter>01.Utility\08.Frustum</Filter>
     </ClInclude>
     <ClInclude Include="..\public\QuadTree.h">
       <Filter>01.Utility\03.Component\VIBuffer\Terrain\QuadTree</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Input_Manager.h">
-      <Filter>01.Utility\10.Input</Filter>
+      <Filter>01.Utility\09.Input</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Sound_Manager.h">
-      <Filter>01.Utility\11.Sound\Manager</Filter>
+      <Filter>01.Utility\10.Sound\Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Imgui_Manager.h">
-      <Filter>01.Utility\12.ImGui\Manager</Filter>
+      <Filter>01.Utility\11.ImGui\Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Jolt_Manager.h">
-      <Filter>01.Utility\13.Jolt\Manager</Filter>
+      <Filter>01.Utility\12.Jolt\Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ThreadPool.h">
-      <Filter>01.Utility\14.ThreadPool</Filter>
+      <Filter>01.Utility\13.ThreadPool</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\RigidBody.h">
       <Filter>01.Utility\03.Component\RigidBody</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Jolt_DebugRenderer.h">
-      <Filter>01.Utility\13.Jolt\DebugRenderer</Filter>
+      <Filter>01.Utility\12.Jolt\DebugRenderer</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Jolt_Layer.h">
-      <Filter>01.Utility\13.Jolt\Jolt_Layer</Filter>
+      <Filter>01.Utility\12.Jolt\Jolt_Layer</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Jolt_ContactListener.h">
-      <Filter>01.Utility\13.Jolt\ContactListener</Filter>
+      <Filter>01.Utility\12.Jolt\ContactListener</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Model_Instance.h">
       <Filter>01.Utility\03.Component\Model\Model_Instance</Filter>
@@ -822,10 +831,10 @@
       <Filter>01.Utility\02.GameObject\Pool\Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Event_Manager.h">
-      <Filter>01.Utility\15.Event\Manager</Filter>
+      <Filter>01.Utility\14.Event\Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\DebugDraw.h">
-      <Filter>01.Utility\13.Jolt\DebugDraw</Filter>
+      <Filter>01.Utility\12.Jolt\DebugDraw</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Engine_Json.h">
       <Filter>99.Defines</Filter>
@@ -840,19 +849,19 @@
       <Filter>01.Utility\03.Component\Model\Model_Instance\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Resource_Manager.h">
-      <Filter>01.Utility\17.Resource\Manager</Filter>
+      <Filter>01.Utility\16.Resource\Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\public\ComputeShader.h">
-      <Filter>01.Utility\16.ComputeShader</Filter>
+      <Filter>01.Utility\15.ComputeShader</Filter>
     </ClInclude>
     <ClInclude Include="..\public\ComputeShader_Manager.h">
-      <Filter>01.Utility\16.ComputeShader\Manager</Filter>
+      <Filter>01.Utility\15.ComputeShader\Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Engine_ConstantBuffer.h">
       <Filter>99.Defines</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Jolt_CharacterContactListener.h">
-      <Filter>01.Utility\13.Jolt\CharacterVirtualContactListener</Filter>
+      <Filter>01.Utility\12.Jolt\CharacterVirtualContactListener</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Body.h">
       <Filter>01.Utility\03.Component\RigidBody\Body</Filter>
@@ -933,46 +942,46 @@
       <Filter>01.Utility\95.AI\BehaviorTree\Node\Decorator\Inverter</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ImGui\imstb_rectpack.h">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
+      <Filter>01.Utility\11.ImGui\Define</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ImGui\imstb_textedit.h">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
+      <Filter>01.Utility\11.ImGui\Define</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ImGui\imstb_truetype.h">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
+      <Filter>01.Utility\11.ImGui\Define</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ImGui\imconfig.h">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
+      <Filter>01.Utility\11.ImGui\Define</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ImGui\imgui.h">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
+      <Filter>01.Utility\11.ImGui\Define</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ImGui\imgui_impl_dx11.h">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
+      <Filter>01.Utility\11.ImGui\Define</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ImGui\imgui_impl_win32.h">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
+      <Filter>01.Utility\11.ImGui\Define</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ImGui\imgui_internal.h">
-      <Filter>01.Utility\12.ImGui\Define</Filter>
+      <Filter>01.Utility\11.ImGui\Define</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Guizmo\GraphEditor.h">
-      <Filter>01.Utility\12.ImGui\Guizmo</Filter>
+      <Filter>01.Utility\11.ImGui\Guizmo</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Guizmo\ImCurveEdit.h">
-      <Filter>01.Utility\12.ImGui\Guizmo</Filter>
+      <Filter>01.Utility\11.ImGui\Guizmo</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Guizmo\ImGradient.h">
-      <Filter>01.Utility\12.ImGui\Guizmo</Filter>
+      <Filter>01.Utility\11.ImGui\Guizmo</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Guizmo\ImGuizmo.h">
-      <Filter>01.Utility\12.ImGui\Guizmo</Filter>
+      <Filter>01.Utility\11.ImGui\Guizmo</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Guizmo\ImSequencer.h">
-      <Filter>01.Utility\12.ImGui\Guizmo</Filter>
+      <Filter>01.Utility\11.ImGui\Guizmo</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Guizmo\ImZoomSlider.h">
-      <Filter>01.Utility\12.ImGui\Guizmo</Filter>
+      <Filter>01.Utility\11.ImGui\Guizmo</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Font_Manager.h">
       <Filter>01.Utility\05.Fonts\Manager</Filter>
@@ -987,6 +996,9 @@
       <Filter>01.Utility\95.AI\BehaviorTree\Node\Defines</Filter>
     </ClInclude>
     <ClInclude Include="..\..\ENGINESDK\DEBUG\INC\COMPOSITE_NODE.H" />
+    <ClInclude Include="..\public\SSAO.h">
+      <Filter>01.Utility\94.RenderingResources\SSAO</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hlsli">

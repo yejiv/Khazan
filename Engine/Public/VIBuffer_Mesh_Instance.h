@@ -41,6 +41,9 @@ public:
 	void						Setting_Pivot(_float3 pivot);
 	void						Setting_Loop(_bool isLoop) { m_IsLoop = isLoop; };
 
+	/*Debug*/
+	virtual HRESULT				Bind_Resources() override;
+
 
 private:
 	HRESULT						Ready_SRV(void* pSysmem);
@@ -60,6 +63,8 @@ private:
 	ID3D11Buffer*				m_pStructuredBuffer = { nullptr };
 	ID3D11Buffer*				m_pSpeedBuffer = { nullptr };
 	ID3D11Buffer*				m_pStagingBuffer = { nullptr };
+	//Debug
+	//ID3D11Buffer*				m_pDebugInstanceBuffer = { nullptr };
 	POINT_INSTANCE_PARAMS*		m_pParticleParams; 
 
 private:

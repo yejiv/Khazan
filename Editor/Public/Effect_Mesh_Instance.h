@@ -20,7 +20,9 @@ public:
 		_uint		iMeshTypeIdx;
 		_float2		iScrollSpeed;
 		_uint		iMaskTextureIdx;
-		_uint		bScrollDir;
+		_float		fMaskScrollSpeed;
+		_uint		bIsScrollVertical;				//마스크 스크롤 방향 (상하 <-> 좌우)
+		_uint		bIsScrollInverse;				//왼->오, 위-> 아래가 기본인데 이거 체크되어있으면 반대로!
 		_uint		bGravity = false;
 	}PARTICLE_DESC;
 
@@ -61,7 +63,8 @@ private:
 private :
 	PARTICLE_DESC					m_sData;
 	PARTICLE_DESC					m_sEditingData;
-	_float							m_fCurTime;
+	/*Editing data*/
+	_bool							m_bIsMaskScrolling;
 
 public:
 	static CEffect_Mesh_Instance*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, void* pArg);

@@ -22,6 +22,10 @@ public:
 		_float	fSizeRatio;
 		_float	ScalingValue;
 		_uint	iTextureIdx;
+		_uint	iMaskTextureIdx;
+		_float	fMaskScrollSpeed;
+		_uint	bIsScrollVertical;				//마스크 스크롤 방향 (상하 <-> 좌우)
+		_uint	bIsScrollInverse;				//왼->오, 위-> 아래가 기본인데 이거 체크되어있으면 반대로!
 	}SPRITE_DESC;
 
 private:

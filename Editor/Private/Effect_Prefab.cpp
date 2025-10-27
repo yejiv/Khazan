@@ -198,8 +198,6 @@ void CEffect_Prefab::Edit_TimeTrack(_uint ChildIdx)
     for(const auto& name : Names)
         cstr_Names.push_back(name.c_str());
 
-    ImGui::Begin("[Time Track List]");
-
     if(cstr_Names.size() > 0)
     {
         ImGui::ListBox("TimeTracks",&m_TrackIdx,cstr_Names.data(),(_int)cstr_Names.size());
@@ -239,13 +237,14 @@ void CEffect_Prefab::Edit_TimeTrack(_uint ChildIdx)
 
         case CEffect_Prefab::EffectEventType::ANIMATE_LINEAR_MOVE:
             ImGui::InputFloat2("Upward speed : ",reinterpret_cast<_float*>(&m_sEditingData.fUpwardSpeed));
+            ImGui::Checkbox("Gravity", &m_Gravity);
             break;
         }
 
         if (ImGui::Button("Edit TimeTrack"))
         {
-            *SelectedElement[m_TrackIdx] = m_sEditingData;
             m_sEditingData.bGravity = m_Gravity;
+            *SelectedElement[m_TrackIdx] = m_sEditingData;
         }
 
         if(ImGui::Button("Delete TimeTrack"))
@@ -258,8 +257,6 @@ void CEffect_Prefab::Edit_TimeTrack(_uint ChildIdx)
 
         m_PrevTrackIdx = m_TrackIdx;
     }
-
-    ImGui::End();
 }
 
 void CEffect_Prefab::Add_TimeTrack(EFFECT_EVENT TrackData)
