@@ -24,7 +24,6 @@ _bool CItem_Slot::Add_Item(_int iItemIndex)
         string strItemData = WStringToAnsi(ItemData.strIconName);
         _float4 vUV = CClientInstance::GetInstance()->Get_AtlasUV(strItemData.c_str(), 2);
         _uint iTexPass = ItemData.iTexPass;
-        
         m_pIcon->Set_Texture(vUV, iTexPass);
         m_iItemMaxCount = ItemData.iMaxValue;
         ++m_iItemCount;
@@ -60,6 +59,14 @@ _bool CItem_Slot::Off_Selete()
     return true;
 }
 
+_bool CItem_Slot::Off_Equip()
+{
+    if (m_iItemIndex < 0)
+        return false;
+    m_bIsEquip = false;
+    return true;
+}
+
 HRESULT CItem_Slot::Initialize_Prototype(_uint iLevel)
 {
     m_iLevel = iLevel;
@@ -74,7 +81,7 @@ HRESULT CItem_Slot::Initialize_Clone(void* pArg)
     m_iItemType = pDesc->iItemType;
     m_iTexPass = 1;
     m_iShaderPass = 0;
-    m_vColor = { 1.f,1.f,1.f,1.f };
+    m_vColor = { 1.f,1.f,1.f,0.75f };
 
     _float4 vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_01_Empty.png", m_iTexPass);
     m_vUV.push_back(vUV);
@@ -105,11 +112,13 @@ void CItem_Slot::Late_Update(_float fTimeDelta)
 {
     CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::ATLAS, this);
     
-    if (ButtonClick(g_hWnd, false, true))
-        Release_Item();
-    else if (ButtonClick(g_hWnd, true, true))
-        Equip_Item();
+    //if (ButtonClick(g_hWnd, false, true))
+    //    Release_Item();
+    if (ButtonClick(g_hWnd, true, true))
+        Selete_Item();
 
+    if (m_bIsSelete && m_pGameInstance->Key_Down(DIK_F))
+        Equip_Item();
 
     if (m_iState == ENUM_CLASS(UISTATE::ENABLE))
     {
@@ -228,15 +237,27 @@ void CItem_Slot::Update_State(_uint iGrade)
 
 }
 
-void CItem_Slot::Equip_Item()
+void CItem_Slot::Selete_Item()
 {
     m_bIsSelete ? m_bIsSelete = false : m_bIsSelete = true;
 
     CUI_Inven::INVENBUBBLE_DESC Desc = {};
-    Desc.eBubbleType = CUI_Inven::EVENT_TYPE::ITEM_EQUIP;
+    Desc.eBubbleType = CUI_Inven::EVENT_TYPE::ITEM_SELETE;
     Desc.iTypeIndex = m_iItemType;
     Desc.iIndex = m_iIndex;
 
+    __super::Bubble_EventCall(&Desc);
+}
+
+void CItem_Slot::Equip_Item()
+{
+    m_bIsEquip = true;
+    
+    CUI_Inven::INVENBUBBLE_DESC Desc = {};
+    Desc.eBubbleType = CUI_Inven::EVENT_TYPE::ITEM_EQUIP;
+    Desc.iTypeIndex = m_iItemType;
+    Desc.iIndex = m_iIndex;
+    Desc.iItemIndex = m_iItemIndex;
     __super::Bubble_EventCall(&Desc);
 }
 
