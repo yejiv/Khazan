@@ -136,7 +136,7 @@ HRESULT CEdit_UIBase::Save_UI(nlohmann::ordered_json& pOutData)
         Data["Maxwidth"] = m_fMaxWidth;
         Data["offsetHeight"] = m_fOffsetHeight;
         Data["FontTag"] = WStringToAnsi(m_wstrTexttag);
-        Data["Text"] = WStringToAnsi(m_wstrText);
+        Data["Text"] = WStringToAnsi(m_wstrText, CP_UTF8);
         Data["iPivot"]["x"] = m_iPivot[0];
         Data["iPivot"]["y"] = m_iPivot[1];
     }
@@ -275,15 +275,7 @@ HRESULT CEdit_UIBase::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
         m_fOffsetHeight = pInData.value("offsetHeight",0);
         string FontTag = pInData.value("FontTag", "");
         m_wstrTexttag = AnsiToWString(FontTag);
-
-        string strText = pInData.value("Text", "");
-        _int iSize = MultiByteToWideChar(CP_UTF8, 0, strText.c_str(), -1, nullptr, 0);
-        _wstring wstr(iSize, 0);
-        MultiByteToWideChar(CP_UTF8, 0, strText.c_str(), -1, &wstr[0], iSize);
- 
-        m_wstrText = wstr;
-
-
+        m_wstrText = AnsiToWString(pInData.value("Text", ""), CP_UTF8);;
         m_iPivot[0] = pInData["iPivot"].value("x", 0);
         m_iPivot[1] = pInData["iPivot"].value("y", 0);
   

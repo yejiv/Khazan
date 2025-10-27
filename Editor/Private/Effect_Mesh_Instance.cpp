@@ -44,8 +44,6 @@ void CEffect_Mesh_Instance::Update(_float fTimeDelta)
             ++it;
     }
 
-    m_fCurTime += fTimeDelta;
-
     m_bRunning = (m_pVIBufferCom->Update(fTimeDelta) == true && m_TimeTracks.size() == 0) ? false : true;
     
     if (m_sData.bGravity)
@@ -55,10 +53,7 @@ void CEffect_Mesh_Instance::Update(_float fTimeDelta)
 
     /* Edit */
     if (m_TimeTracks.size() == 0)
-    {
-        m_pVIBufferCom->Remove_Speed();
-        m_fCurTime = 0.f;
-    }
+        m_pVIBufferCom->Remove_Speed(); 
 }
 
 void CEffect_Mesh_Instance::Late_Update(_float fTimeDelta)
@@ -68,13 +63,14 @@ void CEffect_Mesh_Instance::Late_Update(_float fTimeDelta)
 
 HRESULT CEffect_Mesh_Instance::Render()
 {
+
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
-
     //m_pShaderCom->Begin((_uint)m_Data.TextureBindType);
     m_pShaderCom->Begin(0);
 
     m_pVIBufferCom->Bind_Resources();
+
 
     m_pVIBufferCom->Render();
 
@@ -91,7 +87,8 @@ void CEffect_Mesh_Instance::Edit_Element()
 {
     _int            isCircle = (_int)m_sEditingData.IsCircle;
     _bool            loop = (_int)m_sEditingData.bIsLoop;
-    _bool            Scroll = (_int)m_sEditingData.bScrollDir;
+    _bool            IsVerticalScroll = (_int)m_sEditingData.bIsScrollVertical;
+    _bool            IsInverseScroll = (_int)m_sEditingData.bIsScrollInverse;
 
     ImGui::RadioButton("Spawn_BoundingBox", &isCircle, 0);
     ImGui::RadioButton("Spawn_Circle", &isCircle, 1);
@@ -111,22 +108,33 @@ void CEffect_Mesh_Instance::Edit_Element()
     ImGui::InputFloat2("LifeTime : ", reinterpret_cast<_float*>(&m_sEditingData.vLifeTime));
     ImGui::InputFloat2("Scrolling Speed : ", reinterpret_cast<_float*>(&m_sEditingData.iScrollSpeed));
     ImGui::Checkbox("Element Loop", &loop);
-    ImGui::Checkbox("Scroll Y", &Scroll);
 
     ImGui::ColorEdit4("MyColorWithAlpha",(float*)&m_sEditingData.vColor);
 
     const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19" };
-    ImGui::ListBox("Mesh Textures", reinterpret_cast<int*>(&m_sEditingData.iTextureIdx), textures, IM_ARRAYSIZE(textures));
+    ImGui::Combo("Mesh Textures", reinterpret_cast<int*>(&m_sEditingData.iTextureIdx), textures, IM_ARRAYSIZE(textures));
 
     const char* Meshes[] = { "Mesh1", "Mesh2", "Mesh3",  "Mesh4",  "Mesh5",  "Mesh6",  "Mesh7",  "Mesh8",  "Mesh9",  "Mesh10",  "Mesh11",  "Mesh12",  "Mesh13",  "Mesh14",  "Mesh15",  "Mesh16",  "Mesh17",  "Mesh18",  "Mesh19" ,  "Mesh20" };
-    ImGui::ListBox("Mesh Shape", reinterpret_cast<int*>(&m_sEditingData.iMeshTypeIdx), Meshes, IM_ARRAYSIZE(Meshes));
+    ImGui::Combo("Mesh Shape", reinterpret_cast<int*>(&m_sEditingData.iMeshTypeIdx), Meshes, IM_ARRAYSIZE(Meshes));
 
-    const char* MaskTexture[] = { "width0", "width1", "width2",  "width3",  "width4",  "width5",  "width6" ,  "legnth0"};
-    ImGui::ListBox("Mask Textures", reinterpret_cast<int*>(&m_sEditingData.iMaskTextureIdx), MaskTexture, IM_ARRAYSIZE(MaskTexture));
+    ImGui::Checkbox("Do Mask Scrolling", &m_bIsMaskScrolling);
+    if (m_bIsMaskScrolling)
+    {
+        ImGui::Indent();
+        const char* MaskTexture[] = { "width0", "width1", "width2",  "width3",  "width4",  "width5",  "width6" ,  "length0" };
+        ImGui::Combo("Mask Textures", reinterpret_cast<int*>(&m_sEditingData.iMaskTextureIdx), MaskTexture, IM_ARRAYSIZE(MaskTexture));
+        ImGui::InputFloat("Mask Scroll Speed : ", &m_sEditingData.fMaskScrollSpeed);
+        ImGui::Checkbox("Is Vecrtical", &IsVerticalScroll);
+        ImGui::Checkbox("Is Inverse Direction", &IsInverseScroll);
+        ImGui::Unindent();
+    }
+    else
+        m_sEditingData.fMaskScrollSpeed = 0.f;
 
     m_sEditingData.IsCircle = isCircle;
     m_sEditingData.bIsLoop = loop;
-    m_sEditingData.bScrollDir = Scroll;
+    m_sEditingData.bIsScrollInverse = IsInverseScroll;
+    m_sEditingData.bIsScrollVertical = IsVerticalScroll;
 
     if (ImGui::Button("Apply"))
         Apply(&m_sEditingData);
@@ -142,7 +150,6 @@ void CEffect_Mesh_Instance::RevertChanges()
 void CEffect_Mesh_Instance::Reset()
 {
     __super::Reset();
-    m_fCurTime = 0.f;
     m_pVIBufferCom->Reset();
 }
 
@@ -215,19 +222,23 @@ HRESULT CEffect_Mesh_Instance::Bind_ShaderResources()
     if(FAILED(m_pShaderCom->Bind_RawValue("g_vSourceColor", &m_sEditingData.vColor, sizeof(_float4))))
         return E_FAIL;
 
-    if (FAILED(m_pShaderCom->Bind_RawValue("g_RunningTime", &m_fCurTime, sizeof(_float))))
-        return E_FAIL;
-
     if (FAILED(m_pShaderCom->Bind_RawValue("g_ScrollSpeed", &m_fScrollSpeed, sizeof(_float2))))
         return E_FAIL; 
 
-    _bool ScrollDir = m_sData.bScrollDir;
-    if (FAILED(m_pShaderCom->Bind_Bool("g_ScrollYDir", &ScrollDir)))
+    _bool ScrollDir = m_sData.bIsScrollVertical;
+    if (FAILED(m_pShaderCom->Bind_Bool("g_MaskScrollYDir", &ScrollDir)))
+        return E_FAIL;
+    
+    _bool IsScrollInv = m_sData.bIsScrollInverse;
+    if (FAILED(m_pShaderCom->Bind_Bool("g_MaskScrollInv", &IsScrollInv)))
         return E_FAIL;
 
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_MaskScrollSpeed", &m_sData.fMaskScrollSpeed, sizeof(_float))))
+        return E_FAIL;
+    
     if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DiffuseTexture", m_sData.iTextureIdx)))
         return E_FAIL;
-
+    
     if (FAILED(m_pMaskTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_MaskTexture", m_sData.iMaskTextureIdx)))
         return E_FAIL;
 
@@ -250,8 +261,6 @@ void CEffect_Mesh_Instance::Apply(void* pArg)
 
     m_sEditingData = m_sData;
     m_fScrollSpeed = m_sData.iScrollSpeed;
-
-    m_fCurTime = 0.f;
 }
 
 CEffect_Mesh_Instance* CEffect_Mesh_Instance::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, void* pArg)

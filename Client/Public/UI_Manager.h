@@ -20,6 +20,10 @@ public:
 	HRESULT						Initialize();
 	void						UIObjectToRenderer();
 
+	//UI 관련
+	class CUIObject*			Get_RootUI(const _wstring& szRootUIName);
+	HRESULT						UI_UpdateSwitch(const _wstring& szRootUIName, void* pArg);
+
 	//Event 관련
 	HRESULT						Add_Event(const _wstring& strLayerTag, const _wstring& strEventTag, std::function<void()> Event);
 	HRESULT						Add_ParamEvent(const _wstring& strLayerTag, const _wstring& strEventTag, std::function<void(void*)> Event);
@@ -35,7 +39,6 @@ public:
 	HRESULT						Add_UIRender(UI_RENDER_TYPE eRender, CUIObject* pUIObject);
 	
 	//ETC
-	HRESULT						UI_UpdateSwitch(const _wstring& strUITag, void* pArg);
 	_int						UIType_StringToEnum(string szUIType);
 	_float4						Get_AtlasUV(const string pFrameName, _uint iTextureIndex);
 private:

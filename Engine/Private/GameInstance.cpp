@@ -16,7 +16,6 @@
 #include "Frustum.h"
 #include "Imgui_Manager.h"
 #include "Jolt_Manager.h"
-#include "ThreadPool.h"
 #include "Input_Manager.h"
 #include "Pool_Manager.h"
 #include "Event_Manager.h"
@@ -765,21 +764,18 @@ void CGameInstance::Jolt_Test()
 #pragma endregion
 
 #pragma region THREADPOOL
-future<void> CGameInstance::Enqueue(std::function<void()> job)
+future<HRESULT> CGameInstance::Add_Task(std::function<HRESULT()> task)
 {
-	return m_pThreadPool->Enqueue(job);
+	return m_pThreadPool->Add_Task(task);
 }
-future<any> CGameInstance::EnqueueAny(std::function<any()> job)
+void CGameInstance::Add_FireTask(std::function<HRESULT()> task)
 {
-	return m_pThreadPool->EnqueueAny(job);
-}
-void CGameInstance::Submit(std::function<void()> job)
-{
-	m_pThreadPool->Submit(job);
+	m_pThreadPool->Add_FireTask(task);
 }
 #pragma endregion
 
 #pragma region INPUT_MANAGER
+
 _bool CGameInstance::Key_Pressing(_ubyte byKeyID, _float fTimeDelta, INPUT_TYPE eType, _float* pPressingTime)
 {
 	return m_pInput_Manager->Key_Pressing(byKeyID, fTimeDelta, eType, pPressingTime);
@@ -959,11 +955,10 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pImgui_Manager);
 #endif
 
+	Safe_Release(m_pThreadPool);
 	Safe_Release(m_pSSAO);
-
 	Safe_Release(m_pComputeShader_Manager);
 	Safe_Release(m_pPool_Manager);
-	Safe_Release(m_pThreadPool);
 	Safe_Release(m_pTarget_Manager);
 	Safe_Release(m_pFont_Manager);
 	Safe_Release(m_pFrustum);

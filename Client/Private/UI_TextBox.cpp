@@ -12,6 +12,14 @@ CUI_TextBox::CUI_TextBox(const CUI_TextBox& Prototype)
 {
 }
 
+void CUI_TextBox::Update_PosY(_int iIndex, _float2 vPos, _float fOffSetY)
+{
+	m_vLocalPos.x = vPos.x;
+	m_vLocalPos.y = vPos.y + iIndex * fOffSetY;
+
+	__super::Update_Transform(nullptr, m_vWorldPos);
+}
+
 HRESULT CUI_TextBox::Initialize_Prototype()
 {
 	return S_OK;
