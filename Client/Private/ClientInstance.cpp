@@ -82,9 +82,14 @@ HRESULT CClientInstance::Add_UIRender(UI_RENDER_TYPE eRender, CUIObject* pUIObje
 	return m_pUI_Manager->Add_UIRender(eRender, pUIObject);
 }
 
-HRESULT CClientInstance::UI_UpdateSwitch(const _wstring& strUITag, void* pArg)
+HRESULT CClientInstance::UI_UpdateSwitch(const _wstring& szRootUIName, void* pArg)
 {
-	return m_pUI_Manager->UI_UpdateSwitch(strUITag, pArg);
+	return m_pUI_Manager->UI_UpdateSwitch(szRootUIName, pArg);
+}
+
+CUIObject* CClientInstance::Get_RootUI(const _wstring& szRootUIName)
+{
+	return m_pUI_Manager->Get_RootUI(szRootUIName);
 }
 
 _float4 CClientInstance::Get_AtlasUV(const string pFrameName, _uint iTextureIndex)
