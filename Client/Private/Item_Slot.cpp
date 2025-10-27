@@ -74,7 +74,7 @@ HRESULT CItem_Slot::Initialize_Clone(void* pArg)
     m_iItemType = pDesc->iItemType;
     m_iTexPass = 1;
     m_iShaderPass = 0;
-    m_vColor = { 1.f,1.f,1.f,1.f };
+    m_vColor = { 1.f,1.f,1.f,0.75f };
 
     _float4 vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_01_Empty.png", m_iTexPass);
     m_vUV.push_back(vUV);
@@ -105,9 +105,9 @@ void CItem_Slot::Late_Update(_float fTimeDelta)
 {
     CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::ATLAS, this);
     
-    if (ButtonClick(g_hWnd, false, true))
-        Release_Item();
-    else if (ButtonClick(g_hWnd, true, true))
+    //if (ButtonClick(g_hWnd, false, true))
+    //    Release_Item();
+    if (ButtonClick(g_hWnd, true, true))
         Equip_Item();
 
 

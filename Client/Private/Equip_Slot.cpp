@@ -40,12 +40,12 @@ _bool CEquip_Slot::Add_Item(_int iItemIndex)
         return false;
 }
 
-void CEquip_Slot::Update_PosX(_int iIndex, _float2 vPos, _float fOffSetX)
+void CEquip_Slot::Update_PosX(_int iIndex, _float2 vPos, _float fOffSetX, _float fOffSetY, CUIObject* pParent)
 {
     m_vLocalPos.x = vPos.x + iIndex * fOffSetX;
-    m_vLocalPos.y = vPos.y;
+    m_vLocalPos.y = vPos.y + fOffSetY;
 
-    __super::Update_Transform(nullptr, m_vWorldPos);
+    __super::Update_Transform(pParent, m_vWorldPos);
 }
 
 _bool CEquip_Slot::Off_Selete()
@@ -69,9 +69,10 @@ HRESULT CEquip_Slot::Initialize_Clone(void* pArg)
     m_iIndex = pDesc->iIndex;
     m_iTexPass = 1;
     m_iShaderPass = 0;
-    m_vColor = { 1.f,1.f,1.f,1.f };
 
-    _float4 vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_01_Empty.png", m_iTexPass);
+    m_vColor = { 1.f,1.f,1.f,0.75f };
+
+    _float4 vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_02_Common.png", m_iTexPass);
     m_vUV.push_back(vUV);
 
     for (_int i = 0; i < 2; i++)
@@ -98,27 +99,24 @@ void CEquip_Slot::Update(_float fTimeDelta)
 
 void CEquip_Slot::Late_Update(_float fTimeDelta)
 {
-    CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::ATLAS, this);
+    if(m_iIndex != ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::SOULE))
+        CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::ATLAS, this);
 
     if (ButtonClick(g_hWnd, false, true))
-        Release_Item();
-    else if (ButtonClick(g_hWnd, true, true))
-        Equip_Item();
-
-
-    if (m_iState == ENUM_CLASS(UISTATE::ENABLE))
     {
-        if (ButtonOver(g_hWnd))
+        CUI_Inven::INVENBUBBLE_DESC Desc = {};
+        Desc.eBubbleType = CUI_Inven::EVENT_TYPE::SLOT_EQUIP;
+        Desc.iIndex = m_iIndex;
+        if (m_iIndex != ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::WEAPON) && m_iItemIndex >= 0)
         {
-            m_pOverFx->Late_Update(fTimeDelta);
+            _int iID = CClientInstance::GetInstance()->Get_Data<ITEM_DATA>(m_iItemIndex)->iEffect_ID;
+            Desc.iItemType = CClientInstance::GetInstance()->Get_Data <EQUIPITEM_DATA>(iID)->iType;
         }
-        if (m_bIsSelete)
-        {
-            m_pSeleteFx->Late_Update(fTimeDelta);
-        }
-        m_pIcon->Late_Update(fTimeDelta);
+        __super::Bubble_EventCall(&Desc);
     }
-
+     m_pIcon->Late_Update(fTimeDelta);
+    if (ButtonOver(g_hWnd) && m_iIndex != ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::SOULE))
+        m_pSeleteFx->Late_Update(fTimeDelta);
 
 }
 
@@ -136,26 +134,12 @@ HRESULT CEquip_Slot::Ready_Childer()
 
     AtlasDesc.fDepth = m_fDepth;
     AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
-    AtlasDesc.szName = "Item_Over";
-    AtlasDesc.vLocalPos = _float2{ 0.f, 0.f };
-    AtlasDesc.vLocalSize = { 130.f, 130.f };
-
-    AtlasDesc.vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_Hover.png", 1);
-    AtlasDesc.iShaderPass = 3;
-    AtlasDesc.iTexPass = 1;
-    AtlasDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
-    m_pOverFx = static_cast<CUI_Atlas_Icon*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Atlas_Icon"), &AtlasDesc));
-
-    if (m_pOverFx == nullptr)
-        return E_FAIL;
-    m_Children.push_back(m_pOverFx);
-    Safe_AddRef(m_pOverFx);
-
-    AtlasDesc.fDepth = m_fDepth;
-    AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
     AtlasDesc.szName = "Item_Selet";
     AtlasDesc.vLocalPos = _float2{ 0.f, 0.f };
-    AtlasDesc.vLocalSize = { 131.f, 131.f };
+    if (m_iIndex >= ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::QUICK_1) && m_iIndex <= ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::QUICK_6))
+        AtlasDesc.vLocalSize = { 111.f, 111.f };
+    else
+        AtlasDesc.vLocalSize = { 131.f, 131.f };
 
     AtlasDesc.vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_Select.png", 1);
     AtlasDesc.iShaderPass = 3;
@@ -187,6 +171,7 @@ HRESULT CEquip_Slot::Ready_Childer()
     m_Children.push_back(m_pIcon);
     Safe_AddRef(m_pIcon);
 
+    Update_State(0);
     return S_OK;
 }
 
@@ -194,6 +179,33 @@ void CEquip_Slot::Update_State(_uint iGrade)
 {
     if (m_iItemIndex < 0)
     {
+        _float4 vUV = {};
+        CUI_Inven::EQUIPSLOT_TYPE eType = static_cast<CUI_Inven::EQUIPSLOT_TYPE>(m_iIndex);
+
+        if (eType == CUI_Inven::EQUIPSLOT_TYPE::WEAPON)
+            vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_SubTab_Weapon.png", 1);
+        else if (eType == CUI_Inven::EQUIPSLOT_TYPE::HEAD)
+            vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_SubTab_ArmorHari.png", 1);
+        else if (eType == CUI_Inven::EQUIPSLOT_TYPE::TOP)
+            vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_SubTab_ArmorTorso.png", 1);
+        else if (eType == CUI_Inven::EQUIPSLOT_TYPE::GLOVES)
+            vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_SubTab_ArmorArm.png", 1);
+        else if (eType == CUI_Inven::EQUIPSLOT_TYPE::BOTTOM)
+            vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_SubTab_ArmorLeg.png", 1);
+        else if (eType == CUI_Inven::EQUIPSLOT_TYPE::SHOES)
+            vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_SubTab_ArmorShoes.png", 1);
+        else if (eType == CUI_Inven::EQUIPSLOT_TYPE::NECK)
+            vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_SubTab_AccNeck.png", 1);
+        else if (eType == CUI_Inven::EQUIPSLOT_TYPE::RING)
+            vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_SubTab_AccRing.png", 1);
+        else if (eType == CUI_Inven::EQUIPSLOT_TYPE::SOULE)
+            vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_ShortcutSlot_Equip_01.png", 1);
+        else
+            vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_ShortcutEmptySlot_UI.png", 1);
+
+        m_pIcon->Set_Texture(vUV, 1);
+        m_pIcon->Set_Color({ 0.259f, 0.267f, 0.278f, 1.0f });
+        m_pIcon->Set_Shader(2);
         m_iState = ENUM_CLASS(UISTATE::DISABLE);
         m_vColor.w = 0.75f;
         return;
@@ -267,7 +279,6 @@ CGameObject* CEquip_Slot::Clone(void* pArg)
 void CEquip_Slot::Free()
 {
     __super::Free();
-    Safe_Release(m_pOverFx);
     Safe_Release(m_pSeleteFx);
     Safe_Release(m_pIcon);
 }

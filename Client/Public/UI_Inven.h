@@ -7,17 +7,18 @@ class CUI_Inven final : public CUI_Panel
 {
 public:
 	enum class UIANIMSTATE { ON, OFF, END };
-	enum class TapGroup {WEAPON, ARMOR, ACC, OTHER, END};
-	enum class ITEMTYPE { SPEAR, GREATE, HEAD, TOP, GLOVES, BOTTOM, SHOES, NECK, RING, ATIVE, COLLECTION, MATERIAL, END};
-	enum class EVENT_TYPE { TAP, ITEM_EQUIP, ITEM_RELEASE, END};
+	enum class TapGroup {WEAPON, ARMOR, ACC, OTHER, QUICK, END};
+	enum class ITEMTYPE { SPEAR, GREATE, HEAD, TOP, GLOVES, BOTTOM, SHOES, NECK, RING, ATIVE, COLLECTION, MATERIAL, QUICK_1, QUICK_2, QUICK_3, QUICK_4, QUICK_5, QUICK_6, END};
+	enum class EVENT_TYPE { TAP, ITEM_EQUIP, SLOT_EQUIP, ITEM_RELEASE, END};
 	
-	enum class EQUIPSLOT_TYPE { WEAPON, HEAD, TOP, GLOVES, BOTTOM, SHOES, NECK, RING, QUICK_0, QUICK_1, QUICK_2, QUICK_3, QUICK_4, QUICK_5, SOULE, END };
+	enum class EQUIPSLOT_TYPE { WEAPON, HEAD, TOP, GLOVES, BOTTOM, SHOES, NECK, RING, QUICK_1, QUICK_2, QUICK_3, QUICK_4, QUICK_5, QUICK_6, SOULE, END };
 
 	typedef struct tagInvenBubbleEventTag : public CUIObject::BUBBLEEVENT
 	{
 		EVENT_TYPE eBubbleType = EVENT_TYPE::END;
 		_int iIndex = {};
 		_int iTypeIndex = {};
+		_int iItemType = {};
 	}INVENBUBBLE_DESC;
 
 	typedef struct tagInvenOpenTag
@@ -77,9 +78,11 @@ private:
 	void								TapType_Mapping(string szName);
 	void								Ready_Grouping();
 	void								UI_Animation(_float fTimeDelta);
-	void								Change_Tap();
+	void								Change_Tap(_int iSeleteINdex);
 
 	ITEMTYPE							Convert_UIntToITEMTYPE(_uint iItemIndex);
+	void								EquipSlot_Setting(class CEquip_Slot* pSlot, _int iIndex);
+
 public:
 	static CUI_Inven*					Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
 	virtual CGameObject*				Clone(void* pArg) override;

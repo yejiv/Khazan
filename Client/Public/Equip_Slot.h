@@ -11,7 +11,7 @@ private:
 	virtual ~CEquip_Slot() = default;
 public:
 	_bool								Add_Item(_int iItemIndex);
-	void								Update_PosX(_int iIndex, _float2 vPos, _float fOffSetX);
+	void								Update_PosX(_int iIndex, _float2 vPos, _float fOffSetX, _float fOffSetY, CUIObject* pParent);
 	_bool								Off_Selete();
 public:
 	virtual HRESULT						Initialize_Prototype(_uint iLevel);
@@ -21,9 +21,8 @@ public:
 	virtual void						Late_Update(_float fTimeDelta) override;
 
 private:
-	class CUI_Atlas_Icon* m_pIcon = { nullptr };
-	class CUI_Atlas_Icon* m_pOverFx = { nullptr };
-	class CUI_Atlas_Icon* m_pSeleteFx = { nullptr };
+	class CUI_Atlas_Icon*				m_pIcon = { nullptr };
+	class CUI_Atlas_Icon*				m_pSeleteFx = { nullptr };
 
 	_bool								m_bIsSelete = { false };
 

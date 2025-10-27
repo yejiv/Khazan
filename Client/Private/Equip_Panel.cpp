@@ -160,7 +160,7 @@ HRESULT CEquip_Panel::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, 
 					pChild->Insert_Bubble([this](BUBBLEEVENT* pArg) {this->Bubble_EventCall(pArg); });
 					m_Children.push_back(pChild);
 
-					static_cast<CUI_TextBox*>(pChild)->Update_PosY(i, vPos, 140.f);
+					static_cast<CUI_TextBox*>(pChild)->Update_PosY(i, vPos, 155.f);
 					static_cast<CUI_TextBox*>(pChild)->Set_Text(AnsiToWString(MapPing_Label(i)));
 
 				}

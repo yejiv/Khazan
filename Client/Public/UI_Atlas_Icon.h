@@ -21,6 +21,7 @@ private:
 public:
 	void					Update_Color(_float4 vColor);
 	void					Set_Texture(_float4 vUV, _uint iTexPass);
+	void					Set_Shader(_uint iShaderPass);
 
 public:
 	virtual HRESULT			Initialize_Prototype() override;

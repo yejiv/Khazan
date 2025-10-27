@@ -50,7 +50,6 @@ HRESULT CInven_Tap::Initialize_Clone(void* pArg)
 
 void CInven_Tap::Priority_Update(_float fTimeDelta)
 {
-	__super::Priority_Update(fTimeDelta);
 }
 
 void CInven_Tap::Update(_float fTimeDelta)
@@ -68,24 +67,42 @@ void CInven_Tap::Update(_float fTimeDelta)
 
 		if (ButtonOver(g_hWnd))
 		{
-			m_vColor = { 1.f, 1.f, 1.f, 1.f };
+			if (m_IsQuick)
+				m_Children[1]->Set_Color({ 1.f, 1.f, 1.f, 1.f });
+			else
+				m_vColor = { 1.f, 1.f, 1.f, 0.8f };
 		}
 		else
 		{
-			m_vColor = { 1.f, 1.f, 1.f, 0.5f };
+			if (m_IsQuick)
+				m_Children[1]->Set_Color({ 1.f, 1.f, 1.f, 0.5f });
+			else
+				m_vColor = { 1.f, 1.f, 1.f, 0.5f };
 		}
 	}
 	else if (m_iState == ENUM_CLASS(UISTATE::ENABLE))
 	{
-		m_vColor = { 0.941f, 0.769f, 0.329f, 1.f };
+		if (m_IsQuick)
+			m_Children[1]->Set_Color({ 0.941f, 0.769f, 0.329f, 1.f });
+		else
+			m_vColor = { 0.941f, 0.769f, 0.329f, 1.f };
 	}
-	__super::Update(fTimeDelta);
 }
 
 void CInven_Tap::Late_Update(_float fTimeDelta)
 {
-	CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::ATLAS, this);
-	__super::Late_Update(fTimeDelta);
+	if(!m_IsQuick)
+		CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::ATLAS, this);
+
+	if (m_IsQuick)
+	{
+		if (m_iState == ENUM_CLASS(UISTATE::DISABLE))
+			m_Children[1]->Late_Update(fTimeDelta);
+		else
+			__super::Late_Update(fTimeDelta);
+	}
+	else
+		__super::Late_Update(fTimeDelta);
 }
 
 HRESULT CInven_Tap::Render()
@@ -96,7 +113,14 @@ HRESULT CInven_Tap::Render()
 HRESULT CInven_Tap::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
 {
 	__super::Load_UI(pInData, iPrototypeLevelID, pArg);
+	m_Children[0]->Set_TexPass(1);
+	m_Children[0]->Set_ShaderPass(2);
+
 	m_iShaderPass = 2;
+
+	if (m_szName == "QUICK_1" || m_szName == "QUICK_2" || m_szName == "QUICK_3" ||
+		m_szName == "QUICK_4" || m_szName == "QUICK_5" || m_szName == "QUICK_6" )
+		m_IsQuick = true;
 	return S_OK;
 }
 
