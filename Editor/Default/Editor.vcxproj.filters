@@ -255,9 +255,6 @@
     <ClInclude Include="..\public\Editor_Model.h">
       <Filter>03.Utility\00.Model</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Editor_Animation.h">
-      <Filter>03.Utility\00.Model\Animation</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Editor_Bone.h">
       <Filter>03.Utility\00.Model\Bone</Filter>
     </ClInclude>
@@ -402,6 +399,9 @@
     <ClInclude Include="..\Public\Edit_Monster.h">
       <Filter>02.GameObject\AI\Monster</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Editor_Animation.h">
+      <Filter>03.Utility\00.Model\Animation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -446,9 +446,6 @@
     </ClCompile>
     <ClCompile Include="..\private\Editor_Model.cpp">
       <Filter>03.Utility\00.Model</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Editor_Animation.cpp">
-      <Filter>03.Utility\00.Model\Animation</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Editor_Bone.cpp">
       <Filter>03.Utility\00.Model\Bone</Filter>
@@ -587,6 +584,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Edit_Monster.cpp">
       <Filter>02.GameObject\AI\Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Editor_Animation.cpp">
+      <Filter>03.Utility\00.Model\Animation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

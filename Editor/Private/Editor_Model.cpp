@@ -14,6 +14,38 @@
 #include "../../Engine/Public/assimp/postprocess.h"
 
 
+// helper: 쿼터니언 -> 오일러(도 단위)
+static void QuatToEulerDegrees(const XMVECTOR& q, float& outPitch, float& outYaw, float& outRoll)
+{
+    // Assumes quaternion is normalized
+    XMFLOAT4 quat;
+    XMStoreFloat4(&quat, q);
+
+    // Convert to Euler (pitch=x, yaw=y, roll=z) in radians
+    float ysqr = quat.y * quat.y;
+
+    // roll (x-axis rotation)
+    float t0 = +2.0f * (quat.w * quat.x + quat.y * quat.z);
+    float t1 = +1.0f - 2.0f * (quat.x * quat.x + ysqr);
+    float roll = atan2f(t0, t1);
+
+    // pitch (y-axis rotation)
+    float t2 = +2.0f * (quat.w * quat.y - quat.z * quat.x);
+    t2 = t2 > 1.0f ? 1.0f : (t2 < -1.0f ? -1.0f : t2);
+    float pitch = asinf(t2);
+
+    // yaw (z-axis rotation)
+    float t3 = +2.0f * (quat.w * quat.z + quat.x * quat.y);
+    float t4 = +1.0f - 2.0f * (ysqr + quat.z * quat.z);
+    float yaw = atan2f(t3, t4);
+
+    // radians -> degrees
+    outPitch = XMConvertToDegrees(pitch);
+    outYaw = XMConvertToDegrees(yaw);
+    outRoll = XMConvertToDegrees(roll);
+}
+
+
 CEditor_Model::CEditor_Model(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CComponent{ pDevice ,pContext }
 {
@@ -36,6 +68,8 @@ CEditor_Model::CEditor_Model(const CEditor_Model& Prototype)
    // , m_Bones{ Prototype.m_Bones }
 	, m_iNumAnimations{ Prototype.m_iNumAnimations }
     , m_iRootBoneIndex{Prototype.m_iRootBoneIndex }
+    , m_vPreTransformQuat{ Prototype.m_vPreTransformQuat }
+    //, m_iRotationBoneIndex{Prototype.m_iRotationBoneIndex }
     //, m_fRootMotionBlendTime{Prototype.m_fRootMotionBlendTime }
 
 {
@@ -43,6 +77,7 @@ CEditor_Model::CEditor_Model(const CEditor_Model& Prototype)
         CEditor_Animation* pAnimation = pPrototypeAnimation->Clone();
         m_Animations.push_back(pAnimation);
         pAnimation->Set_TrackPositionPtr(&m_fCurrentTrackPosition);
+        pAnimation->Set_RootBoneIndex(m_iRootBoneIndex);
     }
 
     for (auto& pPrototypeBone : Prototype.m_Bones)
@@ -68,6 +103,16 @@ HRESULT CEditor_Model::Initialize_Prototype(MODELTYPE eModelType, const _char* p
     m_eModelType = eModelType;
     m_pModelFilePath = pModelFilePath;
     XMStoreFloat4x4(&m_PreTransformMatrix, PreTransformMatrix);
+
+    //_vector vScale, vRot, vTrans;
+    //XMMatrixDecompose(&vScale, &vRot, &vTrans, PreTransformMatrix);
+    //m_BaseMatrix = XMMatrixScalingFromVector(vScale); // *XMMatrixRotationQuaternion(vRot);
+
+    // ============ PreTransform 회전 추출 수정 ============
+    // 스케일 제거를 위한 정규화된 행렬 생성
+    _vector vScale, vRot, vTrans;
+    XMMatrixDecompose(&vScale, &vRot, &vTrans, PreTransformMatrix);
+    m_vPreTransformQuat = vRot;
 
     string filePath(pModelFilePath);
     _bool isGLTF = (filePath.substr(filePath.find_last_of(".") + 1) == "gltf");
@@ -157,6 +202,7 @@ HRESULT CEditor_Model::Initialize_Prototype(MODELTYPE eModelType, const _char* p
         m_iRootBoneIndex = static_cast<_uint>(distance(m_Bones.begin(), it));
         OutputDebugStringA(("[Root Boon Index] : " + to_string(m_iRootBoneIndex) + "\n").c_str());
 
+        //m_iRotationBoneIndex = m_iRootBoneIndex + 1;
     }
 
     return S_OK;
@@ -204,70 +250,253 @@ HRESULT CEditor_Model::Bind_BoneMatrices(CShader* pShader, const _char* pConstan
 
 _bool CEditor_Model::Play_Animation(_float fTimeDelta)
 {
-    m_isFinished = m_isAnimationLooped = false;
+    if (m_iCurrentAnimIndex == 17)
+        int a = 100;
 
-    /* 애니메이션 세트 관련 */
+    m_isFinished = false;
+
+    // 애니메이션 세트 관련
     if (m_isSetAnimNextPlay)
     {
         _uint iIndex = static_cast<_uint>(m_Model_Data.vecAnimationSets[m_iCurSelectSetAnimIndex].vecAnimIndices[m_iCurSetAnimIndex]);
-        
         Set_Animation(iIndex, m_Model_Data.vecAnimation[m_iCurSelectSetAnimIndex].animSetup.isLoop);
-
         m_isSetAnimNextPlay = false;
     }
 
-    /* 애니메이션이 바뀜  */
+    // 애니메이션 변경 시 블랜딩
     if (m_isChangedAnimation)
-	{
-        /* 애니메이션 블랜딩 (이전 애니메이션 채널 정보를 다음 애니메이션에게 넘겨주기 ) */
-		m_Animations[m_iCurrentAnimIndex]->OnAnimationBlend(move(m_Animations[m_iPrevAnimIndex]->Get_ChannelMatrices()));
+    {
+        m_Animations[m_iCurrentAnimIndex]->OnAnimationBlend(move(m_Animations[m_iPrevAnimIndex]->Get_ChannelMatrices()));
+        m_isChangedAnimation = false;
+        m_isFirstRootMotionFrame = true; // 새 애니메이션 시작
+
+        char msg[256];
+        sprintf_s(msg, "=== ANIM CHANGE: %d -> %d ===\n", m_iPrevAnimIndex, m_iCurrentAnimIndex);
+        OutputDebugStringA(msg);
     }
 
-    /* 루프 애니메이션이 재시작되는걸 알기 위한 변수  */
+    // 루프 감지를 위한 이전 트랙 포지션 저장
     _float fPrevTrackPosition = m_fCurrentTrackPosition;
 
-    /* 애니메이션 재생 */
+    // 애니메이션 업데이트
     m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrices(m_Bones, m_isLoop, &m_isFinished, fTimeDelta);
 
-    /* 루프 애니메이션이면 처음으로 되돌아 갔을 시 */
-    if ((m_isLoop || m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isLoop) && fPrevTrackPosition > m_fCurrentTrackPosition)
+    // 루프애니메이션의 반복 감지(첫 프레임)
+    if ((m_isLoop || m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isLoop) && fPrevTrackPosition > m_fCurrentTrackPosition && m_fCurrentTrackPosition < 0.1f)
     {
-        m_isAnimationLooped = true;
-        m_isTest = true;
+        OutputDebugStringA(">>> LOOP DETECTED\n");
+        m_isFirstRootMotionFrame = true; // 루프 시작
     }
 
-    /* 뼈 컴바인드 */
-    for (auto& pBone : m_Bones)
-        pBone->Update_CombinedTransformationMatrix(m_PreTransformMatrix, m_Bones);
-
-    /* 루프 재시작 or 애니메이션 체인지 일 때  */
-    if (m_isChangedAnimation || m_isAnimationLooped)
-    {
-        /* 해당 애니메이션이 루트모션을 할건지 체크  */
+    if (m_isFirstRootMotionFrame) {
+        // 루트 모션 처리
         OnRootMotion();
+
+
     }
-    
-    /* 루트 모션을 사용하면  */
-    if (m_isRootMotion)
+
+
+    _bool isBlending = m_Animations[m_iCurrentAnimIndex]->IsBlending();
+
+
+    for (_int i = 0; i < (_int)m_Bones.size(); ++i)
     {
-        /* 루프 재시작 or 애니메이션 체인지 일 때(시점 : 시작 프레임) 변수 초기화 */
-        if ((m_isChangedAnimation || m_isAnimationLooped))
+        
+        if (i == m_iRootBoneIndex )
         {
-            m_PreRootMatrix = m_Bones[m_iRootBoneIndex]->Get_CombinedTransformationMatrix();
-            m_vRootMotionDelta = XMMatrixIdentity();
-            m_isDebug = true;
+            /*  애니메이션 재생시 포지션 고정 */
+            if (m_isIgnoreRootPos || (m_isFirstRootMotionFrame && m_isIgnoreRootPosFirstFrame)) {
+                _matrix rootMat = m_Bones[m_iRootBoneIndex]->Get_TransformationMatrix();
+                rootMat.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+                m_Bones[m_iRootBoneIndex]->Set_TransformationMatrix(rootMat);
+            }
+
+            /* 회전 고정 */
+            if (m_isIgonreRootRot)
+            {
+                _matrix rootMat = m_Bones[m_iRootBoneIndex]->Get_TransformationMatrix();
+                rootMat.r[0] = XMVectorSet(1.f, 0.f, 0.f, 0.f);
+                rootMat.r[1] = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+                rootMat.r[2] = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+                m_Bones[m_iRootBoneIndex]->Set_TransformationMatrix(rootMat);
+
+            }
+
         }
-        /* 루트 모션을 사용할 애니메이션에서 한 프레임이 지난 후 부터 루트모션 업데이트 */
-        else
-            Update_RootMotion(fTimeDelta);
+
+        /*  =========== 뼈들 컴바인드 ===========*/
+        m_Bones[i]->Update_CombinedTransformationMatrix(m_PreTransformMatrix, m_Bones);
+
+#pragma region Rotation test
+
+        /* 루트본 차례에서 */
+        //if (i == m_iRootBoneIndex)
+        //{
+        //    /* 애니메이션 첫 번째 프레임. */
+        //    if (m_isFirstRootMotionFrame)
+        //    {
+        //        _matrix currentCombinedRoot = m_Bones[m_iRootBoneIndex]->Get_CombinedTransformationMatrix();
+
+        //        if (m_isIgonreRootRot)
+        //        {
+        //            _matrix currentRotTransform = m_Bones[m_iRootBoneIndex]->Get_TransformationMatrix();
+
+        //            // ============ Combined에서 PreTransform 제거 ============
+        //            _vector s, r, t;
+        //            _matrix safeComb = currentCombinedRoot;
+        //            safeComb.r[0] = XMVector3Normalize(safeComb.r[0]);
+        //            safeComb.r[1] = XMVector3Normalize(safeComb.r[1]);
+        //            safeComb.r[2] = XMVector3Normalize(safeComb.r[2]);
+        //            XMMatrixDecompose(&s, &r, &t, safeComb);
+        //            _vector pureAnimRot = XMQuaternionMultiply(XMQuaternionInverse(m_vPreTransformQuat), r);
+        //            _matrix currentRot = XMMatrixAffineTransformation(s, XMVectorZero(), pureAnimRot, t);
+
+        //            // 디버그
+        //            _float transYaw = atan2f(2.0f * (XMVectorGetW(pureAnimRot) * XMVectorGetY(pureAnimRot) +
+        //                XMVectorGetX(pureAnimRot) * XMVectorGetZ(pureAnimRot)),
+        //                1.0f - 2.0f * (XMVectorGetY(pureAnimRot) * XMVectorGetY(pureAnimRot) +
+        //                    XMVectorGetZ(pureAnimRot) * XMVectorGetZ(pureAnimRot)));
+
+        //            _float combYaw = atan2f(2.0f * (XMVectorGetW(r) * XMVectorGetY(r) + XMVectorGetX(r) * XMVectorGetZ(r)),
+        //                1.0f - 2.0f * (XMVectorGetY(r) * XMVectorGetY(r) + XMVectorGetZ(r) * XMVectorGetZ(r)));
+
+        //            char msg[512];
+        //            sprintf_s(msg, "[FIRST_FRAME] PureAnim:%.1f° Comb:%.1f°\n",
+        //                XMConvertToDegrees(transYaw),
+        //                XMConvertToDegrees(combYaw));
+        //            OutputDebugStringA(msg);
+
+        //            m_PreRotRootMatrix = currentCombinedRoot;
+
+        //            // Combined 리셋
+        //            _vector scale, rot, pos;
+        //            XMMatrixDecompose(&scale, &rot, &pos, currentCombinedRoot);
+        //            _matrix resetRotation = XMMatrixAffineTransformation(scale, XMVectorZero(), m_vPreTransformQuat, pos);
+        //            m_Bones[m_iRootBoneIndex]->Set_CombinedTransformationMatrix(resetRotation);
+        //        }
+
+        //        ///* ============ 회전용 Combined rootbone 기준으로 초기화 ============ */
+        //        //if (m_isIgonreRootRot)
+        //        //{
+        //        //    _matrix currentRotTransform = m_Bones[m_iRootBoneIndex]->Get_TransformationMatrix();
+
+        //        //    _vector s, r, t;
+        //        //    _matrix safe = currentRotTransform;
+        //        //    safe.r[0] = XMVector3Normalize(safe.r[0]);
+        //        //    safe.r[1] = XMVector3Normalize(safe.r[1]);
+        //        //    safe.r[2] = XMVector3Normalize(safe.r[2]);
+        //        //    XMMatrixDecompose(&s, &r, &t, safe);
+
+        //        //    _float transYaw = atan2f(2.0f * (XMVectorGetW(r) * XMVectorGetY(r) + XMVectorGetX(r) * XMVectorGetZ(r)),
+        //        //        1.0f - 2.0f * (XMVectorGetY(r) * XMVectorGetY(r) + XMVectorGetZ(r) * XMVectorGetZ(r)));
+
+        //        //    // ============ Combined 리셋 전에 ============
+        //        //   // _matrix currentRotCombined = m_Bones[m_iRootBoneIndex]->Get_CombinedTransformationMatrix();
+
+        //        //    _matrix safeComb = currentCombinedRoot;
+        //        //    safeComb.r[0] = XMVector3Normalize(safeComb.r[0]);
+        //        //    safeComb.r[1] = XMVector3Normalize(safeComb.r[1]);
+        //        //    safeComb.r[2] = XMVector3Normalize(safeComb.r[2]);
+        //        //    XMMatrixDecompose(&s, &r, &t, safeComb);
+
+        //        //    _float combYaw = atan2f(2.0f * (XMVectorGetW(r) * XMVectorGetY(r) + XMVectorGetX(r) * XMVectorGetZ(r)),
+        //        //        1.0f - 2.0f * (XMVectorGetY(r) * XMVectorGetY(r) + XMVectorGetZ(r) * XMVectorGetZ(r)));
+
+        //        //    char msg[512];
+        //        //    sprintf_s(msg, "[FIRST_FRAME] Trans:%.1f° Comb:%.1f° (Trans × PreTrans(180°) = Comb)\n",
+        //        //        XMConvertToDegrees(transYaw),
+        //        //        XMConvertToDegrees(combYaw));
+        //        //    OutputDebugStringA(msg);
+
+        //        //    // ============ Transformation 저장 ============
+        //        //    m_PreRotRootMatrix = currentRotTransform;
+        //        //    // m_PreRotRootMatrix.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+
+        //        //    // Combined 리셋
+        //        //    _vector scale, rot, pos;
+        //        //    XMMatrixDecompose(&scale, &rot, &pos, currentCombinedRoot);
+
+        //        //    _matrix resetRotation = XMMatrixAffineTransformation(scale, XMVectorZero(), m_vPreTransformQuat, pos);
+        //        //    m_Bones[m_iRootBoneIndex]->Set_CombinedTransformationMatrix(resetRotation);
+
+        //        //    sprintf_s(msg, "[FIRST_FRAME] After reset - Combined Yaw:180.0° (PreTransform only)\n");
+        //        //    OutputDebugStringA(msg);
+        //        //}
+
+
+        //        /* 컴바인드 루트본 위치 zero 초기화 */
+        //        m_PreRootMatrix = currentCombinedRoot;
+        //        m_PreRootMatrix.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+
+        //        /* 애니메이션 절대 좌표 사용 (위치가 프레임 단위로 엄청 크게 변하는 애니메이션일 때 (ex 앞으로 나가는 콤보공격 애니메이션 2번째부터 이용하는 ))*/
+        //        if (m_isAbsoluteRootPosition)
+        //            m_vFirstFrameRootOffset = currentCombinedRoot.r[3];
+        //        else
+        //            m_vFirstFrameRootOffset = XMVectorZero();
+   
+
+        //        m_vRootMotionDelta = XMMatrixIdentity();
+        //        m_vRootDeltaQuat = XMQuaternionIdentity();
+
+        //        _matrix resetPosition = m_PreRootMatrix;
+        //        resetPosition.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+        //        m_Bones[m_iRootBoneIndex]->Set_CombinedTransformationMatrix(resetPosition);
+
+        //        m_isFirstRootMotionFrame = false;
+
+        //        OutputDebugStringA("========================================\n\n");
+        //    }
+        //    else if (m_isRootMotion && !m_isFinished)
+        //    {
+        //        Update_RootMotion(fTimeDelta, isBlending);
+        //    }
+        //}
+#pragma endregion
+
+        if (i == m_iRootBoneIndex && m_isRootMotion_Pos)
+        {
+            if (m_isFirstRootMotionFrame)
+            {
+                _matrix currentCombinedRoot = m_Bones[m_iRootBoneIndex]->Get_CombinedTransformationMatrix();
+
+				//// 첫 프레임 - PreRootMatrix : 컴바인드된 루트본으로 갱신
+				//// preRoot 회전값 유지, 위치는 0
+				m_PreRootMatrix = currentCombinedRoot;
+				m_PreRootMatrix.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+
+                if (m_isAbsoluteRootPosition)
+                {
+                    // 애니메이션이 설정한 원본 CombinedTransformationMatrix 위치
+                    m_vFirstFrameRootOffset = currentCombinedRoot.r[3];
+                }
+                else
+                {
+                    m_vFirstFrameRootOffset = XMVectorZero();
+                }
+
+                m_vRootMotionDelta = XMMatrixIdentity();
+       
+                // 첫 프레임 - 컴바인드된 루트본에서 포지션만 원점으로
+                _matrix rootMat = m_PreRootMatrix;
+                rootMat.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+                m_Bones[m_iRootBoneIndex]->Set_CombinedTransformationMatrix(rootMat);
+
+                m_isFirstRootMotionFrame = false;
+
+                OutputDebugStringA("========================================\n\n");
+            }
+            else if(m_isRootMotion)
+            {
+                Update_RootMotion(fTimeDelta, isBlending);
+            }
+        }
     }
 
+    /* Owner에 Transform 적용 */
+    if (m_isRootMotion && m_pOwnerTransform)
+        Apply_RootMotion_To_Transform();
 
-    if (m_isChangedAnimation)
-        m_isChangedAnimation = false;
-
-
-    /* 애니메이션 세트 관련  */
+    // 애니메이션 세트 관련
     if (m_isSetAnimPlaying && m_isFinished)
     {
         ++m_iCurSetAnimIndex;
@@ -279,26 +508,26 @@ _bool CEditor_Model::Play_Animation(_float fTimeDelta)
             m_isSetAnimNextPlay = false;
         }
     }
+
     return m_isFinished;
+
 }
 
 void CEditor_Model::Set_Animation(_uint iIndex, _bool isLoop)
 {
-    if (iIndex >= m_iNumAnimations)
-        return;
+	if (iIndex >= m_iNumAnimations)
+		return;
 
-    m_isLoop = isLoop;
+	m_isLoop = isLoop;
 
-    m_iPrevAnimIndex = m_iCurrentAnimIndex;
-    m_iCurrentAnimIndex = iIndex;
+	m_iPrevAnimIndex = m_iCurrentAnimIndex;
+	m_iCurrentAnimIndex = iIndex;
 
-    //if (m_iPrevAnimIndex >= 0 &&  m_iCurrentAnimIndex != m_iPrevAnimIndex)
-        m_isChangedAnimation = true;
+	m_isChangedAnimation = true;
 
-// 새 애니메이션이 루트모션 안 쓰면 끄기
-    //if (!m_Model_Data.vecAnimation[iIndex].animSetup.isRootMotion)
-        //m_isRootMotion = m_Model_Data.vecAnimation[iIndex].animSetup.isRootMotion;
-    
+    m_isIgnoreRootPos = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isIgnoreRootPos;
+    m_isIgnoreRootPosFirstFrame = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isIgnoreRootPosFirstFrame;
+    m_isAbsoluteRootPosition = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isAbsoluteRootPosition;
 }
 
 void CEditor_Model::Set_SetAnimation(const string& strKey)
@@ -568,6 +797,7 @@ void CEditor_Model::LoadModel(string& strPath)
     m_Model_Data.LoadBinary(ifs);
     ifs.close();
 }
+
 void CEditor_Model::Update_DAT_From_JSON(string& strPath)
 {
     ///* 파일시스템에서 실행파일 위치를 .exe로 고정 */
@@ -773,7 +1003,6 @@ HRESULT CEditor_Model::Ready_Animation()
     return S_OK;
 }
 
-
 void CEditor_Model::OnRootMotion()
 {
     m_isRootMotion = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isRootMotion;
@@ -781,102 +1010,276 @@ void CEditor_Model::OnRootMotion()
     if (m_isRootMotion)
     {
         m_isRootMotion_Pos = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isApplyRootPosition;
-        m_isRootMotion_Rot = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isApplyRootRotation;
-        FLOAT3_DATA data = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.RootMitionScale;
-        m_vRootMotionScale = XMVectorSet(data.x, data.y, data.z, 1.f);
-	}
+        m_isIgonreRootRot = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isIgnoreRootRot;
+
+        FLOAT3_DATA scale = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.RootMitionScale;
+        m_vRootMotionScale = XMVectorSet(scale.x, scale.y, scale.z, 1.f);
+    }
+}
+
+void CEditor_Model::Update_RootMotion(_float fTimeDelta, _bool isBlending)
+{
+    //////////////////////////////////////////
+    static _float s_totalRotation = 0.0f;
+    static _int s_lastAnimIndex = -1;
+
+    if (s_lastAnimIndex != m_iCurrentAnimIndex)
+    {
+        if (s_lastAnimIndex != -1)
+        {
+            char msg[128];
+            sprintf_s(msg, "[RESET] Anim changed. TotalRot was %.1f°\n",
+                XMConvertToDegrees(s_totalRotation));
+            OutputDebugStringA(msg);
+        }
+        s_totalRotation = 0.0f;
+        s_lastAnimIndex = m_iCurrentAnimIndex;
+    }
+////////////////////////////////////////////
+
+
+
+    _matrix CurrentCombinedRootMatrix = m_Bones[m_iRootBoneIndex]->Get_CombinedTransformationMatrix();
+
+    if (m_isRootMotion_Pos)
+    {
+        // 현재 루트본에서 첫 프레임 오프셋 빼기
+        _vector vCurPos = XMVectorSubtract(CurrentCombinedRootMatrix.r[3], m_vFirstFrameRootOffset);
+
+        //_vector vCurPos = CurrentCombinedRootMatrix.r[3];
+        _vector vDelta = XMVectorSubtract(vCurPos, m_PreRootMatrix.r[3]);
+        vDelta = XMVectorMultiply(vDelta, m_vRootMotionScale);
+
+
+        m_vRootMotionDelta.r[3] = XMVectorSetW(vDelta, 0.f);
+        m_vRootMotionDelta.r[0] = XMVectorSet(1.f, 0.f, 0.f, 0.f);
+        m_vRootMotionDelta.r[1] = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+        m_vRootMotionDelta.r[2] = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+
+        m_PreRootMatrix.r[3] = vCurPos;
+    }
+
+#pragma region Rotation test
+
+
+    //if (m_isRootMotion_Rot)
+    //{
+    //    _matrix CurrentRotCombined = m_Bones[m_iRootBoneIndex]->Get_CombinedTransformationMatrix();
+
+    //    _vector dummy;
+    //    _vector curQuat, preQuat;
+
+    //    _matrix safeCur = CurrentRotCombined;
+    //    safeCur.r[0] = XMVector3Normalize(safeCur.r[0]);
+    //    safeCur.r[1] = XMVector3Normalize(safeCur.r[1]);
+    //    safeCur.r[2] = XMVector3Normalize(safeCur.r[2]);
+    //    XMMatrixDecompose(&dummy, &curQuat, &dummy, safeCur);
+
+    //    _matrix safePre = m_PreRotRootMatrix;
+    //    safePre.r[0] = XMVector3Normalize(safePre.r[0]);
+    //    safePre.r[1] = XMVector3Normalize(safePre.r[1]);
+    //    safePre.r[2] = XMVector3Normalize(safePre.r[2]);
+    //    XMMatrixDecompose(&dummy, &preQuat, &dummy, safePre);
+
+    //    // Hemisphere fix (쿼터니언 부호 일치)
+    //    if (XMVectorGetX(XMQuaternionDot(curQuat, preQuat)) < 0.f)
+    //        curQuat = XMVectorNegate(curQuat);
+
+    //    //델타 쿼터니언 계산
+    //    _vector localDelta = XMQuaternionMultiply(XMQuaternionInverse(preQuat), curQuat);
+    //    localDelta = XMQuaternionNormalize(localDelta);
+
+    //    // Yaw 계산 (쿼터니언 → Yaw)
+    //    auto GetYawDeg = [](_vector q) -> float {
+    //        float yaw = atan2f(
+    //            2.0f * (XMVectorGetW(q) * XMVectorGetY(q) + XMVectorGetX(q) * XMVectorGetZ(q)),
+    //            1.0f - 2.0f * (XMVectorGetY(q) * XMVectorGetY(q) + XMVectorGetZ(q) * XMVectorGetZ(q))
+    //        );
+    //        return XMConvertToDegrees(yaw);
+    //        };
+
+    //    _float curYawDeg = GetYawDeg(curQuat);
+    //    _float preYawDeg = GetYawDeg(preQuat);
+    //    _float deltaYawDeg = GetYawDeg(localDelta);
+    //    //각도 정규화 함수 (항상 -180~180 유지)
+    //    auto NormalizeAngle = [](float deg) -> float {
+    //        while (deg > 180.f) deg -= 360.f;
+    //        while (deg < -180.f) deg += 360.f;
+    //        return deg;
+    //        };
+
+    //    curYawDeg = NormalizeAngle(curYawDeg);
+    //    preYawDeg = NormalizeAngle(preYawDeg);
+    //    deltaYawDeg = NormalizeAngle(curYawDeg - preYawDeg);
+
+    //    // 누적 회전
+    //    s_totalRotation += XMConvertToRadians(deltaYawDeg);
+
+    //    // 쿼터니언 누적 반영
+    //    m_vRootDeltaQuat = XMQuaternionRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(deltaYawDeg));
+
+    //    // 다음 프레임 대비
+    //    m_PreRotRootMatrix = CurrentRotCombined;
+
+    //    _vector scale, rot, pos;
+    //    XMMatrixDecompose(&scale, &rot, &pos, CurrentRotCombined);
+
+    //    _matrix resetRotation = XMMatrixAffineTransformation(scale, XMVectorZero(), m_vPreTransformQuat, pos);
+    //    m_Bones[m_iRootBoneIndex]->Set_CombinedTransformationMatrix(resetRotation);
+
+    //    // 디버그 로그
+    //    static int frameCount = 0;
+    //    if (m_fCurrentTrackPosition < 3.0f || fabs(deltaYawDeg) > 0.01f)
+    //    {
+    //        char msg[512];
+    //        sprintf_s(msg, "[RM_ROT #%d] T%.2f | Cur:%.1f° Pre:%.1f° → Δ:%.2f° Total:%.1f°\n",
+    //            frameCount++,
+    //            m_fCurrentTrackPosition,
+    //            curYawDeg, preYawDeg, deltaYawDeg,
+    //            XMConvertToDegrees(s_totalRotation));
+    //        OutputDebugStringA(msg);
+    //    }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        //_float curYaw = atan2f(2.0f * (XMVectorGetW(curQuat) * XMVectorGetY(curQuat) +
+        //    XMVectorGetX(curQuat) * XMVectorGetZ(curQuat)),
+        //    1.0f - 2.0f * (XMVectorGetY(curQuat) * XMVectorGetY(curQuat) +
+        //        XMVectorGetZ(curQuat) * XMVectorGetZ(curQuat)));
+
+        //_float preYaw = atan2f(2.0f * (XMVectorGetW(preQuat) * XMVectorGetY(preQuat) +
+        //    XMVectorGetX(preQuat) * XMVectorGetZ(preQuat)),
+        //    1.0f - 2.0f * (XMVectorGetY(preQuat) * XMVectorGetY(preQuat) +
+        //        XMVectorGetZ(preQuat) * XMVectorGetZ(preQuat)));
+
+        //_vector localDelta = XMQuaternionMultiply(XMQuaternionInverse(preQuat), curQuat);
+        //localDelta = XMQuaternionNormalize(localDelta);
+
+        //_float yaw = atan2f(2.0f * (XMVectorGetW(localDelta) * XMVectorGetY(localDelta) +
+        //    XMVectorGetX(localDelta) * XMVectorGetZ(localDelta)),
+        //    1.0f - 2.0f * (XMVectorGetY(localDelta) * XMVectorGetY(localDelta) +
+        //        XMVectorGetZ(localDelta) * XMVectorGetZ(localDelta)));
+
+        //m_vRootDeltaQuat = XMQuaternionRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), yaw);
+
+        //s_totalRotation += yaw;
+
+        //m_PreRotRootMatrix = CurrentRotCombined;
+
+        //_vector scale, rot, pos;
+        //XMMatrixDecompose(&scale, &rot, &pos, CurrentRotCombined);
+
+        //_matrix resetRotation = XMMatrixAffineTransformation(scale, XMVectorZero(), m_vPreTransformQuat, pos);
+        //m_Bones[m_iRootBoneIndex]->Set_CombinedTransformationMatrix(resetRotation);
+
+        //// ============ 모든 프레임 로그 (처음 5개만) ============
+        //static int frameCount = 0;
+        //if (m_fCurrentTrackPosition < 3.0f || abs(yaw) > 0.017f)
+        //{
+        //    char msg[512];
+        //    sprintf_s(msg, "[RM_ROT #%d] T%.2f | Cur:%.1f° Pre:%.1f° → Δ:%.2f° Total:%.1f°\n",
+        //        frameCount++,
+        //        m_fCurrentTrackPosition,
+        //        XMConvertToDegrees(curYaw),
+        //        XMConvertToDegrees(preYaw),
+        //        XMConvertToDegrees(yaw),
+        //        XMConvertToDegrees(s_totalRotation));
+        //    OutputDebugStringA(msg);
+        //}
+    //}
+
+#pragma endregion
+
+
+    //블랜딩 중에는 원점으로 리셋하지 못해서 블랜딩 끝나고 맨 처음.. 루트본의 위치만큼 앞으로 튀어나가는 현상 발생.
+    //블랜딩 여부에 상관없이 리셋하자
+    if (m_isRootMotion_Pos || m_isIgnoreRootPos)
+    {
+        CurrentCombinedRootMatrix.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+        m_Bones[m_iRootBoneIndex]->Set_CombinedTransformationMatrix(CurrentCombinedRootMatrix);
+    }
+
+   // m_vRootDeltaQuat = XMQuaternionIdentity();
 
 }
 
-void CEditor_Model::Update_RootMotion(_float fTimeDelta)
+void CEditor_Model::Apply_RootMotion_To_Transform()
 {
-   // _matrix CurrentRootMatrix = XMMatrixIdentity();
-    _matrix CurrentRootMatrix = m_Bones[m_iRootBoneIndex]->Get_CombinedTransformationMatrix();
-    
-    // 위치 적용
-    if (m_isRootMotion_Pos)
+    if (!m_pOwnerTransform)
+        return;
+
+    _matrix worldMatrix = m_pOwnerTransform->Get_WorldMatrix();
+
+    //델타 분해 
+    _vector deltaScale, deltaRot, deltaPos;
+    XMMatrixDecompose(&deltaScale, &deltaRot, &deltaPos, m_vRootMotionDelta);
+
+    // 월드 분해
+    _vector worldScale, worldRot, worldPos;
+    XMMatrixDecompose(&worldScale, &worldRot, &worldPos, worldMatrix);
+
+
+    /////////////////////////////////////////////////////////
+       // 적용 전 Owner 상태
+    _float beforeYaw = atan2f(2.0f * (XMVectorGetW(worldRot) * XMVectorGetY(worldRot) +
+        XMVectorGetX(worldRot) * XMVectorGetZ(worldRot)),
+        1.0f - 2.0f * (XMVectorGetY(worldRot) * XMVectorGetY(worldRot) +
+            XMVectorGetZ(worldRot) * XMVectorGetZ(worldRot)));
+    /////////////////////////////////////////////////////////
+
+
+    // 새로운 회전 = 기존 회전 * 델타 회전 (쿼터니언 곱셈)
+    _vector newRot = XMQuaternionMultiply(m_vRootDeltaQuat, worldRot);
+    newRot = XMQuaternionNormalize(newRot);
+    //_vector newRot = m_vRootDeltaQuat;
+
+    // 새로운 위치 = 기존 위치 + (델타 위치를 월드 회전으로 변환)
+    _vector rotatedDeltaPos = XMVector3Rotate(deltaPos, worldRot);
+    _vector newPos = worldPos + rotatedDeltaPos;
+
+    // 새 월드 행렬 구성 (스케일 유지 + 새 회전 + 새 위치)
+    _matrix newWorld = XMMatrixAffineTransformation(worldScale, XMVectorSet(0.f, 0.f, 0.f, 1.f), newRot, newPos);
+        //    _matrix newWorld = XMMatrixScalingFromVector(worldScale)
+        //* XMMatrixRotationQuaternion(newRot)
+        //* XMMatrixTranslationFromVector(newPos);
+
+    // Transform에 적용
+    m_pOwnerTransform->Set_WorldMatrix(newWorld);
+
+
+    //////////////////////////////////////////
+// 의미있는 변화만 출력
+    _float deltaYaw = atan2f(2.0f * (XMVectorGetW(m_vRootDeltaQuat) * XMVectorGetY(m_vRootDeltaQuat) +
+        XMVectorGetX(m_vRootDeltaQuat) * XMVectorGetZ(m_vRootDeltaQuat)),
+        1.0f - 2.0f * (XMVectorGetY(m_vRootDeltaQuat) * XMVectorGetY(m_vRootDeltaQuat) +
+            XMVectorGetZ(m_vRootDeltaQuat) * XMVectorGetZ(m_vRootDeltaQuat)));
+
+    _float deltaLen = XMVectorGetX(XMVector3Length(rotatedDeltaPos));
+
+    if (abs(deltaYaw) > 0.017f || deltaLen > 0.01f)  // 1도 이상 또는 1cm 이상
     {
+        _float beforeYaw = atan2f(2.0f * (XMVectorGetW(worldRot) * XMVectorGetY(worldRot) +
+            XMVectorGetX(worldRot) * XMVectorGetZ(worldRot)),
+            1.0f - 2.0f * (XMVectorGetY(worldRot) * XMVectorGetY(worldRot) +
+                XMVectorGetZ(worldRot) * XMVectorGetZ(worldRot)));
 
-        _vector vDelta;
+        _float afterYaw = atan2f(2.0f * (XMVectorGetW(newRot) * XMVectorGetY(newRot) +
+            XMVectorGetX(newRot) * XMVectorGetZ(newRot)),
+            1.0f - 2.0f * (XMVectorGetY(newRot) * XMVectorGetY(newRot) +
+                XMVectorGetZ(newRot) * XMVectorGetZ(newRot)));
 
-        /* 근데 이미 play_animation()에서 조건 처리로 안들어오잖아?  */
-        /* 애니메이션이 바꼈거나 루프 애니메이션이 처음 프레임으로 이동했을 시  */
-        //if (m_isChangedAnimation || m_isAnimationLooped)
-        //{
-        //    /* 델타값 0으로 (아니면 마지막 프레임으로 고정...?) */
-        //    vDelta = XMVectorZero();
-        //}
-        ///* 애니메이션 시작 프레임이 아닌.. 다음 프레임부터 */
-        //else
-        //{
-        //    /* 애니메이션 이전 프레임과 현재 프레임에서 루트 본끼리의 위치 차이 저장 */
-        //    //CurrentRootMatrix = m_Bones[m_iRootBoneIndex]->Get_CombinedTransformationMatrix();
-        //    vDelta = XMVectorSubtract(CurrentRootMatrix.r[3], m_PreRootMatrix.r[3]);
-        //    vDelta = XMVectorMultiply(vDelta, m_vRootMotionScale);
-
-        //}
-
-        /* 애니메이션 이전 프레임과 현재 프레임에서 루트 본끼리의 위치 차이 저장 */
-        vDelta = XMVectorSubtract(CurrentRootMatrix.r[3], m_PreRootMatrix.r[3]);
-        vDelta = XMVectorMultiply(vDelta, m_vRootMotionScale);
-
-        /* w값 0 !!! */
-        m_vRootMotionDelta.r[3] = XMVectorSetW(vDelta, 0.f);
-
-        _float3 pre, cur, del;
-        XMStoreFloat3(&pre, m_PreRootMatrix.r[3]);
-        XMStoreFloat3(&cur, CurrentRootMatrix.r[3]);
-        XMStoreFloat3(&del, vDelta);
-
-        if (m_isDebug)
-        {
-            cout << "Pre :" << pre.x << " " << pre.y << " " << pre.z << "   ";
-            cout << "Cur :" << cur.x << " " << cur.y << " " << cur.z << "   ";
-            cout << "Delta :" << del.x << " " << del.y << " " << del.z << "\n";
-            m_isDebug = false;
-        }
-        if (del.x > 1.f)
-            cout << "!!!!!!!!  del.x: " << m_fCurrentTrackPosition << "  !!!!!!!!!!\n";
-        if (del.y > 1.f)
-            cout << "!!!!!!!!  del.y: " << m_fCurrentTrackPosition << "  !!!!!!!!!!\n";
-        if (del.z > 1.f)
-            cout << "!!!!!!!!  del.z: " << m_fCurrentTrackPosition << "  !!!!!!!!!!\n";
+        char msg[256];
+        sprintf_s(msg, "[APPLY] Before:%.1f° + Δ:%.2f° = After:%.1f°\n",
+            XMConvertToDegrees(beforeYaw),
+            XMConvertToDegrees(deltaYaw),
+            XMConvertToDegrees(afterYaw));
+        OutputDebugStringA(msg);
     }
+    /////////////////////////////////////////////////////////
 
-    /* 위치 적용 안한다면  */
-    else
-    {
-        /* 전부 0 */
-        m_vRootMotionDelta.r[3] = XMVectorSet(0.f, 0.f, 0.f, 0.f);
-    }
 
-    // 회전 적용
-    if (m_isRootMotion_Rot)
-    {
-        _matrix CurrentRot = CurrentRootMatrix;
-        CurrentRot.r[3] = XMVectorZero();
 
-        _matrix PrevRot = m_PreRootMatrix;
-        PrevRot.r[3] = XMVectorZero();
-
-        _matrix DeltaRot = CurrentRot * XMMatrixInverse(nullptr, PrevRot);
-
-        m_vRootMotionDelta.r[0] = DeltaRot.r[0];
-        m_vRootMotionDelta.r[1] = DeltaRot.r[1];
-        m_vRootMotionDelta.r[2] = DeltaRot.r[2];
-    }
-    else
-	{
-		// 회전 없음 = 단위 행렬
-		m_vRootMotionDelta.r[0] = XMVectorSet(1, 0, 0, 0);
-		m_vRootMotionDelta.r[1] = XMVectorSet(0, 1, 0, 0);
-		m_vRootMotionDelta.r[2] = XMVectorSet(0, 0, 1, 0);
-	}
-
-    /* m_PreRootMatrix 갱신   */
-    m_PreRootMatrix = CurrentRootMatrix;
-
-   //m_isRootMotion = false;
+    m_vRootDeltaQuat = XMQuaternionIdentity();
+    m_vRootMotionDelta = XMMatrixIdentity();
 }
 
 _bool CEditor_Model::Export_AnimationJson(const string& strFilePath, const string& strFilePath2)
@@ -1134,6 +1537,8 @@ void CEditor_Model::Free()
 {
     __super::Free();
 
+    Safe_Release(m_pOwnerTransform);
+
     for (auto& pAinmation : m_Animations)
         Safe_Release(pAinmation);
     m_Animations.clear();
@@ -1151,4 +1556,54 @@ void CEditor_Model::Free()
     m_Materials.clear();
 
     m_Importer.FreeScene();
+
+}
+
+
+
+
+void CEditor_Model::DebugDumpRootBonePerFrame()
+{
+    if (m_iRootBoneIndex >= m_Bones.size()) return;
+
+    // combined matrix for root bone (PreTransform already applied in Update_CombinedTransformationMatrix)
+    _matrix rootMat = m_Bones[m_iRootBoneIndex]->Get_CombinedTransformationMatrix();
+
+    // decompose
+    _vector vScale, vQuat, vTrans;
+    XMMatrixDecompose(&vScale, &vQuat, &vTrans, rootMat);
+
+    XMFLOAT3 scale3, trans3;
+    XMFLOAT4 quat4;
+    XMStoreFloat3(&scale3, vScale);
+    XMStoreFloat3(&trans3, vTrans);
+    XMStoreFloat4(&quat4, vQuat);
+
+    float pitchDeg, yawDeg, rollDeg;
+    QuatToEulerDegrees(vQuat, pitchDeg, yawDeg, rollDeg);
+
+    float trackPos = m_fCurrentTrackPosition; // 또는 *m_pTrackPosPtr 등 사용
+
+    // matrix elements (row-major view)
+    XMFLOAT4X4 mat;
+    XMStoreFloat4x4(&mat, rootMat);
+
+    char buf[1024];
+    sprintf_s(buf, "[RootBone Debug] Track: %.4f | Pos: (%.6f, %.6f, %.6f) | Scale: (%.6f, %.6f, %.6f) | Quat: (%.6f, %.6f, %.6f, %.6f) | Euler(deg): P(%.2f) Y(%.2f) R(%.2f)\n"
+        " Mat rows:\n"
+        "  r0: %.6f %.6f %.6f %.6f\n"
+        "  r1: %.6f %.6f %.6f %.6f\n"
+        "  r2: %.6f %.6f %.6f %.6f\n"
+        "  r3: %.6f %.6f %.6f %.6f\n",
+        trackPos,
+        trans3.x, trans3.y, trans3.z,
+        scale3.x, scale3.y, scale3.z,
+        quat4.x, quat4.y, quat4.z, quat4.w,
+        pitchDeg, yawDeg, rollDeg,
+        mat._11, mat._12, mat._13, mat._14,
+        mat._21, mat._22, mat._23, mat._24,
+        mat._31, mat._32, mat._33, mat._34,
+        mat._41, mat._42, mat._43, mat._44);
+
+    OutputDebugStringA(buf);
 }
