@@ -121,7 +121,7 @@ HRESULT CLevel_Stage1::Ready_Layer_Camera(const _wstring& strLayerTag)
 	CameraFreeDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
 	CameraFreeDesc.fFovy = XMConvertToRadians(60.0f);
 	CameraFreeDesc.fNear = 0.1f;
-	CameraFreeDesc.fFar = 500.f;
+	CameraFreeDesc.fFar = 6000.f;
 	CameraFreeDesc.fSpeedPerSec = 10.f;
 	CameraFreeDesc.fRotationPerSec = XMConvertToRadians(90.0f);
 	CameraFreeDesc.fMouseSensor = 0.2f;
@@ -140,7 +140,7 @@ HRESULT CLevel_Stage1::Ready_Layer_Camera(const _wstring& strLayerTag)
 	CameraSpringDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
 	CameraSpringDesc.fFovy = XMConvertToRadians(60.0f);
 	CameraSpringDesc.fNear = 0.1f;
-	CameraSpringDesc.fFar = 500.f;
+	CameraSpringDesc.fFar = 6000.f;
 	CameraSpringDesc.fSpeedPerSec = 10.f;
 	CameraSpringDesc.fRotationPerSec = XMConvertToRadians(90.0f);
 	CameraSpringDesc.fMouseSensor = 0.2f;
