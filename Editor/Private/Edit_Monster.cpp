@@ -21,9 +21,9 @@ HRESULT CEdit_Monster::Initialize_Clone(void* pArg)
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
-    m_pController = CAIController_Edit::Create(this);
+   /* m_pController = CAIController_Edit::Create(this);
     if (nullptr == m_pController)
-        return E_FAIL;
+        return E_FAIL;*/
 
     return S_OK;
 }
@@ -34,7 +34,7 @@ void CEdit_Monster::Priority_Update(_float fTimeDelta)
 
 void CEdit_Monster::Update(_float fTimeDelta)
 {
-    m_pController->Update(this,fTimeDelta);
+    //m_pController->Update(this,fTimeDelta);
 }
 
 void CEdit_Monster::Late_Update(_float fTimeDelta)
@@ -77,5 +77,5 @@ void CEdit_Monster::Free()
 {
     __super::Free();
 
-    Safe_Release(m_pController);
+    //Safe_Release(m_pController);
 }
