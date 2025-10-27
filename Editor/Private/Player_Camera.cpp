@@ -77,10 +77,6 @@ HRESULT CPlayer_Camera::Render()
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
-    // Color Debug
-    if (FAILED(m_pShaderCom->Bind_FloatArray("g_Splits", m_pGameInstance->Get_CascadeSplits(), m_pGameInstance->Get_NumCascades())))
-        return E_FAIL;
-
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
     for (size_t i = 0; i < iNumMeshes; i++)

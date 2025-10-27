@@ -18,6 +18,10 @@ public:
 		_uint		iTextureIdx;
 		_float2		iScrollSpeed;
 		_uint		bGravity = false;
+		_uint		iMaskTextureIdx;
+		_float		fMaskScrollSpeed;
+		_uint		bIsScrollVertical;				//마스크 스크롤 방향 (상하 <-> 좌우)
+		_uint		bIsScrollInverse;				//왼->오, 위-> 아래가 기본인데 이거 체크되어있으면 반대로!
 	}PARTICLE_DESC;
 
 private:
@@ -51,12 +55,15 @@ private:
 
 private:
 	CTexture*						m_pTextureCom = { nullptr };
+	CTexture*						m_pMaskTextureCom = { nullptr };
 	CVIBuffer_Point_Instance*		m_pVIBufferCom = { nullptr };
 
 private :
 	PARTICLE_DESC					m_sData;
 	PARTICLE_DESC					m_sEditingData;
-	
+	/*Editing data*/
+	_bool							m_bIsMaskScrolling;
+
 public:
 	static CEffect_Point_Instance*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, void* pArg);
 	virtual CGameObject*			Clone(void* pArg);

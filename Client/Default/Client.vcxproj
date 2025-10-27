@@ -174,6 +174,8 @@
     <ClInclude Include="..\public\Cursor_FX.h" />
     <ClInclude Include="..\public\DB_Manager.h" />
     <ClInclude Include="..\Public\Dummy.h" />
+    <ClInclude Include="..\public\Equip_Panel.h" />
+    <ClInclude Include="..\public\Equip_Slot.h" />
     <ClInclude Include="..\Public\Event_Defines.h" />
     <ClInclude Include="..\Public\FSM_Yetuga.h" />
     <ClInclude Include="..\Public\HeaderGroup_UI.h" />
@@ -187,6 +189,8 @@
     <ClInclude Include="..\Public\Level_Title.h" />
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\Public\MainApp.h" />
+    <ClInclude Include="..\public\MainMenu_Deco.h" />
+    <ClInclude Include="..\public\MainMenu_List.h" />
     <ClInclude Include="..\Public\MapObject.h" />
     <ClInclude Include="..\Public\MapObject_Header.h" />
     <ClInclude Include="..\Public\Monster.h" />
@@ -211,6 +215,7 @@
     <ClInclude Include="..\public\UI_Gague_Tip.h" />
     <ClInclude Include="..\public\UI_HUD.h" />
     <ClInclude Include="..\public\UI_Inven.h" />
+    <ClInclude Include="..\public\UI_MainMenu.h" />
     <ClInclude Include="..\public\UI_PlayerHP_Penal.h" />
     <ClInclude Include="..\public\UI_PlayerHP_BG.h" />
     <ClInclude Include="..\public\UI_PlayerHP_Gauge.h" />
@@ -252,6 +257,8 @@
     <ClCompile Include="..\private\Cursor_FX.cpp" />
     <ClCompile Include="..\private\DB_Manager.cpp" />
     <ClCompile Include="..\Private\Dummy.cpp" />
+    <ClCompile Include="..\private\Equip_Panel.cpp" />
+    <ClCompile Include="..\private\Equip_Slot.cpp" />
     <ClCompile Include="..\Private\FSM_Yetuga.cpp" />
     <ClCompile Include="..\Private\IdleState_Yetuga.cpp" />
     <ClCompile Include="..\private\Inven_Panel.cpp" />
@@ -263,6 +270,8 @@
     <ClCompile Include="..\Private\Level_Title.cpp" />
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
+    <ClCompile Include="..\private\MainMenu_Deco.cpp" />
+    <ClCompile Include="..\private\MainMenu_List.cpp" />
     <ClCompile Include="..\Private\MapObject.cpp" />
     <ClCompile Include="..\Private\Monster.cpp" />
     <ClCompile Include="..\Private\MoveState_Yetuga.cpp" />
@@ -286,6 +295,7 @@
     <ClCompile Include="..\private\UI_Gague_Tip.cpp" />
     <ClCompile Include="..\private\UI_HUD.cpp" />
     <ClCompile Include="..\private\UI_Inven.cpp" />
+    <ClCompile Include="..\private\UI_MainMenu.cpp" />
     <ClCompile Include="..\private\UI_PlayerHP_Penal.cpp" />
     <ClCompile Include="..\private\UI_PlayerHP_BG.cpp" />
     <ClCompile Include="..\private\UI_PlayerHP_Gauge.cpp" />

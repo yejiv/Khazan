@@ -320,6 +320,24 @@ void CVIBuffer_Mesh_Instance::Setting_Pivot(_float3 pivot)
 {
 	m_vPivot = pivot;
 }
+HRESULT CVIBuffer_Mesh_Instance::Bind_Resources()
+{
+	__super::Bind_Resources();
+
+	//m_pContext->CopyResource(m_pDebugInstanceBuffer, m_pVBInstance);
+	//
+	//D3D11_MAPPED_SUBRESOURCE mappedResource;
+	//HRESULT hr = m_pContext->Map(m_pDebugInstanceBuffer, 0, D3D11_MAP_READ, 0, &mappedResource);
+	//
+	//if (SUCCEEDED(hr))
+	//{
+	//	IB_MESHINSTANCE_EFFECT* pParticles = (IB_MESHINSTANCE_EFFECT*)mappedResource.pData;
+	//
+	//	m_pContext->Unmap(m_pDebugInstanceBuffer, 0);
+	//}
+	
+	return S_OK;;
+}
 HRESULT CVIBuffer_Mesh_Instance::Ready_SRV(void* pSysmem)
 {
 	ID3D11Buffer* pBuffer = { nullptr };
@@ -386,7 +404,20 @@ HRESULT CVIBuffer_Mesh_Instance::Ready_UAV()
 	if (FAILED(m_pDevice->CreateBuffer(&StructuredBufferDesc, nullptr, &m_pStagingBuffer)))
 		return E_FAIL;
 
-
+	// [Debug]
+	//D3D11_BUFFER_DESC DebugBufferDesc{};
+	//m_pVBInstance->GetDesc(&DebugBufferDesc);
+	//
+	//DebugBufferDesc.Usage = D3D11_USAGE_STAGING;     // 용도를 스테이징으로 변경
+	//DebugBufferDesc.BindFlags = 0;                   // GPU가 바인딩하지 않음
+	//DebugBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ; // CPU가 읽을 수 있게 설정
+	//DebugBufferDesc.MiscFlags = 0;
+	//
+	//D3D11_SUBRESOURCE_DATA DebugInitData{};
+	//DebugInitData.pSysMem = m_pInstanceVertices;
+	//if (FAILED(m_pDevice->CreateBuffer(&DebugBufferDesc, &DebugInitData, &m_pDebugInstanceBuffer)))
+	//	return E_FAIL;
+	
 	return S_OK;
 }
 HRESULT CVIBuffer_Mesh_Instance::Ready_CB()

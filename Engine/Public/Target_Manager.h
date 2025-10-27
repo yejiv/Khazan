@@ -18,7 +18,6 @@ public:
 	HRESULT Begin_MRT(const _wstring& strMRTTag, ID3D11DepthStencilView* pDSV, _bool isClear);
 	HRESULT End_MRT();
 	HRESULT Copy_Resource(const _wstring& strTargetTag, ID3D11Texture2D* pSourTexture);
-	ID3D11RenderTargetView** Get_BackBuffer() { return &m_pBackBuffer; }
 
 	void Backup_RT();	// BackBuffer, DSV 보관(백업)
 	void Restore_RT();	// BackBuffer, DSV 복원(복구)

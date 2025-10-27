@@ -86,6 +86,8 @@ void CEffect_Point_Instance::Edit_Element()
 {
     _int            isCircle = (_int)m_sEditingData.IsCircle;
     _bool            loop = (_int)m_sEditingData.bIsLoop;
+    _bool            IsVerticalScroll = (_int)m_sEditingData.bIsScrollVertical;
+    _bool            IsInverseScroll = (_int)m_sEditingData.bIsScrollInverse;
 
     ImGui::RadioButton("Spawn_BoundingBox", &isCircle, 0);
     ImGui::RadioButton("Spawn_Circle", &isCircle, 1);
@@ -107,11 +109,27 @@ void CEffect_Point_Instance::Edit_Element()
 
     ImGui::ColorEdit4("MyColorWithAlpha",(float*)&m_sEditingData.vColor);
 
-    const char* textures[] = {"test0","test1","test2","test3"};
-    ImGui::ListBox("Particles",reinterpret_cast<int*>(&m_sEditingData.iTextureIdx), textures,IM_ARRAYSIZE(textures));
+    const char* textures[] = { "test0", "test1", "test2",  "test3" };
+    ImGui::Combo("Point Particles Textures", reinterpret_cast<int*>(&m_sEditingData.iTextureIdx), textures, IM_ARRAYSIZE(textures));
+
+    ImGui::Checkbox("Do Mask Scrolling", &m_bIsMaskScrolling);
+    if (m_bIsMaskScrolling)
+    {
+        ImGui::Indent();
+        const char* MaskTexture[] = { "width0", "width1", "width2",  "width3",  "width4",  "width5",  "width6" ,  "length0" };
+        ImGui::Combo("Mask Textures", reinterpret_cast<int*>(&m_sEditingData.iMaskTextureIdx), MaskTexture, IM_ARRAYSIZE(MaskTexture));
+        ImGui::InputFloat("Mask Scroll Speed : ", &m_sEditingData.fMaskScrollSpeed);
+        ImGui::Checkbox("Is Vecrtical", &IsVerticalScroll);
+        ImGui::Checkbox("Is Inverse Direction", &IsInverseScroll);
+        ImGui::Unindent();
+    }
+    else
+        m_sEditingData.fMaskScrollSpeed = 0.f;
 
     m_sEditingData.IsCircle = isCircle;
     m_sEditingData.bIsLoop = loop;
+    m_sEditingData.bIsScrollInverse = IsInverseScroll;
+    m_sEditingData.bIsScrollVertical = IsVerticalScroll;
 
     if (ImGui::Button("Apply"))
         Apply(&m_sEditingData);
@@ -178,6 +196,10 @@ HRESULT CEffect_Point_Instance::Ready_Component()
         TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr)))
         return E_FAIL;
 
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_MeshEffect_Masking"),
+        TEXT("Com_TextureMask"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom), nullptr)))
+        return E_FAIL;
+
     return S_OK;
 }
 
@@ -197,10 +219,25 @@ HRESULT CEffect_Point_Instance::Bind_ShaderResources()
 
     if (FAILED(m_pShaderCom->Bind_RawValue("g_vSourceColor", &m_sEditingData.vColor, sizeof(_float4))))
         return E_FAIL;
+    
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fSizeRatio", &m_sData.fSizeRatio, sizeof(_float))))
         return E_FAIL;
 
+    _bool ScrollDir = m_sData.bIsScrollVertical;
+    if (FAILED(m_pShaderCom->Bind_Bool("g_MaskScrollYDir", &ScrollDir)))
+        return E_FAIL;
+
+    _bool IsScrollInv = m_sData.bIsScrollInverse;
+    if (FAILED(m_pShaderCom->Bind_Bool("g_MaskScrollYDir", &IsScrollInv)))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_MaskScrollSpeed", &m_sData.fMaskScrollSpeed, sizeof(_float))))
+        return E_FAIL;
+
     if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DiffuseTexture", m_sData.iTextureIdx)))
+        return E_FAIL;
+
+    if (FAILED(m_pMaskTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_MaskTexture", m_sData.iMaskTextureIdx)))
         return E_FAIL;
 
     return S_OK;

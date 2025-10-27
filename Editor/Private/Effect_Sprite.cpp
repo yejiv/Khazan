@@ -96,7 +96,7 @@ void CEffect_Sprite::Edit_Element()
     ImGui::ColorEdit4("MyColorWithAlpha",(float*)&m_sEditingData.vColor);
     
     const char* textures[] = {"test0","test1"};
-    ImGui::ListBox("Particles",reinterpret_cast<int*>(&m_sEditingData.iTextureIdx), textures,IM_ARRAYSIZE(textures));
+    ImGui::Combo("Textures", reinterpret_cast<int*>(&m_sEditingData.iTextureIdx), textures, IM_ARRAYSIZE(textures));
     ImGui::InputFloat("Scaling Value : ", reinterpret_cast<_float*>(&m_sEditingData.ScalingValue));
     ImGui::InputInt("Col : ", reinterpret_cast<int*>(&m_sEditingData.iCol));
     ImGui::InputInt("Row : ", reinterpret_cast<int*>(&m_sEditingData.iRow));
