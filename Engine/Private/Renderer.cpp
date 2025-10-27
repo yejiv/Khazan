@@ -160,9 +160,9 @@ HRESULT CRenderer::Draw()
     if (FAILED(Render_NonBlend()))
         return E_FAIL;
 
-    if (isEnableSSAO())
-        if (FAILED(Render_SSAO()))
-            return E_FAIL;
+    //if (isEnableSSAO())
+    //    if (FAILED(Render_SSAO()))
+    //        return E_FAIL;
 
     if (FAILED(Render_Lights()))
         return E_FAIL;
