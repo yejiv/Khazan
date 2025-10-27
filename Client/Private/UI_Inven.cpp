@@ -233,7 +233,7 @@ void CUI_Inven::Bubble_EventCall(BUBBLEEVENT* pArg)
 				m_pInvenTap[i]->Tap_Disable();
 		}
 	}
-	else if (pDesc->eBubbleType == EVENT_TYPE::ITEM_EQUIP)
+	else if (pDesc->eBubbleType == EVENT_TYPE::ITEM_SELETE)
 	{
 		for (_int i = 0; i < (_int)m_pItems[pDesc->iTypeIndex].size(); ++i)
 		{
@@ -241,6 +241,38 @@ void CUI_Inven::Bubble_EventCall(BUBBLEEVENT* pArg)
 				continue;
 			if (m_pItems[pDesc->iTypeIndex][i]->Off_Selete() == false)
 				break;
+		}
+	}
+	else if (pDesc->eBubbleType == EVENT_TYPE::ITEM_EQUIP)
+	{
+		for (_int i = 0; i < (_int)m_pItems[pDesc->iTypeIndex].size(); ++i)
+		{
+			if (i == pDesc->iIndex)
+				continue;
+			else if(m_pItems[pDesc->iTypeIndex][i]->Off_Equip() == false)
+				break;
+		}
+
+		if (pDesc->iTypeIndex >= 0)
+		{
+			if(pDesc->iTypeIndex <= ENUM_CLASS(ITEMTYPE::GREATE))
+				m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::WEAPON)]->Add_Item(pDesc->iItemIndex);
+			else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::HEAD))
+				m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::HEAD)]->Add_Item(pDesc->iItemIndex);
+			else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::TOP))
+				m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::TOP)]->Add_Item(pDesc->iItemIndex);
+			else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::GLOVES))
+				m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::GLOVES)]->Add_Item(pDesc->iItemIndex);
+			else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::BOTTOM))
+				m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::BOTTOM)]->Add_Item(pDesc->iItemIndex);
+			else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::SHOES))
+				m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::SHOES)]->Add_Item(pDesc->iItemIndex);
+			else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::NECK))
+				m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::NECK)]->Add_Item(pDesc->iItemIndex);
+			else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::RING))
+				m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::RING)]->Add_Item(pDesc->iItemIndex);
+			//else if (pDesc->iItemType <= ENUM_CLASS(ITEMTYPE::ATIVE))
+			//	m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::SHOES)]->Add_Item(pDesc->iItemIndex);
 		}
 	}
 	else if (pDesc->eBubbleType == EVENT_TYPE::SLOT_EQUIP)

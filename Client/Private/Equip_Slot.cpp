@@ -16,6 +16,7 @@ CEquip_Slot::CEquip_Slot(const CEquip_Slot& Prototype)
 
 _bool CEquip_Slot::Add_Item(_int iItemIndex)
 {
+
     if (m_iItemIndex < 0)
     {
         m_iItemIndex = iItemIndex;
@@ -31,9 +32,8 @@ _bool CEquip_Slot::Add_Item(_int iItemIndex)
         Update_State(ItemData.iGrade);
         return true;
     }
-    else if (m_iItemIndex == iItemIndex && m_iItemCount < m_iItemMaxCount)
+    else if (m_iItemIndex == iItemIndex)
     {
-        ++m_iItemCount;
         return true;
     }
     else
@@ -212,6 +212,7 @@ void CEquip_Slot::Update_State(_uint iGrade)
     }
     else
     {
+        m_pIcon->Set_Color({ 1.f, 1.f, 1.f, 1.0f });
         m_iState = ENUM_CLASS(UISTATE::ENABLE);
         m_vColor.w = 1.f;
     }

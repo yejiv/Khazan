@@ -9,7 +9,7 @@ public:
 	enum class UIANIMSTATE { ON, OFF, END };
 	enum class TapGroup {WEAPON, ARMOR, ACC, OTHER, QUICK, END};
 	enum class ITEMTYPE { SPEAR, GREATE, HEAD, TOP, GLOVES, BOTTOM, SHOES, NECK, RING, ATIVE, COLLECTION, MATERIAL, QUICK_1, QUICK_2, QUICK_3, QUICK_4, QUICK_5, QUICK_6, END};
-	enum class EVENT_TYPE { TAP, ITEM_EQUIP, SLOT_EQUIP, ITEM_RELEASE, END};
+	enum class EVENT_TYPE { TAP, ITEM_SELETE, ITEM_EQUIP, SLOT_EQUIP, ITEM_RELEASE, END};
 	
 	enum class EQUIPSLOT_TYPE { WEAPON, HEAD, TOP, GLOVES, BOTTOM, SHOES, NECK, RING, QUICK_1, QUICK_2, QUICK_3, QUICK_4, QUICK_5, QUICK_6, SOULE, END };
 
@@ -19,6 +19,7 @@ public:
 		_int iIndex = {};
 		_int iTypeIndex = {};
 		_int iItemType = {};
+		_int iItemIndex = {};
 	}INVENBUBBLE_DESC;
 
 	typedef struct tagInvenOpenTag
