@@ -221,7 +221,7 @@ void CUI_QuickSlot_Item::Add_Item(EVENT_HUD_QUICKSLOT pItem)
 {
     if (pItem.iIndex != m_iIndex)
         return;
-    else if (m_iIndex == pItem.iIndex)
+    else if (0 == pItem.iIndex)
     {
         m_iItemCount = pItem.iItemCount;
         return;

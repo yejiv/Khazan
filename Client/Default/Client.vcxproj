@@ -176,6 +176,7 @@
     <ClInclude Include="..\Public\Creature.h" />
     <ClInclude Include="..\public\Cursor.h" />
     <ClInclude Include="..\public\Cursor_FX.h" />
+    <ClInclude Include="..\public\Damage_Text.h" />
     <ClInclude Include="..\public\DB_Manager.h" />
     <ClInclude Include="..\Public\Dummy.h" />
     <ClInclude Include="..\public\Equip_Panel.h" />
@@ -262,6 +263,7 @@
     <ClCompile Include="..\Private\Creature.cpp" />
     <ClCompile Include="..\private\Cursor.cpp" />
     <ClCompile Include="..\private\Cursor_FX.cpp" />
+    <ClCompile Include="..\private\Damage_Text.cpp" />
     <ClCompile Include="..\private\DB_Manager.cpp" />
     <ClCompile Include="..\Private\Dummy.cpp" />
     <ClCompile Include="..\private\Equip_Panel.cpp" />
