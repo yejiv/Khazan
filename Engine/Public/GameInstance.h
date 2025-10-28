@@ -299,6 +299,11 @@ public:
 	bool AddStaticObject(class CGameObject* pGameObject, const _float3& vPoint, const _float& fRadius = 0.0f);
 #pragma endregion
 
+#pragma region BLUR
+	HRESULT						Bind_Blur_ShaderResources(class CShader* pShader);
+	GAUSSIAN_BLUR_CONFIG		Get_BlurConfig();
+	void						Set_BlurConfig(GAUSSIAN_BLUR_CONFIG Config);
+#pragma endregion
 
 private:
 	class CGraphic_Device*		m_pGraphic_Device = { nullptr };
@@ -324,9 +329,10 @@ private:
 	class CCamera_Manager*		m_pCamera_Manager = { nullptr };
 	class CBlackBoard*			m_pBlackBoard = { nullptr };
 	
-	// 임시
+	// 임시(이후 렌더링 리소스 클래스 안으로 이전할 예정)
 	class CSSAO*				m_pSSAO = { nullptr };
 	class COctree*				m_pOctree = { nullptr };
+	class CBlur*				m_pBlur = { nullptr };
 
 #ifdef _DEBUG
 	class CImgui_Manager* m_pImgui_Manager = { nullptr };

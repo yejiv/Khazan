@@ -166,6 +166,8 @@ HRESULT CAI_Controller::Load_BehaviorTree(CGameObject* pOwner,const string& File
     m_pBT = CBehaviorTree::Create();
     m_pBT->Set_Root(pRoot);
     m_pBT->Set_BlackBoard(m_pBB);
+
+    return S_OK;
 }
 
 HRESULT CAI_Controller::LoadBTNode(const JSON& j, AIBTNODE_DATA& Node)

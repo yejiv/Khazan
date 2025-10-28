@@ -43,21 +43,11 @@ HRESULT CLevel_Shader::Initialize()
 			m_CascadeConfig.Splits.resize(m_iNumCascades);
 			m_CascadeConfig = m_pGameInstance->Get_CascadeConfig();
 			m_SSAOConfig = m_pGameInstance->Get_SSAOConfig();
-
-			//	m_CascadeSplits.resize(m_iNumCascades);
-			//	memcpy(m_CascadeSplits.data(), m_pGameInstance->Get_CascadeSplits(), sizeof(_float) * m_iNumCascades);
-			//	m_fShadowBias = m_pGameInstance->Get_ShadowBias();
-			//	m_fShadowLamda = m_pGameInstance->Get_ShadowLamda();
-			//	m_vLightDir = m_pGameInstance->Get_ShadowLightDir();
+			m_BlurConfig = m_pGameInstance->Get_BlurConfig();
 			m_isInitShadow = true;
 		}
 
 		ImGui::Begin("Shader Settings");
-
-		// isRenderShadow true일 때만 아래 애들 띄우기
-		// true일 때만 렌더러에서 기록하는 거 켜주기
-		// 컴바인드에서 안 켜지면 기본 명암 정도만 나타내도록 후처리 셰이더에 플래그 넘겨서 써야 할지도?
-		//	_bool bCopyFlag = m_isRenderShadow;
 
 		if (ImGui::CollapsingHeader("Frame Per Second"), ImGuiTreeNodeFlags_DefaultOpen)
 		{
@@ -132,36 +122,39 @@ HRESULT CLevel_Shader::Initialize()
 			ImGui::Separator();
 		}
 
-		ImGui::Checkbox("Emissive", &m_isEnableEmissive);
-
-		if (m_isEnableEmissive)
+		if (ImGui::CollapsingHeader("Post Processing"), ImGuiTreeNodeFlags_DefaultOpen)
 		{
-			if (ImGui::SliderFloat("Brightness", &m_fEmissiveIntensity, 0.f, 10.f))
+			ImGui::Checkbox("Emissive", &m_isEnableEmissive);
+
+			if (m_isEnableEmissive)
 			{
-				dynamic_cast<CPlayer_Shader*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
-					TEXT("Layer_Player"), 0))->Set_EmissiveIntensity(m_fEmissiveIntensity);
+				if (ImGui::SliderFloat("Brightness", &m_fEmissiveIntensity, 0.f, 10.f))
+				{
+					dynamic_cast<CPlayer_Shader*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
+						TEXT("Layer_Player"), 0))->Set_EmissiveIntensity(m_fEmissiveIntensity);
+				}
+
+				ImGui::Separator();
 			}
 
-			ImGui::Separator();
-		}
+			ImGui::Checkbox("Bloom", &m_isEnableBloom);
 
-		ImGui::Checkbox("Bloom", &m_isEnableBloom);
-
-		if (m_isEnableBloom)
-		{
-			// 가우시안 블러 범위(반경)
-			if (ImGui::SliderFloat("Radius", &m_fBlurWeight, 0.f, 10.f))
+			if (m_isEnableBloom)
 			{
+				// 가우시안 블러 범위(반경)
+				if (ImGui::InputInt("Blur Radius", &m_BlurConfig.iRadius, 2, 4))
+					m_pGameInstance->Set_BlurConfig(m_BlurConfig);
 
+				// 가우시안 블러 가중치 밀집도
+				if (ImGui::SliderFloat("Concentration", &m_BlurConfig.fSigma, 1.f, 10.f))
+					m_pGameInstance->Set_BlurConfig(m_BlurConfig);
+
+				// 가우시안 블러 가중치 합 정규화 수치
+				if (ImGui::SliderFloat("Normalization", &m_BlurConfig.fNormalization, 0.f, 15.f))
+					m_pGameInstance->Set_BlurConfig(m_BlurConfig);
+
+				ImGui::Separator();
 			}
-
-			// 가우시안 블러 가중치 밀집도
-			if (ImGui::SliderFloat("Concentration", &m_fBlurWeight, 0.f, 10.f))
-			{
-
-			}
-
-			ImGui::Separator();
 		}
 
 		dynamic_cast<CPlayer_Shader*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER), 

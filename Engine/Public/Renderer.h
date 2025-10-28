@@ -62,6 +62,9 @@ private:
 	HRESULT Render_UI();
 
 private:
+	HRESULT Ready_RenderTargets();
+	HRESULT Ready_MRTs();
+	HRESULT Ready_Components();
 	HRESULT SetUp_Viewport(_float fWidth, _float fHeight);
 
 #ifdef _DEBUG
@@ -71,7 +74,9 @@ private:
 private:
 	_bool isEnableShadow();
 	_bool isEnableSSAO();
+#ifdef _DEBUG
 	_bool isEnableDebugRender();
+#endif
 
 public:
 	static CRenderer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

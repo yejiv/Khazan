@@ -206,7 +206,7 @@ void CShadow::Clear_DSVs()
 	for (_uint i = 0; i < m_Cascade.iNumCascades; ++i)
 		m_pContext->ClearDepthStencilView(m_ShadowDSVs[i], D3D11_CLEAR_DEPTH, 1.f, 0);
 }
-
+#ifdef _DEBUG
 HRESULT CShadow::Ready_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY)
 {
 	_uint			iNumViewports = { 1 };
@@ -251,6 +251,7 @@ HRESULT CShadow::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
 
 	return S_OK;
 }
+#endif
 
 HRESULT CShadow::Ready_ShaderResources()
 {
@@ -283,6 +284,9 @@ HRESULT CShadow::Ready_ShaderResources()
 		if (FAILED(m_pDevice->CreateDepthStencilView(pDepthStencilTexture, &DSVDesc, &m_ShadowDSVs[i])))
 			return E_FAIL;
 	}
+
+	// Depth Stencil 1 √ ±‚»≠
+	Clear_DSVs();
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc{};
 	SRVDesc.Format = DXGI_FORMAT_R32_FLOAT;

@@ -311,6 +311,7 @@ HRESULT CMainApp::Start_Level(LEVEL eStartLevelID)
 
 HRESULT CMainApp::Ready_DebugTool()
 {
+#if _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Debug"), [&]() {
 
 		ImGui::Text("Camera");
@@ -357,7 +358,7 @@ HRESULT CMainApp::Ready_DebugTool()
 		}
 
 		});
-
+#endif
 		
 	return S_OK;
 }
