@@ -287,7 +287,6 @@ HRESULT CMainApp::Ready_ObjectLayer()
 	m_pGameInstance->Set_PhysicsSystem();
 
 #ifdef _DEBUG
-
 	m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER));
 	m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER));
 #endif

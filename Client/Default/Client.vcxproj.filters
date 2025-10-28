@@ -241,9 +241,6 @@
     <Filter Include="02.GameObject\UI\Inven\ETC">
       <UniqueIdentifier>{a35136d7-7ad3-4580-b681-c029de6c4006}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\UI\Inven\ETC\Tap">
-      <UniqueIdentifier>{f963ed35-50bf-4b47-8cd0-654a0d22a79e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="94. ClientInstance\DB">
       <UniqueIdentifier>{dffd0957-694b-48a5-a2e0-c30d199869c1}</UniqueIdentifier>
     </Filter>
@@ -471,9 +468,6 @@
     <ClInclude Include="..\public\UI_BackGround.h">
       <Filter>02.GameObject\UI\ETC</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Inven_Tap.h">
-      <Filter>02.GameObject\UI\Inven\ETC\Tap</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\UI_Inven.h">
       <Filter>02.GameObject\UI\Inven</Filter>
     </ClInclude>
@@ -518,6 +512,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\BigChest.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\01.BigChest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Inven_Tap.h">
+      <Filter>02.GameObject\UI\Inven\ETC</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -711,9 +708,6 @@
     <ClCompile Include="..\private\UI_BackGround.cpp">
       <Filter>02.GameObject\UI\ETC</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Inven_Tap.cpp">
-      <Filter>02.GameObject\UI\Inven\ETC\Tap</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\UI_Inven.cpp">
       <Filter>02.GameObject\UI\Inven</Filter>
     </ClCompile>
@@ -755,6 +749,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\BigChest.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\01.BigChest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Inven_Tap.cpp">
+      <Filter>02.GameObject\UI\Inven\ETC</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
