@@ -1,7 +1,7 @@
 #pragma once
 #include "UI_Slot.h"
 #include "Client_Defines.h"
-
+#include "Event_Defines.h"
 NS_BEGIN(Client)
 class CUI_QuickSlot_Item final : public CUI_Slot
 {
@@ -13,6 +13,7 @@ private:
 	CUI_QuickSlot_Item(const CUI_QuickSlot_Item& Prototype);
 	virtual ~CUI_QuickSlot_Item() = default;
 public:
+	void								Add_Item(class CItem_Slot* pItem);
 	void								Input_Slot();
 
 public:
@@ -30,6 +31,7 @@ private:
 	_int								m_iItemValue = { 0 };
 	_float4								m_vFxColor = {};
 
+	class CUI_Atlas_Icon*				m_pIcon = { nullptr };
 	class CUI_Atlas_Icon*				m_pDisableFX = { nullptr };
 
 private:

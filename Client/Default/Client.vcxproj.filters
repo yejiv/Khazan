@@ -244,9 +244,6 @@
     <Filter Include="02.GameObject\UI\Inven\ETC\Tap">
       <UniqueIdentifier>{f963ed35-50bf-4b47-8cd0-654a0d22a79e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\UI\Inven\ETC\Panel">
-      <UniqueIdentifier>{99b24549-339c-48be-9c6c-dc1e503be929}</UniqueIdentifier>
-    </Filter>
     <Filter Include="94. ClientInstance\DB">
       <UniqueIdentifier>{dffd0957-694b-48a5-a2e0-c30d199869c1}</UniqueIdentifier>
     </Filter>
@@ -264,6 +261,12 @@
     </Filter>
     <Filter Include="02.GameObject\UI\Inven\Equip">
       <UniqueIdentifier>{35a3ca28-cb04-404e-a3ec-f837e14cae2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\03.RightHand_5Hit">
+      <UniqueIdentifier>{30ee55aa-a59a-49d5-9919-ac567853cd6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\00.BladeNexus">
+      <UniqueIdentifier>{db2499ad-79c0-4c82-ad8f-32198cfc8f33}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -468,9 +471,6 @@
     <ClInclude Include="..\public\Inven_Tap.h">
       <Filter>02.GameObject\UI\Inven\ETC\Tap</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Inven_Panel.h">
-      <Filter>02.GameObject\UI\Inven\ETC\Panel</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\UI_Inven.h">
       <Filter>02.GameObject\UI\Inven</Filter>
     </ClInclude>
@@ -506,6 +506,12 @@
     </ClInclude>
     <ClInclude Include="..\public\Equip_Slot.h">
       <Filter>02.GameObject\UI\Inven\Equip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_RightHand_5Hit_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\03.RightHand_5Hit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BladeNexus.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\00.BladeNexus</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -702,9 +708,6 @@
     <ClCompile Include="..\private\Inven_Tap.cpp">
       <Filter>02.GameObject\UI\Inven\ETC\Tap</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Inven_Panel.cpp">
-      <Filter>02.GameObject\UI\Inven\ETC\Panel</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\UI_Inven.cpp">
       <Filter>02.GameObject\UI\Inven</Filter>
     </ClCompile>
@@ -737,6 +740,12 @@
     </ClCompile>
     <ClCompile Include="..\private\Equip_Slot.cpp">
       <Filter>02.GameObject\UI\Inven\Equip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_RightHand_5Hit_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\03.RightHand_5Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BladeNexus.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\00.BladeNexus</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -221,6 +221,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\Light_Manager.cpp" />
     <ClCompile Include="..\Private\Mesh.cpp" />
     <ClCompile Include="..\private\MeshMaterial.cpp" />
+    <ClCompile Include="..\Private\Octree.cpp" />
     <ClCompile Include="..\Private\Perception.cpp" />
     <ClCompile Include="..\Private\Repeater_Node.cpp" />
     <ClCompile Include="..\Private\Selector_Node.cpp" />
@@ -356,6 +357,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\public\Light_Manager.h" />
     <ClInclude Include="..\Public\Mesh.h" />
     <ClInclude Include="..\public\MeshMaterial.h" />
+    <ClInclude Include="..\Public\Octree.h" />
     <ClInclude Include="..\Public\Perception.h" />
     <ClInclude Include="..\Public\Perception_Defines.h" />
     <ClInclude Include="..\Public\Repeater_Node.h" />

@@ -17,6 +17,19 @@ void CUI_Text::Set_Text(_wstring wstrText)
 	m_wstrText = wstrText;
 }
 
+void CUI_Text::Setting_Text(const TEXTBOX_DESC& pDesc)
+{
+	m_bIsTextBox = pDesc.bIsTextBox;
+	m_eTextAlign = pDesc.eTextAlign;
+	m_fMaxWidth = pDesc.fMaxWidth;
+	m_fOffsetHeight = pDesc.fOffsetHeight;
+	m_iPivotX = pDesc.iPivotX;
+	m_iPivotY = pDesc.iPivotY;
+	m_wstrTexttag = pDesc.wstrTexttag;
+	m_wstrText = pDesc.wstrText;
+	m_vColor = pDesc.vColor;
+}
+
 HRESULT CUI_Text::Initialize_Prototype()
 {
 	return S_OK;

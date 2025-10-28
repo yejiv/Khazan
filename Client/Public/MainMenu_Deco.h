@@ -17,6 +17,8 @@ private:
 	virtual ~CMainMune_Deco() = default;
 
 public:
+	void						Update_AccTime(_float fTime) { m_fAccTime = fTime; }
+public:
 	virtual HRESULT				Initialize_Prototype() override;
 	virtual HRESULT				Initialize_Clone(void* pArg) override;
 	virtual void				Priority_Update(_float fTimeDelta) override;
@@ -29,6 +31,7 @@ private:
 	CTexture*					m_pTextureCom = { nullptr };
 	CVIBuffer_Rect*				m_pVIBufferCom = { nullptr };
 
+	_float						m_fAccTime = {};
 private:
 	HRESULT						Ready_Component();
 

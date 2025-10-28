@@ -211,6 +211,12 @@
     <Filter Include="02.GameObject\AI\Monster">
       <UniqueIdentifier>{4218dc4b-df2a-4240-b370-b0437149faf3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\00.BladeNexus">
+      <UniqueIdentifier>{b8391e45-28ae-487d-981e-929edaff648b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Map_Trigger">
+      <UniqueIdentifier>{990a8953-99fb-4a0d-932c-aeb9f3b4d8e0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -402,6 +408,12 @@
     <ClInclude Include="..\Public\Editor_Animation.h">
       <Filter>03.Utility\00.Model\Animation</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\BladeNexus.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\00.BladeNexus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Map_Trigger.h">
+      <Filter>02.GameObject\MapObject\Map_Trigger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -587,6 +599,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Editor_Animation.cpp">
       <Filter>03.Utility\00.Model\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BladeNexus.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\00.BladeNexus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Map_Trigger.cpp">
+      <Filter>02.GameObject\MapObject\Map_Trigger</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

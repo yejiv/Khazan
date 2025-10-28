@@ -19,6 +19,8 @@ public:
 
 	void Set_Transform(D3DTS eTransformState, _fmatrix Matrix);
 	void Set_Transform(D3DTS eTransformState, const _float4x4& Matrix);
+
+	_float DistanceCam(const _float3& vPos);
 	
 public:
 	HRESULT Initialize();

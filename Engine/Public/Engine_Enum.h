@@ -69,6 +69,8 @@ namespace Engine
 	enum class ANIM_TRANSITIONTYPE { AUTO, FLAG, INPUT, MANUAL, END};	//애니메이션 전환 조건
 	enum class MAPOBJECT_TYPE : unsigned short { OBJECT, STATIC_INST, ANIMATED_INST, INTERACTIVE, DYNAMIC, END };
 	enum class BTNODESTATE { RUNNING, SUCCESS, FAILURE, END };
+
+	enum class INTERACTIVE_TYPE { CHECKPOINT, CHEST, LADDER, ELEVATOR, LEVER, END };
 }
 
 namespace JoltLayers

@@ -2,8 +2,6 @@
 
 #include "GameInstance.h"
 
-#include "Editor_Model.h"
-
 CProp_Object::CProp_Object(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp { pDevice, pContext }
 {

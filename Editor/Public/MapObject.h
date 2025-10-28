@@ -16,6 +16,8 @@ public:
 	{
 		_uint iMapObjectID{};
 
+		INTERACTIVE_TYPE eInteractiveType{ INTERACTIVE_TYPE::END };
+
 	}MAPOBJECT_DESC;
 
 protected:
@@ -34,12 +36,15 @@ public:
 
 public:
 	const _uint Get_MapObjectID() const { return m_iMapObjectID; }
+	const INTERACTIVE_TYPE Get_InteractiveType() const { return m_eInteractiveType; }
 
 protected:
 	CShader* m_pShaderCom = { nullptr };
 
 protected:
 	_uint m_iMapObjectID = {};
+
+	INTERACTIVE_TYPE m_eInteractiveType{ INTERACTIVE_TYPE::END };
 
 public:
 	virtual CGameObject* Clone(void* pArg) = 0;
