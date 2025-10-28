@@ -42,6 +42,8 @@ private:
 	HRESULT Ready_ClientInstance(ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext);
 	HRESULT Start_Level(LEVEL eStartLevelID);
 
+	HRESULT Ready_DebugTool();
+
 public:
 	static CMainApp* Create();
 	virtual void Free() override;		

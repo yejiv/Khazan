@@ -50,6 +50,9 @@ HRESULT CJolt_Manager::Initialize(_uint iNumObjectLayer)
         return E_FAIL;
 
 #ifdef _DEBUG
+
+    BodyDrawFilter BodyFilter{};
+    m_DrawFilter = new DrawOnlyLayers();
     m_pDebugRenderer = new CJolt_DebugRenderer(m_pDevice, m_pContext);
 
 #endif
@@ -250,20 +253,16 @@ void CJolt_Manager::Test()
 }
 void CJolt_Manager::Debug_Render()
 {
-    if (!m_pPhysics || !m_isDebugRender)
+    if (!m_pPhysics)
         return;
     // 디버그 렌더 패스 시작
     m_pDebugRenderer->BeginFrame();
 
     // Jolt가 내부적으로 수백/수천번 DrawLine()을 호출
-    m_pPhysics->DrawBodies(m_DrawSetting, m_pDebugRenderer);
+    m_pPhysics->DrawBodies(m_DrawSetting, m_pDebugRenderer, m_DrawFilter);
 
     // 디버그 렌더 패스 종료
     m_pDebugRenderer->EndFrame();
-}
-void CJolt_Manager::Change_DebugRender()
-{
-    m_isDebugRender = !m_isDebugRender;
 }
 #endif 
 CJolt_Manager* CJolt_Manager::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iNumObjectLayer)
