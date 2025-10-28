@@ -4,6 +4,7 @@
 #include "Camera_Shader.h"
 #include "Prop_Object.h"
 #include "JOH_EditorModelTest.h"
+#include "Player_Shader.h"
 
 CLevel_Shader::CLevel_Shader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
@@ -131,6 +132,42 @@ HRESULT CLevel_Shader::Initialize()
 			ImGui::Separator();
 		}
 
+		ImGui::Checkbox("Emissive", &m_isEnableEmissive);
+
+		if (m_isEnableEmissive)
+		{
+			if (ImGui::SliderFloat("Brightness", &m_fEmissiveIntensity, 0.f, 10.f))
+			{
+				dynamic_cast<CPlayer_Shader*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
+					TEXT("Layer_Player"), 0))->Set_EmissiveIntensity(m_fEmissiveIntensity);
+			}
+
+			ImGui::Separator();
+		}
+
+		ImGui::Checkbox("Bloom", &m_isEnableBloom);
+
+		if (m_isEnableBloom)
+		{
+			// 가우시안 블러 범위(반경)
+			if (ImGui::SliderFloat("Radius", &m_fBlurWeight, 0.f, 10.f))
+			{
+
+			}
+
+			// 가우시안 블러 가중치 밀집도
+			if (ImGui::SliderFloat("Concentration", &m_fBlurWeight, 0.f, 10.f))
+			{
+
+			}
+
+			ImGui::Separator();
+		}
+
+		dynamic_cast<CPlayer_Shader*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER), 
+			TEXT("Layer_Player"), 0))->Set_EnableEmissive(m_isEnableEmissive);
+		dynamic_cast<CPlayer_Shader*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
+			TEXT("Layer_Player"), 0))->Set_EnableBloom(m_isEnableBloom);
 		m_pGameInstance->Set_EnableShadow(m_isRenderShadow);
 		m_pGameInstance->Set_EnableSSAO(m_isRenderSSAO);
 

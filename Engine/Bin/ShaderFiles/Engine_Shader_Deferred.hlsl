@@ -18,7 +18,7 @@ vector g_vMtrlAmbient = { 1.f, 1.f, 1.f, 1.f }, g_vMtrlSpecular = { 1.f, 1.f, 1.
 
 // ===== Textures =====
 Texture2D g_DiffuseTexture, g_NormalTexture, g_DepthTexture, g_ShadeTexture, g_SpecularTexture, g_EmissiveTexture;
-Texture2D g_LightDepthTexture, g_BackBufferTexture, g_BlurXTexture;
+Texture2D g_LightDepthTexture, g_PostSceneTexture, g_BlurXTexture, g_BloomTexture;
 
 // ===== Cascade Shadow =====
 int g_iTextureArrayIndex;
@@ -41,6 +41,9 @@ float g_fRadius = { 1.f };
 float g_fIntensity = { 1.f }, g_fContrast = { 1.f };
 bool g_isEnableSSAO = { true };
 matrix g_CameraViewMatrix, g_CameraProjMatrix;
+
+// ===== Blur =====
+float g_fViewportWidth, g_fViewportHeight;
 
 struct VS_IN
 {
@@ -216,12 +219,9 @@ PS_OUT_BACKBUFFER PS_MAIN_POSTSCENE(PS_IN In)
     
     vector vShade = g_ShadeTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-    // Emissive Test
-    vector vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-    Out.vColor = vDiffuse * vShade + vSpecular + vEmissive;
+
     //  Out.vColor = vDiffuse * vShade;
+    Out.vColor = vDiffuse * vShade + vSpecular;
     
     if (!g_isEnableShadow)
         return Out;
@@ -307,23 +307,24 @@ struct PS_OUT_BLUR_X
 PS_OUT_BLUR_X PS_MAIN_BLUR_X(PS_IN In)
 {
     PS_OUT_BLUR_X Out;
-    
+
     float2 vTexcoord;
-    vector vColor;
+    float3 vColor;
     
     for (int i = -6; i < 7; ++i)
     {
         vTexcoord.x = In.vTexcoord.x + i / 1280.0f;
         vTexcoord.y = In.vTexcoord.y;
         
-        vColor += g_fWeights[i + 6] * g_BackBufferTexture.Sample(ClampSampler, vTexcoord);
+        float4 vEmissive = g_EmissiveTexture.SampleLevel(ClampSampler, vTexcoord, 0.f);
+        
+        vColor += g_fWeights[i + 6] * vEmissive.rgb * vEmissive.a;
     }
-    
-    Out.vBlurX = vColor / 7.5f;
-    
+
+    Out.vBlurX = float4(vColor / 7.5f, 1.f);
+
     return Out;
 }
-
 
 PS_OUT_BACKBUFFER PS_MAIN_BLUR_Y(PS_IN In)
 {
@@ -335,7 +336,7 @@ PS_OUT_BACKBUFFER PS_MAIN_BLUR_Y(PS_IN In)
     for (int i = -6; i < 7; ++i)
     {
         vTexcoord.x = In.vTexcoord.x;
-        vTexcoord.y = In.vTexcoord.y + i / 720.0f;
+        vTexcoord.y = In.vTexcoord.y + i / g_fViewportHeight;
         
         vColor += g_fWeights[i + 6] * g_BlurXTexture.Sample(ClampSampler, vTexcoord);
     }
@@ -433,6 +434,23 @@ PS_OUT_SSAO PS_MAIN_SSAO(PS_IN In)
     return Out;
 }
 
+PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
+{
+    PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
+    
+    vector vPostSceneDesc = g_PostSceneTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vEmissiveDesc = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vBloomDesc = g_BloomTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    if (0.f == vPostSceneDesc.a)
+        Out.vColor = 0.f;
+    
+    //  Out.vColor = vPostSceneDesc;
+    Out.vColor = vPostSceneDesc + vEmissiveDesc + vBloomDesc;
+    
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     pass Debug
@@ -523,14 +541,14 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN_SSAO();
     }
 
-    //  pass Combined
-    //  {
-    //      SetRasterizerState(RS_Default);
-    //      SetDepthStencilState(DSS_None, 0);
-    //      SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-    //  
-    //      VertexShader = compile vs_5_0 VS_MAIN();
-    //      GeometryShader = NULL;
-    //      PixelShader = compile ps_5_0 PS_MAIN_COMBINED();
-    //  }
+    pass Combined
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+    
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_COMBINED();
+    }
 }

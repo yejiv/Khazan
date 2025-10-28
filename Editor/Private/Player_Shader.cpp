@@ -33,6 +33,8 @@ HRESULT CPlayer_Shader::Initialize_Clone(void* pArg)
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, -2.1f, -5.f, 1.f));
     //  m_pTransformCom->Scaling(_float3(5.f, 5.f, 5.f));
 
+    m_fEmissiveIntensity = 1.f;
+
     return S_OK;
 }
 
@@ -43,6 +45,12 @@ void CPlayer_Shader::Priority_Update(_float fTimeDelta)
 
 void CPlayer_Shader::Update(_float fTimeDelta)
 {
+    // Emissive On / Off Test
+    if (m_pGameInstance->Key_Down(DIK_0))
+    {
+        m_isEnableEmissive = !m_isEnableEmissive;
+    }
+
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
         int a = 10;
 
@@ -89,7 +97,16 @@ HRESULT CPlayer_Shader::Render()
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        m_pShaderCom->Begin(0);
+        if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &m_fEmissiveIntensity, sizeof(_float))))
+            return E_FAIL;
+
+        if (FAILED(m_pShaderCom->Bind_Bool("g_isEnableEmissive", &m_isEnableEmissive)))
+            return E_FAIL;
+
+        if (FAILED(m_pShaderCom->Bind_Bool("g_isEnableBloom", &m_isEnableBloom)))
+            return E_FAIL;
+
+        m_pShaderCom->Begin(3);
 
         m_pModelCom->Render(i);
     }
@@ -115,7 +132,7 @@ HRESULT CPlayer_Shader::Render_Shadow()
         if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;
 
-        m_pShaderCom->Begin(3);
+        m_pShaderCom->Begin(2);
 
         m_pModelCom->Render(i);
     }

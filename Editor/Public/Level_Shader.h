@@ -33,11 +33,6 @@ private:
 	// Cascade
 	CASCADE_CONFIG			m_CascadeConfig = {};
 
-	//	_float4					m_vLightDir = {};
-	//	_float					m_fShadowBias = {};
-	//	_float					m_fShadowLamda = {};
-	//	vector<_float>			m_CascadeSplits = {};
-
 	_bool					m_isInitShadow = {};
 	_float					m_fCameraNear = { 0.1f };
 	_float					m_fCameraFar = { 1000.f };
@@ -46,14 +41,16 @@ private:
 	// Render Flag
 	_bool					m_isRenderShadow = { true };
 	_bool					m_isRenderSSAO = { true };
+	_bool					m_isEnableEmissive = {};
+	_bool					m_isEnableBloom = {};
 
 	// SSAO
 	SSAO_CONFIG				m_SSAOConfig = {};
-	
-	//	_float					m_fSampleRadius = { 1.f };
-	//	_float					m_fAOIntensity = { 1.f };
-	//	_float					m_fAOConstrast = { 1.f };
-	//	_float					m_fSampleBias = { 0.f };
+
+	// PostProcessing
+	_float					m_fEmissiveIntensity = {};
+	_float					m_fBlurWeight = {};
+
 
 private:
 	// 파라미터 ( 1. 등록할 레이어 태그 | 2. 데이터 파일 이름 | 3. 현재 로드할 레벨 | 4. 맵 타입 ( 안넣으면 폴더 내부 X ) )
