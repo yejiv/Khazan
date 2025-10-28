@@ -10,29 +10,50 @@ CCoolDown_Node::CCoolDown_Node(_float fCoolTime)
 BTNODESTATE CCoolDown_Node::Tick(CBlackBoard* BB)
 {
     _float fTimeDelta = BB->Get_Value<_float>(m_strName, m_strTag);
+    if(m_fCoolTime == 10.f)
+       cout << "m_fElapsed 5HIT  : " << m_fElapsed << endl;
+
+    if(m_fCoolTime == 5.f)
+    cout << "m_fElapsed 2HIT : " << m_fElapsed << endl;
+
     m_fElapsed += fTimeDelta;
-    if (m_fElapsed < m_fCoolTime)
-        return BTNODESTATE::FAILURE; // 쿨타임 중
 
-    if (m_pChild)
+    // 쿨타임 중이면 자식 실행안하도록 막는다.
+    if (m_isCooling)
     {
-        BTNODESTATE eState = m_pChild->Tick(BB);
-
-        if (BTNODESTATE::SUCCESS == eState)
+        if (m_fElapsed >= m_fCoolTime)
         {
+            m_isCooling = false;
             m_fElapsed = 0.f;
         }
-
-        return eState;
+        else
+        {
+            return BTNODESTATE::FAILURE;
+        }
     }
+   
+    if (m_pChild && !m_isCooling)
+    {
+        BTNODESTATE eState = m_pChild->Tick(BB);
+        // 자식이 성공하면 다시 쿨타임 돌리기
+        if (BTNODESTATE::SUCCESS == eState)
+        {
+            m_isCooling = true;
+            m_fElapsed = 0.f;
+        }
+        return eState;
 
- 
+    }
     return BTNODESTATE::FAILURE;
 }
 
-void CCoolDown_Node::Terminate(BTNODESTATE eState)
+void CCoolDown_Node::Terminate(BTNODESTATE eState, CBlackBoard* BB)
 {
-    m_pChild->Terminate(eState);
+    if (nullptr == m_pChild)
+        return;
+    
+    m_pChild->Terminate(eState,BB);
+
 }
 
 void CCoolDown_Node::Abort()

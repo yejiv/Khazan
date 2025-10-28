@@ -264,6 +264,9 @@
     </Filter>
     <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\00.BladeNexus">
       <UniqueIdentifier>{db2499ad-79c0-4c82-ad8f-32198cfc8f33}</UniqueIdentifier>
+	</Filter>
+    <Filter Include="92.AI\State\Yetuga\04.LieDown">
+      <UniqueIdentifier>{3119b102-ecca-4b2c-a42e-08dbcfd5a313}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\01.BigChest">
       <UniqueIdentifier>{892b8f58-f94a-4d3e-aec9-9b9abb09770d}</UniqueIdentifier>
@@ -509,6 +512,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\BladeNexus.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\00.BladeNexus</Filter>
+	</ClInclude>
+    <ClInclude Include="..\Public\AS_LieDown_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\04.LieDown</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\BigChest.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\01.BigChest</Filter>
@@ -746,6 +752,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\BladeNexus.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\00.BladeNexus</Filter>
+	</ClCompile>
+    <ClCompile Include="..\Private\AS_LieDown_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\04.LieDown</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\BigChest.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\01.BigChest</Filter>

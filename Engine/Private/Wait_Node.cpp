@@ -20,9 +20,10 @@ BTNODESTATE CWait_Node::Tick(CBlackBoard* BB)
     return BTNODESTATE::RUNNING;
 }
 
-void CWait_Node::Terminate(BTNODESTATE eState)
+void CWait_Node::Terminate(BTNODESTATE eState, CBlackBoard* BB)
 {
     m_fElapsed = 0.f;
+
 }
 
 void CWait_Node::Abort()

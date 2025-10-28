@@ -11,7 +11,7 @@ protected:
 
 public:
     virtual BTNODESTATE         Tick(class CBlackBoard* BB) = 0;
-    virtual void                Terminate(BTNODESTATE eState) {};
+    virtual void                Terminate(BTNODESTATE eState, class CBlackBoard* BB = nullptr) {};
     virtual void                Abort() { Terminate(BTNODESTATE::FAILURE); };
 
     void                        Add_Child(CBTNode* pChild);
