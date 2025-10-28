@@ -265,6 +265,18 @@
     <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\00.BladeNexus">
       <UniqueIdentifier>{db2499ad-79c0-4c82-ad8f-32198cfc8f33}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI">
+      <UniqueIdentifier>{dd547fdf-504a-40c8-844b-a85ee87b3c2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Mon_HPGague">
+      <UniqueIdentifier>{7b62ab3c-7ad2-42f3-84f4-f09e6a42b48c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Interaction_Guide">
+      <UniqueIdentifier>{c00e5e09-9592-4d20-94eb-70e9d79117fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Damage_UI">
+      <UniqueIdentifier>{6da1545d-0879-4c90-9ac6-1aeabdd954dc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -510,6 +522,9 @@
     <ClInclude Include="..\public\Inven_Tap.h">
       <Filter>02.GameObject\UI\Inven\ETC</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Damage_Text.h">
+      <Filter>02.GameObject\UI\WorldUI\Damage_UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -743,6 +758,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Inven_Tap.cpp">
       <Filter>02.GameObject\UI\Inven\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Damage_Text.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Damage_UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
