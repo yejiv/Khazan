@@ -163,6 +163,7 @@
     <ClInclude Include="..\Public\AS_RightHand_5Hit_Yetuga.h" />
     <ClInclude Include="..\public\Atlas_RenderGroup.h" />
     <ClInclude Include="..\Public\AttackState_Yetuga.h" />
+    <ClInclude Include="..\Public\BladeNexus.h" />
     <ClInclude Include="..\Public\Body_Player.h" />
     <ClInclude Include="..\Public\BT_Yetuga.h" />
     <ClInclude Include="..\public\Camera_Free.h" />
@@ -248,6 +249,7 @@
     <ClCompile Include="..\Private\AS_RightHand_5Hit_Yetuga.cpp" />
     <ClCompile Include="..\private\Atlas_RenderGroup.cpp" />
     <ClCompile Include="..\Private\AttackState_Yetuga.cpp" />
+    <ClCompile Include="..\Private\BladeNexus.cpp" />
     <ClCompile Include="..\Private\Body_Player.cpp" />
     <ClCompile Include="..\Private\BT_Yetuga.cpp" />
     <ClCompile Include="..\private\Camera_Free.cpp" />
