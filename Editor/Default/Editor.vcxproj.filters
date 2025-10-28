@@ -327,9 +327,6 @@
     <ClInclude Include="..\Public\Level_Shader.h">
       <Filter>01.Levels\Shader</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\AnimationTool.h">
-      <Filter>02.GameObject\Animation\00.Tool</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Prop_Test.h">
       <Filter>02.GameObject\MapObject\Prop\99.Test</Filter>
     </ClInclude>
@@ -413,6 +410,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Map_Trigger.h">
       <Filter>02.GameObject\MapObject\Map_Trigger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AnimationTool.h">
+      <Filter>02.GameObject\Animation\98.Temp Camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
