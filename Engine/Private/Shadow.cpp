@@ -284,6 +284,9 @@ HRESULT CShadow::Ready_ShaderResources()
 			return E_FAIL;
 	}
 
+	// Depth Stencil 1 √ ±‚»≠
+	Clear_DSVs();
+
 	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc{};
 	SRVDesc.Format = DXGI_FORMAT_R32_FLOAT;
 	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;

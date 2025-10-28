@@ -62,6 +62,9 @@ private:
 	HRESULT Render_UI();
 
 private:
+	HRESULT Ready_RenderTargets();
+	HRESULT Ready_MRTs();
+	HRESULT Ready_Components();
 	HRESULT SetUp_Viewport(_float fWidth, _float fHeight);
 
 #ifdef _DEBUG

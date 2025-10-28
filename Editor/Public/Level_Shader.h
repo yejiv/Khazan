@@ -51,6 +51,9 @@ private:
 	_float					m_fEmissiveIntensity = {};
 	_float					m_fBlurWeight = {};
 
+	// Blur
+	GAUSSIAN_BLUR_CONFIG	m_BlurConfig = {};
+
 
 private:
 	// 파라미터 ( 1. 등록할 레이어 태그 | 2. 데이터 파일 이름 | 3. 현재 로드할 레벨 | 4. 맵 타입 ( 안넣으면 폴더 내부 X ) )

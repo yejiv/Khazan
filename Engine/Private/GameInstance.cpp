@@ -24,6 +24,7 @@
 #include "Camera_Manager.h"
 #include "BlackBoard.h"
 #include "SSAO.h"
+#include "Blur.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -127,6 +128,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	// 임시
 	m_pSSAO = CSSAO::Create(*ppDevice, *ppContext);
 	if (nullptr == m_pSSAO)
+		return E_FAIL;
+
+	m_pBlur = CBlur::Create(*ppDevice, *ppContext);
+	if (nullptr == m_pBlur)
 		return E_FAIL;
 
 #ifdef _DEBUG
@@ -933,7 +938,21 @@ HRESULT CGameInstance::Bind_SSAO_ShaderResources(CShader* pShader)
 {
 	return m_pSSAO->Bind_SSAO_ShaderResources(pShader);
 }
+#pragma endregion
 
+#pragma region BLUR
+HRESULT CGameInstance::Bind_Blur_ShaderResources(CShader* pShader)
+{
+	return m_pBlur->Bind_Blur_ShaderResources(pShader);
+}
+GAUSSIAN_BLUR_CONFIG CGameInstance::Get_BlurConfig()
+{
+	return m_pBlur->Get_BlurConfig();
+}
+void CGameInstance::Set_BlurConfig(GAUSSIAN_BLUR_CONFIG Config)
+{
+	m_pBlur->Set_BlurConfig(Config);
+}
 #pragma endregion
 
 //
@@ -955,8 +974,10 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pImgui_Manager);
 #endif
 
-	Safe_Release(m_pThreadPool);
+	Safe_Release(m_pBlur);
 	Safe_Release(m_pSSAO);
+
+	Safe_Release(m_pThreadPool);
 	Safe_Release(m_pComputeShader_Manager);
 	Safe_Release(m_pPool_Manager);
 	Safe_Release(m_pTarget_Manager);
