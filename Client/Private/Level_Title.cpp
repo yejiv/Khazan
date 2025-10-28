@@ -28,11 +28,6 @@ HRESULT CLevel_Title::Initialize()
 
 void CLevel_Title::Update(_float fTimeDelta)
 {
-	if (GetKeyState(VK_RETURN) & 0x8000)
-	{
-		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::STAGE1))))
-			return;
-	}
 
 	if (m_pGameInstance->Key_Down(DIK_0))
 	{
@@ -43,6 +38,13 @@ void CLevel_Title::Update(_float fTimeDelta)
 	{
 		iTest++;
 	}
+
+	if (GetKeyState(VK_RETURN) & 0x8000)
+	{
+		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::STAGE1))))
+			return;
+	}
+
 
 	return;
 }

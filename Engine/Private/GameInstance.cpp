@@ -23,6 +23,7 @@
 #include "Camera_Manager.h"
 #include "BlackBoard.h"
 #include "SSAO.h"
+#include "Octree.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -127,6 +128,7 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	m_pSSAO = CSSAO::Create(*ppDevice, *ppContext);
 	if (nullptr == m_pSSAO)
 		return E_FAIL;
+
 
 #ifdef _DEBUG
 	m_pImgui_Manager = CImgui_Manager::Create(*ppDevice, *ppContext, EngineDesc.Menu_Imgui, EngineDesc.hWnd, EngineDesc.iWinSizeX, EngineDesc.iWinSizeY);
@@ -648,6 +650,14 @@ _bool CGameInstance::isIn_Frustum_WorldSpace(_fvector vWorldPos, _float fRange)
 	return m_pFrustum->isIn_WorldSpace(vWorldPos, fRange);
 }
 
+ContainmentType CGameInstance::isIn_Frustum_WorldSpace(const BoundingBox& BoundingBox)
+{
+	if (!m_pFrustum)
+		return CONTAINS;
+
+	return m_pFrustum->isIn_WorldSpace(BoundingBox);
+}
+
 _bool CGameInstance::isIn_Frustum_LocalSpace(_fvector vLocalPos, _float fRange)
 {
 	return m_pFrustum->isIn_LocalSpace(vLocalPos, fRange);
@@ -927,6 +937,33 @@ HRESULT CGameInstance::Bind_SSAO_ShaderResources(CShader* pShader)
 
 #pragma endregion
 
+#pragma region OCTREE
+
+void CGameInstance::DeleteOctree()
+{
+	Safe_Release(m_pOctree);
+}
+
+HRESULT CGameInstance::CreateOctree(const _float3& vCenter, const _float& fHalfWidth, const _int& iDepthLimit)
+{
+	m_pOctree = COctree::Create(vCenter, fHalfWidth, iDepthLimit);
+	if (!m_pOctree)
+		return E_FAIL;
+
+	return S_OK;
+}
+
+bool CGameInstance::AddStaticObject(CGameObject* pGameObject, const _float3& vPoint, const _float& fRadius)
+{
+	if (!m_pOctree)
+		return false;
+
+	return m_pOctree->AddStaticObject(pGameObject, vPoint, fRadius);
+}
+
+
+#pragma endregion
+
 //
 //void CGameInstance::Transform_Picking_ToLocalSpace(CTransform* pTransformCom)
 //{
@@ -945,7 +982,7 @@ void CGameInstance::Release_Engine()
 #ifdef _DEBUG
 	Safe_Release(m_pImgui_Manager);
 #endif
-
+	Safe_Release(m_pOctree);
 	Safe_Release(m_pThreadPool);
 	Safe_Release(m_pSSAO);
 	Safe_Release(m_pComputeShader_Manager);

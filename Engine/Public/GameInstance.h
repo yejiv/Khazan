@@ -167,6 +167,7 @@ public:
 #pragma region FRUSTUM
 	void Transform_Frustum_ToLocalSpace(_fmatrix WorldMatrix);
 	_bool isIn_Frustum_WorldSpace(_fvector vWorldPos, _float fRange = 0.f);
+	ContainmentType isIn_Frustum_WorldSpace(const BoundingBox& BoundingBox);
 	_bool isIn_Frustum_LocalSpace(_fvector vLocalPos, _float fRange = 0.f);
 	const _float4* Get_WorldPoints() const;
 #pragma endregion
@@ -285,6 +286,12 @@ public:
 	HRESULT		Bind_SSAO_ShaderResources(class CShader* pShader);
 #pragma endregion
 
+#pragma region Octree
+	void DeleteOctree();
+	HRESULT CreateOctree(const _float3& _vCenter, const _float& fHalfWidth = 256.0f, const _int& _iDepthLimit = 4);
+	bool AddStaticObject(class CGameObject* pGameObject, const _float3& vPoint, const _float& fRadius = 0.0f);
+#pragma endregion
+
 
 private:
 	class CGraphic_Device*		m_pGraphic_Device = { nullptr };
@@ -312,6 +319,7 @@ private:
 	
 	// 임시
 	class CSSAO*				m_pSSAO = { nullptr };
+	class COctree*				m_pOctree = { nullptr };
 
 #ifdef _DEBUG
 	class CImgui_Manager* m_pImgui_Manager = { nullptr };
