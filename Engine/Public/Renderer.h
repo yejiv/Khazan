@@ -54,10 +54,11 @@ private:
 	HRESULT Render_NonBlend();
 	HRESULT Render_SSAO();
 	HRESULT Render_Lights();
-	HRESULT Render_Combined();
-	HRESULT Render_Blur();
+	HRESULT Render_PostScene();
 	HRESULT Render_NonLight();
 	HRESULT Render_Blend();
+	HRESULT Render_Blur();
+	HRESULT Render_Combined();
 	HRESULT Render_UI();
 
 private:
