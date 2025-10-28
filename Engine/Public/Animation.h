@@ -9,7 +9,7 @@ class CAnimation final : public CBase
 
 private:
 	CAnimation();
-	CAnimation(const CAnimation& Prototype);
+	//CAnimation(const CAnimation& Prototype);
 	virtual ~CAnimation() = default;
 
 public:
@@ -20,6 +20,7 @@ public:
 
 	/*  Info  */
 public:
+	void		Set_RootBoneIndex(_uint iRootBoneIndex);
 	void		Set_TrackPositionPtr(_float* pTrackPosition);
 	void		Set_AnimBlendTime(_float fBlendTime) { m_fBlendTime = fBlendTime; } //클라에서 바꾸고 싶을 때
 	_float		Get_TickPerSecond() { return m_fTickPerSecond; }
@@ -36,7 +37,7 @@ private:
 	/* Info */
 	_float						m_fDuration = {};				/* 애니메이션의 전체 재생 길이 */
 	_float						m_fTickPerSecond = {};			/* 초당 이동해야할 거리 : 재생속도 */
-	_float*						m_fCurrentTrackPosition = {};   /* 애니메이션 재생중에서의 현재 위치  */
+	_float*						m_fCurrentTrackPosition = { nullptr };   /* 애니메이션 재생중에서의 현재 위치  */
 	_bool						m_isLoop = {};
 
 	/* CChannel == 뼈(시간에 따른 뼈의 상태행렬) */
