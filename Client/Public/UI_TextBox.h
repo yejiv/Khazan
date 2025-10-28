@@ -15,6 +15,7 @@ private:
 
 public:
 	void						Update_PosY(_int iIndex, _float2 vPos, _float fOffSetY);
+
 public:
 	virtual HRESULT				Initialize_Prototype() override;
 	virtual HRESULT				Initialize_Clone(void* pArg) override;

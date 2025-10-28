@@ -25,7 +25,8 @@ private:
 
 public:
 	void								Update_Pos(_int iIndex, _float2 vPos, _float fOffSetY);
-
+	void								OnAnime(_float fAccTime, _float fOffsetX, CUIObject* pParent);
+	void								Set_Selete(_bool isSelete);
 public:
 	virtual HRESULT						Initialize_Prototype(_uint iLevel);
 	virtual HRESULT						Initialize_Clone(void* pArg) override;
@@ -43,6 +44,9 @@ private:
 
 	class CUI_TextBox*					m_pTextBox = { nullptr };
 	class CMainMune_Deco*				m_pDeco = { nullptr };
+
+	_bool								m_bIsSelete = { false };
+	_float								m_fAccTime = {1.f};
 private:
 	HRESULT								Ready_Componet();
 public:

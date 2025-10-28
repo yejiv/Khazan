@@ -4,6 +4,9 @@
 
 #include "UI_Atlas_Icon.h"
 #include "UI_Inven.h"
+#include "Item_Slot.h"
+#include "UI_TextBox.h"
+
 CEquip_Slot::CEquip_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Slot{ pDevice, pContext }
 {
@@ -14,11 +17,19 @@ CEquip_Slot::CEquip_Slot(const CEquip_Slot& Prototype)
 {
 }
 
-_bool CEquip_Slot::Add_Item(_int iItemIndex)
+_bool CEquip_Slot::Add_Item(_int iItemIndex, CItem_Slot* pItem)
 {
-
-    if (m_iItemIndex < 0)
+    if (m_iItemIndex == iItemIndex || m_pItem_Slot == pItem)
     {
+        return true;
+    }
+    else if (iItemIndex >= 0)
+    {
+        if (m_pItem_Slot != nullptr)
+        {
+            m_pItem_Slot->is_Equip(false);
+            Safe_Release(m_pItem_Slot);
+        }
         m_iItemIndex = iItemIndex;
         ITEM_DATA ItemData = *CClientInstance::GetInstance()->Get_Data<ITEM_DATA>(m_iItemIndex);
 
@@ -27,17 +38,27 @@ _bool CEquip_Slot::Add_Item(_int iItemIndex)
         _uint iTexPass = ItemData.iTexPass;
 
         m_pIcon->Set_Texture(vUV, iTexPass);
-        m_iItemMaxCount = ItemData.iMaxValue;
-        ++m_iItemCount;
         Update_State(ItemData.iGrade);
+
+        m_pItem_Slot = pItem;
+        m_pItem_Slot->is_Equip(true, m_iIndex - ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::QUICK_1) + 1);
+        Safe_AddRef(m_pItem_Slot);
         return true;
     }
-    else if (m_iItemIndex == iItemIndex)
-    {
-        return true;
-    }
-    else
-        return false;
+    return false;
+}
+
+void CEquip_Slot::Release_Item(CItem_Slot* pItem)
+{
+    if (m_pItem_Slot == nullptr || pItem == nullptr)
+        return;
+
+    if (m_pItem_Slot != pItem)
+        return;
+    m_iItemIndex = -1;
+    Safe_Release(m_pItem_Slot);
+    Update_State(0);
+    
 }
 
 void CEquip_Slot::Update_PosX(_int iIndex, _float2 vPos, _float fOffSetX, _float fOffSetY, CUIObject* pParent)
@@ -107,17 +128,22 @@ void CEquip_Slot::Late_Update(_float fTimeDelta)
         CUI_Inven::INVENBUBBLE_DESC Desc = {};
         Desc.eBubbleType = CUI_Inven::EVENT_TYPE::SLOT_EQUIP;
         Desc.iIndex = m_iIndex;
-        if (m_iIndex != ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::WEAPON) && m_iItemIndex >= 0)
+        if (m_iIndex == ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::WEAPON) && m_iItemIndex >= 0)
         {
             _int iID = CClientInstance::GetInstance()->Get_Data<ITEM_DATA>(m_iItemIndex)->iEffect_ID;
             Desc.iItemType = CClientInstance::GetInstance()->Get_Data <EQUIPITEM_DATA>(iID)->iType;
         }
         __super::Bubble_EventCall(&Desc);
     }
-     m_pIcon->Late_Update(fTimeDelta);
+    m_pIcon->Late_Update(fTimeDelta);
     if (ButtonOver(g_hWnd) && m_iIndex != ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::SOULE))
         m_pSeleteFx->Late_Update(fTimeDelta);
 
+    if (m_pItem_Slot != nullptr && m_pTextBox != nullptr)
+    {
+        m_pTextBox->Set_Text(to_wstring(m_pItem_Slot->Get_ItemCount()));
+        m_pTextBox->Late_Update(fTimeDelta);
+    }
 }
 
 HRESULT CEquip_Slot::Ready_Prototype()
@@ -157,7 +183,7 @@ HRESULT CEquip_Slot::Ready_Childer()
     AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
     AtlasDesc.szName = "Item_Icon";
     AtlasDesc.vLocalPos = _float2{ 0.f, 0.f };
-    AtlasDesc.vLocalSize = { 93.f, 93.f };
+    AtlasDesc.vLocalSize = { m_vLocalSize.x - 10.f, m_vLocalSize.y - 10.f };
 
     AtlasDesc.vUV = { 0.f, 0.f, 1.f, 1.f };
     AtlasDesc.iShaderPass = 0;
@@ -171,6 +197,34 @@ HRESULT CEquip_Slot::Ready_Childer()
     m_Children.push_back(m_pIcon);
     Safe_AddRef(m_pIcon);
 
+    if (m_iIndex >= ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::QUICK_1))
+    {
+        CUIObject::UIOBJECT_DESC TextDesc = {};
+        TextDesc.fDepth = m_fDepth - 0.5f;
+        TextDesc.iUIType = ENUM_CLASS(UITYPE::TEXT);
+        TextDesc.szName = "Item_Count";
+        TextDesc.vLocalPos = _float2{ 0.f, 0.f };
+        TextDesc.vLocalSize = { m_vLocalSize.x, m_vLocalSize.y};
+        TextDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+        m_pTextBox = static_cast<CUI_TextBox*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_TextBox"), &TextDesc));
+
+        if (m_pTextBox == nullptr)
+            return E_FAIL;
+
+        CUI_TextBox::TEXTBOX_DESC TextSet = {};
+        TextSet.bIsTextBox = false;
+        TextSet.eTextAlign = TEXT_ALIGN::RIGHT_BOTTOM;
+        TextSet.fMaxWidth = 0;
+        TextSet.fOffsetHeight = 0;
+        TextSet.iPivotX = 40;
+        TextSet.iPivotY = 50;
+        TextSet.wstrTexttag = TEXT("Blade_Medium_18");
+        TextSet.wstrText = TEXT("");
+        TextSet.vColor = { 1.f, 1.f, 1.f, 1.f };
+        m_pTextBox->Setting_Text(TextSet);
+        m_Children.push_back(m_pTextBox);
+        Safe_AddRef(m_pTextBox);
+    }
     Update_State(0);
     return S_OK;
 }
@@ -212,6 +266,7 @@ void CEquip_Slot::Update_State(_uint iGrade)
     }
     else
     {
+        m_pIcon->Set_Shader(0);
         m_pIcon->Set_Color({ 1.f, 1.f, 1.f, 1.0f });
         m_iState = ENUM_CLASS(UISTATE::ENABLE);
         m_vColor.w = 1.f;
@@ -247,14 +302,6 @@ void CEquip_Slot::Equip_Item()
     __super::Bubble_EventCall(&Desc);
 }
 
-void CEquip_Slot::Release_Item()
-{
-    m_iItemIndex = -1;
-    m_iItemMaxCount = 0;
-    m_iItemCount = 0;
-    Update_State();
-}
-
 CEquip_Slot* CEquip_Slot::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)
 {
     CEquip_Slot* pInstance = new CEquip_Slot(pDevice, pContext);
@@ -282,4 +329,6 @@ void CEquip_Slot::Free()
     __super::Free();
     Safe_Release(m_pSeleteFx);
     Safe_Release(m_pIcon);
+    Safe_Release(m_pItem_Slot);
+    Safe_Release(m_pTextBox);
 }
