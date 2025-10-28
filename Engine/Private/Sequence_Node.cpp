@@ -17,7 +17,7 @@ BTNODESTATE CSequence_Node::Tick(CBlackBoard* BB)
 		if (BTNODESTATE::FAILURE == eState)
 		{
 			// 나가는 로직을 실행시키고
-			pChild->Terminate(BTNODESTATE::FAILURE);
+			pChild->Terminate(BTNODESTATE::FAILURE,BB);
 			// 가장 앞의 자식을 가리키게하고 FAIL반환
 			m_iCurrentIndex = 0;
 			return BTNODESTATE::FAILURE;
@@ -29,7 +29,7 @@ BTNODESTATE CSequence_Node::Tick(CBlackBoard* BB)
 		else
 		{
 			// 나가는 로직을 실행시키고
-			pChild->Terminate(BTNODESTATE::SUCCESS);
+			pChild->Terminate(BTNODESTATE::SUCCESS,BB);
 			// 다음 자식 노드를 가리키게한다.
 			m_iCurrentIndex++;
 		}
@@ -39,10 +39,10 @@ BTNODESTATE CSequence_Node::Tick(CBlackBoard* BB)
 	return BTNODESTATE::SUCCESS;
 }
 
-void CSequence_Node::Terminate(BTNODESTATE eState)
+void CSequence_Node::Terminate(BTNODESTATE eState, CBlackBoard* BB)
 {
 	if (m_iCurrentIndex < m_Children.size())
-		m_Children[m_iCurrentIndex]->Terminate(eState);
+		m_Children[m_iCurrentIndex]->Terminate(eState,BB);
 
 	m_iCurrentIndex = 0;
 }

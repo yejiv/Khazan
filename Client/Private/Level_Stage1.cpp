@@ -47,6 +47,7 @@ HRESULT CLevel_Stage1::Initialize()
 
 	CHECK_FAILED(Ready_Layer_Test(TEXT("Layer_Test")), E_FAIL);
 
+
 	/* 상호 작용 오브젝트 호출 함수 */
 	// m_pGameInstance->Add_FireTask([this]() {
 	// 	CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach_Test"), LEVEL::STAGE1), E_FAIL);
@@ -59,6 +60,18 @@ HRESULT CLevel_Stage1::Initialize()
 	//m_pGameInstance->Add_FireTask([this]() {
 	//	CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
 	//	});
+
+	/*m_pGameInstance->Add_FireTask([this]() {
+		CHECK_FAILED(Ready_Layer_MapObject_Test(TEXT("Layer_Test")), E_FAIL);
+		});
+	
+	m_pGameInstance->Add_FireTask([this]() {
+		CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+		});
+
+	m_pGameInstance->Add_FireTask([this]() {
+		CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+		});*/
 
 	//m_pGameInstance->Add_FireTask([this]() {
 	//	CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
