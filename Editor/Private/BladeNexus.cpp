@@ -25,8 +25,8 @@ HRESULT CBladeNexus::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Components(pArg), E_FAIL);
 
-    iiii = ANIM_STATE::BEFORE_IDLE;
-    m_pModelCom->Set_Animation(iiii);
+    m_eAnimState = ANIM_STATE::BEFORE_IDLE;
+    m_pModelCom->Set_Animation(ANIM_STATE::BEFORE_IDLE);
     m_pModelCom->Set_AnimationLoop(true);
 
 	return S_OK;
@@ -49,56 +49,64 @@ void CBladeNexus::Update(_float fTimeDelta)
     {
         isisisis = true;
 
-        iiii = ANIM_STATE::BEFORE_START;
+        m_eAnimState = ANIM_STATE::BEFORE_START;
     }
     if (m_pGameInstance->Key_Down(DIK_8))
     {
         isisisis = true;
 
-        iiii = ANIM_STATE::AFTER_START;
+        m_eAnimState = ANIM_STATE::AFTER_START;
     }
     if (m_pGameInstance->Key_Down(DIK_9))
     {
         isisisis = true;
 
-        if (ANIM_STATE::AFTER_LOOP == iiii)
-            iiii = ANIM_STATE::AFTER_END;
-        else if (ANIM_STATE::BEFORE_LOOP == iiii)
-            iiii = ANIM_STATE::BEFORE_END;
+        if (ANIM_STATE::AFTER_LOOP == m_eAnimState)
+            m_eAnimState = ANIM_STATE::AFTER_END;
+        else if (ANIM_STATE::BEFORE_LOOP == m_eAnimState)
+            m_eAnimState = ANIM_STATE::BEFORE_END;
     }
 
     if (isisisis == true)
     {
-        m_pModelCom->Set_Animation(iiii);
-        if (ANIM_STATE::AFTER_LOOP == iiii || ANIM_STATE::AFTER_IDLE == iiii || ANIM_STATE::BEFORE_LOOP == iiii || ANIM_STATE::BEFORE_IDLE == iiii)
+        m_pModelCom->Set_Animation(m_eAnimState);
+        if (ANIM_STATE::AFTER_LOOP == m_eAnimState || ANIM_STATE::AFTER_IDLE == m_eAnimState ||
+            ANIM_STATE::BEFORE_LOOP == m_eAnimState || ANIM_STATE::BEFORE_IDLE == m_eAnimState)
+        {
+            // 활성화 후 작업 중일 때
             m_pModelCom->Set_AnimationLoop(true);
+        }
     }
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
     {
-        if (ANIM_STATE::BEFORE_START == iiii)
+        if (ANIM_STATE::BEFORE_START == m_eAnimState)
         {
+            // 처음 상호 작용 후 애니메이션 루프로 전환
+            m_eAnimState = ANIM_STATE::BEFORE_LOOP;
             m_pModelCom->Set_Animation(ANIM_STATE::BEFORE_LOOP);
             m_pModelCom->Set_AnimationLoop(true);
-            iiii = ANIM_STATE::BEFORE_LOOP;
         }
-        if (ANIM_STATE::BEFORE_END == iiii)
+        if (ANIM_STATE::BEFORE_END == m_eAnimState)
         {
+            // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
+            m_eAnimState = ANIM_STATE::AFTER_IDLE;
             m_pModelCom->Set_Animation(ANIM_STATE::AFTER_IDLE);
             m_pModelCom->Set_AnimationLoop(true);
-            iiii = ANIM_STATE::AFTER_IDLE;
         }
-        if (ANIM_STATE::AFTER_START == iiii)
+        if (ANIM_STATE::AFTER_START == m_eAnimState)
         {
+            // 다회 상호 작용 후 애니메이션 루프로 전환
+            m_eAnimState = ANIM_STATE::AFTER_LOOP;
             m_pModelCom->Set_Animation(ANIM_STATE::AFTER_LOOP);
             m_pModelCom->Set_AnimationLoop(true);
-            iiii = ANIM_STATE::AFTER_LOOP;
         }
-        if (ANIM_STATE::AFTER_END == iiii)
+        if (ANIM_STATE::AFTER_END == m_eAnimState)
         {
+            // 다회 상호 작용이 끝난 후 After Idle 상태로 전환
+            m_eAnimState = ANIM_STATE::AFTER_IDLE;
             m_pModelCom->Set_Animation(ANIM_STATE::AFTER_IDLE);
             m_pModelCom->Set_AnimationLoop(true);
-            iiii = ANIM_STATE::AFTER_IDLE;
         }
     }
 }

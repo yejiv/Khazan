@@ -268,6 +268,9 @@
     <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\00.BladeNexus">
       <UniqueIdentifier>{db2499ad-79c0-4c82-ad8f-32198cfc8f33}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\01.BigChest">
+      <UniqueIdentifier>{892b8f58-f94a-4d3e-aec9-9b9abb09770d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -513,6 +516,9 @@
     <ClInclude Include="..\Public\BladeNexus.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\00.BladeNexus</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\BigChest.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\01.BigChest</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -746,6 +752,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\BladeNexus.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\00.BladeNexus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BigChest.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\01.BigChest</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
