@@ -334,6 +334,9 @@
     <Filter Include="01.Utility\12.Jolt\Filter\BodyDraw">
       <UniqueIdentifier>{4e85521a-82eb-4a5a-844a-614876a09f5e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\94.RenderingResources\Blur">
+      <UniqueIdentifier>{04164c94-d55e-47cc-8a33-5e29e13b0531}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -653,6 +656,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Octree.cpp">
       <Filter>01.Utility\17.Octree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Blur.cpp">
+      <Filter>01.Utility\94.RenderingResources\Blur</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1013,6 +1019,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\BodyDrawFilter.h">
       <Filter>01.Utility\12.Jolt\Filter\BodyDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Blur.h">
+      <Filter>01.Utility\94.RenderingResources\Blur</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
