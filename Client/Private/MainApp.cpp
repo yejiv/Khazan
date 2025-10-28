@@ -239,6 +239,10 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 		CCursor::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 	
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_DamageText"),
+		CDamage_Text::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 	return S_OK;
 }
 

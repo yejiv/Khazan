@@ -102,12 +102,14 @@ deque<CGameObject*>* CPool_Manager::Find_Pool(_uint iLayerLevelIndex, const _wst
 
 	auto iter = m_pPools[iLayerLevelIndex].begin();
 
-	for (auto iter = m_pPools[iLayerLevelIndex].begin(); iter != m_pPools[iLayerLevelIndex].end(); )
+	for (auto iter = m_pPools[iLayerLevelIndex].begin(); iter != m_pPools[iLayerLevelIndex].end();)
 	{
 		if (iter->first == strPoolTag)
 		{
 			return &(iter->second);
 		}
+		else
+			++iter;
 	}
 
 	return nullptr;
