@@ -4,6 +4,7 @@
 #include "GameInstance.h"
 #include "BlackBoard.h"
 #include "FSM_Yetuga.h"
+#include "Body_Yetuga.h"
 
 CAS_LieDown_Yetuga::CAS_LieDown_Yetuga()
 {
@@ -11,14 +12,16 @@ CAS_LieDown_Yetuga::CAS_LieDown_Yetuga()
 
 void CAS_LieDown_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
-    CModel* pModel = static_cast<CModel*>(pOwner->Get_Component(TEXT("Com_Model")));
-    pModel->Set_Animation(3);
+    CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
+    CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
+    pModel->Set_Animation(50);
     pModel->Set_AnimationLoop(false);
 }
 
 void CAS_LieDown_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
-    CModel* pModel = static_cast<CModel*>(pOwner->Get_Component(TEXT("Com_Model")));
+    CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
+    CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
     if (pModel->Play_Animation(fTimeDelta))
     {
         m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>("Yetuga", "isAttackFinished3", true);

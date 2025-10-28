@@ -59,5 +59,4 @@ void CPartObject::Free()
 {
 	__super::Free();
 
-
 }

@@ -267,9 +267,15 @@
     </Filter>
     <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\00.BladeNexus">
       <UniqueIdentifier>{db2499ad-79c0-4c82-ad8f-32198cfc8f33}</UniqueIdentifier>
-	</Filter>
+    </Filter>
     <Filter Include="92.AI\State\Yetuga\04.LieDown">
       <UniqueIdentifier>{3119b102-ecca-4b2c-a42e-08dbcfd5a313}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Yetuga\Body">
+      <UniqueIdentifier>{8fef0fd1-b2ca-4175-81dc-514453bf821a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\05.Turn">
+      <UniqueIdentifier>{5f90142a-cff5-4bcd-ba6a-8a35b7d51aa8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -515,9 +521,15 @@
     </ClInclude>
     <ClInclude Include="..\Public\BladeNexus.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\00.BladeNexus</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="..\Public\AS_LieDown_Yetuga.h">
       <Filter>92.AI\State\Yetuga\04.LieDown</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Body_Yetuga.h">
+      <Filter>02.GameObject\Creature\Monster\Yetuga\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Turn_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\05.Turn</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -752,9 +764,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\BladeNexus.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\00.BladeNexus</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="..\Private\AS_LieDown_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\04.LieDown</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Body_Yetuga.cpp">
+      <Filter>02.GameObject\Creature\Monster\Yetuga\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Turn_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\05.Turn</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

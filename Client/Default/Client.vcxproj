@@ -162,10 +162,12 @@
     <ClInclude Include="..\Public\AI_Controller_Yetuga.h" />
     <ClInclude Include="..\Public\AS_LieDown_Yetuga.h" />
     <ClInclude Include="..\Public\AS_RightHand_5Hit_Yetuga.h" />
+    <ClInclude Include="..\Public\AS_Turn_Yetuga.h" />
     <ClInclude Include="..\public\Atlas_RenderGroup.h" />
     <ClInclude Include="..\Public\AttackState_Yetuga.h" />
     <ClInclude Include="..\Public\BladeNexus.h" />
     <ClInclude Include="..\Public\Body_Player.h" />
+    <ClInclude Include="..\Public\Body_Yetuga.h" />
     <ClInclude Include="..\Public\BT_Yetuga.h" />
     <ClInclude Include="..\public\Camera_Free.h" />
     <ClInclude Include="..\Public\Camera_Compre.h" />
@@ -249,10 +251,12 @@
     <ClCompile Include="..\Private\AI_Controller_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_LieDown_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_RightHand_5Hit_Yetuga.cpp" />
+    <ClCompile Include="..\private\AS_Turn_Yetuga.cpp" />
     <ClCompile Include="..\private\Atlas_RenderGroup.cpp" />
     <ClCompile Include="..\Private\AttackState_Yetuga.cpp" />
     <ClCompile Include="..\Private\BladeNexus.cpp" />
     <ClCompile Include="..\Private\Body_Player.cpp" />
+    <ClCompile Include="..\Private\Body_Yetuga.cpp" />
     <ClCompile Include="..\Private\BT_Yetuga.cpp" />
     <ClCompile Include="..\private\Camera_Free.cpp" />
     <ClCompile Include="..\Private\Camera_Compre.cpp" />
