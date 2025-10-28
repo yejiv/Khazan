@@ -17,7 +17,7 @@ BTNODESTATE CSelector_Node::Tick(CBlackBoard* BB)
 		if (BTNODESTATE::SUCCESS == eState)
 		{
 			// 현재 노드의 성공 초기화를 실행하고
-			pChild->Terminate(BTNODESTATE::SUCCESS);
+			pChild->Terminate(BTNODESTATE::SUCCESS,BB);
 			// 가장 앞의 자식노드를 가리키고 SUCCESS 반환
 			m_iCurrentIndex = 0;
 			return BTNODESTATE::SUCCESS;
@@ -30,7 +30,7 @@ BTNODESTATE CSelector_Node::Tick(CBlackBoard* BB)
 		else
 		{
 			// 실패 초기화 하고
-			pChild->Terminate(BTNODESTATE::FAILURE);
+			pChild->Terminate(BTNODESTATE::FAILURE,BB);
 			// 다음 인덱스를 검사한다.
 			m_iCurrentIndex++;
 		}
@@ -41,12 +41,12 @@ BTNODESTATE CSelector_Node::Tick(CBlackBoard* BB)
 	return BTNODESTATE::FAILURE;
 }
 
-void CSelector_Node::Terminate(BTNODESTATE eState)
+void CSelector_Node::Terminate(BTNODESTATE eState, CBlackBoard* BB)
 {
 	// 노드 종료시 실행한다.
 
 	if (m_iCurrentIndex < m_Children.size())
-		m_Children[m_iCurrentIndex]->Terminate(eState);
+		m_Children[m_iCurrentIndex]->Terminate(eState,BB);
 
 	m_iCurrentIndex = 0;
 }

@@ -227,10 +227,9 @@ CBTNode* CAI_Controller::CreateBTNode(CGameObject* pOwner, const AIBTNODE_DATA& 
         else if (NodeData.strSubtype == "Repeater")
             pDecorator = CRepeater_Node::Create(NodeData.iRepeatCount);
         else if (NodeData.strSubtype == "CoolDown")
-            pDecorator = CCoolDown_Node::Create(m_strMonstertag, "CurrentTime", NodeData.fCoolDownTime);
+            pDecorator = CCoolDown_Node::Create(m_strMonstertag,"CurrentTime", NodeData.fCoolDownTime);
 
         if (!NodeData.Children.empty())
-            //pDecorator->Set_Child(CreateBTNode(pOwner,NodeData.Children[0]));
             pDecorator->Set_Child(CreateBTNode(pOwner,*NodeData.Children[0]));
 
         return pDecorator;
@@ -246,7 +245,6 @@ CBTNode* CAI_Controller::CreateBTNode(CGameObject* pOwner, const AIBTNODE_DATA& 
             pComposite = CSequence_Node::Create();
 
         for (auto& pChild : NodeData.Children)
-            //pComposite->Add_Child(CreateBTNode(pOwner,pChild));
             pComposite->Add_Child(CreateBTNode(pOwner,*pChild));
 
 

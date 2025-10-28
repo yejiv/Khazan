@@ -8,18 +8,25 @@ CAction_Node::CAction_Node(ACTION Action, TERMINATE Terminate)
 
 BTNODESTATE CAction_Node::Tick(CBlackBoard* BB)
 {
-    m_pBB = BB;
+
     if (m_Action)
+    {
         return m_Action(BB);
+       
+    }
+
 
     return BTNODESTATE::FAILURE;
+  
+
 }
 
-void CAction_Node::Terminate(BTNODESTATE eState)
+void CAction_Node::Terminate(BTNODESTATE eState, CBlackBoard* BB)
 {
     if (m_Terminate)
-        return m_Terminate(m_pBB,eState);
+        return m_Terminate(BB, eState);
 }
+
 
 void CAction_Node::Abort()
 {

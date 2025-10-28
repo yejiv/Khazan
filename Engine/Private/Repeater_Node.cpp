@@ -21,10 +21,11 @@ BTNODESTATE CRepeater_Node::Tick(CBlackBoard* BB)
 	return BTNODESTATE::SUCCESS;
 }
 
-void CRepeater_Node::Terminate(BTNODESTATE eState)
+void CRepeater_Node::Terminate(BTNODESTATE eState, CBlackBoard* BB)
 {
 	m_iCurrentCount = 0;
 }
+
 
 void CRepeater_Node::Abort()
 {

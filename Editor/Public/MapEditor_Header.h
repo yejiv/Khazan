@@ -15,7 +15,9 @@
 
 // Interactive Properties
 #include "Prop_Interactive.h"
-#include "BladeNexus.h"
+
+#include "BladeNexus.h"					// ±Í°Ë
+#include "BigChest.h"					// »óÀÚ
 
 // Properties Test
 #include "Prop_Test.h"

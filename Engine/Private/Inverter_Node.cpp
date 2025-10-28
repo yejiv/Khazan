@@ -24,7 +24,7 @@ BTNODESTATE CInverter_Node::Tick(CBlackBoard* BB)
     return BTNODESTATE::FAILURE;
 }
 
-void CInverter_Node::Terminate(BTNODESTATE eState)
+void CInverter_Node::Terminate(BTNODESTATE eState, CBlackBoard* BB)
 {
     if (m_pChild)
         m_pChild->Terminate(eState);

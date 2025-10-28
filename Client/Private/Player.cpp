@@ -41,6 +41,10 @@ HRESULT CPlayer::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Collision()))
         return E_FAIL;
 
+#pragma region 상호 작용 맵 오브젝트 임시 테스트용
+    m_pGameInstance->Subscribe_Event<EventChestActive>(ENUM_CLASS(EVENT_TYPE::BIGCHEST_ACTIVE), [&](const EventChestActive& e) { m_ChestEvent = e; });
+#pragma endregion
+
     return S_OK;
 }
 
@@ -51,6 +55,14 @@ void CPlayer::Priority_Update(_float fTimeDelta)
 
 void CPlayer::Update(_float fTimeDelta)
 {
+
+   /*  XMVECTOR vPos = m_pTransformCom->Get_State(STATE::POSITION);
+   XMFLOAT3 pos;
+   XMStoreFloat3(&pos, vPos);
+
+   cout << "Pos: (" << pos.x << ", " << pos.y << ", " << pos.z << ")" << endl;*/
+
+
     if (GetKeyState(VK_LBUTTON) & 0x8000)
     {
         _float3     vPickedPos{};
@@ -92,6 +104,34 @@ void CPlayer::Update(_float fTimeDelta)
         m_iState |= IDLE;
     }
 
+#pragma region 상호 작용 맵 오브젝트 임시 테스트 용
+    
+    if (m_pGameInstance->Key_Down(DIK_F))
+    {
+        // 스페이스 누르면 상자랑 귀검 상호작용
+        m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::BLADENEXUS), { true, false });
+        m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::BIGCHEST), { true, false });
+    }
+
+    if (m_pGameInstance->Key_Down(DIK_LCONTROL))
+    {
+        // LCONTROL 누르면 상자랑 귀검 상호작용
+        m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::BLADENEXUS), { false, true });
+        m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::BIGCHEST), { false, true });
+    }
+
+    if (true == m_ChestEvent.isSignal)
+    {
+        m_ChestEvent.isSignal = false;
+
+        if (false == m_ChestEvent.isChestActive)
+        {
+            m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&m_ChestEvent.vPlayerPosition), 1.f));
+            m_pTransformCom->LookAt(XMVectorSetW(XMLoadFloat3(&m_ChestEvent.vPosition), 1.f));
+        }
+    }
+    
+#pragma endregion
 
     __super::Update(fTimeDelta);
 

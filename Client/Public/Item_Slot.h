@@ -16,6 +16,7 @@ private:
 	virtual ~CItem_Slot() = default;
 public:
 	_int								Get_ItemCount() { return m_iItemCount; }
+	_int*								Get_ptrItemCount();
 	_bool								Add_Item(_int iItemIndex);
 	void								Update_Pos(_int iIndex, _float2 vPos, _float fOffSet, _int iMaxIndexX, _int iMaxIndexY);
 	_bool								Off_Selete();

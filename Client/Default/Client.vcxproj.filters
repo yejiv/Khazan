@@ -241,9 +241,6 @@
     <Filter Include="02.GameObject\UI\Inven\ETC">
       <UniqueIdentifier>{a35136d7-7ad3-4580-b681-c029de6c4006}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\UI\Inven\ETC\Tap">
-      <UniqueIdentifier>{f963ed35-50bf-4b47-8cd0-654a0d22a79e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="94. ClientInstance\DB">
       <UniqueIdentifier>{dffd0957-694b-48a5-a2e0-c30d199869c1}</UniqueIdentifier>
     </Filter>
@@ -267,6 +264,24 @@
     </Filter>
     <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\00.BladeNexus">
       <UniqueIdentifier>{db2499ad-79c0-4c82-ad8f-32198cfc8f33}</UniqueIdentifier>
+	</Filter>
+    <Filter Include="92.AI\State\Yetuga\04.LieDown">
+      <UniqueIdentifier>{3119b102-ecca-4b2c-a42e-08dbcfd5a313}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\01.BigChest">
+      <UniqueIdentifier>{892b8f58-f94a-4d3e-aec9-9b9abb09770d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI">
+      <UniqueIdentifier>{dd547fdf-504a-40c8-844b-a85ee87b3c2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Mon_HPGague">
+      <UniqueIdentifier>{7b62ab3c-7ad2-42f3-84f4-f09e6a42b48c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Interaction_Guide">
+      <UniqueIdentifier>{c00e5e09-9592-4d20-94eb-70e9d79117fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Damage_UI">
+      <UniqueIdentifier>{6da1545d-0879-4c90-9ac6-1aeabdd954dc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -468,9 +483,6 @@
     <ClInclude Include="..\public\UI_BackGround.h">
       <Filter>02.GameObject\UI\ETC</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Inven_Tap.h">
-      <Filter>02.GameObject\UI\Inven\ETC\Tap</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\UI_Inven.h">
       <Filter>02.GameObject\UI\Inven</Filter>
     </ClInclude>
@@ -512,6 +524,18 @@
     </ClInclude>
     <ClInclude Include="..\Public\BladeNexus.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\00.BladeNexus</Filter>
+	</ClInclude>
+    <ClInclude Include="..\Public\AS_LieDown_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\04.LieDown</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BigChest.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\01.BigChest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Inven_Tap.h">
+      <Filter>02.GameObject\UI\Inven\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Damage_Text.h">
+      <Filter>02.GameObject\UI\WorldUI\Damage_UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -705,9 +729,6 @@
     <ClCompile Include="..\private\UI_BackGround.cpp">
       <Filter>02.GameObject\UI\ETC</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Inven_Tap.cpp">
-      <Filter>02.GameObject\UI\Inven\ETC\Tap</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\UI_Inven.cpp">
       <Filter>02.GameObject\UI\Inven</Filter>
     </ClCompile>
@@ -746,6 +767,18 @@
     </ClCompile>
     <ClCompile Include="..\Private\BladeNexus.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\00.BladeNexus</Filter>
+	</ClCompile>
+    <ClCompile Include="..\Private\AS_LieDown_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\04.LieDown</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BigChest.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\01.BigChest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Inven_Tap.cpp">
+      <Filter>02.GameObject\UI\Inven\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Damage_Text.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Damage_UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
