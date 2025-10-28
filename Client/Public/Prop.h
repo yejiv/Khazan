@@ -19,6 +19,8 @@ public:
 
 		MAPOBJECT_PROPERTIES Properties{};
 
+		_float4x4 WorldMatrix{};
+
 		_tchar szModelName[MAX_PATH] = {};
 
 	}PROP_DESC;

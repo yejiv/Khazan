@@ -23,7 +23,7 @@ private:
 	// === 모델 관련 ===
 	vector<class CJOH_EditorModelTest*>		m_GameObjects;
 	vector<_wstring>						m_ObjectNames;
-	_float3									m_vPreScale = { 0.01f, 0.01f, 0.01f };
+	_float3									m_vPreScale = { 0.0001f, 0.0001f, 0.0001f };
 	_bool									m_isAnim = { false };
 	_int									m_iCurrentRenderGroup = {3};
 	_wstring								m_strModelName;
@@ -103,6 +103,7 @@ private:
 	string	ConvertToClientRelativePath(const string& absolutePath);
 
 	string	DirectionToString(_uint iDir);
+	string	RotationToString(_uint iDir);
 
 public:
 	static CAnimationTool* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

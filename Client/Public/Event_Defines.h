@@ -1,5 +1,12 @@
 #pragma once
 
 namespace Client {
-	enum class EVENT_TYPE { UI_QUICK_SLOT, END };
+	// ENUMs
+	enum class EVENT_TYPE { TEST, UI_QUICK_SLOT, END };
+
+
+	// Structs
+	struct EventTest {
+		int data;
+	};
 }

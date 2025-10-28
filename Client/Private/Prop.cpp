@@ -21,15 +21,14 @@ HRESULT CProp::Initialize_Prototype()
 
 HRESULT CProp::Initialize_Clone(void* pArg)
 {
-    CHECK_NULLPTR(pArg, E_FAIL);
-
     PROP_DESC* pDesc = static_cast<PROP_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
-    m_Properties = pDesc->Properties;
+    CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
+
     memcpy(m_szModelName, pDesc->szModelName, MAX_PATH);
 
-    CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
+    m_Properties = pDesc->Properties;
 
     return S_OK;
 }

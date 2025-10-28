@@ -17,16 +17,34 @@ HRESULT CLevel_Title::Initialize()
 		return E_FAIL;
 
 	CHECK_FAILED(Ready_Layer_UI(), E_FAIL);
+
+	m_pGameInstance->Subscribe_Event<EventTest>(ENUM_CLASS(EVENT_TYPE::TEST), [&](const EventTest& e)
+		{
+			iTest = e.data;
+		});
+
 	return S_OK;
 }
 
 void CLevel_Title::Update(_float fTimeDelta)
 {
+
+	if (m_pGameInstance->Key_Down(DIK_0))
+	{
+		m_pGameInstance->Emit_Event<EventTest>(ENUM_CLASS(EVENT_TYPE::TEST), EventTest{ 10 });
+	}
+
+	if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+	{
+		iTest++;
+	}
+
 	if (GetKeyState(VK_RETURN) & 0x8000)
 	{
 		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::STAGE1))))
 			return;
 	}
+
 
 	return;
 }

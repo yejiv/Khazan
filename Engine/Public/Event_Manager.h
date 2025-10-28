@@ -4,31 +4,103 @@
 
 NS_BEGIN(Engine)
 
-class ENGINE_DLL CEvent_Manager final : public CBase
+class CEvent_Manager final : public CBase
 {
 public:
-	typedef struct tagEvent
-	{
-		_uint iID;
-		std::function<void()> fEvent;
-	}EVENT_DESC;
+	struct Handler {
+		_uint iId;
+		function<void(const void*)> fn_erased;
+	};
+
+	struct IChannel {
+		virtual ~IChannel() = default;
+		virtual type_index PayloadType() const = 0;
+		virtual void Emitptr(const void* pPayload) = 0;
+		virtual _bool Unsubscribe(_uint iListenerId) = 0;
+		virtual void Clear() = 0;
+	};
+
+public:
+	template<typename T>
+	struct Channel final : IChannel {
+		vector<Handler> handlers;
+
+		type_index PayloadType() const override { return typeid(T); }
+
+		void Emitptr(const void* pPayload) override {
+			const T& data = *static_cast<const T*>(pPayload);
+			for (auto& Handler : handlers) if (Handler.fn_erased) {
+				try { Handler.fn_erased(&data); }
+				catch (...) {}
+			}
+		}
+		bool Unsubscribe(_uint iListenerId) override {
+			for (auto it = handlers.begin(); it != handlers.end(); ++it)
+				if (it->iId == iListenerId) { handlers.erase(it); return true; }
+			return false;
+		}
+		void Clear() override { handlers.clear(); }
+	};
+
 private:
 	CEvent_Manager();
 	virtual ~CEvent_Manager() = default;
 
 public:
-	_uint Subscribe(_uint iEventType, std::function<void()> fEvent);
-	void UnSubscribeAll(_uint iEventType);
-	void UnSubscribe(_uint iEventType, _uint iID);
-	HRESULT Emit(_uint iEventType);
+	template<typename T>
+	_uint Subscribe(_uint iEventType, function<void(const T&)> fn) {
+		Channel<T>* channel = GetOrCreateChannel<T>(iEventType);
+		const _uint id = ++m_iNextListenerID;
 
-	void Clear();
+		Handler handler;
+		handler.iId = id;
+		handler.fn_erased = [function = move(fn)](const void* p) {
+			function(*static_cast<const T*>(p));
+			};
+		channel->handlers.push_back(move(handler));
+
+		return id;
+	}
+
+	template<typename T>
+	HRESULT Emit(_uint iEventType, const T& payload) {
+		IChannel* Channel = FindChannel(iEventType);
+		if (!Channel) return E_FAIL;
+		if (Channel->PayloadType() != type_index(typeid(T))) {
+			return E_FAIL;
+		}
+		Channel->Emitptr(&payload);
+		return S_OK;
+	}
+	
+	_bool Unsubscribe(_uint iEventType, _uint iListenerId);
+	void UnsubscribeAll(_uint iEventType);
+	void ClearAll();
+
+private:
+	IChannel* FindChannel(_uint eventType) {
+		auto it = m_Channels.find(eventType);
+		return (it == m_Channels.end()) ? nullptr : it->second;
+	}
+
+	template<typename T>
+	Channel<T>* GetOrCreateChannel(_uint eventType) {
+		auto it = m_Channels.find(eventType);
+		if (it == m_Channels.end()) {
+			auto* ch = new Channel<T>();
+			m_Channels.emplace(eventType, ch);
+			return ch;
+		}
+		if (it->second->PayloadType() != type_index(typeid(T))) {
+
+		}
+		return static_cast<Channel<T>*>(it->second);
+	}
 
 private:
 	class CGameInstance* m_pGameInstance = { nullptr };
-	map<_uint, vector<EVENT_DESC>>	m_Events;
-
-	static _uint	iEvent_Index;
+	unordered_map<_uint, IChannel*> m_Channels;
+	_uint m_iNextListenerID = 0;
 
 public:
 	static CEvent_Manager* Create();
