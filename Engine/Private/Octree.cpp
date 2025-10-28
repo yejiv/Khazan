@@ -62,13 +62,7 @@ void COctree::Priority_Update(_float fTimeDelta)
 			{
 				if ((*iter)->Get_IsActive())
 				{
-					/*if ((*iter)->GetDistanceFromCam() < 40.0f)
-					{*/
-					//(*iter)->SetEnable(true);
 					(*iter)->Priority_Update(fTimeDelta);
-					//}
-					/*else
-						(*iter)->SetEnable(false);*/
 				}
 				else
 				{
@@ -98,7 +92,6 @@ void COctree::Update(_float fTimeDelta)
 			{
 				if ((*iter)->Get_IsActive())
 				{
-					//if ((*iter)->IsEnabled())
 					(*iter)->Update(fTimeDelta);
 				}
 				else
@@ -129,7 +122,6 @@ void COctree::Late_Update(_float fTimeDelta)
 			{
 				if ((*iter)->Get_IsActive())
 				{
-					//if ((*iter)->IsEnabled())
 					(*iter)->Late_Update(fTimeDelta);
 				}
 				else
@@ -140,33 +132,6 @@ void COctree::Late_Update(_float fTimeDelta)
 				iter++;
 			}
 		}
-		/*if (!m_Instances.empty())
-		{
-			
-			for (auto& pair : m_Instances)
-			{
-				for (auto& vecInstance : pair.second)
-				{
-					for (auto& Info : vecInstance.InstanceInfo)
-					{
-						if (vecInstance.fRadius < 5.2f)
-						{
-							if (40.0f > pGameInstance->DistanceFromCam(Info.first) && pGameInstance->isInWorldSpace(Info.first, vecInstance.fRadius))
-							{
-								vecInstance.pGameObject.lock()->AddInstancingWorldMatrix(Info.second);
-							}
-						}
-						else
-						{
-							if (pGameInstance->isInWorldSpace(Info.first, vecInstance.fRadius))
-							{
-								vecInstance.pGameObject.lock()->AddInstancingWorldMatrix(Info.second);
-							}
-						}
-					}
-				}
-			}
-		}*/
 		if (m_iDepth)
 		{
 			for (int Child = LBB; Child < CHILDEND; Child++)
