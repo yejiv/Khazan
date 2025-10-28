@@ -49,7 +49,7 @@ HRESULT CShadow::Initialize()
 void CShadow::Update()
 {
 	// 캐스케이드 코너 카메라 절두체 가져와서 비율로 계산
-	const _float4* pWorldPoints = m_pGameInstance->Get_WorldPoints();
+	const _float4* pWorldPoints = m_pGameInstance->Get_Frustum_WorldPoints();
 
 	for (_uint i = 0; i < m_Cascade.iNumCascades; ++i)
 	{

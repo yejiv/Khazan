@@ -22,6 +22,8 @@ public:
 public:
 	vector<class CCamera*> Get_pCameras(_uint iNumLevel) { return m_pCameras[iNumLevel]; }
 	class CCamera* Get_ActiveCamera() { return m_pActiveCamera; }
+	_float3 Get_ActiveCameraPos();
+	_float4 Get_ActiveCameraLook();
 
 public:
 	void Save_Dat();
