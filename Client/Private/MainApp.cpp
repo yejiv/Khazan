@@ -29,8 +29,6 @@ HRESULT CMainApp::Initialize()
 	Imgui_Menu.push_back(TEXT("Debug"));
 	EngineDesc.Menu_Imgui = Imgui_Menu;
 	
-	//MakeSpriteFont "³Ø½¼Lv1°íµñ Bold" "153.SpriteFont"
-	/*MakeSpriteFont "³Ø½¼Lv1°íµñ Bold" /FontSize:20 /FastPack /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 153ex.spritefont */
 
 	if(FAILED(m_pGameInstance->Initialize_Engine(EngineDesc, &m_pDevice, &m_pContext)))
 		return E_FAIL;
