@@ -32,7 +32,7 @@ namespace Engine
 	//	ALL, CC, CD, CU, LC, LD, LU, RC, RD, RU,
 	//	END,
 	//};
-	enum class ANIM_DIRECTION : uint32_t {
+	enum class DIRECTION : uint32_t {
 		NONE = 0,
 		F = 1 << 0,
 		B = 1 << 1,
@@ -49,9 +49,28 @@ namespace Engine
 
 		END,
 	};
+
+	enum class ANIM_ROTATIONTYPE {
+		NONE = 0 ,
+		ROT_L45 = 1 << 0,
+		ROT_L90 = 1 << 1,
+		ROT_L135 = 1 << 2,
+		ROT_L180 = 1 << 3,
+		ROT_L225 = 1 << 4,
+	
+		ROT_R45	= 1 << 5,
+		ROT_R90 = 1 << 6,
+		ROT_R135 = 1 << 7,
+		ROT_R180 = 1 << 8,
+		ROT_R225 = 1 << 9,
+	};
+
+
 	enum class ANIM_TRANSITIONTYPE { AUTO, FLAG, INPUT, MANUAL, END};	//애니메이션 전환 조건
 	enum class MAPOBJECT_TYPE : unsigned short { OBJECT, STATIC_INST, ANIMATED_INST, INTERACTIVE, DYNAMIC, END };
 	enum class BTNODESTATE { RUNNING, SUCCESS, FAILURE, END };
+
+	enum class INTERACTIVE_TYPE { CHECKPOINT, CHEST, LADDER, ELEVATOR, LEVER, END };
 }
 
 namespace JoltLayers

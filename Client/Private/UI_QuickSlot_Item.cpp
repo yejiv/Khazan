@@ -14,6 +14,10 @@ CUI_QuickSlot_Item::CUI_QuickSlot_Item(const CUI_QuickSlot_Item& Prototype)
 {
 }
 
+void CUI_QuickSlot_Item::Add_Item(CItem_Slot* pItem)
+{
+}
+
 void CUI_QuickSlot_Item::Input_Slot()
 {
     if (m_iState == ENUM_CLASS(QUICKITMESLOTSTATE::DISABLE))
@@ -35,6 +39,7 @@ HRESULT CUI_QuickSlot_Item::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     m_iState = ENUM_CLASS(QUICKITMESLOTSTATE::NONITEM);
+
     return S_OK;
 }
 
@@ -98,6 +103,26 @@ HRESULT CUI_QuickSlot_Item::Ready_Prototype()
 HRESULT CUI_QuickSlot_Item::Ready_Childer()
 {
     
+    CUI_Atlas_Icon::UIATLASICON_DESC AtlasDesc;
+
+    AtlasDesc.fDepth = m_fDepth;
+    AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+    AtlasDesc.szName = "Item_Icon";
+    AtlasDesc.vLocalPos = _float2{ 0.f, 0.f };
+    AtlasDesc.vLocalSize = { 93.f, 93.f };
+
+    AtlasDesc.vUV = { 0.f, 0.f, 1.f, 1.f };
+    AtlasDesc.iShaderPass = 0;
+    AtlasDesc.iTexPass = 2;
+    AtlasDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+    m_pIcon = static_cast<CUI_Atlas_Icon*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Atlas_Icon"), &AtlasDesc));
+
+    if (m_pIcon == nullptr)
+        return E_FAIL;
+
+    m_Children.push_back(m_pIcon);
+    Safe_AddRef(m_pIcon);
+
     CUI_Atlas_Icon::UIATLASICON_DESC Desc;
     Desc.fDepth = m_fDepth;
     Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
@@ -177,6 +202,7 @@ CGameObject* CUI_QuickSlot_Item::Clone(void* pArg)
 
 void CUI_QuickSlot_Item::Free()
 {
+    Safe_Release(m_pIcon);
     Safe_Release(m_pDisableFX);
     __super::Free();
 }

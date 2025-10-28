@@ -11,7 +11,6 @@ public:
 		_int iTexPass = {};
 		_int iShaderPass = {};
 		_float4 vUV = {};
-		_float4 vColor = {};
 	}UIATLASICON_DESC;
 private:
 	CUI_Atlas_Icon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -21,6 +20,7 @@ private:
 public:
 	void					Update_Color(_float4 vColor);
 	void					Set_Texture(_float4 vUV, _uint iTexPass);
+	void					Set_Shader(_uint iShaderPass);
 
 public:
 	virtual HRESULT			Initialize_Prototype() override;

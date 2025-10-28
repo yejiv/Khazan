@@ -56,8 +56,9 @@ HRESULT CMainMune_Deco::Render()
         return E_FAIL;
 
     CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fValue", &m_fAccTime, sizeof(_float)), E_FAIL);
 
-    m_pShaderCom->Begin(1);
+    m_pShaderCom->Begin(6);
     m_pVIBufferCom->Bind_Resources();
     m_pVIBufferCom->Render();
 

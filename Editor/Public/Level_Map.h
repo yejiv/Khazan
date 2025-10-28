@@ -53,6 +53,7 @@ private:
 
 	void Test_Player_Move(_float fTimeDelta);
 	void Select_Fix_Object(_float fTimeDelta);
+	void Select_Fix_Interactive_Object(_float fTimeDelta);
 	void Select_Multi_Fix_Object(_float fTimeDelta);
 	void Select_Fix_Instance(_float fTimeDelta);
 	void Select_Add_LightPoint(_float fTimeDelta);
@@ -64,6 +65,19 @@ private:
 
 	_float3 m_vDistancePos[2] = {};
 	_float m_fDistance = {};
+
+#pragma region 트리거 관련 변수
+
+
+
+#pragma endregion
+
+#pragma region Interactive Object 변수
+
+	vector<class CProp*> m_InteractiveList;		// 오브젝트 리스트 ( 수정 편하게 할려고 )
+	_int m_iInteractiveListIndex = {};			// 오브젝트 리스트 인덱스
+
+#pragma endregion
 
 #pragma region Object 수정 변수
 
@@ -97,7 +111,7 @@ private:
 
 #pragma endregion
 
-#pragma region OBJECT 크기 이동 스케일 동시 수정
+#pragma region OBJECT 크기 이동 스케일 동시 수정 ( 아직 X )
 
 	vector<class CProp*> m_MultiFixObjList;
 
@@ -139,20 +153,24 @@ private:
 
 #pragma region ImGui 윈도우 창
 
-	_bool m_isMainWindow = { true };			// Map Editor 메인 윈도우
+	_bool m_isMainWindow = { true };						// Map Editor 메인 윈도우
 
-	_bool m_isPrototypeWindow = { false };		// 등록된 프로토타입 리스트 윈도우
+	_bool m_isPrototypeWindow = { false };					// 등록된 프로토타입 리스트 윈도우
 
-	_bool m_isObjectWindow = { false };			// 오브젝트들 리스트 윈도우
+	_bool m_isPrototypeInteractiveWindow = { false };		// 등록된 프로토타입 리스트 윈도우
 
-	_bool m_isFixObjectWindow = { false };		// Fix 할 오브젝트 윈도우
+	_bool m_isObjectWindow = { false };						// 오브젝트들 리스트 윈도우
 
-	_bool m_isLightSettingWindow = { false };	// 조명 세팅 윈도우
+	_bool m_isInteractiveWindow = { false };				// 상호 작용 오브젝트들 리스트 윈도우
 
-	_bool m_isSaveObjectWindow = { false };		// 맵 데이터 세이브 윈도우
+	_bool m_isFixObjectWindow = { false };					// Fix 할 오브젝트 윈도우
 
-	_bool m_isLoadObjectWindow = { false };		// 맵 데이터 로드 윈도우
-	_bool m_isLoaded = { false };				// 맵 데이터 로드됐는지 여부
+	_bool m_isLightSettingWindow = { false };				// 조명 세팅 윈도우
+
+	_bool m_isSaveObjectWindow = { false };					// 맵 데이터 세이브 윈도우
+
+	_bool m_isLoadObjectWindow = { false };					// 맵 데이터 로드 윈도우
+	_bool m_isLoaded = { false };							// 맵 데이터 로드됐는지 여부
 
 #pragma endregion
 
@@ -165,6 +183,9 @@ private:
 #pragma region FBX Convert 에 사용
 
 	_char m_szFolderName[MAX_PATH] = {};									// 폴더 경로로 Prototype 등록, FBX to DAT 변환하는 변수
+	_uint m_iPropPrototype = { 0 };											// 프로토 타입 폴더 슥슥 쇽쇽
+	_char m_szPropFolder[MAX_PATH] = {};									// Prop, InteractiveProp 등 폴더 경로 명
+	_bool m_isAnim = { false };												// 애니메이션 폴더 가는지 안가는지
 
 	_char m_szDataSavePath[MAX_PATH] = { "../../Client/Bin/Data/Map/" };	// .dat 추출용 폴더 경로 : "../../Client/Bin/Data/Map/"
 	string m_strDataSavePath = {};											// .dat 추출용 폴더 경로 string 용
@@ -175,6 +196,9 @@ private:
 
 	vector<string> m_Prototypes_Obj;					// Prototype 목록 ( Object 용 모델 )
 	_int m_iIndex_PrtObj = {};							// Prototype Object 용 인덱스
+
+	vector<string> m_Prototypes_Inter;					// Prototype 목록 ( Interactive 용 모델 )
+	_int m_iIndex_PrtInter = {};						// Prototype Interactive 용 인덱스
 
 	_char m_szSearchPrototypeName[MAX_PATH] = {};		// 등록된 프로토 타입 태그 검색용
 	_char m_szSearchObjectName[MAX_PATH] = {};			// 등록된 오브젝트 모델 검색용
@@ -189,12 +213,16 @@ private:
 
 	// MapEditor Default 윈도우
 	HRESULT Ready_Main_Window();
-	// MapEditor 등록된 프로토 타입 리스트 윈도우
+	// MapEditor 등록된 프로토 타입 리스트 윈도우 ( Object )
 	HRESULT Ready_Prototype_List_Window();
+	// MapEditor 등록된 프로토 타입 리스트 윈도우 ( 상호 작용 전용 ) ( 상호 작용 모델 계속 추가하셈 @@@@ )
+	HRESULT Ready_Interactive_Prototype_List_Window();
 	// MapEditor 맵 오브젝트 Fix 윈도우
 	HRESULT Ready_Prop_Fix_Window();
 	// MapEditor 맵 오브젝트 리스트 윈도우
 	HRESULT Ready_Prop_List_Window();
+	// MapEditor Interactive 맵 오브젝트 리스트 윈도우
+	HRESULT Ready_Interactive_Prop_List_Window();
 	// MapEditor Light 세팅 윈도우
 	HRESULT Ready_Light_Window();
 	// MapEditor Object Save, Load 윈도우
@@ -213,10 +241,10 @@ private:
 #pragma region 파일 입출력
 
 private:
-	// 맵 에디터에서 사용할 바이너리 파일 ( 파일 옮기기 용 )
+	// 맵 에디터에서 사용할 프로토 타입 바이너리 파일 ( 파일 옮기기 용 )
 	_bool Prototypes_Save_Binary();
 
-	// 특정 레벨에서 사용할 오브젝트 바이너리 파일
+	// 맵 에디터에서 사용할 오브젝트 바이너리 파일
 	_bool Objects_Save_Binary();
 
 #pragma region 실질적인 사용할 바이너리 파일들
@@ -233,6 +261,9 @@ private:
 	// 특정 레벨에서 사용할 인스턴스 모델 바이너리 파일
 	_bool Instance_Object_Save_Binary();
 
+	// 특정 레벨에서 사용할 상호 작용 모델 바이너리 파일
+	_bool Interactive_Object_Save_Binary();
+
 #pragma endregion
 
 	// 특정 레벨에서 사용할 라이트 바이너리 파일
@@ -242,6 +273,8 @@ private:
 	_bool Prototypes_Load_Binary();
 	// MapEditor에서 오브젝트 불러오기
 	_bool Objects_Load_Binary();
+	// MapEditor에서 상호 작용 오브젝트 불러오기 ( 나중에 코드 채우기 )
+	_bool Interactive_Objects_Load_Binary();
 	// MapEditor에서 조명 불러오기
 	_bool Lights_Load_Binary();
 

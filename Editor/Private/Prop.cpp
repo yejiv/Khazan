@@ -27,11 +27,11 @@ HRESULT CProp::Initialize_Clone(void* pArg)
     PROP_DESC* pDesc = static_cast<PROP_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
+    CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
+
     memcpy(m_szModelName, pDesc->szModelName, MAX_PATH);
 
     m_Properties = pDesc->Properties;
-
-    CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 
     return S_OK;
 }
