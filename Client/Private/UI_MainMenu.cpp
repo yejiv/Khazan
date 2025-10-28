@@ -24,9 +24,12 @@ void CUI_MainMenu::On_Panel()
 {
 	if (m_IsUpdate)
 		return;
+	m_iSeleteIndex = 0;
+	for (_int i = 0; i < ENUM_CLASS(MENULIST::END); ++i)
+		i == m_iSeleteIndex ? m_pList[i]->Set_Selete(true) : m_pList[i]->Set_Selete(false);
 
 	m_eAnimState = UIANIMSTATE::ON;
-	m_fAccTime = 0.f;
+	m_fAccTime = 0.5f;
 	m_IsUpdate = true;
 	m_eNextEvent = MENULIST::END;
 }
@@ -224,7 +227,7 @@ HRESULT CUI_MainMenu::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, 
 					UIDesc.vLocalPos = { g_iWinSizeX >> 1 , g_iWinSizeY >> 1 };
 					UIDesc.eMenu = static_cast<MENULIST>(i);
 
-					CUIObject* pChild = static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelID, wstrClass.c_str(), &UIDesc));
+					CMainMenu_List* pChild = static_cast<CMainMenu_List*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelID, wstrClass.c_str(), &UIDesc));
 
 					if (pChild == nullptr)
 					{
@@ -237,7 +240,9 @@ HRESULT CUI_MainMenu::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, 
 					pChild->Insert_Bubble([this](BUBBLEEVENT* pArg) {this->Bubble_EventCall(pArg); });
 					m_Children.push_back(pChild);
 
-					static_cast<CMainMenu_List*>(pChild)->Update_Pos(i, vPos, 70.f);
+					pChild->Update_Pos(i, vPos, 70.f);
+					m_pList.push_back(pChild);
+					Safe_AddRef(pChild);
 				}
 			}
 		}
@@ -252,9 +257,19 @@ HRESULT CUI_MainMenu::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, 
 void CUI_MainMenu::Bubble_EventCall(BUBBLEEVENT* pArg)
 {
 	MAINMENUBUBBLE_DESC* Desc = static_cast<MAINMENUBUBBLE_DESC*>(pArg);
-	m_eNextEvent = Desc->eListType;
+	if (Desc->isClick)
+	{
+		m_eNextEvent = Desc->eListType;
 
-	Off_Panel();
+		Off_Panel();
+	}
+	else
+	{
+		m_iSeleteIndex = ENUM_CLASS(Desc->eListType);
+		for (_int i = 0; i < ENUM_CLASS(MENULIST::END); ++i)
+			i == m_iSeleteIndex ? m_pList[i]->Set_Selete(true) : m_pList[i]->Set_Selete(false);
+		
+	}
 }
 
 HRESULT CUI_MainMenu::Update_Switch(void* pArg)
@@ -309,6 +324,8 @@ void CUI_MainMenu::UI_Animation(_float fTimeDelta)
 			m_fAccTime = 1.f;
 			m_eAnimState = UIANIMSTATE::END;
 		}
+		for (auto pList : m_pList)
+			pList->OnAnime(m_fAccTime, 100.f, this);
 	}
 	else if (m_eAnimState == UIANIMSTATE::OFF)
 	{
@@ -382,6 +399,9 @@ CGameObject* CUI_MainMenu::Clone(void* pArg)
 void CUI_MainMenu::Free()
 {
 	__super::Free();
+	for (auto pList : m_pList)
+		Safe_Release(pList);
+	m_pList.clear();
 
 	Safe_Release(m_pBackGround);
 }

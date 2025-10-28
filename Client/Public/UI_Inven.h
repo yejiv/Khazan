@@ -20,6 +20,7 @@ public:
 		_int iTypeIndex = {};
 		_int iItemType = {};
 		_int iItemIndex = {};
+		class CItem_Slot* pItem = { nullptr };
 	}INVENBUBBLE_DESC;
 
 	typedef struct tagInvenOpenTag

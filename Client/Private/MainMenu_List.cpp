@@ -23,6 +23,34 @@ void CMainMenu_List::Update_Pos(_int iIndex, _float2 vPos, _float fOffSetY)
 	__super::Update_Transform(nullptr, m_vWorldPos);
 }
 
+void CMainMenu_List::OnAnime(_float fAccTime, _float fOffsetX, CUIObject* pParent)
+{
+	if (fAccTime >= 1.f)
+	{
+		m_vWorldPos.x = pParent->Get_WolrdPos().x + m_vLocalPos.x;
+		m_vWorldPos.y = pParent->Get_WolrdPos().y + m_vLocalPos.y;
+	}
+	else
+	{
+		m_vWorldPos.x = pParent->Get_WolrdPos().x + m_vLocalPos.x - fOffsetX * (1.f - fAccTime);
+		m_vWorldPos.y = m_vWorldPos.y;
+	}
+	
+	__super::Update_Transform(nullptr, m_vWorldPos);
+}
+
+void CMainMenu_List::Set_Selete(_bool isSelete)
+{
+	if (m_bIsSelete == isSelete)
+		return;
+
+	m_bIsSelete = isSelete;
+
+	if(m_bIsSelete)
+		m_fAccTime = 0.35f;
+	m_pDeco->Update_AccTime(0.f);
+}
+
 HRESULT CMainMenu_List::Initialize_Prototype(_uint iLevel)
 {
 	m_iLevel = iLevel;
@@ -47,23 +75,34 @@ void CMainMenu_List::Priority_Update(_float fTimeDelta)
 
 void CMainMenu_List::Update(_float fTimeDelta)
 {
-	m_isVisible = false;
-
-	if ( ButtonOver(g_hWnd))
+	if (m_fAccTime < 1.f)
+	{
+		m_fAccTime += fTimeDelta;
+		m_pDeco->Update_AccTime(m_fAccTime);
+	}
+	if (ButtonOver(g_hWnd))
+	{
+		CUI_MainMenu::MAINMENUBUBBLE_DESC Desc{};
+		Desc.eListType = m_eMenuType;
+		Desc.isClick = false;
+		Bubble_EventCall(&Desc);
+	}
+	if (ButtonClick(g_hWnd, false, true))
+	{
+		CUI_MainMenu::MAINMENUBUBBLE_DESC Desc{};
+		Desc.eListType = m_eMenuType;
+		Desc.isClick = true;
+		Bubble_EventCall(&Desc);
+	}
+	if(m_bIsSelete)
 	{
 		m_isVisible = true;
 		m_pTextBox->Set_Color({ 0.145f, 0.141f, 0.149f, 1.0f });
 	}
 	else
 	{
+		m_isVisible = false;
 		m_pTextBox->Set_Color({ 0.749f, 0.749f, 0.749f, 1.0f });
-	}
-	if (ButtonClick(g_hWnd, false, true))
-	{
-		CUI_MainMenu::MAINMENUBUBBLE_DESC Desc{};
-		Desc.eListType = m_eMenuType;
-
-		Bubble_EventCall(&Desc);
 	}
 
 
@@ -94,8 +133,9 @@ HRESULT CMainMenu_List::Render()
 		return E_FAIL;
 
 	CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
+	CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fValue", &m_fAccTime, sizeof(_float)), E_FAIL);
 
-	m_pShaderCom->Begin(1);
+	m_pShaderCom->Begin(m_iShaderPass);
 	m_pVIBufferCom->Bind_Resources();
 	m_pVIBufferCom->Render();
 
@@ -105,7 +145,7 @@ HRESULT CMainMenu_List::Render()
 HRESULT CMainMenu_List::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
 {
 	__super::Load_UI(pInData, iPrototypeLevelID, pArg);
-	m_iShaderPass = 2;
+	m_iShaderPass = 6;
 	m_iState = ENUM_CLASS(UISTATE::ENABLE);
 
 	for (auto pChild : m_Children)
