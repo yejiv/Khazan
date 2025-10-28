@@ -153,8 +153,21 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 	m_pPipeLine->Update();
 	m_pFrustum->Update();
 
+	if (m_pOctree)
+		m_pOctree->Culling();
+
+	if (m_pOctree)
+		m_pOctree->Priority_Update(fTimeDelta);
+
 	m_pObject_Manager->Update(fTimeDelta);
+
+	if (m_pOctree)
+		m_pOctree->Update(fTimeDelta);
+
 	m_pObject_Manager->Late_Update(fTimeDelta);
+
+	if (m_pOctree)
+		m_pOctree->Late_Update(fTimeDelta);
 
 	// Cascade Test
 	m_pShadow->Update();
@@ -663,9 +676,24 @@ _bool CGameInstance::isIn_Frustum_LocalSpace(_fvector vLocalPos, _float fRange)
 	return m_pFrustum->isIn_LocalSpace(vLocalPos, fRange);
 }
 
-const _float4* CGameInstance::Get_WorldPoints() const
+const _float4* CGameInstance::Get_Frustum_Point() const
+{
+	return m_pFrustum->Get_Point();
+}
+
+const _float4* CGameInstance::Get_Frustum_WorldPoints() const
 {
 	return m_pFrustum->Get_WorldPoints();
+}
+
+const _float4* CGameInstance::Get_Frustum_WorldPlanes() const
+{
+	return m_pFrustum->Get_WorldPlanes();
+}
+
+const _float4* CGameInstance::Get_Frustum_LocalPlanes() const
+{
+	return m_pFrustum->Get_LocalPlanes();
 }
 
 #pragma endregion
@@ -761,13 +789,17 @@ _bool CGameInstance::CastRay(_float3 vStart, _float3 vEnd, _float& outFraction, 
 }
 
 #ifdef _DEBUG
-void CGameInstance::Change_DebugRender()
-{
-	m_pJolt_Manager->Change_DebugRender();
-}
 void CGameInstance::Jolt_Test()
 {
 	m_pJolt_Manager->Test();
+}
+void CGameInstance::Set_DrawFilter(_uint iObjectLayer)
+{
+	m_pJolt_Manager->Set_DrawFilter(iObjectLayer);
+}
+void CGameInstance::Remove_DrawFilter(_uint iObjectLayer)
+{
+	m_pJolt_Manager->Remove_DrawFilter(iObjectLayer);
 }
 #endif
 #pragma endregion
@@ -912,6 +944,14 @@ CCamera* CGameInstance::Get_ActiveCamera()
 {
 	return m_pCamera_Manager->Get_ActiveCamera();
 }
+_float3 CGameInstance::Get_ActiveCameraPos()
+{
+	return m_pCamera_Manager->Get_ActiveCameraPos();
+}
+_float4 CGameInstance::Get_ActiveCameraLook()
+{
+	return m_pCamera_Manager->Get_ActiveCameraLook();
+}
 void CGameInstance::Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData)
 {
 	m_pCamera_Manager->Save_Json(iLevelIndex, strCameraTag, pOutData);
@@ -942,6 +982,7 @@ HRESULT CGameInstance::Bind_SSAO_ShaderResources(CShader* pShader)
 void CGameInstance::DeleteOctree()
 {
 	Safe_Release(m_pOctree);
+	m_pOctree = nullptr;
 }
 
 HRESULT CGameInstance::CreateOctree(const _float3& vCenter, const _float& fHalfWidth, const _int& iDepthLimit)

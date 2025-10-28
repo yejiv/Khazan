@@ -169,7 +169,10 @@ public:
 	_bool isIn_Frustum_WorldSpace(_fvector vWorldPos, _float fRange = 0.f);
 	ContainmentType isIn_Frustum_WorldSpace(const BoundingBox& BoundingBox);
 	_bool isIn_Frustum_LocalSpace(_fvector vLocalPos, _float fRange = 0.f);
-	const _float4* Get_WorldPoints() const;
+	const _float4* Get_Frustum_Point() const;
+	const _float4* Get_Frustum_WorldPoints() const;
+	const _float4* Get_Frustum_WorldPlanes() const;
+	const _float4* Get_Frustum_LocalPlanes() const;
 #pragma endregion
 
 #pragma region IMGUI_MANGER
@@ -204,8 +207,10 @@ public:
 
 	_bool CastRay(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition);
 #ifdef _DEBUG
-	void Change_DebugRender();
 	void Jolt_Test();
+
+	void				Set_DrawFilter(_uint iObjectLayer);
+	void				Remove_DrawFilter(_uint iObjectLayer);
 #endif
 #pragma endregion
 
@@ -272,6 +277,8 @@ public:
 	void Change_Camera(_uint iLevelIndex, _wstring strCameraTag);
 	vector<class CCamera*> Get_pCameras(_uint iNumLevel);
 	class CCamera* Get_ActiveCamera();
+	_float3 Get_ActiveCameraPos();
+	_float4 Get_ActiveCameraLook();
 
 	void Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
 #pragma endregion

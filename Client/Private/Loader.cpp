@@ -97,6 +97,8 @@ HRESULT CLoader::Loading()
 			}));
 		break;
 	case LEVEL::STAGE1:
+		m_pGameInstance->DeleteOctree();
+		m_pGameInstance->CreateOctree({ 260.f, 0.f, 215.f }, 400.f, 7);
 		hr = Loading_For_Stage1_Level();
 		break;
 	}

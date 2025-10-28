@@ -128,7 +128,7 @@ HRESULT CLevel_Stage1::Ready_Layer_Camera(const _wstring& strLayerTag)
 	CameraFreeDesc.fFovy = XMConvertToRadians(60.0f);
 	CameraFreeDesc.fNear = 0.1f;
 	CameraFreeDesc.fFar = 6000.f;
-	CameraFreeDesc.fSpeedPerSec = 10.f;
+	CameraFreeDesc.fSpeedPerSec = 40.f;
 	CameraFreeDesc.fRotationPerSec = XMConvertToRadians(90.0f);
 	CameraFreeDesc.fMouseSensor = 0.2f;
 	CameraFreeDesc.iCameraType = ENUM_CLASS(CAMERATYPE::FREE);
@@ -300,8 +300,12 @@ HRESULT CLevel_Stage1::Ready_Layer_MapObject(const _wstring& strLayerTag, const 
 		//		E_FAIL
 		//	);
 		//	});
-		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
-			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), E_FAIL);
+		/*CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), E_FAIL);*/
+
+		CGameObject* pObject = dynamic_cast<CGameObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc));
+
+		m_pGameInstance->AddStaticObject(pObject, { WorldMatrix._41, WorldMatrix._42, WorldMatrix._43 }, 10.f);
 	}
 
 	return S_OK;
