@@ -47,24 +47,25 @@ HRESULT CLevel_Stage1::Initialize()
 
 	CHECK_FAILED(Ready_Layer_Test(TEXT("Layer_Test")), E_FAIL);
 
-	m_pGameInstance->Add_FireTask([this]() {
-		CHECK_FAILED(Ready_Layer_MapObject_Test(TEXT("Layer_Test")), E_FAIL);
-		});
-
-	m_pGameInstance->Add_FireTask([this]() {
-		CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
-		});
-
-	m_pGameInstance->Add_FireTask([this]() {
-		CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
-		});
-
 	/* 상호 작용 오브젝트 호출 함수 */
 	// m_pGameInstance->Add_FireTask([this]() {
 	// 	CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach_Test"), LEVEL::STAGE1), E_FAIL);
 	// 	});
 	
+	//m_pGameInstance->Add_FireTask([this]() {
+	//	CHECK_FAILED(Ready_Layer_MapObject_Test(TEXT("Layer_Test")), E_FAIL);
+	//	});
+	//
+	//m_pGameInstance->Add_FireTask([this]() {
+	//	CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+	//	});
 
+	//m_pGameInstance->Add_FireTask([this]() {
+	//	CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+	//	});
+	CHECK_FAILED(Ready_Layer_MapObject_Test(TEXT("Layer_Test")), E_FAIL);
+	CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+	CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
 	//m_pGameInstance->Jolt_Test();
 
 	return S_OK;
@@ -287,20 +288,20 @@ HRESULT CLevel_Stage1::Ready_Layer_MapObject(const _wstring& strLayerTag, const 
 		ObjectDesc.Properties = PropProperties;
 
 		// 일단 단일 오브젝트로 배치하고 추후에 인스턴스, 인터렉티브, 다이나믹 으로 나누겠습니다.
-		m_pGameInstance->Add_FireTask([this, objDesc = ObjectDesc, curLevel = eCurrentLevel]() mutable {
-			CHECK_FAILED(
-				m_pGameInstance->Add_GameObject_ToLayer(
-					ENUM_CLASS(objDesc.eLevel),
-					TEXT("Layer_MapObject"),
-					ENUM_CLASS(curLevel),
-					TEXT("Prototype_GameObject_Prop_Object"),
-					&objDesc // 캡처된 값의 주소 -> 안전
-				),
-				E_FAIL
-			);
-			});
-		/*CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
-			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), E_FAIL);*/
+		//m_pGameInstance->Add_FireTask([this, objDesc = ObjectDesc, curLevel = eCurrentLevel]() mutable {
+		//	CHECK_FAILED(
+		//		m_pGameInstance->Add_GameObject_ToLayer(
+		//			ENUM_CLASS(objDesc.eLevel),
+		//			TEXT("Layer_MapObject"),
+		//			ENUM_CLASS(curLevel),
+		//			TEXT("Prototype_GameObject_Prop_Object"),
+		//			&objDesc // 캡처된 값의 주소 -> 안전
+		//		),
+		//		E_FAIL
+		//	);
+		//	});
+		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), E_FAIL);
 	}
 
 	return S_OK;
@@ -376,24 +377,29 @@ HRESULT CLevel_Stage1::Ready_Layer_MapObject_Interactive(const _wstring& strLaye
 
 
 		// 일단 단일 오브젝트로 배치하고 추후에 인스턴스, 인터렉티브, 다이나믹 으로 나누겠습니다.
-		m_pGameInstance->Add_FireTask([this, objDesc = ObjectDesc, curLevel = eCurrentLevel, enumType = eType]() mutable {
+		//m_pGameInstance->Add_FireTask([this, objDesc = ObjectDesc, curLevel = eCurrentLevel, enumType = eType]() mutable {
 
-			if (INTERACTIVE_TYPE::CHECKPOINT == enumType)
-			{
-			CHECK_FAILED(
-				m_pGameInstance->Add_GameObject_ToLayer(
-					ENUM_CLASS(objDesc.eLevel),
-					TEXT("Layer_MapObject_Interact"),
-					ENUM_CLASS(curLevel),
-					TEXT("Prototype_GameObject_Prop_BladeNexus"),
-					&objDesc // 캡처된 값의 주소 -> 안전
-				),
-				E_FAIL);
-			}
+		//	if (INTERACTIVE_TYPE::CHECKPOINT == enumType)
+		//	{
+		//	CHECK_FAILED(
+		//		m_pGameInstance->Add_GameObject_ToLayer(
+		//			ENUM_CLASS(objDesc.eLevel),
+		//			TEXT("Layer_MapObject_Interact"),
+		//			ENUM_CLASS(curLevel),
+		//			TEXT("Prototype_GameObject_Prop_BladeNexus"),
+		//			&objDesc // 캡처된 값의 주소 -> 안전
+		//		),
+		//		E_FAIL);
+		//	}
 
-			});
-		/*CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
-			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), E_FAIL);*/
+		//	});
+		if (INTERACTIVE_TYPE::CHECKPOINT == eType)
+		{
+			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_BladeNexus"), &ObjectDesc), E_FAIL);
+		}
+
+		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), E_FAIL);
 	}
 
 	return S_OK;
@@ -463,18 +469,20 @@ HRESULT CLevel_Stage1::Ready_Layer_MapObject_Inst(const _wstring& strLayerTag, c
 		ObjectDesc.Properties = PropProperties;
 
 		// 인스턴스 객체 슈웃
-		m_pGameInstance->Add_FireTask([this, objDesc = ObjectDesc, curLevel = eCurrentLevel]() mutable {
-			CHECK_FAILED(
-				m_pGameInstance->Add_GameObject_ToLayer(
-					ENUM_CLASS(objDesc.eLevel),
-					TEXT("Layer_MapObject_Inst"),
-					ENUM_CLASS(curLevel),
-					TEXT("Prototype_GameObject_Prop_Static"),
-					&objDesc // 캡처된 값의 주소 -> 안전
-				),
-				E_FAIL
-			);
-			});
+		//m_pGameInstance->Add_FireTask([this, objDesc = ObjectDesc, curLevel = eCurrentLevel]() mutable {
+		//	CHECK_FAILED(
+		//		m_pGameInstance->Add_GameObject_ToLayer(
+		//			ENUM_CLASS(objDesc.eLevel),
+		//			TEXT("Layer_MapObject_Inst"),
+		//			ENUM_CLASS(curLevel),
+		//			TEXT("Prototype_GameObject_Prop_Static"),
+		//			&objDesc // 캡처된 값의 주소 -> 안전
+		//		),
+		//		E_FAIL
+		//	);
+		//	});
+		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Static"), &ObjectDesc), E_FAIL);
 	}
 
 	return S_OK;
