@@ -55,6 +55,9 @@ HRESULT CUI_QuickSlot_Item_Panel::Load_UI(nlohmann::json& pInData, _uint iProtot
 {
 	__super::Load_UI(pInData, iPrototypeLevelID, pArg);
 
+	for (_int i = 0; i < (_int)m_Children.size(); ++i)
+		static_cast<CUI_QuickSlot_Item*>(m_Children[i])->Set_index(i);
+
 	return S_OK;
 }
 

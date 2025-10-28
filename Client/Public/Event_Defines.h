@@ -9,4 +9,11 @@ namespace Client {
 	struct EventTest {
 		int data;
 	};
+
+	struct EVENT_HUD_QUICKSLOT {
+		_bool isEquip;
+		_int  iIndex;
+		_int  iItemIndex;
+		_int* iItemCount;
+	};
 }
