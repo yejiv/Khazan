@@ -9,22 +9,24 @@ CCoolDown_Node::CCoolDown_Node(_float fCoolTime)
 
 BTNODESTATE CCoolDown_Node::Tick(CBlackBoard* BB)
 {
-    _float fTimeDelta = BB->Get_Value<_float>(m_strName, m_strTag);
-    if(m_fCoolTime == 10.f)
-       cout << "m_fElapsed 5HIT  : " << m_fElapsed << endl;
+    //_float fTimeDelta = BB->Get_Value<_float>(m_strName, m_strTag);
+    _float fCurrentTime = BB->Get_Value<_float>(m_strName, m_strTag);
+   /* if(m_fCoolTime == 10.f)
+       cout << "m_fElapsed 5HIT  : " << m_fElapsed << endl;*/
 
-    if(m_fCoolTime == 5.f)
-    cout << "m_fElapsed 2HIT : " << m_fElapsed << endl;
+   /* if(m_fCoolTime == 5.f)
+        cout << "m_fElapsed 2HIT : " << m_fElapsed << endl;*/
 
-    m_fElapsed += fTimeDelta;
+    //m_fElapsed = fTimeDelta;
 
     // 쿨타임 중이면 자식 실행안하도록 막는다.
     if (m_isCooling)
     {
+        m_fElapsed = fCurrentTime - m_fStartTime;
         if (m_fElapsed >= m_fCoolTime)
         {
             m_isCooling = false;
-            m_fElapsed = 0.f;
+            //m_fElapsed = 0.f;
         }
         else
         {
@@ -39,6 +41,7 @@ BTNODESTATE CCoolDown_Node::Tick(CBlackBoard* BB)
         if (BTNODESTATE::SUCCESS == eState)
         {
             m_isCooling = true;
+            m_fStartTime = fCurrentTime;
             m_fElapsed = 0.f;
         }
         return eState;

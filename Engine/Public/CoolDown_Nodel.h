@@ -17,6 +17,8 @@ public:
 private:
 	_float				m_fCoolTime = {};
 	_float				m_fElapsed = {};
+	_float				m_fStartTime = {};
+
 	string				m_strTag;
 	string				m_strName;
 	
