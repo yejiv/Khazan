@@ -264,7 +264,7 @@
     </Filter>
     <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\00.BladeNexus">
       <UniqueIdentifier>{db2499ad-79c0-4c82-ad8f-32198cfc8f33}</UniqueIdentifier>
-	</Filter>
+    </Filter>
     <Filter Include="92.AI\State\Yetuga\04.LieDown">
       <UniqueIdentifier>{3119b102-ecca-4b2c-a42e-08dbcfd5a313}</UniqueIdentifier>
     </Filter>
@@ -282,6 +282,9 @@
     </Filter>
     <Filter Include="02.GameObject\UI\WorldUI\Damage_UI">
       <UniqueIdentifier>{6da1545d-0879-4c90-9ac6-1aeabdd954dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94. ClientInstance\Debug">
+      <UniqueIdentifier>{40550248-8478-40d1-913b-0394bb2ab80f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -524,7 +527,7 @@
     </ClInclude>
     <ClInclude Include="..\Public\BladeNexus.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\00.BladeNexus</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="..\Public\AS_LieDown_Yetuga.h">
       <Filter>92.AI\State\Yetuga\04.LieDown</Filter>
     </ClInclude>
@@ -536,6 +539,9 @@
     </ClInclude>
     <ClInclude Include="..\public\Damage_Text.h">
       <Filter>02.GameObject\UI\WorldUI\Damage_UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Debug_Manager.h">
+      <Filter>94. ClientInstance\Debug</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -767,7 +773,7 @@
     </ClCompile>
     <ClCompile Include="..\Private\BladeNexus.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\00.BladeNexus</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="..\Private\AS_LieDown_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\04.LieDown</Filter>
     </ClCompile>
@@ -779,6 +785,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Damage_Text.cpp">
       <Filter>02.GameObject\UI\WorldUI\Damage_UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Debug_Manager.cpp">
+      <Filter>94. ClientInstance\Debug</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
