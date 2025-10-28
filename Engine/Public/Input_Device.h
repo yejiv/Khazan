@@ -11,13 +11,11 @@ private:
 	virtual ~CInput_Device(void) = default;
 
 public:
-	_byte	Get_DIKeyState(_ubyte byKeyID) { return m_byKeyState[byKeyID]; }
-	_byte	Get_DIMouseState(MOUSEKEYSTATE eMouse) { return m_tMouseState.rgbButtons[ENUM_CLASS(eMouse)]; }
+	const _byte* GetKeyCurr() const { return m_byKeyStateCurr; }
+	const _byte* GetKeyPrev() const { return m_byKeyStatePrev; }
 
-	_long	Get_DIMouseMove(MOUSEMOVESTATE eMouseState)
-	{
-		return *(((_long*)&m_tMouseState) + ENUM_CLASS(eMouseState));
-	}
+	const DIMOUSESTATE& GetMouseCurr() const { return m_tMouseStateCurr; }
+	const DIMOUSESTATE& GetMousePrev() const { return m_tMouseStatePrev; }
 
 public:
 	HRESULT Ready_InputDev(HINSTANCE hInst, HWND hWnd);
@@ -31,8 +29,11 @@ private:
 	LPDIRECTINPUTDEVICE8	m_pMouse = nullptr;
 
 private:
-	_byte					m_byKeyState[256];
-	DIMOUSESTATE			m_tMouseState;
+	_byte    m_byKeyStateCurr[256]{};
+	_byte    m_byKeyStatePrev[256]{};
+
+	DIMOUSESTATE m_tMouseStateCurr{};
+	DIMOUSESTATE m_tMouseStatePrev{};
 
 public:
 	static CInput_Device* Create(HINSTANCE hInst, HWND hWnd);

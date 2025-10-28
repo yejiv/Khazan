@@ -12,6 +12,7 @@ public:
 	typedef struct tagMainBubbleEventTag : public CUIObject::BUBBLEEVENT
 	{
 		MENULIST	eListType = {};
+		_bool		isClick = { false };
 	}MAINMENUBUBBLE_DESC;
 
 private:
@@ -37,11 +38,14 @@ public:
 private:
 	class CUI_BackGround*				m_pBackGround = { nullptr };
 
+	vector<class CMainMenu_List*>		m_pList;
+
 	UIANIMSTATE							m_eAnimState = { UIANIMSTATE::END };
 	MENULIST							m_eNextEvent = { MENULIST::END};
 
 	_float								m_fAccTime = {};
 
+	_int								m_iSeleteIndex = {};
 private:
 	virtual	HRESULT						Ready_Prototype();
 	HRESULT								Ready_Object();

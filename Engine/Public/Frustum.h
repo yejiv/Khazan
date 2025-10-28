@@ -17,6 +17,7 @@ public:
 	void Transform_ToLocalSpace(_fmatrix WorldMatrix);
 
 	_bool isIn_WorldSpace(_fvector vWorldPos, _float fRange = 0.f);
+	ContainmentType isIn_WorldSpace(const BoundingBox& BoundingBox);
 	_bool isIn_LocalSpace(_fvector vLocalPos, _float fRange = 0.f);
 
 	/*XMPlaneTransform(, 월드행렬역전치)*/
