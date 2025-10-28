@@ -66,6 +66,7 @@ HRESULT CLevel_Stage1::Initialize()
 	CHECK_FAILED(Ready_Layer_MapObject_Test(TEXT("Layer_Test")), E_FAIL);
 	CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
 	CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+	CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
 	//m_pGameInstance->Jolt_Test();
 
 	return S_OK;
@@ -393,13 +394,19 @@ HRESULT CLevel_Stage1::Ready_Layer_MapObject_Interactive(const _wstring& strLaye
 		//	}
 
 		//	});
-		if (INTERACTIVE_TYPE::CHECKPOINT == eType)
-		{
-			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_BladeNexus"), &ObjectDesc), E_FAIL);
-		}
 
-		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
-			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), E_FAIL);
+		switch (eType)
+		{
+		case INTERACTIVE_TYPE::CHECKPOINT:
+			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_BladeNexus"), &ObjectDesc), E_FAIL);
+			break;
+		case INTERACTIVE_TYPE::CHEST:
+			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_BigChest"), &ObjectDesc), E_FAIL);
+			break;
+		default:
+			MSG_BOX(TEXT("잉 있으면 안되는디"));
+			break;
+		}
 	}
 
 	return S_OK;

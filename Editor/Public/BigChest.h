@@ -5,33 +5,29 @@
 
 NS_BEGIN(Editor)
 
-class CBladeNexus final : public CProp_Interactive
+class CBigChest final : public CProp_Interactive
 {
 private:
 	enum ANIM_STATE
 	{
-		AFTER_END,
-		AFTER_IDLE,
-		AFTER_LOOP,
-		AFTER_START,
-		BEFORE_END,
-		BEFORE_IDLE,
-		BEFORE_LOOP,
-		BEFORE_START,
+		CLOSE,
+		CLOSING,
+		OPEN,
+		OPENING,
 		END
 	};
 
 public:
-	typedef struct tagBladeNexusDesc : public CProp_Interactive::PROP_INTERACTIVE_DESC
+	typedef struct tagBigChestDesc : public CProp_Interactive::PROP_INTERACTIVE_DESC
 	{
 
 
-	}BLADENEXUS_DESC;
+	}BIGCHEST_DESC;
 
 private:
-	CBladeNexus(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CBladeNexus(const CBladeNexus& Prototype);
-	virtual ~CBladeNexus() = default;
+	CBigChest(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CBigChest(const CBigChest& Prototype);
+	virtual ~CBigChest() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -41,13 +37,13 @@ public:
 	virtual void Late_Update(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
-	ANIM_STATE m_eAnimState = { ANIM_STATE::BEFORE_IDLE };
+	ANIM_STATE m_eAnimState = { ANIM_STATE::CLOSE };
 
 private:
 	virtual HRESULT Ready_Components(void* pArg) override;
 
 public:
-	static CBladeNexus* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CBigChest* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

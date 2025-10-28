@@ -5,27 +5,22 @@
 
 NS_BEGIN(Client)
 
-class CBladeNexus final : public CProp_Interactive
+class CBigChest final : public CProp_Interactive
 {
 private:
-	enum ANIM_STATE
-	{
-		AFTER_END, AFTER_IDLE, AFTER_LOOP, AFTER_START,
-		BEFORE_END, BEFORE_IDLE, BEFORE_LOOP, BEFORE_START,
-		END
-	};
+	enum ANIM_STATE { CLOSE, CLOSING, OPEN, OPENING, END };
 
 public:
-	typedef struct tagBladeNexusDesc : public CProp_Interactive::PROP_INTERACTIVE_DESC
+	typedef struct tagBigChestDesc : public CProp_Interactive::PROP_INTERACTIVE_DESC
 	{
 
 
-	}BLADENEXUS_DESC;
+	}BIGCHEST_DESC;
 
 private:
-	CBladeNexus(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CBladeNexus(const CBladeNexus& Prototype);
-	virtual ~CBladeNexus() = default;
+	CBigChest(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CBigChest(const CBigChest& Prototype);
+	virtual ~CBigChest() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -36,12 +31,10 @@ public:
 	virtual HRESULT Render() override;
 
 private:
-	ANIM_STATE m_eAnimState = { ANIM_STATE::BEFORE_IDLE };
+	ANIM_STATE m_eAnimState = { ANIM_STATE::CLOSE };
 
-private:
-	_float3 m_vPlayerPosition = {};
-	_bool m_isBNOn = { false };
-	_bool m_isBNOff = { false };
+	_bool m_isChestOn = { false };
+	_bool m_isChestOff = { false };
 
 private:
 	virtual HRESULT Ready_Components(void* pArg) override;
@@ -50,7 +43,7 @@ private:
 	void Animation_Change(_float fTimeDelta);
 
 public:
-	static CBladeNexus* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CBigChest* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

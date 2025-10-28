@@ -225,8 +225,12 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 
 #pragma region 모델 원형 : 상호 작용 맵 오브젝트
 	/* Prototype_Component_Model_BladeNexus */
-	// CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_BladeNexus"),
-	// 	CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/TombStone/WIP_COM_DamagedTS.dat")), E_FAIL);
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_BladeNexus"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/TombStone/WIP_COM_DamagedTS.dat")), E_FAIL);
+
+	/* Prototype_Component_Model_BigChest */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_BigChest"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/BigChest/WIP_COM_BigChest_Open_003.dat")), E_FAIL);
 #pragma endregion
 
 	return S_OK;
@@ -302,8 +306,12 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 
 #pragma region 게임 오브젝트 원형 : 상호 작용 맵 오브젝트
 	/* Prototype_GameObject_Prop_BladeNexus */
-	// CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_BladeNexus"),
-	// 	CBladeNexus::Create(m_pDevice, m_pContext)), E_FAIL);
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_BladeNexus"),
+		CBladeNexus::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	/* Prototype_GameObject_Prop_BigChest */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_BigChest"),
+		CBigChest::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 	/* Prototype_GameObject_JOH_Test1 */

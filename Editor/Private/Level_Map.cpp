@@ -766,7 +766,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 {
 	// 이짝에 추가될 상호작용들 로더에도 넣고 여짝에도 넣고 ( 태그 뒷부분만 )
 	m_Prototypes_Inter.push_back("BladeNexus");
-	//m_Prototypes_Inter.push_back("Chest");
+	m_Prototypes_Inter.push_back("BigChest");
 
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (m_isPrototypeWindow)
@@ -851,20 +851,20 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 					CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
 						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BladeNexus"), &BladeNexusDesc), );
 				}
-				else if (false/*"BladeNexus" == m_Prototypes_Inter[m_iIndex_PrtInter]*/) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+				else if ("BigChest" == m_Prototypes_Inter[m_iIndex_PrtInter]) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
 				{
-					/*
-					CBladeNexus::BLADENEXUS_DESC BladeNexusDesc = {};
+					CBigChest::BIGCHEST_DESC BigChestDesc = {};
 
-					BladeNexusDesc.iMapObjectID = m_iMapObjectCnt++;
-					BladeNexusDesc.eLevel = LEVEL::MAP;
-					memcpy(BladeNexusDesc.szModelName, strModelTag.c_str(), sizeof(BladeNexusDesc.szModelName));
+					BigChestDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+					BigChestDesc.eLevel = LEVEL::MAP;
+					memcpy(BigChestDesc.szModelName, strModelTag.c_str(), sizeof(BigChestDesc.szModelName));		// 프로토타입 태그명
 
-					XMStoreFloat4x4(&BladeNexusDesc.WorldMatrix, WorldMatrix);
+					XMStoreFloat4x4(&BigChestDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+					BigChestDesc.eInteractiveType = INTERACTIVE_TYPE::CHEST;										// 상호 작용 오브젝트 타입
 
 					CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
-						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_BladeNexus"), &BladeNexusDesc), );
-					*/
+						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BigChest"), &BigChestDesc), );
 				}
 
 				CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));
@@ -1429,7 +1429,13 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 
 			if (ImGui::Button("EXPORT"))
 			{
+				m_strMapInfoFilePath = m_szMapInfoFilePath;
+				m_strMapInfoFilePath += m_szMapInfoFileName;
 
+				if (false == Interactive_Object_Save_Binary())
+				{
+					_int a = 10;
+				}
 			}
 
 			ImGui::End();
@@ -1780,10 +1786,6 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 					_int a = 10;
 				}
 				if (false == Instance_Object_Save_Binary())
-				{
-					_int a = 10;
-				}
-				if (false == Interactive_Object_Save_Binary())
 				{
 					_int a = 10;
 				}
