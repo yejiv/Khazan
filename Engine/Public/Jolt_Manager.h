@@ -3,7 +3,7 @@
 #include "Jolt_Layer.h"
 #include "Jolt_ContactListener.h"
 #include "Jolt_CharacterContactListener.h"
-
+#include "BodyDrawFilter.h"
 #ifdef new
 #pragma push_macro("new")
 #undef new
@@ -61,7 +61,14 @@ public:
     void				Set_ObjectLayerFilter(_uint iObjectLayer, _bool isOn) {
         m_pObjectLayerFilter->SetUpAllow(iObjectLayer, isOn);
     };
-
+#ifdef _DEBUG
+    void				Set_DrawFilter(_uint iObjectLayer) {
+        m_DrawFilter->SetUp_LayerToFilter(iObjectLayer);
+    };
+    void				Remove_DrawFilter(_uint iObjectLayer) {
+        m_DrawFilter->Remove_LayerToFilter(iObjectLayer);
+    };
+#endif
     void Set_Gravity(_vector vGravity);
     void Reset_Gravity(); 
 
@@ -122,7 +129,7 @@ private:
 private:
     CJolt_DebugRenderer* m_pDebugRenderer = { nullptr };
     BodyManager::DrawSettings m_DrawSetting;
-    _bool   m_isDebugRender = { false };
+    DrawOnlyLayers* m_DrawFilter;
 #endif
 
 public:

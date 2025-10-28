@@ -207,8 +207,10 @@ public:
 
 	_bool CastRay(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition);
 #ifdef _DEBUG
-	void Change_DebugRender();
 	void Jolt_Test();
+
+	void				Set_DrawFilter(_uint iObjectLayer);
+	void				Remove_DrawFilter(_uint iObjectLayer);
 #endif
 #pragma endregion
 

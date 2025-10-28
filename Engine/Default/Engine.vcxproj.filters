@@ -331,6 +331,9 @@
     <Filter Include="01.Utility\17.Octree">
       <UniqueIdentifier>{1a24f7ae-55c7-45fa-8718-fe5789592f6f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\12.Jolt\Filter\BodyDraw">
+      <UniqueIdentifier>{4e85521a-82eb-4a5a-844a-614876a09f5e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -1007,6 +1010,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Octree.h">
       <Filter>01.Utility\17.Octree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BodyDrawFilter.h">
+      <Filter>01.Utility\12.Jolt\Filter\BodyDraw</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

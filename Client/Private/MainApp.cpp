@@ -57,11 +57,6 @@ HRESULT CMainApp::Initialize()
 
 void CMainApp::Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_1))
-	{
-		m_pGameInstance->Change_DebugRender();
-	}
-	
 
 	m_pGameInstance->Update_Engine(fTimeDelta);
 	m_pClientInstance->Update(fTimeDelta);
@@ -290,6 +285,12 @@ HRESULT CMainApp::Ready_ObjectLayer()
 	m_pGameInstance->Set_ObjectLayerFilter(ENUM_CLASS(COLLISION_LAYER::MAP), true);
 
 	m_pGameInstance->Set_PhysicsSystem();
+
+#ifdef _DEBUG
+
+	m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER));
+	m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER));
+#endif
 
 	return S_OK;
 }

@@ -789,13 +789,17 @@ _bool CGameInstance::CastRay(_float3 vStart, _float3 vEnd, _float& outFraction, 
 }
 
 #ifdef _DEBUG
-void CGameInstance::Change_DebugRender()
-{
-	m_pJolt_Manager->Change_DebugRender();
-}
 void CGameInstance::Jolt_Test()
 {
 	m_pJolt_Manager->Test();
+}
+void CGameInstance::Set_DrawFilter(_uint iObjectLayer)
+{
+	m_pJolt_Manager->Set_DrawFilter(iObjectLayer);
+}
+void CGameInstance::Remove_DrawFilter(_uint iObjectLayer)
+{
+	m_pJolt_Manager->Remove_DrawFilter(iObjectLayer);
 }
 #endif
 #pragma endregion
