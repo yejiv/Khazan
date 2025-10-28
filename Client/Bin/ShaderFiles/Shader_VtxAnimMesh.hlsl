@@ -6,6 +6,13 @@ float g_Splits[4];
 
 texture2D g_DiffuseTexture;
 
+// 박준영이 임시로 추가해놓음
+texture2D g_NormalTexture;
+texture2D g_EmissiveTexture;
+texture2D g_SpecularTexture;
+
+
+
 /* 모델 전체 뼈기준(x) */
 /* 특정 메시에 영향ㅇ르 주는 뼈들 */
 matrix g_BoneMatrices[512];

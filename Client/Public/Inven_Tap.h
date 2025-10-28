@@ -25,6 +25,8 @@ public:
 
 public:
 	virtual HRESULT						Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
+private:
+	_bool								m_IsQuick = { false };
 
 public:
 	static CInven_Tap* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);

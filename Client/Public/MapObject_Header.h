@@ -7,8 +7,11 @@
 #include "Prop_Object.h"
 #include "Prop_Static.h"
 #include "Prop_Animated.h"
-#include "Prop_Interactive.h"
 #include "Prop_Dynamic.h"
+
+// Interactive Properties
+#include "Prop_Interactive.h"
+#include "BladeNexus.h"
 
 // Test
 #include "Prop_Test.h"

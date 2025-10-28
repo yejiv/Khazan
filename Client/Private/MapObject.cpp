@@ -21,12 +21,12 @@ HRESULT CMapObject::Initialize_Prototype()
 
 HRESULT CMapObject::Initialize_Clone(void* pArg)
 {
-    CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
-
     MAPOBJECT_DESC* pDesc = static_cast<MAPOBJECT_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
     m_iMapObjectID = pDesc->iMapObjectID;
+
+    CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 
     return S_OK;
 }

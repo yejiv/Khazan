@@ -19,6 +19,9 @@ public:
 private:
 	HRESULT Ready_Layer_BackGround(const _wstring& strLayerTag);
 	HRESULT Ready_Layer_UI();
+
+private:
+	_int iTest = 0;
 public:
 	static CLevel_Title* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;

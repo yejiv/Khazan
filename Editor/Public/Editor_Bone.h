@@ -18,10 +18,15 @@ public:
 
 	_matrix Get_CombinedTransformationMatrix() const { return XMLoadFloat4x4(&m_CombinedTransformationMatrix); }
 	_float4x4* Get_CombinedTransformationMatrixPtr() { return &m_CombinedTransformationMatrix; }
+	void Set_CombinedTransformationMatrix(_fmatrix Matrix) { XMStoreFloat4x4(&m_CombinedTransformationMatrix, Matrix); }
+
+	_matrix Get_TransformationMatrix() const { return XMLoadFloat4x4(&m_TransformationMatrix); }
+	_float4x4* Get_TransformationMatrixPtr() { return &m_TransformationMatrix; }
 	void Set_TransformationMatrix(_fmatrix Matrix) { XMStoreFloat4x4(&m_TransformationMatrix, Matrix); }
-	
+
 public:
 	void	Get_Data(BONE_DATA& data) { data = m_Bone_Data; }
+	const _char*	Get_Name() {return m_szName; }
 
 private:
 	_char				m_szName[MAX_PATH] = {};

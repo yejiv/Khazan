@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 
 #include "UI_QuickSlot_Item.h"
+#include "UI_Atlas_Icon.h"
 
 CUI_QuickSlot_Item_Panel::CUI_QuickSlot_Item_Panel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
@@ -27,7 +28,6 @@ HRESULT CUI_QuickSlot_Item_Panel::Initialize_Clone(void* pArg)
 {
 	if (FAILED(__super::Initialize_Clone(pArg)))
 		return E_FAIL;
-
 	return S_OK;
 }
 
@@ -38,7 +38,6 @@ void CUI_QuickSlot_Item_Panel::Priority_Update(_float fTimeDelta)
 
 void CUI_QuickSlot_Item_Panel::Update(_float fTimeDelta)
 {
-	Input_SlotCheck();
 	__super::Update(fTimeDelta);
 }
 
@@ -65,11 +64,6 @@ HRESULT CUI_QuickSlot_Item_Panel::Ready_Prototype()
 		CUI_QuickSlot_Item::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
 
 	return S_OK;
-}
-
-void CUI_QuickSlot_Item_Panel::Input_SlotCheck()
-{
-	//m_Children[i]
 }
 
 CUI_QuickSlot_Item_Panel* CUI_QuickSlot_Item_Panel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)

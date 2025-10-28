@@ -39,6 +39,11 @@ void CPipeLine::Set_Transform(D3DTS eTransformState, const _float4x4& Matrix)
 	m_TransformMatrices[ENUM_CLASS(eTransformState)] = Matrix;
 }
 
+//_float CPipeLine::DistanceCam(const _float3& vPos)
+//{
+//	return XMVector3Length(*Get_CamPosition() - vPos).m128_f32[0];
+//}
+
 HRESULT CPipeLine::Initialize()
 {
 	for (size_t i = 0; i < ENUM_CLASS(D3DTS::END); i++)

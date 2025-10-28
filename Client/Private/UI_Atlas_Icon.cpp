@@ -23,6 +23,11 @@ void CUI_Atlas_Icon::Set_Texture(_float4 vUV, _uint iTexPass)
 	m_iTexPass = iTexPass;
 }
 
+void CUI_Atlas_Icon::Set_Shader(_uint iShaderPass)
+{
+	m_iShaderPass = iShaderPass;
+}
+
 HRESULT CUI_Atlas_Icon::Initialize_Prototype()
 {
 	return S_OK;

@@ -483,7 +483,7 @@ void CModel::Check_RootMotion()
 		if (m_AnimationsSetup[m_iCurrentAnimIndex].isApplyRootPosition)
 			Add_State(ROOTMOTION_POSITION);
 
-		if (m_AnimationsSetup[m_iCurrentAnimIndex].isApplyRootRotation)
+		if (m_AnimationsSetup[m_iCurrentAnimIndex].isIgnoreRootRot)
 			Add_State(ROOTMOTION_ROTATION);
 
 		FLOAT3_DATA scale = m_AnimationsSetup[m_iCurrentAnimIndex].RootMitionScale;
