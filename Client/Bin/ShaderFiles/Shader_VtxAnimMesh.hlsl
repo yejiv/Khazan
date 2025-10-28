@@ -7,9 +7,7 @@ float g_Splits[4];
 Texture2D g_DiffuseTexture, g_NormalTexture, g_SpecularTexture;
 
 // 박준영이 임시로 추가해놓음
-texture2D g_NormalTexture;
 texture2D g_EmissiveTexture;
-texture2D g_SpecularTexture;
 
 
 
