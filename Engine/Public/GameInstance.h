@@ -3,6 +3,7 @@
 #include "Prototype_Manager.h"
 #include "ComputeShader_Manager.h"
 #include "ThreadPool.h"
+#include "Event_Manager.h"
 
 #ifdef new
 #pragma push_macro("new")
@@ -166,8 +167,12 @@ public:
 #pragma region FRUSTUM
 	void Transform_Frustum_ToLocalSpace(_fmatrix WorldMatrix);
 	_bool isIn_Frustum_WorldSpace(_fvector vWorldPos, _float fRange = 0.f);
+	ContainmentType isIn_Frustum_WorldSpace(const BoundingBox& BoundingBox);
 	_bool isIn_Frustum_LocalSpace(_fvector vLocalPos, _float fRange = 0.f);
-	const _float4* Get_WorldPoints() const;
+	const _float4* Get_Frustum_Point() const;
+	const _float4* Get_Frustum_WorldPoints() const;
+	const _float4* Get_Frustum_WorldPlanes() const;
+	const _float4* Get_Frustum_LocalPlanes() const;
 #pragma endregion
 
 #pragma region IMGUI_MANGER
@@ -202,8 +207,10 @@ public:
 
 	_bool CastRay(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition);
 #ifdef _DEBUG
-	void Change_DebugRender();
 	void Jolt_Test();
+
+	void				Set_DrawFilter(_uint iObjectLayer);
+	void				Remove_DrawFilter(_uint iObjectLayer);
 #endif
 #pragma endregion
 
@@ -234,11 +241,20 @@ public:
 #pragma endregion
 
 #pragma region EVENT_MANAGER
-	_uint Subscribe(_uint iEventType, std::function<void()> fEvent);
-	void UnSubscribeAll(_uint iEventType);
-	void UnSubscribe(_uint iEventType, _uint iID);
-	HRESULT Emit(_uint iEventType);
-	void Event_Clear();
+	template<typename T>
+	_uint Subscribe_Event(_uint iEventType, std::function<void(const T&)> fn) {
+		return m_pEvent_Manager ? m_pEvent_Manager->Subscribe<T>(iEventType, std::move(fn)) : 0;
+	}
+
+	template<typename T>
+	HRESULT Emit_Event(_uint iEventType, const T& payload) {
+		return m_pEvent_Manager ? m_pEvent_Manager->Emit<T>(iEventType, payload) : E_FAIL;
+	}
+
+	_bool Unsubscribe_Event(_uint iEventType, _uint iListenerId);
+	void UnsubscribeAll_Event(_uint iEventType);
+	void Clear_AllEvents();
+
 #pragma endregion
 
 #pragma region RESOURCE_MANAGER
@@ -261,6 +277,8 @@ public:
 	void Change_Camera(_uint iLevelIndex, _wstring strCameraTag);
 	vector<class CCamera*> Get_pCameras(_uint iNumLevel);
 	class CCamera* Get_ActiveCamera();
+	_float3 Get_ActiveCameraPos();
+	_float4 Get_ActiveCameraLook();
 
 	void Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
 #pragma endregion
@@ -273,6 +291,12 @@ public:
 	SSAO_CONFIG	Get_SSAOConfig();
 	void		Set_SSAOConfig(SSAO_CONFIG Config);
 	HRESULT		Bind_SSAO_ShaderResources(class CShader* pShader);
+#pragma endregion
+
+#pragma region Octree
+	void DeleteOctree();
+	HRESULT CreateOctree(const _float3& _vCenter, const _float& fHalfWidth = 256.0f, const _int& _iDepthLimit = 4);
+	bool AddStaticObject(class CGameObject* pGameObject, const _float3& vPoint, const _float& fRadius = 0.0f);
 #pragma endregion
 
 #pragma region BLUR
@@ -307,6 +331,7 @@ private:
 	
 	// 임시(이후 렌더링 리소스 클래스 안으로 이전할 예정)
 	class CSSAO*				m_pSSAO = { nullptr };
+	class COctree*				m_pOctree = { nullptr };
 	class CBlur*				m_pBlur = { nullptr };
 
 #ifdef _DEBUG

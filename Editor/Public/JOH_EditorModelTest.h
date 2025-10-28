@@ -35,6 +35,7 @@ public:
 	class CEditor_Model* get_Model() { return m_pModelCom; }
 
 	void	Debug_RenderState();
+	_matrix	Debug_GetTransformMatrix();
 
 private:
 	CShader*	m_pShaderCom = { nullptr };

@@ -4,6 +4,8 @@
 
 #include "UI_Atlas_Icon.h"
 #include "UI_Inven.h"
+#include "UI_TextBox.h"
+
 CItem_Slot::CItem_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Slot{ pDevice, pContext }
 {
@@ -12,6 +14,11 @@ CItem_Slot::CItem_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 CItem_Slot::CItem_Slot(const CItem_Slot& Prototype)
     : CUI_Slot(Prototype)
 {
+}
+
+_int* CItem_Slot::Get_ptrItemCount()
+{
+    return &m_iItemCount;
 }
 
 _bool CItem_Slot::Add_Item(_int iItemIndex)
@@ -24,7 +31,6 @@ _bool CItem_Slot::Add_Item(_int iItemIndex)
         string strItemData = WStringToAnsi(ItemData.strIconName);
         _float4 vUV = CClientInstance::GetInstance()->Get_AtlasUV(strItemData.c_str(), 2);
         _uint iTexPass = ItemData.iTexPass;
-        
         m_pIcon->Set_Texture(vUV, iTexPass);
         m_iItemMaxCount = ItemData.iMaxValue;
         ++m_iItemCount;
@@ -60,6 +66,34 @@ _bool CItem_Slot::Off_Selete()
     return true;
 }
 
+void CItem_Slot::is_Equip(_bool isEquip, _int iIndex)
+{
+    if (m_iItemIndex < 0)
+        return;
+
+    m_bIsEquip = isEquip;
+
+    if (m_bIsEquip && m_iItemType == ENUM_CLASS(CUI_Inven::ITEMTYPE::ATIVE) && iIndex > 0)
+    {
+        _float4 vUV = {};
+        if(iIndex == 1)
+            vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_ShortcutSlot_Equip_01.png", 1);
+        if (iIndex == 2)
+            vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_ShortcutSlot_Equip_02.png", 1);
+        if (iIndex == 3)
+            vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_ShortcutSlot_Equip_03.png", 1);
+        if (iIndex == 4)
+            vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_ShortcutSlot_Equip_04.png", 1);
+        if (iIndex == 5)
+            vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_ShortcutSlot_Equip_05.png", 1);
+        if (iIndex == 6)
+            vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_ShortcutSlot_Equip_06.png", 1);
+
+        m_pEquipIcon->Set_Texture(vUV, 1);
+    }
+
+}
+
 HRESULT CItem_Slot::Initialize_Prototype(_uint iLevel)
 {
     m_iLevel = iLevel;
@@ -74,7 +108,7 @@ HRESULT CItem_Slot::Initialize_Clone(void* pArg)
     m_iItemType = pDesc->iItemType;
     m_iTexPass = 1;
     m_iShaderPass = 0;
-    m_vColor = { 1.f,1.f,1.f,1.f };
+    m_vColor = { 1.f,1.f,1.f,0.75f };
 
     _float4 vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_01_Empty.png", m_iTexPass);
     m_vUV.push_back(vUV);
@@ -105,11 +139,17 @@ void CItem_Slot::Late_Update(_float fTimeDelta)
 {
     CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::ATLAS, this);
     
-    if (ButtonClick(g_hWnd, false, true))
-        Release_Item();
-    else if (ButtonClick(g_hWnd, true, true))
-        Equip_Item();
+    //if (ButtonClick(g_hWnd, false, true))
+    //    Release_Item();
+    //if (ButtonClick(g_hWnd, true, true))
 
+    if (__super::IsPick(g_hWnd))
+    {
+        if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
+            Selete_Item();
+    }
+    if (m_bIsSelete && m_pGameInstance->Key_Down(DIK_F))
+        Equip_Item();
 
     if (m_iState == ENUM_CLASS(UISTATE::ENABLE))
     {
@@ -124,7 +164,14 @@ void CItem_Slot::Late_Update(_float fTimeDelta)
         m_pIcon->Late_Update(fTimeDelta);
     }
 
+    if (m_bIsEquip)
+        m_pEquipIcon->Late_Update(fTimeDelta);
 
+    if (m_iItemIndex >= 0 && m_pTextBox != nullptr)
+    {
+        m_pTextBox->Set_Text(to_wstring(m_iItemCount));
+        m_pTextBox->Late_Update(fTimeDelta);
+    }
 }
 
 HRESULT CItem_Slot::Ready_Prototype()
@@ -155,7 +202,37 @@ HRESULT CItem_Slot::Ready_Childer()
         return E_FAIL; 
     m_Children.push_back(m_pOverFx);
     Safe_AddRef(m_pOverFx);
+    
+    //ÀåÂø
+    if (m_iItemType <= ENUM_CLASS(CUI_Inven::ITEMTYPE::ATIVE))
+    {
+        AtlasDesc.fDepth = m_fDepth;
+        AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+        AtlasDesc.szName = "Item_Selet";
+        AtlasDesc.vLocalPos = _float2{ -30.f, -30.f };
 
+        if (m_iItemType < ENUM_CLASS(CUI_Inven::ITEMTYPE::ATIVE))
+        {
+            AtlasDesc.vLocalSize = { 40.f, 40.f };
+            AtlasDesc.vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_Inven_Equipped.png", 1);
+        }
+        else
+        {
+            AtlasDesc.vLocalSize = { 28.f, 28.f };
+            AtlasDesc.vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_Inven_Equipped_Alpha.png", 1);
+        }
+        AtlasDesc.iShaderPass = 0;
+        AtlasDesc.iTexPass = 1;
+        AtlasDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+        m_pEquipIcon = static_cast<CUI_Atlas_Icon*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Atlas_Icon"), &AtlasDesc));
+
+        if (m_pEquipIcon == nullptr)
+            return E_FAIL;
+
+        m_Children.push_back(m_pEquipIcon);
+        Safe_AddRef(m_pEquipIcon);
+    }
+    //¼¿·ºÆ®
     AtlasDesc.fDepth = m_fDepth;
     AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
     AtlasDesc.szName = "Item_Selet";
@@ -192,6 +269,34 @@ HRESULT CItem_Slot::Ready_Childer()
     m_Children.push_back(m_pIcon);
     Safe_AddRef(m_pIcon);
 
+    if (m_iItemType == ENUM_CLASS(CUI_Inven::ITEMTYPE::ATIVE) || m_iItemType == ENUM_CLASS(CUI_Inven::ITEMTYPE::MATERIAL))
+    {
+        CUIObject::UIOBJECT_DESC TextDesc = {};
+        TextDesc.fDepth = m_fDepth - 0.5f;
+        TextDesc.iUIType = ENUM_CLASS(UITYPE::TEXT);
+        TextDesc.szName = "Item_Count";
+        TextDesc.vLocalPos = _float2{ 0.f, 0.f };
+        TextDesc.vLocalSize = { m_vLocalSize.x, m_vLocalSize.y };
+        TextDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+        m_pTextBox = static_cast<CUI_TextBox*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_TextBox"), &TextDesc));
+
+        if (m_pTextBox == nullptr)
+            return E_FAIL;
+
+        CUI_TextBox::TEXTBOX_DESC TextSet = {};
+        TextSet.bIsTextBox = false;
+        TextSet.eTextAlign = TEXT_ALIGN::RIGHT_BOTTOM;
+        TextSet.fMaxWidth = 0;
+        TextSet.fOffsetHeight = 0;
+        TextSet.iPivotX = 40;
+        TextSet.iPivotY = 50;
+        TextSet.wstrTexttag = TEXT("Blade_Medium_18");
+        TextSet.wstrText = TEXT("");
+        TextSet.vColor = { 1.f, 1.f, 1.f, 1.f };
+        m_pTextBox->Setting_Text(TextSet);
+        m_Children.push_back(m_pTextBox);
+        Safe_AddRef(m_pTextBox);
+    }
     return S_OK;
 }
 
@@ -212,9 +317,9 @@ void CItem_Slot::Update_State(_uint iGrade)
 
     switch (iGrade)
     {
-    case 1: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_02_Common.png", m_iTexPass);
+    case 1: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_03_UnCommon.png", m_iTexPass);
         return;
-    case 2: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_03_UnCommon.png", m_iTexPass);
+    case 2: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_02_Common.png", m_iTexPass);
         return;
     case 3: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_04_Rare.png", m_iTexPass);
         return;
@@ -228,14 +333,29 @@ void CItem_Slot::Update_State(_uint iGrade)
 
 }
 
-void CItem_Slot::Equip_Item()
+void CItem_Slot::Selete_Item()
 {
     m_bIsSelete ? m_bIsSelete = false : m_bIsSelete = true;
+
+    CUI_Inven::INVENBUBBLE_DESC Desc = {};
+    Desc.eBubbleType = CUI_Inven::EVENT_TYPE::ITEM_SELETE;
+    Desc.iTypeIndex = m_iItemType;
+    Desc.iIndex = m_iIndex;
+
+    __super::Bubble_EventCall(&Desc);
+}
+
+void CItem_Slot::Equip_Item()
+{
+    if (m_iItemType > ENUM_CLASS(CUI_Inven::ITEMTYPE::ATIVE))
+        return;
 
     CUI_Inven::INVENBUBBLE_DESC Desc = {};
     Desc.eBubbleType = CUI_Inven::EVENT_TYPE::ITEM_EQUIP;
     Desc.iTypeIndex = m_iItemType;
     Desc.iIndex = m_iIndex;
+    Desc.iItemIndex = m_iItemIndex;
+    Desc.pItem = this;
 
     __super::Bubble_EventCall(&Desc);
 }
@@ -273,7 +393,9 @@ CGameObject* CItem_Slot::Clone(void* pArg)
 void CItem_Slot::Free()
 {
     __super::Free();
+    Safe_Release(m_pEquipIcon);
     Safe_Release(m_pOverFx);
     Safe_Release(m_pSeleteFx);
     Safe_Release(m_pIcon);
+    Safe_Release(m_pTextBox);
 }

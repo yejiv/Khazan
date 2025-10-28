@@ -160,8 +160,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\AI_Controller_Yetuga.h" />
+    <ClInclude Include="..\Public\AS_LieDown_Yetuga.h" />
+    <ClInclude Include="..\Public\AS_RightHand_5Hit_Yetuga.h" />
     <ClInclude Include="..\public\Atlas_RenderGroup.h" />
     <ClInclude Include="..\Public\AttackState_Yetuga.h" />
+    <ClInclude Include="..\Public\BigChest.h" />
+    <ClInclude Include="..\Public\BladeNexus.h" />
     <ClInclude Include="..\Public\Body_Player.h" />
     <ClInclude Include="..\Public\BT_Yetuga.h" />
     <ClInclude Include="..\public\Camera_Free.h" />
@@ -172,6 +176,7 @@
     <ClInclude Include="..\Public\Creature.h" />
     <ClInclude Include="..\public\Cursor.h" />
     <ClInclude Include="..\public\Cursor_FX.h" />
+    <ClInclude Include="..\public\Damage_Text.h" />
     <ClInclude Include="..\public\DB_Manager.h" />
     <ClInclude Include="..\Public\Dummy.h" />
     <ClInclude Include="..\public\Equip_Panel.h" />
@@ -180,7 +185,6 @@
     <ClInclude Include="..\Public\FSM_Yetuga.h" />
     <ClInclude Include="..\Public\HeaderGroup_UI.h" />
     <ClInclude Include="..\Public\IdleState_Yetuga.h" />
-    <ClInclude Include="..\public\Inven_Panel.h" />
     <ClInclude Include="..\public\Inven_Tap.h" />
     <ClInclude Include="..\public\Item_Slot.h" />
     <ClInclude Include="..\Public\JOH_Test1.h" />
@@ -245,8 +249,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\AI_Controller_Yetuga.cpp" />
+    <ClCompile Include="..\Private\AS_LieDown_Yetuga.cpp" />
+    <ClCompile Include="..\Private\AS_RightHand_5Hit_Yetuga.cpp" />
     <ClCompile Include="..\private\Atlas_RenderGroup.cpp" />
     <ClCompile Include="..\Private\AttackState_Yetuga.cpp" />
+    <ClCompile Include="..\Private\BigChest.cpp" />
+    <ClCompile Include="..\Private\BladeNexus.cpp" />
     <ClCompile Include="..\Private\Body_Player.cpp" />
     <ClCompile Include="..\Private\BT_Yetuga.cpp" />
     <ClCompile Include="..\private\Camera_Free.cpp" />
@@ -255,13 +263,13 @@
     <ClCompile Include="..\Private\Creature.cpp" />
     <ClCompile Include="..\private\Cursor.cpp" />
     <ClCompile Include="..\private\Cursor_FX.cpp" />
+    <ClCompile Include="..\private\Damage_Text.cpp" />
     <ClCompile Include="..\private\DB_Manager.cpp" />
     <ClCompile Include="..\Private\Dummy.cpp" />
     <ClCompile Include="..\private\Equip_Panel.cpp" />
     <ClCompile Include="..\private\Equip_Slot.cpp" />
     <ClCompile Include="..\Private\FSM_Yetuga.cpp" />
     <ClCompile Include="..\Private\IdleState_Yetuga.cpp" />
-    <ClCompile Include="..\private\Inven_Panel.cpp" />
     <ClCompile Include="..\private\Inven_Tap.cpp" />
     <ClCompile Include="..\private\Item_Slot.cpp" />
     <ClCompile Include="..\Private\JOH_Test1.cpp" />

@@ -42,6 +42,13 @@ private:
 	//class CRigidBody* m_pRigidBodyCom = { nullptr };
 	class CCharacterVirtual* m_pCharVirCom = { nullptr };
 
+#pragma region 상호 작용 맵 오브젝트 이벤트 임시 테스트용
+	EventChestActive m_ChestEvent = {};
+#pragma endregion
+
+private:
+
+
 private:
 	HRESULT Ready_Components();
 	HRESULT Ready_PartObjects();

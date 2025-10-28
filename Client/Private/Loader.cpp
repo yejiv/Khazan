@@ -97,6 +97,8 @@ HRESULT CLoader::Loading()
 			}));
 		break;
 	case LEVEL::STAGE1:
+		m_pGameInstance->DeleteOctree();
+		m_pGameInstance->CreateOctree({ 260.f, 0.f, 215.f }, 400.f, 7);
 		hr = Loading_For_Stage1_Level();
 		break;
 	}
@@ -208,10 +210,10 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Test/Fiona/Fiona.dat"))))
 		return E_FAIL;
 
-	///* Prototype_Component_Model_Khazan */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_Khazan"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Test/Khazan/Khazan.dat"))))
-		return E_FAIL;
+	/////* Prototype_Component_Model_Khazan */
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_Khazan"),
+	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Test/Khazan/Khazan.dat"))))
+	//	return E_FAIL;
 
 	/////* Prototype_Component_Model_WP_WOD_Ground_Base_004 */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"),
@@ -222,6 +224,16 @@ HRESULT CLoader::Loading_For_Stage1_Model()
  	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_JOH_TestModel"),
 		//CModel::Create(m_pDevice, m_pContext, "../Data/Test/Test_Player/Test_Player.dat"))))
 		//return E_FAIL;
+
+#pragma region 모델 원형 : 상호 작용 맵 오브젝트
+	/* Prototype_Component_Model_BladeNexus */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_BladeNexus"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/TombStone/WIP_COM_DamagedTS.dat")), E_FAIL);
+
+	/* Prototype_Component_Model_BigChest */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_BigChest"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/BigChest/WIP_COM_BigChest_Open_003.dat")), E_FAIL);
+#pragma endregion
 
 	return S_OK;
 }
@@ -293,6 +305,16 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 	/* Prototype_GameObject_Prop_Static */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_Static"),
 		CProp_Static::Create(m_pDevice, m_pContext)), E_FAIL);
+
+#pragma region 게임 오브젝트 원형 : 상호 작용 맵 오브젝트
+	/* Prototype_GameObject_Prop_BladeNexus */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_BladeNexus"),
+		CBladeNexus::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	/* Prototype_GameObject_Prop_BigChest */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_BigChest"),
+		CBigChest::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
 
 	/* Prototype_GameObject_JOH_Test1 */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_JOH_Test1"),

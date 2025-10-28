@@ -3,7 +3,7 @@
 #include "ClientInstance.h"
 
 #include "UI_Atlas_Icon.h"
-
+#include "UI_TextBox.h"
 CUI_QuickSlot_Item::CUI_QuickSlot_Item(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Slot{ pDevice, pContext }
 {
@@ -14,11 +14,15 @@ CUI_QuickSlot_Item::CUI_QuickSlot_Item(const CUI_QuickSlot_Item& Prototype)
 {
 }
 
-void CUI_QuickSlot_Item::Input_Slot()
+void CUI_QuickSlot_Item::Set_index(_int iIndex)
 {
-    if (m_iState == ENUM_CLASS(QUICKITMESLOTSTATE::DISABLE))
+    m_iIndex = iIndex;
+
+    if (m_iIndex == 0)
     {
-        m_vFxColor.w = 1.f;
+        m_iState = ENUM_CLASS(QUICKITMESLOTSTATE::ENABLE);
+        m_pIcon->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_Item_Potion_HP_1.png", 2), 2);
+        Update_State();
     }
 }
 
@@ -35,6 +39,9 @@ HRESULT CUI_QuickSlot_Item::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     m_iState = ENUM_CLASS(QUICKITMESLOTSTATE::NONITEM);
+
+    m_pGameInstance->Subscribe_Event<EVENT_HUD_QUICKSLOT>(ENUM_CLASS(EVENT_TYPE::UI_QUICK_SLOT), [&](const EVENT_HUD_QUICKSLOT& e) {Add_Item(e); });
+
     return S_OK;
 }
 
@@ -44,29 +51,13 @@ void CUI_QuickSlot_Item::Priority_Update(_float fTimeDelta)
 
 void CUI_QuickSlot_Item::Update(_float fTimeDelta)
 {
-    //Test
-    if (m_pGameInstance->Key_Pressing(DIK_1, 0))
+    Input_KeyState();
+
+    if (m_iItemCount != nullptr && *m_iItemCount > 0 && m_bIsItemZero)
     {
-        m_iState = ENUM_CLASS(QUICKITMESLOTSTATE::NONITEM);
-        m_vColor.w = 0.5f;
+        m_bIsItemZero = false;
+        Update_State();
     }
-    else if (m_pGameInstance->Key_Pressing(DIK_2, 0))
-    {
-        m_iState = ENUM_CLASS(QUICKITMESLOTSTATE::DISABLE);
-        m_vColor.w = 1.f;
-        m_vFxColor.w = 0.5f;
-        m_pDisableFX->Update_Color(m_vFxColor);
-    }
-    else if (m_pGameInstance->Key_Pressing(DIK_3, 0))
-    {
-        m_iState = ENUM_CLASS(QUICKITMESLOTSTATE::ENABLE);
-        m_vColor.w = 1.f;
-    }
-    else if (m_pGameInstance->Key_Down(DIK_Q) && m_iState == ENUM_CLASS(QUICKITMESLOTSTATE::DISABLE))
-    {
-        m_vFxColor.w = 1.f;
-    }
- 
 }
 
 void CUI_QuickSlot_Item::Late_Update(_float fTimeDelta)
@@ -74,6 +65,14 @@ void CUI_QuickSlot_Item::Late_Update(_float fTimeDelta)
     CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::ATLAS, this);
     if (m_iState == ENUM_CLASS(QUICKITMESLOTSTATE::DISABLE))
         Update_DisableFX(fTimeDelta);
+
+    if (m_iState != ENUM_CLASS(QUICKITMESLOTSTATE::NONITEM))
+    {
+        m_pIcon->Late_Update(fTimeDelta);
+        m_pTextBox->Set_Text(to_wstring(*m_iItemCount));
+        m_pTextBox->Late_Update(fTimeDelta);
+    }
+
 }
 
 HRESULT CUI_QuickSlot_Item::Render()
@@ -98,6 +97,29 @@ HRESULT CUI_QuickSlot_Item::Ready_Prototype()
 HRESULT CUI_QuickSlot_Item::Ready_Childer()
 {
     
+    CUI_Atlas_Icon::UIATLASICON_DESC AtlasDesc;
+
+    AtlasDesc.fDepth = m_fDepth;
+    AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+    AtlasDesc.szName = "Item_Icon";
+    AtlasDesc.vLocalPos = _float2{ 0.f, 0.f };
+    if (m_szName == "HUD_Item_Slot_0")
+        AtlasDesc.vLocalSize = { m_vLocalSize.x * 0.9f, m_vLocalSize.y * 0.9f };
+    else
+        AtlasDesc.vLocalSize = { m_vLocalSize.x * 0.7f, m_vLocalSize.y * 0.7f };
+
+    AtlasDesc.vUV = { 0.f, 0.f, 1.f, 1.f };
+    AtlasDesc.iShaderPass = 0;
+    AtlasDesc.iTexPass = 2;
+    AtlasDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+    m_pIcon = static_cast<CUI_Atlas_Icon*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Atlas_Icon"), &AtlasDesc));
+
+    if (m_pIcon == nullptr)
+        return E_FAIL;
+
+    m_Children.push_back(m_pIcon);
+    Safe_AddRef(m_pIcon);
+
     CUI_Atlas_Icon::UIATLASICON_DESC Desc;
     Desc.fDepth = m_fDepth;
     Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
@@ -117,27 +139,69 @@ HRESULT CUI_QuickSlot_Item::Ready_Childer()
 
     m_Children.push_back(m_pDisableFX);
     Safe_AddRef(m_pDisableFX);
+
+    CUIObject::UIOBJECT_DESC TextDesc = {};
+    TextDesc.fDepth = m_fDepth - 0.5f;
+    TextDesc.iUIType = ENUM_CLASS(UITYPE::TEXT);
+    TextDesc.szName = "Item_Count";
+    TextDesc.vLocalPos = _float2{ 0.f, 0.f };
+    TextDesc.vLocalSize = { m_vLocalSize.x, m_vLocalSize.y };
+    TextDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+    m_pTextBox = static_cast<CUI_TextBox*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_TextBox"), &TextDesc));
+
+    if (m_pTextBox == nullptr)
+        return E_FAIL;
+
+    CUI_TextBox::TEXTBOX_DESC TextSet = {};
+    TextSet.bIsTextBox = false;
+    TextSet.eTextAlign = TEXT_ALIGN::RIGHT_BOTTOM;
+    TextSet.fMaxWidth = 0;
+    TextSet.fOffsetHeight = 0;
+
+    if (m_szName == "HUD_Item_Slot_0")
+    {
+        TextSet.iPivotX = 30;
+        TextSet.iPivotY = 45;
+        TextSet.wstrTexttag = TEXT("Blade_Medium_22");
+    }
+    else
+    {
+        TextSet.iPivotX = 20;
+        TextSet.iPivotY = 35;
+        TextSet.wstrTexttag = TEXT("Blade_Medium_18");
+    }
+    TextSet.wstrText = TEXT("");
+    TextSet.vColor = { 1.f, 1.f, 1.f, 1.f };
+    m_pTextBox->Setting_Text(TextSet);
+    m_Children.push_back(m_pTextBox);
+    Safe_AddRef(m_pTextBox);
     return S_OK;
 }
 
 void CUI_QuickSlot_Item::Update_State()
 {
-    if (m_iItemIndex < 0)
+    
+    
+    if (m_iItemIndex < 0 && m_iIndex != 0)
     {
         m_iState = ENUM_CLASS(QUICKITMESLOTSTATE::NONITEM);
         m_vColor.w = 0.5f;
     }
-    else if (m_iItemValue = 0)
+    else if (m_iItemCount != nullptr && (*m_iItemCount) == 0)
     {
         m_iState = ENUM_CLASS(QUICKITMESLOTSTATE::DISABLE);
         m_vColor.w = 1.f;
         m_vFxColor.w = 0.5f;
         m_pDisableFX->Update_Color(m_vFxColor);
+        m_pIcon->Set_Color(_float4{1.f, 1.f, 1.f, 0.5f});
+        m_pTextBox->Set_Color({ 1.f, 1.f,1.f,0.8f });
     }
     else
     {
         m_iState = ENUM_CLASS(QUICKITMESLOTSTATE::ENABLE);
         m_vColor.w = 1.f;
+        m_pIcon->Set_Color(_float4{ 1.f, 1.f, 1.f, 1.f });
+        m_pTextBox->Set_Color({ 1.f, 1.f,1.f,1.f });
     }
 }
 
@@ -152,6 +216,85 @@ void CUI_QuickSlot_Item::Update_DisableFX(_float fTimeDelta)
     }
     m_pDisableFX->Late_Update(fTimeDelta);
 }
+
+void CUI_QuickSlot_Item::Add_Item(EVENT_HUD_QUICKSLOT pItem)
+{
+    if (pItem.iIndex != m_iIndex)
+        return;
+    else if (0 == pItem.iIndex)
+    {
+        m_iItemCount = pItem.iItemCount;
+        return;
+    }
+
+
+    if (!pItem.isEquip)
+    {
+        m_iState = ENUM_CLASS(QUICKITMESLOTSTATE::NONITEM);
+        m_iItemIndex = -1;
+        m_iItemCount = nullptr;
+    }
+    else
+    {
+        m_iItemIndex = pItem.iItemIndex;
+        m_iItemCount = pItem.iItemCount;
+
+        ITEM_DATA ItemData = *CClientInstance::GetInstance()->Get_Data<ITEM_DATA>(m_iItemIndex);
+
+        string strItemData = WStringToAnsi(ItemData.strIconName);
+        _float4 vUV = CClientInstance::GetInstance()->Get_AtlasUV(strItemData.c_str(), ItemData.iTexPass);
+
+        m_pIcon->Set_Texture(vUV, ItemData.iTexPass);
+        Update_State();
+    }
+}
+
+void CUI_QuickSlot_Item::Input_KeyState()
+{
+    if(m_iState == ENUM_CLASS(QUICKITMESLOTSTATE::NONITEM))
+        return;
+
+    _int iInputIndex = { -1 };
+
+    if (m_pGameInstance->Key_Down(DIK_1))
+        iInputIndex = 0;
+    if (m_pGameInstance->Key_Down(DIK_2))
+        iInputIndex = 1;
+    if (m_pGameInstance->Key_Down(DIK_3))
+        iInputIndex = 2;
+    if (m_pGameInstance->Key_Down(DIK_4))
+        iInputIndex = 3;
+    if (m_pGameInstance->Key_Down(DIK_5))
+        iInputIndex = 4;
+    if (m_pGameInstance->Key_Down(DIK_6))
+        iInputIndex = 5;
+    if (m_pGameInstance->Key_Down(DIK_7))
+        iInputIndex = 6;
+
+    if (m_iIndex != iInputIndex)
+        return;
+
+    if (m_iItemCount != nullptr)
+    {
+        _bool isAticv = false;
+
+        if(*m_iItemCount > 0)
+            isAticv = true;
+
+        if (!isAticv)
+            m_vFxColor.w = 1.f;
+        else
+        {
+            --*m_iItemCount;
+            if (*m_iItemCount <= 0)
+            {
+                Update_State();
+                m_bIsItemZero = true;
+            }
+        }
+    }
+}
+
 
 CUI_QuickSlot_Item* CUI_QuickSlot_Item::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)
 {
@@ -177,6 +320,8 @@ CGameObject* CUI_QuickSlot_Item::Clone(void* pArg)
 
 void CUI_QuickSlot_Item::Free()
 {
+    Safe_Release(m_pIcon);
     Safe_Release(m_pDisableFX);
+    Safe_Release(m_pTextBox);
     __super::Free();
 }

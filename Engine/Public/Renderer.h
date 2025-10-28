@@ -74,7 +74,9 @@ private:
 private:
 	_bool isEnableShadow();
 	_bool isEnableSSAO();
+#ifdef _DEBUG
 	_bool isEnableDebugRender();
+#endif
 
 public:
 	static CRenderer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

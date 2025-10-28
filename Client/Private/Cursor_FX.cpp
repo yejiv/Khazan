@@ -84,7 +84,6 @@ void CCursor_FX::Reset()
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);
 
-	//__super::Update_Transform(nullptr, { ptMouse.x + m_vLocalSize.x * 0.5f, ptMouse.y + m_vLocalSize.y * 0.5f });
 	__super::Update_Transform(nullptr, { (_float)ptMouse.x , (_float)ptMouse.y  });
 }
 

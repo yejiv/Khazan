@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClInclude Include="..\Public\AIController_Edit.h" />
     <ClInclude Include="..\public\AnimationTool.h" />
+    <ClInclude Include="..\Public\BigChest.h" />
     <ClInclude Include="..\Public\Camera_Compre.h" />
     <ClInclude Include="..\Public\Camera_Controller.h" />
     <ClInclude Include="..\Public\Camera_Effect.h" />
@@ -203,6 +204,7 @@
     <ClInclude Include="..\Public\MapEditor_Header.h" />
     <ClInclude Include="..\Public\MapObject.h" />
     <ClInclude Include="..\Public\Map_Terrain.h" />
+    <ClInclude Include="..\Public\Map_Trigger.h" />
     <ClInclude Include="..\Public\Player_Camera.h" />
     <ClInclude Include="..\Public\Map_TestPlayer.h" />
     <ClInclude Include="..\public\Player_Shader.h" />
@@ -216,6 +218,7 @@
     <ClInclude Include="..\Public\Prop_Test.h" />
     <ClInclude Include="..\Public\Camera_Terrain.h" />
     <ClInclude Include="..\public\Terrain_Shader.h" />
+    <ClInclude Include="..\Public\BladeNexus.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="EditorPch.h" />
     <ClInclude Include="framework.h" />
@@ -225,6 +228,7 @@
   <ItemGroup>
     <ClCompile Include="..\Private\AIController_Edit.cpp" />
     <ClCompile Include="..\private\AnimationTool.cpp" />
+    <ClCompile Include="..\Private\BigChest.cpp" />
     <ClCompile Include="..\Private\Camera_Compre.cpp" />
     <ClCompile Include="..\Private\Camera_Controller.cpp" />
     <ClCompile Include="..\Private\Camera_Effect.cpp" />
@@ -265,6 +269,7 @@
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\Private\MapObject.cpp" />
     <ClCompile Include="..\Private\Map_Terrain.cpp" />
+    <ClCompile Include="..\Private\Map_Trigger.cpp" />
     <ClCompile Include="..\Private\Player_Camera.cpp" />
     <ClCompile Include="..\Private\Map_TestPlayer.cpp" />
     <ClCompile Include="..\private\Player_Shader.cpp" />
@@ -278,6 +283,7 @@
     <ClCompile Include="..\Private\Prop_Test.cpp" />
     <ClCompile Include="..\Private\Camera_Terrain.cpp" />
     <ClCompile Include="..\private\Terrain_Shader.cpp" />
+    <ClCompile Include="..\Private\BladeNexus.cpp" />
     <ClCompile Include="Editor.cpp" />
     <ClCompile Include="EditorPch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

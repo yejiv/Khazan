@@ -10,9 +10,14 @@
 #include "Prop_Object.h"
 #include "Prop_Static.h"
 #include "Prop_Animated.h"
-#include "Prop_Interactive.h"
 #include "Prop_Dynamic.h"
 #include "Prop_Preview.h"
+
+// Interactive Properties
+#include "Prop_Interactive.h"
+
+#include "BladeNexus.h"					// ±Í°Ë
+#include "BigChest.h"					// »óÀÚ
 
 // Properties Test
 #include "Prop_Test.h"

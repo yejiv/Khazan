@@ -1,6 +1,8 @@
 #include "CharacterVirtual.h"
 #include "GameInstance.h"
 
+inline _float Smoothstep(_float t) { return t * t * (3.f - 2.f * t); }
+
 CCharacterVirtual::CCharacterVirtual(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CRigidBody { pDevice, pContext }
 {
@@ -106,35 +108,56 @@ void CCharacterVirtual::Sync_Update(CTransform* pTransform)
 }
 void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vector vGravity)
 {
-	if (!m_pCharVir) return;
+	m_fAcc += fTimeDelta;
 
-	m_vGravity = LoadVec3(vGravity);
-	JPH::Vec3 vHorizontal = JPH::Vec3::sZero();
-
-	const bool onGround = (m_pCharVir->GetGroundState() == JPH::CharacterVirtual::EGroundState::OnGround);
-	if (onGround)
+	while (m_fAcc >= fFixedDt)
 	{
-		if (m_vVelocity.GetY() < 0.0f)
-			m_vVelocity.SetY(0.0f);
+		if (!m_pCharVir) return;
 
-		vHorizontal += m_pCharVir->GetGroundVelocity();
+		m_vGravity = LoadVec3(vGravity);
+		JPH::Vec3 vHorizontal = JPH::Vec3::sZero();
+
+		const bool onGround = (m_pCharVir->GetGroundState() == JPH::CharacterVirtual::EGroundState::OnGround);
+		if (onGround)
+		{
+			if (m_vVelocity.GetY() < 0.0f)
+				m_vVelocity.SetY(0.0f);
+
+			vHorizontal += m_pCharVir->GetGroundVelocity();
+		}
+		else
+		{
+			m_vVelocity += m_vGravity * fFixedDt;
+		}
+
+		const JPH::Vec3 desired(vHorizontal.GetX(), m_vVelocity.GetY(), vHorizontal.GetZ());
+		m_pCharVir->SetLinearVelocity(desired);
+
+		//m_pGameInstance->CharVir_Update(fTimeDelta, m_pCharVir, m_vGravity, m_iNumObjectLayer, m_pBodyFilter, m_pShapeFilter);
+		m_pGameInstance->CharVir_ExtendedUpdate(fFixedDt, m_pCharVir, m_vGravity, m_iNumObjectLayer, m_pBodyFilter, m_pShapeFilter, m_tEXUpdateSetting);
+
+		m_tPrevPose = m_tCurrPose;
+		m_tCurrPose.vPos = m_pCharVir->GetPosition();
+		m_tCurrPose.vRot = m_pCharVir->GetRotation();
+		m_tCurrPose.vLinvel = m_pCharVir->GetLinearVelocity();
+
+		if (m_isFirstSync)
+		{
+			m_tPrevPose = m_tCurrPose;
+			m_isFirstSync = false;
+		}
+		m_fAcc -= fFixedDt;
 	}
-	else
-	{
-		m_vVelocity += m_vGravity * fTimeDelta;
-	}
 
-	const JPH::Vec3 desired(vHorizontal.GetX(), m_vVelocity.GetY(), vHorizontal.GetZ());
-	m_pCharVir->SetLinearVelocity(desired);
+	const _float fAlpha = (fFixedDt > 0.f) ? (m_fAcc / fFixedDt) : 1.f;
 
-	//m_pGameInstance->CharVir_Update(fTimeDelta, m_pCharVir, m_vGravity, m_iNumObjectLayer, m_pBodyFilter, m_pShapeFilter);
-	m_pGameInstance->CharVir_ExtendedUpdate(fTimeDelta, m_pCharVir, m_vGravity, m_iNumObjectLayer, m_pBodyFilter, m_pShapeFilter, m_tEXUpdateSetting);
+	_float fSmoothAlpha = Smoothstep(fAlpha);
 
-	const JPH::RVec3 pos = m_pCharVir->GetPosition();
-	const JPH::Quat  rot = m_pCharVir->GetRotation();
-
-	_vector vPos = XMVectorSet(pos.GetX(), pos.GetY(), pos.GetZ(), 1.f);
-	_vector vRot = XMVectorSet(rot.GetX(), rot.GetY(), rot.GetZ(), rot.GetW());
+	JPH::RVec3 ipos = LerpRVec3(m_tPrevPose.vPos, m_tCurrPose.vPos, fAlpha);
+	JPH::Quat  irot = SlerpQuat(m_tPrevPose.vRot, m_tCurrPose.vRot, fAlpha);
+	
+	_vector vPos = XMVectorSet((float)ipos.GetX(), (float)ipos.GetY(), (float)ipos.GetZ(), 1.f);
+	_vector vRot = XMVectorSet(irot.GetX(), irot.GetY(), irot.GetZ(), irot.GetW());
 	pTransform->Set_State(STATE::POSITION, vPos);
 	pTransform->Set_Quaternion(vRot);
 

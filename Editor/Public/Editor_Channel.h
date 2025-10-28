@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Editor_Defines.h"
 #include "Base.h"
 
@@ -16,13 +16,15 @@ public:
     void Set_PrevAnimationBlend(const _float& fAnimationRatio, _matrix& PreAnimationMatrix);
 
 public:
-    /* ÇöÀç »ÀÀÇ »óÅÂ Çà·ÄÀ» ¸®ÅÏÇÑ´Ù. */
+    /* í˜„ì¬ ë¼ˆì˜ ìƒíƒœ í–‰ë ¬ì„ ë¦¬í„´í•œë‹¤. */
     _matrix Get_TransformationMatrix() const {  return m_TransformationMatrix; }
-    /* ÀÌ Channel¿¡ ÇØ´çÇÏ´Â »À ÀÎµ¦½º¸¦ ¸®ÅÏÇÑ´Ù. */
+    /* ì´ Channelì— í•´ë‹¹í•˜ëŠ” ë¼ˆ ì¸ë±ìŠ¤ë¥¼ ë¦¬í„´í•œë‹¤. */
     _uint Get_BoneIndex() const { return m_iBoneIndex; }
 
 public:
     void    Get_Data(CHANNEL_DATA& data) { data = m_Channel_Data; }
+    void    Set_IsRootBone(_bool isRoot) { m_isRootBone = isRoot; }
+
 private:
     _char                   m_szName[MAX_PATH] = {};
     _uint                   m_iBoneIndex = {};
@@ -31,14 +33,16 @@ private:
 
     CHANNEL_DATA            m_Channel_Data{};
 
-    /* ÇöÀç »À Çà·Ä*/
+    /* í˜„ì¬ ë¼ˆ í–‰ë ¬*/
     _matrix         m_TransformationMatrix = {};
 
-    /* ÀÌÀü ¾Ö´Ï¸ŞÀÌ¼Ç »óÅÂ */
-    _bool           m_isBlendPreAnimation = {}; // ÀÌÀü ¾Ö´Ï¸ŞÀÌ¼Ç°úÀÇ º¸°£ ¿©ºÎ    
-    _float          m_fAnimationRatio = {}; // ¾Ö´Ï¸ŞÀÌ¼Ç ÀÌÀüÀÇ »óÅÂ Çà·Ä°ú ÇöÀç ¾Ö´Ï¸ŞÀÌ¼Ç »óÅÂ Çà·Ä »çÀÌÀÇ ºñÀ²   
-    _vector         m_vPrevScale{}, m_vPrevRotQuat{}, m_vPrevPositon{}; // ¾Ö´Ï¸ŞÀÌ¼Ç ÀÌÀüÀÇ »óÅÂ Çà·Ä   
+    /* ì´ì „ ì• ë‹ˆë©”ì´ì…˜ ìƒíƒœ */
+    _bool           m_isBlendPreAnimation = {}; // ì´ì „ ì• ë‹ˆë©”ì´ì…˜ê³¼ì˜ ë³´ê°„ ì—¬ë¶€    
+    _float          m_fAnimationRatio = {}; // ì• ë‹ˆë©”ì´ì…˜ ì´ì „ì˜ ìƒíƒœ í–‰ë ¬ê³¼ í˜„ì¬ ì• ë‹ˆë©”ì´ì…˜ ìƒíƒœ í–‰ë ¬ ì‚¬ì´ì˜ ë¹„ìœ¨   
+    _vector         m_vPrevScale{}, m_vPrevRotQuat{}, m_vPrevPositon{}; // ì• ë‹ˆë©”ì´ì…˜ ì´ì „ì˜ ìƒíƒœ í–‰ë ¬   
 
+    /* ë£¨íŠ¸ëª¨ì…˜ + ì• ë‹ˆë©”ì´ì…˜ ë¸”ëœë”© */
+    _bool           m_isRootBone = false; // ì´ ì±„ë„ì´ ë£¨íŠ¸ë³¸ì¸ì§€ ì—¬ë¶€
 public:
     static CEditor_Channel* Create(const aiNodeAnim* pAIChannel, const vector<class CEditor_Bone*>& Bones);
     virtual void Free() override;

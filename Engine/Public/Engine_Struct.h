@@ -484,6 +484,29 @@ namespace Engine
 		class CGameObject* pGameObject = nullptr;
 		void* pInfo = nullptr;	
 	}COLLISION_DESC;
+
+
+	typedef struct tagDirectionInfo
+	{
+		enum DIR : uint32_t {
+			NONE = 0, F = 1 << 0, B = 1 << 1, L = 1 << 2, R = 1 << 3,
+			U = 1 << 4, D = 1 << 5,
+			C = 1 << 6, CC = 1 << 7,
+			ALL = 1 << 8,
+			BBL = 1 << 9, BLL = 1 << 10,
+			END = 1 << 11,
+		};
+		
+
+		void		Add_Flag(unsigned int iFlag) { iDirFlag |= iFlag; }
+		void		Delete_Flag(unsigned int iFlag) { iDirFlag &= ~iFlag; }
+		void		Clear_Flag() { iDirFlag = 0; }
+		bool		Check_Flag(unsigned int iFlag) { return (iDirFlag & iFlag) != 0; }
+
+		unsigned int iDirFlag = {};
+
+	}DIRECTION_INFO;
+
 }
 
 

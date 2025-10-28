@@ -30,6 +30,10 @@ HRESULT CLevel_Stage1::Initialize()
 
 	/*if (FAILED(Ready_Lights()))
 		return E_FAIL;*/
+	m_pGameInstance->Add_FireTask([this]() {
+		CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+		return S_OK;
+		});
 
 	CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
 
@@ -47,19 +51,38 @@ HRESULT CLevel_Stage1::Initialize()
 
 	CHECK_FAILED(Ready_Layer_Test(TEXT("Layer_Test")), E_FAIL);
 
+
+	/* 상호 작용 오브젝트 호출 함수 */
+	// m_pGameInstance->Add_FireTask([this]() {
+	// 	CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach_Test"), LEVEL::STAGE1), E_FAIL);
+	// 	});
+	
+	//m_pGameInstance->Add_FireTask([this]() {
+	//	CHECK_FAILED(Ready_Layer_MapObject_Test(TEXT("Layer_Test")), E_FAIL);
+	//	});
+	//
+	//m_pGameInstance->Add_FireTask([this]() {
+	//	CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+	//	});
+
 	m_pGameInstance->Add_FireTask([this]() {
 		CHECK_FAILED(Ready_Layer_MapObject_Test(TEXT("Layer_Test")), E_FAIL);
 		});
-	
-	m_pGameInstance->Add_FireTask([this]() {
-		CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
-		});
 
-	m_pGameInstance->Add_FireTask([this]() {
-		CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
-		});
-	
+	//m_pGameInstance->Add_FireTask([this]() {
+	//	CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+	//	return S_OK;
+	//	});
 
+	//m_pGameInstance->Add_FireTask([this]() {
+	//	CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+	//	return S_OK;
+	//	});
+
+	//CHECK_FAILED(Ready_Layer_MapObject_Test(TEXT("Layer_Test")), E_FAIL);
+	//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+	CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+	CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
 	//m_pGameInstance->Jolt_Test();
 
 	return S_OK;
@@ -122,7 +145,7 @@ HRESULT CLevel_Stage1::Ready_Layer_Camera(const _wstring& strLayerTag)
 	CameraFreeDesc.fFovy = XMConvertToRadians(60.0f);
 	CameraFreeDesc.fNear = 0.1f;
 	CameraFreeDesc.fFar = 6000.f;
-	CameraFreeDesc.fSpeedPerSec = 10.f;
+	CameraFreeDesc.fSpeedPerSec = 40.f;
 	CameraFreeDesc.fRotationPerSec = XMConvertToRadians(90.0f);
 	CameraFreeDesc.fMouseSensor = 0.2f;
 	CameraFreeDesc.iCameraType = ENUM_CLASS(CAMERATYPE::FREE);
@@ -167,7 +190,6 @@ HRESULT CLevel_Stage1::Ready_Layer_Player(const _wstring& strLayerTag)
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
 		ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Player"))))
 		return E_FAIL;
-
 
 	return S_OK;
 }
@@ -283,20 +305,128 @@ HRESULT CLevel_Stage1::Ready_Layer_MapObject(const _wstring& strLayerTag, const 
 		ObjectDesc.Properties = PropProperties;
 
 		// 일단 단일 오브젝트로 배치하고 추후에 인스턴스, 인터렉티브, 다이나믹 으로 나누겠습니다.
-		m_pGameInstance->Add_FireTask([this, objDesc = ObjectDesc, curLevel = eCurrentLevel]() mutable {
-			CHECK_FAILED(
-				m_pGameInstance->Add_GameObject_ToLayer(
-					ENUM_CLASS(objDesc.eLevel),
-					TEXT("Layer_MapObject"),
-					ENUM_CLASS(curLevel),
-					TEXT("Prototype_GameObject_Prop_Object"),
-					&objDesc // 캡처된 값의 주소 -> 안전
-				),
-				E_FAIL
-			);
-			});
+		//m_pGameInstance->Add_FireTask([this, objDesc = ObjectDesc, curLevel = eCurrentLevel]() mutable {
+		//	CHECK_FAILED(
+		//		m_pGameInstance->Add_GameObject_ToLayer(
+		//			ENUM_CLASS(objDesc.eLevel),
+		//			TEXT("Layer_MapObject"),
+		//			ENUM_CLASS(curLevel),
+		//			TEXT("Prototype_GameObject_Prop_Object"),
+		//			&objDesc // 캡처된 값의 주소 -> 안전
+		//		),
+		//		E_FAIL
+		//	);
+		//	});
 		/*CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
 			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), E_FAIL);*/
+
+		CGameObject* pObject = dynamic_cast<CGameObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc));
+
+		m_pGameInstance->AddStaticObject(pObject, { WorldMatrix._41, WorldMatrix._42, WorldMatrix._43 }, 10.f);
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_Stage1::Ready_Layer_MapObject_Interactive(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
+{
+	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+
+	switch (eMap)
+	{
+	case KHAZAN_MAP::HEINMACH:
+		pDataFilePath += TEXT("HeinMach/");
+		break;
+	case KHAZAN_MAP::YETUGA:
+		pDataFilePath += TEXT("Yetuga/");
+		break;
+	case KHAZAN_MAP::THECREVICE:
+		pDataFilePath += TEXT("TheCrevice/");
+		break;
+	case KHAZAN_MAP::EMBARS:
+		pDataFilePath += TEXT("Embars/");
+		break;
+	case KHAZAN_MAP::VIPER:
+		pDataFilePath += TEXT("Viper/");
+		break;
+	default:
+		break;
+	}
+
+	pDataFilePath += pDataFileName;
+
+	// 동일한 파일명의 _objects.dat 불러오기
+	pDataFilePath += TEXT("_interactive.dat");
+
+	DWORD dwByte = {};
+
+	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("데이터 파일이 없거나 박준영 문제"), E_FAIL);
+
+	// 1. 오브젝트의 총 개수
+	_uint iObjectCnt = {};
+	CHECK_FALSE(ReadFile(hFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr), E_FAIL);
+
+	// 오브젝트 총 개수만큼 순회
+	for (_uint i = 0; i < iObjectCnt; ++i)
+	{
+		CProp_Interactive::PROP_INTERACTIVE_DESC ObjectDesc = {};
+
+		ObjectDesc.eLevel = eCurrentLevel;
+
+		// 2. 프로토 타입 태그 길이 불러오기
+		_uint iPrototypeTagLen = {};
+		CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
+
+		// 3. 프로토 타입 태그 이름 불러오기
+		_tchar szPrototypeTag[MAX_PATH] = {};
+		CHECK_FALSE(ReadFile(hFile, &szPrototypeTag, sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr), E_FAIL);
+
+		// 불러온 태그 카피
+		memcpy(ObjectDesc.szModelName, szPrototypeTag, sizeof(ObjectDesc.szModelName));
+
+		// 4. 객체당 월드 행렬 때오기
+		_float4x4 WorldMatrix = {};
+		CHECK_FALSE(ReadFile(hFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr), E_FAIL);
+
+		ObjectDesc.WorldMatrix = WorldMatrix;
+
+		// 5. 상호 작용 타입 불러오기
+		INTERACTIVE_TYPE eType = {};
+		CHECK_FALSE(ReadFile(hFile, &eType, sizeof(INTERACTIVE_TYPE), &dwByte, nullptr), E_FAIL);
+		CHECK_EQUAL_MSG(INTERACTIVE_TYPE::END, eType, TEXT("맵 에디터에서 상호 작용 타입 미지정"), false);
+
+
+		// 일단 단일 오브젝트로 배치하고 추후에 인스턴스, 인터렉티브, 다이나믹 으로 나누겠습니다.
+		//m_pGameInstance->Add_FireTask([this, objDesc = ObjectDesc, curLevel = eCurrentLevel, enumType = eType]() mutable {
+
+		//	if (INTERACTIVE_TYPE::CHECKPOINT == enumType)
+		//	{
+		//	CHECK_FAILED(
+		//		m_pGameInstance->Add_GameObject_ToLayer(
+		//			ENUM_CLASS(objDesc.eLevel),
+		//			TEXT("Layer_MapObject_Interact"),
+		//			ENUM_CLASS(curLevel),
+		//			TEXT("Prototype_GameObject_Prop_BladeNexus"),
+		//			&objDesc // 캡처된 값의 주소 -> 안전
+		//		),
+		//		E_FAIL);
+		//	}
+
+		//	});
+
+		switch (eType)
+		{
+		case INTERACTIVE_TYPE::CHECKPOINT:
+			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_BladeNexus"), &ObjectDesc), E_FAIL);
+			break;
+		case INTERACTIVE_TYPE::CHEST:
+			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_BigChest"), &ObjectDesc), E_FAIL);
+			break;
+		default:
+			MSG_BOX(TEXT("잉 있으면 안되는디"));
+			break;
+		}
 	}
 
 	return S_OK;
@@ -366,18 +496,20 @@ HRESULT CLevel_Stage1::Ready_Layer_MapObject_Inst(const _wstring& strLayerTag, c
 		ObjectDesc.Properties = PropProperties;
 
 		// 인스턴스 객체 슈웃
-		m_pGameInstance->Add_FireTask([this, objDesc = ObjectDesc, curLevel = eCurrentLevel]() mutable {
-			CHECK_FAILED(
-				m_pGameInstance->Add_GameObject_ToLayer(
-					ENUM_CLASS(objDesc.eLevel),
-					TEXT("Layer_MapObject_Inst"),
-					ENUM_CLASS(curLevel),
-					TEXT("Prototype_GameObject_Prop_Static"),
-					&objDesc // 캡처된 값의 주소 -> 안전
-				),
-				E_FAIL
-			);
-			});
+		//m_pGameInstance->Add_FireTask([this, objDesc = ObjectDesc, curLevel = eCurrentLevel]() mutable {
+		//	CHECK_FAILED(
+		//		m_pGameInstance->Add_GameObject_ToLayer(
+		//			ENUM_CLASS(objDesc.eLevel),
+		//			TEXT("Layer_MapObject_Inst"),
+		//			ENUM_CLASS(curLevel),
+		//			TEXT("Prototype_GameObject_Prop_Static"),
+		//			&objDesc // 캡처된 값의 주소 -> 안전
+		//		),
+		//		E_FAIL
+		//	);
+		//	});
+		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Static"), &ObjectDesc), E_FAIL);
 	}
 
 	return S_OK;

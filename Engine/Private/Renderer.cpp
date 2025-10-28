@@ -677,6 +677,7 @@ _bool CRenderer::isEnableSSAO()
 #endif
 }
 
+#ifdef _DEBUG
 _bool CRenderer::isEnableDebugRender()
 {
     if (m_pGameInstance->Key_Down(DIK_PRIOR))
@@ -686,6 +687,8 @@ _bool CRenderer::isEnableDebugRender()
 
     return m_isEnableDebugRender;
 }
+
+#endif
 
 CRenderer* CRenderer::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {

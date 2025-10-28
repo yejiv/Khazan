@@ -18,12 +18,12 @@
 #include "Jolt_Manager.h"
 #include "Input_Manager.h"
 #include "Pool_Manager.h"
-#include "Event_Manager.h"
 #include "Resource_Manager.h"
 #include "ComputeShader_Manager.h"
 #include "Camera_Manager.h"
 #include "BlackBoard.h"
 #include "SSAO.h"
+#include "Octree.h"
 #include "Blur.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
@@ -157,8 +157,21 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 	m_pPipeLine->Update();
 	m_pFrustum->Update();
 
+	if (m_pOctree)
+		m_pOctree->Culling();
+
+	if (m_pOctree)
+		m_pOctree->Priority_Update(fTimeDelta);
+
 	m_pObject_Manager->Update(fTimeDelta);
+
+	if (m_pOctree)
+		m_pOctree->Update(fTimeDelta);
+
 	m_pObject_Manager->Late_Update(fTimeDelta);
+
+	if (m_pOctree)
+		m_pOctree->Late_Update(fTimeDelta);
 
 	// Cascade Test
 	m_pShadow->Update();
@@ -654,14 +667,37 @@ _bool CGameInstance::isIn_Frustum_WorldSpace(_fvector vWorldPos, _float fRange)
 	return m_pFrustum->isIn_WorldSpace(vWorldPos, fRange);
 }
 
+ContainmentType CGameInstance::isIn_Frustum_WorldSpace(const BoundingBox& BoundingBox)
+{
+	if (!m_pFrustum)
+		return CONTAINS;
+
+	return m_pFrustum->isIn_WorldSpace(BoundingBox);
+}
+
 _bool CGameInstance::isIn_Frustum_LocalSpace(_fvector vLocalPos, _float fRange)
 {
 	return m_pFrustum->isIn_LocalSpace(vLocalPos, fRange);
 }
 
-const _float4* CGameInstance::Get_WorldPoints() const
+const _float4* CGameInstance::Get_Frustum_Point() const
+{
+	return m_pFrustum->Get_Point();
+}
+
+const _float4* CGameInstance::Get_Frustum_WorldPoints() const
 {
 	return m_pFrustum->Get_WorldPoints();
+}
+
+const _float4* CGameInstance::Get_Frustum_WorldPlanes() const
+{
+	return m_pFrustum->Get_WorldPlanes();
+}
+
+const _float4* CGameInstance::Get_Frustum_LocalPlanes() const
+{
+	return m_pFrustum->Get_LocalPlanes();
 }
 
 #pragma endregion
@@ -757,13 +793,17 @@ _bool CGameInstance::CastRay(_float3 vStart, _float3 vEnd, _float& outFraction, 
 }
 
 #ifdef _DEBUG
-void CGameInstance::Change_DebugRender()
-{
-	m_pJolt_Manager->Change_DebugRender();
-}
 void CGameInstance::Jolt_Test()
 {
 	m_pJolt_Manager->Test();
+}
+void CGameInstance::Set_DrawFilter(_uint iObjectLayer)
+{
+	m_pJolt_Manager->Set_DrawFilter(iObjectLayer);
+}
+void CGameInstance::Remove_DrawFilter(_uint iObjectLayer)
+{
+	m_pJolt_Manager->Remove_DrawFilter(iObjectLayer);
 }
 #endif
 #pragma endregion
@@ -835,25 +875,17 @@ void CGameInstance::Push_PoolObject_ToLayer(_uint iLayerLevelIndex, const _wstri
 #pragma endregion
 
 #pragma region EVENT_MANAGER
-_uint CGameInstance::Subscribe(_uint iEventType, std::function<void()> fEvent)
+_bool CGameInstance::Unsubscribe_Event(_uint iEventType, _uint iListenerId)
 {
-	return m_pEvent_Manager->Subscribe(iEventType, fEvent);
+	return m_pEvent_Manager->Unsubscribe(iEventType, iListenerId);
 }
-void CGameInstance::UnSubscribeAll(_uint iEventType)
+void CGameInstance::UnsubscribeAll_Event(_uint iEventType)
 {
-	m_pEvent_Manager->UnSubscribeAll(iEventType);
+	m_pEvent_Manager->UnsubscribeAll(iEventType);
 }
-void CGameInstance::UnSubscribe(_uint iEventType, _uint iID)
+void CGameInstance::Clear_AllEvents()
 {
-	m_pEvent_Manager->UnSubscribe(iEventType, iID);
-}
-HRESULT CGameInstance::Emit(_uint iEventType)
-{
-	return m_pEvent_Manager->Emit(iEventType);
-}
-void CGameInstance::Event_Clear()
-{
-	m_pEvent_Manager->Clear();
+	m_pEvent_Manager->ClearAll();
 }
 #pragma endregion
 
@@ -916,6 +948,14 @@ CCamera* CGameInstance::Get_ActiveCamera()
 {
 	return m_pCamera_Manager->Get_ActiveCamera();
 }
+_float3 CGameInstance::Get_ActiveCameraPos()
+{
+	return m_pCamera_Manager->Get_ActiveCameraPos();
+}
+_float4 CGameInstance::Get_ActiveCameraLook()
+{
+	return m_pCamera_Manager->Get_ActiveCameraLook();
+}
 void CGameInstance::Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData)
 {
 	m_pCamera_Manager->Save_Json(iLevelIndex, strCameraTag, pOutData);
@@ -955,6 +995,34 @@ void CGameInstance::Set_BlurConfig(GAUSSIAN_BLUR_CONFIG Config)
 }
 #pragma endregion
 
+#pragma region OCTREE
+
+void CGameInstance::DeleteOctree()
+{
+	Safe_Release(m_pOctree);
+	m_pOctree = nullptr;
+}
+
+HRESULT CGameInstance::CreateOctree(const _float3& vCenter, const _float& fHalfWidth, const _int& iDepthLimit)
+{
+	m_pOctree = COctree::Create(vCenter, fHalfWidth, iDepthLimit);
+	if (!m_pOctree)
+		return E_FAIL;
+
+	return S_OK;
+}
+
+bool CGameInstance::AddStaticObject(CGameObject* pGameObject, const _float3& vPoint, const _float& fRadius)
+{
+	if (!m_pOctree)
+		return false;
+
+	return m_pOctree->AddStaticObject(pGameObject, vPoint, fRadius);
+}
+
+
+#pragma endregion
+
 //
 //void CGameInstance::Transform_Picking_ToLocalSpace(CTransform* pTransformCom)
 //{
@@ -973,6 +1041,8 @@ void CGameInstance::Release_Engine()
 #ifdef _DEBUG
 	Safe_Release(m_pImgui_Manager);
 #endif
+	Safe_Release(m_pOctree);
+	Safe_Release(m_pThreadPool);
 
 	Safe_Release(m_pBlur);
 	Safe_Release(m_pSSAO);

@@ -3,6 +3,9 @@ matrix      g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 Texture2D   g_FontTexture : register(t0);
 float       g_fAlpha;
 
+float4 g_ShadowColor = { 0.f, 0.f, 0.f, 0.6f };
+float2 g_ShadowOffset = {1.f/1920.f, 1.f/1080.f };
+
 cbuffer CBData : register(b0)
 {
     float4x4 g_mWVP;
@@ -46,14 +49,26 @@ struct PS_OUT
 PS_OUT PS_MAIN(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;    
+    //float4 tex = g_FontTexture.Sample(DefaultSampler, In.vUV);
+    //float alpha = tex.r * g_vColor.a;
+    //float3 color = g_vColor.rgb * alpha;
+    
+    //Out.vColor.rgb = color;
+    
+    //Out.vColor.a = alpha * g_fAlpha;
+    
+    float4 shadowTex = g_FontTexture.Sample(DefaultSampler, In.vUV + g_ShadowOffset);
+    float shadowAlpha = shadowTex.r * g_ShadowColor.a;
+    float3 shadowColor = g_ShadowColor.rgb * shadowAlpha;
+    
     float4 tex = g_FontTexture.Sample(DefaultSampler, In.vUV);
     float alpha = tex.r * g_vColor.a;
     float3 color = g_vColor.rgb * alpha;
     
-    Out.vColor.rgb = color;
+    float3 finalColor = shadowColor + color;
     
+    Out.vColor.rgb = finalColor;
     Out.vColor.a = alpha * g_fAlpha;
-    
     return Out;    
 }
 

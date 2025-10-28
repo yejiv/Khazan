@@ -166,6 +166,8 @@ HRESULT CAI_Controller::Load_BehaviorTree(CGameObject* pOwner,const string& File
     m_pBT = CBehaviorTree::Create();
     m_pBT->Set_Root(pRoot);
     m_pBT->Set_BlackBoard(m_pBB);
+
+    return S_OK;
 }
 
 HRESULT CAI_Controller::LoadBTNode(const JSON& j, AIBTNODE_DATA& Node)
@@ -183,18 +185,6 @@ HRESULT CAI_Controller::LoadBTNode(const JSON& j, AIBTNODE_DATA& Node)
     if (j.contains("Callback"))
         Node.strCallbackFunction = j["Callback"].get<string>();
 
-    //if (j.contains("Children"))
-    //{
-    //    for (auto& childJson : j["Children"])
-    //    {
-    //        AIBTNODE_DATA childNode;
-    //        if (FAILED(LoadBTNode(childJson, childNode)))
-    //            return E_FAIL;
-
-    //        //Node.Children.push_back(childNode);
-    //        Node.Children.push_back(&childNode);
-    //    }
-    //}
 
     if (j.contains("Children"))
     {
@@ -239,10 +229,9 @@ CBTNode* CAI_Controller::CreateBTNode(CGameObject* pOwner, const AIBTNODE_DATA& 
         else if (NodeData.strSubtype == "Repeater")
             pDecorator = CRepeater_Node::Create(NodeData.iRepeatCount);
         else if (NodeData.strSubtype == "CoolDown")
-            pDecorator = CCoolDown_Node::Create(m_strMonstertag, "CurrentTime", NodeData.fCoolDownTime);
+            pDecorator = CCoolDown_Node::Create(m_strMonstertag,"CurrentTime", NodeData.fCoolDownTime);
 
         if (!NodeData.Children.empty())
-            //pDecorator->Set_Child(CreateBTNode(pOwner,NodeData.Children[0]));
             pDecorator->Set_Child(CreateBTNode(pOwner,*NodeData.Children[0]));
 
         return pDecorator;
@@ -258,7 +247,6 @@ CBTNode* CAI_Controller::CreateBTNode(CGameObject* pOwner, const AIBTNODE_DATA& 
             pComposite = CSequence_Node::Create();
 
         for (auto& pChild : NodeData.Children)
-            //pComposite->Add_Child(CreateBTNode(pOwner,pChild));
             pComposite->Add_Child(CreateBTNode(pOwner,*pChild));
 
 
