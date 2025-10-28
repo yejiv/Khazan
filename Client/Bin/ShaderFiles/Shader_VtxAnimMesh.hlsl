@@ -4,18 +4,19 @@ matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 matrix g_LightViewMatrix, g_LightProjMatrix;
 float g_Splits[4];
 
-texture2D g_DiffuseTexture;
+Texture2D g_DiffuseTexture, g_NormalTexture, g_SpecularTexture;
 
 // 박준영이 임시로 추가해놓음
-texture2D g_NormalTexture;
 texture2D g_EmissiveTexture;
-texture2D g_SpecularTexture;
 
 
 
 /* 모델 전체 뼈기준(x) */
 /* 특정 메시에 영향ㅇ르 주는 뼈들 */
 matrix g_BoneMatrices[512];
+
+float g_fEmissiveIntensity;
+bool g_isEnableEmissive, g_isEnableBloom;
 
 struct VS_IN
 {
@@ -32,9 +33,17 @@ struct VS_OUT
 {
     float4 vPosition : SV_POSITION;
     float4 vNormal : NORMAL;
+    float4 vTangent : TANGENT;
+    float4 vBinormal : BINORMAL;
     float2 vTexcoord : TEXCOORD0;
     float4 vWorldPos : TEXCOORD1;
     float4 vProjPos : TEXCOORD2;
+    
+    //  float4 vPosition : SV_POSITION;
+    //  float4 vNormal : NORMAL;
+    //  float2 vTexcoord : TEXCOORD0;
+    //  float4 vWorldPos : TEXCOORD1;
+    //  float4 vProjPos : TEXCOORD2;
 };
 
 /* 정점쉐이더 : 정점 위치의 스페이스 변환(로컬 -> 월드 -> 뷰 -> 투영). */ 
@@ -64,9 +73,12 @@ VS_OUT VS_MAIN(VS_IN In)
     
     Out.vPosition = mul(vPosition, matWVP);
     Out.vNormal = normalize(mul(vNormal, g_WorldMatrix));
+    Out.vTangent = normalize(mul(float4(In.vTangent, 0.f), g_WorldMatrix));
+    Out.vBinormal = normalize(mul(float4(In.vBinormal, 0.f), g_WorldMatrix));
     Out.vTexcoord = In.vTexcoord;
     Out.vWorldPos = mul(vPosition, g_WorldMatrix);
     Out.vProjPos = Out.vPosition;
+    
     return Out;
 }
 
@@ -101,17 +113,17 @@ VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
     Out.vProjPos = Out.vPosition;
     
     return Out;
-
 }
 
 struct PS_IN
 {
     float4 vPosition : SV_POSITION;
     float4 vNormal : NORMAL;
+    float4 vTangent : TANGENT;
+    float4 vBinormal : BINORMAL;
     float2 vTexcoord : TEXCOORD0;
     float4 vWorldPos : TEXCOORD1;
     float4 vProjPos : TEXCOORD2;
-
 };
 
 struct PS_OUT
@@ -120,71 +132,26 @@ struct PS_OUT
     float4 vNormal : SV_TARGET1;
     float4 vDepth : SV_TARGET2;
     float4 vWorld : SV_TARGET3;
+    float4 vSpecular : SV_TARGET4;
+    float4 vEmissive : SV_TARGET5;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
     
-    vector      vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+
     if (vMtrlDiffuse.a < 0.3f)
         discard;
-    
-    // Debug Color
-    //  float fCameraViewDepth = In.vProjPos.w;
-    //  uint iCascadeIndex = 0;
-    //  
-    //  // float Array
-    //  if (fCameraViewDepth < g_Splits[0])
-    //      iCascadeIndex = 0;
-    //  else if (fCameraViewDepth < g_Splits[1])
-    //      iCascadeIndex = 1;
-    //  else if (fCameraViewDepth < g_Splits[2])
-    //      iCascadeIndex = 2;
-    //  else
-    //      iCascadeIndex = 3;
-    //  
-    //  if (0 == iCascadeIndex)
-    //      Out.vDiffuse = float4(1.f, 0.f, 0.f, 1.f); // Red
-    //  else if (1 == iCascadeIndex)
-    //      Out.vDiffuse = float4(1.f, 1.f, 0.f, 1.f); // Yellow
-    //  else if (2 == iCascadeIndex)
-    //      Out.vDiffuse = float4(0.f, 1.f, 0.f, 1.f); // Green
-    //  else if (3 == iCascadeIndex)
-    //      Out.vDiffuse = float4(0.f, 0.f, 1.f, 1.f); // Blue
-    //  else
-    //      Out.vDiffuse = vMtrlDiffuse;
-
-    //if (0 == iCascadeIndex)
-    //    Out.vDiffuse = float4(1.f, 0.f, 0.f, 1.f); // Red
-    //else if (1 == iCascadeIndex)
-    //    Out.vDiffuse = float4(1.f, 1.f, 0.f, 1.f); // Yellow
-    //else if (2 == iCascadeIndex)
-    //    Out.vDiffuse = float4(0.f, 1.f, 0.f, 1.f); // Green
-    //else if (3 == iCascadeIndex)
-    //    Out.vDiffuse = float4(0.f, 0.f, 1.f, 1.f); // Blue
-    //else
-    //    Out.vDiffuse = vMtrlDiffuse;
-
-   //if (0 == iCascadeIndex)
-   //    Out.vDiffuse = float4(1.f, 0.f, 0.f, 1.f); // Red
-   //else if (1 == iCascadeIndex)
-   //    Out.vDiffuse = float4(1.f, 1.f, 0.f, 1.f); // Yellow
-   //else if (2 == iCascadeIndex)
-   //    Out.vDiffuse = float4(0.f, 1.f, 0.f, 1.f); // Green
-   //else if (3 == iCascadeIndex)
-   //    Out.vDiffuse = float4(0.f, 0.f, 1.f, 1.f); // Blue
-   //else
-   //    Out.vDiffuse = vMtrlDiffuse;
 
     Out.vDiffuse = vMtrlDiffuse;
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = In.vWorldPos;
+
     return Out;
 }
-
 
 PS_OUT PS_MAIN_NONPICK(PS_IN In)
 {
@@ -202,32 +169,89 @@ PS_OUT PS_MAIN_NONPICK(PS_IN In)
     return Out;
 }
 
-struct PS_IN_SHADOW
+PS_OUT PS_MAIN_DEBUG(PS_IN In)
 {
-    float4 vPosition : SV_POSITION;
-    float4 vProjPos : TEXCOORD0;
-};
-
-struct PS_OUT_SHADOW
-{
-    float4 vLightDepth : SV_TARGET0;
-    //  float4 vLightDepth0 : SV_TARGET0;
-    //  float4 vLightDepth1 : SV_TARGET1;
-    //  float4 vLightDepth2 : SV_TARGET2;
-};
-
-PS_OUT_SHADOW PS_MAIN_SHADOW(PS_IN_SHADOW In)
-{
-    PS_OUT_SHADOW Out;
+    // NonBlend 객체
     
-    //  Out.vLightDepth0 = float4(In.vProjPos.w / 1000.0f, 0.f, 0.f, 0.f);
-    //  Out.vLightDepth1 = float4(0.f, In.vProjPos.w / 1000.0f, 0.f, 0.f);
-    //  Out.vLightDepth2 = float4(0.f, 0.f, In.vProjPos.w / 1000.0f, 0.f);
-    Out.vLightDepth = float4(In.vProjPos.w / 1000.0f, 0.f, 0.f, 0.f);
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    //  Out.vSpecular = vMtrlSpecular;
+    
+    if (true == g_isEnableEmissive)
+        Out.vEmissive.rgb = Out.vDiffuse * g_fEmissiveIntensity; // 밝기 강도
+    
+    if (true == g_isEnableBloom)
+        Out.vEmissive.a = 1.f;
+    else
+        Out.vEmissive.a = 0.f;
     
     return Out;
 }
 
+struct PS_OUT_EMISSIVE
+{
+    float4 vPostScene : SV_TARGET0;
+    float4 vEmissive : SV_TARGET1;
+};
+
+PS_OUT_EMISSIVE PS_MAIN_DEBUG_EMISSIVE(PS_IN In)
+{
+    // NonLight, Blend Test
+    
+    PS_OUT_EMISSIVE Out = (PS_OUT_EMISSIVE) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+
+    // =============== NonLight ===============
+    
+    // PostScene만 기록
+    //  Out.vPostScene = vMtrlDiffuse;
+    //  // (생략 가능 -> 위에서 0 초기화)
+    //  Out.vEmissive = 0.f; 
+    
+    // Emissive만 기록
+    // (생략 가능 -> 위에서 0 초기화)
+    //  Out.vPostScene = 0.f;
+    //  Out.vEmissive.rgb = vMtrlDiffuse * 3.f; // Intensity
+    //  Out.vEmissive.a = 1.f;
+    
+    // 둘 다 기록하기
+    //  Out.vPostScene = vMtrlDiffuse;
+    //  Out.vEmissive.rgb = vMtrlDiffuse * 3.f; // Intensity
+    //  Out.vEmissive.a = 1.f;
+    
+    // =============== Blend ===============
+    
+    // PostScene만 기록
+    //  Out.vPostScene = float4(vMtrlDiffuse.rgb, 0.5f);
+    //  // (생략 가능 -> 위에서 0 초기화)
+    //  Out.vEmissive = 0.f; 
+    
+    //  Emissive만 기록
+    //  (생략 가능 -> 위에서 0 초기화)
+    //  Out.vPostScene = 0.f;
+    //  Out.vEmissive.rgb = vMtrlDiffuse * 3.f; // Intensity
+    //  Out.vEmissive.a = 1.f;
+    
+    //  둘 다 기록하기
+    //  Out.vPostScene = float4(vMtrlDiffuse.rgb, 0.2f);
+    //  Out.vEmissive.rgb = vMtrlDiffuse * 3.f; // Intensity
+    //  Out.vEmissive.a = 1.f;
+    
+    return Out;
+}
 
 technique11 DefaultTechnique
 {
@@ -256,17 +280,6 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN_NONPICK();
     }
 
-    pass Shadow
-    {
-        SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-
-        VertexShader = compile vs_5_0 VS_MAIN_SHADOW();
-        GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_SHADOW();
-    }
-
     pass Cascade // Depth Only
     {
         SetRasterizerState(RS_Default);
@@ -276,5 +289,38 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN_SHADOW();
         GeometryShader = NULL;
         PixelShader = NULL;
+    }
+
+    pass Debug
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_DEBUG();
+    }
+
+    pass DebugNonLight
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_DEBUG_EMISSIVE();
+    }
+
+    pass DebugBlend
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_DEBUG_EMISSIVE();
     }
 }

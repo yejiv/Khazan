@@ -31,6 +31,7 @@ private:
 	_bool								m_bIsSelete = { false };
 	_int								m_iItemIndex = { -1 };
 
+	_int								m_iSouleCount = {};
 private:
 	virtual	HRESULT						Ready_Prototype();
 	virtual	HRESULT						Ready_Childer();

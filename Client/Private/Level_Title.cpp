@@ -67,16 +67,16 @@ HRESULT CLevel_Title::Ready_Layer_BackGround(const _wstring& strLayerTag)
 
 HRESULT CLevel_Title::Ready_Layer_UI()
 {
-	//CUIObject::UIOBJECT_DESC Desc = {};
-	//Desc.vLocalSize = { 48.f, 48.f };
-	//Desc.vLocalPos = { 0.f, 0.f };
-	//Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
-	//Desc.szName = "Cursor";
-	//Desc.fDepth = 0;
+	CUIObject::UIOBJECT_DESC Desc = {};
+	Desc.vLocalSize = { 48.f, 48.f };
+	Desc.vLocalPos = { 0.f, 0.f };
+	Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+	Desc.szName = "Cursor";
+	Desc.fDepth = 0;
 
-	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
-	//	ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Cursor"), &Desc)))
-	//	return E_FAIL;
+	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
+		ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Cursor"), &Desc)))
+		return E_FAIL;
 
 	if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
 		TEXT("../Bin/Resources/UI/UIData/HUD.json"))))

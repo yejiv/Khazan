@@ -21,7 +21,10 @@ public:
 	_bool isIn_LocalSpace(_fvector vLocalPos, _float fRange = 0.f);
 
 	/*XMPlaneTransform(, 월드행렬역전치)*/
+	const _float4* Get_Point() const { return m_vPoints; }
 	const _float4* Get_WorldPoints() const { return m_vWorldPoints; }
+	const _float4* Get_WorldPlanes() const { return m_vWorldPlanes; }
+	const _float4* Get_LocalPlanes() const { return m_vLocalPlanes; }
 
 private:
 	_float4			m_vPoints[8] = {};

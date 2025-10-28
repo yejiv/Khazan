@@ -55,6 +55,14 @@ void CPlayer::Priority_Update(_float fTimeDelta)
 
 void CPlayer::Update(_float fTimeDelta)
 {
+
+   /*  XMVECTOR vPos = m_pTransformCom->Get_State(STATE::POSITION);
+   XMFLOAT3 pos;
+   XMStoreFloat3(&pos, vPos);
+
+   cout << "Pos: (" << pos.x << ", " << pos.y << ", " << pos.z << ")" << endl;*/
+
+
     if (GetKeyState(VK_LBUTTON) & 0x8000)
     {
         _float3     vPickedPos{};

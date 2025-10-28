@@ -20,10 +20,10 @@ BTNODESTATE CBehaviorTree::Update()
     BTNODESTATE eState = m_pRoot->Tick(m_pBlackBoard);
 
     // Running 에서 Failure/Success 전환시에 한번만 적용시키도록해야한다.
-    if (BTNODESTATE::RUNNING == m_ePrevState && BTNODESTATE::RUNNING != eState)
+    /*if (BTNODESTATE::RUNNING == m_ePrevState && BTNODESTATE::RUNNING != eState)
     {
-        m_pRoot->Terminate(eState);
-    }
+        m_pRoot->Terminate(eState,m_pBlackBoard);
+    }*/
 
     m_ePrevState = eState;
 

@@ -34,13 +34,19 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
      m_pModelCom->Set_Animation(3);
      m_pModelCom->Set_AnimationLoop(true);
 
-    m_pTransformCom->Set_State(STATE::POSITION,
+   /* m_pTransformCom->Set_State(STATE::POSITION,
         XMVectorSet(
             m_pGameInstance->Rand(-5.f, 5.f),
             2.f,
             m_pGameInstance->Rand(5.f, 5.f),
             1.f
-        ));
+        ));*/
+
+     //-4 0 27
+     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(-4, 0, 27, 1.f));
+
+
+
 
     return S_OK;
 }
@@ -55,9 +61,13 @@ void CYetuga::Update(_float fTimeDelta)
 
     m_pController->Update(this, fTimeDelta);
 
+   /* XMVECTOR vPos = m_pTransformCom->Get_State(STATE::POSITION);
+    XMFLOAT3 pos;
+    XMStoreFloat3(&pos, vPos);
 
-   /* if (true == m_pModelCom->Play_Animation(fTimeDelta))
-        int a = 10;*/
+    cout << "Pos: (" << pos.x << ", " << pos.y << ", " << pos.z << ")" << endl;*/
+
+  
 }
 
 void CYetuga::Late_Update(_float fTimeDelta)

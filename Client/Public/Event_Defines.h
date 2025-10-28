@@ -8,7 +8,6 @@ namespace Client {
 		BIGCHEST, BIGCHEST_ACTIVE,					// 상자 시작, 끝 ( 맵 오브젝트에서 구독할 타입 ) | 플레이어 & UI 활성화 ( 플레이어, UI에서 구독할 타입 )
 		END };
 
-
 	// Structs
 	struct EventTest {
 		int data;
@@ -38,5 +37,11 @@ namespace Client {
 	// 상자 관련 이벤트
 	struct EventBigChest {
 		XMFLOAT3 vPosition{};
+	};
+	struct EVENT_HUD_QUICKSLOT {
+		_bool isEquip;
+		_int  iIndex;
+		_int  iItemIndex;
+		_int* iItemCount;
 	};
 }

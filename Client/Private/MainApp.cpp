@@ -26,10 +26,9 @@ HRESULT CMainApp::Initialize()
 
 	list<_wstring> Imgui_Menu;
 	Imgui_Menu.push_back(TEXT("Client"));
+	Imgui_Menu.push_back(TEXT("Debug"));
 	EngineDesc.Menu_Imgui = Imgui_Menu;
 	
-	//MakeSpriteFont "³Ø½¼Lv1°íµñ Bold" "153.SpriteFont"
-	/*MakeSpriteFont "³Ø½¼Lv1°íµñ Bold" /FontSize:20 /FastPack /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 153ex.spritefont */
 
 	if(FAILED(m_pGameInstance->Initialize_Engine(EngineDesc, &m_pDevice, &m_pContext)))
 		return E_FAIL;
@@ -50,16 +49,12 @@ HRESULT CMainApp::Initialize()
 
 	CHECK_FAILED(Ready_DB(), E_FAIL);
 	CHECK_FAILED(Ready_Font(), E_FAIL);
+	CHECK_FAILED(Ready_DebugTool(), E_FAIL);
 	return S_OK;
 }
 
 void CMainApp::Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_1))
-	{
-		m_pGameInstance->Change_DebugRender();
-	}
-	
 
 	m_pGameInstance->Update_Engine(fTimeDelta);
 	m_pClientInstance->Update(fTimeDelta);
@@ -289,6 +284,11 @@ HRESULT CMainApp::Ready_ObjectLayer()
 
 	m_pGameInstance->Set_PhysicsSystem();
 
+#ifdef _DEBUG
+	m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER));
+	m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER));
+#endif
+
 	return S_OK;
 }
 
@@ -306,6 +306,60 @@ HRESULT CMainApp::Start_Level(LEVEL eStartLevelID)
 	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, eStartLevelID))))
 		return E_FAIL;
 
+	return S_OK;
+}
+
+HRESULT CMainApp::Ready_DebugTool()
+{
+#if _DEBUG
+	m_pGameInstance->AddWidget(TEXT("Debug"), [&]() {
+
+		ImGui::Text("Camera");
+
+		_float3 vCameraPos = m_pGameInstance->Get_ActiveCameraPos();
+
+		_char szPosBuffer[MAX_PATH];
+		snprintf(szPosBuffer, sizeof(szPosBuffer), "POS : X : %.2f, Y : %.2f, Z : %.2f", vCameraPos.x, vCameraPos.y, vCameraPos.z);
+		ImGui::Text(szPosBuffer);
+
+		_float4 vCameraLook = m_pGameInstance->Get_ActiveCameraLook();
+
+		_char szLookBuffer[MAX_PATH];
+		snprintf(szLookBuffer, sizeof(szLookBuffer), "LOOK : X : %.2f, Y : %.2f, Z : %.2f, W : %.2f", vCameraLook.x, vCameraLook.y, vCameraLook.z, vCameraLook.w);
+		ImGui::Text(szLookBuffer);
+
+		ImGui::Text("Frustum");
+
+		const _float4* vPoint = m_pGameInstance->Get_Frustum_Point();
+		
+		for (size_t i = 0; i < 8; i++)
+		{
+			_char szPointBuffer[MAX_PATH];
+			snprintf(szPointBuffer, sizeof(szPointBuffer), "POINT %.1f : X : %.2f, Y : %.2f, Z : %.2f, W : %.2f", i, vPoint[i].x, vPoint[i].y, vPoint[i].z, vPoint[i].w);
+			ImGui::Text(szPointBuffer);
+		}
+
+		const _float4* vWorldPoint = m_pGameInstance->Get_Frustum_WorldPoints();
+
+		for (size_t i = 0; i < 8; i++)
+		{
+			_char szPointBuffer[MAX_PATH];
+			snprintf(szPointBuffer, sizeof(szPointBuffer), "WorldPOINT %.1f : X : %.2f, Y : %.2f, Z : %.2f, W : %.2f", i, vWorldPoint[i].x, vWorldPoint[i].y, vWorldPoint[i].z, vWorldPoint[i].w);
+			ImGui::Text(szPointBuffer);
+		}
+
+		const _float4* vWorldPlane = m_pGameInstance->Get_Frustum_WorldPlanes();
+
+		for (size_t i = 0; i < 6; i++)
+		{
+			_char szPlaneBuffer[MAX_PATH];
+			snprintf(szPlaneBuffer, sizeof(szPlaneBuffer), "WorldPlane %.1f : X : %.2f, Y : %.2f, Z : %.2f, W : %.2f", i, vWorldPlane[i].x, vWorldPlane[i].y, vWorldPlane[i].z, vWorldPlane[i].w);
+			ImGui::Text(szPlaneBuffer);
+		}
+
+		});
+#endif
+		
 	return S_OK;
 }
 
