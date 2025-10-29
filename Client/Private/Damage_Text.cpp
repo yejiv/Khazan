@@ -22,6 +22,7 @@ HRESULT CDamage_Text::Initialize_Clone(void* pArg)
 	__super::Initialize_Clone(pArg);
 	m_vUV.resize(1);
 	m_iTexPass = 3;
+	m_iShaderPass = 4;
 	m_isPool = true;
 	m_isDead = true;
 	return S_OK;
@@ -41,7 +42,6 @@ void CDamage_Text::Update(_float fTimeDelta)
 
 void CDamage_Text::Late_Update(_float fTimeDelta)
 {
-	m_iShaderPass = 2;
 	for (_int i = 0; i < m_iLength; ++i)
 	{
 		m_vUV[0] = m_vDamage_UV[i];
@@ -62,33 +62,27 @@ _bool CDamage_Text::Render_Damage(DAMAGE_TYPE eDamageType, _vector vPos, _uint i
 	if (eDamageType == DAMAGE_TYPE::END && iDamage < 0)
 		return false;
 	m_fAlpha = 1.f;
+	m_fAccTime = 1.f;
 	m_iDamage = iDamage;
 	m_vDamage_UV.clear();
 	m_eDamageType = eDamageType;
 	if (eDamageType == DAMAGE_TYPE::DEFAULT)
 	{
-		m_fAccTime = 1.f;
 		m_vLocalSize = { 22.f, 22.f };
 		Update_Scaling(1.f);
 		m_vColor = { 1.f, 1.f, 1.f, 1.f };
 	}
 	else if (eDamageType == DAMAGE_TYPE::BACK)
 	{
-		m_fAccTime = 1.f;
-		m_vLocalSize = { 32.f, 32.f };
-		Update_Scaling(1.f);
 		m_vColor = { 1.f, 1.f, 1.f, 1.f };
 	}
 	else if (eDamageType == DAMAGE_TYPE::SPECIAL)
 	{
 		m_fAccTime = 1.5f;
-		m_vLocalSize = { 46.f, 46.f };
-		Update_Scaling(1.f);
 		m_vColor = { 1.f, 1.f, 1.f, 1.f };
 	}
 	else if (eDamageType == DAMAGE_TYPE::PLAYER)
 	{
-		m_fAccTime = 1.f;
 		m_vLocalSize = { 22.f, 22.f };
 		Update_Scaling(1.f);
 		m_vColor = { 1.f, 0.f, 0.f, 1.f };
@@ -139,65 +133,69 @@ void CDamage_Text::Offset_Pos(_int iIndex, _int iMaxIndex)
 	{
 		if (m_fAccTime >= 0.95f)
 		{
-			m_vLocalSize.x = 32.f * 1.5f;
-			m_vLocalSize.y = 32.f * 1.5f;
+			m_vLocalSize.x = 32.f * (0.5f + m_fAccTime / 0.5f);
+			m_vLocalSize.y = 32.f * (0.5f + m_fAccTime / 0.5f);
 
 			Update_Scaling(1.f);
 			m_vWorldPos.x = m_vCenterPos.x + iIndex * (m_vLocalSize.x * 0.5f +1.f) - (iMaxIndex - 1) * (m_vLocalSize.x * 0.5f + 1.f) / 2;
 			m_vWorldPos.y = m_vCenterPos.y + m_fAccTime * 3.f;// +(m_fAccTime - 1.3f) * 30.f;
 		}
-		else
+		else if (m_fAccTime >= 0.5f)
 		{
 			m_vLocalSize.x = 32.f;
 			m_vLocalSize.y = 32.f;
 
 			Update_Scaling(1.f);
 			m_vWorldPos.x = m_vCenterPos.x + iIndex * (m_vLocalSize.x * 0.5f) - (iMaxIndex - 1) * (m_vLocalSize.x * 0.5f) / 2;
-			m_vWorldPos.y = m_vCenterPos.y - m_fAccTime * 2.f;
-		}
-		m_fAlpha = m_fAccTime;
-		m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(m_vWorldPos.x - g_iWinSizeX * 0.5f, -m_vWorldPos.y + g_iWinSizeY * 0.5f, 0.0f, 1.0f));
-	}
-	else if (m_eDamageType == DAMAGE_TYPE::SPECIAL)
-	{
-		if (m_fAccTime >= 1.45f)
-		{
-			m_vLocalSize.x = 64.f * ((1.5f - m_fAccTime) / 0.05f);
-			m_vLocalSize.y = 64.f * ((1.5f - m_fAccTime) / 0.05f);
-			Update_Scaling(1.f);
-			m_vWorldPos.x = m_vCenterPos.x + iIndex * (m_vLocalSize.x * 0.5f) - (iMaxIndex - 1) * (m_vLocalSize.x * 0.5f) / 2;
-			m_vWorldPos.y = m_vCenterPos.y;
-			m_fAlpha = 1.f;
-		}
-		else if(m_fAccTime > 1.25f)
-		{
-			m_vLocalSize.x = 64.f;
-			m_vLocalSize.y = 64.f;
-			Update_Scaling(1.f);
-			m_vWorldPos.x = m_vCenterPos.x + iIndex * (m_vLocalSize.x * 0.5f) - (iMaxIndex - 1) * (m_vLocalSize.x * 0.5f) / 2;
-			m_vWorldPos.y = m_vCenterPos.y;
-			m_fAlpha = 1.f;
-		}
-		else if (m_fAccTime >= 0.6f)
-		{
-			m_fAlpha = 1.f - ((1.1f - m_fAccTime) / 0.65f);
-			m_vLocalSize.x = 64.f * (1.f - ((1.1f - m_fAccTime) / 0.5f));
-			m_vLocalSize.y = 64.f * (1.f - ((1.1f - m_fAccTime) / 0.5f));
-
-			if (m_vLocalSize.x < 32.f)
-			{
-				m_vLocalSize = { 32.f, 32.f };
-				m_fAlpha = 0.5f;
-			}
-			Update_Scaling(1.f);
-
-			m_vWorldPos.x = m_vCenterPos.x + iIndex * (m_vLocalSize.x * 0.5f) - (iMaxIndex - 1) * (m_vLocalSize.x * 0.5f) / 2;
-			m_vWorldPos.y = m_vCenterPos.y;
-
+			m_vWorldPos.y = m_vCenterPos.y - m_fAccTime * 1.5f;
 		}
 		else
 		{
 			m_vWorldPos.x = m_vCenterPos.x + iIndex * (m_vLocalSize.x * 0.5f) - (iMaxIndex - 1) * (m_vLocalSize.x * 0.5f) / 2;
+			m_vWorldPos.y = m_vCenterPos.y - m_fAccTime * 1.5f;
+			m_fAlpha = m_fAccTime / 0.5f;
+		}
+
+		m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(m_vWorldPos.x - g_iWinSizeX * 0.5f, -m_vWorldPos.y + g_iWinSizeY * 0.5f, 0.0f, 1.0f));
+	}
+	else if (m_eDamageType == DAMAGE_TYPE::SPECIAL)
+	{
+		if (m_fAccTime >= 1.3f)
+		{
+			_float t = Clamp((m_fAccTime - 1.4f) / 0.1f);
+			_float fScale = (exp(-5.f * t)) / (1.f - exp(-5.f));
+			if (fScale < 0.1f)
+				fScale = 0.1f;
+			m_vLocalSize.x = 64.f * fScale;
+			m_vLocalSize.y = 64.f * fScale;
+
+			Update_Scaling(1.f);
+			m_vWorldPos.x = m_vCenterPos.x + iIndex * (m_vLocalSize.x * 0.5f + 1.f) - (iMaxIndex - 1) * (m_vLocalSize.x * 0.5f + 1.f) / 2;
+			m_vWorldPos.y = m_vCenterPos.y;// +(m_fAccTime - 1.3f) * 30.f;
+		}
+		else if(m_fAccTime > 1.0f)
+		{
+			m_vWorldPos.x = m_vCenterPos.x + iIndex * (m_vLocalSize.x * 0.5f + 1.f) - (iMaxIndex - 1) * (m_vLocalSize.x * 0.5f + 1.f) / 2;
+			m_vWorldPos.y = m_vCenterPos.y;
+			m_fAlpha = 1.f;
+		}
+		else if (m_fAccTime >= 0.5f)
+		{
+			_float t = Clamp((1.f - m_fAccTime) / 0.5f);
+			_float fScale = (exp(-4.f * t)) / (1.f - exp(-4.f));
+			if (fScale < 0.7f)
+				fScale = 0.7f;
+			m_vLocalSize.x = 64.f * fScale;
+			m_vLocalSize.y = 64.f * fScale;
+			Update_Scaling(1.f);
+			m_vWorldPos.x = m_vCenterPos.x + iIndex * (m_vLocalSize.x * 0.5f + 1.f) - (iMaxIndex - 1) * (m_vLocalSize.x * 0.5f + 1.f) / 2;
+			m_vWorldPos.y = m_vCenterPos.y;
+			m_fAlpha = fScale;
+
+		}
+		else
+		{
+			m_vWorldPos.x = m_vCenterPos.x + iIndex * (m_vLocalSize.x * 0.5f + 1.f) - (iMaxIndex - 1) * (m_vLocalSize.x * 0.5f + 1.f) / 2;
 			m_vWorldPos.y = m_vCenterPos.y;
 			m_fAlpha = 0.5f * (1.f - ((0.6f - m_fAccTime) / 0.6f));
 		}
