@@ -36,6 +36,8 @@ protected:
 
 	_tchar m_szInteractiveTag[MAX_PATH] = {};
 
+	_bool m_isCollision = { false };
+
 protected:
 	virtual HRESULT Ready_Components(void* pArg) { return S_OK; }
 	virtual HRESULT Bind_ShaderResources();

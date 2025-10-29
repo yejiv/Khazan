@@ -6,6 +6,14 @@ CBone::CBone()
 
 }
 
+CBone::CBone(const CBone& Prototype)
+	: m_strName{ Prototype.m_strName }
+	, m_TransformationMatrix{ Prototype.m_TransformationMatrix }
+	, m_CombinedTransformationMatrix{ Prototype.m_CombinedTransformationMatrix }
+	, m_iParentBoneIndex{ Prototype.m_iParentBoneIndex }
+{
+}
+
 HRESULT CBone::Initialize(BONE_DATA& data)
 {
 	m_strName = AnsiToWString(data.strName);

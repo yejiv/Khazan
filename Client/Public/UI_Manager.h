@@ -49,6 +49,8 @@ private:
 	unordered_map<_wstring,
 		CUI_Layer*>				m_pUILayers;
 	vector<CAtlas_RenderGroup*> m_pAtlasRenderGroup;
+	CAtlas_RenderGroup*			m_pWorldRenderGroup;
+
 	vector<CUIObject*>			m_pRenderUI;
 	unordered_map<_wstring,
 		CUIObject*>				m_pRootUI;

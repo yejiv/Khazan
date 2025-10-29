@@ -482,7 +482,7 @@ namespace Engine
             ofs.write((char*)&RootMitionScale, sizeof(FLOAT3_DATA));
 
             // event
-            //ofs.write((char*)&isEvent, sizeof(isEvent));
+            ofs.write((char*)&isEvent, sizeof(isEvent));
             //ofs.write((char*)&isTriggerOnce, sizeof(isTriggerOnce));
             //ofs.write((char*)&isTriggerOnEnter, sizeof(isTriggerOnEnter));
             //ofs.write((char*)&isTriggerOnExit, sizeof(isTriggerOnExit));
@@ -536,7 +536,7 @@ namespace Engine
             ifs.read((char*)&RootMitionScale, sizeof(FLOAT3_DATA));
 
             // event
-            //ifs.read((char*)&isEvent, sizeof(isEvent));
+            ifs.read((char*)&isEvent, sizeof(isEvent));
             //ifs.read((char*)&isTriggerOnce, sizeof(isTriggerOnce));
             //ifs.read((char*)&isTriggerOnEnter, sizeof(isTriggerOnEnter));
             //ifs.read((char*)&isTriggerOnExit, sizeof(isTriggerOnExit));

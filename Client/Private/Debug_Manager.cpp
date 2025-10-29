@@ -103,9 +103,10 @@ void CDebug_Manager::Ready_JoltDebug()
 		ImGui::Begin("Jolt");
 
 		ImGui::Text("Collision Render");
-
 		vector<const char*> Labels;
-		Labels.push_back("MAP");
+		Labels.push_back("MAP_STATIC");
+		Labels.push_back("MAP_DYNAMIC");
+		Labels.push_back("MAP_INTERACT");
 		Labels.push_back("PLAYER");
 		Labels.push_back("MONSTER");
 		Labels.push_back("ITEM");

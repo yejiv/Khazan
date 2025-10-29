@@ -202,6 +202,21 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 			};
 	}
 
+	if ("Turn" == name)
+	{
+		return [pYetuga](CBlackBoard* BB)->_bool
+			{
+				if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isDead")) return false;
+				_float fDot = BB->Get_Value<_float>(pYetuga->Get_Name(), "Dot");
+				_float fAngle = XMConvertToDegrees(acos(fDot));
+
+				if (fAngle > BB->Get_Value<_float>(pYetuga->Get_Name(), "TurnChangeRange"))
+					return true;
+				else
+					return false;
+			};
+	}
+
 	if ("MoveCondition" == name)
 	{
 		return [pYetuga](CBlackBoard* BB)->_bool
@@ -224,6 +239,7 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 			};
 	}
 
+	
 
 	return nullptr;
 }
@@ -257,6 +273,19 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 
 			};
 	}*/
+
+	if ("Turn" == name)
+	{
+		return [pYetuga](CBlackBoard* BB)->BTNODESTATE
+			{
+				if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isTurnFinished"))
+					return BTNODESTATE::SUCCESS;
+
+				pYetuga->Get_Controller()->Get_State_Machine()->
+					Change_State(ENUM_CLASS(YETUGA_STATE::TURN), pYetuga);
+				return BTNODESTATE::RUNNING;
+			};
+	}
 
 	if ("RightHand_2Hit" == name)
 	{
@@ -361,6 +390,24 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 				}
 			};
 	}*/
+
+	if ("Turn" == name)
+	{
+		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
+			{
+				if (nullptr == BB)
+					return;
+
+				if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+				{
+					//cout << "Attack Turminate " << endl;
+					BB->Set_Value<_bool>("Yetuga", "isTurnFinished", false);
+					//pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
+				}
+			};
+	}
+
+
 
 	if ("RightHand_2Hit" == name)
 	{

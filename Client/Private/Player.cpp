@@ -6,6 +6,8 @@
 #include "RigidBody.h"
 #include "CharacterVirtual.h"
 
+#include "Damage_Text.h"
+
 CPlayer::CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CContainerObject{ pDevice, pContext }
 {
@@ -42,7 +44,10 @@ HRESULT CPlayer::Initialize_Clone(void* pArg)
         return E_FAIL;
 
 #pragma region 상호 작용 맵 오브젝트 임시 테스트용
-    m_pGameInstance->Subscribe_Event<EventChestActive>(ENUM_CLASS(EVENT_TYPE::BIGCHEST_ACTIVE), [&](const EventChestActive& e) { m_ChestEvent = e; });
+    m_pGameInstance->Subscribe_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), [&](const EventInteractType& e)
+        {
+            m_EventInteract = e;
+        });
 #pragma endregion
 
     return S_OK;
@@ -55,13 +60,6 @@ void CPlayer::Priority_Update(_float fTimeDelta)
 
 void CPlayer::Update(_float fTimeDelta)
 {
-
-   /*  XMVECTOR vPos = m_pTransformCom->Get_State(STATE::POSITION);
-   XMFLOAT3 pos;
-   XMStoreFloat3(&pos, vPos);
-
-   cout << "Pos: (" << pos.x << ", " << pos.y << ", " << pos.z << ")" << endl;*/
-
 
     if (GetKeyState(VK_LBUTTON) & 0x8000)
     {
@@ -108,37 +106,82 @@ void CPlayer::Update(_float fTimeDelta)
     
     if (m_pGameInstance->Key_Down(DIK_F))
     {
-        // 스페이스 누르면 상자랑 귀검 상호작용
-        m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::BLADENEXUS), { true, false });
-        m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::BIGCHEST), { true, false });
+        // 스페이스 누르면 오브젝트 상호작용 이벤트 발생
+        m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { true, false });
     }
 
     if (m_pGameInstance->Key_Down(DIK_LCONTROL))
     {
         // LCONTROL 누르면 상자랑 귀검 상호작용
-        m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::BLADENEXUS), { false, true });
-        m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::BIGCHEST), { false, true });
+        m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { false, true });
     }
 
-    if (true == m_ChestEvent.isSignal)
+    if(true == m_EventInteract.isEvent)
     {
-        m_ChestEvent.isSignal = false;
+        m_EventInteract.isEvent = false;
 
-        if (false == m_ChestEvent.isChestActive)
+        if (INTERACTIVE_TYPE::CHECKPOINT == m_EventInteract.eInteractType)
         {
-            m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&m_ChestEvent.vPlayerPosition), 1.f));
-            m_pTransformCom->LookAt(XMVectorSetW(XMLoadFloat3(&m_ChestEvent.vPosition), 1.f));
+            _int a = 10;
+        }
+        if (INTERACTIVE_TYPE::CHEST == m_EventInteract.eInteractType)
+        {
+            EventChest ChestEvent = m_EventInteract.ChestEvent;
+
+            if (false == ChestEvent.isChestOpened)
+            {
+                m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&ChestEvent.vPlayerPosition), 1.f));
+                m_pTransformCom->LookAt(XMVectorSetW(XMLoadFloat3(&ChestEvent.vPosition), 1.f));
+            }
         }
     }
     
 #pragma endregion
 
-    __super::Update(fTimeDelta);
+     __super::Update(fTimeDelta);
 
     //m_pRigidBodyCom->Update(fTimeDelta, m_pTransformCom->Get_WorldMatrix());
 
     m_pCharVirCom->Sync_Update(m_pTransformCom);
     m_pCharVirCom->Update(fTimeDelta, m_pTransformCom);
+
+    if (m_pGameInstance->Key_Down(DIK_R))
+    {
+        CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
+        if (pDamage != nullptr)
+        {
+            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::DEFAULT, m_pTransformCom->Get_State(STATE::POSITION), 100);
+            m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
+        }
+    }
+
+    if (m_pGameInstance->Key_Down(DIK_T))
+    {
+        CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
+        if (pDamage != nullptr)
+        {
+            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::BACK, m_pTransformCom->Get_State(STATE::POSITION), 100);
+            m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
+        }
+    }
+    if (m_pGameInstance->Key_Down(DIK_Y))
+    {
+        CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
+        if (pDamage != nullptr)
+        {
+            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::SPECIAL, m_pTransformCom->Get_State(STATE::POSITION), 100);
+            m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
+        }
+    }
+    if (m_pGameInstance->Key_Down(DIK_U))
+    {
+        CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
+        if (pDamage != nullptr)
+        {
+            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::PLAYER, m_pTransformCom->Get_State(STATE::POSITION), 100);
+            m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
+        }
+    }
     //m_pCharacterCom->Update(fTimeDelta, m_pBodyCom, m_pTransformCom);
 
 }

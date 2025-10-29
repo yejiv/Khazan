@@ -222,6 +222,10 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 		CCursor::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 	
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_DamageText"),
+		CDamage_Text::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -243,7 +247,11 @@ HRESULT CMainApp::Ready_DB()
 HRESULT CMainApp::Ready_ObjectLayer()
 {
 	// Static 지형
-	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MAP), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
+	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MAP_STATIC), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
+
+	// 상호작용 오브젝트에 달린 트리거
+	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
+
 	// 동적 물체
 	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
 	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
@@ -252,9 +260,12 @@ HRESULT CMainApp::Ready_ObjectLayer()
 	// 동적-동적 & 동적-지형 & 동적-트리거
 	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MONSTER));
 	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(COLLISION_LAYER::PLAYER));
-	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MAP));
-	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(COLLISION_LAYER::MAP));
-	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::CAMERA), ENUM_CLASS(COLLISION_LAYER::MAP));
+	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MAP_STATIC));
+	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(COLLISION_LAYER::MAP_STATIC));
+	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::CAMERA), ENUM_CLASS(COLLISION_LAYER::MAP_STATIC));
+
+	// 동적-상호작용
+	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT));
 
 	// PLAYER
 	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
@@ -263,14 +274,9 @@ HRESULT CMainApp::Ready_ObjectLayer()
 	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
 	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
 
-	m_pGameInstance->Set_ObjectLayerFilter(ENUM_CLASS(COLLISION_LAYER::MAP), true);
+	m_pGameInstance->Set_ObjectLayerFilter(ENUM_CLASS(COLLISION_LAYER::MAP_STATIC), true);
 
 	m_pGameInstance->Set_PhysicsSystem();
-
-#ifdef _DEBUG
-	//m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER));
-	//m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER));
-#endif
 
 	return S_OK;
 }
