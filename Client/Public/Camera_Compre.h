@@ -1,10 +1,9 @@
 #pragma once
-
 #include "Client_Defines.h"
 #include "Camera.h"
 
 NS_BEGIN(Engine)
-//class CCharacterVirtual;
+class CCharacterVirtual;
 NS_END
 
 NS_BEGIN(Client)
@@ -16,6 +15,7 @@ public:
 	{
 
 	}CAMERA_COMPRE_DESC;
+
 
 private:
 	CCamera_Compre(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -36,14 +36,10 @@ public:
 
 public:
 	HRESULT Ready_Camera(void* pArg);
-	HRESULT Ready_Body();
-
-public:
-	HRESULT Spring(_float fTimeDelta);
-	HRESULT RayCast(_float fTimeDelta);
 
 public:
 	CAMERA_COMPRE_DESC Get_Desc();
+
 
 public:
 	static CCamera_Compre* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

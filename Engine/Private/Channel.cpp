@@ -6,6 +6,19 @@ CChannel::CChannel()
 {
 }
 
+CChannel::CChannel(const CChannel& Prototype)
+	: m_iBoneIndex{ Prototype.m_iBoneIndex }
+	, m_iNumKeyFrames{ Prototype.m_iNumKeyFrames }
+	, m_KeyFrames{ Prototype.m_KeyFrames }
+	, m_isRootBone{ Prototype.m_isRootBone }
+    , m_vPrevScale   {Prototype.m_vPrevScale  }
+    , m_vPrevRotQuat {Prototype.m_vPrevRotQuat }
+    , m_vPrevPositon {Prototype.m_vPrevPositon }
+	//, m_TransformationMatrix{ Prototype.m_TransformationMatrix }
+{
+}
+
+
 HRESULT CChannel::Initialize(CHANNEL_DATA& data)
 {
     // 데이터 유효성 검사 추가
@@ -48,7 +61,10 @@ HRESULT CChannel::Initialize(CHANNEL_DATA& data)
         m_KeyFrames.push_back(KeyFrame);
     }
 
-
+    m_vPrevScale = XMVectorSet(1.f, 1.f, 1.f, 0.f);
+    m_vPrevRotQuat = XMQuaternionIdentity();
+	m_vPrevPositon = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+    //m_TransformationMatrix = XMMatrixIdentity();
     return S_OK;
 }
 
@@ -79,25 +95,28 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
         while (fCurrentTrackPosition >= m_KeyFrames[*pCurrentKeyFrameIndex + 1].fTrackPosition)
             ++*pCurrentKeyFrameIndex;
 
+        if (*pCurrentKeyFrameIndex + 1 >= m_KeyFrames.size())
+            *pCurrentKeyFrameIndex = static_cast<_uint>(m_KeyFrames.size() - 2);
+
         _float fRatio = (fCurrentTrackPosition - m_KeyFrames[*pCurrentKeyFrameIndex].fTrackPosition) / (m_KeyFrames[*pCurrentKeyFrameIndex + 1].fTrackPosition - m_KeyFrames[*pCurrentKeyFrameIndex].fTrackPosition);
         vScale = XMVectorLerp(XMLoadFloat3(&m_KeyFrames[*pCurrentKeyFrameIndex].vScale), XMLoadFloat3(&m_KeyFrames[*pCurrentKeyFrameIndex + 1].vScale), fRatio);
         vRotation = XMQuaternionSlerp(XMLoadFloat4(&m_KeyFrames[*pCurrentKeyFrameIndex].vRotation), XMLoadFloat4(&m_KeyFrames[*pCurrentKeyFrameIndex + 1].vRotation), fRatio);
         vTranslation = XMVectorSetW(XMVectorLerp(XMVectorSetW(XMLoadFloat3(&m_KeyFrames[*pCurrentKeyFrameIndex].vTranslation), 1.f), XMVectorSetW(XMLoadFloat3(&m_KeyFrames[*pCurrentKeyFrameIndex + 1].vTranslation), 1.f), fRatio), 1.f);
     }
 
-    _float3 scaleBeforeBlend;//
-    XMStoreFloat3(&scaleBeforeBlend, vScale);//
+    //_float3 scaleBeforeBlend;//
+    //XMStoreFloat3(&scaleBeforeBlend, vScale);//
 
     // 이전 애니메이션과의 보간 처리 
 	if (m_isBlendPreAnimation)
 	{
-
 		vScale = XMVectorLerp(m_vPrevScale, vScale, m_fAnimationRatio);
 		vRotation = XMQuaternionSlerp(m_vPrevRotQuat, vRotation, m_fAnimationRatio);
-		vTranslation = XMVectorLerp(m_vPrevPositon, vTranslation, m_fAnimationRatio);
-	}
+        if (!m_isRootBone)
+            vTranslation = XMVectorLerp(m_vPrevPositon, vTranslation, m_fAnimationRatio);
+        m_isBlendPreAnimation = false;
+    }
 
-    /*_matrix         TransformationMatrix = XMMatrixScaling() * XMMatrixRotationQuaternion() * XMMatrixTranslation();*/
     m_TransformationMatrix = XMMatrixAffineTransformation(vScale, XMVectorSet(0.f, 0.f, 0.f, 1.f), vRotation, vTranslation);
 
     Bones[m_iBoneIndex]->Set_TransformationMatrix(m_TransformationMatrix);
@@ -106,15 +125,6 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 void CChannel::Set_PrevAnimationBlend(const _float& fAnimationRatio, _matrix& PreAnimationMatrix)
 {
     XMMatrixDecompose(&m_vPrevScale, &m_vPrevRotQuat, &m_vPrevPositon, PreAnimationMatrix);
-
-
-    //_float3 scale;
-    //XMStoreFloat3(&scale, m_vPrevScale);
-    //char debugMsg[256];
-    //sprintf_s(debugMsg, "[Channel %d] PrevScale: (%.4f, %.4f, %.4f), Ratio: %.4f\n",
-    //    m_iBoneIndex, scale.x, scale.y, scale.z, fAnimationRatio);
-    //OutputDebugStringA(debugMsg);
-
 
     m_fAnimationRatio = fAnimationRatio;
     m_isBlendPreAnimation = true;

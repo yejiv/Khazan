@@ -66,7 +66,8 @@ namespace Engine
 	};
 
 
-	enum class ANIM_TRANSITIONTYPE { AUTO, FLAG, INPUT, MANUAL, END};	//애니메이션 전환 조건
+	enum class ANIM_TRANSITIONTYPE { AUTO, FLAG, INPUT, MANUAL, END };	//애니메이션 전환 조건
+	enum class ANIM_EVENT_TRIGGERTYPE { ONCE , ENTER, EXIT, CONTINUE }; //애니메이션 이벤트 트리거 종류 
 	enum class MAPOBJECT_TYPE : unsigned short { OBJECT, STATIC_INST, ANIMATED_INST, INTERACTIVE, DYNAMIC, END };
 	enum class BTNODESTATE { RUNNING, SUCCESS, FAILURE, END };
 

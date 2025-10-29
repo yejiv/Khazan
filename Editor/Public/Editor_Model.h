@@ -48,8 +48,7 @@ public:
 
 public:
 	void			ExportModel(string& strPath);
-	// 확인 창 말고 디버그 창에 띄우는 추출 함수
-	void			ExportModel_NoMsg(string& strPath);
+	void			ExportModel_NoMsg(string& strPath);	// 확인 창 말고 디버그 창에 띄우는 추출 함수
 	void			LoadModel(string& strPath);
 	void			Update_DAT_From_JSON(string& strPath);
 	_bool			Test()
@@ -102,10 +101,10 @@ private:
 	_vector							m_vRootMotionScale = {};	//루트모션 포지션 값 어디 축에만 적용할 것인지.
 	_vector							m_vFirstFrameRootOffset = {}; //첫 프레임 오프셋 저장. 콤보애니같은경우 위치값이 크므로.
 	_vector							m_vRootDeltaQuat = {};
-	_vector							m_vPreTransformQuat = {}; 
+	_vector							m_vPreTransformQuat = {}; /////
 	//_matrix							m_FirstFrameRootMatrix = {};
 	_matrix							m_PreRootMatrix = {}; // 이전 루트 모션 행렬	
-	_matrix							m_PreRotRootMatrix = {}; // 이전 루트 모션 행렬	(rotataion 용)
+	//_matrix							m_PreRotRootMatrix = {}; // 이전 루트 모션 행렬	(rotataion 용)
 	_matrix							m_vRootMotionDelta = {};// 루트모션 변화량
 	_bool							m_isFirstRootMotionFrame = { false };
 	//_vector							m_vPreRootPos = XMVectorSet(0.f, 0.f, 0.f, 1.f);  // 위치만 저장

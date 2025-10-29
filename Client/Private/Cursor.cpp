@@ -42,6 +42,8 @@ HRESULT CCursor::Initialize_Clone(void* pArg)
 
 void CCursor::Priority_Update(_float fTimeDelta)
 {
+	if (!m_IsUpdate)
+		return;
 	if (m_eMode == MOUSE_MODE::PLAY_MODE)
 		Play_Mode();
 	else if (m_eMode == MOUSE_MODE::UI_MODE)
@@ -50,6 +52,11 @@ void CCursor::Priority_Update(_float fTimeDelta)
 
 void CCursor::Update(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_L))
+		m_IsUpdate ? m_IsUpdate = false : m_IsUpdate = true;
+
+	if (!m_IsUpdate)
+		return;
 	m_IsPressing = false;
 	if (m_pGameInstance->Mouse_Pressing(MOUSEKEYSTATE::LB, INPUT_TYPE::GAMEPLAY))
 		m_IsPressing = true;
@@ -59,7 +66,6 @@ void CCursor::Update(_float fTimeDelta)
 		CGameObject* pFX = m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Cursor_FX"));
 		if (pFX != nullptr)
 		{
-			m_pGameInstance->Reset_PoolObject(pFX);
 			m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pFX);
 		}
 	}
@@ -69,6 +75,8 @@ void CCursor::Update(_float fTimeDelta)
 
 void CCursor::Late_Update(_float fTimeDelta)
 {
+	if (!m_IsUpdate)
+		return;
 	if (m_eMode == MOUSE_MODE::UI_MODE)
 		CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
 }

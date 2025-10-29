@@ -27,12 +27,6 @@ private:
 	ID3D11Device*			m_pDevice = { nullptr };
 	ID3D11DeviceContext*	m_pContext = { nullptr };
 
-#ifdef _DEBUG
-	_tchar					m_szFPS[MAX_PATH] = {};
-	_uint					m_iRenderCount = {};
-	_float					m_fTimeAcc = {}; 
-#endif
-
 private:
 	HRESULT Ready_Prototype_ForStatic();
 	HRESULT Ready_Prototype_ForStatic_UI();
@@ -41,6 +35,8 @@ private:
 	HRESULT Ready_ObjectLayer();
 	HRESULT Ready_ClientInstance(ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext);
 	HRESULT Start_Level(LEVEL eStartLevelID);
+
+	HRESULT Ready_DebugTool();
 
 public:
 	static CMainApp* Create();

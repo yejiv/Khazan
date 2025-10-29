@@ -34,15 +34,25 @@ _bool CEquip_Slot::Add_Item(_int iItemIndex, CItem_Slot* pItem)
         ITEM_DATA ItemData = *CClientInstance::GetInstance()->Get_Data<ITEM_DATA>(m_iItemIndex);
 
         string strItemData = WStringToAnsi(ItemData.strIconName);
-        _float4 vUV = CClientInstance::GetInstance()->Get_AtlasUV(strItemData.c_str(), 2);
+        _float4 vUV = CClientInstance::GetInstance()->Get_AtlasUV(strItemData.c_str(), ItemData.iTexPass);
         _uint iTexPass = ItemData.iTexPass;
 
         m_pIcon->Set_Texture(vUV, iTexPass);
         Update_State(ItemData.iGrade);
 
+        _int iQuickSlotIndex = m_iIndex - ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::QUICK_1) + 1;
         m_pItem_Slot = pItem;
-        m_pItem_Slot->is_Equip(true, m_iIndex - ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::QUICK_1) + 1);
+        m_pItem_Slot->is_Equip(true, iQuickSlotIndex);
         Safe_AddRef(m_pItem_Slot);
+        if (ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::QUICK_1) <= m_iIndex)
+        {
+            EVENT_HUD_QUICKSLOT EventDesc = {};
+            EventDesc.isEquip = true;
+            EventDesc.iItemIndex = m_iItemIndex;
+            EventDesc.iIndex = iQuickSlotIndex;
+            EventDesc.iItemCount = m_pItem_Slot->Get_ptrItemCount();
+            m_pGameInstance->Emit_Event<EVENT_HUD_QUICKSLOT>(ENUM_CLASS(EVENT_TYPE::UI_QUICK_SLOT), EventDesc);
+        }
         return true;
     }
     return false;
@@ -56,8 +66,20 @@ void CEquip_Slot::Release_Item(CItem_Slot* pItem)
     if (m_pItem_Slot != pItem)
         return;
     m_iItemIndex = -1;
+
     Safe_Release(m_pItem_Slot);
     Update_State(0);
+
+    if (ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::QUICK_1) <= m_iIndex)
+    {
+        _int iQuickSlotIndex = m_iIndex - ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::QUICK_1) + 1;
+
+        EVENT_HUD_QUICKSLOT EventDesc = {};
+        EventDesc.isEquip = false;
+        EventDesc.iIndex = iQuickSlotIndex;
+
+        m_pGameInstance->Emit_Event<EVENT_HUD_QUICKSLOT>(ENUM_CLASS(EVENT_TYPE::UI_QUICK_SLOT), EventDesc);
+    }
     
 }
 
@@ -92,6 +114,7 @@ HRESULT CEquip_Slot::Initialize_Clone(void* pArg)
     m_iShaderPass = 0;
 
     m_vColor = { 1.f,1.f,1.f,0.75f };
+    m_iSouleCount = 3;
 
     _float4 vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_02_Common.png", m_iTexPass);
     m_vUV.push_back(vUV);
@@ -120,7 +143,7 @@ void CEquip_Slot::Update(_float fTimeDelta)
 
 void CEquip_Slot::Late_Update(_float fTimeDelta)
 {
-    if(m_iIndex != ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::SOULE))
+    if(m_iIndex != ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::SOUL))
         CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::ATLAS, this);
 
     if (ButtonClick(g_hWnd, false, true))
@@ -136,10 +159,16 @@ void CEquip_Slot::Late_Update(_float fTimeDelta)
         __super::Bubble_EventCall(&Desc);
     }
     m_pIcon->Late_Update(fTimeDelta);
-    if (ButtonOver(g_hWnd) && m_iIndex != ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::SOULE))
+    if (ButtonOver(g_hWnd) && m_iIndex != ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::SOUL))
         m_pSeleteFx->Late_Update(fTimeDelta);
 
-    if (m_pItem_Slot != nullptr && m_pTextBox != nullptr)
+    if (m_iIndex == ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::SOUL))
+    {
+        m_pTextBox->Set_Text(to_wstring(m_iSouleCount));
+        m_pTextBox->Late_Update(fTimeDelta);
+    }
+
+    if (m_pItem_Slot != nullptr && m_pTextBox != nullptr && m_iItemIndex >= 0)
     {
         m_pTextBox->Set_Text(to_wstring(m_pItem_Slot->Get_ItemCount()));
         m_pTextBox->Late_Update(fTimeDelta);
@@ -196,7 +225,7 @@ HRESULT CEquip_Slot::Ready_Childer()
 
     m_Children.push_back(m_pIcon);
     Safe_AddRef(m_pIcon);
-
+   
     if (m_iIndex >= ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::QUICK_1))
     {
         CUIObject::UIOBJECT_DESC TextDesc = {};
@@ -218,7 +247,10 @@ HRESULT CEquip_Slot::Ready_Childer()
         TextSet.fOffsetHeight = 0;
         TextSet.iPivotX = 40;
         TextSet.iPivotY = 50;
-        TextSet.wstrTexttag = TEXT("Blade_Medium_18");
+        if(m_iIndex == ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::SOUL))
+            TextSet.wstrTexttag = TEXT("Blade_Medium_22");
+        else
+            TextSet.wstrTexttag = TEXT("Blade_Medium_18");
         TextSet.wstrText = TEXT("");
         TextSet.vColor = { 1.f, 1.f, 1.f, 1.f };
         m_pTextBox->Setting_Text(TextSet);
@@ -226,6 +258,15 @@ HRESULT CEquip_Slot::Ready_Childer()
         Safe_AddRef(m_pTextBox);
     }
     Update_State(0);
+
+    if (m_iIndex == ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::SOUL))
+    {
+        EVENT_HUD_QUICKSLOT EventDesc = {};
+        EventDesc.isEquip = true;
+        EventDesc.iIndex = 0;
+        EventDesc.iItemCount = &m_iSouleCount;
+        m_pGameInstance->Emit_Event<EVENT_HUD_QUICKSLOT>(ENUM_CLASS(EVENT_TYPE::UI_QUICK_SLOT), EventDesc);
+    }
     return S_OK;
 }
 
@@ -236,6 +277,8 @@ void CEquip_Slot::Update_State(_uint iGrade)
         _float4 vUV = {};
         CUI_Inven::EQUIPSLOT_TYPE eType = static_cast<CUI_Inven::EQUIPSLOT_TYPE>(m_iIndex);
 
+        _int iTexPass = 1;
+        _int iShaderPass = 2;
         if (eType == CUI_Inven::EQUIPSLOT_TYPE::WEAPON)
             vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_SubTab_Weapon.png", 1);
         else if (eType == CUI_Inven::EQUIPSLOT_TYPE::HEAD)
@@ -252,14 +295,18 @@ void CEquip_Slot::Update_State(_uint iGrade)
             vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_SubTab_AccNeck.png", 1);
         else if (eType == CUI_Inven::EQUIPSLOT_TYPE::RING)
             vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_SubTab_AccRing.png", 1);
-        else if (eType == CUI_Inven::EQUIPSLOT_TYPE::SOULE)
-            vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_ShortcutSlot_Equip_01.png", 1);
+        else if (eType == CUI_Inven::EQUIPSLOT_TYPE::SOUL)
+        {
+            vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Item_Potion_HP_1.png", 2);
+            iTexPass = 2;
+            iShaderPass = 1;
+        }
         else
             vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_ShortcutEmptySlot_UI.png", 1);
 
-        m_pIcon->Set_Texture(vUV, 1);
+        m_pIcon->Set_Texture(vUV, iTexPass);
         m_pIcon->Set_Color({ 0.259f, 0.267f, 0.278f, 1.0f });
-        m_pIcon->Set_Shader(2);
+        m_pIcon->Set_Shader(iShaderPass);
         m_iState = ENUM_CLASS(UISTATE::DISABLE);
         m_vColor.w = 0.75f;
         return;
@@ -275,9 +322,9 @@ void CEquip_Slot::Update_State(_uint iGrade)
 
     switch (iGrade)
     {
-    case 1: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_02_Common.png", m_iTexPass);
+    case 1: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_03_UnCommon.png", m_iTexPass);
         return;
-    case 2: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_03_UnCommon.png", m_iTexPass);
+    case 2: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_02_Common.png", m_iTexPass);
         return;
     case 3: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_04_Rare.png", m_iTexPass);
         return;

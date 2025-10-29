@@ -49,57 +49,26 @@ void CJOH_EditorModelTest::Update(_float fTimeDelta)
 {
     if (!m_isEnble) return;
 
-    if (m_isAnim && true == m_pModelCom->Play_Animation(fTimeDelta))
+    if (m_isAnim) {
+    if (true == m_pModelCom->Play_Animation(fTimeDelta))
 		int a = 10;
-
-	//if (m_pModelCom->Test())
-	//{
-	//	_float3 vpos;
-	//	XMStoreFloat3(&vpos, m_pTransformCom->Get_State(STATE::POSITION));
-	//	cout << vpos.x << " " << vpos.y << " " << vpos.z << "\n ";
-	//}
-
-    //if (m_pModelCom->isRootMotion())
-    //{
-    //    _matrix rootMotionMatrix = m_pModelCom->Get_RootMotionDelta();
-    //    _matrix worldMatrix = m_pTransformCom->Get_WorldMatrix();
-
-    //    // 루트모션 델타의 로컬 이동 벡터 (r[3])
-    //    _vector vLocalMove = rootMotionMatrix.r[3];
-
-    //    // 모델의 회전(방향)만 추출
-    //    _vector vRight = XMVector3Normalize(worldMatrix.r[0]);
-    //    _vector vUp = XMVector3Normalize(worldMatrix.r[1]);
-    //    _vector vLook = XMVector3Normalize(worldMatrix.r[2]);
-
-    //    _matrix rotationMatrix;
-    //    rotationMatrix.r[0] = vRight;
-    //    rotationMatrix.r[1] = vUp;
-    //    rotationMatrix.r[2] = vLook;
-    //    rotationMatrix.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
-
-    //    // 루트모션 이동벡터를 월드 좌표계로 회전
-    //    _vector vDelta = XMVector3TransformNormal(vLocalMove, rotationMatrix);
-
-    //    // 누적 적용
-    //    _vector vOldPos = m_pTransformCom->Get_State(STATE::POSITION);
-    //    _vector vNewPos = XMVectorSetW(vOldPos + vDelta, 1.f);
-    //    m_pTransformCom->Set_State(STATE::POSITION, vNewPos);
-
-    //    //위치 + 회전 적용 
-    //    //_matrix newWorld = worldMatrix * rootMotionMatrix ;
-    //    //m_pTransformCom->Set_WorldMatrix(newWorld);
-
-    //}
-
-    if (m_isAnim && m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
+    if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
     {
         m_pModelCom->Set_Animation(++m_iCurrentAnimIndex, true);
     }
-    if (m_isAnim && m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_2))
+    if ( m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_2))
     {
         m_iCurrentAnimIndex = 1;
         m_pModelCom->Set_Animation(m_iCurrentAnimIndex, true);
+    }
+    if(m_pGameInstance->Key_Pressing(DIK_UP, fTimeDelta))
+        m_pTransformCom->Go_Straight(fTimeDelta* 0.0000001f);
+    if (m_pGameInstance->Key_Pressing(DIK_DOWN, fTimeDelta))
+        m_pTransformCom->Go_Backward(fTimeDelta * 0.0000001f);
+    if (m_pGameInstance->Key_Pressing(DIK_LEFT, fTimeDelta))
+        m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * -0.0000001f);
+    if (m_pGameInstance->Key_Pressing(DIK_RIGHT, fTimeDelta))
+        m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * 0.0000001f);
     }
 
 }

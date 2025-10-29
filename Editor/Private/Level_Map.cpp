@@ -30,9 +30,7 @@ void CLevel_Map::Update(_float fTimeDelta)
 
 	Test_Player_Move(fTimeDelta);
 	Select_Fix_Object(fTimeDelta);
-	Select_Fix_Interactive_Object(fTimeDelta);
 	Select_Multi_Fix_Object(fTimeDelta);
-	Select_Fix_Instance(fTimeDelta);
 	Select_Add_LightPoint(fTimeDelta);
 	Measure_Distance(fTimeDelta);
 
@@ -131,7 +129,7 @@ void CLevel_Map::Clear_List()
 
 void CLevel_Map::Test_Player_Move(_float fTimeDelta)
 {
-	if (true == m_isFixObjectWindow)
+	if (true == m_isFixObjectWindow || true == m_isFixInteractObjectWindow)
 		return;
 
 	if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
@@ -152,7 +150,7 @@ void CLevel_Map::Test_Player_Move(_float fTimeDelta)
 
 void CLevel_Map::Select_Fix_Object(_float fTimeDelta)
 {
-	if (true == m_isFixObjectWindow)
+	if (true == m_isFixObjectWindow || true == m_isFixInteractObjectWindow)
 		return;
 
 	if (m_pGameInstance->Key_Pressing(DIK_F1, fTimeDelta) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
@@ -163,55 +161,6 @@ void CLevel_Map::Select_Fix_Object(_float fTimeDelta)
 		if (m_pGameInstance->isPicked(&vPosition, &iObjectID))
 		{
 			for (auto& pObject : m_ObjectList)
-			{
-				if (nullptr != pObject)
-				{
-					if (iObjectID == pObject->Get_MapObjectID())
-					{
-						m_pFixPropObj = pObject;
-						m_pFixTransformCom = static_cast<CTransform*>(pObject->Get_Component(TEXT("Com_Transform")));
-						CHECK_NULLPTR_MSG(m_pFixTransformCom, TEXT("Fix Transform == nullptr"), );
-
-						m_FixBaseMatrix = XMMatrixIdentity();
-
-						ZeroMemory(&m_vFixScale, sizeof(_float3));
-						ZeroMemory(&m_vFixRotation, sizeof(_float3));
-						ZeroMemory(&m_vFixPosition, sizeof(_float3));
-
-						m_vFixScale = m_pFixTransformCom->Get_Scaled();
-						XMStoreFloat3(&m_vFixPosition, m_pFixTransformCom->Get_State(STATE::POSITION));
-
-						m_FixBaseMatrix = m_FixWorldMatrix = m_pFixTransformCom->Get_WorldMatrix();
-
-						// ======================================================
-						// ======================================================
-
-						m_isFixObjectWindow = true;
-						m_eFixType = FIX_OBJECT::FIX;
-
-						m_pGameInstance->Set_GizmoObject(m_pFixPropObj);
-
-						return;
-					}
-				}
-			}
-		}
-	}
-}
-
-void CLevel_Map::Select_Fix_Interactive_Object(_float fTimeDelta)
-{
-	if (true == m_isFixObjectWindow)
-		return;
-
-	if (m_pGameInstance->Key_Pressing(DIK_F1, fTimeDelta) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
-	{
-		_float3 vPosition = {};
-		_uint iObjectID = {};
-
-		if (m_pGameInstance->isPicked(&vPosition, &iObjectID))
-		{
-			for (auto& pObject : m_InteractiveList)
 			{
 				if (nullptr != pObject)
 				{
@@ -312,43 +261,6 @@ void CLevel_Map::Select_Multi_Fix_Object(_float fTimeDelta)
 	}
 }
 
-void CLevel_Map::Select_Fix_Instance(_float fTimeDelta)
-{
-	if (true == m_isFixObjectWindow)
-		return;
-
-	if (m_pGameInstance->Key_Pressing(DIK_F2, fTimeDelta) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
-	{
-		_float3 vPosition = {};
-		_uint iInstanceID = {};
-
-		if (m_pGameInstance->isPicked(&vPosition, &iInstanceID))
-		{
-			for (auto& pObject : m_ObjectList)
-			{
-				if (nullptr != pObject)
-				{
-					//if (iObjectID == pObject->Get_MapObjectID())
-					//{
-					//	m_pFixPropObj = pObject;
-					//	m_pFixTransformCom = static_cast<CTransform*>(pObject->Get_Component(TEXT("Com_Transform")));
-					//	CHECK_NULLPTR_MSG(m_pFixTransformCom, TEXT("Fix Transform == nullptr"), );
-
-					//	m_vFixScale = m_pFixTransformCom->Get_Scaled();
-					//	XMStoreFloat3(&m_vFixPosition, m_pFixTransformCom->Get_State(STATE::POSITION));
-					//	//m_vFixRotation = m_pFixTransformCom->Get_Rotation_Quat();
-
-					//	m_isFixObjectWindow = true;
-
-					//	break;
-					//}
-				}
-			}
-
-		}
-	}
-}
-
 void CLevel_Map::Select_Add_LightPoint(_float fTimeDelta)
 {
 	if (false == m_isLightSettingWindow)
@@ -398,6 +310,8 @@ HRESULT CLevel_Map::Ready_DefaultImGui_For_MapTool()
 	CHECK_FAILED(Ready_Interactive_Prototype_List_Window(), E_FAIL);
 
 	CHECK_FAILED(Ready_Prop_Fix_Window(), E_FAIL);
+
+	CHECK_FAILED(Ready_Interactive_Prop_Fix_Window(), E_FAIL);
 
 	CHECK_FAILED(Ready_Prop_List_Window(), E_FAIL);
 	
@@ -673,7 +587,8 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 			}
 
 			// 단일 오브젝트 Layer 추가
-			if (false == m_isLightSettingWindow && false == m_isFixObjectWindow && (ImGui::Button("ADD OBJECT (Y)") || m_pGameInstance->Key_Down(DIK_Y)))
+			if (false == m_isLightSettingWindow && false == m_isFixObjectWindow && false == m_isFixInteractObjectWindow &&
+				(ImGui::Button("ADD OBJECT (Y)") || m_pGameInstance->Key_Down(DIK_Y)))
 			{
 				CProp_Object::PROP_OBJECT_DESC ObjectDesc = {};
 
@@ -727,7 +642,7 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 
 				m_iObjectListIndex = m_ObjectList.size() - 1;
 
-				if (nullptr != m_ObjectList[m_iObjectListIndex] && false == m_isFixObjectWindow)
+				if (nullptr != m_ObjectList[m_iObjectListIndex] && false == m_isFixObjectWindow && false == m_isFixInteractObjectWindow)
 				{
 					m_pFixPropObj = m_ObjectList[m_iObjectListIndex];
 					m_pFixTransformCom = static_cast<CTransform*>(m_ObjectList[m_iObjectListIndex]->Get_Component(TEXT("Com_Transform")));
@@ -766,7 +681,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 {
 	// 이짝에 추가될 상호작용들 로더에도 넣고 여짝에도 넣고 ( 태그 뒷부분만 )
 	m_Prototypes_Inter.push_back("BladeNexus");
-	//m_Prototypes_Inter.push_back("Chest");
+	m_Prototypes_Inter.push_back("BigChest");
 
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (m_isPrototypeWindow)
@@ -798,7 +713,8 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 				ImGui::InputFloat("##add_pos_y", &m_fAddPositionY, 0.1f, 1.f); SEPARATOR;
 			}
 
-			if (false == m_isLightSettingWindow && false == m_isFixObjectWindow && (ImGui::Button("ADD INTERACTIVE (I)") || m_pGameInstance->Key_Down(DIK_I)))
+			if (false == m_isLightSettingWindow && false == m_isFixObjectWindow && false == m_isFixInteractObjectWindow &&
+				(ImGui::Button("ADD INTERACTIVE (I)") || m_pGameInstance->Key_Down(DIK_I)))
 			{
 				_wstring strModelTag = TEXT("Prototype_Component_Model_");
 
@@ -851,20 +767,20 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 					CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
 						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BladeNexus"), &BladeNexusDesc), );
 				}
-				else if (false/*"BladeNexus" == m_Prototypes_Inter[m_iIndex_PrtInter]*/) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+				else if ("BigChest" == m_Prototypes_Inter[m_iIndex_PrtInter]) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
 				{
-					/*
-					CBladeNexus::BLADENEXUS_DESC BladeNexusDesc = {};
+					CBigChest::BIGCHEST_DESC BigChestDesc = {};
 
-					BladeNexusDesc.iMapObjectID = m_iMapObjectCnt++;
-					BladeNexusDesc.eLevel = LEVEL::MAP;
-					memcpy(BladeNexusDesc.szModelName, strModelTag.c_str(), sizeof(BladeNexusDesc.szModelName));
+					BigChestDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+					BigChestDesc.eLevel = LEVEL::MAP;
+					memcpy(BigChestDesc.szModelName, strModelTag.c_str(), sizeof(BigChestDesc.szModelName));		// 프로토타입 태그명
 
-					XMStoreFloat4x4(&BladeNexusDesc.WorldMatrix, WorldMatrix);
+					XMStoreFloat4x4(&BigChestDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+					BigChestDesc.eInteractiveType = INTERACTIVE_TYPE::CHEST;										// 상호 작용 오브젝트 타입
 
 					CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
-						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_BladeNexus"), &BladeNexusDesc), );
-					*/
+						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BigChest"), &BigChestDesc), );
 				}
 
 				CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));
@@ -874,7 +790,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 
 				m_iInteractiveListIndex = m_InteractiveList.size() - 1;
 
-				if (nullptr != m_InteractiveList[m_iInteractiveListIndex] && false == m_isFixObjectWindow)
+				if (nullptr != m_InteractiveList[m_iInteractiveListIndex] && false == m_isFixObjectWindow && false == m_isFixInteractObjectWindow)
 				{
 					m_pFixPropObj = m_InteractiveList[m_iInteractiveListIndex];
 					m_pFixTransformCom = static_cast<CTransform*>(m_InteractiveList[m_iInteractiveListIndex]->Get_Component(TEXT("Com_Transform")));
@@ -896,7 +812,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 
 					m_pGameInstance->Set_GizmoObject(m_pFixPropObj);
 
-					m_isFixObjectWindow = true;
+					m_isFixInteractObjectWindow = true;
 					m_eFixType = FIX_OBJECT::FIX;
 				}
 			}
@@ -1056,6 +972,164 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 				m_pFixPropObj = nullptr;
 				m_pFixTransformCom = nullptr;
 				m_isFixObjectWindow = false;
+				m_eFixType = FIX_OBJECT::END;
+			}
+
+			ImGui::End();
+		}
+		});
+
+	return S_OK;
+}
+
+HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
+{
+	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
+		if (m_isFixInteractObjectWindow)
+		{
+			ImGui::Begin("OBJECT FIX WINDOW", &m_isFixInteractObjectWindow, ImGuiWindowFlags_AlwaysAutoResize);
+
+			_bool isReset = { false };
+
+			if (nullptr != m_pFixPropObj)
+			{
+				_char szModelName[MAX_PATH] = {};
+				WideCharToMultiByte(CP_ACP, 0, m_pFixPropObj->Get_ModelName(), -1, szModelName, MAX_PATH, nullptr, nullptr);
+
+				ImGui::Text("MODEL NAME : "); SAMELINE;
+				ImGui::InputText("##copy_batch_modelname", szModelName, IM_ARRAYSIZE(szModelName)); SAMELINE;
+
+				if (ImGui::Button("COPY"))
+				{
+					memcpy(&m_szSearchPrototypeName, &szModelName, MAX_PATH);
+					isReset = true;
+
+				} SEPARATOR;
+
+				_float3 vFixObjPos = {};
+				XMStoreFloat3(&vFixObjPos, m_pFixTransformCom->Get_State(STATE::POSITION));
+
+				_float3 vFixObjScale = {};
+				vFixObjScale = m_pFixTransformCom->Get_Scaled();
+
+				ImGui::Text("== OBJECT SCALE ==");
+				ImGui::Text("SCALE X : %0.4f", vFixObjScale.x);
+				ImGui::Text("SCALE Y : %0.4f", vFixObjScale.y);
+				ImGui::Text("SCALE Z : %0.4f", vFixObjScale.z);
+
+				ImGui::Text("\n== OBJECT POSITION ==");
+				ImGui::Text("POSITION X : %0.2f", vFixObjPos.x);
+				ImGui::Text("POSITION Y : %0.2f", vFixObjPos.y);
+				ImGui::Text("POSITION Z : %0.2f", vFixObjPos.z);
+
+				SEPARATOR;
+			}
+
+#pragma region 속성 설정
+
+			if (m_pGameInstance->Key_Pressing(DIK_F4, 0.000001f) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+			{
+				_float3 vPickPos = {};
+
+				if (m_pGameInstance->isPicked(&vPickPos))
+				{
+					m_pFixTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPickPos), 1.f));
+				}
+			}
+
+			ImGui::Text("SETTING");
+
+			MAPOBJECT_PROPERTIES PropProperties = m_pFixPropObj->Get_Properties();
+
+			ImGui::Checkbox("SNOW", &PropProperties.isSnow);
+			SAMELINE;
+
+			ImGui::Checkbox("COLLIDER", &PropProperties.isCollider);
+			SAMELINE;
+
+			ImGui::Checkbox("ICE", &PropProperties.isIce);
+			SAMELINE;
+
+			ImGui::Checkbox("INSTANCE", &PropProperties.isInstance);
+			SEPARATOR;
+
+			ImGui::Checkbox("SHADOW", &PropProperties.isShadow);
+			SAMELINE;
+
+			ImGui::Checkbox("BACKGROUND", &PropProperties.isBackGround);
+			SEPARATOR;
+
+			m_pFixPropObj->Set_Properties(PropProperties);
+
+			SEPARATOR;
+			SEPARATOR;
+
+#pragma endregion
+
+			if (ImGui::Button("DONE ( ENTER or MOUSE RB )") || m_pGameInstance->Key_Down(DIK_RETURN) || m_pGameInstance->Key_Down(DIK_NUMPADENTER) || m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
+			{
+				m_pGameInstance->Clear_GizmoObject();
+
+				m_FixBaseMatrix = XMMatrixIdentity();
+
+				ZeroMemory(&m_vFixScale, sizeof(_float3));
+				ZeroMemory(&m_vFixRotation, sizeof(_float3));
+				ZeroMemory(&m_vFixPosition, sizeof(_float3));
+
+				m_pFixPropObj = nullptr;
+				m_pFixTransformCom = nullptr;
+				m_isFixInteractObjectWindow = false;
+				m_eFixType = FIX_OBJECT::END;
+
+			} SAMELINE;
+			if (ImGui::Button("RESET (R)") || m_pGameInstance->Key_Down(DIK_R) || true == isReset)
+			{
+				m_pGameInstance->Clear_GizmoObject();
+
+				m_pFixTransformCom->Set_State(STATE::RIGHT, m_FixBaseMatrix.r[0]);
+				m_pFixTransformCom->Set_State(STATE::UP, m_FixBaseMatrix.r[1]);
+				m_pFixTransformCom->Set_State(STATE::LOOK, m_FixBaseMatrix.r[2]);
+				m_pFixTransformCom->Set_State(STATE::POSITION, m_FixBaseMatrix.r[3]);
+
+				m_FixBaseMatrix = XMMatrixIdentity();
+
+				ZeroMemory(&m_vFixScale, sizeof(_float3));
+				ZeroMemory(&m_vFixRotation, sizeof(_float3));
+				ZeroMemory(&m_vFixPosition, sizeof(_float3));
+
+				m_pFixPropObj = nullptr;
+				m_pFixTransformCom = nullptr;
+				m_isFixInteractObjectWindow = false;
+				m_eFixType = FIX_OBJECT::END;
+			}
+			SEPARATOR;
+			SEPARATOR;
+			if (ImGui::Button("DELETE (ESC)") || m_pGameInstance->Key_Down(DIK_ESCAPE))
+			{
+				m_pGameInstance->Clear_GizmoObject();
+
+				if (nullptr != m_pFixPropObj)
+				{
+					m_pFixPropObj->Set_IsDead(true);
+
+					for (_uint i = 0; i < m_ObjectList.size(); )
+					{
+						if (m_pFixPropObj == m_ObjectList[i])
+						{
+							swap(m_ObjectList[i], m_ObjectList.back());
+							m_ObjectList.pop_back();
+							break;
+						}
+						else
+							++i;
+					}
+
+					m_pFixPropObj = nullptr;
+				}
+
+				m_pFixPropObj = nullptr;
+				m_pFixTransformCom = nullptr;
+				m_isFixInteractObjectWindow = false;
 				m_eFixType = FIX_OBJECT::END;
 			}
 
@@ -1246,7 +1320,7 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 				{
 					if (ImGui::Button("FIX"))
 					{
-						if (nullptr != m_ObjectList[m_iObjectListIndex] && false == m_isFixObjectWindow)
+						if (nullptr != m_ObjectList[m_iObjectListIndex] && false == m_isFixObjectWindow && false == m_isFixInteractObjectWindow)
 						{
 							m_pFixPropObj = m_ObjectList[m_iObjectListIndex];
 							m_pFixTransformCom = static_cast<CTransform*>(m_ObjectList[m_iObjectListIndex]->Get_Component(TEXT("Com_Transform")));
@@ -1368,7 +1442,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 			{
 				if (ImGui::Button("FIX"))
 				{
-					if (nullptr != m_InteractiveList[m_iInteractiveListIndex] && false == m_isFixObjectWindow)
+					if (nullptr != m_InteractiveList[m_iInteractiveListIndex] && false == m_isFixObjectWindow && false == m_isFixInteractObjectWindow)
 					{
 						m_pFixPropObj = m_InteractiveList[m_iInteractiveListIndex];
 						m_pFixTransformCom = static_cast<CTransform*>(m_InteractiveList[m_iInteractiveListIndex]->Get_Component(TEXT("Com_Transform")));
@@ -1390,14 +1464,19 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 
 						m_pGameInstance->Set_GizmoObject(m_pFixPropObj);
 
-						m_isFixObjectWindow = true;
+						if (INTERACTIVE_TYPE::CHEST == m_pFixPropObj->Get_InteractiveType())
+						{
+							m_iFixItemBox = m_pFixPropObj->Get_ItemBox();
+						}
+
+						m_isFixInteractObjectWindow = true;
 						m_eFixType = FIX_OBJECT::FIX;
 					}
 				}
 				SAMELINE;
 				if (ImGui::Button("DELETE"))
 				{
-					m_isFixObjectWindow = false;
+					m_isFixInteractObjectWindow = false;
 
 					if (nullptr != m_InteractiveList[m_iInteractiveListIndex])
 					{
@@ -1429,7 +1508,13 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 
 			if (ImGui::Button("EXPORT"))
 			{
+				m_strMapInfoFilePath = m_szMapInfoFilePath;
+				m_strMapInfoFilePath += m_szMapInfoFileName;
 
+				if (false == Interactive_Object_Save_Binary())
+				{
+					_int a = 10;
+				}
 			}
 
 			ImGui::End();
@@ -1783,10 +1868,6 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 				{
 					_int a = 10;
 				}
-				if (false == Interactive_Object_Save_Binary())
-				{
-					_int a = 10;
-				}
 
 #pragma endregion
 
@@ -1859,6 +1940,25 @@ OutputDebugStringA("프로토타입 정보 바이너리 불러오기 실패");
 				{
 #ifdef _DEBUG
 OutputDebugStringA("단일 오브젝트 정보 바이너리 불러오기 실패");
+#endif // _DEBUG
+
+					isLoadComplete = false;
+
+				}
+				else
+				{
+					// 오브젝트 리스트 윈도우 띄우기
+					m_isObjectWindow = true;
+				}
+
+#pragma endregion
+
+#pragma region 상호 작용 오브젝트 일괄 불러오기
+
+				if (false == Interactive_Objects_Load_Binary())
+				{
+#ifdef _DEBUG
+					OutputDebugStringA("단일 오브젝트 정보 바이너리 불러오기 실패");
 #endif // _DEBUG
 
 					isLoadComplete = false;
@@ -2930,7 +3030,92 @@ _bool CLevel_Map::Objects_Load_Binary()
 
 _bool CLevel_Map::Interactive_Objects_Load_Binary()
 {
-	// 나중에 코드 채우기
+	_wstring strObjectInfoPath = AnsiToWString(m_strMapInfoFilePath);
+
+	strObjectInfoPath += TEXT("_interactive.dat");
+
+	DWORD dwByte = {};
+
+	// 프로토타입 핸들 개방
+	HANDLE hObjectFile = CreateFile(strObjectInfoPath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (INVALID_HANDLE_VALUE == hObjectFile)
+	{
+		CloseHandle(hObjectFile);
+		return false;
+	}
+	else
+	{
+		// 오브젝트 총 개수 카운트
+		_uint iObjectCnt = {};
+		// 1. 오브젝트의 총 개수 불러오기
+		CHECK_FALSE(ReadFile(hObjectFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr), false);
+
+		// 단일 오브젝트 순회하면서 모델 이름 알아오기 ( Prototype 태그로 사용할 것 ) ( 상호작용은 Prototype_Component_Model_귀검, 상자, 이런식으로 간단하게 갈것 )
+		for (_uint i = 0; i < iObjectCnt; ++i)
+		{
+			// 상호작용 애들은 애초에 Prototype_Component_Model_귀검, 상자, 이런식임 )
+			_tchar szPrototypeTag[MAX_PATH] = {};
+
+			// 모델 이름 길이
+			_uint iPrototypeLen = {};
+
+			// 2. 프로토 타입 태그 길이 저장
+			CHECK_FALSE(ReadFile(hObjectFile, &iPrototypeLen, sizeof(_uint), &dwByte, nullptr), false);
+			// 3. 프로토 타입 태그 이름 저장
+			CHECK_FALSE(ReadFile(hObjectFile, szPrototypeTag, sizeof(_tchar) * iPrototypeLen, &dwByte, nullptr), false);
+
+			_float4x4 WorldMatrix = {};
+
+			// 4. 객체당 월드행렬 저장
+			CHECK_FALSE(ReadFile(hObjectFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr), false);
+
+			// 5. 객체의 상호작용 오브젝트 저장 ( 클라랑 에디터랑 맞추기 ) ( MapObject::MAPOBJECT_DESC::INTERACTIVE_TYPE )
+			INTERACTIVE_TYPE eType = { INTERACTIVE_TYPE::END };
+			CHECK_FALSE(ReadFile(hObjectFile, &eType, sizeof(INTERACTIVE_TYPE), &dwByte, nullptr), false);
+			CHECK_EQUAL(INTERACTIVE_TYPE::END, eType, false);
+
+			if (INTERACTIVE_TYPE::CHECKPOINT == eType)
+			{
+				CBladeNexus::BLADENEXUS_DESC BladeNexusDesc = {};
+
+				BladeNexusDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+				BladeNexusDesc.eLevel = LEVEL::MAP;
+				memcpy(BladeNexusDesc.szModelName, TEXT("Prototype_Component_Model_BladeNexus"), sizeof(BladeNexusDesc.szModelName));		// 프로토타입 태그명
+
+				BladeNexusDesc.WorldMatrix = WorldMatrix;										// 행렬
+
+				BladeNexusDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BladeNexus"), &BladeNexusDesc), false);
+			}
+			else if (INTERACTIVE_TYPE::CHEST == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+			{
+				CBigChest::BIGCHEST_DESC BigChestDesc = {};
+
+				BigChestDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+				BigChestDesc.eLevel = LEVEL::MAP;
+				memcpy(BigChestDesc.szModelName, TEXT("Prototype_Component_Model_BigChest"), sizeof(BigChestDesc.szModelName));		// 프로토타입 태그명
+
+				BigChestDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+				BigChestDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BigChest"), &BigChestDesc), false);
+			}
+
+			CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));
+			CHECK_NULLPTR_MSG(pInteractive_Prop, TEXT("엥"), false);
+
+			m_InteractiveList.push_back(pInteractive_Prop);
+		}
+
+		m_iInteractiveListIndex = m_InteractiveList.size() - 1;
+	}
+
+	// 프로토타입 핸들 닫기
+	CloseHandle(hObjectFile);
 
 	return true;
 }

@@ -84,6 +84,32 @@ void CCamera_Manager::Clear(_uint iLevelIndex)
 	m_pCameras[iLevelIndex].clear();
 }
 
+_float3 CCamera_Manager::Get_ActiveCameraPos()
+{
+	if (m_pActiveCamera == nullptr)
+		return _float3(0.f, 0.f, 0.f);
+
+	CTransform* pTransform = dynamic_cast<CTransform*>(m_pActiveCamera->Get_Component(TEXT("Com_Transform")));
+
+	_float3 vPos{};
+	XMStoreFloat3(&vPos, pTransform->Get_State(STATE::POSITION));
+
+	return vPos;
+}
+
+_float4 CCamera_Manager::Get_ActiveCameraLook()
+{
+	if (m_pActiveCamera == nullptr)
+		return _float4(0.f, 0.f, 0.f, 0.f);
+
+	CTransform* pTransform = dynamic_cast<CTransform*>(m_pActiveCamera->Get_Component(TEXT("Com_Transform")));
+
+	_float4 vLook{};
+	XMStoreFloat4(&vLook, pTransform->Get_State(STATE::LOOK));
+
+	return vLook;
+}
+
 void CCamera_Manager::Save_Json(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData)
 {
 	CCamera* pCamera = Find_Camera(iLevelIndex, strCameraTag);

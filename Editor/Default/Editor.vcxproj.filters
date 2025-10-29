@@ -217,6 +217,9 @@
     <Filter Include="02.GameObject\MapObject\Map_Trigger">
       <UniqueIdentifier>{990a8953-99fb-4a0d-932c-aeb9f3b4d8e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\01.BigChest">
+      <UniqueIdentifier>{3cfa6e48-cb6a-489b-894a-7cd434d2148c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -327,9 +330,6 @@
     <ClInclude Include="..\Public\Level_Shader.h">
       <Filter>01.Levels\Shader</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\AnimationTool.h">
-      <Filter>02.GameObject\Animation\00.Tool</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Prop_Test.h">
       <Filter>02.GameObject\MapObject\Prop\99.Test</Filter>
     </ClInclude>
@@ -413,6 +413,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\Map_Trigger.h">
       <Filter>02.GameObject\MapObject\Map_Trigger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BigChest.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\01.BigChest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AnimationTool.h">
+      <Filter>02.GameObject\Animation\98.Temp Camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -605,6 +611,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Map_Trigger.cpp">
       <Filter>02.GameObject\MapObject\Map_Trigger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BigChest.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\01.BigChest</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

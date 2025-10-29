@@ -250,6 +250,9 @@ HRESULT CEditor_Model::Bind_BoneMatrices(CShader* pShader, const _char* pConstan
 
 _bool CEditor_Model::Play_Animation(_float fTimeDelta)
 {
+    if (m_iNumAnimations <= 0)
+        return false;
+
     if (m_iCurrentAnimIndex == 17)
         int a = 100;
 
@@ -515,7 +518,7 @@ _bool CEditor_Model::Play_Animation(_float fTimeDelta)
 
 void CEditor_Model::Set_Animation(_uint iIndex, _bool isLoop)
 {
-	if (iIndex >= m_iNumAnimations)
+	if (iIndex >= m_iNumAnimations || m_iNumAnimations <= 0)
 		return;
 
 	m_isLoop = isLoop;
@@ -525,6 +528,7 @@ void CEditor_Model::Set_Animation(_uint iIndex, _bool isLoop)
 
 	m_isChangedAnimation = true;
 
+	m_isIgonreRootRot = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isIgnoreRootRot;
     m_isIgnoreRootPos = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isIgnoreRootPos;
     m_isIgnoreRootPosFirstFrame = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isIgnoreRootPosFirstFrame;
     m_isAbsoluteRootPosition = m_Model_Data.vecAnimation[m_iCurrentAnimIndex].animSetup.isAbsoluteRootPosition;
@@ -988,17 +992,29 @@ HRESULT CEditor_Model::Ready_Animation()
 {
     m_iNumAnimations = m_pAIScene->mNumAnimations;
 
-    for (size_t i = 0; i < m_iNumAnimations; i++)
+	_uint iSkipCount = 0;
+
+    for (_uint i = 0; i < m_iNumAnimations; i++)
     {
         CEditor_Animation* pAnimation = CEditor_Animation::Create(m_pAIScene->mAnimations[i], m_Bones);
         if (nullptr == pAnimation)
             return E_FAIL;
+
+		if (pAnimation->Get_Skip())
+		{
+			Safe_Release(pAnimation);
+            iSkipCount++;
+			continue;
+		}
+
         m_Animations.push_back(pAnimation);
 
         ANIMATION_DATA animationData;
         pAnimation->Get_Data(animationData);
         m_Model_Data.vecAnimation.push_back(animationData);
     }
+
+	m_iNumAnimations -= iSkipCount;
 
     return S_OK;
 }
@@ -1268,11 +1284,11 @@ void CEditor_Model::Apply_RootMotion_To_Transform()
                 XMVectorGetZ(newRot) * XMVectorGetZ(newRot)));
 
         char msg[256];
-        sprintf_s(msg, "[APPLY] Before:%.1f° + Δ:%.2f° = After:%.1f°\n",
+        sprintf_s(msg, "[APPLY] Before:%.1f° + d:%.2f° = After:%.1f°\n",
             XMConvertToDegrees(beforeYaw),
             XMConvertToDegrees(deltaYaw),
             XMConvertToDegrees(afterYaw));
-        OutputDebugStringA(msg);
+        //OutputDebugStringA(msg);
     }
     /////////////////////////////////////////////////////////
 
@@ -1309,6 +1325,7 @@ _bool CEditor_Model::Export_AnimationJson(const string& strFilePath, const strin
 		summary.fDuration = anim.fDuration;
 		summary.fTickPerSecond = anim.fTickPerSecond;
 		summary.iNumChannels = anim.iNumChannels;
+        summary.animSetup = anim.animSetup;
 
 		AnimSummaries.vecSummaries.push_back(summary);
 	}
