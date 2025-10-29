@@ -27,6 +27,7 @@ CLevel_Stage1::CLevel_Stage1(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 
 HRESULT CLevel_Stage1::Initialize()
 {
+	CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
 
 	/*if (FAILED(Ready_Lights()))
 		return E_FAIL;*/
@@ -34,8 +35,6 @@ HRESULT CLevel_Stage1::Initialize()
 		CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
 		return S_OK;
 		});
-
-	CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
 
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
