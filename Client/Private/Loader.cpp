@@ -9,7 +9,6 @@
 #include "Camera_Compre.h"
 #include "Sky.h"
 #include "Terrain.h"
-#include "Yetuga.h"
 #include "Dummy.h"
 
 #pragma region Khazan
@@ -21,6 +20,11 @@
 
 #pragma region MAP OBJECT
 #include "MapObject_Header.h"
+#pragma endregion
+
+#pragma region Monster
+#include "Yetuga.h"
+#include "Body_Yetuga.h"
 #pragma endregion
 
 //static mutex g_GpuGate;
@@ -225,7 +229,12 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Spear/Spear.dat"))))
 		return E_FAIL;
 
-	///* Prototype_Component_Model_Khazan */
+	// Prototype_Component_Model_Yetuga
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_Yetuga"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Yetuga/Yetuga.dat"))))
+		return E_FAIL;
+
+	/////* Prototype_Component_Model_Khazan */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_Khazan"),
 	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Test/Khazan/Khazan.dat"))))
 	//	return E_FAIL;
@@ -298,10 +307,16 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 		CBody_Player::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	/* Prototype_GameObject_Monster */
+	/* Prototype_GameObject_Monster_Yetuga */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Monster_Yetuga"),
 		CYetuga::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+
+	// Prototype_PartObject_Yetuga_Body
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_PartObject_Yetuga_Body"),
+		CBody_Yetuga::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 
 	///* Prototype_GameObject_Dummy */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Dummy"),

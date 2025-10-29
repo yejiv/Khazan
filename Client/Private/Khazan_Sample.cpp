@@ -79,7 +79,7 @@ void CKhazan_Sample::Update(_float fTimeDelta)
     }
     __super::Update(fTimeDelta);
 
-    XMStoreFloat4x4(&m_pSpearFX_WorldMatrix, m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pTransformCom->Get_WorldMatrix());
+    XMStoreFloat4x4(&m_SpearFX_WorldMatrix, m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pTransformCom->Get_WorldMatrix());
 
     //m_pRigidBodyCom->Update(fTimeDelta, m_pTransformCom->Get_WorldMatrix());
 
