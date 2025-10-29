@@ -12,6 +12,13 @@ NS_BEGIN(Client)
 
 class CBody_Yetuga final : public CPartObject
 {
+public:
+	typedef struct tagBodyDesc : public PARTOBJECT_DESC
+	{
+		CTransform* pOwnerTransform = { nullptr };
+
+	}BODY_DESC;
+
 
 private:
 	CBody_Yetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -33,7 +40,7 @@ private:
 private:
 	CShader*				m_pShaderCom = { nullptr };
 	CModel*					m_pModelCom = { nullptr };
-
+	CTransform*				m_pOwnerTransform = { nullptr };
 
 public:
 	static CBody_Yetuga*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

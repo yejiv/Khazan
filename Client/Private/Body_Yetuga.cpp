@@ -19,6 +19,12 @@ HRESULT CBody_Yetuga::Initialize_Prototype()
 
 HRESULT CBody_Yetuga::Initialize_Clone(void* pArg)
 {   
+    BODY_DESC* pDesc = static_cast<BODY_DESC*>(pArg);
+    
+    m_pOwnerTransform = pDesc->pOwnerTransform;
+    if (nullptr == m_pOwnerTransform)
+        return E_FAIL;
+
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
@@ -82,6 +88,8 @@ HRESULT CBody_Yetuga::Ready_Components()
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
 
+    m_pModelCom->Set_OwnerTransform(&m_pOwnerTransform);
+   
     return S_OK;
 
 }

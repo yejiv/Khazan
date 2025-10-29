@@ -91,8 +91,9 @@ HRESULT CYetuga::Ready_Components()
 
 HRESULT CYetuga::Ready_PartObjects()
 {
-    CBody_Yetuga::PARTOBJECT_DESC BodyDesc{};
+    CBody_Yetuga::BODY_DESC BodyDesc{};
     BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
+    BodyDesc.pOwnerTransform = m_pTransformCom;
 
     if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Body"),ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_PartObject_Yetuga_Body"), &BodyDesc)))
         return E_FAIL;

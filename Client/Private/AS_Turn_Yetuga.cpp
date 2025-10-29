@@ -61,7 +61,6 @@ void CAS_Turn_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fT
     _vector vLerpDir = XMVector3Normalize(XMVectorLerp(vLook, vTargetDir, fTimeDelta * fTurnSpeed));
 
     _vector vPosition = pOwnerTransform->Get_State(STATE::POSITION);
-    //pOwnerTransform->LookAt(vPosition + vLerpDir);
     _vector vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
     _vector vRight = XMVector3Normalize(XMVector3Cross(vUp, vLerpDir));
     vUp = XMVector3Normalize(XMVector3Cross(vLerpDir, vRight));
@@ -72,7 +71,6 @@ void CAS_Turn_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fT
 
     if (fAngle < XMConvertToRadians(10.f) || pModel->Play_Animation(fTimeDelta))
     {
-
         // 블랙보드 갱신
         m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>("Yetuga", "isTurnFinished", true);
         pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pOwner);
