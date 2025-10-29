@@ -29,10 +29,18 @@ public:
 
 private:
 	_uint						m_iDamage = {};
-		
+	DAMAGE_TYPE					m_eDamageType = {};
+	_int						m_iLength = {};
+	vector<_float4>				m_vDamage_UV ;
+	_float2						m_vCenterPos = {};
+	
+	_float4						m_vWorldTranslation = {};
+
+	_float						m_fAccTime = {};
 private:
 	void						Update_WolrdPos(_vector vPos);
-
+	void						Offset_Pos(_int iIndex, _int iMaxIndex);
+	_float4						Mapping_Number(_int iNumber);
 public:
 	static CDamage_Text*		Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject*		Clone(void* pArg) override;

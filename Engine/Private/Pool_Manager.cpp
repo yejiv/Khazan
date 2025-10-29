@@ -64,6 +64,7 @@ HRESULT CPool_Manager::Reset_PoolObject(CGameObject* pGameObject)
 	if (!pGameObject->Get_IsDead())
 		return E_FAIL;
 
+	pGameObject->Set_IsPool(true);
 	pGameObject->Set_IsDead(false);
 	pGameObject->Reset();
 
@@ -103,12 +104,14 @@ deque<CGameObject*>* CPool_Manager::Find_Pool(_uint iLayerLevelIndex, const _wst
 
 	auto iter = m_pPools[iLayerLevelIndex].begin();
 
-	for (auto iter = m_pPools[iLayerLevelIndex].begin(); iter != m_pPools[iLayerLevelIndex].end(); )
+	for (auto iter = m_pPools[iLayerLevelIndex].begin(); iter != m_pPools[iLayerLevelIndex].end();)
 	{
 		if (iter->first == strPoolTag)
 		{
 			return &(iter->second);
 		}
+		else
+			++iter;
 	}
 
 	return nullptr;

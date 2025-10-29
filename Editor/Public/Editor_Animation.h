@@ -27,6 +27,7 @@ public:
 	void					EnbleTrackPosition(_bool isEnble) { m_isEnbleTrackPosition = isEnble; }//tool
 	const _float&			Get_Duration() const { return m_fDuration; } //tool
 
+	_bool					Get_Skip() { return m_isSkip; }
 
 private:
 	string								m_strName = {};
@@ -47,6 +48,8 @@ private:
 
 	/* anim tool  */
 	_bool							m_isEnbleTrackPosition = { true };
+
+	_bool							m_isSkip = { false };	/* action 빈 깡통 들어오면 스킵  */
 
 	class CGameInstance* m_pGameInstance = { nullptr };
 
