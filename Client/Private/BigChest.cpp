@@ -276,7 +276,7 @@ CBigChest* CBigChest::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 
     if (FAILED(pInstance->Initialize_Prototype()))
     {
-        MSG_BOX(TEXT("Failed to Created : CProp_Object"));
+        MSG_BOX(TEXT("Failed to Created : CBigChest"));
         Safe_Release(pInstance);
     }
 
@@ -289,7 +289,7 @@ CGameObject* CBigChest::Clone(void* pArg)
 
     if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
-        MSG_BOX(TEXT("Failed to Cloned : CProp_Object"));
+        MSG_BOX(TEXT("Failed to Cloned : CBigChest"));
         Safe_Release(pInstance);
     }
 
