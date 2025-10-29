@@ -41,8 +41,6 @@ private:
 private:
 	ANIM_STATE m_eAnimState = { ANIM_STATE::CLOSE };
 
-	_bool m_isCollide = { false };
-
 	_bool m_isChestOn = { false };
 	_bool m_isChestOff = { false };
 

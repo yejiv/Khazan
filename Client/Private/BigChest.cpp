@@ -42,6 +42,11 @@ HRESULT CBigChest::Initialize_Clone(void* pArg)
 
 void CBigChest::Priority_Update(_float fTimeDelta)
 {
+    if (false == m_isCollision)
+    {
+        m_isChestOn = false;
+        m_isChestOff = false;
+    }
 }
 
 void CBigChest::Update(_float fTimeDelta)
@@ -132,7 +137,7 @@ HRESULT CBigChest::Ready_Collision(void* pArg)
 
 #pragma region 트리거 영역
     CBody::BODY_BOXSHAPE_DESC TriggerDesc{};
-    TriggerDesc.vExtent = _float3(1.f, 0.5f, 1.f);
+    TriggerDesc.vExtent = _float3(0.5f, 0.5f, 0.5f);
     TriggerDesc.bIsTrigger = true;
     TriggerDesc.bStartActive = true;
     TriggerDesc.eMotion = EMotionType::Static;
@@ -142,13 +147,10 @@ HRESULT CBigChest::Ready_Collision(void* pArg)
     TriggerDesc.fMass = 1.0f;
     TriggerDesc.fRestitution = 0.0f;
     TriggerDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT);
-    
-    _matrix matOffSet = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Position_Ch")) * m_pTransformCom->Get_WorldMatrix();
 
-    matOffSet.r[3].m128_f32[1] += TriggerDesc.vExtent.y;
-    matOffSet.r[3].m128_f32[3] += 1.f;
+    XMStoreFloat3(&TriggerDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION) + XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK)) * 1.f);
+    TriggerDesc.vPos.y += TriggerDesc.vExtent.y;
 
-    XMStoreFloat3(&TriggerDesc.vPos, matOffSet.r[3]);
     XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
 
     TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
@@ -166,7 +168,7 @@ HRESULT CBigChest::Ready_Collision(void* pArg)
 
 void CBigChest::Animation_Update(_float fTimeDelta)
 {
-    if (false == m_isCollide)
+    if (false == m_isCollision)
         return;
 
     if (true == m_isChestOn)               // 켠다는 신호
@@ -212,7 +214,7 @@ void CBigChest::Animation_Update(_float fTimeDelta)
 
 void CBigChest::Animation_Change(_float fTimeDelta)
 {
-    if (false == m_isCollide)
+    if (false == m_isCollision)
         return;
 
     if (ANIM_STATE::OPENING == m_eAnimState)
@@ -251,7 +253,7 @@ void CBigChest::Animation_Change(_float fTimeDelta)
 
 void CBigChest::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
-    m_isCollide = true;
+    m_isCollision = true;
     
     OutputDebugStringA("상자 트리거에 들어옴 !!!!!\n");
 }
@@ -263,7 +265,7 @@ void CBigChest::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _
 
 void CBigChest::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 {
-    m_isCollide = false;
+    m_isCollision = false;
 
     OutputDebugStringA("상자 트리거에서 나나나감감감 !!!!!\n");
 }

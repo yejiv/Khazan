@@ -46,8 +46,6 @@ private:
 private:
 	ANIM_STATE m_eAnimState = { ANIM_STATE::BEFORE_IDLE };
 
-	_bool m_isCollide = { false };
-
 private:
 	_float3 m_vPlayerPosition = {};
 
