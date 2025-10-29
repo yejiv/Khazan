@@ -148,7 +148,6 @@ void CPlayer::Update(_float fTimeDelta)
         if (pDamage != nullptr)
         {
             pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::DEFAULT, m_pTransformCom->Get_State(STATE::POSITION), 100);
-            m_pGameInstance->Reset_PoolObject(pDamage);
             m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
         }
     }
@@ -159,7 +158,6 @@ void CPlayer::Update(_float fTimeDelta)
         if (pDamage != nullptr)
         {
             pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::BACK, m_pTransformCom->Get_State(STATE::POSITION), 100);
-            m_pGameInstance->Reset_PoolObject(pDamage);
             m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
         }
     }
@@ -169,7 +167,6 @@ void CPlayer::Update(_float fTimeDelta)
         if (pDamage != nullptr)
         {
             pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::SPECIAL, m_pTransformCom->Get_State(STATE::POSITION), 100);
-            m_pGameInstance->Reset_PoolObject(pDamage);
             m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
         }
     }
@@ -179,7 +176,6 @@ void CPlayer::Update(_float fTimeDelta)
         if (pDamage != nullptr)
         {
             pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::PLAYER, m_pTransformCom->Get_State(STATE::POSITION), 100);
-            m_pGameInstance->Reset_PoolObject(pDamage);
             m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
         }
     }

@@ -61,11 +61,10 @@ _bool CDamage_Text::Render_Damage(DAMAGE_TYPE eDamageType, _vector vPos, _uint i
 {
 	if (eDamageType == DAMAGE_TYPE::END && iDamage < 0)
 		return false;
-	m_fAlpha = 1.f;
-	m_fAccTime = 1.f;
+
 	m_iDamage = iDamage;
-	m_vDamage_UV.clear();
 	m_eDamageType = eDamageType;
+
 	if (eDamageType == DAMAGE_TYPE::DEFAULT)
 	{
 		m_vLocalSize = { 22.f, 22.f };
@@ -100,6 +99,9 @@ _bool CDamage_Text::Render_Damage(DAMAGE_TYPE eDamageType, _vector vPos, _uint i
 
 void CDamage_Text::Reset()
 {
+	m_fAlpha = 1.f;
+	m_fAccTime = 1.f;
+	m_vDamage_UV.clear();
 }
 
 void CDamage_Text::Update_WolrdPos(_vector vPos)

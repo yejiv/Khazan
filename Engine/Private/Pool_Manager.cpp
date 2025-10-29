@@ -63,6 +63,7 @@ HRESULT CPool_Manager::Reset_PoolObject(CGameObject* pGameObject)
 	if (!pGameObject->Get_IsDead())
 		return E_FAIL;
 
+	pGameObject->Set_IsPool(true);
 	pGameObject->Set_IsDead(false);
 	pGameObject->Reset();
 
