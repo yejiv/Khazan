@@ -186,6 +186,10 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Hud/State/T_Hud_Hp_Bg_0%d.png"), 5))))
 		return E_FAIL;
 
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_Common_MenuList"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Common/T_Img_List_Menu_%d.png"), 6))))
+		return E_FAIL;
+
 	//UI °´Ã¼
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Atlas_Icon"),
 		CUI_Atlas_Icon::Create(m_pDevice, m_pContext))))
@@ -235,6 +239,8 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 		CInteraction_Guide::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC)))))
 		return E_FAIL;
 
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_MainMenu_Deco"),
+		CMainMune_Deco::Create(m_pDevice, m_pContext)), E_FAIL);
 	CUIObject::UIOBJECT_DESC Desc = {};
 	Desc.vLocalSize = { 64.f, 64.f };
 	Desc.vLocalPos = { 0.f, 0.f };

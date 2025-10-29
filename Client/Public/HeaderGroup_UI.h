@@ -13,3 +13,5 @@
 #include "Damage_Text.h"
 #include "Mon_HP.h"
 #include "Interaction_Guide.h"
+
+#include "MainMenu_Deco.h"

@@ -1,25 +1,26 @@
-#include "UI_MainMenu.h"
+#include "UI_BladeNexus.h"
 #include "GameInstance.h"
 #include "ClientInstance.h"
 
 #include "UI_TextBox.h"
 #include "UI_BackGround.h"
 
-#include "MainMenu_List.h"
+#include "BladeNexus_List.h"
+#include "MainMenu_Deco.h"
 
 #include "UI_Inven.h"
 
-CUI_MainMenu::CUI_MainMenu(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CUI_BladeNexus::CUI_BladeNexus(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
 {
 }
 
-CUI_MainMenu::CUI_MainMenu(const CUI_MainMenu& Prototype)
+CUI_BladeNexus::CUI_BladeNexus(const CUI_BladeNexus& Prototype)
 	: CUI_Panel(Prototype)
 {
 }
 
-void CUI_MainMenu::On_Panel()
+void CUI_BladeNexus::On_Panel()
 {
 	if (m_IsUpdate)
 		return;
@@ -33,7 +34,7 @@ void CUI_MainMenu::On_Panel()
 	m_eNextEvent = MENULIST::END;
 }
 
-void CUI_MainMenu::Off_Panel()
+void CUI_BladeNexus::Off_Panel()
 {
 	if (!m_IsUpdate)
 		return;
@@ -50,23 +51,23 @@ void CUI_MainMenu::Off_Panel()
 	}
 }
 
-HRESULT CUI_MainMenu::Initialize_Prototype(_uint iLevel)
+HRESULT CUI_BladeNexus::Initialize_Prototype(_uint iLevel)
 {
 	m_iLevel = iLevel;
 	CHECK_FAILED(Ready_Prototype(), E_FAIL);
 	return S_OK;
 }
 
-HRESULT CUI_MainMenu::Initialize_Clone(void* pArg)
+HRESULT CUI_BladeNexus::Initialize_Clone(void* pArg)
 {
 	if (FAILED(__super::Initialize_Clone(pArg)))
 		return E_FAIL;
 	return S_OK;
 }
 
-void CUI_MainMenu::Priority_Update(_float fTimeDelta)
+void CUI_BladeNexus::Priority_Update(_float fTimeDelta)
 {
-	
+
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE) && m_eNextEvent == MENULIST::END)
 		m_IsUpdate ? Off_Panel() : On_Panel();
 
@@ -77,7 +78,7 @@ void CUI_MainMenu::Priority_Update(_float fTimeDelta)
 	__super::Priority_Update(fTimeDelta);
 }
 
-void CUI_MainMenu::Update(_float fTimeDelta)
+void CUI_BladeNexus::Update(_float fTimeDelta)
 {
 	if (!m_IsUpdate)
 		return;
@@ -86,7 +87,7 @@ void CUI_MainMenu::Update(_float fTimeDelta)
 
 }
 
-void CUI_MainMenu::Late_Update(_float fTimeDelta)
+void CUI_BladeNexus::Late_Update(_float fTimeDelta)
 {
 	if (!m_IsUpdate)
 		return;
@@ -95,12 +96,12 @@ void CUI_MainMenu::Late_Update(_float fTimeDelta)
 
 }
 
-HRESULT CUI_MainMenu::Render()
+HRESULT CUI_BladeNexus::Render()
 {
 	return S_OK;
 }
 
-HRESULT CUI_MainMenu::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
+HRESULT CUI_BladeNexus::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
 {
 	m_szName = pInData.value("name", "");
 	string strTexType = pInData.value("TexType", "");
@@ -218,7 +219,7 @@ HRESULT CUI_MainMenu::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, 
 					string strClass = child.value("class", "");
 					_wstring wstrClass = AnsiToWString(strClass);
 
-					CMainMenu_List::MAINMENULIST_DESC UIDesc{};
+					CBladeNexus_List::MAINMENULIST_DESC UIDesc{};
 					UIDesc.szName = "";
 					UIDesc.iUIType = 0;
 					UIDesc.vLocalSize = { 1.f, 1.f };
@@ -226,7 +227,7 @@ HRESULT CUI_MainMenu::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, 
 					UIDesc.vLocalPos = { g_iWinSizeX >> 1 , g_iWinSizeY >> 1 };
 					UIDesc.eMenu = static_cast<MENULIST>(i);
 
-					CMainMenu_List* pChild = static_cast<CMainMenu_List*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelID, wstrClass.c_str(), &UIDesc));
+					CBladeNexus_List* pChild = static_cast<CBladeNexus_List*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelID, wstrClass.c_str(), &UIDesc));
 
 					if (pChild == nullptr)
 					{
@@ -253,7 +254,7 @@ HRESULT CUI_MainMenu::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, 
 	return S_OK;
 }
 
-void CUI_MainMenu::Bubble_EventCall(BUBBLEEVENT* pArg)
+void CUI_BladeNexus::Bubble_EventCall(BUBBLEEVENT* pArg)
 {
 	MAINMENUBUBBLE_DESC* Desc = static_cast<MAINMENUBUBBLE_DESC*>(pArg);
 	if (Desc->isClick)
@@ -267,26 +268,26 @@ void CUI_MainMenu::Bubble_EventCall(BUBBLEEVENT* pArg)
 		m_iSeleteIndex = ENUM_CLASS(Desc->eListType);
 		for (_int i = 0; i < ENUM_CLASS(MENULIST::END); ++i)
 			i == m_iSeleteIndex ? m_pList[i]->Set_Selete(true) : m_pList[i]->Set_Selete(false);
-		
+
 	}
 }
 
-HRESULT CUI_MainMenu::Update_Switch(void* pArg)
+HRESULT CUI_BladeNexus::Update_Switch(void* pArg)
 {
-	m_IsUpdate ? Off_Panel() :On_Panel();
+	m_IsUpdate ? Off_Panel() : On_Panel();
 	return S_OK;
 }
 
 
-HRESULT CUI_MainMenu::Ready_Prototype()
+HRESULT CUI_BladeNexus::Ready_Prototype()
 {
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_MainMenu_List"),
-		CMainMenu_List::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_BladeNexus_List"),
+		CBladeNexus_List::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
 
 	return S_OK;
 }
 
-HRESULT CUI_MainMenu::Ready_Object()
+HRESULT CUI_BladeNexus::Ready_Object()
 {
 	UIOBJECT_DESC Desc = {};
 	Desc.fDepth = 4;
@@ -305,7 +306,7 @@ HRESULT CUI_MainMenu::Ready_Object()
 	return S_OK;
 }
 
-void CUI_MainMenu::UI_Animation(_float fTimeDelta)
+void CUI_BladeNexus::UI_Animation(_float fTimeDelta)
 {
 	if (m_eAnimState == UIANIMSTATE::ON)
 	{
@@ -334,62 +335,50 @@ void CUI_MainMenu::UI_Animation(_float fTimeDelta)
 	}
 }
 
-void CUI_MainMenu::Next_Event()
+void CUI_BladeNexus::Next_Event()
 {
 
-	if (m_eNextEvent == MENULIST::WEAPON)
+	if (m_eNextEvent == MENULIST::STATE)
 	{
-		CUI_Inven::INVEN_ONOFF_DESC Desc = {};
-		Desc.isOpen = true;
-		Desc.isEquip = true;
-		Desc.szName = m_szName;
-		CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Inven"), &Desc);
+		//CUI_Inven::INVEN_ONOFF_DESC Desc = {};
+		//Desc.isOpen = true;
+		//Desc.isEquip = true;
+		//Desc.szName = m_szName;
+		//CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Inven"), &Desc);
 	}
-	else if (m_eNextEvent == MENULIST::OTHER)
+	else if (m_eNextEvent == MENULIST::WARP)
 	{
-		CUI_Inven::INVEN_ONOFF_DESC Desc = {};
-		Desc.isOpen = true;
-		Desc.isEquip = false;
-		Desc.szName = m_szName;
-		CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Inven"), &Desc);
+
 	}
-	else if (m_eNextEvent == MENULIST::SKILL)
+	else if (m_eNextEvent == MENULIST::CREVICE)
 	{
 	}
-	else if (m_eNextEvent == MENULIST::STATE)
-	{
-	}
-	else if (m_eNextEvent == MENULIST::TITLE)
-	{
-	}
-	else if (m_eNextEvent == MENULIST::EXIT)
-	{
-	}
+
 }
 
-CUI_MainMenu* CUI_MainMenu::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)
+CUI_BladeNexus* CUI_BladeNexus::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)
 {
-	CUI_MainMenu* pInstance = new CUI_MainMenu(pDevice, pContext);
+	CUI_BladeNexus* pInstance = new CUI_BladeNexus(pDevice, pContext);
 	if (FAILED(pInstance->Initialize_Prototype(iLevel)))
 	{
-		MSG_BOX(TEXT("Failed Created : CUI_MainMenu"));
+		MSG_BOX(TEXT("Failed Created : CUI_BladeNexus"));
 		Safe_Release(pInstance);
 	}
 	return pInstance;
 }
 
-CGameObject* CUI_MainMenu::Clone(void* pArg)
+CGameObject* CUI_BladeNexus::Clone(void* pArg)
 {
-	CUI_MainMenu* pInstance = new CUI_MainMenu(*this);
+	CUI_BladeNexus* pInstance = new CUI_BladeNexus(*this);
 	if (FAILED(pInstance->Initialize_Clone(pArg)))
 	{
-		MSG_BOX(TEXT("Failed Cloned : CUI_MainMenu"));
+		MSG_BOX(TEXT("Failed Cloned : CUI_BladeNexus"));
 		Safe_Release(pInstance);
 	}
 	return pInstance;
 }
 
-void CUI_MainMenu::Free()
+void CUI_BladeNexus::Free()
 {
 	__super::Free();
 	for (auto pList : m_pList)
