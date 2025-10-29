@@ -62,8 +62,6 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 	_float fPrevTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
 	m_pBB->Set_Value(m_strMonstertag, "CurrentTime", fPrevTime + fTimeDelta);
 
-	//m_pBB->Set_Value(m_strMonstertag, "CurrentTime", fTimeDelta);
-
 	/*_uint iDirFlag = m_pBB->Get_Value<_uint>("Yetuga", "TargetDirection");
 	cout << "DirFlag : " << iDirFlag << "(";
 
@@ -168,76 +166,84 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 			};
 	}*/
 
-	if ("RightHand_2Hit" == name)
-	{
-		return [pYetuga](CBlackBoard* BB)->_bool
-			{			
+	//if ("RightHand_2Hit" == name)
+	//{
+	//	return [pYetuga](CBlackBoard* BB)->_bool
+	//		{			
 
-				_float fDist = BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
-				_float fAttackRanage = BB->Get_Value<_float>(pYetuga->Get_Name(), "AttackRange");
-				if (fDist != 0 && fDist <= fAttackRanage && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "IsAttack"))
-				{
-					//cout << "RightHand_2Hit Condition TRUE!!!!!!!!!!!!" << endl;
-					return true;
-				}
-				else
-					return false;
-			};
-	}
+	//			_float fDist = BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
+	//			_float fAttackRanage = BB->Get_Value<_float>(pYetuga->Get_Name(), "AttackRange");
+	//			if (fDist != 0 && fDist <= fAttackRanage && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "IsAttack"))
+	//			{
+	//				//cout << "RightHand_2Hit Condition TRUE!!!!!!!!!!!!" << endl;
+	//				return true;
+	//			}
+	//			else
+	//				return false;
+	//		};
+	//}
 
-	if ("RightHand_5Hit" == name)
-	{
-		return [pYetuga](CBlackBoard* BB)->_bool
-			{
+	//if ("RightHand_5Hit" == name)
+	//{
+	//	return [pYetuga](CBlackBoard* BB)->_bool
+	//		{
 
-				_float fDist = BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
-				_float fAttackRanage = BB->Get_Value<_float>(pYetuga->Get_Name(), "AttackRange");
-				if (fDist != 0 && fDist <= fAttackRanage && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "IsAttack2"))
-				{
-					//cout << "RightHand_5Hit Condition TRUE!!!!!!!!!!!!" << endl;
-					return true;
-				}
-				else
-					return false;
-			};
-	}
+	//			_float fDist = BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
+	//			_float fAttackRanage = BB->Get_Value<_float>(pYetuga->Get_Name(), "AttackRange");
+	//			if (fDist != 0 && fDist <= fAttackRanage && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "IsAttack2"))
+	//			{
+	//				//cout << "RightHand_5Hit Condition TRUE!!!!!!!!!!!!" << endl;
+	//				return true;
+	//			}
+	//			else
+	//				return false;
+	//		};
+	//}
 
 	if ("Turn" == name)
 	{
 		return [pYetuga](CBlackBoard* BB)->_bool
 			{
 				if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isDead")) return false;
-				_float fDot = BB->Get_Value<_float>(pYetuga->Get_Name(), "Dot");
+
+				_float fDot = BB->Get_Value<_float>(pYetuga->Get_Name(), "fDot");
+				fDot = clamp(fDot, -1.f, 1.f);
 				_float fAngle = XMConvertToDegrees(acos(fDot));
-
-				if (fAngle > BB->Get_Value<_float>(pYetuga->Get_Name(), "TurnChangeRange"))
-					return true;
-				else
-					return false;
-			};
-	}
-
-	if ("MoveCondition" == name)
-	{
-		return [pYetuga](CBlackBoard* BB)->_bool
-			{
-				if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isDead"))
-					return false;
-
-
+				_float fLimit = BB->Get_Value<_float>(pYetuga->Get_Name(), "TurnChangeRange");
 				_float fDist = BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
 				_float fChaseRange = BB->Get_Value<_float>(pYetuga->Get_Name(), "ChaseRange");
 
-				if (fDist != 0 && fDist <= fChaseRange)
+				if (fDist != 0 && fDist <= fChaseRange && fAngle > 15.f)
 				{
-					//cout << "MoveCondition" << endl;
+					cout << "Turn Condition" << endl;
 					return true;
-
 				}
 				else
 					return false;
 			};
 	}
+
+	//if ("MoveCondition" == name)
+	//{
+	//	return [pYetuga](CBlackBoard* BB)->_bool
+	//		{
+	//			if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isDead"))
+	//				return false;
+
+
+	//			_float fDist = BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
+	//			_float fChaseRange = BB->Get_Value<_float>(pYetuga->Get_Name(), "ChaseRange");
+
+	//			if (fDist != 0 && fDist <= fChaseRange)
+	//			{
+	//				//cout << "MoveCondition" << endl;
+	//				return true;
+
+	//			}
+	//			else
+	//				return false;
+	//		};
+	//}
 
 	
 
@@ -287,68 +293,68 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 			};
 	}
 
-	if ("RightHand_2Hit" == name)
-	{
-		return [pYetuga](CBlackBoard* BB)-> BTNODESTATE
-			{
+	//if ("RightHand_2Hit" == name)
+	//{
+	//	return [pYetuga](CBlackBoard* BB)-> BTNODESTATE
+	//		{
 
-				if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isAttackFinished"))
-				{
-					//cout << "RightHand_2Hit Action SUCESSSS!!!!!!!!!!!!" << endl;
-					return BTNODESTATE::SUCCESS;
-				}
-				//cout << "RightHand_2Hit Action Running" << endl;
+	//			if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isAttackFinished"))
+	//			{
+	//				//cout << "RightHand_2Hit Action SUCESSSS!!!!!!!!!!!!" << endl;
+	//				return BTNODESTATE::SUCCESS;
+	//			}
+	//			//cout << "RightHand_2Hit Action Running" << endl;
 
-				BB->Set_Value(pYetuga->Get_Name(), "isAttack", true);
-				BB->Set_Value(pYetuga->Get_Name(), "isAttackFinished", false);
+	//			BB->Set_Value(pYetuga->Get_Name(), "isAttack", true);
+	//			BB->Set_Value(pYetuga->Get_Name(), "isAttackFinished", false);
 
-				
-				pYetuga->Get_Controller()->Get_State_Machine()->
-					Change_State(ENUM_CLASS(YETUGA_STATE::ATTACK),pYetuga);
-				return BTNODESTATE::RUNNING;
+	//			
+	//			pYetuga->Get_Controller()->Get_State_Machine()->
+	//				Change_State(ENUM_CLASS(YETUGA_STATE::ATTACK),pYetuga);
+	//			return BTNODESTATE::RUNNING;
 
-			
-			};
-	}
+	//		
+	//		};
+	//}
 
-	if ("RightHand_5Hit" == name)
-	{
-		return [pYetuga](CBlackBoard* BB)-> BTNODESTATE
-			{
-				if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isAttack2Finished"))
-				{
-					//cout << "RightHand_5Hit Action Suceess" << endl;
-					return BTNODESTATE::SUCCESS;
-				}
-				//cout << "RightHand_5Hit Action Running" << endl;
-				BB->Set_Value(pYetuga->Get_Name(), "isAttack2", true);
-				BB->Set_Value(pYetuga->Get_Name(), "isAttack2Finished", false);
+	//if ("RightHand_5Hit" == name)
+	//{
+	//	return [pYetuga](CBlackBoard* BB)-> BTNODESTATE
+	//		{
+	//			if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isAttack2Finished"))
+	//			{
+	//				//cout << "RightHand_5Hit Action Suceess" << endl;
+	//				return BTNODESTATE::SUCCESS;
+	//			}
+	//			//cout << "RightHand_5Hit Action Running" << endl;
+	//			BB->Set_Value(pYetuga->Get_Name(), "isAttack2", true);
+	//			BB->Set_Value(pYetuga->Get_Name(), "isAttack2Finished", false);
 
-				pYetuga->Get_Controller()->Get_State_Machine()->
-					Change_State(ENUM_CLASS(YETUGA_STATE::RIGHTHAND_5HIT), pYetuga);
-				return BTNODESTATE::RUNNING;
+	//			pYetuga->Get_Controller()->Get_State_Machine()->
+	//				Change_State(ENUM_CLASS(YETUGA_STATE::RIGHTHAND_5HIT), pYetuga);
+	//			return BTNODESTATE::RUNNING;
 
-			};
-	}
+	//		};
+	//}
 
-	if ("MoveAction" == name)
-	{
-		CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
-		if (nullptr == pYetuga)
-			return nullptr;
+	//if ("MoveAction" == name)
+	//{
+	//	CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
+	//	if (nullptr == pYetuga)
+	//		return nullptr;
 
-		return [pYetuga](CBlackBoard* BB) ->BTNODESTATE
-			{
-				//cout << "MoveAction" << endl;
-				if (BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist") <= BB->Get_Value<_float>("Yetuga", "AttackRange"))
-					return BTNODESTATE::SUCCESS;
+	//	return [pYetuga](CBlackBoard* BB) ->BTNODESTATE
+	//		{
+	//			//cout << "MoveAction" << endl;
+	//			if (BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist") <= BB->Get_Value<_float>("Yetuga", "AttackRange"))
+	//				return BTNODESTATE::SUCCESS;
 
 
-				pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::MOVE), pYetuga);
+	//			pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::MOVE), pYetuga);
 
-				return BTNODESTATE::RUNNING;
-			};
-	}
+	//			return BTNODESTATE::RUNNING;
+	//		};
+	//}
 
 	if ("IdleAction" == name)
 	{
@@ -356,6 +362,7 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 			{
 				if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isDead")) return BTNODESTATE::FAILURE;
 				if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isDetected")) return BTNODESTATE::FAILURE;
+
 
 				cout << "Idle" << endl;
 				pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
@@ -409,25 +416,25 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 
 
 
-	if ("RightHand_2Hit" == name)
-	{
-		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
-			{
-				if (nullptr == BB)
-					return;
+	//if ("RightHand_2Hit" == name)
+	//{
+	//	return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
+	//		{
+	//			if (nullptr == BB)
+	//				return;
 
-				if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
-				{
-					//cout << "Attack Turminate " << endl;
+	//			if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+	//			{
+	//				//cout << "Attack Turminate " << endl;
 
-					BB->Set_Value<_bool>(pYetuga->Get_Name(), "IsAttack", false);
-					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isAttackFinished", false);
-					pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
-				}
-			};
-	}
+	//				BB->Set_Value<_bool>(pYetuga->Get_Name(), "IsAttack", false);
+	//				BB->Set_Value<_bool>(pYetuga->Get_Name(), "isAttackFinished", false);
+	//				pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
+	//			}
+	//		};
+	//}
 
-	if ("RightHand_5Hit" == name)
+	/*if ("RightHand_5Hit" == name)
 	{
 		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
 			{
@@ -441,9 +448,9 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 					pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
 				}
 			};
-	}
+	}*/
 
-	if ("MoveAction" == name)
+	/*if ("MoveAction" == name)
 	{
 		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
 			{
@@ -454,7 +461,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 				{
 				}
 			};
-	}
+	}*/
 
 	return nullptr;
 }

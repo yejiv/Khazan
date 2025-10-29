@@ -15,7 +15,7 @@ void CAttackState_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
 
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
-    pModel->Set_Animation(8);
+    pModel->Set_Animation(0);
     pModel->Set_AnimationLoop(false);
 }
 

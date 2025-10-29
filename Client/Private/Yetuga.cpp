@@ -55,6 +55,14 @@ void CYetuga::Priority_Update(_float fTimeDelta)
 
 void CYetuga::Update(_float fTimeDelta)
 {
+   /* _vector vLook = m_pTransformCom->Get_State(STATE::LOOK);
+    _float3 vTempDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>("Yetuga", "TargetDir");
+    _vector vTargetDir = XMVector3Normalize(XMLoadFloat3(&vTempDir));
+    _float fTurnSpeed = 1.f;
+    _vector vLerpDir = XMVector3Normalize(XMVectorLerp(vLook, vTargetDir, fTimeDelta * fTurnSpeed));
+
+    m_pTransformCom->LookAt(m_pTransformCom->Get_State(STATE::POSITION) + vLerpDir);*/
+
     m_pController->Update(this, fTimeDelta);
 
     CContainerObject::Update(fTimeDelta);

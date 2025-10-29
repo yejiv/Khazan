@@ -67,7 +67,8 @@ void CPerception::Check_Sight(CGameObject* pOwner)
 	// 시야 감지 사이클에 들어왔을때만 갱신
 	m_pGameInstance->Get_BlackBoard()->Set_Value<_float>(m_strName, "TargetDist", fDistsq);
 	
-	_vector vSide = XMVector3Cross(vLook,vDist);
+	//_vector vSide = XMVector3Cross(vLook,vDist);
+	_vector vSide = XMVector3Cross(vDist,vLook);
 	_float fSide = XMVectorGetY(vSide);
 
 	m_tDirInfo.Clear_Flag();
@@ -79,12 +80,12 @@ void CPerception::Check_Sight(CGameObject* pOwner)
 
 		if (fSide > 0.5f)
 		{
-			m_tDirInfo.Add_Flag(m_tDirInfo.L);
+			m_tDirInfo.Add_Flag(m_tDirInfo.R);
 		}
 		else if (fSide < -0.5f)
 		{
 
-			m_tDirInfo.Add_Flag(m_tDirInfo.R);
+			m_tDirInfo.Add_Flag(m_tDirInfo.L);
 		}
 	}
 	// Back
@@ -93,11 +94,11 @@ void CPerception::Check_Sight(CGameObject* pOwner)
 		m_tDirInfo.Add_Flag(m_tDirInfo.B);
 
 		if (fSide > 0.5)
-			m_tDirInfo.Add_Flag(m_tDirInfo.L);
+			m_tDirInfo.Add_Flag(m_tDirInfo.R);
 		
 
 		else if (fSide < -0.5f)
-			m_tDirInfo.Add_Flag(m_tDirInfo.R);
+			m_tDirInfo.Add_Flag(m_tDirInfo.L);
 		
 	}
 	// Side
