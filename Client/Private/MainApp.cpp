@@ -55,13 +55,8 @@ HRESULT CMainApp::Initialize()
 
 void CMainApp::Update(_float fTimeDelta)
 {
-
 	m_pGameInstance->Update_Engine(fTimeDelta);
 	m_pClientInstance->Update(fTimeDelta);
-
-#ifdef _DEBUG
-	m_fTimeAcc += fTimeDelta;
-#endif
 }
 
 HRESULT CMainApp::Render()
@@ -71,18 +66,6 @@ HRESULT CMainApp::Render()
 	m_pGameInstance->Render_Begin(&vClearColor);
 
 	m_pGameInstance->Draw();
-
-#ifdef _DEBUG
-	++m_iRenderCount;
-
-	if (m_fTimeAcc >= 1.f)
-	{
-		wsprintf(m_szFPS, TEXT("FPS:%d"), m_iRenderCount);
-		m_fTimeAcc = 0.f;
-		m_iRenderCount = 0;
-	}
-	//m_pGameInstance->DrawText(TEXT("Font_153"), m_szFPS, _float2(100.f, 0.f), XMVectorSet(1.f, 0.f, 0.f, 1.f));
-#endif
 
 	m_pGameInstance->Render_End();
 
@@ -264,7 +247,11 @@ HRESULT CMainApp::Ready_DB()
 HRESULT CMainApp::Ready_ObjectLayer()
 {
 	// Static 지형
-	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MAP), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
+	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MAP_STATIC), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
+
+	// 상호작용 오브젝트에 달린 트리거
+	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
+
 	// 동적 물체
 	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
 	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
@@ -273,9 +260,12 @@ HRESULT CMainApp::Ready_ObjectLayer()
 	// 동적-동적 & 동적-지형 & 동적-트리거
 	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MONSTER));
 	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(COLLISION_LAYER::PLAYER));
-	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MAP));
-	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(COLLISION_LAYER::MAP));
-	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::CAMERA), ENUM_CLASS(COLLISION_LAYER::MAP));
+	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MAP_STATIC));
+	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(COLLISION_LAYER::MAP_STATIC));
+	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::CAMERA), ENUM_CLASS(COLLISION_LAYER::MAP_STATIC));
+
+	// 동적-상호작용
+	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT));
 
 	// PLAYER
 	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
@@ -284,14 +274,9 @@ HRESULT CMainApp::Ready_ObjectLayer()
 	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
 	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
 
-	m_pGameInstance->Set_ObjectLayerFilter(ENUM_CLASS(COLLISION_LAYER::MAP), true);
+	m_pGameInstance->Set_ObjectLayerFilter(ENUM_CLASS(COLLISION_LAYER::MAP_STATIC), true);
 
 	m_pGameInstance->Set_PhysicsSystem();
-
-#ifdef _DEBUG
-	m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER));
-	m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER));
-#endif
 
 	return S_OK;
 }
@@ -315,54 +300,7 @@ HRESULT CMainApp::Start_Level(LEVEL eStartLevelID)
 
 HRESULT CMainApp::Ready_DebugTool()
 {
-#if _DEBUG
-	m_pGameInstance->AddWidget(TEXT("Debug"), [&]() {
 
-		ImGui::Text("Camera");
-
-		_float3 vCameraPos = m_pGameInstance->Get_ActiveCameraPos();
-
-		_char szPosBuffer[MAX_PATH];
-		snprintf(szPosBuffer, sizeof(szPosBuffer), "POS : X : %.2f, Y : %.2f, Z : %.2f", vCameraPos.x, vCameraPos.y, vCameraPos.z);
-		ImGui::Text(szPosBuffer);
-
-		_float4 vCameraLook = m_pGameInstance->Get_ActiveCameraLook();
-
-		_char szLookBuffer[MAX_PATH];
-		snprintf(szLookBuffer, sizeof(szLookBuffer), "LOOK : X : %.2f, Y : %.2f, Z : %.2f, W : %.2f", vCameraLook.x, vCameraLook.y, vCameraLook.z, vCameraLook.w);
-		ImGui::Text(szLookBuffer);
-
-		ImGui::Text("Frustum");
-
-		const _float4* vPoint = m_pGameInstance->Get_Frustum_Point();
-		
-		for (size_t i = 0; i < 8; i++)
-		{
-			_char szPointBuffer[MAX_PATH];
-			snprintf(szPointBuffer, sizeof(szPointBuffer), "POINT %.1f : X : %.2f, Y : %.2f, Z : %.2f, W : %.2f", i, vPoint[i].x, vPoint[i].y, vPoint[i].z, vPoint[i].w);
-			ImGui::Text(szPointBuffer);
-		}
-
-		const _float4* vWorldPoint = m_pGameInstance->Get_Frustum_WorldPoints();
-
-		for (size_t i = 0; i < 8; i++)
-		{
-			_char szPointBuffer[MAX_PATH];
-			snprintf(szPointBuffer, sizeof(szPointBuffer), "WorldPOINT %.1f : X : %.2f, Y : %.2f, Z : %.2f, W : %.2f", i, vWorldPoint[i].x, vWorldPoint[i].y, vWorldPoint[i].z, vWorldPoint[i].w);
-			ImGui::Text(szPointBuffer);
-		}
-
-		const _float4* vWorldPlane = m_pGameInstance->Get_Frustum_WorldPlanes();
-
-		for (size_t i = 0; i < 6; i++)
-		{
-			_char szPlaneBuffer[MAX_PATH];
-			snprintf(szPlaneBuffer, sizeof(szPlaneBuffer), "WorldPlane %.1f : X : %.2f, Y : %.2f, Z : %.2f, W : %.2f", i, vWorldPlane[i].x, vWorldPlane[i].y, vWorldPlane[i].z, vWorldPlane[i].w);
-			ImGui::Text(szPlaneBuffer);
-		}
-
-		});
-#endif
 		
 	return S_OK;
 }

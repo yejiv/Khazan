@@ -28,6 +28,7 @@ CLevel_Stage1::CLevel_Stage1(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 
 HRESULT CLevel_Stage1::Initialize()
 {
+	CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
 
 	/*if (FAILED(Ready_Lights()))
 		return E_FAIL;*/
@@ -36,10 +37,10 @@ HRESULT CLevel_Stage1::Initialize()
 		return S_OK;
 		});
 
-	CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
-
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
+
+	CHECK_FAILED(Ready_Layer_Test(TEXT("Layer_Creature_Test")), E_FAIL);
 
 	if (FAILED(Ready_Layer_Player(TEXT("Layer_Player"))))
 		return E_FAIL;
@@ -50,7 +51,7 @@ HRESULT CLevel_Stage1::Initialize()
 	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
 		return E_FAIL;
 
-	CHECK_FAILED(Ready_Layer_Test(TEXT("Layer_Test")), E_FAIL);
+	
 
 
 	/* 상호 작용 오브젝트 호출 함수 */
@@ -173,7 +174,7 @@ HRESULT CLevel_Stage1::Ready_Layer_Camera(const _wstring& strLayerTag)
 	
 	CCamera_Compre* pCamera_Spring = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Camera_Compre"), &CameraSpringDesc));
 	pCamera_Spring->Set_IsActive(false);
-	CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::STAGE1), TEXT("Layer_Player"));
+	CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::STAGE1), TEXT("Layer_Creature_Test"));
 	pCamera_Spring->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
 	m_pGameInstance->Add_Camera(ENUM_CLASS(LEVEL::STAGE1), pCamera_Spring);
 
@@ -188,9 +189,9 @@ HRESULT CLevel_Stage1::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 HRESULT CLevel_Stage1::Ready_Layer_Player(const _wstring& strLayerTag)
 {
-	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
-		ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Player"))))
-		return E_FAIL;
+	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
+	//	ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Player"))))
+	//	return E_FAIL;
 
 	return S_OK;
 }
@@ -217,7 +218,7 @@ HRESULT CLevel_Stage1::Ready_Layer_Monster(const _wstring& strLayerTag)
 HRESULT CLevel_Stage1::Ready_Layer_Test(const _wstring& strLayerTag)
 {
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), strLayerTag,
-		ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_JOH_Test1"))))
+		ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Khazan_Sample"))))
 		return E_FAIL;
 
 	return S_OK;

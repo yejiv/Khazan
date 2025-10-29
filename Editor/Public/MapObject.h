@@ -12,11 +12,21 @@ NS_BEGIN(Editor)
 class CMapObject abstract : public CGameObject
 {
 public:
+	typedef struct tagBoxItemDesc
+	{
+		_uint iItem_0 = {};
+		_uint iItem_1 = {};
+		_uint iItem_2 = {};
+
+	}ITEMBOX_DESC;
+
 	typedef struct tagMapObjectDesc : public CGameObject::GAMEOBJECT_DESC
 	{
 		_uint iMapObjectID{};
 
 		INTERACTIVE_TYPE eInteractiveType{ INTERACTIVE_TYPE::END };
+
+		ITEMBOX_DESC ItemBox{};
 
 	}MAPOBJECT_DESC;
 
@@ -37,6 +47,8 @@ public:
 public:
 	const _uint Get_MapObjectID() const { return m_iMapObjectID; }
 	const INTERACTIVE_TYPE Get_InteractiveType() const { return m_eInteractiveType; }
+	const ITEMBOX_DESC Get_ItemBox() const { return m_ItemBox; }
+	void Set_ItemBox(ITEMBOX_DESC ItemBoxDesc) { m_ItemBox = ItemBoxDesc; }
 
 protected:
 	CShader* m_pShaderCom = { nullptr };
@@ -45,6 +57,7 @@ protected:
 	_uint m_iMapObjectID = {};
 
 	INTERACTIVE_TYPE m_eInteractiveType{ INTERACTIVE_TYPE::END };
+	ITEMBOX_DESC m_ItemBox = {};
 
 public:
 	virtual CGameObject* Clone(void* pArg) = 0;

@@ -448,9 +448,15 @@ namespace Engine
 	/* 애니메이션 이벤트 데이터*/
 	typedef struct tagAnimationEventDesc
 	{
+		enum TRIGGER_INDEX {
+			ONCE = 0,
+			ENTER = 1,
+			EXIT = 2,
+			CONTINUE = 3
+		};
 		string					strEventKey = "";					// 이벤트 키
 		XMFLOAT2				vFrameRange = { 0.f, 0.f };			// x: start, y: end
-		bool					isTriggered = false;                // 이번 재생에서 발동했는지
+		bool					isTriggered[4] = { false, false, false, false };       // 이번 재생에서 발동했는지
 
 		bool                    isTriggerOnce = { false };          // 루프 시 한 번만 발동
 		bool					isTriggerOnEnter = { true };        // 범위 진입 시 발동
