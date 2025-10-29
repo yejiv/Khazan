@@ -39,6 +39,7 @@ public:
 	bool AddStaticObject(class CGameObject* pGameObject, const _float3& vPoint, const _float& fRadius = 0.0f);
 	//bool AddStaticInstance(const string& _strModelTag, class CGameObject* _pGameObject, const _float3& _vPoint, const _float4x4& _WorldMatrix, const float& _fRadius = 0.0f);
 	void Clear();
+	void Destroy();
 
 private:
 	ContainmentType isDraw();

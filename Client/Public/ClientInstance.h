@@ -59,6 +59,11 @@ private:
 	
 	class CUI_Manager*	m_pUI_Manager = { nullptr };
 	CDB_Manager*		m_pDB_Manager = { nullptr };
+
+#ifdef _DEBUG
+	class CDebug_Manager* m_pDebug_Manager = { nullptr };
+
+#endif
 public:
 	virtual void Free() override;
 };

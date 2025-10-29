@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "AI_Controller_Yetuga.h"
 #include "BlackBoard.h"
+#include "Body_Yetuga.h"
 
 CYetuga::CYetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice, pContext }
@@ -27,83 +28,72 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
+    if (FAILED(Ready_PartObjects()))
+        return E_FAIL;
+
+
     m_pController = CAI_Controller_Yetuga::Create(this);
     if (nullptr == m_pController)
         return E_FAIL;
 
-     m_pModelCom->Set_Animation(3);
-     m_pModelCom->Set_AnimationLoop(true);
+    /* m_pModelCom->Set_Animation(3);
+     m_pModelCom->Set_AnimationLoop(true);*/
 
-    m_pTransformCom->Set_State(STATE::POSITION,
-        XMVectorSet(
-            m_pGameInstance->Rand(-5.f, 5.f),
-            2.f,
-            m_pGameInstance->Rand(5.f, 5.f),
-            1.f
-        ));
+     //-4 0 27
+     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(-4, 0, 27, 1.f));
+
+
+
 
     return S_OK;
 }
 
 void CYetuga::Priority_Update(_float fTimeDelta)
 {
+    CContainerObject::Priority_Update(fTimeDelta);
 }
 
 void CYetuga::Update(_float fTimeDelta)
 {
-    m_fCoolTimeAcc += fTimeDelta;
-
     m_pController->Update(this, fTimeDelta);
 
+    CContainerObject::Update(fTimeDelta);
 
-   /* if (true == m_pModelCom->Play_Animation(fTimeDelta))
-        int a = 10;*/
+  
 }
 
 void CYetuga::Late_Update(_float fTimeDelta)
 {
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this)))
         return;
+
+    CContainerObject::Late_Update(fTimeDelta);
 }
 
 HRESULT CYetuga::Render()
 {
-
-    if (FAILED(Bind_ShaderResources()))
-        return E_FAIL;
-
-    _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
-
-    for (size_t i = 0; i < iNumMeshes; i++)
-    {
-        if (FAILED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0)))
-            return E_FAIL;
-        /*if (FAILED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_DIFFUSE, 0)))
-            return E_FAIL;        */
-
-        if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
-            return E_FAIL;
-
-        m_pShaderCom->Begin(0);
-
-        m_pModelCom->Render(i);
-    }
-
-
     return S_OK;
 }
 
 HRESULT CYetuga::Ready_Components()
 {
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
-        TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
-        return E_FAIL;
-        
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_Fiona"),
-        TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
+    return S_OK;
+}
+
+HRESULT CYetuga::Ready_PartObjects()
+{
+    CBody_Yetuga::PARTOBJECT_DESC BodyDesc{};
+    BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
+
+    if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Body"),ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_PartObject_Yetuga_Body"), &BodyDesc)))
         return E_FAIL;
 
+    CPartObject* pBody = Find_PartObject(TEXT("Part_Body"));
+    if (nullptr == pBody)
+        return E_FAIL;
+
+    m_pBody = dynamic_cast<CBody_Yetuga*>(pBody);
     return S_OK;
 }
 

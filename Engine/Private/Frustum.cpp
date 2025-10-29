@@ -70,7 +70,18 @@ _bool CFrustum::isIn_WorldSpace(_fvector vWorldPos, _float fRange)
 
 ContainmentType CFrustum::isIn_WorldSpace(const BoundingBox& BoundingBox)
 {
-	return BoundingBox.ContainedBy(XMLoadFloat4(&m_vWorldPlanes[5]), XMLoadFloat4(&m_vWorldPlanes[4]), XMLoadFloat4(&m_vWorldPlanes[0]), XMLoadFloat4(&m_vWorldPlanes[1]), XMLoadFloat4(&m_vWorldPlanes[2]), XMLoadFloat4(&m_vWorldPlanes[3]));
+	//return BoundingBox.ContainedBy(XMLoadFloat4(&m_vWorldPlanes[5]), XMLoadFloat4(&m_vWorldPlanes[4]), XMLoadFloat4(&m_vWorldPlanes[0]), XMLoadFloat4(&m_vWorldPlanes[1]), XMLoadFloat4(&m_vWorldPlanes[2]), XMLoadFloat4(&m_vWorldPlanes[3]));
+
+
+	return BoundingBox.ContainedBy(
+		XMLoadFloat4(&m_vWorldPlanes[0]),
+		XMLoadFloat4(&m_vWorldPlanes[1]),
+		XMLoadFloat4(&m_vWorldPlanes[2]),
+		XMLoadFloat4(&m_vWorldPlanes[3]),
+		XMLoadFloat4(&m_vWorldPlanes[4]),
+		XMLoadFloat4(&m_vWorldPlanes[5]));
+
+
 }
 
 _bool CFrustum::isIn_LocalSpace(_fvector vLocalPos, _float fRange)

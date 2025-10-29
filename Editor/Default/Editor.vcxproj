@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClInclude Include="..\Public\AIController_Edit.h" />
     <ClInclude Include="..\public\AnimationTool.h" />
+    <ClInclude Include="..\Public\BigChest.h" />
     <ClInclude Include="..\Public\Camera_Compre.h" />
     <ClInclude Include="..\Public\Camera_Controller.h" />
     <ClInclude Include="..\Public\Camera_Effect.h" />
@@ -227,6 +228,7 @@
   <ItemGroup>
     <ClCompile Include="..\Private\AIController_Edit.cpp" />
     <ClCompile Include="..\private\AnimationTool.cpp" />
+    <ClCompile Include="..\Private\BigChest.cpp" />
     <ClCompile Include="..\Private\Camera_Compre.cpp" />
     <ClCompile Include="..\Private\Camera_Controller.cpp" />
     <ClCompile Include="..\Private\Camera_Effect.cpp" />

@@ -5,8 +5,10 @@ enum class YETUGA_STATE
 {
 	IDLE,
 	MOVE,
+	TURN,
 	ATTACK,
 	RIGHTHAND_5HIT,
+	LIE_DOWN,
 	RUSH,
 	HIT,
 	DEAD,

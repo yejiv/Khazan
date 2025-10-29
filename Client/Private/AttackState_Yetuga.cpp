@@ -4,6 +4,7 @@
 #include "GameInstance.h"
 #include "BlackBoard.h"
 #include "FSM_Yetuga.h"
+#include "Body_Yetuga.h"
 
 CAttackState_Yetuga::CAttackState_Yetuga()
 {
@@ -11,17 +12,20 @@ CAttackState_Yetuga::CAttackState_Yetuga()
 
 void CAttackState_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
-    CModel* pModel = static_cast<CModel*>(pOwner->Get_Component(TEXT("Com_Model")));
-    pModel->Set_Animation(0);
-    //pModel->Set_AnimationLoop(false);
+    CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
+
+    CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
+    pModel->Set_Animation(8);
+    pModel->Set_AnimationLoop(false);
 }
 
 void CAttackState_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
-    CModel* pModel = static_cast<CModel*>(pOwner->Get_Component(TEXT("Com_Model")));
+    CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
+    CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
+
     if (pModel->Play_Animation(fTimeDelta))
     {
-        //cout << "AttackFinished" << endl;
         m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>("Yetuga", "isAttackFinished", true);
     }
 

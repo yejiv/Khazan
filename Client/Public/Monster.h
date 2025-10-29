@@ -5,8 +5,6 @@
 
 NS_BEGIN(Engine)
 class CCollider;
-class CShader;
-class CModel;
 class CRigidBody;
 class CAI_Controller;
 NS_END
@@ -44,21 +42,12 @@ public:
 	virtual HRESULT				Render() override;
 	virtual HRESULT				Render_Shadow() { return S_OK; }
 
-	// ÄðÅ¸ÀÓ
-public:
-	void						AI_Set_CoolDown(const string& strName, _float fDelay);
-	_bool						AI_IsReadyCoolDown(const string& strName);
-	void						AI_Reset_CoolDown(const string& strName);
-	void						AI_Reset_AllCoolDown();
-
 protected:
-	CShader*					m_pShaderCom = { nullptr };
-	CModel*						m_pModelCom = { nullptr };
 	//CRigidBody*				m_pRigidBodyCom = { nullptr };
 
 protected:
-	class CAI_Controller*		m_pController = { nullptr };
-	class CGameObject*			m_pTarget = { nullptr };
+	class CAI_Controller*			m_pController = { nullptr };
+	class CGameObject*				m_pTarget = { nullptr };
 
 protected:
 	unordered_map<string, _float>	m_CoolDowns;
@@ -70,7 +59,6 @@ protected:
 //	HRESULT Ready_Components();
 
 protected:
-	HRESULT Bind_ShaderResources();
 
 public:
 	virtual CGameObject*		Clone(void* pArg) = 0;

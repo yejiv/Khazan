@@ -18,10 +18,9 @@ HRESULT CUI_Manager::Initialize()
 {
 	if (FAILED(Ready_Prototype()))
 		return E_FAIL;
-
+	CAtlas_RenderGroup::ATLASGROUP_DESC Desc = {};
 	for (_int i = 0; i < 10; ++i)
 	{
-		CAtlas_RenderGroup::ATLASGROUP_DESC Desc = {};
 		Desc.fDepth = (_float)i;
 		Desc.iShdaerPass = 0;
 		Desc.szName = "";
@@ -34,6 +33,17 @@ HRESULT CUI_Manager::Initialize()
 
 		m_pAtlasRenderGroup.push_back(pRenderGroup);
 	}
+
+	Desc.fDepth = 0;
+	Desc.iShdaerPass = 1;
+	Desc.szName = "";
+	Desc.iUIType = ENUM_CLASS(UITYPE::RENDER_GROUP);
+
+	m_pWorldRenderGroup = static_cast<CAtlas_RenderGroup*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_AtlasRenderGroup"), &Desc));
+
+	if (m_pWorldRenderGroup == nullptr)
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -256,6 +266,13 @@ HRESULT CUI_Manager::Add_UIRender(UI_RENDER_TYPE eRender, CUIObject* pUIObject)
 		pUIObject->Get_Data(UIInstanceDesc);
 		m_pAtlasRenderGroup[(_uint)pUIObject->Get_Depth()]->Add_UIInstance(&UIInstanceDesc);
 	}
+	else if (UI_RENDER_TYPE::WORLD == eRender)
+	{
+		VTXINSTANCE_UI UIInstanceDesc = {};
+		pUIObject->Get_Data(UIInstanceDesc);
+		m_pWorldRenderGroup->Add_UIInstance(&UIInstanceDesc);
+	}
+
 	else
 	{
 		m_pRenderUI.push_back(pUIObject);
@@ -274,6 +291,7 @@ void CUI_Manager::UIObjectToRenderer()
 
 	sort(m_pRenderUI.begin(), m_pRenderUI.end(), [](CUIObject* pSour, CUIObject* pDest) { return pSour->Get_Depth() > pDest->Get_Depth(); });
 
+	m_pWorldRenderGroup->Add_Renderer();
 	for (_int i = 0; i < (_int)m_pRenderUI.size(); ++i)
 	{
 		m_pRenderUI[i]->Add_Renderer();
@@ -314,7 +332,7 @@ HRESULT CUI_Manager::Ready_Prototype()
 
 	/* Prototype_Component_Shader_VtxPosTex_UI*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_UI_Atlas"),
-		CTexture_Atlas::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Atlas/Atlas_%d.json"), 3))))
+		CTexture_Atlas::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Atlas/Atlas_%d.json"), 4))))
 		return E_FAIL;
 
 	//GameObject_AtlasRenderGroup
@@ -346,6 +364,8 @@ void CUI_Manager::Free()
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
 	Safe_Release(m_pGameInstance);
+
+	Safe_Release(m_pWorldRenderGroup);
 
 	for (auto UIObject : m_pRenderUI)
 		Safe_Release(UIObject);

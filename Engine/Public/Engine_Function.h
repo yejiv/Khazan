@@ -252,6 +252,63 @@ namespace Engine
 		return result;
 	}
 
+
+
+
+	/* 정환 Jolt 유틸함수*/
+
+// 선형 보간 [0,1]
+	inline double LerpD(double a, double b, float t) {
+		return (1.0 - t) * a + t * b;
+	}
+
+	// RVec3(=double) 보간
+	inline JPH::RVec3 LerpRVec3(const JPH::RVec3& a, const JPH::RVec3& b, float t) {
+		return JPH::RVec3(
+			LerpD(a.GetX(), b.GetX(), t),
+			LerpD(a.GetY(), b.GetY(), t),
+			LerpD(a.GetZ(), b.GetZ(), t)
+		);
+	}
+
+	// 단위 쿼터니언 정규화 (std::sqrt 사용)
+	inline JPH::Quat NormalizeQuat(const JPH::Quat& q) {
+		const float len2 = q.LengthSq();
+		if (len2 <= 0.f) return JPH::Quat::sIdentity();
+		const float invLen = 1.0f / std::sqrt(len2);
+		return q * invLen;              // JPH::Quat * float 연산자 존재
+	}
+
+	// 로버스트 Slerp (anti-podal / 작은 각도 처리)
+	inline JPH::Quat SlerpQuat(JPH::Quat a, JPH::Quat b, float t) {
+		// (안전) 단위화
+		a = NormalizeQuat(a);
+		b = NormalizeQuat(b);
+
+		float dot = a.Dot(b);
+
+		// 반대쪽 반구 보정
+		if (dot < 0.0f) {
+			b = -b;
+			dot = -dot;
+		}
+
+		// 각도 매우 작으면 nlerp 근사
+		constexpr float kEps = 1e-5f;
+		if (dot > 1.0f - kEps) {
+			JPH::Quat q = NormalizeQuat(a * (1.0f - t) + b * t);
+			return q;
+		}
+
+		// 표준 slerp
+		dot = std::clamp(dot, -1.0f, 1.0f);
+		const float theta = std::acos(dot);
+		const float s = std::sin(theta);
+		const float w1 = std::sin((1.0f - t) * theta) / s;
+		const float w2 = std::sin(t * theta) / s;
+		return a * w1 + b * w2;
+	}
+
 }
 
 #endif // Engine_Function_h__

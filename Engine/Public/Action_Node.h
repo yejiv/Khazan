@@ -15,13 +15,13 @@ private:
 
 public:
 	virtual BTNODESTATE		Tick(class CBlackBoard* BB = nullptr) override;
-	virtual void			Terminate(BTNODESTATE eState);
+	virtual void			Terminate(BTNODESTATE eState, class CBlackBoard* BB = nullptr) override;
 	virtual void			Abort() override;
 
 private:
 	ACTION					m_Action;
 	TERMINATE				m_Terminate;
-	class CBlackBoard*		m_pBB = { nullptr };
+
 public:
 	static CAction_Node*	Create(ACTION Action, TERMINATE Terminate);
 	virtual void			Free() override;

@@ -37,7 +37,7 @@ public:
 	_bool Get_IsDead() { return m_isDead; }
 
 	void Set_IsActive(_bool isActive) { m_isActive = isActive; }
-	_bool Get_IsActive() { return m_isDead; }
+	_bool Get_IsActive() { return m_isActive; }
 
 	// Team ฐüทร
 	_uint				Get_Team() { return m_iTeam; }
@@ -47,6 +47,10 @@ public:
 
 	void Set_Layer(_uint iLayer) { m_iLayer = iLayer; }
 	_uint Get_Layer() { return m_iLayer; }
+
+	void Set_Name(string strTag) { m_strName = strTag; }
+    _bool Compare_Name(string strName) { return strName == m_strName; }
+	string Get_Name() { return m_strName; }
 
 public:
 	virtual void Reset() {};
@@ -66,6 +70,7 @@ protected:
 
 	_bool						m_isPool = { false };
 	_wstring					m_strTag;
+	string						m_strName;
 	_uint						m_iLayer = {};
 
 	_bool						m_isDead = { false };

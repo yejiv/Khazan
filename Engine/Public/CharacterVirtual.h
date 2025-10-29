@@ -26,6 +26,8 @@
 
 NS_BEGIN(Engine)
 
+constexpr float fFixedDt = 1.0f / 120.0f;
+
 class ENGINE_DLL CCharacterVirtual final : public CRigidBody
 {
 public:
@@ -92,6 +94,12 @@ public:
 		_float				fRadius;
 	}CV_CAPSULESHAPE_DESC;
 
+	typedef struct tagPhysPose {
+		JPH::RVec3 vPos;
+		JPH::Quat vRot;
+		JPH::Vec3 vLinvel;
+	}PHYSPOSE;
+
 private:
 	CCharacterVirtual(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CCharacterVirtual(const CCharacterVirtual& Prototype);
@@ -124,6 +132,11 @@ private:
 	CharacterVirtual::ExtendedUpdateSettings m_tEXUpdateSetting{};
 
 	_uint		m_iNumObjectLayer = {};
+
+	PHYSPOSE m_tPrevPose = {};
+	PHYSPOSE m_tCurrPose = {};
+	_float m_fAcc = {};
+	_float m_isFirstSync = { true };
 
 
 public:

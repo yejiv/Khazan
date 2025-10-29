@@ -6,11 +6,22 @@ CEditor_Animation::CEditor_Animation()
     : m_pGameInstance{ CGameInstance::GetInstance() }
 {
     Safe_AddRef(m_pGameInstance);
+    m_Channels.clear();
+    m_CurrentKeyFrameIndices.clear();
 }
 
 HRESULT CEditor_Animation::Initialize(const aiAnimation* pAIAnimation, const vector<class CEditor_Bone*>& Bones)
 {
     m_strName = string(pAIAnimation->mName.C_Str());
+    if (m_strName.find("|Action") != string::npos)
+    {
+        m_isSkip = true;
+        return S_OK;
+    }
+
+    size_t pos = m_strName.rfind('|');
+    if (pos != std::string::npos)
+        m_strName.erase(0, pos + 1);
     m_fDuration = static_cast<_float>(pAIAnimation->mDuration);
     m_fTickPerSecond = static_cast<_float>(pAIAnimation->mTicksPerSecond);
     m_iNumChannels = pAIAnimation->mNumChannels;
@@ -111,6 +122,7 @@ map<_uint, _matrix>& CEditor_Animation::Get_ChannelMatrices()
 {
     m_PreAnimationChannelMatrices.clear();
     for (_uint i = 0; i < m_iNumChannels; ++i) {
+        _matrix a = m_Channels[i]->Get_TransformationMatrix();
         m_PreAnimationChannelMatrices.emplace(m_Channels[i]->Get_BoneIndex(), m_Channels[i]->Get_TransformationMatrix());
     }
     return m_PreAnimationChannelMatrices;

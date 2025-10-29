@@ -39,7 +39,7 @@ HRESULT CMonster::Initialize_Clone(void* pArg)
     // 이름
     m_strName = pDesc->strName;
     // 타겟
-    m_pTarget = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::STAGE1), TEXT("Layer_Player"), 0);
+    m_pTarget = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::STAGE1), TEXT("Layer_Creature_Test"), 0);
     if (nullptr == m_pTarget)
         return E_FAIL;
     // 블랙보드에 설정
@@ -70,36 +70,6 @@ HRESULT CMonster::Render()
 {
   
     return S_OK;
-}
-
-void CMonster::AI_Set_CoolDown(const string& strName, _float fDelay)
-{
-    m_CoolDowns[strName] = m_fCoolTimeAcc + fDelay;
-}
-
-_bool CMonster::AI_IsReadyCoolDown(const string& strName)
-{
-    auto iter = m_CoolDowns.find(strName);
-    if (iter == m_CoolDowns.end())
-        return true;
-
-    if (m_fCoolTimeAcc >= iter->second)
-    {
-        m_CoolDowns.erase(iter);
-        return true;
-    }
-
-    return false;
-}
-
-void CMonster::AI_Reset_CoolDown(const string& strName)
-{
-    m_CoolDowns.erase(strName);
-}
-
-void CMonster::AI_Reset_AllCoolDown()
-{
-    m_CoolDowns.clear();
 }
 
 //HRESULT CMonster::Ready_Components()
@@ -139,53 +109,11 @@ void CMonster::AI_Reset_AllCoolDown()
 //    return S_OK;
 //}
 
-HRESULT CMonster::Bind_ShaderResources()
-{
-    if (FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix")))
-        return E_FAIL;
-
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
-        return E_FAIL;
-
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
-        return E_FAIL;
-
-
-    return S_OK;
-}
-
-//CMonster* CMonster::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-//{
-//    CMonster* pInstance = new CMonster(pDevice, pContext);
-//
-//    if (FAILED(pInstance->Initialize_Prototype()))
-//    {
-//        MSG_BOX(TEXT("Failed to Created : CMonster"));
-//        Safe_Release(pInstance);
-//    }
-//
-//    return pInstance;
-//}
-
-//CGameObject* CMonster::Clone(void* pArg)
-//{
-//    CMonster* pInstance = new CMonster(*this);
-//
-//    if (FAILED(pInstance->Initialize_Clone(pArg)))
-//    {
-//        MSG_BOX(TEXT("Failed to Created : CMonster"));
-//        Safe_Release(pInstance);
-//    }
-//
-//    return pInstance;
-//}
 
 void CMonster::Free()
 {
     __super::Free();
 
-    Safe_Release(m_pModelCom);
-    Safe_Release(m_pShaderCom);
     Safe_Release(m_pController);
     //Safe_Release(m_pRigidBodyCom);
 }

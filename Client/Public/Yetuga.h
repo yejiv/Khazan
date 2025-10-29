@@ -11,6 +11,9 @@ private:
 	virtual ~CYetuga() = default;
 
 public:
+	class CBody_Yetuga*			Get_Body() const { return m_pBody; }
+
+public:
 	virtual HRESULT				Initialize_Prototype() override;
 	virtual HRESULT				Initialize_Clone(void* pArg) override;
 	virtual void				Priority_Update(_float fTimeDelta) override;
@@ -21,6 +24,11 @@ public:
 
 private:
 	HRESULT						Ready_Components();
+	HRESULT						Ready_PartObjects();
+
+public:
+	class CBody_Yetuga*			m_pBody = { nullptr };
+
 
 public:
 	static CYetuga*				Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
