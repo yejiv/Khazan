@@ -330,9 +330,6 @@
     <ClInclude Include="..\Public\Level_Shader.h">
       <Filter>01.Levels\Shader</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\AnimationTool.h">
-      <Filter>02.GameObject\Animation\00.Tool</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Prop_Test.h">
       <Filter>02.GameObject\MapObject\Prop\99.Test</Filter>
     </ClInclude>
@@ -419,6 +416,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\BigChest.h">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\01.BigChest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AnimationTool.h">
+      <Filter>02.GameObject\Animation\98.Temp Camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

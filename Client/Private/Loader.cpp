@@ -12,7 +12,12 @@
 #include "Yetuga.h"
 #include "Dummy.h"
 
+#pragma region Khazan
 #include "JOH_Test1.h"
+#include "Khazan_Sample.h"
+#include "Body_Khazan_Sample.h"
+#include "Spear_Khazan_Sample.h"
+#pragma endregion
 
 #pragma region MAP OBJECT
 #include "MapObject_Header.h"
@@ -210,7 +215,17 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Test/Fiona/Fiona.dat"))))
 		return E_FAIL;
 
-	/////* Prototype_Component_Model_Khazan */
+	/* Prototype_Component_Model_Khazan_Sample*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_Khazan_Sample"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Khazan_Sample.dat"))))
+		return E_FAIL;
+
+	/* Prototype_Component_Model_Spear_Khazan_Sample*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_Spear_Khazan_Sample"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Spear/Spear.dat"))))
+		return E_FAIL;
+
+	///* Prototype_Component_Model_Khazan */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_Khazan"),
 	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Test/Khazan/Khazan.dat"))))
 	//	return E_FAIL;
@@ -321,6 +336,21 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 		CJOH_Test1::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	/* Prototype_GameObject_Khazan_Sample */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Khazan_Sample"),
+		CKhazan_Sample::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_GameObject_Body_Khazan_Sample */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Body_Khazan_Sample"),
+		CBody_Khazan_Sample::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_GameObject_Spear_Khazan_Sample */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Spear_Khazan_Sample"),
+		CSpear_Khazan_Sample::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -383,7 +413,7 @@ HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDa
 		_char szModelPath[MAX_PATH] = {};
 		CHECK_FALSE(ReadFile(hFile, &szModelPath, sizeof(_char) * iModelPathLen, &dwByte, nullptr), E_FAIL);
 
-		if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(eLevel), szPrototypeTag,
+ 		if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(eLevel), szPrototypeTag,
 			CModel::Create(m_pDevice, m_pContext, szModelPath))))
 		{
 			CloseHandle(hFile);

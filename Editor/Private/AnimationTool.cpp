@@ -165,7 +165,9 @@ void CAnimationTool::OpenModel_Widget()
         ofn.hwndOwner = NULL;
         ofn.lpstrFile = szFile;
         ofn.nMaxFile = sizeof(szFile);
-        ofn.lpstrFilter = "FBX Files\0*.fbx\0All Files\0*.*\0";
+        ofn.lpstrFilter = "FBX Files (*.fbx)\0*.fbx\0"
+            "GLTF Files (*.gltf)\0*.gltf\0"
+            "All Files (*.*)\0*.*\0";
         ofn.nFilterIndex = 1;
         ofn.lpstrFileTitle = NULL;
         ofn.nMaxFileTitle = 0;

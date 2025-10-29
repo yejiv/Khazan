@@ -259,6 +259,21 @@
     <Filter Include="02.GameObject\UI\Inven\Equip">
       <UniqueIdentifier>{35a3ca28-cb04-404e-a3ec-f837e14cae2d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan">
+      <UniqueIdentifier>{a05f121c-5397-47c6-a09e-f8137dd5be8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Sample">
+      <UniqueIdentifier>{282dcbca-ec05-4932-a0e5-97928c2b47e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Sample\Base">
+      <UniqueIdentifier>{f302f73b-d0e7-4c80-b351-ad7fc0f76ba9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Sample\Body">
+      <UniqueIdentifier>{43218a9c-3f2e-4f4f-9612-c9b3c2fce308}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Sample\Spear">
+      <UniqueIdentifier>{3beaf210-4418-4b5f-8dba-cf71731a9a86}</UniqueIdentifier>
+    </Filter>
     <Filter Include="92.AI\State\Yetuga\03.RightHand_5Hit">
       <UniqueIdentifier>{30ee55aa-a59a-49d5-9919-ac567853cd6a}</UniqueIdentifier>
     </Filter>
@@ -531,6 +546,15 @@
     <ClInclude Include="..\public\Equip_Slot.h">
       <Filter>02.GameObject\UI\Inven\Equip</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Khazan_Sample.h">
+      <Filter>02.GameObject\Creature\Khazan\Sample\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Body_Khazan_Sample.h">
+      <Filter>02.GameObject\Creature\Khazan\Sample\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Spear_Khazan_Sample.h">
+      <Filter>02.GameObject\Creature\Khazan\Sample\Spear</Filter>
+    </ClInclude>
     <ClInclude Include="..\Public\AS_RightHand_5Hit_Yetuga.h">
       <Filter>92.AI\State\Yetuga\03.RightHand_5Hit</Filter>
     </ClInclude>
@@ -779,6 +803,15 @@
     </ClCompile>
     <ClCompile Include="..\private\Equip_Slot.cpp">
       <Filter>02.GameObject\UI\Inven\Equip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_Sample.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Sample\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Body_Khazan_Sample.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Sample\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Spear_Khazan_Sample.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Sample\Spear</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_RightHand_5Hit_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\03.RightHand_5Hit</Filter>

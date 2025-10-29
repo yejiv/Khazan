@@ -34,14 +34,17 @@ HRESULT CCreature::Initialize_Clone(void* pArg)
 
 void CCreature::Priority_Update(_float fTimeDelta)
 {
+    __super::Priority_Update(fTimeDelta);
 }
 
 void CCreature::Update(_float fTimeDelta)
 {
+    __super::Update(fTimeDelta);
 }
 
 void CCreature::Late_Update(_float fTimeDelta)
 {
+    __super::Late_Update(fTimeDelta);
 }
 
 HRESULT CCreature::Render()
