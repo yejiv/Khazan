@@ -104,7 +104,7 @@ HRESULT CProp_Test::Ready_Collision(void* pArg)
     BodyDesc.fFriction = 0.8f;
     BodyDesc.fMass = 1.0f;
     BodyDesc.fRestitution = 0.0f;
-    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP);
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_STATIC);
     _float3 vPos{};
     XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
     _float4 vQuat{};

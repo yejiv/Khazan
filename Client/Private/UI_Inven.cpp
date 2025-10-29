@@ -79,14 +79,23 @@ void CUI_Inven::Priority_Update(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_K))
 	{
-		Add_Item(1010);
-		Add_Item(1011);
-		Add_Item(1012);
-		Add_Item(2030);
-		Add_Item(3020);
+		Add_Item(1001);
+		Add_Item(1002);
+		Add_Item(1003);
+		Add_Item(1004);
+		Add_Item(1101);
+		Add_Item(1102);
+		Add_Item(2001);
+		Add_Item(3001);
 		Add_Item(4001);
+		Add_Item(4011);
 		Add_Item(5001);
+		Add_Item(5002);
+		Add_Item(5003);
+		Add_Item(5004);
+		Add_Item(5005);
 		Add_Item(6001);
+		Add_Item(6011);
 	}
 	if (!m_IsUpdate)
 		return;
@@ -622,7 +631,7 @@ void CUI_Inven::EquipSlot_Setting(CEquip_Slot* pSlot, _int iIndex)
 		vPos = { -810.f , -318.f + 51.f };
 		pSlot->Update_PosX(iIndex - ENUM_CLASS(EQUIPSLOT_TYPE::QUICK_1), vPos, 95.f, 155.f * 3, this);
 	}
-	else if (iIndex >= ENUM_CLASS(EQUIPSLOT_TYPE::SOULE))
+	else if (iIndex >= ENUM_CLASS(EQUIPSLOT_TYPE::SOUL))
 		pSlot->Update_PosX(0, vPos, 113.f, 155.f * 4, this);
 }
 

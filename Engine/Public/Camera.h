@@ -86,7 +86,7 @@ protected:
 
 	_float				m_fYaw = 0.f;
 	_float				m_fPitch = 0.6f;
-	_float				m_fRadius = 5.f;
+	_float				m_fRadius = 4.f;
 
 	_float				m_fPitchMin = -1.2f;
 	_float				m_fPitchMax = 0.7f;

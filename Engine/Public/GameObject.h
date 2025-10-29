@@ -37,7 +37,7 @@ public:
 	_bool Get_IsDead() { return m_isDead; }
 
 	void Set_IsActive(_bool isActive) { m_isActive = isActive; }
-	_bool Get_IsActive() { return m_isDead; }
+	_bool Get_IsActive() { return m_isActive; }
 
 	// Team ฐüทร
 	_uint				Get_Team() { return m_iTeam; }

@@ -3,6 +3,8 @@
 #include "Editor_Defines.h"
 #include "Level.h"
 
+#include "MapObject.h"
+
 NS_BEGIN(Engine)
 class CTransform;
 NS_END
@@ -53,9 +55,7 @@ private:
 
 	void Test_Player_Move(_float fTimeDelta);
 	void Select_Fix_Object(_float fTimeDelta);
-	void Select_Fix_Interactive_Object(_float fTimeDelta);
-	void Select_Multi_Fix_Object(_float fTimeDelta);
-	void Select_Fix_Instance(_float fTimeDelta);
+	void Select_Multi_Fix_Object(_float fTimeDelta);			// 기능 아직 X
 	void Select_Add_LightPoint(_float fTimeDelta);
 	void Measure_Distance(_float fTimeDelta);
 
@@ -76,6 +76,8 @@ private:
 
 	vector<class CProp*> m_InteractiveList;		// 오브젝트 리스트 ( 수정 편하게 할려고 )
 	_int m_iInteractiveListIndex = {};			// 오브젝트 리스트 인덱스
+
+	CMapObject::ITEMBOX_DESC m_iFixItemBox = {};
 
 #pragma endregion
 
@@ -165,6 +167,8 @@ private:
 
 	_bool m_isFixObjectWindow = { false };					// Fix 할 오브젝트 윈도우
 
+	_bool m_isFixInteractObjectWindow = { false };			// Fix 할 상호 작용 오브젝트 윈도우
+
 	_bool m_isLightSettingWindow = { false };				// 조명 세팅 윈도우
 
 	_bool m_isSaveObjectWindow = { false };					// 맵 데이터 세이브 윈도우
@@ -219,6 +223,8 @@ private:
 	HRESULT Ready_Interactive_Prototype_List_Window();
 	// MapEditor 맵 오브젝트 Fix 윈도우
 	HRESULT Ready_Prop_Fix_Window();
+	// MapEditor 맵 오브젝트 Fix 윈도우
+	HRESULT Ready_Interactive_Prop_Fix_Window();
 	// MapEditor 맵 오브젝트 리스트 윈도우
 	HRESULT Ready_Prop_List_Window();
 	// MapEditor Interactive 맵 오브젝트 리스트 윈도우

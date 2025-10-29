@@ -26,11 +26,21 @@ public:
 	virtual HRESULT Render() override;
 	virtual HRESULT Render_Shadow() override;
 
+public:
+	void Set_EnableEmissive(_bool isEnable) { m_isEnableEmissive = isEnable; }
+	void Set_EnableBloom(_bool isEnable) { m_isEnableBloom = isEnable; }
+
+	void Set_EmissiveIntensity(_float fIntensity) { m_fEmissiveIntensity = fIntensity; }
+
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
 
 	_uint m_iCurrentAnimIndex = { 0 };
+
+	_float m_fEmissiveIntensity = {};
+	_bool m_isEnableEmissive = {};
+	_bool m_isEnableBloom = {};
 
 private:
 	HRESULT Ready_Components();

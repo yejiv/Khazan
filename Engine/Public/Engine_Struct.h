@@ -149,6 +149,13 @@ namespace Engine
 		float			fConstrast;
 	}SSAO_CONFIG;
 
+	typedef struct tagGaussianBlurConfig
+	{
+		int				iRadius;
+		float			fSigma;
+		float			fNormalization;
+	}GAUSSIAN_BLUR_CONFIG;
+
 	typedef struct tagPointInstanceParams
 	{
 		XMFLOAT4 vInitTranslation; 

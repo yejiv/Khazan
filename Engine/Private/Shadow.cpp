@@ -49,7 +49,7 @@ HRESULT CShadow::Initialize()
 void CShadow::Update()
 {
 	// 캐스케이드 코너 카메라 절두체 가져와서 비율로 계산
-	const _float4* pWorldPoints = m_pGameInstance->Get_WorldPoints();
+	const _float4* pWorldPoints = m_pGameInstance->Get_Frustum_WorldPoints();
 
 	for (_uint i = 0; i < m_Cascade.iNumCascades; ++i)
 	{
@@ -206,7 +206,7 @@ void CShadow::Clear_DSVs()
 	for (_uint i = 0; i < m_Cascade.iNumCascades; ++i)
 		m_pContext->ClearDepthStencilView(m_ShadowDSVs[i], D3D11_CLEAR_DEPTH, 1.f, 0);
 }
-
+#ifdef _DEBUG
 HRESULT CShadow::Ready_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY)
 {
 	_uint			iNumViewports = { 1 };
@@ -251,6 +251,7 @@ HRESULT CShadow::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
 
 	return S_OK;
 }
+#endif
 
 HRESULT CShadow::Ready_ShaderResources()
 {
@@ -283,6 +284,9 @@ HRESULT CShadow::Ready_ShaderResources()
 		if (FAILED(m_pDevice->CreateDepthStencilView(pDepthStencilTexture, &DSVDesc, &m_ShadowDSVs[i])))
 			return E_FAIL;
 	}
+
+	// Depth Stencil 1 초기화
+	Clear_DSVs();
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc{};
 	SRVDesc.Format = DXGI_FORMAT_R32_FLOAT;

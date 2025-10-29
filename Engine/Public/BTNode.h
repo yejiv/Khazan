@@ -10,13 +10,19 @@ protected:
 	virtual ~CBTNode() = default;
 
 public:
+	BTNODESTATE			Get_CurrentNodeState() const { return m_eCurrentNodeState; }
+
+public:
 	// 노드를 실행하고 실행 상태를 반환
 	virtual BTNODESTATE Tick(class CBlackBoard* BB) = 0;
 
 	// 노드 종료 처리 : 성공 / 실패 후 정리기능
-	virtual void Terminate(BTNODESTATE eState) {};
+	virtual void Terminate(BTNODESTATE eState, class CBlackBoard* BB = nullptr) {};
 	// 노드 강제 중단 : 외부 이벤트나 상위 노드 요청시 노드들을 강제 중단
 	virtual void Abort() { Terminate(BTNODESTATE::FAILURE); }
+
+protected:
+	BTNODESTATE				m_eCurrentNodeState = { BTNODESTATE::END };
 
 public:
 	virtual void Free() override;

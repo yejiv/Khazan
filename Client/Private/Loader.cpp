@@ -9,7 +9,6 @@
 #include "Camera_Compre.h"
 #include "Sky.h"
 #include "Terrain.h"
-#include "Yetuga.h"
 #include "Dummy.h"
 
 #pragma region Khazan
@@ -21,6 +20,11 @@
 
 #pragma region MAP OBJECT
 #include "MapObject_Header.h"
+#pragma endregion
+
+#pragma region Monster
+#include "Yetuga.h"
+#include "Body_Yetuga.h"
 #pragma endregion
 
 //static mutex g_GpuGate;
@@ -102,6 +106,8 @@ HRESULT CLoader::Loading()
 			}));
 		break;
 	case LEVEL::STAGE1:
+		m_pGameInstance->DeleteOctree();
+		m_pGameInstance->CreateOctree({ 260.f, 0.f, 215.f }, 400.f, 7);
 		hr = Loading_For_Stage1_Level();
 		break;
 	}
@@ -208,10 +214,10 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 
 	//lock_guard<mutex> gpu_lock(g_GpuGate);
 
-	///* Prototype_Component_Model_Fiona */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_Fiona"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Test/Fiona/Fiona.dat"))))
-		return E_FAIL;
+	/* Prototype_Component_Model_Fiona */
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_Fiona"),
+	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Test/Fiona/Fiona.dat"))))
+	//	return E_FAIL;
 
 	/* Prototype_Component_Model_Khazan_Sample*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_Khazan_Sample"),
@@ -223,7 +229,12 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Spear/Spear.dat"))))
 		return E_FAIL;
 
-	///* Prototype_Component_Model_Khazan */
+	// Prototype_Component_Model_Yetuga
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_Yetuga"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Yetuga/Yetuga.dat"))))
+		return E_FAIL;
+
+	/////* Prototype_Component_Model_Khazan */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_Khazan"),
 	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Test/Khazan/Khazan.dat"))))
 	//	return E_FAIL;
@@ -240,8 +251,12 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 
 #pragma region 모델 원형 : 상호 작용 맵 오브젝트
 	/* Prototype_Component_Model_BladeNexus */
-	// CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_BladeNexus"),
-	// 	CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/TombStone/WIP_COM_DamagedTS.dat")), E_FAIL);
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_BladeNexus"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_DamagedTS/WIP_COM_DamagedTS.dat")), E_FAIL);
+
+	/* Prototype_Component_Model_BigChest */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_BigChest"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_BigChest_Open_003/WIP_COM_BigChest_Open_003.dat")), E_FAIL);
 #pragma endregion
 
 	return S_OK;
@@ -282,25 +297,31 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 		CCamera_Compre::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	/* Prototype_GameObject_Player */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Player"),
-		CPlayer::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	///* Prototype_GameObject_Player */
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Player"),
+	//	CPlayer::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
 
-	/* Prototype_GameObject_Body_Player */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Body_Player"),
-		CBody_Player::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	///* Prototype_GameObject_Body_Player */
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Body_Player"),
+	//	CBody_Player::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
 
-	/* Prototype_GameObject_Monster */
+	/* Prototype_GameObject_Monster_Yetuga */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Monster_Yetuga"),
 		CYetuga::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	///* Prototype_GameObject_Dummy */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Dummy"),
-		CDummy::Create(m_pDevice, m_pContext))))
+	// Prototype_PartObject_Yetuga_Body
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_PartObject_Yetuga_Body"),
+		CBody_Yetuga::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+
+
+	/////* Prototype_GameObject_Dummy */
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Dummy"),
+	//	CDummy::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
 
 	///* Prototype_GameObject_Prop_Test */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_Test"),
@@ -317,8 +338,12 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 
 #pragma region 게임 오브젝트 원형 : 상호 작용 맵 오브젝트
 	/* Prototype_GameObject_Prop_BladeNexus */
-	// CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_BladeNexus"),
-	// 	CBladeNexus::Create(m_pDevice, m_pContext)), E_FAIL);
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_BladeNexus"),
+		CBladeNexus::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	/* Prototype_GameObject_Prop_BigChest */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_BigChest"),
+		CBigChest::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 	/* Prototype_GameObject_JOH_Test1 */

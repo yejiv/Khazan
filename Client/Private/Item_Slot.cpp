@@ -16,6 +16,11 @@ CItem_Slot::CItem_Slot(const CItem_Slot& Prototype)
 {
 }
 
+_int* CItem_Slot::Get_ptrItemCount()
+{
+    return &m_iItemCount;
+}
+
 _bool CItem_Slot::Add_Item(_int iItemIndex)
 {
     if (m_iItemIndex < 0)
@@ -312,9 +317,9 @@ void CItem_Slot::Update_State(_uint iGrade)
 
     switch (iGrade)
     {
-    case 1: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_02_Common.png", m_iTexPass);
+    case 1: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_03_UnCommon.png", m_iTexPass);
         return;
-    case 2: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_03_UnCommon.png", m_iTexPass);
+    case 2: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_02_Common.png", m_iTexPass);
         return;
     case 3: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_04_Rare.png", m_iTexPass);
         return;

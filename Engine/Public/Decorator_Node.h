@@ -10,7 +10,7 @@ protected:
 	virtual ~CDecorator_Node() = default;
 
 	virtual BTNODESTATE		Tick(class CBlackBoard* BB) = 0;
-	virtual void			Terminate(BTNODESTATE eState) {};
+	virtual void			Terminate(BTNODESTATE eState, class CBlackBoard* BB = nullptr) override;
 	virtual void			Abort() { Terminate(BTNODESTATE::FAILURE); };
 
 public:

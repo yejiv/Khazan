@@ -1,4 +1,5 @@
 #include "Creature.h"
+#include "PartObject.h"
 
 CCreature::CCreature(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CContainerObject{ pDevice, pContext }
@@ -9,6 +10,7 @@ CCreature::CCreature(const CCreature& Prototype)
     :CContainerObject{ Prototype }
 {
 }
+
 
 HRESULT CCreature::Initialize_Prototype()
 {
