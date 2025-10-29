@@ -283,6 +283,18 @@
     <Filter Include="02.GameObject\UI\WorldUI\Damage_UI">
       <UniqueIdentifier>{6da1545d-0879-4c90-9ac6-1aeabdd954dc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="94. ClientInstance\Debug">
+      <UniqueIdentifier>{40550248-8478-40d1-913b-0394bb2ab80f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Tool">
+      <UniqueIdentifier>{69d26ed9-2e45-4fc2-90bc-4a4da31625a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Tool\Camera">
+      <UniqueIdentifier>{71d26352-adad-4d1d-a566-39f2285daa3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Tool\Camera\Controller">
+      <UniqueIdentifier>{ddd3541e-7243-4f90-a57b-80b45d25d080}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -537,6 +549,12 @@
     <ClInclude Include="..\public\Damage_Text.h">
       <Filter>02.GameObject\UI\WorldUI\Damage_UI</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Debug_Manager.h">
+      <Filter>94. ClientInstance\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Controller.h">
+      <Filter>03.Tool\Camera\Controller</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -779,6 +797,12 @@
     </ClCompile>
     <ClCompile Include="..\private\Damage_Text.cpp">
       <Filter>02.GameObject\UI\WorldUI\Damage_UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Debug_Manager.cpp">
+      <Filter>94. ClientInstance\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Controller.cpp">
+      <Filter>03.Tool\Camera\Controller</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

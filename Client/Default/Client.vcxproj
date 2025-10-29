@@ -168,6 +168,7 @@
     <ClInclude Include="..\Public\BladeNexus.h" />
     <ClInclude Include="..\Public\Body_Player.h" />
     <ClInclude Include="..\Public\BT_Yetuga.h" />
+    <ClInclude Include="..\Public\Camera_Controller.h" />
     <ClInclude Include="..\public\Camera_Free.h" />
     <ClInclude Include="..\Public\Camera_Compre.h" />
     <ClInclude Include="..\Public\ClientInstance.h" />
@@ -257,6 +258,7 @@
     <ClCompile Include="..\Private\BladeNexus.cpp" />
     <ClCompile Include="..\Private\Body_Player.cpp" />
     <ClCompile Include="..\Private\BT_Yetuga.cpp" />
+    <ClCompile Include="..\Private\Camera_Controller.cpp" />
     <ClCompile Include="..\private\Camera_Free.cpp" />
     <ClCompile Include="..\Private\Camera_Compre.cpp" />
     <ClCompile Include="..\Private\ClientInstance.cpp" />

@@ -25,6 +25,7 @@ HRESULT CPool_Manager::Add_PoolObject(_uint iPrototypeLevelIndex, const _wstring
 		if (nullptr == pGameObject)
 			return E_FAIL;
 
+		pGameObject->Set_IsPool(true);
 		pGameObject->Set_Tag(strPoolTag);
 		pGameObject->Set_Layer(iLayerLevelIndex);
 
