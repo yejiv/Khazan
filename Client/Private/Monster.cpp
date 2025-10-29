@@ -39,7 +39,7 @@ HRESULT CMonster::Initialize_Clone(void* pArg)
     // 이름
     m_strName = pDesc->strName;
     // 타겟
-    m_pTarget = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::STAGE1), TEXT("Layer_Player"), 0);
+    m_pTarget = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::STAGE1), TEXT("Layer_Creature_Test"), 0);
     if (nullptr == m_pTarget)
         return E_FAIL;
     // 블랙보드에 설정
