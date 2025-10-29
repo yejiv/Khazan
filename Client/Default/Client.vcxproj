@@ -190,6 +190,8 @@
     <ClInclude Include="..\Public\FSM_Yetuga.h" />
     <ClInclude Include="..\Public\HeaderGroup_UI.h" />
     <ClInclude Include="..\Public\IdleState_Yetuga.h" />
+    <ClInclude Include="..\public\Interaction_Guide.h" />
+    <ClInclude Include="..\public\Interaction_Icon.h" />
     <ClInclude Include="..\public\Inven_Tap.h" />
     <ClInclude Include="..\public\Item_Slot.h" />
     <ClInclude Include="..\Public\JOH_Test1.h" />
@@ -226,6 +228,7 @@
     <ClInclude Include="..\public\UI_ComBatSpirit_Gauge.h" />
     <ClInclude Include="..\public\UI_CombatSpirit_Penal.h" />
     <ClInclude Include="..\public\UI_Gague_Tip.h" />
+    <ClInclude Include="..\public\UI_Guide_Gauge.h" />
     <ClInclude Include="..\public\UI_HUD.h" />
     <ClInclude Include="..\public\UI_Inven.h" />
     <ClInclude Include="..\public\UI_MainMenu.h" />
@@ -284,6 +287,8 @@
     <ClCompile Include="..\private\Equip_Slot.cpp" />
     <ClCompile Include="..\Private\FSM_Yetuga.cpp" />
     <ClCompile Include="..\Private\IdleState_Yetuga.cpp" />
+    <ClCompile Include="..\private\Interaction_Guide.cpp" />
+    <ClCompile Include="..\private\Interaction_Icon.cpp" />
     <ClCompile Include="..\private\Inven_Tap.cpp" />
     <ClCompile Include="..\private\Item_Slot.cpp" />
     <ClCompile Include="..\Private\JOH_Test1.cpp" />
@@ -319,6 +324,7 @@
     <ClCompile Include="..\private\UI_ComBatSpirit_Gauge.cpp" />
     <ClCompile Include="..\private\UI_CombatSpirit_Penal.cpp" />
     <ClCompile Include="..\private\UI_Gague_Tip.cpp" />
+    <ClCompile Include="..\private\UI_Guide_Gauge.cpp" />
     <ClCompile Include="..\private\UI_HUD.cpp" />
     <ClCompile Include="..\private\UI_Inven.cpp" />
     <ClCompile Include="..\private\UI_MainMenu.cpp" />

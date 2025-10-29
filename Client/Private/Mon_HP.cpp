@@ -18,8 +18,8 @@ void CMon_HP::Setting_HP(const _float4x4* pTagetMat, _float2 vOffset, const _int
 	m_pTagetMat = pTagetMat;
 	m_vLocalPos = { vOffset.x, -vOffset.y };
 
-	m_pHPGauge->Settin_Progress(pHpValue, pHpMaxValue);
-	m_pStaminaGauge->Settin_Progress(pStaminaCulValue, pStaminaMaxValue);
+	m_pHPGauge->Setting_Progress(pHpValue, pHpMaxValue);
+	m_pStaminaGauge->Setting_Progress(pStaminaCulValue, pStaminaMaxValue);
 }
 
 HRESULT CMon_HP::Initialize_Prototype(_uint iLevel)

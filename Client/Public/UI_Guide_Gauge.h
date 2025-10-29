@@ -8,23 +8,20 @@ class CVIBuffer_Rect;
 NS_END
 
 NS_BEGIN(Client)
-class CMon_Gauge : public CUI_ProgressBar
+class CUI_Guide_Gauge : public CUI_ProgressBar
 {
 public:
-	typedef struct tagMonGaugeDesc : public CUIObject::UIOBJECT_DESC
+	typedef struct tagGuideGaugeDesc : public CUIObject::UIOBJECT_DESC
 	{
-		_int iTexPass = {};
-		_int iShaderPass = {};
+		const _float* pMaxValue = { nullptr };
+		const _float* pCulValue = { nullptr };
 
-	}MONGAUGE_DESC;
+	}GUIDEGAUGE_DESC;
 private:
-	CMon_Gauge(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CMon_Gauge(const CMon_Gauge& Prototype);
-	virtual ~CMon_Gauge() = default;
+	CUI_Guide_Gauge(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CUI_Guide_Gauge(const CUI_Guide_Gauge& Prototype);
+	virtual ~CUI_Guide_Gauge() = default;
 
-public:
-	void							Setting_Progress(const _int* pCulValue, const _int* pMaxValue);
-	void							Reset_Progress();
 public:
 	virtual HRESULT					Initialize_Prototype();
 	virtual HRESULT					Initialize_Clone(void* pArg) override;
@@ -38,15 +35,15 @@ private:
 	CTexture*						m_pTextureCom = { nullptr };
 	CVIBuffer_Rect*					m_pVIBufferCom = { nullptr };
 
-	const _int*						m_pMaxValue = { nullptr };
-	const _int*						m_pCulValue = { nullptr };
+	const _float*					m_pMaxValue = { nullptr };
+	const _float*					m_pCulValue = { nullptr };
 
 
 private:
 	HRESULT							Ready_Component();
 
 public:
-	static CMon_Gauge*				Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CUI_Guide_Gauge*				Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject*			Clone(void* pArg) override;
 	virtual void					Free() override;
 };

@@ -36,10 +36,11 @@ HRESULT CMainApp::Initialize()
 	if (FAILED(Ready_Prototype_ForStatic()))
 		return E_FAIL;
 
-	if (Ready_Prototype_ForStatic_UI())
-		return E_FAIL;
 
 	CHECK_FAILED(Ready_ClientInstance(&m_pDevice, &m_pContext), E_FAIL);
+
+	if (Ready_Prototype_ForStatic_UI())
+		return E_FAIL;
 
 	if (FAILED(Start_Level(LEVEL::TITLE)))
 		return E_FAIL;
@@ -230,6 +231,10 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 		CMon_HP::Create(m_pDevice, m_pContext,ENUM_CLASS(LEVEL::STATIC)))))
 		return E_FAIL;
 
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Interaction_Guide"),
+		CInteraction_Guide::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC)))))
+		return E_FAIL;
+
 	CUIObject::UIOBJECT_DESC Desc = {};
 	Desc.vLocalSize = { 64.f, 64.f };
 	Desc.vLocalPos = { 0.f, 0.f };
@@ -249,6 +254,16 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 
 	if (FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Mon_HP"),
 		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Mon_HP"), &Desc, 20)))
+		return E_FAIL;
+
+	Desc.vLocalSize = { 48.f, 48.f };
+	Desc.vLocalPos = { 0.f, 0.f };
+	Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
+	Desc.szName = "KeyGuide";
+	Desc.fDepth = 6.f;
+
+	if (FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Interaction_Guide"),
+		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide"), &Desc, 15)))
 		return E_FAIL;
 
 	return S_OK;

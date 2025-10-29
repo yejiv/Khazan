@@ -319,6 +319,12 @@
     <Filter Include="02.GameObject\UI\WorldUI\Mon_HP\Gague">
       <UniqueIdentifier>{ca70c219-d32f-4a44-9b4f-9729323d8de6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Interaction_Guide\Progress">
+      <UniqueIdentifier>{f2fe28d3-014b-46ca-95a9-e959048bffa8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Interaction_Guide\Icon">
+      <UniqueIdentifier>{c743f82e-11bd-4d92-96d1-d2043454dd66}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -600,6 +606,15 @@
     <ClInclude Include="..\public\Mon_Gague.h">
       <Filter>02.GameObject\UI\WorldUI\Mon_HP\Gague</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Interaction_Guide.h">
+      <Filter>02.GameObject\UI\WorldUI\Interaction_Guide</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Guide_Gauge.h">
+      <Filter>02.GameObject\UI\WorldUI\Interaction_Guide\Progress</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Interaction_Icon.h">
+      <Filter>02.GameObject\UI\WorldUI\Interaction_Guide\Icon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -869,6 +884,15 @@
     </ClCompile>
     <ClCompile Include="..\private\Mon_Gague.cpp">
       <Filter>02.GameObject\UI\WorldUI\Mon_HP\Gague</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Interaction_Guide.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Interaction_Guide</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Guide_Gauge.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Interaction_Guide\Progress</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Interaction_Icon.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Interaction_Guide\Icon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

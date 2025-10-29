@@ -6,7 +6,7 @@ float g_fAlpha;
 float g_fValue;
 
 texture2D g_Texture;
-
+#define PI       3.14159265358979323846
 struct VS_IN
 {
     float3 vPosition : POSITION;
@@ -140,6 +140,25 @@ PS_OUT PS_TEX_PROGRESS_BOTTOMDOWN(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_MAINMENU_LIST(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+         
+    Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
+    
+    float fAlpha = 1.f;
+    
+    if (In.vTexcoord.x > g_fValue + 0.3)
+        discard;
+    else if (In.vTexcoord.x > g_fValue)
+    {
+        fAlpha = (In.vTexcoord.x - g_fValue) / 0.3f;
+        fAlpha = saturate(1.0f - fAlpha);
+    }
+    Out.vColor.a = Out.vColor.a * g_fAlpha * fAlpha;
+    return Out;
+}
+
 PS_OUT PS_TEX_PROGRESS_LEFTDOWN_GAUGE(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
@@ -184,22 +203,28 @@ PS_OUT PS_TEX_PROGRESS_LEFTDOWN_GAUGE_TIP(PS_IN In)
     return Out;
 }
 
-PS_OUT PS_MAINMENU_LIST(PS_IN In)
+PS_OUT PS_TEX_PROGRESS_CIRCLE_GAUGE(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
-         
+    
     Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
-    
-    float fAlpha = 1.f;
-    
-    if (In.vTexcoord.x > g_fValue + 0.3)
+    if(Out.vColor.a < 0.2f)
         discard;
-    else if (In.vTexcoord.x > g_fValue)
+    
+    float2 vCenter = { 0.5f, 0.5f };
+    float2 vPos = In.vTexcoord - vCenter;
+
+    float fAngle = atan2(vPos.y, vPos.x);
+
+    float fTemp = (fAngle + PI) / (2.0 * PI);
+    fTemp = frac(fTemp - 0.25);
+    Out.vColor.a = Out.vColor.r;
+    if (fTemp > g_fProgressValue.x)
     {
-        fAlpha = (In.vTexcoord.x - g_fValue) / 0.3f;
-        fAlpha = saturate(1.0f - fAlpha);
+        Out.vColor.rgb = Out.vColor.r * 0.5f;
+  
     }
-    Out.vColor.a = Out.vColor.a * g_fAlpha * fAlpha;
+  
     return Out;
 }
 
@@ -302,6 +327,17 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_TEX_PROGRESS_LEFTDOWN_GAUGE_TIP();
+    }
+
+    pass PS_TEX_PROGRESS_CIRCLE_GAUGE //9
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_TEX_PROGRESS_CIRCLE_GAUGE();
     }
 
 }

@@ -1,5 +1,5 @@
 #pragma once
-#include "UI_ProgressBar.h"
+#include "UI_Texture.h"
 
 NS_BEGIN(Engine)
 class CShader;
@@ -8,23 +8,15 @@ class CVIBuffer_Rect;
 NS_END
 
 NS_BEGIN(Client)
-class CMon_Gauge : public CUI_ProgressBar
+class CInteraction_Icon : public CUI_Texture
 {
-public:
-	typedef struct tagMonGaugeDesc : public CUIObject::UIOBJECT_DESC
-	{
-		_int iTexPass = {};
-		_int iShaderPass = {};
-
-	}MONGAUGE_DESC;
 private:
-	CMon_Gauge(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CMon_Gauge(const CMon_Gauge& Prototype);
-	virtual ~CMon_Gauge() = default;
+	CInteraction_Icon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CInteraction_Icon(const CInteraction_Icon& Prototype);
+	virtual ~CInteraction_Icon() = default;
 
 public:
-	void							Setting_Progress(const _int* pCulValue, const _int* pMaxValue);
-	void							Reset_Progress();
+	void							Anim_Start(_bool isStart);
 public:
 	virtual HRESULT					Initialize_Prototype();
 	virtual HRESULT					Initialize_Clone(void* pArg) override;
@@ -38,15 +30,14 @@ private:
 	CTexture*						m_pTextureCom = { nullptr };
 	CVIBuffer_Rect*					m_pVIBufferCom = { nullptr };
 
-	const _int*						m_pMaxValue = { nullptr };
-	const _int*						m_pCulValue = { nullptr };
-
+	_float2							m_vDefaultPos = {};
+	_bool							m_isAnim = { false };
 
 private:
 	HRESULT							Ready_Component();
 
 public:
-	static CMon_Gauge*				Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CInteraction_Icon*		Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject*			Clone(void* pArg) override;
 	virtual void					Free() override;
 };
