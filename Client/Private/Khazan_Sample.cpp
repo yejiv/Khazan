@@ -79,6 +79,8 @@ void CKhazan_Sample::Update(_float fTimeDelta)
     }
     __super::Update(fTimeDelta);
 
+    XMStoreFloat4x4(&m_pSpearFX_WorldMatrix, m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pTransformCom->Get_WorldMatrix());
+
     //m_pRigidBodyCom->Update(fTimeDelta, m_pTransformCom->Get_WorldMatrix());
 
     m_pCharVirCom->Sync_Update(m_pTransformCom);
@@ -214,20 +216,28 @@ HRESULT CKhazan_Sample::Ready_PartObjects()
     CBody_Khazan_Sample::BODY_KHAZAN_SAMPLE_DESC         BodyDesc{};
     BodyDesc.pState = &m_iState;
     BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
-	BodyDesc.pWeaponR = &m_pWeaponR_Matrix;
     BodyDesc.pParentTransform = m_pTransformCom;
-    BodyDesc.pSpearFX = &m_matSpearFx;
     if (FAILED(__super::Add_PartObject(TEXT("Part_Body"), ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Body_Khazan_Sample"), &BodyDesc)))
         return E_FAIL;
+
+    pBody = static_cast<CBody_Khazan_Sample*>(Find_PartObject(TEXT("Part_Body")));
+    m_pWeaponR_Matrix = pBody->Get_BoneMatrix("Weapon_R");
 
     CSpear_Khazan_Sample::SPEAR_KHAZAN_SAMPLE_DESC         SpearDesc{};
     SpearDesc.pState = &m_iState;
     SpearDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
-    SpearDesc.pWeaponR = &m_pWeaponR_Matrix;
-    SpearDesc.pSpearFX = &m_matSpearFx;
-    if (FAILED(__super::Add_PartObject(TEXT("Part_Weapon_Spear"), ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Spear_Khazan_Sample"), &BodyDesc)))
+    SpearDesc.pParentTransform = m_pTransformCom;
+    if (FAILED(__super::Add_PartObject(TEXT("Part_Weapon_Spear"), ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Spear_Khazan_Sample"), &SpearDesc)))
         return E_FAIL;
 
+    pSpear = static_cast<CSpear_Khazan_Sample*>(Find_PartObject(TEXT("Part_Weapon_Spear")));
+    m_pSpearFX_Matrix = pSpear->Get_BoneMatrix("FX");
+    m_SpearOffset_Matrix = pSpear->Get_OffestMatrix();
+
+    /* 넘겨주기  */
+    pSpear->Set_matWeaponR(m_pWeaponR_Matrix);
+    pBody->Set_matSpearFX(m_pSpearFX_Matrix);
+    pBody->Set_matSpearOffset(m_SpearOffset_Matrix);
 
 	return S_OK;
 

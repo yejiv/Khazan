@@ -2,10 +2,6 @@
 #include "Client_Defines.h"
 #include "Creature.h"
 
-
-
-
-
 NS_BEGIN(Engine)
 class CNavigation;
 class CCharacterVirtual;
@@ -56,28 +52,36 @@ public:
 	void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
 	void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
 
-private:
-	_uint				m_iState = { };
-	_uint				m_iDirState = { MOVE_DIR::RIGHT };
-
-	//class CRigidBody* m_pRigidBodyCom = { nullptr };
-	CCharacterVirtual*	m_pCharVirCom = { nullptr };
-
-	_bool				m_isEnableControl = { true };
-	_float4x4			m_pWeaponR_Matrix ;
-	_int				m_isMove = {0};
-
-	_float4x4			m_matSpearFx;
+	const _float4x4* Get_BoneSpearFXMatrixPtr() { return &m_pSpearFX_WorldMatrix; }
+	_matrix Get_BoneSpearFXMatrix() { return XMLoadFloat4x4(&m_pSpearFX_WorldMatrix); }
 
 
 private:
-	void Update_State(_float fTimeDelta);
-	void Key_Input(_float fTimeDelta);
+	class CBody_Khazan_Sample*	pBody = { nullptr };
+	class CSpear_Khazan_Sample* pSpear = { nullptr };
+
+	_uint						m_iState = { };
+	_uint						m_iDirState = { MOVE_DIR::RIGHT };
+
+	//class CRigidBody*			m_pRigidBodyCom = { nullptr };
+	CCharacterVirtual*			m_pCharVirCom = { nullptr };
+	_float4x4*					m_pWeaponR_Matrix = { nullptr };
+	_float4x4*					m_pSpearFX_Matrix = { nullptr };
+	_float4x4					m_pSpearFX_WorldMatrix = { nullptr };
+	_matrix						m_SpearOffset_Matrix = {};
+
+	_bool						m_isEnableControl = { true };
+	_int						m_isMove = {0};
+
 
 private:
-	HRESULT Ready_Components();
-	HRESULT Ready_PartObjects();
-	HRESULT Ready_Collision();
+	void			Update_State(_float fTimeDelta);
+	void			Key_Input(_float fTimeDelta);
+
+private:
+	HRESULT			Ready_Components();
+	HRESULT			Ready_PartObjects();
+	HRESULT			Ready_Collision();
 
 private:
 	inline void		Add_State(_uint i) { m_iState |= i; }
@@ -94,7 +98,7 @@ private:
 	inline void		Clear_DirState() { m_iDirState = 0; }
 
 #ifdef _DEBUG
-	void	Debug_Widget();
+	void			Debug_Widget();
 #endif // _DEBUG
 
 

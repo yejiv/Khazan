@@ -18,8 +18,7 @@ public:
 	typedef struct tagSpearKhazanSampleDesc : public CPartObject::PARTOBJECT_DESC
 	{
 		_uint* pState = { nullptr };
-		_float4x4* pWeaponR = { nullptr };
-		_float4x4* pSpearFX= { nullptr };
+		class CTransform* pParentTransform = { nullptr };
 
 	}SPEAR_KHAZAN_SAMPLE_DESC;
 
@@ -29,7 +28,9 @@ private:
 	virtual ~CSpear_Khazan_Sample() = default;
 
 public:
-	_float4x4* Get_BoneMatrix(const _char* pBoneName);
+	_float4x4*  Get_BoneMatrix(const _char* pBoneName);
+	const _matrix& Get_OffestMatrix() const { return m_matOffset; }
+	void		Set_matWeaponR(_float4x4* mat) { m_pWeaponR_Matrix = mat; }
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -44,13 +45,14 @@ public:
 	CModel* Get_Model() { return m_pModelCom; }
 
 private:
-	CShader* m_pShaderCom = { nullptr };
-	CModel* m_pModelCom = { nullptr };
+	CShader*					m_pShaderCom = { nullptr };
+	CModel*						m_pModelCom = { nullptr };
+	class CTransform*			m_pParentTransform = { nullptr };
 
-	_uint* m_pParentState = { nullptr };
-	_float4x4* m_pWeaponR_Matrix = { nullptr };
+	_uint*						m_pParentState = { nullptr };
+	_float4x4*					m_pWeaponR_Matrix = { nullptr };
 
-	_matrix m_matOffset;
+	_matrix						m_matOffset;
 
 private:
 	HRESULT Ready_Components();

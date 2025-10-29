@@ -30,7 +30,8 @@ HRESULT CSpear_Khazan_Sample::Initialize_Clone(void* pArg)
 {
     SPEAR_KHAZAN_SAMPLE_DESC* pDesc = static_cast<SPEAR_KHAZAN_SAMPLE_DESC*>(pArg);
     m_pParentState = pDesc->pState;
-    m_pWeaponR_Matrix = pDesc->pWeaponR;
+    m_pParentTransform = pDesc->pParentTransform;
+    Safe_AddRef(m_pParentTransform);
 
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
@@ -38,7 +39,7 @@ HRESULT CSpear_Khazan_Sample::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    pDesc->pSpearFX = m_pModelCom->Get_BoneMatrix("FX");
+
 
     m_matOffset = XMMatrixRotationX(XMConvertToRadians(-90.0f));
     int a = m_pModelCom->Get_BoneIndex("Weapon_R");
@@ -194,6 +195,7 @@ void CSpear_Khazan_Sample::Free()
 {
     __super::Free();
 
+    Safe_Release(m_pParentTransform);
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
     //Safe_Release(m_pColliderCom);

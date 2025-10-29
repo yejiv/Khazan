@@ -33,7 +33,7 @@ HRESULT CBody_Khazan_Sample::Initialize_Clone(void* pArg)
     m_iCurState = *m_pParentState;
     m_pParentTransform = pDesc->pParentTransform;
     Safe_AddRef(m_pParentTransform);
-    m_pSpearFX = pDesc->pSpearFX;
+
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
@@ -43,8 +43,6 @@ HRESULT CBody_Khazan_Sample::Initialize_Clone(void* pArg)
     if (FAILED(Ready_AnimationEvent()))
         return E_FAIL;
 
-    /* 무기 소켓 이동경로 바디클래스 -> 부모클래스 -> 무기클래스 */
-	pDesc->pWeaponR = m_pModelCom->Get_BoneMatrix("Weapon_R");
 
     m_pModelCom->Set_Animation(5);
     /* 부모 트랜스폼 연결 */
@@ -241,14 +239,21 @@ HRESULT CBody_Khazan_Sample::Bind_ShaderResources()
 
 void CBody_Khazan_Sample::Effect1_Enter()
 {
-    //cout << "[Effect1_Enter]" << endl;
-   // OutputDebugStringA("[Effect1_Enter] \n");
     char msg[256];
-    sprintf_s(msg, "%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n", 
-        m_pSpearFX->_11, m_pSpearFX->_12, m_pSpearFX->_13, m_pSpearFX->_14,
-        m_pSpearFX->_21, m_pSpearFX->_22, m_pSpearFX->_23, m_pSpearFX->_24,
-        m_pSpearFX->_31, m_pSpearFX->_32, m_pSpearFX->_33, m_pSpearFX->_34,
-        m_pSpearFX->_41, m_pSpearFX->_42, m_pSpearFX->_43, m_pSpearFX->_44);
+    sprintf_s(msg,"Local Bone SpearFX\n %.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n", 
+        m_pSpearFX_Matrix->_11, m_pSpearFX_Matrix->_12, m_pSpearFX_Matrix->_13, m_pSpearFX_Matrix->_14,
+        m_pSpearFX_Matrix->_21, m_pSpearFX_Matrix->_22, m_pSpearFX_Matrix->_23, m_pSpearFX_Matrix->_24,
+        m_pSpearFX_Matrix->_31, m_pSpearFX_Matrix->_32, m_pSpearFX_Matrix->_33, m_pSpearFX_Matrix->_34,
+        m_pSpearFX_Matrix->_41, m_pSpearFX_Matrix->_42, m_pSpearFX_Matrix->_43, m_pSpearFX_Matrix->_44);
+    OutputDebugStringA(msg);
+
+    _float4x4 matWorldSpearFX;
+    XMStoreFloat4x4(&matWorldSpearFX, m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pParentTransform->Get_WorldMatrix());
+    sprintf_s(msg, "Local Bone SpearFX\n %.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n",
+        matWorldSpearFX._11, matWorldSpearFX._12, matWorldSpearFX._13, matWorldSpearFX._14,
+        matWorldSpearFX._21, matWorldSpearFX._22, matWorldSpearFX._23, matWorldSpearFX._24,
+        matWorldSpearFX._31, matWorldSpearFX._32, matWorldSpearFX._33, matWorldSpearFX._34,
+        matWorldSpearFX._41, matWorldSpearFX._42, matWorldSpearFX._43, matWorldSpearFX._44);
     OutputDebugStringA(msg);
 }
 
@@ -256,52 +261,63 @@ void CBody_Khazan_Sample::Effect1_Exit()
 {
     //cout << "[Effect1_Exit]" << endl;
    // OutputDebugStringA("[Effect1_Exit] \n");
+
 }
 
 void CBody_Khazan_Sample::Effect1_Continue()
 {
     //cout << "[Effect1_Continue]" << endl;
     //OutputDebugStringA("[Effect1_Continue] \n");
+
 }
 
 void CBody_Khazan_Sample::Effect2()
 {
+    /* OutputDebugStringA 원래 출력이 느립니다! 정확한 시점의 디버그는 cout으로 하십시오! */
     OutputDebugStringA("[Effect2] \n");
+
 }
 
 void CBody_Khazan_Sample::Effect3()
 {
     OutputDebugStringA("[Effect3] \n");
+
 }
 
 void CBody_Khazan_Sample::Effect4()
 {
     OutputDebugStringA("[Effect4] \n");
+
 }
 
 void CBody_Khazan_Sample::Effect5()
 {
     OutputDebugStringA("[Effect5] \n");
+
 }
 
 void CBody_Khazan_Sample::Effect6()
 {
     OutputDebugStringA("[Effect6] \n");
+
 }
 
 void CBody_Khazan_Sample::Effect7_Enter()
 {
     OutputDebugStringA("[Effect7_Enter] \n");
+
 }
 
 void CBody_Khazan_Sample::Effect7_Exit()
 {
     OutputDebugStringA("[Effect7_Exit] \n");
+
 }
 
 void CBody_Khazan_Sample::Effect7_Continue()
 {
     OutputDebugStringA("[Effect7_Continue] \n");
+
 }
 
 
@@ -351,5 +367,5 @@ void CBody_Khazan_Sample::Free()
     Safe_Release(m_pParentTransform);
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
-    //Safe_Release(m_pColliderCom);
+
 }
