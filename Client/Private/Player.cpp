@@ -6,6 +6,8 @@
 #include "RigidBody.h"
 #include "CharacterVirtual.h"
 
+#include "Damage_Text.h"
+
 CPlayer::CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CContainerObject{ pDevice, pContext }
 {
@@ -149,6 +151,44 @@ void CPlayer::Update(_float fTimeDelta)
 
     m_pCharVirCom->Sync_Update(m_pTransformCom);
     m_pCharVirCom->Update(fTimeDelta, m_pTransformCom);
+
+    if (m_pGameInstance->Key_Down(DIK_R))
+    {
+        CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
+        if (pDamage != nullptr)
+        {
+            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::DEFAULT, m_pTransformCom->Get_State(STATE::POSITION), 100);
+            m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
+        }
+    }
+
+    if (m_pGameInstance->Key_Down(DIK_T))
+    {
+        CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
+        if (pDamage != nullptr)
+        {
+            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::BACK, m_pTransformCom->Get_State(STATE::POSITION), 100);
+            m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
+        }
+    }
+    if (m_pGameInstance->Key_Down(DIK_Y))
+    {
+        CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
+        if (pDamage != nullptr)
+        {
+            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::SPECIAL, m_pTransformCom->Get_State(STATE::POSITION), 100);
+            m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
+        }
+    }
+    if (m_pGameInstance->Key_Down(DIK_U))
+    {
+        CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
+        if (pDamage != nullptr)
+        {
+            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::PLAYER, m_pTransformCom->Get_State(STATE::POSITION), 100);
+            m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
+        }
+    }
     //m_pCharacterCom->Update(fTimeDelta, m_pBodyCom, m_pTransformCom);
 
 }

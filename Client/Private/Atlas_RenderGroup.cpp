@@ -18,13 +18,13 @@ HRESULT CAtlas_RenderGroup::Initialize_Prototype()
 
 HRESULT CAtlas_RenderGroup::Initialize_Clone(void* pArg)
 {
-	CUIObject::UIOBJECT_DESC Desc = {};
+	ATLASGROUP_DESC* pDesc = static_cast<ATLASGROUP_DESC*>(pArg);
 
 	__super::Initialize_Clone(pArg);
 
 	//ATLASGROUP_DESC* pDesc = static_cast<ATLASGROUP_DESC*>(pArg);
 	//m_fDepth = pDesc->fDepth;
-	//m_iShaderPass = pDesc->iShdaerPass;
+	m_iShaderPass = pDesc->iShdaerPass;
 
 	if (FAILED(Ready_Component()))
 		return E_FAIL;
@@ -47,16 +47,29 @@ HRESULT CAtlas_RenderGroup::Render()
 {
 	m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix");
 
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
-		return E_FAIL;
+	if (m_iShaderPass == 0)
+	{
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+			return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
-		return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+			return E_FAIL;
+	}
+	else
+	{
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
+			return E_FAIL;
 
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
+			return E_FAIL;
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
+			return E_FAIL;
+	}
 	if (FAILED(m_pTextureCom->Bind_Shader_AllTexture(m_pShaderCom, "g_DiffuseTextures")))
 		return E_FAIL;
 
-	m_pShaderCom->Begin(0);
+	m_pShaderCom->Begin(m_iShaderPass);
 
 	m_pVIBufferCom->Bind_Resources();
 	m_pVIBufferCom->Render();
