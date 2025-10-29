@@ -261,6 +261,8 @@ HRESULT CMainApp::Ready_ObjectLayer()
 {
 	// Static 지형
 	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MAP_STATIC), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
+
+	// 상호작용 오브젝트에 달린 트리거
 	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
 
 	// 동적 물체
@@ -292,6 +294,7 @@ HRESULT CMainApp::Ready_ObjectLayer()
 #ifdef _DEBUG
 	m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER));
 	m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER));
+	m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT));			// 상호 작용 트리거 렌더
 #endif
 
 	return S_OK;
