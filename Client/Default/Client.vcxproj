@@ -182,6 +182,7 @@
     <ClInclude Include="..\public\Cursor_FX.h" />
     <ClInclude Include="..\public\Damage_Text.h" />
     <ClInclude Include="..\public\DB_Manager.h" />
+    <ClInclude Include="..\Public\Debug_Manager.h" />
     <ClInclude Include="..\Public\Dummy.h" />
     <ClInclude Include="..\public\Equip_Panel.h" />
     <ClInclude Include="..\public\Equip_Slot.h" />
@@ -275,6 +276,7 @@
     <ClCompile Include="..\private\Cursor_FX.cpp" />
     <ClCompile Include="..\private\Damage_Text.cpp" />
     <ClCompile Include="..\private\DB_Manager.cpp" />
+    <ClCompile Include="..\Private\Debug_Manager.cpp" />
     <ClCompile Include="..\Private\Dummy.cpp" />
     <ClCompile Include="..\private\Equip_Panel.cpp" />
     <ClCompile Include="..\private\Equip_Slot.cpp" />
