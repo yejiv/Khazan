@@ -86,6 +86,13 @@ HRESULT CMon_HP::Render()
 	return S_OK;
 }
 
+void CMon_HP::Reset()
+{
+	m_pTagetMat = nullptr;
+	m_pHPGauge->Reset_Progress();
+	m_pStaminaGauge->Reset_Progress();
+}
+
 HRESULT CMon_HP::Ready_Prototype()
 {
 	if (FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Mon_Gague"),

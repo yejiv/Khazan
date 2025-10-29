@@ -46,12 +46,6 @@ private:
 	EventInteractType m_EventInteract = {};
 #pragma endregion
 
-	_int				m_iHp = {};
-	_int				m_iMaxHp = {};
-	_int				m_iStamina = {};
-	_int				m_iMaxStamina = {};
-
-
 private:
 
 

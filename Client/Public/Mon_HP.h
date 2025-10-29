@@ -18,7 +18,7 @@ private:
 
 public:
 	void					Setting_HP(const _float4x4* pTagetMat, _float2 vOffset, const _int* pHpValue, const _int* pHpMaxValue, const _int* pStaminaCulValue, const _int* pStaminaMaxValue);
-
+			
 public:
 	virtual HRESULT			Initialize_Prototype(_uint iLevel);
 	virtual HRESULT			Initialize_Clone(void* pArg) override;
@@ -27,6 +27,7 @@ public:
 	virtual void			Late_Update(_float fTimeDelta) override;
 	virtual HRESULT			Render() override;
 
+	virtual void			Reset() override;
 private:
 	CShader*				m_pShaderCom = { nullptr };
 	CTexture*				m_pTextureCom = { nullptr };

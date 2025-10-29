@@ -202,22 +202,20 @@ void CDamage_Text::Offset_Pos(_int iIndex, _int iMaxIndex)
 			m_vWorldPos.x = m_vCenterPos.x + iIndex * (m_vLocalSize.x * 0.6f + 1.f) - (iMaxIndex - 1) * (m_vLocalSize.x * 0.6f + 1.f) / 2;
 			m_vWorldPos.y = m_vCenterPos.y;// +(m_fAccTime - 1.3f) * 30.f;
 		}
-		else if (m_fAccTime > 1.3f)
+		else if (m_fAccTime > 1.2f)
 		{
 			m_vWorldPos.x = m_vCenterPos.x + iIndex * (m_vLocalSize.x * 0.6f + 1.f) - (iMaxIndex - 1) * (m_vLocalSize.x * 0.6f + 1.f) / 2;
 			m_vWorldPos.y = m_vCenterPos.y;
 			m_fAlpha = 1.f;
 		}
-		else if (m_fAccTime >= 0.7f)
+		else if (m_fAccTime >= 1.f)
 		{
 			//_float t = Clamp((1.f - m_fAccTime) / 0.5f);
 			//_float fScale = (exp(-4.f * t)) / (1.f - exp(-4.f));
 			
-			_float fScale = (m_fAccTime - 1.f) / 0.5f;
-			if (fScale < 0.5f)
-				fScale = 0.5f;
-			if (fScale >= 1.f)
-				fScale = 1.f;
+			_float fScale = 1.f - (0.8 - m_fAccTime) / 0.3f;
+			if (fScale < 0.7f)
+				fScale = 0.7f;
 			m_vLocalSize.x = 64.f * fScale;
 			m_vLocalSize.y = 64.f * fScale;
 			Update_Scaling(1.f);
@@ -230,7 +228,7 @@ void CDamage_Text::Offset_Pos(_int iIndex, _int iMaxIndex)
 		{
 			m_vWorldPos.x = m_vCenterPos.x + iIndex * (m_vLocalSize.x * 0.6f + 1.f) - (iMaxIndex - 1) * (m_vLocalSize.x * 0.6f + 1.f) / 2;
 			m_vWorldPos.y = m_vCenterPos.y;
-			m_fAlpha = m_fAccTime * 0.5f;
+			m_fAlpha = 0.5f * (1.f - ((0.6f - m_fAccTime) / 0.6f));
 		}
 		m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(m_vWorldPos.x - g_iWinSizeX * 0.5f, -m_vWorldPos.y + g_iWinSizeY * 0.5f, 0.0f, 1.0f));
 	}

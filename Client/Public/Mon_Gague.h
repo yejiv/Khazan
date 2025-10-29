@@ -24,7 +24,7 @@ private:
 
 public:
 	void							Settin_Progress(const _int* pCulValue, const _int* pMaxValue);
-
+	void							Reset_Progress();
 public:
 	virtual HRESULT					Initialize_Prototype();
 	virtual HRESULT					Initialize_Clone(void* pArg) override;

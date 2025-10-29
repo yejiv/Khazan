@@ -18,6 +18,12 @@ void CMon_Gauge::Settin_Progress(const _int* pCulValue, const _int* pMaxValue)
 	m_pCulValue = pCulValue;
 }
 
+void CMon_Gauge::Reset_Progress()
+{
+	m_pMaxValue = nullptr;
+	m_pCulValue = nullptr;
+}
+
 HRESULT CMon_Gauge::Initialize_Prototype()
 {
 	return S_OK;
