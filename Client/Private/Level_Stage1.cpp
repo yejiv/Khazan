@@ -423,8 +423,13 @@ HRESULT CLevel_Stage1::Ready_Layer_MapObject_Interactive(const _wstring& strLaye
 			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_BladeNexus"), &ObjectDesc), E_FAIL);
 			break;
 		case INTERACTIVE_TYPE::CHEST:
+		{
+			BOX_ITEMS ItemBoxDesc = {};
+			CHECK_FALSE(ReadFile(hFile, &ItemBoxDesc, sizeof(BOX_ITEMS), &dwByte, nullptr), E_FAIL);
+			ObjectDesc.pOtherDesc = &ItemBoxDesc;
 			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_BigChest"), &ObjectDesc), E_FAIL);
 			break;
+		}
 		default:
 			MSG_BOX(TEXT("잉 있으면 안되는디"));
 			break;

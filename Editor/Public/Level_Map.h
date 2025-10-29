@@ -77,7 +77,8 @@ private:
 	vector<class CProp*> m_InteractiveList;		// 오브젝트 리스트 ( 수정 편하게 할려고 )
 	_int m_iInteractiveListIndex = {};			// 오브젝트 리스트 인덱스
 
-	CMapObject::ITEMBOX_DESC m_iFixItemBox = {};
+	CMapObject::ITEMBOX_DESC m_ItemBox = {};
+	CMapObject::ITEMBOX_DESC m_FixItemBox = {};
 
 #pragma endregion
 

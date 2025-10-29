@@ -27,6 +27,14 @@ HRESULT CBigChest::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Collision(pArg), E_FAIL);
 
+    PROP_INTERACTIVE_DESC* pDesc = static_cast<PROP_INTERACTIVE_DESC*>(pArg);
+    CHECK_NULLPTR(pDesc, E_FAIL);
+
+    BOX_ITEMS* pItemBox = static_cast<BOX_ITEMS*>(pDesc->pOtherDesc);
+    CHECK_NULLPTR(pItemBox, E_FAIL);
+
+    m_Items = *pItemBox;
+
     m_eAnimState = ANIM_STATE::CLOSE;
     m_pModelCom->Set_Animation(ANIM_STATE::CLOSE);
     m_pModelCom->Set_AnimationLoop(true);
@@ -51,10 +59,6 @@ void CBigChest::Priority_Update(_float fTimeDelta)
 
 void CBigChest::Update(_float fTimeDelta)
 {
-    // CLOSE > OPENING > OPEN > CLOSING >> CLOSE                    // 상자 상호 작용 ( 서순 )
-
-    // 7 > 9 > 8 > 9 > 8 > 9 >>> ...
-
     Animation_Update(fTimeDelta);
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
@@ -137,7 +141,7 @@ HRESULT CBigChest::Ready_Collision(void* pArg)
 
 #pragma region 트리거 영역
     CBody::BODY_BOXSHAPE_DESC TriggerDesc{};
-    TriggerDesc.vExtent = _float3(0.5f, 0.5f, 0.5f);
+    TriggerDesc.vExtent = _float3(0.75f, 0.5f, 0.75f);
     TriggerDesc.bIsTrigger = true;
     TriggerDesc.bStartActive = true;
     TriggerDesc.eMotion = EMotionType::Static;
@@ -180,6 +184,7 @@ void CBigChest::Animation_Update(_float fTimeDelta)
             // 닫긴 상자 상호 작용 시
             m_eAnimState = ANIM_STATE::OPENING;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+            m_pModelCom->Set_AnimationLoop(false);
 
             EventInteractType InteractType = {};
 
@@ -192,6 +197,7 @@ void CBigChest::Animation_Update(_float fTimeDelta)
 
             XMStoreFloat3(&ChestEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
             XMStoreFloat3(&ChestEvent.vPlayerPosition, OffSetMatrix.r[3]);
+            ChestEvent.Items = m_Items;
             ChestEvent.isChestOpened = false;
 
             InteractType.ChestEvent = ChestEvent;
@@ -208,15 +214,13 @@ void CBigChest::Animation_Update(_float fTimeDelta)
         {
             m_eAnimState = ANIM_STATE::CLOSING;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+            m_pModelCom->Set_AnimationLoop(false);
         }
     }
 }
 
 void CBigChest::Animation_Change(_float fTimeDelta)
 {
-    if (false == m_isCollision)
-        return;
-
     if (ANIM_STATE::OPENING == m_eAnimState)
     {
         // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
@@ -235,6 +239,7 @@ void CBigChest::Animation_Change(_float fTimeDelta)
 
         XMStoreFloat3(&ChestEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
         XMStoreFloat3(&ChestEvent.vPlayerPosition, OffSetMatrix.r[3]);
+        ChestEvent.Items = m_Items;
         ChestEvent.isChestOpened = true;
 
         InteractType.ChestEvent = ChestEvent;
@@ -254,20 +259,36 @@ void CBigChest::Animation_Change(_float fTimeDelta)
 void CBigChest::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
     m_isCollision = true;
-    
-    OutputDebugStringA("상자 트리거에 들어옴 !!!!!\n");
+
+    EventInteractType InteractType = {};
+
+    InteractType.isInteract = true;
+    InteractType.eInteractType = INTERACTIVE_TYPE::CHEST;
+
+    m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 }
 
 void CBigChest::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
-    OutputDebugStringA("상자 트리거 STAY !!!!!\n");
+    m_isCollision = true;
+
+    EventInteractType InteractType = {};
+
+    InteractType.isInteract = true;
+    InteractType.eInteractType = INTERACTIVE_TYPE::CHEST;
+
+    m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 }
 
 void CBigChest::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 {
     m_isCollision = false;
 
-    OutputDebugStringA("상자 트리거에서 나나나감감감 !!!!!\n");
+    EventInteractType InteractType = {};
+
+    InteractType.isInteract = false;
+
+    m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 }
 
 CBigChest* CBigChest::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

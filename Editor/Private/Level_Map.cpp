@@ -699,10 +699,6 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 
 				ImGui::EndListBox();
 			}
-
-			ImGui::Text("SCALE SIZE : "); SAMELINE;
-			ImGui::InputFloat("##input_scale_add", &m_fAddScale, 0.001f, 0.005f); SAMELINE;
-			if (ImGui::Button("RESET")) m_fAddScale = 0.005f;
 			SEPARATOR;
 
 			ImGui::Checkbox("CAMERA POS ADD", &m_isCameraPosAdd); SEPARATOR;
@@ -746,10 +742,9 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 
 				_matrix WorldMatrix = XMMatrixIdentity();
 
-				// 스케일 기존 0.005f, 위치는 마우스 피킹 위치 혹은 카메라 위치
-				WorldMatrix.r[0] *= m_fAddScale;
-				WorldMatrix.r[1] *= m_fAddScale;
-				WorldMatrix.r[2] *= m_fAddScale;
+				WorldMatrix.r[0] *= 1.f;
+				WorldMatrix.r[1] *= 1.f;
+				WorldMatrix.r[2] *= 1.f;
 				WorldMatrix.r[3] = XMVectorSetW(XMLoadFloat3(&vPos), 1.f);
 
 				if ("BladeNexus" == m_Prototypes_Inter[m_iIndex_PrtInter])
@@ -997,14 +992,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
 				WideCharToMultiByte(CP_ACP, 0, m_pFixPropObj->Get_ModelName(), -1, szModelName, MAX_PATH, nullptr, nullptr);
 
 				ImGui::Text("MODEL NAME : "); SAMELINE;
-				ImGui::InputText("##copy_batch_modelname", szModelName, IM_ARRAYSIZE(szModelName)); SAMELINE;
-
-				if (ImGui::Button("COPY"))
-				{
-					memcpy(&m_szSearchPrototypeName, &szModelName, MAX_PATH);
-					isReset = true;
-
-				} SEPARATOR;
+				ImGui::InputText("##copy_batch_modelname", szModelName, IM_ARRAYSIZE(szModelName)); SEPARATOR;
 
 				_float3 vFixObjPos = {};
 				XMStoreFloat3(&vFixObjPos, m_pFixTransformCom->Get_State(STATE::POSITION));
@@ -1027,42 +1015,27 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
 
 #pragma region 속성 설정
 
-			if (m_pGameInstance->Key_Pressing(DIK_F4, 0.000001f) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+			if (INTERACTIVE_TYPE::CHEST == m_pFixPropObj->Get_InteractiveType())
 			{
-				_float3 vPickPos = {};
+				ImGui::Text("== CHEST INFOMATION ==");
+				ImGui::Text("BEFORE");
 
-				if (m_pGameInstance->isPicked(&vPickPos))
-				{
-					m_pFixTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPickPos), 1.f));
-				}
+				ImGui::Text("FIRST ITEM : %d", m_ItemBox.iItem_0);
+				ImGui::Text("SECOND ITEM : %d", m_ItemBox.iItem_1);
+				ImGui::Text("THIRD ITEM : %d", m_ItemBox.iItem_2);
+
+				ImGui::Text("FIX ITEM");
+				ImGui::Text("FIX FIRST ITEM : "); SAMELINE;
+				ImGui::InputInt("##item_list_fix_0", &m_FixItemBox.iItem_0);
+				ImGui::Text("FIX SECOND ITEM : "); SAMELINE;
+				ImGui::InputInt("##item_list_fix_1", &m_FixItemBox.iItem_1);
+				ImGui::Text("FIX THIRD ITEM : "); SAMELINE;
+				ImGui::InputInt("##item_list_fix_2", &m_FixItemBox.iItem_2);
+
+				m_pFixPropObj->Set_ItemBox(m_FixItemBox);
+
+				SEPARATOR;
 			}
-
-			ImGui::Text("SETTING");
-
-			MAPOBJECT_PROPERTIES PropProperties = m_pFixPropObj->Get_Properties();
-
-			ImGui::Checkbox("SNOW", &PropProperties.isSnow);
-			SAMELINE;
-
-			ImGui::Checkbox("COLLIDER", &PropProperties.isCollider);
-			SAMELINE;
-
-			ImGui::Checkbox("ICE", &PropProperties.isIce);
-			SAMELINE;
-
-			ImGui::Checkbox("INSTANCE", &PropProperties.isInstance);
-			SEPARATOR;
-
-			ImGui::Checkbox("SHADOW", &PropProperties.isShadow);
-			SAMELINE;
-
-			ImGui::Checkbox("BACKGROUND", &PropProperties.isBackGround);
-			SEPARATOR;
-
-			m_pFixPropObj->Set_Properties(PropProperties);
-
-			SEPARATOR;
-			SEPARATOR;
 
 #pragma endregion
 
@@ -1079,6 +1052,8 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
 				m_pFixPropObj = nullptr;
 				m_pFixTransformCom = nullptr;
 				m_isFixInteractObjectWindow = false;
+				ZeroMemory(&m_FixItemBox, sizeof(CMapObject::ITEMBOX_DESC));
+
 				m_eFixType = FIX_OBJECT::END;
 
 			} SAMELINE;
@@ -1100,6 +1075,8 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
 				m_pFixPropObj = nullptr;
 				m_pFixTransformCom = nullptr;
 				m_isFixInteractObjectWindow = false;
+				ZeroMemory(&m_FixItemBox, sizeof(CMapObject::ITEMBOX_DESC));
+
 				m_eFixType = FIX_OBJECT::END;
 			}
 			SEPARATOR;
@@ -1130,6 +1107,8 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
 				m_pFixPropObj = nullptr;
 				m_pFixTransformCom = nullptr;
 				m_isFixInteractObjectWindow = false;
+				ZeroMemory(&m_FixItemBox, sizeof(CMapObject::ITEMBOX_DESC));
+
 				m_eFixType = FIX_OBJECT::END;
 			}
 
@@ -1466,7 +1445,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 
 						if (INTERACTIVE_TYPE::CHEST == m_pFixPropObj->Get_InteractiveType())
 						{
-							m_iFixItemBox = m_pFixPropObj->Get_ItemBox();
+							m_FixItemBox = m_ItemBox = m_pFixPropObj->Get_ItemBox();
 						}
 
 						m_isFixInteractObjectWindow = true;
@@ -2799,6 +2778,15 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 			INTERACTIVE_TYPE eType = pProp->Get_InteractiveType();
 			CHECK_EQUAL(INTERACTIVE_TYPE::END, eType, false);
 			WriteFile(hObjectFile, &eType, sizeof(INTERACTIVE_TYPE), &dwByte, nullptr);
+
+			// ( 추가적으로 체스트 인 경우 )
+			if (INTERACTIVE_TYPE::CHEST == eType)
+			{
+				// 6. 아이템 3개 ID 넘기기 ( 구조체 Editor, Client 동일하게 )
+				CMapObject::ITEMBOX_DESC ItemBoxDesc = {};
+				ItemBoxDesc = pProp->Get_ItemBox();
+				WriteFile(hObjectFile, &ItemBoxDesc, sizeof(CMapObject::ITEMBOX_DESC), &dwByte, nullptr);
+			}
 		}
 	}
 
@@ -3100,6 +3088,9 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 				BigChestDesc.WorldMatrix = WorldMatrix;									// 행렬
 
 				BigChestDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+				// 상자 타입인 경우 아이템 박스 구조체도 슥슥 쇽쇽
+				CHECK_FALSE(ReadFile(hObjectFile, &BigChestDesc.ItemBox, sizeof(CMapObject::ITEMBOX_DESC), &dwByte, nullptr), false);
 
 				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
 					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BigChest"), &BigChestDesc), false);

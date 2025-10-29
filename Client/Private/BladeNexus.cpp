@@ -133,7 +133,7 @@ HRESULT CBladeNexus::Ready_Collision(void* pArg)
 
 #pragma region 트리거 영역
     CBody::BODY_BOXSHAPE_DESC TriggerDesc{};
-    TriggerDesc.vExtent = _float3(1.3f, 1.f, 1.3f);
+    TriggerDesc.vExtent = _float3(1.6f, 1.f, 1.6f);
     TriggerDesc.bIsTrigger = true;
     TriggerDesc.bStartActive = true;
     TriggerDesc.eMotion = EMotionType::Static;
@@ -174,6 +174,7 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
             // 처음 상호 작용 시
             m_eAnimState = ANIM_STATE::BEFORE_START;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+            m_pModelCom->Set_AnimationLoop(false);
 
             EventInteractType InteractType = {};
 
@@ -195,6 +196,7 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
             // 2번 이상의 상호 작용 시
             m_eAnimState = ANIM_STATE::AFTER_START;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+            m_pModelCom->Set_AnimationLoop(false);
 
             EventInteractType InteractType = {};
 
@@ -218,20 +220,19 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
         {
             m_eAnimState = ANIM_STATE::BEFORE_END;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+            m_pModelCom->Set_AnimationLoop(false);
         }
         if (ANIM_STATE::AFTER_LOOP == m_eAnimState)
         {
             m_eAnimState = ANIM_STATE::AFTER_END;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+            m_pModelCom->Set_AnimationLoop(false);
         }
     }
 }
 
 void CBladeNexus::Animation_Change(_float fTimeDelta)
 {
-    if (false == m_isCollision)
-        return;
-
     if (ANIM_STATE::BEFORE_START == m_eAnimState)       // BEFORE_START 가 끝나면 BEFORE_LOOP ( 플레이어가 UI랑 상호 작용 )
     {
         // 처음 상호 작용 후 애니메이션 루프로 전환 및 이벤트 발생
@@ -299,15 +300,36 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
 void CBladeNexus::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
     m_isCollision = true;
+
+    EventInteractType InteractType = {};
+
+    InteractType.isInteract = true;
+    InteractType.eInteractType = INTERACTIVE_TYPE::CHECKPOINT;
+
+    m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 }
 
 void CBladeNexus::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
+    m_isCollision = true;
+
+    EventInteractType InteractType = {};
+
+    InteractType.isInteract = true;
+    InteractType.eInteractType = INTERACTIVE_TYPE::CHECKPOINT;
+
+    m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 }
 
 void CBladeNexus::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 {
     m_isCollision = false;
+
+    EventInteractType InteractType = {};
+
+    InteractType.isInteract = false;
+
+    m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 }
 
 CBladeNexus* CBladeNexus::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
