@@ -60,6 +60,7 @@ void CLayer::Late_Update(_float fTimeDelta)
 		}
 		else if ((*it)->Get_IsDead() && (*it)->Get_IsPool())
 		{
+			m_pGameInstance->Reset_PoolObject((*it));
 			it = m_GameObjects.erase(it);
 		}
 		else

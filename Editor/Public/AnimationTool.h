@@ -52,9 +52,9 @@ private:
 	_char									m_szAnimSearchBuffer[256] = "";
 
 	// === 애니메이션 프레임 제어 ===
-	class CEditor_Animation* m_pCurAnimaion = { nullptr };
+	class CEditor_Animation*				m_pCurAnimaion = { nullptr };
 	_bool									m_isPlaying = { false };
-	_float* m_fCurrentFrame = { nullptr };
+	_float*									m_fCurrentFrame = { nullptr };
 	_float									m_fCurrentDuration = { 0.f };
 
 	// === 애니메이션 이벤트 제작 (임시 저장용) ===

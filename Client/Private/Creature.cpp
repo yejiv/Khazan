@@ -1,4 +1,5 @@
 #include "Creature.h"
+#include "PartObject.h"
 
 CCreature::CCreature(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CContainerObject{ pDevice, pContext }
@@ -9,6 +10,7 @@ CCreature::CCreature(const CCreature& Prototype)
     :CContainerObject{ Prototype }
 {
 }
+
 
 HRESULT CCreature::Initialize_Prototype()
 {
@@ -34,14 +36,17 @@ HRESULT CCreature::Initialize_Clone(void* pArg)
 
 void CCreature::Priority_Update(_float fTimeDelta)
 {
+    __super::Priority_Update(fTimeDelta);
 }
 
 void CCreature::Update(_float fTimeDelta)
 {
+    __super::Update(fTimeDelta);
 }
 
 void CCreature::Late_Update(_float fTimeDelta)
 {
+    __super::Late_Update(fTimeDelta);
 }
 
 HRESULT CCreature::Render()

@@ -4,6 +4,7 @@
 #include "AttackState_Yetuga.h"
 #include "AS_RightHand_5Hit_Yetuga.h"
 #include "AS_LieDown_Yetuga.h"
+#include "AS_Turn_Yetuga.h"
 
 CFSM_Yetuga::CFSM_Yetuga()
 {
@@ -21,6 +22,8 @@ HRESULT CFSM_Yetuga::Initialize()
     if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::RIGHTHAND_5HIT), CAS_RightHand_5Hit_Yetuga::Create())))
         return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::LIE_DOWN), CAS_LieDown_Yetuga::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::TURN), CAS_Turn_Yetuga::Create())))
         return E_FAIL;
 
     m_pCurrentState = m_States[ENUM_CLASS(YETUGA_STATE::IDLE)];

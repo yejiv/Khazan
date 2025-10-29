@@ -66,7 +66,6 @@ void CCursor::Update(_float fTimeDelta)
 		CGameObject* pFX = m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Cursor_FX"));
 		if (pFX != nullptr)
 		{
-			m_pGameInstance->Reset_PoolObject(pFX);
 			m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pFX);
 		}
 	}

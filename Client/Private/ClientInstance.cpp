@@ -3,6 +3,12 @@
 
 #include "UI_Manager.h"
 #include "DB_Manager.h"
+
+#ifdef _DEBUG
+#include "Debug_Manager.h"
+#endif
+
+
 IMPLEMENT_SINGLETON(CClientInstance)
 
 CClientInstance::CClientInstance()
@@ -23,12 +29,22 @@ HRESULT CClientInstance::Initialize(ID3D11Device** ppDevice, ID3D11DeviceContext
 	m_pUI_Manager = CUI_Manager::Create(m_pDevice, m_pContext);
 	m_pDB_Manager = CDB_Manager::Create();
 
+#ifdef _DEBUG
+	m_pDebug_Manager = CDebug_Manager::Create();
+	if (m_pDebug_Manager == nullptr)
+		return E_FAIL;
+#endif
+
 	return S_OK;
 }
 
 void CClientInstance::Update(_float fTimeDelta)
 {
 	m_pUI_Manager->UIObjectToRenderer();
+
+#ifdef _DEBUG
+	m_pDebug_Manager->Update(fTimeDelta);
+#endif
 }
 
 HRESULT CClientInstance::Load_Data(DATATYPE eType, const _tchar* pFilePath)

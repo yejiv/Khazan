@@ -1,5 +1,4 @@
 #include "Camera_Compre.h"
-
 #include "GameInstance.h"
 
 static inline float Clamp(float v, float lo, float hi) { return max(lo, min(v, hi)); }
@@ -76,7 +75,6 @@ HRESULT CCamera_Compre::Render()
 
 void CCamera_Compre::Update_Free(_float fTimeDelta)
 {
-
     if (m_pGameInstance->Key_Pressing(DIK_W, fTimeDelta))
     {
         m_pTransformCom->Go_Straight(fTimeDelta);
@@ -96,48 +94,26 @@ void CCamera_Compre::Update_Free(_float fTimeDelta)
 
     _int    iMouseMove = {};
 
-    if (iMouseMove = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::X))
-    {
-        m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * iMouseMove * m_fMouseSensor);
-    }
 
-    if (iMouseMove = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::Y))
+    if (m_pGameInstance->Mouse_Pressing(MOUSEKEYSTATE::RB))
     {
-        m_pTransformCom->Turn(m_pTransformCom->Get_State(STATE::RIGHT), fTimeDelta * iMouseMove * m_fMouseSensor);
+        if (iMouseMove = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::X))
+        {
+            m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * iMouseMove * m_fMouseSensor);
+        }
+
+        if (iMouseMove = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::Y))
+        {
+            m_pTransformCom->Turn(m_pTransformCom->Get_State(STATE::RIGHT), fTimeDelta * iMouseMove * m_fMouseSensor);
+        }
     }
 
 }
 
 void CCamera_Compre::Update_Spring(_float fTimeDelta)
 {
-    Spring(fTimeDelta);
-    RayCast(fTimeDelta);
-
-
-}
-
-HRESULT CCamera_Compre::Ready_Camera(void* pArg)
-{
-    CAMERA_COMPRE_DESC* pDesc = static_cast<CAMERA_COMPRE_DESC*>(pArg);
-
-    if (pDesc->iCameraType == ENUM_CLASS(CAMERATYPE::SPRING))
-    {
-        //CHECK_FAILED(Ready_Body(), E_FAIL);
-    }
-
-    return S_OK;
-}
-
-HRESULT CCamera_Compre::Ready_Body()
-{
-
-    return S_OK;
-}
-
-HRESULT CCamera_Compre::Spring(_float fTimeDelta)
-{
     if (m_pObjMatrix == nullptr)
-        return E_FAIL;
+        return;
 
     _int iMouseMoveX = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::X);
     _int iMouseMoveY = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::Y);
@@ -145,16 +121,18 @@ HRESULT CCamera_Compre::Spring(_float fTimeDelta)
     m_fYaw = WrapAngle(m_fYaw - fTimeDelta * iMouseMoveX * m_fMouseSensor);
     m_fPitch = Clamp(m_fPitch - fTimeDelta * iMouseMoveY * m_fMouseSensor, m_fPitchMin, m_fPitchMax);
 
-    _vector vTargetPos = XMVectorSet(m_pObjMatrix->_41, m_pObjMatrix->_42 + 1.5f, m_pObjMatrix->_43, 1.f);
+    _vector vTargetPos = XMVectorSet(m_pObjMatrix->_41, m_pObjMatrix->_42 + 7.f, m_pObjMatrix->_43, 1.f);
     _vector vDir = XMVectorSet(cosf(m_fPitch) * cosf(m_fYaw), sinf(m_fPitch), cosf(m_fPitch) * sinf(m_fYaw), 0.f);
-    vDir = XMVector3Normalize(vDir);
+    _vector vCamPosDes = XMVectorMultiplyAdd(XMVectorSet(-m_fRadius, -m_fRadius, -m_fRadius, 0.f), vDir, vTargetPos);
 
-    _vector vCamPos = XMVectorMultiplyAdd(XMVectorReplicate(-m_fRadius), vDir, vTargetPos);
+    _vector vWorldUp, vLook, vRight, vUp;
 
     _float fAlphaTarget = 1.f - expf(-m_fFollowValue * fTimeDelta);
     m_vLerpMove = XMVectorLerp(m_vLerpMove, vTargetPos, fAlphaTarget);
 
-    _vector vWorldUp, vLook, vRight, vUp;
+    _vector vCamPosPrev = m_pTransformCom->Get_State(STATE::POSITION);
+    _vector vCamPos = vCamPosDes;
+
 
     vWorldUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
     vLook = XMVector3Normalize(XMVectorSubtract(m_vLerpMove, vCamPos));
@@ -166,25 +144,15 @@ HRESULT CCamera_Compre::Spring(_float fTimeDelta)
     m_pTransformCom->Set_State(STATE::LOOK, vLook);
     m_pTransformCom->Set_State(STATE::POSITION, vCamPos);
 
-    return S_OK;
 }
 
-HRESULT CCamera_Compre::RayCast(_float fTimeDelta)
+HRESULT CCamera_Compre::Ready_Camera(void* pArg)
 {
-    _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
-    _vector vTargetPos = XMVectorSet(m_pObjMatrix->_41, m_pObjMatrix->_42 + 1.5f, m_pObjMatrix->_43, 1.f);
+    CAMERA_COMPRE_DESC* pDesc = static_cast<CAMERA_COMPRE_DESC*>(pArg);
 
-    _float fFraction;
-    _float4 vPosition;
-
-    if (m_pGameInstance->CastRay(
-        _float3(vTargetPos.m128_f32[0], vTargetPos.m128_f32[1], vTargetPos.m128_f32[2]),
-        _float3(vPos.m128_f32[0], vPos.m128_f32[1], vPos.m128_f32[2]),
-        fFraction,
-        vPosition
-    ))
+    if (pDesc->iCameraType == ENUM_CLASS(CAMERATYPE::SPRING))
     {
-        m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&vPosition));
+        //CHECK_FAILED(Ready_Body(), E_FAIL);
     }
 
     return S_OK;
@@ -236,5 +204,4 @@ void CCamera_Compre::Free()
 {
     __super::Free();
 
-    //Safe_Release(m_pCharVirCom);
 }
