@@ -310,6 +310,10 @@ public:
 	HRESULT						Bind_Fog_ShaderResources(class CShader* pShader);
 	FOG_CONFIG					Get_FogConfig();
 	void						Set_FogConfig(FOG_CONFIG Config);
+	_uint						Get_NumFogNoiseTextures();
+	ID3D11ShaderResourceView*	Get_FogNoiseTexture(_uint iTextureIndex);
+	void						Set_FogNoiseTextureIndex(_uint iTextureIndex);
+	void						Set_FogNoiseWorldSpace(_bool isEnable);
 #pragma endregion
 
 private:

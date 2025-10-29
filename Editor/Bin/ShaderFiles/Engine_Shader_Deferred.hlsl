@@ -54,6 +54,11 @@ float g_fFogNear, g_fFogFar;
 float g_fFogDensity;
 float4 g_vFogColor = { 1.f, 1.f, 1.f, 1.f };
 bool g_isEnableFog;
+float g_fTimeDelta;
+bool g_isEnableNoise, g_isWorldFog;
+
+float2 g_vNoiseSpeed, g_vNoiseScale;
+float g_fNoiseStrength, g_fNoiseContrast;
 
 struct VS_IN
 {
@@ -447,18 +452,21 @@ PS_OUT_BACKBUFFER PS_MAIN_FOG(PS_IN In)
     vector vPostSceneDesc = g_PostSceneTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
     
-    vector vViewPos;
+    vector vWorldPos;
 
-    vViewPos.x = In.vTexcoord.x * 2.f - 1.f;
-    vViewPos.y = In.vTexcoord.y * -2.f + 1.f;
-    vViewPos.z = vDepthDesc.x;
-    vViewPos.w = 1.f;
+    vWorldPos.x = In.vTexcoord.x * 2.f - 1.f;
+    vWorldPos.y = In.vTexcoord.y * -2.f + 1.f;
+    vWorldPos.z = vDepthDesc.x;
+    vWorldPos.w = 1.f;
     
     // View Space
-    vViewPos = vViewPos * vDepthDesc.y;   // View Z
-    vViewPos = mul(vViewPos, g_ProjMatrixInv);
-    float fViewZ = vViewPos.z;
+    vWorldPos = vWorldPos * vDepthDesc.y;   // View Z
+    vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
+    float fViewZ = vWorldPos.z;
     
+    // World Space
+    vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+
     // Linear
     float fLinear = saturate((fViewZ - g_fFogNear) / (g_fFogFar - g_fFogNear));
     
@@ -471,7 +479,7 @@ PS_OUT_BACKBUFFER PS_MAIN_FOG(PS_IN In)
     float fExpSquare = saturate(1.f - exp(-(fOpticalDepth * fOpticalDepth)));
     
     float4 vResultColor;
-    float fFogFactor;
+    float fFogFactor = 0.f;
         
     if (0 == g_iFogMode)
         fFogFactor = fLinear;
@@ -480,6 +488,37 @@ PS_OUT_BACKBUFFER PS_MAIN_FOG(PS_IN In)
     else if (2 == g_iFogMode)
         fFogFactor = fExpSquare;
 
+    if (true == g_isEnableNoise)
+    {
+        float2 vNoiseTexcoord;
+        
+        if (true == g_isWorldFog)
+        {
+            vNoiseTexcoord = vWorldPos.xz * g_vNoiseScale;
+            vNoiseTexcoord.x += g_fTimeDelta * g_vNoiseSpeed.x;
+            vNoiseTexcoord.y += g_fTimeDelta * g_vNoiseSpeed.y;
+        }
+        else
+        {
+            vNoiseTexcoord = In.vTexcoord * g_vNoiseScale;
+            vNoiseTexcoord.x += g_fTimeDelta * g_vNoiseSpeed.x;
+            vNoiseTexcoord.y += g_fTimeDelta * g_vNoiseSpeed.y;
+        }
+        
+        //  float2 vNoiseTexcoord = vWorldPos.xz * g_vNoiseScale;
+        //  vNoiseTexcoord.x += g_fTimeDelta * g_vNoiseSpeed.x;
+        //  vNoiseTexcoord.y += g_fTimeDelta * g_vNoiseSpeed.y;
+
+        //  float2 vNoiseTexcoord = In.vTexcoord * g_vNoiseScale;
+        //  vNoiseTexcoord.x += g_fTimeDelta * g_vNoiseSpeed.x;
+        //  vNoiseTexcoord.y += g_fTimeDelta * g_vNoiseSpeed.y;
+        
+        float fNoise = g_NoiseTexture.Sample(DefaultSampler, vNoiseTexcoord).r;
+        fNoise = pow(fNoise, g_fNoiseContrast);
+        
+        fFogFactor = lerp(fFogFactor, fFogFactor * fNoise, g_fNoiseStrength);
+    }
+    
     vResultColor = lerp(vPostSceneDesc, g_vFogColor, fFogFactor);
     Out.vColor = vResultColor;
     //  Out.vColor = float4(vResultColor.rgb, vPostSceneDesc.a);

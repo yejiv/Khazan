@@ -158,15 +158,16 @@ HRESULT CLevel_Shader::Initialize()
 			}
 		}
 
-		ImGui::Checkbox("Fog", &m_isEnableFog);
+		ImGui::Separator();
+
+		if (ImGui::Checkbox("Fog", &m_isEnableFog))
+			m_pGameInstance->Set_EnableFog(m_isEnableFog);
 
 		if (m_isEnableFog)
 		{
 			_bool isChanged = {};
 			_int iFogMode = static_cast<_int>(m_FogConfig.eType);
-			
-			//	ImGui::Text("Fog Type : ");
-			//	ImGui::SameLine();
+
 			isChanged |= ImGui::RadioButton("Linear", &iFogMode, static_cast<_int>(FOG_CONFIG::LINEAR));
 			ImGui::SameLine();
 			isChanged |= ImGui::RadioButton("Exp", &iFogMode, static_cast<_int>(FOG_CONFIG::EXP));
@@ -201,6 +202,96 @@ HRESULT CLevel_Shader::Initialize()
 
 			if (ImGui::ColorEdit4("Fog Color", reinterpret_cast<_float*>(&m_FogConfig.vColor)))
 				m_pGameInstance->Set_FogConfig(m_FogConfig);
+
+			ImGui::Separator();
+
+			if (ImGui::Checkbox("Fog Noise", &m_FogConfig.Noise.isEnable))
+			{
+				if (m_isWorldSpaceFog)
+				{
+					m_FogConfig.Noise.vSpeed = { 0.05f, 0.f };
+					m_FogConfig.Noise.vScale = { 0.05f, 0.05f };
+				}
+				else
+				{
+					m_FogConfig.Noise.vSpeed = { 0.01f, 0.f };
+					m_FogConfig.Noise.vScale = { 1.f, 1.f };
+				}
+
+				m_pGameInstance->Set_FogConfig(m_FogConfig);
+			}
+
+			if (m_FogConfig.Noise.isEnable)
+			{
+				if (m_isWorldSpaceFog)
+				{
+					if (ImGui::SliderFloat2("Noise Speed", reinterpret_cast<_float*>(&m_FogConfig.Noise.vSpeed), -0.1f, 0.1f, "%.4f"))
+						m_pGameInstance->Set_FogConfig(m_FogConfig);
+				}
+				else
+				{
+					if (ImGui::SliderFloat2("Noise Speed", reinterpret_cast<_float*>(&m_FogConfig.Noise.vSpeed), -1.f, 1.f, "%.2f"))
+						m_pGameInstance->Set_FogConfig(m_FogConfig);
+				}
+
+				if (m_isWorldSpaceFog)
+				{
+					if (ImGui::SliderFloat2("Noise Scale", reinterpret_cast<_float*>(&m_FogConfig.Noise.vScale), 0.1f, 0.0001f, "%.4f"))
+						m_pGameInstance->Set_FogConfig(m_FogConfig);
+				}
+				else
+				{
+					if (ImGui::SliderFloat2("Noise Scale", reinterpret_cast<_float*>(&m_FogConfig.Noise.vScale), 1.f, 5.f, "%.2f"))
+						m_pGameInstance->Set_FogConfig(m_FogConfig);
+				}
+
+				if (ImGui::SliderFloat("Noise Strength", &m_FogConfig.Noise.fStrength, 0.0f, 1.0f, "%.2f"))
+					m_pGameInstance->Set_FogConfig(m_FogConfig);
+
+				if (ImGui::SliderFloat("Noise Contrast", &m_FogConfig.Noise.fContrast, 0.1f, 5.0f, "%.2f"))
+					m_pGameInstance->Set_FogConfig(m_FogConfig);
+
+				if (ImGui::CollapsingHeader("Noise Texture"), ImGuiTreeNodeFlags_DefaultOpen)
+				{
+					ImGui::BeginChild("Noise Texture", ImVec2(0, 70), true, ImGuiWindowFlags_HorizontalScrollbar);
+
+					for (_uint i = 0; i < m_pGameInstance->Get_NumFogNoiseTextures(); ++i)
+					{
+						ID3D11ShaderResourceView* pSRV = m_pGameInstance->Get_FogNoiseTexture(i);
+
+						if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
+							m_pGameInstance->Set_FogNoiseTextureIndex(i);
+
+						ImGui::SameLine();
+					}
+
+					ImGui::EndChild();
+				}
+
+				ImGui::NewLine();
+			}
+
+			_bool isChangedSpace{};
+
+			isChangedSpace |= ImGui::Checkbox("Fog World Space", &m_isWorldSpaceFog);
+
+			if (isChangedSpace)
+			{
+				if (m_isWorldSpaceFog)
+				{
+					m_FogConfig.Noise.vSpeed = { 0.05f, 0.f };
+					m_FogConfig.Noise.vScale = { 0.05f, 0.05f };
+				}
+				else
+				{
+					m_FogConfig.Noise.vSpeed = { 0.01f, 0.f };
+					m_FogConfig.Noise.vScale = { 1.f, 1.f };
+				}
+			}
+			
+			m_pGameInstance->Set_FogConfig(m_FogConfig);
+
+			ImGui::Separator();
 		}
 
 		dynamic_cast<CPlayer_Shader*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER), 
@@ -210,6 +301,7 @@ HRESULT CLevel_Shader::Initialize()
 		m_pGameInstance->Set_EnableShadow(m_isRenderShadow);
 		m_pGameInstance->Set_EnableSSAO(m_isRenderSSAO);
 		m_pGameInstance->Set_EnableFog(m_isEnableFog);
+		m_pGameInstance->Set_FogNoiseWorldSpace(m_isWorldSpaceFog);
 
 		ImGui::End();
 	});

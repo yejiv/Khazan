@@ -135,7 +135,7 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pBlur)
 		return E_FAIL;
 
-	m_pFog = CFog::Create();
+	m_pFog = CFog::Create(*ppDevice, *ppContext);
 	if (nullptr == m_pFog)
 		return E_FAIL;
 
@@ -180,6 +180,7 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 
 	// Cascade Test
 	m_pShadow->Update();
+	m_pFog->Update(fTimeDelta);
 
 	m_pLevel_Manager->Update(fTimeDelta);
 
@@ -1017,6 +1018,22 @@ FOG_CONFIG CGameInstance::Get_FogConfig()
 void CGameInstance::Set_FogConfig(FOG_CONFIG Config)
 {
 	m_pFog->Set_FogConfig(Config);
+}
+_uint CGameInstance::Get_NumFogNoiseTextures()
+{
+	return m_pFog->Get_NumFogNoiseTextures();
+}
+ID3D11ShaderResourceView* CGameInstance::Get_FogNoiseTexture(_uint iTextureIndex)
+{
+	return m_pFog->Get_FogNoiseTexture(iTextureIndex);
+}
+void CGameInstance::Set_FogNoiseTextureIndex(_uint iTextureIndex)
+{
+	m_pFog->Set_FogNoiseTextureIndex(iTextureIndex);
+}
+void CGameInstance::Set_FogNoiseWorldSpace(_bool isEnable)
+{
+	m_pFog->Set_FogNoiseWorldSpace(isEnable);
 }
 #pragma endregion
 
