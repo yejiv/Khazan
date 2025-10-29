@@ -3,6 +3,7 @@
 #include "AI_Controller_Yetuga.h"
 #include "BlackBoard.h"
 #include "Body_Yetuga.h"
+#include "CharacterVirtual.h"
 
 CYetuga::CYetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice, pContext }
@@ -28,6 +29,10 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
+    //-4 0 27
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(-4, 0, 27, 1.f));
+
+
     if (FAILED(Ready_PartObjects()))
         return E_FAIL;
 
@@ -36,11 +41,6 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
     if (nullptr == m_pController)
         return E_FAIL;
 
-    /* m_pModelCom->Set_Animation(3);
-     m_pModelCom->Set_AnimationLoop(true);*/
-
-     //-4 0 27
-     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(-4, 0, 27, 1.f));
 
 
 
@@ -62,6 +62,16 @@ void CYetuga::Update(_float fTimeDelta)
     _vector vLerpDir = XMVector3Normalize(XMVectorLerp(vLook, vTargetDir, fTimeDelta * fTurnSpeed));
 
     m_pTransformCom->LookAt(m_pTransformCom->Get_State(STATE::POSITION) + vLerpDir);*/
+
+    if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+    {
+        _float3     vPickedPos{};
+        _bool isPicked = m_pGameInstance->isPicked(&vPickedPos);
+        if (true == isPicked)
+        {
+            m_pTransformCom->Set_State(Engine::STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPickedPos), 1.f));
+        }
+    }
 
     m_pController->Update(this, fTimeDelta);
 
@@ -85,7 +95,6 @@ HRESULT CYetuga::Render()
 
 HRESULT CYetuga::Ready_Components()
 {
-
     return S_OK;
 }
 
@@ -103,6 +112,8 @@ HRESULT CYetuga::Ready_PartObjects()
         return E_FAIL;
 
     m_pBody = dynamic_cast<CBody_Yetuga*>(pBody);
+
+
     return S_OK;
 }
 

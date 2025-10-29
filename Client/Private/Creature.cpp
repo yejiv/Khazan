@@ -31,6 +31,7 @@ HRESULT CCreature::Initialize_Clone(void* pArg)
     m_fAttack = pDesc->fAttack;
     m_fMoveSpeed = pDesc->fMoveSpeed;
 
+
     return S_OK;
 }
 

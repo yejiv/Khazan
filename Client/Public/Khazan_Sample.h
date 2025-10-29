@@ -75,13 +75,13 @@ private:
 
 
 private:
-	void			Update_State(_float fTimeDelta);
-	void			Key_Input(_float fTimeDelta);
+	void				Update_State(_float fTimeDelta);
+	void				Key_Input(_float fTimeDelta);
 
 private:
-	HRESULT			Ready_Components();
-	HRESULT			Ready_PartObjects();
-	HRESULT			Ready_Collision();
+	HRESULT				Ready_Components();
+	HRESULT				Ready_PartObjects();
+	HRESULT				Ready_Collision();
 
 private:
 	inline void		Add_State(_uint i) { m_iState |= i; }

@@ -22,6 +22,7 @@ HRESULT CBody_Yetuga::Initialize_Clone(void* pArg)
     BODY_DESC* pDesc = static_cast<BODY_DESC*>(pArg);
     
     m_pOwnerTransform = pDesc->pOwnerTransform;
+    Safe_AddRef(m_pOwnerTransform);
     if (nullptr == m_pOwnerTransform)
         return E_FAIL;
 
@@ -42,6 +43,10 @@ void CBody_Yetuga::Priority_Update(_float fTimeDelta)
 void CBody_Yetuga::Update(_float fTimeDelta)
 {
     Update_CombinedMatrix();
+
+    m_pCharVirCom->Sync_Update(m_pOwnerTransform);
+    m_pCharVirCom->Update(fTimeDelta, m_pOwnerTransform);
+
 }
 
 void CBody_Yetuga::Late_Update(_float fTimeDelta)
@@ -72,6 +77,12 @@ HRESULT CBody_Yetuga::Render()
 
         m_pModelCom->Render(i);
     }
+
+#ifdef _DEBUG
+    //m_pCharVirCom->Render();
+#endif // _DEBUG
+
+
     
     return S_OK;
 }
@@ -89,7 +100,29 @@ HRESULT CBody_Yetuga::Ready_Components()
         return E_FAIL;
 
     m_pModelCom->Set_OwnerTransform(&m_pOwnerTransform);
-   
+
+
+    CCharacterVirtual::CV_CAPSULESHAPE_DESC tCharVirDesc{};
+    _float3 vPos{};
+    _float4 vQuat{};
+    XMStoreFloat3(&vPos, m_pOwnerTransform->Get_State(STATE::POSITION));
+    XMStoreFloat4(&vQuat, m_pOwnerTransform->Get_Rotation_Quat());
+    tCharVirDesc.eShapeType = SHAPE::CAPSULE;
+    tCharVirDesc.vPos = vPos;
+    tCharVirDesc.vQuat = vQuat;
+    tCharVirDesc.vShapeOffset = _float3(0.f, 0.7f, 0.f);
+    tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
+    tCharVirDesc.fRadius = 0.5f;
+    tCharVirDesc.fHeight = 0.5f;
+    tCharVirDesc.fMaxSlopeAngle = 45.f;
+    m_tCollisionDesc.pGameObject = this;
+    //pCollDesc.pInfo = ?? // 작성하기
+    tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
+        TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
+        return E_FAIL;
+
     return S_OK;
 
 }
@@ -142,6 +175,8 @@ void CBody_Yetuga::Free()
 {
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
+    Safe_Release(m_pOwnerTransform);
+    Safe_Release(m_pCharVirCom);
 
     __super::Free();
 

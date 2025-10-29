@@ -5,6 +5,7 @@
 NS_BEGIN(Engine)
 class CShader;
 class CModel;
+class CCharacterVirtual;
 NS_END
 
 
@@ -41,6 +42,7 @@ private:
 	CShader*				m_pShaderCom = { nullptr };
 	CModel*					m_pModelCom = { nullptr };
 	CTransform*				m_pOwnerTransform = { nullptr };
+	CCharacterVirtual*		m_pCharVirCom = { nullptr };
 
 public:
 	static CBody_Yetuga*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
