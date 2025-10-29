@@ -91,86 +91,7 @@ void CKhazan_Sample::Update(_float fTimeDelta)
     }
 
 #pragma region 상호 작용 맵 오브젝트 임시 테스트 용
-
-    // 상호 작용 트리거에 접촉 중일때 키 입력 가능
-    if (true == m_EventInteract.isInteract)
-    {
-        // 활성화
-        if (m_pGameInstance->Key_Down(DIK_F))
-        {
-            m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { true, false });
-        }
-
-        // 비활성화 ( 임시 )
-        if (m_pGameInstance->Key_Down(DIK_LCONTROL))
-        {
-            m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { false, true });
-        }
-    }
-
-    // 이벤트가 발생 했을 때
-    if (true == m_EventInteract.isEvent)
-    {
-        // 바로 false 해서 중복 x
-        m_EventInteract.isEvent = false;
-
-        // 귀검일때
-        if (INTERACTIVE_TYPE::CHECKPOINT == m_EventInteract.eInteractType)
-        {
-            EventBladeNexus BNEvent = m_EventInteract.BNEvent;
-
-            // 귀검에 접촉 후 상호 작용
-            if (false == BNEvent.isBNOpened)
-            {
-                // 플레이어 Look -> 귀검
-                m_pTransformCom->LookAt(XMVectorSetW(XMLoadFloat3(&BNEvent.vPosition), 1.f));
-            }
-            // 귀검 열리는 애니메이션 종료 시 ( 활성화 )
-            else if (true == BNEvent.isBNOpened)
-            {
-
-            }
-        }
-        // 상자일때 ( 나중에 창고, 파밍 상자 나눌 예정 )
-        if (INTERACTIVE_TYPE::CHEST == m_EventInteract.eInteractType)
-        {
-            EventChest ChestEvent = m_EventInteract.ChestEvent;
-
-            // 상자에 접촉 후 상호 작용 ( 닫힌 상태 )
-            if (false == ChestEvent.isChestOpened)
-            {
-                // 플레이어 Look -> 상자, Position 상자 본 위치로 이동
-                m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&ChestEvent.vPlayerPosition), 1.f));
-                m_pTransformCom->LookAt(XMVectorSetW(XMLoadFloat3(&ChestEvent.vPosition), 1.f));
-            }
-            // 상자 열리는 애니메이션 종료되면 ( 열린 상태 )
-            else if (true == ChestEvent.isChestOpened)
-            {
-                ChestEvent.isChestOpened = false;
-
-                // 인벤토리에 상자의 0, 1, 2 아이템 삽입 ( 테스트 후 개선점 있으면 개선 하겠습니다. )
-                static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(ChestEvent.Items.iItem_0);
-                static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(ChestEvent.Items.iItem_1);
-                static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(ChestEvent.Items.iItem_2);
-
-#ifdef _DEBUG
-                _char strItem_0[MAX_PATH] = {};
-                _char strItem_1[MAX_PATH] = {};
-                _char strItem_2[MAX_PATH] = {};
-
-                sprintf_s(strItem_0, "첫번째 아이템 ID : %d\n", ChestEvent.Items.iItem_0);
-                sprintf_s(strItem_1, "두번째 아이템 ID : %d\n", ChestEvent.Items.iItem_1);
-                sprintf_s(strItem_2, "세번째 아이템 ID : %d\n", ChestEvent.Items.iItem_2);
-
-                OutputDebugStringA("================ 상자 ================\n");
-                OutputDebugStringA(strItem_0);
-                OutputDebugStringA(strItem_1);
-                OutputDebugStringA(strItem_2);
-#endif // _DEBUG
-            }
-        }
-    }
-
+    Event_Interact_Object(fTimeDelta);
 #pragma endregion
 
     __super::Update(fTimeDelta);
@@ -211,6 +132,101 @@ void CKhazan_Sample::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLay
 {
 }
 
+#pragma region 상호 작용 맵 오브젝트 임시 테스트 용
+void CKhazan_Sample::Event_Interact_Object(_float fTimeDelta)
+{
+    // 상호 작용 트리거에 접촉 중일때 키 입력 가능
+    if (true == m_EventInteract.isInteract)
+    {
+        // 활성화 키
+        if (m_pGameInstance->Key_Down(DIK_F))
+        {
+            // 상호작용 활성화시 맵 오브젝트한테 ObjectOn 을 true 로 던져주고, ObjectOff 를 false 로 던져준다.
+            m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { true, false });
+        }
+
+        // 비활성화 키 ( 임시 )
+        if (m_pGameInstance->Key_Down(DIK_LCONTROL))
+        {
+            // 상호작용 비 활성화시 맵 오브젝트한테 ObjectOn 을 false 로 던져주고, ObjectOff 를 true 로 던져준다.
+            m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { false, true });
+        }
+    }
+
+    // 이벤트가 발생 했을 때
+    if (true == m_EventInteract.isEvent)
+    {
+        // 바로 false 해서 한번만 타게
+        m_EventInteract.isEvent = false;
+
+        // 귀검일때
+        if (INTERACTIVE_TYPE::CHECKPOINT == m_EventInteract.eInteractType)
+        {
+            EventBladeNexus BNEvent = m_EventInteract.BNEvent;
+
+            // 귀검에 접촉 후 상호 작용 ( 귀검 가동 )
+            if (false == BNEvent.isBNOpened)
+            {
+                // 귀검 첫 해금 시
+                if (true == BNEvent.isUnLock)
+                {
+                    // 첫 해금 플레이어 애니메이션?
+                }
+                // 이미 해금된 귀검
+                else if (false == BNEvent.isUnLock)
+                {
+                    // 해금된 귀검 플레이어 애니메이션?
+                }
+
+                // 플레이어 Look -> 귀검 ( 기우는거 보정하려고 이렇게 코드 넣어놨습니다. )
+                BNEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+                m_pTransformCom->LookAt(XMVectorSetW(XMLoadFloat3(&BNEvent.vPosition), 1.f));
+            }
+            // 귀검 가동 끝나고 UI 팝업 ( 귀검 UI 창 활성화 )
+            else if (true == BNEvent.isBNOpened)
+            {
+            }
+        }
+        // 상자일때 ( 나중에 창고, 파밍 상자 나눌 예정 )
+        if (INTERACTIVE_TYPE::CHEST == m_EventInteract.eInteractType)
+        {
+            EventChest ChestEvent = m_EventInteract.ChestEvent;
+
+            // 상자에 접촉 후 상호 작용 ( 닫힌 상태 )
+            if (false == ChestEvent.isChestOpened)
+            {
+                // 플레이어 Look -> 상자, Position 상자 본 위치로 이동 ( 기우는거 보정 )
+                m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&ChestEvent.vPlayerPosition), 1.f));
+                ChestEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+                m_pTransformCom->LookAt(XMVectorSetW(XMLoadFloat3(&ChestEvent.vPosition), 1.f));
+            }
+            // 상자 열리는 애니메이션 종료되면 ( 열린 상태 )
+            else if (true == ChestEvent.isChestOpened)
+            {
+                // 인벤토리에 상자의 0, 1, 2 아이템 삽입 ( 테스트 후 개선점 있으면 개선 하겠습니다. )
+                static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(ChestEvent.Items.iItem_0);
+                static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(ChestEvent.Items.iItem_1);
+                static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(ChestEvent.Items.iItem_2);
+
+#ifdef _DEBUG
+                _char strItem_0[MAX_PATH] = {};
+                _char strItem_1[MAX_PATH] = {};
+                _char strItem_2[MAX_PATH] = {};
+
+                sprintf_s(strItem_0, "첫번째 아이템 ID : %d\n", ChestEvent.Items.iItem_0);
+                sprintf_s(strItem_1, "두번째 아이템 ID : %d\n", ChestEvent.Items.iItem_1);
+                sprintf_s(strItem_2, "세번째 아이템 ID : %d\n", ChestEvent.Items.iItem_2);
+
+                OutputDebugStringA("================ 아 이 템 ================\n");
+                OutputDebugStringA(strItem_0);
+                OutputDebugStringA(strItem_1);
+                OutputDebugStringA(strItem_2);
+#endif // _DEBUG
+            }
+        }
+    }
+}
+#pragma endregion
 
 void CKhazan_Sample::Update_State(_float fTimeDelta)
 {

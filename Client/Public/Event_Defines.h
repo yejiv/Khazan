@@ -21,6 +21,7 @@ namespace Client {
 	// 귀검 관련 이벤트 ( 1. 귀검 월드 포지션 ( LOOK 플레이어 -> 귀검 방향 용 ), 2. 귀검 활성화 )
 	struct EventBladeNexus {
 		XMFLOAT3 vPosition{};			// 귀검의 월드 위치
+		bool isUnLock{ false };			// 귀검 첫 해금인지 아닌지 여부 ( TRUE 면 첫 해금, FALSE 면 해금 한 귀검 )
 		bool isBNOpened{ false };		// 귀검 가동 애니메이션 종료되면 TRUE
 	};
 

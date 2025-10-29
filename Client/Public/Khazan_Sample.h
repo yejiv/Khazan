@@ -74,7 +74,11 @@ private:
 	_int						m_isMove = {0};
 
 #pragma region 상호 작용 맵 오브젝트 이벤트 임시 테스트용
-	EventInteractType m_EventInteract = {};				// 트리거 접촉 여부, 이벤트 발생 여부, 상호 작용 타입, 상호 작용 타입들의 구조체
+private:
+	EventInteractType			m_EventInteract = {};				// 트리거 접촉 여부, 이벤트 발생 여부, 상호 작용 타입, 상호 작용 타입들의 구조체
+
+private:
+	void						Event_Interact_Object(_float fTimeDelta);
 #pragma endregion
 
 private:
