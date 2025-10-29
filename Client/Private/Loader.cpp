@@ -229,10 +229,10 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Spear/Spear.dat"))))
 		return E_FAIL;
 
-	//// Prototype_Component_Model_Yetuga
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_Yetuga"),
-	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Yetuga/Yetuga.dat"))))
-	//	return E_FAIL;
+	// Prototype_Component_Model_Yetuga
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_Yetuga"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Yetuga/Yetuga.dat"))))
+		return E_FAIL;
 
 	/////* Prototype_Component_Model_Khazan */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_Khazan"),
@@ -250,13 +250,13 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 		//return E_FAIL;
 
 #pragma region 모델 원형 : 상호 작용 맵 오브젝트
-	///* Prototype_Component_Model_BladeNexus */
-	//CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_BladeNexus"),
-	//	CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/TombStone/WIP_COM_DamagedTS.dat")), E_FAIL);
+	/* Prototype_Component_Model_BladeNexus */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_BladeNexus"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_DamagedTS/WIP_COM_DamagedTS.dat")), E_FAIL);
 
-	///* Prototype_Component_Model_BigChest */
-	//CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_BigChest"),
-	//	CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/BigChest/WIP_COM_BigChest_Open_003.dat")), E_FAIL);
+	/* Prototype_Component_Model_BigChest */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_BigChest"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_BigChest_Open_003/WIP_COM_BigChest_Open_003.dat")), E_FAIL);
 #pragma endregion
 
 	return S_OK;
@@ -297,15 +297,15 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 		CCamera_Compre::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	/* Prototype_GameObject_Player */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Player"),
-		CPlayer::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	///* Prototype_GameObject_Player */
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Player"),
+	//	CPlayer::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
 
-	/* Prototype_GameObject_Body_Player */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Body_Player"),
-		CBody_Player::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	///* Prototype_GameObject_Body_Player */
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Body_Player"),
+	//	CBody_Player::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
 
 	/* Prototype_GameObject_Monster_Yetuga */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Monster_Yetuga"),
@@ -318,10 +318,10 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 		return E_FAIL;
 
 
-	///* Prototype_GameObject_Dummy */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Dummy"),
-		CDummy::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	/////* Prototype_GameObject_Dummy */
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Dummy"),
+	//	CDummy::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
 
 	///* Prototype_GameObject_Prop_Test */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Prop_Test"),

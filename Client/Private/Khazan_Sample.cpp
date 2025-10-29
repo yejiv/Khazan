@@ -127,32 +127,32 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
 
     if (!Has_State(ATTACK_ALL))
     {
-        if (m_pGameInstance->Key_Down(DIK_DOWN))
+        if (m_pGameInstance->Key_Down(DIK_S))
         {
             ++m_isMove;
             Add_DirState(DOWN);
         }
-        if (m_pGameInstance->Key_Pressing(DIK_DOWN, fTimeDelta))
+        if (m_pGameInstance->Key_Pressing(DIK_S, fTimeDelta))
         {
             m_pTransformCom->Go_Backward(fTimeDelta * m_fMoveSpeed);
         }
-        if (m_pGameInstance->Key_Up(DIK_DOWN))
+        if (m_pGameInstance->Key_Up(DIK_S))
         {
             m_isMove = 0;
            // m_isMove = m_isMove - 1 < 0 ? 0 : m_isMove - 1;
             Remove_DirState(DOWN);
         }
 
-        if (m_pGameInstance->Key_Down(DIK_UP))
+        if (m_pGameInstance->Key_Down(DIK_W))
         {
             ++m_isMove;
             Add_DirState(UP);
         }
-        if (m_pGameInstance->Key_Pressing(DIK_UP, fTimeDelta))
+        if (m_pGameInstance->Key_Pressing(DIK_W, fTimeDelta))
         {
             m_pTransformCom->Go_Straight(fTimeDelta * m_fMoveSpeed);
         }
-        if (m_pGameInstance->Key_Up(DIK_UP))
+        if (m_pGameInstance->Key_Up(DIK_W))
         {
             m_isMove = 0;
 
@@ -160,10 +160,10 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
             Remove_DirState(UP);
         }
 
-        if (m_pGameInstance->Key_Pressing(DIK_LEFT, fTimeDelta))
+        if (m_pGameInstance->Key_Pressing(DIK_A, fTimeDelta))
             m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * -1.f);
 
-        if (m_pGameInstance->Key_Pressing(DIK_RIGHT, fTimeDelta))
+        if (m_pGameInstance->Key_Pressing(DIK_D, fTimeDelta))
             m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * 1.f);
     }
 
