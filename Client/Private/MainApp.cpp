@@ -226,6 +226,31 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 		CDamage_Text::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Mon_HP"),
+		CMon_HP::Create(m_pDevice, m_pContext,ENUM_CLASS(LEVEL::STATIC)))))
+		return E_FAIL;
+
+	CUIObject::UIOBJECT_DESC Desc = {};
+	Desc.vLocalSize = { 64.f, 64.f };
+	Desc.vLocalPos = { 0.f, 0.f };
+	Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+	Desc.szName = "DamageText";
+	Desc.fDepth = 5.f;
+
+	if (FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_DamageText"),
+		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text"), &Desc, 40)))
+		return E_FAIL;
+
+	Desc.vLocalSize = { 106.f, 18.f };
+	Desc.vLocalPos = { 0.f, 0.f };
+	Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
+	Desc.szName = "MonHP";
+	Desc.fDepth = 6.f;
+
+	if (FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Mon_HP"),
+		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Mon_HP"), &Desc, 20)))
+		return E_FAIL;
+
 	return S_OK;
 }
 

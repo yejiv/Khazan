@@ -92,15 +92,6 @@ HRESULT CLevel_Title::Ready_Layer_UI()
 		TEXT("../Bin/Resources/UI/UIData/MainMenu.json"))))
 		return E_FAIL;
 
-	Desc.vLocalSize = { 64.f, 64.f };
-	Desc.vLocalPos = { 0.f, 0.f };
-	Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
-	Desc.szName = "DamageText";
-	Desc.fDepth = 5.f;
-
-	if (FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_DamageText"),
-		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text"), &Desc, 40)))
-		return E_FAIL;
 	return S_OK;
 }
 

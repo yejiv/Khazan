@@ -289,9 +289,6 @@
     <Filter Include="02.GameObject\UI\WorldUI">
       <UniqueIdentifier>{dd547fdf-504a-40c8-844b-a85ee87b3c2a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\UI\WorldUI\Mon_HPGague">
-      <UniqueIdentifier>{7b62ab3c-7ad2-42f3-84f4-f09e6a42b48c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\UI\WorldUI\Interaction_Guide">
       <UniqueIdentifier>{c00e5e09-9592-4d20-94eb-70e9d79117fe}</UniqueIdentifier>
     </Filter>
@@ -315,6 +312,12 @@
     </Filter>
     <Filter Include="92.AI\State\Yetuga\05.Turn">
       <UniqueIdentifier>{5f90142a-cff5-4bcd-ba6a-8a35b7d51aa8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Mon_HP">
+      <UniqueIdentifier>{7b62ab3c-7ad2-42f3-84f4-f09e6a42b48c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Mon_HP\Gague">
+      <UniqueIdentifier>{ca70c219-d32f-4a44-9b4f-9729323d8de6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -591,6 +594,12 @@
     <ClInclude Include="..\Public\AS_Turn_Yetuga.h">
       <Filter>92.AI\State\Yetuga\05.Turn</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Mon_HP.h">
+      <Filter>02.GameObject\UI\WorldUI\Mon_HP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Mon_Gague.h">
+      <Filter>02.GameObject\UI\WorldUI\Mon_HP\Gague</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -854,6 +863,12 @@
     </ClCompile>
     <ClCompile Include="..\private\AS_Turn_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\05.Turn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Mon_HP.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Mon_HP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Mon_Gague.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Mon_HP\Gague</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

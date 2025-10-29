@@ -204,6 +204,8 @@
     <ClInclude Include="..\Public\MapObject.h" />
     <ClInclude Include="..\Public\MapObject_Header.h" />
     <ClInclude Include="..\Public\Monster.h" />
+    <ClInclude Include="..\public\Mon_HP.h" />
+    <ClInclude Include="..\public\Mon_Gague.h" />
     <ClInclude Include="..\Public\MoveState_Yetuga.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\Prop.h" />
@@ -295,6 +297,8 @@
     <ClCompile Include="..\private\MainMenu_List.cpp" />
     <ClCompile Include="..\Private\MapObject.cpp" />
     <ClCompile Include="..\Private\Monster.cpp" />
+    <ClCompile Include="..\private\Mon_HP.cpp" />
+    <ClCompile Include="..\private\Mon_Gague.cpp" />
     <ClCompile Include="..\Private\MoveState_Yetuga.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\Prop.cpp" />

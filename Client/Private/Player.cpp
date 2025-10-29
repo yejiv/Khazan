@@ -7,6 +7,7 @@
 #include "CharacterVirtual.h"
 
 #include "Damage_Text.h"
+#include "Mon_HP.h"
 
 CPlayer::CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CContainerObject{ pDevice, pContext }
@@ -27,10 +28,14 @@ HRESULT CPlayer::Initialize_Prototype()
 
 HRESULT CPlayer::Initialize_Clone(void* pArg)
 {
+    m_iMaxHp = 1000;
+    m_iHp = 1000;
+    m_iMaxStamina = 1000;
+    m_iStamina = 1000;
     GAMEOBJECT_DESC         Desc{};
     Desc.fSpeedPerSec = 10.f;
     Desc.fRotationPerSec = XMConvertToRadians(180.0f);
-
+    
     if (FAILED(__super::Initialize_Clone(&Desc)))
         return E_FAIL;
 
@@ -50,12 +55,29 @@ HRESULT CPlayer::Initialize_Clone(void* pArg)
         });
 #pragma endregion
 
+    CMon_HP* pHP = static_cast<CMon_HP*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Mon_HP")));
+    if (pHP != nullptr)
+    {
+        pHP->Setting_HP(m_pTransformCom->Get_WorldMatrixPtr(), {0.f, 200.f}, &m_iHp, &m_iMaxHp, &m_iStamina, &m_iMaxStamina);
+        m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), TEXT("Layer_UI"), pHP);
+    }
     return S_OK;
 }
 
 void CPlayer::Priority_Update(_float fTimeDelta)
 {
     __super::Priority_Update(fTimeDelta);
+
+    if (m_pGameInstance->Key_Down(DIK_O))
+    {
+        m_iHp -= 30.f;
+        m_iStamina -= 30.f;
+    }
+    if (m_pGameInstance->Key_Down(DIK_P))
+    {
+        m_iHp += 30.f;
+        m_iStamina += 30.f;
+    }
 }
 
 void CPlayer::Update(_float fTimeDelta)
@@ -150,7 +172,7 @@ void CPlayer::Update(_float fTimeDelta)
         CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
         if (pDamage != nullptr)
         {
-            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::DEFAULT, m_pTransformCom->Get_State(STATE::POSITION), 100);
+            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::DEFAULT, m_pTransformCom->Get_State(STATE::POSITION), 100, {0.f, 10.f});
             m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
         }
     }
@@ -160,7 +182,7 @@ void CPlayer::Update(_float fTimeDelta)
         CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
         if (pDamage != nullptr)
         {
-            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::BACK, m_pTransformCom->Get_State(STATE::POSITION), 100);
+            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::BACK, m_pTransformCom->Get_State(STATE::POSITION), 1234);
             m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
         }
     }
@@ -169,7 +191,7 @@ void CPlayer::Update(_float fTimeDelta)
         CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
         if (pDamage != nullptr)
         {
-            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::SPECIAL, m_pTransformCom->Get_State(STATE::POSITION), 100);
+            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::SPECIAL, m_pTransformCom->Get_State(STATE::POSITION), 12345657656);
             m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
         }
     }

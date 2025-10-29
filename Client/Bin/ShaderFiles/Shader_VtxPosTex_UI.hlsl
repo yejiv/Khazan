@@ -65,7 +65,7 @@ PS_OUT PS_TEX(PS_IN In)
     PS_OUT Out = (PS_OUT) 0;
          
     Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
-    Out.vColor.a = Out.vColor.a * g_fAlpha;
+    Out.vColor.a = Out.vColor.a * g_vColor.a * g_fAlpha;
     return Out;
 }
 
@@ -140,6 +140,50 @@ PS_OUT PS_TEX_PROGRESS_BOTTOMDOWN(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_TEX_PROGRESS_LEFTDOWN_GAUGE(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    if (In.vTexcoord.x > g_fProgressValue.x)
+    {
+        Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
+        Out.vColor.a = Out.vColor.a * g_fAlpha * 0.5f;
+    }
+    else
+    {
+        Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
+        Out.vColor.a = Out.vColor.a * g_fAlpha;
+    }
+  
+    return Out;
+}
+
+PS_OUT PS_TEX_PROGRESS_LEFTDOWN_GAUGE_TIP(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
+    
+    if (In.vTexcoord.x > g_fProgressValue.x)
+    {
+        Out.vColor.a = Out.vColor.a * g_fAlpha * 0.5f;
+    }
+    else if (In.vTexcoord.x > g_fProgressValue.x - 0.1f && g_fProgressValue.x < 1.f)
+    {
+        float TipStart = g_fProgressValue.x - 0.1f;
+       
+        float fDelta = saturate((In.vTexcoord.x - TipStart) / (g_fProgressValue.x - TipStart));
+        Out.vColor.rgb += 0.5f * fDelta;
+        Out.vColor.a = Out.vColor.a * g_fAlpha;
+    }
+    else
+    {
+        Out.vColor.a = Out.vColor.a * g_fAlpha;
+    }
+  
+    return Out;
+}
+
 PS_OUT PS_MAINMENU_LIST(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
@@ -158,7 +202,6 @@ PS_OUT PS_MAINMENU_LIST(PS_IN In)
     Out.vColor.a = Out.vColor.a * g_fAlpha * fAlpha;
     return Out;
 }
-
 
 technique11 DefaultTechnique
 {
@@ -239,5 +282,26 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAINMENU_LIST();
     }
 
+    pass PS_TEX_PROGRESS_LEFTDOWN_GAUGE //7
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_TEX_PROGRESS_LEFTDOWN_GAUGE();
+    }
+
+    pass PS_TEX_PROGRESS_LEFTDOWN_GAUGE_TIP //8
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_TEX_PROGRESS_LEFTDOWN_GAUGE_TIP();
+    }
 
 }
