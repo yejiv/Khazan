@@ -175,9 +175,6 @@
     <Filter Include="01.Utility\03.Component\RigidBody\Body">
       <UniqueIdentifier>{234491fb-0a84-4d47-983d-5d177c16d1f4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\02.GameObject\Camera\Manager">
-      <UniqueIdentifier>{42338772-b84f-41a6-a319-aa1cd95ab3f0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\03.Component\VIBuffer\Instance\UI">
       <UniqueIdentifier>{4d49d96d-a532-4f2a-81c6-c554d0f4a230}</UniqueIdentifier>
     </Filter>
@@ -336,6 +333,18 @@
     </Filter>
     <Filter Include="01.Utility\94.RenderingResources\Blur">
       <UniqueIdentifier>{04164c94-d55e-47cc-8a33-5e29e13b0531}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\11.ImGui\Adapter">
+      <UniqueIdentifier>{44a65cdf-2ce3-4c92-82ff-f002ca0d5c76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\93.Sequence">
+      <UniqueIdentifier>{a6e85971-8877-4ef0-93b7-b3d650c46205}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\93.Sequence\Manager">
+      <UniqueIdentifier>{3d2d8ecb-90dc-42b8-b098-f48af915e652}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\93.Sequence\Interface">
+      <UniqueIdentifier>{0dce9e87-4e0f-4a18-919a-9f7fb1d9fdc6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -540,9 +549,6 @@
     <ClCompile Include="..\Private\VIBuffer_Point_Instance.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Point</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Camera_Manager.cpp">
-      <Filter>01.Utility\02.GameObject\Camera\Manager</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\VIBuffer_Instance_UI.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\UI</Filter>
     </ClCompile>
@@ -659,6 +665,12 @@
     </ClCompile>
     <ClCompile Include="..\private\Blur.cpp">
       <Filter>01.Utility\94.RenderingResources\Blur</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SequenceAdapter.cpp">
+      <Filter>01.Utility\11.ImGui\Adapter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_Manager.cpp">
+      <Filter>01.Utility\93.Sequence\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -887,9 +899,6 @@
     <ClInclude Include="..\Public\VIBuffer_Point_Instance.h">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Point</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Camera_Manager.h">
-      <Filter>01.Utility\02.GameObject\Camera\Manager</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\VIBuffer_Instance_UI.h">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\UI</Filter>
     </ClInclude>
@@ -1022,6 +1031,18 @@
     </ClInclude>
     <ClInclude Include="..\public\Blur.h">
       <Filter>01.Utility\94.RenderingResources\Blur</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SequenceAdapter.h">
+      <Filter>01.Utility\11.ImGui\Adapter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sequence_Manager.h">
+      <Filter>01.Utility\93.Sequence\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Engine_Sequence.h">
+      <Filter>99.Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Sequence_Interface.h">
+      <Filter>01.Utility\93.Sequence\Interface</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

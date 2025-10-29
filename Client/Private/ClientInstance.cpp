@@ -3,6 +3,8 @@
 
 #include "UI_Manager.h"
 #include "DB_Manager.h"
+#include "Camera_Manager.h"
+#include "Camera.h"
 
 #ifdef _DEBUG
 #include "Debug_Manager.h"
@@ -28,6 +30,11 @@ HRESULT CClientInstance::Initialize(ID3D11Device** ppDevice, ID3D11DeviceContext
 
 	m_pUI_Manager = CUI_Manager::Create(m_pDevice, m_pContext);
 	m_pDB_Manager = CDB_Manager::Create();
+
+	m_pCamera_Manager = Client::CCamera_Manager::Create(ENUM_CLASS(LEVEL::END));
+	if (nullptr == m_pCamera_Manager)
+		return E_FAIL;
+
 
 #ifdef _DEBUG
 	m_pDebug_Manager = CDebug_Manager::Create();
@@ -114,6 +121,42 @@ _float4 CClientInstance::Get_AtlasUV(const string pFrameName, _uint iTextureInde
 }
 
 #pragma endregion
+
+#pragma region CAMERA_MANAGER
+HRESULT CClientInstance::Add_Camera(_uint iLevelIndex, CCamera* pCamera)
+{
+	return m_pCamera_Manager->Add_Camera(iLevelIndex, pCamera);
+}
+void CClientInstance::Change_Camera(_uint iLevelIndex, _uint iCameraType)
+{
+	m_pCamera_Manager->Change_Camera(iLevelIndex, iCameraType);
+}
+void CClientInstance::Change_Camera(_uint iLevelIndex, _wstring strCameraTag)
+{
+	m_pCamera_Manager->Change_Camera(iLevelIndex, strCameraTag);
+}
+vector<CCamera*> CClientInstance::Get_pCameras(_uint iNumLevel)
+{
+	return m_pCamera_Manager->Get_pCameras(iNumLevel);
+}
+CCamera* CClientInstance::Get_ActiveCamera()
+{
+	return m_pCamera_Manager->Get_ActiveCamera();
+}
+_float3 CClientInstance::Get_ActiveCameraPos()
+{
+	return m_pCamera_Manager->Get_ActiveCameraPos();
+}
+_float4 CClientInstance::Get_ActiveCameraLook()
+{
+	return m_pCamera_Manager->Get_ActiveCameraLook();
+}
+void CClientInstance::Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData)
+{
+	m_pCamera_Manager->Save_Json(iLevelIndex, strCameraTag, pOutData);
+}
+#pragma endregion
+
 
 void CClientInstance::Free()
 {

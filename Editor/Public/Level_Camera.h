@@ -21,9 +21,6 @@ private:
 	HRESULT Ready_Layer_Player();
 	HRESULT Ready_Layer_Camera(const _wstring& strLayerTag);
 
-private:
-	class CCamera_Controller* m_pCamera_Controller = { nullptr };
-
 public:
 	static CLevel_Camera* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;

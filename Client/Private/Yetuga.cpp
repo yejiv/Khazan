@@ -86,7 +86,7 @@ HRESULT CYetuga::Ready_PartObjects()
     CBody_Yetuga::PARTOBJECT_DESC BodyDesc{};
     BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
 
-    if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Body"),ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_PartObject_Yetuga_Body"), &BodyDesc)))
+    if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Body"),ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Yetuga_Body"), &BodyDesc)))
         return E_FAIL;
 
     CPartObject* pBody = Find_PartObject(TEXT("Part_Body"));

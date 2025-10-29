@@ -24,6 +24,7 @@ public:
 
 private:
 	unsigned int m_iRefCnt = {};
+	//mutex m_Mutex;
 
 public:
 	virtual void Free();

@@ -7,6 +7,8 @@
 #include "UIObject.h"
 #include "Damage_Text.h"
 
+#include "Sequence_Dummy.h"
+
 CLevel_Title::CLevel_Title(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel { pDevice, pContext }
 {
@@ -24,6 +26,15 @@ HRESULT CLevel_Title::Initialize()
 		{
 			iTest = e.data;
 		});
+
+	CSequence_Dummy* pDummy = CSequence_Dummy::Create();
+
+	SEQ_REQ_PLAY_DESC tPlayDesc{};
+	tPlayDesc.tId.iSeq = 100;
+	tPlayDesc.pAsset = L"Boss_Intro";
+	tPlayDesc.fStartTime = 0.f;
+
+	m_pGameInstance->SEQ_AdoptAndPlay(pDummy, tPlayDesc);
 
 	return S_OK;
 }
@@ -43,7 +54,7 @@ void CLevel_Title::Update(_float fTimeDelta)
 
 	if (GetKeyState(VK_RETURN) & 0x8000)
 	{
-		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::STAGE1))))
+		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::HEINMACH))))
 			return;
 	}
 

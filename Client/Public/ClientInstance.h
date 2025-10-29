@@ -5,7 +5,9 @@
 
 NS_BEGIN(Engine)
 class CUIObject;
+class CCamera;
 NS_END
+
 NS_BEGIN(Client)
 
 class CClientInstance final : public CBase
@@ -53,12 +55,26 @@ public:
 	//ETC
 	_float4						Get_AtlasUV(const string pFrameName, _uint iTextureIndex);
 #pragma endregion
+
+#pragma region CAMERA_MANAGER
+	HRESULT Add_Camera(_uint iLevelIndex, class CCamera* pCamera);
+	void Change_Camera(_uint iLevelIndex, _uint iCameraType);
+	void Change_Camera(_uint iLevelIndex, _wstring strCameraTag);
+	vector<class CCamera*> Get_pCameras(_uint iNumLevel);
+	class CCamera* Get_ActiveCamera();
+	_float3 Get_ActiveCameraPos();
+	_float4 Get_ActiveCameraLook();
+
+	void Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
+#pragma endregion
+
 private:
 	ID3D11Device* m_pDevice = { nullptr };
 	ID3D11DeviceContext* m_pContext = { nullptr };
 	
 	class CUI_Manager*	m_pUI_Manager = { nullptr };
 	CDB_Manager*		m_pDB_Manager = { nullptr };
+	class CCamera_Manager* m_pCamera_Manager = { nullptr };
 
 #ifdef _DEBUG
 	class CDebug_Manager* m_pDebug_Manager = { nullptr };

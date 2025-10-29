@@ -1,8 +1,12 @@
 #pragma once
-
+#include "Client_Defines.h"
 #include "Base.h"
 
 NS_BEGIN(Engine)
+class CCamera;
+NS_END
+
+NS_BEGIN(Client)
 
 class CCamera_Manager final : public CBase
 {

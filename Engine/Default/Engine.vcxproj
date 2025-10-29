@@ -186,7 +186,6 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\Bone.cpp" />
     <ClCompile Include="..\Private\BTNode.cpp" />
     <ClCompile Include="..\private\Camera.cpp" />
-    <ClCompile Include="..\Private\Camera_Manager.cpp" />
     <ClCompile Include="..\private\Cell.cpp" />
     <ClCompile Include="..\private\Channel.cpp" />
     <ClCompile Include="..\Private\Composite_Node.cpp" />
@@ -226,6 +225,8 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\Perception.cpp" />
     <ClCompile Include="..\Private\Repeater_Node.cpp" />
     <ClCompile Include="..\Private\Selector_Node.cpp" />
+    <ClCompile Include="..\Private\SequenceAdapter.cpp" />
+    <ClCompile Include="..\Private\Sequence_Manager.cpp" />
     <ClCompile Include="..\Private\Sequence_Node.cpp" />
     <ClCompile Include="..\private\SSAO.cpp" />
     <ClCompile Include="..\Private\StateMachine.cpp" />
@@ -302,13 +303,13 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\BTNode.h" />
     <ClInclude Include="..\Public\BTNode_Defines.h" />
     <ClInclude Include="..\public\Camera.h" />
-    <ClInclude Include="..\Public\Camera_Manager.h" />
     <ClInclude Include="..\public\Cell.h" />
     <ClInclude Include="..\public\Channel.h" />
     <ClInclude Include="..\Public\Composite_Node.h" />
     <ClInclude Include="..\Public\Condition_Node.h" />
     <ClInclude Include="..\Public\CoolDown_Nodel.h" />
     <ClInclude Include="..\Public\Decorator_Node.h" />
+    <ClInclude Include="..\public\Engine_Sequence.h" />
     <ClInclude Include="..\Public\Guizmo\GraphEditor.h" />
     <ClInclude Include="..\Public\Guizmo\ImCurveEdit.h" />
     <ClInclude Include="..\Public\Guizmo\ImGradient.h" />
@@ -365,6 +366,9 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Perception_Defines.h" />
     <ClInclude Include="..\Public\Repeater_Node.h" />
     <ClInclude Include="..\Public\Selector_Node.h" />
+    <ClInclude Include="..\Public\SequenceAdapter.h" />
+    <ClInclude Include="..\public\Sequence_Interface.h" />
+    <ClInclude Include="..\Public\Sequence_Manager.h" />
     <ClInclude Include="..\Public\Sequence_Node.h" />
     <ClInclude Include="..\public\SSAO.h" />
     <ClInclude Include="..\Public\StateMachine.h" />
