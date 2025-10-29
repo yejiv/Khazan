@@ -44,6 +44,7 @@ HRESULT CLevel_Shader::Initialize()
 			m_CascadeConfig = m_pGameInstance->Get_CascadeConfig();
 			m_SSAOConfig = m_pGameInstance->Get_SSAOConfig();
 			m_BlurConfig = m_pGameInstance->Get_BlurConfig();
+			m_FogConfig = m_pGameInstance->Get_FogConfig();
 			m_isInitShadow = true;
 		}
 
@@ -157,12 +158,58 @@ HRESULT CLevel_Shader::Initialize()
 			}
 		}
 
+		ImGui::Checkbox("Fog", &m_isEnableFog);
+
+		if (m_isEnableFog)
+		{
+			_bool isChanged = {};
+			_int iFogMode = static_cast<_int>(m_FogConfig.eType);
+			
+			//	ImGui::Text("Fog Type : ");
+			//	ImGui::SameLine();
+			isChanged |= ImGui::RadioButton("Linear", &iFogMode, static_cast<_int>(FOG_CONFIG::LINEAR));
+			ImGui::SameLine();
+			isChanged |= ImGui::RadioButton("Exp", &iFogMode, static_cast<_int>(FOG_CONFIG::EXP));
+			ImGui::SameLine();
+			isChanged |= ImGui::RadioButton("Exp Spuare", &iFogMode, static_cast<_int>(FOG_CONFIG::EXPSQUARE));
+
+			if (true == isChanged)
+			{
+				m_FogConfig.eType = static_cast<FOG_CONFIG::TYPE>(iFogMode);
+				m_pGameInstance->Set_FogConfig(m_FogConfig);
+			}
+
+			if (FOG_CONFIG::LINEAR == m_FogConfig.eType)
+			{
+				if (ImGui::SliderFloat("Near", &m_FogConfig.fNear, 0.1f, 100.f))
+					m_pGameInstance->Set_FogConfig(m_FogConfig);
+
+				if (ImGui::SliderFloat("Far", &m_FogConfig.fFar, m_FogConfig.fNear + 0.1f, 1000.f))
+					m_pGameInstance->Set_FogConfig(m_FogConfig);
+
+				if (m_FogConfig.fFar <= m_FogConfig.fNear)
+				{
+					m_FogConfig.fFar = m_FogConfig.fNear + 0.1f;
+					m_pGameInstance->Set_FogConfig(m_FogConfig);
+				}
+			}
+			else
+			{
+				if (ImGui::SliderFloat("Density", &m_FogConfig.fDensity, 0.0001f, 0.05f, "%.4f"))
+					m_pGameInstance->Set_FogConfig(m_FogConfig);
+			}
+
+			if (ImGui::ColorEdit4("Fog Color", reinterpret_cast<_float*>(&m_FogConfig.vColor)))
+				m_pGameInstance->Set_FogConfig(m_FogConfig);
+		}
+
 		dynamic_cast<CPlayer_Shader*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER), 
 			TEXT("Layer_Player"), 0))->Set_EnableEmissive(m_isEnableEmissive);
 		dynamic_cast<CPlayer_Shader*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
 			TEXT("Layer_Player"), 0))->Set_EnableBloom(m_isEnableBloom);
 		m_pGameInstance->Set_EnableShadow(m_isRenderShadow);
 		m_pGameInstance->Set_EnableSSAO(m_isRenderSSAO);
+		m_pGameInstance->Set_EnableFog(m_isEnableFog);
 
 		ImGui::End();
 	});

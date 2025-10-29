@@ -43,6 +43,7 @@ private:
 	_bool					m_isRenderSSAO = { true };
 	_bool					m_isEnableEmissive = {};
 	_bool					m_isEnableBloom = {};
+	_bool					m_isEnableFog = {};
 
 	// SSAO
 	SSAO_CONFIG				m_SSAOConfig = {};
@@ -54,6 +55,8 @@ private:
 	// Blur
 	GAUSSIAN_BLUR_CONFIG	m_BlurConfig = {};
 
+	// Fog
+	FOG_CONFIG				m_FogConfig = {};
 
 private:
 	// 파라미터 ( 1. 등록할 레이어 태그 | 2. 데이터 파일 이름 | 3. 현재 로드할 레벨 | 4. 맵 타입 ( 안넣으면 폴더 내부 X ) )

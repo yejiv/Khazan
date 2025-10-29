@@ -193,6 +193,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\Condition_Node.cpp" />
     <ClCompile Include="..\Private\CoolDown_Nodel.cpp" />
     <ClCompile Include="..\Private\Decorator_Node.cpp" />
+    <ClCompile Include="..\private\Fog.cpp" />
     <ClCompile Include="..\private\Font_Face.cpp" />
     <ClCompile Include="..\private\Font_Renderer.cpp" />
     <ClCompile Include="..\Private\Inverter_Node.cpp" />
@@ -309,6 +310,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Condition_Node.h" />
     <ClInclude Include="..\Public\CoolDown_Nodel.h" />
     <ClInclude Include="..\Public\Decorator_Node.h" />
+    <ClInclude Include="..\public\Fog.h" />
     <ClInclude Include="..\Public\Guizmo\GraphEditor.h" />
     <ClInclude Include="..\Public\Guizmo\ImCurveEdit.h" />
     <ClInclude Include="..\Public\Guizmo\ImGradient.h" />

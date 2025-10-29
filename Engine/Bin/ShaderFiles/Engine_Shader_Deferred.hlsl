@@ -18,7 +18,7 @@ vector g_vMtrlAmbient = { 1.f, 1.f, 1.f, 1.f }, g_vMtrlSpecular = { 1.f, 1.f, 1.
 
 // ===== Textures =====
 Texture2D g_DiffuseTexture, g_NormalTexture, g_DepthTexture, g_ShadeTexture, g_SpecularTexture, g_EmissiveTexture;
-Texture2D g_LightDepthTexture, g_PostSceneTexture, g_BlurXTexture, g_BloomTexture;
+Texture2D g_LightDepthTexture, g_PostSceneTexture, g_BlurXTexture, g_BloomTexture, g_FogTexture;
 
 // ===== Cascade Shadow =====
 int g_iTextureArrayIndex;
@@ -47,6 +47,13 @@ float g_fViewportWidth, g_fViewportHeight;
 StructuredBuffer<float> g_Weights;
 float g_fNormalization;
 int g_iWeightRadius;
+
+// ===== Fog =====
+uint g_iFogMode;
+float g_fFogNear, g_fFogFar;
+float g_fFogDensity;
+float4 g_vFogColor = { 1.f, 1.f, 1.f, 1.f };
+bool g_isEnableFog;
 
 struct VS_IN
 {
@@ -420,11 +427,62 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
     vector vPostSceneDesc = g_PostSceneTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vEmissiveDesc = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vBloomDesc = g_BloomTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vFogDesc = g_FogTexture.Sample(DefaultSampler, In.vTexcoord);
     
-    if (0.f == vPostSceneDesc.a)
-        Out.vColor = 0.f;
+    //  if (0.f == vPostSceneDesc.a)
+    //      Out.vColor = 0.f;
 
-    Out.vColor = vPostSceneDesc + vEmissiveDesc + vBloomDesc;
+    if (true == g_isEnableFog)
+        Out.vColor = vFogDesc + vEmissiveDesc + vBloomDesc;
+    else
+        Out.vColor = vPostSceneDesc + vEmissiveDesc + vBloomDesc;
+
+    return Out;
+}
+
+PS_OUT_BACKBUFFER PS_MAIN_FOG(PS_IN In)
+{
+    PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
+    
+    vector vPostSceneDesc = g_PostSceneTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    vector vViewPos;
+
+    vViewPos.x = In.vTexcoord.x * 2.f - 1.f;
+    vViewPos.y = In.vTexcoord.y * -2.f + 1.f;
+    vViewPos.z = vDepthDesc.x;
+    vViewPos.w = 1.f;
+    
+    // View Space
+    vViewPos = vViewPos * vDepthDesc.y;   // View Z
+    vViewPos = mul(vViewPos, g_ProjMatrixInv);
+    float fViewZ = vViewPos.z;
+    
+    // Linear
+    float fLinear = saturate((fViewZ - g_fFogNear) / (g_fFogFar - g_fFogNear));
+    
+    // Exponential -> (1 - e^{-rho * d})
+    float fDistance = abs(fViewZ);
+    float fExp = saturate(1.f - exp(-g_fFogDensity * fDistance));
+    
+    // Exponential^2 -> (1 - e^{-(rho * d)^2})
+    float fOpticalDepth = g_fFogDensity * fDistance;    // ±§«– ±Ì¿Ã
+    float fExpSquare = saturate(1.f - exp(-(fOpticalDepth * fOpticalDepth)));
+    
+    float4 vResultColor;
+    float fFogFactor;
+        
+    if (0 == g_iFogMode)
+        fFogFactor = fLinear;
+    else if (1 == g_iFogMode)
+        fFogFactor = fExp;
+    else if (2 == g_iFogMode)
+        fFogFactor = fExpSquare;
+
+    vResultColor = lerp(vPostSceneDesc, g_vFogColor, fFogFactor);
+    Out.vColor = vResultColor;
+    //  Out.vColor = float4(vResultColor.rgb, vPostSceneDesc.a);
     
     return Out;
 }
@@ -528,5 +586,16 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_COMBINED();
+    }
+
+    pass Fog
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+    
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_FOG();
     }
 }

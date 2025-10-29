@@ -46,13 +46,15 @@ HRESULT CRenderer::Initialize()
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_SSAO"), 450.0f, 450.0f, 300.f, 300.f)))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_CSM_Debug(ViewportDesc.Width - 150.0f, 150.0f, 300.f, 300.f)))
+    if (FAILED(m_pGameInstance->Ready_CSM_Debug(m_fViewportWidth - 150.0f, 150.0f, 300.f, 300.f)))
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Specular"), 150.0f, 750.0f, 300.f, 300.f)))
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Emissive"), 450.0f, 750.0f, 300.f, 300.f)))
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_PostScene"), 750.0f, 150.0f, 300.f, 300.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Fog"), 1050.0f, 150.0f, 300.f, 300.f)))
         return E_FAIL;
 #endif
 
@@ -99,6 +101,9 @@ HRESULT CRenderer::Draw()
     if (FAILED(Render_Blend()))
         return E_FAIL;
 
+    if (FAILED(Render_Fog()))
+        return E_FAIL;
+
     // Bloom
     if (FAILED(Render_Blur()))
         return E_FAIL;
@@ -108,9 +113,6 @@ HRESULT CRenderer::Draw()
 
     if (FAILED(Render_UI()))
         return E_FAIL;
-
-    //  if (FAILED(Render_UI_Effect()))
-    //      return E_FAIL;
 
 #ifdef _DEBUG
     if (isEnableDebugRender())
@@ -397,6 +399,41 @@ HRESULT CRenderer::Render_Blend()
     return S_OK;
 }
 
+HRESULT CRenderer::Render_Fog()
+{
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Fog"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::PROJ))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_Fog_ShaderResources(m_pShader)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_PostScene"), m_pShader, "g_PostSceneTexture")))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
+        return E_FAIL;
+
+    m_pShader->Begin(9);
+
+    m_pVIBuffer->Bind_Resources();
+    m_pVIBuffer->Render();
+
+    if (FAILED(m_pGameInstance->End_MRT()))
+        return E_FAIL;
+
+    return S_OK;
+}
+
 HRESULT CRenderer::Render_Blur()
 {
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_BlurX"))))
@@ -472,6 +509,12 @@ HRESULT CRenderer::Render_Combined()
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Bloom"), m_pShader, "g_BloomTexture")))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Fog"), m_pShader, "g_FogTexture")))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_Bool("g_isEnableFog", &m_isEnableFog)))
         return E_FAIL;
 
     m_pShader->Begin(8);
@@ -551,6 +594,10 @@ HRESULT CRenderer::Ready_RenderTargets()
     if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Bloom"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
+    /* For.Target_Fog */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Fog"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+        return E_FAIL;
+
     return S_OK;
 }
 
@@ -559,20 +606,26 @@ HRESULT CRenderer::Ready_MRTs()
     /* For.MRT_GameObjects : 게임 오브젝트들의 정보를 저장받기위한 타겟들 */
     if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Diffuse"))))
         return E_FAIL;
+
     if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Normal"))))
         return E_FAIL;
+
     if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Depth"))))
         return E_FAIL;
+
     if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_World"))))
         return E_FAIL;
+
     if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Specular"))))
         return E_FAIL;
+
     if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Emissive"))))
         return E_FAIL;
 
     /* For.MRT_LightAcc : 빛들의 연산 결과를 누적한다. */
     if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Shade"))))
         return E_FAIL;
+
     if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_SpecularLight"))))
         return E_FAIL;
 
@@ -596,6 +649,10 @@ HRESULT CRenderer::Ready_MRTs()
 
     /* For.MRT_SSAO */
     if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_SSAO"), TEXT("Target_SSAO"))))
+        return E_FAIL;
+
+    /* For.MRT_Fog */
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Fog"), TEXT("Target_Fog"))))
         return E_FAIL;
 
     return S_OK;
@@ -677,6 +734,15 @@ _bool CRenderer::isEnableSSAO()
 #endif
 }
 
+_bool CRenderer::isEnableFog()
+{
+#ifdef _DEBUG
+    return m_isEnableFog;
+#else
+    return true;
+#endif
+}
+
 #ifdef _DEBUG
 _bool CRenderer::isEnableDebugRender()
 {
@@ -687,7 +753,6 @@ _bool CRenderer::isEnableDebugRender()
 
     return m_isEnableDebugRender;
 }
-
 #endif
 
 CRenderer* CRenderer::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

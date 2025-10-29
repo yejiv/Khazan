@@ -24,6 +24,7 @@ public:
 	HRESULT Add_DebugComponent(class CComponent* pComponent);
 	void Set_EnableShadow(_bool isEnable) { m_isEnableShadow = isEnable; }
 	void Set_EnableSSAO(_bool isEnable) { m_isEnableSSAO = isEnable; }
+	void Set_EnableFog(_bool isEnable) { m_isEnableFog = isEnable; }
 #endif
 
 private:
@@ -46,6 +47,7 @@ private:
 	_bool						m_isEnableDebugRender = {};
 	_bool						m_isEnableShadow = { true };
 	_bool						m_isEnableSSAO = { true };
+	_bool						m_isEnableFog = {};
 #endif
 
 private:
@@ -57,6 +59,7 @@ private:
 	HRESULT Render_PostScene();
 	HRESULT Render_NonLight();
 	HRESULT Render_Blend();
+	HRESULT Render_Fog();
 	HRESULT Render_Blur();
 	HRESULT Render_Combined();
 	HRESULT Render_UI();
@@ -74,7 +77,10 @@ private:
 private:
 	_bool isEnableShadow();
 	_bool isEnableSSAO();
+	_bool isEnableFog();
+
 #ifdef _DEBUG
+private:
 	_bool isEnableDebugRender();
 #endif
 
