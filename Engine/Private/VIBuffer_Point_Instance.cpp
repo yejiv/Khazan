@@ -13,8 +13,10 @@ CVIBuffer_Point_Instance::CVIBuffer_Point_Instance(const CVIBuffer_Point_Instanc
 	, m_vRange{ Prototype.m_vRange }
 	, m_IsLoop{ Prototype.m_IsLoop }
 	, m_fOffset{ Prototype.m_fOffset } //나중에 필요하면 상수버퍼로 넘기기
+	, m_pSRVNoise{ Prototype.m_pSRVNoise } //나중에 필요하면 상수버퍼로 넘기기
 
 {
+	Safe_AddRef(m_pSRVNoise);
 }
 
 void CVIBuffer_Point_Instance::Reset()
@@ -127,6 +129,22 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDes
 		m_pParticleParams[i].fSize = fScale;
 	}
 
+
+	HRESULT     hr = {};
+	_tchar		tpath[MAX_PATH] = {};
+
+	MultiByteToWideChar(CP_UTF8, 0, pPointDesc->pNoiseFilePath, -1, tpath, 100);
+
+	filesystem::path path(tpath);
+	string FileExt = path.extension().string();
+	if (FileExt == ".dds")
+		hr = CreateDDSTextureFromFile(m_pDevice, tpath, nullptr, &m_pSRVNoise);
+	else //png
+		hr = CreateWICTextureFromFile(m_pDevice, tpath, nullptr, &m_pSRVNoise);
+
+	if (FAILED(hr))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -198,6 +216,7 @@ _bool CVIBuffer_Point_Instance::Update(_float fTimeDelta)
 	
 	COMPUTE_PASS_DESC PassDesc{};
 	PassDesc.SRVs.push_back(m_pSRV);
+	//PassDesc.SRVs.push_back(m_pSRVNoise);
 	PassDesc.UAVs.push_back(m_pUAV);
 	PassDesc.UAVs.push_back(m_pUAVSpeed);
 	PassDesc.ConstantBuffers.push_back(m_pCB);
@@ -232,6 +251,37 @@ void CVIBuffer_Point_Instance::UpdateGravity(_float fTimeDelta)
 
 	CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
 	JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::GRAVITY)];
+	JobDesc.PassDesc = PassDesc;
+
+	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
+
+	m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
+}
+
+void CVIBuffer_Point_Instance::UpdateTurbulence(_float fTimeDelta, _float fAccTime)
+{
+	D3D11_MAPPED_SUBRESOURCE SubResource;
+	if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
+	{
+		POINT_INSTANCE_CB* pPointInstanceCB = reinterpret_cast<POINT_INSTANCE_CB*>(SubResource.pData);
+		pPointInstanceCB->fTotalTime = fAccTime;
+		pPointInstanceCB->fTimeDelta = fTimeDelta;
+		m_pContext->Unmap(m_pCB, 0);
+	}
+
+	COMPUTE_PASS_DESC PassDesc{};
+	PassDesc.SRVs.push_back(m_pSRV);
+	PassDesc.SRVs.push_back(m_pSRVNoise);
+	PassDesc.UAVs.push_back(m_pUAV);
+	PassDesc.ConstantBuffers.push_back(m_pCB);
+	_uint iNumThreadPerGroup = 256;
+	_uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
+	PassDesc.x = iNumGroups;
+	PassDesc.y = 1;
+	PassDesc.z = 1;
+
+	CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
+	JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::TURBULENCE)];
 	JobDesc.PassDesc = PassDesc;
 
 	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
@@ -425,6 +475,11 @@ HRESULT CVIBuffer_Point_Instance::Ready_ComputeShader()
 	if (nullptr == m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET_SPEED)])
 		return E_FAIL;
 
+	m_ComputeShaders[ENUM_CLASS(CS_PASS::TURBULENCE)] = CComputeShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Point_Instance_Compute.hlsl"), "CS_TURBULENCE");
+	if (nullptr == m_ComputeShaders[ENUM_CLASS(CS_PASS::TURBULENCE)])
+		return E_FAIL;
+
+
 	return S_OK;
 }
 
@@ -475,8 +530,20 @@ void CVIBuffer_Point_Instance::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pCB);
+	Safe_Release(m_pStructuredBuffer);
+	Safe_Release(m_pSpeedBuffer);
+	Safe_Release(m_pStagingBuffer);
+	Safe_Release(m_pSRV);
+	Safe_Release(m_pUAV);
+	Safe_Release(m_pUAVSpeed);
+
+	for(_uint i = 0; i < CS_PASS::END; ++i)
+		Safe_Release(m_ComputeShaders[i]);
+
 	if (false == m_isCloned)
 	{
 		Safe_Delete_Array(m_pParticleParams);
+		Safe_Release(m_pSRVNoise);
 	}
 }

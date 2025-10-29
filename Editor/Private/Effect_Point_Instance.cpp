@@ -49,6 +49,12 @@ void CEffect_Point_Instance::Update(_float fTimeDelta)
     if (m_sData.bGravity)
         m_pVIBufferCom->UpdateGravity(fTimeDelta);
 
+    if (m_sData.bIsTurbulence)
+    {
+        m_fAccTime += fTimeDelta;
+        m_pVIBufferCom->UpdateTurbulence(fTimeDelta, m_fAccTime);
+    }
+
     __super::Update(fTimeDelta);
 
     /* Edit */
@@ -88,6 +94,7 @@ void CEffect_Point_Instance::Edit_Element()
     _bool            loop = (_int)m_sEditingData.bIsLoop;
     _bool            IsVerticalScroll = (_int)m_sEditingData.bIsScrollVertical;
     _bool            IsInverseScroll = (_int)m_sEditingData.bIsScrollInverse;
+    _bool            bIsTurbulence = (_int)m_sEditingData.bIsTurbulence;
 
     ImGui::RadioButton("Spawn_BoundingBox", &isCircle, 0);
     ImGui::RadioButton("Spawn_Circle", &isCircle, 1);
@@ -126,10 +133,19 @@ void CEffect_Point_Instance::Edit_Element()
     else
         m_sEditingData.fMaskScrollSpeed = 0.f;
 
+    if (bIsTurbulence)
+    {
+        ImGui::Indent();
+        const char* MaskTexture[] = { "texture0", "texture1", "texture2",  "texture3" };
+        ImGui::Combo("Turbulence Textures", reinterpret_cast<int*>(&m_sEditingData.iTurbulenceTextureIdx), MaskTexture, IM_ARRAYSIZE(MaskTexture));
+        ImGui::Unindent();
+    }
+
     m_sEditingData.IsCircle = isCircle;
     m_sEditingData.bIsLoop = loop;
     m_sEditingData.bIsScrollInverse = IsInverseScroll;
     m_sEditingData.bIsScrollVertical = IsVerticalScroll;
+    m_sEditingData.bIsTurbulence = bIsTurbulence;
 
     if (ImGui::Button("Apply"))
         Apply(&m_sEditingData);
@@ -146,6 +162,7 @@ void CEffect_Point_Instance::Reset()
 {
     __super::Reset();
     m_pVIBufferCom->Reset();
+    m_fAccTime = 0.f;
 }
 
 void CEffect_Point_Instance::SetSpreadData(void* pArg)
@@ -246,10 +263,18 @@ HRESULT CEffect_Point_Instance::Bind_ShaderResources()
 void CEffect_Point_Instance::Apply(void* pArg)
 {
     m_sData = *static_cast<PARTICLE_DESC*>(pArg);
+
+    const char* format = "../../Client/Bin/Resources/Effect/Noise/Noise%d.png";
+
+    char finalPathBuffer[MAX_PATH] = {};
+    sprintf_s(finalPathBuffer, MAX_PATH, format, m_sData.iTurbulenceTextureIdx);
+    strcpy_s(m_sData.pNoiseFilePath, MAX_PATH, finalPathBuffer);
+
     Safe_Release(m_pVIBufferCom);
     m_pVIBufferCom = CVIBuffer_Point_Instance::Create(m_pDevice, m_pContext, &m_sData);
     m_pVIBufferCom->Initialize_Clone(nullptr);
     m_iEffect_Type = 0;
+    m_fAccTime = 0.f;
 
     m_sEditingData = m_sData;
 }

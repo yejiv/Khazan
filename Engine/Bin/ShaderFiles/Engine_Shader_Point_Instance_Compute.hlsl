@@ -34,11 +34,21 @@ cbuffer CB_PARTICLE : register(b0)
     
     float g_bIsLoop;
     float3 g_SpawnRange;
+    float g_TotalTime;
 };
 
 StructuredBuffer<PARTICLE_PARAMS> g_InputData : register(t0);
+Texture2D g_NoiseTexture : register(t1);
 RWStructuredBuffer<VTXINSTANCE_PARTICLE> g_OutputData : register(u0);
 RWStructuredBuffer<VTXINSTANCE_DYNAMIC_DATA> g_SpeedData : register(u1);
+
+
+SamplerState g_LinearWrapSampler
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = WRAP;
+    AddressV = WRAP;
+};
 
 uint pcg_hash(uint seed)
 {
@@ -237,4 +247,27 @@ void CS_RESET_SPEED(uint3 DTid : SV_DispatchThreadID)
         SpeedData.fSpeed.w = 0.f;
     
     g_SpeedData[iIndex] = SpeedData;
+}
+
+[numthreads(256, 1, 1)]
+void CS_TURBULENCE(uint3 DTid : SV_DispatchThreadID)
+{
+    uint iIndex = DTid.x;
+    
+    if (iIndex >= g_iNumInstances)
+        return;
+    
+    VTXINSTANCE_PARTICLE Particle = g_OutputData[iIndex];
+    
+    float3 pos = Particle.vTranslation.xyz;
+    
+    float forceX = g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.yz * 0.1f + g_TotalTime * 0.05f, 0.f).r;
+    float forceY = g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.xz * 0.1f + g_TotalTime * 0.05f, 0.f).r;
+    float forceZ = g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.xy * 0.1f + g_TotalTime * 0.05f, 0.f).r;
+    
+    float3 noiseDirection = (float3(forceX, forceY, forceZ) * 2.f - 1.f);   //0~1 -> -1 ~ 1
+    
+    Particle.vTranslation += float4(noiseDirection, 0.f) * 10.f * g_fTimeDelta; //나중에 필요시 상수버퍼로 세기값 받아오기
+    
+    g_OutputData[iIndex] = Particle;
 }
