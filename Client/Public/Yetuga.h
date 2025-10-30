@@ -25,9 +25,18 @@ public:
 private:
 	HRESULT						Ready_Components();
 	HRESULT						Ready_PartObjects();
+	HRESULT						Ready_Projectiles();
+	HRESULT						Ready_AnimEvent();
+
+
+private:
+	void						Pick_Rock();
+	void						Hold_Rock();
+	void						Throw_Rock();
 
 public:
 	class CBody_Yetuga*			m_pBody = { nullptr };
+	class CProjectile_Yetuga*	m_pHoldRock = { nullptr };
 
 public:
 	static CYetuga*				Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
