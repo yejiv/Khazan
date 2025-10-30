@@ -406,6 +406,11 @@ void CGameInstance::Set_EnableToonShade(_bool isEnable)
 	m_pRenderer->Set_EnableToonShade(isEnable);
 }
 
+void CGameInstance::Set_EnableOutline(_bool isEnable)
+{
+	m_pRenderer->Set_EnableOutline(isEnable);
+}
+
 void CGameInstance::Set_EnableFog(_bool isEnable)
 {
 	m_pRenderer->Set_EnableFog(isEnable);
@@ -415,6 +420,16 @@ void CGameInstance::Set_EnableFog(_bool isEnable)
 void CGameInstance::Set_ToonShadeLevel(_float fLevel)
 {
 	m_pRenderer->Set_ToonShadeLevel(fLevel);
+}
+
+OUTLINE_CONFIG CGameInstance::Get_OutlineConfig()
+{
+	return m_pRenderer->Get_OutlineConfig();
+}
+
+void CGameInstance::Set_OutlineConfig(OUTLINE_CONFIG Config)
+{
+	m_pRenderer->Set_OutlineConfig(Config);
 }
 
 #pragma endregion

@@ -86,9 +86,13 @@ public:
 	void Set_EnableSSAO(_bool isEnable);
 	void Set_EnableFog(_bool isEnable);
 	void Set_EnableToonShade(_bool isEnable);
+	void Set_EnableOutline(_bool isEnable);
 #endif
 
+public:
 	void Set_ToonShadeLevel(_float fLevel);
+	OUTLINE_CONFIG Get_OutlineConfig();
+	void Set_OutlineConfig(OUTLINE_CONFIG Config);
 #pragma endregion
 
 #pragma region TIMER_MANAGER

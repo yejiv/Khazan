@@ -25,12 +25,20 @@ public:
 	virtual void Late_Update(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 	virtual HRESULT Render_Shadow() override;
+	virtual HRESULT Render_Outline() override;
 
 public:
 	void Set_EnableEmissive(_bool isEnable) { m_isEnableEmissive = isEnable; }
 	void Set_EnableBloom(_bool isEnable) { m_isEnableBloom = isEnable; }
 
 	void Set_EmissiveIntensity(_float fIntensity) { m_fEmissiveIntensity = fIntensity; }
+
+	OUTLINE_CONFIG Get_OutlineConfig() { return m_OutlineConfig; }
+	void Set_OutlineConfig(OUTLINE_CONFIG Config) 
+	{ 
+		m_OutlineConfig.vColor = Config.vColor;
+		m_OutlineConfig.fSize = Config.fSize;
+	}
 
 private:
 	CShader* m_pShaderCom = { nullptr };
@@ -41,6 +49,8 @@ private:
 	_float m_fEmissiveIntensity = {};
 	_bool m_isEnableEmissive = {};
 	_bool m_isEnableBloom = {};
+
+	OUTLINE_CONFIG m_OutlineConfig = { _float3(1.f, 0.f, 1.f), 0.001f, 0.f, 0.f };
 
 private:
 	HRESULT Ready_Components();
