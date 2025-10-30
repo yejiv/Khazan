@@ -25,6 +25,7 @@
 #include "SSAO.h"
 #include "Octree.h"
 #include "Blur.h"
+#include "Fog.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -134,6 +135,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pBlur)
 		return E_FAIL;
 
+	m_pFog = CFog::Create(*ppDevice, *ppContext);
+	if (nullptr == m_pFog)
+		return E_FAIL;
+
 #ifdef _DEBUG
 	m_pImgui_Manager = CImgui_Manager::Create(*ppDevice, *ppContext, EngineDesc.Menu_Imgui, EngineDesc.hWnd, EngineDesc.iWinSizeX, EngineDesc.iWinSizeY);
 	if (nullptr == m_pImgui_Manager)
@@ -175,6 +180,7 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 
 	// Cascade Test
 	m_pShadow->Update();
+	m_pFog->Update(fTimeDelta);
 
 	m_pLevel_Manager->Update(fTimeDelta);
 
@@ -394,8 +400,21 @@ void CGameInstance::Set_EnableSSAO(_bool isEnable)
 	m_pRenderer->Set_EnableSSAO(isEnable);
 }
 
+void CGameInstance::Set_EnableToonShade(_bool isEnable)
+{
+	m_pRenderer->Set_EnableToonShade(isEnable);
+}
+
+void CGameInstance::Set_EnableFog(_bool isEnable)
+{
+	m_pRenderer->Set_EnableFog(isEnable);
+}
 #endif
 
+void CGameInstance::Set_ToonShadeLevel(_float fLevel)
+{
+	m_pRenderer->Set_ToonShadeLevel(fLevel);
+}
 
 #pragma endregion
 
@@ -995,6 +1014,37 @@ void CGameInstance::Set_BlurConfig(GAUSSIAN_BLUR_CONFIG Config)
 }
 #pragma endregion
 
+#pragma region FOG
+HRESULT CGameInstance::Bind_Fog_ShaderResources(CShader* pShader)
+{
+	return m_pFog->Bind_Fog_ShaderResources(pShader);
+}
+FOG_CONFIG CGameInstance::Get_FogConfig()
+{
+	return m_pFog->Get_FogConfig();
+}
+void CGameInstance::Set_FogConfig(FOG_CONFIG Config)
+{
+	m_pFog->Set_FogConfig(Config);
+}
+_uint CGameInstance::Get_NumFogNoiseTextures()
+{
+	return m_pFog->Get_NumFogNoiseTextures();
+}
+ID3D11ShaderResourceView* CGameInstance::Get_FogNoiseTexture(_uint iTextureIndex)
+{
+	return m_pFog->Get_FogNoiseTexture(iTextureIndex);
+}
+void CGameInstance::Set_FogNoiseTextureIndex(_uint iTextureIndex)
+{
+	m_pFog->Set_FogNoiseTextureIndex(iTextureIndex);
+}
+void CGameInstance::Set_FogNoiseWorldSpace(_bool isEnable)
+{
+	m_pFog->Set_FogNoiseWorldSpace(isEnable);
+}
+#pragma endregion
+
 #pragma region OCTREE
 
 void CGameInstance::DeleteOctree()
@@ -1044,8 +1094,10 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pOctree);
 	Safe_Release(m_pThreadPool);
 
+	Safe_Release(m_pFog);
 	Safe_Release(m_pBlur);
 	Safe_Release(m_pSSAO);
+	Safe_Release(m_pShadow);
 
 	Safe_Release(m_pThreadPool);
 	Safe_Release(m_pComputeShader_Manager);
@@ -1053,7 +1105,6 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pTarget_Manager);
 	Safe_Release(m_pFont_Manager);
 	Safe_Release(m_pFrustum);
-	Safe_Release(m_pShadow);
 	Safe_Release(m_pEvent_Manager);
 	Safe_Release(m_pPipeLine);
 	Safe_Release(m_pLight_Manager);

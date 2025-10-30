@@ -12,13 +12,15 @@ float g_fRange;
 vector g_vLightDiffuse;
 vector g_vLightAmbient;
 vector g_vLightSpecular;
+bool g_isEnableToonShade;
+float g_fToonShadeLevel = { 3.f };
 
 // ===== Material =====
 vector g_vMtrlAmbient = { 1.f, 1.f, 1.f, 1.f }, g_vMtrlSpecular = { 1.f, 1.f, 1.f, 1.f };
 
 // ===== Textures =====
 Texture2D g_DiffuseTexture, g_NormalTexture, g_DepthTexture, g_ShadeTexture, g_SpecularTexture, g_EmissiveTexture;
-Texture2D g_LightDepthTexture, g_PostSceneTexture, g_BlurXTexture, g_BloomTexture;
+Texture2D g_LightDepthTexture, g_PostSceneTexture, g_BlurXTexture, g_BloomTexture, g_FogTexture;
 
 // ===== Cascade Shadow =====
 int g_iTextureArrayIndex;
@@ -47,6 +49,18 @@ float g_fViewportWidth, g_fViewportHeight;
 StructuredBuffer<float> g_Weights;
 float g_fNormalization;
 int g_iWeightRadius;
+
+// ===== Fog =====
+uint g_iFogMode;
+float g_fFogNear, g_fFogFar;
+float g_fFogDensity;
+float4 g_vFogColor = { 1.f, 1.f, 1.f, 1.f };
+bool g_isEnableFog;
+float g_fTimeDelta;
+bool g_isEnableNoise, g_isWorldFog;
+
+float2 g_vNoiseSpeed, g_vNoiseScale;
+float g_fNoiseStrength, g_fNoiseContrast;
 
 struct VS_IN
 {
@@ -132,16 +146,25 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
     vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
     
     float fShade = max(dot(vNormal * -1.f, normalize(g_vLightDir)), 0.f);
-    
-    Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient));
-    
-    if (!g_isEnableSSAO)
-        return Out;
-    
-    // SSAO
-    float fAO = g_SSAOTexture.Sample(PointSampler, In.vTexcoord).r;
-    Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient * fAO));
 
+    // Toon Shade
+    float fLightIntensity = saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient));
+    float fLevel = floor(g_fToonShadeLevel);
+    float fToonShade = ceil(fLightIntensity * fLevel) / fLevel;
+    
+    if (g_isEnableSSAO)
+    {
+        float fAO = g_SSAOTexture.Sample(PointSampler, In.vTexcoord).r;
+        fToonShade *= fAO;
+        
+        fLightIntensity *= fAO;
+    }
+    
+    if (g_isEnableToonShade)
+        Out.vShade = g_vLightDiffuse * fToonShade;
+    else
+        Out.vShade = g_vLightDiffuse * fLightIntensity;
+    
     // Specular
     vector vSpecularDesc = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
     
@@ -180,16 +203,28 @@ PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
     
     float fAtt = saturate((g_fRange - fDistance) / g_fRange);
     
-    float fShade = max(dot(vNormal * -1.f, normalize(vLightDir)), 0.f);
+    float fShade = max(dot(vNormal * -1.f, normalize(g_vLightDir)), 0.f);
+
+    // Toon Shade
+    float fLightIntensity = saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient));
+    float fLevel = floor(g_fToonShadeLevel);
+    float fToonShade = ceil(fLightIntensity * fLevel) / fLevel;
     
-    Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient)) * fAtt;
+    if (g_isEnableSSAO)
+    {
+        float fAO = g_SSAOTexture.Sample(PointSampler, In.vTexcoord).r;
+        fToonShade *= fAO;
+        
+        fLightIntensity *= fAO;
+    }
     
-    if (!g_isEnableSSAO)
-        return Out;
-    
-    // SSAO
-    float fAO = g_SSAOTexture.Sample(PointSampler, In.vTexcoord).r;
-    Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient * fAO)) * fAtt;
+    if (g_isEnableToonShade)
+        Out.vShade = g_vLightDiffuse * fToonShade * fAtt;
+    else
+        Out.vShade = g_vLightDiffuse * fLightIntensity * fAtt;
+
+    // Specular
+    vector vSpecularDesc = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
     
     vector vReflect = reflect(normalize(vLightDir), vNormal);
     vector vLook = vWorldPos - g_vCamPosition;
@@ -420,11 +455,88 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
     vector vPostSceneDesc = g_PostSceneTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vEmissiveDesc = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vBloomDesc = g_BloomTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vFogDesc = g_FogTexture.Sample(DefaultSampler, In.vTexcoord);
     
-    if (0.f == vPostSceneDesc.a)
-        Out.vColor = 0.f;
+    //  if (0.f == vPostSceneDesc.a)
+    //      Out.vColor = 0.f;
 
-    Out.vColor = vPostSceneDesc + vEmissiveDesc + vBloomDesc;
+    if (true == g_isEnableFog)
+        Out.vColor = vFogDesc + vEmissiveDesc + vBloomDesc;
+    else
+        Out.vColor = vPostSceneDesc + vEmissiveDesc + vBloomDesc;
+
+    return Out;
+}
+
+PS_OUT_BACKBUFFER PS_MAIN_FOG(PS_IN In)
+{
+    PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
+    
+    vector vPostSceneDesc = g_PostSceneTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    vector vWorldPos;
+
+    vWorldPos.x = In.vTexcoord.x * 2.f - 1.f;
+    vWorldPos.y = In.vTexcoord.y * -2.f + 1.f;
+    vWorldPos.z = vDepthDesc.x;
+    vWorldPos.w = 1.f;
+    
+    // View Space
+    vWorldPos = vWorldPos * vDepthDesc.y;   // View Z
+    vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
+    float fViewZ = vWorldPos.z;
+    
+    // World Space
+    vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+
+    // Linear
+    float fLinear = saturate((fViewZ - g_fFogNear) / (g_fFogFar - g_fFogNear));
+    
+    // Exponential -> (1 - e^{-rho * d})
+    float fDistance = abs(fViewZ);
+    float fExp = saturate(1.f - exp(-g_fFogDensity * fDistance));
+    
+    // Exponential^2 -> (1 - e^{-(rho * d)^2})
+    float fOpticalDepth = g_fFogDensity * fDistance;    // ±§«– ±Ì¿Ã
+    float fExpSquare = saturate(1.f - exp(-(fOpticalDepth * fOpticalDepth)));
+    
+    float4 vResultColor;
+    float fFogFactor = 0.f;
+        
+    if (0 == g_iFogMode)
+        fFogFactor = fLinear;
+    else if (1 == g_iFogMode)
+        fFogFactor = fExp;
+    else if (2 == g_iFogMode)
+        fFogFactor = fExpSquare;
+
+    if (true == g_isEnableNoise)
+    {
+        float2 vNoiseTexcoord;
+        
+        if (true == g_isWorldFog)
+        {
+            vNoiseTexcoord = vWorldPos.xz * g_vNoiseScale;
+            vNoiseTexcoord.x += g_fTimeDelta * g_vNoiseSpeed.x;
+            vNoiseTexcoord.y += g_fTimeDelta * g_vNoiseSpeed.y;
+        }
+        else
+        {
+            vNoiseTexcoord = In.vTexcoord * g_vNoiseScale;
+            vNoiseTexcoord.x += g_fTimeDelta * g_vNoiseSpeed.x;
+            vNoiseTexcoord.y += g_fTimeDelta * g_vNoiseSpeed.y;
+        }
+        
+        float fNoise = g_NoiseTexture.Sample(DefaultSampler, vNoiseTexcoord).r;
+        fNoise = pow(fNoise, g_fNoiseContrast);
+        
+        fFogFactor = lerp(fFogFactor, fFogFactor * fNoise, g_fNoiseStrength);
+    }
+    
+    vResultColor = lerp(vPostSceneDesc, g_vFogColor, fFogFactor);
+    Out.vColor = vResultColor;
+    //  Out.vColor = float4(vResultColor.rgb, vPostSceneDesc.a);
     
     return Out;
 }
@@ -528,5 +640,16 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_COMBINED();
+    }
+
+    pass Fog
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+    
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_FOG();
     }
 }

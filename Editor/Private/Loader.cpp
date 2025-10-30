@@ -370,9 +370,13 @@ HRESULT CLoader::Loading_For_Shader_Level()
 	//		return E_FAIL;
 
 	/* Prototype_Component_Editor_Model_Test */
-	//	_matrix PreTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+	//	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Editor_Model_Test"),
+	//		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Test/Test_Player/Test_Player.dat"))))
+	//		return E_FAIL;
+
+	/* Prototype_Component_Editor_Model_Test */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Editor_Model_Test"),
-		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Test/Test_Player/Test_Player.dat"))))
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Khazan/Khazan_Sample/Khazan_Sample.dat"))))
 		return E_FAIL;
 
 	/* Prototype_Component_Model_Rock */

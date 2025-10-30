@@ -84,7 +84,11 @@ public:
 	HRESULT Add_DebugComponent(class CComponent* pComponent);
 	void Set_EnableShadow(_bool isEnable);
 	void Set_EnableSSAO(_bool isEnable);
+	void Set_EnableFog(_bool isEnable);
+	void Set_EnableToonShade(_bool isEnable);
 #endif
+
+	void Set_ToonShadeLevel(_float fLevel);
 #pragma endregion
 
 #pragma region TIMER_MANAGER
@@ -305,6 +309,16 @@ public:
 	void						Set_BlurConfig(GAUSSIAN_BLUR_CONFIG Config);
 #pragma endregion
 
+#pragma region FOG
+	HRESULT						Bind_Fog_ShaderResources(class CShader* pShader);
+	FOG_CONFIG					Get_FogConfig();
+	void						Set_FogConfig(FOG_CONFIG Config);
+	_uint						Get_NumFogNoiseTextures();
+	ID3D11ShaderResourceView*	Get_FogNoiseTexture(_uint iTextureIndex);
+	void						Set_FogNoiseTextureIndex(_uint iTextureIndex);
+	void						Set_FogNoiseWorldSpace(_bool isEnable);
+#pragma endregion
+
 private:
 	class CGraphic_Device*		m_pGraphic_Device = { nullptr };
 	class CLevel_Manager*		m_pLevel_Manager = { nullptr };
@@ -317,7 +331,6 @@ private:
 	class CLight_Manager*		m_pLight_Manager = { nullptr };
 	class CFont_Manager*		m_pFont_Manager = { nullptr };
 	class CTarget_Manager*		m_pTarget_Manager = { nullptr };
-	class CShadow*				m_pShadow = { nullptr };
 	class CFrustum*				m_pFrustum = { nullptr };
 	class CJolt_Manager*		m_pJolt_Manager = { nullptr };
 	CThreadPool*				m_pThreadPool = { nullptr };
@@ -330,9 +343,11 @@ private:
 	class CBlackBoard*			m_pBlackBoard = { nullptr };
 	
 	// 임시(이후 렌더링 리소스 클래스 안으로 이전할 예정)
+	class CShadow*				m_pShadow = { nullptr };
 	class CSSAO*				m_pSSAO = { nullptr };
 	class COctree*				m_pOctree = { nullptr };
 	class CBlur*				m_pBlur = { nullptr };
+	class CFog*					m_pFog = { nullptr };
 
 #ifdef _DEBUG
 	class CImgui_Manager* m_pImgui_Manager = { nullptr };
