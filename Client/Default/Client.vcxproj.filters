@@ -316,6 +316,9 @@
     <Filter Include="92.AI\State\Yetuga\05.Turn">
       <UniqueIdentifier>{5f90142a-cff5-4bcd-ba6a-8a35b7d51aa8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="92.AI\State\Yetuga\06.ThrowBall">
+      <UniqueIdentifier>{6edc0ab8-6d05-4567-a2fb-ae3dfef8cb0b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -591,6 +594,9 @@
     <ClInclude Include="..\Public\AS_Turn_Yetuga.h">
       <Filter>92.AI\State\Yetuga\05.Turn</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\AS_ThrowBall_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\06.ThrowBall</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -854,6 +860,9 @@
     </ClCompile>
     <ClCompile Include="..\private\AS_Turn_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\05.Turn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_ThrowBall_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\06.ThrowBall</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

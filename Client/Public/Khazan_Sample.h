@@ -64,7 +64,7 @@ private:
 	_uint						m_iDirState = { MOVE_DIR::RIGHT };
 
 	//class CRigidBody*			m_pRigidBodyCom = { nullptr };
-	CCharacterVirtual*			m_pCharVirCom = { nullptr };
+	//CCharacterVirtual*			m_pCharVirCom = { nullptr };
 	_float4x4*					m_pWeaponR_Matrix = { nullptr };
 	_float4x4*					m_pSpearFX_Matrix = { nullptr };
 	_float4x4					m_SpearFX_WorldMatrix = {};
@@ -75,13 +75,13 @@ private:
 
 
 private:
-	void			Update_State(_float fTimeDelta);
-	void			Key_Input(_float fTimeDelta);
+	void				Update_State(_float fTimeDelta);
+	void				Key_Input(_float fTimeDelta);
 
 private:
-	HRESULT			Ready_Components();
-	HRESULT			Ready_PartObjects();
-	HRESULT			Ready_Collision();
+	HRESULT				Ready_Components();
+	HRESULT				Ready_PartObjects();
+	HRESULT				Ready_Collision();
 
 private:
 	inline void		Add_State(_uint i) { m_iState |= i; }

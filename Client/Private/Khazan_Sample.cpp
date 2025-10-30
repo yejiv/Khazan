@@ -83,8 +83,8 @@ void CKhazan_Sample::Update(_float fTimeDelta)
 
     //m_pRigidBodyCom->Update(fTimeDelta, m_pTransformCom->Get_WorldMatrix());
 
-    m_pCharVirCom->Sync_Update(m_pTransformCom);
-    m_pCharVirCom->Update(fTimeDelta, m_pTransformCom);
+   /* m_pCharVirCom->Sync_Update(m_pTransformCom);
+    m_pCharVirCom->Update(fTimeDelta, m_pTransformCom);*/
 }
 
 void CKhazan_Sample::Late_Update(_float fTimeDelta)
@@ -387,5 +387,5 @@ void CKhazan_Sample::Free()
 {
     __super::Free();
     //Safe_Release(m_pRigidBodyCom);
-    Safe_Release(m_pCharVirCom);
+    //Safe_Release(m_pCharVirCom);
 }
