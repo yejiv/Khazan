@@ -238,9 +238,6 @@
     <Filter Include="02.GameObject\UI\Inven">
       <UniqueIdentifier>{bf77453f-04e7-4354-93fa-9c62f443d060}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\UI\Inven\ETC">
-      <UniqueIdentifier>{a35136d7-7ad3-4580-b681-c029de6c4006}</UniqueIdentifier>
-    </Filter>
     <Filter Include="94. ClientInstance\DB">
       <UniqueIdentifier>{dffd0957-694b-48a5-a2e0-c30d199869c1}</UniqueIdentifier>
     </Filter>
@@ -289,9 +286,6 @@
     <Filter Include="02.GameObject\UI\WorldUI">
       <UniqueIdentifier>{dd547fdf-504a-40c8-844b-a85ee87b3c2a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\UI\WorldUI\Mon_HPGague">
-      <UniqueIdentifier>{7b62ab3c-7ad2-42f3-84f4-f09e6a42b48c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\UI\WorldUI\Interaction_Guide">
       <UniqueIdentifier>{c00e5e09-9592-4d20-94eb-70e9d79117fe}</UniqueIdentifier>
     </Filter>
@@ -318,6 +312,27 @@
     </Filter>
     <Filter Include="92.AI\State\Yetuga\06.ThrowBall">
       <UniqueIdentifier>{6edc0ab8-6d05-4567-a2fb-ae3dfef8cb0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Mon_HP">
+      <UniqueIdentifier>{7b62ab3c-7ad2-42f3-84f4-f09e6a42b48c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Mon_HP\Gague">
+      <UniqueIdentifier>{ca70c219-d32f-4a44-9b4f-9729323d8de6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Interaction_Guide\Progress">
+      <UniqueIdentifier>{f2fe28d3-014b-46ca-95a9-e959048bffa8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Interaction_Guide\Icon">
+      <UniqueIdentifier>{c743f82e-11bd-4d92-96d1-d2043454dd66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\BladeNexus">
+      <UniqueIdentifier>{957a9fc1-9418-4508-a055-2f384d85d438}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\BladeNexus\List">
+      <UniqueIdentifier>{e0aaf90f-e252-4b71-8779-718f15f69bd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Inven\List">
+      <UniqueIdentifier>{a35136d7-7ad3-4580-b681-c029de6c4006}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -546,9 +561,6 @@
     <ClInclude Include="..\public\MainMenu_List.h">
       <Filter>02.GameObject\UI\MainMenu\ETC</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\MainMenu_Deco.h">
-      <Filter>02.GameObject\UI\MainMenu\ETC</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\Equip_Panel.h">
       <Filter>02.GameObject\UI\Inven\Equip</Filter>
     </ClInclude>
@@ -577,7 +589,7 @@
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\01.BigChest</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Inven_Tap.h">
-      <Filter>02.GameObject\UI\Inven\ETC</Filter>
+      <Filter>02.GameObject\UI\Inven\List</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Damage_Text.h">
       <Filter>02.GameObject\UI\WorldUI\Damage_UI</Filter>
@@ -596,6 +608,30 @@
     </ClInclude>
     <ClInclude Include="..\Public\AS_ThrowBall_Yetuga.h">
       <Filter>92.AI\State\Yetuga\06.ThrowBall</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Mon_HP.h">
+      <Filter>02.GameObject\UI\WorldUI\Mon_HP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Mon_Gague.h">
+      <Filter>02.GameObject\UI\WorldUI\Mon_HP\Gague</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Interaction_Guide.h">
+      <Filter>02.GameObject\UI\WorldUI\Interaction_Guide</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Guide_Gauge.h">
+      <Filter>02.GameObject\UI\WorldUI\Interaction_Guide\Progress</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Interaction_Icon.h">
+      <Filter>02.GameObject\UI\WorldUI\Interaction_Guide\Icon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_BladeNexus.h">
+      <Filter>02.GameObject\UI\BladeNexus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BladeNexus_List.h">
+      <Filter>02.GameObject\UI\BladeNexus\List</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MainMenu_Deco.h">
+      <Filter>02.GameObject\UI\MainMenu\ETC</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -844,7 +880,7 @@
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\01.BigChest</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Inven_Tap.cpp">
-      <Filter>02.GameObject\UI\Inven\ETC</Filter>
+      <Filter>02.GameObject\UI\Inven\List</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Damage_Text.cpp">
       <Filter>02.GameObject\UI\WorldUI\Damage_UI</Filter>
@@ -863,6 +899,27 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_ThrowBall_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\06.ThrowBall</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Mon_HP.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Mon_HP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Mon_Gague.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Mon_HP\Gague</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Interaction_Guide.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Interaction_Guide</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Guide_Gauge.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Interaction_Guide\Progress</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Interaction_Icon.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Interaction_Guide\Icon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_BladeNexus.cpp">
+      <Filter>02.GameObject\UI\BladeNexus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BladeNexus_List.cpp">
+      <Filter>02.GameObject\UI\BladeNexus\List</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

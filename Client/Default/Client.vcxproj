@@ -167,6 +167,7 @@
     <ClInclude Include="..\public\Atlas_RenderGroup.h" />
     <ClInclude Include="..\Public\AttackState_Yetuga.h" />
     <ClInclude Include="..\Public\BigChest.h" />
+    <ClInclude Include="..\public\BladeNexus_List.h" />
     <ClInclude Include="..\Public\Body_Khazan_Sample.h" />
     <ClInclude Include="..\Public\BladeNexus.h" />
     <ClInclude Include="..\Public\Body_Player.h" />
@@ -191,6 +192,8 @@
     <ClInclude Include="..\Public\FSM_Yetuga.h" />
     <ClInclude Include="..\Public\HeaderGroup_UI.h" />
     <ClInclude Include="..\Public\IdleState_Yetuga.h" />
+    <ClInclude Include="..\public\Interaction_Guide.h" />
+    <ClInclude Include="..\public\Interaction_Icon.h" />
     <ClInclude Include="..\public\Inven_Tap.h" />
     <ClInclude Include="..\public\Item_Slot.h" />
     <ClInclude Include="..\Public\JOH_Test1.h" />
@@ -200,11 +203,13 @@
     <ClInclude Include="..\Public\Level_Title.h" />
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\Public\MainApp.h" />
-    <ClInclude Include="..\public\MainMenu_Deco.h" />
+    <ClInclude Include="..\Public\MainMenu_Deco.h" />
     <ClInclude Include="..\public\MainMenu_List.h" />
     <ClInclude Include="..\Public\MapObject.h" />
     <ClInclude Include="..\Public\MapObject_Header.h" />
     <ClInclude Include="..\Public\Monster.h" />
+    <ClInclude Include="..\public\Mon_HP.h" />
+    <ClInclude Include="..\public\Mon_Gague.h" />
     <ClInclude Include="..\Public\MoveState_Yetuga.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\Prop.h" />
@@ -220,11 +225,13 @@
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\Spear_Khazan_Sample.h" />
     <ClInclude Include="..\Public\Terrain.h" />
+    <ClInclude Include="..\public\UI_BladeNexus.h" />
     <ClInclude Include="..\Public\UI_Button.h" />
     <ClInclude Include="..\public\UI_ComBatSpirit_Slot.h" />
     <ClInclude Include="..\public\UI_ComBatSpirit_Gauge.h" />
     <ClInclude Include="..\public\UI_CombatSpirit_Penal.h" />
     <ClInclude Include="..\public\UI_Gague_Tip.h" />
+    <ClInclude Include="..\public\UI_Guide_Gauge.h" />
     <ClInclude Include="..\public\UI_HUD.h" />
     <ClInclude Include="..\public\UI_Inven.h" />
     <ClInclude Include="..\public\UI_MainMenu.h" />
@@ -265,6 +272,7 @@
     <ClCompile Include="..\Private\AttackState_Yetuga.cpp" />
     <ClCompile Include="..\Private\BigChest.cpp" />
     <ClCompile Include="..\Private\BladeNexus.cpp" />
+    <ClCompile Include="..\private\BladeNexus_List.cpp" />
     <ClCompile Include="..\Private\Body_Khazan_Sample.cpp" />
     <ClCompile Include="..\Private\Body_Player.cpp" />
     <ClCompile Include="..\Private\Body_Yetuga.cpp" />
@@ -284,6 +292,8 @@
     <ClCompile Include="..\private\Equip_Slot.cpp" />
     <ClCompile Include="..\Private\FSM_Yetuga.cpp" />
     <ClCompile Include="..\Private\IdleState_Yetuga.cpp" />
+    <ClCompile Include="..\private\Interaction_Guide.cpp" />
+    <ClCompile Include="..\private\Interaction_Icon.cpp" />
     <ClCompile Include="..\private\Inven_Tap.cpp" />
     <ClCompile Include="..\private\Item_Slot.cpp" />
     <ClCompile Include="..\Private\JOH_Test1.cpp" />
@@ -297,6 +307,8 @@
     <ClCompile Include="..\private\MainMenu_List.cpp" />
     <ClCompile Include="..\Private\MapObject.cpp" />
     <ClCompile Include="..\Private\Monster.cpp" />
+    <ClCompile Include="..\private\Mon_HP.cpp" />
+    <ClCompile Include="..\private\Mon_Gague.cpp" />
     <ClCompile Include="..\Private\MoveState_Yetuga.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\Prop.cpp" />
@@ -312,11 +324,13 @@
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\Spear_Khazan_Sample.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
+    <ClCompile Include="..\private\UI_BladeNexus.cpp" />
     <ClCompile Include="..\Private\UI_Button.cpp" />
     <ClCompile Include="..\private\UI_ComBatSpirit_Slot.cpp" />
     <ClCompile Include="..\private\UI_ComBatSpirit_Gauge.cpp" />
     <ClCompile Include="..\private\UI_CombatSpirit_Penal.cpp" />
     <ClCompile Include="..\private\UI_Gague_Tip.cpp" />
+    <ClCompile Include="..\private\UI_Guide_Gauge.cpp" />
     <ClCompile Include="..\private\UI_HUD.cpp" />
     <ClCompile Include="..\private\UI_Inven.cpp" />
     <ClCompile Include="..\private\UI_MainMenu.cpp" />

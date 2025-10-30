@@ -37,7 +37,7 @@ private:
 	class CUI_Gague_Tip*		m_pUITip = {nullptr};
 private:
 	HRESULT						Ready_Component();
-	HRESULT						Ready_Childer();
+	HRESULT						Ready_Children();
 
 	void						Update_Deley(_float fTimeDelta);
 public:
