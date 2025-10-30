@@ -2,6 +2,15 @@
 #include "Frustum.h"
 #include "GameObject.h"
 
+static inline bool ContainsSphereFully(const BoundingBox& box, const XMFLOAT3& p, float r)
+{
+	const XMFLOAT3& c = box.Center;
+	const XMFLOAT3& e = box.Extents;
+	return (fabsf(p.x - c.x) + r <= e.x) &&
+		(fabsf(p.y - c.y) + r <= e.y) &&
+		(fabsf(p.z - c.z) + r <= e.z);
+}
+
 COctree::COctree()
 	: m_pParent(nullptr),
 	m_iDepth(0),
@@ -67,6 +76,7 @@ void COctree::Priority_Update(_float fTimeDelta)
 				}
 				else
 				{
+					Safe_Release(*iter);
 					iter = m_GameObjects.erase(iter);
 					continue;
 				}
@@ -97,6 +107,7 @@ void COctree::Update(_float fTimeDelta)
 				}
 				else
 				{
+					Safe_Release(*iter);
 					iter = m_GameObjects.erase(iter);
 					continue;
 				}
@@ -127,6 +138,7 @@ void COctree::Late_Update(_float fTimeDelta)
 				}
 				else
 				{
+					Safe_Release(*iter);
 					iter = m_GameObjects.erase(iter);
 					continue;
 				}
@@ -143,12 +155,11 @@ void COctree::Late_Update(_float fTimeDelta)
 	}
 }
 
-bool COctree::AddStaticObject(CGameObject* pGameObject, const _float3& vPoint, const _float& _fRadius)
+bool COctree::AddStaticObject(CGameObject* pGameObject, const _float3& vPoint, const _float& fRadius)
 {
 	lock_guard<recursive_mutex> lock(m_Mutex);
-	Safe_AddRef(pGameObject);
 
-	ContainmentType Containment = (_fRadius == 0.0f ? m_BoundingBox.Contains(XMLoadFloat3(&vPoint)) : m_BoundingBox.Contains(BoundingSphere(vPoint, _fRadius)));
+	ContainmentType Containment = (fRadius == 0.0f ? m_BoundingBox.Contains(XMLoadFloat3(&vPoint)) : m_BoundingBox.Contains(BoundingSphere(vPoint, fRadius)));
 	if (CONTAINS == Containment)
 	{
 		m_isObtainStatic = true;
@@ -162,7 +173,7 @@ bool COctree::AddStaticObject(CGameObject* pGameObject, const _float3& vPoint, c
 			if (m_BoundingBox.Center.z <= vPoint.z)
 				ChildIndex |= 4;
 
-			if (m_pChilds[ChildIndex]->AddStaticObject(pGameObject, vPoint, _fRadius))
+			if (m_pChilds[ChildIndex]->AddStaticObject(pGameObject, vPoint, fRadius))
 				return true;
 
 			Safe_AddRef(pGameObject);
@@ -187,7 +198,7 @@ bool COctree::AddStaticObject(CGameObject* pGameObject, const _float3& vPoint, c
 	return false;
 }
 
-void COctree::Culling(class CFrustum* pFrustum)
+void COctree::Culling(CFrustum* pFrustum)
 {
 	if (m_isObtainStatic)
 	{
@@ -227,16 +238,17 @@ void COctree::Clear()
 
 void COctree::Destroy()
 {
-	for (int i = 0; i < CHILDEND; ++i)
-	{
-		if (m_pChilds[i])
-		{
-			Safe_Release(m_pChilds[i]);
-		}
-	}
+	 for (int i = 0; i < CHILDEND; ++i)
+    {
+        if (m_pChilds[i])
+        {
+            Safe_Release(m_pChilds[i]); // 내부적으로 Free() 호출될 것으로 가정
+            m_pChilds[i] = nullptr;
+        }
+    }
 }
 
-ContainmentType COctree::isDraw(class CFrustum* pFrustum)
+ContainmentType COctree::isDraw(CFrustum* pFrustum)
 {
 	return pFrustum->isIn_WorldSpace(m_BoundingBox);
 }
@@ -293,19 +305,21 @@ void COctree::Free()
 {
 	__super::Free();
 
-	// 내 것들부터 정리
+	// 1) 내가 가진 게임오브젝트 해제
 	for (auto* p : m_GameObjects) Safe_Release(p);
 	m_GameObjects.clear();
 
+	// 2) 인스턴스 안의 게임오브젝트 해제
 	for (auto& kv : m_Instances)
 		for (auto& inst : kv.second)
 			Safe_Release(inst.pGameObject);
 	m_Instances.clear();
 
+	// 3) 자식 노드 해제 (각 자식의 Free에서 자기 것 정리)
+	Destroy();
+
 	m_isVisible = false;
 	m_isObtainStatic = false;
-
-	Destroy();
 
 	
 }
