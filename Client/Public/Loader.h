@@ -44,8 +44,8 @@ private:
 	_tchar							m_szLoadingText[MAX_PATH] = {};
 	CGameInstance*					m_pGameInstance = { nullptr };
 
-	/*vector<future<HRESULT>> m_futures;
-	_bool m_isFinished = false;*/
+	vector<future<HRESULT>> m_futures;
+	//_bool m_isFinished = false;
 	//atomic<_bool> m_isFinished = { false };
 
 	HANDLE							m_hThread = {};

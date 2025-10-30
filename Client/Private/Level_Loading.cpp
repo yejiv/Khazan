@@ -45,9 +45,9 @@ void CLevel_Loading::Update(_float fTimeDelta)
  			pNewLevel = CLevel_Title::Create(m_pDevice, m_pContext);
 			break;
 		case LEVEL::HEINMACH:
-			pNewLevel = CLevel_HeinMach::Create(m_pDevice, m_pContext);
 			m_pGameInstance->DeleteOctree();
 			m_pGameInstance->CreateOctree({ 260.f, 0.f, 215.f }, 1000.f, 4);
+			pNewLevel = CLevel_HeinMach::Create(m_pDevice, m_pContext);
 			break;
 		case LEVEL::CREVICE:
 			pNewLevel = CLevel_Crevice::Create(m_pDevice, m_pContext);
