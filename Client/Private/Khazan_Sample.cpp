@@ -274,6 +274,7 @@ void CKhazan_Sample::Update_State(_float fTimeDelta)
 {
     Key_Input(fTimeDelta);
 
+
 }
 
 void CKhazan_Sample::Key_Input(_float fTimeDelta)
@@ -374,8 +375,9 @@ HRESULT CKhazan_Sample::Ready_PartObjects()
     if (FAILED(__super::Add_PartObject(TEXT("Part_Body"), ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Body_Khazan_Sample"), &BodyDesc)))
         return E_FAIL;
 
-    pBody = static_cast<CBody_Khazan_Sample*>(Find_PartObject(TEXT("Part_Body")));
-    m_pWeaponR_Matrix = pBody->Get_BoneMatrix("Weapon_R");
+    m_pBody = static_cast<CBody_Khazan_Sample*>(Find_PartObject(TEXT("Part_Body")));
+    m_pWeaponR_Matrix = m_pBody->Get_BoneMatrix("Weapon_R");
+    Safe_AddRef(m_pBody);
 
     CSpear_Khazan_Sample::SPEAR_KHAZAN_SAMPLE_DESC         SpearDesc{};
     SpearDesc.pState = &m_iState;
@@ -384,14 +386,15 @@ HRESULT CKhazan_Sample::Ready_PartObjects()
     if (FAILED(__super::Add_PartObject(TEXT("Part_Weapon_Spear"), ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Spear_Khazan_Sample"), &SpearDesc)))
         return E_FAIL;
 
-    pSpear = static_cast<CSpear_Khazan_Sample*>(Find_PartObject(TEXT("Part_Weapon_Spear")));
-    m_pSpearFX_Matrix = pSpear->Get_BoneMatrix("FX");
-    m_SpearOffset_Matrix = pSpear->Get_OffestMatrix();
+    m_pSpear = static_cast<CSpear_Khazan_Sample*>(Find_PartObject(TEXT("Part_Weapon_Spear")));
+    m_pSpearFX_Matrix = m_pSpear->Get_BoneMatrix("FX");
+    m_SpearOffset_Matrix = m_pSpear->Get_OffestMatrix();
+    Safe_AddRef(m_pSpear);
 
     /* 넘겨주기  */
-    pSpear->Set_matWeaponR(m_pWeaponR_Matrix);
-    pBody->Set_matSpearFX(m_pSpearFX_Matrix);
-    pBody->Set_matSpearOffset(m_SpearOffset_Matrix);
+    m_pSpear->Set_matWeaponR(m_pWeaponR_Matrix);
+    m_pBody->Set_matSpearFX(m_pSpearFX_Matrix);
+    m_pBody->Set_matSpearOffset(m_SpearOffset_Matrix);
 
 	return S_OK;
 
@@ -540,6 +543,7 @@ CGameObject* CKhazan_Sample::Clone(void* pArg)
 void CKhazan_Sample::Free()
 {
     __super::Free();
-    //Safe_Release(m_pRigidBodyCom);
-    //Safe_Release(m_pCharVirCom);
+    Safe_Release(m_pCharVirCom);
+    Safe_Release(m_pBody);
+    Safe_Release(m_pSpear);
 }
