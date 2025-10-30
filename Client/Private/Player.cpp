@@ -100,63 +100,6 @@ void CPlayer::Update(_float fTimeDelta)
         m_iState |= IDLE;
     }
 
-#pragma region 상호 작용 맵 오브젝트 임시 테스트 용
-
-
-    if (true == m_EventInteract.isInteract)
-    {
-        if (m_pGameInstance->Key_Down(DIK_F))
-        {
-            // 스페이스 누르면 오브젝트 상호작용 이벤트 발생
-            m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { true, false });
-        }
-
-        if (m_pGameInstance->Key_Down(DIK_LCONTROL))
-        {
-            // LCONTROL 누르면 상자랑 귀검 상호작용
-            m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { false, true });
-        }
-    }
-
-    if(true == m_EventInteract.isEvent)
-    {
-        m_EventInteract.isEvent = false;
-
-        if (INTERACTIVE_TYPE::CHECKPOINT == m_EventInteract.eInteractType)
-        {
-            _int a = 10;
-        }
-        if (INTERACTIVE_TYPE::CHEST == m_EventInteract.eInteractType)
-        {
-            EventChest ChestEvent = m_EventInteract.ChestEvent;
-
-            if (false == ChestEvent.isChestOpened)
-            {
-                m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&ChestEvent.vPlayerPosition), 1.f));
-                m_pTransformCom->LookAt(XMVectorSetW(XMLoadFloat3(&ChestEvent.vPosition), 1.f));
-            }
-            else if (true == ChestEvent.isChestOpened)
-            {
-                ChestEvent.isChestOpened = false;
-
-                _char strItem_0[MAX_PATH] = {};
-                _char strItem_1[MAX_PATH] = {};
-                _char strItem_2[MAX_PATH] = {};
-
-                sprintf_s(strItem_0, "첫번째 아이템 ID : %d\n", ChestEvent.Items.iItem_0);
-                sprintf_s(strItem_1, "두번째 아이템 ID : %d\n", ChestEvent.Items.iItem_1);
-                sprintf_s(strItem_2, "세번째 아이템 ID : %d\n", ChestEvent.Items.iItem_2);
-
-                OutputDebugStringA("================ 상자 ================\n");
-                OutputDebugStringA(strItem_0);
-                OutputDebugStringA(strItem_1);
-                OutputDebugStringA(strItem_2);
-            }
-        }
-    }
-    
-#pragma endregion
-
      __super::Update(fTimeDelta);
 
     //m_pRigidBodyCom->Update(fTimeDelta, m_pTransformCom->Get_WorldMatrix());

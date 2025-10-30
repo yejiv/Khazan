@@ -2,6 +2,8 @@
 
 #include "GameInstance.h"
 
+#include "Interaction_Guide.h"
+
 CBigChest::CBigChest(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp_Interactive { pDevice, pContext }
 {
@@ -26,6 +28,12 @@ HRESULT CBigChest::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_Components(pArg), E_FAIL);
 
     CHECK_FAILED(Ready_Collision(pArg), E_FAIL);
+
+#pragma region 범수 상호작용 슥슥
+
+    CHECK_FAILED(Ready_Interaction_Guide(pArg), E_FAIL);
+
+#pragma endregion
 
     PROP_INTERACTIVE_DESC* pDesc = static_cast<PROP_INTERACTIVE_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
@@ -170,10 +178,69 @@ HRESULT CBigChest::Ready_Collision(void* pArg)
     return S_OK;
 }
 
+HRESULT CBigChest::Ready_Interaction_Guide(void* pArg)
+{
+    m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
+    CHECK_NULLPTR(m_pGuide, E_FAIL);
+
+    Safe_AddRef(m_pGuide);
+
+    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("열기"), 1.f);
+
+    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pGuide);
+
+    m_pGuide->Update_Visible(false);
+
+    return S_OK;
+}
+
+void CBigChest::Input_Interact_Event(_float fTimeDelta)
+{
+    if (ANIM_STATE::OPENING == m_eAnimState || ANIM_STATE::CLOSING == m_eAnimState)
+        return;
+
+    _bool isPressing = { false };
+
+    if (m_pGameInstance->Key_Pressing(DIK_F, fTimeDelta))
+    {
+        isPressing = m_pGuide->IsPressing();
+    }
+    else if (m_pGameInstance->Key_Down(DIK_LCONTROL))
+    {
+        EventInteractType InteractType = {};
+
+        InteractType.eState = EventInteractType::END;
+
+        m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+
+        return;
+    }
+
+    if (true == isPressing)
+    {
+        EventInteractType InteractType = {};
+
+        InteractType.eState = EventInteractType::BEGIN;
+
+        EventChest ChestEvent = {};
+
+        _matrix OffSetMatrix = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Position_Ch")) * m_pTransformCom->Get_WorldMatrix();
+
+        XMStoreFloat3(&ChestEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+        XMStoreFloat3(&ChestEvent.vPlayerPosition, OffSetMatrix.r[3]);
+
+        InteractType.ChestEvent = ChestEvent;
+
+        m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+    }
+}
+
 void CBigChest::Animation_Update(_float fTimeDelta)
 {
     if (false == m_isCollision)
         return;
+
+    Input_Interact_Event(fTimeDelta);
 
     if (true == m_isChestOn)               // 켠다는 신호
     {
@@ -181,6 +248,8 @@ void CBigChest::Animation_Update(_float fTimeDelta)
 
         if (ANIM_STATE::CLOSE == m_eAnimState)
         {
+            m_pGuide->Update_Visible(false);
+
             // 닫긴 상자 상호 작용 시
             m_eAnimState = ANIM_STATE::OPENING;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
@@ -249,6 +318,9 @@ void CBigChest::Animation_Change(_float fTimeDelta)
     }
     if (ANIM_STATE::CLOSING == m_eAnimState)
     {
+        if (true == m_isCollision)
+            m_pGuide->Update_Visible(true);
+
         // 처음 상호 작용 후 애니메이션 루프로 전환
         m_eAnimState = ANIM_STATE::CLOSE;
         m_pModelCom->Set_Animation(ANIM_STATE::CLOSE);
@@ -258,37 +330,22 @@ void CBigChest::Animation_Change(_float fTimeDelta)
 
 void CBigChest::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
+    if(ANIM_STATE::CLOSE == m_eAnimState)
+        m_pGuide->Update_Visible(true);
+
     m_isCollision = true;
-
-    EventInteractType InteractType = {};
-
-    InteractType.isInteract = true;
-    InteractType.eInteractType = INTERACTIVE_TYPE::CHEST;
-
-    m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 }
 
 void CBigChest::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
     m_isCollision = true;
-
-    EventInteractType InteractType = {};
-
-    InteractType.isInteract = true;
-    InteractType.eInteractType = INTERACTIVE_TYPE::CHEST;
-
-    m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 }
 
 void CBigChest::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 {
+    m_pGuide->Update_Visible(false);
+
     m_isCollision = false;
-
-    EventInteractType InteractType = {};
-
-    InteractType.isInteract = false;
-
-    m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 }
 
 CBigChest* CBigChest::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -323,4 +380,7 @@ void CBigChest::Free()
 
     Safe_Release(m_pStaticCom);
     Safe_Release(m_pTriggerCom);
+
+    m_pGuide->Set_IsDead(true);
+    Safe_Release(m_pGuide);
 }
