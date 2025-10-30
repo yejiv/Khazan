@@ -111,13 +111,15 @@ HRESULT CUI_BackGround::Bind_Mask()
 {
 	if (m_eBGType == UIBGTYPE::MAIN)
 	{
-		if (FAILED(m_pMaskTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_MaskTexture", 0)))
-			return E_FAIL;
-		m_pShaderCom->Begin(0);
+		m_pShaderCom->Begin(1);
 	}
 	else if (m_eBGType == UIBGTYPE::ITEM)
 	{
 		m_pShaderCom->Begin(1);
+	}
+	else if (m_eBGType == UIBGTYPE::BLADENEXUS)
+	{
+		m_pShaderCom->Begin(2);
 	}
 	else
 	{

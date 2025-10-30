@@ -84,7 +84,11 @@ public:
 	HRESULT Add_DebugComponent(class CComponent* pComponent);
 	void Set_EnableShadow(_bool isEnable);
 	void Set_EnableSSAO(_bool isEnable);
+	void Set_EnableFog(_bool isEnable);
+	void Set_EnableToonShade(_bool isEnable);
 #endif
+
+	void Set_ToonShadeLevel(_float fLevel);
 #pragma endregion
 
 #pragma region TIMER_MANAGER
@@ -272,18 +276,6 @@ public:
 #pragma endregion
 
 #pragma region CAMERA_MANAGER
-	HRESULT Add_Camera(_uint iLevelIndex, class CCamera* pCamera);
-	void Change_Camera(_uint iLevelIndex, _uint iCameraType);
-	void Change_Camera(_uint iLevelIndex, _wstring strCameraTag);
-	vector<class CCamera*> Get_pCameras(_uint iNumLevel);
-	class CCamera* Get_ActiveCamera();
-	_float3 Get_ActiveCameraPos();
-	_float4 Get_ActiveCameraLook();
-
-	void Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
-#pragma endregion
-
-#pragma region CAMERA_MANAGER
 	class CBlackBoard* Get_BlackBoard() { return m_pBlackBoard; }
 #pragma endregion
 
@@ -305,6 +297,28 @@ public:
 	void						Set_BlurConfig(GAUSSIAN_BLUR_CONFIG Config);
 #pragma endregion
 
+
+#pragma region FOG
+	HRESULT						Bind_Fog_ShaderResources(class CShader* pShader);
+	FOG_CONFIG					Get_FogConfig();
+	void						Set_FogConfig(FOG_CONFIG Config);
+	_uint						Get_NumFogNoiseTextures();
+	ID3D11ShaderResourceView*	Get_FogNoiseTexture(_uint iTextureIndex);
+	void						Set_FogNoiseTextureIndex(_uint iTextureIndex);
+	void						Set_FogNoiseWorldSpace(_bool isEnable);
+#pragma endregion
+
+#pragma region SEQUENCE_MANAGER
+	HRESULT SEQ_AdoptAndPlay(class ISeqInstance* pSeq, SEQ_REQ_PLAY_DESC tDesc);
+	void    SEQ_EnqueueAdopt(class ISeqInstance* pSeq, const SEQ_REQ_PLAY_DESC& tDesc);
+
+	HRESULT SEQ_Play(const SEQ_REQ_PLAY_DESC& tDecs);
+	HRESULT SEQ_Stop(const SEQ_ID& tId, _bool isImmediate);
+	HRESULT SEQ_Pause(const SEQ_ID& tId);
+	HRESULT SEQ_Resume(const SEQ_ID& tId);
+	HRESULT SEQ_Jump(const SEQ_REQ_JUMP_DESC& tDesc);
+#pragma endregion
+
 private:
 	class CGraphic_Device*		m_pGraphic_Device = { nullptr };
 	class CLevel_Manager*		m_pLevel_Manager = { nullptr };
@@ -317,7 +331,6 @@ private:
 	class CLight_Manager*		m_pLight_Manager = { nullptr };
 	class CFont_Manager*		m_pFont_Manager = { nullptr };
 	class CTarget_Manager*		m_pTarget_Manager = { nullptr };
-	class CShadow*				m_pShadow = { nullptr };
 	class CFrustum*				m_pFrustum = { nullptr };
 	class CJolt_Manager*		m_pJolt_Manager = { nullptr };
 	CThreadPool*				m_pThreadPool = { nullptr };
@@ -326,13 +339,15 @@ private:
 	class CEvent_Manager*		m_pEvent_Manager = { nullptr };
 	class CResource_Manager*	m_pResource_Manager = { nullptr };
 	class CComputeShader_Manager*	m_pComputeShader_Manager = { nullptr };
-	class CCamera_Manager*		m_pCamera_Manager = { nullptr };
 	class CBlackBoard*			m_pBlackBoard = { nullptr };
+	class CSequence_Manager*	m_pSequence_Manager = { nullptr };
 	
 	// 임시(이후 렌더링 리소스 클래스 안으로 이전할 예정)
+	class CShadow*				m_pShadow = { nullptr };
 	class CSSAO*				m_pSSAO = { nullptr };
 	class COctree*				m_pOctree = { nullptr };
 	class CBlur*				m_pBlur = { nullptr };
+	class CFog*					m_pFog = { nullptr };
 
 #ifdef _DEBUG
 	class CImgui_Manager* m_pImgui_Manager = { nullptr };

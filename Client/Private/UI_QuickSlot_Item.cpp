@@ -83,7 +83,7 @@ HRESULT CUI_QuickSlot_Item::Render()
 HRESULT CUI_QuickSlot_Item::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
 {
     FAILED_CHECK_RETURN(__super::Load_UI(pInData, iPrototypeLevelID, pArg), E_FAIL);
-    FAILED_CHECK_RETURN(Ready_Childer(), E_FAIL);
+    FAILED_CHECK_RETURN(Ready_Children(), E_FAIL);
 
     Update_State();
     return S_OK;
@@ -94,7 +94,7 @@ HRESULT CUI_QuickSlot_Item::Ready_Prototype()
     return S_OK;
 }
 
-HRESULT CUI_QuickSlot_Item::Ready_Childer()
+HRESULT CUI_QuickSlot_Item::Ready_Children()
 {
     
     CUI_Atlas_Icon::UIATLASICON_DESC AtlasDesc;

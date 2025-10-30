@@ -6,7 +6,6 @@
 #include "UI_BackGround.h"
 
 #include "MainMenu_List.h"
-#include "MainMenu_Deco.h"
 
 #include "UI_Inven.h"
 
@@ -284,12 +283,6 @@ HRESULT CUI_MainMenu::Ready_Prototype()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_MainMenu_List"),
 		CMainMenu_List::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
 
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_MainMenu_Deco"),
-		CMainMune_Deco::Create(m_pDevice, m_pContext)), E_FAIL);
-
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_Common_MenuList"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Common/T_Img_List_Menu_%d.png"), 6))))
-		return E_FAIL;
 	return S_OK;
 }
 
@@ -305,7 +298,7 @@ HRESULT CUI_MainMenu::Ready_Object()
 	m_pBackGround = static_cast<CUI_BackGround*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_BackGround"), &Desc));
 	if (m_pBackGround == nullptr)
 		return E_FAIL;
-	m_pBackGround->Setting_BG(CUI_BackGround::UIBGTYPE::ITEM);
+	m_pBackGround->Setting_BG(CUI_BackGround::UIBGTYPE::MAIN);
 	m_Children.push_back(m_pBackGround);
 	Safe_AddRef(m_pBackGround);
 
