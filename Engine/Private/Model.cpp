@@ -39,8 +39,9 @@ CModel::CModel(const CModel& Prototype)
         pAnimation->Set_RootBoneIndex(m_iRootBoneIndex);
 
     }
-    for (auto& pPrototypeBone : Prototype.m_Bones)
+    for (auto& pPrototypeBone : Prototype.m_Bones) {
         m_Bones.push_back(pPrototypeBone->Clone());
+    }
 
     for (auto& pMesh : m_Meshes)
         Safe_AddRef(pMesh);
@@ -912,24 +913,21 @@ void CModel::Free()
     if(m_pOwnerTransform)
         Safe_Release(m_pOwnerTransform);
 
+
     for (auto& pAnimation : m_Animations)
         Safe_Release(pAnimation);
-
     m_Animations.clear();
 
     for (auto& pBone : m_Bones)
         Safe_Release(pBone);
-
     m_Bones.clear();
 
     for (auto& pMesh : m_Meshes)
         Safe_Release(pMesh);
-
     m_Meshes.clear();
 
     for (auto& pMaterial : m_Materials)
         Safe_Release(pMaterial);
-
     m_Materials.clear();
 
 

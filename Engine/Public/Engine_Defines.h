@@ -105,6 +105,7 @@ namespace Engine
 #include "Engine_Function.h"
 #include "Engine_Json.h"
 #include "Engine_ConstantBuffer.h"
+#include "Engine_Sequence.h"
 
 #ifdef _DEBUG
 

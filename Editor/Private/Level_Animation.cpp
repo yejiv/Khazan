@@ -26,6 +26,8 @@ HRESULT CLevel_Animation::Initialize()
 
 	//OutputDebugStringA(("[Editor.exe Dir] " + editorExeDir.string() + "\n").c_str());
 
+	CHECK_FAILED(Ready_Lights(), E_FAIL);
+
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 		return E_FAIL;
 

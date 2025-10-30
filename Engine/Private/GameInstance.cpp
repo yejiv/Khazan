@@ -20,11 +20,13 @@
 #include "Pool_Manager.h"
 #include "Resource_Manager.h"
 #include "ComputeShader_Manager.h"
-#include "Camera_Manager.h"
 #include "BlackBoard.h"
 #include "SSAO.h"
 #include "Octree.h"
 #include "Blur.h"
+#include "Fog.h"
+#include "Sequence_Manager.h"
+#include "Sequence_Interface.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -105,10 +107,6 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pComputeShader_Manager)
 		return E_FAIL;
 
-	m_pCamera_Manager = CCamera_Manager::Create(EngineDesc.iNumLevels);
-	if (nullptr == m_pCamera_Manager)
-		return E_FAIL;
-
 	m_pShadow = CShadow::Create(*ppDevice, *ppContext);
 	if (nullptr == m_pShadow)
 		return E_FAIL;
@@ -134,6 +132,14 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pBlur)
 		return E_FAIL;
 
+	m_pFog = CFog::Create(*ppDevice, *ppContext);
+	if (nullptr == m_pFog)
+		return E_FAIL;
+
+	m_pSequence_Manager = CSequence_Manager::Create();
+	if (nullptr == m_pSequence_Manager)
+		return E_FAIL;
+
 #ifdef _DEBUG
 	m_pImgui_Manager = CImgui_Manager::Create(*ppDevice, *ppContext, EngineDesc.Menu_Imgui, EngineDesc.hWnd, EngineDesc.iWinSizeX, EngineDesc.iWinSizeY);
 	if (nullptr == m_pImgui_Manager)
@@ -153,17 +159,19 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 	/* 내 게임내에서 반복적인 갱신이 필요한 객체들이 있다라면 갱신을 여기에서 모아서 수행하낟. */
 	m_pObject_Manager->Priority_Update(fTimeDelta);
 
-	//m_pPicking->Update();
 	m_pPipeLine->Update();
 	m_pFrustum->Update();
 
 	if (m_pOctree)
-		m_pOctree->Culling();
+		m_pOctree->Culling(m_pFrustum);
 
 	if (m_pOctree)
 		m_pOctree->Priority_Update(fTimeDelta);
 
 	m_pObject_Manager->Update(fTimeDelta);
+
+	m_pSequence_Manager->ProcessRequests();
+	m_pSequence_Manager->Update(fTimeDelta);
 
 	if (m_pOctree)
 		m_pOctree->Update(fTimeDelta);
@@ -175,6 +183,7 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 
 	// Cascade Test
 	m_pShadow->Update();
+	m_pFog->Update(fTimeDelta);
 
 	m_pLevel_Manager->Update(fTimeDelta);
 
@@ -200,8 +209,6 @@ HRESULT CGameInstance::Clear_Resources(_uint iClearLevelID)
 	m_pObject_Manager->Clear(iClearLevelID);
 
 	m_pLight_Manager->Clear(iClearLevelID);
-
-	m_pCamera_Manager->Clear(iClearLevelID);
 
 	return S_OK;
 }
@@ -394,8 +401,21 @@ void CGameInstance::Set_EnableSSAO(_bool isEnable)
 	m_pRenderer->Set_EnableSSAO(isEnable);
 }
 
+void CGameInstance::Set_EnableToonShade(_bool isEnable)
+{
+	m_pRenderer->Set_EnableToonShade(isEnable);
+}
+
+void CGameInstance::Set_EnableFog(_bool isEnable)
+{
+	m_pRenderer->Set_EnableFog(isEnable);
+}
 #endif
 
+void CGameInstance::Set_ToonShadeLevel(_float fLevel)
+{
+	m_pRenderer->Set_ToonShadeLevel(fLevel);
+}
 
 #pragma endregion
 
@@ -927,41 +947,6 @@ void CGameInstance::Execute_Job(COMPUTEJOB eJobTag)
 }
 #pragma endregion
 
-#pragma region CAMERA_MANAGER
-HRESULT CGameInstance::Add_Camera(_uint iLevelIndex, CCamera* pCamera)
-{
-	return m_pCamera_Manager->Add_Camera(iLevelIndex, pCamera);
-}
-void CGameInstance::Change_Camera(_uint iLevelIndex, _uint iCameraType)
-{
-	m_pCamera_Manager->Change_Camera(iLevelIndex, iCameraType);
-}
-void CGameInstance::Change_Camera(_uint iLevelIndex, _wstring strCameraTag)
-{
-	m_pCamera_Manager->Change_Camera(iLevelIndex, strCameraTag);
-}
-vector<class CCamera*> CGameInstance::Get_pCameras(_uint iNumLevel)
-{
-	return m_pCamera_Manager->Get_pCameras(iNumLevel);
-}
-CCamera* CGameInstance::Get_ActiveCamera()
-{
-	return m_pCamera_Manager->Get_ActiveCamera();
-}
-_float3 CGameInstance::Get_ActiveCameraPos()
-{
-	return m_pCamera_Manager->Get_ActiveCameraPos();
-}
-_float4 CGameInstance::Get_ActiveCameraLook()
-{
-	return m_pCamera_Manager->Get_ActiveCameraLook();
-}
-void CGameInstance::Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData)
-{
-	m_pCamera_Manager->Save_Json(iLevelIndex, strCameraTag, pOutData);
-}
-#pragma endregion
-
 #pragma region SSAO
 
 SSAO_CONFIG CGameInstance::Get_SSAOConfig()
@@ -992,6 +977,75 @@ GAUSSIAN_BLUR_CONFIG CGameInstance::Get_BlurConfig()
 void CGameInstance::Set_BlurConfig(GAUSSIAN_BLUR_CONFIG Config)
 {
 	m_pBlur->Set_BlurConfig(Config);
+}
+#pragma endregion
+
+
+#pragma region FOG
+HRESULT CGameInstance::Bind_Fog_ShaderResources(CShader* pShader)
+{
+	return m_pFog->Bind_Fog_ShaderResources(pShader);
+}
+FOG_CONFIG CGameInstance::Get_FogConfig()
+{
+	return m_pFog->Get_FogConfig();
+}
+void CGameInstance::Set_FogConfig(FOG_CONFIG Config)
+{
+	m_pFog->Set_FogConfig(Config);
+}
+_uint CGameInstance::Get_NumFogNoiseTextures()
+{
+	return m_pFog->Get_NumFogNoiseTextures();
+}
+ID3D11ShaderResourceView* CGameInstance::Get_FogNoiseTexture(_uint iTextureIndex)
+{
+	return m_pFog->Get_FogNoiseTexture(iTextureIndex);
+}
+void CGameInstance::Set_FogNoiseTextureIndex(_uint iTextureIndex)
+{
+	m_pFog->Set_FogNoiseTextureIndex(iTextureIndex);
+}
+void CGameInstance::Set_FogNoiseWorldSpace(_bool isEnable)
+{
+	m_pFog->Set_FogNoiseWorldSpace(isEnable);
+}
+#pragma endregion
+
+#pragma region SEQUENCE_MANAGER
+HRESULT CGameInstance::SEQ_AdoptAndPlay(ISeqInstance* pSeq, SEQ_REQ_PLAY_DESC tDesc)
+{
+	return m_pSequence_Manager->AdoptAndPlay(pSeq, tDesc);
+}
+
+void CGameInstance::SEQ_EnqueueAdopt(ISeqInstance* pSeq, const SEQ_REQ_PLAY_DESC& tDesc)
+{
+	m_pSequence_Manager->EnqueueAdopt(pSeq, tDesc);
+}
+
+HRESULT CGameInstance::SEQ_Play(const SEQ_REQ_PLAY_DESC& tDecs)
+{
+	return m_pSequence_Manager->Play(tDecs);
+}
+
+HRESULT CGameInstance::SEQ_Stop(const SEQ_ID& tId, _bool isImmediate)
+{
+	return m_pSequence_Manager->Stop(tId, isImmediate);
+}
+
+HRESULT CGameInstance::SEQ_Pause(const SEQ_ID& tId)
+{
+	return m_pSequence_Manager->Pause(tId);
+}
+
+HRESULT CGameInstance::SEQ_Resume(const SEQ_ID& tId)
+{
+	return m_pSequence_Manager->Resume(tId);
+}
+
+HRESULT CGameInstance::SEQ_Jump(const SEQ_REQ_JUMP_DESC& tDesc)
+{
+	return m_pSequence_Manager->Jump(tDesc);
 }
 #pragma endregion
 
@@ -1041,33 +1095,34 @@ void CGameInstance::Release_Engine()
 #ifdef _DEBUG
 	Safe_Release(m_pImgui_Manager);
 #endif
-	Safe_Release(m_pOctree);
+	Safe_Release(m_pSequence_Manager);
 	Safe_Release(m_pThreadPool);
 
+	Safe_Release(m_pFog);
+	Safe_Release(m_pOctree);
+	
 	Safe_Release(m_pBlur);
 	Safe_Release(m_pSSAO);
+	Safe_Release(m_pShadow);
 
-	Safe_Release(m_pThreadPool);
 	Safe_Release(m_pComputeShader_Manager);
 	Safe_Release(m_pPool_Manager);
 	Safe_Release(m_pTarget_Manager);
 	Safe_Release(m_pFont_Manager);
 	Safe_Release(m_pFrustum);
-	Safe_Release(m_pShadow);
 	Safe_Release(m_pEvent_Manager);
 	Safe_Release(m_pPipeLine);
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pInput_Manager);
 	Safe_Release(m_pResource_Manager);
-	Safe_Release(m_pCamera_Manager);
 	Safe_Release(m_pBlackBoard);
+	Safe_Release(m_pJolt_Manager);
 
 	Safe_Release(m_pPicking);
 	Safe_Release(m_pTimer_Manager);
 	Safe_Release(m_pRenderer);
 	Safe_Release(m_pObject_Manager);
-	Safe_Release(m_pPrototype_Manager);
-	Safe_Release(m_pJolt_Manager);
+	Safe_Release(m_pPrototype_Manager);	
 	Safe_Release(m_pLevel_Manager);
 	Safe_Release(m_pGraphic_Device);
 }

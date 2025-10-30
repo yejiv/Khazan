@@ -110,7 +110,7 @@ HRESULT CUI_PlayerHP_Gauge::Load_UI(nlohmann::json& pInData, _uint iPrototypeLev
 	if (FAILED(__super::Load_UI(pInData, iPrototypeLevelID, pArg)))
 		return E_FAIL;
 
-	if (FAILED(Ready_Childer()))
+	if (FAILED(Ready_Children()))
 		return E_FAIL;
 
 	return S_OK;
@@ -135,7 +135,7 @@ HRESULT CUI_PlayerHP_Gauge::Ready_Component()
 	return S_OK;
 }
 
-HRESULT CUI_PlayerHP_Gauge::Ready_Childer()
+HRESULT CUI_PlayerHP_Gauge::Ready_Children()
 {
 	CUIObject::UIOBJECT_DESC Desc;
 	Desc.fDepth = m_fDepth;

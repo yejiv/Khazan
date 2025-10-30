@@ -24,7 +24,7 @@ public:
 	virtual HRESULT				Render() override;
 
 public:
-	_bool						Render_Damage(DAMAGE_TYPE eDamageType, _vector vPos, _uint iDamage);
+	_bool						Render_Damage(DAMAGE_TYPE eDamageType, _vector vPos, _uint iDamage, _float2 vOffset = {0.f,0.f});
 	virtual void				Reset() override;
 
 private:

@@ -20,6 +20,25 @@ public:
 
 	}MONSTER_DESC;
 
+	typedef struct tagMonsterInfo
+	{
+		enum MONSTERSTATE 
+		{
+			STATE_NONE = 0,
+			WALK = 1 << 0,
+			RUN = 1 << 1,
+			SPRINT = 1 << 2,
+		};
+
+		void Add_State(unsigned int flag)			{ iStateFlag |= flag; }
+		void Delete_State(unsigned int flag)		{ iStateFlag &= ~flag; }
+		void Clear_State()							{ iStateFlag = 0; }
+		bool Check_State(unsigned int flag) const	{ return (iStateFlag & flag) != 0; }
+
+		unsigned int			iStateFlag = 0;
+
+	}MONSTER_INFO;
+
 
 protected:
 	CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
