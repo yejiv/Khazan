@@ -18,4 +18,14 @@
 // Test
 #include "Prop_Test.h"
 
+// 맵의 서브레벨 개수 및 귀검 있는 SUB LV
+#define HEINMACH_SUBLV 11
+#define HEINMACH_1ST_BN 0
+#define HEINMACH_2ND_BN 5
+#define HEINMACH_3RD_BN 10
+
+#define CREVICE_SUBLV 0
+#define EMBARS_SUBLV 0
+#define VIPER_SUBLV 0
+
 #endif // MapObject_Header_h__

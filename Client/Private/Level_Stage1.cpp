@@ -32,8 +32,23 @@ HRESULT CLevel_Stage1::Initialize()
 
 	/*if (FAILED(Ready_Lights()))
 		return E_FAIL;*/
+	//m_pGameInstance->Add_FireTask([this]() {
+		//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+		//return S_OK;
+		//});
+
+	CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV0"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+	//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV5"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+	//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV9"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+
 	m_pGameInstance->Add_FireTask([this]() {
-		CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+		for (_uint i = 0; i <= HEINMACH_SUBLV; ++i)
+		{
+			//if (0 != i && 5 != i && 9 != i)
+			if (HEINMACH_1ST_BN != i)
+				CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), i, LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+		}
+		
 		return S_OK;
 		});
 
@@ -330,6 +345,102 @@ HRESULT CLevel_Stage1::Ready_Layer_MapObject(const _wstring& strLayerTag, const 
 	return S_OK;
 }
 
+HRESULT CLevel_Stage1::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag, const _tchar* pDataFileName, _uint iSubLV, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
+{
+	_wstring strDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+
+	switch (eMap)
+	{
+	case KHAZAN_MAP::HEINMACH:
+		strDataFilePath += TEXT("HeinMach/");
+		break;
+	case KHAZAN_MAP::YETUGA:
+		strDataFilePath += TEXT("Yetuga/");
+		break;
+	case KHAZAN_MAP::THECREVICE:
+		strDataFilePath += TEXT("TheCrevice/");
+		break;
+	case KHAZAN_MAP::EMBARS:
+		strDataFilePath += TEXT("Embars/");
+		break;
+	case KHAZAN_MAP::VIPER:
+		strDataFilePath += TEXT("Viper/");
+		break;
+	default:
+		break;
+	}
+
+	strDataFilePath += pDataFileName;
+
+	_tchar szDataFilePath[MAX_PATH] = {};
+
+	wsprintf(szDataFilePath, TEXT("%s_LV%d_object.dat"), strDataFilePath.c_str(), iSubLV);
+
+	strDataFilePath = szDataFilePath;
+
+	DWORD dwByte = {};
+
+	HANDLE hFile = CreateFile(strDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("데이터 파일이 없거나 박준영 문제"), E_FAIL);
+
+	// 1. 오브젝트의 총 개수
+	_uint iObjectCnt = {};
+	CHECK_FALSE(ReadFile(hFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr), E_FAIL);
+
+	// 오브젝트 총 개수만큼 순회
+	for (_uint i = 0; i < iObjectCnt; ++i)
+	{
+		CProp_Object::PROP_OBJECT_DESC ObjectDesc = {};
+
+		ObjectDesc.eLevel = eCurrentLevel;
+
+		// 2. 프로토 타입 태그 길이 불러오기
+		_uint iPrototypeTagLen = {};
+		CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
+
+		// 3. 프로토 타입 태그 이름 불러오기
+		_tchar szPrototypeTag[MAX_PATH] = {};
+		CHECK_FALSE(ReadFile(hFile, &szPrototypeTag, sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr), E_FAIL);
+
+		// 불러온 태그 카피
+		memcpy(ObjectDesc.szModelName, szPrototypeTag, sizeof(ObjectDesc.szModelName));
+
+		// 4. 객체당 월드 행렬 때오기
+		_float4x4 WorldMatrix = {};
+		CHECK_FALSE(ReadFile(hFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr), E_FAIL);
+
+		ObjectDesc.WorldMatrix = WorldMatrix;
+
+		// 5. 객체의 속성 불러오기
+		MAPOBJECT_PROPERTIES PropProperties = {};
+		CHECK_FALSE(ReadFile(hFile, &PropProperties, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr), false);
+
+		ObjectDesc.Properties = PropProperties;
+
+		// 일단 단일 오브젝트로 배치하고 추후에 인스턴스, 인터렉티브, 다이나믹 으로 나누겠습니다.
+		//m_pGameInstance->Add_FireTask([this, objDesc = ObjectDesc, curLevel = eCurrentLevel]() mutable {
+		//	CHECK_FAILED(
+		//		m_pGameInstance->Add_GameObject_ToLayer(
+		//			ENUM_CLASS(objDesc.eLevel),
+		//			TEXT("Layer_MapObject"),
+		//			ENUM_CLASS(curLevel),
+		//			TEXT("Prototype_GameObject_Prop_Object"),
+		//			&objDesc // 캡처된 값의 주소 -> 안전
+		//		),
+		//		E_FAIL
+		//	);
+		//	});
+		/*CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), E_FAIL);*/
+
+		CGameObject* pObject = dynamic_cast<CGameObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc));
+
+		m_pGameInstance->AddStaticObject(pObject, { WorldMatrix._41, WorldMatrix._42, WorldMatrix._43 }, 10.f);
+	}
+
+	return S_OK;
+}
+
 HRESULT CLevel_Stage1::Ready_Layer_MapObject_Interactive(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
 {
 	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
@@ -423,8 +534,13 @@ HRESULT CLevel_Stage1::Ready_Layer_MapObject_Interactive(const _wstring& strLaye
 			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_BladeNexus"), &ObjectDesc), E_FAIL);
 			break;
 		case INTERACTIVE_TYPE::CHEST:
+		{
+			BOX_ITEMS ItemBoxDesc = {};
+			CHECK_FALSE(ReadFile(hFile, &ItemBoxDesc, sizeof(BOX_ITEMS), &dwByte, nullptr), E_FAIL);
+			ObjectDesc.pOtherDesc = &ItemBoxDesc;
 			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_BigChest"), &ObjectDesc), E_FAIL);
 			break;
+		}
 		default:
 			MSG_BOX(TEXT("잉 있으면 안되는디"));
 			break;

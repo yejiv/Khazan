@@ -66,6 +66,8 @@ private:
 	_float3 m_vDistancePos[2] = {};
 	_float m_fDistance = {};
 
+	_int m_iMaxLevel = {};						// 분할할 레벨의 총 개수
+
 #pragma region 트리거 관련 변수
 
 
@@ -77,7 +79,8 @@ private:
 	vector<class CProp*> m_InteractiveList;		// 오브젝트 리스트 ( 수정 편하게 할려고 )
 	_int m_iInteractiveListIndex = {};			// 오브젝트 리스트 인덱스
 
-	CMapObject::ITEMBOX_DESC m_iFixItemBox = {};
+	CMapObject::ITEMBOX_DESC m_ItemBox = {};
+	CMapObject::ITEMBOX_DESC m_FixItemBox = {};
 
 #pragma endregion
 
@@ -103,6 +106,8 @@ private:
 	
 	_float m_fAddScale = { 0.005f };						// 오브젝트 Add 시 스케일 지정
 
+	_int m_iAddSubLevel = {};								// 오브젝트 Add 시 Sub LV 지정
+
 	_bool m_isCameraPosAdd = { false };						// 카메라 위치에 오브젝트 생성할지 말지
 	_float m_fAddPositionY = { 0.f };						// 오브젝트 높이 위치 Off-Set
 
@@ -110,6 +115,13 @@ private:
 
 	_bool m_isCheckRender = { false };
 	MAPOBJECT_PROPERTIES m_RenderProperties = {};
+	_int m_iRenderSubLevel = {};
+
+	_int m_iSubLevel = {};									// 오브젝트의 세이브 레벨 ( FIX 가져오는 용 )
+
+	_float m_fInstanceRange = { 3.f };						// 인스턴싱 막 깔때의 반지름
+
+	_int m_iNumInstance = { 5 };							// 인스턴싱 깔때 범위내의 인스턴싱 모델 개수
 
 #pragma endregion
 
@@ -269,6 +281,9 @@ private:
 
 	// 특정 레벨에서 사용할 상호 작용 모델 바이너리 파일
 	_bool Interactive_Object_Save_Binary();
+
+	// 특정 레벨에서 사용할 모델 바이너리 파일 ( LV_1, LV_2 이런식으로 구분 )
+	_bool Object_Save_Binary_ByLevel(_uint iLevel);
 
 #pragma endregion
 

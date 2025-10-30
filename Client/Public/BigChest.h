@@ -17,7 +17,7 @@ private:
 public:
 	typedef struct tagBigChestDesc : public CProp_Interactive::PROP_INTERACTIVE_DESC
 	{
-
+		BOX_ITEMS Items{};
 
 	}BIGCHEST_DESC;
 
@@ -45,6 +45,8 @@ private:
 	_bool m_isChestOff = { false };
 
 	_float3 m_vCharacterPosition = {};
+
+	BOX_ITEMS m_Items = {};
 
 private:
 	virtual HRESULT Ready_Components(void* pArg) override;
