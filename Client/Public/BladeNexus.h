@@ -43,6 +43,8 @@ private:
 	CBody* m_pStaticCom = { nullptr };
 	CBody* m_pTriggerCom = { nullptr };
 
+	class CInteraction_Guide* m_pGuide = { nullptr };
+
 private:
 	ANIM_STATE m_eAnimState = { ANIM_STATE::BEFORE_IDLE };
 
@@ -55,7 +57,9 @@ private:
 private:
 	virtual HRESULT Ready_Components(void* pArg) override;
 	HRESULT Ready_Collision(void* pArg);
+	HRESULT Ready_Interaction_Guide(void* pArg);
 
+	void Input_Interact_Event(_float fTimeDelta);
 	void Animation_Update(_float fTimeDelta);
 	void Animation_Change(_float fTimeDelta);
 

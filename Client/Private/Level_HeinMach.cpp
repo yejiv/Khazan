@@ -276,37 +276,37 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Test(const _wstring& strLayerTag)
 
 HRESULT CLevel_HeinMach::Ready_Layer_MapObject(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
 {
-	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+	_wstring strDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
 
 	switch (eMap)
 	{
 	case KHAZAN_MAP::HEINMACH:
-		pDataFilePath += TEXT("HeinMach/");
+		strDataFilePath += TEXT("HeinMach/");
 		break;
 	case KHAZAN_MAP::YETUGA:
-		pDataFilePath += TEXT("Yetuga/");
+		strDataFilePath += TEXT("Yetuga/");
 		break;
 	case KHAZAN_MAP::THECREVICE:
-		pDataFilePath += TEXT("TheCrevice/");
+		strDataFilePath += TEXT("TheCrevice/");
 		break;
 	case KHAZAN_MAP::EMBARS:
-		pDataFilePath += TEXT("Embars/");
+		strDataFilePath += TEXT("Embars/");
 		break;
 	case KHAZAN_MAP::VIPER:
-		pDataFilePath += TEXT("Viper/");
+		strDataFilePath += TEXT("Viper/");
 		break;
 	default:
 		break;
 	}
 
-	pDataFilePath += pDataFileName;
+	strDataFilePath += pDataFileName;
 
 	// 동일한 파일명의 _objects.dat 불러오기
-	pDataFilePath += TEXT("_object.dat");
+	strDataFilePath += TEXT("_object.dat");
 
 	DWORD dwByte = {};
 
-	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE hFile = CreateFile(strDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("데이터 파일이 없거나 박준영 문제"), E_FAIL);
 
 	// 1. 오브젝트의 총 개수
@@ -504,37 +504,37 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag
 HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Interactive(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
 
 {
-	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+	_wstring strDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
 
 	switch (eMap)
 	{
 	case KHAZAN_MAP::HEINMACH:
-		pDataFilePath += TEXT("HeinMach/");
+		strDataFilePath += TEXT("HeinMach/");
 		break;
 	case KHAZAN_MAP::YETUGA:
-		pDataFilePath += TEXT("Yetuga/");
+		strDataFilePath += TEXT("Yetuga/");
 		break;
 	case KHAZAN_MAP::THECREVICE:
-		pDataFilePath += TEXT("TheCrevice/");
+		strDataFilePath += TEXT("TheCrevice/");
 		break;
 	case KHAZAN_MAP::EMBARS:
-		pDataFilePath += TEXT("Embars/");
+		strDataFilePath += TEXT("Embars/");
 		break;
 	case KHAZAN_MAP::VIPER:
-		pDataFilePath += TEXT("Viper/");
+		strDataFilePath += TEXT("Viper/");
 		break;
 	default:
 		break;
 	}
 
-	pDataFilePath += pDataFileName;
+	strDataFilePath += pDataFileName;
 
 	// 동일한 파일명의 _objects.dat 불러오기
-	pDataFilePath += TEXT("_interactive.dat");
+	strDataFilePath += TEXT("_interactive.dat");
 
 	DWORD dwByte = {};
 
-	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE hFile = CreateFile(strDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("데이터 파일이 없거나 박준영 문제"), E_FAIL);
 
 	// 1. 오브젝트의 총 개수
@@ -615,37 +615,37 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Interactive(const _wstring& strLa
 
 HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Inst(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
 {
-	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+	_wstring strDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
 
 	switch (eMap)
 	{
 	case KHAZAN_MAP::HEINMACH:
-		pDataFilePath += TEXT("HeinMach/");
+		strDataFilePath += TEXT("HeinMach/");
 		break;
 	case KHAZAN_MAP::YETUGA:
-		pDataFilePath += TEXT("Yetuga/");
+		strDataFilePath += TEXT("Yetuga/");
 		break;
 	case KHAZAN_MAP::THECREVICE:
-		pDataFilePath += TEXT("TheCrevice/");
+		strDataFilePath += TEXT("TheCrevice/");
 		break;
 	case KHAZAN_MAP::EMBARS:
-		pDataFilePath += TEXT("Embars/");
+		strDataFilePath += TEXT("Embars/");
 		break;
 	case KHAZAN_MAP::VIPER:
-		pDataFilePath += TEXT("Viper/");
+		strDataFilePath += TEXT("Viper/");
 		break;
 	default:
 		break;
 	}
 
-	pDataFilePath += pDataFileName;
+	strDataFilePath += pDataFileName;
 
 	// 동일한 파일명의 _inst.dat 불러오기
-	pDataFilePath += TEXT("_inst.dat");
+	strDataFilePath += TEXT("_inst.dat");
 
 	DWORD dwByte = {};
 
-	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE hFile = CreateFile(strDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("데이터 파일이 없거나 박준영 문제"), E_FAIL);
 
 	// 1. 오브젝트의 총 개수
@@ -700,36 +700,36 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Inst(const _wstring& strLayerTag,
 HRESULT CLevel_HeinMach::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
 {
 	// Dat 기본 경로
-	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+	_wstring strDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
 
 	switch (eMap)
 	{
 	case KHAZAN_MAP::HEINMACH:
-		pDataFilePath += TEXT("HeinMach/");
+		strDataFilePath += TEXT("HeinMach/");
 		break;
 	case KHAZAN_MAP::YETUGA:
-		pDataFilePath += TEXT("Yetuga/");
+		strDataFilePath += TEXT("Yetuga/");
 		break;
 	case KHAZAN_MAP::THECREVICE:
-		pDataFilePath += TEXT("TheCrevice/");
+		strDataFilePath += TEXT("TheCrevice/");
 		break;
 	case KHAZAN_MAP::EMBARS:
-		pDataFilePath += TEXT("Embars/");
+		strDataFilePath += TEXT("Embars/");
 		break;
 	case KHAZAN_MAP::VIPER:
-		pDataFilePath += TEXT("Viper/");
+		strDataFilePath += TEXT("Viper/");
 		break;
 	default:
 		break;
 	}
 
-	pDataFilePath += pDataFileName;
+	strDataFilePath += pDataFileName;
 
-	pDataFilePath += TEXT("_lights.dat");
+	strDataFilePath += TEXT("_lights.dat");
 
 	DWORD dwByte = {};
 
-	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE hFile = CreateFile(strDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	CHECK_EQUAL(INVALID_HANDLE_VALUE, hFile, E_FAIL);
 
 	// 1. 조명의 총 개수
