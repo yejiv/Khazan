@@ -184,7 +184,7 @@ void CLevel_Map::Select_Fix_Object(_float fTimeDelta)
 						// ======================================================
 						// ======================================================
 
-						m_iSaveLevel = m_pFixPropObj->Get_SaveLevel();
+						m_iSubLevel = m_pFixPropObj->Get_SubLevel();
 
 						m_isFixObjectWindow = true;
 						m_eFixType = FIX_OBJECT::FIX;
@@ -239,7 +239,7 @@ void CLevel_Map::Select_Multi_Fix_Object(_float fTimeDelta)
 							// ======================================================
 							// ======================================================
 
-							m_iSaveLevel = m_pFixPropObj->Get_SaveLevel();
+							m_iSubLevel = m_pFixPropObj->Get_SubLevel();
 
 							m_isFixObjectWindow = true;
 							m_eFixType = FIX_OBJECT::FIX;
@@ -587,8 +587,16 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 
 			if (true == m_AddObjectProperties.isInstance)
 			{
+				//ImGui::Text("RANGE : "); SAMELINE;
+				//ImGui::InputFloat("##instancing_range", &m_fInstanceRange);
+				//ImGui::Text("INSTANCE NUM : "); SAMELINE;
+				//ImGui::InputInt("##instancing_count", &m_iNumInstance);
+
 				// 인스턴스일때, 반지름, 그 안에 생길 인스턴싱 모델의 개수 넘기고 랜덤하게 생기게
 			}
+
+			ImGui::Text("PUT SUB LEVEL : ");
+			ImGui::InputInt("##input_sub_level", &m_iAddSubLevel); SEPARATOR;
 
 			// 단일 오브젝트 Layer 추가
 			if (false == m_isLightSettingWindow && false == m_isFixObjectWindow && false == m_isFixInteractObjectWindow &&
@@ -636,6 +644,8 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 
 				ObjectDesc.Properties = m_AddObjectProperties;
 
+				ObjectDesc.iSubLevel = m_iAddSubLevel;
+
 				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj"),
 					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), );
 
@@ -668,7 +678,7 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 
 					m_pGameInstance->Set_GizmoObject(m_pFixPropObj);
 
-					m_iSaveLevel = m_pFixPropObj->Get_SaveLevel();
+					m_iSubLevel = m_pFixPropObj->Get_SubLevel();
 
 					m_isFixObjectWindow = true;
 					m_eFixType = FIX_OBJECT::FIX;
@@ -905,9 +915,9 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 			m_pFixPropObj->Set_Properties(PropProperties);
 
 			ImGui::Text("SET LEVEL : "); SAMELINE;
-			ImGui::InputInt("##set_level_fix", &m_iSaveLevel);
+			ImGui::InputInt("##set_level_fix", &m_iSubLevel);
 
-			m_pFixPropObj->Set_SaveLevel(m_iSaveLevel);
+			m_pFixPropObj->Set_SubLevel(m_iSubLevel);
 
 			SEPARATOR;
 			SEPARATOR;
@@ -1193,7 +1203,7 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 				{
 					pProp->Set_CheckRender(true);
 					pProp->Set_RenderProperties(&m_RenderProperties);
-					pProp->Set_RenderSaveLevel(&m_iRenderSaveLevel);
+					pProp->Set_RenderSubLevel(&m_iRenderSubLevel);
 				}
 			}
 			SAMELINE;
@@ -1235,8 +1245,8 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 				ImGui::Checkbox("BACKGROUND", &m_RenderProperties.isBackGround);
 				SEPARATOR;
 
-				ImGui::Text("( 0 UNDER == ALL ) RENDER SAVE LEVEL : "); SAMELINE;
-				ImGui::InputInt("##render_save_level", &m_iRenderSaveLevel);
+				ImGui::Text("( 0 UNDER == ALL ) RENDER SUB LEVEL : "); SAMELINE;
+				ImGui::InputInt("##render_sub_level", &m_iRenderSubLevel);
 
 				SEPARATOR;
 			}
@@ -1264,13 +1274,21 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 						ImGui::Checkbox("SNOW", &PropProperties.isSnow);
 						SAMELINE;
 
-						ImGui::Checkbox("COLLIDER", &PropProperties.isCollider);
+						if (ImGui::Checkbox("COLLIDER", &PropProperties.isCollider))
+						{
+							if (true == PropProperties.isCollider)
+								PropProperties.isInstance = false;
+						}
 						SAMELINE;
 
 						ImGui::Checkbox("ICE", &PropProperties.isIce);
 						SAMELINE;
 
-						ImGui::Checkbox("INSTANCE", &PropProperties.isInstance);
+						if (ImGui::Checkbox("INSTANCE", &PropProperties.isInstance))
+						{
+							if (true == PropProperties.isInstance)
+								PropProperties.isCollider = false;
+						}
 						SEPARATOR;
 
 						ImGui::Checkbox("SHADOW", &PropProperties.isShadow);
@@ -1280,11 +1298,6 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 						SEPARATOR;
 
 						m_ObjectList[m_iObjectListIndex]->Set_Properties(PropProperties);
-
-						ImGui::Text("SET LEVEL : "); SAMELINE;
-						ImGui::InputInt("##set_level_fix", &m_iSaveLevel);
-
-						m_ObjectList[m_iObjectListIndex]->Set_SaveLevel(m_iSaveLevel);
 
 						SEPARATOR;
 					}
@@ -1317,7 +1330,7 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 
 							m_pGameInstance->Set_GizmoObject(m_pFixPropObj);
 
-							m_iSaveLevel = m_pFixPropObj->Get_SaveLevel();
+							m_iSubLevel = m_pFixPropObj->Get_SubLevel();
 
 							m_isFixObjectWindow = true;
 							m_eFixType = FIX_OBJECT::FIX;
@@ -2325,7 +2338,7 @@ _bool CLevel_Map::Objects_Save_Binary()
 			WriteFile(hObjectFile, &PropDesc, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr);
 
 			// 6. 객체의 SaveLevel 저장
-			_int iSaveLevel = pProp->Get_SaveLevel();
+			_int iSaveLevel = pProp->Get_SubLevel();
 			WriteFile(hObjectFile, &iSaveLevel, sizeof(_int), &dwByte, nullptr);
 		}
 		// 단일 오브젝트 이외의 것들 추가 예정
@@ -2836,7 +2849,7 @@ _bool CLevel_Map::Object_Save_Binary_ByLevel(_uint iLevel)
 		if (true == pProp->Get_Properties().isInstance)
 			continue;
 
-		if (iLevel != pProp->Get_SaveLevel())
+		if (iLevel != pProp->Get_SubLevel())
 			continue;
 
 		++iObjectCnt;
@@ -2853,7 +2866,7 @@ _bool CLevel_Map::Object_Save_Binary_ByLevel(_uint iLevel)
 			continue;
 
 		// 저장된 Level 값이랑 일치하지 않으면 다음 순회
-		if (iLevel != pProp->Get_SaveLevel())
+		if (iLevel != pProp->Get_SubLevel())
 			continue;
 
 		// 기본 양식 지키기 ( Prototype_Component_Model_모델파일명 ) ( Layer 추가에 사용할 것, 모델명 던져주기 )
@@ -3099,7 +3112,7 @@ _bool CLevel_Map::Objects_Load_Binary()
 		_int iSaveLevel = {};
 		CHECK_FALSE(ReadFile(hFile, &iSaveLevel, sizeof(_int), &dwByte, nullptr), false);
 
-		ObjectDesc.iSaveLevel = iSaveLevel;
+		ObjectDesc.iSubLevel = iSaveLevel;
 
 		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj"),
 			ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), false);

@@ -23,7 +23,7 @@ public:
 
 		_tchar szModelName[MAX_PATH]{};
 
-		_int iSaveLevel{};
+		_int iSubLevel{};
 
 	}PROP_DESC;
 
@@ -55,15 +55,15 @@ public:
 
 	void Set_CheckRender(_bool isCheckRender) { m_isCheckRender = isCheckRender; }
 	void Set_RenderProperties(MAPOBJECT_PROPERTIES* pRenderProperties) { m_pRenderProperties = pRenderProperties; }
-	void Set_RenderSaveLevel(_int* pRenderSaveLevel) { m_pRenderSaveLevel = pRenderSaveLevel; }
+	void Set_RenderSubLevel(_int* pRenderSubLevel) { m_pRenderSubLevel = pRenderSubLevel; }
 
-	_int Get_SaveLevel() { return m_iSaveLevel; }
-	void Set_SaveLevel(_int iSaveLevel) { m_iSaveLevel = iSaveLevel; }
+	_int Get_SubLevel() { return m_iSubLevel; }
+	void Set_SubLevel(_int iSubLevel) { m_iSubLevel = iSubLevel; }
 
 protected:
 	SHADER_PASS m_eShaderPass = { SHADER_PASS::MAP };
 	_bool m_isCheckRender = { false };
-	_int m_iSaveLevel = {};
+	_int m_iSubLevel = {};
 
 protected:
 	_tchar m_szModelName[MAX_PATH] = {};
@@ -72,7 +72,7 @@ protected:
 
 	MAPOBJECT_PROPERTIES* m_pRenderProperties = { nullptr };
 
-	_int* m_pRenderSaveLevel = {};
+	_int* m_pRenderSubLevel = {};
 
 protected:
 	_float m_fSnowAmount = { 0.8f };

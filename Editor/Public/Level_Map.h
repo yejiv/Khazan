@@ -106,6 +106,8 @@ private:
 	
 	_float m_fAddScale = { 0.005f };						// 오브젝트 Add 시 스케일 지정
 
+	_int m_iAddSubLevel = {};								// 오브젝트 Add 시 Sub LV 지정
+
 	_bool m_isCameraPosAdd = { false };						// 카메라 위치에 오브젝트 생성할지 말지
 	_float m_fAddPositionY = { 0.f };						// 오브젝트 높이 위치 Off-Set
 
@@ -113,9 +115,13 @@ private:
 
 	_bool m_isCheckRender = { false };
 	MAPOBJECT_PROPERTIES m_RenderProperties = {};
-	_int m_iRenderSaveLevel = {};
+	_int m_iRenderSubLevel = {};
 
-	_int m_iSaveLevel = {};									// 오브젝트의 세이브 레벨
+	_int m_iSubLevel = {};									// 오브젝트의 세이브 레벨 ( FIX 가져오는 용 )
+
+	_float m_fInstanceRange = { 3.f };						// 인스턴싱 막 깔때의 반지름
+
+	_int m_iNumInstance = { 5 };							// 인스턴싱 깔때 범위내의 인스턴싱 모델 개수
 
 #pragma endregion
 
