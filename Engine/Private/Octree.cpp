@@ -1,18 +1,19 @@
 #include "Octree.h"
-#include "GameInstance.h"
+#include "Frustum.h"
 #include "GameObject.h"
 
 COctree::COctree()
-	: m_pGameInstance { CGameInstance::GetInstance() }
+	: m_pParent(nullptr),
+	m_iDepth(0),
+	m_isVisible(false),
+	m_isObtainStatic(false)
 {
-	Safe_AddRef(m_pGameInstance);
+	for (int i = 0; i < CHILDEND; ++i) m_pChilds[i] = nullptr;
 }
 
 COctree::~COctree()
 {
 }
-
-
 
 HRESULT COctree::Initialize(const _float3& vCenter, const _float& fHalfWidth, const _int& iDepthLimit, COctree* pParent)
 {
@@ -144,6 +145,9 @@ void COctree::Late_Update(_float fTimeDelta)
 
 bool COctree::AddStaticObject(CGameObject* pGameObject, const _float3& vPoint, const _float& _fRadius)
 {
+	lock_guard<recursive_mutex> lock(m_Mutex);
+	Safe_AddRef(pGameObject);
+
 	ContainmentType Containment = (_fRadius == 0.0f ? m_BoundingBox.Contains(XMLoadFloat3(&vPoint)) : m_BoundingBox.Contains(BoundingSphere(vPoint, _fRadius)));
 	if (CONTAINS == Containment)
 	{
@@ -161,11 +165,13 @@ bool COctree::AddStaticObject(CGameObject* pGameObject, const _float3& vPoint, c
 			if (m_pChilds[ChildIndex]->AddStaticObject(pGameObject, vPoint, _fRadius))
 				return true;
 
+			Safe_AddRef(pGameObject);
 			m_GameObjects.emplace_back(pGameObject);
 			return true;
 		}
 		else
 		{
+			Safe_AddRef(pGameObject);
 			m_GameObjects.emplace_back(pGameObject);
 			return true;
 		}
@@ -173,6 +179,7 @@ bool COctree::AddStaticObject(CGameObject* pGameObject, const _float3& vPoint, c
 	else if (!m_pParent && Containment)
 	{
 		m_isObtainStatic = true;
+		Safe_AddRef(pGameObject);
 		m_GameObjects.emplace_back(pGameObject);
 		return true;
 	}
@@ -180,11 +187,11 @@ bool COctree::AddStaticObject(CGameObject* pGameObject, const _float3& vPoint, c
 	return false;
 }
 
-void COctree::Culling()
+void COctree::Culling(class CFrustum* pFrustum)
 {
 	if (m_isObtainStatic)
 	{
-		switch (isDraw())
+		switch (isDraw(pFrustum))
 		{
 		case DISJOINT:
 		{
@@ -198,7 +205,7 @@ void COctree::Culling()
 			{
 				for (auto& Child : m_pChilds)
 				{
-					Child->Culling();
+					Child->Culling(pFrustum);
 				}
 			}
 		}
@@ -224,15 +231,14 @@ void COctree::Destroy()
 	{
 		if (m_pChilds[i])
 		{
-			m_pChilds[i]->Destroy();
 			Safe_Release(m_pChilds[i]);
 		}
 	}
 }
 
-ContainmentType COctree::isDraw()
+ContainmentType COctree::isDraw(class CFrustum* pFrustum)
 {
-	return m_pGameInstance->isIn_Frustum_WorldSpace(m_BoundingBox);
+	return pFrustum->isIn_WorldSpace(m_BoundingBox);
 }
 
 void COctree::AllVisible()
@@ -277,6 +283,7 @@ COctree* COctree::Create(const _float3& vCenter, const _float& fHalfWidth, const
 	{
 		MSG_BOX(TEXT("Failed to Created : CObject_Manager"));
 		Safe_Release(pInstance);
+		return nullptr;
 	}
 
 	return pInstance;
@@ -286,14 +293,19 @@ void COctree::Free()
 {
 	__super::Free();
 
-	for (CGameObject* pGameObject : m_GameObjects)
-		Safe_Release(pGameObject);
+	// 내 것들부터 정리
+	for (auto* p : m_GameObjects) Safe_Release(p);
 	m_GameObjects.clear();
+
+	for (auto& kv : m_Instances)
+		for (auto& inst : kv.second)
+			Safe_Release(inst.pGameObject);
 	m_Instances.clear();
+
 	m_isVisible = false;
 	m_isObtainStatic = false;
+
 	Destroy();
-	Safe_Release(m_pGameInstance);
 
 	
 }

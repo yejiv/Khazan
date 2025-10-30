@@ -44,7 +44,7 @@ private:
 
 private:
 	virtual	HRESULT						Ready_Prototype();
-	virtual	HRESULT						Ready_Childer();
+	virtual	HRESULT						Ready_Children();
 
 	void								Update_State(_uint iGrade = 0);
 

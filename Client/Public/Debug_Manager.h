@@ -21,6 +21,7 @@ private:
 	
 private:
 	class CGameInstance* m_pGameInstance = { nullptr };
+	class CClientInstance* m_pClientInstance = { nullptr };
 
 	// Jolt
 	_bool m_isCollisionRender[ENUM_CLASS(COLLISION_LAYER::END)];

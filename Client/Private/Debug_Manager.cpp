@@ -1,10 +1,13 @@
 #include "Debug_Manager.h"
 #include "GameInstance.h"
+#include "ClientInstance.h"
 
 CDebug_Manager::CDebug_Manager()
 	: m_pGameInstance { CGameInstance::GetInstance() }
+	, m_pClientInstance { CClientInstance::GetInstance() }
 {
 	Safe_AddRef(m_pGameInstance);
+	Safe_AddRef(m_pClientInstance);
 }
 
 HRESULT CDebug_Manager::Initialize()
@@ -48,13 +51,13 @@ void CDebug_Manager::Ready_CameraDebug()
 	m_pGameInstance->AddWidget(TEXT("Debug"), [&]() {
 		ImGui::Begin("Camera");
 
-		_float3 vCameraPos = m_pGameInstance->Get_ActiveCameraPos();
+		_float3 vCameraPos = m_pClientInstance->Get_ActiveCameraPos();
 
 		_char szPosBuffer[MAX_PATH];
 		snprintf(szPosBuffer, sizeof(szPosBuffer), "POS : X : %.2f, Y : %.2f, Z : %.2f", vCameraPos.x, vCameraPos.y, vCameraPos.z);
 		ImGui::Text(szPosBuffer);
 
-		_float4 vCameraLook = m_pGameInstance->Get_ActiveCameraLook();
+		_float4 vCameraLook = m_pClientInstance->Get_ActiveCameraLook();
 
 		_char szLookBuffer[MAX_PATH];
 		snprintf(szLookBuffer, sizeof(szLookBuffer), "LOOK : X : %.2f, Y : %.2f, Z : %.2f, W : %.2f", vCameraLook.x, vCameraLook.y, vCameraLook.z, vCameraLook.w);
@@ -148,4 +151,5 @@ void CDebug_Manager::Free()
 {
 	__super::Free();
 	Safe_Release(m_pGameInstance);
+	Safe_Release(m_pClientInstance);
 }

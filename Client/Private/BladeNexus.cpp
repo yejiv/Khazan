@@ -133,7 +133,7 @@ HRESULT CBladeNexus::Ready_Collision(void* pArg)
 
 #pragma region 트리거 영역
     CBody::BODY_BOXSHAPE_DESC TriggerDesc{};
-    TriggerDesc.vExtent = _float3(1.3f, 1.f, 1.3f);
+    TriggerDesc.vExtent = _float3(1.6f, 1.f, 1.6f);
     TriggerDesc.bIsTrigger = true;
     TriggerDesc.bStartActive = true;
     TriggerDesc.eMotion = EMotionType::Static;
@@ -169,11 +169,13 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
     {
         m_isBNOff = false;
 
+        // 해금 전 IDLE 상태
         if (ANIM_STATE::BEFORE_IDLE == m_eAnimState)
         {
             // 처음 상호 작용 시
             m_eAnimState = ANIM_STATE::BEFORE_START;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+            m_pModelCom->Set_AnimationLoop(false);
 
             EventInteractType InteractType = {};
 
@@ -183,6 +185,7 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
             EventBladeNexus BNEvent = {};
 
             XMStoreFloat3(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+            BNEvent.isUnLock = true;
             BNEvent.isBNOpened = false;
 
             InteractType.BNEvent = BNEvent;
@@ -190,11 +193,13 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
             // 귀검을 바라볼 수 있도록 포지션만 던짐 ( 귀검 애니메이션 아직 종료 X )
             m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
         }
+        // 해금 후 IDLE 상태
         else if (ANIM_STATE::AFTER_IDLE == m_eAnimState)
         {
             // 2번 이상의 상호 작용 시
             m_eAnimState = ANIM_STATE::AFTER_START;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+            m_pModelCom->Set_AnimationLoop(false);
 
             EventInteractType InteractType = {};
 
@@ -204,7 +209,10 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
             EventBladeNexus BNEvent = {};
 
             XMStoreFloat3(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+            BNEvent.isUnLock = false;
             BNEvent.isBNOpened = false;
+
+            InteractType.BNEvent = BNEvent;
 
             // 귀검을 바라볼 수 있도록 포지션만 던짐 ( 귀검 애니메이션 아직 종료 X )
             m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
@@ -218,20 +226,20 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
         {
             m_eAnimState = ANIM_STATE::BEFORE_END;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+            m_pModelCom->Set_AnimationLoop(false);
         }
         if (ANIM_STATE::AFTER_LOOP == m_eAnimState)
         {
             m_eAnimState = ANIM_STATE::AFTER_END;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+            m_pModelCom->Set_AnimationLoop(false);
         }
     }
 }
 
 void CBladeNexus::Animation_Change(_float fTimeDelta)
 {
-    if (false == m_isCollision)
-        return;
-
+    // 귀검 가동 끝나면 ( 첫 해금 O )
     if (ANIM_STATE::BEFORE_START == m_eAnimState)       // BEFORE_START 가 끝나면 BEFORE_LOOP ( 플레이어가 UI랑 상호 작용 )
     {
         // 처음 상호 작용 후 애니메이션 루프로 전환 및 이벤트 발생
@@ -247,14 +255,18 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
         EventBladeNexus BNEvent = {};
 
         XMStoreFloat3(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
-        BNEvent.isBNOpened = true;
+        BNEvent.isUnLock = true;
+        BNEvent.isBNOpened = true;              // 이제 귀검 UI 열리게
+
+        InteractType.BNEvent = BNEvent;
 
         // 귀검을 바라볼 수 있도록 포지션만 던짐 ( 귀검 애니메이션 종료 O, UI 창 팝업? )
         m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 
         m_isBNOn = false;
     }
-    if (ANIM_STATE::BEFORE_END == m_eAnimState)         // BEFORE_END 가 끝나면 AFTER_IDLE
+    // 귀검 상호 작용 종료 후 ( 첫 해금 O )
+    if (ANIM_STATE::BEFORE_END == m_eAnimState)
     {
         // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
         m_eAnimState = ANIM_STATE::AFTER_IDLE;
@@ -263,6 +275,7 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
 
         m_isBNOff = false;
     }
+    // 귀검 가동 끝나면 ( 첫 해금 X )
     if (ANIM_STATE::AFTER_START == m_eAnimState)
     {
         // 다회 상호 작용 후 애니메이션 루프로 전환
@@ -278,13 +291,17 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
         EventBladeNexus BNEvent = {};
 
         XMStoreFloat3(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
-        BNEvent.isBNOpened = true;
+        BNEvent.isUnLock = false;
+        BNEvent.isBNOpened = true;              // 이제 귀검 UI 열리게
+
+        InteractType.BNEvent = BNEvent;
 
         // 귀검을 바라볼 수 있도록 포지션만 던짐 ( 귀검 애니메이션 종료 O, UI 창 팝업? )
         m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 
         m_isBNOn = false;
     }
+    // 귀검 상호 작용 종료 후 ( 첫 해금 X )
     if (ANIM_STATE::AFTER_END == m_eAnimState)
     {
         // 다회 상호 작용이 끝난 후 After Idle 상태로 전환
@@ -299,15 +316,36 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
 void CBladeNexus::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
     m_isCollision = true;
+
+    EventInteractType InteractType = {};
+
+    InteractType.isInteract = true;
+    InteractType.eInteractType = INTERACTIVE_TYPE::CHECKPOINT;
+
+    m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 }
 
 void CBladeNexus::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
+    m_isCollision = true;
+
+    EventInteractType InteractType = {};
+
+    InteractType.isInteract = true;
+    InteractType.eInteractType = INTERACTIVE_TYPE::CHECKPOINT;
+
+    m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 }
 
 void CBladeNexus::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 {
     m_isCollision = false;
+
+    EventInteractType InteractType = {};
+
+    InteractType.isInteract = false;
+
+    m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 }
 
 CBladeNexus* CBladeNexus::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

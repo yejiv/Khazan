@@ -216,7 +216,7 @@ void CTransform::Chase(_fvector vTargetPos, _float fTimeDelta, _float fLimit)
 
 }
 
-void CTransform::AI_Chase(_fvector vTargetPos, _float fTimeDelta, _float fLimit)
+void CTransform::AI_Chase(_fvector vTargetPos, _float fTimeDelta, _float SpeedPerSec, _float fLimit)
 {
 	// 거리 제곱 기반으로 사용되는 추적 함수
 	_vector vPosition = Get_State(STATE::POSITION);
@@ -232,7 +232,7 @@ void CTransform::AI_Chase(_fvector vTargetPos, _float fTimeDelta, _float fLimit)
 	//vPosition += vDirNorm * fMove;
 
 	if (fDistSq >= fLimit)
-		vPosition += XMVector3Normalize(vMoveDir) * m_fSpeedPerSec * fTimeDelta;
+		vPosition += XMVector3Normalize(vMoveDir) * SpeedPerSec * fTimeDelta;
 
 
 	Set_State(STATE::POSITION, vPosition);

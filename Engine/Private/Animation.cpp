@@ -56,7 +56,9 @@ HRESULT CAnimation::Initialize(const vector<class CBone*>& Bones, ANIMATION_DATA
         m_Channels.push_back(pChannel);
     }
 
+
     m_isClone = false;
+
     return S_OK;
 }
 

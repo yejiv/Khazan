@@ -14,9 +14,9 @@ class CMapObject abstract : public CGameObject
 public:
 	typedef struct tagBoxItemDesc
 	{
-		_uint iItem_0 = {};
-		_uint iItem_1 = {};
-		_uint iItem_2 = {};
+		_int iItem_0 = {};
+		_int iItem_1 = {};
+		_int iItem_2 = {};
 
 	}ITEMBOX_DESC;
 
