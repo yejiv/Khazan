@@ -33,6 +33,8 @@ HRESULT CProp::Initialize_Clone(void* pArg)
 
     m_Properties = pDesc->Properties;
 
+    m_iSaveLevel = pDesc->iSaveLevel;
+
     return S_OK;
 }
 

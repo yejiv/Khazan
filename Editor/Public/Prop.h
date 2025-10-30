@@ -21,7 +21,9 @@ public:
 
 		_float4x4 WorldMatrix{};
 
-		_tchar szModelName[MAX_PATH] = {};
+		_tchar szModelName[MAX_PATH]{};
+
+		_int iSaveLevel{};
 
 	}PROP_DESC;
 
@@ -53,10 +55,15 @@ public:
 
 	void Set_CheckRender(_bool isCheckRender) { m_isCheckRender = isCheckRender; }
 	void Set_RenderProperties(MAPOBJECT_PROPERTIES* pRenderProperties) { m_pRenderProperties = pRenderProperties; }
+	void Set_RenderSaveLevel(_int* pRenderSaveLevel) { m_pRenderSaveLevel = pRenderSaveLevel; }
+
+	_int Get_SaveLevel() { return m_iSaveLevel; }
+	void Set_SaveLevel(_int iSaveLevel) { m_iSaveLevel = iSaveLevel; }
 
 protected:
 	SHADER_PASS m_eShaderPass = { SHADER_PASS::MAP };
 	_bool m_isCheckRender = { false };
+	_int m_iSaveLevel = {};
 
 protected:
 	_tchar m_szModelName[MAX_PATH] = {};
@@ -64,6 +71,8 @@ protected:
 	MAPOBJECT_PROPERTIES m_Properties = {};
 
 	MAPOBJECT_PROPERTIES* m_pRenderProperties = { nullptr };
+
+	_int* m_pRenderSaveLevel = {};
 
 protected:
 	_float m_fSnowAmount = { 0.8f };

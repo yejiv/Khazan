@@ -184,6 +184,8 @@ void CLevel_Map::Select_Fix_Object(_float fTimeDelta)
 						// ======================================================
 						// ======================================================
 
+						m_iSaveLevel = m_pFixPropObj->Get_SaveLevel();
+
 						m_isFixObjectWindow = true;
 						m_eFixType = FIX_OBJECT::FIX;
 
@@ -236,6 +238,8 @@ void CLevel_Map::Select_Multi_Fix_Object(_float fTimeDelta)
 
 							// ======================================================
 							// ======================================================
+
+							m_iSaveLevel = m_pFixPropObj->Get_SaveLevel();
 
 							m_isFixObjectWindow = true;
 							m_eFixType = FIX_OBJECT::FIX;
@@ -380,7 +384,7 @@ HRESULT CLevel_Map::Ready_Main_Window()
 					m_isLightSettingWindow = !m_isLightSettingWindow;
 				}
 				SEPARATOR;
-				
+
 				ImGui::Text("MAP DATA SAVE & LOAD");
 				if (ImGui::Button("SAVE")) m_isSaveObjectWindow = !m_isSaveObjectWindow;
 				if (false == m_isLoaded)
@@ -664,6 +668,8 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 
 					m_pGameInstance->Set_GizmoObject(m_pFixPropObj);
 
+					m_iSaveLevel = m_pFixPropObj->Get_SaveLevel();
+
 					m_isFixObjectWindow = true;
 					m_eFixType = FIX_OBJECT::FIX;
 				}
@@ -710,7 +716,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 			}
 
 			if (false == m_isLightSettingWindow && false == m_isFixObjectWindow && false == m_isFixInteractObjectWindow &&
-				(ImGui::Button("ADD INTERACTIVE (I)") || m_pGameInstance->Key_Down(DIK_I)))
+				(ImGui::Button("ADD INTERACTIVE")))
 			{
 				_wstring strModelTag = TEXT("Prototype_Component_Model_");
 
@@ -897,6 +903,11 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 			SEPARATOR;
 
 			m_pFixPropObj->Set_Properties(PropProperties);
+
+			ImGui::Text("SET LEVEL : "); SAMELINE;
+			ImGui::InputInt("##set_level_fix", &m_iSaveLevel);
+
+			m_pFixPropObj->Set_SaveLevel(m_iSaveLevel);
 
 			SEPARATOR;
 			SEPARATOR;
@@ -1173,30 +1184,6 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 					SEPARATOR;
 				}
 			}
-			/*
-			if (ImGui::Button("ALL SNOW ON"))
-			{
-				MAPOBJECT_PROPERTIES PropProperties = {};
-
-				for (auto& pObj : m_ObjectList)
-				{
-					PropProperties = pObj->Get_Properties();
-					PropProperties.isSnow = true;
-					pObj->Set_Properties(PropProperties);
-				}
-			} SAMELINE;
-			if (ImGui::Button("ALL SNOW OFF"))
-			{
-				MAPOBJECT_PROPERTIES PropProperties = {};
-
-				for (auto& pObj : m_ObjectList)
-				{
-					PropProperties = pObj->Get_Properties();
-					PropProperties.isSnow = false;
-					pObj->Set_Properties(PropProperties);
-				}
-			} SEPARATOR;
-			*/
 
 			if (ImGui::Button("CHECK RENDER ON"))
 			{
@@ -1206,6 +1193,7 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 				{
 					pProp->Set_CheckRender(true);
 					pProp->Set_RenderProperties(&m_RenderProperties);
+					pProp->Set_RenderSaveLevel(&m_iRenderSaveLevel);
 				}
 			}
 			SAMELINE;
@@ -1246,6 +1234,9 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 
 				ImGui::Checkbox("BACKGROUND", &m_RenderProperties.isBackGround);
 				SEPARATOR;
+
+				ImGui::Text("( 0 UNDER == ALL ) RENDER SAVE LEVEL : "); SAMELINE;
+				ImGui::InputInt("##render_save_level", &m_iRenderSaveLevel);
 
 				SEPARATOR;
 			}
@@ -1290,6 +1281,11 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 
 						m_ObjectList[m_iObjectListIndex]->Set_Properties(PropProperties);
 
+						ImGui::Text("SET LEVEL : "); SAMELINE;
+						ImGui::InputInt("##set_level_fix", &m_iSaveLevel);
+
+						m_ObjectList[m_iObjectListIndex]->Set_SaveLevel(m_iSaveLevel);
+
 						SEPARATOR;
 					}
 
@@ -1320,6 +1316,8 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 							// ======================================================
 
 							m_pGameInstance->Set_GizmoObject(m_pFixPropObj);
+
+							m_iSaveLevel = m_pFixPropObj->Get_SaveLevel();
 
 							m_isFixObjectWindow = true;
 							m_eFixType = FIX_OBJECT::FIX;
@@ -1799,6 +1797,20 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 
 			SEPARATOR;
 
+			ImGui::Text("TOTAL LEVEL : "); SAMELINE;
+			ImGui::InputInt("##total_level_parts", &m_iMaxLevel);
+
+			if (ImGui::Button("SAVE_SUB_LEVELS"))
+			{
+				m_strMapInfoFilePath = m_szMapInfoFilePath;
+				m_strMapInfoFilePath += m_szMapInfoFileName;
+
+				for (_int i = 0; i <= m_iMaxLevel; ++i)
+				{
+					Object_Save_Binary_ByLevel(i);
+				}
+			}
+			SAMELINE;
 			if (ImGui::Button("SAVE"))
 			{
 				// m_strMapInfoFilePath : 뒤에 _prototypes.dat, _objs.dat, insts.dat 이런식으로 ㄱㄱ
@@ -2311,6 +2323,10 @@ _bool CLevel_Map::Objects_Save_Binary()
 			// 5. 객체당 속성 저장
 			MAPOBJECT_PROPERTIES PropDesc = pProp->Get_Properties();
 			WriteFile(hObjectFile, &PropDesc, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr);
+
+			// 6. 객체의 SaveLevel 저장
+			_int iSaveLevel = pProp->Get_SaveLevel();
+			WriteFile(hObjectFile, &iSaveLevel, sizeof(_int), &dwByte, nullptr);
 		}
 		// 단일 오브젝트 이외의 것들 추가 예정
 	}
@@ -2577,8 +2593,10 @@ _bool CLevel_Map::Instance_Prototype_Save_Binary()
 _bool CLevel_Map::Object_Save_Binary()
 {
 	_wstring strObjectInfoPath = AnsiToWString(m_strMapInfoFilePath);
+	_wstring strObjectInfoPath_Hot = AnsiToWString(m_strMapInfoFilePath);
 
 	strObjectInfoPath += TEXT("_object.dat");
+	strObjectInfoPath_Hot += TEXT("_object_hot.dat");
 
 	DWORD dwByte = {};
 
@@ -2586,59 +2604,55 @@ _bool CLevel_Map::Object_Save_Binary()
 	HANDLE hObjectFile = CreateFile(strObjectInfoPath.c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (INVALID_HANDLE_VALUE == hObjectFile)
 	{
-		CloseHandle(hObjectFile);
 		return false;
 	}
-	else
+
+	// 오브젝트 총 개수 카운트
+	_uint iObjectCnt = {};
+
+	for (auto& pProp : m_ObjectList)
 	{
-		// 오브젝트 총 개수 카운트
-		_uint iObjectCnt = {};
+		// 인스턴스 속성이 아니면 카운트 증가 X
+		if (false == pProp->Get_Properties().isInstance)
+			++iObjectCnt;
+	}
 
-		for (auto& pProp : m_ObjectList)
-		{
-			// 인스턴스 속성이 아니면 카운트 증가 X
-			if (false == pProp->Get_Properties().isInstance)
-				++iObjectCnt;
-		}
+	// 1. 오브젝트의 총 개수 저장
+	WriteFile(hObjectFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr);
 
-		// 1. 오브젝트의 총 개수 저장
-		WriteFile(hObjectFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr);
+	// 단일 오브젝트 순회하면서 모델 이름 알아오기 ( Prototype 태그로 사용할 것 )
+	for (auto& pProp : m_ObjectList)
+	{
+		// 인스턴스 속성이면 단일 오브젝트니까 다음 순회
+		if (true == pProp->Get_Properties().isInstance)
+			continue;
 
-		// 단일 오브젝트 순회하면서 모델 이름 알아오기 ( Prototype 태그로 사용할 것 )
-		for (auto& pProp : m_ObjectList)
-		{
-			// 인스턴스 속성이면 단일 오브젝트니까 다음 순회
-			if (true == pProp->Get_Properties().isInstance)
-				continue;
+		// 기본 양식 지키기 ( Prototype_Component_Model_모델파일명 ) ( Layer 추가에 사용할 것, 모델명 던져주기 )
+		_wstring strPrototypeTag = TEXT("Prototype_Component_Model_");
+		strPrototypeTag += pProp->Get_ModelName();
 
-			// 기본 양식 지키기 ( Prototype_Component_Model_모델파일명 ) ( Layer 추가에 사용할 것, 모델명 던져주기 )
-			_wstring strPrototypeTag = TEXT("Prototype_Component_Model_");
-			strPrototypeTag += pProp->Get_ModelName();
+		// 모델 이름 길이
+		_uint iPrototypeLen = strPrototypeTag.size();
 
-			// 모델 이름 길이
-			_uint iPrototypeLen = strPrototypeTag.size();
+		// 2. 프로토 타입 태그 길이 저장
+		WriteFile(hObjectFile, &iPrototypeLen, sizeof(_uint), &dwByte, nullptr);
+		// 3. 프로토 타입 태그 이름 저장
+		WriteFile(hObjectFile, strPrototypeTag.c_str(), sizeof(_tchar) * iPrototypeLen, &dwByte, nullptr);
 
-			// 2. 프로토 타입 태그 길이 저장
-			WriteFile(hObjectFile, &iPrototypeLen, sizeof(_uint), &dwByte, nullptr);
-			// 3. 프로토 타입 태그 이름 저장
-			WriteFile(hObjectFile, strPrototypeTag.c_str(), sizeof(_tchar) * iPrototypeLen, &dwByte, nullptr);
+		// 객체당 월드행렬 빼오기
+		CTransform* pTransform = static_cast<CTransform*>(pProp->Get_Component(TEXT("Com_Transform")));
+		CHECK_NULLPTR_MSG(pTransform, TEXT("nullptr == pTransform"), false);
 
-			// 객체당 월드행렬 빼오기
-			CTransform* pTransform = static_cast<CTransform*>(pProp->Get_Component(TEXT("Com_Transform")));
-			CHECK_NULLPTR_MSG(pTransform, TEXT("nullptr == pTransform"), false);
+		_float4x4 WorldMatrix = {};
 
-			_float4x4 WorldMatrix = {};
+		XMStoreFloat4x4(&WorldMatrix, pTransform->Get_WorldMatrix());
 
-			XMStoreFloat4x4(&WorldMatrix, pTransform->Get_WorldMatrix());
+		// 4. 객체당 월드행렬 저장
+		WriteFile(hObjectFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr);
 
-			// 4. 객체당 월드행렬 저장
-			WriteFile(hObjectFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr);
-
-			// 5. 객체당 속성 저장
-			MAPOBJECT_PROPERTIES PropDesc = pProp->Get_Properties();
-			WriteFile(hObjectFile, &PropDesc, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr);
-		}
-		// 단일 오브젝트 이외의 것들 추가 예정
+		// 5. 객체당 속성 저장
+		MAPOBJECT_PROPERTIES PropDesc = pProp->Get_Properties();
+		WriteFile(hObjectFile, &PropDesc, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr);
 	}
 
 	// 프로토타입 핸들 닫기
@@ -2659,7 +2673,6 @@ _bool CLevel_Map::Instance_Object_Save_Binary()
 	HANDLE hObjectFile = CreateFile(strObjectInfoPath.c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (INVALID_HANDLE_VALUE == hObjectFile)
 	{
-		CloseHandle(hObjectFile);
 		return false;
 	}
 	else
@@ -2732,7 +2745,6 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 	HANDLE hObjectFile = CreateFile(strObjectInfoPath.c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (INVALID_HANDLE_VALUE == hObjectFile)
 	{
-		CloseHandle(hObjectFile);
 		return false;
 	}
 	else
@@ -2796,6 +2808,88 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 	return true;
 }
 
+_bool CLevel_Map::Object_Save_Binary_ByLevel(_uint iLevel)
+{
+	_wstring strObjectInfoPath = AnsiToWString(m_strMapInfoFilePath);
+
+	_tchar szObjectLevelInfoPath[MAX_PATH] = {};
+
+	wsprintf(szObjectLevelInfoPath, TEXT("%s_LV%d_object.dat"), strObjectInfoPath.c_str(), iLevel);
+
+	strObjectInfoPath = szObjectLevelInfoPath;
+
+	DWORD dwByte = {};
+
+	// 프로토타입 핸들 개방
+	HANDLE hObjectFile = CreateFile(szObjectLevelInfoPath, GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (INVALID_HANDLE_VALUE == hObjectFile)
+	{
+		return false;
+	}
+
+	// 오브젝트 총 개수 카운트
+	_uint iObjectCnt = {};
+
+	for (auto& pProp : m_ObjectList)
+	{
+		// 인스턴스 속성이 아니면 카운트 증가 X
+		if (true == pProp->Get_Properties().isInstance)
+			continue;
+
+		if (iLevel != pProp->Get_SaveLevel())
+			continue;
+
+		++iObjectCnt;
+	}
+
+	// 1. 오브젝트의 총 개수 저장 ( 지정한 특정 레벨의 )
+	WriteFile(hObjectFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr);
+
+	// 단일 오브젝트 순회하면서 모델 이름 알아오기 ( Prototype 태그로 사용할 것 )
+	for (auto& pProp : m_ObjectList)
+	{
+		// 인스턴스 속성이면 단일 오브젝트니까 다음 순회
+		if (true == pProp->Get_Properties().isInstance)
+			continue;
+
+		// 저장된 Level 값이랑 일치하지 않으면 다음 순회
+		if (iLevel != pProp->Get_SaveLevel())
+			continue;
+
+		// 기본 양식 지키기 ( Prototype_Component_Model_모델파일명 ) ( Layer 추가에 사용할 것, 모델명 던져주기 )
+		_wstring strPrototypeTag = TEXT("Prototype_Component_Model_");
+		strPrototypeTag += pProp->Get_ModelName();
+
+		// 모델 이름 길이
+		_uint iPrototypeLen = strPrototypeTag.size();
+
+		// 2. 프로토 타입 태그 길이 저장
+		WriteFile(hObjectFile, &iPrototypeLen, sizeof(_uint), &dwByte, nullptr);
+		// 3. 프로토 타입 태그 이름 저장
+		WriteFile(hObjectFile, strPrototypeTag.c_str(), sizeof(_tchar) * iPrototypeLen, &dwByte, nullptr);
+
+		// 객체당 월드행렬 빼오기
+		CTransform* pTransform = static_cast<CTransform*>(pProp->Get_Component(TEXT("Com_Transform")));
+		CHECK_NULLPTR_MSG(pTransform, TEXT("nullptr == pTransform"), false);
+
+		_float4x4 WorldMatrix = {};
+
+		XMStoreFloat4x4(&WorldMatrix, pTransform->Get_WorldMatrix());
+
+		// 4. 객체당 월드행렬 저장
+		WriteFile(hObjectFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr);
+
+		// 5. 객체당 속성 저장
+		MAPOBJECT_PROPERTIES PropDesc = pProp->Get_Properties();
+		WriteFile(hObjectFile, &PropDesc, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr);
+	}
+
+	// 프로토타입 핸들 닫기
+	CloseHandle(hObjectFile);
+
+	return true;
+}
+
 _bool CLevel_Map::Lights_Save_Binary()
 {
 	_wstring strLightInfoPath = AnsiToWString(m_strMapInfoFilePath);
@@ -2808,7 +2902,6 @@ _bool CLevel_Map::Lights_Save_Binary()
 	HANDLE hLightFile = CreateFile(strLightInfoPath.c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (INVALID_HANDLE_VALUE == hLightFile)
 	{
-		CloseHandle(hLightFile);
 		return false;
 	}
 	else
@@ -3001,6 +3094,12 @@ _bool CLevel_Map::Objects_Load_Binary()
 		CHECK_FALSE(ReadFile(hFile, &PropProperties, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr), false);
 
 		ObjectDesc.Properties = PropProperties;
+
+		// 6. 객체의 소 레벨 불러오기
+		_int iSaveLevel = {};
+		CHECK_FALSE(ReadFile(hFile, &iSaveLevel, sizeof(_int), &dwByte, nullptr), false);
+
+		ObjectDesc.iSaveLevel = iSaveLevel;
 
 		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj"),
 			ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), false);

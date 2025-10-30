@@ -66,6 +66,8 @@ private:
 	_float3 m_vDistancePos[2] = {};
 	_float m_fDistance = {};
 
+	_int m_iMaxLevel = {};						// 분할할 레벨의 총 개수
+
 #pragma region 트리거 관련 변수
 
 
@@ -111,6 +113,9 @@ private:
 
 	_bool m_isCheckRender = { false };
 	MAPOBJECT_PROPERTIES m_RenderProperties = {};
+	_int m_iRenderSaveLevel = {};
+
+	_int m_iSaveLevel = {};									// 오브젝트의 세이브 레벨
 
 #pragma endregion
 
@@ -270,6 +275,9 @@ private:
 
 	// 특정 레벨에서 사용할 상호 작용 모델 바이너리 파일
 	_bool Interactive_Object_Save_Binary();
+
+	// 특정 레벨에서 사용할 모델 바이너리 파일 ( LV_1, LV_2 이런식으로 구분 )
+	_bool Object_Save_Binary_ByLevel(_uint iLevel);
 
 #pragma endregion
 

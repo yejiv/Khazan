@@ -89,6 +89,17 @@ void CProp_Object::Late_Update(_float fTimeDelta)
         if (true == m_pRenderProperties->isBackGround && m_Properties.isBackGround == m_pRenderProperties->isBackGround)
             isRender = true;
 
+        if (0 > *m_pRenderSaveLevel && isRender == true)
+        {
+            isRender = true;
+        }
+        else if (*m_pRenderSaveLevel == m_iSaveLevel && isRender == true)
+        {
+            isRender = true;
+        }
+        else if (*m_pRenderSaveLevel != m_iSaveLevel)
+            isRender = false;
+
         _bool isRenderProperties = { false == *m_pRenderProperties };
 
         if (true == isRenderProperties || true == isRender)
