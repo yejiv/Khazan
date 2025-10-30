@@ -223,6 +223,8 @@ HRESULT CKhazan_Sample::Ready_PartObjects()
     pBody = static_cast<CBody_Khazan_Sample*>(Find_PartObject(TEXT("Part_Body")));
     m_pWeaponR_Matrix = pBody->Get_BoneMatrix("Weapon_R");
 
+    Safe_AddRef(pBody);
+
     CSpear_Khazan_Sample::SPEAR_KHAZAN_SAMPLE_DESC         SpearDesc{};
     SpearDesc.pState = &m_iState;
     SpearDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
@@ -233,6 +235,8 @@ HRESULT CKhazan_Sample::Ready_PartObjects()
     pSpear = static_cast<CSpear_Khazan_Sample*>(Find_PartObject(TEXT("Part_Weapon_Spear")));
     m_pSpearFX_Matrix = pSpear->Get_BoneMatrix("FX");
     m_SpearOffset_Matrix = pSpear->Get_OffestMatrix();
+
+    Safe_AddRef(pSpear);
 
     /* 넘겨주기  */
     pSpear->Set_matWeaponR(m_pWeaponR_Matrix);
@@ -388,4 +392,6 @@ void CKhazan_Sample::Free()
     __super::Free();
     //Safe_Release(m_pRigidBodyCom);
     Safe_Release(m_pCharVirCom);
+    Safe_Release(pBody);
+    Safe_Release(pSpear);
 }

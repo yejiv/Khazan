@@ -11,23 +11,23 @@ CAnimation::CAnimation()
     Safe_AddRef(m_pGameInstance);
 }
 
-//CAnimation::CAnimation(const CAnimation& Prototype)
-//    : m_pGameInstance{ CGameInstance::GetInstance() }   
-//    , m_fDuration{ Prototype.m_fDuration }
-//    , m_fTickPerSecond{ Prototype.m_fTickPerSecond }
-//    , m_fCurrentTrackPosition{ Prototype.m_fCurrentTrackPosition }
-//    , m_iNumChannels{ Prototype.m_iNumChannels }
-//   // , m_Channels{Prototype.m_Channels}
-//    , m_CurrentKeyFrameIndices{ Prototype.m_CurrentKeyFrameIndices }
-//    , m_fBlendTime { Prototype.m_fBlendTime }
-//    , m_isLoop { Prototype.m_isLoop }
-//{
-//    Safe_AddRef(m_pGameInstance);
-//
-//    for (auto& pPrototypeChannel : Prototype.m_Channels) 
-//        m_Channels.push_back(pPrototypeChannel->Clone());
-//
-//}
+CAnimation::CAnimation(const CAnimation& Prototype)
+    : m_pGameInstance{ CGameInstance::GetInstance() }   
+    , m_fDuration{ Prototype.m_fDuration }
+    , m_fTickPerSecond{ Prototype.m_fTickPerSecond }
+    , m_fCurrentTrackPosition{ Prototype.m_fCurrentTrackPosition }
+    , m_iNumChannels{ Prototype.m_iNumChannels }
+   // , m_Channels{Prototype.m_Channels}
+    , m_CurrentKeyFrameIndices{ Prototype.m_CurrentKeyFrameIndices }
+    , m_fBlendTime { Prototype.m_fBlendTime }
+    , m_isLoop { Prototype.m_isLoop }
+{
+    for (auto& pPrototypeChannel : Prototype.m_Channels)
+    {
+        m_Channels.push_back(pPrototypeChannel->Clone());
+    }
+    Safe_AddRef(m_pGameInstance);
+}
 
 HRESULT CAnimation::Initialize(const vector<class CBone*>& Bones, ANIMATION_DATA& data, _uint iCurAnimation)
 {
@@ -54,7 +54,6 @@ HRESULT CAnimation::Initialize(const vector<class CBone*>& Bones, ANIMATION_DATA
 
         m_Channels.push_back(pChannel);
     }
-
 
     return S_OK;
 }
@@ -264,10 +263,12 @@ void CAnimation::Free()
 {
     __super::Free();
 
+
     for (auto& pChannel : m_Channels)
         Safe_Release(pChannel);
 
     m_Channels.clear();
+
 
     Safe_Release(m_pGameInstance);
 }

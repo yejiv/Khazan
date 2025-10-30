@@ -66,6 +66,7 @@ public:
 	_float4 Get_ActiveCameraLook();
 
 	void Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
+	void Release_Client();
 #pragma endregion
 
 private:

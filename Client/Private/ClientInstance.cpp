@@ -158,12 +158,23 @@ void CClientInstance::Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag,
 #pragma endregion
 
 
+void CClientInstance::Release_Client()
+{
+	Safe_Release(m_pUI_Manager);
+	Safe_Release(m_pDB_Manager);
+	Safe_Release(m_pCamera_Manager);
+
+#ifdef _DEBUG	
+	Safe_Release(m_pDebug_Manager);
+#endif 
+
+	Safe_Release(m_pDevice);
+	Safe_Release(m_pContext);
+}
+
 void CClientInstance::Free()
 {
 	__super::Free();
 	
-	Safe_Release(m_pUI_Manager);
-	Safe_Release(m_pDB_Manager);
-	Safe_Release(m_pDevice);
-	Safe_Release(m_pContext);
+	
 }

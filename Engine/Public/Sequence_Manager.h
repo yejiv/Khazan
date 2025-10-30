@@ -49,6 +49,8 @@ private:
 
 	_uint m_iNextInstance = 1; // 동시 재생 대비 자동 인스턴스 번호
 
+	vector<_uint> m_SubscribeTokens;
+
 public:
 	static CSequence_Manager* Create();
 	virtual void Free() override;

@@ -221,21 +221,53 @@ void CSequence_Manager::EnqueueAdopt(ISeqInstance* pSeq, const SEQ_REQ_PLAY_DESC
 
 void CSequence_Manager::Subscribe_REQ()
 {
-	// REQ_* 수신 → 내부 큐 적재
-	m_pGameInstance->Subscribe_Event<SEQ_REQ_PLAY_DESC>(SEQ_REQ_PLAY,
-		[this](const SEQ_REQ_PLAY_DESC& d) { m_qPlay.push_back(d); });
+	m_SubscribeTokens.reserve(5);
 
-	m_pGameInstance->Subscribe_Event<SEQ_REQ_STOP_DESC>(SEQ_REQ_STOP,
-		[this](const SEQ_REQ_STOP_DESC& d) { m_qStop.push_back(d); });
+	m_SubscribeTokens.push_back(
+		m_pGameInstance->Subscribe_Event<SEQ_REQ_PLAY_DESC>(
+			SEQ_REQ_PLAY,
+			[this](const SEQ_REQ_PLAY_DESC& d) { m_qPlay.push_back(d); })
+	);
 
-	m_pGameInstance->Subscribe_Event<SEQ_REQ_PAUSE_DESC>(SEQ_REQ_PAUSE,
-		[this](const SEQ_REQ_PAUSE_DESC& d) { m_qPause.push_back(d); });
+	m_SubscribeTokens.push_back(
+		m_pGameInstance->Subscribe_Event<SEQ_REQ_STOP_DESC>(
+			SEQ_REQ_STOP,
+			[this](const SEQ_REQ_STOP_DESC& d) { m_qStop.push_back(d); })
+	);
 
-	m_pGameInstance->Subscribe_Event<SEQ_REQ_RESUME_DESC>(SEQ_REQ_RESUME,
-		[this](const SEQ_REQ_RESUME_DESC& d) { m_qResume.push_back(d); });
+	m_SubscribeTokens.push_back(
+		m_pGameInstance->Subscribe_Event<SEQ_REQ_PAUSE_DESC>(
+			SEQ_REQ_PAUSE,
+			[this](const SEQ_REQ_PAUSE_DESC& d) { m_qPause.push_back(d); })
+	);
 
-	m_pGameInstance->Subscribe_Event<SEQ_REQ_JUMP_DESC>(SEQ_REQ_JUMP,
-		[this](const SEQ_REQ_JUMP_DESC& d) { m_qJump.push_back(d); });
+	m_SubscribeTokens.push_back(
+		m_pGameInstance->Subscribe_Event<SEQ_REQ_RESUME_DESC>(
+			SEQ_REQ_RESUME,
+			[this](const SEQ_REQ_RESUME_DESC& d) { m_qResume.push_back(d); })
+	);
+
+	m_SubscribeTokens.push_back(
+		m_pGameInstance->Subscribe_Event<SEQ_REQ_JUMP_DESC>(
+			SEQ_REQ_JUMP,
+			[this](const SEQ_REQ_JUMP_DESC& d) { m_qJump.push_back(d); })
+	);
+
+	//// REQ_* 수신 → 내부 큐 적재
+	//m_pGameInstance->Subscribe_Event<SEQ_REQ_PLAY_DESC>(SEQ_REQ_PLAY,
+	//	[this](const SEQ_REQ_PLAY_DESC& d) { m_qPlay.push_back(d); });
+
+	//m_pGameInstance->Subscribe_Event<SEQ_REQ_STOP_DESC>(SEQ_REQ_STOP,
+	//	[this](const SEQ_REQ_STOP_DESC& d) { m_qStop.push_back(d); });
+
+	//m_pGameInstance->Subscribe_Event<SEQ_REQ_PAUSE_DESC>(SEQ_REQ_PAUSE,
+	//	[this](const SEQ_REQ_PAUSE_DESC& d) { m_qPause.push_back(d); });
+
+	//m_pGameInstance->Subscribe_Event<SEQ_REQ_RESUME_DESC>(SEQ_REQ_RESUME,
+	//	[this](const SEQ_REQ_RESUME_DESC& d) { m_qResume.push_back(d); });
+
+	//m_pGameInstance->Subscribe_Event<SEQ_REQ_JUMP_DESC>(SEQ_REQ_JUMP,
+	//	[this](const SEQ_REQ_JUMP_DESC& d) { m_qJump.push_back(d); });
 }
 
 void CSequence_Manager::Emit_Started(const SEQ_ID& tId)
@@ -268,9 +300,28 @@ void CSequence_Manager::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pGameInstance);
-	for (auto& kv : m_MapInstances) 
+	for (_uint token : m_SubscribeTokens)
+		m_pGameInstance->UnsubscribeAll_Event(token);
+	m_SubscribeTokens.clear();
+
+
+	for (auto& it : m_qAdopt)
+		Safe_Release(it.first); // ISeqInstance*
+	m_qAdopt.clear();
+
+
+	for (auto& kv : m_MapInstances)
 		Safe_Release(kv.second);
 	m_MapInstances.clear();
+
+
+	m_qPlay.clear();
+	m_qStop.clear();
+	m_qPause.clear();
+	m_qResume.clear();
+	m_qJump.clear();
+
 	m_pFactory = nullptr;
+
+	Safe_Release(m_pGameInstance);
 }

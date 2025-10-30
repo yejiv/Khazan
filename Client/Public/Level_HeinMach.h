@@ -36,6 +36,7 @@ private:
 
 private:
 	class CClientInstance* m_pClientInstance = { nullptr };
+
 public:
 	static CLevel_HeinMach* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;

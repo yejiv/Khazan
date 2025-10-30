@@ -158,7 +158,7 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 	m_pFrustum->Update();
 
 	if (m_pOctree)
-		m_pOctree->Culling();
+		m_pOctree->Culling(m_pFrustum);
 
 	if (m_pOctree)
 		m_pOctree->Priority_Update(fTimeDelta);
@@ -1044,13 +1044,13 @@ void CGameInstance::Release_Engine()
 #ifdef _DEBUG
 	Safe_Release(m_pImgui_Manager);
 #endif
-	Safe_Release(m_pOctree);
+	Safe_Release(m_pSequence_Manager);
 	Safe_Release(m_pThreadPool);
-
+	Safe_Release(m_pOctree);
+	
 	Safe_Release(m_pBlur);
 	Safe_Release(m_pSSAO);
 
-	Safe_Release(m_pThreadPool);
 	Safe_Release(m_pComputeShader_Manager);
 	Safe_Release(m_pPool_Manager);
 	Safe_Release(m_pTarget_Manager);
@@ -1063,13 +1063,13 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pInput_Manager);
 	Safe_Release(m_pResource_Manager);
 	Safe_Release(m_pBlackBoard);
+	Safe_Release(m_pJolt_Manager);
 
 	Safe_Release(m_pPicking);
 	Safe_Release(m_pTimer_Manager);
 	Safe_Release(m_pRenderer);
 	Safe_Release(m_pObject_Manager);
-	Safe_Release(m_pPrototype_Manager);
-	Safe_Release(m_pJolt_Manager);
+	Safe_Release(m_pPrototype_Manager);	
 	Safe_Release(m_pLevel_Manager);
 	Safe_Release(m_pGraphic_Device);
 }
