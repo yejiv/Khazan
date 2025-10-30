@@ -386,7 +386,20 @@ HRESULT CLevel_Map::Ready_Main_Window()
 				SEPARATOR;
 
 				ImGui::Text("MAP DATA SAVE & LOAD");
-				if (ImGui::Button("SAVE")) m_isSaveObjectWindow = !m_isSaveObjectWindow;
+				if (ImGui::Button("SAVE"))
+				{
+					_int iMaxSubLevel = {};
+
+					for (auto& pProp : m_ObjectList)
+					{
+						if (iMaxSubLevel < pProp->Get_SubLevel())
+							iMaxSubLevel = pProp->Get_SubLevel();
+					}
+
+					m_iMaxSubLevel = iMaxSubLevel;
+
+					m_isSaveObjectWindow = !m_isSaveObjectWindow;
+				}
 				if (false == m_isLoaded)
 				{
 					SAMELINE;
@@ -587,6 +600,7 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 
 			if (true == m_AddObjectProperties.isInstance)
 			{
+				ImGui::Checkbox("RANDOM ROTATION ?", &m_isRandomRotation);
 				//ImGui::Text("RANGE : "); SAMELINE;
 				//ImGui::InputFloat("##instancing_range", &m_fInstanceRange);
 				//ImGui::Text("INSTANCE NUM : "); SAMELINE;
@@ -594,6 +608,8 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 
 				// 인스턴스일때, 반지름, 그 안에 생길 인스턴싱 모델의 개수 넘기고 랜덤하게 생기게
 			}
+			else if (false == m_AddObjectProperties.isInstance)
+				m_isRandomRotation = false;
 
 			ImGui::Text("PUT SUB LEVEL : ");
 			ImGui::InputInt("##input_sub_level", &m_iAddSubLevel); SEPARATOR;
@@ -633,6 +649,13 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 				}
 
 				_matrix WorldMatrix = XMMatrixIdentity();
+
+				if (true == m_isRandomRotation)
+				{
+					_float fRandomRadian_Y = XMConvertToRadians(m_pGameInstance->Rand(0.f, 360.f));
+
+					WorldMatrix = XMMatrixRotationY(fRandomRadian_Y);
+				}
 
 				// 스케일 기존 0.005f, 위치는 마우스 피킹 위치 혹은 카메라 위치
 				WorldMatrix.r[0] *= m_fAddScale;
@@ -897,13 +920,21 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 			ImGui::Checkbox("SNOW", &PropProperties.isSnow);
 			SAMELINE;
 
-			ImGui::Checkbox("COLLIDER", &PropProperties.isCollider);
+			if (ImGui::Checkbox("COLLIDER", &PropProperties.isCollider))
+			{
+				if (true == PropProperties.isCollider)
+					PropProperties.isInstance = false;
+			}
 			SAMELINE;
 
 			ImGui::Checkbox("ICE", &PropProperties.isIce);
 			SAMELINE;
 
-			ImGui::Checkbox("INSTANCE", &PropProperties.isInstance);
+			if (ImGui::Checkbox("INSTANCE", &PropProperties.isInstance))
+			{
+				if (true == PropProperties.isInstance)
+					PropProperties.isCollider = false;
+			}
 			SEPARATOR;
 
 			ImGui::Checkbox("SHADOW", &PropProperties.isShadow);
@@ -1257,9 +1288,10 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 					CProp* pObjProp = m_ObjectList[m_iObjectListIndex];
 
 					_wstring strModelName = m_ObjectList[m_iObjectListIndex]->Get_ModelName();
+					string strTempModelName = WStringToAnsi(strModelName);
 
 					_char szModelName[MAX_PATH] = {};
-					memcpy(szModelName, WStringToAnsi(strModelName).c_str(), sizeof(szModelName));
+					memcpy(szModelName, strTempModelName.c_str(), sizeof(szModelName));
 
 					ImGui::Text("MODEL NAME : ");
 					ImGui::InputText("##model_name_by_list", szModelName, IM_ARRAYSIZE(szModelName));
@@ -1419,9 +1451,10 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 				CProp* pObjProp = m_InteractiveList[m_iInteractiveListIndex];
 
 				_wstring strModelName = m_InteractiveList[m_iInteractiveListIndex]->Get_ModelName();
+				string strTempModelName = WStringToAnsi(strModelName);
 
 				_char szModelName[MAX_PATH] = {};
-				memcpy(szModelName, WStringToAnsi(strModelName).c_str(), sizeof(szModelName));
+				memcpy(szModelName, strTempModelName.c_str(), sizeof(szModelName));
 
 				ImGui::Text("MODEL NAME : ");
 				ImGui::InputText("##model_name_by_list_inter", szModelName, IM_ARRAYSIZE(szModelName));
@@ -1811,14 +1844,14 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 			SEPARATOR;
 
 			ImGui::Text("TOTAL LEVEL : "); SAMELINE;
-			ImGui::InputInt("##total_level_parts", &m_iMaxLevel);
+			ImGui::InputInt("##total_level_parts", &m_iMaxSubLevel);
 
 			if (ImGui::Button("SAVE_SUB_LEVELS"))
 			{
 				m_strMapInfoFilePath = m_szMapInfoFilePath;
 				m_strMapInfoFilePath += m_szMapInfoFileName;
 
-				for (_int i = 0; i <= m_iMaxLevel; ++i)
+				for (_int i = 0; i <= m_iMaxSubLevel; ++i)
 				{
 					Object_Save_Binary_ByLevel(i);
 				}

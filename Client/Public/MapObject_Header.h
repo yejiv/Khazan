@@ -19,10 +19,11 @@
 #include "Prop_Test.h"
 
 // 맵의 서브레벨 개수 및 귀검 있는 SUB LV
-#define HEINMACH_SUBLV 11
-#define HEINMACH_1ST_BN 0
-#define HEINMACH_2ND_BN 5
-#define HEINMACH_3RD_BN 10
+#define HEINMACH_SUBLV 12
+#define HEINMACH_1ST_BLADENEXUS 0			// 첫번째 귀검
+#define HEINMACH_2ND_BLADENEXUS 5			// 두번째 귀검
+#define HEINMACH_3RD_BLADENEXUS 10			// 세번째 귀검
+#define HEINMACH_YETUGA			11			// 예투가 맵
 
 #define CREVICE_SUBLV 0
 #define EMBARS_SUBLV 0
