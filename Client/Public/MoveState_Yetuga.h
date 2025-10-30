@@ -14,6 +14,7 @@ public:
 
 private:
 	_float						m_fSpeedPerSec = {};
+	_uint						m_iPrevMovementFlag = {};
 
 public:
 	static CMoveState_Yetuga*	Create();
