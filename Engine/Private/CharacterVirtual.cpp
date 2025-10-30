@@ -220,7 +220,7 @@ void CCharacterVirtual::Free()
 {
 	__super::Free();
 
-	Safe_Delete(m_pCharVir);
+	//Safe_Delete(m_pCharVir);
 	Safe_Delete(m_pBodyFilter);
 	Safe_Delete(m_pShapeFilter);
 }

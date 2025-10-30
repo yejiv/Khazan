@@ -102,7 +102,7 @@ void CKhazan_Sample::Update(_float fTimeDelta)
         CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
         if (pDamage != nullptr)
         {
-            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::SPECIAL, m_pTransformCom->Get_State(STATE::POSITION), 12345657656);
+            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::SPECIAL, m_pTransformCom->Get_State(STATE::POSITION), 12345);
             m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
         }
     }
@@ -543,7 +543,7 @@ CGameObject* CKhazan_Sample::Clone(void* pArg)
 void CKhazan_Sample::Free()
 {
     __super::Free();
-    Safe_Release(m_pCharVirCom);
+    //Safe_Release(m_pCharVirCom);
     Safe_Release(m_pBody);
     Safe_Release(m_pSpear);
 
