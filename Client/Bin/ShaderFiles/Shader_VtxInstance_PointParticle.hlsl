@@ -141,7 +141,7 @@ struct PS_DEFAULT_IN
 struct PS_OUT
 {
     float4 vBackBufferColor : SV_TARGET0;
-    //float4 vEmissiveColor : SV_TARGET1;
+    float4 vEmissiveColor : SV_TARGET1;
 };
 
 float Mask_Scrolling(float2 vLifetime, float2 vTexcoord)
@@ -197,6 +197,8 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
         discard;
     
     Out.vBackBufferColor = vFinalColor;
+    //Out.vEmissiveColor = vFinalColor * 3.f;
+    //Out.vEmissiveColor.a = 1;
 
     //if(g_IsEmissive)
     //{
