@@ -88,6 +88,8 @@ void CProp_Object::Late_Update(_float fTimeDelta)
             isRender = true;
         if (true == m_pRenderProperties->isBackGround && m_Properties.isBackGround == m_pRenderProperties->isBackGround)
             isRender = true;
+        if (true == m_pRenderProperties->isPlant && m_Properties.isPlant == m_pRenderProperties->isPlant)
+            isRender = true;
 
         if (0 > *m_pRenderSubLevel && isRender == true)
         {
