@@ -43,7 +43,8 @@ HRESULT CCamera::Initialize_Clone(void* pArg)
 	m_fMouseSensor = pDesc->fMouseSensor;
 
 	m_iCameraType = pDesc->iCameraType;
-	m_strCameraTag = pDesc->strCameraTag;
+	if (pDesc->strCameraTag != TEXT(""))
+		m_strCameraTag = pDesc->strCameraTag;
 
 	return S_OK;
 }

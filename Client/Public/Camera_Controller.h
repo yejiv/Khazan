@@ -60,7 +60,7 @@ private:
 	_char m_szLoadFilePath[MAX_PATH] = "../../Client/Bin/Data/Camera";
 	_char m_szSaveFilePath[MAX_PATH] = "../../Client/Bin/Data/Camera";
 
-	LEVEL m_eCurrentLevel = { LEVEL::END };
+	LEVEL m_eCurrentLevel = { LEVEL::TITLE };
 
 	_bool m_isSelectLevel[ENUM_CLASS(LEVEL::END)];
 

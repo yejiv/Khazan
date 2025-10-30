@@ -15,6 +15,9 @@ CCamera_Controller::CCamera_Controller()
 
 HRESULT CCamera_Controller::Initialize()
 {
+	for (auto level : m_isSelectLevel)
+		level = false;
+
 	m_tCreateCameraDesc.vEye = _float4(0.f, 20.f, -15.f, 1.f);
 	m_tCreateCameraDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
 	m_tCreateCameraDesc.fFovy = 60.0f;
@@ -523,22 +526,23 @@ void CCamera_Controller::Ready_Guizmo()
 void CCamera_Controller::Ready_Level()
 {
 	ImGui::Begin("Select Level");
-	vector<const char*> Labels;
-	Labels.push_back("STATIC");
-	Labels.push_back("LOADING");
-	Labels.push_back("HEINGMACH");
-	Labels.push_back("CREVICE");
-	Labels.push_back("EMBARS");
-	Labels.push_back("VIPER");
+	static const struct { const char* label; LEVEL value; } kItems[] = {
+	{ "HEINMACH", LEVEL::HEINMACH },
+	{ "CREVICE",  LEVEL::CREVICE  },
+	{ "EMBARS",   LEVEL::EMBARS   },
+	{ "VIPER",    LEVEL::VIPER    },
+	};
 
+	// 현재 선택을 int로 보유(라디오 그룹은 int 포인터 사용 권장)
+	int iCurrent = static_cast<int>(m_eCurrentLevel);
 
-	for (size_t i = 0; i < ENUM_CLASS(LEVEL::END); i++)
+	for (const auto& it : kItems)
 	{
-		if (i == 0 || i == 1)
-			continue;
-		if (ImGui::RadioButton(Labels[i], &m_isSelectLevel[i]))
+		const int v_button = static_cast<int>(it.value);
+		// 동일 int*를 공유하면 "그룹"으로 동작 (하나만 선택됨)
+		if (ImGui::RadioButton(it.label, &iCurrent, v_button))
 		{
-			m_eCurrentLevel == static_cast<LEVEL>(i);
+			m_eCurrentLevel = static_cast<LEVEL>(iCurrent); // ← 대입!
 		}
 	}
 
