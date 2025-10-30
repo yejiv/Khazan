@@ -21,7 +21,7 @@ void CAS_Turn_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     if (Info.Check_Flag(DIRECTION_INFO::DIR::L))
     {
-        if(!Info.Check_Flag(DIRECTION_INFO::DIR::B))
+        if (!Info.Check_Flag(DIRECTION_INFO::DIR::B))
             // 왼쪽 90도 회전
             pModel->Set_Animation(8);
         else
@@ -36,7 +36,6 @@ void CAS_Turn_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
         else
             // 오른쪽 뒤 (180도 회전)
             pModel->Set_Animation(11);
-       
     }
 }
 
@@ -50,17 +49,27 @@ void CAS_Turn_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fT
     _float3 vTempDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>("Yetuga", "TargetDir");
     _vector vTargetDir = XMVector3Normalize(XMLoadFloat3(&vTempDir));
     
+    vLook = XMVectorSetY(vLook, 0.f);
+    vTargetDir = XMVectorSetY(vTargetDir, 0.f);
+    vLook = XMVector3Normalize(vLook);
+    vTargetDir = XMVector3Normalize(vTargetDir);
+
     _float fDot = XMVectorGetX(XMVector3Dot(vLook, vTargetDir));
-    _float fAngle = acosf(fDot);
+    _float fAngle = acosf(clamp(fDot, -1.f, 1.f));
     
-    // 이건 감으로 맞추자
-    _float fTurnSpeed = 5.f;
+    _float fTurnSpeed = 5.f * (fAngle / XM_PI);
     _vector vLerpDir = XMVector3Normalize(XMVectorLerp(vLook, vTargetDir, fTimeDelta * fTurnSpeed));
 
     _vector vPosition = pOwnerTransform->Get_State(STATE::POSITION);
-    pOwnerTransform->LookAt(vPosition + vLerpDir);
-    
-    if (fAngle < XMConvertToRadians(5.f) || pModel->Play_Animation(fTimeDelta))
+    _vector vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+    _vector vRight = XMVector3Normalize(XMVector3Cross(vUp, vLerpDir));
+    vUp = XMVector3Normalize(XMVector3Cross(vLerpDir, vRight));
+
+    pOwnerTransform->Set_State(STATE::LOOK, vLerpDir);
+    pOwnerTransform->Set_State(STATE::RIGHT, vRight);
+    pOwnerTransform->Set_State(STATE::UP, vUp);
+
+    if (fAngle < XMConvertToRadians(10.f) || pModel->Play_Animation(fTimeDelta))
     {
         // 블랙보드 갱신
         m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>("Yetuga", "isTurnFinished", true);

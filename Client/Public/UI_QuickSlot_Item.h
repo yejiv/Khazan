@@ -37,7 +37,7 @@ private:
 	_bool								m_bIsItemZero = { false };
 private:
 	virtual	HRESULT						Ready_Prototype();
-	virtual	HRESULT						Ready_Childer();
+	virtual	HRESULT						Ready_Children();
 	void								Update_State();
 	void								Update_DisableFX(_float fTimeDelta);
 

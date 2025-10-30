@@ -153,16 +153,16 @@ HRESULT CLoader::Loading_For_Map_Level()
 
 	/* Prototype_Component_Model_PlayerTest */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_PlayerTest"),
-		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Test/Test/Test.dat")), E_FAIL);
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Khazan/Khazan_Sample/Khazan_Sample.dat")), E_FAIL);
 
 #pragma region 상호 작용 모델 원형
 	/* Prototype_Component_Model_BladeNexus */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_BladeNexus"),
-		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/TombStone/WIP_COM_DamagedTS.dat")), E_FAIL);
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_DamagedTS/WIP_COM_DamagedTS.dat")), E_FAIL);
 
 	/* Prototype_Component_Model_BigChest */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_BigChest"),
-		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/BigChest/WIP_COM_BigChest_Open_003.dat")), E_FAIL);
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_BigChest_Open_003/WIP_COM_BigChest_Open_003.dat")), E_FAIL);
 #pragma endregion
 
 #pragma endregion
@@ -304,7 +304,7 @@ HRESULT CLoader::Loading_For_UI_Level()
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
 
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_Atlas"),
-		CTexture_Atlas::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Atlas/Atlas_%d.json"), 2))))
+		CTexture_Atlas::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Atlas/Atlas_%d.json"), 3))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_Hud_HPGauge"),
@@ -326,7 +326,15 @@ HRESULT CLoader::Loading_For_UI_Level()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_UI_Common_MenuList"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Common/T_Img_List_Menu_%d.png"), 6))))
 		return E_FAIL;
-	
+
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_UI_State_Arrow"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/State/ArrowButton_UI_%d.png"), 2))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_UI_State_Button"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/State/NormalButton_%d.png"), 7))))
+		return E_FAIL;
+
 	lstrcpy(m_szLoadingText, TEXT("게임오브젝트원형를 로딩중입니다."));
 
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_GameObject_Camera_UI"),
@@ -368,9 +376,13 @@ HRESULT CLoader::Loading_For_Shader_Level()
 	//		return E_FAIL;
 
 	/* Prototype_Component_Editor_Model_Test */
-	//	_matrix PreTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+	//	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Editor_Model_Test"),
+	//		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Test/Test_Player/Test_Player.dat"))))
+	//		return E_FAIL;
+
+	/* Prototype_Component_Editor_Model_Test */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Editor_Model_Test"),
-		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Test/Test_Player/Test_Player.dat"))))
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Khazan/Khazan_Sample/Khazan_Sample.dat"))))
 		return E_FAIL;
 
 	/* Prototype_Component_Model_Rock */

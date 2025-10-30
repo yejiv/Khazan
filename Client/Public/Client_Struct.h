@@ -52,4 +52,11 @@ namespace Client
 		_wstring			strText;
 	}OTHERITEM_DATA;
 
+	typedef struct tagBoxItems
+	{
+		_int iItem_0{};
+		_int iItem_1{};
+		_int iItem_2{};
+
+	}BOX_ITEMS;
 }

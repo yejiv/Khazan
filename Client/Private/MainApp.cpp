@@ -36,10 +36,11 @@ HRESULT CMainApp::Initialize()
 	if (FAILED(Ready_Prototype_ForStatic()))
 		return E_FAIL;
 
-	if (Ready_Prototype_ForStatic_UI())
-		return E_FAIL;
 
 	CHECK_FAILED(Ready_ClientInstance(&m_pDevice, &m_pContext), E_FAIL);
+
+	if (Ready_Prototype_ForStatic_UI())
+		return E_FAIL;
 
 	if (FAILED(Start_Level(LEVEL::TITLE)))
 		return E_FAIL;
@@ -173,58 +174,89 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 {
 	//플레이어 HUD 텍스처
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Hud_HPGauge"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Hud/State/T_Hud_Gauge_HP_0%d.png"), 7))))
-		return E_FAIL;
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Hud_HPGauge"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Hud/State/T_Hud_Gauge_HP_0%d.png"), 7)), E_FAIL);
 
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Hud_HPGauge_BG"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Hud/State/T_Hud_Gauge_HP_BG_0%d.png"), 10))))
-		return E_FAIL;
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Hud_HPGauge_BG"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Hud/State/T_Hud_Gauge_HP_BG_0%d.png"), 10)), E_FAIL);
 
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Hud_Player_HPGauge_BG"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Hud/State/T_Hud_Hp_Bg_0%d.png"), 5))))
-		return E_FAIL;
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Hud_Player_HPGauge_BG"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Hud/State/T_Hud_Hp_Bg_0%d.png"), 5)), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_Common_MenuList"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Common/T_Img_List_Menu_%d.png"), 6)), E_FAIL);
 
 	//UI 객체
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Atlas_Icon"),
-		CUI_Atlas_Icon::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Atlas_Icon"),
+		CUI_Atlas_Icon::Create(m_pDevice, m_pContext)), E_FAIL);
 
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_BackGround"),
-		CUI_BackGround::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_BackGround"),
+		CUI_BackGround::Create(m_pDevice, m_pContext)), E_FAIL);
 
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_TextBox"),
-		CUI_TextBox::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
-	
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Gague_Tip"),
-		CUI_Gague_Tip::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_TextBox"),
+		CUI_TextBox::Create(m_pDevice, m_pContext)), E_FAIL);
 
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_HUD"),
-		CUI_HUD::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC)))))
-		return E_FAIL;
-	
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Inven"),
-		CUI_Inven::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC)))))
-		return E_FAIL;
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Gague_Tip"),
+		CUI_Gague_Tip::Create(m_pDevice, m_pContext)), E_FAIL);
 
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Item"),
-		CItem_Slot::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC)))))
-		return E_FAIL;
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_HUD"),
+		CUI_HUD::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
 
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_MainMenu"),
-		CUI_MainMenu::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC)))))
-		return E_FAIL;
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Inven"),
+		CUI_Inven::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
 
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Cursor"),
-		CCursor::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
-	
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_DamageText"),
-		CDamage_Text::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Item"),
+		CItem_Slot::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_MainMenu"),
+		CUI_MainMenu::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_BladeNexus"),
+		CUI_BladeNexus::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_MainMenu_Deco"),
+		CMainMune_Deco::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Cursor"),
+		CCursor::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_DamageText"),
+		CDamage_Text::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Mon_HP"),
+		CMon_HP::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Interaction_Guide"),
+		CInteraction_Guide::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
+		
+
+	CUIObject::UIOBJECT_DESC Desc = {};
+	Desc.vLocalSize = { 64.f, 64.f };
+	Desc.vLocalPos = { 0.f, 0.f };
+	Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+	Desc.szName = "DamageText";
+	Desc.fDepth = 5.f;
+
+	CHECK_FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_DamageText"),
+		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text"), &Desc, 40), E_FAIL);
+
+	Desc.vLocalSize = { 106.f, 18.f };
+	Desc.vLocalPos = { 0.f, 0.f };
+	Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
+	Desc.szName = "MonHP";
+	Desc.fDepth = 6.f;
+
+	CHECK_FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Mon_HP"),
+		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Mon_HP"), &Desc, 20), E_FAIL);
+
+	Desc.vLocalSize = { 48.f, 48.f };
+	Desc.vLocalPos = { 0.f, 0.f };
+	Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
+	Desc.szName = "KeyGuide";
+	Desc.fDepth = 6.f;
+
+	CHECK_FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Interaction_Guide"),
+		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide"), &Desc, 15), E_FAIL);
 
 	return S_OK;
 }

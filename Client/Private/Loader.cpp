@@ -239,9 +239,9 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 		return E_FAIL;
 
 	// Prototype_Component_Model_Yetuga
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Yetuga"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Yetuga/Yetuga.dat"))))
-		return E_FAIL;
+	/*if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Yetuga"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Yetuga/Yetuga.dat"))))
+		return E_FAIL;*/
 
 	/////* Prototype_Component_Model_Khazan */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan"),

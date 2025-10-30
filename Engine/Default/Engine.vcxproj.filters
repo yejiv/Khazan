@@ -334,6 +334,9 @@
     <Filter Include="01.Utility\94.RenderingResources\Blur">
       <UniqueIdentifier>{04164c94-d55e-47cc-8a33-5e29e13b0531}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\94.RenderingResources\Fog">
+      <UniqueIdentifier>{0bd4d2b8-2201-4c74-9f9a-00e407f7a444}</UniqueIdentifier>
+    </Filter>
     <Filter Include="01.Utility\11.ImGui\Adapter">
       <UniqueIdentifier>{44a65cdf-2ce3-4c92-82ff-f002ca0d5c76}</UniqueIdentifier>
     </Filter>
@@ -665,6 +668,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Blur.cpp">
       <Filter>01.Utility\94.RenderingResources\Blur</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Fog.cpp">
+      <Filter>01.Utility\94.RenderingResources\Fog</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\SequenceAdapter.cpp">
       <Filter>01.Utility\11.ImGui\Adapter</Filter>
@@ -1031,6 +1037,9 @@
     </ClInclude>
     <ClInclude Include="..\public\Blur.h">
       <Filter>01.Utility\94.RenderingResources\Blur</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Fog.h">
+      <Filter>01.Utility\94.RenderingResources\Fog</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\SequenceAdapter.h">
       <Filter>01.Utility\11.ImGui\Adapter</Filter>

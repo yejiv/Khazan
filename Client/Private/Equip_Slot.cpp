@@ -126,7 +126,7 @@ HRESULT CEquip_Slot::Initialize_Clone(void* pArg)
     }
 
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
-    CHECK_FAILED(Ready_Childer(), E_FAIL);
+    CHECK_FAILED(Ready_Children(), E_FAIL);
 
     __super::Update_Transform(this, m_vLocalPos);
     return S_OK;
@@ -183,7 +183,7 @@ HRESULT CEquip_Slot::Ready_Prototype()
     return S_OK;
 }
 
-HRESULT CEquip_Slot::Ready_Childer()
+HRESULT CEquip_Slot::Ready_Children()
 {
     CUI_Atlas_Icon::UIATLASICON_DESC AtlasDesc;
 

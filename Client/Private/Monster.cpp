@@ -56,7 +56,11 @@ void CMonster::Priority_Update(_float fTimeDelta)
 
 void CMonster::Update(_float fTimeDelta)
 {
+    __super::Update(fTimeDelta);
+
     //m_pRigidBodyCom->Sync_Update(m_pTransformCom);
+
+
 }
 
 void CMonster::Late_Update(_float fTimeDelta)
@@ -78,7 +82,7 @@ HRESULT CMonster::Render()
 //        TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
 //        return E_FAIL;
 //
-//    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_Fiona"),
+//    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Fiona"),
 //        TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
 //        return E_FAIL;
 //
