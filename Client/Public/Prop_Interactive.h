@@ -16,6 +16,8 @@ public:
 	{
 		_tchar szInteractiveTag[MAX_PATH] = {};
 
+		void* pOtherDesc{};
+
 	}PROP_INTERACTIVE_DESC;
 
 protected:

@@ -27,6 +27,7 @@ public:
 	virtual HRESULT				Render() override;
 
 public:
+	void						Pos_Update();
 	virtual void				Reset() override;
 private:
 	CShader*					m_pShaderCom = { nullptr };

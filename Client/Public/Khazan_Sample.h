@@ -23,7 +23,6 @@ public:
 		ATTACK_SET = 1 << 4,
 		ATTACK_ALL = ATTACK_FAST | ATTACK_SET,
 
-
 		END = 1<<5,
 	};
 
@@ -57,14 +56,14 @@ public:
 
 
 private:
-	class CBody_Khazan_Sample*	pBody = { nullptr };
-	class CSpear_Khazan_Sample* pSpear = { nullptr };
+	class CBody_Khazan_Sample*	m_pBody = { nullptr };
+	class CSpear_Khazan_Sample* m_pSpear = { nullptr };
 
 	_uint						m_iState = { };
 	_uint						m_iDirState = { MOVE_DIR::RIGHT };
 
 	//class CRigidBody*			m_pRigidBodyCom = { nullptr };
-	CCharacterVirtual*			m_pCharVirCom = { nullptr };
+	//CCharacterVirtual*			m_pCharVirCom = { nullptr };
 	_float4x4*					m_pWeaponR_Matrix = { nullptr };
 	_float4x4*					m_pSpearFX_Matrix = { nullptr };
 	_float4x4					m_SpearFX_WorldMatrix = {};
@@ -73,15 +72,22 @@ private:
 	_bool						m_isEnableControl = { true };
 	_int						m_isMove = {0};
 
+#pragma region 상호 작용 맵 오브젝트 이벤트 임시 테스트용
+private:
+	EventInteractType			m_EventInteract = {};				// 트리거 접촉 여부, 이벤트 발생 여부, 상호 작용 타입, 상호 작용 타입들의 구조체
 
 private:
-	void			Update_State(_float fTimeDelta);
-	void			Key_Input(_float fTimeDelta);
+	void						Event_Interact_Object(_float fTimeDelta);
+#pragma endregion
 
 private:
-	HRESULT			Ready_Components();
-	HRESULT			Ready_PartObjects();
-	HRESULT			Ready_Collision();
+	void				Update_State(_float fTimeDelta);
+	void				Key_Input(_float fTimeDelta);
+
+private:
+	HRESULT				Ready_Components();
+	HRESULT				Ready_PartObjects();
+	HRESULT				Ready_Collision();
 
 private:
 	inline void		Add_State(_uint i) { m_iState |= i; }

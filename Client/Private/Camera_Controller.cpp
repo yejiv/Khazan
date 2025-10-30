@@ -1,12 +1,15 @@
 #include "Camera_Controller.h"
+#include "ClientInstance.h"
 #include "GameInstance.h"
 #include "Camera_Compre.h"
 #include "Transform.h"
 
 CCamera_Controller::CCamera_Controller()
 	: m_pGameInstance{ CGameInstance::GetInstance() }
+	, m_pClientInstance{ CClientInstance::GetInstance() }
 {
 	Safe_AddRef(m_pGameInstance);
+	Safe_AddRef(m_pClientInstance);
 }
 
 
@@ -167,7 +170,7 @@ void CCamera_Controller::Ready_ImGui_Create()
 			pCamera->Set_IsActive(false);
 			pCamera->Load(Animations, Events);
 
-			m_pGameInstance->Add_Camera(ENUM_CLASS(m_eCurrentLevel), pCamera);
+			m_pClientInstance->Add_Camera(ENUM_CLASS(m_eCurrentLevel), pCamera);
 
 			m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Camera"), pCamera);
 
@@ -182,7 +185,7 @@ void CCamera_Controller::Ready_ImGui_Create()
 
 void CCamera_Controller::Ready_ImGui_List()
 {
-	vector<CCamera*> Cameras = m_pGameInstance->Get_pCameras(ENUM_CLASS(m_eCurrentLevel));
+	vector<CCamera*> Cameras = m_pClientInstance->Get_pCameras(ENUM_CLASS(m_eCurrentLevel));
 	if (Cameras.size() > 0)
 	{
 		ImGui::Begin("List Camera");
@@ -203,7 +206,7 @@ void CCamera_Controller::Ready_ImGui_List()
 
 
 
-		CCamera* pCamera = m_pGameInstance->Get_ActiveCamera();
+		CCamera* pCamera = m_pClientInstance->Get_ActiveCamera();
 		if (pCamera != nullptr)
 		{
 			ImGui::InputText("Name", m_szEdit_CameraName, sizeof(MAX_PATH));
@@ -222,9 +225,9 @@ void CCamera_Controller::Ready_ImGui_List()
 		}
 		if (ImGui::Button("Active", ImVec2(60.f, 30.f)))
 		{
-			m_pGameInstance->Change_Camera(ENUM_CLASS(m_eCurrentLevel), Cameras[m_iListSelectCamera]->Get_CameraTag());
+			m_pClientInstance->Change_Camera(ENUM_CLASS(m_eCurrentLevel), Cameras[m_iListSelectCamera]->Get_CameraTag());
 
-			CCamera* pCamera = m_pGameInstance->Get_ActiveCamera();
+			CCamera* pCamera = m_pClientInstance->Get_ActiveCamera();
 
 			if (pCamera != nullptr)
 			{
@@ -245,7 +248,7 @@ void CCamera_Controller::Ready_ImGui_List()
 			string filePath = m_szSaveFilePath;
 			filePath += ".json";
 			nlohmann::ordered_json SaveData;
-			m_pGameInstance->Save_Json_Camera(ENUM_CLASS(m_eCurrentLevel), Cameras[m_iListSelectCamera]->Get_CameraTag(), SaveData);
+			m_pClientInstance->Save_Json_Camera(ENUM_CLASS(m_eCurrentLevel), Cameras[m_iListSelectCamera]->Get_CameraTag(), SaveData);
 			ofstream Out(filePath, ios::out | ios::trunc);
 			if (!Out.is_open())
 			{
@@ -266,7 +269,7 @@ void CCamera_Controller::Ready_ImGui_List()
 
 void CCamera_Controller::Ready_ImGui_Active_Camera_Info()
 {
-	CCamera* pCamera = m_pGameInstance->Get_ActiveCamera();
+	CCamera* pCamera = m_pClientInstance->Get_ActiveCamera();
 	if (pCamera != nullptr)
 	{
 		CTransform* pTransform = dynamic_cast<CTransform*>(pCamera->Get_Component(TEXT("Com_Transform")));
@@ -289,7 +292,7 @@ void CCamera_Controller::Ready_ImGui_Active_Camera_Info()
 }
 void CCamera_Controller::Ready_ImGui_Active_Camera_Animation()
 {
-	CCamera* pCamera = m_pGameInstance->Get_ActiveCamera();
+	CCamera* pCamera = m_pClientInstance->Get_ActiveCamera();
 	if (pCamera != nullptr)
 	{
 		ImGui::Begin("Animation");
@@ -327,7 +330,7 @@ void CCamera_Controller::Ready_ImGui_Active_Camera_Animation()
 
 void CCamera_Controller::Ready_ImGui_Active_Camera_Animation_Item()
 {
-	CCamera* pCamera = m_pGameInstance->Get_ActiveCamera();
+	CCamera* pCamera = m_pClientInstance->Get_ActiveCamera();
 	if (pCamera != nullptr)
 	{
 		vector<CAMERA_KEYFRAME>* pAnimations = pCamera->Get_Animations(m_strListSelectAnimation);
@@ -379,7 +382,7 @@ void CCamera_Controller::Ready_ImGui_Active_Camera_Animation_Item()
 
 void CCamera_Controller::Ready_ImGui_Active_Camera_Event_Item()
 {
-	CCamera* pCamera = m_pGameInstance->Get_ActiveCamera();
+	CCamera* pCamera = m_pClientInstance->Get_ActiveCamera();
 	if (pCamera != nullptr)
 	{
 		vector<CAMERA_EVENT_DATA>* Events = pCamera->Get_Events(m_strListSelectAnimation);
@@ -547,7 +550,7 @@ void CCamera_Controller::Create_Camera()
 	CCamera_Compre* pCamera = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(m_eCurrentLevel), TEXT("Prototype_GameObject_Camera_Compre"), &Desc));
 	pCamera->Set_IsActive(false);
 
-	m_pGameInstance->Add_Camera(ENUM_CLASS(m_eCurrentLevel), pCamera);
+	m_pClientInstance->Add_Camera(ENUM_CLASS(m_eCurrentLevel), pCamera);
 
 	m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Camera"), pCamera);
 }
@@ -568,6 +571,6 @@ CCamera_Controller* CCamera_Controller::Create()
 void CCamera_Controller::Free()
 {
 	__super::Free();
-
+	Safe_Release(m_pClientInstance);
 	Safe_Release(m_pGameInstance);
 }

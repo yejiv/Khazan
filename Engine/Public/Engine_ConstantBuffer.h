@@ -14,6 +14,6 @@ namespace Engine
 
 		_float		bIsLoop;			//16 
 		_float3		vSpawnRange;
-		_float		padding;
+		_float		fTotalTime;
 	}POINT_INSTANCE_CB;
 }

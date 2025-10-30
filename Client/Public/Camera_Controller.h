@@ -5,6 +5,7 @@
 
 NS_BEGIN(Engine)
 class CGameInstance;
+class CCamera;
 NS_END
 
 NS_BEGIN(Client)
@@ -57,6 +58,8 @@ private:
 	_char m_szSaveFilePath[MAX_PATH] = "../../Client/Bin/Data/Camera";
 
 	LEVEL m_eCurrentLevel = {};
+
+	class CClientInstance* m_pClientInstance = { nullptr };
 
 public:
 	static CCamera_Controller* Create();
