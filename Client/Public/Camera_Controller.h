@@ -38,6 +38,11 @@ public:
 	void Ready_ImGui_Active_Camera_Animation_Item();
 	void Ready_ImGui_Active_Camera_Event_Item();
 	void Ready_Guizmo();
+	void Ready_Level();
+	void Ready_Player();
+	
+
+	void CameraTool_Clear();
 
 private:
 	_char m_szCreate_CameraName[MAX_PATH];
@@ -48,8 +53,6 @@ private:
 
 	_char m_szCreate_AnimationName[MAX_PATH];
 	_char m_szCreate_EventName[MAX_PATH];
-	map<_wstring, vector<CAMERA_KEYFRAME>> m_CreateAnimations;
-	map<_wstring, vector<CAMERA_EVENT_DATA>> m_CreateEvents;
 
 	_int m_iListSelectCamera = {};
 	_wstring m_strListSelectAnimation = {};
@@ -57,7 +60,9 @@ private:
 	_char m_szLoadFilePath[MAX_PATH] = "../../Client/Bin/Data/Camera";
 	_char m_szSaveFilePath[MAX_PATH] = "../../Client/Bin/Data/Camera";
 
-	LEVEL m_eCurrentLevel = {};
+	LEVEL m_eCurrentLevel = { LEVEL::END };
+
+	_bool m_isSelectLevel[ENUM_CLASS(LEVEL::END)];
 
 	class CClientInstance* m_pClientInstance = { nullptr };
 

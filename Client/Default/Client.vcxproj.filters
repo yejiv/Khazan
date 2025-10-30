@@ -289,15 +289,6 @@
     <Filter Include="94. ClientInstance\Debug">
       <UniqueIdentifier>{40550248-8478-40d1-913b-0394bb2ab80f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03.Tool">
-      <UniqueIdentifier>{69d26ed9-2e45-4fc2-90bc-4a4da31625a2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03.Tool\Camera">
-      <UniqueIdentifier>{71d26352-adad-4d1d-a566-39f2285daa3d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03.Tool\Camera\Controller">
-      <UniqueIdentifier>{ddd3541e-7243-4f90-a57b-80b45d25d080}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\Creature\Monster\Yetuga\Body">
       <UniqueIdentifier>{8fef0fd1-b2ca-4175-81dc-514453bf821a}</UniqueIdentifier>
     </Filter>
@@ -381,6 +372,9 @@
     </Filter>
     <Filter Include="01.Levels\Viper">
       <UniqueIdentifier>{663bf125-288a-4167-aca7-71e9e34d56d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94. ClientInstance\Camera\Controller">
+      <UniqueIdentifier>{ddd3541e-7243-4f90-a57b-80b45d25d080}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -646,7 +640,7 @@
       <Filter>94. ClientInstance\Debug</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Camera_Controller.h">
-      <Filter>03.Tool\Camera\Controller</Filter>
+      <Filter>94. ClientInstance\Camera\Controller</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Body_Yetuga.h">
       <Filter>02.GameObject\Creature\Monster\Yetuga\Body</Filter>
@@ -973,7 +967,7 @@
       <Filter>94. ClientInstance\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Camera_Controller.cpp">
-      <Filter>03.Tool\Camera\Controller</Filter>
+      <Filter>94. ClientInstance\Camera\Controller</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Body_Yetuga.cpp">
       <Filter>02.GameObject\Creature\Monster\Yetuga\Body</Filter>

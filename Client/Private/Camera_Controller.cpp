@@ -46,11 +46,6 @@ void CCamera_Controller::Update(_float fTimeDelta)
 
 HRESULT CCamera_Controller::Ready_ImGui()
 {
-	CGameObject* pPlayer = m_pGameInstance->Get_BackGameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Player"));
-	CTransform* pTransform = dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")));
-
-	_matrix pMatrix = XMLoadFloat4x4(pTransform->Get_WorldMatrixPtr());
-
 	m_pGameInstance->AddWidget(TEXT("Camera"), [this]() {
 		Ready_ImGui_Create();
 		Ready_ImGui_List();
@@ -59,6 +54,7 @@ HRESULT CCamera_Controller::Ready_ImGui()
 		Ready_ImGui_Active_Camera_Animation_Item();
 		Ready_ImGui_Active_Camera_Event_Item();
 		Ready_Guizmo();
+		Ready_Level();
 		});
 	return S_OK;
 }
@@ -524,7 +520,40 @@ void CCamera_Controller::Ready_Guizmo()
 	//ImGui::End();
 }
 
+void CCamera_Controller::Ready_Level()
+{
+	ImGui::Begin("Select Level");
+	vector<const char*> Labels;
+	Labels.push_back("STATIC");
+	Labels.push_back("LOADING");
+	Labels.push_back("HEINGMACH");
+	Labels.push_back("CREVICE");
+	Labels.push_back("EMBARS");
+	Labels.push_back("VIPER");
 
+
+	for (size_t i = 0; i < ENUM_CLASS(LEVEL::END); i++)
+	{
+		if (i == 0 || i == 1)
+			continue;
+		if (ImGui::RadioButton(Labels[i], &m_isSelectLevel[i]))
+		{
+			m_eCurrentLevel == static_cast<LEVEL>(i);
+		}
+	}
+
+	ImGui::End();
+}
+
+void CCamera_Controller::Ready_Player()
+{
+}
+
+void CCamera_Controller::CameraTool_Clear()
+{
+	m_iListSelectCamera = 0;
+	m_strListSelectAnimation = TEXT("");
+}
 
 HRESULT CCamera_Controller::Ready_Camera(const _wstring& strLayerTag)
 {

@@ -2,6 +2,7 @@
 
 #include "Loader.h"
 #include "GameInstance.h"
+#include "ClientInstance.h"
 
 #include "Level_Title.h"
 #include "Level_HeinMach.h"
@@ -11,12 +12,14 @@
 
 CLevel_Loading::CLevel_Loading(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel { pDevice, pContext }
+	, m_pClientInstance { CClientInstance::GetInstance() }
 {
+	Safe_AddRef(m_pClientInstance);
 }
 
 HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
 {
-	m_eNextLevelID = eNextLevelID;	 
+	m_eNextLevelID = eNextLevelID;
 
 	/* 현재 레벨을 구성해주기 위한 객체들을 생성한다. */
 	if (FAILED(Ready_GameObjects()))
@@ -37,6 +40,17 @@ void CLevel_Loading::Update(_float fTimeDelta)
 		GetKeyState(VK_SPACE) & 0x8000)
 	{
 		m_pGameInstance->Clear_AllEvents();
+
+		if (m_pClientInstance->Get_CurrLevel() != m_eNextLevelID)
+		{
+			m_pClientInstance->Clear_CameraManager(ENUM_CLASS(m_pClientInstance->Get_CurrLevel()));
+#ifdef _DEBUG
+			m_pClientInstance->CameraTool_Clear();
+#endif
+			m_pClientInstance->Set_PrevLevel(m_pClientInstance->Get_CurrLevel());
+			m_pClientInstance->Set_CurrLevel(m_eNextLevelID);
+		}
+
 		CLevel* pNewLevel = { nullptr };
 
 		switch (m_eNextLevelID)
@@ -106,5 +120,5 @@ void CLevel_Loading::Free()
 	__super::Free();
 
 	Safe_Release(m_pLoader);
-
+	Safe_Release(m_pClientInstance);
 }
