@@ -238,9 +238,6 @@
     <Filter Include="02.GameObject\UI\Inven">
       <UniqueIdentifier>{bf77453f-04e7-4354-93fa-9c62f443d060}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\UI\Inven\ETC">
-      <UniqueIdentifier>{a35136d7-7ad3-4580-b681-c029de6c4006}</UniqueIdentifier>
-    </Filter>
     <Filter Include="94. ClientInstance\DB">
       <UniqueIdentifier>{dffd0957-694b-48a5-a2e0-c30d199869c1}</UniqueIdentifier>
     </Filter>
@@ -328,8 +325,11 @@
     <Filter Include="02.GameObject\UI\BladeNexus">
       <UniqueIdentifier>{957a9fc1-9418-4508-a055-2f384d85d438}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\UI\BladeNexus\ETC">
+    <Filter Include="02.GameObject\UI\BladeNexus\List">
       <UniqueIdentifier>{e0aaf90f-e252-4b71-8779-718f15f69bd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Inven\List">
+      <UniqueIdentifier>{a35136d7-7ad3-4580-b681-c029de6c4006}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -586,7 +586,7 @@
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\01.BigChest</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Inven_Tap.h">
-      <Filter>02.GameObject\UI\Inven\ETC</Filter>
+      <Filter>02.GameObject\UI\Inven\List</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Damage_Text.h">
       <Filter>02.GameObject\UI\WorldUI\Damage_UI</Filter>
@@ -622,7 +622,7 @@
       <Filter>02.GameObject\UI\BladeNexus</Filter>
     </ClInclude>
     <ClInclude Include="..\public\BladeNexus_List.h">
-      <Filter>02.GameObject\UI\BladeNexus\ETC</Filter>
+      <Filter>02.GameObject\UI\BladeNexus\List</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\MainMenu_Deco.h">
       <Filter>02.GameObject\UI\MainMenu\ETC</Filter>
@@ -874,7 +874,7 @@
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\01.BigChest</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Inven_Tap.cpp">
-      <Filter>02.GameObject\UI\Inven\ETC</Filter>
+      <Filter>02.GameObject\UI\Inven\List</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Damage_Text.cpp">
       <Filter>02.GameObject\UI\WorldUI\Damage_UI</Filter>
@@ -910,7 +910,7 @@
       <Filter>02.GameObject\UI\BladeNexus</Filter>
     </ClCompile>
     <ClCompile Include="..\private\BladeNexus_List.cpp">
-      <Filter>02.GameObject\UI\BladeNexus\ETC</Filter>
+      <Filter>02.GameObject\UI\BladeNexus\List</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

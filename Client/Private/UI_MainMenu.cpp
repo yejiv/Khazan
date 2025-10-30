@@ -298,7 +298,7 @@ HRESULT CUI_MainMenu::Ready_Object()
 	m_pBackGround = static_cast<CUI_BackGround*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_BackGround"), &Desc));
 	if (m_pBackGround == nullptr)
 		return E_FAIL;
-	m_pBackGround->Setting_BG(CUI_BackGround::UIBGTYPE::ITEM);
+	m_pBackGround->Setting_BG(CUI_BackGround::UIBGTYPE::MAIN);
 	m_Children.push_back(m_pBackGround);
 	Safe_AddRef(m_pBackGround);
 

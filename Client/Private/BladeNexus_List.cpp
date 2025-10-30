@@ -167,9 +167,14 @@ HRESULT CBladeNexus_List::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevel
 	switch (m_eMenuType)
 	{
 	case CUI_BladeNexus::MENULIST::STATE:
-		szText = TEXT("상태");
+		szText = TEXT("능력 강화");
 		break;
-
+	case CUI_BladeNexus::MENULIST::WARP:
+		szText = TEXT("귀검 이동");
+		break;
+	case CUI_BladeNexus::MENULIST::CREVICE:
+		szText = TEXT("경계의 틈");
+		break;
 	}
 
 	m_pTextBox->Set_Text(szText);

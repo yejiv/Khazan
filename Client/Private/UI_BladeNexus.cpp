@@ -20,10 +20,14 @@ CUI_BladeNexus::CUI_BladeNexus(const CUI_BladeNexus& Prototype)
 {
 }
 
-void CUI_BladeNexus::On_Panel()
+void CUI_BladeNexus::On_Panel(ONTYPE eType, _wstring strMapName)
 {
 	if (m_IsUpdate)
 		return;
+
+	m_pText[1]->Set_Text(strMapName);
+
+	m_iListeType = ENUM_CLASS(eType);
 	m_iSeleteIndex = 0;
 	for (_int i = 0; i < ENUM_CLASS(MENULIST::END); ++i)
 		i == m_iSeleteIndex ? m_pList[i]->Set_Selete(true) : m_pList[i]->Set_Selete(false);
@@ -33,6 +37,7 @@ void CUI_BladeNexus::On_Panel()
 	m_IsUpdate = true;
 	m_eNextEvent = MENULIST::END;
 }
+
 
 void CUI_BladeNexus::Off_Panel()
 {
@@ -68,14 +73,22 @@ HRESULT CUI_BladeNexus::Initialize_Clone(void* pArg)
 void CUI_BladeNexus::Priority_Update(_float fTimeDelta)
 {
 
-	if (m_pGameInstance->Key_Down(DIK_ESCAPE) && m_eNextEvent == MENULIST::END)
-		m_IsUpdate ? Off_Panel() : On_Panel();
+	if (m_pGameInstance->Key_Down(DIK_7) && m_eNextEvent == MENULIST::END)
+		m_IsUpdate ? Off_Panel() : On_Panel(ONTYPE::DEFAULT, TEXT("황야 벌판 어딘가"));
+
+	if (m_pGameInstance->Key_Down(DIK_6) && m_eNextEvent == MENULIST::END)
+		m_IsUpdate ? Off_Panel() : On_Panel(ONTYPE::CREVICE, TEXT("경계의 틈"));
 
 	if (!m_IsUpdate)
 		return;
 
 	UI_Animation(fTimeDelta);
-	__super::Priority_Update(fTimeDelta);
+	m_pBackGround->Priority_Update(fTimeDelta);
+	for (_int i = 0; i < m_iListeType; ++i)
+		m_pList[i]->Priority_Update(fTimeDelta);
+
+	for (auto pText : m_pText)
+		pText->Priority_Update(fTimeDelta);
 }
 
 void CUI_BladeNexus::Update(_float fTimeDelta)
@@ -83,8 +96,12 @@ void CUI_BladeNexus::Update(_float fTimeDelta)
 	if (!m_IsUpdate)
 		return;
 
-	__super::Update(fTimeDelta);
+	m_pBackGround->Update(fTimeDelta);
+	for (_int i = 0; i < m_iListeType; ++i)
+		m_pList[i]->Update(fTimeDelta);
 
+	for (auto pText : m_pText)
+		pText->Update(fTimeDelta);
 }
 
 void CUI_BladeNexus::Late_Update(_float fTimeDelta)
@@ -92,8 +109,12 @@ void CUI_BladeNexus::Late_Update(_float fTimeDelta)
 	if (!m_IsUpdate)
 		return;
 
-	__super::Late_Update(fTimeDelta);
+	m_pBackGround->Late_Update(fTimeDelta);
+	for (_int i = 0; i < m_iListeType; ++i)
+		m_pList[i]->Late_Update(fTimeDelta);
 
+	for (auto pText : m_pText)
+		pText->Late_Update(fTimeDelta);
 }
 
 HRESULT CUI_BladeNexus::Render()
@@ -178,6 +199,7 @@ HRESULT CUI_BladeNexus::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID
 
 	m_pTransformCom->Scale(_float3{ m_vLocalSize.x, m_vLocalSize.y, 1.f });
 	__super::Update_Rotation(0.f);
+	m_pText.resize(2);
 
 	if (pInData.contains("Children"))
 	{
@@ -185,7 +207,7 @@ HRESULT CUI_BladeNexus::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID
 		{
 			string strChildName = child.value("name", "");
 
-			if (strChildName != "Menu_List")
+			if (strChildName == "Munu_Name")
 			{
 				string strClass = child.value("class", "");
 				_wstring wstrClass = AnsiToWString(strClass);
@@ -209,10 +231,40 @@ HRESULT CUI_BladeNexus::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID
 
 				pChild->Insert_Bubble([this](BUBBLEEVENT* pArg) {this->Bubble_EventCall(pArg); });
 				m_Children.push_back(pChild);
+
+				m_pText[0] = static_cast<CUI_TextBox*>(pChild);
+				Safe_AddRef(pChild);
+			}
+			else if (strChildName == "Map_Name")
+			{
+				string strClass = child.value("class", "");
+				_wstring wstrClass = AnsiToWString(strClass);
+
+				CUIObject::UIOBJECT_DESC UIDesc{};
+				UIDesc.szName = "";
+				UIDesc.iUIType = 0;
+				UIDesc.vLocalSize = { 1.f, 1.f };
+				UIDesc.fDepth = 0;
+				UIDesc.vLocalPos = { g_iWinSizeX >> 1 , g_iWinSizeY >> 1 };
+
+				CUIObject* pChild = static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelID, wstrClass.c_str(), &UIDesc));
+
+				if (pChild == nullptr)
+				{
+					MSG_BOX(TEXT("자식 클론 생성 실패"));
+					return E_FAIL;
+				}
+				if (pChild->Load_UI(child, iPrototypeLevelID, pArg))
+					return E_FAIL;
+
+				pChild->Insert_Bubble([this](BUBBLEEVENT* pArg) {this->Bubble_EventCall(pArg); });
+				m_Children.push_back(pChild);
+
+				m_pText[1] = static_cast<CUI_TextBox*>(pChild);
+				Safe_AddRef(pChild);
 			}
 			else
 			{
-
 				_float2 vPos = { child["LocalPos"].value("x", 0.f), child["LocalPos"].value("y", 0.f) };
 				for (_int i = 0; i < ENUM_CLASS(MENULIST::END); ++i)
 				{
@@ -240,7 +292,7 @@ HRESULT CUI_BladeNexus::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID
 					pChild->Insert_Bubble([this](BUBBLEEVENT* pArg) {this->Bubble_EventCall(pArg); });
 					m_Children.push_back(pChild);
 
-					pChild->Update_Pos(i, vPos, 70.f);
+					pChild->Update_Pos(i, vPos, 85.f);
 					m_pList.push_back(pChild);
 					Safe_AddRef(pChild);
 				}
@@ -272,13 +324,6 @@ void CUI_BladeNexus::Bubble_EventCall(BUBBLEEVENT* pArg)
 	}
 }
 
-HRESULT CUI_BladeNexus::Update_Switch(void* pArg)
-{
-	m_IsUpdate ? Off_Panel() : On_Panel();
-	return S_OK;
-}
-
-
 HRESULT CUI_BladeNexus::Ready_Prototype()
 {
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_BladeNexus_List"),
@@ -299,7 +344,7 @@ HRESULT CUI_BladeNexus::Ready_Object()
 	m_pBackGround = static_cast<CUI_BackGround*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_BackGround"), &Desc));
 	if (m_pBackGround == nullptr)
 		return E_FAIL;
-	m_pBackGround->Setting_BG(CUI_BackGround::UIBGTYPE::ITEM);
+	m_pBackGround->Setting_BG(CUI_BackGround::UIBGTYPE::BLADENEXUS);
 	m_Children.push_back(m_pBackGround);
 	Safe_AddRef(m_pBackGround);
 
@@ -384,6 +429,10 @@ void CUI_BladeNexus::Free()
 	for (auto pList : m_pList)
 		Safe_Release(pList);
 	m_pList.clear();
+
+	for (auto pText : m_pText)
+		Safe_Release(pText);
+	m_pText.clear();
 
 	Safe_Release(m_pBackGround);
 }
