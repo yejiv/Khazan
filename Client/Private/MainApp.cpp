@@ -27,6 +27,7 @@ HRESULT CMainApp::Initialize()
 	list<_wstring> Imgui_Menu;
 	Imgui_Menu.push_back(TEXT("Client"));
 	Imgui_Menu.push_back(TEXT("Debug"));
+	Imgui_Menu.push_back(TEXT("Camera"));
 	EngineDesc.Menu_Imgui = Imgui_Menu;
 	
 

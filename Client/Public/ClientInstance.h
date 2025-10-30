@@ -22,6 +22,14 @@ private:
 public:
 	HRESULT Initialize(ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext);
 	void Update(_float fTimeDelta);
+
+	LEVEL Get_CurrLevel() { return m_eCurrLevel; }
+	void Set_CurrLevel(LEVEL eLevel) { m_eCurrLevel = eLevel; }
+
+	LEVEL Get_PrevLevel() { return m_ePrevLevel; };
+	void Set_PrevLevel(LEVEL eLevel) { m_ePrevLevel = eLevel; } ;
+
+	void Release_Client();
 #pragma endregion
 
 #pragma region DB_MANGER
@@ -66,12 +74,20 @@ public:
 	_float4 Get_ActiveCameraLook();
 
 	void Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
-	void Release_Client();
+	void Clear_CameraManager(_uint iLevelIndex);
 #pragma endregion
+
+#ifdef _DEBUG
+#pragma region CAMERA_CONTROLLER
+	void CameraTool_Clear();
+#pragma region CAMERA_MANAGER
+#endif
 
 private:
 	ID3D11Device* m_pDevice = { nullptr };
 	ID3D11DeviceContext* m_pContext = { nullptr };
+	LEVEL				m_ePrevLevel = { LEVEL::TITLE };
+	LEVEL				m_eCurrLevel = { LEVEL::TITLE };
 	
 	class CUI_Manager*	m_pUI_Manager = { nullptr };
 	CDB_Manager*		m_pDB_Manager = { nullptr };
@@ -79,7 +95,7 @@ private:
 
 #ifdef _DEBUG
 	class CDebug_Manager* m_pDebug_Manager = { nullptr };
-
+	class CCamera_Controller* m_pCamera_Controller = { nullptr };
 #endif
 public:
 	virtual void Free() override;

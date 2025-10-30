@@ -543,7 +543,7 @@ CGameObject* CKhazan_Sample::Clone(void* pArg)
 void CKhazan_Sample::Free()
 {
     __super::Free();
-    Safe_Release(m_pCharVirCom);
+    //Safe_Release(m_pCharVirCom);
     Safe_Release(m_pBody);
     Safe_Release(m_pSpear);
 

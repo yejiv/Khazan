@@ -28,11 +28,14 @@ HRESULT CCamera_Compre::Initialize_Prototype()
 
 HRESULT CCamera_Compre::Initialize_Clone(void* pArg)
 {
+    m_strCameraTag = TEXT("Default");
+
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 
     CHECK_FAILED(Ready_Camera(pArg), E_FAIL);
 
     m_isActive = false;
+    
 
     return S_OK;
 }
@@ -76,7 +79,7 @@ HRESULT CCamera_Compre::Render()
 
 void CCamera_Compre::Update_Free(_float fTimeDelta)
 {
-
+    
     if (m_pGameInstance->Key_Pressing(DIK_UP, fTimeDelta))
     {
         m_pTransformCom->Go_Straight(fTimeDelta);
@@ -95,17 +98,19 @@ void CCamera_Compre::Update_Free(_float fTimeDelta)
     }
 
     _int    iMouseMove = {};
-
-    if (iMouseMove = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::X))
+    if (m_pGameInstance->Mouse_Pressing(MOUSEKEYSTATE::RB))
     {
-        m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * iMouseMove * m_fMouseSensor);
-    }
+        if (iMouseMove = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::X))
+        {
+            m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * iMouseMove * m_fMouseSensor);
+        }
 
-    if (iMouseMove = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::Y))
-    {
-        m_pTransformCom->Turn(m_pTransformCom->Get_State(STATE::RIGHT), fTimeDelta * iMouseMove * m_fMouseSensor);
+        if (iMouseMove = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::Y))
+        {
+            m_pTransformCom->Turn(m_pTransformCom->Get_State(STATE::RIGHT), fTimeDelta * iMouseMove * m_fMouseSensor);
+        }
     }
-
+    
 }
 
 void CCamera_Compre::Update_Spring(_float fTimeDelta)
