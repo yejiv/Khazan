@@ -2,6 +2,20 @@
 
 #include "GameInstance.h"
 
+static inline float SmoothDampScalar(float current, float target, float& currentVel, float smoothTime, float dt)
+{
+    const float eps = 1e-4f;
+    float omega = 2.0f / max(eps, smoothTime);
+    float x = omega * dt;
+    float expv = 1.0f / (1.0f + x + 0.48f * x * x + 0.235f * x * x * x);
+
+    float change = current - target;
+    float temp = (currentVel + omega * change) * dt;
+    currentVel = (currentVel - omega * temp) * expv;
+    float output = target + (change + temp) * expv;
+    return output;
+}
+
 static inline float Clamp(float v, float lo, float hi) { return max(lo, min(v, hi)); }
 
 static inline float WrapAngle(float a) {
@@ -52,6 +66,9 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
         else if (m_iCameraType == ENUM_CLASS(CAMERATYPE::SPRING))
             Update_Spring(fTimeDelta);
     }
+
+    
+
     __super::Update_PipeLines();
 }
 
@@ -59,6 +76,11 @@ void CCamera_Compre::Update(_float fTimeDelta)
 {
     if (!m_isActive)
         return;
+
+    if (m_pGameInstance->Key_Down(DIK_LCONTROL))
+    {
+        Shaking_Start(2.f, 1.f);
+    }
 
     __super::Play_Animation(fTimeDelta);
 }
@@ -118,7 +140,11 @@ void CCamera_Compre::Update_Spring(_float fTimeDelta)
     Spring(fTimeDelta);
     RayCast(fTimeDelta);
 
-
+    m_vShaking_BasePos = m_pTransformCom->Get_State(STATE::POSITION);
+    m_vShaking_BaseRight = m_pTransformCom->Get_State(STATE::RIGHT);
+    m_vShaking_BaseUp = m_pTransformCom->Get_State(STATE::UP);
+    m_vShaking_BaseLook = m_pTransformCom->Get_State(STATE::LOOK);
+    Shaking(fTimeDelta);
 }
 
 HRESULT CCamera_Compre::Ready_Camera(void* pArg)
@@ -144,25 +170,23 @@ HRESULT CCamera_Compre::Spring(_float fTimeDelta)
     if (m_pObjMatrix == nullptr)
         return E_FAIL;
 
-    _int iMouseMoveX = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::X);
-    _int iMouseMoveY = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::Y);
+    _vector vTargetPos, vDir;
 
-    m_fYaw = WrapAngle(m_fYaw - fTimeDelta * iMouseMoveX * m_fMouseSensor);
-    m_fPitch = Clamp(m_fPitch - fTimeDelta * iMouseMoveY * m_fMouseSensor, m_fPitchMin, m_fPitchMax);
+    _vector vCamPos = Cal_CamPos(fTimeDelta, vTargetPos, vDir);
 
-    _vector vTargetPos = XMVectorSet(m_pObjMatrix->_41, m_pObjMatrix->_42 + 1.5f, m_pObjMatrix->_43, 1.f);
-    _vector vDir = XMVectorSet(cosf(m_fPitch) * cosf(m_fYaw), sinf(m_fPitch), cosf(m_fPitch) * sinf(m_fYaw), 0.f);
-    vDir = XMVector3Normalize(vDir);
+    // Y 스무딩
+    /*_float fDesiredY = vCamPos.m128_f32[1];
+    _float fCurrentY = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
 
-    _vector vCamPos = XMVectorMultiplyAdd(XMVectorReplicate(-m_fRadius), vDir, vTargetPos);
+    _float smoothedY = UpdateY_Stable(fCurrentY, fDesiredY, fTimeDelta);
+    vCamPos = XMVectorSetY(vCamPos, smoothedY);*/
 
-    _float fAlphaTarget = 1.f - expf(-m_fFollowValue * fTimeDelta);
-    m_vLerpMove = XMVectorLerp(m_vLerpMove, vTargetPos, fAlphaTarget);
+    //_float fAlphaTarget = 1.f - expf(-m_fFollowValue * fTimeDelta);
+    //m_vLerpMove = XMVectorLerp(m_vLerpMove, vTargetPos, fAlphaTarget);
 
     _vector vWorldUp, vLook, vRight, vUp;
-
     vWorldUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
-    vLook = XMVector3Normalize(XMVectorSubtract(m_vLerpMove, vCamPos));
+    vLook = XMVector3Normalize(XMVectorSubtract(vTargetPos, vCamPos));
     vRight = XMVector3Normalize(XMVector3Cross(vWorldUp, vLook));
     vUp = XMVector3Normalize(XMVector3Cross(vLook, vRight));
 
@@ -193,6 +217,45 @@ HRESULT CCamera_Compre::RayCast(_float fTimeDelta)
     }
 
     return S_OK;
+}
+
+_vector CCamera_Compre::Cal_CamPos(_float fTimeDelta, _vector& vTargetPos, _vector& vDir)
+{
+    _int iMouseMoveX = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::X);
+    _int iMouseMoveY = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::Y);
+
+    m_fYaw = WrapAngle(m_fYaw - fTimeDelta * iMouseMoveX * m_fMouseSensor);
+    m_fPitch = Clamp(m_fPitch - fTimeDelta * iMouseMoveY * m_fMouseSensor, m_fPitchMin, m_fPitchMax);
+
+    vTargetPos = XMVectorSet(m_pObjMatrix->_41, m_pObjMatrix->_42 + 1.5f, m_pObjMatrix->_43, 1.f);
+    vDir = XMVectorSet(cosf(m_fPitch) * cosf(m_fYaw), sinf(m_fPitch), cosf(m_fPitch) * sinf(m_fYaw), 0.f);
+    vDir = XMVector3Normalize(vDir);
+
+    _vector vCamPos = XMVectorMultiplyAdd(XMVectorReplicate(-m_fRadius), vDir, vTargetPos);
+
+    return vCamPos;
+}
+
+_float CCamera_Compre::UpdateY_Stable(_float fCurrentY, _float fDesiredY, _float fTimeDelta)
+{
+    if (!m_isInited) { m_fSmoothY = fCurrentY; m_fYVel = 0.f; m_isInited = true; }
+
+    // 1) 데드존: 미세한 요철 변화 무시
+    float delta = fDesiredY - m_fSmoothY;
+    if (fabsf(delta) < m_fDeadZone)
+        fDesiredY = m_fSmoothY;
+
+    // 2) 상승/하강 속도 제한
+    {
+        float raw = fDesiredY - m_fSmoothY;
+        float maxStep = (raw >= 0 ? m_fMaxRise : m_fMaxFall) * fTimeDelta;
+        fDesiredY = m_fSmoothY + std::clamp(raw, -fabsf(maxStep), fabsf(maxStep));
+    }
+
+    // 3) 크리티컬 감쇠
+    m_fSmoothY = SmoothDampScalar(m_fSmoothY, fDesiredY, m_fYVel, m_fYSmoothTime, fTimeDelta);
+
+    return m_fSmoothY;
 }
 
 CCamera_Compre::CAMERA_COMPRE_DESC CCamera_Compre::Get_Desc()
