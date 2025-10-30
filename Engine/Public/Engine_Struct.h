@@ -156,6 +156,26 @@ namespace Engine
 		float			fNormalization;
 	}GAUSSIAN_BLUR_CONFIG;
 
+	typedef struct tagFogNoise_DESC
+	{
+		bool			isEnable;
+		XMFLOAT2		vSpeed;
+		XMFLOAT2		vScale;
+		float			fStrength;
+		float			fContrast;
+	}FOG_NOISE_DESC;
+
+	typedef struct tagFogConfig
+	{
+		enum TYPE { LINEAR, EXP, EXPSQUARE };
+
+		TYPE			eType;
+		float			fNear, fFar;	// 선형용
+		float			fDensity;		// 지수용
+		XMFLOAT4		vColor;
+		FOG_NOISE_DESC	Noise;
+	}FOG_CONFIG;
+
 	typedef struct tagPointInstanceParams
 	{
 		XMFLOAT4 vInitTranslation; 

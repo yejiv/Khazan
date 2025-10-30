@@ -6,9 +6,13 @@
 #include "RigidBody.h"
 #include "CharacterVirtual.h"
 
+#include "Damage_Text.h"
+#include "ClientInstance.h"
+
 #pragma region 인벤토리 삽입 테스트
 #include "UI_Inven.h"
 #pragma endregion
+
 
 
 CKhazan_Sample::CKhazan_Sample(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -74,6 +78,44 @@ void CKhazan_Sample::Priority_Update(_float fTimeDelta)
 
 void CKhazan_Sample::Update(_float fTimeDelta)
 {
+    if (m_pGameInstance->Key_Down(DIK_R))
+    {
+        CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
+        if (pDamage != nullptr)
+        {
+            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::DEFAULT, m_pTransformCom->Get_State(STATE::POSITION), 100, { 0.f, 10.f });
+            m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
+        }
+    }
+
+    if (m_pGameInstance->Key_Down(DIK_T))
+    {
+        CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
+        if (pDamage != nullptr)
+        {
+            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::BACK, m_pTransformCom->Get_State(STATE::POSITION), 1234);
+            m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
+        }
+    }
+    if (m_pGameInstance->Key_Down(DIK_Y))
+    {
+        CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
+        if (pDamage != nullptr)
+        {
+            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::SPECIAL, m_pTransformCom->Get_State(STATE::POSITION), 12345657656);
+            m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
+        }
+    }
+    if (m_pGameInstance->Key_Down(DIK_U))
+    {
+        CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
+        if (pDamage != nullptr)
+        {
+            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::PLAYER, m_pTransformCom->Get_State(STATE::POSITION), 100);
+            m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
+        }
+    }
+
     if (m_isEnableControl)
     {
         if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
@@ -100,8 +142,8 @@ void CKhazan_Sample::Update(_float fTimeDelta)
 
     //m_pRigidBodyCom->Update(fTimeDelta, m_pTransformCom->Get_WorldMatrix());
 
-    m_pCharVirCom->Sync_Update(m_pTransformCom);
-    m_pCharVirCom->Update(fTimeDelta, m_pTransformCom);
+   /* m_pCharVirCom->Sync_Update(m_pTransformCom);
+    m_pCharVirCom->Update(fTimeDelta, m_pTransformCom);*/
 }
 
 void CKhazan_Sample::Late_Update(_float fTimeDelta)
@@ -232,6 +274,7 @@ void CKhazan_Sample::Update_State(_float fTimeDelta)
 {
     Key_Input(fTimeDelta);
 
+
 }
 
 void CKhazan_Sample::Key_Input(_float fTimeDelta)
@@ -329,27 +372,29 @@ HRESULT CKhazan_Sample::Ready_PartObjects()
     BodyDesc.pState = &m_iState;
     BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     BodyDesc.pParentTransform = m_pTransformCom;
-    if (FAILED(__super::Add_PartObject(TEXT("Part_Body"), ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Body_Khazan_Sample"), &BodyDesc)))
+    if (FAILED(__super::Add_PartObject(TEXT("Part_Body"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Body_Khazan_Sample"), &BodyDesc)))
         return E_FAIL;
 
-    pBody = static_cast<CBody_Khazan_Sample*>(Find_PartObject(TEXT("Part_Body")));
-    m_pWeaponR_Matrix = pBody->Get_BoneMatrix("Weapon_R");
+    m_pBody = static_cast<CBody_Khazan_Sample*>(Find_PartObject(TEXT("Part_Body")));
+    m_pWeaponR_Matrix = m_pBody->Get_BoneMatrix("Weapon_R");
+    Safe_AddRef(m_pBody);
 
     CSpear_Khazan_Sample::SPEAR_KHAZAN_SAMPLE_DESC         SpearDesc{};
     SpearDesc.pState = &m_iState;
     SpearDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     SpearDesc.pParentTransform = m_pTransformCom;
-    if (FAILED(__super::Add_PartObject(TEXT("Part_Weapon_Spear"), ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Spear_Khazan_Sample"), &SpearDesc)))
+    if (FAILED(__super::Add_PartObject(TEXT("Part_Weapon_Spear"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Spear_Khazan_Sample"), &SpearDesc)))
         return E_FAIL;
 
-    pSpear = static_cast<CSpear_Khazan_Sample*>(Find_PartObject(TEXT("Part_Weapon_Spear")));
-    m_pSpearFX_Matrix = pSpear->Get_BoneMatrix("FX");
-    m_SpearOffset_Matrix = pSpear->Get_OffestMatrix();
+    m_pSpear = static_cast<CSpear_Khazan_Sample*>(Find_PartObject(TEXT("Part_Weapon_Spear")));
+    m_pSpearFX_Matrix = m_pSpear->Get_BoneMatrix("FX");
+    m_SpearOffset_Matrix = m_pSpear->Get_OffestMatrix();
+    Safe_AddRef(m_pSpear);
 
     /* 넘겨주기  */
-    pSpear->Set_matWeaponR(m_pWeaponR_Matrix);
-    pBody->Set_matSpearFX(m_pSpearFX_Matrix);
-    pBody->Set_matSpearOffset(m_SpearOffset_Matrix);
+    m_pSpear->Set_matWeaponR(m_pWeaponR_Matrix);
+    m_pBody->Set_matSpearFX(m_pSpearFX_Matrix);
+    m_pBody->Set_matSpearOffset(m_SpearOffset_Matrix);
 
 	return S_OK;
 
@@ -498,6 +543,8 @@ CGameObject* CKhazan_Sample::Clone(void* pArg)
 void CKhazan_Sample::Free()
 {
     __super::Free();
-    //Safe_Release(m_pRigidBodyCom);
     Safe_Release(m_pCharVirCom);
+    Safe_Release(m_pBody);
+    Safe_Release(m_pSpear);
+
 }

@@ -23,8 +23,9 @@ HRESULT CCursor_FX::Initialize_Clone(void* pArg)
 	CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 	CHECK_FAILED(Ready_Component(), E_FAIL);
 	m_isPool = true;
-	m_isDead = true;
 	m_vColor = { 1.f, 1.f, 0.f, 0.5f };
+	m_fAccTime = 0.f;
+	m_fAlpha = 1.f;
 	return S_OK;
 }
 
@@ -76,15 +77,19 @@ HRESULT CCursor_FX::Render()
 	return S_OK;
 }
 
-void CCursor_FX::Reset()
+void CCursor_FX::Pos_Update()
 {
-	m_fAccTime = 0.f;
-	m_fAlpha = 1.f;
 	POINT ptMouse{};
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);
 
-	__super::Update_Transform(nullptr, { (_float)ptMouse.x , (_float)ptMouse.y  });
+	__super::Update_Transform(nullptr, { (_float)ptMouse.x , (_float)ptMouse.y });
+}
+
+void CCursor_FX::Reset()
+{
+	m_fAccTime = 0.f;
+	m_fAlpha = 1.f;
 }
 
 HRESULT CCursor_FX::Ready_Prototype()

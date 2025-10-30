@@ -14,7 +14,7 @@ namespace Client
 	const unsigned int			g_iWinSizeX_Imgui = 800;
 	const unsigned int			g_iWinSizeY_Imgui = 600;
 
-	enum class LEVEL { STATIC, LOADING, TITLE, STAGE1, END };
+	enum class LEVEL { STATIC, LOADING, TITLE, HEINMACH, CREVICE, EMBARS, VIPER, END };
 	enum class COLLISION_LAYER { MAP_STATIC, MAP_DYNAMIC, MAP_INTERACT, PLAYER, MONSTER, ITEM, EFFECT, SKILL, CAMERA, END };
 
 	enum class KHAZAN_MAP { HEINMACH, YETUGA, THECREVICE, EMBARS, VIPER, END };

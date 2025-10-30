@@ -1,7 +1,12 @@
 #pragma once
-
 #include "Client_Defines.h"
+#include "Base.h"
 #include "Camera.h"
+
+NS_BEGIN(Engine)
+class CCamera;
+NS_END
+
 
 NS_BEGIN(Client)
 

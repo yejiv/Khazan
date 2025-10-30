@@ -63,9 +63,10 @@ void CCursor::Update(_float fTimeDelta)
 
 	if (m_pGameInstance->Mouse_Up(MOUSEKEYSTATE::LB, INPUT_TYPE::GAMEPLAY))
 	{
-		CGameObject* pFX = m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Cursor_FX"));
+		CCursor_FX* pFX = static_cast<CCursor_FX*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Cursor_FX")));
 		if (pFX != nullptr)
 		{
+			pFX->Pos_Update();
 			m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pFX);
 		}
 	}
@@ -96,6 +97,7 @@ HRESULT CCursor::Render()
 		return E_FAIL;
 
 	CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
+	CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof(_float4)), E_FAIL);
 
 
 	m_IsPressing ? m_pShaderCom->Begin(1) : m_pShaderCom->Begin(0);

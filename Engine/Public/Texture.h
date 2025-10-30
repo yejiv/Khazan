@@ -17,6 +17,10 @@ public:
 	virtual HRESULT Initialize_Clone(void* pArg) override;
 
 public:
+	_uint						Get_NumTextures() { return m_iNumTextures; }
+	ID3D11ShaderResourceView*	Get_Texture(_uint iTextureIndex);
+
+public:
 	HRESULT Bind_Shader_Resource(class CShader* pShader, const _char* pConstantName, _uint iTextureIndex);
 	HRESULT Bind_Shader_Resources(class CShader* pShader, const _char* pConstantName);
 

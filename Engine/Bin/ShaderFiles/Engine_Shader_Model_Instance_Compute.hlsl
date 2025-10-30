@@ -39,6 +39,13 @@ StructuredBuffer<PARTICLE_PARAMS> g_InputData : register(t0);
 RWStructuredBuffer<VTXINSTANCE_PARTICLE> g_OutputData : register(u0);
 RWStructuredBuffer<VTXINSTANCE_DYNAMIC_DATA> g_SpeedData : register(u1);
 
+SamplerState g_LinearWrapSampler
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = WRAP;
+    AddressV = WRAP;
+};
+
 uint pcg_hash(uint seed)
 {
     uint state = seed * 747796405u + 2891336453u;

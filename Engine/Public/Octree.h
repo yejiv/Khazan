@@ -33,7 +33,7 @@ public:
 	void Update(_float fTimeDelta);
 	void Late_Update(_float fTimeDelta);
 
-	void Culling();
+	void Culling(class CFrustum* pFrustum);
 
 public:
 	bool AddStaticObject(class CGameObject* pGameObject, const _float3& vPoint, const _float& fRadius = 0.0f);
@@ -42,7 +42,7 @@ public:
 	void Destroy();
 
 private:
-	ContainmentType isDraw();
+	ContainmentType isDraw(class CFrustum* pFrustum);
 	void AllVisible();
 	void Invisible();
 	vector<tInstance>* FindInstance(const string& strModelTag);
@@ -60,7 +60,7 @@ private:
 	//map<const string, tInstance> m_Instances;
 	map<const string, vector<tInstance>> m_Instances;
 
-	class CGameInstance* m_pGameInstance = { nullptr };
+	mutable recursive_mutex m_Mutex;
 
 public:
 	static COctree* Create(const _float3& vCenter, const _float& fHalfWidth, const _int& iDepthLimit, COctree* pParent = nullptr);
