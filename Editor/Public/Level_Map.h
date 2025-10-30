@@ -66,7 +66,7 @@ private:
 	_float3 m_vDistancePos[2] = {};
 	_float m_fDistance = {};
 
-	_int m_iMaxLevel = {};						// 분할할 레벨의 총 개수
+	_int m_iMaxSubLevel = {};						// 분할할 레벨의 총 개수
 
 #pragma region 트리거 관련 변수
 
@@ -112,6 +112,8 @@ private:
 	_float m_fAddPositionY = { 0.f };						// 오브젝트 높이 위치 Off-Set
 
 	MAPOBJECT_PROPERTIES m_AddObjectProperties = {};		// 추가할 오브젝트의 속성 부여
+
+	_bool m_isRandomRotation = { false };
 
 	_bool m_isCheckRender = { false };
 	MAPOBJECT_PROPERTIES m_RenderProperties = {};

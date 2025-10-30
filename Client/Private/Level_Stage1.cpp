@@ -37,16 +37,29 @@ HRESULT CLevel_Stage1::Initialize()
 		//return S_OK;
 		//});
 
-	CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV0"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
-	//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV5"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
-	//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV9"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+	CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV0"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);		// 1¹øÂ° ±Í°Ë
+	//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV5"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);		// 2¹øÂ° ±Í°Ë
+	//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV10"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);		// 3¹øÂ° ±Í°Ë
+	//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV11"), LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);		// ¿¹Åõ°¡ ¸Ê
 
 	m_pGameInstance->Add_FireTask([this]() {
-		for (_uint i = 0; i <= HEINMACH_SUBLV; ++i)
+		for (_uint i = 0; i < HEINMACH_SUBLV; ++i)
 		{
-			//if (0 != i && 5 != i && 9 != i)
-			if (HEINMACH_1ST_BN != i)
-				CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), i, LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
+			if (HEINMACH_1ST_BLADENEXUS == i)
+				continue;
+
+			/*
+			if (HEINMACH_2ND_BLADENEXUS == i)
+				continue;
+
+			if (HEINMACH_3RD_BLADENEXUS == i)
+				continue;
+
+			if (HEINMACH_YETUGA == i)
+				continue;
+			*/
+			
+			CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), i, LEVEL::STAGE1, KHAZAN_MAP::HEINMACH), E_FAIL);
 		}
 		
 		return S_OK;
