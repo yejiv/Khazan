@@ -13,35 +13,6 @@ CAI_Controller_Yetuga::CAI_Controller_Yetuga()
 
 HRESULT CAI_Controller_Yetuga::Initialize(CCreature* pOwner)
 {
-	/*SIGHT_DESC SightDesc = {};
-	SightDesc.fRadius = 50.f;
-	SightDesc.fLoseSightTime = 0.1f;
-	SightDesc.fFov = 120.f;
-	SightDesc.fFovCos = cosf(XMConvertToRadians(SightDesc.fFov * 0.5f));
-	m_pPerception = CPerception::Create("Yetuga", SightDesc, ENUM_CLASS(TEAM::YETI));
-
-
-	m_pFSM = CFSM_Yetuga::Create();
-	if (nullptr == m_pFSM)
-		return E_FAIL;
-
-
-	m_pBB = m_pGameInstance->Get_BlackBoard();
-	if (nullptr == m_pBB)
-		return E_FAIL;
-
-	m_pBT = CBT_Yetuga::Create(pArg);
-	if (nullptr == m_pBT)
-		return E_FAIL;
-
-	if (FAILED(Ready_BlackBoard()))
-		return E_FAIL;
-
-	if (FAILED(Ready_Perception()))
-		return E_FAIL;
-
-	if (FAILED(Ready_BehaviorTree()))
-		return E_FAIL;*/
 
 	CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
 
@@ -140,6 +111,23 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 	if (nullptr == pYetuga)
 		return nullptr;
 
+	/*if ("ThrowBall" == name)
+	{
+		return [pYetuga](CBlackBoard* BB)->_bool
+			{
+
+				_float fDist = BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
+				_float fAttackRanage = BB->Get_Value<_float>(pYetuga->Get_Name(), "ThrowBallRange");
+				if (fDist != 0 && fDist <= fAttackRanage && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "IsThrowBall"))
+				{
+					cout << "IsThrowBall Condition TRUE!!!!!!!!!!!!" << endl;
+					return true;
+				}
+				else
+					return false;
+			};
+	}*/
+
 	if ("LieDown" == name)
 	{
 		return [pYetuga](CBlackBoard* BB)->_bool
@@ -229,6 +217,12 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 					return false;
 				_float fDist = BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
 				_float fChaseRange = BB->Get_Value<_float>(pYetuga->Get_Name(), "ChaseRange");
+				_float fSprintRange = BB->Get_Value<_float>(pYetuga->Get_Name(), "SprintRange");
+				_float fRunRange = BB->Get_Value<_float>(pYetuga->Get_Name(), "RunRange");
+
+				CYetuga::MONSTER_INFO Info{};
+
+				Info.Clear_State();
 
 				cout << "Dist" << fDist << endl;
 				cout << "ChaseRange" << fChaseRange << endl;
@@ -236,8 +230,17 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 				if (fDist != 0 && fDist <= fChaseRange)
 				{
 					cout << "MoveCondition" << endl;
-					return true;
 
+					if (fDist <= fRunRange)
+						Info.Add_State(Info.WALK);
+					else if (fDist > fRunRange && fDist <= fSprintRange)
+						Info.Add_State(Info.RUN);
+					else if (fDist > fSprintRange)
+						Info.Add_State(Info.SPRINT);
+						
+					BB->Set_Value<_uint>(pYetuga->Get_Name(), "iMovementFlag", Info.iStateFlag);
+
+					return true;
 				}
 				else
 					return false;
@@ -253,6 +256,30 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 	CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
 	if (nullptr == pYetuga)
 		return nullptr;
+
+	//if ("ThrowBall" == name)
+	//{
+	//	return [pYetuga](CBlackBoard* BB)-> BTNODESTATE
+	//		{
+
+	//			if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isThrowBallFinished"))
+	//			{
+	//				//cout << "ThrowBall Action SUCESSSS!!!!!!!!!!!!" << endl;
+	//				return BTNODESTATE::SUCCESS;
+	//			}
+	//			//cout << "ThrowBall Action Running" << endl;
+
+	//			BB->Set_Value(pYetuga->Get_Name(), "isisThrowBall", true);
+	//			BB->Set_Value(pYetuga->Get_Name(), "isThrowBallFinished", false);
+
+
+	//			pYetuga->Get_Controller()->Get_State_Machine()->
+	//				Change_State(ENUM_CLASS(YETUGA_STATE::THROWBALL), pYetuga);
+	//			return BTNODESTATE::RUNNING;
+
+	//		};
+	//}
+
 
 
 	if ("LieDown" == name)
@@ -379,6 +406,26 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 	CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
 	if (nullptr == pYetuga)
 		return nullptr;
+
+	/*if ("ThrowBall" == name)
+	{
+		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
+			{
+				if (nullptr == BB)
+					return;
+
+				if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+				{
+					cout << "Attack Turminate " << endl;
+
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isThrowBall", false);
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isisThrowBallFinished", false);
+					pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
+				}
+			};
+	}*/
+
+
 
 	if ("LieDown" == name)
 	{

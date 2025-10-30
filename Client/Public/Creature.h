@@ -2,6 +2,10 @@
 #include "ContainerObject.h"
 #include "Client_Defines.h"
 
+NS_BEGIN(Engine)
+class CCharacterVirtual;
+NS_END
+
 NS_BEGIN(Client)
 
 class CCreature abstract : public CContainerObject
@@ -51,6 +55,10 @@ protected:
 	_float						m_fCurrentStamina = {};
 	_float						m_fMaxStamina = {};
 	_float						m_fMoveSpeed = {};
+
+protected:
+	CCharacterVirtual*			m_pCharVirCom = { nullptr };
+
 
 public:
 	virtual CGameObject*		Clone(void* pArg) = 0;

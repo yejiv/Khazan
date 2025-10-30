@@ -1,5 +1,6 @@
 #include "Creature.h"
 #include "PartObject.h"
+#include "CharacterVirtual.h"
 
 CCreature::CCreature(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CContainerObject{ pDevice, pContext }
@@ -43,6 +44,11 @@ void CCreature::Priority_Update(_float fTimeDelta)
 void CCreature::Update(_float fTimeDelta)
 {
     __super::Update(fTimeDelta);
+
+    m_pCharVirCom->Sync_Update(m_pTransformCom);
+    m_pCharVirCom->Update(fTimeDelta, m_pTransformCom);
+
+
 }
 
 void CCreature::Late_Update(_float fTimeDelta)
@@ -59,5 +65,8 @@ HRESULT CCreature::Render()
 
 void CCreature::Free()
 {
+
+    Safe_Release(m_pCharVirCom);
+
     __super::Free();
 }

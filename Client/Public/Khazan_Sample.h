@@ -64,7 +64,7 @@ private:
 	_uint						m_iDirState = { MOVE_DIR::RIGHT };
 
 	//class CRigidBody*			m_pRigidBodyCom = { nullptr };
-	CCharacterVirtual*			m_pCharVirCom = { nullptr };
+	//CCharacterVirtual*			m_pCharVirCom = { nullptr };
 	_float4x4*					m_pWeaponR_Matrix = { nullptr };
 	_float4x4*					m_pSpearFX_Matrix = { nullptr };
 	_float4x4					m_SpearFX_WorldMatrix = {};

@@ -67,6 +67,9 @@ public:
 
 	_float Get_RotationPerSec() { return m_fRotationPerSec; }
 	_float Get_SpeedPerSec() { return m_fSpeedPerSec; }
+
+	void	Set_SpeedPerSec(_float fSpeedPerSec) { m_fSpeedPerSec = fSpeedPerSec; }
+
 public:
 	void Scale(_float3 vScale);
 	void Scaling(_float3 vScale);
@@ -81,7 +84,7 @@ public:
 	void LookAt(_fvector vAt);
 	void Chase(_fvector vTargetPos, _float fTimeDelta, _float fLimit = 0.f);
 
-	void AI_Chase(_fvector vTargetPos, _float fTimeDelta, _float fLimit = 0.f);
+	void AI_Chase(_fvector vTargetPos, _float fTimeDelta, _float SpeedPerSec ,_float fLimit = 0.f);
 private:
 	_float4x4				m_WorldMatrix = {};
 	_float					m_fSpeedPerSec = {};

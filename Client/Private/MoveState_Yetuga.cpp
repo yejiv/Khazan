@@ -12,9 +12,30 @@ CMoveState_Yetuga::CMoveState_Yetuga()
 void CMoveState_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
-
+    CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
-    pModel->Set_Animation(1);
+
+    
+    CYetuga::MONSTER_INFO Info{};
+    Info.iStateFlag = m_pGameInstance->Get_BlackBoard()->Get_Value<_uint>(pYetuga->Get_Name(), "iMovementFlag");
+
+    if (Info.iStateFlag == Info.WALK)
+    {
+        m_fSpeedPerSec = pTransform->Get_SpeedPerSec();
+        pModel->Set_Animation(1);
+
+    }
+    else if (Info.iStateFlag == Info.RUN)
+    {
+        m_fSpeedPerSec = m_pGameInstance->Get_BlackBoard()->Get_Value<_float>(pYetuga->Get_Name(), "RunSpeed");
+        pModel->Set_Animation(6);
+    }
+    else if (Info.iStateFlag == Info.SPRINT)
+    {
+        m_fSpeedPerSec = m_pGameInstance->Get_BlackBoard()->Get_Value<_float>(pYetuga->Get_Name(), "SprintSpeed");
+        pModel->Set_Animation(7);
+    }
+   
 }
 
 void CMoveState_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -23,7 +44,11 @@ void CMoveState_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 
     CBlackBoard* pBB = m_pGameInstance->Get_BlackBoard();
     pYetuga->Get_Controller()->
-        AI_MoveTo(pOwner, pBB->Get_Value<CGameObject*>("Yetuga", "Target"),pBB->Get_Value<_float>("Yetuga","AttackRange"), fTimeDelta);
+        AI_MoveTo(pOwner, 
+            pBB->Get_Value<CGameObject*>("Yetuga", "Target"),
+            pBB->Get_Value<_float>("Yetuga","AttackRange"), 
+            m_fSpeedPerSec,
+            fTimeDelta);
 
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
     if (pModel->Play_Animation(fTimeDelta))

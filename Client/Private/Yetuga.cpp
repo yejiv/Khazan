@@ -75,7 +75,9 @@ void CYetuga::Update(_float fTimeDelta)
 
     m_pController->Update(this, fTimeDelta);
 
-    CContainerObject::Update(fTimeDelta);
+    __super::Update(fTimeDelta);
+
+   
 
   
 }
@@ -95,6 +97,29 @@ HRESULT CYetuga::Render()
 
 HRESULT CYetuga::Ready_Components()
 {
+    CCharacterVirtual::CV_CAPSULESHAPE_DESC tCharVirDesc{};
+    _float3 vPos{};
+    _float4 vQuat{};
+ 
+    XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
+    XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
+    tCharVirDesc.eShapeType = SHAPE::CAPSULE;
+    tCharVirDesc.vPos = vPos;
+    tCharVirDesc.vQuat = vQuat;
+    tCharVirDesc.vShapeOffset = _float3(0.f, 1.5f, 0.f);
+    tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
+    tCharVirDesc.fRadius = 1.f;
+    tCharVirDesc.fHeight = 1.;
+    tCharVirDesc.fMaxSlopeAngle = 45.f;
+    m_tCollisionDesc.pGameObject = this;
+    //pCollDesc.pInfo = ?? // 작성하기
+    tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
+        TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
+        return E_FAIL;
+
+
     return S_OK;
 }
 

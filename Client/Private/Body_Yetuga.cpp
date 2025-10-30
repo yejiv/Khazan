@@ -32,6 +32,9 @@ HRESULT CBody_Yetuga::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
+   /* if (FAILED(Ready_Colliders()))
+        return E_FAIL;*/
+
     return S_OK;
 }
 
@@ -44,9 +47,13 @@ void CBody_Yetuga::Update(_float fTimeDelta)
 {
     Update_CombinedMatrix();
 
-    m_pCharVirCom->Sync_Update(m_pOwnerTransform);
-    m_pCharVirCom->Update(fTimeDelta, m_pOwnerTransform);
+   /* m_pRH_BodyCom->Sync_Update(m_pTransformCom);
+    m_pLH_BodyCom->Sync_Update(m_pTransformCom);
+    m_pBack_BodyCom->Sync_Update(m_pTransformCom);
 
+    m_pRH_BodyCom->Update(fTimeDelta, m_pTransformCom);
+    m_pLH_BodyCom->Update(fTimeDelta, m_pTransformCom);
+    m_pBack_BodyCom->Update(fTimeDelta, m_pTransformCom);*/
 }
 
 void CBody_Yetuga::Late_Update(_float fTimeDelta)
@@ -78,13 +85,22 @@ HRESULT CBody_Yetuga::Render()
         m_pModelCom->Render(i);
     }
 
-#ifdef _DEBUG
-    //m_pCharVirCom->Render();
-#endif // _DEBUG
-
-
-    
     return S_OK;
+}
+
+void CBody_Yetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+{
+
+}
+
+void CBody_Yetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+{
+
+}
+
+void CBody_Yetuga::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+{
+    
 }
 
 
@@ -101,28 +117,6 @@ HRESULT CBody_Yetuga::Ready_Components()
 
     m_pModelCom->Set_OwnerTransform(&m_pOwnerTransform);
 
-
-    CCharacterVirtual::CV_CAPSULESHAPE_DESC tCharVirDesc{};
-    _float3 vPos{};
-    _float4 vQuat{};
-    XMStoreFloat3(&vPos, m_pOwnerTransform->Get_State(STATE::POSITION));
-    XMStoreFloat4(&vQuat, m_pOwnerTransform->Get_Rotation_Quat());
-    tCharVirDesc.eShapeType = SHAPE::CAPSULE;
-    tCharVirDesc.vPos = vPos;
-    tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 0.7f, 0.f);
-    tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
-    tCharVirDesc.fRadius = 0.5f;
-    tCharVirDesc.fHeight = 0.5f;
-    tCharVirDesc.fMaxSlopeAngle = 45.f;
-    m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // 작성하기
-    tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
-
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
-        TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
-        return E_FAIL;
-
     return S_OK;
 
 }
@@ -137,6 +131,76 @@ HRESULT CBody_Yetuga::Bind_ShaderResources()
         return E_FAIL;
 
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
+        return E_FAIL;
+
+
+    return S_OK;
+}
+
+HRESULT CBody_Yetuga::Ready_Colliders()
+{
+    CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
+
+    // 오른손
+    BodyDesc.fRadius = 6.f;
+    BodyDesc.eMotion = EMotionType::Kinematic;
+    BodyDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
+    BodyDesc.eShapeType = SHAPE::SPHERE;
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER); // 추후에 Enum Monster attack 변경 할수도
+    _float3 vPosition{};
+    vPosition.x = m_pModelCom->Get_BoneMatrix("Weapon_R")->m[3][0];
+    vPosition.y = m_pModelCom->Get_BoneMatrix("Weapon_R")->m[3][1];
+    vPosition.z = m_pModelCom->Get_BoneMatrix("Weapon_R")->m[3][2];
+    _float4 vQuat{};
+    XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
+    BodyDesc.vPos = vPosition;
+    BodyDesc.vQuat = vQuat;
+    BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+    m_tCollisionDesc.pGameObject = this;
+    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+        TEXT("Com_Body_LH"), reinterpret_cast<CComponent**>(&m_pRH_BodyCom), &BodyDesc)))
+        return E_FAIL;
+
+    // 왼손
+    BodyDesc.fRadius = 6.f;
+    BodyDesc.eMotion = EMotionType::Kinematic;
+    BodyDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
+    BodyDesc.eShapeType = SHAPE::SPHERE;
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER); // 추후에 Enum Monster attack 변경 할수도
+    vPosition.x = m_pModelCom->Get_BoneMatrix("Weapon_L")->m[3][0];
+    vPosition.y = m_pModelCom->Get_BoneMatrix("Weapon_L")->m[3][1];
+    vPosition.z = m_pModelCom->Get_BoneMatrix("Weapon_L")->m[3][2];
+    XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
+    BodyDesc.vPos = vPosition;
+    BodyDesc.vQuat = vQuat;
+    BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+    m_tCollisionDesc.pGameObject = this;
+    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+        TEXT("Com_Body_RH"), reinterpret_cast<CComponent**>(&m_pLH_BodyCom), &BodyDesc)))
+        return E_FAIL;
+
+    // 등
+    BodyDesc.fRadius = 15.f;
+    BodyDesc.eMotion = EMotionType::Kinematic;
+    BodyDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
+    BodyDesc.eShapeType = SHAPE::SPHERE;
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER); // 추후에 Enum Monster attack 변경 할수도
+    vPosition.x = m_pModelCom->Get_BoneMatrix("B_Spine2_12_01_S")->m[3][0];
+    vPosition.y = m_pModelCom->Get_BoneMatrix("B_Spine2_12_01_S")->m[3][1];
+    vPosition.z = m_pModelCom->Get_BoneMatrix("B_Spine2_12_01_S")->m[3][2];
+    XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
+    BodyDesc.vPos = vPosition;
+    BodyDesc.vQuat = vQuat;
+    BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+    m_tCollisionDesc.pGameObject = this;
+    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+        TEXT("Com_Body_Back"), reinterpret_cast<CComponent**>(&m_pBack_BodyCom), &BodyDesc)))
         return E_FAIL;
 
 
@@ -176,7 +240,6 @@ void CBody_Yetuga::Free()
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pOwnerTransform);
-    Safe_Release(m_pCharVirCom);
 
     __super::Free();
 
