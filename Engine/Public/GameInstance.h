@@ -85,7 +85,10 @@ public:
 	void Set_EnableShadow(_bool isEnable);
 	void Set_EnableSSAO(_bool isEnable);
 	void Set_EnableFog(_bool isEnable);
+	void Set_EnableToonShade(_bool isEnable);
 #endif
+
+	void Set_ToonShadeLevel(_float fLevel);
 #pragma endregion
 
 #pragma region TIMER_MANAGER

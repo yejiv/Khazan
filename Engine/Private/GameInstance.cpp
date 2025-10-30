@@ -400,13 +400,21 @@ void CGameInstance::Set_EnableSSAO(_bool isEnable)
 	m_pRenderer->Set_EnableSSAO(isEnable);
 }
 
+void CGameInstance::Set_EnableToonShade(_bool isEnable)
+{
+	m_pRenderer->Set_EnableToonShade(isEnable);
+}
+
 void CGameInstance::Set_EnableFog(_bool isEnable)
 {
 	m_pRenderer->Set_EnableFog(isEnable);
 }
-
 #endif
 
+void CGameInstance::Set_ToonShadeLevel(_float fLevel)
+{
+	m_pRenderer->Set_ToonShadeLevel(fLevel);
+}
 
 #pragma endregion
 

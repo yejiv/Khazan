@@ -12,6 +12,8 @@ float g_fRange;
 vector g_vLightDiffuse;
 vector g_vLightAmbient;
 vector g_vLightSpecular;
+bool g_isEnableToonShade;
+float g_fToonShadeLevel = { 3.f };
 
 // ===== Material =====
 vector g_vMtrlAmbient = { 1.f, 1.f, 1.f, 1.f }, g_vMtrlSpecular = { 1.f, 1.f, 1.f, 1.f };
@@ -144,16 +146,25 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
     vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
     
     float fShade = max(dot(vNormal * -1.f, normalize(g_vLightDir)), 0.f);
-    
-    Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient));
-    
-    if (!g_isEnableSSAO)
-        return Out;
-    
-    // SSAO
-    float fAO = g_SSAOTexture.Sample(PointSampler, In.vTexcoord).r;
-    Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient * fAO));
 
+    // Toon Shade
+    float fLightIntensity = saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient));
+    float fLevel = floor(g_fToonShadeLevel);
+    float fToonShade = ceil(fLightIntensity * fLevel) / fLevel;
+    
+    if (g_isEnableSSAO)
+    {
+        float fAO = g_SSAOTexture.Sample(PointSampler, In.vTexcoord).r;
+        fToonShade *= fAO;
+        
+        fLightIntensity *= fAO;
+    }
+    
+    if (g_isEnableToonShade)
+        Out.vShade = g_vLightDiffuse * fToonShade;
+    else
+        Out.vShade = g_vLightDiffuse * fLightIntensity;
+    
     // Specular
     vector vSpecularDesc = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
     
@@ -192,16 +203,28 @@ PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
     
     float fAtt = saturate((g_fRange - fDistance) / g_fRange);
     
-    float fShade = max(dot(vNormal * -1.f, normalize(vLightDir)), 0.f);
+    float fShade = max(dot(vNormal * -1.f, normalize(g_vLightDir)), 0.f);
+
+    // Toon Shade
+    float fLightIntensity = saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient));
+    float fLevel = floor(g_fToonShadeLevel);
+    float fToonShade = ceil(fLightIntensity * fLevel) / fLevel;
     
-    Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient)) * fAtt;
+    if (g_isEnableSSAO)
+    {
+        float fAO = g_SSAOTexture.Sample(PointSampler, In.vTexcoord).r;
+        fToonShade *= fAO;
+        
+        fLightIntensity *= fAO;
+    }
     
-    if (!g_isEnableSSAO)
-        return Out;
-    
-    // SSAO
-    float fAO = g_SSAOTexture.Sample(PointSampler, In.vTexcoord).r;
-    Out.vShade = g_vLightDiffuse * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient * fAO)) * fAtt;
+    if (g_isEnableToonShade)
+        Out.vShade = g_vLightDiffuse * fToonShade * fAtt;
+    else
+        Out.vShade = g_vLightDiffuse * fLightIntensity * fAtt;
+
+    // Specular
+    vector vSpecularDesc = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
     
     vector vReflect = reflect(normalize(vLightDir), vNormal);
     vector vLook = vWorldPos - g_vCamPosition;
@@ -504,14 +527,6 @@ PS_OUT_BACKBUFFER PS_MAIN_FOG(PS_IN In)
             vNoiseTexcoord.x += g_fTimeDelta * g_vNoiseSpeed.x;
             vNoiseTexcoord.y += g_fTimeDelta * g_vNoiseSpeed.y;
         }
-        
-        //  float2 vNoiseTexcoord = vWorldPos.xz * g_vNoiseScale;
-        //  vNoiseTexcoord.x += g_fTimeDelta * g_vNoiseSpeed.x;
-        //  vNoiseTexcoord.y += g_fTimeDelta * g_vNoiseSpeed.y;
-
-        //  float2 vNoiseTexcoord = In.vTexcoord * g_vNoiseScale;
-        //  vNoiseTexcoord.x += g_fTimeDelta * g_vNoiseSpeed.x;
-        //  vNoiseTexcoord.y += g_fTimeDelta * g_vNoiseSpeed.y;
         
         float fNoise = g_NoiseTexture.Sample(DefaultSampler, vNoiseTexcoord).r;
         fNoise = pow(fNoise, g_fNoiseContrast);

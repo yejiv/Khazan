@@ -158,8 +158,6 @@ HRESULT CLevel_Shader::Initialize()
 			}
 		}
 
-		ImGui::Separator();
-
 		if (ImGui::Checkbox("Fog", &m_isEnableFog))
 			m_pGameInstance->Set_EnableFog(m_isEnableFog);
 
@@ -292,6 +290,18 @@ HRESULT CLevel_Shader::Initialize()
 			m_pGameInstance->Set_FogConfig(m_FogConfig);
 
 			ImGui::Separator();
+		}
+
+		if (ImGui::CollapsingHeader("Cartoon Rendering"), ImGuiTreeNodeFlags_DefaultOpen)
+		{
+			if (ImGui::Checkbox("Toon Shading", &m_isEnableToonShade))
+				m_pGameInstance->Set_EnableToonShade(m_isEnableToonShade);
+
+			if (m_isEnableToonShade)
+			{
+				if (ImGui::SliderFloat("Toon Shade Level", &m_fToonShadeLevel, 1.f, 5.f, "%.1f"))
+					m_pGameInstance->Set_ToonShadeLevel(m_fToonShadeLevel);
+			}
 		}
 
 		dynamic_cast<CPlayer_Shader*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER), 

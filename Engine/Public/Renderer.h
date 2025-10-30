@@ -25,7 +25,10 @@ public:
 	void Set_EnableShadow(_bool isEnable) { m_isEnableShadow = isEnable; }
 	void Set_EnableSSAO(_bool isEnable) { m_isEnableSSAO = isEnable; }
 	void Set_EnableFog(_bool isEnable) { m_isEnableFog = isEnable; }
+	void Set_EnableToonShade(_bool isEnable) { m_isEnableToonShade = isEnable; }
 #endif
+
+	void Set_ToonShadeLevel(_float fLevel) { m_fToonShadeLevel = fLevel; }
 
 private:
 	ID3D11Device*				m_pDevice = { nullptr };
@@ -41,6 +44,8 @@ private:
 	_float4x4					m_WorldMatrix{}, m_ViewMatrix{}, m_ProjMatrix{};
 	_float						m_fViewportWidth{}, m_fViewportHeight{};
 
+	_float						m_fToonShadeLevel = { 3.f };
+
 #ifdef _DEBUG
 private:
 	list<class CComponent*>		m_DebugComponent;
@@ -48,6 +53,7 @@ private:
 	_bool						m_isEnableShadow = { true };
 	_bool						m_isEnableSSAO = { true };
 	_bool						m_isEnableFog = {};
+	_bool						m_isEnableToonShade = {};
 #endif
 
 private:

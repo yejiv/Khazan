@@ -281,8 +281,13 @@ HRESULT CRenderer::Render_Lights()
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Specular"), m_pShader, "g_SpecularTexture")))
         return E_FAIL;
 
+    if (FAILED(m_pShader->Bind_RawValue("g_fToonShadeLevel", &m_fToonShadeLevel, sizeof(_float))))
+        return E_FAIL;
+
 #ifdef _DEBUG
     if (FAILED(m_pShader->Bind_Bool("g_isEnableSSAO", &m_isEnableSSAO)))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Bool("g_isEnableToonShade", &m_isEnableToonShade)))
         return E_FAIL;
 #endif
 
