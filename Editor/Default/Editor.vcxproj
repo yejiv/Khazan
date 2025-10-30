@@ -163,7 +163,6 @@
     <ClInclude Include="..\public\AnimationTool.h" />
     <ClInclude Include="..\Public\BigChest.h" />
     <ClInclude Include="..\Public\Camera_Compre.h" />
-    <ClInclude Include="..\Public\Camera_Controller.h" />
     <ClInclude Include="..\Public\Camera_Effect.h" />
     <ClInclude Include="..\Public\Camera_Map.h" />
     <ClInclude Include="..\Public\Camera_UI.h" />
@@ -205,7 +204,6 @@
     <ClInclude Include="..\Public\MapObject.h" />
     <ClInclude Include="..\Public\Map_Terrain.h" />
     <ClInclude Include="..\Public\Map_Trigger.h" />
-    <ClInclude Include="..\Public\Player_Camera.h" />
     <ClInclude Include="..\Public\Map_TestPlayer.h" />
     <ClInclude Include="..\public\Player_Shader.h" />
     <ClInclude Include="..\Public\Prop.h" />
@@ -216,7 +214,6 @@
     <ClInclude Include="..\Public\Prop_Preview.h" />
     <ClInclude Include="..\Public\Prop_Static.h" />
     <ClInclude Include="..\Public\Prop_Test.h" />
-    <ClInclude Include="..\Public\Camera_Terrain.h" />
     <ClInclude Include="..\public\Terrain_Shader.h" />
     <ClInclude Include="..\Public\BladeNexus.h" />
     <ClInclude Include="Editor.h" />
@@ -230,7 +227,6 @@
     <ClCompile Include="..\private\AnimationTool.cpp" />
     <ClCompile Include="..\Private\BigChest.cpp" />
     <ClCompile Include="..\Private\Camera_Compre.cpp" />
-    <ClCompile Include="..\Private\Camera_Controller.cpp" />
     <ClCompile Include="..\Private\Camera_Effect.cpp" />
     <ClCompile Include="..\Private\Camera_Map.cpp" />
     <ClCompile Include="..\Private\Camera_UI.cpp" />
@@ -270,7 +266,6 @@
     <ClCompile Include="..\Private\MapObject.cpp" />
     <ClCompile Include="..\Private\Map_Terrain.cpp" />
     <ClCompile Include="..\Private\Map_Trigger.cpp" />
-    <ClCompile Include="..\Private\Player_Camera.cpp" />
     <ClCompile Include="..\Private\Map_TestPlayer.cpp" />
     <ClCompile Include="..\private\Player_Shader.cpp" />
     <ClCompile Include="..\Private\Prop.cpp" />
@@ -281,7 +276,6 @@
     <ClCompile Include="..\Private\Prop_Preview.cpp" />
     <ClCompile Include="..\Private\Prop_Static.cpp" />
     <ClCompile Include="..\Private\Prop_Test.cpp" />
-    <ClCompile Include="..\Private\Camera_Terrain.cpp" />
     <ClCompile Include="..\private\Terrain_Shader.cpp" />
     <ClCompile Include="..\Private\BladeNexus.cpp" />
     <ClCompile Include="Editor.cpp" />

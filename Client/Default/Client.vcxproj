@@ -162,6 +162,7 @@
     <ClInclude Include="..\Public\AI_Controller_Yetuga.h" />
     <ClInclude Include="..\Public\AS_LieDown_Yetuga.h" />
     <ClInclude Include="..\Public\AS_RightHand_5Hit_Yetuga.h" />
+    <ClInclude Include="..\Public\AS_ThrowBall_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Turn_Yetuga.h" />
     <ClInclude Include="..\public\Atlas_RenderGroup.h" />
     <ClInclude Include="..\Public\AttackState_Yetuga.h" />
@@ -169,14 +170,17 @@
     <ClInclude Include="..\public\BladeNexus_List.h" />
     <ClInclude Include="..\Public\Body_Khazan_Sample.h" />
     <ClInclude Include="..\Public\BladeNexus.h" />
+    <ClInclude Include="..\Public\Body_Khazan_Spear.h" />
     <ClInclude Include="..\Public\Body_Player.h" />
     <ClInclude Include="..\Public\Body_Yetuga.h" />
     <ClInclude Include="..\Public\BT_Yetuga.h" />
     <ClInclude Include="..\Public\Camera_Controller.h" />
     <ClInclude Include="..\public\Camera_Free.h" />
     <ClInclude Include="..\Public\Camera_Compre.h" />
+    <ClInclude Include="..\Public\Camera_Manager.h" />
     <ClInclude Include="..\Public\ClientInstance.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
+    <ClInclude Include="..\Public\Client_Sequence.h" />
     <ClInclude Include="..\Public\Client_Struct.h" />
     <ClInclude Include="..\Public\Creature.h" />
     <ClInclude Include="..\public\Cursor.h" />
@@ -197,9 +201,13 @@
     <ClInclude Include="..\public\Item_Slot.h" />
     <ClInclude Include="..\Public\JOH_Test1.h" />
     <ClInclude Include="..\public\Khazan_Sample.h" />
+    <ClInclude Include="..\Public\Khazan_Spear.h" />
+    <ClInclude Include="..\Public\Level_Crevice.h" />
+    <ClInclude Include="..\Public\Level_Embars.h" />
     <ClInclude Include="..\Public\Level_Loading.h" />
-    <ClInclude Include="..\Public\Level_Stage1.h" />
+    <ClInclude Include="..\Public\Level_HeinMach.h" />
     <ClInclude Include="..\Public\Level_Title.h" />
+    <ClInclude Include="..\Public\Level_Viper.h" />
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\MainMenu_Deco.h" />
@@ -221,8 +229,10 @@
     </ClInclude>
     <ClInclude Include="..\Public\Prop_Static.h" />
     <ClInclude Include="..\Public\Prop_Test.h" />
+    <ClInclude Include="..\Public\Sequence_Dummy.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\Spear_Khazan_Sample.h" />
+    <ClInclude Include="..\Public\Spear_Khazan_Spear.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="..\public\UI_BladeNexus.h" />
     <ClInclude Include="..\Public\UI_Button.h" />
@@ -265,6 +275,7 @@
     <ClCompile Include="..\Private\AI_Controller_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_LieDown_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_RightHand_5Hit_Yetuga.cpp" />
+    <ClCompile Include="..\Private\AS_ThrowBall_Yetuga.cpp" />
     <ClCompile Include="..\private\AS_Turn_Yetuga.cpp" />
     <ClCompile Include="..\private\Atlas_RenderGroup.cpp" />
     <ClCompile Include="..\Private\AttackState_Yetuga.cpp" />
@@ -272,12 +283,14 @@
     <ClCompile Include="..\Private\BladeNexus.cpp" />
     <ClCompile Include="..\private\BladeNexus_List.cpp" />
     <ClCompile Include="..\Private\Body_Khazan_Sample.cpp" />
+    <ClCompile Include="..\Private\Body_Khazan_Spear.cpp" />
     <ClCompile Include="..\Private\Body_Player.cpp" />
     <ClCompile Include="..\Private\Body_Yetuga.cpp" />
     <ClCompile Include="..\Private\BT_Yetuga.cpp" />
     <ClCompile Include="..\Private\Camera_Controller.cpp" />
     <ClCompile Include="..\private\Camera_Free.cpp" />
     <ClCompile Include="..\Private\Camera_Compre.cpp" />
+    <ClCompile Include="..\Private\Camera_Manager.cpp" />
     <ClCompile Include="..\Private\ClientInstance.cpp" />
     <ClCompile Include="..\Private\Creature.cpp" />
     <ClCompile Include="..\private\Cursor.cpp" />
@@ -296,9 +309,13 @@
     <ClCompile Include="..\private\Item_Slot.cpp" />
     <ClCompile Include="..\Private\JOH_Test1.cpp" />
     <ClCompile Include="..\private\Khazan_Sample.cpp" />
+    <ClCompile Include="..\Private\Khazan_Spear.cpp" />
+    <ClCompile Include="..\Private\Level_Crevice.cpp" />
+    <ClCompile Include="..\Private\Level_Embars.cpp" />
     <ClCompile Include="..\Private\Level_Loading.cpp" />
-    <ClCompile Include="..\Private\Level_Stage1.cpp" />
+    <ClCompile Include="..\Private\Level_HeinMach.cpp" />
     <ClCompile Include="..\Private\Level_Title.cpp" />
+    <ClCompile Include="..\Private\Level_Viper.cpp" />
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\private\MainMenu_Deco.cpp" />
@@ -319,8 +336,10 @@
     </ClCompile>
     <ClCompile Include="..\Private\Prop_Static.cpp" />
     <ClCompile Include="..\Private\Prop_Test.cpp" />
+    <ClCompile Include="..\Private\Sequence_Dummy.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\Spear_Khazan_Sample.cpp" />
+    <ClCompile Include="..\Private\Spear_Khazan_Spear.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="..\private\UI_BladeNexus.cpp" />
     <ClCompile Include="..\Private\UI_Button.cpp" />

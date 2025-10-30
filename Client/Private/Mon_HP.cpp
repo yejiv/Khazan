@@ -158,11 +158,11 @@ void CMon_HP::Update_WorldPos()
 	_float4 vTemp = _float4{ m_pTagetMat->m[3] };
 	_vector vTargetPos = XMLoadFloat4(&vTemp);
 
-	vTemp = m_pGameInstance->Get_ActiveCameraLook();
+	vTemp = CClientInstance::GetInstance()->Get_ActiveCameraLook();
 	_vector vCamLook = XMLoadFloat4(&vTemp);
 	vCamLook = XMVector3Normalize(vCamLook);
 
-	_float3 vDest = m_pGameInstance->Get_ActiveCameraPos();
+	_float3 vDest = CClientInstance::GetInstance()->Get_ActiveCameraPos();
 	_vector vCamPos = XMLoadFloat3(&vDest);
 
 	_vector vDir = XMVector3Normalize(vTargetPos - vCamPos);

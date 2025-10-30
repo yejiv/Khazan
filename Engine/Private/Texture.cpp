@@ -130,6 +130,14 @@ HRESULT CTexture::Initialize_Clone(void* pArg)
     return S_OK;
 }
 
+ID3D11ShaderResourceView* CTexture::Get_Texture(_uint iTextureIndex)
+{
+    if (iTextureIndex >= m_iNumTextures)
+        return nullptr;
+
+    return m_SRVs[iTextureIndex];
+}
+
 HRESULT CTexture::Bind_Shader_Resource(CShader* pShader, const _char* pConstantName, _uint iTextureIndex)
 {
     if (iTextureIndex >= m_iNumTextures)

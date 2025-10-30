@@ -13,7 +13,8 @@ public:
 	virtual void				Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
 private:
-
+	_float						m_fSpeedPerSec = {};
+	_uint						m_iPrevMovementFlag = {};
 
 public:
 	static CMoveState_Yetuga*	Create();

@@ -1,5 +1,4 @@
 #include "GameObject.h"
-
 #include "GameInstance.h"
 
 CGameObject::CGameObject(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

@@ -52,39 +52,34 @@ void CThreadPool::Add_FireTask(std::function<HRESULT()> task)
 
 void CThreadPool::PushJob(function<void()> job)
 {
+    std::unique_lock<std::mutex> lock(m_Mutex);
     if (m_isStopAll)
-    {
-        throw runtime_error("ThreadPool 사용 중지됨");
-    }
+        throw std::runtime_error("ThreadPool 사용 중지됨");
 
-    {
-    lock_guard<mutex> lock(m_Mutex);
-    m_Tasks.push(move(job));
-    }
-
+    m_Tasks.push(std::move(job));
+    lock.unlock();
     m_CV.notify_one();
 
 }
 
 void CThreadPool::Worker_Thread()
 {
-    CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+    HRESULT hrCo = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+    auto coGuard = std::unique_ptr<void, void(*)(void*)>{ (void*)1, [](void*) { CoUninitialize(); } };
 
-    while (true)
-    {
-        unique_lock<mutex> lock(m_Mutex);
+    for (;;) {
+        std::unique_lock<std::mutex> lock(m_Mutex);
         m_CV.wait(lock, [this] { return m_isStopAll || !m_Tasks.empty(); });
-        if (m_isStopAll && m_Tasks.empty())
-            return;
 
-        function<void()> task = move(m_Tasks.front());
+        if (m_isStopAll && m_Tasks.empty())
+            break; // return 말고 break
+
+        auto task = std::move(m_Tasks.front());
         m_Tasks.pop();
         lock.unlock();
 
         task();
     }
-
-    CoUninitialize();
 }
 
 CThreadPool* CThreadPool::Create(_uint thread_count)

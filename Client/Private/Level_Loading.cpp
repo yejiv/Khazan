@@ -4,7 +4,10 @@
 #include "GameInstance.h"
 
 #include "Level_Title.h"
-#include "Level_Stage1.h"
+#include "Level_HeinMach.h"
+#include "Level_Crevice.h"
+#include "Level_Embars.h"
+#include "Level_Viper.h"
 
 CLevel_Loading::CLevel_Loading(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel { pDevice, pContext }
@@ -41,8 +44,19 @@ void CLevel_Loading::Update(_float fTimeDelta)
 		case LEVEL::TITLE:
  			pNewLevel = CLevel_Title::Create(m_pDevice, m_pContext);
 			break;
-		case LEVEL::STAGE1:
-			pNewLevel = CLevel_Stage1::Create(m_pDevice, m_pContext);
+		case LEVEL::HEINMACH:
+			pNewLevel = CLevel_HeinMach::Create(m_pDevice, m_pContext);
+			/*m_pGameInstance->DeleteOctree();
+			m_pGameInstance->CreateOctree({ 260.f, 0.f, 215.f }, 400.f, 3);*/
+			break;
+		case LEVEL::CREVICE:
+			pNewLevel = CLevel_Crevice::Create(m_pDevice, m_pContext);
+			break;
+		case LEVEL::EMBARS:
+			pNewLevel = CLevel_Embars::Create(m_pDevice, m_pContext);
+			break;
+		case LEVEL::VIPER:
+			pNewLevel = CLevel_Viper::Create(m_pDevice, m_pContext);
 			break;
 		}
 

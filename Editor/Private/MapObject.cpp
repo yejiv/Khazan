@@ -28,6 +28,9 @@ HRESULT CMapObject::Initialize_Clone(void* pArg)
 
     m_eInteractiveType = pDesc->eInteractiveType;
 
+    if (INTERACTIVE_TYPE::CHEST == m_eInteractiveType)
+        m_ItemBox = pDesc->ItemBox;
+
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 
     return S_OK;

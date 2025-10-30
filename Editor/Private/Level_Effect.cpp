@@ -146,6 +146,16 @@ void CLevel_Effect::Create_Element()
 			ImGui::InputFloat2("Size : ", m_fSize);
 			ImGui::InputFloat("Size Ratio : ", &m_fSizeRatio);
 			GetMaksingScrollData();
+			ImGui::Checkbox("Turbulence", &m_bIsTurbulence);
+
+			if (m_bIsTurbulence)
+			{
+				ImGui::Indent();
+				const char* MaskTexture[] = { "texture0", "texture1", "texture2",  "texture3"};
+				ImGui::Combo("Turbulence Textures", reinterpret_cast<int*>(&m_iTurbulenceTextureIdx), MaskTexture, IM_ARRAYSIZE(MaskTexture));
+				ImGui::Unindent();
+			}
+
 			m_EffectType = 0;
 			ImGui::EndTabItem();
 		}
@@ -367,6 +377,9 @@ void CLevel_Effect::Create_PointInstance_Element()
 	data.fMaskScrollSpeed = m_bMaskScrollSpeed;
 	data.bIsScrollVertical = m_bIsScrollVertical;
 	data.bIsScrollInverse = m_bScrollDir;
+
+	data.bIsTurbulence = m_bIsTurbulence;
+	data.iTurbulenceTextureIdx = m_iTurbulenceTextureIdx;
 
 	m_PrefabPrototype->Add_Effect_Element(m_EffectType, &data);
 }
