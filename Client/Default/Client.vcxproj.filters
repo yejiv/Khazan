@@ -43,9 +43,6 @@
     <Filter Include="02.GameObject\Player\Body">
       <UniqueIdentifier>{a0a922f9-093f-4157-9af1-6e30e243bd72}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Levels\Stage1">
-      <UniqueIdentifier>{4230c53b-dd46-4d38-8626-e6d9f39edccc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\Sky">
       <UniqueIdentifier>{87c7892c-d671-42e9-b93c-994ee103ddde}</UniqueIdentifier>
     </Filter>
@@ -361,6 +358,30 @@
     <Filter Include="02.GameObject\Creature\Khazan\Sample\Weapon">
       <UniqueIdentifier>{3beaf210-4418-4b5f-8dba-cf71731a9a86}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04. Sequence">
+      <UniqueIdentifier>{d9f9bdc1-e281-4d8e-86c4-ea9548bc5e2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Sequence\Dummy">
+      <UniqueIdentifier>{f2d6df02-dd3b-4aad-99f3-888f46dc3174}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94. ClientInstance\Camera">
+      <UniqueIdentifier>{33df5b8e-6309-4a8a-8ced-629013b2df9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94. ClientInstance\Camera\Manager">
+      <UniqueIdentifier>{cf0c660e-bce3-46f8-8912-49aa0bb51fa0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\HeinMach">
+      <UniqueIdentifier>{4230c53b-dd46-4d38-8626-e6d9f39edccc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Crevice">
+      <UniqueIdentifier>{c5e80620-0a56-4112-8d9c-340aac0ef0b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Embars">
+      <UniqueIdentifier>{66178168-e7e6-49c4-bc25-67a3c0d66b42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Viper">
+      <UniqueIdentifier>{663bf125-288a-4167-aca7-71e9e34d56d9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -396,8 +417,8 @@
     <ClInclude Include="..\Public\Body_Player.h">
       <Filter>02.GameObject\Player\Body</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Level_Stage1.h">
-      <Filter>01.Levels\Stage1</Filter>
+    <ClInclude Include="..\Public\Level_HeinMach.h">
+      <Filter>01.Levels\HeinMach</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Sky.h">
       <Filter>02.GameObject\Sky</Filter>
@@ -678,6 +699,24 @@
     <ClInclude Include="..\Public\Spear_Khazan_Spear.h">
       <Filter>02.GameObject\Creature\Khazan\Spear\Weapon</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Sequence_Dummy.h">
+      <Filter>04. Sequence\Dummy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Client_Sequence.h">
+      <Filter>99.Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Manager.h">
+      <Filter>94. ClientInstance\Camera\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Crevice.h">
+      <Filter>01.Levels\Crevice</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Embars.h">
+      <Filter>01.Levels\Embars</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Viper.h">
+      <Filter>01.Levels\Viper</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -717,8 +756,8 @@
     <ClCompile Include="..\Private\Body_Player.cpp">
       <Filter>02.GameObject\Player\Body</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Level_Stage1.cpp">
-      <Filter>01.Levels\Stage1</Filter>
+    <ClCompile Include="..\Private\Level_HeinMach.cpp">
+      <Filter>01.Levels\HeinMach</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Sky.cpp">
       <Filter>02.GameObject\Sky</Filter>
@@ -983,6 +1022,21 @@
     </ClCompile>
     <ClCompile Include="..\Private\Spear_Khazan_Spear.cpp">
       <Filter>02.GameObject\Creature\Khazan\Spear\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_Dummy.cpp">
+      <Filter>04. Sequence\Dummy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Manager.cpp">
+      <Filter>94. ClientInstance\Camera\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Crevice.cpp">
+      <Filter>01.Levels\Crevice</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Embars.cpp">
+      <Filter>01.Levels\Embars</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Viper.cpp">
+      <Filter>01.Levels\Viper</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

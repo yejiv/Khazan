@@ -112,11 +112,11 @@ void CDamage_Text::Reset()
 
 void CDamage_Text::Update_WolrdPos(_vector vPos)
 {
-	_float4 vTemp = m_pGameInstance->Get_ActiveCameraLook();
+	_float4 vTemp = CClientInstance::GetInstance()->Get_ActiveCameraLook();
 	_vector vCamLook = XMLoadFloat4(&vTemp);
 	vCamLook = XMVector3Normalize(vCamLook);
 
-	_float3 vDest = m_pGameInstance->Get_ActiveCameraPos();
+	_float3 vDest = CClientInstance::GetInstance()->Get_ActiveCameraPos();
 	_vector vCamPos = XMLoadFloat3(&vDest);
 
 	_vector vDir = XMVector3Normalize(vPos - vCamPos);

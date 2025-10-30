@@ -6,8 +6,8 @@
 #include "RigidBody.h"
 #include "CharacterVirtual.h"
 
-
 #include "Damage_Text.h"
+#include "ClientInstance.h"
 
 #pragma region 인벤토리 삽입 테스트
 #include "UI_Inven.h"
@@ -372,7 +372,7 @@ HRESULT CKhazan_Sample::Ready_PartObjects()
     BodyDesc.pState = &m_iState;
     BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     BodyDesc.pParentTransform = m_pTransformCom;
-    if (FAILED(__super::Add_PartObject(TEXT("Part_Body"), ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Body_Khazan_Sample"), &BodyDesc)))
+    if (FAILED(__super::Add_PartObject(TEXT("Part_Body"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Body_Khazan_Sample"), &BodyDesc)))
         return E_FAIL;
 
     m_pBody = static_cast<CBody_Khazan_Sample*>(Find_PartObject(TEXT("Part_Body")));
@@ -383,7 +383,7 @@ HRESULT CKhazan_Sample::Ready_PartObjects()
     SpearDesc.pState = &m_iState;
     SpearDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     SpearDesc.pParentTransform = m_pTransformCom;
-    if (FAILED(__super::Add_PartObject(TEXT("Part_Weapon_Spear"), ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_GameObject_Spear_Khazan_Sample"), &SpearDesc)))
+    if (FAILED(__super::Add_PartObject(TEXT("Part_Weapon_Spear"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Spear_Khazan_Sample"), &SpearDesc)))
         return E_FAIL;
 
     m_pSpear = static_cast<CSpear_Khazan_Sample*>(Find_PartObject(TEXT("Part_Weapon_Spear")));
@@ -546,4 +546,5 @@ void CKhazan_Sample::Free()
     Safe_Release(m_pCharVirCom);
     Safe_Release(m_pBody);
     Safe_Release(m_pSpear);
+
 }

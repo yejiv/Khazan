@@ -354,9 +354,12 @@ void CMainApp::Free()
 {
 	__super::Free();
 
+	m_pClientInstance->Release_Client();
+
+	Safe_Release(m_pClientInstance);
+
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
-	Safe_Release(m_pClientInstance);
 
 	m_pGameInstance->Release_Engine();
 

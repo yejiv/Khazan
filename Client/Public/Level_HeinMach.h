@@ -5,11 +5,11 @@
 
 NS_BEGIN(Client)
 
-class CLevel_Stage1 final : public CLevel
+class CLevel_HeinMach final : public CLevel
 {
 private:
-	CLevel_Stage1(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	virtual ~CLevel_Stage1() = default;
+	CLevel_HeinMach(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	virtual ~CLevel_HeinMach() = default;
 
 public:
 	virtual HRESULT Initialize() override;
@@ -43,8 +43,9 @@ private:
 
 private:
 	class CClientInstance* m_pClientInstance = { nullptr };
+
 public:
-	static CLevel_Stage1* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CLevel_HeinMach* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;
 };
 

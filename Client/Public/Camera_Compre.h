@@ -1,14 +1,13 @@
 #pragma once
-
 #include "Client_Defines.h"
+#include "Base.h"
 #include "Camera.h"
 
 NS_BEGIN(Engine)
-//class CCharacterVirtual;
+class CCamera;
 NS_END
 
 NS_BEGIN(Client)
-
 class CCamera_Compre final : public CCamera
 {
 public:
