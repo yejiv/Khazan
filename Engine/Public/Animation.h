@@ -9,7 +9,7 @@ class CAnimation final : public CBase
 
 private:
 	CAnimation();
-	//CAnimation(const CAnimation& Prototype);
+	CAnimation(const CAnimation& Prototype);
 	virtual ~CAnimation() = default;
 
 public:
@@ -51,6 +51,7 @@ private:
 	_float						m_fBlendTime = { 0.25f };		//애니메이션 사이 보간에 사용할 시간
 	map<_uint, _matrix>			m_PreAnimationChannelMatrices;	//<뼈 번호, 뼈 행렬>	 // 애니메이션 전환용 마지막 프레임 뼈 행렬 모음. (다시 사용하면 안됨.  move로 넘겨줌)
 
+	_bool						m_isClone = { true };
 private:
 	/*Animation Blend */
 	void		Update_AnimationBlend(const vector<class CBone*>& Bones, _float fTimeDelta);

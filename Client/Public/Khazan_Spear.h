@@ -11,7 +11,7 @@ NS_END
 
 NS_BEGIN(Client)
 
-class CKhazan_Sample final:  public CCreature
+class CKhazan_Spear final:  public CCreature
 {
 public:
 	enum PLAYER_STATE {
@@ -22,6 +22,7 @@ public:
 		ATTACK_FAST = 1 << 3,
 		ATTACK_SET = 1 << 4,
 		ATTACK_ALL = ATTACK_FAST | ATTACK_SET,
+
 
 		END = 1<<5,
 	};
@@ -35,9 +36,9 @@ private:
 	};
 
 private:
-	CKhazan_Sample(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CKhazan_Sample(const CKhazan_Sample& Prototype);
-	virtual ~CKhazan_Sample() = default;
+	CKhazan_Spear(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CKhazan_Spear(const CKhazan_Spear& Prototype);
+	virtual ~CKhazan_Spear() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -51,13 +52,13 @@ public:
 	void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
 	void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
 
-	const _float4x4* Get_BoneSpearFXMatrixPtr() { return &m_SpearFX_WorldMatrix; }
-	_matrix Get_BoneSpearFXMatrix() { return XMLoadFloat4x4(&m_SpearFX_WorldMatrix); }
+	const _float4x4* Get_BoneSpearFXMatrixPtr() { return &m_pSpearFX_WorldMatrix; }
+	_matrix Get_BoneSpearFXMatrix() { return XMLoadFloat4x4(&m_pSpearFX_WorldMatrix); }
 
 
 private:
-	class CBody_Khazan_Sample*	m_pBody = { nullptr };
-	class CSpear_Khazan_Sample* m_pSpear = { nullptr };
+	class CBody_Khazan_Spear*	pBody = { nullptr };
+	class CSpear_Khazan_Spear* pSpear = { nullptr };
 
 	_uint						m_iState = { };
 	_uint						m_iDirState = { MOVE_DIR::RIGHT };
@@ -66,7 +67,7 @@ private:
 	CCharacterVirtual*			m_pCharVirCom = { nullptr };
 	_float4x4*					m_pWeaponR_Matrix = { nullptr };
 	_float4x4*					m_pSpearFX_Matrix = { nullptr };
-	_float4x4					m_SpearFX_WorldMatrix = {};
+	_float4x4					m_pSpearFX_WorldMatrix = {};
 	_matrix						m_SpearOffset_Matrix = {};
 
 	_bool						m_isEnableControl = { true };
@@ -102,7 +103,7 @@ private:
 
 
 public:
-	static CKhazan_Sample* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CKhazan_Spear* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 
