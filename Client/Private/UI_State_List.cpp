@@ -1,6 +1,12 @@
 #include "UI_State_List.h"
 #include "GameInstance.h"
 #include "ClientInstance.h"
+
+#include "UI_TextBox.h"
+#include "UI_Atlas_Icon.h"
+#include "UI_Default_Tex.h"
+#include "UI_State_Button.h"
+
 CUI_State_List::CUI_State_List(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Tap{ pDevice, pContext }
 {
@@ -11,11 +17,37 @@ CUI_State_List::CUI_State_List(const CUI_State_List& Prototype)
 {
 }
 
-void CUI_State_List::Update_Pos(_int iIndex, _float2 vPos, _float fOffSetY)
+void CUI_State_List::Setting_List(_int iIndex, _float2 vPos, _float fOffSetY)
 {
+    m_iIndex = iIndex;
     m_vLocalPos.x = vPos.x;
     m_vLocalPos.y = vPos.y + iIndex * fOffSetY;
 
+    if (m_iIndex == 0)
+    {
+        m_pName_TextBox->Set_Text(TEXT("활력"));
+        m_pStateIcon->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_Bullet_03_Body.png", 2), 2);
+    }
+    else if (m_iIndex == 1)
+    {
+        m_pName_TextBox->Set_Text(TEXT("지구력"));
+        m_pStateIcon->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_Bullet_04_Heart.png", 2), 2);
+    }
+    else if (m_iIndex == 2)
+    {
+        m_pName_TextBox->Set_Text(TEXT("힘"));
+        m_pStateIcon->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_Bullet_07_Strength.png", 2), 2);
+    }
+    else if (m_iIndex == 3)
+    {
+        m_pName_TextBox->Set_Text(TEXT("의지"));
+        m_pStateIcon->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_Bullet_06_Force.png", 2), 2);
+    }
+    else if (m_iIndex == 4)
+    {
+        m_pName_TextBox->Set_Text(TEXT("역량"));
+        m_pStateIcon->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_Bullet_05_Skill.png", 2), 2);
+    }
     __super::Update_Transform(nullptr, m_vWorldPos);
 }
 
@@ -87,6 +119,32 @@ HRESULT CUI_State_List::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID
     if (FAILED(__super::Load_UI(pInData, iPrototypeLevelID, pArg)))
         return E_FAIL;
 
+
+    if (m_szName == "State_List")
+    {
+        m_pButton.resize(2);
+        for (auto child : m_Children)
+        {
+            string strName = child->Get_Name();
+            if (strName == "Level_List_Tex")
+                m_pName_TextBox = static_cast<CUI_TextBox*>(child);
+            else if (strName == "State_List_L" || strName == "State_List_R")
+                m_pTexture.push_back(static_cast<CUI_Default_Tex*>(child));
+            else if (strName == "Level_List_Icon")
+                m_pStateIcon = static_cast<CUI_Atlas_Icon*>(child);
+            else if (strName == "State_Level")
+                m_pCulLevel_TextBox = static_cast<CUI_TextBox*>(child);
+            else if (strName == "State_Level_Up")
+                m_pUpLevel_TextBox = static_cast<CUI_TextBox*>(child);
+            else if (strName == "State_Level_Up")
+                m_pUpIcon = static_cast<CUI_Default_Tex*>(child);
+            else if (strName == "State_Button_UP")
+                m_pButton[0] = static_cast<CUI_State_Button*>(child);
+            else if (strName == "State_Button_Down")
+                m_pButton[1] = static_cast<CUI_State_Button*>(child);
+        }
+    }
+
     return S_OK;
 }
 
@@ -129,6 +187,20 @@ CGameObject* CUI_State_List::Clone(void* pArg)
 void CUI_State_List::Free()
 {
     __super::Free();
+
+    Safe_Release(m_pName_TextBox);
+    Safe_Release(m_pCulLevel_TextBox);
+    Safe_Release(m_pUpLevel_TextBox);
+    Safe_Release(m_pStateIcon);
+    Safe_Release(m_pUpIcon);
+
+    for (auto pButton : m_pButton)
+        Safe_Release(pButton);
+    m_pButton.clear();
+
+    for (auto pTex : m_pTexture)
+        Safe_Release(pTex);
+    m_pTexture.clear();
 
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pTextureCom);

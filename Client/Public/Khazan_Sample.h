@@ -90,6 +90,12 @@ private:
 	HRESULT				Ready_Collision();
 
 private:
+	_int			m_iMaxHp = {};
+	_int			m_iHp = {};
+	_int			m_iMaxStamina = {};
+	_int			m_iStamina = {};
+
+private:
 	inline void		Add_State(_uint i) { m_iState |= i; }
 	inline void		Toggle_State(_uint i) { m_iState ^= i; }
 	inline void		Remove_State(_uint i) { m_iState &= ~i; }

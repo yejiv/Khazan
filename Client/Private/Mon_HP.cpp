@@ -55,7 +55,7 @@ void CMon_HP::Update(_float fTimeDelta)
 
 void CMon_HP::Late_Update(_float fTimeDelta)
 {
-	if (!m_isVisible)
+	if (!m_isVisible || !m_isActive)
 		return;
 
 	CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
@@ -170,9 +170,9 @@ void CMon_HP::Update_WorldPos()
 	_float fDot = XMVectorGetX(XMVector3Dot(vCamLook, vDir));
 
 	if (fDot <= 0)
-		m_isVisible = false;
+		m_isActive = false;
 	else
-		m_isVisible = true;
+		m_isActive = true;
 
 	_matrix OldVeiw = m_pGameInstance->Get_Transform_Matrix(D3DTS::VIEW);
 	_matrix OldProj = m_pGameInstance->Get_Transform_Matrix(D3DTS::PROJ);
