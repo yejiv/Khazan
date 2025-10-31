@@ -26,7 +26,7 @@ namespace Client
 
 	enum class TEAM { GOBLIN, YETI, END };
 
-	enum class DATATYPE { ITEM, EQUIPEFFECT, OTHEREFFECT, END };
+	enum class DATATYPE { ITEM, EQUIPEFFECT, OTHEREFFECT,KHAZAN_SPEAR_ANIM ,END };
 }
 
 extern HWND g_hWnd;
