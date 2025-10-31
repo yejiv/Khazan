@@ -388,6 +388,12 @@
     <Filter Include="02.GameObject\UI\State\ETC">
       <UniqueIdentifier>{fc22b869-8155-4de2-b6ce-bcd319a3e06c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Projectile">
+      <UniqueIdentifier>{016b08f1-9acb-46f9-accb-93ce5a6ece77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Projectile\Yetuga">
+      <UniqueIdentifier>{0141891e-b7df-4dcc-8da3-729637bf512b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -738,6 +744,12 @@
     <ClInclude Include="..\public\UI_State.h">
       <Filter>02.GameObject\UI\State</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Projectile.h">
+      <Filter>02.GameObject\Projectile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Projectile_Yetuga.h">
+      <Filter>02.GameObject\Projectile\Yetuga</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1073,6 +1085,12 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_State.cpp">
       <Filter>02.GameObject\UI\State</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile.cpp">
+      <Filter>02.GameObject\Projectile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile_Yetuga.cpp">
+      <Filter>02.GameObject\Projectile\Yetuga</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

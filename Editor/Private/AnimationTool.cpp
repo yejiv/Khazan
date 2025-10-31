@@ -706,7 +706,11 @@ void CAnimationTool::Tool_AnimationInfo_Widget()
     if (m_isEnble_AnimInfo)
     {
         ImGui::Text("strName: %s", setup->strName.c_str());
-        ImGui::Checkbox("isLoop", &setup->isLoop);
+        if (ImGui::Checkbox("isLoop", &setup->isLoop))
+        {
+            _bool a = &setup->isLoop;
+            int aaa = 0;
+        }
 
         ImGui::Text("iDirection: %d", setup->iDirection);
         ImGui::SameLine();
