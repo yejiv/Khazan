@@ -91,7 +91,7 @@ HRESULT CLevel_Map::Ready_Layer_Camera(const _wstring& strLayerTag)
 	MapDesc.fNear = 0.1f;
 
 	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), strLayerTag,
-		ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Camera_Map"), &MapDesc), E_FAIL);
+		ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Camera_Map"), TIME_CHANNEL::WORLD, &MapDesc), E_FAIL);
 
 	return S_OK;
 }
@@ -111,7 +111,7 @@ HRESULT CLevel_Map::Ready_Layer_Preview(const _wstring& strLayerTag)
 	Desc.fRotationPerSec = XMConvertToRadians(90.f);
 
 	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), strLayerTag,
-		ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Preview"), &Desc), E_FAIL);
+		ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Preview"), TIME_CHANNEL::WORLD, &Desc), E_FAIL);
 
 	return S_OK;
 }
@@ -728,7 +728,7 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 				ObjectDesc.iSubLevel = m_iAddSubLevel;
 
 				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj"),
-					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), );
+					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"), TIME_CHANNEL::WORLD, &ObjectDesc), );
 
 				CProp* pObject_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj")));
 				CHECK_NULLPTR_MSG(pObject_Prop, TEXT("엥"), );
@@ -857,7 +857,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 					BladeNexusDesc.eInteractiveType = INTERACTIVE_TYPE::CHECKPOINT;										// 상호 작용 오브젝트 타입
 
 					CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
-						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BladeNexus"), &BladeNexusDesc), );
+						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BladeNexus"), TIME_CHANNEL::WORLD, &BladeNexusDesc), );
 				}
 				else if ("BigChest" == m_Prototypes_Inter[m_iIndex_PrtInter]) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
 				{
@@ -872,7 +872,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 					BigChestDesc.eInteractiveType = INTERACTIVE_TYPE::CHEST;										// 상호 작용 오브젝트 타입
 
 					CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
-						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BigChest"), &BigChestDesc), );
+						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BigChest"), TIME_CHANNEL::WORLD, &BigChestDesc), );
 				}
 
 				CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));
@@ -3210,7 +3210,7 @@ _bool CLevel_Map::Objects_Load_Binary()
 		ObjectDesc.iSubLevel = iSaveLevel;
 
 		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj"),
-			ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), false);
+			ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"), TIME_CHANNEL::WORLD, &ObjectDesc), false);
 
 		CProp* pProp = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj")));
 		CHECK_NULLPTR_MSG(pProp, TEXT("[OBJECT LOAD] 오브젝트 찾기 실패"), false);
@@ -3282,7 +3282,7 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 				BladeNexusDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
 
 				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
-					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BladeNexus"), &BladeNexusDesc), false);
+					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BladeNexus"), TIME_CHANNEL::WORLD, &BladeNexusDesc), false);
 			}
 			else if (INTERACTIVE_TYPE::CHEST == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
 			{
@@ -3300,7 +3300,7 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 				CHECK_FALSE(ReadFile(hObjectFile, &BigChestDesc.ItemBox, sizeof(CMapObject::ITEMBOX_DESC), &dwByte, nullptr), false);
 
 				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
-					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BigChest"), &BigChestDesc), false);
+					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BigChest"), TIME_CHANNEL::WORLD, &BigChestDesc), false);
 			}
 
 			CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));

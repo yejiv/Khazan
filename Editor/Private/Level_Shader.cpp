@@ -396,7 +396,7 @@ HRESULT CLevel_Shader::Ready_Layer_Camera()
 	Desc.fMouseSensor = 0.1f;
 
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_Camera"),
-		ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Camera_Shader"), &Desc)))
+		ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Camera_Shader"), TIME_CHANNEL::WORLD, &Desc)))
 		return E_FAIL;
 
 	return S_OK;
@@ -415,7 +415,7 @@ HRESULT CLevel_Shader::Ready_Layer_BackGround()
 	memcpy(Desc.szModelName, szPrototypeModelTag, MAX_PATH);
 
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_BackGround"),
-		ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Prop_Object"), &Desc)))
+		ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Prop_Object"), TIME_CHANNEL::WORLD, &Desc)))
 		return E_FAIL;
 
 	return S_OK;
@@ -509,6 +509,7 @@ HRESULT CLevel_Shader::Ready_Layer_MapObject(const _wstring& strLayerTag, const 
 				TEXT("Layer_MapObject"),
 				ENUM_CLASS(eCurrentLevel),
 				TEXT("Prototype_GameObject_Prop_Object"),
+				TIME_CHANNEL::WORLD,
 				&ObjectDesc // 캡처된 값의 주소 -> 안전
 			),
 			E_FAIL
@@ -592,6 +593,7 @@ HRESULT CLevel_Shader::Ready_Layer_MapObject_Inst(const _wstring& strLayerTag, c
 					TEXT("Layer_MapObject_Inst"),
 					ENUM_CLASS(curLevel),
 					TEXT("Prototype_GameObject_Prop_Static"),
+					TIME_CHANNEL::WORLD,
 					&objDesc // 캡처된 값의 주소 -> 안전
 				),
 				E_FAIL

@@ -349,6 +349,9 @@
     <Filter Include="01.Utility\93.Sequence\Interface">
       <UniqueIdentifier>{0dce9e87-4e0f-4a18-919a-9f7fb1d9fdc6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\18.Hit">
+      <UniqueIdentifier>{b728cd5d-c96c-443b-8d01-2404ac46d718}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">

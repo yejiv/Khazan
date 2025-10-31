@@ -68,8 +68,8 @@ HRESULT CLevel_HeinMach::Initialize()
 			if (HEINMACH_3RD_BLADENEXUS == i)
 				continue;*/
 			// ¿¹Åõ°¡ ¸Ê »¡¸® ·Îµå 
-			if (HEINMACH_YETUGA == i)
-				continue;
+			/*if (HEINMACH_YETUGA == i)
+				continue;*/
 			
 			CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), i, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		}
@@ -258,7 +258,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster(const _wstring& strLayerTag)
 	MonsterDesc.strName = "Yetuga";
 
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-		ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Yetuga"), &MonsterDesc)))
+		ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Yetuga"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
 		return E_FAIL;
 
 	return S_OK;
@@ -267,7 +267,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster(const _wstring& strLayerTag)
 HRESULT CLevel_HeinMach::Ready_Layer_Test(const _wstring& strLayerTag)
 {
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-		ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Sample"))))
+		ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Sample"), TIME_CHANNEL::PLAYER)))
 		return E_FAIL;
 
 	return S_OK;
@@ -385,7 +385,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject(const _wstring& strLayerTag, cons
 			return S_OK;
 			}));
 		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
-			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), E_FAIL);
+			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
 
 		//CGameObject* pObject = dynamic_cast<CGameObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc));
 
@@ -604,14 +604,14 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Interactive(const _wstring& strLa
 		switch (eType)
 		{
 		case INTERACTIVE_TYPE::CHECKPOINT:
-			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_BladeNexus"), &ObjectDesc), E_FAIL);
+			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_BladeNexus"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
 			break;
 		case INTERACTIVE_TYPE::CHEST:
 		{
 			BOX_ITEMS ItemBoxDesc = {};
 			CHECK_FALSE(ReadFile(hFile, &ItemBoxDesc, sizeof(BOX_ITEMS), &dwByte, nullptr), E_FAIL);
 			ObjectDesc.pOtherDesc = &ItemBoxDesc;
-			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_BigChest"), &ObjectDesc), E_FAIL);
+			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_BigChest"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
 			break;
 		}
 		default:
@@ -702,7 +702,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Inst(const _wstring& strLayerTag,
 		//	);
 		//	});
 		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
-			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Static"), &ObjectDesc), E_FAIL);
+			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Static"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
 	}
 	CloseHandle(hFile);
 

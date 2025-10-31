@@ -1458,7 +1458,7 @@ void CAnimationTool::Add_Model(_uint iLevelIndex)
     desc.isAnim = m_isAnim;
     desc.renderGroup = static_cast<RENDERGROUP>(m_iCurrentRenderGroup);
     if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(iLevelIndex, TEXT("Layer_Model"),
-        iLevelIndex, TEXT("Prototype_GameObject_Editor_Animation_TestModel"), &desc)))
+        iLevelIndex, TEXT("Prototype_GameObject_Editor_Animation_TestModel"), TIME_CHANNEL::WORLD, &desc)))
     {
         MSG_BOX(TEXT("게임 오브젝트 클론 실패!"));
         return;
