@@ -206,6 +206,12 @@ void CShadow::Clear_DSVs()
 	for (_uint i = 0; i < m_Cascade.iNumCascades; ++i)
 		m_pContext->ClearDepthStencilView(m_ShadowDSVs[i], D3D11_CLEAR_DEPTH, 1.f, 0);
 }
+void CShadow::Update_Cascade_CameraInfo(_float fNear, _float fFar)
+{
+	m_fCameraNear = fNear;
+	m_fCameraFar = fFar;
+}
+
 #ifdef _DEBUG
 HRESULT CShadow::Ready_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY)
 {

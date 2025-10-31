@@ -162,6 +162,7 @@ public:
 	HRESULT Bind_ShadowDSV(_uint iIndex);
 	HRESULT				Bind_Shadow_ShaderResources(class CShader* pShader);
 	void				Clear_ShadowDSVs();
+	void				Update_Cascade_CameraInfo(_float fNear, _float fFar);
 
 #ifdef _DEBUG
 	CASCADE_CONFIG		Get_CascadeConfig();

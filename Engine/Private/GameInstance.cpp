@@ -668,6 +668,11 @@ void CGameInstance::Clear_ShadowDSVs()
 	m_pShadow->Clear_DSVs();
 }
 
+void CGameInstance::Update_Cascade_CameraInfo(_float fNear, _float fFar)
+{
+	m_pShadow->Update_Cascade_CameraInfo(fNear, fFar);
+}
+
 #ifdef _DEBUG
 HRESULT CGameInstance::Ready_CSM_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY)
 {
