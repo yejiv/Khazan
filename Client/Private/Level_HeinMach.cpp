@@ -40,6 +40,8 @@ HRESULT CLevel_HeinMach::Initialize()
 	//// CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV10"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);		// 3¹øÂ° ±Í°Ë
 	//// CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV11"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);		// ¿¹Åõ°¡ ¸Ê
 
+	CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), 0, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+
 	//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV11"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);		// ¿¹Åõ°¡ ¸Ê
 
 	m_pGameInstance->Add_FireTask([this]() {
@@ -75,8 +77,8 @@ HRESULT CLevel_HeinMach::Initialize()
 		return S_OK;
 		});
 
-	/*m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); });
-	m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); });*/
+	m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); });
+	m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); });
 
 
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))

@@ -310,34 +310,49 @@ namespace Engine
 	}
 
 
-	// (Centripetal) Catmull-Rom
-	inline XMVECTOR CatmullRom_Centripetal(XMVECTOR P0, XMVECTOR P1, XMVECTOR P2, XMVECTOR P3, float s01, float s12, float s23, float s)
-	{
-		// s in [0,1] -> u in [t1,t2]
-		float t0 = 0.0f;
-		float t1 = t0 + s01;
-		float t2 = t1 + s12;
-		float t3 = t2 + s23;
-		float u = t1 + s * (t2 - t1);
-
-		auto Lerp = [](XMVECTOR a, XMVECTOR b, float t) { return XMVectorLerp(a, b, t); };
-
-		XMVECTOR A1 = Lerp(P0, P1, (u - t0) / (t1 - t0));
-		XMVECTOR A2 = Lerp(P1, P2, (u - t1) / (t2 - t1));
-		XMVECTOR A3 = Lerp(P2, P3, (u - t2) / (t3 - t2));
-
-		XMVECTOR B1 = Lerp(A1, A2, (u - t0) / (t2 - t0));
-		XMVECTOR B2 = Lerp(A2, A3, (u - t1) / (t3 - t1));
-
-		return Lerp(B1, B2, (u - t1) / (t2 - t1));
+	static inline int Wrap(int i, int n) { return (i % n + n) % n; }
+	static inline float DampAlpha(float smooth, float dt) {
+		// exp(-smooth*dt) 기반 지수 스무딩
+		return 1.f - expf(-smooth * dt);
 	}
 
-	// 거리기반 가중치(α=0.5)
-	inline float ChordLenAlpha(XMVECTOR a, XMVECTOR b, float alpha = 0.5f)
-	{
-		float d = XMVectorGetX(XMVector3Length(XMVectorSubtract(a, b)));
+	static float ChordLenAlpha(XMVECTOR a, XMVECTOR b, float alpha = 0.5f) {
+		float d = XMVectorGetX(XMVector3Length(a - b));
+		d = (d < 1e-6f ? 1e-6f : d);
 		return powf(d, alpha);
 	}
+	static XMVECTOR CatmullCR(XMVECTOR P0, XMVECTOR P1, XMVECTOR P2, XMVECTOR P3,
+		float s01, float s12, float s23, float s) {
+		float t0 = 0.f, t1 = t0 + s01, t2 = t1 + s12, t3 = t2 + s23;
+		float u = t1 + s * (t2 - t1);
+
+		auto L = [](XMVECTOR a, XMVECTOR b, float t) { return XMVectorLerp(a, b, t); };
+		float d10 = (t1 - t0), d21 = (t2 - t1), d32 = (t3 - t2), d20 = (t2 - t0), d31 = (t3 - t1);
+		d10 = max(d10, 1e-6f); d21 = max(d21, 1e-6f); d32 = max(d32, 1e-6f);
+		d20 = max(d20, 1e-6f); d31 = max(d31, 1e-6f);
+
+		XMVECTOR A1 = L(P0, P1, (u - t0) / d10), A2 = L(P1, P2, (u - t1) / d21), A3 = L(P2, P3, (u - t2) / d32);
+		XMVECTOR B1 = L(A1, A2, (u - t0) / d20), B2 = L(A2, A3, (u - t1) / d31);
+		return L(B1, B2, (u - t1) / max(t2 - t1, 1e-6f));
+	}
+	static XMVECTOR QuatFromLook(const XMFLOAT4& la) {
+		XMVECTOR look = XMVector3Normalize(XMLoadFloat4(&la));
+		if (XMVectorGetX(XMVector3Length(look)) < 1e-6f) look = XMVectorSet(0, 0, 1, 0);
+
+		XMVECTOR up = XMVectorSet(0, 1, 0, 0);
+		if (fabsf(XMVectorGetX(XMVector3Dot(up, look))) > 0.999f) up = XMVectorSet(1, 0, 0, 0);
+
+		XMVECTOR right = XMVector3Normalize(XMVector3Cross(up, look));
+		up = XMVector3Normalize(XMVector3Cross(look, right));
+
+		XMMATRIX R(
+			XMVectorSet(XMVectorGetX(right), XMVectorGetY(right), XMVectorGetZ(right), 0),
+			XMVectorSet(XMVectorGetX(up), XMVectorGetY(up), XMVectorGetZ(up), 0),
+			XMVectorSet(XMVectorGetX(look), XMVectorGetY(look), XMVectorGetZ(look), 0),
+			XMVectorSet(0, 0, 0, 1));
+		return XMQuaternionNormalize(XMQuaternionRotationMatrix(R));
+	}
+
 }
 
 #endif // Engine_Function_h__

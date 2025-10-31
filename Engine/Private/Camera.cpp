@@ -68,47 +68,99 @@ HRESULT CCamera::Render()
 
 void CCamera::Set_Animation(_wstring strAnimationTag)
 {
-	m_pCurrentAnimation = Get_Animations(strAnimationTag);
-	if ((*m_pCurrentAnimation).size() < 3)
-	{
-		m_pCurrentAnimation = nullptr;
-		return;
+	//m_pCurrentAnimation = Get_Animations(strAnimationTag);
+	//if ((*m_pCurrentAnimation).size() < 3)
+	//{
+	//	m_pCurrentAnimation = nullptr;
+	//	return;
+	//}
+	//	
+
+	//m_isAnimation = true;
+	//m_iAnimationIndex = 0;
+	//m_vOldLook = m_pTransformCom->Get_State(STATE::LOOK);
+
+	//m_tPosCatmullrom.v1 = XMVectorSet(
+	//	(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.x,
+	//	(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.y,
+	//	(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.z,
+	//	1.f
+	//);
+	//m_tPosCatmullrom.v2 = XMVectorSet(
+	//	(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.x,
+	//	(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.y,
+	//	(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.z,
+	//	1.f
+	//);
+	//m_tPosCatmullrom.v3 = XMVectorSet(
+	//	(*m_pCurrentAnimation)[m_iAnimationIndex + 1].vTranslation.x,
+	//	(*m_pCurrentAnimation)[m_iAnimationIndex + 1].vTranslation.y,
+	//	(*m_pCurrentAnimation)[m_iAnimationIndex + 1].vTranslation.z,
+	//	1.f
+	//);
+	//m_tPosCatmullrom.v4 = XMVectorSet(
+	//	(*m_pCurrentAnimation)[m_iAnimationIndex + 2].vTranslation.x,
+	//	(*m_pCurrentAnimation)[m_iAnimationIndex + 2].vTranslation.y,
+	//	(*m_pCurrentAnimation)[m_iAnimationIndex + 2].vTranslation.z,
+	//	1.f
+	//);
+	auto it = m_Animations.find(strAnimationTag);
+	if (it == m_Animations.end() || it->second.size() < 2) {
+		m_pCurrentAnimation = nullptr; m_isAnimation = false; return;
 	}
-		
+
+	m_RuntimeKeys = it->second;
+	m_pCurrentAnimation = &m_RuntimeKeys;
+
+	_vector vEntryPos = m_pTransformCom->Get_State(STATE::POSITION);
+	_vector vEntryLook = XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK));
+	vEntryLook = XMVectorSetW(vEntryLook, 0.f);
+
+	auto makeLookF4 = [](_vector look) {
+		_float4 f; XMStoreFloat4(&f, XMVectorSetW(XMVector3Normalize(look), 0.f)); return f;
+		};
+
+	const int N = (int)m_RuntimeKeys.size();
+
+	
+	for (size_t i = 0; i < m_RuntimeKeys.size(); i++)
+	{
+		if (m_RuntimeKeys[i].isCurPos)
+		{
+			_float3 p;
+			XMStoreFloat3(&p, vEntryPos);
+			m_RuntimeKeys[i].vTranslation = p;
+			m_RuntimeKeys[i].vLookAt = makeLookF4(vEntryLook);
+
+			if (i == 0)
+			{
+				m_vCurPos = vEntryPos;
+				m_vCurQ = vEntryLook;
+			}
+		}
+		else {
+			_vector v0Pos = XMLoadFloat3(&m_RuntimeKeys[i].vTranslation);
+			_vector v0Look = XMLoadFloat4(&m_RuntimeKeys[i].vLookAt);
+
+
+			if (i == 0)
+			{
+				m_vCurPos = XMVectorSetW(v0Pos, 1.f);
+				m_vCurQ = XMVectorSetW(v0Look, 0.f);
+			}
+
+		}
+	}
 
 	m_isAnimation = true;
-	m_iAnimationIndex = 0;
-	m_vOldLook = m_pTransformCom->Get_State(STATE::LOOK);
-
-	m_tPosCatmullrom.v1 = XMVectorSet(
-		(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.x,
-		(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.y,
-		(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.z,
-		1.f
-	);
-	m_tPosCatmullrom.v2 = XMVectorSet(
-		(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.x,
-		(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.y,
-		(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.z,
-		1.f
-	);
-	m_tPosCatmullrom.v3 = XMVectorSet(
-		(*m_pCurrentAnimation)[m_iAnimationIndex + 1].vTranslation.x,
-		(*m_pCurrentAnimation)[m_iAnimationIndex + 1].vTranslation.y,
-		(*m_pCurrentAnimation)[m_iAnimationIndex + 1].vTranslation.z,
-		1.f
-	);
-	m_tPosCatmullrom.v4 = XMVectorSet(
-		(*m_pCurrentAnimation)[m_iAnimationIndex + 2].vTranslation.x,
-		(*m_pCurrentAnimation)[m_iAnimationIndex + 2].vTranslation.y,
-		(*m_pCurrentAnimation)[m_iAnimationIndex + 2].vTranslation.z,
-		1.f
-	);
+	m_isLoop = false;  // 컷씬이면 보통 false
+	m_iSeg = 0;
+	m_fSegTime = 0.f;
 }
 
 void CCamera::Play_Animation(_float fTimeDelta)
 {
-	if (m_isAnimation && m_pCurrentAnimation)
+	/*if (m_isAnimation && m_pCurrentAnimation)
 	{
 		m_fCurrentTrackPosition = fTimeDelta * (*m_pCurrentAnimation)[m_iAnimationIndex].fSpeed;
 		m_fAnimationRatio += m_fCurrentTrackPosition / (*m_pCurrentAnimation)[m_iAnimationIndex].fTrackPosition;
@@ -171,7 +223,90 @@ void CCamera::Play_Animation(_float fTimeDelta)
 			}
 			m_fAnimationRatio = 0.f;
 		}
+	}*/
+	if (!m_isAnimation || !m_pCurrentAnimation || m_pCurrentAnimation->size() < 2) return;
+
+	const _int iCurrAniSize = (_int)m_pCurrentAnimation->size();
+
+	// ── 세그 시간 증가 & carry ──
+	_float fSpeed = max(1e-4f, (*m_pCurrentAnimation)[m_iSeg].fSpeed);
+	_float fTrack = max(1e-4f, (*m_pCurrentAnimation)[m_iSeg].fTrackPosition);
+	_bool isCurPos = (*m_pCurrentAnimation)[m_iSeg].isCurPos;
+	_float fDuration = fTrack / fSpeed;
+
+	m_fSegTime += fTimeDelta;
+	while (m_fSegTime >= fDuration - 1e-6f) {
+		m_fSegTime -= fDuration;
+		m_iSeg++;
+		if (m_iSeg >= iCurrAniSize - 1) {
+			if (m_isLoop) m_iSeg = 0;
+			else { m_iSeg = iCurrAniSize - 2; m_isAnimation = false; m_fSegTime = fDuration; break; }
+		}
+		// 다음 세그 duration 갱신
+		fSpeed = max(1e-4f, (*m_pCurrentAnimation)[m_iSeg].fSpeed);
+		fTrack = max(1e-4f, (*m_pCurrentAnimation)[m_iSeg].fTrackPosition);
+		isCurPos = (*m_pCurrentAnimation)[m_iSeg].isCurPos;
+		fDuration = fTrack / fSpeed;
 	}
+	if (isCurPos)
+	{
+		_vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
+		(*m_pCurrentAnimation)[m_iSeg].vTranslation = _float3(vPos.m128_f32[0], vPos.m128_f32[1], vPos.m128_f32[2]);
+		m_vCurPos = XMVectorSet(vPos.m128_f32[0], vPos.m128_f32[1], vPos.m128_f32[2], 1.f);
+	}
+
+	// ── 현재 세그 파라미터 ──
+	_float fSeg = std::clamp(m_fSegTime / fDuration, 0.f, 1.f); // 시간 기반 진행도(중간은 일정속도)
+
+	auto idx = [&](int i)->int { return m_isLoop ? Wrap(i, iCurrAniSize) : std::clamp(i, 0, iCurrAniSize - 1); };
+
+	_int iSeg0 = m_iSeg - 1, iSeg1 = m_iSeg, iSeg2 = m_iSeg + 1, iSeg3 = m_iSeg + 2;
+
+	XMVECTOR P1 = XMLoadFloat3(&(*m_pCurrentAnimation)[idx(iSeg0)].vTranslation);
+	_vector P2 = XMLoadFloat3(&(*m_pCurrentAnimation)[idx(iSeg1)].vTranslation);
+	_vector P0, P3;
+	if (m_isLoop) {
+		P0 = XMLoadFloat3(&(*m_pCurrentAnimation)[idx(iSeg0)].vTranslation);
+		P3 = XMLoadFloat3(&(*m_pCurrentAnimation)[idx(iSeg3)].vTranslation);
+	}
+	else {
+		P0 = (iSeg0 >= 0) ? XMLoadFloat3(&(*m_pCurrentAnimation)[iSeg0].vTranslation) : (P1 * 2.f - P2);
+		P3 = (iSeg3 < iCurrAniSize) ? XMLoadFloat3(&(*m_pCurrentAnimation)[iSeg3].vTranslation) : (P2 * 2.f - P1);
+	}
+
+	float s01 = ChordLenAlpha(P0, P1), s12 = ChordLenAlpha(P1, P2), s23 = ChordLenAlpha(P2, P3);
+
+	// ── 목표 위치(부드러운 곡선) ──
+	_vector vPosTarget = CatmullCR(P0, P1, P2, P3, s01, s12, s23, fSeg);
+	vPosTarget = XMVectorSetW(vPosTarget, 1.f);
+
+	// ── 목표 회전(룩 SLERP) ──
+	_vector qFrom = QuatFromLook((*m_pCurrentAnimation)[idx(iSeg1)].vLookAt);
+	_vector qTo = QuatFromLook((*m_pCurrentAnimation)[idx(iSeg2)].vLookAt);
+	if (XMVectorGetX(XMVector4Dot(qFrom, qTo)) < 0.f) qTo = XMVectorNegate(qTo); // 반구 통일
+	_vector vQuatTarget = XMQuaternionNormalize(XMQuaternionSlerp(qFrom, qTo, fSeg));
+
+	// ── 최소 스무딩(감쇠) 적용 ──
+	float fAlphaPos = DampAlpha(m_fPosSmooth, fTimeDelta);
+	float fAlphaRot = DampAlpha(m_fRotSmooth, fTimeDelta);
+
+	m_vCurPos = XMVectorLerp(m_vCurPos, vPosTarget, fAlphaPos);
+	m_vCurQ = XMQuaternionNormalize(XMQuaternionSlerp(m_vCurQ, vQuatTarget, fAlphaRot));
+
+	// ── 트랜스폼 반영 ──
+	XMMATRIX R = XMMatrixRotationQuaternion(m_vCurQ);
+	_vector right = XMVector3Normalize(R.r[0]);
+	_vector up = XMVector3Normalize(R.r[1]);
+	_vector look = XMVector3Normalize(R.r[2]);
+
+	right = XMVectorSetW(right, 0.f);
+	up = XMVectorSetW(up, 0.f);
+	look = XMVectorSetW(look, 0.f);
+
+	m_pTransformCom->Set_State(STATE::RIGHT, right);
+	m_pTransformCom->Set_State(STATE::UP, up);
+	m_pTransformCom->Set_State(STATE::LOOK, look);
+	m_pTransformCom->Set_State(STATE::POSITION, m_vCurPos);
 }
 
 void CCamera::Create_Animation(_wstring strAnimationTag)
@@ -204,7 +339,7 @@ void CCamera::Create_Animation_Item(_wstring strAnimationTag)
 		return;
 
 	CAMERA_KEYFRAME Desc{};
-	Desc.fTrackPosition = 0.f;
+	Desc.fTrackPosition = static_cast<_float>(iter->second.size());
 	_vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
 	_vector vLook = m_pTransformCom->Get_State(STATE::LOOK);
 	Desc.vTranslation = _float3(vPos.m128_f32[0] , vPos.m128_f32[1], vPos.m128_f32[2]);

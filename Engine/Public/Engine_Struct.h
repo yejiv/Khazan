@@ -98,6 +98,7 @@ namespace Engine
 		float fSpeed;
 
 		float fTrackPosition;
+		bool isCurPos = { false }; // 현재 카메라 위치 기준으로 할것인지
 	}CAMERA_KEYFRAME;
 
 	typedef struct tagCameraEvent
