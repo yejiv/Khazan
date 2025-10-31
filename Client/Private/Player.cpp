@@ -210,6 +210,11 @@ HRESULT CPlayer::Ready_Collision()
     tCharVirDesc.fRadius = 0.5f;
     tCharVirDesc.fHeight = 0.5f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
+    //tCharVirDesc.fPredictiveContactDistance = 0.02f;
+    //tCharVirDesc.vStickToFloorStepDown = _float3(0.0f, -0.15f, 0.0f);
+    //tCharVirDesc.vWalkStairsStepUp = _float3(0.f, 0.2f, 0.f);
+    //tCharVirDesc.fWalkStairsMinStepForward = 0.03f;
+    //tCharVirDesc.fWalkStairsStepForwardTest = 0.2f;
     m_tCollisionDesc.pGameObject = this;
     //pCollDesc.pInfo = ?? // 작성하기
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;

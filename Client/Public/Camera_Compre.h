@@ -42,7 +42,28 @@ public:
 	HRESULT RayCast(_float fTimeDelta);
 
 public:
+	_vector Cal_CamPos(_float fTimeDelta, _vector& vTargetPos, _vector& vDir);
+
+public:
+	_float UpdateY_Stable(_float fCurrentY, _float fDesiredY, _float fTimeDelta);
+
+	void  SetYSmoothTime(_float fTime) { m_fYSmoothTime = fTime; }
+	void  SetYDeadZone(_float fDeadZone) { m_fDeadZone = fDeadZone; }
+	void  SetYMaxRiseFall(_float fRise, _float fFall) { m_fMaxRise = fRise; m_fMaxFall = fFall; }
+	void  ResetYState(_float fY = 0.f) { m_fYVel = 0.f; m_isInited = false; m_fSmoothY = fY; }
+
+public:
 	CAMERA_COMPRE_DESC Get_Desc();
+
+private:
+	_float m_fYVel = { 0.f };
+	_bool m_isInited = { false };
+	_float m_fSmoothY = { 0.f };
+
+	_float m_fYSmoothTime = { 0.16f }; // 감쇠 시간
+	_float m_fDeadZone = { 0.1f }; // 미세 요철 무시
+	_float m_fMaxRise = { 5.f }; // 초당 상승 한도
+	_float m_fMaxFall = { 9.f }; // 초당 하강한도
 
 public:
 	static CCamera_Compre* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

@@ -26,6 +26,7 @@ public:
 private:
 	LEVEL				m_eNextLevelID = { LEVEL::END };
 	class CLoader*		m_pLoader = { nullptr };
+	class CClientInstance* m_pClientInstance = { nullptr };
 
 private:
 	HRESULT Ready_GameObjects();

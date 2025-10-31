@@ -15,6 +15,9 @@ CCamera_Controller::CCamera_Controller()
 
 HRESULT CCamera_Controller::Initialize()
 {
+	for (auto level : m_isSelectLevel)
+		level = false;
+
 	m_tCreateCameraDesc.vEye = _float4(0.f, 20.f, -15.f, 1.f);
 	m_tCreateCameraDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
 	m_tCreateCameraDesc.fFovy = 60.0f;
@@ -46,11 +49,6 @@ void CCamera_Controller::Update(_float fTimeDelta)
 
 HRESULT CCamera_Controller::Ready_ImGui()
 {
-	CGameObject* pPlayer = m_pGameInstance->Get_BackGameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Player"));
-	CTransform* pTransform = dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")));
-
-	_matrix pMatrix = XMLoadFloat4x4(pTransform->Get_WorldMatrixPtr());
-
 	m_pGameInstance->AddWidget(TEXT("Camera"), [this]() {
 		Ready_ImGui_Create();
 		Ready_ImGui_List();
@@ -59,6 +57,7 @@ HRESULT CCamera_Controller::Ready_ImGui()
 		Ready_ImGui_Active_Camera_Animation_Item();
 		Ready_ImGui_Active_Camera_Event_Item();
 		Ready_Guizmo();
+		Ready_Level();
 		});
 	return S_OK;
 }
@@ -524,7 +523,41 @@ void CCamera_Controller::Ready_Guizmo()
 	//ImGui::End();
 }
 
+void CCamera_Controller::Ready_Level()
+{
+	ImGui::Begin("Select Level");
+	static const struct { const char* label; LEVEL value; } kItems[] = {
+	{ "HEINMACH", LEVEL::HEINMACH },
+	{ "CREVICE",  LEVEL::CREVICE  },
+	{ "EMBARS",   LEVEL::EMBARS   },
+	{ "VIPER",    LEVEL::VIPER    },
+	};
 
+	// 현재 선택을 int로 보유(라디오 그룹은 int 포인터 사용 권장)
+	int iCurrent = static_cast<int>(m_eCurrentLevel);
+
+	for (const auto& it : kItems)
+	{
+		const int v_button = static_cast<int>(it.value);
+		// 동일 int*를 공유하면 "그룹"으로 동작 (하나만 선택됨)
+		if (ImGui::RadioButton(it.label, &iCurrent, v_button))
+		{
+			m_eCurrentLevel = static_cast<LEVEL>(iCurrent); // ← 대입!
+		}
+	}
+
+	ImGui::End();
+}
+
+void CCamera_Controller::Ready_Player()
+{
+}
+
+void CCamera_Controller::CameraTool_Clear()
+{
+	m_iListSelectCamera = 0;
+	m_strListSelectAnimation = TEXT("");
+}
 
 HRESULT CCamera_Controller::Ready_Camera(const _wstring& strLayerTag)
 {

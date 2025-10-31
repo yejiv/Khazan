@@ -177,6 +177,14 @@ namespace Engine
 		FOG_NOISE_DESC	Noise;
 	}FOG_CONFIG;
 
+	typedef struct tagOutlineConfig
+	{
+		XMFLOAT3	vColor;
+		float		fSize;
+		float		fAlpha;
+		float		fBias;
+	}OUTLINE_CONFIG;
+
 	typedef struct tagPointInstanceParams
 	{
 		XMFLOAT4 vInitTranslation; 
