@@ -14,7 +14,8 @@ HRESULT CDB_Manager::Load_Data(DATATYPE eType, const _tchar* pFilePath)
 		Load_Equip_EffectDB(pFilePath);
 	else if (eType == DATATYPE::OTHEREFFECT)
 		Load_Other_EffectDB(pFilePath);
-
+	else if (eType == DATATYPE::STATE)
+		Load_StateDB(pFilePath);
 	return S_OK;
 }
 
@@ -190,6 +191,47 @@ HRESULT CDB_Manager::Load_Other_EffectDB(const _tchar* pFilePath)
 		data.strText = Read_WString(ss);
 
 		m_OtherEffectData.emplace(ID, data);
+	}
+
+	return S_OK;
+}
+
+HRESULT CDB_Manager::Load_StateDB(const _tchar* pFilePath)
+{
+	_wstring wText = Load_UTF8ToWString(pFilePath);
+
+	if (wText.empty())
+	{
+		MSG_BOX(TEXT("CSV 파일 로드 실패"));
+		return E_FAIL;
+	}
+
+	wstringstream fileStream(wText);
+	_wstring line = {};
+	_bool bHeader = true;
+
+	while (getline(fileStream, line))
+	{
+		if (bHeader)
+		{
+			bHeader = false;
+			continue;
+		}
+
+		wstringstream ss(line);
+		STATE_DATA data{};
+
+		_int ID = data.iID = Read_UInt(ss);
+		data.iType_1 = Read_UInt(ss);
+		data.iValue_1 = Read_UInt(ss);
+		data.iType_2 = Read_UInt(ss);
+		data.iValue_2 = Read_UInt(ss);
+		data.iType_3 = Read_UInt(ss);
+		data.fValue_3 = Read_float(ss);
+		data.iType_4 = Read_UInt(ss);
+		data.fValue_4 = Read_float(ss);
+
+		m_StateData.emplace(ID, data);
 	}
 
 	return S_OK;

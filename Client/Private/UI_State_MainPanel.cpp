@@ -2,7 +2,6 @@
 #include "GameInstance.h"
 #include "ClientInstance.h"
 
-#include "UI_State.h"
 #include "UI_State_Panel.h"
 
 #include "UI_TextBox.h"
@@ -16,11 +15,12 @@ CUI_State_MainPanel::CUI_State_MainPanel(const CUI_State_MainPanel& Prototype)
 {
 }
 
-HRESULT CUI_State_MainPanel::Setting_PanelLevel(_int iPanelType, UI_PLAYER_STATE_DATA* Data)
+HRESULT CUI_State_MainPanel::Setting_PanelLevel(_int iPanelType, UI_PLAYER_STATE_DATA* Data, UI_PLAYER_STATE_DATA* UpData)
 {
     m_iPanelType = iPanelType;
     m_pData = Data;
 
+    m_pUpData = UpData;
     if (m_iPanelType == ENUM_CLASS(CUI_State::STATE_PANEL::LEVEL))
     {
         for (auto child : m_Children)
@@ -34,6 +34,12 @@ HRESULT CUI_State_MainPanel::Setting_PanelLevel(_int iPanelType, UI_PLAYER_STATE
             else if (child->Get_Name() == "Up_Count")
             {
                 m_pValue_Text.emplace("Up_Count", static_cast<CUI_TextBox*>(child));
+                Safe_AddRef(child);
+                continue;
+            }
+            else if (child->Get_Name() == "Up_Title")
+            {
+                m_pValue_Text.emplace("Up_Title", static_cast<CUI_TextBox*>(child));
                 Safe_AddRef(child);
                 continue;
             }
@@ -186,6 +192,99 @@ HRESULT CUI_State_MainPanel::Setting_PanelLevel(_int iPanelType, UI_PLAYER_STATE
         }
     }
     return S_OK;
+}
+
+void CUI_State_MainPanel::Setting_Type(CUI_State::UI_TYPE eType, CUIObject* pParent)
+{
+    if (m_iPanelType == ENUM_CLASS(CUI_State::STATE_PANEL::LEVEL))
+    {
+        if (CUI_State::UI_TYPE::DEFAULT == eType)
+        {
+            m_pValue_Text.at("Up_Count")->Update_Visible(false);
+            m_pValue_Text.at("Up_Title")->Update_Visible(false);
+        }
+        else
+        {
+            m_pValue_Text.at("Up_Count")->Update_Visible(true);
+            m_pValue_Text.at("Up_Title")->Update_Visible(true);
+        }
+    }
+    else if (m_iPanelType == ENUM_CLASS(CUI_State::STATE_PANEL::LACHRYMA))
+    {
+        if (CUI_State::UI_TYPE::DEFAULT == eType)
+        {
+            m_vLocalPos = { -616.f, 285.f };
+            Update_Transform(pParent, m_vLocalPos);
+        }
+        else
+        {
+            m_vLocalPos = { -616.f, 215.f };
+            Update_Transform(pParent, m_vLocalPos);
+        }
+    }
+
+}
+
+void CUI_State_MainPanel::State_Hover(pair<_int, _float> Index)
+{
+    PLAYTER_STATE eState = static_cast<PLAYTER_STATE>(Index.first);
+    string strStg = {};
+
+    if (eState == PLAYTER_STATE::MAXHP) strStg = "DefaultState_List_Hp";
+    else if (eState == PLAYTER_STATE::MAXSTAMINA) strStg = "DefaultState_List_Stamin";
+    else if (eState == PLAYTER_STATE::ATK) strStg = "DefaultState_List_Damage";
+    else if (eState == PLAYTER_STATE::DEF) strStg = "DefaultState_List_Def";
+    else if (eState == PLAYTER_STATE::WEIGHT) strStg = "DefaultState_List_Weight";
+    else if (eState == PLAYTER_STATE::AGILE) strStg = "DefaultState_List_Agile";
+    else if (eState == PLAYTER_STATE::STAMINAATK) strStg = "AddState_List_Atk";
+    else if (eState == PLAYTER_STATE::STAMINAREGEN) strStg = "AddState_List_Regen";
+    else if (eState == PLAYTER_STATE::EVASION_STAMINADOWN) strStg = "AddState_List_Min";
+    else if (eState == PLAYTER_STATE::DAMAGE_STAMINADOWN) strStg = "AddState_List_MinDamage";
+    else if (eState == PLAYTER_STATE::GUARD_STAMINADOWN) strStg = "AddState_List_GuardDamage";
+    else if (eState == PLAYTER_STATE::FIRE)
+    {
+        m_pState_Panel.at("Elemental_List_Fire")->State_Hover();
+        m_pState_Panel.at("Elemental_List_Water")->State_Hover();
+        m_pState_Panel.at("Elemental_List_Lightning")->State_Hover();
+        m_pState_Panel.at("Elemental_List_Earth")->State_Hover();
+        m_pState_Panel.at("Elemental_List_Chaos")->State_Hover();
+        m_pState_Panel.at("Elemental_List_Disease")->State_Hover();
+        m_pState_Panel.at("Elemental_List_Poison")->State_Hover();
+        return;
+    }
+    m_pState_Panel.at(strStg)->State_Hover();
+}
+
+void CUI_State_MainPanel::State_On(pair<_int, _float> Index)
+{
+
+    PLAYTER_STATE eState = static_cast<PLAYTER_STATE>(Index.first);
+
+    string strStg = {};
+
+    if (eState == PLAYTER_STATE::MAXHP) strStg = "DefaultState_List_Hp";
+    else if (eState == PLAYTER_STATE::MAXSTAMINA) strStg = "DefaultState_List_Stamin";
+    else if (eState == PLAYTER_STATE::ATK) strStg = "DefaultState_List_Damage";
+    else if (eState == PLAYTER_STATE::DEF) strStg = "DefaultState_List_Def";
+    else if (eState == PLAYTER_STATE::WEIGHT) strStg = "DefaultState_List_Weight";
+    else if (eState == PLAYTER_STATE::AGILE) strStg = "DefaultState_List_Agile";
+    else if (eState == PLAYTER_STATE::STAMINAATK) strStg = "AddState_List_Atk";
+    else if (eState == PLAYTER_STATE::STAMINAREGEN) strStg = "AddState_List_Regen";
+    else if (eState == PLAYTER_STATE::EVASION_STAMINADOWN) strStg = "AddState_List_Min";
+    else if (eState == PLAYTER_STATE::DAMAGE_STAMINADOWN) strStg = "AddState_List_MinDamage";
+    else if (eState == PLAYTER_STATE::GUARD_STAMINADOWN) strStg = "AddState_List_GuardDamage";
+    else if (eState == PLAYTER_STATE::FIRE)
+    {
+        m_pState_Panel.at("Elemental_List_Fire")->State_On(Index.second);
+        m_pState_Panel.at("Elemental_List_Water")->State_On(Index.second);
+        m_pState_Panel.at("Elemental_List_Lightning")->State_On(Index.second);
+        m_pState_Panel.at("Elemental_List_Earth")->State_On(Index.second);
+        m_pState_Panel.at("Elemental_List_Chaos")->State_On(Index.second);
+        m_pState_Panel.at("Elemental_List_Disease")->State_On(Index.second);
+        m_pState_Panel.at("Elemental_List_Poison")->State_On(Index.second);
+        return;
+    }
+    m_pState_Panel.at(strStg)->State_On(Index.second);
 }
 
 HRESULT CUI_State_MainPanel::Initialize_Prototype(_uint iLevel)

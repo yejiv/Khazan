@@ -19,6 +19,7 @@ private:
 	unordered_map<_uint, ITEM_DATA>			m_ItemData = {};
 	unordered_map<_uint, EQUIPITEM_DATA>	m_EquipEffectData = {};
 	unordered_map<_uint, OTHERITEM_DATA>	m_OtherEffectData = {};
+	unordered_map<_uint, STATE_DATA>		m_StateData = {};
 
 private:
 	_wstring								Load_UTF8ToWString(const wstring& filePath);	//UTF8 º¯È¯
@@ -29,6 +30,7 @@ private:
 	HRESULT									Load_ItemDB(const _tchar* pFilePath);
 	HRESULT									Load_Equip_EffectDB(const _tchar* pFilePath);
 	HRESULT									Load_Other_EffectDB(const _tchar* pFilePath);
+	HRESULT									Load_StateDB(const _tchar* pFilePath);
 
 
 public:
@@ -64,5 +66,13 @@ inline const OTHERITEM_DATA* CDB_Manager::Get_Data<OTHERITEM_DATA>(_uint iID) co
 	auto Data = m_OtherEffectData.find(iID);
 	return (Data != m_OtherEffectData.end()) ? &Data->second : nullptr;
 }
+
+template <>
+inline const STATE_DATA* CDB_Manager::Get_Data<STATE_DATA>(_uint iID) const
+{
+	auto Data = m_StateData.find(iID);
+	return (Data != m_StateData.end()) ? &Data->second : nullptr;
+}
+
 
 NS_END

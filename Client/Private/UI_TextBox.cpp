@@ -42,7 +42,8 @@ void CUI_TextBox::Update(_float fTimeDelta)
 
 void CUI_TextBox::Late_Update(_float fTimeDelta)
 {
-	CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
+	if(m_isVisible)
+		CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
 }
 
 HRESULT CUI_TextBox::Render()

@@ -82,6 +82,19 @@ namespace Client
 		_wstring			strText;
 	}OTHERITEM_DATA;
 
+	typedef struct tag_State_DATA
+	{
+		_uint				iID;
+		_uint				iType_1;
+		_uint				iValue_1;
+		_uint				iType_2;
+		_uint				iValue_2;
+		_uint				iType_3;
+		_float				fValue_3;
+		_uint				iType_4;
+		_float				fValue_4;
+	}STATE_DATA;
+
 	typedef struct tagBoxItems
 	{
 		_int iItem_0{};

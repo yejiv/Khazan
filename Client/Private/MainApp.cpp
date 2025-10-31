@@ -278,7 +278,8 @@ HRESULT CMainApp::Ready_DB()
 	CHECK_FAILED(m_pClientInstance->Load_Data(DATATYPE::ITEM, TEXT("../Bin/Data/DB/Item_DB.csv")),E_FAIL);
 	CHECK_FAILED(m_pClientInstance->Load_Data(DATATYPE::EQUIPEFFECT, TEXT("../Bin/Data/DB/EquipItem_DB.csv")), E_FAIL);
 	CHECK_FAILED(m_pClientInstance->Load_Data(DATATYPE::OTHEREFFECT, TEXT("../Bin/Data/DB/OtherItem_DB.csv")), E_FAIL);
-		
+	CHECK_FAILED(m_pClientInstance->Load_Data(DATATYPE::STATE, TEXT("../Bin/Data/DB/State_DB.csv")), E_FAIL);
+
 	return S_OK;
 }
 
