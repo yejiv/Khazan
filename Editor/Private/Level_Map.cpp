@@ -21,6 +21,9 @@ HRESULT CLevel_Map::Initialize()
 
 	CHECK_FAILED(Ready_DefaultImGui_For_MapTool(), E_FAIL);
 
+	// 렉땜시 false
+	m_pGameInstance->Set_EnableSSAO(false);
+
 	return S_OK;
 }
 
@@ -378,6 +381,46 @@ HRESULT CLevel_Map::Ready_Main_Window()
 				}
 
 				SEPARATOR;
+
+				if (ImGui::Button("RENDER OPTION"))
+					m_isRenderOption = !m_isRenderOption;
+
+				SEPARATOR;
+
+				if (true == m_isRenderOption)
+				{
+					if (ImGui::Button("SSAO ON"))
+						m_pGameInstance->Set_EnableSSAO(true);
+					SAMELINE;
+					if (ImGui::Button("SSAO OFF"))
+						m_pGameInstance->Set_EnableSSAO(false);
+					SEPARATOR;
+					if (ImGui::Button("SHADOW ON"))
+						m_pGameInstance->Set_EnableShadow(true);
+					SAMELINE;
+					if (ImGui::Button("SHADOW OFF"))
+						m_pGameInstance->Set_EnableShadow(false);
+					SEPARATOR;
+					if (ImGui::Button("FOG ON"))
+						m_pGameInstance->Set_EnableFog(true);
+					SAMELINE;
+					if (ImGui::Button("FOG OFF"))
+						m_pGameInstance->Set_EnableFog(false);
+					SEPARATOR;
+					if (ImGui::Button("OUTLINE ON"))
+						m_pGameInstance->Set_EnableOutline(true);
+					SAMELINE;
+					if (ImGui::Button("OUTLINE OFF"))
+						m_pGameInstance->Set_EnableOutline(false);
+					SEPARATOR;
+					if (ImGui::Button("TOONSHADE ON"))
+						m_pGameInstance->Set_EnableToonShade(true);
+					SAMELINE;
+					if (ImGui::Button("TOONSHADE OFF"))
+						m_pGameInstance->Set_EnableToonShade(false);
+					SEPARATOR;
+				}
+
 				ImGui::Text("LIGHT");
 				if (ImGui::Button("LIGHT EDIT"))
 				{
@@ -1204,37 +1247,43 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 
 				if (ImGui::Button("CLEAR"))
 					ZeroMemory(m_szSearchObjectName, sizeof(m_szSearchObjectName));
+				SAMELINE;
+				if (ImGui::Button("LIST VIEW"))
+					m_isObjectListView = !m_isObjectListView;
 
-				ITEMWIDTH(300.f);
-				if (ImGui::BeginListBox("##prop_object_list"))
+				if (true == m_isObjectListView)
 				{
-					if (m_iObjectListIndex >= m_ObjectList.size())
-						m_iObjectListIndex = m_ObjectList.size() - 1;
-
-					string strSearchName = m_szSearchObjectName;
-					transform(strSearchName.begin(), strSearchName.end(), strSearchName.begin(), ::tolower);		// 검색할 모델을 소문자로 변환
-
-					for (_uint i = 0; i < m_ObjectList.size(); ++i)
+					ITEMWIDTH(300.f);
+					if (ImGui::BeginListBox("##prop_object_list"))
 					{
-						_wstring strModelName = m_ObjectList[i]->Get_ModelName();
-						transform(strModelName.begin(), strModelName.end(), strModelName.begin(), ::tolower);		// 찾을 모델을 소문자로 변환
+						if (m_iObjectListIndex >= m_ObjectList.size())
+							m_iObjectListIndex = m_ObjectList.size() - 1;
 
-						if (true == strSearchName.empty() || strModelName.find(AnsiToWString(strSearchName)) != string::npos)
+						string strSearchName = m_szSearchObjectName;
+						transform(strSearchName.begin(), strSearchName.end(), strSearchName.begin(), ::tolower);		// 검색할 모델을 소문자로 변환
+
+						for (_uint i = 0; i < m_ObjectList.size(); ++i)
 						{
-							_bool isSelected = (m_iObjectListIndex == i);
+							_wstring strModelName = m_ObjectList[i]->Get_ModelName();
+							transform(strModelName.begin(), strModelName.end(), strModelName.begin(), ::tolower);		// 찾을 모델을 소문자로 변환
 
-							string strModelName = WStringToAnsi(m_ObjectList[i]->Get_ModelName()) + "##id_%d";
+							if (true == strSearchName.empty() || strModelName.find(AnsiToWString(strSearchName)) != string::npos)
+							{
+								_bool isSelected = (m_iObjectListIndex == i);
 
-							_char szModelName[MAX_PATH] = {};
+								string strModelName = WStringToAnsi(m_ObjectList[i]->Get_ModelName()) + "##id_%d";
 
-							sprintf_s(szModelName, strModelName.c_str(), i);
+								_char szModelName[MAX_PATH] = {};
 
-							if (ImGui::Selectable(szModelName, isSelected))
-								m_iObjectListIndex = i;
+								sprintf_s(szModelName, strModelName.c_str(), i);
+
+								if (ImGui::Selectable(szModelName, isSelected))
+									m_iObjectListIndex = i;
+							}
 						}
-					}
 
-					ImGui::EndListBox();
+						ImGui::EndListBox();
+					} SEPARATOR;
 				} SEPARATOR;
 
 				if (0 != m_ObjectList.size())
@@ -1303,7 +1352,7 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 
 				SEPARATOR;
 			}
-			else
+			else if (true == m_isObjectListView)
 			{
 				if (0 != m_ObjectList.size() && m_iObjectListIndex < m_ObjectList.size())
 				{
