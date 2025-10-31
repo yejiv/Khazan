@@ -388,6 +388,12 @@
     <Filter Include="94.ClientInstance\Camera\Controller">
       <UniqueIdentifier>{ddd3541e-7243-4f90-a57b-80b45d25d080}</UniqueIdentifier>
     </Filter>
+    <Filter Include="94.ClientInstance\Shader">
+      <UniqueIdentifier>{0c39bca6-3a43-4515-b0e0-d2a86ae695d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\Shader\Shader_Controller">
+      <UniqueIdentifier>{38ef54a1-e721-4966-9df1-08a358535e44}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -747,6 +753,9 @@
     <ClInclude Include="..\public\UI_State_MainPanel.h">
       <Filter>02.GameObject\UI\State\ETC</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Shader_Controller.h">
+      <Filter>94.ClientInstance\Shader\Shader_Controller</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1091,6 +1100,9 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_State_MainPanel.cpp">
       <Filter>02.GameObject\UI\State\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Shader_Controller.cpp">
+      <Filter>94.ClientInstance\Shader\Shader_Controller</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

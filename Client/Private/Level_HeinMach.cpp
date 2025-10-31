@@ -34,13 +34,13 @@ HRESULT CLevel_HeinMach::Initialize()
 	//	return E_FAIL;*/
 
 
-	m_futures.push_back(m_pGameInstance->Add_Task([this]() {CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV0"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);	}));	// 1π¯¬∞ ±Õ∞À	
+	//m_futures.push_back(m_pGameInstance->Add_Task([this]() {CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV0"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);	}));	// 1π¯¬∞ ±Õ∞À	
 	//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV0"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 	//// CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV5"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);		// 2π¯¬∞ ±Õ∞À
 	//// CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV10"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);		// 3π¯¬∞ ±Õ∞À
 	//// CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV11"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);		// øπ≈ı∞° ∏ 
 
-	CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), 0, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), 0, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); }));
 
 	//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV11"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);		// øπ≈ı∞° ∏ 
 

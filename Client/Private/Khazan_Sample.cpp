@@ -79,7 +79,7 @@ HRESULT CKhazan_Sample::Initialize_Clone(void* pArg)
     if (pUI_HP != nullptr)
     {
         Safe_AddRef(pUI_HP);
-        pUI_HP->Setting_HP(m_pTransformCom->Get_WorldMatrixPtr(), { 0.f, 150.f }, &m_iHp, &m_iMaxHp, &m_iStamina, &m_iMaxStamina);
+        pUI_HP->Setting_HP(m_pTransformCom->Get_WorldMatrixPtr(), { 0.f, 250.f }, &m_iHp, &m_iMaxHp, &m_iStamina, &m_iMaxStamina);
 
         m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), pUI_HP);
     }
