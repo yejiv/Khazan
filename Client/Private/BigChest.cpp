@@ -381,6 +381,9 @@ void CBigChest::Free()
     Safe_Release(m_pStaticCom);
     Safe_Release(m_pTriggerCom);
 
-    m_pGuide->Set_IsDead(true);
-    Safe_Release(m_pGuide);
+    if (nullptr != m_pGuide)
+    {
+        m_pGuide->Set_IsDead(true);
+        Safe_Release(m_pGuide);
+    }
 }
