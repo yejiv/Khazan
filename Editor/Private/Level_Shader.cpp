@@ -391,7 +391,7 @@ HRESULT CLevel_Shader::Ready_Layer_Camera()
 	Desc.fFovy = XMConvertToRadians(60.0f);
 	Desc.fNear = 0.1f;
 	Desc.fFar = 1000.f;
-	Desc.fSpeedPerSec = 10.f;
+	Desc.fSpeedPerSec = 25.f;
 	Desc.fRotationPerSec = XMConvertToRadians(90.0f);
 	Desc.fMouseSensor = 0.1f;
 
@@ -410,7 +410,7 @@ HRESULT CLevel_Shader::Ready_Layer_BackGround()
 
 	CProp_Object::PROP_OBJECT_DESC Desc = {};
 	Desc.eLevel = LEVEL::SHADER;
-	XMStoreFloat4x4(&Desc.WorldMatrix, XMMatrixScaling(0.05f, 0.05f, 0.05f) * XMMatrixTranslation(0.f, -5.f, 20.f));
+	XMStoreFloat4x4(&Desc.WorldMatrix, XMMatrixScaling(0.5f, 0.5f, 0.5f) * XMMatrixTranslation(0.f, 0.f, 200.f));
 	_tchar szPrototypeModelTag[MAX_PATH] = TEXT("Prototype_Component_Model_Rock");
 	memcpy(Desc.szModelName, szPrototypeModelTag, MAX_PATH);
 
