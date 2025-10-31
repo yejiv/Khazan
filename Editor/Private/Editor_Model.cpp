@@ -262,7 +262,7 @@ _bool CEditor_Model::Play_Animation(_float fTimeDelta)
     if (m_isSetAnimNextPlay)
     {
         _uint iIndex = static_cast<_uint>(m_Model_Data.vecAnimationSets[m_iCurSelectSetAnimIndex].vecAnimIndices[m_iCurSetAnimIndex]);
-        Set_Animation(iIndex, m_Model_Data.vecAnimation[m_iCurSelectSetAnimIndex].animSetup.isLoop);
+        Set_Animation(iIndex, m_Model_Data.vecAnimation[m_Model_Data.vecAnimationSets[m_iCurSelectSetAnimIndex].vecAnimIndices[m_iCurSelectSetAnimIndex]].animSetup.isLoop);
         m_isSetAnimNextPlay = false;
     }
 

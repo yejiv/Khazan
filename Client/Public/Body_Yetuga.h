@@ -20,6 +20,8 @@ public:
 
 	}BODY_DESC;
 
+public:
+	_float3					Get_ThrowPoint();
 
 private:
 	CBody_Yetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -56,6 +58,9 @@ private:
 	CBody*					m_pRH_BodyCom = { nullptr }; // 오른손
 	CBody*					m_pLH_BodyCom = { nullptr }; // 왼손
 	CBody*					m_pBack_BodyCom = { nullptr }; // 등
+
+private:
+	_float3					m_vThrowPoint = {};
 
 public:
 	static CBody_Yetuga*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

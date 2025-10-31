@@ -60,13 +60,14 @@ namespace Engine
 		bool isInstance{ false };
 		bool isShadow{ false };
 		bool isBackGround{ false };
+		bool isPlant{ false };
 
 		tagMapObjectProperties() = default;
 
 		operator bool() const noexcept
 		{
 			return isSnow || isCollider || isIce ||
-				isInstance || isShadow || isBackGround;
+				isInstance || isShadow || isBackGround || isPlant;
 		}
 
 	}MAPOBJECT_PROPERTIES;
@@ -175,6 +176,14 @@ namespace Engine
 		XMFLOAT4		vColor;
 		FOG_NOISE_DESC	Noise;
 	}FOG_CONFIG;
+
+	typedef struct tagOutlineConfig
+	{
+		XMFLOAT3	vColor;
+		float		fSize;
+		float		fAlpha;
+		float		fBias;
+	}OUTLINE_CONFIG;
 
 	typedef struct tagPointInstanceParams
 	{

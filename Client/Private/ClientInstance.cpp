@@ -8,6 +8,7 @@
 
 #ifdef _DEBUG
 #include "Debug_Manager.h"
+#include "Camera_Controller.h"
 #endif
 
 
@@ -39,6 +40,10 @@ HRESULT CClientInstance::Initialize(ID3D11Device** ppDevice, ID3D11DeviceContext
 #ifdef _DEBUG
 	m_pDebug_Manager = CDebug_Manager::Create();
 	if (m_pDebug_Manager == nullptr)
+		return E_FAIL;
+
+	m_pCamera_Controller = CCamera_Controller::Create();
+	if (m_pCamera_Controller == nullptr)
 		return E_FAIL;
 #endif
 
@@ -155,9 +160,23 @@ void CClientInstance::Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag,
 {
 	m_pCamera_Manager->Save_Json(iLevelIndex, strCameraTag, pOutData);
 }
+void CClientInstance::Clear_CameraManager(_uint iLevelIndex)
+{
+	m_pCamera_Manager->Clear(iLevelIndex);
+}
 #pragma endregion
 
 
+#ifdef _DEBUG
+#pragma region CAMERA_MANAGER
+
+void CClientInstance::CameraTool_Clear()
+{
+	m_pCamera_Controller->CameraTool_Clear();
+}
+
+#pragma endregion
+#endif
 void CClientInstance::Release_Client()
 {
 	Safe_Release(m_pUI_Manager);
@@ -166,6 +185,7 @@ void CClientInstance::Release_Client()
 
 #ifdef _DEBUG	
 	Safe_Release(m_pDebug_Manager);
+	Safe_Release(m_pCamera_Controller);
 #endif 
 
 	Safe_Release(m_pDevice);

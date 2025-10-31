@@ -9,14 +9,16 @@ Texture2D g_DiffuseTexture, g_NormalTexture, g_SpecularTexture;
 // 박준영이 임시로 추가해놓음
 texture2D g_EmissiveTexture;
 
-
-
 /* 모델 전체 뼈기준(x) */
 /* 특정 메시에 영향ㅇ르 주는 뼈들 */
 matrix g_BoneMatrices[512];
 
 float g_fEmissiveIntensity;
 bool g_isEnableEmissive, g_isEnableBloom;
+
+// Outline
+float g_fOutlineSize = 0.001f;
+float3 g_vOutlineColor = { 1.f, 0.f, 1.f };
 
 struct VS_IN
 {
@@ -88,7 +90,6 @@ struct VS_OUT_SHADOW
     float4 vProjPos : TEXCOORD0;    
 };
 
-
 VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
 {
     VS_OUT_SHADOW Out;
@@ -111,6 +112,40 @@ VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
     
     Out.vPosition = mul(vPosition, matWVP);
     Out.vProjPos = Out.vPosition;
+    
+    return Out;
+}
+
+struct VS_OUT_OUTLINE
+{
+    float4 vPosition : SV_POSITION;
+    float fDepth : TEXCOORD0;
+};
+
+VS_OUT_OUTLINE VS_MAIN_OUTLINE(VS_IN In)
+{
+    VS_OUT_OUTLINE Out;
+      /* 정점의 로컬위치 * 월드 * 뷰 * 투영 */ 
+    
+    float fWeightW = 1.f - (In.vBlendWeight.x + In.vBlendWeight.y + In.vBlendWeight.z);
+    
+    matrix BoneMatrix =
+        g_BoneMatrices[In.vBlendIndex.x] * In.vBlendWeight.x +
+        g_BoneMatrices[In.vBlendIndex.y] * In.vBlendWeight.y +
+        g_BoneMatrices[In.vBlendIndex.z] * In.vBlendWeight.z +
+        g_BoneMatrices[In.vBlendIndex.w] * fWeightW;
+    
+    vector vPosition = mul(float4(In.vPosition, 1.f), BoneMatrix);
+    
+    vPosition.xyz += In.vNormal * g_fOutlineSize;
+    
+    float4x4 matWV, matWVP;
+    
+    matWV = mul(g_WorldMatrix, g_ViewMatrix);
+    matWVP = mul(matWV, g_ProjMatrix);
+    
+    Out.vPosition = mul(vPosition, matWVP);
+    Out.fDepth = Out.vPosition.z / Out.vPosition.w;
     
     return Out;
 }
@@ -169,6 +204,27 @@ PS_OUT PS_MAIN_NONPICK(PS_IN In)
     return Out;
 }
 
+struct PS_IN_OUTLINE
+{
+    float4 vPosition : SV_POSITION;
+    float fDepth : TEXCOORD0;
+};
+
+struct PS_OUT_OUTLINE
+{
+    float4 vOutline : SV_TARGET0;
+};
+
+PS_OUT_OUTLINE PS_MAIN_OUTLINE(PS_IN_OUTLINE In)
+{
+    PS_OUT_OUTLINE Out = (PS_OUT_OUTLINE) 0;
+    
+    Out.vOutline.rgb = g_vOutlineColor;
+    Out.vOutline.a = In.fDepth;
+    
+    return Out;
+}
+
 PS_OUT PS_MAIN_DEBUG(PS_IN In)
 {
     // NonBlend 객체
@@ -187,7 +243,7 @@ PS_OUT PS_MAIN_DEBUG(PS_IN In)
     //  Out.vSpecular = vMtrlSpecular;
     
     if (true == g_isEnableEmissive)
-        Out.vEmissive.rgb = Out.vDiffuse * g_fEmissiveIntensity; // 밝기 강도
+        Out.vEmissive.rgb = Out.vDiffuse.rgb * g_fEmissiveIntensity; // 밝기 강도
     
     if (true == g_isEnableBloom)
         Out.vEmissive.a = 1.f;
@@ -214,6 +270,8 @@ PS_OUT_EMISSIVE PS_MAIN_DEBUG_EMISSIVE(PS_IN In)
     if (vMtrlDiffuse.a < 0.3f)
         discard;
 
+    Out.vPostScene = vMtrlDiffuse;
+    
     // =============== NonLight ===============
     
     // PostScene만 기록
@@ -289,6 +347,17 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN_SHADOW();
         GeometryShader = NULL;
         PixelShader = NULL;
+    }
+
+    pass Outline
+    {
+        SetRasterizerState(RS_Cull_CW);
+        SetDepthStencilState(DSS_Outline, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN_OUTLINE();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_OUTLINE();
     }
 
     pass Debug

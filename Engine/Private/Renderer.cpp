@@ -56,6 +56,8 @@ HRESULT CRenderer::Initialize()
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Fog"), 1050.0f, 150.0f, 300.f, 300.f)))
         return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Outline"), 750.0f, 450.0f, 300.f, 300.f)))
+        return E_FAIL;
 #endif
 
     return S_OK;
@@ -83,6 +85,9 @@ HRESULT CRenderer::Draw()
             return E_FAIL;
 
     if (FAILED(Render_NonBlend()))
+        return E_FAIL;
+
+    if (FAILED(Render_Outline()))
         return E_FAIL;
 
     if (isEnableSSAO())
@@ -201,6 +206,27 @@ HRESULT CRenderer::Render_NonBlend()
     }
 
     m_RenderObjects[ENUM_CLASS(RENDERGROUP::NONBLEND)].clear();
+
+    if (FAILED(m_pGameInstance->End_MRT()))
+        return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CRenderer::Render_Outline()
+{
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Outline"))))
+        return E_FAIL;
+
+    for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::OUTLINE)])
+    {
+        if (nullptr != pRenderObject)
+            pRenderObject->Render_Outline();
+
+        Safe_Release(pRenderObject);
+    }
+
+    m_RenderObjects[ENUM_CLASS(RENDERGROUP::OUTLINE)].clear();
 
     if (FAILED(m_pGameInstance->End_MRT()))
         return E_FAIL;
@@ -519,7 +545,22 @@ HRESULT CRenderer::Render_Combined()
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Fog"), m_pShader, "g_FogTexture")))
         return E_FAIL;
 
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Outline"), m_pShader, "g_OutlineTexture")))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
+        return E_FAIL;
+
     if (FAILED(m_pShader->Bind_Bool("g_isEnableFog", &m_isEnableFog)))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_Bool("g_isEnableOutline", &m_isEnableOutline)))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_RawValue("g_fOutlineAlpha", &m_OutlineConfig.fAlpha, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_RawValue("g_fOutlineBias", &m_OutlineConfig.fBias, sizeof(_float))))
         return E_FAIL;
 
     m_pShader->Begin(8);
@@ -603,6 +644,10 @@ HRESULT CRenderer::Ready_RenderTargets()
     if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Fog"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
+    /* For.Target_Outline */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Outline"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 1.f))))
+        return E_FAIL;
+
     return S_OK;
 }
 
@@ -658,6 +703,10 @@ HRESULT CRenderer::Ready_MRTs()
 
     /* For.MRT_Fog */
     if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Fog"), TEXT("Target_Fog"))))
+        return E_FAIL;
+
+    /* For.MRT_Outline */
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Outline"), TEXT("Target_Outline"))))
         return E_FAIL;
 
     return S_OK;

@@ -20,7 +20,7 @@ vector g_vMtrlAmbient = { 1.f, 1.f, 1.f, 1.f }, g_vMtrlSpecular = { 1.f, 1.f, 1.
 
 // ===== Textures =====
 Texture2D g_DiffuseTexture, g_NormalTexture, g_DepthTexture, g_ShadeTexture, g_SpecularTexture, g_EmissiveTexture;
-Texture2D g_LightDepthTexture, g_PostSceneTexture, g_BlurXTexture, g_BloomTexture, g_FogTexture;
+Texture2D g_LightDepthTexture, g_PostSceneTexture, g_BlurXTexture, g_BloomTexture, g_FogTexture, g_OutlineTexture;
 
 // ===== Cascade Shadow =====
 int g_iTextureArrayIndex;
@@ -58,9 +58,14 @@ float4 g_vFogColor = { 1.f, 1.f, 1.f, 1.f };
 bool g_isEnableFog;
 float g_fTimeDelta;
 bool g_isEnableNoise, g_isWorldFog;
-
 float2 g_vNoiseSpeed, g_vNoiseScale;
 float g_fNoiseStrength, g_fNoiseContrast;
+
+// ===== Outline =====
+float g_fOutlineAlpha = { 1.f };
+float g_fOutlineBias = { 0.01f };
+bool g_isEnableOutline;
+float g_fCameraFar = { 1000.f };
 
 struct VS_IN
 {
@@ -456,7 +461,7 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
     vector vEmissiveDesc = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vBloomDesc = g_BloomTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vFogDesc = g_FogTexture.Sample(DefaultSampler, In.vTexcoord);
-    
+
     //if (0.f == vPostSceneDesc.a)
     //    discard;
 
@@ -464,6 +469,48 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
         Out.vColor = vFogDesc + vEmissiveDesc + vBloomDesc;
     else
         Out.vColor = vPostSceneDesc + vEmissiveDesc + vBloomDesc;
+    
+    //  if (0.f == vPostSceneDesc.a)
+    //      discard;
+    
+    // Outline
+    if (g_isEnableOutline)
+    {
+        vector vOutlineDesc = g_OutlineTexture.Sample(DefaultSampler, In.vTexcoord);
+        vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+        //  // Depth View Space
+        //  vector vNDCPos;
+        //  float4 vViewPos;
+        //  
+        //  vNDCPos.x = In.vTexcoord.x * 2.f - 1.f;
+        //  vNDCPos.y = In.vTexcoord.y * -2.f + 1.f;
+        //  vNDCPos.z = vDepthDesc.x;
+        //  vNDCPos.w = 1.f;
+        //  
+        //  vNDCPos = vNDCPos * vDepthDesc.y; // View.Z
+        //  vViewPos = mul(vNDCPos, g_ProjMatrixInv); // 현재 픽셀의 View Space 위치
+        //  float fViewDepth = vViewPos.z;
+        //  
+        //  // Outline View Space
+        //  vNDCPos.x = In.vTexcoord.x * 2.f - 1.f;
+        //  vNDCPos.y = In.vTexcoord.y * -2.f + 1.f;
+        //  vNDCPos.z = vOutlineDesc.w;
+        //  vNDCPos.w = 1.f;
+        //  
+        //  vNDCPos = vNDCPos * vDepthDesc.y; // View.Z
+        //  vViewPos = mul(vNDCPos, g_ProjMatrixInv); // 현재 픽셀의 View Space 위치
+        //  float fOutlineDepth = vViewPos.z;
+        //  
+        //  // View 비교
+        //  bool isOutline = (fViewDepth >= g_fCameraFar - g_fOutlineBias && fOutlineDepth < fViewDepth);
+        
+        // 0~1 비교
+        bool isOutline = (vDepthDesc.x >= 1.f - g_fOutlineBias && vOutlineDesc.w <= 1.f);
+
+        if (isOutline)
+            Out.vColor *= float4(vOutlineDesc.rgb, g_fOutlineAlpha);
+    }
 
     return Out;
 }

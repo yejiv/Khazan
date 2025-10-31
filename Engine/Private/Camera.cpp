@@ -43,7 +43,8 @@ HRESULT CCamera::Initialize_Clone(void* pArg)
 	m_fMouseSensor = pDesc->fMouseSensor;
 
 	m_iCameraType = pDesc->iCameraType;
-	m_strCameraTag = pDesc->strCameraTag;
+	if (pDesc->strCameraTag != TEXT(""))
+		m_strCameraTag = pDesc->strCameraTag;
 
 	return S_OK;
 }
@@ -204,8 +205,11 @@ void CCamera::Create_Animation_Item(_wstring strAnimationTag)
 
 	CAMERA_KEYFRAME Desc{};
 	Desc.fTrackPosition = 0.f;
-	Desc.vTranslation = _float3(0.f, 0.f, 0.f);
-	Desc.vLookAt = _float4(0.f, 0.f, 0.f, 0.f);
+	_vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
+	_vector vLook = m_pTransformCom->Get_State(STATE::LOOK);
+	Desc.vTranslation = _float3(vPos.m128_f32[0] , vPos.m128_f32[1], vPos.m128_f32[2]);
+	Desc.vLookAt = _float4(vLook.m128_f32[0], vLook.m128_f32[1], vLook.m128_f32[2], vLook.m128_f32[3]);
+	Desc.fSpeed = 3.f;
 
 	iter->second.push_back(Desc);
 }
@@ -408,6 +412,60 @@ void CCamera::Update_PipeLines()
 
 	m_pGameInstance->Set_Transform(D3DTS::VIEW, m_pTransformCom->Get_WorldMatrix_Inverse());
 	m_pGameInstance->Set_Transform(D3DTS::PROJ, XMMatrixPerspectiveFovLH(m_fFovy, m_fAspect, m_fNear, m_fFar));
+}
+
+void CCamera::Shaking_Start(_float fPower, _float fDuration)
+{
+	m_fShaking_Power = fPower;
+	m_fShaking_Duration = fDuration;
+	m_fShaking_Time = 0.f;
+
+	auto fRnd = [&]{ 
+		m_fShaking_Seed = m_fShaking_Seed * 1664525u + 1013904223u;
+		return (m_fShaking_Seed & 0xFFFF) / 65535.f; 
+	};
+	const _float fTAU = 6.2831853f;
+	m_vShaking_Phase = _float3(fRnd() * fTAU, fRnd() * fTAU, fRnd() * fTAU);
+}
+
+void CCamera::Shaking(_float fTimeDelta)
+{
+	if (!Shaking_Active()) return;
+
+	// 진행
+	m_fShaking_Time = min(m_fShaking_Time + fTimeDelta, m_fShaking_Duration);
+	_float fS = m_fShaking_Time / m_fShaking_Duration;
+
+	// 감쇠 (끝으로 갈수록 0)
+	_float fEnv = m_fShaking_Power * (1.f - fS);
+	fEnv *= fEnv; // (1-s)^2
+
+	// duration 동안 최소 3회 왕복 보장
+	const _float fCyclesMin = 3.f;
+	_float fFreqEff = max(m_fShaking_Freq, fCyclesMin / max(1e-4f, m_fShaking_Duration));
+
+	// 혼합 파형(편향 방지): sin + 0.5*cos(2x)
+	const _float w = 6.2831853f * fFreqEff;     // 2π f
+	_float t = m_fShaking_Time;
+	_float sx = sinf(w * t + m_vShaking_Phase.x) + 0.7f * cosf(2.f * w * t + m_vShaking_Phase.x * 1.7f);
+	_float sy = sinf(w * t * 1.1f + m_vShaking_Phase.y) + 0.5f * cosf(2.1f * w * t + m_vShaking_Phase.y * 1.9f);
+	_float sz = sinf(w * t * 0.9f + m_vShaking_Phase.z) + 0.5f * cosf(1.8f * w * t + m_vShaking_Phase.z * 1.3f);
+
+	// 축별 진폭(미터) 사용
+	_float fOX = fEnv * m_vShaking_Amplitude.x * sx;
+	_float fOY = fEnv * m_vShaking_Amplitude.y * sy;
+	_float fOZ = fEnv * m_vShaking_Amplitude.z * sz;
+
+	// ★★ “베이스 축/위치” 기준으로만 오프셋 적용 (누적 금지!)
+	_vector vPosOff =
+		XMVectorMultiplyAdd(XMVectorReplicate(fOX), m_vShaking_BaseRight,
+			XMVectorMultiplyAdd(XMVectorReplicate(fOY), m_vShaking_BaseUp,
+				XMVectorMultiplyAdd(XMVectorReplicate(fOZ), m_vShaking_BaseLook, XMVectorZero())));
+
+	_vector vShakenPos = XMVectorAdd(m_vShaking_BasePos, vPosOff);
+
+	// 위치만 흔들기 (회전 쉐이크 원하면 축도 회전해서 Set_State)
+	m_pTransformCom->Set_State(STATE::POSITION, vShakenPos);
 }
 
 void CCamera::Free()
