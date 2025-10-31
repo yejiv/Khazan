@@ -447,7 +447,7 @@ void CCamera::Shaking(_float fTimeDelta)
 	// 혼합 파형(편향 방지): sin + 0.5*cos(2x)
 	const _float w = 6.2831853f * fFreqEff;     // 2π f
 	_float t = m_fShaking_Time;
-	_float sx = sinf(w * t + m_vShaking_Phase.x) + 0.5f * cosf(2.f * w * t + m_vShaking_Phase.x * 1.7f);
+	_float sx = sinf(w * t + m_vShaking_Phase.x) + 0.7f * cosf(2.f * w * t + m_vShaking_Phase.x * 1.7f);
 	_float sy = sinf(w * t * 1.1f + m_vShaking_Phase.y) + 0.5f * cosf(2.1f * w * t + m_vShaking_Phase.y * 1.9f);
 	_float sz = sinf(w * t * 0.9f + m_vShaking_Phase.z) + 0.5f * cosf(1.8f * w * t + m_vShaking_Phase.z * 1.3f);
 
