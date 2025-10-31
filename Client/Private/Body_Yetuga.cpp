@@ -4,7 +4,7 @@
 
 _float3 CBody_Yetuga::Get_ThrowPoint()
 {
-    _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix("Weapon_R");
+    _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix("Weapon_L");
     _matrix ConvertMatrix = XMLoadFloat4x4(&BoneMatrix);
     _matrix WorldMatrix = m_pOwnerTransform->Get_WorldMatrix();
 

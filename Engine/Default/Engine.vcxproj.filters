@@ -349,6 +349,9 @@
     <Filter Include="01.Utility\93.Sequence\Interface">
       <UniqueIdentifier>{0dce9e87-4e0f-4a18-919a-9f7fb1d9fdc6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\95.AI\BehaviorTree\Node\Composite\Interrupt">
+      <UniqueIdentifier>{5c193903-8f07-4bc4-8fb4-2e9b9b1b8fc6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -677,6 +680,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Sequence_Manager.cpp">
       <Filter>01.Utility\93.Sequence\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\InterruptibleSelector_Node.cpp">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Composite\Interrupt</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1025,7 +1031,6 @@
     <ClInclude Include="..\Public\BTNode_Defines.h">
       <Filter>01.Utility\95.AI\BehaviorTree\Node\Defines</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\ENGINESDK\DEBUG\INC\COMPOSITE_NODE.H" />
     <ClInclude Include="..\public\SSAO.h">
       <Filter>01.Utility\94.RenderingResources\SSAO</Filter>
     </ClInclude>
@@ -1052,6 +1057,9 @@
     </ClInclude>
     <ClInclude Include="..\public\Sequence_Interface.h">
       <Filter>01.Utility\93.Sequence\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\InterruptibleSelector_Node.h">
+      <Filter>01.Utility\95.AI\BehaviorTree\Node\Composite\Interrupt</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
