@@ -219,6 +219,8 @@
     <ClInclude Include="..\public\Mon_Gague.h" />
     <ClInclude Include="..\Public\MoveState_Yetuga.h" />
     <ClInclude Include="..\Public\Player.h" />
+    <ClInclude Include="..\Public\Projectile.h" />
+    <ClInclude Include="..\Public\Projectile_Yetuga.h" />
     <ClInclude Include="..\Public\Prop.h" />
     <ClInclude Include="..\Public\Prop_Animated.h" />
     <ClInclude Include="..\Public\Prop_Dynamic.h" />
@@ -331,6 +333,8 @@
     <ClCompile Include="..\private\Mon_Gague.cpp" />
     <ClCompile Include="..\Private\MoveState_Yetuga.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
+    <ClCompile Include="..\Private\Projectile.cpp" />
+    <ClCompile Include="..\Private\Projectile_Yetuga.cpp" />
     <ClCompile Include="..\Private\Prop.cpp" />
     <ClCompile Include="..\Private\Prop_Animated.cpp" />
     <ClCompile Include="..\Private\Prop_Dynamic.cpp" />

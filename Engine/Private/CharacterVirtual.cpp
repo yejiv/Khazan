@@ -135,6 +135,7 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vecto
 
 		//m_pGameInstance->CharVir_Update(fTimeDelta, m_pCharVir, m_vGravity, m_iNumObjectLayer, m_pBodyFilter, m_pShapeFilter);
 		m_pGameInstance->CharVir_ExtendedUpdate(fFixedDt, m_pCharVir, m_vGravity, m_iNumObjectLayer, m_pBodyFilter, m_pShapeFilter, m_tEXUpdateSetting);
+		
 
 		m_tPrevPose = m_tCurrPose;
 		m_tCurrPose.vPos = m_pCharVir->GetPosition();

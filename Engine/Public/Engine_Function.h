@@ -309,6 +309,35 @@ namespace Engine
 		return a * w1 + b * w2;
 	}
 
+
+	// (Centripetal) Catmull-Rom
+	inline XMVECTOR CatmullRom_Centripetal(XMVECTOR P0, XMVECTOR P1, XMVECTOR P2, XMVECTOR P3, float s01, float s12, float s23, float s)
+	{
+		// s in [0,1] -> u in [t1,t2]
+		float t0 = 0.0f;
+		float t1 = t0 + s01;
+		float t2 = t1 + s12;
+		float t3 = t2 + s23;
+		float u = t1 + s * (t2 - t1);
+
+		auto Lerp = [](XMVECTOR a, XMVECTOR b, float t) { return XMVectorLerp(a, b, t); };
+
+		XMVECTOR A1 = Lerp(P0, P1, (u - t0) / (t1 - t0));
+		XMVECTOR A2 = Lerp(P1, P2, (u - t1) / (t2 - t1));
+		XMVECTOR A3 = Lerp(P2, P3, (u - t2) / (t3 - t2));
+
+		XMVECTOR B1 = Lerp(A1, A2, (u - t0) / (t2 - t0));
+		XMVECTOR B2 = Lerp(A2, A3, (u - t1) / (t3 - t1));
+
+		return Lerp(B1, B2, (u - t1) / (t2 - t1));
+	}
+
+	// 거리기반 가중치(α=0.5)
+	inline float ChordLenAlpha(XMVECTOR a, XMVECTOR b, float alpha = 0.5f)
+	{
+		float d = XMVectorGetX(XMVector3Length(XMVectorSubtract(a, b)));
+		return powf(d, alpha);
+	}
 }
 
 #endif // Engine_Function_h__

@@ -284,9 +284,7 @@ void CJolt_Manager::Free()
 #ifdef _DEBUG
     Safe_Delete(m_pDebugRenderer);
 #endif
-
-    for (auto Char : m_CharacterVirtuals)
-        Safe_Delete(Char.second);
+    m_CharacterVirtuals.clear();
     Safe_Delete(m_DrawFilter);
     Safe_Delete(m_pBPLayerIF);
 

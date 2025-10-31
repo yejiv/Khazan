@@ -271,6 +271,9 @@
     <Filter Include="02.GameObject\UI\WorldUI\Damage_UI">
       <UniqueIdentifier>{6da1545d-0879-4c90-9ac6-1aeabdd954dc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="94. ClientInstance\Debug">
+      <UniqueIdentifier>{40550248-8478-40d1-913b-0394bb2ab80f}</UniqueIdentifier>
+    </Filter>
     <Filter Include="03.Tool">
       <UniqueIdentifier>{69d26ed9-2e45-4fc2-90bc-4a4da31625a2}</UniqueIdentifier>
     </Filter>
@@ -358,6 +361,9 @@
     <Filter Include="01.Levels\Viper">
       <UniqueIdentifier>{663bf125-288a-4167-aca7-71e9e34d56d9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="94. ClientInstance\Camera\Controller">
+      <UniqueIdentifier>{ddd3541e-7243-4f90-a57b-80b45d25d080}</UniqueIdentifier>
+    </Filter>
     <Filter Include="94.ClientInstance">
       <UniqueIdentifier>{7a63893c-daa7-4abb-bec1-4e58e468f354}</UniqueIdentifier>
     </Filter>
@@ -387,6 +393,12 @@
     </Filter>
     <Filter Include="02.GameObject\UI\State\ETC">
       <UniqueIdentifier>{fc22b869-8155-4de2-b6ce-bcd319a3e06c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Projectile">
+      <UniqueIdentifier>{016b08f1-9acb-46f9-accb-93ce5a6ece77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Projectile\Yetuga">
+      <UniqueIdentifier>{0141891e-b7df-4dcc-8da3-729637bf512b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -652,7 +664,7 @@
       <Filter>94.ClientInstance\Debug</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Camera_Controller.h">
-      <Filter>03.Tool\Camera\Controller</Filter>
+      <Filter>94. ClientInstance\Camera\Controller</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Body_Yetuga.h">
       <Filter>02.GameObject\Creature\Monster\Yetuga\Body</Filter>
@@ -737,6 +749,12 @@
     </ClInclude>
     <ClInclude Include="..\public\UI_State.h">
       <Filter>02.GameObject\UI\State</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Projectile.h">
+      <Filter>02.GameObject\Projectile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Projectile_Yetuga.h">
+      <Filter>02.GameObject\Projectile\Yetuga</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -994,7 +1012,7 @@
       <Filter>94.ClientInstance\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Camera_Controller.cpp">
-      <Filter>03.Tool\Camera\Controller</Filter>
+      <Filter>94. ClientInstance\Camera\Controller</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Body_Yetuga.cpp">
       <Filter>02.GameObject\Creature\Monster\Yetuga\Body</Filter>
@@ -1073,6 +1091,12 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_State.cpp">
       <Filter>02.GameObject\UI\State</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile.cpp">
+      <Filter>02.GameObject\Projectile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile_Yetuga.cpp">
+      <Filter>02.GameObject\Projectile\Yetuga</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -44,6 +44,10 @@ private:
 private:
 	class CClientInstance* m_pClientInstance = { nullptr };
 
+	vector<future<HRESULT>> m_futures;
+
+	recursive_mutex m_Mutex;
+
 public:
 	static CLevel_HeinMach* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;

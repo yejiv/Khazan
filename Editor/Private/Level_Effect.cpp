@@ -328,10 +328,10 @@ void CLevel_Effect::GetParticleColor()
 	}
 	else if (m_EffectType == 1)
 	{
-		const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19" };
+		const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19",  "test20",  "test21"};
 		ImGui::Combo("Mesh Textures", reinterpret_cast<int*>(&m_iTextureIdx), textures, IM_ARRAYSIZE(textures));
 
-		const char* Meshes[] = { "Mesh1", "Mesh2", "Mesh3",  "Mesh4",  "Mesh5",  "Mesh6",  "Mesh7",  "Mesh8",  "Mesh9",  "Mesh10",  "Mesh11",  "Mesh12",  "Mesh13",  "Mesh14",  "Mesh15",  "Mesh16",  "Mesh17",  "Mesh18",  "Mesh19" ,  "Mesh20" };
+		const char* Meshes[] = { "Mesh0", "Mesh1", "Mesh2", "Mesh3",  "Mesh4",  "Mesh5",  "Mesh6",  "Mesh7",  "Mesh8",  "Mesh9",  "Mesh10",  "Mesh11",  "Mesh12",  "Mesh13",  "Mesh14",  "Mesh15",  "Mesh16",  "Mesh17",  "Mesh18",  "Mesh19",  "Mesh20",  "Mesh21",  "Mesh22" };
 		ImGui::Combo("Mesh Shape", reinterpret_cast<int*>(&m_iMeshTypeIdx), Meshes, IM_ARRAYSIZE(Meshes));
 	}
 
@@ -345,7 +345,7 @@ void CLevel_Effect::GetMaksingScrollData()
 	if (m_bIsMaskScrolling)
 	{
 		ImGui::Indent();
-		const char* MaskTexture[] = { "width0", "width1", "width2",  "width3",  "width4",  "width5",  "width6" ,  "length0" };
+		const char* MaskTexture[] = { "width0", "width1", "width2",  "width3",  "width4",  "width5",  "length0" ,  "length1",  "length2" ,  "length3",  "length4" ,  "length5" };
 		ImGui::Combo("Mask Textures", reinterpret_cast<int*>(&m_iMaskTextureIdx), MaskTexture, IM_ARRAYSIZE(MaskTexture));
 		ImGui::InputFloat("Mask Scroll Speed: ", &m_bMaskScrollSpeed);
 		ImGui::Checkbox("Is Vecrtical", &m_bIsScrollVertical);
