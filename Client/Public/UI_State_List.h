@@ -17,7 +17,7 @@ private:
 	virtual ~CUI_State_List() = default;
 
 public:
-	void								Update_Pos(_int iIndex, _float2 vPos, _float fOffSetY);
+	void								Setting_List(_int iIndex, _float2 vPos, _float fOffSetY);
 public:
 	virtual HRESULT						Initialize_Prototype(_uint iLevel);
 	virtual HRESULT						Initialize_Clone(void* pArg) override;
@@ -32,6 +32,16 @@ private:
 	CShader*							m_pShaderCom = { nullptr };
 	CTexture*							m_pTextureCom = { nullptr };
 	CVIBuffer_Rect*						m_pVIBufferCom = { nullptr };
+
+	_int								m_iIndex = { -1 };
+
+	class CUI_TextBox*					m_pName_TextBox = { nullptr };
+	class CUI_TextBox*					m_pCulLevel_TextBox = { nullptr };
+	class CUI_TextBox*					m_pUpLevel_TextBox = { nullptr };
+	class CUI_Atlas_Icon*				m_pStateIcon = { nullptr };
+	class CUI_Default_Tex*				m_pUpIcon = { nullptr };
+	vector<class CUI_State_Button*>		m_pButton;
+	vector<class CUI_Default_Tex*>		m_pTexture;
 
 private:
 	HRESULT								Ready_Component();

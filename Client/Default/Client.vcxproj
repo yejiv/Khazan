@@ -258,6 +258,7 @@
     <ClInclude Include="..\public\UI_State.h" />
     <ClInclude Include="..\public\UI_State_Button.h" />
     <ClInclude Include="..\public\UI_State_List.h" />
+    <ClInclude Include="..\public\UI_State_MainPanel.h" />
     <ClInclude Include="..\public\UI_State_Panel.h" />
     <ClInclude Include="..\public\UI_Text.h" />
     <ClInclude Include="..\public\UI_TextBox.h" />
@@ -372,6 +373,7 @@
     <ClCompile Include="..\private\UI_State.cpp" />
     <ClCompile Include="..\private\UI_State_Button.cpp" />
     <ClCompile Include="..\private\UI_State_List.cpp" />
+    <ClCompile Include="..\private\UI_State_MainPanel.cpp" />
     <ClCompile Include="..\private\UI_State_Panel.cpp" />
     <ClCompile Include="..\private\UI_Text.cpp" />
     <ClCompile Include="..\private\UI_TextBox.cpp" />

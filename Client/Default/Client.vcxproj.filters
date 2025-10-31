@@ -756,6 +756,9 @@
     <ClInclude Include="..\Public\Projectile_Yetuga.h">
       <Filter>02.GameObject\Projectile\Yetuga</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\UI_State_MainPanel.h">
+      <Filter>02.GameObject\UI\State\ETC</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1097,6 +1100,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Projectile_Yetuga.cpp">
       <Filter>02.GameObject\Projectile\Yetuga</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_State_MainPanel.cpp">
+      <Filter>02.GameObject\UI\State\ETC</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
