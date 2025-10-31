@@ -1,7 +1,7 @@
 #include "Engine_Shader_Defines.hlsli"
 
 float4x4 g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
-vector g_vCamPosition;
+float4 g_vCamPosition;
 
 float4 g_vSourceColor = float4(1.f, 1.f, 1.f, 1.f);
 float g_fSizeRatio = 1.f;
