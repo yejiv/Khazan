@@ -947,7 +947,7 @@ void CAnimationTool::Tool_AnimationInfo_Widget()
 			   setup->RootMitionScale = FLOAT3_DATA(1.f, 1.f, 1.f);
            }
            ImGui::SameLine();
-           if (ImGui::Button("Fast Rotation Motion (plz apply 2th.. )"))
+           if (ImGui::Button("Fast Absolute Motion (plz apply 2th.. )"))
            {
                setup->isApplyRootPosition = true;
                setup->isIgnoreRootRot = false;
