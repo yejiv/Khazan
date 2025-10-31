@@ -2,6 +2,11 @@
 
 #include "GameInstance.h"
 
+#include "Interaction_Guide.h"
+
+#include "ClientInstance.h"
+#include "UI_BladeNexus.h"
+
 CBladeNexus::CBladeNexus(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp_Interactive { pDevice, pContext }
 {
@@ -26,6 +31,8 @@ HRESULT CBladeNexus::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_Components(pArg), E_FAIL);
 
     CHECK_FAILED(Ready_Collision(pArg), E_FAIL);
+
+    CHECK_FAILED(Ready_Interaction_Guide(pArg), E_FAIL);
 
     m_eAnimState = ANIM_STATE::BEFORE_IDLE;
     m_pModelCom->Set_Animation(ANIM_STATE::BEFORE_IDLE);
@@ -160,10 +167,67 @@ HRESULT CBladeNexus::Ready_Collision(void* pArg)
     return S_OK;
 }
 
+HRESULT CBladeNexus::Ready_Interaction_Guide(void* pArg)
+{
+    m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
+    CHECK_NULLPTR(m_pGuide, E_FAIL);
+
+    Safe_AddRef(m_pGuide);
+
+    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("접촉"), 1.5f);
+
+    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pGuide);
+
+    m_pGuide->Update_Visible(false);
+
+    return S_OK;
+}
+
+void CBladeNexus::Input_Interact_Event(_float fTimeDelta)
+{
+    if (ANIM_STATE::AFTER_START == m_eAnimState || ANIM_STATE::AFTER_LOOP == m_eAnimState|| ANIM_STATE::AFTER_END == m_eAnimState ||
+        ANIM_STATE::BEFORE_LOOP == m_eAnimState || ANIM_STATE::BEFORE_LOOP == m_eAnimState|| ANIM_STATE::BEFORE_LOOP == m_eAnimState)
+        return;
+
+    _bool isPressing = { false };
+
+    if (m_pGameInstance->Key_Pressing(DIK_F, fTimeDelta))
+    {
+        isPressing = m_pGuide->IsPressing();
+    }
+    else if (m_pGameInstance->Key_Down(DIK_LCONTROL))
+    {
+        EventInteractType InteractType = {};
+
+        InteractType.eState = EventInteractType::END;
+
+        m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+
+        return;
+    }
+
+    if (true == isPressing)
+    {
+        EventInteractType InteractType = {};
+
+        InteractType.eState = EventInteractType::BEGIN;
+
+        EventBladeNexus BNEvent = {};
+
+        XMStoreFloat3(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+
+        InteractType.BNEvent = BNEvent;
+
+        m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+    }
+}
+
 void CBladeNexus::Animation_Update(_float fTimeDelta)
 {
     if (false == m_isCollision)
         return;
+
+    Input_Interact_Event(fTimeDelta);
 
     if (true == m_isBNOn)               // 켠다는 신호
     {
@@ -172,6 +236,8 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
         // 해금 전 IDLE 상태
         if (ANIM_STATE::BEFORE_IDLE == m_eAnimState)
         {
+            m_pGuide->Update_Visible(false);
+
             // 처음 상호 작용 시
             m_eAnimState = ANIM_STATE::BEFORE_START;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
@@ -196,6 +262,8 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
         // 해금 후 IDLE 상태
         else if (ANIM_STATE::AFTER_IDLE == m_eAnimState)
         {
+            m_pGuide->Update_Visible(false);
+
             // 2번 이상의 상호 작용 시
             m_eAnimState = ANIM_STATE::AFTER_START;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
@@ -242,6 +310,9 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
     // 귀검 가동 끝나면 ( 첫 해금 O )
     if (ANIM_STATE::BEFORE_START == m_eAnimState)       // BEFORE_START 가 끝나면 BEFORE_LOOP ( 플레이어가 UI랑 상호 작용 )
     {
+        // 귀검 애니메이션 끝나면 귀검 UI 창 팝업
+        static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(CUI_BladeNexus::ONTYPE::DEFAULT, TEXT("하인마흐 구석진 으슥한 어떠한 곳"));
+
         // 처음 상호 작용 후 애니메이션 루프로 전환 및 이벤트 발생
         m_eAnimState = ANIM_STATE::BEFORE_LOOP;
         m_pModelCom->Set_Animation(ANIM_STATE::BEFORE_LOOP);
@@ -268,16 +339,25 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
     // 귀검 상호 작용 종료 후 ( 첫 해금 O )
     if (ANIM_STATE::BEFORE_END == m_eAnimState)
     {
+        if (true == m_isCollision)
+            m_pGuide->Update_Visible(true);
+
         // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
         m_eAnimState = ANIM_STATE::AFTER_IDLE;
         m_pModelCom->Set_Animation(ANIM_STATE::AFTER_IDLE);
         m_pModelCom->Set_AnimationLoop(true);
 
         m_isBNOff = false;
+
+        // 첫 해금 후 접촉 -> 결속 으로 변경
+        m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("결속"), 1.5f);
     }
     // 귀검 가동 끝나면 ( 첫 해금 X )
     if (ANIM_STATE::AFTER_START == m_eAnimState)
     {
+        // 귀검 애니메이션 끝나면 귀검 UI 창 팝업
+        static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(CUI_BladeNexus::ONTYPE::DEFAULT, TEXT("하인마흐 구석진 으슥한 어떠한 곳"));
+
         // 다회 상호 작용 후 애니메이션 루프로 전환
         m_eAnimState = ANIM_STATE::AFTER_LOOP;
         m_pModelCom->Set_Animation(ANIM_STATE::AFTER_LOOP);
@@ -304,6 +384,9 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
     // 귀검 상호 작용 종료 후 ( 첫 해금 X )
     if (ANIM_STATE::AFTER_END == m_eAnimState)
     {
+        if (true == m_isCollision)
+            m_pGuide->Update_Visible(true);
+
         // 다회 상호 작용이 끝난 후 After Idle 상태로 전환
         m_eAnimState = ANIM_STATE::AFTER_IDLE;
         m_pModelCom->Set_Animation(ANIM_STATE::AFTER_IDLE);
@@ -315,37 +398,22 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
 
 void CBladeNexus::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
+    if (ANIM_STATE::AFTER_IDLE == m_eAnimState || ANIM_STATE::BEFORE_IDLE == m_eAnimState)
+        m_pGuide->Update_Visible(true);
+
     m_isCollision = true;
-
-    EventInteractType InteractType = {};
-
-    InteractType.isInteract = true;
-    InteractType.eInteractType = INTERACTIVE_TYPE::CHECKPOINT;
-
-    m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 }
 
 void CBladeNexus::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
     m_isCollision = true;
-
-    EventInteractType InteractType = {};
-
-    InteractType.isInteract = true;
-    InteractType.eInteractType = INTERACTIVE_TYPE::CHECKPOINT;
-
-    m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 }
 
 void CBladeNexus::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 {
+    m_pGuide->Update_Visible(false);
+
     m_isCollision = false;
-
-    EventInteractType InteractType = {};
-
-    InteractType.isInteract = false;
-
-    m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 }
 
 CBladeNexus* CBladeNexus::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -380,4 +448,10 @@ void CBladeNexus::Free()
 
     Safe_Release(m_pStaticCom);
     Safe_Release(m_pTriggerCom);
+
+    if (nullptr != m_pGuide)
+    {
+        m_pGuide->Set_IsDead(true);
+        Safe_Release(m_pGuide);
+    }
 }

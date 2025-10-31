@@ -60,13 +60,14 @@ namespace Engine
 		bool isInstance{ false };
 		bool isShadow{ false };
 		bool isBackGround{ false };
+		bool isPlant{ false };
 
 		tagMapObjectProperties() = default;
 
 		operator bool() const noexcept
 		{
 			return isSnow || isCollider || isIce ||
-				isInstance || isShadow || isBackGround;
+				isInstance || isShadow || isBackGround || isPlant;
 		}
 
 	}MAPOBJECT_PROPERTIES;

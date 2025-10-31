@@ -4,6 +4,7 @@
 #include "BlackBoard.h"
 #include "Body_Yetuga.h"
 #include "CharacterVirtual.h"
+#include "Projectile_Yetuga.h"
 
 CYetuga::CYetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice, pContext }
@@ -30,19 +31,21 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     //-4 0 27
-    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(-4, 0, 27, 1.f));
-
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(517.f, -12.f, 241.f,1.f));
 
     if (FAILED(Ready_PartObjects()))
+        return E_FAIL;
+
+    if (FAILED(Ready_Projectiles()))
+        return E_FAIL;
+
+    if (FAILED(Ready_AnimEvent()))
         return E_FAIL;
 
 
     m_pController = CAI_Controller_Yetuga::Create(this);
     if (nullptr == m_pController)
         return E_FAIL;
-
-
-
 
 
     return S_OK;
@@ -63,7 +66,7 @@ void CYetuga::Update(_float fTimeDelta)
 
     m_pTransformCom->LookAt(m_pTransformCom->Get_State(STATE::POSITION) + vLerpDir);*/
 
-    if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+   /* if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
     {
         _float3     vPickedPos{};
         _bool isPicked = m_pGameInstance->isPicked(&vPickedPos);
@@ -71,15 +74,12 @@ void CYetuga::Update(_float fTimeDelta)
         {
             m_pTransformCom->Set_State(Engine::STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPickedPos), 1.f));
         }
-    }
+    }*/
 
     m_pController->Update(this, fTimeDelta);
 
     __super::Update(fTimeDelta);
 
-   
-
-  
 }
 
 void CYetuga::Late_Update(_float fTimeDelta)
@@ -88,11 +88,65 @@ void CYetuga::Late_Update(_float fTimeDelta)
         return;
 
     CContainerObject::Late_Update(fTimeDelta);
+
 }
 
 HRESULT CYetuga::Render()
 {
     return S_OK;
+}
+
+void CYetuga::Pick_Rock()
+{
+    _float3 vSpawnPoint = m_pBody->Get_ThrowPoint();
+
+    CGameObject* pGameObject = m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Rock"));
+    if (nullptr == pGameObject)
+        return;
+
+    m_pHoldRock = static_cast<CProjectile_Yetuga*>(pGameObject);
+    if (m_pHoldRock == nullptr)
+        return;
+    Safe_AddRef(m_pHoldRock);
+
+    m_pHoldRock->Set_IsActive(false);   // 던지지 않음
+    m_pHoldRock->Set_Visible(true);     // 보이게
+    m_pHoldRock->Set_SpanwPoint(vSpawnPoint);
+    m_pHoldRock->Reset();
+
+    m_pGameInstance->Push_PoolObject_ToLayer(
+        ENUM_CLASS(LEVEL::HEINMACH),
+        TEXT("Layer_Yetuga_Rock"),
+        m_pHoldRock
+    );
+}
+
+void CYetuga::Hold_Rock()
+{
+    if (nullptr == m_pHoldRock)
+        return;
+
+    _float3 vSpawnPoint = m_pBody->Get_ThrowPoint();
+    m_pHoldRock->Set_SpanwPoint(vSpawnPoint);
+    m_pHoldRock->Reset();
+
+}
+
+void CYetuga::Throw_Rock()
+{
+    if (m_pHoldRock == nullptr)
+        return;
+
+    _float3 vSpawnPoint = m_pBody->Get_ThrowPoint();
+    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+
+    m_pHoldRock->Set_SpanwPoint(vSpawnPoint);
+    m_pHoldRock->Set_SpawnDir(vTargetDir);
+    m_pHoldRock->Reset();
+    m_pHoldRock->Set_IsActive(true);
+
+    Safe_Release(m_pHoldRock);
+
 }
 
 HRESULT CYetuga::Ready_Components()
@@ -137,9 +191,37 @@ HRESULT CYetuga::Ready_PartObjects()
         return E_FAIL;
 
     m_pBody = dynamic_cast<CBody_Yetuga*>(pBody);
-
+    Safe_AddRef(m_pBody);
 
     return S_OK;
+}
+
+HRESULT CYetuga::Ready_Projectiles()
+{
+    CProjectile_Yetuga::PROJECTILE_DESC Desc{};
+    Desc.fDamage = 10.f;
+    Desc.fSpeedPerSec = 10.f;
+    Desc.fLifeTime = 5.f;
+    Desc.fRotationPerSec = 180.f;
+
+    m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH),TEXT("Prototype_Projectile_Yetuga_Rock"),
+        ENUM_CLASS(LEVEL::HEINMACH),TEXT("Yetuga_Rock"),&Desc,5);
+
+    return S_OK;
+}
+
+HRESULT CYetuga::Ready_AnimEvent()
+{
+    CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+    if (nullptr == pModel)
+        return E_FAIL;
+
+    pModel->Register_Event("Rock", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Pick_Rock(); });
+    pModel->Register_Event("Rock", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Throw_Rock(); });
+    pModel->Register_Event("Rock", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Hold_Rock(); });
+
+    return S_OK;
+    
 }
 
 
@@ -167,5 +249,7 @@ CGameObject* CYetuga::Clone(void* pArg)
 
 void CYetuga::Free()
 {
+    Safe_Release(m_pBody);
+
     __super::Free();
 }

@@ -592,11 +592,26 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 			}
 
 			ImGui::Checkbox("SNOW", &m_AddObjectProperties.isSnow); SAMELINE;
-			ImGui::Checkbox("COLLIDER", &m_AddObjectProperties.isCollider); SAMELINE;
+
+			if (ImGui::Checkbox("COLLIDER", &m_AddObjectProperties.isCollider))
+			{
+				if (true == m_AddObjectProperties.isCollider)
+					m_AddObjectProperties.isInstance = false;
+			} SAMELINE;
+
 			ImGui::Checkbox("ICE", &m_AddObjectProperties.isIce); SAMELINE;
-			ImGui::Checkbox("INSTANCE", &m_AddObjectProperties.isInstance); SEPARATOR;
+
+			if (ImGui::Checkbox("INSTANCE", &m_AddObjectProperties.isInstance))
+			{
+				if (true == m_AddObjectProperties.isInstance)
+					m_AddObjectProperties.isCollider = false;
+			} SEPARATOR;
+
 			ImGui::Checkbox("SHADOW", &m_AddObjectProperties.isShadow); SAMELINE;
-			ImGui::Checkbox("BACKGROUND", &m_AddObjectProperties.isBackGround); SEPARATOR;
+
+			ImGui::Checkbox("BACKGROUND", &m_AddObjectProperties.isBackGround); SAMELINE;
+
+			ImGui::Checkbox("PLANT", &m_AddObjectProperties.isPlant); SEPARATOR;
 
 			if (true == m_AddObjectProperties.isInstance)
 			{
@@ -941,6 +956,9 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 			SAMELINE;
 
 			ImGui::Checkbox("BACKGROUND", &PropProperties.isBackGround);
+			SAMELINE;
+
+			ImGui::Checkbox("PLANT", &PropProperties.isPlant);
 			SEPARATOR;
 
 			m_pFixPropObj->Set_Properties(PropProperties);
@@ -1251,6 +1269,7 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 				m_RenderProperties.isInstance = false;
 				m_RenderProperties.isShadow = false;
 				m_RenderProperties.isBackGround = false;
+				m_RenderProperties.isPlant = false;
 			}
 			SEPARATOR;
 
@@ -1274,6 +1293,9 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 				SAMELINE;
 
 				ImGui::Checkbox("BACKGROUND", &m_RenderProperties.isBackGround);
+				SAMELINE;
+
+				ImGui::Checkbox("PLANT", &m_RenderProperties.isPlant);
 				SEPARATOR;
 
 				ImGui::Text("( 0 UNDER == ALL ) RENDER SUB LEVEL : "); SAMELINE;
@@ -1285,16 +1307,10 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 			{
 				if (0 != m_ObjectList.size() && m_iObjectListIndex < m_ObjectList.size())
 				{
-					CProp* pObjProp = m_ObjectList[m_iObjectListIndex];
-
 					_wstring strModelName = m_ObjectList[m_iObjectListIndex]->Get_ModelName();
 					string strTempModelName = WStringToAnsi(strModelName);
 
-					_char szModelName[MAX_PATH] = {};
-					memcpy(szModelName, strTempModelName.c_str(), sizeof(szModelName));
-
-					ImGui::Text("MODEL NAME : ");
-					ImGui::InputText("##model_name_by_list", szModelName, IM_ARRAYSIZE(szModelName));
+					ImGui::Text("MODEL NAME : %s", strTempModelName.c_str());
 					SEPARATOR;
 
 #pragma region 속성 설정
@@ -1327,6 +1343,9 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 						SAMELINE;
 
 						ImGui::Checkbox("BACKGROUND", &PropProperties.isBackGround);
+						SAMELINE;
+
+						ImGui::Checkbox("PLANT", &PropProperties.isPlant);
 						SEPARATOR;
 
 						m_ObjectList[m_iObjectListIndex]->Set_Properties(PropProperties);
@@ -1448,16 +1467,10 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 			}
 			if (0 != m_InteractiveList.size() && m_iInteractiveListIndex < m_InteractiveList.size())
 			{
-				CProp* pObjProp = m_InteractiveList[m_iInteractiveListIndex];
-
 				_wstring strModelName = m_InteractiveList[m_iInteractiveListIndex]->Get_ModelName();
 				string strTempModelName = WStringToAnsi(strModelName);
 
-				_char szModelName[MAX_PATH] = {};
-				memcpy(szModelName, strTempModelName.c_str(), sizeof(szModelName));
-
-				ImGui::Text("MODEL NAME : ");
-				ImGui::InputText("##model_name_by_list_inter", szModelName, IM_ARRAYSIZE(szModelName));
+				ImGui::Text("MODEL NAME : %s", strTempModelName.c_str());
 				SEPARATOR;
 
 			}

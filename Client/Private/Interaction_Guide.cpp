@@ -223,13 +223,13 @@ void CInteraction_Guide::Update_WorldPos()
 
 	_float fDot = XMVectorGetX(XMVector3Dot(vCamLook, vDir));
 
-	if (fDot <= 0)
-	{
-		m_isVisible = false;
-		return;
-	}
-	else
-		m_isVisible = true;
+	//if (fDot <= 0)
+	//{
+	//	m_isVisible = false;
+	//	return;
+	//}
+	//else
+	//	m_isVisible = true;
 
 	_matrix OldVeiw = m_pGameInstance->Get_Transform_Matrix(D3DTS::VIEW);
 	_matrix OldProj = m_pGameInstance->Get_Transform_Matrix(D3DTS::PROJ);

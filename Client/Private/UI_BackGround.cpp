@@ -121,11 +121,15 @@ HRESULT CUI_BackGround::Bind_Mask()
 	{
 		m_pShaderCom->Begin(2);
 	}
+	else if (m_eBGType == UIBGTYPE::STATE)
+	{
+		m_pShaderCom->Begin(3);
+	}
 	else
 	{
 		m_pShaderCom->Begin(0);
 	}
-	return E_NOTIMPL;
+	return S_OK;
 }
 
 CUI_BackGround* CUI_BackGround::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
