@@ -63,6 +63,7 @@ private :
 	ID3D11Buffer*						m_pStructuredBuffer = { nullptr };
 	ID3D11Buffer*						m_pSpeedBuffer = { nullptr };
 	ID3D11Buffer*						m_pStagingBuffer = { nullptr };
+	ID3D11Buffer*						m_pDebugStagingBuffer = { nullptr }; //debug
 	POINT_INSTANCE_PARAMS*				m_pParticleParams;
 
 private:

@@ -461,7 +461,10 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
     vector vEmissiveDesc = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vBloomDesc = g_BloomTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vFogDesc = g_FogTexture.Sample(DefaultSampler, In.vTexcoord);
-    
+
+    //if (0.f == vPostSceneDesc.a)
+    //    discard;
+
     if (true == g_isEnableFog)
         Out.vColor = vFogDesc + vEmissiveDesc + vBloomDesc;
     else
