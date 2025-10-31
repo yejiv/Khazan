@@ -72,6 +72,14 @@ public:
 public:
 	void Update_PipeLines();
 
+
+
+public:
+	void Shaking_Start(_float fPower, _float fDuration);
+	void Shaking(_float fTimeDelta);
+	_bool Shaking_Active() const { return m_fShaking_Time < m_fShaking_Duration && m_fShaking_Power > 0.f; }
+	
+
 protected:
 	_wstring			m_strCameraTag = {};
 	_uint				m_iCameraType = {};
@@ -99,6 +107,20 @@ protected:
 
 	const _float4x4*	m_pObjMatrix = { nullptr };
 	const _float4x4*	m_pSocketMatrix = { nullptr };
+
+	// 쉐이킹
+	_float m_fShaking_Time = { 0.f }; // 계산용 시간
+	_float m_fShaking_Duration = { 0.f }; // 지속시간
+	_float m_fShaking_Power = { 0.f }; // 세기
+	_uint m_fShaking_Seed = 1337u; // 매 실행마다 위상 랜덤화용
+	_float3 m_vShaking_Amplitude = { 0.1f, 0.08f, 0.09f }; // 진폭
+	_float3 m_vShaking_Phase = { 0.f, 0.f, 0.f }; // 위상
+	_float m_fShaking_Freq = { 0.f }; // 주파수
+	_vector m_vShaking_BasePos;
+	_vector m_vShaking_BaseRight;
+	_vector m_vShaking_BaseUp;
+	_vector m_vShaking_BaseLook;
+
 
 	map<_wstring, vector<CAMERA_KEYFRAME>> m_Animations;
 	map<_wstring, vector<CAMERA_EVENT_DATA>> m_Events;

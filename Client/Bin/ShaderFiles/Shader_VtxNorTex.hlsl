@@ -107,6 +107,7 @@ PS_OUT PS_MAIN(PS_IN In)
     // vector vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);    
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     Out.vWorld = In.vWorldPos;
+    Out.vDiffuse = float4(1.f, 1.f, 1.f, 1.f);
     return Out;
 }
 

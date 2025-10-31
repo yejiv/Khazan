@@ -15,6 +15,12 @@ texture2D g_SnowTexture;
 float g_fSnowAmount = float(0.5f);
 float3 g_vSnowColor = float3(0.92f, 0.94f, 1.f);
 
+/*흔들리는 풀때기에 사용*/
+float g_fTime = 0.f;
+float3 g_vWindDir = float3(1.f, 0.f, 3.f);
+float g_fWindPower = 0.15f;
+float g_fWindSpeed = 1.2f;
+
 vector g_vCamPosition;
 
 float g_fFar = 1000.f;
@@ -75,6 +81,31 @@ VS_OUT VS_MAIN(VS_IN In)
 
 VS_OUT VS_MAPOBJECT(VS_IN In)
 {
+    VS_OUT Out = (VS_OUT) 0; // C 스타일의 캐스팅 가능 - 0 초기화
+ 
+    vector vPosition = mul(float4(In.vPosition, 1.f), In.TransformMatrix);
+    
+    float4x4 matWV, matWVP;
+    
+    matWV = mul(g_WorldMatrix, g_ViewMatrix);
+    matWVP = mul(matWV, g_ProjMatrix);
+    
+    Out.vPosition = mul(vPosition, matWVP);
+    Out.vNormal = normalize(mul(float4(In.vNormal, 0.f), g_WorldMatrix));
+    Out.vTangent = normalize(mul(float4(In.vTangent, 0.f), g_WorldMatrix));
+    Out.vBinormal = normalize(mul(float4(In.vBinormal, 0.f), g_WorldMatrix));
+    Out.vTexcoord = In.vTexcoord;
+    Out.vWorldPos = mul(float4(In.vPosition, 1.f), g_WorldMatrix);
+    Out.vWorldPos.w = float(In.iID);
+    Out.vProjPos = Out.vPosition;
+    
+    return Out;
+}
+
+VS_OUT VS_PLANT(VS_IN In)
+{
+    // 풀 살랑살랑 할 예정
+    
     VS_OUT Out = (VS_OUT) 0; // C 스타일의 캐스팅 가능 - 0 초기화
  
     vector vPosition = mul(float4(In.vPosition, 1.f), In.TransformMatrix);
@@ -414,5 +445,27 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAPOBJECT();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_SNOWMAP_ICE();
+    }
+
+    pass PlantPass // 맵 오브젝트용 패스 ( 7번 ) ( 풀 흔들림 ( 눈 X ) )
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_PLANT();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAP();
+    }
+
+    pass SnowPlantPass // 맵 오브젝트용 패스 ( 8번 ) ( 풀 흔들림 ( 눈 O ) )
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_PLANT();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_SNOWMAP();
     }
 }

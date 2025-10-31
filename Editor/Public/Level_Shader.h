@@ -45,6 +45,7 @@ private:
 	_bool					m_isEnableBloom = {};
 	_bool					m_isEnableFog = {};
 	_bool					m_isEnableToonShade = {};
+	_bool					m_isEnableOutline = {};
 
 	// SSAO
 	SSAO_CONFIG				m_SSAOConfig = {};
@@ -60,8 +61,9 @@ private:
 	FOG_CONFIG				m_FogConfig = {};
 	_bool					m_isWorldSpaceFog = {};
 
-	// Toon Rendering
-	_float					m_fToonShadeLevel = {};
+	// Cartoon Rendering
+	_float					m_fToonShadeLevel = { 3.f };
+	OUTLINE_CONFIG			m_OutlineConfig = {};
 
 private:
 	// 파라미터 ( 1. 등록할 레이어 태그 | 2. 데이터 파일 이름 | 3. 현재 로드할 레벨 | 4. 맵 타입 ( 안넣으면 폴더 내부 X ) )

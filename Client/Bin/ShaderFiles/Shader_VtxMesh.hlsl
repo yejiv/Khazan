@@ -148,8 +148,8 @@ PS_OUT PS_MAIN(PS_IN In)
     
     vector      vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
     
-    if (vMtrlDiffuse.a < 0.3f)
-        discard;
+    //if (vMtrlDiffuse.a < 0.3f)
+    //    discard;
     
     /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
     vector      vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
@@ -163,6 +163,7 @@ PS_OUT PS_MAIN(PS_IN In)
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     Out.vWorld = In.vWorldPos;
     
+    Out.vDiffuse = float4(1.f, 1.f, 1.f, 1.f);
     return Out;
 }
 

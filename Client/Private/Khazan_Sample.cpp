@@ -177,21 +177,30 @@ void CKhazan_Sample::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLay
 #pragma region 상호 작용 맵 오브젝트 임시 테스트 용
 void CKhazan_Sample::Event_Interact_Object(_float fTimeDelta)
 {
-    // 상호 작용 트리거에 접촉 중일때 키 입력 가능
-    if (true == m_EventInteract.isInteract)
+    // 상호 작용 오브젝트 쪽에서 BEGIN STATE 내보낼 시
+    if (EventInteractType::EVENT_STATE::BEGIN == m_EventInteract.eState)
     {
-        // 활성화 키
-        if (m_pGameInstance->Key_Down(DIK_F))
+        // 플레이어 이동, LOOK 보간??
+        // 완료하면 이벤트 반대로 던져주기
+
+        _float3 vPos = m_EventInteract.ChestEvent.vPlayerPosition;
+
+        if (true)
         {
             // 상호작용 활성화시 맵 오브젝트한테 ObjectOn 을 true 로 던져주고, ObjectOff 를 false 로 던져준다.
             m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { true, false });
+            m_EventInteract.eState = EventInteractType::EVENT_STATE::NONE;
         }
+    }
 
-        // 비활성화 키 ( 임시 )
-        if (m_pGameInstance->Key_Down(DIK_LCONTROL))
+    // 상호 작용 오브젝트 쪽에서 END STATE 내보낼 시
+    if (EventInteractType::EVENT_STATE::END == m_EventInteract.eState)
+    {
+        if (true)
         {
             // 상호작용 비 활성화시 맵 오브젝트한테 ObjectOn 을 false 로 던져주고, ObjectOff 를 true 로 던져준다.
             m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { false, true });
+            m_EventInteract.eState = EventInteractType::EVENT_STATE::NONE;
         }
     }
 
@@ -415,6 +424,7 @@ HRESULT CKhazan_Sample::Ready_Collision()
     tCharVirDesc.fRadius = 0.5f;
     tCharVirDesc.fHeight = 0.5f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
+    tCharVirDesc.fMass = 100000.f;
     m_tCollisionDesc.pGameObject = this;
     //pCollDesc.pInfo = ?? // 작성하기
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;

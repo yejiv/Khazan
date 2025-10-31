@@ -45,6 +45,14 @@ HRESULT CLevel_Shader::Initialize()
 			m_SSAOConfig = m_pGameInstance->Get_SSAOConfig();
 			m_BlurConfig = m_pGameInstance->Get_BlurConfig();
 			m_FogConfig = m_pGameInstance->Get_FogConfig();
+			OUTLINE_CONFIG PlayerOutlineConfig = dynamic_cast<CPlayer_Shader*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
+					TEXT("Layer_Player"), 0))->Get_OutlineConfig();
+			m_OutlineConfig.vColor = PlayerOutlineConfig.vColor;
+			m_OutlineConfig.fSize = PlayerOutlineConfig.fSize;
+			OUTLINE_CONFIG RendererOutlineConfig = m_pGameInstance->Get_OutlineConfig();
+			m_OutlineConfig.fAlpha = RendererOutlineConfig.fAlpha;
+			m_OutlineConfig.fBias = RendererOutlineConfig.fBias;
+
 			m_isInitShadow = true;
 		}
 
@@ -299,9 +307,34 @@ HRESULT CLevel_Shader::Initialize()
 
 			if (m_isEnableToonShade)
 			{
-				if (ImGui::SliderFloat("Toon Shade Level", &m_fToonShadeLevel, 1.f, 5.f, "%.1f"))
+				if (ImGui::SliderFloat("Toon Shade Level", &m_fToonShadeLevel, 1.f, 5.f, "%.0f"))
 					m_pGameInstance->Set_ToonShadeLevel(m_fToonShadeLevel);
 			}
+
+			if (ImGui::Checkbox("Outline", &m_isEnableOutline))
+				m_pGameInstance->Set_EnableOutline(m_isEnableOutline);
+
+			if (m_isEnableOutline)
+			{
+				if (ImGui::SliderFloat("Outline Size", &m_OutlineConfig.fSize, 0.001f, 0.01f, "%.3f"))
+					dynamic_cast<CPlayer_Shader*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
+						TEXT("Layer_Player"), 0))->Set_OutlineConfig(m_OutlineConfig);
+
+				if (ImGui::ColorEdit3("Outline Color", reinterpret_cast<_float*>(&m_OutlineConfig.vColor)))
+					dynamic_cast<CPlayer_Shader*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
+						TEXT("Layer_Player"), 0))->Set_OutlineConfig(m_OutlineConfig);
+
+				if (ImGui::SliderFloat("Outline Alpha", &m_OutlineConfig.fAlpha, 0.f, 1.f, "%.2f"))
+					m_pGameInstance->Set_OutlineConfig(m_OutlineConfig);
+
+				//	if (ImGui::SliderFloat("Outline Bias", &m_OutlineConfig.fBias, 0.001f, 0.01f, "%.3f"))
+				//		m_pGameInstance->Set_OutlineConfig(m_OutlineConfig);
+
+				if (ImGui::SliderFloat("Outline Bias", &m_OutlineConfig.fBias, 0.01f, 1.f, "%.2f"))
+					m_pGameInstance->Set_OutlineConfig(m_OutlineConfig);
+			}
+
+			ImGui::Separator();
 		}
 
 		dynamic_cast<CPlayer_Shader*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER), 
@@ -368,7 +401,7 @@ HRESULT CLevel_Shader::Ready_Layer_Camera()
 	Desc.fFovy = XMConvertToRadians(60.0f);
 	Desc.fNear = 0.1f;
 	Desc.fFar = 1000.f;
-	Desc.fSpeedPerSec = 25.f;
+	Desc.fSpeedPerSec = 10.f;
 	Desc.fRotationPerSec = XMConvertToRadians(90.0f);
 	Desc.fMouseSensor = 0.1f;
 
