@@ -347,7 +347,7 @@ void CCamera_Controller::Ready_ImGui_Active_Camera_Animation_Item()
 				ImGui::InputFloat3("Translation", &(*pAnimations)[i].vTranslation.x);
 				ImGui::InputFloat4("LookAt", &(*pAnimations)[i].vLookAt.x);
 				ImGui::InputFloat("Speed", &(*pAnimations)[i].fSpeed);
-
+				ImGui::Checkbox("isCurPos", &(*pAnimations)[i].isCurPos);
 				ImGui::EndGroup();
 
 				ImVec2 rect_min = ImGui::GetItemRectMin();
@@ -365,8 +365,13 @@ void CCamera_Controller::Ready_ImGui_Active_Camera_Animation_Item()
 				// 아래쪽 패딩만
 				ImGui::Dummy(ImVec2(0.0f, 5.0f)); // 필요하면 8.0f 조절
 				ImGui::PopID();
+				_char szRemoveBuffer[10];
+				snprintf(szRemoveBuffer, sizeof(szRemoveBuffer), "Remove_%d", i);
+				if (ImGui::Button(szRemoveBuffer, ImVec2(60.f, 30.f)))
+				{
+					pCamera->Remove_Animation(m_strListSelectAnimation, i);
+				}
 			}
-
 			if (ImGui::Button("Add", ImVec2(60.f, 30.f)))
 			{
 				pCamera->Create_Animation_Item(m_strListSelectAnimation);
