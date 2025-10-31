@@ -28,6 +28,14 @@ HRESULT CAI_Controller_Yetuga::Initialize(CCreature* pOwner)
 
 void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_T))
+	{
+		CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
+		CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(pYetuga->Get_Name(), "Target");
+		pYetuga->Take_Damage(pTarget,10.f);
+	}
+
+
 	m_pPerception->Update(pOwner, fTimeDelta);
 
 	_float fPrevTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
@@ -554,8 +562,21 @@ INTERRUPTCONDITION CAI_Controller_Yetuga::GetCallbackInterruptCondition(CGameObj
 		return [pYetuga](CBlackBoard* BB) 
 			{
 				//"AttackInterrupt"
-				_bool isAttakck = BB->Get_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt");
-				if (isAttakck)
+				_bool isAttack = BB->Get_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt");
+				if (isAttack)
+				{
+					return true;
+				}
+				return false;
+			};
+	}
+
+	if ("DamagedInterrupt" == name)
+	{
+		return [pYetuga](CBlackBoard* BB)
+			{
+				_bool isDamaged = BB->Get_Value<_bool>(pYetuga->Get_Name(), "DamageInterrupt");
+				if (isDamaged)
 				{
 					return true;
 				}
@@ -597,7 +618,7 @@ PERCEPTIONCALLBACK CAI_Controller_Yetuga::GetCallBackPerception(CGameObject* pOw
 		{
 			if (Stim.eType == SENSETYPE::DAMAGE)
 			{
-				m_pBB->Set_Value("Yetuga", "DamgedInterrupt", true);
+				m_pBB->Set_Value("Yetuga", "DamageInterrupt", true);
 			}
 		};
 	};
