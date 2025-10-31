@@ -34,8 +34,7 @@ void CMoveState_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     {
         m_fSpeedPerSec = m_pGameInstance->Get_BlackBoard()->Get_Value<_float>(pYetuga->Get_Name(), "SprintSpeed");
         pModel->Set_Animation(7);
-    }
-   
+    }  
 }
 
 void CMoveState_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

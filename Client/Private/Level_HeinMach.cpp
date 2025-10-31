@@ -33,17 +33,18 @@ HRESULT CLevel_HeinMach::Initialize()
 	///*if (FAILED(Ready_Lights()))
 	//	return E_FAIL;*/
 
-	//m_pGameInstance->Add_FireTask([this]() {CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV0"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);	});	// 1번째 귀검	
+
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV0"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);	}));	// 1번째 귀검	
 	//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV0"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 	//// CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV5"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);		// 2번째 귀검
 	//// CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV10"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);		// 3번째 귀검
 	//// CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV11"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);		// 예투가 맵
 
+	//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV11"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);		// 예투가 맵
 
-	CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), 0, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-	
 	m_pGameInstance->Add_FireTask([this]() {
-		for (_uint i = 1; i < HEINMACH_SUBLV; ++i)
+		for (_uint i = 0; i < HEINMACH_SUBLV; ++i)
+
 		{
 			if (HEINMACH_1ST_BLADENEXUS == i)
 				continue;
@@ -58,6 +59,15 @@ HRESULT CLevel_HeinMach::Initialize()
 			if (HEINMACH_YETUGA == i)
 				continue;
 			*/
+
+			/*if (HEINMACH_2ND_BLADENEXUS == i)
+				continue;
+
+			if (HEINMACH_3RD_BLADENEXUS == i)
+				continue;*/
+			// 예투가 맵 빨리 로드 
+			if (HEINMACH_YETUGA == i)
+				continue;
 			
 			CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), i, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		}
@@ -65,26 +75,21 @@ HRESULT CLevel_HeinMach::Initialize()
 		return S_OK;
 		});
 
-	m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); });
-	m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); });
+	/*m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); });
+	m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); });*/
 
 
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
 
-	//CHECK_FAILED(Ready_Layer_Test(TEXT("Layer_Creature_Test")), E_FAIL);
+	CHECK_FAILED(Ready_Layer_Test(TEXT("Layer_Creature_Test")), E_FAIL);
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 		return E_FAIL;
 
-	/*if (FAILED(Ready_Layer_Player(TEXT("Layer_Player"))))
-	return E_FAIL;*/
 
+	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
+		return E_FAIL;
 
-	/*if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
-		return E_FAIL;*/
-
-
-	
 	while (true) {
 		bool all_ready = true;
 
@@ -123,6 +128,11 @@ HRESULT CLevel_HeinMach::Initialize()
 		}
 	}
 	m_futures.clear();
+
+
+	//m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); });
+	//m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); });
+
 
 	return S_OK;
 }
@@ -196,7 +206,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 	m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag, pCamera_Free);
 
-	/*CCamera_Compre::CAMERA_COMPRE_DESC	CameraSpringDesc{};
+	CCamera_Compre::CAMERA_COMPRE_DESC	CameraSpringDesc{};
 
 	CameraFreeDesc.vEye = _float4(0.39f, 3.97f, -1.79f, 1.f);
 	CameraFreeDesc.vAt = _float4(-0.26f, -0.1f, 0.96f, 1.f);
@@ -215,7 +225,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
 	pCamera_Spring->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
 	m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::HEINMACH), pCamera_Spring);
 
-	m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag, pCamera_Spring);*/
+	m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag, pCamera_Spring);
 
 	m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::HEINMACH), ENUM_CLASS(CAMERATYPE::FREE));
 
@@ -276,37 +286,37 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Test(const _wstring& strLayerTag)
 
 HRESULT CLevel_HeinMach::Ready_Layer_MapObject(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
 {
-	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+	_wstring strDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
 
 	switch (eMap)
 	{
 	case KHAZAN_MAP::HEINMACH:
-		pDataFilePath += TEXT("HeinMach/");
+		strDataFilePath += TEXT("HeinMach/");
 		break;
 	case KHAZAN_MAP::YETUGA:
-		pDataFilePath += TEXT("Yetuga/");
+		strDataFilePath += TEXT("Yetuga/");
 		break;
 	case KHAZAN_MAP::THECREVICE:
-		pDataFilePath += TEXT("TheCrevice/");
+		strDataFilePath += TEXT("TheCrevice/");
 		break;
 	case KHAZAN_MAP::EMBARS:
-		pDataFilePath += TEXT("Embars/");
+		strDataFilePath += TEXT("Embars/");
 		break;
 	case KHAZAN_MAP::VIPER:
-		pDataFilePath += TEXT("Viper/");
+		strDataFilePath += TEXT("Viper/");
 		break;
 	default:
 		break;
 	}
 
-	pDataFilePath += pDataFileName;
+	strDataFilePath += pDataFileName;
 
 	// 동일한 파일명의 _objects.dat 불러오기
-	pDataFilePath += TEXT("_object.dat");
+	strDataFilePath += TEXT("_object.dat");
 
 	DWORD dwByte = {};
 
-	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE hFile = CreateFile(strDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("데이터 파일이 없거나 박준영 문제"), E_FAIL);
 
 	// 1. 오브젝트의 총 개수
@@ -489,7 +499,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag
 				if (isAdd)
 					Safe_Release(pObject);
 				else
-					return E_FAIL;\
+					return E_FAIL;
 				return S_OK;
 				});
 		}
@@ -504,37 +514,37 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag
 HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Interactive(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
 
 {
-	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+	_wstring strDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
 
 	switch (eMap)
 	{
 	case KHAZAN_MAP::HEINMACH:
-		pDataFilePath += TEXT("HeinMach/");
+		strDataFilePath += TEXT("HeinMach/");
 		break;
 	case KHAZAN_MAP::YETUGA:
-		pDataFilePath += TEXT("Yetuga/");
+		strDataFilePath += TEXT("Yetuga/");
 		break;
 	case KHAZAN_MAP::THECREVICE:
-		pDataFilePath += TEXT("TheCrevice/");
+		strDataFilePath += TEXT("TheCrevice/");
 		break;
 	case KHAZAN_MAP::EMBARS:
-		pDataFilePath += TEXT("Embars/");
+		strDataFilePath += TEXT("Embars/");
 		break;
 	case KHAZAN_MAP::VIPER:
-		pDataFilePath += TEXT("Viper/");
+		strDataFilePath += TEXT("Viper/");
 		break;
 	default:
 		break;
 	}
 
-	pDataFilePath += pDataFileName;
+	strDataFilePath += pDataFileName;
 
 	// 동일한 파일명의 _objects.dat 불러오기
-	pDataFilePath += TEXT("_interactive.dat");
+	strDataFilePath += TEXT("_interactive.dat");
 
 	DWORD dwByte = {};
 
-	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE hFile = CreateFile(strDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("데이터 파일이 없거나 박준영 문제"), E_FAIL);
 
 	// 1. 오브젝트의 총 개수
@@ -615,37 +625,37 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Interactive(const _wstring& strLa
 
 HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Inst(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
 {
-	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+	_wstring strDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
 
 	switch (eMap)
 	{
 	case KHAZAN_MAP::HEINMACH:
-		pDataFilePath += TEXT("HeinMach/");
+		strDataFilePath += TEXT("HeinMach/");
 		break;
 	case KHAZAN_MAP::YETUGA:
-		pDataFilePath += TEXT("Yetuga/");
+		strDataFilePath += TEXT("Yetuga/");
 		break;
 	case KHAZAN_MAP::THECREVICE:
-		pDataFilePath += TEXT("TheCrevice/");
+		strDataFilePath += TEXT("TheCrevice/");
 		break;
 	case KHAZAN_MAP::EMBARS:
-		pDataFilePath += TEXT("Embars/");
+		strDataFilePath += TEXT("Embars/");
 		break;
 	case KHAZAN_MAP::VIPER:
-		pDataFilePath += TEXT("Viper/");
+		strDataFilePath += TEXT("Viper/");
 		break;
 	default:
 		break;
 	}
 
-	pDataFilePath += pDataFileName;
+	strDataFilePath += pDataFileName;
 
 	// 동일한 파일명의 _inst.dat 불러오기
-	pDataFilePath += TEXT("_inst.dat");
+	strDataFilePath += TEXT("_inst.dat");
 
 	DWORD dwByte = {};
 
-	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE hFile = CreateFile(strDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("데이터 파일이 없거나 박준영 문제"), E_FAIL);
 
 	// 1. 오브젝트의 총 개수
@@ -700,36 +710,36 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Inst(const _wstring& strLayerTag,
 HRESULT CLevel_HeinMach::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
 {
 	// Dat 기본 경로
-	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+	_wstring strDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
 
 	switch (eMap)
 	{
 	case KHAZAN_MAP::HEINMACH:
-		pDataFilePath += TEXT("HeinMach/");
+		strDataFilePath += TEXT("HeinMach/");
 		break;
 	case KHAZAN_MAP::YETUGA:
-		pDataFilePath += TEXT("Yetuga/");
+		strDataFilePath += TEXT("Yetuga/");
 		break;
 	case KHAZAN_MAP::THECREVICE:
-		pDataFilePath += TEXT("TheCrevice/");
+		strDataFilePath += TEXT("TheCrevice/");
 		break;
 	case KHAZAN_MAP::EMBARS:
-		pDataFilePath += TEXT("Embars/");
+		strDataFilePath += TEXT("Embars/");
 		break;
 	case KHAZAN_MAP::VIPER:
-		pDataFilePath += TEXT("Viper/");
+		strDataFilePath += TEXT("Viper/");
 		break;
 	default:
 		break;
 	}
 
-	pDataFilePath += pDataFileName;
+	strDataFilePath += pDataFileName;
 
-	pDataFilePath += TEXT("_lights.dat");
+	strDataFilePath += TEXT("_lights.dat");
 
 	DWORD dwByte = {};
 
-	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE hFile = CreateFile(strDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	CHECK_EQUAL(INVALID_HANDLE_VALUE, hFile, E_FAIL);
 
 	// 1. 조명의 총 개수

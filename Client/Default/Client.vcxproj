@@ -219,6 +219,8 @@
     <ClInclude Include="..\public\Mon_Gague.h" />
     <ClInclude Include="..\Public\MoveState_Yetuga.h" />
     <ClInclude Include="..\Public\Player.h" />
+    <ClInclude Include="..\Public\Projectile.h" />
+    <ClInclude Include="..\Public\Projectile_Yetuga.h" />
     <ClInclude Include="..\Public\Prop.h" />
     <ClInclude Include="..\Public\Prop_Animated.h" />
     <ClInclude Include="..\Public\Prop_Dynamic.h" />
@@ -239,6 +241,7 @@
     <ClInclude Include="..\public\UI_ComBatSpirit_Slot.h" />
     <ClInclude Include="..\public\UI_ComBatSpirit_Gauge.h" />
     <ClInclude Include="..\public\UI_CombatSpirit_Penal.h" />
+    <ClInclude Include="..\public\UI_Default_Tex.h" />
     <ClInclude Include="..\public\UI_Gague_Tip.h" />
     <ClInclude Include="..\public\UI_Guide_Gauge.h" />
     <ClInclude Include="..\public\UI_HUD.h" />
@@ -252,6 +255,10 @@
     <ClInclude Include="..\public\UI_QuickSlot_Item_Panel.h" />
     <ClInclude Include="..\public\UI_QuickSlot_Skill.h" />
     <ClInclude Include="..\public\UI_QuickSlot_Skill_Panel.h" />
+    <ClInclude Include="..\public\UI_State.h" />
+    <ClInclude Include="..\public\UI_State_Button.h" />
+    <ClInclude Include="..\public\UI_State_List.h" />
+    <ClInclude Include="..\public\UI_State_Panel.h" />
     <ClInclude Include="..\public\UI_Text.h" />
     <ClInclude Include="..\public\UI_TextBox.h" />
     <ClInclude Include="..\public\UI_Texture.h" />
@@ -326,6 +333,8 @@
     <ClCompile Include="..\private\Mon_Gague.cpp" />
     <ClCompile Include="..\Private\MoveState_Yetuga.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
+    <ClCompile Include="..\Private\Projectile.cpp" />
+    <ClCompile Include="..\Private\Projectile_Yetuga.cpp" />
     <ClCompile Include="..\Private\Prop.cpp" />
     <ClCompile Include="..\Private\Prop_Animated.cpp" />
     <ClCompile Include="..\Private\Prop_Dynamic.cpp" />
@@ -346,6 +355,7 @@
     <ClCompile Include="..\private\UI_ComBatSpirit_Slot.cpp" />
     <ClCompile Include="..\private\UI_ComBatSpirit_Gauge.cpp" />
     <ClCompile Include="..\private\UI_CombatSpirit_Penal.cpp" />
+    <ClCompile Include="..\private\UI_Default_Tex.cpp" />
     <ClCompile Include="..\private\UI_Gague_Tip.cpp" />
     <ClCompile Include="..\private\UI_Guide_Gauge.cpp" />
     <ClCompile Include="..\private\UI_HUD.cpp" />
@@ -359,6 +369,10 @@
     <ClCompile Include="..\private\UI_QuickSlot_Item_Panel.cpp" />
     <ClCompile Include="..\private\UI_QuickSlot_Skill.cpp" />
     <ClCompile Include="..\private\UI_QuickSlot_Skill_Panel.cpp" />
+    <ClCompile Include="..\private\UI_State.cpp" />
+    <ClCompile Include="..\private\UI_State_Button.cpp" />
+    <ClCompile Include="..\private\UI_State_List.cpp" />
+    <ClCompile Include="..\private\UI_State_Panel.cpp" />
     <ClCompile Include="..\private\UI_Text.cpp" />
     <ClCompile Include="..\private\UI_TextBox.cpp" />
     <ClCompile Include="..\private\UI_Texture.cpp" />

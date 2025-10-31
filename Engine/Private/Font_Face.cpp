@@ -267,6 +267,8 @@ void CFont_Face::Free()
     m_Glyphs.clear();
     m_Buffer.clear();
 
+    m_LRURefs.clear();
+
     Safe_Release(m_pTexture);
     Safe_Release(m_pSRV);
 	Safe_Release(m_pDevice);

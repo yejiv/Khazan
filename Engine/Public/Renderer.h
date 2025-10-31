@@ -26,9 +26,18 @@ public:
 	void Set_EnableSSAO(_bool isEnable) { m_isEnableSSAO = isEnable; }
 	void Set_EnableFog(_bool isEnable) { m_isEnableFog = isEnable; }
 	void Set_EnableToonShade(_bool isEnable) { m_isEnableToonShade = isEnable; }
+	void Set_EnableOutline(_bool isEnable) { m_isEnableOutline = isEnable; }
 #endif
 
+public:
 	void Set_ToonShadeLevel(_float fLevel) { m_fToonShadeLevel = fLevel; }
+	OUTLINE_CONFIG Get_OutlineConfig() { return m_OutlineConfig; }
+	void Set_OutlineConfig(OUTLINE_CONFIG Config) 
+	{ 
+		m_OutlineConfig.fAlpha = Config.fAlpha;
+		m_OutlineConfig.fBias = Config.fBias;
+	}
+
 
 private:
 	ID3D11Device*				m_pDevice = { nullptr };
@@ -44,7 +53,14 @@ private:
 	_float4x4					m_WorldMatrix{}, m_ViewMatrix{}, m_ProjMatrix{};
 	_float						m_fViewportWidth{}, m_fViewportHeight{};
 
+	// Toon Shade
 	_float						m_fToonShadeLevel = { 3.f };
+
+	// Outline
+	_float						m_fOutlineAlpha = { 1.f };
+	_float						m_fOutlineBias = { 0.01f };
+
+	OUTLINE_CONFIG				m_OutlineConfig = { _float3(0.f, 0.f, 0.f), 0.f, 1.f, 0.01f };
 
 #ifdef _DEBUG
 private:
@@ -54,12 +70,14 @@ private:
 	_bool						m_isEnableSSAO = { true };
 	_bool						m_isEnableFog = {};
 	_bool						m_isEnableToonShade = {};
+	_bool						m_isEnableOutline = {};
 #endif
 
 private:
 	HRESULT Render_Priority();
 	HRESULT Render_Shadow();
 	HRESULT Render_NonBlend();
+	HRESULT Render_Outline();
 	HRESULT Render_SSAO();
 	HRESULT Render_Lights();
 	HRESULT Render_PostScene();

@@ -26,7 +26,7 @@ public:
 
 	}PROP_STATIC_DESC;
 
-	enum class SHADER_PASS { MAIN, WIREFRAME, SHADOW, MAP, MAP_BLEND, SNOWMAP, SNOWMAP_BLEND, END };
+	enum class SHADER_PASS { MAIN, WIREFRAME, SHADOW, MAP, MAP_BLEND, SNOWMAP, SNOWMAP_BLEND, PLANT, SNOWPLANT, END };
 
 private:
 	CProp_Static(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -44,13 +44,23 @@ public:
 private:
 	CModel_Instance* m_pModelCom = { nullptr };
 	CBody* m_pBodyCom = { nullptr };
+
 private:
 	SHADER_PASS m_eShaderPass = { SHADER_PASS::MAP };
+
+#pragma region Ç®¶§±â
+private:
+	_float m_fTime = {};
+	_float3 m_vWindDir = { _float3(1.f, 0.f, 0.35f) };
+	_float m_fWindPower = { 0.45f };
+	_float m_fWindSpeed = { 2.4f };
+#pragma endregion
 
 private:
 	HRESULT Ready_Components(void* pArg);
 	HRESULT Ready_Collision(void* pArg);
 	virtual HRESULT Bind_ShaderResources();
+	HRESULT Bind_Waving_Plants();
 
 	HRESULT Bind_Materials(_uint iMeshIndex);
 

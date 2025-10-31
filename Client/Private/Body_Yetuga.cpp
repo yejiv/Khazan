@@ -2,6 +2,27 @@
 #include "GameInstance.h"
 
 
+_float3 CBody_Yetuga::Get_ThrowPoint()
+{
+    _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix("Weapon_R");
+    _matrix ConvertMatrix = XMLoadFloat4x4(&BoneMatrix);
+    _matrix WorldMatrix = m_pOwnerTransform->Get_WorldMatrix();
+
+    _matrix MulMatrix = ConvertMatrix * WorldMatrix;
+
+    _float4x4 ThrowMatrix{};
+
+    XMStoreFloat4x4(&ThrowMatrix,MulMatrix);
+
+  
+    m_vThrowPoint.x = ThrowMatrix.m[3][0];
+    m_vThrowPoint.y = ThrowMatrix.m[3][1];
+    m_vThrowPoint.z = ThrowMatrix.m[3][2];
+
+    return m_vThrowPoint;
+}
+
+
 CBody_Yetuga::CBody_Yetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CPartObject{pDevice,pContext}
 {
@@ -110,7 +131,7 @@ HRESULT CBody_Yetuga::Ready_Components()
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
-
+ 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Yetuga"),
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;

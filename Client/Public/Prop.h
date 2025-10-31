@@ -46,6 +46,7 @@ public:
 	_bool isInstance() { return m_Properties.isInstance; }
 	_bool isShadow() { return m_Properties.isShadow; }
 	_bool isBackGround() { return m_Properties.isBackGround; }
+	_bool isPlant() { return m_Properties.isPlant; }
 
 protected:
 	_tchar m_szModelName[MAX_PATH] = {};
