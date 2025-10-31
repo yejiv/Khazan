@@ -65,6 +65,13 @@ DepthStencilState DSS_None
     DepthWriteMask = zero;
 };
 
+DepthStencilState DSS_Outline
+{
+    DepthEnable = true;         // 깊이 테스트 활성화
+    DepthWriteMask = zero;      // 깊이 기록 비활성화
+    DepthFunc = LESS_EQUAL;     // 기본 깊이 함수
+};
+
 BlendState BS_Default
 {
     BlendEnable[0] = false;

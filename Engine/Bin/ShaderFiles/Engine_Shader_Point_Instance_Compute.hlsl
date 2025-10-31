@@ -232,8 +232,8 @@ void CS_RESET_SPEED(uint3 DTid : SV_DispatchThreadID)
 {
     uint iIndex = DTid.x;
     
-    if (iIndex >= g_iNumInstances)
-        return;
+    //if (iIndex >= g_iNumInstances)
+    //    return;
     
     VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
     
@@ -267,7 +267,7 @@ void CS_TURBULENCE(uint3 DTid : SV_DispatchThreadID)
     
     float3 noiseDirection = (float3(forceX, forceY, forceZ) * 2.f - 1.f);   //0~1 -> -1 ~ 1
     
-    Particle.vTranslation += float4(noiseDirection, 0.f) * 10.f * g_fTimeDelta; //나중에 필요시 상수버퍼로 세기값 받아오기
+    Particle.vTranslation += float4(noiseDirection, 0.f) * 2.f * g_fTimeDelta; //나중에 필요시 상수버퍼로 세기값 받아오기
     
     g_OutputData[iIndex] = Particle;
 }

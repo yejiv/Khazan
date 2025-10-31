@@ -35,7 +35,8 @@ namespace Client {
 
 	// 상호작용 오브젝트 어떤 종류인지 받아오는 이벤트 구조체 ( 오브젝트 -> 플레이어 )
 	struct EventInteractType {
-		_bool isInteract{ false };									// 트리거에 충돌시 TRUE
+		enum EVENT_STATE { BEGIN, END, NONE };						// 이벤트 시작, 끝 여부
+		EVENT_STATE eState = { EVENT_STATE::NONE };					// 이벤트 상태 여부
 		_bool isEvent{ false };										// 이벤트 발생 시 TRUE
 		INTERACTIVE_TYPE eInteractType{ INTERACTIVE_TYPE::END };	// 상호작용 오브젝트의 타입 ( 체크포인트, 상자, 사다리 등등 )
 		EventBladeNexus BNEvent{};									// 귀검 구조체

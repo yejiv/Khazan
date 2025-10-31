@@ -31,17 +31,12 @@ HRESULT CProp_Static::Initialize_Clone(void* pArg)
 
     m_pTransformCom->Set_WorldMatrix(XMMatrixIdentity());
 
-
-
-    // if (pDesc->Properties.isCollider)
-    // {
-    //     CHECK_FAILED(Ready_Collision(pArg), E_FAIL);
-    // }
-
     if (isSnow())
     {
         if (isIce())
             m_eShaderPass = SHADER_PASS::SNOWMAP_BLEND;
+        else if (isPlant())
+            m_eShaderPass = SHADER_PASS::SNOWPLANT;
         else
             m_eShaderPass = SHADER_PASS::SNOWMAP;
     }
@@ -49,6 +44,8 @@ HRESULT CProp_Static::Initialize_Clone(void* pArg)
     {
         if (isIce())
             m_eShaderPass = SHADER_PASS::MAP_BLEND;
+        else if (isPlant())
+            m_eShaderPass = SHADER_PASS::PLANT;
         else
             m_eShaderPass = SHADER_PASS::MAP;
     }
@@ -62,6 +59,10 @@ void CProp_Static::Priority_Update(_float fTimeDelta)
 
 void CProp_Static::Update(_float fTimeDelta)
 {
+    if (isPlant())
+    {
+        m_fTime += fTimeDelta;
+    }
 }
 
 void CProp_Static::Late_Update(_float fTimeDelta)
@@ -81,6 +82,9 @@ HRESULT CProp_Static::Render()
 {
     CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Static : Bind_ShaderResources ÇÔ¼ö E_FAIL"), E_FAIL);
 
+    if (isPlant())
+        CHECK_FAILED(Bind_Waving_Plants(), E_FAIL);
+
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
     for (_uint i = 0; i < iNumMeshes; ++i)
@@ -88,6 +92,7 @@ HRESULT CProp_Static::Render()
         Bind_Instance_Materials(m_pModelCom, i);
 
         if (true == isSnow()) CHECK_FAILED(Bind_ShaderResources_ForSnowMap(i), E_FAIL);
+
 
         CHECK_FAILED_ASSERT(m_pShaderCom->Begin(ENUM_CLASS(m_eShaderPass)), E_FAIL);
 
@@ -162,11 +167,21 @@ HRESULT CProp_Static::Bind_ShaderResources()
     return S_OK;
 }
 
+HRESULT CProp_Static::Bind_Waving_Plants()
+{
+    m_pShaderCom->Bind_RawValue("g_fTime", &m_fTime, sizeof(_float));
+    m_pShaderCom->Bind_RawValue("g_vWindDir", &m_vWindDir, sizeof(_float3));
+    m_pShaderCom->Bind_RawValue("g_fWindPower", &m_fWindPower, sizeof(_float));
+    m_pShaderCom->Bind_RawValue("g_fWindSpeed", &m_fWindSpeed, sizeof(_float));
+
+    return S_OK;
+}
+
 HRESULT CProp_Static::Bind_Materials(_uint iMeshIndex)
 {
     m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0);
     m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", iMeshIndex, aiTextureType_NORMALS, 0);
-    //m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", iMeshIndex, aiTextureType_EMISSIVE, 0);
+    m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", iMeshIndex, aiTextureType_EMISSIVE, 0);
     m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0);
 
     return S_OK;

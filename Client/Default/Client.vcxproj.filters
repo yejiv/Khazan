@@ -88,9 +88,6 @@
     <Filter Include="95.SuperClass\UI">
       <UniqueIdentifier>{9ef03780-85dc-46e5-ad98-28a16e1cec36}</UniqueIdentifier>
     </Filter>
-    <Filter Include="94. ClientInstance">
-      <UniqueIdentifier>{7a63893c-daa7-4abb-bec1-4e58e468f354}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\JOH Test\Test Anim Model">
       <UniqueIdentifier>{2a2f2620-f90d-4ad0-80a5-ce65409e5eab}</UniqueIdentifier>
     </Filter>
@@ -99,15 +96,6 @@
     </Filter>
     <Filter Include="02.GameObject\MapObject\00.Prop\04.Dynamic">
       <UniqueIdentifier>{793f3e60-e849-4e56-833a-595a71a59c84}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="94. ClientInstance\UI_Manager">
-      <UniqueIdentifier>{1a84dd5b-c59f-474d-8847-7c1b26d43f75}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="94. ClientInstance\UI_Manager\Layer">
-      <UniqueIdentifier>{18f4177d-5a3a-4e0a-b041-3f5e4008009c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="94. ClientInstance\UI_Manager\Atlas_RenderGroup">
-      <UniqueIdentifier>{57ad347e-b1e7-4c06-9ec6-ab0fe2033e5c}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObject\UI">
       <UniqueIdentifier>{345178cf-31b2-40a0-894a-34250de6668a}</UniqueIdentifier>
@@ -235,9 +223,6 @@
     <Filter Include="02.GameObject\UI\Inven">
       <UniqueIdentifier>{bf77453f-04e7-4354-93fa-9c62f443d060}</UniqueIdentifier>
     </Filter>
-    <Filter Include="94. ClientInstance\DB">
-      <UniqueIdentifier>{dffd0957-694b-48a5-a2e0-c30d199869c1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\UI\Item">
       <UniqueIdentifier>{5a375172-cf57-4494-aa11-36f0c266d20c}</UniqueIdentifier>
     </Filter>
@@ -364,12 +349,6 @@
     <Filter Include="04. Sequence\Dummy">
       <UniqueIdentifier>{f2d6df02-dd3b-4aad-99f3-888f46dc3174}</UniqueIdentifier>
     </Filter>
-    <Filter Include="94. ClientInstance\Camera">
-      <UniqueIdentifier>{33df5b8e-6309-4a8a-8ced-629013b2df9b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="94. ClientInstance\Camera\Manager">
-      <UniqueIdentifier>{cf0c660e-bce3-46f8-8912-49aa0bb51fa0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Levels\HeinMach">
       <UniqueIdentifier>{4230c53b-dd46-4d38-8626-e6d9f39edccc}</UniqueIdentifier>
     </Filter>
@@ -381,6 +360,45 @@
     </Filter>
     <Filter Include="01.Levels\Viper">
       <UniqueIdentifier>{663bf125-288a-4167-aca7-71e9e34d56d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94. ClientInstance\Camera\Controller">
+      <UniqueIdentifier>{ddd3541e-7243-4f90-a57b-80b45d25d080}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance">
+      <UniqueIdentifier>{7a63893c-daa7-4abb-bec1-4e58e468f354}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\UI_Manager">
+      <UniqueIdentifier>{1a84dd5b-c59f-474d-8847-7c1b26d43f75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\UI_Manager\Layer">
+      <UniqueIdentifier>{18f4177d-5a3a-4e0a-b041-3f5e4008009c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\UI_Manager\Atlas_RenderGroup">
+      <UniqueIdentifier>{57ad347e-b1e7-4c06-9ec6-ab0fe2033e5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\DB">
+      <UniqueIdentifier>{dffd0957-694b-48a5-a2e0-c30d199869c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\Debug">
+      <UniqueIdentifier>{40550248-8478-40d1-913b-0394bb2ab80f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\Camera">
+      <UniqueIdentifier>{33df5b8e-6309-4a8a-8ced-629013b2df9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\Camera\Manager">
+      <UniqueIdentifier>{cf0c660e-bce3-46f8-8912-49aa0bb51fa0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\State">
+      <UniqueIdentifier>{aaba0e0d-e85e-4ef7-a1db-6efac646ae7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\State\ETC">
+      <UniqueIdentifier>{fc22b869-8155-4de2-b6ce-bcd319a3e06c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Projectile">
+      <UniqueIdentifier>{016b08f1-9acb-46f9-accb-93ce5a6ece77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Projectile\Yetuga">
+      <UniqueIdentifier>{0141891e-b7df-4dcc-8da3-729637bf512b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -469,16 +487,16 @@
       <Filter>02.GameObject\MapObject\00.Prop\99.Test</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ClientInstance.h">
-      <Filter>94. ClientInstance</Filter>
+      <Filter>94.ClientInstance</Filter>
     </ClInclude>
     <ClInclude Include="..\public\UI_Manager.h">
-      <Filter>94. ClientInstance\UI_Manager</Filter>
+      <Filter>94.ClientInstance\UI_Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\public\UI_Layer.h">
-      <Filter>94. ClientInstance\UI_Manager\Layer</Filter>
+      <Filter>94.ClientInstance\UI_Manager\Layer</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Atlas_RenderGroup.h">
-      <Filter>94. ClientInstance\UI_Manager\Atlas_RenderGroup</Filter>
+      <Filter>94.ClientInstance\UI_Manager\Atlas_RenderGroup</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\UI_Button.h">
       <Filter>95.SuperClass\UI\UIPart\UI_Button</Filter>
@@ -586,7 +604,7 @@
       <Filter>02.GameObject\UI\Inven</Filter>
     </ClInclude>
     <ClInclude Include="..\public\DB_Manager.h">
-      <Filter>94. ClientInstance\DB</Filter>
+      <Filter>94.ClientInstance\DB</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Client_Struct.h">
       <Filter>99.Defines</Filter>
@@ -643,10 +661,10 @@
       <Filter>02.GameObject\UI\WorldUI\Damage_UI</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Debug_Manager.h">
-      <Filter>94. ClientInstance\Debug</Filter>
+      <Filter>94.ClientInstance\Debug</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Camera_Controller.h">
-      <Filter>03.Tool\Camera\Controller</Filter>
+      <Filter>94. ClientInstance\Camera\Controller</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Body_Yetuga.h">
       <Filter>02.GameObject\Creature\Monster\Yetuga\Body</Filter>
@@ -706,7 +724,7 @@
       <Filter>99.Defines</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Camera_Manager.h">
-      <Filter>94. ClientInstance\Camera\Manager</Filter>
+      <Filter>94.ClientInstance\Camera\Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Level_Crevice.h">
       <Filter>01.Levels\Crevice</Filter>
@@ -716,6 +734,27 @@
     </ClInclude>
     <ClInclude Include="..\Public\Level_Viper.h">
       <Filter>01.Levels\Viper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Default_Tex.h">
+      <Filter>02.GameObject\UI\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_State_Panel.h">
+      <Filter>02.GameObject\UI\State\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_State_Button.h">
+      <Filter>02.GameObject\UI\State\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_State_List.h">
+      <Filter>02.GameObject\UI\State\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_State.h">
+      <Filter>02.GameObject\UI\State</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Projectile.h">
+      <Filter>02.GameObject\Projectile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Projectile_Yetuga.h">
+      <Filter>02.GameObject\Projectile\Yetuga</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -799,16 +838,16 @@
       <Filter>02.GameObject\MapObject\00.Prop\99.Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\ClientInstance.cpp">
-      <Filter>94. ClientInstance</Filter>
+      <Filter>94.ClientInstance</Filter>
     </ClCompile>
     <ClCompile Include="..\private\UI_Manager.cpp">
-      <Filter>94. ClientInstance\UI_Manager</Filter>
+      <Filter>94.ClientInstance\UI_Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\private\UI_Layer.cpp">
-      <Filter>94. ClientInstance\UI_Manager\Layer</Filter>
+      <Filter>94.ClientInstance\UI_Manager\Layer</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Atlas_RenderGroup.cpp">
-      <Filter>94. ClientInstance\UI_Manager\Atlas_RenderGroup</Filter>
+      <Filter>94.ClientInstance\UI_Manager\Atlas_RenderGroup</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\UI_Button.cpp">
       <Filter>95.SuperClass\UI\UIPart\UI_Button</Filter>
@@ -913,7 +952,7 @@
       <Filter>02.GameObject\UI\Inven</Filter>
     </ClCompile>
     <ClCompile Include="..\private\DB_Manager.cpp">
-      <Filter>94. ClientInstance\DB</Filter>
+      <Filter>94.ClientInstance\DB</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Item_Slot.cpp">
       <Filter>02.GameObject\UI\Item</Filter>
@@ -970,10 +1009,10 @@
       <Filter>02.GameObject\UI\WorldUI\Damage_UI</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Debug_Manager.cpp">
-      <Filter>94. ClientInstance\Debug</Filter>
+      <Filter>94.ClientInstance\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Camera_Controller.cpp">
-      <Filter>03.Tool\Camera\Controller</Filter>
+      <Filter>94. ClientInstance\Camera\Controller</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Body_Yetuga.cpp">
       <Filter>02.GameObject\Creature\Monster\Yetuga\Body</Filter>
@@ -1027,7 +1066,7 @@
       <Filter>04. Sequence\Dummy</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Camera_Manager.cpp">
-      <Filter>94. ClientInstance\Camera\Manager</Filter>
+      <Filter>94.ClientInstance\Camera\Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Level_Crevice.cpp">
       <Filter>01.Levels\Crevice</Filter>
@@ -1037,6 +1076,27 @@
     </ClCompile>
     <ClCompile Include="..\Private\Level_Viper.cpp">
       <Filter>01.Levels\Viper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Default_Tex.cpp">
+      <Filter>02.GameObject\UI\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_State_Panel.cpp">
+      <Filter>02.GameObject\UI\State\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_State_Button.cpp">
+      <Filter>02.GameObject\UI\State\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_State_List.cpp">
+      <Filter>02.GameObject\UI\State\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_State.cpp">
+      <Filter>02.GameObject\UI\State</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile.cpp">
+      <Filter>02.GameObject\Projectile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile_Yetuga.cpp">
+      <Filter>02.GameObject\Projectile\Yetuga</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
