@@ -9,42 +9,35 @@ class CVIBuffer_Rect;
 NS_END
 
 NS_BEGIN(Client)
-class CUI_BackGround final : public CUI_Texture
+class CUI_Default_Tex final : public CUI_Texture
 {
-public:
-	enum class UIBGTYPE { MAIN, ITEM, BLADENEXUS, STATE, END  };
 private:
-	CUI_BackGround(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CUI_BackGround(const CUI_BackGround& Prototype);
-	virtual ~CUI_BackGround() = default;
+	CUI_Default_Tex(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CUI_Default_Tex(const CUI_Default_Tex& Prototype);
+	virtual ~CUI_Default_Tex() = default;
 
 public:
-	void					Setting_BG(UIBGTYPE eType);
-
+	
 public:
-	virtual HRESULT			Initialize_Prototype() override;
+	virtual HRESULT			Initialize_Prototype();
 	virtual HRESULT			Initialize_Clone(void* pArg) override;
 	virtual void			Priority_Update(_float fTimeDelta) override;
 	virtual void			Update(_float fTimeDelta) override;
 	virtual void			Late_Update(_float fTimeDelta) override;
 	virtual HRESULT			Render() override;
 
-	virtual void			Bubble_EventCall();
+	virtual HRESULT			Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
 
 private:
 	CShader*				m_pShaderCom = { nullptr };
 	CTexture*				m_pTextureCom = { nullptr };
 	CVIBuffer_Rect*			m_pVIBufferCom = { nullptr };
-	CTexture*				m_pMaskTextureCom = { nullptr };
 
-	UIBGTYPE				m_eBGType = { UIBGTYPE ::END};
 private:
-	HRESULT					Ready_Prototype();
 	HRESULT					Ready_Component();
 
-	HRESULT					Bind_Mask();
 public:
-	static CUI_BackGround*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CUI_Default_Tex* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject*	Clone(void* pArg) override;
 	virtual void			Free() override;
 };

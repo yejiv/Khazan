@@ -204,4 +204,8 @@ void CDB_Manager::Free()
 {
 	__super::Free();
 
+	m_ItemData.clear();
+	m_EquipEffectData.clear();
+	m_OtherEffectData.clear();
+
 }
