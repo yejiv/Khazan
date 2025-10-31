@@ -28,6 +28,7 @@ HRESULT CMainApp::Initialize()
 	Imgui_Menu.push_back(TEXT("Client"));
 	Imgui_Menu.push_back(TEXT("Debug"));
 	Imgui_Menu.push_back(TEXT("Camera"));
+	Imgui_Menu.push_back(TEXT("Shader"));
 	EngineDesc.Menu_Imgui = Imgui_Menu;
 	
 

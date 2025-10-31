@@ -37,12 +37,15 @@ private:
 	class CUI_State_List*				m_pUpButton = { nullptr };
 
 	vector<class CUI_State_List*>		m_pState;
-	vector<class CUI_State_Panel*>		m_pPanel;
+	vector<class CUI_State_MainPanel*>	m_pPanel;
+
+	UI_PLAYER_STATE_DATA				m_Player_Data;
 
 private:
 	virtual	HRESULT						Ready_Prototype();
 	HRESULT								Ready_Object();
-
+	void								Ready_PlayerData();
+	HRESULT								Ready_UISetting();
 	void								UI_Animation(_float fTimeDelta);
 
 public:

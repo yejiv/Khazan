@@ -30,10 +30,10 @@ private:
 	_float					m_fTimeAcc = {};
 #endif
 
+private:
 	// Cascade
 	CASCADE_CONFIG			m_CascadeConfig = {};
 
-	_bool					m_isInitShadow = {};
 	_float					m_fCameraNear = { 0.1f };
 	_float					m_fCameraFar = { 1000.f };
 	_uint					m_iNumCascades = {};
@@ -52,7 +52,6 @@ private:
 
 	// PostProcessing
 	_float					m_fEmissiveIntensity = {};
-	_float					m_fBlurWeight = {};
 
 	// Blur
 	GAUSSIAN_BLUR_CONFIG	m_BlurConfig = {};

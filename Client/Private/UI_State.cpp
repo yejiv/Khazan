@@ -5,6 +5,7 @@
 #include "UI_TextBox.h"
 #include "UI_BackGround.h"
 
+#include "UI_State_MainPanel.h"
 #include "UI_State_Panel.h"
 #include "UI_State_Button.h"
 #include "UI_State_List.h"
@@ -51,6 +52,9 @@ HRESULT CUI_State::Initialize_Clone(void* pArg)
 {
 	if (FAILED(__super::Initialize_Clone(pArg)))
 		return E_FAIL;
+
+	Ready_PlayerData();
+
 	return S_OK;
 }
 
@@ -198,7 +202,7 @@ HRESULT CUI_State::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, voi
 					m_pState.push_back(pChild);
 
 					Safe_AddRef(pChild);
-					pChild->Update_Pos(i, vPos, 65.f);
+					pChild->Setting_List(i, vPos, 65.f);
 				}
 			}
 			else
@@ -220,28 +224,33 @@ HRESULT CUI_State::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, voi
 				}
 				else if (strName == "Level")
 				{
-					m_pPanel[ENUM_CLASS(STATE_PANEL::LEVEL)] = static_cast<CUI_State_Panel*>(pChild);
+					m_pPanel[ENUM_CLASS(STATE_PANEL::LEVEL)] = static_cast<CUI_State_MainPanel*>(pChild);
 					Safe_AddRef(pChild);
+					m_pPanel[ENUM_CLASS(STATE_PANEL::LEVEL)]->Setting_PanelLevel(ENUM_CLASS(STATE_PANEL::LEVEL), &m_Player_Data);
 				}
 				else if (strName == "Lachryma")
 				{
-					m_pPanel[ENUM_CLASS(STATE_PANEL::LACHRYMA)] = static_cast<CUI_State_Panel*>(pChild);
+					m_pPanel[ENUM_CLASS(STATE_PANEL::LACHRYMA)] = static_cast<CUI_State_MainPanel*>(pChild);
 					Safe_AddRef(pChild);
+					m_pPanel[ENUM_CLASS(STATE_PANEL::LACHRYMA)]->Setting_PanelLevel(ENUM_CLASS(STATE_PANEL::LACHRYMA), &m_Player_Data);
 				}
 				else if (strName == "DefaultState")
 				{
-					m_pPanel[ENUM_CLASS(STATE_PANEL::DEFAULT_STATE)] = static_cast<CUI_State_Panel*>(pChild);
+					m_pPanel[ENUM_CLASS(STATE_PANEL::DEFAULT_STATE)] = static_cast<CUI_State_MainPanel*>(pChild);
 					Safe_AddRef(pChild);
+					m_pPanel[ENUM_CLASS(STATE_PANEL::DEFAULT_STATE)]->Setting_PanelLevel(ENUM_CLASS(STATE_PANEL::DEFAULT_STATE), &m_Player_Data);
 				}
 				else if (strName == "AddState")
 				{
-					m_pPanel[ENUM_CLASS(STATE_PANEL::ADD_STATE)] = static_cast<CUI_State_Panel*>(pChild);
+					m_pPanel[ENUM_CLASS(STATE_PANEL::ADD_STATE)] = static_cast<CUI_State_MainPanel*>(pChild);
 					Safe_AddRef(pChild);
+					m_pPanel[ENUM_CLASS(STATE_PANEL::ADD_STATE)]->Setting_PanelLevel(ENUM_CLASS(STATE_PANEL::ADD_STATE), &m_Player_Data);
 				}
 				else if (strName == "Elemental")
 				{
-					m_pPanel[ENUM_CLASS(STATE_PANEL::ELEMENTAL)] = static_cast<CUI_State_Panel*>(pChild);
+					m_pPanel[ENUM_CLASS(STATE_PANEL::ELEMENTAL)] = static_cast<CUI_State_MainPanel*>(pChild);
 					Safe_AddRef(pChild);
+					m_pPanel[ENUM_CLASS(STATE_PANEL::ELEMENTAL)]->Setting_PanelLevel(ENUM_CLASS(STATE_PANEL::ELEMENTAL), &m_Player_Data);
 				}
 				else if (strName == "State_Button")
 				{
@@ -255,6 +264,8 @@ HRESULT CUI_State::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, voi
 	__super::Update_Transform(nullptr, m_vLocalPos);
 
 	CHECK_FAILED(Ready_Object(), E_FAIL);
+	CHECK_FAILED(Ready_UISetting(), E_FAIL);
+
 	return S_OK;
 }
 
@@ -267,6 +278,9 @@ HRESULT CUI_State::Update_Switch(void* pArg)
 
 HRESULT CUI_State::Ready_Prototype()
 {
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_State_MainPanel"),
+		CUI_State_MainPanel::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
+
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_State_Panel"),
 		CUI_State_Panel::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
 
@@ -304,6 +318,42 @@ HRESULT CUI_State::Ready_Object()
 	m_Children.push_back(m_pBackGround);
 	Safe_AddRef(m_pBackGround);
 
+	return S_OK;
+}
+
+void CUI_State::Ready_PlayerData()
+{
+	m_Player_Data.iLevel						= 1;
+	m_Player_Data.iUPPoint						= 0;
+	m_Player_Data.iUpLachryma					= 0;
+	m_Player_Data.iLachryma						= 1;
+	
+	m_Player_Data.iMaxHp						= 100;
+	m_Player_Data.iMaxStamina					= 100;
+	m_Player_Data.iAtk							= 1111;
+	m_Player_Data.iDef							= 934;
+	m_Player_Data.fWeight						= 15.f;
+	m_Player_Data.fMaxWeight					= 35.f;
+	m_Player_Data.fAgile						= 100.f;
+	
+	m_Player_Data.fStaminaAttack				= 50.f;
+	m_Player_Data.fStaminaRegen					= 17.1f;
+	m_Player_Data.fEvasion_StaminaDown			= 10.7f;
+	m_Player_Data.fDamage_StaminaDown			= 0.0f;
+	m_Player_Data.fGuard_StaminaDown			= 15.0f;
+	
+	m_Player_Data.iFire							= 500;
+	m_Player_Data.iWater						= 500;
+	m_Player_Data.iLightning					= 500;
+	m_Player_Data.iEarth						= 500;
+	m_Player_Data.iChaos						= 500;
+	m_Player_Data.iDisease						= 500;
+	m_Player_Data.iPoison						= 500;
+}
+
+HRESULT CUI_State::Ready_UISetting()
+{
+	//m_pPanel[ENUM_CLASS(STATE_PANEL::LEVEL)]
 	return S_OK;
 }
 
