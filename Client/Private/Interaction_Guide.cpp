@@ -97,7 +97,7 @@ void CInteraction_Guide::Update(_float fTimeDelta)
 void CInteraction_Guide::Late_Update(_float fTimeDelta)
 {
 	Update_WorldPos();
-	if (!m_isVisible)
+	if (!m_isVisible || !m_isActive)
 		return;
 	CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::ATLAS, this);
 	
@@ -223,13 +223,14 @@ void CInteraction_Guide::Update_WorldPos()
 
 	_float fDot = XMVectorGetX(XMVector3Dot(vCamLook, vDir));
 
-	//if (fDot <= 0)
-	//{
-	//	m_isVisible = false;
-	//	return;
-	//}
-	//else
-	//	m_isVisible = true;
+
+	if (fDot <= 0)
+	{
+		m_isActive = false;
+		return;
+	}
+	else
+		m_isActive = true;
 
 	_matrix OldVeiw = m_pGameInstance->Get_Transform_Matrix(D3DTS::VIEW);
 	_matrix OldProj = m_pGameInstance->Get_Transform_Matrix(D3DTS::PROJ);

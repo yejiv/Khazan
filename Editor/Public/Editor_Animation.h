@@ -16,6 +16,7 @@ public:
 
 public:
 	void	Get_Data(ANIMATION_DATA& data) { data = m_Animation_Data; }
+	string	Get_Name() const { return m_strName; }
 
 public:
 	void					Set_RootBoneIndex(_uint iRootBoneIndex);

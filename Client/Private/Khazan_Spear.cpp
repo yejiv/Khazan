@@ -5,6 +5,8 @@
 
 #include "RigidBody.h"
 #include "CharacterVirtual.h"
+#include "Khazan_Spear_ASManager.h"
+#include "Khazan_Spear_ASMachine.h"
 
 CKhazan_Spear::CKhazan_Spear(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CCreature{ pDevice, pContext }
@@ -45,6 +47,9 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     if (FAILED(Ready_Collision()))
+        return E_FAIL;
+
+    if (FAILED(Ready_AnimationStateMachine()))
         return E_FAIL;
 
 #ifdef _DEBUG
@@ -220,8 +225,8 @@ HRESULT CKhazan_Spear::Ready_PartObjects()
     if (FAILED(__super::Add_PartObject(TEXT("Part_Body"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Body_Khazan_Sample"), &BodyDesc)))
         return E_FAIL;
 
-    pBody = static_cast<CBody_Khazan_Spear*>(Find_PartObject(TEXT("Part_Body")));
-    m_pWeaponR_Matrix = pBody->Get_BoneMatrix("Weapon_R");
+    m_pBody = static_cast<CBody_Khazan_Spear*>(Find_PartObject(TEXT("Part_Body")));
+    m_pWeaponR_Matrix = m_pBody->Get_BoneMatrix("Weapon_R");
 
     CSpear_Khazan_Spear::SPEAR_KHAZAN_SPEAR_DESC         SpearDesc{};
     SpearDesc.pState = &m_iState;
@@ -230,14 +235,14 @@ HRESULT CKhazan_Spear::Ready_PartObjects()
     if (FAILED(__super::Add_PartObject(TEXT("Part_Weapon_Spear"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Spear_Khazan_Sample"), &SpearDesc)))
         return E_FAIL;
 
-    pSpear = static_cast<CSpear_Khazan_Spear*>(Find_PartObject(TEXT("Part_Weapon_Spear")));
-    m_pSpearFX_Matrix = pSpear->Get_BoneMatrix("FX");
-    m_SpearOffset_Matrix = pSpear->Get_OffestMatrix();
+    m_pSpear = static_cast<CSpear_Khazan_Spear*>(Find_PartObject(TEXT("Part_Weapon_Spear")));
+    m_pSpearFX_Matrix = m_pSpear->Get_BoneMatrix("FX");
+    m_SpearOffset_Matrix = m_pSpear->Get_OffestMatrix();
 
     /* 넘겨주기  */
-    pSpear->Set_matWeaponR(m_pWeaponR_Matrix);
-    pBody->Set_matSpearFX(m_pSpearFX_Matrix);
-    pBody->Set_matSpearOffset(m_SpearOffset_Matrix);
+    m_pSpear->Set_matWeaponR(m_pWeaponR_Matrix);
+    m_pBody->Set_matSpearFX(m_pSpearFX_Matrix);
+    m_pBody->Set_matSpearOffset(m_SpearOffset_Matrix);
 
 	return S_OK;
 
@@ -268,7 +273,26 @@ HRESULT CKhazan_Spear::Ready_Collision()
 
     return S_OK;
 }
-#ifdef _DEBUG
+
+HRESULT CKhazan_Spear::Ready_AnimationStateMachine()
+{
+    m_pASMachine = CKhazan_Spear_ASMachine::Create();
+
+    m_pASManager = CKhazan_Spear_ASManager::Create(m_pASMachine);
+
+
+    using CAT = CKhazan_Spear_ASMachine::CATEGORY;
+    using MOV = CKhazan_Spear_ASMachine::MOVE;
+    using ATK = CKhazan_Spear_ASMachine::ATTACK;
+
+
+
+
+
+
+    return S_OK;
+}
+
 inline _bool CKhazan_Spear::Has_States()
 {
     for (_uint i = 0; i < GetBitPosition(CKhazan_Spear::END); ++i)
@@ -279,6 +303,8 @@ inline _bool CKhazan_Spear::Has_States()
     }
     return false;
 }
+
+#ifdef _DEBUG
 void CKhazan_Spear::Debug_Widget()
 {
     m_pGameInstance->AddWidget(TEXT("Client"), [this]() {
@@ -388,4 +414,7 @@ void CKhazan_Spear::Free()
     __super::Free();
     //Safe_Release(m_pRigidBodyCom);
     Safe_Release(m_pCharVirCom);
+
+    Safe_Release(m_pASMachine);
+    Safe_Release(m_pASManager);
 }

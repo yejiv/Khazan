@@ -202,6 +202,8 @@
     <ClInclude Include="..\Public\JOH_Test1.h" />
     <ClInclude Include="..\public\Khazan_Sample.h" />
     <ClInclude Include="..\Public\Khazan_Spear.h" />
+    <ClInclude Include="..\public\Khazan_Spear_ASMachine.h" />
+    <ClInclude Include="..\public\Khazan_Spear_ASManager.h" />
     <ClInclude Include="..\Public\Level_Crevice.h" />
     <ClInclude Include="..\Public\Level_Embars.h" />
     <ClInclude Include="..\Public\Level_Loading.h" />
@@ -232,6 +234,7 @@
     <ClInclude Include="..\Public\Prop_Static.h" />
     <ClInclude Include="..\Public\Prop_Test.h" />
     <ClInclude Include="..\Public\Sequence_Dummy.h" />
+    <ClInclude Include="..\Public\Shader_Controller.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\Spear_Khazan_Sample.h" />
     <ClInclude Include="..\Public\Spear_Khazan_Spear.h" />
@@ -258,6 +261,7 @@
     <ClInclude Include="..\public\UI_State.h" />
     <ClInclude Include="..\public\UI_State_Button.h" />
     <ClInclude Include="..\public\UI_State_List.h" />
+    <ClInclude Include="..\public\UI_State_MainPanel.h" />
     <ClInclude Include="..\public\UI_State_Panel.h" />
     <ClInclude Include="..\public\UI_Text.h" />
     <ClInclude Include="..\public\UI_TextBox.h" />
@@ -317,6 +321,8 @@
     <ClCompile Include="..\Private\JOH_Test1.cpp" />
     <ClCompile Include="..\private\Khazan_Sample.cpp" />
     <ClCompile Include="..\Private\Khazan_Spear.cpp" />
+    <ClCompile Include="..\private\Khazan_Spear_ASMachine.cpp" />
+    <ClCompile Include="..\private\Khazan_Spear_ASManager.cpp" />
     <ClCompile Include="..\Private\Level_Crevice.cpp" />
     <ClCompile Include="..\Private\Level_Embars.cpp" />
     <ClCompile Include="..\Private\Level_Loading.cpp" />
@@ -346,6 +352,7 @@
     <ClCompile Include="..\Private\Prop_Static.cpp" />
     <ClCompile Include="..\Private\Prop_Test.cpp" />
     <ClCompile Include="..\Private\Sequence_Dummy.cpp" />
+    <ClCompile Include="..\Private\Shader_Controller.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\Spear_Khazan_Sample.cpp" />
     <ClCompile Include="..\Private\Spear_Khazan_Spear.cpp" />
@@ -372,6 +379,7 @@
     <ClCompile Include="..\private\UI_State.cpp" />
     <ClCompile Include="..\private\UI_State_Button.cpp" />
     <ClCompile Include="..\private\UI_State_List.cpp" />
+    <ClCompile Include="..\private\UI_State_MainPanel.cpp" />
     <ClCompile Include="..\private\UI_State_Panel.cpp" />
     <ClCompile Include="..\private\UI_Text.cpp" />
     <ClCompile Include="..\private\UI_TextBox.cpp" />

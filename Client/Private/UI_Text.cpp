@@ -30,6 +30,12 @@ void CUI_Text::Setting_Text(const TEXTBOX_DESC& pDesc)
 	m_vColor = pDesc.vColor;
 }
 
+void CUI_Text::Setting_Pivot(_int iPivotX, _int iPivotY)
+{
+	m_iPivotX = iPivotX;
+	m_iPivotY = iPivotY;
+}
+
 HRESULT CUI_Text::Initialize_Prototype()
 {
 	return S_OK;

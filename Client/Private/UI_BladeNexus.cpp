@@ -72,6 +72,8 @@ HRESULT CUI_BladeNexus::Initialize_Clone(void* pArg)
 
 void CUI_BladeNexus::Priority_Update(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_7))
+		m_IsUpdate ? Off_Panel() : On_Panel(ONTYPE::CREVICE, TEXT("ÇÏÀÎ¸¶Èå ¾îµò°¡¿¡ ¾îµò°¡¿¡ ¾îµò°¡"));
 	if (!m_IsUpdate)
 		return;
 
@@ -86,6 +88,7 @@ void CUI_BladeNexus::Priority_Update(_float fTimeDelta)
 
 void CUI_BladeNexus::Update(_float fTimeDelta)
 {
+
 	if (!m_IsUpdate)
 		return;
 

@@ -56,6 +56,8 @@ HRESULT CBody_Khazan_Sample::Initialize_Clone(void* pArg)
 		m_pModelCom->Debug_RanderState();
 		ImGui::End();
 		});
+
+    m_fEmissiveIntensity = 1.f;
 #endif
 
     return S_OK;
@@ -125,10 +127,14 @@ void CBody_Khazan_Sample::Update(_float fTimeDelta)
 
 void CBody_Khazan_Sample::Late_Update(_float fTimeDelta)
 {
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONLIGHT, this)))
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this)))
         return;
-    //if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
-    //    return;
+
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
+        return;
+
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::OUTLINE, this)))
+        return;
 
 #ifdef _DEBUG
 
@@ -191,6 +197,31 @@ HRESULT CBody_Khazan_Sample::Render_Shadow()
     return S_OK;
 }
 
+HRESULT CBody_Khazan_Sample::Render_Outline()
+{
+    if (FAILED(Bind_ShaderResources()))
+        return E_FAIL;
+
+    _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vOutlineColor", &m_OutlineConfig.vColor, sizeof(_float3))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fOutlineSize", &m_OutlineConfig.fSize, sizeof(_float))))
+        return E_FAIL;
+
+    for (size_t i = 0; i < iNumMeshes; i++)
+    {
+        m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+
+        m_pShaderCom->Begin(3);
+
+        m_pModelCom->Render(i);
+    }
+
+    return S_OK;
+}
+
 HRESULT CBody_Khazan_Sample::Ready_Components()
 {
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
@@ -206,7 +237,7 @@ HRESULT CBody_Khazan_Sample::Ready_Components()
 
 HRESULT CBody_Khazan_Sample::Ready_AnimationEvent()
 {
-    m_pModelCom->Register_Event("Effect1", ANIM_EVENT_TRIGGERTYPE::ENTER,       [this]() {Effect1_Enter(); });
+    m_pModelCom->Register_Event("0", ANIM_EVENT_TRIGGERTYPE::ENTER,       [this]() {Effect1_Enter(); });
     m_pModelCom->Register_Event("Effect1", ANIM_EVENT_TRIGGERTYPE::EXIT,        [this]() {Effect1_Exit(); });
     m_pModelCom->Register_Event("Effect1", ANIM_EVENT_TRIGGERTYPE::CONTINUE,    [this]() {Effect1_Continue(); });
     m_pModelCom->Register_Event("Effect2", ANIM_EVENT_TRIGGERTYPE::ENTER,       [this]() {Effect2(); });

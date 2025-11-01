@@ -9,12 +9,16 @@ bool g_MaskScrollInv;
 
 float g_MaskScrollSpeed;
 
+float4 g_vCamPosition;
+
 texture2D g_DiffuseTexture;
 texture2D g_MaskTexture;
+
 
 struct VS_IN
 {
     float3 vPosition : POSITION;
+    float3 vNormal : NORMAL;
     float2 vTexcoord : TEXCOORD0;
     
     row_major float4x4 TransformMatrix : WORLD;
@@ -26,6 +30,7 @@ struct VS_IN
 struct VS_OUT
 {
     float4 vPosition : SV_POSITION;
+    float4 vNormal : NORMAL;
     float2 vTexcoord : TEXCOORD0;
     float4 vWorldPos : TEXCOORD1;
     float2 vLifeTime : TEXCOORD2;
@@ -41,8 +46,10 @@ VS_OUT VS_MAIN(VS_IN In)
     matWV = mul(g_WorldMatrix, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
     float4 vPosition = mul(float4(In.vPosition, 1.f), In.TransformMatrix);
+    float4 vNormal = normalize(mul(float4(In.vNormal, 0.f), In.TransformMatrix));
     
     Out.vPosition = mul(vPosition, matWVP);
+    Out.vNormal = normalize(mul(vNormal, g_WorldMatrix));
     Out.vTexcoord = In.vTexcoord;
     Out.vWorldPos = mul(vPosition, g_WorldMatrix);
     Out.vLifeTime = In.vLifeTime;
@@ -54,6 +61,7 @@ VS_OUT VS_MAIN(VS_IN In)
 struct PS_IN
 {
     float4 vPosition : SV_POSITION;
+    float4 vNormal : NORMAL;
     float2 vTexcoord : TEXCOORD0;
     float4 vWorldPos : TEXCOORD1;
     float2 vLifeTime : TEXCOORD2;
@@ -122,6 +130,35 @@ PS_OUT PS_MAIN(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_PRESNEL(PS_IN In)
+{
+    //if (In.bDead == true)
+    //    discard;
+    
+    PS_OUT Out = (PS_OUT) 0;
+    
+    float2 fEffectOffset = float2(In.vLifeTime.x * g_ScrollSpeed.x, In.vLifeTime.x * g_ScrollSpeed.y);
+    float2 fScrolledEffectUV = In.vTexcoord + fEffectOffset;
+    
+    vector vEffectTexture = g_DiffuseTexture.Sample(PointSampler, fScrolledEffectUV);
+    vector vFinalColor = float4(g_vSourceColor.xyz, min(vEffectTexture.r, g_vSourceColor.a));
+    
+    
+    float fresnelFactor = 1.0 - abs(dot(In.vNormal, normalize(g_vCamPosition - In.vWorldPos)));
+    vFinalColor.xyz = vFinalColor.xyz * pow(fresnelFactor, 2.f);
+    
+    float fDecreaseAlpha = (In.vLifeTime.x / In.vLifeTime.y);
+    
+    vFinalColor.a -= fDecreaseAlpha;
+    
+    if (vFinalColor.a <= 0.f)
+        discard;
+
+    Out.vColor = vFinalColor;
+    
+    return Out;
+}
+
 
 technique11 DefaultTechnique
 {
@@ -136,13 +173,14 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN();
     }
 
-    //pass AlphaBlend
-    //{
-    //    SetRasterizerState(RS_Cull_None);
-    //    SetDepthStencilState(DSS_Default, 0);
-    //    SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-    //    VertexShader = compile vs_5_0 VS_MAIN();
-    //    GeometryShader = NULL;
-    //    PixelShader = compile ps_5_0 PS_MAIN();
-    //}
+    pass FresnelPass
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_PRESNEL();
+    }
 }

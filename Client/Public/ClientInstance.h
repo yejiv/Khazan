@@ -92,10 +92,12 @@ private:
 	class CUI_Manager*	m_pUI_Manager = { nullptr };
 	CDB_Manager*		m_pDB_Manager = { nullptr };
 	class CCamera_Manager* m_pCamera_Manager = { nullptr };
+	
 
 #ifdef _DEBUG
 	class CDebug_Manager* m_pDebug_Manager = { nullptr };
 	class CCamera_Controller* m_pCamera_Controller = { nullptr };
+	class CShader_Controller* m_pShader_Controller = { nullptr };
 #endif
 public:
 	virtual void Free() override;

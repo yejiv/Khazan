@@ -594,15 +594,15 @@ void CLevel_AI::Show_BT_Editor(AI_BTDATA& TreeData)
 
 		// 서브 타입
 
-		const char* SubTypes[] = { "Selector", "Sequence", "Repeater", "Inverter", "CoolDown","Condition","Action","Wait" };
+		const char* SubTypes[] = { "Selector", "Sequence", "InterruptibleSelector" ,"Repeater", "Inverter", "CoolDown","Condition","Action","Wait"};
 		_uint iCurrentSub = 0;
-		for (_uint i = 0; i < 8; i++)
+		for (_uint i = 0; i < 9; i++)
 			if (g_SelectedNode->strSubtype == SubTypes[i])
 				iCurrentSub = i;
 
 		if (ImGui::BeginCombo("SubType", SubTypes[iCurrentSub]))
 		{
-			for (_uint i = 0; i < 8; i++)
+			for (_uint i = 0; i < 9; i++)
 			{
 				_bool isSelected = (iCurrentSub == i);
 				if (ImGui::Selectable(SubTypes[i], isSelected))
@@ -612,6 +612,16 @@ void CLevel_AI::Show_BT_Editor(AI_BTDATA& TreeData)
 					ImGui::SetItemDefaultFocus();
 			}
 			ImGui::EndCombo();
+		}
+		if (g_SelectedNode->strNodeType == "Composite")
+		{
+			if (g_SelectedNode->strSubtype == "InterruptibleSelector")
+			{
+				static char cb[128];
+				strcpy_s(cb, g_SelectedNode->strCallbackFunction.c_str());
+				if (ImGui::InputText("Interrput Callback", cb, IM_ARRAYSIZE(cb)))
+					g_SelectedNode->strCallbackFunction = cb;
+			}
 		}
 
 		if (g_SelectedNode->strNodeType == "Leaf")
@@ -786,6 +796,14 @@ void CLevel_AI::SaveNode(JSON& j, const AIBTNODE_DATA* pNode)
 	j["NodeType"] = pNode->strNodeType;
 	j["SubType"] = pNode->strSubtype;
 	j["NodeName"] = pNode->strNodeName;
+
+	if (pNode->strNodeType == "Composite")
+	{
+		if (pNode->strSubtype == "InterruptibleSelector")
+		{
+			j["Callback"] = pNode->strCallbackFunction;
+		}
+	}
 
 
 	if (pNode->strNodeType == "Leaf")
