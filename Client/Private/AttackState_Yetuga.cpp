@@ -24,7 +24,7 @@ void CAttackState_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
 
-    if (pModel->Play_Animation(fTimeDelta))
+    if (pModel->Play_Animation(fTimeDelta * 1.3f))
     {
         m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>("Yetuga", "isAttackFinished", true);
     }
