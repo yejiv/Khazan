@@ -3,6 +3,7 @@
 #include "Client_Defines.h"
 #include "Base.h"
 #include "ClientInstance.h"
+#include "GameInstance.h"
 
 NS_BEGIN(Engine)
 class CGameInstance;
@@ -18,7 +19,7 @@ private:
 
 public:
 	HRESULT Initialize();
-	void Update(_float fTimeDelta);
+	void Update(TIME_DELTA tTimeDelta);
 	HRESULT Render();
 
 private:

@@ -497,7 +497,7 @@ HRESULT CLevel_Effect::Ready_Layer_GameObject()
 	Desc.fMouseSensor = 0.1f;
 
 	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EFFECT), TEXT("Layer_Camera"),
-		ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_Camera_Effect"), &Desc), E_FAIL);
+		ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_Camera_Effect"), TIME_CHANNEL::WORLD, &Desc), E_FAIL);
 
 	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EFFECT), TEXT("Effect_Terrain"),
 		ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_Effect_Terrain")), E_FAIL);
