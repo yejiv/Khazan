@@ -46,8 +46,7 @@ void CSelector_Node::Terminate(BTNODESTATE eState, CBlackBoard* BB)
 	// 노드 종료시 실행한다.
 
 	if (m_iCurrentIndex < m_Children.size())
-		m_Children[m_iCurrentIndex]->Terminate(eState,BB);
-
+		m_Children[m_iCurrentIndex]->Terminate(eState, BB);
 	m_iCurrentIndex = 0;
 }
 
@@ -55,7 +54,6 @@ void CSelector_Node::Abort()
 {
 	if (m_iCurrentIndex < m_Children.size())
 		m_Children[m_iCurrentIndex]->Abort();
-
 	m_iCurrentIndex = 0;
 }
 

@@ -12,6 +12,7 @@ enum class YETUGA_STATE
 	THROWBALL,
 	RUSH,
 	HIT,
+	GROGGY,
 	DEAD,
 	SLEEP,
 	END,

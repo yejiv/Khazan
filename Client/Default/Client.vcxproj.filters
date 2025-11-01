@@ -400,6 +400,9 @@
     <Filter Include="02.GameObject\Creature\Khazan\Spear\Anim State Manager">
       <UniqueIdentifier>{6830d138-8660-4890-8174-2b8f66fe9d52}</UniqueIdentifier>
     </Filter>
+    <Filter Include="92.AI\State\Yetuga\07. Hit">
+      <UniqueIdentifier>{da1ea781-147f-4124-9510-f2c5c6d3c222}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -768,6 +771,9 @@
     <ClInclude Include="..\public\Khazan_Spear_ASManager.h">
       <Filter>02.GameObject\Creature\Khazan\Spear\Anim State Manager</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\AS_Hit_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\07. Hit</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1121,6 +1127,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Khazan_Spear_ASManager.cpp">
       <Filter>02.GameObject\Creature\Khazan\Spear\Anim State Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Hit_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\07. Hit</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
