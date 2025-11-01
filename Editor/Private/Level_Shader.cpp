@@ -45,6 +45,7 @@ HRESULT CLevel_Shader::Initialize()
 	OUTLINE_CONFIG RendererOutlineConfig = m_pGameInstance->Get_OutlineConfig();
 	m_OutlineConfig.fAlpha = RendererOutlineConfig.fAlpha;
 	m_OutlineConfig.fBias = RendererOutlineConfig.fBias;
+	m_VignetteConfig = m_pGameInstance->Get_VignetteConfig();
 
 	m_iNumCascades = m_pGameInstance->Get_NumCascades();
 
@@ -299,6 +300,21 @@ HRESULT CLevel_Shader::Initialize()
 				m_pGameInstance->Set_FogConfig(m_FogConfig);
 
 				ImGui::Separator();
+			}
+
+			if (ImGui::Checkbox("Vignette", &m_isEnableVignette))
+				m_pGameInstance->Set_EnableVignette(m_isEnableVignette);
+
+			if (m_isEnableVignette)
+			{
+				if (ImGui::SliderFloat("Vignette Power", &m_VignetteConfig.fPower, 0.f, 10.f, "%.2f"))
+					m_pGameInstance->Set_VignetteConfig(m_VignetteConfig);
+
+				if (ImGui::SliderFloat("Vignette Intensity", &m_VignetteConfig.fIntensity, 0.f, 10.f, "%.2f"))
+					m_pGameInstance->Set_VignetteConfig(m_VignetteConfig);
+			
+				if (ImGui::ColorEdit3("Vignette Color", reinterpret_cast<_float*>(&m_VignetteConfig.vColor)))
+					m_pGameInstance->Set_VignetteConfig(m_VignetteConfig);
 			}
 		}
 

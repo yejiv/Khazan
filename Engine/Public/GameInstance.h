@@ -307,7 +307,6 @@ public:
 	void						Set_BlurConfig(GAUSSIAN_BLUR_CONFIG Config);
 #pragma endregion
 
-
 #pragma region FOG
 	HRESULT						Bind_Fog_ShaderResources(class CShader* pShader);
 	FOG_CONFIG					Get_FogConfig();
@@ -316,6 +315,13 @@ public:
 	ID3D11ShaderResourceView*	Get_FogNoiseTexture(_uint iTextureIndex);
 	void						Set_FogNoiseTextureIndex(_uint iTextureIndex);
 	void						Set_FogNoiseWorldSpace(_bool isEnable);
+#pragma endregion
+
+#pragma region VIGNETTE
+	HRESULT						Bind_Vignette_ShaderResources(class CShader* pShader);
+	void						Set_EnableVignette(_bool isEnable);
+	VIGNETTE_CONFIG				Get_VignetteConfig();
+	void						Set_VignetteConfig(VIGNETTE_CONFIG Config);
 #pragma endregion
 
 #pragma region SEQUENCE_MANAGER
@@ -358,6 +364,7 @@ private:
 	class COctree*				m_pOctree = { nullptr };
 	class CBlur*				m_pBlur = { nullptr };
 	class CFog*					m_pFog = { nullptr };
+	class CVignette*			m_pVignette = { nullptr };
 
 #ifdef _DEBUG
 	class CImgui_Manager* m_pImgui_Manager = { nullptr };

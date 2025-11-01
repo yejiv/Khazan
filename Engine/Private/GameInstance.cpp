@@ -25,6 +25,7 @@
 #include "Octree.h"
 #include "Blur.h"
 #include "Fog.h"
+#include "Vignette.h"
 #include "Sequence_Manager.h"
 #include "Sequence_Interface.h"
 
@@ -134,6 +135,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 
 	m_pFog = CFog::Create(*ppDevice, *ppContext);
 	if (nullptr == m_pFog)
+		return E_FAIL;
+
+	m_pVignette = CVignette::Create();
+	if (nullptr == m_pVignette)
 		return E_FAIL;
 
 	m_pSequence_Manager = CSequence_Manager::Create();
@@ -1015,7 +1020,6 @@ void CGameInstance::Set_BlurConfig(GAUSSIAN_BLUR_CONFIG Config)
 }
 #pragma endregion
 
-
 #pragma region FOG
 HRESULT CGameInstance::Bind_Fog_ShaderResources(CShader* pShader)
 {
@@ -1044,6 +1048,28 @@ void CGameInstance::Set_FogNoiseTextureIndex(_uint iTextureIndex)
 void CGameInstance::Set_FogNoiseWorldSpace(_bool isEnable)
 {
 	m_pFog->Set_FogNoiseWorldSpace(isEnable);
+}
+#pragma endregion
+
+#pragma region VIGNETTE
+HRESULT CGameInstance::Bind_Vignette_ShaderResources(CShader* pShader)
+{
+	return m_pVignette->Bind_Vignette_ShaderResources(pShader);
+}
+
+void CGameInstance::Set_EnableVignette(_bool isEnable)
+{
+	m_pVignette->Set_EnableVignette(isEnable);
+}
+
+VIGNETTE_CONFIG CGameInstance::Get_VignetteConfig()
+{
+	return m_pVignette->Get_VignetteConfig();
+}
+
+void CGameInstance::Set_VignetteConfig(VIGNETTE_CONFIG Config)
+{
+	m_pVignette->Set_VignetteConfig(Config);
 }
 #pragma endregion
 
@@ -1133,9 +1159,10 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pSequence_Manager);
 	Safe_Release(m_pThreadPool);
 
-	Safe_Release(m_pFog);
 	Safe_Release(m_pOctree);
 	
+	Safe_Release(m_pVignette);
+	Safe_Release(m_pFog);
 	Safe_Release(m_pBlur);
 	Safe_Release(m_pSSAO);
 	Safe_Release(m_pShadow);

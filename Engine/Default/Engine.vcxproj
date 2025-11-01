@@ -269,6 +269,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\VIBuffer_Point_Instance.cpp" />
     <ClCompile Include="..\private\VIBuffer_Rect.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Terrain.cpp" />
+    <ClCompile Include="..\private\Vignette.cpp" />
     <ClCompile Include="..\Private\Wait_Node.cpp" />
     <ClCompile Include="..\Public\Guizmo\GraphEditor.cpp" />
     <ClCompile Include="..\Public\Guizmo\ImCurveEdit.cpp" />
@@ -412,6 +413,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\VIBuffer_Point_Instance.h" />
     <ClInclude Include="..\public\VIBuffer_Rect.h" />
     <ClInclude Include="..\Public\VIBuffer_Terrain.h" />
+    <ClInclude Include="..\public\Vignette.h" />
     <ClInclude Include="..\Public\Wait_Node.h" />
     <ClInclude Include="EnginePch.h" />
   </ItemGroup>

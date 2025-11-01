@@ -186,6 +186,13 @@ namespace Engine
 		float		fBias;
 	}OUTLINE_CONFIG;
 
+	typedef struct tagVignetteConfig
+	{
+		XMFLOAT3	vColor;
+		float		fPower;
+		float		fIntensity;
+	}VIGNETTE_CONFIG;
+
 	struct HitStopState
 	{
 		bool isActive = false;
