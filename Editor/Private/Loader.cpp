@@ -332,7 +332,7 @@ HRESULT CLoader::Loading_For_UI_Level()
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_UI_State_Button"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/State/NormalButton_%d.png"), 7))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/State/NormalButton_%d.png"), 10))))
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("게임오브젝트원형를 로딩중입니다."));

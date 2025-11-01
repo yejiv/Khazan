@@ -18,7 +18,8 @@ private:
 
 public:
 	HRESULT								Setting_PanelLevel(_int iPanelType, UI_PLAYER_STATE_DATA* Data);
-
+	void								State_Hover();
+	void								State_On(_float fValue);
 public:
 	virtual HRESULT						Initialize_Prototype(_uint iLevel);
 	virtual HRESULT						Initialize_Clone(void* pArg) override;
@@ -33,6 +34,7 @@ private:
 	CTexture*							m_pTextureCom = { nullptr };
 	CVIBuffer_Rect*						m_pVIBufferCom = { nullptr };
 
+	_float								m_fUpValue = {};
 	_bool								m_isUpgrade = { false };
 
 	class CUI_TextBox*					m_pName_TextBox = { nullptr };

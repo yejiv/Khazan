@@ -26,6 +26,10 @@ public:
 	virtual HRESULT				Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
 
 protected:
+	virtual _bool				ButtonOver(HWND hWnd);
+	virtual _bool				ButtonClick(HWND hWnd, _bool IsRight, _bool IsDown);
+
+protected:
 	vector<std::function<void()>>	m_Events;
 
 public:
