@@ -40,12 +40,6 @@ void CUI_Announce_MapName::Priority_Update(_float fTimeDelta)
 
 void CUI_Announce_MapName::Update(_float fTimeDelta)
 {
-	EVENT_ANNOUNCE_MAPNAME Desc = {};
-	Desc.fTime = 2.f;
-	Desc.iMapType = 0;
-	Desc.fFadeOutTime = 2.5f;
-	if(m_pGameInstance->Key_Down(DIK_N))
-		m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_MAPNAME>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_MAPNAME), Desc);
 }
 
 void CUI_Announce_MapName::Late_Update(_float fTimeDelta)
@@ -139,7 +133,7 @@ void CUI_Announce_MapName::Setting_Text(const EVENT_ANNOUNCE_MAPNAME& e)
 		m_fTexAspect = { 720.f / 100.f };
 		m_fDissovleAspect = { 256.f/ 68.f };
 
-		m_isDissovle = true;
+		m_isDissovle = e.isDissovle;
 	}
 }
 
@@ -171,4 +165,5 @@ void CUI_Announce_MapName::Free()
 
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pMaskTextureCom);
+	Safe_Release(m_pDissolveTextureCom);
 }

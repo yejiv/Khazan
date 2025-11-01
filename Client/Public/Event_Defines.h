@@ -63,5 +63,6 @@ namespace Client {
 		_int		iMapType;				//화면에 표시하는 지역 이름
 		_float		fTime;					//화면에 출력시간
 		_int		fFadeOutTime;			//화면에서 사라지는 시간
+		_bool		isDissovle;
 	};
 }
