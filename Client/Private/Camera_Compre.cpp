@@ -67,7 +67,11 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
             Update_Spring(fTimeDelta);
     }
 
-    
+    m_vShaking_BasePos = m_pTransformCom->Get_State(STATE::POSITION);
+    m_vShaking_BaseRight = m_pTransformCom->Get_State(STATE::RIGHT);
+    m_vShaking_BaseUp = m_pTransformCom->Get_State(STATE::UP);
+    m_vShaking_BaseLook = m_pTransformCom->Get_State(STATE::LOOK);
+    Shaking(fTimeDelta);
 
     __super::Update_PipeLines();
 }
@@ -76,11 +80,6 @@ void CCamera_Compre::Update(_float fTimeDelta)
 {
     if (!m_isActive)
         return;
-
-    if (m_pGameInstance->Key_Down(DIK_LCONTROL))
-    {
-        Shaking_Start(2.f, 1.f);
-    }
 
     __super::Play_Animation(fTimeDelta);
 }
@@ -139,12 +138,6 @@ void CCamera_Compre::Update_Spring(_float fTimeDelta)
 {
     Spring(fTimeDelta);
     RayCast(fTimeDelta);
-
-    m_vShaking_BasePos = m_pTransformCom->Get_State(STATE::POSITION);
-    m_vShaking_BaseRight = m_pTransformCom->Get_State(STATE::RIGHT);
-    m_vShaking_BaseUp = m_pTransformCom->Get_State(STATE::UP);
-    m_vShaking_BaseLook = m_pTransformCom->Get_State(STATE::LOOK);
-    Shaking(fTimeDelta);
 }
 
 HRESULT CCamera_Compre::Ready_Camera(void* pArg)

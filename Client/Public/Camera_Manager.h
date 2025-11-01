@@ -30,6 +30,9 @@ public:
 	_float4 Get_ActiveCameraLook();
 
 public:
+	void ActiveCamera_Shaking(_float fPower, _float fDuration);
+
+public:
 	void Save_Dat();
 	void Load_Dat();
 

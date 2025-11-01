@@ -73,6 +73,8 @@ public:
 	_float3 Get_ActiveCameraPos();
 	_float4 Get_ActiveCameraLook();
 
+	void ActiveCamera_Shaking(_float fPower, _float fDuration);
+
 	void Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
 	void Clear_CameraManager(_uint iLevelIndex);
 #pragma endregion

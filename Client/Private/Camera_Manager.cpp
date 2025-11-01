@@ -110,6 +110,14 @@ _float4 CCamera_Manager::Get_ActiveCameraLook()
 	return vLook;
 }
 
+void CCamera_Manager::ActiveCamera_Shaking(_float fPower, _float fDuration)
+{
+	if (m_pActiveCamera == nullptr)
+		return;
+
+	m_pActiveCamera->Shaking_Start(fPower, fDuration);
+}
+
 void CCamera_Manager::Save_Json(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData)
 {
 	CCamera* pCamera = Find_Camera(iLevelIndex, strCameraTag);
