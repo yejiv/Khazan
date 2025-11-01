@@ -195,6 +195,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\Fog.cpp" />
     <ClCompile Include="..\private\Font_Face.cpp" />
     <ClCompile Include="..\private\Font_Renderer.cpp" />
+    <ClCompile Include="..\Private\InterruptibleSelector_Node.cpp" />
     <ClCompile Include="..\Private\Inverter_Node.cpp" />
     <ClCompile Include="..\Private\Jolt_CharacterContactListener.cpp" />
     <ClCompile Include="..\Private\CharacterVirtual.cpp" />
@@ -288,7 +289,6 @@ call Copy.bat</Command>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\ENGINESDK\DEBUG\INC\COMPOSITE_NODE.H" />
     <ClInclude Include="..\Public\Action_Node.h" />
     <ClInclude Include="..\Public\AI_Controller.h" />
     <ClInclude Include="..\Public\AI_State.h" />
@@ -328,6 +328,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\ImGui\imstb_truetype.h" />
     <ClInclude Include="..\public\Font_Face.h" />
     <ClInclude Include="..\public\Font_Renderer.h" />
+    <ClInclude Include="..\Public\InterruptibleSelector_Node.h" />
     <ClInclude Include="..\Public\Inverter_Node.h" />
     <ClInclude Include="..\Public\Jolt_CharacterContactListener.h" />
     <ClInclude Include="..\Public\CharacterVirtual.h" />

@@ -17,7 +17,7 @@ CMonster::CMonster(const CMonster& Prototype)
 
 }
 
-void CMonster::Take_Damage(CCreature* pGameObject, _float fDamage)
+void CMonster::Take_Damage(CGameObject* pGameObject, _float fDamage)
 {
     m_fCurrentHP -= fDamage;
     m_pController->AI_ApplyDamage(pGameObject,fDamage);

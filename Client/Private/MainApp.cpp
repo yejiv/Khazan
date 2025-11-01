@@ -1,5 +1,4 @@
 #include "MainApp.h"
-#include "GameInstance.h"
 #include "Level_Loading.h"
 #include "HeaderGroup_UI.h"
 
@@ -28,6 +27,7 @@ HRESULT CMainApp::Initialize()
 	Imgui_Menu.push_back(TEXT("Client"));
 	Imgui_Menu.push_back(TEXT("Debug"));
 	Imgui_Menu.push_back(TEXT("Camera"));
+	Imgui_Menu.push_back(TEXT("Shader"));
 	EngineDesc.Menu_Imgui = Imgui_Menu;
 	
 
@@ -55,10 +55,10 @@ HRESULT CMainApp::Initialize()
 	return S_OK;
 }
 
-void CMainApp::Update(_float fTimeDelta)
+void CMainApp::Update(TIME_DELTA tTimeDelta)
 {
-	m_pGameInstance->Update_Engine(fTimeDelta);
-	m_pClientInstance->Update(fTimeDelta);
+	m_pGameInstance->Update_Engine(tTimeDelta);
+	m_pClientInstance->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 }
 
 HRESULT CMainApp::Render()

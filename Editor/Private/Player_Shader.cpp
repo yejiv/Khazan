@@ -30,8 +30,8 @@ HRESULT CPlayer_Shader::Initialize_Clone(void* pArg)
     m_pModelCom->Set_Animation(8);
 
     m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
-    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, -2.1f, -5.f, 1.f));
-    //  m_pTransformCom->Scaling(_float3(5.f, 5.f, 5.f));
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 83.f, -5.f, 1.f));
+    m_pTransformCom->Scaling(_float3(3.f, 3.f, 3.f));
 
     m_fEmissiveIntensity = 1.f;
 

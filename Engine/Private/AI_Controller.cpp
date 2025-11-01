@@ -43,7 +43,7 @@ HRESULT CAI_Controller::Initialize(CGameObject* pOwner, string FileName)
 {
     string BasePath = "../../Client/Bin/Data/Monster/";
 
-    Load_Perception(BasePath + "Perception/" + FileName + "/" + FileName + ".json");
+    Load_Perception(pOwner,BasePath + "Perception/" + FileName + "/" + FileName + ".json");
     Load_BlackBoard(pOwner, BasePath + "BlackBoard/" + "/" + FileName + "/" + FileName + ".json");
     Load_BehaviorTree(pOwner,BasePath + "BehaviorTree/" + FileName + "/" + FileName + ".json");
 
@@ -55,7 +55,7 @@ void CAI_Controller::Update(class CGameObject* pOwner, _float fTimeDelta)
 
 }
 
-HRESULT CAI_Controller::Load_Perception(const string& FilePath)
+HRESULT CAI_Controller::Load_Perception(CGameObject* pOwner, const string& FilePath)
 {
     ifstream ifs(FilePath);
     if (!ifs.is_open())
@@ -78,8 +78,8 @@ HRESULT CAI_Controller::Load_Perception(const string& FilePath)
         Desc.isRequireLineOfSight = Data["isRequireLineOfSight"].get<_bool>();
         Desc.fHeightOffset = Data["fHeightOffset"].get<_float>();
 
-
-        if (FAILED(Ready_Perception(Desc)))
+    
+        if (FAILED(Ready_Perception(pOwner,Desc)))
             return E_FAIL;
     }
     return S_OK;
@@ -246,6 +246,9 @@ CBTNode* CAI_Controller::CreateBTNode(CGameObject* pOwner, const AIBTNODE_DATA& 
         else if (NodeData.strSubtype == "Sequence")
             pComposite = CSequence_Node::Create();
 
+        else if (NodeData.strSubtype == "InterruptibleSelector")
+            pComposite = CInterruptibleSelector_Node::Create(GetCallbackInterruptCondition(pOwner,NodeData.strCallbackFunction));
+
         for (auto& pChild : NodeData.Children)
             pComposite->Add_Child(CreateBTNode(pOwner,*pChild));
 
@@ -256,7 +259,7 @@ CBTNode* CAI_Controller::CreateBTNode(CGameObject* pOwner, const AIBTNODE_DATA& 
     return nullptr;
 }
 
-HRESULT CAI_Controller::Ready_Perception(const AIPERCEPTION_DATA& Desc)
+HRESULT CAI_Controller::Ready_Perception(CGameObject* pOwner, const AIPERCEPTION_DATA& Desc)
 {
     return S_OK;
 }
@@ -269,6 +272,11 @@ HRESULT CAI_Controller::Ready_BlackBoard(CGameObject* pOwner)
 HRESULT CAI_Controller::Ready_BehaviorTree()
 {
     return S_OK;
+}
+
+PERCEPTIONCALLBACK CAI_Controller::GetCallBackPerception(CGameObject* pOwner, const string& name)
+{
+    return PERCEPTIONCALLBACK();
 }
 
 
@@ -288,6 +296,11 @@ ACTION CAI_Controller::GetCallbackAction(CGameObject* pOwner, const string& name
 TERMINATE CAI_Controller::GetCallbackTeminate(CGameObject* pOwner, const string& name)
 {
     return TERMINATE();
+}
+
+INTERRUPTCONDITION CAI_Controller::GetCallbackInterruptCondition(CGameObject* pOwner, const string& name)
+{
+    return INTERRUPTCONDITION();
 }
 
 

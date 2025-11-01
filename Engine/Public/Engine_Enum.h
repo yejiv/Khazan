@@ -21,6 +21,8 @@ namespace Engine
 	enum class COMPUTEJOB { UPDATE, POSTPROCESS, END };
 	enum class INPUT_TYPE { GAMEPLAY, UI, END };
 	enum class TEXT_ALIGN { LEFT_TOP, CENTER_TOP, RIGHT_TOP, LEFT_CENTER, CENTER, RIGHT_CENTER, LEFT_BOTTOM, CENTER_BOTTOM, RIGHT_BOTTOM, END };
+	enum class TIME_CHANNEL : unsigned int { WORLD, PLAYER, ENEMY, EFFECT, MAP, END };
+
 	//enum class ANIM_DIRECTION { 
 	//	NONE = 0,
 	//	F, B, L, R, U, D,
@@ -42,10 +44,13 @@ namespace Engine
 		D = 1 << 5,
 		C = 1 << 6,
 		CC = 1 << 7,
-		ALL = 1 << 8,
+		ALL = 1 << 8, //안씀
 
-		BBL = 1 << 9,
-		BLL	= 1 << 10,
+		BBL = 1 << 9, //안씀
+		BLL	= 1 << 10,//안씀
+
+		R180 = 1 << 11,
+		L180 = 1 << 12,
 
 		END,
 	};
