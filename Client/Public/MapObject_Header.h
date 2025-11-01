@@ -1,7 +1,10 @@
 #ifndef MapObject_Header_h__
 #define MapObject_Header_h__
 
-// Map Editor에 필요한 헤더 모아놓는 용
+// Map 관련 객체 헤더 모아놓는 용도
+
+// SkySphere
+#include "SkySphere.h"
 
 // Properties
 #include "Prop_Object.h"

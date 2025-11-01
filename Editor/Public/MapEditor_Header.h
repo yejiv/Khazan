@@ -6,6 +6,9 @@
 // Camera
 #include "Camera_Map.h"
 
+// SkySphere
+#include "SkySphere.h"
+
 // Properties
 #include "Prop_Object.h"
 #include "Prop_Static.h"

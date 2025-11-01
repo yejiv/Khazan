@@ -236,6 +236,7 @@
     <ClInclude Include="..\Public\Sequence_Dummy.h" />
     <ClInclude Include="..\Public\Shader_Controller.h" />
     <ClInclude Include="..\Public\Sky.h" />
+    <ClInclude Include="..\Public\SkySphere.h" />
     <ClInclude Include="..\Public\Spear_Khazan_Sample.h" />
     <ClInclude Include="..\Public\Spear_Khazan_Spear.h" />
     <ClInclude Include="..\Public\Terrain.h" />
@@ -354,6 +355,7 @@
     <ClCompile Include="..\Private\Sequence_Dummy.cpp" />
     <ClCompile Include="..\Private\Shader_Controller.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
+    <ClCompile Include="..\Private\SkySphere.cpp" />
     <ClCompile Include="..\Private\Spear_Khazan_Sample.cpp" />
     <ClCompile Include="..\Private\Spear_Khazan_Spear.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
@@ -423,6 +425,7 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_Font.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_UI.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_UIMask.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxSphere.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

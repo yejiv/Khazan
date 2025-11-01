@@ -21,6 +21,12 @@ float3 g_vWindDir = float3(1.f, 0.f, 3.f);
 float g_fWindPower = 0.15f;
 float g_fWindSpeed = 1.2f;
 
+/* ¹ÙÀÎµù ¿©ºÎ */
+bool g_isDiffuse = { false };
+bool g_isNormal = { false };
+bool g_isEmissive = { false };
+bool g_isSpecular = { false };
+
 vector g_vCamPosition;
 
 float g_fFar = 1000.f;
@@ -91,11 +97,11 @@ VS_OUT VS_MAPOBJECT(VS_IN In)
     matWVP = mul(matWV, g_ProjMatrix);
     
     Out.vPosition = mul(vPosition, matWVP);
-    Out.vNormal = normalize(mul(float4(In.vNormal, 0.f), g_WorldMatrix));
-    Out.vTangent = normalize(mul(float4(In.vTangent, 0.f), g_WorldMatrix));
-    Out.vBinormal = normalize(mul(float4(In.vBinormal, 0.f), g_WorldMatrix));
+    Out.vNormal = normalize(mul(float4(In.vNormal, 0.f), In.TransformMatrix));
+    Out.vTangent = normalize(mul(float4(In.vTangent, 0.f), In.TransformMatrix));
+    Out.vBinormal = normalize(mul(float4(In.vBinormal, 0.f), In.TransformMatrix));
     Out.vTexcoord = In.vTexcoord;
-    Out.vWorldPos = mul(float4(In.vPosition, 1.f), g_WorldMatrix);
+    Out.vWorldPos = mul(float4(In.vPosition, 1.f), In.TransformMatrix);
     Out.vWorldPos.w = float(In.iID);
     Out.vProjPos = Out.vPosition;
     
@@ -167,10 +173,12 @@ struct PS_IN
 
 struct PS_OUT
 {
-    float4 vDiffuse : SV_TARGET0;
-    float4 vNormal  : SV_TARGET1;
-    float4 vDepth   : SV_TARGET2;
-    float4 vWorld   : SV_TARGET3;
+    float4 vDiffuse  : SV_TARGET0;
+    float4 vNormal   : SV_TARGET1;
+    float4 vDepth    : SV_TARGET2;
+    float4 vWorld    : SV_TARGET3;
+    float4 vSpecular : SV_TARGET4;
+    float4 vEmissive : SV_TARGET5;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
@@ -249,10 +257,24 @@ PS_OUT PS_MAP(PS_IN In)                       // ¸Ê ¿ÀºêÁ§Æ®¿ë ÇÈ¼¿ ½¦ÀÌ´õ
     float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
     vNormal = mul(vNormal, WorldMatrix);
     
+    // Specular Test
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    
+    if (true == g_isSpecular)
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    // Emissive Test
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    
+    if (true == g_isEmissive)
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
     Out.vDiffuse = vMtrlDiffuse;
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     Out.vWorld = In.vWorldPos;
+    Out.vSpecular = vMtrlSpecular;
+    //  Out.vEmissive = vMtrlEmissive;
     
     return Out;
 }
@@ -280,11 +302,24 @@ PS_OUT PS_MAP_ICE(PS_IN In)                       // ¸Ê ¿ÀºêÁ§Æ®¿ë ÇÈ¼¿ ½¦ÀÌ´õ
     float3 vFinalColor = saturate(vIceColor * 0.95f);
     
     float fAlpha = saturate(0.6f + fReflectPower * 0.3f);
+    // Specular Test
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    
+    if (true == g_isSpecular)
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    // Emissive Test
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    
+    if (true == g_isEmissive)
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     
     Out.vDiffuse = float4(vFinalColor, fAlpha);
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     Out.vWorld = In.vWorldPos;
+    Out.vSpecular = vMtrlSpecular;
+    //  Out.vEmissive = vMtrlEmissive;
 
     return Out;
 }
@@ -316,10 +351,24 @@ PS_OUT PS_SNOWMAP(PS_IN In)                       // ¸Ê ¿ÀºêÁ§Æ®¿ë ÇÈ¼¿ ½¦ÀÌ´õ
     
     float3 vFinalColor = lerp(vMtrlDiffuse.rgb, vSnowColor, fSnowBlend);
     
+    // Specular Test
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    
+    if (true == g_isSpecular)
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    // Emissive Test
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    
+    if (true == g_isEmissive)
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
     Out.vDiffuse = float4(vFinalColor, vMtrlDiffuse.a);
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     Out.vWorld = In.vWorldPos;
+    Out.vSpecular = vMtrlSpecular;
+    //  Out.vEmissive = vMtrlEmissive;
     
     return Out;
 }
@@ -356,10 +405,24 @@ PS_OUT PS_SNOWMAP_ICE(PS_IN In)                       // ¸Ê ¿ÀºêÁ§Æ®¿ë ÇÈ¼¿ ½¦ÀÌ
     
     float fAlpha = saturate(0.6f + fReflectPower * 0.3f);
     
+    // Specular Test
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    
+    if (true == g_isSpecular)
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    // Emissive Test
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    
+    if (true == g_isEmissive)
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
     Out.vDiffuse = float4(vFinalColor, fAlpha);
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     Out.vWorld = In.vWorldPos;
+    Out.vSpecular = vMtrlSpecular;
+    //  Out.vEmissive = vMtrlEmissive;
 
     return Out;
 }

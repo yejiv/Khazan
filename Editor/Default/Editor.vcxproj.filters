@@ -214,6 +214,9 @@
     <Filter Include="02.GameObject\Effect\EffectTool">
       <UniqueIdentifier>{18a8e209-0479-4986-9947-bd2778027e43}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Sky">
+      <UniqueIdentifier>{c39f273c-ce44-4269-9200-f2f0e77106d6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -405,6 +408,9 @@
     <ClInclude Include="..\public\AnimationTool.h">
       <Filter>02.GameObject\Animation\98.Temp Camera</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\SkySphere.h">
+      <Filter>02.GameObject\MapObject\Sky</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -590,6 +596,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\BigChest.cpp">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\01.BigChest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SkySphere.cpp">
+      <Filter>02.GameObject\MapObject\Sky</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
