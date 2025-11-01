@@ -165,6 +165,14 @@ void CClientInstance::ActiveCamera_Shaking(_float fPower, _float fDuration)
 {
 	m_pCamera_Manager->ActiveCamera_Shaking(fPower, fDuration);
 }
+void CClientInstance::ActiveCamera_PushFOVModifier(const FOVModifier& tNewModifier)
+{
+	m_pCamera_Manager->ActiveCamera_PushFOVModifier(tNewModifier);
+}
+void CClientInstance::ActiveCamera_KillFov(const _wstring& strID)
+{
+	m_pCamera_Manager->ActiveCamera_KillFov(strID);
+}
 void CClientInstance::Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData)
 {
 	m_pCamera_Manager->Save_Json(iLevelIndex, strCameraTag, pOutData);

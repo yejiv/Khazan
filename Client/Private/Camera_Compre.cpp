@@ -73,7 +73,7 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
     m_vShaking_BaseLook = m_pTransformCom->Get_State(STATE::LOOK);
     Shaking(fTimeDelta);
 
-    __super::Update_PipeLines();
+    __super::Update_PipeLines(fTimeDelta);
 }
 
 void CCamera_Compre::Update(_float fTimeDelta)

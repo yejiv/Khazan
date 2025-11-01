@@ -31,6 +31,8 @@ public:
 
 public:
 	void ActiveCamera_Shaking(_float fPower, _float fDuration);
+	void ActiveCamera_PushFOVModifier(const FOVModifier& tNewModifier);
+	void ActiveCamera_KillFov(const _wstring& strID);
 
 public:
 	void Save_Dat();
