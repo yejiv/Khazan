@@ -46,10 +46,17 @@ void CPlayer_Shader::Priority_Update(_float fTimeDelta)
 void CPlayer_Shader::Update(_float fTimeDelta)
 {
     // Emissive On / Off Test
+    //  if (m_pGameInstance->Key_Down(DIK_0))
+    //  {
+    //      m_isEnableEmissive = !m_isEnableEmissive;
+    //  }
+
+    // Vignette Animation Test
     if (m_pGameInstance->Key_Down(DIK_0))
     {
-        m_isEnableEmissive = !m_isEnableEmissive;
+        m_pGameInstance->Start_VignetteAnimation(5.f);
     }
+
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
         int a = 10;

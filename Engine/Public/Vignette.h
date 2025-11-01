@@ -18,6 +18,7 @@ public:
 	VIGNETTE_CONFIG				Get_VignetteConfig() { return m_Config; }
 	void						Set_VignetteConfig(VIGNETTE_CONFIG Config) { m_Config = Config; }
 	void						Set_EnableVignette(_bool isEnable) { m_isEnable = isEnable; }
+	void						Start_VignetteAnimation(_float fDuration);
 
 private:
 	VIGNETTE_CONFIG				m_Config = {};
@@ -27,6 +28,7 @@ private:
 	// Animation
 	_float						m_fTimeAcc = {};
 	_float						m_fDuration = {};
+	_float						m_fMaxIntensity = {};
 	// 애니메이션 열거체
 
 public:

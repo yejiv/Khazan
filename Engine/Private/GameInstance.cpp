@@ -186,9 +186,10 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 	if (m_pOctree)
 		m_pOctree->Late_Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
-	// Cascade Test
+	// Renderer Resources
 	m_pShadow->Update();
 	m_pFog->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
+	m_pVignette->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
 	m_pLevel_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
@@ -1070,6 +1071,10 @@ VIGNETTE_CONFIG CGameInstance::Get_VignetteConfig()
 void CGameInstance::Set_VignetteConfig(VIGNETTE_CONFIG Config)
 {
 	m_pVignette->Set_VignetteConfig(Config);
+}
+void CGameInstance::Start_VignetteAnimation(_float fDuration)
+{
+	m_pVignette->Start_VignetteAnimation(fDuration);
 }
 #pragma endregion
 
