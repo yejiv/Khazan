@@ -241,6 +241,7 @@ HRESULT CGameInstance::Draw()
 	m_pImgui_Manager->BeginFrame();
 	m_pImgui_Manager->Render();
 	m_pJolt_Manager->Debug_Render();
+	m_pJolt_Manager->RayCast_Render_Clear();
 #endif
 
 	return S_OK;
@@ -844,9 +845,9 @@ void CGameInstance::Reset_Gravity()
 	m_pJolt_Manager->Reset_Gravity();
 }
 
-_bool CGameInstance::CastRay(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition)
+_bool CGameInstance::RayCast(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition, _float3* outNormal)
 {
-	return m_pJolt_Manager->CastRay(vStart, vEnd, outFraction, outPosition);
+	return m_pJolt_Manager->RayCast(vStart, vEnd, outFraction, outPosition, outNormal);
 }
 
 #ifdef _DEBUG

@@ -64,7 +64,6 @@ void CJolt_Manager::Update(_float fDeltaTime)
 {
     if (!m_pPhysics)
         return;
-
     m_pPhysics->Update(fDeltaTime, 1, m_pTempAlloc, m_pJobSystem);
 }
 
@@ -190,7 +189,7 @@ void CJolt_Manager::Remove_CharacterVirtual(CharacterID id)
 	}
 }
 
-_bool CJolt_Manager::CastRay(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition)
+_bool CJolt_Manager::RayCast(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition, _float3* outNormal)
 {
     Vec3 origin = LoadVec3(vStart);
     Vec3 dir = LoadVec3(vEnd) - origin;
@@ -215,16 +214,45 @@ _bool CJolt_Manager::CastRay(_float3 vStart, _float3 vEnd, _float& outFraction, 
     if (!collector.HadHit())
         return false;
 
+    const auto& hit = collector.mHit;
     const float fraction = clamp(collector.mHit.mFraction, 0.0f, 1.0f);
     outFraction = fraction;
 
     _vector vDir = XMVectorSet(dir.GetX(), dir.GetY(), dir.GetZ(), 0.f);
-
     vDir = XMVector3Normalize(vDir);
 
     const Vec3 hitPos = ray.GetPointOnRay(fraction);
 
     outPosition = _float4(hitPos.GetX(), hitPos.GetY(), hitPos.GetZ(), 1.f);
+
+    if (outNormal)
+    {
+        // Body 읽기 락 후 바디 포인터 획득
+        BodyLockRead lock(m_pPhysics->GetBodyLockInterfaceNoLock(), hit.mBodyID);
+        if (lock.Succeeded())
+        {
+            const Body& pBody = lock.GetBody();
+            const Vec3 n = pBody.GetWorldSpaceSurfaceNormal(hit.mSubShapeID2, hitPos);
+            _float3 N = { n.GetX(), n.GetY(), n.GetZ() };
+
+            // 레이 방향과 같은 방향을 보고 있으면 뒤집어 데칼이 항상 표면 위로 향하게
+            Vec3 vDir = dir.Normalized();
+            if (vDir.Dot(n) > 0.0f) {
+                N.x *= -1.f; N.y *= -1.f; N.z *= -1.f;
+            }
+
+            *outNormal = N;
+        }
+    }
+
+#ifdef _DEBUG
+    RayCastDesc RayCastDesc{};
+    RayCastDesc.vStart = vStart;
+    RayCastDesc.vEnd = vEnd;
+    RayCastDesc.vColor = Color::sGreen;
+    m_RayCasts.push_back(RayCastDesc);
+#endif
+
 
     return true;
 }
@@ -257,12 +285,16 @@ void CJolt_Manager::Debug_Render()
         return;
     // 디버그 렌더 패스 시작
     m_pDebugRenderer->BeginFrame();
-
     // Jolt가 내부적으로 수백/수천번 DrawLine()을 호출
     m_pPhysics->DrawBodies(m_DrawSetting, m_pDebugRenderer, m_DrawFilter);
-
+    for (RayCastDesc RC : m_RayCasts)
+        m_pDebugRenderer->DrawLine(LoadVec3(RC.vStart), LoadVec3(RC.vEnd), RC.vColor);
     // 디버그 렌더 패스 종료
     m_pDebugRenderer->EndFrame();
+}
+void CJolt_Manager::RayCast_Render_Clear()
+{
+    m_RayCasts.clear();
 }
 #endif 
 CJolt_Manager* CJolt_Manager::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iNumObjectLayer)

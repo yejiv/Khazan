@@ -199,7 +199,7 @@ HRESULT CCamera_Compre::RayCast(_float fTimeDelta)
     _float fFraction;
     _float4 vPosition;
 
-    if (m_pGameInstance->CastRay(
+    if (m_pGameInstance->RayCast(
         _float3(vTargetPos.m128_f32[0], vTargetPos.m128_f32[1], vTargetPos.m128_f32[2]),
         _float3(vPos.m128_f32[0], vPos.m128_f32[1], vPos.m128_f32[2]),
         fFraction,

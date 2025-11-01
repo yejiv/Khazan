@@ -51,6 +51,8 @@ public:
 	void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
 	void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
 
+	HRESULT RayCast(_float fTimeDelta);
+
 	const _float4x4* Get_BoneSpearFXMatrixPtr() { return &m_SpearFX_WorldMatrix; }
 	_matrix Get_BoneSpearFXMatrix() { return XMLoadFloat4x4(&m_SpearFX_WorldMatrix); }
 
