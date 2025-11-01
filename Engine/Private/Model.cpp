@@ -193,6 +193,19 @@ _float4x4* CModel::Get_ContainNameBoneMatrix(const _char* pBoneName)
     return (*iter)->Get_CombinedTransformationMatrixPtr();
 }
 
+_int CModel::Get_AnimIndexByName(const string& strName)
+{
+    auto iter = find_if(m_AnimationsSetup.begin(), m_AnimationsSetup.end(),
+        [&](ANIMATION_SETUP_DATA& data) {
+            return data.strName == strName;
+        });
+
+    if (iter != m_AnimationsSetup.end())
+        return static_cast<_int>(std::distance(m_AnimationsSetup.begin(), iter));
+
+    return -1; // 못 찾을 경우
+}
+
 vector<_float3> CModel::Get_VerticesPos(_uint iIndex)
 {
     return m_Meshes[iIndex]->Get_VerticesPos();

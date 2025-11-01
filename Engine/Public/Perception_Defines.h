@@ -41,5 +41,6 @@ typedef struct tagSightDesc
 }SIGHT_DESC;
 
 
+typedef function<void(class CGameObject*, const STIMULUS&)> PERCEPTIONCALLBACK;
 
 NS_END

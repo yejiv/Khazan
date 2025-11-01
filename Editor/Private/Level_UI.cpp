@@ -95,7 +95,7 @@ HRESULT CLevel_UI::Ready_Layer_Camera(const _wstring& strLayerTag)
 	CameraDesc.fMouseSensor = 0.2f;
 
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::UI), strLayerTag,
-		ENUM_CLASS(LEVEL::UI), TEXT("Prototype_GameObject_Camera_UI"), &CameraDesc)))
+		ENUM_CLASS(LEVEL::UI), TEXT("Prototype_GameObject_Camera_UI"), TIME_CHANNEL::WORLD, &CameraDesc)))
 		return E_FAIL;
 
 	return S_OK;

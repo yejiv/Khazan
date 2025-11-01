@@ -59,12 +59,12 @@ HRESULT CMainApp::Initialize()
 	return S_OK;
 }
 
-void CMainApp::Update(_float fTimeDelta)
+void CMainApp::Update(TIME_DELTA tTimeDelta)
 {
-	m_pGameInstance->Update_Engine(fTimeDelta);
+	m_pGameInstance->Update_Engine(tTimeDelta);
 	m_pDebug->Update();
 #ifdef _DEBUG
-	m_fTimeAcc += fTimeDelta;
+	m_fTimeAcc += tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)];
 
 #endif
 }

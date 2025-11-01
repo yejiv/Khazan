@@ -24,6 +24,7 @@ public:
 		_uint		bIsScrollVertical;				//마스크 스크롤 방향 (상하 <-> 좌우)
 		_uint		bIsScrollInverse;				//왼->오, 위-> 아래가 기본인데 이거 체크되어있으면 반대로!
 		_uint		bGravity = false;
+		_uint		bIsFresnel = false;
 	}PARTICLE_DESC;
 
 private:

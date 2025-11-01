@@ -32,6 +32,14 @@ public:
 	void		Set_matSpearFX(_float4x4* mat) { m_pSpearFX_Matrix = mat; }
 	void		Set_matSpearOffset(_matrix mat) { m_SpearOffset_Matrix = mat; }
 
+public:
+	OUTLINE_CONFIG Get_OutlineConfig() { return m_OutlineConfig; }
+	void Set_OutlineConfig(OUTLINE_CONFIG Config)
+	{
+		m_OutlineConfig.vColor = Config.vColor;
+		m_OutlineConfig.fSize = Config.fSize;
+	}
+
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -41,6 +49,7 @@ public:
 	virtual void Late_Update(_float fTimeDelta);
 	virtual HRESULT Render();
 	virtual HRESULT Render_Shadow() override;
+	virtual HRESULT Render_Outline() override;
 
 public:
 	CModel* Get_Model() { return m_pModelCom; }
@@ -62,6 +71,16 @@ private:
 	_uint				m_iCurSetAnimIndex = { 0 };
 
 	const _uint			m_iSetAnimation[3] = { 3,2,1 };
+
+	void Set_EnableEmissive(_bool isEnable) { m_isEnableEmissive = isEnable; }
+	void Set_EnableBloom(_bool isEnable) { m_isEnableBloom = isEnable; }
+
+	void Set_EmissiveIntensity(_float fIntensity) { m_fEmissiveIntensity = fIntensity; }
+
+	_float m_fEmissiveIntensity = {};
+	_bool m_isEnableEmissive = {};
+	_bool m_isEnableBloom = {};
+	OUTLINE_CONFIG m_OutlineConfig = { _float3(1.f, 0.f, 1.f), 0.001f, 0.f, 0.f };
 
 
 private:

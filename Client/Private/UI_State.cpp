@@ -5,6 +5,7 @@
 #include "UI_TextBox.h"
 #include "UI_BackGround.h"
 
+#include "UI_State_MainPanel.h"
 #include "UI_State_Panel.h"
 #include "UI_State_Button.h"
 #include "UI_State_List.h"
@@ -19,15 +20,24 @@ CUI_State::CUI_State(const CUI_State& Prototype)
 {
 }
 
-void CUI_State::On_Panel()
+void CUI_State::On_Panel(UI_TYPE eType)
 {
 	if (m_IsUpdate)
 		return;
 
+	m_eType = eType;
+	m_eType == UI_TYPE::DEFAULT ? m_pTitle->Set_Text(TEXT("상태")) : m_pTitle->Set_Text(TEXT("능력 강화"));
+
+	m_pPanel[ENUM_CLASS(STATE_PANEL::LACHRYMA)]->Setting_Type(m_eType, this);
+	m_pPanel[ENUM_CLASS(STATE_PANEL::LEVEL)]->Setting_Type(m_eType, this);
+
+	for (auto pList : m_pState)
+		pList->Setting_Type(m_eType);
 	m_eAnimState = UIANIMSTATE::ON;
 	m_fAccTime = 0.5f;
 	m_IsUpdate = true;
 }
+
 
 void CUI_State::Off_Panel()
 {
@@ -51,13 +61,18 @@ HRESULT CUI_State::Initialize_Clone(void* pArg)
 {
 	if (FAILED(__super::Initialize_Clone(pArg)))
 		return E_FAIL;
+
+	Ready_PlayerData();
+
 	return S_OK;
 }
 
 void CUI_State::Priority_Update(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_8))
-		Update_Switch(nullptr);
+		m_IsUpdate ? Off_Panel() : On_Panel(UI_TYPE::DEFAULT);
+	if (m_pGameInstance->Key_Down(DIK_6))
+		m_IsUpdate ? Off_Panel() : On_Panel(UI_TYPE::UPAGERD);
 
 	if (!m_IsUpdate)
 		return;
@@ -80,8 +95,16 @@ void CUI_State::Late_Update(_float fTimeDelta)
 	if (!m_IsUpdate)
 		return;
 
-	__super::Late_Update(fTimeDelta);
+	m_pBackGround->Late_Update(fTimeDelta);
+	m_pTitle->Late_Update(fTimeDelta);
 
+	for (auto pChild : m_pState)
+		pChild->Late_Update(fTimeDelta);
+	for (auto pChild : m_pPanel)
+		pChild->Late_Update(fTimeDelta);
+
+	if (UI_TYPE::UPAGERD == m_eType)
+		m_pUpButton->Late_Update(fTimeDelta);
 }
 
 HRESULT CUI_State::Render()
@@ -198,7 +221,7 @@ HRESULT CUI_State::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, voi
 					m_pState.push_back(pChild);
 
 					Safe_AddRef(pChild);
-					pChild->Update_Pos(i, vPos, 65.f);
+					pChild->Setting_List(i, vPos, 65.f, &m_CulStateLevel[i], &m_UpStateLevel[i], &m_Player_Data.iUPPoint);
 				}
 			}
 			else
@@ -220,28 +243,33 @@ HRESULT CUI_State::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, voi
 				}
 				else if (strName == "Level")
 				{
-					m_pPanel[ENUM_CLASS(STATE_PANEL::LEVEL)] = static_cast<CUI_State_Panel*>(pChild);
+					m_pPanel[ENUM_CLASS(STATE_PANEL::LEVEL)] = static_cast<CUI_State_MainPanel*>(pChild);
 					Safe_AddRef(pChild);
+					m_pPanel[ENUM_CLASS(STATE_PANEL::LEVEL)]->Setting_PanelLevel(ENUM_CLASS(STATE_PANEL::LEVEL), &m_Player_Data, &m_UpPlayer_Data);
 				}
 				else if (strName == "Lachryma")
 				{
-					m_pPanel[ENUM_CLASS(STATE_PANEL::LACHRYMA)] = static_cast<CUI_State_Panel*>(pChild);
+					m_pPanel[ENUM_CLASS(STATE_PANEL::LACHRYMA)] = static_cast<CUI_State_MainPanel*>(pChild);
 					Safe_AddRef(pChild);
+					m_pPanel[ENUM_CLASS(STATE_PANEL::LACHRYMA)]->Setting_PanelLevel(ENUM_CLASS(STATE_PANEL::LACHRYMA), &m_Player_Data, &m_UpPlayer_Data);
 				}
 				else if (strName == "DefaultState")
 				{
-					m_pPanel[ENUM_CLASS(STATE_PANEL::DEFAULT_STATE)] = static_cast<CUI_State_Panel*>(pChild);
+					m_pPanel[ENUM_CLASS(STATE_PANEL::DEFAULT_STATE)] = static_cast<CUI_State_MainPanel*>(pChild);
 					Safe_AddRef(pChild);
+					m_pPanel[ENUM_CLASS(STATE_PANEL::DEFAULT_STATE)]->Setting_PanelLevel(ENUM_CLASS(STATE_PANEL::DEFAULT_STATE), &m_Player_Data, &m_UpPlayer_Data);
 				}
 				else if (strName == "AddState")
 				{
-					m_pPanel[ENUM_CLASS(STATE_PANEL::ADD_STATE)] = static_cast<CUI_State_Panel*>(pChild);
+					m_pPanel[ENUM_CLASS(STATE_PANEL::ADD_STATE)] = static_cast<CUI_State_MainPanel*>(pChild);
 					Safe_AddRef(pChild);
+					m_pPanel[ENUM_CLASS(STATE_PANEL::ADD_STATE)]->Setting_PanelLevel(ENUM_CLASS(STATE_PANEL::ADD_STATE), &m_Player_Data, &m_UpPlayer_Data);
 				}
 				else if (strName == "Elemental")
 				{
-					m_pPanel[ENUM_CLASS(STATE_PANEL::ELEMENTAL)] = static_cast<CUI_State_Panel*>(pChild);
+					m_pPanel[ENUM_CLASS(STATE_PANEL::ELEMENTAL)] = static_cast<CUI_State_MainPanel*>(pChild);
 					Safe_AddRef(pChild);
+					m_pPanel[ENUM_CLASS(STATE_PANEL::ELEMENTAL)]->Setting_PanelLevel(ENUM_CLASS(STATE_PANEL::ELEMENTAL), &m_Player_Data, &m_UpPlayer_Data);
 				}
 				else if (strName == "State_Button")
 				{
@@ -255,18 +283,57 @@ HRESULT CUI_State::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, voi
 	__super::Update_Transform(nullptr, m_vLocalPos);
 
 	CHECK_FAILED(Ready_Object(), E_FAIL);
+	CHECK_FAILED(Ready_UISetting(), E_FAIL);
+
 	return S_OK;
+}
+
+void CUI_State::Bubble_EventCall(BUBBLEEVENT* pArg)
+{
+	UI_STATE_BUBLLE* pDesc = static_cast<UI_STATE_BUBLLE*>(pArg);
+
+	if (pDesc->isClick)
+	{
+
+	}
+	else
+	{
+		_int iType = ENUM_CLASS(pDesc->eListType);
+		
+		pair<_int, _float> Index[4];
+		Index[0].first = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iType_1;
+		Index[1].first = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iType_2;
+		Index[2].first = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iType_3;
+		Index[3].first = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iType_4;
+		
+		Index[0].second = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iValue_1;
+		Index[1].second = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iValue_2;
+		Index[2].second = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->fValue_3;
+		Index[3].second = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->fValue_4;
+
+		for (_int i = 0; i < 4; ++i)
+		{
+			if (Index[i].first <= ENUM_CLASS(PLAYTER_STATE::AGILE))
+				m_pPanel[ENUM_CLASS(STATE_PANEL::DEFAULT_STATE)]->State_Hover(Index[i]);
+			else if (Index[i].first <= ENUM_CLASS(PLAYTER_STATE::GUARD_STAMINADOWN))
+				m_pPanel[ENUM_CLASS(STATE_PANEL::ADD_STATE)]->State_Hover(Index[i]);
+			else if (Index[i].first < ENUM_CLASS(PLAYTER_STATE::END))
+				m_pPanel[ENUM_CLASS(STATE_PANEL::ELEMENTAL)]->State_Hover(Index[i]);
+		}
+	}
 }
 
 HRESULT CUI_State::Update_Switch(void* pArg)
 {
-	m_IsUpdate ? Off_Panel() : On_Panel();
 	return S_OK;
 }
 
 
 HRESULT CUI_State::Ready_Prototype()
 {
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_State_MainPanel"),
+		CUI_State_MainPanel::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
+
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_State_Panel"),
 		CUI_State_Panel::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
 
@@ -282,7 +349,7 @@ HRESULT CUI_State::Ready_Prototype()
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_Component_UI_State_Button"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("..//Bin/Resources/UI/State/NormalButton_%d.png"), 7))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("..//Bin/Resources/UI/State/NormalButton_%d.png"), 10))))
 		return E_FAIL;
 
 	return S_OK;
@@ -304,6 +371,93 @@ HRESULT CUI_State::Ready_Object()
 	m_Children.push_back(m_pBackGround);
 	Safe_AddRef(m_pBackGround);
 
+	return S_OK;
+}
+
+void CUI_State::Ready_PlayerData()
+{
+	//플레이어 기본 정보
+	m_Player_Data.iLevel						= 1;
+	m_Player_Data.iUPPoint						= 10;
+	m_Player_Data.iUpLachryma					= 0;
+	m_Player_Data.iLachryma						= 1;
+	
+	m_Player_Data.iMaxHp						= 100;
+	m_Player_Data.iMaxStamina					= 100;
+	m_Player_Data.iAtk							= 1111;
+	m_Player_Data.iDef							= 934;
+	m_Player_Data.fWeight						= 15.f;
+	m_Player_Data.fMaxWeight					= 35.f;
+	m_Player_Data.fAgile						= 100.f;
+	
+	m_Player_Data.fStaminaAttack				= 50.f;
+	m_Player_Data.fStaminaRegen					= 17.1f;
+	m_Player_Data.fEvasion_StaminaDown			= 10.7f;
+	m_Player_Data.fDamage_StaminaDown			= 0.0f;
+	m_Player_Data.fGuard_StaminaDown			= 15.0f;
+	
+	m_Player_Data.iFire							= 500;
+	m_Player_Data.iWater						= 500;
+	m_Player_Data.iLightning					= 500;
+	m_Player_Data.iEarth						= 500;
+	m_Player_Data.iChaos						= 500;
+	m_Player_Data.iDisease						= 500;
+	m_Player_Data.iPoison						= 500;
+
+	m_Player_Data.iLevel						= 1;
+	m_Player_Data.iUPPoint						= 10;
+	m_Player_Data.iUpLachryma					= 0;
+	m_Player_Data.iLachryma						= 1;
+
+	//플레이어 스텟업 정보
+	m_UpPlayer_Data.iMaxHp						= 0;
+	m_UpPlayer_Data.iMaxStamina					= 0;
+	m_UpPlayer_Data.iAtk						= 0;
+	m_UpPlayer_Data.iDef						= 0;
+	m_UpPlayer_Data.fWeight						= 0.f;
+	m_UpPlayer_Data.fMaxWeight					= 0.f;
+	m_UpPlayer_Data.fAgile						= 0.f;
+												  
+	m_UpPlayer_Data.fStaminaAttack				= 0.f;
+	m_UpPlayer_Data.fStaminaRegen				= 0.f;
+	m_UpPlayer_Data.fEvasion_StaminaDown		= 0.f;
+	m_UpPlayer_Data.fDamage_StaminaDown			= 0.f;
+	m_UpPlayer_Data.fGuard_StaminaDown			= 0.f;
+												 
+	m_UpPlayer_Data.iFire						= 0;
+	m_UpPlayer_Data.iWater						= 0;
+	m_UpPlayer_Data.iLightning					= 0;
+	m_UpPlayer_Data.iEarth						= 0;
+	m_UpPlayer_Data.iChaos						= 0;
+	m_UpPlayer_Data.iDisease					= 0;
+	m_UpPlayer_Data.iPoison						= 0;
+
+	m_UpPlayer_Data.iLevel						= 0;
+	m_UpPlayer_Data.iUPPoint					= 0;
+	m_UpPlayer_Data.iUpLachryma					= 0;
+	m_UpPlayer_Data.iLachryma					= 0;
+	
+	//스텟창 레벨
+	m_CulStateLevel.resize(ENUM_CLASS(STATE_LIST::END));
+	m_UpStateLevel.resize(ENUM_CLASS(STATE_LIST::END));
+
+	m_CulStateLevel[ENUM_CLASS(STATE_LIST::VITALITY)] = 10;
+	m_CulStateLevel[ENUM_CLASS(STATE_LIST::ENDURANCE)] = 10;
+	m_CulStateLevel[ENUM_CLASS(STATE_LIST::POWER)] = 10;
+	m_CulStateLevel[ENUM_CLASS(STATE_LIST::COMPETENCY)] = 10;
+	m_CulStateLevel[ENUM_CLASS(STATE_LIST::WILL)] = 10;
+
+	m_UpStateLevel[ENUM_CLASS(STATE_LIST::VITALITY)] = 0;
+	m_UpStateLevel[ENUM_CLASS(STATE_LIST::ENDURANCE)] = 0;
+	m_UpStateLevel[ENUM_CLASS(STATE_LIST::POWER)] = 0;
+	m_UpStateLevel[ENUM_CLASS(STATE_LIST::COMPETENCY)] = 0;
+	m_UpStateLevel[ENUM_CLASS(STATE_LIST::WILL)] = 0;
+
+}
+
+HRESULT CUI_State::Ready_UISetting()
+{
+	//m_pPanel[ENUM_CLASS(STATE_PANEL::LEVEL)]
 	return S_OK;
 }
 

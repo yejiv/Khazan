@@ -271,18 +271,6 @@
     <Filter Include="02.GameObject\UI\WorldUI\Damage_UI">
       <UniqueIdentifier>{6da1545d-0879-4c90-9ac6-1aeabdd954dc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="94. ClientInstance\Debug">
-      <UniqueIdentifier>{40550248-8478-40d1-913b-0394bb2ab80f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03.Tool">
-      <UniqueIdentifier>{69d26ed9-2e45-4fc2-90bc-4a4da31625a2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03.Tool\Camera">
-      <UniqueIdentifier>{71d26352-adad-4d1d-a566-39f2285daa3d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03.Tool\Camera\Controller">
-      <UniqueIdentifier>{ddd3541e-7243-4f90-a57b-80b45d25d080}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\Creature\Monster\Yetuga\Body">
       <UniqueIdentifier>{8fef0fd1-b2ca-4175-81dc-514453bf821a}</UniqueIdentifier>
     </Filter>
@@ -361,9 +349,6 @@
     <Filter Include="01.Levels\Viper">
       <UniqueIdentifier>{663bf125-288a-4167-aca7-71e9e34d56d9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="94. ClientInstance\Camera\Controller">
-      <UniqueIdentifier>{ddd3541e-7243-4f90-a57b-80b45d25d080}</UniqueIdentifier>
-    </Filter>
     <Filter Include="94.ClientInstance">
       <UniqueIdentifier>{7a63893c-daa7-4abb-bec1-4e58e468f354}</UniqueIdentifier>
     </Filter>
@@ -399,6 +384,21 @@
     </Filter>
     <Filter Include="02.GameObject\Projectile\Yetuga">
       <UniqueIdentifier>{0141891e-b7df-4dcc-8da3-729637bf512b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\Camera\Controller">
+      <UniqueIdentifier>{ddd3541e-7243-4f90-a57b-80b45d25d080}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\Shader">
+      <UniqueIdentifier>{0c39bca6-3a43-4515-b0e0-d2a86ae695d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\Shader\Shader_Controller">
+      <UniqueIdentifier>{38ef54a1-e721-4966-9df1-08a358535e44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Anim State Machine">
+      <UniqueIdentifier>{e29ff819-bdd5-4357-9735-20156e615c46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Anim State Manager">
+      <UniqueIdentifier>{6830d138-8660-4890-8174-2b8f66fe9d52}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -663,9 +663,6 @@
     <ClInclude Include="..\Public\Debug_Manager.h">
       <Filter>94.ClientInstance\Debug</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Camera_Controller.h">
-      <Filter>94. ClientInstance\Camera\Controller</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Body_Yetuga.h">
       <Filter>02.GameObject\Creature\Monster\Yetuga\Body</Filter>
     </ClInclude>
@@ -755,6 +752,21 @@
     </ClInclude>
     <ClInclude Include="..\Public\Projectile_Yetuga.h">
       <Filter>02.GameObject\Projectile\Yetuga</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Controller.h">
+      <Filter>94.ClientInstance\Camera\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_State_MainPanel.h">
+      <Filter>02.GameObject\UI\State\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Shader_Controller.h">
+      <Filter>94.ClientInstance\Shader\Shader_Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_Spear_ASMachine.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Anim State Machine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_Spear_ASManager.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Anim State Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1011,9 +1023,6 @@
     <ClCompile Include="..\Private\Debug_Manager.cpp">
       <Filter>94.ClientInstance\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Camera_Controller.cpp">
-      <Filter>94. ClientInstance\Camera\Controller</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Body_Yetuga.cpp">
       <Filter>02.GameObject\Creature\Monster\Yetuga\Body</Filter>
     </ClCompile>
@@ -1097,6 +1106,21 @@
     </ClCompile>
     <ClCompile Include="..\Private\Projectile_Yetuga.cpp">
       <Filter>02.GameObject\Projectile\Yetuga</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Controller.cpp">
+      <Filter>94.ClientInstance\Camera\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_State_MainPanel.cpp">
+      <Filter>02.GameObject\UI\State\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Shader_Controller.cpp">
+      <Filter>94.ClientInstance\Shader\Shader_Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_Spear_ASMachine.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Anim State Machine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_Spear_ASManager.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Anim State Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -33,6 +33,8 @@ cbuffer CB_PARTICLE : register(b0)
     
     float g_bIsLoop;
     float3 g_SpawnRange;
+    
+    float g_TurblunceSpeed;
 };
 
 StructuredBuffer<PARTICLE_PARAMS> g_InputData : register(t0);
@@ -178,6 +180,35 @@ void CS_UPDATE_SPEED(uint3 DTid : SV_DispatchThreadID)
     g_SpeedData[iIndex] = SpeedData;
 }
 
+[numthreads(256, 1, 1)]
+void CS_RESET_SPEED(uint3 DTid : SV_DispatchThreadID)
+{
+    uint iIndex = DTid.x;
+    
+    //if (iIndex >= g_iNumInstances)
+    //    return;
+    VTXINSTANCE_PARTICLE Particle = g_OutputData[iIndex];
+    VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
+    
+    if (g_iSpeedType == 0)
+        SpeedData.fSpeed.x = 0.f;
+    else if (g_iSpeedType == 1)
+        SpeedData.fSpeed.y = 0.f;
+    else if (g_iSpeedType == 2)
+    {
+        SpeedData.fSpeed.z = 0.f;
+        Particle.vRight = float4(g_InputData[iIndex].fSize, 0.f, 0.f, 0.f);
+        Particle.vUp = float4(0.f, g_InputData[iIndex].fSize, 0.f, 0.f);
+        Particle.vLook = float4(0.f, 0.f, g_InputData[iIndex].fSize, 0.f);
+    }
+    else
+        SpeedData.fSpeed.w = 0.f;
+    SpeedData.fSpeed = float4(0.f, 0.f, 0.f, 0.f);
+
+    g_OutputData[iIndex] = Particle;
+    g_SpeedData[iIndex] = SpeedData;
+}
+
 
 [numthreads(256, 1, 1)]
 void CS_UPDATE_GRAVITY(uint3 DTid : SV_DispatchThreadID)
@@ -224,24 +255,3 @@ void CS_RESET(uint3 DTid : SV_DispatchThreadID)
 }
 
 
-[numthreads(256, 1, 1)]
-void CS_RESET_SPEED(uint3 DTid : SV_DispatchThreadID)
-{
-    uint iIndex = DTid.x;
-    
-    //if (iIndex >= g_iNumInstances)
-    //    return;
-    
-    VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
-    
-    if (g_iSpeedType == 0)
-        SpeedData.fSpeed.x = 0.f;
-    else if (g_iSpeedType == 1)
-        SpeedData.fSpeed.y = 0.f;
-    else if (g_iSpeedType == 2)
-        SpeedData.fSpeed.z = 0.f;
-    else
-        SpeedData.fSpeed.w = 0.f;
-    
-    g_SpeedData[iIndex] = SpeedData;
-}

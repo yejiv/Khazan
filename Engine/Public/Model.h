@@ -74,6 +74,8 @@ public:
 	_float4x4*			Get_BoneMatrix(const _char* pBoneName);
 	_float4x4*			Get_ContainNameBoneMatrix(const _char* pBoneName);
 	_int				Get_CurAnimIndex() { return m_iCurrentAnimIndex; }
+	_int				Get_AnimIndexByName(const string& strName);
+	string				Get_CurAnimName() { return m_AnimationsSetup[m_iCurrentAnimIndex].strName; }
 	_float*				Get_CurTrackPosition() { return &m_fCurrentTrackPosition; }
 
 	void				Set_RootBone(_uint iIndex) { m_iRootBoneIndex = iIndex; }

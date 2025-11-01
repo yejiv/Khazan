@@ -211,6 +211,9 @@
     <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\01.BigChest">
       <UniqueIdentifier>{3cfa6e48-cb6a-489b-894a-7cd434d2148c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Effect\EffectTool">
+      <UniqueIdentifier>{18a8e209-0479-4986-9947-bd2778027e43}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">

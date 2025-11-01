@@ -11,6 +11,9 @@
 
 #pragma region 인벤토리 삽입 테스트
 #include "UI_Inven.h"
+//몬스터 체력 테스트
+#include "Mon_HP.h"
+
 #pragma endregion
 
 
@@ -56,6 +59,9 @@ HRESULT CKhazan_Sample::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Collision()))
         return E_FAIL;
 
+
+
+
 #ifdef _DEBUG
     Debug_Widget();
 #endif // _DEBUG
@@ -67,6 +73,19 @@ HRESULT CKhazan_Sample::Initialize_Clone(void* pArg)
         });
 #pragma endregion
 
+    CMon_HP* pUI_HP = static_cast<CMon_HP*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Mon_HP")));
+    m_iMaxHp = 100;
+    m_iHp = 50;
+    m_iMaxStamina = 100;
+    m_iStamina = 50;
+
+    if (pUI_HP != nullptr)
+    {
+        Safe_AddRef(pUI_HP);
+        pUI_HP->Setting_HP(m_pTransformCom->Get_WorldMatrixPtr(), { 0.f, 250.f }, &m_iHp, &m_iMaxHp, &m_iStamina, &m_iMaxStamina);
+
+        m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), pUI_HP);
+    }
     return S_OK;
 
 }
@@ -74,6 +93,11 @@ HRESULT CKhazan_Sample::Initialize_Clone(void* pArg)
 void CKhazan_Sample::Priority_Update(_float fTimeDelta)
 {
     __super::Priority_Update(fTimeDelta);
+
+    if(m_pGameInstance->Key_Down(DIK_F5))
+        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(457.f, -12.f, 241.f, 1.f));
+
+
 }
 
 void CKhazan_Sample::Update(_float fTimeDelta)

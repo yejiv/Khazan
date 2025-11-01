@@ -552,7 +552,7 @@ void CEditor_Model::Set_SetAnimation(const string& strKey)
         m_isSetAnimFinished = false;
         m_iCurSelectSetAnimIndex = static_cast<_uint>(distance(m_Model_Data.vecAnimationSets.begin(), iter));
         m_iCurSetAnimMaxIndex = static_cast<_uint>(iter->vecAnimIndices.size());
-
+        m_isLoop = m_Model_Data.vecAnimation[m_Model_Data.vecAnimationSets[m_iCurSelectSetAnimIndex].vecAnimIndices[m_iCurSelectSetAnimIndex]].animSetup.isLoop;
         OutputDebugStringA(("[Animation Set Selected] " + strKey +
             "\n - Set Index: " + to_string(m_iCurSelectSetAnimIndex) +
             "\n - Total Animations: " + to_string(m_iCurSetAnimMaxIndex) + "\n").c_str());
@@ -1012,6 +1012,7 @@ HRESULT CEditor_Model::Ready_Animation()
         ANIMATION_DATA animationData;
         pAnimation->Get_Data(animationData);
         m_Model_Data.vecAnimation.push_back(animationData);
+        OutputDebugStringA((pAnimation->Get_Name()+"\n").c_str());
     }
 
 	m_iNumAnimations -= iSkipCount;
