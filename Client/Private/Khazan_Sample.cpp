@@ -59,6 +59,9 @@ HRESULT CKhazan_Sample::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Collision()))
         return E_FAIL;
 
+
+
+
 #ifdef _DEBUG
     Debug_Widget();
 #endif // _DEBUG
@@ -90,6 +93,11 @@ HRESULT CKhazan_Sample::Initialize_Clone(void* pArg)
 void CKhazan_Sample::Priority_Update(_float fTimeDelta)
 {
     __super::Priority_Update(fTimeDelta);
+
+    if(m_pGameInstance->Key_Down(DIK_F5))
+        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(457.f, -12.f, 241.f, 1.f));
+
+
 }
 
 void CKhazan_Sample::Update(_float fTimeDelta)

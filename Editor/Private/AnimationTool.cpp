@@ -1056,7 +1056,7 @@ void CAnimationTool::Tool_AnimationInfo_Widget()
                     ImGui::Spacing();
 
                     // 현재 트리거 상태 표시
-                    ImGui::Text("Triggers: ");
+                    ImGui::Text(("Triggers: "+to_string(trigger)+ "  ").c_str());
                     ImGui::SameLine();
                     string triggerStr;
                     if (trigger & (1 << 0)) triggerStr += "[Once] ";
