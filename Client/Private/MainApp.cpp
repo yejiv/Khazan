@@ -241,7 +241,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	Desc.vLocalPos = { 0.f, 0.f };
 	Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
 	Desc.szName = "DamageText";
-	Desc.fDepth = 5.f;
+	Desc.fDepth = 7.9f;
 
 	CHECK_FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_DamageText"),
 		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text"), &Desc, 40), E_FAIL);
@@ -250,7 +250,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	Desc.vLocalPos = { 0.f, 0.f };
 	Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
 	Desc.szName = "MonHP";
-	Desc.fDepth = 6.f;
+	Desc.fDepth = 9.f;
 
 	CHECK_FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Mon_HP"),
 		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Mon_HP"), &Desc, 20), E_FAIL);
@@ -259,7 +259,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	Desc.vLocalPos = { 0.f, 0.f };
 	Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
 	Desc.szName = "KeyGuide";
-	Desc.fDepth = 6.f;
+	Desc.fDepth = 8.f;
 
 	CHECK_FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Interaction_Guide"),
 		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide"), &Desc, 15), E_FAIL);

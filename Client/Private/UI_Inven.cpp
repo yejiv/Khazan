@@ -369,7 +369,7 @@ HRESULT CUI_Inven::Ready_Prototype()
 HRESULT CUI_Inven::Ready_Object()
 {
 	UIOBJECT_DESC Desc = {};
-	Desc.fDepth = 3;
+	Desc.fDepth = 5.5f;
 	Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
 	Desc.szName = "BackGround";
 	Desc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
@@ -395,6 +395,7 @@ HRESULT CUI_Inven::Ready_SlotSet()
 	Desc.szName = "Item";
 	Desc.vLocalPos = vPos;
 	Desc.vLocalSize = { 103.f , 103.f };
+	Desc.fDepth = 3.5f;
 
 	for (_int i = 0; i < ENUM_CLASS(ITEMTYPE::END); ++i)
 	{
@@ -435,7 +436,8 @@ HRESULT CUI_Inven::Ready_SlotSet()
 	EquipDesc.iUIType = ENUM_CLASS(UITYPE::PANEL);
 	EquipDesc.szName = "Equip";
 	EquipDesc.vLocalPos = { 0.f, 0.f };
-	
+	EquipDesc.fDepth = 3.5f;
+
 	for (_int i = 0; i < ENUM_CLASS(EQUIPSLOT_TYPE::END); ++i)
 	{
 		if (i >= ENUM_CLASS(EQUIPSLOT_TYPE::QUICK_1) && i <= ENUM_CLASS(EQUIPSLOT_TYPE::QUICK_6))

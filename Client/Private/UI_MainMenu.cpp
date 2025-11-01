@@ -289,7 +289,7 @@ HRESULT CUI_MainMenu::Ready_Prototype()
 HRESULT CUI_MainMenu::Ready_Object()
 {
 	UIOBJECT_DESC Desc = {};
-	Desc.fDepth = 4;
+	Desc.fDepth = 5.5f;
 	Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
 	Desc.szName = "BackGround";
 	Desc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };

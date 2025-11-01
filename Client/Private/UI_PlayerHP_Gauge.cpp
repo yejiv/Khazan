@@ -138,7 +138,7 @@ HRESULT CUI_PlayerHP_Gauge::Ready_Component()
 HRESULT CUI_PlayerHP_Gauge::Ready_Children()
 {
 	CUIObject::UIOBJECT_DESC Desc;
-	Desc.fDepth = m_fDepth;
+	Desc.fDepth = m_fDepth - 1;
 	Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
 	Desc.szName = "Tip";
 	Desc.vLocalPos = _float2{ 0.f, 0.f };
