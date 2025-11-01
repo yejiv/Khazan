@@ -67,28 +67,28 @@ void CEditor_TempCamera::Priority_Update(_float fTimeDelta)
 {
     if (m_pGameInstance->Key_Pressing(DIK_W, fTimeDelta) )
     {
-        m_pTransformCom->Go_Straight(fTimeDelta * 2.f);
+        m_pTransformCom->Go_Straight(fTimeDelta * m_fCameraSpeed);
         //_float3 temp;
         //XMStoreFloat3(&temp, m_pTransformCom->Get_State(STATE::POSITION));
         //OutputDebugStringA((std::to_string(temp.x) + " " + std::to_string(temp.y) + " " + std::to_string(temp.z) + "\n").c_str());
     }
     if (m_pGameInstance->Key_Pressing(DIK_S, fTimeDelta) )
     {
-        m_pTransformCom->Go_Backward(fTimeDelta * 2.f);
+        m_pTransformCom->Go_Backward(fTimeDelta * m_fCameraSpeed);
         //_float3 temp;
         //XMStoreFloat3(&temp, m_pTransformCom->Get_State(STATE::POSITION));
         //OutputDebugStringA((std::to_string(temp.x) + " " + std::to_string(temp.y) + " " + std::to_string(temp.z) + "\n").c_str());
     }
     if (m_pGameInstance->Key_Pressing(DIK_A, fTimeDelta))
     {
-        m_pTransformCom->Go_Left(fTimeDelta * 2.f);
+        m_pTransformCom->Go_Left(fTimeDelta * m_fCameraSpeed);
         //_float3 temp;
         //XMStoreFloat3(&temp, m_pTransformCom->Get_State(STATE::POSITION));
         //OutputDebugStringA((std::to_string(temp.x) + " " + std::to_string(temp.y) + " " + std::to_string(temp.z) + "\n").c_str());
     }
     if (m_pGameInstance->Key_Pressing(DIK_D, fTimeDelta))
     {
-        m_pTransformCom->Go_Right(fTimeDelta * 2.f);
+        m_pTransformCom->Go_Right(fTimeDelta * m_fCameraSpeed);
         //_float3 temp;
        //XMStoreFloat3(&temp, m_pTransformCom->Get_State(STATE::POSITION));
         //OutputDebugStringA((std::to_string(temp.x) + " " + std::to_string(temp.y) + " " + std::to_string(temp.z) + "\n").c_str());

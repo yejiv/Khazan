@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Engine_Defines.h"
 #include "Prototype_Manager.h"
 #include "ComputeShader_Manager.h"
 #include "ThreadPool.h"
@@ -31,7 +32,7 @@ private:
 #pragma region ENGINE
 public:
 	HRESULT Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext);
-	void Update_Engine(_float fTimeDelta);
+	void Update_Engine(TIME_DELTA tTimeDelta);
 	HRESULT Clear_Resources(_uint iClearLevelID);
 public:
 	void Render_Begin(const _float4* pClearColor);
@@ -71,8 +72,8 @@ public:
 	class CComponent* Find_Component(_uint iLayerLevelIndex, const _wstring& strLayerTag, const _wstring& strComponentTag, _uint iIndex = 0);
 	class CGameObject* Find_GameObject(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint iIndex = 0);
 	class CGameObject* Get_BackGameObject(_uint iLayerLevelIndex, const _wstring& strLayerTag);
-	HRESULT Add_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);
-	HRESULT Push_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, class CGameObject* pGameObject);
+	HRESULT Add_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, TIME_CHANNEL eTimeChannel = TIME_CHANNEL::WORLD, void* pArg = nullptr);
+	HRESULT Push_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, class CGameObject* pGameObject, TIME_CHANNEL eTimeChannel = TIME_CHANNEL::WORLD);
 #pragma endregion
 
 #pragma region RENDERER
@@ -100,6 +101,10 @@ public:
 	_float	Get_TimeDelta(const _wstring& strTimerTag);
 	HRESULT	Add_Timer(const _wstring& strTimerTag);
 	void	Compute_TimeDelta(const _wstring& strTimerTag);
+
+	_float	Get_ScaledDelta(const _wstring& strTimerTag, TIME_CHANNEL cCH);
+	void Update_HitStop(_float fUnScaleTimeDelta);
+	void Start_HitStop(TIME_CHANNEL tCH, _float fTargetScale, _float fHold, _float fRecover);
 #pragma endregion
 
 #pragma region PIPELINE
@@ -162,6 +167,7 @@ public:
 	HRESULT Bind_ShadowDSV(_uint iIndex);
 	HRESULT				Bind_Shadow_ShaderResources(class CShader* pShader);
 	void				Clear_ShadowDSVs();
+	void				Update_Cascade_CameraInfo(_float fNear, _float fFar);
 
 #ifdef _DEBUG
 	CASCADE_CONFIG		Get_CascadeConfig();

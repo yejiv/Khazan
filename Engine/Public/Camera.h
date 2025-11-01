@@ -72,12 +72,11 @@ public:
 public:
 	void Update_PipeLines();
 
-
-
 public:
 	void Shaking_Start(_float fPower, _float fDuration);
 	void Shaking(_float fTimeDelta);
 	_bool Shaking_Active() const { return m_fShaking_Time < m_fShaking_Duration && m_fShaking_Power > 0.f; }
+
 	
 
 protected:
@@ -126,12 +125,24 @@ protected:
 	map<_wstring, vector<CAMERA_EVENT_DATA>> m_Events;
 
 	_bool							m_isAnimation = {false};
+	_bool							m_isLoop = { false };
 	vector<CAMERA_KEYFRAME>*		m_pCurrentAnimation = { nullptr };
+	vector<CAMERA_KEYFRAME>			m_RuntimeKeys;
+	_vector							m_vEntryPos = {};
+	_vector							m_vEntryLook = {};
 	_uint							m_iAnimationIndex = {};
 	_float							m_fCurrentTrackPosition = {};
 	_float							m_fAnimationRatio = {};
 	CATMULLROM						m_tPosCatmullrom{};
 	_vector							m_vOldLook = {};
+	_int    m_iSeg = { 0 };
+	_float  m_fSegTime = { 0.f };
+	_float  m_fPosSmooth = { 8.f };
+	_float  m_fRotSmooth = { 8.f };
+	_vector m_vCurPos = XMVectorSet(0, 0, 0, 1);
+	_vector m_vCurQ = XMQuaternionIdentity();
+	_bool m_isCurPos = { false };
+	
 	
 public:
 	virtual CGameObject* Clone(void* pArg) = 0;

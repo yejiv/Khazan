@@ -98,6 +98,7 @@ namespace Engine
 		float fSpeed;
 
 		float fTrackPosition;
+		bool isCurPos = { false }; // 현재 카메라 위치 기준으로 할것인지
 	}CAMERA_KEYFRAME;
 
 	typedef struct tagCameraEvent
@@ -184,6 +185,21 @@ namespace Engine
 		float		fAlpha;
 		float		fBias;
 	}OUTLINE_CONFIG;
+
+	struct HitStopState
+	{
+		bool isActive = false;
+		float fTargetScale = 0.1f; // 히트 순간 속도(0~1)
+		float fHold = 0.03f; // 완전 고정 구간
+		float fRecover = 0.06f; // 1.0으로 복귀까지 시간
+		float fElapsed = 0.f; // 경과 시간
+		float fCurScale = 1.f; // 현재 채널 스케일
+	};
+
+	typedef struct TimeDelta
+	{
+		float TimeDeltas[ENUM_CLASS(TIME_CHANNEL::END)];
+	}TIME_DELTA;
 
 	typedef struct tagPointInstanceParams
 	{
@@ -531,7 +547,8 @@ namespace Engine
 			C = 1 << 6, CC = 1 << 7,
 			ALL = 1 << 8,
 			BBL = 1 << 9, BLL = 1 << 10,
-			END = 1 << 11,
+			R180 = 1 << 11, L180 = 1 << 12,
+			END = 1 << 13,
 		};
 		
 

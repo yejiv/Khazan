@@ -27,7 +27,7 @@ public:
 
 private:
 	_float			m_fMouseSensor = { };
-	_float			m_fCameraSpeed = { 1.f };
+	_float			m_fCameraSpeed = { 2.f };
 
 public:
 	static CEditor_TempCamera* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

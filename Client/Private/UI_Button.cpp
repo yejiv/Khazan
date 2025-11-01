@@ -142,6 +142,45 @@ HRESULT CUI_Button::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, vo
 	return S_OK;
 }
 
+_bool CUI_Button::ButtonOver(HWND hWnd)
+{
+	return __super::IsPick(hWnd);
+}
+
+_bool CUI_Button::ButtonClick(HWND hWnd, _bool IsRight, _bool IsDown)
+{
+	if (__super::IsPick(hWnd))
+	{
+		if (IsRight)
+		{
+			if (IsDown)
+			{
+				if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
+					return true;
+			}
+			else
+			{
+				if (m_pGameInstance->Mouse_Up(MOUSEKEYSTATE::RB))
+					return true;
+			}
+		}
+		else
+		{
+			if (IsDown)
+			{
+				if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+					return true;
+			}
+			else
+			{
+				if (m_pGameInstance->Mouse_Up(MOUSEKEYSTATE::LB))
+					return true;
+			}
+		}
+	}
+	return false;
+}
+
 void CUI_Button::Free()
 {
     __super::Free();

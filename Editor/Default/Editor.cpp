@@ -79,8 +79,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     if (FAILED(pGameInstance->Add_Timer(TEXT("Timer_60"))))
         return FALSE;
 
-    _float          fTimeAcc = {};
-
+    _float          fTimeAcc = 0.f;
+    TIME_DELTA      tTimeDelta = {};
     // 기본 메시지 루프입니다:
     while (true)
     {
@@ -97,13 +97,27 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
         pGameInstance->Compute_TimeDelta(TEXT("Timer_Default"));
 
-        fTimeAcc += pGameInstance->Get_TimeDelta(TEXT("Timer_Default"));
+        const float dt_unscaled = pGameInstance->Get_TimeDelta(TEXT("Timer_Default"));
+        pGameInstance->Update_HitStop(dt_unscaled);
 
-        if (/*fTimeAcc >= 1.f / 60.0f*/1)
+        fTimeAcc += dt_unscaled;
+
+        if (fTimeAcc >= 1.f / 60.0f)
         {
             pGameInstance->Compute_TimeDelta(TEXT("Timer_60"));
 
-            pMainApp->Update(pGameInstance->Get_TimeDelta(TEXT("Timer_60")));
+            const float dt_world = pGameInstance->Get_ScaledDelta(TEXT("Timer_60"), TIME_CHANNEL::WORLD);
+            const float dt_player = pGameInstance->Get_ScaledDelta(TEXT("Timer_60"), TIME_CHANNEL::PLAYER);
+            const float dt_Enemy = pGameInstance->Get_ScaledDelta(TEXT("Timer_60"), TIME_CHANNEL::ENEMY);
+            const float dt_ui = pGameInstance->Get_ScaledDelta(TEXT("Timer_60"), TIME_CHANNEL::MAP);
+            const float dt_fx = pGameInstance->Get_ScaledDelta(TEXT("Timer_60"), TIME_CHANNEL::EFFECT);
+            tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)] = dt_world;
+            tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::PLAYER)] = dt_player;
+            tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::ENEMY)] = dt_Enemy;
+            tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::MAP)] = dt_ui;
+            tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::EFFECT)] = dt_fx;
+
+            pMainApp->Update(tTimeDelta);
             pMainApp->Render();
 
             fTimeAcc = 0.f;
@@ -114,6 +128,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     Safe_Release(pMainApp);
 
     return (int)msg.wParam;
+
 }
 
 

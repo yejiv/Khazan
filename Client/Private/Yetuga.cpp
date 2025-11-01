@@ -100,6 +100,8 @@ void CYetuga::Pick_Rock()
 {
     _float3 vSpawnPoint = m_pBody->Get_ThrowPoint();
 
+    cout << "3333333333333333333333333333333333333333" << endl;
+
     CGameObject* pGameObject = m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Rock"));
     if (nullptr == pGameObject)
         return;
@@ -123,6 +125,8 @@ void CYetuga::Pick_Rock()
 
 void CYetuga::Hold_Rock()
 {
+    cout << "2222222222222222222222222222222222222222222" << endl;
+
     if (nullptr == m_pHoldRock)
         return;
 
@@ -134,9 +138,10 @@ void CYetuga::Hold_Rock()
 
 void CYetuga::Throw_Rock()
 {
+    cout << "11111111111111111111111111111111111111111111" << endl;
+
     if (m_pHoldRock == nullptr)
         return;
-
     _float3 vSpawnPoint = m_pBody->Get_ThrowPoint();
     _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
 
@@ -200,7 +205,7 @@ HRESULT CYetuga::Ready_Projectiles()
 {
     CProjectile_Yetuga::PROJECTILE_DESC Desc{};
     Desc.fDamage = 10.f;
-    Desc.fSpeedPerSec = 10.f;
+    Desc.fSpeedPerSec = 30.f;
     Desc.fLifeTime = 5.f;
     Desc.fRotationPerSec = 180.f;
 
@@ -216,9 +221,9 @@ HRESULT CYetuga::Ready_AnimEvent()
     if (nullptr == pModel)
         return E_FAIL;
 
-    pModel->Register_Event("Rock", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Pick_Rock(); });
-    pModel->Register_Event("Rock", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Throw_Rock(); });
-    pModel->Register_Event("Rock", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Hold_Rock(); });
+    pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Pick_Rock(); });
+    pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Throw_Rock(); });
+    pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Hold_Rock(); });
 
     return S_OK;
     

@@ -13,6 +13,12 @@ texture2D g_SnowTexture;
 float g_fSnowAmount = float(0.5f);
 float3 g_vSnowColor = float3(0.92f, 0.94f, 1.f);
 
+/*바인딩 여부*/
+bool g_isDiffuse = { false };
+bool g_isNormal = { false };
+bool g_isEmissive = { false };
+bool g_isSpecular = { false };
+
 vector g_vCamPosition;
 
 float g_fFar = 1000.f;
@@ -211,10 +217,17 @@ PS_OUT PS_MAP(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐이더
     vNormal = mul(vNormal, WorldMatrix);
     
     // Specular Test
-    vector vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    
+    if (true == g_isSpecular)
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
     
     // Emissive Test
-    vector vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    
+    if (true == g_isEmissive)
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+        
     
     Out.vDiffuse = vMtrlDiffuse;
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);

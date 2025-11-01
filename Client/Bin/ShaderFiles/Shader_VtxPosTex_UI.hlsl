@@ -53,10 +53,10 @@ struct PS_OUT
 PS_OUT PS_MAIN(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
+    Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
+    Out.vColor.rgb = (Out.vColor.r) * g_vColor.rgb;
     
-    //Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
-    
-    Out.vColor = 1.f;
+    Out.vColor.a = Out.vColor.a * g_vColor.a * g_fAlpha;
     return Out;
 }
 
