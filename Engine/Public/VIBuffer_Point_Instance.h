@@ -17,6 +17,7 @@ public:
 		_float	fOffset;
 		_uint   IsCircle;
 		_float	fSizeRatio;
+		_float	fTurbulenceSpeed;
 		_char	pNoiseFilePath[MAX_PATH];
 	}POINT_INSTANCE_DESC;
 
@@ -74,7 +75,7 @@ private:
 	_float								m_fOffset = {};
 	_bool								m_bIsCircle = {};
 
-	_bool								m_bIsFollow;
+	_float								m_fTurbulenceSpeed;
 
 public:
 	static CVIBuffer_Point_Instance*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const INSTANCE_DESC* pDesc);
