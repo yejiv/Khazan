@@ -57,13 +57,18 @@ void CUI_State::Off_Panel()
 	if (!m_IsUpdate)
 		return;
 
-	m_UpPlayer_Data = {};
-	for (_int i = 0; i < ENUM_CLASS(STATE_LIST::END); ++i)
-		m_UpStateLevel[i] = 0;
-		
-	m_eAnimState = UIANIMSTATE::OFF;
-	m_fAccTime = 1.f;
+	m_IsUpdate = false;
+	//m_UpPlayer_Data = {};
+	//for (_int i = 0; i < ENUM_CLASS(STATE_LIST::END); ++i)
+	//	m_UpStateLevel[i] = 0;
+	//	
+	//m_eAnimState = UIANIMSTATE::OFF;
+	//m_fAccTime = 1.f;
 
+	if(m_eType == UI_TYPE::DEFAULT)
+		CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("MainMeun"));
+	else if (m_eType == UI_TYPE::UPAGERD)
+		CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("MainMeun"));
 }
 
 HRESULT CUI_State::Initialize_Prototype(_uint iLevel)
@@ -86,13 +91,10 @@ HRESULT CUI_State::Initialize_Clone(void* pArg)
 
 void CUI_State::Priority_Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_8))
-		m_IsUpdate ? Off_Panel() : On_Panel(UI_TYPE::DEFAULT);
-	if (m_pGameInstance->Key_Down(DIK_6))
-		m_IsUpdate ? Off_Panel() : On_Panel(UI_TYPE::UPAGERD);
-
 	if (!m_IsUpdate)
 		return;
+	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
+		Off_Panel();
 
 	UI_Animation(fTimeDelta);
 	__super::Priority_Update(fTimeDelta);
@@ -321,9 +323,15 @@ void CUI_State::Bubble_EventCall(BUBBLEEVENT* pArg)
 
 HRESULT CUI_State::Update_Switch(void* pArg)
 {
+	if (m_IsUpdate)
+		Off_Panel();
+	else
+	{
+		UI_StateONDesc* pDesc = static_cast<UI_StateONDesc*>(pArg);
+		On_Panel(pDesc->eType);
+	}
 	return S_OK;
 }
-
 
 HRESULT CUI_State::Ready_Prototype()
 {

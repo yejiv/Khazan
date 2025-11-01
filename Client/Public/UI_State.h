@@ -11,6 +11,12 @@ public:
 	enum class STATE_LIST { VITALITY, ENDURANCE, POWER, WILL, COMPETENCY, END };
 	enum class STATE_PANEL {LEVEL, LACHRYMA, DEFAULT_STATE, ADD_STATE, ELEMENTAL, END};
 
+
+	typedef struct UI_StateONDesc
+	{
+		UI_TYPE eType;
+	}UI_STATE_ON;
+
 	typedef struct BubbleDesc : public CUIObject::BUBBLEEVENT
 	{
 		_bool		isClick = {};

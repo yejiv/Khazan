@@ -29,7 +29,7 @@ protected:
 
 protected:
 	virtual _bool				ButtonOver(HWND hWnd);
-	virtual _bool				ButtonClick(HWND hWnd, _bool IsRight, _bool IsDown);
+	virtual _bool				ButtonClick(HWND hWnd, _bool IsRight, _bool IsDown, INPUT_TYPE eType = INPUT_TYPE::UI);
 
 public:
 	virtual CGameObject*		Clone(void* pArg) = 0;

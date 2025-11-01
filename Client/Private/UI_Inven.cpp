@@ -12,6 +12,9 @@
 #include "Equip_Panel.h"
 #include "Equip_Slot.h"
 
+#include "UI_Atlas_Icon.h"
+#include "UI_TextBox.h"
+
 CUI_Inven::CUI_Inven(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
 {
@@ -29,6 +32,7 @@ void CUI_Inven::On_Panel()
 	m_eAnimState = UIANIMSTATE::ON;
 	m_fAccTime = 0.f;
 	m_IsUpdate = true;
+
 }
 
 void CUI_Inven::Off_Panel()
@@ -44,6 +48,7 @@ void CUI_Inven::Off_Panel()
 		CClientInstance::GetInstance()->UI_UpdateSwitch(AnsiToWString(m_strReturnName));
 		m_strReturnName = "";
 	}
+
 }
 
 _bool CUI_Inven::Add_Item(_uint iItemIndex)
@@ -77,36 +82,9 @@ HRESULT CUI_Inven::Initialize_Clone(void* pArg)
 
 void CUI_Inven::Priority_Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_K))
-	{
-		Add_Item(1001);
-		Add_Item(1002);
-		Add_Item(1003);
-		Add_Item(1004);
-		Add_Item(1101);
-		Add_Item(1102);
-		Add_Item(2001);
-		Add_Item(3001);
-		Add_Item(4001);
-		Add_Item(4011);
-		Add_Item(5001);
-		Add_Item(5002);
-		Add_Item(5003);
-		Add_Item(5004);
-		Add_Item(5005);
-		Add_Item(6001);
-		Add_Item(6011);
-	}
 	if (!m_IsUpdate)
 		return;
 
-	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
-	{
-		if (ENUM_CLASS(TapGroup::OTHER) == m_iTapGroupIndex || m_bIsEquip)
-			Off_Panel();
-		else
-			m_bIsEquip = true;
-	}
 	UI_Animation(fTimeDelta);
 	m_pBackGround->Priority_Update(fTimeDelta);
 	m_pUIText->Priority_Update(fTimeDelta);
@@ -136,6 +114,8 @@ void CUI_Inven::Update(_float fTimeDelta)
 {
 	if (!m_IsUpdate)
 		return;
+
+	Inven_Key_Input();
 
 	m_pBackGround->Update(fTimeDelta);
 	m_pUIText->Update(fTimeDelta);
@@ -180,6 +160,9 @@ void CUI_Inven::Late_Update(_float fTimeDelta)
 		}
 		for (auto Item : m_pItems[m_iSeleteTap])
 			Item->Late_Update(fTimeDelta);
+
+		m_pQIcon->Late_Update(fTimeDelta);
+		m_pEIcon->Late_Update(fTimeDelta);
 	}
 	else
 	{
@@ -187,6 +170,13 @@ void CUI_Inven::Late_Update(_float fTimeDelta)
 		for (auto Slot : m_pEquipSlot)
 			Slot->Late_Update(fTimeDelta);
 	}
+
+	for (auto Icon : m_pGuideIcon)
+		Icon->Late_Update(fTimeDelta);
+
+	for (auto Text : m_pGuideText)
+		Text->Late_Update(fTimeDelta);
+
 }
 
 HRESULT CUI_Inven::Render()
@@ -206,7 +196,7 @@ HRESULT CUI_Inven::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, voi
 			Safe_AddRef(pChild);
 		}
 
-		if (ENUM_CLASS(UITYPE::TEXT) == pChild->Get_UIType())
+		if ("Inven_Name" == pChild->Get_Name())
 		{
 			m_pUIText = static_cast<CUI_TextBox*>(pChild);
 			Safe_AddRef(m_pUIText);
@@ -216,6 +206,30 @@ HRESULT CUI_Inven::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, voi
 		{
 			m_pEquip_Panel = static_cast<CEquip_Panel*>(pChild);
 			Safe_AddRef(m_pEquip_Panel);
+		}
+
+		if ("Guade_Key_ESC_Text" == pChild->Get_Name())
+		{
+			m_pGuideText.push_back(static_cast<CUI_TextBox*>(pChild));
+			Safe_AddRef(pChild);
+		}
+
+		if ("Guade_Key_ESC" == pChild->Get_Name())
+		{
+			m_pGuideIcon.push_back(static_cast<CUI_Atlas_Icon*>(pChild));
+			Safe_AddRef(pChild);
+		}
+
+		if ("Guade_Key_Q" == pChild->Get_Name())
+		{
+			m_pQIcon = static_cast<CUI_Atlas_Icon*>(pChild);
+			Safe_AddRef(pChild);
+		}
+
+		if ("Guade_Key_E" == pChild->Get_Name())
+		{
+			m_pEIcon = static_cast<CUI_Atlas_Icon*>(pChild);
+			Safe_AddRef(pChild);
 		}
 	}
 
@@ -344,10 +358,6 @@ HRESULT CUI_Inven::Update_Switch(void* pArg)
 			m_pUIText->Set_Text(TEXT("Àåºñ"));
 		}
 		m_strReturnName = pDesc->szName;
-	}
-	else
-	{
-
 	}
 
 	return S_OK;
@@ -565,7 +575,8 @@ void CUI_Inven::UI_Animation(_float fTimeDelta)
 
 void CUI_Inven::Change_Tap(_int iSeleteINdex)
 {
-	for (_int i = 0; i < (_int)m_UpdateGroup[m_iTapGroupIndex].size(); ++i)
+	_int i = 0;
+	for (; i < (_int)m_UpdateGroup[m_iTapGroupIndex].size(); ++i)
 	{
 		if (i == iSeleteINdex)
 		{
@@ -581,6 +592,13 @@ void CUI_Inven::Change_Tap(_int iSeleteINdex)
 		
 		m_pInvenTap[m_UpdateGroup[m_iTapGroupIndex][i]]->Update_Pos(i, { 185.f, 135.f }, 80.f, (_int)m_UpdateGroup[m_iTapGroupIndex].size());
 	}
+
+	_float2 vPos;
+
+	vPos.x = (185.f + i * 80.f) - 20.f;
+	vPos.y = 135.f;
+
+	m_pEIcon->Set_Pos(vPos);
 }
 
 CUI_Inven::ITEMTYPE CUI_Inven::Convert_UIntToITEMTYPE(_uint iItemIndex)
@@ -637,6 +655,63 @@ void CUI_Inven::EquipSlot_Setting(CEquip_Slot* pSlot, _int iIndex)
 		pSlot->Update_PosX(0, vPos, 113.f, 155.f * 4, this);
 }
 
+void CUI_Inven::Inven_Key_Input()
+{
+	if (m_pGameInstance->Key_Down(DIK_ESCAPE, INPUT_TYPE::UI))
+	{
+		if (ENUM_CLASS(TapGroup::OTHER) == m_iTapGroupIndex || m_bIsEquip)
+			Off_Panel();
+		else
+			m_bIsEquip = true;
+	}
+	else if (m_pGameInstance->Key_Down(DIK_E, INPUT_TYPE::UI))
+	{
+		_int iMaxIndex = m_UpdateGroup[m_iTapGroupIndex].size();
+		for (_int i = 0; i < iMaxIndex; ++i)
+		{
+			if (m_iSeleteTap == m_UpdateGroup[m_iTapGroupIndex][i])
+			{
+				if (i == iMaxIndex - 1)
+					m_iSeleteTap = m_UpdateGroup[m_iTapGroupIndex][0];
+				else
+					m_iSeleteTap = m_UpdateGroup[m_iTapGroupIndex][i + 1];
+				break;
+			}
+		}
+
+		for (_int i = 0; i < (_int)m_pInvenTap.size(); ++i)
+		{
+			if (m_iSeleteTap == i)
+				m_pInvenTap[i]->Tap_Enable();
+			else
+				m_pInvenTap[i]->Tap_Disable();
+		}
+	}
+	else if (m_pGameInstance->Key_Down(DIK_Q, INPUT_TYPE::UI))
+	{
+		_int iMaxIndex = m_UpdateGroup[m_iTapGroupIndex].size();
+		for (_int i = 0; i < iMaxIndex; ++i)
+		{
+			if (m_iSeleteTap == m_UpdateGroup[m_iTapGroupIndex][i])
+			{
+				if (i == 0)
+					m_iSeleteTap = m_UpdateGroup[m_iTapGroupIndex][iMaxIndex - 1];
+				else
+					m_iSeleteTap = m_UpdateGroup[m_iTapGroupIndex][i - 1];
+				break;
+			}
+		}
+
+		for (_int i = 0; i < (_int)m_pInvenTap.size(); ++i)
+		{
+			if (m_iSeleteTap == i)
+				m_pInvenTap[i]->Tap_Enable();
+			else
+				m_pInvenTap[i]->Tap_Disable();
+		}
+	}
+}
+
 CUI_Inven* CUI_Inven::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)
 {
 	CUI_Inven* pInstance = new CUI_Inven(pDevice, pContext);
@@ -662,6 +737,17 @@ CGameObject* CUI_Inven::Clone(void* pArg)
 void CUI_Inven::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pQIcon);
+	Safe_Release(m_pEIcon);
+
+	for (auto Icon : m_pGuideIcon)
+		Safe_Release(Icon);
+	m_pGuideIcon.clear();
+
+	for (auto Text : m_pGuideText)
+		Safe_Release(Text);
+	m_pGuideText.clear();
 
 	Safe_Release(m_pEquip_Panel);
 	Safe_Release(m_pUIText);

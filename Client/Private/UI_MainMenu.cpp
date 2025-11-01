@@ -8,6 +8,7 @@
 #include "MainMenu_List.h"
 
 #include "UI_Inven.h"
+#include "UI_State.h"
 
 CUI_MainMenu::CUI_MainMenu(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
@@ -31,6 +32,8 @@ void CUI_MainMenu::On_Panel()
 	m_fAccTime = 0.5f;
 	m_IsUpdate = true;
 	m_eNextEvent = MENULIST::END;
+
+	m_pGameInstance->Change_InputType(INPUT_TYPE::UI);
 }
 
 void CUI_MainMenu::Off_Panel()
@@ -42,6 +45,7 @@ void CUI_MainMenu::Off_Panel()
 		m_eNextEvent = MENULIST::END;
 		m_eAnimState = UIANIMSTATE::OFF;
 		m_fAccTime = 1.f;
+		m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
 	}
 	else
 	{
@@ -66,10 +70,10 @@ HRESULT CUI_MainMenu::Initialize_Clone(void* pArg)
 
 void CUI_MainMenu::Priority_Update(_float fTimeDelta)
 {
-	
-	if (m_pGameInstance->Key_Down(DIK_ESCAPE) && m_eNextEvent == MENULIST::END)
-		m_IsUpdate ? Off_Panel() : On_Panel();
-
+	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
+		On_Panel();
+	else if (m_pGameInstance->Key_Down(DIK_ESCAPE, INPUT_TYPE::UI))
+		Off_Panel();
 	if (!m_IsUpdate)
 		return;
 
@@ -81,6 +85,29 @@ void CUI_MainMenu::Update(_float fTimeDelta)
 {
 	if (!m_IsUpdate)
 		return;
+
+	_bool isKeyInput = false;
+	if (m_pGameInstance->Key_Down(DIK_W, INPUT_TYPE::UI))
+	{
+		m_iSeleteIndex -= 1;
+		isKeyInput = true;
+
+		if (m_iSeleteIndex < 0)
+			m_iSeleteIndex = ENUM_CLASS(MENULIST::END) - 1;
+	}
+	else if (m_pGameInstance->Key_Down(DIK_S, INPUT_TYPE::UI))
+	{
+		m_iSeleteIndex += 1;
+		isKeyInput = true;
+
+		if (m_iSeleteIndex >= ENUM_CLASS(MENULIST::END))
+			m_iSeleteIndex =0;
+	}
+
+	if(isKeyInput)
+		for (_int i = 0; i < ENUM_CLASS(MENULIST::END); ++i)
+			i == m_iSeleteIndex ? m_pList[i]->Set_Selete(true) : m_pList[i]->Set_Selete(false);
+
 
 	__super::Update(fTimeDelta);
 
@@ -358,6 +385,10 @@ void CUI_MainMenu::Next_Event()
 	}
 	else if (m_eNextEvent == MENULIST::STATE)
 	{
+		CUI_State::UI_STATE_ON Desc = {};
+		Desc.eType = CUI_State::UI_TYPE::DEFAULT;
+
+		CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("State"), &Desc);
 	}
 	else if (m_eNextEvent == MENULIST::TITLE)
 	{

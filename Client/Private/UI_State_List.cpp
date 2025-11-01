@@ -125,7 +125,7 @@ void CUI_State_List::Update(_float fTimeDelta)
                 pTex->Set_Color({1.f,1.f,1.f,1.f});
             m_vColor.w = 1.f;
 
-            if (ButtonClick(g_hWnd, false, true))
+            if (ButtonClick(g_hWnd, false, true, INPUT_TYPE::UI))
             {
                 CUI_State::BubbleDesc Desc = {};
                 Desc.isList = false;
