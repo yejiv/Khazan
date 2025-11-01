@@ -201,6 +201,13 @@ namespace Engine
 		float TimeDeltas[ENUM_CLASS(TIME_CHANNEL::END)];
 	}TIME_DELTA;
 
+	typedef struct tagTrailPointDesc
+	{
+		XMFLOAT4 vTop;
+		XMFLOAT4 vBottom;
+		float	fLifeTime;
+	}TRAIL_POINT;
+	
 	typedef struct tagPointInstanceParams
 	{
 		XMFLOAT4 vInitTranslation; 

@@ -205,6 +205,7 @@
     <ClInclude Include="..\Public\Map_Terrain.h" />
     <ClInclude Include="..\Public\Map_Trigger.h" />
     <ClInclude Include="..\Public\Map_TestPlayer.h" />
+    <ClInclude Include="..\Public\MeshTrail.h" />
     <ClInclude Include="..\public\Player_Shader.h" />
     <ClInclude Include="..\Public\Prop.h" />
     <ClInclude Include="..\Public\Prop_Animated.h" />
@@ -267,6 +268,7 @@
     <ClCompile Include="..\Private\Map_Terrain.cpp" />
     <ClCompile Include="..\Private\Map_Trigger.cpp" />
     <ClCompile Include="..\Private\Map_TestPlayer.cpp" />
+    <ClCompile Include="..\Private\MeshTrail.cpp" />
     <ClCompile Include="..\private\Player_Shader.cpp" />
     <ClCompile Include="..\Private\Prop.cpp" />
     <ClCompile Include="..\Private\Prop_Animated.cpp" />
