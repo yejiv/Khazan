@@ -55,6 +55,11 @@ void CUI_State_List::Setting_List(_int iIndex, _float2 vPos, _float fOffSetY, _i
     __super::Update_Transform(nullptr, m_vWorldPos);
 }
 
+void CUI_State_List::Setting_Button(_int* pUpValue)
+{
+    m_pUpValue = pUpValue;
+}
+
 void CUI_State_List::Setting_Type(CUI_State::UI_TYPE eType)
 {
     m_eUI_Type = eType;
@@ -96,25 +101,58 @@ void CUI_State_List::Update(_float fTimeDelta)
     if (m_iIndex > -1 && m_eUI_Type == CUI_State::UI_TYPE::UPAGERD)
     {
         if (ButtonOver(g_hWnd))
-        {
-            m_pHover->Late_Update(fTimeDelta);
-            
+        {            
             CUI_State::BubbleDesc Desc = {};
             Desc.eListType = static_cast<CUI_State::STATE_LIST>(m_iIndex);
             Desc.isClick = false;
-           
+            Desc.isList = true;
             m_UIBubbleCallBack(&Desc);
         }
-        for (auto pButton : m_pButton)
-            pButton->Update(fTimeDelta);
+
+        if (*m_pPoint > 0)
+            m_pButton[0]->Update(fTimeDelta);
+
+        if (*m_pUpValue > 0)
+            m_pButton[1]->Update(fTimeDelta);
     }
+    else
+    {
+        if (*m_pUpValue > 0)
+        {
+            m_pName_TextBox->Set_Color({ 1.f, 1.f, 1.f, 1.f });
+
+            for (auto pTex : m_pTexture)
+                pTex->Set_Color({1.f,1.f,1.f,1.f});
+            m_vColor.w = 1.f;
+
+            if (ButtonClick(g_hWnd, false, true))
+            {
+                CUI_State::BubbleDesc Desc = {};
+                Desc.isList = false;
+                m_UIBubbleCallBack(&Desc);
+            }
+        }
+        else
+        {
+            m_pName_TextBox->Set_Color({ 1.f, 1.f, 1.f, 0.6f });
+
+            for (auto pTex : m_pTexture)
+                pTex->Set_Color({ 1.f,1.f,1.f,0.6f });
+
+            m_vColor.w = 0.6f;
+        }
+
+
+    }
+
+
 }
 
 void CUI_State_List::Late_Update(_float fTimeDelta)
 {
     CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
 
-    m_iIndex > -1 ? List_RenderUpdate(fTimeDelta) : __super::Late_Update(fTimeDelta);
+    m_iIndex > -1 ? List_RenderUpdate(fTimeDelta) : Button_RenderUpdate(fTimeDelta);
 }
 
 HRESULT CUI_State_List::Render()
@@ -145,7 +183,6 @@ void CUI_State_List::Bubble_EventCall(BUBBLEEVENT* pArg)
 {
     STATE_LIST_BUBBLE* pDesc = static_cast<STATE_LIST_BUBBLE*>(pArg);
 
-
     if (pDesc->eType == STATE_BUTTON_TYPE::UP)
     {
         if (*m_pPoint <= 0)
@@ -154,6 +191,12 @@ void CUI_State_List::Bubble_EventCall(BUBBLEEVENT* pArg)
         *m_pUpValue += 1;
         *m_pPoint -= 1;
 
+        CUI_State::BubbleDesc Desc = {};
+        Desc.eListType = static_cast<CUI_State::STATE_LIST>(m_iIndex);
+        Desc.isClick = true;
+        Desc.isUp = true;
+        Desc.isList = true;
+        m_UIBubbleCallBack(&Desc);
     }
     else
     {
@@ -162,6 +205,13 @@ void CUI_State_List::Bubble_EventCall(BUBBLEEVENT* pArg)
 
         *m_pUpValue -= 1;
         *m_pPoint += 1;
+
+        CUI_State::BubbleDesc Desc = {};
+        Desc.eListType = static_cast<CUI_State::STATE_LIST>(m_iIndex);
+        Desc.isClick = true;
+        Desc.isUp = false;
+        Desc.isList = true;
+        m_UIBubbleCallBack(&Desc);
     }
 }
 
@@ -184,6 +234,7 @@ HRESULT CUI_State_List::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID
         for (auto child : m_Children)
         {
             string strName = child->Get_Name();
+            Safe_AddRef(child);
             if (strName == "Level_List_Tex")
                 m_pName_TextBox = static_cast<CUI_TextBox*>(child);
             else if (strName == "State_List_L" || strName == "State_List_R")
@@ -194,7 +245,7 @@ HRESULT CUI_State_List::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID
                 m_pCulLevel_TextBox = static_cast<CUI_TextBox*>(child);
             else if (strName == "State_Level_Up")
                 m_pUpLevel_TextBox = static_cast<CUI_TextBox*>(child);
-            else if (strName == "State_Level_Up")
+            else if (strName == "State_Up_Icon")
                 m_pUpIcon = static_cast<CUI_Default_Tex*>(child);
             else if (strName == "State_Button_UP")
                 m_pButton[ENUM_CLASS(STATE_BUTTON_TYPE::UP)] = static_cast<CUI_State_Button*>(child);
@@ -202,12 +253,29 @@ HRESULT CUI_State_List::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID
                 m_pButton[ENUM_CLASS(STATE_BUTTON_TYPE::DOWN)] = static_cast<CUI_State_Button*>(child);
             else if (strName == "State_List_Hover")
                 m_pHover = static_cast<CUI_Default_Tex*>(child);
+            else
+                Safe_Release(child);
         }
 
         m_pButton[ENUM_CLASS(STATE_BUTTON_TYPE::UP)]->Set_Type(STATE_BUTTON_TYPE::UP);
         m_pButton[ENUM_CLASS(STATE_BUTTON_TYPE::DOWN)]->Set_Type(STATE_BUTTON_TYPE::DOWN);
     }
-
+    else if(m_szName == "State_Button")
+    {
+        for (auto child : m_Children)
+        {
+            string strName = child->Get_Name();
+            Safe_AddRef(child);
+            if (strName == "State_Button_Text")
+                m_pName_TextBox = static_cast<CUI_TextBox*>(child);
+            else if (strName == "State_Button_L" || strName == "State_Button_R")
+                m_pTexture.push_back(static_cast<CUI_Default_Tex*>(child));
+            else if (strName == "ButtonHover")
+                m_pHover = static_cast<CUI_Default_Tex*>(child);
+            else
+                Safe_Release(child);
+        }
+    }
     return S_OK;
 }
 
@@ -242,14 +310,16 @@ void CUI_State_List::List_RenderUpdate(_float fTimeDelta)
         m_pName_TextBox->Late_Update(fTimeDelta);
         m_pCulLevel_TextBox->Late_Update(fTimeDelta);
         m_pStateIcon->Late_Update(fTimeDelta);
-        m_pButton[0]->Late_Update(fTimeDelta);
-
 
         if (ButtonOver(g_hWnd))
             m_pHover->Late_Update(fTimeDelta);
 
         for (auto pTex : m_pTexture)
             pTex->Late_Update(fTimeDelta);
+
+        if(*m_pPoint > 0)
+            m_pButton[0]->Late_Update(fTimeDelta);
+
         if (*m_pUpValue > 0)
         {
             m_pUpLevel_TextBox->Late_Update(fTimeDelta);
@@ -257,6 +327,16 @@ void CUI_State_List::List_RenderUpdate(_float fTimeDelta)
             m_pButton[1]->Late_Update(fTimeDelta);
         }
     }
+}
+
+void CUI_State_List::Button_RenderUpdate(_float fTimeDelta)
+{
+    m_pName_TextBox->Late_Update(fTimeDelta);
+    for (auto pTex : m_pTexture)
+        pTex->Late_Update(fTimeDelta);
+
+    if (*m_pUpValue > 0 && ButtonOver(g_hWnd))
+        m_pHover->Late_Update(fTimeDelta);
 }
 
 CUI_State_List* CUI_State_List::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)
@@ -290,6 +370,8 @@ void CUI_State_List::Free()
     Safe_Release(m_pUpLevel_TextBox);
     Safe_Release(m_pStateIcon);
     Safe_Release(m_pUpIcon);
+
+    Safe_Release(m_pHover);
 
     for (auto pButton : m_pButton)
         Safe_Release(pButton);

@@ -26,6 +26,8 @@ private:
 
 public:
 	void								Setting_List(_int iIndex, _float2 vPos, _float fOffSetY, _int* pValue, _int* pUpValue, _int* pPoint);
+	void								Setting_Button(_int* pUpValue);
+
 	void								Setting_Type(CUI_State::UI_TYPE eType);
 
 public:
@@ -63,6 +65,7 @@ private:
 	HRESULT								Ready_Component();
 
 	void								List_RenderUpdate(_float fTimeDelta);
+	void								Button_RenderUpdate(_float fTimeDelta);
 public:
 	static CUI_State_List*				Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
 	virtual CGameObject*				Clone(void* pArg) override;

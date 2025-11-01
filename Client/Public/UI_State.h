@@ -14,6 +14,8 @@ public:
 	typedef struct BubbleDesc : public CUIObject::BUBBLEEVENT
 	{
 		_bool		isClick = {};
+		_bool		isUp = {};
+		_bool		isList = {};
 		STATE_LIST	eListType = {};
 	}UI_STATE_BUBLLE;
 private:
@@ -50,6 +52,8 @@ private:
 	vector<_int>						m_CulStateLevel;
 	vector<_int>						m_UpStateLevel;
 
+	_int								m_iLachryma = {};
+
 	UI_PLAYER_STATE_DATA				m_Player_Data;
 	UI_PLAYER_STATE_DATA				m_UpPlayer_Data;
 
@@ -60,6 +64,8 @@ private:
 	HRESULT								Ready_UISetting();
 	void								UI_Animation(_float fTimeDelta);
 
+	void								List_Bubble_Event(UI_STATE_BUBLLE* pDesc);
+	void								Button_Bubble_Event(UI_STATE_BUBLLE* pDesc);
 public:
 	static CUI_State*					Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
 	virtual CGameObject*				Clone(void* pArg) override;
