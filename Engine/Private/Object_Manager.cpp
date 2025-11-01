@@ -48,7 +48,7 @@ HRESULT CObject_Manager::Initialize(_uint iNumLevels)
 	return S_OK;
 }
 
-HRESULT CObject_Manager::Add_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, void* pArg)
+HRESULT CObject_Manager::Add_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, TIME_CHANNEL eTimeChannel, _uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, void* pArg)
 {
 	CGameObject* pGameObject = dynamic_cast<CGameObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelIndex, strPrototypeTag, pArg));
 	if (nullptr == pGameObject)
@@ -59,6 +59,7 @@ HRESULT CObject_Manager::Add_GameObject_ToLayer(_uint iLayerLevelIndex, const _w
 	{
 		pLayer = CLayer::Create();
 		pLayer->Add_GameObject(pGameObject);
+		pLayer->Set_TimeChannel(eTimeChannel);
 		m_pLayers[iLayerLevelIndex].emplace(strLayerTag, pLayer);
 	}
 	else
@@ -67,7 +68,7 @@ HRESULT CObject_Manager::Add_GameObject_ToLayer(_uint iLayerLevelIndex, const _w
 	return S_OK;
 }
 
-HRESULT CObject_Manager::Push_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CGameObject* pGameObject)
+HRESULT CObject_Manager::Push_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, TIME_CHANNEL eTimeChannel, CGameObject* pGameObject)
 {
 	CLayer* pLayer = Find_Layer(iLayerLevelIndex, strLayerTag);
 	if (nullptr == pLayer)
@@ -82,38 +83,38 @@ HRESULT CObject_Manager::Push_GameObject_ToLayer(_uint iLayerLevelIndex, const _
 	return S_OK;
 }
 
-void CObject_Manager::Priority_Update(_float fTimeDelta)
-{
-	for (size_t i = 0; i < m_iNumLevels; i++)
-	{
-		for (auto& Pair : m_pLayers[i])
-		{
-			if(nullptr != Pair.second)
-				Pair.second->Priority_Update(fTimeDelta);
-		}
-	}
-}
-
-void CObject_Manager::Update(_float fTimeDelta)
+void CObject_Manager::Priority_Update(TIME_DELTA tTimeDelta)
 {
 	for (size_t i = 0; i < m_iNumLevels; i++)
 	{
 		for (auto& Pair : m_pLayers[i])
 		{
 			if (nullptr != Pair.second)
-				Pair.second->Update(fTimeDelta);
+				Pair.second->Priority_Update(tTimeDelta.TimeDeltas[ENUM_CLASS(Pair.second->Get_TimeChannel())]);
 		}
 	}
 }
 
-void CObject_Manager::Late_Update(_float fTimeDelta)
+void CObject_Manager::Update(TIME_DELTA tTimeDelta)
 {
 	for (size_t i = 0; i < m_iNumLevels; i++)
 	{
 		for (auto& Pair : m_pLayers[i])
 		{
 			if (nullptr != Pair.second)
-				Pair.second->Late_Update(fTimeDelta);
+				Pair.second->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(Pair.second->Get_TimeChannel())]);
+		}
+	}
+}
+
+void CObject_Manager::Late_Update(TIME_DELTA tTimeDelta)
+{
+	for (size_t i = 0; i < m_iNumLevels; i++)
+	{
+		for (auto& Pair : m_pLayers[i])
+		{
+			if (nullptr != Pair.second)
+				Pair.second->Late_Update(tTimeDelta.TimeDeltas[ENUM_CLASS(Pair.second->Get_TimeChannel())]);
 		}
 	}
 }

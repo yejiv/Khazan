@@ -20,11 +20,11 @@ public:
 	class CGameObject* Get_BackGameObject(_uint iLayerLevelIndex, const _wstring& strLayerTag);
 public:
 	HRESULT Initialize(_uint iNumLevels);
-	HRESULT Add_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, void* pArg);
-	HRESULT Push_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CGameObject* pGameObject);
-	void Priority_Update(_float fTimeDelta);
-	void Update(_float fTimeDelta);
-	void Late_Update(_float fTimeDelta);
+	HRESULT Add_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, TIME_CHANNEL eTimeChannel, _uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, void* pArg);
+	HRESULT Push_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, TIME_CHANNEL eTimeChannel, CGameObject* pGameObject);
+	void Priority_Update(TIME_DELTA tTimeDelta);
+	void Update(TIME_DELTA tTimeDelta);
+	void Late_Update(TIME_DELTA tTimeDelta);
 	void Clear(_uint iLevelIndex);
 
 private:

@@ -42,7 +42,7 @@ private:
     unordered_map<class CGameObject*, PERCEIVED_DESC>   m_Perceived; // AI의 현재까지 감지한 모든 대상 정보를 저장하는 테이블
     function<void(class CGameObject*, const STIMULUS&)> m_PerceptionCallBack; // 감지 이베트를 AI_Controller에 알리기 위한 콜백
 
-    DIRECTION_INFO      m_tDirInfo = {};
+    DIRECTION_INFO          m_tDirInfo = {};
 
     class CGameInstance*    m_pGameInstance = { nullptr };
 

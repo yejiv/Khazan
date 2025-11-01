@@ -2,6 +2,36 @@
 #include "Engine_Defines.h"
 namespace Client
 {
+	typedef struct tag_UI_Player_State_Data
+	{
+		_int	iLevel;
+		_int	iUPPoint;
+		_int	iUpLachryma;
+		_int	iLachryma;
+		
+		_int	iMaxHp;
+		_int	iMaxStamina;
+		_int	iAtk;
+		_int	iDef;
+		_float	fWeight;
+		_float	fMaxWeight;
+		_float	fAgile;
+
+		_float	fStaminaAttack;
+		_float	fStaminaRegen;
+		_float	fEvasion_StaminaDown;
+		_float	fDamage_StaminaDown;
+		_float	fGuard_StaminaDown;
+
+		_int	iFire;
+		_int	iWater;
+		_int	iLightning;
+		_int	iEarth;
+		_int	iChaos;
+		_int	iDisease;
+		_int	iPoison;
+	}UI_PLAYER_STATE_DATA;
+
 	typedef struct tag_Item_DB
 	{
 		_uint			iID;
@@ -51,6 +81,19 @@ namespace Client
 
 		_wstring			strText;
 	}OTHERITEM_DATA;
+
+	typedef struct tag_State_DATA
+	{
+		_uint				iID;
+		_uint				iType_1;
+		_uint				iValue_1;
+		_uint				iType_2;
+		_uint				iValue_2;
+		_uint				iType_3;
+		_float				fValue_3;
+		_uint				iType_4;
+		_float				fValue_4;
+	}STATE_DATA;
 
 	typedef struct tagBoxItems
 	{

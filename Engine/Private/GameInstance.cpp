@@ -150,14 +150,14 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	return S_OK;
 }
 
-void CGameInstance::Update_Engine(_float fTimeDelta)
+void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 {
 	//m_pPicking->Update();
 
 	m_pInput_Manager->Update();
 
 	/* 내 게임내에서 반복적인 갱신이 필요한 객체들이 있다라면 갱신을 여기에서 모아서 수행하낟. */
-	m_pObject_Manager->Priority_Update(fTimeDelta);
+	m_pObject_Manager->Priority_Update(tTimeDelta);
 
 	m_pPipeLine->Update();
 	m_pFrustum->Update();
@@ -166,28 +166,28 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 		m_pOctree->Culling(m_pFrustum);
 
 	if (m_pOctree)
-		m_pOctree->Priority_Update(fTimeDelta);
+		m_pOctree->Priority_Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
-	m_pObject_Manager->Update(fTimeDelta);
+	m_pObject_Manager->Update(tTimeDelta);
 
 	m_pSequence_Manager->ProcessRequests();
-	m_pSequence_Manager->Update(fTimeDelta);
+	m_pSequence_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
 	if (m_pOctree)
-		m_pOctree->Update(fTimeDelta);
+		m_pOctree->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
-	m_pObject_Manager->Late_Update(fTimeDelta);
+	m_pObject_Manager->Late_Update(tTimeDelta);
 
 	if (m_pOctree)
-		m_pOctree->Late_Update(fTimeDelta);
+		m_pOctree->Late_Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
 	// Cascade Test
 	m_pShadow->Update();
-	m_pFog->Update(fTimeDelta);
+	m_pFog->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
-	m_pLevel_Manager->Update(fTimeDelta);
+	m_pLevel_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
-	m_pJolt_Manager->Update(fTimeDelta);
+	m_pJolt_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
 	m_pComputeShader_Manager->Execute_Job(COMPUTEJOB::UPDATE);
 
@@ -362,17 +362,17 @@ CGameObject* CGameInstance::Get_BackGameObject(_uint iLayerLevelIndex, const _ws
 	return m_pObject_Manager->Get_BackGameObject(iLayerLevelIndex, strLayerTag);
 }
 
-HRESULT CGameInstance::Add_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, void* pArg)
+HRESULT CGameInstance::Add_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, TIME_CHANNEL eTimeChannel, void* pArg)
 {
 	if (nullptr == m_pObject_Manager)
 		return E_FAIL;
 
-	return m_pObject_Manager->Add_GameObject_ToLayer(iLayerLevelIndex, strLayerTag, iPrototypeLevelIndex, strPrototypeTag, pArg);
+	return m_pObject_Manager->Add_GameObject_ToLayer(iLayerLevelIndex, strLayerTag, eTimeChannel, iPrototypeLevelIndex, strPrototypeTag, pArg);
 }
 
-HRESULT CGameInstance::Push_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CGameObject* pGameObject)
+HRESULT CGameInstance::Push_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CGameObject* pGameObject, TIME_CHANNEL eTimeChannel)
 {
-	return m_pObject_Manager->Push_GameObject_ToLayer(iLayerLevelIndex, strLayerTag, pGameObject);
+	return m_pObject_Manager->Push_GameObject_ToLayer(iLayerLevelIndex, strLayerTag, eTimeChannel, pGameObject);
 }
 
 #pragma endregion
@@ -449,6 +449,21 @@ HRESULT CGameInstance::Add_Timer(const _wstring& strTimerTag)
 void CGameInstance::Compute_TimeDelta(const _wstring& strTimerTag)
 {
 	m_pTimer_Manager->Compute_TimeDelta(strTimerTag);
+}
+
+_float CGameInstance::Get_ScaledDelta(const _wstring& strTimerTag, TIME_CHANNEL eCH)
+{
+	return m_pTimer_Manager->Get_ScaledDelta(strTimerTag, eCH);
+}
+
+void CGameInstance::Update_HitStop(_float fUnScaleTimeDelta)
+{
+	m_pTimer_Manager->Update_HitStop(fUnScaleTimeDelta);
+}
+
+void CGameInstance::Start_HitStop(TIME_CHANNEL tCH, _float fTargetScale, _float fHold, _float fRecover)
+{
+	m_pTimer_Manager->Start_HitStop(tCH, fTargetScale, fHold, fRecover);
 }
 
 #pragma endregion
@@ -666,6 +681,11 @@ HRESULT CGameInstance::Bind_Shadow_ShaderResources(CShader* pShader)
 void CGameInstance::Clear_ShadowDSVs()
 {
 	m_pShadow->Clear_DSVs();
+}
+
+void CGameInstance::Update_Cascade_CameraInfo(_float fNear, _float fFar)
+{
+	m_pShadow->Update_Cascade_CameraInfo(fNear, fFar);
 }
 
 #ifdef _DEBUG

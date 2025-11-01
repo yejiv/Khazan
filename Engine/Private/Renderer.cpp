@@ -483,6 +483,9 @@ HRESULT CRenderer::Render_Blur()
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Emissive"), m_pShader, "g_EmissiveTexture")))
         return E_FAIL;
 
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_PostScene"), m_pShader, "g_PostSceneTexture")))
+        return E_FAIL;
+
     if (FAILED(m_pShader->Bind_RawValue("g_fViewportWidth", &m_fViewportWidth, sizeof(_float))))
         return E_FAIL;
 
@@ -625,7 +628,7 @@ HRESULT CRenderer::Ready_RenderTargets()
         return E_FAIL;
 
     /* For.Target_PostScene */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_PostScene"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_PostScene"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
     /* For.Target_BackBuffer */

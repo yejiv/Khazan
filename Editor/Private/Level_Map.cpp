@@ -21,6 +21,9 @@ HRESULT CLevel_Map::Initialize()
 
 	CHECK_FAILED(Ready_DefaultImGui_For_MapTool(), E_FAIL);
 
+	// 렉땜시 false
+	m_pGameInstance->Set_EnableSSAO(false);
+
 	return S_OK;
 }
 
@@ -88,7 +91,7 @@ HRESULT CLevel_Map::Ready_Layer_Camera(const _wstring& strLayerTag)
 	MapDesc.fNear = 0.1f;
 
 	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), strLayerTag,
-		ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Camera_Map"), &MapDesc), E_FAIL);
+		ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Camera_Map"), TIME_CHANNEL::WORLD, &MapDesc), E_FAIL);
 
 	return S_OK;
 }
@@ -108,7 +111,7 @@ HRESULT CLevel_Map::Ready_Layer_Preview(const _wstring& strLayerTag)
 	Desc.fRotationPerSec = XMConvertToRadians(90.f);
 
 	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), strLayerTag,
-		ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Preview"), &Desc), E_FAIL);
+		ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Preview"), TIME_CHANNEL::WORLD, &Desc), E_FAIL);
 
 	return S_OK;
 }
@@ -378,6 +381,46 @@ HRESULT CLevel_Map::Ready_Main_Window()
 				}
 
 				SEPARATOR;
+
+				if (ImGui::Button("RENDER OPTION"))
+					m_isRenderOption = !m_isRenderOption;
+
+				SEPARATOR;
+
+				if (true == m_isRenderOption)
+				{
+					if (ImGui::Button("SSAO ON"))
+						m_pGameInstance->Set_EnableSSAO(true);
+					SAMELINE;
+					if (ImGui::Button("SSAO OFF"))
+						m_pGameInstance->Set_EnableSSAO(false);
+					SEPARATOR;
+					if (ImGui::Button("SHADOW ON"))
+						m_pGameInstance->Set_EnableShadow(true);
+					SAMELINE;
+					if (ImGui::Button("SHADOW OFF"))
+						m_pGameInstance->Set_EnableShadow(false);
+					SEPARATOR;
+					if (ImGui::Button("FOG ON"))
+						m_pGameInstance->Set_EnableFog(true);
+					SAMELINE;
+					if (ImGui::Button("FOG OFF"))
+						m_pGameInstance->Set_EnableFog(false);
+					SEPARATOR;
+					if (ImGui::Button("OUTLINE ON"))
+						m_pGameInstance->Set_EnableOutline(true);
+					SAMELINE;
+					if (ImGui::Button("OUTLINE OFF"))
+						m_pGameInstance->Set_EnableOutline(false);
+					SEPARATOR;
+					if (ImGui::Button("TOONSHADE ON"))
+						m_pGameInstance->Set_EnableToonShade(true);
+					SAMELINE;
+					if (ImGui::Button("TOONSHADE OFF"))
+						m_pGameInstance->Set_EnableToonShade(false);
+					SEPARATOR;
+				}
+
 				ImGui::Text("LIGHT");
 				if (ImGui::Button("LIGHT EDIT"))
 				{
@@ -685,7 +728,7 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 				ObjectDesc.iSubLevel = m_iAddSubLevel;
 
 				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj"),
-					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), );
+					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"), TIME_CHANNEL::WORLD, &ObjectDesc), );
 
 				CProp* pObject_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj")));
 				CHECK_NULLPTR_MSG(pObject_Prop, TEXT("엥"), );
@@ -814,7 +857,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 					BladeNexusDesc.eInteractiveType = INTERACTIVE_TYPE::CHECKPOINT;										// 상호 작용 오브젝트 타입
 
 					CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
-						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BladeNexus"), &BladeNexusDesc), );
+						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BladeNexus"), TIME_CHANNEL::WORLD, &BladeNexusDesc), );
 				}
 				else if ("BigChest" == m_Prototypes_Inter[m_iIndex_PrtInter]) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
 				{
@@ -829,7 +872,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 					BigChestDesc.eInteractiveType = INTERACTIVE_TYPE::CHEST;										// 상호 작용 오브젝트 타입
 
 					CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
-						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BigChest"), &BigChestDesc), );
+						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BigChest"), TIME_CHANNEL::WORLD, &BigChestDesc), );
 				}
 
 				CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));
@@ -1204,37 +1247,43 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 
 				if (ImGui::Button("CLEAR"))
 					ZeroMemory(m_szSearchObjectName, sizeof(m_szSearchObjectName));
+				SAMELINE;
+				if (ImGui::Button("LIST VIEW"))
+					m_isObjectListView = !m_isObjectListView;
 
-				ITEMWIDTH(300.f);
-				if (ImGui::BeginListBox("##prop_object_list"))
+				if (true == m_isObjectListView)
 				{
-					if (m_iObjectListIndex >= m_ObjectList.size())
-						m_iObjectListIndex = m_ObjectList.size() - 1;
-
-					string strSearchName = m_szSearchObjectName;
-					transform(strSearchName.begin(), strSearchName.end(), strSearchName.begin(), ::tolower);		// 검색할 모델을 소문자로 변환
-
-					for (_uint i = 0; i < m_ObjectList.size(); ++i)
+					ITEMWIDTH(300.f);
+					if (ImGui::BeginListBox("##prop_object_list"))
 					{
-						_wstring strModelName = m_ObjectList[i]->Get_ModelName();
-						transform(strModelName.begin(), strModelName.end(), strModelName.begin(), ::tolower);		// 찾을 모델을 소문자로 변환
+						if (m_iObjectListIndex >= m_ObjectList.size())
+							m_iObjectListIndex = m_ObjectList.size() - 1;
 
-						if (true == strSearchName.empty() || strModelName.find(AnsiToWString(strSearchName)) != string::npos)
+						string strSearchName = m_szSearchObjectName;
+						transform(strSearchName.begin(), strSearchName.end(), strSearchName.begin(), ::tolower);		// 검색할 모델을 소문자로 변환
+
+						for (_uint i = 0; i < m_ObjectList.size(); ++i)
 						{
-							_bool isSelected = (m_iObjectListIndex == i);
+							_wstring strModelName = m_ObjectList[i]->Get_ModelName();
+							transform(strModelName.begin(), strModelName.end(), strModelName.begin(), ::tolower);		// 찾을 모델을 소문자로 변환
 
-							string strModelName = WStringToAnsi(m_ObjectList[i]->Get_ModelName()) + "##id_%d";
+							if (true == strSearchName.empty() || strModelName.find(AnsiToWString(strSearchName)) != string::npos)
+							{
+								_bool isSelected = (m_iObjectListIndex == i);
 
-							_char szModelName[MAX_PATH] = {};
+								string strModelName = WStringToAnsi(m_ObjectList[i]->Get_ModelName()) + "##id_%d";
 
-							sprintf_s(szModelName, strModelName.c_str(), i);
+								_char szModelName[MAX_PATH] = {};
 
-							if (ImGui::Selectable(szModelName, isSelected))
-								m_iObjectListIndex = i;
+								sprintf_s(szModelName, strModelName.c_str(), i);
+
+								if (ImGui::Selectable(szModelName, isSelected))
+									m_iObjectListIndex = i;
+							}
 						}
-					}
 
-					ImGui::EndListBox();
+						ImGui::EndListBox();
+					} SEPARATOR;
 				} SEPARATOR;
 
 				if (0 != m_ObjectList.size())
@@ -1303,7 +1352,7 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 
 				SEPARATOR;
 			}
-			else
+			else if (true == m_isObjectListView)
 			{
 				if (0 != m_ObjectList.size() && m_iObjectListIndex < m_ObjectList.size())
 				{
@@ -3161,7 +3210,7 @@ _bool CLevel_Map::Objects_Load_Binary()
 		ObjectDesc.iSubLevel = iSaveLevel;
 
 		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj"),
-			ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc), false);
+			ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"), TIME_CHANNEL::WORLD, &ObjectDesc), false);
 
 		CProp* pProp = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj")));
 		CHECK_NULLPTR_MSG(pProp, TEXT("[OBJECT LOAD] 오브젝트 찾기 실패"), false);
@@ -3233,7 +3282,7 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 				BladeNexusDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
 
 				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
-					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BladeNexus"), &BladeNexusDesc), false);
+					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BladeNexus"), TIME_CHANNEL::WORLD, &BladeNexusDesc), false);
 			}
 			else if (INTERACTIVE_TYPE::CHEST == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
 			{
@@ -3251,7 +3300,7 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 				CHECK_FALSE(ReadFile(hObjectFile, &BigChestDesc.ItemBox, sizeof(CMapObject::ITEMBOX_DESC), &dwByte, nullptr), false);
 
 				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
-					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BigChest"), &BigChestDesc), false);
+					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BigChest"), TIME_CHANNEL::WORLD, &BigChestDesc), false);
 			}
 
 			CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));

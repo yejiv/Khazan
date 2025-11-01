@@ -36,7 +36,7 @@ public:
 	// Set함수는 다르게 작동할수도 있을 것 같아서  일단 Get만 만들었습니다.
 
 public:
-	virtual void				Take_Damage(CCreature* pGameObject, _float fDamage) {};
+	virtual void				Take_Damage(CGameObject* pGameObject, _float fDamage) {};
 
 public:
 	virtual HRESULT				Initialize_Prototype() override;
