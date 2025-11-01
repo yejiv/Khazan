@@ -400,6 +400,9 @@
     <Filter Include="02.GameObject\Creature\Khazan\Spear\Anim State Manager">
       <UniqueIdentifier>{6830d138-8660-4890-8174-2b8f66fe9d52}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Announce">
+      <UniqueIdentifier>{84a25179-8e31-451d-99ed-b011ba78bff2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -768,6 +771,9 @@
     <ClInclude Include="..\public\Khazan_Spear_ASManager.h">
       <Filter>02.GameObject\Creature\Khazan\Spear\Anim State Manager</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\UI_Announce_MapName.h">
+      <Filter>02.GameObject\UI\Announce</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1121,6 +1127,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Khazan_Spear_ASManager.cpp">
       <Filter>02.GameObject\Creature\Khazan\Spear\Anim State Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Announce_MapName.cpp">
+      <Filter>02.GameObject\UI\Announce</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

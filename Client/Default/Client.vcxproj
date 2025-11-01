@@ -239,6 +239,7 @@
     <ClInclude Include="..\Public\Spear_Khazan_Sample.h" />
     <ClInclude Include="..\Public\Spear_Khazan_Spear.h" />
     <ClInclude Include="..\Public\Terrain.h" />
+    <ClInclude Include="..\public\UI_Announce_MapName.h" />
     <ClInclude Include="..\public\UI_BladeNexus.h" />
     <ClInclude Include="..\Public\UI_Button.h" />
     <ClInclude Include="..\public\UI_ComBatSpirit_Slot.h" />
@@ -357,6 +358,7 @@
     <ClCompile Include="..\Private\Spear_Khazan_Sample.cpp" />
     <ClCompile Include="..\Private\Spear_Khazan_Spear.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
+    <ClCompile Include="..\private\UI_Announce_MapName.cpp" />
     <ClCompile Include="..\private\UI_BladeNexus.cpp" />
     <ClCompile Include="..\Private\UI_Button.cpp" />
     <ClCompile Include="..\private\UI_ComBatSpirit_Slot.cpp" />
