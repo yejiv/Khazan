@@ -153,6 +153,7 @@ void CLevel_Effect::Create_Element()
 				ImGui::Indent();
 				const char* MaskTexture[] = { "texture0", "texture1", "texture2",  "texture3"};
 				ImGui::Combo("Turbulence Textures", reinterpret_cast<int*>(&m_iTurbulenceTextureIdx), MaskTexture, IM_ARRAYSIZE(MaskTexture));
+				ImGui::InputFloat("Turbulence Speed : ", &m_fTurbulenceSpeed);
 				ImGui::Unindent();
 			}
 
@@ -180,6 +181,7 @@ void CLevel_Effect::Create_Element()
 			ImGui::InputFloat2("Size : ", m_fSize);
 			ImGui::InputFloat("Size Ratio : ", &m_fSizeRatio);
 			GetMaksingScrollData();
+			ImGui::Checkbox("Fresnel", &m_bIsFresnel);
 			m_EffectType = 1;
 			ImGui::EndTabItem();
 		}
@@ -379,6 +381,7 @@ void CLevel_Effect::Create_PointInstance_Element()
 	data.bIsScrollInverse = m_bScrollDir;
 
 	data.bIsTurbulence = m_bIsTurbulence;
+	data.fTurbulenceSpeed = m_fTurbulenceSpeed;
 	data.iTurbulenceTextureIdx = m_iTurbulenceTextureIdx;
 
 	m_PrefabPrototype->Add_Effect_Element(m_EffectType, &data);
@@ -406,6 +409,7 @@ void CLevel_Effect::Create_MeshInstance_Element()
 	data.fMaskScrollSpeed = m_bMaskScrollSpeed;
 	data.bIsScrollVertical = m_bIsScrollVertical;
 	data.bIsScrollInverse = m_bScrollDir;
+	data.bIsFresnel = m_bIsFresnel;
 
 	m_PrefabPrototype->Add_Effect_Element(m_EffectType, &data);
 }

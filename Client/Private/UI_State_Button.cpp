@@ -33,6 +33,18 @@ void CUI_State_Button::Priority_Update(_float fTimeDelta)
 
 void CUI_State_Button::Update(_float fTimeDelta)
 {
+
+    if (ButtonOver(g_hWnd))
+        m_vColor.w = 1.f;
+    else
+        m_vColor.w = 0.7f;
+
+    if (ButtonClick(g_hWnd, false, true))
+    {
+        CUI_State_List::STATE_LIST_BUBBLE Desc = {};
+        Desc.eType = m_eType;
+        Bubble_EventCall(&Desc);
+    }
 }
 
 void CUI_State_Button::Late_Update(_float fTimeDelta)

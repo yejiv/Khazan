@@ -1,6 +1,7 @@
 #pragma once
 #include "UI_Panel.h"
 #include "Client_Defines.h"
+#include "UI_State.h"
 
 NS_BEGIN(Client)
 class CUI_State_MainPanel final : public CUI_Panel
@@ -11,8 +12,11 @@ private:
 	virtual ~CUI_State_MainPanel() = default;
 
 public:
-	HRESULT								Setting_PanelLevel(_int iPanelType, UI_PLAYER_STATE_DATA* Data);
+	HRESULT								Setting_PanelLevel(_int iPanelType, UI_PLAYER_STATE_DATA* Data, UI_PLAYER_STATE_DATA* UpData);
+	void								Setting_Type(CUI_State::UI_TYPE eType, CUIObject* pParent);
 
+	void								State_Hover(pair<_int, _float> Index);
+	void								State_On(pair<_int, _float> Index);
 public:
 	virtual HRESULT						Initialize_Prototype(_uint iLevel);
 	virtual HRESULT						Initialize_Clone(void* pArg) override;
@@ -23,14 +27,15 @@ public:
 	virtual HRESULT						Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
 
 private:
-	_int								m_iPanelType = { -1 };
 	unordered_map<string, 
 		class CUI_TextBox*>				m_pValue_Text;
 
 	unordered_map<string,
 		class CUI_State_Panel*>			m_pState_Panel;
 
+	_int								m_iPanelType = { -1 };
 	UI_PLAYER_STATE_DATA*				m_pData;
+	UI_PLAYER_STATE_DATA*				m_pUpData;
 
 private:
 	HRESULT								Mapping_Child();

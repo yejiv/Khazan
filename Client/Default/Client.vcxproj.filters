@@ -394,6 +394,12 @@
     <Filter Include="94.ClientInstance\Shader\Shader_Controller">
       <UniqueIdentifier>{38ef54a1-e721-4966-9df1-08a358535e44}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Anim State Machine">
+      <UniqueIdentifier>{e29ff819-bdd5-4357-9735-20156e615c46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Anim State Manager">
+      <UniqueIdentifier>{6830d138-8660-4890-8174-2b8f66fe9d52}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -756,6 +762,12 @@
     <ClInclude Include="..\Public\Shader_Controller.h">
       <Filter>94.ClientInstance\Shader\Shader_Controller</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Khazan_Spear_ASMachine.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Anim State Machine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_Spear_ASManager.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Anim State Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1103,6 +1115,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Shader_Controller.cpp">
       <Filter>94.ClientInstance\Shader\Shader_Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_Spear_ASMachine.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Anim State Machine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_Spear_ASManager.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Anim State Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

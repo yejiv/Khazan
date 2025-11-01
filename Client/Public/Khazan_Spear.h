@@ -57,8 +57,11 @@ public:
 
 
 private:
-	class CBody_Khazan_Spear*	pBody = { nullptr };
-	class CSpear_Khazan_Spear* pSpear = { nullptr };
+	class CBody_Khazan_Spear*	m_pBody = { nullptr };
+	class CSpear_Khazan_Spear*  m_pSpear = { nullptr };
+
+	class CKhazan_Spear_ASMachine* m_pASMachine = { nullptr };
+	class CKhazan_Spear_ASManager* m_pASManager = { nullptr };
 
 	_uint						m_iState = { };
 	_uint						m_iDirState = { MOVE_DIR::RIGHT };
@@ -82,6 +85,7 @@ private:
 	HRESULT			Ready_Components();
 	HRESULT			Ready_PartObjects();
 	HRESULT			Ready_Collision();
+	HRESULT			Ready_AnimationStateMachine();
 
 private:
 	inline void		Add_State(_uint i) { m_iState |= i; }

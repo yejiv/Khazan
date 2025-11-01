@@ -187,6 +187,15 @@ HRESULT CUI_State_Panel::Setting_PanelLevel(_int iPanelType, UI_PLAYER_STATE_DAT
     return S_OK;
 }
 
+void CUI_State_Panel::State_Hover()
+{
+    m_isUpgrade = true;
+}
+
+void CUI_State_Panel::State_On(_float fValue)
+{
+}
+
 HRESULT CUI_State_Panel::Initialize_Prototype(_uint iLevel)
 {
     m_iLevel = iLevel;
@@ -203,6 +212,7 @@ HRESULT CUI_State_Panel::Initialize_Clone(void* pArg)
 
 void CUI_State_Panel::Priority_Update(_float fTimeDelta)
 {
+    m_isUpgrade = false;
 }
 
 void CUI_State_Panel::Update(_float fTimeDelta)
@@ -212,10 +222,14 @@ void CUI_State_Panel::Update(_float fTimeDelta)
 
 void CUI_State_Panel::Late_Update(_float fTimeDelta)
 {
-    if (m_pTextureCom != nullptr && m_isUpgrade)
+    if(m_pTextureCom != nullptr && m_fUpValue > 0)
+    {
+        m_pIcon->Late_Update(fTimeDelta);
+        CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
+    }
+    else if (m_pTextureCom != nullptr && m_isUpgrade)
     {
         CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
-        m_pIcon->Late_Update(fTimeDelta);
     }
 
     m_pName_TextBox->Late_Update(fTimeDelta);
@@ -263,6 +277,7 @@ HRESULT CUI_State_Panel::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelI
     if (FAILED(__super::Load_UI(pInData, iPrototypeLevelID, pArg)))
         return E_FAIL;
 
+    m_iShaderPass = 0;
     return S_OK;
 }
 
@@ -323,23 +338,33 @@ void CUI_State_Panel::Update_Text()
         break;
 
     case PLAYTER_STATE::STAMINAATK:
-        wstrTemp = to_wstring(m_pData->fStaminaAttack).substr(0,4) + TEXT("%");
+        fValue = m_pData->fStaminaAttack;
+        fValue <= 0.f ? iTextValue = 3 : iTextValue = 4;
+        wstrTemp = to_wstring(fValue).substr(0, iTextValue) + TEXT("%");
         m_pValue_TextBox->Set_Text(wstrTemp);
         break;
     case PLAYTER_STATE::STAMINAREGEN:
-        wstrTemp = to_wstring(m_pData->fStaminaRegen).substr(0, 4) + TEXT("%");
+        fValue = m_pData->fStaminaRegen;
+        fValue <= 0.f ? iTextValue = 3 : iTextValue = 4;
+        wstrTemp = to_wstring(fValue).substr(0, iTextValue) + TEXT("%");
         m_pValue_TextBox->Set_Text(wstrTemp);
         break;
     case PLAYTER_STATE::EVASION_STAMINADOWN:
-        wstrTemp = to_wstring(m_pData->fEvasion_StaminaDown).substr(0, 4) + TEXT("%");
+        fValue = m_pData->fEvasion_StaminaDown;
+        fValue <= 0.f ? iTextValue = 3 : iTextValue = 4;
+        wstrTemp = to_wstring(fValue).substr(0, iTextValue) + TEXT("%");
         m_pValue_TextBox->Set_Text(wstrTemp);
         break;
     case PLAYTER_STATE::DAMAGE_STAMINADOWN:
-        wstrTemp = to_wstring(m_pData->fDamage_StaminaDown).substr(0, 4) + TEXT("%");
+        fValue = m_pData->fDamage_StaminaDown;
+        fValue <= 0.f ? iTextValue = 3 : iTextValue = 4;
+        wstrTemp = to_wstring(fValue).substr(0, iTextValue) + TEXT("%");
         m_pValue_TextBox->Set_Text(wstrTemp);
         break;
     case PLAYTER_STATE::GUARD_STAMINADOWN:
-        wstrTemp = to_wstring(m_pData->fGuard_StaminaDown).substr(0, 4) + TEXT("%");
+        fValue = m_pData->fGuard_StaminaDown;
+        fValue <= 0.f ? iTextValue = 3 : iTextValue = 4;
+        wstrTemp = to_wstring(fValue).substr(0, iTextValue) + TEXT("%");
         m_pValue_TextBox->Set_Text(wstrTemp);
         break;
 

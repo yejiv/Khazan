@@ -138,6 +138,7 @@ void CEffect_Point_Instance::Edit_Element()
         ImGui::Indent();
         const char* MaskTexture[] = { "texture0", "texture1", "texture2",  "texture3" };
         ImGui::Combo("Turbulence Textures", reinterpret_cast<int*>(&m_sEditingData.iTurbulenceTextureIdx), MaskTexture, IM_ARRAYSIZE(MaskTexture));
+        ImGui::InputFloat("Turbulence Speed : ", &m_sEditingData.fTurbulenceSpeed);
         ImGui::Unindent();
     }
 

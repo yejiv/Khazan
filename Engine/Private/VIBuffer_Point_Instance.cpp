@@ -14,6 +14,7 @@ CVIBuffer_Point_Instance::CVIBuffer_Point_Instance(const CVIBuffer_Point_Instanc
 	, m_IsLoop{ Prototype.m_IsLoop }
 	, m_fOffset{ Prototype.m_fOffset } //나중에 필요하면 상수버퍼로 넘기기
 	, m_pSRVNoise{ Prototype.m_pSRVNoise } //나중에 필요하면 상수버퍼로 넘기기
+	, m_fTurbulenceSpeed{ Prototype.m_fTurbulenceSpeed }
 
 {
 	Safe_AddRef(m_pSRVNoise);
@@ -57,6 +58,7 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDes
 	m_fOffset = pPointDesc->fOffset;
 	m_IsLoop = pPointDesc->bIsLoop;
 	m_vRange = pPointDesc->vRange;
+	m_fTurbulenceSpeed = pPointDesc->fTurbulenceSpeed;
 
 	D3D11_BUFFER_DESC		VBDesc{};
 	VBDesc.ByteWidth = m_iNumVertices * m_iVertexStride;
@@ -208,8 +210,6 @@ _bool CVIBuffer_Point_Instance::Update(_float fTimeDelta)
 		pPointInstanceCB->fTimeDelta = fTimeDelta;
 		pPointInstanceCB->iNumInstances = m_iNumInstance;
 		pPointInstanceCB->bIsLoop = m_IsLoop;
-		//pPointInstanceCB->bIsFollow = m_bIsFollow;
-		//pPointInstanceCB->vPrefabPosition = PrefabPos;
 		pPointInstanceCB->vSpawnRange = m_vRange;
 		m_pContext->Unmap(m_pCB, 0);
 	}
@@ -280,6 +280,7 @@ void CVIBuffer_Point_Instance::UpdateTurbulence(_float fTimeDelta, _float fAccTi
 		pPointInstanceCB->fTotalTime = fAccTime;
 		pPointInstanceCB->fTimeDelta = fTimeDelta;
 		pPointInstanceCB->iNumInstances = m_iNumInstance;
+		pPointInstanceCB->fTurbulenceSpeed = m_fTurbulenceSpeed;
 		m_pContext->Unmap(m_pCB, 0);
 	}
 
@@ -353,8 +354,10 @@ void CVIBuffer_Point_Instance::Remove_Speed(SPEED_VALUE type)
 		pInstanceSpeedCB->iSpeedType = static_cast<_uint>(type); 
 		pInstanceSpeedCB->iNumInstances = m_iNumInstance;
 		m_pContext->Unmap(m_pCB, 0);
-	}	COMPUTE_PASS_DESC PassDesc{};
-
+	}	
+	
+	COMPUTE_PASS_DESC PassDesc{};
+	PassDesc.SRVs.push_back(m_pSRV);
 	PassDesc.UAVs.push_back(m_pUAV);
 	PassDesc.UAVs.push_back(m_pUAVSpeed);
 	PassDesc.ConstantBuffers.push_back(m_pCB);
@@ -374,6 +377,7 @@ void CVIBuffer_Point_Instance::Remove_Speed(SPEED_VALUE type)
 void CVIBuffer_Point_Instance::Remove_Speed()
 { 
 	COMPUTE_PASS_DESC PassDesc{};
+	PassDesc.SRVs.push_back(m_pSRV);
 	PassDesc.UAVs.push_back(m_pUAV);
 	PassDesc.UAVs.push_back(m_pUAVSpeed);
 	_uint iNumThreadPerGroup = 256;

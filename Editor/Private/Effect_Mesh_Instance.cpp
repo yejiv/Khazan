@@ -67,10 +67,9 @@ HRESULT CEffect_Mesh_Instance::Render()
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
     //m_pShaderCom->Begin((_uint)m_Data.TextureBindType);
-    m_pShaderCom->Begin(0);
+    m_pShaderCom->Begin((_uint)m_sData.bIsFresnel);
 
     m_pVIBufferCom->Bind_Resources();
-
 
     m_pVIBufferCom->Render();
 
@@ -89,6 +88,7 @@ void CEffect_Mesh_Instance::Edit_Element()
     _bool            loop = (_int)m_sEditingData.bIsLoop;
     _bool            IsVerticalScroll = (_int)m_sEditingData.bIsScrollVertical;
     _bool            IsInverseScroll = (_int)m_sEditingData.bIsScrollInverse;
+    _bool            IsFresnel = (_int)m_sEditingData.bIsFresnel;
 
     ImGui::RadioButton("Spawn_BoundingBox", &isCircle, 0);
     ImGui::RadioButton("Spawn_Circle", &isCircle, 1);
@@ -131,10 +131,13 @@ void CEffect_Mesh_Instance::Edit_Element()
     else
         m_sEditingData.fMaskScrollSpeed = 0.f;
 
+    ImGui::Checkbox("Fresnel", &IsFresnel);
+
     m_sEditingData.IsCircle = isCircle;
     m_sEditingData.bIsLoop = loop;
     m_sEditingData.bIsScrollInverse = IsInverseScroll;
     m_sEditingData.bIsScrollVertical = IsVerticalScroll;
+    m_sEditingData.bIsFresnel = IsFresnel;
 
     if (ImGui::Button("Apply"))
         Apply(&m_sEditingData);
@@ -217,6 +220,9 @@ HRESULT CEffect_Mesh_Instance::Bind_ShaderResources()
         return E_FAIL;
 
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
         return E_FAIL;
 
     if(FAILED(m_pShaderCom->Bind_RawValue("g_vSourceColor", &m_sEditingData.vColor, sizeof(_float4))))
