@@ -135,8 +135,9 @@ PS_OUT PS_SKY(PS_IN In)
     
     // 달 방향 기반 UV 계산
     float3 vMoonDir = normalize(g_vMoonDirection);
-    float fMoonDot = dot(vDir, vMoonDir);
-
+    float fMoonDot = dot(vDir, vMoonDir); // 달과 픽셀의 방향 관계
+    float moonVisible = step(0.f, fMoonDot); // 달이 보이는 면만 1 (뒤쪽은 0)
+    
     float3 vRight = normalize(cross(float3(0.f, 1.f, 0.f), vMoonDir));
     float3 vUp = cross(vMoonDir, vRight);
 
@@ -150,7 +151,6 @@ PS_OUT PS_SKY(PS_IN In)
     float2 moonCenter = float2(0.5f, 0.5f);
     float fDist = distance(moonUV, moonCenter);
 
-    // fOuter는 0.48 근처로 고정하고, g_fMoonSize에 따라 내부 범위 자동 보정
     float fOuter = 0.48f;
     float fInner = fOuter - (0.15f * saturate(g_fMoonSize));
     float fMoonMask = 1.0f - smoothstep(fInner, fOuter, fDist);
@@ -161,16 +161,19 @@ PS_OUT PS_SKY(PS_IN In)
     float3 vMoonRGB = fLuma.xxx * g_vMoonColor * g_fMoonIntensity;
     
     // 블랙홀 (달 중심부 완전 어둠)
-    float fBlackHoleRadius = 0.11f; // 달 대비 반경 (1/4)
-    float fBlackHoleFeather = 0.02f; // 경계 페이드 폭
+    float fBlackHoleRadius = 0.11f;
+    float fBlackHoleFeather = 0.02f;
     float fHoleMask = 1.0f - smoothstep(fBlackHoleRadius, fBlackHoleRadius + fBlackHoleFeather, fDist);
 
-    // 블랙홀 색상 및 강도
     float3 vBlackHoleColor = float3(0.0f, 0.0f, 0.0f);
     vMoonRGB = lerp(vMoonRGB, vBlackHoleColor, fHoleMask);
     
     // 달 내부엔 별 제거
     vStars *= (1.0f - fMoonMask);
+
+    // 달은 한쪽 면(dot>0)만 보이게
+    vMoonRGB *= moonVisible;
+    fMoonMask *= moonVisible;
     
     // 스크린 합성 (자연스럽게 달+별+하늘)
     float3 vBaseColor = vSkyColor + vStars;

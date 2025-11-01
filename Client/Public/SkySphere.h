@@ -59,9 +59,6 @@ private:
 	HRESULT Bind_Sky_ShaderResources();
 	HRESULT Bind_Cloud_ShaderResources();
 
-private:
-	HRESULT Ready_ImGuiWidget();
-
 public:
 	static CSkySphere* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg) override;

@@ -37,7 +37,6 @@ HRESULT CSkySphere::Initialize_Clone(void* pArg)
 
 void CSkySphere::Priority_Update(_float fTimeDelta)
 {
-    int a = 10;
 }
 
 void CSkySphere::Update(_float fTimeDelta)
@@ -47,46 +46,6 @@ void CSkySphere::Update(_float fTimeDelta)
     //m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
 
     m_fTimeAcc += fTimeDelta;
-
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
-        m_SkyDesc.vNebulaColor.x += 0.01f;
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
-        m_SkyDesc.vNebulaColor.y += 0.01f;
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD3))
-        m_SkyDesc.vNebulaColor.z += 0.01f;
-
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD4))
-        m_SkyDesc.vNebulaColor.x -= 0.01f;
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD5))
-        m_SkyDesc.vNebulaColor.y -= 0.01f;
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD6))
-        m_SkyDesc.vNebulaColor.z -= 0.01f;
-
-    if (m_pGameInstance->Key_Down(DIK_NUMPADMINUS))
-        m_SkyDesc.fStarStrength -= 0.1f;
-    if (m_pGameInstance->Key_Down(DIK_NUMPADPLUS))
-        m_SkyDesc.fStarStrength += 0.1f;
-
-    if (m_pGameInstance->Key_Down(DIK_MINUS))
-        m_SkyDesc.fMoonSize -= 0.01f;
-    if (m_pGameInstance->Key_Down(DIK_EQUALS))
-        m_SkyDesc.fMoonSize += 0.01f;
-
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD7))
-        m_SkyDesc.fMoonIntensity -= 0.01f;
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD9))
-        m_SkyDesc.fMoonIntensity += 0.01f;
-
-    if (0.f > m_SkyDesc.vNebulaColor.x) m_SkyDesc.vNebulaColor.x = 0.f;
-    if (0.f > m_SkyDesc.vNebulaColor.y) m_SkyDesc.vNebulaColor.y = 0.f;
-    if (0.f > m_SkyDesc.vNebulaColor.z) m_SkyDesc.vNebulaColor.z = 0.f;
-
-    if (1.f < m_SkyDesc.vNebulaColor.x) m_SkyDesc.vNebulaColor.x = 1.f;
-    if (1.f < m_SkyDesc.vNebulaColor.y) m_SkyDesc.vNebulaColor.y = 1.f;
-    if (1.f < m_SkyDesc.vNebulaColor.z) m_SkyDesc.vNebulaColor.z = 1.f;
-    
-    if (0.f > m_SkyDesc.fStarStrength)
-        m_SkyDesc.fStarStrength = 0.f;
 }
 
 void CSkySphere::Late_Update(_float fTimeDelta)

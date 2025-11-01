@@ -110,7 +110,7 @@ VS_OUT VS_MAPOBJECT(VS_IN In)
 
 VS_OUT VS_PLANT(VS_IN In)
 {
-    // 풀 살랑살랑 할 예정
+    // 풀 살랑살랑 할 예정 진짜 나중에
     
     VS_OUT Out = (VS_OUT) 0; // C 스타일의 캐스팅 가능 - 0 초기화
  

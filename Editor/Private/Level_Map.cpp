@@ -1941,7 +1941,7 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 				}
 			}
 			SAMELINE;
-			if (ImGui::Button("SAVE"))
+			if (ImGui::Button("ALL_SAVE"))
 			{
 				// m_strMapInfoFilePath : 뒤에 _prototypes.dat, _objs.dat, insts.dat 이런식으로 ㄱㄱ
 				m_strMapInfoFilePath = m_szMapInfoFilePath;
@@ -2007,7 +2007,20 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 
 				m_isSaveObjectWindow = false;
 			}
+			SAMELINE;
+			if (ImGui::Button("SAVE LIGHT"))
+			{
+				m_strMapInfoFilePath = m_szMapInfoFilePath;
+				m_strMapInfoFilePath += m_szMapInfoFileName;
 
+				if (false == Lights_Save_Binary())
+				{
+#ifdef _DEBUG
+					OutputDebugStringA("단일 오브젝트 정보 바이너리화 실패");
+#endif // _DEBUG
+					return;
+				}
+			}
 			ImGui::End();
 		}
 		});
