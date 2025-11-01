@@ -41,7 +41,7 @@ void CProjectile_Yetuga::Update(_float fTimeDelta)
 	{
 		_float3 vPos{};
 			XMStoreFloat3(&vPos,m_pTransformCom->Get_State(STATE::POSITION)); // _float3
-		std::cout << "Pos: " << vPos.x << ", " << vPos.y << ", " << vPos.z << std::endl;
+		//std::cout << "Pos: " << vPos.x << ", " << vPos.y << ", " << vPos.z << std::endl;
 
 		if (m_fCurrentTime >= m_fLifeTime)
 		{
@@ -89,7 +89,18 @@ void CProjectile_Yetuga::Reset()
 {
 	m_fCurrentTime = 0.f;
 	_vector vDir = XMVector3Normalize(XMLoadFloat3(&m_vSpawnDir));
+	//m_pTransformCom->Set_State(STATE::LOOK, vDir);
+
+	_vector vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+	_vector vRight = XMVector3Normalize(XMVector3Cross(vUp, vDir));
+	vUp = XMVector3Cross(vDir, vRight);
+
+	m_pTransformCom->Set_State(STATE::RIGHT, vRight);
+	m_pTransformCom->Set_State(STATE::UP, vUp);
 	m_pTransformCom->Set_State(STATE::LOOK, vDir);
+
+	m_pTransformCom->Scale(_float3(0.3f,0.3f,0.3f));
+
 	m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&m_vSpawnPoint), 1.f));
 }
 

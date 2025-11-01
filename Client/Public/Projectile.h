@@ -55,6 +55,8 @@ protected:
 
 	_bool					m_isVisible = { false };
 
+	_float4x4				m_OriginMatrix = {};
+
 public:
 	virtual CGameObject*	Clone(void* pArg) = 0;
 	virtual void			Free() override;

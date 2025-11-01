@@ -403,6 +403,18 @@
     <Filter Include="92.AI\State\Yetuga\07. Hit">
       <UniqueIdentifier>{da1ea781-147f-4124-9510-f2c5c6d3c222}</UniqueIdentifier>
     </Filter>
+    <Filter Include="92.AI\State\Yetuga\08.Groggy">
+      <UniqueIdentifier>{f42c73b1-3285-400d-8f2c-76d830865620}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\09.Dead">
+      <UniqueIdentifier>{4cf7082c-0498-48f9-9990-97868ab4536a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\08. Amageddon">
+      <UniqueIdentifier>{6bf50b95-38c3-4fe2-a1d9-b502e4ab0fb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\07. IceBreath">
+      <UniqueIdentifier>{5893559b-ea54-4504-af39-8097d6190c68}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -774,6 +786,12 @@
     <ClInclude Include="..\Public\AS_Hit_Yetuga.h">
       <Filter>92.AI\State\Yetuga\07. Hit</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\AS_IceBreath_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\07. IceBreath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Amageddon_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\08. Amageddon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1130,6 +1148,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_Hit_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\07. Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_IceBreath_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\07. IceBreath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Amageddon_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\08. Amageddon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

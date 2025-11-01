@@ -177,6 +177,47 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 
 #pragma region ATTACK SELECTOR
 
+
+	//if ("Amageddon" == name)
+	//{
+	//	return [pYetuga](CBlackBoard* BB)->_bool
+	//		{
+
+	//			_float fDist = BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
+	//			_float fAttackRanage = BB->Get_Value<_float>(pYetuga->Get_Name(), "ThrowBallRange");
+
+	//			if (fDist != 0 && fDist <= fAttackRanage && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "IsAmageddon"))
+	//			{
+	//				BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", true);
+	//				return true;
+	//			}
+	//			else
+	//				return false;
+	//		};
+	//}
+
+
+
+	//if ("IceBreath" == name)
+	//{
+	//	return [pYetuga](CBlackBoard* BB)->_bool
+	//		{
+
+	//			_float fDist = BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
+	//			_float fAttackRanage = BB->Get_Value<_float>(pYetuga->Get_Name(), "ThrowBallRange");
+
+	//			if (fDist != 0 && fDist <= fAttackRanage && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "IsIceBreath"))
+	//			{
+	//				BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", true);
+	//				return true;
+	//			}
+	//			else
+	//				return false;
+	//		};
+	//}
+
+
+
 	if ("ThrowBall" == name)
 	{
 		return [pYetuga](CBlackBoard* BB)->_bool
@@ -397,6 +438,52 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 #pragma endregion
 
 #pragma region ATTACK SELECTOR
+
+	/*if ("Amageddon" == name)
+	{
+		return [pYetuga](CBlackBoard* BB)-> BTNODESTATE
+			{
+
+				if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isAmageddonFinished"))
+				{
+
+					return BTNODESTATE::SUCCESS;
+				}
+
+				BB->Set_Value(pYetuga->Get_Name(), "isAmageddon", true);
+				BB->Set_Value(pYetuga->Get_Name(), "isAmageddonFinished", false);
+
+
+				pYetuga->Get_Controller()->Get_State_Machine()->
+					Change_State(ENUM_CLASS(YETUGA_STATE::ICEBREATH), pYetuga);
+				return BTNODESTATE::RUNNING;
+
+			};
+	}
+
+	if ("IceBreath" == name)
+	{
+		return [pYetuga](CBlackBoard* BB)-> BTNODESTATE
+			{
+
+				if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isIceBreathFinished"))
+				{
+
+					return BTNODESTATE::SUCCESS;
+				}
+
+				BB->Set_Value(pYetuga->Get_Name(), "isIceBreath", true);
+				BB->Set_Value(pYetuga->Get_Name(), "isIceBreathFinished", false);
+
+
+				pYetuga->Get_Controller()->Get_State_Machine()->
+					Change_State(ENUM_CLASS(YETUGA_STATE::ICEBREATH), pYetuga);
+				return BTNODESTATE::RUNNING;
+
+			};
+	}*/
+
+
 
 	if ("ThrowBall" == name)
 	{
@@ -636,6 +723,66 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 #pragma endregion
 
 #pragma region ATTACK SELECTOR
+
+
+	/*if ("Amageddon" == name)
+	{
+		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
+			{
+				if (nullptr == BB)
+					return;
+
+				if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+				{
+
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isAmageddon", false);
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isAmageddonFinished", false);
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", false);
+					pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
+				}
+			};
+	}
+
+	if ("IceBreath" == name)
+	{
+		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
+			{
+				if (nullptr == BB)
+					return;
+
+				if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+				{
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isIceBreath", false);
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isIceBreathFinished", false);
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", false);
+					pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
+				}
+			};
+	}*/
+
+
+
+
+	if ("ThrowBall" == name)
+	{
+		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
+			{
+				if (nullptr == BB)
+					return;
+
+				if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+				{
+					//cout << "Throw Turminate " << endl;
+
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isThrowBall", false);
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isThrowBallFinished", false);
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", false);
+					pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
+				}
+			};
+	}
+
+
 
 	if ("ThrowBall" == name)
 	{
