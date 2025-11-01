@@ -8,10 +8,10 @@ CVignette::CVignette()
 HRESULT CVignette::Initialize()
 {
     m_Config.vColor = _float3(0.f, 0.f, 0.f);
-    m_Config.fPower = 1.f;
+    m_Config.fPower = 4.f;
     m_Config.fIntensity = 1.f;
 
-    m_fMaxIntensity = 5.f;
+    m_Config.fMaxIntensity = 5.f;
 
     return S_OK;
 }
@@ -34,16 +34,31 @@ void CVignette::Update(_float fTimeDelta)
     else
     {
         _float fRatio = m_fTimeAcc / m_fDuration;
+        _float fProgress = 0.f;
 
-        _float fProgress = sin(fRatio * 3.14159f); // PI
+        switch (m_Config.eMode)
+        {
+        case VIGNETTE_CONFIG::ANIMMODE::SMOOTH_SMOOTH:
+            fProgress = sin(fRatio * PI);
+            break;
+        case VIGNETTE_CONFIG::ANIMMODE::SMOOTH_INTANT:
+            fProgress = fRatio;
+            break;
+        case VIGNETTE_CONFIG::ANIMMODE::INTANT_SMOOTH:
+            fProgress = 1.f - fRatio;
+            break;
+        case VIGNETTE_CONFIG::ANIMMODE::NONE:
+            fProgress = m_Config.fMaxIntensity;
+            break;
+        }
         
-        m_Config.fIntensity = m_fMaxIntensity * fProgress;
+        m_Config.fIntensity = m_Config.fMaxIntensity * fProgress;
     }
 
     // 아닐 경우 Ratio = 누적 시간 / 지속 시간
     // SS -> 0 -> 1 -> 0 -> sin(t * PI)
-    // IS -> 1 -> 0 -> 1 - t
     // SI -> 0 -> 1 -> t
+    // IS -> 1 -> 0 -> 1 - t
     // Intensity = Max Intensity * Progress
 
     // Set 함수로 모드, 지속 시간 받기
@@ -66,10 +81,11 @@ HRESULT CVignette::Bind_Vignette_ShaderResources(CShader* pShader)
     return S_OK;
 }
 
-void CVignette::Start_VignetteAnimation(_float fDuration)
+void CVignette::Start_VignetteAnimation(_float fDuration, VIGNETTE_CONFIG::ANIMMODE eMode)
 {
     m_isEnable = true;
     m_fDuration = fDuration;
+    m_Config.eMode = eMode;
 }
 
 CVignette* CVignette::Create()

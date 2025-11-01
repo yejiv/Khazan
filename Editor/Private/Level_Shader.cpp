@@ -315,6 +315,36 @@ HRESULT CLevel_Shader::Initialize()
 			
 				if (ImGui::ColorEdit3("Vignette Color", reinterpret_cast<_float*>(&m_VignetteConfig.vColor)))
 					m_pGameInstance->Set_VignetteConfig(m_VignetteConfig);
+
+				ImGui::Separator();
+				ImGui::Text("Vignette Animation");
+				ImGui::Separator();
+
+				// 라디오 버튼으로 애니메이션 모드 고르기
+				_bool isChanged = {};
+				_int iVignetteMode = static_cast<_int>(m_VignetteConfig.eMode);
+
+				isChanged |= ImGui::RadioButton("Smooth_Smooth", &iVignetteMode, static_cast<_int>(VIGNETTE_CONFIG::SMOOTH_SMOOTH));
+				ImGui::SameLine();
+				isChanged |= ImGui::RadioButton("Smooth_Intant", &iVignetteMode, static_cast<_int>(VIGNETTE_CONFIG::SMOOTH_INTANT));
+				ImGui::SameLine();
+				isChanged |= ImGui::RadioButton("Intant_Smooth", &iVignetteMode, static_cast<_int>(VIGNETTE_CONFIG::INTANT_SMOOTH));
+				ImGui::SameLine();
+				isChanged |= ImGui::RadioButton("None", &iVignetteMode, static_cast<_int>(VIGNETTE_CONFIG::NONE));
+
+				if (true == isChanged)
+					m_VignetteConfig.eMode = static_cast<VIGNETTE_CONFIG::ANIMMODE>(iVignetteMode);
+
+				// 최대 강도
+				if (ImGui::SliderFloat("Vignette Max Intensity", &m_VignetteConfig.fMaxIntensity, 0.f, 10.f, "%.2f"))
+					m_pGameInstance->Set_VignetteConfig(m_VignetteConfig);
+				
+				// 듀레이션
+				ImGui::SliderFloat("Vignette Duration", &m_fVignetteAnimDuration, 0.f, 5.f, "%.2f");
+
+				// 스타트 버튼
+				if (ImGui::Button("Start"))
+					m_pGameInstance->Start_VignetteAnimation(m_fVignetteAnimDuration, m_VignetteConfig.eMode);
 			}
 		}
 

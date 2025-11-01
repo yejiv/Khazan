@@ -188,9 +188,13 @@ namespace Engine
 
 	typedef struct tagVignetteConfig
 	{
+		enum ANIMMODE { SMOOTH_SMOOTH, SMOOTH_INTANT, INTANT_SMOOTH, NONE };
+
+		ANIMMODE	eMode;
 		XMFLOAT3	vColor;
 		float		fPower;
 		float		fIntensity;
+		float		fMaxIntensity;
 	}VIGNETTE_CONFIG;
 
 	struct HitStopState

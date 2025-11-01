@@ -540,7 +540,8 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
         float fDistance = length(In.vTexcoord - 0.5f);
         float fVignetteFactor = 1.f - pow(fDistance, g_fVignettePower) * g_fVignetteIntensity;
 
-        vFinalColor.rgb = vFinalColor.rgb * fVignetteFactor * g_vVignetteColor + vFinalColor.rgb * fVignetteFactor;
+        //  vFinalColor.rgb = vFinalColor.rgb * fVignetteFactor * g_vVignetteColor + vFinalColor.rgb * fVignetteFactor;
+        vFinalColor.rgb = lerp(g_vVignetteColor, vFinalColor.rgb, fVignetteFactor);
         vFinalColor.a = vPostSceneDesc.a;
     }
 
