@@ -35,6 +35,8 @@ cbuffer CB_PARTICLE : register(b0)
     float g_bIsLoop;
     float3 g_SpawnRange;
     float g_TotalTime;
+    
+    float g_TurblunceSpeed;
 };
 
 StructuredBuffer<PARTICLE_PARAMS> g_InputData : register(t0);
@@ -109,7 +111,7 @@ void ResetParticle(inout VTXINSTANCE_PARTICLE Particle, uint iIndex)
     //}
     
     Particle.vTranslation = g_InputData[iIndex].vInitTranslation;
-    
+    Particle.vPrevPosition = g_InputData[iIndex].vInitTranslation;
     if (g_bIsLoop == 0)
     {
         Particle.bDead = true;
@@ -218,6 +220,7 @@ void CS_RESET(uint3 DTid : SV_DispatchThreadID)
     VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
 
     Particle.vTranslation = g_InputData[iIndex].vInitTranslation;
+    Particle.vPrevPosition = g_InputData[iIndex].vInitTranslation;
     Particle.bDead = false;
     Particle.vLifeTime.x = 0.f;
     SpeedData.fGravity = 0.f;
@@ -235,6 +238,7 @@ void CS_RESET_SPEED(uint3 DTid : SV_DispatchThreadID)
     //if (iIndex >= g_iNumInstances)
     //    return;
     
+    VTXINSTANCE_PARTICLE Particle = g_OutputData[iIndex];
     VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
     
     if (g_iSpeedType == 0)
@@ -242,32 +246,64 @@ void CS_RESET_SPEED(uint3 DTid : SV_DispatchThreadID)
     else if (g_iSpeedType == 1)
         SpeedData.fSpeed.y = 0.f;
     else if (g_iSpeedType == 2)
+    {
         SpeedData.fSpeed.z = 0.f;
+        Particle.vRight = float4(g_InputData[iIndex].fSize, 0.f, 0.f, 0.f);
+        Particle.vUp = float4(0.f, g_InputData[iIndex].fSize, 0.f, 0.f);
+        Particle.vLook = float4(0.f, 0.f, g_InputData[iIndex].fSize, 0.f);
+    }
     else
         SpeedData.fSpeed.w = 0.f;
-    
+    SpeedData.fSpeed = float4(0.f, 0.f, 0.f, 0.f);
+
+    g_OutputData[iIndex] = Particle;
     g_SpeedData[iIndex] = SpeedData;
 }
 
+//[numthreads(256, 1, 1)]
+//void CS_TURBULENCE(uint3 DTid : SV_DispatchThreadID)
+//{
+//    uint iIndex = DTid.x;
+//    
+//    if (iIndex >= g_iNumInstances)
+//        return;
+//    
+//    VTXINSTANCE_PARTICLE Particle = g_OutputData[iIndex];
+//    
+//    float3 pos = Particle.vTranslation.xyz;
+//    
+//    float forceX = g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.yz * 0.1f + g_TotalTime * 0.05f, 0.f).r;
+//    float forceY = g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.xz * 0.1f + g_TotalTime * 0.05f, 0.f).r;
+//    float forceZ = g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.xy * 0.1f + g_TotalTime * 0.05f, 0.f).r;
+//    
+//    float3 noiseDirection = (float3(forceX, forceY, forceZ) * 2.f - 1.f);   //0~1 -> -1 ~ 1
+//    
+//    Particle.vTranslation += float4(noiseDirection, 0.f) * g_TurblunceSpeed * g_fTimeDelta;
+//    
+//    g_OutputData[iIndex] = Particle;
+//}
 [numthreads(256, 1, 1)]
 void CS_TURBULENCE(uint3 DTid : SV_DispatchThreadID)
 {
     uint iIndex = DTid.x;
-    
     if (iIndex >= g_iNumInstances)
         return;
     
     VTXINSTANCE_PARTICLE Particle = g_OutputData[iIndex];
-    
     float3 pos = Particle.vTranslation.xyz;
+
+    // 방향 편향 방지 ===
+    float2 offset1 = float2(sin(g_TotalTime), cos(g_TotalTime)) * 0.5f;
+    float2 offset2 = float2(sin(g_TotalTime * 1.37f), cos(g_TotalTime * 1.91f)) * 0.5f;
+    float2 offset3 = float2(sin(g_TotalTime * 0.77f), cos(g_TotalTime * 1.21f)) * 0.5f;
     
-    float forceX = g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.yz * 0.1f + g_TotalTime * 0.05f, 0.f).r;
-    float forceY = g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.xz * 0.1f + g_TotalTime * 0.05f, 0.f).r;
-    float forceZ = g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.xy * 0.1f + g_TotalTime * 0.05f, 0.f).r;
-    
-    float3 noiseDirection = (float3(forceX, forceY, forceZ) * 2.f - 1.f);   //0~1 -> -1 ~ 1
-    
-    Particle.vTranslation += float4(noiseDirection, 0.f) * 2.f * g_fTimeDelta; //나중에 필요시 상수버퍼로 세기값 받아오기
-    
+    float forceX = (g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.yz * 0.1f + offset1, 0).r - 0.5f) * 2.f;
+    float forceY = (g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.xz * 0.1f + offset2, 0).r - 0.5f) * 2.f;
+    float forceZ = (g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.xy * 0.1f + offset3, 0).r - 0.5f) * 2.f;
+
+    float3 noiseDir = normalize(float3(forceX, forceY, forceZ));
+
+    Particle.vTranslation.xyz += noiseDir * g_TurblunceSpeed * g_fTimeDelta;
+
     g_OutputData[iIndex] = Particle;
 }

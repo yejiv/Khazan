@@ -9,6 +9,7 @@
 #ifdef _DEBUG
 #include "Debug_Manager.h"
 #include "Camera_Controller.h"
+#include "Shader_Controller.h"
 #endif
 
 
@@ -44,6 +45,10 @@ HRESULT CClientInstance::Initialize(ID3D11Device** ppDevice, ID3D11DeviceContext
 
 	m_pCamera_Controller = CCamera_Controller::Create();
 	if (m_pCamera_Controller == nullptr)
+		return E_FAIL;
+
+	m_pShader_Controller = CShader_Controller::Create();
+	if (m_pShader_Controller == nullptr)
 		return E_FAIL;
 #endif
 

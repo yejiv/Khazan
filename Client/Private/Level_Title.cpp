@@ -88,7 +88,7 @@ HRESULT CLevel_Title::Ready_Layer_UI()
 	Desc.fDepth = 0;
 
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
-		ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Cursor"), &Desc)))
+		ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Cursor"), TIME_CHANNEL::WORLD, &Desc)))
 		return E_FAIL;
 
 	if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),

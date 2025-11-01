@@ -88,7 +88,7 @@ HRESULT CLevel_Animation::Ready_Layer_Camera(const _wstring& strLayerTag)
 	CameraDesc.fMouseSensor = 0.2f;
 
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::ANIMATION), strLayerTag,
-		ENUM_CLASS(LEVEL::ANIMATION), TEXT("Prototype_GameObject_JOH_TempCamera"), &CameraDesc)))
+		ENUM_CLASS(LEVEL::ANIMATION), TEXT("Prototype_GameObject_JOH_TempCamera"), TIME_CHANNEL::WORLD, &CameraDesc)))
 		return E_FAIL;
 
 	return S_OK;

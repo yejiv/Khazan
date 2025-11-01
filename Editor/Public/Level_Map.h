@@ -68,6 +68,10 @@ private:
 
 	_int m_iMaxSubLevel = {};						// 분할할 레벨의 총 개수
 
+	_bool m_isRenderOption = { false };
+
+	_bool m_isObjectListView = { true };
+
 #pragma region 트리거 관련 변수
 
 

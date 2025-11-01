@@ -1,6 +1,7 @@
 #pragma once
 #include "UI_Button.h"
 #include "Client_Defines.h"
+#include "UI_State_List.h"
 
 NS_BEGIN(Engine)
 class CShader;
@@ -17,6 +18,9 @@ private:
 	virtual ~CUI_State_Button() = default;
 
 public:
+	void								Set_Type(CUI_State_List::STATE_BUTTON_TYPE eStaet) { m_eType = eStaet; }
+
+public:
 	virtual HRESULT						Initialize_Prototype(_uint iLevel);
 	virtual HRESULT						Initialize_Clone(void* pArg) override;
 	virtual void						Priority_Update(_float fTimeDelta) override;
@@ -30,6 +34,7 @@ private:
 	CTexture*							m_pTextureCom = { nullptr };
 	CVIBuffer_Rect*						m_pVIBufferCom = { nullptr };
 
+	CUI_State_List::STATE_BUTTON_TYPE	m_eType = { CUI_State_List::STATE_BUTTON_TYPE::END };
 private:
 	HRESULT								Ready_Component();
 

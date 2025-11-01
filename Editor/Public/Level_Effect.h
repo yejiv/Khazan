@@ -84,6 +84,10 @@ private :
 	//[Turbulence]
 	_bool							m_bIsTurbulence;
 	_uint							m_iTurbulenceTextureIdx;
+	_float							m_fTurbulenceSpeed;
+
+	//[Fresnel]
+	_bool							m_bIsFresnel;
 
 	_int							m_iChildrenIdx;
 	_int							m_iPrevChildrenIdx;

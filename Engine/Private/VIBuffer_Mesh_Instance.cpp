@@ -82,6 +82,7 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 	for (_uint i = 0; i < m_iNumVertices; ++i)
 	{
 		memcpy(&pVertices[i].vPosition, &tMeshInfo.vecVertices[i].position, sizeof(_float3));
+		memcpy(&pVertices[i].vNormal, &tMeshInfo.vecVertices[i].normal, sizeof(_float3));
 		memcpy(&pVertices[i].vTexcoord, &tMeshInfo.vecVertices[i].texcoord, sizeof(_float2));
 
 		m_pVertexPositions[i] = pVertices[i].vPosition;
@@ -283,9 +284,12 @@ void CVIBuffer_Mesh_Instance::Remove_Speed(SPEED_VALUE type)
 	{
 		POINT_INSTANCE_CB* pInstanceSpeedCB = reinterpret_cast<POINT_INSTANCE_CB*>(SubResource.pData);
 		pInstanceSpeedCB->iSpeedType = static_cast<_uint>(type);
+		pInstanceSpeedCB->iNumInstances = m_iNumInstance;
 		m_pContext->Unmap(m_pCB, 0);
-	}	COMPUTE_PASS_DESC PassDesc{};
-
+	}	
+	
+	COMPUTE_PASS_DESC PassDesc{}; 
+	PassDesc.SRVs.push_back(m_pSRV);
 	PassDesc.UAVs.push_back(m_pUAV);
 	PassDesc.UAVs.push_back(m_pUAVSpeed);
 	PassDesc.ConstantBuffers.push_back(m_pCB);

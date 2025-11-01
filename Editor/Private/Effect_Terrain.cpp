@@ -47,7 +47,7 @@ HRESULT CEffect_Terrain::Render()
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
-    m_pShaderCom->Begin(1);
+    m_pShaderCom->Begin(0);
 
     m_pVIBufferCom->Bind_Resources();
 

@@ -333,9 +333,21 @@ PS_OUT_BLUR_X PS_MAIN_BLUR_X(PS_IN In)
         vTexcoord.x = In.vTexcoord.x + i / g_fViewportWidth;
         vTexcoord.y = In.vTexcoord.y;
         
+        // 기존 샘플링
         float4 vEmissive = g_EmissiveTexture.SampleLevel(ClampSampler, vTexcoord, 0.f);
+        float3 vEmissiveColor = vEmissive.rgb * vEmissive.a;
         
-        vColor += g_Weights[i + g_iWeightRadius] * vEmissive.rgb * vEmissive.a;
+        // 포스트씬 샘플링
+        float3 vPostSceneColor = g_PostSceneTexture.SampleLevel(ClampSampler, vTexcoord, 0.f).rgb;
+        
+        // 임계치 넘는 영역만 추출
+        float3 vBrightColor = max(vPostSceneColor - 1.f, 0.f); // 씬 컬러 - 임계치
+        
+        // 이미시브 + 밝은 영역
+        float3 vCombinedColor = vEmissiveColor + vBrightColor;
+        
+        // 합친 컬러에 가중치 곱
+        vColor += g_Weights[i + g_iWeightRadius] * vCombinedColor;
     }
 
     Out.vBlurX = float4(vColor / g_fNormalization, 1.f);
@@ -465,14 +477,16 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
     //if (0.f == vPostSceneDesc.a)
     //    discard;
 
+    //  if (true == g_isEnableFog)
+    //      Out.vColor = vFogDesc + vEmissiveDesc + vBloomDesc;
+    //  else
+    //      Out.vColor = vPostSceneDesc + vEmissiveDesc + vBloomDesc;
+    
     if (true == g_isEnableFog)
-        Out.vColor = vFogDesc + vEmissiveDesc + vBloomDesc;
+        Out.vColor = vFogDesc + vBloomDesc;
     else
-        Out.vColor = vPostSceneDesc + vEmissiveDesc + vBloomDesc;
-    
-    //  if (0.f == vPostSceneDesc.a)
-    //      discard;
-    
+        Out.vColor = vPostSceneDesc + vBloomDesc;
+
     // Outline
     if (g_isEnableOutline)
     {
