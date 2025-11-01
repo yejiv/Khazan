@@ -246,11 +246,21 @@ _bool CJolt_Manager::RayCast(_float3 vStart, _float3 vEnd, _float& outFraction, 
     }
 
 #ifdef _DEBUG
-    RayCastDesc RayCastDesc{};
-    RayCastDesc.vStart = vStart;
-    RayCastDesc.vEnd = vEnd;
-    RayCastDesc.vColor = Color::sGreen;
-    m_RayCasts.push_back(RayCastDesc);
+    RayCastDesc RayCastDesc1{};
+    RayCastDesc1.vStart = vStart;
+    RayCastDesc1.vEnd = vEnd;
+    RayCastDesc1.vColor = Color::sGreen;
+    m_RayCasts.push_back(RayCastDesc1);
+   
+    _vector EndPlus;
+    EndPlus = XMLoadFloat3(&RayCastDesc1.vEnd) + vDir;
+    XMVectorSetW(EndPlus, 1.f);
+
+    RayCastDesc RayCastDesc2{};
+    RayCastDesc2.vStart = RayCastDesc1.vEnd;
+    XMStoreFloat3(&RayCastDesc2.vEnd, EndPlus);
+    RayCastDesc2.vColor = Color::sRed;
+    m_RayCasts.push_back(RayCastDesc2);
 #endif
 
 
