@@ -12,7 +12,7 @@ private:
 
 public:
 	class CBody_Yetuga*			Get_Body() const { return m_pBody; }
-
+	virtual _float4				Get_LockOnPosition();
 public:
 	virtual HRESULT				Initialize_Prototype() override;
 	virtual HRESULT				Initialize_Clone(void* pArg) override;

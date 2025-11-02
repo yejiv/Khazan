@@ -16,6 +16,14 @@ CYetuga::CYetuga(const CYetuga& Prototype)
 {
 }
 
+_float4 CYetuga::Get_LockOnPosition()
+{
+    _float3 vTempPos = m_pBody->Get_BonePoint("FX_Body_ExpGained");
+    m_vLockOnPosition = _float4(vTempPos.x, vTempPos.y, vTempPos.z, 1.f);
+
+    return m_vLockOnPosition;
+}
+
 HRESULT CYetuga::Initialize_Prototype()
 {
     return S_OK;
@@ -98,7 +106,7 @@ HRESULT CYetuga::Render()
 
 void CYetuga::Pick_Rock()
 {
-    _float3 vSpawnPoint = m_pBody->Get_ThrowPoint();
+    _float3 vSpawnPoint = m_pBody->Get_BonePoint("Weapon_L");
     CGameObject* pGameObject = m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Rock"));
     if (nullptr == pGameObject)
         return;
@@ -126,7 +134,7 @@ void CYetuga::Hold_Rock()
     if (nullptr == m_pHoldRock)
         return;
 
-    _float3 vSpawnPoint = m_pBody->Get_ThrowPoint();
+    _float3 vSpawnPoint = m_pBody->Get_BonePoint("Weapon_L");
     m_pHoldRock->Set_SpanwPoint(vSpawnPoint);
     m_pHoldRock->Reset();
 
@@ -139,7 +147,7 @@ void CYetuga::Throw_Rock()
 
     if (m_pHoldRock == nullptr)
         return;
-    _float3 vSpawnPoint = m_pBody->Get_ThrowPoint();
+    _float3 vSpawnPoint = m_pBody->Get_BonePoint("Weapon_L");
     _float3 vTargetDir = (m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir"));
     _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
     _float3 vNormalize{};
@@ -201,6 +209,10 @@ HRESULT CYetuga::Ready_PartObjects()
 
     m_pBody = dynamic_cast<CBody_Yetuga*>(pBody);
     Safe_AddRef(m_pBody);
+
+
+    //_float4 vTest = Get_LockOnPosition();
+
 
     return S_OK;
 }

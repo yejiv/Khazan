@@ -167,6 +167,7 @@
     <ClInclude Include="..\Public\AS_JumpAttack_Yetuga.h" />
     <ClInclude Include="..\Public\AS_LieDown_Yetuga.h" />
     <ClInclude Include="..\Public\AS_RightHand_5Hit_Yetuga.h" />
+    <ClInclude Include="..\Public\AS_Rush_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Smash_Yetuga.h" />
     <ClInclude Include="..\Public\AS_ThrowBall_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Turn_Yetuga.h" />
@@ -299,6 +300,7 @@
     <ClCompile Include="..\Private\AS_JumpAttack_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_LieDown_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_RightHand_5Hit_Yetuga.cpp" />
+    <ClCompile Include="..\Private\AS_Rush_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Smash_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_ThrowBall_Yetuga.cpp" />
     <ClCompile Include="..\private\AS_Turn_Yetuga.cpp" />

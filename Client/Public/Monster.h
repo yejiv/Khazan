@@ -49,6 +49,8 @@ public:
 	CAI_Controller*				Get_Controller() const { return m_pController; }
 	_float						Get_CoolTimeAcc() const { return m_fCoolTimeAcc; }
 	const string&				Get_Name() const { return m_strName; }
+	virtual _float4				Get_LockOnPosition() const { return _float4(0.f, 0.f, 0.f, 0.f); };
+
 public:
 	virtual void				Take_Damage(_float fDamage, HITREACTION eHitreaction, _float fValidTime ,CGameObject* pGameObject = nullptr);
 
@@ -61,6 +63,7 @@ public:
 	virtual HRESULT				Render() override;
 	virtual HRESULT				Render_Shadow() { return S_OK; }
 
+
 protected:
 	//CRigidBody*				m_pRigidBodyCom = { nullptr };
 
@@ -71,6 +74,7 @@ protected:
 protected:
 	unordered_map<string, _float>	m_CoolDowns;
 	_float							m_fCoolTimeAcc = {};
+	_float4							m_vLockOnPosition = {};
 
 	string							m_strName;
 

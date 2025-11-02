@@ -2,9 +2,10 @@
 #include "GameInstance.h"
 
 
-_float3 CBody_Yetuga::Get_ThrowPoint()
+
+_float3 CBody_Yetuga::Get_BonePoint(const _char* BoneName)
 {
-    _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix("Weapon_L");
+    _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix(BoneName);
     _matrix ConvertMatrix = XMLoadFloat4x4(&BoneMatrix);
     _matrix WorldMatrix = m_pOwnerTransform->Get_WorldMatrix();
 
@@ -20,7 +21,6 @@ _float3 CBody_Yetuga::Get_ThrowPoint()
 
     return m_vThrowPoint;
 }
-
 
 CBody_Yetuga::CBody_Yetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CPartObject{pDevice,pContext}
@@ -56,6 +56,8 @@ HRESULT CBody_Yetuga::Initialize_Clone(void* pArg)
         return E_FAIL;*/
 
     m_pTransformCom->Scale(_float3(1.5f,1.5f,1.5f));
+
+    
 
     return S_OK;
 }

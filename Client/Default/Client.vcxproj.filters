@@ -412,22 +412,28 @@
     <Filter Include="92.AI\State\Yetuga\08.JumpAttack">
       <UniqueIdentifier>{5f1e106b-d61e-44e1-84f1-b58b2c869d46}</UniqueIdentifier>
     </Filter>
-    <Filter Include="92.AI\State\Yetuga\09. Amageddon">
+    <Filter Include="92.AI\State\Yetuga\09. Grab">
+      <UniqueIdentifier>{de1349a8-5345-476c-8d18-f3c58e01631e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\10. Rush">
+      <UniqueIdentifier>{67393b4c-c99a-4929-a6c4-02a1ff5b22df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\11. Amageddon">
       <UniqueIdentifier>{6bf50b95-38c3-4fe2-a1d9-b502e4ab0fb8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="92.AI\State\Yetuga\10. IceBreath">
+    <Filter Include="92.AI\State\Yetuga\12. IceBreath">
       <UniqueIdentifier>{5893559b-ea54-4504-af39-8097d6190c68}</UniqueIdentifier>
     </Filter>
-    <Filter Include="92.AI\State\Yetuga\11. Hit">
+    <Filter Include="92.AI\State\Yetuga\13. Hit">
       <UniqueIdentifier>{da1ea781-147f-4124-9510-f2c5c6d3c222}</UniqueIdentifier>
     </Filter>
-    <Filter Include="92.AI\State\Yetuga\12.Dodge">
+    <Filter Include="92.AI\State\Yetuga\14.Dodge">
       <UniqueIdentifier>{20baa023-33d1-42a9-b275-4cf58a713d04}</UniqueIdentifier>
     </Filter>
-    <Filter Include="92.AI\State\Yetuga\13.Groggy">
+    <Filter Include="92.AI\State\Yetuga\15.Groggy">
       <UniqueIdentifier>{f42c73b1-3285-400d-8f2c-76d830865620}</UniqueIdentifier>
     </Filter>
-    <Filter Include="92.AI\State\Yetuga\14.Dead">
+    <Filter Include="92.AI\State\Yetuga\16.Dead">
       <UniqueIdentifier>{4cf7082c-0498-48f9-9990-97868ab4536a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -796,13 +802,13 @@
       <Filter>02.GameObject\UI\Announce</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_Hit_Yetuga.h">
-      <Filter>92.AI\State\Yetuga\11. Hit</Filter>
+      <Filter>92.AI\State\Yetuga\13. Hit</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_IceBreath_Yetuga.h">
-      <Filter>92.AI\State\Yetuga\10. IceBreath</Filter>
+      <Filter>92.AI\State\Yetuga\12. IceBreath</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_Amageddon_Yetuga.h">
-      <Filter>92.AI\State\Yetuga\09. Amageddon</Filter>
+      <Filter>92.AI\State\Yetuga\11. Amageddon</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_Smash_Yetuga.h">
       <Filter>92.AI\State\Yetuga\07.Smash</Filter>
@@ -811,7 +817,10 @@
       <Filter>92.AI\State\Yetuga\08.JumpAttack</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_Dodge_Yetuga.h">
-      <Filter>92.AI\State\Yetuga\12.Dodge</Filter>
+      <Filter>92.AI\State\Yetuga\14.Dodge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Rush_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\10. Rush</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1165,13 +1174,13 @@
       <Filter>02.GameObject\UI\Announce</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_Hit_Yetuga.cpp">
-      <Filter>92.AI\State\Yetuga\11. Hit</Filter>
+      <Filter>92.AI\State\Yetuga\13. Hit</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_IceBreath_Yetuga.cpp">
-      <Filter>92.AI\State\Yetuga\10. IceBreath</Filter>
+      <Filter>92.AI\State\Yetuga\12. IceBreath</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_Amageddon_Yetuga.cpp">
-      <Filter>92.AI\State\Yetuga\09. Amageddon</Filter>
+      <Filter>92.AI\State\Yetuga\11. Amageddon</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_Smash_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\07.Smash</Filter>
@@ -1180,7 +1189,10 @@
       <Filter>92.AI\State\Yetuga\08.JumpAttack</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_Dodge_Yetuga.cpp">
-      <Filter>92.AI\State\Yetuga\12.Dodge</Filter>
+      <Filter>92.AI\State\Yetuga\14.Dodge</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Rush_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\10. Rush</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
