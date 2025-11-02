@@ -75,6 +75,7 @@ private:
 
 	_int								m_iSeleteTap = {};
 	_int								m_iTapGroupIndex = {};
+	_int								m_iSeleteSlotIndex = {};
 
 	string								m_strReturnName = {};
 	_bool								m_bIsEquip = {};
@@ -92,6 +93,7 @@ private:
 	void								EquipSlot_Setting(class CEquip_Slot* pSlot, _int iIndex);
 
 	void								Inven_Key_Input();
+	void								Selete_Slot();
 public:
 	static CUI_Inven*					Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
 	virtual CGameObject*				Clone(void* pArg) override;

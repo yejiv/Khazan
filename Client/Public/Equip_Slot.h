@@ -39,6 +39,7 @@ private:
 	void								Update_State(_uint iGrade = 0);
 
 	void								Equip_Item();
+	void								Render_ItemInfo();
 public:
 	static CEquip_Slot* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
 	virtual CGameObject* Clone(void* pArg) override;
