@@ -57,7 +57,7 @@ void CInven_Tap::Update(_float fTimeDelta)
 
 	if (m_iState == ENUM_CLASS(UISTATE::DISABLE))
 	{
-		if (ButtonClick(g_hWnd, false, true))
+		if (ButtonClick(g_hWnd, false, true, INPUT_TYPE::UI))
 		{
 			CUI_Inven::INVENBUBBLE_DESC Desc = {};
 			Desc.szName = m_szName;

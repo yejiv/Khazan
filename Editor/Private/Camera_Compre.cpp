@@ -49,7 +49,7 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
         else if (m_iCameraType == ENUM_CLASS(CAMERATYPE::SPRING))
             Update_Spring(fTimeDelta);
     }
-    __super::Update_PipeLines();
+    __super::Update_PipeLines(fTimeDelta);
 }
 
 void CCamera_Compre::Update(_float fTimeDelta)

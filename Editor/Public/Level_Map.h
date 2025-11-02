@@ -48,6 +48,7 @@ private:
 	HRESULT Ready_Layer_Camera(const _wstring& strLayerTag);
 	HRESULT Ready_Layer_Terrain(const _wstring& strLayerTag);
 	HRESULT Ready_Layer_Preview(const _wstring& strLayerTag);
+	HRESULT Ready_Layer_SkySphere(const _wstring& strLayerTag);
 
 private:
 	// 맵 오브젝트 배치하면서 vector에 개별로 push_back 한거 nullptr 시 정리용
@@ -194,6 +195,8 @@ private:
 	_bool m_isLoadObjectWindow = { false };					// 맵 데이터 로드 윈도우
 	_bool m_isLoaded = { false };							// 맵 데이터 로드됐는지 여부
 
+	_bool m_isSkySphereWindow = { false };
+
 #pragma endregion
 
 #pragma region ImGui > MainWindow 관련 변수
@@ -227,6 +230,14 @@ private:
 
 #pragma endregion
 
+#pragma region SKY SPHERE 용
+
+	SKY_DESC m_FixSkyDesc = {};
+
+	class CSkySphere* m_pSkySphere = { nullptr };
+
+#pragma endregion
+
 #pragma endregion
 
 private:
@@ -251,6 +262,8 @@ private:
 	HRESULT Ready_Light_Window();
 	// MapEditor Object Save, Load 윈도우
 	HRESULT Ready_Object_SaveLoad_Window();
+	// MapEditor SkySphere 수정 윈도우
+	HRESULT Ready_SkySphere_Window();
 
 private:
 	// 폴더에 있는 .fbx 파일들 전부 순회하면서 지정한 경로 ( Bin/Data/Map/ ) 에 모델폴더/모델 생성 해주는 함수

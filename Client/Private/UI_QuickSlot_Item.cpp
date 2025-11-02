@@ -99,7 +99,7 @@ HRESULT CUI_QuickSlot_Item::Ready_Children()
     
     CUI_Atlas_Icon::UIATLASICON_DESC AtlasDesc;
 
-    AtlasDesc.fDepth = m_fDepth;
+    AtlasDesc.fDepth = 7;
     AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
     AtlasDesc.szName = "Item_Icon";
     AtlasDesc.vLocalPos = _float2{ 0.f, 0.f };
@@ -121,7 +121,7 @@ HRESULT CUI_QuickSlot_Item::Ready_Children()
     Safe_AddRef(m_pIcon);
 
     CUI_Atlas_Icon::UIATLASICON_DESC Desc;
-    Desc.fDepth = m_fDepth;
+    Desc.fDepth = 6;
     Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
     Desc.szName = "Quick_Slot_Item_Disable";
     Desc.vLocalPos = _float2{ 0.f, 0.f };
@@ -141,7 +141,7 @@ HRESULT CUI_QuickSlot_Item::Ready_Children()
     Safe_AddRef(m_pDisableFX);
 
     CUIObject::UIOBJECT_DESC TextDesc = {};
-    TextDesc.fDepth = m_fDepth - 0.5f;
+    TextDesc.fDepth = 6.9f;
     TextDesc.iUIType = ENUM_CLASS(UITYPE::TEXT);
     TextDesc.szName = "Item_Count";
     TextDesc.vLocalPos = _float2{ 0.f, 0.f };

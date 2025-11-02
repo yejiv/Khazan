@@ -31,7 +31,7 @@ HRESULT CCursor::Initialize_Clone(void* pArg)
 	Desc.vLocalPos = { 0.f, 0.f };
 	Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
 	Desc.szName = "Cursor_FX";
-	Desc.fDepth = 0.5f;
+	Desc.fDepth = 0.7f;
 
 	if (FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Cursor_FX"),
 		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Cursor_FX"), &Desc, 20)))
