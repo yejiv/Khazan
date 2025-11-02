@@ -8,13 +8,12 @@ _float3 CBody_Yetuga::Get_ThrowPoint()
     _matrix ConvertMatrix = XMLoadFloat4x4(&BoneMatrix);
     _matrix WorldMatrix = m_pOwnerTransform->Get_WorldMatrix();
 
-    _matrix MulMatrix = ConvertMatrix * WorldMatrix;
+    _matrix MulMatrix = ConvertMatrix * WorldMatrix ;
 
     _float4x4 ThrowMatrix{};
 
     XMStoreFloat4x4(&ThrowMatrix,MulMatrix);
 
-  
     m_vThrowPoint.x = ThrowMatrix.m[3][0];
     m_vThrowPoint.y = ThrowMatrix.m[3][1];
     m_vThrowPoint.z = ThrowMatrix.m[3][2];

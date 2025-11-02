@@ -61,6 +61,7 @@ void CInterruptibleSelector_Node::Terminate(BTNODESTATE eState, CBlackBoard* BB)
 		m_Children[m_iCurrentIndex]->Terminate(eState, BB);
 
 	m_iCurrentIndex = 0;
+
 }
 
 void CInterruptibleSelector_Node::Abort()
@@ -69,6 +70,7 @@ void CInterruptibleSelector_Node::Abort()
 		m_Children[m_iCurrentIndex]->Abort();
 
 	m_iCurrentIndex = 0;
+
 }
 
 CInterruptibleSelector_Node* CInterruptibleSelector_Node::Create(INTERRUPTCONDITION Func)

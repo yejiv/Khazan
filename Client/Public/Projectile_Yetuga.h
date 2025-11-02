@@ -21,7 +21,6 @@ public:
 public:
 	virtual void				Reset() override;
 
-
 private:
 	HRESULT						Ready_Components();
 	HRESULT						Bind_ShaderResources();
