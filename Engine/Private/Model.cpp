@@ -118,7 +118,9 @@ HRESULT CModel::Initialize_Prototype(const _char* pModelFilePath)
         }
         else {
             m_iRootBoneIndex = static_cast<_uint>(distance(m_Bones.begin(), it));
+#ifdef _DEBUG
             isFindRoot = true;
+#endif
         }
     }
 

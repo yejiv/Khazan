@@ -164,6 +164,72 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vecto
 
 }
 
+void CCharacterVirtual::Sync_Update(_matrix WorldMatirx)
+{
+	_vector vScale, vRotation, vTranslation;
+
+	XMMatrixDecompose(&vScale, &vRotation, &vTranslation, WorldMatirx);
+
+	Set_PosRot(vTranslation, vRotation);
+}
+
+void CCharacterVirtual::Update(_float fTimeDelta, _vector& outQuatRotation, _vector& outPosition, _vector vGravity)
+{
+	m_fAcc += fTimeDelta;
+
+	while (m_fAcc >= fFixedDt)
+	{
+		if (!m_pCharVir) return;
+
+		m_vGravity = LoadVec3(vGravity);
+		JPH::Vec3 vHorizontal = JPH::Vec3::sZero();
+
+		const bool onGround = (m_pCharVir->GetGroundState() == JPH::CharacterVirtual::EGroundState::OnGround);
+		if (onGround)
+		{
+			if (m_vVelocity.GetY() < 0.0f)
+				m_vVelocity.SetY(0.0f);
+
+			vHorizontal += m_pCharVir->GetGroundVelocity();
+		}
+		else
+		{
+			m_vVelocity += m_vGravity * fFixedDt;
+		}
+
+		const JPH::Vec3 desired(vHorizontal.GetX(), m_vVelocity.GetY(), vHorizontal.GetZ());
+		m_pCharVir->SetLinearVelocity(desired);
+
+		//m_pGameInstance->CharVir_Update(fTimeDelta, m_pCharVir, m_vGravity, m_iNumObjectLayer, m_pBodyFilter, m_pShapeFilter);
+		m_pGameInstance->CharVir_ExtendedUpdate(fFixedDt, m_pCharVir, m_vGravity, m_iNumObjectLayer, m_pBodyFilter, m_pShapeFilter, m_tEXUpdateSetting);
+
+
+		m_tPrevPose = m_tCurrPose;
+		m_tCurrPose.vPos = m_pCharVir->GetPosition();
+		m_tCurrPose.vRot = m_pCharVir->GetRotation();
+		m_tCurrPose.vLinvel = m_pCharVir->GetLinearVelocity();
+
+		if (m_isFirstSync)
+		{
+			m_tPrevPose = m_tCurrPose;
+			m_isFirstSync = false;
+		}
+		m_fAcc -= fFixedDt;
+	}
+
+	const _float fAlpha = (fFixedDt > 0.f) ? (m_fAcc / fFixedDt) : 1.f;
+
+	_float fSmoothAlpha = Smoothstep(fAlpha);
+
+	JPH::RVec3 ipos = LerpRVec3(m_tPrevPose.vPos, m_tCurrPose.vPos, fAlpha);
+	JPH::Quat  irot = SlerpQuat(m_tPrevPose.vRot, m_tCurrPose.vRot, fAlpha);
+
+	_vector vPos = XMVectorSet((float)ipos.GetX(), (float)ipos.GetY(), (float)ipos.GetZ(), 1.f);
+	_vector vRot = XMVectorSet(irot.GetX(), irot.GetY(), irot.GetZ(), irot.GetW());
+	outPosition = vPos;
+	outPosition = vRot;
+}
+
 void CCharacterVirtual::Set_PosRot(_vector vPos, _vector vRot)
 {
 	m_pCharVir->SetPosition(LoadVec3(vPos));

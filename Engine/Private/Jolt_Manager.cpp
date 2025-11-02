@@ -327,7 +327,9 @@ void CJolt_Manager::Free()
     Safe_Delete(m_pDebugRenderer);
 #endif
     m_CharacterVirtuals.clear();
+#ifdef _DEBUG
     Safe_Delete(m_DrawFilter);
+#endif
     Safe_Delete(m_pBPLayerIF);
 
     Safe_Delete(m_pObjectLayerPairFilter);
