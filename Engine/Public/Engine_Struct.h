@@ -233,6 +233,13 @@ namespace Engine
 		std::function<float(float)> Ease;
 	};
 
+	typedef struct tagTrailPointDesc
+	{
+		XMFLOAT4 vTop;
+		XMFLOAT4 vBottom;
+		float	fLifeTime;
+	}TRAIL_POINT;
+
 	typedef struct tagPointInstanceParams
 	{
 		XMFLOAT4 vInitTranslation; 
