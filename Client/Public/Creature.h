@@ -32,7 +32,7 @@ public:
 	_float						Get_CurrentStamina() const{ return m_fCurrentStamina; }
 	_float						Get_MaxStamina() const { return m_fMaxStamina; }
 	_float						Get_MoveSpeed() const{ return m_fMoveSpeed; }
-
+	
 	// Set함수는 다르게 작동할수도 있을 것 같아서  일단 Get만 만들었습니다.
 
 public:

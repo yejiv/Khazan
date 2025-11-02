@@ -161,10 +161,13 @@
   <ItemGroup>
     <ClInclude Include="..\Public\AI_Controller_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Amageddon_Yetuga.h" />
+    <ClInclude Include="..\Public\AS_Dodge_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Hit_Yetuga.h" />
     <ClInclude Include="..\Public\AS_IceBreath_Yetuga.h" />
+    <ClInclude Include="..\Public\AS_JumpAttack_Yetuga.h" />
     <ClInclude Include="..\Public\AS_LieDown_Yetuga.h" />
     <ClInclude Include="..\Public\AS_RightHand_5Hit_Yetuga.h" />
+    <ClInclude Include="..\Public\AS_Smash_Yetuga.h" />
     <ClInclude Include="..\Public\AS_ThrowBall_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Turn_Yetuga.h" />
     <ClInclude Include="..\public\Atlas_RenderGroup.h" />
@@ -290,10 +293,13 @@
   <ItemGroup>
     <ClCompile Include="..\Private\AI_Controller_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Amageddon_Yetuga.cpp" />
+    <ClCompile Include="..\Private\AS_Dodge_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Hit_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_IceBreath_Yetuga.cpp" />
+    <ClCompile Include="..\Private\AS_JumpAttack_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_LieDown_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_RightHand_5Hit_Yetuga.cpp" />
+    <ClCompile Include="..\Private\AS_Smash_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_ThrowBall_Yetuga.cpp" />
     <ClCompile Include="..\private\AS_Turn_Yetuga.cpp" />
     <ClCompile Include="..\private\Atlas_RenderGroup.cpp" />

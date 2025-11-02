@@ -406,17 +406,29 @@
     <Filter Include="92.AI\State\Yetuga\07. Hit">
       <UniqueIdentifier>{da1ea781-147f-4124-9510-f2c5c6d3c222}</UniqueIdentifier>
     </Filter>
-    <Filter Include="92.AI\State\Yetuga\08.Groggy">
-      <UniqueIdentifier>{f42c73b1-3285-400d-8f2c-76d830865620}</UniqueIdentifier>
+    <Filter Include="92.AI\State\Yetuga\07.Smash">
+      <UniqueIdentifier>{0e31b1a0-0e3b-4f09-b2e2-b8ad28b1d1b1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="92.AI\State\Yetuga\09.Dead">
-      <UniqueIdentifier>{4cf7082c-0498-48f9-9990-97868ab4536a}</UniqueIdentifier>
+    <Filter Include="92.AI\State\Yetuga\08.JumpAttack">
+      <UniqueIdentifier>{5f1e106b-d61e-44e1-84f1-b58b2c869d46}</UniqueIdentifier>
     </Filter>
-    <Filter Include="92.AI\State\Yetuga\08. Amageddon">
+    <Filter Include="92.AI\State\Yetuga\09. Amageddon">
       <UniqueIdentifier>{6bf50b95-38c3-4fe2-a1d9-b502e4ab0fb8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="92.AI\State\Yetuga\07. IceBreath">
+    <Filter Include="92.AI\State\Yetuga\10. IceBreath">
       <UniqueIdentifier>{5893559b-ea54-4504-af39-8097d6190c68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\11. Hit">
+      <UniqueIdentifier>{da1ea781-147f-4124-9510-f2c5c6d3c222}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\12.Dodge">
+      <UniqueIdentifier>{20baa023-33d1-42a9-b275-4cf58a713d04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\13.Groggy">
+      <UniqueIdentifier>{f42c73b1-3285-400d-8f2c-76d830865620}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\14.Dead">
+      <UniqueIdentifier>{4cf7082c-0498-48f9-9990-97868ab4536a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -784,13 +796,22 @@
       <Filter>02.GameObject\UI\Announce</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_Hit_Yetuga.h">
-      <Filter>92.AI\State\Yetuga\07. Hit</Filter>
+      <Filter>92.AI\State\Yetuga\11. Hit</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_IceBreath_Yetuga.h">
-      <Filter>92.AI\State\Yetuga\07. IceBreath</Filter>
+      <Filter>92.AI\State\Yetuga\10. IceBreath</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_Amageddon_Yetuga.h">
-      <Filter>92.AI\State\Yetuga\08. Amageddon</Filter>
+      <Filter>92.AI\State\Yetuga\09. Amageddon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Smash_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\07.Smash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_JumpAttack_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\08.JumpAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Dodge_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\12.Dodge</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1144,13 +1165,22 @@
       <Filter>02.GameObject\UI\Announce</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_Hit_Yetuga.cpp">
-      <Filter>92.AI\State\Yetuga\07. Hit</Filter>
+      <Filter>92.AI\State\Yetuga\11. Hit</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_IceBreath_Yetuga.cpp">
-      <Filter>92.AI\State\Yetuga\07. IceBreath</Filter>
+      <Filter>92.AI\State\Yetuga\10. IceBreath</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_Amageddon_Yetuga.cpp">
-      <Filter>92.AI\State\Yetuga\08. Amageddon</Filter>
+      <Filter>92.AI\State\Yetuga\09. Amageddon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Smash_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\07.Smash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_JumpAttack_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\08.JumpAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Dodge_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\12.Dodge</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

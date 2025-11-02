@@ -50,7 +50,7 @@ public:
 	_float						Get_CoolTimeAcc() const { return m_fCoolTimeAcc; }
 	const string&				Get_Name() const { return m_strName; }
 public:
-	virtual void				Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject = nullptr) override;
+	virtual void				Take_Damage(_float fDamage, HITREACTION eHitreaction, _float fValidTime ,CGameObject* pGameObject = nullptr);
 
 public:
 	virtual HRESULT				Initialize_Prototype() override;

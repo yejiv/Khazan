@@ -55,6 +55,8 @@ HRESULT CBody_Yetuga::Initialize_Clone(void* pArg)
    /* if (FAILED(Ready_Colliders()))
         return E_FAIL;*/
 
+    m_pTransformCom->Scale(_float3(1.5f,1.5f,1.5f));
+
     return S_OK;
 }
 

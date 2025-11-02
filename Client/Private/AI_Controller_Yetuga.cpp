@@ -32,7 +32,7 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 	{
 		CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
 		CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(pYetuga->Get_Name(), "Target");
-		pYetuga->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK, pTarget);
+		pYetuga->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK, 3.f ,pTarget);
 	}
 
 	m_pPerception->Update(pOwner, fTimeDelta);
@@ -57,7 +57,7 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 
 	m_pBT->Update();
 
-	m_pFSM->Update(pOwner,fTimeDelta);
+	m_pFSM->Update(pOwner,fTimeDelta * 1.2f);
 
 }
 
@@ -105,7 +105,7 @@ HRESULT CAI_Controller_Yetuga::Ready_BlackBoard(CGameObject* pOwner)
 	if (nullptr == m_pBB)
 		return E_FAIL;
 
-	m_pBB->Set_Value(m_strMonstertag, "Owner", pOwner);
+	//m_pBB->Set_Value(m_strMonstertag, "Owner", pOwner);
 
 	return S_OK;
 }
@@ -153,6 +153,23 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 					return false;
 			};
 	}
+
+	else if ("Dodge" == name)
+	{
+		return [pYetuga](CBlackBoard* BB)->_bool
+			{
+				//DamageACC
+				_float fDamageAcc = BB->Get_Value<_float>(pYetuga->Get_Name(), "DamageACC");
+				_float fMaxHp = pYetuga->Get_MaxHP();
+				_float fRatio = fDamageAcc / fMaxHp;
+
+				if (fRatio >= 0.15f && !BB->Get_Value<_bool>(pYetuga->Get_Name(),"isDodge"))
+					return true;
+				else
+					return false;
+			};
+	}
+
 	else if ("Hit" == name)
 	{
 		return [pYetuga](CBlackBoard* BB) -> _bool
@@ -177,7 +194,7 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 
 #pragma region ATTACK SELECTOR
 
-
+#pragma region ETC
 	//if ("Amageddon" == name)
 	//{
 	//	return [pYetuga](CBlackBoard* BB)->_bool
@@ -216,17 +233,51 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 	//		};
 	//}
 
+#pragma endregion
 
+	if ("JumpAttack" == name)
+	{
+		return [pYetuga](CBlackBoard* BB)->_bool
+			{
+				_float fDist = BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
+				_float fAttackRanage = BB->Get_Value<_float>(pYetuga->Get_Name(), "JumpAttackRange");
 
-	if ("ThrowBall" == name)
+				if (fDist != 0 && fDist < fAttackRanage && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "IsJumpAttack"))
+				{
+					return true;
+				}
+				else
+					return false;
+			};
+	}
+
+	else if ("NormalSmash" == name)
+	{
+		return [pYetuga](CBlackBoard* BB)->_bool
+			{
+				_float fDist = BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
+				_float fAttackRanage = BB->Get_Value<_float>(pYetuga->Get_Name(), "AttackRange");
+
+				if (fDist != 0 && fDist < fAttackRanage && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "IsNormalSmash"))
+				{
+					return true;
+				}
+				else
+					return false;
+			};
+	}
+
+	else if ("ThrowBall" == name)
 	{
 		return [pYetuga](CBlackBoard* BB)->_bool
 			{
 
 				_float fDist = BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
 				_float fAttackRanage = BB->Get_Value<_float>(pYetuga->Get_Name(), "ThrowBallRange");
-
-				if (fDist != 0 && fDist <= fAttackRanage && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "IsThrowBall"))
+				_float fChasRange = BB->Get_Value<_float>(pYetuga->Get_Name(), "ChaseRange");
+				if (fDist != 0 && 
+					fDist <= fChasRange && fDist > fAttackRanage &&
+					!BB->Get_Value<_bool>(pYetuga->Get_Name(), "IsThrowBall"))
 				{
 					//cout << "IsThrowBall Condition TRUE!!!!!!!!!!!!" << endl;
 					BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", true);
@@ -237,7 +288,7 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 			};
 	}
 
-	if ("LieDown" == name)
+	else if ("LieDown" == name)
 	{
 		return [pYetuga](CBlackBoard* BB)->_bool
 			{
@@ -262,7 +313,7 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 			};
 	}
 
-	if ("RightHand_2Hit" == name)
+	else if ("RightHand_2Hit" == name)
 	{
 		return [pYetuga](CBlackBoard* BB)->_bool
 			{			
@@ -279,7 +330,7 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 			};
 	}
 
-	if ("RightHand_5Hit" == name)
+	else if ("RightHand_5Hit" == name)
 	{
 		return [pYetuga](CBlackBoard* BB)->_bool
 			{
@@ -336,13 +387,14 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 				_float fRunRange = BB->Get_Value<_float>(pYetuga->Get_Name(), "RunRange");
 
 				CYetuga::MONSTER_INFO Info{};
-
+				cout << "fDist" << fDist << endl;
+				cout << "fChaseRange" << fChaseRange << endl;
+				cout << "RunRagne" << fRunRange << endl;
+				cout << "fSprintRange" << fSprintRange << endl;
 				Info.Clear_State();
 
 				if (fDist != 0 && fDist <= fChaseRange)
 				{
-					cout << "MoveCondition" << endl;
-
 					if (fDist <= fRunRange)
 						Info.Add_State(Info.WALK);
 					else if (fDist > fRunRange && fDist <= fSprintRange)
@@ -414,6 +466,28 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 
 			};
 	}
+
+	else if ("Dodge" == name)
+	{
+		return [pYetuga](CBlackBoard* BB) -> BTNODESTATE
+			{
+
+				// 애니 종료 플래그가 true면 SUCCESS
+				if (true == BB->Get_Value<_bool>(pYetuga->Get_Name(), "isDodgeFinished"))
+				{
+					return BTNODESTATE::SUCCESS;
+				}
+				
+				BB->Set_Value(pYetuga->Get_Name(), "isDodge", true);
+				BB->Set_Value(pYetuga->Get_Name(), "isDodgeFinished", false);
+
+				pYetuga->Get_Controller()->Get_State_Machine()->Change_State(
+					ENUM_CLASS(YETUGA_STATE::DODGE), pYetuga);
+
+				return BTNODESTATE::RUNNING;
+			};
+	}
+
 	else if ("Hit" == name)
 	{
 		return [pYetuga](CBlackBoard* BB) -> BTNODESTATE
@@ -438,6 +512,8 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 #pragma endregion
 
 #pragma region ATTACK SELECTOR
+
+#pragma region ETC
 
 	/*if ("Amageddon" == name)
 	{
@@ -483,9 +559,73 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 			};
 	}*/
 
+#pragma endregion
+
+	if ("JumpAttack" == name)
+	{
+		return [pYetuga](CBlackBoard* BB) -> BTNODESTATE
+			{
+				if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isJumpAttackFinished"))
+				{
+					return BTNODESTATE::SUCCESS;
+				}
+
+				BB->Set_Value(pYetuga->Get_Name(), "isJumpAttackFinished", false);
+				BB->Set_Value(pYetuga->Get_Name(), "isJumpAttack", true);
+
+				pYetuga->Get_Controller()->Get_State_Machine()->
+					Change_State(ENUM_CLASS(YETUGA_STATE::JUMPATTACK), pYetuga);
+
+				return BTNODESTATE::RUNNING;
+			};
+	}
+
+	else if ("NormalSmash" == name)
+	{
+		return [pYetuga](CBlackBoard* BB) -> BTNODESTATE
+			{
+				if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isNormalSmashFinished"))
+				{
+					return BTNODESTATE::SUCCESS;
+				}
+
+				BB->Set_Value(pYetuga->Get_Name(), "isNormalSmashFinished", false);
+				BB->Set_Value(pYetuga->Get_Name(), "isNormalSmash", true);
+
+				pYetuga->Get_Controller()->Get_State_Machine()->
+					Change_State(ENUM_CLASS(YETUGA_STATE::SMASH), pYetuga);
+
+				return BTNODESTATE::RUNNING;
+			};
+	}
 
 
-	if ("ThrowBall" == name)
+	else if ("RightHand_2Hit" == name)
+	{
+		return [pYetuga](CBlackBoard* BB)-> BTNODESTATE
+			{
+
+				if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isAttackFinished"))
+				{
+					return BTNODESTATE::SUCCESS;
+				}
+				//cout << "RightHand_2Hit Action Running" << endl;
+
+				BB->Set_Value(pYetuga->Get_Name(), "isAttack", true);
+				BB->Set_Value(pYetuga->Get_Name(), "isAttackFinished", false);
+
+
+				pYetuga->Get_Controller()->Get_State_Machine()->
+					Change_State(ENUM_CLASS(YETUGA_STATE::ATTACK), pYetuga);
+				return BTNODESTATE::RUNNING;
+
+
+			};
+	}
+
+
+
+	else if ("ThrowBall" == name)
 	{
 		return [pYetuga](CBlackBoard* BB)-> BTNODESTATE
 			{
@@ -508,7 +648,7 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 	}
 
 
-	if ("LieDown" == name)
+	else if ("LieDown" == name)
 	{
 		return [pYetuga](CBlackBoard* BB)-> BTNODESTATE
 			{
@@ -533,7 +673,7 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 
 	
 
-	if ("RightHand_2Hit" == name)
+	else if ("RightHand_2Hit" == name)
 	{
 		return [pYetuga](CBlackBoard* BB)-> BTNODESTATE
 			{
@@ -557,7 +697,7 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 			};
 	}
 
-	if ("RightHand_5Hit" == name)
+	else if ("RightHand_5Hit" == name)
 	{
 		return [pYetuga](CBlackBoard* BB)-> BTNODESTATE
 			{
@@ -702,6 +842,25 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 				}
 			};
 	}
+	if ("Dodge" == name)
+	{
+		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
+			{
+				if (nullptr == BB)
+					return;
+
+				if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+				{
+
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isDodge", false);
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isDodgeFinished", false);
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "DamageInterrupt", false);
+					pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
+				}
+			};
+	}
+
+
 
 	if ("Hit" == name)
 	{
@@ -724,6 +883,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 
 #pragma region ATTACK SELECTOR
 
+#pragma region ETC
 
 	/*if ("Amageddon" == name)
 	{
@@ -761,9 +921,45 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 	}*/
 
 
+#pragma endregion
+
+	if ("JumpAttack" == name)
+	{
+		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
+			{
+				if (nullptr == BB)
+					return;
+
+				if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+				{
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isJumpAttack", false);
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isJumpAttackFinished", false);
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", false);
+					pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
+				}
+			};
+	}
+
+	else if ("NormalSmash" == name)
+	{
+		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
+			{
+				if (nullptr == BB)
+					return;
+
+				if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+				{
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isNormalSmash", false);
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isNormalSmashFinished", false);
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", false);
+					pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
+				}
+			};
+	}
 
 
-	if ("ThrowBall" == name)
+
+	else if ("ThrowBall" == name)
 	{
 		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
 			{
@@ -784,7 +980,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 
 
 
-	if ("ThrowBall" == name)
+	else if ("ThrowBall" == name)
 	{
 		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
 			{
@@ -805,7 +1001,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 
 
 
-	if ("LieDown" == name)
+	else if ("LieDown" == name)
 	{
 		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
 			{
@@ -823,7 +1019,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 			};
 	}
 
-	if ("Turn" == name)
+	else if ("Turn" == name)
 	{
 		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
 			{
@@ -839,7 +1035,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 			};
 	}
 
-	if ("RightHand_2Hit" == name)
+	else if ("RightHand_2Hit" == name)
 	{
 		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
 			{
@@ -857,7 +1053,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 			};
 	}
 
-	if ("RightHand_5Hit" == name)
+	else if ("RightHand_5Hit" == name)
 	{
 		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
 			{
@@ -877,7 +1073,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 
 #pragma region NONATTACK SELECTOR
 
-	if ("MoveAction" == name)
+	else if ("MoveAction" == name)
 	{
 		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
 			{
@@ -959,8 +1155,16 @@ PERCEPTIONCALLBACK CAI_Controller_Yetuga::GetCallBackPerception(CGameObject* pOw
 			if (Stim.eType == SENSETYPE::DAMAGE)
 			{
 				
-				m_pBB->Set_Value<_uint>("Yetuga", "DamageType", Stim.iDamageType);
-				m_pBB->Set_Value("Yetuga", "DamageInterrupt", true);
+				if (Stim.bSensed)
+				{
+					m_pBB->Set_Value<_uint>("Yetuga", "DamageType", Stim.iDamageType);
+					m_pBB->Set_Value("Yetuga", "DamageInterrupt", true);
+					m_pBB->Set_Value("Yetuga", "DamageACC", m_pPerception->Get_DamageAcc());
+				}
+				else
+				{
+					m_pBB->Set_Value("Yetuga", "DamageACC", m_pPerception->Get_DamageAcc());
+				}
 			}
 		};
 	};
