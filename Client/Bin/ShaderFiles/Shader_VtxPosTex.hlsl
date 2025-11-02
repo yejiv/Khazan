@@ -148,9 +148,6 @@ PS_OUT PS_MAIN_BLEND(PS_IN In)
 
 PS_OUT PS_TRAIL(PS_IN In)
 {
-    //Texcoord에 따라서 알파값 달라지도록 처리하기
-    //DepthDesc에 뭐 기록해뒀는지 다시 확인
-
     PS_OUT Out = (PS_OUT) 0;
 
     Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);

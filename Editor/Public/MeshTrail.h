@@ -27,6 +27,7 @@ private:
 	virtual ~CMeshTrail() = default;
 
 public:
+	virtual HRESULT			Initialize_Prototype() override;
 	virtual HRESULT			Initialize_Clone(void* pArg) override;
 	virtual void			Priority_Update(_float fTimeDelta) override;
 	virtual void			Update(_float fTimeDelta) override;
@@ -55,7 +56,7 @@ private :
 	deque<CVIBuffer_QuadTrail::QUAD_TRAIL_POINT>		m_TrailPoints;
 
 public:
-	static CMeshTrail*		Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, void* pArg);
+	static CMeshTrail*		Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject*	Clone(void* pArg);
 	virtual void			Free() override;
 

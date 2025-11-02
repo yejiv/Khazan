@@ -19,6 +19,7 @@ private:
 	virtual ~CScreenTrail() = default;
 
 public:
+	virtual HRESULT			Initialize_Prototype() override;
 	virtual HRESULT			Initialize_Clone(void* pArg) override;
 	virtual void			Late_Update(_float fTimeDelta) override;
 	virtual HRESULT			Render() override;
@@ -30,9 +31,10 @@ private:
 
 private :
 	_float2					m_fViewportSize;
+	_float					m_ZValue { 1.f };
 
 public:
-	static CScreenTrail*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, void* pArg);
+	static CScreenTrail*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject*	Clone(void* pArg);
 	virtual void			Free() override;
 

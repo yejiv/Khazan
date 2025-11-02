@@ -20,18 +20,6 @@ HRESULT CVIBuffer_LineTrail::Initialize_Prototype()
 	m_eIndexFormat = DXGI_FORMAT_R16_UINT;
 	m_ePrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
-	D3D11_BUFFER_DESC		VBDesc{};
-
-	VBDesc.ByteWidth = m_iNumVertices * m_iVertexStride;
-	VBDesc.Usage = D3D11_USAGE_DYNAMIC;
-	VBDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	VBDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	VBDesc.MiscFlags = 0;
-	VBDesc.StructureByteStride = m_iVertexStride;
-
-	if (FAILED(m_pDevice->CreateBuffer(&VBDesc, nullptr, &m_pVB)))
-		return E_FAIL;
-
 	D3D11_BUFFER_DESC		IBDesc{};
 	IBDesc.ByteWidth = m_iNumVertices * m_iIndexStride;
 	IBDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -68,13 +56,20 @@ HRESULT CVIBuffer_LineTrail::Initialize_Prototype()
 
 HRESULT CVIBuffer_LineTrail::Initialize_Clone(void* pArg)
 {
-	m_fOffset = 5.f;
+	D3D11_BUFFER_DESC		VBDesc{};
 
-	if (pArg)
-	{
-		LINE_BUFFER_DESC* dsc = static_cast<LINE_BUFFER_DESC*>(pArg);
-		m_fOffset = dsc->fOffset;
-	}
+	VBDesc.ByteWidth = m_iNumVertices * m_iVertexStride;
+	VBDesc.Usage = D3D11_USAGE_DYNAMIC;
+	VBDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	VBDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	VBDesc.MiscFlags = 0;
+	VBDesc.StructureByteStride = m_iVertexStride;
+
+	if (FAILED(m_pDevice->CreateBuffer(&VBDesc, nullptr, &m_pVB)))
+		return E_FAIL;
+
+	LINE_BUFFER_DESC* dsc = static_cast<LINE_BUFFER_DESC*>(pArg);
+	m_fOffset = dsc->fOffset;
 
 	return S_OK;
 }

@@ -8,13 +8,12 @@ CScreenTrail::CScreenTrail(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceCo
 
 CScreenTrail::CScreenTrail(const CScreenTrail& Prototype)
     : CLineTrail(Prototype)
+    , m_fViewportSize{ Prototype.m_fViewportSize }
 {
 }
 
-HRESULT CScreenTrail::Initialize_Clone(void* pArg)
+HRESULT CScreenTrail::Initialize_Prototype()
 {
-    __super::Initialize_Clone(pArg);
-
     D3D11_VIEWPORT viewport = {};
     UINT numViewports = 1;
     m_pContext->RSGetViewports(&numViewports, &viewport);
@@ -22,6 +21,16 @@ HRESULT CScreenTrail::Initialize_Clone(void* pArg)
     m_fViewportSize.x = viewport.Width;
     m_fViewportSize.y = viewport.Height;
 
+    m_iTextureIdx = 0;
+    m_fLifeTime = 0.4f;
+    m_iDivisionCount = 5;
+
+    return S_OK;
+}
+
+HRESULT CScreenTrail::Initialize_Clone(void* pArg)
+{
+    __super::Initialize_Clone(pArg);
 
     return S_OK;
 }
@@ -73,7 +82,14 @@ HRESULT CScreenTrail::Ready_Component(void* pArg)
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_Slash"),
         TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr)))
         return E_FAIL;
-    
+
+    LINE_TRAIL_DESC dsc{};
+    if (pArg == nullptr)
+    {
+        dsc.fOffset = 8.f;
+        pArg = &dsc;
+    }
+
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_VIBuffer_LineTrail"),
         TEXT("Com_Buffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), pArg)))
         return E_FAIL;
@@ -92,11 +108,11 @@ HRESULT CScreenTrail::Bind_ShaderResources()
     return S_OK;
 }
 
-CScreenTrail* CScreenTrail::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, void* pArg)
+CScreenTrail* CScreenTrail::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     CScreenTrail* pInstance = new CScreenTrail(pDevice, pContext);
 
-    if (FAILED(pInstance->Initialize_Clone(pArg)))
+    if (FAILED(pInstance->Initialize_Prototype()))
     {
         MSG_BOX(TEXT("Failed to Created : CScreenTrail"));
         Safe_Release(pInstance);

@@ -1108,6 +1108,9 @@
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hlsli">
       <Filter>95.ShaderFiles</Filter>
     </None>
+    <None Include="..\Bin\ShaderFiles\Engine_Shader_Function.hlsli">
+      <Filter>95.ShaderFiles</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Cell.hlsl">

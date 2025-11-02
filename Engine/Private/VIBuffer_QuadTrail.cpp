@@ -20,18 +20,6 @@ HRESULT CVIBuffer_QuadTrail::Initialize_Prototype()
 	m_eIndexFormat = DXGI_FORMAT_R16_UINT;
 	m_ePrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
-	D3D11_BUFFER_DESC		VBDesc{};
-
-	VBDesc.ByteWidth = m_iNumVertices * m_iVertexStride;
-	VBDesc.Usage = D3D11_USAGE_DYNAMIC;
-	VBDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	VBDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	VBDesc.MiscFlags = 0;
-	VBDesc.StructureByteStride = m_iVertexStride;
-
-	if (FAILED(m_pDevice->CreateBuffer(&VBDesc, nullptr, &m_pVB)))
-		return E_FAIL;
-
 	D3D11_BUFFER_DESC		IBDesc{};
 	IBDesc.ByteWidth = m_iNumVertices * m_iIndexStride;
 	IBDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -68,6 +56,18 @@ HRESULT CVIBuffer_QuadTrail::Initialize_Prototype()
 
 HRESULT CVIBuffer_QuadTrail::Initialize_Clone(void* pArg)
 {
+	D3D11_BUFFER_DESC		VBDesc{};
+
+	VBDesc.ByteWidth = m_iNumVertices * m_iVertexStride;
+	VBDesc.Usage = D3D11_USAGE_DYNAMIC;
+	VBDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	VBDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	VBDesc.MiscFlags = 0;
+	VBDesc.StructureByteStride = m_iVertexStride;
+
+	if (FAILED(m_pDevice->CreateBuffer(&VBDesc, nullptr, &m_pVB)))
+		return E_FAIL;
+
 	return S_OK;
 }
 

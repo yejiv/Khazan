@@ -13,7 +13,7 @@ NS_BEGIN(Editor)
 
 class CLineTrail : public CGameObject
 {
-protected:
+public:
 	typedef struct tagLineTrailDesc : public CVIBuffer_LineTrail::LINE_BUFFER_DESC
 	{
 		_float	fLifeTime;
@@ -27,6 +27,7 @@ protected:
 	virtual ~CLineTrail() = default;
 
 public:
+	virtual HRESULT			Initialize_Prototype() override;
 	virtual HRESULT			Initialize_Clone(void* pArg) override;
 	virtual void			Priority_Update(_float fTimeDelta) override;
 	virtual void			Update(_float fTimeDelta) override;
@@ -55,7 +56,7 @@ protected:
 	deque<_float4>	m_TrailPoints;
 
 public:
-	static CLineTrail*		Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, void* pArg);
+	static CLineTrail*		Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject*	Clone(void* pArg);
 	virtual void			Free() override;
 

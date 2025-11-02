@@ -8,17 +8,25 @@ CMeshTrail::CMeshTrail(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContex
 
 CMeshTrail::CMeshTrail(const CMeshTrail& Prototype)
     : CGameObject(Prototype)
+    , m_iTextureIdx { Prototype.m_iTextureIdx}
+    , m_fLifeTime{ Prototype.m_fLifeTime }
+    , m_iDivisionCount{ Prototype.m_iDivisionCount }
 {
+}
+
+HRESULT CMeshTrail::Initialize_Prototype()
+{
+    m_iTextureIdx = 0;
+    m_fLifeTime = 0.4f;
+    m_iDivisionCount = 5;
+
+    return S_OK;
 }
 
 HRESULT CMeshTrail::Initialize_Clone(void* pArg)
 {
     if (FAILED(Ready_Component()))
         return E_FAIL;
-
-    m_iTextureIdx = 0;
-    m_fLifeTime = 0.4f;
-    m_iDivisionCount = 5;
 
     if (pArg)
     {
@@ -27,12 +35,11 @@ HRESULT CMeshTrail::Initialize_Clone(void* pArg)
         m_iTextureIdx = dsc->iTextureIdx;
         m_fLifeTime = dsc->fLifeTime;
         m_iDivisionCount = dsc->iDivisionCount;
-    }
-
-    if (m_iDivisionCount < 1)
-    {
-        MSG_BOX(TEXT("Division Count is too low"));
-        return E_FAIL;
+        if (m_iDivisionCount < 1)
+        {
+            MSG_BOX(TEXT("Division Count is too low"));
+            return E_FAIL;
+        }
     }
 
     return S_OK;
@@ -146,9 +153,6 @@ HRESULT CMeshTrail::Ready_Component()
 
 HRESULT CMeshTrail::Bind_ShaderResources()
 {
-    //if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix)))
-    //    return E_FAIL;
-
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
         return E_FAIL;
 
@@ -162,11 +166,11 @@ HRESULT CMeshTrail::Bind_ShaderResources()
     return S_OK;
 }
 
-CMeshTrail* CMeshTrail::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, void* pArg)
+CMeshTrail* CMeshTrail::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     CMeshTrail* pInstance = new CMeshTrail(pDevice, pContext);
 
-    if (FAILED(pInstance->Initialize_Clone(pArg)))
+    if (FAILED(pInstance->Initialize_Prototype()))
     {
         MSG_BOX(TEXT("Failed to Created : CMeshTrail"));
         Safe_Release(pInstance);

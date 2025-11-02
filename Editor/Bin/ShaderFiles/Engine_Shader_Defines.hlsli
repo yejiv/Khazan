@@ -1,3 +1,4 @@
+#include "Engine_Shader_Function.hlsli"
 
 SamplerComparisonState ComparisonSampler
 {

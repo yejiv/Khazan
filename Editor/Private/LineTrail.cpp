@@ -8,17 +8,25 @@ CLineTrail::CLineTrail(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContex
 
 CLineTrail::CLineTrail(const CLineTrail& Prototype)
     : CGameObject(Prototype)
+    , m_iTextureIdx{ Prototype.m_iTextureIdx }
+    , m_fLifeTime{ Prototype.m_fLifeTime }
+    , m_iDivisionCount{ Prototype.m_iDivisionCount }
 {
+}
+
+HRESULT CLineTrail::Initialize_Prototype()
+{
+    m_iTextureIdx = 0;
+    m_fLifeTime = 0.4f;
+    m_iDivisionCount = 5;
+
+    return S_OK;
 }
 
 HRESULT CLineTrail::Initialize_Clone(void* pArg)
 {
     if (FAILED(Ready_Component(pArg)))
         return E_FAIL;
-
-    m_iTextureIdx = 0;
-    m_fLifeTime = 0.4f;
-    m_iDivisionCount = 5;
 
     if (pArg)
     {
@@ -27,12 +35,11 @@ HRESULT CLineTrail::Initialize_Clone(void* pArg)
         m_iTextureIdx = dsc->iTextureIdx;
         m_fLifeTime = dsc->fLifeTime;
         m_iDivisionCount = dsc->iDivisionCount;
-    }
-
-    if (m_iDivisionCount < 1)
-    {
-        MSG_BOX(TEXT("Division Count is too low"));
-        return E_FAIL;
+        if (m_iDivisionCount < 1)
+        {
+            MSG_BOX(TEXT("Division Count is too low"));
+            return E_FAIL;
+        }
     }
 
     return S_OK;
@@ -126,6 +133,13 @@ HRESULT CLineTrail::Ready_Component(void* pArg)
         TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr)))
         return E_FAIL;
     
+    LINE_TRAIL_DESC dsc{};
+    if (pArg == nullptr)
+    {
+        dsc.fOffset = 0.5f;
+        pArg = &dsc;
+    }
+
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_VIBuffer_LineTrail"),
         TEXT("Com_Buffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), pArg)))
         return E_FAIL;
@@ -135,9 +149,6 @@ HRESULT CLineTrail::Ready_Component(void* pArg)
 
 HRESULT CLineTrail::Bind_ShaderResources()
 {
-    //if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix)))
-    //    return E_FAIL;
-
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
         return E_FAIL;
 
@@ -151,11 +162,11 @@ HRESULT CLineTrail::Bind_ShaderResources()
     return S_OK;
 }
 
-CLineTrail* CLineTrail::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, void* pArg)
+CLineTrail* CLineTrail::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     CLineTrail* pInstance = new CLineTrail(pDevice, pContext);
 
-    if (FAILED(pInstance->Initialize_Clone(pArg)))
+    if (FAILED(pInstance->Initialize_Prototype()))
     {
         MSG_BOX(TEXT("Failed to Created : CLineTrail"));
         Safe_Release(pInstance);

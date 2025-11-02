@@ -216,6 +216,7 @@
     <ClInclude Include="..\Public\Prop_Preview.h" />
     <ClInclude Include="..\Public\Prop_Static.h" />
     <ClInclude Include="..\Public\Prop_Test.h" />
+    <ClInclude Include="..\Public\ScreenTrail.h" />
     <ClInclude Include="..\Public\SkySphere.h" />
     <ClInclude Include="..\public\Terrain_Shader.h" />
     <ClInclude Include="..\Public\BladeNexus.h" />
@@ -281,6 +282,7 @@
     <ClCompile Include="..\Private\Prop_Preview.cpp" />
     <ClCompile Include="..\Private\Prop_Static.cpp" />
     <ClCompile Include="..\Private\Prop_Test.cpp" />
+    <ClCompile Include="..\Private\ScreenTrail.cpp" />
     <ClCompile Include="..\Private\SkySphere.cpp" />
     <ClCompile Include="..\private\Terrain_Shader.cpp" />
     <ClCompile Include="..\Private\BladeNexus.cpp" />
