@@ -25,7 +25,7 @@ matrix      g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D   g_Texture;
 texture2D   g_DepthTexture;
 float4      g_vColor;
-
+float2      g_ViewportSize;
 
 struct VS_IN
 {
@@ -62,6 +62,20 @@ VS_OUT VS_MAIN(VS_IN In)
     Out.vProjPos = Out.vPosition;
     
     return Out;     
+}
+
+VS_OUT VS_TRAIL(VS_IN In)
+{
+    VS_OUT Out = (VS_OUT) 0;
+            
+    float4x4 matVP = mul(g_ViewMatrix, g_ProjMatrix);
+    
+    Out.vPosition = mul(float4(In.vPosition, 1.f), matVP);
+    Out.vTexcoord = In.vTexcoord;
+    Out.vWorldPos = float4(In.vPosition, 1.f);
+    Out.vProjPos = Out.vPosition;
+    
+    return Out;
 }
 
 /* /W을 수행한다. 투영스페이스로 변환 */
@@ -115,6 +129,33 @@ PS_OUT PS_MAIN_BLEND(PS_IN In)
     return Out;
 }
 
+
+PS_OUT PS_TRAIL(PS_IN In)
+{
+    //Texcoord에 따라서 알파값 달라지도록 처리하기
+    //DepthDesc에 뭐 기록해뒀는지 다시 확인
+    
+    PS_OUT Out = (PS_OUT) 0;
+    
+    Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+    //Out.vColor = float4(1.f, 1.f, 1.f, 1.f);
+    
+    //alpha fading
+    Out.vColor.a *= In.vTexcoord.x;
+    
+    //소프트 파티클 효과
+    
+    //float2 vTexcoord;
+    //
+    //vTexcoord.x = (In.vProjPos.x / In.vProjPos.w) * 0.5f + 0.5f;
+    //vTexcoord.y = (In.vProjPos.y / In.vProjPos.w) * -0.5f + 0.5f;
+    //vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, vTexcoord);
+    //
+    //Out.vColor.a = Out.vColor.a * saturate(vDepthDesc.y - In.vProjPos.w);
+   
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     /* 특정 패스를 이용해서 점정을 그려냈다. */
@@ -142,15 +183,14 @@ technique11 DefaultTechnique
 
     }
 
-    pass MeshTrail
+    pass TrailPass
     {
-        SetRasterizerState(RS_Default);
+        SetRasterizerState(RS_Cull_None);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-        VertexShader = compile vs_5_0 VS_MAIN();
+        VertexShader = compile vs_5_0 VS_TRAIL();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_BLEND();
-
+        PixelShader = compile ps_5_0 PS_TRAIL();
     }
 
     ///* 정점의 정보에 따라 쉐이더 파일을 작성한다. */

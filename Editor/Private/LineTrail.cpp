@@ -1,19 +1,19 @@
-﻿#include "MeshTrail.h"
+﻿#include "LineTrail.h"
 #include "GameInstance.h"
 
-CMeshTrail::CMeshTrail(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+CLineTrail::CLineTrail(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
     : CGameObject{pDevice, pDeviceContext}
 {
 }
 
-CMeshTrail::CMeshTrail(const CMeshTrail& Prototype)
+CLineTrail::CLineTrail(const CLineTrail& Prototype)
     : CGameObject(Prototype)
 {
 }
 
-HRESULT CMeshTrail::Initialize_Clone(void* pArg)
+HRESULT CLineTrail::Initialize_Clone(void* pArg)
 {
-    if (FAILED(Ready_Component()))
+    if (FAILED(Ready_Component(pArg)))
         return E_FAIL;
 
     m_iTextureIdx = 0;
@@ -22,8 +22,8 @@ HRESULT CMeshTrail::Initialize_Clone(void* pArg)
 
     if (pArg)
     {
-        TRAIL_DESC* dsc = static_cast<TRAIL_DESC*>(pArg);
-
+        LINE_TRAIL_DESC* dsc = static_cast<LINE_TRAIL_DESC*>(pArg);
+    
         m_iTextureIdx = dsc->iTextureIdx;
         m_fLifeTime = dsc->fLifeTime;
         m_iDivisionCount = dsc->iDivisionCount;
@@ -38,7 +38,7 @@ HRESULT CMeshTrail::Initialize_Clone(void* pArg)
     return S_OK;
 }
 
-void CMeshTrail::Priority_Update(_float fTimeDelta)
+void CLineTrail::Priority_Update(_float fTimeDelta)
 {
     //일정 시간 지난 TrailPoints들은 삭제
 
@@ -53,7 +53,7 @@ void CMeshTrail::Priority_Update(_float fTimeDelta)
     }
 }
 
-void CMeshTrail::Update(_float fTimeDelta)
+void CLineTrail::Update(_float fTimeDelta)
 {
     //캣멀룸으로 TrailPoints구성
     if (m_ControlPoints.size() < 2)
@@ -61,7 +61,7 @@ void CMeshTrail::Update(_float fTimeDelta)
     
     m_TrailPoints.clear();
 
-    m_TrailPoints.push_back(m_ControlPoints[0]);
+    m_TrailPoints.push_back(m_ControlPoints[0].vPos);
 
     for (_int i = 0; i < m_ControlPoints.size() - 1; ++i)
     {
@@ -69,35 +69,27 @@ void CMeshTrail::Update(_float fTimeDelta)
         {
             _float weight = (float)(j + 1) / (float)(m_iDivisionCount);
 
-            _vector top = XMVectorCatmullRom( XMLoadFloat4(&m_ControlPoints[(i - 1) < 0 ? 0 : i - 1].vTop),
-                                              XMLoadFloat4(&m_ControlPoints[i].vTop),
-                                              XMLoadFloat4(&m_ControlPoints[i + 1].vTop),
-                                              XMLoadFloat4(&m_ControlPoints[(i + 2) > m_ControlPoints.size() - 1 ? i + 1 : i + 2].vTop),
+            _vector pos = XMVectorCatmullRom( XMLoadFloat4(&m_ControlPoints[(i - 1) < 0 ? 0 : i - 1].vPos),
+                                              XMLoadFloat4(&m_ControlPoints[i].vPos),
+                                              XMLoadFloat4(&m_ControlPoints[i + 1].vPos),
+                                              XMLoadFloat4(&m_ControlPoints[(i + 2) > m_ControlPoints.size() - 1 ? i + 1 : i + 2].vPos),
                                               weight);
-
-           _vector bottom = XMVectorCatmullRom( XMLoadFloat4(&m_ControlPoints[(i - 1) < 0 ? 0 : i - 1].vBottom),
-                                             XMLoadFloat4(&m_ControlPoints[i].vBottom),
-                                             XMLoadFloat4(&m_ControlPoints[i + 1].vBottom),
-                                             XMLoadFloat4(&m_ControlPoints[(i + 2) > m_ControlPoints.size() - 1 ? i + 1 : i + 2].vBottom),
-                                             weight);
-           CVIBuffer_QuadTrail::QUAD_TRAIL_POINT SplineNode;
-           XMStoreFloat4(&SplineNode.vTop, top);
-           XMStoreFloat4(&SplineNode.vBottom, bottom);
-
-           m_TrailPoints.push_back(SplineNode);
+           _float4 NewNode;
+           XMStoreFloat4(&NewNode, pos);
+           m_TrailPoints.push_back(NewNode);
         }
     }
 }
 
-void CMeshTrail::Late_Update(_float fTimeDelta)
+void CLineTrail::Late_Update(_float fTimeDelta)
 {
-    m_pVIBufferCom->Update(m_TrailPoints);
+    m_pVIBufferCom->Update(m_TrailPoints, m_pGameInstance->Get_CamPosition());
 
     if (m_ControlPoints.size() > 1)
         m_pGameInstance->Add_RenderGroup(RENDERGROUP::BLEND, this);
 }
 
-HRESULT CMeshTrail::Render()
+HRESULT CLineTrail::Render()
 {
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
@@ -111,23 +103,20 @@ HRESULT CMeshTrail::Render()
     return S_OK;
 }
 
-void CMeshTrail::Add_ControlPoint(_fvector top, _gvector bottom)
+void CLineTrail::Add_ControlPoint(_fvector pos)
 {
-    if (m_ControlPoints.size() 
-        && XMVector4Equal(XMLoadFloat4(&m_ControlPoints.back().vTop), top)
-        && XMVector4Equal(XMLoadFloat4(&m_ControlPoints.back().vBottom), bottom))
+    if (m_ControlPoints.size() && XMVector4Equal(XMLoadFloat4(&m_ControlPoints.back().vPos), pos))
         return;
 
-    CVIBuffer_QuadTrail::QUAD_TRAIL_POINT newPoint;
+    CVIBuffer_LineTrail::LINE_TRAIL_POINT newNode;
 
-    XMStoreFloat4(&newPoint.vTop, top);
-    XMStoreFloat4(&newPoint.vBottom, bottom);
-    newPoint.fLifeTime = 0.f;
+    XMStoreFloat4(&newNode.vPos, pos);
+    newNode.fLifeTime = 0.f;
 
-    m_ControlPoints.push_back(newPoint);
+    m_ControlPoints.push_back(newNode);
 }
 
-HRESULT CMeshTrail::Ready_Component()
+HRESULT CLineTrail::Ready_Component(void* pArg)
 {
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxPosTex"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
@@ -137,14 +126,14 @@ HRESULT CMeshTrail::Ready_Component()
         TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr)))
         return E_FAIL;
     
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_VIBuffer_QuadTrail"),
-        TEXT("Com_Buffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), nullptr)))
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_VIBuffer_LineTrail"),
+        TEXT("Com_Buffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), pArg)))
         return E_FAIL;
 
     return S_OK;
 }
 
-HRESULT CMeshTrail::Bind_ShaderResources()
+HRESULT CLineTrail::Bind_ShaderResources()
 {
     //if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix)))
     //    return E_FAIL;
@@ -162,33 +151,33 @@ HRESULT CMeshTrail::Bind_ShaderResources()
     return S_OK;
 }
 
-CMeshTrail* CMeshTrail::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, void* pArg)
+CLineTrail* CLineTrail::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, void* pArg)
 {
-    CMeshTrail* pInstance = new CMeshTrail(pDevice, pContext);
+    CLineTrail* pInstance = new CLineTrail(pDevice, pContext);
 
     if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
-        MSG_BOX(TEXT("Failed to Created : CMeshTrail"));
+        MSG_BOX(TEXT("Failed to Created : CLineTrail"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-CGameObject* CMeshTrail::Clone(void* pArg)
+CGameObject* CLineTrail::Clone(void* pArg)
 {
-    CMeshTrail* pInstance = new CMeshTrail(*this);
+    CLineTrail* pInstance = new CLineTrail(*this);
 
     if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
-        MSG_BOX(TEXT("Failed to Created : CMeshTrail"));
+        MSG_BOX(TEXT("Failed to Created : CLineTrail"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-void CMeshTrail::Free()
+void CLineTrail::Free()
 {
     __super::Free();
 
@@ -196,8 +185,3 @@ void CMeshTrail::Free()
     Safe_Release(m_pVIBufferCom);
     Safe_Release(m_pShaderCom);
 }
-
-
-
-
-

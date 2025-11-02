@@ -5,6 +5,8 @@
 NS_BEGIN(Editor)
 
 class CEffect_Element;
+class CMeshTrail;
+class CLineTrail;
 
 class CEffect_Prefab : public CGameObject
 {
@@ -76,6 +78,10 @@ private:
 	_int							m_PrevTrackIdx;
 	_int							m_TrackIdx;
 	_bool							m_Gravity;
+
+private:
+	class CMeshTrail*				m_pMeshTrail;
+	class CLineTrail*				m_pLineTrail;
 	 
 public:
 	static CEffect_Prefab*			Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
