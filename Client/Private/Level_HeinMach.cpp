@@ -30,6 +30,8 @@ HRESULT CLevel_HeinMach::Initialize()
 {
 	CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
+	CHECK_FAILED(Ready_Layer_Sky(TEXT("Layer_Sky"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+
 	///*if (FAILED(Ready_Lights()))
 	//	return E_FAIL;*/
 
@@ -296,9 +298,6 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject(const _wstring& strLayerTag, cons
 	case KHAZAN_MAP::HEINMACH:
 		strDataFilePath += TEXT("HeinMach/");
 		break;
-	case KHAZAN_MAP::YETUGA:
-		strDataFilePath += TEXT("Yetuga/");
-		break;
 	case KHAZAN_MAP::THECREVICE:
 		strDataFilePath += TEXT("TheCrevice/");
 		break;
@@ -408,9 +407,6 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag
 	{
 	case KHAZAN_MAP::HEINMACH:
 		strDataFilePath += TEXT("HeinMach/");
-		break;
-	case KHAZAN_MAP::YETUGA:
-		strDataFilePath += TEXT("Yetuga/");
 		break;
 	case KHAZAN_MAP::THECREVICE:
 		strDataFilePath += TEXT("TheCrevice/");
@@ -524,9 +520,6 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Interactive(const _wstring& strLa
 	case KHAZAN_MAP::HEINMACH:
 		strDataFilePath += TEXT("HeinMach/");
 		break;
-	case KHAZAN_MAP::YETUGA:
-		strDataFilePath += TEXT("Yetuga/");
-		break;
 	case KHAZAN_MAP::THECREVICE:
 		strDataFilePath += TEXT("TheCrevice/");
 		break;
@@ -635,9 +628,6 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Inst(const _wstring& strLayerTag,
 	case KHAZAN_MAP::HEINMACH:
 		strDataFilePath += TEXT("HeinMach/");
 		break;
-	case KHAZAN_MAP::YETUGA:
-		strDataFilePath += TEXT("Yetuga/");
-		break;
 	case KHAZAN_MAP::THECREVICE:
 		strDataFilePath += TEXT("TheCrevice/");
 		break;
@@ -720,9 +710,6 @@ HRESULT CLevel_HeinMach::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurren
 	case KHAZAN_MAP::HEINMACH:
 		strDataFilePath += TEXT("HeinMach/");
 		break;
-	case KHAZAN_MAP::YETUGA:
-		strDataFilePath += TEXT("Yetuga/");
-		break;
 	case KHAZAN_MAP::THECREVICE:
 		strDataFilePath += TEXT("TheCrevice/");
 		break;
@@ -785,9 +772,72 @@ HRESULT CLevel_HeinMach::Ready_Layer_BackGround(const _wstring& strLayerTag)
 	//	ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Terrain"))))
 	//	return E_FAIL;
 
-	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-		ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Sky"))))
-		return E_FAIL;
+	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+	//	ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Sky"))))
+	//	return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CLevel_HeinMach::Ready_Layer_Sky(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
+{
+	_wstring strDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+
+	switch (eMap)
+	{
+	case KHAZAN_MAP::HEINMACH:
+		strDataFilePath += TEXT("HeinMach/");
+		break;
+	case KHAZAN_MAP::THECREVICE:
+		strDataFilePath += TEXT("TheCrevice/");
+		break;
+	case KHAZAN_MAP::EMBARS:
+		strDataFilePath += TEXT("Embars/");
+		break;
+	case KHAZAN_MAP::VIPER:
+		strDataFilePath += TEXT("Viper/");
+		break;
+	default:
+		break;
+	}
+
+	strDataFilePath += pDataFileName;
+
+	strDataFilePath += TEXT("_sky.dat");
+
+	CSkySphere::SKY_SPHERE_DESC SkySphereDesc = {};
+
+	SkySphereDesc.eLevel = eCurrentLevel;
+
+	DWORD dwByte = {};
+
+	HANDLE hFile = CreateFile(strDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (INVALID_HANDLE_VALUE == hFile)
+	{
+		// 파일 없으면 생성
+		SkySphereDesc.SkyDesc.vNebulaColor = { 0.1f, 0.1f, 0.1f };
+		SkySphereDesc.SkyDesc.fStarStrength = { 1.5f };
+		SkySphereDesc.SkyDesc.fMoonSize = { 0.45f };
+		SkySphereDesc.SkyDesc.vMoonDirection = { -0.8f, 0.55f, 1.f };
+		SkySphereDesc.SkyDesc.vMoonColor = { 0.8f, 0.2f, 0.2f };
+		SkySphereDesc.SkyDesc.fMoonIntensity = { 1.f };
+
+		SkySphereDesc.fRotationPerSec = XMConvertToRadians(0.f);
+
+		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+			ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_SkySphere"), TIME_CHANNEL::WORLD, &SkySphereDesc), E_FAIL);
+	}
+	else
+	{
+		CHECK_FAILED(ReadFile(hFile, &SkySphereDesc.SkyDesc, sizeof(SKY_DESC), &dwByte, nullptr), E_FAIL);
+
+		SkySphereDesc.fRotationPerSec = XMConvertToRadians(0.f);
+
+		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+			ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_SkySphere"), TIME_CHANNEL::WORLD, &SkySphereDesc), E_FAIL);
+
+		CloseHandle(hFile);
+	}
 
 	return S_OK;
 }

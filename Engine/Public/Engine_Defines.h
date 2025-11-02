@@ -98,6 +98,8 @@ namespace Engine
 	const float g_fGravity = -9.81f;
 }
 
+#define PI 3.14159f
+
 #include "Engine_Enum.h"
 #include "Engine_Macro.h"
 #include "Engine_Struct.h"

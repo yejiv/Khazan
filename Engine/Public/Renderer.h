@@ -38,7 +38,6 @@ public:
 		m_OutlineConfig.fBias = Config.fBias;
 	}
 
-
 private:
 	ID3D11Device*				m_pDevice = { nullptr };
 	ID3D11DeviceContext*		m_pContext = { nullptr };
@@ -57,9 +56,6 @@ private:
 	_float						m_fToonShadeLevel = { 3.f };
 
 	// Outline
-	_float						m_fOutlineAlpha = { 1.f };
-	_float						m_fOutlineBias = { 0.01f };
-
 	OUTLINE_CONFIG				m_OutlineConfig = { _float3(0.f, 0.f, 0.f), 0.f, 1.f, 0.01f };
 
 #ifdef _DEBUG
@@ -71,6 +67,7 @@ private:
 	_bool						m_isEnableFog = {};
 	_bool						m_isEnableToonShade = {};
 	_bool						m_isEnableOutline = {};
+	_bool						m_isEnableVignette = {};
 #endif
 
 private:

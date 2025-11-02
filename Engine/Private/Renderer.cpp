@@ -87,6 +87,9 @@ HRESULT CRenderer::Draw()
     if (FAILED(Render_NonBlend()))
         return E_FAIL;
 
+    //  if (FAILED(Render_Decal()))
+    //      return E_FAIL;
+
     if (FAILED(Render_Outline()))
         return E_FAIL;
 
@@ -554,17 +557,23 @@ HRESULT CRenderer::Render_Combined()
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
         return E_FAIL;
 
-    if (FAILED(m_pShader->Bind_Bool("g_isEnableFog", &m_isEnableFog)))
-        return E_FAIL;
-
-    if (FAILED(m_pShader->Bind_Bool("g_isEnableOutline", &m_isEnableOutline)))
-        return E_FAIL;
-
     if (FAILED(m_pShader->Bind_RawValue("g_fOutlineAlpha", &m_OutlineConfig.fAlpha, sizeof(_float))))
         return E_FAIL;
 
     if (FAILED(m_pShader->Bind_RawValue("g_fOutlineBias", &m_OutlineConfig.fBias, sizeof(_float))))
         return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_Vignette_ShaderResources(m_pShader)))
+        return E_FAIL;
+
+#ifdef _DEBUG
+    if (FAILED(m_pShader->Bind_Bool("g_isEnableShadow", &m_isEnableShadow)))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Bool("g_isEnableFog", &m_isEnableFog)))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Bool("g_isEnableOutline", &m_isEnableOutline)))
+        return E_FAIL;
+#endif
 
     m_pShader->Begin(8);
 
