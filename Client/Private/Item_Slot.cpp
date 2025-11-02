@@ -186,7 +186,7 @@ HRESULT CItem_Slot::Ready_Children()
 {
     CUI_Atlas_Icon::UIATLASICON_DESC AtlasDesc;
 
-    AtlasDesc.fDepth = m_fDepth;
+    AtlasDesc.fDepth = m_fDepth - 1;
     AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
     AtlasDesc.szName = "Item_Over";
     AtlasDesc.vLocalPos = _float2{ 0.f, 0.f };
@@ -206,7 +206,7 @@ HRESULT CItem_Slot::Ready_Children()
     //ÀåÂø
     if (m_iItemType <= ENUM_CLASS(CUI_Inven::ITEMTYPE::ATIVE))
     {
-        AtlasDesc.fDepth = m_fDepth;
+        AtlasDesc.fDepth = m_fDepth - 0.5;
         AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
         AtlasDesc.szName = "Item_Selet";
         AtlasDesc.vLocalPos = _float2{ -30.f, -30.f };
@@ -233,7 +233,7 @@ HRESULT CItem_Slot::Ready_Children()
         Safe_AddRef(m_pEquipIcon);
     }
     //¼¿·ºÆ®
-    AtlasDesc.fDepth = m_fDepth;
+    AtlasDesc.fDepth = m_fDepth - 2;
     AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
     AtlasDesc.szName = "Item_Selet";
     AtlasDesc.vLocalPos = _float2{ 0.f, 0.f };
@@ -251,7 +251,7 @@ HRESULT CItem_Slot::Ready_Children()
     m_Children.push_back(m_pSeleteFx);
     Safe_AddRef(m_pSeleteFx);
 
-    AtlasDesc.fDepth = m_fDepth;
+    AtlasDesc.fDepth = m_fDepth - 1;
     AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
     AtlasDesc.szName = "Item_Icon";
     AtlasDesc.vLocalPos = _float2{ 0.f, 0.f };
@@ -272,7 +272,7 @@ HRESULT CItem_Slot::Ready_Children()
     if (m_iItemType == ENUM_CLASS(CUI_Inven::ITEMTYPE::ATIVE) || m_iItemType == ENUM_CLASS(CUI_Inven::ITEMTYPE::MATERIAL))
     {
         CUIObject::UIOBJECT_DESC TextDesc = {};
-        TextDesc.fDepth = m_fDepth - 0.5f;
+        TextDesc.fDepth = m_fDepth - 1.f;
         TextDesc.iUIType = ENUM_CLASS(UITYPE::TEXT);
         TextDesc.szName = "Item_Count";
         TextDesc.vLocalPos = _float2{ 0.f, 0.f };

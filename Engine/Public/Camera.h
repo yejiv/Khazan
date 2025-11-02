@@ -31,9 +31,18 @@ public:
 	virtual HRESULT Render();
 
 public:
+	void Set_ObjMatrix(const _float4x4* pObjMatrix) { m_pObjMatrix = pObjMatrix; }
+	void Set_SocketMatrix(const _float4x4* pSocketMatrix) { m_pSocketMatrix = pSocketMatrix; }
+
+public:
+	void Update_PipeLines(_float fTimeDelta);
+
+	// 애니메이션
+public:
 	void Set_Animation(_wstring strAnimationTag);
 	void Play_Animation(_float fTimeDelta);
 
+	// 툴 관련
 public:
 	void Create_Animation(_wstring strAnimationTag);
 	void Create_Event(_wstring strAnimationTag);
@@ -65,21 +74,28 @@ public:
 	HRESULT Set_DefaultData(CAMERA_DESC tDesc);
 	HRESULT Load(map<_wstring, vector<CAMERA_KEYFRAME>> Animations, map<_wstring, vector<CAMERA_EVENT_DATA>> Events);
 
-public:
-	void Set_ObjMatrix(const _float4x4* pObjMatrix) { m_pObjMatrix = pObjMatrix; }
-	void Set_SocketMatrix(const _float4x4* pSocketMatrix) { m_pSocketMatrix = pSocketMatrix; }
-
-public:
-	void Update_PipeLines();
-
+// 쉐이킹
 public:
 	void Shaking_Start(_float fPower, _float fDuration);
 	void Shaking(_float fTimeDelta);
 	_bool Shaking_Active() const { return m_fShaking_Time < m_fShaking_Duration && m_fShaking_Power > 0.f; }
 
-	
+// Fov 관련
+public:
+	void    Set_BaseFOV(_float fDegree) { m_fBaseFOV = fDegree; }
+	_float	Get_CurrentFOV() const { return m_fFovy; }
+
+	void	Push_FOVModifier(const FOVModifier& tMod);
+	void	Kill_FOVModifier(const _wstring& strID);
+	void	Update_FOVChannel(_float fTimeDelta);
+
+private:
+	_int	FindModIndexByID(const _wstring& strID) const;
+
+
 
 protected:
+	// 기본 투입값들
 	_wstring			m_strCameraTag = {};
 	_uint				m_iCameraType = {};
 
@@ -87,7 +103,6 @@ protected:
 
 	_float4				m_vEye = {};
 	_float4				m_vAt = {};
-	_float				m_fFovy = {};
 	_float				m_fAspect = {};
 	_float				m_fNear{}, m_fFar{};
 
@@ -107,7 +122,11 @@ protected:
 	const _float4x4*	m_pObjMatrix = { nullptr };
 	const _float4x4*	m_pSocketMatrix = { nullptr };
 
-	// 쉐이킹
+	map<_wstring, vector<CAMERA_KEYFRAME>> m_Animations;
+	map<_wstring, vector<CAMERA_EVENT_DATA>> m_Events;
+
+
+	// 쉐이킹 관련
 	_float m_fShaking_Time = { 0.f }; // 계산용 시간
 	_float m_fShaking_Duration = { 0.f }; // 지속시간
 	_float m_fShaking_Power = { 0.f }; // 세기
@@ -120,10 +139,7 @@ protected:
 	_vector m_vShaking_BaseUp;
 	_vector m_vShaking_BaseLook;
 
-
-	map<_wstring, vector<CAMERA_KEYFRAME>> m_Animations;
-	map<_wstring, vector<CAMERA_EVENT_DATA>> m_Events;
-
+	// Animation 관련
 	_bool							m_isAnimation = {false};
 	_bool							m_isLoop = { false };
 	vector<CAMERA_KEYFRAME>*		m_pCurrentAnimation = { nullptr };
@@ -142,7 +158,14 @@ protected:
 	_vector m_vCurPos = XMVectorSet(0, 0, 0, 1);
 	_vector m_vCurQ = XMQuaternionIdentity();
 	_bool m_isCurPos = { false };
-	
+
+	// Fov 관련
+	_float				m_fFovy = {};
+	_float				m_fBaseFOV = XMConvertToRadians(60.f);   // 기본 FOV
+	vector<FOVModifier> m_vFOVMods;
+	_float				m_fFOVSmooth = 20.f;   // 클수록 빠르게 따라감
+	_float				m_fFOVMin = XMConvertToRadians(30.f);
+	_float				m_fFOVMax = XMConvertToRadians(110.f);
 	
 public:
 	virtual CGameObject* Clone(void* pArg) = 0;

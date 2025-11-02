@@ -131,6 +131,12 @@ void CAnimation::Update_TransformationMatrices(const vector<class CBone*>& Bones
         m_Channels[i]->Update_TransformationMatrix(Bones, *m_fCurrentTrackPosition, &m_CurrentKeyFrameIndices[i]);
 }
 
+_float CAnimation::MakeRatio()
+{
+    _float fRatio = *m_fCurrentTrackPosition / m_fDuration;
+    return fRatio;
+}
+
 void CAnimation::Set_RootBoneIndex(_uint iRootBoneIndex)
 {
     for (auto& pChannel : m_Channels)

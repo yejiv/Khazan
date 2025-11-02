@@ -34,7 +34,7 @@ HRESULT CProp_Static::Initialize_Clone(void* pArg)
     if (isSnow())
     {
         if (isIce())
-            m_eShaderPass = SHADER_PASS::SNOWMAP_BLEND;
+            m_eShaderPass = SHADER_PASS::SNOWMAP_ICE;
         else if (isPlant())
             m_eShaderPass = SHADER_PASS::SNOWPLANT;
         else
@@ -43,7 +43,7 @@ HRESULT CProp_Static::Initialize_Clone(void* pArg)
     else
     {
         if (isIce())
-            m_eShaderPass = SHADER_PASS::MAP_BLEND;
+            m_eShaderPass = SHADER_PASS::MAP_ICE;
         else if (isPlant())
             m_eShaderPass = SHADER_PASS::PLANT;
         else
@@ -82,8 +82,7 @@ HRESULT CProp_Static::Render()
 {
     CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Static : Bind_ShaderResources ÇÔ¼ö E_FAIL"), E_FAIL);
 
-    if (isPlant())
-        CHECK_FAILED(Bind_Waving_Plants(), E_FAIL);
+    if (isPlant()) CHECK_FAILED(Bind_Waving_Plants(), E_FAIL);
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -92,7 +91,6 @@ HRESULT CProp_Static::Render()
         Bind_Instance_Materials(m_pModelCom, i);
 
         if (true == isSnow()) CHECK_FAILED(Bind_ShaderResources_ForSnowMap(i), E_FAIL);
-
 
         CHECK_FAILED_ASSERT(m_pShaderCom->Begin(ENUM_CLASS(m_eShaderPass)), E_FAIL);
 

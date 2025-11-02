@@ -27,7 +27,7 @@ public:
 
 protected:
 	virtual _bool				ButtonOver(HWND hWnd);
-	virtual _bool				ButtonClick(HWND hWnd, _bool IsRight, _bool IsDown);
+	virtual _bool				ButtonClick(HWND hWnd, _bool IsRight, _bool IsDown, INPUT_TYPE eType = INPUT_TYPE::UI);
 
 protected:
 	vector<std::function<void()>>	m_Events;

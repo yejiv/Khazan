@@ -46,10 +46,17 @@ void CPlayer_Shader::Priority_Update(_float fTimeDelta)
 void CPlayer_Shader::Update(_float fTimeDelta)
 {
     // Emissive On / Off Test
-    if (m_pGameInstance->Key_Down(DIK_0))
-    {
-        m_isEnableEmissive = !m_isEnableEmissive;
-    }
+    //  if (m_pGameInstance->Key_Down(DIK_0))
+    //  {
+    //      m_isEnableEmissive = !m_isEnableEmissive;
+    //  }
+
+    // Vignette Animation Test
+    //  if (m_pGameInstance->Key_Down(DIK_0))
+    //  {
+    //      m_pGameInstance->Start_VignetteAnimation(1.f);
+    //  }
+
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
         int a = 10;
@@ -69,7 +76,7 @@ void CPlayer_Shader::Update(_float fTimeDelta)
 
 void CPlayer_Shader::Late_Update(_float fTimeDelta)
 {
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this)))
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONLIGHT, this)))
         return;
 
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))

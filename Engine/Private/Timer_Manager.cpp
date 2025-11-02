@@ -66,7 +66,6 @@ void CTimer_Manager::Start_HitStop(TIME_CHANNEL eCH, _float fTargetScale, _float
 {
 	auto& HitStop = m_tHitStop[(int)eCH];
 	HitStop.isActive = true;
-	HitStop.fTargetScale = std::clamp(fTargetScale, 0.f, 1.f);
 	HitStop.fHold = max(0.f, fHold);
 	HitStop.fRecover = max(0.f, fRecover);
 	HitStop.fElapsed = 0.f;
