@@ -6,6 +6,7 @@ float g_fAlpha;
 float g_fValue;
 
 texture2D g_Texture;
+
 #define PI       3.14159265358979323846
 struct VS_IN
 {

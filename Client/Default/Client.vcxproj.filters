@@ -418,6 +418,9 @@
     <Filter Include="02.GameObject\Sky\Sphere">
       <UniqueIdentifier>{b0adc5cf-a380-4078-8cc6-136824a02480}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Announce">
+      <UniqueIdentifier>{84a25179-8e31-451d-99ed-b011ba78bff2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -783,12 +786,14 @@
     <ClInclude Include="..\public\Khazan_Spear_ASManager.h">
       <Filter>02.GameObject\Creature\Khazan\Spear\Anim State Manager</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Camera_Controller.h" />
     <ClInclude Include="..\Public\Sky.h">
       <Filter>02.GameObject\Sky\Sky</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\SkySphere.h">
       <Filter>02.GameObject\Sky\Sphere</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Announce_MapName.h">
+      <Filter>02.GameObject\UI\Announce</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1141,12 +1146,14 @@
     <ClCompile Include="..\private\Khazan_Spear_ASManager.cpp">
       <Filter>02.GameObject\Creature\Khazan\Spear\Anim State Manager</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Camera_Controller.cpp" />
     <ClCompile Include="..\Private\Sky.cpp">
       <Filter>02.GameObject\Sky\Sky</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\SkySphere.cpp">
       <Filter>02.GameObject\Sky\Sphere</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Announce_MapName.cpp">
+      <Filter>02.GameObject\UI\Announce</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

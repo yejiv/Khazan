@@ -294,12 +294,26 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_State"),
 		CUI_State::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
 
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Announce_MapName"),
+		CUI_Announce_MapName::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
+
+	CUIObject::UIOBJECT_DESC AnnounceDesc = {};
+	AnnounceDesc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
+	AnnounceDesc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
+	AnnounceDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+	AnnounceDesc.szName = "Announce";
+	AnnounceDesc.fDepth = 9.f;
+
+	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
+		ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Announce_MapName"), TIME_CHANNEL::WORLD, &AnnounceDesc)))
+		return E_FAIL;
+
 	CUIObject::UIOBJECT_DESC Desc = {};
 	Desc.vLocalSize = { 64.f, 64.f };
 	Desc.vLocalPos = { 0.f, 0.f };
 	Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
 	Desc.szName = "DamageText";
-	Desc.fDepth = 5.f;
+	Desc.fDepth = 7.9f;
 
 	CHECK_FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_DamageText"),
 		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text"), &Desc, 40), E_FAIL);
@@ -308,7 +322,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	Desc.vLocalPos = { 0.f, 0.f };
 	Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
 	Desc.szName = "MonHP";
-	Desc.fDepth = 6.f;
+	Desc.fDepth = 9.f;
 
 	CHECK_FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Mon_HP"),
 		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Mon_HP"), &Desc, 20), E_FAIL);
@@ -317,7 +331,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	Desc.vLocalPos = { 0.f, 0.f };
 	Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
 	Desc.szName = "KeyGuide";
-	Desc.fDepth = 6.f;
+	Desc.fDepth = 8.f;
 
 	CHECK_FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Interaction_Guide"),
 		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide"), &Desc, 15), E_FAIL);

@@ -31,6 +31,19 @@ void CUI_State::On_Panel(UI_TYPE eType)
 	m_pPanel[ENUM_CLASS(STATE_PANEL::LACHRYMA)]->Setting_Type(m_eType, this);
 	m_pPanel[ENUM_CLASS(STATE_PANEL::LEVEL)]->Setting_Type(m_eType, this);
 
+	_int iLacryma = m_iLachryma;
+	_int iPreUpPoint = m_Player_Data.iLevel;
+	_int iUpPoint = 0;
+	while (iLacryma > (300 + (iPreUpPoint - 1 + iUpPoint) * 280))
+	{
+		iLacryma = iLacryma - (300 + (iPreUpPoint - 1  + iUpPoint) * 280);
+		iUpPoint++;
+	}
+
+	m_Player_Data.iUPPoint = iUpPoint;
+	m_Player_Data.iLachryma = m_iLachryma;
+	m_Player_Data.iUpLachryma = (300 + (m_Player_Data.iLevel - 1 + m_UpPlayer_Data.iLevel) * 280);
+
 	for (auto pList : m_pState)
 		pList->Setting_Type(m_eType);
 	m_eAnimState = UIANIMSTATE::ON;
@@ -44,9 +57,18 @@ void CUI_State::Off_Panel()
 	if (!m_IsUpdate)
 		return;
 
-	m_eAnimState = UIANIMSTATE::OFF;
-	m_fAccTime = 1.f;
+	m_IsUpdate = false;
+	//m_UpPlayer_Data = {};
+	//for (_int i = 0; i < ENUM_CLASS(STATE_LIST::END); ++i)
+	//	m_UpStateLevel[i] = 0;
+	//	
+	//m_eAnimState = UIANIMSTATE::OFF;
+	//m_fAccTime = 1.f;
 
+	if(m_eType == UI_TYPE::DEFAULT)
+		CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("MainMeun"));
+	else if (m_eType == UI_TYPE::UPAGERD)
+		CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("MainMeun"));
 }
 
 HRESULT CUI_State::Initialize_Prototype(_uint iLevel)
@@ -69,13 +91,10 @@ HRESULT CUI_State::Initialize_Clone(void* pArg)
 
 void CUI_State::Priority_Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_8))
-		m_IsUpdate ? Off_Panel() : On_Panel(UI_TYPE::DEFAULT);
-	if (m_pGameInstance->Key_Down(DIK_6))
-		m_IsUpdate ? Off_Panel() : On_Panel(UI_TYPE::UPAGERD);
-
 	if (!m_IsUpdate)
 		return;
+	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
+		Off_Panel();
 
 	UI_Animation(fTimeDelta);
 	__super::Priority_Update(fTimeDelta);
@@ -83,6 +102,9 @@ void CUI_State::Priority_Update(_float fTimeDelta)
 
 void CUI_State::Update(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_M))
+		m_iLachryma += 10000;
+
 	if (!m_IsUpdate)
 		return;
 
@@ -275,6 +297,7 @@ HRESULT CUI_State::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, voi
 				{
 					m_pUpButton = static_cast<CUI_State_List*>(pChild);
 					Safe_AddRef(pChild);
+					m_pUpButton->Setting_Button(&m_UpPlayer_Data.iLevel);
 				}
 			}
 		}
@@ -292,42 +315,23 @@ void CUI_State::Bubble_EventCall(BUBBLEEVENT* pArg)
 {
 	UI_STATE_BUBLLE* pDesc = static_cast<UI_STATE_BUBLLE*>(pArg);
 
-	if (pDesc->isClick)
-	{
-
-	}
+	if (pDesc->isList)
+		List_Bubble_Event(pDesc);
 	else
-	{
-		_int iType = ENUM_CLASS(pDesc->eListType);
-		
-		pair<_int, _float> Index[4];
-		Index[0].first = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iType_1;
-		Index[1].first = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iType_2;
-		Index[2].first = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iType_3;
-		Index[3].first = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iType_4;
-		
-		Index[0].second = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iValue_1;
-		Index[1].second = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iValue_2;
-		Index[2].second = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->fValue_3;
-		Index[3].second = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->fValue_4;
-
-		for (_int i = 0; i < 4; ++i)
-		{
-			if (Index[i].first <= ENUM_CLASS(PLAYTER_STATE::AGILE))
-				m_pPanel[ENUM_CLASS(STATE_PANEL::DEFAULT_STATE)]->State_Hover(Index[i]);
-			else if (Index[i].first <= ENUM_CLASS(PLAYTER_STATE::GUARD_STAMINADOWN))
-				m_pPanel[ENUM_CLASS(STATE_PANEL::ADD_STATE)]->State_Hover(Index[i]);
-			else if (Index[i].first < ENUM_CLASS(PLAYTER_STATE::END))
-				m_pPanel[ENUM_CLASS(STATE_PANEL::ELEMENTAL)]->State_Hover(Index[i]);
-		}
-	}
+		Button_Bubble_Event(pDesc);
 }
 
 HRESULT CUI_State::Update_Switch(void* pArg)
 {
+	if (m_IsUpdate)
+		Off_Panel();
+	else
+	{
+		UI_StateONDesc* pDesc = static_cast<UI_StateONDesc*>(pArg);
+		On_Panel(pDesc->eType);
+	}
 	return S_OK;
 }
-
 
 HRESULT CUI_State::Ready_Prototype()
 {
@@ -358,7 +362,7 @@ HRESULT CUI_State::Ready_Prototype()
 HRESULT CUI_State::Ready_Object()
 {
 	UIOBJECT_DESC Desc = {};
-	Desc.fDepth = 4;
+	Desc.fDepth = 5.5f;
 	Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
 	Desc.szName = "BackGround";
 	Desc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
@@ -376,9 +380,10 @@ HRESULT CUI_State::Ready_Object()
 
 void CUI_State::Ready_PlayerData()
 {
+	m_iLachryma									= 3000;
 	//플레이어 기본 정보
-	m_Player_Data.iLevel						= 1;
-	m_Player_Data.iUPPoint						= 10;
+	m_Player_Data.iLevel						= 3;
+	m_Player_Data.iUPPoint						= 0;
 	m_Player_Data.iUpLachryma					= 0;
 	m_Player_Data.iLachryma						= 1;
 	
@@ -403,11 +408,6 @@ void CUI_State::Ready_PlayerData()
 	m_Player_Data.iChaos						= 500;
 	m_Player_Data.iDisease						= 500;
 	m_Player_Data.iPoison						= 500;
-
-	m_Player_Data.iLevel						= 1;
-	m_Player_Data.iUPPoint						= 10;
-	m_Player_Data.iUpLachryma					= 0;
-	m_Player_Data.iLachryma						= 1;
 
 	//플레이어 스텟업 정보
 	m_UpPlayer_Data.iMaxHp						= 0;
@@ -486,6 +486,195 @@ void CUI_State::UI_Animation(_float fTimeDelta)
 			m_IsUpdate = false;
 		}
 	}
+}
+
+void CUI_State::List_Bubble_Event(UI_STATE_BUBLLE* pDesc)
+{
+	if (pDesc->isClick)
+	{
+		_int iType = ENUM_CLASS(pDesc->eListType);
+
+		pair<_int, _float> Index[4];
+		Index[0].first = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iType_1;
+		Index[1].first = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iType_2;
+		Index[2].first = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iType_3;
+		Index[3].first = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iType_4;
+
+		Index[0].second = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iValue_1;
+		Index[1].second = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iValue_2;
+		Index[2].second = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->fValue_3;
+		Index[3].second = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->fValue_4;
+
+		for (_int i = 0; i < 4; ++i)
+		{
+			switch (static_cast<PLAYTER_STATE>(Index[i].first))
+			{
+			case PLAYTER_STATE::MAXHP:
+				pDesc->isUp ? m_UpPlayer_Data.iMaxHp += Index[i].second : m_UpPlayer_Data.iMaxHp -= Index[i].second;
+				break;
+			case PLAYTER_STATE::MAXSTAMINA:
+				pDesc->isUp ? m_UpPlayer_Data.iMaxStamina += Index[i].second : m_UpPlayer_Data.iMaxStamina -= Index[i].second;
+				break;
+			case PLAYTER_STATE::ATK:
+				pDesc->isUp ? m_UpPlayer_Data.iAtk += Index[i].second : m_UpPlayer_Data.iAtk -= Index[i].second;
+				break;
+			case PLAYTER_STATE::DEF:
+				pDesc->isUp ? m_UpPlayer_Data.iDef += Index[i].second : m_UpPlayer_Data.iDef -= Index[i].second;
+				break;
+			case PLAYTER_STATE::WEIGHT:
+				pDesc->isUp ? m_UpPlayer_Data.fMaxWeight += Index[i].second : m_UpPlayer_Data.fWeight -= Index[i].second;
+				break;
+			case PLAYTER_STATE::AGILE:
+				pDesc->isUp ? m_UpPlayer_Data.fAgile += Index[i].second : m_UpPlayer_Data.fAgile -= Index[i].second;
+				break;
+			case PLAYTER_STATE::STAMINAATK:
+				pDesc->isUp ? m_UpPlayer_Data.fStaminaAttack += Index[i].second : m_UpPlayer_Data.fStaminaAttack -= Index[i].second;
+				break;
+			case PLAYTER_STATE::STAMINAREGEN:
+				pDesc->isUp ? m_UpPlayer_Data.fStaminaRegen += Index[i].second : m_UpPlayer_Data.fStaminaRegen -= Index[i].second;
+				break;
+			case PLAYTER_STATE::EVASION_STAMINADOWN:
+				pDesc->isUp ? m_UpPlayer_Data.fEvasion_StaminaDown += Index[i].second : m_UpPlayer_Data.fEvasion_StaminaDown -= Index[i].second;
+				break;
+			case PLAYTER_STATE::DAMAGE_STAMINADOWN:
+				pDesc->isUp ? m_UpPlayer_Data.fDamage_StaminaDown += Index[i].second : m_UpPlayer_Data.fDamage_StaminaDown -= Index[i].second;
+				break;
+			case PLAYTER_STATE::GUARD_STAMINADOWN:
+				pDesc->isUp ? m_UpPlayer_Data.fGuard_StaminaDown += Index[i].second : m_UpPlayer_Data.fGuard_StaminaDown -= Index[i].second;
+				break;
+			case PLAYTER_STATE::FIRE:
+				pDesc->isUp ? m_UpPlayer_Data.iFire += Index[i].second : m_UpPlayer_Data.iFire -= Index[i].second;
+				break;
+			case PLAYTER_STATE::WATER:
+				pDesc->isUp ? m_UpPlayer_Data.iWater += Index[i].second : m_UpPlayer_Data.iWater -= Index[i].second;
+				break;
+			case PLAYTER_STATE::LIGHTNING:
+				pDesc->isUp ? m_UpPlayer_Data.iLightning += Index[i].second : m_UpPlayer_Data.iLightning -= Index[i].second;
+				break;
+			case PLAYTER_STATE::EARTH:
+				pDesc->isUp ? m_UpPlayer_Data.iEarth += Index[i].second : m_UpPlayer_Data.iEarth -= Index[i].second;
+				break;
+			case PLAYTER_STATE::CHAOS:
+				pDesc->isUp ? m_UpPlayer_Data.iChaos += Index[i].second : m_UpPlayer_Data.iChaos -= Index[i].second;
+				break;
+			case PLAYTER_STATE::DISEASE:
+				pDesc->isUp ? m_UpPlayer_Data.iDisease += Index[i].second : m_UpPlayer_Data.iDisease -= Index[i].second;
+				break;
+			case PLAYTER_STATE::POISON:
+				pDesc->isUp ? m_UpPlayer_Data.iPoison += Index[i].second : m_UpPlayer_Data.iPoison -= Index[i].second;
+				break;
+			}
+		}
+
+		if (pDesc->isUp)
+		{
+			m_UpPlayer_Data.iLevel += 1;
+			m_Player_Data.iLachryma = m_iLachryma - m_Player_Data.iUpLachryma;
+			m_Player_Data.iUpLachryma += (300 + ((m_Player_Data.iLevel) - 1 + (m_UpPlayer_Data.iLevel)) * 280);
+		}
+		else
+		{
+			m_Player_Data.iUpLachryma -= (300 + ((m_Player_Data.iLevel) - 1 + (m_UpPlayer_Data.iLevel)) * 280);
+			m_UpPlayer_Data.iLevel -= 1;
+			m_Player_Data.iLachryma = m_Player_Data.iLachryma + m_Player_Data.iUpLachryma;
+		}
+	}
+	else
+	{
+		_int iType = ENUM_CLASS(pDesc->eListType);
+
+		pair<_int, _float> Index[4];
+		Index[0].first = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iType_1;
+		Index[1].first = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iType_2;
+		Index[2].first = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iType_3;
+		Index[3].first = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iType_4;
+
+		Index[0].second = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iValue_1;
+		Index[1].second = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iValue_2;
+		Index[2].second = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->fValue_3;
+		Index[3].second = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->fValue_4;
+
+		for (_int i = 0; i < 4; ++i)
+		{
+			if (Index[i].first <= ENUM_CLASS(PLAYTER_STATE::AGILE))
+				m_pPanel[ENUM_CLASS(STATE_PANEL::DEFAULT_STATE)]->State_Hover(Index[i]);
+			else if (Index[i].first <= ENUM_CLASS(PLAYTER_STATE::GUARD_STAMINADOWN))
+				m_pPanel[ENUM_CLASS(STATE_PANEL::ADD_STATE)]->State_Hover(Index[i]);
+			else if (Index[i].first < ENUM_CLASS(PLAYTER_STATE::END))
+				m_pPanel[ENUM_CLASS(STATE_PANEL::ELEMENTAL)]->State_Hover(Index[i]);
+		}
+	}
+}
+
+void CUI_State::Button_Bubble_Event(UI_STATE_BUBLLE* pDesc)
+{
+	m_Player_Data.iLevel += m_UpPlayer_Data.iLevel;
+	m_UpPlayer_Data.iLevel = 0;
+
+	m_iLachryma = m_Player_Data.iLachryma;
+
+	_int iLacryma = m_iLachryma;
+	_int iPreUpPoint = m_Player_Data.iLevel;
+	_int iUpPoint = 0;
+	while (iLacryma > (300 + (iPreUpPoint - 1 + iUpPoint) * 280))
+	{
+		iLacryma = iLacryma - (300 + (iPreUpPoint - 1 + iUpPoint) * 280);
+		iUpPoint++;
+	}
+
+	m_Player_Data.iUPPoint = iUpPoint;
+	m_Player_Data.iLachryma = m_iLachryma;
+	m_Player_Data.iUpLachryma = (300 + (m_Player_Data.iLevel - 1 + m_UpPlayer_Data.iLevel) * 280);
+
+	for (_int i = 0; i < ENUM_CLASS(STATE_LIST::END); ++i)
+	{
+		m_CulStateLevel[i] += m_UpStateLevel[i];
+		m_UpStateLevel[i] = 0;
+	}
+
+	m_Player_Data.iMaxHp				+=		m_UpPlayer_Data.iMaxHp					;
+	m_Player_Data.iMaxStamina			+=		m_UpPlayer_Data.iMaxStamina				;
+	m_Player_Data.iAtk					+=		m_UpPlayer_Data.iAtk					;
+	m_Player_Data.iDef					+=		m_UpPlayer_Data.iDef					;
+	m_Player_Data.fWeight				+=		m_UpPlayer_Data.fWeight					;
+	m_Player_Data.fMaxWeight			+=		m_UpPlayer_Data.fMaxWeight				;
+	m_Player_Data.fAgile				+=		m_UpPlayer_Data.fAgile					;
+										
+	m_Player_Data.fStaminaAttack		+=		m_UpPlayer_Data.fStaminaAttack			;
+	m_Player_Data.fStaminaRegen			+=		m_UpPlayer_Data.fStaminaRegen			;
+	m_Player_Data.fEvasion_StaminaDown	+=		m_UpPlayer_Data.fEvasion_StaminaDown	;
+	m_Player_Data.fDamage_StaminaDown	+=		m_UpPlayer_Data.fDamage_StaminaDown		;
+	m_Player_Data.fGuard_StaminaDown	+=		m_UpPlayer_Data.fGuard_StaminaDown		;
+									
+	m_Player_Data.iFire					+=		m_UpPlayer_Data.iFire					;
+	m_Player_Data.iWater				+=		m_UpPlayer_Data.iWater					;
+	m_Player_Data.iLightning			+=		m_UpPlayer_Data.iLightning				;
+	m_Player_Data.iEarth				+=		m_UpPlayer_Data.iEarth					;
+	m_Player_Data.iChaos				+=		m_UpPlayer_Data.iChaos					;
+	m_Player_Data.iDisease				+=		m_UpPlayer_Data.iDisease				;
+	m_Player_Data.iPoison				+=		m_UpPlayer_Data.iPoison					;
+
+	m_UpPlayer_Data.iMaxHp				= 0;
+	m_UpPlayer_Data.iMaxStamina			= 0;
+	m_UpPlayer_Data.iAtk				= 0;
+	m_UpPlayer_Data.iDef				= 0;
+	m_UpPlayer_Data.fWeight				= 0;
+	m_UpPlayer_Data.fMaxWeight			= 0;
+	m_UpPlayer_Data.fAgile				= 0;
+
+	m_UpPlayer_Data.fStaminaAttack		= 0;
+	m_UpPlayer_Data.fStaminaRegen		= 0;
+	m_UpPlayer_Data.fEvasion_StaminaDown= 0;
+	m_UpPlayer_Data.fDamage_StaminaDown	= 0;
+	m_UpPlayer_Data.fGuard_StaminaDown	= 0;
+
+	m_UpPlayer_Data.iFire				= 0;
+	m_UpPlayer_Data.iWater				= 0;
+	m_UpPlayer_Data.iLightning			= 0;
+	m_UpPlayer_Data.iEarth				= 0;
+	m_UpPlayer_Data.iChaos				= 0;
+	m_UpPlayer_Data.iDisease			= 0;
+	m_UpPlayer_Data.iPoison				= 0;
 }
 
 CUI_State* CUI_State::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)

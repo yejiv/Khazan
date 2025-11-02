@@ -123,7 +123,7 @@ HRESULT CMon_HP::Ready_Children()
 {
 	CMon_Gauge::MONGAUGE_DESC Desc;
 
-	Desc.fDepth = m_fDepth;
+	Desc.fDepth = m_fDepth - 0.1f;
 	Desc.iUIType = ENUM_CLASS(UITYPE::PROGRESSBAR);
 	Desc.szName = "HP";
 	Desc.vLocalPos = _float2{ 0.f, -3.f };
