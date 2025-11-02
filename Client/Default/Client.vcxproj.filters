@@ -822,6 +822,9 @@
     <ClInclude Include="..\Public\AS_Rush_Yetuga.h">
       <Filter>92.AI\State\Yetuga\10. Rush</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\AS_JumpGrab_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\09. Grab</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1193,6 +1196,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_Rush_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\10. Rush</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_JumpGrab_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\09. Grab</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

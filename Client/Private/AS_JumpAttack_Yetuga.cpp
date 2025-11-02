@@ -29,7 +29,7 @@ void CAS_JumpAttack_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _fl
 {
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     CBlackBoard* pBB = m_pGameInstance->Get_BlackBoard();
-    CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+    //CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
 
    /* pYetuga->Get_Controller()->

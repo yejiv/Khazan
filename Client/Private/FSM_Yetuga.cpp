@@ -11,6 +11,7 @@
 #include "AS_JumpAttack_Yetuga.h"
 #include "AS_Rush_Yetuga.h"
 #include "AS_Dodge_Yetuga.h"
+#include "AS_JumpGrab_Yetuga.h"
 
 CFSM_Yetuga::CFSM_Yetuga()
 {
@@ -36,6 +37,8 @@ HRESULT CFSM_Yetuga::Initialize()
     if(FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::SMASH), CAS_Smash_Yetuga::Create())))
         return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::JUMPATTACK), CAS_JumpAttack_Yetuga::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::JUMPGRAB), CAS_JumpGrab_Yetuga::Create())))
         return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::RUSH), CAS_Rush_Yetuga::Create())))
         return E_FAIL;

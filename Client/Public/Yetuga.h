@@ -34,6 +34,10 @@ private:
 	void						Hold_Rock();
 	void						Throw_Rock();
 
+	void						Grab_Check_Begin();
+	void						Grab_Check_End();
+
+
 public:
 	class CBody_Yetuga*			m_pBody = { nullptr };
 	class CProjectile_Yetuga*	m_pHoldRock = { nullptr };

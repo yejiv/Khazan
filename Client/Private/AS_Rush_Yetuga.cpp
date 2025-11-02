@@ -15,6 +15,14 @@ void CAS_Rush_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
 
+    CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+    CTransform* pTargetTransform = static_cast<CTransform*>(m_pGameInstance->Get_BlackBoard()->
+        Get_Value<CGameObject*>(pYetuga->Get_Name(), "Target")->Get_Component(TEXT("Com_Transform")));
+    _vector vTargetLoc = pTargetTransform->Get_State(STATE::POSITION);
+
+    pTransform->LookAt(vTargetLoc);
+
+
     pModel->Set_AnimationSet("Rush");
 
 }

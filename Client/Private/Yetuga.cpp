@@ -166,6 +166,20 @@ void CYetuga::Throw_Rock()
 
 }
 
+void CYetuga::Grab_Check_Begin()
+{
+    // 충돌키고
+    // 충돌됬으면
+    _float3 vTemp = m_pBody->Get_BonePoint("Holding");
+    _float4(vTemp.x,vTemp.y,vTemp.z,1.f);
+    // 뼈 포지션을 넣어주고
+}
+
+void CYetuga::Grab_Check_End()
+{
+    // 충돌을 꺼준다.
+}
+
 HRESULT CYetuga::Ready_Components()
 {
     CCharacterVirtual::CV_CAPSULESHAPE_DESC tCharVirDesc{};
@@ -237,9 +251,67 @@ HRESULT CYetuga::Ready_AnimEvent()
     if (nullptr == pModel)
         return E_FAIL;
 
+#pragma region ThrowRock
+
     pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Pick_Rock(); });
     pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Throw_Rock(); });
     pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Hold_Rock(); });
+
+#pragma endregion
+
+
+#pragma region 2HIT
+
+    pModel->Register_Event("2HitOne", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Look_Target(); });
+    //pModel->Register_Event("2HitOne", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { /*충돌끄고*/});
+    //pModel->Register_Event("2HitOne", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { });
+
+    //pModel->Register_Event("2HitTwo", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {  });
+    //pModel->Register_Event("2HitTwo", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { /*타겟 풀어주기*/});
+    //pModel->Register_Event("2HitTwo", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { /*타겟 풀어주기*/});
+#pragma endregion
+
+#pragma region BACKSMASH
+    //pModel->Register_Event("BackSmashOne", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { /*충돌 키고*/ });
+    //pModel->Register_Event("BackSmashOne", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { /*충돌끄고*/});
+    //pModel->Register_Event("BackSmashOne", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { });
+
+    //pModel->Register_Event("BackSmashTwo", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 충돌 키고 });
+    //pModel->Register_Event("BackSmashTwo", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { /*충돌 끄고*/});
+    //pModel->Register_Event("BackSmashTwo", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { /*타겟 풀어주기*/});
+#pragma endregion
+
+
+#pragma region JumpGrab
+
+    pModel->Register_Event("GrabCheck", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {/*충돌키고*/ });
+    pModel->Register_Event("GrabCheck", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { /*충돌끄고*/});
+    //pModel->Register_Event("GrabCheck", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Hold_Rock(); });
+
+    pModel->Register_Event("TargetFree", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() 
+        {
+            // 타겟 풀어주기
+        });
+
+#pragma endregion
+
+
+#pragma region DempeyRoll
+
+    pModel->Register_Event("SetOne", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Look_Target(); });
+    pModel->Register_Event("SetOne", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Look_Target(); });
+    //pModel->Register_Event("SetOne", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { /*타겟 풀어주기*/});
+
+    pModel->Register_Event("SetTwo", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Look_Target(); });
+    pModel->Register_Event("SetTwo", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Look_Target(); });
+    //pModel->Register_Event("SetTwo", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { /*타겟 풀어주기*/});
+
+    // 패리 시 StrongAnimation 으로 
+    pModel->Register_Event("SetThree", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Look_Target(); });
+    pModel->Register_Event("SetThree", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Look_Target(); });
+    //pModel->Register_Event("SetThree", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { /*타겟 풀어주기*/});
+
+#pragma endregion
 
     return S_OK;
     
