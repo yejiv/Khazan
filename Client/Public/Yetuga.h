@@ -37,10 +37,13 @@ private:
 	void						Grab_Check_Begin();
 	void						Grab_Check_End();
 
+	void						Smash(_float fTimeDelta);
 
 public:
 	class CBody_Yetuga*			m_pBody = { nullptr };
 	class CProjectile_Yetuga*	m_pHoldRock = { nullptr };
+
+	_bool						m_isSmash = { false };
 
 public:
 	static CYetuga*				Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

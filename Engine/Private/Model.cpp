@@ -477,7 +477,6 @@ void CModel::UnRegister_Event(const string& strEventKey, ANIM_EVENT_TRIGGERTYPE 
     auto it = m_EventCallbacks.find(MakeCallbackKey(strEventKey, eTriggerType));
     if (it != m_EventCallbacks.end())
         m_EventCallbacks.erase(it);
-
 }
 
 void CModel::Clear_AllEvent()
