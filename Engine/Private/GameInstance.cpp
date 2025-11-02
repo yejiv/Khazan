@@ -25,6 +25,7 @@
 #include "Octree.h"
 #include "Blur.h"
 #include "Fog.h"
+#include "Vignette.h"
 #include "Sequence_Manager.h"
 #include "Sequence_Interface.h"
 
@@ -136,6 +137,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pFog)
 		return E_FAIL;
 
+	m_pVignette = CVignette::Create();
+	if (nullptr == m_pVignette)
+		return E_FAIL;
+
 	m_pSequence_Manager = CSequence_Manager::Create();
 	if (nullptr == m_pSequence_Manager)
 		return E_FAIL;
@@ -153,6 +158,8 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 {
 	//m_pPicking->Update();
+
+	m_pTimer_Manager->Update_HitStop(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
 	m_pInput_Manager->Update();
 
@@ -181,9 +188,10 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 	if (m_pOctree)
 		m_pOctree->Late_Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
-	// Cascade Test
+	// Renderer Resources
 	m_pShadow->Update();
 	m_pFog->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
+	m_pVignette->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
 	m_pLevel_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
@@ -239,6 +247,7 @@ HRESULT CGameInstance::Draw()
 	m_pImgui_Manager->BeginFrame();
 	m_pImgui_Manager->Render();
 	m_pJolt_Manager->Debug_Render();
+	m_pJolt_Manager->RayCast_Render_Clear();
 #endif
 
 	return S_OK;
@@ -842,9 +851,9 @@ void CGameInstance::Reset_Gravity()
 	m_pJolt_Manager->Reset_Gravity();
 }
 
-_bool CGameInstance::CastRay(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition)
+_bool CGameInstance::RayCast(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition, _float3* outNormal)
 {
-	return m_pJolt_Manager->CastRay(vStart, vEnd, outFraction, outPosition);
+	return m_pJolt_Manager->RayCast(vStart, vEnd, outFraction, outPosition, outNormal);
 }
 
 #ifdef _DEBUG
@@ -1015,7 +1024,6 @@ void CGameInstance::Set_BlurConfig(GAUSSIAN_BLUR_CONFIG Config)
 }
 #pragma endregion
 
-
 #pragma region FOG
 HRESULT CGameInstance::Bind_Fog_ShaderResources(CShader* pShader)
 {
@@ -1044,6 +1052,32 @@ void CGameInstance::Set_FogNoiseTextureIndex(_uint iTextureIndex)
 void CGameInstance::Set_FogNoiseWorldSpace(_bool isEnable)
 {
 	m_pFog->Set_FogNoiseWorldSpace(isEnable);
+}
+#pragma endregion
+
+#pragma region VIGNETTE
+HRESULT CGameInstance::Bind_Vignette_ShaderResources(CShader* pShader)
+{
+	return m_pVignette->Bind_Vignette_ShaderResources(pShader);
+}
+
+void CGameInstance::Set_EnableVignette(_bool isEnable)
+{
+	m_pVignette->Set_EnableVignette(isEnable);
+}
+
+VIGNETTE_CONFIG CGameInstance::Get_VignetteConfig()
+{
+	return m_pVignette->Get_VignetteConfig();
+}
+
+void CGameInstance::Set_VignetteConfig(VIGNETTE_CONFIG Config)
+{
+	m_pVignette->Set_VignetteConfig(Config);
+}
+void CGameInstance::Start_VignetteAnimation(_float fDuration, VIGNETTE_CONFIG::ANIMMODE eMode)
+{
+	m_pVignette->Start_VignetteAnimation(fDuration, eMode);
 }
 #pragma endregion
 
@@ -1133,9 +1167,10 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pSequence_Manager);
 	Safe_Release(m_pThreadPool);
 
-	Safe_Release(m_pFog);
 	Safe_Release(m_pOctree);
 	
+	Safe_Release(m_pVignette);
+	Safe_Release(m_pFog);
 	Safe_Release(m_pBlur);
 	Safe_Release(m_pSSAO);
 	Safe_Release(m_pShadow);

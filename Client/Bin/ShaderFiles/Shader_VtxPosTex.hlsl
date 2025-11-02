@@ -142,6 +142,17 @@ technique11 DefaultTechnique
 
     }
 
+    pass MeshTrail
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_BLEND();
+
+    }
+
     ///* 정점의 정보에 따라 쉐이더 파일을 작성한다. */
     ///* 정점의 정보가 같지만 완전히 다른 취급을 하느 ㄴ객체나 모델을 그리는 방식 -> 렌더링방식에 차이가 생길 수 있다. */ 
     //pass DefaultPass1

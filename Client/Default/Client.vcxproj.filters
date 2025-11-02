@@ -274,9 +274,6 @@
     <Filter Include="03.Tool\Camera">
       <UniqueIdentifier>{71d26352-adad-4d1d-a566-39f2285daa3d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03.Tool\Camera\Controller">
-      <UniqueIdentifier>{ddd3541e-7243-4f90-a57b-80b45d25d080}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\Creature\Monster\Yetuga\Body">
       <UniqueIdentifier>{8fef0fd1-b2ca-4175-81dc-514453bf821a}</UniqueIdentifier>
     </Filter>
@@ -306,21 +303,6 @@
     </Filter>
     <Filter Include="02.GameObject\UI\Inven\List">
       <UniqueIdentifier>{a35136d7-7ad3-4580-b681-c029de6c4006}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\Spear">
-      <UniqueIdentifier>{0c70caf0-2026-4253-ae91-ea448f86f5b0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\Spear\Base">
-      <UniqueIdentifier>{16f5b752-4b1d-4dbe-abd3-17ff982bf630}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\Spear\Body">
-      <UniqueIdentifier>{997d3adc-61d3-438d-be89-7eed0978d401}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\Spear\Weapon">
-      <UniqueIdentifier>{2c9350a0-3eb6-42b7-8f6c-362a2268d53a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\Sample\Weapon">
-      <UniqueIdentifier>{3beaf210-4418-4b5f-8dba-cf71731a9a86}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObject\Creature\Khazan\Spear">
       <UniqueIdentifier>{0c70caf0-2026-4253-ae91-ea448f86f5b0}</UniqueIdentifier>
@@ -417,6 +399,24 @@
     </Filter>
     <Filter Include="02.GameObject\Sky\Sphere">
       <UniqueIdentifier>{b0adc5cf-a380-4078-8cc6-136824a02480}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Announce">
+      <UniqueIdentifier>{84a25179-8e31-451d-99ed-b011ba78bff2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\07. Hit">
+      <UniqueIdentifier>{da1ea781-147f-4124-9510-f2c5c6d3c222}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\08.Groggy">
+      <UniqueIdentifier>{f42c73b1-3285-400d-8f2c-76d830865620}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\09.Dead">
+      <UniqueIdentifier>{4cf7082c-0498-48f9-9990-97868ab4536a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\08. Amageddon">
+      <UniqueIdentifier>{6bf50b95-38c3-4fe2-a1d9-b502e4ab0fb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\07. IceBreath">
+      <UniqueIdentifier>{5893559b-ea54-4504-af39-8097d6190c68}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -720,15 +720,6 @@
     <ClInclude Include="..\Public\Spear_Khazan_Spear.h">
       <Filter>02.GameObject\Creature\Khazan\Spear\Weapon</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Khazan_Spear.h">
-      <Filter>02.GameObject\Creature\Khazan\Spear\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Body_Khazan_Spear.h">
-      <Filter>02.GameObject\Creature\Khazan\Spear\Body</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Spear_Khazan_Spear.h">
-      <Filter>02.GameObject\Creature\Khazan\Spear\Weapon</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Sequence_Dummy.h">
       <Filter>04. Sequence\Dummy</Filter>
     </ClInclude>
@@ -783,12 +774,23 @@
     <ClInclude Include="..\public\Khazan_Spear_ASManager.h">
       <Filter>02.GameObject\Creature\Khazan\Spear\Anim State Manager</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Camera_Controller.h" />
     <ClInclude Include="..\Public\Sky.h">
       <Filter>02.GameObject\Sky\Sky</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\SkySphere.h">
       <Filter>02.GameObject\Sky\Sphere</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Announce_MapName.h">
+      <Filter>02.GameObject\UI\Announce</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Hit_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\07. Hit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_IceBreath_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\07. IceBreath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Amageddon_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\08. Amageddon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1081,15 +1083,6 @@
     <ClCompile Include="..\Private\Spear_Khazan_Spear.cpp">
       <Filter>02.GameObject\Creature\Khazan\Spear\Weapon</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Khazan_Spear.cpp">
-      <Filter>02.GameObject\Creature\Khazan\Spear\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Body_Khazan_Spear.cpp">
-      <Filter>02.GameObject\Creature\Khazan\Spear\Body</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Spear_Khazan_Spear.cpp">
-      <Filter>02.GameObject\Creature\Khazan\Spear\Weapon</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Sequence_Dummy.cpp">
       <Filter>04. Sequence\Dummy</Filter>
     </ClCompile>
@@ -1141,12 +1134,23 @@
     <ClCompile Include="..\private\Khazan_Spear_ASManager.cpp">
       <Filter>02.GameObject\Creature\Khazan\Spear\Anim State Manager</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Camera_Controller.cpp" />
     <ClCompile Include="..\Private\Sky.cpp">
       <Filter>02.GameObject\Sky\Sky</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\SkySphere.cpp">
       <Filter>02.GameObject\Sky\Sphere</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Announce_MapName.cpp">
+      <Filter>02.GameObject\UI\Announce</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Hit_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\07. Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_IceBreath_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\07. IceBreath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Amageddon_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\08. Amageddon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

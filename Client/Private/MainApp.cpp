@@ -55,10 +55,63 @@ HRESULT CMainApp::Initialize()
 	return S_OK;
 }
 
-void CMainApp::Update(TIME_DELTA tTimeDelta)
+void CMainApp::Update(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_LCONTROL))
+	{
+		//m_pClientInstance->ActiveCamera_Shaking(2.f, 1.f);
+		//m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.3f, 0.003f, 3.f);
+
+		FOVModifier tMod{};
+
+		// PRIORITY
+		tMod.strID = TEXT("Hit");
+		tMod.eMode = FOVModifier::FOV_MODE::PRIORITY;
+		tMod.fDuration = 0.f;
+		tMod.fFrom = 0.f;
+		tMod.fTo = XMConvertToRadians(50.f);
+		tMod.iPriority = 5.f;
+		tMod.Ease = EaseOutQuad;
+
+		// ADD
+		//tMod.eMode = FOVModifier::FOV_MODE::ADD;
+		//tMod.fDuration = 5.f;
+		//tMod.fFrom = 0.f;
+		//tMod.fTo = XMConvertToRadians(80.f);
+		//tMod.iPriority = 5.f;
+		//tMod.Ease = EaseOutQuad;
+
+		// Multiply
+		//tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+		//tMod.fDuration = 5.f;
+		//tMod.fFrom = XMConvertToRadians(60.f);
+		//tMod.fTo = XMConvertToRadians(80.f);
+		//tMod.iPriority = 5.f;
+		//tMod.Ease = EaseOutQuad;
+
+		m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
+	}
+	if (m_pGameInstance->Key_Down(DIK_RCONTROL))
+	{
+		m_pClientInstance->ActiveCamera_KillFov(L"Hit");
+	}
+
+	TIME_DELTA      tTimeDelta = {};
+
+	const _float fDt_World = m_pGameInstance->Get_ScaledDelta(TEXT("Timer_60"), TIME_CHANNEL::WORLD);
+	const _float fDt_Player = m_pGameInstance->Get_ScaledDelta(TEXT("Timer_60"), TIME_CHANNEL::PLAYER);
+	const _float fDt_Enemy = m_pGameInstance->Get_ScaledDelta(TEXT("Timer_60"), TIME_CHANNEL::ENEMY);
+	const _float fDt_UI = m_pGameInstance->Get_ScaledDelta(TEXT("Timer_60"), TIME_CHANNEL::MAP);
+	const _float fDt_FX = m_pGameInstance->Get_ScaledDelta(TEXT("Timer_60"), TIME_CHANNEL::EFFECT);
+	tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)] = fDt_World;
+	tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::PLAYER)] = fDt_Player;
+	tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::ENEMY)] = fDt_Enemy;
+	tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::MAP)] = fDt_UI;
+	tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::EFFECT)] = fDt_FX;
+
 	m_pGameInstance->Update_Engine(tTimeDelta);
 	m_pClientInstance->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
+	
 }
 
 HRESULT CMainApp::Render()
@@ -241,12 +294,26 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_State"),
 		CUI_State::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
 
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Announce_MapName"),
+		CUI_Announce_MapName::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
+
+	CUIObject::UIOBJECT_DESC AnnounceDesc = {};
+	AnnounceDesc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
+	AnnounceDesc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
+	AnnounceDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+	AnnounceDesc.szName = "Announce";
+	AnnounceDesc.fDepth = 9.f;
+
+	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
+		ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Announce_MapName"), TIME_CHANNEL::WORLD, &AnnounceDesc)))
+		return E_FAIL;
+
 	CUIObject::UIOBJECT_DESC Desc = {};
 	Desc.vLocalSize = { 64.f, 64.f };
 	Desc.vLocalPos = { 0.f, 0.f };
 	Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
 	Desc.szName = "DamageText";
-	Desc.fDepth = 5.f;
+	Desc.fDepth = 7.9f;
 
 	CHECK_FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_DamageText"),
 		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text"), &Desc, 40), E_FAIL);
@@ -255,7 +322,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	Desc.vLocalPos = { 0.f, 0.f };
 	Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
 	Desc.szName = "MonHP";
-	Desc.fDepth = 6.f;
+	Desc.fDepth = 9.f;
 
 	CHECK_FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Mon_HP"),
 		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Mon_HP"), &Desc, 20), E_FAIL);
@@ -264,7 +331,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	Desc.vLocalPos = { 0.f, 0.f };
 	Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
 	Desc.szName = "KeyGuide";
-	Desc.fDepth = 6.f;
+	Desc.fDepth = 8.f;
 
 	CHECK_FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Interaction_Guide"),
 		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide"), &Desc, 15), E_FAIL);
