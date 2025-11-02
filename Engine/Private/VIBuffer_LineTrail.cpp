@@ -68,7 +68,7 @@ HRESULT CVIBuffer_LineTrail::Initialize_Prototype()
 
 HRESULT CVIBuffer_LineTrail::Initialize_Clone(void* pArg)
 {
-	m_fOffset = 0.5f;
+	m_fOffset = 5.f;
 
 	if (pArg)
 	{
@@ -110,6 +110,46 @@ void CVIBuffer_LineTrail::Update(deque<_float4>& vertices, const _float4* CamPos
 		_vector vDir = XMLoadFloat4(&vertices[dataIdx - 1]) - XMLoadFloat4(&vertices[dataIdx]);
 		_vector vLookDir = XMVector4Normalize(XMLoadFloat4(CamPos) - XMLoadFloat4(&vertices[dataIdx]));
 		_vector vRight = XMVector4Normalize(XMVector3Cross(vDir, vLookDir)) * m_fOffset * 0.5f;
+
+		XMStoreFloat3(&pVertices[NumDrawVertices - 2].vPosition, XMLoadFloat4(&vertices[dataIdx]) + vRight);
+		pVertices[NumDrawVertices - 2].vTexcoord = _float2((_float)(NumDrawVertices - 2) / (_float)(NumDrawVertices - 2), 0);
+
+		XMStoreFloat3(&pVertices[NumDrawVertices - 1].vPosition, XMLoadFloat4(&vertices[dataIdx++]) - vRight);
+		pVertices[NumDrawVertices - 1].vTexcoord = _float2((_float)(NumDrawVertices - 2) / (_float)(NumDrawVertices - 2), 1);
+
+		m_pContext->Unmap(m_pVB, 0);
+	}
+}
+
+void CVIBuffer_LineTrail::Update(deque<_float4>& vertices)
+{
+	if (vertices.size() < 2)
+		return;
+
+	_int NumDrawVertices = vertices.size() * 2;
+	m_iNumDrawIndices = ((NumDrawVertices / 2) - 1) * 6;
+
+	D3D11_MAPPED_SUBRESOURCE SubResource;
+	if (SUCCEEDED(m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
+	{
+		VTXPOSTEX* pVertices = reinterpret_cast<VTXPOSTEX*>(SubResource.pData);
+		_uint dataIdx{};
+		for (_uint i = 0; i < NumDrawVertices - 2; i += 2)
+		{
+			//위아래 정점 빌보딩해서 직접 만들기
+			_vector vDir = XMLoadFloat4(&vertices[dataIdx]) - XMLoadFloat4(&vertices[dataIdx + 1]);
+			_vector vRight = XMVector4Normalize(XMVectorSet(-XMVectorGetY(vDir), XMVectorGetX(vDir), 0.f, 0.f)) * m_fOffset * 0.5f;
+
+			XMStoreFloat3(&pVertices[i].vPosition, XMLoadFloat4(&vertices[dataIdx]) + vRight);
+			pVertices[i].vTexcoord = _float2((_float)i / (_float)(NumDrawVertices - 2), 0);
+
+			XMStoreFloat3(&pVertices[i + 1].vPosition, XMLoadFloat4(&vertices[dataIdx++]) - vRight);
+			pVertices[i + 1].vTexcoord = _float2((_float)i / (_float)(NumDrawVertices - 2), 1);
+		}
+
+		//마지막 쌍 예외처리
+		_vector vDir = XMLoadFloat4(&vertices[dataIdx - 1]) - XMLoadFloat4(&vertices[dataIdx]);
+		_vector vRight = XMVector4Normalize(XMVectorSet(-XMVectorGetY(vDir), XMVectorGetX(vDir), 0.f, 0.f)) * m_fOffset * 0.5f;
 
 		XMStoreFloat3(&pVertices[NumDrawVertices - 2].vPosition, XMLoadFloat4(&vertices[dataIdx]) + vRight);
 		pVertices[NumDrawVertices - 2].vTexcoord = _float2((_float)(NumDrawVertices - 2) / (_float)(NumDrawVertices - 2), 0);

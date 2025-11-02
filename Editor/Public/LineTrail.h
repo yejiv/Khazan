@@ -13,6 +13,7 @@ NS_BEGIN(Editor)
 
 class CLineTrail : public CGameObject
 {
+protected:
 	typedef struct tagLineTrailDesc : public CVIBuffer_LineTrail::LINE_BUFFER_DESC
 	{
 		_float	fLifeTime;
@@ -20,7 +21,7 @@ class CLineTrail : public CGameObject
 		_uint	iDivisionCount;
 	}LINE_TRAIL_DESC;
 
-private:
+protected:
 	CLineTrail(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	CLineTrail(const CLineTrail& Prototype);
 	virtual ~CLineTrail() = default;
@@ -34,22 +35,22 @@ public:
 
 	void					Add_ControlPoint(_fvector pos);
 
-private:
-	HRESULT					Ready_Component(void* pArg);
+protected:
+	virtual HRESULT			Ready_Component(void* pArg);
 	HRESULT					Bind_ShaderResources();
 
-private:
+protected:
 	CTexture*				m_pTextureCom = { nullptr };
 	CVIBuffer_LineTrail*	m_pVIBufferCom = { nullptr };
 	CShader*				m_pShaderCom = { nullptr };
 
-private :
+protected:
 	_float					m_fLifeTime;
 
 	_uint					m_iTextureIdx;
 	_int					m_iDivisionCount;
 
-private :
+protected:
 	deque<CVIBuffer_LineTrail::LINE_TRAIL_POINT>	m_ControlPoints;
 	deque<_float4>	m_TrailPoints;
 

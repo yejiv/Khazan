@@ -27,6 +27,7 @@ public:
 	virtual HRESULT Initialize_Prototype() override;
 	virtual HRESULT Initialize_Clone(void* pArg) override;
 	void			Update(deque<_float4>& vertices, const _float4* CamPos);
+	void			Update(deque<_float4>& vertices);
 	virtual HRESULT Render() override;
 
 private :
