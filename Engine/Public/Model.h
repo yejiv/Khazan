@@ -68,6 +68,8 @@ public:
 
 
 public:
+	// 권성은 테스트
+	_float				MakeRatio();
 	/* 정보 */
 	_uint				Get_NumMeshes() const { return m_iNumMeshes; }
 	_uint				Get_BoneIndex(const _char* pBoneName);

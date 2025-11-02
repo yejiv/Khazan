@@ -353,6 +353,10 @@ namespace Engine
 		return XMQuaternionNormalize(XMQuaternionRotationMatrix(R));
 	}
 
+	// 카메라용(정환)
+	inline _float EaseOutQuad(_float t) { return 1.f - (1.f - t) * (1.f - t); }
+	inline _float SmoothStep(_float t) { return t * t * (3.f - 2.f * t); }
+
 }
 
 #endif // Engine_Function_h__

@@ -5,6 +5,7 @@ namespace Client {
 	enum class EVENT_TYPE { TEST, UI_QUICK_SLOT,
 		OBJECT_INTERACT,							// 상호 작용할 오브젝트에 접촉 ( 맵 오브젝트가 구독 )
 		INTERACT_TYPE,								// 상호 작용할 오브젝트에 접촉 ( 플레이어가 구독 )
+		ANNOUNCE_MAPNAME,							// 지역 이름, 연출 이름 출력
 		END };
 
 	// Structs
@@ -47,10 +48,21 @@ namespace Client {
 	struct EventBigChest {
 		XMFLOAT3 vPosition{};
 	};
+
+	//UI 퀵슬롯 관련 이벤트
 	struct EVENT_HUD_QUICKSLOT {
 		_bool isEquip;
 		_int  iIndex;
 		_int  iItemIndex;
 		_int* iItemCount;
+	};
+
+	//지역 이름 표시하는 이벤트
+	struct EVENT_ANNOUNCE_MAPNAME {
+		_wstring	wstrName;				//지역이름
+		_int		iMapType;				//화면에 표시하는 지역 이름
+		_float		fTime;					//화면에 출력시간
+		_int		fFadeOutTime;			//화면에서 사라지는 시간
+		_bool		isDissovle;
 	};
 }

@@ -19,3 +19,4 @@
 #include "Interaction_Guide.h"
 
 #include "MainMenu_Deco.h"
+#include "UI_Announce_MapName.h"

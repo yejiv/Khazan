@@ -349,11 +349,17 @@
     <Filter Include="01.Utility\93.Sequence\Interface">
       <UniqueIdentifier>{0dce9e87-4e0f-4a18-919a-9f7fb1d9fdc6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\18.Hit">
-      <UniqueIdentifier>{b728cd5d-c96c-443b-8d01-2404ac46d718}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\95.AI\BehaviorTree\Node\Composite\Interrupt">
       <UniqueIdentifier>{5c193903-8f07-4bc4-8fb4-2e9b9b1b8fc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\94.RenderingResources\Vignette">
+      <UniqueIdentifier>{5a514760-80ef-4a39-828d-44fdfc11fc37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\19.Decal">
+      <UniqueIdentifier>{86ca67f8-c6d1-410a-8674-6252450cbc2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\19.Decal\Manager">
+      <UniqueIdentifier>{a64e4049-d756-4b51-af2b-6f50a0d345fb}</UniqueIdentifier>
     </Filter>
     <Filter Include="01.Utility\03.Component\VIBuffer\Trail">
       <UniqueIdentifier>{5465306f-5fd6-47a4-83c0-e9515b6df4cf}</UniqueIdentifier>
@@ -695,6 +701,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\InterruptibleSelector_Node.cpp">
       <Filter>01.Utility\95.AI\BehaviorTree\Node\Composite\Interrupt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Vignette.cpp">
+      <Filter>01.Utility\94.RenderingResources\Vignette</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Decal.cpp">
+      <Filter>01.Utility\19.Decal</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_QuadTrail.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Trail\VIBuffer_QuadTrail</Filter>
@@ -1078,6 +1090,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\InterruptibleSelector_Node.h">
       <Filter>01.Utility\95.AI\BehaviorTree\Node\Composite\Interrupt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Vignette.h">
+      <Filter>01.Utility\94.RenderingResources\Vignette</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Decal.h">
+      <Filter>01.Utility\19.Decal</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_QuadTrail.h">
       <Filter>01.Utility\03.Component\VIBuffer\Trail\VIBuffer_QuadTrail</Filter>

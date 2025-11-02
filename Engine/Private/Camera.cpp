@@ -540,10 +540,12 @@ HRESULT CCamera::Load(map<_wstring, vector<CAMERA_KEYFRAME>> Animations, map<_ws
 	return S_OK;
 }
 
-void CCamera::Update_PipeLines()
+void CCamera::Update_PipeLines(_float fTimeDelta)
 {
 	if (!m_isActive)
 		return;
+
+	Update_FOVChannel(fTimeDelta);
 
 	m_pGameInstance->Set_Transform(D3DTS::VIEW, m_pTransformCom->Get_WorldMatrix_Inverse());
 	m_pGameInstance->Set_Transform(D3DTS::PROJ, XMMatrixPerspectiveFovLH(m_fFovy, m_fAspect, m_fNear, m_fFar));
@@ -601,6 +603,130 @@ void CCamera::Shaking(_float fTimeDelta)
 
 	// 위치만 흔들기 (회전 쉐이크 원하면 축도 회전해서 Set_State)
 	m_pTransformCom->Set_State(STATE::POSITION, vShakenPos);
+}
+
+void CCamera::Push_FOVModifier(const FOVModifier& tMod)
+{
+	_int idx = FindModIndexByID(tMod.strID);
+	if (idx >= 0)
+	{
+		auto& Mod = m_vFOVMods[idx];
+		Mod.eMode = tMod.eMode;
+		Mod.fFrom = tMod.fFrom;
+		Mod.fTo = tMod.fTo;
+		Mod.fTime = 0.f;
+		Mod.fDuration = tMod.fDuration;
+		Mod.iPriority = tMod.iPriority;
+		Mod.isAlive = true;
+		Mod.Ease = tMod.Ease;
+	}
+	else
+	{
+		FOVModifier Mod = tMod;
+		Mod.fTime = 0.f;
+		Mod.isAlive = true;
+		m_vFOVMods.emplace_back(std::move(Mod));
+	}
+
+}
+
+void CCamera::Kill_FOVModifier(const _wstring& strID)
+{
+	_int idx = FindModIndexByID(strID);
+	if (idx >= 0)
+		m_vFOVMods[idx].isAlive = false;
+}
+
+void CCamera::Update_FOVChannel(_float fTimeDelta)
+{
+	// 타임라인 진행 & 완료 판전
+	for (auto& Mod : m_vFOVMods)
+	{
+		if (Mod.isAlive == false)
+			continue;
+
+		Mod.fTime += fTimeDelta;
+		const _float fTime = (Mod.fDuration > 0.f) ? min(Mod.fTime / Mod.fDuration, 1.f) : 1.f;
+
+		// 유지형 아니면 즉시 삭제
+		if (fTime >= 1.f && Mod.fDuration > 0.f)
+		{
+			if (Mod.eMode == FOVModifier::FOV_MODE::ADD ||
+				Mod.eMode == FOVModifier::FOV_MODE::MULTIPLY)
+			{
+				Mod.isAlive = false;
+			}
+		}
+	}
+
+	// 죽은 항목 삭제
+	m_vFOVMods.erase(
+		remove_if(m_vFOVMods.begin(), m_vFOVMods.end(),
+			[](const FOVModifier& Mod)
+			{
+				return Mod.isAlive <= 0.f;
+			}), m_vFOVMods.end());
+
+	// 합성 (Base * Multiply + Add) 우선순위 포함하여
+	_float fMulAcc = 1.f;
+	_float fAddAcc = 0.f;
+	const FOVModifier* pPri = nullptr;
+
+	for (auto& Mod : m_vFOVMods)
+	{
+		const _float fProgress = Mod.fDuration > 0.f ? min(Mod.fTime / Mod.fDuration, 1.f) : 1.f;
+		const _float fEaseRatio = Mod.Ease ? Mod.Ease(fProgress) : fProgress;
+		const _float fModulated = Mod.fFrom + (Mod.fTo - Mod.fFrom) * fEaseRatio;
+
+		switch (Mod.eMode)
+		{
+		case FOVModifier::FOV_MODE::MULTIPLY:
+			fMulAcc *= fModulated;
+			break;
+
+		case FOVModifier::FOV_MODE::ADD:
+			fAddAcc += fModulated;
+			break;
+
+		case FOVModifier::FOV_MODE::PRIORITY:
+			if (!pPri || pPri->iPriority < Mod.iPriority)
+				pPri = &Mod;
+			break;
+		}
+	}
+
+	_float fTargetFov = m_fBaseFOV * fMulAcc + fAddAcc;
+
+	if (pPri)
+	{
+		const _float fProgress =
+			(pPri->fDuration > 0.f) ? min(pPri->fTime / pPri->fDuration, 1.f) : 1.f;
+
+		const _float fEaseRatio =
+			(pPri->Ease ? pPri->Ease(fProgress) : fProgress);
+
+		fTargetFov = pPri->fFrom + (pPri->fTo - pPri->fFrom) * fEaseRatio;
+	}
+
+	if (m_vFOVMods.empty())
+		fTargetFov = m_fBaseFOV;
+
+	fTargetFov = max(m_fFOVMin, min(fTargetFov, m_fFOVMax));
+
+	const _float fSmoothingWeight = std::clamp(m_fFOVSmooth * fTimeDelta, 0.f, 1.f);
+	const _float fPrevFovy = m_fFovy;
+	m_fFovy = fPrevFovy + (fTargetFov - fPrevFovy) * fSmoothingWeight;
+}
+
+_int CCamera::FindModIndexByID(const _wstring& strID) const
+{
+	for (_int i = 0; i < static_cast<_int>(m_vFOVMods.size()); i++)
+	{
+		if (m_vFOVMods[i].strID == strID)
+			return i;
+	}
+
+	return -1;
 }
 
 void CCamera::Free()

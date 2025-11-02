@@ -10,7 +10,7 @@ CFont_Renderer::CFont_Renderer(ID3D11Device* pDevice, ID3D11DeviceContext* pCont
 HRESULT CFont_Renderer::Initialize()
 {
     D3D11_BUFFER_DESC cbDesc{};
-    cbDesc.ByteWidth = sizeof(XMFLOAT4X4) + sizeof(XMFLOAT4);
+    cbDesc.ByteWidth = sizeof(XMFLOAT4X4) + sizeof(XMFLOAT4) + sizeof(XMFLOAT4);
     cbDesc.Usage = D3D11_USAGE_DEFAULT;
     cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     m_pDevice->CreateBuffer(&cbDesc, nullptr, &m_pCB);
@@ -59,6 +59,11 @@ HRESULT CFont_Renderer::DrawText(CFont_Face* pFont, const _wstring& strText, _fl
 
     _uint baseIndex = 0;
 
+    _float minX = +FLT_MAX;
+    _float minY = +FLT_MAX;
+    _float maxX = -FLT_MAX;
+    _float maxY = -FLT_MAX;
+
     for (_tchar ch : strText)
     {
         const GLYPH_INFO* g = pFont->GetGlyph(ch);
@@ -76,9 +81,19 @@ HRESULT CFont_Renderer::DrawText(CFont_Face* pFont, const _wstring& strText, _fl
 
         indices.insert(indices.end(), { baseIndex, baseIndex + 1, baseIndex + 2, baseIndex, baseIndex + 2, baseIndex + 3 });
         baseIndex += 4;
+        
+        minX = min(minX, xpos);
+        minY = min(minY, ypos);
+        maxX = max(maxX, xpos + w);
+        maxY = max(maxY, ypos + h);
+
         cursorX += g->iAdvance;
     }
 
+    _float rectX = minX;
+    _float rectY = minY;
+    _float rectW = maxX - minX;
+    _float rectH = maxY - minY;
     // VB Map/Unmap
     D3D11_MAPPED_SUBRESOURCE mappedVB{};
     m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedVB);
@@ -99,9 +114,11 @@ HRESULT CFont_Renderer::DrawText(CFont_Face* pFont, const _wstring& strText, _fl
     m_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     // 상수버퍼 (색상 + 투영)
-    struct CBData { XMFLOAT4X4 mtx; XMFLOAT4 color; } cb;
+    struct CBData { _float4x4 mtx; _float4 color; _float4 rect;} cb;
     XMStoreFloat4x4(&cb.mtx, XMMatrixTranspose(XMMatrixOrthographicOffCenterLH(0, 1920, 1080, 0, 0, 1)));
+
     cb.color = vColor;
+    cb.rect = { rectX, rectY, rectW, rectH };
     m_pContext->UpdateSubresource(m_pCB, 0, nullptr, &cb, 0, 0);
     m_pContext->VSSetConstantBuffers(0, 1, &m_pCB);
     m_pContext->PSSetConstantBuffers(0, 1, &m_pCB);
@@ -146,6 +163,11 @@ HRESULT CFont_Renderer::DrawTextBox(CFont_Face* pFont, const _wstring& strText, 
     _float lineHeight = vSize.y + fOffsetHeight;
     _float lineWidth = 0.f;
 
+    _float minX = +FLT_MAX;
+    _float minY = +FLT_MAX;
+    _float maxX = -FLT_MAX;
+    _float maxY = -FLT_MAX;
+
     for (_tchar ch : strText)
     {
         if (ch == L'\n')
@@ -183,10 +205,23 @@ HRESULT CFont_Renderer::DrawTextBox(CFont_Face* pFont, const _wstring& strText, 
 
         indices.insert(indices.end(), { baseIndex, baseIndex + 1, baseIndex + 2, baseIndex, baseIndex + 2, baseIndex + 3 });
         baseIndex += 4;
+
+        minX = min(minX, xpos);
+        minY = min(minY, ypos);
+        maxX = max(maxX, xpos + w);
+        maxY = max(maxY, ypos + h);
+        
         cursorX += g->iAdvance;
         lineWidth += g->iAdvance;
         vSize.x -= g->iAdvance;
+
+
     }
+    
+    _float rectX = minX;
+    _float rectY = minY;
+    _float rectW = maxX - minX;
+    _float rectH = maxY - minY;
 
     // VB Map/Unmap
     D3D11_MAPPED_SUBRESOURCE mappedVB{};
@@ -208,9 +243,11 @@ HRESULT CFont_Renderer::DrawTextBox(CFont_Face* pFont, const _wstring& strText, 
     m_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     // 상수버퍼 (색상 + 투영)
-    struct CBData { XMFLOAT4X4 mtx; XMFLOAT4 color; } cb;
+    struct CBData { _float4x4 mtx; _float4 color; _float4 rect; } cb;
     XMStoreFloat4x4(&cb.mtx, XMMatrixTranspose(XMMatrixOrthographicOffCenterLH(0, 1920, 1080, 0, 0, 1)));
+
     cb.color = vColor;
+    cb.rect = { rectX, rectY, rectW, rectH };
     m_pContext->UpdateSubresource(m_pCB, 0, nullptr, &cb, 0, 0);
     m_pContext->VSSetConstantBuffers(0, 1, &m_pCB);
     m_pContext->PSSetConstantBuffers(0, 1, &m_pCB);

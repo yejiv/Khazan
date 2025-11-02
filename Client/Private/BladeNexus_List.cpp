@@ -87,7 +87,7 @@ void CBladeNexus_List::Update(_float fTimeDelta)
 		Desc.isClick = false;
 		Bubble_EventCall(&Desc);
 	}
-	if (ButtonClick(g_hWnd, false, true))
+	if (ButtonClick(g_hWnd, false, true, INPUT_TYPE::UI))
 	{
 		CUI_BladeNexus::MAINMENUBUBBLE_DESC Desc{};
 		Desc.eListType = m_eMenuType;

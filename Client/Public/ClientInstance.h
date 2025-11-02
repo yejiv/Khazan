@@ -73,6 +73,10 @@ public:
 	_float3 Get_ActiveCameraPos();
 	_float4 Get_ActiveCameraLook();
 
+	void ActiveCamera_Shaking(_float fPower, _float fDuration);
+	void ActiveCamera_PushFOVModifier(const FOVModifier& tNewModifier);
+	void ActiveCamera_KillFov(const _wstring& strID);
+
 	void Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
 	void Clear_CameraManager(_uint iLevelIndex);
 #pragma endregion

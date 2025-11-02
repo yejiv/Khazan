@@ -217,6 +217,9 @@
     <Filter Include="02.GameObject\Effect\Trail\MeshTrail">
       <UniqueIdentifier>{92517f09-02ed-4642-89e6-18111d0361f7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Sky">
+      <UniqueIdentifier>{c39f273c-ce44-4269-9200-f2f0e77106d6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -408,6 +411,9 @@
     <ClInclude Include="..\public\AnimationTool.h">
       <Filter>02.GameObject\Animation\98.Temp Camera</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\SkySphere.h">
+      <Filter>02.GameObject\MapObject\Sky</Filter>
+    </ClInclude>
     <ClInclude Include="..\Public\MeshTrail.h">
       <Filter>02.GameObject\Effect\Trail\MeshTrail</Filter>
     </ClInclude>
@@ -596,6 +602,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\BigChest.cpp">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\01.BigChest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SkySphere.cpp">
+      <Filter>02.GameObject\MapObject\Sky</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\MeshTrail.cpp">
       <Filter>02.GameObject\Effect\Trail\MeshTrail</Filter>

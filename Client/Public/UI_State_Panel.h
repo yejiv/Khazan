@@ -17,7 +17,7 @@ private:
 	virtual ~CUI_State_Panel() = default;
 
 public:
-	HRESULT								Setting_PanelLevel(_int iPanelType, UI_PLAYER_STATE_DATA* Data);
+	HRESULT								Setting_PanelLevel(_int iPanelType, UI_PLAYER_STATE_DATA* Data, UI_PLAYER_STATE_DATA* pUPData);
 	void								State_Hover();
 	void								State_On(_float fValue);
 public:
@@ -34,18 +34,20 @@ private:
 	CTexture*							m_pTextureCom = { nullptr };
 	CVIBuffer_Rect*						m_pVIBufferCom = { nullptr };
 
-	_float								m_fUpValue = {};
 	_bool								m_isUpgrade = { false };
 
 	class CUI_TextBox*					m_pName_TextBox = { nullptr };
 	class CUI_TextBox*					m_pValue_TextBox = { nullptr };
+	class CUI_TextBox*					m_pUpValue_TextBox = { nullptr };
 	class CUI_Atlas_Icon*				m_pIcon = { nullptr };
 	
 	PLAYTER_STATE						m_eState = { PLAYTER_STATE::END };
 	UI_PLAYER_STATE_DATA*				m_pData;
+	UI_PLAYER_STATE_DATA*				m_pUpData;
 private:
 	HRESULT								Ready_Component();
 	void								Update_Text();
+	void								Update_UpGradeText(_float fTimeDelta);
 public:
 	static CUI_State_Panel*				Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
 	virtual CGameObject*				Clone(void* pArg) override;

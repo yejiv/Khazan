@@ -72,16 +72,22 @@ namespace Engine
 
 	}MAPOBJECT_PROPERTIES;
 
-	typedef struct tagInteractiveDesc		// 공부하고 추가 예정
+	typedef struct tagSkyDesc
 	{
-		enum TYPE { SAVEPOINT, LADDER, LEVER, ELEVATOR, PLZADD, END };
+		XMFLOAT3 vNebulaColor{ 0.1f, 0.1f, 0.1f };			// 하늘 색깔 ( 마스크 적용 X, 단색 )
+		float fStarStrength{ 1.5f };						// 별의 세기
+		float fMoonSize{ 0.45f };							// 달 크기
+		XMFLOAT3 vMoonDirection{ -0.6f, 0.5f, 1.f };		// 달의 방향 ( 카메라 기준 )
+		XMFLOAT3 vMoonColor{ 1.f, 1.f, 1.f };				// 달의 색상
+		float fMoonIntensity{ 1.5f };						// 달의 세기
 
-		bool isOnce{ false };				// 한번만 작동하는지
-		bool isActive{ false };				// 활성화 되었는지
-		float fInteractiveRange{};			// 상호작용 범위
-		unsigned int iTriggerID{};			// 어떤 트리거랑 연동할 지
+	}SKY_DESC;
 
-	}INTERACTIVE_DESC;
+	typedef struct tagCloudDesc
+	{
+		// 구름 Desc 넣을 예정
+
+	}CLOUD_DESC;
 
 	typedef struct tagCatmullrom
 	{
@@ -186,6 +192,17 @@ namespace Engine
 		float		fBias;
 	}OUTLINE_CONFIG;
 
+	typedef struct tagVignetteConfig
+	{
+		enum ANIMMODE { SMOOTH_SMOOTH, SMOOTH_INTANT, INTANT_SMOOTH, NONE };
+
+		ANIMMODE	eMode;
+		XMFLOAT3	vColor;
+		float		fPower;
+		float		fIntensity;
+		float		fMaxIntensity;
+	}VIGNETTE_CONFIG;
+
 	struct HitStopState
 	{
 		bool isActive = false;
@@ -201,13 +218,28 @@ namespace Engine
 		float TimeDeltas[ENUM_CLASS(TIME_CHANNEL::END)];
 	}TIME_DELTA;
 
+	struct FOVModifier
+	{
+		enum class FOV_MODE { ADD, MULTIPLY, PRIORITY };
+		wstring strID;
+		FOV_MODE eMode = FOV_MODE::ADD;
+		float fFrom = 0.f; // 시작 값(가변)
+		float fTo = 0.f; // 목표 값(가변)
+		float fTime = 0.f; // 경과 시간
+		float fDuration = 0.f; // 전체 재생 시간
+		float iPriority = 0.f; // 우선순위
+		bool isAlive = true; // 종료되면 false이면서 삭제
+
+		std::function<float(float)> Ease;
+	};
+
 	typedef struct tagTrailPointDesc
 	{
 		XMFLOAT4 vTop;
 		XMFLOAT4 vBottom;
 		float	fLifeTime;
 	}TRAIL_POINT;
-	
+
 	typedef struct tagPointInstanceParams
 	{
 		XMFLOAT4 vInitTranslation; 
