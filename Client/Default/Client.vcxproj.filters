@@ -418,6 +418,9 @@
     <Filter Include="92.AI\State\Yetuga\07. IceBreath">
       <UniqueIdentifier>{5893559b-ea54-4504-af39-8097d6190c68}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\HUD\ItemInfo_Hud">
+      <UniqueIdentifier>{aa7f4f90-2fa1-4e4f-96e7-84abdaa01ebe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -792,6 +795,9 @@
     <ClInclude Include="..\Public\AS_Amageddon_Yetuga.h">
       <Filter>92.AI\State\Yetuga\08. Amageddon</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\ItemInfo_Hud.h">
+      <Filter>02.GameObject\UI\HUD\ItemInfo_Hud</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1151,6 +1157,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_Amageddon_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\08. Amageddon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ItemInfo_Hud.cpp">
+      <Filter>02.GameObject\UI\HUD\ItemInfo_Hud</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

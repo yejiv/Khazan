@@ -201,6 +201,7 @@
     <ClInclude Include="..\public\Interaction_Guide.h" />
     <ClInclude Include="..\public\Interaction_Icon.h" />
     <ClInclude Include="..\public\Inven_Tap.h" />
+    <ClInclude Include="..\public\ItemInfo_Hud.h" />
     <ClInclude Include="..\public\Item_Slot.h" />
     <ClInclude Include="..\Public\JOH_Test1.h" />
     <ClInclude Include="..\public\Khazan_Sample.h" />
@@ -325,6 +326,7 @@
     <ClCompile Include="..\private\Interaction_Guide.cpp" />
     <ClCompile Include="..\private\Interaction_Icon.cpp" />
     <ClCompile Include="..\private\Inven_Tap.cpp" />
+    <ClCompile Include="..\private\ItemInfo_Hud.cpp" />
     <ClCompile Include="..\private\Item_Slot.cpp" />
     <ClCompile Include="..\Private\JOH_Test1.cpp" />
     <ClCompile Include="..\private\Khazan_Sample.cpp" />

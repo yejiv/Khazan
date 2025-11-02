@@ -15,6 +15,8 @@
 #include "UI_Atlas_Icon.h"
 #include "UI_TextBox.h"
 
+#include "UI_HUD.h"
+
 CUI_Inven::CUI_Inven(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
 {
@@ -58,7 +60,10 @@ _bool CUI_Inven::Add_Item(_uint iItemIndex)
 	for (auto Item : m_pItems[ENUM_CLASS(eType)])
 	{
 		if (Item->Add_Item(iItemIndex))
+		{
+			static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Add_Item(iItemIndex);
 			return true;
+		}
 	}
 	
 	return false;
