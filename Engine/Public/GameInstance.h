@@ -219,7 +219,7 @@ public:
 	void Set_Gravity(_vector vGravity);
 	void Reset_Gravity();
 
-	_bool CastRay(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition);
+	_bool RayCast(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition, _float3* outNormal = nullptr);
 #ifdef _DEBUG
 	void Jolt_Test();
 

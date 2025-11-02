@@ -41,19 +41,19 @@ BTNODESTATE CSequence_Node::Tick(CBlackBoard* BB)
 
 void CSequence_Node::Terminate(BTNODESTATE eState, CBlackBoard* BB)
 {
-	if (m_iCurrentIndex < m_Children.size())
-		m_Children[m_iCurrentIndex]->Terminate(eState,BB);
 
+	for (auto& Child : m_Children)
+		Child->Terminate(eState, BB);
 	m_iCurrentIndex = 0;
 }
 
 void CSequence_Node::Abort()
 {
-	if (m_iCurrentIndex < m_Children.size())
-		m_Children[m_iCurrentIndex]->Abort();
-
+	for (auto& Child : m_Children)
+		Child->Abort();
 	m_iCurrentIndex = 0;
 }
+
 
 CSequence_Node* CSequence_Node::Create()
 {

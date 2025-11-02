@@ -20,7 +20,6 @@ HRESULT CEffect_Point_Instance::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     Apply(pArg);
-
     return S_OK;
 }
 

@@ -36,7 +36,7 @@ void CCamera_Map::Priority_Update(_float fTimeDelta)
 
     Camera_Lock();
 
-    __super::Update_PipeLines();
+    __super::Update_PipeLines(fTimeDelta);
 }
 
 void CCamera_Map::Update(_float fTimeDelta)

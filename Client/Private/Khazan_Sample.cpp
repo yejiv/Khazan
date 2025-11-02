@@ -164,6 +164,8 @@ void CKhazan_Sample::Update(_float fTimeDelta)
 
     XMStoreFloat4x4(&m_SpearFX_WorldMatrix, m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pTransformCom->Get_WorldMatrix());
 
+    RayCast(fTimeDelta);
+
     //m_pRigidBodyCom->Update(fTimeDelta, m_pTransformCom->Get_WorldMatrix());
 
    /* m_pCharVirCom->Sync_Update(m_pTransformCom);
@@ -182,6 +184,7 @@ void CKhazan_Sample::Late_Update(_float fTimeDelta)
     __super::Late_Update(fTimeDelta);
 }
 
+
 HRESULT CKhazan_Sample::Render()
 {
 
@@ -196,6 +199,30 @@ void CKhazan_Sample::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLa
 
 void CKhazan_Sample::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
+}
+
+HRESULT CKhazan_Sample::RayCast(_float fTimeDelta)
+{
+    _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
+    _vector vTargetPos = XMVectorSet(vPos.m128_f32[0], vPos.m128_f32[1] - 5.f, vPos.m128_f32[2], 1.f);
+
+    _float fFraction;
+    _float4 vPosition;
+    _float3 outNormal;
+
+    if (m_pGameInstance->RayCast(
+        _float3(vPos.m128_f32[0], vPos.m128_f32[1], vPos.m128_f32[2]),
+        _float3(vTargetPos.m128_f32[0], vTargetPos.m128_f32[1], vTargetPos.m128_f32[2]),
+        fFraction,
+        vPosition,
+        &outNormal
+    ))
+    {
+        // 충돌되는 지점 fFraction, vPosition
+        int a = 0;
+    }
+
+    return S_OK;
 }
 
 #pragma region 상호 작용 맵 오브젝트 임시 테스트 용

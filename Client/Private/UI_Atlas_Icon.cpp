@@ -12,6 +12,12 @@ CUI_Atlas_Icon::CUI_Atlas_Icon(const CUI_Atlas_Icon& Prototype)
 {
 }
 
+void CUI_Atlas_Icon::Set_Pos(_float2 vPos)
+{
+	m_vWorldPos = vPos;
+	Update_Transform(nullptr, m_vWorldPos);
+}
+
 void CUI_Atlas_Icon::Update_Color(_float4 vColor)
 {
 	m_vColor = vColor;

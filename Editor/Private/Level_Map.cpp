@@ -21,9 +21,6 @@ HRESULT CLevel_Map::Initialize()
 
 	CHECK_FAILED(Ready_DefaultImGui_For_MapTool(), E_FAIL);
 
-	// 렉땜시 false
-	m_pGameInstance->Set_EnableSSAO(false);
-
 	return S_OK;
 }
 
@@ -57,6 +54,8 @@ HRESULT CLevel_Map::Ready_Defaults()
 	
 	CHECK_FAILED(Ready_Layer_Preview(TEXT("Layer_Preview")), E_FAIL);
 
+	CHECK_FAILED(Ready_Layer_SkySphere(TEXT("Layer_Sky")), E_FAIL);
+
 	return S_OK;
 }
 
@@ -87,7 +86,7 @@ HRESULT CLevel_Map::Ready_Layer_Camera(const _wstring& strLayerTag)
 	MapDesc.vEye = _float4(0.f, 5.f, 0.f, 1.f);
 	MapDesc.vAt = _float4(0.f, 5.f, 1.f, 1.f);
 
-	MapDesc.fFar = 1000.f;
+	MapDesc.fFar = 10000.f;
 	MapDesc.fNear = 0.1f;
 
 	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), strLayerTag,
@@ -112,6 +111,22 @@ HRESULT CLevel_Map::Ready_Layer_Preview(const _wstring& strLayerTag)
 
 	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), strLayerTag,
 		ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Preview"), TIME_CHANNEL::WORLD, &Desc), E_FAIL);
+
+	return S_OK;
+}
+
+HRESULT CLevel_Map::Ready_Layer_SkySphere(const _wstring& strLayerTag)
+{
+	CSkySphere::SKY_SPHERE_DESC Desc = {};
+
+	Desc.eLevel = LEVEL::MAP;
+
+	Desc.fRotationPerSec = XMConvertToRadians(1.f);
+
+	Desc.SkyDesc = {};
+
+	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), strLayerTag,
+		ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_SkySphere"), TIME_CHANNEL::WORLD, &Desc), E_FAIL);
 
 	return S_OK;
 }
@@ -328,6 +343,8 @@ HRESULT CLevel_Map::Ready_DefaultImGui_For_MapTool()
 
 	CHECK_FAILED(Ready_Object_SaveLoad_Window(), E_FAIL);
 
+	CHECK_FAILED(Ready_SkySphere_Window(), E_FAIL);
+
 	return S_OK;
 }
 
@@ -337,8 +354,8 @@ HRESULT CLevel_Map::Ready_Main_Window()
 		if (m_isMainWindow)
 		{
 			ImGui::Begin("MAIN WINDOW", &m_isMainWindow, ImGuiWindowFlags_AlwaysAutoResize);
-
-			if (ImGui::Button("INFORMATION"))
+			ImGui::Text("INFORMAION");
+			if (ImGui::Button("ON/OFF##information"))
 				m_isInformation = !m_isInformation;
 
 				if (true == m_isInformation)
@@ -381,9 +398,14 @@ HRESULT CLevel_Map::Ready_Main_Window()
 				}
 
 				SEPARATOR;
-
-				if (ImGui::Button("RENDER OPTION"))
+				ImGui::Text("RENDER OPTION");
+				if (ImGui::Button("ON/OFF##renderoption"))
 					m_isRenderOption = !m_isRenderOption;
+
+				SEPARATOR;
+				ImGui::Text("SKY SPHERE");
+				if (ImGui::Button("ON/OFF##sky"))
+					m_isSkySphereWindow = !m_isSkySphereWindow;
 
 				SEPARATOR;
 
@@ -1919,7 +1941,7 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 				}
 			}
 			SAMELINE;
-			if (ImGui::Button("SAVE"))
+			if (ImGui::Button("ALL_SAVE"))
 			{
 				// m_strMapInfoFilePath : 뒤에 _prototypes.dat, _objs.dat, insts.dat 이런식으로 ㄱㄱ
 				m_strMapInfoFilePath = m_szMapInfoFilePath;
@@ -1985,7 +2007,20 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 
 				m_isSaveObjectWindow = false;
 			}
+			SAMELINE;
+			if (ImGui::Button("SAVE LIGHT"))
+			{
+				m_strMapInfoFilePath = m_szMapInfoFilePath;
+				m_strMapInfoFilePath += m_szMapInfoFileName;
 
+				if (false == Lights_Save_Binary())
+				{
+#ifdef _DEBUG
+					OutputDebugStringA("단일 오브젝트 정보 바이너리화 실패");
+#endif // _DEBUG
+					return;
+				}
+			}
 			ImGui::End();
 		}
 		});
@@ -2102,6 +2137,118 @@ OutputDebugStringA("조명 정보 바이너리 불러오기 실패");
 		});
 
 #pragma endregion
+
+	return S_OK;
+}
+
+HRESULT CLevel_Map::Ready_SkySphere_Window()
+{
+	m_pSkySphere = static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_Sky")));
+	CHECK_NULLPTR(m_pSkySphere, E_FAIL);
+
+	m_FixSkyDesc = m_pSkySphere->Get_SkyDesc();
+
+	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
+		if (m_isSkySphereWindow)
+		{
+			ImGui::Begin("SKY SPHERE WINDOW", &m_isSkySphereWindow, ImGuiWindowFlags_AlwaysAutoResize);
+
+			_float fMoonIntensity = m_FixSkyDesc.fMoonIntensity;
+			_float fMoonSize = m_FixSkyDesc.fMoonSize;
+			_float fStarStrength = m_FixSkyDesc.fStarStrength;
+			_float3 vMoonColor = m_FixSkyDesc.vMoonColor;
+			_float3 vMoonDirection = m_FixSkyDesc.vMoonDirection;
+			_float3 vNebulaColor = m_FixSkyDesc.vNebulaColor;
+
+			ImGui::Text("SKY COLOR");
+			ImGui::Text("R"); SAMELINE;
+			ImGui::InputFloat("##fix_sky_color_R", &m_FixSkyDesc.vNebulaColor.x, 0.01f, 0.1f);
+			ImGui::Text("G"); SAMELINE;
+			ImGui::InputFloat("##fix_sky_color_G", &m_FixSkyDesc.vNebulaColor.y, 0.01f, 0.1f);
+			ImGui::Text("B"); SAMELINE;
+			ImGui::InputFloat("##fix_sky_color_B", &m_FixSkyDesc.vNebulaColor.z, 0.01f, 0.1f);
+			SEPARATOR;
+
+			ImGui::Text("MOON SIZE"); SAMELINE;
+			ImGui::InputFloat("##fix_moon_size", &m_FixSkyDesc.fMoonSize, 0.01f, 0.1f);
+
+			ImGui::Text("MOON COLOR");
+			ImGui::Text("R"); SAMELINE;
+			ImGui::InputFloat("##fix_moon_color_R", &m_FixSkyDesc.vMoonColor.x, 0.01f, 0.1f);
+			ImGui::Text("G"); SAMELINE;
+			ImGui::InputFloat("##fix_moon_color_G", &m_FixSkyDesc.vMoonColor.y, 0.01f, 0.1f);
+			ImGui::Text("B"); SAMELINE;
+			ImGui::InputFloat("##fix_moon_color_B", &m_FixSkyDesc.vMoonColor.z, 0.01f, 0.1f);
+			SEPARATOR;
+
+			ImGui::Text("MOON INTENSITY"); SAMELINE;
+			ImGui::InputFloat("##fix_moon_inten", &m_FixSkyDesc.fMoonIntensity, 0.01f, 0.1f);
+
+			ImGui::Text("MOON POSITION");
+			ImGui::Text("X"); SAMELINE;
+			ImGui::InputFloat("##fix_moon_dir_X", &m_FixSkyDesc.vMoonDirection.x, 0.01f, 0.1f);
+			ImGui::Text("Y"); SAMELINE;
+			ImGui::InputFloat("##fix_moon_dir_Y", &m_FixSkyDesc.vMoonDirection.y, 0.01f, 0.1f);
+			ImGui::Text("Z"); SAMELINE;
+			ImGui::InputFloat("##fix_moon_dir_Z", &m_FixSkyDesc.vMoonDirection.z, 0.01f, 0.1f);
+			SEPARATOR;
+
+			ImGui::Text("STAR STRENGTH"); SAMELINE;
+			ImGui::InputFloat("##fix_moon_str", &m_FixSkyDesc.fStarStrength, 0.01f, 0.1f);
+
+			m_pSkySphere->Set_SkyDesc(m_FixSkyDesc);
+
+			SEPARATOR;
+			ImGui::Text("PATH : %s", m_szMapInfoFilePath);
+			ImGui::Text("SKY SPHERE SAVE FILE : "); SAMELINE;
+			ImGui::InputText("##sky_file_name", m_szMapInfoFileName, IM_ARRAYSIZE(m_szMapInfoFileName));
+
+			SEPARATOR;
+			if (ImGui::Button("SAVE"))
+			{
+				string strPath = m_szMapInfoFilePath;
+				strPath += m_szMapInfoFileName;
+				strPath += "_sky.dat";
+
+				DWORD dwByte = {};
+
+				HANDLE hFile = CreateFile(AnsiToWString(strPath).c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+				if (INVALID_HANDLE_VALUE == hFile)
+				{
+					_int a = 10;
+				}
+				else
+				{
+					WriteFile(hFile, &m_FixSkyDesc, sizeof(SKY_DESC), &dwByte, nullptr);
+				}
+
+				CloseHandle(hFile);
+
+			} SAMELINE;
+			if (ImGui::Button("LOAD"))
+			{
+				string strPath = m_szMapInfoFilePath;
+				strPath += m_szMapInfoFileName;
+				strPath += "_sky.dat";
+
+				DWORD dwByte = {};
+
+				HANDLE hFile = CreateFile(AnsiToWString(strPath).c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+				if (INVALID_HANDLE_VALUE == hFile)
+				{
+					_int a = 10;
+				}
+				else
+				{
+					ReadFile(hFile, &m_FixSkyDesc, sizeof(SKY_DESC), &dwByte, nullptr);
+				}
+
+				CloseHandle(hFile);
+			}
+
+			ImGui::End();
+		}
+		});
 
 	return S_OK;
 }

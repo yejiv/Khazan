@@ -159,6 +159,8 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 {
 	//m_pPicking->Update();
 
+	m_pTimer_Manager->Update_HitStop(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
+
 	m_pInput_Manager->Update();
 
 	/* 내 게임내에서 반복적인 갱신이 필요한 객체들이 있다라면 갱신을 여기에서 모아서 수행하낟. */
@@ -245,6 +247,7 @@ HRESULT CGameInstance::Draw()
 	m_pImgui_Manager->BeginFrame();
 	m_pImgui_Manager->Render();
 	m_pJolt_Manager->Debug_Render();
+	m_pJolt_Manager->RayCast_Render_Clear();
 #endif
 
 	return S_OK;
@@ -848,9 +851,9 @@ void CGameInstance::Reset_Gravity()
 	m_pJolt_Manager->Reset_Gravity();
 }
 
-_bool CGameInstance::CastRay(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition)
+_bool CGameInstance::RayCast(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition, _float3* outNormal)
 {
-	return m_pJolt_Manager->CastRay(vStart, vEnd, outFraction, outPosition);
+	return m_pJolt_Manager->RayCast(vStart, vEnd, outFraction, outPosition, outNormal);
 }
 
 #ifdef _DEBUG
