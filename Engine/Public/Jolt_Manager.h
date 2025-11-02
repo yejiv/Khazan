@@ -36,6 +36,13 @@ NS_BEGIN(Engine)
 
 class CJolt_Manager final : public CBase
 {
+public:
+    struct RayCastDesc
+    {
+        _float3 vStart;
+        _float3 vEnd;
+        ColorArg vColor;
+    };
 private:
     CJolt_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual ~CJolt_Manager() = default;
@@ -82,14 +89,14 @@ public:
 	void Remove_CharacterVirtual(CharacterID id);
 
 public:
-    _bool CastRay(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition);
+    _bool RayCast(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition, _float3* outNormal = nullptr);
 
 #ifdef _DEBUG
 
 public:
     void Test();
     void Debug_Render();
-    void Change_DebugRender();
+    void RayCast_Render_Clear();
 #endif
 private:
     ID3D11Device* m_pDevice = { nullptr };
@@ -115,6 +122,8 @@ private:
 
 
 	map<CharacterID, CharacterVirtual*>           m_CharacterVirtuals;
+
+    vector<RayCastDesc>  m_RayCasts;
 private:
     // 생성 파라미터 보관(선택)
     _uint m_iMaxBodies = { 2048 };

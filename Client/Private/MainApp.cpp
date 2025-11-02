@@ -55,10 +55,63 @@ HRESULT CMainApp::Initialize()
 	return S_OK;
 }
 
-void CMainApp::Update(TIME_DELTA tTimeDelta)
+void CMainApp::Update(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_LCONTROL))
+	{
+		//m_pClientInstance->ActiveCamera_Shaking(2.f, 1.f);
+		//m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.3f, 0.003f, 3.f);
+
+		FOVModifier tMod{};
+
+		// PRIORITY
+		tMod.strID = TEXT("Hit");
+		tMod.eMode = FOVModifier::FOV_MODE::PRIORITY;
+		tMod.fDuration = 0.f;
+		tMod.fFrom = 0.f;
+		tMod.fTo = XMConvertToRadians(50.f);
+		tMod.iPriority = 5.f;
+		tMod.Ease = EaseOutQuad;
+
+		// ADD
+		//tMod.eMode = FOVModifier::FOV_MODE::ADD;
+		//tMod.fDuration = 5.f;
+		//tMod.fFrom = 0.f;
+		//tMod.fTo = XMConvertToRadians(80.f);
+		//tMod.iPriority = 5.f;
+		//tMod.Ease = EaseOutQuad;
+
+		// Multiply
+		//tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+		//tMod.fDuration = 5.f;
+		//tMod.fFrom = XMConvertToRadians(60.f);
+		//tMod.fTo = XMConvertToRadians(80.f);
+		//tMod.iPriority = 5.f;
+		//tMod.Ease = EaseOutQuad;
+
+		m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
+	}
+	if (m_pGameInstance->Key_Down(DIK_RCONTROL))
+	{
+		m_pClientInstance->ActiveCamera_KillFov(L"Hit");
+	}
+
+	TIME_DELTA      tTimeDelta = {};
+
+	const _float fDt_World = m_pGameInstance->Get_ScaledDelta(TEXT("Timer_60"), TIME_CHANNEL::WORLD);
+	const _float fDt_Player = m_pGameInstance->Get_ScaledDelta(TEXT("Timer_60"), TIME_CHANNEL::PLAYER);
+	const _float fDt_Enemy = m_pGameInstance->Get_ScaledDelta(TEXT("Timer_60"), TIME_CHANNEL::ENEMY);
+	const _float fDt_UI = m_pGameInstance->Get_ScaledDelta(TEXT("Timer_60"), TIME_CHANNEL::MAP);
+	const _float fDt_FX = m_pGameInstance->Get_ScaledDelta(TEXT("Timer_60"), TIME_CHANNEL::EFFECT);
+	tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)] = fDt_World;
+	tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::PLAYER)] = fDt_Player;
+	tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::ENEMY)] = fDt_Enemy;
+	tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::MAP)] = fDt_UI;
+	tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::EFFECT)] = fDt_FX;
+
 	m_pGameInstance->Update_Engine(tTimeDelta);
 	m_pClientInstance->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
+	
 }
 
 HRESULT CMainApp::Render()

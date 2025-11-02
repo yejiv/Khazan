@@ -55,7 +55,7 @@ void CCamera_UI::Priority_Update(_float fTimeDelta)
 
 
 
-    __super::Update_PipeLines();
+    __super::Update_PipeLines(fTimeDelta);
 
 
 }

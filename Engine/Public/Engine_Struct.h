@@ -201,6 +201,21 @@ namespace Engine
 		float TimeDeltas[ENUM_CLASS(TIME_CHANNEL::END)];
 	}TIME_DELTA;
 
+	struct FOVModifier
+	{
+		enum class FOV_MODE { ADD, MULTIPLY, PRIORITY };
+		wstring strID;
+		FOV_MODE eMode = FOV_MODE::ADD;
+		float fFrom = 0.f; // 시작 값(가변)
+		float fTo = 0.f; // 목표 값(가변)
+		float fTime = 0.f; // 경과 시간
+		float fDuration = 0.f; // 전체 재생 시간
+		float iPriority = 0.f; // 우선순위
+		bool isAlive = true; // 종료되면 false이면서 삭제
+
+		std::function<float(float)> Ease;
+	};
+
 	typedef struct tagPointInstanceParams
 	{
 		XMFLOAT4 vInitTranslation; 

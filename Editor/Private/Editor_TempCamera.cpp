@@ -107,7 +107,7 @@ void CEditor_TempCamera::Priority_Update(_float fTimeDelta)
         m_pTransformCom->Turn(m_pTransformCom->Get_State(STATE::RIGHT), fTimeDelta * iMouseMove * m_fMouseSensor);
     }
 
-    __super::Update_PipeLines();
+    __super::Update_PipeLines(fTimeDelta);
 }
 
 void CEditor_TempCamera::Update(_float fTimeDelta)
