@@ -207,6 +207,8 @@ HRESULT CBladeNexus::Ready_PlaceName(void* pArg)
         memcpy(m_szPlaceName, TEXT("예투가 전"), sizeof(m_szPlaceName));
         break;
     }
+
+    return S_OK;
 }
 
 void CBladeNexus::Input_Interact_Event(_float fTimeDelta)
