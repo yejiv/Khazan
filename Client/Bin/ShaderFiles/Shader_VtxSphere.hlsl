@@ -3,29 +3,27 @@
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 
 texture2D g_DiffuseTexture;
-texture2D g_MaskTexture;
 
+// 구름
 texture2D g_GradationTexture;
 texture2D g_LookUpTexture;
 texture2D g_NormalTexture;
 texture2D g_DistortionTexture;
+
+// 하늘
 texture2D g_NebulaTexture;
 texture2D g_StarMaskTexture;
 texture2D g_MoonTexture;
 texture2D g_RingTexture;
 
 // 구름
-float g_fCloudAmount = 1.1f;
-float g_fCloudSharpness = 0.25f;
-float g_fWorldDistortIntensity = 2.0f;
-float g_fWorldDistortSpeed = -0.1f;
-float g_fWorldDistortScale = 10.0f;
-float2 g_fUVScale = float2(8.0f, 8.0f);
-float g_fUVSpeed = 1.0f;
-
-float4 g_vSkyColor = float4(0.216f, 0.217f, 0.248f, 1.0f);
-float4 g_vSunSideColor = float4(1.0f, 0.529f, 0.0f, 1.0f);
-float4 g_vCloudBaseColor = float4(0.04f, 0.03f, 0.03f, 1.0f);
+float g_fCloudDensity;
+float g_fCloudLightIntensity;
+float g_fCloudScale;
+float g_fCloudSpeed;
+float g_isDynamic;
+float3 g_vCloudColor;
+float3 g_vLightDir;
 
 // 하늘
 float3 g_vNebulaColor = float3(0.5f, 0.5f, 0.5f);
@@ -125,7 +123,7 @@ PS_OUT PS_SKY(PS_IN In)
     float3 vDir = normalize(In.vWorldPos.xyz - g_vCamPosition.xyz);
 
     float2 uv;
-    uv.x = atan2(vDir.x, vDir.z) * 0.159155f + 0.5f;
+    uv.x = atan2(vDir.x, vDir.z) * (1.f / (2.f * g_fPI)) + 0.5f;
     uv.y = saturate(vDir.y * 0.5f + 0.5f);
     
     // 기본 하늘색 + 별
@@ -147,7 +145,7 @@ PS_OUT PS_SKY(PS_IN In)
     moonUV = moonUV / g_fMoonSize + 0.5f;
     moonUV.y = 1.0f - moonUV.y;
     
-    // 달 마스크 (달 외곽 보정  커져도 안 짤림)
+    // 달 마스크 (달 외곽 보정 )
     float2 moonCenter = float2(0.5f, 0.5f);
     float fDist = distance(moonUV, moonCenter);
 
@@ -180,27 +178,40 @@ PS_OUT PS_SKY(PS_IN In)
     float3 vWithMoon = 1.0f - (1.0f - vBaseColor) * (1.0f - vMoonRGB * fMoonMask);
     
     Out.vColor = float4(saturate(vWithMoon), 1.0f);
+    
     return Out;
 }
 
 PS_OUT PS_CLOUD(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
+    /*
+    // UV 이동
+    float2 uv = In.vTexcoord * g_fCloudScale;
+    uv += g_fTime * g_fCloudSpeed * float2(0.5f, 0.3f) * g_isDynamic;
 
-    float2 uv = In.vTexcoord;
-    float2 uvDistort = uv + (g_DistortionTexture.Sample(DefaultSampler, uv).rg - 0.5f)
-                            * g_fWorldDistortIntensity * 0.01f;
+    // 왜곡
+    float2 distortion = (g_DistortionTexture.Sample(DefaultSampler, uv).rg - 0.5f) * 0.05f * g_isDynamic;
+    float2 uvDistort = uv + distortion;
 
-    float4 look = g_LookUpTexture.Sample(DefaultSampler, uvDistort);
-    float grad = g_GradationTexture.Sample(DefaultSampler, float2(0.5, uv.y)).r;
+    // 클라우드 텍스처
+    float4 cloudTex = g_LookUpTexture.Sample(DefaultSampler, uvDistort);
+
+    // 하단 페이드 (Normal.y 기반)
+    float heightFactor = saturate(In.vNormal.y * 0.5f + 0.5f);
+    float grad = smoothstep(0.05f, 0.55f, heightFactor);
+    grad = pow(grad, 1.2f);
+
+    // 노멀과 조명 계산
     float3 normal = g_NormalTexture.Sample(DefaultSampler, uvDistort).xyz * 2 - 1;
-    float light = saturate(normal.z * 0.8 + 0.2);
+    float light = saturate(dot(normalize(g_vLightDir), normal) * 0.5f + 0.5f);
 
-    float3 color = lerp(g_vCloudBaseColor.rgb, g_vSunSideColor.rgb, light);
-    color *= look.rgb * grad;
-    float alpha = saturate(look.r * g_fCloudAmount);
+    // 색상과 알파 계산
+    float3 color = g_vCloudColor * cloudTex.rgb * grad * light * g_fCloudLightIntensity;
+    float alpha = saturate(cloudTex.a * g_fCloudDensity * grad * 0.9f);
 
     Out.vColor = float4(color, alpha);
+    */
     return Out;
 }
 

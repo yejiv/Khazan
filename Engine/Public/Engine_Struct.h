@@ -85,7 +85,15 @@ namespace Engine
 
 	typedef struct tagCloudDesc
 	{
-		// 구름 Desc 넣을 예정
+		XMFLOAT3 vCloudColor = { 1.0f, 1.0f, 1.0f };	// 구름의 기본 색상
+		float  fCloudSpeed = 0.01f;					    // Distortion 이동 속도
+		float  fCloudScale = 1.0f;						// 텍스처 UV 스케일
+		float  fCloudDensity = 1.0f;					// 투명도(농도)
+		float  fCloudLightIntensity = 1.0f;				// 조명 영향 강도
+
+		XMFLOAT3 vLightDir = { 0.f, 1.f, 0.f };			// 광원 방향 (태양)
+
+		float   fDynamic = 1.f;							// 시간에 따라 움직임 여부		( 1.f == true, 0.f == false )
 
 	}CLOUD_DESC;
 

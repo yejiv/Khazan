@@ -68,6 +68,7 @@ public:
 	_float Get_RotationPerSec() { return m_fRotationPerSec; }
 	_float Get_SpeedPerSec() { return m_fSpeedPerSec; }
 
+	void	Set_RotationPerSec(_float fRotationPerSec) { m_fRotationPerSec = fRotationPerSec; }
 	void	Set_SpeedPerSec(_float fSpeedPerSec) { m_fSpeedPerSec = fSpeedPerSec; }
 
 public:

@@ -11,24 +11,24 @@ NS_END
 
 NS_BEGIN(Editor)
 
-class CSkySphere final : public CGameObject
+class CCloudSphere final : public CGameObject
 {
 public:
-	typedef struct tagSkySphereDesc : public CGameObject::GAMEOBJECT_DESC
+	typedef struct tagCloudSphereDesc : public CGameObject::GAMEOBJECT_DESC
 	{
 		LEVEL eLevel = LEVEL::END;
 
-		SKY_DESC SkyDesc{};
+		CLOUD_DESC CloudDesc{};
 
-	}SKY_SPHERE_DESC;
-
-private:
-	enum TEX_TYPE { NEBULA, STAR_MASK, MOON, RING, TEX_TYPE_END };
+	}CLOUD_SPHERE_DESC;
 
 private:
-	CSkySphere(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CSkySphere(const CSkySphere& Prototype);
-	virtual ~CSkySphere() = default;
+	enum TEX_TYPE { DISTANCE_GRADATION, LOOKUP, NORMAL, DISTORTION, TEX_TYPE_END };
+
+private:
+	CCloudSphere(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CCloudSphere(const CCloudSphere& Prototype);
+	virtual ~CCloudSphere() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -39,29 +39,26 @@ public:
 	virtual HRESULT Render();
 
 public:
-	SKY_DESC Get_SkyDesc() { return m_SkyDesc; }
-	void Set_SkyDesc(SKY_DESC SkyDesc) { m_SkyDesc = SkyDesc; }
+	CLOUD_DESC Get_CloudDesc() { return m_CloudDesc; }
+	void Set_CloudDesc(CLOUD_DESC CloudDesc) { m_CloudDesc = CloudDesc; }
 
 private:
 	CModel* m_pModelCom = { nullptr };
 	CShader* m_pShaderCom = { nullptr };
 	CTexture* m_pTextureCom[TEX_TYPE_END] = { nullptr };
 
-	SKY_DESC m_SkyDesc = {};
-	SKY_DESC m_TempDesc = {};
+	CLOUD_DESC m_CloudDesc = {};
 
 	_float m_fTimeAcc = { 0.f };
-
-	_bool m_isSkyDesc = {};
 
 private:
 	HRESULT Ready_Components(void* pArg);
 	HRESULT Bind_ShaderResources();
 
-	HRESULT Bind_Sky_ShaderResources();
+	HRESULT Bind_Cloud_ShaderResources();
 
 public:
-	static CSkySphere* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CCloudSphere* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

@@ -32,47 +32,32 @@ HRESULT CLevel_HeinMach::Initialize()
 
 	CHECK_FAILED(Ready_Layer_Sky(TEXT("Layer_Sky"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
-	///*if (FAILED(Ready_Lights()))
-	//	return E_FAIL;*/
+	// 첫번째 서브 레벨 로드 ( 스폰 ~ 첫 귀검 )
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
+		HEINMACH_1ST_BLADENEXUS, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); }));
 
-
-	//m_futures.push_back(m_pGameInstance->Add_Task([this]() {CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV0"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);	}));	// 1번째 귀검	
-	//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV0"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-	//// CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV5"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);		// 2번째 귀검
-	//// CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV10"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);		// 3번째 귀검
-	CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV11"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);		// 예투가 맵
-
-	m_futures.push_back(m_pGameInstance->Add_Task([this]() {CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), 0, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); }));
-
-	//CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("HeinMach_LV11"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);		// 예투가 맵
+	// 예투가 보스 맵 서브 레벨 로드
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
+		HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); }));
 
 	m_pGameInstance->Add_FireTask([this]() {
 		for (_uint i = 0; i < HEINMACH_SUBLV; ++i)
-
 		{
+			// 첫번째 서브 레벨 로드 주석 해제하면 여기서 스킵
 			if (HEINMACH_1ST_BLADENEXUS == i)
 				continue;
 
-			/*
-			if (HEINMACH_2ND_BLADENEXUS == i)
-				continue;
+			// 두번째 서브 레벨 로드 주석 해제하면 여기서 스킵
+			//if (HEINMACH_2ND_BLADENEXUS == i)
+			//	continue;
 
-			if (HEINMACH_3RD_BLADENEXUS == i)
-				continue;
+			// 세번째 서브 레벨 로드 주석 해제하면 여기서 스킵
+			//if (HEINMACH_3RD_BLADENEXUS == i)
+			//	continue;
 
+			// 예투가 보스 맵 서브 레벨 로드 주석 해제하면 여기서 스킵
 			if (HEINMACH_YETUGA == i)
 				continue;
-			*/
-
-			/*if (HEINMACH_2ND_BLADENEXUS == i)
-				continue;
-
-			if (HEINMACH_3RD_BLADENEXUS == i)
-				continue;*/
-
-			// 예투가 맵 빨리 로드 
-			/*if (HEINMACH_YETUGA == i)
-				continue;*/
 			
 			CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), i, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		}
@@ -80,9 +65,12 @@ HRESULT CLevel_HeinMach::Initialize()
 		return S_OK;
 		});
 
-	m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); });
-	m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); });
-
+	// 맵 오브젝트 : 메쉬 인스턴싱
+	CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+	//m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); });
+	// 맵 오브젝트 : 상호 작용
+	CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+	//m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); });
 
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
@@ -598,8 +586,13 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Interactive(const _wstring& strLa
 		switch (eType)
 		{
 		case INTERACTIVE_TYPE::CHECKPOINT:
+		{
+			_int iBladeNexusID = {};
+			CHECK_FALSE(ReadFile(hFile, &iBladeNexusID, sizeof(_int), &dwByte, nullptr), E_FAIL);
+			ObjectDesc.pOtherDesc = &iBladeNexusID;
 			CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_BladeNexus"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
 			break;
+		}
 		case INTERACTIVE_TYPE::CHEST:
 		{
 			BOX_ITEMS ItemBoxDesc = {};

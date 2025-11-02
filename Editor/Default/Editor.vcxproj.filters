@@ -417,6 +417,9 @@
     <ClInclude Include="..\Public\MeshTrail.h">
       <Filter>02.GameObject\Effect\Trail\MeshTrail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\CloudSphere.h">
+      <Filter>02.GameObject\MapObject\Sky</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -608,6 +611,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\MeshTrail.cpp">
       <Filter>02.GameObject\Effect\Trail\MeshTrail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CloudSphere.cpp">
+      <Filter>02.GameObject\MapObject\Sky</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

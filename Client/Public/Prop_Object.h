@@ -20,7 +20,7 @@ public:
 
 	}PROP_OBJECT_DESC;
 
-	enum class SHADER_PASS { MAIN, WIREFRAME, SHADOW, MAP, MAP_ICE, SNOWMAP, SNOWMAP_ICE, END };
+	enum class SHADER_PASS { MAIN, WIREFRAME, SOLIDFRAME, SHADOW, MAP, MAP_ICE, SNOWMAP, SNOWMAP_ICE, END };
 
 private:
 	CProp_Object(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
