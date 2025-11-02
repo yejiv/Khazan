@@ -4,6 +4,7 @@
 #include "Jolt_ContactListener.h"
 #include "Jolt_CharacterContactListener.h"
 #include "BodyDrawFilter.h"
+#include "BoneChainPhysic.h"
 #ifdef new
 #pragma push_macro("new")
 #undef new
@@ -54,6 +55,7 @@ public:
 
     Body* CreateAndAdd_Body(const BodyCreationSettings& BodySetting, BodyInterface** pBodyInterface);
     CharacterVirtual* CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData, BodyInterface** pBodyInterface);
+    CBoneChainPhysic* CreateBoneChain(class CModel* pModel, CBoneChainPhysic::BCP_BuildDesc tBuild, CBoneChainPhysic::BCP_RuntimeParams tParams, _uint iRootObjectLayer, _uint iBoneChainObjectLayer);
 
     HRESULT				Set_PhysicsSystem();
     void				Set_ObjectToBP(_uint iObjectLayer, _uint iBPLayer) {

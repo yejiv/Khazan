@@ -11,6 +11,7 @@ CBone::CBone(const CBone& Prototype)
 	, m_TransformationMatrix{ Prototype.m_TransformationMatrix }
 	, m_CombinedTransformationMatrix{ Prototype.m_CombinedTransformationMatrix }
 	, m_iParentBoneIndex{ Prototype.m_iParentBoneIndex }
+	, m_iChildBones { Prototype.m_iChildBones }
 {
 }
 
