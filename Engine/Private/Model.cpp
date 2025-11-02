@@ -151,6 +151,11 @@ HRESULT CModel::Initialize_Clone(void* pArg)
 	return S_OK;
 }
 
+_float CModel::MakeRatio()
+{
+    return m_Animations[m_iCurrentAnimIndex]->MakeRatio();
+}
+
 _uint CModel::Get_BoneIndex(const _char* pBoneName)
 {
     auto    iter = find_if(m_Bones.begin(), m_Bones.end(), [&](CBone* pBone) {

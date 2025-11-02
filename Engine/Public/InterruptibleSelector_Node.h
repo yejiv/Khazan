@@ -18,9 +18,6 @@ public:
 	virtual void						Terminate(BTNODESTATE eState, class CBlackBoard* BB = nullptr) override;
 	virtual void						Abort() override;
 
-public:
-	void								Set_InterruptCondition(INTERRUPTCONDITION Func);
-
 private:
 	INTERRUPTCONDITION					m_pInterruptCondition;
 

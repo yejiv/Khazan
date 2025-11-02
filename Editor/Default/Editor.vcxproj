@@ -205,6 +205,7 @@
     <ClInclude Include="..\Public\Map_Terrain.h" />
     <ClInclude Include="..\Public\Map_Trigger.h" />
     <ClInclude Include="..\Public\Map_TestPlayer.h" />
+    <ClInclude Include="..\Public\MeshTrail.h" />
     <ClInclude Include="..\public\Player_Shader.h" />
     <ClInclude Include="..\Public\Prop.h" />
     <ClInclude Include="..\Public\Prop_Animated.h" />
@@ -214,6 +215,7 @@
     <ClInclude Include="..\Public\Prop_Preview.h" />
     <ClInclude Include="..\Public\Prop_Static.h" />
     <ClInclude Include="..\Public\Prop_Test.h" />
+    <ClInclude Include="..\Public\SkySphere.h" />
     <ClInclude Include="..\public\Terrain_Shader.h" />
     <ClInclude Include="..\Public\BladeNexus.h" />
     <ClInclude Include="Editor.h" />
@@ -267,6 +269,7 @@
     <ClCompile Include="..\Private\Map_Terrain.cpp" />
     <ClCompile Include="..\Private\Map_Trigger.cpp" />
     <ClCompile Include="..\Private\Map_TestPlayer.cpp" />
+    <ClCompile Include="..\Private\MeshTrail.cpp" />
     <ClCompile Include="..\private\Player_Shader.cpp" />
     <ClCompile Include="..\Private\Prop.cpp" />
     <ClCompile Include="..\Private\Prop_Animated.cpp" />
@@ -276,6 +279,7 @@
     <ClCompile Include="..\Private\Prop_Preview.cpp" />
     <ClCompile Include="..\Private\Prop_Static.cpp" />
     <ClCompile Include="..\Private\Prop_Test.cpp" />
+    <ClCompile Include="..\Private\SkySphere.cpp" />
     <ClCompile Include="..\private\Terrain_Shader.cpp" />
     <ClCompile Include="..\Private\BladeNexus.cpp" />
     <ClCompile Include="Editor.cpp" />

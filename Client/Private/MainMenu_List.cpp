@@ -87,7 +87,7 @@ void CMainMenu_List::Update(_float fTimeDelta)
 		Desc.isClick = false;
 		Bubble_EventCall(&Desc);
 	}
-	if (ButtonClick(g_hWnd, false, true))
+	if (ButtonClick(g_hWnd, false, true, INPUT_TYPE::UI) || m_bIsSelete && m_pGameInstance->Key_Down(DIK_F, INPUT_TYPE::UI))
 	{
 		CUI_MainMenu::MAINMENUBUBBLE_DESC Desc{};
 		Desc.eListType = m_eMenuType;

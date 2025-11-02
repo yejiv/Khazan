@@ -39,8 +39,6 @@ void CLevel_Loading::Update(_float fTimeDelta)
 	if (true == m_pLoader->isFinished() && 
 		GetKeyState(VK_SPACE) & 0x8000)
 	{
-		m_pGameInstance->Clear_AllEvents();
-
 		if (m_pClientInstance->Get_CurrLevel() != m_eNextLevelID)
 		{
 			m_pClientInstance->Clear_CameraManager(ENUM_CLASS(m_pClientInstance->Get_CurrLevel()));

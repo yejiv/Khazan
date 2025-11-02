@@ -67,6 +67,12 @@ float g_fOutlineBias = { 0.01f };
 bool g_isEnableOutline;
 float g_fCameraFar = { 1000.f };
 
+// ===== Vignette =====
+float g_fVignettePower = { 1.f };
+float g_fVignetteIntensity = { 1.f };
+float3 g_vVignetteColor = { 0.f, 0.f, 0.f };
+bool g_isEnableVignette;
+
 struct VS_IN
 {
     float3 vPosition : POSITION;
@@ -474,18 +480,20 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
     vector vBloomDesc = g_BloomTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vFogDesc = g_FogTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    //if (0.f == vPostSceneDesc.a)
-    //    discard;
+    //  if (0.f == vPostSceneDesc.a)
+    //      discard;
 
     //  if (true == g_isEnableFog)
     //      Out.vColor = vFogDesc + vEmissiveDesc + vBloomDesc;
     //  else
     //      Out.vColor = vPostSceneDesc + vEmissiveDesc + vBloomDesc;
     
+    float4 vFinalColor;
+    
     if (true == g_isEnableFog)
-        Out.vColor = vFogDesc + vBloomDesc;
+        vFinalColor = vFogDesc + vBloomDesc;
     else
-        Out.vColor = vPostSceneDesc + vBloomDesc;
+        vFinalColor = vPostSceneDesc + vBloomDesc;
 
     // Outline
     if (g_isEnableOutline)
@@ -523,9 +531,22 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
         bool isOutline = (vDepthDesc.x >= 1.f - g_fOutlineBias && vOutlineDesc.w <= 1.f);
 
         if (isOutline)
-            Out.vColor *= float4(vOutlineDesc.rgb, g_fOutlineAlpha);
+            vFinalColor *= float4(vOutlineDesc.rgb, g_fOutlineAlpha);
+    }
+    
+    // Vignette
+    if (g_isEnableVignette)
+    {
+        float fDistance = length(In.vTexcoord - 0.5f);
+        float fVignetteFactor = 1.f - pow(fDistance, g_fVignettePower) * g_fVignetteIntensity;
+
+        //  vFinalColor.rgb = vFinalColor.rgb * fVignetteFactor * g_vVignetteColor + vFinalColor.rgb * fVignetteFactor;
+        vFinalColor.rgb = lerp(g_vVignetteColor, vFinalColor.rgb, fVignetteFactor);
+        vFinalColor.a = vPostSceneDesc.a;
     }
 
+    Out.vColor = vFinalColor;
+    
     return Out;
 }
 

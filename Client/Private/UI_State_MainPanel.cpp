@@ -102,7 +102,7 @@ HRESULT CUI_State_MainPanel::Setting_PanelLevel(_int iPanelType, UI_PLAYER_STATE
                 isSetting = false;
             
             if(isSetting)
-                static_cast<CUI_State_Panel*>(child)->Setting_PanelLevel(m_iPanelType, Data);
+                static_cast<CUI_State_Panel*>(child)->Setting_PanelLevel(m_iPanelType, Data, UpData);
         }
     }
     else if (m_iPanelType == ENUM_CLASS(CUI_State::STATE_PANEL::ADD_STATE))
@@ -139,7 +139,7 @@ HRESULT CUI_State_MainPanel::Setting_PanelLevel(_int iPanelType, UI_PLAYER_STATE
                 isSetting = false;
 
             if (isSetting)
-                static_cast<CUI_State_Panel*>(child)->Setting_PanelLevel(m_iPanelType, Data);
+                static_cast<CUI_State_Panel*>(child)->Setting_PanelLevel(m_iPanelType, Data, UpData);
         }
     }
     else if (m_iPanelType == ENUM_CLASS(CUI_State::STATE_PANEL::ELEMENTAL))
@@ -187,7 +187,7 @@ HRESULT CUI_State_MainPanel::Setting_PanelLevel(_int iPanelType, UI_PLAYER_STATE
                 isSetting = false;
 
             if (isSetting)
-                static_cast<CUI_State_Panel*>(child)->Setting_PanelLevel(m_iPanelType, Data);
+                static_cast<CUI_State_Panel*>(child)->Setting_PanelLevel(m_iPanelType, Data, UpData);
          
         }
     }
@@ -314,6 +314,11 @@ void CUI_State_MainPanel::Update(_float fTimeDelta)
     }
     else if (m_iPanelType == ENUM_CLASS(CUI_State::STATE_PANEL::LACHRYMA))
     {
+        if (0 < m_pData->iUPPoint)
+            m_pValue_Text.at("Lachryma_PennyValue")->Set_Color(_float4{ 1.f, 0.6f, 0.2f, 1.f });
+        else
+            m_pValue_Text.at("Lachryma_PennyValue")->Set_Color(_float4{ 1.f, 0.2f, 0.2f, 1.f });
+
         m_pValue_Text.at("Lachryma_PennyValue")->Set_Text(to_wstring(m_pData->iLachryma));
         m_pValue_Text.at("Lachryma_UpValue")->Set_Text(to_wstring(m_pData->iUpLachryma));
     }
@@ -337,11 +342,6 @@ HRESULT CUI_State_MainPanel::Load_UI(nlohmann::json& pInData, _uint iPrototypeLe
         return E_FAIL;
 
     return S_OK;
-}
-
-HRESULT CUI_State_MainPanel::Mapping_Child()
-{
-    return E_NOTIMPL;
 }
 
 CUI_State_MainPanel* CUI_State_MainPanel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)

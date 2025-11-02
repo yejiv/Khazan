@@ -37,9 +37,6 @@ private:
 	UI_PLAYER_STATE_DATA*				m_pData;
 	UI_PLAYER_STATE_DATA*				m_pUpData;
 
-private:
-	HRESULT								Mapping_Child();
-
 public:
 	static CUI_State_MainPanel*			Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
 	virtual CGameObject*				Clone(void* pArg) override;

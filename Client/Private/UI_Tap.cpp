@@ -185,7 +185,7 @@ _bool CUI_Tap::ButtonOver(HWND hWnd)
 	return __super::IsPick(hWnd);
 }
 
-_bool CUI_Tap::ButtonClick(HWND hWnd, _bool IsRight, _bool IsDown)
+_bool CUI_Tap::ButtonClick(HWND hWnd, _bool IsRight, _bool IsDown, INPUT_TYPE eType)
 {
 	if (__super::IsPick(hWnd))
 	{
@@ -193,12 +193,12 @@ _bool CUI_Tap::ButtonClick(HWND hWnd, _bool IsRight, _bool IsDown)
 		{
 			if (IsDown)
 			{
-				if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
+				if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB, eType))
 					return true;
 			}
 			else
 			{
-				if (m_pGameInstance->Mouse_Up(MOUSEKEYSTATE::RB))
+				if (m_pGameInstance->Mouse_Up(MOUSEKEYSTATE::RB, eType))
 					return true;
 			}
 		}
@@ -206,12 +206,12 @@ _bool CUI_Tap::ButtonClick(HWND hWnd, _bool IsRight, _bool IsDown)
 		{
 			if (IsDown)
 			{
-				if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+				if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB, eType))
 					return true;
 			}
 			else
 			{
-				if (m_pGameInstance->Mouse_Up(MOUSEKEYSTATE::LB))
+				if (m_pGameInstance->Mouse_Up(MOUSEKEYSTATE::LB, eType))
 					return true;
 			}
 		}

@@ -99,9 +99,6 @@ HRESULT CYetuga::Render()
 void CYetuga::Pick_Rock()
 {
     _float3 vSpawnPoint = m_pBody->Get_ThrowPoint();
-
-    cout << "3333333333333333333333333333333333333333" << endl;
-
     CGameObject* pGameObject = m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Rock"));
     if (nullptr == pGameObject)
         return;
@@ -125,7 +122,6 @@ void CYetuga::Pick_Rock()
 
 void CYetuga::Hold_Rock()
 {
-    cout << "2222222222222222222222222222222222222222222" << endl;
 
     if (nullptr == m_pHoldRock)
         return;
@@ -138,17 +134,25 @@ void CYetuga::Hold_Rock()
 
 void CYetuga::Throw_Rock()
 {
-    cout << "11111111111111111111111111111111111111111111" << endl;
+    CTransform* pTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+    _vector vTargetLoc = pTransform->Get_State(STATE::POSITION);
 
     if (m_pHoldRock == nullptr)
         return;
     _float3 vSpawnPoint = m_pBody->Get_ThrowPoint();
-    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
-
+    _float3 vTargetDir = (m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir"));
+    _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
+    _float3 vNormalize{};
+    XMStoreFloat3(&vNormalize,vTempVec);
     m_pHoldRock->Set_SpanwPoint(vSpawnPoint);
-    m_pHoldRock->Set_SpawnDir(vTargetDir);
+    //m_pHoldRock->Set_SpawnDir(vTargetDir);
+    m_pHoldRock->Set_SpawnDir(vNormalize);
     m_pHoldRock->Reset();
     m_pHoldRock->Set_IsActive(true);
+
+
+    m_pTransformCom->LookAt(vTargetLoc);
+
 
     Safe_Release(m_pHoldRock);
 
@@ -205,7 +209,7 @@ HRESULT CYetuga::Ready_Projectiles()
 {
     CProjectile_Yetuga::PROJECTILE_DESC Desc{};
     Desc.fDamage = 10.f;
-    Desc.fSpeedPerSec = 30.f;
+    Desc.fSpeedPerSec = 50.f;
     Desc.fLifeTime = 5.f;
     Desc.fRotationPerSec = 180.f;
 

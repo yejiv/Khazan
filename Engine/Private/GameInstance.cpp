@@ -25,6 +25,7 @@
 #include "Octree.h"
 #include "Blur.h"
 #include "Fog.h"
+#include "Vignette.h"
 #include "Sequence_Manager.h"
 #include "Sequence_Interface.h"
 
@@ -136,6 +137,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pFog)
 		return E_FAIL;
 
+	m_pVignette = CVignette::Create();
+	if (nullptr == m_pVignette)
+		return E_FAIL;
+
 	m_pSequence_Manager = CSequence_Manager::Create();
 	if (nullptr == m_pSequence_Manager)
 		return E_FAIL;
@@ -183,9 +188,10 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 	if (m_pOctree)
 		m_pOctree->Late_Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
-	// Cascade Test
+	// Renderer Resources
 	m_pShadow->Update();
 	m_pFog->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
+	m_pVignette->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
 	m_pLevel_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
@@ -1018,7 +1024,6 @@ void CGameInstance::Set_BlurConfig(GAUSSIAN_BLUR_CONFIG Config)
 }
 #pragma endregion
 
-
 #pragma region FOG
 HRESULT CGameInstance::Bind_Fog_ShaderResources(CShader* pShader)
 {
@@ -1047,6 +1052,32 @@ void CGameInstance::Set_FogNoiseTextureIndex(_uint iTextureIndex)
 void CGameInstance::Set_FogNoiseWorldSpace(_bool isEnable)
 {
 	m_pFog->Set_FogNoiseWorldSpace(isEnable);
+}
+#pragma endregion
+
+#pragma region VIGNETTE
+HRESULT CGameInstance::Bind_Vignette_ShaderResources(CShader* pShader)
+{
+	return m_pVignette->Bind_Vignette_ShaderResources(pShader);
+}
+
+void CGameInstance::Set_EnableVignette(_bool isEnable)
+{
+	m_pVignette->Set_EnableVignette(isEnable);
+}
+
+VIGNETTE_CONFIG CGameInstance::Get_VignetteConfig()
+{
+	return m_pVignette->Get_VignetteConfig();
+}
+
+void CGameInstance::Set_VignetteConfig(VIGNETTE_CONFIG Config)
+{
+	m_pVignette->Set_VignetteConfig(Config);
+}
+void CGameInstance::Start_VignetteAnimation(_float fDuration, VIGNETTE_CONFIG::ANIMMODE eMode)
+{
+	m_pVignette->Start_VignetteAnimation(fDuration, eMode);
 }
 #pragma endregion
 
@@ -1136,9 +1167,10 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pSequence_Manager);
 	Safe_Release(m_pThreadPool);
 
-	Safe_Release(m_pFog);
 	Safe_Release(m_pOctree);
 	
+	Safe_Release(m_pVignette);
+	Safe_Release(m_pFog);
 	Safe_Release(m_pBlur);
 	Safe_Release(m_pSSAO);
 	Safe_Release(m_pShadow);

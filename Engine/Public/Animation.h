@@ -18,6 +18,11 @@ public:
 	/* todo : 준영이 CModel_Instance에서 사용하는데 한번 이야기해봐야할 듯 */
 	void Update_TransformationMatrices(const vector<class CBone*>& Bones, _bool isLoop, _bool* pFinished, _float fTimeDelta);
 
+
+public:
+	// 오현형 저 테스트좀 해볼께요..
+	_float		MakeRatio();
+
 	/*  Info  */
 public:
 	void		Set_RootBoneIndex(_uint iRootBoneIndex);

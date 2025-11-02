@@ -56,6 +56,12 @@ private:
 	class CUI_BackGround*				m_pBackGround = { nullptr };
 	class CUI_TextBox*					m_pUIText = { nullptr };
 
+	class CUI_Atlas_Icon*				m_pQIcon = { nullptr };
+	class CUI_Atlas_Icon*				m_pEIcon = { nullptr };
+
+	vector<class CUI_Atlas_Icon*>		m_pGuideIcon;
+	vector<class CUI_TextBox*>			m_pGuideText;
+
 	UIANIMSTATE							m_eAnimState = { UIANIMSTATE::END };
 	
 	vector<vector<class CItem_Slot*>>	m_pItems;
@@ -85,6 +91,7 @@ private:
 	ITEMTYPE							Convert_UIntToITEMTYPE(_uint iItemIndex);
 	void								EquipSlot_Setting(class CEquip_Slot* pSlot, _int iIndex);
 
+	void								Inven_Key_Input();
 public:
 	static CUI_Inven*					Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
 	virtual CGameObject*				Clone(void* pArg) override;
