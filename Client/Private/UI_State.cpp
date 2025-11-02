@@ -10,6 +10,8 @@
 #include "UI_State_Button.h"
 #include "UI_State_List.h"
 
+#include "UI_BladeNexus.h"
+
 CUI_State::CUI_State(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
 {
@@ -58,17 +60,16 @@ void CUI_State::Off_Panel()
 		return;
 
 	m_IsUpdate = false;
-	//m_UpPlayer_Data = {};
-	//for (_int i = 0; i < ENUM_CLASS(STATE_LIST::END); ++i)
-	//	m_UpStateLevel[i] = 0;
-	//	
-	//m_eAnimState = UIANIMSTATE::OFF;
-	//m_fAccTime = 1.f;
 
 	if(m_eType == UI_TYPE::DEFAULT)
 		CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("MainMeun"));
 	else if (m_eType == UI_TYPE::UPAGERD)
-		CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("MainMeun"));
+	{
+		CUI_BladeNexus::BLADENEXUS_ON_DESC Desc;
+
+		Desc.eType = CUI_BladeNexus::ONTYPE::END;
+		CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BladeNexus"), &Desc);
+	}
 }
 
 HRESULT CUI_State::Initialize_Prototype(_uint iLevel)
@@ -93,7 +94,7 @@ void CUI_State::Priority_Update(_float fTimeDelta)
 {
 	if (!m_IsUpdate)
 		return;
-	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
+	if (m_pGameInstance->Key_Down(DIK_ESCAPE, INPUT_TYPE::UI))
 		Off_Panel();
 
 	UI_Animation(fTimeDelta);
