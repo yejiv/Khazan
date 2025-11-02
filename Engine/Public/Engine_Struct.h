@@ -72,16 +72,22 @@ namespace Engine
 
 	}MAPOBJECT_PROPERTIES;
 
-	typedef struct tagInteractiveDesc		// 공부하고 추가 예정
+	typedef struct tagSkyDesc
 	{
-		enum TYPE { SAVEPOINT, LADDER, LEVER, ELEVATOR, PLZADD, END };
+		XMFLOAT3 vNebulaColor{ 0.1f, 0.1f, 0.1f };			// 하늘 색깔 ( 마스크 적용 X, 단색 )
+		float fStarStrength{ 1.5f };						// 별의 세기
+		float fMoonSize{ 0.45f };							// 달 크기
+		XMFLOAT3 vMoonDirection{ -0.6f, 0.5f, 1.f };		// 달의 방향 ( 카메라 기준 )
+		XMFLOAT3 vMoonColor{ 1.f, 1.f, 1.f };				// 달의 색상
+		float fMoonIntensity{ 1.5f };						// 달의 세기
 
-		bool isOnce{ false };				// 한번만 작동하는지
-		bool isActive{ false };				// 활성화 되었는지
-		float fInteractiveRange{};			// 상호작용 범위
-		unsigned int iTriggerID{};			// 어떤 트리거랑 연동할 지
+	}SKY_DESC;
 
-	}INTERACTIVE_DESC;
+	typedef struct tagCloudDesc
+	{
+		// 구름 Desc 넣을 예정
+
+	}CLOUD_DESC;
 
 	typedef struct tagCatmullrom
 	{
