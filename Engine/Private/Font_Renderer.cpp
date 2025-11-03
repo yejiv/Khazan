@@ -170,9 +170,16 @@ HRESULT CFont_Renderer::DrawTextBox(CFont_Face* pFont, const _wstring& strText, 
 
     for (_tchar ch : strText)
     {
-        if (ch == L'\n')
+        if (ch == L'\\')
         {
-            cursorX = fX;
+            if (eAlign == TEXT_ALIGN::LEFT_BOTTOM || eAlign == TEXT_ALIGN::LEFT_CENTER || eAlign == TEXT_ALIGN::LEFT_TOP)
+                cursorX = fX;
+            else
+            {
+                Offset_Align(eAlign, vSize);
+                cursorX = fX + fOffsetWidth;
+            }
+            lineWidth = 0.f;
             cursorY += lineHeight;
             continue;
         }
