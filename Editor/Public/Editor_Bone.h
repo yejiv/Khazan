@@ -8,6 +8,7 @@ class CEditor_Bone final :public CBase
 {
 private:
 	CEditor_Bone();
+	CEditor_Bone(const CEditor_Bone& Prototype);
 	virtual ~CEditor_Bone() = default;
 
 public:
