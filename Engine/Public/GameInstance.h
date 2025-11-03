@@ -5,6 +5,7 @@
 #include "ComputeShader_Manager.h"
 #include "ThreadPool.h"
 #include "Event_Manager.h"
+#include "BoneChainPhysic.h"
 
 #ifdef new
 #pragma push_macro("new")
@@ -157,6 +158,7 @@ public:
 	// Target_World의 W도 추가로 값 빼오는 용도 ( 맵 오브젝트 ID용으로 사용 )
 	_bool isPicked(_float3* pOut, _uint* iObjectID);
 	_float4 isPickRenderTargetPixel(_wstring strRenderTargetTag);
+	_bool isPicked(_float3* pOutPosition, _float3* pOutNormal);
 #pragma endregion
 
 #pragma region SHADOW
@@ -209,6 +211,7 @@ public:
 	void Set_ObjectLayerFilter(_uint iObjectLayer, _bool isOn = true);
 	Body* CreateAndAdd_Body(const BodyCreationSettings& BodySetting, BodyInterface** pBodyInterface);
 	CharacterVirtual* CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData, BodyInterface** pBodyInterface);
+	CBoneChainPhysic* CreateBoneChain(class CModel* pModel, CBoneChainPhysic::BCP_BuildDesc tBuild, CBoneChainPhysic::BCP_RuntimeParams tParams, _uint iRootObjectLayer, _uint iBoneChainObjectLayer);
 
 	void CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter);
 	void CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter, CharacterVirtual::ExtendedUpdateSettings tSetting);
@@ -336,6 +339,12 @@ public:
 	HRESULT SEQ_Jump(const SEQ_REQ_JUMP_DESC& tDesc);
 #pragma endregion
 
+#pragma region DECAL_MANAGER
+	HRESULT	Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag,
+		_fvector vPosition, _fvector vNormal, const _float3& vScale);
+	HRESULT Render_Decals();
+#pragma endregion
+
 private:
 	class CGraphic_Device*		m_pGraphic_Device = { nullptr };
 	class CLevel_Manager*		m_pLevel_Manager = { nullptr };
@@ -358,6 +367,7 @@ private:
 	class CComputeShader_Manager*	m_pComputeShader_Manager = { nullptr };
 	class CBlackBoard*			m_pBlackBoard = { nullptr };
 	class CSequence_Manager*	m_pSequence_Manager = { nullptr };
+	class CDecal_Manager*		m_pDecal_Manager = { nullptr };
 	
 	// 임시(이후 렌더링 리소스 클래스 안으로 이전할 예정)
 	class CShadow*				m_pShadow = { nullptr };

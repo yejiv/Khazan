@@ -220,6 +220,12 @@
     <Filter Include="02.GameObject\MapObject\Sky">
       <UniqueIdentifier>{c39f273c-ce44-4269-9200-f2f0e77106d6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Effect\Trail\LineTrail">
+      <UniqueIdentifier>{09c3ca49-3bb5-459d-aea8-8dd64aa164b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Trail\LineTrail\ScreenTrail">
+      <UniqueIdentifier>{1c0dc89f-df51-443c-9aa3-83300d8a860f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -420,6 +426,12 @@
     <ClInclude Include="..\Public\CloudSphere.h">
       <Filter>02.GameObject\MapObject\Sky</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\LineTrail.h">
+      <Filter>02.GameObject\Effect\Trail\LineTrail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ScreenTrail.h">
+      <Filter>02.GameObject\Effect\Trail\LineTrail\ScreenTrail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -614,6 +626,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\CloudSphere.cpp">
       <Filter>02.GameObject\MapObject\Sky</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\LineTrail.cpp">
+      <Filter>02.GameObject\Effect\Trail\LineTrail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ScreenTrail.cpp">
+      <Filter>02.GameObject\Effect\Trail\LineTrail\ScreenTrail</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

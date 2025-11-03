@@ -16,6 +16,14 @@ CYetuga::CYetuga(const CYetuga& Prototype)
 {
 }
 
+_float4 CYetuga::Get_LockOnPosition()
+{
+    _float3 vTempPos = m_pBody->Get_BonePoint("FX_Body_ExpGained");
+    m_vLockOnPosition = _float4(vTempPos.x, vTempPos.y, vTempPos.z, 1.f);
+
+    return m_vLockOnPosition;
+}
+
 HRESULT CYetuga::Initialize_Prototype()
 {
     return S_OK;
@@ -58,23 +66,9 @@ void CYetuga::Priority_Update(_float fTimeDelta)
 
 void CYetuga::Update(_float fTimeDelta)
 {
-   /* _vector vLook = m_pTransformCom->Get_State(STATE::LOOK);
-    _float3 vTempDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>("Yetuga", "TargetDir");
-    _vector vTargetDir = XMVector3Normalize(XMLoadFloat3(&vTempDir));
-    _float fTurnSpeed = 1.f;
-    _vector vLerpDir = XMVector3Normalize(XMVectorLerp(vLook, vTargetDir, fTimeDelta * fTurnSpeed));
+    if (m_isSmash)
+        Smash(fTimeDelta);
 
-    m_pTransformCom->LookAt(m_pTransformCom->Get_State(STATE::POSITION) + vLerpDir);*/
-
-   /* if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
-    {
-        _float3     vPickedPos{};
-        _bool isPicked = m_pGameInstance->isPicked(&vPickedPos);
-        if (true == isPicked)
-        {
-            m_pTransformCom->Set_State(Engine::STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPickedPos), 1.f));
-        }
-    }*/
 
     m_pController->Update(this, fTimeDelta);
 
@@ -98,7 +92,7 @@ HRESULT CYetuga::Render()
 
 void CYetuga::Pick_Rock()
 {
-    _float3 vSpawnPoint = m_pBody->Get_ThrowPoint();
+    _float3 vSpawnPoint = m_pBody->Get_BonePoint("Weapon_L");
     CGameObject* pGameObject = m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Rock"));
     if (nullptr == pGameObject)
         return;
@@ -126,7 +120,7 @@ void CYetuga::Hold_Rock()
     if (nullptr == m_pHoldRock)
         return;
 
-    _float3 vSpawnPoint = m_pBody->Get_ThrowPoint();
+    _float3 vSpawnPoint = m_pBody->Get_BonePoint("Weapon_L");
     m_pHoldRock->Set_SpanwPoint(vSpawnPoint);
     m_pHoldRock->Reset();
 
@@ -139,7 +133,7 @@ void CYetuga::Throw_Rock()
 
     if (m_pHoldRock == nullptr)
         return;
-    _float3 vSpawnPoint = m_pBody->Get_ThrowPoint();
+    _float3 vSpawnPoint = m_pBody->Get_BonePoint("Weapon_L");
     _float3 vTargetDir = (m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir"));
     _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
     _float3 vNormalize{};
@@ -155,6 +149,32 @@ void CYetuga::Throw_Rock()
 
 
     Safe_Release(m_pHoldRock);
+
+}
+
+void CYetuga::Grab_Check_Begin()
+{
+    // 충돌키고
+    // 충돌됬으면
+    _float3 vTemp = m_pBody->Get_BonePoint("Holding");
+    _float4(vTemp.x,vTemp.y,vTemp.z,1.f);
+    // 뼈 포지션을 넣어주고
+}
+
+void CYetuga::Grab_Check_End()
+{
+    // 충돌을 꺼준다.
+}
+
+void CYetuga::Smash(_float fTimeDelta)
+{
+    CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+
+    CBlackBoard* BB = m_pGameInstance->Get_BlackBoard();
+    CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+    _vector vTargetLoc = pTargetTransform->Get_State(STATE::POSITION);
+
+    m_pTransformCom->Set_State(STATE::POSITION,vTargetLoc);
 
 }
 
@@ -202,6 +222,10 @@ HRESULT CYetuga::Ready_PartObjects()
     m_pBody = dynamic_cast<CBody_Yetuga*>(pBody);
     Safe_AddRef(m_pBody);
 
+
+    //_float4 vTest = Get_LockOnPosition();
+
+
     return S_OK;
 }
 
@@ -225,9 +249,121 @@ HRESULT CYetuga::Ready_AnimEvent()
     if (nullptr == pModel)
         return E_FAIL;
 
+#pragma region ThrowRock
+
     pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Pick_Rock(); });
     pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Throw_Rock(); });
     pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Hold_Rock(); });
+
+#pragma endregion
+
+
+#pragma region 2HIT
+
+    pModel->Register_Event("2HitOne", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Look_Target(); });
+    //pModel->Register_Event("2HitOne", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { /*충돌끄고*/});
+    //pModel->Register_Event("2HitOne", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { });
+
+    //pModel->Register_Event("2HitTwo", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {  });
+    //pModel->Register_Event("2HitTwo", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { /*타겟 풀어주기*/});
+    //pModel->Register_Event("2HitTwo", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { /*타겟 풀어주기*/});
+#pragma endregion
+
+#pragma region BACKSMASH
+    //pModel->Register_Event("BackSmashOne", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { /*충돌 키고*/ });
+    //pModel->Register_Event("BackSmashOne", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { /*충돌끄고*/});
+    //pModel->Register_Event("BackSmashOne", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { });
+
+    //pModel->Register_Event("BackSmashTwo", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 충돌 키고 });
+    //pModel->Register_Event("BackSmashTwo", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { /*충돌 끄고*/});
+    //pModel->Register_Event("BackSmashTwo", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { /*타겟 풀어주기*/});
+#pragma endregion
+
+
+#pragma region JumpGrab
+
+    pModel->Register_Event("GrabCheck", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {/*충돌키고*/ });
+    pModel->Register_Event("GrabCheck", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { /*충돌끄고*/});
+    //pModel->Register_Event("GrabCheck", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Hold_Rock(); });
+
+    pModel->Register_Event("TargetFree", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() 
+        {
+            // 타겟 풀어주기
+        });
+
+#pragma endregion
+
+
+#pragma region DempeyRoll
+
+    pModel->Register_Event("SetOne", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Look_Target(); });
+    pModel->Register_Event("SetOne", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Look_Target(); });
+    //pModel->Register_Event("SetOne", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { /*타겟 풀어주기*/});
+
+    pModel->Register_Event("SetTwo", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Look_Target(); });
+    pModel->Register_Event("SetTwo", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Look_Target(); });
+    //pModel->Register_Event("SetTwo", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { /*타겟 풀어주기*/});
+
+    // 패리 시 StrongAnimation 으로 
+    pModel->Register_Event("SetThree", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Look_Target(); });
+    pModel->Register_Event("SetThree", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Look_Target(); });
+    //pModel->Register_Event("SetThree", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { /*타겟 풀어주기*/});
+
+#pragma endregion
+
+
+#pragma region Amageddon
+    //// 돌을 풀에 서 꺼낸다.
+    //pModel->Register_Event("AMG_RockEvent", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { });
+    //// 대미지를 주고 충돌끄고 풀로 보낸다.
+    //pModel->Register_Event("AMG_RockEvent", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { /*충돌끄고*/});
+    //// Hold한다.
+    //pModel->Register_Event("AMG_RockEvent", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Look_Target(); });
+
+    // 점프 시작
+    pModel->Register_Event("AMG_JumpEvent", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { });
+    // 최고 높이까지도달
+    pModel->Register_Event("AMG_JumpEvent", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { });
+    // 속도, 조절
+    pModel->Register_Event("AMG_JumpEvent", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { });
+
+    // 플레이어 위치로 방향 조절
+    pModel->Register_Event("AMG_AimEvent", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
+        {
+            Look_Target();
+            m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 0.3f, 0.5f, 2.f);
+
+        });
+
+    pModel->Register_Event("AMG_AimEvent", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()
+        {
+            CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+            _float fAnimRatio = pModel->MakeRatio();
+            CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+            _vector vTargetLoc = pTargetTransform->Get_State(STATE::POSITION);
+            _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
+
+            _vector vDir = vTargetLoc - vPos;
+            vDir = XMVector3Normalize(vDir);
+
+            _vector vLook = m_pTransformCom->Get_State(STATE::LOOK);
+            vLook = XMVector3Normalize(vLook);
+
+
+            _vector vLerp = XMVectorLerp(vLook, vDir, fAnimRatio * 0.8f);
+            vLerp = XMVector3Normalize(vLerp);
+
+            m_pTransformCom->Set_State(STATE::LOOK, vLerp);
+        });
+
+
+    // 속도 조절
+    pModel->Register_Event("AMG_SmashEvent", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_isSmash = true; });
+    pModel->Register_Event("AMG_SmashEvent", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_isSmash = false; });
+
+    
+#pragma endregion
+
 
     return S_OK;
     

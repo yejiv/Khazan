@@ -51,6 +51,8 @@ public:
 		EMotionQuality  eQuality = EMotionQuality::Discrete;
 		_float		fAngularDamping = 0.5;
 
+		_float		fGravity = 1.f;
+
 		//class CGameObject* pGameObject = nullptr;
 		COLLISION_DESC* pCollisionDesc = nullptr;
 	}BODY_DESC;
@@ -94,6 +96,9 @@ public:
 
 	virtual void Update(_float fTimeDelta, class CTransform* pTransform) override;
 	virtual void Sync_Update(class CTransform* pTransform) override;
+
+	virtual void Update(_float fTimeDelta, _matrix WorldMatirx, _vector& outQuatRotation, _vector& outPosition);
+	virtual void Sync_Update(_matrix WorldMatirx);
 	void MeshUpdate();
 
 public:

@@ -18,6 +18,7 @@ private:
 	virtual ~CUI_Atlas_Icon() = default;
 
 public:
+	void					Set_LocalPos(_float2 vPos, CUIObject* pParent);
 	void					Set_Pos(_float2 vPos);
 	void					Update_Color(_float4 vColor);
 	void					Set_Texture(_float4 vUV, _uint iTexPass);

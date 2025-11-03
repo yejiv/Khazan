@@ -5,6 +5,8 @@
 
 NS_BEGIN(Engine)
 class CCamera;
+class CBody;
+class CGameObject;
 NS_END
 
 NS_BEGIN(Client)
@@ -40,8 +42,11 @@ public:
 public:
 	HRESULT Spring(_float fTimeDelta);
 	HRESULT RayCast(_float fTimeDelta);
+	HRESULT LockOn(_float fTimeDelta);
 
 public:
+	void LockOn_Check(_float fTimeDelta);
+	class CGameObject* Pick_ClosetTarget();
 	_vector Cal_CamPos(_float fTimeDelta, _vector& vTargetPos, _vector& vDir);
 
 public:
@@ -64,6 +69,23 @@ private:
 	_float m_fDeadZone = { 0.1f }; // 미세 요철 무시
 	_float m_fMaxRise = { 5.f }; // 초당 상승 한도
 	_float m_fMaxFall = { 9.f }; // 초당 하강한도
+
+	CBody* m_pBody = { nullptr };
+	_bool m_isLockOn = { false };
+	_float m_fLockOnDelay = {};
+	vector<class CGameObject*> m_CollMonsters;
+	class CGameObject* m_pLockMonster = { nullptr };
+	
+	_float m_fTargetHalfFovDegrees = { 50.f };
+	_float m_fTargetHalfFovCos = 0.f;
+	_float m_fTargetMaxDistance = 20.f;
+
+
+public:
+	void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
+	void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
+	void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
+
 
 public:
 	static CCamera_Compre* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

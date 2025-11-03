@@ -96,6 +96,11 @@ CharacterVirtual* CJolt_Manager::CreateCharacterVirtual(const CharacterVirtualSe
     return pCharVir;
 }
 
+CBoneChainPhysic* CJolt_Manager::CreateBoneChain(CModel* pModel, CBoneChainPhysic::BCP_BuildDesc tBuild, CBoneChainPhysic::BCP_RuntimeParams tParams, _uint iRootObjectLayer, _uint iBoneChainObjectLayer)
+{
+    return CBoneChainPhysic::Create(m_pPhysics, &m_pPhysics->GetBodyInterface(), pModel, tBuild, tParams, iRootObjectLayer, iBoneChainObjectLayer);
+}
+
 
 HRESULT CJolt_Manager::Set_PhysicsSystem()
 {
@@ -327,7 +332,9 @@ void CJolt_Manager::Free()
     Safe_Delete(m_pDebugRenderer);
 #endif
     m_CharacterVirtuals.clear();
+#ifdef _DEBUG
     Safe_Delete(m_DrawFilter);
+#endif
     Safe_Delete(m_pBPLayerIF);
 
     Safe_Delete(m_pObjectLayerPairFilter);
