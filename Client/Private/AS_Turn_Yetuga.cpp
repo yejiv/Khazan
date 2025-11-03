@@ -25,14 +25,12 @@ void CAS_Turn_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
         {
             // 왼쪽 90도 회전
             pModel->Set_Animation(8);
-            //m_fTargetYaw = XMConvertToRadians(-90.f);
         }
             
         else
         {
             // 왼쪽 뒤 (180도 회전)
             pModel->Set_Animation(10);
-            //m_fTargetYaw = XMConvertToRadians(-180.f);
         }
            
     }
@@ -42,27 +40,14 @@ void CAS_Turn_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
         {
             // 오른쪽 90도 회전
             pModel->Set_Animation(9);
-            //m_fTargetYaw = XMConvertToRadians(90.f);
         }
             
         else
         {
             // 오른쪽 뒤 (180도 회전)
             pModel->Set_Animation(11);
-            //m_fTargetYaw = XMConvertToRadians(180.f);
         }
     }
-
-
-    //// 회전 시작 방향 을 기록한다.
-    //CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
-    //_vector vLook = pTransform->Get_State(STATE::LOOK);
-    //vLook = XMVectorSetY(vLook,0.f);
-    //XMStoreFloat3(&m_vStartLook,XMVector3Normalize(vLook));
-
-    //_float3 vTempDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(pYetuga->Get_Name(), "TargetDir");
-    //XMStoreFloat3(&m_vTargetDir, XMVector3Normalize(XMLoadFloat3(&vTempDir)));
-
 }
 
 void CAS_Turn_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -105,28 +90,6 @@ void CAS_Turn_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fT
         pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pOwner);
     }
 
-
-  /*  _float fAnimRation = pModel->MakeRatio();
-    _float fCurrentYaw = m_fTargetYaw * fAnimRation;
-    _vector vStartLook = XMLoadFloat3(&m_vStartLook);
-    _matrix RotateMatrix = XMMatrixRotationY(fCurrentYaw);
-    _vector vLook = XMVector3TransformNormal(vStartLook,RotateMatrix);
-    vLook = XMVectorSetY(vLook, 0.f);
-    vLook = XMVector3Normalize(vLook);
-
-    _vector vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
-    _vector vRight = XMVector3Normalize(XMVector3Cross(vUp,vLook));
-    vUp = XMVector3Cross(vLook,vRight);
-
-    pOwnerTransform->Set_State(STATE::RIGHT,vRight);
-    pOwnerTransform->Set_State(STATE::UP,vUp);
-    pOwnerTransform->Set_State(STATE::LOOK,vLook);
-
-    if (pModel->Play_Animation(fTimeDelta))
-    {
-        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>("Yetuga", "isTurnFinished", true);
-        pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pOwner);
-    }*/
 }
 
 void CAS_Turn_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)

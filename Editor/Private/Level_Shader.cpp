@@ -22,6 +22,11 @@ HRESULT CLevel_Shader::Initialize()
 	if (FAILED(Ready_Layer_Camera()))
 		return E_FAIL;
 
+	// Decal
+	if (FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Decal"),
+		ENUM_CLASS(LEVEL::SHADER), TEXT("Pool_Decal"), nullptr, g_iNumDecals)))
+		return E_FAIL;
+
 	//if (FAILED(Ready_Lights()))
 		//return E_FAIL;
 
@@ -390,6 +395,23 @@ HRESULT CLevel_Shader::Initialize()
 
 void CLevel_Shader::Update(_float fTimeDelta)
 {
+	// Picking Test
+	if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::WB))
+	{
+		_float3 vPos, vNorm;
+		m_pGameInstance->isPicked(&vPos, &vNorm);
+
+		int a = 10;
+
+		//	if (FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Decal"),
+		//		ENUM_CLASS(LEVEL::SHADER), TEXT("Pool_Decal"), nullptr, g_iNumDecals)))
+		//		return E_FAIL;
+
+		if (FAILED(m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_Decal"),
+			XMVectorSet(vPos.x, vPos.y, vPos.z, 1.f), XMVectorSet(vNorm.x, vNorm.y, vNorm.z, 0.f), _float3(10.f, 10.f, 10.f))))
+			MSG_BOX(TEXT("Failed to Spawn : Decal"));
+	}
+
 #ifdef _DEBUG
 	m_fTimeAcc += fTimeDelta;
 #endif
@@ -642,8 +664,7 @@ HRESULT CLevel_Shader::Ready_Layer_MapObject_Inst(const _wstring& strLayerTag, c
 					TIME_CHANNEL::WORLD,
 					&objDesc // 캡처된 값의 주소 -> 안전
 				),
-				E_FAIL
-			);
+				E_FAIL);
 			});
 	}
 

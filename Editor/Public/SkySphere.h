@@ -23,8 +23,7 @@ public:
 	}SKY_SPHERE_DESC;
 
 private:
-	enum TEX_TYPE { DISTANCE_GRADATION, LOOKUP, NORMAL, DISTORTION, NEBULA, STAR_MASK, MOON, RING, TEX_TYPE_END };
-	enum MESH_TYPE { SKY, CLOUD, MESH_END };
+	enum TEX_TYPE { NEBULA, STAR_MASK, MOON, RING, TEX_TYPE_END };
 
 private:
 	CSkySphere(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -44,7 +43,7 @@ public:
 	void Set_SkyDesc(SKY_DESC SkyDesc) { m_SkyDesc = SkyDesc; }
 
 private:
-	CModel* m_pModelCom[MESH_END] = { nullptr };
+	CModel* m_pModelCom = { nullptr };
 	CShader* m_pShaderCom = { nullptr };
 	CTexture* m_pTextureCom[TEX_TYPE_END] = { nullptr };
 
@@ -60,7 +59,6 @@ private:
 	HRESULT Bind_ShaderResources();
 
 	HRESULT Bind_Sky_ShaderResources();
-	HRESULT Bind_Cloud_ShaderResources();
 
 public:
 	static CSkySphere* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

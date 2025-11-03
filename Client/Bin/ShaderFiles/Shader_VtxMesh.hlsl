@@ -23,7 +23,7 @@ vector g_vCamPosition;
 
 float g_fFar = 1000.f;
 
-vector    g_vColor = vector(0.f, 1.f, 0.f, 1.f);
+vector    g_vColor = vector(1.f, 0.f, 1.f, 1.f);
 
 unsigned int g_iMapObjectID;
 
@@ -176,6 +176,16 @@ PS_OUT PS_WIREFRAME(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐이더
     PS_OUT Out = (PS_OUT) 0;
     
     Out.vDiffuse = g_vColor;
+    
+    return Out;
+}
+
+PS_OUT PS_SOLIDFRAME(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐이더
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    Out.vDiffuse = g_vColor;
+    Out.vWorld = In.vWorldPos;
     
     return Out;
 }
@@ -362,7 +372,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN();
     }
 
-    pass WireFrame              // 와이어프레임 ( 1번 )
+    pass WireFrame // 와이어프레임 ( 1번 )
     {
         SetRasterizerState(RS_Wireframe);
         SetDepthStencilState(DSS_Default, 0);
@@ -373,7 +383,18 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_WIREFRAME();
     }
 
-    pass Shadow             // 그림자 ( 2번 )
+    pass SolidFrame // 솔리드프레임 ( 2번 )
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAPOBJECT();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_SOLIDFRAME();
+    }
+
+    pass Shadow             // 그림자 ( 3번 )
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -384,7 +405,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN_SHADOW();
     }
 
-    pass MapPass                        // 맵 오브젝트용 패스 ( 3번 ) ( 눈 X )
+    pass MapPass                        // 맵 오브젝트용 패스 ( 4번 ) ( 눈 X )
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -395,7 +416,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAP();
     }
 
-    pass MapIcePass                   // 맵 오브젝트용 패스 ( 4번 ) ( 눈 X )
+    pass MapIcePass                   // 맵 오브젝트용 패스 ( 5번 ) ( 눈 X )
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -406,7 +427,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAP_ICE();
     }
 
-    pass SnowMapPass               // 맵 오브젝트용 패스 ( 5번 ) ( 눈 O )
+    pass SnowMapPass               // 맵 오브젝트용 패스 ( 6번 ) ( 눈 O )
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -417,7 +438,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_SNOWMAP();
     }
 
-    pass SnowMapIcePass               // 맵 오브젝트용 패스 ( 6번 ) ( 눈 O )
+    pass SnowMapIcePass               // 맵 오브젝트용 패스 ( 7번 ) ( 눈 O )
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);

@@ -54,7 +54,7 @@ HRESULT CLevel_Map::Ready_Defaults()
 	
 	CHECK_FAILED(Ready_Layer_Preview(TEXT("Layer_Preview")), E_FAIL);
 
-	CHECK_FAILED(Ready_Layer_SkySphere(TEXT("Layer_Sky")), E_FAIL);
+	CHECK_FAILED(Ready_Layer_Sky(TEXT("Layer_Sky")), E_FAIL);
 
 	return S_OK;
 }
@@ -115,7 +115,7 @@ HRESULT CLevel_Map::Ready_Layer_Preview(const _wstring& strLayerTag)
 	return S_OK;
 }
 
-HRESULT CLevel_Map::Ready_Layer_SkySphere(const _wstring& strLayerTag)
+HRESULT CLevel_Map::Ready_Layer_Sky(const _wstring& strLayerTag)
 {
 	CSkySphere::SKY_SPHERE_DESC Desc = {};
 
@@ -127,6 +127,17 @@ HRESULT CLevel_Map::Ready_Layer_SkySphere(const _wstring& strLayerTag)
 
 	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), strLayerTag,
 		ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_SkySphere"), TIME_CHANNEL::WORLD, &Desc), E_FAIL);
+
+	CCloudSphere::CLOUD_SPHERE_DESC CloudDesc = {};
+
+	CloudDesc.eLevel = LEVEL::MAP;
+
+	CloudDesc.fRotationPerSec = XMConvertToRadians(1.f);
+
+	CloudDesc.CloudDesc = {};
+
+	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), strLayerTag,
+		ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_CloudSphere"), TIME_CHANNEL::WORLD, &CloudDesc), E_FAIL);
 
 	return S_OK;
 }
@@ -403,11 +414,6 @@ HRESULT CLevel_Map::Ready_Main_Window()
 					m_isRenderOption = !m_isRenderOption;
 
 				SEPARATOR;
-				ImGui::Text("SKY SPHERE");
-				if (ImGui::Button("ON/OFF##sky"))
-					m_isSkySphereWindow = !m_isSkySphereWindow;
-
-				SEPARATOR;
 
 				if (true == m_isRenderOption)
 				{
@@ -442,6 +448,38 @@ HRESULT CLevel_Map::Ready_Main_Window()
 						m_pGameInstance->Set_EnableToonShade(false);
 					SEPARATOR;
 				}
+
+				ImGui::Text("SPHERE");
+				if (ImGui::Button("SKY ON/OFF"))
+					m_isSkySphereWindow = !m_isSkySphereWindow;
+				SAMELINE;
+				if (ImGui::Button("CLOUD ON/OFF"))
+					m_isCloudSphereWindow = !m_isCloudSphereWindow;
+
+				SEPARATOR;
+
+				if (ImGui::Button("CUBE WIRE FRAME"))
+				{
+					for (auto& pProp : m_ObjectList)
+					{
+						if (pProp->Get_Properties().isCollider && pProp->Get_Properties().isBackGround)
+						{
+							m_iRenderFrame = 1;
+							pProp->Set_ShaderPass(m_iRenderFrame);
+						}
+					}
+				} SAMELINE;
+				if (ImGui::Button("CUBE SOLID FRAME"))
+				{
+					for (auto& pProp : m_ObjectList)
+					{
+						if (pProp->Get_Properties().isCollider && pProp->Get_Properties().isBackGround)
+							m_iRenderFrame = 2;
+							pProp->Set_ShaderPass(m_iRenderFrame);
+					}
+				}
+
+				SEPARATOR;
 
 				ImGui::Text("LIGHT");
 				if (ImGui::Button("LIGHT EDIT"))
@@ -537,47 +575,6 @@ HRESULT CLevel_Map::Ready_Main_Window()
 						ZeroMemory(m_szFolderName, sizeof(m_szFolderName));
 					}
 				}
-
-				/*
-				SEPARATOR;
-
-				ImGui::Text("DON'T USE");
-
-				if (ImGui::Button("CLEAR JSON LIST"))
-				{
-					m_isMainWindow = { true };
-					m_isPrototypeWindow = { false };
-
-					m_isLightSettingWindow = { false };
-
-					ZeroMemory(&m_LightDesc, sizeof(LIGHT_DESC));
-					m_LightDesc.eType = LIGHT_DESC::END;
-
-					m_strLightTag.clear();
-
-					m_LightTags.clear();
-					m_iLightTagIndex = {};
-
-					m_isAddLight = { false };
-					m_isFixLight = { false };
-					m_isFindFixLight = { false };
-
-					ZeroMemory(&m_FixLightDesc, sizeof(LIGHT_DESC));
-
-					m_szFixLightTag[MAX_PATH] = {};
-					m_strFixLightTag.clear();
-
-					m_isAddLightPoint = { false };
-					m_vLightPoint = {};
-
-					m_Prototypes_Obj.clear();			// Prototype 목록 ( Object 용 모델 )
-					m_iIndex_PrtObj = {};				// Prototype Object 용 인덱스
-				}
-				if (ImGui::Button("CLEAR LEVEL"))
-				{
-					CHECK_FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::MAP)), );
-				}
-				*/
 
 				ImGui::End();
 		}
@@ -754,6 +751,9 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 
 				CProp* pObject_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj")));
 				CHECK_NULLPTR_MSG(pObject_Prop, TEXT("엥"), );
+
+				if (pObject_Prop->Get_Properties().isCollider && pObject_Prop->Get_Properties().isBackGround)
+					pObject_Prop->Set_ShaderPass(m_iRenderFrame);
 
 				m_ObjectList.push_back(pObject_Prop);
 
@@ -1150,15 +1150,28 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
 
 #pragma region 속성 설정
 
+			if (INTERACTIVE_TYPE::CHECKPOINT== m_pFixPropObj->Get_InteractiveType())
+			{
+				ImGui::Text("== BLADE NEXUS INFORMATION ==");
+				ImGui::Text("BEFORE");
+
+				ImGui::Text("BLADE NEXUS ID : %d", m_iBN_ID);
+				SEPARATOR;
+				ImGui::Text("FIX ID");
+				ImGui::Text("FIX ID : "); SAMELINE;
+				ImGui::InputInt("##bn_id_fix", &m_iFix_BN_ID);
+
+				m_pFixPropObj->Set_BladeNexus_ID(m_iFix_BN_ID);
+			}
 			if (INTERACTIVE_TYPE::CHEST == m_pFixPropObj->Get_InteractiveType())
 			{
-				ImGui::Text("== CHEST INFOMATION ==");
+				ImGui::Text("== CHEST INFORMATION ==");
 				ImGui::Text("BEFORE");
 
 				ImGui::Text("FIRST ITEM : %d", m_ItemBox.iItem_0);
 				ImGui::Text("SECOND ITEM : %d", m_ItemBox.iItem_1);
 				ImGui::Text("THIRD ITEM : %d", m_ItemBox.iItem_2);
-
+				SEPARATOR;
 				ImGui::Text("FIX ITEM");
 				ImGui::Text("FIX FIRST ITEM : "); SAMELINE;
 				ImGui::InputInt("##item_list_fix_0", &m_FixItemBox.iItem_0);
@@ -1570,6 +1583,11 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 						// ======================================================
 
 						m_pGameInstance->Set_GizmoObject(m_pFixPropObj);
+
+						if (INTERACTIVE_TYPE::CHECKPOINT == m_pFixPropObj->Get_InteractiveType())
+						{
+							m_iFix_BN_ID = m_iBN_ID = m_pFixPropObj->Get_BladeNexus_ID();
+						}
 
 						if (INTERACTIVE_TYPE::CHEST == m_pFixPropObj->Get_InteractiveType())
 						{
@@ -2143,10 +2161,15 @@ OutputDebugStringA("조명 정보 바이너리 불러오기 실패");
 
 HRESULT CLevel_Map::Ready_SkySphere_Window()
 {
-	m_pSkySphere = static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_Sky")));
+	m_pSkySphere = static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_Sky"), 0));
 	CHECK_NULLPTR(m_pSkySphere, E_FAIL);
 
+	m_pCloudSphere = static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_Sky"), 1));
+	CHECK_NULLPTR(m_pCloudSphere, E_FAIL);
+
 	m_FixSkyDesc = m_pSkySphere->Get_SkyDesc();
+
+	m_FixCloudDesc = m_pCloudSphere->Get_CloudDesc();
 
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (m_isSkySphereWindow)
@@ -2171,6 +2194,7 @@ HRESULT CLevel_Map::Ready_SkySphere_Window()
 
 			ImGui::Text("MOON SIZE"); SAMELINE;
 			ImGui::InputFloat("##fix_moon_size", &m_FixSkyDesc.fMoonSize, 0.01f, 0.1f);
+			SEPARATOR;
 
 			ImGui::Text("MOON COLOR");
 			ImGui::Text("R"); SAMELINE;
@@ -2183,6 +2207,7 @@ HRESULT CLevel_Map::Ready_SkySphere_Window()
 
 			ImGui::Text("MOON INTENSITY"); SAMELINE;
 			ImGui::InputFloat("##fix_moon_inten", &m_FixSkyDesc.fMoonIntensity, 0.01f, 0.1f);
+			SEPARATOR;
 
 			ImGui::Text("MOON POSITION");
 			ImGui::Text("X"); SAMELINE;
@@ -2249,6 +2274,114 @@ HRESULT CLevel_Map::Ready_SkySphere_Window()
 			ImGui::End();
 		}
 		});
+
+		m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
+			if (m_isCloudSphereWindow)
+			{
+				ImGui::Begin("CLOUD SPHERE WINDOW", &m_isCloudSphereWindow, ImGuiWindowFlags_AlwaysAutoResize);
+
+				_float fCloudDensity = m_FixCloudDesc.fCloudDensity;	//
+				_float fCloudLightIntensity = m_FixCloudDesc.fCloudLightIntensity;		//
+				_float fCloudScale = m_FixCloudDesc.fCloudScale;		//
+				_float fCloudSpeed = m_FixCloudDesc.fCloudSpeed;		//
+				_float3 vCloudColor = m_FixCloudDesc.vCloudColor;		//
+				_float3 vLightDir = m_FixCloudDesc.vLightDir;			//
+				_float isDynamic = m_FixCloudDesc.fDynamic;
+				 
+				ImGui::Text("CLOUD COLOR");
+				ImGui::Text("R"); SAMELINE;
+				ImGui::InputFloat("##fix_cloud_color_R", &m_FixCloudDesc.vCloudColor.x, 0.01f, 0.1f);
+				ImGui::Text("G"); SAMELINE;
+				ImGui::InputFloat("##fix_cloud_color_G", &m_FixCloudDesc.vCloudColor.y, 0.01f, 0.1f);
+				ImGui::Text("B"); SAMELINE;
+				ImGui::InputFloat("##fix_cloud_color_B", &m_FixCloudDesc.vCloudColor.z, 0.01f, 0.1f);
+				SEPARATOR;
+
+				ImGui::Text("CLOUD SCALE"); SAMELINE;
+				ImGui::InputFloat("##fix_cloud_scale", &m_FixCloudDesc.fCloudScale, 0.01f, 0.1f);
+				SEPARATOR;
+
+				ImGui::Text("CLOUD SPEED"); SAMELINE;
+				ImGui::InputFloat("##fix_cloud_speed", &m_FixCloudDesc.fCloudSpeed, 0.01f, 0.1f);
+				SEPARATOR;
+
+				ImGui::Text("CLOUD DENSITY"); SAMELINE;
+				ImGui::InputFloat("##fix_cloud_density", &m_FixCloudDesc.fCloudDensity, 0.01f, 0.1f);
+				SEPARATOR;
+
+				ImGui::Text("CLOUD INTENSITY"); SAMELINE;
+				ImGui::InputFloat("##fix_cloud_inten", &m_FixCloudDesc.fCloudLightIntensity, 0.01f, 0.1f);
+				SEPARATOR;
+
+				ImGui::Text("LIGHT DIRECTION");
+				ImGui::Text("X"); SAMELINE;
+				ImGui::InputFloat("##fix_cloudlight_dir_X", &m_FixCloudDesc.vLightDir.x, 0.01f, 0.1f);
+				ImGui::Text("Y"); SAMELINE;
+				ImGui::InputFloat("##fix_cloudlight_dir_Y", &m_FixCloudDesc.vLightDir.y, 0.01f, 0.1f);
+				ImGui::Text("Z"); SAMELINE;
+				ImGui::InputFloat("##fix_cloudlight_dir_Z", &m_FixCloudDesc.vLightDir.z, 0.01f, 0.1f);
+				SEPARATOR;
+
+				ImGui::Text("CLOUD DYNAMIC"); SAMELINE;
+				if (ImGui::Button("ON"))
+					m_FixCloudDesc.fDynamic = 1.f;
+				SAMELINE;
+				if (ImGui::Button("OFF"))
+					m_FixCloudDesc.fDynamic = 0.f;
+
+				m_pCloudSphere->Set_CloudDesc(m_FixCloudDesc);
+
+				SEPARATOR;
+				ImGui::Text("PATH : %s", m_szMapInfoFilePath);
+				ImGui::Text("CLOUD SPHERE SAVE FILE : "); SAMELINE;
+				ImGui::InputText("##sky_file_name", m_szMapInfoFileName, IM_ARRAYSIZE(m_szMapInfoFileName));
+
+				SEPARATOR;
+				if (ImGui::Button("SAVE"))
+				{
+					string strPath = m_szMapInfoFilePath;
+					strPath += m_szMapInfoFileName;
+					strPath += "_cloud.dat";
+
+					DWORD dwByte = {};
+
+					HANDLE hFile = CreateFile(AnsiToWString(strPath).c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+					if (INVALID_HANDLE_VALUE == hFile)
+					{
+						_int a = 10;
+					}
+					else
+					{
+						WriteFile(hFile, &m_FixCloudDesc, sizeof(CLOUD_DESC), &dwByte, nullptr);
+					}
+
+					CloseHandle(hFile);
+
+				} SAMELINE;
+				if (ImGui::Button("LOAD"))
+				{
+					string strPath = m_szMapInfoFilePath;
+					strPath += m_szMapInfoFileName;
+					strPath += "_cloud.dat";
+
+					DWORD dwByte = {};
+
+					HANDLE hFile = CreateFile(AnsiToWString(strPath).c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+					if (INVALID_HANDLE_VALUE == hFile)
+					{
+						_int a = 10;
+					}
+					else
+					{
+						ReadFile(hFile, &m_FixCloudDesc, sizeof(CLOUD_DESC), &dwByte, nullptr);
+					}
+
+					CloseHandle(hFile);
+				}
+
+				ImGui::End();
+			}
+			});
 
 	return S_OK;
 }
@@ -3047,6 +3180,13 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 			WriteFile(hObjectFile, &eType, sizeof(INTERACTIVE_TYPE), &dwByte, nullptr);
 
 			// ( 추가적으로 체스트 인 경우 )
+
+			if (INTERACTIVE_TYPE::CHECKPOINT == eType)
+			{
+				_int iBladeNexusID = {};
+				iBladeNexusID = pProp->Get_BladeNexus_ID();
+				WriteFile(hObjectFile, &iBladeNexusID, sizeof(_int), &dwByte, nullptr);
+			}
 			if (INTERACTIVE_TYPE::CHEST == eType)
 			{
 				// 6. 아이템 3개 ID 넘기기 ( 구조체 Editor, Client 동일하게 )
@@ -3427,6 +3567,8 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 				BladeNexusDesc.WorldMatrix = WorldMatrix;										// 행렬
 
 				BladeNexusDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+				CHECK_FALSE(ReadFile(hObjectFile, &BladeNexusDesc.iBladeNexus_ID, sizeof(_int), &dwByte, nullptr), false);
 
 				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
 					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BladeNexus"), TIME_CHANNEL::WORLD, &BladeNexusDesc), false);

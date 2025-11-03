@@ -357,6 +357,25 @@ namespace Engine
 	inline _float EaseOutQuad(_float t) { return 1.f - (1.f - t) * (1.f - t); }
 	inline _float SmoothStep(_float t) { return t * t * (3.f - 2.f * t); }
 
+	static inline XMVECTOR ExtractQuatFromWorld(const XMMATRIX& W)
+	{
+		XMVECTOR S, Q, T;
+		if (XMMatrixDecompose(&S, &Q, &T, W))
+			return XMQuaternionNormalize(Q);
+
+		XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
+		XMVECTOR r0 = XMVectorSet(m._11, m._12, m._13, 0.f);
+		XMVECTOR r1 = XMVectorSet(m._21, m._22, m._23, 0.f);
+		XMVECTOR r2 = XMVectorSet(m._31, m._32, m._33, 0.f);
+		r0 = XMVector3Normalize(r0);
+		r1 = XMVector3Normalize(r1);
+		r2 = XMVector3Normalize(r2);
+		float det = XMVectorGetX(XMVector3Dot(r0, XMVector3Cross(r1, r2)));
+		if (det < 0.f) r0 = XMVectorNegate(r0);
+		XMMATRIX R(r0, r1, r2, XMVectorSet(0, 0, 0, 1));
+		return XMQuaternionNormalize(XMQuaternionRotationMatrix(R));
+	}
+
 }
 
 #endif // Engine_Function_h__
