@@ -8,12 +8,16 @@
 #include "Cursor.h"
 #include "Item_Slot.h"
 
+//메인 UI
 #include "UI_HUD.h"
 #include "UI_Inven.h"
 #include "UI_MainMenu.h"
 #include "UI_BladeNexus.h"
 #include "UI_State.h"
+
+//HUD  관련
 #include "BossHp.h"
+#include "Amount.h"
 
 #include "Damage_Text.h"
 #include "Mon_HP.h"

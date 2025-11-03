@@ -160,6 +160,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\AI_Controller_Yetuga.h" />
+    <ClInclude Include="..\public\Amount.h" />
+    <ClInclude Include="..\public\Amount_Panel.h" />
     <ClInclude Include="..\Public\AS_Amageddon_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Dodge_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Hit_Yetuga.h" />
@@ -300,6 +302,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\AI_Controller_Yetuga.cpp" />
+    <ClCompile Include="..\private\Amount.cpp" />
+    <ClCompile Include="..\private\Amount_Panel.cpp" />
     <ClCompile Include="..\Private\AS_Amageddon_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Dodge_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Hit_Yetuga.cpp" />

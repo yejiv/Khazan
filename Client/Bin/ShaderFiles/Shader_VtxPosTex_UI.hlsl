@@ -276,6 +276,27 @@ PS_OUT PS_TEX_PROGRESS_BossHP(PS_IN In)
     }
     return Out;
 }
+
+PS_OUT PS_HUD_AMOUNT(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
+    if (In.vTexcoord.x < 0.7f)
+    {
+        float fAlpha = In.vTexcoord.x / 0.7f;
+        fAlpha = clamp(fAlpha, 0.0f, 1.0f);
+        
+        Out.vColor.a = fAlpha;
+        Out.vColor.a *= g_vColor.a;
+        Out.vColor.a *= g_fAlpha;
+    }
+    else
+    {
+        Out.vColor.a *= g_fAlpha;
+    }
+
+    return Out;
+}
 technique11 DefaultTechnique
 {
     pass DefaultPass
@@ -408,4 +429,16 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_TEX_PROGRESS_BossHP();
     }
+    pass PS_HUD_AMOUNT //12
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_HUD_AMOUNT();
+    }
+
+
 }

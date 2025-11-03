@@ -454,6 +454,12 @@
     <Filter Include="02.GameObject\UI\BossHp\BossGauge">
       <UniqueIdentifier>{d5fe018e-b0e6-4ae5-8f26-fc4b8ca7c66d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Amount">
+      <UniqueIdentifier>{b4b7171c-3aa1-4e4a-b2f8-9835253039b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Amount\Panel">
+      <UniqueIdentifier>{c0acf912-d9e7-4f81-9e6c-cba8d2a873e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -861,6 +867,12 @@
     <ClInclude Include="..\public\BossHp_Gauge.h">
       <Filter>02.GameObject\UI\BossHp\BossGauge</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Amount.h">
+      <Filter>02.GameObject\UI\Amount</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Amount_Panel.h">
+      <Filter>02.GameObject\UI\Amount\Panel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1253,6 +1265,12 @@
     </ClCompile>
     <ClCompile Include="..\private\BossHp_Gauge.cpp">
       <Filter>02.GameObject\UI\BossHp\BossGauge</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Amount.cpp">
+      <Filter>02.GameObject\UI\Amount</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Amount_Panel.cpp">
+      <Filter>02.GameObject\UI\Amount\Panel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
