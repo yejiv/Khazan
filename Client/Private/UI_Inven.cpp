@@ -15,6 +15,8 @@
 #include "UI_Atlas_Icon.h"
 #include "UI_TextBox.h"
 
+#include "UI_HUD.h"
+
 CUI_Inven::CUI_Inven(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
 {
@@ -58,7 +60,10 @@ _bool CUI_Inven::Add_Item(_uint iItemIndex)
 	for (auto Item : m_pItems[ENUM_CLASS(eType)])
 	{
 		if (Item->Add_Item(iItemIndex))
+		{
+			static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Add_Item(iItemIndex);
 			return true;
+		}
 	}
 	
 	return false;
@@ -82,6 +87,19 @@ HRESULT CUI_Inven::Initialize_Clone(void* pArg)
 
 void CUI_Inven::Priority_Update(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_M))
+	{
+		Add_Item(1001);
+		Add_Item(3001);
+		Add_Item(5001);
+		Add_Item(5002);
+		Add_Item(5003);
+		Add_Item(5004);
+		Add_Item(5005);
+		Add_Item(4001);
+		Add_Item(4002);
+	}
+
 	if (!m_IsUpdate)
 		return;
 
@@ -101,6 +119,17 @@ void CUI_Inven::Priority_Update(_float fTimeDelta)
 		
 		for (auto Item : m_pItems[m_iSeleteTap])
 			Item->Priority_Update(fTimeDelta);
+
+		if (m_pGameInstance->Key_Down(DIK_D, INPUT_TYPE::UI))
+		{
+			++m_iSeleteSlotIndex;
+			Selete_Slot();
+		}
+		else if (m_pGameInstance->Key_Down(DIK_A, INPUT_TYPE::UI))
+		{
+			--m_iSeleteSlotIndex;
+			Selete_Slot();
+		}
 	}
 	else
 	{
@@ -244,6 +273,18 @@ void CUI_Inven::Bubble_EventCall(BUBBLEEVENT* pArg)
 
 	if (pDesc->eBubbleType == EVENT_TYPE::TAP)
 	{
+		for (_int i = 0; i < m_pItems[m_iSeleteTap].size(); ++i)
+		{
+			if (i == m_iSeleteSlotIndex)
+			{
+				if (m_pItems[m_iSeleteTap][i]->On_Selete())
+					continue;
+				else
+					m_pItems[m_iSeleteTap][0]->On_Selete();
+			}
+			else if (m_pItems[m_iSeleteTap][i]->Off_Selete() == false)
+				break;
+		}
 		TapType_Mapping(pArg->szName);
 		if (m_iSeleteTap < 0)
 			return;
@@ -255,9 +296,14 @@ void CUI_Inven::Bubble_EventCall(BUBBLEEVENT* pArg)
 			else
 				m_pInvenTap[i]->Tap_Disable();
 		}
+
+		m_iSeleteSlotIndex = 0;
+		Selete_Slot();
+
 	}
 	else if (pDesc->eBubbleType == EVENT_TYPE::ITEM_SELETE)
 	{
+		m_iSeleteSlotIndex = pDesc->iIndex;
 		for (_int i = 0; i < (_int)m_pItems[pDesc->iTypeIndex].size(); ++i)
 		{
 			if (i == pDesc->iIndex)
@@ -599,6 +645,11 @@ void CUI_Inven::Change_Tap(_int iSeleteINdex)
 	vPos.y = 135.f;
 
 	m_pEIcon->Set_Pos(vPos);
+
+	m_iSeleteSlotIndex = 0;
+
+	Selete_Slot();
+
 }
 
 CUI_Inven::ITEMTYPE CUI_Inven::Convert_UIntToITEMTYPE(_uint iItemIndex)
@@ -657,6 +708,7 @@ void CUI_Inven::EquipSlot_Setting(CEquip_Slot* pSlot, _int iIndex)
 
 void CUI_Inven::Inven_Key_Input()
 {
+	_bool isTapChage = { false };
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE, INPUT_TYPE::UI))
 	{
 		if (ENUM_CLASS(TapGroup::OTHER) == m_iTapGroupIndex || m_bIsEquip)
@@ -666,6 +718,7 @@ void CUI_Inven::Inven_Key_Input()
 	}
 	else if (m_pGameInstance->Key_Down(DIK_E, INPUT_TYPE::UI))
 	{
+		isTapChage = true;
 		_int iMaxIndex = m_UpdateGroup[m_iTapGroupIndex].size();
 		for (_int i = 0; i < iMaxIndex; ++i)
 		{
@@ -689,6 +742,7 @@ void CUI_Inven::Inven_Key_Input()
 	}
 	else if (m_pGameInstance->Key_Down(DIK_Q, INPUT_TYPE::UI))
 	{
+		isTapChage = true;
 		_int iMaxIndex = m_UpdateGroup[m_iTapGroupIndex].size();
 		for (_int i = 0; i < iMaxIndex; ++i)
 		{
@@ -710,6 +764,53 @@ void CUI_Inven::Inven_Key_Input()
 				m_pInvenTap[i]->Tap_Disable();
 		}
 	}
+
+	if (isTapChage)
+	{
+		m_iSeleteSlotIndex = 0;
+		Selete_Slot();
+	}
+}
+
+void CUI_Inven::Selete_Slot()
+{
+	if (m_iSeleteSlotIndex < 0)
+	{
+		_bool isSelete = false;
+
+		for (_int i = m_pItems[m_iSeleteTap].size() -1; i >= 0; --i)
+		{
+			if (!isSelete && m_pItems[m_iSeleteTap][i]->Get_ItemIndex() > -1)
+			{
+				m_iSeleteSlotIndex = i;
+				m_pItems[m_iSeleteTap][i]->On_Selete();
+				isSelete = true;
+			}
+			else
+			{
+				m_pItems[m_iSeleteTap][i]->Off_Selete();
+			}
+		}
+	}
+	else
+	{
+		for (_int i = 0; i < m_pItems[m_iSeleteTap].size(); ++i)
+		{
+			if (i == m_iSeleteSlotIndex)
+			{
+				if (m_pItems[m_iSeleteTap][i]->On_Selete())
+					continue;
+				else
+				{
+					m_iSeleteSlotIndex = 0;
+					m_pItems[m_iSeleteTap][0]->On_Selete();
+				}
+			}
+			else if (m_pItems[m_iSeleteTap][i]->Off_Selete() == false)
+				break;
+		}
+	}
+
 }
 
 CUI_Inven* CUI_Inven::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)

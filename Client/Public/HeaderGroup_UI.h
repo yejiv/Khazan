@@ -20,3 +20,6 @@
 
 #include "MainMenu_Deco.h"
 #include "UI_Announce_MapName.h"
+
+#include "ItemInfo_Other.h"
+#include "ItemInfo_Weapon.h"

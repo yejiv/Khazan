@@ -9,7 +9,7 @@ typedef struct tagStimulus
 {
     SENSETYPE       eType;              // 감각 종류
     _float3         vLocation = {};     // 자극이 발생한 월드 위치
-    _double         dTimeStamp = 0.0;   // 자극이 생성된 시간
+    _float          fTimeStamp = 0.0;   // 자극이 생성된 시간
     _float          fStrength = 0.f;    // 자극의 강도(0..1 또는 damage 값 등)
     _bool           bSensed = { false };  // Perception이 성공적으로 감지했는지 여부
     _float          fVaildTime = 0.f;   // 이 자극을 유효하다고 볼 TTL (초)

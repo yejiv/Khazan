@@ -240,6 +240,33 @@ void CTransform::AI_Chase(_fvector vTargetPos, _float fTimeDelta, _float SpeedPe
 
 }
 
+void CTransform::Align_ToNormal(_fvector vNormal)
+{
+	// 1. Z축을 목표 노말로 설정, 정규화
+	// 2. Y축을 월드 업벡터
+	// 3. 예외처리 Z축과 Y축이 거의 평행할 경우 내적했을 때 0.999 이상 -> 다른 임의의 축 월드 Z를 기준으로 외적 시작
+	// 4. 업룩 외적 -> X축 계산
+	// 5. 룩라 외적 -> 최종 Y축 계산
+	// 6. 결과를 012행에 세팅
+
+	_float3 vScaled = Get_Scaled();
+
+	_vector vLook = XMVector3Normalize(vNormal);
+	_vector vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+
+	if (XMVectorGetX(XMVector3Dot(vLook, vUp)) >= 0.999f)
+		vUp = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+
+	_vector vRight = XMVector3Cross(vUp, vLook);
+	vRight = XMVector3Normalize(vRight);
+
+	vUp = XMVector3Normalize(XMVector3Cross(vLook, vRight));
+	
+	Set_State(STATE::RIGHT, XMVector3Normalize(vRight) * vScaled.x);
+	Set_State(STATE::UP, XMVector3Normalize(vUp) * vScaled.y);
+	Set_State(STATE::LOOK, XMVector3Normalize(vLook) * vScaled.z);
+}
+
 CTransform* CTransform::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	CTransform* pInstance = new CTransform(pDevice, pContext);

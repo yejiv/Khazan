@@ -53,6 +53,7 @@ HRESULT CBody::Initialize_Clone(void* pArg)
         BCS.mMassPropertiesOverride.mMass = pDesc->fMass;
     }
 
+    BCS.mGravityFactor = 0;
     if (pDesc->eShapeType != SHAPE::MESH)
     {
         m_pBody = m_pGameInstance->CreateAndAdd_Body(BCS, &m_pBodyInterface);
@@ -102,9 +103,44 @@ void CBody::Sync_Update(CTransform* pTransform)
         Set_PosRot(pTransform->Get_State(STATE::POSITION), pTransform->Get_Rotation_Quat());
 }
 
+void CBody::Update(_float fTimeDelta, _matrix WorldMatirx, _vector& outQuatRotation, _vector& outPosition)
+{
+    if (!m_pBodyInterface->IsActive(m_BodyID))
+        m_pBodyInterface->ActivateBody(m_BodyID);
+
+    if (m_pBody->GetMotionType() == EMotionType::Kinematic)
+    {
+        _vector vScale{}, vRotation{}, vTranslation{};
+
+        XMMatrixDecompose(&vScale, &vRotation, &vTranslation, WorldMatirx);
+
+        m_pBodyInterface->MoveKinematic(m_BodyID, LoadVec3(vTranslation), LoadQuat(vRotation), fTimeDelta);
+
+    }
+
+    Vec3 vPos;
+    Quat qRotation;
+    m_pBodyInterface->GetPositionAndRotation(m_BodyID, vPos, qRotation);
+
+    _vector vQuaternion = XMVectorSet(qRotation.GetX(), qRotation.GetY(), qRotation.GetZ(), qRotation.GetW());
+
+    outQuatRotation = vQuaternion;
+    outPosition = XMVectorSet(vPos.GetX(), vPos.GetY(), vPos.GetZ(), 1.f);
+}
+
+void CBody::Sync_Update(_matrix WorldMatirx)
+{
+    _vector vScale, vRotation, vTranslation;
+
+    XMMatrixDecompose(&vScale, &vRotation, &vTranslation, WorldMatirx);
+
+    if (m_pBody->GetMotionType() == EMotionType::Kinematic)
+        Set_PosRot(vTranslation, vRotation);
+}
+
 void CBody::MeshUpdate()
 {
-    //m_pBody->Set
+
 }
 
 

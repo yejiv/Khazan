@@ -32,12 +32,19 @@ public:
 	_bool			Contains_Name(const _tchar* pName) { return m_strName.find(static_cast<_wstring>(pName)) != _wstring::npos; }
 	_bool			Contains_Name(const _char* pName) { return 	m_strName.find(CharToWString(pName)) != _wstring::npos;}
 
+	_int			Get_ParentBoneIndex() { return m_iParentBoneIndex; }
+	const vector<_int>&	Get_ChildBones() const { return m_iChildBones; }
+
+public:
+	void			Push_ChildBone(_int iBoneIndex) { m_iChildBones.push_back(iBoneIndex); }
+
 private:
 	_wstring			m_strName = {};
 	_float4x4			m_TransformationMatrix = {};
 	_float4x4			m_CombinedTransformationMatrix = {};
 
 	_int				m_iParentBoneIndex = { -1 };
+	vector<_int>		m_iChildBones;
 
 public:
 	static CBone* Create(BONE_DATA& data);

@@ -17,10 +17,17 @@ CMonster::CMonster(const CMonster& Prototype)
 
 }
 
-void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject)
+void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction, _float fValidTime,CGameObject* pGameObject)
 {
     m_fCurrentHP -= fDamage;
-    m_pController->AI_ApplyDamage(pGameObject,fDamage,ENUM_CLASS(eHitreaction));
+    m_pController->AI_ApplyDamage(pGameObject,fDamage,ENUM_CLASS(eHitreaction),fValidTime);
+}
+
+void CMonster::Look_Target()
+{
+    CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+    _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+    m_pTransformCom->LookAt(vTargetPos);
 }
 
 HRESULT CMonster::Initialize_Prototype()

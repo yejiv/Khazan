@@ -11,6 +11,9 @@ private:
 	virtual ~CUI_HUD() = default;
 
 public:
+	void						Add_Item(_int iIndex);
+
+public:
 	virtual HRESULT				Initialize_Prototype(_uint iLevel);
 	virtual HRESULT				Initialize_Clone(void* pArg) override;
 	virtual void				Priority_Update(_float fTimeDelta) override;
@@ -21,7 +24,11 @@ public:
 	virtual void				Bubble_EventCall();
 
 private:
-	virtual	HRESULT				Ready_Prototype();
+	deque<class CItemInfo_Hud*> m_pRender_ItemInfo;
+	queue<class CItemInfo_Hud*> m_pItemInfo;
+private:
+	HRESULT						Ready_Prototype();
+	HRESULT						Ready_Childeren();
 
 public:
 	static CUI_HUD*				Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);

@@ -7,6 +7,12 @@
 #include "AS_Turn_Yetuga.h"
 #include "AS_ThrowBall_Yetuga.h"
 #include "AS_Hit_Yetuga.h"
+#include "AS_Smash_Yetuga.h"
+#include "AS_JumpAttack_Yetuga.h"
+#include "AS_Rush_Yetuga.h"
+#include "AS_Dodge_Yetuga.h"
+#include "AS_JumpGrab_Yetuga.h"
+#include "AS_Amageddon_Yetuga.h"
 
 CFSM_Yetuga::CFSM_Yetuga()
 {
@@ -29,9 +35,21 @@ HRESULT CFSM_Yetuga::Initialize()
         return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::THROWBALL), CAS_ThrowBall_Yetuga::Create())))
         return E_FAIL;
+    if(FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::SMASH), CAS_Smash_Yetuga::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::JUMPATTACK), CAS_JumpAttack_Yetuga::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::JUMPGRAB), CAS_JumpGrab_Yetuga::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::RUSH), CAS_Rush_Yetuga::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::AMAGEDDON), CAS_Amageddon_Yetuga::Create())))
+        return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::HIT), CAS_Hit_Yetuga::Create())))
         return E_FAIL;
-
+    if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::DODGE), CAS_Dodge_Yetuga::Create())))
+        return E_FAIL;
+  
     m_pCurrentState = m_States[ENUM_CLASS(YETUGA_STATE::IDLE)];
     if (nullptr == m_pCurrentState)
         return E_FAIL;
