@@ -56,33 +56,36 @@ void CAnimationTool::Widget()
 
         if (!m_GameObjects.empty())
         {
-            m_GameObjects[0]->Debug_RenderState();
-            if (ImGui::CollapsingHeader("Rotation Info"))
+            for (auto gameObject : m_GameObjects)
             {
-                _matrix worldMatrix = m_GameObjects[0]->Debug_GetTransformMatrix();
-                _vector scale, rotQ, pos;
-                XMMatrixDecompose(&scale, &rotQ, &pos, worldMatrix);
+                gameObject->Debug_RenderState();
+                if (ImGui::CollapsingHeader("Rotation Info"))
+                {
+                    _matrix worldMatrix = gameObject->Debug_GetTransformMatrix();
+                    _vector scale, rotQ, pos;
+                    XMMatrixDecompose(&scale, &rotQ, &pos, worldMatrix);
 
-                _float x = XMVectorGetX(rotQ);
-                _float y = XMVectorGetY(rotQ);
-                _float z = XMVectorGetZ(rotQ);
-                _float w = XMVectorGetW(rotQ);
+                    _float x = XMVectorGetX(rotQ);
+                    _float y = XMVectorGetY(rotQ);
+                    _float z = XMVectorGetZ(rotQ);
+                    _float w = XMVectorGetW(rotQ);
 
-                // 라디안 계산
-                _float roll = atan2f(2 * (w * x + y * z), 1 - 2 * (x * x + y * y)); // X
-                _float pitch = asinf(2 * (w * y - z * x));                           // Y
-                _float yaw = atan2f(2 * (w * z + x * y), 1 - 2 * (y * y + z * z)); // Z
+                    // 라디안 계산
+                    _float roll = atan2f(2 * (w * x + y * z), 1 - 2 * (x * x + y * y)); // X
+                    _float pitch = asinf(2 * (w * y - z * x));                           // Y
+                    _float yaw = atan2f(2 * (w * z + x * y), 1 - 2 * (y * y + z * z)); // Z
 
-                // 각도 변환
-                _float rollDeg = XMConvertToDegrees(roll);
-                _float pitchDeg = XMConvertToDegrees(pitch);
-                _float yawDeg = XMConvertToDegrees(yaw);
+                    // 각도 변환
+                    _float rollDeg = XMConvertToDegrees(roll);
+                    _float pitchDeg = XMConvertToDegrees(pitch);
+                    _float yawDeg = XMConvertToDegrees(yaw);
 
-                // ImGui 출력
-                ImGui::SeparatorText("Rotation (Euler)");
-                ImGui::Text("X (Roll)  : %.4f rad  |  %.2f°", roll, rollDeg);
-                ImGui::Text("Y (Pitch) : %.4f rad  |  %.2f°", pitch, pitchDeg);
-                ImGui::Text("Z (Yaw)   : %.4f rad  |  %.2f°", yaw, yawDeg);
+                    // ImGui 출력
+                    ImGui::SeparatorText("Rotation (Euler)");
+                    ImGui::Text("X (Roll)  : %.4f rad  |  %.2f°", roll, rollDeg);
+                    ImGui::Text("Y (Pitch) : %.4f rad  |  %.2f°", pitch, pitchDeg);
+                    ImGui::Text("Z (Yaw)   : %.4f rad  |  %.2f°", yaw, yawDeg);
+                }
             }
         }
 
@@ -141,12 +144,11 @@ void CAnimationTool::OpenModel_Widget()
 
 	//랜더 그룹 선택 
 	ImGui::SeparatorText("RenderGroup");
-    const _char* renderGroupNames[] = {"PRIORITY", "SHADOW", "NONBLEND", "NONLIGHT", "BLEND", "UI"};
-    if (ImGui::Combo("##RenderGroupCombo", &m_iCurrentRenderGroup, renderGroupNames, IM_ARRAYSIZE(renderGroupNames)))
+    if (ImGui::Combo("##RenderGroupCombo", &m_iCurrentRenderGroup, m_strRenderGroupNames, IM_ARRAYSIZE(m_strRenderGroupNames)))
     {
         //m_iCurrentRenderGroup = 3;
     }
-    ImGui::Text("Selected: %s", renderGroupNames[m_iCurrentRenderGroup]);
+    ImGui::Text("Selected: %s", m_strRenderGroupNames[m_iCurrentRenderGroup]);
 
     // 파일 선택 
     ImGui::SeparatorText("Load Model");
