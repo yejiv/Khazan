@@ -136,12 +136,19 @@ void CAnimationTool::OpenModel_Widget()
     ImGui::DragFloat3("Pre-Scale", (_float*)&m_vPreScale, 0.001f, 0.001f, 10.0f, "%.5f");
     if (ImGui::Button("Fast 0.0001")) m_vPreScale = _float3(0.0001f, 0.0001f, 0.0001f);
     ImGui::SameLine();
+    if (ImGui::Button("Fast 0.001")) m_vPreScale = _float3(0.001f, 0.001f, 0.001f);
+    ImGui::SameLine();
+    if (ImGui::Button("Fast 0.01")) m_vPreScale = _float3(0.01f, 0.01f, 0.01f);
+    ImGui::SameLine();
+    if (ImGui::Button("Fast 0.1")) m_vPreScale = _float3(0.1f, 0.1f, 0.1f);
+    ImGui::SameLine();
     if (ImGui::Button("Fast 1.0")) m_vPreScale = _float3(1.f, 1.f, 1.f);
 
     // 애니메이션 타입 선택 
     ImGui::SeparatorText("Model Type");
     ImGui::Checkbox("Is Animated Model", &m_isAnim);
-
+    ImGui::SameLine();
+    ImGui::Checkbox("Only Animation Model : isSolid ", &m_isSolid);
 	//랜더 그룹 선택 
 	ImGui::SeparatorText("RenderGroup");
     if (ImGui::Combo("##RenderGroupCombo", &m_iCurrentRenderGroup, m_strRenderGroupNames, IM_ARRAYSIZE(m_strRenderGroupNames)))
@@ -782,10 +789,10 @@ void CAnimationTool::Tool_AnimationInfo_Widget()
         ImGui::DragFloat("##BlendTime", &animData->fAnimationBlendTime, 0.01f, 0.0f, 5.0f, "%.3f");
 
 
-        ImGui::Text("(Set Anim)Blend Out Time:");
+        ImGui::Text("Minimum Play Time :");
         ImGui::SameLine();
         ImGui::SetNextItemWidth(150);
-        ImGui::DragFloat("##BlendOut", &setup->fBlendOutTime, 0.01f, 0.0f, 5.0f, "%.3f");
+        ImGui::DragFloat("##MinimumPlayTime", &setup->fBlendOutTime, 0.01f, 0.0f, 5.0f, "%.3f");
         //if (ImGui::IsItemHovered())
         //{
         //    ImGui::SetTooltip("이 애니메이션이 종료될 때 블렌드 시간");
@@ -1458,6 +1465,7 @@ void CAnimationTool::Add_Model(_uint iLevelIndex)
     CJOH_EditorModelTest::EDITORTESTMODEL_DESC desc;
     desc.strPrototypeTag = prototypeTag;
     desc.isAnim = m_isAnim;
+    desc.isSolid = m_isSolid;
     desc.renderGroup = static_cast<RENDERGROUP>(m_iCurrentRenderGroup);
     if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(iLevelIndex, TEXT("Layer_Model"),
         iLevelIndex, TEXT("Prototype_GameObject_Editor_Animation_TestModel"), TIME_CHANNEL::WORLD, &desc)))

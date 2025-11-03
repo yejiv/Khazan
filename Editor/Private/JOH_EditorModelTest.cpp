@@ -24,6 +24,8 @@ HRESULT CJOH_EditorModelTest::Initialize_Clone(void* pArg)
     EDITORTESTMODEL_DESC* pDesc = static_cast<EDITORTESTMODEL_DESC*>(pArg);
     m_isAnim = pDesc->isAnim;
     m_RenderGroup = pDesc->renderGroup;
+    m_isSolid = pDesc->isSolid;
+
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
@@ -103,7 +105,7 @@ HRESULT CJOH_EditorModelTest::Render()
             // m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
             hr = m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-            m_pShaderCom->Begin(0);
+            m_pShaderCom->Begin((m_isSolid? 7 : 0));
         }
         else
         {
