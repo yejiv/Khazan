@@ -198,6 +198,10 @@
     <ClInclude Include="..\public\DB_Manager.h" />
     <ClInclude Include="..\Public\Debug_Manager.h" />
     <ClInclude Include="..\Public\Dummy.h" />
+    <ClInclude Include="..\Public\Effect_Mesh_Instance.h" />
+    <ClInclude Include="..\Public\Effect_Point_Instance.h" />
+    <ClInclude Include="..\Public\Effect_Prefab.h" />
+    <ClInclude Include="..\Public\Effect_Sprite.h" />
     <ClInclude Include="..\public\Equip_Panel.h" />
     <ClInclude Include="..\public\Equip_Slot.h" />
     <ClInclude Include="..\Public\Event_Defines.h" />
@@ -336,6 +340,10 @@
     <ClCompile Include="..\private\DB_Manager.cpp" />
     <ClCompile Include="..\Private\Debug_Manager.cpp" />
     <ClCompile Include="..\Private\Dummy.cpp" />
+    <ClCompile Include="..\Private\Effect_Mesh_Instance.cpp" />
+    <ClCompile Include="..\Private\Effect_Point_Instance.cpp" />
+    <ClCompile Include="..\Private\Effect_Prefab.cpp" />
+    <ClCompile Include="..\Private\Effect_Sprite.cpp" />
     <ClCompile Include="..\private\Equip_Panel.cpp" />
     <ClCompile Include="..\private\Equip_Slot.cpp" />
     <ClCompile Include="..\Private\FSM_Yetuga.cpp" />

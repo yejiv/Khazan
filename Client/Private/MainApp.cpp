@@ -359,6 +359,17 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 
 HRESULT CMainApp::Ready_Prototype_ForStatic_Effect()
 {
+	/* Prototype_Component_Shader_VtxInstance_PointParticle*/
+	// 이거 혹시 다른사람 쓰는 지 확인 필요
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxInstance_PointParticle"),
+	//	CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxInstance_PointParticle.hlsl"), VTXPOINTPARTICLE::Elements, VTXPOINTPARTICLE::iNumElements))))
+	//	return E_FAIL;
+
+	/* Prototype_Component_Shader_VtxInstance_MeshParticle*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxInstance_Particle"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxInstance_Particle.hlsl"), VTXPARTICLE::Elements, VTXPARTICLE::iNumElements))))
+		return E_FAIL;
+
 	/* Prototype_Component_VIBuffer_LineTrail */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_LineTrail"),
 		CVIBuffer_LineTrail::Create(m_pDevice, m_pContext))))

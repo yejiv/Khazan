@@ -1,15 +1,12 @@
 ﻿#pragma once
-#include "Editor_Defines.h"
-#include "GameObject.h"
+#include "Client_Defines.h"
+#include "Prefab.h"
 
-NS_BEGIN(Editor)
+NS_BEGIN(Client)
 
 class CEffect_Element;
-class CMeshTrail;
-class CLineTrail;
-class CScreenTrail;
 
-class CEffect_Prefab : public CGameObject
+class CEffect_Prefab : public CPrefab
 {
 public :
 	enum class EffectType { POINT_INSTANCE, MESH_INSTANCE, SPRITE };
@@ -42,52 +39,27 @@ private:
 	virtual ~CEffect_Prefab() = default;
 
 public:
-	virtual HRESULT					Initialize_Prototype() override;
+	virtual HRESULT					Initialize_Prototype(const char* filename);
 	virtual HRESULT					Initialize_Clone(void* pArg) override;
 	virtual void					Priority_Update(_float fTimeDelta) override;
 	virtual void					Update(_float fTimeDelta) override;
 	virtual void					Late_Update(_float fTimeDelta) override;
 	virtual HRESULT					Render() override;
 
-	/*[Edit]*/
-
-	void							Add_Effect_Element(_uint EffectType, void *pArg);
 	void							Add_TimeTrack(EFFECT_EVENT TrackData);
-
-	void							Edit_Element(_uint ChildIdx);
-	void							Edit_TimeTrack(_uint ChildIdx);
-	void							RevertChanges(_uint ChildIdx);
-	void							RemoveEffect(_uint ChildIdx);
-	_uint							Get_ChildrenSize() { return (_uint)m_Children.size(); }
-	_float							Get_Time() { return m_fCurTime; }
-	_float							Get_MaxTrack();
-	void							Setting_Loop();
-	void							ResetChildren();
-	void							Save(const char* filename);
 	void							Load(const char* filename);
 
+	void							ResetChildren();
+
 private:
-	vector<class CEffect_Element*>	m_Children;
 	vector<EFFECT_EVENT>			m_eEventTracks;
 	vector<bool>					m_bEventTriggered;
 
-	_float							m_fCurTime;
 	_bool							m_bPlaying;
 	_bool							m_IsLoop;
-
-	/*[Edit]*/
-	EFFECT_EVENT					m_sEditingData;
-	_int							m_PrevTrackIdx;
-	_int							m_TrackIdx;
-	_bool							m_Gravity;
-
-private:
-	class CMeshTrail*				m_pMeshTrail;
-	class CLineTrail*				m_pLineTrail;
-	class CScreenTrail*				m_pScreenTrail;
 	 
 public:
-	static CEffect_Prefab*			Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
+	static CEffect_Prefab*			Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const char* filename);
 	virtual CGameObject*			Clone(void* pArg);
 	virtual void					Free() override; 
 };

@@ -1,4 +1,5 @@
 ﻿#include "Effect_Prefab.h"
+#include "Effect_Prefab.h"
 #include "Effect_Point_Instance.h"
 #include "Effect_Sprite.h"
 #include "Effect_Mesh_Instance.h"
@@ -40,7 +41,7 @@ HRESULT CEffect_Prefab::Initialize_Prototype()
     CScreenTrail::LINE_TRAIL_DESC dsc;
     dsc.fOffset = 10.f;
     dsc.fLifeTime = 0.2f;
-    dsc.iDivisionCount = 1.f;
+    dsc.iDivisionCount = 10.f;
     dsc.iTextureIdx = 0;
     //offset default : 8.f;
     //lifetime default : 0.4;
