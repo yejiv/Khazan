@@ -276,6 +276,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\VIBuffer_Terrain.cpp" />
     <ClCompile Include="..\private\Vignette.cpp" />
     <ClCompile Include="..\Private\Wait_Node.cpp" />
+    <ClCompile Include="..\Public\BoneTreePBD.cpp" />
     <ClCompile Include="..\Public\Guizmo\GraphEditor.cpp" />
     <ClCompile Include="..\Public\Guizmo\ImCurveEdit.cpp" />
     <ClCompile Include="..\Public\Guizmo\ImGradient.cpp" />
@@ -307,6 +308,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Body.h" />
     <ClInclude Include="..\Public\BodyDrawFilter.h" />
     <ClInclude Include="..\public\Bone.h" />
+    <ClInclude Include="..\Public\BoneTreePBD.h" />
     <ClInclude Include="..\Public\BoneChainPhysic.h" />
     <ClInclude Include="..\Public\BTNode.h" />
     <ClInclude Include="..\Public\BTNode_Defines.h" />

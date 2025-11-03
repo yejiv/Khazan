@@ -1,7 +1,8 @@
 ﻿#include "Body_Khazan_Sample.h"
 #include "Khazan_Sample.h"
 #include "GameInstance.h"
-#include "BoneChainPhysic.h"
+#include "BoneTreePBD.h"
+
 
 static std::vector<int> MakeChainByNames(Engine::CModel* m,
     std::initializer_list<const char*> names) {
@@ -71,9 +72,11 @@ HRESULT CBody_Khazan_Sample::Initialize_Clone(void* pArg)
 
     m_fEmissiveIntensity = 1.f;
 #endif
+    m_pModelCom->Set_Animation(5);
+    m_pModelCom->Update_BoneCombinedMatrices();
 
-    //if (FAILED(Ready_BonePhysics()))
-    //    return E_FAIL;
+    if (FAILED(Ready_BonePhysics()))
+        return E_FAIL;
 
     return S_OK;
 }
@@ -136,9 +139,14 @@ void CBody_Khazan_Sample::Update(_float fTimeDelta)
 
     m_isFinishedAnimation = m_pModelCom->Play_Animation(fTimeDelta);
 
-    /*if (m_pBoneChain) m_pBoneChain->SyncRootProxy_PrePhysics(m_pModelCom);
+    XMVECTOR vWindWS = XMVectorZero();
 
-    if (m_pBoneChain) m_pBoneChain->ApplyBodiesToBones_PostPhysics(m_pModelCom);*/
+    // Update (Logic)
+    m_pPBD->PreUpdate(fTimeDelta, vWindWS); // 루트 관성/중력/바람 적용 + Verlet 예측
+    m_pPBD->Simulate(fTimeDelta);           // 거리/콘/테더/충돌 제약 반복
+
+    // Late-Update (또는 Render 직전) : 본 로컬 회전 반영
+    m_pPBD->PostApply();
 
     Update_CombinedMatrix();
 }
@@ -272,28 +280,36 @@ HRESULT CBody_Khazan_Sample::Ready_AnimationEvent()
 
 HRESULT CBody_Khazan_Sample::Ready_BonePhysics()
 {
-    //int hairRoot = (_int)m_pModelCom->Get_BoneIndex("Hair_BoneRoot");
-    //if (hairRoot >= 0)
-    //{
-    //    // 2) 루트에서 모든 브랜치 체인 수집 (최대 5뎁스, 길이 ≥ 2)
-    //    auto chains = m_pModelCom->BuildChainsFromRoot(hairRoot, /*maxDepth*/5, /*minLen*/2);
-    //    m_HairChains.insert(m_HairChains.end(), chains.begin(), chains.end());
-    //}
+    m_pPBD = CBoneTreePBD::Create(m_pModelCom, m_pTransformCom);
 
-    //// 3) BoneChainPhysic 생성
-    //if (!m_HairChains.empty())
-    //{
-    //    Engine::CBoneChainPhysic::BCP_BuildDesc build{};
-    //    build.vBoneChains = m_HairChains;                // 여기!
-    //    build.ePreset = Engine::CBoneChainPhysic::BCP_PRESET_Hair;
-    //    build.fCapsuleRadius = 0.02f;
-    //    build.isTipCCD = true;
+    vector<_int> vRoots;
+    vRoots.push_back(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001"));
+    vRoots.push_back(m_pModelCom->Get_BoneIndex("B_Hair_03_01_L_Head"));
+    vRoots.push_back(m_pModelCom->Get_BoneIndex("B_Hair_02_01_L_Head"));
+    vRoots.push_back(m_pModelCom->Get_BoneIndex("B_Hair_01_01_L_Head"));
+    vRoots.push_back(m_pModelCom->Get_BoneIndex("B_Hair_01_01_R_Head"));
+    vRoots.push_back(m_pModelCom->Get_BoneIndex("B_Hair_02_01_R_Head"));
+    vRoots.push_back(m_pModelCom->Get_BoneIndex("B_Hair_03_01_R_Head"));
+    vRoots.push_back(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001"));
 
-    //    Engine::CBoneChainPhysic::BCP_RuntimeParams params{};
-    //    // 필요하면 params 튜닝
+    m_pPBD->BuildForestFromRoots(vRoots);
 
-    //    m_pBoneChain = m_pGameInstance->CreateBoneChain(m_pModelCom, build, params, ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::HAIR));
-    //}
+    BTPBD_Params params;
+    params.fDampStill = 0.985f;
+    params.fDampMove = 0.92f;
+    params.fDistanceStiffness = 1.0f;
+    params.fRootConeDeg = 35.f;
+    params.fMidConeDeg = 28.f;
+    params.fTetherScale = 1.20f;
+    params.iIterations = 2;
+    params.fRootConeDeg = 35.f; params.fMidConeDeg = 28.f;
+    m_pPBD->SetParams(params);
+
+    /*m_pPBD->AddSphereCollider(XMLoadFloat3(&XMFLOAT3(headX, headY, headZ)), 0.11f);
+    m_pPBD->AddSphereCollider(XMLoadFloat3(&XMFLOAT3(shoulderLX, shoulderLY, shoulderLZ)), 0.10f);*/
+
+
+
     return S_OK;
 }
 
@@ -443,8 +459,8 @@ void CBody_Khazan_Sample::Free()
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
 
-    if (m_pBoneChain) {
-        Safe_Release(m_pBoneChain);
+    if (m_pPBD) {
+        Safe_Release(m_pPBD);
     }
 
 }

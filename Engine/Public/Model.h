@@ -88,6 +88,9 @@ public:
 	void				Set_OwnerTransform(_float4x4* pMatrix) {
 		m_pOwnerTransformMatrix = pMatrix;
 	}
+	_float4x4* Get_OwnerWorldMatrix() const {
+		return m_pOwnerTransformMatrix;
+	}
 
 	_vector Get_BoneWorldRotationQuat(_int iBone) const;
 

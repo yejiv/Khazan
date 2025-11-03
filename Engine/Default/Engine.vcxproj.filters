@@ -719,11 +719,14 @@
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_LineTrail.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Trail\VIBuffer_LineTrail</Filter>
-	</ClCompile>
-	<ClCompile Include="..\private\Decal_Manager.cpp">
+    </ClCompile>
+    <ClCompile Include="..\private\Decal_Manager.cpp">
       <Filter>01.Utility\19.Decal\Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\BoneChainPhysic.cpp">
+      <Filter>01.Utility\20.BoneChainPhysic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Public\BoneTreePBD.cpp">
       <Filter>01.Utility\20.BoneChainPhysic</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1114,11 +1117,14 @@
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_LineTrail.h">
       <Filter>01.Utility\03.Component\VIBuffer\Trail\VIBuffer_LineTrail</Filter>
-	</ClInclude>
-	<ClInclude Include="..\public\Decal_Manager.h">
+    </ClInclude>
+    <ClInclude Include="..\public\Decal_Manager.h">
       <Filter>01.Utility\19.Decal\Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\BoneChainPhysic.h">
+      <Filter>01.Utility\20.BoneChainPhysic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BoneTreePBD.h">
       <Filter>01.Utility\20.BoneChainPhysic</Filter>
     </ClInclude>
   </ItemGroup>
