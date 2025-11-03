@@ -75,7 +75,7 @@ HRESULT CLevel_HeinMach::Initialize()
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
 
-	//CHECK_FAILED(Ready_Layer_Test(TEXT("Layer_Creature_Test")), E_FAIL);
+	CHECK_FAILED(Ready_Layer_Test(TEXT("Layer_Creature_Test")), E_FAIL);
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 		return E_FAIL;
 
@@ -125,7 +125,6 @@ HRESULT CLevel_HeinMach::Initialize()
 
 	//m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); });
 	//m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); });
-
 
 	return S_OK;
 }

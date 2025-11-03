@@ -460,6 +460,12 @@
     <Filter Include="02.GameObject\UI\Amount\Panel">
       <UniqueIdentifier>{c0acf912-d9e7-4f81-9e6c-cba8d2a873e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Target_LockOn">
+      <UniqueIdentifier>{af128dcc-b74e-427e-b5ba-c05a5d91ed80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Target_BrutalAttack">
+      <UniqueIdentifier>{8f9708aa-1535-425e-8cde-157f13bdfdd9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -873,6 +879,9 @@
     <ClInclude Include="..\public\Amount_Panel.h">
       <Filter>02.GameObject\UI\Amount\Panel</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Target_LockOn.h">
+      <Filter>02.GameObject\UI\WorldUI\Target_LockOn</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1272,6 +1281,9 @@
     <ClCompile Include="..\private\Amount_Panel.cpp">
       <Filter>02.GameObject\UI\Amount\Panel</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Target_LockOn.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Target_LockOn</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
@@ -1320,6 +1332,9 @@
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxSphere.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_UI_Effect.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

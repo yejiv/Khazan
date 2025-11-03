@@ -213,6 +213,11 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxPosTex_Font.hlsl"), VTXPOSTEX::Elements, VTXPOSTEX::iNumElements))))
 		return E_FAIL;
 
+	/* Prototype_Component_Shader_VtxPosTex_Font */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxPosTex_UI_Effect"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxPosTex_UI_Effect.hlsl"), VTXPOSTEX::Elements, VTXPOSTEX::iNumElements))))
+		return E_FAIL;
+
 	/* Prototype_Component_RigidBody*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_RigidBody"),
 		CRigidBody::Create(m_pDevice, m_pContext))))
@@ -320,6 +325,9 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Amount"),
 		CAmount::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
 
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Target_LockOn"),
+		CTarget_LockOn::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
+
 	CUIObject::UIOBJECT_DESC AnnounceDesc = {};
 	AnnounceDesc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
 	AnnounceDesc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
@@ -327,9 +335,8 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	AnnounceDesc.szName = "Announce";
 	AnnounceDesc.fDepth = 9.f;
 
-	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
-		ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Announce_MapName"), TIME_CHANNEL::WORLD, &AnnounceDesc)))
-		return E_FAIL;
+	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
+		ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Announce_MapName"), TIME_CHANNEL::WORLD, &AnnounceDesc), E_FAIL);
 
 	CUIObject::UIOBJECT_DESC Desc = {};
 	Desc.vLocalSize = { 64.f, 64.f };
@@ -358,6 +365,16 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 
 	CHECK_FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Interaction_Guide"),
 		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide"), &Desc, 15), E_FAIL);
+
+	CUIObject::UIOBJECT_DESC LockOnDesc = {};
+	LockOnDesc.vLocalSize = { 84.f, 84.f };
+	LockOnDesc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
+	LockOnDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+	LockOnDesc.szName = "LockOn";
+	LockOnDesc.fDepth = 9.f;
+
+	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
+		ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Target_LockOn"), TIME_CHANNEL::WORLD, &LockOnDesc), E_FAIL);
 
 	return S_OK;
 }

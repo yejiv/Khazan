@@ -52,6 +52,8 @@ HRESULT CAmount::Initialize_Clone(void* pArg)
 {
 	if (FAILED(__super::Initialize_Clone(pArg)))
 		return E_FAIL;
+
+	m_IsUpdate = false;
 	return S_OK;
 }
 
@@ -67,7 +69,6 @@ void CAmount::Update(_float fTimeDelta)
 		Add_Value(AMOUNT_TYPE::LACHRYMA, 1000);
 
 	__super::Update(fTimeDelta);
-
 }
 
 void CAmount::Late_Update(_float fTimeDelta)

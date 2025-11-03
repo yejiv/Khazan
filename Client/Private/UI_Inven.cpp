@@ -87,19 +87,6 @@ HRESULT CUI_Inven::Initialize_Clone(void* pArg)
 
 void CUI_Inven::Priority_Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_M))
-	{
-		Add_Item(1001);
-		Add_Item(3001);
-		Add_Item(5001);
-		Add_Item(5002);
-		Add_Item(5003);
-		Add_Item(5004);
-		Add_Item(5005);
-		Add_Item(4001);
-		Add_Item(4002);
-	}
-
 	if (!m_IsUpdate)
 		return;
 
