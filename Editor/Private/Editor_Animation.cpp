@@ -11,7 +11,20 @@ CEditor_Animation::CEditor_Animation()
 }
 
 CEditor_Animation::CEditor_Animation(const CEditor_Animation& Prototype)
+    : m_pGameInstance{ CGameInstance::GetInstance() }
+   , m_strName                       {Prototype.m_strName                   }
+   , m_fDuration                     {Prototype.m_fDuration                 }
+   , m_fTickPerSecond                {Prototype.m_fTickPerSecond            }
+   , m_fCurrentTrackPosition         {Prototype.m_fCurrentTrackPosition     }
+   , m_iNumChannels                  {Prototype.m_iNumChannels              }
+   , m_Channels                      {Prototype.m_Channels            }
+   , m_CurrentKeyFrameIndices        {Prototype. m_CurrentKeyFrameIndices   }
+   , m_Animation_Data                {Prototype.m_Animation_Data            }
 {
+    Safe_AddRef(m_pGameInstance);
+    for (auto channel : m_Channels)
+        Safe_AddRef(channel);
+
 }
 
 HRESULT CEditor_Animation::Initialize(const aiAnimation* pAIAnimation, const vector<class CEditor_Bone*>& Bones)

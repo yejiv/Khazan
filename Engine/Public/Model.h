@@ -70,6 +70,7 @@ public:
 public:
 	// 권성은 테스트
 	_float				MakeRatio();
+	_float3				Get_RootMotionDelta() const { return m_vDelta; }
 	/* 정보 */
 	_uint				Get_NumMeshes() const { return m_iNumMeshes; }
 	_uint				Get_BoneIndex(const _char* pBoneName);
@@ -110,7 +111,7 @@ public:
 	void			Register_Event(const string& strEventKey, ANIM_EVENT_TRIGGERTYPE eTriggerType,function<void()> OnEvent);
 	void			UnRegister_Event(const string& strEventKey, ANIM_EVENT_TRIGGERTYPE eTriggerType);
 	void			Clear_AllEvent();
-
+	
 #ifdef _DEBUG
 	void			Debug_RanderState();
 #endif // _DEBUG
@@ -167,7 +168,7 @@ private:
 
 	/* const val */
 	const _float					m_fBaseRootMotionBlendTime = { 0.15f };   /* 만약 블랜딩 시간이 안써져있으면 사용할 기본 블랜딩 시간 */
-
+	_float3							m_vDelta = {};
 private:
 	/* 루트 모션 */
 	void			Check_RootMotion();
