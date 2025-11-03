@@ -6,6 +6,14 @@ NS_BEGIN(Engine)
 
 class ENGINE_DLL CVIBuffer_QuadTrail final : public CVIBuffer
 {
+public :
+	typedef struct tagQuadTrailPointDesc
+	{
+		XMFLOAT4 vTop;
+		XMFLOAT4 vBottom;
+		float	fLifeTime;
+	}QUAD_TRAIL_POINT;
+
 private:
 	CVIBuffer_QuadTrail(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CVIBuffer_QuadTrail(const CVIBuffer_QuadTrail& Prototype);
@@ -14,13 +22,11 @@ private:
 public:
 	virtual HRESULT Initialize_Prototype() override;
 	virtual HRESULT Initialize_Clone(void* pArg) override;
-	void			Update(deque<TRAIL_POINT>& vertices);
+	void			Update(deque<QUAD_TRAIL_POINT>& vertices);
 	virtual HRESULT Render() override;
-	virtual HRESULT Bind_Resources() override;
 
 private :
 	_uint			m_iNumDrawIndices = {};
-	_uint			m_iNumDrawVertices = {};
 
 public:
 	static CVIBuffer_QuadTrail* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
