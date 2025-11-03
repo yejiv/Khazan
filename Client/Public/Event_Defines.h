@@ -42,6 +42,8 @@ namespace Client {
 		INTERACTIVE_TYPE eInteractType{ INTERACTIVE_TYPE::END };	// 상호작용 오브젝트의 타입 ( 체크포인트, 상자, 사다리 등등 )
 		EventBladeNexus BNEvent{};									// 귀검 구조체
 		EventChest ChestEvent{};									// 상자 구조체
+
+		void End_Event() { isEvent = false; }
 	};
 
 	// 상자 관련 이벤트

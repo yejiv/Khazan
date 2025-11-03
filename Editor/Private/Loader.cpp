@@ -211,7 +211,7 @@ HRESULT CLoader::Loading_For_Map_Level()
 		return E_FAIL;
 #pragma endregion
 
-#pragma region 상호 작용 모델 원형
+#pragma region 상호 작용 모델 원형 ( 추가 추가 하면 추가 추가 )
 	/* Prototype_Component_Model_BladeNexus */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_BladeNexus"),
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_DamagedTS/WIP_COM_DamagedTS.dat")), E_FAIL);
@@ -241,6 +241,10 @@ HRESULT CLoader::Loading_For_Map_Level()
 	/* Prototype_GameObject_SkyShpere */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_SkySphere"),
 		CSkySphere::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	/* Prototype_GameObject_CloudShpere */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_CloudSphere"),
+		CCloudSphere::Create(m_pDevice, m_pContext)), E_FAIL);
 
 	/* Prototype_GameObject_Prop_Object */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"),

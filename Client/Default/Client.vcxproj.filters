@@ -792,6 +792,9 @@
     <ClInclude Include="..\Public\AS_Amageddon_Yetuga.h">
       <Filter>92.AI\State\Yetuga\08. Amageddon</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\CloudSphere.h">
+      <Filter>02.GameObject\Sky\Cloud</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1151,6 +1154,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_Amageddon_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\08. Amageddon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CloudSphere.cpp">
+      <Filter>02.GameObject\Sky\Cloud</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

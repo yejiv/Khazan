@@ -185,6 +185,7 @@
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\Public\Client_Sequence.h" />
     <ClInclude Include="..\Public\Client_Struct.h" />
+    <ClInclude Include="..\Public\CloudSphere.h" />
     <ClInclude Include="..\Public\Creature.h" />
     <ClInclude Include="..\public\Cursor.h" />
     <ClInclude Include="..\public\Cursor_FX.h" />
@@ -311,6 +312,7 @@
     <ClCompile Include="..\Private\Camera_Compre.cpp" />
     <ClCompile Include="..\Private\Camera_Manager.cpp" />
     <ClCompile Include="..\Private\ClientInstance.cpp" />
+    <ClCompile Include="..\Private\CloudSphere.cpp" />
     <ClCompile Include="..\Private\Creature.cpp" />
     <ClCompile Include="..\private\Cursor.cpp" />
     <ClCompile Include="..\private\Cursor_FX.cpp" />
