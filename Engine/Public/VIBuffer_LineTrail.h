@@ -7,10 +7,16 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CVIBuffer_LineTrail final : public CVIBuffer
 {
 public:
-	typedef struct tagLineTrailDesc
+	typedef struct tagLineTrailPointDesc
+	{
+		XMFLOAT4 vPos;
+		float	fLifeTime;
+	}LINE_TRAIL_POINT;
+
+	typedef struct tagLineBufferDesc
 	{
 		_float fOffset;
-	}LINE_TRAIL_DESC;
+	}LINE_BUFFER_DESC;
 
 private:
 	CVIBuffer_LineTrail(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -21,12 +27,11 @@ public:
 	virtual HRESULT Initialize_Prototype() override;
 	virtual HRESULT Initialize_Clone(void* pArg) override;
 	void			Update(deque<_float4>& vertices, const _float4* CamPos);
+	void			Update(deque<_float4>& vertices);
 	virtual HRESULT Render() override;
-	virtual HRESULT Bind_Resources() override;
 
 private :
 	_uint			m_iNumDrawIndices = {};
-	_uint			m_iNumDrawVertices = {};
 
 	_float			m_fOffset;
 

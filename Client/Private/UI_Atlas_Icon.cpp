@@ -12,6 +12,12 @@ CUI_Atlas_Icon::CUI_Atlas_Icon(const CUI_Atlas_Icon& Prototype)
 {
 }
 
+void CUI_Atlas_Icon::Set_LocalPos(_float2 vPos, CUIObject* pParent)
+{
+	m_vLocalPos = vPos;
+	Update_Transform(pParent, vPos);
+}
+
 void CUI_Atlas_Icon::Set_Pos(_float2 vPos)
 {
 	m_vWorldPos = vPos;
@@ -63,7 +69,8 @@ void CUI_Atlas_Icon::Update(_float fTimeDelta)
 
 void CUI_Atlas_Icon::Late_Update(_float fTimeDelta)
 {
-	CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::ATLAS, this);
+	if(m_isVisible)
+		CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::ATLAS, this);
 }
 
 HRESULT CUI_Atlas_Icon::Render()

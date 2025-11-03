@@ -28,6 +28,7 @@
 #include "Vignette.h"
 #include "Sequence_Manager.h"
 #include "Sequence_Interface.h"
+#include "Decal_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -145,6 +146,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pSequence_Manager)
 		return E_FAIL;
 
+	m_pDecal_Manager = CDecal_Manager::Create(*ppDevice, *ppContext, EngineDesc.iNumDecals);
+	if (nullptr == m_pDecal_Manager)
+		return E_FAIL;
+
 #ifdef _DEBUG
 	m_pImgui_Manager = CImgui_Manager::Create(*ppDevice, *ppContext, EngineDesc.Menu_Imgui, EngineDesc.hWnd, EngineDesc.iWinSizeX, EngineDesc.iWinSizeY);
 	if (nullptr == m_pImgui_Manager)
@@ -183,10 +188,14 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 	if (m_pOctree)
 		m_pOctree->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
+	m_pDecal_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
+
 	m_pObject_Manager->Late_Update(tTimeDelta);
 
 	if (m_pOctree)
 		m_pOctree->Late_Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
+
+	//	m_pDecal_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
 	// Renderer Resources
 	m_pShadow->Update();
@@ -651,6 +660,11 @@ _bool CGameInstance::isPicked(_float3* pOut, _uint* iObjectID)
 _float4 CGameInstance::isPickRenderTargetPixel(_wstring strRenderTargetTag)
 {
 	return m_pPicking->isPickRenderTargetPixel(strRenderTargetTag);
+}
+
+_bool CGameInstance::isPicked(_float3* pOutPosition, _float3* pOutNormal)
+{
+	return m_pPicking->isPicked(pOutPosition, pOutNormal);
 }
 
 #pragma endregion
@@ -1121,6 +1135,21 @@ HRESULT CGameInstance::SEQ_Jump(const SEQ_REQ_JUMP_DESC& tDesc)
 {
 	return m_pSequence_Manager->Jump(tDesc);
 }
+
+#pragma endregion
+
+#pragma region DECAL_MANAGER
+
+HRESULT CGameInstance::Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, _fvector vPosition, _fvector vNormal, const _float3& vScale)
+{
+	return m_pDecal_Manager->Spawn_Decal(strPoolTag, iLayerLevelIndex, strLayerTag, vPosition, vNormal, vScale);
+}
+
+HRESULT CGameInstance::Render_Decals()
+{
+	return m_pDecal_Manager->Render();
+}
+
 #pragma endregion
 
 #pragma region OCTREE
@@ -1169,6 +1198,7 @@ void CGameInstance::Release_Engine()
 #ifdef _DEBUG
 	Safe_Release(m_pImgui_Manager);
 #endif
+	Safe_Release(m_pDecal_Manager);
 	Safe_Release(m_pSequence_Manager);
 	Safe_Release(m_pThreadPool);
 

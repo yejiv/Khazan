@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Editor_Defines.h"
 #include "GameObject.h"
+#include "VIBuffer_QuadTrail.h"
 
 NS_BEGIN(Engine)
 class CTexture;
@@ -26,13 +27,14 @@ private:
 	virtual ~CMeshTrail() = default;
 
 public:
+	virtual HRESULT			Initialize_Prototype() override;
 	virtual HRESULT			Initialize_Clone(void* pArg) override;
 	virtual void			Priority_Update(_float fTimeDelta) override;
 	virtual void			Update(_float fTimeDelta) override;
 	virtual void			Late_Update(_float fTimeDelta) override;
 	virtual HRESULT			Render() override;
 
-	void					Add_ControlPoint(_float4 top, _float4 bottom);
+	void					Add_ControlPoint(_fvector top, _gvector bottom);
 
 private:
 	HRESULT					Ready_Component();
@@ -44,19 +46,17 @@ private:
 	CShader*				m_pShaderCom = { nullptr };
 
 private :
-	_float					m_fCurTime;
 	_float					m_fLifeTime;
 
 	_uint					m_iTextureIdx;
 	_int					m_iDivisionCount;
-	_bool					m_bOn {false};
 
 private :
-	deque<TRAIL_POINT>		m_ControlPoints;
-	deque<TRAIL_POINT>		m_TrailPoints;
+	deque<CVIBuffer_QuadTrail::QUAD_TRAIL_POINT>		m_ControlPoints;
+	deque<CVIBuffer_QuadTrail::QUAD_TRAIL_POINT>		m_TrailPoints;
 
 public:
-	static CMeshTrail*		Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, void* pArg);
+	static CMeshTrail*		Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject*	Clone(void* pArg);
 	virtual void			Free() override;
 

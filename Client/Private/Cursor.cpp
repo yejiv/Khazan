@@ -52,7 +52,7 @@ void CCursor::Priority_Update(_float fTimeDelta)
 
 void CCursor::Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_L))
+	if (m_pGameInstance->Key_Down(DIK_L, INPUT_TYPE::UI))
 		m_IsUpdate ? m_IsUpdate = false : m_IsUpdate = true;
 
 	if (!m_IsUpdate)

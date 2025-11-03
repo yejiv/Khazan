@@ -47,7 +47,9 @@ private:
 
 	vector<future<HRESULT>> m_futures;
 
-	recursive_mutex m_Mutex;
+	recursive_mutex m_RecurMutex;
+
+	mutex m_Mutex;
 
 public:
 	static CLevel_HeinMach* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
