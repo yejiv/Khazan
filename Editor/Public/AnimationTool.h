@@ -25,6 +25,7 @@ private:
 	vector<_wstring>						m_ObjectNames;
 	_float3									m_vPreScale = { 0.0001f, 0.0001f, 0.0001f };
 	_bool									m_isAnim = { false };
+	_bool									m_isSolid = { false };
 	_int									m_iCurrentRenderGroup = {4};
 	_wstring								m_strModelName;
 	string									m_strModelPath;
