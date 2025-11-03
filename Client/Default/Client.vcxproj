@@ -190,6 +190,7 @@
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\Public\Client_Sequence.h" />
     <ClInclude Include="..\Public\Client_Struct.h" />
+    <ClInclude Include="..\Public\CloudSphere.h" />
     <ClInclude Include="..\Public\Creature.h" />
     <ClInclude Include="..\public\Cursor.h" />
     <ClInclude Include="..\public\Cursor_FX.h" />
@@ -206,6 +207,9 @@
     <ClInclude Include="..\public\Interaction_Guide.h" />
     <ClInclude Include="..\public\Interaction_Icon.h" />
     <ClInclude Include="..\public\Inven_Tap.h" />
+    <ClInclude Include="..\public\ItemInfo_Hud.h" />
+    <ClInclude Include="..\public\ItemInfo_Other.h" />
+    <ClInclude Include="..\public\ItemInfo_Weapon.h" />
     <ClInclude Include="..\public\Item_Slot.h" />
     <ClInclude Include="..\Public\JOH_Test1.h" />
     <ClInclude Include="..\public\Khazan_Sample.h" />
@@ -321,6 +325,7 @@
     <ClCompile Include="..\Private\Camera_Compre.cpp" />
     <ClCompile Include="..\Private\Camera_Manager.cpp" />
     <ClCompile Include="..\Private\ClientInstance.cpp" />
+    <ClCompile Include="..\Private\CloudSphere.cpp" />
     <ClCompile Include="..\Private\Creature.cpp" />
     <ClCompile Include="..\private\Cursor.cpp" />
     <ClCompile Include="..\private\Cursor_FX.cpp" />
@@ -335,6 +340,9 @@
     <ClCompile Include="..\private\Interaction_Guide.cpp" />
     <ClCompile Include="..\private\Interaction_Icon.cpp" />
     <ClCompile Include="..\private\Inven_Tap.cpp" />
+    <ClCompile Include="..\private\ItemInfo_Hud.cpp" />
+    <ClCompile Include="..\private\ItemInfo_Other.cpp" />
+    <ClCompile Include="..\private\ItemInfo_Weapon.cpp" />
     <ClCompile Include="..\private\Item_Slot.cpp" />
     <ClCompile Include="..\Private\JOH_Test1.cpp" />
     <ClCompile Include="..\private\Khazan_Sample.cpp" />

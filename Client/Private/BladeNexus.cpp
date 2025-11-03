@@ -34,6 +34,8 @@ HRESULT CBladeNexus::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Interaction_Guide(pArg), E_FAIL);
 
+    CHECK_FAILED(Ready_PlaceName(pArg), E_FAIL);
+
     m_eAnimState = ANIM_STATE::BEFORE_IDLE;
     m_pModelCom->Set_Animation(ANIM_STATE::BEFORE_IDLE);
     m_pModelCom->Set_AnimationLoop(true);
@@ -183,6 +185,32 @@ HRESULT CBladeNexus::Ready_Interaction_Guide(void* pArg)
     return S_OK;
 }
 
+HRESULT CBladeNexus::Ready_PlaceName(void* pArg)
+{
+    BLADENEXUS_DESC* pDesc = static_cast<BLADENEXUS_DESC*>(pArg);
+    CHECK_NULLPTR(pDesc, E_FAIL);
+
+    _int* pBladeNexusID = static_cast<_int*>(pDesc->pOtherDesc);
+    CHECK_NULLPTR(pBladeNexusID, E_FAIL);
+
+    m_eBladeNexus_ID = static_cast<BLADENEXUS_ID>(*pBladeNexusID);
+
+    switch (m_eBladeNexus_ID)
+    {
+    case HEINMACH_ENTER:
+        memcpy(m_szPlaceName, TEXT("초입"), sizeof(m_szPlaceName));
+        break;
+    case HEINMACH_CAVE:
+        memcpy(m_szPlaceName, TEXT("동굴"), sizeof(m_szPlaceName));
+        break;
+    case HEINMACH_YETUGA:
+        memcpy(m_szPlaceName, TEXT("예투가 전"), sizeof(m_szPlaceName));
+        break;
+    }
+
+    return S_OK;
+}
+
 void CBladeNexus::Input_Interact_Event(_float fTimeDelta)
 {
     if (ANIM_STATE::AFTER_START == m_eAnimState || ANIM_STATE::AFTER_LOOP == m_eAnimState|| ANIM_STATE::AFTER_END == m_eAnimState ||
@@ -195,7 +223,7 @@ void CBladeNexus::Input_Interact_Event(_float fTimeDelta)
     {
         isPressing = m_pGuide->IsPressing();
     }
-    else if (m_pGameInstance->Key_Down(DIK_LCONTROL))
+    else if (m_pGameInstance->Key_Down(DIK_N))
     {
         EventInteractType InteractType = {};
 
@@ -311,7 +339,7 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
     if (ANIM_STATE::BEFORE_START == m_eAnimState)       // BEFORE_START 가 끝나면 BEFORE_LOOP ( 플레이어가 UI랑 상호 작용 )
     {
         // 귀검 애니메이션 끝나면 귀검 UI 창 팝업
-        static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(CUI_BladeNexus::ONTYPE::DEFAULT, TEXT("하인마흐 구석진 으슥한 어떠한 곳"));
+        static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(CUI_BladeNexus::ONTYPE::DEFAULT, m_szPlaceName);
 
         // 처음 상호 작용 후 애니메이션 루프로 전환 및 이벤트 발생
         m_eAnimState = ANIM_STATE::BEFORE_LOOP;

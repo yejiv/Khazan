@@ -28,6 +28,7 @@ void CDebug_Manager::Update(_float fTimeDelta)
 
 void CDebug_Manager::Ready_FPS()
 {
+#ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Debug"), [&]() {
 		ImGui::Begin("FPS");
 
@@ -43,11 +44,12 @@ void CDebug_Manager::Ready_FPS()
 
 		ImGui::End();
 		});
+#endif
 }
 
 void CDebug_Manager::Ready_CameraDebug()
 {
-
+#ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Debug"), [&]() {
 		ImGui::Begin("Camera");
 
@@ -97,11 +99,12 @@ void CDebug_Manager::Ready_CameraDebug()
 		}
 		ImGui::End();
 		});
-
+#endif
 }
 
 void CDebug_Manager::Ready_JoltDebug()
 {
+#ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Debug"), [&]() {
 		ImGui::Begin("Jolt");
 
@@ -134,6 +137,7 @@ void CDebug_Manager::Ready_JoltDebug()
 		
 		ImGui::End();
 		});
+#endif
 }
 
 CDebug_Manager* CDebug_Manager::Create()

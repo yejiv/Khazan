@@ -26,6 +26,8 @@ public:
 
 		INTERACTIVE_TYPE eInteractiveType{ INTERACTIVE_TYPE::END };
 
+		_int iBladeNexus_ID{};
+
 		ITEMBOX_DESC ItemBox{};
 
 	}MAPOBJECT_DESC;
@@ -47,7 +49,10 @@ public:
 public:
 	const _uint Get_MapObjectID() const { return m_iMapObjectID; }
 	const INTERACTIVE_TYPE Get_InteractiveType() const { return m_eInteractiveType; }
+	const _int Get_BladeNexus_ID() const { return m_iBladeNexusID; }
 	const ITEMBOX_DESC Get_ItemBox() const { return m_ItemBox; }
+
+	void Set_BladeNexus_ID(_uint BladeNexusID) { m_iBladeNexusID = BladeNexusID; }
 	void Set_ItemBox(ITEMBOX_DESC ItemBoxDesc) { m_ItemBox = ItemBoxDesc; }
 
 protected:
@@ -57,6 +62,7 @@ protected:
 	_uint m_iMapObjectID = {};
 
 	INTERACTIVE_TYPE m_eInteractiveType{ INTERACTIVE_TYPE::END };
+	_int m_iBladeNexusID = { 0 };
 	ITEMBOX_DESC m_ItemBox = {};
 
 public:

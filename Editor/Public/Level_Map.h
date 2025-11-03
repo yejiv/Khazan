@@ -48,7 +48,7 @@ private:
 	HRESULT Ready_Layer_Camera(const _wstring& strLayerTag);
 	HRESULT Ready_Layer_Terrain(const _wstring& strLayerTag);
 	HRESULT Ready_Layer_Preview(const _wstring& strLayerTag);
-	HRESULT Ready_Layer_SkySphere(const _wstring& strLayerTag);
+	HRESULT Ready_Layer_Sky(const _wstring& strLayerTag);
 
 private:
 	// 맵 오브젝트 배치하면서 vector에 개별로 push_back 한거 nullptr 시 정리용
@@ -83,6 +83,9 @@ private:
 
 	vector<class CProp*> m_InteractiveList;		// 오브젝트 리스트 ( 수정 편하게 할려고 )
 	_int m_iInteractiveListIndex = {};			// 오브젝트 리스트 인덱스
+
+	_int m_iBN_ID = {};
+	_int m_iFix_BN_ID = {};
 
 	CMapObject::ITEMBOX_DESC m_ItemBox = {};
 	CMapObject::ITEMBOX_DESC m_FixItemBox = {};
@@ -129,6 +132,8 @@ private:
 	_float m_fInstanceRange = { 3.f };						// 인스턴싱 막 깔때의 반지름
 
 	_int m_iNumInstance = { 5 };							// 인스턴싱 깔때 범위내의 인스턴싱 모델 개수
+
+	_uint m_iRenderFrame = {};
 
 #pragma endregion
 
@@ -197,6 +202,8 @@ private:
 
 	_bool m_isSkySphereWindow = { false };
 
+	_bool m_isCloudSphereWindow = { false };
+
 #pragma endregion
 
 #pragma region ImGui > MainWindow 관련 변수
@@ -235,6 +242,14 @@ private:
 	SKY_DESC m_FixSkyDesc = {};
 
 	class CSkySphere* m_pSkySphere = { nullptr };
+
+#pragma endregion
+
+#pragma region CLOUD SPHERE 용
+
+	CLOUD_DESC m_FixCloudDesc = {};
+
+	class CCloudSphere* m_pCloudSphere = { nullptr };
 
 #pragma endregion
 

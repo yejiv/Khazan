@@ -70,8 +70,9 @@ void CProp_Object::Late_Update(_float fTimeDelta)
     else if (isShadow())    m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this);
     else                    m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
     */
-    
-    m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
+
+    if (false == (isCollider() && isBackGround()))
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
 }
 
 HRESULT CProp_Object::Render()

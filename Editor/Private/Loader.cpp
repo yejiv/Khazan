@@ -17,6 +17,9 @@
 #pragma region Effect
 #include "Camera_Effect.h"
 #include "Effect_Terrain.h"
+#include "LineTrail.h"
+#include "MeshTrail.h"
+#include "ScreenTrail.h"
 #pragma endregion
 
 #pragma region MapEditor
@@ -211,7 +214,7 @@ HRESULT CLoader::Loading_For_Map_Level()
 		return E_FAIL;
 #pragma endregion
 
-#pragma region 상호 작용 모델 원형
+#pragma region 상호 작용 모델 원형 ( 추가 추가 하면 추가 추가 )
 	/* Prototype_Component_Model_BladeNexus */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_BladeNexus"),
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_DamagedTS/WIP_COM_DamagedTS.dat")), E_FAIL);
@@ -241,6 +244,10 @@ HRESULT CLoader::Loading_For_Map_Level()
 	/* Prototype_GameObject_SkyShpere */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_SkySphere"),
 		CSkySphere::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	/* Prototype_GameObject_CloudShpere */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_CloudSphere"),
+		CCloudSphere::Create(m_pDevice, m_pContext)), E_FAIL);
 
 	/* Prototype_GameObject_Prop_Object */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"),
@@ -345,6 +352,14 @@ HRESULT CLoader::Loading_For_Effect_Level()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_VIBuffer_Terrain"),
 		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 100, 100)), E_FAIL);
 
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_VIBuffer_QuadTrail"),
+		CVIBuffer_QuadTrail::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_VIBuffer_LineTrail"),
+		CVIBuffer_LineTrail::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 	// Prototype_GameObject_Camera_Effect
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_Camera_Effect"),
 		CCamera_Effect::Create(m_pDevice, m_pContext)), E_FAIL);
@@ -352,6 +367,15 @@ HRESULT CLoader::Loading_For_Effect_Level()
 	// Prototype_GameObject_Terrain_Effect
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_Effect_Terrain"),
 		CEffect_Terrain::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_LineTrail"),
+		CLineTrail::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_MeshTrail"),
+		CMeshTrail::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_ScreenTrail"),
+		CScreenTrail::Create(m_pDevice, m_pContext)), E_FAIL);
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 
@@ -393,6 +417,22 @@ HRESULT CLoader::Loading_For_UI_Level()
 
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_UI_State_Button"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/State/NormalButton_%d.png"), 10))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_UI_ItemInfo"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Hud/ItemInfo/T_BG_ItemInfo_B_%d.png"), 7))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_UI_ItemInfo_BG"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/ItemInfo/T_BG_ItemInfo_%d.png"), 2))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_UI_ItemInfo_Top"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/ItemInfo/T_BG_ItemInfo_Top_%d.png"), 6))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_UI_ItemInfo_Bottom"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/ItemInfo/T_BG_ItemInfo_Bottom_%d.png"), 6))))
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("게임오브젝트원형를 로딩중입니다."));
@@ -477,6 +517,11 @@ HRESULT CLoader::Loading_For_Shader_Level()
 	// Prototype_GameObject_Prop_Object
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Prop_Object"),
 		CProp_Object::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	// Prototype_GameObject_Decal
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Decal"),
+		CDecal::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 	// Prototype_GameObject_Editor_Animation_TestModel

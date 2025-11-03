@@ -16,6 +16,12 @@ public:
 		_bool		isClick = { false };
 	}MAINMENUBUBBLE_DESC;
 
+	typedef struct tagBladeNexusON
+	{
+		ONTYPE eType;
+		_wstring strMapName;
+	}BLADENEXUS_ON_DESC;
+
 private:
 	CUI_BladeNexus(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CUI_BladeNexus(const CUI_BladeNexus& Prototype);
@@ -34,13 +40,17 @@ public:
 
 	virtual HRESULT						Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
 	virtual void						Bubble_EventCall(BUBBLEEVENT* pArg) override;
-
+	virtual	HRESULT						Update_Switch(void* pArg);
 
 private:
 	class CUI_BackGround*				m_pBackGround = { nullptr };
 
 	vector<class CBladeNexus_List*>		m_pList;
 	vector<class CUI_TextBox*>			m_pText;
+
+	vector<	class CUI_TextBox*>			m_pGuideText;
+	vector<	class CUI_Atlas_Icon*>		m_pGuideIcon;
+
 
 	UIANIMSTATE							m_eAnimState = { UIANIMSTATE::END };
 	MENULIST							m_eNextEvent = { MENULIST::END };

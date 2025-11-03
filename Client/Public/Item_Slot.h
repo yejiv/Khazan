@@ -15,10 +15,14 @@ private:
 	CItem_Slot(const CItem_Slot& Prototype);
 	virtual ~CItem_Slot() = default;
 public:
+	_int								Get_ItemIndex() { return m_iItemIndex; }
 	_int								Get_ItemCount() { return m_iItemCount; }
+	_int								Get_MaxItemCount() { return m_iItemMaxCount; }
 	_int*								Get_ptrItemCount();
+
 	_bool								Add_Item(_int iItemIndex);
 	void								Update_Pos(_int iIndex, _float2 vPos, _float fOffSet, _int iMaxIndexX, _int iMaxIndexY);
+	_bool								On_Selete();
 	_bool								Off_Selete();
 	void								is_Equip(_bool isEquip, _int iindex = 0);
 public:
@@ -51,6 +55,8 @@ private:
 	void								Selete_Item();
 	void								Equip_Item();
 	void								Release_Item();
+
+	void								Render_ItemInfo();
 public:
 	static CItem_Slot*					Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
 	virtual CGameObject*				Clone(void* pArg) override;

@@ -203,6 +203,7 @@ void CClientInstance::Release_Client()
 #ifdef _DEBUG	
 	Safe_Release(m_pDebug_Manager);
 	Safe_Release(m_pCamera_Controller);
+	Safe_Release(m_pShader_Controller);
 #endif 
 
 	Safe_Release(m_pDevice);

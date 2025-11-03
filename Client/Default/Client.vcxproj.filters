@@ -424,6 +424,18 @@
     <Filter Include="92.AI\State\Yetuga\12. IceBreath">
       <UniqueIdentifier>{5893559b-ea54-4504-af39-8097d6190c68}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\HUD\ItemInfo_Hud">
+      <UniqueIdentifier>{aa7f4f90-2fa1-4e4f-96e7-84abdaa01ebe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Item_Info">
+      <UniqueIdentifier>{024225c5-68e5-4264-a33b-e80d1d7d6713}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Item_Info\Other">
+      <UniqueIdentifier>{55ec1b2b-4e07-470c-8997-2fb17c1de068}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Item_Info\Weapon">
+      <UniqueIdentifier>{bbb08c0b-09f3-495a-bb01-cb8450fd780b}</UniqueIdentifier>
+    </Filter>
     <Filter Include="92.AI\State\Yetuga\13. Hit">
       <UniqueIdentifier>{da1ea781-147f-4124-9510-f2c5c6d3c222}</UniqueIdentifier>
     </Filter>
@@ -825,6 +837,18 @@
     <ClInclude Include="..\Public\AS_JumpGrab_Yetuga.h">
       <Filter>92.AI\State\Yetuga\09. Grab</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\CloudSphere.h">
+      <Filter>02.GameObject\Sky\Cloud</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\ItemInfo_Hud.h">
+      <Filter>02.GameObject\UI\HUD\ItemInfo_Hud</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\ItemInfo_Other.h">
+      <Filter>02.GameObject\UI\Item_Info\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\ItemInfo_Weapon.h">
+      <Filter>02.GameObject\UI\Item_Info\Weapon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1199,6 +1223,18 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_JumpGrab_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\09. Grab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CloudSphere.cpp">
+      <Filter>02.GameObject\Sky\Cloud</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ItemInfo_Hud.cpp">
+      <Filter>02.GameObject\UI\HUD\ItemInfo_Hud</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ItemInfo_Other.cpp">
+      <Filter>02.GameObject\UI\Item_Info\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ItemInfo_Weapon.cpp">
+      <Filter>02.GameObject\UI\Item_Info\Weapon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

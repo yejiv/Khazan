@@ -8,30 +8,38 @@ CMeshTrail::CMeshTrail(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContex
 
 CMeshTrail::CMeshTrail(const CMeshTrail& Prototype)
     : CGameObject(Prototype)
-    , m_bOn(Prototype.m_bOn)
+    , m_iTextureIdx { Prototype.m_iTextureIdx}
+    , m_fLifeTime{ Prototype.m_fLifeTime }
+    , m_iDivisionCount{ Prototype.m_iDivisionCount }
 {
+}
+
+HRESULT CMeshTrail::Initialize_Prototype()
+{
+    m_iTextureIdx = 0;
+    m_fLifeTime = 0.4f;
+    m_iDivisionCount = 5;
+
+    return S_OK;
 }
 
 HRESULT CMeshTrail::Initialize_Clone(void* pArg)
 {
-    __super::Initialize_Clone(pArg);
-
     if (FAILED(Ready_Component()))
         return E_FAIL;
-
-    m_fCurTime = 0.f;
-    m_iTextureIdx = 0;
-    m_fLifeTime = 1.f;
-    m_iDivisionCount = 5;
 
     if (pArg)
     {
         TRAIL_DESC* dsc = static_cast<TRAIL_DESC*>(pArg);
 
-        m_fCurTime = 0.f;
         m_iTextureIdx = dsc->iTextureIdx;
         m_fLifeTime = dsc->fLifeTime;
         m_iDivisionCount = dsc->iDivisionCount;
+        if (m_iDivisionCount < 1)
+        {
+            MSG_BOX(TEXT("Division Count is too low"));
+            return E_FAIL;
+        }
     }
 
     return S_OK;
@@ -79,7 +87,7 @@ void CMeshTrail::Update(_float fTimeDelta)
                                              XMLoadFloat4(&m_ControlPoints[i + 1].vBottom),
                                              XMLoadFloat4(&m_ControlPoints[(i + 2) > m_ControlPoints.size() - 1 ? i + 1 : i + 2].vBottom),
                                              weight);
-           TRAIL_POINT SplineNode;
+           CVIBuffer_QuadTrail::QUAD_TRAIL_POINT SplineNode;
            XMStoreFloat4(&SplineNode.vTop, top);
            XMStoreFloat4(&SplineNode.vBottom, bottom);
 
@@ -92,7 +100,7 @@ void CMeshTrail::Late_Update(_float fTimeDelta)
 {
     m_pVIBufferCom->Update(m_TrailPoints);
 
-    if (m_TrailPoints.size() > 1)
+    if (m_ControlPoints.size() > 1)
         m_pGameInstance->Add_RenderGroup(RENDERGROUP::BLEND, this);
 }
 
@@ -101,7 +109,7 @@ HRESULT CMeshTrail::Render()
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
-    m_pShaderCom->Begin(0);
+    m_pShaderCom->Begin(2);
 
     m_pVIBufferCom->Bind_Resources();
 
@@ -110,12 +118,17 @@ HRESULT CMeshTrail::Render()
     return S_OK;
 }
 
-void CMeshTrail::Add_ControlPoint(_float4 top, _float4 bottom)
+void CMeshTrail::Add_ControlPoint(_fvector top, _gvector bottom)
 {
-    TRAIL_POINT newPoint;
+    if (m_ControlPoints.size() 
+        && XMVector4Equal(XMLoadFloat4(&m_ControlPoints.back().vTop), top)
+        && XMVector4Equal(XMLoadFloat4(&m_ControlPoints.back().vBottom), bottom))
+        return;
 
-    newPoint.vTop = top;
-    newPoint.vBottom = bottom;
+    CVIBuffer_QuadTrail::QUAD_TRAIL_POINT newPoint;
+
+    XMStoreFloat4(&newPoint.vTop, top);
+    XMStoreFloat4(&newPoint.vBottom, bottom);
     newPoint.fLifeTime = 0.f;
 
     m_ControlPoints.push_back(newPoint);
@@ -123,26 +136,23 @@ void CMeshTrail::Add_ControlPoint(_float4 top, _float4 bottom)
 
 HRESULT CMeshTrail::Ready_Component()
 {
-    //if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxPosTex"),
-    //    TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
-    //    return E_FAIL;
-    //
-    //if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_QuadTrail"),
-    //    TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr)))
-    //    return E_FAIL;
-    //
-    //if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_QuadTrail"),
-    //    TEXT("Com_Buffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), nullptr)))
-    //    return E_FAIL;
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxPosTex"),
+        TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
+        return E_FAIL;
+    
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_Slash"),
+        TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr)))
+        return E_FAIL;
+    
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_VIBuffer_QuadTrail"),
+        TEXT("Com_Buffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), nullptr)))
+        return E_FAIL;
 
     return S_OK;
 }
 
 HRESULT CMeshTrail::Bind_ShaderResources()
 {
-    //if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix)))
-    //    return E_FAIL;
-
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
         return E_FAIL;
 
@@ -156,11 +166,11 @@ HRESULT CMeshTrail::Bind_ShaderResources()
     return S_OK;
 }
 
-CMeshTrail* CMeshTrail::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, void* pArg)
+CMeshTrail* CMeshTrail::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     CMeshTrail* pInstance = new CMeshTrail(pDevice, pContext);
 
-    if (FAILED(pInstance->Initialize_Clone(pArg)))
+    if (FAILED(pInstance->Initialize_Prototype()))
     {
         MSG_BOX(TEXT("Failed to Created : CMeshTrail"));
         Safe_Release(pInstance);

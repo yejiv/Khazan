@@ -6,6 +6,7 @@ float g_fAlpha;
 float g_fValue;
 
 texture2D g_Texture;
+texture2D g_MaskTexture;
 
 #define PI       3.14159265358979323846
 struct VS_IN
@@ -229,6 +230,20 @@ PS_OUT PS_TEX_PROGRESS_CIRCLE_GAUGE(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_GET_ITEMINFO(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    float4 vMaskColor = g_MaskTexture.Sample(ClampSampler, In.vTexcoord);
+    
+    Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
+    
+    
+    Out.vColor.rgb = vMaskColor.r * Out.vColor.rgb * 1.4f;
+    Out.vColor.a = Out.vColor.a * g_vColor.a * vMaskColor.a * g_fAlpha;
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     pass DefaultPass
@@ -339,6 +354,17 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_TEX_PROGRESS_CIRCLE_GAUGE();
+    }
+
+    pass PS_GET_ITEMINFO //10
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_GET_ITEMINFO();
     }
 
 }
