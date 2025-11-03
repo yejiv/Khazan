@@ -98,8 +98,8 @@ HRESULT CTarget_LockOn::Render()
 
 HRESULT CTarget_LockOn::Ready_Prototype()
 {
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_Common_Roct_Fx"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/World/Rock_FX_%d.png"), 2)), E_FAIL);
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_Common_Loct_Fx"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/World/Lock_FX_%d.png"), 2)), E_FAIL);
 
 	return S_OK;
 }
@@ -112,7 +112,7 @@ HRESULT CTarget_LockOn::Ready_Component()
 	CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Rect"),
 		TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), nullptr), E_FAIL);
 		
-	CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_Common_Roct_Fx"),
+	CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_Common_Loct_Fx"),
 		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr), E_FAIL);
 		
 	return S_OK;

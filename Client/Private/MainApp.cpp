@@ -328,6 +328,9 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Target_LockOn"),
 		CTarget_LockOn::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
 
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Target_BrutalAttack"),
+		CTarget_BrutalAttack::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
+
 	CUIObject::UIOBJECT_DESC AnnounceDesc = {};
 	AnnounceDesc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
 	AnnounceDesc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
@@ -365,6 +368,15 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 
 	CHECK_FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Interaction_Guide"),
 		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide"), &Desc, 15), E_FAIL);
+
+	Desc.vLocalSize = { 52.f, 52.f };
+	Desc.vLocalPos = { 0.f, 0.f };
+	Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
+	Desc.szName = "BrutalAttack";
+	Desc.fDepth = 9.f;
+
+	CHECK_FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Target_BrutalAttack"),
+		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack"), &Desc, 10), E_FAIL);
 
 	CUIObject::UIOBJECT_DESC LockOnDesc = {};
 	LockOnDesc.vLocalSize = { 84.f, 84.f };

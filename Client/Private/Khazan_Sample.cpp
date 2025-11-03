@@ -13,8 +13,10 @@
 #include "UI_Inven.h"
 #pragma endregion
 
+#pragma region 락온, 브루탈어택 테스트
 #include "Target_LockOn.h"
-
+#include "Target_BrutalAttack.h"
+#pragma endregion
 
 CKhazan_Sample::CKhazan_Sample(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CCreature{ pDevice, pContext }
@@ -71,7 +73,7 @@ HRESULT CKhazan_Sample::Initialize_Clone(void* pArg)
         });
 #pragma endregion
 
-      return S_OK;
+    return S_OK;
 
 }
 
@@ -89,6 +91,14 @@ void CKhazan_Sample::Priority_Update(_float fTimeDelta)
     
     if (m_pGameInstance->Key_Down(DIK_N))
         static_cast<CTarget_LockOn*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("LockOn")))->LockOff();
+
+    if (m_pGameInstance->Key_Down(DIK_B))
+    {
+        CTarget_BrutalAttack* pObject = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
+        pObject->Setting_BrutalAttack(&m_vPos, 2.f);
+
+        m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), pObject);
+    }
 }
 
 void CKhazan_Sample::Update(_float fTimeDelta)

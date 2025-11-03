@@ -70,12 +70,88 @@ PS_OUT_EMISSIVE PS_ROCKON(PS_IN In)
     
     if (Out.vPostScene.a >= 0.9f)
     {
-        Out.vEmissive.rgb = Out.vPostScene.rgb * 2.f;
+        Out.vEmissive.rgb = Out.vPostScene.rgb * 1.5f;
         Out.vEmissive.a = 1.f;
     }
     else
         Out.vEmissive.a = 0.f;
 
+    return Out;
+}
+
+PS_OUT_EMISSIVE PS_BRUTALBG(PS_IN In)
+{
+    PS_OUT_EMISSIVE Out = (PS_OUT_EMISSIVE) 0;
+
+    Out.vPostScene = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+    Out.vPostScene.rgb = 1.f - Out.vPostScene.rgb;
+    if (Out.vPostScene.a >= 0.1f)
+    {
+        Out.vPostScene.rgb = 0.f;
+        Out.vPostScene.a = 1.f - Out.vPostScene.a + 0.5f;
+        Out.vPostScene.a = clamp(Out.vPostScene.a, 0.5f, 1.f);
+    }
+    
+    Out.vPostScene.a = Out.vPostScene.a * g_vColor.a;
+    return Out;
+}
+
+PS_OUT_EMISSIVE PS_BRUTAL_PROGRESS(PS_IN In)
+{
+    PS_OUT_EMISSIVE Out = (PS_OUT_EMISSIVE) 0;
+    
+    Out.vPostScene = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+    if (Out.vPostScene.a < 0.2f)
+        discard;
+    
+    float2 vCenter = { 0.5f, 0.5f };
+    float2 vPos = In.vTexcoord - vCenter;
+
+    float fAngle = atan2(vPos.y, vPos.x);
+
+    float fTemp = (fAngle + PI) / (2.0 * PI);
+    fTemp = frac(fTemp - 0.25);
+    Out.vPostScene.a = Out.vPostScene.r;
+    if (fTemp > g_fProgressValue.x)
+    {
+        Out.vPostScene.rgb = Out.vPostScene.r * 0.5f;
+        Out.vPostScene.gb = Out.vPostScene.r * 0.1f;
+  
+    }
+    else
+    {
+        Out.vPostScene.gb = Out.vPostScene.r * 0.1f;      
+    }
+
+    return Out;
+}
+
+PS_OUT_EMISSIVE PS_BRUTALPoint(PS_IN In)
+{
+    PS_OUT_EMISSIVE Out = (PS_OUT_EMISSIVE) 0;
+
+    Out.vPostScene = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+    Out.vPostScene.a = Out.vPostScene.r;
+    Out.vPostScene.a = Out.vPostScene.a;
+    
+    if (Out.vEmissive.r > 0.9f)
+    {
+        Out.vEmissive.rgb = Out.vPostScene.rgb;
+        Out.vEmissive = 1.f;
+    }
+    else
+        Out.vEmissive = 0.f;
+ 
+    return Out;
+ 
+}
+PS_OUT_EMISSIVE PS_BRUTALPointBG(PS_IN In)
+{
+    PS_OUT_EMISSIVE Out = (PS_OUT_EMISSIVE) 0;
+
+    Out.vPostScene = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+    Out.vPostScene.rgb = Out.vPostScene.r * g_vColor.rgb;
+    Out.vPostScene.a = Out.vPostScene.a * g_vColor.a;
     return Out;
 }
 
@@ -90,6 +166,50 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_ROCKON();
+    }
+
+    pass PS_BRUTALBG
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_BRUTALBG();
+    }
+
+    pass PS_BRUTAL_PROGRESS //2
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_BRUTAL_PROGRESS();
+    }
+
+    pass PS_BRUTALPoint //3
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_BRUTALPoint();
+    }
+
+    pass PS_BRUTALPointBG //4
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_BRUTALPointBG();
     }
 
 }

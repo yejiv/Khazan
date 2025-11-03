@@ -185,6 +185,8 @@
     <ClInclude Include="..\Public\Body_Yetuga.h" />
     <ClInclude Include="..\public\BossHp.h" />
     <ClInclude Include="..\public\BossHp_Gauge.h" />
+    <ClInclude Include="..\public\BrutalAttack_Point.h" />
+    <ClInclude Include="..\public\BrutalAttack_Progress.h" />
     <ClInclude Include="..\Public\BT_Yetuga.h" />
     <ClInclude Include="..\Public\Camera_Controller.h" />
     <ClInclude Include="..\public\Camera_Free.h" />
@@ -255,6 +257,7 @@
     <ClInclude Include="..\Public\SkySphere.h" />
     <ClInclude Include="..\Public\Spear_Khazan_Sample.h" />
     <ClInclude Include="..\Public\Spear_Khazan_Spear.h" />
+    <ClInclude Include="..\public\Target_BrutalAttack.h" />
     <ClInclude Include="..\public\Target_LockOn.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="..\public\UI_Announce_MapName.h" />
@@ -328,6 +331,8 @@
     <ClCompile Include="..\Private\Body_Yetuga.cpp" />
     <ClCompile Include="..\private\BossHp.cpp" />
     <ClCompile Include="..\private\BossHp_Gauge.cpp" />
+    <ClCompile Include="..\private\BrutalAttack_Point.cpp" />
+    <ClCompile Include="..\private\BrutalAttack_Progress.cpp" />
     <ClCompile Include="..\Private\BT_Yetuga.cpp" />
     <ClCompile Include="..\Private\Camera_Controller.cpp" />
     <ClCompile Include="..\private\Camera_Free.cpp" />
@@ -392,6 +397,7 @@
     <ClCompile Include="..\Private\SkySphere.cpp" />
     <ClCompile Include="..\Private\Spear_Khazan_Sample.cpp" />
     <ClCompile Include="..\Private\Spear_Khazan_Spear.cpp" />
+    <ClCompile Include="..\private\Target_BrutalAttack.cpp" />
     <ClCompile Include="..\private\Target_LockOn.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="..\private\UI_Announce_MapName.cpp" />

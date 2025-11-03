@@ -31,5 +31,6 @@
 #include "Mon_HP.h"
 #include "Interaction_Guide.h"
 #include "Target_LockOn.h"
+#include "Target_BrutalAttack.h"
 
 

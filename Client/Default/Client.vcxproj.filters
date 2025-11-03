@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="99.Defines">
-      <UniqueIdentifier>{7aa2cf62-6ed3-40ac-8805-9ee09729bdbb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="98.Default">
       <UniqueIdentifier>{6d5ec687-677b-4977-bb88-b7f9efcaa511}</UniqueIdentifier>
     </Filter>
@@ -466,6 +463,15 @@
     <Filter Include="02.GameObject\UI\WorldUI\Target_BrutalAttack">
       <UniqueIdentifier>{8f9708aa-1535-425e-8cde-157f13bdfdd9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="99.Defines">
+      <UniqueIdentifier>{7aa2cf62-6ed3-40ac-8805-9ee09729bdbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Target_BrutalAttack\Progress">
+      <UniqueIdentifier>{f3547287-83aa-477a-9822-39efc490417d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Target_BrutalAttack\Point">
+      <UniqueIdentifier>{42406861-76be-42a0-b004-ecd70e443e2e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -882,6 +888,15 @@
     <ClInclude Include="..\public\Target_LockOn.h">
       <Filter>02.GameObject\UI\WorldUI\Target_LockOn</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Target_BrutalAttack.h">
+      <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BrutalAttack_Progress.h">
+      <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack\Progress</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BrutalAttack_Point.h">
+      <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack\Point</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1283,6 +1298,15 @@
     </ClCompile>
     <ClCompile Include="..\private\Target_LockOn.cpp">
       <Filter>02.GameObject\UI\WorldUI\Target_LockOn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Target_BrutalAttack.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BrutalAttack_Progress.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack\Progress</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BrutalAttack_Point.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack\Point</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
