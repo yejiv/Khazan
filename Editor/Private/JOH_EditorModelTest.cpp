@@ -99,12 +99,11 @@ HRESULT CJOH_EditorModelTest::Render()
         HRESULT hr;
         if (m_isAnim)
         {
-  
             hr = m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
             // m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
             hr = m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-            m_pShaderCom->Begin(1);
+            m_pShaderCom->Begin(0);
         }
         else
         {
@@ -113,7 +112,7 @@ HRESULT CJOH_EditorModelTest::Render()
         }
 
         hr = m_pModelCom->Render(i);
-        int a = 0;
+
     }
 
     return S_OK;
