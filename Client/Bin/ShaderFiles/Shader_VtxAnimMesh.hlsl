@@ -352,7 +352,7 @@ technique11 DefaultTechnique
     pass Outline
     {
         SetRasterizerState(RS_Cull_CW);
-        SetDepthStencilState(DSS_Outline, 0);
+        SetDepthStencilState(DSS_DepthTestOnly, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_MAIN_OUTLINE();
