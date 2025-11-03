@@ -5,6 +5,7 @@
 
 // SkySphere
 #include "SkySphere.h"
+#include "CloudSphere.h"
 
 // Properties
 #include "Prop_Object.h"

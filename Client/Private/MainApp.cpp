@@ -2,6 +2,9 @@
 #include "Level_Loading.h"
 #include "HeaderGroup_UI.h"
 
+#include "MapObject_Header.h"
+#include "Camera_Free.h"
+
 CMainApp::CMainApp()
 	: m_pGameInstance{ CGameInstance::GetInstance() }
 {
@@ -227,6 +230,85 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
 		CBody::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+
+#pragma region FOR LOADING & SKY BOX
+
+#pragma region SKY SPHERE TEXTURES
+	/* Prototype_Component_Texture_Cloud_Dist_Gradation */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Cloud_Dist_Gradation"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Map/Prop/Sky/DistanceGradation.dds"), 1))))
+		return E_FAIL;
+
+	/* Prototype_Component_Texture_Cloud_LookUp */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Cloud_LookUp"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Map/Prop/Sky/FTW_Sky_Cloud_LookUp.dds"), 1))))
+		return E_FAIL;
+
+	/* Prototype_Component_Texture_Cloud_Normal */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Cloud_Normal"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Map/Prop/Sky/FTW_Sky_Cloud_Nomal.dds"), 1))))
+		return E_FAIL;
+
+	/* Prototype_Component_Texture_Cloud_Distortion */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Cloud_Distortion"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Map/Prop/Sky/FTW_Sky_Cloud_Distortion.dds"), 1))))
+		return E_FAIL;
+
+	/* Prototype_Component_Texture_Sky_Nebula */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sky_Nebula"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Map/Prop/Sky/FTW_Sky_Nebula.dds"), 1))))
+		return E_FAIL;
+
+	/* Prototype_Component_Texture_Sky_Star_Mask */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sky_Star_Mask"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Map/Prop/Sky/FTW_Sky_Star_Mask_001.dds"), 1))))
+		return E_FAIL;
+
+	/* Prototype_Component_Texture_Moon */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Moon"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Map/Prop/Sky/FT_Rgb_Moon_001.dds"), 1))))
+		return E_FAIL;
+
+	/* Prototype_Component_Texture_Ring */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Ring"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Map/Prop/Sky/FT_Refraction_Ring.dds"), 1))))
+		return E_FAIL;
+#pragma endregion
+	
+#pragma region SKY SPHERE MODELS
+	/* Prototype_Component_Model_SkyMesh */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Model_SkyMesh"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Map/Prop/NonAnim/SkySphere/SkyMesh.dat"))))
+		return E_FAIL;
+
+	/* Prototype_Component_Model_CloudMesh */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Model_CloudMesh"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Map/Prop/NonAnim/SkySphere/CloudMesh.dat"))))
+		return E_FAIL;
+#pragma endregion
+
+#pragma region 하늘 구름 객체 원형
+
+	/* Prototype_GameObject_SkyShpere */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_SkySphere"),
+		CSkySphere::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_GameObject_CloudSphere */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_CloudSphere"),
+		CCloudSphere::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+#pragma endregion
+
+#pragma region 카메라
+	/* Prototype_GameObject_Camera_Free */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Camera_Free"),
+		CCamera_Free::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+#pragma endregion
+
+#pragma endregion
 
 	return S_OK;
 }

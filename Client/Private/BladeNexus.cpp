@@ -81,6 +81,12 @@ HRESULT CBladeNexus::Render()
     {
         Bind_Materials(i);
 
+        m_fEmissiveIntensity = 1.5f;
+
+        m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &m_fEmissiveIntensity, sizeof(_float));
+        m_pShaderCom->Bind_RawValue("g_isEnableEmissive", &m_isEnableEmissive, sizeof(_bool));
+        m_pShaderCom->Bind_RawValue("g_isEnableBloom", &m_isEnableBloom, sizeof(_bool));
+
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
         CHECK_FAILED_ASSERT(m_pShaderCom->Begin(0), E_FAIL);
