@@ -250,6 +250,46 @@ namespace Engine
 		std::function<float(float)> Ease;
 	};
 
+	struct XPBD_Params
+	{
+		// 통합/댐핑/외력
+		float fDampingStill = 0.985f;  // 정지시
+		float fDampingMove = 0.90f;   // 이동 중
+		float fGravityY = -9.8f;   // 중력
+		float fAirLinear = 0.40f;   // v
+		float fAirQuadratic = 0.12f;   // |v| v
+		float fMaxSpeed = 20.0f;   // m/s
+
+		// XPBD (compliance: 0=무한강성)
+		float fStretchCompliance = 2e-5f; // 거리
+		float fBendCompliance = 1e-4f; // 곡률(거리-벤드)
+		float fShearCompliance = 5e-5f; // 2열 카드용(선택)
+
+		// 반복/서브스텝
+		int   iSolverIterations = 3;
+		int   iSubsteps = 1;
+
+		// 테더(루트~노드 최대 거리 / 소프트 복원)
+		float fTetherScale = 1.35f;
+		float fTetherSoftness = 0.30f;
+
+		// 루트 이월(깊이 가중)
+		float fAdvectPosRoot = 1.0f;
+		float fAdvectPosTip = 0.60f;
+		float fAdvectRotRoot = 0.70f;
+		float fAdvectRotTip = 0.35f;
+
+		float fSagBiasStill = 0.65f;  // 정지 시 루트→아래(-Y) 축으로 당기는 비율
+		float fSagBiasMove = 0.15f;  // 이동 중에는 낮게
+	};
+
+	// 구 충돌 프록시
+	struct XPBD_Sphere
+	{
+		XMVECTOR vCenterWS = XMVectorZero();
+		float    fRadius = 0.1f;
+	};
+
 	typedef struct tagTrailPointDesc
 	{
 		XMFLOAT4 vTop;
