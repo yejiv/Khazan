@@ -95,7 +95,7 @@ void CKhazan_Sample::Priority_Update(_float fTimeDelta)
     if (m_pGameInstance->Key_Down(DIK_B))
     {
         CTarget_BrutalAttack* pObject = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
-        pObject->Setting_BrutalAttack(&m_vPos, 2.f);
+        pObject->Setting_BrutalAttack(&m_vPos, 0.f);
 
         m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), pObject);
     }

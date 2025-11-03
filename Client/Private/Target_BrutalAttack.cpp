@@ -60,7 +60,7 @@ void CTarget_BrutalAttack::Update(_float fTimeDelta)
 void CTarget_BrutalAttack::Late_Update(_float fTimeDelta)
 {
 	m_fTime -= fTimeDelta;
-	if (m_fTime <= 0)
+	if (m_fTime <= 0 && m_fMaxTime > 0)
 		m_isDead = true;
 
 
