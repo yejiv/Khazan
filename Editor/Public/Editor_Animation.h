@@ -8,6 +8,7 @@ class CEditor_Animation final : public CBase
 {
 private:
 	CEditor_Animation();
+	CEditor_Animation(const CEditor_Animation& Prototype);
 	virtual ~CEditor_Animation() = default;
 
 public:
