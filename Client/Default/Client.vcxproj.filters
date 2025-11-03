@@ -448,6 +448,12 @@
     <Filter Include="92.AI\State\Yetuga\16.Dead">
       <UniqueIdentifier>{4cf7082c-0498-48f9-9990-97868ab4536a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\BossHp">
+      <UniqueIdentifier>{7c5ed5fb-b737-4aa3-8396-8834d3527d94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\BossHp\BossGauge">
+      <UniqueIdentifier>{d5fe018e-b0e6-4ae5-8f26-fc4b8ca7c66d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -849,6 +855,12 @@
     <ClInclude Include="..\public\ItemInfo_Weapon.h">
       <Filter>02.GameObject\UI\Item_Info\Weapon</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\BossHp.h">
+      <Filter>02.GameObject\UI\BossHp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BossHp_Gauge.h">
+      <Filter>02.GameObject\UI\BossHp\BossGauge</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1235,6 +1247,12 @@
     </ClCompile>
     <ClCompile Include="..\private\ItemInfo_Weapon.cpp">
       <Filter>02.GameObject\UI\Item_Info\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BossHp.cpp">
+      <Filter>02.GameObject\UI\BossHp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BossHp_Gauge.cpp">
+      <Filter>02.GameObject\UI\BossHp\BossGauge</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

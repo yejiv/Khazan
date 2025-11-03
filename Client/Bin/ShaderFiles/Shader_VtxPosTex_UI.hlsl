@@ -244,6 +244,38 @@ PS_OUT PS_GET_ITEMINFO(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_TEX_PROGRESS_BossHP(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
+    
+    if (In.vTexcoord.x > g_fProgressValue.y)
+    {
+        Out.vColor.a = Out.vColor.a * g_fAlpha * 0.5f;
+    }
+    else if (In.vTexcoord.x < g_fProgressValue.y && In.vTexcoord.x > g_fProgressValue.x)
+    {
+        Out.vColor.rgb = Out.vColor.r + (g_vColor.rgb * 0.3f);
+        Out.vColor.a = Out.vColor.a * g_fAlpha;
+    }
+    else if (In.vTexcoord.x > g_fProgressValue.x - 0.05f && g_fProgressValue.x < 1.f)
+    {
+        float TipStart = g_fProgressValue.x - 0.05f;
+       
+        float fDelta = saturate((In.vTexcoord.x - TipStart) / (g_fProgressValue.x - TipStart));
+        if (fDelta > 0.97f)
+            Out.vColor.rgb = 1.f;
+        else
+            Out.vColor.rgb += 0.5f * fDelta;
+        Out.vColor.a = Out.vColor.a * g_fAlpha;
+    }
+    else
+    {
+        Out.vColor.a = Out.vColor.a * g_fAlpha;
+    }
+    return Out;
+}
 technique11 DefaultTechnique
 {
     pass DefaultPass
@@ -366,5 +398,14 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_GET_ITEMINFO();
     }
+    pass PS_TEX_PROGRESS_BossHP //11
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_TEX_PROGRESS_BossHP();
+    }
 }

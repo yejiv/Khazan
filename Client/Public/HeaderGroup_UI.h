@@ -13,6 +13,7 @@
 #include "UI_MainMenu.h"
 #include "UI_BladeNexus.h"
 #include "UI_State.h"
+#include "BossHp.h"
 
 #include "Damage_Text.h"
 #include "Mon_HP.h"

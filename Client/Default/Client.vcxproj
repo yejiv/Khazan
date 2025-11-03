@@ -181,6 +181,8 @@
     <ClInclude Include="..\Public\Body_Khazan_Spear.h" />
     <ClInclude Include="..\Public\Body_Player.h" />
     <ClInclude Include="..\Public\Body_Yetuga.h" />
+    <ClInclude Include="..\public\BossHp.h" />
+    <ClInclude Include="..\public\BossHp_Gauge.h" />
     <ClInclude Include="..\Public\BT_Yetuga.h" />
     <ClInclude Include="..\Public\Camera_Controller.h" />
     <ClInclude Include="..\public\Camera_Free.h" />
@@ -319,6 +321,8 @@
     <ClCompile Include="..\Private\Body_Khazan_Spear.cpp" />
     <ClCompile Include="..\Private\Body_Player.cpp" />
     <ClCompile Include="..\Private\Body_Yetuga.cpp" />
+    <ClCompile Include="..\private\BossHp.cpp" />
+    <ClCompile Include="..\private\BossHp_Gauge.cpp" />
     <ClCompile Include="..\Private\BT_Yetuga.cpp" />
     <ClCompile Include="..\Private\Camera_Controller.cpp" />
     <ClCompile Include="..\private\Camera_Free.cpp" />
