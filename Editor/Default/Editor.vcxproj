@@ -166,6 +166,7 @@
     <ClInclude Include="..\Public\Camera_Effect.h" />
     <ClInclude Include="..\Public\Camera_Map.h" />
     <ClInclude Include="..\Public\Camera_UI.h" />
+    <ClInclude Include="..\Public\CloudSphere.h" />
     <ClInclude Include="..\Public\Debug_Controller.h" />
     <ClInclude Include="..\Public\Editor_Animation.h" />
     <ClInclude Include="..\Public\Editor_Bone.h" />
@@ -234,6 +235,7 @@
     <ClCompile Include="..\Private\Camera_Effect.cpp" />
     <ClCompile Include="..\Private\Camera_Map.cpp" />
     <ClCompile Include="..\Private\Camera_UI.cpp" />
+    <ClCompile Include="..\Private\CloudSphere.cpp" />
     <ClCompile Include="..\Private\Debug_Controller.cpp" />
     <ClCompile Include="..\Private\Editor_Animation.cpp" />
     <ClCompile Include="..\Private\Editor_Bone.cpp" />

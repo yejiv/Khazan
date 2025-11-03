@@ -184,6 +184,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\Blur.cpp" />
     <ClCompile Include="..\Private\Body.cpp" />
     <ClCompile Include="..\private\Bone.cpp" />
+    <ClCompile Include="..\Private\BoneChainPhysic.cpp" />
     <ClCompile Include="..\Private\BTNode.cpp" />
     <ClCompile Include="..\private\Camera.cpp" />
     <ClCompile Include="..\private\Cell.cpp" />
@@ -192,6 +193,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\Condition_Node.cpp" />
     <ClCompile Include="..\Private\CoolDown_Nodel.cpp" />
     <ClCompile Include="..\private\Decal.cpp" />
+    <ClCompile Include="..\private\Decal_Manager.cpp" />
     <ClCompile Include="..\Private\Decorator_Node.cpp" />
     <ClCompile Include="..\private\Fog.cpp" />
     <ClCompile Include="..\private\Font_Face.cpp" />
@@ -305,6 +307,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Body.h" />
     <ClInclude Include="..\Public\BodyDrawFilter.h" />
     <ClInclude Include="..\public\Bone.h" />
+    <ClInclude Include="..\Public\BoneChainPhysic.h" />
     <ClInclude Include="..\Public\BTNode.h" />
     <ClInclude Include="..\Public\BTNode_Defines.h" />
     <ClInclude Include="..\public\Camera.h" />
@@ -314,6 +317,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Condition_Node.h" />
     <ClInclude Include="..\Public\CoolDown_Nodel.h" />
     <ClInclude Include="..\public\Decal.h" />
+    <ClInclude Include="..\public\Decal_Manager.h" />
     <ClInclude Include="..\Public\Decorator_Node.h" />
     <ClInclude Include="..\public\Fog.h" />
     <ClInclude Include="..\public\Engine_Sequence.h" />
@@ -429,6 +433,7 @@ call Copy.bat</Command>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Cell.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Decal.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Model_Instance_Compute.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Point_Instance_Compute.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Deferred.hlsl" />

@@ -16,12 +16,9 @@ CModel::CModel(const CModel& Prototype)
 	: CComponent{ Prototype }
     , m_iNumMeshes { Prototype.m_iNumMeshes }
     , m_Meshes { Prototype.m_Meshes }
-
     , m_iNumMaterials { Prototype.m_iNumMaterials }
     , m_Materials { Prototype.m_Materials }
-
     , m_iNumAnimations{ Prototype.m_iNumAnimations }
-
     , m_eModelType { Prototype.m_eModelType} 
     , m_PreTransformMatrix{ Prototype.m_PreTransformMatrix }
     , m_strModelName{ Prototype.m_strModelName }
@@ -118,7 +115,9 @@ HRESULT CModel::Initialize_Prototype(const _char* pModelFilePath)
         }
         else {
             m_iRootBoneIndex = static_cast<_uint>(distance(m_Bones.begin(), it));
+#ifdef _DEBUG
             isFindRoot = true;
+#endif
         }
     }
 
@@ -184,6 +183,22 @@ _float4x4* CModel::Get_BoneMatrix(const _char* pBoneName)
     return (*iter)->Get_CombinedTransformationMatrixPtr();
 }
 
+_float4x4* CModel::Get_BoneMatrix(const _int iBoneIndex)
+{
+    if (m_Bones.size() < iBoneIndex || 0 > iBoneIndex)
+        return nullptr;
+
+    return m_Bones[iBoneIndex]->Get_CombinedTransformationMatrixPtr();
+}
+
+_float4x4* CModel::Get_LocalBoneMatrix(_int iBoneIndex)
+{
+    if (m_Bones.size() < iBoneIndex || 0 > iBoneIndex)
+        return nullptr;
+
+    return m_Bones[iBoneIndex]->Get_TransformationMatrixPtr();
+}
+
 _float4x4* CModel::Get_ContainNameBoneMatrix(const _char* pBoneName)
 {
     auto iter = find_if(m_Bones.begin(), m_Bones.end(),
@@ -209,6 +224,59 @@ _int CModel::Get_AnimIndexByName(const string& strName)
         return static_cast<_int>(std::distance(m_AnimationsSetup.begin(), iter));
 
     return -1; // 못 찾을 경우
+}
+
+const vector<_int>& CModel::Get_ChildIndices(_int boneIndex) const
+{
+    return m_Bones[boneIndex]->Get_ChildBones();
+}
+
+void CModel::Set_OwnerTransform(CTransform** pTransform)
+{
+    m_pOwnerTransform = *pTransform;
+    Safe_AddRef(m_pOwnerTransform);
+}
+
+_vector CModel::Get_BoneWorldRotationQuat(_int iBone) const
+{
+    if (iBone < 0 || iBone >= (_int)m_Bones.size())
+        return XMQuaternionIdentity();
+
+    const _matrix W = m_Bones[iBone]->Get_CombinedTransformationMatrix();
+    return ExtractQuatFromWorld(W);
+}
+
+void CModel::Set_BoneLocalRotation(_int iBone, _vector vLocal)
+{
+    if (iBone < 0 || iBone >= (_int)m_Bones.size()) return;
+    CBone* pBone = m_Bones[iBone];
+
+    _vector S, Q, T;
+    XMMatrixDecompose(&S, &Q, &T, pBone->Get_TransformationMatrix());
+
+    _matrix L = XMMatrixAffineTransformation(
+        S, XMVectorZero(),
+        XMQuaternionNormalize(vLocal),
+        T);
+
+    pBone->Set_TransformationMatrix(L);
+}
+
+void CModel::Set_BoneWorldRotation(_int iBone, _vector vWorld)
+{
+    if (iBone < 0 || iBone >= (_int)m_Bones.size()) return;
+
+    const _int pIdx = m_Bones[iBone]->Get_ParentBoneIndex();
+    _vector qLocal = XMQuaternionNormalize(vWorld);
+
+    if (pIdx >= 0)
+    {
+        _vector qParentW = Get_BoneWorldRotationQuat(pIdx);
+        // local = inv(parentW) * world
+        qLocal = XMQuaternionMultiply(XMQuaternionConjugate(qParentW), vWorld);
+    }
+
+    Set_BoneLocalRotation(iBone, qLocal);
 }
 
 vector<_float3> CModel::Get_VerticesPos(_uint iIndex)
@@ -477,7 +545,6 @@ void CModel::UnRegister_Event(const string& strEventKey, ANIM_EVENT_TRIGGERTYPE 
     auto it = m_EventCallbacks.find(MakeCallbackKey(strEventKey, eTriggerType));
     if (it != m_EventCallbacks.end())
         m_EventCallbacks.erase(it);
-
 }
 
 void CModel::Clear_AllEvent()
@@ -876,6 +943,16 @@ HRESULT CModel::Ready_Bones(MODEL_DATA& data)
         m_Bones.emplace_back(pBone);
     }
 
+    if (m_eModelType == MODELTYPE::ANIM)
+    {
+        for (_int i = 0; i < m_Bones.size(); i++)
+        {
+            if (m_Bones[i]->Get_ParentBoneIndex() == -1)
+                continue;
+
+            m_Bones[m_Bones[i]->Get_ParentBoneIndex()]->Push_ChildBone(i);
+        }
+    }
     return S_OK;
 }
 
@@ -897,6 +974,43 @@ HRESULT CModel::Ready_Animations(MODEL_DATA& data)
     return S_OK;
 }
 
+
+inline void CModel::DFS_BuildChainsFromRoot(_int cur, _int maxDepth, vector<_int>& path, vector<vector<_int>>& outChains, _int minLen)
+{
+    path.push_back(cur);
+
+    // 종료 조건: 깊이 도달 or 리프 본
+    const auto& children = this->Get_ChildIndices(cur);
+    const bool atDepthLimit = (int)path.size() >= maxDepth + 1; // 노드 수 기준
+    const bool isLeaf = children.empty();
+
+    if (isLeaf || atDepthLimit)
+    {
+        if ((int)path.size() >= minLen) outChains.push_back(path);
+        path.pop_back();
+        return;
+    }
+
+    // 자식이 여러 개면 각각 “새로운 체인 브랜치”
+    for (int child : children)
+    {
+        DFS_BuildChainsFromRoot(child, maxDepth, path, outChains, minLen);
+    }
+
+    path.pop_back();
+
+}
+
+inline vector<vector<_int>> CModel::BuildChainsFromRoot(_int rootBone, _int maxDepth, _int minLen)
+{
+    std::vector<std::vector<int>> chains;
+    std::vector<int> path;
+    DFS_BuildChainsFromRoot(rootBone, maxDepth, path, chains, minLen);
+
+    // path는 [root, ..., leaf], CBoneChainPhysic가 요구하는 포맷과 동일
+    return chains;
+
+}
 
 CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _char* pModelFilePath)
 {

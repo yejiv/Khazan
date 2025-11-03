@@ -423,6 +423,9 @@
     <ClInclude Include="..\Public\MeshTrail.h">
       <Filter>02.GameObject\Effect\Trail\MeshTrail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\CloudSphere.h">
+      <Filter>02.GameObject\MapObject\Sky</Filter>
+    </ClInclude>
     <ClInclude Include="..\Public\LineTrail.h">
       <Filter>02.GameObject\Effect\Trail\LineTrail</Filter>
     </ClInclude>
@@ -620,6 +623,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\MeshTrail.cpp">
       <Filter>02.GameObject\Effect\Trail\MeshTrail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CloudSphere.cpp">
+      <Filter>02.GameObject\MapObject\Sky</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\LineTrail.cpp">
       <Filter>02.GameObject\Effect\Trail\LineTrail</Filter>

@@ -370,6 +370,12 @@
     <Filter Include="01.Utility\03.Component\VIBuffer\Trail\VIBuffer_LineTrail">
       <UniqueIdentifier>{2c9058cd-319d-42b5-af77-42d5cda9ba53}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Component\HairPhysic">
+      <UniqueIdentifier>{d7234e79-a641-4433-a670-35d0d6ea2cbc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\20.BoneChainPhysic">
+      <UniqueIdentifier>{425e255b-b518-42ec-8ca9-f0cf2d6f4b40}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -713,6 +719,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_LineTrail.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Trail\VIBuffer_LineTrail</Filter>
+	</ClCompile>
+	<ClCompile Include="..\private\Decal_Manager.cpp">
+      <Filter>01.Utility\19.Decal\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BoneChainPhysic.cpp">
+      <Filter>01.Utility\20.BoneChainPhysic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1102,6 +1114,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_LineTrail.h">
       <Filter>01.Utility\03.Component\VIBuffer\Trail\VIBuffer_LineTrail</Filter>
+	</ClInclude>
+	<ClInclude Include="..\public\Decal_Manager.h">
+      <Filter>01.Utility\19.Decal\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BoneChainPhysic.h">
+      <Filter>01.Utility\20.BoneChainPhysic</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1123,6 +1141,9 @@
       <Filter>95.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Model_Instance_Compute.hlsl">
+      <Filter>95.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Decal.hlsl">
       <Filter>95.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

@@ -28,6 +28,9 @@ HRESULT CMapObject::Initialize_Clone(void* pArg)
 
     m_eInteractiveType = pDesc->eInteractiveType;
 
+    if (INTERACTIVE_TYPE::CHECKPOINT == m_eInteractiveType)
+        m_iBladeNexusID = pDesc->iBladeNexus_ID;
+
     if (INTERACTIVE_TYPE::CHEST == m_eInteractiveType)
         m_ItemBox = pDesc->ItemBox;
 

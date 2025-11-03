@@ -15,11 +15,6 @@ public:
 	virtual void Update(class CStateMachine* pFSM, class CGameObject* pOwner, _float fTimeDelta) override;
 	virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
-
-	_float					m_fTargetYaw = {};
-	_float3					m_vStartLook = {};
-	_float3					m_vTargetDir = {};
-
 public:
 	static CAS_Turn_Yetuga* Create();
 	virtual void			Free() override;

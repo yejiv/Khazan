@@ -4,12 +4,12 @@
 
 #include "UI_TextBox.h"
 #include "UI_BackGround.h"
-
+#include "UI_Atlas_Icon.h"
 #include "BladeNexus_List.h"
 #include "MainMenu_Deco.h"
 
 #include "UI_Inven.h"
-
+#include "UI_State.h"
 CUI_BladeNexus::CUI_BladeNexus(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
 {
@@ -25,9 +25,13 @@ void CUI_BladeNexus::On_Panel(ONTYPE eType, _wstring strMapName)
 	if (m_IsUpdate)
 		return;
 
-	m_pText[1]->Set_Text(strMapName);
+	if (ONTYPE::END != eType)
+	{
+		m_pText[1]->Set_Text(strMapName);
 
-	m_iListeType = ENUM_CLASS(eType);
+		m_iListeType = ENUM_CLASS(eType);
+	}
+	
 	m_iSeleteIndex = 0;
 	for (_int i = 0; i < ENUM_CLASS(MENULIST::END); ++i)
 		i == m_iSeleteIndex ? m_pList[i]->Set_Selete(true) : m_pList[i]->Set_Selete(false);
@@ -36,6 +40,8 @@ void CUI_BladeNexus::On_Panel(ONTYPE eType, _wstring strMapName)
 	m_fAccTime = 0.5f;
 	m_IsUpdate = true;
 	m_eNextEvent = MENULIST::END;
+
+	m_pGameInstance->Change_InputType(INPUT_TYPE::UI);
 }
 
 
@@ -48,6 +54,8 @@ void CUI_BladeNexus::Off_Panel()
 		m_eNextEvent = MENULIST::END;
 		m_eAnimState = UIANIMSTATE::OFF;
 		m_fAccTime = 1.f;
+
+		m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
 	}
 	else
 	{
@@ -73,7 +81,13 @@ HRESULT CUI_BladeNexus::Initialize_Clone(void* pArg)
 void CUI_BladeNexus::Priority_Update(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_7))
-		m_IsUpdate ? Off_Panel() : On_Panel(ONTYPE::CREVICE, TEXT("하인마흐 어딘가에 어딘가에 어딘가"));
+	{
+		On_Panel(ONTYPE::CREVICE, TEXT("하인마흐 어딘가에 어딘가에 어딘가"));
+	}
+	else if (m_pGameInstance->Key_Down(DIK_7, INPUT_TYPE::UI))
+	{
+		Off_Panel();
+	}
 	if (!m_IsUpdate)
 		return;
 
@@ -105,12 +119,41 @@ void CUI_BladeNexus::Late_Update(_float fTimeDelta)
 	if (!m_IsUpdate)
 		return;
 
+	_bool isKeyInput = false;
+	if (m_pGameInstance->Key_Down(DIK_W, INPUT_TYPE::UI))
+	{
+		m_iSeleteIndex -= 1;
+		isKeyInput = true;
+
+		if (m_iSeleteIndex < 0)
+			m_iSeleteIndex = ENUM_CLASS(MENULIST::END) - 1;
+	}
+	else if (m_pGameInstance->Key_Down(DIK_S, INPUT_TYPE::UI))
+	{
+		m_iSeleteIndex += 1;
+		isKeyInput = true;
+
+		if (m_iSeleteIndex >= ENUM_CLASS(MENULIST::END))
+			m_iSeleteIndex = 0;
+	}
+
+	if (isKeyInput)
+		for (_int i = 0; i < ENUM_CLASS(MENULIST::END); ++i)
+			i == m_iSeleteIndex ? m_pList[i]->Set_Selete(true) : m_pList[i]->Set_Selete(false);
+
+
 	m_pBackGround->Late_Update(fTimeDelta);
 	for (_int i = 0; i < m_iListeType; ++i)
 		m_pList[i]->Late_Update(fTimeDelta);
 
 	for (auto pText : m_pText)
 		pText->Late_Update(fTimeDelta);
+
+	for (auto pText : m_pGuideText)
+		pText->Late_Update(fTimeDelta);
+
+	for (auto pIcon : m_pGuideIcon)
+		pIcon->Late_Update(fTimeDelta);
 }
 
 HRESULT CUI_BladeNexus::Render()
@@ -259,6 +302,62 @@ HRESULT CUI_BladeNexus::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID
 				m_pText[1] = static_cast<CUI_TextBox*>(pChild);
 				Safe_AddRef(pChild);
 			}
+			else if (strChildName == "Guade_Icon_Esc_Text" || strChildName == "Guade_Icon_F_Text")
+			{
+				string strClass = child.value("class", "");
+				_wstring wstrClass = AnsiToWString(strClass);
+
+				CUIObject::UIOBJECT_DESC UIDesc{};
+				UIDesc.szName = "";
+				UIDesc.iUIType = 0;
+				UIDesc.vLocalSize = { 1.f, 1.f };
+				UIDesc.fDepth = 0;
+				UIDesc.vLocalPos = { g_iWinSizeX >> 1 , g_iWinSizeY >> 1 };
+
+				CUIObject* pChild = static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelID, wstrClass.c_str(), &UIDesc));
+
+				if (pChild == nullptr)
+				{
+					MSG_BOX(TEXT("자식 클론 생성 실패"));
+					return E_FAIL;
+				}
+				if (pChild->Load_UI(child, iPrototypeLevelID, pArg))
+					return E_FAIL;
+
+				pChild->Insert_Bubble([this](BUBBLEEVENT* pArg) {this->Bubble_EventCall(pArg); });
+				m_Children.push_back(pChild);
+
+				m_pGuideText.push_back(static_cast<CUI_TextBox*>(pChild));
+				Safe_AddRef(pChild);
+			}
+			else if (strChildName == "Guade_Icon_ESC" || strChildName == "Guade_Icon_F")
+			{
+				string strClass = child.value("class", "");
+				_wstring wstrClass = AnsiToWString(strClass);
+
+				CUIObject::UIOBJECT_DESC UIDesc{};
+				UIDesc.szName = "";
+				UIDesc.iUIType = 0;
+				UIDesc.vLocalSize = { 1.f, 1.f };
+				UIDesc.fDepth = 0;
+				UIDesc.vLocalPos = { g_iWinSizeX >> 1 , g_iWinSizeY >> 1 };
+
+				CUIObject* pChild = static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelID, wstrClass.c_str(), &UIDesc));
+
+				if (pChild == nullptr)
+				{
+					MSG_BOX(TEXT("자식 클론 생성 실패"));
+					return E_FAIL;
+				}
+				if (pChild->Load_UI(child, iPrototypeLevelID, pArg))
+					return E_FAIL;
+
+				pChild->Insert_Bubble([this](BUBBLEEVENT* pArg) {this->Bubble_EventCall(pArg); });
+				m_Children.push_back(pChild);
+
+				m_pGuideIcon.push_back(static_cast<CUI_Atlas_Icon*>(pChild));
+				Safe_AddRef(pChild);
+			}
 			else
 			{
 				_float2 vPos = { child["LocalPos"].value("x", 0.f), child["LocalPos"].value("y", 0.f) };
@@ -299,6 +398,7 @@ HRESULT CUI_BladeNexus::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID
 	__super::Update_Transform(nullptr, m_vLocalPos);
 
 	CHECK_FAILED(Ready_Object(), E_FAIL);
+
 	return S_OK;
 }
 
@@ -318,6 +418,14 @@ void CUI_BladeNexus::Bubble_EventCall(BUBBLEEVENT* pArg)
 			i == m_iSeleteIndex ? m_pList[i]->Set_Selete(true) : m_pList[i]->Set_Selete(false);
 
 	}
+}
+
+HRESULT CUI_BladeNexus::Update_Switch(void* pArg)
+{
+	BLADENEXUS_ON_DESC* pDesc = static_cast<BLADENEXUS_ON_DESC*>(pArg);
+
+	On_Panel(pDesc->eType, pDesc->strMapName);
+	return S_OK;
 }
 
 HRESULT CUI_BladeNexus::Ready_Prototype()
@@ -381,18 +489,26 @@ void CUI_BladeNexus::Next_Event()
 
 	if (m_eNextEvent == MENULIST::STATE)
 	{
-		//CUI_Inven::INVEN_ONOFF_DESC Desc = {};
-		//Desc.isOpen = true;
-		//Desc.isEquip = true;
-		//Desc.szName = m_szName;
-		//CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Inven"), &Desc);
+		CUI_State::UI_STATE_ON Desc = {};
+		Desc.eType = CUI_State::UI_TYPE::UPAGERD;
+
+		CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("State"), &Desc);
 	}
 	else if (m_eNextEvent == MENULIST::WARP)
 	{
+		m_eNextEvent = MENULIST::END;
+		m_eAnimState = UIANIMSTATE::OFF;
+		m_fAccTime = 1.f;
 
+		m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
 	}
 	else if (m_eNextEvent == MENULIST::CREVICE)
 	{
+		m_eNextEvent = MENULIST::END;
+		m_eAnimState = UIANIMSTATE::OFF;
+		m_fAccTime = 1.f;
+
+		m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
 	}
 
 }
@@ -429,6 +545,14 @@ void CUI_BladeNexus::Free()
 	for (auto pText : m_pText)
 		Safe_Release(pText);
 	m_pText.clear();
+
+	for (auto pText : m_pGuideText)
+		Safe_Release(pText);
+	m_pGuideText.clear();
+
+	for (auto pIcon : m_pGuideIcon)
+		Safe_Release(pIcon);
+	m_pGuideIcon.clear();
 
 	Safe_Release(m_pBackGround);
 }

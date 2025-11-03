@@ -21,7 +21,7 @@ public:
 	}BODY_DESC;
 
 public:
-	_float3					Get_ThrowPoint();
+	_float3					Get_BonePoint(const _char* BoneName);
 
 private:
 	CBody_Yetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

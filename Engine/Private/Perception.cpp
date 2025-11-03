@@ -36,6 +36,7 @@ void CPerception::Update(CGameObject* pOwner, _float fTimeDelta)
 
 
 	Forget();
+	Forget_Damage();
 
 }
 
@@ -119,7 +120,7 @@ void CPerception::Check_Sight(CGameObject* pOwner)
 	STIMULUS Stim;
 	Stim.eType = SENSETYPE::SIGHT;
 	XMStoreFloat3(&Stim.vLocation, vTargetPos);
-	Stim.dTimeStamp = m_fCurrnetTime;
+	Stim.fTimeStamp = m_fCurrnetTime;
 	Stim.fStrength = 1.f;
 	Stim.bSensed = true;
 	Stim.fVaildTime = m_tSightDesc.fLoseSightTime;
@@ -145,6 +146,9 @@ void CPerception::Notify_Damage(CGameObject* pAttacker, const STIMULUS& Stim)
 	Perceived.fLastUpdated = m_fCurrnetTime;
 	Perceived.isCurrentlySensed = Stim.bSensed;
 
+	m_DamageHistory.push_back(Stim);
+	m_fDamageAcc += Stim.fStrength;
+
 	if (m_PerceptionCallBack)
 		m_PerceptionCallBack(pAttacker, Stim);
 }
@@ -154,10 +158,10 @@ void CPerception::Forget()
 	// ¸Á°¢
 	for (auto iter = m_Perceived.begin(); iter != m_Perceived.end(); )
 	{
-		bool bHasValidStim = false;
+		_bool bHasValidStim = false;
 		for (auto& Pair : iter->second.LastStimulus)
 		{
-			if (m_fCurrnetTime - Pair.second.dTimeStamp < Pair.second.fVaildTime)
+			if (m_fCurrnetTime - Pair.second.fTimeStamp < Pair.second.fVaildTime)
 				bHasValidStim = true;
 		}
 
@@ -169,7 +173,7 @@ void CPerception::Forget()
 				STIMULUS loseStim;
 				loseStim.eType = SENSETYPE::SIGHT;
 				loseStim.bSensed = false;
-				loseStim.dTimeStamp = m_fCurrnetTime;
+				loseStim.fTimeStamp = m_fCurrnetTime;
 				m_PerceptionCallBack(iter->first, loseStim);
 			}
 
@@ -178,6 +182,31 @@ void CPerception::Forget()
 		else
 			++iter;
 	}
+
+}
+
+void CPerception::Forget_Damage()
+{
+	_float fNow = m_fCurrnetTime;
+	while (!m_DamageHistory.empty())
+	{
+		const STIMULUS& Front = m_DamageHistory.front();
+		if (fNow - Front.fTimeStamp > Front.fVaildTime)
+		{
+			m_fDamageAcc -= Front.fStrength;
+
+			if (m_PerceptionCallBack)
+			{
+				STIMULUS OutStim = Front;
+				OutStim.bSensed = false;
+				m_PerceptionCallBack(nullptr, OutStim);
+			}
+			m_DamageHistory.pop_front();
+		}
+		else
+			break;
+	}
+
 
 
 }
