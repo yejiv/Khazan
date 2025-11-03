@@ -184,6 +184,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\Blur.cpp" />
     <ClCompile Include="..\Private\Body.cpp" />
     <ClCompile Include="..\private\Bone.cpp" />
+    <ClCompile Include="..\Private\BoneChainPhysic.cpp" />
     <ClCompile Include="..\Private\BTNode.cpp" />
     <ClCompile Include="..\private\Camera.cpp" />
     <ClCompile Include="..\private\Cell.cpp" />
@@ -305,6 +306,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Body.h" />
     <ClInclude Include="..\Public\BodyDrawFilter.h" />
     <ClInclude Include="..\public\Bone.h" />
+    <ClInclude Include="..\Public\BoneChainPhysic.h" />
     <ClInclude Include="..\Public\BTNode.h" />
     <ClInclude Include="..\Public\BTNode_Defines.h" />
     <ClInclude Include="..\public\Camera.h" />

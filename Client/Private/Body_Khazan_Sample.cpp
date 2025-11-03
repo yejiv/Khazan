@@ -1,6 +1,18 @@
 ﻿#include "Body_Khazan_Sample.h"
 #include "Khazan_Sample.h"
 #include "GameInstance.h"
+#include "BoneChainPhysic.h"
+
+static std::vector<int> MakeChainByNames(Engine::CModel* m,
+    std::initializer_list<const char*> names) {
+    std::vector<int> chain;
+    chain.reserve(names.size());
+    for (auto* n : names) {
+        int idx = (_int)m->Get_BoneIndex(n);
+        if (idx >= 0) chain.push_back(idx);
+    }
+    return chain;
+}
 
 CBody_Khazan_Sample::CBody_Khazan_Sample(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CPartObject{ pDevice, pContext }
@@ -59,6 +71,9 @@ HRESULT CBody_Khazan_Sample::Initialize_Clone(void* pArg)
 
     m_fEmissiveIntensity = 1.f;
 #endif
+
+    if (FAILED(Ready_BonePhysics()))
+        return E_FAIL;
 
     return S_OK;
 }
@@ -121,6 +136,9 @@ void CBody_Khazan_Sample::Update(_float fTimeDelta)
 
     m_isFinishedAnimation = m_pModelCom->Play_Animation(fTimeDelta);
 
+    if (m_pBoneChain) m_pBoneChain->SyncRootProxy_PrePhysics(m_pModelCom);
+
+    if (m_pBoneChain) m_pBoneChain->ApplyBodiesToBones_PostPhysics(m_pModelCom);
 
     Update_CombinedMatrix();
 }
@@ -249,6 +267,33 @@ HRESULT CBody_Khazan_Sample::Ready_AnimationEvent()
     m_pModelCom->Register_Event("Effect7", ANIM_EVENT_TRIGGERTYPE::EXIT,        [this]() {Effect7_Exit(); });
     m_pModelCom->Register_Event("Effect7", ANIM_EVENT_TRIGGERTYPE::CONTINUE,    [this]() {Effect7_Continue(); });
 
+    return S_OK;
+}
+
+HRESULT CBody_Khazan_Sample::Ready_BonePhysics()
+{
+    int hairRoot = (_int)m_pModelCom->Get_BoneIndex("Hair_BoneRoot");
+    if (hairRoot >= 0)
+    {
+        // 2) 루트에서 모든 브랜치 체인 수집 (최대 5뎁스, 길이 ≥ 2)
+        auto chains = m_pModelCom->BuildChainsFromRoot(hairRoot, /*maxDepth*/5, /*minLen*/2);
+        m_HairChains.insert(m_HairChains.end(), chains.begin(), chains.end());
+    }
+
+    // 3) BoneChainPhysic 생성
+    if (!m_HairChains.empty())
+    {
+        Engine::CBoneChainPhysic::BCP_BuildDesc build{};
+        build.vBoneChains = m_HairChains;                // 여기!
+        build.ePreset = Engine::CBoneChainPhysic::BCP_PRESET_Hair;
+        build.fCapsuleRadius = 0.02f;
+        build.isTipCCD = true;
+
+        Engine::CBoneChainPhysic::BCP_RuntimeParams params{};
+        // 필요하면 params 튜닝
+
+        m_pBoneChain = m_pGameInstance->CreateBoneChain(m_pModelCom, build, params, ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::HAIR));
+    }
     return S_OK;
 }
 
@@ -397,5 +442,9 @@ void CBody_Khazan_Sample::Free()
     Safe_Release(m_pParentTransform);
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
+
+    if (m_pBoneChain) {
+        Safe_Release(m_pBoneChain);
+    }
 
 }

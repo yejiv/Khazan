@@ -74,20 +74,25 @@ public:
 	_uint				Get_NumMeshes() const { return m_iNumMeshes; }
 	_uint				Get_BoneIndex(const _char* pBoneName);
 	_float4x4*			Get_BoneMatrix(const _char* pBoneName);
+	_float4x4*			Get_BoneMatrix(_int iBoneIndex);
+	_float4x4*			Get_LocalBoneMatrix(_int iBoneIndex);
 	_float4x4*			Get_ContainNameBoneMatrix(const _char* pBoneName);
 	_int				Get_CurAnimIndex() { return m_iCurrentAnimIndex; }
 	_int				Get_AnimIndexByName(const string& strName);
 	string				Get_CurAnimName() { return m_AnimationsSetup[m_iCurrentAnimIndex].strName; }
 	_float*				Get_CurTrackPosition() { return &m_fCurrentTrackPosition; }
+	const vector<_int>&	Get_ChildIndices(_int boneIndex) const;
 
 	void				Set_RootBone(_uint iIndex) { m_iRootBoneIndex = iIndex; }
-	void				Set_OwnerTransform(class CTransform** pTransform) {
-		m_pOwnerTransform = *pTransform;
-		Safe_AddRef(m_pOwnerTransform);
-	}
+	void				Set_OwnerTransform(class CTransform** pTransform);
 	void				Set_OwnerTransform(_float4x4* pMatrix) {
 		m_pOwnerTransformMatrix = pMatrix;
 	}
+
+	_vector Get_BoneWorldRotationQuat(_int iBone) const;
+
+	void Set_BoneLocalRotation(_int iBone, _vector vLocal);
+	void Set_BoneWorldRotation(_int iBone, _vector vWorld);
 
 	vector<_float3>		Get_VerticesPos(_uint iIndex);		//졸트
 	vector<_uint>		Get_Indices(_uint iIndex);			//졸트
@@ -195,6 +200,12 @@ private:
 	inline _bool	Has_State(_uint i) { return (m_iState & i) != 0; }
 	inline _bool	Has_AllStates(_uint i) { return (m_iState & i) == i; }
 	inline void		Clear_State() { m_iState = 0; }
+
+public:
+	inline void DFS_BuildChainsFromRoot(_int cur, _int maxDepth, vector<_int>& path, vector<vector<_int>>& outChains, _int minLen /*=2*/);
+	inline vector<vector<_int>> BuildChainsFromRoot(_int rootBone, _int maxDepth /*=5*/, _int minLen /*=2*/);
+
+
 
 public:
 	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _char* pModelFilePath);

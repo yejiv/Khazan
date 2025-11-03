@@ -49,6 +49,7 @@ void CCamera_Controller::Update(_float fTimeDelta)
 
 HRESULT CCamera_Controller::Ready_ImGui()
 {
+#ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Camera"), [this]() {
 		Ready_ImGui_Create();
 		Ready_ImGui_List();
@@ -59,6 +60,7 @@ HRESULT CCamera_Controller::Ready_ImGui()
 		Ready_Guizmo();
 		Ready_Level();
 		});
+#endif
 	return S_OK;
 }
 
