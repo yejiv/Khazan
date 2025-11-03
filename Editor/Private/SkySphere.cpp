@@ -47,46 +47,6 @@ void CSkySphere::Update(_float fTimeDelta)
     //m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
 
     m_fTimeAcc += fTimeDelta;
-
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
-        m_SkyDesc.vNebulaColor.x += 0.01f;
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
-        m_SkyDesc.vNebulaColor.y += 0.01f;
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD3))
-        m_SkyDesc.vNebulaColor.z += 0.01f;
-
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD4))
-        m_SkyDesc.vNebulaColor.x -= 0.01f;
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD5))
-        m_SkyDesc.vNebulaColor.y -= 0.01f;
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD6))
-        m_SkyDesc.vNebulaColor.z -= 0.01f;
-
-    if (m_pGameInstance->Key_Down(DIK_NUMPADMINUS))
-        m_SkyDesc.fStarStrength -= 0.1f;
-    if (m_pGameInstance->Key_Down(DIK_NUMPADPLUS))
-        m_SkyDesc.fStarStrength += 0.1f;
-
-    if (m_pGameInstance->Key_Down(DIK_MINUS))
-        m_SkyDesc.fMoonSize -= 0.01f;
-    if (m_pGameInstance->Key_Down(DIK_EQUALS))
-        m_SkyDesc.fMoonSize += 0.01f;
-
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD7))
-        m_SkyDesc.fMoonIntensity -= 0.01f;
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD9))
-        m_SkyDesc.fMoonIntensity += 0.01f;
-
-    if (0.f > m_SkyDesc.vNebulaColor.x) m_SkyDesc.vNebulaColor.x = 0.f;
-    if (0.f > m_SkyDesc.vNebulaColor.y) m_SkyDesc.vNebulaColor.y = 0.f;
-    if (0.f > m_SkyDesc.vNebulaColor.z) m_SkyDesc.vNebulaColor.z = 0.f;
-
-    if (1.f < m_SkyDesc.vNebulaColor.x) m_SkyDesc.vNebulaColor.x = 1.f;
-    if (1.f < m_SkyDesc.vNebulaColor.y) m_SkyDesc.vNebulaColor.y = 1.f;
-    if (1.f < m_SkyDesc.vNebulaColor.z) m_SkyDesc.vNebulaColor.z = 1.f;
-
-    if (0.f > m_SkyDesc.fStarStrength)
-        m_SkyDesc.fStarStrength = 0.f;
 }
 
 void CSkySphere::Late_Update(_float fTimeDelta)
@@ -101,7 +61,7 @@ HRESULT CSkySphere::Render()
 
     m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4));
 
-    _uint iNumMeshes = m_pModelCom[SKY]->Get_NumMeshes();
+    _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
     for (_uint i = 0; i < iNumMeshes; ++i)
     {
@@ -109,20 +69,7 @@ HRESULT CSkySphere::Render()
 
         CHECK_FAILED_ASSERT(m_pShaderCom->Begin(1), E_FAIL);
 
-        CHECK_FAILED_ASSERT(m_pModelCom[SKY]->Render(i), E_FAIL);
-    }
-
-    iNumMeshes = m_pModelCom[CLOUD]->Get_NumMeshes();
-
-    for (_uint i = 0; i < 0/*iNumMeshes*/; ++i)
-    {
-        CHECK_FAILED_ASSERT(Bind_Cloud_ShaderResources(), E_FAIL);
-
-        m_pShaderCom->Bind_RawValue("g_fTime", &m_fTimeAcc, sizeof(_float));
-
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(2), E_FAIL);
-
-        CHECK_FAILED_ASSERT(m_pModelCom[CLOUD]->Render(i), E_FAIL);
+        CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
 
     return S_OK;
@@ -138,30 +85,10 @@ HRESULT CSkySphere::Ready_Components(void* pArg)
         return E_FAIL;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(pDesc->eLevel), TEXT("Prototype_Component_Model_SkyMesh"),
-        TEXT("Com_Model_Sky"), reinterpret_cast<CComponent**>(&m_pModelCom[SKY]), nullptr)))
-        return E_FAIL;
-
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(pDesc->eLevel), TEXT("Prototype_Component_Model_CloudMesh"),
-        TEXT("Com_Model_Cloud"), reinterpret_cast<CComponent**>(&m_pModelCom[CLOUD]), nullptr)))
+        TEXT("Com_Model_Sky"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
 
 #pragma region 구 스카이 관련 텍스쳐들
-    /* Prototype_Component_Texture_Cloud_LookUp */
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(pDesc->eLevel), TEXT("Prototype_Component_Texture_Cloud_LookUp"),
-        TEXT("Com_Texture_Gradation"), reinterpret_cast<CComponent**>(&m_pTextureCom[DISTANCE_GRADATION]), nullptr)))
-        return E_FAIL;
-    /* Prototype_Component_Texture_Cloud_LookUp */
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(pDesc->eLevel), TEXT("Prototype_Component_Texture_Cloud_LookUp"),
-        TEXT("Com_Texture_LookUp"), reinterpret_cast<CComponent**>(&m_pTextureCom[LOOKUP]), nullptr)))
-        return E_FAIL;
-    /* Prototype_Component_Texture_Cloud_Normal */
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(pDesc->eLevel), TEXT("Prototype_Component_Texture_Cloud_Normal"),
-        TEXT("Com_Texture_Normal"), reinterpret_cast<CComponent**>(&m_pTextureCom[NORMAL]), nullptr)))
-        return E_FAIL;
-    /* Prototype_Component_Texture_Cloud_Distortion */
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(pDesc->eLevel), TEXT("Prototype_Component_Texture_Cloud_Distortion"),
-        TEXT("Com_Texture_Distortion"), reinterpret_cast<CComponent**>(&m_pTextureCom[DISTORTION]), nullptr)))
-        return E_FAIL;
     /* Prototype_Component_Texture_Sky_Nebula */
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(pDesc->eLevel), TEXT("Prototype_Component_Texture_Sky_Nebula"),
         TEXT("Com_Texture_Nebula"), reinterpret_cast<CComponent**>(&m_pTextureCom[NEBULA]), nullptr)))
@@ -214,16 +141,6 @@ HRESULT CSkySphere::Bind_Sky_ShaderResources()
     return S_OK;
 }
 
-HRESULT CSkySphere::Bind_Cloud_ShaderResources()
-{
-    m_pTextureCom[DISTANCE_GRADATION]->Bind_Shader_Resource(m_pShaderCom, "g_GradationTexture", 0);
-    m_pTextureCom[LOOKUP]->Bind_Shader_Resource(m_pShaderCom, "g_LookUpTexture", 0);
-    m_pTextureCom[NORMAL]->Bind_Shader_Resource(m_pShaderCom, "g_NormalTexture", 0);
-    m_pTextureCom[DISTORTION]->Bind_Shader_Resource(m_pShaderCom, "g_DistortionTexture", 0);
-
-    return S_OK;
-}
-
 CSkySphere* CSkySphere::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     CSkySphere* pInstance = new CSkySphere(pDevice, pContext);
@@ -256,8 +173,7 @@ void CSkySphere::Free()
 
     Safe_Release(m_pShaderCom);
 
-    for (auto& pModelCom : m_pModelCom)
-        Safe_Release(pModelCom);
+    Safe_Release(m_pModelCom);
 
     for (auto& pTex : m_pTextureCom)
         Safe_Release(pTex);

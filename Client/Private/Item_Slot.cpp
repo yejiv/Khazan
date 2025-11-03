@@ -6,6 +6,9 @@
 #include "UI_Inven.h"
 #include "UI_TextBox.h"
 
+#include "ItemInfo_Other.h"
+#include "ItemInfo_Weapon.h"
+
 CItem_Slot::CItem_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Slot{ pDevice, pContext }
 {
@@ -56,6 +59,15 @@ void CItem_Slot::Update_Pos(_int iIndex, _float2 vPos, _float fOffSet, _int iMax
 
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(m_vWorldPos.x - m_iWinSizeX * 0.5f, -m_vWorldPos.y + m_iWinSizeY * 0.5f, 0.f, 1.f));
     __super::Update_Transform(nullptr, m_vWorldPos);
+}
+
+_bool CItem_Slot::On_Selete()
+{
+    if (m_iItemIndex < 0)
+        return false;
+
+    m_bIsSelete = true;
+    return true;
 }
 
 _bool CItem_Slot::Off_Selete()
@@ -141,14 +153,11 @@ void CItem_Slot::Late_Update(_float fTimeDelta)
     
     //if (ButtonClick(g_hWnd, false, true))
     //    Release_Item();
-    //if (ButtonClick(g_hWnd, true, true))
 
-    if (__super::IsPick(g_hWnd))
-    {
-        if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
-            Selete_Item();
-    }
-    if (m_bIsSelete && m_pGameInstance->Key_Down(DIK_F))
+    if (m_iItemIndex > -1 && ButtonClick(g_hWnd, false, true))
+        Selete_Item();
+
+    if (m_bIsSelete && m_pGameInstance->Key_Down(DIK_F, INPUT_TYPE::UI))
         Equip_Item();
 
     if (m_iState == ENUM_CLASS(UISTATE::ENABLE))
@@ -156,17 +165,34 @@ void CItem_Slot::Late_Update(_float fTimeDelta)
         if (ButtonOver(g_hWnd))
         {
             m_pOverFx->Late_Update(fTimeDelta);
+            Render_ItemInfo();
         }
         if (m_bIsSelete)
         {
             m_pSeleteFx->Late_Update(fTimeDelta);
+            Render_ItemInfo();
         }
         m_pIcon->Late_Update(fTimeDelta);
     }
 
     if (m_bIsEquip)
+    {
         m_pEquipIcon->Late_Update(fTimeDelta);
+        if (m_iItemIndex < 0)
+            return;
 
+        const ITEM_DATA* pData = CClientInstance::GetInstance()->Get_Data<ITEM_DATA>(m_iItemIndex);
+
+        if (m_iItemIndex > 0 && pData->iType > 3)
+        {
+            CItemInfo_Weapon::WEAPONINFO_DESC Desc = {};
+            Desc.iItemIndex = m_iItemIndex;
+            Desc.iOffsetPos = { 1230.f, 595.f };
+            Desc.isEquip = m_bIsEquip;
+            CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("ItemInfo_Equip"), &Desc);
+
+        }
+    }
     if (m_iItemIndex >= 0 && m_pTextBox != nullptr)
     {
         m_pTextBox->Set_Text(to_wstring(m_iItemCount));
@@ -317,17 +343,17 @@ void CItem_Slot::Update_State(_uint iGrade)
 
     switch (iGrade)
     {
+    case 0: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_02_Common.png", m_iTexPass);
+        return;
     case 1: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_03_UnCommon.png", m_iTexPass);
         return;
-    case 2: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_02_Common.png", m_iTexPass);
+    case 2: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_04_Rare.png", m_iTexPass);
         return;
-    case 3: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_04_Rare.png", m_iTexPass);
+    case 3: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_05_Unique.png", m_iTexPass);
         return;
-    case 4: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_05_Unique.png", m_iTexPass);
+    case 4: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_06_Legendary.png", m_iTexPass);
         return;
-    case 5: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_06_Legendary.png", m_iTexPass);
-        return;
-    case 6: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_07_Epic.png", m_iTexPass);
+    case 5: m_vUV[ENUM_CLASS(UISTATE::ENABLE)] = CClientInstance::GetInstance()->Get_AtlasUV("T_Slot_Inven_07_Epic.png", m_iTexPass);
         return;
     }
 
@@ -335,7 +361,7 @@ void CItem_Slot::Update_State(_uint iGrade)
 
 void CItem_Slot::Selete_Item()
 {
-    m_bIsSelete ? m_bIsSelete = false : m_bIsSelete = true;
+    m_bIsSelete = true;
 
     CUI_Inven::INVENBUBBLE_DESC Desc = {};
     Desc.eBubbleType = CUI_Inven::EVENT_TYPE::ITEM_SELETE;
@@ -366,6 +392,34 @@ void CItem_Slot::Release_Item()
     m_iItemMaxCount = 0;
     m_iItemCount = 0;
     Update_State();
+}
+
+void CItem_Slot::Render_ItemInfo()
+{
+    if (m_iItemIndex < 0)
+        return;
+
+    const ITEM_DATA* pData = CClientInstance::GetInstance()->Get_Data<ITEM_DATA>(m_iItemIndex);
+
+    if (pData->iType <= 3)
+    {
+        CItemInfo_Other::OTHERINFO_DESC Desc = {};
+        Desc.iItemIndex = m_iItemIndex;
+        Desc.iOffsetPos = { 780.f, 511.f };
+        Desc.isEquip = m_bIsEquip;
+        Desc.iMaxItem = m_iItemMaxCount;
+        Desc.iCurItem = m_iItemCount;
+        CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("ItemInfo_Other"), &Desc);
+
+    }
+    else
+    {
+        CItemInfo_Weapon::WEAPONINFO_DESC Desc = {};
+        Desc.iItemIndex = m_iItemIndex;
+        Desc.iOffsetPos = { 780.f, 595.f };
+        Desc.isEquip = m_bIsEquip;
+        CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("ItemInfo_Weapon"), &Desc);
+    }
 }
 
 CItem_Slot* CItem_Slot::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)

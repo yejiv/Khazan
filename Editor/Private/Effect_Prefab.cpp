@@ -2,6 +2,9 @@
 #include "Effect_Point_Instance.h"
 #include "Effect_Sprite.h"
 #include "Effect_Mesh_Instance.h"
+#include "MeshTrail.h"
+#include "LineTrail.h"
+#include "ScreenTrail.h"
 #include "GameInstance.h"
 
 CEffect_Prefab::CEffect_Prefab(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
@@ -32,11 +35,22 @@ HRESULT CEffect_Prefab::Initialize_Prototype()
     m_PrevTrackIdx = -1;
     m_TrackIdx = 0;
 
+    //trail test
+    //m_pLineTrail = static_cast<CLineTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_LineTrail"), nullptr));
+    CScreenTrail::LINE_TRAIL_DESC dsc;
+    dsc.fOffset = 10.f;
+    dsc.fLifeTime = 0.2f;
+    //offset default : 8.f;
+    //lifetime default : 0.4;
+    m_pScreenTrail = static_cast<CScreenTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_ScreenTrail"), &dsc));
+    //m_pMeshTrail = CMeshTrail::Create(m_pDevice, m_pContext, nullptr);
+
     return S_OK;
 }
 
 HRESULT CEffect_Prefab::Initialize_Clone(void* pArg)
 {
+
     return S_OK;
 }
 
@@ -107,6 +121,10 @@ void CEffect_Prefab::Priority_Update(_float fTimeDelta)
     //if (flag)
     //    m_fCurTime += fTimeDelta;
 
+    /* Trail Test */
+    //m_pLineTrail->Priority_Update(fTimeDelta);
+    //m_pMeshTrail->Priority_Update(fTimeDelta);
+    m_pScreenTrail->Priority_Update(fTimeDelta);
 }
 
 void CEffect_Prefab::Update(_float fTimeDelta)
@@ -132,6 +150,26 @@ void CEffect_Prefab::Update(_float fTimeDelta)
                 break;
         m_bPlaying = false;
     }
+
+    /* Trail Test */
+
+    //if (m_pGameInstance->Key_Pressing(DIK_Q, fTimeDelta))
+
+    //m_pLineTrail->Add_ControlPoint(m_pTransformCom->Get_State(STATE::POSITION));
+    //m_pLineTrail->Update(fTimeDelta);
+    //m_pMeshTrail->Add_ControlPoint(m_pTransformCom->Get_State(STATE::POSITION), XMVectorSetY(m_pTransformCom->Get_State(STATE::POSITION), XMVectorGetY(m_pTransformCom->Get_State(STATE::POSITION)) + 2.f));
+    //m_pMeshTrail->Update(fTimeDelta);
+
+    
+    POINT ptMouse{};
+    GetCursorPos(&ptMouse);
+    ScreenToClient(g_hWnd, &ptMouse);
+    
+    if (m_pGameInstance->Key_Pressing(DIK_Q, fTimeDelta))
+        int a = 0;
+    
+    m_pScreenTrail->Add_ControlPoint(ptMouse);
+    m_pScreenTrail->Update(fTimeDelta);
 }
 
 void CEffect_Prefab::Late_Update(_float fTimeDelta)
@@ -141,6 +179,11 @@ void CEffect_Prefab::Late_Update(_float fTimeDelta)
         if (child->IsActive())
             child->Late_Update(fTimeDelta);
     }
+
+    /* Trail Test */
+    //m_pLineTrail->Late_Update(fTimeDelta);
+    //m_pMeshTrail->Late_Update(fTimeDelta);
+    m_pScreenTrail->Late_Update(fTimeDelta);
 }
 
 HRESULT CEffect_Prefab::Render()
@@ -457,6 +500,10 @@ void CEffect_Prefab::Free()
 
     for (auto& elements : m_Children)
         Safe_Release(elements);
+
+    Safe_Release(m_pLineTrail);
+    Safe_Release(m_pMeshTrail);
+    Safe_Release(m_pScreenTrail);
 }
 
 

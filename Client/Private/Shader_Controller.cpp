@@ -17,7 +17,9 @@ CShader_Controller::CShader_Controller()
 HRESULT CShader_Controller::Initialize()
 {
 	m_CascadeConfig.Splits.resize(m_iNumCascades);
+#ifdef _DEBUG
 	m_CascadeConfig = m_pGameInstance->Get_CascadeConfig();
+#endif
 	m_SSAOConfig = m_pGameInstance->Get_SSAOConfig();
 	m_FogConfig = m_pGameInstance->Get_FogConfig();
 	m_iNumCascades = m_pGameInstance->Get_NumCascades();
@@ -36,6 +38,7 @@ void CShader_Controller::Update(_float fTimeDelta)
 
 void CShader_Controller::Ready_Level()
 {
+#ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Shader"), [&]()
 		{
 			ImGui::Begin("Select Level");
@@ -75,10 +78,12 @@ void CShader_Controller::Ready_Level()
 
 			ImGui::End();
 		});
+#endif
 }
 
 void CShader_Controller::Ready_Shader()
 {
+#ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Shader"), [&]()
 		{
 			ImGui::Begin("Shader Settings");
@@ -338,6 +343,7 @@ void CShader_Controller::Ready_Shader()
 
 			ImGui::End();
 		});
+#endif
 }
 
 CShader_Controller* CShader_Controller::Create()

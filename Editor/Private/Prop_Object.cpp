@@ -46,7 +46,7 @@ void CProp_Object::Update(_float fTimeDelta)
         else
             m_eShaderPass = SHADER_PASS::SNOWMAP;
     }
-    else
+    else if (false == (m_Properties.isCollider && m_Properties.isBackGround))
     {
         if (true == m_Properties.isIce)
             m_eShaderPass = SHADER_PASS::MAP_ICE;
@@ -172,6 +172,22 @@ HRESULT CProp_Object::Bind_Materials(_uint iMeshIndex)
     _bool isNormal = { false };
     _bool isEmissive = { false };
     _bool isSpecular = { false };
+
+    if (true == (m_Properties.isCollider && m_Properties.isBackGround))
+    {
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0);
+
+        isNormal = false;
+        isSpecular = false;
+        isEmissive = false;
+
+        m_pShaderCom->Bind_RawValue("g_isDiffuse", &isDiffuse, sizeof(_bool));
+        m_pShaderCom->Bind_RawValue("g_isNormal", &isNormal, sizeof(_bool));
+        m_pShaderCom->Bind_RawValue("g_isEmissive", &isEmissive, sizeof(_bool));
+        m_pShaderCom->Bind_RawValue("g_isSpecular", &isSpecular, sizeof(_bool));
+
+        return S_OK;
+    }
 
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0)))
         isDiffuse = true;
