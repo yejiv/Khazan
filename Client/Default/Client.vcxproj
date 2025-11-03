@@ -222,12 +222,14 @@
     <ClInclude Include="..\Public\Level_HeinMach.h" />
     <ClInclude Include="..\Public\Level_Title.h" />
     <ClInclude Include="..\Public\Level_Viper.h" />
+    <ClInclude Include="..\Public\LineTrail.h" />
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\MainMenu_Deco.h" />
     <ClInclude Include="..\public\MainMenu_List.h" />
     <ClInclude Include="..\Public\MapObject.h" />
     <ClInclude Include="..\Public\MapObject_Header.h" />
+    <ClInclude Include="..\Public\MeshTrail.h" />
     <ClInclude Include="..\Public\Monster.h" />
     <ClInclude Include="..\public\Mon_HP.h" />
     <ClInclude Include="..\public\Mon_Gague.h" />
@@ -245,6 +247,7 @@
     </ClInclude>
     <ClInclude Include="..\Public\Prop_Static.h" />
     <ClInclude Include="..\Public\Prop_Test.h" />
+    <ClInclude Include="..\Public\ScreenTrail.h" />
     <ClInclude Include="..\Public\Sequence_Dummy.h" />
     <ClInclude Include="..\Public\Shader_Controller.h" />
     <ClInclude Include="..\Public\Sky.h" />
@@ -355,11 +358,13 @@
     <ClCompile Include="..\Private\Level_HeinMach.cpp" />
     <ClCompile Include="..\Private\Level_Title.cpp" />
     <ClCompile Include="..\Private\Level_Viper.cpp" />
+    <ClCompile Include="..\Private\LineTrail.cpp" />
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\private\MainMenu_Deco.cpp" />
     <ClCompile Include="..\private\MainMenu_List.cpp" />
     <ClCompile Include="..\Private\MapObject.cpp" />
+    <ClCompile Include="..\Private\MeshTrail.cpp" />
     <ClCompile Include="..\Private\Monster.cpp" />
     <ClCompile Include="..\private\Mon_HP.cpp" />
     <ClCompile Include="..\private\Mon_Gague.cpp" />
@@ -377,6 +382,7 @@
     </ClCompile>
     <ClCompile Include="..\Private\Prop_Static.cpp" />
     <ClCompile Include="..\Private\Prop_Test.cpp" />
+    <ClCompile Include="..\Private\ScreenTrail.cpp" />
     <ClCompile Include="..\Private\Sequence_Dummy.cpp" />
     <ClCompile Include="..\Private\Shader_Controller.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />

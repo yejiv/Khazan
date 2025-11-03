@@ -50,6 +50,7 @@ HRESULT CMainApp::Initialize()
 	if (FAILED(Ready_ObjectLayer()))
 		return E_FAIL;
 
+	CHECK_FAILED(Ready_Prototype_ForStatic_Effect(), E_FAIL);
 	CHECK_FAILED(Ready_DB(), E_FAIL);
 	CHECK_FAILED(Ready_Font(), E_FAIL);
 	CHECK_FAILED(Ready_DebugTool(), E_FAIL);
@@ -356,6 +357,25 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	return S_OK;
 }
 
+HRESULT CMainApp::Ready_Prototype_ForStatic_Effect()
+{
+	/* Prototype_Component_VIBuffer_LineTrail */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_LineTrail"),
+		CVIBuffer_LineTrail::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_Component_VIBuffer_QuadTrail */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_MeshTrail"),
+		CVIBuffer_QuadTrail::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_Component_Texture_Trail */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Slash"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/SowardTrailTexture/Slash_%d.png"), 22)), E_FAIL);
+
+	return S_OK;
+}
+
 HRESULT CMainApp::Ready_Font()
 {
 	CHECK_FAILED(m_pGameInstance->Font_Load_Data("../Bin/Data/Font/FontData.json"), E_FAIL);
@@ -425,6 +445,7 @@ HRESULT CMainApp::Start_Level(LEVEL eStartLevelID)
 {
 	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, eStartLevelID))))
 		return E_FAIL;
+
 
 	return S_OK;
 }

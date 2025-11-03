@@ -40,6 +40,8 @@ HRESULT CEffect_Prefab::Initialize_Prototype()
     CScreenTrail::LINE_TRAIL_DESC dsc;
     dsc.fOffset = 10.f;
     dsc.fLifeTime = 0.2f;
+    dsc.iDivisionCount = 1.f;
+    dsc.iTextureIdx = 0;
     //offset default : 8.f;
     //lifetime default : 0.4;
     m_pScreenTrail = static_cast<CScreenTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_ScreenTrail"), &dsc));
