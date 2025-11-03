@@ -612,6 +612,7 @@ namespace Engine
 		void		Delete_Flag(unsigned int iFlag) { iDirFlag &= ~iFlag; }
 		void		Clear_Flag() { iDirFlag = 0; }
 		bool		Check_Flag(unsigned int iFlag) { return (iDirFlag & iFlag) != 0; }
+		bool		AllCheck_Flag(unsigned int iFlag) { return (iDirFlag & iFlag) == iFlag; }
 
 		unsigned int iDirFlag = {};
 

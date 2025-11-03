@@ -279,6 +279,11 @@ void CModel::Set_BoneWorldRotation(_int iBone, _vector vWorld)
     Set_BoneLocalRotation(iBone, qLocal);
 }
 
+_float CModel::Get_CurDuration()
+{
+    return m_Animations[m_iCurrentAnimIndex]->Get_Duration();
+}
+
 vector<_float3> CModel::Get_VerticesPos(_uint iIndex)
 {
     return m_Meshes[iIndex]->Get_VerticesPos();
