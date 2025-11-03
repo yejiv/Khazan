@@ -10,6 +10,10 @@ CEditor_Animation::CEditor_Animation()
     m_CurrentKeyFrameIndices.clear();
 }
 
+CEditor_Animation::CEditor_Animation(const CEditor_Animation& Prototype)
+{
+}
+
 HRESULT CEditor_Animation::Initialize(const aiAnimation* pAIAnimation, const vector<class CEditor_Bone*>& Bones)
 {
     m_strName = string(pAIAnimation->mName.C_Str());
