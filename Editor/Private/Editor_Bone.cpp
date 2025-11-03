@@ -4,6 +4,10 @@ CEditor_Bone::CEditor_Bone()
 {
 }
 
+CEditor_Bone::CEditor_Bone(const CEditor_Bone& Prototype)
+{
+}
+
 HRESULT CEditor_Bone::Initialize(const aiNode* pAINode, _int iParentBoneIndex)
 {
 	strcpy_s(m_szName, pAINode->mName.data);
