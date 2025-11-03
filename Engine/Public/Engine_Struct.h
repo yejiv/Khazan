@@ -13,6 +13,7 @@ namespace Engine
 		unsigned int	iWinSizeX, iWinSizeY;
 		unsigned int	iNumLevels;
 		unsigned int	iNumJoltObjectLayer;
+		unsigned int	iNumDecals;
 
 		unsigned int	iWinSizeX_Imgui, iWinSizeY_Imgui;
 		list<wstring>	Menu_Imgui;
@@ -210,6 +211,14 @@ namespace Engine
 		float		fIntensity;
 		float		fMaxIntensity;
 	}VIGNETTE_CONFIG;
+
+	typedef struct tagDecalParams
+	{
+		XMFLOAT4X4	vWorldMarixInv;
+		float		fOpacity;
+		float		fLifeRatio;
+		float		fPadding[2];
+	}DECAL_PARAMS;
 
 	struct HitStopState
 	{

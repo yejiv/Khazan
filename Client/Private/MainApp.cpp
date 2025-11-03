@@ -22,6 +22,7 @@ HRESULT CMainApp::Initialize()
 	EngineDesc.iWinSizeX_Imgui = g_iWinSizeX_Imgui;
 	EngineDesc.iWinSizeY_Imgui = g_iWinSizeY_Imgui;
 	EngineDesc.iNumJoltObjectLayer = ENUM_CLASS(COLLISION_LAYER::END);
+	EngineDesc.iNumDecals = 10;
 
 	list<_wstring> Imgui_Menu;
 	Imgui_Menu.push_back(TEXT("Client"));

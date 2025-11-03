@@ -115,6 +115,70 @@ _bool CPicking::isPicked(_float3* pOut, _uint* iObjectID)
     return true;
 }
 
+_bool CPicking::isPicked(_float3* pOutPosition, _float3* pOutNormal)
+{
+    if (FAILED(m_pGameInstance->Copy_RT_Resource(TEXT("Target_World"), m_pTexture2D)))
+        return false;
+
+    D3D11_MAPPED_SUBRESOURCE        SubResource{};
+    if (FAILED(m_pContext->Map(m_pTexture2D, 0, D3D11_MAP_READ, 0, &SubResource)))
+        return false;
+
+    memcpy(m_pPixels, SubResource.pData, sizeof(_float4) * m_iWinSizeX * m_iWinSizeY);
+
+    m_pContext->Unmap(m_pTexture2D, 0);
+
+    GetCursorPos(&m_ptMouse);
+    ScreenToClient(m_hWnd, &m_ptMouse);
+
+    if (0 > m_ptMouse.x || static_cast<_long>(m_iWinSizeX) < m_ptMouse.x || 0 > m_ptMouse.y || static_cast<_long>(m_iWinSizeY) < m_ptMouse.y)
+        return false;
+
+    _uint       iIndex = m_ptMouse.y * m_iWinSizeX + m_ptMouse.x;
+
+    if (0.0f == m_pPixels[iIndex].x && 0.0f == m_pPixels[iIndex].y && 0.0f == m_pPixels[iIndex].z && 0.0f == m_pPixels[iIndex].w)
+        return false;
+
+    _vector     vPosition = { m_pPixels[iIndex].x, m_pPixels[iIndex].y, m_pPixels[iIndex].z, 1.f };
+
+    XMStoreFloat3(pOutPosition, vPosition);
+
+    // Normal
+    if (FAILED(m_pGameInstance->Copy_RT_Resource(TEXT("Target_Normal"), m_pTexture2D)))
+        return false;
+
+    if (FAILED(m_pContext->Map(m_pTexture2D, 0, D3D11_MAP_READ, 0, &SubResource)))
+        return false;
+
+    // RowPitch 고려해서 해당 픽셀 위치로 접근
+    BYTE* pRow0 = reinterpret_cast<BYTE*>(SubResource.pData);
+    size_t pixelBytes = 8; // R16G16B16A16_UNORM → 4채널 * 2바이트 = 8바이트
+    BYTE* pPixelAddr = pRow0 + (size_t)m_ptMouse.y * SubResource.RowPitch + (size_t)m_ptMouse.x * pixelBytes;
+
+    // 픽셀 데이터 해석
+    WORD* pUShort = reinterpret_cast<WORD*>(pPixelAddr);
+
+    // 0~1 범위 복원
+    _float nx = pUShort[0] / 65535.0f;
+    _float ny = pUShort[1] / 65535.0f;
+    _float nz = pUShort[2] / 65535.0f;
+
+    // Unmap
+    m_pContext->Unmap(m_pTexture2D, 0);
+
+    // 0~1 → -1~1 언팩
+    _float3 vNormal;
+    vNormal.x = nx * 2.0f - 1.0f;
+    vNormal.y = ny * 2.0f - 1.0f;
+    vNormal.z = nz * 2.0f - 1.0f;
+
+    // 정규화 (반드시)
+    _vector vN = XMVector3Normalize(XMLoadFloat3(&vNormal));
+    XMStoreFloat3(pOutNormal, vN);
+
+    return true;
+}
+
 _float4 CPicking::isPickRenderTargetPixel(_wstring strRenderTargetTag)
 {
     if (FAILED(m_pGameInstance->Copy_RT_Resource(strRenderTargetTag, m_pTexture2D)))

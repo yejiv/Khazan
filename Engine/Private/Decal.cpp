@@ -34,7 +34,8 @@ void CDecal::Update(_float fTimeDelta)
 	// 수명이 끝나면 사망 처리 -> 풀
 	if (m_fTimeAcc >= m_fLifeTime)
 	{
-		Set_IsDead(true);
+		//	Set_IsDead(true);
+		m_isDead = true;
 		m_fOpacity = 0.f;
 		return;
 	}
