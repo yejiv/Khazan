@@ -286,6 +286,8 @@
     <ClInclude Include="..\public\UI_Guide_Gauge.h" />
     <ClInclude Include="..\public\UI_HUD.h" />
     <ClInclude Include="..\public\UI_Inven.h" />
+    <ClInclude Include="..\public\UI_Loading.h" />
+    <ClInclude Include="..\public\UI_Loading_Panel.h" />
     <ClInclude Include="..\public\UI_Logo.h" />
     <ClInclude Include="..\public\UI_Logo_List.h" />
     <ClInclude Include="..\public\UI_MainMenu.h" />
@@ -443,6 +445,8 @@
     <ClCompile Include="..\private\UI_Guide_Gauge.cpp" />
     <ClCompile Include="..\private\UI_HUD.cpp" />
     <ClCompile Include="..\private\UI_Inven.cpp" />
+    <ClCompile Include="..\private\UI_Loading.cpp" />
+    <ClCompile Include="..\private\UI_Loading_Panel.cpp" />
     <ClCompile Include="..\private\UI_Logo.cpp" />
     <ClCompile Include="..\private\UI_Logo_List.cpp" />
     <ClCompile Include="..\private\UI_MainMenu.cpp" />

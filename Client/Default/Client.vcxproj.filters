@@ -520,6 +520,12 @@
     <Filter Include="94.ClientInstance\UI_Manager\Fade">
       <UniqueIdentifier>{b60d75a1-371a-458f-b0af-b6cc6e55d7a9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Loding">
+      <UniqueIdentifier>{06f1141d-ce71-46a9-a4e8-97eb5fcb7624}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Loding\Panel">
+      <UniqueIdentifier>{fc470073-a7db-486d-bf55-71597800c6c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -990,6 +996,12 @@
     <ClInclude Include="..\Public\AS_Dead_Yetuga.h">
       <Filter>92.AI\State\Yetuga\16.Dead</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\UI_Loading.h">
+      <Filter>02.GameObject\UI\Loding</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Loading_Panel.h">
+      <Filter>02.GameObject\UI\Loding\Panel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1445,6 +1457,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_Dead_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\16.Dead</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Loading.cpp">
+      <Filter>02.GameObject\UI\Loding</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Loading_Panel.cpp">
+      <Filter>02.GameObject\UI\Loding\Panel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

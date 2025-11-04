@@ -158,6 +158,24 @@ PS_OUT PS_COLOR_BG(PS_IN In)
     Out.vColor.a = Out.vColor.a * g_fAlpha;
     return Out;
 }
+
+PS_OUT PS_MASK_BOTTOM(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    if (In.vTexcoord.y < 0.4f)
+        discard;
+    
+    //Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
+    Out.vColor.r = 0.f;
+    Out.vColor.gb = 0.f;
+    float fAlpha = (In.vTexcoord.y - 0.4f) / 0.6f;
+    fAlpha = clamp(fAlpha, 0.0f, 1.f);
+    
+    Out.vColor.a = fAlpha * g_vColor.a * g_fAlpha;
+    
+    return Out;
+}
 technique11 DefaultTechnique
 {
     pass PS_MASK_PASS_0
@@ -209,6 +227,16 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_COLOR_BG();
+    }
+    pass PS_MASK_BOTTOM_5
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MASK_BOTTOM();
     }
 
 }

@@ -15,6 +15,7 @@
 #include "UI_BladeNexus.h"
 #include "UI_State.h"
 #include "UI_Logo.h"
+#include "UI_Loading.h"
 
 //¼­ºê UI
 #include "MainMenu_Deco.h"

@@ -15,12 +15,19 @@
 #pragma endregion
 
 #include "Camera_Free.h"
+#include "UI_Loading.h"
+#include "ClientInstance.h"
 
 CLevel_Loading::CLevel_Loading(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel { pDevice, pContext }
 	, m_pClientInstance { CClientInstance::GetInstance() }
 {
 	Safe_AddRef(m_pClientInstance);
+}
+
+void CLevel_Loading::Complete()
+{
+	m_eLoadingState = LOADING_STATE::NEXTLEVEL;
 }
 
 HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
@@ -35,6 +42,8 @@ HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
 	if (FAILED(Ready_LoadingThread()))
 		return E_FAIL;
 	CClientInstance::GetInstance()->Fade_In();
+	m_pGameInstance->Change_InputType(INPUT_TYPE::UI);
+	static_cast<CUI_Loading*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Loading")))->On_Panel();
 	return S_OK;
 }
 
@@ -42,9 +51,25 @@ void CLevel_Loading::Update(_float fTimeDelta)
 {
 	m_pLoader->Update();
 
-	if (true == m_pLoader->isFinished() && 
-		GetKeyState(VK_SPACE) & 0x8000)
+	if (true == m_pLoader->isFinished() && m_eLoadingState == LOADING_STATE::END)
 	{
+		m_eLoadingState = LOADING_STATE::UI_ON;
+	}
+	else if (m_eLoadingState == LOADING_STATE::UI_ON)
+	{
+		static_cast<CUI_Loading*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Loading")))->Finsh_UI();
+		m_eLoadingState = LOADING_STATE::INPUT;
+	}
+	else if(m_eLoadingState == LOADING_STATE::INPUT && m_pGameInstance->Key_Down(DIK_F, INPUT_TYPE::UI))
+	{
+		CClientInstance::GetInstance()->Fade_Out([this]() {this->Complete(); });
+	}
+	else if (m_eLoadingState == LOADING_STATE::NEXTLEVEL)
+	{
+		m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
+		m_eLoadingState = LOADING_STATE::END;
+
+		static_cast<CUI_Loading*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Loading")))->Off_Panel();
 		if (m_pClientInstance->Get_CurrLevel() != m_eNextLevelID)
 		{
 			m_pClientInstance->Clear_CameraManager(ENUM_CLASS(m_pClientInstance->Get_CurrLevel()));
@@ -60,7 +85,7 @@ void CLevel_Loading::Update(_float fTimeDelta)
 		switch (m_eNextLevelID)
 		{
 		case LEVEL::TITLE:
- 			pNewLevel = CLevel_Title::Create(m_pDevice, m_pContext);
+			pNewLevel = CLevel_Title::Create(m_pDevice, m_pContext);
 			break;
 		case LEVEL::HEINMACH:
 			m_pGameInstance->DeleteOctree();
@@ -80,8 +105,9 @@ void CLevel_Loading::Update(_float fTimeDelta)
 			break;
 		}
 		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(m_eNextLevelID), pNewLevel)))
-			return;		
+			return;
 	}
+
 }
 
 HRESULT CLevel_Loading::Render()

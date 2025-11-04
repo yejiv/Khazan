@@ -116,7 +116,7 @@ HRESULT CLevel_HeinMach::Initialize()
 
 	/*if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
 		return E_FAIL;*/
-
+	CClientInstance::GetInstance()->Fade_Out();
 	while (true) {
 		bool all_ready = true;
 
@@ -156,10 +156,9 @@ HRESULT CLevel_HeinMach::Initialize()
 	}
 	m_futures.clear();
 
-
+	CClientInstance::GetInstance()->Fade_In();
 	//m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); });
 	//m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); });
-	CClientInstance::GetInstance()->Fade_In();
 	return S_OK;
 }
 
@@ -170,6 +169,7 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
 	//	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::GAMEPLAY))))
 	//		return;
 	//}
+
 	if (m_pGameInstance->Key_Down(DIK_Q))
 	{
 		m_pGameInstance->isPickRenderTargetPixel(TEXT("Target_Normal"));
