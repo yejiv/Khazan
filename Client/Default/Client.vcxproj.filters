@@ -969,6 +969,9 @@
     <ClInclude Include="..\Public\AS_Dead_Yetuga.h">
       <Filter>92.AI\State\Yetuga\16.Dead</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\AS_Groggy_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\15.Groggy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1415,6 +1418,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_Dead_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\16.Dead</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Groggy_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\15.Groggy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

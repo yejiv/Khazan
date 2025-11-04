@@ -15,8 +15,6 @@ public:
 	virtual void Update(class CStateMachine* pFSM, class CGameObject* pOwner, _float fTimeDelta) override;
 	virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
-private:
-
 
 public:
 	static CAS_Dead_Yetuga*		Create();

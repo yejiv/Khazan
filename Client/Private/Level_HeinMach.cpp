@@ -49,11 +49,11 @@ HRESULT CLevel_HeinMach::Initialize()
 		return S_OK;
 		}));
 
-	//m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-	//	CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
-	//	HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); 
-	//	return S_OK;
-	//	}));
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
+		HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); 
+		return S_OK;
+		}));
 
 	m_pGameInstance->Add_FireTask([this]() {
 		for (_uint i = 0; i < HEINMACH_SUBLV; ++i)
@@ -71,8 +71,8 @@ HRESULT CLevel_HeinMach::Initialize()
 			//	continue;
 
 			// ì˜ˆíˆ¬ê°€ ë³´ìŠ¤ ë§µ ì„œë¸Œ ë ˆë²¨ ë¡œë“œ ì£¼ì„ í•´ì œí•˜ë©´ ì—¬ê¸°ì„œ ìŠ¤í‚µ
-			//if (HEINMACH_YETUGA == i)
-			//	continue;
+			if (HEINMACH_YETUGA == i)
+				continue;
 			
 			CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), i, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		}
@@ -100,22 +100,27 @@ HRESULT CLevel_HeinMach::Initialize()
 		return S_OK;
 	});
 
-	m_pGameInstance->Add_FireTask([this]() {
-		CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
+	CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
+	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
+		return E_FAIL;
 
-		if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
-			return E_FAIL;
+	CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
+
+	m_pGameInstance->Add_FireTask([this]() {
+
 		return S_OK;
 	});
+	
+	m_pGameInstance->Add_FireTask([this]() {
 
-	//if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
-	//	return E_FAIL;
+		return S_OK;
+		});
+
 
 	if (FAILED(Ready_Layer_TestEffect(TEXT("Layer_EffectTest"))))
 		return E_FAIL;
 
-	/*if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
-		return E_FAIL;*/
+
 
 	while (true) {
 		bool all_ready = true;
@@ -313,7 +318,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Test(const _wstring& strLayerTag)
 
 HRESULT CLevel_HeinMach::Ready_Layer_TestEffect(const _wstring& strLayerTag)
 {
-	//À§Ä¡°ª Å×½ºÆ®ÀÓ cloneÇÒ ¶§ argument ¾È ¹ÞÀ» °Å
+	//ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½×½ï¿½Æ®ï¿½ï¿½ cloneï¿½ï¿½ ï¿½ï¿½ argument ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
 
 	//_float3 test { 1.f, 0.f, 0.f};
 	//
