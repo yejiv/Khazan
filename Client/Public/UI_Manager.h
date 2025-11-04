@@ -23,6 +23,7 @@ public:
 	//UI 관련
 	class CUIObject*			Get_RootUI(const _wstring& szRootUIName);
 	HRESULT						UI_UpdateSwitch(const _wstring& szRootUIName, void* pArg);
+	HRESULT						Add_RootUI(const _wstring& szRootUIName, CUIObject* pUIObject);
 
 	//Event 관련
 	HRESULT						Add_Event(const _wstring& strLayerTag, const _wstring& strEventTag, std::function<void()> Event);

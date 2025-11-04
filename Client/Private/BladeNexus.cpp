@@ -229,16 +229,16 @@ void CBladeNexus::Input_Interact_Event(_float fTimeDelta)
     {
         isPressing = m_pGuide->IsPressing();
     }
-    else if (m_pGameInstance->Key_Down(DIK_N))
-    {
-        EventInteractType InteractType = {};
+    //else if (m_pGameInstance->Key_Down(DIK_N))
+    //{
+    //    EventInteractType InteractType = {};
 
-        InteractType.eState = EventInteractType::END;
+    //    InteractType.eState = EventInteractType::END;
 
-        m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+    //    m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 
-        return;
-    }
+    //    return;
+    //}
 
     if (true == isPressing)
     {
