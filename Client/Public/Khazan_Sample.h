@@ -15,15 +15,43 @@ class CKhazan_Sample final:  public CCreature
 {
 public:
 	enum PLAYER_STATE {
-		IDLE = 1 << 0 ,
+		IDLE = 1 << 0,
 		WALK = 1 << 1,
 		RUN = 1 << 2,
 		MOVING = WALK | RUN,
-		ATTACK_FAST = 1 << 3,
-		ATTACK_SET = 1 << 4,
-		ATTACK_ALL = ATTACK_FAST | ATTACK_SET,
+		ATTACK_FAST = 1 << 3, //약공
+		ATTACK_STRONG = 1 << 4, //강공
+		ATTACK_FULLMOON = 1 << 5, //보름달
+		ATTACK_SHADOW1 = 1 << 6,//그림자 베기  = 강공
+		ATTACK_SPIRAL = 1 << 7,//기본찌르기
+		ATTACK_TWISTE = 1 << 8,//찌르기, 소용돌이
+		ATTACK_STRIKE = 1 << 9, //강습
 
-		END = 1<<5,
+		ATTACK_SOON = 1 << 10, //찰나베기
+		ATTACK_VITALPOINT = 1 << 11, // 급소타격
+		ATTACK_SHADOW2 = 1 << 12,//그림자 참격
+		ATTACK_BRUTAL = 1 << 13, // 브루탈
+		ATTACK_COUNT = 1 << 14, //  카운터   (애니메이션 안넣음)
+
+		ATTACK_ALL =
+		ATTACK_FAST |
+		ATTACK_STRONG |
+		ATTACK_FULLMOON |
+		ATTACK_SHADOW1 |
+		ATTACK_SPIRAL |
+		ATTACK_TWISTE |
+		ATTACK_STRIKE |
+		ATTACK_SOON |
+		ATTACK_VITALPOINT |
+		ATTACK_SHADOW2 |
+		ATTACK_BRUTAL ,
+		//ATTACK_COUNT,
+
+		ATTACK_FAST_ING = 1 << 15,
+		ATTACK_STRING_ING = 1 << 16,
+
+
+		END = 1<<17,
 	};
 
 private:
@@ -53,9 +81,13 @@ public:
 
 	HRESULT RayCast(_float fTimeDelta);
 
-	const _float4x4* Get_BoneSpearFXMatrixPtr() { return &m_SpearFX_WorldMatrix; }
-	_matrix Get_BoneSpearFXMatrix() { return XMLoadFloat4x4(&m_SpearFX_WorldMatrix); }
+	const _float4x4* Get_BoneSpearFX_WorldMatrixPtr() { return &m_SpearFX_WorldMatrix; }
+	_matrix Get_BoneSpearFX_WorldMatrix() { return XMLoadFloat4x4(&m_SpearFX_WorldMatrix); }
 
+	const _float4x4* Get_BoneSpearFX_CombinedMatrixPtr() { return m_pSpearFX_Matrix; }
+	_matrix Get_BoneSpearFX_CombinedMatrix() { return XMLoadFloat4x4(m_pSpearFX_Matrix); }
+
+	_matrix Get_BoneSpearFX_Offset() { return m_SpearOffset_Matrix; }
 
 private:
 	class CBody_Khazan_Sample*	m_pBody = { nullptr };
@@ -74,8 +106,16 @@ private:
 	_bool						m_isEnableControl = { true };
 	_int						m_isMove = {0};
 
+<<<<<<< HEAD
 	//락온 테스트
 	_float4						m_vPos = {};
+=======
+
+	/*  공격 */
+	_uint						m_iFastAttackIndex = { 0 };
+	_uint						m_iStrongAttackIndex = { 0 };
+
+>>>>>>> b2e876d (FEAT : 플레이어 샘플에 공격 스킬 추가)
 #pragma region 상호 작용 맵 오브젝트 이벤트 임시 테스트용
 private:
 	EventInteractType			m_EventInteract = {};				// 트리거 접촉 여부, 이벤트 발생 여부, 상호 작용 타입, 상호 작용 타입들의 구조체

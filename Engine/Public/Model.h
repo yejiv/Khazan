@@ -83,6 +83,7 @@ public:
 	string				Get_CurAnimName() { return m_AnimationsSetup[m_iCurrentAnimIndex].strName; }
 	_float*				Get_CurTrackPosition() { return &m_fCurrentTrackPosition; }
 	const vector<_int>&	Get_ChildIndices(_int boneIndex) const;
+	_float				Get_CurDuration();
 
 	void				Set_RootBone(_uint iIndex) { m_iRootBoneIndex = iIndex; }
 	void				Set_OwnerTransform(class CTransform** pTransform);
@@ -106,6 +107,7 @@ public:
 	void			Set_Animation(_uint iIndex);
 	void			Set_AnimationSet(const string& strKey);
 	void			Set_AnimationLoop(_bool isLoop);
+	_bool			Check_MinAnimationTime() { return m_AnimationsSetup[m_iCurrentAnimIndex].fBlendOutTime <= m_fCurrentTrackPosition; }
 
 	/* rootBone Combined  */
 	void			Update_BoneCombinedMatrices();	
