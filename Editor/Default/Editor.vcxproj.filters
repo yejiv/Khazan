@@ -408,7 +408,7 @@
     <ClInclude Include="..\Public\BladeNexus.h">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\00.BladeNexus</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Map_Trigger.h">
+    <ClInclude Include="..\Public\Trigger.h">
       <Filter>02.GameObject\MapObject\Map_Trigger</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\BigChest.h">
@@ -618,7 +618,7 @@
     <ClCompile Include="..\Private\BladeNexus.cpp">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\00.BladeNexus</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Map_Trigger.cpp">
+    <ClCompile Include="..\Private\Trigger.cpp">
       <Filter>02.GameObject\MapObject\Map_Trigger</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\BigChest.cpp">

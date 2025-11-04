@@ -4,6 +4,9 @@
 // Defines
 #include "Client_Defines.h"
 
+// ClientInstance
+#include "ClientInstance.h"
+
 // Main
 #include "MainApp.h"
 

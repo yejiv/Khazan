@@ -228,6 +228,14 @@ HRESULT CLoader::Loading_For_Map_Level()
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_BigTombStone_Destruct_001/WIP_BGQ_BigTombStone_Destruct_001.dat")), E_FAIL);
 #pragma endregion
 
+#pragma region 트리거 모델 원형 ( 야매? )
+
+	/* Prototype_Component_Model_Trigger */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_Trigger"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Base/Cube/Cube.dat")), E_FAIL);
+
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 쉐이더 원형 로딩
@@ -289,6 +297,10 @@ HRESULT CLoader::Loading_For_Map_Level()
 	/* Prototype_GameObject_Prop_TombStone */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_TombStone"),
 		CTombStone::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	/* Prototype_GameObject_Prop_Trigger */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Trigger"),
+		CTrigger::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 #pragma endregion
