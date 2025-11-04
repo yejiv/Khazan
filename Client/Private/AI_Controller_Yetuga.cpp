@@ -83,23 +83,6 @@ HRESULT CAI_Controller_Yetuga::Ready_Perception(CGameObject* pOwner, const AIPER
 	if (nullptr == m_pPerception)
 		return E_FAIL;
 
-	//m_pPerception->Set_PerceptionCallBack([this](CGameObject* pTarget, const STIMULUS& Stim)
-	//	{
-	//		if (Stim.eType == SENSETYPE::SIGHT)
-	//		{
-	//			if (Stim.bSensed)
-	//			{
-	//				m_pBB->Set_Value("Yetuga", "Target", pTarget);
-	//				m_pBB->Set_Value("Yetuga", "isDetected", true);
-	//			}
-	//			else
-	//			{
-	//				m_pBB->Set_Value("Yetuga", "isDetected", false);
-	//			}
-	//		}
-	//	});
-
-
 	m_pPerception->Set_PerceptionCallBack([this, pOwner, Desc](CGameObject* pTarget, const STIMULUS& Stim)
 		{
 			for (_uint i = 0; i < Desc.CallbackTags.size(); i++)
@@ -162,8 +145,13 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 		return [pYetuga](CBlackBoard* BB)->_bool
 			{
 				HITREACTION eHitRection = static_cast<HITREACTION>(BB->Get_Value<_uint>(pYetuga->Get_Name(), "DamageType"));
-				if (eHitRection == HITREACTION::GROGGY)
+				_float fCurrentStamina = pYetuga->Get_CurrentStamina();
+			
+				if (fCurrentStamina <= 0.f)
+				{
+					eHitRection = HITREACTION::GROGGY;
 					return true;
+				}
 				else
 					return false;
 			};
@@ -215,22 +203,30 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 
 #pragma endregion
 
-
 	if ("IceBreath" == name)
 	{
 		return [pYetuga](CBlackBoard* BB)->_bool
 			{
 
 				_float fDist = BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
-				_float fAttackRanage = BB->Get_Value<_float>(pYetuga->Get_Name(), "ThrowBallRange");
+				_float fAttackRanage = BB->Get_Value<_float>(pYetuga->Get_Name(), "AttackRange");
 
-				if (fDist != 0 && fDist <= fAttackRanage && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "isIceBreath"))
+				_float fMaxHp = pYetuga->Get_MaxHP();
+				_float fCurrentHp = pYetuga->Get_CurrentHP();
+
+				_float fRate = fCurrentHp / fMaxHp;
+
+				if(fRate <= 0.6f)
 				{
-					BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", true);
-					return true;
+					if (fDist != 0 && fDist <= fAttackRanage && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "isIceBreath"))
+					{
+						BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", true);
+						return true;
+					}
+					else
+						return false;
 				}
-				else
-					return false;
+				return false;
 			};
 	}
 
@@ -243,13 +239,23 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 				_float fDist = BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
 				_float fAttackRanage = BB->Get_Value<_float>(pYetuga->Get_Name(), "ThrowBallRange");
 				_float fChaseRange = BB->Get_Value<_float>(pYetuga->Get_Name(), "ChaseRange");
-				if (fDist != 0 && fDist >= fAttackRanage && fDist <= fChaseRange,
-					!BB->Get_Value<_bool>(pYetuga->Get_Name(), "IsAmageddon"))
+
+				_float fMaxHp = pYetuga->Get_MaxHP();
+				_float fCurrentHp = pYetuga->Get_CurrentHP();
+				_float fRate = fCurrentHp / fMaxHp;
+
+				if (fRate <= 0.6f)
 				{
-					return true;
+					if (fDist != 0 && fDist >= fAttackRanage && fDist <= fChaseRange,
+						!BB->Get_Value<_bool>(pYetuga->Get_Name(), "IsAmageddon"))
+					{
+						return true;
+					}
+					else
+						return false;
 				}
-				else
-					return false;
+				return false;
+				
 			};
 	}
 
@@ -568,14 +574,14 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 		return [pYetuga](CBlackBoard* BB)-> BTNODESTATE
 			{
 
-				if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isiceBreathFinished"))
+				if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isIceBreathFinished"))
 				{
 
 					return BTNODESTATE::SUCCESS;
 				}
 
-				BB->Set_Value(pYetuga->Get_Name(), "isiceBreath", true);
-				BB->Set_Value(pYetuga->Get_Name(), "isiceBreathFinished", false);
+				BB->Set_Value(pYetuga->Get_Name(), "isIceBreath", true);
+				BB->Set_Value(pYetuga->Get_Name(), "isIceBreathFinished", false);
 
 
 				pYetuga->Get_Controller()->Get_State_Machine()->

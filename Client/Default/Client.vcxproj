@@ -163,6 +163,7 @@
     <ClInclude Include="..\public\Amount.h" />
     <ClInclude Include="..\public\Amount_Panel.h" />
     <ClInclude Include="..\Public\AS_Amageddon_Yetuga.h" />
+    <ClInclude Include="..\Public\AS_Dead_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Dodge_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Hit_Yetuga.h" />
     <ClInclude Include="..\Public\AS_IceBreath_Yetuga.h" />
@@ -224,6 +225,8 @@
     <ClInclude Include="..\Public\JOH_Test1.h" />
     <ClInclude Include="..\public\Khazan_Sample.h" />
     <ClInclude Include="..\Public\Khazan_Spear.h" />
+    <ClInclude Include="..\public\Khazan_Spear_Animation.h" />
+    <ClInclude Include="..\public\Khazan_Spear_Anim_Move.h" />
     <ClInclude Include="..\public\Khazan_Spear_ASMachine.h" />
     <ClInclude Include="..\public\Khazan_Spear_ASManager.h" />
     <ClInclude Include="..\Public\Level_Crevice.h" />
@@ -247,6 +250,7 @@
     <ClInclude Include="..\Public\MoveState_Yetuga.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\Projectile.h" />
+    <ClInclude Include="..\Public\Projectile_Breath_Yetuga.h" />
     <ClInclude Include="..\Public\Projectile_Rock_Yetuga.h" />
     <ClInclude Include="..\Public\Projectile_Yetuga.h" />
     <ClInclude Include="..\Public\Prop.h" />
@@ -269,6 +273,7 @@
     <ClInclude Include="..\public\Target_BrutalAttack.h" />
     <ClInclude Include="..\public\Target_LockOn.h" />
     <ClInclude Include="..\Public\Terrain.h" />
+    <ClInclude Include="..\Public\TombStone.h" />
     <ClInclude Include="..\public\UI_Announce_MapName.h" />
     <ClInclude Include="..\public\UI_BladeNexus.h" />
     <ClInclude Include="..\Public\UI_Button.h" />
@@ -318,6 +323,7 @@
     <ClCompile Include="..\private\Amount.cpp" />
     <ClCompile Include="..\private\Amount_Panel.cpp" />
     <ClCompile Include="..\Private\AS_Amageddon_Yetuga.cpp" />
+    <ClCompile Include="..\Private\AS_Dead_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Dodge_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Hit_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_IceBreath_Yetuga.cpp" />
@@ -374,6 +380,8 @@
     <ClCompile Include="..\Private\JOH_Test1.cpp" />
     <ClCompile Include="..\private\Khazan_Sample.cpp" />
     <ClCompile Include="..\Private\Khazan_Spear.cpp" />
+    <ClCompile Include="..\private\Khazan_Spear_Animation.cpp" />
+    <ClCompile Include="..\private\Khazan_Spear_Anim_Move.cpp" />
     <ClCompile Include="..\private\Khazan_Spear_ASMachine.cpp" />
     <ClCompile Include="..\private\Khazan_Spear_ASManager.cpp" />
     <ClCompile Include="..\Private\Level_Crevice.cpp" />
@@ -396,6 +404,7 @@
     <ClCompile Include="..\Private\MoveState_Yetuga.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\Projectile.cpp" />
+    <ClCompile Include="..\Private\Projectile_Breath_Yetuga.cpp" />
     <ClCompile Include="..\Private\Projectile_Rock_Yetuga.cpp" />
     <ClCompile Include="..\Private\Projectile_Yetuga.cpp" />
     <ClCompile Include="..\Private\Prop.cpp" />
@@ -418,6 +427,7 @@
     <ClCompile Include="..\private\Target_BrutalAttack.cpp" />
     <ClCompile Include="..\private\Target_LockOn.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
+    <ClCompile Include="..\Private\TombStone.cpp" />
     <ClCompile Include="..\private\UI_Announce_MapName.cpp" />
     <ClCompile Include="..\private\UI_BladeNexus.cpp" />
     <ClCompile Include="..\Private\UI_Button.cpp" />

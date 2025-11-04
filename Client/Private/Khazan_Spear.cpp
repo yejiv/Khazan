@@ -5,8 +5,27 @@
 
 #include "RigidBody.h"
 #include "CharacterVirtual.h"
-#include "Khazan_Spear_ASManager.h"
+//#include "Khazan_Spear_ASManager.h"
 #include "Khazan_Spear_ASMachine.h"
+
+#include "Khazan_Spear_Anim_Move.h"
+//#include "Khazan_Spear_Anim_Attack.h"
+
+using WEA = CKhazan_Spear_ASMachine::WEAPON;
+using CAT = CKhazan_Spear_ASMachine::CATEGORY;
+using ATT = CKhazan_Spear_ASMachine::ATTACK;
+using SKI = CKhazan_Spear_ASMachine::SKILL;
+using MOV = CKhazan_Spear_ASMachine::MOVE;
+using MOV_S = CKhazan_Spear_ASMachine::MOVESUB;
+using CYC = CKhazan_Spear_ASMachine::CYCLE;
+using GUA = CKhazan_Spear_ASMachine::GUARD;
+using GRO = CKhazan_Spear_ASMachine::GROGGY;
+using INTE = CKhazan_Spear_ASMachine::INTERACT;
+using WEA_C = CKhazan_Spear_ASMachine::WEAPONCHANGE;
+using HOL = CKhazan_Spear_ASMachine::HOLD;
+using DAM = CKhazan_Spear_ASMachine::DAMAGED;
+
+
 
 CKhazan_Spear::CKhazan_Spear(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CCreature{ pDevice, pContext }
@@ -56,6 +75,17 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
     Debug_Widget();
 #endif // _DEBUG
 
+    m_eDir.Add_Flag(DIRECTION_INFO::NONE);
+    Add_Status(BAREHAND);
+    m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand");
+    m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
+
+    //m_vCoolTime.reserve(32);
+    //for (size_t i = 0; i < 32; i++)
+    //{
+    //    m_vCoolTime.emplace_back(_float2(0.f, 0.f));
+    //}
+
     return S_OK;
 
 }
@@ -63,6 +93,7 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
 void CKhazan_Spear::Priority_Update(_float fTimeDelta)
 {
     __super::Priority_Update(fTimeDelta);
+
 }
 
 void CKhazan_Spear::Update(_float fTimeDelta)
@@ -81,15 +112,12 @@ void CKhazan_Spear::Update(_float fTimeDelta)
         }
 
         Update_State(fTimeDelta);
+
     }
     __super::Update(fTimeDelta);
 
     XMStoreFloat4x4(&m_pSpearFX_WorldMatrix, m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pTransformCom->Get_WorldMatrix());
 
-    //m_pRigidBodyCom->Update(fTimeDelta, m_pTransformCom->Get_WorldMatrix());
-
-    m_pCharVirCom->Sync_Update(m_pTransformCom);
-    m_pCharVirCom->Update(fTimeDelta, m_pTransformCom);
 }
 
 void CKhazan_Spear::Late_Update(_float fTimeDelta)
@@ -123,93 +151,435 @@ void CKhazan_Spear::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLaye
 
 void CKhazan_Spear::Update_State(_float fTimeDelta)
 {
-    Key_Input(fTimeDelta);
+    /* 이전 상태 저장*/
+    m_iPrevMainState = m_iCurMainState;
+    m_iPrevSubState = m_iCurSubState;
+    m_ePrevDir = m_eDir.iDirFlag;
+    m_iPrevCycle = m_iCycle;
 
-}
+    /* 키 입력 */
+    Move_Input(fTimeDelta);
 
-void CKhazan_Spear::Key_Input(_float fTimeDelta)
-{
+    /*  상태 전환 여부*/
 
-    if (!Has_State(ATTACK_ALL))
-    {
-        if (m_pGameInstance->Key_Down(DIK_DOWN))
-        {
-            ++m_isMove;
-            Add_DirState(DOWN);
-        }
-        if (m_pGameInstance->Key_Pressing(DIK_DOWN, fTimeDelta))
-        {
-            m_pTransformCom->Go_Backward(fTimeDelta * m_fMoveSpeed);
-        }
-        if (m_pGameInstance->Key_Up(DIK_DOWN))
-        {
-            m_isMove = 0;
-           // m_isMove = m_isMove - 1 < 0 ? 0 : m_isMove - 1;
-            Remove_DirState(DOWN);
-        }
+    _bool isEnter = (m_iCurMainState != m_iPrevMainState) || (m_iCurSubState != m_iPrevSubState);
+    _bool isContinue = (m_iCurMainState == m_iPrevMainState) && (m_iCurSubState == m_iPrevSubState);
 
-        if (m_pGameInstance->Key_Down(DIK_UP))
-        {
-            ++m_isMove;
-            Add_DirState(UP);
-        }
-        if (m_pGameInstance->Key_Pressing(DIK_UP, fTimeDelta))
-        {
-            m_pTransformCom->Go_Straight(fTimeDelta * m_fMoveSpeed);
-        }
-        if (m_pGameInstance->Key_Up(DIK_UP))
-        {
-            m_isMove = 0;
+    /* 애니메이션 변경 여부 */
+    ChangeAnimation();
 
-            //m_isMove = m_isMove - 1 < 0 ? 0 : m_isMove - 1;
-            Remove_DirState(UP);
-        }
+    Apply_PlayerMovement(fTimeDelta);
 
-        if (m_pGameInstance->Key_Pressing(DIK_LEFT, fTimeDelta))
-            m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * -1.f);
+    /* Exit 실행 */
+    if (isEnter)
+        ExecuteAnimationExit();
+ 
 
-        if (m_pGameInstance->Key_Pressing(DIK_RIGHT, fTimeDelta))
-            m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * 1.f);
+    /* 상태별 로직 실행 */
+    if (Has_State(CAT::M_DIE)) {
+
     }
-
-    if (m_isMove > 0)
+    else if( Has_State(CAT::ORDER2))
     {
-        Add_State(WALK);
-        Remove_State(IDLE);
+        //if (Has_State(CAT::M_HOLD));
+        //if (Has_State(CAT::M_GROGGY));
+        //if (Has_State(CAT::M_DAMAGED));
+        //if (Has_State(CAT::M_CLIMB));
+    }
+    else if (Has_State(CAT::M_SKILL))
+    {
+
+	}
+	else if (Has_State(CAT::M_GUARD))
+	{
+
+	}
+	else if (Has_State(CAT::ORDER5))
+	{
+		//if (Has_State(CAT::M_ATTACK));
+		if (Has_State(CAT::M_MOVE))
+		{
+			if (isEnter) m_pAnimMove->Enter();
+			if (isEnter || isContinue) m_pAnimMove->Continue(fTimeDelta);
+
+		}
+		//if (Has_State(CAT::M_LOCKON));
+	}
+	else if (Has_State(CAT::M_INTERACT))
+	{
+
+	}
+	else if (Has_State(CAT::M_WEAPON_CHANGE))
+    {
+
     }
     else
-    { 
-        Add_State(IDLE);
-        Remove_State(MOVING);
-    }
-
-
-    if (Has_State(WALK) && m_pGameInstance->Key_Down(DIK_LSHIFT))
     {
-        Add_State(RUN);
-    }
-    else if (Has_State(WALK) && m_pGameInstance->Key_Up(DIK_LSHIFT))
-    {
-        Remove_State(RUN);
+
     }
 
 
-	if (m_pGameInstance->Key_Down(DIK_Z))
-	{
-		Clear_State();
-        m_isMove = 0; 
-
-		Add_State(ATTACK_FAST);
-	}
-
-	if (m_pGameInstance->Key_Down(DIK_X))
-	{
-		Clear_State();
-        m_isMove = 0;
-		Add_State(ATTACK_SET);
-	}
 
 }
+
+void CKhazan_Spear::Move_Input(_float fTimeDelta)
+{
+    _bool isPrevMove = Has_State(CAT::M_MOVE);
+
+    //Clear_State();
+    if (Has_CycleState(CYC::CYCLE_END))
+        Remove_State(CAT::M_MOVE);
+
+    AllClear_CycleState();
+
+
+    if (Has_Status(BACK_DODGE))
+    {
+        Remove_Status(BACK_DODGE);
+        m_eDir.Delete_Flag(DIR::B);
+    }
+
+    /* 방향 결정 */
+    Check_KeyInput_Direction(fTimeDelta);
+
+    /* 방향이 들어오면 Move On */
+    if (m_eDir.iDirFlag) {
+        Add_State(CAT::M_MOVE);
+        if (isPrevMove)    Add_CycleState(CYC::CYCLE_LOOP);
+        else Add_CycleState(CYC::CYCLE_START);
+    }
+    else {
+        if (isPrevMove) {
+            Add_CycleState(CYC::CYCLE_END);
+        }
+    }
+
+
+    if (Has_State(CAT::M_MOVE))
+    {
+        Clear_SubState();
+        _bool isSpaceHandled = false;
+
+        /*  Sprint , Dodge */
+        if (m_pGameInstance->Key_Down(DIK_SPACE))
+        {
+            m_fSprintTime = 0.f;
+            Add_Status(CHARGING_SPRINT);
+            Add_SubState(MOV::MOVE_DODGE);
+            isSpaceHandled = true;
+        }
+        else if (m_pGameInstance->Key_Pressing(DIK_SPACE, fTimeDelta, INPUT_TYPE::GAMEPLAY, &m_fSprintTime))
+        {
+            if (Has_Status(CHARGING_SPRINT))
+            {
+
+                // Dodge 애니메이션 진행도 체크
+                _float trackPos = *m_pBody->Get_Model()->Get_CurTrackPosition();
+                _float duration = m_pBody->Get_Model()->Get_CurDuration();
+
+                if ((trackPos / duration) >= 0.5f)
+                {
+                    Add_SubState(MOV::MOVE_SPRINT);
+                    Remove_Status(CHARGING_SPRINT);  // Sprint 전환 완료
+                }
+                else
+                {
+                    Add_SubState(MOV::MOVE_DODGE);  // 아직 Dodge 유지
+                    isSpaceHandled = true;
+                }
+
+            }
+            else
+            {
+                // 이미 Sprint 상태 - 유지
+                Add_SubState(MOV::MOVE_SPRINT);
+                isSpaceHandled = true;
+            }
+        }
+        // Space를 뗌
+        else if (m_pGameInstance->Key_Up(DIK_SPACE))
+        {
+            m_fSprintTime = 0.f;
+            Remove_Status(CHARGING_SPRINT);
+            // Sprint 종료 신호 (다음 프레임에 END 애니메이션 재생)
+            if (Has_SubState(MOV::MOVE_SPRINT))
+            {
+                Add_CycleState(CYC::CYCLE_END);
+                Add_SubState(MOV::MOVE_SPRINT);
+                isSpaceHandled = true;
+            }
+        }
+
+        /* Walk,  Run */
+        if (!isSpaceHandled)
+        {
+            if (m_pGameInstance->Key_Pressing(DIK_LALT, fTimeDelta))  Add_SubState(MOV::MOVE_WALK);
+            else
+                Add_SubState(MOV::MOVE_RUN);
+
+        }
+
+    }
+    else
+    {
+        // 뒤로 회피
+        if (m_pGameInstance->Key_Down(DIK_SPACE))
+        {
+            Add_State(CAT::M_MOVE);
+            Add_SubState(MOV::MOVE_DODGE);
+            m_eDir.Add_Flag(DIR::B);  // 뒤로 회피
+            m_fSprintTime = 0.f;
+            Add_Status(BACK_DODGE);
+            Remove_Status(CHARGING_SPRINT);
+        }
+        else
+        {
+            // 이동하지 않을 때는 SubState 초기화
+            Clear_SubState();
+            m_fSprintTime = 0.f;
+            Remove_Status(CHARGING_SPRINT);
+        }
+    }
+
+}
+
+void CKhazan_Spear::Attack_Input(_float fTimeDelta)
+{
+ 
+ /* 연속기 */
+    //if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+    //{
+    //    m_pAnimAttack
+    //}
+
+   
+}
+
+void CKhazan_Spear::ChangeAnimation()
+{
+    if (m_iCurMainState == m_iPrevMainState 
+        && m_iCurSubState == m_iPrevSubState 
+        && m_iCycle == m_iPrevCycle
+        /*&& (Has_State(CAT::M_MOVE) && m_ePrevDir == m_eDir.iDirFlag)*/ ) 
+        return;
+
+    if(Has_State(CAT::M_ATTACK))
+
+    auto GetAnimIndexByState = [&](unsigned int state, const std::string& bare, const std::string& spear)
+        {
+            return m_pBody->Get_Model()->Get_AnimIndexByName(
+                Has_Status(state) ? spear.c_str() : bare.c_str()
+            );
+        };
+
+
+    /* Move  */
+    if (Has_State(CAT::M_MOVE))
+    {
+        CKhazan_Spear_Anim_Move::SPEAR_MOVE info ;
+        info.isEquipWeapon = Has_Status(WEA::SPEAR);
+        info.iSubState = m_iCurSubState;
+        info.iCycle = m_iCycle;
+        info.eDir = m_eDir;
+
+        m_pAnimMove->Try_ChangeAnimation(info);
+    }
+    /* Idle */
+    else
+    {
+
+		_uint iCurAnimIndex = m_pBody->Get_Model()->Get_CurAnimIndex();
+		if (m_pBody->Get_Model()->Check_MinAnimationTime() && iCurAnimIndex != 279 && iCurAnimIndex != 19)
+			m_pBody->Get_Model()->Set_Animation(Has_Status(SPEAR) ? 279 : 19);
+
+    }
+
+
+
+}
+
+void CKhazan_Spear::ExecuteAnimationExit()
+{
+      //if(m_iPrevMainState & CAT::M_DIE)
+      //if(m_iPrevMainState &   CAT::M_HOLD             )
+      //if(m_iPrevMainState &   CAT::M_GROGGY           )
+      //if(m_iPrevMainState &   CAT::M_DAMAGED          )
+      //if(m_iPrevMainState &   CAT::M_CLIMB            )
+      //if(m_iPrevMainState &   CAT::M_SKILL            )
+      //if(m_iPrevMainState &   CAT::M_GUARD            )
+      //if(m_iPrevMainState &   CAT::M_ATTACK           )
+    if (m_iPrevMainState & CAT::M_MOVE) m_pAnimMove->Exit();
+      //if(m_iPrevMainState &   CAT::M_LOCKON           )
+      //if(m_iPrevMainState &   CAT::M_INTERACT         )
+      //if(m_iPrevMainState &   CAT::M_WEAPON_CHANGE    )
+      //if(m_iPrevMainState &   CAT::M_IDLE             )
+      //if(m_iPrevMainState &   CAT::M_END              )
+
+}
+
+void CKhazan_Spear::Apply_PlayerMovement(_float fTimeDelta)
+{
+    _float4x4 CamWorldMatrix = *m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::VIEW);
+    _vector vCamLook = XMLoadFloat3((_float3*)&CamWorldMatrix._31);
+
+    _vector vRight = XMVector3Normalize(XMVectorSetW(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vCamLook), 0.f));
+    _vector vLook = XMVector3Normalize(XMVectorSetW(XMVector3Cross(vRight, XMVectorSet(0.f, 1.f, 0.f, 0.f)), 0.f));
+
+    _vector vPlayerPosition = m_pTransformCom->Get_State(STATE::POSITION);
+
+    _float fSpeed = 0.f;
+    _float fDiagonalSpeed = 0.f;
+
+    if (Has_SubState(MOV::MOVE_SPRINT)) fSpeed = m_fSprintSpeed;
+    else if (Has_SubState(MOV::MOVE_WALK)) fSpeed = m_fWalkSpeed;
+    else if (Has_SubState(MOV::MOVE_RUN)) fSpeed = m_fRunSpeed;
+
+
+    /*  카메라 기준 이동 방향 벡터 계산  */
+    _vector vMoveDirection = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+    _bool isMoving = false;
+    _bool isDiagonal = false;
+
+    // m_eWorldDir 사용 (카메라 기준 입력)
+    if (m_eWorldDir.Check_Flag(DIR::F))
+    {
+        vMoveDirection += vLook;
+        isMoving = true;
+    }
+    if (m_eWorldDir.Check_Flag(DIR::B))
+    {
+        vMoveDirection -= vLook;
+        isMoving = true;
+    }
+    if (m_eWorldDir.Check_Flag(DIR::L))
+    {
+        vMoveDirection -= vRight;
+        isMoving = true;
+    }
+    if (m_eWorldDir.Check_Flag(DIR::R))
+    {
+        vMoveDirection += vRight;
+        isMoving = true;
+    }
+
+    // 대각선 판별
+    int dirCount = 0;
+    if (m_eWorldDir.Check_Flag(DIR::F)) dirCount++;
+    if (m_eWorldDir.Check_Flag(DIR::B)) dirCount++;
+    if (m_eWorldDir.Check_Flag(DIR::L)) dirCount++;
+    if (m_eWorldDir.Check_Flag(DIR::R)) dirCount++;
+    isDiagonal = (dirCount == 2);
+
+    /*  이동 적용*/
+    if (isMoving)
+    {
+        vMoveDirection = XMVector3Normalize(vMoveDirection);
+        vPlayerPosition += vMoveDirection * fSpeed * fTimeDelta;
+        m_pTransformCom->Set_State(STATE::POSITION, vPlayerPosition);
+    }
+
+    /* 회전 */
+    if (Has_State(CAT::M_MOVE) && isMoving)
+    {
+        _vector vPlayerLook = XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK));
+
+        // 타겟 룩 = 이동 방향 (카메라 기준!!!)
+        _vector vTargetLook = vMoveDirection;
+
+        _float fDotProduct = XMVectorGetX(XMVector3Dot(vPlayerLook, vTargetLook));
+
+        // 회전 시작 조건 (약 5도 이상 차이)
+        if (!Has_Status(ROTATION) && fDotProduct < 0.996f)
+        {
+            Add_Status(ROTATION);
+            m_fRotateTime[0] = 0.f;
+            m_vRotateStart = vPlayerLook;
+        }
+
+        if (Has_Status(ROTATION))
+        {
+            m_fRotateTime[0] += fTimeDelta;
+            _float t = min(m_fRotateTime[0] / m_fRotateTime[1], 1.0f);
+
+            if (t >= 1.0f)
+            {
+                // 회전 완료
+                _float yaw = atan2f(XMVectorGetX(vTargetLook), XMVectorGetZ(vTargetLook));
+                _vector q = XMQuaternionRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), yaw);
+                m_pTransformCom->Set_Quaternion(q);
+                Remove_Status(ROTATION);
+            }
+            else
+            {
+                // 회전 중 - Slerp 보간
+                _vector vInterpolated = XMVector3Normalize(XMVectorLerp(m_vRotateStart, vTargetLook, t));
+                _float yaw = atan2f(XMVectorGetX(vInterpolated), XMVectorGetZ(vInterpolated));
+                _vector q = XMQuaternionRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), yaw);
+                m_pTransformCom->Set_Quaternion(q);
+            }
+        }
+        else
+        {
+            // 각도 차이가 작을 때 즉시 회전
+            _float yaw = atan2f(XMVectorGetX(vTargetLook), XMVectorGetZ(vTargetLook));
+            _vector q = XMQuaternionRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), yaw);
+            m_pTransformCom->Set_Quaternion(q);
+        }
+    }
+}
+
+
+
+void CKhazan_Spear::Check_KeyInput_Direction(_float fTimeDelta)
+{
+    // 카메라 방향 계산
+    _float4x4 CamWorldMatrix = *m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::VIEW);
+    _vector vCamLook = XMLoadFloat3((_float3*)&CamWorldMatrix._31);
+    vCamLook = XMVector3Normalize(XMVectorSetW(vCamLook, 0.f));
+
+    _vector vPlayerLook = XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK));
+    _vector vCamRight = XMVector3Normalize(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vCamLook));
+
+    _float dotLook = XMVectorGetX(XMVector3Dot(vPlayerLook, vCamLook));
+    _float dotRight = XMVectorGetX(XMVector3Dot(vPlayerLook, vCamRight));
+
+    PLAYER_CAMERA_DIR playerCamDir = PC_FRONT;
+    _float angle = atan2f(dotRight, dotLook);
+
+    if (angle >= -XM_PI / 8.f && angle < XM_PI / 8.f)                      playerCamDir = PC_FRONT;
+    else if (angle >= XM_PI / 8.f && angle < 3.f * XM_PI / 8.f)           playerCamDir = PC_FRONT_RIGHT;
+    else if (angle >= 3.f * XM_PI / 8.f && angle < 5.f * XM_PI / 8.f)     playerCamDir = PC_RIGHT;
+    else if (angle >= 5.f * XM_PI / 8.f && angle < 7.f * XM_PI / 8.f)     playerCamDir = PC_BACK_RIGHT;
+    else if (angle >= 7.f * XM_PI / 8.f || angle < -7.f * XM_PI / 8.f)    playerCamDir = PC_BACK;
+    else if (angle >= -7.f * XM_PI / 8.f && angle < -5.f * XM_PI / 8.f)   playerCamDir = PC_BACK_LEFT;
+    else if (angle >= -5.f * XM_PI / 8.f && angle < -3.f * XM_PI / 8.f)   playerCamDir = PC_LEFT;
+    else if (angle >= -3.f * XM_PI / 8.f && angle < -XM_PI / 8.f)         playerCamDir = PC_FRONT_LEFT;
+
+    // 키 입력
+    _bool isW = m_pGameInstance->Key_Pressing(DIK_W, fTimeDelta);
+    _bool isS = m_pGameInstance->Key_Pressing(DIK_S, fTimeDelta);
+    _bool isA = m_pGameInstance->Key_Pressing(DIK_A, fTimeDelta);
+    _bool isD = m_pGameInstance->Key_Pressing(DIK_D, fTimeDelta);
+
+    // 카메라 기준 월드 방향 (이동/회전용)
+    m_eWorldDir.Clear_Flag();
+    if (isW && !isS && !isA && !isD)      m_eWorldDir.Add_Flag(DIR::F);
+    else if (!isW && isS && !isA && !isD) m_eWorldDir.Add_Flag(DIR::B);
+    else if (!isW && !isS && isA && !isD) m_eWorldDir.Add_Flag(DIR::L);
+    else if (!isW && !isS && !isA && isD) m_eWorldDir.Add_Flag(DIR::R);
+    else if (isW && !isS && isA && !isD)  m_eWorldDir.Add_Flag(DIR::F | DIR::L);
+    else if (isW && !isS && !isA && isD)  m_eWorldDir.Add_Flag(DIR::F | DIR::R);
+    else if (!isW && isS && isA && !isD)  m_eWorldDir.Add_Flag(DIR::B | DIR::L);
+    else if (!isW && isS && !isA && isD)  m_eWorldDir.Add_Flag(DIR::B | DIR::R);
+
+    // 플레이어 로컬 방향 (애니메이션 선택용)
+    m_eDir.Clear_Flag();
+    if (m_eWorldDir.Check_Flag(DIR::F | DIR::B | DIR::L | DIR::R))
+    {
+        m_eDir.Add_Flag(ConvertCameraToPlayerDir(playerCamDir));
+    }
+}
+
 
 HRESULT CKhazan_Spear::Ready_Components()
 {
@@ -219,20 +589,20 @@ HRESULT CKhazan_Spear::Ready_Components()
 HRESULT CKhazan_Spear::Ready_PartObjects()
 {
     CBody_Khazan_Spear::BODY_KHAZAN_SPEAR_DESC         BodyDesc{};
-    BodyDesc.pState = &m_iState;
+    BodyDesc.pState = &m_iCurMainState;
     BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     BodyDesc.pParentTransform = m_pTransformCom;
-    if (FAILED(__super::Add_PartObject(TEXT("Part_Body"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Body_Khazan_Sample"), &BodyDesc)))
+    if (FAILED(__super::Add_PartObject(TEXT("Part_Body"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Body_Khazan_Spear"), &BodyDesc)))
         return E_FAIL;
 
     m_pBody = static_cast<CBody_Khazan_Spear*>(Find_PartObject(TEXT("Part_Body")));
     m_pWeaponR_Matrix = m_pBody->Get_BoneMatrix("Weapon_R");
 
     CSpear_Khazan_Spear::SPEAR_KHAZAN_SPEAR_DESC         SpearDesc{};
-    SpearDesc.pState = &m_iState;
+    SpearDesc.pState = &m_iCurMainState;
     SpearDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     SpearDesc.pParentTransform = m_pTransformCom;
-    if (FAILED(__super::Add_PartObject(TEXT("Part_Weapon_Spear"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Spear_Khazan_Sample"), &SpearDesc)))
+    if (FAILED(__super::Add_PartObject(TEXT("Part_Weapon_Spear"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Spear_Khazan_Spear"), &SpearDesc)))
         return E_FAIL;
 
     m_pSpear = static_cast<CSpear_Khazan_Spear*>(Find_PartObject(TEXT("Part_Weapon_Spear")));
@@ -263,6 +633,7 @@ HRESULT CKhazan_Spear::Ready_Collision()
     tCharVirDesc.fRadius = 0.5f;
     tCharVirDesc.fHeight = 0.5f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
+    tCharVirDesc.fMass = 100000.f;
     m_tCollisionDesc.pGameObject = this;
     //pCollDesc.pInfo = ?? // 작성하기
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
@@ -271,31 +642,31 @@ HRESULT CKhazan_Spear::Ready_Collision()
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
         return E_FAIL;
 
-    return S_OK;
+      return S_OK;
 }
 
 HRESULT CKhazan_Spear::Ready_AnimationStateMachine()
 {
-    m_pASMachine = CKhazan_Spear_ASMachine::Create();
-
-    m_pASManager = CKhazan_Spear_ASManager::Create(m_pASMachine);
-
-
-    using CAT = CKhazan_Spear_ASMachine::CATEGORY;
-    using MOV = CKhazan_Spear_ASMachine::MOVE;
-    using ATK = CKhazan_Spear_ASMachine::ATTACK;
+        
+    m_pAnimMove = CKhazan_Spear_Anim_Move::Create();
+    if (m_pAnimMove == nullptr)
+        return E_FAIL;
+    m_pAnimMove->Set_Model(m_pBody->Get_Model());
 
 
-
-
+	//m_pAnimAttack = CKhazan_Spear_Anim_Attack::Create();
+ //   if (m_pAnimAttack == nullptr)
+ //       return E_FAIL;
+ //   m_pAnimAttack->Set_Model(m_pBody->Get_Model());
 
 
     return S_OK;
 }
 
+
 inline _bool CKhazan_Spear::Has_States()
 {
-    for (_uint i = 0; i < GetBitPosition(CKhazan_Spear::END); ++i)
+    for (_uint i = 0; i < GetBitPosition(CAT::M_END); ++i)
     {
         if (Has_State(1 << i))
             return true;
@@ -304,85 +675,519 @@ inline _bool CKhazan_Spear::Has_States()
     return false;
 }
 
+inline _bool CKhazan_Spear::Has_SubStates()
+{
+    for (_uint i = 0; i < GetBitPosition(CAT::M_END); ++i)
+    {
+        if (Has_SubState(1 << i))
+            return true;
+
+    }
+    return false;
+}
+
+_uint CKhazan_Spear::ConvertCameraToPlayerDir(PLAYER_CAMERA_DIR playerCamDir)
+{
+    // 8방향 변환 테이블
+    // [플레이어가 카메라 기준으로 보는 방향][입력 방향] = 플레이어 기준 방향
+    static const _uint conversionTable[8][8] = {
+        // 카메라 입력:    F,  R,  B,  L,  FR, BR, BL, FL
+        {DIR::F, DIR::R, DIR::B, DIR::L, (DIR::F | DIR::R), (DIR::B | DIR::R), (DIR::B | DIR::L), (DIR::F | DIR::L)},               /* PC_FRONT */      
+        {(DIR::F | DIR::L), DIR::F, (DIR::F | DIR::R), DIR::L, DIR::F, (DIR::F | DIR::R), (DIR::B | DIR::R), (DIR::B | DIR::L)},    /* PC_FRONT_RIGHT */
+        {DIR::L, DIR::F, DIR::R, DIR::B, (DIR::F | DIR::L), (DIR::F | DIR::R), (DIR::B | DIR::R), (DIR::B | DIR::L)},               /* PC_RIGHT */
+        {(DIR::B | DIR::L), (DIR::F | DIR::L), DIR::F, (DIR::B | DIR::R), (DIR::F | DIR::L), DIR::F, (DIR::F | DIR::R), DIR::B},    /* PC_BACK_RIGHT */
+        {DIR::B, DIR::L, DIR::F, DIR::R, (DIR::B | DIR::L), (DIR::F | DIR::L), (DIR::F | DIR::R), (DIR::B | DIR::R)},               /* PC_BACK */
+        {(DIR::B | DIR::R), DIR::B, (DIR::F | DIR::L), (DIR::F | DIR::R), DIR::B, (DIR::B | DIR::L), DIR::F, (DIR::F | DIR::R)},    /* PC_BACK_LEFT */
+        {DIR::R, DIR::B, DIR::L, DIR::F, (DIR::B | DIR::R), (DIR::B | DIR::L), (DIR::F | DIR::L), (DIR::F | DIR::R)},               /* PC_LEFT */
+        {(DIR::F | DIR::R), (DIR::B | DIR::R), DIR::B, DIR::F, (DIR::B | DIR::R), DIR::B, (DIR::B | DIR::L), (DIR::F | DIR::L)}     /* PC_FRONT_LEFT */
+    };
+    // 입력 방향을 인덱스로 변환
+    int inputIdx = 0;
+    if (m_eWorldDir.AllCheck_Flag(DIR::F)) inputIdx = 0;
+    else if (m_eWorldDir.AllCheck_Flag(DIR::R)) inputIdx = 1;
+    else if (m_eWorldDir.AllCheck_Flag(DIR::B))inputIdx = 2;
+    else if (m_eWorldDir.AllCheck_Flag(DIR::L)) inputIdx = 3;
+    else if (m_eWorldDir.AllCheck_Flag((DIR::F | DIR::R))) inputIdx = 4;
+    else if (m_eWorldDir.AllCheck_Flag((DIR::B | DIR::R))) inputIdx = 5;
+    else if (m_eWorldDir.AllCheck_Flag((DIR::B | DIR::L))) inputIdx = 6;
+    else if (m_eWorldDir.AllCheck_Flag((DIR::F | DIR::L))) inputIdx = 7;
+
+    return conversionTable[playerCamDir][inputIdx];
+}
+
 #ifdef _DEBUG
+
 void CKhazan_Spear::Debug_Widget()
 {
     m_pGameInstance->AddWidget(TEXT("Client"), [this]() {
 
-        ImGui::Begin("Control Guide");
+        // 메인 윈도우
+        ImGui::Begin("Khazan Spear Debug", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
-        //  Movement
-        ImGui::BeginChild("LeftPanel", ImVec2(220, 0), true);
+        // 탭 바
+        if (ImGui::BeginTabBar("DebugTabs"))
         {
-            ImGui::Text("Movement");
-            ImGui::Separator();
-            ImGui::BulletText("U key Move Forward (WALK)");
-            ImGui::BulletText("D key Move Backward");
-            ImGui::BulletText("L key Turn Left");
-            ImGui::BulletText("R key Turn Right");
-            ImGui::BulletText("U key + LSHIFT  Run (RUN)");
+            if (ImGui::BeginTabItem("Control"))
+            {
+                Debug_Widget_Movement();
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("States"))
+            {
+                Debug_Widget_States();
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("Animation"))
+            {
+                Debug_Widget_Animation();
+                ImGui::EndTabItem();
+            }
+
+            ImGui::EndTabBar();
         }
-        ImGui::EndChild();
-
-        // Attack & Other
-        ImGui::SameLine();
-        ImGui::BeginChild("MiddlePanel", ImVec2(300, 0), true);
-        {
-            ImGui::Text("Attack");
-            ImGui::Separator();
-            ImGui::BulletText("Z  Fast Attack (ATTACK_FAST)");
-            ImGui::BulletText("X  Set Attack (ATTACK_SET)");
-
-            ImGui::Spacing();
-            ImGui::Text("Other");
-            ImGui::Separator();
-            ImGui::BulletText("LShift + Mouse(LB) Ground click -> teleport");
-            ImGui::BulletText("Idle state when not moving");
-        }
-        ImGui::EndChild();
-
-        // 오른쪽 패널: 사용자 정의 공간
-        ImGui::SameLine();
-        ImGui::BeginChild("RightPanel", ImVec2(0, 0), true);
-        {
-			if(ImGui::Button(m_isEnableControl ? "Clicked Enable Control" : "Clicked Disable Control", ImVec2(-1.0f, 0.0f)))
-				m_isEnableControl = !m_isEnableControl;
-
-            ImGui::Text("Maunal Area");
-            // === Speed Section ===
-            ImGui::Separator();
-			ImGui::DragFloat("Move Speed", &m_fMoveSpeed, 0.1f, 0.f, 100.f);
-
-            // === HP Section ===
-            ImGui::Text("Health");
-            ImGui::Separator();
-            ImGui::SliderFloat("Current HP", &m_fCurrentHP, 0.0f, m_fMaxHP, "%.1f"); 
-            ImGui::InputFloat("Max HP", &m_fMaxHP);
-            ImGui::ProgressBar(m_fCurrentHP / max(0.0001f, m_fMaxHP), ImVec2(-1.0f, 0.0f), "HP");
-
-            // === Stamina Section ===
-            ImGui::Spacing();
-            ImGui::Text("Stamina");
-            ImGui::Separator();
-            ImGui::SliderFloat("Current Stamina", &m_fCurrentStamina, 0.0f, m_fMaxStamina, "%.1f");
-            ImGui::InputFloat("Max Stamina", &m_fMaxStamina);
-            ImGui::ProgressBar(m_fCurrentStamina / max(0.0001f, m_fMaxStamina), ImVec2(-1.0f, 0.0f), "Stamina");
-
-            // === Attack Section ===
-            ImGui::Spacing();
-            ImGui::Text("Attack");
-            ImGui::Separator();
-            ImGui::SliderFloat("Attack Power", &m_fAttack, 0.0f, 500.0f, "%.1f");
-        }
-        ImGui::EndChild();
 
         ImGui::End();
-
-
-		});
+        });
 }
-#endif // _DEBUG
 
+void CKhazan_Spear::Debug_Widget_States()
+{
+    // === 상태 개요 ===
+    ImGui::SeparatorText("State Overview");
+
+    ImGui::BeginTable("StateOverview", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg);
+    ImGui::TableSetupColumn("Property", ImGuiTableColumnFlags_WidthFixed, 120.0f);
+    ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
+    ImGui::TableNextRow();
+    ImGui::TableNextColumn(); ImGui::Text("Control");
+    ImGui::TableNextColumn();
+    if (m_isEnableControl)
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "ENABLED");
+    else
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "DISABLED");
+
+    ImGui::TableNextRow();
+    ImGui::TableNextColumn(); ImGui::Text("Main State");
+    ImGui::TableNextColumn();
+    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", GetStateName(m_iCurMainState));
+
+    ImGui::TableNextRow();
+    ImGui::TableNextColumn(); ImGui::Text("Sub State");
+    ImGui::TableNextColumn();
+    ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "%s", GetSubStateName(m_iCurSubState));
+
+    ImGui::TableNextRow();
+    ImGui::TableNextColumn(); ImGui::Text("Cycle");
+    ImGui::TableNextColumn();
+    ImGui::Text("%s", GetCycleName(m_iCycle));
+
+    ImGui::TableNextRow();
+    ImGui::TableNextColumn(); ImGui::Text("Direction");
+    ImGui::TableNextColumn();
+    ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f), "%s", GetDirectionString().c_str());
+
+    ImGui::EndTable();  
+
+    ImGui::Spacing();
+
+    // === 상세 상태 비트 플래그 ===
+    ImGui::SeparatorText("State Bit Flags");
+
+    ImGui::BeginChild("StateBits", ImVec2(0, 200), true);
+
+    // Main States
+    ImGui::Text("Main States (0x%08X)", m_iCurMainState);
+    ImGui::Indent();
+
+    auto DisplayState = [](const char* label, bool isActive) {
+        if (isActive)
+            ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "[ok] %s", label);
+        else
+            ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "[ ] %s", label);
+        };
+
+    DisplayState("M_DIE", m_iCurMainState & CAT::M_DIE);
+    DisplayState("M_HOLD", m_iCurMainState & CAT::M_HOLD);
+    DisplayState("M_GROGGY", m_iCurMainState & CAT::M_GROGGY);
+    DisplayState("M_DAMAGED", m_iCurMainState & CAT::M_DAMAGED);
+    DisplayState("M_CLIMB", m_iCurMainState & CAT::M_CLIMB);
+    DisplayState("M_SKILL", m_iCurMainState & CAT::M_SKILL);
+    DisplayState("M_GUARD", m_iCurMainState & CAT::M_GUARD);
+    DisplayState("M_ATTACK", m_iCurMainState & CAT::M_ATTACK);
+    DisplayState("M_MOVE", m_iCurMainState & CAT::M_MOVE);
+    DisplayState("M_LOCKON", m_iCurMainState & CAT::M_LOCKON);
+    DisplayState("M_INTERACT", m_iCurMainState & CAT::M_INTERACT);
+    DisplayState("M_WEAPON_CHANGE", m_iCurMainState & CAT::M_WEAPON_CHANGE);
+    DisplayState("M_IDLE", m_iCurMainState & CAT::M_IDLE);
+
+    ImGui::Unindent();
+
+    ImGui::Separator();
+
+    // Sub States (Movement)
+    ImGui::Text("Sub States (0x%08X)", m_iCurSubState);
+    ImGui::Indent();
+
+    DisplayState("MOVE_WALK", m_iCurSubState & MOV::MOVE_WALK);
+    DisplayState("MOVE_RUN", m_iCurSubState & MOV::MOVE_RUN);
+    DisplayState("MOVE_SPRINT", m_iCurSubState & MOV::MOVE_SPRINT);
+    DisplayState("MOVE_CLIMB", m_iCurSubState & MOV::MOVE_CLIMB);
+    DisplayState("MOVE_MIRAGE_STEP", m_iCurSubState & MOV::MOVE_MIRAGE_STEP);
+    DisplayState("MOVE_GETUP", m_iCurSubState & MOV::MOVE_GETUP);
+    DisplayState("MOVE_FALL", m_iCurSubState & MOV::MOVE_FALL);
+    DisplayState("MOVE_DODGE", m_iCurSubState & MOV::MOVE_DODGE);
+
+    ImGui::Unindent();
+
+    ImGui::EndChild();  
+
+    ImGui::Spacing();
+
+    // === 상태 변화 추적 ===
+    ImGui::SeparatorText("State Changes");
+
+    ImGui::BeginTable("StateChanges", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg);
+    ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+    ImGui::TableSetupColumn("Previous", ImGuiTableColumnFlags_WidthFixed, 150.0f);
+    ImGui::TableSetupColumn("Current", ImGuiTableColumnFlags_WidthFixed, 150.0f);
+    ImGui::TableHeadersRow();
+
+    ImGui::TableNextRow();
+    ImGui::TableNextColumn(); ImGui::Text("Main");
+    ImGui::TableNextColumn(); ImGui::Text("%s", GetStateName(m_iPrevMainState));
+    ImGui::TableNextColumn();
+    if (m_iPrevMainState != m_iCurMainState)
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "%s", GetStateName(m_iCurMainState));
+    else
+        ImGui::Text("%s", GetStateName(m_iCurMainState));
+
+    ImGui::TableNextRow();
+    ImGui::TableNextColumn(); ImGui::Text("Sub");
+    ImGui::TableNextColumn(); ImGui::Text("%s", GetSubStateName(m_iPrevSubState));
+    ImGui::TableNextColumn();
+    if (m_iPrevSubState != m_iCurSubState)
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "%s", GetSubStateName(m_iCurSubState));
+    else
+        ImGui::Text("%s", GetSubStateName(m_iCurSubState));
+
+    ImGui::EndTable();  
+
+    // === 무기 상태 ===
+    ImGui::Spacing();
+    ImGui::SeparatorText("Weapon Status");
+
+    _uint currentStatus = m_iStatus;
+    bool isBarehand = (currentStatus & BAREHAND) != 0;
+    bool isSpear = (currentStatus & SPEAR) != 0;
+
+    if (ImGui::Checkbox("Barehand", &isBarehand))
+    {
+        if (isBarehand) Add_Status(BAREHAND);
+        else Remove_Status(BAREHAND);
+    }
+    ImGui::SameLine();
+    if (ImGui::Checkbox("Spear", &isSpear))
+    {
+        if (isSpear) Add_Status(SPEAR);
+        else Remove_Status(SPEAR);
+    }
+}
+
+void CKhazan_Spear::Debug_Widget_Animation()
+{
+    ImGui::SeparatorText("Animation Info");
+
+    if (!m_pBody || !m_pBody->Get_Model())
+    {
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Model not available");
+        return;
+    }
+
+    CModel* pModel = m_pBody->Get_Model();
+
+    // 현재 애니메이션 정보
+    ImGui::BeginTable("AnimInfo", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg);
+    ImGui::TableSetupColumn("Property", ImGuiTableColumnFlags_WidthFixed, 150.0f);
+    ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
+    ImGui::TableNextRow();
+    ImGui::TableNextColumn(); ImGui::Text("Current Anim Index");
+    ImGui::TableNextColumn();
+    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%d", m_iCurAnimIndex);
+
+    ImGui::TableNextRow();
+    ImGui::TableNextColumn(); ImGui::Text("Animation Name");
+    ImGui::TableNextColumn();
+
+    ImGui::TableNextRow();
+    ImGui::TableNextColumn(); ImGui::Text("Track Position");
+    ImGui::TableNextColumn();
+    float trackPos = *pModel->Get_CurTrackPosition();
+    ImGui::ProgressBar(trackPos / pModel->Get_CurDuration(),
+        ImVec2(-1, 0),
+        (std::to_string((_int)trackPos) + " / " +
+            std::to_string((_int)pModel->Get_CurDuration())).c_str());
+
+    ImGui::TableNextRow();
+    ImGui::TableNextColumn(); ImGui::Text("Is Finished");
+    ImGui::TableNextColumn();
+    bool isFinished = m_pBody->Get_FinishedAnimation();
+    if (isFinished)
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "YES");
+    else
+        ImGui::Text("NO");
+
+    ImGui::TableNextRow();
+    ImGui::TableNextColumn(); ImGui::Text("Reserved Anim");
+    ImGui::TableNextColumn();
+    ImGui::Text("%d", m_iReserveAnimIndex);
+
+    ImGui::EndTable();
+
+    ImGui::Spacing();
+
+    // Move Animation 정보
+    if (m_pAnimMove)
+    {
+        ImGui::SeparatorText("Move Animation State");
+
+        ImGui::Text("Selected Animation: %d", m_pAnimMove->Get_AnimationIndex());
+        ImGui::Text("Is Finished: %s", m_pAnimMove->Is_Finished() ? "YES" : "NO");
+    }
+
+    // 애니메이션 속도 조절
+    ImGui::SeparatorText("Animation Control");
+
+    static float animSpeed = 1.0f;
+    if (ImGui::SliderFloat("Speed", &animSpeed, 0.1f, 3.0f))
+    {
+        // pModel->Set_AnimSpeed(animSpeed); // 모델에 속도 설정 함수가 있다면
+    }
+
+    if (ImGui::Button("Reset Speed"))
+    {
+        animSpeed = 1.0f;
+    }
+}
+
+void CKhazan_Spear::Debug_Widget_Movement()
+{
+    // === 컨트롤 토글 ===
+    ImGui::SeparatorText("Control");
+
+    if (ImGui::Button(m_isEnableControl ? "Disable Control" : "Enable Control",
+        ImVec2(-1.0f, 30.0f)))
+    {
+        m_isEnableControl = !m_isEnableControl;
+    }
+
+    ImGui::Spacing();
+
+    // === 키 입력 가이드 ===
+    ImGui::SeparatorText("Key Bindings");
+
+    ImGui::BeginTable("KeyBindings", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg);
+    ImGui::TableSetupColumn("Action", ImGuiTableColumnFlags_WidthFixed, 150.0f);
+    ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthStretch);
+    ImGui::TableHeadersRow();
+
+    auto AddKeyRow = [](const char* action, const char* key) {
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn(); ImGui::Text("%s", action);
+        ImGui::TableNextColumn(); ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "%s", key);
+        };
+
+    AddKeyRow("Move Forward", "W");
+    AddKeyRow("Move Backward", "S");
+    AddKeyRow("Move Left", "A");
+    AddKeyRow("Move Right", "D");
+    AddKeyRow("Walk", "W/A/S/D + LALT");
+    AddKeyRow("Dodge", "SPACE (Tap)");
+    AddKeyRow("Sprint", "SPACE (Hold > 0.15s)");
+    AddKeyRow("Teleport", "LSHIFT + Mouse LB");
+
+    ImGui::EndTable();
+
+    ImGui::Spacing();
+
+    // === 이동 정보 ===
+    ImGui::SeparatorText("Movement Info");
+
+    ImGui::DragFloat("Move Speed", &m_fMoveSpeed, 0.1f, 0.f, 100.f);
+    ImGui::ProgressBar(m_fSprintTime / m_fMinSprintTime,
+        ImVec2(-1, 0),
+        ("Sprint Charge: " + std::to_string((_int)(m_fSprintTime * 100.0f)) + "%").c_str());
+
+    ImGui::Spacing();
+
+    // === 방향 시각화 ===
+    ImGui::SeparatorText("Direction Visualization");
+
+    ImVec2 canvas_pos = ImGui::GetCursorScreenPos();
+    ImVec2 canvas_size = ImVec2(150, 150);
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+    ImVec2 center = ImVec2(canvas_pos.x + canvas_size.x * 0.5f,
+        canvas_pos.y + canvas_size.y * 0.5f);
+    float radius = 60.0f;
+
+    // 배경 원
+    draw_list->AddCircle(center, radius, IM_COL32(100, 100, 100, 255), 32, 2.0f);
+
+    // 방향 표시
+    using DIR = DIRECTION_INFO::DIR;
+    if (m_eDir.Check_Flag(DIR::F))
+        draw_list->AddLine(center,
+            ImVec2(center.x, center.y - radius),
+            IM_COL32(0, 255, 0, 255), 3.0f);
+    if (m_eDir.Check_Flag(DIR::B))
+        draw_list->AddLine(center,
+            ImVec2(center.x, center.y + radius),
+            IM_COL32(0, 255, 0, 255), 3.0f);
+    if (m_eDir.Check_Flag(DIR::L))
+        draw_list->AddLine(center,
+            ImVec2(center.x - radius, center.y),
+            IM_COL32(0, 255, 0, 255), 3.0f);
+    if (m_eDir.Check_Flag(DIR::R))
+        draw_list->AddLine(center,
+            ImVec2(center.x + radius, center.y),
+            IM_COL32(0, 255, 0, 255), 3.0f);
+
+    // 중심점
+    draw_list->AddCircleFilled(center, 5.0f, IM_COL32(255, 255, 0, 255));
+
+    // 텍스트
+    draw_list->AddText(ImVec2(center.x - 5, center.y - radius - 20),
+        IM_COL32(255, 255, 255, 255), "F");
+    draw_list->AddText(ImVec2(center.x - 5, center.y + radius + 5),
+        IM_COL32(255, 255, 255, 255), "B");
+    draw_list->AddText(ImVec2(center.x - radius - 15, center.y - 7),
+        IM_COL32(255, 255, 255, 255), "L");
+    draw_list->AddText(ImVec2(center.x + radius + 5, center.y - 7),
+        IM_COL32(255, 255, 255, 255), "R");
+
+    ImGui::Dummy(canvas_size);
+
+    ImGui::Spacing();
+
+    // === 캐릭터 스탯 ===
+    ImGui::SeparatorText("Character Stats");
+
+    // HP
+    ImGui::Text("Health");
+    ImGui::SliderFloat("##CurrentHP", &m_fCurrentHP, 0.0f, m_fMaxHP, "%.1f");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(80);
+    ImGui::InputFloat("##MaxHP", &m_fMaxHP, 0, 0, "%.0f");
+    ImGui::ProgressBar(m_fCurrentHP / max(0.0001f, m_fMaxHP),
+        ImVec2(-1.0f, 0.0f), "");
+
+    // Stamina
+    ImGui::Text("Stamina");
+    ImGui::SliderFloat("##CurrentStamina", &m_fCurrentStamina, 0.0f, m_fMaxStamina, "%.1f");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(80);
+    ImGui::InputFloat("##MaxStamina", &m_fMaxStamina, 0, 0, "%.0f");
+    ImGui::ProgressBar(m_fCurrentStamina / max(0.0001f, m_fMaxStamina),
+        ImVec2(-1.0f, 0.0f), "");
+
+    // Attack
+    ImGui::Text("Attack Power");
+    ImGui::SliderFloat("##Attack", &m_fAttack, 0.0f, 500.0f, "%.1f");
+}
+
+// === 헬퍼 함수들 ===
+const char* CKhazan_Spear::GetStateName(_uint state)
+{
+    if (state == 0) return "NONE";
+
+    static std::string result;
+    result.clear();
+
+    if (state & CAT::M_DIE) result += "DIE | ";
+    if (state & CAT::M_HOLD) result += "HOLD | ";
+    if (state & CAT::M_GROGGY) result += "GROGGY | ";
+    if (state & CAT::M_DAMAGED) result += "DAMAGED | ";
+    if (state & CAT::M_CLIMB) result += "CLIMB | ";
+    if (state & CAT::M_SKILL) result += "SKILL | ";
+    if (state & CAT::M_GUARD) result += "GUARD | ";
+    if (state & CAT::M_ATTACK) result += "ATTACK | ";
+    if (state & CAT::M_MOVE) result += "MOVE | ";
+    if (state & CAT::M_LOCKON) result += "LOCKON | ";
+    if (state & CAT::M_INTERACT) result += "INTERACT | ";
+    if (state & CAT::M_WEAPON_CHANGE) result += "WEAPON_CHANGE | ";
+    if (state & CAT::M_IDLE) result += "IDLE | ";
+
+    if (!result.empty())
+        result = result.substr(0, result.length() - 3); // 마지막 " | " 제거
+
+    return result.c_str();
+}
+
+const char* CKhazan_Spear::GetSubStateName(_uint subState)
+{
+    if (subState == 0) return "NONE";
+
+    static std::string result;
+    result.clear();
+
+    if (subState & MOV::MOVE_WALK) result += "WALK | ";
+    if (subState & MOV::MOVE_RUN) result += "RUN | ";
+    if (subState & MOV::MOVE_SPRINT) result += "SPRINT | ";
+    if (subState & MOV::MOVE_CLIMB) result += "CLIMB | ";
+    if (subState & MOV::MOVE_MIRAGE_STEP) result += "MIRAGE_STEP | ";
+    if (subState & MOV::MOVE_GETUP) result += "GETUP | ";
+    if (subState & MOV::MOVE_FALL) result += "FALL | ";
+    if (subState & MOV::MOVE_DODGE) result += "DODGE | ";
+
+    if (!result.empty())
+        result = result.substr(0, result.length() - 3);
+
+    return result.c_str();
+}
+
+const char* CKhazan_Spear::GetCycleName(_uint cycle)
+{
+    if (cycle == 0) return "NONE";
+
+    static std::string result;
+    result.clear();
+
+    if (cycle & CYC::CYCLE_START) result += "START | ";
+    if (cycle & CYC::CYCLE_LOOP) result += "LOOP | ";
+    if (cycle & CYC::CYCLE_END) result += "END | ";
+    if (cycle & CYC::CYCLE_ENDSTART) result += "ENDSTART | ";
+    if (cycle & CYC::CYCLE_ENDEND) result += "ENDEND | ";
+    if (cycle & CYC::CYCLE_BREAK) result += "BREAK | ";
+    if (cycle & CYC::CYCLE_SHOT) result += "SHOT | ";
+    if (cycle & CYC::CYCLE_FAIL) result += "FAIL | ";
+
+    if (!result.empty())
+        result = result.substr(0, result.length() - 3);
+
+    return result.c_str();
+}
+
+std::string CKhazan_Spear::GetDirectionString()
+{
+    using DIR = DIRECTION_INFO::DIR;
+
+    if (m_eDir.iDirFlag == 0) return "NONE";
+
+    std::string result;
+
+    if (m_eDir.Check_Flag(DIR::F)) result += "F";
+    if (m_eDir.Check_Flag(DIR::B)) result += "B";
+    if (m_eDir.Check_Flag(DIR::L)) result += "L";
+    if (m_eDir.Check_Flag(DIR::R)) result += "R";
+
+    return result;
+}
+
+#endif // _DEBUG
 CKhazan_Spear* CKhazan_Spear::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     CKhazan_Spear* pInstance = new CKhazan_Spear(pDevice, pContext);
@@ -412,9 +1217,14 @@ CGameObject* CKhazan_Spear::Clone(void* pArg)
 void CKhazan_Spear::Free()
 {
     __super::Free();
-    //Safe_Release(m_pRigidBodyCom);
-    Safe_Release(m_pCharVirCom);
 
-    Safe_Release(m_pASMachine);
-    Safe_Release(m_pASManager);
+	Safe_Release(m_pBody);
+	Safe_Release(m_pSpear);
+	Safe_Release(m_pAnimMove);
+	//Safe_Release(m_pAnimAttack);
+
+   // Safe_Release(m_pCharVirCom);
+
+    //Safe_Release(m_pASMachine);
+   // Safe_Release(m_pASManager);
 }

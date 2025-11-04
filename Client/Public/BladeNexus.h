@@ -60,8 +60,7 @@ private:
 
 	_float3 m_vPlayerPosition = {};
 
-	_bool m_isBNOn = { false };
-	_bool m_isBNOff = { false };
+	EventObject m_Event = {};
 
 	_float m_fEmissiveIntensity = { 0.f };
 	_bool m_isEnableEmissive = { true };
@@ -72,6 +71,7 @@ private:
 	HRESULT Ready_Collision(void* pArg);
 	HRESULT Ready_Interaction_Guide(void* pArg);
 	HRESULT Ready_PlaceName(void* pArg);
+	virtual HRESULT Bind_Materials(_uint iMeshIndex) override;
 
 	void Input_Interact_Event(_float fTimeDelta);
 	void Animation_Update(_float fTimeDelta);

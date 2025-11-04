@@ -18,6 +18,7 @@
 
 #include "BladeNexus.h"					// ±Í°Ë
 #include "BigChest.h"					// »óÀÚ
+#include "TombStone.h"					// °æ°èÀÇ Æ´ Åù½ºÅæ
 
 // Test
 #include "Prop_Test.h"
@@ -29,7 +30,8 @@
 #define HEINMACH_3RD_BLADENEXUS 10			// ¼¼¹øÂ° ±Í°Ë
 #define HEINMACH_YETUGA			11			// ¿¹Åõ°¡ ¸Ê
 
-#define CREVICE_SUBLV 0
+#define CREVICE_SUBLV 1						// °æ°èÀÇ Æ´ 
+
 #define EMBARS_SUBLV 0
 #define VIPER_SUBLV 0
 

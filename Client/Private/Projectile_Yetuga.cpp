@@ -94,6 +94,8 @@ HRESULT CProjectile_Yetuga::Render()
 }
 
 
+
+
 void CProjectile_Yetuga::Reset()
 {
 	m_fCurrentTime = 0.f;

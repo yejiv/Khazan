@@ -197,6 +197,7 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
         discard;
     
     Out.vBackBufferColor = vFinalColor;
+
     //Out.vEmissiveColor = vFinalColor * 3.f;
     //Out.vEmissiveColor.a = 1;
 

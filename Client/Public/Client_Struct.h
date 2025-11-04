@@ -118,5 +118,5 @@ namespace Client
 			: iWeapon{ weapon }, iCycle{ cycle }, iSet{ set }, iCategory{ cat }, iSubType{ sub }, iDirection{ dir }
 		{
 		}
-	}kHAZAN_ANIM_FIND;
+	}kHAZAN_ANIM_INFO;
 }

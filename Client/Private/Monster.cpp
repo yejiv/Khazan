@@ -23,6 +23,20 @@ void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction, _float fVal
     m_pController->AI_ApplyDamage(pGameObject,fDamage,ENUM_CLASS(eHitreaction),fValidTime);
 }
 
+void CMonster::Consume_Stamina(_float fAmout)
+{
+    if (m_fCurrentStamina > 0.f)
+        m_fCurrentStamina -= fAmout;
+
+    if (m_fCurrentStamina <= 0)
+        m_fCurrentStamina = 0.1f;
+}
+
+void CMonster::Recovery_Stamina(_float fTimeDelta)
+{
+
+}
+
 void CMonster::Look_Target()
 {
     CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));

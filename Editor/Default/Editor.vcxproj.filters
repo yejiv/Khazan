@@ -226,6 +226,9 @@
     <Filter Include="02.GameObject\Effect\Trail\LineTrail\ScreenTrail">
       <UniqueIdentifier>{1c0dc89f-df51-443c-9aa3-83300d8a860f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\02.TombStone">
+      <UniqueIdentifier>{2bf29804-d405-4e56-b93b-c082d1d474fd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -269,9 +272,6 @@
     </ClInclude>
     <ClInclude Include="..\public\Editor_Model.h">
       <Filter>03.Utility\00.Model</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Editor_Bone.h">
-      <Filter>03.Utility\00.Model\Bone</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Editor_Channel.h">
       <Filter>03.Utility\00.Model\Animation\Channel</Filter>
@@ -431,6 +431,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\ScreenTrail.h">
       <Filter>02.GameObject\Effect\Trail\LineTrail\ScreenTrail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Editor_Bone.h">
+      <Filter>03.Utility\00.Model\Bone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TombStone.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\02.TombStone</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -632,6 +638,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\ScreenTrail.cpp">
       <Filter>02.GameObject\Effect\Trail\LineTrail\ScreenTrail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TombStone.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\02.TombStone</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

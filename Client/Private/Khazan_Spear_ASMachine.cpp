@@ -4,45 +4,50 @@
 
 const CKhazan_Spear_ASMachine::SPEAR_PRIORTIY  CKhazan_Spear_ASMachine::s_CategoryPriorities[] =
 {
-	{TEXT("DIE"),			(1 << 0), 0, 5},
+	/*   이름				카테고리		서브타입			우선순위	*/					
+	{TEXT("DIE"),			(1 << 0),		   0,		5},
+											   
+	{TEXT("HOLD"),			(1 << 1),		   0,		15},
+	{TEXT("GROGGY"),		(1 << 2),		   0,		15},
+	{TEXT("DAMAGED"),		(1 << 3),		   0,		15},
 
-	{TEXT("HOLD"),			(1 << 1), 0, 15},
-	{TEXT("GROGGY"),		(1 << 2), 0, 15},
-	{TEXT("DAMAGED"),		(1 << 3), 0, 15},
+	{TEXT(" SKILL     "),	(1 << 4),		   0,		25},
+
+	{TEXT("GUARD"),			(1 << 5),		   0,		35},
+
+	{TEXT("ATTACK	  "),	(1 << 6),		   0,		45},
+	{TEXT(" FALL      "),	(1 << 6),	(1 << 0),		45},
+	{TEXT(" FAST      "),	(1 << 6),	(1 << 1),		45},
+	{TEXT(" GRAPPLE   "),	(1 << 6),	(1 << 2),		45},
+	//{TEXT(" SKILL     "),	(1 << 6),	(1 << 3),		45},
+	{TEXT(" COUNTER   "),	(1 << 6),	(1 << 4),		45},
+	{TEXT(" DODGEATK  "),	(1 << 6),	(1 << 5),		45},
+	{TEXT(" REFLECTION"),	(1 << 6),	(1 << 6),		45},
+	{TEXT(" SPRINTATK "),	(1 << 6),	(1 << 7),		45},
+	{TEXT(" STRONG    "),	(1 << 6),	(1 << 8),		45},
+	{TEXT(" JAVELIN   "),	(1 << 6),	(1 << 9),		45},
+	{TEXT(" CHARGE    "),	(1 << 6),	(1 << 10),		45},
+
+	{TEXT(" MOVE	   "),  (1 << 7),	       0,		45},
+	{TEXT(" IDLE       "),	(1 << 7),	(1 << 0),		1000},// 예외
+	{TEXT(" WALK       "),	(1 << 7),	(1 << 1),		45},
+	{TEXT(" RUN        "),	(1 << 7),	(1 << 2),		45},
+	{TEXT(" SPRINT     "),	(1 << 7),	(1 << 3),		45},
+	{TEXT(" CLIMB      "),	(1 << 7),	(1 << 4),		45}, //
+	{TEXT(" MIRAGE_STEP"),	(1 << 7),	(1 << 5),		44}, //
+	{TEXT(" GETUP      "),	(1 << 7),	(1 << 6),		45},
+	{TEXT(" FALL       "),	(1 << 7),	(1 << 7),		45},
+	{TEXT(" DODGE      "),	(1 << 7),	(1 << 8),		44}, //
+
+
+
+
+	{TEXT("LOCKON"),		(1 << 8), 0, 55},
 									  
-	{TEXT("GUARD"),			(1 << 4), 0, 25},
+	{TEXT("INTERACT"),		(1 << 9), 0, 65},
+	{TEXT("WEAPON_CHANGE"), (1 << 10), 0, 65},
 
-	{TEXT("ATTACK"),(1 << 5), 0, 35},
-	{TEXT(" FALL      "),	(1 << 5),	(1 << 0), 35},
-	{TEXT(" FAST      "),	(1 << 5),	(1 << 1), 35},
-	{TEXT(" GRAPPLE   "),	(1 << 5),	(1 << 2), 35},
-	{TEXT(" SKILL     "),	(1 << 5),	(1 << 3), 35},
-	{TEXT(" COUNTER   "),	(1 << 5),	(1 << 4), 35},
-	{TEXT(" DODGEATK  "),	(1 << 5),	(1 << 5), 35},
-	{TEXT(" REFLECTION"),	(1 << 5),	(1 << 6), 35},
-	{TEXT(" SPRINTATK "),	(1 << 5),	(1 << 7), 35},
-	{TEXT(" STRONG    "),	(1 << 5),	(1 << 8), 35},
-	{TEXT(" JAVELIN   "),	(1 << 5),	(1 << 9), 35},
-	{TEXT(" CHARGE    "),	(1 << 5),	(1 << 10), 35},
-
-	{TEXT(" MOVE"),	(1 << 6),0, 35},
-	{TEXT(" IDLE       "),	(1 << 6),	(1 << 0), 35},
-	{TEXT(" WALK       "),	(1 << 6),	(1 << 1), 35},
-	{TEXT(" RUN        "),	(1 << 6),	(1 << 2), 35},
-	{TEXT(" SPRINT     "),	(1 << 6),	(1 << 3), 35},
-	{TEXT(" CLIMB      "),	(1 << 6),	(1 << 4), 30},
-	{TEXT(" MIRAGE_STEP"),	(1 << 6),	(1 << 5), 34},
-	{TEXT(" GETUP      "),	(1 << 6),	(1 << 6), 35},
-	{TEXT(" FALL       "),	(1 << 6),	(1 << 7), 35},
-	{TEXT(" DODGE      "),	(1 << 6),	(1 << 8), 34},
-
-
-
-
-	{TEXT("LOCKON"),		(1 << 7), 0, 45},
-									  
-	{TEXT("INTERACT"),		(1 << 8), 0, 55},
-	{TEXT("WEAPON_CHANGE"), (1 << 9), 0, 55},
+	//{TEXT(" IDLE       "),	(1 << 11),	0,		1000},
 };
 
 CKhazan_Spear_ASMachine::CKhazan_Spear_ASMachine()
@@ -144,11 +149,36 @@ _bool CKhazan_Spear_ASMachine::Can_Interrupt(_uint iCurCategory, _uint iCurSubTy
 	return iNewPriority < iCurrentPriority;
 }
 
+_bool CKhazan_Spear_ASMachine::Check_CoolTime(_uint iAnimationIndex)
+{
+	return m_CoolTimes[iAnimationIndex].isEnble;
+}
+
+void CKhazan_Spear_ASMachine::Update_CoolTime(_float fTimeDelta, _uint iAnimationIndex)
+{
+	if (m_CoolTimes[iAnimationIndex].fMaxCoolTime > 0.f && !m_CoolTimes[iAnimationIndex].isEnble)
+		m_CoolTimes[iAnimationIndex].isEnble = true;
+
+	for (auto cool : m_CoolTimes)
+	{
+		if (cool.isEnble)
+		{
+			cool.fCurCooltime += fTimeDelta;
+			
+			if (cool.fCurCooltime >= cool.fMaxCoolTime)
+			{	
+				cool.fCurCooltime = 0.f;
+				cool.isEnble = false;
+			}
+		}
+	}
+}
+
 
 HRESULT CKhazan_Spear_ASMachine::Data_Load()
 {
 
-	_wstring wText = Load_UTF8ToWString(TEXT("../../Bin/Data/DB/Khazan_Spear_Animation_DB.csv"));
+	_wstring wText = Load_UTF8ToWString(TEXT("../Bin/Data/DB/Khazan_Spear_Animation_DB.csv"));
 
 	if (wText.empty())
 	{
@@ -211,7 +241,7 @@ HRESULT CKhazan_Spear_ASMachine::Data_Load()
 
 		//CYCLE
 		_wstring strCycle = read_wstring(ss);
-		if (!strCycle.empty() && strCycle != L"0") asmData.iCycle |= Parse_Attack(strCycle);
+		if (!strCycle.empty() && strCycle != L"0") asmData.iCycle |= Parse_Cycle(strCycle);
 
 		// ATTACK
 		_wstring strAttack0 = read_wstring(ss);
@@ -323,6 +353,28 @@ _uint CKhazan_Spear_ASMachine::Parse_Category(const wstring& str)
 	return 0;
 }
 
+_uint CKhazan_Spear_ASMachine::Parse_Cycle(const wstring& str)
+{
+	if (str.empty() || str == L"0")
+		return 0;
+
+	wstring lower = str;
+	transform(lower.begin(), lower.end(), lower.begin(), ::towlower);
+
+	if (lower == L"start") return CYCLE::CYCLE_START;
+	else if (lower == L"loop") return CYCLE::CYCLE_LOOP;
+	else if (lower == L"end") return CYCLE::CYCLE_END;
+	else if (lower == L"endstart") return CYCLE::CYCLE_ENDSTART;
+	else if (lower == L"endend") return CYCLE::CYCLE_ENDEND;
+	//else if (lower == L"startstart") return CYCLE::CYCLE_STARTSTART;
+	//else if (lower == L"startend") return CYCLE::CYCLE_STARTEND;
+	else if (lower == L"_break") return CYCLE::CYCLE_BREAK;
+	else if (lower == L"shot") return CYCLE::CYCLE_SHOT;
+	else if (lower == L"fail") return CYCLE::CYCLE_FAIL;
+
+	return 0;
+}
+
 _uint CKhazan_Spear_ASMachine::Parse_Attack(const wstring& str)
 {
 	if (str.empty() || str == L"0")
@@ -362,8 +414,8 @@ _uint CKhazan_Spear_ASMachine::Parse_Move(const wstring& str)
 	wstring lower = str;
 	transform(lower.begin(), lower.end(), lower.begin(), ::towlower);
 
-	if (lower == L"idle") return MOVE::MOVE_IDLE;
-	else if (lower == L"walk") return MOVE::MOVE_WALK;
+	//if (lower == L"idle") return MOVE::MOVE_IDLE;
+	 if (lower == L"walk") return MOVE::MOVE_WALK;
 	else if (lower == L"run") return MOVE::MOVE_RUN;
 	else if (lower == L"sprint") return MOVE::MOVE_SPRINT;
 	else if (lower == L"climb") return MOVE::MOVE_CLIMB;
@@ -486,6 +538,7 @@ _uint CKhazan_Spear_ASMachine::Parse_Direction(const wstring& str)
 CKhazan_Spear_ASMachine* CKhazan_Spear_ASMachine::Create()
 {
 	CKhazan_Spear_ASMachine* pInstance = new CKhazan_Spear_ASMachine();
+
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{

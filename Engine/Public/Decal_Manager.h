@@ -15,7 +15,7 @@ public:
 	HRESULT						Render();
 	// 풀 태그, 레벨 인덱스, 레이어 태그, 포지션, 노말, 스케일
 	HRESULT						Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, 
-									_fvector vPosition, _fvector vNormal, const _float3& vScale);
+									const _float3& vPosition, const _float3& vScale);
 
 private:
 	ID3D11Device*				m_pDevice = { nullptr };

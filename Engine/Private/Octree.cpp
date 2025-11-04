@@ -157,42 +157,43 @@ void COctree::Late_Update(_float fTimeDelta)
 
 bool COctree::AddStaticObject(CGameObject* pGameObject, const _float3& vPoint, const _float& fRadius)
 {
-	lock_guard<recursive_mutex> lock(m_Mutex);
-
-	ContainmentType Containment = (fRadius == 0.0f ? m_BoundingBox.Contains(XMLoadFloat3(&vPoint)) : m_BoundingBox.Contains(BoundingSphere(vPoint, fRadius)));
-	if (CONTAINS == Containment)
 	{
-		m_isObtainStatic = true;
-		if (m_iDepth)
+		lock_guard<recursive_mutex> lock(m_Mutex);
+		ContainmentType Containment = (fRadius == 0.0f ? m_BoundingBox.Contains(XMLoadFloat3(&vPoint)) : m_BoundingBox.Contains(BoundingSphere(vPoint, fRadius)));
+		if (CONTAINS == Containment)
 		{
-			int ChildIndex{ 0 };
-			if (m_BoundingBox.Center.x <= vPoint.x)
-				ChildIndex |= 1;
-			if (m_BoundingBox.Center.y <= vPoint.y)
-				ChildIndex |= 2;
-			if (m_BoundingBox.Center.z <= vPoint.z)
-				ChildIndex |= 4;
+			m_isObtainStatic = true;
+			if (m_iDepth)
+			{
+				int ChildIndex{ 0 };
+				if (m_BoundingBox.Center.x <= vPoint.x)
+					ChildIndex |= 1;
+				if (m_BoundingBox.Center.y <= vPoint.y)
+					ChildIndex |= 2;
+				if (m_BoundingBox.Center.z <= vPoint.z)
+					ChildIndex |= 4;
 
-			if (m_pChilds[ChildIndex]->AddStaticObject(pGameObject, vPoint, fRadius))
+				if (m_pChilds[ChildIndex]->AddStaticObject(pGameObject, vPoint, fRadius))
+					return true;
+
+				Safe_AddRef(pGameObject);
+				m_GameObjects.emplace_back(pGameObject);
 				return true;
-
-			Safe_AddRef(pGameObject);
-			m_GameObjects.emplace_back(pGameObject);
-			return true;
+			}
+			else
+			{
+				Safe_AddRef(pGameObject);
+				m_GameObjects.emplace_back(pGameObject);
+				return true;
+			}
 		}
-		else
+		else if (!m_pParent && Containment)
 		{
+			m_isObtainStatic = true;
 			Safe_AddRef(pGameObject);
 			m_GameObjects.emplace_back(pGameObject);
 			return true;
 		}
-	}
-	else if (!m_pParent && Containment)
-	{
-		m_isObtainStatic = true;
-		Safe_AddRef(pGameObject);
-		m_GameObjects.emplace_back(pGameObject);
-		return true;
 	}
 
 	return false;

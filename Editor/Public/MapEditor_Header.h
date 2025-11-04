@@ -22,6 +22,7 @@
 
 #include "BladeNexus.h"					// ±Í°Ë
 #include "BigChest.h"					// »óÀÚ
+#include "TombStone.h"					// °æ°èÀÇ Æ´ Åù½ºÅæ
 
 // Properties Test
 #include "Prop_Test.h"
