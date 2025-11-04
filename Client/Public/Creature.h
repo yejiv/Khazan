@@ -37,6 +37,8 @@ public:
 
 public:
 	virtual void				Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject = nullptr) {};
+	virtual void				Consume_Stamina(_float fAmout) {};
+	virtual void				Recovery_Stamina(_float fTimeDelta) {};
 
 public:
 	virtual HRESULT				Initialize_Prototype() override;

@@ -14,6 +14,7 @@ CVIBuffer_Point_Instance::CVIBuffer_Point_Instance(const CVIBuffer_Point_Instanc
 	, m_fOffset{ Prototype.m_fOffset } //나중에 필요하면 상수버퍼로 넘기기
 	, m_pSRVNoise{ Prototype.m_pSRVNoise } //나중에 필요하면 상수버퍼로 넘기기
 	, m_fTurbulenceSpeed{ Prototype.m_fTurbulenceSpeed }
+	, m_pParticleParams{ Prototype.m_pParticleParams}
 
 {
 	Safe_AddRef(m_pSRVNoise);
@@ -195,6 +196,17 @@ HRESULT CVIBuffer_Point_Instance::Render()
 {
 	m_pContext->DrawInstanced(1, m_iNumInstance, 0, 0);
 
+	//debug
+	m_pContext->CopyResource(m_pDebugStagingBuffer, m_pVBInstance);
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	if (SUCCEEDED(m_pContext->Map(m_pDebugStagingBuffer, 0, D3D11_MAP_READ, 0, &mappedResource)))
+	{
+		IB_POINTINSTANCE_EFFECT aliveCount = *reinterpret_cast<IB_POINTINSTANCE_EFFECT*>(mappedResource.pData);
+		m_pContext->Unmap(m_pStagingBuffer, 0);
+	}
+	//debug end
+
 	return S_OK;
 }
 
@@ -258,19 +270,6 @@ void CVIBuffer_Point_Instance::UpdateGravity(_float fTimeDelta)
 
 void CVIBuffer_Point_Instance::UpdateTurbulence(_float fTimeDelta, _float fAccTime)
 {
-	//debug
-
-			m_pContext->CopyResource(m_pDebugStagingBuffer, m_pStructuredBuffer);
-
-			D3D11_MAPPED_SUBRESOURCE mappedResource;
-			if (SUCCEEDED(m_pContext->Map(m_pDebugStagingBuffer, 0, D3D11_MAP_READ, 0, &mappedResource)))
-			{
-				IB_POINTINSTANCE_EFFECT aliveCount = *reinterpret_cast<IB_POINTINSTANCE_EFFECT*>(mappedResource.pData);
-				m_pContext->Unmap(m_pStagingBuffer, 0);
-			}
-
-	//debug end
-
 	D3D11_MAPPED_SUBRESOURCE SubResource;
 	if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
 	{
@@ -300,18 +299,6 @@ void CVIBuffer_Point_Instance::UpdateTurbulence(_float fTimeDelta, _float fAccTi
 	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
 
 	m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
-
-	//debug
-
-			m_pContext->CopyResource(m_pDebugStagingBuffer, m_pStructuredBuffer);
-
-			if (SUCCEEDED(m_pContext->Map(m_pDebugStagingBuffer, 0, D3D11_MAP_READ, 0, &mappedResource)))
-			{
-				IB_POINTINSTANCE_EFFECT aliveCount = *reinterpret_cast<IB_POINTINSTANCE_EFFECT*>(mappedResource.pData);
-				m_pContext->Unmap(m_pStagingBuffer, 0);
-			}
-
-	//debug end
 }
 
 void CVIBuffer_Point_Instance::Setting_Speed(SPEED_VALUE type, _float2 range)
@@ -345,6 +332,9 @@ void CVIBuffer_Point_Instance::Setting_Speed(SPEED_VALUE type, _float2 range)
 
 void CVIBuffer_Point_Instance::Remove_Speed(SPEED_VALUE type)
 {
+	if (m_IsLoop == true)
+		return;
+
 	D3D11_MAPPED_SUBRESOURCE SubResource;
 	if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
 	{
@@ -425,6 +415,19 @@ HRESULT CVIBuffer_Point_Instance::Ready_SRV(void* pSysmem)
 	if (FAILED(m_pDevice->CreateShaderResourceView(pBuffer, &SRVDesc, &m_pSRV)))
 		return E_FAIL;
 
+	//Debug
+	//여기서 Instance Buffer를 깔 수 있는 Staging Buffer를 만들어야됨
+	//m_pVBInstance 이 내용을 system으로 넣어주는 Staing버퍼 만들기
+	D3D11_BUFFER_DESC DebugStaingBufferDesc{};
+	DebugStaingBufferDesc = m_VBInstanceDesc;
+	DebugStaingBufferDesc.Usage = D3D11_USAGE_STAGING;
+	DebugStaingBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	DebugStaingBufferDesc.BindFlags = 0;
+	if (FAILED(m_pDevice->CreateBuffer(&DebugStaingBufferDesc, nullptr, &m_pDebugStagingBuffer)))
+		return E_FAIL;
+	//Debug End
+
+
 	return S_OK;
 }
 
@@ -463,12 +466,6 @@ HRESULT CVIBuffer_Point_Instance::Ready_UAV()
 	StructuredBufferDesc.BindFlags = 0;
 	StructuredBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
 	if (FAILED(m_pDevice->CreateBuffer(&StructuredBufferDesc, nullptr, &m_pStagingBuffer)))
-		return E_FAIL;
-	
-	//디버깅용 스테이징버퍼
-	StructuredBufferDesc.ByteWidth = m_iNumInstance * sizeof(IB_POINTINSTANCE_EFFECT);
-	StructuredBufferDesc.StructureByteStride = sizeof(IB_POINTINSTANCE_EFFECT);
-	if (FAILED(m_pDevice->CreateBuffer(&StructuredBufferDesc, nullptr, &m_pDebugStagingBuffer)))
 		return E_FAIL;
 
 	return S_OK;

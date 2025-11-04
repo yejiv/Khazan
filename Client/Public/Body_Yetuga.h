@@ -65,6 +65,9 @@ private:
 private:
 	_float3					m_vThrowPoint = {};
 
+private:
+	_float4x4				m_RightHandMatrix = {};
+
 public:
 	static CBody_Yetuga*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject*	Clone(void* pArg) override;

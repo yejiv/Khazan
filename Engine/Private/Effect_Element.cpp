@@ -35,7 +35,7 @@ void CEffect_Element::Update(_float fTimeDelta)
 
 void CEffect_Element::Late_Update(_float fTimeDelta)
 {
-    m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONLIGHT, this);
+    m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
 }
 
 HRESULT CEffect_Element::Render()
@@ -60,6 +60,10 @@ void CEffect_Element::SetUpwardData(void* pArg)
 }
 
 void CEffect_Element::SetScrollData(void* pArg)
+{
+}
+
+void CEffect_Element::SetLoopOff()
 {
 }
 

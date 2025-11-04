@@ -28,24 +28,32 @@ CLevel_HeinMach::CLevel_HeinMach(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 
 HRESULT CLevel_HeinMach::Initialize()
 {
-	CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+	m_pGameInstance->Add_FireTask([this]() {
+		CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+		return S_OK;
+		});
 
-	CHECK_FAILED(Ready_Layer_Sky(TEXT("Layer_Sky"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
- 	CHECK_FAILED(Ready_Layer_Cloud(TEXT("Layer_Sky"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+	m_pGameInstance->Add_FireTask([this]() {
+		CHECK_FAILED(Ready_Layer_Sky(TEXT("Layer_Sky"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+		return S_OK;
+		});
 
-	// Ã¹ï¿½ï¿½Â° ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ ( ï¿½ï¿½ï¿½ï¿½ ~ Ã¹ ï¿½Í°ï¿½ )
+	m_pGameInstance->Add_FireTask([this]() {
+		CHECK_FAILED(Ready_Layer_Cloud(TEXT("Layer_Sky"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+		return S_OK;
+		});
+
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
 		HEINMACH_1ST_BLADENEXUS, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); 
 		return S_OK;
 		}));
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½
-	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
-		HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); 
-		return S_OK;
-		}));
+	//m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+	//	CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
+	//	HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); 
+	//	return S_OK;
+	//	}));
 
 	m_pGameInstance->Add_FireTask([this]() {
 		for (_uint i = 0; i < HEINMACH_SUBLV; ++i)
@@ -63,8 +71,8 @@ HRESULT CLevel_HeinMach::Initialize()
 			//	continue;
 
 			// ì˜ˆíˆ¬ê°€ ë³´ìŠ¤ ë§µ ì„œë¸Œ ë ˆë²¨ ë¡œë“œ ì£¼ì„ í•´ì œí•˜ë©´ ì—¬ê¸°ì„œ ìŠ¤í‚µ
-			if (HEINMACH_YETUGA == i)
-				continue;
+			//if (HEINMACH_YETUGA == i)
+			//	continue;
 			
 			CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), i, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		}
@@ -73,27 +81,41 @@ HRESULT CLevel_HeinMach::Initialize()
 		});
 
 
-	// ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® : ï¿½Þ½ï¿½ ï¿½Î½ï¿½ï¿½Ï½ï¿½
+
 	//CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 	m_pGameInstance->Add_FireTask([this]() mutable { 
 		CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); 
 		return S_OK;
 		});
-	// ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® : ï¿½ï¿½È£ ï¿½Û¿ï¿½
+
 	//CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 	m_pGameInstance->Add_FireTask([this]() mutable { 
 		CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); 
 		return S_OK;
 		});
 
-	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
-		return E_FAIL;
+	m_pGameInstance->Add_FireTask([this]() {
+		if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
+			return E_FAIL;
+		return S_OK;
+	});
 
-	CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
-	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
-		return E_FAIL;
+	m_pGameInstance->Add_FireTask([this]() {
+		CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
+
+		if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
+			return E_FAIL;
+		return S_OK;
+	});
+
 	//if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
 	//	return E_FAIL;
+
+	if (FAILED(Ready_Layer_TestEffect(TEXT("Layer_EffectTest"))))
+		return E_FAIL;
+
+	/*if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
+		return E_FAIL;*/
 
 	while (true) {
 		bool all_ready = true;
@@ -285,6 +307,28 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Test(const _wstring& strLayerTag)
 
 	//CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
 	//	ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Test"), &ObjectDesc), E_FAIL);
+
+	return S_OK;
+}
+
+HRESULT CLevel_HeinMach::Ready_Layer_TestEffect(const _wstring& strLayerTag)
+{
+	//À§Ä¡°ª Å×½ºÆ®ÀÓ cloneÇÒ ¶§ argument ¾È ¹ÞÀ» °Å
+
+	//_float3 test { 1.f, 0.f, 0.f};
+	//
+	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+	//	ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_TestParticle"), TIME_CHANNEL::EFFECT, &test)))
+	//	return E_FAIL;
+	//
+	//_float3 test2{ 0.f, 1.f, 0.f };
+	//
+	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+	//	ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_TestParticle"), TIME_CHANNEL::EFFECT, &test2)))
+	//	return E_FAIL;
+
+	//m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle1"), 3);
+	//m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle2"), 3);
 
 	return S_OK;
 }
