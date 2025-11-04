@@ -502,6 +502,12 @@
     <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation\Attack">
       <UniqueIdentifier>{a91ac477-d2f9-4e27-afb2-0bd27f255aee}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\02.TombStone">
+      <UniqueIdentifier>{02e4226f-6770-4c00-8ecb-92687cc483a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Logo">
+      <UniqueIdentifier>{26278f3a-a228-41e2-a180-ca8ee47150b7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -951,6 +957,15 @@
     <ClInclude Include="..\public\Khazan_Spear_Anim_Move.h">
       <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Move</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\TombStone.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\02.TombStone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Logo_BG.h">
+      <Filter>02.GameObject\UI\Logo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Projectile_Breath_Yetuga.h">
+      <Filter>02.GameObject\Projectile\Yetuga\Breath</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1385,6 +1400,15 @@
     </ClCompile>
     <ClCompile Include="..\private\Khazan_Spear_Anim_Move.cpp">
       <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Move</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TombStone.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\02.TombStone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Logo_BG.cpp">
+      <Filter>02.GameObject\UI\Logo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile_Breath_Yetuga.cpp">
+      <Filter>02.GameObject\Projectile\Yetuga\Breath</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

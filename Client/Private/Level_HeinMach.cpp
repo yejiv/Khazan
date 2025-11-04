@@ -910,7 +910,6 @@ HRESULT CLevel_HeinMach::Ready_Layer_Cloud(const _wstring& strLayerTag, const _t
 	return S_OK;
 }
 
-
 CLevel_HeinMach* CLevel_HeinMach::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	CLevel_HeinMach* pInstance = new CLevel_HeinMach(pDevice, pContext);
@@ -923,7 +922,6 @@ CLevel_HeinMach* CLevel_HeinMach::Create(ID3D11Device* pDevice, ID3D11DeviceCont
 
 	return pInstance;
 }
-
 
 void CLevel_HeinMach::Free()
 {

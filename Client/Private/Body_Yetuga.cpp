@@ -22,6 +22,14 @@ _float3 CBody_Yetuga::Get_BonePoint(const _char* BoneName)
     return m_vThrowPoint;
 }
 
+_matrix CBody_Yetuga::Get_BoneMatrix(const _char* pBoneName)
+{
+    _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix(pBoneName);
+    _matrix BoneWorld = XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(&m_CombinedWorldMatrix);
+
+    return BoneWorld;
+}
+
 CBody_Yetuga::CBody_Yetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CPartObject{pDevice,pContext}
 {
@@ -166,10 +174,14 @@ HRESULT CBody_Yetuga::Bind_ShaderResources()
 void CBody_Yetuga::Carculate_Matrix(_float fTimeDelta)
 {
     _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix("Weapon_R");
-    _matrix BoneWorld = XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix);
+    _matrix BoneWorld = XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(&m_CombinedWorldMatrix);
     _vector vOutQuat, vOutPos;
+    m_pTransformCom->Set_WorldMatrix(BoneWorld);
     m_pRH_BodyCom->Sync_Update(BoneWorld);
     m_pRH_BodyCom->Update(fTimeDelta, BoneWorld, vOutQuat, vOutPos);
+    
+    m_pTransformCom->Set_Quaternion(vOutQuat);
+    m_pTransformCom->Set_State(STATE::POSITION, vOutPos);
 
 }
 
@@ -196,7 +208,7 @@ HRESULT CBody_Yetuga::Ready_Colliders()
     BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
     m_tCollisionDesc.pGameObject = this;
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
-
+    BodyDesc.bIsTrigger = true;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body_RH"), reinterpret_cast<CComponent**>(&m_pRH_BodyCom), &BodyDesc)))
         return E_FAIL;

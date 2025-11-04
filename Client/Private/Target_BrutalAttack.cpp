@@ -18,15 +18,16 @@ CTarget_BrutalAttack::CTarget_BrutalAttack(const CTarget_BrutalAttack& Prototype
 
 void CTarget_BrutalAttack::Setting_BrutalAttack(const _float4* pTargetPos, _float fDelayTime, _float2 vOffset)
 {
-	m_pTagetPos = pTargetPos;
+	m_pTargetPos = pTargetPos;
 	m_vLocalPos = { vOffset.x, -vOffset.y };
 	m_fTime = fDelayTime;
 	m_fMaxTime = fDelayTime;
+
+	m_pGameInstance->Emit_Event<EVENT_LOCKON_VISIBLE>(ENUM_CLASS(EVENT_TYPE::LOCKON_VISIBLE), EVENT_LOCKON_VISIBLE{ pTargetPos, false });
 }
 
 void CTarget_BrutalAttack::Off_BrutalAttack()
 {
-	m_pTagetPos = nullptr;
 	m_isDead = true;
 }
 
@@ -101,7 +102,8 @@ HRESULT CTarget_BrutalAttack::Render()
 
 void CTarget_BrutalAttack::Reset()
 {
-	m_pTagetPos = nullptr;
+	m_pGameInstance->Emit_Event<EVENT_LOCKON_VISIBLE>(ENUM_CLASS(EVENT_TYPE::LOCKON_VISIBLE), EVENT_LOCKON_VISIBLE{ m_pTargetPos, true });
+	m_pTargetPos = nullptr;
 	m_fMaxTime = 0;
 	m_fTime = 0;
 }
@@ -136,10 +138,10 @@ HRESULT CTarget_BrutalAttack::Ready_Component()
 
 void CTarget_BrutalAttack::Update_WorldPos()
 {
-	if (nullptr == m_pTagetPos)
+	if (nullptr == m_pTargetPos)
 		return;
 
-	_vector vTargetPos = XMLoadFloat4(m_pTagetPos);
+	_vector vTargetPos = XMLoadFloat4(m_pTargetPos);
 
 	_float4 vTemp = CClientInstance::GetInstance()->Get_ActiveCameraLook();
 	_vector vCamLook = XMVector3Normalize(XMLoadFloat4(&vTemp));
