@@ -341,7 +341,7 @@ public:
 
 #pragma region DECAL_MANAGER
 	HRESULT	Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag,
-		_fvector vPosition, _fvector vNormal, const _float3& vScale);
+		const _float3& vPosition, const _float3& vScale);
 	HRESULT Render_Decals();
 #pragma endregion
 

@@ -13,14 +13,14 @@ HRESULT CKhazan_Spear_ASManager::Initialize_Prototype(CKhazan_Spear_ASMachine* p
     Safe_AddRef(m_pASM);
 
     /* 초기 애니메이션 값 */
-    kHAZAN_ANIM_FIND initAnim =
+    kHAZAN_ANIM_INFO initAnim =
         tagKhazanAnimationFindInfo(
             CKhazan_Spear_ASMachine::WEAPON::NONE,
             CKhazan_Spear_ASMachine::CATEGORY::M_MOVE,
-            CKhazan_Spear_ASMachine::MOVE::MOVE_IDLE,
+            //CKhazan_Spear_ASMachine::MOVE::MOVE_IDLE,
             ENUM_CLASS(DIRECTION::F)
         );
-    m_eCurState.animFind = initAnim;
+    m_eCurState.animInfo = initAnim;
     m_eCurState.isInterruptible = true;
     m_eCurState.iAnimIndex = Find_AnimationIndex(initAnim);
     m_eCurState.fStateTime = 0.f;
@@ -29,23 +29,54 @@ HRESULT CKhazan_Spear_ASManager::Initialize_Prototype(CKhazan_Spear_ASMachine* p
     return S_OK;
 }
 
-void CKhazan_Spear_ASManager::Add_Transition(_uint iFrom, kHAZAN_ANIM_FIND toAnimFind, function<_bool()> condition, _uint priority)
+void CKhazan_Spear_ASManager::Add_Transition(_uint iFrom, kHAZAN_ANIM_INFO toAnimInfo, function<_bool()> condition, _uint priority)
 {
-    m_Transitions.emplace_back(iFrom, toAnimFind, condition, priority);
+    m_Transitions.emplace_back(iFrom, toAnimInfo, condition, priority);
 
     // 우선순위로 정렬
     sort(m_Transitions.begin(), m_Transitions.end(), [](const SPEAR_ANIMTRANSITION& a, const SPEAR_ANIMTRANSITION& b) {
         return a.iPriority > b.iPriority; });
 }
 
-void CKhazan_Spear_ASManager::Force_ChangeState(kHAZAN_ANIM_FIND animFind)
+void CKhazan_Spear_ASManager::Force_ChangeState(kHAZAN_ANIM_INFO animInfo)
 {
-    Change_State(animFind);
+    Change_State(animInfo);
 }
 
-void CKhazan_Spear_ASManager::Update(_float fTimeDelta)
+kHAZAN_ANIM_INFO CKhazan_Spear_ASManager::Detect_State(const vector<kHAZAN_ANIM_INFO>& candidates)
+{
+    kHAZAN_ANIM_INFO bestAnim;
+    _uint bestPriority = 9999;
+
+    for (const auto& candidate : candidates)
+    {
+        _uint priority = m_pASM->Get_CategoryPriority(candidate.iCategory, candidate.iSubType);
+        if (priority < bestPriority)  // 낮은 숫자가 높은 우선순위
+        {
+            bestPriority = priority;
+            bestAnim = candidate;
+        }
+    }
+
+    // 아무것도 없으면 IDLE 반환
+    if (bestPriority == 9999)
+    {
+        return kHAZAN_ANIM_INFO(
+            CKhazan_Spear_ASMachine::WEAPON::SPEAR,
+            CKhazan_Spear_ASMachine::CATEGORY::M_MOVE,
+            //CKhazan_Spear_ASMachine::MOVE::MOVE_IDLE,
+            ENUM_CLASS(DIRECTION::F)
+        );
+    }
+
+    return bestAnim;
+}
+
+
+void CKhazan_Spear_ASManager::Update(_float fTimeDelta, kHAZAN_ANIM_INFO animInfo)
 {
     m_eCurState.fStateTime += fTimeDelta;
+
 
     /* 최소 시간 체크 */
     if (m_eCurState.fStateTime < m_eCurState.fMinDuration)
@@ -58,17 +89,20 @@ void CKhazan_Spear_ASManager::Update(_float fTimeDelta)
     /* 우선순위 체크 */
     for (const auto& rule : m_Transitions)
     {
-        if (!(m_eCurState.animFind.iCategory & rule.iFromCategory))
+        /* 카테고리 일치 체크 */
+        if (!(m_eCurState.animInfo.iCategory & rule.iFromCategory))
             continue;
 
+        /* 컨디션 체크 */
         if (!rule.checkCondition || rule.checkCondition())
             continue;
 
-        if (!Can_Transition(rule.toAnimFind.iCategory, rule.toAnimFind.iSubType))
+        /*  */
+        if (!Can_Transition(rule.toAnimInfo.iCategory, rule.toAnimInfo.iSubType))
             continue;
 
         /* 전환  */
-        Change_State(rule.toAnimFind);
+        Change_State(rule.toAnimInfo);
         return;
     }
     
@@ -85,7 +119,7 @@ _bool CKhazan_Spear_ASManager::Update_Transition(_uint& iCurrentState)
         {
             // 이전 상태 제거하고 새 상태 추가
             iCurrentState &= ~transition.iFromCategory;
-            iCurrentState |= transition.toAnimFind.iCategory;
+            iCurrentState |= transition.toAnimInfo.iCategory;
             return true;  // 전환 발생
         }
     }
@@ -128,12 +162,12 @@ _int CKhazan_Spear_ASManager::Get_AnimationIndex(_uint iState, _uint iDirection)
     return -1;
 }
 
-void CKhazan_Spear_ASManager::Change_State(kHAZAN_ANIM_FIND animFind)
+void CKhazan_Spear_ASManager::Change_State(kHAZAN_ANIM_INFO animInfo)
 {
     m_ePrevState = m_eCurState;
 
-    m_eCurState.animFind = animFind;
-    m_eCurState.iAnimIndex = Find_AnimationIndex(animFind);
+    m_eCurState.animInfo = animInfo;
+    m_eCurState.iAnimIndex = Find_AnimationIndex(animInfo);
     m_eCurState.fStateTime = 0.f;
 
     /* 상태별 속성 설정하기  */
@@ -143,10 +177,10 @@ void CKhazan_Spear_ASManager::Change_State(kHAZAN_ANIM_FIND animFind)
 
 _bool CKhazan_Spear_ASManager::Can_Transition(_uint iNewCategory, _uint iNewSubType)
 {
-    return m_pASM->Can_Interrupt(m_eCurState.animFind.iCategory, m_eCurState.animFind.iSubType, iNewCategory, iNewSubType);
+    return m_pASM->Can_Interrupt(m_eCurState.animInfo.iCategory, m_eCurState.animInfo.iSubType, iNewCategory, iNewSubType);
 }
 
-_int CKhazan_Spear_ASManager::Find_AnimationIndex(kHAZAN_ANIM_FIND animFind)
+_int CKhazan_Spear_ASManager::Find_AnimationIndex(kHAZAN_ANIM_INFO animInfo)
 {
     const vector<CKhazan_Spear_ASMachine::SPEAR_ASM>& asms = m_pASM->Get_ASMs();
 
@@ -154,21 +188,35 @@ _int CKhazan_Spear_ASManager::Find_AnimationIndex(kHAZAN_ANIM_FIND animFind)
     {
          const CKhazan_Spear_ASMachine::SPEAR_ASM&  c_asm = asms[i];
          // 무기 체크 
-         if (!(c_asm.iWeapon & animFind.iWeapon)) continue;
+         if (!(c_asm.iWeapon & animInfo.iWeapon)) continue;
 
          // 카테고리 체크
-         if (!(c_asm.iCategory & animFind.iCategory)) continue;
+         if (!(c_asm.iCategory & animInfo.iCategory)) continue;
 
          // 서브타입 체크
          // MOVE
-         if ((CKhazan_Spear_ASMachine::CATEGORY::M_MOVE & animFind.iCategory))
+         if ((CKhazan_Spear_ASMachine::CATEGORY::M_MOVE & animInfo.iCategory))
          {
-             if ((c_asm.iMove & animFind.iSubType) && (c_asm.iCycle & animFind.iCycle) && (c_asm.iDirection & animFind.iDirection))
-                 return i;
+             if (!(c_asm.iMove & animInfo.iSubType)) continue;
+             if (animInfo.iCycle && !(c_asm.iCycle & animInfo.iCycle)) continue;
+             if (animInfo.iDirection && !(c_asm.iDirection & animInfo.iDirection)) continue;
+             return i;
          }
 
          //ATTACK 
+         else if (animInfo.iCategory & CKhazan_Spear_ASMachine::CATEGORY::M_ATTACK)
+         {
+             if (!(c_asm.iAttack & animInfo.iSubType)) continue;
+             if (animInfo.iDirection && !(c_asm.iDirection & animInfo.iDirection)) continue;
+             return i;
+         }
 
+         //SKILL
+         else if (animInfo.iCategory & CKhazan_Spear_ASMachine::CATEGORY::M_SKILL)
+         {
+             if (c_asm.iSkill != animInfo.iSubType) continue;
+             return i;
+         }
 
 
 

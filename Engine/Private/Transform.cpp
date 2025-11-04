@@ -234,32 +234,25 @@ void CTransform::AI_Chase(_fvector vTargetPos, _float fTimeDelta, _float SpeedPe
 	if (fDistSq >= fLimit)
 		vPosition += XMVector3Normalize(vMoveDir) * SpeedPerSec * fTimeDelta;
 
-
 	Set_State(STATE::POSITION, vPosition);
-
-
 }
 
-void CTransform::Align_ToNormal(_fvector vNormal)
+void CTransform::Look_Dir(_fvector vDir)
 {
-	// 1. Z축을 목표 노말로 설정, 정규화
-	// 2. Y축을 월드 업벡터
-	// 3. 예외처리 Z축과 Y축이 거의 평행할 경우 내적했을 때 0.999 이상 -> 다른 임의의 축 월드 Z를 기준으로 외적 시작
-	// 4. 업룩 외적 -> X축 계산
-	// 5. 룩라 외적 -> 최종 Y축 계산
-	// 6. 결과를 012행에 세팅
+	// 인자로 들어온 방향을 Look으로 설정 후 외적 == 인자 방향과 같은 방향을 쳐다보도록 회전
 
 	_float3 vScaled = Get_Scaled();
-	
-	_vector		vLook = vNormal;
+
+	_vector		vLook = vDir;
 	_vector		vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
 	_vector		vRight = {};
+
 	if (XMVectorGetX(XMVector3Dot(vLook, vUp)) >= 0.999f)
 		vUp = XMVectorSet(0.f, 0.f, 1.f, 0.f);
-	
+
 	vRight = XMVector3Normalize(XMVector3Cross(vUp, vLook));
 	vUp = XMVector3Normalize(XMVector3Cross(vLook, vRight));
-	
+
 	Set_State(STATE::RIGHT, XMVector3Normalize(vRight) * vScaled.x);
 	Set_State(STATE::UP, XMVector3Normalize(vUp) * vScaled.y);
 	Set_State(STATE::LOOK, XMVector3Normalize(vLook) * vScaled.z);

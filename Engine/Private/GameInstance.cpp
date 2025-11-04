@@ -1150,9 +1150,9 @@ HRESULT CGameInstance::SEQ_Jump(const SEQ_REQ_JUMP_DESC& tDesc)
 
 #pragma region DECAL_MANAGER
 
-HRESULT CGameInstance::Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, _fvector vPosition, _fvector vNormal, const _float3& vScale)
+HRESULT CGameInstance::Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, const _float3& vPosition, const _float3& vScale)
 {
-	return m_pDecal_Manager->Spawn_Decal(strPoolTag, iLayerLevelIndex, strLayerTag, vPosition, vNormal, vScale);
+	return m_pDecal_Manager->Spawn_Decal(strPoolTag, iLayerLevelIndex, strLayerTag, vPosition, vScale);
 }
 
 HRESULT CGameInstance::Render_Decals()
