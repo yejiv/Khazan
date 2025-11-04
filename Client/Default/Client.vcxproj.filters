@@ -960,6 +960,9 @@
     <ClInclude Include="..\Public\Projectile_Breath_Yetuga.h">
       <Filter>02.GameObject\Projectile\Yetuga\Breath</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\AS_Dead_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\16.Dead</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1397,6 +1400,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Projectile_Breath_Yetuga.cpp">
       <Filter>02.GameObject\Projectile\Yetuga\Breath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Dead_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\16.Dead</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

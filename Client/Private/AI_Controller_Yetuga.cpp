@@ -145,8 +145,13 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 		return [pYetuga](CBlackBoard* BB)->_bool
 			{
 				HITREACTION eHitRection = static_cast<HITREACTION>(BB->Get_Value<_uint>(pYetuga->Get_Name(), "DamageType"));
-				if (eHitRection == HITREACTION::GROGGY)
+				_float fCurrentStamina = pYetuga->Get_CurrentStamina();
+			
+				if (fCurrentStamina <= 0.f)
+				{
+					eHitRection = HITREACTION::GROGGY;
 					return true;
+				}
 				else
 					return false;
 			};
