@@ -60,8 +60,8 @@ HRESULT CBody_Yetuga::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-   /* if (FAILED(Ready_Colliders()))
-        return E_FAIL;*/
+   if (FAILED(Ready_Colliders()))
+        return E_FAIL;
 
     m_pTransformCom->Scale(_float3(1.5f,1.5f,1.5f));
 
@@ -80,14 +80,13 @@ void CBody_Yetuga::Update(_float fTimeDelta)
 
     Update_CombinedMatrix();
 
-    
-    //Carculate_Matrix(fTimeDelta);
+    Carculate_Matrix(fTimeDelta);
 
-   /* m_pLH_BodyCom->Sync_Update(m_pTransformCom);
-    m_pBack_BodyCom->Sync_Update(m_pTransformCom);
+   //m_pLH_BodyCom->Sync_Update(m_pTransformCom);
+   // m_pBack_BodyCom->Sync_Update(m_pTransformCom);
 
-    m_pLH_BodyCom->Update(fTimeDelta, m_pTransformCom);
-    m_pBack_BodyCom->Update(fTimeDelta, m_pTransformCom);*/
+    //m_pLH_BodyCom->Update(fTimeDelta, m_pTransformCom);
+    //m_pBack_BodyCom->Update(fTimeDelta, m_pTransformCom);
 }
 
 void CBody_Yetuga::Late_Update(_float fTimeDelta)
@@ -174,15 +173,18 @@ HRESULT CBody_Yetuga::Bind_ShaderResources()
 void CBody_Yetuga::Carculate_Matrix(_float fTimeDelta)
 {
     _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix("Weapon_R");
-    _matrix BoneWorld = XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(&m_CombinedWorldMatrix);
+    XMStoreFloat4x4(&m_RightHandMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
     _vector vOutQuat, vOutPos;
-    m_pTransformCom->Set_WorldMatrix(BoneWorld);
-    m_pRH_BodyCom->Sync_Update(BoneWorld);
-    m_pRH_BodyCom->Update(fTimeDelta, BoneWorld, vOutQuat, vOutPos);
-    
-    m_pTransformCom->Set_Quaternion(vOutQuat);
-    m_pTransformCom->Set_State(STATE::POSITION, vOutPos);
 
+    m_pRH_BodyCom->Sync_Update(XMLoadFloat4x4(&m_RightHandMatrix));
+    m_pRH_BodyCom->Update(fTimeDelta, XMLoadFloat4x4(&m_RightHandMatrix), vOutQuat, vOutPos);
+    // m_pTransformCom->Set_Quaternion(vOutQuat);
+    //m_pTransformCom->Set_State(STATE::POSITION, vOutPos);
+
+    m_RightHandMatrix._41 = vOutPos.m128_f32[0];
+    m_RightHandMatrix._42 = vOutPos.m128_f32[1];
+    m_RightHandMatrix._43 = vOutPos.m128_f32[2];
+    m_RightHandMatrix._44 = 1.f;
 }
 
 HRESULT CBody_Yetuga::Ready_Colliders()
@@ -190,21 +192,18 @@ HRESULT CBody_Yetuga::Ready_Colliders()
     CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
 
     // 오른손
-    BodyDesc.fRadius = 6.f;
+    BodyDesc.fRadius = 3.f;
     BodyDesc.eMotion = EMotionType::Kinematic;
     BodyDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
     BodyDesc.eShapeType = SHAPE::SPHERE;
     BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER); // 추후에 Enum Monster attack 변경 할수도
-    _float3 vPosition{};
-   /* vPosition.x = m_pModelCom->Get_BoneMatrix("Weapon_R")->m[3][0];
-    vPosition.y = m_pModelCom->Get_BoneMatrix("Weapon_R")->m[3][1];
-    vPosition.z = m_pModelCom->Get_BoneMatrix("Weapon_R")->m[3][2];*/
-    vPosition = Get_BonePoint("Weapon_R");
+    _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix("Weapon_R");
+    XMStoreFloat4x4(&m_RightHandMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
+    _vector vScale, vQuat, vTrans;
+    XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_RightHandMatrix));
 
-    _float4 vQuat{};
-    XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
-    BodyDesc.vPos = vPosition;
-    BodyDesc.vQuat = vQuat;
+    BodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
+    BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
     BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
     m_tCollisionDesc.pGameObject = this;
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;

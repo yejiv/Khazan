@@ -1,4 +1,5 @@
 #include "Yetuga.h"
+#include "ClientInstance.h"
 #include "GameInstance.h"
 #include "AI_Controller_Yetuga.h"
 #include "BlackBoard.h"
@@ -7,7 +8,7 @@
 #include "Projectile_Yetuga.h"
 #include "Projectile_Rock_Yetuga.h"
 #include "Projectile_Breath_Yetuga.h"
-
+#include "BossHp.h"
 
 CYetuga::CYetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice, pContext }
@@ -58,6 +59,14 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
     if (nullptr == m_pController)
         return E_FAIL;
 
+    CBossHp::BOSSMON_UPDATE_DESC HPDesc{};
+    HPDesc.isOpen = true;
+    HPDesc.pHpMaxValue = &m_fMaxHP;
+    HPDesc.pHpValue = &m_fCurrentHP;
+    HPDesc.pStaminaMaxValue = &m_fMaxStamina;
+    HPDesc.pStaminaCulValue = &m_fCurrentStamina;
+
+    CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"),&HPDesc);
 
     return S_OK;
 }
@@ -646,6 +655,29 @@ HRESULT CYetuga::Ready_AnimEvent()
     /*pModel->Register_Event("IceBreath_Melee", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Breath_Start(); });
     pModel->Register_Event("IceBreath_Melee", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Breath_Loop(); });*/
     //pModel->Register_Event("IceBreath_Melee", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Breath_Start(); });
+#pragma endregion
+
+#pragma region Groggy
+    pModel->Register_Event("GroggyStart", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
+        {
+
+        });
+    pModel->Register_Event("GroggyEnd", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
+        {
+
+        });
+
+#pragma endregion
+
+#pragma region Dead
+
+    pModel->Register_Event("Dead", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            CBossHp::BOSSMON_UPDATE_DESC Desc;
+            Desc.isOpen = false;
+            CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &Desc);
+        });
+
 #pragma endregion
 
 
