@@ -17,7 +17,7 @@ private:
 	virtual ~CUI_Default_Tex() = default;
 
 public:
-	
+	HRESULT					Set_Texture(const _wstring& strPrototypeTag, _int iTexPass = 0);
 public:
 	virtual HRESULT			Initialize_Prototype();
 	virtual HRESULT			Initialize_Clone(void* pArg) override;

@@ -29,6 +29,13 @@ sampler PointSampler = sampler_state
     AddressV = wrap;
 };
 
+sampler SkySampler = sampler_state
+{
+    filter = min_mag_mip_linear;
+    AddressU = wrap;
+    AddressV = clamp;
+};
+
 RasterizerState RS_Wireframe
 {
     FillMode = wireframe;

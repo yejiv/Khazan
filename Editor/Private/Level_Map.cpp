@@ -2181,15 +2181,41 @@ HRESULT CLevel_Map::Ready_SkySphere_Window()
 			_float fStarStrength = m_FixSkyDesc.fStarStrength;
 			_float3 vMoonColor = m_FixSkyDesc.vMoonColor;
 			_float3 vMoonDirection = m_FixSkyDesc.vMoonDirection;
-			_float3 vNebulaColor = m_FixSkyDesc.vNebulaColor;
+			_float3 vNebulaColorR = m_FixSkyDesc.vNebulaColorR;
+			_float3 vNebulaColorG = m_FixSkyDesc.vNebulaColorG;
+			_float3 vNebulaColorB = m_FixSkyDesc.vNebulaColorB;
 
 			ImGui::Text("SKY COLOR");
+			ImGui::Text("COLOR PALHETT");
+			ImGui::ColorPicker3("##r_edit", reinterpret_cast<_float*>(&m_FixSkyDesc.vNebulaColorR));
+			//ImGui::ColorPicker3("##g_edit", (_float*)&m_FixSkyDesc.vNebulaColorG);
+			//ImGui::ColorPicker3("##b_edit", (_float*)&m_FixSkyDesc.vNebulaColorB);
+			/*
 			ImGui::Text("R"); SAMELINE;
-			ImGui::InputFloat("##fix_sky_color_R", &m_FixSkyDesc.vNebulaColor.x, 0.01f, 0.1f);
+			ImGui::InputFloat("##fix_sky_R_color_R", &m_FixSkyDesc.vNebulaColorR.x, 0.01f, 0.1f);
 			ImGui::Text("G"); SAMELINE;
-			ImGui::InputFloat("##fix_sky_color_G", &m_FixSkyDesc.vNebulaColor.y, 0.01f, 0.1f);
+			ImGui::InputFloat("##fix_sky_R_color_G", &m_FixSkyDesc.vNebulaColorR.y, 0.01f, 0.1f);
 			ImGui::Text("B"); SAMELINE;
-			ImGui::InputFloat("##fix_sky_color_B", &m_FixSkyDesc.vNebulaColor.z, 0.01f, 0.1f);
+			ImGui::InputFloat("##fix_sky_R_color_B", &m_FixSkyDesc.vNebulaColorR.z, 0.01f, 0.1f);
+			*/
+			/*
+			ImGui::Text("GREEN AREA");
+			ImGui::Text("R"); SAMELINE;
+			ImGui::InputFloat("##fix_sky_G_color_R", &m_FixSkyDesc.vNebulaColorG.x, 0.01f, 0.1f);
+			ImGui::Text("G"); SAMELINE;
+			ImGui::InputFloat("##fix_sky_G_color_G", &m_FixSkyDesc.vNebulaColorG.y, 0.01f, 0.1f);
+			ImGui::Text("B"); SAMELINE;
+			ImGui::InputFloat("##fix_sky_G_color_B", &m_FixSkyDesc.vNebulaColorG.z, 0.01f, 0.1f);
+			*/
+			/*
+			ImGui::Text("BLUE AREA");
+			ImGui::Text("R"); SAMELINE;
+			ImGui::InputFloat("##fix_sky_B_color_R", &m_FixSkyDesc.vNebulaColorB.x, 0.01f, 0.1f);
+			ImGui::Text("G"); SAMELINE;
+			ImGui::InputFloat("##fix_sky_B_color_G", &m_FixSkyDesc.vNebulaColorB.y, 0.01f, 0.1f);
+			ImGui::Text("B"); SAMELINE;
+			ImGui::InputFloat("##fix_sky_B_color_B", &m_FixSkyDesc.vNebulaColorB.z, 0.01f, 0.1f);
+			*/
 			SEPARATOR;
 
 			ImGui::Text("MOON SIZE"); SAMELINE;
@@ -2197,12 +2223,16 @@ HRESULT CLevel_Map::Ready_SkySphere_Window()
 			SEPARATOR;
 
 			ImGui::Text("MOON COLOR");
+			ImGui::Text("COLOR PALHETT");
+			ImGui::ColorPicker3("##moon_color_edit", reinterpret_cast<_float*>(&m_FixSkyDesc.vMoonColor));
+			/*
 			ImGui::Text("R"); SAMELINE;
 			ImGui::InputFloat("##fix_moon_color_R", &m_FixSkyDesc.vMoonColor.x, 0.01f, 0.1f);
 			ImGui::Text("G"); SAMELINE;
 			ImGui::InputFloat("##fix_moon_color_G", &m_FixSkyDesc.vMoonColor.y, 0.01f, 0.1f);
 			ImGui::Text("B"); SAMELINE;
 			ImGui::InputFloat("##fix_moon_color_B", &m_FixSkyDesc.vMoonColor.z, 0.01f, 0.1f);
+			*/
 			SEPARATOR;
 
 			ImGui::Text("MOON INTENSITY"); SAMELINE;

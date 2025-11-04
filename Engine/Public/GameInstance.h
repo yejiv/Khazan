@@ -211,7 +211,7 @@ public:
 	void Set_ObjectLayerFilter(_uint iObjectLayer, _bool isOn = true);
 	Body* CreateAndAdd_Body(const BodyCreationSettings& BodySetting, BodyInterface** pBodyInterface);
 	CharacterVirtual* CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData, BodyInterface** pBodyInterface);
-	CBoneChainPhysic* CreateBoneChain(class CModel* pModel, CBoneChainPhysic::BCP_BuildDesc tBuild, CBoneChainPhysic::BCP_RuntimeParams tParams, _uint iRootObjectLayer, _uint iBoneChainObjectLayer);
+	CBoneChainPhysic* CreateBoneChain(class CModel* pModel, CBoneChainPhysic::BCP_BuildDesc tBuild, CBoneChainPhysic::BCP_RuntimeParams tParams, _uint iRootObjectLayer, _uint iBoneChainObjectLayer, class CTransform** pOwnerTransform);
 
 	void CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter);
 	void CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter, CharacterVirtual::ExtendedUpdateSettings tSetting);

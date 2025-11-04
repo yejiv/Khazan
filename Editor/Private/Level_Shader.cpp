@@ -510,8 +510,8 @@ HRESULT CLevel_Shader::Ready_Layer_MapObject(const _wstring& strLayerTag, const 
 	case KHAZAN_MAP::YETUGA:
 		pDataFilePath += TEXT("Yetuga/");
 		break;
-	case KHAZAN_MAP::THECREVICE:
-		pDataFilePath += TEXT("TheCrevice/");
+	case KHAZAN_MAP::CREVICE:
+		pDataFilePath += TEXT("Crevice/");
 		break;
 	case KHAZAN_MAP::EMBARS:
 		pDataFilePath += TEXT("Embars/");
@@ -602,8 +602,8 @@ HRESULT CLevel_Shader::Ready_Layer_MapObject_Inst(const _wstring& strLayerTag, c
 	case KHAZAN_MAP::YETUGA:
 		pDataFilePath += TEXT("Yetuga/");
 		break;
-	case KHAZAN_MAP::THECREVICE:
-		pDataFilePath += TEXT("TheCrevice/");
+	case KHAZAN_MAP::CREVICE:
+		pDataFilePath += TEXT("Crevice/");
 		break;
 	case KHAZAN_MAP::EMBARS:
 		pDataFilePath += TEXT("Embars/");
@@ -684,8 +684,8 @@ HRESULT CLevel_Shader::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurrentL
 	case KHAZAN_MAP::YETUGA:
 		pDataFilePath += TEXT("Yetuga/");
 		break;
-	case KHAZAN_MAP::THECREVICE:
-		pDataFilePath += TEXT("TheCrevice/");
+	case KHAZAN_MAP::CREVICE:
+		pDataFilePath += TEXT("Crevice/");
 		break;
 	case KHAZAN_MAP::EMBARS:
 		pDataFilePath += TEXT("Embars/");

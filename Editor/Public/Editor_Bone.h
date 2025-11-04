@@ -30,12 +30,12 @@ public:
 	const _char*	Get_Name() {return m_szName; }
 
 private:
-	_char				m_szName[MAX_PATH] = {};
-	_float4x4			m_TransformationMatrix = {};
-	_float4x4			m_CombinedTransformationMatrix = {};
-	_int				m_iParentBoneIndex = { -1 };
+	_char				m_szName							[MAX_PATH]					 = {};
+	_float4x4			m_TransformationMatrix					= {};
+	_float4x4			m_CombinedTransformationMatrix				 = {};
+	_int				m_iParentBoneIndex								=	 { -1 };
 
-	BONE_DATA			m_Bone_Data{};
+	BONE_DATA			m_Bone_Data												{};
 
 public:
 	static CEditor_Bone* Create(const aiNode* pAINode, _int iParentBoneIndex);

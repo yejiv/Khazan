@@ -11,7 +11,6 @@ public:
 
 	typedef struct tagPointInstanceDesc : public INSTANCE_DESC
 	{
-		_float3 vPivot;
 		_float2 vSpeed{ 0.f, 0.f };
 		_float2 vLifeTime;
 		_float	fOffset;

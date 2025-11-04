@@ -81,6 +81,12 @@ HRESULT CBladeNexus::Render()
     {
         Bind_Materials(i);
 
+        m_fEmissiveIntensity = 1.5f;
+
+        m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &m_fEmissiveIntensity, sizeof(_float));
+        m_pShaderCom->Bind_RawValue("g_isEnableEmissive", &m_isEnableEmissive, sizeof(_bool));
+        m_pShaderCom->Bind_RawValue("g_isEnableBloom", &m_isEnableBloom, sizeof(_bool));
+
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
         CHECK_FAILED_ASSERT(m_pShaderCom->Begin(0), E_FAIL);
@@ -223,16 +229,16 @@ void CBladeNexus::Input_Interact_Event(_float fTimeDelta)
     {
         isPressing = m_pGuide->IsPressing();
     }
-    else if (m_pGameInstance->Key_Down(DIK_N))
-    {
-        EventInteractType InteractType = {};
+    //else if (m_pGameInstance->Key_Down(DIK_N))
+    //{
+    //    EventInteractType InteractType = {};
 
-        InteractType.eState = EventInteractType::END;
+    //    InteractType.eState = EventInteractType::END;
 
-        m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+    //    m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 
-        return;
-    }
+    //    return;
+    //}
 
     if (true == isPressing)
     {
