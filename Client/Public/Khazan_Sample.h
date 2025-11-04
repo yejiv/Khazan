@@ -106,16 +106,15 @@ private:
 	_bool						m_isEnableControl = { true };
 	_int						m_isMove = {0};
 
-<<<<<<< HEAD
+
 	//락온 테스트
 	_float4						m_vPos = {};
-=======
+
 
 	/*  공격 */
 	_uint						m_iFastAttackIndex = { 0 };
 	_uint						m_iStrongAttackIndex = { 0 };
 
->>>>>>> b2e876d (FEAT : 플레이어 샘플에 공격 스킬 추가)
 #pragma region 상호 작용 맵 오브젝트 이벤트 임시 테스트용
 private:
 	EventInteractType			m_EventInteract = {};				// 트리거 접촉 여부, 이벤트 발생 여부, 상호 작용 타입, 상호 작용 타입들의 구조체

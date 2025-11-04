@@ -489,6 +489,7 @@ void CModel::Set_Animation(_uint iIndex)
 	/* 이벤트 설정 */
 	Setup_Events();
 
+    cout << m_iCurrentAnimIndex<<" : "+ Get_CurAnimName() << endl;
 }
 
 void CModel::Set_AnimationSet(const string& strKey)
@@ -528,6 +529,13 @@ void CModel::Set_AnimationLoop(_bool isLoop)
 
     if(isLoop)
         Add_State(ANIM_LOOP);
+}
+
+_bool CModel::Check_MinAnimationTime()
+{
+    if (m_AnimationsSetup[m_iCurrentAnimIndex].fBlendOutTime < 1.f)
+        return true;
+    return m_AnimationsSetup[m_iCurrentAnimIndex].fBlendOutTime <= m_fCurrentTrackPosition;
 }
 
 void CModel::Update_BoneCombinedMatrices()

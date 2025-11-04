@@ -107,7 +107,7 @@ public:
 	void			Set_Animation(_uint iIndex);
 	void			Set_AnimationSet(const string& strKey);
 	void			Set_AnimationLoop(_bool isLoop);
-	_bool			Check_MinAnimationTime() { return m_AnimationsSetup[m_iCurrentAnimIndex].fBlendOutTime <= m_fCurrentTrackPosition; }
+	_bool			Check_MinAnimationTime();
 
 	/* rootBone Combined  */
 	void			Update_BoneCombinedMatrices();	
