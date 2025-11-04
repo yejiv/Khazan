@@ -6,6 +6,7 @@ namespace Client {
 		OBJECT_INTERACT,							// 상호 작용할 오브젝트에 접촉 ( 맵 오브젝트가 구독 )
 		INTERACT_TYPE,								// 상호 작용할 오브젝트에 접촉 ( 플레이어가 구독 )
 		ANNOUNCE_MAPNAME,							// 지역 이름, 연출 이름 출력
+		LOCKON_VISIBLE,								// 록온 랜더 온/오프
 		END };
 
 	// Structs
@@ -102,5 +103,10 @@ namespace Client {
 		_float		fTime;					//화면에 출력시간
 		_int		fFadeOutTime;			//화면에서 사라지는 시간
 		_bool		isDissovle;
+	};
+
+	struct EVENT_LOCKON_VISIBLE {
+		const _float4* pTargetPos;
+		_bool isVisible;
 	};
 }

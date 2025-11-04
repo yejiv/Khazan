@@ -15,6 +15,7 @@ public:
 	{
 		_wstring strPrototypeTag;
 		_bool	 isAnim;
+		_bool	 isSolid;
 		RENDERGROUP renderGroup;
 	}EDITORTESTMODEL_DESC;
 
@@ -45,7 +46,7 @@ private:
 
 	_uint		m_iCurrentAnimIndex = { 0 };
 	_bool		m_isEnble = { true };
-
+	_bool		m_isSolid = { false };
 	_bool		m_isAnim = { false };
 
 	_float2		m_tempTime = { 1.f,1.f };

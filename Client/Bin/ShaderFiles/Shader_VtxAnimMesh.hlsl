@@ -6,13 +6,15 @@ float g_Splits[4];
 
 Texture2D g_DiffuseTexture, g_NormalTexture, g_SpecularTexture;
 
-// 박준영이 임시로 추가해놓음
+// 諛뺤???쁺?씠 ?엫?떆濡? 異붽???빐?넃?쓬
 texture2D g_EmissiveTexture;
+
 
 bool g_isDiffuse = false;
 bool g_isNormal = false;
 bool g_isEmissive = false;
 bool g_isSpecular = false;
+
 
 /* 모델 전체 뼈기준(x) */
 /* 특정 메시에 영향ㅇ르 주는 뼈들 */
@@ -53,14 +55,14 @@ struct VS_OUT
     //  float4 vProjPos : TEXCOORD2;
 };
 
-/* 정점쉐이더 : 정점 위치의 스페이스 변환(로컬 -> 월드 -> 뷰 -> 투영). */ 
-/*          : 정점의 구성을 변경.(in:3개, out:2개 or 5개) */
-/*          : 정점 단위(정점 하나당 VS_MAIN한번호출) */ 
+/* ?젙?젏?뎽?씠?뜑 : ?젙?젏 ?쐞移섏쓽 ?뒪?럹?씠?뒪 蹂??솚(濡쒖뺄 -> ?썡?뱶 -> 酉? -> ?닾?쁺). */ 
+/*          : ?젙?젏?쓽 援ъ꽦?쓣 蹂?寃?.(in:3媛?, out:2媛? or 5媛?) */
+/*          : ?젙?젏 ?떒?쐞(?젙?젏 ?븯?굹?떦 VS_MAIN?븳踰덊샇異?) */ 
 VS_OUT VS_MAIN(VS_IN In)
 {
     VS_OUT Out = (VS_OUT) 0;
     
-    /* 정점의 로컬위치 * 월드 * 뷰 * 투영 */ 
+    /* ?젙?젏?쓽 濡쒖뺄?쐞移? * ?썡?뱶 * 酉? * ?닾?쁺 */ 
     
     float fWeightW = 1.f - (In.vBlendWeight.x + In.vBlendWeight.y + In.vBlendWeight.z);
     
@@ -98,7 +100,7 @@ struct VS_OUT_SHADOW
 VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
 {
     VS_OUT_SHADOW Out;
-      /* 정점의 로컬위치 * 월드 * 뷰 * 투영 */ 
+      /* ?젙?젏?쓽 濡쒖뺄?쐞移? * ?썡?뱶 * 酉? * ?닾?쁺 */ 
     
     float fWeightW = 1.f - (In.vBlendWeight.x + In.vBlendWeight.y + In.vBlendWeight.z);
     
@@ -130,7 +132,7 @@ struct VS_OUT_OUTLINE
 VS_OUT_OUTLINE VS_MAIN_OUTLINE(VS_IN In)
 {
     VS_OUT_OUTLINE Out;
-      /* 정점의 로컬위치 * 월드 * 뷰 * 투영 */ 
+      /* ?젙?젏?쓽 濡쒖뺄?쐞移? * ?썡?뱶 * 酉? * ?닾?쁺 */ 
     
     float fWeightW = 1.f - (In.vBlendWeight.x + In.vBlendWeight.y + In.vBlendWeight.z);
     
@@ -232,7 +234,7 @@ PS_OUT_OUTLINE PS_MAIN_OUTLINE(PS_IN_OUTLINE In)
 
 PS_OUT PS_MAIN_DEBUG(PS_IN In)
 {
-    // NonBlend 객체
+    // NonBlend 媛앹껜
     
     PS_OUT Out = (PS_OUT) 0;
     
@@ -248,7 +250,7 @@ PS_OUT PS_MAIN_DEBUG(PS_IN In)
     //  Out.vSpecular = vMtrlSpecular;
     
     if (true == g_isEnableEmissive)
-        Out.vEmissive.rgb = Out.vDiffuse.rgb * g_fEmissiveIntensity; // 밝기 강도
+        Out.vEmissive.rgb = Out.vDiffuse.rgb * g_fEmissiveIntensity; // 諛앷린 媛뺣룄
     
     if (true == g_isEnableBloom)
         Out.vEmissive.a = 1.f;
@@ -279,36 +281,36 @@ PS_OUT_EMISSIVE PS_MAIN_DEBUG_EMISSIVE(PS_IN In)
     
     // =============== NonLight ===============
     
-    // PostScene만 기록
+    // PostScene留? 湲곕줉
     //  Out.vPostScene = vMtrlDiffuse;
-    //  // (생략 가능 -> 위에서 0 초기화)
+    //  // (?깮?왂 媛??뒫 -> ?쐞?뿉?꽌 0 珥덇린?솕)
     //  Out.vEmissive = 0.f; 
     
-    // Emissive만 기록
-    // (생략 가능 -> 위에서 0 초기화)
+    // Emissive留? 湲곕줉
+    // (?깮?왂 媛??뒫 -> ?쐞?뿉?꽌 0 珥덇린?솕)
     //  Out.vPostScene = 0.f;
     //  Out.vEmissive.rgb = vMtrlDiffuse * 3.f; // Intensity
     //  Out.vEmissive.a = 1.f;
     
-    // 둘 다 기록하기
+    // ?몮 ?떎 湲곕줉?븯湲?
     //  Out.vPostScene = vMtrlDiffuse;
     //  Out.vEmissive.rgb = vMtrlDiffuse * 3.f; // Intensity
     //  Out.vEmissive.a = 1.f;
     
     // =============== Blend ===============
     
-    // PostScene만 기록
+    // PostScene留? 湲곕줉
     //  Out.vPostScene = float4(vMtrlDiffuse.rgb, 0.5f);
-    //  // (생략 가능 -> 위에서 0 초기화)
+    //  // (?깮?왂 媛??뒫 -> ?쐞?뿉?꽌 0 珥덇린?솕)
     //  Out.vEmissive = 0.f; 
     
-    //  Emissive만 기록
-    //  (생략 가능 -> 위에서 0 초기화)
+    //  Emissive留? 湲곕줉
+    //  (?깮?왂 媛??뒫 -> ?쐞?뿉?꽌 0 珥덇린?솕)
     //  Out.vPostScene = 0.f;
     //  Out.vEmissive.rgb = vMtrlDiffuse * 3.f; // Intensity
     //  Out.vEmissive.a = 1.f;
     
-    //  둘 다 기록하기
+    //  ?몮 ?떎 湲곕줉?븯湲?
     //  Out.vPostScene = float4(vMtrlDiffuse.rgb, 0.2f);
     //  Out.vEmissive.rgb = vMtrlDiffuse * 3.f; // Intensity
     //  Out.vEmissive.a = 1.f;
@@ -316,11 +318,24 @@ PS_OUT_EMISSIVE PS_MAIN_DEBUG_EMISSIVE(PS_IN In)
     return Out;
 }
 
+/* ?븷?븘踰꾩???쓽 ?떖?뵆而щ윭 酉? */
+PS_OUT PS_SIMPLE_COLOR_VIEW(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    Out.vDiffuse = (1.f, 1.f, 1.f, 1.f);
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
-    /* 특정 패스를 이용해서 점정을 그려냈다. */
-    /* 하나의 모델을 그려냈다. */ 
-    /* 모델의 상황에 따라 다른 쉐이딩 기법 세트(명암 + 림라이트 + 스펙큘러 + 노멀맵 + ssao )를 먹여주기위해서 */
+    /* ?듅?젙 ?뙣?뒪瑜? ?씠?슜?빐?꽌 ?젏?젙?쓣 洹몃젮?깉?떎. */
+    /* ?븯?굹?쓽 紐⑤뜽?쓣 洹몃젮?깉?떎. */ 
+    /* 紐⑤뜽?쓽 ?긽?솴?뿉 ?뵲?씪 ?떎瑜? ?뎽?씠?뵫 湲곕쾿 ?꽭?듃(紐낆븫 + 由쇰씪?씠?듃 + ?뒪?럺?걯?윭 + ?끂硫?留? + ssao )瑜? 癒뱀뿬二쇨린?쐞?빐?꽌 */
     pass DefaultPass
     {
         SetRasterizerState(RS_Default);
@@ -397,4 +412,18 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_DEBUG_EMISSIVE();
     }
+
+    /* 7踰? : ?븷?븘踰꾩???쓽 ?떖?뵆而щ윭 酉? */
+    pass SimpleColorView
+    {
+
+        SetRasterizerState(RS_Wireframe);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_SIMPLE_COLOR_VIEW();
+    }
+
 }

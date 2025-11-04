@@ -44,7 +44,7 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
         return E_FAIL;
 
 
-    m_pModelCom->Set_Animation(5);
+   // m_pModelCom->Set_Animation(5);
     /* 부모 트랜스폼 연결 */
     m_pModelCom->Set_OwnerTransform(&m_pParentTransform);
 
@@ -68,54 +68,7 @@ void CBody_Khazan_Spear::Priority_Update(_float fTimeDelta)
 
 void CBody_Khazan_Spear::Update(_float fTimeDelta)
 {
-	_bool isChanged = false;
 
-	if (m_iCurState != *m_pParentState)
-	{
-		m_iCurState = *m_pParentState;
-        isChanged = true;
-	}
-
-    if (m_isFinishedAnimation)
-    {
-        if (Has_State(CKhazan_Sample::ATTACK_FAST))
-            Remove_State(CKhazan_Sample::ATTACK_FAST);
-        if (Has_State(CKhazan_Sample::ATTACK_SET))
-            Remove_State(CKhazan_Sample::ATTACK_SET);
-    }
-
-    if (isChanged)
-    {
-        if (Has_State(CKhazan_Sample::ATTACK_ALL))
-        {
-
-            if(Has_State(CKhazan_Sample::ATTACK_FAST))
-                m_pModelCom->Set_Animation(0);
-
-            m_isSetAnimation = false;
-            if (!m_isSetAnimation && Has_State(CKhazan_Sample::ATTACK_SET)) {
-                m_pModelCom->Set_AnimationSet("Set1");
-                m_isSetAnimation = true;
-            }
-
-        }
-        else
-        {
-			if (isChanged && Has_State(CKhazan_Sample::IDLE))
-			{
-				m_pModelCom->Set_Animation(5);
-			}
-			if (isChanged && Has_State(CKhazan_Sample::WALK))
-			{
-				m_pModelCom->Set_Animation(6);
-			}
-			if (isChanged && Has_State(CKhazan_Sample::RUN))
-			{
-				m_pModelCom->Set_Animation(4);
-			}
-        }
-
-    }
 
     m_isFinishedAnimation = m_pModelCom->Play_Animation(fTimeDelta);
 
@@ -152,7 +105,7 @@ HRESULT CBody_Khazan_Spear::Render()
         if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;
 
-        m_pShaderCom->Begin(1);
+        m_pShaderCom->Begin(7);
 
         m_pModelCom->Render(i);
     }
@@ -195,7 +148,7 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Sample"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Spear"),
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
 

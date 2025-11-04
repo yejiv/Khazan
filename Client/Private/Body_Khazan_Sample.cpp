@@ -1,19 +1,7 @@
 ﻿#include "Body_Khazan_Sample.h"
 #include "Khazan_Sample.h"
 #include "GameInstance.h"
-#include "XPBD.h"
 
-
-static std::vector<int> MakeChainByNames(Engine::CModel* m,
-    std::initializer_list<const char*> names) {
-    std::vector<int> chain;
-    chain.reserve(names.size());
-    for (auto* n : names) {
-        int idx = (_int)m->Get_BoneIndex(n);
-        if (idx >= 0) chain.push_back(idx);
-    }
-    return chain;
-}
 
 CBody_Khazan_Sample::CBody_Khazan_Sample(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CPartObject{ pDevice, pContext }
@@ -75,8 +63,7 @@ HRESULT CBody_Khazan_Sample::Initialize_Clone(void* pArg)
     m_pModelCom->Set_Animation(5);
     m_pModelCom->Update_BoneCombinedMatrices();
 
-    /*if (FAILED(Ready_BonePhysics()))
-        return E_FAIL;*/
+
 
     return S_OK;
 }
@@ -98,10 +85,30 @@ void CBody_Khazan_Sample::Update(_float fTimeDelta)
 
     if (m_isFinishedAnimation)
     {
-        if (Has_State(CKhazan_Sample::ATTACK_FAST))
-            Remove_State(CKhazan_Sample::ATTACK_FAST);
-        if (Has_State(CKhazan_Sample::ATTACK_SET))
-            Remove_State(CKhazan_Sample::ATTACK_SET);
+        //if (Has_State(CKhazan_Sample::ATTACK_FAST))
+        //    Remove_State(CKhazan_Sample::ATTACK_FAST);
+        //if (Has_State(CKhazan_Sample::ATTACK_STRONG))
+        //    Remove_State(CKhazan_Sample::ATTACK_STRONG);
+        if (Has_State(CKhazan_Sample::ATTACK_FULLMOON))
+            Remove_State(CKhazan_Sample::ATTACK_FULLMOON);
+        if (Has_State(CKhazan_Sample::ATTACK_SHADOW1))
+            Remove_State(CKhazan_Sample::ATTACK_SHADOW1);
+        if (Has_State(CKhazan_Sample::ATTACK_SPIRAL))
+            Remove_State(CKhazan_Sample::ATTACK_SPIRAL);
+        if (Has_State(CKhazan_Sample::ATTACK_TWISTE))
+            Remove_State(CKhazan_Sample::ATTACK_TWISTE);
+        if (Has_State(CKhazan_Sample::ATTACK_STRIKE))
+            Remove_State(CKhazan_Sample::ATTACK_STRIKE);
+        if (Has_State(CKhazan_Sample::ATTACK_SOON))
+            Remove_State(CKhazan_Sample::ATTACK_SOON);
+        if (Has_State(CKhazan_Sample::ATTACK_VITALPOINT))
+            Remove_State(CKhazan_Sample::ATTACK_VITALPOINT);
+        if (Has_State(CKhazan_Sample::ATTACK_SHADOW2))
+            Remove_State(CKhazan_Sample::ATTACK_SHADOW2);
+        if (Has_State(CKhazan_Sample::ATTACK_BRUTAL))
+            Remove_State(CKhazan_Sample::ATTACK_BRUTAL);
+        if (Has_State(CKhazan_Sample::ATTACK_COUNT))
+            Remove_State(CKhazan_Sample::ATTACK_COUNT);
     }
 
     if (isChanged)
@@ -109,43 +116,35 @@ void CBody_Khazan_Sample::Update(_float fTimeDelta)
         if (Has_State(CKhazan_Sample::ATTACK_ALL))
         {
 
-            if(Has_State(CKhazan_Sample::ATTACK_FAST))
-                m_pModelCom->Set_Animation(0);
+            //if(Has_State(CKhazan_Sample::ATTACK_FAST))
+            //    m_pModelCom->Set_Animation(0);
 
-            m_isSetAnimation = false;
-            if (!m_isSetAnimation && Has_State(CKhazan_Sample::ATTACK_SET)) {
-                m_pModelCom->Set_AnimationSet("Set1");
-                m_isSetAnimation = true;
-            }
+            //m_isSetAnimation = false;
+            //if (!m_isSetAnimation && Has_State(CKhazan_Sample::ATTACK_SET)) {
+            //    m_pModelCom->Set_AnimationSet("Set1");
+            //    m_isSetAnimation = true;
+            //}
 
         }
         else
         {
 			if (isChanged && Has_State(CKhazan_Sample::IDLE))
 			{
-				m_pModelCom->Set_Animation(5);
-			}
+                m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_Spear_Stand"));
+            }
 			if (isChanged && Has_State(CKhazan_Sample::WALK))
 			{
-				m_pModelCom->Set_Animation(6);
+                m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_Spear_Walk_F"));
 			}
 			if (isChanged && Has_State(CKhazan_Sample::RUN))
 			{
-				m_pModelCom->Set_Animation(4);
+                m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_Spear_Run_F"));
 			}
         }
 
     }
 
     m_isFinishedAnimation = m_pModelCom->Play_Animation(fTimeDelta);
-
-    //XMVECTOR vWindWS = XMVectorSet(0.f, 0.f , 1.f, 0.f);
-
-    //m_pXPBD->PreUpdate(fTimeDelta, vWindWS);
-
-    //m_pXPBD->Solve(fTimeDelta);
-
-    //m_pXPBD->PostApply(fTimeDelta);
 
 
     Update_CombinedMatrix();
@@ -263,17 +262,67 @@ HRESULT CBody_Khazan_Sample::Ready_Components()
 
 HRESULT CBody_Khazan_Sample::Ready_AnimationEvent()
 {
-    m_pModelCom->Register_Event("0", ANIM_EVENT_TRIGGERTYPE::ENTER,       [this]() {Effect1_Enter(); });
-    m_pModelCom->Register_Event("Effect1", ANIM_EVENT_TRIGGERTYPE::EXIT,        [this]() {Effect1_Exit(); });
-    m_pModelCom->Register_Event("Effect1", ANIM_EVENT_TRIGGERTYPE::CONTINUE,    [this]() {Effect1_Continue(); });
-    m_pModelCom->Register_Event("Effect2", ANIM_EVENT_TRIGGERTYPE::ENTER,       [this]() {Effect2(); });
-    m_pModelCom->Register_Event("Effect3", ANIM_EVENT_TRIGGERTYPE::ENTER,       [this]() {Effect3(); });
-    m_pModelCom->Register_Event("Effect4", ANIM_EVENT_TRIGGERTYPE::ENTER,       [this]() {Effect4(); });
-    m_pModelCom->Register_Event("Effect5", ANIM_EVENT_TRIGGERTYPE::ENTER,       [this]() {Effect5(); });
-    m_pModelCom->Register_Event("Effect6", ANIM_EVENT_TRIGGERTYPE::ENTER,       [this]() {Effect6(); });
-    m_pModelCom->Register_Event("Effect7", ANIM_EVENT_TRIGGERTYPE::ENTER,       [this]() {Effect7_Enter(); });
-    m_pModelCom->Register_Event("Effect7", ANIM_EVENT_TRIGGERTYPE::EXIT,        [this]() {Effect7_Exit(); });
-    m_pModelCom->Register_Event("Effect7", ANIM_EVENT_TRIGGERTYPE::CONTINUE,    [this]() {Effect7_Continue(); });
+    m_pModelCom->Register_Event("e1", ANIM_EVENT_TRIGGERTYPE::ENTER,       [this]() {Effect1_Enter(); });
+    m_pModelCom->Register_Event("e1", ANIM_EVENT_TRIGGERTYPE::EXIT,        [this]() {Effect1_Exit(); });
+    m_pModelCom->Register_Event("e1", ANIM_EVENT_TRIGGERTYPE::CONTINUE,    [this]() {Effect1_Continue(); });
+
+    m_pModelCom->Register_Event("e2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()       {Effect2_Enter(); });
+    m_pModelCom->Register_Event("e2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()        {Effect2_Exit(); });
+    m_pModelCom->Register_Event("e2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()    {Effect2_Continue(); });
+
+    m_pModelCom->Register_Event("e3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()       {Effect3_Enter(); });
+    m_pModelCom->Register_Event("e3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()        {Effect3_Exit(); });
+    m_pModelCom->Register_Event("e3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()    {Effect3_Continue(); });
+
+    m_pModelCom->Register_Event("e4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()       {Effect4_Enter(); });
+    m_pModelCom->Register_Event("e4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()        {Effect4_Exit(); });
+    m_pModelCom->Register_Event("e4", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()    {Effect4_Continue(); });
+
+    m_pModelCom->Register_Event("e5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()       {Effect5_Enter(); });
+    m_pModelCom->Register_Event("e5", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()        {Effect5_Exit(); });
+    m_pModelCom->Register_Event("e5", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()    {Effect5_Continue(); });
+
+    m_pModelCom->Register_Event("e6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()       {Effect6_Enter(); });
+    m_pModelCom->Register_Event("e6", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()        {Effect6_Exit(); });
+    m_pModelCom->Register_Event("e6", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()    {Effect6_Continue(); });
+
+    m_pModelCom->Register_Event("e7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()       {Effect7_Enter(); });
+    m_pModelCom->Register_Event("e7", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()        {Effect7_Exit(); });
+    m_pModelCom->Register_Event("e7", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()    {Effect7_Continue(); });
+
+    m_pModelCom->Register_Event("e8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()       {Effect8_Enter(); });
+    m_pModelCom->Register_Event("e8", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()        {Effect8_Exit(); });
+    m_pModelCom->Register_Event("e8", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()    {Effect8_Continue(); });
+
+    m_pModelCom->Register_Event("e9", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()       {Effect9_Enter(); });
+    m_pModelCom->Register_Event("e9", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()        {Effect9_Exit(); });
+    m_pModelCom->Register_Event("e9", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()    {Effect9_Continue(); });
+
+    m_pModelCom->Register_Event("e10", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()      {Effect10_Enter(); });
+    m_pModelCom->Register_Event("e10", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()       {Effect10_Exit(); });
+    m_pModelCom->Register_Event("e10", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()   {Effect10_Continue(); });
+
+    m_pModelCom->Register_Event("e11", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()      {Effect11_Enter(); });
+    m_pModelCom->Register_Event("e11", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()       {Effect11_Exit(); });
+    m_pModelCom->Register_Event("e11", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()   {Effect11_Continue(); });
+
+    m_pModelCom->Register_Event("e12", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()      {Effect12_Enter(); });
+    m_pModelCom->Register_Event("e12", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()       {Effect12_Exit(); });
+    m_pModelCom->Register_Event("e12", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()   {Effect12_Continue(); });
+
+    m_pModelCom->Register_Event("e13", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()      {Effect13_Enter(); });
+    m_pModelCom->Register_Event("e13", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()       {Effect13_Exit(); });
+    m_pModelCom->Register_Event("e13", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()   {Effect13_Continue(); });
+
+    m_pModelCom->Register_Event("e14", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()      {Effect14_Enter(); });
+    m_pModelCom->Register_Event("e14", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()       {Effect14_Exit(); });
+    m_pModelCom->Register_Event("e14", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()   {Effect14_Continue(); });
+
+    m_pModelCom->Register_Event("e15", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()      {Effect15_Enter(); });
+    m_pModelCom->Register_Event("e15", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()       {Effect15_Exit(); });
+    m_pModelCom->Register_Event("e15", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()   {Effect15_Continue(); });
+
+
 
     return S_OK;
 }
@@ -512,55 +561,173 @@ void CBody_Khazan_Sample::Effect1_Continue()
 
 }
 
-void CBody_Khazan_Sample::Effect2()
+void CBody_Khazan_Sample::Effect2_Enter()
 {
-    /* OutputDebugStringA 원래 출력이 느립니다! 정확한 시점의 디버그는 cout으로 하십시오! */
-    OutputDebugStringA("[Effect2] \n");
-
 }
 
-void CBody_Khazan_Sample::Effect3()
+void CBody_Khazan_Sample::Effect2_Exit()
 {
-    OutputDebugStringA("[Effect3] \n");
-
 }
 
-void CBody_Khazan_Sample::Effect4()
+void CBody_Khazan_Sample::Effect2_Continue()
 {
-    OutputDebugStringA("[Effect4] \n");
-
 }
 
-void CBody_Khazan_Sample::Effect5()
+void CBody_Khazan_Sample::Effect3_Enter()
 {
-    OutputDebugStringA("[Effect5] \n");
-
 }
 
-void CBody_Khazan_Sample::Effect6()
+void CBody_Khazan_Sample::Effect3_Exit()
 {
-    OutputDebugStringA("[Effect6] \n");
+}
 
+void CBody_Khazan_Sample::Effect3_Continue()
+{
+}
+
+void CBody_Khazan_Sample::Effect4_Enter()
+{
+}
+
+void CBody_Khazan_Sample::Effect4_Exit()
+{
+}
+
+void CBody_Khazan_Sample::Effect4_Continue()
+{
+}
+
+void CBody_Khazan_Sample::Effect5_Enter()
+{
+}
+
+void CBody_Khazan_Sample::Effect5_Exit()
+{
+}
+
+void CBody_Khazan_Sample::Effect5_Continue()
+{
+}
+
+void CBody_Khazan_Sample::Effect6_Enter()
+{
+}
+
+void CBody_Khazan_Sample::Effect6_Exit()
+{
+}
+
+void CBody_Khazan_Sample::Effect6_Continue()
+{
 }
 
 void CBody_Khazan_Sample::Effect7_Enter()
 {
-    OutputDebugStringA("[Effect7_Enter] \n");
-
 }
 
 void CBody_Khazan_Sample::Effect7_Exit()
 {
-    OutputDebugStringA("[Effect7_Exit] \n");
-
 }
 
 void CBody_Khazan_Sample::Effect7_Continue()
 {
-    OutputDebugStringA("[Effect7_Continue] \n");
-
 }
 
+void CBody_Khazan_Sample::Effect8_Enter()
+{
+}
+
+void CBody_Khazan_Sample::Effect8_Exit()
+{
+}
+
+void CBody_Khazan_Sample::Effect8_Continue()
+{
+}
+
+void CBody_Khazan_Sample::Effect9_Enter()
+{
+}
+
+void CBody_Khazan_Sample::Effect9_Exit()
+{
+}
+
+void CBody_Khazan_Sample::Effect9_Continue()
+{
+}
+
+void CBody_Khazan_Sample::Effect10_Enter()
+{
+}
+
+void CBody_Khazan_Sample::Effect10_Exit()
+{
+}
+
+void CBody_Khazan_Sample::Effect10_Continue()
+{
+}
+
+void CBody_Khazan_Sample::Effect11_Enter()
+{
+}
+
+void CBody_Khazan_Sample::Effect11_Exit()
+{
+}
+
+void CBody_Khazan_Sample::Effect11_Continue()
+{
+}
+
+void CBody_Khazan_Sample::Effect12_Enter()
+{
+}
+
+void CBody_Khazan_Sample::Effect12_Exit()
+{
+}
+
+void CBody_Khazan_Sample::Effect12_Continue()
+{
+}
+
+void CBody_Khazan_Sample::Effect13_Enter()
+{
+}
+
+void CBody_Khazan_Sample::Effect13_Exit()
+{
+}
+
+void CBody_Khazan_Sample::Effect13_Continue()
+{
+}
+
+void CBody_Khazan_Sample::Effect14_Enter()
+{
+}
+
+void CBody_Khazan_Sample::Effect14_Exit()
+{
+}
+
+void CBody_Khazan_Sample::Effect14_Continue()
+{
+}
+
+void CBody_Khazan_Sample::Effect15_Enter()
+{
+}
+
+void CBody_Khazan_Sample::Effect15_Exit()
+{
+}
+
+void CBody_Khazan_Sample::Effect15_Continue()
+{
+}
 
 
 inline _bool CBody_Khazan_Sample::Has_States()
@@ -609,8 +776,6 @@ void CBody_Khazan_Sample::Free()
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
 
-    if (m_pXPBD) {
-        Safe_Release(m_pXPBD);
-    }
+
 
 }

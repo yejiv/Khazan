@@ -24,10 +24,10 @@ public:
 	_float					Get_LifeRatio() { return m_fTimeAcc / m_fLifeTime; }
 
 private:
-	_float					m_fLifeTime = { 2.f };
 	_float					m_fTimeAcc = {};
+	_float					m_fLifeTime = {};
 	_float					m_fOpacity = {};
-	_float					m_fFadeStartTime = { 1.f };
+	_float					m_fFadeOutStartTime{}, m_fFadeInEndTime{};
 
 public:
 	static CDecal*			Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

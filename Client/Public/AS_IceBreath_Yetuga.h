@@ -2,6 +2,9 @@
 #include "AI_State.h"
 #include "Client_Defines.h"
 
+enum class PHASE { START, ROOP, END, };
+
+
 NS_BEGIN(Client)
 
 class CAS_IceBreath_Yetuga final : public CAI_State
@@ -16,7 +19,7 @@ public:
 	virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
 private:
-
+	PHASE							m_eState = { PHASE::END };
 
 public:
 	static CAS_IceBreath_Yetuga*	Create();
