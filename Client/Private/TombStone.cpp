@@ -1,4 +1,4 @@
-#include "BladeNexus.h"
+#include "TombStone.h"
 
 #include "GameInstance.h"
 
@@ -7,24 +7,24 @@
 #include "ClientInstance.h"
 #include "UI_BladeNexus.h"
 
-CBladeNexus::CBladeNexus(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CTombStone::CTombStone(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp_Interactive { pDevice, pContext }
 {
 }
 
-CBladeNexus::CBladeNexus(const CBladeNexus& Prototype)
+CTombStone::CTombStone(const CTombStone& Prototype)
     : CProp_Interactive { Prototype }
 {
 }
 
-HRESULT CBladeNexus::Initialize_Prototype()
+HRESULT CTombStone::Initialize_Prototype()
 {
     CHECK_FAILED(__super::Initialize_Prototype(), E_FAIL);
 
     return S_OK;
 }
 
-HRESULT CBladeNexus::Initialize_Clone(void* pArg)
+HRESULT CTombStone::Initialize_Clone(void* pArg)
 {
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 
@@ -48,7 +48,7 @@ HRESULT CBladeNexus::Initialize_Clone(void* pArg)
     return S_OK;
 }
 
-void CBladeNexus::Priority_Update(_float fTimeDelta)
+void CTombStone::Priority_Update(_float fTimeDelta)
 {
     if (false == m_isCollision)
     {
@@ -56,7 +56,7 @@ void CBladeNexus::Priority_Update(_float fTimeDelta)
     }
 }
 
-void CBladeNexus::Update(_float fTimeDelta)
+void CTombStone::Update(_float fTimeDelta)
 {
     Animation_Update(fTimeDelta);
 
@@ -64,12 +64,12 @@ void CBladeNexus::Update(_float fTimeDelta)
         Animation_Change(fTimeDelta);
 }
 
-void CBladeNexus::Late_Update(_float fTimeDelta)
+void CTombStone::Late_Update(_float fTimeDelta)
 {
     CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this), );
 }
 
-HRESULT CBladeNexus::Render()
+HRESULT CTombStone::Render()
 {
     CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources 함수 E_FAIL"), E_FAIL);
 
@@ -79,20 +79,18 @@ HRESULT CBladeNexus::Render()
     {
         Bind_Materials(i);
 
-        m_fEmissiveIntensity = 1.5f;
-
         /*
-        if (1 != i)
+        if (1 == i)     // 1 == 룬문자
         {
             _bool isEmissive = { true };
             m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_SPECULAR, 0);
             m_pShaderCom->Bind_RawValue("g_isEmissive", &isEmissive, sizeof(_bool));
+
+            m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &m_fEmissiveIntensity, sizeof(_float));
+            m_pShaderCom->Bind_RawValue("g_isEnableEmissive", &m_isEnableEmissive, sizeof(_bool));
+            m_pShaderCom->Bind_RawValue("g_isEnableBloom", &m_isEnableBloom, sizeof(_bool));
         }
         */
-
-        m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &m_fEmissiveIntensity, sizeof(_float));
-        m_pShaderCom->Bind_RawValue("g_isEnableEmissive", &m_isEnableEmissive, sizeof(_bool));
-        m_pShaderCom->Bind_RawValue("g_isEnableBloom", &m_isEnableBloom, sizeof(_bool));
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
@@ -104,9 +102,9 @@ HRESULT CBladeNexus::Render()
     return S_OK;
 }
 
-HRESULT CBladeNexus::Ready_Components(void* pArg)
+HRESULT CTombStone::Ready_Components(void* pArg)
 {
-    BLADENEXUS_DESC* pDesc = static_cast<BLADENEXUS_DESC*>(pArg);
+    TOMBSTONE_DESC* pDesc = static_cast<TOMBSTONE_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
     LEVEL eLevel = pDesc->eLevel;
@@ -122,7 +120,7 @@ HRESULT CBladeNexus::Ready_Components(void* pArg)
     return S_OK;
 }
 
-HRESULT CBladeNexus::Ready_Collision(void* pArg)
+HRESULT CTombStone::Ready_Collision(void* pArg)
 {
 #pragma region 스태틱 몸체
     CBody::BODY_BOXSHAPE_DESC StaticBodyDesc{};
@@ -182,14 +180,14 @@ HRESULT CBladeNexus::Ready_Collision(void* pArg)
     return S_OK;
 }
 
-HRESULT CBladeNexus::Ready_Interaction_Guide(void* pArg)
+HRESULT CTombStone::Ready_Interaction_Guide(void* pArg)
 {
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
 
     Safe_AddRef(m_pGuide);
 
-    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("접촉"), 1.5f);
+    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("샤르나크 산맥 일대"), 1.5f);
 
     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pGuide);
 
@@ -198,33 +196,17 @@ HRESULT CBladeNexus::Ready_Interaction_Guide(void* pArg)
     return S_OK;
 }
 
-HRESULT CBladeNexus::Ready_PlaceName(void* pArg)
+HRESULT CTombStone::Ready_PlaceName(void* pArg)
 {
-    BLADENEXUS_DESC* pDesc = static_cast<BLADENEXUS_DESC*>(pArg);
+    TOMBSTONE_DESC* pDesc = static_cast<TOMBSTONE_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
-    _int* pBladeNexusID = static_cast<_int*>(pDesc->pOtherDesc);
-    CHECK_NULLPTR(pBladeNexusID, E_FAIL);
-
-    m_eBladeNexus_ID = static_cast<BLADENEXUS_ID>(*pBladeNexusID);
-
-    switch (m_eBladeNexus_ID)
-    {
-    case HEINMACH_ENTER:
-        memcpy(m_szPlaceName, TEXT("초입"), sizeof(m_szPlaceName));
-        break;
-    case HEINMACH_CAVE:
-        memcpy(m_szPlaceName, TEXT("동굴"), sizeof(m_szPlaceName));
-        break;
-    case HEINMACH_YETUGA:
-        memcpy(m_szPlaceName, TEXT("예투가 전"), sizeof(m_szPlaceName));
-        break;
-    }
+    memcpy(m_szPlaceName, TEXT("툼스톤 파일드라이버"), sizeof(m_szPlaceName));
 
     return S_OK;
 }
 
-HRESULT CBladeNexus::Bind_Materials(_uint iMeshIndex)
+HRESULT CTombStone::Bind_Materials(_uint iMeshIndex)
 {
     _bool isDiffuse = { false };
     _bool isNormal = { false };
@@ -251,10 +233,10 @@ HRESULT CBladeNexus::Bind_Materials(_uint iMeshIndex)
     return S_OK;
 }
 
-void CBladeNexus::Input_Interact_Event(_float fTimeDelta)
+void CTombStone::Input_Interact_Event(_float fTimeDelta)
 {
-    if (ANIM_STATE::AFTER_START == m_eAnimState || ANIM_STATE::AFTER_LOOP == m_eAnimState|| ANIM_STATE::AFTER_END == m_eAnimState ||
-        ANIM_STATE::BEFORE_START == m_eAnimState || ANIM_STATE::BEFORE_LOOP == m_eAnimState|| ANIM_STATE::BEFORE_END == m_eAnimState)
+    if (ANIM_STATE::AFTER_START == m_eAnimState || ANIM_STATE::AFTER_LOOP == m_eAnimState || ANIM_STATE::AFTER_END == m_eAnimState ||
+        ANIM_STATE::BEFORE_IDLE == m_eAnimState || ANIM_STATE::BEFORE_START == m_eAnimState)
         return;
 
     _bool isPressing = { false };
@@ -270,18 +252,36 @@ void CBladeNexus::Input_Interact_Event(_float fTimeDelta)
 
         InteractType.eState = EventInteractType::BEGIN;
 
-        EventBladeNexus BNEvent = {};
+        EventTombStone TSEvent = {};
 
-        XMStoreFloat3(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+        _matrix OffSetMatrix = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("IA_BeginLoc")) * m_pTransformCom->Get_WorldMatrix();
 
-        InteractType.BNEvent = BNEvent;
+        XMStoreFloat3(&TSEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+        XMStoreFloat3(&TSEvent.vPlayerPosition, OffSetMatrix.r[3]);
+
+        InteractType.TSEvent = TSEvent;
 
         m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
     }
 }
 
-void CBladeNexus::Animation_Update(_float fTimeDelta)
+void CTombStone::Animation_Update(_float fTimeDelta)
 {
+    // 경계의 틈 진입 후 일정 시간 후 AFTER 상태로 변경
+    if (ANIM_STATE::BEFORE_IDLE == m_eAnimState)
+    {
+        m_fTimeAcc += fTimeDelta;
+
+        if (10.f <= m_fTimeAcc)
+        {
+            m_eAnimState = ANIM_STATE::BEFORE_START;
+            m_pModelCom->Set_Animation(m_eAnimState);
+            m_pModelCom->Set_AnimationLoop(false);
+        }
+
+        return;
+    }
+
     if (false == m_isCollision)
         return;
 
@@ -289,67 +289,38 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
 
     if (m_Event.isOn())               // 켠다는 신호
     {
-        // 해금 전 IDLE 상태
-        if (ANIM_STATE::BEFORE_IDLE == m_eAnimState)
+        // IDLE 상태
+        if (ANIM_STATE::AFTER_IDLE == m_eAnimState)
         {
             m_pGuide->Update_Visible(false);
 
-            // 처음 상호 작용 시
-            m_eAnimState = ANIM_STATE::BEFORE_START;
-            m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
-            m_pModelCom->Set_AnimationLoop(false);
+            m_fEmissiveIntensity = 1.5f;
 
-            EventInteractType InteractType = {};
-
-            InteractType.eInteractType = INTERACTIVE_TYPE::CHECKPOINT;
-            InteractType.isEvent = true;
-
-            EventBladeNexus BNEvent = {};
-
-            XMStoreFloat3(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
-            BNEvent.isUnLock = true;
-            BNEvent.isBNOpened = false;
-
-            InteractType.BNEvent = BNEvent;
-
-            // 귀검을 바라볼 수 있도록 포지션만 던짐 ( 귀검 애니메이션 아직 종료 X )
-            m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
-        }
-        // 해금 후 IDLE 상태
-        else if (ANIM_STATE::AFTER_IDLE == m_eAnimState)
-        {
-            m_pGuide->Update_Visible(false);
-
-            // 2번 이상의 상호 작용 시
             m_eAnimState = ANIM_STATE::AFTER_START;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
 
             EventInteractType InteractType = {};
 
-            InteractType.eInteractType = INTERACTIVE_TYPE::CHECKPOINT;
+            InteractType.eInteractType = INTERACTIVE_TYPE::TOMBSTONE;
             InteractType.isEvent = true;
 
-            EventBladeNexus BNEvent = {};
+            EventTombStone TSEvent = {};
 
-            XMStoreFloat3(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
-            BNEvent.isUnLock = false;
-            BNEvent.isBNOpened = false;
+            _matrix OffSetMatrix = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("IA_BeginLoc")) * m_pTransformCom->Get_WorldMatrix();
 
-            InteractType.BNEvent = BNEvent;
+            XMStoreFloat3(&TSEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+            XMStoreFloat3(&TSEvent.vPlayerPosition, OffSetMatrix.r[3]);
+            TSEvent.isTSOpened = false;
 
-            // 귀검을 바라볼 수 있도록 포지션만 던짐 ( 귀검 애니메이션 아직 종료 X )
+            InteractType.TSEvent = TSEvent;
+
+            // 툼스톤을 바라볼 수 있도록 포지션만 던짐 ( 툼스톤 애니메이션 아직 종료 X )
             m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
         }
     }
     else if (m_Event.isOff())         // 끈다는 신호 ( 내가 받기만 하면 됨
     {
-        if (ANIM_STATE::BEFORE_LOOP == m_eAnimState)
-        {
-            m_eAnimState = ANIM_STATE::BEFORE_END;
-            m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
-            m_pModelCom->Set_AnimationLoop(false);
-        }
         if (ANIM_STATE::AFTER_LOOP == m_eAnimState)
         {
             m_eAnimState = ANIM_STATE::AFTER_END;
@@ -359,144 +330,110 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
     }
 }
 
-void CBladeNexus::Animation_Change(_float fTimeDelta)
+void CTombStone::Animation_Change(_float fTimeDelta)
 {
-    // 귀검 가동 끝나면 ( 첫 해금 O )
-    if (ANIM_STATE::BEFORE_START == m_eAnimState)       // BEFORE_START 가 끝나면 BEFORE_LOOP ( 플레이어가 UI랑 상호 작용 )
+    // 툼스톤 가동 끝나면 ( 일정 시간 이후 )
+    if (ANIM_STATE::BEFORE_START == m_eAnimState)       // BEFORE_START 가 끝나면 AFTER_IDLE
     {
-        // 귀검 애니메이션 끝나면 귀검 UI 창 팝업
-        static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(CUI_BladeNexus::ONTYPE::DEFAULT, m_szPlaceName);
-
-        // 처음 상호 작용 후 애니메이션 루프로 전환 및 이벤트 발생
-        m_eAnimState = ANIM_STATE::BEFORE_LOOP;
-        m_pModelCom->Set_Animation(ANIM_STATE::BEFORE_LOOP);
-        m_pModelCom->Set_AnimationLoop(true);
-
-        EventInteractType InteractType = {};
-
-        InteractType.eInteractType = INTERACTIVE_TYPE::CHECKPOINT;
-        InteractType.isEvent = true;
-
-        EventBladeNexus BNEvent = {};
-
-        XMStoreFloat3(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
-        BNEvent.isUnLock = true;
-        BNEvent.isBNOpened = true;              // 이제 귀검 UI 열리게
-
-        InteractType.BNEvent = BNEvent;
-
-        // 귀검을 바라볼 수 있도록 포지션만 던짐 ( 귀검 애니메이션 종료 O, UI 창 팝업? )
-        m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
-
-        m_Event.None();
-    }
-    // 귀검 상호 작용 종료 후 ( 첫 해금 O )
-    if (ANIM_STATE::BEFORE_END == m_eAnimState)
-    {
-        if (true == m_isCollision)
-            m_pGuide->Update_Visible(true);
-
-        // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
+        // 경계의 틈 진입 후 일정 시간 후 BEFORE_START 실행 -> 종료 후 AFTER_IDLE 로 변경
         m_eAnimState = ANIM_STATE::AFTER_IDLE;
-        m_pModelCom->Set_Animation(ANIM_STATE::AFTER_IDLE);
+        m_pModelCom->Set_Animation(m_eAnimState);
         m_pModelCom->Set_AnimationLoop(true);
 
-        m_Event.None();
-
-        // 첫 해금 후 접촉 -> 결속 으로 변경
-        m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("결속"), 1.5f);
+        m_fEmissiveIntensity = 1.f;
     }
-    // 귀검 가동 끝나면 ( 첫 해금 X )
+    // 툼스톤 가동 끝나면
     if (ANIM_STATE::AFTER_START == m_eAnimState)
     {
-        // 귀검 애니메이션 끝나면 귀검 UI 창 팝업
+        // 툼스톤 애니메이션 끝나면 툼스톤 UI 창 팝업
         static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(CUI_BladeNexus::ONTYPE::DEFAULT, TEXT("하인마흐 구석진 으슥한 어떠한 곳"));
 
-        // 다회 상호 작용 후 애니메이션 루프로 전환
+        // 애니메이션 루프로 전환
         m_eAnimState = ANIM_STATE::AFTER_LOOP;
-        m_pModelCom->Set_Animation(ANIM_STATE::AFTER_LOOP);
+        m_pModelCom->Set_Animation(m_eAnimState);
         m_pModelCom->Set_AnimationLoop(true);
 
         EventInteractType InteractType = {};
 
-        InteractType.eInteractType = INTERACTIVE_TYPE::CHECKPOINT;
+        InteractType.eInteractType = INTERACTIVE_TYPE::TOMBSTONE;
         InteractType.isEvent = true;
 
-        EventBladeNexus BNEvent = {};
+        EventTombStone TSEvent = {};
 
-        XMStoreFloat3(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
-        BNEvent.isUnLock = false;
-        BNEvent.isBNOpened = true;              // 이제 귀검 UI 열리게
+        XMStoreFloat3(&TSEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+        TSEvent.isTSOpened = true;              // 이제 툼스톤 UI 열리게
 
-        InteractType.BNEvent = BNEvent;
+        InteractType.TSEvent = TSEvent;
 
-        // 귀검을 바라볼 수 있도록 포지션만 던짐 ( 귀검 애니메이션 종료 O, UI 창 팝업? )
+        // 툼스톤을 바라볼 수 있도록 포지션만 던짐 ( 툼스톤 애니메이션 종료 O, UI 창 팝업? )
         m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 
         m_Event.None();
     }
-    // 귀검 상호 작용 종료 후 ( 첫 해금 X )
+    // 툼스톤 상호 작용 종료 후 ( 첫 해금 X )
     if (ANIM_STATE::AFTER_END == m_eAnimState)
     {
         if (true == m_isCollision)
             m_pGuide->Update_Visible(true);
 
+        m_fEmissiveIntensity = 1.f;
+
         // 다회 상호 작용이 끝난 후 After Idle 상태로 전환
         m_eAnimState = ANIM_STATE::AFTER_IDLE;
-        m_pModelCom->Set_Animation(ANIM_STATE::AFTER_IDLE);
+        m_pModelCom->Set_Animation(m_eAnimState);
         m_pModelCom->Set_AnimationLoop(true);
 
         m_Event.None();
     }
 }
 
-void CBladeNexus::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CTombStone::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
-    if (ANIM_STATE::AFTER_IDLE == m_eAnimState || ANIM_STATE::BEFORE_IDLE == m_eAnimState)
+    if (ANIM_STATE::AFTER_IDLE == m_eAnimState)
         m_pGuide->Update_Visible(true);
 
     m_isCollision = true;
 }
 
-void CBladeNexus::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CTombStone::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
     m_isCollision = true;
 }
 
-void CBladeNexus::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CTombStone::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 {
     m_pGuide->Update_Visible(false);
 
     m_isCollision = false;
 }
 
-CBladeNexus* CBladeNexus::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CTombStone* CTombStone::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-    CBladeNexus* pInstance = new CBladeNexus(pDevice, pContext);
+    CTombStone* pInstance = new CTombStone(pDevice, pContext);
 
     if (FAILED(pInstance->Initialize_Prototype()))
     {
-        MSG_BOX(TEXT("Failed to Created : CBladeNexus"));
+        MSG_BOX(TEXT("Failed to Created : CTombStone"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-CGameObject* CBladeNexus::Clone(void* pArg)
+CGameObject* CTombStone::Clone(void* pArg)
 {
-    CBladeNexus* pInstance = new CBladeNexus(*this);
+    CTombStone* pInstance = new CTombStone(*this);
 
     if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
-        MSG_BOX(TEXT("Failed to Cloned : CBladeNexus"));
+        MSG_BOX(TEXT("Failed to Cloned : CTombStone"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-void CBladeNexus::Free()
+void CTombStone::Free()
 {
     __super::Free();
 

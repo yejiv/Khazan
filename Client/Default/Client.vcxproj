@@ -270,6 +270,7 @@
     <ClInclude Include="..\public\Target_BrutalAttack.h" />
     <ClInclude Include="..\public\Target_LockOn.h" />
     <ClInclude Include="..\Public\Terrain.h" />
+    <ClInclude Include="..\Public\TombStone.h" />
     <ClInclude Include="..\public\UI_Announce_MapName.h" />
     <ClInclude Include="..\public\UI_BladeNexus.h" />
     <ClInclude Include="..\Public\UI_Button.h" />
@@ -420,6 +421,7 @@
     <ClCompile Include="..\private\Target_BrutalAttack.cpp" />
     <ClCompile Include="..\private\Target_LockOn.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
+    <ClCompile Include="..\Private\TombStone.cpp" />
     <ClCompile Include="..\private\UI_Announce_MapName.cpp" />
     <ClCompile Include="..\private\UI_BladeNexus.cpp" />
     <ClCompile Include="..\Private\UI_Button.cpp" />

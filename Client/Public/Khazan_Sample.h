@@ -124,6 +124,7 @@ private:
 	void						Event_Interact_Object(_float fTimeDelta);
 	void						BladeNexus_Event(_float fTimeDelta);
 	void						Chest_Event(_float fTimeDelta);
+	void						TombStone_Event(_float fTimeDelta);
 #pragma endregion
 
 private:
