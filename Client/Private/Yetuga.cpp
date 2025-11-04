@@ -6,6 +6,8 @@
 #include "CharacterVirtual.h"
 #include "Projectile_Yetuga.h"
 #include "Projectile_Rock_Yetuga.h"
+#include "Projectile_Breath_Yetuga.h"
+
 
 CYetuga::CYetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice, pContext }
@@ -344,6 +346,75 @@ void CYetuga::Smash()
 
 }
 
+void CYetuga::Breath_Start()
+{
+    _matrix BoneMatrix = m_pBody->Get_BoneMatrix("Bip001-Head");
+    _vector vPosition = BoneMatrix.r[3];
+    _vector vLook = XMVector3Normalize(BoneMatrix.r[2]);
+
+    _vector vTempSpawnPoint = vPosition + vLook * 0.5f;
+    _float3 vSpawnPoint{};
+    XMStoreFloat3(&vSpawnPoint, vTempSpawnPoint);
+
+
+    CGameObject* pGameObject = m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Breath"));
+    if (nullptr == pGameObject)
+        return;
+    m_pBreath = static_cast<CProjectile_Breath_Yetuga*>(pGameObject);
+    if (m_pBreath == nullptr)
+        return;
+    Safe_AddRef(m_pBreath);
+
+    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
+    _float3 vNormalize{};
+    XMStoreFloat3(&vNormalize, vTempVec);
+    m_pBreath->Set_SpawnDir(vNormalize);
+    m_pBreath->Set_IsActive(false);
+    m_pBreath->Set_Visible(true);
+    m_pBreath->Set_SpanwPoint(vSpawnPoint);
+    m_pBreath->Reset();
+
+    m_pGameInstance->Push_PoolObject_ToLayer(
+        ENUM_CLASS(LEVEL::HEINMACH),
+        TEXT("Layer_Yetuga_Breath"),
+        m_pBreath
+    );
+}
+
+void CYetuga::Breath_Loop()
+{
+    if (nullptr == m_pBreath)
+        return;
+
+    _matrix BoneMatrix = m_pBody->Get_BoneMatrix("Bip001-Head");
+    _vector vPosition = BoneMatrix.r[3];
+    _vector vLook = XMVector3Normalize(BoneMatrix.r[1]);
+
+    _vector vTempSpawnPoint = vPosition + vLook * 15.f;
+    _float3 vSpawnPoint{};
+    XMStoreFloat3(&vSpawnPoint, vTempSpawnPoint);
+
+    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
+    _float3 vNormalize{};
+    XMStoreFloat3(&vNormalize, vTempVec);
+    m_pBreath->Set_SpawnDir(vNormalize);
+    m_pBreath->Set_SpanwPoint(vSpawnPoint);
+
+    m_pBreath->Reset();
+
+   /* _float3 dbgPos;
+    XMStoreFloat3(&dbgPos, vPosition);
+    _float3 WorldPos;
+    _vector vTemp = m_pTransformCom->Get_State(STATE::POSITION);
+    XMStoreFloat3(&WorldPos, vTemp);
+    std::cout << "Head Pos : " << dbgPos.x << " , " << dbgPos.y << " , " << dbgPos.z << std::endl;
+    std::cout << "WorldPos : " << WorldPos.x << " , " << WorldPos.y << " , " << dbgPos.z << std::endl;
+    std::cout << "Spawn Pos : " << vSpawnPoint.x << " , " << vSpawnPoint.y << " , " << vSpawnPoint.z << std::endl;*/
+
+}
+
 HRESULT CYetuga::Ready_Components()
 {
     CCharacterVirtual::CV_CAPSULESHAPE_DESC tCharVirDesc{};
@@ -414,6 +485,16 @@ HRESULT CYetuga::Ready_Projectiles()
 
        m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Yetuga_Rock"),
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Rock"), &RockDesc, 2);
+
+
+       CProjectile_Breath_Yetuga::PROJECTILE_DESC BreathDesc{};
+       BreathDesc.fDamage = 5.f;
+       BreathDesc.fSpeedPerSec = 5.f;
+       BreathDesc.fLifeTime = 10.f;
+       RockDesc.fRotationPerSec = 180.f;
+
+       m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Yetuga_Breath"),
+           ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Breath"), &BreathDesc ,2);
 
     return S_OK;
 }
@@ -554,6 +635,17 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("AMG_SmashEvent", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Smash(); });
 
+#pragma endregion
+
+#pragma region IceBreath
+    pModel->Register_Event("IceBreath", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Breath_Start(); });
+    pModel->Register_Event("IceBreath", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Breath_Loop(); });
+    //pModel->Register_Event("IceBreath", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Breath_Start(); });
+
+
+    /*pModel->Register_Event("IceBreath_Melee", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Breath_Start(); });
+    pModel->Register_Event("IceBreath_Melee", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Breath_Loop(); });*/
+    //pModel->Register_Event("IceBreath_Melee", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Breath_Start(); });
 #pragma endregion
 
 

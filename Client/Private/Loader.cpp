@@ -29,6 +29,7 @@
 #include "Body_Yetuga.h"
 #include "Projectile_Yetuga.h"
 #include "Projectile_Rock_Yetuga.h"
+#include "Projectile_Breath_Yetuga.h"
 #pragma endregion
 
 #pragma region EFFECT
@@ -371,6 +372,11 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Yetuga_Rock"),
 		CProjectile_Rock_Yetuga::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Yetuga_Breath"),
+		CProjectile_Breath_Yetuga::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 
 #pragma endregion
 

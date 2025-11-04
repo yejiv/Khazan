@@ -957,6 +957,9 @@
     <ClInclude Include="..\Public\Effect_Mesh_Instance.h">
       <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Mesh_Instance</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Projectile_Breath_Yetuga.h">
+      <Filter>02.GameObject\Projectile\Yetuga\Breath</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1391,6 +1394,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Effect_Sprite.cpp">
       <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile_Breath_Yetuga.cpp">
+      <Filter>02.GameObject\Projectile\Yetuga\Breath</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

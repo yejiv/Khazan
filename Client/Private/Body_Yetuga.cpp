@@ -22,6 +22,14 @@ _float3 CBody_Yetuga::Get_BonePoint(const _char* BoneName)
     return m_vThrowPoint;
 }
 
+_matrix CBody_Yetuga::Get_BoneMatrix(const _char* pBoneName)
+{
+    _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix(pBoneName);
+    _matrix BoneWorld = XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(&m_CombinedWorldMatrix);
+
+    return BoneWorld;
+}
+
 CBody_Yetuga::CBody_Yetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CPartObject{pDevice,pContext}
 {
