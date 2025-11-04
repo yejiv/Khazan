@@ -801,6 +801,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 	// 이짝에 추가될 상호작용들 로더에도 넣고 여짝에도 넣고 ( 태그 뒷부분만 )
 	m_Prototypes_Inter.push_back("BladeNexus");
 	m_Prototypes_Inter.push_back("BigChest");
+	m_Prototypes_Inter.push_back("TombStone");
 
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (m_isPrototypeWindow)
@@ -866,6 +867,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 				WorldMatrix.r[2] *= 1.f;
 				WorldMatrix.r[3] = XMVectorSetW(XMLoadFloat3(&vPos), 1.f);
 
+#pragma region 상호 작용 오브젝트 레이어 생성
 				if ("BladeNexus" == m_Prototypes_Inter[m_iIndex_PrtInter])
 				{
 					CBladeNexus::BLADENEXUS_DESC BladeNexusDesc = {};
@@ -881,7 +883,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 					CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
 						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BladeNexus"), TIME_CHANNEL::WORLD, &BladeNexusDesc), );
 				}
-				else if ("BigChest" == m_Prototypes_Inter[m_iIndex_PrtInter]) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+				else if ("BigChest" == m_Prototypes_Inter[m_iIndex_PrtInter])
 				{
 					CBigChest::BIGCHEST_DESC BigChestDesc = {};
 
@@ -896,6 +898,22 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 					CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
 						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BigChest"), TIME_CHANNEL::WORLD, &BigChestDesc), );
 				}
+				else if ("TombStone" == m_Prototypes_Inter[m_iIndex_PrtInter]) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+				{
+					CTombStone::TOMBSTONE_DESC TombStoneDesc = {};
+
+					TombStoneDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+					TombStoneDesc.eLevel = LEVEL::MAP;
+					memcpy(TombStoneDesc.szModelName, strModelTag.c_str(), sizeof(TombStoneDesc.szModelName));		// 프로토타입 태그명
+
+					XMStoreFloat4x4(&TombStoneDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+					TombStoneDesc.eInteractiveType = INTERACTIVE_TYPE::TOMBSTONE;										// 상호 작용 오브젝트 타입
+
+					CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_TombStone"), TIME_CHANNEL::WORLD, &TombStoneDesc), );
+				}
+#pragma endregion
 
 				CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));
 				CHECK_NULLPTR_MSG(pInteractive_Prop, TEXT("엥"), );
@@ -3620,6 +3638,21 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 
 				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
 					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BigChest"), TIME_CHANNEL::WORLD, &BigChestDesc), false);
+			}
+			else if (INTERACTIVE_TYPE::TOMBSTONE == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+			{
+				CTombStone::TOMBSTONE_DESC TombStoneDesc = {};
+
+				TombStoneDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+				TombStoneDesc.eLevel = LEVEL::MAP;
+				memcpy(TombStoneDesc.szModelName, TEXT("Prototype_Component_Model_TombStone"), sizeof(TombStoneDesc.szModelName));		// 프로토타입 태그명
+
+				TombStoneDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+				TombStoneDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_TombStone"), TIME_CHANNEL::WORLD, &TombStoneDesc), false);
 			}
 
 			CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));

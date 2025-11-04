@@ -38,7 +38,7 @@ private:
 	class CBrutalAttack_Point*			m_pPoint	= { nullptr };
 	class CBrutalAttack_Point*			m_pPointfront = { nullptr };
 
-	const _float4*						m_pTagetPos = { nullptr };
+	const _float4*						m_pTargetPos = { nullptr };
 	
 	_float								m_fTime = {10};
 	_float								m_fMaxTime = {10};

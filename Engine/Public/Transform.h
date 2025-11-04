@@ -85,7 +85,7 @@ public:
 	void LookAt(_fvector vAt);
 	void Chase(_fvector vTargetPos, _float fTimeDelta, _float fLimit = 0.f);
 	void AI_Chase(_fvector vTargetPos, _float fTimeDelta, _float SpeedPerSec ,_float fLimit = 0.f);
-	void Align_ToNormal(_fvector vNormal); // 특정 노말 벡터에 맞춰 축을 정렬(회전)
+	void Look_Dir(_fvector vDir);
 
 private:
 	_float4x4				m_WorldMatrix = {};

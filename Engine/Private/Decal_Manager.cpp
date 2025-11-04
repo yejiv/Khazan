@@ -30,10 +30,6 @@ HRESULT CDecal_Manager::Initialize(_uint iNumDecals)
 
 void CDecal_Manager::Update(_float fTimeDelta)
 {
-    m_iNumActiveDecals = m_Decals.size();
-    if (0 == m_iNumActiveDecals)
-        return;
-
     // 죽은 데칼 순회, 풀에 반납하고 컨테이너에서 지우기
     for (auto iter = m_Decals.begin(); iter != m_Decals.end();)
     {
@@ -45,7 +41,10 @@ void CDecal_Manager::Update(_float fTimeDelta)
             ++iter;
     }
 
-    // 오브젝트 매니저 Late 업데이트 이후로 호출하기
+    // 활성화된 데칼 개수 저장
+    m_iNumActiveDecals = m_Decals.size();
+    if (0 == m_iNumActiveDecals)
+        return;
     
     // 활성화된 데칼 정보 GPU 버퍼에 업데이트
     DECAL_PARAMS* pDecalParams = new DECAL_PARAMS[m_iMaxDecals];
@@ -100,11 +99,10 @@ HRESULT CDecal_Manager::Render()
         return E_FAIL;
 
     // 뎁스, 노말
-    // 디퓨즈를 장치에 바인딩
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Diffuse"), m_pShader, "g_DiffuseTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Normal"), m_pShader, "g_NormalTexture")))
         return E_FAIL;
 
     _uint       iNumViewports = { 1 };
@@ -135,7 +133,7 @@ HRESULT CDecal_Manager::Render()
 }
 
 HRESULT CDecal_Manager::Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag,
-    _fvector vPosition, _fvector vNormal, const _float3& vScale)
+    const _float3& vPosition, const _float3& vScale)
 {
     // 풀 태그, 레벨 인덱스, 레이어 태그, 포지션, 노말, 스케일
     // 인자로 받아 풀에서 꺼냄
@@ -151,8 +149,7 @@ HRESULT CDecal_Manager::Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLeve
 
     // 인자로 받은 위치, 노말, 크기를 통해 캐스팅하여 월드 행렬 세팅
     pTransform->Scale(vScale);
-    pTransform->Align_ToNormal(vNormal);
-    pTransform->Set_State(STATE::POSITION, vPosition);
+    pTransform->Set_State(STATE::POSITION, XMVectorSet(vPosition.x, vPosition.y, vPosition.z, 1.f));
 
     // 컨테이너에 저장
     m_Decals.push_back(pDecal);
@@ -188,9 +185,10 @@ HRESULT CDecal_Manager::Ready_Components()
         TEXT("FT_Decal_Blood_A_001.png"),
         TEXT("FT_Decal_Blood_A_002.png"),
         TEXT("FT_Decal_Blood_A_003.png"),
-        TEXT("FT_Decal_Blood_Curve_A_000.png"),
         TEXT("FT_Decal_Blood_Linear_000.png"),
         TEXT("FT_Decal_Blood_Spin_001.png"),
+        TEXT("FT_Decal_Blood_Curve_A_000.png"),
+        TEXT("FT_Decal_Dirt_Curve_000.png"),
         TEXT("FT_Decal_Dirt_000.png"),
         TEXT("FT_Decal_Dirt_001.png"),
         TEXT("FT_Decal_Dirt_002.png"),
