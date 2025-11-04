@@ -505,6 +505,9 @@
     <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\02.TombStone">
       <UniqueIdentifier>{02e4226f-6770-4c00-8ecb-92687cc483a8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Logo">
+      <UniqueIdentifier>{26278f3a-a228-41e2-a180-ca8ee47150b7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -957,6 +960,9 @@
     <ClInclude Include="..\Public\TombStone.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\02.TombStone</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Logo_BG.h">
+      <Filter>02.GameObject\UI\Logo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1394,6 +1400,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\TombStone.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\02.TombStone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Logo_BG.cpp">
+      <Filter>02.GameObject\UI\Logo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

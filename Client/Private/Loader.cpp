@@ -38,7 +38,9 @@
 #include "Effect_Prefab.h"
 #pragma endregion
 
-
+#pragma region UI
+#include "Logo_BG.h"
+#pragma endregion
 //static mutex g_GpuGate;
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -154,6 +156,9 @@ HRESULT CLoader::Loading_For_Title_Level()
 	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));
 
 	lstrcpy(m_szLoadingText, TEXT("게임오브젝트를 로딩중입니다."));
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TITLE), TEXT("Prototype_GameObject_Logo_BG"),
+		CLogo_BG::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::TITLE))), E_FAIL);
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 	
