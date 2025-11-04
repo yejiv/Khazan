@@ -75,7 +75,9 @@ namespace Engine
 
 	typedef struct tagSkyDesc
 	{
-		XMFLOAT3 vNebulaColor{ 0.1f, 0.1f, 0.1f };			// 하늘 색깔 ( 마스크 적용 X, 단색 )
+		XMFLOAT3 vNebulaColorR{ 0.1f, 0.1f, 0.1f };			// 하늘 색깔 ( 마스크 적용 X, 단색 )
+		XMFLOAT3 vNebulaColorG{ 0.1f, 0.1f, 0.1f };			// 하늘 색깔 ( 마스크 적용 X, 단색 )
+		XMFLOAT3 vNebulaColorB{ 0.1f, 0.1f, 0.1f };			// 하늘 색깔 ( 마스크 적용 X, 단색 )
 		float fStarStrength{ 1.5f };						// 별의 세기
 		float fMoonSize{ 0.45f };							// 달 크기
 		XMFLOAT3 vMoonDirection{ -0.6f, 0.5f, 1.f };		// 달의 방향 ( 카메라 기준 )

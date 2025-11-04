@@ -55,6 +55,8 @@ void CUI_BladeNexus::Off_Panel()
 		m_eAnimState = UIANIMSTATE::OFF;
 		m_fAccTime = 1.f;
 
+		m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { false, true });
+
 		m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
 	}
 	else
