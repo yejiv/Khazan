@@ -13,20 +13,45 @@ CAS_IceBreath_Yetuga::CAS_IceBreath_Yetuga()
 
 void CAS_IceBreath_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
+    m_eState = PHASE::START;
+
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
 
-    pModel->Set_Animation(49);
+    if (PHASE::START == m_eState)
+        pModel->Set_Animation(21);
+
 }
 
 void CAS_IceBreath_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
+    CBlackBoard* BB = m_pGameInstance->Get_BlackBoard();
+
+    switch (m_eState)
+    {
+    case PHASE::START:
+        if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isReadyiceBreath"))
+        {
+            BB->Set_Value<_bool>(pYetuga->Get_Name(), "isReadyiceBreath", false);
+            pModel->Set_Animation(49);
+            m_eState = PHASE::ROOP;
+        }
+        break;
+    case PHASE::ROOP:
+        break;
+    }
 
     if (pModel->Play_Animation(fTimeDelta))
     {
-        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isIceBreathFinished", true);
+
+        if (PHASE::START == m_eState)
+            BB->Set_Value<_bool>(pYetuga->Get_Name(), "isReadyiceBreath", true);
+
+        if (PHASE::ROOP == m_eState)
+            m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isiceBreathFinished", true);
+        
     }
 
 

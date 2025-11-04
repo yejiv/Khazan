@@ -18,6 +18,7 @@ public:
 	virtual HRESULT				Render() override;
 	virtual HRESULT				Render_Shadow() { return S_OK; }
 
+
 public:
 	virtual void				Reset() override;
 

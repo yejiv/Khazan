@@ -134,7 +134,8 @@ void CYetuga::Hold_Stone()
 void CYetuga::Throw_Stone()
 {
     CTransform* pTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
-    _vector vTargetLoc = pTransform->Get_State(STATE::POSITION);
+    _vector vOffset = XMVectorSet(0.f,-10.f,0.f,0.f);
+    _vector vTargetLoc = pTransform->Get_State(STATE::POSITION) - vOffset;
 
     if (m_pHoldStone == nullptr)
         return;
@@ -173,7 +174,7 @@ void CYetuga::Grab_Check_End()
 void CYetuga::Pick_Rock()
 {
      _float3 vLHTemp = m_pBody->Get_BonePoint("Weapon_L");
-    _float3 vRHTemp = m_pBody->Get_BonePoint("Weapon_L");
+    _float3 vRHTemp = m_pBody->Get_BonePoint("Weapon_R");
 
     _vector vLH = XMLoadFloat3(&vLHTemp);
     _vector vRH = XMLoadFloat3(&vRHTemp);
@@ -288,12 +289,11 @@ void CYetuga::Hold_Rock()
 
 }
 
-
 void CYetuga::Smash()
 {
 
     _float3 vLHTemp = m_pBody->Get_BonePoint("Weapon_L");
-    _float3 vRHTemp = m_pBody->Get_BonePoint("Weapon_L");
+    _float3 vRHTemp = m_pBody->Get_BonePoint("Weapon_R");
 
     _vector vLH = XMLoadFloat3(&vLHTemp);
     _vector vRH = XMLoadFloat3(&vRHTemp);
@@ -314,6 +314,7 @@ void CYetuga::Smash()
     CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
     CBlackBoard* BB = m_pGameInstance->Get_BlackBoard();
     CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+    _vector vTargetLoc = pTargetTransform->Get_State(STATE::POSITION);
     _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
     _vector vPosition = m_pTransformCom->Get_State(STATE::POSITION);
     _float fAnimRatio = pModel->MakeRatio();
@@ -326,10 +327,9 @@ void CYetuga::Smash()
     {
         _vector vDir = XMLoadFloat3(&vTempDir);
 
-        // 타겟 앞 Limit 만큼 떨어진 목표지점 계산
         _vector vGoalPos = vTargetPos - vDir * fLimit;
 
-        // lerp 로 위치 보간
+
         _vector vNewPos = XMVectorLerp(vPosition, vGoalPos, fAnimRatio - 0.5f);
         m_pTransformCom->Set_State(STATE::POSITION, vNewPos);
     }
@@ -340,6 +340,7 @@ void CYetuga::Smash()
         m_pTransformCom->Set_State(STATE::POSITION, vStopPos);
     }
 
+    m_pTransformCom->Set_State(STATE::POSITION, vTargetLoc);
 
 }
 
@@ -550,9 +551,9 @@ HRESULT CYetuga::Ready_AnimEvent()
             m_pTransformCom->Set_State(STATE::LOOK, vLerp);
         });
 
+
     pModel->Register_Event("AMG_SmashEvent", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Smash(); });
 
-    
 #pragma endregion
 
 

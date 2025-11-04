@@ -47,6 +47,7 @@ private:
 	void							Hold_Rock();
 	void							Smash();
 
+
 public:
 	class CBody_Yetuga*				m_pBody = { nullptr };
 	class CProjectile_Yetuga*		m_pHoldStone = { nullptr };

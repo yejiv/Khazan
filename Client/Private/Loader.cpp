@@ -274,7 +274,7 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 		return E_FAIL;
 
 	// Prototype_Component_Model_Yetuga_Rock
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Yetuga_Rock"),
+ 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Yetuga_Rock"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Yetuga/Yetuga_Rock/Yetuga_Rock.dat"))))
 		return E_FAIL;
 
