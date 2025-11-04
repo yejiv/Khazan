@@ -49,8 +49,7 @@ HRESULT CBigChest::Initialize_Clone(void* pArg)
 
     m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
         {
-            m_isChestOn = e.isObjectOn;
-            m_isChestOff = e.isObjectOff;
+            m_Event = e;
         });
 
     return S_OK;
@@ -60,8 +59,7 @@ void CBigChest::Priority_Update(_float fTimeDelta)
 {
     if (false == m_isCollision)
     {
-        m_isChestOn = false;
-        m_isChestOff = false;
+        m_Event.None();
     }
 }
 
@@ -242,10 +240,8 @@ void CBigChest::Animation_Update(_float fTimeDelta)
 
     Input_Interact_Event(fTimeDelta);
 
-    if (true == m_isChestOn)               // 켠다는 신호
+    if (m_Event.isOn())               // 켠다는 신호
     {
-        m_isChestOff = false;
-
         if (ANIM_STATE::CLOSE == m_eAnimState)
         {
             m_pGuide->Update_Visible(false);
@@ -275,10 +271,8 @@ void CBigChest::Animation_Update(_float fTimeDelta)
             m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
         }
     }
-    else if (true == m_isChestOff)         // 끈다는 신호 ( 내가 받기만 하면 됨
+    else if (m_Event.isOff())         // 끈다는 신호 ( 내가 받기만 하면 됨
     {
-        m_isChestOn = false;
-
         if (ANIM_STATE::OPEN == m_eAnimState)
         {
             m_eAnimState = ANIM_STATE::CLOSING;

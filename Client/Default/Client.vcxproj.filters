@@ -265,12 +265,6 @@
     <Filter Include="02.GameObject\UI\WorldUI\Damage_UI">
       <UniqueIdentifier>{6da1545d-0879-4c90-9ac6-1aeabdd954dc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03.Tool">
-      <UniqueIdentifier>{69d26ed9-2e45-4fc2-90bc-4a4da31625a2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03.Tool\Camera">
-      <UniqueIdentifier>{71d26352-adad-4d1d-a566-39f2285daa3d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\Creature\Monster\Yetuga\Body">
       <UniqueIdentifier>{8fef0fd1-b2ca-4175-81dc-514453bf821a}</UniqueIdentifier>
     </Filter>
@@ -385,17 +379,14 @@
     <Filter Include="02.GameObject\Creature\Khazan\Spear\Anim State Manager">
       <UniqueIdentifier>{6830d138-8660-4890-8174-2b8f66fe9d52}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Sky">
-      <UniqueIdentifier>{87c7892c-d671-42e9-b93c-994ee103ddde}</UniqueIdentifier>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation">
+      <UniqueIdentifier>{d5183513-550f-45be-b176-06a147ec5e89}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Sky\Sky">
-      <UniqueIdentifier>{64dedd65-da4e-408b-8b78-620d99ea6586}</UniqueIdentifier>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation\Base">
+      <UniqueIdentifier>{3255658b-fe86-4011-9aa1-12a1992708a1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Sky\Cloud">
-      <UniqueIdentifier>{4ba534d2-358d-4fd3-b472-aa02227b00a5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObject\Sky\Sphere">
-      <UniqueIdentifier>{b0adc5cf-a380-4078-8cc6-136824a02480}</UniqueIdentifier>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation\Move">
+      <UniqueIdentifier>{3aaed89d-1eae-44e4-9d94-ec850266349d}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObject\UI\Announce">
       <UniqueIdentifier>{84a25179-8e31-451d-99ed-b011ba78bff2}</UniqueIdentifier>
@@ -507,6 +498,15 @@
     </Filter>
     <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite">
       <UniqueIdentifier>{be3d7783-09b2-4210-8f95-7574cdc85092}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation\Attack">
+      <UniqueIdentifier>{a91ac477-d2f9-4e27-afb2-0bd27f255aee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\02.TombStone">
+      <UniqueIdentifier>{02e4226f-6770-4c00-8ecb-92687cc483a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Logo">
+      <UniqueIdentifier>{26278f3a-a228-41e2-a180-ca8ee47150b7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -741,9 +741,6 @@
     <ClInclude Include="..\public\Khazan_Sample.h">
       <Filter>02.GameObject\Creature\Khazan\Sample\Base</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Body_Khazan_Sample.h">
-      <Filter>02.GameObject\Creature\Khazan\Sample\Body</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Spear_Khazan_Sample.h">
       <Filter>02.GameObject\Creature\Khazan\Sample\Weapon</Filter>
     </ClInclude>
@@ -861,12 +858,6 @@
     <ClInclude Include="..\public\Khazan_Spear_ASManager.h">
       <Filter>02.GameObject\Creature\Khazan\Spear\Anim State Manager</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Sky.h">
-      <Filter>02.GameObject\Sky\Sky</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\SkySphere.h">
-      <Filter>02.GameObject\Sky\Sphere</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\UI_Announce_MapName.h">
       <Filter>02.GameObject\UI\Announce</Filter>
     </ClInclude>
@@ -893,9 +884,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\AS_JumpGrab_Yetuga.h">
       <Filter>92.AI\State\Yetuga\09. Grab</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\CloudSphere.h">
-      <Filter>02.GameObject\Sky\Cloud</Filter>
     </ClInclude>
     <ClInclude Include="..\public\ItemInfo_Hud.h">
       <Filter>02.GameObject\UI\HUD\ItemInfo_Hud</Filter>
@@ -956,6 +944,24 @@
     </ClInclude>
     <ClInclude Include="..\Public\Effect_Mesh_Instance.h">
       <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Mesh_Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CloudSphere.h" />
+    <ClInclude Include="..\Public\Sky.h" />
+    <ClInclude Include="..\Public\SkySphere.h" />
+    <ClInclude Include="..\Public\Body_Khazan_Sample.h">
+      <Filter>02.GameObject\Creature\Khazan\Sample\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_Spear_Animation.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_Spear_Anim_Move.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Move</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TombStone.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\02.TombStone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Logo_BG.h">
+      <Filter>02.GameObject\UI\Logo</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Projectile_Breath_Yetuga.h">
       <Filter>02.GameObject\Projectile\Yetuga\Breath</Filter>
@@ -1302,12 +1308,6 @@
     <ClCompile Include="..\private\Khazan_Spear_ASManager.cpp">
       <Filter>02.GameObject\Creature\Khazan\Spear\Anim State Manager</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Sky.cpp">
-      <Filter>02.GameObject\Sky\Sky</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\SkySphere.cpp">
-      <Filter>02.GameObject\Sky\Sphere</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\UI_Announce_MapName.cpp">
       <Filter>02.GameObject\UI\Announce</Filter>
     </ClCompile>
@@ -1334,9 +1334,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_JumpGrab_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\09. Grab</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\CloudSphere.cpp">
-      <Filter>02.GameObject\Sky\Cloud</Filter>
     </ClCompile>
     <ClCompile Include="..\private\ItemInfo_Hud.cpp">
       <Filter>02.GameObject\UI\HUD\ItemInfo_Hud</Filter>
@@ -1397,6 +1394,21 @@
     </ClCompile>
     <ClCompile Include="..\Private\Effect_Sprite.cpp">
       <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CloudSphere.cpp" />
+    <ClCompile Include="..\Private\Sky.cpp" />
+    <ClCompile Include="..\Private\SkySphere.cpp" />
+    <ClCompile Include="..\private\Khazan_Spear_Animation.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_Spear_Anim_Move.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Move</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TombStone.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\02.TombStone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Logo_BG.cpp">
+      <Filter>02.GameObject\UI\Logo</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Projectile_Breath_Yetuga.cpp">
       <Filter>02.GameObject\Projectile\Yetuga\Breath</Filter>

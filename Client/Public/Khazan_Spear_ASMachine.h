@@ -3,6 +3,7 @@
 #include "Base.h"
 
 NS_BEGIN(Client)
+
 class CKhazan_Spear_ASMachine final : public CBase
 {
 public:
@@ -32,6 +33,14 @@ public:
         _uint   iCycle = 0;         // 생명주기
     }SPEAR_ASM;
 
+    typedef struct tagKhazanSpearCoolTime
+    {
+        _bool isEnble;
+        _float fCurCooltime;
+        _float fMaxCoolTime;
+
+    }COOLTIME;
+
     typedef struct tagKhazanSpearCategoryPriority
     {
         wstring strName;
@@ -49,31 +58,29 @@ public:
 
     enum CATEGORY : _uint
     {
-        /* 기본초기화값 = x + 5*/
-        /* 우선 순위 : 1순위 = 0~9 (x ~ y) */ 
         M_DIE         = 1 << 0,
 
-        /* 우선 순위 : 2순위 = 10~19 */
         M_HOLD        = 1 << 1,
         M_GROGGY      = 1 << 2,
         M_DAMAGED     = 1 << 3,
+        M_CLIMB        = 1<< 4,
+        ORDER2 = M_HOLD | M_GROGGY | M_DAMAGED | M_CLIMB,
 
-        /* 우선 순위 : 3순위 = 20~29 */
-        M_SKILL       = 1 << 4,
+        M_SKILL       = 1 << 5,
 
-        /* 우선 순위 : 4순위 = 30~39 */
-        M_GUARD         = 1 << 5,
+        M_GUARD         = 1 << 6,
 
-        /* 우선 순위 : 5순위 = 40~49 */
-        M_ATTACK        = 1 << 6,   // 초기화 값 34
-        M_MOVE          = 1 << 7,   // 초기화 값 37
+   
+        M_ATTACK        = 1 << 7, 
+        M_MOVE          = 1 << 8,  
+        M_LOCKON        = 1 << 9,
+        ORDER5 = M_ATTACK | M_MOVE | M_LOCKON,
 
-        /* 우선 순위 : 6순위 = 50~59 */
-        M_LOCKON        = 1 << 8,
-
-        /* 우선 순위 : 7순위 = 60~69 */
-        M_INTERACT      = 1 << 9,
-        M_WEAPON_CHANGE = 1<< 10,
+    
+        M_INTERACT      = 1 << 10,
+        M_WEAPON_CHANGE = 1<< 11,
+        M_IDLE          = 1 <<12, 
+        M_END            = 1<<13,
     };
 
     enum ATTACK : _uint
@@ -89,47 +96,51 @@ public:
         ATK_STRONG      = 1 << 8,
         ATK_JAVELIN     = 1 << 9,
         ATK_CHARGE      = 1 << 10,
+        ATK_ALL = ATK_FALL | ATK_FAST | ATK_GRAPPLE | ATK_SKILL | ATK_COUNTER | ATK_DODGEATK | ATK_REFLECTION | ATK_SPRINTATK | ATK_STRONG | ATK_JAVELIN | ATK_CHARGE,
+
     };
 
  enum SKILL : _uint
     {
-        MOONLIGHT_SLASH               = 18,   // 달빛 베기        
-        MOONLIGHT_STANCE              = 19,   // 달빛 태세 (패시브)  
-        MOONLIGHT_STANCE_VITALITY     = 20,   // 달빛 태세: 활력 (패시브)
-        FULL_MOON                     = 21,   // 보름달              
-        SHADOW_SLASH                  = 22,   // 그림자 베기           
-        SPIRAL_THRUST                 = 23,   // 나선 찌르기          
-        SPIRAL_THRUST_WHIRLWIND       = 24,   // 나선 찌르기: 소용돌이
-        PURSUIT                       = 25,   // 추격 (패시브)                
-        PURSUIT_DEVOUR                = 26,   // 추격: 포식 (패시브)         
-        ASSAULT                       = 27,   // 강습                
-        MOMENT_SLASH                  = 28,   // 찰나 베기           
-        AGILITY                       = 29,   // 기민함 (패시브)                
-        CRITICAL_STRIKE               = 30,   // 급소 타격        
-        SHADOW_CLEAVE                 = 31,   // 그림자 참격          
-        SMASH_DOWN                    = 32,   // 무너뜨리기 (패시브)             
-        ENDURANCE                     = 33,   // 인내심 (패시브)              
-        WILL_EXTRACTION               = 34,   // 투지 추출 (패시브)        
-        COMBATIVE_SPIRIT              = 35,   // 호전적인 투지 (패시브)       
-        BRUTAL_ATTACK_EXECUTION       = 36,   // 브루탈 어택: 처형
-        BRUTAL_ATTACK_HARVEST         = 37,   // 브루탈 어택: 수확 (패시브)  
-        SPEAR_THROW                   = 38,   // 투창 (추후 추가)
-        SPEAR_THROW_REPOSE            = 39,   // 투창: 안식 (추후 추가)
-        COUNTER_ATTACK                = 40,   // 카운터 어택         
-        COUNTER_ATTACK_ONSLAUGHT      = 41,   // 카운터 어택: 공세 (패시브)  
+        MOONLIGHT_SLASH               = 1 << 0,   // 달빛 베기        
+        MOONLIGHT_STANCE              = 1 << 1,   // 달빛 태세 (패시브)  
+        MOONLIGHT_STANCE_VITALITY     = 1 << 2,   // 달빛 태세: 활력 (패시브)
+        FULL_MOON                     = 1 << 3,   // 보름달              
+        SHADOW_SLASH                  = 1 <<4 ,   // 그림자 베기           
+        SPIRAL_THRUST                 = 1 <<5 ,   // 나선 찌르기          
+        SPIRAL_THRUST_WHIRLWIND       = 1 << 6,   // 나선 찌르기: 소용돌이
+        PURSUIT                       = 1 << 7,   // 추격 (패시브)                
+        PURSUIT_DEVOUR                = 1 << 8,   // 추격: 포식 (패시브)         
+        ASSAULT                       = 1 << 9,   // 강습                
+        MOMENT_SLASH                  = 1 << 10,   // 찰나 베기           
+        AGILITY                       = 1 << 11,   // 기민함 (패시브)                
+        CRITICAL_STRIKE               = 1 << 12,   // 급소 타격        
+        SHADOW_CLEAVE                 = 1 << 13,   // 그림자 참격          
+        SMASH_DOWN                    = 1 << 14,   // 무너뜨리기 (패시브)             
+        ENDURANCE                     = 1 << 15,   // 인내심 (패시브)              
+        WILL_EXTRACTION               = 1 << 16,   // 투지 추출 (패시브)        
+        COMBATIVE_SPIRIT              = 1 << 17,   // 호전적인 투지 (패시브)       
+        BRUTAL_ATTACK_EXECUTION       = 1 << 18,   // 브루탈 어택: 처형
+        BRUTAL_ATTACK_HARVEST         = 1 << 19,   // 브루탈 어택: 수확 (패시브)  
+        SPEAR_THROW                   = 1 << 20,   // 투창 (추후 추가)
+        SPEAR_THROW_REPOSE            = 1 << 21,   // 투창: 안식 (추후 추가)
+        COUNTER_ATTACK                = 1 << 22,   // 카운터 어택         
+        COUNTER_ATTACK_ONSLAUGHT      = 1 << 23,   // 카운터 어택: 공세 (패시브)  
     };
 
     enum MOVE : _uint
     {
-        MOVE_IDLE        = 1 << 0,
-        MOVE_WALK        = 1 << 1,
-        MOVE_RUN         = 1 << 2,
-        MOVE_SPRINT      = 1 << 3,
-        MOVE_CLIMB       = 1 << 4,         // 공격보다 높은 순위로 30
-        MOVE_MIRAGE_STEP = 1 << 5,   // 조건부 순위로 34
-        MOVE_GETUP       = 1 << 6,
-        MOVE_FALL        = 1 << 7,
-        MOVE_DODGE       = 1 << 8,         // 공격보다 높은 순위로 34
+       // MOVE_IDLE        = 1 << 0,
+        MOVE_WALK        = 1 << 0,
+        MOVE_RUN         = 1 << 1,
+        MOVE_SPRINT      = 1 << 2,
+        MOVE_CLIMB       = 1 << 3,    
+        MOVE_MIRAGE_STEP = 1 << 4,         
+        MOVE_GETUP       = 1 << 5,
+        MOVE_FALL        = 1 << 6,
+        MOVE_DODGE       = 1 << 7,         
+                                
+        MOVE_ALL = MOVE_WALK | MOVE_RUN | MOVE_SPRINT | MOVE_MIRAGE_STEP | MOVE_GETUP | MOVE_FALL | MOVE_DODGE,
     };
 
     /* 우선 순위 필요없음 */
@@ -148,9 +159,14 @@ public:
         CYCLE_START       = 1 << 0,
         CYCLE_LOOP        = 1 << 1,
         CYCLE_END         = 1 << 2,   
-        CYCLE_ENDEND      = 1 << 3,   //사다리 끝에서
-        CYCLE_ENDSTART    = 1 << 4,   //사다리 끝에서
+        CYCLE_ENDSTART    = 1 << 3,   //사다리 끝에서
+        CYCLE_ENDEND      = 1 << 4,   //사다리 끝에서
+        //CYCLE_STARTSTART    = 1 << 5,   //사다리 에서
+        //CYCLE_STARTEND      = 1 << 6,   //사다리 에서
         CYCLE_BREAK       = 1 << 5,
+        CYCLE_SHOT          = 1<<6,
+        CYCLE_FAIL          = 1<<7,
+
     };
     
     enum GUARD : _uint
@@ -216,6 +232,11 @@ public:
     _uint Get_CategoryPriority(_uint iCategory, _uint iSubType) const;
     _bool Can_Interrupt(_uint iCurCategory, _uint iCurSubType, _uint iNewCategory, _uint iNewSubType) const;  //우선 순위에 따라 중단시키기
 
+    /* cool Time*/
+    _bool   Check_CoolTime(_uint iAnimationIndex);
+    void    Update_CoolTime(_float fTimeDelta, _uint iCurAnimIndex);
+
+
 private:
     _uint                                   m_iCurrentWaepon = {};
     _uint                                   m_iCurrentCategory = {};
@@ -224,6 +245,7 @@ private:
     _uint                                   m_iCurrentMove = {};
 
     vector<SPEAR_ASM>                       m_ASMs;
+    vector<COOLTIME>                        m_CoolTimes;
     unordered_map<wstring, _uint>           m_AnimNameToIndex;
 
     static const SPEAR_PRIORTIY             s_CategoryPriorities[];
@@ -233,11 +255,13 @@ private:
 	_wstring        Load_UTF8ToWString(const std::wstring& filePath);
     _uint           Parse_Weapon(const wstring& str);
     _uint           Parse_Category(const wstring& str);
+    _uint           Parse_Cycle(const wstring& str);
     _uint           Parse_Attack(const wstring& str);
     _uint           Parse_Skill(const wstring& str);
     _uint           Parse_Move(const wstring& str);
     _uint           Parse_MoveSub(const wstring& str);
     _uint           Parse_Direction(const wstring& str);
+
     //_uint           Parse_Cycle(const wstring& str);
     //_uint           Parse_Set(const wstring& str);
     //_uint           Parse_Groggy(const wstring& str);
@@ -245,8 +269,6 @@ private:
     //_uint           Parse_WeaponChange(const wstring& str);
     //_uint           Parse_Hold(const wstring& str);
     //_uint           Parse_Damaged(const wstring& str);
-
-
 
 
 
