@@ -325,19 +325,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_TestEffect(const _wstring& strLayerTag)
 {
 	//��ġ�� �׽�Ʈ�� clone�� �� argument �� ���� ��
 
-	//_float3 test { 1.f, 0.f, 0.f};
-	//
-	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-	//	ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_TestParticle"), TIME_CHANNEL::EFFECT, &test)))
-	//	return E_FAIL;
-	//
-	//_float3 test2{ 0.f, 1.f, 0.f };
-	//
-	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-	//	ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_TestParticle"), TIME_CHANNEL::EFFECT, &test2)))
-	//	return E_FAIL;
-
-	//m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle1"), 3);
+	m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle1"), 3);
 	//m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle2"), 3);
 
 	return S_OK;
