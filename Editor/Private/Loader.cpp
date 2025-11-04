@@ -586,8 +586,8 @@ HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDa
 	case KHAZAN_MAP::YETUGA:
 		pDataFilePath += TEXT("Yetuga/");
 		break;
-	case KHAZAN_MAP::THECREVICE:
-		pDataFilePath += TEXT("TheCrevice/");
+	case KHAZAN_MAP::CREVICE:
+		pDataFilePath += TEXT("Crevice/");
 		break;
 	case KHAZAN_MAP::EMBARS:
 		pDataFilePath += TEXT("Embars/");
@@ -659,8 +659,8 @@ HRESULT CLoader::Loading_Prototype_MapObject_Inst_From_DAT(const _tchar* pProtot
 	case KHAZAN_MAP::YETUGA:
 		pDataFilePath += TEXT("Yetuga/");
 		break;
-	case KHAZAN_MAP::THECREVICE:
-		pDataFilePath += TEXT("TheCrevice/");
+	case KHAZAN_MAP::CREVICE:
+		pDataFilePath += TEXT("Crevice/");
 		break;
 	case KHAZAN_MAP::EMBARS:
 		pDataFilePath += TEXT("Embars/");

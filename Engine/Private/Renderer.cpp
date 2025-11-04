@@ -54,7 +54,7 @@ HRESULT CRenderer::Initialize()
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Outline"), 750.0f, 450.0f, 300.f, 300.f)))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_DecalDiffuse"), 750.0f, 750.0f, 300.f, 300.f)))
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Decal"), 750.0f, 750.0f, 300.f, 300.f)))
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Fog"), 1050.0f, 150.0f, 300.f, 300.f)))
         return E_FAIL;
@@ -224,19 +224,19 @@ HRESULT CRenderer::Render_Decal()
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Decal"))))
         return E_FAIL;
     
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Diffuse"), m_pShader, "g_DiffuseTexture")))
-        return E_FAIL;
-
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
-        return E_FAIL;
-
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Normal"), m_pShader, "g_NormalTexture")))
-        return E_FAIL;
-
-    // 스크린 사이즈
-    _float2 vScreenSize = _float2(m_fViewportWidth, m_fViewportHeight);
-    if (FAILED(m_pShader->Bind_RawValue("g_vScreenSize", &vScreenSize, sizeof(_float2))))
-        return E_FAIL;
+    //  if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Diffuse"), m_pShader, "g_DiffuseTexture")))
+    //      return E_FAIL;
+    //  
+    //  if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
+    //      return E_FAIL;
+    //  
+    //  if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Normal"), m_pShader, "g_NormalTexture")))
+    //      return E_FAIL;
+    //  
+    //  // 스크린 사이즈
+    //  _float2 vScreenSize = _float2(m_fViewportWidth, m_fViewportHeight);
+    //  if (FAILED(m_pShader->Bind_RawValue("g_vScreenSize", &vScreenSize, sizeof(_float2))))
+    //      return E_FAIL;
 
     // Test
     //  if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
@@ -386,6 +386,9 @@ HRESULT CRenderer::Render_PostScene()
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Diffuse"), m_pShader, "g_DiffuseTexture")))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Decal"), m_pShader, "g_DecalTexture")))
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Shade"), m_pShader, "g_ShadeTexture")))
@@ -700,8 +703,8 @@ HRESULT CRenderer::Ready_RenderTargets()
     if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Outline"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 1.f))))
         return E_FAIL;
 
-    /* For.Target_DecalDiffuse */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_DecalDiffuse"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+    /* For.Target_Decal */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Decal"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
     return S_OK;
@@ -766,7 +769,7 @@ HRESULT CRenderer::Ready_MRTs()
         return E_FAIL;
 
     /* For.MRT_Decal */
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Decal"), TEXT("Target_DecalDiffuse"))))
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Decal"), TEXT("Target_Decal"))))
         return E_FAIL;
 
     return S_OK;

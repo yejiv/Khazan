@@ -20,7 +20,7 @@ vector g_vMtrlAmbient = { 1.f, 1.f, 1.f, 1.f }, g_vMtrlSpecular = { 1.f, 1.f, 1.
 
 // ===== Textures =====
 Texture2D g_DiffuseTexture, g_NormalTexture, g_DepthTexture, g_ShadeTexture, g_SpecularTexture, g_EmissiveTexture;
-Texture2D g_LightDepthTexture, g_PostSceneTexture, g_BlurXTexture, g_BloomTexture, g_FogTexture, g_OutlineTexture;
+Texture2D g_LightDepthTexture, g_PostSceneTexture, g_BlurXTexture, g_BloomTexture, g_FogTexture, g_OutlineTexture, g_DecalTexture;
 
 // ===== Cascade Shadow =====
 int g_iTextureArrayIndex;
@@ -258,8 +258,10 @@ PS_OUT_BACKBUFFER PS_MAIN_POSTSCENE(PS_IN In)
     vector vShade = g_ShadeTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
 
+    vector vDecal = g_DecalTexture.Sample(DefaultSampler, In.vTexcoord);
+    
     //  Out.vColor = vDiffuse * vShade;
-    Out.vColor = vDiffuse * vShade + vSpecular;
+    Out.vColor = (vDiffuse + vDecal) * vShade + vSpecular;
     
     if (!g_isEnableShadow)
         return Out;

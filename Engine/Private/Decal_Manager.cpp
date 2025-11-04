@@ -75,7 +75,7 @@ void CDecal_Manager::Update(_float fTimeDelta)
 
 HRESULT CDecal_Manager::Render()
 {
-    // 데칼의 월드, 카메라 뷰 투영, 역뷰, 역투 바인딩
+    // 데칼의 월드, 카메라 뷰 투영, 뷰 역행렬, 투영 역행렬 바인딩
     if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
         return E_FAIL;
     
@@ -88,10 +88,6 @@ HRESULT CDecal_Manager::Render()
     if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::PROJ))))
         return E_FAIL;
 
-    // 월드는 반복문 내부에서 던져주기
-    //  if (FAILED(pTransform->Bind_Shader_Resource(m_pShader, "g_WorldMatrix")))
-    //      return E_FAIL;
-
     // 활성화된 데칼 개수
     if (FAILED(m_pShader->Bind_RawValue("g_iNumActiveDecals", &m_iNumActiveDecals, sizeof(_uint))))
         return E_FAIL;
@@ -100,10 +96,26 @@ HRESULT CDecal_Manager::Render()
     if (FAILED(m_pShader->Bind_SRV("g_DecalParams", m_pDecalSRV)))
         return E_FAIL;
 
-    // 렌더 타겟의 크기?
-    
+    if (FAILED(m_pTexture->Bind_Shader_Resource(m_pShader, "g_DecalTexture", 0)))
+        return E_FAIL;
+
     // 뎁스, 노말
     // 디퓨즈를 장치에 바인딩
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Diffuse"), m_pShader, "g_DiffuseTexture")))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
+        return E_FAIL;
+
+    _uint       iNumViewports = { 1 };
+    D3D11_VIEWPORT      ViewportDesc{};
+    m_pContext->RSGetViewports(&iNumViewports, &ViewportDesc);
+
+    // 스크린 사이즈
+    _float2 vScreenSize = _float2(ViewportDesc.Width, ViewportDesc.Height);
+    if (FAILED(m_pShader->Bind_RawValue("g_vScreenSize", &vScreenSize, sizeof(_float2))))
+        return E_FAIL;
+
     // 활성화된 데칼 개수만큼 순회, 해당 데칼의 월드, 뷰, 투영 바인딩
     for (auto& pDecal : m_Decals)
     {
@@ -118,21 +130,6 @@ HRESULT CDecal_Manager::Render()
         m_pVIBuffer->Bind_Resources();
         m_pVIBuffer->Render();
     }
-
-    // Test
-    //  if (FAILED(pTransform->Bind_Shader_Resource(m_pShader, "g_WorldMatrix")))
-    //      return E_FAIL;
-    
-    //  _float4x4 WorldMatrix = {};
-    //  XMStoreFloat4x4(&WorldMatrix, XMMatrixScaling(10.f, 10.f, 10.f));
-    //  if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &WorldMatrix)))
-    //      return E_FAIL;
-    //  
-    //  // 버퍼 렌더 및 텍스처 바인딩, 셰이더 비긴
-    //  m_pShader->Begin(0);
-    //  
-    //  m_pVIBuffer->Bind_Resources();
-    //  m_pVIBuffer->Render();
 
     return S_OK;
 }

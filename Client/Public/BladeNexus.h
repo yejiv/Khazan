@@ -63,6 +63,10 @@ private:
 	_bool m_isBNOn = { false };
 	_bool m_isBNOff = { false };
 
+	_float m_fEmissiveIntensity = { 0.f };
+	_bool m_isEnableEmissive = { true };
+	_bool m_isEnableBloom = { true };
+
 private:
 	virtual HRESULT Ready_Components(void* pArg) override;
 	HRESULT Ready_Collision(void* pArg);

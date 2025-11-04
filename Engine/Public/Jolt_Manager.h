@@ -25,6 +25,7 @@
 #include <Jolt/Physics/Collision/CastResult.h>
 #include <Jolt/Physics/Collision/NarrowPhaseQuery.h>
 #include <Jolt/Physics//Collision/CollisionCollectorImpl.h>
+#include <Jolt/Physics/Collision/GroupFilterTable.h>
 #ifdef new
 #pragma pop_macro("new") // DBG_NEW º¹¿ø
 #endif
@@ -55,7 +56,7 @@ public:
 
     Body* CreateAndAdd_Body(const BodyCreationSettings& BodySetting, BodyInterface** pBodyInterface);
     CharacterVirtual* CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData, BodyInterface** pBodyInterface);
-    CBoneChainPhysic* CreateBoneChain(class CModel* pModel, CBoneChainPhysic::BCP_BuildDesc tBuild, CBoneChainPhysic::BCP_RuntimeParams tParams, _uint iRootObjectLayer, _uint iBoneChainObjectLayer);
+    CBoneChainPhysic* CreateBoneChain(class CModel* pModel, CBoneChainPhysic::BCP_BuildDesc tBuild, CBoneChainPhysic::BCP_RuntimeParams tParams, _uint iRootObjectLayer, _uint iBoneChainObjectLayer, class CTransform** pOwnerTransform);
 
     HRESULT				Set_PhysicsSystem();
     void				Set_ObjectToBP(_uint iObjectLayer, _uint iBPLayer) {
@@ -119,9 +120,8 @@ private:
     CJolt_ContactListener*               m_pContactListener = { nullptr };
     CJolt_CharacterContactListener*      m_pCharContactListener = { nullptr };
     CharacterVsCharacterCollisionSimple* m_pCharVsCharCollision = { nullptr };
-
     CJolt_ObjectLayerFilter*             m_pObjectLayerFilter = { nullptr };
-
+    GroupFilterTable*                    m_pGroupFilterTable = { nullptr };
 
 	map<CharacterID, CharacterVirtual*>           m_CharacterVirtuals;
 

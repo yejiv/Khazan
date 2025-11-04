@@ -34,6 +34,18 @@ void CAS_JumpGrab_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 
     _bool isGrabbed = m_pGameInstance->Get_BlackBoard()->Get_Value<_bool>(pYetuga->Get_Name(), "isGrabbed");
 
+    CBlackBoard* pBB = m_pGameInstance->Get_BlackBoard();
+
+    if (pBB->Get_Value<_bool>(pYetuga->Get_Name(), "JumpNotify"))
+    {
+        pYetuga->Get_Controller()->
+            AI_MoveTo(pOwner,
+                pBB->Get_Value<CGameObject*>(pYetuga->Get_Name(), "Target"),
+                pBB->Get_Value<_float>(pYetuga->Get_Name(), "AttackRange"),
+                10,
+                fTimeDelta);
+    }
+
     if (isGrabbed && !m_isGrabbed)
     {
         pModel->Set_Animation(58);

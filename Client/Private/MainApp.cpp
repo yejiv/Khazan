@@ -2,6 +2,9 @@
 #include "Level_Loading.h"
 #include "HeaderGroup_UI.h"
 
+#include "MapObject_Header.h"
+#include "Camera_Free.h"
+
 CMainApp::CMainApp()
 	: m_pGameInstance{ CGameInstance::GetInstance() }
 {
@@ -50,6 +53,7 @@ HRESULT CMainApp::Initialize()
 	if (FAILED(Ready_ObjectLayer()))
 		return E_FAIL;
 
+	CHECK_FAILED(Ready_Prototype_ForStatic_Effect(), E_FAIL);
 	CHECK_FAILED(Ready_DB(), E_FAIL);
 	CHECK_FAILED(Ready_Font(), E_FAIL);
 	CHECK_FAILED(Ready_DebugTool(), E_FAIL);
@@ -233,6 +237,85 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 		CBody::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+#pragma region FOR LOADING & SKY BOX
+
+#pragma region SKY SPHERE TEXTURES
+	/* Prototype_Component_Texture_Cloud_Dist_Gradation */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Cloud_Dist_Gradation"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Map/Prop/Sky/DistanceGradation.dds"), 1))))
+		return E_FAIL;
+
+	/* Prototype_Component_Texture_Cloud_LookUp */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Cloud_LookUp"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Map/Prop/Sky/FTW_Sky_Cloud_LookUp.dds"), 1))))
+		return E_FAIL;
+
+	/* Prototype_Component_Texture_Cloud_Normal */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Cloud_Normal"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Map/Prop/Sky/FTW_Sky_Cloud_Nomal.dds"), 1))))
+		return E_FAIL;
+
+	/* Prototype_Component_Texture_Cloud_Distortion */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Cloud_Distortion"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Map/Prop/Sky/FTW_Sky_Cloud_Distortion.dds"), 1))))
+		return E_FAIL;
+
+	/* Prototype_Component_Texture_Sky_Nebula */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sky_Nebula"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Map/Prop/Sky/FTW_Sky_Nebula.dds"), 1))))
+		return E_FAIL;
+
+	/* Prototype_Component_Texture_Sky_Star_Mask */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sky_Star_Mask"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Map/Prop/Sky/FTW_Sky_Star_Mask_001.dds"), 1))))
+		return E_FAIL;
+
+	/* Prototype_Component_Texture_Moon */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Moon"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Map/Prop/Sky/FT_Rgb_Moon_001.dds"), 1))))
+		return E_FAIL;
+
+	/* Prototype_Component_Texture_Ring */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Ring"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Map/Prop/Sky/FT_Refraction_Ring.dds"), 1))))
+		return E_FAIL;
+#pragma endregion
+	
+#pragma region SKY SPHERE MODELS
+	/* Prototype_Component_Model_SkyMesh */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Model_SkyMesh"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Map/Prop/NonAnim/SkySphere/SkyMesh.dat"))))
+		return E_FAIL;
+
+	/* Prototype_Component_Model_CloudMesh */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Model_CloudMesh"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Map/Prop/NonAnim/SkySphere/CloudMesh.dat"))))
+		return E_FAIL;
+#pragma endregion
+
+#pragma region 하늘 구름 객체 원형
+
+	/* Prototype_GameObject_SkyShpere */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_SkySphere"),
+		CSkySphere::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_GameObject_CloudSphere */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_CloudSphere"),
+		CCloudSphere::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+#pragma endregion
+
+#pragma region 카메라
+	/* Prototype_GameObject_Camera_Free */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Camera_Free"),
+		CCamera_Free::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+#pragma endregion
+
+#pragma endregion
+
 	return S_OK;
 }
 
@@ -391,6 +474,36 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	return S_OK;
 }
 
+HRESULT CMainApp::Ready_Prototype_ForStatic_Effect()
+{
+	/* Prototype_Component_Shader_VtxInstance_PointParticle*/
+	// 이거 혹시 다른사람 쓰는 지 확인 필요
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxInstance_PointParticle"),
+	//	CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxInstance_PointParticle.hlsl"), VTXPOINTPARTICLE::Elements, VTXPOINTPARTICLE::iNumElements))))
+	//	return E_FAIL;
+
+	/* Prototype_Component_Shader_VtxInstance_MeshParticle*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxInstance_Particle"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxInstance_Particle.hlsl"), VTXPARTICLE::Elements, VTXPARTICLE::iNumElements))))
+		return E_FAIL;
+
+	/* Prototype_Component_VIBuffer_LineTrail */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_LineTrail"),
+		CVIBuffer_LineTrail::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_Component_VIBuffer_QuadTrail */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_MeshTrail"),
+		CVIBuffer_QuadTrail::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_Component_Texture_Trail */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Slash"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/SowardTrailTexture/Slash_%d.png"), 22)), E_FAIL);
+
+	return S_OK;
+}
+
 HRESULT CMainApp::Ready_Font()
 {
 	CHECK_FAILED(m_pGameInstance->Font_Load_Data("../Bin/Data/Font/FontData.json"), E_FAIL);
@@ -427,7 +540,7 @@ HRESULT CMainApp::Ready_ObjectLayer()
 	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MAP_STATIC));
 	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(COLLISION_LAYER::MAP_STATIC));
 	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::CAMERA), ENUM_CLASS(COLLISION_LAYER::MONSTER));
-	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::HAIR), ENUM_CLASS(COLLISION_LAYER::PLAYER));
+	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::HAIR), ENUM_CLASS(COLLISION_LAYER::MAP_STATIC));
 
 	// 동적-상호작용
 	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT));
@@ -438,7 +551,7 @@ HRESULT CMainApp::Ready_ObjectLayer()
 	// MONSTER
 	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
 	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
-
+	m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER));
 
 	m_pGameInstance->Set_ObjectLayerFilter(ENUM_CLASS(COLLISION_LAYER::MAP_STATIC), true);
 
@@ -460,6 +573,7 @@ HRESULT CMainApp::Start_Level(LEVEL eStartLevelID)
 {
 	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, eStartLevelID))))
 		return E_FAIL;
+
 
 	return S_OK;
 }
