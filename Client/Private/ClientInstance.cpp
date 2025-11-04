@@ -125,6 +125,11 @@ CUIObject* CClientInstance::Get_RootUI(const _wstring& szRootUIName)
 	return m_pUI_Manager->Get_RootUI(szRootUIName);
 }
 
+HRESULT CClientInstance::Add_RootUI(const _wstring& szRootUIName, CUIObject* pUIObject)
+{
+	return m_pUI_Manager->Add_RootUI(szRootUIName, pUIObject);
+}
+
 _float4 CClientInstance::Get_AtlasUV(const string pFrameName, _uint iTextureIndex)
 {
 	return m_pUI_Manager->Get_AtlasUV(pFrameName, iTextureIndex);

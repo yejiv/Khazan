@@ -408,7 +408,7 @@ HRESULT CLoader::Loading_For_UI_Level()
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_UI_Common_MenuList"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Common/T_Img_List_Menu_%d.png"), 6))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Common/T_Img_List_Menu_%d.png"), 8))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_UI_State_Arrow"),
@@ -586,8 +586,8 @@ HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDa
 	case KHAZAN_MAP::YETUGA:
 		pDataFilePath += TEXT("Yetuga/");
 		break;
-	case KHAZAN_MAP::THECREVICE:
-		pDataFilePath += TEXT("TheCrevice/");
+	case KHAZAN_MAP::CREVICE:
+		pDataFilePath += TEXT("Crevice/");
 		break;
 	case KHAZAN_MAP::EMBARS:
 		pDataFilePath += TEXT("Embars/");
@@ -659,8 +659,8 @@ HRESULT CLoader::Loading_Prototype_MapObject_Inst_From_DAT(const _tchar* pProtot
 	case KHAZAN_MAP::YETUGA:
 		pDataFilePath += TEXT("Yetuga/");
 		break;
-	case KHAZAN_MAP::THECREVICE:
-		pDataFilePath += TEXT("TheCrevice/");
+	case KHAZAN_MAP::CREVICE:
+		pDataFilePath += TEXT("Crevice/");
 		break;
 	case KHAZAN_MAP::EMBARS:
 		pDataFilePath += TEXT("Embars/");

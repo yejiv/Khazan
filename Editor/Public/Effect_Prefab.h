@@ -49,10 +49,11 @@ public:
 	virtual void					Late_Update(_float fTimeDelta) override;
 	virtual HRESULT					Render() override;
 
+	/*[Edit]*/
+
 	void							Add_Effect_Element(_uint EffectType, void *pArg);
 	void							Add_TimeTrack(EFFECT_EVENT TrackData);
 
-	/*[Edit]*/
 	void							Edit_Element(_uint ChildIdx);
 	void							Edit_TimeTrack(_uint ChildIdx);
 	void							RevertChanges(_uint ChildIdx);
@@ -92,7 +93,3 @@ public:
 };
 
 NS_END
-
-
-
-

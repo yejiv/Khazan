@@ -48,9 +48,12 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 	}
 
 	m_pPerception->Update(pOwner, fTimeDelta);
-
 	_float fPrevTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
-	m_pBB->Set_Value(m_strMonstertag, "CurrentTime", fPrevTime + fTimeDelta);
+
+	if (m_pBB->Get_Value<_bool>("Yetuga", "isDetected"))
+		m_pBB->Set_Value(m_strMonstertag, "CurrentTime", fPrevTime + fTimeDelta);
+	else
+		m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
 
 	/*_uint iDirFlag = m_pBB->Get_Value<_uint>("Yetuga", "TargetDirection");
 	cout << "DirFlag : " << iDirFlag << "(";
@@ -208,25 +211,29 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 
 #pragma region ETC
 	
-	//if ("IceBreath" == name)
-	//{
-	//	return [pYetuga](CBlackBoard* BB)->_bool
-	//		{
-
-	//			_float fDist = BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
-	//			_float fAttackRanage = BB->Get_Value<_float>(pYetuga->Get_Name(), "ThrowBallRange");
-
-	//			if (fDist != 0 && fDist <= fAttackRanage && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "IsIceBreath"))
-	//			{
-	//				BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", true);
-	//				return true;
-	//			}
-	//			else
-	//				return false;
-	//		};
-	//}
+	
 
 #pragma endregion
+
+
+	if ("IceBreath" == name)
+	{
+		return [pYetuga](CBlackBoard* BB)->_bool
+			{
+
+				_float fDist = BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
+				_float fAttackRanage = BB->Get_Value<_float>(pYetuga->Get_Name(), "ThrowBallRange");
+
+				if (fDist != 0 && fDist <= fAttackRanage && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "isIceBreath"))
+				{
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", true);
+					return true;
+				}
+				else
+					return false;
+			};
+	}
+
 
 	else if ("Amageddon" == name)
 	{
@@ -235,8 +242,9 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 
 				_float fDist = BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
 				_float fAttackRanage = BB->Get_Value<_float>(pYetuga->Get_Name(), "ThrowBallRange");
-
-				if (fDist != 0 && fDist <= fAttackRanage && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "IsAmageddon"))
+				_float fChaseRange = BB->Get_Value<_float>(pYetuga->Get_Name(), "ChaseRange");
+				if (fDist != 0 && fDist >= fAttackRanage && fDist <= fChaseRange,
+					!BB->Get_Value<_bool>(pYetuga->Get_Name(), "IsAmageddon"))
 				{
 					return true;
 				}
@@ -552,19 +560,22 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 
 #pragma region ETC
 
-	/*if ("IceBreath" == name)
+	
+
+#pragma endregion
+	else if ("IceBreath" == name)
 	{
 		return [pYetuga](CBlackBoard* BB)-> BTNODESTATE
 			{
 
-				if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isIceBreathFinished"))
+				if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isiceBreathFinished"))
 				{
 
 					return BTNODESTATE::SUCCESS;
 				}
 
-				BB->Set_Value(pYetuga->Get_Name(), "isIceBreath", true);
-				BB->Set_Value(pYetuga->Get_Name(), "isIceBreathFinished", false);
+				BB->Set_Value(pYetuga->Get_Name(), "isiceBreath", true);
+				BB->Set_Value(pYetuga->Get_Name(), "isiceBreathFinished", false);
 
 
 				pYetuga->Get_Controller()->Get_State_Machine()->
@@ -572,9 +583,8 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 				return BTNODESTATE::RUNNING;
 
 			};
-	}*/
+	}
 
-#pragma endregion
 
 	else if ("Amageddon" == name)
 	{
@@ -954,7 +964,10 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 
 #pragma region ETC
 
-	/*if ("IceBreath" == name)
+	
+#pragma endregion
+
+	else if ("IceBreath" == name)
 	{
 		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
 			{
@@ -969,13 +982,10 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 					pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
 				}
 			};
-	}*/
+	}
 
 
-
-#pragma endregion
-
-	if ("Amageddon" == name)
+	else if ("Amageddon" == name)
 	{
 		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
 			{

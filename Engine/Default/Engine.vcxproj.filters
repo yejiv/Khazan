@@ -379,6 +379,18 @@
     <Filter Include="01.Utility\21.XPBD">
       <UniqueIdentifier>{b061e657-0aa8-4362-9fea-a69bae13943e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\02.GameObject\Effect">
+      <UniqueIdentifier>{1c4d3cfa-4c45-41e2-8a49-440ce42f8dbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\Effect\Manager">
+      <UniqueIdentifier>{2d58975b-41ed-4ed9-80bb-7519374144a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\Effect\Prefab">
+      <UniqueIdentifier>{fad2561b-a450-47e2-95b3-7d5e1374e509}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\Effect\Prefab\Effect_Element">
+      <UniqueIdentifier>{30b55a15-3568-4924-966d-29cbd3f69ede}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -734,6 +746,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\XPBD.cpp">
       <Filter>01.Utility\21.XPBD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Element.cpp">
+      <Filter>01.Utility\02.GameObject\Effect\Prefab\Effect_Element</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prefab.cpp">
+      <Filter>01.Utility\02.GameObject\Effect\Prefab</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1135,6 +1153,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\XPBD.h">
       <Filter>01.Utility\21.XPBD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Element.h">
+      <Filter>01.Utility\02.GameObject\Effect\Prefab\Effect_Element</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prefab.h">
+      <Filter>01.Utility\02.GameObject\Effect\Prefab</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

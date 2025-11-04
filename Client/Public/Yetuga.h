@@ -13,6 +13,8 @@ private:
 public:
 	class CBody_Yetuga*			Get_Body() const { return m_pBody; }
 	virtual _float4				Get_LockOnPosition();
+	inline _float				EaseInOutSine(_float t) { return -(cosf(XM_PI * t) - 1.f) * 0.5f; }
+
 public:
 	virtual HRESULT				Initialize_Prototype() override;
 	virtual HRESULT				Initialize_Clone(void* pArg) override;
@@ -30,25 +32,36 @@ private:
 
 
 private:
-	void						Pick_Rock();
-	void						Hold_Rock();
-	void						Throw_Rock();
+	// ThrowBall
+	void							Pick_Stone();
+	void							Hold_Stone();
+	void							Throw_Stone();
 
-	void						Grab_Check_Begin();
-	void						Grab_Check_End();
 
-	void						Smash(_float fTimeDelta);
+	// Rush
+	void							Grab_Check_Begin();
+	void							Grab_Check_End();
+
+	// Armageddon
+	void							Pick_Rock();
+	void							Hold_Rock();
+	void							Smash();
 
 public:
-	class CBody_Yetuga*			m_pBody = { nullptr };
-	class CProjectile_Yetuga*	m_pHoldRock = { nullptr };
+	class CBody_Yetuga*				m_pBody = { nullptr };
+	class CProjectile_Yetuga*		m_pHoldStone = { nullptr };
+	class CProjectile_Rock_Yetuga*	m_pHoldRock = { nullptr };
 
-	_bool						m_isSmash = { false };
+	_bool							m_isRockPlay = { false };
+	_bool							m_isSmash = { false };
+	_float3							m_vHoldRockOffset = {};
+
+
 
 public:
-	static CYetuga*				Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	virtual CGameObject*		Clone(void* pArg) override;
-	virtual void				Free() override;
+	static CYetuga*					Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	virtual CGameObject*			Clone(void* pArg) override;
+	virtual void					Free() override;
 };
-
+ 
 NS_END

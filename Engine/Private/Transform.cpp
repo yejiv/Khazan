@@ -250,16 +250,14 @@ void CTransform::Align_ToNormal(_fvector vNormal)
 	// 6. 결과를 012행에 세팅
 
 	_float3 vScaled = Get_Scaled();
-
-	_vector vLook = XMVector3Normalize(vNormal);
-	_vector vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
-
+	
+	_vector		vLook = vNormal;
+	_vector		vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+	_vector		vRight = {};
 	if (XMVectorGetX(XMVector3Dot(vLook, vUp)) >= 0.999f)
 		vUp = XMVectorSet(0.f, 0.f, 1.f, 0.f);
-
-	_vector vRight = XMVector3Cross(vUp, vLook);
-	vRight = XMVector3Normalize(vRight);
-
+	
+	vRight = XMVector3Normalize(XMVector3Cross(vUp, vLook));
 	vUp = XMVector3Normalize(XMVector3Cross(vLook, vRight));
 	
 	Set_State(STATE::RIGHT, XMVector3Normalize(vRight) * vScaled.x);

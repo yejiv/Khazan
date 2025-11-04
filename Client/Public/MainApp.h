@@ -31,6 +31,7 @@ private:
 private:
 	HRESULT Ready_Prototype_ForStatic();
 	HRESULT Ready_Prototype_ForStatic_UI();
+	HRESULT Ready_Prototype_ForStatic_Effect();
 	HRESULT Ready_Font();
 	HRESULT Ready_DB();
 	HRESULT Ready_ObjectLayer();

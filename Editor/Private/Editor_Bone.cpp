@@ -5,6 +5,11 @@ CEditor_Bone::CEditor_Bone()
 }
 
 CEditor_Bone::CEditor_Bone(const CEditor_Bone& Prototype)
+
+: m_TransformationMatrix{ Prototype.m_TransformationMatrix }
+, m_CombinedTransformationMatrix{ Prototype.m_CombinedTransformationMatrix }
+, m_iParentBoneIndex{ Prototype.m_iParentBoneIndex }
+, m_Bone_Data{ Prototype.m_Bone_Data }
 {
 }
 
