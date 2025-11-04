@@ -28,24 +28,32 @@ CLevel_HeinMach::CLevel_HeinMach(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 
 HRESULT CLevel_HeinMach::Initialize()
 {
-	CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+	m_pGameInstance->Add_FireTask([this]() {
+		CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+		return S_OK;
+		});
 
-	CHECK_FAILED(Ready_Layer_Sky(TEXT("Layer_Sky"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
- 	CHECK_FAILED(Ready_Layer_Cloud(TEXT("Layer_Sky"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+	m_pGameInstance->Add_FireTask([this]() {
+		CHECK_FAILED(Ready_Layer_Sky(TEXT("Layer_Sky"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+		return S_OK;
+		});
 
-	// ù��° ���� ���� �ε� ( ���� ~ ù �Ͱ� )
+	m_pGameInstance->Add_FireTask([this]() {
+		CHECK_FAILED(Ready_Layer_Cloud(TEXT("Layer_Sky"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+		return S_OK;
+		});
+
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
 		HEINMACH_1ST_BLADENEXUS, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); 
 		return S_OK;
 		}));
 
-	// ������ ���� �� ���� ���� �ε�
-	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
-		HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); 
-		return S_OK;
-		}));
+	//m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+	//	CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
+	//	HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); 
+	//	return S_OK;
+	//	}));
 
 	m_pGameInstance->Add_FireTask([this]() {
 		for (_uint i = 0; i < HEINMACH_SUBLV; ++i)
@@ -63,8 +71,8 @@ HRESULT CLevel_HeinMach::Initialize()
 			//	continue;
 
 			// 예투가 보스 맵 서브 레벨 로드 주석 해제하면 여기서 스킵
-			if (HEINMACH_YETUGA == i)
-				continue;
+			//if (HEINMACH_YETUGA == i)
+			//	continue;
 			
 			CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), i, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		}
@@ -73,25 +81,33 @@ HRESULT CLevel_HeinMach::Initialize()
 		});
 
 
-	// �� ������Ʈ : �޽� �ν��Ͻ�
+
 	//CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 	m_pGameInstance->Add_FireTask([this]() mutable { 
 		CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); 
 		return S_OK;
 		});
-	// �� ������Ʈ : ��ȣ �ۿ�
+
 	//CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 	m_pGameInstance->Add_FireTask([this]() mutable { 
 		CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); 
 		return S_OK;
 		});
 
-	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
-		return E_FAIL;
+	m_pGameInstance->Add_FireTask([this]() {
+		if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
+			return E_FAIL;
+		return S_OK;
+	});
 
-	CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
-	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
-		return E_FAIL;
+	m_pGameInstance->Add_FireTask([this]() {
+		CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
+
+		if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
+			return E_FAIL;
+		return S_OK;
+	});
+
 	//if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
 	//	return E_FAIL;
 
