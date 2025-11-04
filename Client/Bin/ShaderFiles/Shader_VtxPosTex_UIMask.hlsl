@@ -163,13 +163,15 @@ PS_OUT PS_MASK_BOTTOM(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
     
-    if (In.vTexcoord.y < 0.4f)
+    if (In.vTexcoord.y < 0.2f)
         discard;
     
     //Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
-    Out.vColor.r = 0.f;
-    Out.vColor.gb = 0.f;
-    float fAlpha = (In.vTexcoord.y - 0.4f) / 0.6f;
+    Out.vColor.r = 0.19f;
+    Out.vColor.g = 0.15f;
+    Out.vColor.b = 0.24f;
+    
+    float fAlpha = (In.vTexcoord.y - 0.2f) / 0.8f;
     fAlpha = clamp(fAlpha, 0.0f, 1.f);
     
     Out.vColor.a = fAlpha * g_vColor.a * g_fAlpha;

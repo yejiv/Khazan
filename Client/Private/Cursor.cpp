@@ -55,10 +55,11 @@ void CCursor::Priority_Update(_float fTimeDelta)
 
 void CCursor::Update(_float fTimeDelta)
 {
-	if (m_eMode == MOUSE_MODE::PLAY_MODE)
-		Play_Mode();
-	else if (*m_pInputType == INPUT_TYPE::UI)
+
+	if (*m_pInputType == INPUT_TYPE::UI)
 		UI_Mode();
+	else
+		Play_Mode();
 
 	if (m_pGameInstance->Key_Down(DIK_L, INPUT_TYPE::UI))
 		m_IsUpdate ? m_IsUpdate = false : m_IsUpdate = true;
@@ -80,8 +81,8 @@ void CCursor::Update(_float fTimeDelta)
 			m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pFX);
 		}
 	}
-	if(!m_IsDefalutMouse)
-		ShowCursor(FALSE);
+	//if(!m_IsDefalutMouse)
+	//	ShowCursor(FALSE);
 
 	m_pScreenTrail->Update(fTimeDelta);
 }
@@ -154,6 +155,7 @@ HRESULT CCursor::Ready_Component()
 
 void CCursor::Play_Mode()
 {
+	m_eMode = MOUSE_MODE::PLAY_MODE;
 	RECT clientRect;
 	POINT centerPoint;
 
@@ -163,11 +165,12 @@ void CCursor::Play_Mode()
 
 	ClientToScreen(g_hWnd, &centerPoint);
 
-	SetCursorPos(centerPoint.x, centerPoint.y);
+	//SetCursorPos(centerPoint.x, centerPoint.y);
 }
 
 void CCursor::UI_Mode()
 {
+	ShowCursor(FALSE);
 	POINT ptMouse{};
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);
