@@ -75,8 +75,8 @@ HRESULT CBody_Khazan_Sample::Initialize_Clone(void* pArg)
     m_pModelCom->Set_Animation(5);
     m_pModelCom->Update_BoneCombinedMatrices();
 
-    if (FAILED(Ready_BonePhysics()))
-        return E_FAIL;
+    /*if (FAILED(Ready_BonePhysics()))
+        return E_FAIL;*/
 
     return S_OK;
 }
@@ -139,13 +139,13 @@ void CBody_Khazan_Sample::Update(_float fTimeDelta)
 
     m_isFinishedAnimation = m_pModelCom->Play_Animation(fTimeDelta);
 
-    XMVECTOR vWindWS = XMVectorSet(0.f, 0.f , 1.f, 0.f);
+    //XMVECTOR vWindWS = XMVectorSet(0.f, 0.f , 1.f, 0.f);
 
-    m_pXPBD->PreUpdate(fTimeDelta, vWindWS);
+    //m_pXPBD->PreUpdate(fTimeDelta, vWindWS);
 
-    m_pXPBD->Solve(fTimeDelta);
+    //m_pXPBD->Solve(fTimeDelta);
 
-    m_pXPBD->PostApply(fTimeDelta);
+    //m_pXPBD->PostApply(fTimeDelta);
 
 
     Update_CombinedMatrix();
@@ -280,185 +280,185 @@ HRESULT CBody_Khazan_Sample::Ready_AnimationEvent()
 
 HRESULT CBody_Khazan_Sample::Ready_BonePhysics()
 {
-    vector<vector<_int>> vStrands;
+    //vector<vector<_int>> vStrands;
 
-    vStrands.push_back({
-        /*atic_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
-        stic_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),*/
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C1_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C1_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C1_003")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C1_004")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C1_005")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C1_006")),
-        });
+    //vStrands.push_back({
+    //    /*atic_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
+    //    stic_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),*/
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C1_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C1_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C1_003")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C1_004")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C1_005")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C1_006")),
+    //    });
 
-    vStrands.push_back({
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C5_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C5_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C5_003")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C5_004")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C5_005")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C5_006")),
-        });
+    //vStrands.push_back({
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C5_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C5_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C5_003")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C5_004")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C5_005")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C5_006")),
+    //    });
 
-    vStrands.push_back({
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C2_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C2_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C2_003")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C2_004")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C2_005")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C2_006")),
-        });
+    //vStrands.push_back({
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C2_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C2_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C2_003")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C2_004")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C2_005")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C2_006")),
+    //    });
 
-    vStrands.push_back({
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_L3_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_L3_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_L3_003")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_L3_004")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_L3_005")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_L3_006")),
-        });
+    //vStrands.push_back({
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_L3_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_L3_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_L3_003")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_L3_004")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_L3_005")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_L3_006")),
+    //    });
 
-    vStrands.push_back({
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R2_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R2_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R2_003")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R2_004")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R2_005")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R2_006")),
-        });
+    //vStrands.push_back({
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R2_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R2_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R2_003")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R2_004")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R2_005")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R2_006")),
+    //    });
 
-    vStrands.push_back({
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C4_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C4_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C4_003")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C4_004")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C4_005")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C4_006")),
-        });
+    //vStrands.push_back({
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C4_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C4_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C4_003")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C4_004")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C4_005")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C4_006")),
+    //    });
 
-    vStrands.push_back({
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R3_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R3_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R3_003")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R3_004")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R3_005")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R3_006")),
-        });
+    //vStrands.push_back({
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R3_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R3_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R3_003")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R3_004")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R3_005")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R3_006")),
+    //    });
 
-    vStrands.push_back({
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_DL_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_DL_002"))
-        });
+    //vStrands.push_back({
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_DL_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_DL_002"))
+    //    });
 
-    vStrands.push_back({
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_UL_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_UL_002"))
-        });
+    //vStrands.push_back({
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_UL_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_UL_002"))
+    //    });
 
-    vStrands.push_back({
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_L2_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_L2_002"))
-        });
+    //vStrands.push_back({
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_L2_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_L2_002"))
+    //    });
 
-    vStrands.push_back({
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_L1_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_L1_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_L1_003")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_L1_004"))
-        });
+    //vStrands.push_back({
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_L1_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_L1_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_L1_003")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_L1_004"))
+    //    });
 
-    vStrands.push_back({
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_DR_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_DR_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_DR_003")),
-        });
+    //vStrands.push_back({
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_DR_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_DR_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_DR_003")),
+    //    });
 
-    vStrands.push_back({
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R1_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R1_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R1_003")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R1_004")),
-        });
+    //vStrands.push_back({
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R1_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R1_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R1_003")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_R1_004")),
+    //    });
 
-    vStrands.push_back({
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C3_001")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C3_002")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C3_003")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C3_004")),
-        static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C3_005")),
-        });
+    //vStrands.push_back({
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_BoneRoot_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C3_001")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C3_002")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C3_003")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C3_004")),
+    //    static_cast<_int>(m_pModelCom->Get_BoneIndex("Hair_C3_005")),
+    //    });
 
-    XPBD_Params params{};
-    params.fGravityY = -980.0f;
+    //XPBD_Params params{};
+    //params.fGravityY = -980.0f;
 
-    params.fDampingStill = 0.96f;
-    params.fDampingMove = 0.885f;
+    //params.fDampingStill = 0.96f;
+    //params.fDampingMove = 0.885f;
 
-    params.fStretchCompliance = 3.0e-5f;
-    params.fBendCompliance = 1.5e-4f;
-    params.fShearCompliance = 0.0f;
+    //params.fStretchCompliance = 3.0e-5f;
+    //params.fBendCompliance = 1.5e-4f;
+    //params.fShearCompliance = 0.0f;
 
-    params.iSolverIterations = 6;
-    params.iSubsteps = 1;    // 진동 크면 2로
+    //params.iSolverIterations = 6;
+    //params.iSubsteps = 1;    // 진동 크면 2로
 
-    params.fTetherScale = 1.15f;
-    params.fTetherSoftness = 0.45f;
+    //params.fTetherScale = 1.15f;
+    //params.fTetherSoftness = 0.45f;
 
-    params.fSagBiasStill = 0.0f;
-    params.fSagBiasMove = 0.0f;
+    //params.fSagBiasStill = 0.0f;
+    //params.fSagBiasMove = 0.0f;
 
-    params.fAdvectPosRoot = 0.15f;
-    params.fAdvectPosTip = 0.35f;
-    params.fAdvectRotRoot = 0.15f;
-    params.fAdvectRotTip = 0.30f;
+    //params.fAdvectPosRoot = 0.15f;
+    //params.fAdvectPosTip = 0.35f;
+    //params.fAdvectRotRoot = 0.15f;
+    //params.fAdvectRotTip = 0.30f;
 
-    params.fAirLinear = 0.12f;
-    params.fAirQuadratic = 0.008f;
-    params.fMaxSpeed = 240.0f;
+    //params.fAirLinear = 0.12f;
+    //params.fAirQuadratic = 0.008f;
+    //params.fMaxSpeed = 240.0f;
 
-    m_pXPBD = CXPBD::Create(m_pModelCom, m_pParentTransform, vStrands, params);
+    //m_pXPBD = CXPBD::Create(m_pModelCom, m_pParentTransform, vStrands, params);
 
     return S_OK;
 }
