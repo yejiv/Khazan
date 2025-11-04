@@ -9,8 +9,10 @@ CEffect_Point_Instance::CEffect_Point_Instance(ID3D11Device* pDevice, ID3D11Devi
 
 CEffect_Point_Instance::CEffect_Point_Instance(const CEffect_Point_Instance& Prototype)
     : CEffect_Element(Prototype)
+    , m_sData { Prototype.m_sData }
 {
-    m_pVIBufferCom->Clone(Prototype.m_pVIBufferCom);
+    //m_pVIBufferCom->Clone(Prototype.m_pVIBufferCom);
+    m_pVIBufferCom = dynamic_cast<CVIBuffer_Point_Instance*>(Prototype.m_pVIBufferCom->Clone(nullptr));
 }
 
 HRESULT CEffect_Point_Instance::Initialize_Prototype(void* pArg)
@@ -224,5 +226,6 @@ void CEffect_Point_Instance::Free()
 
     Safe_Release(m_pTextureCom);
     Safe_Release(m_pVIBufferCom);
+    Safe_Release(m_pMaskTextureCom);
 }
 

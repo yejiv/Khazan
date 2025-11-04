@@ -440,7 +440,7 @@ HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDa
 	switch (eMap)
 	{
 	case KHAZAN_MAP::HEINMACH:
-		pDataFilePath += TEXT("HeinMach/");
+		pDataFilePath += TEXT("HeinMach/");	
 		break;
 	case KHAZAN_MAP::CREVICE:
 		pDataFilePath += TEXT("Crevice/");

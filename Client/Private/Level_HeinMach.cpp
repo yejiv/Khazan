@@ -82,6 +82,12 @@ HRESULT CLevel_HeinMach::Initialize()
 	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
 		return E_FAIL;
 
+	if (FAILED(Ready_Layer_TestEffect(TEXT("Layer_EffectTest"))))
+		return E_FAIL;
+
+	/*if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
+		return E_FAIL;*/
+
 	while (true) {
 		bool all_ready = true;
 
@@ -271,6 +277,25 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Test(const _wstring& strLayerTag)
 
 	//CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
 	//	ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Test"), &ObjectDesc), E_FAIL);
+
+	return S_OK;
+}
+
+HRESULT CLevel_HeinMach::Ready_Layer_TestEffect(const _wstring& strLayerTag)
+{
+	//위치값 테스트임 clone할 때 argument 안 받을 거
+
+	_float3 test { 1.f, 0.f, 0.f};
+
+	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+		ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_TestParticle"), TIME_CHANNEL::EFFECT, &test)))
+		return E_FAIL;
+
+	_float3 test2{ 0.f, 1.f, 0.f };
+
+	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+		ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_TestParticle"), TIME_CHANNEL::EFFECT, &test2)))
+		return E_FAIL;
 
 	return S_OK;
 }

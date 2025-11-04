@@ -14,7 +14,6 @@ public :
 									ANIMATE_SPREAD, ANIMATE_ROTATE, ANIMATE_TWINLKE, ANIMATE_LINEAR_MOVE,
 									SCROLL_SPEAD,
 									DISSOLVE, }; 
-public:
 	typedef struct tagEffectEvent
 	{
 		EffectEventType eEventType;
@@ -56,8 +55,9 @@ private:
 	vector<bool>					m_bEventTriggered;
 
 	_bool							m_bPlaying;
-	_bool							m_IsLoop;
 	 
+	_float3							m_test;
+
 public:
 	static CEffect_Prefab*			Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const char* filename);
 	virtual CGameObject*			Clone(void* pArg);

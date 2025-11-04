@@ -14,7 +14,7 @@ CEffect_Prefab::CEffect_Prefab(const CEffect_Prefab& Prototype)
     , m_bEventTriggered(Prototype.m_bEventTriggered)
     , m_eEventTracks(Prototype.m_eEventTracks)
 {
-    for(auto& element : Prototype.m_Children)
+    for (auto& element : Prototype.m_Children)
         m_Children.push_back(element->Clone());
 }
 
@@ -36,17 +36,33 @@ HRESULT CEffect_Prefab::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     m_bPlaying = true;
-    m_IsLoop = true;
+
+    for(auto& element : m_Children)
+        element->SetParentsMatrix(m_pTransformCom->Get_WorldMatrixPtr());
+
+    //m_test = *static_cast<_float3*>(pArg);
+    //m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(m_test.x, m_test.y, m_test.z, 1.f));
 
     return S_OK;
 }
 
 void CEffect_Prefab::Priority_Update(_float fTimeDelta)
 {
-    if(!m_bPlaying && m_IsLoop)
-        ResetChildren();
-    else if (!m_bPlaying)
-        return ;    //pool로 돌아가기!
+    ///*test 지울 거*/
+    //if (m_pGameInstance->Key_Down(DIK_L) && m_test.x == 1.f)    //000
+    //    ResetChildren();
+    //else if (m_pGameInstance->Key_Down(DIK_O) && m_test.y == 1.f) //100
+    //    ResetChildren();
+    //
+    //const _float4* cam;
+    //if (m_pGameInstance->Key_Down(DIK_D))    //000
+    //    cam = m_pGameInstance->Get_CamPosition();
+    ////test end
+    
+
+    
+    if (!m_bPlaying)
+        return ;    //reset && pool로 돌아가기!
 
     for (size_t i = 0; i < m_eEventTracks.size(); ++i)
     {
@@ -81,7 +97,7 @@ void CEffect_Prefab::Priority_Update(_float fTimeDelta)
 
 void CEffect_Prefab::Update(_float fTimeDelta)
 {
-    if (!m_bPlaying && !m_IsLoop) 
+    if (!m_bPlaying) 
         return; 
 
     _bool   isFin{true};
@@ -174,8 +190,6 @@ void CEffect_Prefab::Load(const char* filename)
             MSG_BOX(TEXT("Effect Type Error"));
             return;
         }
-
-        newEffect->SetParentsMatrix(m_pTransformCom->Get_WorldMatrixPtr());
         m_Children.push_back(newEffect);
     }
 
