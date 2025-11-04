@@ -5,6 +5,7 @@
 #include "Body_Yetuga.h"
 #include "CharacterVirtual.h"
 #include "Projectile_Yetuga.h"
+#include "Projectile_Rock_Yetuga.h"
 
 CYetuga::CYetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice, pContext }
@@ -66,14 +67,9 @@ void CYetuga::Priority_Update(_float fTimeDelta)
 
 void CYetuga::Update(_float fTimeDelta)
 {
-    if (m_isSmash)
-        Smash(fTimeDelta);
-
-
     m_pController->Update(this, fTimeDelta);
 
     __super::Update(fTimeDelta);
-
 }
 
 void CYetuga::Late_Update(_float fTimeDelta)
@@ -90,65 +86,73 @@ HRESULT CYetuga::Render()
     return S_OK;
 }
 
-void CYetuga::Pick_Rock()
+void CYetuga::Pick_Stone()
 {
     _float3 vSpawnPoint = m_pBody->Get_BonePoint("Weapon_L");
-    CGameObject* pGameObject = m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Rock"));
+    CGameObject* pGameObject = m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Stone"));
     if (nullptr == pGameObject)
         return;
 
-    m_pHoldRock = static_cast<CProjectile_Yetuga*>(pGameObject);
-    if (m_pHoldRock == nullptr)
+    m_pHoldStone = static_cast<CProjectile_Yetuga*>(pGameObject);
+    if (m_pHoldStone == nullptr)
         return;
-    Safe_AddRef(m_pHoldRock);
+    Safe_AddRef(m_pHoldStone);
 
-    m_pHoldRock->Set_IsActive(false);   // 던지지 않음
-    m_pHoldRock->Set_Visible(true);     // 보이게
-    m_pHoldRock->Set_SpanwPoint(vSpawnPoint);
-    m_pHoldRock->Reset();
+    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
+    _float3 vNormalize{};
+    XMStoreFloat3(&vNormalize, vTempVec);
+    m_pHoldStone->Set_SpawnDir(vNormalize);
+    m_pHoldStone->Set_IsActive(false);   // 던지지 않음
+    m_pHoldStone->Set_Visible(true);     // 보이게
+    m_pHoldStone->Set_SpanwPoint(vSpawnPoint);
+    m_pHoldStone->Reset();
 
     m_pGameInstance->Push_PoolObject_ToLayer(
         ENUM_CLASS(LEVEL::HEINMACH),
-        TEXT("Layer_Yetuga_Rock"),
-        m_pHoldRock
+        TEXT("Layer_Yetuga_Stone"),
+        m_pHoldStone
     );
 }
 
-void CYetuga::Hold_Rock()
+void CYetuga::Hold_Stone()
 {
-
-    if (nullptr == m_pHoldRock)
+    if (nullptr == m_pHoldStone)
         return;
 
     _float3 vSpawnPoint = m_pBody->Get_BonePoint("Weapon_L");
-    m_pHoldRock->Set_SpanwPoint(vSpawnPoint);
-    m_pHoldRock->Reset();
+    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
+    _float3 vNormalize{};
+    XMStoreFloat3(&vNormalize, vTempVec);
+    m_pHoldStone->Set_SpawnDir(vNormalize);
+    m_pHoldStone->Set_SpanwPoint(vSpawnPoint);
+    m_pHoldStone->Reset();
 
 }
 
-void CYetuga::Throw_Rock()
+void CYetuga::Throw_Stone()
 {
     CTransform* pTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
     _vector vTargetLoc = pTransform->Get_State(STATE::POSITION);
 
-    if (m_pHoldRock == nullptr)
+    if (m_pHoldStone == nullptr)
         return;
     _float3 vSpawnPoint = m_pBody->Get_BonePoint("Weapon_L");
     _float3 vTargetDir = (m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir"));
     _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
     _float3 vNormalize{};
     XMStoreFloat3(&vNormalize,vTempVec);
-    m_pHoldRock->Set_SpanwPoint(vSpawnPoint);
-    //m_pHoldRock->Set_SpawnDir(vTargetDir);
-    m_pHoldRock->Set_SpawnDir(vNormalize);
-    m_pHoldRock->Reset();
-    m_pHoldRock->Set_IsActive(true);
-
-
+    m_pHoldStone->Set_SpanwPoint(vSpawnPoint);
+    m_pHoldStone->Set_SpawnDir(vNormalize);
+    m_pHoldStone->Reset();
+    m_pHoldStone->Set_IsActive(true);
     m_pTransformCom->LookAt(vTargetLoc);
-
-
-    Safe_Release(m_pHoldRock);
+    
+    CModel* pModel = static_cast<CModel*>(m_pHoldStone->Get_Component(TEXT("Com_Model")));
+    pModel->Set_Animation(1);
+   
+    Safe_Release(m_pHoldStone);
 
 }
 
@@ -166,15 +170,176 @@ void CYetuga::Grab_Check_End()
     // 충돌을 꺼준다.
 }
 
-void CYetuga::Smash(_float fTimeDelta)
+void CYetuga::Pick_Rock()
 {
-    CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+     _float3 vLHTemp = m_pBody->Get_BonePoint("Weapon_L");
+    _float3 vRHTemp = m_pBody->Get_BonePoint("Weapon_L");
 
+    _vector vLH = XMLoadFloat3(&vLHTemp);
+    _vector vRH = XMLoadFloat3(&vRHTemp);
+    _vector vCenterOffset = XMVectorSet(0.f, -0.7f, 0.f, 0.f);
+    _vector vSpawnTemp = (vLH + vRH) * 0.5f + vCenterOffset;
+    _float3 vSpawnPoint = {};
+
+    XMStoreFloat3(&vSpawnPoint,vSpawnTemp);
+    
+    CGameObject* pGameObject = m_pGameInstance->Pop_PoolObject(
+        ENUM_CLASS(LEVEL::HEINMACH),
+        TEXT("Yetuga_Rock")
+    );
+    if (nullptr == pGameObject)
+        return;
+
+    m_pHoldRock = static_cast<CProjectile_Rock_Yetuga*>(pGameObject);
+    if (m_pHoldRock == nullptr)
+        return;
+    Safe_AddRef(m_pHoldRock);
+
+    m_isRockPlay = true;
+
+    // 타겟 방향 가져오기
+    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
+    _float3 vNormalize{};
+    XMStoreFloat3(&vNormalize, vTempVec);
+
+    // 돌 초기 세팅
+    m_pHoldRock->Set_IsActive(false);
+    m_pHoldRock->Set_Visible(true);
+    m_pHoldRock->Set_SpanwPoint(vSpawnPoint);
+    m_pHoldRock->Set_SpawnDir(vNormalize);
+    m_pHoldRock->Reset();
+
+    m_pGameInstance->Push_PoolObject_ToLayer(
+        ENUM_CLASS(LEVEL::HEINMACH),
+        TEXT("Layer_Yetuga_Rock"),
+        m_pHoldRock
+    );
+}
+
+void CYetuga::Hold_Rock()
+{
+    /*if (nullptr == m_pHoldRock)
+        return;
+
+    // 뼈 위치 가져오기
+    _float3 vLHTemp = m_pBody->Get_BonePoint("Weapon_L");
+    _float3 vRHTemp = m_pBody->Get_BonePoint("Weapon_L");
+
+    _vector vLH = XMLoadFloat3(&vLHTemp);
+    _vector vRH = XMLoadFloat3(&vRHTemp);
+
+    _vector vSpawnTemp = (vLH + vRH) * 0.5f;
+    _float3 vSpawnPoint = {};
+
+    XMStoreFloat3(&vSpawnPoint, vSpawnTemp);
+
+    // 오프셋 적용 (월드 기준)
+    XMStoreFloat3(&vSpawnPoint, XMLoadFloat3(&vSpawnPoint));
+
+    // 위치와 방향 갱신
+    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
+    _float3 vNormalize{};
+    XMStoreFloat3(&vNormalize, vTempVec);
+    m_pHoldRock->Set_SpawnDir(vNormalize);
+    m_pHoldRock->Set_SpanwPoint(vSpawnPoint);
+    
+    m_pHoldRock->Reset();*/
+
+
+    if (!m_isRockPlay)
+        return;
+
+    if (nullptr == m_pHoldRock)
+        return;
+
+    _float3 LHTemp = m_pBody->Get_BonePoint("Weapon_L");
+    _float3 RHTemp = m_pBody->Get_BonePoint("Weapon_R");
+
+    _vector vLH = XMLoadFloat3(&LHTemp);
+    _vector vRH = XMLoadFloat3(&RHTemp);
+
+    _vector vCenterOffset = XMVectorSet(0.f, -2.5f, 0.f, 0.f);
+    _vector vCenter = (vLH + vRH) * 0.5f + vCenterOffset;
+
+    _float fAnimRatio = {};
+    CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+    fAnimRatio = pModel->MakeRatio();
+
+    _float fAngle = XM_PI * fAnimRatio * 0.7f;
+    _float fY = sin(fAngle) * 7.5f;
+    _float fZ = cos(fAngle) * 2.f;
+
+    _vector vOffset = XMVectorSet(0.f, fY, fZ, 0.f);
+    _vector vResult = vCenter + vOffset;
+
+    _float3 vSpawnPoint{};
+    XMStoreFloat3(&vSpawnPoint, vResult);
+
+    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
+    _float3 vNormalize{};
+    XMStoreFloat3(&vNormalize, vTempVec);
+    m_pHoldRock->Set_SpawnDir(vNormalize);
+    m_pHoldRock->Set_SpanwPoint(vSpawnPoint);
+
+    m_pHoldRock->Reset();
+
+}
+
+
+void CYetuga::Smash()
+{
+
+    _float3 vLHTemp = m_pBody->Get_BonePoint("Weapon_L");
+    _float3 vRHTemp = m_pBody->Get_BonePoint("Weapon_L");
+
+    _vector vLH = XMLoadFloat3(&vLHTemp);
+    _vector vRH = XMLoadFloat3(&vRHTemp);
+    _vector vCenterOffset = XMVectorSet(0.f, -0.7f, 0.f, 0.f);
+    _vector vSpawnTemp = (vLH + vRH) * 0.5f + vCenterOffset;
+    _float3 vSpawnPoint = {};
+
+    XMStoreFloat3(&vSpawnPoint, vSpawnTemp);
+    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
+    _float3 vNormalize{};
+    XMStoreFloat3(&vNormalize, vTempVec);
+    m_pHoldRock->Set_SpawnDir(vNormalize);
+    m_pHoldRock->Set_SpanwPoint(vSpawnPoint);
+
+    m_pHoldRock->Reset();
+
+    CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
     CBlackBoard* BB = m_pGameInstance->Get_BlackBoard();
     CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
-    _vector vTargetLoc = pTargetTransform->Get_State(STATE::POSITION);
+    _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+    _vector vPosition = m_pTransformCom->Get_State(STATE::POSITION);
+    _float fAnimRatio = pModel->MakeRatio();
+    _float fDistSq = BB->Get_Value<_float>(m_strName, "TargetDist");
+    _float fLimit = 6.f;
+    _float fLimitSq = fLimit * fLimit;
 
-    m_pTransformCom->Set_State(STATE::POSITION,vTargetLoc);
+    _float3 vTempDir = BB->Get_Value<_float3>(m_strName, "TargetDir");
+    if (fDistSq > fLimitSq)
+    {
+        _vector vDir = XMLoadFloat3(&vTempDir);
+
+        // 타겟 앞 Limit 만큼 떨어진 목표지점 계산
+        _vector vGoalPos = vTargetPos - vDir * fLimit;
+
+        // lerp 로 위치 보간
+        _vector vNewPos = XMVectorLerp(vPosition, vGoalPos, fAnimRatio - 0.5f);
+        m_pTransformCom->Set_State(STATE::POSITION, vNewPos);
+    }
+    else
+    {
+        _vector vDir = XMLoadFloat3(&vTempDir);
+        _vector vStopPos = vTargetPos - vDir * fLimit;
+        m_pTransformCom->Set_State(STATE::POSITION, vStopPos);
+    }
+
 
 }
 
@@ -189,10 +354,10 @@ HRESULT CYetuga::Ready_Components()
     tCharVirDesc.eShapeType = SHAPE::CAPSULE;
     tCharVirDesc.vPos = vPos;
     tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 1.5f, 0.f);
+    tCharVirDesc.vShapeOffset = _float3(0.f, 2.5f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
     tCharVirDesc.fRadius = 1.f;
-    tCharVirDesc.fHeight = 1.;
+    tCharVirDesc.fHeight = 2.5f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
     m_tCollisionDesc.pGameObject = this;
     //pCollDesc.pInfo = ?? // 작성하기
@@ -233,12 +398,21 @@ HRESULT CYetuga::Ready_Projectiles()
 {
     CProjectile_Yetuga::PROJECTILE_DESC Desc{};
     Desc.fDamage = 10.f;
-    Desc.fSpeedPerSec = 50.f;
-    Desc.fLifeTime = 5.f;
+    Desc.fSpeedPerSec = 150.f;
+    Desc.fLifeTime = 3.f;
     Desc.fRotationPerSec = 180.f;
 
-    m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH),TEXT("Prototype_Projectile_Yetuga_Rock"),
-        ENUM_CLASS(LEVEL::HEINMACH),TEXT("Yetuga_Rock"),&Desc,5);
+    m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH),TEXT("Prototype_Projectile_Yetuga_Stone"),
+        ENUM_CLASS(LEVEL::HEINMACH),TEXT("Yetuga_Stone"),&Desc,5);
+
+    CProjectile_Rock_Yetuga::PROJECTILE_DESC RockDesc{};
+    RockDesc.fDamage = 30.f;
+    RockDesc.fSpeedPerSec = 1.f;
+    RockDesc.fLifeTime = 10.f;
+    RockDesc.fRotationPerSec = 180.f;
+
+       m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Yetuga_Rock"),
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Rock"), &RockDesc, 2);
 
     return S_OK;
 }
@@ -251,9 +425,9 @@ HRESULT CYetuga::Ready_AnimEvent()
 
 #pragma region ThrowRock
 
-    pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Pick_Rock(); });
-    pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Throw_Rock(); });
-    pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Hold_Rock(); });
+    pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Pick_Stone(); });
+    pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Throw_Stone(); });
+    pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Hold_Stone(); });
 
 #pragma endregion
 
@@ -280,10 +454,31 @@ HRESULT CYetuga::Ready_AnimEvent()
 #pragma endregion
 
 
+#pragma region JumpAttack
+    pModel->Register_Event("JumpAttack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
+        { 
+            m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", true);
+        });
+    pModel->Register_Event("JumpAttack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() 
+        {
+            m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", false);
+
+        });
+    //pModel->Register_Event("JumpAttack", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Look_Target(); });
+#pragma endregion
+
 #pragma region JumpGrab
 
-    pModel->Register_Event("GrabCheck", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {/*충돌키고*/ });
-    pModel->Register_Event("GrabCheck", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { /*충돌끄고*/});
+    pModel->Register_Event("GrabCheck", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
+        {
+            m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", true);
+
+        });
+    pModel->Register_Event("GrabCheck", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() 
+        { 
+            m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", false);
+
+        });
     //pModel->Register_Event("GrabCheck", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Hold_Rock(); });
 
     pModel->Register_Event("TargetFree", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() 
@@ -313,12 +508,12 @@ HRESULT CYetuga::Ready_AnimEvent()
 
 
 #pragma region Amageddon
-    //// 돌을 풀에 서 꺼낸다.
-    //pModel->Register_Event("AMG_RockEvent", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { });
-    //// 대미지를 주고 충돌끄고 풀로 보낸다.
-    //pModel->Register_Event("AMG_RockEvent", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { /*충돌끄고*/});
-    //// Hold한다.
-    //pModel->Register_Event("AMG_RockEvent", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Look_Target(); });
+    // 돌을 풀에 서 꺼낸다.
+    pModel->Register_Event("AMG_RockEvent", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Pick_Rock(); });
+    // 대미지를 주고 충돌끄고 풀로 보낸다.
+    pModel->Register_Event("AMG_RockEvent", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { m_isRockPlay = false; });
+    // Hold한다.
+    pModel->Register_Event("AMG_RockEvent", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Hold_Rock(); });
 
     // 점프 시작
     pModel->Register_Event("AMG_JumpEvent", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { });
@@ -349,17 +544,13 @@ HRESULT CYetuga::Ready_AnimEvent()
             _vector vLook = m_pTransformCom->Get_State(STATE::LOOK);
             vLook = XMVector3Normalize(vLook);
 
-
             _vector vLerp = XMVectorLerp(vLook, vDir, fAnimRatio * 0.8f);
             vLerp = XMVector3Normalize(vLerp);
 
             m_pTransformCom->Set_State(STATE::LOOK, vLerp);
         });
 
-
-    // 속도 조절
-    pModel->Register_Event("AMG_SmashEvent", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_isSmash = true; });
-    pModel->Register_Event("AMG_SmashEvent", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_isSmash = false; });
+    pModel->Register_Event("AMG_SmashEvent", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Smash(); });
 
     
 #pragma endregion

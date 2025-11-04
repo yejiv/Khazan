@@ -122,13 +122,12 @@ HRESULT CModel::Initialize_Prototype(const _char* pModelFilePath)
     }
 
 
-    /* 피오나용 */
-#ifdef _DEBUG
+    /* 투사체용 */
     if (!isFindRoot && m_eModelType == MODELTYPE::ANIM)
     {
         auto it = find_if(m_Bones.begin(), m_Bones.end(),
             [&](CBone* pBone) {
-                if (pBone->Compare_Name("Bip001"))
+                if (pBone->Compare_Name("B_Rock"))
                     return true;
                 return false;
             });
@@ -140,7 +139,6 @@ HRESULT CModel::Initialize_Prototype(const _char* pModelFilePath)
         else
             m_iRootBoneIndex = static_cast<_uint>(distance(m_Bones.begin(), it));
     }
-#endif // _DEBUG
 
 	return S_OK;
 }
@@ -705,6 +703,9 @@ void CModel::Update_RootMotion(_float fTimeDelta)
 
         /* 이전 포지션 현재 포지션으로 갱신 */
         m_RootMotionInfo.matPreRootMotion.r[3] = vCurPos;
+
+        XMStoreFloat3(&m_vDelta, vDelta);
+
 	}
 
     /* 리셋 */

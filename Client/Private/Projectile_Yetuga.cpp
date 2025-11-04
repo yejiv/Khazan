@@ -26,11 +26,14 @@ HRESULT CProjectile_Yetuga::Initialize_Clone(void* pArg)
 
 	m_isActive = false;
 
+ 	m_pModelCom->Set_Animation(0);
+
 	return S_OK;
 }
 
 void CProjectile_Yetuga::Priority_Update(_float fTimeDelta)
 {
+
 }
 
 void CProjectile_Yetuga::Update(_float fTimeDelta)
@@ -52,11 +55,17 @@ void CProjectile_Yetuga::Update(_float fTimeDelta)
 		}
 		m_pTransformCom->Go_Straight(fTimeDelta);
 	}
+
+	if (m_pModelCom->Play_Animation(fTimeDelta))
+	{
+		int a = 10;
+	}
+
+
 }
 
 void CProjectile_Yetuga::Late_Update(_float fTimeDelta)
 {
-	//__super::Late_Update(fTimeDelta);
 	if(m_isVisible)
 		m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND,this);
 }
@@ -89,7 +98,6 @@ void CProjectile_Yetuga::Reset()
 {
 	m_fCurrentTime = 0.f;
 	_vector vDir = XMVector3Normalize(XMLoadFloat3(&m_vSpawnDir));
-	//m_pTransformCom->Set_State(STATE::LOOK, vDir);
 
 	_vector vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
 	_vector vRight = XMVector3Normalize(XMVector3Cross(vUp, vDir));
@@ -99,18 +107,16 @@ void CProjectile_Yetuga::Reset()
 	m_pTransformCom->Set_State(STATE::UP, vUp);
 	m_pTransformCom->Set_State(STATE::LOOK, vDir);
 
-	m_pTransformCom->Scale(_float3(0.3f,0.3f,0.3f));
-
 	m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&m_vSpawnPoint), 1.f));
 }
 
 HRESULT CProjectile_Yetuga::Ready_Components()
 {
-	if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
+	if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
 		TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
 		return E_FAIL;
 
-	if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Yetuga_Rock"),
+	if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Yetuga_Stone"),
 		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
 		return E_FAIL;
 

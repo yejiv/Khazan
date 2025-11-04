@@ -400,9 +400,6 @@
     <Filter Include="02.GameObject\UI\Announce">
       <UniqueIdentifier>{84a25179-8e31-451d-99ed-b011ba78bff2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="92.AI\State\Yetuga\07. Hit">
-      <UniqueIdentifier>{da1ea781-147f-4124-9510-f2c5c6d3c222}</UniqueIdentifier>
-    </Filter>
     <Filter Include="92.AI\State\Yetuga\07.Smash">
       <UniqueIdentifier>{0e31b1a0-0e3b-4f09-b2e2-b8ad28b1d1b1}</UniqueIdentifier>
     </Filter>
@@ -471,6 +468,15 @@
     </Filter>
     <Filter Include="02.GameObject\UI\WorldUI\Target_BrutalAttack\Point">
       <UniqueIdentifier>{42406861-76be-42a0-b004-ecd70e443e2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Projectile\Yetuga\Stone">
+      <UniqueIdentifier>{6f5a5b15-108f-401d-b9a7-cc78e45f10b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Projectile\Yetuga\Rock">
+      <UniqueIdentifier>{c7680d2c-0e09-4b3c-a64b-19e30e04e3b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Projectile\Yetuga\Breath">
+      <UniqueIdentifier>{26b56be5-a831-4719-98da-994557176210}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -810,9 +816,6 @@
     <ClInclude Include="..\Public\Projectile.h">
       <Filter>02.GameObject\Projectile</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Projectile_Yetuga.h">
-      <Filter>02.GameObject\Projectile\Yetuga</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Camera_Controller.h">
       <Filter>94.ClientInstance\Camera\Controller</Filter>
     </ClInclude>
@@ -896,6 +899,12 @@
     </ClInclude>
     <ClInclude Include="..\public\BrutalAttack_Point.h">
       <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack\Point</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Projectile_Yetuga.h">
+      <Filter>02.GameObject\Projectile\Yetuga\Stone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Projectile_Rock_Yetuga.h">
+      <Filter>02.GameObject\Projectile\Yetuga\Rock</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1221,9 +1230,6 @@
     <ClCompile Include="..\Private\Projectile.cpp">
       <Filter>02.GameObject\Projectile</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Projectile_Yetuga.cpp">
-      <Filter>02.GameObject\Projectile\Yetuga</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Camera_Controller.cpp">
       <Filter>94.ClientInstance\Camera\Controller</Filter>
     </ClCompile>
@@ -1307,6 +1313,12 @@
     </ClCompile>
     <ClCompile Include="..\private\BrutalAttack_Point.cpp">
       <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack\Point</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile_Yetuga.cpp">
+      <Filter>02.GameObject\Projectile\Yetuga\Stone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile_Rock_Yetuga.cpp">
+      <Filter>02.GameObject\Projectile\Yetuga\Rock</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

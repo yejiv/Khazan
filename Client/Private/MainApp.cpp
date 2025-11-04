@@ -520,7 +520,7 @@ HRESULT CMainApp::Ready_ObjectLayer()
 	// MONSTER
 	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
 	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
-
+	m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER));
 
 	m_pGameInstance->Set_ObjectLayerFilter(ENUM_CLASS(COLLISION_LAYER::MAP_STATIC), true);
 
