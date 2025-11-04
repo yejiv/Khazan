@@ -28,7 +28,13 @@
 #include "Yetuga.h"
 #include "Body_Yetuga.h"
 #include "Projectile_Yetuga.h"
+#include "Projectile_Rock_Yetuga.h"
 #pragma endregion
+
+#pragma region EFFECT
+#include "Effect_Prefab.h"
+#pragma endregion
+
 
 //static mutex g_GpuGate;
 
@@ -262,6 +268,11 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Yetuga/Yetuga.dat"))))
 		return E_FAIL;
 
+	// Prototype_Component_Model_Yetuga_Stone
+ 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Yetuga_Stone"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Yetuga/Yetuga_Stone/Yetuga_Stone.dat"))))
+		return E_FAIL;
+
 	// Prototype_Component_Model_Yetuga_Rock
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Yetuga_Rock"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Yetuga/Yetuga_Rock/Yetuga_Rock.dat"))))
@@ -353,8 +364,12 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 		CBody_Yetuga::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Yetuga_Rock"),
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Yetuga_Stone"),
 		CProjectile_Yetuga::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Yetuga_Rock"),
+		CProjectile_Rock_Yetuga::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 #pragma endregion
@@ -406,6 +421,13 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Spear_Khazan_Sample"),
 		CSpear_Khazan_Sample::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+
+#pragma region 이펙트 테스트 중!
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_TestParticle"),
+		CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/test1"))))
+		return E_FAIL;
+#pragma endregion
+
 
 	return S_OK;
 }

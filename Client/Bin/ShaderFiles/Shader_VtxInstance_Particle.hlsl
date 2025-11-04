@@ -145,7 +145,7 @@ PS_OUT PS_PRESNEL(PS_IN In)
     
     
     float fresnelFactor = 1.0 - abs(dot(In.vNormal, normalize(g_vCamPosition - In.vWorldPos)));
-    vFinalColor.xyz = vFinalColor.xyz * pow(fresnelFactor, 2.f);
+    vFinalColor.xyz = vFinalColor.xyz * pow(fresnelFactor, 1.4f);
     
     float fDecreaseAlpha = (In.vLifeTime.x / In.vLifeTime.y);
     

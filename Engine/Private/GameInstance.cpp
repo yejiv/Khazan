@@ -835,9 +835,9 @@ CharacterVirtual* CGameInstance::CreateCharacterVirtual(const CharacterVirtualSe
 	return m_pJolt_Manager->CreateCharacterVirtual(inSettings, inPosition, inRotation, inUserData, pBodyInterface);
 }
 
-CBoneChainPhysic* CGameInstance::CreateBoneChain(CModel* pModel, CBoneChainPhysic::BCP_BuildDesc tBuild, CBoneChainPhysic::BCP_RuntimeParams tParams, _uint iRootObjectLayer, _uint iBoneChainObjectLayer)
+CBoneChainPhysic* CGameInstance::CreateBoneChain(CModel* pModel, CBoneChainPhysic::BCP_BuildDesc tBuild, CBoneChainPhysic::BCP_RuntimeParams tParams, _uint iRootObjectLayer, _uint iBoneChainObjectLayer, CTransform** pTransform)
 {
-	return m_pJolt_Manager->CreateBoneChain(pModel, tBuild, tParams, iRootObjectLayer, iBoneChainObjectLayer);
+	return m_pJolt_Manager->CreateBoneChain(pModel, tBuild, tParams, iRootObjectLayer, iBoneChainObjectLayer, pTransform);
 }
 
 void CGameInstance::CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter)

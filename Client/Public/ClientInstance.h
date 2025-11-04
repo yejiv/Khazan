@@ -59,7 +59,7 @@ public:
 	//UI 관련 함수
 	HRESULT						UI_UpdateSwitch(const _wstring& szRootUIName, void* pArg = nullptr);
 	class CUIObject*			Get_RootUI(const _wstring& szRootUIName);
-	
+	HRESULT						Add_RootUI(const _wstring& szRootUIName, CUIObject* pUIObject);
 	//ETC
 	_float4						Get_AtlasUV(const string pFrameName, _uint iTextureIndex);
 #pragma endregion

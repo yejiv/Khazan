@@ -82,11 +82,7 @@ HRESULT CUI_BladeNexus::Initialize_Clone(void* pArg)
 
 void CUI_BladeNexus::Priority_Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_7))
-	{
-		On_Panel(ONTYPE::CREVICE, TEXT("ÇÏÀÎ¸¶Èå ¾îµò°¡¿¡ ¾îµò°¡¿¡ ¾îµò°¡"));
-	}
-	else if (m_pGameInstance->Key_Down(DIK_7, INPUT_TYPE::UI))
+	if (m_pGameInstance->Key_Down(DIK_ESCAPE, INPUT_TYPE::UI))
 	{
 		Off_Panel();
 	}

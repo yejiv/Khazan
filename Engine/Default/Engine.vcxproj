@@ -195,6 +195,8 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\Decal.cpp" />
     <ClCompile Include="..\private\Decal_Manager.cpp" />
     <ClCompile Include="..\Private\Decorator_Node.cpp" />
+    <ClCompile Include="..\Private\Effect_Element.cpp" />
+    <ClCompile Include="..\Private\Prefab.cpp" />
     <ClCompile Include="..\private\Fog.cpp" />
     <ClCompile Include="..\private\Font_Face.cpp" />
     <ClCompile Include="..\private\Font_Renderer.cpp" />
@@ -276,6 +278,8 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\VIBuffer_Terrain.cpp" />
     <ClCompile Include="..\private\Vignette.cpp" />
     <ClCompile Include="..\Private\Wait_Node.cpp" />
+    <ClCompile Include="..\Private\XPBD.cpp" />
+    <ClCompile Include="..\Public\BoneTreePBD.cpp" />
     <ClCompile Include="..\Public\Guizmo\GraphEditor.cpp" />
     <ClCompile Include="..\Public\Guizmo\ImCurveEdit.cpp" />
     <ClCompile Include="..\Public\Guizmo\ImGradient.cpp" />
@@ -307,6 +311,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Body.h" />
     <ClInclude Include="..\Public\BodyDrawFilter.h" />
     <ClInclude Include="..\public\Bone.h" />
+    <ClInclude Include="..\Public\BoneTreePBD.h" />
     <ClInclude Include="..\Public\BoneChainPhysic.h" />
     <ClInclude Include="..\Public\BTNode.h" />
     <ClInclude Include="..\Public\BTNode_Defines.h" />
@@ -319,6 +324,8 @@ call Copy.bat</Command>
     <ClInclude Include="..\public\Decal.h" />
     <ClInclude Include="..\public\Decal_Manager.h" />
     <ClInclude Include="..\Public\Decorator_Node.h" />
+    <ClInclude Include="..\Public\Effect_Element.h" />
+    <ClInclude Include="..\Public\Prefab.h" />
     <ClInclude Include="..\public\Fog.h" />
     <ClInclude Include="..\public\Engine_Sequence.h" />
     <ClInclude Include="..\Public\Guizmo\GraphEditor.h" />
@@ -425,6 +432,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\VIBuffer_Terrain.h" />
     <ClInclude Include="..\public\Vignette.h" />
     <ClInclude Include="..\Public\Wait_Node.h" />
+    <ClInclude Include="..\Public\XPBD.h" />
     <ClInclude Include="EnginePch.h" />
   </ItemGroup>
   <ItemGroup>

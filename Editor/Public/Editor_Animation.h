@@ -32,11 +32,11 @@ public:
 	_bool					Get_Skip() { return m_isSkip; }
 
 private:
-	string								m_strName = {};
-	_float								m_fDuration = {};				
-	_float								m_fTickPerSecond = {};			
-	_float*								m_fCurrentTrackPosition = {nullptr};	
-	_uint								m_iNumChannels = {};			
+	string								m_strName						= {};
+	_float								m_fDuration						= {};				
+	_float								m_fTickPerSecond				= {};			
+	_float*								m_fCurrentTrackPosition			 = {nullptr};	
+	_uint								m_iNumChannels					 =	 {};			
 	vector< class CEditor_Channel* >	m_Channels;
 	vector<_uint>						m_CurrentKeyFrameIndices;
 
