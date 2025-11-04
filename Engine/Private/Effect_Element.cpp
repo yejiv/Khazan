@@ -63,6 +63,10 @@ void CEffect_Element::SetScrollData(void* pArg)
 {
 }
 
+void CEffect_Element::SetLoopOff()
+{
+}
+
 void CEffect_Element::SetData(_uint eventType,_float fDurTime)
 {
     TRACK_DATA data;

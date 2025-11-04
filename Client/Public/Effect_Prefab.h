@@ -48,13 +48,12 @@ public:
 	void							Add_TimeTrack(EFFECT_EVENT TrackData);
 	void							Load(const char* filename);
 
-	void							ResetChildren();
+	virtual void					ResetChildren() override;
 
 private:
 	vector<EFFECT_EVENT>			m_eEventTracks;
 	vector<bool>					m_bEventTriggered;
 
-	_bool							m_bPlaying;
 	 
 	_float3							m_test;
 

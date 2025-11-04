@@ -753,6 +753,9 @@
     <ClCompile Include="..\Private\Prefab.cpp">
       <Filter>01.Utility\02.GameObject\Effect\Prefab</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Effect_Manager.cpp">
+      <Filter>01.Utility\02.GameObject\Effect\Manager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -1159,6 +1162,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Prefab.h">
       <Filter>01.Utility\02.GameObject\Effect\Prefab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Manager.h">
+      <Filter>01.Utility\02.GameObject\Effect\Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

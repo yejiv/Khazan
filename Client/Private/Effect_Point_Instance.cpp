@@ -97,6 +97,7 @@ void CEffect_Point_Instance::Reset()
     __super::Reset();
     m_pVIBufferCom->Reset();
     m_fAccTime = 0.f;
+    m_bRunning = true;
 }
 
 void CEffect_Point_Instance::SetSpreadData(void* pArg)

@@ -345,6 +345,13 @@ public:
 	HRESULT Render_Decals();
 #pragma endregion
 
+#pragma region EFFECT_MANAGER
+	void		Add_Effect_ToPool(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint iPoolSize);
+	_uint		Spwan_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector SpwanPos);
+	void		Update_Effect_Position(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector SpwanPos);
+	void		Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID);
+#pragma endregion
+
 private:
 	class CGraphic_Device*		m_pGraphic_Device = { nullptr };
 	class CLevel_Manager*		m_pLevel_Manager = { nullptr };
@@ -368,6 +375,7 @@ private:
 	class CBlackBoard*			m_pBlackBoard = { nullptr };
 	class CSequence_Manager*	m_pSequence_Manager = { nullptr };
 	class CDecal_Manager*		m_pDecal_Manager = { nullptr };
+	class CEffect_Manager*		m_pEffect_Manager = { nullptr };
 	
 	// 임시(이후 렌더링 리소스 클래스 안으로 이전할 예정)
 	class CShadow*				m_pShadow = { nullptr };

@@ -332,6 +332,9 @@ void CVIBuffer_Point_Instance::Setting_Speed(SPEED_VALUE type, _float2 range)
 
 void CVIBuffer_Point_Instance::Remove_Speed(SPEED_VALUE type)
 {
+	if (m_IsLoop == true)
+		return;
+
 	D3D11_MAPPED_SUBRESOURCE SubResource;
 	if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
 	{

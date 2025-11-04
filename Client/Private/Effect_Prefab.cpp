@@ -35,7 +35,7 @@ HRESULT CEffect_Prefab::Initialize_Clone(void* pArg)
     if (FAILED(__super::Initialize_Clone(&Desc)))
         return E_FAIL;
 
-    m_bPlaying = true;
+    //m_bPlaying = true;
 
     for(auto& element : m_Children)
         element->SetParentsMatrix(m_pTransformCom->Get_WorldMatrixPtr());
@@ -57,12 +57,10 @@ void CEffect_Prefab::Priority_Update(_float fTimeDelta)
     //const _float4* cam;
     //if (m_pGameInstance->Key_Down(DIK_D))    //000
     //    cam = m_pGameInstance->Get_CamPosition();
-    ////test end
+    ////test end 
     
-
-    
-    if (!m_bPlaying)
-        return ;    //reset && pool로 돌아가기!
+    //if (!m_bPlaying)
+    //    return ;    //reset && pool로 돌아가기!
 
     for (size_t i = 0; i < m_eEventTracks.size(); ++i)
     {
@@ -97,8 +95,8 @@ void CEffect_Prefab::Priority_Update(_float fTimeDelta)
 
 void CEffect_Prefab::Update(_float fTimeDelta)
 {
-    if (!m_bPlaying) 
-        return; 
+    //if (!m_bPlaying) 
+    //    return; 
 
     _bool   isFin{true};
 
@@ -136,7 +134,7 @@ HRESULT CEffect_Prefab::Render()
 
 void CEffect_Prefab::ResetChildren()
 {
-    m_bPlaying = true;
+    m_bPlaying = false;
     m_fCurTime = 0.f;
     for (_uint i = 0; i < m_Children.size(); ++i)
         m_Children[i]->Reset();
