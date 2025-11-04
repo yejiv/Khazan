@@ -9,6 +9,7 @@ CEffect_Mesh_Instance::CEffect_Mesh_Instance(ID3D11Device* pDevice, ID3D11Device
 
 CEffect_Mesh_Instance::CEffect_Mesh_Instance(const CEffect_Mesh_Instance& Prototype)
     : CEffect_Element(Prototype)
+    , m_sData{ Prototype.m_sData }
 {
     m_pVIBufferCom->Clone(Prototype.m_pVIBufferCom);
 }
