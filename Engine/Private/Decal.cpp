@@ -30,24 +30,37 @@ void CDecal::Priority_Update(_float fTimeDelta)
 void CDecal::Update(_float fTimeDelta)
 {
 	m_fTimeAcc += fTimeDelta;
+	// m_fTimeAcc += 0.16f;
 
 	// 수명이 끝나면 사망 처리 -> 풀
 	if (m_fTimeAcc >= m_fLifeTime)
 	{
 		//	Set_IsDead(true);
 		m_isDead = true;
+		m_fTimeAcc = 0.f;
 		m_fOpacity = 0.f;
 		return;
 	}
-
-	// 페이드 아웃 계산
-	if (m_fTimeAcc > m_fFadeStartTime)
+	else
 	{
 		_float fFadeDuration = m_fLifeTime - m_fFadeStartTime;
 		_float fFadeTimeAcc = m_fTimeAcc - m_fFadeStartTime;
 		m_fOpacity = 1.f - (fFadeTimeAcc / fFadeDuration);
 		m_fOpacity = max(0.f, m_fOpacity);
+	
+		int a = 10;
 	}
+
+	// 페이드 아웃 계산
+	//	if (m_fTimeAcc > m_fFadeStartTime)
+	//	{
+	//		_float fFadeDuration = m_fLifeTime - m_fFadeStartTime;
+	//		_float fFadeTimeAcc = m_fTimeAcc - m_fFadeStartTime;
+	//		m_fOpacity = 1.f - (fFadeTimeAcc / fFadeDuration);
+	//		m_fOpacity = max(0.f, m_fOpacity);
+	//	
+	//		int a = 10;
+	//	}
 }
 
 void CDecal::Late_Update(_float fTimeDelta)
@@ -56,13 +69,12 @@ void CDecal::Late_Update(_float fTimeDelta)
 
 HRESULT CDecal::Render()
 {
-	// Decal 전용 셰이더 만들어서 호출
-
 	return S_OK;
 }
 
 void CDecal::Reset()
 {
+	//	m_fOpacity = 1.f;
 }
 
 CDecal* CDecal::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

@@ -62,22 +62,22 @@ RasterizerState RS_Cull_None
 
 DepthStencilState DSS_Default
 {
-    DepthEnable = true;
-    DepthWriteMask = all;
+    DepthEnable = true;     // 깊이 테스트 O
+    DepthWriteMask = all;   // 깊이 기록 O
     DepthFunc = LESS_EQUAL;
 };
 
 DepthStencilState DSS_None
 {
-    DepthEnable = false;
-    DepthWriteMask = zero;
+    DepthEnable = false;    // 깊이 테스트 X
+    DepthWriteMask = zero;  // 깊이 기록 X
 };
 
-DepthStencilState DSS_Outline
+DepthStencilState DSS_DepthTestOnly
 {
-    DepthEnable = true;         // 깊이 테스트 활성화
-    DepthWriteMask = zero;      // 깊이 기록 비활성화
-    DepthFunc = LESS_EQUAL;     // 기본 깊이 함수
+    DepthEnable = true;     // 깊이 테스트 O
+    DepthWriteMask = zero;  // 깊이 기록 X
+    DepthFunc = LESS_EQUAL; 
 };
 
 BlendState BS_Default
