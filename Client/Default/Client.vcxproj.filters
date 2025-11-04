@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="99.Defines">
-      <UniqueIdentifier>{7aa2cf62-6ed3-40ac-8805-9ee09729bdbb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="98.Default">
       <UniqueIdentifier>{6d5ec687-677b-4977-bb88-b7f9efcaa511}</UniqueIdentifier>
     </Filter>
@@ -445,6 +442,33 @@
     <Filter Include="92.AI\State\Yetuga\16.Dead">
       <UniqueIdentifier>{4cf7082c-0498-48f9-9990-97868ab4536a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\BossHp">
+      <UniqueIdentifier>{7c5ed5fb-b737-4aa3-8396-8834d3527d94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\BossHp\BossGauge">
+      <UniqueIdentifier>{d5fe018e-b0e6-4ae5-8f26-fc4b8ca7c66d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Amount">
+      <UniqueIdentifier>{b4b7171c-3aa1-4e4a-b2f8-9835253039b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Amount\Panel">
+      <UniqueIdentifier>{c0acf912-d9e7-4f81-9e6c-cba8d2a873e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Target_LockOn">
+      <UniqueIdentifier>{af128dcc-b74e-427e-b5ba-c05a5d91ed80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Target_BrutalAttack">
+      <UniqueIdentifier>{8f9708aa-1535-425e-8cde-157f13bdfdd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="99.Defines">
+      <UniqueIdentifier>{7aa2cf62-6ed3-40ac-8805-9ee09729bdbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Target_BrutalAttack\Progress">
+      <UniqueIdentifier>{f3547287-83aa-477a-9822-39efc490417d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Target_BrutalAttack\Point">
+      <UniqueIdentifier>{42406861-76be-42a0-b004-ecd70e443e2e}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObject\Projectile\Yetuga\Stone">
       <UniqueIdentifier>{6f5a5b15-108f-401d-b9a7-cc78e45f10b7}</UniqueIdentifier>
     </Filter>
@@ -453,6 +477,36 @@
     </Filter>
     <Filter Include="02.GameObject\Projectile\Yetuga\Breath">
       <UniqueIdentifier>{26b56be5-a831-4719-98da-994557176210}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect">
+      <UniqueIdentifier>{64d20bad-a374-4b87-a92d-1f1919696796}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Trail">
+      <UniqueIdentifier>{19fb49db-0b4b-422f-862a-dbd3debb2d95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Trail\LineTrail">
+      <UniqueIdentifier>{110305d5-caf6-4992-803c-e5689d92a699}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Trail\MeshTrail">
+      <UniqueIdentifier>{03db8ed4-9a43-41f0-91b3-5fb9b3fd0f49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Trail\LineTrail\ScreenTrail">
+      <UniqueIdentifier>{17d235e9-f3e3-4cb1-88ff-c32efdd95b95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab">
+      <UniqueIdentifier>{ce2d27b8-643c-42a4-8ad9-20d7baef3228}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element">
+      <UniqueIdentifier>{a3fc7da7-a797-48d4-9722-a71b177fbd12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Mesh_Instance">
+      <UniqueIdentifier>{e55a6b80-f98f-49dd-9644-6f3118beaf97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Point_Instance">
+      <UniqueIdentifier>{cd6ac5cb-7816-4820-bff2-b6ecb67da7a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite">
+      <UniqueIdentifier>{be3d7783-09b2-4210-8f95-7574cdc85092}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -852,11 +906,56 @@
     <ClInclude Include="..\public\ItemInfo_Weapon.h">
       <Filter>02.GameObject\UI\Item_Info\Weapon</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\BossHp.h">
+      <Filter>02.GameObject\UI\BossHp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BossHp_Gauge.h">
+      <Filter>02.GameObject\UI\BossHp\BossGauge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Amount.h">
+      <Filter>02.GameObject\UI\Amount</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Amount_Panel.h">
+      <Filter>02.GameObject\UI\Amount\Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Target_LockOn.h">
+      <Filter>02.GameObject\UI\WorldUI\Target_LockOn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Target_BrutalAttack.h">
+      <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BrutalAttack_Progress.h">
+      <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack\Progress</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BrutalAttack_Point.h">
+      <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack\Point</Filter>
+    </ClInclude>
     <ClInclude Include="..\Public\Projectile_Yetuga.h">
       <Filter>02.GameObject\Projectile\Yetuga\Stone</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Projectile_Rock_Yetuga.h">
       <Filter>02.GameObject\Projectile\Yetuga\Rock</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\LineTrail.h">
+      <Filter>02.GameObject\Effect\Trail\LineTrail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ScreenTrail.h">
+      <Filter>02.GameObject\Effect\Trail\LineTrail\ScreenTrail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MeshTrail.h">
+      <Filter>02.GameObject\Effect\Trail\MeshTrail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Prefab.h">
+      <Filter>02.GameObject\Effect\Effect_Prefab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Sprite.h">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Point_Instance.h">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Point_Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Mesh_Instance.h">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Mesh_Instance</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1242,11 +1341,56 @@
     <ClCompile Include="..\private\ItemInfo_Weapon.cpp">
       <Filter>02.GameObject\UI\Item_Info\Weapon</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\BossHp.cpp">
+      <Filter>02.GameObject\UI\BossHp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BossHp_Gauge.cpp">
+      <Filter>02.GameObject\UI\BossHp\BossGauge</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Amount.cpp">
+      <Filter>02.GameObject\UI\Amount</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Amount_Panel.cpp">
+      <Filter>02.GameObject\UI\Amount\Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Target_LockOn.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Target_LockOn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Target_BrutalAttack.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BrutalAttack_Progress.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack\Progress</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BrutalAttack_Point.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack\Point</Filter>
+    </ClCompile>
     <ClCompile Include="..\Private\Projectile_Yetuga.cpp">
       <Filter>02.GameObject\Projectile\Yetuga\Stone</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Projectile_Rock_Yetuga.cpp">
       <Filter>02.GameObject\Projectile\Yetuga\Rock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\LineTrail.cpp">
+      <Filter>02.GameObject\Effect\Trail\LineTrail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MeshTrail.cpp">
+      <Filter>02.GameObject\Effect\Trail\MeshTrail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ScreenTrail.cpp">
+      <Filter>02.GameObject\Effect\Trail\LineTrail\ScreenTrail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Prefab.cpp">
+      <Filter>02.GameObject\Effect\Effect_Prefab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Mesh_Instance.cpp">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Mesh_Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Point_Instance.cpp">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Point_Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Sprite.cpp">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1296,6 +1440,9 @@
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxSphere.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_UI_Effect.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

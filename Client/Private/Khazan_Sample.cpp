@@ -11,12 +11,12 @@
 
 #pragma region 인벤토리 삽입 테스트
 #include "UI_Inven.h"
-//몬스터 체력 테스트
-#include "Mon_HP.h"
-
 #pragma endregion
 
-
+#pragma region 락온, 브루탈어택 테스트
+#include "Target_LockOn.h"
+#include "Target_BrutalAttack.h"
+#pragma endregion
 
 CKhazan_Sample::CKhazan_Sample(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CCreature{ pDevice, pContext }
@@ -73,19 +73,6 @@ HRESULT CKhazan_Sample::Initialize_Clone(void* pArg)
         });
 #pragma endregion
 
-    CMon_HP* pUI_HP = static_cast<CMon_HP*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Mon_HP")));
-    m_iMaxHp = 100;
-    m_iHp = 50;
-    m_iMaxStamina = 100;
-    m_iStamina = 50;
-
-    if (pUI_HP != nullptr)
-    {
-        Safe_AddRef(pUI_HP);
-        pUI_HP->Setting_HP(m_pTransformCom->Get_WorldMatrixPtr(), { 0.f, 250.f }, &m_iHp, &m_iMaxHp, &m_iStamina, &m_iMaxStamina);
-
-        m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), pUI_HP);
-    }
     return S_OK;
 
 }
@@ -97,7 +84,21 @@ void CKhazan_Sample::Priority_Update(_float fTimeDelta)
     if(m_pGameInstance->Key_Down(DIK_F5))
         m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(457.f, -12.f, 241.f, 1.f));
 
+    XMStoreFloat4(&m_vPos, XMVectorSetW(m_pTransformCom->Get_State(STATE::POSITION),1.f));
 
+    if(m_pGameInstance->Key_Down(DIK_M))
+        static_cast<CTarget_LockOn*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("LockOn")))->LockOn(&m_vPos);
+    
+    if (m_pGameInstance->Key_Down(DIK_N))
+        static_cast<CTarget_LockOn*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("LockOn")))->LockOff();
+
+    if (m_pGameInstance->Key_Down(DIK_B))
+    {
+        CTarget_BrutalAttack* pObject = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
+        pObject->Setting_BrutalAttack(&m_vPos, 0.f);
+
+        m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), pObject);
+    }
 }
 
 void CKhazan_Sample::Update(_float fTimeDelta)

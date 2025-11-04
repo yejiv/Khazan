@@ -12,6 +12,16 @@ CUI_Default_Tex::CUI_Default_Tex(const CUI_Default_Tex& Prototype)
 {
 }
 
+HRESULT CUI_Default_Tex::Set_Texture(const _wstring& strPrototypeTag, _int iTexPass)
+{
+	m_iTexPass = iTexPass;
+	if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), strPrototypeTag,
+		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr)))
+		return E_FAIL;
+
+	return E_NOTIMPL;
+}
+
 HRESULT CUI_Default_Tex::Initialize_Prototype()
 {
 	return S_OK;

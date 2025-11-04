@@ -27,14 +27,14 @@ HRESULT CLevel_Shader::Initialize()
 		ENUM_CLASS(LEVEL::SHADER), TEXT("Pool_Decal"), nullptr, g_iNumDecals)))
 		return E_FAIL;
 
-	//if (FAILED(Ready_Lights()))
-		//return E_FAIL;
+	//	if (FAILED(Ready_Lights()))
+	//		return E_FAIL;
 
 #pragma region 테스트용 ( 박준영이 남기고 간거 )
 	CHECK_FAILED(Ready_Lights(TEXT("Test"), LEVEL::SHADER), E_FAIL);
-
+	
 	CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("Test"), LEVEL::SHADER), E_FAIL);
-
+	
 	CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("Test"), LEVEL::SHADER), E_FAIL);
 #pragma endregion
 
@@ -408,7 +408,7 @@ void CLevel_Shader::Update(_float fTimeDelta)
 		//		return E_FAIL;
 
 		if (FAILED(m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_Decal"),
-			XMVectorSet(vPos.x, vPos.y, vPos.z, 1.f), XMVectorSet(vNorm.x, vNorm.y, vNorm.z, 0.f), _float3(10.f, 10.f, 10.f))))
+			XMVectorSet(vPos.x, vPos.y, vPos.z, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f), _float3(10.f, 10.f, 10.f))))
 			MSG_BOX(TEXT("Failed to Spawn : Decal"));
 	}
 
@@ -481,7 +481,7 @@ HRESULT CLevel_Shader::Ready_Layer_BackGround()
 	XMStoreFloat4x4(&Desc.WorldMatrix, XMMatrixScaling(0.5f, 0.5f, 0.5f) * XMMatrixTranslation(0.f, 0.f, 200.f));
 	_tchar szPrototypeModelTag[MAX_PATH] = TEXT("Prototype_Component_Model_Rock");
 	memcpy(Desc.szModelName, szPrototypeModelTag, MAX_PATH);
-
+	
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_BackGround"),
 		ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Prop_Object"), TIME_CHANNEL::WORLD, &Desc)))
 		return E_FAIL;
@@ -510,8 +510,8 @@ HRESULT CLevel_Shader::Ready_Layer_MapObject(const _wstring& strLayerTag, const 
 	case KHAZAN_MAP::YETUGA:
 		pDataFilePath += TEXT("Yetuga/");
 		break;
-	case KHAZAN_MAP::THECREVICE:
-		pDataFilePath += TEXT("TheCrevice/");
+	case KHAZAN_MAP::CREVICE:
+		pDataFilePath += TEXT("Crevice/");
 		break;
 	case KHAZAN_MAP::EMBARS:
 		pDataFilePath += TEXT("Embars/");
@@ -602,8 +602,8 @@ HRESULT CLevel_Shader::Ready_Layer_MapObject_Inst(const _wstring& strLayerTag, c
 	case KHAZAN_MAP::YETUGA:
 		pDataFilePath += TEXT("Yetuga/");
 		break;
-	case KHAZAN_MAP::THECREVICE:
-		pDataFilePath += TEXT("TheCrevice/");
+	case KHAZAN_MAP::CREVICE:
+		pDataFilePath += TEXT("Crevice/");
 		break;
 	case KHAZAN_MAP::EMBARS:
 		pDataFilePath += TEXT("Embars/");
@@ -684,8 +684,8 @@ HRESULT CLevel_Shader::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurrentL
 	case KHAZAN_MAP::YETUGA:
 		pDataFilePath += TEXT("Yetuga/");
 		break;
-	case KHAZAN_MAP::THECREVICE:
-		pDataFilePath += TEXT("TheCrevice/");
+	case KHAZAN_MAP::CREVICE:
+		pDataFilePath += TEXT("Crevice/");
 		break;
 	case KHAZAN_MAP::EMBARS:
 		pDataFilePath += TEXT("Embars/");

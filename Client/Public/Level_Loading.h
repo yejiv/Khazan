@@ -30,6 +30,11 @@ private:
 
 private:
 	HRESULT Ready_GameObjects();
+
+	HRESULT Ready_Layer_Camera(const _wstring& strLayerTag);
+	HRESULT Ready_Layer_Sky(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
+	HRESULT Ready_Layer_Cloud(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
+
 	HRESULT Ready_LoadingThread();
 
 public:

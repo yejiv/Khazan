@@ -1,0 +1,194 @@
+﻿#include "Effect_Sprite.h"
+#include "Effect_Prefab.h"
+#include "GameInstance.h"
+
+CEffect_Sprite::CEffect_Sprite(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+    : CEffect_Element{pDevice, pDeviceContext}
+{
+}
+
+CEffect_Sprite::CEffect_Sprite(const CEffect_Sprite& Prototype)
+    : CEffect_Element(Prototype)
+    , m_sData { Prototype.m_sData }
+{
+}
+
+HRESULT CEffect_Sprite::Initialize_Prototype(void* pArg)
+{
+    m_sData = *static_cast<SPRITE_DESC*>(pArg);
+
+    return S_OK;
+}
+
+HRESULT CEffect_Sprite::Initialize_Clone()
+{
+    __super::Initialize_Clone(nullptr);
+
+    if (FAILED(Ready_Component()))
+        return E_FAIL;
+
+    //test
+    m_pTransformCom->Scale(_float3(2.f, 2.f, 2.f));
+
+    return S_OK;
+}
+
+void CEffect_Sprite::Priority_Update(_float fTimeDelta)
+{
+    __super::Priority_Update(fTimeDelta);
+}
+
+void CEffect_Sprite::Update(_float fTimeDelta)
+{
+    m_fCurTime += fTimeDelta * 10.f;
+
+    if (m_fCurTime > m_sData.fSpriteSpeed)
+    {
+        ++ m_iUVIdx;
+        m_fCurTime = 0.f;
+    }
+
+    m_pTransformCom->Scaling(_float3(m_sData.ScalingValue, m_sData.ScalingValue, m_sData.ScalingValue));
+    const _float4* CamPos = m_pGameInstance->Get_CamPosition();
+    m_pTransformCom->LookAt(XMLoadFloat4(CamPos));
+ 
+    if (m_iUVIdx == (m_sData.iCol * m_sData.iRow))
+    {
+        if (m_sData.IsLoop == false)
+            m_TimeTracks.pop_back(); 
+        m_iUVIdx = 0;
+        m_bRunning = false;
+    }
+    //(뭔가 끝내라는 이벤트 -> 이거 루프 세팅 false로 바꿔주기)
+    
+    __super::Update(fTimeDelta);
+}
+
+void CEffect_Sprite::Late_Update(_float fTimeDelta)
+{
+    __super::Late_Update(fTimeDelta);
+}
+
+HRESULT CEffect_Sprite::Render()
+{
+    if (FAILED(Bind_ShaderResources()))
+        return E_FAIL;
+
+    //m_pShaderCom->Begin((_uint)m_Data.TextureBindType);
+    m_pShaderCom->Begin(0);
+
+    m_pVIBufferCom->Bind_Resources();
+
+    m_pVIBufferCom->Render();
+
+    return S_OK;
+}
+
+void CEffect_Sprite::Reset()
+{
+    __super::Reset();
+}
+
+void CEffect_Sprite::Active()
+{
+    __super::Active();
+
+    m_fCurTime = 0.f;
+    m_iUVIdx = 0;
+    m_bRunning = true;
+}
+
+HRESULT CEffect_Sprite::Ready_Component()
+{
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxPosSpriteTex"),
+        TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
+        return E_FAIL;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sprite_Effect"),
+        TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr)))
+        return E_FAIL;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Rect"),
+        TEXT("Com_Buffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), nullptr)))
+        return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CEffect_Sprite::Bind_ShaderResources()
+{
+    _float iCol = static_cast<_float>(m_sData.iCol);
+    _float iRow = static_cast<_float>(m_sData.iRow);
+    _float UVIdx = static_cast<_float>(m_iUVIdx);
+
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix)))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
+        return E_FAIL;
+
+    if(FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_sData.vColor, sizeof(_float4))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_numCols", &iCol, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_numRows", &iRow, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_FrameIdx", &UVIdx, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_Texture", m_sData.iTextureIdx)))
+        return E_FAIL;
+
+
+    return S_OK;
+}
+
+//void CEffect_Sprite::Apply(void* pArg)
+//{
+//    m_sData = *static_cast<SPRITE_DESC*>(pArg);
+//}
+
+CEffect_Sprite* CEffect_Sprite::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, void* pArg)
+{
+    CEffect_Sprite* pInstance = new CEffect_Sprite(pDevice, pContext);
+
+    if (FAILED(pInstance->Initialize_Prototype(pArg)))
+    {
+        MSG_BOX(TEXT("Failed to Created : CEffect_Sprite"));
+        Safe_Release(pInstance);
+    }
+
+    return pInstance;
+}
+
+Engine::CEffect_Element* CEffect_Sprite::Clone()
+{
+    CEffect_Sprite* pInstance = new CEffect_Sprite(*this);
+
+    if (FAILED(pInstance->Initialize_Clone()))
+    {
+        MSG_BOX(TEXT("CEffect_Sprite :: Clone Error!!!!"));
+        Safe_Release(pInstance);
+    }
+
+    return pInstance;
+}
+
+void CEffect_Sprite::Free()
+{
+    __super::Free();
+
+    Safe_Release(m_pTextureCom);
+    Safe_Release(m_pVIBufferCom);
+}
+
+
+
+
+

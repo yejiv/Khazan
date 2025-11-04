@@ -55,6 +55,8 @@ void CUI_BladeNexus::Off_Panel()
 		m_eAnimState = UIANIMSTATE::OFF;
 		m_fAccTime = 1.f;
 
+		m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { false, true });
+
 		m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
 	}
 	else
@@ -80,11 +82,7 @@ HRESULT CUI_BladeNexus::Initialize_Clone(void* pArg)
 
 void CUI_BladeNexus::Priority_Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_7))
-	{
-		On_Panel(ONTYPE::CREVICE, TEXT("ÇÏÀÎ¸¶Èå ¾îµò°¡¿¡ ¾îµò°¡¿¡ ¾îµò°¡"));
-	}
-	else if (m_pGameInstance->Key_Down(DIK_7, INPUT_TYPE::UI))
+	if (m_pGameInstance->Key_Down(DIK_ESCAPE, INPUT_TYPE::UI))
 	{
 		Off_Panel();
 	}

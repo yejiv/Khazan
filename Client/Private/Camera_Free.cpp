@@ -30,36 +30,39 @@ HRESULT CCamera_Free::Initialize_Clone(void* pArg)
 
 void CCamera_Free::Priority_Update(_float fTimeDelta)
 {
-    // if (GetKeyState('W') & 0x8000)
-    if(m_pGameInstance->Key_Pressing(DIK_UP, fTimeDelta))
+    if (LEVEL::LOADING != static_cast<LEVEL>(m_pGameInstance->Get_CurrentLevelID()))
     {
-        m_pTransformCom->Go_Straight(fTimeDelta);
-    }
-    if (m_pGameInstance->Key_Pressing(DIK_DOWN, fTimeDelta))
-    {
-        m_pTransformCom->Go_Backward(fTimeDelta);
-    }
-    if (m_pGameInstance->Key_Pressing(DIK_LEFT, fTimeDelta))
-    {
-        m_pTransformCom->Go_Left(fTimeDelta);
-    }
-    if (m_pGameInstance->Key_Pressing(DIK_RIGHT, fTimeDelta))
-    {
-        m_pTransformCom->Go_Right(fTimeDelta);
-    }
+        // if (GetKeyState('W') & 0x8000)
+        if (m_pGameInstance->Key_Pressing(DIK_UP, fTimeDelta))
+        {
+            m_pTransformCom->Go_Straight(fTimeDelta);
+        }
+        if (m_pGameInstance->Key_Pressing(DIK_DOWN, fTimeDelta))
+        {
+            m_pTransformCom->Go_Backward(fTimeDelta);
+        }
+        if (m_pGameInstance->Key_Pressing(DIK_LEFT, fTimeDelta))
+        {
+            m_pTransformCom->Go_Left(fTimeDelta);
+        }
+        if (m_pGameInstance->Key_Pressing(DIK_RIGHT, fTimeDelta))
+        {
+            m_pTransformCom->Go_Right(fTimeDelta);
+        }
 
-    _int    iMouseMove = {};
-    
-    
-    if (iMouseMove = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::X))
-    {
-        m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * iMouseMove * m_fMouseSensor);
-    }
+        _int    iMouseMove = {};
 
 
-    if (iMouseMove = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::Y))
-    {
-        m_pTransformCom->Turn(m_pTransformCom->Get_State(STATE::RIGHT), fTimeDelta * iMouseMove * m_fMouseSensor);
+        if (iMouseMove = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::X))
+        {
+            m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * iMouseMove * m_fMouseSensor);
+        }
+
+
+        if (iMouseMove = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::Y))
+        {
+            m_pTransformCom->Turn(m_pTransformCom->Get_State(STATE::RIGHT), fTimeDelta * iMouseMove * m_fMouseSensor);
+        }
     }
 
 

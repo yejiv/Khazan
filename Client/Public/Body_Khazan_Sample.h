@@ -8,7 +8,7 @@
 NS_BEGIN(Engine)
 class CShader;
 class CModel;
-class CBoneChainPhysic;
+class CXPBD;
 NS_END
 
 NS_BEGIN(Client)
@@ -83,10 +83,7 @@ private:
 	_bool m_isEnableBloom = {};
 	OUTLINE_CONFIG m_OutlineConfig = { _float3(1.f, 0.f, 1.f), 0.001f, 0.f, 0.f };
 
-	CBoneChainPhysic* m_pBoneChain = { nullptr };
-	_bool m_isBoneChainEnabled = true;
-
-	vector<vector<int>> m_HairChains; 
+	class CXPBD* m_pXPBD = { nullptr };
 
 
 private:

@@ -38,6 +38,9 @@ void CJolt_CharacterContactListener::OnContactAdded(const JPH::CharacterVirtual*
         m_pGameInstance->Remove_CharacterVirtual(inCharacter->GetID());
     }
 
+    if (pCharDesc == nullptr || pBodyDesc == nullptr || pCharDesc->pGameObject == nullptr || pBodyDesc->pGameObject == nullptr)
+        return;
+
     if (pCharDesc->pGameObject != nullptr && pBodyDesc->pGameObject != nullptr && 
         !pCharDesc->pGameObject->Get_IsDead() && !pBodyDesc->pGameObject->Get_IsDead())
     {
@@ -63,6 +66,9 @@ void CJolt_CharacterContactListener::OnContactPersisted(const JPH::CharacterVirt
     {
         m_pGameInstance->Remove_CharacterVirtual(inCharacter->GetID());
     }
+
+    if (pCharDesc == nullptr || pBodyDesc == nullptr || pCharDesc->pGameObject == nullptr || pBodyDesc->pGameObject == nullptr)
+        return;
 
     if (pCharDesc->pGameObject != nullptr && pBodyDesc->pGameObject != nullptr && 
         !pCharDesc->pGameObject->Get_IsDead() && !pBodyDesc->pGameObject->Get_IsDead())
@@ -90,6 +96,9 @@ void CJolt_CharacterContactListener::OnContactRemoved(const JPH::CharacterVirtua
         m_pGameInstance->Remove_CharacterVirtual(inCharacter->GetID());
     }
 
+    if (pCharDesc == nullptr || pBodyDesc == nullptr || pCharDesc->pGameObject == nullptr || pBodyDesc->pGameObject == nullptr)
+        return;
+
 	if (pCharDesc->pGameObject != nullptr && pBodyDesc->pGameObject != nullptr && 
         !pCharDesc->pGameObject->Get_IsDead() && !pBodyDesc->pGameObject->Get_IsDead())
 	{
@@ -115,6 +124,8 @@ void CJolt_CharacterContactListener::OnCharacterContactAdded(const CharacterVirt
         m_pGameInstance->Remove_CharacterVirtual(inOtherCharacter->GetID());
     }
 
+    if (pCharDesc1 == nullptr || pCharDesc2 == nullptr || pCharDesc1->pGameObject == nullptr || pCharDesc2->pGameObject == nullptr)
+        return;
 
     if (pCharDesc1->pGameObject != nullptr && pCharDesc2->pGameObject != nullptr &&
         !pCharDesc1->pGameObject->Get_IsDead() && !pCharDesc2->pGameObject->Get_IsDead())
@@ -149,6 +160,8 @@ void CJolt_CharacterContactListener::OnCharacterContactPersisted(const Character
         m_pGameInstance->Remove_CharacterVirtual(inOtherCharacter->GetID());
     }
 
+    if (pCharDesc1 == nullptr || pCharDesc2 == nullptr || pCharDesc1->pGameObject == nullptr || pCharDesc2->pGameObject == nullptr)
+        return;
 
     if (pCharDesc1->pGameObject != nullptr && pCharDesc2->pGameObject != nullptr &&
         !pCharDesc1->pGameObject->Get_IsDead() && !pCharDesc2->pGameObject->Get_IsDead())
@@ -184,6 +197,8 @@ void CJolt_CharacterContactListener::OnCharacterContactRemoved(const CharacterVi
     {
         m_pGameInstance->Remove_CharacterVirtual(inOtherCharacterID);
     }
+    if (pCharDesc1 == nullptr || pCharDesc2 == nullptr || pCharDesc1->pGameObject == nullptr || pCharDesc2->pGameObject == nullptr)
+        return;
 
     if (pCharDesc1->pGameObject != nullptr && pCharDesc2->pGameObject != nullptr && !pCharDesc1->pGameObject->Get_IsDead() && !pCharDesc2->pGameObject->Get_IsDead())
     {
