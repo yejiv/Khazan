@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="99.Defines">
-      <UniqueIdentifier>{7aa2cf62-6ed3-40ac-8805-9ee09729bdbb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="98.Default">
       <UniqueIdentifier>{6d5ec687-677b-4977-bb88-b7f9efcaa511}</UniqueIdentifier>
     </Filter>
@@ -403,9 +400,6 @@
     <Filter Include="02.GameObject\UI\Announce">
       <UniqueIdentifier>{84a25179-8e31-451d-99ed-b011ba78bff2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="92.AI\State\Yetuga\07. Hit">
-      <UniqueIdentifier>{da1ea781-147f-4124-9510-f2c5c6d3c222}</UniqueIdentifier>
-    </Filter>
     <Filter Include="92.AI\State\Yetuga\07.Smash">
       <UniqueIdentifier>{0e31b1a0-0e3b-4f09-b2e2-b8ad28b1d1b1}</UniqueIdentifier>
     </Filter>
@@ -447,6 +441,42 @@
     </Filter>
     <Filter Include="92.AI\State\Yetuga\16.Dead">
       <UniqueIdentifier>{4cf7082c-0498-48f9-9990-97868ab4536a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\BossHp">
+      <UniqueIdentifier>{7c5ed5fb-b737-4aa3-8396-8834d3527d94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\BossHp\BossGauge">
+      <UniqueIdentifier>{d5fe018e-b0e6-4ae5-8f26-fc4b8ca7c66d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Amount">
+      <UniqueIdentifier>{b4b7171c-3aa1-4e4a-b2f8-9835253039b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Amount\Panel">
+      <UniqueIdentifier>{c0acf912-d9e7-4f81-9e6c-cba8d2a873e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Target_LockOn">
+      <UniqueIdentifier>{af128dcc-b74e-427e-b5ba-c05a5d91ed80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Target_BrutalAttack">
+      <UniqueIdentifier>{8f9708aa-1535-425e-8cde-157f13bdfdd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="99.Defines">
+      <UniqueIdentifier>{7aa2cf62-6ed3-40ac-8805-9ee09729bdbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Target_BrutalAttack\Progress">
+      <UniqueIdentifier>{f3547287-83aa-477a-9822-39efc490417d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Target_BrutalAttack\Point">
+      <UniqueIdentifier>{42406861-76be-42a0-b004-ecd70e443e2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Projectile\Yetuga\Stone">
+      <UniqueIdentifier>{6f5a5b15-108f-401d-b9a7-cc78e45f10b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Projectile\Yetuga\Rock">
+      <UniqueIdentifier>{c7680d2c-0e09-4b3c-a64b-19e30e04e3b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Projectile\Yetuga\Breath">
+      <UniqueIdentifier>{26b56be5-a831-4719-98da-994557176210}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObject\Effect">
       <UniqueIdentifier>{64d20bad-a374-4b87-a92d-1f1919696796}</UniqueIdentifier>
@@ -816,9 +846,6 @@
     <ClInclude Include="..\Public\Projectile.h">
       <Filter>02.GameObject\Projectile</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Projectile_Yetuga.h">
-      <Filter>02.GameObject\Projectile\Yetuga</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Camera_Controller.h">
       <Filter>94.ClientInstance\Camera\Controller</Filter>
     </ClInclude>
@@ -878,6 +905,36 @@
     </ClInclude>
     <ClInclude Include="..\public\ItemInfo_Weapon.h">
       <Filter>02.GameObject\UI\Item_Info\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BossHp.h">
+      <Filter>02.GameObject\UI\BossHp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BossHp_Gauge.h">
+      <Filter>02.GameObject\UI\BossHp\BossGauge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Amount.h">
+      <Filter>02.GameObject\UI\Amount</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Amount_Panel.h">
+      <Filter>02.GameObject\UI\Amount\Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Target_LockOn.h">
+      <Filter>02.GameObject\UI\WorldUI\Target_LockOn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Target_BrutalAttack.h">
+      <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BrutalAttack_Progress.h">
+      <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack\Progress</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BrutalAttack_Point.h">
+      <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack\Point</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Projectile_Yetuga.h">
+      <Filter>02.GameObject\Projectile\Yetuga\Stone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Projectile_Rock_Yetuga.h">
+      <Filter>02.GameObject\Projectile\Yetuga\Rock</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\LineTrail.h">
       <Filter>02.GameObject\Effect\Trail\LineTrail</Filter>
@@ -1224,9 +1281,6 @@
     <ClCompile Include="..\Private\Projectile.cpp">
       <Filter>02.GameObject\Projectile</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Projectile_Yetuga.cpp">
-      <Filter>02.GameObject\Projectile\Yetuga</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Camera_Controller.cpp">
       <Filter>94.ClientInstance\Camera\Controller</Filter>
     </ClCompile>
@@ -1286,6 +1340,36 @@
     </ClCompile>
     <ClCompile Include="..\private\ItemInfo_Weapon.cpp">
       <Filter>02.GameObject\UI\Item_Info\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BossHp.cpp">
+      <Filter>02.GameObject\UI\BossHp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BossHp_Gauge.cpp">
+      <Filter>02.GameObject\UI\BossHp\BossGauge</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Amount.cpp">
+      <Filter>02.GameObject\UI\Amount</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Amount_Panel.cpp">
+      <Filter>02.GameObject\UI\Amount\Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Target_LockOn.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Target_LockOn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Target_BrutalAttack.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BrutalAttack_Progress.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack\Progress</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BrutalAttack_Point.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack\Point</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile_Yetuga.cpp">
+      <Filter>02.GameObject\Projectile\Yetuga\Stone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile_Rock_Yetuga.cpp">
+      <Filter>02.GameObject\Projectile\Yetuga\Rock</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\LineTrail.cpp">
       <Filter>02.GameObject\Effect\Trail\LineTrail</Filter>
@@ -1356,6 +1440,9 @@
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxSphere.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_UI_Effect.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

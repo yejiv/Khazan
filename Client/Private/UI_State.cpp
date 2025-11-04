@@ -103,9 +103,6 @@ void CUI_State::Priority_Update(_float fTimeDelta)
 
 void CUI_State::Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_M))
-		m_iLachryma += 10000;
-
 	if (!m_IsUpdate)
 		return;
 

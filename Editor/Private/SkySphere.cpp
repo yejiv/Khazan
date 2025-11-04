@@ -131,7 +131,9 @@ HRESULT CSkySphere::Bind_Sky_ShaderResources()
     m_pTextureCom[MOON]->Bind_Shader_Resource(m_pShaderCom, "g_MoonTexture", 0);
     m_pTextureCom[RING]->Bind_Shader_Resource(m_pShaderCom, "g_RingTexture", 0);
 
-    m_pShaderCom->Bind_RawValue("g_vNebulaColor", &m_SkyDesc.vNebulaColor, sizeof(_float3));
+    m_pShaderCom->Bind_RawValue("g_vNebulaColorR", &m_SkyDesc.vNebulaColorR, sizeof(_float3));
+    m_pShaderCom->Bind_RawValue("g_vNebulaColorG", &m_SkyDesc.vNebulaColorG, sizeof(_float3));
+    m_pShaderCom->Bind_RawValue("g_vNebulaColorB", &m_SkyDesc.vNebulaColorB, sizeof(_float3));
     m_pShaderCom->Bind_RawValue("g_fStarStrength", &m_SkyDesc.fStarStrength, sizeof(_float));
     m_pShaderCom->Bind_RawValue("g_fMoonSize", &m_SkyDesc.fMoonSize, sizeof(_float));
     m_pShaderCom->Bind_RawValue("g_vMoonColor", &m_SkyDesc.vMoonColor, sizeof(_float3));

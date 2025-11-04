@@ -160,6 +160,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\AI_Controller_Yetuga.h" />
+    <ClInclude Include="..\public\Amount.h" />
+    <ClInclude Include="..\public\Amount_Panel.h" />
     <ClInclude Include="..\Public\AS_Amageddon_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Dodge_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Hit_Yetuga.h" />
@@ -181,6 +183,10 @@
     <ClInclude Include="..\Public\Body_Khazan_Spear.h" />
     <ClInclude Include="..\Public\Body_Player.h" />
     <ClInclude Include="..\Public\Body_Yetuga.h" />
+    <ClInclude Include="..\public\BossHp.h" />
+    <ClInclude Include="..\public\BossHp_Gauge.h" />
+    <ClInclude Include="..\public\BrutalAttack_Point.h" />
+    <ClInclude Include="..\public\BrutalAttack_Progress.h" />
     <ClInclude Include="..\Public\BT_Yetuga.h" />
     <ClInclude Include="..\Public\Camera_Controller.h" />
     <ClInclude Include="..\public\Camera_Free.h" />
@@ -240,6 +246,7 @@
     <ClInclude Include="..\Public\MoveState_Yetuga.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\Projectile.h" />
+    <ClInclude Include="..\Public\Projectile_Rock_Yetuga.h" />
     <ClInclude Include="..\Public\Projectile_Yetuga.h" />
     <ClInclude Include="..\Public\Prop.h" />
     <ClInclude Include="..\Public\Prop_Animated.h" />
@@ -258,6 +265,8 @@
     <ClInclude Include="..\Public\SkySphere.h" />
     <ClInclude Include="..\Public\Spear_Khazan_Sample.h" />
     <ClInclude Include="..\Public\Spear_Khazan_Spear.h" />
+    <ClInclude Include="..\public\Target_BrutalAttack.h" />
+    <ClInclude Include="..\public\Target_LockOn.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="..\public\UI_Announce_MapName.h" />
     <ClInclude Include="..\public\UI_BladeNexus.h" />
@@ -305,6 +314,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\AI_Controller_Yetuga.cpp" />
+    <ClCompile Include="..\private\Amount.cpp" />
+    <ClCompile Include="..\private\Amount_Panel.cpp" />
     <ClCompile Include="..\Private\AS_Amageddon_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Dodge_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Hit_Yetuga.cpp" />
@@ -326,6 +337,10 @@
     <ClCompile Include="..\Private\Body_Khazan_Spear.cpp" />
     <ClCompile Include="..\Private\Body_Player.cpp" />
     <ClCompile Include="..\Private\Body_Yetuga.cpp" />
+    <ClCompile Include="..\private\BossHp.cpp" />
+    <ClCompile Include="..\private\BossHp_Gauge.cpp" />
+    <ClCompile Include="..\private\BrutalAttack_Point.cpp" />
+    <ClCompile Include="..\private\BrutalAttack_Progress.cpp" />
     <ClCompile Include="..\Private\BT_Yetuga.cpp" />
     <ClCompile Include="..\Private\Camera_Controller.cpp" />
     <ClCompile Include="..\private\Camera_Free.cpp" />
@@ -379,6 +394,7 @@
     <ClCompile Include="..\Private\MoveState_Yetuga.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\Projectile.cpp" />
+    <ClCompile Include="..\Private\Projectile_Rock_Yetuga.cpp" />
     <ClCompile Include="..\Private\Projectile_Yetuga.cpp" />
     <ClCompile Include="..\Private\Prop.cpp" />
     <ClCompile Include="..\Private\Prop_Animated.cpp" />
@@ -397,6 +413,8 @@
     <ClCompile Include="..\Private\SkySphere.cpp" />
     <ClCompile Include="..\Private\Spear_Khazan_Sample.cpp" />
     <ClCompile Include="..\Private\Spear_Khazan_Spear.cpp" />
+    <ClCompile Include="..\private\Target_BrutalAttack.cpp" />
+    <ClCompile Include="..\private\Target_LockOn.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="..\private\UI_Announce_MapName.cpp" />
     <ClCompile Include="..\private\UI_BladeNexus.cpp" />
@@ -465,6 +483,7 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_Font.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_UI.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_UIMask.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_UI_Effect.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxSphere.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
