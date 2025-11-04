@@ -94,7 +94,10 @@ HRESULT CProjectile_Yetuga::Render()
 }
 
 
-
+void CProjectile_Yetuga::Play_Animation(_float fTimeDelta)
+{
+	
+}
 
 void CProjectile_Yetuga::Reset()
 {

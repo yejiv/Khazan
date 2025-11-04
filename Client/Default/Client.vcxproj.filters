@@ -963,6 +963,9 @@
     <ClInclude Include="..\public\Logo_BG.h">
       <Filter>02.GameObject\UI\Logo</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Projectile_Breath_Yetuga.h">
+      <Filter>02.GameObject\Projectile\Yetuga\Breath</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1403,6 +1406,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Logo_BG.cpp">
       <Filter>02.GameObject\UI\Logo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile_Breath_Yetuga.cpp">
+      <Filter>02.GameObject\Projectile\Yetuga\Breath</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

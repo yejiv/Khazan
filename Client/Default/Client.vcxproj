@@ -249,6 +249,7 @@
     <ClInclude Include="..\Public\MoveState_Yetuga.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\Projectile.h" />
+    <ClInclude Include="..\Public\Projectile_Breath_Yetuga.h" />
     <ClInclude Include="..\Public\Projectile_Rock_Yetuga.h" />
     <ClInclude Include="..\Public\Projectile_Yetuga.h" />
     <ClInclude Include="..\Public\Prop.h" />
@@ -401,6 +402,7 @@
     <ClCompile Include="..\Private\MoveState_Yetuga.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\Projectile.cpp" />
+    <ClCompile Include="..\Private\Projectile_Breath_Yetuga.cpp" />
     <ClCompile Include="..\Private\Projectile_Rock_Yetuga.cpp" />
     <ClCompile Include="..\Private\Projectile_Yetuga.cpp" />
     <ClCompile Include="..\Private\Prop.cpp" />

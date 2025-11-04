@@ -22,6 +22,7 @@ public:
 
 public:
 	_float3					Get_BonePoint(const _char* BoneName);
+	_matrix					Get_BoneMatrix(const _char* pBoneName);
 
 private:
 	CBody_Yetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

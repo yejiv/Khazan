@@ -47,10 +47,14 @@ private:
 	void							Hold_Rock();
 	void							Smash();
 
+	// IceBreath
+	void							Breath_Start();
+	void							Breath_Loop();
 public:
 	class CBody_Yetuga*				m_pBody = { nullptr };
 	class CProjectile_Yetuga*		m_pHoldStone = { nullptr };
 	class CProjectile_Rock_Yetuga*	m_pHoldRock = { nullptr };
+	class CProjectile_Breath_Yetuga* m_pBreath = { nullptr };
 
 	_bool							m_isRockPlay = { false };
 	_bool							m_isSmash = { false };
