@@ -70,6 +70,7 @@ public:
 public:
 	// 권성은 테스트
 	_float				MakeRatio();
+	_float3				Get_RootMotionDelta() const { return m_vDelta; }
 	/* 정보 */
 	_uint				Get_NumMeshes() const { return m_iNumMeshes; }
 	_uint				Get_BoneIndex(const _char* pBoneName);
@@ -82,12 +83,14 @@ public:
 	string				Get_CurAnimName() { return m_AnimationsSetup[m_iCurrentAnimIndex].strName; }
 	_float*				Get_CurTrackPosition() { return &m_fCurrentTrackPosition; }
 	const vector<_int>&	Get_ChildIndices(_int boneIndex) const;
-	_float				Get_CurDuration();
 
 	void				Set_RootBone(_uint iIndex) { m_iRootBoneIndex = iIndex; }
 	void				Set_OwnerTransform(class CTransform** pTransform);
 	void				Set_OwnerTransform(_float4x4* pMatrix) {
 		m_pOwnerTransformMatrix = pMatrix;
+	}
+	_float4x4* Get_OwnerWorldMatrix() const {
+		return m_pOwnerTransformMatrix;
 	}
 
 	_vector Get_BoneWorldRotationQuat(_int iBone) const;
@@ -103,7 +106,6 @@ public:
 	void			Set_Animation(_uint iIndex);
 	void			Set_AnimationSet(const string& strKey);
 	void			Set_AnimationLoop(_bool isLoop);
-	_bool			Check_MinAnimationTime() { return m_AnimationsSetup[m_iCurrentAnimIndex].fBlendOutTime <= m_fCurrentTrackPosition; }
 
 	/* rootBone Combined  */
 	void			Update_BoneCombinedMatrices();	
@@ -112,7 +114,7 @@ public:
 	void			Register_Event(const string& strEventKey, ANIM_EVENT_TRIGGERTYPE eTriggerType,function<void()> OnEvent);
 	void			UnRegister_Event(const string& strEventKey, ANIM_EVENT_TRIGGERTYPE eTriggerType);
 	void			Clear_AllEvent();
-
+	
 #ifdef _DEBUG
 	void			Debug_RanderState();
 #endif // _DEBUG
@@ -169,7 +171,7 @@ private:
 
 	/* const val */
 	const _float					m_fBaseRootMotionBlendTime = { 0.15f };   /* 만약 블랜딩 시간이 안써져있으면 사용할 기본 블랜딩 시간 */
-
+	_float3							m_vDelta = {};
 private:
 	/* 루트 모션 */
 	void			Check_RootMotion();

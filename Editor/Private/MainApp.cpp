@@ -13,7 +13,7 @@ CMainApp::CMainApp()
 }
 
 HRESULT CMainApp::Initialize()
-{
+{ 
 
 	ENGINE_DESC		EngineDesc{};
 

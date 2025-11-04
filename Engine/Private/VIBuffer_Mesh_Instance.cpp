@@ -9,7 +9,6 @@ CVIBuffer_Mesh_Instance::CVIBuffer_Mesh_Instance(ID3D11Device* pDevice, ID3D11De
 
 CVIBuffer_Mesh_Instance::CVIBuffer_Mesh_Instance(const CVIBuffer_Mesh_Instance& Prototype)
 	: CVIBuffer_Instance { Prototype }
-	, m_vPivot{ Prototype.m_vPivot }
 	, m_vRange{ Prototype.m_vRange }
 	, m_IsLoop{ Prototype.m_IsLoop }
 	, m_fOffset{ Prototype.m_fOffset }	//나중에 필요하면 상수버퍼로 넘기기
@@ -62,7 +61,6 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 	m_eIndexFormat = DXGI_FORMAT_R32_UINT;
 	m_ePrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
-	m_vPivot = pMeshDesc->vPivot;
 	m_bIsCircle = pMeshDesc->IsCircle;
 	m_fOffset = pMeshDesc->fOffset;
 	m_IsLoop = pMeshDesc->bIsLoop;

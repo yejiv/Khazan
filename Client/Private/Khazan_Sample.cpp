@@ -11,12 +11,12 @@
 
 #pragma region 인벤토리 삽입 테스트
 #include "UI_Inven.h"
-//몬스터 체력 테스트
-#include "Mon_HP.h"
-
 #pragma endregion
 
-
+#pragma region 락온, 브루탈어택 테스트
+#include "Target_LockOn.h"
+#include "Target_BrutalAttack.h"
+#pragma endregion
 
 CKhazan_Sample::CKhazan_Sample(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CCreature{ pDevice, pContext }
@@ -73,19 +73,6 @@ HRESULT CKhazan_Sample::Initialize_Clone(void* pArg)
         });
 #pragma endregion
 
-    CMon_HP* pUI_HP = static_cast<CMon_HP*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Mon_HP")));
-    m_iMaxHp = 100;
-    m_iHp = 50;
-    m_iMaxStamina = 100;
-    m_iStamina = 50;
-
-    if (pUI_HP != nullptr)
-    {
-        Safe_AddRef(pUI_HP);
-        pUI_HP->Setting_HP(m_pTransformCom->Get_WorldMatrixPtr(), { 0.f, 250.f }, &m_iHp, &m_iMaxHp, &m_iStamina, &m_iMaxStamina);
-
-        m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), pUI_HP);
-    }
     return S_OK;
 
 }
@@ -97,7 +84,21 @@ void CKhazan_Sample::Priority_Update(_float fTimeDelta)
     if(m_pGameInstance->Key_Down(DIK_F5))
         m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(457.f, -12.f, 241.f, 1.f));
 
+    XMStoreFloat4(&m_vPos, XMVectorSetW(m_pTransformCom->Get_State(STATE::POSITION),1.f));
 
+    if(m_pGameInstance->Key_Down(DIK_M))
+        static_cast<CTarget_LockOn*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("LockOn")))->LockOn(&m_vPos);
+    
+    if (m_pGameInstance->Key_Down(DIK_N))
+        static_cast<CTarget_LockOn*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("LockOn")))->LockOff();
+
+    if (m_pGameInstance->Key_Down(DIK_B))
+    {
+        CTarget_BrutalAttack* pObject = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
+        pObject->Setting_BrutalAttack(&m_vPos, 0.f);
+
+        m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), pObject);
+    }
 }
 
 void CKhazan_Sample::Update(_float fTimeDelta)
@@ -362,43 +363,6 @@ void CKhazan_Sample::Chest_Event(_float fTimeDelta)
 
 void CKhazan_Sample::Update_State(_float fTimeDelta)
 {
-    if (Has_State(ATTACK_FAST))
-    {
-        if (m_pBody->Get_Model()->Check_MinAnimationTime())
-        {
-            if (m_iFastAttackIndex == 0)
-            {
-                m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_FastAtk02"));
-                ++m_iFastAttackIndex;
-            }
-            else if (m_iFastAttackIndex == 1)
-            {
-                m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_LightningSpear_Advanced"));
-                m_iFastAttackIndex = 0;
-                Remove_State(ATTACK_FAST);
-            }
-        }
-        return;
-    }
-    if (Has_State(ATTACK_STRONG))
-    {
-        if (m_pBody->Get_Model()->Check_MinAnimationTime())
-        {
-            if (m_iStrongAttackIndex == 0)
-            {
-                m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk02"));
-                ++m_iStrongAttackIndex;
-            }
-            else if (m_iStrongAttackIndex == 1)
-            {
-                m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk03"));
-                m_iStrongAttackIndex = 0;
-                Remove_State(ATTACK_STRONG);
-            }
-        }
-        return;
-    }
-
     Key_Input(fTimeDelta);
 
 
@@ -470,106 +434,21 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         Remove_State(RUN);
     }
 
-    if (!m_pBody->Get_Model()->Check_MinAnimationTime())
-        return;
 
-	if (m_pGameInstance->Key_Pressing(DIK_LCONTROL,fTimeDelta) && m_pGameInstance->Key_Down(DIK_Z))
+	if (m_pGameInstance->Key_Down(DIK_Z))
 	{
 		Clear_State();
         m_isMove = 0; 
-        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_FastAtk01"));
 
 		Add_State(ATTACK_FAST);
 	}
 
-    if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_X))
-    {
-        Clear_State();
+	if (m_pGameInstance->Key_Down(DIK_X))
+	{
+		Clear_State();
         m_isMove = 0;
-        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk01"));
-        Add_State(ATTACK_STRONG);
-    }
-
-    if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_C))
-    {
-        Clear_State();
-        m_isMove = 0;
-        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_SpaceTimeCutter03"));
-
-        Add_State(ATTACK_FULLMOON);
-    }
-    if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_V))
-    {
-        Clear_State();
-        m_isMove = 0;
-        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk01"));
-
-        Add_State(ATTACK_STRONG);
-    }
-    if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_B))
-    {
-        Clear_State();
-        m_isMove = 0;
-        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Tempest_SpiralSpear"));
-
-        Add_State(ATTACK_SPIRAL);
-    }
-    if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_N))
-    {
-        Clear_State();
-        m_isMove = 0;
-        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Tempest_TwisterSpear"));
-
-        Add_State(ATTACK_TWISTE);
-    }
-    if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_M))
-    {
-        Clear_State();
-        m_isMove = 0;
-        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_PureMind_SeismicKick"));
-
-        Add_State(ATTACK_STRIKE);
-    }
-    if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_G))
-    {
-        Clear_State();
-        m_isMove = 0;
-        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_LowFlying_F"));
-
-        Add_State(ATTACK_SOON);
-    }
-    if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_H))
-    {
-        Clear_State();
-        m_isMove = 0;
-        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Crescent"));
-
-        Add_State(ATTACK_VITALPOINT);
-    }
-    if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_J))
-    {
-        Clear_State();
-        m_isMove = 0;
-        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Tempest_MoonVeil"));
-
-        Add_State(ATTACK_SHADOW2);
-    }
-    if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_K))
-    {
-        Clear_State();
-        m_isMove = 0;
-        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_PureMind_TranceSpirit_GrappleAtk01"));
-
-        Add_State(ATTACK_BRUTAL);
-    }
-    //if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_L))
-    //{
-    //    Clear_State();
-    //    m_isMove = 0;
-    //    m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_LowFlying_F"));
-
-    //    Add_State(ATTACK_COUNT);
-    //}
+		Add_State(ATTACK_SET);
+	}
 
 }
 
@@ -584,10 +463,10 @@ HRESULT CKhazan_Sample::Ready_PartObjects()
     BodyDesc.pState = &m_iState;
     BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     BodyDesc.pParentTransform = m_pTransformCom;
-    if (FAILED(__super::Add_PartObject(TEXT("Part_CKhazan_Sample_Body"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Body_Khazan_Sample"), &BodyDesc)))
+    if (FAILED(__super::Add_PartObject(TEXT("Part_Body"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Body_Khazan_Sample"), &BodyDesc)))
         return E_FAIL;
 
-    m_pBody = static_cast<CBody_Khazan_Sample*>(Find_PartObject(TEXT("Part_CKhazan_Sample_Body")));
+    m_pBody = static_cast<CBody_Khazan_Sample*>(Find_PartObject(TEXT("Part_Body")));
     m_pWeaponR_Matrix = m_pBody->Get_BoneMatrix("Weapon_R");
     Safe_AddRef(m_pBody);
 
@@ -595,10 +474,10 @@ HRESULT CKhazan_Sample::Ready_PartObjects()
     SpearDesc.pState = &m_iState;
     SpearDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     SpearDesc.pParentTransform = m_pTransformCom;
-    if (FAILED(__super::Add_PartObject(TEXT("Part_CKhazan_Sample_Weapon_Spear"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Spear_Khazan_Sample"), &SpearDesc)))
+    if (FAILED(__super::Add_PartObject(TEXT("Part_Weapon_Spear"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Spear_Khazan_Sample"), &SpearDesc)))
         return E_FAIL;
 
-    m_pSpear = static_cast<CSpear_Khazan_Sample*>(Find_PartObject(TEXT("Part_CKhazan_Sample_Weapon_Spear")));
+    m_pSpear = static_cast<CSpear_Khazan_Sample*>(Find_PartObject(TEXT("Part_Weapon_Spear")));
     m_pSpearFX_Matrix = m_pSpear->Get_BoneMatrix("FX");
     m_SpearOffset_Matrix = m_pSpear->Get_OffestMatrix();
     Safe_AddRef(m_pSpear);
@@ -649,7 +528,6 @@ inline _bool CKhazan_Sample::Has_States()
     }
     return false;
 }
-
 void CKhazan_Sample::Debug_Widget()
 {
     m_pGameInstance->AddWidget(TEXT("Client"), [this]() {

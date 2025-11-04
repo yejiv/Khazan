@@ -319,7 +319,7 @@ PS_OUT PS_MAP_ICE(PS_IN In)                       // ¸Ê ¿ÀºêÁ§Æ®¿ë ÇÈ¼¿ ½¦ÀÌ´õ
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     Out.vWorld = In.vWorldPos;
     Out.vSpecular = vMtrlSpecular;
-    //  Out.vEmissive = vMtrlEmissive;
+    // Out.vEmissive = Out.vDiffuse * 0.1f;
 
     return Out;
 }
@@ -422,7 +422,7 @@ PS_OUT PS_SNOWMAP_ICE(PS_IN In)                       // ¸Ê ¿ÀºêÁ§Æ®¿ë ÇÈ¼¿ ½¦ÀÌ
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     Out.vWorld = In.vWorldPos;
     Out.vSpecular = vMtrlSpecular;
-    //  Out.vEmissive = vMtrlEmissive;
+    // Out.vEmissive = Out.vDiffuse * 0.1f;
 
     return Out;
 }

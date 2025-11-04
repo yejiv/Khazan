@@ -17,7 +17,7 @@ CAnimation::CAnimation(const CAnimation& Prototype)
     , m_fTickPerSecond{ Prototype.m_fTickPerSecond }
     , m_fCurrentTrackPosition{ Prototype.m_fCurrentTrackPosition }
     , m_iNumChannels{ Prototype.m_iNumChannels }
-    , m_Channels{Prototype.m_Channels}
+    //, m_Channels{Prototype.m_Channels}
     , m_CurrentKeyFrameIndices{ Prototype.m_CurrentKeyFrameIndices }
     , m_fBlendTime { Prototype.m_fBlendTime }
     , m_isLoop { Prototype.m_isLoop }
@@ -25,8 +25,8 @@ CAnimation::CAnimation(const CAnimation& Prototype)
     Safe_AddRef(m_pGameInstance);
 
     for (auto& pChannel : Prototype.m_Channels)
-        Safe_AddRef(pChannel);
-        // m_Channels.push_back(pChannel->Clone());
+        //Safe_AddRef(pChannel);
+         m_Channels.push_back(pChannel->Clone());
 
 }
 

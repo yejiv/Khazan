@@ -10,6 +10,12 @@
 #include "Level_Embars.h"
 #include "Level_Viper.h"
 
+#pragma region MAP OBJECT HEADER
+#include "MapObject_Header.h"
+#pragma endregion
+
+#include "Camera_Free.h"
+
 CLevel_Loading::CLevel_Loading(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel { pDevice, pContext }
 	, m_pClientInstance { CClientInstance::GetInstance() }
@@ -87,6 +93,156 @@ HRESULT CLevel_Loading::Render()
 
 HRESULT CLevel_Loading::Ready_GameObjects()
 {
+	if (LEVEL::TITLE != m_eNextLevelID)
+	{
+		CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera")), E_FAIL);
+		CHECK_FAILED(Ready_Layer_Sky(TEXT("Layer_Sky"), TEXT("Loading"), LEVEL::LOADING), E_FAIL);
+		CHECK_FAILED(Ready_Layer_Cloud(TEXT("Layer_Sky"), TEXT("Loading"), LEVEL::LOADING), E_FAIL);
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_Loading::Ready_Layer_Camera(const _wstring& strLayerTag)
+{
+	CCamera_Free::CAMERA_FREE_DESC CameraDesc = {};
+
+	CameraDesc.fSpeedPerSec = 5.f;
+	CameraDesc.fRotationPerSec = XMConvertToRadians(30.f);
+
+	CameraDesc.fMouseSensor = 0.2f;
+
+	CameraDesc.fFovy = XMConvertToRadians(45.f);
+
+	CameraDesc.vEye = _float4(0.f, 0.f, 0.f, 1.f);
+	CameraDesc.vAt = _float4(-0.6f, 0.5f, 1.f, 1.f);
+
+	CameraDesc.fFar = 10000.f;
+	CameraDesc.fNear = 0.1f;
+
+	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::LOADING), strLayerTag,
+		ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Camera_Free"), TIME_CHANNEL::WORLD, &CameraDesc), E_FAIL);
+
+	return S_OK;
+}
+
+HRESULT CLevel_Loading::Ready_Layer_Sky(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
+{
+	_wstring strDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+
+	switch (eMap)
+	{
+	case KHAZAN_MAP::HEINMACH:
+		strDataFilePath += TEXT("HeinMach/");
+		break;
+	case KHAZAN_MAP::CREVICE:
+		strDataFilePath += TEXT("Crevice/");
+		break;
+	case KHAZAN_MAP::EMBARS:
+		strDataFilePath += TEXT("Embars/");
+		break;
+	case KHAZAN_MAP::VIPER:
+		strDataFilePath += TEXT("Viper/");
+		break;
+	default:
+		break;
+	}
+
+	strDataFilePath += pDataFileName;
+
+	strDataFilePath += TEXT("_sky.dat");
+
+	CSkySphere::SKY_SPHERE_DESC SkySphereDesc = {};
+
+	SkySphereDesc.eLevel = eCurrentLevel;
+
+	DWORD dwByte = {};
+
+	HANDLE hFile = CreateFile(strDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (INVALID_HANDLE_VALUE == hFile)
+	{
+		// 파일 없으면 생성
+		SkySphereDesc.SkyDesc.vNebulaColorR = { 0.1f, 0.1f, 0.1f };
+		SkySphereDesc.SkyDesc.vNebulaColorG = { 0.1f, 0.1f, 0.1f };
+		SkySphereDesc.SkyDesc.vNebulaColorB = { 0.1f, 0.1f, 0.1f };
+		SkySphereDesc.SkyDesc.fStarStrength = { 1.5f };
+		SkySphereDesc.SkyDesc.fMoonSize = { 0.45f };
+		SkySphereDesc.SkyDesc.vMoonDirection = { -0.8f, 0.55f, 1.f };
+		SkySphereDesc.SkyDesc.vMoonColor = { 0.8f, 0.2f, 0.2f };
+		SkySphereDesc.SkyDesc.fMoonIntensity = { 1.f };
+
+		SkySphereDesc.fRotationPerSec = XMConvertToRadians(0.f);
+
+		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+			ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_SkySphere"), TIME_CHANNEL::WORLD, &SkySphereDesc), E_FAIL);
+	}
+	else
+	{
+		CHECK_FAILED(ReadFile(hFile, &SkySphereDesc.SkyDesc, sizeof(SKY_DESC), &dwByte, nullptr), E_FAIL);
+
+		SkySphereDesc.fRotationPerSec = XMConvertToRadians(0.f);
+
+		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+			ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_SkySphere"), TIME_CHANNEL::WORLD, &SkySphereDesc), E_FAIL);
+
+		CloseHandle(hFile);
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_Loading::Ready_Layer_Cloud(const _wstring & strLayerTag, const _tchar * pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
+{
+	_wstring strDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+
+	switch (eMap)
+	{
+	case KHAZAN_MAP::HEINMACH:
+		strDataFilePath += TEXT("HeinMach/");
+		break;
+	case KHAZAN_MAP::CREVICE:
+		strDataFilePath += TEXT("Crevice/");
+		break;
+	case KHAZAN_MAP::EMBARS:
+		strDataFilePath += TEXT("Embars/");
+		break;
+	case KHAZAN_MAP::VIPER:
+		strDataFilePath += TEXT("Viper/");
+		break;
+	default:
+		break;
+	}
+
+	strDataFilePath += pDataFileName;
+
+	strDataFilePath += TEXT("_cloud.dat");
+
+	CCloudSphere::CLOUD_SPHERE_DESC CloudSphereDesc = {};
+
+	CloudSphereDesc.eLevel = eCurrentLevel;
+
+	DWORD dwByte = {};
+
+	HANDLE hFile = CreateFile(strDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (INVALID_HANDLE_VALUE == hFile)
+	{
+		CloudSphereDesc.fRotationPerSec = XMConvertToRadians(0.f);
+
+		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+			ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_CloudSphere"), TIME_CHANNEL::WORLD, &CloudSphereDesc), E_FAIL);
+	}
+	else
+	{
+		CHECK_FAILED(ReadFile(hFile, &CloudSphereDesc.CloudDesc, sizeof(CLOUD_DESC), &dwByte, nullptr), E_FAIL);
+
+		CloudSphereDesc.fRotationPerSec = XMConvertToRadians(0.f);
+
+		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+			ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_CloudSphere"), TIME_CHANNEL::WORLD, &CloudSphereDesc), E_FAIL);
+
+		CloseHandle(hFile);
+	}
+
 	return S_OK;
 }
 

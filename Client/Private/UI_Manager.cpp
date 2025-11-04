@@ -61,6 +61,25 @@ HRESULT CUI_Manager::UI_UpdateSwitch(const _wstring& szRootUIName, void* pArg)
 	return pRootUI->Update_Switch(pArg);
 }
 
+HRESULT CUI_Manager::Add_RootUI(const _wstring& szRootUIName, CUIObject* pUIObject)
+{
+	if (pUIObject == nullptr)
+		return E_FAIL;
+
+	CUIObject* pRootUI = Find_RootUI(szRootUIName);
+
+	if (pRootUI != nullptr)
+	{
+		_wstring Failed = TEXT("Failed to Add_RootUI : ") + szRootUIName;
+		MSG_BOX(Failed.c_str());
+		return E_FAIL;
+	}
+
+	m_pRootUI.emplace(szRootUIName, pUIObject);
+
+	return S_OK;
+}
+
 CUIObject* CUI_Manager::Get_RootUI(const _wstring& szRootUIName)
 {
 	CUIObject* pRootUI = Find_RootUI(szRootUIName);

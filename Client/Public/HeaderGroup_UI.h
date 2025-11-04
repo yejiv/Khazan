@@ -8,18 +8,29 @@
 #include "Cursor.h"
 #include "Item_Slot.h"
 
+//메인 UI
 #include "UI_HUD.h"
 #include "UI_Inven.h"
 #include "UI_MainMenu.h"
 #include "UI_BladeNexus.h"
 #include "UI_State.h"
 
-#include "Damage_Text.h"
-#include "Mon_HP.h"
-#include "Interaction_Guide.h"
-
+//서브 UI
 #include "MainMenu_Deco.h"
 #include "UI_Announce_MapName.h"
 
 #include "ItemInfo_Other.h"
 #include "ItemInfo_Weapon.h"
+
+//HUD  관련
+#include "BossHp.h"
+#include "Amount.h"
+
+//월드 UI
+#include "Damage_Text.h"
+#include "Mon_HP.h"
+#include "Interaction_Guide.h"
+#include "Target_LockOn.h"
+#include "Target_BrutalAttack.h"
+
+

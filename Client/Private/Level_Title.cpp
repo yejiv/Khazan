@@ -8,6 +8,7 @@
 #include "Damage_Text.h"
 
 #include "Sequence_Dummy.h"
+#include "UI_Announce_MapName.h"
 
 CLevel_Title::CLevel_Title(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel { pDevice, pContext }
@@ -41,6 +42,25 @@ HRESULT CLevel_Title::Initialize()
 
 void CLevel_Title::Update(_float fTimeDelta)
 {
+
+	if (m_pGameInstance->Key_Down(DIK_B))
+	{
+		EVENT_ANNOUNCE_MAPNAME Desc = {};
+		//화면에 표시할 시간
+		Desc.fTime = 2.f;
+
+		//표시할 지역 이름
+		Desc.iMapType = ENUM_CLASS(CUI_Announce_MapName::MAP_TYPE::HEINMACH);
+
+		//페이드 아웃 시간
+		Desc.fFadeOutTime = 2.0f;
+
+		//디죨부 처리 여부
+		Desc.isDissovle = true;
+
+		//이벤트 발생시키기	
+		m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_MAPNAME>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_MAPNAME), Desc);
+	}
 
 	if (m_pGameInstance->Key_Down(DIK_0))
 	{
@@ -123,6 +143,13 @@ HRESULT CLevel_Title::Ready_Layer_UI()
 		TEXT("../Bin/Resources/UI/UIData/ItemInfo_Equip.json"))))
 		return E_FAIL;
 
+	if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+		TEXT("../Bin/Resources/UI/UIData/BossHp.json"))))
+		return E_FAIL;
+
+	if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+		TEXT("../Bin/Resources/UI/UIData/HUD_Amount.json"))))
+		return E_FAIL;
 	return S_OK;
 }
 

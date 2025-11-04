@@ -22,7 +22,6 @@ void CAS_Rush_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     pTransform->LookAt(vTargetLoc);
 
-
     pModel->Set_AnimationSet("Rush");
 
 }
@@ -39,12 +38,11 @@ void CAS_Rush_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fT
         pModel->Set_Animation(38);
         m_isCrashed = true;
     }
-        
+
     if (pModel->Play_Animation(fTimeDelta))
     {
         m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isRushFinished", true);
     }
-
 }
 
 void CAS_Rush_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)

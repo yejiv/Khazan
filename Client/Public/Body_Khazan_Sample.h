@@ -8,7 +8,7 @@
 NS_BEGIN(Engine)
 class CShader;
 class CModel;
-class CBoneChainPhysic;
+class CXPBD;
 NS_END
 
 NS_BEGIN(Client)
@@ -83,10 +83,7 @@ private:
 	_bool m_isEnableBloom = {};
 	OUTLINE_CONFIG m_OutlineConfig = { _float3(1.f, 0.f, 1.f), 0.001f, 0.f, 0.f };
 
-	CBoneChainPhysic* m_pBoneChain = { nullptr };
-	_bool m_isBoneChainEnabled = true;
-
-	vector<vector<int>> m_HairChains; 
+	class CXPBD* m_pXPBD = { nullptr };
 
 
 private:
@@ -99,86 +96,33 @@ private:
 
 
 	/*
-	공격 진입~ 공격 끝날 때까지 ( 트리거 진입 , 범위, 탈출 이벤트 있음 )
+	공격 진입~ 공격 끝날 때까지 ( 트리거 진입 , 범위, 탈출 이벤트 다 있음 )
 	필요 시 함수 만들어서 사용하셔도 됩니다.
 
-	LCTRL + Z	  : 달빛 베기
-	LCTRL + X	  : 강공 세트
-	LCTRL + C	  : 보름달
-	LCTRL + V	  : 그림자베기
-	LCTRL + B	  : 나선찌르기
-	LCTRL + N	  : 나선 찌르기 소용돌이
-	LCTRL + M	  : 강습
-	LCTRL + G	  : 찰나베기
-	LCTRL + H	  : 급소타격
-	LCTRL + J	  : 그림자 참격
-	LCTRL + K	  : 브루탈 어택?
-	
+	- 단일 찌르기 공격 -
+	Effect1 : Fast
+
+	- 연속 세트 찌르기 공격 -
+	Effect2	: Set   1 번째 공격
+	Effect3 : Set	2 번째 공격
+	Effect4 : Set	3 번째 공격
+	Effect5 : Set	4 번째 공격
+	Effect6 : Set	5 번째 공격
+	Effect7 : Set	6 번째 공격
 	*/
 private:
 	void	Effect1_Enter();
 	void	Effect1_Exit();
 	void	Effect1_Continue();
-
-	void	Effect2_Enter();
-	void	Effect2_Exit();
-	void	Effect2_Continue();
-
-	void	Effect3_Enter();
-	void	Effect3_Exit();
-	void	Effect3_Continue();
-
-	void	Effect4_Enter();
-	void	Effect4_Exit();
-	void	Effect4_Continue();
-
-	void	Effect5_Enter();
-	void	Effect5_Exit();
-	void	Effect5_Continue();
-
-	void	Effect6_Enter();
-	void	Effect6_Exit();
-	void	Effect6_Continue();
-
+	void	Effect2();
+	void	Effect3();
+	void	Effect4();
+	void	Effect5();
+	void	Effect6();
 	void	Effect7_Enter();
 	void	Effect7_Exit();
 	void	Effect7_Continue();
-
-	void	Effect8_Enter();
-	void	Effect8_Exit();
-	void	Effect8_Continue();
-
-	void	Effect9_Enter();
-	void	Effect9_Exit();
-	void	Effect9_Continue();
-
-	void	Effect10_Enter();
-	void	Effect10_Exit();
-	void	Effect10_Continue();
-
-	void	Effect11_Enter();
-	void	Effect11_Exit();
-	void	Effect11_Continue();
-
-	void	Effect12_Enter();
-	void	Effect12_Exit();
-	void	Effect12_Continue();
-
-	void	Effect13_Enter();
-	void	Effect13_Exit();
-	void	Effect13_Continue();
-
-	void	Effect14_Enter();
-	void	Effect14_Exit();
-	void	Effect14_Continue();
-
-	void	Effect15_Enter();
-	void	Effect15_Exit();
-	void	Effect15_Continue();
-
-
-
-
+	
 
 private:
 	inline void		Add_State(_uint i) { *m_pParentState |= i; }

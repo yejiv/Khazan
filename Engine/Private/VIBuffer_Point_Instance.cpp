@@ -9,7 +9,6 @@ CVIBuffer_Point_Instance::CVIBuffer_Point_Instance(ID3D11Device* pDevice, ID3D11
 
 CVIBuffer_Point_Instance::CVIBuffer_Point_Instance(const CVIBuffer_Point_Instance& Prototype)
 	: CVIBuffer_Instance { Prototype }
-	, m_vPivot{ Prototype.m_vPivot }
 	, m_vRange{ Prototype.m_vRange }
 	, m_IsLoop{ Prototype.m_IsLoop }
 	, m_fOffset{ Prototype.m_fOffset } //나중에 필요하면 상수버퍼로 넘기기
@@ -53,7 +52,6 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDes
 	m_iNumVertexBuffers = 2;
 	m_ePrimitiveType = D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
 
-	m_vPivot = pPointDesc->vPivot;
 	m_bIsCircle = pPointDesc->IsCircle;
 	m_fOffset = pPointDesc->fOffset;
 	m_IsLoop = pPointDesc->bIsLoop;

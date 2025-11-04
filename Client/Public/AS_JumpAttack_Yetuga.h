@@ -15,6 +15,7 @@ public:
 	virtual void Update(class CStateMachine* pFSM, class CGameObject* pOwner, _float fTimeDelta) override;
 	virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
+
 public:
 	static CAS_JumpAttack_Yetuga*	Create();
 	virtual void					Free() override;

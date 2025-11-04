@@ -83,25 +83,25 @@ HRESULT CSkySphere::Ready_Components(void* pArg)
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(pDesc->eLevel), TEXT("Prototype_Component_Model_SkyMesh"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Model_SkyMesh"),
         TEXT("Com_Model_Sky"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
 
 #pragma region 구 스카이 관련 텍스쳐들
     /* Prototype_Component_Texture_Sky_Nebula */
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(pDesc->eLevel), TEXT("Prototype_Component_Texture_Sky_Nebula"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sky_Nebula"),
         TEXT("Com_Texture_Nebula"), reinterpret_cast<CComponent**>(&m_pTextureCom[NEBULA]), nullptr)))
         return E_FAIL;
     /* Prototype_Component_Texture_Sky_Star_Mask */
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(pDesc->eLevel), TEXT("Prototype_Component_Texture_Sky_Star_Mask"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sky_Star_Mask"),
         TEXT("Com_Texture_Star_Mask"), reinterpret_cast<CComponent**>(&m_pTextureCom[STAR_MASK]), nullptr)))
         return E_FAIL;
     /* Prototype_Component_Texture_Moon */
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(pDesc->eLevel), TEXT("Prototype_Component_Texture_Moon"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Moon"),
         TEXT("Com_Texture_Moon"), reinterpret_cast<CComponent**>(&m_pTextureCom[MOON]), nullptr)))
         return E_FAIL;
     /* Prototype_Component_Texture_Ring */
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(pDesc->eLevel), TEXT("Prototype_Component_Texture_Ring"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Ring"),
         TEXT("Com_Texture_Ring"), reinterpret_cast<CComponent**>(&m_pTextureCom[RING]), nullptr)))
         return E_FAIL;
 #pragma endregion
@@ -130,7 +130,9 @@ HRESULT CSkySphere::Bind_Sky_ShaderResources()
     m_pTextureCom[MOON]->Bind_Shader_Resource(m_pShaderCom, "g_MoonTexture", 0);
     m_pTextureCom[RING]->Bind_Shader_Resource(m_pShaderCom, "g_RingTexture", 0);
 
-    m_pShaderCom->Bind_RawValue("g_vNebulaColor", &m_SkyDesc.vNebulaColor, sizeof(_float3));
+    m_pShaderCom->Bind_RawValue("g_vNebulaColorR", &m_SkyDesc.vNebulaColorR, sizeof(_float3));
+    m_pShaderCom->Bind_RawValue("g_vNebulaColorG", &m_SkyDesc.vNebulaColorG, sizeof(_float3));
+    m_pShaderCom->Bind_RawValue("g_vNebulaColorB", &m_SkyDesc.vNebulaColorB, sizeof(_float3));
     m_pShaderCom->Bind_RawValue("g_fStarStrength", &m_SkyDesc.fStarStrength, sizeof(_float));
     m_pShaderCom->Bind_RawValue("g_fMoonSize", &m_SkyDesc.fMoonSize, sizeof(_float));
     m_pShaderCom->Bind_RawValue("g_vMoonColor", &m_SkyDesc.vMoonColor, sizeof(_float3));
