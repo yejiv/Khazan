@@ -478,6 +478,36 @@
     <Filter Include="02.GameObject\Projectile\Yetuga\Breath">
       <UniqueIdentifier>{26b56be5-a831-4719-98da-994557176210}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Effect">
+      <UniqueIdentifier>{64d20bad-a374-4b87-a92d-1f1919696796}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Trail">
+      <UniqueIdentifier>{19fb49db-0b4b-422f-862a-dbd3debb2d95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Trail\LineTrail">
+      <UniqueIdentifier>{110305d5-caf6-4992-803c-e5689d92a699}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Trail\MeshTrail">
+      <UniqueIdentifier>{03db8ed4-9a43-41f0-91b3-5fb9b3fd0f49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Trail\LineTrail\ScreenTrail">
+      <UniqueIdentifier>{17d235e9-f3e3-4cb1-88ff-c32efdd95b95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab">
+      <UniqueIdentifier>{ce2d27b8-643c-42a4-8ad9-20d7baef3228}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element">
+      <UniqueIdentifier>{a3fc7da7-a797-48d4-9722-a71b177fbd12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Mesh_Instance">
+      <UniqueIdentifier>{e55a6b80-f98f-49dd-9644-6f3118beaf97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Point_Instance">
+      <UniqueIdentifier>{cd6ac5cb-7816-4820-bff2-b6ecb67da7a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite">
+      <UniqueIdentifier>{be3d7783-09b2-4210-8f95-7574cdc85092}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -906,6 +936,27 @@
     <ClInclude Include="..\Public\Projectile_Rock_Yetuga.h">
       <Filter>02.GameObject\Projectile\Yetuga\Rock</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\LineTrail.h">
+      <Filter>02.GameObject\Effect\Trail\LineTrail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ScreenTrail.h">
+      <Filter>02.GameObject\Effect\Trail\LineTrail\ScreenTrail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MeshTrail.h">
+      <Filter>02.GameObject\Effect\Trail\MeshTrail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Prefab.h">
+      <Filter>02.GameObject\Effect\Effect_Prefab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Sprite.h">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Point_Instance.h">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Point_Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Mesh_Instance.h">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Mesh_Instance</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1319,6 +1370,27 @@
     </ClCompile>
     <ClCompile Include="..\Private\Projectile_Rock_Yetuga.cpp">
       <Filter>02.GameObject\Projectile\Yetuga\Rock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\LineTrail.cpp">
+      <Filter>02.GameObject\Effect\Trail\LineTrail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MeshTrail.cpp">
+      <Filter>02.GameObject\Effect\Trail\MeshTrail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ScreenTrail.cpp">
+      <Filter>02.GameObject\Effect\Trail\LineTrail\ScreenTrail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Prefab.cpp">
+      <Filter>02.GameObject\Effect\Effect_Prefab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Mesh_Instance.cpp">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Mesh_Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Point_Instance.cpp">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Point_Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Sprite.cpp">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

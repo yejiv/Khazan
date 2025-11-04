@@ -195,6 +195,8 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\Decal.cpp" />
     <ClCompile Include="..\private\Decal_Manager.cpp" />
     <ClCompile Include="..\Private\Decorator_Node.cpp" />
+    <ClCompile Include="..\Private\Effect_Element.cpp" />
+    <ClCompile Include="..\Private\Prefab.cpp" />
     <ClCompile Include="..\private\Fog.cpp" />
     <ClCompile Include="..\private\Font_Face.cpp" />
     <ClCompile Include="..\private\Font_Renderer.cpp" />
@@ -322,6 +324,8 @@ call Copy.bat</Command>
     <ClInclude Include="..\public\Decal.h" />
     <ClInclude Include="..\public\Decal_Manager.h" />
     <ClInclude Include="..\Public\Decorator_Node.h" />
+    <ClInclude Include="..\Public\Effect_Element.h" />
+    <ClInclude Include="..\Public\Prefab.h" />
     <ClInclude Include="..\public\Fog.h" />
     <ClInclude Include="..\public\Engine_Sequence.h" />
     <ClInclude Include="..\Public\Guizmo\GraphEditor.h" />
