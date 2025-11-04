@@ -29,6 +29,7 @@ private:
 
 public:
 	_float4x4*  Get_BoneMatrix(const _char* pBoneName);
+	_bool*		Get_FinishedAnimation() { return &m_isFinishedAnimation; }
 	void		Set_matSpearFX(_float4x4* mat) { m_pSpearFX_Matrix = mat; }
 	void		Set_matSpearOffset(_matrix mat) { m_SpearOffset_Matrix = mat; }
 
