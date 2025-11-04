@@ -70,6 +70,18 @@ HRESULT CClientInstance::Load_Data(DATATYPE eType, const _tchar* pFilePath)
 }
 
 #pragma region UI_MANGER
+void CClientInstance::Fade_In(function<void()> FadeEvent)
+{
+	m_pUI_Manager->Fade_In(FadeEvent);
+}
+void CClientInstance::Fade_Out(function<void()> FadeEvent)
+{
+	m_pUI_Manager->Fade_Out(FadeEvent);
+}
+_bool CClientInstance::Fade_End()
+{
+	return 	m_pUI_Manager->Fade_End();
+}
 HRESULT CClientInstance::Add_UIEvent(const _wstring& strLayerTag, const _wstring& strEventTag, std::function<void()> Event)
 {
 	return m_pUI_Manager->Add_Event(strLayerTag, strEventTag, Event);

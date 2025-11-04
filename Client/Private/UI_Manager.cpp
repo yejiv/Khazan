@@ -3,6 +3,7 @@
 #include "Atlas_RenderGroup.h"
 #include "UI_Layer.h"
 #include "UIObject.h"
+#include "UI_Fade.h"
 
 CUI_Manager::CUI_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: m_pDevice{ pDevice }
@@ -44,6 +45,19 @@ HRESULT CUI_Manager::Initialize()
 	if (m_pWorldRenderGroup == nullptr)
 		return E_FAIL;
 
+	CUIObject::UIOBJECT_DESC FadeDesc;
+
+	FadeDesc.fDepth = 0;
+	FadeDesc.szName = "Fade";
+	FadeDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+	FadeDesc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
+	FadeDesc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
+	m_pFadeUI = static_cast<CUI_Fade*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Fade"), &FadeDesc));
+
+	if (m_pFadeUI == nullptr)
+		return E_FAIL;
+
+	m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), m_pFadeUI);
 	return S_OK;
 }
 
@@ -316,7 +330,23 @@ void CUI_Manager::UIObjectToRenderer()
 		m_pRenderUI[i]->Add_Renderer();
 		Safe_Release(m_pRenderUI[i]);
 	}
+
 	m_pRenderUI.clear();
+}
+
+void CUI_Manager::Fade_In(function<void()> FadeEvent)
+{
+	m_pFadeUI->Fade_In(FadeEvent);
+}
+
+void CUI_Manager::Fade_Out(function<void()> FadeEvent)
+{
+	m_pFadeUI->Fade_Out(FadeEvent);
+}
+
+_bool CUI_Manager::Fade_End()
+{
+	return 	m_pFadeUI->Fade_End();
 }
 
 CUI_Layer* CUI_Manager::Find_Layer(const _wstring& strLayerTag)
@@ -349,7 +379,7 @@ HRESULT CUI_Manager::Ready_Prototype()
 		CVIBuffer_Instance_UI::Create(m_pDevice, m_pContext, &UIInstanceDesc))))
 		return E_FAIL;
 
-	/* Prototype_Component_Shader_VtxPosTex_UI*/
+	/* Prototype_Component_Texture_UI_Atlas*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_UI_Atlas"),
 		CTexture_Atlas::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Atlas/Atlas_%d.json"), 4))))
 		return E_FAIL;
@@ -357,6 +387,11 @@ HRESULT CUI_Manager::Ready_Prototype()
 	//GameObject_AtlasRenderGroup
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_AtlasRenderGroup"),
 		CAtlas_RenderGroup::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	//Prototype_GameObject_UI_Fade
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Fade"),
+		CUI_Fade::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 	return S_OK;
 }
@@ -384,6 +419,7 @@ void CUI_Manager::Free()
 	Safe_Release(m_pContext);
 	Safe_Release(m_pGameInstance);
 
+	Safe_Release(m_pFadeUI);
 	Safe_Release(m_pWorldRenderGroup);
 
 	for (auto UIObject : m_pRenderUI)

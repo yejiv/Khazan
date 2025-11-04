@@ -4,6 +4,7 @@ float4x4 g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 float4 g_vColor, g_fProgressValue;
 float g_fAlpha;
 float g_fValue;
+float g_fDissovle;
 
 texture2D g_Texture;
 texture2D g_MaskTexture;
@@ -297,6 +298,20 @@ PS_OUT PS_HUD_AMOUNT(PS_IN In)
 
     return Out;
 }
+
+PS_OUT PS_MASK_DISSOVLE(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    float4 DissoveleColor = g_MaskTexture.Sample(DefaultSampler, In.vTexcoord);
+    if (DissoveleColor.r > g_fDissovle)
+        discard;
+    
+    Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+    Out.vColor.a = Out.vColor.a * g_vColor.a * g_fAlpha;
+
+    return Out;
+}
 technique11 DefaultTechnique
 {
     pass DefaultPass
@@ -439,6 +454,17 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_HUD_AMOUNT();
     }
+    pass PS_MASK_DISSOVLE //12
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MASK_DISSOVLE();
+    }
+
 
 
 }

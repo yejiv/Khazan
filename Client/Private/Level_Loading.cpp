@@ -34,7 +34,7 @@ HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
 	/* 다음 레벨을 위한 로딩작업을 시작 한다. */
 	if (FAILED(Ready_LoadingThread()))
 		return E_FAIL;
-	
+	CClientInstance::GetInstance()->Fade_In();
 	return S_OK;
 }
 
@@ -79,7 +79,6 @@ void CLevel_Loading::Update(_float fTimeDelta)
 			pNewLevel = CLevel_Viper::Create(m_pDevice, m_pContext);
 			break;
 		}
-
 		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(m_eNextLevelID), pNewLevel)))
 			return;		
 	}
@@ -274,7 +273,6 @@ CLevel_Loading* CLevel_Loading::Create(ID3D11Device* pDevice, ID3D11DeviceContex
 void CLevel_Loading::Free()
 {
 	__super::Free();
-
 	Safe_Release(m_pLoader);
 	Safe_Release(m_pClientInstance);
 }

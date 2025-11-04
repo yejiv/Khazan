@@ -41,6 +41,7 @@
 
 #pragma region UI
 #include "Logo_BG.h"
+#include "UI_Logo.h"
 #pragma endregion
 //static mutex g_GpuGate;
 
@@ -161,6 +162,8 @@ HRESULT CLoader::Loading_For_Title_Level()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TITLE), TEXT("Prototype_GameObject_Logo_BG"),
 		CLogo_BG::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::TITLE))), E_FAIL);
 
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TITLE), TEXT("Prototype_GameObject_UI_Logo"),
+		CUI_Logo::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::TITLE))), E_FAIL);
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 	
 	m_isFinished = true;

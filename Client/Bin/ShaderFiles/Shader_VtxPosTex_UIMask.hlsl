@@ -149,6 +149,15 @@ PS_OUT PS_MASK_3(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_COLOR_BG(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+        
+    Out.vColor = g_vColor;
+        
+    Out.vColor.a = Out.vColor.a * g_fAlpha;
+    return Out;
+}
 technique11 DefaultTechnique
 {
     pass PS_MASK_PASS_0
@@ -191,4 +200,15 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MASK_3();
     }
+    pass PS_COLOR_BG_4
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_COLOR_BG();
+    }
+
 }

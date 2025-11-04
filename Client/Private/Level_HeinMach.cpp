@@ -159,7 +159,7 @@ HRESULT CLevel_HeinMach::Initialize()
 
 	//m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); });
 	//m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); });
-
+	CClientInstance::GetInstance()->Fade_In();
 	return S_OK;
 }
 
@@ -313,7 +313,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Test(const _wstring& strLayerTag)
 
 HRESULT CLevel_HeinMach::Ready_Layer_TestEffect(const _wstring& strLayerTag)
 {
-	//À§Ä¡°ª Å×½ºÆ®ÀÓ cloneÇÒ ¶§ argument ¾È ¹ÞÀ» °Å
+	//ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½×½ï¿½Æ®ï¿½ï¿½ cloneï¿½ï¿½ ï¿½ï¿½ argument ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
 
 	//_float3 test { 1.f, 0.f, 0.f};
 	//

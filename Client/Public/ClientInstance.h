@@ -40,6 +40,11 @@ public:
 #pragma endregion
 
 #pragma region UI_MANGER
+	//Fade 관련
+	void						Fade_In(function<void()> FadeEvent = nullptr);
+	void						Fade_Out(function<void()> FadeEvent = nullptr);
+	_bool						Fade_End();
+
 	//Event 관련
 	HRESULT						Add_UIEvent(const _wstring& strLayerTag, const _wstring& strEventTag, std::function<void()> Event);
 	HRESULT						Add_UIParamEvent(const _wstring& strLayerTag, const _wstring& strEventTag, std::function<void(void*)> Event);

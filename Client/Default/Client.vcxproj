@@ -281,10 +281,13 @@
     <ClInclude Include="..\public\UI_ComBatSpirit_Gauge.h" />
     <ClInclude Include="..\public\UI_CombatSpirit_Penal.h" />
     <ClInclude Include="..\public\UI_Default_Tex.h" />
+    <ClInclude Include="..\public\UI_Fade.h" />
     <ClInclude Include="..\public\UI_Gague_Tip.h" />
     <ClInclude Include="..\public\UI_Guide_Gauge.h" />
     <ClInclude Include="..\public\UI_HUD.h" />
     <ClInclude Include="..\public\UI_Inven.h" />
+    <ClInclude Include="..\public\UI_Logo.h" />
+    <ClInclude Include="..\public\UI_Logo_List.h" />
     <ClInclude Include="..\public\UI_MainMenu.h" />
     <ClInclude Include="..\public\UI_PlayerHP_Penal.h" />
     <ClInclude Include="..\public\UI_PlayerHP_BG.h" />
@@ -435,10 +438,13 @@
     <ClCompile Include="..\private\UI_ComBatSpirit_Gauge.cpp" />
     <ClCompile Include="..\private\UI_CombatSpirit_Penal.cpp" />
     <ClCompile Include="..\private\UI_Default_Tex.cpp" />
+    <ClCompile Include="..\private\UI_Fade.cpp" />
     <ClCompile Include="..\private\UI_Gague_Tip.cpp" />
     <ClCompile Include="..\private\UI_Guide_Gauge.cpp" />
     <ClCompile Include="..\private\UI_HUD.cpp" />
     <ClCompile Include="..\private\UI_Inven.cpp" />
+    <ClCompile Include="..\private\UI_Logo.cpp" />
+    <ClCompile Include="..\private\UI_Logo_List.cpp" />
     <ClCompile Include="..\private\UI_MainMenu.cpp" />
     <ClCompile Include="..\private\UI_PlayerHP_Penal.cpp" />
     <ClCompile Include="..\private\UI_PlayerHP_BG.cpp" />

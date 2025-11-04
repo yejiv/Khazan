@@ -946,6 +946,14 @@ void CGameInstance::Change_InputType(INPUT_TYPE eType)
 {
 	m_pInput_Manager->Change_InputType(eType);
 }
+INPUT_TYPE* CGameInstance::Get_InputTypePtr()
+{
+	return m_pInput_Manager->Get_InputTypePtr();
+}
+INPUT_TYPE CGameInstance::Get_InputType()
+{
+	return m_pInput_Manager->Get_InputType();
+}
 #pragma endregion
 
 #pragma region POOL_MANAGER

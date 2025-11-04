@@ -76,7 +76,7 @@ HRESULT CUI_Guide_Gauge::Render()
 		return E_FAIL;
 
 	CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
-	CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fProgressValue", &m_fProgress_Value, sizeof(_float)), E_FAIL);
+	CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fProgressValue", &m_fProgress_Value, sizeof(_float4)), E_FAIL);
 
 	m_pShaderCom->Begin(m_iShaderPass);
 	m_pVIBufferCom->Bind_Resources();
