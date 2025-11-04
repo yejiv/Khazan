@@ -5,7 +5,7 @@
 NS_BEGIN(Client)
 class CBossHp final : public CUI_Panel
 {
-private:
+public:
 	enum class UIANIMSTATE { ON, OFF, END };
 
 	typedef struct BossMonUpdateTag

@@ -53,6 +53,8 @@ public:
 
 public:
 	virtual void				Take_Damage(_float fDamage, HITREACTION eHitreaction, _float fValidTime ,CGameObject* pGameObject = nullptr);
+	virtual void				Consume_Stamina(_float fAmout) override;
+	virtual void				Recovery_Stamina(_float fTimeDelta) override;
 	virtual void				Look_Target();
 public:
 	virtual HRESULT				Initialize_Prototype() override;

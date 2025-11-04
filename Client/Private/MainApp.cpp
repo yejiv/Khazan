@@ -501,6 +501,18 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_Effect()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Slash"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/SowardTrailTexture/Slash_%d.png"), 22)), E_FAIL);
 
+	// Prototype_Component_Texture_TestParticle
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Particle_Prototype"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/particle/particle%d.png"), 4)), E_FAIL);
+
+	// Prototype_Component_Texture_TestSpriteImage
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sprite_Effect"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Sprite/Sprite%d.png"), 2)), E_FAIL);
+
+	// Prototype_Component_Texture_MeshEffect(Masking)
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MeshEffect_Masking"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Mask/Masking%d.png"), 12)), E_FAIL);
+
 	return S_OK;
 }
 
@@ -551,7 +563,7 @@ HRESULT CMainApp::Ready_ObjectLayer()
 	// MONSTER
 	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
 	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
-	m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER));
+	//m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER));
 
 	m_pGameInstance->Set_ObjectLayerFilter(ENUM_CLASS(COLLISION_LAYER::MAP_STATIC), true);
 

@@ -30,7 +30,6 @@ private:
 	HRESULT						Ready_Projectiles();
 	HRESULT						Ready_AnimEvent();
 
-
 private:
 	// ThrowBall
 	void							Pick_Stone();
@@ -50,6 +49,7 @@ private:
 	// IceBreath
 	void							Breath_Start();
 	void							Breath_Loop();
+
 public:
 	class CBody_Yetuga*				m_pBody = { nullptr };
 	class CProjectile_Yetuga*		m_pHoldStone = { nullptr };

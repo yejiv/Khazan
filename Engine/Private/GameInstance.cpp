@@ -29,6 +29,7 @@
 #include "Sequence_Manager.h"
 #include "Sequence_Interface.h"
 #include "Decal_Manager.h"
+#include "Effect_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -150,6 +151,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pDecal_Manager)
 		return E_FAIL;
 
+	//m_pEffect_Manager = CEffect_Manager::Create(EngineDesc.iNumLevels);
+	//if (nullptr == m_pEffect_Manager)
+	//	return E_FAIL;
+
 #ifdef _DEBUG
 	m_pImgui_Manager = CImgui_Manager::Create(*ppDevice, *ppContext, EngineDesc.Menu_Imgui, EngineDesc.hWnd, EngineDesc.iWinSizeX, EngineDesc.iWinSizeY);
 	if (nullptr == m_pImgui_Manager)
@@ -170,6 +175,7 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 
 	/* 내 게임내에서 반복적인 갱신이 필요한 객체들이 있다라면 갱신을 여기에서 모아서 수행하낟. */
 	m_pObject_Manager->Priority_Update(tTimeDelta);
+	//m_pEffect_Manager->Priority_Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::EFFECT)]);
 
 	m_pPipeLine->Update();
 	m_pFrustum->Update();
@@ -181,6 +187,7 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 		m_pOctree->Priority_Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
 	m_pObject_Manager->Update(tTimeDelta);
+	//m_pEffect_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::EFFECT)]);
 
 	m_pSequence_Manager->ProcessRequests();
 	m_pSequence_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
@@ -191,6 +198,7 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 	m_pDecal_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
 	m_pObject_Manager->Late_Update(tTimeDelta);
+	//m_pEffect_Manager->Late_Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::EFFECT)]);
 
 	if (m_pOctree)
 		m_pOctree->Late_Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
@@ -226,6 +234,8 @@ HRESULT CGameInstance::Clear_Resources(_uint iClearLevelID)
 	m_pObject_Manager->Clear(iClearLevelID);
 
 	m_pLight_Manager->Clear(iClearLevelID);
+
+	//m_pEffect_Manager->Clear(iClearLevelID);
 
 	return S_OK;
 }
@@ -1152,6 +1162,30 @@ HRESULT CGameInstance::Render_Decals()
 
 #pragma endregion
 
+#pragma region EFFECT_MANAGER
+
+void CGameInstance::Add_Effect_ToPool(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint iPoolSize)
+{
+	m_pEffect_Manager->Add_Effect_ToPool(iLayerLevelIndex, strPrototypeTag, iPoolSize);
+}
+
+_uint CGameInstance::Spwan_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector SpwanPos)
+{
+	return m_pEffect_Manager->Spwan_Effect(iLayerLevelIndex, strPrototypeTag, SpwanPos);
+}
+
+void CGameInstance::Update_Effect_Position(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector SpwanPos)
+{
+	m_pEffect_Manager->Update_Effect_Position(iLayerLevelIndex, strPrototypeTag, ID, SpwanPos);
+}
+
+void CGameInstance::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID)
+{
+	m_pEffect_Manager->Stop_Effect(iLayerLevelIndex, strPrototypeTag, ID);
+}
+
+#pragma endregion
+
 #pragma region OCTREE
 
 void CGameInstance::DeleteOctree()
@@ -1230,6 +1264,7 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pPrototype_Manager);	
 	Safe_Release(m_pLevel_Manager);
 	Safe_Release(m_pGraphic_Device);
+	//Safe_Release(m_pEffect_Manager);
 }
 
 void CGameInstance::Free()
