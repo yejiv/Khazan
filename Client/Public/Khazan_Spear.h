@@ -11,28 +11,32 @@ NS_END
 
 NS_BEGIN(Client)
 
+using DIR = DIRECTION_INFO;
+
 class CKhazan_Spear final:  public CCreature
 {
-public:
-	enum PLAYER_STATE {
-		IDLE = 1 << 0 ,
-		WALK = 1 << 1,
-		RUN = 1 << 2,
-		MOVING = WALK | RUN,
-		ATTACK_FAST = 1 << 3,
-		ATTACK_SET = 1 << 4,
-		ATTACK_ALL = ATTACK_FAST | ATTACK_SET,
-
-
-		END = 1<<5,
-	};
-
 private:
-	enum  MOVE_DIR {
-		UP = 1 << 0,
-		DOWN = 1 << 1,
-		RIGHT = 1 << 2,
-		LEFT = 1 << 3,
+
+	enum PLAYER_STATUS : _uint
+	{
+		BAREHAND = 1 << 0,
+		SPEAR = 1 << 1,
+
+		RESERVED = 1 << 2,
+
+		CHARGING_SPRINT = 1 << 3,
+		BACK_DODGE = 1 << 4,
+
+		ROTATION = 1 << 5,
+		KEY_ROTATION = 1 << 6,
+		SAMEDIRECTION = 1 << 7,  // 키입력 방향과 플레이어의 룩방향 일치성
+
+
+
+	};
+	enum PLAYER_CAMERA_DIR {
+		PC_FRONT, PC_FRONT_RIGHT, PC_RIGHT, PC_BACK_RIGHT,
+		PC_BACK, PC_BACK_LEFT, PC_LEFT, PC_FRONT_LEFT
 	};
 
 private:
@@ -57,29 +61,58 @@ public:
 
 
 private:
-	class CBody_Khazan_Spear*	m_pBody = { nullptr };
-	class CSpear_Khazan_Spear*  m_pSpear = { nullptr };
+	class CBody_Khazan_Spear*		m_pBody = { nullptr };
+	class CSpear_Khazan_Spear*		m_pSpear = { nullptr };
+	class CKhazan_Spear_Anim_Move*	m_pAnimMove = { nullptr };
+	class CKhazan_Spear_Anim_Attack* m_pAnimAttack = { nullptr };
+	//kHAZAN_ANIM_INFO			m_eCurAnimInfo = {}; //후보지에서 선택된 애님인포 
+	//vector<kHAZAN_ANIM_INFO>	m_AnimCandidates; // 매 프레임 후보 리스트 적립
 
-	class CKhazan_Spear_ASMachine* m_pASMachine = { nullptr };
-	class CKhazan_Spear_ASManager* m_pASManager = { nullptr };
+	/* state */
+	_uint						m_iStatus = {};
+	_uint						m_iCurMainState = {};
+	_uint						m_iPrevMainState = {};
+	_uint						m_iCurSubState = {};
+	_uint						m_iPrevSubState = {};
+	_uint						m_iCycle;
+	_uint						m_iPrevCycle;
+	DIR							m_eDir = {};		//플레이어 dir
+	_uint						m_ePrevDir = {};
 
-	_uint						m_iState = { };
-	_uint						m_iDirState = { MOVE_DIR::RIGHT };
+	_uint						m_iCurAnimIndex = {};
+	_uint						m_iReserveAnimIndex = {};
 
-	//class CRigidBody*			m_pRigidBodyCom = { nullptr };
-	CCharacterVirtual*			m_pCharVirCom = { nullptr };
+	/* info */
 	_float4x4*					m_pWeaponR_Matrix = { nullptr };
 	_float4x4*					m_pSpearFX_Matrix = { nullptr };
 	_float4x4					m_pSpearFX_WorldMatrix = {};
 	_matrix						m_SpearOffset_Matrix = {};
-
 	_bool						m_isEnableControl = { true };
-	_int						m_isMove = {0};
 
+	vector<_float2>				m_vCoolTime;
+
+	/* Move*/
+	DIR							m_eWorldDir = {}; // 키 입력 방향
+	_float						m_fRotateTime[2] = { 0.f,0.1f };
+	_vector						m_vRotateStart;
+	_float						m_fSprintTime = { 0.f };
+
+	/* const */
+	const	_float				m_fMinSprintTime = { 0.15f };
+
+	/* Move Speed */
+	const _float				m_fWalkSpeed = { 1.6f };
+	const _float				m_fRunSpeed = { 4.f };
+	const _float				m_fSprintSpeed = { 7.f };
 
 private:
 	void			Update_State(_float fTimeDelta);
-	void			Key_Input(_float fTimeDelta);
+	void			Move_Input(_float fTimeDelta);
+	void			Attack_Input(_float fTimeDelta);
+	void			ChangeAnimation();
+	void			ExecuteAnimationExit();
+	void			Apply_PlayerMovement(_float fTimeDelta);
+	void			Check_KeyInput_Direction(_float fTimeDelta);
 
 private:
 	HRESULT			Ready_Components();
@@ -88,21 +121,45 @@ private:
 	HRESULT			Ready_AnimationStateMachine();
 
 private:
-	inline void		Add_State(_uint i) { m_iState |= i; }
-	inline void		Toggle_State(_uint i) { m_iState ^= i; }
-	inline void		Remove_State(_uint i) { m_iState &= ~i; }
-	inline _bool	Has_State(_uint i) { return (m_iState & i) != 0; }
-	inline void		Clear_State() { m_iState = 0; }
-	inline _bool	Has_States();
+	inline void		Add_Status(_uint i) { m_iStatus |= i; }
+	inline void		Remove_Status(_uint i) { m_iStatus &= ~i; }
+	inline _bool	Has_Status(_uint i) { return (m_iStatus & i) != 0; }
+	inline void		Clear_Status( ) { m_iStatus = 0; }
 
-	inline void		Add_DirState(_uint i) { m_iDirState |= i; }
-	inline void		Toggle_DirState(_uint i) { m_iDirState ^= i; }
-	inline void		Remove_DirState(_uint i) { m_iDirState &= ~i; }
-	inline _bool	Has_DirState(_uint i) { return (m_iDirState & i) != 0; }
-	inline void		Clear_DirState() { m_iDirState = 0; }
+	inline void		Add_State(_uint i) { m_iCurMainState |= i; }
+	inline void		Toggle_State(_uint i) { m_iCurMainState ^= i; }
+	inline void		Remove_State(_uint i) { m_iCurMainState &= ~i; }
+	inline _bool	Has_State(_uint i) { return (m_iCurMainState & i) != 0; }
+	inline _bool	Has_AllStates(_uint i) { return (m_iCurMainState & i) == i; }
+	inline _bool	Has_States();	//하나의 상태라도 있는지 없는지
+	inline void		Clear_State() { m_iCurMainState = 0; }
+
+	inline void		Add_SubState(_uint i) { m_iCurSubState |= i; }
+	inline void		Toggle_SubState(_uint i) { m_iCurSubState ^= i; }
+	inline void		Remove_SubState(_uint i) { m_iCurSubState &= ~i; }
+	inline _bool	Has_SubState(_uint i) { return (m_iCurSubState & i) != 0; }
+	inline _bool	Has_AllSubStates(_uint i) { return (m_iCurSubState & i) == i; }
+	inline _bool	Has_SubStates();	//하나의 상태라도 있는지 없는지
+	inline void		Clear_SubState() { m_iCurSubState = 0; }
+
+	inline void		Add_CycleState(_uint i) { m_iCycle |= i; }
+	inline void		Remove_CycleState(_uint i) { m_iCycle &= ~i; }
+	inline _bool	Has_CycleState(_uint i) { return (m_iCycle & i) != 0; }
+	inline void		Clear_CycleState() { m_iCycle = 0; }
+	inline void		AllClear_CycleState() { m_iCycle = 0;	}
+
+	_uint			ConvertCameraToPlayerDir( PLAYER_CAMERA_DIR playerCamDir);
 
 #ifdef _DEBUG
 	void			Debug_Widget();
+	void			Debug_Widget_States();      // 상태 디버깅
+	void			Debug_Widget_Animation();   // 애니메이션 디버깅
+	void			Debug_Widget_Movement();    // 이동 디버깅
+
+	const char*		GetStateName(_uint state);
+	const char*		GetSubStateName(_uint subState);
+	const char*		GetCycleName(_uint cycle);
+	std::string		GetDirectionString();
 #endif // _DEBUG
 
 

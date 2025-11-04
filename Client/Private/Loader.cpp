@@ -18,6 +18,9 @@
 #include "Khazan_Sample.h"
 #include "Body_Khazan_Sample.h"
 #include "Spear_Khazan_Sample.h"
+#include "Khazan_Spear.h"
+#include "Body_Khazan_Spear.h"
+#include "Spear_Khazan_Spear.h"
 #pragma endregion
 
 #pragma region MAP OBJECT
@@ -251,6 +254,21 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Test/Fiona/Fiona.dat"))))
 	//	return E_FAIL;
 
+
+#pragma region SKY SPHERE MODELS
+	/* Prototype_Component_Model_SkyMesh */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_SkyMesh"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Map/Prop/NonAnim/SkySphere/SkyMesh.dat"))))
+		return E_FAIL;
+
+	/* Prototype_Component_Model_CloudMesh */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_CloudMesh"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Map/Prop/NonAnim/SkySphere/CloudMesh.dat"))))
+		return E_FAIL;
+#pragma endregion
+
+#pragma region KHAZAN
+
 	/* Prototype_Component_Model_Khazan_Sample*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Sample"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Khazan_Sample.dat"))))
@@ -260,6 +278,13 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Spear_Khazan_Sample"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Spear/Spear.dat"))))
 		return E_FAIL;
+
+	/* Prototype_Component_Model_Khazan_Spear*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Spear"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Spear/Khazan_Spear.dat"))))
+		return E_FAIL;
+
+#pragma endregion
 
 #pragma region YETUGA
 
@@ -407,6 +432,7 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 		CJOH_Test1::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+#pragma region KHAZAN
 	/* Prototype_GameObject_Khazan_Sample */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Sample"),
 		CKhazan_Sample::Create(m_pDevice, m_pContext))))
@@ -421,6 +447,24 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Spear_Khazan_Sample"),
 		CSpear_Khazan_Sample::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+
+	/* Prototype_GameObject_Khazan_Spear */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"),
+		CKhazan_Spear::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_GameObject_Body_Khazan_Spear */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Body_Khazan_Spear"),
+		CBody_Khazan_Spear::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_GameObject_Spear_Khazan_Spear */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Spear_Khazan_Spear"),
+		CSpear_Khazan_Spear::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+
+#pragma endregion
 
 #pragma region 이펙트 테스트 중!
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_TestParticle"),
