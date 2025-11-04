@@ -8,6 +8,8 @@
 #include "Dummy.h"
 #include "Monster.h"
 #include "ClientInstance.h"
+#include "Sequence_HeinMach_Field.h"
+
 
 #pragma region MAP OBJECT
 #include "MapObject_Header.h"
@@ -17,6 +19,7 @@
 #include "UI_Atlas_Icon.h"
 #include "UI_BackGround.h"
 #include "Damage_Text.h"
+#include "UI_Announce_MapName.h"
 #pragma endregion
 
 CLevel_HeinMach::CLevel_HeinMach(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -111,8 +114,8 @@ HRESULT CLevel_HeinMach::Initialize()
 	//if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
 	//	return E_FAIL;
 
-	if (FAILED(Ready_Layer_TestEffect(TEXT("Layer_EffectTest"))))
-		return E_FAIL;
+	//if (FAILED(Ready_Layer_TestEffect(TEXT("Layer_EffectTest"))))
+	//	return E_FAIL;
 
 	/*if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
 		return E_FAIL;*/
@@ -170,6 +173,16 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
 	//	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::GAMEPLAY))))
 	//		return;
 	//}
+
+	if (m_pGameInstance->Key_Down(DIK_B))
+	{
+		SEQ_REQ_PLAY_DESC tPlayDesc{};
+		tPlayDesc.tId.iSeq = 100;
+		tPlayDesc.pAsset = L"Boss_Intro";
+		tPlayDesc.fStartTime = 0.f;
+
+		m_pGameInstance->SEQ_AdoptAndPlay(m_pTest, tPlayDesc);
+	}
 	if (m_pGameInstance->Key_Down(DIK_Q))
 	{
 		m_pGameInstance->isPickRenderTargetPixel(TEXT("Target_Normal"));
@@ -256,7 +269,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 	m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::HEINMACH), ENUM_CLASS(CAMERATYPE::FREE));
 
-
+	m_pTest = CSequence_HeinMach_Field::Create(pCamera_Spring);
 
 	return S_OK;
 }
@@ -313,7 +326,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Test(const _wstring& strLayerTag)
 
 HRESULT CLevel_HeinMach::Ready_Layer_TestEffect(const _wstring& strLayerTag)
 {
-	//��ġ�� �׽�Ʈ�� clone�� �� argument �� ���� ��
+	//��ġ�� �׽�Ʈ�� clone�� �� argument �� ���� ��
 
 	//_float3 test { 1.f, 0.f, 0.f};
 	//
@@ -513,7 +526,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag
 
 		ObjectDesc.Properties = PropProperties;
 
-		if (iSubLV == 0)
+		if (iSubLV == HEINMACH_1ST_BLADENEXUS)
 		{
 
 			// 일단 단일 오브젝트로 배치하고 추후에 인스턴스, 인터렉티브, 다이나믹 으로 나누겠습니다.

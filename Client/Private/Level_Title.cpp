@@ -28,15 +28,6 @@ HRESULT CLevel_Title::Initialize()
 			iTest = e.data;
 		});
 
-	CSequence_Dummy* pDummy = CSequence_Dummy::Create();
-
-	SEQ_REQ_PLAY_DESC tPlayDesc{};
-	tPlayDesc.tId.iSeq = 100;
-	tPlayDesc.pAsset = L"Boss_Intro";
-	tPlayDesc.fStartTime = 0.f;
-
-	m_pGameInstance->SEQ_AdoptAndPlay(pDummy, tPlayDesc);
-
 	return S_OK;
 }
 

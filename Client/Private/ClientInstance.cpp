@@ -182,6 +182,10 @@ void CClientInstance::Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag,
 {
 	m_pCamera_Manager->Save_Json(iLevelIndex, strCameraTag, pOutData);
 }
+void CClientInstance::Save_Json_Animation(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData)
+{
+	m_pCamera_Manager->Save_Json_Animation(iLevelIndex, strCameraTag, pOutData);
+}
 void CClientInstance::Clear_CameraManager(_uint iLevelIndex)
 {
 	m_pCamera_Manager->Clear(iLevelIndex);

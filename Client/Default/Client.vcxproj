@@ -265,6 +265,7 @@
     <ClInclude Include="..\Public\Prop_Test.h" />
     <ClInclude Include="..\Public\ScreenTrail.h" />
     <ClInclude Include="..\Public\Sequence_Dummy.h" />
+    <ClInclude Include="..\Public\Sequence_HeinMach_Field.h" />
     <ClInclude Include="..\Public\Shader_Controller.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\SkySphere.h" />
@@ -419,6 +420,7 @@
     <ClCompile Include="..\Private\Prop_Test.cpp" />
     <ClCompile Include="..\Private\ScreenTrail.cpp" />
     <ClCompile Include="..\Private\Sequence_Dummy.cpp" />
+    <ClCompile Include="..\Private\Sequence_HeinMach_Field.cpp" />
     <ClCompile Include="..\Private\Shader_Controller.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\SkySphere.cpp" />
