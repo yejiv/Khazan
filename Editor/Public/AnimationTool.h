@@ -25,7 +25,8 @@ private:
 	vector<_wstring>						m_ObjectNames;
 	_float3									m_vPreScale = { 0.0001f, 0.0001f, 0.0001f };
 	_bool									m_isAnim = { false };
-	_int									m_iCurrentRenderGroup = {3};
+	_bool									m_isSolid = { false };
+	_int									m_iCurrentRenderGroup = {4};
 	_wstring								m_strModelName;
 	string									m_strModelPath;
 	_int									m_iSelectedIndex = { -1 }; //현재 선택된 게임 오브젝트
@@ -81,6 +82,8 @@ private:
 	// === UI 레이아웃 ===
 	_float									m_pannelLeftWidth = { 400.0f };
 	_float									m_pannelMiddleWidth = { 600.0f };
+
+	const _char* m_strRenderGroupNames[7] = { "PRIORITY", "SHADOW", "NONBLEND", "OUTLINE","NONLIGHT", "BLEND", "UI"};
 
 private:
 	// === 위젯 함수 ===

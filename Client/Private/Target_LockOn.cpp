@@ -15,15 +15,16 @@ CTarget_LockOn::CTarget_LockOn(const CTarget_LockOn& Prototype)
 void CTarget_LockOn::LockOn(const _float4* pTargetPos, _float2 vOffset)
 {
 	m_IsUpdate = true;
-	m_pTagetPos = pTargetPos;
+	m_pTargetPos = pTargetPos;
 	m_vLocalPos = { vOffset.x, -vOffset.y };
 	m_fDelta = 2.f;
+	m_isVisible = true;
 }
 
 void CTarget_LockOn::LockOff()
 {
 	m_IsUpdate = false;
-	m_pTagetPos = nullptr;
+	m_pTargetPos = nullptr;
 }
 
 
@@ -41,6 +42,7 @@ HRESULT CTarget_LockOn::Initialize_Clone(void* pArg)
 	CHECK_FAILED(Ready_Component(), E_FAIL);
 
 	CClientInstance::GetInstance()->Add_RootUI(TEXT("LockOn"), this);
+	m_pGameInstance->Subscribe_Event<EVENT_LOCKON_VISIBLE>(ENUM_CLASS(EVENT_TYPE::LOCKON_VISIBLE), [&](const EVENT_LOCKON_VISIBLE& e) {BrutalAttack_Check(e); });
 
 	return S_OK;
 }
@@ -66,7 +68,8 @@ void CTarget_LockOn::Late_Update(_float fTimeDelta)
 	}
 	Update_Scaling(m_fDelta);
 	Update_WorldPos();
-	m_pGameInstance->Add_RenderGroup(RENDERGROUP::BLEND, this);
+	if(m_isVisible)
+		m_pGameInstance->Add_RenderGroup(RENDERGROUP::BLEND, this);
 }
 
 HRESULT CTarget_LockOn::Render()
@@ -120,10 +123,10 @@ HRESULT CTarget_LockOn::Ready_Component()
 
 void CTarget_LockOn::Update_WorldPos()
 {
-	if (nullptr == m_pTagetPos)
+	if (nullptr == m_pTargetPos)
 		return;
 
-	_vector vTargetPos = XMLoadFloat4(m_pTagetPos);
+	_vector vTargetPos = XMLoadFloat4(m_pTargetPos);
 
 	_matrix OldVeiw = m_pGameInstance->Get_Transform_Matrix(D3DTS::VIEW);
 	_matrix OldProj = m_pGameInstance->Get_Transform_Matrix(D3DTS::PROJ);
@@ -149,6 +152,14 @@ void CTarget_LockOn::Update_WorldPos()
 
 
 	Update_Transform(nullptr, m_vWorldPos);
+}
+
+void CTarget_LockOn::BrutalAttack_Check(const EVENT_LOCKON_VISIBLE& e)
+{
+	if (m_pTargetPos != e.pTargetPos)
+		return;
+
+	m_isVisible = e.isVisible;
 }
 
 CTarget_LockOn* CTarget_LockOn::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)

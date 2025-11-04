@@ -33,13 +33,14 @@ private:
 	CTexture*							m_pTextureCom = { nullptr };
 	CVIBuffer_Rect*						m_pVIBufferCom = { nullptr };
 
-	const _float4*						m_pTagetPos = { nullptr };
+	const _float4*						m_pTargetPos = { nullptr };
 	_float								m_fDelta = {};
 private:
 	HRESULT								Ready_Prototype();
 	HRESULT								Ready_Component();
 
 	void								Update_WorldPos();
+	void								BrutalAttack_Check(const EVENT_LOCKON_VISIBLE& e);
 
 public:
 	static CTarget_LockOn*				Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);

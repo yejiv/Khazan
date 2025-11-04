@@ -33,7 +33,6 @@ protected:
 	_uint					m_iNumIndexPerInstance = {};
 	_uint					m_iInstanceVertexStride = {};
 
-
 protected:
 	D3D11_BUFFER_DESC		m_VBInstanceDesc{};
 	void*					m_pInstanceVertices = { nullptr };

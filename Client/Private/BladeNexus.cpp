@@ -42,8 +42,7 @@ HRESULT CBladeNexus::Initialize_Clone(void* pArg)
 
     m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
         {
-            m_isBNOn = e.isObjectOn;
-            m_isBNOff = e.isObjectOff;
+            m_Event = e;
         });
 
     return S_OK;
@@ -53,8 +52,7 @@ void CBladeNexus::Priority_Update(_float fTimeDelta)
 {
     if (false == m_isCollision)
     {
-        m_isBNOn = false;
-        m_isBNOff = false;
+        m_Event.None();
     }
 }
 
@@ -82,6 +80,15 @@ HRESULT CBladeNexus::Render()
         Bind_Materials(i);
 
         m_fEmissiveIntensity = 1.5f;
+
+        /*
+        if (1 != i)
+        {
+            _bool isEmissive = { true };
+            m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_SPECULAR, 0);
+            m_pShaderCom->Bind_RawValue("g_isEmissive", &isEmissive, sizeof(_bool));
+        }
+        */
 
         m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &m_fEmissiveIntensity, sizeof(_float));
         m_pShaderCom->Bind_RawValue("g_isEnableEmissive", &m_isEnableEmissive, sizeof(_bool));
@@ -217,10 +224,37 @@ HRESULT CBladeNexus::Ready_PlaceName(void* pArg)
     return S_OK;
 }
 
+HRESULT CBladeNexus::Bind_Materials(_uint iMeshIndex)
+{
+    _bool isDiffuse = { false };
+    _bool isNormal = { false };
+    _bool isEmissive = { false };
+    _bool isSpecular = { false };
+
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0)))
+        isDiffuse = true;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", iMeshIndex, aiTextureType_NORMALS, 0)))
+        isNormal = true;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", iMeshIndex, aiTextureType_EMISSIVE, 0)))
+        isEmissive = true;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
+        isSpecular = true;
+
+    isSpecular = false;
+    isEmissive = false;
+
+    m_pShaderCom->Bind_RawValue("g_isDiffuse", &isDiffuse, sizeof(_bool));
+    m_pShaderCom->Bind_RawValue("g_isNormal", &isNormal, sizeof(_bool));
+    m_pShaderCom->Bind_RawValue("g_isEmissive", &isEmissive, sizeof(_bool));
+    m_pShaderCom->Bind_RawValue("g_isSpecular", &isSpecular, sizeof(_bool));
+
+    return S_OK;
+}
+
 void CBladeNexus::Input_Interact_Event(_float fTimeDelta)
 {
     if (ANIM_STATE::AFTER_START == m_eAnimState || ANIM_STATE::AFTER_LOOP == m_eAnimState|| ANIM_STATE::AFTER_END == m_eAnimState ||
-        ANIM_STATE::BEFORE_LOOP == m_eAnimState || ANIM_STATE::BEFORE_LOOP == m_eAnimState|| ANIM_STATE::BEFORE_LOOP == m_eAnimState)
+        ANIM_STATE::BEFORE_START == m_eAnimState || ANIM_STATE::BEFORE_LOOP == m_eAnimState|| ANIM_STATE::BEFORE_END == m_eAnimState)
         return;
 
     _bool isPressing = { false };
@@ -229,16 +263,6 @@ void CBladeNexus::Input_Interact_Event(_float fTimeDelta)
     {
         isPressing = m_pGuide->IsPressing();
     }
-    //else if (m_pGameInstance->Key_Down(DIK_N))
-    //{
-    //    EventInteractType InteractType = {};
-
-    //    InteractType.eState = EventInteractType::END;
-
-    //    m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
-
-    //    return;
-    //}
 
     if (true == isPressing)
     {
@@ -263,10 +287,8 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
 
     Input_Interact_Event(fTimeDelta);
 
-    if (true == m_isBNOn)               // 켠다는 신호
+    if (m_Event.isOn())               // 켠다는 신호
     {
-        m_isBNOff = false;
-
         // 해금 전 IDLE 상태
         if (ANIM_STATE::BEFORE_IDLE == m_eAnimState)
         {
@@ -320,10 +342,8 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
             m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
         }
     }
-    else if (true == m_isBNOff)         // 끈다는 신호 ( 내가 받기만 하면 됨
+    else if (m_Event.isOff())         // 끈다는 신호 ( 내가 받기만 하면 됨
     {
-        m_isBNOn = false;
-
         if (ANIM_STATE::BEFORE_LOOP == m_eAnimState)
         {
             m_eAnimState = ANIM_STATE::BEFORE_END;
@@ -368,7 +388,7 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
         // 귀검을 바라볼 수 있도록 포지션만 던짐 ( 귀검 애니메이션 종료 O, UI 창 팝업? )
         m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 
-        m_isBNOn = false;
+        m_Event.None();
     }
     // 귀검 상호 작용 종료 후 ( 첫 해금 O )
     if (ANIM_STATE::BEFORE_END == m_eAnimState)
@@ -381,7 +401,7 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
         m_pModelCom->Set_Animation(ANIM_STATE::AFTER_IDLE);
         m_pModelCom->Set_AnimationLoop(true);
 
-        m_isBNOff = false;
+        m_Event.None();
 
         // 첫 해금 후 접촉 -> 결속 으로 변경
         m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("결속"), 1.5f);
@@ -413,7 +433,7 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
         // 귀검을 바라볼 수 있도록 포지션만 던짐 ( 귀검 애니메이션 종료 O, UI 창 팝업? )
         m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 
-        m_isBNOn = false;
+        m_Event.None();
     }
     // 귀검 상호 작용 종료 후 ( 첫 해금 X )
     if (ANIM_STATE::AFTER_END == m_eAnimState)
@@ -426,7 +446,7 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
         m_pModelCom->Set_Animation(ANIM_STATE::AFTER_IDLE);
         m_pModelCom->Set_AnimationLoop(true);
 
-        m_isBNOff = false;
+        m_Event.None();
     }
 }
 
