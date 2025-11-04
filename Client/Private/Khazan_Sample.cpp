@@ -237,10 +237,10 @@ void CKhazan_Sample::Event_Interact_Object(_float fTimeDelta)
 
         _float3 vPos = m_EventInteract.ChestEvent.vPlayerPosition;
 
-        if (true)
+        if (true)               // 특정 조건 완성하면 이벤트 발생
         {
             // 상호작용 활성화시 맵 오브젝트한테 ObjectOn 을 true 로 던져주고, ObjectOff 를 false 로 던져준다.
-            m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { true, false });
+            m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { EventObject::OnEvent() });
             m_EventInteract.eState = EventInteractType::EVENT_STATE::NONE;
         }
     }
@@ -248,10 +248,10 @@ void CKhazan_Sample::Event_Interact_Object(_float fTimeDelta)
     // 상호 작용 오브젝트 쪽에서 END STATE 내보낼 시
     if (EventInteractType::EVENT_STATE::END == m_EventInteract.eState)
     {
-        if (true)
+        if (true)               // 특정 조건 완성하면 이벤트 발생
         {
             // 상호작용 비 활성화시 맵 오브젝트한테 ObjectOn 을 false 로 던져주고, ObjectOff 를 true 로 던져준다.
-            m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { false, true });
+            m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { EventObject::OffEvent() });
             m_EventInteract.eState = EventInteractType::EVENT_STATE::NONE;
         }
     }
@@ -268,6 +268,11 @@ void CKhazan_Sample::Event_Interact_Object(_float fTimeDelta)
         if (INTERACTIVE_TYPE::CHEST == m_EventInteract.eInteractType)
         {
             Chest_Event(fTimeDelta);
+        }
+        // 경계의 틈 툼스톤일때
+        if (INTERACTIVE_TYPE::TOMBSTONE == m_EventInteract.eInteractType)
+        {
+            TombStone_Event(fTimeDelta);
         }
     }
 }
@@ -358,6 +363,27 @@ void CKhazan_Sample::Chest_Event(_float fTimeDelta)
             m_fEventTimeAcc = 0.f;
         }
     }
+}
+
+void CKhazan_Sample::TombStone_Event(_float fTimeDelta)
+{
+    EventTombStone TSEvent = m_EventInteract.TSEvent;
+
+    // 툼스톤에 접촉 후 상호 작용 ( 툼스톤 가동 )
+    if (false == TSEvent.isTSOpened)
+    {
+        // 플레이어 Look -> 툼스톤 ( 기우는거 보정하려고 이렇게 코드 넣어놨습니다. )
+        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&TSEvent.vPlayerPosition), 1.f));
+        TSEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+        m_pTransformCom->LookAt(XMVectorSetW(XMLoadFloat3(&TSEvent.vPosition), 1.f));
+    }
+    // 툼스톤 가동 끝나고 가동 LOOP 진입
+    else if (true == TSEvent.isTSOpened)
+    {
+        // 플레이어 툼스톤 LOOP 애니메이션?
+    }
+
+    m_EventInteract.End_Event();
 }
 #pragma endregion
 
