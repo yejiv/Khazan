@@ -55,6 +55,7 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDes
 	m_sData.vRange = pPointDesc->vRange;
 	m_sData.fTurbulenceSpeed = pPointDesc->fTurbulenceSpeed;
 	m_sData.fTurbulenceSampleSize = pPointDesc->fTurbulenceSampleSize;
+	memcpy(m_sData.pNoiseFilePath, pPointDesc->pNoiseFilePath, sizeof(pPointDesc->pNoiseFilePath));
 
 	D3D11_BUFFER_DESC		VBDesc{};
 	VBDesc.ByteWidth = m_iNumVertices * m_iVertexStride;
@@ -398,7 +399,7 @@ HRESULT CVIBuffer_Point_Instance::Ready_SRV(void* pSysmem)
 		return E_FAIL;
 
 	_char fullpath[MAX_PATH];
-	HRESULT     hr = {};
+ 	HRESULT     hr = {};
 	_tchar		tpath[MAX_PATH] = {};
 	MultiByteToWideChar(CP_UTF8, 0, m_sData.pNoiseFilePath, -1, tpath, 100);
 
@@ -408,7 +409,6 @@ HRESULT CVIBuffer_Point_Instance::Ready_SRV(void* pSysmem)
 
 	strcpy_s(fullpath, "../Bin/Resources/Effect/Noise/");
 	strcat_s(fullpath, FileName.c_str());
-	strcat_s(fullpath, FileExt.c_str());
 	ZeroMemory(tpath, MAX_PATH);
 	MultiByteToWideChar(CP_UTF8, 0, fullpath, -1, tpath, 100);
 

@@ -68,6 +68,7 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 	m_sData.vRange = pMeshDesc->vRange;
 	m_sData.fTurbulenceSpeed = pMeshDesc->fTurbulenceSpeed;
 	m_sData.fTurbulenceSampleSize = pMeshDesc->fTurbulenceSampleSize;
+	memcpy(m_sData.pNoiseFilePath, pMeshDesc->pNoiseFilePath, sizeof(pMeshDesc->pNoiseFilePath));
 
 
 	D3D11_BUFFER_DESC		VBDesc{};
@@ -421,7 +422,6 @@ HRESULT CVIBuffer_Mesh_Instance::Ready_SRV(void* pSysmem)
 
 	strcpy_s(fullpath, "../Bin/Resources/Effect/Noise/");
 	strcat_s(fullpath, FileName.c_str());
-	strcat_s(fullpath, FileExt.c_str());
 	ZeroMemory(tpath, MAX_PATH);
 	MultiByteToWideChar(CP_UTF8, 0, fullpath, -1, tpath, 100);
 
