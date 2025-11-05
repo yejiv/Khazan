@@ -156,7 +156,6 @@ HRESULT CCursor::Ready_Component()
 void CCursor::Play_Mode()
 {
 	ShowCursor(TRUE);
-
 	m_eMode = MOUSE_MODE::PLAY_MODE;
 	RECT clientRect;
 	POINT centerPoint;

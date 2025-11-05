@@ -433,15 +433,28 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Loading"),
 		CUI_Loading::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
 
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Announce_Talk"),
+		CUI_Announce_Talk::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
+
+
 	CUIObject::UIOBJECT_DESC AnnounceDesc = {};
 	AnnounceDesc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
 	AnnounceDesc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
 	AnnounceDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
 	AnnounceDesc.szName = "Announce";
-	AnnounceDesc.fDepth = 9.f;
+	AnnounceDesc.fDepth = 8.f;
 
 	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
 		ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Announce_MapName"), TIME_CHANNEL::WORLD, &AnnounceDesc), E_FAIL);
+
+	AnnounceDesc.vLocalSize = { 660.f, 100.f };
+	AnnounceDesc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
+	AnnounceDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+	AnnounceDesc.szName = "Announce";
+	AnnounceDesc.fDepth = 8.f;
+
+	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
+		ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Announce_Talk"), TIME_CHANNEL::WORLD, &AnnounceDesc), E_FAIL);
 
 	CUIObject::UIOBJECT_DESC Desc = {};
 	Desc.vLocalSize = { 64.f, 64.f };
