@@ -1173,6 +1173,31 @@ HRESULT CGameInstance::Render_Decals()
 	return m_pDecal_Manager->Render();
 }
 
+_float3 CGameInstance::Get_DecalColor()
+{
+	return m_pDecal_Manager->Get_DecalColor();
+}
+
+void CGameInstance::Set_DecalColor(_float3 vColor)
+{
+	m_pDecal_Manager->Set_DecalColor(vColor);
+}
+
+_uint CGameInstance::Get_NumDecalTextures()
+{
+	return m_pDecal_Manager->Get_NumDecalTextures();
+}
+
+ID3D11ShaderResourceView* CGameInstance::Get_DecalTexture(_uint iTextureIndex)
+{
+	return m_pDecal_Manager->Get_DecalTexture(iTextureIndex);
+}
+
+void CGameInstance::Set_DecalTextureIndex(_uint iTextureIndex)
+{
+	m_pDecal_Manager->Set_DecalTextureIndex(iTextureIndex);
+}
+
 #pragma endregion
 
 #pragma region EFFECT_MANAGER
