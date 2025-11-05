@@ -509,11 +509,8 @@ HRESULT CLevel_Map::Ready_Main_Window()
 
 					m_isSaveObjectWindow = !m_isSaveObjectWindow;
 				}
-				if (false == m_isLoaded)
-				{
-					SAMELINE;
-					if (ImGui::Button("LOAD")) m_isLoadObjectWindow = !m_isLoadObjectWindow;
-				}
+				SAMELINE;
+				if (ImGui::Button("LOAD")) m_isLoadObjectWindow = !m_isLoadObjectWindow;
 				SEPARATOR;
 				
 				ImGui::Text("PROP LIST");
@@ -1645,6 +1642,10 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 				ImGui::Text("MODEL NAME : %s", strTempModelName.c_str());
 				SEPARATOR;
 
+				if (INTERACTIVE_TYPE::TRIGGER == m_InteractiveList[m_iInteractiveListIndex]->Get_InteractiveType())
+				{
+					ImGui::Text("TRIGGER KEY : %s", static_cast<CTrigger*>(m_InteractiveList[m_iInteractiveListIndex])->Get_TriggerKey().c_str());
+				}
 			}
 			if (0 != m_InteractiveList.size())
 			{
@@ -1725,7 +1726,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 				}
 			}
 
-			if (ImGui::Button("EXPORT"))
+			if (ImGui::Button("EXPORT ONLY INTERACTIVE"))
 			{
 				m_strMapInfoFilePath = m_szMapInfoFilePath;
 				m_strMapInfoFilePath += m_szMapInfoFileName;
@@ -1736,7 +1737,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 				}
 			}
 
-			if (ImGui::Button("EXPORT FOR TRIGGER"))
+			if (ImGui::Button("EXPORT ONLY TRIGGER"))
 			{
 				m_strMapInfoFilePath = m_szMapInfoFilePath;
 				m_strMapInfoFilePath += m_szMapInfoFileName;
@@ -2171,7 +2172,9 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 
 			SEPARATOR;
 
-			if (ImGui::Button("LOAD"))
+			if (false == m_isLoaded)
+			{
+				if (ImGui::Button("LOAD"))
 			{
 				// m_strMapInfoFilePath : 뒤에 _prototypes.dat, _objs.dat, insts.dat 이런식으로 ㄱㄱ
 				m_strMapInfoFilePath = m_szMapInfoFilePath;
@@ -2260,6 +2263,15 @@ OutputDebugStringA("조명 정보 바이너리 불러오기 실패");
 					m_isLoadObjectWindow = false;
 					m_isLoaded = true;
 				}
+			}
+			}
+
+			if (ImGui::Button("TRIGGER LOAD"))
+			{
+				m_strMapInfoFilePath = m_szMapInfoFilePath;
+				m_strMapInfoFilePath += m_szMapInfoFileName;
+
+				Trigger_objects_Load_Json();
 			}
 
 			ImGui::End();
@@ -3821,6 +3833,53 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 
 	// 프로토타입 핸들 닫기
 	CloseHandle(hObjectFile);
+
+	return true;
+}
+
+_bool CLevel_Map::Trigger_objects_Load_Json()
+{
+	_wstring strTriggerInfoPath = AnsiToWString(m_strMapInfoFilePath);
+
+	strTriggerInfoPath += TEXT("_trigger.json");
+
+	ifstream ifs(strTriggerInfoPath);
+
+	if (!ifs.is_open())
+	{
+		OutputDebugStringA("트리거 제이슨 없거나 문제잇음 일단 true 반환");
+		return true;
+	}
+
+	JSON j = {};
+	ifs >> j;
+	ifs.close();
+
+	JSON_MAP_TRIGGER_DATA TriggerData = j.get<JSON_MAP_TRIGGER_DATA>();
+
+	_uint iNumTrigger = TriggerData.iNumTrigger;
+
+	for (_uint i = 0; i < iNumTrigger; ++i)
+	{
+		CTrigger::TRIGGER_DESC TriggerDesc = {};
+
+		TriggerDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+		TriggerDesc.eLevel = LEVEL::MAP;
+		memcpy(TriggerDesc.szModelName, TEXT("Prototype_Component_Model_Trigger"), sizeof(TriggerDesc.szModelName));		// 프로토타입 태그명
+		TriggerDesc.strTriggerKey = TriggerData.TriggerKey[i];
+
+		memcpy(&TriggerDesc.WorldMatrix, &TriggerData.WorldMatrix[i], sizeof(_float4x4));										// 행렬
+
+		TriggerDesc.eInteractiveType = INTERACTIVE_TYPE::TRIGGER;										// 상호 작용 오브젝트 타입
+
+		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+			ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Trigger"), TIME_CHANNEL::WORLD, &TriggerDesc), false);
+
+		CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));
+		CHECK_NULLPTR_MSG(pInteractive_Prop, TEXT("엥"), false);
+
+		m_InteractiveList.push_back(pInteractive_Prop);
+	}
 
 	return true;
 }

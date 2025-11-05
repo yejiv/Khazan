@@ -252,8 +252,8 @@ PS_OUT_BACKBUFFER PS_MAIN_POSTSCENE(PS_IN In)
     
     vector vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    //  if (0.f == vDiffuse.a)
-    //      discard;
+    if (0.f == vDiffuse.a)
+        discard;
     
     //  if (1.f == vDiffuse.r && 0.f == vDiffuse.g && 1.f == vDiffuse.b)
     //      discard;
