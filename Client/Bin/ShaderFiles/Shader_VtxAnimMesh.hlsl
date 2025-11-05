@@ -277,7 +277,7 @@ PS_OUT_EMISSIVE PS_MAIN_DEBUG_EMISSIVE(PS_IN In)
     if (vMtrlDiffuse.a < 0.3f)
         discard;
 
-    Out.vPostScene = vMtrlDiffuse;
+    //  Out.vPostScene = vMtrlDiffuse;
     
     // =============== NonLight ===============
     
@@ -289,8 +289,11 @@ PS_OUT_EMISSIVE PS_MAIN_DEBUG_EMISSIVE(PS_IN In)
     // EmissiveÎß? Í∏∞Î°ù
     // (?Éù?ûµ Í∞??ä• -> ?úÑ?óê?Ñú 0 Ï¥àÍ∏∞?ôî)
     //  Out.vPostScene = 0.f;
-    //  Out.vEmissive.rgb = vMtrlDiffuse * 3.f; // Intensity
-    //  Out.vEmissive.a = 1.f;
+    //  Out.vPostScene.rgb = vMtrlDiffuse * 3.f; // Intensity
+    //  Out.vPostScene.a = 1.f;
+    
+    Out.vEmissive.rgb = vMtrlDiffuse * 3.f; // Intensity
+    Out.vEmissive.a = 1.f;
     
     // ?ëò ?ã§ Í∏∞Î°ù?ïòÍ∏?
     //  Out.vPostScene = vMtrlDiffuse;
