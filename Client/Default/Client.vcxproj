@@ -278,7 +278,9 @@
     <ClInclude Include="..\public\Target_LockOn.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="..\Public\TombStone.h" />
+    <ClInclude Include="..\Public\Trigger.h" />
     <ClInclude Include="..\public\UI_Announce_MapName.h" />
+    <ClInclude Include="..\public\UI_Announce_Talk.h" />
     <ClInclude Include="..\public\UI_BladeNexus.h" />
     <ClInclude Include="..\Public\UI_Button.h" />
     <ClInclude Include="..\public\UI_ComBatSpirit_Slot.h" />
@@ -441,7 +443,9 @@
     <ClCompile Include="..\private\Target_LockOn.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="..\Private\TombStone.cpp" />
+    <ClCompile Include="..\Private\Trigger.cpp" />
     <ClCompile Include="..\private\UI_Announce_MapName.cpp" />
+    <ClCompile Include="..\private\UI_Announce_Talk.cpp" />
     <ClCompile Include="..\private\UI_BladeNexus.cpp" />
     <ClCompile Include="..\Private\UI_Button.cpp" />
     <ClCompile Include="..\private\UI_ComBatSpirit_Slot.cpp" />

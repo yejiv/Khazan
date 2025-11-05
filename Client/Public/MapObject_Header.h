@@ -20,6 +20,9 @@
 #include "BigChest.h"					// »óÀÚ
 #include "TombStone.h"					// °æ°èÀÇ Æ´ Åù½ºÅæ
 
+// Trigger
+#include "Trigger.h"
+
 // Test
 #include "Prop_Test.h"
 

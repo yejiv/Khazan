@@ -617,7 +617,7 @@ HRESULT CRenderer::Render_UI()
 HRESULT CRenderer::Ready_RenderTargets()
 {
     /* For.Target_Diffuse */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Diffuse"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(1.f, 0.f, 1.f, 1.f))))
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Diffuse"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(1.f, 1.f, 1.f, 0.f))))
         return E_FAIL;
 
     /* For.Target_Normal */
@@ -653,7 +653,7 @@ HRESULT CRenderer::Ready_RenderTargets()
         return E_FAIL;
 
     /* For.Target_PostScene */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_PostScene"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(1.f, 0.f, 1.f, 1.f))))
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_PostScene"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
     /* For.Target_BackBuffer */

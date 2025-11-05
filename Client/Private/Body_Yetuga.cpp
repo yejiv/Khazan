@@ -1,7 +1,8 @@
 #include "Body_Yetuga.h"
 #include "GameInstance.h"
-
-
+#include "BlackBoard.h"
+#include "Yetuga.h"
+#include "AI_Controller.h"
 
 _float3 CBody_Yetuga::Get_BonePoint(const _char* BoneName)
 {
@@ -69,9 +70,15 @@ HRESULT CBody_Yetuga::Initialize_Clone(void* pArg)
     BODY_DESC* pDesc = static_cast<BODY_DESC*>(pArg);
     
     m_pOwnerTransform = pDesc->pOwnerTransform;
-    Safe_AddRef(m_pOwnerTransform);
     if (nullptr == m_pOwnerTransform)
         return E_FAIL;
+
+    Safe_AddRef(m_pOwnerTransform);
+
+    m_pOwner = pDesc->pOwner;
+    if (nullptr == m_pOwner)
+        return E_FAIL;
+
 
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
@@ -98,9 +105,25 @@ void CBody_Yetuga::Priority_Update(_float fTimeDelta)
 void CBody_Yetuga::Update(_float fTimeDelta)
 {
 
+    if (m_pGameInstance->Get_BlackBoard()->Get_Value<_bool>("Yetuga", "AttackInterrupt"))
+    {
+        m_pLH_BodyCom->Activate(true);
+        m_pRH_BodyCom->Activate(true);
+        //m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
+
+    }
+    else
+    {
+        m_pLH_BodyCom->Activate(false);
+        m_pRH_BodyCom->Activate(false);
+        //m_pGameInstance->Remove_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
+    }
+
+
     Update_CombinedMatrix();
 
     Carculate_Matrix(fTimeDelta);
+
 }
 
 void CBody_Yetuga::Late_Update(_float fTimeDelta)
@@ -137,7 +160,12 @@ HRESULT CBody_Yetuga::Render()
 
 void CBody_Yetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
-
+    COLLISION_LAYER eType = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
+    if (COLLISION_LAYER::PLAYER == eType)
+    {
+        // 여기서 플레이어를 감지해서 BT로 알려줘야하나
+        m_pOwner->Get_Controller()->AI_React_Collision(pDesc);
+    }
 }
 
 void CBody_Yetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
