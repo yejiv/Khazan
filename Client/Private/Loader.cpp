@@ -206,9 +206,6 @@ HRESULT CLoader::Loading_For_Stage1_Level()
 
 HRESULT CLoader::Loading_For_Stage1_Texture()
 {
-	CoInitGuard co;
-
-	//lock_guard<mutex> gpu_lock(g_GpuGate);
 
 	/* Prototype_Component_Texture_Sky */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Texture_Sky"),
@@ -250,10 +247,6 @@ HRESULT CLoader::Loading_For_Stage1_Texture()
 
 HRESULT CLoader::Loading_For_Stage1_Model()
 {
-	CoInitGuard co;
-
-	//lock_guard<mutex> gpu_lock(g_GpuGate);
-
 	/* Prototype_Component_Model_Fiona */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Fiona"),
 	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Test/Fiona/Fiona.dat"))))
@@ -329,19 +322,11 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 
 HRESULT CLoader::Loading_For_Stage1_Shader()
 {
-	CoInitGuard co;
-
-	//lock_guard<mutex> gpu_lock(g_GpuGate);
-
 	return S_OK;
 }
 
 HRESULT CLoader::Loading_For_Stage1_GameObject()
 {
-	CoInitGuard co;
-
-	//lock_guard<mutex> gpu_lock(g_GpuGate);
-
 	/* Prototype_GameObject_Terrain*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Terrain"),
 		CTerrain::Create(m_pDevice, m_pContext))))
@@ -503,9 +488,6 @@ HRESULT CLoader::Loading_For_Crevice_Level()
 
 HRESULT CLoader::Loading_For_Crevice_Texture()
 {
-	CoInitGuard co;
-
-	//lock_guard<mutex> gpu_lock(g_GpuGate);
 
 	return S_OK;
 }
@@ -513,10 +495,6 @@ HRESULT CLoader::Loading_For_Crevice_Texture()
 
 HRESULT CLoader::Loading_For_Crevice_Model()
 {
-	CoInitGuard co;
-
-	//lock_guard<mutex> gpu_lock(g_GpuGate);
-
 	/* Prototype_Component_Model_Khazan_Sample*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Sample"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Khazan_Sample.dat"))))
@@ -551,19 +529,12 @@ HRESULT CLoader::Loading_For_Crevice_Model()
 
 HRESULT CLoader::Loading_For_Crevice_Shader()
 {
-	CoInitGuard co;
-
-	//lock_guard<mutex> gpu_lock(g_GpuGate);
 
 	return S_OK;
 }
 
 HRESULT CLoader::Loading_For_Crevice_GameObject()
 {
-	CoInitGuard co;
-
-	//lock_guard<mutex> gpu_lock(g_GpuGate);
-
 	/* Prototype_GameObject_Camera_Compre */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Camera_Compre"),
 		CCamera_Compre::Create(m_pDevice, m_pContext))))
@@ -591,8 +562,6 @@ HRESULT CLoader::Loading_For_Crevice_GameObject()
 	/* Prototype_GameObject_Prop_TombStone */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Prop_TombStone"),
 		CTombStone::Create(m_pDevice, m_pContext)), E_FAIL);
-#pragma endregion
-
 #pragma endregion
 
 	/* Prototype_GameObject_Khazan_Spear */

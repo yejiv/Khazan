@@ -7,14 +7,13 @@ CBase::CBase()
 
 unsigned int CBase::AddRef()
 {
-	lock_guard<mutex> lock(mutex);
+	lock_guard<mutex> lock(m_Mutex);
 
 	return ++m_iRefCnt;
 }
 
 unsigned int CBase::Release()
 {
-	lock_guard<mutex> lock(mutex);
 	if (0 == m_iRefCnt)
 	{
 		Free();

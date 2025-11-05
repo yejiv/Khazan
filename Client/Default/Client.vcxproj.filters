@@ -550,6 +550,9 @@
     <Filter Include="02.GameObject\UI\Announce\Talk">
       <UniqueIdentifier>{3efae2c3-a7c5-4b0b-987d-9e6961e76f4a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\01.Trigger\00.HeinMach\HeinMach_Trigger">
+      <UniqueIdentifier>{97d366cf-cb22-4463-91cb-dcea2dc51180}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">

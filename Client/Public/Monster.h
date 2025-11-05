@@ -49,7 +49,7 @@ public:
 	CAI_Controller*				Get_Controller() const { return m_pController; }
 	_float						Get_CoolTimeAcc() const { return m_fCoolTimeAcc; }
 	const string&				Get_Name() const { return m_strName; }
-	virtual _float4				Get_LockOnPosition() const { return _float4(0.f, 0.f, 0.f, 0.f); };
+	virtual _float4*			Get_LockOnPosition() const { return m_vLockOnPosition; }
 	void						RequestRecoveryStamina() { m_isRequestRecoveryStamina = true; }
 
 public:

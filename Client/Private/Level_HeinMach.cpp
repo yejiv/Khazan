@@ -117,11 +117,6 @@ HRESULT CLevel_HeinMach::Initialize()
 		return S_OK;
 	});
 	
-	m_pGameInstance->Add_FireTask([this]() {
-
-		return S_OK;
-		});
-
 
 	if (FAILED(Ready_Layer_TestEffect(TEXT("Layer_EffectTest"))))
 		return E_FAIL;
@@ -178,7 +173,6 @@ HRESULT CLevel_HeinMach::Initialize()
 }
 
 void CLevel_HeinMach::Update(_float fTimeDelta)
-	//{
 {
 	//if (GetKeyState(VK_RETURN) & 0x8000)
 	//	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::GAMEPLAY))))
@@ -338,7 +332,6 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Test(const _wstring& strLayerTag)
 
 HRESULT CLevel_HeinMach::Ready_Layer_TestEffect(const _wstring& strLayerTag)
 {
-	//��ġ�� �׽�Ʈ�� clone�� �� argument �� ���� ��
 
 	m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle1"), 3);
 	//m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle2"), 3);
