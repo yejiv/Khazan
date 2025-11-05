@@ -11,9 +11,17 @@ bool g_MaskScrollInv;
 float g_MaskScrollSpeed;
 
 bool g_IsEmissive = false;
+bool g_IsDisolve = false;
+
+float g_numCols, g_numRows;
+float g_FrameIdx;
+
+float g_EdgeWidth;
+float4 g_EdgeColor;
 
 texture2D g_DiffuseTexture;
 texture2D g_MaskTexture;
+texture2D g_DisolveTexture;
 
 struct VS_IN
 {
@@ -96,26 +104,36 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
         vRight = normalize(vector(cross(vUp.xyz, vLook.xyz), 0.f)) * In[0].fSize * 0.5f;
         vUp += (In[0].vPosition - In[0].vPrevPosition) * 7.f;
     }
-
+    
+    float Width = 1.0f / g_numCols;
+    float Height = 1.0f / g_numRows;
+    
+    float startU = (g_FrameIdx % g_numCols) * Width;
+    float startV = floor(g_FrameIdx / g_numCols) * Height;
+    
     matrix matrVP = mul(g_ViewMatrix, g_ProjMatrix);
     
     Out[0].vPosition = mul(In[0].vPosition + vRight + vUp, matrVP);
     Out[0].vTexcoord = float2(0.f, 0.f);
+    Out[0].vTexcoord = float2(startU, startV) + (Out[0].vTexcoord * float2(Width, Height));
     Out[0].vLifeTime = In[0].vLifeTime;
     Out[0].bDead = In[0].bDead;
     
     Out[1].vPosition = mul(In[0].vPosition - vRight + vUp, matrVP);
     Out[1].vTexcoord = float2(1.f, 0.f);
+    Out[1].vTexcoord = float2(startU, startV) + (Out[1].vTexcoord * float2(Width, Height));
     Out[1].vLifeTime = In[0].vLifeTime;
     Out[1].bDead = In[0].bDead;
     
     Out[2].vPosition = mul(In[0].vPosition - vRight - vUp, matrVP);
     Out[2].vTexcoord = float2(1.f, 1.f);
+    Out[2].vTexcoord = float2(startU, startV) + (Out[2].vTexcoord * float2(Width, Height));
     Out[2].vLifeTime = In[0].vLifeTime;
     Out[2].bDead = In[0].bDead;
     
     Out[3].vPosition = mul(In[0].vPosition + vRight - vUp, matrVP);
     Out[3].vTexcoord = float2(0.f, 1.f);
+    Out[3].vTexcoord = float2(startU, startV) + (Out[3].vTexcoord * float2(Width, Height));
     Out[3].vLifeTime = In[0].vLifeTime;
     Out[3].bDead = In[0].bDead;
     
@@ -170,6 +188,28 @@ float Mask_Scrolling(float2 vLifetime, float2 vTexcoord)
     return maskValue;
 }
 
+
+float4 Dissolve(float4 InColor, float fDecreaseAlpha, float2 UV)
+{
+    float4 rt = InColor;
+    
+    float noise = g_DisolveTexture.Sample(PointSampler, UV).r;
+    
+    if (noise < fDecreaseAlpha)
+    {
+        rt.a = 0.f;
+        return rt;
+    }
+    
+    float edgeStart = fDecreaseAlpha;
+    float edgeEnd = fDecreaseAlpha + g_EdgeWidth;
+    float edgeFactor = smoothstep(edgeStart, edgeEnd, noise);
+    rt = lerp(g_EdgeColor * 2.f, InColor, edgeFactor);
+    
+    return rt;
+}
+
+
 PS_OUT PS_MAIN(PS_DEFAULT_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
@@ -190,8 +230,10 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
         vFinalColor.a = vFinalColor.a * Mask_Scrolling(In.vLifeTime, In.vTexcoord);
     
     float fDecreaseAlpha = (In.vLifeTime.x / In.vLifeTime.y);
-    
-    vFinalColor.a -= fDecreaseAlpha;
+    if (g_IsDisolve == false) 
+        vFinalColor.a -= fDecreaseAlpha;
+    else
+        vFinalColor = Dissolve(vFinalColor, fDecreaseAlpha, In.vTexcoord);
     
     if (vFinalColor.a <= 0.f)
         discard;
@@ -230,5 +272,4 @@ technique11 DefaultTechnique
         GeometryShader = compile gs_5_0 GS_MAIN();
         PixelShader = compile ps_5_0 PS_MAIN();
     }
-
 }

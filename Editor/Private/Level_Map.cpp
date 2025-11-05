@@ -464,7 +464,7 @@ HRESULT CLevel_Map::Ready_Main_Window()
 
 				SEPARATOR;
 
-				if (ImGui::Button("CUBE WIRE FRAME"))
+				if (ImGui::Button("CUBE WIRE FRAME") || m_pGameInstance->Key_Down(DIK_TAB))
 				{
 					for (auto& pProp : m_ObjectList)
 					{
@@ -475,7 +475,7 @@ HRESULT CLevel_Map::Ready_Main_Window()
 						}
 					}
 				} SAMELINE;
-				if (ImGui::Button("CUBE SOLID FRAME"))
+				if (ImGui::Button("CUBE SOLID FRAME") || m_pGameInstance->Key_Down(DIK_CAPSLOCK))
 				{
 					for (auto& pProp : m_ObjectList)
 					{
@@ -3287,6 +3287,10 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 
 		for (auto& pProp : m_InteractiveList)
 		{
+			// 트리거 타입일 경우 컨티뉴
+			if (INTERACTIVE_TYPE::TRIGGER == pProp->Get_InteractiveType())
+				continue;
+
 			// 현재 등록되어있는 상호 작용 객체 카운트 증가
 			++iObjectCnt;
 		}
@@ -3297,6 +3301,10 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 		// 단일 오브젝트 순회하면서 모델 이름 알아오기 ( Prototype 태그로 사용할 것 ) ( 상호작용은 Prototype_Component_Model_귀검, 상자, 이런식으로 간단하게 갈것 )
 		for (auto& pProp : m_InteractiveList)
 		{
+			// 트리거 타입 일 경우 패스
+			if (INTERACTIVE_TYPE::TRIGGER == pProp->Get_InteractiveType())
+				continue;
+
 			// 상호작용 애들은 애초에 Prototype_Component_Model_귀검, 상자, 이런식임 )
 			_wstring strPrototypeTag = pProp->Get_ModelName();
 
@@ -3324,8 +3332,7 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 			CHECK_EQUAL(INTERACTIVE_TYPE::END, eType, false);
 			WriteFile(hObjectFile, &eType, sizeof(INTERACTIVE_TYPE), &dwByte, nullptr);
 
-			// ( 추가적으로 체스트 인 경우 )
-
+			// 추가적으로 넣어줘야 할 게 있는 경우 여기 채우기
 			if (INTERACTIVE_TYPE::CHECKPOINT == eType)
 			{
 				_int iBladeNexusID = {};
@@ -3338,6 +3345,10 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 				CMapObject::ITEMBOX_DESC ItemBoxDesc = {};
 				ItemBoxDesc = pProp->Get_ItemBox();
 				WriteFile(hObjectFile, &ItemBoxDesc, sizeof(CMapObject::ITEMBOX_DESC), &dwByte, nullptr);
+			}
+			if (INTERACTIVE_TYPE::TOMBSTONE == eType)
+			{
+				_int o_ing = 0;
 			}
 		}
 	}

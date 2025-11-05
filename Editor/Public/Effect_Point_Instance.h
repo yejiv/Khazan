@@ -24,6 +24,9 @@ public:
 		_uint		bIsScrollInverse;					//왼->오, 위-> 아래가 기본인데 이거 체크되어있으면 반대로!
 		_uint		iTurbulenceTextureIdx;				//랜덤 노이즈텍스쳐 인덱스
 		_uint		bIsTurbulence;						//노이즈텍스쳐
+		_uint		iCol, iRow;
+		_float		fSpriteSpeed;
+		DISSOLVE_DATA sDissolveData;
 	}PARTICLE_DESC;
 
 private:
@@ -57,7 +60,9 @@ private:
 
 private:
 	CTexture*						m_pTextureCom = { nullptr };
+	CTexture*						m_pSpriteTextureCom = { nullptr };
 	CTexture*						m_pMaskTextureCom = { nullptr };
+	CTexture*						m_pDissolveTextureCom = { nullptr };
 	CVIBuffer_Point_Instance*		m_pVIBufferCom = { nullptr };
 
 private :
@@ -66,6 +71,8 @@ private :
 	/*Editing data*/
 	_bool							m_bIsMaskScrolling;
 	_float							m_fAccTime;
+	_float							m_fSpriteTime;
+	_uint							m_iUVIdx;
 
 public:
 	static CEffect_Point_Instance*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, void* pArg);

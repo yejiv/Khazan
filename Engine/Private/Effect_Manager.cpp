@@ -233,4 +233,34 @@ void CEffect_Manager::Free()
 {
 	__super::Free();	 
 	Safe_Release(m_pGameInstance); 
+
+	for (size_t i = 0; i < m_iNumLevels; i++)
+	{
+		for (auto& Pair : m_pEffectLayers[i])
+		{
+			for (auto effect : Pair.second)
+				Safe_Release(effect);
+			Pair.second.clear();
+		}
+		m_pEffectLayers[i].clear();
+
+		for (auto Pair : m_pEffectPools[i])
+		{
+			for (auto& effect : Pair.second)
+				Safe_Release(effect);
+			Pair.second.clear();
+		}
+		m_pEffectPools[i].clear();
+
+		for (auto Pair : m_pRunningEffects)
+		{
+			for (auto& effect : Pair.second)
+				Safe_Release(effect);
+			Pair.second.clear();
+		}
+		m_pRunningEffects.clear();
+	}
+
+	Safe_Delete_Array(m_pEffectLayers);
+	Safe_Delete_Array(m_pEffectPools);
 }

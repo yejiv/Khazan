@@ -157,6 +157,19 @@ void CLevel_Effect::Create_Element()
 				ImGui::Unindent();
 			}
 
+			ImGui::InputFloat("Sprite Speed : ", reinterpret_cast<_float*>(&m_fSpriteSpeed));
+			ImGui::InputInt("Col : ", reinterpret_cast<int*>(&m_iCol));
+			ImGui::InputInt("Row : ", reinterpret_cast<int*>(&m_iRow));
+
+			ImGui::Checkbox("Dissolve", &m_bIsDissolve);
+			if (m_bIsDissolve)
+			{
+				const char* DissolveTex[] = { "Mesh0", "Mesh1"};
+				ImGui::Combo("Dissolve Texture", reinterpret_cast<int*>(&m_iDissolveTextureIdx), DissolveTex, IM_ARRAYSIZE(DissolveTex));
+				ImGui::InputFloat("Dissolve Edge Width : ", reinterpret_cast<_float*>(&m_fDissolveEdgeWidth));
+				ImGui::ColorEdit4("Edge Color", (float*)&m_fDissolveEdgeColor);
+			}
+
 			m_EffectType = 0;
 			ImGui::EndTabItem();
 		}
@@ -182,6 +195,14 @@ void CLevel_Effect::Create_Element()
 			ImGui::InputFloat("Size Ratio : ", &m_fSizeRatio);
 			GetMaksingScrollData();
 			ImGui::Checkbox("Fresnel", &m_bIsFresnel);
+			ImGui::Checkbox("Dissolve", &m_bIsDissolve);
+			if (m_bIsDissolve)
+			{
+				const char* DissolveTex[] = { "Mesh0", "Mesh1" };
+				ImGui::Combo("Dissolve Texture", reinterpret_cast<int*>(&m_iDissolveTextureIdx), DissolveTex, IM_ARRAYSIZE(DissolveTex));
+				ImGui::InputFloat("Dissolve Edge Width : ", reinterpret_cast<_float*>(&m_fDissolveEdgeWidth));
+				ImGui::ColorEdit4("Edge Color", (float*)&m_fDissolveEdgeColor);
+			}
 			m_EffectType = 1;
 			ImGui::EndTabItem();
 		}
@@ -191,7 +212,6 @@ void CLevel_Effect::Create_Element()
 			ImGui::Combo("Textures", reinterpret_cast<int*>(&m_iTextureIdx), textures, IM_ARRAYSIZE(textures));
 
 			ImGui::InputFloat("Sprite Speed : ", reinterpret_cast<_float*>(&m_fSpriteSpeed));
-			ImGui::InputInt("Scaling Value : ", reinterpret_cast<int*>(&m_fScalingValue));
 			ImGui::InputInt("Col : ", reinterpret_cast<int*>(&m_iCol));
 			ImGui::InputInt("Row : ", reinterpret_cast<int*>(&m_iRow));
 			ImGui::Checkbox("Sprite Loop", &m_bLoop);
@@ -384,6 +404,15 @@ void CLevel_Effect::Create_PointInstance_Element()
 	data.fTurbulenceSpeed = m_fTurbulenceSpeed;
 	data.iTurbulenceTextureIdx = m_iTurbulenceTextureIdx;
 
+	data.iCol = m_iCol;
+	data.iRow = m_iRow;
+	data.fSpriteSpeed = m_fSpriteSpeed;
+
+	data.sDissolveData.bIsDissolve = m_bIsDissolve;
+	data.sDissolveData.fDissolveEdgeColor = m_fDissolveEdgeColor;
+	data.sDissolveData.fDissolveEdgeWidth = m_fDissolveEdgeWidth;
+	data.sDissolveData.iDissolveTextureIdx = m_iDissolveTextureIdx;
+
 	m_PrefabPrototype->Add_Effect_Element(m_EffectType, &data);
 }
 
@@ -410,6 +439,10 @@ void CLevel_Effect::Create_MeshInstance_Element()
 	data.bIsScrollVertical = m_bIsScrollVertical;
 	data.bIsScrollInverse = m_bScrollDir;
 	data.bIsFresnel = m_bIsFresnel;
+	data.sDissolveData.bIsDissolve = m_bIsDissolve;
+	data.sDissolveData.fDissolveEdgeColor = m_fDissolveEdgeColor;
+	data.sDissolveData.fDissolveEdgeWidth = m_fDissolveEdgeWidth;
+	data.sDissolveData.iDissolveTextureIdx = m_iDissolveTextureIdx;
 
 	m_PrefabPrototype->Add_Effect_Element(m_EffectType, &data);
 }

@@ -69,6 +69,10 @@ private:
 	VIGNETTE_CONFIG			m_VignetteConfig = {};
 	_float					m_fVignetteAnimDuration = {};
 
+	// Decal
+	_float3					m_vDecalColor = {};
+	_float3					m_vDecalBoxSize = {};
+
 private:
 	// 파라미터 ( 1. 등록할 레이어 태그 | 2. 데이터 파일 이름 | 3. 현재 로드할 레벨 | 4. 맵 타입 ( 안넣으면 폴더 내부 X ) )
 	HRESULT Ready_Layer_MapObject(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
