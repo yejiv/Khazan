@@ -22,7 +22,6 @@ HRESULT CEffect_Point_Instance::Initialize_Prototype(void* pArg)
 
     m_pVIBufferCom = CVIBuffer_Point_Instance::Create(m_pDevice, m_pContext, &m_sData);
     m_iEffect_Type = 0; //필요할까
-    m_fAccTime = 0.f;
 
     return S_OK;
 }
@@ -44,6 +43,9 @@ void CEffect_Point_Instance::Priority_Update(_float fTimeDelta)
 
 void CEffect_Point_Instance::Update(_float fTimeDelta)
 {
+    m_fAccTime += fTimeDelta;
+    m_fSpriteTime += fTimeDelta;
+
     for(auto it = m_TimeTracks.begin(); it != m_TimeTracks.end();)
     {
         it->fCurTime += fTimeDelta;
@@ -67,6 +69,15 @@ void CEffect_Point_Instance::Update(_float fTimeDelta)
         m_fAccTime += fTimeDelta;
         m_pVIBufferCom->UpdateTurbulence(fTimeDelta, m_fAccTime);
     }
+
+    if (m_fSpriteTime > m_sData.fSpriteSpeed)
+    {
+        ++m_iUVIdx;
+        m_fSpriteTime = 0.f;
+    }
+
+    if (m_iUVIdx == (m_sData.iCol * m_sData.iRow))
+        m_iUVIdx = 0;
 
     __super::Update(fTimeDelta);
 }
@@ -96,6 +107,8 @@ void CEffect_Point_Instance::Reset()
     __super::Reset();
     m_pVIBufferCom->Reset();
     m_fAccTime = 0.f;
+    m_fSpriteTime = 0.f;
+    m_iUVIdx = 0;
     m_bRunning = true;
 }
 
@@ -151,11 +164,23 @@ HRESULT CEffect_Point_Instance::Ready_Component()
         TEXT("Com_TextureMask"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom), nullptr)))
         return E_FAIL;
 
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MeshEffect_Dissolve"),
+        TEXT("Com_TextureDissolve"), reinterpret_cast<CComponent**>(&m_pDissolveTextureCom), nullptr)))
+        return E_FAIL;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sprite_Effect"),
+        TEXT("Com_TextureSprite"), reinterpret_cast<CComponent**>(&m_pSpriteTextureCom), nullptr)))
+        return E_FAIL;
+
     return S_OK;
 }
 
 HRESULT CEffect_Point_Instance::Bind_ShaderResources()
 {
+    _float iCol = static_cast<_float>(m_sData.iCol);
+    _float iRow = static_cast<_float>(m_sData.iRow);
+    _float UVIdx = static_cast<_float>(m_iUVIdx);
+
     if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix)))
         return E_FAIL;
 
@@ -182,13 +207,43 @@ HRESULT CEffect_Point_Instance::Bind_ShaderResources()
     if (FAILED(m_pShaderCom->Bind_Bool("g_MaskScrollYDir", &IsScrollInv)))
         return E_FAIL;
 
+    _bool IsDissolve = m_sData.sDissolveData.bIsDissolve;
+    if (FAILED(m_pShaderCom->Bind_Bool("g_IsDisolve", &IsDissolve)))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_EdgeWidth", &m_sData.sDissolveData.fDissolveEdgeWidth, sizeof(_float))))
+        return E_FAIL;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_EdgeColor", &m_sData.sDissolveData.fDissolveEdgeColor, sizeof(_float4))))
+        return E_FAIL;
+
     if (FAILED(m_pShaderCom->Bind_RawValue("g_MaskScrollSpeed", &m_sData.fMaskScrollSpeed, sizeof(_float))))
         return E_FAIL;
 
-    if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DiffuseTexture", m_sData.iTextureIdx)))
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_numCols", &iCol, sizeof(_float))))
         return E_FAIL;
 
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_numRows", &iRow, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_FrameIdx", &UVIdx, sizeof(_float))))
+        return E_FAIL;
+
+    if (m_sData.iCol > 1 || m_sData.iRow > 1)
+    {
+        if (FAILED(m_pSpriteTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DiffuseTexture", m_sData.iTextureIdx)))
+            return E_FAIL;
+    }
+    else
+    {
+        if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DiffuseTexture", m_sData.iTextureIdx)))
+            return E_FAIL;
+    }
+
+
     if (FAILED(m_pMaskTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_MaskTexture", m_sData.iMaskTextureIdx)))
+        return E_FAIL;
+
+    if (FAILED(m_pDissolveTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DisolveTexture", m_sData.sDissolveData.iDissolveTextureIdx)))
         return E_FAIL;
 
     return S_OK;
@@ -225,7 +280,9 @@ void CEffect_Point_Instance::Free()
     __super::Free();
 
     Safe_Release(m_pTextureCom);
-    Safe_Release(m_pVIBufferCom);
+    Safe_Release(m_pSpriteTextureCom);
     Safe_Release(m_pMaskTextureCom);
+    Safe_Release(m_pDissolveTextureCom);
+    Safe_Release(m_pVIBufferCom);
 }
 

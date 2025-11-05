@@ -35,11 +35,14 @@ cbuffer CB_PARTICLE : register(b0)
     
     float g_bIsLoop;
     float3 g_SpawnRange;
-    
+    float g_TotalTime;
+
     float g_TurblunceSpeed;
+    float g_TurblunceSampleSize;
 };
 
 StructuredBuffer<PARTICLE_PARAMS> g_InputData : register(t0);
+Texture2D g_NoiseTexture : register(t1);
 RWStructuredBuffer<VTXINSTANCE_PARTICLE> g_OutputData : register(u0);
 RWStructuredBuffer<VTXINSTANCE_DYNAMIC_DATA> g_SpeedData : register(u1);
 
@@ -239,3 +242,28 @@ void CS_RESET(uint3 DTid : SV_DispatchThreadID)
 }
 
 
+[numthreads(256, 1, 1)]
+void CS_TURBULENCE(uint3 DTid : SV_DispatchThreadID)
+{
+    uint iIndex = DTid.x;
+    if (iIndex >= g_iNumInstances)
+        return;
+    
+    VTXINSTANCE_PARTICLE Particle = g_OutputData[iIndex];
+    float3 pos = Particle.vTranslation.xyz;
+
+    // 방향 편향 방지 ===
+    float2 offset1 = float2(sin(g_TotalTime), cos(g_TotalTime)) * 0.5f;
+    float2 offset2 = float2(sin(g_TotalTime * 1.37f), cos(g_TotalTime * 1.91f)) * 0.5f;
+    float2 offset3 = float2(sin(g_TotalTime * 0.77f), cos(g_TotalTime * 1.21f)) * 0.5f;
+    
+    float forceX = (g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.yz * 0.1f + offset1, 0).r - 0.5f) * 2.f;
+    float forceY = (g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.xz * 0.1f + offset2, 0).r - 0.5f) * 2.f;
+    float forceZ = (g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.xy * 0.1f + offset3, 0).r - 0.5f) * 2.f;
+
+    float3 noiseDir = normalize(float3(forceX, forceY, forceZ));
+
+    Particle.vTranslation.xyz += noiseDir * g_TurblunceSpeed * g_fTimeDelta;
+
+    g_OutputData[iIndex] = Particle;
+}

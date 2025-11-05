@@ -9,15 +9,11 @@ CVIBuffer_Point_Instance::CVIBuffer_Point_Instance(ID3D11Device* pDevice, ID3D11
 
 CVIBuffer_Point_Instance::CVIBuffer_Point_Instance(const CVIBuffer_Point_Instance& Prototype)
 	: CVIBuffer_Instance { Prototype }
-	, m_vRange{ Prototype.m_vRange }
-	, m_IsLoop{ Prototype.m_IsLoop }
-	, m_fOffset{ Prototype.m_fOffset } //나중에 필요하면 상수버퍼로 넘기기
-	, m_pSRVNoise{ Prototype.m_pSRVNoise } //나중에 필요하면 상수버퍼로 넘기기
-	, m_fTurbulenceSpeed{ Prototype.m_fTurbulenceSpeed }
 	, m_pParticleParams{ Prototype.m_pParticleParams}
+	, m_sData {Prototype.m_sData}
 
 {
-	Safe_AddRef(m_pSRVNoise);
+	Safe_AddRef(m_pSRVNoise); //이거 해줘야되는지 확인좀
 }
 
 void CVIBuffer_Point_Instance::Reset()
@@ -53,11 +49,12 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDes
 	m_iNumVertexBuffers = 2;
 	m_ePrimitiveType = D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
 
-	m_bIsCircle = pPointDesc->IsCircle;
-	m_fOffset = pPointDesc->fOffset;
-	m_IsLoop = pPointDesc->bIsLoop;
-	m_vRange = pPointDesc->vRange;
-	m_fTurbulenceSpeed = pPointDesc->fTurbulenceSpeed;
+	m_sData.IsCircle = pPointDesc->IsCircle;
+	m_sData.fOffset = pPointDesc->fOffset;
+	m_sData.bIsLoop = pPointDesc->bIsLoop;
+	m_sData.vRange = pPointDesc->vRange;
+	m_sData.fTurbulenceSpeed = pPointDesc->fTurbulenceSpeed;
+	m_sData.fTurbulenceSampleSize = pPointDesc->fTurbulenceSampleSize;
 
 	D3D11_BUFFER_DESC		VBDesc{};
 	VBDesc.ByteWidth = m_iNumVertices * m_iVertexStride;
@@ -95,10 +92,10 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDes
 		_float		fScale = m_pGameInstance->Rand(pPointDesc->vSize.x, pPointDesc->vSize.y);
 		_float		fLifeTime = m_pGameInstance->Rand(pPointDesc->vLifeTime.x, pPointDesc->vLifeTime.y);
 
-		if (m_bIsCircle)
+		if (m_sData.IsCircle)
 		{
 			_vector Dir = XMVectorSet(m_pGameInstance->Rand(-1.f, 1.f), 0.f, m_pGameInstance->Rand(-1.f, 1.f), 0.f);
-			XMStoreFloat4(&pInstanceVertices[i].vTranslation, XMVectorSetW(XMVector4Normalize(Dir) * m_fOffset, 1.f));
+			XMStoreFloat4(&pInstanceVertices[i].vTranslation, XMVectorSetW(XMVector4Normalize(Dir) * m_sData.fOffset, 1.f));
 		}
 		else
 		{
@@ -129,23 +126,7 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDes
 		m_pParticleParams[i].vInitTranslation = pInstanceVertices[i].vTranslation;
 		m_pParticleParams[i].fSize = fScale;
 	}
-
-
-	HRESULT     hr = {};
-	_tchar		tpath[MAX_PATH] = {};
-
-	MultiByteToWideChar(CP_UTF8, 0, pPointDesc->pNoiseFilePath, -1, tpath, 100);
-
-	filesystem::path path(tpath);
-	string FileExt = path.extension().string();
-	if (FileExt == ".dds")
-		hr = CreateDDSTextureFromFile(m_pDevice, tpath, nullptr, &m_pSRVNoise);
-	else //png
-		hr = CreateWICTextureFromFile(m_pDevice, tpath, nullptr, &m_pSRVNoise);
-
-	if (FAILED(hr))
-		return E_FAIL;
-
+	 
 	return S_OK;
 }
 
@@ -219,8 +200,8 @@ _bool CVIBuffer_Point_Instance::Update(_float fTimeDelta)
 		pPointInstanceCB->vPivot = m_vPivot;
 		pPointInstanceCB->fTimeDelta = fTimeDelta;
 		pPointInstanceCB->iNumInstances = m_iNumInstance;
-		pPointInstanceCB->bIsLoop = m_IsLoop;
-		pPointInstanceCB->vSpawnRange = m_vRange;
+		pPointInstanceCB->bIsLoop = m_sData.bIsLoop;
+		pPointInstanceCB->vSpawnRange = m_sData.vRange;
 		m_pContext->Unmap(m_pCB, 0);
 	}
 	
@@ -244,7 +225,7 @@ _bool CVIBuffer_Point_Instance::Update(_float fTimeDelta)
 	
 	m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
 
-	return m_IsLoop ? false : IsFinish();	//다 끝나면 true 반환
+	return  m_sData.bIsLoop ? false : IsFinish();	//다 끝나면 true 반환
 }
 
 void CVIBuffer_Point_Instance::UpdateGravity(_float fTimeDelta)
@@ -277,7 +258,8 @@ void CVIBuffer_Point_Instance::UpdateTurbulence(_float fTimeDelta, _float fAccTi
 		pPointInstanceCB->fTotalTime = fAccTime;
 		pPointInstanceCB->fTimeDelta = fTimeDelta;
 		pPointInstanceCB->iNumInstances = m_iNumInstance;
-		pPointInstanceCB->fTurbulenceSpeed = m_fTurbulenceSpeed;
+		pPointInstanceCB->fTurbulenceSpeed = m_sData.fTurbulenceSpeed;
+		pPointInstanceCB->fTurbulenceSampleSize = m_sData.fTurbulenceSampleSize;
 		m_pContext->Unmap(m_pCB, 0);
 	}
 
@@ -332,8 +314,8 @@ void CVIBuffer_Point_Instance::Setting_Speed(SPEED_VALUE type, _float2 range)
 
 void CVIBuffer_Point_Instance::Remove_Speed(SPEED_VALUE type)
 {
-	if (m_IsLoop == true)
-		return;
+	//if (m_IsLoop == true)
+	//	return;
 
 	D3D11_MAPPED_SUBRESOURCE SubResource;
 	if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
@@ -414,6 +396,32 @@ HRESULT CVIBuffer_Point_Instance::Ready_SRV(void* pSysmem)
 
 	if (FAILED(m_pDevice->CreateShaderResourceView(pBuffer, &SRVDesc, &m_pSRV)))
 		return E_FAIL;
+
+	_char fullpath[MAX_PATH];
+	HRESULT     hr = {};
+	_tchar		tpath[MAX_PATH] = {};
+	MultiByteToWideChar(CP_UTF8, 0, m_sData.pNoiseFilePath, -1, tpath, 100);
+
+	filesystem::path path(tpath);
+	string FileExt = path.extension().string();
+	string FileName = path.filename().string();
+
+	strcpy_s(fullpath, "../Bin/Resources/Effect/Noise/");
+	strcat_s(fullpath, FileName.c_str());
+	strcat_s(fullpath, FileExt.c_str());
+	ZeroMemory(tpath, MAX_PATH);
+	MultiByteToWideChar(CP_UTF8, 0, fullpath, -1, tpath, 100);
+
+	if (FileExt == ".dds")
+		hr = CreateDDSTextureFromFile(m_pDevice, tpath, nullptr, &m_pSRVNoise);
+	else //png
+		hr = CreateWICTextureFromFile(m_pDevice, tpath, nullptr, &m_pSRVNoise);
+
+	if (FAILED(hr))
+	{
+		MSG_BOX(TEXT("Noise Texture :: Create Error!"));
+		return E_FAIL;
+	}
 
 	//Debug
 	//여기서 Instance Buffer를 깔 수 있는 Staging Buffer를 만들어야됨

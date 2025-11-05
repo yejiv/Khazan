@@ -14,16 +14,19 @@ class CEffect_Point_Instance : public Engine::CEffect_Element
 public:
 	typedef struct tagParticlePrototypeDesc : public CVIBuffer_Point_Instance::POINT_INSTANCE_DESC
 	{
-		_float4		vColor;
-		_uint		iTextureIdx;
-		_float2		iScrollSpeed;
-		_uint		bGravity = false;
-		_uint		iMaskTextureIdx;
-		_float		fMaskScrollSpeed;
-		_uint		bIsScrollVertical;		
-		_uint		bIsScrollInverse;		
-		_uint		iTurbulenceTextureIdx;	
-		_uint		bIsTurbulence;			
+		_float4			vColor;
+		_uint			iTextureIdx;
+		_float2			iScrollSpeed;
+		_uint			bGravity = false;
+		_uint			iMaskTextureIdx;
+		_float			fMaskScrollSpeed;
+		_uint			bIsScrollVertical;		
+		_uint			bIsScrollInverse;		
+		_uint			iTurbulenceTextureIdx;	
+		_uint			bIsTurbulence;			
+		_uint			iCol, iRow;
+		_float			fSpriteSpeed;
+		DISSOLVE_DATA	sDissolveData;
 	}PARTICLE_DESC;
 
 private:
@@ -55,12 +58,16 @@ private:
 
 private:
 	CTexture*						m_pTextureCom = { nullptr };
+	CTexture*						m_pSpriteTextureCom = { nullptr };
 	CTexture*						m_pMaskTextureCom = { nullptr };
+	CTexture*						m_pDissolveTextureCom = { nullptr };
 	CVIBuffer_Point_Instance*		m_pVIBufferCom = { nullptr };
 
 private :
 	PARTICLE_DESC					m_sData;
 	_float							m_fAccTime;
+	_float							m_fSpriteTime;
+	_uint							m_iUVIdx;
 
 public:
 	static CEffect_Point_Instance*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, void* pArg);

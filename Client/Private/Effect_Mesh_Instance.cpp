@@ -47,6 +47,8 @@ void CEffect_Mesh_Instance::Priority_Update(_float fTimeDelta)
 
 void CEffect_Mesh_Instance::Update(_float fTimeDelta)
 {
+    m_fAccTime += fTimeDelta;
+
     for(auto it = m_TimeTracks.begin(); it != m_TimeTracks.end();)
     {
         it->fCurTime += fTimeDelta;
@@ -65,11 +67,14 @@ void CEffect_Mesh_Instance::Update(_float fTimeDelta)
     if (m_sData.bGravity)
         m_pVIBufferCom->UpdateGravity(fTimeDelta);
 
+
+    if (m_sData.bIsTurbulence)
+        m_pVIBufferCom->UpdateTurbulence(fTimeDelta, m_fAccTime);
+
     __super::Update(fTimeDelta);
 
-    /* Edit */
-    if (m_TimeTracks.size() == 0)
-        m_pVIBufferCom->Remove_Speed(); 
+    //if (m_TimeTracks.size() == 0)
+    //    m_pVIBufferCom->Remove_Speed(); 
 }
 
 void CEffect_Mesh_Instance::Late_Update(_float fTimeDelta)
@@ -95,6 +100,7 @@ HRESULT CEffect_Mesh_Instance::Render()
 void CEffect_Mesh_Instance::Reset()
 {
     __super::Reset();
+    m_fAccTime = 0.f;
     m_pVIBufferCom->Reset();
 }
 
@@ -150,6 +156,10 @@ HRESULT CEffect_Mesh_Instance::Ready_Component()
         TEXT("Com_TextureMask"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom), nullptr)))
         return E_FAIL;
 
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MeshEffect_Dissolve"),
+        TEXT("Com_TextureDissolve"), reinterpret_cast<CComponent**>(&m_pDissolveTextureCom), nullptr)))
+        return E_FAIL;
+
     return S_OK;
 }
 
@@ -181,6 +191,16 @@ HRESULT CEffect_Mesh_Instance::Bind_ShaderResources()
     if (FAILED(m_pShaderCom->Bind_Bool("g_MaskScrollInv", &IsScrollInv)))
         return E_FAIL;
 
+    _bool IsDissolve = m_sData.sDissolveData.bIsDissolve;
+    if (FAILED(m_pShaderCom->Bind_Bool("g_IsDisolve", &IsDissolve)))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_EdgeWidth", &m_sData.sDissolveData.fDissolveEdgeWidth, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_EdgeColor", &m_sData.sDissolveData.fDissolveEdgeColor, sizeof(_float4))))
+        return E_FAIL;
+
     if (FAILED(m_pShaderCom->Bind_RawValue("g_MaskScrollSpeed", &m_sData.fMaskScrollSpeed, sizeof(_float))))
         return E_FAIL;
     
@@ -188,6 +208,9 @@ HRESULT CEffect_Mesh_Instance::Bind_ShaderResources()
         return E_FAIL;
     
     if (FAILED(m_pMaskTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_MaskTexture", m_sData.iMaskTextureIdx)))
+        return E_FAIL;
+
+    if (FAILED(m_pDissolveTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DisolveTexture", m_sData.sDissolveData.iDissolveTextureIdx)))
         return E_FAIL;
 
     return S_OK;
