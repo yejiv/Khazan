@@ -252,8 +252,11 @@ PS_OUT_BACKBUFFER PS_MAIN_POSTSCENE(PS_IN In)
     
     vector vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    if (1.f == vDiffuse.r && 0.f == vDiffuse.g && 1.f == vDiffuse.b)
-        discard;
+    //  if (0.f == vDiffuse.a)
+    //      discard;
+    
+    //  if (1.f == vDiffuse.r && 0.f == vDiffuse.g && 1.f == vDiffuse.b)
+    //      discard;
     
     vector vShade = g_ShadeTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
@@ -479,9 +482,6 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
     vector vEmissiveDesc = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vBloomDesc = g_BloomTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vFogDesc = g_FogTexture.Sample(DefaultSampler, In.vTexcoord);
-
-    if (1.f == vPostSceneDesc.r && 0.f == vPostSceneDesc.g && 1.f == vPostSceneDesc.b)
-        discard;
 
     //  if (true == g_isEnableFog)
     //      Out.vColor = vFogDesc + vEmissiveDesc + vBloomDesc;

@@ -257,6 +257,7 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 					if (fDist != 0 && fDist >= fAttackRanage && fDist <= fChaseRange,
 						!BB->Get_Value<_bool>(pYetuga->Get_Name(), "IsAmageddon"))
 					{
+						BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", true);
 						return true;
 					}
 					else
@@ -276,7 +277,10 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 				_float fAttackRanage = BB->Get_Value<_float>(pYetuga->Get_Name(), "JumpAttackRange");
 
 				if (fDist != 0 && fDist < fAttackRanage && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "isJumpGrab"))
+				{
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", true);
 					return true;
+				}
 				else
 					return false;
 			};
@@ -290,9 +294,12 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 				_float fSprintRange = BB->Get_Value<_float>(pYetuga->Get_Name(), "SprintRange");
 				_float fRunRange = BB->Get_Value<_float>(pYetuga->Get_Name(), "RunRange");
 
-				if (fDist != 0 && fDist >= fRunRange && fDist <= fSprintRange && 
+				if (fDist != 0 && fDist >= fRunRange && fDist <= fSprintRange &&
 					!BB->Get_Value<_bool>(pYetuga->Get_Name(), "isRush"))
+				{
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", true);
 					return true;
+				}
 				else
 					return false;
 			};
@@ -307,6 +314,7 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 
 				if (fDist != 0 && fDist < fAttackRanage && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "IsJumpAttack"))
 				{
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", true);
 					return true;
 				}
 				else
@@ -323,6 +331,7 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 
 				if (fDist != 0 && fDist < fAttackRanage && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "IsNormalSmash"))
 				{
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", true);
 					return true;
 				}
 				else
@@ -342,7 +351,6 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 					fDist <= fChasRange && fDist > fAttackRanage &&
 					!BB->Get_Value<_bool>(pYetuga->Get_Name(), "IsThrowBall"))
 				{
-					//cout << "IsThrowBall Condition TRUE!!!!!!!!!!!!" << endl;
 					BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", true);
 					return true;
 				}
@@ -362,7 +370,7 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 				if (fDist != 0 && fDist <= fAttackRanage && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "IsAttack3"))
 				{
 					//cout << "LieDownCondition" << endl;
-
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", true);
 					DIRECTION_INFO Info = {};
 					Info.iDirFlag = BB->Get_Value<_uint>("Yetuga", "TargetDirection");
 					if (Info.Check_Flag(DIRECTION_INFO::DIR::B) && Info.Check_Flag(DIRECTION_INFO::DIR::L))
@@ -385,7 +393,7 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 				_float fAttackRanage = BB->Get_Value<_float>(pYetuga->Get_Name(), "AttackRange");
 				if (fDist != 0 && fDist <= fAttackRanage && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "IsAttack"))
 				{
-					//cout << "RightHand_2Hit Condition TRUE!!!!!!!!!!!!" << endl;
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", true);
 					return true;
 				}
 				else
@@ -402,7 +410,7 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 				_float fAttackRanage = BB->Get_Value<_float>(pYetuga->Get_Name(), "AttackRange");
 				if (fDist != 0 && fDist <= fAttackRanage && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "IsAttack2"))
 				{
-					//cout << "RightHand_5Hit Condition TRUE!!!!!!!!!!!!" << endl;
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", true);
 					return true;
 				}
 				else
