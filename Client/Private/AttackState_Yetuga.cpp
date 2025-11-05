@@ -36,6 +36,12 @@ void CAttackState_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 
 }
 
+void CAttackState_Yetuga::OnCollision(COLLISION_DESC* pDesc)
+{
+    CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+    pTarget->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK); 
+}
+
 CAttackState_Yetuga* CAttackState_Yetuga::Create()
 {
     return new CAttackState_Yetuga();

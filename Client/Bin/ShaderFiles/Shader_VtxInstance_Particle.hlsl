@@ -6,13 +6,18 @@ float4 g_vSourceColor = float4(1.f, 1.f, 1.f, 1.f);
 float2 g_ScrollSpeed = 0.f; //Texture scroll
 bool g_MaskScrollYDir;
 bool g_MaskScrollInv;
+bool g_IsDisolve = false;
 
 float g_MaskScrollSpeed;
 
 float4 g_vCamPosition;
 
+float g_EdgeWidth;
+float4 g_EdgeColor;
+
 texture2D g_DiffuseTexture;
 texture2D g_MaskTexture;
+texture2D g_DisolveTexture;
 
 
 struct VS_IN
@@ -100,6 +105,26 @@ float Mask_Scrolling(float2 vLifetime, float2 vTexcoord)
     return maskValue;
 }
 
+float4 Dissolve(float4 InColor, float fDecreaseAlpha, float2 UV)
+{
+    float4 rt = InColor;
+    
+    float noise = g_DisolveTexture.Sample(PointSampler, UV).r;
+    
+    if (noise < fDecreaseAlpha)
+    {
+        rt.a = 0.f;
+        return rt;
+    }
+    
+    float edgeStart = fDecreaseAlpha;
+    float edgeEnd = fDecreaseAlpha + g_EdgeWidth;
+    float edgeFactor = smoothstep(edgeStart, edgeEnd, noise);
+    rt = lerp(g_EdgeColor * 2.f, InColor, edgeFactor);
+    
+    return rt; 
+}
+
 PS_OUT PS_MAIN(PS_IN In)
 {
     //if (In.bDead == true)
@@ -116,9 +141,11 @@ PS_OUT PS_MAIN(PS_IN In)
     if (g_MaskScrollSpeed)
         vFinalColor.a = vFinalColor.a * Mask_Scrolling(In.vLifeTime, In.vTexcoord);
     
-    float fDecreaseAlpha = (In.vLifeTime.x / In.vLifeTime.y);  
-    
-    vFinalColor.a -= fDecreaseAlpha;  
+    float fDecreaseAlpha = (In.vLifeTime.x / In.vLifeTime.y);
+    if (g_IsDisolve == false) 
+        vFinalColor.a -= fDecreaseAlpha;
+    else
+        vFinalColor = Dissolve(vFinalColor, fDecreaseAlpha, fScrolledEffectUV);
     
     if (vFinalColor.a <= 0.f)
         discard;
@@ -144,12 +171,14 @@ PS_OUT PS_PRESNEL(PS_IN In)
     vector vFinalColor = float4(g_vSourceColor.xyz, min(vEffectTexture.r, g_vSourceColor.a));
     
     
-    float fresnelFactor = 1.0 - abs(dot(In.vNormal, normalize(g_vCamPosition - In.vWorldPos)));
+    float fresnelFactor = 1.0 - abs(dot(In.vNormal.xyz, normalize(g_vCamPosition - In.vWorldPos)));
     vFinalColor.xyz = vFinalColor.xyz * pow(fresnelFactor, 1.4f);
     
     float fDecreaseAlpha = (In.vLifeTime.x / In.vLifeTime.y);
-    
-    vFinalColor.a -= fDecreaseAlpha;
+    if (g_IsDisolve == false) 
+        vFinalColor.a -= fDecreaseAlpha; 
+    else
+        vFinalColor = Dissolve(vFinalColor, fDecreaseAlpha, fScrolledEffectUV);
     
     if (vFinalColor.a <= 0.f)
         discard;

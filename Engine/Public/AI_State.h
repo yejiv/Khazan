@@ -13,7 +13,9 @@ public:
 	virtual void Enter(class CStateMachine* pFSM, class CGameObject* pOwner = nullptr) = 0;
 	virtual void Update(class CStateMachine* pFSM, class CGameObject* pOwner, _float fTimeDelta) = 0;
 	virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner) = 0;
-
+	
+public:
+	virtual void OnCollision(COLLISION_DESC* pDesc) {};
 
 protected:
 	class CGameInstance*		m_pGameInstance = { nullptr };

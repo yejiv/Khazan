@@ -208,6 +208,10 @@ HRESULT CEffect_Mesh_Instance::Ready_Component()
         TEXT("Com_TextureMask"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom), nullptr)))
         return E_FAIL;
 
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_MeshEffect_Dissolve"),
+        TEXT("Com_TextureDissolve"), reinterpret_cast<CComponent**>(&m_pDissolveTextureCom), nullptr)))
+        return E_FAIL;
+
     return S_OK;
 }
 
@@ -239,6 +243,15 @@ HRESULT CEffect_Mesh_Instance::Bind_ShaderResources()
     if (FAILED(m_pShaderCom->Bind_Bool("g_MaskScrollInv", &IsScrollInv)))
         return E_FAIL;
 
+    _bool IsDissolve = m_sData.sDissolveData.bIsDissolve;
+    if (FAILED(m_pShaderCom->Bind_Bool("g_IsDisolve", &IsDissolve)))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_EdgeWidth", &m_sEditingData.vColor, sizeof(_float))))
+        return E_FAIL;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_EdgeColor", &m_sEditingData.vColor, sizeof(_float4))))
+        return E_FAIL;
+
     if (FAILED(m_pShaderCom->Bind_RawValue("g_MaskScrollSpeed", &m_sData.fMaskScrollSpeed, sizeof(_float))))
         return E_FAIL;
     
@@ -247,6 +260,10 @@ HRESULT CEffect_Mesh_Instance::Bind_ShaderResources()
     
     if (FAILED(m_pMaskTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_MaskTexture", m_sData.iMaskTextureIdx)))
         return E_FAIL;
+
+    if (FAILED(m_pDissolveTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DisolveTexture", m_sData.sDissolveData.iDissolveTextureIdx)))
+        return E_FAIL;
+
 
     return S_OK;
 }
@@ -301,6 +318,7 @@ void CEffect_Mesh_Instance::Free()
 
     Safe_Release(m_pTextureCom);
     Safe_Release(m_pMaskTextureCom);
+    Safe_Release(m_pDissolveTextureCom);
     Safe_Release(m_pVIBufferCom);
 }
 

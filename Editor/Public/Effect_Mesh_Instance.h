@@ -25,6 +25,7 @@ public:
 		_uint		bIsScrollInverse;				//왼->오, 위-> 아래가 기본인데 이거 체크되어있으면 반대로!
 		_uint		bGravity = false;
 		_uint		bIsFresnel = false;
+		DISSOLVE_DATA sDissolveData;
 	}PARTICLE_DESC;
 
 private:
@@ -59,6 +60,7 @@ private:
 private:
 	CTexture*						m_pTextureCom = { nullptr };
 	CTexture*						m_pMaskTextureCom = { nullptr };
+	CTexture*						m_pDissolveTextureCom = { nullptr };
 	CVIBuffer_Mesh_Instance*		m_pVIBufferCom = { nullptr };
 
 private :

@@ -41,6 +41,15 @@ void CAI_Controller::AI_ApplyDamage(CGameObject* pAttacker, _float fDamage, _uin
 
 }
 
+void CAI_Controller::AI_React_Collision(COLLISION_DESC* pDesc)
+{
+    if (nullptr == m_pFSM)
+        return;
+    
+    m_pFSM->OnCollision(pDesc);
+   
+}
+
 HRESULT CAI_Controller::Initialize(CGameObject* pOwner, string FileName)
 {
     string BasePath = "../../Client/Bin/Data/Monster/";

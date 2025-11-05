@@ -105,15 +105,28 @@ HRESULT CLevel_HeinMach::Initialize()
 		return S_OK;
 	});
 
-	CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
-	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
+	m_pGameInstance->Add_FireTask([this]() {
+
+		CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
+		if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
+			return E_FAIL;
+
+		CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
+
+
+		return S_OK;
+	});
+	
+	m_pGameInstance->Add_FireTask([this]() {
+
+		return S_OK;
+		});
+
+
+	if (FAILED(Ready_Layer_TestEffect(TEXT("Layer_EffectTest"))))
 		return E_FAIL;
 
-	CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
 
-
-	//if (FAILED(Ready_Layer_TestEffect(TEXT("Layer_EffectTest"))))
-	//	return E_FAIL;
 
 	/*if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
 		return E_FAIL;*/
@@ -327,19 +340,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_TestEffect(const _wstring& strLayerTag)
 {
 	//��ġ�� �׽�Ʈ�� clone�� �� argument �� ���� ��
 
-	//_float3 test { 1.f, 0.f, 0.f};
-	//
-	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-	//	ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_TestParticle"), TIME_CHANNEL::EFFECT, &test)))
-	//	return E_FAIL;
-	//
-	//_float3 test2{ 0.f, 1.f, 0.f };
-	//
-	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-	//	ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_TestParticle"), TIME_CHANNEL::EFFECT, &test2)))
-	//	return E_FAIL;
-
-	//m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle1"), 3);
+	m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle1"), 3);
 	//m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle2"), 3);
 
 	return S_OK;
