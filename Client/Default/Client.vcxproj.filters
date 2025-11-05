@@ -538,6 +538,12 @@
     <Filter Include="94.ClientInstance\PlayerData">
       <UniqueIdentifier>{1d2ef6bc-c0f6-4e05-9f58-fa1e39927a2b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Announce\MapName">
+      <UniqueIdentifier>{20ca7029-3cf7-47f3-8401-0166ea7f2ed3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Announce\Talk">
+      <UniqueIdentifier>{3efae2c3-a7c5-4b0b-987d-9e6961e76f4a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1032,6 +1038,9 @@
     <ClInclude Include="..\public\PlayerData_Manager.h">
       <Filter>94.ClientInstance\PlayerData</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\UI_Announce_Talk.h">
+      <Filter>02.GameObject\UI\Announce\Talk</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1511,6 +1520,9 @@
     </ClCompile>
     <ClCompile Include="..\private\PlayerData_Manager.cpp">
       <Filter>94.ClientInstance\PlayerData</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Announce_Talk.cpp">
+      <Filter>02.GameObject\UI\Announce\Talk</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

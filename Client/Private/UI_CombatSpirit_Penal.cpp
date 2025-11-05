@@ -47,7 +47,7 @@ void CUI_CombatSpirit_Penal::Update(_float fTimeDelta)
 	{
 		m_fCulGaugeValue = 0;
 	}
-	if (m_pGameInstance->Key_Down(DIK_I))
+	if (m_pGameInstance->Key_Down(DIK_I, INPUT_TYPE::UI))
 	{
 		m_iCulSlotNum++;
 		if (m_iCulSlotNum > m_iMaxSlotNum)
