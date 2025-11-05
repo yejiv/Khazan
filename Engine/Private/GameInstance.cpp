@@ -318,6 +318,11 @@ void CGameInstance::Present_SwapChain(_uint iSyncInterval, _uint iFlag)
 	m_pGraphic_Device->Present_SwapChain(iSyncInterval, iFlag);
 }
 
+ID3D11DeviceContext* CGameInstance::Get_DeferredContext(DEFERRED_CONTEXT eType)
+{
+	return m_pGraphic_Device->Get_DeferredContext(eType);
+}
+
 #pragma endregion
 
 #pragma region LEVEL_MANAGER
