@@ -216,11 +216,21 @@ namespace Engine
 
 	typedef struct tagDecalParams
 	{
-		XMFLOAT4X4	vWorldMarixInv;
-		float		fOpacity;
-		float		fLifeRatio;
-		float		fPadding[2];
+		XMFLOAT4X4		vWorldMarixInv;
+		float			fOpacity;
+		unsigned int	iRandSeed;
+		float			fPadding[2];
 	}DECAL_PARAMS;
+
+	typedef struct tagDecalDesc
+	{
+		float		fLifeTime;
+		XMFLOAT2	vFadeTime;
+		DECALTYPE	eType;
+		XMFLOAT3	vPosition;
+		XMFLOAT3	vScale;
+		XMFLOAT3	vColor;
+	}DECAL_DESC;
 
 	struct HitStopState
 	{

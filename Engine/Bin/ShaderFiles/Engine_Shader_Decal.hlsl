@@ -5,15 +5,16 @@ matrix g_ViewMatrixInv, g_ProjMatrixInv;
 
 uint g_iNumActiveDecals;
 Texture2D g_DiffuseTexture, g_DepthTexture, g_NormalTexture, g_DecalTexture;
+
 float2 g_vScreenSize;
 float3 g_vDecalColor;
 
 struct DECAL_PARAMS
 {
-    matrix vWorldMarixInv;
-    float fOpacity;
-    float fLifeRatio;
-    float fPadding[2];
+    matrix  vWorldMarixInv;
+    float   fOpacity;
+    uint    iRandSeed;
+    float   fPadding[2];
 };
 
 StructuredBuffer<DECAL_PARAMS> g_DecalParams;
@@ -93,7 +94,7 @@ PS_OUT PS_MAIN(PS_IN In)
             continue;
         
         // 노말 텍스처 읽기
-        float3 vNormal = g_NormalTexture.Sample(DefaultSampler, vTexcoord).xyz;
+        float3 vNormal = g_NormalTexture.SampleLevel(DefaultSampler, vTexcoord, 0.f).xyz;
         vNormal = abs(vNormal);
         
         // 각 픽셀마다 노말을 확인
@@ -110,6 +111,7 @@ PS_OUT PS_MAIN(PS_IN In)
         // Z축이 클 때
         else if (vNormal.z > vNormal.y && vNormal.z > vNormal.x)
             vDecalTexcoord = vLocalPos.xy;
+        
         else
             vDecalTexcoord = vLocalPos.zy;
         
@@ -117,9 +119,20 @@ PS_OUT PS_MAIN(PS_IN In)
         vDecalTexcoord += 0.5f;
 
         // 데칼 텍스처를 샘플링
-        vector vDecalDesc = g_DecalTexture.Sample(ClampSampler, vDecalTexcoord);
+        vector vDecalDesc = g_DecalTexture.SampleLevel(ClampSampler, vDecalTexcoord, 0.f);
 
-        float fMask = vDecalDesc.r;
+        float fMask = 1.f;
+        
+        float fThresholdR = 1.f / 3.f;
+        float fThresholdG = 2.f / 3.f;
+        float fRandNum = rand_between(0.f, 1.f, g_DecalParams[i].iRandSeed);
+        
+        if (fRandNum < fThresholdR)
+            fMask = vDecalDesc.r;
+        else if (fRandNum < fThresholdG)
+            fMask = vDecalDesc.g;
+        else
+            fMask = vDecalDesc.b;
 
         vFinalColor.rgb = g_vDecalColor;
         

@@ -14,15 +14,7 @@ public:
 	void						Update(_float fTimeDelta);
 	HRESULT						Render();
 	// 풀 태그, 레벨 인덱스, 레이어 태그, 포지션, 노말, 스케일
-	HRESULT						Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, 
-									const _float3& vPosition, const _float3& vScale);
-
-	// 에디터용
-	_float3						Get_DecalColor() { return m_vDecalColor; }
-	void						Set_DecalColor(_float3 vColor) { m_vDecalColor = vColor; }
-	_uint						Get_NumDecalTextures();
-	ID3D11ShaderResourceView*	Get_DecalTexture(_uint iTextureIndex);
-	void						Set_DecalTextureIndex(_uint iTextureIndex) { m_iTextureIndex = iTextureIndex; }
+	HRESULT						Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, const DECAL_DESC& Desc);
 
 private:
 	ID3D11Device*				m_pDevice = { nullptr };
@@ -35,10 +27,7 @@ private:
 
 	class CShader*				m_pShader = {};
 	class CVIBuffer_Cube*		m_pVIBuffer = {};
-	class CTexture*				m_pTexture = {};
-
-	_float3						m_vDecalColor = {};
-	_uint						m_iTextureIndex = {};
+	class CTexture*				m_pTexture[ENUM_CLASS(DECALTYPE::END)] = { nullptr };
 
 private:
 	ID3D11Buffer*				m_pStructuredBuffer = { nullptr };
