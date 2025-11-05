@@ -6,6 +6,8 @@
 #include "Camera_Manager.h"
 #include "Camera.h"
 
+#include "PlayerData_Manager.h"
+
 #ifdef _DEBUG
 #include "Debug_Manager.h"
 #include "Camera_Controller.h"
@@ -35,6 +37,10 @@ HRESULT CClientInstance::Initialize(ID3D11Device** ppDevice, ID3D11DeviceContext
 
 	m_pCamera_Manager = Client::CCamera_Manager::Create(ENUM_CLASS(LEVEL::END));
 	if (nullptr == m_pCamera_Manager)
+		return E_FAIL;
+
+	m_pPlayerData_Manager = CPlayerData_Manager::Create();
+	if (nullptr == m_pPlayerData_Manager)
 		return E_FAIL;
 
 
@@ -202,6 +208,47 @@ void CClientInstance::Clear_CameraManager(_uint iLevelIndex)
 {
 	m_pCamera_Manager->Clear(iLevelIndex);
 }
+_bool CClientInstance::Check_SpearSkill(_uint skill)
+{
+	return m_pPlayerData_Manager->Check_SpearSkill(skill);
+}
+_bool CClientInstance::Check_GSwordSkill(_uint skill)
+{
+	return false;
+	//return m_pPlayerData_Manager->Check_GSwordSkill(skill);
+}
+void CClientInstance::AllUnlock_SpearSkill()
+{
+	m_pPlayerData_Manager->AllUnlock_SpearSkill();
+}
+void CClientInstance::AllUnlock_GswordSkill()
+{
+	//m_pPlayerData_Manager->AllUnlock_GswordSkill();
+}
+void CClientInstance::Unlock_SpearSkill(_uint skill)
+{
+	m_pPlayerData_Manager->Unlock_SpearSkill(skill);
+}
+void CClientInstance::Unlock_GswordSkill(_uint skill)
+{
+	//m_pPlayerData_Manager->Unlock_GswordSkill(skill);
+}
+void CClientInstance::Alllock_SpearSkill()
+{
+	m_pPlayerData_Manager->Alllock_SpearSkill();
+}
+void CClientInstance::Alllock_GswordSkill()
+{
+	//m_pPlayerData_Manager->Alllock_GswordSkill();
+}
+void CClientInstance::lock_SpearSkill(_uint skill)
+{
+	m_pPlayerData_Manager->lock_SpearSkill(skill);
+}
+void CClientInstance::lock_GswordSkill(_uint skill)
+{
+	//m_pPlayerData_Manager->lock_GswordSkill(skill);
+}
 #pragma endregion
 
 
@@ -220,7 +267,8 @@ void CClientInstance::Release_Client()
 	Safe_Release(m_pUI_Manager);
 	Safe_Release(m_pDB_Manager);
 	Safe_Release(m_pCamera_Manager);
-
+	Safe_Release(m_pPlayerData_Manager);
+	
 #ifdef _DEBUG	
 	Safe_Release(m_pDebug_Manager);
 	Safe_Release(m_pCamera_Controller);

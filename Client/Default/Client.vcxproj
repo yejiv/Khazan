@@ -227,6 +227,7 @@
     <ClInclude Include="..\public\Khazan_Sample.h" />
     <ClInclude Include="..\Public\Khazan_Spear.h" />
     <ClInclude Include="..\public\Khazan_Spear_Animation.h" />
+    <ClInclude Include="..\public\Khazan_Spear_Anim_Attack.h" />
     <ClInclude Include="..\public\Khazan_Spear_Anim_Move.h" />
     <ClInclude Include="..\public\Khazan_Spear_ASMachine.h" />
     <ClInclude Include="..\public\Khazan_Spear_ASManager.h" />
@@ -250,6 +251,7 @@
     <ClInclude Include="..\public\Mon_Gague.h" />
     <ClInclude Include="..\Public\MoveState_Yetuga.h" />
     <ClInclude Include="..\Public\Player.h" />
+    <ClInclude Include="..\public\PlayerData_Manager.h" />
     <ClInclude Include="..\Public\Projectile.h" />
     <ClInclude Include="..\Public\Projectile_Breath_Yetuga.h" />
     <ClInclude Include="..\Public\Projectile_Rock_Yetuga.h" />
@@ -389,6 +391,7 @@
     <ClCompile Include="..\private\Khazan_Sample.cpp" />
     <ClCompile Include="..\Private\Khazan_Spear.cpp" />
     <ClCompile Include="..\private\Khazan_Spear_Animation.cpp" />
+    <ClCompile Include="..\private\Khazan_Spear_Anim_Attack.cpp" />
     <ClCompile Include="..\private\Khazan_Spear_Anim_Move.cpp" />
     <ClCompile Include="..\private\Khazan_Spear_ASMachine.cpp" />
     <ClCompile Include="..\private\Khazan_Spear_ASManager.cpp" />
@@ -411,6 +414,7 @@
     <ClCompile Include="..\private\Mon_Gague.cpp" />
     <ClCompile Include="..\Private\MoveState_Yetuga.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
+    <ClCompile Include="..\private\PlayerData_Manager.cpp" />
     <ClCompile Include="..\Private\Projectile.cpp" />
     <ClCompile Include="..\Private\Projectile_Breath_Yetuga.cpp" />
     <ClCompile Include="..\Private\Projectile_Rock_Yetuga.cpp" />

@@ -535,6 +535,9 @@
     <Filter Include="02.GameObject\UI\Loding\Panel">
       <UniqueIdentifier>{fc470073-a7db-486d-bf55-71597800c6c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="94.ClientInstance\PlayerData">
+      <UniqueIdentifier>{1d2ef6bc-c0f6-4e05-9f58-fa1e39927a2b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1023,6 +1026,12 @@
     <ClInclude Include="..\Public\AS_Groggy_Yetuga.h">
       <Filter>92.AI\State\Yetuga\15.Groggy</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Khazan_Spear_Anim_Attack.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\PlayerData_Manager.h">
+      <Filter>94.ClientInstance\PlayerData</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1496,6 +1505,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_Groggy_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\15.Groggy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_Spear_Anim_Attack.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\PlayerData_Manager.cpp">
+      <Filter>94.ClientInstance\PlayerData</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
