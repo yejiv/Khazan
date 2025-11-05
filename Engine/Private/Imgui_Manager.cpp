@@ -213,57 +213,74 @@ void CImgui_Manager::Render_Docking()
 
 void CImgui_Manager::Render_Gizmo()
 {
-    if (m_pGizmoObject != nullptr)
+    if (m_pGizmoObject == nullptr)
+        return;
+
+    ImGuiViewport* vp = ImGui::GetMainViewport();
+    ImGuizmo::BeginFrame();
+    ImGuizmo::SetOrthographic(false);
+    ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList(vp));
+    ImGuizmo::SetRect(vp->Pos.x, vp->Pos.y, vp->Size.x, vp->Size.y);
+
+    float viewM[16];
+    XMStoreFloat4x4((XMFLOAT4X4*)viewM, m_pGameInstance->Get_Transform_Matrix(D3DTS::VIEW));
+    float projM[16];
+    XMStoreFloat4x4((XMFLOAT4X4*)projM, m_pGameInstance->Get_Transform_Matrix(D3DTS::PROJ));
+
+    CTransform* pTransform = dynamic_cast<CTransform*>(m_pGizmoObject->Get_Component(TEXT("Com_Transform")));
+    if (!pTransform)
+        return;
+
+    XMFLOAT4X4 worldFloat;
+    XMStoreFloat4x4(&worldFloat, pTransform->Get_WorldMatrix());
+    float objM[16];
+    memcpy(objM, &worldFloat, sizeof(float) * 16);
+
+    // 조작 모드 전환
+    if (m_pGameInstance->Key_Down(DIK_F1))
+        m_GizmoOp = ImGuizmo::TRANSLATE;
+    if (m_pGameInstance->Key_Down(DIK_F2))
+        m_GizmoOp = ImGuizmo::ROTATE;
+    if (m_pGameInstance->Key_Down(DIK_F3))
+        m_GizmoOp = ImGuizmo::SCALE;
+
+    // F4/F5 로 모드 전환
+    if (m_pGameInstance->Key_Down(DIK_F4))
     {
-        ImGuiViewport* vp = ImGui::GetMainViewport();
-        ImGuizmo::BeginFrame();
-        ImGuizmo::SetOrthographic(false);
-        ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList(vp));
-        ImGuizmo::SetRect(vp->Pos.x, vp->Pos.y, vp->Size.x, vp->Size.y);
-
-        float viewM[16];  XMStoreFloat4x4((XMFLOAT4X4*)viewM, m_pGameInstance->Get_Transform_Matrix(D3DTS::VIEW));
-        float projM[16];  XMStoreFloat4x4((XMFLOAT4X4*)projM, m_pGameInstance->Get_Transform_Matrix(D3DTS::PROJ));
-
-        CTransform* pTransform = dynamic_cast<CTransform*>(m_pGizmoObject->Get_Component(TEXT("Com_Transform")));
-
-        _matrix WorldMatrix = pTransform->Get_WorldMatrix(); 
-
-        _float objM[16];   XMStoreFloat4x4((_float4x4*)objM, WorldMatrix);
-
-        if (m_pGameInstance->Key_Down(DIK_F1)) 
-            m_GizmoOp = ImGuizmo::TRANSLATE;
-        if (m_pGameInstance->Key_Down(DIK_F2))
-            m_GizmoOp = ImGuizmo::ROTATE;
-        if (m_pGameInstance->Key_Down(DIK_F3))
-            m_GizmoOp = ImGuizmo::SCALE;
-
-        _bool useSnap = false;
-        _float snap[3] = { 0.25f, 15.0f, 0.1f };
-        _float* pSnap = nullptr;
-        if (useSnap)
-        {
-            if (m_GizmoOp == ImGuizmo::TRANSLATE) pSnap = &snap[0];
-            else if (m_GizmoOp == ImGuizmo::ROTATE) pSnap = &snap[1];
-            else if (m_GizmoOp == ImGuizmo::SCALE) pSnap = &snap[2];
-        }
-
-        _float deltaM[16];
-        ImGuizmo::SetGizmoSizeClipSpace(0.15f * vp->DpiScale);
-        _bool changed = ImGuizmo::Manipulate(
-            viewM, projM,
-            m_GizmoOp, m_GizmoMode,
-            objM, deltaM,
-            pSnap
-        );
-
-        if (changed)
-        {
-            _matrix objWorldT = XMLoadFloat4x4((_float4x4*)objM);
-            pTransform->Set_WorldMatrix(objWorldT);
-        }
-
+        if (ImGuizmo::WORLD == m_GizmoMode)
+            m_GizmoMode = ImGuizmo::LOCAL;
+        else if (ImGuizmo::LOCAL == m_GizmoMode)
+            m_GizmoMode = ImGuizmo::WORLD;
     }
-    
+
+    // 스냅 설정
+    bool useSnap = false;
+    float snap[3] = { 0.25f, 15.0f, 0.1f };
+    float* pSnap = nullptr;
+    if (useSnap)
+    {
+        if (m_GizmoOp == ImGuizmo::TRANSLATE) pSnap = &snap[0];
+        else if (m_GizmoOp == ImGuizmo::ROTATE) pSnap = &snap[1];
+        else if (m_GizmoOp == ImGuizmo::SCALE) pSnap = &snap[2];
+    }
+
+    ImGuizmo::SetGizmoSizeClipSpace(0.15f * vp->DpiScale);
+
+    bool changed = ImGuizmo::Manipulate(
+        viewM,
+        projM,
+        m_GizmoOp,
+        m_GizmoMode,  // F4/F5 로 수동 전환된 모드 사용
+        objM,
+        nullptr,
+        pSnap
+    );
+
+    if (changed)
+    {
+        XMMATRIX newWorld = XMLoadFloat4x4((XMFLOAT4X4*)objM);
+        pTransform->Set_WorldMatrix(newWorld);
+    }
 }
 
 CImgui_Manager* CImgui_Manager::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, list<wstring> Menu, HWND hWnd, _uint iWinSizeX, _uint iWinSizeY)

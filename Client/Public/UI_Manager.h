@@ -20,8 +20,13 @@ public:
 	HRESULT						Initialize();
 	void						UIObjectToRenderer();
 
+	//Fade 관련
+	void						Fade_In(function<void()> FadeEvent);
+	void						Fade_Out(function<void()> FadeEvent);
+	_bool						Fade_End();
+
 	//UI 관련
-	class CUIObject*			Get_RootUI(const _wstring& szRootUIName);
+	CUIObject*					Get_RootUI(const _wstring& szRootUIName);
 	HRESULT						UI_UpdateSwitch(const _wstring& szRootUIName, void* pArg);
 	HRESULT						Add_RootUI(const _wstring& szRootUIName, CUIObject* pUIObject);
 
@@ -56,6 +61,7 @@ private:
 	unordered_map<_wstring,
 		CUIObject*>				m_pRootUI;
 
+	class CUI_Fade*				m_pFadeUI = { nullptr };
 private:
 	CUI_Layer*					Find_Layer(const _wstring& strLayerTag);
 	CUIObject*					Find_RootUI(const _wstring& strUITag);

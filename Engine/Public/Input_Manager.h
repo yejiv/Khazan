@@ -36,6 +36,9 @@ public:
 
 	void		Change_InputType(INPUT_TYPE eType);
 
+	INPUT_TYPE* Get_InputTypePtr() { return &m_eInputType; }
+	INPUT_TYPE  Get_InputType() { return m_eInputType; }
+
 private:
 	class CInput_Device* m_pInput_Device = { nullptr };
 

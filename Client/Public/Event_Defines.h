@@ -2,7 +2,7 @@
 
 namespace Client {
 	// ENUMs
-	enum class EVENT_TYPE { TEST, UI_QUICK_SLOT,
+	enum class EVENT_TYPE { LEVEL_CHANGE, UI_QUICK_SLOT,
 		OBJECT_INTERACT,							// 상호 작용할 오브젝트에 접촉 ( 맵 오브젝트가 구독 )
 		INTERACT_TYPE,								// 상호 작용할 오브젝트에 접촉 ( 플레이어가 구독 )
 		ANNOUNCE_MAPNAME,							// 지역 이름, 연출 이름 출력
@@ -10,8 +10,8 @@ namespace Client {
 		END };
 
 	// Structs
-	struct EventTest {
-		int data;
+	struct EVENT_LEVEL_CHANGE {
+		_int iLevel;
 	};
 
 	// 상호작용 오브젝트 활성화 이벤트 구조체 ( 1. 오브젝트 활성화, 2. 오브젝트 비활성화 ) ( 플레이어 -> 오브젝트 )

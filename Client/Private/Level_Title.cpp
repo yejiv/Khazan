@@ -23,18 +23,19 @@ HRESULT CLevel_Title::Initialize()
 
 	CHECK_FAILED(Ready_Layer_UI(), E_FAIL);
 
-	m_pGameInstance->Subscribe_Event<EventTest>(ENUM_CLASS(EVENT_TYPE::TEST), [&](const EventTest& e)
+	m_pGameInstance->Subscribe_Event<EVENT_LEVEL_CHANGE>(ENUM_CLASS(EVENT_TYPE::LEVEL_CHANGE), [&](const EVENT_LEVEL_CHANGE& e)
 		{
-			iTest = e.data;
+			m_eNextLevel = static_cast<LEVEL>(e.iLevel);
 		});
+
+	m_pGameInstance->Change_InputType(INPUT_TYPE::UI);
 
 	return S_OK;
 }
 
 void CLevel_Title::Update(_float fTimeDelta)
 {
-
-	if (m_pGameInstance->Key_Down(DIK_B))
+	if (m_pGameInstance->Key_Down(DIK_B,INPUT_TYPE::UI))
 	{
 		EVENT_ANNOUNCE_MAPNAME Desc = {};
 		//화면에 표시할 시간
@@ -53,22 +54,11 @@ void CLevel_Title::Update(_float fTimeDelta)
 		m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_MAPNAME>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_MAPNAME), Desc);
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_0))
+	if (m_eNextLevel != LEVEL::END)
 	{
-		m_pGameInstance->Emit_Event<EventTest>(ENUM_CLASS(EVENT_TYPE::TEST), EventTest{ 10 });
-	}
-
-	if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
-	{
-		iTest++;
-	}
-
-	if (GetKeyState(VK_RETURN) & 0x8000)
-	{
-		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::HEINMACH))))
+		if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, m_eNextLevel))))
 			return;
 	}
-
 
 	return;
 }
@@ -106,7 +96,7 @@ HRESULT CLevel_Title::Ready_Layer_UI()
 	Desc.vLocalPos = { 0.f, 0.f };
 	Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
 	Desc.szName = "Cursor";
-	Desc.fDepth = 0;
+	Desc.fDepth = 0.5f;
 
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
 		ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Cursor"), TIME_CHANNEL::WORLD, &Desc)))
@@ -152,6 +142,9 @@ HRESULT CLevel_Title::Ready_Layer_UI()
 		TEXT("../Bin/Resources/UI/UIData/HUD_Amount.json"))))
 		return E_FAIL;
 
+	if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::TITLE), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::TITLE),
+		TEXT("../Bin/Resources/UI/UIData/Logo.json"))))
+		return E_FAIL;
 
 	return S_OK;
 }

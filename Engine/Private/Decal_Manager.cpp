@@ -70,6 +70,8 @@ void CDecal_Manager::Update(_float fTimeDelta)
         memcpy(SubResource.pData, pDecalParams, sizeof(DECAL_PARAMS) * m_iNumActiveDecals);
         m_pContext->Unmap(m_pStructuredBuffer, 0);
     }
+
+    Safe_Delete_Array(pDecalParams);
 }
 
 HRESULT CDecal_Manager::Render()
@@ -98,7 +100,10 @@ HRESULT CDecal_Manager::Render()
     if (FAILED(m_pTexture->Bind_Shader_Resource(m_pShader, "g_DecalTexture", 0)))
         return E_FAIL;
 
-    // 뎁스, 노말
+    // 디퓨즈, 뎁스, 노말
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Diffuse"), m_pShader, "g_DiffuseTexture")))
+        return E_FAIL;
+
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
         return E_FAIL;
 

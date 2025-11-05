@@ -30,6 +30,9 @@
 // 플레이어 모델 테스트
 #include "Map_TestPlayer.h"
 
+// 맵 트리거 ( 좀 야매 )
+#include "Trigger.h"
+
 // Terrain
 #include "Map_Terrain.h"
 

@@ -218,7 +218,9 @@ void CLevel_Map::Select_Fix_Object(_float fTimeDelta)
 						m_isFixObjectWindow = true;
 						m_eFixType = FIX_OBJECT::FIX;
 
+#ifdef _DEBUG
 						m_pGameInstance->Set_GizmoObject(m_pFixPropObj);
+#endif // _DEBUG
 
 						return;
 					}
@@ -273,7 +275,10 @@ void CLevel_Map::Select_Multi_Fix_Object(_float fTimeDelta)
 							m_isFixObjectWindow = true;
 							m_eFixType = FIX_OBJECT::FIX;
 
+#ifdef _DEBUG
 							m_pGameInstance->Set_GizmoObject(m_pFixPropObj);
+#endif // _DEBUG
+
 							m_MultiFixObjList.push_back(m_pFixPropObj);
 						}
 						else
@@ -361,6 +366,7 @@ HRESULT CLevel_Map::Ready_DefaultImGui_For_MapTool()
 
 HRESULT CLevel_Map::Ready_Main_Window()
 {
+#ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (m_isMainWindow)
 		{
@@ -579,12 +585,14 @@ HRESULT CLevel_Map::Ready_Main_Window()
 				ImGui::End();
 		}
 		});
+#endif // _DEBUG
 
 	return S_OK;
 }
 
 HRESULT CLevel_Map::Ready_Prototype_List_Window()
 {
+#ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (m_isPrototypeWindow)
 		{
@@ -779,7 +787,9 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 					// ======================================================
 					// ======================================================
 
+#ifdef _DEBUG
 					m_pGameInstance->Set_GizmoObject(m_pFixPropObj);
+#endif // _DEBUG
 
 					m_iSubLevel = m_pFixPropObj->Get_SubLevel();
 
@@ -792,6 +802,7 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 			ImGui::End();
 		}
 		});
+#endif // _DEBUG
 
 	return S_OK;
 }
@@ -802,7 +813,9 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 	m_Prototypes_Inter.push_back("BladeNexus");
 	m_Prototypes_Inter.push_back("BigChest");
 	m_Prototypes_Inter.push_back("TombStone");
+	m_Prototypes_Inter.push_back("Trigger");
 
+#ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (m_isPrototypeWindow)
 		{
@@ -913,6 +926,21 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 					CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
 						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_TombStone"), TIME_CHANNEL::WORLD, &TombStoneDesc), );
 				}
+				else if ("Trigger" == m_Prototypes_Inter[m_iIndex_PrtInter]) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+				{
+					CTrigger::TRIGGER_DESC TriggerDesc = {};
+
+					TriggerDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+					TriggerDesc.eLevel = LEVEL::MAP;
+					memcpy(TriggerDesc.szModelName, strModelTag.c_str(), sizeof(TriggerDesc.szModelName));		// 프로토타입 태그명
+
+					XMStoreFloat4x4(&TriggerDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+					TriggerDesc.eInteractiveType = INTERACTIVE_TYPE::TRIGGER;										// 상호 작용 오브젝트 타입
+
+					CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Trigger"), TIME_CHANNEL::WORLD, &TriggerDesc), );
+				}
 #pragma endregion
 
 				CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));
@@ -942,7 +970,9 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 					// ======================================================
 					// ======================================================
 
+#ifdef _DEBUG
 					m_pGameInstance->Set_GizmoObject(m_pFixPropObj);
+#endif // _DEBUG
 
 					m_isFixInteractObjectWindow = true;
 					m_eFixType = FIX_OBJECT::FIX;
@@ -952,12 +982,14 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 			ImGui::End();
 		}
 		});
+#endif // _DEBUG
 
 	return S_OK;
 }
 
 HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 {
+#ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (m_isFixObjectWindow)
 		{
@@ -1058,7 +1090,9 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 
 			if (ImGui::Button("DONE ( ENTER or MOUSE RB )") || m_pGameInstance->Key_Down(DIK_RETURN) || m_pGameInstance->Key_Down(DIK_NUMPADENTER) || m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
 			{
+#ifdef _DEBUG
 				m_pGameInstance->Clear_GizmoObject();
+#endif // _DEBUG
 
 				m_FixBaseMatrix = XMMatrixIdentity();
 
@@ -1074,7 +1108,9 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 			} SAMELINE;
 			if (ImGui::Button("RESET (R)") || m_pGameInstance->Key_Down(DIK_R) || true == isReset)
 			{
+#ifdef _DEBUG
 				m_pGameInstance->Clear_GizmoObject();
+#endif // _DEBUG
 
 				m_pFixTransformCom->Set_State(STATE::RIGHT, m_FixBaseMatrix.r[0]);
 				m_pFixTransformCom->Set_State(STATE::UP, m_FixBaseMatrix.r[1]);
@@ -1096,7 +1132,9 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 			SEPARATOR;
 			if (ImGui::Button("DELETE (ESC)") || m_pGameInstance->Key_Down(DIK_ESCAPE))
 			{
+#ifdef _DEBUG
 				m_pGameInstance->Clear_GizmoObject();
+#endif // _DEBUG
 
 				if (nullptr != m_pFixPropObj)
 				{
@@ -1126,12 +1164,14 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 			ImGui::End();
 		}
 		});
+#endif // _DEBUG
 
 	return S_OK;
 }
 
 HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
 {
+#ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (m_isFixInteractObjectWindow)
 		{
@@ -1202,12 +1242,33 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
 
 				SEPARATOR;
 			}
+			if (INTERACTIVE_TYPE::TRIGGER == m_pFixPropObj->Get_InteractiveType())
+			{
+				ImGui::Text("== TRIGGER INFORMATION ==");
+				ImGui::Text("BEFORE");
+
+				ImGui::Text("TRIGGER KEY : %s", m_strTriggerKey.c_str());
+				SEPARATOR;
+				ImGui::Text("FIX TRIGGER KEY");
+				ImGui::InputText("##fix_trigger_key", m_szFixTriggerKey, IM_ARRAYSIZE(m_szFixTriggerKey));
+			}
 
 #pragma endregion
 
 			if (ImGui::Button("DONE ( ENTER or MOUSE RB )") || m_pGameInstance->Key_Down(DIK_RETURN) || m_pGameInstance->Key_Down(DIK_NUMPADENTER) || m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
 			{
+#ifdef _DEBUG
 				m_pGameInstance->Clear_GizmoObject();
+#endif // _DEBUG
+
+				if (INTERACTIVE_TYPE::TRIGGER == m_pFixPropObj->Get_InteractiveType())
+				{	
+					m_strFixTriggerKey = m_szFixTriggerKey;
+
+					static_cast<CTrigger*>(m_pFixPropObj)->Set_TriggerKey(m_strFixTriggerKey);
+
+					ZeroMemory(m_szFixTriggerKey, sizeof(m_szFixTriggerKey));
+				}
 
 				m_FixBaseMatrix = XMMatrixIdentity();
 
@@ -1281,12 +1342,15 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
 			ImGui::End();
 		}
 		});
+#endif // _DEBUG
 
 	return S_OK;
 }
 
 HRESULT CLevel_Map::Ready_Prop_List_Window()
 {
+
+#ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (m_isObjectWindow)
 		{
@@ -1481,7 +1545,11 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 							// ======================================================
 							// ======================================================
 
+#ifdef _DEBUG
+
 							m_pGameInstance->Set_GizmoObject(m_pFixPropObj);
+
+#endif // _DEBUG
 
 							m_iSubLevel = m_pFixPropObj->Get_SubLevel();
 
@@ -1525,12 +1593,14 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 			ImGui::End();
 		}
 		});
+#endif // _DEBUG
 
 	return S_OK;
 }
 
 HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 {
+#ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (m_isInteractiveWindow)
 		{
@@ -1612,6 +1682,12 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 							m_FixItemBox = m_ItemBox = m_pFixPropObj->Get_ItemBox();
 						}
 
+						if (INTERACTIVE_TYPE::TRIGGER == m_pFixPropObj->Get_InteractiveType())
+						{
+							CTrigger* pTrigger = static_cast<CTrigger*>(m_pFixPropObj);
+							m_strFixTriggerKey = m_strTriggerKey = pTrigger->Get_TriggerKey();
+						}
+
 						m_isFixInteractObjectWindow = true;
 						m_eFixType = FIX_OBJECT::FIX;
 					}
@@ -1660,14 +1736,28 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 				}
 			}
 
+			if (ImGui::Button("EXPORT FOR TRIGGER"))
+			{
+				m_strMapInfoFilePath = m_szMapInfoFilePath;
+				m_strMapInfoFilePath += m_szMapInfoFileName;
+
+				if (false == Trigger_Save_Json())
+				{
+					_int a = 10;
+				}
+			}
+
 			ImGui::End();
 		}
 		});
+#endif // _DEBUG
+
 	return S_OK;
 }
 
 HRESULT CLevel_Map::Ready_Light_Window()
 {
+#ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (true == m_isLightSettingWindow)
 		{
@@ -1941,6 +2031,7 @@ HRESULT CLevel_Map::Ready_Light_Window()
 			ImGui::End();
 		}
 		});
+#endif // _DEBUG
 
 #pragma endregion
 
@@ -1951,6 +2042,7 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 {
 #pragma region WIDGET : OBJECT SAVE 윈도우
 
+#ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (true == m_isSaveObjectWindow)
 		{
@@ -2060,11 +2152,13 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 			ImGui::End();
 		}
 		});
+#endif // _DEBUG
 
 #pragma endregion
 
 #pragma region WIDGET : OBJECT LOAD 윈도우
 
+#ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (true == m_isLoadObjectWindow)
 		{
@@ -2171,6 +2265,7 @@ OutputDebugStringA("조명 정보 바이너리 불러오기 실패");
 			ImGui::End();
 		}
 		});
+#endif // _DEBUG
 
 #pragma endregion
 
@@ -2189,6 +2284,7 @@ HRESULT CLevel_Map::Ready_SkySphere_Window()
 
 	m_FixCloudDesc = m_pCloudSphere->Get_CloudDesc();
 
+#ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
 		if (m_isSkySphereWindow)
 		{
@@ -2323,113 +2419,114 @@ HRESULT CLevel_Map::Ready_SkySphere_Window()
 		}
 		});
 
-		m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
-			if (m_isCloudSphereWindow)
+	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
+		if (m_isCloudSphereWindow)
+		{
+			ImGui::Begin("CLOUD SPHERE WINDOW", &m_isCloudSphereWindow, ImGuiWindowFlags_AlwaysAutoResize);
+
+			_float fCloudDensity = m_FixCloudDesc.fCloudDensity;	//
+			_float fCloudLightIntensity = m_FixCloudDesc.fCloudLightIntensity;		//
+			_float fCloudScale = m_FixCloudDesc.fCloudScale;		//
+			_float fCloudSpeed = m_FixCloudDesc.fCloudSpeed;		//
+			_float3 vCloudColor = m_FixCloudDesc.vCloudColor;		//
+			_float3 vLightDir = m_FixCloudDesc.vLightDir;			//
+			_float isDynamic = m_FixCloudDesc.fDynamic;
+			 
+			ImGui::Text("CLOUD COLOR");
+			ImGui::Text("R"); SAMELINE;
+			ImGui::InputFloat("##fix_cloud_color_R", &m_FixCloudDesc.vCloudColor.x, 0.01f, 0.1f);
+			ImGui::Text("G"); SAMELINE;
+			ImGui::InputFloat("##fix_cloud_color_G", &m_FixCloudDesc.vCloudColor.y, 0.01f, 0.1f);
+			ImGui::Text("B"); SAMELINE;
+			ImGui::InputFloat("##fix_cloud_color_B", &m_FixCloudDesc.vCloudColor.z, 0.01f, 0.1f);
+			SEPARATOR;
+
+			ImGui::Text("CLOUD SCALE"); SAMELINE;
+			ImGui::InputFloat("##fix_cloud_scale", &m_FixCloudDesc.fCloudScale, 0.01f, 0.1f);
+			SEPARATOR;
+
+			ImGui::Text("CLOUD SPEED"); SAMELINE;
+			ImGui::InputFloat("##fix_cloud_speed", &m_FixCloudDesc.fCloudSpeed, 0.01f, 0.1f);
+			SEPARATOR;
+
+			ImGui::Text("CLOUD DENSITY"); SAMELINE;
+			ImGui::InputFloat("##fix_cloud_density", &m_FixCloudDesc.fCloudDensity, 0.01f, 0.1f);
+			SEPARATOR;
+
+			ImGui::Text("CLOUD INTENSITY"); SAMELINE;
+			ImGui::InputFloat("##fix_cloud_inten", &m_FixCloudDesc.fCloudLightIntensity, 0.01f, 0.1f);
+			SEPARATOR;
+
+			ImGui::Text("LIGHT DIRECTION");
+			ImGui::Text("X"); SAMELINE;
+			ImGui::InputFloat("##fix_cloudlight_dir_X", &m_FixCloudDesc.vLightDir.x, 0.01f, 0.1f);
+			ImGui::Text("Y"); SAMELINE;
+			ImGui::InputFloat("##fix_cloudlight_dir_Y", &m_FixCloudDesc.vLightDir.y, 0.01f, 0.1f);
+			ImGui::Text("Z"); SAMELINE;
+			ImGui::InputFloat("##fix_cloudlight_dir_Z", &m_FixCloudDesc.vLightDir.z, 0.01f, 0.1f);
+			SEPARATOR;
+
+			ImGui::Text("CLOUD DYNAMIC"); SAMELINE;
+			if (ImGui::Button("ON"))
+				m_FixCloudDesc.fDynamic = 1.f;
+			SAMELINE;
+			if (ImGui::Button("OFF"))
+				m_FixCloudDesc.fDynamic = 0.f;
+
+			m_pCloudSphere->Set_CloudDesc(m_FixCloudDesc);
+
+			SEPARATOR;
+			ImGui::Text("PATH : %s", m_szMapInfoFilePath);
+			ImGui::Text("CLOUD SPHERE SAVE FILE : "); SAMELINE;
+			ImGui::InputText("##sky_file_name", m_szMapInfoFileName, IM_ARRAYSIZE(m_szMapInfoFileName));
+
+			SEPARATOR;
+			if (ImGui::Button("SAVE"))
 			{
-				ImGui::Begin("CLOUD SPHERE WINDOW", &m_isCloudSphereWindow, ImGuiWindowFlags_AlwaysAutoResize);
+				string strPath = m_szMapInfoFilePath;
+				strPath += m_szMapInfoFileName;
+				strPath += "_cloud.dat";
 
-				_float fCloudDensity = m_FixCloudDesc.fCloudDensity;	//
-				_float fCloudLightIntensity = m_FixCloudDesc.fCloudLightIntensity;		//
-				_float fCloudScale = m_FixCloudDesc.fCloudScale;		//
-				_float fCloudSpeed = m_FixCloudDesc.fCloudSpeed;		//
-				_float3 vCloudColor = m_FixCloudDesc.vCloudColor;		//
-				_float3 vLightDir = m_FixCloudDesc.vLightDir;			//
-				_float isDynamic = m_FixCloudDesc.fDynamic;
-				 
-				ImGui::Text("CLOUD COLOR");
-				ImGui::Text("R"); SAMELINE;
-				ImGui::InputFloat("##fix_cloud_color_R", &m_FixCloudDesc.vCloudColor.x, 0.01f, 0.1f);
-				ImGui::Text("G"); SAMELINE;
-				ImGui::InputFloat("##fix_cloud_color_G", &m_FixCloudDesc.vCloudColor.y, 0.01f, 0.1f);
-				ImGui::Text("B"); SAMELINE;
-				ImGui::InputFloat("##fix_cloud_color_B", &m_FixCloudDesc.vCloudColor.z, 0.01f, 0.1f);
-				SEPARATOR;
+				DWORD dwByte = {};
 
-				ImGui::Text("CLOUD SCALE"); SAMELINE;
-				ImGui::InputFloat("##fix_cloud_scale", &m_FixCloudDesc.fCloudScale, 0.01f, 0.1f);
-				SEPARATOR;
-
-				ImGui::Text("CLOUD SPEED"); SAMELINE;
-				ImGui::InputFloat("##fix_cloud_speed", &m_FixCloudDesc.fCloudSpeed, 0.01f, 0.1f);
-				SEPARATOR;
-
-				ImGui::Text("CLOUD DENSITY"); SAMELINE;
-				ImGui::InputFloat("##fix_cloud_density", &m_FixCloudDesc.fCloudDensity, 0.01f, 0.1f);
-				SEPARATOR;
-
-				ImGui::Text("CLOUD INTENSITY"); SAMELINE;
-				ImGui::InputFloat("##fix_cloud_inten", &m_FixCloudDesc.fCloudLightIntensity, 0.01f, 0.1f);
-				SEPARATOR;
-
-				ImGui::Text("LIGHT DIRECTION");
-				ImGui::Text("X"); SAMELINE;
-				ImGui::InputFloat("##fix_cloudlight_dir_X", &m_FixCloudDesc.vLightDir.x, 0.01f, 0.1f);
-				ImGui::Text("Y"); SAMELINE;
-				ImGui::InputFloat("##fix_cloudlight_dir_Y", &m_FixCloudDesc.vLightDir.y, 0.01f, 0.1f);
-				ImGui::Text("Z"); SAMELINE;
-				ImGui::InputFloat("##fix_cloudlight_dir_Z", &m_FixCloudDesc.vLightDir.z, 0.01f, 0.1f);
-				SEPARATOR;
-
-				ImGui::Text("CLOUD DYNAMIC"); SAMELINE;
-				if (ImGui::Button("ON"))
-					m_FixCloudDesc.fDynamic = 1.f;
-				SAMELINE;
-				if (ImGui::Button("OFF"))
-					m_FixCloudDesc.fDynamic = 0.f;
-
-				m_pCloudSphere->Set_CloudDesc(m_FixCloudDesc);
-
-				SEPARATOR;
-				ImGui::Text("PATH : %s", m_szMapInfoFilePath);
-				ImGui::Text("CLOUD SPHERE SAVE FILE : "); SAMELINE;
-				ImGui::InputText("##sky_file_name", m_szMapInfoFileName, IM_ARRAYSIZE(m_szMapInfoFileName));
-
-				SEPARATOR;
-				if (ImGui::Button("SAVE"))
+				HANDLE hFile = CreateFile(AnsiToWString(strPath).c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+				if (INVALID_HANDLE_VALUE == hFile)
 				{
-					string strPath = m_szMapInfoFilePath;
-					strPath += m_szMapInfoFileName;
-					strPath += "_cloud.dat";
-
-					DWORD dwByte = {};
-
-					HANDLE hFile = CreateFile(AnsiToWString(strPath).c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-					if (INVALID_HANDLE_VALUE == hFile)
-					{
-						_int a = 10;
-					}
-					else
-					{
-						WriteFile(hFile, &m_FixCloudDesc, sizeof(CLOUD_DESC), &dwByte, nullptr);
-					}
-
-					CloseHandle(hFile);
-
-				} SAMELINE;
-				if (ImGui::Button("LOAD"))
+					_int a = 10;
+				}
+				else
 				{
-					string strPath = m_szMapInfoFilePath;
-					strPath += m_szMapInfoFileName;
-					strPath += "_cloud.dat";
-
-					DWORD dwByte = {};
-
-					HANDLE hFile = CreateFile(AnsiToWString(strPath).c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-					if (INVALID_HANDLE_VALUE == hFile)
-					{
-						_int a = 10;
-					}
-					else
-					{
-						ReadFile(hFile, &m_FixCloudDesc, sizeof(CLOUD_DESC), &dwByte, nullptr);
-					}
-
-					CloseHandle(hFile);
+					WriteFile(hFile, &m_FixCloudDesc, sizeof(CLOUD_DESC), &dwByte, nullptr);
 				}
 
-				ImGui::End();
+				CloseHandle(hFile);
+
+			} SAMELINE;
+			if (ImGui::Button("LOAD"))
+			{
+				string strPath = m_szMapInfoFilePath;
+				strPath += m_szMapInfoFileName;
+				strPath += "_cloud.dat";
+
+				DWORD dwByte = {};
+
+				HANDLE hFile = CreateFile(AnsiToWString(strPath).c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+				if (INVALID_HANDLE_VALUE == hFile)
+				{
+					_int a = 10;
+				}
+				else
+				{
+					ReadFile(hFile, &m_FixCloudDesc, sizeof(CLOUD_DESC), &dwByte, nullptr);
+				}
+
+				CloseHandle(hFile);
 			}
-			});
+
+			ImGui::End();
+		}
+		});
+#endif // _DEBUG
 
 	return S_OK;
 }
@@ -3247,6 +3344,53 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 
 	// 프로토타입 핸들 닫기
 	CloseHandle(hObjectFile);
+
+	return true;
+}
+
+_bool CLevel_Map::Trigger_Save_Json()
+{
+	_wstring strTriggerFilePath = AnsiToWString(m_strMapInfoFilePath);
+
+	strTriggerFilePath += TEXT("_trigger.json");
+
+	_uint iTriggerCnt = { 0 };
+
+	JSON_MAP_TRIGGER_DATA TriggerJson = {};
+
+	// 트리거 야매 ( 가져오깅
+	for (auto& pProp : m_InteractiveList)
+	{
+		if (INTERACTIVE_TYPE::TRIGGER == pProp->Get_InteractiveType())
+		{
+			_float4x4 WorldMatrix = *static_cast<CTransform*>(pProp->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr();
+			string TriggerKey = static_cast<CTrigger*>(pProp)->Get_TriggerKey();
+
+			FLOAT4X4_DATA matWorldData = {};
+			memcpy(&matWorldData, &WorldMatrix, sizeof(_float4x4));
+
+			TriggerJson.WorldMatrix.push_back(matWorldData);
+			TriggerJson.TriggerKey.push_back(TriggerKey);
+
+			++iTriggerCnt;
+		}
+	}
+
+	TriggerJson.iNumTrigger = iTriggerCnt;
+
+	JSON j = TriggerJson;
+
+	ofstream ofs(strTriggerFilePath);
+
+	if (!ofs.is_open())
+	{
+		OutputDebugStringA("프로토타입 Json 파일입출력 실패");
+	}
+
+	ofs << j.dump(4);
+	ofs.close();
+
+#pragma endregion
 
 	return true;
 }
