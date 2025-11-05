@@ -4,6 +4,7 @@
 
 #include "MapObject_Header.h"
 #include "Camera_Free.h"
+#include "ScreenTrail.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance{ CGameInstance::GetInstance() }
@@ -321,7 +322,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 
 HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 {
-	//플레이어 HUD 텍스처
+	//텍스처
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Hud_HPGauge"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Hud/State/T_Hud_Gauge_HP_0%d.png"), 7)), E_FAIL);
 
@@ -333,6 +334,10 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_Common_MenuList"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Common/T_Img_List_Menu_%d.png"), 8)), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_FX_Mask"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Mask/T_Fx_%d.png"), 5)), E_FAIL);
+
 
 	//아이템 인포 텍스처
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_ItemInfo_BG"),
@@ -378,6 +383,9 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Cursor"),
 		CCursor::Create(m_pDevice, m_pContext)), E_FAIL);
 
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_ScreenTrail"),
+		CScreenTrail::Create(m_pDevice, m_pContext)), E_FAIL);
+
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_DamageText"),
 		CDamage_Text::Create(m_pDevice, m_pContext)), E_FAIL);
 
@@ -413,6 +421,9 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Target_BrutalAttack"),
 		CTarget_BrutalAttack::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Loading"),
+		CUI_Loading::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
 
 	CUIObject::UIOBJECT_DESC AnnounceDesc = {};
 	AnnounceDesc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
@@ -471,6 +482,9 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
 		ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Target_LockOn"), TIME_CHANNEL::WORLD, &LockOnDesc), E_FAIL);
 
+	if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+		TEXT("../Bin/Resources/UI/UIData/Loading.json"))))
+		return E_FAIL;
 	return S_OK;
 }
 

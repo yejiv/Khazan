@@ -517,6 +517,24 @@
     <Filter Include="02.GameObject\Sky">
       <UniqueIdentifier>{2c7d8743-ca8b-41d9-99db-38edaf99c5af}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Logo\Logo_BG">
+      <UniqueIdentifier>{029c92cd-a943-4ac8-aa1b-b9197650327d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Logo\UI_Logo">
+      <UniqueIdentifier>{bcde2f71-bff1-4a6e-b9cc-cf14c1396166}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Logo\UI_Logo\List">
+      <UniqueIdentifier>{7bbd2447-b83b-4559-95aa-a9649dbf8014}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\UI_Manager\Fade">
+      <UniqueIdentifier>{b60d75a1-371a-458f-b0af-b6cc6e55d7a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Loding">
+      <UniqueIdentifier>{06f1141d-ce71-46a9-a4e8-97eb5fcb7624}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Loding\Panel">
+      <UniqueIdentifier>{fc470073-a7db-486d-bf55-71597800c6c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -967,7 +985,16 @@
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\02.TombStone</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Logo_BG.h">
-      <Filter>02.GameObject\UI\Logo</Filter>
+      <Filter>02.GameObject\UI\Logo\Logo_BG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Logo.h">
+      <Filter>02.GameObject\UI\Logo\UI_Logo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Logo_List.h">
+      <Filter>02.GameObject\UI\Logo\UI_Logo\List</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Fade.h">
+      <Filter>94.ClientInstance\UI_Manager\Fade</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Projectile_Breath_Yetuga.h">
       <Filter>02.GameObject\Projectile\Yetuga\Breath</Filter>
@@ -986,6 +1013,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\Sky.h">
       <Filter>02.GameObject\Sky</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Loading.h">
+      <Filter>02.GameObject\UI\Loding</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Loading_Panel.h">
+      <Filter>02.GameObject\UI\Loding\Panel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1423,7 +1456,16 @@
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\02.TombStone</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Logo_BG.cpp">
-      <Filter>02.GameObject\UI\Logo</Filter>
+      <Filter>02.GameObject\UI\Logo\Logo_BG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Logo.cpp">
+      <Filter>02.GameObject\UI\Logo\UI_Logo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Logo_List.cpp">
+      <Filter>02.GameObject\UI\Logo\UI_Logo\List</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Fade.cpp">
+      <Filter>94.ClientInstance\UI_Manager\Fade</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Projectile_Breath_Yetuga.cpp">
       <Filter>02.GameObject\Projectile\Yetuga\Breath</Filter>
@@ -1442,6 +1484,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\SkySphere.cpp">
       <Filter>02.GameObject\Sky</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Loading.cpp">
+      <Filter>02.GameObject\UI\Loding</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Loading_Panel.cpp">
+      <Filter>02.GameObject\UI\Loding\Panel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -149,6 +149,35 @@ PS_OUT PS_MASK_3(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_COLOR_BG(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+        
+    Out.vColor = g_vColor;
+        
+    Out.vColor.a = Out.vColor.a * g_fAlpha;
+    return Out;
+}
+
+PS_OUT PS_MASK_BOTTOM(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    if (In.vTexcoord.y < 0.2f)
+        discard;
+    
+    //Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
+    Out.vColor.r = 0.19f;
+    Out.vColor.g = 0.15f;
+    Out.vColor.b = 0.24f;
+    
+    float fAlpha = (In.vTexcoord.y - 0.2f) / 0.8f;
+    fAlpha = clamp(fAlpha, 0.0f, 1.f);
+    
+    Out.vColor.a = fAlpha * g_vColor.a * g_fAlpha;
+    
+    return Out;
+}
 technique11 DefaultTechnique
 {
     pass PS_MASK_PASS_0
@@ -191,4 +220,25 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MASK_3();
     }
+    pass PS_COLOR_BG_4
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_COLOR_BG();
+    }
+    pass PS_MASK_BOTTOM_5
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MASK_BOTTOM();
+    }
+
 }

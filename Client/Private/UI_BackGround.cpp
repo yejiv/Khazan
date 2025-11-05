@@ -125,6 +125,10 @@ HRESULT CUI_BackGround::Bind_Mask()
 	{
 		m_pShaderCom->Begin(3);
 	}
+	else if (m_eBGType == UIBGTYPE::LOADING)
+	{
+		m_pShaderCom->Begin(5);
+	}
 	else
 	{
 		m_pShaderCom->Begin(0);
