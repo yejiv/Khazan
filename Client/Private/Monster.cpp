@@ -56,6 +56,19 @@ void CMonster::Look_Target()
     m_pTransformCom->LookAt(vTargetPos);
 }
 
+void CMonster::Look_Target_Lerp(_float fTimeDleta, _float AnimRatio, _float fTrunSpeed)
+{
+    CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+    _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+    
+    _float fResultTurnSpeed = AnimRatio * fTrunSpeed;
+
+    m_pTransformCom->LookAt_Lerp(vTargetPos,fTimeDleta, fResultTurnSpeed);
+
+}
+
+
+
 HRESULT CMonster::Initialize_Prototype()
 {
     return S_OK;

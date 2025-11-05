@@ -19,29 +19,22 @@ void CAS_Smash_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     _uint animID = 0;
 
-    DIRECTION_INFO Info{};
-    Info.iDirFlag = m_pGameInstance->Get_BlackBoard()->Get_Value<_uint>(pYetuga->Get_Name(), "TargetDirection");
-
-    if (Info.Check_Flag(Info.F))
+    switch (iRand)
     {
-        switch (iRand)
-        {
-        case 0: 
-            animID = 33; 
-            break;
-        case 1: 
-            animID = 32; 
-            break;
-        case 2:
-            animID = 16;
-            break;
-        case 3:
-            animID = 18;
-            break;
-        }
+    case 0: 
+        animID = 33; 
+        break;
+    case 1: 
+        animID = 32; 
+        break;
+    case 2:
+        animID = 16;
+        break;
+    case 3:
+        animID = 18;
+        break;
     }
-
-
+    
     pModel->Set_Animation(animID);
 }
 
@@ -49,13 +42,6 @@ void CAS_Smash_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
 {
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
-
-    CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
-    CTransform* pTargetTransform = static_cast<CTransform*>(m_pGameInstance->Get_BlackBoard()->
-        Get_Value<CGameObject*>(pYetuga->Get_Name(), "Target")->Get_Component(TEXT("Com_Transform")));
-    _vector vTargetLoc = pTargetTransform->Get_State(STATE::POSITION);
-
-    pTransform->LookAt(vTargetLoc);
 
     if (pModel->Play_Animation(fTimeDelta))
     {

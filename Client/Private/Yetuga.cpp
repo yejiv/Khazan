@@ -81,7 +81,17 @@ void CYetuga::Update(_float fTimeDelta)
 {
     m_pController->Update(this, fTimeDelta);
 
-    __super::Update(fTimeDelta);
+    if (m_isLookAt)
+    {
+        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+        if (nullptr == pModel)
+            return;
+        _float fRatio = pModel->MakeRatio();
+        Look_Target_Lerp(fTimeDelta,fRatio,m_fTurnSpeed);
+    }
+        
+    if(!m_isGrab)
+        __super::Update(fTimeDelta);
 }
 
 void CYetuga::Late_Update(_float fTimeDelta)
@@ -96,6 +106,21 @@ void CYetuga::Late_Update(_float fTimeDelta)
 HRESULT CYetuga::Render()
 {
     return S_OK;
+}
+
+void CYetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+{
+
+}
+
+void CYetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+{
+
+}
+
+void CYetuga::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+{
+
 }
 
 void CYetuga::Pick_Stone()
@@ -145,37 +170,42 @@ void CYetuga::Hold_Stone()
 
 void CYetuga::Throw_Stone()
 {
-    CTransform* pTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
-    _vector vOffset = XMVectorSet(0.f,-10.f,0.f,0.f);
-    _vector vTargetLoc = pTransform->Get_State(STATE::POSITION) - vOffset;
-
     if (m_pHoldStone == nullptr)
         return;
+
+    CTransform* pTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+    _vector vOffset = XMVectorSet(-0.5f, -0.3f, 0.f, 0.f);
+    _vector vTargetLoc = pTransform->Get_State(STATE::POSITION) + vOffset;
     _float3 vSpawnPoint = m_pBody->Get_BonePoint("Weapon_L");
-    _float3 vTargetDir = (m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir"));
-    _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
-    _float3 vNormalize{};
-    XMStoreFloat3(&vNormalize,vTempVec);
+    _vector vDir = vTargetLoc - XMLoadFloat3(&vSpawnPoint);
+    vDir = XMVector3Normalize(vDir);
+    _float3 vSpawnDir{};
+    XMStoreFloat3(&vSpawnDir, vDir);
+    
     m_pHoldStone->Set_SpanwPoint(vSpawnPoint);
-    m_pHoldStone->Set_SpawnDir(vNormalize);
+    m_pHoldStone->Set_SpawnDir(vSpawnDir);
     m_pHoldStone->Reset();
     m_pHoldStone->Set_IsActive(true);
-    m_pTransformCom->LookAt(vTargetLoc);
-    
+    m_pHoldStone->Fire_Projectile();
+
     CModel* pModel = static_cast<CModel*>(m_pHoldStone->Get_Component(TEXT("Com_Model")));
     pModel->Set_Animation(1);
-   
+
     Safe_Release(m_pHoldStone);
+
 
 }
 
-void CYetuga::Grab_Check_Begin()
+void CYetuga::Grab_Check_Begin(const _char* pBoneName)
 {
-    // 충돌키고
-    // 충돌됬으면
-    _float3 vTemp = m_pBody->Get_BonePoint("Holding");
-    _float4(vTemp.x,vTemp.y,vTemp.z,1.f);
-    // 뼈 포지션을 넣어주고
+    CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+    if (nullptr == pTargetTransform)
+        return;
+    _matrix BoneWorld = m_pBody->Get_BoneMatrix(pBoneName);
+    
+    _vector vGrabPosition = BoneWorld.r[3];
+    pTargetTransform->Set_State(STATE::POSITION, vGrabPosition);
+
 }
 
 void CYetuga::Grab_Check_End()
@@ -436,10 +466,10 @@ HRESULT CYetuga::Ready_Components()
     tCharVirDesc.eShapeType = SHAPE::CAPSULE;
     tCharVirDesc.vPos = vPos;
     tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 2.5f, 0.f);
+    tCharVirDesc.vShapeOffset = _float3(0.f, 4.1f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
-    tCharVirDesc.fRadius = 1.f;
-    tCharVirDesc.fHeight = 2.5f;
+    tCharVirDesc.fRadius = 2.f;
+    tCharVirDesc.fHeight = 4.f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
     m_tCollisionDesc.pGameObject = this;
     //pCollDesc.pInfo = ?? // 작성하기
@@ -481,7 +511,7 @@ HRESULT CYetuga::Ready_Projectiles()
 {
     CProjectile_Yetuga::PROJECTILE_DESC Desc{};
     Desc.fDamage = 10.f;
-    Desc.fSpeedPerSec = 150.f;
+    Desc.fSpeedPerSec = 50.f;
     Desc.fLifeTime = 3.f;
     Desc.fRotationPerSec = 180.f;
 
@@ -518,34 +548,311 @@ HRESULT CYetuga::Ready_AnimEvent()
 
 #pragma region ThrowRock
 
-    pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Pick_Stone(); });
-    pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Throw_Stone(); });
-    pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Hold_Stone(); });
+    pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Pick_Stone(); });
+    
+    pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() 
+        { 
+            m_isLookAt = false;
+            Throw_Stone(); 
+        });
+
+    pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() 
+        {
+            m_isLookAt = true;
+            Hold_Stone(); 
+        });
 
 #pragma endregion
 
 
 #pragma region 2HIT
 
-    pModel->Register_Event("2HitOne", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Look_Target(); });
-    //pModel->Register_Event("2HitOne", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { /*충돌끄고*/});
-    //pModel->Register_Event("2HitOne", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { });
+    pModel->Register_Event("2Hit_Fake", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+        m_fTurnSpeed = 40.f;
+        m_isLookAt = true; 
+        });
+    pModel->Register_Event("2Hit_Fake", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { 
+        m_isLookAt = false; });
+    pModel->Register_Event("2Hit_One", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+        m_fTurnSpeed = 40.f;
+        m_pBody->Set_OnAttackCollision(true);
+        m_isLookAt = true;
+        });
+    pModel->Register_Event("2Hit_One", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { 
+        m_pBody->Set_OnAttackCollision(false);
+        m_isLookAt = false; });
 
-    //pModel->Register_Event("2HitTwo", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {  });
-    //pModel->Register_Event("2HitTwo", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { /*타겟 풀어주기*/});
-    //pModel->Register_Event("2HitTwo", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { /*타겟 풀어주기*/});
+    pModel->Register_Event("2Hit_Two", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_fTurnSpeed = 40.f;
+        m_pBody->Set_OnAttackCollision(true);
+        m_isLookAt = true; });
+    pModel->Register_Event("2Hit_Two", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { 
+        m_pBody->Set_OnAttackCollision(false);
+        m_isLookAt = false; });
+
+#pragma endregion
+
+#pragma region NormalSmash
+
+    // Smash
+    pModel->Register_Event("Smash_Look", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_fTurnSpeed = 40.f;
+        m_isLookAt = true;
+        });
+
+    pModel->Register_Event("Smash_Look", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_fTurnSpeed = 40.f;
+        m_isLookAt = false;
+        });
+
+    // After_Smash
+    pModel->Register_Event("Smash_Attack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_fTurnSpeed = 40.f;
+        m_pBody->Set_OnAttackCollision(true);
+        m_isLookAt = true;
+        });
+
+    pModel->Register_Event("Smash_Attack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_fTurnSpeed = 40.f;
+        m_pBody->Set_OnAttackCollision(false);
+        m_isLookAt = false;
+        });
+
+
+    // After_Smash
+    pModel->Register_Event("Smash_After", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_fTurnSpeed = 40.f;
+        m_isLookAt = true;
+        });
+
+    pModel->Register_Event("Smash_After", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_fTurnSpeed = 40.f;
+        m_isLookAt = false;
+        });
+
+
+#pragma endregion
+
+
+#pragma region TurnAttack
+
+    pModel->Register_Event("TurnAttack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+    m_fTurnSpeed = 40.f;
+    m_pBody->Set_OnAttackCollision(true);
+    m_isLookAt = true;
+        });
+
+    pModel->Register_Event("TurnAttack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_fTurnSpeed = 40.f;
+        m_pBody->Set_OnAttackCollision(false);
+        m_isLookAt = false;
+        });
+
+
+    pModel->Register_Event("TurnAttack_After", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_fTurnSpeed = 20.f;
+        m_isLookAt = true;
+        });
+
+    pModel->Register_Event("TurnAttack_After", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_fTurnSpeed = 20.f;
+        m_isLookAt = false;
+        });
+
+#pragma endregion
+
+#pragma region Move_L_Attack
+
+    pModel->Register_Event("Side_L_Look", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_fTurnSpeed = 40.f;
+        m_isLookAt = true;
+        });
+
+    pModel->Register_Event("Side_L_Look", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_fTurnSpeed = 40.f;
+        m_isLookAt = false;
+        });
+
+    pModel->Register_Event("Side_L_Attack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_fTurnSpeed = 40.f;
+        m_pBody->Set_OnAttackCollision(true);
+        m_isLookAt = true;
+        });
+
+    pModel->Register_Event("Side_L_Attack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_fTurnSpeed = 40.f;
+        m_pBody->Set_OnAttackCollision(false);
+        m_isLookAt = false;
+        });
+
+
+    pModel->Register_Event("Side_L_After", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_fTurnSpeed = 40.f;
+        m_isLookAt = true;
+        });
+
+    pModel->Register_Event("Side_L_After", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_fTurnSpeed = 40.f;
+        m_isLookAt = false;
+        });
+
+
+#pragma endregion
+
+#pragma region Move_L_Attack
+
+    pModel->Register_Event("Side_R_Look", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_fTurnSpeed = 40.f;
+        m_isLookAt = true;
+        });
+
+    pModel->Register_Event("Side_R_Look", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_fTurnSpeed = 40.f;
+        m_isLookAt = false;
+        });
+
+    pModel->Register_Event("Side_R_Attack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_fTurnSpeed = 40.f;
+        m_pBody->Set_OnAttackCollision(true);
+        m_isLookAt = true;
+        });
+
+    pModel->Register_Event("Side_R_Attack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_fTurnSpeed = 40.f;
+        m_pBody->Set_OnAttackCollision(false);
+        m_isLookAt = false;
+        });
+
+
+    pModel->Register_Event("Side_R_After", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_fTurnSpeed = 40.f;
+        m_isLookAt = true;
+        });
+
+    pModel->Register_Event("Side_R_After", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_fTurnSpeed = 40.f;
+        m_isLookAt = false;
+        });
+
+#pragma endregion
+
+#pragma region DempeyRoll
+
+    pModel->Register_Event("Dampsey_First", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+
+        cout << "11111111111111111111111111111111111111111" << endl;
+        m_isLookAt = true;
+        m_pBody->Set_OnAttackCollision(true);
+
+        });
+    pModel->Register_Event("Dampsey_First", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+
+        cout << "2222222222222222222222222222222222222222222" << endl;
+        m_isLookAt = false;
+        m_pBody->Set_OnAttackCollision(false);
+
+        });
+
+    pModel->Register_Event("Dampsey_Second", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+
+        cout << "333333333333333333333333333333333333333333333333" << endl;
+        m_isLookAt = true;
+        m_pBody->Set_OnAttackCollision(true);
+
+        });
+    pModel->Register_Event("Dampsey_Second", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        cout << "444444444444444444444444444444444444444444444444444" << endl;
+
+        m_isLookAt = false;
+        m_pBody->Set_OnAttackCollision(false);
+
+        });
+
+    pModel->Register_Event("Dampsey_Third", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        cout << "5555555555555555555555555555555555555555555" << endl;
+
+        m_isLookAt = true;
+        m_pBody->Set_OnAttackCollision(true);
+
+        });
+    pModel->Register_Event("Dampsey_Third", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        cout << "66666666666666666666666666666666666666666666666" << endl;
+
+        m_isLookAt = false;
+        m_pBody->Set_OnAttackCollision(false);
+
+        });
+
+
+    pModel->Register_Event("Dampsey_Forth", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        cout << "7777777777777777777777777777777777777777777777" << endl;
+
+        m_isLookAt = true;
+        m_pBody->Set_OnAttackCollision(true);
+
+        });
+    pModel->Register_Event("Dampsey_Forth", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        cout << "888888888888888888888888888888888888888888888888" << endl;
+
+        m_isLookAt = false;
+        m_pBody->Set_OnAttackCollision(false);
+
+        });
+
+    pModel->Register_Event("Dampsey_Final", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        cout << "999999999999999999999999999999999999999999999999999" << endl;
+
+        m_isLookAt = true;
+        m_pBody->Set_OnAttackCollision(true);
+
+        });
+    pModel->Register_Event("Dampsey_Final", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        cout << "123123213214123512354351515413532412343124312" << endl;
+
+        m_isLookAt = false;
+        m_pBody->Set_OnAttackCollision(false);
+
+        });
+
+
+    pModel->Register_Event("Dampsey_After", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        cout << "50005000055050505050505050000505050505050" << endl;
+
+        m_isLookAt = true;
+
+        });
+    pModel->Register_Event("Dampsey_After", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        cout << "fdasfdjfjasdfljdaslkfjlkasjflajsfkjdaslfjkasjdfkas;flkjsl;" << endl;
+        m_isLookAt = false;
+
+        });
+
+
+
+
 #pragma endregion
 
 #pragma region BACKSMASH
-    //pModel->Register_Event("BackSmashOne", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { /*충돌 키고*/ });
-    //pModel->Register_Event("BackSmashOne", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { /*충돌끄고*/});
-    //pModel->Register_Event("BackSmashOne", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { });
 
-    //pModel->Register_Event("BackSmashTwo", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 충돌 키고 });
-    //pModel->Register_Event("BackSmashTwo", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { /*충돌 끄고*/});
-    //pModel->Register_Event("BackSmashTwo", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { /*타겟 풀어주기*/});
+    pModel->Register_Event("BackSmashOne", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
+        { 
+            m_pBody->Set_OnAttackCollision(true);
+        });
+    pModel->Register_Event("BackSmashOne", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() 
+        { 
+            m_pBody->Set_OnAttackCollision(false);
+        });
+
+    pModel->Register_Event("BackSmashTwo", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pBody->Set_OnAttackCollision(true);
+        });
+    pModel->Register_Event("BackSmashTwo", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() 
+        { 
+            m_pBody->Set_OnAttackCollision(false);
+        });
+   
 #pragma endregion
-
 
 #pragma region JumpAttack
     pModel->Register_Event("JumpAttack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
@@ -562,42 +869,41 @@ HRESULT CYetuga::Ready_AnimEvent()
 
 #pragma region JumpGrab
 
-    pModel->Register_Event("GrabCheck", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
+   /* "Grab_Hand",
+        "Grab_Hold"*/
+
+    pModel->Register_Event("Grab_Hand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", true);
+            m_isGrab = true;
 
         });
-    pModel->Register_Event("GrabCheck", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() 
-        { 
-            m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", false);
-
+    pModel->Register_Event("Grab_Hand", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()
+        {
+           // 손뼈행렬 전달
+            Grab_Check_Begin("Weapon_R");
         });
-    //pModel->Register_Event("GrabCheck", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Hold_Rock(); });
 
-    pModel->Register_Event("TargetFree", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() 
+    pModel->Register_Event("Grab_Hold", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            
+        });
+
+
+    pModel->Register_Event("Grab_Hold", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()
+        {
+            Grab_Check_Begin("Holding");
+        });
+
+
+    pModel->Register_Event("Grab_Hold", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() 
         {
             // 타겟 풀어주기
+            m_isGrab = false;
         });
 
 #pragma endregion
 
-
-#pragma region DempeyRoll
-
-    pModel->Register_Event("SetOne", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Look_Target(); });
-    pModel->Register_Event("SetOne", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Look_Target(); });
-    //pModel->Register_Event("SetOne", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { /*타겟 풀어주기*/});
-
-    pModel->Register_Event("SetTwo", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Look_Target(); });
-    pModel->Register_Event("SetTwo", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Look_Target(); });
-    //pModel->Register_Event("SetTwo", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { /*타겟 풀어주기*/});
-
-    // 패리 시 StrongAnimation 으로 
-    pModel->Register_Event("SetThree", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Look_Target(); });
-    pModel->Register_Event("SetThree", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Look_Target(); });
-    //pModel->Register_Event("SetThree", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { /*타겟 풀어주기*/});
-
-#pragma endregion
 
 
 #pragma region Amageddon

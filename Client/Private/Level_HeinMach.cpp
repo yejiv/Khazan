@@ -48,11 +48,11 @@ HRESULT CLevel_HeinMach::Initialize()
 		return S_OK;
 		});
 
-	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+	/*m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
 		HEINMACH_1ST_BLADENEXUS, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); 
 		return S_OK;
-		}));
+		}));*/
 
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),

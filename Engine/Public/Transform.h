@@ -83,6 +83,7 @@ public:
 	void Rotation(_float fX, _float fY, _float fZ);
 	void Turn(_fvector vAxis, _float fTimeDelta);
 	void LookAt(_fvector vAt);
+	void LookAt_Lerp(_fvector vAt, _float fTimeDelta, _float fTurnSpeed);
 	void Chase(_fvector vTargetPos, _float fTimeDelta, _float fLimit = 0.f);
 	void AI_Chase(_fvector vTargetPos, _float fTimeDelta, _float SpeedPerSec ,_float fLimit = 0.f);
 	void Look_Dir(_fvector vDir);

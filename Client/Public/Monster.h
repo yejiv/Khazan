@@ -57,6 +57,7 @@ public:
 	virtual void				Consume_Stamina(_float fAmout) override;
 	virtual void				Recovery_Stamina(_float fTimeDelta) override;
 	virtual void				Look_Target();
+	virtual void				Look_Target_Lerp(_float fTimeDleta, _float AnimRatio, _float fTurnSpeed);
 public:
 	virtual HRESULT				Initialize_Prototype() override;
 	virtual HRESULT				Initialize_Clone(void* pArg) override;
