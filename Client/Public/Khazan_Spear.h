@@ -150,6 +150,20 @@ private:
 
 	_uint			ConvertCameraToPlayerDir( PLAYER_CAMERA_DIR playerCamDir);
 
+#pragma region 상호 작용 맵 오브젝트 이벤트
+private:
+	EventInteractType			m_EventInteract = {};				// 트리거 접촉 여부, 이벤트 발생 여부, 상호 작용 타입, 상호 작용 타입들의 구조체
+	_float						m_fEventTimeAcc = { 0.f };
+	_ushort						m_sNextItem = { 0 };
+
+private:
+	void						Subscribe_Events();
+	void						Event_Interact_Object(_float fTimeDelta);
+	void						BladeNexus_Event(_float fTimeDelta);
+	void						Chest_Event(_float fTimeDelta);
+	void						TombStone_Event(_float fTimeDelta);
+#pragma endregion
+
 #ifdef _DEBUG
 	void			Debug_Widget();
 	void			Debug_Widget_States();      // 상태 디버깅

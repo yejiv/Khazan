@@ -514,6 +514,9 @@
     <Filter Include="04.Sequence\HeinMach\Fieldscene">
       <UniqueIdentifier>{a8bfaaf5-8d1a-4cb1-a10b-3fc60e4ab142}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Sky">
+      <UniqueIdentifier>{2c7d8743-ca8b-41d9-99db-38edaf99c5af}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -951,9 +954,6 @@
     <ClInclude Include="..\Public\Effect_Mesh_Instance.h">
       <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Mesh_Instance</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\CloudSphere.h" />
-    <ClInclude Include="..\Public\Sky.h" />
-    <ClInclude Include="..\Public\SkySphere.h" />
     <ClInclude Include="..\Public\Body_Khazan_Sample.h">
       <Filter>02.GameObject\Creature\Khazan\Sample\Body</Filter>
     </ClInclude>
@@ -977,6 +977,15 @@
     </ClInclude>
     <ClInclude Include="..\Public\Sequence_HeinMach_Field.h">
       <Filter>04.Sequence\HeinMach\Fieldscene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SkySphere.h">
+      <Filter>02.GameObject\Sky</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CloudSphere.h">
+      <Filter>02.GameObject\Sky</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sky.h">
+      <Filter>02.GameObject\Sky</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1404,9 +1413,6 @@
     <ClCompile Include="..\Private\Effect_Sprite.cpp">
       <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\CloudSphere.cpp" />
-    <ClCompile Include="..\Private\Sky.cpp" />
-    <ClCompile Include="..\Private\SkySphere.cpp" />
     <ClCompile Include="..\private\Khazan_Spear_Animation.cpp">
       <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Base</Filter>
     </ClCompile>
@@ -1427,6 +1433,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\Sequence_HeinMach_Field.cpp">
       <Filter>04.Sequence\HeinMach\Fieldscene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CloudSphere.cpp">
+      <Filter>02.GameObject\Sky</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sky.cpp">
+      <Filter>02.GameObject\Sky</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SkySphere.cpp">
+      <Filter>02.GameObject\Sky</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
