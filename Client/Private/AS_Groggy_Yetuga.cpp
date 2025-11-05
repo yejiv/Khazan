@@ -46,7 +46,7 @@ void CAS_Groggy_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 			
 
 			m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pBrutalAttack);
-			Safe_Release(m_pBrutalAttack);
+			m_pBrutalAttack->Setting_BrutalAttack(m_vBonePosition, m_fGroggyTime);
 		}
 		break;
 
@@ -54,14 +54,12 @@ void CAS_Groggy_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 		m_fCurrentTime += fTimeDelta;
 		pModel->Play_Animation(fTimeDelta); 
 
-		
-		m_pBrutalAttack->Setting_BrutalAttack(m_vBonePosition, m_fGroggyTime);
 
 		if (m_fCurrentTime >= m_fGroggyTime)
 		{
-		
 			m_eState = GROGGY::END;
 			pModel->Set_Animation(91);
+
 			if (m_isBrutalAttackSuccess)
 			{
 				HITREACTION eHitreaction = 

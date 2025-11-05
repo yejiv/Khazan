@@ -11,7 +11,6 @@ CEffect_Point_Instance::CEffect_Point_Instance(const CEffect_Point_Instance& Pro
     : CEffect_Element(Prototype)
     , m_sData { Prototype.m_sData }
 {
-    //m_pVIBufferCom->Clone(Prototype.m_pVIBufferCom);
     m_pVIBufferCom = dynamic_cast<CVIBuffer_Point_Instance*>(Prototype.m_pVIBufferCom->Clone(nullptr));
 }
 

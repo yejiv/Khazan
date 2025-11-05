@@ -50,6 +50,7 @@ private:
 #pragma region Graphic_Device
 public:
 	void Present_SwapChain(_uint iSyncInterval, _uint iFlag);
+	ID3D11DeviceContext* Get_DeferredContext(DEFERRED_CONTEXT eType);
 #pragma endregion
 
 #pragma region LEVEL_MANAGER

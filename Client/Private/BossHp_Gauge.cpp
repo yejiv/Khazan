@@ -40,7 +40,7 @@ HRESULT CBossHp_Gauge::Initialize_Clone(void* pArg)
 	m_fLerpSpeed = 0.5f;
 	m_fLerpValue = 1.f;
 	m_fDeleyTime = 0.5f;
-
+	m_fAlpha = 1.f;
 	return S_OK;
 }
 

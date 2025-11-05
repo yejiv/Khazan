@@ -1,7 +1,7 @@
 ﻿#include "Body_Khazan_Sample.h"
 #include "Khazan_Sample.h"
 #include "GameInstance.h"
-
+#include "MeshTrail.h"
 
 CBody_Khazan_Sample::CBody_Khazan_Sample(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CPartObject{ pDevice, pContext }
@@ -71,6 +71,7 @@ HRESULT CBody_Khazan_Sample::Initialize_Clone(void* pArg)
 void CBody_Khazan_Sample::Priority_Update(_float fTimeDelta)
 {
     int a = 10;
+    m_pTrail->Priority_Update(fTimeDelta);
 }
 
 void CBody_Khazan_Sample::Update(_float fTimeDelta)
@@ -148,6 +149,8 @@ void CBody_Khazan_Sample::Update(_float fTimeDelta)
 
 
     Update_CombinedMatrix();
+
+    m_pTrail->Update(fTimeDelta);
 }
 
 void CBody_Khazan_Sample::Late_Update(_float fTimeDelta)
@@ -160,6 +163,8 @@ void CBody_Khazan_Sample::Late_Update(_float fTimeDelta)
 
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::OUTLINE, this)))
         return;
+
+    m_pTrail->Late_Update(fTimeDelta);
 
 #ifdef _DEBUG
 
@@ -256,6 +261,8 @@ HRESULT CBody_Khazan_Sample::Ready_Components()
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Sample"),
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
+
+    m_pTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), nullptr));
 
     return S_OK;
 }
@@ -545,13 +552,16 @@ void CBody_Khazan_Sample::Effect1_Enter()
         matWorldSpearFX._31, matWorldSpearFX._32, matWorldSpearFX._33, matWorldSpearFX._34,
         matWorldSpearFX._41, matWorldSpearFX._42, matWorldSpearFX._43, matWorldSpearFX._44);
     OutputDebugStringA(msg);
+
+    int a = 0;
+
 }
 
 void CBody_Khazan_Sample::Effect1_Exit()
 {
     //cout << "[Effect1_Exit]" << endl;
    // OutputDebugStringA("[Effect1_Exit] \n");
-
+    int a = 0;
 }
 
 void CBody_Khazan_Sample::Effect1_Continue()
@@ -559,6 +569,10 @@ void CBody_Khazan_Sample::Effect1_Continue()
     //cout << "[Effect1_Continue]" << endl;
     //OutputDebugStringA("[Effect1_Continue] \n");
 
+
+    _matrix tip = m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pParentTransform->Get_WorldMatrix();
+    _matrix hand = m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearWeaponR_Matrix) * m_pParentTransform->Get_WorldMatrix();
+    m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
 }
 
 void CBody_Khazan_Sample::Effect2_Enter()
@@ -775,7 +789,7 @@ void CBody_Khazan_Sample::Free()
     Safe_Release(m_pParentTransform);
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
-
+    Safe_Release(m_pTrail);
 
 
 }
