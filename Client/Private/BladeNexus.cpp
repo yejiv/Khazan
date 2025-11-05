@@ -155,7 +155,7 @@ HRESULT CBladeNexus::Ready_Collision(void* pArg)
 
 #pragma region 트리거 영역
     CBody::BODY_BOXSHAPE_DESC TriggerDesc{};
-    TriggerDesc.vExtent = _float3(1.6f, 1.f, 1.6f);
+    TriggerDesc.vExtent = _float3(2.f, 1.f, 2.f);
     TriggerDesc.bIsTrigger = true;
     TriggerDesc.bStartActive = true;
     TriggerDesc.eMotion = EMotionType::Kinematic;
