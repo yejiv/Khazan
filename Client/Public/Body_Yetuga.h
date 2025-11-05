@@ -17,6 +17,7 @@ public:
 	typedef struct tagBodyDesc : public PARTOBJECT_DESC
 	{
 		CTransform* pOwnerTransform = { nullptr };
+		class CYetuga*	pOwner = { nullptr };
 
 	}BODY_DESC;
 
@@ -54,6 +55,9 @@ private:
 	HRESULT					Ready_Colliders();
 
 private:
+	class CYetuga*			m_pOwner = { nullptr };
+
+private:
 	CShader*				m_pShaderCom = { nullptr };
 	CModel*					m_pModelCom = { nullptr };
 	CTransform*				m_pOwnerTransform = { nullptr };
@@ -62,6 +66,7 @@ private:
 	CBody*					m_pRH_BodyCom = { nullptr }; // 오른손
 	CBody*					m_pLH_BodyCom = { nullptr }; // 왼손
 	CBody*					m_pBack_BodyCom = { nullptr }; // 등
+
 
 private:
 	_float3					m_vThrowPoint = {};

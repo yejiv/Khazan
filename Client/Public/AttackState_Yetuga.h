@@ -12,8 +12,8 @@ public:
 	virtual void				Update(class CStateMachine* pFSM, class CGameObject* pOwner, _float fTimeDelta) override;
 	virtual void				Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
-private:
-
+public:
+	virtual void				OnCollision(COLLISION_DESC* pDesc) override;
 
 public:
 	static CAttackState_Yetuga* Create();

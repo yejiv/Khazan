@@ -334,6 +334,47 @@ PS_OUT PS_SIMPLE_COLOR_VIEW(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_BLADENEXUS(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
+    if (true == g_isNormal)
+    {
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+        vMtrlNormal = float4(normalize(vMtrlNormal.xyz) * 2.f - 1.f, 0.f);
+    }
+    
+    
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (true == g_isEmissive)
+    {
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (true == g_isSpecular)
+    {
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+        vMtrlSpecular.a = 1.f;
+    }
+
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vMtrlNormal);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    //Out.vSpecular = vMtrlSpecular;
+    //Out.vEmissive = vMtrlEmissive;
+    Out.vEmissive = vMtrlSpecular;
+
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     /* ?Š¹? • ?Œ¨?Š¤ë¥? ?´?š©?•´?„œ ? ? •?„ ê·¸ë ¤?ƒˆ?‹¤. */
@@ -427,6 +468,19 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_SIMPLE_COLOR_VIEW();
+    }
+
+    // ±Í°Ë ÆÐ½º        ( 8¹ø )
+    pass BladeNexusPass
+    {
+
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_BLADENEXUS();
     }
 
 }

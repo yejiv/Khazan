@@ -52,6 +52,14 @@ void CAS_JumpGrab_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
         m_isGrabbed = true;
     }
 
+    if (m_isGrabbed)
+    {
+        m_vGrabPoint = pYetuga->Get_Body()->Get_BonePoint("Holding");  
+        CGameObject* pTarget = pBB->Get_Value<CGameObject*>(pYetuga->Get_Name(), "Target");
+        CTransform* pTargetTransform = static_cast<CTransform*>(pTarget->Get_Component(TEXT("Com_Transform")));
+        pTargetTransform->Set_State(STATE::POSITION, XMLoadFloat3(&m_vGrabPoint));
+    }
+
     if (pModel->Play_Animation(fTimeDelta))
     {
         m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isJumpGrabFinished", true);
@@ -64,6 +72,13 @@ void CAS_JumpGrab_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isGrabbed", false);
     m_isGrabbed = false;
+}
+
+void CAS_JumpGrab_Yetuga::OnCollision(COLLISION_DESC* pDesc)
+{
+   CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+   m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>("Yetuga", "isGrabbed", true);
+ 
 }
 
 CAS_JumpGrab_Yetuga* CAS_JumpGrab_Yetuga::Create()

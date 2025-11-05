@@ -25,6 +25,8 @@ HRESULT CDecal_Manager::Initialize(_uint iNumDecals)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
+    m_vDecalColor = _float3(0.47f, 0.08f, 0.08f);
+
     return S_OK;
 }
 
@@ -97,7 +99,7 @@ HRESULT CDecal_Manager::Render()
     if (FAILED(m_pShader->Bind_SRV("g_DecalParams", m_pDecalSRV)))
         return E_FAIL;
 
-    if (FAILED(m_pTexture->Bind_Shader_Resource(m_pShader, "g_DecalTexture", 0)))
+    if (FAILED(m_pTexture->Bind_Shader_Resource(m_pShader, "g_DecalTexture", m_iTextureIndex)))
         return E_FAIL;
 
     // 디퓨즈, 뎁스, 노말
@@ -117,6 +119,9 @@ HRESULT CDecal_Manager::Render()
     // 스크린 사이즈
     _float2 vScreenSize = _float2(ViewportDesc.Width, ViewportDesc.Height);
     if (FAILED(m_pShader->Bind_RawValue("g_vScreenSize", &vScreenSize, sizeof(_float2))))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_RawValue("g_vDecalColor", &m_vDecalColor, sizeof(_float3))))
         return E_FAIL;
 
     // 활성화된 데칼 개수만큼 순회, 해당 데칼의 월드, 뷰, 투영 바인딩
@@ -163,6 +168,16 @@ HRESULT CDecal_Manager::Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLeve
     m_pGameInstance->Push_PoolObject_ToLayer(iLayerLevelIndex, strLayerTag, pDecal);
 
     return S_OK;
+}
+
+_uint CDecal_Manager::Get_NumDecalTextures()
+{
+    return m_pTexture->Get_NumTextures();
+}
+
+ID3D11ShaderResourceView* CDecal_Manager::Get_DecalTexture(_uint iTextureIndex)
+{
+    return m_pTexture->Get_Texture(iTextureIndex);
 }
 
 HRESULT CDecal_Manager::Ready_Components()

@@ -44,6 +44,8 @@ private:
 	// 조명 불러오기
 	HRESULT Ready_Lights(const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
 
+	HRESULT Ready_Trigger(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
+
 private:
 	class CClientInstance* m_pClientInstance = { nullptr };
 

@@ -6,6 +6,7 @@ matrix g_ViewMatrixInv, g_ProjMatrixInv;
 uint g_iNumActiveDecals;
 Texture2D g_DiffuseTexture, g_DepthTexture, g_NormalTexture, g_DecalTexture;
 float2 g_vScreenSize;
+float3 g_vDecalColor;
 
 struct DECAL_PARAMS
 {
@@ -119,10 +120,13 @@ PS_OUT PS_MAIN(PS_IN In)
         vector vDecalDesc = g_DecalTexture.Sample(ClampSampler, vDecalTexcoord);
 
         float fMask = vDecalDesc.r;
-        float3 vBloodColor = { 0.67f, 0.08f, 0.08f };
 
-        vFinalColor.rgb = lerp(vDiffuseDesc.rgb, vBloodColor, fMask);
-        vFinalColor.a = g_DecalParams[i].fOpacity * fMask;
+        vFinalColor.rgb = g_vDecalColor;
+        
+        if (fMask > 0.f)
+            vFinalColor.a = g_DecalParams[i].fOpacity * 1.f;
+        else
+            vFinalColor.a = g_DecalParams[i].fOpacity * 0.f;
     }
     
     Out.vColor = vFinalColor;
