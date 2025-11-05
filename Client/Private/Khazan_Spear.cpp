@@ -253,7 +253,7 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
 	else if (Has_State(CAT::M_WEAPON_CHANGE))
     {
 
-    }
+    }  
     else
     {
 

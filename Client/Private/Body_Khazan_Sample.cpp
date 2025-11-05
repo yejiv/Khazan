@@ -273,7 +273,7 @@ HRESULT CBody_Khazan_Sample::Ready_AnimationEvent()
     m_pModelCom->Register_Event("e1", ANIM_EVENT_TRIGGERTYPE::EXIT,        [this]() {Effect1_Exit(); });
     m_pModelCom->Register_Event("e1", ANIM_EVENT_TRIGGERTYPE::CONTINUE,    [this]() {Effect1_Continue(); });
 
-    m_pModelCom->Register_Event("e2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()       {Effect2_Enter(); });
+    m_pModelCom->Register_Event("e2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()       {Effect2_Enter(); }); 
     m_pModelCom->Register_Event("e2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()        {Effect2_Exit(); });
     m_pModelCom->Register_Event("e2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()    {Effect2_Continue(); });
 
@@ -281,7 +281,7 @@ HRESULT CBody_Khazan_Sample::Ready_AnimationEvent()
     m_pModelCom->Register_Event("e3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()        {Effect3_Exit(); });
     m_pModelCom->Register_Event("e3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()    {Effect3_Continue(); });
 
-    m_pModelCom->Register_Event("e4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()       {Effect4_Enter(); });
+    m_pModelCom->Register_Event("e4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()       {Effect4_Enter(); }); 
     m_pModelCom->Register_Event("e4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()        {Effect4_Exit(); });
     m_pModelCom->Register_Event("e4", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()    {Effect4_Continue(); });
 
@@ -309,7 +309,7 @@ HRESULT CBody_Khazan_Sample::Ready_AnimationEvent()
     m_pModelCom->Register_Event("e10", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()       {Effect10_Exit(); });
     m_pModelCom->Register_Event("e10", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()   {Effect10_Continue(); });
 
-    m_pModelCom->Register_Event("e11", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()      {Effect11_Enter(); });
+    m_pModelCom->Register_Event("e11", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()      {Effect11_Enter(); }); 
     m_pModelCom->Register_Event("e11", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()       {Effect11_Exit(); });
     m_pModelCom->Register_Event("e11", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()   {Effect11_Continue(); });
 
