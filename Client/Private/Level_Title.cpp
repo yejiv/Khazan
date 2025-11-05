@@ -29,7 +29,7 @@ HRESULT CLevel_Title::Initialize()
 		});
 
 	m_pGameInstance->Change_InputType(INPUT_TYPE::UI);
-
+	CClientInstance::GetInstance()->Fade_In();
 	return S_OK;
 }
 
