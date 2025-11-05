@@ -124,9 +124,27 @@ HRESULT CProp_Object::Render()
         if (SHADER_PASS::SNOWMAP == m_eShaderPass || SHADER_PASS::SNOWMAP_ICE == m_eShaderPass)
             CHECK_FAILED(Bind_ShaderResources_ForSnowMap(i), E_FAIL);
 
+        if (SHADER_PASS::SOLIDFRAME == m_eShaderPass)
+        {
+            _float4 vWireColor = { 0.6f, 0.f, 0.6f, 1.f };
+
+            m_pShaderCom->Bind_RawValue("g_vColor", &vWireColor, sizeof(_float4));
+        }
+
         CHECK_FAILED_ASSERT(m_pShaderCom->Begin(ENUM_CLASS(m_eShaderPass)), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
+
+        if (SHADER_PASS::SOLIDFRAME == m_eShaderPass)
+        {
+            _float4 vWireColor = { 1.f, 1.f, 0.f, 1.f };
+
+            m_pShaderCom->Bind_RawValue("g_vColor", &vWireColor, sizeof(_float4));
+
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(ENUM_CLASS(SHADER_PASS::WIREFRAME)), E_FAIL);
+
+            CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
+        }
     }
 
     return S_OK;

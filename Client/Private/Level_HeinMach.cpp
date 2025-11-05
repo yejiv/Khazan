@@ -31,6 +31,8 @@ CLevel_HeinMach::CLevel_HeinMach(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 
 HRESULT CLevel_HeinMach::Initialize()
 {
+	CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+
 	m_pGameInstance->Add_FireTask([this]() {
 		CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		return S_OK;
@@ -828,6 +830,64 @@ HRESULT CLevel_HeinMach::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurren
 	}
 
 	CloseHandle(hFile);
+
+	return S_OK;
+}
+
+HRESULT CLevel_HeinMach::Ready_Trigger(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
+{
+	// Json 기본 경로
+	_wstring strJsonFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+
+	switch (eMap)
+	{
+	case KHAZAN_MAP::HEINMACH:
+		strJsonFilePath += TEXT("HeinMach/");
+		break;
+	case KHAZAN_MAP::CREVICE:
+		strJsonFilePath += TEXT("Crevice/");
+		break;
+	case KHAZAN_MAP::EMBARS:
+		strJsonFilePath += TEXT("Embars/");
+		break;
+	case KHAZAN_MAP::VIPER:
+		strJsonFilePath += TEXT("Viper/");
+		break;
+	default:
+		break;
+	}
+
+	strJsonFilePath += pDataFileName;
+
+	strJsonFilePath += TEXT("_trigger.json");
+
+	ifstream ifs(strJsonFilePath);
+	if (!ifs.is_open())
+	{
+		MSG_BOX(TEXT("Json read failed"));
+		return E_FAIL;
+	}
+
+	JSON j = {};
+	ifs >> j;
+	ifs.close();
+
+	JSON_MAP_TRIGGER_DATA TriggerData = j.get<JSON_MAP_TRIGGER_DATA>();
+
+	_uint iNumTrigger = TriggerData.iNumTrigger;
+
+	for (_uint i = 0; i < iNumTrigger; ++i)
+	{
+		CTrigger::TRIGGER_DESC TriggerDesc = {};
+
+		_float4x4 WorldMatrix = {};
+		memcpy(&TriggerDesc.WorldMatrix, &TriggerData.WorldMatrix[i], sizeof(_float4x4));
+
+		TriggerDesc.strTriggerKey = TriggerData.TriggerKey[i];
+
+		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Trigger"), TIME_CHANNEL::MAP, &TriggerDesc), E_FAIL);
+	}
 
 	return S_OK;
 }

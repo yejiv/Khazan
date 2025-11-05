@@ -96,7 +96,7 @@ HRESULT CBladeNexus::Render()
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(0), E_FAIL);
+        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(8), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
@@ -158,7 +158,7 @@ HRESULT CBladeNexus::Ready_Collision(void* pArg)
     TriggerDesc.vExtent = _float3(1.6f, 1.f, 1.6f);
     TriggerDesc.bIsTrigger = true;
     TriggerDesc.bStartActive = true;
-    TriggerDesc.eMotion = EMotionType::Static;
+    TriggerDesc.eMotion = EMotionType::Kinematic;
     TriggerDesc.eQuality = EMotionQuality::LinearCast;
     TriggerDesc.eShapeType = SHAPE::BOX;
     TriggerDesc.fFriction = 0.8f;
