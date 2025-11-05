@@ -156,6 +156,7 @@ void CCamera::Set_Animation(_wstring strAnimationTag)
 	m_isLoop = false;  // 컷씬이면 보통 false
 	m_iSeg = 0;
 	m_fSegTime = 0.f;
+	m_isStarted = true;
 }
 
 void CCamera::Play_Animation(_float fTimeDelta)
@@ -228,10 +229,9 @@ void CCamera::Play_Animation(_float fTimeDelta)
 
 	const _int iCurrAniSize = (_int)m_pCurrentAnimation->size();
 
-	// ── 세그 시간 증가 & carry ──
+
 	_float fSpeed = max(1e-4f, (*m_pCurrentAnimation)[m_iSeg].fSpeed);
 	_float fTrack = max(1e-4f, (*m_pCurrentAnimation)[m_iSeg].fTrackPosition);
-	_bool isCurPos = (*m_pCurrentAnimation)[m_iSeg].isCurPos;
 	_float fDuration = fTrack / fSpeed;
 
 	m_fSegTime += fTimeDelta;
@@ -245,63 +245,88 @@ void CCamera::Play_Animation(_float fTimeDelta)
 		// 다음 세그 duration 갱신
 		fSpeed = max(1e-4f, (*m_pCurrentAnimation)[m_iSeg].fSpeed);
 		fTrack = max(1e-4f, (*m_pCurrentAnimation)[m_iSeg].fTrackPosition);
-		isCurPos = (*m_pCurrentAnimation)[m_iSeg].isCurPos;
 		fDuration = fTrack / fSpeed;
 	}
-	if (isCurPos)
-	{
-		_vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
-		(*m_pCurrentAnimation)[m_iSeg].vTranslation = _float3(vPos.m128_f32[0], vPos.m128_f32[1], vPos.m128_f32[2]);
-		m_vCurPos = XMVectorSet(vPos.m128_f32[0], vPos.m128_f32[1], vPos.m128_f32[2], 1.f);
-	}
 
-	// ── 현재 세그 파라미터 ──
-	_float fSeg = std::clamp(m_fSegTime / fDuration, 0.f, 1.f); // 시간 기반 진행도(중간은 일정속도)
 
+	_float fSeg = std::clamp(m_fSegTime / fDuration, 0.f, 1.f);
 	auto idx = [&](int i)->int { return m_isLoop ? Wrap(i, iCurrAniSize) : std::clamp(i, 0, iCurrAniSize - 1); };
 
-	_int iSeg0 = m_iSeg - 1, iSeg1 = m_iSeg, iSeg2 = m_iSeg + 1, iSeg3 = m_iSeg + 2;
+	int iSeg0 = m_iSeg - 1;
+	int iSeg1 = m_iSeg;
+	int iSeg2 = m_iSeg + 1;
+	int iSeg3 = m_iSeg + 2;
 
-	XMVECTOR P1 = XMLoadFloat3(&(*m_pCurrentAnimation)[idx(iSeg0)].vTranslation);
-	_vector P2 = XMLoadFloat3(&(*m_pCurrentAnimation)[idx(iSeg1)].vTranslation);
-	_vector P0, P3;
-	if (m_isLoop) {
+
+	_vector P0, P1, P2, P3;
+
+	if (m_isLoop)
+	{
 		P0 = XMLoadFloat3(&(*m_pCurrentAnimation)[idx(iSeg0)].vTranslation);
+		P1 = XMLoadFloat3(&(*m_pCurrentAnimation)[idx(iSeg1)].vTranslation);
+		P2 = XMLoadFloat3(&(*m_pCurrentAnimation)[idx(iSeg2)].vTranslation);
 		P3 = XMLoadFloat3(&(*m_pCurrentAnimation)[idx(iSeg3)].vTranslation);
 	}
-	else {
-		P0 = (iSeg0 >= 0) ? XMLoadFloat3(&(*m_pCurrentAnimation)[iSeg0].vTranslation) : (P1 * 2.f - P2);
-		P3 = (iSeg3 < iCurrAniSize) ? XMLoadFloat3(&(*m_pCurrentAnimation)[iSeg3].vTranslation) : (P2 * 2.f - P1);
+	else
+	{
+
+		_vector Key0 = XMLoadFloat3(&(*m_pCurrentAnimation)[idx(iSeg1)].vTranslation);
+		_vector Key1 = XMLoadFloat3(&(*m_pCurrentAnimation)[idx(iSeg2)].vTranslation);
+
+		P1 = Key0;
+		P2 = Key1;
+
+
+		if (iSeg0 >= 0)
+			P0 = XMLoadFloat3(&(*m_pCurrentAnimation)[iSeg0].vTranslation);
+		else
+			P0 = P1 * 2.f - P2;
+
+
+		if (iSeg3 < iCurrAniSize)
+			P3 = XMLoadFloat3(&(*m_pCurrentAnimation)[iSeg3].vTranslation);
+		else
+			P3 = P2 * 2.f - P1;
 	}
 
-	float s01 = ChordLenAlpha(P0, P1), s12 = ChordLenAlpha(P1, P2), s23 = ChordLenAlpha(P2, P3);
 
-	// ── 목표 위치(부드러운 곡선) ──
-	_vector vPosTarget = CatmullCR(P0, P1, P2, P3, s01, s12, s23, fSeg);
+	float s01 = ChordLenAlpha(P0, P1);
+	float s12 = ChordLenAlpha(P1, P2);
+	float s23 = ChordLenAlpha(P2, P3);
+
+
+	_vector vPosTarget;
+	if (s12 < 1e-6f)
+		vPosTarget = XMVectorLerp(P1, P2, fSeg);
+	else
+		vPosTarget = CatmullCR(P0, P1, P2, P3, s01, s12, s23, fSeg);
+
 	vPosTarget = XMVectorSetW(vPosTarget, 1.f);
 
-	// ── 목표 회전(룩 SLERP) ──
+
 	_vector qFrom = QuatFromLook((*m_pCurrentAnimation)[idx(iSeg1)].vLookAt);
 	_vector qTo = QuatFromLook((*m_pCurrentAnimation)[idx(iSeg2)].vLookAt);
-	if (XMVectorGetX(XMVector4Dot(qFrom, qTo)) < 0.f) qTo = XMVectorNegate(qTo); // 반구 통일
+	if (XMVectorGetX(XMVector4Dot(qFrom, qTo)) < 0.f) qTo = XMVectorNegate(qTo);
 	_vector vQuatTarget = XMQuaternionNormalize(XMQuaternionSlerp(qFrom, qTo, fSeg));
 
-	// ── 최소 스무딩(감쇠) 적용 ──
+
+	if (m_isStarted) {
+		m_vCurPos = vPosTarget;
+		m_vCurQ = vQuatTarget;
+		m_isStarted = false;
+	}
+
+
 	float fAlphaPos = DampAlpha(m_fPosSmooth, fTimeDelta);
 	float fAlphaRot = DampAlpha(m_fRotSmooth, fTimeDelta);
-
 	m_vCurPos = XMVectorLerp(m_vCurPos, vPosTarget, fAlphaPos);
 	m_vCurQ = XMQuaternionNormalize(XMQuaternionSlerp(m_vCurQ, vQuatTarget, fAlphaRot));
 
-	// ── 트랜스폼 반영 ──
-	XMMATRIX R = XMMatrixRotationQuaternion(m_vCurQ);
-	_vector right = XMVector3Normalize(R.r[0]);
-	_vector up = XMVector3Normalize(R.r[1]);
-	_vector look = XMVector3Normalize(R.r[2]);
 
-	right = XMVectorSetW(right, 0.f);
-	up = XMVectorSetW(up, 0.f);
-	look = XMVectorSetW(look, 0.f);
+	XMMATRIX R = XMMatrixRotationQuaternion(m_vCurQ);
+	_vector right = XMVectorSetW(XMVector3Normalize(R.r[0]), 0.f);
+	_vector up = XMVectorSetW(XMVector3Normalize(R.r[1]), 0.f);
+	_vector look = XMVectorSetW(XMVector3Normalize(R.r[2]), 0.f);
 
 	m_pTransformCom->Set_State(STATE::RIGHT, right);
 	m_pTransformCom->Set_State(STATE::UP, up);
@@ -536,6 +561,13 @@ HRESULT CCamera::Load(map<_wstring, vector<CAMERA_KEYFRAME>> Animations, map<_ws
 {
 	m_Animations = Animations;
 	m_Events = Events;
+
+	return S_OK;
+}
+
+HRESULT CCamera::Load_Animation(map<_wstring, vector<CAMERA_KEYFRAME>> Animations)
+{
+	m_Animations = Animations;
 
 	return S_OK;
 }

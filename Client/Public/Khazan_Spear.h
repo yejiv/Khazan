@@ -28,8 +28,11 @@ private:
 		BACK_DODGE = 1 << 4,
 
 		ROTATION = 1 << 5,
-		KEY_ROTATION = 1 << 6,
-		SAMEDIRECTION = 1 << 7,  // 키입력 방향과 플레이어의 룩방향 일치성
+		//KEY_ROTATION = 1 << 6,
+		//SAMEDIRECTION = 1 << 7,  // 키입력 방향과 플레이어의 룩방향 일치성
+		
+		CHARGING_STRONG_ATTACK = 1 << 6,
+
 
 
 
@@ -96,6 +99,10 @@ private:
 	_float						m_fRotateTime[2] = { 0.f,0.1f };
 	_vector						m_vRotateStart;
 	_float						m_fSprintTime = { 0.f };
+	uint						m_iStopMoveIndexTable[9];	/* 스탑 애니메이션일 때 움직임 x  */
+
+	/* Attack  */
+	_float						m_fChargingStrongTime = { 0.f };
 
 	/* const */
 	const	_float				m_fMinSprintTime = { 0.15f };
@@ -105,10 +112,14 @@ private:
 	const _float				m_fRunSpeed = { 4.f };
 	const _float				m_fSprintSpeed = { 7.f };
 
+	/*  Attack */
+	const _float				m_fChargingStrongIntervalTime = { 0.25f };
+
+
 private:
 	void			Update_State(_float fTimeDelta);
 	void			Move_Input(_float fTimeDelta);
-	void			Attack_Input(_float fTimeDelta);
+	_bool			Attack_Input(_float fTimeDelta);
 	void			ChangeAnimation();
 	void			ExecuteAnimationExit();
 	void			Apply_PlayerMovement(_float fTimeDelta);
@@ -149,6 +160,20 @@ private:
 	inline void		AllClear_CycleState() { m_iCycle = 0;	}
 
 	_uint			ConvertCameraToPlayerDir( PLAYER_CAMERA_DIR playerCamDir);
+
+#pragma region 상호 작용 맵 오브젝트 이벤트
+private:
+	EventInteractType			m_EventInteract = {};				// 트리거 접촉 여부, 이벤트 발생 여부, 상호 작용 타입, 상호 작용 타입들의 구조체
+	_float						m_fEventTimeAcc = { 0.f };
+	_ushort						m_sNextItem = { 0 };
+
+private:
+	void						Subscribe_Events();
+	void						Event_Interact_Object(_float fTimeDelta);
+	void						BladeNexus_Event(_float fTimeDelta);
+	void						Chest_Event(_float fTimeDelta);
+	void						TombStone_Event(_float fTimeDelta);
+#pragma endregion
 
 #ifdef _DEBUG
 	void			Debug_Widget();

@@ -53,6 +53,8 @@ private:
 
 	mutex m_Mutex;
 
+	class CSequence_HeinMach_Field* m_pTest = nullptr;
+
 public:
 	static CLevel_HeinMach* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;

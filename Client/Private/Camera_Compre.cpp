@@ -82,13 +82,14 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
             Update_Free(fTimeDelta);
         else if (m_iCameraType == ENUM_CLASS(CAMERATYPE::SPRING))
             Update_Spring(fTimeDelta);
-    }
 
-    m_vShaking_BasePos = m_pTransformCom->Get_State(STATE::POSITION);
-    m_vShaking_BaseRight = m_pTransformCom->Get_State(STATE::RIGHT);
-    m_vShaking_BaseUp = m_pTransformCom->Get_State(STATE::UP);
-    m_vShaking_BaseLook = m_pTransformCom->Get_State(STATE::LOOK);
-    Shaking(fTimeDelta);
+        m_vShaking_BasePos = m_pTransformCom->Get_State(STATE::POSITION);
+        m_vShaking_BaseRight = m_pTransformCom->Get_State(STATE::RIGHT);
+        m_vShaking_BaseUp = m_pTransformCom->Get_State(STATE::UP);
+        m_vShaking_BaseLook = m_pTransformCom->Get_State(STATE::LOOK);
+        Shaking(fTimeDelta);
+
+    }
 
     __super::Update_PipeLines(fTimeDelta);
 }

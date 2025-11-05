@@ -110,7 +110,6 @@ void CInteraction_Guide::Late_Update(_float fTimeDelta)
 
 HRESULT CInteraction_Guide::Render()
 {
-
 	return S_OK;
 }
 
