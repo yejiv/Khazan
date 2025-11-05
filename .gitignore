@@ -11,6 +11,7 @@ x64/
 *.ini
 *.exp
 *.pskx
+*.jpg
 
 Client.exp
 Client.exe

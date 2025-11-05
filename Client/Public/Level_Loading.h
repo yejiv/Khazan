@@ -15,9 +15,13 @@ NS_BEGIN(Client)
 class CLevel_Loading final : public CLevel
 {
 private:
+	enum class LOADING_STATE {UI_ON, INPUT, NEXTLEVEL, END };
+private:
 	CLevel_Loading(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual ~CLevel_Loading() = default;
 
+public:
+	void			Complete();
 public:
 	virtual HRESULT Initialize(LEVEL eNextLevelID);
 	virtual void Update(_float fTimeDelta) override;
@@ -28,6 +32,7 @@ private:
 	class CLoader*		m_pLoader = { nullptr };
 	class CClientInstance* m_pClientInstance = { nullptr };
 
+	LOADING_STATE		m_eLoadingState = { LOADING_STATE::END };
 private:
 	HRESULT Ready_GameObjects();
 

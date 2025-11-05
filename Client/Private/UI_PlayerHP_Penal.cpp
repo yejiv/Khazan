@@ -101,6 +101,12 @@ void CUI_PlayerHP_Penal::Bubble_EventCall()
 {
 }
 
+HRESULT CUI_PlayerHP_Penal::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
+{
+	CHECK_FAILED(__super::Load_UI(pInData, iPrototypeLevelID, pArg),E_FAIL);
+	return S_OK;
+}
+
 HRESULT CUI_PlayerHP_Penal::Ready_Prototype()
 {
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_PlayerHP_BG"),

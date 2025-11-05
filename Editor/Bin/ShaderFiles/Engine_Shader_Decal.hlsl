@@ -77,7 +77,10 @@ PS_OUT PS_MAIN(PS_IN In)
     
     vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
     
-    float4 vFinalColor = { 0.f, 0.f, 0.f, 0.f };
+    // 디퓨즈 텍스처를 샘플링
+    vector vDiffuseDesc = g_DiffuseTexture.Sample(ClampSampler, vTexcoord);
+
+    float4 vFinalColor = vDiffuseDesc;
     
     [loop]
     for (uint i = 0; i < g_iNumActiveDecals; ++i)
@@ -115,10 +118,11 @@ PS_OUT PS_MAIN(PS_IN In)
         // 데칼 텍스처를 샘플링
         vector vDecalDesc = g_DecalTexture.Sample(ClampSampler, vDecalTexcoord);
 
-        // CPU에서 계산된 불투명도와 데칼 텍스처의 알파값을 곱함
-        vDecalDesc.a = vDecalDesc.a * g_DecalParams[i].fOpacity;
+        float fMask = vDecalDesc.r;
+        float3 vBloodColor = { 0.67f, 0.08f, 0.08f };
 
-        vFinalColor += vDecalDesc;
+        vFinalColor.rgb = lerp(vDiffuseDesc.rgb, vBloodColor, fMask);
+        vFinalColor.a = g_DecalParams[i].fOpacity * fMask;
     }
     
     Out.vColor = vFinalColor;

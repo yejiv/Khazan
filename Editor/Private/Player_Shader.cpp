@@ -76,7 +76,7 @@ void CPlayer_Shader::Update(_float fTimeDelta)
 
 void CPlayer_Shader::Late_Update(_float fTimeDelta)
 {
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this)))
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONLIGHT, this)))
         return;
 
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
@@ -116,7 +116,7 @@ HRESULT CPlayer_Shader::Render()
         if (FAILED(m_pShaderCom->Bind_Bool("g_isEnableBloom", &m_isEnableBloom)))
             return E_FAIL;
 
-        m_pShaderCom->Begin(4);
+        m_pShaderCom->Begin(5);
 
         m_pModelCom->Render(i);
     }

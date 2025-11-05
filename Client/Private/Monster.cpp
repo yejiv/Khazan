@@ -34,6 +34,18 @@ void CMonster::Consume_Stamina(_float fAmout)
 
 void CMonster::Recovery_Stamina(_float fTimeDelta)
 {
+    if (!m_isRequestRecoveryStamina)
+        return;
+
+    if (m_fCurrentStamina < m_fMaxStamina)
+    {
+        m_fCurrentStamina += m_fRecoveryPerSec * fTimeDelta;
+        if (m_fCurrentStamina > m_fMaxStamina)
+            m_fCurrentStamina = m_fMaxStamina;
+    }
+
+    if (m_fCurrentStamina >= m_fMaxStamina)
+        m_isRequestRecoveryStamina = false;
 
 }
 
@@ -60,7 +72,7 @@ HRESULT CMonster::Initialize_Clone(void* pArg)
     // 이름
     m_strName = pDesc->strName;
     // 타겟
-    m_pTarget = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Test"), 0);
+    m_pTarget = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH),TEXT("Layer_Creature_Player"),0);
     if (nullptr == m_pTarget)
         return E_FAIL;
     // 블랙보드에 설정

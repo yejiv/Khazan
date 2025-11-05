@@ -20,10 +20,11 @@ CYetuga::CYetuga(const CYetuga& Prototype)
 {
 }
 
-_float4 CYetuga::Get_LockOnPosition()
+_float4* CYetuga::Get_LockOnPosition()
 {
-    _float3 vTempPos = m_pBody->Get_BonePoint("FX_Body_ExpGained");
-    m_vLockOnPosition = _float4(vTempPos.x, vTempPos.y, vTempPos.z, 1.f);
+    //m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
+    //m_vLockOnPosition = m_pBody->Get_BonePointEX("Holding");
+    m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
 
     return m_vLockOnPosition;
 }

@@ -2,6 +2,10 @@
 #include "Client_Defines.h"
 #include "Base.h"
 #include "DB_Manager.h"
+#include "PlayerData_Manager.h"
+
+using SPEARSKILL = CPlayerData_Manager::SPEARSKILL;
+//using GSWORDSKILL = CPlayerData_Manager::GSWORDSKILL;
 
 NS_BEGIN(Engine)
 class CUIObject;
@@ -40,6 +44,11 @@ public:
 #pragma endregion
 
 #pragma region UI_MANGER
+	//Fade 관련
+	void						Fade_In(function<void()> FadeEvent = nullptr);
+	void						Fade_Out(function<void()> FadeEvent = nullptr);
+	_bool						Fade_End();
+
 	//Event 관련
 	HRESULT						Add_UIEvent(const _wstring& strLayerTag, const _wstring& strEventTag, std::function<void()> Event);
 	HRESULT						Add_UIParamEvent(const _wstring& strLayerTag, const _wstring& strEventTag, std::function<void(void*)> Event);
@@ -78,14 +87,33 @@ public:
 	void ActiveCamera_KillFov(const _wstring& strID);
 
 	void Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
+	void Save_Json_Animation(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
 	void Clear_CameraManager(_uint iLevelIndex);
 #pragma endregion
+
+#pragma region PlayerData
+public:
+	_bool   Check_SpearSkill(_uint skill);		// Check if the skill exists
+	_bool   Check_GSwordSkill(_uint skill);
+	void    AllUnlock_SpearSkill();				// Unlock all skills
+	void    AllUnlock_GswordSkill( );
+	void    Unlock_SpearSkill(_uint skill);		// Unlock a single skill
+	void    Unlock_GswordSkill(_uint skill) ;
+	void    Alllock_SpearSkill();				// Lock all skills
+	void    Alllock_GswordSkill();
+	void    lock_SpearSkill(_uint skill);		// Lock a single skill
+	void    lock_GswordSkill(_uint skill);
+#pragma endregion
+
+
 
 #ifdef _DEBUG
 #pragma region CAMERA_CONTROLLER
 	void CameraTool_Clear();
 #pragma region CAMERA_MANAGER
 #endif
+
+
 
 private:
 	ID3D11Device* m_pDevice = { nullptr };
@@ -96,6 +124,7 @@ private:
 	class CUI_Manager*	m_pUI_Manager = { nullptr };
 	CDB_Manager*		m_pDB_Manager = { nullptr };
 	class CCamera_Manager* m_pCamera_Manager = { nullptr };
+	 CPlayerData_Manager* m_pPlayerData_Manager = { nullptr };
 	
 
 #ifdef _DEBUG
