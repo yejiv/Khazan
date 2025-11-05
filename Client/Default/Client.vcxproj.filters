@@ -310,12 +310,6 @@
     <Filter Include="02.GameObject\Creature\Khazan\Sample\Weapon">
       <UniqueIdentifier>{3beaf210-4418-4b5f-8dba-cf71731a9a86}</UniqueIdentifier>
     </Filter>
-    <Filter Include="04. Sequence">
-      <UniqueIdentifier>{d9f9bdc1-e281-4d8e-86c4-ea9548bc5e2d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="04. Sequence\Dummy">
-      <UniqueIdentifier>{f2d6df02-dd3b-4aad-99f3-888f46dc3174}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Levels\HeinMach">
       <UniqueIdentifier>{4230c53b-dd46-4d38-8626-e6d9f39edccc}</UniqueIdentifier>
     </Filter>
@@ -508,6 +502,21 @@
     <Filter Include="02.GameObject\UI\Logo">
       <UniqueIdentifier>{26278f3a-a228-41e2-a180-ca8ee47150b7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04.Sequence">
+      <UniqueIdentifier>{d9f9bdc1-e281-4d8e-86c4-ea9548bc5e2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\Dummy">
+      <UniqueIdentifier>{f2d6df02-dd3b-4aad-99f3-888f46dc3174}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\HeinMach">
+      <UniqueIdentifier>{84d2fd3a-284c-4751-8935-661615722e0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\HeinMach\Fieldscene">
+      <UniqueIdentifier>{a8bfaaf5-8d1a-4cb1-a10b-3fc60e4ab142}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Sky">
+      <UniqueIdentifier>{2c7d8743-ca8b-41d9-99db-38edaf99c5af}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObject\UI\Logo\Logo_BG">
       <UniqueIdentifier>{029c92cd-a943-4ac8-aa1b-b9197650327d}</UniqueIdentifier>
     </Filter>
@@ -525,6 +534,9 @@
     </Filter>
     <Filter Include="02.GameObject\UI\Loding\Panel">
       <UniqueIdentifier>{fc470073-a7db-486d-bf55-71597800c6c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\PlayerData">
+      <UniqueIdentifier>{1d2ef6bc-c0f6-4e05-9f58-fa1e39927a2b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -826,7 +838,7 @@
       <Filter>02.GameObject\Creature\Khazan\Spear\Weapon</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Sequence_Dummy.h">
-      <Filter>04. Sequence\Dummy</Filter>
+      <Filter>04.Sequence\Dummy</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Client_Sequence.h">
       <Filter>99.Defines</Filter>
@@ -963,9 +975,6 @@
     <ClInclude Include="..\Public\Effect_Mesh_Instance.h">
       <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Mesh_Instance</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\CloudSphere.h" />
-    <ClInclude Include="..\Public\Sky.h" />
-    <ClInclude Include="..\Public\SkySphere.h" />
     <ClInclude Include="..\Public\Body_Khazan_Sample.h">
       <Filter>02.GameObject\Creature\Khazan\Sample\Body</Filter>
     </ClInclude>
@@ -996,11 +1005,32 @@
     <ClInclude Include="..\Public\AS_Dead_Yetuga.h">
       <Filter>92.AI\State\Yetuga\16.Dead</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Sequence_HeinMach_Field.h">
+      <Filter>04.Sequence\HeinMach\Fieldscene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SkySphere.h">
+      <Filter>02.GameObject\Sky</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CloudSphere.h">
+      <Filter>02.GameObject\Sky</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sky.h">
+      <Filter>02.GameObject\Sky</Filter>
+    </ClInclude>
     <ClInclude Include="..\public\UI_Loading.h">
       <Filter>02.GameObject\UI\Loding</Filter>
     </ClInclude>
     <ClInclude Include="..\public\UI_Loading_Panel.h">
       <Filter>02.GameObject\UI\Loding\Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Groggy_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\15.Groggy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_Spear_Anim_Attack.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\PlayerData_Manager.h">
+      <Filter>94.ClientInstance\PlayerData</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1294,7 +1324,7 @@
       <Filter>02.GameObject\Creature\Khazan\Spear\Weapon</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Sequence_Dummy.cpp">
-      <Filter>04. Sequence\Dummy</Filter>
+      <Filter>04.Sequence\Dummy</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Camera_Manager.cpp">
       <Filter>94.ClientInstance\Camera\Manager</Filter>
@@ -1428,9 +1458,6 @@
     <ClCompile Include="..\Private\Effect_Sprite.cpp">
       <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\CloudSphere.cpp" />
-    <ClCompile Include="..\Private\Sky.cpp" />
-    <ClCompile Include="..\Private\SkySphere.cpp" />
     <ClCompile Include="..\private\Khazan_Spear_Animation.cpp">
       <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Base</Filter>
     </ClCompile>
@@ -1458,11 +1485,32 @@
     <ClCompile Include="..\Private\AS_Dead_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\16.Dead</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Sequence_HeinMach_Field.cpp">
+      <Filter>04.Sequence\HeinMach\Fieldscene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CloudSphere.cpp">
+      <Filter>02.GameObject\Sky</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sky.cpp">
+      <Filter>02.GameObject\Sky</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SkySphere.cpp">
+      <Filter>02.GameObject\Sky</Filter>
+    </ClCompile>
     <ClCompile Include="..\private\UI_Loading.cpp">
       <Filter>02.GameObject\UI\Loding</Filter>
     </ClCompile>
     <ClCompile Include="..\private\UI_Loading_Panel.cpp">
       <Filter>02.GameObject\UI\Loding\Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Groggy_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\15.Groggy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_Spear_Anim_Attack.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\PlayerData_Manager.cpp">
+      <Filter>94.ClientInstance\PlayerData</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

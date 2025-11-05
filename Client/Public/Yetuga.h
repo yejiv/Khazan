@@ -12,7 +12,7 @@ private:
 
 public:
 	class CBody_Yetuga*			Get_Body() const { return m_pBody; }
-	virtual _float4				Get_LockOnPosition();
+	virtual _float4*			Get_LockOnPosition();
 	inline _float				EaseInOutSine(_float t) { return -(cosf(XM_PI * t) - 1.f) * 0.5f; }
 
 public:

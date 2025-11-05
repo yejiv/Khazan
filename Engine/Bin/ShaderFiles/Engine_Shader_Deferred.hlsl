@@ -20,7 +20,7 @@ vector g_vMtrlAmbient = { 1.f, 1.f, 1.f, 1.f }, g_vMtrlSpecular = { 1.f, 1.f, 1.
 
 // ===== Textures =====
 Texture2D g_DiffuseTexture, g_NormalTexture, g_DepthTexture, g_ShadeTexture, g_SpecularTexture, g_EmissiveTexture;
-Texture2D g_LightDepthTexture, g_PostSceneTexture, g_BlurXTexture, g_BloomTexture, g_FogTexture, g_OutlineTexture, g_DecalTexture;
+Texture2D g_LightDepthTexture, g_PostSceneTexture, g_BlurXTexture, g_BloomTexture, g_FogTexture, g_OutlineTexture;
 
 // ===== Cascade Shadow =====
 int g_iTextureArrayIndex;
@@ -251,17 +251,15 @@ PS_OUT_BACKBUFFER PS_MAIN_POSTSCENE(PS_IN In)
     PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
     
     vector vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-    if (vDiffuse.a == 0.f)
+
+    if (1.f == vDiffuse.r && 0.f == vDiffuse.g && 1.f == vDiffuse.b)
         discard;
     
     vector vShade = g_ShadeTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    vector vDecal = g_DecalTexture.Sample(DefaultSampler, In.vTexcoord);
-    
     //  Out.vColor = vDiffuse * vShade;
-    Out.vColor = (vDiffuse + vDecal) * vShade + vSpecular;
+    Out.vColor = vDiffuse * vShade + vSpecular;
     
     if (!g_isEnableShadow)
         return Out;
@@ -482,8 +480,8 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
     vector vBloomDesc = g_BloomTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vFogDesc = g_FogTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    //  if (0.f == vPostSceneDesc.a)
-    //      discard;
+    if (1.f == vPostSceneDesc.r && 0.f == vPostSceneDesc.g && 1.f == vPostSceneDesc.b)
+        discard;
 
     //  if (true == g_isEnableFog)
     //      Out.vColor = vFogDesc + vEmissiveDesc + vBloomDesc;
@@ -730,7 +728,7 @@ technique11 DefaultTechnique
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
     
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;

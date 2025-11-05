@@ -50,6 +50,7 @@ public:
 	_float						Get_CoolTimeAcc() const { return m_fCoolTimeAcc; }
 	const string&				Get_Name() const { return m_strName; }
 	virtual _float4				Get_LockOnPosition() const { return _float4(0.f, 0.f, 0.f, 0.f); };
+	void						RequestRecoveryStamina() { m_isRequestRecoveryStamina = true; }
 
 public:
 	virtual void				Take_Damage(_float fDamage, HITREACTION eHitreaction, _float fValidTime ,CGameObject* pGameObject = nullptr);
@@ -76,9 +77,11 @@ protected:
 protected:
 	unordered_map<string, _float>	m_CoolDowns;
 	_float							m_fCoolTimeAcc = {};
-	_float4							m_vLockOnPosition = {};
+	_float4*						m_vLockOnPosition = {};
 
 	string							m_strName;
+	_float							m_fRecoveryPerSec = {};
+	_bool							m_isRequestRecoveryStamina = {};
 
 //private:
 //	HRESULT Ready_Components();

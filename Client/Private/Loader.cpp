@@ -18,6 +18,9 @@
 #include "Khazan_Sample.h"
 #include "Body_Khazan_Sample.h"
 #include "Spear_Khazan_Sample.h"
+#include "Khazan_Spear.h"
+#include "Body_Khazan_Spear.h"
+#include "Spear_Khazan_Spear.h"
 #pragma endregion
 
 #pragma region MAP OBJECT
@@ -256,6 +259,7 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Test/Fiona/Fiona.dat"))))
 	//	return E_FAIL;
 
+
 	/* Prototype_Component_Model_Khazan_Sample*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Sample"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Khazan_Sample.dat"))))
@@ -264,6 +268,11 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 	/* Prototype_Component_Model_Spear_Khazan_Sample*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Spear_Khazan_Sample"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Spear/Spear.dat"))))
+		return E_FAIL;
+
+	/* Prototype_Component_Model_Khazan_Spear*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Spear"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Spear/Khazan_Spear.dat"))))
 		return E_FAIL;
 
 #pragma region YETUGA
@@ -427,8 +436,170 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 		CSpear_Khazan_Sample::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	/* Prototype_GameObject_Khazan_Spear */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"),
+		CKhazan_Spear::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_GameObject_Body_Khazan_Spear */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Body_Khazan_Spear"),
+		CBody_Khazan_Spear::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_GameObject_Spear_Khazan_Spear */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Spear_Khazan_Spear"),
+		CSpear_Khazan_Spear::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 #pragma region 이펙트 테스트 중!
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_TestParticle"),
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle1"),
+	//	CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/test1"))))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle2"),
+	//	CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/test2"))))
+	//	return E_FAIL;
+#pragma endregion
+
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Crevice_Level()
+{
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		return Loading_For_Crevice_Texture();
+		}));
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		return Loading_For_Crevice_Model();
+		}));
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		return Loading_For_Crevice_Shader();
+		}));
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		return Loading_For_Crevice_GameObject();
+		}));
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("Crevice"), LEVEL::CREVICE, KHAZAN_MAP::CREVICE), E_FAIL);
+		}));
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		CHECK_FAILED(Loading_Prototype_MapObject_Inst_From_DAT(TEXT("Crevice"), LEVEL::CREVICE, KHAZAN_MAP::CREVICE), E_FAIL);
+		}));
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Crevice_Texture()
+{
+	CoInitGuard co;
+
+	//lock_guard<mutex> gpu_lock(g_GpuGate);
+
+	return S_OK;
+}
+
+
+HRESULT CLoader::Loading_For_Crevice_Model()
+{
+	CoInitGuard co;
+
+	//lock_guard<mutex> gpu_lock(g_GpuGate);
+
+	/* Prototype_Component_Model_Khazan_Sample*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Sample"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Khazan_Sample.dat"))))
+		return E_FAIL;
+
+	/* Prototype_Component_Model_Spear_Khazan_Sample*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Spear_Khazan_Sample"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Spear/Spear.dat"))))
+		return E_FAIL;
+
+	/* Prototype_Component_Model_Khazan_Spear*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Spear"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Spear/Khazan_Spear.dat"))))
+		return E_FAIL;
+
+#pragma region 모델 원형 : 상호 작용 맵 오브젝트
+	/* Prototype_Component_Model_BladeNexus */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_BladeNexus"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_DamagedTS/WIP_COM_DamagedTS.dat")), E_FAIL);
+
+	/* Prototype_Component_Model_BigChest */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_BigChest"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_BigChest_Open_003/WIP_COM_BigChest_Open_003.dat")), E_FAIL);
+
+	/* Prototype_Component_Model_TombStone */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_TombStone"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_BigTombStone_Destruct_001/WIP_BGQ_BigTombStone_Destruct_001.dat")), E_FAIL);
+#pragma endregion
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Crevice_Shader()
+{
+	CoInitGuard co;
+
+	//lock_guard<mutex> gpu_lock(g_GpuGate);
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Crevice_GameObject()
+{
+	CoInitGuard co;
+
+	//lock_guard<mutex> gpu_lock(g_GpuGate);
+
+	/* Prototype_GameObject_Camera_Compre */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Camera_Compre"),
+		CCamera_Compre::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+#pragma region 게임 오브젝트 : 맵
+
+	/* Prototype_GameObject_Prop_Object */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Prop_Object"),
+		CProp_Object::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	/* Prototype_GameObject_Prop_Static */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Prop_Static"),
+		CProp_Static::Create(m_pDevice, m_pContext)), E_FAIL);
+
+#pragma region 게임 오브젝트 원형 : 상호 작용 맵 오브젝트
+	/* Prototype_GameObject_Prop_BladeNexus */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Prop_BladeNexus"),
+		CBladeNexus::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	/* Prototype_GameObject_Prop_BigChest */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Prop_BigChest"),
+		CBigChest::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	/* Prototype_GameObject_Prop_TombStone */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Prop_TombStone"),
+		CTombStone::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma endregion
+
+	/* Prototype_GameObject_Khazan_Spear */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Khazan_Spear"),
+		CKhazan_Spear::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_GameObject_Body_Khazan_Spear */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Body_Khazan_Spear"),
+		CBody_Khazan_Spear::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_GameObject_Spear_Khazan_Spear */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Spear_Khazan_Spear"),
+		CSpear_Khazan_Spear::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+#pragma region 이펙트 테스트 중!
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_TestParticle"),
 		CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/test1"))))
 		return E_FAIL;
 #pragma endregion

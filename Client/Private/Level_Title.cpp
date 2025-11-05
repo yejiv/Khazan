@@ -28,16 +28,8 @@ HRESULT CLevel_Title::Initialize()
 			m_eNextLevel = static_cast<LEVEL>(e.iLevel);
 		});
 
-	CSequence_Dummy* pDummy = CSequence_Dummy::Create();
-
-	SEQ_REQ_PLAY_DESC tPlayDesc{};
-	tPlayDesc.tId.iSeq = 100;
-	tPlayDesc.pAsset = L"Boss_Intro";
-	tPlayDesc.fStartTime = 0.f;
-
-	m_pGameInstance->SEQ_AdoptAndPlay(pDummy, tPlayDesc);
 	m_pGameInstance->Change_InputType(INPUT_TYPE::UI);
-	CClientInstance::GetInstance()->Fade_In();
+
 	return S_OK;
 }
 
