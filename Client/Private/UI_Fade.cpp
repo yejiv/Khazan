@@ -66,7 +66,7 @@ void CUI_Fade::Late_Update(_float fTimeDelta)
 			}
 		}
 	}
-	CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
+	//CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
 }
 
 HRESULT CUI_Fade::Render()

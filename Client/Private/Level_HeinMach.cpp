@@ -109,16 +109,6 @@ HRESULT CLevel_HeinMach::Initialize()
 
 	CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
 
-	m_pGameInstance->Add_FireTask([this]() {
-
-		return S_OK;
-	});
-	
-	m_pGameInstance->Add_FireTask([this]() {
-
-		return S_OK;
-		});
-
 
 	//if (FAILED(Ready_Layer_TestEffect(TEXT("Layer_EffectTest"))))
 	//	return E_FAIL;

@@ -28,6 +28,8 @@ HRESULT CLevel_Title::Initialize()
 			m_eNextLevel = static_cast<LEVEL>(e.iLevel);
 		});
 
+	m_pGameInstance->Change_InputType(INPUT_TYPE::UI);
+
 	return S_OK;
 }
 

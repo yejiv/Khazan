@@ -9,6 +9,7 @@
 #include "Khazan_Spear_ASMachine.h"
 
 #include "Khazan_Spear_Anim_Move.h"
+#include "ClientInstance.h"
 //#include "Khazan_Spear_Anim_Attack.h"
 
 #pragma region 이벤트 - 인벤토리
@@ -76,7 +77,7 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
         return E_FAIL;
 
 #pragma region 상호 작용 맵 오브젝트 이벤트
-    Subscribe_Events();
+    //Subscribe_Events();
 #pragma endregion
 
 #ifdef _DEBUG
@@ -128,7 +129,7 @@ void CKhazan_Spear::Update(_float fTimeDelta)
     }
 
 #pragma region 상호 작용 맵 오브젝트 이벤트
-    Event_Interact_Object(fTimeDelta);
+    //Event_Interact_Object(fTimeDelta);
 #pragma endregion
 
     __super::Update(fTimeDelta);
@@ -728,7 +729,7 @@ _uint CKhazan_Spear::ConvertCameraToPlayerDir(PLAYER_CAMERA_DIR playerCamDir)
     else if (m_eWorldDir.AllCheck_Flag(DIR::L)) inputIdx = 3;
     else if (m_eWorldDir.AllCheck_Flag((DIR::F | DIR::R))) inputIdx = 4;
     else if (m_eWorldDir.AllCheck_Flag((DIR::B | DIR::R))) inputIdx = 5;
-    else if (m_eWorldDir.AllCheck_Flag((DIR::B | DIR::L))) inputIdx = 6;
+    else if (m_eWorldDir.AllCheck_Flag((DIR::B | DIR::L))) inputIdx = 6;www
     else if (m_eWorldDir.AllCheck_Flag((DIR::F | DIR::L))) inputIdx = 7;
 
     return conversionTable[playerCamDir][inputIdx];
