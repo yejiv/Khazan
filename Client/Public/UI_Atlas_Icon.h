@@ -20,9 +20,11 @@ private:
 public:
 	void					Set_LocalPos(_float2 vPos, CUIObject* pParent);
 	void					Set_Pos(_float2 vPos);
-	void					Update_Color(_float4 vColor);
 	void					Set_Texture(_float4 vUV, _uint iTexPass);
 	void					Set_Shader(_uint iShaderPass);
+	void					Update_Color(_float4 vColor);
+
+	_float2					Get_LocalPos() { return m_vLocalPos; }
 
 public:
 	virtual HRESULT			Initialize_Prototype() override;

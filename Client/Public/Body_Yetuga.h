@@ -22,6 +22,7 @@ public:
 
 public:
 	_float3					Get_BonePoint(const _char* BoneName);
+	_float4*				Get_BonePointEX(const _char* BoneName);
 	_matrix					Get_BoneMatrix(const _char* pBoneName);
 
 private:
@@ -64,9 +65,12 @@ private:
 
 private:
 	_float3					m_vThrowPoint = {};
+	_float4					m_vLockOnPoint = {};
 
 private:
 	_float4x4				m_RightHandMatrix = {};
+	_float4x4				m_LeftHandMatrix = {};
+	_float4x4				m_BackMatrix = {};
 
 public:
 	static CBody_Yetuga*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

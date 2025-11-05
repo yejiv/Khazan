@@ -84,6 +84,7 @@ public:
 	_float*				Get_CurTrackPosition() { return &m_fCurrentTrackPosition; }
 	const vector<_int>&	Get_ChildIndices(_int boneIndex) const;
 	_float				Get_CurDuration();
+	_bool				IsFinished( ) { return m_isFinished; }
 
 	void				Set_RootBone(_uint iIndex) { m_iRootBoneIndex = iIndex; }
 	void				Set_OwnerTransform(class CTransform** pTransform);
@@ -153,6 +154,7 @@ private:
 	_int								m_iPrevAnimIndex = { 0 };			/* 이전 애니메이션 인덱스 */
 	vector< class CAnimation* >			m_Animations;						/* 애니메이션 클래스 저장  */ 
 	vector<ANIMATION_SETUP_DATA>		m_AnimationsSetup;					/* 애니메이션들 정보 */ 
+	//vector<_bool>						m_AnimationFinished;				/* 애니메이션들이 끝났는지 정보 */
 
 	/* 애니메이션 세트 */
 	vector< ANIMATION_SET_DATA >		m_AnimationSets;					/* 애니메이션 세트 정보*/ 

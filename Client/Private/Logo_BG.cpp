@@ -44,6 +44,7 @@ void CLogo_BG::Update(_float fTimeDelta)
 void CLogo_BG::Late_Update(_float fTimeDelta)
 {
 	CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
+	//m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONLIGHT, this);
 }
 
 HRESULT CLogo_BG::Render()

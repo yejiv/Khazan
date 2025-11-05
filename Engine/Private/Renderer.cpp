@@ -54,8 +54,6 @@ HRESULT CRenderer::Initialize()
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Outline"), 750.0f, 450.0f, 300.f, 300.f)))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Decal"), 750.0f, 750.0f, 300.f, 300.f)))
-        return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Fog"), 1050.0f, 150.0f, 300.f, 300.f)))
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_CSM_Debug(m_fViewportWidth - 150.0f, 150.0f, 300.f, 300.f)))
@@ -220,31 +218,9 @@ HRESULT CRenderer::Render_NonBlend()
 
 HRESULT CRenderer::Render_Decal()
 {
-    /* DecalDiffuse */
-    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Decal"))))
+    /* Diffuse */
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Decal"), nullptr, false)))
         return E_FAIL;
-    
-    //  if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Diffuse"), m_pShader, "g_DiffuseTexture")))
-    //      return E_FAIL;
-    //  
-    //  if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
-    //      return E_FAIL;
-    //  
-    //  if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Normal"), m_pShader, "g_NormalTexture")))
-    //      return E_FAIL;
-    //  
-    //  // 스크린 사이즈
-    //  _float2 vScreenSize = _float2(m_fViewportWidth, m_fViewportHeight);
-    //  if (FAILED(m_pShader->Bind_RawValue("g_vScreenSize", &vScreenSize, sizeof(_float2))))
-    //      return E_FAIL;
-
-    // Test
-    //  if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
-    //      return E_FAIL;
-    //  if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
-    //      return E_FAIL;
-    //  if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
-    //      return E_FAIL;
 
     // Render_Decals
     if (FAILED(m_pGameInstance->Render_Decals()))
@@ -386,9 +362,6 @@ HRESULT CRenderer::Render_PostScene()
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Diffuse"), m_pShader, "g_DiffuseTexture")))
-        return E_FAIL;
-
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Decal"), m_pShader, "g_DecalTexture")))
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Shade"), m_pShader, "g_ShadeTexture")))
@@ -644,7 +617,7 @@ HRESULT CRenderer::Render_UI()
 HRESULT CRenderer::Ready_RenderTargets()
 {
     /* For.Target_Diffuse */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Diffuse"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(1.f, 1.f, 1.f, 0.f))))
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Diffuse"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(1.f, 0.f, 1.f, 1.f))))
         return E_FAIL;
 
     /* For.Target_Normal */
@@ -680,7 +653,7 @@ HRESULT CRenderer::Ready_RenderTargets()
         return E_FAIL;
 
     /* For.Target_PostScene */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_PostScene"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_PostScene"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(1.f, 0.f, 1.f, 1.f))))
         return E_FAIL;
 
     /* For.Target_BackBuffer */
@@ -701,10 +674,6 @@ HRESULT CRenderer::Ready_RenderTargets()
 
     /* For.Target_Outline */
     if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Outline"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 1.f))))
-        return E_FAIL;
-
-    /* For.Target_Decal */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Decal"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
     return S_OK;
@@ -769,7 +738,7 @@ HRESULT CRenderer::Ready_MRTs()
         return E_FAIL;
 
     /* For.MRT_Decal */
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Decal"), TEXT("Target_Decal"))))
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Decal"), TEXT("Target_Diffuse"))))
         return E_FAIL;
 
     return S_OK;

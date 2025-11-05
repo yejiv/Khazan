@@ -30,7 +30,7 @@
 #define HEINMACH_3RD_BLADENEXUS 10			// 세번째 귀검
 #define HEINMACH_YETUGA			11			// 예투가 맵
 
-#define CREVICE_SUBLV 1						// 경계의 틈 
+#define CREVICE_SUBLV 2						// 경계의 틈 
 
 #define EMBARS_SUBLV 0
 #define VIPER_SUBLV 0

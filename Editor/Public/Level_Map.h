@@ -90,6 +90,11 @@ private:
 	CMapObject::ITEMBOX_DESC m_ItemBox = {};
 	CMapObject::ITEMBOX_DESC m_FixItemBox = {};
 
+	string m_strTriggerKey = {};
+
+	_char m_szFixTriggerKey[MAX_PATH];
+	string m_strFixTriggerKey = {};
+
 #pragma endregion
 
 #pragma region Object 수정 변수
@@ -315,6 +320,9 @@ private:
 
 	// 특정 레벨에서 사용할 상호 작용 모델 바이너리 파일
 	_bool Interactive_Object_Save_Binary();
+
+	// 특정 레벨에서 사용할 트리거 Json 정보
+	_bool Trigger_Save_Json();
 
 	// 특정 레벨에서 사용할 모델 바이너리 파일 ( LV_1, LV_2 이런식으로 구분 )
 	_bool Object_Save_Binary_ByLevel(_uint iLevel);
