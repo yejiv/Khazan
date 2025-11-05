@@ -508,6 +508,9 @@
     <Filter Include="02.GameObject\UI\Logo">
       <UniqueIdentifier>{26278f3a-a228-41e2-a180-ca8ee47150b7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="94.ClientInstance\PlayerData">
+      <UniqueIdentifier>{1d2ef6bc-c0f6-4e05-9f58-fa1e39927a2b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -969,6 +972,12 @@
     <ClInclude Include="..\Public\AS_Dead_Yetuga.h">
       <Filter>92.AI\State\Yetuga\16.Dead</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Khazan_Spear_Anim_Attack.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\PlayerData_Manager.h">
+      <Filter>94.ClientInstance\PlayerData</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1415,6 +1424,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_Dead_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\16.Dead</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_Spear_Anim_Attack.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\PlayerData_Manager.cpp">
+      <Filter>94.ClientInstance\PlayerData</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -9,7 +9,7 @@
 #include "Khazan_Spear_ASMachine.h"
 
 #include "Khazan_Spear_Anim_Move.h"
-//#include "Khazan_Spear_Anim_Attack.h"
+#include "Khazan_Spear_Anim_Attack.h"
 
 using WEA = CKhazan_Spear_ASMachine::WEAPON;
 using CAT = CKhazan_Spear_ASMachine::CATEGORY;
@@ -80,11 +80,18 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
     m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand");
     m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
 
-    //m_vCoolTime.reserve(32);
-    //for (size_t i = 0; i < 32; i++)
-    //{
-    //    m_vCoolTime.emplace_back(_float2(0.f, 0.f));
-    //}
+
+    m_iStopMoveIndexTable[0] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Walk_Stop_F_RF");
+    m_iStopMoveIndexTable[1] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Walk_Stop_F_RF");
+    m_iStopMoveIndexTable[2] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Walk_Stop_F_LF");
+    m_iStopMoveIndexTable[3] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Walk_Stop_F_LF");
+    m_iStopMoveIndexTable[4] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Run_Stop_F_RF");
+    m_iStopMoveIndexTable[5] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Run_Stop_F_RF");
+    m_iStopMoveIndexTable[6] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Run_Stop_F_LF");
+    m_iStopMoveIndexTable[7] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Run_Stop_F_LF");
+    m_iStopMoveIndexTable[8] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Sprint_Stop_F");
+
+    
 
     return S_OK;
 
@@ -158,7 +165,8 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
     m_iPrevCycle = m_iCycle;
 
     /* 키 입력 */
-    Move_Input(fTimeDelta);
+    _bool isAttacking = Attack_Input(fTimeDelta);
+    if(!isAttacking) Move_Input(fTimeDelta);
 
     /*  상태 전환 여부*/
 
@@ -168,7 +176,9 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
     /* 애니메이션 변경 여부 */
     ChangeAnimation();
 
-    Apply_PlayerMovement(fTimeDelta);
+   // if(!m_pAnimMove->m_isEndMoveAnimantionFinished())
+    if (Has_State(CAT::M_MOVE)&& !Has_State(CAT::M_ATTACK))
+        Apply_PlayerMovement(fTimeDelta);
 
     /* Exit 실행 */
     if (isEnter)
@@ -196,7 +206,20 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
 	}
 	else if (Has_State(CAT::ORDER5))
 	{
-		//if (Has_State(CAT::M_ATTACK));
+        if (Has_State(CAT::M_ATTACK))
+        {
+            if (isEnter) m_pAnimAttack->Enter();
+             m_pAnimAttack->Continue(fTimeDelta);
+
+             if (!m_pAnimAttack->Is_Attacking())
+             {
+                 Remove_State(CAT::M_ATTACK);
+                 Remove_Status(CHARGING_STRONG_ATTACK);
+                 Clear_SubState();
+                 OutputDebugStringA("[State] Attack State Removed\n");
+             }
+        }
+
 		if (Has_State(CAT::M_MOVE))
 		{
 			if (isEnter) m_pAnimMove->Enter();
@@ -224,6 +247,14 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
 
 void CKhazan_Spear::Move_Input(_float fTimeDelta)
 {
+    // 공격 상태일 때 방향 입력은 받되, 상태 변경은 하지 않음
+    if (m_pAnimAttack->Is_Attacking())
+    { 
+        Check_KeyInput_Direction(fTimeDelta);
+        return;
+    }
+
+
     _bool isPrevMove = Has_State(CAT::M_MOVE);
 
     //Clear_State();
@@ -343,15 +374,156 @@ void CKhazan_Spear::Move_Input(_float fTimeDelta)
 
 }
 
-void CKhazan_Spear::Attack_Input(_float fTimeDelta)
+_bool CKhazan_Spear::Attack_Input(_float fTimeDelta)
 {
- 
- /* 연속기 */
-    //if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+    if (Has_State(CAT::M_ATTACK) && m_pAnimAttack && !m_pAnimAttack->Can_NextCombo() && !Has_Status(CHARGING_STRONG_ATTACK))
+        return false;
+
+    _bool isAttack = { false };
+
+    if (Has_Status(CHARGING_STRONG_ATTACK))
+    {
+        isAttack = true;
+        // todo 
+
+    }
+
+
+    /*  브루탈 공격 + 추후에 어떤 조건을 추가해야함 .*/
+    //if (( ?? && m_pGameInstance->Key_Down(DIK_F))
     //{
-    //    m_pAnimAttack
+    //    isAttack = m_pAnimAttack->Try_GrappleAttack();
     //}
 
+
+    ///* 카운터 공격 + 추후에 어떤 조건을 추가해야함 .*/
+    //if ( ??? && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+    //{
+
+    //}
+
+    /* dodge 공격 */
+    if ((m_iPrevMainState & CAT::M_MOVE) && (m_iPrevSubState & MOV::MOVE_DODGE) &&  m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+    {
+        if (m_pAnimAttack->Try_DodgeAttack(m_ePrevDir))
+        {
+            Add_State(CAT::M_ATTACK);
+            Add_SubState(ATT::ATK_DODGEATK);
+            Remove_State(CAT::M_MOVE);
+            OutputDebugStringA("[Input] Dodge Attack\n");
+            return true;
+       }
+    }
+
+    /* Sprint 공격  */
+    else if ((m_iPrevMainState & CAT::M_MOVE) && (m_iPrevSubState & MOV::MOVE_SPRINT))
+    {
+        /* 빠른 공격*/
+        if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+        {
+            if (m_pAnimAttack->Try_SprintFastAttack())
+            {
+                Remove_State(CAT::M_MOVE);
+                Clear_SubState();
+                Remove_Status(CHARGING_SPRINT);
+
+                Add_State(CAT::M_ATTACK);
+                Add_SubState(ATT::ATK_SPRINTATK);
+
+                return true;
+            }
+        }
+        /* 강한 공격 */
+        else if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
+        {
+            if (m_pAnimAttack->Try_SprintStrongAttack())
+            {
+                Remove_State(CAT::M_MOVE);
+                Clear_SubState();
+                Remove_Status(CHARGING_SPRINT);
+
+                Add_State(CAT::M_ATTACK);
+                Add_SubState(ATT::ATK_SPRINTATK);
+                return true;
+            }
+        }
+    }
+
+    ///* 떨어지면서 공격 + 추후에 어떤 조건을 추가해야함  */
+    //else if (m_pGameInstance->Mouse_Up(MOUSEKEYSTATE::LB))
+    //{
+    //    isAttack = m_pAnimAttack->Try_FallAttack();
+    //}
+
+
+    /* 빠른 공격 3연타 + 스킬 배우면 3타 바뀜 */
+    else if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+    {
+        if (m_pAnimAttack->Try_FastAttack())
+        {
+            Add_State(CAT::M_ATTACK);
+            Add_SubState(ATT::ATK_FAST);
+            OutputDebugStringA("[Input] Fast Attack Input\n");
+            return true;
+        }
+    }
+
+    /* 강한 공격 3연타  차징 */
+    if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
+    {
+        m_fChargingStrongTime = 0.f;
+        Remove_Status(CHARGING_STRONG_ATTACK);
+    }
+    else if (m_pGameInstance->Mouse_Pressing(MOUSEKEYSTATE::RB))
+    {
+        if (!Has_Status(CHARGING_STRONG_ATTACK))
+        {
+            m_fChargingStrongTime += fTimeDelta;
+
+            if (m_fChargingStrongTime >= m_fChargingStrongIntervalTime)
+            {
+      
+                if (m_pAnimAttack->Try_ChageStrongAttack()) {
+                    Add_Status(CHARGING_STRONG_ATTACK);
+                    Add_State(CAT::M_ATTACK);
+                    Add_SubState(ATT::ATK_CHARGE);
+                    OutputDebugStringA("[Input] Charge Strong Attack\n");
+              }
+            }
+        }
+        
+    }
+    else if (!Has_Status(CHARGING_STRONG_ATTACK) && m_pGameInstance->Mouse_Up(MOUSEKEYSTATE::RB))
+    {
+
+        _bool wasCharging = Has_Status(CHARGING_STRONG_ATTACK);
+        Remove_Status(CHARGING_STRONG_ATTACK);
+
+        // 차징 안했으면 일반 강공격
+        if (!wasCharging && m_fChargingStrongTime < m_fChargingStrongIntervalTime)
+        {
+            if (m_pAnimAttack->Try_StrongAttack())
+            {
+                Add_State(CAT::M_ATTACK);
+                Add_SubState(ATT::ATK_STRONG);
+                OutputDebugStringA("[Input] Strong Attack Input\n");
+                return true;
+            }
+        }
+        else if (wasCharging)
+        {
+            OutputDebugStringA("[Input] Charge Cancelled\n");
+            // 공격 상태 해제
+            if (m_pAnimAttack)
+            {
+                m_pAnimAttack->Exit();
+            }
+            Remove_State(CAT::M_ATTACK);
+            Clear_SubState();
+        }
+    }
+
+    return isAttack;
    
 }
 
@@ -363,18 +535,9 @@ void CKhazan_Spear::ChangeAnimation()
         /*&& (Has_State(CAT::M_MOVE) && m_ePrevDir == m_eDir.iDirFlag)*/ ) 
         return;
 
-    if(Has_State(CAT::M_ATTACK))
-
-    auto GetAnimIndexByState = [&](unsigned int state, const std::string& bare, const std::string& spear)
-        {
-            return m_pBody->Get_Model()->Get_AnimIndexByName(
-                Has_Status(state) ? spear.c_str() : bare.c_str()
-            );
-        };
-
 
     /* Move  */
-    if (Has_State(CAT::M_MOVE))
+    if (Has_State(CAT::M_MOVE)&& !Has_State(CAT::M_ATTACK))
     {
         CKhazan_Spear_Anim_Move::SPEAR_MOVE info ;
         info.isEquipWeapon = Has_Status(WEA::SPEAR);
@@ -385,7 +548,7 @@ void CKhazan_Spear::ChangeAnimation()
         m_pAnimMove->Try_ChangeAnimation(info);
     }
     /* Idle */
-    else
+    else if(!Has_State(CAT::M_END -2 ))
     {
 
 		_uint iCurAnimIndex = m_pBody->Get_Model()->Get_CurAnimIndex();
@@ -393,8 +556,6 @@ void CKhazan_Spear::ChangeAnimation()
 			m_pBody->Get_Model()->Set_Animation(Has_Status(SPEAR) ? 279 : 19);
 
     }
-
-
 
 }
 
@@ -407,7 +568,7 @@ void CKhazan_Spear::ExecuteAnimationExit()
       //if(m_iPrevMainState &   CAT::M_CLIMB            )
       //if(m_iPrevMainState &   CAT::M_SKILL            )
       //if(m_iPrevMainState &   CAT::M_GUARD            )
-      //if(m_iPrevMainState &   CAT::M_ATTACK           )
+    if (m_iPrevMainState & CAT::M_ATTACK)m_pAnimAttack->Exit();
     if (m_iPrevMainState & CAT::M_MOVE) m_pAnimMove->Exit();
       //if(m_iPrevMainState &   CAT::M_LOCKON           )
       //if(m_iPrevMainState &   CAT::M_INTERACT         )
@@ -419,6 +580,13 @@ void CKhazan_Spear::ExecuteAnimationExit()
 
 void CKhazan_Spear::Apply_PlayerMovement(_float fTimeDelta)
 {
+    for (size_t i = 0; i < 9; i++)
+        if (m_iStopMoveIndexTable[i] == m_pBody->Get_Model()->Get_CurAnimIndex()) {
+            Remove_State(CAT::M_MOVE);
+      
+            return;
+        }
+
     _float4x4 CamWorldMatrix = *m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::VIEW);
     _vector vCamLook = XMLoadFloat3((_float3*)&CamWorldMatrix._31);
 
@@ -654,10 +822,10 @@ HRESULT CKhazan_Spear::Ready_AnimationStateMachine()
     m_pAnimMove->Set_Model(m_pBody->Get_Model());
 
 
-	//m_pAnimAttack = CKhazan_Spear_Anim_Attack::Create();
- //   if (m_pAnimAttack == nullptr)
- //       return E_FAIL;
- //   m_pAnimAttack->Set_Model(m_pBody->Get_Model());
+	m_pAnimAttack = CKhazan_Spear_Anim_Attack::Create();
+    if (m_pAnimAttack == nullptr)
+        return E_FAIL;
+    m_pAnimAttack->Set_Model(m_pBody->Get_Model());
 
 
     return S_OK;
@@ -1221,7 +1389,7 @@ void CKhazan_Spear::Free()
 	Safe_Release(m_pBody);
 	Safe_Release(m_pSpear);
 	Safe_Release(m_pAnimMove);
-	//Safe_Release(m_pAnimAttack);
+	Safe_Release(m_pAnimAttack);
 
    // Safe_Release(m_pCharVirCom);
 
