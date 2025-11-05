@@ -570,8 +570,10 @@ void CVIBuffer_Point_Instance::Free()
 	Safe_Release(m_pSpeedBuffer);
 	Safe_Release(m_pStagingBuffer);
 	Safe_Release(m_pSRV);
+	Safe_Release(m_pSRVNoise);
 	Safe_Release(m_pUAV);
 	Safe_Release(m_pUAVSpeed);
+	Safe_Release(m_pDebugStagingBuffer);
 
 	for(_uint i = 0; i < CS_PASS::END; ++i)
 		Safe_Release(m_ComputeShaders[i]);
@@ -579,6 +581,6 @@ void CVIBuffer_Point_Instance::Free()
 	if (false == m_isCloned)
 	{
 		Safe_Delete_Array(m_pParticleParams);
-		Safe_Release(m_pSRVNoise);
+		//Safe_Release(m_pSRVNoise);
 	}
 }

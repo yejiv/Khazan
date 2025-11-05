@@ -31,6 +31,8 @@ CLevel_HeinMach::CLevel_HeinMach(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 
 HRESULT CLevel_HeinMach::Initialize()
 {
+	CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+
 	m_pGameInstance->Add_FireTask([this]() {
 		CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		return S_OK;
@@ -103,11 +105,12 @@ HRESULT CLevel_HeinMach::Initialize()
 		return S_OK;
 	});
 
-	CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
+	//CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
+	CHECK_FAILED(Ready_Layer_Test(TEXT("Layer_Creature_Test")), E_FAIL);
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 		return E_FAIL;
 
-	CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
+	//CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
 
 
 	//if (FAILED(Ready_Layer_TestEffect(TEXT("Layer_EffectTest"))))
@@ -257,8 +260,8 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 	CCamera_Compre* pCamera_Spring = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Camera_Compre"), &CameraSpringDesc));
 	pCamera_Spring->Set_IsActive(false);
-	//CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Test"));
-	CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player"));
+	CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Test"));
+	//CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player"));
 	pCamera_Spring->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
 	m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::HEINMACH), pCamera_Spring);
 
@@ -325,19 +328,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_TestEffect(const _wstring& strLayerTag)
 {
 	//��ġ�� �׽�Ʈ�� clone�� �� argument �� ���� ��
 
-	//_float3 test { 1.f, 0.f, 0.f};
-	//
-	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-	//	ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_TestParticle"), TIME_CHANNEL::EFFECT, &test)))
-	//	return E_FAIL;
-	//
-	//_float3 test2{ 0.f, 1.f, 0.f };
-	//
-	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-	//	ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_TestParticle"), TIME_CHANNEL::EFFECT, &test2)))
-	//	return E_FAIL;
-
-	//m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle1"), 3);
+	m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle1"), 3);
 	//m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle2"), 3);
 
 	return S_OK;
@@ -828,6 +819,64 @@ HRESULT CLevel_HeinMach::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurren
 	}
 
 	CloseHandle(hFile);
+
+	return S_OK;
+}
+
+HRESULT CLevel_HeinMach::Ready_Trigger(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
+{
+	// Json 기본 경로
+	_wstring strJsonFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+
+	switch (eMap)
+	{
+	case KHAZAN_MAP::HEINMACH:
+		strJsonFilePath += TEXT("HeinMach/");
+		break;
+	case KHAZAN_MAP::CREVICE:
+		strJsonFilePath += TEXT("Crevice/");
+		break;
+	case KHAZAN_MAP::EMBARS:
+		strJsonFilePath += TEXT("Embars/");
+		break;
+	case KHAZAN_MAP::VIPER:
+		strJsonFilePath += TEXT("Viper/");
+		break;
+	default:
+		break;
+	}
+
+	strJsonFilePath += pDataFileName;
+
+	strJsonFilePath += TEXT("_trigger.json");
+
+	ifstream ifs(strJsonFilePath);
+	if (!ifs.is_open())
+	{
+		MSG_BOX(TEXT("Json read failed"));
+		return E_FAIL;
+	}
+
+	JSON j = {};
+	ifs >> j;
+	ifs.close();
+
+	JSON_MAP_TRIGGER_DATA TriggerData = j.get<JSON_MAP_TRIGGER_DATA>();
+
+	_uint iNumTrigger = TriggerData.iNumTrigger;
+
+	for (_uint i = 0; i < iNumTrigger; ++i)
+	{
+		CTrigger::TRIGGER_DESC TriggerDesc = {};
+
+		_float4x4 WorldMatrix = {};
+		memcpy(&TriggerDesc.WorldMatrix, &TriggerData.WorldMatrix[i], sizeof(_float4x4));
+
+		TriggerDesc.strTriggerKey = TriggerData.TriggerKey[i];
+
+		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Trigger"), TIME_CHANNEL::MAP, &TriggerDesc), E_FAIL);
+	}
 
 	return S_OK;
 }

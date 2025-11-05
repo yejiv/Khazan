@@ -79,7 +79,6 @@ private :
 	//[Sprite Data]
 	_uint							m_iCol, m_iRow;
 	_float							m_fSpriteSpeed;
-	_float							m_fScalingValue;
 
 	//[Turbulence]
 	_bool							m_bIsTurbulence;
@@ -91,6 +90,12 @@ private :
 
 	_int							m_iChildrenIdx;
 	_int							m_iPrevChildrenIdx;
+
+	//[Dissolve]
+	_bool							m_bIsDissolve;
+	_int							m_iDissolveTextureIdx;
+	_float							m_fDissolveEdgeWidth;
+	_float4							m_fDissolveEdgeColor;
 
 
 	//[Save / Load]

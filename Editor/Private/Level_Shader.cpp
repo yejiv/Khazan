@@ -51,6 +51,8 @@ HRESULT CLevel_Shader::Initialize()
 	m_OutlineConfig.fAlpha = RendererOutlineConfig.fAlpha;
 	m_OutlineConfig.fBias = RendererOutlineConfig.fBias;
 	m_VignetteConfig = m_pGameInstance->Get_VignetteConfig();
+	m_vDecalColor = m_pGameInstance->Get_DecalColor();
+	m_vDecalBoxSize = _float3(40.f, 10.f, 40.f);
 
 	m_iNumCascades = m_pGameInstance->Get_NumCascades();
 
@@ -387,6 +389,49 @@ HRESULT CLevel_Shader::Initialize()
 			ImGui::Separator();
 		}
 
+		if (ImGui::CollapsingHeader("Decal"), ImGuiTreeNodeFlags_DefaultOpen)
+		{
+			// 컬러
+			if (ImGui::ColorEdit3("Decal Color", reinterpret_cast<_float*>(&m_vDecalColor)))
+				m_pGameInstance->Set_DecalColor(m_vDecalColor);
+
+			// 바운딩 박스 사이즈
+			if (ImGui::SliderFloat3("Decal Bounding Box Size", reinterpret_cast<_float*>(&m_vDecalBoxSize), 1.f, 50.f, "%.0f"))
+				m_pGameInstance->Set_OutlineConfig(m_OutlineConfig);
+
+			// 텍스처
+			ImGui::Separator();
+			ImGui::Text("Decal Texture");
+			ImGui::Separator();
+			
+			ImGui::BeginChild("Decal Texture", ImVec2(0, 70), true, ImGuiWindowFlags_HorizontalScrollbar);
+
+			for (_uint i = 0; i < m_pGameInstance->Get_NumFogNoiseTextures(); ++i)
+			{
+				ID3D11ShaderResourceView* pSRV = m_pGameInstance->Get_DecalTexture(i);
+
+				if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
+					m_pGameInstance->Set_DecalTextureIndex(i);
+
+				ImGui::SameLine();
+			}
+
+			ImGui::EndChild();
+
+			// Picking Test
+			if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::WB))
+			{
+				_float3 vPos, vNorm;
+				m_pGameInstance->isPicked(&vPos, &vNorm);
+
+				if (FAILED(m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_Decal"),
+					vPos, m_vDecalBoxSize)))
+					MSG_BOX(TEXT("Failed to Spawn : Decal"));
+			}
+
+			ImGui::Separator();
+		}
+
 		ImGui::End();
 	});
 
@@ -395,22 +440,7 @@ HRESULT CLevel_Shader::Initialize()
 
 void CLevel_Shader::Update(_float fTimeDelta)
 {
-	// Picking Test
-	if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::WB))
-	{
-		_float3 vPos, vNorm;
-		m_pGameInstance->isPicked(&vPos, &vNorm);
-
-		int a = 10;
-
-		//	if (FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Decal"),
-		//		ENUM_CLASS(LEVEL::SHADER), TEXT("Pool_Decal"), nullptr, g_iNumDecals)))
-		//		return E_FAIL;
-
-		if (FAILED(m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_Decal"),
-			vPos, _float3(40.f, 10.f, 40.f))))
-			MSG_BOX(TEXT("Failed to Spawn : Decal"));
-	}
+	
 
 #ifdef _DEBUG
 	m_fTimeAcc += fTimeDelta;

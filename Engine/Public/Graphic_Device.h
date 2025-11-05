@@ -34,6 +34,14 @@ public:
 public:
 	void Present_SwapChain(_uint iSyncInterval, _uint iFlag);
 
+public:
+	ID3D11DeviceContext* Get_DeferredContext(DEFERRED_CONTEXT eType) {
+		if (ENUM_CLASS(eType) < 0 || ENUM_CLASS(eType) > ENUM_CLASS(DEFERRED_CONTEXT::END))
+			return nullptr;
+
+		return m_pDeferredContext[ENUM_CLASS(eType)];
+	};
+
 private:	
 	// IDirect3DDevice9* == LPDIRECT3DDEVICE9 == ID3D11Device + ID3D11DeviceContext 	
 
@@ -77,6 +85,10 @@ private:
 
 	ID3D11RenderTargetView*		m_pBackBufferRTV = { nullptr };
 	ID3D11DepthStencilView*		m_pDepthStencilView = { nullptr };
+
+
+	ID3D11DeviceContext* m_pDeferredContext[ENUM_CLASS(DEFERRED_CONTEXT::END)];
+	ID3D11CommandList* m_pCommandList[(int)DEFERRED_CONTEXT::END] = {};
 
 private:
 	/* 스왑체인에게 필수적으로 필요한 데이터는 백버퍼가 필요하여 백버퍼를 생성하기위한 정보를 던져준다. */

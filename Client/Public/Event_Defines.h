@@ -26,21 +26,24 @@ namespace Client {
 		_bool isOn() const { return eState == EVENT_STATE::ON; }
 		_bool isOff() const { return eState == EVENT_STATE::OFF; }
 
-		static EventObject OnEvent()			// 플레이어 -> 오브젝트 ( 이벤트 활성화 )
+		// 플레이어 -> 오브젝트 ( 이벤트 활성화 )
+		static EventObject OnEvent()
 		{
 			EventObject e = {};
 			e.On();
 			return e;
 		}
 
-		static EventObject OffEvent()			// 플레이어 -> 오브젝트 ( 이벤트 끝났다 )
+		// 플레이어 -> 오브젝트 ( 이벤트 끝났다 )
+		static EventObject OffEvent()
 		{
 			EventObject e = {};
 			e.Off();
 			return e;
 		}
 
-		static EventObject NoneEvent()			// 플레이어 -> 오브젝트 ( 이벤트 없다 )
+		// 플레이어 -> 오브젝트 ( 이벤트 없다 )
+		static EventObject NoneEvent()
 		{
 			EventObject e = {};
 			e.None();
