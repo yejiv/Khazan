@@ -176,6 +176,7 @@ void CCamera_Manager::Save_Json(_uint iLevelIndex, _wstring strCameraTag, nlohma
 			AniData["LookAt"]["w"] = Ani.vLookAt.w;
 			AniData["Speed"] = Ani.fSpeed;
 			AniData["TrackPosition"] = Ani.fTrackPosition;
+			AniData["isCurPos"] = Ani.isCurPos;
 
 			AnimationData["Animations"].push_back(AniData);
 		}
@@ -201,6 +202,37 @@ void CCamera_Manager::Save_Json(_uint iLevelIndex, _wstring strCameraTag, nlohma
 		Data["Event"].push_back(EventData);
 	}
 	pOutData = Data;
+}
+
+void CCamera_Manager::Save_Json_Animation(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData)
+{
+	CCamera* pCamera = Find_Camera(iLevelIndex, strCameraTag);
+	CCamera::CAMERA_DESC CameraDesc = pCamera->Get_CameraDesc();
+
+	map<_wstring, vector<CAMERA_KEYFRAME>>* Animations = pCamera->Get_AllAnimations();
+
+	for (auto Animation : *Animations)
+	{
+		nlohmann::ordered_json AnimationData;
+		AnimationData["Name"] = Animation.first.c_str();
+		for (auto Ani : Animation.second)
+		{
+			nlohmann::ordered_json AniData;
+			AniData["Translation"]["x"] = Ani.vTranslation.x;
+			AniData["Translation"]["y"] = Ani.vTranslation.y;
+			AniData["Translation"]["z"] = Ani.vTranslation.z;
+			AniData["LookAt"]["x"] = Ani.vLookAt.x;
+			AniData["LookAt"]["y"] = Ani.vLookAt.y;
+			AniData["LookAt"]["z"] = Ani.vLookAt.z;
+			AniData["LookAt"]["w"] = Ani.vLookAt.w;
+			AniData["Speed"] = Ani.fSpeed;
+			AniData["TrackPosition"] = Ani.fTrackPosition;
+			AniData["isCurPos"] = Ani.isCurPos;
+
+			AnimationData["Animations"].push_back(AniData);
+		}
+		pOutData["Animation"].push_back(AnimationData);
+	}
 }
 
 CCamera_Manager* CCamera_Manager::Create(_uint iNumLevels)

@@ -792,6 +792,15 @@ namespace Engine
 
     }JSON_MAP_PROTOTYPE_DATA;
 
+    typedef struct tagJsonTriggerDataSet
+    {
+        unsigned int iNumTrigger{};
+        
+        std::vector<FLOAT4X4_DATA> WorldMatrix{};
+        std::vector<string> TriggerKey{};
+
+    }JSON_MAP_TRIGGER_DATA;
+
 
 #pragma endregion
 
@@ -962,6 +971,9 @@ namespace Engine
     );
     // 프로토타입 관련 태그, 이름, 경로 직렬화
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(JSON_MAP_PROTOTYPE_DATA, iNumPrototypes, PrototypeTag, FileName, FilePath);
+
+    // 트리거 개수, 행렬, 트리거 키 직렬화
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(JSON_MAP_TRIGGER_DATA, iNumTrigger, WorldMatrix, TriggerKey);
 
 
 #pragma endregion

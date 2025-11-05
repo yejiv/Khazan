@@ -3,6 +3,7 @@
 #include "ClientInstance.h"
 
 #include "Cursor_FX.h"
+#include "ScreenTrail.h"
 
 CCursor::CCursor(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUIObject{pDevice, pContext}
@@ -37,31 +38,41 @@ HRESULT CCursor::Initialize_Clone(void* pArg)
 		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Cursor_FX"), &Desc, 20)))
 		return E_FAIL;
 
+	m_pInputType = m_pGameInstance->Get_InputTypePtr();
+	m_IsUpdate = true;
+
+	m_pScreenTrail = static_cast<CScreenTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_ScreenTrail"), nullptr));
+	if (!m_pScreenTrail)
+		return E_FAIL;
 	return S_OK;
 }
 
 void CCursor::Priority_Update(_float fTimeDelta)
 {
-	if (!m_IsUpdate)
-		return;
-	if (m_eMode == MOUSE_MODE::PLAY_MODE)
-		Play_Mode();
-	else if (m_eMode == MOUSE_MODE::UI_MODE)
-		UI_Mode();
+	m_pScreenTrail->Priority_Update(fTimeDelta);
+
 }
 
 void CCursor::Update(_float fTimeDelta)
 {
+
+	if (*m_pInputType == INPUT_TYPE::UI)
+		UI_Mode();
+	else
+		Play_Mode();
+
 	if (m_pGameInstance->Key_Down(DIK_L, INPUT_TYPE::UI))
+		m_IsUpdate ? m_IsUpdate = false : m_IsUpdate = true;
+	else	if (m_pGameInstance->Key_Down(DIK_L))
 		m_IsUpdate ? m_IsUpdate = false : m_IsUpdate = true;
 
 	if (!m_IsUpdate)
 		return;
 	m_IsPressing = false;
-	if (m_pGameInstance->Mouse_Pressing(MOUSEKEYSTATE::LB, INPUT_TYPE::GAMEPLAY))
+	if (m_pGameInstance->Mouse_Pressing(MOUSEKEYSTATE::LB, INPUT_TYPE::UI))
 		m_IsPressing = true;
 
-	if (m_pGameInstance->Mouse_Up(MOUSEKEYSTATE::LB, INPUT_TYPE::GAMEPLAY))
+	if (m_pGameInstance->Mouse_Up(MOUSEKEYSTATE::LB, INPUT_TYPE::UI))
 	{
 		CCursor_FX* pFX = static_cast<CCursor_FX*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Cursor_FX")));
 		if (pFX != nullptr)
@@ -70,8 +81,10 @@ void CCursor::Update(_float fTimeDelta)
 			m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pFX);
 		}
 	}
-	if(!m_IsDefalutMouse)
-		ShowCursor(FALSE);
+	//if(!m_IsDefalutMouse)
+	//	ShowCursor(FALSE);
+
+	m_pScreenTrail->Update(fTimeDelta);
 }
 
 void CCursor::Late_Update(_float fTimeDelta)
@@ -79,7 +92,10 @@ void CCursor::Late_Update(_float fTimeDelta)
 	if (!m_IsUpdate)
 		return;
 	if (m_eMode == MOUSE_MODE::UI_MODE)
+	{
+		m_pScreenTrail->Late_Update(fTimeDelta);
 		CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
+	}
 }
 
 HRESULT CCursor::Render()
@@ -139,6 +155,7 @@ HRESULT CCursor::Ready_Component()
 
 void CCursor::Play_Mode()
 {
+	m_eMode = MOUSE_MODE::PLAY_MODE;
 	RECT clientRect;
 	POINT centerPoint;
 
@@ -148,15 +165,16 @@ void CCursor::Play_Mode()
 
 	ClientToScreen(g_hWnd, &centerPoint);
 
-	SetCursorPos(centerPoint.x, centerPoint.y);
+	//SetCursorPos(centerPoint.x, centerPoint.y);
 }
 
 void CCursor::UI_Mode()
 {
+	ShowCursor(FALSE);
 	POINT ptMouse{};
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);
-
+	m_pScreenTrail->Add_ControlPoint(ptMouse);
 	__super::Update_Transform(nullptr, { ptMouse.x + m_vLocalSize.x * 0.5f -7.f, ptMouse.y + m_vLocalSize.y * 0.5f });
 }
 
@@ -189,4 +207,6 @@ void CCursor::Free()
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pVIBufferCom);
+
+	Safe_Release(m_pScreenTrail);
 }

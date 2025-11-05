@@ -62,7 +62,8 @@ HRESULT CLevel_Crevice::Initialize()
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
 
-	CHECK_FAILED(Ready_Layer_Test(TEXT("Layer_Creature_Test")), E_FAIL);
+	CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
+
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 		return E_FAIL;
 
@@ -116,8 +117,17 @@ void CLevel_Crevice::Update(_float fTimeDelta)
 {
 	if (GetKeyState(VK_RETURN) & 0x8000)
 	{
-		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::CREVICE))))
+		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::HEINMACH))))
 			return;
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_F1))
+	{
+		m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::CREVICE), ENUM_CLASS(CAMERATYPE::FREE));
+	}
+	else if (m_pGameInstance->Key_Down(DIK_F2))
+	{
+		m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::CREVICE), ENUM_CLASS(CAMERATYPE::SPRING));
 	}
 
 
@@ -146,10 +156,10 @@ HRESULT CLevel_Crevice::Ready_Layer_UI()
 	return S_OK;
 }
 
-HRESULT CLevel_Crevice::Ready_Layer_Test(const _wstring& strLayerTag)
+HRESULT CLevel_Crevice::Ready_Layer_Player(const _wstring& strLayerTag)
 {
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::CREVICE), strLayerTag,
-		ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Khazan_Sample"), TIME_CHANNEL::PLAYER)))
+		ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
 		return E_FAIL;
 
 	return S_OK;
@@ -191,7 +201,7 @@ HRESULT CLevel_Crevice::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 	CCamera_Compre* pCamera_Spring = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Camera_Compre"), &CameraSpringDesc));
 	pCamera_Spring->Set_IsActive(false);
-	CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::CREVICE), TEXT("Layer_Creature_Test"));
+	CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::CREVICE), TEXT("Layer_Creature_Player"));
 	pCamera_Spring->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
 	m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::CREVICE), pCamera_Spring);
 

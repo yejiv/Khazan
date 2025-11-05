@@ -248,6 +248,8 @@ public:
 	_long		Mouse_Move(MOUSEMOVESTATE eMouseState, INPUT_TYPE eType = INPUT_TYPE::GAMEPLAY);
 
 	void		Change_InputType(INPUT_TYPE eType);
+	INPUT_TYPE* Get_InputTypePtr();
+	INPUT_TYPE  Get_InputType();
 #pragma endregion
 
 #pragma region POOL_MANAGER

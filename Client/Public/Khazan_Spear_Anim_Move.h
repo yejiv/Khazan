@@ -39,6 +39,7 @@ public:
 
 public:
 	_bool	Try_ChangeAnimation(SPEAR_MOVE moveInfo);
+	_bool	m_isEndMoveAnimantionFinished() const { return m_isEndAnimationFinished; }
 
 
 private:
@@ -50,6 +51,11 @@ private:
 
 	//_bool		m_isRun_Turn = { false };
 	//_bool		m_isEquipSpear = { false }; /* 180도 회전시 사용  */
+
+	_bool		m_isEndAnimationFinished = { false };
+
+	_bool		m_isStopRunAnim = { false };
+	_bool		m_isStopWalkAnim = { false };
 
 
 
