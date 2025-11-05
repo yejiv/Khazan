@@ -15,8 +15,14 @@ public:
 	virtual void Update(class CStateMachine* pFSM, class CGameObject* pOwner, _float fTimeDelta) override;
 	virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
+public:
+	virtual void OnCollision(COLLISION_DESC* pDesc);
+
+
+
 private:
 	_bool						m_isGrabbed = { false };
+	_float3						m_vGrabPoint = {};
 
 public:
 	static CAS_JumpGrab_Yetuga* Create();
