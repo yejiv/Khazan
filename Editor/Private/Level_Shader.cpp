@@ -408,7 +408,7 @@ void CLevel_Shader::Update(_float fTimeDelta)
 		//		return E_FAIL;
 
 		if (FAILED(m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_Decal"),
-			vPos, _float3(10.f, 10.f, 10.f))))
+			vPos, _float3(40.f, 10.f, 40.f))))
 			MSG_BOX(TEXT("Failed to Spawn : Decal"));
 	}
 

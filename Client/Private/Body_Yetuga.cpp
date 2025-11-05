@@ -22,6 +22,25 @@ _float3 CBody_Yetuga::Get_BonePoint(const _char* BoneName)
     return m_vThrowPoint;
 }
 
+_float4* CBody_Yetuga::Get_BonePointEX(const _char* BoneName)
+{
+    _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix(BoneName);
+    _matrix ConvertMatrix = XMLoadFloat4x4(&BoneMatrix);
+    _matrix WorldMatrix = m_pOwnerTransform->Get_WorldMatrix();
+
+    _matrix MulMatrix = ConvertMatrix * WorldMatrix;
+
+    _float4x4 ThrowMatrix{};
+
+    XMStoreFloat4x4(&ThrowMatrix, MulMatrix);
+
+    m_vLockOnPoint.x = ThrowMatrix.m[3][0];
+    m_vLockOnPoint.y = ThrowMatrix.m[3][1];
+    m_vLockOnPoint.z = ThrowMatrix.m[3][2];
+
+    return &m_vLockOnPoint;
+}
+
 _matrix CBody_Yetuga::Get_BoneMatrix(const _char* pBoneName)
 {
     _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix(pBoneName);
@@ -65,7 +84,8 @@ HRESULT CBody_Yetuga::Initialize_Clone(void* pArg)
 
     m_pTransformCom->Scale(_float3(1.5f,1.5f,1.5f));
 
-    
+    m_pLH_BodyCom->Activate(false);
+    m_pRH_BodyCom->Activate(false);
 
     return S_OK;
 }
@@ -81,12 +101,6 @@ void CBody_Yetuga::Update(_float fTimeDelta)
     Update_CombinedMatrix();
 
     Carculate_Matrix(fTimeDelta);
-
-   //m_pLH_BodyCom->Sync_Update(m_pTransformCom);
-   // m_pBack_BodyCom->Sync_Update(m_pTransformCom);
-
-    //m_pLH_BodyCom->Update(fTimeDelta, m_pTransformCom);
-    //m_pBack_BodyCom->Update(fTimeDelta, m_pTransformCom);
 }
 
 void CBody_Yetuga::Late_Update(_float fTimeDelta)
@@ -172,19 +186,32 @@ HRESULT CBody_Yetuga::Bind_ShaderResources()
 
 void CBody_Yetuga::Carculate_Matrix(_float fTimeDelta)
 {
+    // 뼈 행렬을 가져온다.
     _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix("Weapon_R");
+    // 오른쪽 뼈 행렬을 자체 행렬 * 뼈 로컬행렬  * 부모 행렬을 곱해서 최종 행렬을 만들어준다.
     XMStoreFloat4x4(&m_RightHandMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
     _vector vOutQuat, vOutPos;
-
+    // 콜라이더를 갱신시킨다.
     m_pRH_BodyCom->Sync_Update(XMLoadFloat4x4(&m_RightHandMatrix));
     m_pRH_BodyCom->Update(fTimeDelta, XMLoadFloat4x4(&m_RightHandMatrix), vOutQuat, vOutPos);
-    // m_pTransformCom->Set_Quaternion(vOutQuat);
-    //m_pTransformCom->Set_State(STATE::POSITION, vOutPos);
 
     m_RightHandMatrix._41 = vOutPos.m128_f32[0];
     m_RightHandMatrix._42 = vOutPos.m128_f32[1];
     m_RightHandMatrix._43 = vOutPos.m128_f32[2];
     m_RightHandMatrix._44 = 1.f;
+
+
+    BoneMatrix = *m_pModelCom->Get_BoneMatrix("Weapon_L");
+    XMStoreFloat4x4(&m_LeftHandMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
+    m_pLH_BodyCom->Sync_Update(XMLoadFloat4x4(&m_LeftHandMatrix));
+    m_pLH_BodyCom->Update(fTimeDelta,XMLoadFloat4x4(&m_LeftHandMatrix),vOutQuat,vOutPos);
+
+    m_LeftHandMatrix._41 = vOutPos.m128_f32[0];
+    m_LeftHandMatrix._42 = vOutPos.m128_f32[1];
+    m_LeftHandMatrix._43 = vOutPos.m128_f32[2];
+    m_LeftHandMatrix._44 = vOutPos.m128_f32[3];
+    
+
 }
 
 HRESULT CBody_Yetuga::Ready_Colliders()
@@ -192,16 +219,15 @@ HRESULT CBody_Yetuga::Ready_Colliders()
     CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
 
     // 오른손
-    BodyDesc.fRadius = 3.f;
+    BodyDesc.fRadius = 2.f;
     BodyDesc.eMotion = EMotionType::Kinematic;
     BodyDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
     BodyDesc.eShapeType = SHAPE::SPHERE;
-    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER); // 추후에 Enum Monster attack 변경 할수도
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK); // 추후에 Enum Monster attack 변경 할수도
     _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix("Weapon_R");
     XMStoreFloat4x4(&m_RightHandMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
     _vector vScale, vQuat, vTrans;
     XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_RightHandMatrix));
-
     BodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
     BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
     BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
@@ -212,26 +238,29 @@ HRESULT CBody_Yetuga::Ready_Colliders()
         TEXT("Com_Body_RH"), reinterpret_cast<CComponent**>(&m_pRH_BodyCom), &BodyDesc)))
         return E_FAIL;
 
- //   // 왼손
- //   BodyDesc.fRadius = 6.f;
- //   BodyDesc.eMotion = EMotionType::Kinematic;
- //   BodyDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
- //   BodyDesc.eShapeType = SHAPE::SPHERE;
- //   BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER); // 추후에 Enum Monster attack 변경 할수도
- // /*  vPosition.x = m_pModelCom->Get_BoneMatrix("Weapon_L")->m[3][0];
- //   vPosition.y = m_pModelCom->Get_BoneMatrix("Weapon_L")->m[3][1];
- //   vPosition.z = m_pModelCom->Get_BoneMatrix("Weapon_L")->m[3][2];*/
- //   vPosition = Get_BonePoint("Weapon_L");
- //   XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
- //   BodyDesc.vPos = vPosition;
- //   BodyDesc.vQuat = vQuat;
- //   BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
- //   m_tCollisionDesc.pGameObject = this;
- //   BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    BodyDesc.fRadius = 2.f;
+    BodyDesc.eMotion = EMotionType::Kinematic;
+    BodyDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
+    BodyDesc.eShapeType = SHAPE::SPHERE;
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+    BoneMatrix = *m_pModelCom->Get_BoneMatrix("Weapon_L");
+    XMStoreFloat4x4(&m_RightHandMatrix, m_pTransformCom->Get_WorldMatrix() * 
+        XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
+   /* _vector vScale, vQuat, vTrans;*/
+    // 쪼갠다.
+    XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_RightHandMatrix));
+    // 위치값
+    BodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
+    // 쿼터니언
+    BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
 
- //   if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
- //       TEXT("Com_Body_LH"), reinterpret_cast<CComponent**>(&m_pLH_BodyCom), &BodyDesc)))
- //       return E_FAIL;
+    BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+    m_tCollisionDesc.pGameObject = this;
+    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    BodyDesc.bIsTrigger = true;
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+        TEXT("Com_Body_LH"), reinterpret_cast<CComponent**>(&m_pLH_BodyCom), &BodyDesc)))
+        return E_FAIL;
 
  //   // 등
  //   BodyDesc.fRadius = 15.f;

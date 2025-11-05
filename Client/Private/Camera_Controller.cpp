@@ -324,6 +324,82 @@ void CCamera_Controller::Ready_ImGui_Active_Camera_Animation()
 			pCamera->Set_Animation(m_strListSelectAnimation);
 		}
 
+
+		ImGui::InputText("AnimationSaveFilePath", m_szAnimationSaveFilePath, MAX_PATH);
+
+		if (ImGui::Button("Save", ImVec2(60.f, 30.f)))
+		{
+			vector<CCamera*> Cameras = m_pClientInstance->Get_pCameras(ENUM_CLASS(m_eCurrentLevel));
+
+			string filePath = m_szAnimationSaveFilePath;
+			filePath += ".json";
+			nlohmann::ordered_json SaveData;
+			m_pClientInstance->Save_Json_Animation(ENUM_CLASS(m_eCurrentLevel), Cameras[m_iListSelectCamera]->Get_CameraTag(), SaveData);
+
+			ofstream Out(filePath, ios::out | ios::trunc);
+			if (!Out.is_open())
+			{
+				MSG_BOX(TEXT("Json 파일 저장 실패"));
+				Out.close();
+			}
+			else
+			{
+				MSG_BOX(TEXT("Json 파일 저장 성공"));
+				Out << SaveData.dump(4);
+				Out.close();
+			}
+		}
+
+		ImGui::InputText("AnimationLoadFilePath", m_szAnimationLoadFilePath, MAX_PATH);
+
+		if (ImGui::Button("Load", ImVec2(60.f, 30.f)))
+		{
+			string filePath = m_szAnimationLoadFilePath;
+			filePath += ".json";
+			ifstream In(filePath);
+			if (!In.is_open())
+			{
+				MSG_BOX(TEXT("UI JSON 파일 불러오기 실패"));
+				In.close();
+			}
+			else
+			{
+				nlohmann::json jsonData;
+				In >> jsonData;
+
+				map<_wstring, vector<CAMERA_KEYFRAME>> Animations;
+				for (auto Animation : jsonData["Animation"])
+				{
+					vector<CAMERA_KEYFRAME> KeyFrames;
+					for (auto Ani : Animation["Animations"])
+					{
+						CAMERA_KEYFRAME KeyFrame{};
+						KeyFrame.vTranslation.x = Ani["Translation"]["x"];
+						KeyFrame.vTranslation.y = Ani["Translation"]["y"];
+						KeyFrame.vTranslation.z = Ani["Translation"]["z"];
+						KeyFrame.vLookAt.x = Ani["LookAt"]["x"];
+						KeyFrame.vLookAt.y = Ani["LookAt"]["y"];
+						KeyFrame.vLookAt.z = Ani["LookAt"]["z"];
+						KeyFrame.vLookAt.w = Ani["LookAt"]["w"];
+						KeyFrame.fSpeed = Ani["Speed"];
+						KeyFrame.fTrackPosition = Ani["TrackPosition"];
+						KeyFrame.isCurPos = Ani["isCurPos"];
+
+						KeyFrames.push_back(KeyFrame);
+					}
+
+					Animations.emplace(AnsiToWString(Animation["Name"]), KeyFrames);
+				}
+
+				CCamera* pCamera = m_pClientInstance->Get_ActiveCamera();
+				pCamera->Set_IsActive(false);
+				pCamera->Load_Animation(Animations);
+
+			}
+		}
+
+
+
 		ImGui::End();
 	}
 

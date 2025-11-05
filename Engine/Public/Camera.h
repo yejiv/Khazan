@@ -73,6 +73,7 @@ public:
 public:
 	HRESULT Set_DefaultData(CAMERA_DESC tDesc);
 	HRESULT Load(map<_wstring, vector<CAMERA_KEYFRAME>> Animations, map<_wstring, vector<CAMERA_EVENT_DATA>> Events);
+	HRESULT Load_Animation(map<_wstring, vector<CAMERA_KEYFRAME>> Animations);
 
 // 쉐이킹
 public:
@@ -158,6 +159,7 @@ protected:
 	_vector m_vCurPos = XMVectorSet(0, 0, 0, 1);
 	_vector m_vCurQ = XMQuaternionIdentity();
 	_bool m_isCurPos = { false };
+	_bool m_isStarted = { true };
 
 	// Fov 관련
 	_float				m_fFovy = {};

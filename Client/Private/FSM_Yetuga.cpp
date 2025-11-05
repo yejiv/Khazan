@@ -14,6 +14,8 @@
 #include "AS_JumpGrab_Yetuga.h"
 #include "AS_Amageddon_Yetuga.h"
 #include "AS_IceBreath_Yetuga.h"
+#include "AS_Groggy_Yetuga.h"
+#include "AS_Dead_Yetuga.h"
 
 CFSM_Yetuga::CFSM_Yetuga()
 {
@@ -51,6 +53,10 @@ HRESULT CFSM_Yetuga::Initialize()
     if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::HIT), CAS_Hit_Yetuga::Create())))
         return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::DODGE), CAS_Dodge_Yetuga::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::GROGGY), CAS_Groggy_Yetuga::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::DEAD), CAS_Dead_Yetuga::Create())))
         return E_FAIL;
     
 

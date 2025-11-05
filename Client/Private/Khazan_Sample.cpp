@@ -235,8 +235,6 @@ void CKhazan_Sample::Event_Interact_Object(_float fTimeDelta)
         // 플레이어 이동, LOOK 보간??
         // 완료하면 이벤트 반대로 던져주기
 
-        _float3 vPos = m_EventInteract.ChestEvent.vPlayerPosition;
-
         if (true)               // 특정 조건 완성하면 이벤트 발생
         {
             // 상호작용 활성화시 맵 오브젝트한테 ObjectOn 을 true 로 던져주고, ObjectOff 를 false 로 던져준다.

@@ -165,6 +165,7 @@
     <ClInclude Include="..\Public\AS_Amageddon_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Dead_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Dodge_Yetuga.h" />
+    <ClInclude Include="..\Public\AS_Groggy_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Hit_Yetuga.h" />
     <ClInclude Include="..\Public\AS_IceBreath_Yetuga.h" />
     <ClInclude Include="..\Public\AS_JumpAttack_Yetuga.h" />
@@ -267,6 +268,7 @@
     <ClInclude Include="..\Public\Prop_Test.h" />
     <ClInclude Include="..\Public\ScreenTrail.h" />
     <ClInclude Include="..\Public\Sequence_Dummy.h" />
+    <ClInclude Include="..\Public\Sequence_HeinMach_Field.h" />
     <ClInclude Include="..\Public\Shader_Controller.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\SkySphere.h" />
@@ -283,10 +285,15 @@
     <ClInclude Include="..\public\UI_ComBatSpirit_Gauge.h" />
     <ClInclude Include="..\public\UI_CombatSpirit_Penal.h" />
     <ClInclude Include="..\public\UI_Default_Tex.h" />
+    <ClInclude Include="..\public\UI_Fade.h" />
     <ClInclude Include="..\public\UI_Gague_Tip.h" />
     <ClInclude Include="..\public\UI_Guide_Gauge.h" />
     <ClInclude Include="..\public\UI_HUD.h" />
     <ClInclude Include="..\public\UI_Inven.h" />
+    <ClInclude Include="..\public\UI_Loading.h" />
+    <ClInclude Include="..\public\UI_Loading_Panel.h" />
+    <ClInclude Include="..\public\UI_Logo.h" />
+    <ClInclude Include="..\public\UI_Logo_List.h" />
     <ClInclude Include="..\public\UI_MainMenu.h" />
     <ClInclude Include="..\public\UI_PlayerHP_Penal.h" />
     <ClInclude Include="..\public\UI_PlayerHP_BG.h" />
@@ -327,6 +334,7 @@
     <ClCompile Include="..\Private\AS_Amageddon_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Dead_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Dodge_Yetuga.cpp" />
+    <ClCompile Include="..\Private\AS_Groggy_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Hit_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_IceBreath_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_JumpAttack_Yetuga.cpp" />
@@ -423,6 +431,7 @@
     <ClCompile Include="..\Private\Prop_Test.cpp" />
     <ClCompile Include="..\Private\ScreenTrail.cpp" />
     <ClCompile Include="..\Private\Sequence_Dummy.cpp" />
+    <ClCompile Include="..\Private\Sequence_HeinMach_Field.cpp" />
     <ClCompile Include="..\Private\Shader_Controller.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\SkySphere.cpp" />
@@ -439,10 +448,15 @@
     <ClCompile Include="..\private\UI_ComBatSpirit_Gauge.cpp" />
     <ClCompile Include="..\private\UI_CombatSpirit_Penal.cpp" />
     <ClCompile Include="..\private\UI_Default_Tex.cpp" />
+    <ClCompile Include="..\private\UI_Fade.cpp" />
     <ClCompile Include="..\private\UI_Gague_Tip.cpp" />
     <ClCompile Include="..\private\UI_Guide_Gauge.cpp" />
     <ClCompile Include="..\private\UI_HUD.cpp" />
     <ClCompile Include="..\private\UI_Inven.cpp" />
+    <ClCompile Include="..\private\UI_Loading.cpp" />
+    <ClCompile Include="..\private\UI_Loading_Panel.cpp" />
+    <ClCompile Include="..\private\UI_Logo.cpp" />
+    <ClCompile Include="..\private\UI_Logo_List.cpp" />
     <ClCompile Include="..\private\UI_MainMenu.cpp" />
     <ClCompile Include="..\private\UI_PlayerHP_Penal.cpp" />
     <ClCompile Include="..\private\UI_PlayerHP_BG.cpp" />

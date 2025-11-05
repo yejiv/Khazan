@@ -40,7 +40,7 @@ void CScreenTrail::Late_Update(_float fTimeDelta)
     m_pVIBufferCom->Update(m_TrailPoints);
 
     if (m_ControlPoints.size() > 1)
-        m_pGameInstance->Add_RenderGroup(RENDERGROUP::BLEND, this);
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::UI, this);
 }
 
 HRESULT CScreenTrail::Render()
