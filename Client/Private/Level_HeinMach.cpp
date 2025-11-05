@@ -103,12 +103,27 @@ HRESULT CLevel_HeinMach::Initialize()
 		return S_OK;
 	});
 
-	CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
-	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
+
+	m_pGameInstance->Add_FireTask([this]() {
+
+		CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
+		if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
+			return E_FAIL;
+
+		CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
+
+
+		return S_OK;
+	});
+	
+	m_pGameInstance->Add_FireTask([this]() {
+
+		return S_OK;
+		});
+
+
+	if (FAILED(Ready_Layer_TestEffect(TEXT("Layer_EffectTest"))))
 		return E_FAIL;
-
-	CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
-
 
 	//if (FAILED(Ready_Layer_TestEffect(TEXT("Layer_EffectTest"))))
 	//	return E_FAIL;
