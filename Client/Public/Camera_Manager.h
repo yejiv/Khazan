@@ -40,6 +40,8 @@ public:
 
 	void Save_Json(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
 
+	void Save_Json_Animation(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
+
 private:
 	class CGameInstance* m_pGameInstance = { nullptr };
 	_uint m_iNumLevels = {};

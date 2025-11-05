@@ -310,12 +310,6 @@
     <Filter Include="02.GameObject\Creature\Khazan\Sample\Weapon">
       <UniqueIdentifier>{3beaf210-4418-4b5f-8dba-cf71731a9a86}</UniqueIdentifier>
     </Filter>
-    <Filter Include="04. Sequence">
-      <UniqueIdentifier>{d9f9bdc1-e281-4d8e-86c4-ea9548bc5e2d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="04. Sequence\Dummy">
-      <UniqueIdentifier>{f2d6df02-dd3b-4aad-99f3-888f46dc3174}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Levels\HeinMach">
       <UniqueIdentifier>{4230c53b-dd46-4d38-8626-e6d9f39edccc}</UniqueIdentifier>
     </Filter>
@@ -507,6 +501,18 @@
     </Filter>
     <Filter Include="02.GameObject\UI\Logo">
       <UniqueIdentifier>{26278f3a-a228-41e2-a180-ca8ee47150b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence">
+      <UniqueIdentifier>{d9f9bdc1-e281-4d8e-86c4-ea9548bc5e2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\Dummy">
+      <UniqueIdentifier>{f2d6df02-dd3b-4aad-99f3-888f46dc3174}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\HeinMach">
+      <UniqueIdentifier>{84d2fd3a-284c-4751-8935-661615722e0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\HeinMach\Fieldscene">
+      <UniqueIdentifier>{a8bfaaf5-8d1a-4cb1-a10b-3fc60e4ab142}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -808,7 +814,7 @@
       <Filter>02.GameObject\Creature\Khazan\Spear\Weapon</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Sequence_Dummy.h">
-      <Filter>04. Sequence\Dummy</Filter>
+      <Filter>04.Sequence\Dummy</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Client_Sequence.h">
       <Filter>99.Defines</Filter>
@@ -968,6 +974,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\AS_Dead_Yetuga.h">
       <Filter>92.AI\State\Yetuga\16.Dead</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sequence_HeinMach_Field.h">
+      <Filter>04.Sequence\HeinMach\Fieldscene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1261,7 +1270,7 @@
       <Filter>02.GameObject\Creature\Khazan\Spear\Weapon</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Sequence_Dummy.cpp">
-      <Filter>04. Sequence\Dummy</Filter>
+      <Filter>04.Sequence\Dummy</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Camera_Manager.cpp">
       <Filter>94.ClientInstance\Camera\Manager</Filter>
@@ -1415,6 +1424,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_Dead_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\16.Dead</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_HeinMach_Field.cpp">
+      <Filter>04.Sequence\HeinMach\Fieldscene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

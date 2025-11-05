@@ -78,6 +78,7 @@ public:
 	void ActiveCamera_KillFov(const _wstring& strID);
 
 	void Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
+	void Save_Json_Animation(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
 	void Clear_CameraManager(_uint iLevelIndex);
 #pragma endregion
 
