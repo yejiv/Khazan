@@ -52,11 +52,11 @@ HRESULT CLevel_HeinMach::Initialize()
 		return S_OK;
 		}));
 
-	//m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-	//	CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
-	//	HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); 
-	//	return S_OK;
-	//	}));
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
+		HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); 
+		return S_OK;
+		}));
 
 	m_pGameInstance->Add_FireTask([this]() {
 		for (_uint i = 0; i < HEINMACH_SUBLV; ++i)
@@ -74,8 +74,8 @@ HRESULT CLevel_HeinMach::Initialize()
 			//	continue;
 
 			// 예투가 보스 맵 서브 레벨 로드 주석 해제하면 여기서 스킵
-			//if (HEINMACH_YETUGA == i)
-			//	continue;
+			if (HEINMACH_YETUGA == i)
+				continue;
 			
 			CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), i, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		}
@@ -103,16 +103,22 @@ HRESULT CLevel_HeinMach::Initialize()
 		return S_OK;
 	});
 
-	m_pGameInstance->Add_FireTask([this]() {
-		CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
+	CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
+	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
+		return E_FAIL;
 
-		if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
-			return E_FAIL;
+	CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
+
+	m_pGameInstance->Add_FireTask([this]() {
+
 		return S_OK;
 	});
+	
+	m_pGameInstance->Add_FireTask([this]() {
 
-	//if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
-	//	return E_FAIL;
+		return S_OK;
+		});
+
 
 	//if (FAILED(Ready_Layer_TestEffect(TEXT("Layer_EffectTest"))))
 	//	return E_FAIL;
@@ -120,6 +126,7 @@ HRESULT CLevel_HeinMach::Initialize()
 	/*if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
 		return E_FAIL;*/
 	CClientInstance::GetInstance()->Fade_Out();
+
 	while (true) {
 		bool all_ready = true;
 

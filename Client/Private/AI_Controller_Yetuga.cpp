@@ -32,7 +32,7 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 	{
 		CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
 		CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(pYetuga->Get_Name(), "Target");
-		pYetuga->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK, 3.f ,pTarget);
+		pYetuga->Take_Damage(10.f,HITREACTION::GROGGY, 3.f ,pTarget);
 	}
 	
 	if (m_pGameInstance->Key_Down(DIK_Y))
@@ -46,6 +46,14 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 		CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
 		m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isGrabbed", true);
 	}
+
+	if (m_pGameInstance->Key_Down(DIK_U))
+	{
+		CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
+		//m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isGrabbed", true);
+		pYetuga->Consume_Stamina(50.f);
+	}
+
 
 	m_pPerception->Update(pOwner, fTimeDelta);
 	_float fPrevTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
@@ -147,7 +155,7 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 				HITREACTION eHitRection = static_cast<HITREACTION>(BB->Get_Value<_uint>(pYetuga->Get_Name(), "DamageType"));
 				_float fCurrentStamina = pYetuga->Get_CurrentStamina();
 			
-				if (fCurrentStamina <= 0.f)
+				if (fCurrentStamina <= 0.1f)
 				{
 					eHitRection = HITREACTION::GROGGY;
 					return true;

@@ -165,6 +165,7 @@
     <ClInclude Include="..\Public\AS_Amageddon_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Dead_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Dodge_Yetuga.h" />
+    <ClInclude Include="..\Public\AS_Groggy_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Hit_Yetuga.h" />
     <ClInclude Include="..\Public\AS_IceBreath_Yetuga.h" />
     <ClInclude Include="..\Public\AS_JumpAttack_Yetuga.h" />
@@ -331,6 +332,7 @@
     <ClCompile Include="..\Private\AS_Amageddon_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Dead_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Dodge_Yetuga.cpp" />
+    <ClCompile Include="..\Private\AS_Groggy_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Hit_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_IceBreath_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_JumpAttack_Yetuga.cpp" />
