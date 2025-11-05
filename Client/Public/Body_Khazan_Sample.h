@@ -31,6 +31,7 @@ private:
 public:
 	_float4x4*  Get_BoneMatrix(const _char* pBoneName);
 	void		Set_matSpearFX(_float4x4* mat) { m_pSpearFX_Matrix = mat; }
+	void		Set_matSpearWeaponR(_float4x4* mat) { m_pSpearWeaponR_Matrix = mat; }
 	void		Set_matSpearOffset(_matrix mat) { m_SpearOffset_Matrix = mat; }
 
 public:
@@ -60,7 +61,8 @@ private:
 	CShader*			m_pShaderCom = { nullptr };
 	CModel*				m_pModelCom = { nullptr };
 
-	_float4x4*			m_pSpearFX_Matrix = { nullptr };
+	_float4x4*			m_pSpearWeaponR_Matrix = { nullptr };  //손잡는 부분
+	_float4x4*			m_pSpearFX_Matrix = { nullptr };		//창날 
 	_matrix				m_SpearOffset_Matrix = {};
 
 	_uint*				m_pParentState = { nullptr };
@@ -84,7 +86,7 @@ private:
 	OUTLINE_CONFIG m_OutlineConfig = { _float3(1.f, 0.f, 1.f), 0.001f, 0.f, 0.f };
 
 	class CXPBD* m_pXPBD = { nullptr };
-
+	class CMeshTrail* m_pTrail = { nullptr };
 
 private:
 	HRESULT Ready_Components();

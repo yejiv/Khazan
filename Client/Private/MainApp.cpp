@@ -5,6 +5,8 @@
 #include "MapObject_Header.h"
 #include "Camera_Free.h"
 #include "ScreenTrail.h"
+#include "MeshTrail.h"
+#include "LineTrail.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance{ CGameInstance::GetInstance() }
@@ -386,6 +388,12 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_ScreenTrail"),
 		CScreenTrail::Create(m_pDevice, m_pContext)), E_FAIL);
 
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"),
+		CMeshTrail::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_LineTrail"),
+		CLineTrail::Create(m_pDevice, m_pContext)), E_FAIL);
+
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_DamageText"),
 		CDamage_Text::Create(m_pDevice, m_pContext)), E_FAIL);
 
@@ -507,7 +515,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_Effect()
 		return E_FAIL;
 
 	/* Prototype_Component_VIBuffer_QuadTrail */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_MeshTrail"),
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_QuadTrail"),
 		CVIBuffer_QuadTrail::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
