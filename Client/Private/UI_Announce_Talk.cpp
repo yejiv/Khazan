@@ -16,6 +16,20 @@ void CUI_Announce_Talk::ShowUI(_int iTalkIndex)
 {
 	m_eState = UIAnimeStae::ON;
 	m_fAlpha = 0.f;
+
+	const ANNOUNCE_TALK_DB* TalkDB = CClientInstance::GetInstance()->Get_Data<ANNOUNCE_TALK_DB>(iTalkIndex);
+	m_fDeleyTime = TalkDB->fTime;
+	m_wstrTalkName = TalkDB->wstrName;
+	NameColor();
+
+	m_wstrText_1 = TalkDB->wstrText_1;
+	if (TalkDB->wstrText_2 != TEXT("-\r"))
+	{
+		m_wstrText_2 = TalkDB->wstrText_2;
+		m_isOneLine = false;
+	}
+	else
+		m_isOneLine = true;
 }
 
 HRESULT CUI_Announce_Talk::Initialize_Prototype(_int iLevel)
@@ -54,15 +68,11 @@ void CUI_Announce_Talk::Update(_float fTimeDelta)
 void CUI_Announce_Talk::Late_Update(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_X, INPUT_TYPE::UI))
-	{
-		m_isOneLine = false;
-		ShowUI(1);
-	}
+		ShowUI(13);
+
 	else if(m_pGameInstance->Key_Down(DIK_C, INPUT_TYPE::UI))
-	{
-		m_isOneLine = true;
-		ShowUI(1);
-	}
+		ShowUI(5);
+
 	if (m_eState == UIAnimeStae::END)
 		return;
 
@@ -108,6 +118,15 @@ HRESULT CUI_Announce_Talk::Render()
 		Font_TextTwoLine();
 	
 	return S_OK;
+}
+
+void CUI_Announce_Talk::NameColor()
+{
+	if (m_wstrTalkName == TEXT("???"))
+		m_vNameColor = { 0.686f, 0.280f, 0.373f, 1.f };
+
+	if (m_wstrTalkName == TEXT("Ä«ÀÜ"))
+		m_vNameColor = { 0.863f, 0.780f, 0.638f, 1.f };
 }
 
 HRESULT CUI_Announce_Talk::Ready_Prototype()
@@ -164,7 +183,7 @@ HRESULT CUI_Announce_Talk::Font_TextOneLine()
 	CHECK_FAILED(m_pTextShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
 	m_pTextShaderCom->Begin(0);
 
-	m_pGameInstance->Draw_Text(TEXT("Blade_Medium_22"), TEXT("???"), m_vWorldPos.x, m_vWorldPos.y - 5, { 1.f, 0.f, 0.f, 1.f }, m_eTextAlign);
+	m_pGameInstance->Draw_Text(TEXT("Blade_Medium_22"), m_wstrTalkName, m_vWorldPos.x, m_vWorldPos.y - 5, m_vNameColor, m_eTextAlign);
 	m_pGameInstance->Draw_Text(TEXT("Blade_Medium_24"), m_wstrText_1, m_vWorldPos.x, m_vWorldPos.y + 35, { 1.f, 1.f, 1.f, 1.f }, m_eTextAlign);
 
 
@@ -176,7 +195,7 @@ HRESULT CUI_Announce_Talk::Font_TextTwoLine()
 	CHECK_FAILED(m_pTextShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
 	m_pTextShaderCom->Begin(0);
 
-	m_pGameInstance->Draw_Text(TEXT("Blade_Medium_22"), TEXT("???"), m_vWorldPos.x, m_vWorldPos.y - 15, { 1.f, 0.f, 0.f, 1.f }, m_eTextAlign);
+	m_pGameInstance->Draw_Text(TEXT("Blade_Medium_22"), m_wstrTalkName, m_vWorldPos.x, m_vWorldPos.y - 15, m_vNameColor, m_eTextAlign);
 	m_pGameInstance->Draw_Text(TEXT("Blade_Medium_24"), m_wstrText_1, m_vWorldPos.x, m_vWorldPos.y + 25, { 1.f, 1.f, 1.f, 1.f }, m_eTextAlign);
 	m_pGameInstance->Draw_Text(TEXT("Blade_Medium_24"), m_wstrText_2, m_vWorldPos.x, m_vWorldPos.y + 52, { 1.f, 1.f, 1.f, 1.f }, m_eTextAlign);
 

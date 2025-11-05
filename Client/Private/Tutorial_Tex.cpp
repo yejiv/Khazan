@@ -1,26 +1,23 @@
-#include "Logo_BG.h"
+#include "Tutorial_Tex.h"
 #include "GameInstance.h"
 #include "ClientInstance.h"
 
-CLogo_BG::CLogo_BG(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CTutorial_Tex::CTutorial_Tex(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Texture{ pDevice, pContext }
 {
 }
 
-CLogo_BG::CLogo_BG(const CLogo_BG& Prototype)
+CTutorial_Tex::CTutorial_Tex(const CTutorial_Tex& Prototype)
 	: CUI_Texture(Prototype)
 {
 }
 
-HRESULT CLogo_BG::Initialize_Prototype(_uint iLevel)
+HRESULT CTutorial_Tex::Initialize_Prototype()
 {
-	m_iLevel = iLevel;
-	CHECK_FAILED(Ready_Prototype(), E_FAIL);
-
 	return S_OK;
 }
 
-HRESULT CLogo_BG::Initialize_Clone(void* pArg)
+HRESULT CTutorial_Tex::Initialize_Clone(void* pArg)
 {
 	CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 	CHECK_FAILED(Ready_Component(), E_FAIL);
@@ -28,26 +25,25 @@ HRESULT CLogo_BG::Initialize_Clone(void* pArg)
 	return S_OK;
 }
 
-void CLogo_BG::Priority_Update(_float fTimeDelta)
+void CTutorial_Tex::Priority_Update(_float fTimeDelta)
 {
 }
 
-void CLogo_BG::Update(_float fTimeDelta)
+void CTutorial_Tex::Update(_float fTimeDelta)
 {
-	++m_iTexPass;
+	//++m_iTexPass;
 
-	if (m_iTexPass >= 251)
-		m_iTexPass = 0;
+	//if (m_iTexPass >= 251)
+	//	m_iTexPass = 0;
 
 }
 
-void CLogo_BG::Late_Update(_float fTimeDelta)
+void CTutorial_Tex::Late_Update(_float fTimeDelta)
 {
 	CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
-	//m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONLIGHT, this);
 }
 
-HRESULT CLogo_BG::Render()
+HRESULT CTutorial_Tex::Render()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
 		return E_FAIL;
@@ -61,7 +57,7 @@ HRESULT CLogo_BG::Render()
 	if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_Texture", m_iTexPass)))
 		return E_FAIL;
 
-	
+
 	CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
 	CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof(_float4)), E_FAIL);
 
@@ -72,15 +68,7 @@ HRESULT CLogo_BG::Render()
 	return S_OK;
 }
 
-HRESULT CLogo_BG::Ready_Prototype()
-{
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_Component_UI_Movie_Logo"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Movie/Logo/logo_%d.dds"), 251)), E_FAIL);
-
-	return S_OK;
-}
-
-HRESULT CLogo_BG::Ready_Component()
+HRESULT CTutorial_Tex::Ready_Component()
 {
 	CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxPosTex_UI"),
 		TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr), E_FAIL);
@@ -88,35 +76,35 @@ HRESULT CLogo_BG::Ready_Component()
 	CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Rect"),
 		TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), nullptr), E_FAIL);
 
-	CHECK_FAILED(CGameObject::Add_Component(m_iLevel, TEXT("Prototype_Component_UI_Movie_Logo"),
+	CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_GuidePage"),
 		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr), E_FAIL);
 
 	return S_OK;
 }
 
-CLogo_BG* CLogo_BG::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)
+CTutorial_Tex* CTutorial_Tex::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-	CLogo_BG* pInstance = new CLogo_BG(pDevice, pContext);
-	if (FAILED(pInstance->Initialize_Prototype(iLevel)))
+	CTutorial_Tex* pInstance = new CTutorial_Tex(pDevice, pContext);
+	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed Created : CLogo_BG"));
+		MSG_BOX(TEXT("Failed Created : CTutorial_Tex"));
 		Safe_Release(pInstance);
 	}
 	return pInstance;
 }
 
-CGameObject* CLogo_BG::Clone(void* pArg)
+CGameObject* CTutorial_Tex::Clone(void* pArg)
 {
-	CLogo_BG* pInstance = new CLogo_BG(*this);
+	CTutorial_Tex* pInstance = new CTutorial_Tex(*this);
 	if (FAILED(pInstance->Initialize_Clone(pArg)))
 	{
-		MSG_BOX(TEXT("Failed Cloned : CLogo_BG"));
+		MSG_BOX(TEXT("Failed Cloned : CTutorial_Tex"));
 		Safe_Release(pInstance);
 	}
 	return pInstance;
 }
 
-void CLogo_BG::Free()
+void CTutorial_Tex::Free()
 {
 	__super::Free();
 
