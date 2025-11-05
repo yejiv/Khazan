@@ -729,7 +729,7 @@ _uint CKhazan_Spear::ConvertCameraToPlayerDir(PLAYER_CAMERA_DIR playerCamDir)
     else if (m_eWorldDir.AllCheck_Flag(DIR::L)) inputIdx = 3;
     else if (m_eWorldDir.AllCheck_Flag((DIR::F | DIR::R))) inputIdx = 4;
     else if (m_eWorldDir.AllCheck_Flag((DIR::B | DIR::R))) inputIdx = 5;
-    else if (m_eWorldDir.AllCheck_Flag((DIR::B | DIR::L))) inputIdx = 6;www
+    else if (m_eWorldDir.AllCheck_Flag((DIR::B | DIR::L))) inputIdx = 6;
     else if (m_eWorldDir.AllCheck_Flag((DIR::F | DIR::L))) inputIdx = 7;
 
     return conversionTable[playerCamDir][inputIdx];
