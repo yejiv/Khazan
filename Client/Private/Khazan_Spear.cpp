@@ -77,7 +77,7 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
         return E_FAIL;
 
 #pragma region 상호 작용 맵 오브젝트 이벤트
-    //Subscribe_Events();
+    Subscribe_Events();
 #pragma endregion
 
 #ifdef _DEBUG
@@ -136,7 +136,7 @@ void CKhazan_Spear::Update(_float fTimeDelta)
     }
 
 #pragma region 상호 작용 맵 오브젝트 이벤트
-    //Event_Interact_Object(fTimeDelta);
+    Event_Interact_Object(fTimeDelta);
 #pragma endregion
 
     __super::Update(fTimeDelta);
@@ -903,8 +903,6 @@ _uint CKhazan_Spear::ConvertCameraToPlayerDir(PLAYER_CAMERA_DIR playerCamDir)
     return conversionTable[playerCamDir][inputIdx];
 }
 
-#ifdef _DEBUG
-
 #pragma region 상호 작용 맵 오브젝트 임시 테스트 용
 void CKhazan_Spear::Subscribe_Events()
 {
@@ -919,11 +917,22 @@ void CKhazan_Spear::Event_Interact_Object(_float fTimeDelta)
     {
         // 플레이어 이동, LOOK 보간??
         // 완료하면 이벤트 반대로 던져주기
+        _bool isDone = { true };
 
-        if (true)               // 특정 조건 완성하면 이벤트 발생
+        if (INTERACTIVE_TYPE::CHEST == m_EventInteract.eInteractType)
+        {
+            isDone = false;
+
+            // 상자 오브젝트에 슉슉 가는
+            if (true)
+                isDone = true;
+        }
+
+        if (isDone)               // 특정 조건 완성하면 이벤트 발생
         {
             // 상호작용 활성화시 맵 오브젝트한테 ObjectOn 을 true 로 던져주고, ObjectOff 를 false 로 던져준다.
             m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { EventObject::OnEvent() });
+            // 내 상태를 STATE::NONE 으로 변경해준다.
             m_EventInteract.eState = EventInteractType::EVENT_STATE::NONE;
         }
     }
@@ -935,6 +944,7 @@ void CKhazan_Spear::Event_Interact_Object(_float fTimeDelta)
         {
             // 상호작용 비 활성화시 맵 오브젝트한테 ObjectOn 을 false 로 던져주고, ObjectOff 를 true 로 던져준다.
             m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { EventObject::OffEvent() });
+            // 내 상태를 STATE::NONE 으로 변경해준다.
             m_EventInteract.eState = EventInteractType::EVENT_STATE::NONE;
         }
     }
@@ -1069,6 +1079,8 @@ void CKhazan_Spear::TombStone_Event(_float fTimeDelta)
     m_EventInteract.End_Event();
 }
 #pragma endregion
+
+#ifdef _DEBUG
 
 void CKhazan_Spear::Debug_Widget()
 {
