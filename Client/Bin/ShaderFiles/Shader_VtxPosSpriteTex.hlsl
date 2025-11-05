@@ -35,13 +35,13 @@ VS_OUT VS_MAIN(VS_IN In)
     Out.vWorldPos = mul(float4(In.vPosition, 1.f), g_WorldMatrix);
     Out.vProjPos = Out.vPosition;
     
-    //float Width = 1.0f / g_numCols;
-    //float Height = 1.0f / g_numRows;
-    //
-    //float startU = (g_FrameIdx % g_numCols) * Width;
-    //float startV = floor(g_FrameIdx / g_numCols) * Height;
-    //float2 finalUV = float2(startU, startV) + (In.vTexcoord * float2(Width, Height));
-    //Out.vTexcoord = finalUV;
+    float Width = 1.0f / g_numCols;
+    float Height = 1.0f / g_numRows;
+    
+    float startU = (g_FrameIdx % g_numCols) * Width;
+    float startV = floor(g_FrameIdx / g_numCols) * Height;
+    float2 finalUV = float2(startU, startV) + (In.vTexcoord * float2(Width, Height));
+    Out.vTexcoord = finalUV;
     
     Out.vTexcoord = In.vTexcoord;
     
@@ -76,7 +76,7 @@ PS_OUT PS_MAIN_BLEND(PS_IN In)
     
     Out.vColor = vFinalColor;
     
-    Out.vColor = float4(1.f, 1.f, 1.f, 1.f);
+   // Out.vColor = float4(1.f, 1.f, 1.f, 1.f);
     
     return Out;
 }

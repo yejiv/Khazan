@@ -632,7 +632,7 @@ HRESULT CKhazan_Sample::Ready_PartObjects()
     m_pSpear->Set_matWeaponR(m_pWeaponR_Matrix);
     m_pBody->Set_matSpearFX(m_pSpearFX_Matrix);
     m_pBody->Set_matSpearOffset(m_SpearOffset_Matrix);
-
+    m_pBody->Set_matSpearWeaponR(m_pWeaponR_Matrix);
 	return S_OK;
 
 }

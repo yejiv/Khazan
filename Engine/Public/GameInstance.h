@@ -343,9 +343,14 @@ public:
 #pragma endregion
 
 #pragma region DECAL_MANAGER
-	HRESULT	Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag,
-		const _float3& vPosition, const _float3& vScale);
-	HRESULT Render_Decals();
+	HRESULT						Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag,
+								const _float3& vPosition, const _float3& vScale);
+	HRESULT						Render_Decals();
+	_float3						Get_DecalColor();
+		void					Set_DecalColor(_float3 vColor);
+	_uint						Get_NumDecalTextures();
+	ID3D11ShaderResourceView*	Get_DecalTexture(_uint iTextureIndex);
+	void						Set_DecalTextureIndex(_uint iTextureIndex);
 #pragma endregion
 
 #pragma region EFFECT_MANAGER

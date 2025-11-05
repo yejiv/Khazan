@@ -118,18 +118,19 @@ void CBossHp::UI_Animation(_float fTimeDelta)
 	if (m_eAnimState == UIANIMSTATE::ON)
 	{
 		m_fAccTime += fTimeDelta * 3.f;
-		__super::Update_Alpha(m_fAccTime);
 
 		if (m_fAccTime >= 1.f)
 		{
 			m_fAccTime = 1.f;
 			m_eAnimState = UIANIMSTATE::END;
 		}
+		__super::Update_Alpha(m_fAccTime);
+
 	}
 	else if (m_eAnimState == UIANIMSTATE::OFF)
 	{
 		m_fAccTime -= fTimeDelta * 3.f;
-		__super::Update_Alpha(m_fAccTime);
+
 
 		if (m_fAccTime <= 0.f)
 		{
@@ -139,6 +140,8 @@ void CBossHp::UI_Animation(_float fTimeDelta)
 			m_pHPGauge->Setting_Progress(nullptr, nullptr);
 			m_pStaminaGauge->Setting_Progress(nullptr, nullptr);
 		}
+		__super::Update_Alpha(m_fAccTime);
+
 	}
 }
 

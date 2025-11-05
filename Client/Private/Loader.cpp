@@ -318,6 +318,12 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_BigChest_Open_003/WIP_COM_BigChest_Open_003.dat")), E_FAIL);
 #pragma endregion
 
+#pragma region 모델 원형 : 트리거
+	/* Prototype_Component_Model_Trigger */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Trigger"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Base/Cube/Cube.dat")), E_FAIL);
+#pragma endregion
+
 	return S_OK;
 }
 
@@ -416,6 +422,12 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 		CBigChest::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
+#pragma region 게임 오브젝트 원형 : 트리거
+	/* Prototype_GameObject_Prop_Trigger */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Trigger"),
+		CTrigger::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
 	/* Prototype_GameObject_JOH_Test1 */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_JOH_Test1"),
 		CJOH_Test1::Create(m_pDevice, m_pContext))))
@@ -452,9 +464,9 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 		return E_FAIL;
 
 #pragma region 이펙트 테스트 중!
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle1"),
-	//	CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/test1"))))
-	//	return E_FAIL;
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle1"),
+		CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/test1"))))
+		return E_FAIL;
 
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle2"),
 	//	CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/test2"))))

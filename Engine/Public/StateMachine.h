@@ -22,6 +22,9 @@ public:
 
 public:
 	HRESULT				Change_State(_uint iStateIndex, class CGameObject* pOwner);
+	void				OnCollision(COLLISION_DESC* pDesc);
+
+
 protected:
 	HRESULT				Add_State(_uint iStateIndex, class CAI_State* pState);
 	class CAI_State*	Find_State(_uint iStateIndex);

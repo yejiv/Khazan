@@ -44,6 +44,9 @@ void CPrefab::SetClose()
 void CPrefab::Free()
 {
     __super::Free();
+
+    for (auto child : m_Children)
+        Safe_Release(child);
 }
 
 

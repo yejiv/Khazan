@@ -26,7 +26,6 @@ HRESULT CUI_Announce_MapName::Initialize_Clone(void* pArg)
 
 	Update_Transform(nullptr, m_vLocalPos);
 	m_eTextAlign = TEXT_ALIGN::CENTER;
-	m_fDepth = 8.f;
 	m_vColor = { 1.f, 1.f, 1.f, 1.f };
   	m_pGameInstance->Subscribe_Event<EVENT_ANNOUNCE_MAPNAME>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_MAPNAME), [&](const EVENT_ANNOUNCE_MAPNAME& e)
 		{ Setting_Text(e);});
