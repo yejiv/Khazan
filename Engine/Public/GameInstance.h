@@ -57,12 +57,6 @@ public:
 	ID3D11Device* GetDevice() const;
 	ID3D11DeviceContext* GetImmediate() const;
 
-	void InitCLSlots(uint32_t N);
-
-	void StoreRecordedCL(uint32_t idx, ID3D11CommandList* pCL);
-
-	ID3D11CommandList* ConsumeRecordedCL(uint32_t idx);
-
 #pragma endregion
 
 #pragma region LEVEL_MANAGER
@@ -162,13 +156,11 @@ public:
 	void	Backup_RT();
 	void	Restore_RT();
 
-
 	HRESULT Apply_MRT_OnContext(const wstring& mrtTag,
 		ID3D11DeviceContext* pCtx,
 		ID3D11DepthStencilView* pDSV,
 		bool isClear);
 
-	// (선택) 현재 DSV를 AddRef해서 돌려주는 함수
 	ID3D11DepthStencilView* Get_CurrentDSV_AddRef();
 
 #ifdef _DEBUG
@@ -417,9 +409,6 @@ private:
 	class CFog*					m_pFog = { nullptr };
 	class CVignette*			m_pVignette = { nullptr };
 
-	// GameInstance 멤버
-	mutex m_clMutex;
-	vector<ID3D11CommandList*> m_threadCLs; // 크기 N
 
 #ifdef _DEBUG
 	class CImgui_Manager* m_pImgui_Manager = { nullptr };

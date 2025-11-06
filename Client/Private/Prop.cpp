@@ -59,6 +59,15 @@ HRESULT CProp::Bind_ShaderResources_ForSnowMap(_uint iMeshIndex)
     return S_OK;
 }
 
+HRESULT CProp::Deferred_Bind_ShaderResources_ForSnowMap(_uint iMeshIndex, CDeferredShader* pDeferredShader)
+{
+    CHECK_FAILED(pDeferredShader->Bind_RawValue("g_fSnowAmount", &m_fSnowAmount, sizeof(_float)), E_FAIL);
+
+    CHECK_FAILED(pDeferredShader->Bind_RawValue("g_vSnowColor", &m_vSnowColor, sizeof(_float3)), E_FAIL);
+
+    return S_OK;
+}
+
 HRESULT CProp::Bind_Instance_Materials(CModel_Instance* pModelCom, _uint iMeshIndex)
 {
     _bool isDiffuse = { false };
@@ -85,6 +94,34 @@ HRESULT CProp::Bind_Instance_Materials(CModel_Instance* pModelCom, _uint iMeshIn
 
     return S_OK;
 }
+
+HRESULT CProp::Deferred_Bind_Instance_Materials(CModel_Instance* pModelCom, _uint iMeshIndex, CDeferredShader* pDeferredShader)
+{
+    _bool isDiffuse = { false };
+    _bool isNormal = { false };
+    _bool isEmissive = { false };
+    _bool isSpecular = { false };
+
+    if (SUCCEEDED(pModelCom->Bind_Materials(pDeferredShader, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0)))
+        isDiffuse = true;
+    if (SUCCEEDED(pModelCom->Bind_Materials(pDeferredShader, "g_NormalTexture", iMeshIndex, aiTextureType_NORMALS, 0)))
+        isNormal = true;
+    if (SUCCEEDED(pModelCom->Bind_Materials(pDeferredShader, "g_EmissiveTexture", iMeshIndex, aiTextureType_EMISSIVE, 0)))
+        isEmissive = true;
+    if (SUCCEEDED(pModelCom->Bind_Materials(pDeferredShader, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
+        isSpecular = true;
+
+    isSpecular = false;
+    isEmissive = false;
+
+    pDeferredShader->Bind_RawValue("g_isDiffuse", &isDiffuse, sizeof(_bool));
+    pDeferredShader->Bind_RawValue("g_isNormal", &isNormal, sizeof(_bool));
+    pDeferredShader->Bind_RawValue("g_isEmissive", &isEmissive, sizeof(_bool));
+    pDeferredShader->Bind_RawValue("g_isSpecular", &isSpecular, sizeof(_bool));
+
+    return S_OK;
+}
+
 
 void CProp::Free()
 {

@@ -107,7 +107,7 @@ HRESULT CProp_Object::Deferred_Render(ID3D11DeviceContext* pDeferredContext)
     {
         Deferred_Bind_Materials(i);
 
-        if (true == isSnow()) CHECK_FAILED(Bind_ShaderResources_ForSnowMap(i), E_FAIL);
+        if (true == isSnow()) CHECK_FAILED(Deferred_Bind_ShaderResources_ForSnowMap(i, m_pDeferredShader), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pDeferredShader->Begin(ENUM_CLASS(m_eShaderPass), pDeferredContext), E_FAIL);
 

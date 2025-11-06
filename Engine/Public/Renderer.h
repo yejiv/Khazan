@@ -90,6 +90,9 @@ private:
 	// Outline
 	OUTLINE_CONFIG				m_OutlineConfig = { _float3(0.f, 0.f, 0.f), 0.f, 1.f, 0.01f };
 
+	vector<ID3D11CommandList*>	m_threadCLs;
+	mutex						m_Mutex;
+
 
 #ifdef _DEBUG
 private:
@@ -124,6 +127,12 @@ private:
 	HRESULT Ready_MRTs();
 	HRESULT Ready_Components();
 	HRESULT SetUp_Viewport(_float fWidth, _float fHeight);
+
+	void InitCLSlots(uint32_t N);
+	void StoreRecordedCL(uint32_t idx, ID3D11CommandList* pCL);
+	ID3D11CommandList* ConsumeRecordedCL(uint32_t idx);
+
+	void Deferred_Job(vector<class CGameObject*> Deferred);
 
 #ifdef _DEBUG
 	HRESULT Render_Debug();

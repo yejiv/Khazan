@@ -36,12 +36,6 @@ CDeferredShader::CDeferredShader(const CDeferredShader& Prototype)
         Safe_AddRef(pInputLayout);
 }
 
-CDeferredShader::CDeferredShader(const CDeferredShader& Prototype)
-       
-{
-    
-}
-
 HRESULT CDeferredShader::Initialize_Prototype(const _tchar* strShaderPath,
     const D3D11_INPUT_ELEMENT_DESC* pElements, _uint iNumElements,
     _uint iNumThreads)

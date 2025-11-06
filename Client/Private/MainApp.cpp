@@ -248,6 +248,11 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 		CDeferredShader::Create(m_pDevice, TEXT("../Bin/ShaderFiles/Shader_VtxMesh.hlsl"), VTXMESH::Elements, VTXMESH::iNumElements, m_pGameInstance->Get_ThreadCount()))))
 		return E_FAIL;
 
+	/* Prototype_Component_DeferredShader_ModelMeshInstance */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_DeferredShader_ModelMeshInstance"),
+		CDeferredShader::Create(m_pDevice, TEXT("../Bin/ShaderFiles/Shader_ModelMeshInstance.hlsl"), MESH_INSTANCING::Elements, MESH_INSTANCING::iNumElements, m_pGameInstance->Get_ThreadCount()))))
+		return E_FAIL;
+
 #pragma region FOR LOADING & SKY BOX
 
 #pragma region SKY SPHERE TEXTURES
