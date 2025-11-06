@@ -73,6 +73,8 @@ private:
 
 	_bool m_isObjectListView = { true };
 
+	unordered_map<string, string> m_ModelPathCache;
+
 #pragma region 트리거 관련 변수
 
 
@@ -346,6 +348,7 @@ private:
 #pragma endregion
 
 private:
+	void Build_ModelPathCache();
 	void MapEditor_Close_Windows();
 
 public:

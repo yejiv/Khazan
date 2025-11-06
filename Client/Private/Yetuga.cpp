@@ -44,7 +44,7 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     //-4 0 27
-    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(517.f, -12.f, 241.f,1.f));
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(513.f, -11.f, 225.f,1.f));
 
     if (FAILED(Ready_PartObjects()))
         return E_FAIL;
