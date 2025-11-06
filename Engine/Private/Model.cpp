@@ -670,6 +670,17 @@ HRESULT CModel::Render(_uint iMeshIndex)
     return S_OK;
 }
 
+HRESULT CModel::Deferred_Render(_uint iMeshIndex, ID3D11DeviceContext* pDeferredContext)
+{
+    if (FAILED(m_Meshes[iMeshIndex]->Deferred_Bind_Resources(pDeferredContext)))
+        return E_FAIL;
+
+    if (FAILED(m_Meshes[iMeshIndex]->Deferred_Render(pDeferredContext)))
+        return E_FAIL;
+
+    return S_OK;
+}
+
 void CModel::Check_RootMotion()
 {
 	if (m_AnimationsSetup[m_iCurrentAnimIndex].isRootMotion) {

@@ -50,7 +50,13 @@ private:
 #pragma region Graphic_Device
 public:
 	void Present_SwapChain(_uint iSyncInterval, _uint iFlag);
-	ID3D11DeviceContext* Get_DeferredContext(DEFERRED_CONTEXT eType);
+	
+	bool CreateDeferredContexts(uint32_t count);
+	ID3D11DeviceContext* GetDeferredContext(uint32_t idx) const;
+	_uint	GetDeferredContext_Count();
+	ID3D11Device* GetDevice() const;
+	ID3D11DeviceContext* GetImmediate() const;
+
 #pragma endregion
 
 #pragma region LEVEL_MANAGER
@@ -149,6 +155,15 @@ public:
 	HRESULT Copy_RT_Resource(const _wstring& strTargetTag, ID3D11Texture2D* pSourTexture);
 	void	Backup_RT();
 	void	Restore_RT();
+
+
+	HRESULT Apply_MRT_OnContext(const wstring& mrtTag,
+		ID3D11DeviceContext* pCtx,
+		ID3D11DepthStencilView* pDSV,
+		bool isClear);
+
+	// (선택) 현재 DSV를 AddRef해서 돌려주는 함수
+	ID3D11DepthStencilView* Get_CurrentDSV_AddRef();
 
 #ifdef _DEBUG
 	HRESULT Ready_RT_Debug(const _wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY);

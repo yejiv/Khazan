@@ -22,6 +22,16 @@ public:
 	void Backup_RT();	// BackBuffer, DSV 보관(백업)
 	void Restore_RT();	// BackBuffer, DSV 복원(복구)
 
+public:
+	HRESULT Apply_MRT_OnContext(const wstring& mrtTag,
+		ID3D11DeviceContext* pCtx,
+		ID3D11DepthStencilView* pDSV,
+		bool isClear);
+
+	// (선택) 현재 DSV를 AddRef해서 돌려주는 함수
+	ID3D11DepthStencilView* Get_CurrentDSV_AddRef();
+
+
 #ifdef _DEBUG
 public:
 	HRESULT Ready_Debug(const _wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY);

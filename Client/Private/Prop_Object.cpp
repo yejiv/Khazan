@@ -31,6 +31,8 @@ HRESULT CProp_Object::Initialize_Clone(void* pArg)
 
     m_pTransformCom->Set_WorldMatrix_4x4(pDesc->WorldMatrix);
 
+    m_isDeferredContext = true;
+
     if (isCollider())
     {
         CHECK_FAILED(Ready_Collision(pArg), E_FAIL);
@@ -90,6 +92,26 @@ HRESULT CProp_Object::Render()
         CHECK_FAILED_ASSERT(m_pShaderCom->Begin(ENUM_CLASS(m_eShaderPass)), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
+    }
+
+    return S_OK;
+}
+
+HRESULT CProp_Object::Deferred_Render(ID3D11DeviceContext* pDeferredContext)
+{
+    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources ÇÔ¼ö E_FAIL"), E_FAIL);
+
+    _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+    for (_uint i = 0; i < iNumMeshes; ++i)
+    {
+        Bind_Materials(i);
+
+        if (true == isSnow()) CHECK_FAILED(Bind_ShaderResources_ForSnowMap(i), E_FAIL);
+
+        CHECK_FAILED_ASSERT(m_pShaderCom->Deferred_Begin(ENUM_CLASS(m_eShaderPass), pDeferredContext), E_FAIL);
+
+        CHECK_FAILED_ASSERT(m_pModelCom->Deferred_Render(i, pDeferredContext), E_FAIL);
     }
 
     return S_OK;

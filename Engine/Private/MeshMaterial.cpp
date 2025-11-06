@@ -100,6 +100,11 @@ HRESULT CMeshMaterial::Bind_Resources(class CShader* pShader, const _char* pCons
 	return pShader->Bind_SRV(pConstantName, m_SRVs[iTextureType][iIndex]);
 }
 
+HRESULT CMeshMaterial::Deferred_Bind_Resources(ID3D11DeviceContext* pDeferredContext, CShader* pShader, const _char* pConstantName, _uint iTextureType, _uint iIndex)
+{
+	return pShader->Bind_SRV(pConstantName, m_SRVs[iTextureType][iIndex]);
+}
+
 _bool CMeshMaterial::ExistTextureCache(_wstring strPath)
 {
 	auto iter = m_TextureCache.find(strPath);

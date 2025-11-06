@@ -196,20 +196,54 @@ HRESULT CRenderer::Render_Shadow()
 
 HRESULT CRenderer::Render_NonBlend()
 {
-    /* Diffuse + Normal */
+    // 1) 즉시 컨텍스트에서 MRT 세팅 & 클리어
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_GameObjects"))))
         return E_FAIL;
 
-    for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::NONBLEND)])
+    // 2) 디퍼드 컨텍스트 확보
+    ID3D11DeviceContext* pDef = m_pGameInstance->GetDeferredContext(0);
+
+    // 3) 디퍼드 컨텍스트에도 같은 MRT 상태 적용(클리어는 즉시에서 했으니 false)
+    ID3D11DepthStencilView* pDSV = m_pGameInstance->Get_CurrentDSV_AddRef();
+    if (FAILED(m_pGameInstance->Apply_MRT_OnContext(TEXT("MRT_GameObjects"), pDef, pDSV, /*isClear=*/false)))
     {
-        if (nullptr != pRenderObject)
-            pRenderObject->Render();
-
-        Safe_Release(pRenderObject);
+        Safe_Release(pDSV);
+        return E_FAIL;
     }
+    Safe_Release(pDSV);
 
+    // 4) 뷰포트/필요 상태를 디퍼드에도 동일하게
+    D3D11_VIEWPORT vp{};
+    UINT n = 1;
+    m_pContext->RSGetViewports(&n, &vp);
+    pDef->RSSetViewports(1, &vp);
+    // 필요 시 상태도 맞추기
+    // pDef->OMSetBlendState(...); pDef->OMSetDepthStencilState(...); pDef->RSSetState(...);
+
+    // 5) 렌더 오브젝트 루프: 즉시/디퍼드 분기
+    for (auto& obj : m_RenderObjects[ENUM_CLASS(RENDERGROUP::NONBLEND)])
+    {
+        if (!obj) { Safe_Release(obj); continue; }
+
+        if (!obj->Get_IsDeferred())
+        {
+            obj->Render();
+        }
+        else
+        {
+            obj->Deferred_Render(pDef);
+        }
+        Safe_Release(obj);
+    }
     m_RenderObjects[ENUM_CLASS(RENDERGROUP::NONBLEND)].clear();
 
+    // 6) 커맨드 리스트 생성 & 실행
+    ID3D11CommandList* pCL = nullptr;
+    pDef->FinishCommandList(FALSE, &pCL);
+    m_pContext->ExecuteCommandList(pCL, TRUE);
+    pCL->Release();
+
+    // 7) MRT 해제/복원
     if (FAILED(m_pGameInstance->End_MRT()))
         return E_FAIL;
 

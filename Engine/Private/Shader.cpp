@@ -80,6 +80,19 @@ HRESULT CShader::Begin(_uint iPassIndex)
 	return S_OK;
 }
 
+HRESULT CShader::Deferred_Begin(_uint iPassIndex, ID3D11DeviceContext* pDeferredContext)
+{
+	if (iPassIndex >= m_iNumPasses)
+		return E_FAIL;
+
+	if (FAILED(m_pEffect->GetTechniqueByIndex(0)->GetPassByIndex(iPassIndex)->Apply(0, pDeferredContext)))
+		return E_FAIL;
+
+	pDeferredContext->IASetInputLayout(m_InputLayouts[iPassIndex]);
+
+	return S_OK;
+}
+
 //m_pShaderCom->Bind_Matrix("g_WorldMatrix", )
 
 HRESULT CShader::Bind_RawValue(const _char* pConstantName, const void* pData, _uint iLength)

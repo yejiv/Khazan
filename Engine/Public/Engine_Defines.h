@@ -96,6 +96,7 @@ namespace Engine
 	const unsigned int g_iMaxHeight = 4608;
 
 	const float g_fGravity = -9.81f;
+
 }
 
 #define PI 3.14159f
