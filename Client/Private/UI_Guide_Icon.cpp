@@ -12,6 +12,17 @@ CUI_Guide_Icon::CUI_Guide_Icon(const CUI_Guide_Icon& Prototype)
 {
 }
 
+void CUI_Guide_Icon::Setting_Text(const TEXTBOX_DESC& pDesc)
+{
+	m_bIsTextBox = pDesc.bIsTextBox;
+	m_eTextAlign = pDesc.eTextAlign;
+	m_iPivotX = pDesc.iPivotX;
+	m_iPivotY = pDesc.iPivotY;
+	m_wstrTexttag = pDesc.wstrTexttag;
+	m_wstrText = pDesc.wstrText;
+	m_vFontColor = pDesc.vColor;
+}
+
 void CUI_Guide_Icon::Set_LocalPos(_float2 vPos, CUIObject* pParent)
 {
 	m_vLocalPos = vPos;
@@ -49,6 +60,7 @@ HRESULT CUI_Guide_Icon::Initialize_Clone(void* pArg)
 {
 	__super::Initialize_Clone(pArg);
 	CHECK_FAILED(Ready_Component(), E_FAIL);
+	m_vUV.resize(1);
 	return S_OK;
 }
 
@@ -58,6 +70,7 @@ void CUI_Guide_Icon::Priority_Update(_float fTimeDelta)
 
 void CUI_Guide_Icon::Update(_float fTimeDelta)
 {
+
 }
 
 void CUI_Guide_Icon::Late_Update(_float fTimeDelta)
@@ -71,9 +84,8 @@ void CUI_Guide_Icon::Late_Update(_float fTimeDelta)
 HRESULT CUI_Guide_Icon::Render()
 {
 	CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
-	m_pShaderCom->Begin(m_iShaderPass);
-
-	m_pGameInstance->Draw_Text(m_wstrTexttag, m_wstrText, m_vWorldPos.x + m_iPivotX, m_vWorldPos.y + m_iPivotY, m_vColor, m_eTextAlign);
+	CHECK_FAILED(m_pShaderCom->Begin(m_iShaderPass), E_FAIL);
+	CHECK_FAILED(m_pGameInstance->Draw_Text(m_wstrTexttag, m_wstrText, m_vWorldPos.x + m_iPivotX, m_vWorldPos.y + m_iPivotY, m_vFontColor, m_eTextAlign), E_FAIL);
 
 	return S_OK;
 }

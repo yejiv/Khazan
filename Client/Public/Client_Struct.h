@@ -111,6 +111,19 @@ namespace Client
 		wstring wstrText_2{};
 	}ANNOUNCE_TALK_DB;
 
+	typedef struct tag_Skill_DB
+	{
+		_int iType{};
+		_int iSubID{};
+		_int SkillType{};
+		_wstring wstrName{};
+		_int iLevel{};
+		_int iMaxPoint{};
+		_int iIndex{};
+		_int iTaxPass{};
+		_wstring wstrIcon{};
+	}SKILL_DB;
+
 	typedef struct tagKhazanAnimationFindInfo
 	{
 		_uint iWeapon = { 0 };

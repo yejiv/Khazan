@@ -14,6 +14,8 @@ protected:
 	CUI_Button(const CUI_Button& Prototype);
 	virtual ~CUI_Button() = default;
 
+public:
+	void						Set_State(STATE eState) { m_eState = eState; }
 
 public:
 	virtual HRESULT				Initialize_Prototype() override;
@@ -29,9 +31,10 @@ protected:
 	virtual _bool				ButtonOver(HWND hWnd);
 	virtual _bool				ButtonClick(HWND hWnd, _bool IsRight, _bool IsDown, INPUT_TYPE eType = INPUT_TYPE::UI);
 
+	virtual void				ButtonEvent(STATE eState);
 protected:
 	vector<std::function<void()>>	m_Events;
-
+	STATE							m_eState;
 public:
 	virtual CGameObject*		Clone(void* pArg) = 0;
 	virtual void				Free() override;

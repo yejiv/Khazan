@@ -35,24 +35,7 @@ HRESULT CLevel_Title::Initialize()
 
 void CLevel_Title::Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_B,INPUT_TYPE::UI))
-	{
-		EVENT_ANNOUNCE_MAPNAME Desc = {};
-		//화면에 표시할 시간
-		Desc.fTime = 2.f;
 
-		//표시할 지역 이름
-		Desc.iMapType = ENUM_CLASS(CUI_Announce_MapName::MAP_TYPE::HEINMACH);
-
-		//페이드 아웃 시간
-		Desc.fFadeOutTime = 2.0f;
-
-		//디죨부 처리 여부
-		Desc.isDissovle = true;
-
-		//이벤트 발생시키기	
-		m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_MAPNAME>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_MAPNAME), Desc);
-	}
 
 	if (m_eNextLevel != LEVEL::END)
 	{
@@ -146,9 +129,9 @@ HRESULT CLevel_Title::Ready_Layer_UI()
 		TEXT("../Bin/Resources/UI/UIData/Logo.json"))))
 		return E_FAIL;
 
-	//if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
-	//	TEXT("../Bin/Resources/UI/UIData/Tutorial.json"))))
-	//	return E_FAIL;
+	if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+		TEXT("../Bin/Resources/UI/UIData/Tutorial.json"))))
+		return E_FAIL;
 
 	return S_OK;
 }

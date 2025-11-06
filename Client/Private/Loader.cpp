@@ -34,9 +34,10 @@
 #include "Projectile_Rock_Yetuga.h"
 #pragma endregion
 
+#pragma region UI
 #include "Logo_BG.h"
 #include "UI_Logo.h"
-
+#pragma endregion
 #include "Effect_Prefab.h"
 //static mutex g_GpuGate;
 

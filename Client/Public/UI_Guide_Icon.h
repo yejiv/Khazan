@@ -20,6 +20,8 @@ private:
 	CUI_Guide_Icon(const CUI_Guide_Icon& Prototype);
 	virtual ~CUI_Guide_Icon() = default;
 public:
+	virtual void				Setting_Text(const TEXTBOX_DESC& pDesc);
+
 	void						Set_LocalPos(_float2 vPos, CUIObject* pParent);
 	void						Set_Pos(_float2 vPos);
 	void						Set_Texture(_float4 vUV, _uint iTexPass);
@@ -37,6 +39,7 @@ public:
 	virtual HRESULT				Render() override;
 private:
 	CShader*					m_pShaderCom = { nullptr };
+	_float4						m_vFontColor = {};
 private:
 	HRESULT						Ready_Component();
 
