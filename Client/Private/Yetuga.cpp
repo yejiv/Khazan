@@ -24,7 +24,6 @@ _float4* CYetuga::Get_LockOnPosition()
 {
     //m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
     //m_vLockOnPosition = m_pBody->Get_BonePointEX("Holding");
-    m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
 
     return m_vLockOnPosition;
 }
@@ -92,6 +91,11 @@ void CYetuga::Update(_float fTimeDelta)
         
     if(!m_isGrab)
         __super::Update(fTimeDelta);
+
+    m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
+
+    __super::Update(fTimeDelta);
+
 }
 
 void CYetuga::Late_Update(_float fTimeDelta)
@@ -499,9 +503,6 @@ HRESULT CYetuga::Ready_PartObjects()
 
     m_pBody = dynamic_cast<CBody_Yetuga*>(pBody);
     Safe_AddRef(m_pBody);
-
-
-    //_float4 vTest = Get_LockOnPosition();
 
 
     return S_OK;

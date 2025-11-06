@@ -115,11 +115,11 @@ void CDebug_Manager::Ready_JoltDebug()
 		Labels.push_back("MAP_INTERACT");
 		Labels.push_back("PLAYER");
 		Labels.push_back("MONSTER");
+		Labels.push_back("MONSTERATTACK");
 		Labels.push_back("ITEM");
 		Labels.push_back("EFFECT");
 		Labels.push_back("SKILL");
 		Labels.push_back("CAMERA");
-		Labels.push_back("HAIR");
 
 		for (size_t i = 0; i < Labels.size(); i++)
 		{

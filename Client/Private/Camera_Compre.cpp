@@ -1,6 +1,8 @@
 #include "Camera_Compre.h"
-
 #include "GameInstance.h"
+#include "ClientInstance.h"
+#include "Target_LockOn.h"
+#include "Monster.h"
 
 static inline float SmoothDampScalar(float current, float target, float& currentVel, float smoothTime, float dt)
 {
@@ -62,7 +64,7 @@ HRESULT CCamera_Compre::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_Camera(pArg), E_FAIL);
 
 
-    if(m_iCameraType == ENUM_CLASS(CAMERATYPE::SPRING))
+    if(m_iCameraType == ENUM_CLASS(CAMERATYPE::PLAYER))
         CHECK_FAILED(Ready_Body(), E_FAIL);
 
     m_isActive = false;
@@ -80,7 +82,7 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
     {
         if (m_iCameraType == ENUM_CLASS(CAMERATYPE::FREE))
             Update_Free(fTimeDelta);
-        else if (m_iCameraType == ENUM_CLASS(CAMERATYPE::SPRING))
+        else if (m_iCameraType == ENUM_CLASS(CAMERATYPE::PLAYER))
             Update_Spring(fTimeDelta);
 
         m_vShaking_BasePos = m_pTransformCom->Get_State(STATE::POSITION);
@@ -99,7 +101,7 @@ void CCamera_Compre::Update(_float fTimeDelta)
     if (!m_isActive)
         return;
 
-    if (m_iCameraType == ENUM_CLASS(CAMERATYPE::SPRING))
+    if (m_iCameraType == ENUM_CLASS(CAMERATYPE::PLAYER))
     {
         m_pBody->Update(fTimeDelta, m_pTransformCom);
         m_pBody->Sync_Update(m_pTransformCom);
@@ -172,9 +174,10 @@ HRESULT CCamera_Compre::Ready_Camera(void* pArg)
 {
     CAMERA_COMPRE_DESC* pDesc = static_cast<CAMERA_COMPRE_DESC*>(pArg);
 
-    if (pDesc->iCameraType == ENUM_CLASS(CAMERATYPE::SPRING))
+    if (pDesc->iCameraType == ENUM_CLASS(CAMERATYPE::PLAYER))
     {
-        //CHECK_FAILED(Ready_Body(), E_FAIL);
+        m_pLockOnUI = static_cast<CTarget_LockOn*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("LockOn")));
+        Safe_AddRef(m_pLockOnUI);
     }
 
     return S_OK;
@@ -280,14 +283,14 @@ HRESULT CCamera_Compre::LockOn(_float fTimeDelta)
     CTransform* pLockTargetTransform = dynamic_cast<CTransform*>(m_pLockMonster->Get_Component(TEXT("Com_Transform")));
     const _matrix lockTargetWorldMatrix = pLockTargetTransform->Get_WorldMatrix();
 
-    const _vector lockTargetWorldPosition = XMVectorSet(
-        lockTargetWorldMatrix.r[3].m128_f32[0],
-        lockTargetWorldMatrix.r[3].m128_f32[1] + playerEyeOffsetY,
-        lockTargetWorldMatrix.r[3].m128_f32[2],
-        1.f
-    );
+    //const _vector lockTargetWorldPosition = XMVectorSet(
+    //    lockTargetWorldMatrix.r[3].m128_f32[0],
+    //    lockTargetWorldMatrix.r[3].m128_f32[1] + playerEyeOffsetY,
+    //    lockTargetWorldMatrix.r[3].m128_f32[2],
+    //    1.f
+    //);
 
-    _vector playerToTargetVector = XMVectorSubtract(lockTargetWorldPosition, playerWorldPosition);
+    _vector playerToTargetVector = XMVectorSubtract(XMLoadFloat4(m_pLockOnPos), playerWorldPosition);
     float playerToTargetDistance = XMVectorGetX(XMVector3Length(playerToTargetVector));
 
     if (playerToTargetDistance < 1e-4f)
@@ -338,6 +341,7 @@ void CCamera_Compre::LockOn_Check(_float fTimeDelta)
             m_fLockOnDelay = 0.f;
             m_isLockOn = false;
             m_pLockMonster = nullptr;
+            m_pLockOnUI->LockOff();
         }
         
         if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::WB))
@@ -345,6 +349,7 @@ void CCamera_Compre::LockOn_Check(_float fTimeDelta)
             m_fLockOnDelay = 0.f;
             m_isLockOn = false;
             m_pLockMonster = nullptr;
+            m_pLockOnUI->LockOff();
         }
     }
 }
@@ -468,8 +473,14 @@ void CCamera_Compre::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLay
             {
                 if (m_fLockOnDelay > 0.3f)
                 {
-                    m_isLockOn = true;
+                    
                     m_pLockMonster = Pick_ClosetTarget();
+                    if (m_pLockMonster)
+                    {
+                        m_isLockOn = true;
+                        m_pLockOnPos = dynamic_cast<CMonster*>(m_pLockMonster)->Get_LockOnPosition();
+                        m_pLockOnUI->LockOn(m_pLockOnPos);
+                    }
                 }
             }
         }
@@ -517,5 +528,6 @@ void CCamera_Compre::Free()
 {
     __super::Free();
 
-    //Safe_Release(m_pCharVirCom);
+    Safe_Release(m_pLockOnUI);
+    Safe_Release(m_pBody);
 }
