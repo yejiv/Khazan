@@ -41,6 +41,11 @@ void CTimer_Manager::Update_HitStop(_float fUnScaleTimeDelta)
 			continue;
 		}
 
+		if (HitStop.isFix)
+		{
+			continue;
+		}
+
 		HitStop.fElapsed += fUnScaleTimeDelta;
 
 		if (HitStop.fElapsed < HitStop.fHold)
@@ -70,6 +75,20 @@ void CTimer_Manager::Start_HitStop(TIME_CHANNEL eCH, _float fTargetScale, _float
 	HitStop.fRecover = max(0.f, fRecover);
 	HitStop.fElapsed = 0.f;
 	HitStop.fCurScale = 1.f;
+}
+
+void CTimer_Manager::Fix_HitStop(TIME_CHANNEL eCH)
+{
+	m_tHitStop[(int)eCH].isActive = true;
+	m_tHitStop[(int)eCH].isFix = true;
+	m_ChannelScale[(int)eCH] = 0.00000000001f;
+}
+
+void CTimer_Manager::UnFix_HitStop(TIME_CHANNEL eCH)
+{
+	m_tHitStop[(int)eCH].isActive = false;
+	m_tHitStop[(int)eCH].isFix = false;
+	m_ChannelScale[(int)eCH] = 1.f;
 }
 
 HRESULT CTimer_Manager::Add_Timer(const _wstring& strTimerTag)

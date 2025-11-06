@@ -69,17 +69,17 @@ void CMainApp::Update(_float fTimeDelta)
 	{
 		//m_pClientInstance->ActiveCamera_Shaking(2.f, 1.f);
 		//m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.3f, 0.003f, 3.f);
-
+		m_pGameInstance->Fix_HitStop(TIME_CHANNEL::ENEMY);
 		FOVModifier tMod{};
 
 		// PRIORITY
-		tMod.strID = TEXT("Hit");
-		tMod.eMode = FOVModifier::FOV_MODE::PRIORITY;
-		tMod.fDuration = 0.f;
-		tMod.fFrom = 0.f;
-		tMod.fTo = XMConvertToRadians(50.f);
-		tMod.iPriority = 5.f;
-		tMod.Ease = EaseOutQuad;
+		//tMod.strID = TEXT("Hit");
+		//tMod.eMode = FOVModifier::FOV_MODE::PRIORITY;
+		//tMod.fDuration = 0.f;
+		//tMod.fFrom = 0.f;
+		//tMod.fTo = XMConvertToRadians(50.f);
+		//tMod.iPriority = 5.f;
+		//tMod.Ease = EaseOutQuad;
 
 		// ADD
 		//tMod.eMode = FOVModifier::FOV_MODE::ADD;
@@ -97,11 +97,12 @@ void CMainApp::Update(_float fTimeDelta)
 		//tMod.iPriority = 5.f;
 		//tMod.Ease = EaseOutQuad;
 
-		m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
+		//m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
 	}
 	if (m_pGameInstance->Key_Down(DIK_RCONTROL))
 	{
-		m_pClientInstance->ActiveCamera_KillFov(L"Hit");
+		//m_pClientInstance->ActiveCamera_KillFov(L"Hit");
+		m_pGameInstance->UnFix_HitStop(TIME_CHANNEL::ENEMY);
 	}
 
 	TIME_DELTA      tTimeDelta = {};

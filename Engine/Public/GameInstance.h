@@ -107,6 +107,8 @@ public:
 	_float	Get_ScaledDelta(const _wstring& strTimerTag, TIME_CHANNEL cCH);
 	void Update_HitStop(_float fUnScaleTimeDelta);
 	void Start_HitStop(TIME_CHANNEL tCH, _float fTargetScale, _float fHold, _float fRecover);
+	void Fix_HitStop(TIME_CHANNEL eCH);
+	void UnFix_HitStop(TIME_CHANNEL eCH);
 #pragma endregion
 
 #pragma region PIPELINE

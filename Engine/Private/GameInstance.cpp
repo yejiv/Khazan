@@ -499,6 +499,16 @@ void CGameInstance::Start_HitStop(TIME_CHANNEL tCH, _float fTargetScale, _float 
 	m_pTimer_Manager->Start_HitStop(tCH, fTargetScale, fHold, fRecover);
 }
 
+void CGameInstance::Fix_HitStop(TIME_CHANNEL eCH)
+{
+	m_pTimer_Manager->Fix_HitStop(eCH);
+}
+
+void CGameInstance::UnFix_HitStop(TIME_CHANNEL eCH)
+{
+	m_pTimer_Manager->UnFix_HitStop(eCH);
+}
+
 #pragma endregion
 
 #pragma region TRANSFORM_MANAGER
