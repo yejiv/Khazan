@@ -103,6 +103,13 @@ namespace Client
 
 	}BOX_ITEMS;
 
+	typedef struct tag_Announce_Talk
+	{
+		_float fTime{};
+		wstring wstrName{};
+		wstring wstrText_1{};
+		wstring wstrText_2{};
+	}ANNOUNCE_TALK_DB;
 
 	typedef struct tagKhazanAnimationFindInfo
 	{

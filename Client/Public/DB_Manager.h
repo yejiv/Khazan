@@ -20,7 +20,7 @@ private:
 	unordered_map<_uint, EQUIPITEM_DATA>	m_EquipEffectData = {};
 	unordered_map<_uint, OTHERITEM_DATA>	m_OtherEffectData = {};
 	unordered_map<_uint, STATE_DATA>		m_StateData = {};
-
+	unordered_map<_uint, ANNOUNCE_TALK_DB>	m_Announce_Talk_Data = {};
 private:
 	_wstring								Load_UTF8ToWString(const wstring& filePath);	//UTF8 º¯È¯
 	_float									Read_float(wstringstream& s);
@@ -31,6 +31,7 @@ private:
 	HRESULT									Load_Equip_EffectDB(const _tchar* pFilePath);
 	HRESULT									Load_Other_EffectDB(const _tchar* pFilePath);
 	HRESULT									Load_StateDB(const _tchar* pFilePath);
+	HRESULT									Load_Announce_TalkDB(const _tchar* pFilePath);
 
 
 public:
@@ -74,5 +75,11 @@ inline const STATE_DATA* CDB_Manager::Get_Data<STATE_DATA>(_uint iID) const
 	return (Data != m_StateData.end()) ? &Data->second : nullptr;
 }
 
+template <>
+inline const ANNOUNCE_TALK_DB* CDB_Manager::Get_Data<ANNOUNCE_TALK_DB>(_uint iID) const
+{
+	auto Data = m_Announce_Talk_Data.find(iID);
+	return (Data != m_Announce_Talk_Data.end()) ? &Data->second : nullptr;
+}
 
 NS_END

@@ -1,12 +1,12 @@
 #pragma once
+//ETC
 #include "UI_Atlas_Icon.h"
 #include "UI_BackGround.h"
 #include "UI_Gague_Tip.h"
 #include "UI_TextBox.h"
 #include "UI_Default_Tex.h"
-
-#include "Cursor.h"
-#include "Item_Slot.h"
+#include "UI_Guide_Icon.h"
+#include "UI_Default_Button.h"
 
 //메인 UI
 #include "UI_HUD.h"
@@ -16,6 +16,7 @@
 #include "UI_State.h"
 #include "UI_Logo.h"
 #include "UI_Loading.h"
+#include "UI_Tutorial.h"
 
 //서브 UI
 #include "MainMenu_Deco.h"
@@ -24,6 +25,9 @@
 
 #include "ItemInfo_Other.h"
 #include "ItemInfo_Weapon.h"
+
+#include "Cursor.h"
+#include "Item_Slot.h"
 
 //HUD  관련
 #include "BossHp.h"
