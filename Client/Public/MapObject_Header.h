@@ -22,6 +22,7 @@
 
 // Trigger
 #include "Trigger.h"
+#include "HeinMach_Trigger.h"
 
 // Test
 #include "Prop_Test.h"

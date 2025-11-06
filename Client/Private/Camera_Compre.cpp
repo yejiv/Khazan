@@ -64,7 +64,7 @@ HRESULT CCamera_Compre::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_Camera(pArg), E_FAIL);
 
 
-    if(m_iCameraType == ENUM_CLASS(CAMERATYPE::SPRING))
+    if(m_iCameraType == ENUM_CLASS(CAMERATYPE::PLAYER))
         CHECK_FAILED(Ready_Body(), E_FAIL);
 
     m_isActive = false;
@@ -82,7 +82,7 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
     {
         if (m_iCameraType == ENUM_CLASS(CAMERATYPE::FREE))
             Update_Free(fTimeDelta);
-        else if (m_iCameraType == ENUM_CLASS(CAMERATYPE::SPRING))
+        else if (m_iCameraType == ENUM_CLASS(CAMERATYPE::PLAYER))
             Update_Spring(fTimeDelta);
 
         m_vShaking_BasePos = m_pTransformCom->Get_State(STATE::POSITION);
@@ -101,7 +101,7 @@ void CCamera_Compre::Update(_float fTimeDelta)
     if (!m_isActive)
         return;
 
-    if (m_iCameraType == ENUM_CLASS(CAMERATYPE::SPRING))
+    if (m_iCameraType == ENUM_CLASS(CAMERATYPE::PLAYER))
     {
         m_pBody->Update(fTimeDelta, m_pTransformCom);
         m_pBody->Sync_Update(m_pTransformCom);
@@ -174,10 +174,8 @@ HRESULT CCamera_Compre::Ready_Camera(void* pArg)
 {
     CAMERA_COMPRE_DESC* pDesc = static_cast<CAMERA_COMPRE_DESC*>(pArg);
 
-    if (pDesc->iCameraType == ENUM_CLASS(CAMERATYPE::SPRING))
+    if (pDesc->iCameraType == ENUM_CLASS(CAMERATYPE::PLAYER))
     {
-        //CHECK_FAILED(Ready_Body(), E_FAIL);
-
         m_pLockOnUI = static_cast<CTarget_LockOn*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("LockOn")));
         Safe_AddRef(m_pLockOnUI);
     }

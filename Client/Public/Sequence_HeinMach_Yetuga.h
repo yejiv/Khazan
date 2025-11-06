@@ -4,15 +4,17 @@
 
 NS_BEGIN(Engine)
 class CGameInstance;
+class CTransform;
+class CCharacterVirtual;
 NS_END
 
 NS_BEGIN(Client)
 
-class CSequence_HeinMach_Field : public ISeqInstance
+class CSequence_HeinMach_Yetuga : public ISeqInstance
 {
 private:
-    CSequence_HeinMach_Field(class CCamera_Compre* pCamera);
-    virtual ~CSequence_HeinMach_Field() = default;
+    CSequence_HeinMach_Yetuga(class CCamera_Compre* pCamera, class CCreature* pPlayer);
+    virtual ~CSequence_HeinMach_Yetuga() = default;
 
 public:
     HRESULT Initialize(const SEQ_REQ_PLAY_DESC& tDesc) override;
@@ -26,20 +28,28 @@ public:
     _bool   IsEnd() const override;
     SEQ_ID  GetId() const override { return m_Id; }
 
+public:
+    void PlayerMove(_float fTimeDelta);
+
 private:
-    enum class STATE { Idle, Playing, Paused, End };
-    STATE  m_State{ STATE::Idle };
     SEQ_ID m_Id{};
     _float  m_fTime{ 0.f };
 
+    _bool   m_isFadeIn = { false };
+    _bool   m_isPlayerMove = { false };
+    _bool   m_isFadeOut = { false };
+
+
+    _bool   m_isEnd = { false };
+
     _bool   m_isCameraStart = { false };
-    _bool   m_isFieldName = { false };
 
     class CCamera_Compre* m_pCamera_Compre = { nullptr };
+    class CCreature* m_pPlayer = { nullptr };
     class CGameInstance* m_pGameInstance = { nullptr };
 
 public:
-    static CSequence_HeinMach_Field* Create(class CCamera_Compre* pCamera);
+    static CSequence_HeinMach_Yetuga* Create(class CCamera_Compre* pCamera, class CCreature* pPlayer);
     virtual void Free() override;
 };
 

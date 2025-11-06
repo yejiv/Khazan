@@ -553,6 +553,9 @@
     <Filter Include="02.GameObject\MapObject\01.Trigger\00.HeinMach\HeinMach_Trigger">
       <UniqueIdentifier>{97d366cf-cb22-4463-91cb-dcea2dc51180}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04.Sequence\HeinMach\Yetuga">
+      <UniqueIdentifier>{15be54d5-6e2d-41e7-badb-0c095f0d0039}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1053,6 +1056,12 @@
     <ClInclude Include="..\public\UI_Announce_Talk.h">
       <Filter>02.GameObject\UI\Announce\Talk</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\HeinMach_Trigger.h">
+      <Filter>02.GameObject\MapObject\01.Trigger\00.HeinMach\HeinMach_Trigger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sequence_HeinMach_Yetuga.h">
+      <Filter>04.Sequence\HeinMach\Yetuga</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1538,6 +1547,12 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_Announce_Talk.cpp">
       <Filter>02.GameObject\UI\Announce\Talk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\HeinMach_Trigger.cpp">
+      <Filter>02.GameObject\MapObject\01.Trigger\00.HeinMach\HeinMach_Trigger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_HeinMach_Yetuga.cpp">
+      <Filter>04.Sequence\HeinMach\Yetuga</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

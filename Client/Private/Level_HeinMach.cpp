@@ -8,7 +8,6 @@
 #include "Dummy.h"
 #include "Monster.h"
 #include "ClientInstance.h"
-#include "Sequence_HeinMach_Field.h"
 
 
 #pragma region MAP OBJECT
@@ -31,8 +30,6 @@ CLevel_HeinMach::CLevel_HeinMach(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 
 HRESULT CLevel_HeinMach::Initialize()
 {
-	CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-
 	m_pGameInstance->Add_FireTask([this]() {
 		CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		return S_OK;
@@ -50,15 +47,10 @@ HRESULT CLevel_HeinMach::Initialize()
 
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
-		HEINMACH_1ST_BLADENEXUS, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); 
+			HEINMACH_1ST_BLADENEXUS, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		return S_OK;
 		}));
 
-	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
-		HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); 
-		return S_OK;
-		}));
 
 	m_pGameInstance->Add_FireTask([this]() {
 		for (_uint i = 0; i < HEINMACH_SUBLV; ++i)
@@ -87,23 +79,23 @@ HRESULT CLevel_HeinMach::Initialize()
 
 
 
-	//CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+	CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 	m_pGameInstance->Add_FireTask([this]() mutable { 
 		CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); 
 		return S_OK;
 		});
 
-	//CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+	CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 	m_pGameInstance->Add_FireTask([this]() mutable { 
 		CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); 
 		return S_OK;
 		});
 
-	m_pGameInstance->Add_FireTask([this]() {
-		if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
-			return E_FAIL;
-		return S_OK;
-	});
+	//m_pGameInstance->Add_FireTask([this]() {
+	//	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
+	//		return E_FAIL;
+	//	return S_OK;
+	//});
 
 	m_pGameInstance->Add_FireTask([this]() {
 
@@ -111,15 +103,18 @@ HRESULT CLevel_HeinMach::Initialize()
 		if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 			return E_FAIL;
 
+		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
+			HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+
 		CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
 
-
+		CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		return S_OK;
 	});
 	
 
-	if (FAILED(Ready_Layer_TestEffect(TEXT("Layer_EffectTest"))))
-		return E_FAIL;
+	//if (FAILED(Ready_Layer_TestEffect(TEXT("Layer_EffectTest"))))
+	//	return E_FAIL;
 
 
 
@@ -179,16 +174,6 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
 	//		return;
 	//}
 
-	if (m_pGameInstance->Key_Down(DIK_B))
-	{
-		SEQ_REQ_PLAY_DESC tPlayDesc{};
-		tPlayDesc.tId.iSeq = 100;
-		tPlayDesc.pAsset = L"Boss_Intro";
-		tPlayDesc.fStartTime = 0.f;
-
-		m_pGameInstance->SEQ_AdoptAndPlay(m_pTest, tPlayDesc);
-	}
-
 	if (m_pGameInstance->Key_Down(DIK_Q))
 	{
 		m_pGameInstance->isPickRenderTargetPixel(TEXT("Target_Normal"));
@@ -200,7 +185,7 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
 	}
 	else if (m_pGameInstance->Key_Down(DIK_F2))
 	{
-		m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::HEINMACH), ENUM_CLASS(CAMERATYPE::SPRING));
+		m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::HEINMACH), ENUM_CLASS(CAMERATYPE::PLAYER));
 	}
 
 	return;
@@ -251,31 +236,31 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 	m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag, pCamera_Free);
 
-	CCamera_Compre::CAMERA_COMPRE_DESC	CameraSpringDesc{};
+	CCamera_Compre::CAMERA_COMPRE_DESC	PlayerCameraDesc{};
 
-	CameraFreeDesc.vEye = _float4(0.39f, 3.97f, -1.79f, 1.f);
-	CameraFreeDesc.vAt = _float4(-0.26f, -0.1f, 0.96f, 1.f);
-	CameraSpringDesc.fFovy = XMConvertToRadians(60.0f);
-	CameraSpringDesc.fNear = 0.1f;
-	CameraSpringDesc.fFar = 6000.f;
-	CameraSpringDesc.fSpeedPerSec = 10.f;
-	CameraSpringDesc.fRotationPerSec = XMConvertToRadians(90.0f);
-	CameraSpringDesc.fMouseSensor = 0.2f;
-	CameraSpringDesc.iCameraType = ENUM_CLASS(CAMERATYPE::SPRING);
+	PlayerCameraDesc.vEye = _float4(0.39f, 3.97f, -1.79f, 1.f);
+	PlayerCameraDesc.vAt = _float4(-0.26f, -0.1f, 0.96f, 1.f);
+	PlayerCameraDesc.fFovy = XMConvertToRadians(60.0f);
+	PlayerCameraDesc.fNear = 0.1f;
+	PlayerCameraDesc.fFar = 6000.f;
+	PlayerCameraDesc.fSpeedPerSec = 10.f;
+	PlayerCameraDesc.fRotationPerSec = XMConvertToRadians(90.0f);
+	PlayerCameraDesc.fMouseSensor = 0.2f;
+	PlayerCameraDesc.iCameraType = ENUM_CLASS(CAMERATYPE::PLAYER);
 
 
-	CCamera_Compre* pCamera_Spring = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Camera_Compre"), &CameraSpringDesc));
-	pCamera_Spring->Set_IsActive(false);
+	CCamera_Compre* pCamera_Player = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Camera_Compre"), &PlayerCameraDesc));
+	pCamera_Player->Set_IsActive(false);
 	//CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Test"));
 	CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player"));
-	pCamera_Spring->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
-	m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::HEINMACH), pCamera_Spring);
+	pCamera_Player->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
+	m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::HEINMACH), pCamera_Player);
 
-	m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag, pCamera_Spring);
+	m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag, pCamera_Player);
 
 	m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::HEINMACH), ENUM_CLASS(CAMERATYPE::FREE));
 
-	m_pTest = CSequence_HeinMach_Field::Create(pCamera_Spring);
+
 
 	return S_OK;
 }
@@ -880,7 +865,7 @@ HRESULT CLevel_HeinMach::Ready_Trigger(const _wstring& strLayerTag, const _tchar
 		TriggerDesc.strTriggerKey = TriggerData.TriggerKey[i];
 
 		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
-			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Trigger"), TIME_CHANNEL::MAP, &TriggerDesc), E_FAIL);
+			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_HeinMach_Trigger"), TIME_CHANNEL::MAP, &TriggerDesc), E_FAIL);
 	}
 
 	return S_OK;

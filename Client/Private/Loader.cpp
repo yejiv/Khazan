@@ -409,8 +409,8 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 
 #pragma region 게임 오브젝트 원형 : 트리거
 	/* Prototype_GameObject_Prop_Trigger */
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Trigger"),
-		CTrigger::Create(m_pDevice, m_pContext)), E_FAIL);
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_HeinMach_Trigger"),
+		CHeinMach_Trigger::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 	/* Prototype_GameObject_JOH_Test1 */
