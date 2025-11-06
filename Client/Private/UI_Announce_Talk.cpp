@@ -67,12 +67,6 @@ void CUI_Announce_Talk::Update(_float fTimeDelta)
 
 void CUI_Announce_Talk::Late_Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_X, INPUT_TYPE::UI))
-		ShowUI(13);
-
-	else if(m_pGameInstance->Key_Down(DIK_C, INPUT_TYPE::UI))
-		ShowUI(5);
-
 	if (m_eState == UIAnimeStae::END)
 		return;
 

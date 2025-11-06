@@ -181,6 +181,12 @@ _bool CUI_Button::ButtonClick(HWND hWnd, _bool IsRight, _bool IsDown, INPUT_TYPE
 	return false;
 }
 
+void CUI_Button::ButtonEvent(STATE eState)
+{
+	if(m_Events[ENUM_CLASS(eState)] != nullptr)
+		m_Events[ENUM_CLASS(eState)]();
+}
+
 void CUI_Button::Free()
 {
     __super::Free();

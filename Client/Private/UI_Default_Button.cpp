@@ -53,6 +53,16 @@ void CUI_Default_Button::Priority_Update(_float fTimeDelta)
 
 void CUI_Default_Button::Update(_float fTimeDelta)
 {
+	if (!m_isVisible)
+		return;
+
+	if (ButtonOver(g_hWnd))
+		m_vColor.w = 1.f;
+	else
+		m_vColor.w = 0.6f;
+
+	if (ButtonClick(g_hWnd, false, true))
+		ButtonEvent(m_eState);
 }
 
 void CUI_Default_Button::Late_Update(_float fTimeDelta)
