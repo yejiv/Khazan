@@ -42,7 +42,7 @@ private:
 	void							Throw_Stone();
 
 
-	// Rush
+	// JumpGrab
 	void							Grab_Check_Begin(const _char* BoneName);
 	void							Grab_Check_End();
 
@@ -57,6 +57,7 @@ private:
 
 public:
 	class CBody_Yetuga*				m_pBody = { nullptr };
+	class CHead_Yetuga*				m_pHead = { nullptr };
 	class CProjectile_Yetuga*		m_pHoldStone = { nullptr };
 	class CProjectile_Rock_Yetuga*	m_pHoldRock = { nullptr };
 	class CProjectile_Breath_Yetuga* m_pBreath = { nullptr };

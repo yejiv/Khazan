@@ -550,6 +550,12 @@
     <Filter Include="02.GameObject\UI\Announce\Talk">
       <UniqueIdentifier>{3efae2c3-a7c5-4b0b-987d-9e6961e76f4a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="92.AI\State\Yetuga\17.LOCKON">
+      <UniqueIdentifier>{e1c803a4-854a-4dac-98e8-e7652245f768}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Yetuga\Head">
+      <UniqueIdentifier>{6139718a-8b42-4ba4-afef-9aeecb79be21}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1050,6 +1056,12 @@
     <ClInclude Include="..\public\UI_Announce_Talk.h">
       <Filter>02.GameObject\UI\Announce\Talk</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\AS_LockOn_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\17.LOCKON</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Head_Yetuga.h">
+      <Filter>02.GameObject\Creature\Monster\Yetuga\Head</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1535,6 +1547,12 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_Announce_Talk.cpp">
       <Filter>02.GameObject\UI\Announce\Talk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_LockOn_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\17.LOCKON</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Head_Yetuga.cpp">
+      <Filter>02.GameObject\Creature\Monster\Yetuga\Head</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

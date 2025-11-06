@@ -67,6 +67,37 @@ void CMonster::Look_Target_Lerp(_float fTimeDleta, _float AnimRatio, _float fTru
 
 }
 
+void CMonster::Start_Decel(_float fDuration)
+{
+    m_vVelocutyTarget = _float3(0.f, 0.f, 0.f);
+    m_fDecelTime = fDuration;
+    m_fDecelElapsed = 0.f;
+    m_isDecelerating = true;
+}
+
+void CMonster::Update_Velocity(_float fTimeDelta)
+{
+    if (m_isDecelerating)
+    {
+        m_fDecelElapsed += fTimeDelta;
+
+        _float fLerpTime = m_fDecelElapsed / m_fDecelTime;
+        if (fLerpTime > 1.f)
+            fLerpTime = 1.f;
+        else
+            fLerpTime = fLerpTime;
+
+        XMStoreFloat3(&m_vVelocity, XMVectorLerp(XMLoadFloat3(&m_vVelocity), XMLoadFloat3(&m_vVelocutyTarget), fLerpTime));
+
+        if (fLerpTime >= 1.f)
+            m_isDecelerating = false;
+    }
+    _vector vRseult = XMVectorScale(XMLoadFloat3(&m_vVelocity),fTimeDelta);
+    _vector vPosition = m_pTransformCom->Get_State(STATE::POSITION);
+
+    m_pTransformCom->Set_State(STATE::POSITION, vPosition + vRseult);
+}
+
 
 
 HRESULT CMonster::Initialize_Prototype()

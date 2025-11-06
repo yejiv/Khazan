@@ -15,6 +15,10 @@ public:
 	virtual void Update(class CStateMachine* pFSM, class CGameObject* pOwner, _float fTimeDelta) override;
 	virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
+public:
+	virtual void OnCollision(COLLISION_DESC* pDesc, class CGameObject* pOwner = nullptr) override;
+
+
 private:
 	_bool						m_isCrashed = { false };
 

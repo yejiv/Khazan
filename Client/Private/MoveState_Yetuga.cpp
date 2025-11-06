@@ -29,11 +29,13 @@ void CMoveState_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     {
         m_fSpeedPerSec = m_pGameInstance->Get_BlackBoard()->Get_Value<_float>(pYetuga->Get_Name(), "RunSpeed");
         pModel->Set_Animation(6);
+
     }
     else if (Info.iStateFlag == Info.SPRINT)
     {
         m_fSpeedPerSec = m_pGameInstance->Get_BlackBoard()->Get_Value<_float>(pYetuga->Get_Name(), "SprintSpeed");
         pModel->Set_Animation(7);
+
     }  
 }
 
@@ -45,23 +47,23 @@ void CMoveState_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
     CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
 
+
+    _float fAttackRange = pBB->Get_Value<_float>("Yetuga", "AttackRange");
+
     pYetuga->Get_Controller()->
         AI_MoveTo(pOwner, 
             pBB->Get_Value<CGameObject*>("Yetuga", "Target"),
-            pBB->Get_Value<_float>("Yetuga","AttackRange"), 
+            fAttackRange - 0.5f, 
             m_fSpeedPerSec,
             fTimeDelta);
 
-    if (pModel->Play_Animation(fTimeDelta))
-    {
-        int a = 10;
-    }
+    if (pModel->Play_Animation(fTimeDelta)) {}
 
 }
 
 void CMoveState_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
-
+   
 }
 
 CMoveState_Yetuga* CMoveState_Yetuga::Create()

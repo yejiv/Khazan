@@ -156,7 +156,7 @@ HRESULT CProjectile_Yetuga::Ready_Colliders()
 
 	BodyDesc.fRadius = 1.5f;
 	BodyDesc.eMotion = EMotionType::Kinematic;
-	BodyDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
+	BodyDesc.eQuality = EMotionQuality::LinearCast; // 기본 모드
 	BodyDesc.eShapeType = SHAPE::SPHERE;
 	BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
 	

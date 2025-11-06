@@ -171,6 +171,7 @@
     <ClInclude Include="..\Public\AS_JumpAttack_Yetuga.h" />
     <ClInclude Include="..\Public\AS_JumpGrab_Yetuga.h" />
     <ClInclude Include="..\Public\AS_LieDown_Yetuga.h" />
+    <ClInclude Include="..\Public\AS_LockOn_Yetuga.h" />
     <ClInclude Include="..\Public\AS_RightHand_5Hit_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Rush_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Smash_Yetuga.h" />
@@ -215,6 +216,7 @@
     <ClInclude Include="..\Public\Event_Defines.h" />
     <ClInclude Include="..\Public\FSM_Yetuga.h" />
     <ClInclude Include="..\Public\HeaderGroup_UI.h" />
+    <ClInclude Include="..\Public\Head_Yetuga.h" />
     <ClInclude Include="..\Public\IdleState_Yetuga.h" />
     <ClInclude Include="..\public\Interaction_Guide.h" />
     <ClInclude Include="..\public\Interaction_Icon.h" />
@@ -342,6 +344,7 @@
     <ClCompile Include="..\Private\AS_JumpAttack_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_JumpGrab_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_LieDown_Yetuga.cpp" />
+    <ClCompile Include="..\Private\AS_LockOn_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_RightHand_5Hit_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Rush_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Smash_Yetuga.cpp" />
@@ -381,6 +384,7 @@
     <ClCompile Include="..\private\Equip_Panel.cpp" />
     <ClCompile Include="..\private\Equip_Slot.cpp" />
     <ClCompile Include="..\Private\FSM_Yetuga.cpp" />
+    <ClCompile Include="..\Private\Head_Yetuga.cpp" />
     <ClCompile Include="..\Private\IdleState_Yetuga.cpp" />
     <ClCompile Include="..\private\Interaction_Guide.cpp" />
     <ClCompile Include="..\private\Interaction_Icon.cpp" />
