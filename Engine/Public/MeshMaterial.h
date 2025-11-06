@@ -13,6 +13,7 @@ private:
 public:
 	HRESULT Initialize(MATERIAL_DATA& data);
 	HRESULT Bind_Resources(class CShader* pShader, const _char* pConstantName, _uint iTextureType, _uint iIndex);
+	HRESULT Bind_Resources(class CDeferredShader* pShader, const _char* pConstantName, _uint iTextureType, _uint iIndex);
 	HRESULT Deferred_Bind_Resources(ID3D11DeviceContext* pDeferredContext, class CShader* pShader, const _char* pConstantName, _uint iTextureType, _uint iIndex);
 private:
 	ID3D11Device*								m_pDevice = { nullptr };

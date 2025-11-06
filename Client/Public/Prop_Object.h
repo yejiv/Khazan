@@ -8,6 +8,7 @@
 NS_BEGIN(Engine)
 class CModel;
 class CBody;
+class CDeferredShader;
 NS_END
 
 NS_BEGIN(Client)
@@ -40,6 +41,7 @@ public:
 private:
 	CModel* m_pModelCom = { nullptr };
 	CBody* m_pBodyCom = { nullptr };
+	CDeferredShader* m_pDeferredShader = { nullptr };
 private:
 	SHADER_PASS m_eShaderPass = { SHADER_PASS::MAP };
 
@@ -47,8 +49,9 @@ private:
 	HRESULT Ready_Components(void* pArg);
 	HRESULT Ready_Collision(void* pArg);
 	virtual HRESULT Bind_ShaderResources();
-
+	HRESULT Bind_DeferredShaderResources();
 	HRESULT Bind_Materials(_uint iMeshIndex);
+	HRESULT Deferred_Bind_Materials(_uint iMeshIndex);
 
 public:
 	static CProp_Object* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

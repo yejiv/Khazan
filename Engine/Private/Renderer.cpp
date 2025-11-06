@@ -196,58 +196,89 @@ HRESULT CRenderer::Render_Shadow()
 
 HRESULT CRenderer::Render_NonBlend()
 {
-    // 1) 즉시 컨텍스트에서 MRT 세팅 & 클리어
+    // [메인] 1) MRT 세팅 & (여기서만) 클리어
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_GameObjects"))))
         return E_FAIL;
 
-    // 2) 디퍼드 컨텍스트 확보
-    ID3D11DeviceContext* pDef = m_pGameInstance->GetDeferredContext(0);
-
-    // 3) 디퍼드 컨텍스트에도 같은 MRT 상태 적용(클리어는 즉시에서 했으니 false)
-    ID3D11DepthStencilView* pDSV = m_pGameInstance->Get_CurrentDSV_AddRef();
-    if (FAILED(m_pGameInstance->Apply_MRT_OnContext(TEXT("MRT_GameObjects"), pDef, pDSV, /*isClear=*/false)))
-    {
-        Safe_Release(pDSV);
-        return E_FAIL;
-    }
-    Safe_Release(pDSV);
-
-    // 4) 뷰포트/필요 상태를 디퍼드에도 동일하게
-    D3D11_VIEWPORT vp{};
-    UINT n = 1;
-    m_pContext->RSGetViewports(&n, &vp);
-    pDef->RSSetViewports(1, &vp);
-    // 필요 시 상태도 맞추기
-    // pDef->OMSetBlendState(...); pDef->OMSetDepthStencilState(...); pDef->RSSetState(...);
-
-    // 5) 렌더 오브젝트 루프: 즉시/디퍼드 분기
-    for (auto& obj : m_RenderObjects[ENUM_CLASS(RENDERGROUP::NONBLEND)])
-    {
-        if (!obj) { Safe_Release(obj); continue; }
-
-        if (!obj->Get_IsDeferred())
-        {
-            obj->Render();
-        }
-        else
-        {
-            obj->Deferred_Render(pDef);
-        }
-        Safe_Release(obj);
+    // [메인] 2) 렌더 객체 분리
+    std::vector<CGameObject*> imm, def;
+    for (auto& o : m_RenderObjects[ENUM_CLASS(RENDERGROUP::NONBLEND)]) {
+        if (!o) { Safe_Release(o); continue; }
+        (o->Get_IsDeferred() ? def : imm).push_back(o);
     }
     m_RenderObjects[ENUM_CLASS(RENDERGROUP::NONBLEND)].clear();
 
-    // 6) 커맨드 리스트 생성 & 실행
-    ID3D11CommandList* pCL = nullptr;
-    pDef->FinishCommandList(FALSE, &pCL);
-    m_pContext->ExecuteCommandList(pCL, TRUE);
-    pCL->Release();
+    // [메인] 3) 즉시 컨텍스트로 그릴 애들 먼저 처리(원하면 뒤로 미뤄도 ok)
+    for (auto* o : imm) { o->Render(); Safe_Release(o); }
+    imm.clear();
 
-    // 7) MRT 해제/복원
+    // [메인] 4) 뷰포트/상태 캐시 (Get은 메인만!)
+    D3D11_VIEWPORT cachedVP{}; UINT vpCount = 1;
+    m_pContext->RSGetViewports(&vpCount, &cachedVP);
+
+    // (선택) 블렌드/DS/래스터 상태도 여기서 캐시해두고 워커가 Set만 하게 만들 수 있음
+    // ID3D11BlendState* pBlend = ...; UINT sampleMask=..., blendFactor[4]=... 등
+
+    // [메인] 5) 워커 분배
+    const uint32_t N = m_pGameInstance->GetDeferredContext_Count();
+    auto chunks = SplitEvenly(def, N); // 직접 구현한 균등 분배 함수
+    std::vector<std::future<HRESULT>> futures; futures.reserve(N);
+
+    // 현재 DSV를 AddRef해서 넘겨준다(워커가 OMSetRenderTargets에 써야 함)
+    ID3D11DepthStencilView* pCurDSV = m_pGameInstance->Get_CurrentDSV_AddRef();
+
+    for (uint32_t i = 0; i < N; ++i) {
+        auto batch = std::move(chunks[i]);
+        futures.emplace_back(
+            m_pGameInstance->Add_Task([this, i, batch = std::move(batch), cachedVP, pCurDSV]() mutable -> HRESULT
+                {
+                    // 빈 배치는 커맨드리스트 없이 스킵
+                    if (batch.empty()) { m_pGameInstance->StoreRecordedCL(i, nullptr); return S_OK; }
+
+                    ID3D11DeviceContext* pDef = m_pGameInstance->GetDeferredContext(i);
+
+                    // (A) 디퍼드 컨텍스트에 같은 MRT를 '바인딩' (클리어X)
+                    if (FAILED(m_pGameInstance->Apply_MRT_OnContext(TEXT("MRT_GameObjects"), pDef, pCurDSV, /*isClear=*/false)))
+                        return E_FAIL;
+
+                    // (B) 뷰포트/필요상태 SET (Get 금지)
+                    pDef->RSSetViewports(1, &cachedVP);
+                    // pDef->OMSetBlendState(pBlend, blendFactor, sampleMask) ... (선택)
+
+                    // (C) 녹화
+                    for (auto* o : batch) { o->Deferred_Render(pDef); Safe_Release(o); }
+                    batch.clear();
+
+                    // (D) CL 생성 및 기록
+                    ID3D11CommandList* pCL = nullptr;
+                    HRESULT hr = pDef->FinishCommandList(FALSE, &pCL);
+                    if (FAILED(hr)) return hr;
+
+                    m_pGameInstance->StoreRecordedCL(i, pCL);
+                    return S_OK;
+                })
+        );
+    }
+
+    // [메인] 6) 워커 완료 대기 → 순서대로 Execute
+    for (auto& f : futures) if (f.valid()) f.get();
+
+    for (uint32_t i = 0; i < N; ++i) {
+        ID3D11CommandList* pCL = m_pGameInstance->ConsumeRecordedCL(i);
+        if (pCL) {
+            m_pContext->ExecuteCommandList(pCL, TRUE);
+            Safe_Release(pCL);
+        }
+    }
+
+    Safe_Release(pCurDSV);
+
+    // [메인] 7) MRT 해제/복원
     if (FAILED(m_pGameInstance->End_MRT()))
         return E_FAIL;
 
     return S_OK;
+
 }
 
 HRESULT CRenderer::Render_Decal()

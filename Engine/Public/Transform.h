@@ -24,6 +24,7 @@ public:
 
 public:
 	HRESULT Bind_Shader_Resource(class CShader* pShader, const _char* pConstantName);
+	HRESULT Bind_Shader_Resource(class CDeferredShader* pShader, const _char* pConstantName);
 
 public:
 	_vector Get_State(STATE eState) const {

@@ -105,11 +105,11 @@ HRESULT CProp_Object::Deferred_Render(ID3D11DeviceContext* pDeferredContext)
 
     for (_uint i = 0; i < iNumMeshes; ++i)
     {
-        Bind_Materials(i);
+        Deferred_Bind_Materials(i);
 
         if (true == isSnow()) CHECK_FAILED(Bind_ShaderResources_ForSnowMap(i), E_FAIL);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Deferred_Begin(ENUM_CLASS(m_eShaderPass), pDeferredContext), E_FAIL);
+        CHECK_FAILED_ASSERT(m_pDeferredShader->Begin(ENUM_CLASS(m_eShaderPass), pDeferredContext), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Deferred_Render(i, pDeferredContext), E_FAIL);
     }
@@ -160,6 +160,9 @@ HRESULT CProp_Object::Ready_Components(void* pArg)
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), m_szModelName,
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr), E_FAIL);
 
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_DeferredShader_VtxMesh"),
+        TEXT("Com_DeferredShader"), reinterpret_cast<CComponent**>(&m_pDeferredShader), nullptr), E_FAIL);
+
     return S_OK;
 }
 
@@ -196,6 +199,23 @@ HRESULT CProp_Object::Ready_Collision(void* pArg)
 }
 
 HRESULT CProp_Object::Bind_ShaderResources()
+{
+    // 월드 행렬 쉐이더에 바인딩
+    CHECK_FAILED(m_pTransformCom->Bind_Shader_Resource(m_pDeferredShader, "g_WorldMatrix"), E_FAIL);
+
+    // 뷰 행렬 쉐이더에 바인딩
+    CHECK_FAILED(m_pDeferredShader->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW)), E_FAIL);
+
+    // 투영 행렬 쉐이더에 바인딩
+    CHECK_FAILED(m_pDeferredShader->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ)), E_FAIL);
+
+    // 카메라 바인딩
+    CHECK_FAILED(m_pDeferredShader->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4)), E_FAIL);
+
+    return S_OK;
+}
+
+HRESULT CProp_Object::Bind_DeferredShaderResources()
 {
     // 월드 행렬 쉐이더에 바인딩
     CHECK_FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix"), E_FAIL);
@@ -239,6 +259,33 @@ HRESULT CProp_Object::Bind_Materials(_uint iMeshIndex)
     return S_OK;
 }
 
+HRESULT CProp_Object::Deferred_Bind_Materials(_uint iMeshIndex)
+{
+    _bool isDiffuse = { false };
+    _bool isNormal = { false };
+    _bool isEmissive = { false };
+    _bool isSpecular = { false };
+
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pDeferredShader, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0)))
+        isDiffuse = true;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pDeferredShader, "g_NormalTexture", iMeshIndex, aiTextureType_NORMALS, 0)))
+        isNormal = true;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pDeferredShader, "g_EmissiveTexture", iMeshIndex, aiTextureType_EMISSIVE, 0)))
+        isEmissive = true;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pDeferredShader, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
+        isSpecular = true;
+
+    isSpecular = false;
+    isEmissive = false;
+
+    m_pDeferredShader->Bind_RawValue("g_isDiffuse", &isDiffuse, sizeof(_bool));
+    m_pDeferredShader->Bind_RawValue("g_isNormal", &isNormal, sizeof(_bool));
+    m_pDeferredShader->Bind_RawValue("g_isEmissive", &isEmissive, sizeof(_bool));
+    m_pDeferredShader->Bind_RawValue("g_isSpecular", &isSpecular, sizeof(_bool));
+
+    return S_OK;
+}
+
 CProp_Object* CProp_Object::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     CProp_Object* pInstance = new CProp_Object(pDevice, pContext);
@@ -271,4 +318,5 @@ void CProp_Object::Free()
 
     Safe_Release(m_pModelCom);
     Safe_Release(m_pBodyCom);
+    Safe_Release(m_pDeferredShader);
 }

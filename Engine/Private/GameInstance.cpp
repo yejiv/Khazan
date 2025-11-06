@@ -155,6 +155,8 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pEffect_Manager)
 		return E_FAIL;
 
+	m_threadCLs.resize(16, nullptr);
+
 #ifdef _DEBUG
 	m_pImgui_Manager = CImgui_Manager::Create(*ppDevice, *ppContext, EngineDesc.Menu_Imgui, EngineDesc.hWnd, EngineDesc.iWinSizeX, EngineDesc.iWinSizeY);
 	if (nullptr == m_pImgui_Manager)
@@ -343,6 +345,24 @@ ID3D11DeviceContext* CGameInstance::GetImmediate() const
 	return m_pGraphic_Device->GetImmediate();
 }
 
+
+void CGameInstance::InitCLSlots(uint32_t N) {
+	std::lock_guard<std::mutex> lk(m_clMutex);
+	m_threadCLs.assign(N, nullptr);
+}
+
+void CGameInstance::StoreRecordedCL(uint32_t idx, ID3D11CommandList* pCL) {
+	std::lock_guard<std::mutex> lk(m_clMutex);
+	Safe_Release(m_threadCLs[idx]);
+	m_threadCLs[idx] = pCL; // 소유권 보유
+}
+
+ID3D11CommandList* CGameInstance::ConsumeRecordedCL(uint32_t idx) {
+	std::lock_guard<std::mutex> lk(m_clMutex);
+	ID3D11CommandList* p = m_threadCLs[idx];
+	m_threadCLs[idx] = nullptr;
+	return p; // 호출자가 Release
+}
 #pragma endregion
 
 #pragma region LEVEL_MANAGER
@@ -954,6 +974,10 @@ future<HRESULT> CGameInstance::Add_Task(std::function<HRESULT()> task)
 void CGameInstance::Add_FireTask(std::function<HRESULT()> task)
 {
 	m_pThreadPool->Add_FireTask(task);
+}
+_uint CGameInstance::Get_ThreadCount()
+{
+	return m_pThreadPool->Get_ThreadCount();
 }
 #pragma endregion
 

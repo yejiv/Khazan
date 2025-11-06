@@ -129,17 +129,20 @@ void CTarget_Manager::Restore_RT()
 
 HRESULT CTarget_Manager::Apply_MRT_OnContext(const wstring& mrtTag, ID3D11DeviceContext* pCtx, ID3D11DepthStencilView* pDSV, bool isClear)
 {
-	auto pMRT = Find_MRT(mrtTag);
-	if (!pMRT) return E_FAIL;
+	auto* pList = Find_MRT(mrtTag); // 내부에서 list<CRenderTarget*> 반환
+	if (!pList) return E_FAIL;
 
 	ID3D11RenderTargetView* rtvs[8] = {};
-	UINT count = 0;
-	for (auto* pRT : *pMRT)
-	{
-		if (isClear) pRT->Clear();     // 클리어를 여기서 할 거면, 즉시/디퍼드 한쪽에서만 하자(중복 금지)
-		rtvs[count++] = pRT->Get_RTV();
+	UINT cnt = 0;
+	for (auto* rt : *pList) {
+		if (isClear && rt) rt->Clear(); // 클리어는 보통 메인에서 1회만
+		rtvs[cnt++] = rt ? rt->Get_RTV() : nullptr;
 	}
-	pCtx->OMSetRenderTargets(count, rtvs, pDSV);
+
+	// DSV 선택: 주어진 pDSV가 있으면 그걸, 없으면 “현재 DSV”를 넘겨도 됨
+	ID3D11DepthStencilView* dsv = pDSV ? pDSV : m_pOriginalDSV; // 구현에 맞춰 가져오기
+
+	pCtx->OMSetRenderTargets(cnt, rtvs, dsv);
 	return S_OK;
 }
 

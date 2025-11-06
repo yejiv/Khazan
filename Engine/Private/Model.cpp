@@ -300,6 +300,19 @@ HRESULT CModel::Bind_Materials(class CShader* pShader, const _char* pConstantNam
     return m_Materials[iMaterialIndex]->Bind_Resources(pShader, pConstantName, iTextureType, iIndex);
 }
 
+HRESULT CModel::Bind_Materials(class CDeferredShader* pShader, const _char* pConstantName, _uint iMeshIndex, _uint iTextureType, _uint iIndex)
+{
+    if (iMeshIndex >= m_iNumMeshes)
+        return E_FAIL;
+
+    _uint       iMaterialIndex = m_Meshes[iMeshIndex]->Get_MaterialIndex();
+
+    if (m_iNumMaterials <= iMaterialIndex)
+        return E_FAIL;
+
+    return m_Materials[iMaterialIndex]->Bind_Resources(pShader, pConstantName, iTextureType, iIndex);
+}
+
 HRESULT CModel::Bind_BoneMatrices(CShader* pShader, const _char* pConstantName, _uint iMeshIndex)
 {
     if (iMeshIndex >= m_iNumMeshes)

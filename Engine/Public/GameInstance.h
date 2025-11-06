@@ -57,6 +57,12 @@ public:
 	ID3D11Device* GetDevice() const;
 	ID3D11DeviceContext* GetImmediate() const;
 
+	void InitCLSlots(uint32_t N);
+
+	void StoreRecordedCL(uint32_t idx, ID3D11CommandList* pCL);
+
+	ID3D11CommandList* ConsumeRecordedCL(uint32_t idx);
+
 #pragma endregion
 
 #pragma region LEVEL_MANAGER
@@ -252,6 +258,7 @@ public:
 #pragma region THREADPOOL
 	future<HRESULT> Add_Task(std::function<HRESULT()> task);
 	void Add_FireTask(std::function<HRESULT()> task);
+	_uint Get_ThreadCount();
 #pragma
 
 #pragma region INPUT_MANAGER
@@ -409,6 +416,10 @@ private:
 	class CBlur*				m_pBlur = { nullptr };
 	class CFog*					m_pFog = { nullptr };
 	class CVignette*			m_pVignette = { nullptr };
+
+	// GameInstance 멤버
+	mutex m_clMutex;
+	vector<ID3D11CommandList*> m_threadCLs; // 크기 N
 
 #ifdef _DEBUG
 	class CImgui_Manager* m_pImgui_Manager = { nullptr };

@@ -19,8 +19,8 @@ HRESULT CThreadPool::Initialize(_uint thread_count)
     for (unsigned int i = 0; i < thread_count; ++i) {
         m_Workers.emplace_back([this, i] { this->Worker_Thread(i); });
     }
-
-    m_pGameInstance->CreateDeferredContexts(thread_count);
+    m_iNumWokers = thread_count;
+    m_pGameInstance->CreateDeferredContexts(m_iNumWokers);
 
     return S_OK;
 }
