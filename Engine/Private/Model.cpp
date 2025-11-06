@@ -300,6 +300,19 @@ HRESULT CModel::Bind_Materials(class CShader* pShader, const _char* pConstantNam
     return m_Materials[iMaterialIndex]->Bind_Resources(pShader, pConstantName, iTextureType, iIndex);
 }
 
+HRESULT CModel::Bind_Materials(class CDeferredShader* pShader, const _char* pConstantName, _uint iMeshIndex, _uint iTextureType, _uint iIndex)
+{
+    if (iMeshIndex >= m_iNumMeshes)
+        return E_FAIL;
+
+    _uint       iMaterialIndex = m_Meshes[iMeshIndex]->Get_MaterialIndex();
+
+    if (m_iNumMaterials <= iMaterialIndex)
+        return E_FAIL;
+
+    return m_Materials[iMaterialIndex]->Bind_Resources(pShader, pConstantName, iTextureType, iIndex);
+}
+
 HRESULT CModel::Bind_BoneMatrices(CShader* pShader, const _char* pConstantName, _uint iMeshIndex)
 {
     if (iMeshIndex >= m_iNumMeshes)
@@ -841,6 +854,16 @@ HRESULT CModel::Render(_uint iMeshIndex)
     return S_OK;
 }
 
+HRESULT CModel::Deferred_Render(_uint iMeshIndex, ID3D11DeviceContext* pDeferredContext)
+{
+    if (FAILED(m_Meshes[iMeshIndex]->Deferred_Bind_Resources(pDeferredContext)))
+        return E_FAIL;
+
+    if (FAILED(m_Meshes[iMeshIndex]->Deferred_Render(pDeferredContext)))
+        return E_FAIL;
+
+    return S_OK;
+}
 
 void CModel::Check_RootMotion()
 {

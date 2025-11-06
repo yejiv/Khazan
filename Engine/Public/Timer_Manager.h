@@ -21,6 +21,8 @@ public:
 public:
 	void Update_HitStop(_float fUnScaleTimeDelta);
 	void Start_HitStop(TIME_CHANNEL eCH, _float fTargetScale, _float fHold, _float fRecover);
+	void Fix_HitStop(TIME_CHANNEL eCH);
+	void UnFix_HitStop(TIME_CHANNEL eCH);
 
 private:		
 	map<const _wstring, CTimer*>	m_Timers;

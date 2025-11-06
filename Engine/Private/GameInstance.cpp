@@ -46,6 +46,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pGraphic_Device)
 		return E_FAIL;
 
+	m_pThreadPool = CThreadPool::Create();
+	if (nullptr == m_pThreadPool)
+		return E_FAIL;
+
 	m_pInput_Manager = CInput_Manager::Create(EngineDesc.hInst, EngineDesc.hWnd);
 	if (nullptr == m_pInput_Manager)
 		return E_FAIL;
@@ -88,10 +92,6 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 
 	m_pJolt_Manager = CJolt_Manager::Create(*ppDevice, *ppContext, EngineDesc.iNumJoltObjectLayer);
 	if (nullptr == m_pJolt_Manager)
-		return E_FAIL;
-
-	m_pThreadPool = CThreadPool::Create();
-	if (nullptr == m_pThreadPool)
 		return E_FAIL;
 
 	m_pPool_Manager = CPool_Manager::Create(EngineDesc.iNumLevels);
@@ -318,9 +318,29 @@ void CGameInstance::Present_SwapChain(_uint iSyncInterval, _uint iFlag)
 	m_pGraphic_Device->Present_SwapChain(iSyncInterval, iFlag);
 }
 
-ID3D11DeviceContext* CGameInstance::Get_DeferredContext(DEFERRED_CONTEXT eType)
+bool CGameInstance::CreateDeferredContexts(uint32_t count)
 {
-	return m_pGraphic_Device->Get_DeferredContext(eType);
+	return m_pGraphic_Device->CreateDeferredContexts(count);
+}
+
+ID3D11DeviceContext* CGameInstance::GetDeferredContext(uint32_t idx) const
+{
+	return m_pGraphic_Device->GetDeferredContext(idx);
+}
+
+_uint CGameInstance::GetDeferredContext_Count()
+{
+	return m_pGraphic_Device->GetDeferredContext_Count();
+}
+
+ID3D11Device* CGameInstance::GetDevice() const
+{
+	return m_pGraphic_Device->GetDevice();
+}
+
+ID3D11DeviceContext* CGameInstance::GetImmediate() const
+{
+	return m_pGraphic_Device->GetImmediate();
 }
 
 #pragma endregion
@@ -499,6 +519,16 @@ void CGameInstance::Start_HitStop(TIME_CHANNEL tCH, _float fTargetScale, _float 
 	m_pTimer_Manager->Start_HitStop(tCH, fTargetScale, fHold, fRecover);
 }
 
+void CGameInstance::Fix_HitStop(TIME_CHANNEL eCH)
+{
+	m_pTimer_Manager->Fix_HitStop(eCH);
+}
+
+void CGameInstance::UnFix_HitStop(TIME_CHANNEL eCH)
+{
+	m_pTimer_Manager->UnFix_HitStop(eCH);
+}
+
 #pragma endregion
 
 #pragma region TRANSFORM_MANAGER
@@ -643,6 +673,16 @@ void CGameInstance::Backup_RT()
 void CGameInstance::Restore_RT()
 {
 	m_pTarget_Manager->Restore_RT();
+}
+
+HRESULT CGameInstance::Apply_MRT_OnContext(const wstring& mrtTag, ID3D11DeviceContext* pCtx, ID3D11DepthStencilView* pDSV, bool isClear)
+{
+	return m_pTarget_Manager->Apply_MRT_OnContext(mrtTag, pCtx, pDSV, isClear);
+}
+
+ID3D11DepthStencilView* CGameInstance::Get_CurrentDSV_AddRef()
+{
+	return m_pTarget_Manager->Get_CurrentDSV_AddRef();
 }
 
 #ifdef _DEBUG
@@ -914,6 +954,10 @@ future<HRESULT> CGameInstance::Add_Task(std::function<HRESULT()> task)
 void CGameInstance::Add_FireTask(std::function<HRESULT()> task)
 {
 	m_pThreadPool->Add_FireTask(task);
+}
+_uint CGameInstance::Get_ThreadCount()
+{
+	return m_pThreadPool->Get_ThreadCount();
 }
 #pragma endregion
 

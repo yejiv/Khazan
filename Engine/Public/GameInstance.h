@@ -50,7 +50,13 @@ private:
 #pragma region Graphic_Device
 public:
 	void Present_SwapChain(_uint iSyncInterval, _uint iFlag);
-	ID3D11DeviceContext* Get_DeferredContext(DEFERRED_CONTEXT eType);
+	
+	bool CreateDeferredContexts(uint32_t count);
+	ID3D11DeviceContext* GetDeferredContext(uint32_t idx) const;
+	_uint	GetDeferredContext_Count();
+	ID3D11Device* GetDevice() const;
+	ID3D11DeviceContext* GetImmediate() const;
+
 #pragma endregion
 
 #pragma region LEVEL_MANAGER
@@ -107,6 +113,8 @@ public:
 	_float	Get_ScaledDelta(const _wstring& strTimerTag, TIME_CHANNEL cCH);
 	void Update_HitStop(_float fUnScaleTimeDelta);
 	void Start_HitStop(TIME_CHANNEL tCH, _float fTargetScale, _float fHold, _float fRecover);
+	void Fix_HitStop(TIME_CHANNEL eCH);
+	void UnFix_HitStop(TIME_CHANNEL eCH);
 #pragma endregion
 
 #pragma region PIPELINE
@@ -147,6 +155,13 @@ public:
 	HRESULT Copy_RT_Resource(const _wstring& strTargetTag, ID3D11Texture2D* pSourTexture);
 	void	Backup_RT();
 	void	Restore_RT();
+
+	HRESULT Apply_MRT_OnContext(const wstring& mrtTag,
+		ID3D11DeviceContext* pCtx,
+		ID3D11DepthStencilView* pDSV,
+		bool isClear);
+
+	ID3D11DepthStencilView* Get_CurrentDSV_AddRef();
 
 #ifdef _DEBUG
 	HRESULT Ready_RT_Debug(const _wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY);
@@ -235,6 +250,7 @@ public:
 #pragma region THREADPOOL
 	future<HRESULT> Add_Task(std::function<HRESULT()> task);
 	void Add_FireTask(std::function<HRESULT()> task);
+	_uint Get_ThreadCount();
 #pragma
 
 #pragma region INPUT_MANAGER
@@ -386,6 +402,7 @@ private:
 	class CBlur*				m_pBlur = { nullptr };
 	class CFog*					m_pFog = { nullptr };
 	class CVignette*			m_pVignette = { nullptr };
+
 
 #ifdef _DEBUG
 	class CImgui_Manager* m_pImgui_Manager = { nullptr };

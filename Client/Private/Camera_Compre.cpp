@@ -248,7 +248,7 @@ HRESULT CCamera_Compre::Spring(_float fTimeDelta)
 
 HRESULT CCamera_Compre::RayCast(_float fTimeDelta)
 {
-    _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
+    _vector vPos = m_pTransformCom->Get_State(STATE::POSITION) - XMVectorSetW(XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK)), 0.f) * 1.5f;
     _vector vTargetPos = XMVectorSet(m_pObjMatrix->_41, m_pObjMatrix->_42 + 1.5f, m_pObjMatrix->_43, 1.f);
 
     _float fFraction;
@@ -279,16 +279,6 @@ HRESULT CCamera_Compre::LockOn(_float fTimeDelta)
         m_pObjMatrix->_43,
         1.f
     );
-
-    CTransform* pLockTargetTransform = dynamic_cast<CTransform*>(m_pLockMonster->Get_Component(TEXT("Com_Transform")));
-    const _matrix lockTargetWorldMatrix = pLockTargetTransform->Get_WorldMatrix();
-
-    //const _vector lockTargetWorldPosition = XMVectorSet(
-    //    lockTargetWorldMatrix.r[3].m128_f32[0],
-    //    lockTargetWorldMatrix.r[3].m128_f32[1] + playerEyeOffsetY,
-    //    lockTargetWorldMatrix.r[3].m128_f32[2],
-    //    1.f
-    //);
 
     _vector playerToTargetVector = XMVectorSubtract(XMLoadFloat4(m_pLockOnPos), playerWorldPosition);
     float playerToTargetDistance = XMVectorGetX(XMVector3Length(playerToTargetVector));
