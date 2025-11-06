@@ -32,45 +32,31 @@ HRESULT CLevel_HeinMach::Initialize()
 {
 
 	m_pGameInstance->Add_FireTask([this]() {
-		CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-		return S_OK;
-		});
-
-	m_pGameInstance->Add_FireTask([this]() {
-		CHECK_FAILED(Ready_Layer_Sky(TEXT("Layer_Sky"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-		return S_OK;
-		});
-
-	m_pGameInstance->Add_FireTask([this]() {
-		CHECK_FAILED(Ready_Layer_Cloud(TEXT("Layer_Sky"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-		return S_OK;
-		});
-
-	/*m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
+		//CHECK_FAILED(Ready_Layer_Test(TEXT("Layer_Creature_Test")), E_FAIL);
+		if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
+			return E_FAIL;
+		CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
 		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
-			HEINMACH_1ST_BLADENEXUS, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+			HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		return S_OK;
-		}));*/
+		});
 
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
-			HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+			HEINMACH_1ST_BLADENEXUS, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		return S_OK;
 		}));
 
-	CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
-
+	//m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+	//	
+	//	
+	//	return S_OK;
+	//	}));
 
 	m_pGameInstance->Add_FireTask([this]() {
-		if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
-			return E_FAIL;
 
 		CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-
-		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
-			HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-
-		CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
 
 		CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
@@ -82,8 +68,6 @@ HRESULT CLevel_HeinMach::Initialize()
 
 
 	
-
-
 	m_pGameInstance->Add_FireTask([this]() {
 		for (_uint i = 0; i < HEINMACH_SUBLV; ++i)
 		{
@@ -118,9 +102,15 @@ HRESULT CLevel_HeinMach::Initialize()
 		return S_OK;
 		});
 
-	//if (FAILED(Ready_Layer_TestEffect(TEXT("Layer_EffectTest"))))
-	//	return E_FAIL;
+	//CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+	m_pGameInstance->Add_FireTask([this]() mutable { 
+		CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); 
+		return S_OK;
+		});
 
+
+	if (FAILED(Ready_Layer_TestEffect(TEXT("Layer_EffectTest"))))
+		return E_FAIL;
 
 
 	/*if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
@@ -164,6 +154,7 @@ HRESULT CLevel_HeinMach::Initialize()
 			all_ok = false;
 		}
 	}
+
 	m_futures.clear();
 
 	CClientInstance::GetInstance()->Fade_In();
@@ -192,6 +183,11 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
 	{
 		m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::HEINMACH), ENUM_CLASS(CAMERATYPE::PLAYER));
 	}
+
+	/*Effect test => 혹시 보게되면 지우셔도 됩니다!!!!!!!!! */
+	if (m_pGameInstance->Key_Down(DIK_I))
+		m_pGameInstance->Spwan_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle1"), XMVectorSet(0.f, 0.f, 0.f, 1.f));
+	//Test End
 
 	return;
 }
@@ -252,7 +248,6 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
 	PlayerCameraDesc.fRotationPerSec = XMConvertToRadians(90.0f);
 	PlayerCameraDesc.fMouseSensor = 0.2f;
 	PlayerCameraDesc.iCameraType = ENUM_CLASS(CAMERATYPE::PLAYER);
-
 
 	CCamera_Compre* pCamera_Player = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Camera_Compre"), &PlayerCameraDesc));
 	pCamera_Player->Set_IsActive(false);

@@ -135,7 +135,7 @@ HRESULT CEffect_Prefab::Render()
 
 void CEffect_Prefab::ResetChildren()
 {
-    m_bPlaying = false;
+    m_bPlaying = true;
     m_fCurTime = 0.f;
     for (_uint i = 0; i < m_Children.size(); ++i)
         m_Children[i]->Reset();

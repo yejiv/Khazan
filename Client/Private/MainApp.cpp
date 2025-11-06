@@ -568,6 +568,11 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_Effect()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MeshEffect_Masking"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Mask/Masking%d.png"), 12)), E_FAIL);
 
+	// Prototype_Component_Texture_MeshEffect(Dissolve)
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MeshEffect_Dissolve"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Dissolve/Dissolve%d.png"), 1))))
+		return E_FAIL;
+
 	return S_OK;
 }
 

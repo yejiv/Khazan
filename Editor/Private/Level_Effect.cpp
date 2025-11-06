@@ -154,6 +154,7 @@ void CLevel_Effect::Create_Element()
 				const char* MaskTexture[] = { "texture0", "texture1", "texture2",  "texture3"};
 				ImGui::Combo("Turbulence Textures", reinterpret_cast<int*>(&m_iTurbulenceTextureIdx), MaskTexture, IM_ARRAYSIZE(MaskTexture));
 				ImGui::InputFloat("Turbulence Speed : ", &m_fTurbulenceSpeed);
+				ImGui::InputFloat("Turbulence Sample Size: ", &m_fTurbulenceSampleSize);
 				ImGui::Unindent();
 			}
 
@@ -194,6 +195,19 @@ void CLevel_Effect::Create_Element()
 			ImGui::InputFloat2("Size : ", m_fSize);
 			ImGui::InputFloat("Size Ratio : ", &m_fSizeRatio);
 			GetMaksingScrollData();
+
+			ImGui::Checkbox("Turbulence", &m_bIsTurbulence);
+
+			if (m_bIsTurbulence)
+			{
+				ImGui::Indent();
+				const char* MaskTexture[] = { "texture0", "texture1", "texture2",  "texture3" };
+				ImGui::Combo("Turbulence Textures", reinterpret_cast<int*>(&m_iTurbulenceTextureIdx), MaskTexture, IM_ARRAYSIZE(MaskTexture));
+				ImGui::InputFloat("Turbulence Speed : ", &m_fTurbulenceSpeed);
+				ImGui::InputFloat("Turbulence Sample Size: ", &m_fTurbulenceSampleSize);
+				ImGui::Unindent();
+			}
+
 			ImGui::Checkbox("Fresnel", &m_bIsFresnel);
 			ImGui::Checkbox("Dissolve", &m_bIsDissolve);
 			if (m_bIsDissolve)
@@ -402,6 +416,7 @@ void CLevel_Effect::Create_PointInstance_Element()
 
 	data.bIsTurbulence = m_bIsTurbulence;
 	data.fTurbulenceSpeed = m_fTurbulenceSpeed;
+	data.fTurbulenceSampleSize = m_fTurbulenceSampleSize;
 	data.iTurbulenceTextureIdx = m_iTurbulenceTextureIdx;
 
 	data.iCol = m_iCol;
@@ -443,6 +458,11 @@ void CLevel_Effect::Create_MeshInstance_Element()
 	data.sDissolveData.fDissolveEdgeColor = m_fDissolveEdgeColor;
 	data.sDissolveData.fDissolveEdgeWidth = m_fDissolveEdgeWidth;
 	data.sDissolveData.iDissolveTextureIdx = m_iDissolveTextureIdx;
+
+	data.bIsTurbulence = m_bIsTurbulence;
+	data.fTurbulenceSpeed = m_fTurbulenceSpeed;
+	data.fTurbulenceSampleSize = m_fTurbulenceSampleSize;
+	data.iTurbulenceTextureIdx = m_iTurbulenceTextureIdx;
 
 	m_PrefabPrototype->Add_Effect_Element(m_EffectType, &data);
 }
