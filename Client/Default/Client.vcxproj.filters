@@ -217,9 +217,6 @@
     <Filter Include="02.GameObject\UI\Inven">
       <UniqueIdentifier>{bf77453f-04e7-4354-93fa-9c62f443d060}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\UI\Item">
-      <UniqueIdentifier>{5a375172-cf57-4494-aa11-36f0c266d20c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\UI\Cursor">
       <UniqueIdentifier>{8fcc381a-8b4e-49ee-b6e8-50919dc023a9}</UniqueIdentifier>
     </Filter>
@@ -565,6 +562,9 @@
     <Filter Include="02.GameObject\UI\Tutorial\Tutorial_Tex">
       <UniqueIdentifier>{a6a00170-ad51-4fd0-a0ad-c6ced3f2edf5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Slot">
+      <UniqueIdentifier>{5a375172-cf57-4494-aa11-36f0c266d20c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -766,7 +766,7 @@
       <Filter>99.Defines</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Item_Slot.h">
-      <Filter>02.GameObject\UI\Item</Filter>
+      <Filter>02.GameObject\UI\Slot</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Cursor.h">
       <Filter>02.GameObject\UI\Cursor</Filter>
@@ -1080,6 +1080,9 @@
     <ClInclude Include="..\public\Tutorial_Tex.h">
       <Filter>02.GameObject\UI\Tutorial\Tutorial_Tex</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Skill_Slot.h">
+      <Filter>02.GameObject\UI\Slot</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1270,7 +1273,7 @@
       <Filter>94.ClientInstance\DB</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Item_Slot.cpp">
-      <Filter>02.GameObject\UI\Item</Filter>
+      <Filter>02.GameObject\UI\Slot</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Cursor.cpp">
       <Filter>02.GameObject\UI\Cursor</Filter>
@@ -1580,6 +1583,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Tutorial_Tex.cpp">
       <Filter>02.GameObject\UI\Tutorial\Tutorial_Tex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_Slot.cpp">
+      <Filter>02.GameObject\UI\Slot</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

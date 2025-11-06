@@ -21,6 +21,9 @@ private:
 	unordered_map<_uint, OTHERITEM_DATA>	m_OtherEffectData = {};
 	unordered_map<_uint, STATE_DATA>		m_StateData = {};
 	unordered_map<_uint, ANNOUNCE_TALK_DB>	m_Announce_Talk_Data = {};
+	unordered_map<_uint, SKILL_DB>			m_Skill_Data = {};
+
+	
 private:
 	_wstring								Load_UTF8ToWString(const wstring& filePath);	//UTF8 º¯È¯
 	_float									Read_float(wstringstream& s);
@@ -82,4 +85,10 @@ inline const ANNOUNCE_TALK_DB* CDB_Manager::Get_Data<ANNOUNCE_TALK_DB>(_uint iID
 	return (Data != m_Announce_Talk_Data.end()) ? &Data->second : nullptr;
 }
 
+template <>
+inline const SKILL_DB* CDB_Manager::Get_Data<SKILL_DB>(_uint iID) const
+{
+	auto Data = m_Skill_Data.find(iID);
+	return (Data != m_Skill_Data.end()) ? &Data->second : nullptr;
+}
 NS_END

@@ -214,6 +214,7 @@
     <ClInclude Include="..\public\Equip_Slot.h" />
     <ClInclude Include="..\Public\Event_Defines.h" />
     <ClInclude Include="..\Public\FSM_Yetuga.h" />
+    <ClInclude Include="..\public\Skill_Slot.h" />
     <ClInclude Include="..\public\UI_Guide_Icon.h" />
     <ClInclude Include="..\Public\HeaderGroup_UI.h" />
     <ClInclude Include="..\Public\IdleState_Yetuga.h" />
@@ -386,6 +387,7 @@
     <ClCompile Include="..\private\Equip_Panel.cpp" />
     <ClCompile Include="..\private\Equip_Slot.cpp" />
     <ClCompile Include="..\Private\FSM_Yetuga.cpp" />
+    <ClCompile Include="..\private\Skill_Slot.cpp" />
     <ClCompile Include="..\private\UI_Guide_Icon.cpp" />
     <ClCompile Include="..\Private\IdleState_Yetuga.cpp" />
     <ClCompile Include="..\private\Interaction_Guide.cpp" />

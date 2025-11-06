@@ -108,9 +108,6 @@ HRESULT CUI_Tutorial::Initialize_Clone(void* pArg)
 
 void CUI_Tutorial::Priority_Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_8, INPUT_TYPE::UI))
-		On_Panel(GUIDE_TYPE::BURTALATTACK);
-
 	if (!m_IsUpdate)
 		return;
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE, INPUT_TYPE::POPUP))

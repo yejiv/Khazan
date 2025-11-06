@@ -4,6 +4,7 @@
 
 #include "UI_TextBox.h"
 #include "UI_BackGround.h"
+#include "UI_Atlas_Icon.h"
 
 #include "UI_State_MainPanel.h"
 #include "UI_State_Panel.h"
@@ -103,6 +104,9 @@ void CUI_State::Priority_Update(_float fTimeDelta)
 
 void CUI_State::Update(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_7,INPUT_TYPE::UI))
+		On_Panel(UI_TYPE::UPAGERD);
+
 	if (!m_IsUpdate)
 		return;
 
@@ -125,6 +129,9 @@ void CUI_State::Late_Update(_float fTimeDelta)
 
 	if (UI_TYPE::UPAGERD == m_eType)
 		m_pUpButton->Late_Update(fTimeDelta);
+
+	m_pGuide_Text->Late_Update(fTimeDelta);
+	m_pGuide_Icon->Late_Update(fTimeDelta);
 }
 
 HRESULT CUI_State::Render()
@@ -296,6 +303,16 @@ HRESULT CUI_State::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, voi
 					m_pUpButton = static_cast<CUI_State_List*>(pChild);
 					Safe_AddRef(pChild);
 					m_pUpButton->Setting_Button(&m_UpPlayer_Data.iLevel);
+				}
+				else if (strName == "Guade_Icon_ESC")
+				{
+					m_pGuide_Icon = static_cast<CUI_Atlas_Icon*>(pChild);
+					Safe_AddRef(m_pGuide_Icon);
+				}
+				else if (strName == "Guade_Icon_Esc_Text")
+				{
+					m_pGuide_Text = static_cast<CUI_TextBox*>(pChild);
+					Safe_AddRef(m_pGuide_Text);
 				}
 			}
 		}
@@ -711,4 +728,7 @@ void CUI_State::Free()
 	Safe_Release(m_pUpButton);
 	Safe_Release(m_pBackGround);
 	Safe_Release(m_pTitle);
-}
+
+	Safe_Release(m_pGuide_Text);
+	Safe_Release(m_pGuide_Icon);
+}				 
