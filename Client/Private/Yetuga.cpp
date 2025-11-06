@@ -9,6 +9,7 @@
 #include "Projectile_Rock_Yetuga.h"
 #include "Projectile_Breath_Yetuga.h"
 #include "BossHp.h"
+#include "Head_Yetuga.h"
 
 CYetuga::CYetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice, pContext }
@@ -104,6 +105,7 @@ void CYetuga::Late_Update(_float fTimeDelta)
         return;
 
     CContainerObject::Late_Update(fTimeDelta);
+    
 
 }
 
@@ -475,6 +477,7 @@ HRESULT CYetuga::Ready_Components()
     tCharVirDesc.fRadius = 2.f;
     tCharVirDesc.fHeight = 4.f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
+
     m_tCollisionDesc.pGameObject = this;
     //pCollDesc.pInfo = ?? // 작성하기
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
@@ -504,6 +507,20 @@ HRESULT CYetuga::Ready_PartObjects()
     m_pBody = dynamic_cast<CBody_Yetuga*>(pBody);
     Safe_AddRef(m_pBody);
 
+    CHead_Yetuga::HEAD_DESC HeadDesc{};
+    HeadDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
+    HeadDesc.pOwnerTransform = m_pTransformCom;
+    HeadDesc.pOwner = this;
+
+    if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Head"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Yetuga_Head"), &HeadDesc)))
+        return E_FAIL;
+
+    CPartObject* pHead = Find_PartObject(TEXT("Part_Head"));
+    if (nullptr == pHead)
+        return E_FAIL;
+
+    m_pHead = dynamic_cast<CHead_Yetuga*>(pHead);
+    Safe_AddRef(m_pHead);
 
     return S_OK;
 }
@@ -549,17 +566,21 @@ HRESULT CYetuga::Ready_AnimEvent()
 
 #pragma region ThrowRock
 
-    pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Pick_Stone(); });
+    pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+        Pick_Stone(); 
+        });
     
     pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() 
         { 
             m_isLookAt = false;
+            m_fTurnSpeed = 50.f;
             Throw_Stone(); 
         });
 
     pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() 
         {
             m_isLookAt = true;
+            m_fTurnSpeed = 50.f;
             Hold_Stone(); 
         });
 
@@ -700,7 +721,7 @@ HRESULT CYetuga::Ready_AnimEvent()
 
 #pragma endregion
 
-#pragma region Move_L_Attack
+#pragma region Move_R_Attack
 
     pModel->Register_Event("Side_R_Look", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_fTurnSpeed = 40.f;
@@ -856,16 +877,37 @@ HRESULT CYetuga::Ready_AnimEvent()
 #pragma endregion
 
 #pragma region JumpAttack
-    pModel->Register_Event("JumpAttack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
+    pModel->Register_Event("JumpAttack_Jump", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
         { 
             m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", true);
         });
-    pModel->Register_Event("JumpAttack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() 
+    pModel->Register_Event("JumpAttack_Jump", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() 
         {
             m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", false);
 
         });
-    //pModel->Register_Event("JumpAttack", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Look_Target(); });
+
+
+    pModel->Register_Event("JumpAttack_Attack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_pBody->Set_OnAttackCollision(true);
+        });
+    pModel->Register_Event("JumpAttack_Attack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_pBody->Set_OnAttackCollision(false);
+        });
+
+    pModel->Register_Event("JumpAttack_Attack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pBody->Set_OnAttackCollision(true);
+        });
+    pModel->Register_Event("JumpAttack_Attack2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pBody->Set_OnAttackCollision(false);
+        });
+   
 #pragma endregion
 
 #pragma region JumpGrab
@@ -906,6 +948,21 @@ HRESULT CYetuga::Ready_AnimEvent()
 #pragma endregion
 
 
+#pragma region RUSH
+    pModel->Register_Event("RushCheck", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pHead->Set_OnAttackCollision(true);
+            m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
+        });
+
+    pModel->Register_Event("RushCheck", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pHead->Set_OnAttackCollision(false);
+            m_pGameInstance->Remove_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
+        });
+
+
+#pragma endregion
 
 #pragma region Amageddon
     // 돌을 풀에 서 꺼낸다.
@@ -1020,6 +1077,6 @@ CGameObject* CYetuga::Clone(void* pArg)
 void CYetuga::Free()
 {
     Safe_Release(m_pBody);
-
+    Safe_Release(m_pHead);
     __super::Free();
 }

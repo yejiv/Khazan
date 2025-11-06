@@ -571,6 +571,12 @@
     <Filter Include="02.GameObject\UI\Slot">
       <UniqueIdentifier>{5a375172-cf57-4494-aa11-36f0c266d20c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="92.AI\State\Yetuga\17.LOCKON">
+      <UniqueIdentifier>{e1c803a4-854a-4dac-98e8-e7652245f768}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Yetuga\Head">
+      <UniqueIdentifier>{6139718a-8b42-4ba4-afef-9aeecb79be21}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1095,6 +1101,12 @@
     <ClInclude Include="..\public\Skill_Slot.h">
       <Filter>02.GameObject\UI\Slot</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\AS_LockOn_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\17.LOCKON</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Head_Yetuga.h">
+      <Filter>02.GameObject\Creature\Monster\Yetuga\Head</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1604,6 +1616,12 @@
     </ClCompile>
     <ClCompile Include="..\private\Skill_Slot.cpp">
       <Filter>02.GameObject\UI\Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_LockOn_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\17.LOCKON</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Head_Yetuga.cpp">
+      <Filter>02.GameObject\Creature\Monster\Yetuga\Head</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

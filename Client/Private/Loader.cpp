@@ -30,6 +30,7 @@
 #pragma region Monster
 #include "Yetuga.h"
 #include "Body_Yetuga.h"
+#include "Head_Yetuga.h"
 #include "Projectile_Yetuga.h"
 #include "Projectile_Rock_Yetuga.h"
 #pragma endregion
@@ -425,6 +426,11 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 	// Prototype_PartObject_Yetuga_Body
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Yetuga_Body"),
 		CBody_Yetuga::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	// Prototype_PartObject_Yetuga_Body
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Yetuga_Head"),
+		CHead_Yetuga::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Yetuga_Stone"),

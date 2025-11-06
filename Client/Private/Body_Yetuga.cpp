@@ -231,23 +231,13 @@ void CBody_Yetuga::Carculate_Matrix(_float fTimeDelta)
     BoneMatrix = *m_pModelCom->Get_BoneMatrix("Weapon_L");
     XMStoreFloat4x4(&m_LeftHandMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
     m_pLH_BodyCom->Sync_Update(XMLoadFloat4x4(&m_LeftHandMatrix));
-    m_pLH_BodyCom->Update(fTimeDelta,XMLoadFloat4x4(&m_LeftHandMatrix),vOutQuat,vOutPos);
+    m_pLH_BodyCom->Update(fTimeDelta, XMLoadFloat4x4(&m_LeftHandMatrix), vOutQuat, vOutPos);
 
     m_LeftHandMatrix._41 = vOutPos.m128_f32[0];
     m_LeftHandMatrix._42 = vOutPos.m128_f32[1];
     m_LeftHandMatrix._43 = vOutPos.m128_f32[2];
     m_LeftHandMatrix._44 = vOutPos.m128_f32[3];
 
-
-    BoneMatrix = *m_pModelCom->Get_BoneMatrix("Bip001-Head");
-    XMStoreFloat4x4(&m_HeadMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
-    m_pHeadBodyCom->Sync_Update(XMLoadFloat4x4(&m_HeadMatrix));
-    m_pHeadBodyCom->Update(fTimeDelta, XMLoadFloat4x4(&m_HeadMatrix), vOutQuat, vOutPos);
-
-    m_HeadMatrix._41 = vOutPos.m128_f32[0];
-    m_HeadMatrix._42 = vOutPos.m128_f32[1];
-    m_HeadMatrix._43 = vOutPos.m128_f32[2];
-    m_HeadMatrix._44 = vOutPos.m128_f32[3];
 }
 
 HRESULT CBody_Yetuga::Ready_Colliders()
@@ -298,31 +288,7 @@ HRESULT CBody_Yetuga::Ready_Colliders()
         TEXT("Com_Body_LH"), reinterpret_cast<CComponent**>(&m_pLH_BodyCom), &BodyDesc)))
         return E_FAIL;
 
-    // 머리
-
-    BodyDesc.fRadius = 2.f;
-    BodyDesc.eMotion = EMotionType::Kinematic;
-    BodyDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
-    BodyDesc.eShapeType = SHAPE::SPHERE;
-    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
-    BoneMatrix = *m_pModelCom->Get_BoneMatrix("Bip001-Head");
-    XMStoreFloat4x4(&m_HeadMatrix, m_pTransformCom->Get_WorldMatrix() *
-        XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
-    /* _vector vScale, vQuat, vTrans;*/
-     // 쪼갠다.
-    XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_HeadMatrix));
-    // 위치값
-    BodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
-    // 쿼터니언
-    BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
-
-    BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
-    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
-    BodyDesc.bIsTrigger = true;
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
-        TEXT("Com_Body_Head"), reinterpret_cast<CComponent**>(&m_pHeadBodyCom), &BodyDesc)))
-        return E_FAIL;
+   
 
 
  //   // 등
