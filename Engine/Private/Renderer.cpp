@@ -84,10 +84,13 @@ HRESULT CRenderer::Draw()
         if (FAILED(Render_Shadow()))
             return E_FAIL;
 
-    if (FAILED(Render_NonBlend()))
+    if (FAILED(Render_Static()))
         return E_FAIL;
 
     if (FAILED(Render_Decal()))
+        return E_FAIL;
+
+    if (FAILED(Render_Dynamic()))
         return E_FAIL;
 
     if (FAILED(Render_Outline()))
@@ -112,7 +115,6 @@ HRESULT CRenderer::Draw()
     if (FAILED(Render_Fog()))
         return E_FAIL;
 
-    // Bloom
     if (FAILED(Render_Blur()))
         return E_FAIL;
 
@@ -194,13 +196,12 @@ HRESULT CRenderer::Render_Shadow()
     return S_OK;
 }
 
-HRESULT CRenderer::Render_NonBlend()
+HRESULT CRenderer::Render_Static()
 {
-    /* Diffuse + Normal */
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_GameObjects"))))
         return E_FAIL;
 
-    for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::NONBLEND)])
+    for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::STATIC)])
     {
         if (nullptr != pRenderObject)
             pRenderObject->Render();
@@ -208,7 +209,7 @@ HRESULT CRenderer::Render_NonBlend()
         Safe_Release(pRenderObject);
     }
 
-    m_RenderObjects[ENUM_CLASS(RENDERGROUP::NONBLEND)].clear();
+    m_RenderObjects[ENUM_CLASS(RENDERGROUP::STATIC)].clear();
 
     if (FAILED(m_pGameInstance->End_MRT()))
         return E_FAIL;
@@ -219,12 +220,32 @@ HRESULT CRenderer::Render_NonBlend()
 HRESULT CRenderer::Render_Decal()
 {
     /* Diffuse */
-    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Decal"), nullptr, false)))
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Decal"), false)))
         return E_FAIL;
 
-    // Render_Decals
     if (FAILED(m_pGameInstance->Render_Decals()))
         return E_FAIL;
+
+    if (FAILED(m_pGameInstance->End_MRT()))
+        return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CRenderer::Render_Dynamic()
+{
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_GameObjects"), false)))
+        return E_FAIL;
+
+    for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::DYNAMIC)])
+    {
+        if (nullptr != pRenderObject)
+            pRenderObject->Render();
+
+        Safe_Release(pRenderObject);
+    }
+
+    m_RenderObjects[ENUM_CLASS(RENDERGROUP::DYNAMIC)].clear();
 
     if (FAILED(m_pGameInstance->End_MRT()))
         return E_FAIL;
@@ -346,7 +367,7 @@ HRESULT CRenderer::Render_Lights()
 
 HRESULT CRenderer::Render_PostScene()
 {
-    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_PostScene"), nullptr, false)))
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_PostScene"), false)))
         return E_FAIL;
 
     if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
@@ -409,7 +430,7 @@ HRESULT CRenderer::Render_PostScene()
 
 HRESULT CRenderer::Render_NonLight()
 {
-    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), nullptr, false)))
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
         return E_FAIL;
 
     for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::NONLIGHT)])
@@ -430,7 +451,7 @@ HRESULT CRenderer::Render_NonLight()
 
 HRESULT CRenderer::Render_Blend()
 {
-    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), nullptr, false)))
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
         return E_FAIL;
 
     for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::BLEND)])

@@ -73,8 +73,9 @@ private:
 private:
 	HRESULT Render_Priority();
 	HRESULT Render_Shadow();
-	HRESULT Render_NonBlend();
+	HRESULT Render_Static();
 	HRESULT Render_Decal();
+	HRESULT Render_Dynamic();
 	HRESULT Render_Outline();
 	HRESULT Render_SSAO();
 	HRESULT Render_Lights();

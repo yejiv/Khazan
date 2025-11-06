@@ -86,7 +86,7 @@ void CYetuga::Update(_float fTimeDelta)
 
 void CYetuga::Late_Update(_float fTimeDelta)
 {
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this)))
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 
     CContainerObject::Late_Update(fTimeDelta);

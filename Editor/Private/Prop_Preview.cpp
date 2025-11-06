@@ -65,7 +65,7 @@ void CProp_Preview::Update(_float fTimeDelta)
 
 void CProp_Preview::Late_Update(_float fTimeDelta)
 {
-    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this), );
+    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this), );
 }
 
 HRESULT CProp_Preview::Render()

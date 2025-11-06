@@ -292,8 +292,8 @@ PS_OUT_EMISSIVE PS_MAIN_DEBUG_EMISSIVE(PS_IN In)
     //  Out.vPostScene.rgb = vMtrlDiffuse * 3.f; // Intensity
     //  Out.vPostScene.a = 1.f;
     
-    Out.vEmissive.rgb = vMtrlDiffuse * 3.f; // Intensity
-    Out.vEmissive.a = 1.f;
+    //  Out.vEmissive.rgb = vMtrlDiffuse * 3.f; // Intensity
+    //  Out.vEmissive.a = 1.f;
     
     // ?‘˜ ?‹¤ ê¸°ë¡?•˜ê¸?
     //  Out.vPostScene = vMtrlDiffuse;
@@ -303,7 +303,7 @@ PS_OUT_EMISSIVE PS_MAIN_DEBUG_EMISSIVE(PS_IN In)
     // =============== Blend ===============
     
     // PostSceneë§? ê¸°ë¡
-    //  Out.vPostScene = float4(vMtrlDiffuse.rgb, 0.5f);
+    Out.vPostScene = float4(vMtrlDiffuse.rgb, 0.2f);
     //  // (?ƒ?µ ê°??Š¥ -> ?œ„?—?„œ 0 ì´ˆê¸°?™”)
     //  Out.vEmissive = 0.f; 
     
@@ -377,9 +377,6 @@ PS_OUT PS_BLADENEXUS(PS_IN In)
 
 technique11 DefaultTechnique
 {
-    /* ?Š¹? • ?Œ¨?Š¤ë¥? ?´?š©?•´?„œ ? ? •?„ ê·¸ë ¤?ƒˆ?‹¤. */
-    /* ?•˜?‚˜?˜ ëª¨ë¸?„ ê·¸ë ¤?ƒˆ?‹¤. */ 
-    /* ëª¨ë¸?˜ ?ƒ?™©?— ?”°?¼ ?‹¤ë¥? ?‰?´?”© ê¸°ë²• ?„¸?Š¸(ëª…ì•” + ë¦¼ë¼?´?Š¸ + ?Š¤?™?˜?Ÿ¬ + ?…¸ë©?ë§? + ssao )ë¥? ë¨¹ì—¬ì£¼ê¸°?œ„?•´?„œ */
     pass DefaultPass
     {
         SetRasterizerState(RS_Default);
@@ -457,7 +454,6 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN_DEBUG_EMISSIVE();
     }
 
-    /* 7ë²? : ?• ?•„ë²„ì???˜ ?‹¬?”Œì»¬ëŸ¬ ë·? */
     pass SimpleColorView
     {
 

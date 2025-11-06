@@ -75,7 +75,7 @@ void CProp_Static::Late_Update(_float fTimeDelta)
     if (isShadow())    m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this);
     */
     
-    m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
+    m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
 }
 
 HRESULT CProp_Static::Render()

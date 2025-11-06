@@ -67,7 +67,7 @@ void CProjectile_Yetuga::Update(_float fTimeDelta)
 void CProjectile_Yetuga::Late_Update(_float fTimeDelta)
 {
 	if(m_isVisible)
-		m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND,this);
+		m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC,this);
 }
 
 HRESULT CProjectile_Yetuga::Render()

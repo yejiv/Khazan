@@ -147,7 +147,7 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pSequence_Manager)
 		return E_FAIL;
 
-	m_pDecal_Manager = CDecal_Manager::Create(*ppDevice, *ppContext, EngineDesc.iNumDecals);
+	m_pDecal_Manager = CDecal_Manager::Create(*ppDevice, *ppContext);
 	if (nullptr == m_pDecal_Manager)
 		return E_FAIL;
 
@@ -615,9 +615,9 @@ HRESULT CGameInstance::Add_MRT(const _wstring& strMRTTag, const _wstring& strTar
 	return m_pTarget_Manager->Add_MRT(strMRTTag, strTargetTag);
 }
 
-HRESULT CGameInstance::Begin_MRT(const _wstring& strMRTTag, ID3D11DepthStencilView* pDSV, _bool isClear)
+HRESULT CGameInstance::Begin_MRT(const _wstring& strMRTTag, _bool isClear, ID3D11DepthStencilView* pDSV)
 {
-	return m_pTarget_Manager->Begin_MRT(strMRTTag, pDSV, isClear);
+	return m_pTarget_Manager->Begin_MRT(strMRTTag, isClear, pDSV);
 }
 
 HRESULT CGameInstance::End_MRT()

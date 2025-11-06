@@ -12,15 +12,8 @@ CDecal_Manager::CDecal_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pCont
     Safe_AddRef(m_pGameInstance);
 }
 
-HRESULT CDecal_Manager::Initialize(_uint iNumDecals)
+HRESULT CDecal_Manager::Initialize()
 {
-    // 최대 데칼 수 저장
-    m_iMaxDecals = iNumDecals;
-
-    // 최대 데칼 수만큼 버퍼 생성
-    if (FAILED(Ready_DecalSRV()))
-        return E_FAIL;
-
     // 컴포넌트 생성
     if (FAILED(Ready_Components()))
         return E_FAIL;
@@ -40,37 +33,6 @@ void CDecal_Manager::Update(_float fTimeDelta)
         else
             ++iter;
     }
-
-    // 활성화된 데칼 개수 저장
-    m_iNumActiveDecals = m_Decals.size();
-    if (0 == m_iNumActiveDecals)
-        return;
-    
-    // 활성화된 데칼 정보 GPU 버퍼에 업데이트
-    DECAL_PARAMS* pDecalParams = new DECAL_PARAMS[m_iMaxDecals];
-    ZeroMemory(pDecalParams, sizeof(DECAL_PARAMS) * m_iMaxDecals);
-
-    _uint i = {};
-    for (auto& pDecal : m_Decals)
-    {
-        CTransform* pTransform = dynamic_cast<CTransform*>(pDecal->Get_Component(TEXT("Com_Transform")));
-        
-        XMStoreFloat4x4(&pDecalParams[i].vWorldMarixInv, pTransform->Get_WorldMatrix_Inverse());
-        pDecalParams[i].fOpacity = pDecal->Get_Opacity();
-        pDecalParams[i].iRandSeed = pDecal->Get_RandomSeed();
-        ++i;
-    }
-
-    // 구조화 버퍼 업데이트
-    D3D11_MAPPED_SUBRESOURCE SubResource{};
-
-    if (SUCCEEDED(m_pContext->Map(m_pStructuredBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
-    {
-        memcpy(SubResource.pData, pDecalParams, sizeof(DECAL_PARAMS) * m_iNumActiveDecals);
-        m_pContext->Unmap(m_pStructuredBuffer, 0);
-    }
-
-    Safe_Delete_Array(pDecalParams);
 }
 
 HRESULT CDecal_Manager::Render()
@@ -88,14 +50,6 @@ HRESULT CDecal_Manager::Render()
     if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::PROJ))))
         return E_FAIL;
 
-    // 활성화된 데칼 개수
-    if (FAILED(m_pShader->Bind_RawValue("g_iNumActiveDecals", &m_iNumActiveDecals, sizeof(_uint))))
-        return E_FAIL;
-
-    // 데칼 구조화 버퍼 SRV
-    if (FAILED(m_pShader->Bind_SRV("g_DecalParams", m_pDecalSRV)))
-        return E_FAIL;
-
     // 디퓨즈, 뎁스, 노말
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Diffuse"), m_pShader, "g_DiffuseTexture")))
         return E_FAIL;
@@ -106,8 +60,8 @@ HRESULT CDecal_Manager::Render()
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Normal"), m_pShader, "g_NormalTexture")))
         return E_FAIL;
 
-    _uint       iNumViewports = { 1 };
-    D3D11_VIEWPORT      ViewportDesc{};
+    _uint           iNumViewports = { 1 };
+    D3D11_VIEWPORT  ViewportDesc{};
     m_pContext->RSGetViewports(&iNumViewports, &ViewportDesc);
 
     // 스크린 사이즈
@@ -118,38 +72,8 @@ HRESULT CDecal_Manager::Render()
     // 활성화된 데칼 개수만큼 순회, 해당 데칼의 월드, 뷰, 투영 바인딩
     for (auto& pDecal : m_Decals)
     {
-        CTransform* pTransform = dynamic_cast<CTransform*>(pDecal->Get_Component(TEXT("Com_Transform")));
-        
-        if (FAILED(pTransform->Bind_Shader_Resource(m_pShader, "g_WorldMatrix")))
+        if (FAILED(pDecal->Bind_ShaderResources(m_pShader, m_pTexture, m_pVIBuffer)))
             return E_FAIL;
-
-        _float3 vColor = pDecal->Get_Desc().vColor;
-        if (FAILED(m_pShader->Bind_RawValue("g_vDecalColor", &vColor, sizeof(_float3))))
-            return E_FAIL;
-
-        _uint iIndex = pDecal->Get_TextureIndex();
-
-        switch (pDecal->Get_Desc().eType)
-        {
-        case DECALTYPE::LINEAR:
-            if (FAILED(m_pTexture[ENUM_CLASS(DECALTYPE::LINEAR)]->Bind_Shader_Resource(m_pShader, "g_DecalTexture", iIndex)))
-                return E_FAIL;
-            break;
-        case DECALTYPE::CIRCLE:
-            if (FAILED(m_pTexture[ENUM_CLASS(DECALTYPE::CIRCLE)]->Bind_Shader_Resource(m_pShader, "g_DecalTexture", iIndex)))
-                return E_FAIL;
-            break;
-        case DECALTYPE::CURVE:
-            if (FAILED(m_pTexture[ENUM_CLASS(DECALTYPE::CURVE)]->Bind_Shader_Resource(m_pShader, "g_DecalTexture", iIndex)))
-                return E_FAIL;
-            break;
-        }
-
-        // 버퍼 렌더 및 텍스처 바인딩, 셰이더 비긴
-        m_pShader->Begin(0);
-
-        m_pVIBuffer->Bind_Resources();
-        m_pVIBuffer->Render();
     }
 
     return S_OK;
@@ -248,37 +172,11 @@ HRESULT CDecal_Manager::Ready_Components()
     return S_OK;
 }
 
-HRESULT CDecal_Manager::Ready_DecalSRV()
-{
-    // 월드 역행렬, 불투명도, 수명 비율
-    D3D11_BUFFER_DESC BufferDesc{};
-    BufferDesc.ByteWidth = sizeof(DECAL_PARAMS) * m_iMaxDecals;
-    BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-    BufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-    BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    BufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-    BufferDesc.StructureByteStride = sizeof(DECAL_PARAMS);
-
-    if (FAILED(m_pDevice->CreateBuffer(&BufferDesc, nullptr, &m_pStructuredBuffer)))
-        return E_FAIL;
-
-    D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc{};
-    SRVDesc.Format = DXGI_FORMAT_UNKNOWN;
-    SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-    SRVDesc.Buffer.FirstElement = 0;
-    SRVDesc.Buffer.NumElements = m_iMaxDecals;
-
-    if (FAILED(m_pDevice->CreateShaderResourceView(m_pStructuredBuffer, &SRVDesc, &m_pDecalSRV)))
-        return E_FAIL;
-
-    return S_OK;
-}
-
-CDecal_Manager* CDecal_Manager::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iNumDecals)
+CDecal_Manager* CDecal_Manager::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     CDecal_Manager* pInstance = new CDecal_Manager(pDevice, pContext);
 
-    if (FAILED(pInstance->Initialize(iNumDecals)))
+    if (FAILED(pInstance->Initialize()))
     {
         MSG_BOX(TEXT("Failed to Create : CDecal_Manager"));
         Safe_Release(pInstance);
@@ -294,9 +192,6 @@ void CDecal_Manager::Free()
     for (auto& pDecal : m_Decals)
         Safe_Release(pDecal);
     m_Decals.clear();
-
-    Safe_Release(m_pDecalSRV);
-    Safe_Release(m_pStructuredBuffer);
 
     for (_uint i = 0; i < ENUM_CLASS(DECALTYPE::END); ++i)
         Safe_Release(m_pTexture[i]);
