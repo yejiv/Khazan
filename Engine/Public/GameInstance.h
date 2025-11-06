@@ -43,6 +43,9 @@ public:
 	_float Rand_Normal();
 	_float Rand(_float fMin, _float fMax);
 
+public:
+	_uint Get_StaticLevel();
+
 private:
 	void	SetupDebugMessageFilter(ID3D11Device* pDevice);
 #pragma endregion
@@ -413,6 +416,9 @@ private:
 #ifdef _DEBUG
 	class CImgui_Manager* m_pImgui_Manager = { nullptr };
 #endif
+
+
+	_uint m_iStaticLevel = {};
 	
 
 public:

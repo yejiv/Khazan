@@ -26,6 +26,7 @@ public:
 	void Update(TIME_DELTA tTimeDelta);
 	void Late_Update(TIME_DELTA tTimeDelta);
 	void Clear(_uint iLevelIndex);
+	void Static_Clear();
 
 private:
 	class CGameInstance*					m_pGameInstance = { nullptr };

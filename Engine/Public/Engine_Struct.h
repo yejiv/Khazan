@@ -14,6 +14,7 @@ namespace Engine
 		unsigned int	iNumLevels;
 		unsigned int	iNumJoltObjectLayer;
 		unsigned int	iNumDecals;
+		unsigned int	iStaticLevel;
 
 		unsigned int	iWinSizeX_Imgui, iWinSizeY_Imgui;
 		list<wstring>	Menu_Imgui;
