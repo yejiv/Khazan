@@ -338,6 +338,8 @@ private:
 	_bool Objects_Load_Binary();
 	// MapEditor에서 상호 작용 오브젝트 불러오기 ( 나중에 코드 채우기 )
 	_bool Interactive_Objects_Load_Binary();
+	// MapEditor에서 트리거 오브젝트 불러오기
+	_bool Trigger_objects_Load_Json();
 	// MapEditor에서 조명 불러오기
 	_bool Lights_Load_Binary();
 

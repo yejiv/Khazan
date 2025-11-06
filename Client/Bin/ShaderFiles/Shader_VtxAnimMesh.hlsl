@@ -15,6 +15,7 @@ bool g_isNormal = false;
 bool g_isEmissive = false;
 bool g_isSpecular = false;
 
+bool g_isTest = false;
 
 /* 모델 전체 뼈기준(x) */
 /* 특정 메시에 영향ㅇ르 주는 뼈들 */
@@ -370,7 +371,54 @@ PS_OUT PS_BLADENEXUS(PS_IN In)
     Out.vWorld = In.vWorldPos;
     //Out.vSpecular = vMtrlSpecular;
     //Out.vEmissive = vMtrlEmissive;
-    Out.vEmissive = vMtrlSpecular;
+    if (true == g_isTest)
+        Out.vEmissive = vMtrlSpecular;
+    else
+        Out.vEmissive = vMtrlEmissive;
+
+    return Out;
+}
+
+PS_OUT PS_TOMBSTONE(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
+    if (true == g_isNormal)
+    {
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+        vMtrlNormal = float4(normalize(vMtrlNormal.xyz) * 2.f - 1.f, 0.f);
+    }
+    
+    
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (true == g_isEmissive)
+    {
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (true == g_isSpecular)
+    {
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+        vMtrlSpecular.a = 1.f;
+    }
+
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vMtrlNormal);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    //Out.vSpecular = vMtrlSpecular;
+    //Out.vEmissive = vMtrlEmissive;
+    if (true == g_isTest)
+        Out.vEmissive = vMtrlSpecular;
+    else
+        Out.vEmissive = vMtrlEmissive;
 
     return Out;
 }
@@ -481,6 +529,19 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_BLADENEXUS();
+    }
+
+    // 툼스톤 패스        ( 9번 )
+    pass TombStonePass
+    {
+
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_TOMBSTONE();
     }
 
 }

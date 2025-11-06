@@ -28,6 +28,8 @@ HRESULT CTrigger::Initialize_Clone(void* pArg)
     TRIGGER_DESC* pDesc = static_cast<TRIGGER_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
+    m_strTriggerKey = pDesc->strTriggerKey;
+
     m_eShaderPass = SHADER_PASS::WIREFRAME;
 
     return S_OK;
