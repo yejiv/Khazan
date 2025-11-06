@@ -84,11 +84,11 @@ void CMesh::Build_BoneNameList(const vector<class CBone*>& Bones)
 		if (iBoneIndex >= 0 && iBoneIndex < Bones.size()) 
 		{
 			m_BoneNames.emplace_back(Bones[iBoneIndex]->Get_Name());
-#ifdef _DEBUG
-			// 본 이름 확인용
-			OutputDebugStringW((L"[Mesh:" + m_strName + L"] Bone[" +
-				to_wstring(m_BoneNames.size() - 1) + L"]: " + Bones[iBoneIndex]->Get_Name() + L"\n").c_str());
-#endif
+//#ifdef _DEBUG
+//			// 본 이름 확인용
+//			OutputDebugStringW((L"[Mesh:" + m_strName + L"] Bone[" +
+//				to_wstring(m_BoneNames.size() - 1) + L"]: " + Bones[iBoneIndex]->Get_Name() + L"\n").c_str());
+//#endif
 
 		}
 		else 
@@ -96,15 +96,14 @@ void CMesh::Build_BoneNameList(const vector<class CBone*>& Bones)
 			m_BoneNames.emplace_back(L"");
 
 #ifdef _DEBUG
-			OutputDebugStringA(("[CMesh::Build_BoneNameList] Invalid bone index: "
-				+ to_string(iBoneIndex) + "\n").c_str());
+			OutputDebugStringA(("[CMesh::Build_BoneNameList] Invalid bone index: "	+ to_string(iBoneIndex) + "\n").c_str());
 #endif
 
 		}
 	}
 
 #ifdef _DEBUG
-	OutputDebugStringA(("@@@@@ [CMesh::Build_BoneNameList] Mesh: "+ WStringToAnsi(m_strName) + ", Bones: "+ to_string(m_BoneNames.size()) + "@@@@@@@@@\n").c_str());
+	OutputDebugStringA(("[CMesh::Build_BoneNameList] Mesh: "+ WStringToAnsi(m_strName) + ", Bones: "+ to_string(m_BoneNames.size()) + "\n").c_str());
 #endif
 }
 
@@ -139,10 +138,10 @@ void CMesh::Build_MasterBoneCache(const vector<class CBone*>& MasterBones)
 				{
 					iMasterBoneIndex = j;
 					iMappedCount++;
-#ifdef _DEBUG
-					OutputDebugStringW((L"[Mesh:" + m_strName + L"] Mapped[" + to_wstring(i) + L"]: " +
-						strBoneName + L" -> Master[" + to_wstring(j) + L"]\n").c_str());
-#endif		
+//#ifdef _DEBUG
+//					OutputDebugStringW((L"[Mesh:" + m_strName + L"] Mapped[" + to_wstring(i) + L"]: " +
+//						strBoneName + L" -> Master[" + to_wstring(j) + L"]\n").c_str());
+//#endif		
 					break;
 				}
 			}
@@ -162,6 +161,8 @@ void CMesh::Build_MasterBoneCache(const vector<class CBone*>& MasterBones)
 
 	m_isBoneIndicesCached = true;
 
+
+
 #ifdef _DEBUG
 	OutputDebugStringA(("@@@@@@@@@[CMesh::Build_MasterBoneCache] 캐시 완료.@@@@@@@@@\n"));
 	OutputDebugStringA(("  전체 본: " + to_string(m_BoneNames.size()) + "\n").c_str());
@@ -175,51 +176,88 @@ void CMesh::Build_MasterBoneCache(const vector<class CBone*>& MasterBones)
 #endif
 
 }
+
 void CMesh::Build_FallbackBoneCache(const vector<class CBone*>& PartBones, const vector<class CBone*>& MasterBones)
 {
 	m_FallbackBoneCache.clear();
-	//m_IsStaticBone.clear(); 
+	m_IsStaticBone.clear();
+	m_StaticBoneChainParent.clear();
 
 	m_FallbackBoneCache.reserve(m_iNumBones);
-	//m_IsStaticBone.reserve(m_iNumBones);
+	m_IsStaticBone.reserve(m_iNumBones);
+	m_StaticBoneChainParent.reserve(m_iNumBones);
 
-
-
-
-	OutputDebugStringW((L" [" + m_strName + L"] 대체 본 매핑\n").c_str());
+#ifdef _DEBUG
+	OutputDebugStringW((L"[" + m_strName + L"] 대체 본 매핑 시작\n").c_str());
+#endif
 
 	for (size_t i = 0; i < m_MasterBoneCache.size(); ++i)
 	{
 		_int iMasterBoneIndex = m_MasterBoneCache[i];
-
 		_bool isStatic = false;
+		_int iStaticParent = -1;
 
-		//매핑 성공
-		if (iMasterBoneIndex >= 0) {
+		// 매핑 성공한 본
+		if (iMasterBoneIndex >= 0)
+		{
 			m_FallbackBoneCache.emplace_back(iMasterBoneIndex);
-			//m_IsStaticBone.emplace_back(false);
+			m_IsStaticBone.emplace_back(false);
+			m_StaticBoneChainParent.emplace_back(-1);
 		}
-		// 매핑 실패
+		// 매핑 실패한 본 (파츠 전용 본)
 		else
 		{
-//			/* 고정 시킬 본 먼저 탐색 */
-//			const _wstring& boneName = m_BoneNames[i];
-//
-//			for (const auto& pattern : staticBonePatterns)
-//			{
-//				if (boneName.find(pattern) != wstring::npos)
-//				{
-//					isStatic = true;
+			const _wstring& boneName = m_BoneNames[i];
+
+			// 1단계: 고정시킬 본인지 확인 (물리 시뮬레이션용)
+			for (const auto& pattern : s_StaticBonePatterns)
+			{
+				if (boneName.find(pattern) != wstring::npos)
+				{
+					isStatic = true;
+					break;
+				}
+			}
+
+			if (isStatic)
+			{
+				// 2단계: 고정 본의 부모 찾기 (체인 구조 유지)
+				if (m_BoneIndices[i] >= 0 && m_BoneIndices[i] < PartBones.size())
+				{
+					CBone* pPartBone = PartBones[m_BoneIndices[i]];
+					_int iParentIndex = pPartBone->Get_ParentBoneIndex();
+
+					// 부모 본이 파츠 내부에 있는지 확인
+					if (iParentIndex >= 0 && iParentIndex < PartBones.size())
+					{
+						// 부모 본의 이름 찾기
+						_wstring strParentName = PartBones[iParentIndex]->Get_Name();
+
+						// 부모 본이 m_BoneNames에서 몇 번째인지 찾기
+						for (size_t j = 0; j < m_BoneNames.size(); ++j)
+						{
+							if (m_BoneNames[j] == strParentName)
+							{
+								iStaticParent = static_cast<_int>(j);
+								break;
+							}
+						}
+					}
+				}
+
+				m_FallbackBoneCache.emplace_back(-1); // 고정 본은 마스터 인덱스 없음
+				m_IsStaticBone.emplace_back(true);
+				m_StaticBoneChainParent.emplace_back(iStaticParent);
+
 //#ifdef _DEBUG
-//					OutputDebugStringW((L"[" + to_wstring(i) + L"] " +boneName + L" -> 초기 위치 고정\n").c_str());
+//				OutputDebugStringW((L"  [고정본] " + boneName +
+//					L" -> 부모: " + (iStaticParent >= 0 ? m_BoneNames[iStaticParent] : L"없음") +
+//					L"\n").c_str());
 //#endif
-//					break;
-//				}
-//			}
-//
-//			if (!isStatic)
-//			{
-				// 고정 대상 아님 - 부모 본 찾기
+			}
+			else
+			{
+				// 3단계: 일반 대체 본 처리 (마스터에 있는 부모 본 찾기)
 				_int iFallbackBoneIndex = -1;
 
 				if (m_BoneIndices[i] >= 0 && m_BoneIndices[i] < PartBones.size())
@@ -227,6 +265,7 @@ void CMesh::Build_FallbackBoneCache(const vector<class CBone*>& PartBones, const
 					CBone* pPartBone = PartBones[m_BoneIndices[i]];
 					_int iParentIndex = pPartBone->Get_ParentBoneIndex();
 
+					// 부모 체인을 따라 올라가며 마스터에 있는 본 찾기
 					while (iParentIndex >= 0 && iParentIndex < PartBones.size())
 					{
 						_wstring strParentName = PartBones[iParentIndex]->Get_Name();
@@ -236,10 +275,6 @@ void CMesh::Build_FallbackBoneCache(const vector<class CBone*>& PartBones, const
 							if (MasterBones[j]->Compare_Name(strParentName))
 							{
 								iFallbackBoneIndex = j;
-#ifdef _DEBUG
-								OutputDebugStringW((L"[" + to_wstring(i) + L"] " +	m_BoneNames[i] + L"\n").c_str());
-								OutputDebugStringW((L" -> 대체: " + strParentName +L" [Master:" + to_wstring(j) + L"]\n").c_str());
-#endif
 								break;
 							}
 						}
@@ -251,12 +286,13 @@ void CMesh::Build_FallbackBoneCache(const vector<class CBone*>& PartBones, const
 					}
 				}
 
-				// 부모도 못 찾으면 Root
+				// 부모도 못 찾으면 Root 본으로 대체
 				if (iFallbackBoneIndex < 0)
 				{
 					for (_int j = 0; j < MasterBones.size(); ++j)
 					{
-						if (MasterBones[j]->Compare_Name(L"Root") || MasterBones[j]->Compare_Name(L"Bip001"))
+						if (MasterBones[j]->Compare_Name(L"Root") ||
+							MasterBones[j]->Compare_Name(L"Bip001"))
 						{
 							iFallbackBoneIndex = j;
 							break;
@@ -264,69 +300,63 @@ void CMesh::Build_FallbackBoneCache(const vector<class CBone*>& PartBones, const
 					}
 				}
 
-				m_FallbackBoneCache.push_back(iFallbackBoneIndex);
-			//}
-			//else
-			//{
-			//	// 고정 대상
-			//	m_FallbackBoneCache.push_back(-1);
-			//}
+				m_FallbackBoneCache.emplace_back(iFallbackBoneIndex);
+				m_IsStaticBone.emplace_back(false);
+				m_StaticBoneChainParent.emplace_back(-1);
 
-			//m_IsStaticBone.push_back(isStatic);
+//#ifdef _DEBUG
+//				if (iFallbackBoneIndex >= 0)
+//				{
+//					OutputDebugStringW((L"  [대체본] " + boneName +
+//						L" -> " + MasterBones[iFallbackBoneIndex]->Get_Name() +
+//						L"\n").c_str());
+//				}
+//#endif
+			}
 		}
 	}
 
 #ifdef _DEBUG
-	OutputDebugStringA(("!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@2\n\n"));
+	_int iStaticCount = static_cast<_int>(count(m_IsStaticBone.begin(), m_IsStaticBone.end(), true));
+	OutputDebugStringA(("대체 본 매핑 완료: 고정본 " + to_string(iStaticCount) + "개\n").c_str());
 #endif
 }
 
-
-
-
-
-HRESULT CMesh::Bind_BoneMatrices(CShader* pShader, const _char* pConstantName, const vector<class CBone*>& Bones)
+HRESULT CMesh::Bind_BoneMatrices(CShader* pShader, const _char* pConstantName,
+	const vector<class CBone*>& Bones, const vector<_float4x4>* PartLocalBoneMatrices)
 {
-	// 본 이름 리스트가 비어있으면 기존 방식 사용
 	if (m_BoneNames.empty())
 	{
+		// 마스터 메시: 기존 로직
 		for (size_t i = 0; i < m_iNumBones; i++)
 		{
 			XMStoreFloat4x4(&m_BoneMatrices[i],
-				XMLoadFloat4x4(&m_OffsetMatrices[i]) * Bones[m_BoneIndices[i]]->Get_CombinedTransformationMatrix());
+				XMLoadFloat4x4(&m_OffsetMatrices[i]) *
+				Bones[m_BoneIndices[i]]->Get_CombinedTransformationMatrix());
 		}
 	}
 	else
 	{
-		// 파츠: 캐시된 마스터 본 인덱스 사용
-		if (!m_isBoneIndicesCached)
+		// 파츠 메시: 파츠 로컬 본 사용
+		if (!m_isBoneIndicesCached || !PartLocalBoneMatrices)
 			return E_FAIL;
-		
-		const vector<_int>& boneCache = m_FallbackBoneCache.empty() ? m_MasterBoneCache : m_FallbackBoneCache;
 
 		for (size_t i = 0; i < m_iNumBones; i++)
 		{
-			//// 고정 본인지 확인
-			//if (!m_IsStaticBone.empty() && m_IsStaticBone[i])
-			//{
-			//	//고정 본이묜 OffsetMatrix
-			//	XMStoreFloat4x4(&m_BoneMatrices[i], XMMatrixIdentity());
-			//}
-			//else
-			//{
-				// 그냥 본이면 애니메이션 적용
-				_int iMasterBoneIndex = boneCache[i];
+			// m_BoneIndices[i]는 파츠 본 인덱스
+			_int partBoneIdx = m_BoneIndices[i];
 
-				if (iMasterBoneIndex >= 0 && iMasterBoneIndex < Bones.size())
-				{
-					XMStoreFloat4x4(&m_BoneMatrices[i],
-						XMLoadFloat4x4(&m_OffsetMatrices[i]) * Bones[iMasterBoneIndex]->Get_CombinedTransformationMatrix());
-				}
-				else
-				{
-					XMStoreFloat4x4(&m_BoneMatrices[i], XMMatrixIdentity());
-				}
-			//}
+			if (partBoneIdx >= 0 && partBoneIdx < PartLocalBoneMatrices->size())
+			{
+				// 파츠 로컬 본 행렬 사용 (초기 위치 포함됨)
+				XMStoreFloat4x4(&m_BoneMatrices[i],
+					XMLoadFloat4x4(&m_OffsetMatrices[i]) *
+					XMLoadFloat4x4(&(*PartLocalBoneMatrices)[partBoneIdx]));
+			}
+			else
+			{
+				XMStoreFloat4x4(&m_BoneMatrices[i], XMMatrixIdentity());
+			}
 		}
 	}
 
@@ -368,11 +398,6 @@ HRESULT CMesh::Ready_Vertices_For_NonAnim(MESH_DATA& data)
 		return E_FAIL;
 
 	Safe_Delete_Array(pVertices);
-
-
-
-
-
 
 	return S_OK;
 }

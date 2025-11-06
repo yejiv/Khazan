@@ -121,12 +121,17 @@ public:
 	void			Clear_AllEvent();
 	
 	/* 스켈레톤 공유 */
+public:
 	void			Set_MasterSkeleton(CModel* pMaster);
 	void			Attach_Part(CModel* pPart);
 	void			Detach_Part(CModel* pPart);
 	void			Render_AllAttachedParts();
+	const			vector<_float4x4>& Get_PartLocalBoneMatrices() const { return m_PartLocalBoneMatrices; }
+	void			Update_PartLocalBones();
+
 
 #ifdef _DEBUG
+public:
 	void			Debug_RanderState();
 #endif // _DEBUG
 
@@ -183,6 +188,7 @@ private:
 	/* 스켈레톤 공유 */
 	CModel*								m_pMasterSkeleton = { nullptr };
 	vector<CModel*>						m_AttachedParts;
+	vector<_float4x4>					m_PartLocalBoneMatrices;  //파츠 로컬 본 행렬
 	_bool								m_isMaterSkeleton = { false };
 	_bool								m_isSharedSkeleton = { false };
 

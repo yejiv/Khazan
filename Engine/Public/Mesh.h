@@ -27,7 +27,8 @@ public:
 	void			Build_FallbackBoneCache(const vector<class CBone*>& PartBones, const vector<class CBone*>& MasterBones);
 
 public:
-	HRESULT Bind_BoneMatrices(class CShader* pShader, const _char* pConstantName, const vector<class CBone*>& Bones);
+	//HRESULT Bind_BoneMatrices(class CShader* pShader, const _char* pConstantName, const vector<class CBone*>& Bones);
+	HRESULT Bind_BoneMatrices(class CShader* pShader, const _char* pConstantName, const vector<class CBone*>& Bones, const vector<_float4x4>* PartLocalBoneMatrices = nullptr);
 
 private:
 	_wstring				m_strName;
@@ -43,18 +44,24 @@ private:
 
 	/* 파츠용 */
 	vector<_wstring>		m_BoneNames;
-	vector<_int>            m_MasterBoneCache;  // 캐시- 마스터 본 인덱스
-	vector<_int>			m_FallbackBoneCache; // 파츠 전용으로 존재하는 인덱스들
-	//vector<_bool>           m_IsStaticBone;  // 고정시킬 본 인덱스 (일단 물리 줘야하는것들 이것으로 대체)
+	vector<_int>            m_MasterBoneCache;  // m_BoneNames에 저장되어 있는 순으로 마스터 본 인덱스를 저장 
+	vector<_int>			m_FallbackBoneCache; // MasterBone의 인덱스에서 마스터에는 없고 파츠에만 있는 전용 본 인덱스를 마스터본에 존재하는 상위 본인덱스로 저장(매핑)
+	vector<_bool>           m_IsStaticBone;  // 고정시킬 본 인덱스 (일단 물리 줘야하는것들 이것으로 대체)
+	vector<_int>            m_StaticBoneChainParent;  // 고정 본의 부모 본 인덱스 <파츠 로컬>
 	_bool                   m_isBoneIndicesCached = { false };
 
 
-	///* 고정 시킬 본 이름*/
-	//inline static const vector<_wstring> staticBonePatterns = {
-	//	L"Cloth_",
-	//	L"Hair_BoneRoot",
-	//	L"_HBR",
-	//};
+	/* 고정 시킬 본 이름들 */
+	inline static const vector<_wstring> s_StaticBonePatterns = {
+		/* leg*/
+		L"Cloth_",
+		L"Point_",
+
+		/* hair*/
+		L"Hair_BoneRoot",
+		L"_HBR",
+		L"B_Hair_",
+	};
 private:
 	HRESULT  Ready_Vertices_For_NonAnim(MESH_DATA& data);
 	HRESULT Ready_Vertices_For_Anim(MESH_DATA& data);

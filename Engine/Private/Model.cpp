@@ -309,9 +309,10 @@ HRESULT CModel::Bind_BoneMatrices(CShader* pShader, const _char* pConstantName, 
     if (m_isSharedSkeleton && m_pMasterSkeleton != nullptr)
     {
         // 마스터 본으로 바인딩 (Mesh 내부에서 본 이름으로 매칭)
-        return m_Meshes[iMeshIndex]->Bind_BoneMatrices(pShader, pConstantName, m_pMasterSkeleton->m_Bones);
+        Update_PartLocalBones();
+        return m_Meshes[iMeshIndex]->Bind_BoneMatrices(pShader, pConstantName, m_pMasterSkeleton->m_Bones, &m_PartLocalBoneMatrices);
     }
-    return m_Meshes[iMeshIndex]->Bind_BoneMatrices(pShader, pConstantName, m_Bones);
+    return m_Meshes[iMeshIndex]->Bind_BoneMatrices(pShader, pConstantName, m_Bones, nullptr);
 }
 
 _bool CModel::Play_Animation(_float fTimeDelta)
@@ -458,6 +459,7 @@ _bool CModel::Play_Animation(_float fTimeDelta)
 
     }
 
+     
     return m_isFinished;
 }
 
@@ -570,34 +572,6 @@ void CModel::Clear_AllEvent()
     m_EventCallbacks.clear();
 }
 
-//void CModel::Set_MasterSkeleton(CModel* pMaster)
-//{
-//    if (nullptr == pMaster)
-//        return;
-//
-//    if (m_pMasterSkeleton != nullptr)
-//        Safe_Release(m_pMasterSkeleton);
-//
-//    m_pMasterSkeleton = pMaster;
-//    Safe_AddRef(m_pMasterSkeleton);
-//
-//    m_isSharedSkeleton = true;
-//    m_isMaterSkeleton = false;
-//
-//    for (auto& pMesh : m_Meshes) {
-//        pMesh->Build_BoneNameList(m_pMasterSkeleton->m_Bones);
-//        pMesh->Build_MasterBoneCache(m_pMasterSkeleton->m_Bones);
-//        pMesh->Build_FallbackBoneCache(m_Bones, m_pMasterSkeleton->m_Bones);
-//    }
-//
-//#ifdef _DEBUG
-//    OutputDebugStringA(("[CModel::Set_MasterSkeleton] 파츠가 마스터에 연결.\n"));
-//
-//    // 디버그: 파츠의 본 개수와 마스터의 본 개수 출력
-//    OutputDebugStringA(("파츠 본 개수: " + to_string(m_Bones.size()) + "\n").c_str());
-//    OutputDebugStringA(("마스터 본 개수: " + to_string(pMaster->m_Bones.size()) + "\n").c_str());
-//#endif
-//}
 
 void CModel::Set_MasterSkeleton(CModel* pMaster)
 {
@@ -612,63 +586,6 @@ void CModel::Set_MasterSkeleton(CModel* pMaster)
 
     m_isSharedSkeleton = true;
     m_isMaterSkeleton = false;
-
-#ifdef _DEBUG
-
-    OutputDebugStringW((L"파츠: " + m_strModelName + L" -> 마스터 연결\n").c_str());
-    OutputDebugStringA(("파츠 본: " + to_string(m_Bones.size()) + "\n").c_str());
-    OutputDebugStringA(("마스터 본: " + to_string(pMaster->m_Bones.size()) + "\n").c_str());
-
-
-    // PreTransformMatrix 비교
-    OutputDebugStringA(("║ PreTransformMatrix 비교:\n"));
-
-    _matrix matPartPre = XMLoadFloat4x4(&m_PreTransformMatrix);
-    _matrix matMasterPre = XMLoadFloat4x4(&pMaster->m_PreTransformMatrix);
-
-    _vector vPartScale, vPartRot, vPartTrans;
-    _vector vMasterScale, vMasterRot, vMasterTrans;
-
-    XMMatrixDecompose(&vPartScale, &vPartRot, &vPartTrans, matPartPre);
-    XMMatrixDecompose(&vMasterScale, &vMasterRot, &vMasterTrans, matMasterPre);
-
-    _float3 partScale, masterScale;
-    _float4 partRot, masterRot;
-
-    XMStoreFloat3(&partScale, vPartScale);
-    XMStoreFloat3(&masterScale, vMasterScale);
-    XMStoreFloat4(&partRot, vPartRot);
-    XMStoreFloat4(&masterRot, vMasterRot);
-
-    char buffer[1024];
-    sprintf_s(buffer,
-        "파츠 Scale: (%.3f, %.3f, %.3f)\n"
-        "마스터 Scale: (%.3f, %.3f, %.3f)\n"
-        "파츠 Rot: (%.3f, %.3f, %.3f, %.3f)\n"
-        "마스터 Rot: (%.3f, %.3f, %.3f, %.3f)\n",
-        partScale.x, partScale.y, partScale.z,
-        masterScale.x, masterScale.y, masterScale.z,
-        partRot.x, partRot.y, partRot.z, partRot.w,
-        masterRot.x, masterRot.y, masterRot.z, masterRot.w);
-    OutputDebugStringA(buffer);
-
-    // PreTransform이 다르면 경고
-    _bool bDifferentPreTransform =
-        !XMVector3NearEqual(vPartScale, vMasterScale, XMVectorReplicate(0.001f)) ||
-        !XMVector4NearEqual(vPartRot, vMasterRot, XMVectorReplicate(0.001f));
-
-    if (bDifferentPreTransform)
-    {
-
-        OutputDebugStringA((" PreTransform 불일치! 마스터로 동기화\n"));
-
-
-        // 파츠의 PreTransform을 마스터와 동일하게 설정
-        memcpy(&m_PreTransformMatrix, &pMaster->m_PreTransformMatrix, sizeof(_float4x4));
-    }
-
-    OutputDebugStringA(("______________________\n\n"));
-#endif
 
     // 메시 본 매핑
     for (auto& pMesh : m_Meshes)
@@ -725,6 +642,56 @@ void CModel::Render_AllAttachedParts()
         }
     }
 }
+
+void CModel::Update_PartLocalBones()
+{
+    if (!m_isSharedSkeleton || nullptr == m_pMasterSkeleton)
+        return;
+
+    m_PartLocalBoneMatrices.clear();
+    m_PartLocalBoneMatrices.resize(m_Bones.size());
+
+    // 중요: 순차적으로 처리 (부모 -> 자식 순서)
+    for (size_t i = 0; i < m_Bones.size(); ++i)
+    {
+        CBone* pBone = m_Bones[i];
+        _wstring boneName = pBone->Get_Name();
+
+        // 마스터에 있는 본인지 확인
+        _bool foundInMaster = false;
+        for (size_t j = 0; j < m_pMasterSkeleton->m_Bones.size(); ++j)
+        {
+            if (m_pMasterSkeleton->m_Bones[j]->Compare_Name(boneName))
+            {
+                // 마스터 본: 마스터의 Combined Matrix 사용
+                m_PartLocalBoneMatrices[i] =
+                    *m_pMasterSkeleton->m_Bones[j]->Get_CombinedTransformationMatrixPtr();
+                foundInMaster = true;
+                break;
+            }
+        }
+
+        // 파츠 전용 본 처리
+        if (!foundInMaster)
+        {
+            _int iParentIndex = pBone->Get_ParentBoneIndex();
+
+            if (iParentIndex >= 0 && iParentIndex < m_PartLocalBoneMatrices.size())
+            {
+                // 핵심: 부모 Combined * 자신의 Local
+                _matrix matParent = XMLoadFloat4x4(&m_PartLocalBoneMatrices[iParentIndex]);
+                _matrix matLocal = pBone->Get_TransformationMatrix();  // 초기 로컬 변환
+
+                XMStoreFloat4x4(&m_PartLocalBoneMatrices[i], matLocal * matParent);
+            }
+            else
+            {
+                XMStoreFloat4x4(&m_PartLocalBoneMatrices[i], XMMatrixIdentity());
+            }
+        }
+    }
+}
+
 
 #ifdef _DEBUG
 void CModel::Debug_RanderState()
@@ -829,9 +796,6 @@ void CModel::Debug_RanderState()
 
 HRESULT CModel::Render(_uint iMeshIndex)
 {    
-    //if (m_isSharedSkeleton)
-    //    Update_BoneCombinedMatrices();
-
     if (FAILED(m_Meshes[iMeshIndex]->Bind_Resources()))
         return E_FAIL;
 
