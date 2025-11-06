@@ -13,7 +13,7 @@ CVIBuffer_Point_Instance::CVIBuffer_Point_Instance(const CVIBuffer_Point_Instanc
 	, m_sData {Prototype.m_sData}
 
 {
-	Safe_AddRef(m_pSRVNoise); //이거 해줘야되는지 확인좀
+	//Safe_AddRef(m_pSRVNoise); //이거 해줘야되는지 확인좀
 }
 
 void CVIBuffer_Point_Instance::Reset()
@@ -402,15 +402,8 @@ HRESULT CVIBuffer_Point_Instance::Ready_SRV(void* pSysmem)
  	HRESULT     hr = {};
 	_tchar		tpath[MAX_PATH] = {};
 	MultiByteToWideChar(CP_UTF8, 0, m_sData.pNoiseFilePath, -1, tpath, 100);
-
 	filesystem::path path(tpath);
 	string FileExt = path.extension().string();
-	string FileName = path.filename().string();
-
-	strcpy_s(fullpath, "../Bin/Resources/Effect/Noise/");
-	strcat_s(fullpath, FileName.c_str());
-	ZeroMemory(tpath, MAX_PATH);
-	MultiByteToWideChar(CP_UTF8, 0, fullpath, -1, tpath, 100);
 
 	if (FileExt == ".dds")
 		hr = CreateDDSTextureFromFile(m_pDevice, tpath, nullptr, &m_pSRVNoise);

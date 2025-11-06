@@ -17,8 +17,15 @@ CEffect_Point_Instance::CEffect_Point_Instance(const CEffect_Point_Instance& Pro
 HRESULT CEffect_Point_Instance::Initialize_Prototype(void* pArg)
 {
     __super::Initialize_Prototype();
-
     m_sData = *static_cast<PARTICLE_DESC*>(pArg);
+
+    const char* NoiseFormat = "../Bin/Resources/Effect/Noise/Noise%d.png";
+
+    char finalNoisePathBuffer[MAX_PATH] = {};
+    ZeroMemory(m_sData.pNoiseFilePath, sizeof(m_sData.pNoiseFilePath));
+    sprintf_s(finalNoisePathBuffer, MAX_PATH, NoiseFormat, m_sData.iTurbulenceTextureIdx);
+    strcpy_s(m_sData.pNoiseFilePath, MAX_PATH, finalNoisePathBuffer);
+
 
     m_pVIBufferCom = CVIBuffer_Point_Instance::Create(m_pDevice, m_pContext, &m_sData);
     m_iEffect_Type = 0; //필요할까

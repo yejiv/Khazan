@@ -11,7 +11,7 @@ CEffect_Mesh_Instance::CEffect_Mesh_Instance(const CEffect_Mesh_Instance& Protot
     : CEffect_Element(Prototype)
     , m_sData{ Prototype.m_sData }
 {
-    m_pVIBufferCom->Clone(Prototype.m_pVIBufferCom);
+    m_pVIBufferCom = dynamic_cast<CVIBuffer_Mesh_Instance*>(Prototype.m_pVIBufferCom->Clone(nullptr));
 }
 
 HRESULT CEffect_Mesh_Instance::Initialize_Prototype(void* pArg)
@@ -21,10 +21,17 @@ HRESULT CEffect_Mesh_Instance::Initialize_Prototype(void* pArg)
     if (FAILED(Ready_Component()))
         return E_FAIL;
 
-    //Apply(pArg);
     m_sData = *static_cast<PARTICLE_DESC*>(pArg);
+
+    const char* NoiseFormat = "../Bin/Resources/Effect/Noise/Noise%d.png";
+
+    char finalNoisePathBuffer[MAX_PATH] = {};
+    ZeroMemory(m_sData.pNoiseFilePath, sizeof(m_sData.pNoiseFilePath));
+    sprintf_s(finalNoisePathBuffer, MAX_PATH, NoiseFormat, m_sData.iTurbulenceTextureIdx);
+    strcpy_s(m_sData.pNoiseFilePath, MAX_PATH, finalNoisePathBuffer);
+
     m_pVIBufferCom = CVIBuffer_Mesh_Instance::Create(m_pDevice, m_pContext, &m_sData);  //이걸 프로토타입으로 바꾸고 객체 클론할 땐 m_pVIBuffer->Clone 직접 호출
-    m_iEffect_Type = 1; //필요할까
+    //m_iEffect_Type = 1; //필요할까
     m_fScrollSpeed = m_sData.iScrollSpeed;
 
     return S_OK;

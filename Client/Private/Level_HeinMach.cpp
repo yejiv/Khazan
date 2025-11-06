@@ -107,11 +107,12 @@ HRESULT CLevel_HeinMach::Initialize()
 
 	m_pGameInstance->Add_FireTask([this]() {
 
-		CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
+		//CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
+		CHECK_FAILED(Ready_Layer_Test(TEXT("Layer_Creature_Test")), E_FAIL);
 		if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 			return E_FAIL;
 
-		CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
+		//CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
 
 
 		return S_OK;
@@ -209,6 +210,11 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
 		m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::HEINMACH), ENUM_CLASS(CAMERATYPE::SPRING));
 	}
 
+	/*Effect test => 혹시 보게되면 지우셔도 됩니다!!!!!!!!! */
+	if (m_pGameInstance->Key_Down(DIK_I))
+		m_pGameInstance->Spwan_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle1"), XMVectorSet(0.f, 0.f, 0.f, 1.f));
+	//Test End
+
 	return;
 }
 
@@ -272,8 +278,8 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 	CCamera_Compre* pCamera_Spring = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Camera_Compre"), &CameraSpringDesc));
 	pCamera_Spring->Set_IsActive(false);
-	//CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Test"));
-	CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player"));
+	CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Test"));
+	//CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player"));
 	pCamera_Spring->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
 	m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::HEINMACH), pCamera_Spring);
 

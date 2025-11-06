@@ -60,19 +60,20 @@ HRESULT CComputeShader::Initialize(const _tchar* pShaderFilePath, const _char* p
 #ifndef _DEBUG
     if (FAILED(D3DCompileFromFile(
         pShaderFilePath,
-        nullptr, nullptr,
+        nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
         pEntryPoint, "cs_5_0",
         D3DCOMPILE_ENABLE_STRICTNESS, 0,
         &pCSBlob, nullptr)))
     {
         MSG_BOX(TEXT("Compute Shader Compile Error"));
         return E_FAIL;
+    
     }
 #endif // _DEBUG
 
     if (FAILED(m_pDevice->CreateComputeShader(
-        pCSBlob->GetBufferPointer(),    // 컴파일된 셰이더 바이트코드
-        pCSBlob->GetBufferSize(),        // 코드 크기
+        pCSBlob->GetBufferPointer(),       // 컴파일된 셰이더 바이트코드
+        pCSBlob->GetBufferSize(),         // 코드 크기
         nullptr,                         // 동적 클래스 링크 (거의 NULL)
         &m_pShader)))                   // 출력: 실제 ComputeShader 객체
     {

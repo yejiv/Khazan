@@ -310,7 +310,7 @@ void CEffect_Mesh_Instance::Apply(void* pArg)
     strcpy_s(m_sData.pFilePath, MAX_PATH, finalPathBuffer);
 
     const char* NoiseFormat = "../../Client/Bin/Resources/Effect/Noise/Noise%d.png";
-
+    
     char finalNoisePathBuffer[MAX_PATH] = {};
     sprintf_s(finalNoisePathBuffer, MAX_PATH, NoiseFormat, m_sData.iTurbulenceTextureIdx);
     strcpy_s(m_sData.pNoiseFilePath, MAX_PATH, finalNoisePathBuffer);

@@ -115,69 +115,65 @@ private:
 	
 	*/
 private:
-	void	Effect1_Enter();
-	void	Effect1_Exit();
-	void	Effect1_Continue();
+	void    Effect1_Enter();
+	void    Effect1_Exit();
+	void    Effect1_Continue();
 
-	void	Effect2_Enter();
-	void	Effect2_Exit();
-	void	Effect2_Continue();
+	void    Effect2_Enter();        // z fast 1타
+	void    Effect2_Exit();
+	void    Effect2_Continue();
 
-	void	Effect3_Enter();
-	void	Effect3_Exit();
-	void	Effect3_Continue();
+	void    Effect3_Enter();
+	void    Effect3_Exit();
+	void    Effect3_Continue();
 
-	void	Effect4_Enter();
-	void	Effect4_Exit();
-	void	Effect4_Continue();
+	void    Effect4_Enter();        //x  strong 1타
+	void    Effect4_Exit();
+	void    Effect4_Continue();
 
-	void	Effect5_Enter();
-	void	Effect5_Exit();
-	void	Effect5_Continue();
+	void    Effect5_Enter();        //x  strong 2타
+	void    Effect5_Exit();
+	void    Effect5_Continue();
 
-	void	Effect6_Enter();
-	void	Effect6_Exit();
-	void	Effect6_Continue();
+	void    Effect6_Enter();        //x  strong 3타
+	void    Effect6_Exit();
+	void    Effect6_Continue();
 
-	void	Effect7_Enter();
-	void	Effect7_Exit();
-	void	Effect7_Continue();
+	void    Effect7_Enter();        //h 급소 타격
+	void    Effect7_Exit();
+	void    Effect7_Continue();
 
-	void	Effect8_Enter();
-	void	Effect8_Exit();
-	void	Effect8_Continue();
+	void    Effect8_Enter();        //g 찰나 베기
+	void    Effect8_Exit();
+	void    Effect8_Continue();
 
-	void	Effect9_Enter();
-	void	Effect9_Exit();
-	void	Effect9_Continue();
+	void    Effect9_Enter();        //m        강습
+	void    Effect9_Exit();
+	void    Effect9_Continue();
 
-	void	Effect10_Enter();
-	void	Effect10_Exit();
-	void	Effect10_Continue();
+	void    Effect10_Enter();        // L  브루탈
+	void    Effect10_Exit();
+	void    Effect10_Continue();
 
-	void	Effect11_Enter();
-	void	Effect11_Exit();
-	void	Effect11_Continue();
+	void    Effect11_Enter();        //c 보름달
+	void    Effect11_Exit();
+	void    Effect11_Continue();
 
-	void	Effect12_Enter();
-	void	Effect12_Exit();
-	void	Effect12_Continue();
+	void    Effect12_Enter();        //j  그림자 참격 1 타
+	void    Effect12_Exit();
+	void    Effect12_Continue();
 
-	void	Effect13_Enter();
-	void	Effect13_Exit();
-	void	Effect13_Continue();
+	void    Effect13_Enter();        //j  그림자 참격 2 타
+	void    Effect13_Exit();
+	void    Effect13_Continue();
 
-	void	Effect14_Enter();
-	void	Effect14_Exit();
-	void	Effect14_Continue();
+	void    Effect14_Enter();        //b 나선 찌르기
+	void    Effect14_Exit();
+	void    Effect14_Continue();
 
-	void	Effect15_Enter();
-	void	Effect15_Exit();
-	void	Effect15_Continue();
-
-
-
-
+	void    Effect15_Enter();        //n 나선 찌르기소용돌이
+	void    Effect15_Exit();
+	void    Effect15_Continue();
 
 private:
 	inline void		Add_State(_uint i) { *m_pParentState |= i; }
