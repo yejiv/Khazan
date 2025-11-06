@@ -21,6 +21,14 @@ HRESULT CLevel_Map::Initialize()
 
 	CHECK_FAILED(Ready_DefaultImGui_For_MapTool(), E_FAIL);
 
+	Build_ModelPathCache();
+
+	m_pGameInstance->Set_EnableSSAO(false);
+	m_pGameInstance->Set_EnableShadow(false);
+	m_pGameInstance->Set_EnableFog(false);
+	m_pGameInstance->Set_EnableOutline(false);
+	m_pGameInstance->Set_EnableToonShade(false);
+
 	return S_OK;
 }
 
@@ -2662,11 +2670,17 @@ void CLevel_Map::Add_Prototype_ByFolder(const _char* pFolderName, _bool isAnim)
 
 string CLevel_Map::Find_ModelPath(const string& strModelName, const string& strFileExtern)
 {
-	string strRoot = {};
-
 	if (".fbx" != strFileExtern && ".dat" != strFileExtern)
 		return "NOTFOUND";
 
+	string strModelFilePath = strModelName + strFileExtern;
+
+	auto iter = m_ModelPathCache.find(strModelFilePath);
+	if (iter != m_ModelPathCache.end())
+		return iter->second;
+
+	return "NOTFOUND";
+	/*
 	if (".fbx" == strFileExtern)
 		strRoot = "../../Client/Bin/Resources/Map/Prop/";
 	else if (".dat" == strFileExtern)
@@ -2682,6 +2696,7 @@ string CLevel_Map::Find_ModelPath(const string& strModelName, const string& strF
 	}
 
 	return "NOTFOUND";
+	*/
 }
 
 _bool CLevel_Map::Prototypes_Save_Binary()
@@ -3936,6 +3951,36 @@ _bool CLevel_Map::Lights_Load_Binary()
 	CloseHandle(hFile);
 
 	return true;
+}
+
+void CLevel_Map::Build_ModelPathCache()
+{
+	m_ModelPathCache.clear();
+
+	vector<pair<string, string>> Roots = {
+		{"../../Client/Bin/Resources/Map/Prop/", ".fbx"},
+		{"../../Client/Bin/Data/Map/", ".dat"}
+	};
+
+	for (auto& [root, ext] : Roots)
+	{
+		for (auto& entry : filesystem::recursive_directory_iterator(root))
+		{
+			if (entry.is_regular_file() && entry.path().extension() == ext)
+			{
+				string name = entry.path().stem().string();
+				string path = entry.path().string();
+
+				// .fbx / .dat 둘 다 있을 수 있으므로 구분
+				string key = name + ext;
+				m_ModelPathCache[key] = path;
+			}
+		}
+	}
+
+#ifdef _DEBUG
+	OutputDebugStringA(("Model cache built: " + std::to_string(m_ModelPathCache.size()) + " entries\n").c_str());
+#endif
 }
 
 void CLevel_Map::MapEditor_Close_Windows()
