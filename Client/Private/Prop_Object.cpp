@@ -74,7 +74,7 @@ void CProp_Object::Late_Update(_float fTimeDelta)
     */
 
     if (false == (isCollider() && isBackGround()))
-        m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
 }
 
 HRESULT CProp_Object::Render()

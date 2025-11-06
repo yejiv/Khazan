@@ -20,6 +20,9 @@ public:
 	virtual void			Reset() override;
 
 public:
+	HRESULT					Bind_ShaderResources(class CShader* pShader, class CTexture** pTexture, class CVIBuffer_Cube* pVIBuffer);
+
+public:
 	_float					Get_Opacity() { return m_fOpacity; }
 	
 	DECAL_DESC				Get_Desc() { return m_Desc; }

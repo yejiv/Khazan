@@ -73,7 +73,7 @@ void CBigChest::Update(_float fTimeDelta)
 
 void CBigChest::Late_Update(_float fTimeDelta)
 {
-    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this), );
+    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this), );
 }
 
 HRESULT CBigChest::Render()

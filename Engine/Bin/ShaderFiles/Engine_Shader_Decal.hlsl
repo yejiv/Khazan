@@ -1,23 +1,15 @@
 #include "Engine_Shader_Defines.hlsli"
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
-matrix g_ViewMatrixInv, g_ProjMatrixInv;
+matrix g_WorldMatrixInv, g_ViewMatrixInv, g_ProjMatrixInv;
 
-uint g_iNumActiveDecals;
 Texture2D g_DiffuseTexture, g_DepthTexture, g_NormalTexture, g_DecalTexture;
 
 float2 g_vScreenSize;
 float3 g_vDecalColor;
 
-struct DECAL_PARAMS
-{
-    matrix  vWorldMarixInv;
-    float   fOpacity;
-    uint    iRandSeed;
-    float   fPadding[2];
-};
-
-StructuredBuffer<DECAL_PARAMS> g_DecalParams;
+float g_fOpacity;
+uint g_iRandSeed;
 
 struct VS_IN
 {
@@ -64,10 +56,10 @@ PS_OUT PS_MAIN(PS_IN In)
     vTexcoord.y = In.vPosition.y / g_vScreenSize.y;
     
     // 위에서 구한 텍스쿠드로 깊이 값 읽어오기
-    vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, vTexcoord);
+    float4 vDepthDesc = g_DepthTexture.Sample(DefaultSampler, vTexcoord);
     
     // 깊이로 월드 포지션 복원
-    vector vWorldPos;
+    float4 vWorldPos;
 
     vWorldPos.x = vTexcoord.x * 2.f - 1.f;
     vWorldPos.y = vTexcoord.y * -2.f + 1.f;
@@ -80,70 +72,67 @@ PS_OUT PS_MAIN(PS_IN In)
     vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
     
     // 디퓨즈 텍스처를 샘플링
-    vector vDiffuseDesc = g_DiffuseTexture.Sample(ClampSampler, vTexcoord);
+    float4 vDiffuseDesc = g_DiffuseTexture.Sample(ClampSampler, vTexcoord);
 
     float4 vFinalColor = vDiffuseDesc;
+    float fFinalAlpha = 0.f;
     
-    [loop]
-    for (uint i = 0; i < g_iNumActiveDecals; ++i)
-    {
-        // 월드를 현재 데칼의 로컬 공간으로 변환
-        vector vLocalPos = mul(g_DecalParams[i].vWorldMarixInv, vWorldPos);
+    // 월드를 현재 데칼의 로컬 공간으로 변환
+    float4 vLocalPos = mul(vWorldPos, g_WorldMatrixInv);
         
-        if (any(abs(vLocalPos.xyz) > 0.5f))
-            continue;
+    if (any(abs(vLocalPos.xyz) > 0.5f))
+        return Out;
         
-        // 노말 텍스처 읽기
-        float3 vNormal = g_NormalTexture.SampleLevel(DefaultSampler, vTexcoord, 0.f).xyz;
-        vNormal = abs(vNormal);
+    // 노말 텍스처 읽기
+    float3 vNormal = g_NormalTexture.Sample(DefaultSampler, vTexcoord).xyz;
+    vNormal = abs(vNormal);
         
-        // 각 픽셀마다 노말을 확인
-        float2 vDecalTexcoord;
+    // 각 픽셀마다 노말을 확인
+    float2 vDecalTexcoord;
         
-        // Y축이 클 때
-        if (vNormal.y > vNormal.x && vNormal.y > vNormal.z)
-            vDecalTexcoord = vLocalPos.xz;
+    // Y축이 클 때
+    if (vNormal.y > vNormal.x && vNormal.y > vNormal.z)
+        vDecalTexcoord = vLocalPos.xz;
         
-        // X축이 클 때
-        else if (vNormal.x > vNormal.y && vNormal.x > vNormal.z)
-            vDecalTexcoord = vLocalPos.zy;
+    // X축이 클 때
+    else if (vNormal.x > vNormal.y && vNormal.x > vNormal.z)
+        vDecalTexcoord = vLocalPos.zy;
         
-        // Z축이 클 때
-        else if (vNormal.z > vNormal.y && vNormal.z > vNormal.x)
-            vDecalTexcoord = vLocalPos.xy;
+    // Z축이 클 때
+    else if (vNormal.z > vNormal.y && vNormal.z > vNormal.x)
+        vDecalTexcoord = vLocalPos.xy;
+    else
+        vDecalTexcoord = vLocalPos.zy;
         
-        else
-            vDecalTexcoord = vLocalPos.zy;
-        
-        // 로컬 좌표 -0.5 0.5 를 데칼 UV 좌표 0, 1 범위로 변환
-        vDecalTexcoord += 0.5f;
+    // 로컬 좌표 -0.5 0.5 를 데칼 UV 좌표 0, 1 범위로 변환
+    vDecalTexcoord += 0.5f;
 
-        // 데칼 텍스처를 샘플링
-        vector vDecalDesc = g_DecalTexture.SampleLevel(ClampSampler, vDecalTexcoord, 0.f);
+    //  데칼 텍스처를 샘플링
+    float4 vDecalDesc = g_DecalTexture.Sample(ClampSampler, vDecalTexcoord);
 
-        float fMask = 1.f;
+    float fMask = 1.f;
         
-        float fThresholdR = 1.f / 3.f;
-        float fThresholdG = 2.f / 3.f;
-        float fRandNum = rand_between(0.f, 1.f, g_DecalParams[i].iRandSeed);
+    float fThresholdR = 1.f / 3.f;
+    float fThresholdG = 2.f / 3.f;
+    float fRandNum = rand_between(0.f, 1.f, g_iRandSeed);
         
-        if (fRandNum < fThresholdR)
-            fMask = vDecalDesc.r;
-        else if (fRandNum < fThresholdG)
-            fMask = vDecalDesc.g;
-        else
-            fMask = vDecalDesc.b;
+    if (fRandNum < fThresholdR)
+        fMask = vDecalDesc.r;
+    else if (fRandNum < fThresholdG)
+        fMask = vDecalDesc.g;
+    else
+        fMask = vDecalDesc.b;
 
-        vFinalColor.rgb = g_vDecalColor;
-        
-        if (fMask > 0.f)
-            vFinalColor.a = g_DecalParams[i].fOpacity * 1.f;
-        else
-            vFinalColor.a = g_DecalParams[i].fOpacity * 0.f;
-    }
+    if (fMask > 0.f)
+        fFinalAlpha = g_fOpacity * 1.f;
+    else
+        fFinalAlpha = g_fOpacity * 0.f;
     
-    Out.vColor = vFinalColor;
-
+    float3 vTargetColor = g_vDecalColor * 0.3f;
+    
+    Out.vColor.rgb = lerp(vTargetColor, g_vDecalColor, g_fOpacity);
+    Out.vColor.a = fFinalAlpha;
+   
     return Out;
 }
 
