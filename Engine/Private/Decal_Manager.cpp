@@ -25,8 +25,6 @@ HRESULT CDecal_Manager::Initialize(_uint iNumDecals)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    m_vDecalColor = _float3(0.47f, 0.08f, 0.08f);
-
     return S_OK;
 }
 
@@ -59,8 +57,7 @@ void CDecal_Manager::Update(_float fTimeDelta)
         
         XMStoreFloat4x4(&pDecalParams[i].vWorldMarixInv, pTransform->Get_WorldMatrix_Inverse());
         pDecalParams[i].fOpacity = pDecal->Get_Opacity();
-        pDecalParams[i].fLifeRatio = pDecal->Get_LifeRatio();
-
+        pDecalParams[i].iRandSeed = pDecal->Get_RandomSeed();
         ++i;
     }
 
@@ -99,9 +96,6 @@ HRESULT CDecal_Manager::Render()
     if (FAILED(m_pShader->Bind_SRV("g_DecalParams", m_pDecalSRV)))
         return E_FAIL;
 
-    if (FAILED(m_pTexture->Bind_Shader_Resource(m_pShader, "g_DecalTexture", m_iTextureIndex)))
-        return E_FAIL;
-
     // 디퓨즈, 뎁스, 노말
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Diffuse"), m_pShader, "g_DiffuseTexture")))
         return E_FAIL;
@@ -121,9 +115,6 @@ HRESULT CDecal_Manager::Render()
     if (FAILED(m_pShader->Bind_RawValue("g_vScreenSize", &vScreenSize, sizeof(_float2))))
         return E_FAIL;
 
-    if (FAILED(m_pShader->Bind_RawValue("g_vDecalColor", &m_vDecalColor, sizeof(_float3))))
-        return E_FAIL;
-
     // 활성화된 데칼 개수만큼 순회, 해당 데칼의 월드, 뷰, 투영 바인딩
     for (auto& pDecal : m_Decals)
     {
@@ -131,6 +122,28 @@ HRESULT CDecal_Manager::Render()
         
         if (FAILED(pTransform->Bind_Shader_Resource(m_pShader, "g_WorldMatrix")))
             return E_FAIL;
+
+        _float3 vColor = pDecal->Get_Desc().vColor;
+        if (FAILED(m_pShader->Bind_RawValue("g_vDecalColor", &vColor, sizeof(_float3))))
+            return E_FAIL;
+
+        _uint iIndex = pDecal->Get_TextureIndex();
+
+        switch (pDecal->Get_Desc().eType)
+        {
+        case DECALTYPE::LINEAR:
+            if (FAILED(m_pTexture[ENUM_CLASS(DECALTYPE::LINEAR)]->Bind_Shader_Resource(m_pShader, "g_DecalTexture", iIndex)))
+                return E_FAIL;
+            break;
+        case DECALTYPE::CIRCLE:
+            if (FAILED(m_pTexture[ENUM_CLASS(DECALTYPE::CIRCLE)]->Bind_Shader_Resource(m_pShader, "g_DecalTexture", iIndex)))
+                return E_FAIL;
+            break;
+        case DECALTYPE::CURVE:
+            if (FAILED(m_pTexture[ENUM_CLASS(DECALTYPE::CURVE)]->Bind_Shader_Resource(m_pShader, "g_DecalTexture", iIndex)))
+                return E_FAIL;
+            break;
+        }
 
         // 버퍼 렌더 및 텍스처 바인딩, 셰이더 비긴
         m_pShader->Begin(0);
@@ -142,8 +155,7 @@ HRESULT CDecal_Manager::Render()
     return S_OK;
 }
 
-HRESULT CDecal_Manager::Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag,
-    const _float3& vPosition, const _float3& vScale)
+HRESULT CDecal_Manager::Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, const DECAL_DESC& Desc)
 {
     // 풀 태그, 레벨 인덱스, 레이어 태그, 포지션, 노말, 스케일
     // 인자로 받아 풀에서 꺼냄
@@ -154,13 +166,14 @@ HRESULT CDecal_Manager::Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLeve
     CDecal* pDecal = dynamic_cast<CDecal*>(pGameObject);
     if (nullptr == pDecal)
         return E_FAIL;
+
+    // 세팅
+    pDecal->Set_Desc(Desc);
+    _uint iNumTextures = m_pTexture[ENUM_CLASS(Desc.eType)]->Get_NumTextures();
+    _uint iTextureIndex = static_cast<_uint>(m_pGameInstance->Rand(0.f, static_cast<_float>(iNumTextures)));
+    pDecal->Set_TextureIndex(iTextureIndex);
+    pDecal->Set_RandomSeed(static_cast<_uint>(m_pGameInstance->Rand(0.f, 256.f)));
     
-    CTransform* pTransform = dynamic_cast<CTransform*>(pDecal->Get_Component(TEXT("Com_Transform")));
-
-    // 인자로 받은 위치, 노말, 크기를 통해 캐스팅하여 월드 행렬 세팅
-    pTransform->Scale(vScale);
-    pTransform->Set_State(STATE::POSITION, XMVectorSet(vPosition.x, vPosition.y, vPosition.z, 1.f));
-
     // 컨테이너에 저장
     m_Decals.push_back(pDecal);
 
@@ -168,16 +181,6 @@ HRESULT CDecal_Manager::Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLeve
     m_pGameInstance->Push_PoolObject_ToLayer(iLayerLevelIndex, strLayerTag, pDecal);
 
     return S_OK;
-}
-
-_uint CDecal_Manager::Get_NumDecalTextures()
-{
-    return m_pTexture->Get_NumTextures();
-}
-
-ID3D11ShaderResourceView* CDecal_Manager::Get_DecalTexture(_uint iTextureIndex)
-{
-    return m_pTexture->Get_Texture(iTextureIndex);
 }
 
 HRESULT CDecal_Manager::Ready_Components()
@@ -193,6 +196,8 @@ HRESULT CDecal_Manager::Ready_Components()
         return E_FAIL;
 
     // Decal Texture 생성
+    
+    // =============== Linear ===============
     vector<const _tchar*> TextureTags;
     TextureTags =
     {
@@ -200,28 +205,43 @@ HRESULT CDecal_Manager::Ready_Components()
         TEXT("FT_Decal_Blood_001.png"),
         TEXT("FT_Decal_Blood_002.png"),
         TEXT("FT_Decal_Blood_003.png"),
-        TEXT("FT_Decal_Blood_004.png"),
         TEXT("FT_Decal_Blood_A_000.png"),
         TEXT("FT_Decal_Blood_A_001.png"),
         TEXT("FT_Decal_Blood_A_002.png"),
         TEXT("FT_Decal_Blood_A_003.png"),
         TEXT("FT_Decal_Blood_Linear_000.png"),
-        TEXT("FT_Decal_Blood_Spin_001.png"),
-        TEXT("FT_Decal_Blood_Curve_A_000.png"),
-        TEXT("FT_Decal_Dirt_Curve_000.png"),
         TEXT("FT_Decal_Dirt_000.png"),
         TEXT("FT_Decal_Dirt_001.png"),
         TEXT("FT_Decal_Dirt_002.png"),
         TEXT("FT_Decal_Dirt_003.png"),
-        TEXT("FT_BloodDecal_A_004.png"),
-        TEXT("FT_BloodDecal_A_005.png"),
-        TEXT("FT_BloodDecal_A_006.png"),
-        TEXT("FT_BloodDecal_A_007.png"),
-        TEXT("FT_BloodDecal_RGB.png"),
-        TEXT("FT_BloodDecalTile_test_001.png"),
     };
 
-    m_pTexture = CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Shader/Decal/"), TextureTags);
+    m_pTexture[ENUM_CLASS(DECALTYPE::LINEAR)] = CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Shader/Decal/"), TextureTags);
+    if (nullptr == m_pTexture)
+        return E_FAIL;
+
+    // =============== Circle ===============
+    TextureTags =
+    {
+        TEXT("FT_Decal_Blood_004.png"),
+        TEXT("FT_BloodDecal_A_004.png"),
+        TEXT("FT_BloodDecal_A_005.png"),
+        TEXT("FT_BloodDecal_A_007.png"),
+    };
+
+    m_pTexture[ENUM_CLASS(DECALTYPE::CIRCLE)] = CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Shader/Decal/"), TextureTags);
+    if (nullptr == m_pTexture)
+        return E_FAIL;
+
+    // =============== Curve ===============
+    TextureTags =
+    {
+        TEXT("FT_Decal_Blood_Spin_001.png"),
+        TEXT("FT_Decal_Blood_Curve_A_000.png"),
+        TEXT("FT_Decal_Dirt_Curve_000.png"),
+    };
+
+    m_pTexture[ENUM_CLASS(DECALTYPE::CURVE)] = CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Shader/Decal/"), TextureTags);
     if (nullptr == m_pTexture)
         return E_FAIL;
 
@@ -278,7 +298,9 @@ void CDecal_Manager::Free()
     Safe_Release(m_pDecalSRV);
     Safe_Release(m_pStructuredBuffer);
 
-    Safe_Release(m_pTexture);
+    for (_uint i = 0; i < ENUM_CLASS(DECALTYPE::END); ++i)
+        Safe_Release(m_pTexture[i]);
+
     Safe_Release(m_pVIBuffer);
     Safe_Release(m_pShader);
 
