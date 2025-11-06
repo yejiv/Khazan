@@ -26,6 +26,8 @@ public:
 	_float4*				Get_BonePointEX(const _char* BoneName);
 	_matrix					Get_BoneMatrix(const _char* pBoneName);
 
+	void					Set_OnAttackCollision(_bool isToggle) { m_isOnAttackCollision = isToggle; }
+
 private:
 	CBody_Yetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CBody_Yetuga(const CBody_Yetuga& Prototype);
@@ -66,7 +68,7 @@ private:
 	CBody*					m_pRH_BodyCom = { nullptr }; // 오른손
 	CBody*					m_pLH_BodyCom = { nullptr }; // 왼손
 	CBody*					m_pBack_BodyCom = { nullptr }; // 등
-
+	CBody*					m_pHeadBodyCom = { nullptr };
 
 private:
 	_float3					m_vThrowPoint = {};
@@ -76,6 +78,9 @@ private:
 	_float4x4				m_RightHandMatrix = {};
 	_float4x4				m_LeftHandMatrix = {};
 	_float4x4				m_BackMatrix = {};
+	_float4x4				m_HeadMatrix = {};
+
+	_bool					m_isOnAttackCollision = { false };
 
 public:
 	static CBody_Yetuga*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

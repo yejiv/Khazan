@@ -15,7 +15,7 @@ public:
 	virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner) = 0;
 	
 public:
-	virtual void OnCollision(COLLISION_DESC* pDesc) {};
+	virtual void OnCollision(COLLISION_DESC* pDesc, class CGameObject* pOwner = nullptr) {};
 
 protected:
 	class CGameInstance*		m_pGameInstance = { nullptr };
