@@ -7,6 +7,7 @@
 #include "Transform.h"
 #include "Creature.h"
 #include "UI_Tutorial.h"
+#include "SkySphere.h"
 
 CHeinMach_Trigger::CHeinMach_Trigger(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CTrigger{ pDevice, pContext }
@@ -113,6 +114,14 @@ HRESULT CHeinMach_Trigger::Ready_TriggerType(void* pArg)
     // {
     //     m_eGuideType = GUIDE_TYPE::LOCKON;
     // }
+    else if (m_strTriggerKey == "Day")
+    {
+        m_eDayCircle = DAY_CIRCLE::DAY;
+    }
+    else if (m_strTriggerKey == "Dawn")
+    {
+        m_eDayCircle = DAY_CIRCLE::DAWN;
+    }
 
 
     return S_OK;
@@ -160,6 +169,16 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             }
 
             m_isDead = true;
+        }
+        else if (DAY_CIRCLE::NONE != m_eDayCircle)
+        {
+            switch (m_eDayCircle)
+            {
+            case DAY_CIRCLE::DAWN:
+                break;
+            case DAY_CIRCLE::DAY:
+                break;
+            }
         }
     }
     
