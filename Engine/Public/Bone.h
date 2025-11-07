@@ -32,8 +32,9 @@ public:
 	_bool				Contains_Name(const _wstring& pName) { return m_strName.find(pName) != _wstring::npos; }
 	_bool				Contains_Name(const _tchar* pName) { return m_strName.find(static_cast<_wstring>(pName)) != _wstring::npos; }
 	_bool				Contains_Name(const _char* pName) { return 	m_strName.find(CharToWString(pName)) != _wstring::npos;}
-
+	
 	_int			Get_ParentBoneIndex() { return m_iParentBoneIndex; }
+
 	const vector<_int>&	Get_ChildBones() const { return m_iChildBones; }
 
 public:
