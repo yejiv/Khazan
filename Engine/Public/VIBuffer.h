@@ -18,7 +18,9 @@ public:
 public:
 	/* 준비된 자원을 이용하여 어떠한 기능(렌더링)을 수행하기위하여 자원을 장치에 바인딩한다. */
 	virtual HRESULT Bind_Resources();
+	HRESULT Deferred_Bind_Resources(ID3D11DeviceContext* pDeferredContext);
 	virtual HRESULT Render();
+	virtual HRESULT Deferred_Render(ID3D11DeviceContext* pDeferredContext);
 
 protected:
 	ID3D11Buffer*	m_pVB = { nullptr };

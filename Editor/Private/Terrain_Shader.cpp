@@ -40,7 +40,7 @@ void CTerrain_Shader::Update(_float fTimeDelta)
 
 void CTerrain_Shader::Late_Update(_float fTimeDelta)
 {
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this)))
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this)))
         return;
 }
 

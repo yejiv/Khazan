@@ -30,6 +30,7 @@
 #pragma region Monster
 #include "Yetuga.h"
 #include "Body_Yetuga.h"
+#include "Head_Yetuga.h"
 #include "Projectile_Yetuga.h"
 #include "Projectile_Rock_Yetuga.h"
 #pragma endregion
@@ -207,9 +208,6 @@ HRESULT CLoader::Loading_For_Stage1_Level()
 
 HRESULT CLoader::Loading_For_Stage1_Texture()
 {
-	CoInitGuard co;
-
-	//lock_guard<mutex> gpu_lock(g_GpuGate);
 
 	/* Prototype_Component_Texture_Sky */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Texture_Sky"),
@@ -251,16 +249,12 @@ HRESULT CLoader::Loading_For_Stage1_Texture()
 
 HRESULT CLoader::Loading_For_Stage1_Model()
 {
-	CoInitGuard co;
-
-	//lock_guard<mutex> gpu_lock(g_GpuGate);
-
 	/* Prototype_Component_Model_Fiona */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Fiona"),
 	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Test/Fiona/Fiona.dat"))))
 	//	return E_FAIL;
 
-
+#pragma region KHAZAN
 	/* Prototype_Component_Model_Khazan_Sample*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Sample"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Khazan_Sample.dat"))))
@@ -275,6 +269,63 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Spear"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Spear/Khazan_Spear.dat"))))
 		return E_FAIL;
+
+	/* Prototype_Component_Model_Khazan_Prisoner_Torso1*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso1"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Prisoner_Torso1/Prisoner_Torso1.dat"))))
+		return E_FAIL;
+	/* Prototype_Component_Model_Khazan_Prisoner_Torso2*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso2"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Prisoner_Torso2/Prisoner_Torso2.dat"))))
+		return E_FAIL;
+	/* Prototype_Component_Model_Khazan_Prisoner_Torso3*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso3"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Prisoner_Torso3/Prisoner_Torso3.dat"))))
+		return E_FAIL;
+
+	/* Prototype_Component_Model_Khazan_Prisoner_Shoes1*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Prisoner_Shoes1"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Prisoner_Shoes1/Prisoner_Shoes1.dat"))))
+		return E_FAIL;
+	///* Prototype_Component_Model_Khazan_Prisoner_Shoes2*/
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Prisoner_Shoes2"),
+	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Prisoner_Shoes2/Prisoner_Shoes2.dat"))))
+	//	return E_FAIL;
+
+	/* Prototype_Component_Model_Khazan_Prisoner_Leg1*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg1"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Prisoner_Leg1/Prisoner_Leg1.dat"))))
+		return E_FAIL;
+	/* Prototype_Component_Model_Khazan_Prisoner_Leg2*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg2"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Prisoner_Leg2/Prisoner_Leg2.dat"))))
+		return E_FAIL;
+	/* Prototype_Component_Model_Khazan_Prisoner_Leg3*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg3"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Prisoner_Leg3/Prisoner_Leg3.dat"))))
+		return E_FAIL;
+
+	/* Prototype_Component_Model_Khazan_Prisoner_Hair1*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Prisoner_Hair1"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Prisoner_Hair1/Prisoner_Hair1.dat"))))
+		return E_FAIL;
+
+	/* Prototype_Component_Model_Khazan_Prisoner_Face1*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Prisoner_Face1"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Face/Prisoner_Face1/Prisoner_Face1.dat"))))
+		return E_FAIL;
+
+
+	/* Prototype_Component_Model_Khazan_Prisoner_Arm1*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Prisoner_Arm1"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Prisoner_Arm1/Prisoner_Arm1.dat"))))
+		return E_FAIL;
+
+	/* Prototype_Component_Model_Khazan_Prisoner_Arm2*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Prisoner_Arm2"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Prisoner_Arm2/Prisoner_Arm2.dat"))))
+		return E_FAIL;
+#pragma endregion
 
 #pragma region YETUGA
 
@@ -330,19 +381,11 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 
 HRESULT CLoader::Loading_For_Stage1_Shader()
 {
-	CoInitGuard co;
-
-	//lock_guard<mutex> gpu_lock(g_GpuGate);
-
 	return S_OK;
 }
 
 HRESULT CLoader::Loading_For_Stage1_GameObject()
 {
-	CoInitGuard co;
-
-	//lock_guard<mutex> gpu_lock(g_GpuGate);
-
 	/* Prototype_GameObject_Terrain*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Terrain"),
 		CTerrain::Create(m_pDevice, m_pContext))))
@@ -385,6 +428,11 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 		CBody_Yetuga::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	// Prototype_PartObject_Yetuga_Body
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Yetuga_Head"),
+		CHead_Yetuga::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Yetuga_Stone"),
 		CProjectile_Yetuga::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
@@ -425,8 +473,8 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 
 #pragma region 게임 오브젝트 원형 : 트리거
 	/* Prototype_GameObject_Prop_Trigger */
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Trigger"),
-		CTrigger::Create(m_pDevice, m_pContext)), E_FAIL);
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_HeinMach_Trigger"),
+		CHeinMach_Trigger::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 	/* Prototype_GameObject_JOH_Test1 */
@@ -466,7 +514,7 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 
 #pragma region 이펙트 테스트 중!
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle1"),
-		CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/test1"))))
+		CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/testtesttesttest"))))
 		return E_FAIL;
 
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle2"),
@@ -504,9 +552,6 @@ HRESULT CLoader::Loading_For_Crevice_Level()
 
 HRESULT CLoader::Loading_For_Crevice_Texture()
 {
-	CoInitGuard co;
-
-	//lock_guard<mutex> gpu_lock(g_GpuGate);
 
 	return S_OK;
 }
@@ -514,10 +559,6 @@ HRESULT CLoader::Loading_For_Crevice_Texture()
 
 HRESULT CLoader::Loading_For_Crevice_Model()
 {
-	CoInitGuard co;
-
-	//lock_guard<mutex> gpu_lock(g_GpuGate);
-
 	/* Prototype_Component_Model_Khazan_Sample*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Sample"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Khazan_Sample.dat"))))
@@ -552,19 +593,12 @@ HRESULT CLoader::Loading_For_Crevice_Model()
 
 HRESULT CLoader::Loading_For_Crevice_Shader()
 {
-	CoInitGuard co;
-
-	//lock_guard<mutex> gpu_lock(g_GpuGate);
 
 	return S_OK;
 }
 
 HRESULT CLoader::Loading_For_Crevice_GameObject()
 {
-	CoInitGuard co;
-
-	//lock_guard<mutex> gpu_lock(g_GpuGate);
-
 	/* Prototype_GameObject_Camera_Compre */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Camera_Compre"),
 		CCamera_Compre::Create(m_pDevice, m_pContext))))
@@ -594,8 +628,8 @@ HRESULT CLoader::Loading_For_Crevice_GameObject()
 		CTombStone::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
-#pragma endregion
 
+#pragma region Khazna
 	/* Prototype_GameObject_Khazan_Spear */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Khazan_Spear"),
 		CKhazan_Spear::Create(m_pDevice, m_pContext))))
@@ -610,6 +644,7 @@ HRESULT CLoader::Loading_For_Crevice_GameObject()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Spear_Khazan_Spear"),
 		CSpear_Khazan_Spear::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+#pragma endregion
 
 #pragma region 이펙트 테스트 중!
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_TestParticle"),

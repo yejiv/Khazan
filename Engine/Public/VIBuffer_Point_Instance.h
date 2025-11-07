@@ -17,6 +17,7 @@ public:
 		_uint   IsCircle;
 		_float	fSizeRatio;
 		_float	fTurbulenceSpeed;
+		_float	fTurbulenceSampleSize;
 		_char	pNoiseFilePath[MAX_PATH];
 	}POINT_INSTANCE_DESC;
 
@@ -42,7 +43,7 @@ public:
 	void						Remove_Speed(SPEED_VALUE type);
 	void						Remove_Speed();
 	void						Setting_Pivot(_float3 pivot);
-	void						Setting_Loop(_bool isLoop) { m_IsLoop = isLoop; };
+	void						Setting_Loop(_bool isLoop) { m_sData.bIsLoop = isLoop; };
 
 private:
 	HRESULT						Ready_SRV(void* pSysmem);
@@ -70,13 +71,7 @@ private :
 
 private:
 	_float3								m_vPivot = {}; 
-	_float3								m_vRange= {}; 
-	_bool								m_IsLoop = {}; 
-
-	_float								m_fOffset = {};
-	_bool								m_bIsCircle = {};
-
-	_float								m_fTurbulenceSpeed;
+	POINT_INSTANCE_DESC					m_sData;
 
 public:
 	static CVIBuffer_Point_Instance*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const INSTANCE_DESC* pDesc);

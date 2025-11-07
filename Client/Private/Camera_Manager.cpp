@@ -12,8 +12,6 @@ CCamera_Manager::CCamera_Manager()
 
 HRESULT CCamera_Manager::Initialize(_uint iNumLevels)
 {
-	m_pCameras = new vector<CCamera*>[iNumLevels];
-
 	m_iNumLevels = iNumLevels;
 
 	return S_OK;
@@ -54,11 +52,11 @@ void CCamera_Manager::Change_Camera(_uint iLevelIndex, _wstring strCameraTag)
 	}
 }
 
-CCamera* CCamera_Manager::Find_Camera(_uint iLevelIndex, _uint iCameraType)
+CCamera* CCamera_Manager::Find_Camera(_uint iLevelIndex, CAMERATYPE eCameraType)
 {
 	for (auto& pCamera : m_pCameras[iLevelIndex])
 	{
-		if (pCamera->Get_CameraType() == iCameraType)
+		if (pCamera->Get_CameraType() == ENUM_CLASS(eCameraType))
 			return pCamera;
 	}
 
@@ -259,7 +257,5 @@ void CCamera_Manager::Free()
 	}
 
 	Safe_Release(m_pGameInstance);
-
-	Safe_Delete_Array(m_pCameras);
 
 }

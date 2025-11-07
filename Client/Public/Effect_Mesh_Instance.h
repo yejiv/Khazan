@@ -23,8 +23,11 @@ public:
 		_float		fMaskScrollSpeed;
 		_uint		bIsScrollVertical;
 		_uint		bIsScrollInverse;
+		_uint		bIsTurbulence;					//노이즈텍스쳐
+		_uint		iTurbulenceTextureIdx;			//랜덤 노이즈텍스쳐 인덱스
 		_uint		bGravity = false;
 		_uint		bIsFresnel = false;
+		DISSOLVE_DATA sDissolveData;
 	}PARTICLE_DESC;
 
 private:
@@ -52,15 +55,16 @@ public:
 private:
 	HRESULT							Ready_Component() override;
 	HRESULT							Bind_ShaderResources() override;
-	//virtual void					Apply(void* pArg) override;
 
 private:
 	CTexture*						m_pTextureCom = { nullptr };
 	CTexture*						m_pMaskTextureCom = { nullptr };
+	CTexture*						m_pDissolveTextureCom = { nullptr };
 	CVIBuffer_Mesh_Instance*		m_pVIBufferCom = { nullptr };
 
 private :
 	PARTICLE_DESC					m_sData;
+	_float							m_fAccTime;
 
 public:
 	static CEffect_Mesh_Instance*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, void* pArg);

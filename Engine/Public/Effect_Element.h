@@ -17,6 +17,14 @@ protected:
 
 	}TRACK_DATA;
 
+	typedef struct tagDissolveData
+	{
+		_uint		bIsDissolve;
+		_float		fDissolveEdgeWidth;
+		_float4		fDissolveEdgeColor;
+		_uint		iDissolveTextureIdx;
+	}DISSOLVE_DATA;
+
 protected:
 	CEffect_Element(ID3D11Device* pDevice,ID3D11DeviceContext* pDeviceContext);
 	CEffect_Element(const CEffect_Element& Prototype);

@@ -96,6 +96,15 @@ HRESULT CModel_Instance::Render(_uint iMeshIndex)
     return S_OK;
 }
 
+HRESULT CModel_Instance::Deferred_Render(_uint iMeshIndex, ID3D11DeviceContext* pDeferredContext)
+{
+    CHECK_FAILED(m_Meshes[iMeshIndex]->Deferred_Bind_Resources(pDeferredContext), E_FAIL);
+
+    CHECK_FAILED(m_Meshes[iMeshIndex]->Deferred_Render(pDeferredContext), E_FAIL);
+
+    return S_OK;
+}
+
 _float4x4* CModel_Instance::Get_BoneMatrix(const _char* pBoneName)
 {
     auto    iter = find_if(m_Bones.begin(), m_Bones.end(), [&](CBone* pBone) {
@@ -116,6 +125,19 @@ const _uint CModel_Instance::Get_NumInstances() const
 }
 
 HRESULT CModel_Instance::Bind_Materials(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, aiTextureType eTextureType, _uint iIndex)
+{
+    if (iMeshIndex >= m_iNumMeshes)
+        return E_FAIL;
+
+    _uint       iMaterialIndex = m_Meshes[iMeshIndex]->Get_MaterialIndex();
+
+    if (m_iNumMaterials <= iMaterialIndex)
+        return E_FAIL;
+
+    return m_Materials[iMaterialIndex]->Bind_Resources(pShader, pConstantName, eTextureType, iIndex);
+}
+
+HRESULT CModel_Instance::Bind_Materials(class CDeferredShader* pShader, const _char* pConstantName, _uint iMeshIndex, aiTextureType eTextureType, _uint iIndex)
 {
     if (iMeshIndex >= m_iNumMeshes)
         return E_FAIL;

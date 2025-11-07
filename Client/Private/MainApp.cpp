@@ -28,7 +28,6 @@ HRESULT CMainApp::Initialize()
 	EngineDesc.iWinSizeX_Imgui = g_iWinSizeX_Imgui;
 	EngineDesc.iWinSizeY_Imgui = g_iWinSizeY_Imgui;
 	EngineDesc.iNumJoltObjectLayer = ENUM_CLASS(COLLISION_LAYER::END);
-	EngineDesc.iNumDecals = 10;
 
 	list<_wstring> Imgui_Menu;
 	Imgui_Menu.push_back(TEXT("Client"));
@@ -69,17 +68,17 @@ void CMainApp::Update(_float fTimeDelta)
 	{
 		//m_pClientInstance->ActiveCamera_Shaking(2.f, 1.f);
 		//m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.3f, 0.003f, 3.f);
-
+		m_pGameInstance->Fix_HitStop(TIME_CHANNEL::ENEMY);
 		FOVModifier tMod{};
 
 		// PRIORITY
-		tMod.strID = TEXT("Hit");
-		tMod.eMode = FOVModifier::FOV_MODE::PRIORITY;
-		tMod.fDuration = 0.f;
-		tMod.fFrom = 0.f;
-		tMod.fTo = XMConvertToRadians(50.f);
-		tMod.iPriority = 5.f;
-		tMod.Ease = EaseOutQuad;
+		//tMod.strID = TEXT("Hit");
+		//tMod.eMode = FOVModifier::FOV_MODE::PRIORITY;
+		//tMod.fDuration = 0.f;
+		//tMod.fFrom = 0.f;
+		//tMod.fTo = XMConvertToRadians(50.f);
+		//tMod.iPriority = 5.f;
+		//tMod.Ease = EaseOutQuad;
 
 		// ADD
 		//tMod.eMode = FOVModifier::FOV_MODE::ADD;
@@ -97,11 +96,12 @@ void CMainApp::Update(_float fTimeDelta)
 		//tMod.iPriority = 5.f;
 		//tMod.Ease = EaseOutQuad;
 
-		m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
+		//m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
 	}
 	if (m_pGameInstance->Key_Down(DIK_RCONTROL))
 	{
-		m_pClientInstance->ActiveCamera_KillFov(L"Hit");
+		//m_pClientInstance->ActiveCamera_KillFov(L"Hit");
+		m_pGameInstance->UnFix_HitStop(TIME_CHANNEL::ENEMY);
 	}
 
 	TIME_DELTA      tTimeDelta = {};
@@ -238,6 +238,18 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 	///* Prototype_Component_Body*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
 		CBody::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	/* Prototype_Component_DeferredShader_VtxMesh */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_DeferredShader_VtxMesh"),
+		CDeferredShader::Create(m_pDevice, TEXT("../Bin/ShaderFiles/Shader_VtxMesh.hlsl"), VTXMESH::Elements, VTXMESH::iNumElements, m_pGameInstance->Get_ThreadCount()))))
+		return E_FAIL;
+
+	/* Prototype_Component_DeferredShader_ModelMeshInstance */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_DeferredShader_ModelMeshInstance"),
+		CDeferredShader::Create(m_pDevice, TEXT("../Bin/ShaderFiles/Shader_ModelMeshInstance.hlsl"), MESH_INSTANCING::Elements, MESH_INSTANCING::iNumElements, m_pGameInstance->Get_ThreadCount()))))
 		return E_FAIL;
 
 #pragma region FOR LOADING & SKY BOX
@@ -556,6 +568,11 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_Effect()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MeshEffect_Masking"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Mask/Masking%d.png"), 12)), E_FAIL);
 
+	// Prototype_Component_Texture_MeshEffect(Dissolve)
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MeshEffect_Dissolve"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Dissolve/Dissolve%d.png"), 1))))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -589,7 +606,6 @@ HRESULT CMainApp::Ready_ObjectLayer()
 	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
 	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
 	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::CAMERA), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
-	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::HAIR), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
 
 	// 동적-동적 & 동적-지형 & 동적-트리거
 	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MONSTER));
@@ -599,7 +615,6 @@ HRESULT CMainApp::Ready_ObjectLayer()
 	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MAP_STATIC));
 	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(COLLISION_LAYER::MAP_STATIC));
 	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::CAMERA), ENUM_CLASS(COLLISION_LAYER::MONSTER));
-	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::HAIR), ENUM_CLASS(COLLISION_LAYER::MAP_STATIC));
 
 	// 동적-상호작용
 	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT));
@@ -610,6 +625,7 @@ HRESULT CMainApp::Ready_ObjectLayer()
 	// MONSTER
 	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
 	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
+	/*m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER));*/
 	// MONSTER ATTACK
 	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
 	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK), ENUM_CLASS(JOLT_BP_LAYER::MOVING));

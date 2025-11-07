@@ -562,8 +562,20 @@
     <Filter Include="02.GameObject\UI\Tutorial\Tutorial_Tex">
       <UniqueIdentifier>{a6a00170-ad51-4fd0-a0ad-c6ced3f2edf5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\01.Trigger\00.HeinMach\HeinMach_Trigger">
+      <UniqueIdentifier>{97d366cf-cb22-4463-91cb-dcea2dc51180}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\HeinMach\Yetuga">
+      <UniqueIdentifier>{15be54d5-6e2d-41e7-badb-0c095f0d0039}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObject\UI\Slot">
       <UniqueIdentifier>{5a375172-cf57-4494-aa11-36f0c266d20c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\17.LOCKON">
+      <UniqueIdentifier>{e1c803a4-854a-4dac-98e8-e7652245f768}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Yetuga\Head">
+      <UniqueIdentifier>{6139718a-8b42-4ba4-afef-9aeecb79be21}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1080,8 +1092,20 @@
     <ClInclude Include="..\public\Tutorial_Tex.h">
       <Filter>02.GameObject\UI\Tutorial\Tutorial_Tex</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\HeinMach_Trigger.h">
+      <Filter>02.GameObject\MapObject\01.Trigger\00.HeinMach\HeinMach_Trigger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sequence_HeinMach_Yetuga.h">
+      <Filter>04.Sequence\HeinMach\Yetuga</Filter>
+    </ClInclude>
     <ClInclude Include="..\public\Skill_Slot.h">
       <Filter>02.GameObject\UI\Slot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_LockOn_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\17.LOCKON</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Head_Yetuga.h">
+      <Filter>02.GameObject\Creature\Monster\Yetuga\Head</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1584,8 +1608,20 @@
     <ClCompile Include="..\private\Tutorial_Tex.cpp">
       <Filter>02.GameObject\UI\Tutorial\Tutorial_Tex</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\HeinMach_Trigger.cpp">
+      <Filter>02.GameObject\MapObject\01.Trigger\00.HeinMach\HeinMach_Trigger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_HeinMach_Yetuga.cpp">
+      <Filter>04.Sequence\HeinMach\Yetuga</Filter>
+    </ClCompile>
     <ClCompile Include="..\private\Skill_Slot.cpp">
       <Filter>02.GameObject\UI\Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_LockOn_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\17.LOCKON</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Head_Yetuga.cpp">
+      <Filter>02.GameObject\Creature\Monster\Yetuga\Head</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

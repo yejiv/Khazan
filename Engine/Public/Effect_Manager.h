@@ -32,9 +32,10 @@ public:
 private:
 	class CGameInstance*								m_pGameInstance = { nullptr };
 	_uint												m_iNumLevels = {};
+	_uint												m_iCurLevel;
 	unordered_map<_wstring, vector<class CPrefab*>>*	m_pEffectLayers = {};	//본체 - 인덱스로 바로 접근해야함
 	unordered_map<_wstring, deque<class CPrefab*>>*		m_pEffectPools = {};	//위,끝만 삽입 삭제가 일어나서 deque
-	unordered_map<_wstring, list<class CPrefab*>>		m_pRunningEffects = {};	//중간 삽입도 일어나서 list
+	unordered_map<_wstring, list<class CPrefab*>>*		m_pRunningEffects = {};	//중간 삽입도 일어나서 list
 
 private:
 	vector<class CPrefab*>* Find_Effect_Layer(_uint iLayerLevelIndex, const _wstring& strLayerTag);

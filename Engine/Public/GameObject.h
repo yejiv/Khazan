@@ -27,6 +27,7 @@ public:
 	virtual void Update(_float fTimeDelta);
 	virtual void Late_Update(_float fTimeDelta);
 	virtual HRESULT Render();
+	virtual HRESULT Deferred_Render(ID3D11DeviceContext* pDeferredContext);
 	virtual HRESULT Render_Shadow() { return S_OK; }
 	virtual HRESULT Render_Outline() { return S_OK; }
 
@@ -39,6 +40,9 @@ public:
 
 	void Set_IsActive(_bool isActive) { m_isActive = isActive; }
 	_bool Get_IsActive() { return m_isActive; }
+
+	void Set_IsDeferred(_bool isDeferred) { m_isDeferredContext = isDeferred; }
+	_bool Get_IsDeferred() { return m_isDeferredContext; }
 
 	// Team 관련
 	_uint				Get_Team() { return m_iTeam; }
@@ -76,6 +80,7 @@ protected:
 
 	_bool						m_isDead = { false };
 	_bool						m_isActive = { true };
+	_bool						m_isDeferredContext = { false };
 
 	// 추후에 파생 클래스 나눠지게 되면 옮기거나 다른 방법으로 바꿔보겠습니다.
 	_uint						m_iTeam = {};
