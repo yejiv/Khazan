@@ -37,6 +37,7 @@ public:
 private:
 	virtual HRESULT Ready_Components(void* pArg) override;
 	HRESULT Ready_Collision(void* pArg);
+	HRESULT Ready_TriggerType(void* pArg);
 
 private:
 	virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint	iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
@@ -47,6 +48,9 @@ private:
 	class CSequence_HeinMach_Field* m_pHeinMach_Field = { nullptr };
 	class CSequence_HeinMach_Yetuga* m_pHeinMach_Yetuga = { nullptr };
 	class CClientInstance* m_pClientInstance = { nullptr };
+
+private:
+	GUIDE_TYPE m_eGuideType = { GUIDE_TYPE::END };
 
 public:
 	static CHeinMach_Trigger* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

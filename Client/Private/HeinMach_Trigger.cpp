@@ -6,6 +6,7 @@
 #include "Camera_Compre.h"
 #include "Transform.h"
 #include "Creature.h"
+#include "UI_Tutorial.h"
 
 CHeinMach_Trigger::CHeinMach_Trigger(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CTrigger{ pDevice, pContext }
@@ -32,22 +33,7 @@ HRESULT CHeinMach_Trigger::Initialize_Clone(void* pArg)
 {
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 
-    if (m_strTriggerKey == "CutScene")
-    {
-        m_pHeinMach_Field = CSequence_HeinMach_Field::Create(
-            dynamic_cast<CCamera_Compre*>(m_pClientInstance->Find_Camera(
-                ENUM_CLASS(LEVEL::HEINMACH), 
-                CAMERATYPE::PLAYER))
-        );
-    }
-    else if (m_strTriggerKey == "Yetuga")
-    {
-        m_pHeinMach_Yetuga = CSequence_HeinMach_Yetuga::Create(
-            dynamic_cast<CCamera_Compre*>(m_pClientInstance->Find_Camera(ENUM_CLASS(LEVEL::HEINMACH), CAMERATYPE::PLAYER)),
-            dynamic_cast<CCreature*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player")))
-        );
-
-    }
+    CHECK_FAILED(Ready_TriggerType(pArg), E_FAIL);
 
     return S_OK;
 }
@@ -93,6 +79,45 @@ HRESULT CHeinMach_Trigger::Ready_Collision(void* pArg)
     return S_OK;
 }
 
+HRESULT CHeinMach_Trigger::Ready_TriggerType(void* pArg)
+{
+    if (m_strTriggerKey == "CutScene")
+    {
+        m_pHeinMach_Field = CSequence_HeinMach_Field::Create(
+            dynamic_cast<CCamera_Compre*>(m_pClientInstance->Find_Camera(
+                ENUM_CLASS(LEVEL::HEINMACH),
+                CAMERATYPE::PLAYER))
+        );
+    }
+    else if (m_strTriggerKey == "Yetuga")
+    {
+        m_pHeinMach_Yetuga = CSequence_HeinMach_Yetuga::Create(
+            dynamic_cast<CCamera_Compre*>(m_pClientInstance->Find_Camera(ENUM_CLASS(LEVEL::HEINMACH), CAMERATYPE::PLAYER)),
+            dynamic_cast<CCreature*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player")))
+        );
+
+    }
+    else if (m_strTriggerKey == "Guide_LockOn")
+    {
+        m_eGuideType = GUIDE_TYPE::LOCKON;
+    }
+    else if (m_strTriggerKey == "Guide_Guard")
+    {
+        m_eGuideType = GUIDE_TYPE::GUARD;
+    }
+    // else if (m_strTriggerKey == "Guide_LockOn")
+    // {
+    //     m_eGuideType = GUIDE_TYPE::LOCKON;
+    // }
+    // else if (m_strTriggerKey == "Guide_LockOn")
+    // {
+    //     m_eGuideType = GUIDE_TYPE::LOCKON;
+    // }
+
+
+    return S_OK;
+}
+
 void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::PLAYER))
@@ -114,6 +139,26 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             tPlayDesc.pAsset = L"Yetuga_Cut";
             tPlayDesc.fStartTime = 0.f;
             m_pGameInstance->SEQ_AdoptAndPlay(m_pHeinMach_Yetuga, tPlayDesc);
+            m_isDead = true;
+        }
+        else if (GUIDE_TYPE::END != m_eGuideType)
+        {
+            // BURTALATTACK ¤¤¤¤
+            // Guide_LockOn
+            // Guide_Guard
+            //enum class GUIDE_TYPE { LOCKON, GUARD, UNDERWORLD, DODGE, BURTALATTACK, FALLATTACK, IMPULSE, END };
+
+            CUI_Tutorial* pUI_Tutorial = static_cast<CUI_Tutorial*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Tutorial")));
+            CHECK_NULLPTR_MSG(pUI_Tutorial, TEXT("pUI_Tutorial == nullptr"), );
+
+            switch (m_eGuideType)
+            {
+            case GUIDE_TYPE::LOCKON:
+            case GUIDE_TYPE::GUARD:
+                pUI_Tutorial->On_Panel(m_eGuideType);
+                break;
+            }
+
             m_isDead = true;
         }
     }
