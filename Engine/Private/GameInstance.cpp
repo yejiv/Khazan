@@ -155,6 +155,9 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pEffect_Manager)
 		return E_FAIL;
 
+
+	m_iStaticLevel = EngineDesc.iStaticLevel;
+
 #ifdef _DEBUG
 	m_pImgui_Manager = CImgui_Manager::Create(*ppDevice, *ppContext, EngineDesc.Menu_Imgui, EngineDesc.hWnd, EngineDesc.iWinSizeX, EngineDesc.iWinSizeY);
 	if (nullptr == m_pImgui_Manager)
@@ -232,6 +235,7 @@ HRESULT CGameInstance::Clear_Resources(_uint iClearLevelID)
 	m_pPrototype_Manager->Clear(iClearLevelID);
 
 	m_pObject_Manager->Clear(iClearLevelID);
+	m_pObject_Manager->Static_Clear();
 
 	m_pLight_Manager->Clear(iClearLevelID);
 
@@ -288,6 +292,11 @@ _float CGameInstance::Rand_Normal()
 _float CGameInstance::Rand(_float fMin, _float fMax)
 {
 	return fMin + Rand_Normal() * (fMax - fMin);
+}
+
+_uint CGameInstance::Get_StaticLevel()
+{
+	return m_iStaticLevel;
 }
 
 void CGameInstance::SetupDebugMessageFilter(ID3D11Device* pDevice)

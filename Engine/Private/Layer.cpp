@@ -72,6 +72,14 @@ void CLayer::Late_Update(_float fTimeDelta)
 	}
 }
 
+void CLayer::DeadObject_Clear()
+{
+	for (auto& pGameObject : m_DeadGameObjects)
+		Safe_Release(pGameObject);
+
+	m_DeadGameObjects.clear();
+}
+
 CLayer* CLayer::Create()
 {
 	return new CLayer();
