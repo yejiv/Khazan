@@ -35,6 +35,7 @@ private:
 	HRESULT									Load_Other_EffectDB(const _tchar* pFilePath);
 	HRESULT									Load_StateDB(const _tchar* pFilePath);
 	HRESULT									Load_Announce_TalkDB(const _tchar* pFilePath);
+	HRESULT									Load_Skill_DB(const _tchar* pFilePath);
 
 
 public:

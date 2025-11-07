@@ -381,7 +381,7 @@ HRESULT CUI_Manager::Ready_Prototype()
 
 	/* Prototype_Component_Texture_UI_Atlas*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_UI_Atlas"),
-		CTexture_Atlas::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Atlas/Atlas_%d.json"), 5))))
+		CTexture_Atlas::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Atlas/Atlas_%d.json"), 6))))
 		return E_FAIL;
 
 	//GameObject_AtlasRenderGroup

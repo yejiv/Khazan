@@ -43,8 +43,8 @@ HRESULT CMainApp::Initialize()
 	if (FAILED(Ready_Prototype_ForStatic()))
 		return E_FAIL;
 
-
 	CHECK_FAILED(Ready_ClientInstance(&m_pDevice, &m_pContext), E_FAIL);
+	CHECK_FAILED(Ready_DB(), E_FAIL);
 
 	if (Ready_Prototype_ForStatic_UI())
 		return E_FAIL;
@@ -56,7 +56,6 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	CHECK_FAILED(Ready_Prototype_ForStatic_Effect(), E_FAIL);
-	CHECK_FAILED(Ready_DB(), E_FAIL);
 	CHECK_FAILED(Ready_Font(), E_FAIL);
 	CHECK_FAILED(Ready_DebugTool(), E_FAIL);
 	return S_OK;
@@ -393,6 +392,9 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Item"),
 		CItem_Slot::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
+	
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Skill"),
+		CSkill_Slot::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
 
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_MainMenu"),
 		CUI_MainMenu::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
@@ -526,6 +528,19 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
 		TEXT("../Bin/Resources/UI/UIData/Loading.json"))))
 		return E_FAIL;
+
+
+	CSkill_Slot::UISKILLSLOT_DESC SkillDesc = {};
+	SkillDesc.vLocalSize = { 64.f, 64.f };
+	SkillDesc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
+	SkillDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+	SkillDesc.szName = "LogoBG";
+	SkillDesc.fDepth = 3;
+	SkillDesc.iSkillIndex = 101;
+	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
+		ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Skill"), TIME_CHANNEL::WORLD, &SkillDesc)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -589,6 +604,7 @@ HRESULT CMainApp::Ready_DB()
 	CHECK_FAILED(m_pClientInstance->Load_Data(DATATYPE::OTHEREFFECT, TEXT("../Bin/Data/DB/OtherItem_DB.csv")), E_FAIL);
 	CHECK_FAILED(m_pClientInstance->Load_Data(DATATYPE::STATE, TEXT("../Bin/Data/DB/State_DB.csv")), E_FAIL);
 	CHECK_FAILED(m_pClientInstance->Load_Data(DATATYPE::ANNOUNCE_TALK, TEXT("../Bin/Data/DB/Announce_Talk_DB.csv")), E_FAIL);
+	CHECK_FAILED(m_pClientInstance->Load_Data(DATATYPE::SKill, TEXT("../Bin/Data/DB/Skill_DB.csv")), E_FAIL);
 
 	return S_OK;
 }

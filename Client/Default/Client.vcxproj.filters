@@ -577,6 +577,24 @@
     <Filter Include="02.GameObject\Creature\Monster\Yetuga\Head">
       <UniqueIdentifier>{6139718a-8b42-4ba4-afef-9aeecb79be21}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Skill_Tree">
+      <UniqueIdentifier>{4f900bb9-b16f-450d-b2be-d8cd873bd89b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Skill_Tree\Tap">
+      <UniqueIdentifier>{7d2555f7-253b-45d9-8ce0-0af52c6eee77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Skill_Tree\Table">
+      <UniqueIdentifier>{78284e8b-a8e0-4d29-8c7a-b256a7abf27a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Skill_Tree\Table\Panel">
+      <UniqueIdentifier>{d48d9e7a-8145-407e-96f0-8580e09dfddb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Skill_Tree\SkillPanel">
+      <UniqueIdentifier>{e491b225-6a76-4ad3-bcf1-f9b105bf6a11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Skill_Tree\SkillPanel\Gauge">
+      <UniqueIdentifier>{f1c35b12-9d73-42ef-94d0-e5df51b6fd26}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1107,6 +1125,24 @@
     <ClInclude Include="..\Public\Head_Yetuga.h">
       <Filter>02.GameObject\Creature\Monster\Yetuga\Head</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\UI_SkillTree.h">
+      <Filter>02.GameObject\UI\Skill_Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_Tap.h">
+      <Filter>02.GameObject\UI\Skill_Tree\Tap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_Table.h">
+      <Filter>02.GameObject\UI\Skill_Tree\Table</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_Panel.h">
+      <Filter>02.GameObject\UI\Skill_Tree\SkillPanel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_Gauge.h">
+      <Filter>02.GameObject\UI\Skill_Tree\SkillPanel\Gauge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_Table_Panel.h">
+      <Filter>02.GameObject\UI\Skill_Tree\Table\Panel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1622,6 +1658,24 @@
     </ClCompile>
     <ClCompile Include="..\Private\Head_Yetuga.cpp">
       <Filter>02.GameObject\Creature\Monster\Yetuga\Head</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_SkillTree.cpp">
+      <Filter>02.GameObject\UI\Skill_Tree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_Tap.cpp">
+      <Filter>02.GameObject\UI\Skill_Tree\Tap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_Table.cpp">
+      <Filter>02.GameObject\UI\Skill_Tree\Table</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_Panel.cpp">
+      <Filter>02.GameObject\UI\Skill_Tree\SkillPanel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_Gauge.cpp">
+      <Filter>02.GameObject\UI\Skill_Tree\SkillPanel\Gauge</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_Table_Panel.cpp">
+      <Filter>02.GameObject\UI\Skill_Tree\Table\Panel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -18,6 +18,8 @@ HRESULT CDB_Manager::Load_Data(DATATYPE eType, const _tchar* pFilePath)
 		Load_StateDB(pFilePath);
 	else if (eType == DATATYPE::ANNOUNCE_TALK)
 		Load_Announce_TalkDB(pFilePath);
+	else if (eType == DATATYPE::SKill)
+		Load_Skill_DB(pFilePath);
 
 	return S_OK;
 }
@@ -275,6 +277,48 @@ HRESULT CDB_Manager::Load_Announce_TalkDB(const _tchar* pFilePath)
 	}
 
 	return S_OK;
+}
+
+HRESULT CDB_Manager::Load_Skill_DB(const _tchar* pFilePath)
+{
+	_wstring wText = Load_UTF8ToWString(pFilePath);
+
+	if (wText.empty())
+	{
+		MSG_BOX(TEXT("CSV 파일 로드 실패"));
+		return E_FAIL;
+	}
+
+	wstringstream fileStream(wText);
+	_wstring line = {};
+	_bool bHeader = true;
+
+	while (getline(fileStream, line))
+	{
+		if (bHeader)
+		{
+			bHeader = false;
+			continue;
+		}
+
+		wstringstream ss(line);
+		SKILL_DB data{};
+
+		_int ID = Read_UInt(ss);
+		data.iType = Read_UInt(ss);
+		data.iSubID = Read_UInt(ss);
+		data.iSkillType = Read_UInt(ss);
+		data.wstrName = Read_WString(ss);
+		data.iLevel = Read_UInt(ss);
+		data.iMaxPoint = Read_UInt(ss);
+		data.iIndex = Read_UInt(ss);
+		data.iTexPass = Read_UInt(ss);
+		data.wstrIcon = Read_WString(ss);
+		data.wstrText = Read_WString(ss);
+		m_Skill_Data.emplace(ID, data);
+	}
+
+return S_OK;
 }
 
 CDB_Manager* CDB_Manager::Create()

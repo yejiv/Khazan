@@ -215,7 +215,12 @@
     <ClInclude Include="..\public\Equip_Slot.h" />
     <ClInclude Include="..\Public\Event_Defines.h" />
     <ClInclude Include="..\Public\FSM_Yetuga.h" />
+    <ClInclude Include="..\public\Skill_Gauge.h" />
+    <ClInclude Include="..\public\Skill_Panel.h" />
     <ClInclude Include="..\public\Skill_Slot.h" />
+    <ClInclude Include="..\public\Skill_Table.h" />
+    <ClInclude Include="..\public\Skill_Table_Panel.h" />
+    <ClInclude Include="..\public\Skill_Tap.h" />
     <ClInclude Include="..\public\UI_Guide_Icon.h" />
     <ClInclude Include="..\Public\HeaderGroup_UI.h" />
     <ClInclude Include="..\Public\HeinMach_Trigger.h" />
@@ -314,6 +319,7 @@
     <ClInclude Include="..\public\UI_QuickSlot_Item_Panel.h" />
     <ClInclude Include="..\public\UI_QuickSlot_Skill.h" />
     <ClInclude Include="..\public\UI_QuickSlot_Skill_Panel.h" />
+    <ClInclude Include="..\public\UI_SkillTree.h" />
     <ClInclude Include="..\public\UI_State.h" />
     <ClInclude Include="..\public\UI_State_Button.h" />
     <ClInclude Include="..\public\UI_State_List.h" />
@@ -392,7 +398,12 @@
     <ClCompile Include="..\private\Equip_Panel.cpp" />
     <ClCompile Include="..\private\Equip_Slot.cpp" />
     <ClCompile Include="..\Private\FSM_Yetuga.cpp" />
+    <ClCompile Include="..\private\Skill_Gauge.cpp" />
+    <ClCompile Include="..\private\Skill_Panel.cpp" />
     <ClCompile Include="..\private\Skill_Slot.cpp" />
+    <ClCompile Include="..\private\Skill_Table.cpp" />
+    <ClCompile Include="..\private\Skill_Table_Panel.cpp" />
+    <ClCompile Include="..\private\Skill_Tap.cpp" />
     <ClCompile Include="..\private\UI_Guide_Icon.cpp" />
     <ClCompile Include="..\Private\HeinMach_Trigger.cpp" />
     <ClCompile Include="..\Private\Head_Yetuga.cpp" />
@@ -489,6 +500,7 @@
     <ClCompile Include="..\private\UI_QuickSlot_Item_Panel.cpp" />
     <ClCompile Include="..\private\UI_QuickSlot_Skill.cpp" />
     <ClCompile Include="..\private\UI_QuickSlot_Skill_Panel.cpp" />
+    <ClCompile Include="..\private\UI_SkillTree.cpp" />
     <ClCompile Include="..\private\UI_State.cpp" />
     <ClCompile Include="..\private\UI_State_Button.cpp" />
     <ClCompile Include="..\private\UI_State_List.cpp" />

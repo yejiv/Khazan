@@ -133,6 +133,7 @@ HRESULT CLevel_Title::Ready_Layer_UI()
 		TEXT("../Bin/Resources/UI/UIData/Tutorial.json"))))
 		return E_FAIL;
 
+
 	return S_OK;
 }
 

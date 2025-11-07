@@ -28,6 +28,7 @@
 
 #include "Cursor.h"
 #include "Item_Slot.h"
+#include "Skill_Slot.h"
 
 //HUD  ฐüทร
 #include "BossHp.h"
