@@ -13,6 +13,7 @@ HRESULT CEffect_Manager::Initialize(_uint iNumLevels)
 {
 	m_pEffectLayers = new unordered_map<_wstring, vector<class CPrefab*>>[iNumLevels];
 	m_pEffectPools = new unordered_map<_wstring, deque<class CPrefab*>>[iNumLevels];
+	m_pRunningEffects = new unordered_map<_wstring, list<class CPrefab*>>[iNumLevels];
 	m_iNumLevels = iNumLevels;
 
 	return S_OK;
@@ -23,9 +24,11 @@ HRESULT CEffect_Manager::Initialize(_uint iNumLevels)
 void CEffect_Manager::Add_Effect_ToPool(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint iPoolSize)
 {
 	CPrefab* effect;
+	m_iCurLevel = iLayerLevelIndex;
+
 	auto Layer = Find_Effect_Layer(iLayerLevelIndex, strPrototypeTag);
 	m_pEffectPools[iLayerLevelIndex][strPrototypeTag];
-	m_pRunningEffects[strPrototypeTag];
+	m_pRunningEffects[iLayerLevelIndex][strPrototypeTag];
 	auto Pool = Find_Effect_Pool(iLayerLevelIndex, strPrototypeTag);
 
 	if (Layer == nullptr)
@@ -88,7 +91,7 @@ void CEffect_Manager::Priority_Update(_float fEffectTimeDelta)
 {
 	for (size_t i = 0; i < m_iNumLevels; i++)
 	{
-		for (auto& Pair : m_pRunningEffects)
+		for (auto& Pair : m_pRunningEffects[m_iCurLevel])
 		{
 			for (auto& effect : Pair.second)
 			{
@@ -103,7 +106,7 @@ void CEffect_Manager::Update(_float fEffectTimeDelta)
 {
 	for (size_t i = 0; i < m_iNumLevels; i++)	//레벨
 	{
-		for (auto& Pair : m_pRunningEffects)	//이펙트별
+		for (auto& Pair : m_pRunningEffects[i])	//이펙트별
 		{
 			for (auto iter = Pair.second.begin(); iter != Pair.second.end();)
 			{
@@ -133,7 +136,7 @@ void CEffect_Manager::Late_Update(_float fEffectTimeDelta)
 {
 	for (size_t i = 0; i < m_iNumLevels; i++)
 	{
-		for (auto& Pair : m_pRunningEffects)
+		for (auto& Pair : m_pRunningEffects[m_iCurLevel])
 		{
 			for (auto& effect : Pair.second)
 			{
@@ -165,13 +168,13 @@ void CEffect_Manager::Clear(_uint iLevelIndex)
 	}
 	m_pEffectPools[iLevelIndex].clear();
 
-	for (auto Pair : m_pRunningEffects)
+	for (auto Pair : m_pRunningEffects[iLevelIndex])
 	{
 		for (auto& effect : Pair.second)
 			Safe_Release(effect);
 		Pair.second.clear();
 	}
-	m_pRunningEffects.clear();
+	m_pRunningEffects[iLevelIndex].clear();
 }
 
 deque<class CPrefab*>* CEffect_Manager::Find_Effect_Pool(_uint iLayerLevelIndex, const _wstring& strLayerTag)
@@ -203,9 +206,9 @@ vector<class CPrefab*>* CEffect_Manager::Find_Effect_Layer(_uint iLayerLevelInde
 
 list<class CPrefab*>* CEffect_Manager::Find_RunningEffect_Layer(const _wstring& strLayerTag)
 {
-	auto	iter = m_pRunningEffects.find(strLayerTag);
+	auto	iter = m_pRunningEffects[m_iCurLevel].find(strLayerTag);
 
-	if (iter == m_pRunningEffects.end())
+	if (iter == m_pRunningEffects[m_iCurLevel].end())
 	{
 		MSG_BOX(TEXT("Running하는 Effect Layer 없다는데 그럴 리가 없다;"));
 		return nullptr;
@@ -252,15 +255,16 @@ void CEffect_Manager::Free()
 		}
 		m_pEffectPools[i].clear();
 
-		for (auto Pair : m_pRunningEffects)
+		for (auto Pair : m_pRunningEffects[i])
 		{
 			for (auto& effect : Pair.second)
 				Safe_Release(effect);
 			Pair.second.clear();
 		}
-		m_pRunningEffects.clear();
+		m_pRunningEffects[i].clear();
 	}
 
 	Safe_Delete_Array(m_pEffectLayers);
 	Safe_Delete_Array(m_pEffectPools);
+	Safe_Delete_Array(m_pRunningEffects);
 }

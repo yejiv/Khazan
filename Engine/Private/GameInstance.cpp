@@ -46,6 +46,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pGraphic_Device)
 		return E_FAIL;
 
+	m_pThreadPool = CThreadPool::Create();
+	if (nullptr == m_pThreadPool)
+		return E_FAIL;
+
 	m_pInput_Manager = CInput_Manager::Create(EngineDesc.hInst, EngineDesc.hWnd);
 	if (nullptr == m_pInput_Manager)
 		return E_FAIL;
@@ -88,10 +92,6 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 
 	m_pJolt_Manager = CJolt_Manager::Create(*ppDevice, *ppContext, EngineDesc.iNumJoltObjectLayer);
 	if (nullptr == m_pJolt_Manager)
-		return E_FAIL;
-
-	m_pThreadPool = CThreadPool::Create();
-	if (nullptr == m_pThreadPool)
 		return E_FAIL;
 
 	m_pPool_Manager = CPool_Manager::Create(EngineDesc.iNumLevels);
@@ -147,13 +147,16 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pSequence_Manager)
 		return E_FAIL;
 
-	m_pDecal_Manager = CDecal_Manager::Create(*ppDevice, *ppContext, EngineDesc.iNumDecals);
+	m_pDecal_Manager = CDecal_Manager::Create(*ppDevice, *ppContext);
 	if (nullptr == m_pDecal_Manager)
 		return E_FAIL;
 
 	m_pEffect_Manager = CEffect_Manager::Create(EngineDesc.iNumLevels);
 	if (nullptr == m_pEffect_Manager)
 		return E_FAIL;
+
+
+	m_iStaticLevel = EngineDesc.iStaticLevel;
 
 #ifdef _DEBUG
 	m_pImgui_Manager = CImgui_Manager::Create(*ppDevice, *ppContext, EngineDesc.Menu_Imgui, EngineDesc.hWnd, EngineDesc.iWinSizeX, EngineDesc.iWinSizeY);
@@ -232,6 +235,7 @@ HRESULT CGameInstance::Clear_Resources(_uint iClearLevelID)
 	m_pPrototype_Manager->Clear(iClearLevelID);
 
 	m_pObject_Manager->Clear(iClearLevelID);
+	m_pObject_Manager->Static_Clear();
 
 	m_pLight_Manager->Clear(iClearLevelID);
 
@@ -290,6 +294,11 @@ _float CGameInstance::Rand(_float fMin, _float fMax)
 	return fMin + Rand_Normal() * (fMax - fMin);
 }
 
+_uint CGameInstance::Get_StaticLevel()
+{
+	return m_iStaticLevel;
+}
+
 void CGameInstance::SetupDebugMessageFilter(ID3D11Device* pDevice)
 {
 	ID3D11InfoQueue* pInfoQueue = nullptr;
@@ -318,9 +327,29 @@ void CGameInstance::Present_SwapChain(_uint iSyncInterval, _uint iFlag)
 	m_pGraphic_Device->Present_SwapChain(iSyncInterval, iFlag);
 }
 
-ID3D11DeviceContext* CGameInstance::Get_DeferredContext(DEFERRED_CONTEXT eType)
+bool CGameInstance::CreateDeferredContexts(uint32_t count)
 {
-	return m_pGraphic_Device->Get_DeferredContext(eType);
+	return m_pGraphic_Device->CreateDeferredContexts(count);
+}
+
+ID3D11DeviceContext* CGameInstance::GetDeferredContext(uint32_t idx) const
+{
+	return m_pGraphic_Device->GetDeferredContext(idx);
+}
+
+_uint CGameInstance::GetDeferredContext_Count()
+{
+	return m_pGraphic_Device->GetDeferredContext_Count();
+}
+
+ID3D11Device* CGameInstance::GetDevice() const
+{
+	return m_pGraphic_Device->GetDevice();
+}
+
+ID3D11DeviceContext* CGameInstance::GetImmediate() const
+{
+	return m_pGraphic_Device->GetImmediate();
 }
 
 #pragma endregion
@@ -499,6 +528,16 @@ void CGameInstance::Start_HitStop(TIME_CHANNEL tCH, _float fTargetScale, _float 
 	m_pTimer_Manager->Start_HitStop(tCH, fTargetScale, fHold, fRecover);
 }
 
+void CGameInstance::Fix_HitStop(TIME_CHANNEL eCH)
+{
+	m_pTimer_Manager->Fix_HitStop(eCH);
+}
+
+void CGameInstance::UnFix_HitStop(TIME_CHANNEL eCH)
+{
+	m_pTimer_Manager->UnFix_HitStop(eCH);
+}
+
 #pragma endregion
 
 #pragma region TRANSFORM_MANAGER
@@ -615,9 +654,9 @@ HRESULT CGameInstance::Add_MRT(const _wstring& strMRTTag, const _wstring& strTar
 	return m_pTarget_Manager->Add_MRT(strMRTTag, strTargetTag);
 }
 
-HRESULT CGameInstance::Begin_MRT(const _wstring& strMRTTag, ID3D11DepthStencilView* pDSV, _bool isClear)
+HRESULT CGameInstance::Begin_MRT(const _wstring& strMRTTag, _bool isClear, ID3D11DepthStencilView* pDSV)
 {
-	return m_pTarget_Manager->Begin_MRT(strMRTTag, pDSV, isClear);
+	return m_pTarget_Manager->Begin_MRT(strMRTTag, isClear, pDSV);
 }
 
 HRESULT CGameInstance::End_MRT()
@@ -643,6 +682,16 @@ void CGameInstance::Backup_RT()
 void CGameInstance::Restore_RT()
 {
 	m_pTarget_Manager->Restore_RT();
+}
+
+HRESULT CGameInstance::Apply_MRT_OnContext(const wstring& mrtTag, ID3D11DeviceContext* pCtx, ID3D11DepthStencilView* pDSV, bool isClear)
+{
+	return m_pTarget_Manager->Apply_MRT_OnContext(mrtTag, pCtx, pDSV, isClear);
+}
+
+ID3D11DepthStencilView* CGameInstance::Get_CurrentDSV_AddRef()
+{
+	return m_pTarget_Manager->Get_CurrentDSV_AddRef();
 }
 
 #ifdef _DEBUG
@@ -915,6 +964,10 @@ void CGameInstance::Add_FireTask(std::function<HRESULT()> task)
 {
 	m_pThreadPool->Add_FireTask(task);
 }
+_uint CGameInstance::Get_ThreadCount()
+{
+	return m_pThreadPool->Get_ThreadCount();
+}
 #pragma endregion
 
 #pragma region INPUT_MANAGER
@@ -1163,39 +1216,14 @@ HRESULT CGameInstance::SEQ_Jump(const SEQ_REQ_JUMP_DESC& tDesc)
 
 #pragma region DECAL_MANAGER
 
-HRESULT CGameInstance::Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, const _float3& vPosition, const _float3& vScale)
+HRESULT CGameInstance::Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, const DECAL_DESC& Desc)
 {
-	return m_pDecal_Manager->Spawn_Decal(strPoolTag, iLayerLevelIndex, strLayerTag, vPosition, vScale);
+	return m_pDecal_Manager->Spawn_Decal(strPoolTag, iLayerLevelIndex, strLayerTag, Desc);
 }
 
 HRESULT CGameInstance::Render_Decals()
 {
 	return m_pDecal_Manager->Render();
-}
-
-_float3 CGameInstance::Get_DecalColor()
-{
-	return m_pDecal_Manager->Get_DecalColor();
-}
-
-void CGameInstance::Set_DecalColor(_float3 vColor)
-{
-	m_pDecal_Manager->Set_DecalColor(vColor);
-}
-
-_uint CGameInstance::Get_NumDecalTextures()
-{
-	return m_pDecal_Manager->Get_NumDecalTextures();
-}
-
-ID3D11ShaderResourceView* CGameInstance::Get_DecalTexture(_uint iTextureIndex)
-{
-	return m_pDecal_Manager->Get_DecalTexture(iTextureIndex);
-}
-
-void CGameInstance::Set_DecalTextureIndex(_uint iTextureIndex)
-{
-	m_pDecal_Manager->Set_DecalTextureIndex(iTextureIndex);
 }
 
 #pragma endregion

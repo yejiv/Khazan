@@ -100,7 +100,7 @@ void CTombStone::Update(_float fTimeDelta)
 
 void CTombStone::Late_Update(_float fTimeDelta)
 {
-    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this), );
+    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this), );
 }
 
 HRESULT CTombStone::Render()
@@ -113,9 +113,33 @@ HRESULT CTombStone::Render()
     {
         Bind_Materials(i);
 
+        // 0 돌에 무슨 파란 무늬 블링블링 ( 얘는 Emmi 에는 Emmi 넣는게 맞고 )
+        // 1 0번이랑은 다른 블링블링
+        // 2 뭐임 얘는
+        if (3 == i)
+        {
+            _bool isEmissive = { false };
+            _bool isSpecular = { false };
+
+            _bool isSpecToEmmi = true;
+
+            if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_EMISSIVE, 0)))
+                isEmissive = true;
+            if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR, 0)))
+                isSpecular = true;
+            //if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_EMISSIVE, 0)))
+            //    isEmissive = true;
+            //if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_SPECULAR, 0)))
+            //    isSpecular = true;
+
+            m_pShaderCom->Bind_RawValue("g_isEmissive", &isEmissive, sizeof(_bool));
+            m_pShaderCom->Bind_RawValue("g_isSpecular", &isSpecular, sizeof(_bool));
+            m_pShaderCom->Bind_RawValue("g_isTest", &isSpecToEmmi, sizeof(_bool));
+        }
+
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(0), E_FAIL);
+        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }

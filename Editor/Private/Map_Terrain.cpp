@@ -60,7 +60,7 @@ void CMap_Terrain::Update(_float fTimeDelta)
 void CMap_Terrain::Late_Update(_float fTimeDelta)
 {
     if (true == m_isRender)
-        CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this), );
+        CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this), );
 }
 
 HRESULT CMap_Terrain::Render()

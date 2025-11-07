@@ -20,6 +20,7 @@ public:
 	virtual HRESULT Initialize_Prototype(const _char* pModelFilePath, const CModelMesh_Instance::INSTANCE_DESC* pDesc);
 	virtual HRESULT Initialize_Clone(void* pArg);
 	virtual HRESULT Render(_uint iMeshIndex);
+	virtual HRESULT Deferred_Render(_uint iMeshIndex, ID3D11DeviceContext* pDeferredContext);
 
 public:
 	_uint Get_NumMeshes() const { return m_iNumMeshes; }
@@ -31,6 +32,7 @@ public:
 
 public:
 	HRESULT Bind_Materials(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, aiTextureType eTextureType, _uint iIndex);
+	HRESULT Bind_Materials(class CDeferredShader* pShader, const _char* pConstantName, _uint iMeshIndex, aiTextureType eTextureType, _uint iIndex);
 	HRESULT Bind_BoneMatrices(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex);
 	_bool Play_Animation(_float fTimeDelta);
 	void Set_Animation(_uint iIndex, _bool isLoop = false);

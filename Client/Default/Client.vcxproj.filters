@@ -217,9 +217,6 @@
     <Filter Include="02.GameObject\UI\Inven">
       <UniqueIdentifier>{bf77453f-04e7-4354-93fa-9c62f443d060}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\UI\Item">
-      <UniqueIdentifier>{5a375172-cf57-4494-aa11-36f0c266d20c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\UI\Cursor">
       <UniqueIdentifier>{8fcc381a-8b4e-49ee-b6e8-50919dc023a9}</UniqueIdentifier>
     </Filter>
@@ -550,6 +547,30 @@
     <Filter Include="02.GameObject\UI\Announce\Talk">
       <UniqueIdentifier>{3efae2c3-a7c5-4b0b-987d-9e6961e76f4a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Tutorial">
+      <UniqueIdentifier>{dfb2ae56-5728-45db-bb5f-b653d68102b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\ETC\Tex">
+      <UniqueIdentifier>{c2fd7a63-012f-4159-9077-9a7eddafc562}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Tutorial\Panel">
+      <UniqueIdentifier>{3f597541-c0fc-4b1c-829e-a5dfd555d200}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\ETC\Atlas">
+      <UniqueIdentifier>{e9ed288b-25cf-4684-942b-1ef7fa6c992c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Tutorial\Tutorial_Tex">
+      <UniqueIdentifier>{a6a00170-ad51-4fd0-a0ad-c6ced3f2edf5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\01.Trigger\00.HeinMach\HeinMach_Trigger">
+      <UniqueIdentifier>{97d366cf-cb22-4463-91cb-dcea2dc51180}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\HeinMach\Yetuga">
+      <UniqueIdentifier>{15be54d5-6e2d-41e7-badb-0c095f0d0039}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Slot">
+      <UniqueIdentifier>{5a375172-cf57-4494-aa11-36f0c266d20c}</UniqueIdentifier>
+    </Filter>
     <Filter Include="92.AI\State\Yetuga\17.LOCKON">
       <UniqueIdentifier>{e1c803a4-854a-4dac-98e8-e7652245f768}</UniqueIdentifier>
     </Filter>
@@ -669,9 +690,6 @@
     <ClInclude Include="..\public\UI_Slot.h">
       <Filter>95.SuperClass\UI\UIContainer\UI_Slot</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\UI_Atlas_Icon.h">
-      <Filter>02.GameObject\UI\ETC</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\UI_Texture.h">
       <Filter>95.SuperClass\UI\UIPart\UI_Frame</Filter>
     </ClInclude>
@@ -750,9 +768,6 @@
     <ClInclude Include="..\public\UI_QuickSlot_Item.h">
       <Filter>02.GameObject\UI\HUD\State\QuickSlot_Item\Slot</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\UI_BackGround.h">
-      <Filter>02.GameObject\UI\ETC</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\UI_Inven.h">
       <Filter>02.GameObject\UI\Inven</Filter>
     </ClInclude>
@@ -763,7 +778,7 @@
       <Filter>99.Defines</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Item_Slot.h">
-      <Filter>02.GameObject\UI\Item</Filter>
+      <Filter>02.GameObject\UI\Slot</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Cursor.h">
       <Filter>02.GameObject\UI\Cursor</Filter>
@@ -873,9 +888,6 @@
     <ClInclude Include="..\Public\Level_Viper.h">
       <Filter>01.Levels\Viper</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\UI_Default_Tex.h">
-      <Filter>02.GameObject\UI\ETC</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\UI_State_Panel.h">
       <Filter>02.GameObject\UI\State\ETC</Filter>
     </ClInclude>
@@ -905,9 +917,6 @@
     </ClInclude>
     <ClInclude Include="..\public\Khazan_Spear_ASManager.h">
       <Filter>02.GameObject\Creature\Khazan\Spear\Anim State Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\UI_Announce_MapName.h">
-      <Filter>02.GameObject\UI\Announce</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_Hit_Yetuga.h">
       <Filter>92.AI\State\Yetuga\13. Hit</Filter>
@@ -1056,6 +1065,42 @@
     <ClInclude Include="..\public\UI_Announce_Talk.h">
       <Filter>02.GameObject\UI\Announce\Talk</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\UI_Announce_MapName.h">
+      <Filter>02.GameObject\UI\Announce\MapName</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Tutorial.h">
+      <Filter>02.GameObject\UI\Tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_BackGround.h">
+      <Filter>02.GameObject\UI\ETC\Tex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Default_Tex.h">
+      <Filter>02.GameObject\UI\ETC\Tex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Tutorial_Panel.h">
+      <Filter>02.GameObject\UI\Tutorial\Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Guide_Icon.h">
+      <Filter>02.GameObject\UI\ETC\Atlas</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Default_Button.h">
+      <Filter>02.GameObject\UI\ETC\Atlas</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Atlas_Icon.h">
+      <Filter>02.GameObject\UI\ETC\Atlas</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Tutorial_Tex.h">
+      <Filter>02.GameObject\UI\Tutorial\Tutorial_Tex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\HeinMach_Trigger.h">
+      <Filter>02.GameObject\MapObject\01.Trigger\00.HeinMach\HeinMach_Trigger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sequence_HeinMach_Yetuga.h">
+      <Filter>04.Sequence\HeinMach\Yetuga</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_Slot.h">
+      <Filter>02.GameObject\UI\Slot</Filter>
+    </ClInclude>
     <ClInclude Include="..\Public\AS_LockOn_Yetuga.h">
       <Filter>92.AI\State\Yetuga\17.LOCKON</Filter>
     </ClInclude>
@@ -1170,9 +1215,6 @@
     <ClCompile Include="..\private\UI_Slot.cpp">
       <Filter>95.SuperClass\UI\UIContainer\UI_Slot</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\UI_Atlas_Icon.cpp">
-      <Filter>02.GameObject\UI\ETC</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\UI_Texture.cpp">
       <Filter>95.SuperClass\UI\UIPart\UI_Frame</Filter>
     </ClCompile>
@@ -1248,9 +1290,6 @@
     <ClCompile Include="..\private\UI_QuickSlot_Item.cpp">
       <Filter>02.GameObject\UI\HUD\State\QuickSlot_Item\Slot</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\UI_BackGround.cpp">
-      <Filter>02.GameObject\UI\ETC</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\UI_Inven.cpp">
       <Filter>02.GameObject\UI\Inven</Filter>
     </ClCompile>
@@ -1258,7 +1297,7 @@
       <Filter>94.ClientInstance\DB</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Item_Slot.cpp">
-      <Filter>02.GameObject\UI\Item</Filter>
+      <Filter>02.GameObject\UI\Slot</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Cursor.cpp">
       <Filter>02.GameObject\UI\Cursor</Filter>
@@ -1368,9 +1407,6 @@
     <ClCompile Include="..\Private\Level_Viper.cpp">
       <Filter>01.Levels\Viper</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\UI_Default_Tex.cpp">
-      <Filter>02.GameObject\UI\ETC</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\UI_State_Panel.cpp">
       <Filter>02.GameObject\UI\State\ETC</Filter>
     </ClCompile>
@@ -1400,9 +1436,6 @@
     </ClCompile>
     <ClCompile Include="..\private\Khazan_Spear_ASManager.cpp">
       <Filter>02.GameObject\Creature\Khazan\Spear\Anim State Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="..\private\UI_Announce_MapName.cpp">
-      <Filter>02.GameObject\UI\Announce</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_Hit_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\13. Hit</Filter>
@@ -1547,6 +1580,42 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_Announce_Talk.cpp">
       <Filter>02.GameObject\UI\Announce\Talk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Announce_MapName.cpp">
+      <Filter>02.GameObject\UI\Announce\MapName</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Tutorial.cpp">
+      <Filter>02.GameObject\UI\Tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_BackGround.cpp">
+      <Filter>02.GameObject\UI\ETC\Tex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Default_Tex.cpp">
+      <Filter>02.GameObject\UI\ETC\Tex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Tutorial_Panel.cpp">
+      <Filter>02.GameObject\UI\Tutorial\Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Guide_Icon.cpp">
+      <Filter>02.GameObject\UI\ETC\Atlas</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Default_Button.cpp">
+      <Filter>02.GameObject\UI\ETC\Atlas</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Atlas_Icon.cpp">
+      <Filter>02.GameObject\UI\ETC\Atlas</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Tutorial_Tex.cpp">
+      <Filter>02.GameObject\UI\Tutorial\Tutorial_Tex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\HeinMach_Trigger.cpp">
+      <Filter>02.GameObject\MapObject\01.Trigger\00.HeinMach\HeinMach_Trigger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_HeinMach_Yetuga.cpp">
+      <Filter>04.Sequence\HeinMach\Yetuga</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_Slot.cpp">
+      <Filter>02.GameObject\UI\Slot</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_LockOn_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\17.LOCKON</Filter>

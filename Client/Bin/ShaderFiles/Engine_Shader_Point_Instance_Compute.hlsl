@@ -39,6 +39,7 @@ cbuffer CB_PARTICLE : register(b0)
     float g_TotalTime;
     
     float g_TurblunceSpeed;
+    float g_TurblunceSampleSize;
 };
 
 StructuredBuffer<PARTICLE_PARAMS> g_InputData : register(t0);

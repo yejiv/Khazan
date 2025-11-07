@@ -6,6 +6,7 @@
 NS_BEGIN(Engine)
 class CTexture;
 class CModel_Instance;
+class CDeferredShader;
 NS_END
 
 NS_BEGIN(Client)
@@ -58,7 +59,9 @@ protected:
 
 protected:
 	virtual HRESULT Bind_ShaderResources_ForSnowMap(_uint iMeshIndex);
+	HRESULT Deferred_Bind_ShaderResources_ForSnowMap(_uint iMeshIndex, CDeferredShader* pDeferredShader);
 	virtual HRESULT Bind_Instance_Materials(CModel_Instance* pModelCom, _uint iMeshIndex);
+	HRESULT Deferred_Bind_Instance_Materials(CModel_Instance* pModelCom, _uint iMeshIndex, CDeferredShader* pDeferredShader);
 
 public:
 	virtual CGameObject* Clone(void* pArg) = 0;

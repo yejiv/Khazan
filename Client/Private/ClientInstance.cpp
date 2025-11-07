@@ -184,6 +184,14 @@ _float4 CClientInstance::Get_ActiveCameraLook()
 {
 	return m_pCamera_Manager->Get_ActiveCameraLook();
 }
+CCamera* CClientInstance::Find_Camera(_uint iLevelIndex, CAMERATYPE eCameraType)
+{
+	return m_pCamera_Manager->Find_Camera(iLevelIndex, eCameraType);
+}
+CCamera* CClientInstance::Find_Camera(_uint iLevelIndex, _wstring strCameraTag)
+{
+	return m_pCamera_Manager->Find_Camera(iLevelIndex, strCameraTag);
+}
 void CClientInstance::ActiveCamera_Shaking(_float fPower, _float fDuration)
 {
 	m_pCamera_Manager->ActiveCamera_Shaking(fPower, fDuration);

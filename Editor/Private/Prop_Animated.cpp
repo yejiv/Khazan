@@ -57,7 +57,7 @@ void CProp_Animated::Update(_float fTimeDelta)
 
 void CProp_Animated::Late_Update(_float fTimeDelta)
 {
-    m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
+    m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
 }
 
 HRESULT CProp_Animated::Render()

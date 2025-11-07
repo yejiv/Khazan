@@ -1,5 +1,6 @@
 #include "Transform.h"
 #include "Shader.h"
+#include "DeferredShader.h"
 #include "Navigation.h"
 #include "RigidBody.h"
 
@@ -32,6 +33,11 @@ HRESULT CTransform::Initialize_Clone(void* pArg)
 }
 
 HRESULT CTransform::Bind_Shader_Resource(CShader* pShader, const _char* pConstantName)
+{
+	return pShader->Bind_Matrix(pConstantName, &m_WorldMatrix);
+}
+
+HRESULT CTransform::Bind_Shader_Resource(CDeferredShader* pShader, const _char* pConstantName)
 {
 	return pShader->Bind_Matrix(pConstantName, &m_WorldMatrix);
 }

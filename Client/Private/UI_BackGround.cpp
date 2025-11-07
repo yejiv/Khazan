@@ -131,7 +131,7 @@ HRESULT CUI_BackGround::Bind_Mask()
 	}
 	else
 	{
-		m_pShaderCom->Begin(0);
+		m_pShaderCom->Begin(4);
 	}
 	return S_OK;
 }

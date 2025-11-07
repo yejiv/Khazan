@@ -68,10 +68,14 @@ void CBody_Khazan_Spear::Priority_Update(_float fTimeDelta)
 
 void CBody_Khazan_Spear::Update(_float fTimeDelta)
 {
-
-
     m_isFinishedAnimation = m_pModelCom->Play_Animation(fTimeDelta);
 
+    //m_pModelCom_Arm->Play_Animation(fTimeDelta);
+    //m_pModelCom_Face->Play_Animation(fTimeDelta);
+    //m_pModelCom_Hair->Play_Animation(fTimeDelta);
+    //m_pModelCom_Leg->Play_Animation(fTimeDelta);
+    //m_pModelCom_Shoes->Play_Animation(fTimeDelta);
+    //m_pModelCom_Torso->Play_Animation(fTimeDelta);
 
     Update_CombinedMatrix();
 }
@@ -97,7 +101,7 @@ HRESULT CBody_Khazan_Spear::Render()
 
     for (size_t i = 0; i < iNumMeshes; i++)
     {
-        m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
+        //m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
 
         /*if (FAILED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_DIFFUSE, 0)
             return E_FAIL;        */
@@ -105,12 +109,17 @@ HRESULT CBody_Khazan_Spear::Render()
         if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;
 
-        m_pShaderCom->Begin(7);
+      //  m_pShaderCom->Begin(1);
 
-        m_pModelCom->Render(i);
+      //  m_pModelCom->Render(i);
     }
 
-
+    Render_Part(m_pModelCom_Arm);
+    Render_Part(m_pModelCom_Face);
+    Render_Part(m_pModelCom_Hair);
+    Render_Part(m_pModelCom_Leg);
+    Render_Part(m_pModelCom_Shoes);
+    Render_Part(m_pModelCom_Torso);
 
     return S_OK;
 }
@@ -142,6 +151,26 @@ HRESULT CBody_Khazan_Spear::Render_Shadow()
     return S_OK;
 }
 
+void CBody_Khazan_Spear::Render_Part(CModel* pModel)
+{
+    if (nullptr == pModel)
+        return;
+
+    _uint iNumMeshes = pModel->Get_NumMeshes();
+    for (size_t i = 0; i < iNumMeshes; i++)
+    {
+        pModel->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
+
+        // 마스터의 본을 자동으로 사용
+        if (FAILED(pModel->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
+            continue;
+
+        m_pShaderCom->Begin(1);
+        pModel->Render(i);
+    }
+
+}
+
 HRESULT CBody_Khazan_Spear::Ready_Components()
 {
     LEVEL eCurrentLevel = CClientInstance::GetInstance()->Get_CurrLevel();
@@ -153,6 +182,34 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eCurrentLevel), TEXT("Prototype_Component_Model_Khazan_Spear"),
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eCurrentLevel), TEXT("Prototype_Component_Model_Khazan_Prisoner_Arm1"),
+        TEXT("Com_Mode2"), reinterpret_cast<CComponent**>(&m_pModelCom_Arm), nullptr)))
+        return E_FAIL;
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eCurrentLevel), TEXT("Prototype_Component_Model_Khazan_Prisoner_Face1"),
+        TEXT("Com_Mode3"), reinterpret_cast<CComponent**>(&m_pModelCom_Face), nullptr)))
+        return E_FAIL;
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eCurrentLevel), TEXT("Prototype_Component_Model_Khazan_Prisoner_Hair1"),
+        TEXT("Com_Mode4"), reinterpret_cast<CComponent**>(&m_pModelCom_Hair), nullptr)))
+        return E_FAIL;
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eCurrentLevel), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg3"),
+        TEXT("Com_Mode5"), reinterpret_cast<CComponent**>(&m_pModelCom_Leg), nullptr)))
+        return E_FAIL;
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eCurrentLevel), TEXT("Prototype_Component_Model_Khazan_Prisoner_Shoes1"),
+        TEXT("Com_Mode6"), reinterpret_cast<CComponent**>(&m_pModelCom_Shoes), nullptr)))
+        return E_FAIL;
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eCurrentLevel), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso3"),
+        TEXT("Com_Mode7"), reinterpret_cast<CComponent**>(&m_pModelCom_Torso), nullptr)))
+        return E_FAIL;
+
+
+
+    m_pModelCom->Attach_Part(m_pModelCom_Arm);
+    m_pModelCom->Attach_Part(m_pModelCom_Face);
+    m_pModelCom->Attach_Part(m_pModelCom_Hair);
+    m_pModelCom->Attach_Part(m_pModelCom_Leg);
+    m_pModelCom->Attach_Part(m_pModelCom_Shoes);
+    m_pModelCom->Attach_Part(m_pModelCom_Torso);
 
 
     return S_OK;
@@ -317,8 +374,13 @@ void CBody_Khazan_Spear::Free()
 {
     __super::Free();
 
-    Safe_Release(m_pParentTransform);
-    Safe_Release(m_pModelCom);
-    Safe_Release(m_pShaderCom);
-
+	Safe_Release(m_pParentTransform);
+	Safe_Release(m_pModelCom);
+	Safe_Release(m_pShaderCom);
+	Safe_Release(m_pModelCom_Torso);
+	Safe_Release(m_pModelCom_Arm);
+	Safe_Release(m_pModelCom_Face);
+	Safe_Release(m_pModelCom_Hair);
+	Safe_Release(m_pModelCom_Leg);
+	Safe_Release(m_pModelCom_Shoes);
 }

@@ -25,7 +25,6 @@ _float4* CYetuga::Get_LockOnPosition()
 {
     //m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
     //m_vLockOnPosition = m_pBody->Get_BonePointEX("Holding");
-    m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
 
     return m_vLockOnPosition;
 }
@@ -45,7 +44,7 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     //-4 0 27
-    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(517.f, -12.f, 241.f,1.f));
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(513.f, -11.f, 225.f,1.f));
 
     if (FAILED(Ready_PartObjects()))
         return E_FAIL;
@@ -93,11 +92,16 @@ void CYetuga::Update(_float fTimeDelta)
         
     if(!m_isGrab)
         __super::Update(fTimeDelta);
+
+    m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
+
+    __super::Update(fTimeDelta);
+
 }
 
 void CYetuga::Late_Update(_float fTimeDelta)
 {
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this)))
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 
     CContainerObject::Late_Update(fTimeDelta);
@@ -517,7 +521,6 @@ HRESULT CYetuga::Ready_PartObjects()
 
     m_pHead = dynamic_cast<CHead_Yetuga*>(pHead);
     Safe_AddRef(m_pHead);
-
 
     return S_OK;
 }

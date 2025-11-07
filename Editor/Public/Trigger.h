@@ -10,7 +10,7 @@ class CTrigger final : public CProp_Interactive
 public:
 	typedef struct tagTriggerDesc : public CProp_Interactive::PROP_INTERACTIVE_DESC
 	{
-		_tchar szTriggerKey[MAX_PATH]{};
+		string strTriggerKey{};
 
 	}TRIGGER_DESC;
 
@@ -33,7 +33,7 @@ public:
 private:
 	_float4 m_vWireColor = { 0.f, 1.f, 0.f, 1.f };
 
-	string m_strTriggerKey = { "MUST FIX" };
+	string m_strTriggerKey = {};
 
 private:
 	virtual HRESULT Ready_Components(void* pArg) override;

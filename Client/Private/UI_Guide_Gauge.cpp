@@ -40,6 +40,10 @@ void CUI_Guide_Gauge::Priority_Update(_float fTimeDelta)
 
 void CUI_Guide_Gauge::Update(_float fTimeDelta)
 {
+}
+
+void CUI_Guide_Gauge::Late_Update(_float fTimeDelta)
+{
 	if (m_pCulValue == nullptr || m_pMaxValue == nullptr)
 		return;
 	m_fMaxValue = *m_pMaxValue;
@@ -51,13 +55,6 @@ void CUI_Guide_Gauge::Update(_float fTimeDelta)
 		m_fCurrentValue = m_fMaxValue;
 
 	Progress_Update();
-}
-
-void CUI_Guide_Gauge::Late_Update(_float fTimeDelta)
-{
-	if (m_pCulValue == nullptr || m_pMaxValue == nullptr)
-		return;
-
 	CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
 }
 

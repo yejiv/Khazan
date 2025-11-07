@@ -195,6 +195,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\Decal.cpp" />
     <ClCompile Include="..\private\Decal_Manager.cpp" />
     <ClCompile Include="..\Private\Decorator_Node.cpp" />
+    <ClCompile Include="..\Private\DeferredShader.cpp" />
     <ClCompile Include="..\Private\Effect_Element.cpp" />
     <ClCompile Include="..\Private\Effect_Manager.cpp" />
     <ClCompile Include="..\Private\Prefab.cpp" />
@@ -325,6 +326,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\public\Decal.h" />
     <ClInclude Include="..\public\Decal_Manager.h" />
     <ClInclude Include="..\Public\Decorator_Node.h" />
+    <ClInclude Include="..\Public\DeferredShader.h" />
     <ClInclude Include="..\Public\Effect_Element.h" />
     <ClInclude Include="..\Public\Effect_Manager.h" />
     <ClInclude Include="..\Public\Prefab.h" />
