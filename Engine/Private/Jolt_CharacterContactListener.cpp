@@ -35,6 +35,8 @@ void CJolt_CharacterContactListener::OnContactAdded(const JPH::CharacterVirtual*
 
     if (pCharDesc->pGameObject->Get_IsDead())
     {
+
+
         m_pGameInstance->Remove_CharacterVirtual(inCharacter->GetID());
     }
 
@@ -51,6 +53,8 @@ void CJolt_CharacterContactListener::OnContactAdded(const JPH::CharacterVirtual*
             _float3(inContactPosition.GetX(), inContactPosition.GetY(), inContactPosition.GetZ()),
             _float3(inContactNormal.GetX(), inContactNormal.GetY(), inContactNormal.GetZ()));
     }
+
+    ioSettings.mCanPushCharacter = true;
 }
 
 void CJolt_CharacterContactListener::OnContactPersisted(const JPH::CharacterVirtual* inCharacter, const JPH::BodyID& inBodyID2, const JPH::SubShapeID& inSubShapeID2, JPH::RVec3Arg inContactPosition, JPH::Vec3Arg inContactNormal, JPH::CharacterContactSettings& ioSettings)
@@ -80,7 +84,7 @@ void CJolt_CharacterContactListener::OnContactPersisted(const JPH::CharacterVirt
             _float3(inContactPosition.GetX(), inContactPosition.GetY(), inContactPosition.GetZ()),
             _float3(inContactNormal.GetX(), inContactNormal.GetY(), inContactNormal.GetZ()));
     }
-        
+    ioSettings.mCanPushCharacter = true;
 }
 
 void CJolt_CharacterContactListener::OnContactRemoved(const JPH::CharacterVirtual* inCharacter, const JPH::BodyID& inBodyID2, const JPH::SubShapeID& inSubShapeID2)
