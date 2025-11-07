@@ -68,6 +68,7 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 	m_sData.vRange = pMeshDesc->vRange;
 	m_sData.fTurbulenceSpeed = pMeshDesc->fTurbulenceSpeed;
 	m_sData.fTurbulenceSampleSize = pMeshDesc->fTurbulenceSampleSize;
+	m_sData.fRotation = pMeshDesc->fRotation;
 	memcpy(m_sData.pNoiseFilePath, pMeshDesc->pNoiseFilePath, sizeof(pMeshDesc->pNoiseFilePath));
 
 
@@ -142,16 +143,28 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 		_float		fScale = m_pGameInstance->Rand(pMeshDesc->vSize.x, pMeshDesc->vSize.y);
 		_float		fLifeTime = m_pGameInstance->Rand(pMeshDesc->vLifeTime.x, pMeshDesc->vLifeTime.y);
 
+		XMVECTOR rotation;
+		if (m_sData.fRotation.x == 0.f && m_sData.fRotation.y == 0.f && m_sData.fRotation.z == 0.f && m_sData.iNumInstance > 1)
+			rotation = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(m_pGameInstance->Rand(0, 360)), 
+														XMConvertToRadians(m_pGameInstance->Rand(0, 360)), 
+														XMConvertToRadians(m_pGameInstance->Rand(0, 360)));
+		else
+			rotation = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(m_sData.fRotation.x), XMConvertToRadians(m_sData.fRotation.y), XMConvertToRadians(m_sData.fRotation.z));
+
+		XMStoreFloat4(&pInstanceVertices[i].vRight, XMVector3Rotate(XMVectorSet(fScale, 0.f, 0.f, 0.f), rotation));
+		XMStoreFloat4(&pInstanceVertices[i].vUp, XMVector3Rotate(XMVectorSet(0.f, fScale, 0.f, 0.f), rotation));
+		XMStoreFloat4(&pInstanceVertices[i].vLook, XMVector3Rotate(XMVectorSet(0.f, 0.f, fScale * pMeshDesc->fSizeRatio, 0.f), rotation));
+
 		//_matrix		RotationMatrix = XMMatrixRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(m_pGameInstance->Rand(0, 360)));
 		//
 		//XMStoreFloat4(&pInstanceVertices[i].vRight, XMVector4Transform(XMVectorSet(fScale, 0.f, 0.f, 0.f), RotationMatrix));
 		//XMStoreFloat4(&pInstanceVertices[i].vUp, XMVector4Transform(XMVectorSet(0.f, fScale, 0.f, 0.f), RotationMatrix));
 		//XMStoreFloat4(&pInstanceVertices[i].vLook, XMVector4Transform(XMVectorSet(0.f, 0.f, fScale * pMeshDesc->fSizeRatio, 0.f), RotationMatrix));
 
-		XMStoreFloat4(&pInstanceVertices[i].vRight, XMVectorSet(1.f, 0.f, 0.f, 0.f) * fScale);
-		XMStoreFloat4(&pInstanceVertices[i].vUp, XMVectorSet(0.f, 1.f, 0.f, 0.f) * fScale);
-		XMStoreFloat4(&pInstanceVertices[i].vLook, XMVectorSet(0.f, 0.f, 1.f, 0.f) * fScale);
-
+		//XMStoreFloat4(&pInstanceVertices[i].vRight, XMVectorSet(1.f, 0.f, 0.f, 0.f) * fScale);
+		//XMStoreFloat4(&pInstanceVertices[i].vUp, XMVectorSet(0.f, 1.f, 0.f, 0.f) * fScale);
+		//XMStoreFloat4(&pInstanceVertices[i].vLook, XMVectorSet(0.f, 0.f, 1.f, 0.f) * fScale);
+	
 		if (m_sData.IsCircle)
 		{
 			_vector Dir = XMVectorSet(m_pGameInstance->Rand(-1.f, 1.f), 0.f, m_pGameInstance->Rand(-1.f, 1.f), 0.f);
