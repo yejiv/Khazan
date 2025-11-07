@@ -142,6 +142,8 @@ private:
 	_int			m_iMaxStamina = {};
 	_int			m_iStamina = {};
 
+	_uint			m_StrongComboIndex = { 0 };
+
 private:
 	inline void		Add_State(_uint i) { m_iState |= i; }
 	inline void		Toggle_State(_uint i) { m_iState ^= i; }

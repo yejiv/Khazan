@@ -21,6 +21,14 @@ HRESULT CLevel_Map::Initialize()
 
 	CHECK_FAILED(Ready_DefaultImGui_For_MapTool(), E_FAIL);
 
+	Build_ModelPathCache();
+
+	m_pGameInstance->Set_EnableSSAO(false);
+	m_pGameInstance->Set_EnableShadow(false);
+	m_pGameInstance->Set_EnableFog(false);
+	m_pGameInstance->Set_EnableOutline(false);
+	m_pGameInstance->Set_EnableToonShade(false);
+
 	return S_OK;
 }
 
@@ -509,11 +517,8 @@ HRESULT CLevel_Map::Ready_Main_Window()
 
 					m_isSaveObjectWindow = !m_isSaveObjectWindow;
 				}
-				if (false == m_isLoaded)
-				{
-					SAMELINE;
-					if (ImGui::Button("LOAD")) m_isLoadObjectWindow = !m_isLoadObjectWindow;
-				}
+				SAMELINE;
+				if (ImGui::Button("LOAD")) m_isLoadObjectWindow = !m_isLoadObjectWindow;
 				SEPARATOR;
 				
 				ImGui::Text("PROP LIST");
@@ -1645,6 +1650,10 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 				ImGui::Text("MODEL NAME : %s", strTempModelName.c_str());
 				SEPARATOR;
 
+				if (INTERACTIVE_TYPE::TRIGGER == m_InteractiveList[m_iInteractiveListIndex]->Get_InteractiveType())
+				{
+					ImGui::Text("TRIGGER KEY : %s", static_cast<CTrigger*>(m_InteractiveList[m_iInteractiveListIndex])->Get_TriggerKey().c_str());
+				}
 			}
 			if (0 != m_InteractiveList.size())
 			{
@@ -1725,7 +1734,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 				}
 			}
 
-			if (ImGui::Button("EXPORT"))
+			if (ImGui::Button("EXPORT ONLY INTERACTIVE"))
 			{
 				m_strMapInfoFilePath = m_szMapInfoFilePath;
 				m_strMapInfoFilePath += m_szMapInfoFileName;
@@ -1736,7 +1745,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 				}
 			}
 
-			if (ImGui::Button("EXPORT FOR TRIGGER"))
+			if (ImGui::Button("EXPORT ONLY TRIGGER"))
 			{
 				m_strMapInfoFilePath = m_szMapInfoFilePath;
 				m_strMapInfoFilePath += m_szMapInfoFileName;
@@ -2171,7 +2180,9 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 
 			SEPARATOR;
 
-			if (ImGui::Button("LOAD"))
+			if (false == m_isLoaded)
+			{
+				if (ImGui::Button("LOAD"))
 			{
 				// m_strMapInfoFilePath : 뒤에 _prototypes.dat, _objs.dat, insts.dat 이런식으로 ㄱㄱ
 				m_strMapInfoFilePath = m_szMapInfoFilePath;
@@ -2260,6 +2271,15 @@ OutputDebugStringA("조명 정보 바이너리 불러오기 실패");
 					m_isLoadObjectWindow = false;
 					m_isLoaded = true;
 				}
+			}
+			}
+
+			if (ImGui::Button("TRIGGER LOAD"))
+			{
+				m_strMapInfoFilePath = m_szMapInfoFilePath;
+				m_strMapInfoFilePath += m_szMapInfoFileName;
+
+				Trigger_objects_Load_Json();
 			}
 
 			ImGui::End();
@@ -2650,11 +2670,17 @@ void CLevel_Map::Add_Prototype_ByFolder(const _char* pFolderName, _bool isAnim)
 
 string CLevel_Map::Find_ModelPath(const string& strModelName, const string& strFileExtern)
 {
-	string strRoot = {};
-
 	if (".fbx" != strFileExtern && ".dat" != strFileExtern)
 		return "NOTFOUND";
 
+	string strModelFilePath = strModelName + strFileExtern;
+
+	auto iter = m_ModelPathCache.find(strModelFilePath);
+	if (iter != m_ModelPathCache.end())
+		return iter->second;
+
+	return "NOTFOUND";
+	/*
 	if (".fbx" == strFileExtern)
 		strRoot = "../../Client/Bin/Resources/Map/Prop/";
 	else if (".dat" == strFileExtern)
@@ -2670,6 +2696,7 @@ string CLevel_Map::Find_ModelPath(const string& strModelName, const string& strF
 	}
 
 	return "NOTFOUND";
+	*/
 }
 
 _bool CLevel_Map::Prototypes_Save_Binary()
@@ -3825,6 +3852,53 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 	return true;
 }
 
+_bool CLevel_Map::Trigger_objects_Load_Json()
+{
+	_wstring strTriggerInfoPath = AnsiToWString(m_strMapInfoFilePath);
+
+	strTriggerInfoPath += TEXT("_trigger.json");
+
+	ifstream ifs(strTriggerInfoPath);
+
+	if (!ifs.is_open())
+	{
+		OutputDebugStringA("트리거 제이슨 없거나 문제잇음 일단 true 반환");
+		return true;
+	}
+
+	JSON j = {};
+	ifs >> j;
+	ifs.close();
+
+	JSON_MAP_TRIGGER_DATA TriggerData = j.get<JSON_MAP_TRIGGER_DATA>();
+
+	_uint iNumTrigger = TriggerData.iNumTrigger;
+
+	for (_uint i = 0; i < iNumTrigger; ++i)
+	{
+		CTrigger::TRIGGER_DESC TriggerDesc = {};
+
+		TriggerDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+		TriggerDesc.eLevel = LEVEL::MAP;
+		memcpy(TriggerDesc.szModelName, TEXT("Prototype_Component_Model_Trigger"), sizeof(TriggerDesc.szModelName));		// 프로토타입 태그명
+		TriggerDesc.strTriggerKey = TriggerData.TriggerKey[i];
+
+		memcpy(&TriggerDesc.WorldMatrix, &TriggerData.WorldMatrix[i], sizeof(_float4x4));										// 행렬
+
+		TriggerDesc.eInteractiveType = INTERACTIVE_TYPE::TRIGGER;										// 상호 작용 오브젝트 타입
+
+		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+			ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Trigger"), TIME_CHANNEL::WORLD, &TriggerDesc), false);
+
+		CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));
+		CHECK_NULLPTR_MSG(pInteractive_Prop, TEXT("엥"), false);
+
+		m_InteractiveList.push_back(pInteractive_Prop);
+	}
+
+	return true;
+}
+
 _bool CLevel_Map::Lights_Load_Binary()
 {
 	_wstring strLightInfoPath = AnsiToWString(m_strMapInfoFilePath);
@@ -3877,6 +3951,36 @@ _bool CLevel_Map::Lights_Load_Binary()
 	CloseHandle(hFile);
 
 	return true;
+}
+
+void CLevel_Map::Build_ModelPathCache()
+{
+	m_ModelPathCache.clear();
+
+	vector<pair<string, string>> Roots = {
+		{"../../Client/Bin/Resources/Map/Prop/", ".fbx"},
+		{"../../Client/Bin/Data/Map/", ".dat"}
+	};
+
+	for (auto& [root, ext] : Roots)
+	{
+		for (auto& entry : filesystem::recursive_directory_iterator(root))
+		{
+			if (entry.is_regular_file() && entry.path().extension() == ext)
+			{
+				string name = entry.path().stem().string();
+				string path = entry.path().string();
+
+				// .fbx / .dat 둘 다 있을 수 있으므로 구분
+				string key = name + ext;
+				m_ModelPathCache[key] = path;
+			}
+		}
+	}
+
+#ifdef _DEBUG
+	OutputDebugStringA(("Model cache built: " + std::to_string(m_ModelPathCache.size()) + " entries\n").c_str());
+#endif
 }
 
 void CLevel_Map::MapEditor_Close_Windows()

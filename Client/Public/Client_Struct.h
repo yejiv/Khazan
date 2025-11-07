@@ -103,6 +103,26 @@ namespace Client
 
 	}BOX_ITEMS;
 
+	typedef struct tag_Announce_Talk
+	{
+		_float fTime{};
+		wstring wstrName{};
+		wstring wstrText_1{};
+		wstring wstrText_2{};
+	}ANNOUNCE_TALK_DB;
+
+	typedef struct tag_Skill_DB
+	{
+		_int iType{};
+		_int iSubID{};
+		_int SkillType{};
+		_wstring wstrName{};
+		_int iLevel{};
+		_int iMaxPoint{};
+		_int iIndex{};
+		_int iTaxPass{};
+		_wstring wstrIcon{};
+	}SKILL_DB;
 
 	typedef struct tagKhazanAnimationFindInfo
 	{

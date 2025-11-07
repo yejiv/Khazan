@@ -24,6 +24,9 @@ HRESULT CProjectile_Yetuga::Initialize_Clone(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	if (FAILED(Ready_Colliders()))
+		return E_FAIL;
+
 	m_isActive = false;
 
  	m_pModelCom->Set_Animation(0);
@@ -42,26 +45,27 @@ void CProjectile_Yetuga::Update(_float fTimeDelta)
 
 	if (m_isActive)
 	{
-		_float3 vPos{};
-			XMStoreFloat3(&vPos,m_pTransformCom->Get_State(STATE::POSITION)); // _float3
-		//std::cout << "Pos: " << vPos.x << ", " << vPos.y << ", " << vPos.z << std::endl;
-
 		if (m_fCurrentTime >= m_fLifeTime)
 		{
 			// 풀로 돌아가고
 			m_isDead = true;
 			// Active 끄고
 			m_isActive = false;
+			m_pBody->Activate(false);
 		}
 		m_pTransformCom->Go_Straight(fTimeDelta);
+		// 콜라이더를 갱신시킨다.
+		m_pBody->Sync_Update(m_pTransformCom);
+		m_pBody->Update(fTimeDelta, m_pTransformCom);
 	}
 
 	if (m_pModelCom->Play_Animation(fTimeDelta))
 	{
-		int a = 10;
+		if (CRASHED == m_eState)
+		{
+			Enter_State(PRJSTATE::END);
+		}
 	}
-
-
 }
 
 void CProjectile_Yetuga::Late_Update(_float fTimeDelta)
@@ -94,10 +98,10 @@ HRESULT CProjectile_Yetuga::Render()
 }
 
 
-
-
 void CProjectile_Yetuga::Reset()
 {
+	m_pBody->Activate(true);
+
 	m_fCurrentTime = 0.f;
 	_vector vDir = XMVector3Normalize(XMLoadFloat3(&m_vSpawnDir));
 
@@ -110,6 +114,26 @@ void CProjectile_Yetuga::Reset()
 	m_pTransformCom->Set_State(STATE::LOOK, vDir);
 
 	m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&m_vSpawnPoint), 1.f));
+}
+
+void CProjectile_Yetuga::Enter_State(PRJSTATE eNextState)
+{
+	m_eState = eNextState;
+
+	switch (m_eState)
+	{
+	case Client::CProjectile::LOOP:
+		m_pModelCom->Set_Animation(1);
+		break;
+	case Client::CProjectile::CRASHED:
+		m_pModelCom->Set_Animation(2);
+		m_isActive = false;
+		break;
+	case Client::CProjectile::END:
+		m_isDead = true;
+		m_pBody->Activate(false);
+		break;
+	}
 }
 
 HRESULT CProjectile_Yetuga::Ready_Components()
@@ -126,6 +150,33 @@ HRESULT CProjectile_Yetuga::Ready_Components()
 	return S_OK;
 }
 
+HRESULT CProjectile_Yetuga::Ready_Colliders()
+{
+	CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
+
+	BodyDesc.fRadius = 1.5f;
+	BodyDesc.eMotion = EMotionType::Kinematic;
+	BodyDesc.eQuality = EMotionQuality::LinearCast; // 기본 모드
+	BodyDesc.eShapeType = SHAPE::SPHERE;
+	BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+	
+
+	XMStoreFloat3(&BodyDesc.vPos,m_pTransformCom->Get_State(STATE::POSITION));
+	XMStoreFloat4(&BodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
+
+	BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+	m_tCollisionDesc.pGameObject = this;
+	BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+	BodyDesc.bIsTrigger = true;
+	if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+		TEXT("Com_Body_Yetuga_Stone"), reinterpret_cast<CComponent**>(&m_pBody), &BodyDesc)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+
+
 HRESULT CProjectile_Yetuga::Bind_ShaderResources()
 {
 
@@ -140,6 +191,29 @@ HRESULT CProjectile_Yetuga::Bind_ShaderResources()
 
 
 	return S_OK;
+}
+
+void CProjectile_Yetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+{
+	
+
+}
+
+void CProjectile_Yetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+{
+	if (PRJSTATE::LOOP == m_eState)
+	{
+		COLLISION_LAYER eType = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
+		if (COLLISION_LAYER::PLAYER == eType || COLLISION_LAYER::MAP_STATIC == eType)
+		{
+			Enter_State(PRJSTATE::CRASHED);
+		}
+	}
+}
+
+void CProjectile_Yetuga::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+{
+
 }
 
 CProjectile_Yetuga* CProjectile_Yetuga::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -169,5 +243,7 @@ CGameObject* CProjectile_Yetuga::Clone(void* pArg)
 
 void CProjectile_Yetuga::Free()
 {
+	Safe_Release(m_pBody);
+
 	__super::Free();
 }

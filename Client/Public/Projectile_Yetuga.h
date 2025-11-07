@@ -1,10 +1,15 @@
 #pragma once
 #include "Projectile.h"
 
+NS_BEGIN(Engine)
+class CBody;
+NS_END
+
 NS_BEGIN(Client)
 
 class CProjectile_Yetuga final : public CProjectile
 {
+private:
 	CProjectile_Yetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CProjectile_Yetuga(const CProjectile_Yetuga& Protptype);
 	virtual ~CProjectile_Yetuga() = default;
@@ -21,11 +26,23 @@ public:
 
 public:
 	virtual void				Reset() override;
+	void						Enter_State(PRJSTATE eNextState);
+
 
 private:
 	HRESULT						Ready_Components();
+	HRESULT						Ready_Colliders();
 	HRESULT						Bind_ShaderResources();
 
+
+
+	virtual void				Collision_Enter(COLLISION_DESC* pDesc, _uint	iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
+	virtual void				Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
+	virtual void				Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
+
+
+private:
+	CBody*						m_pBody = { nullptr };
 
 public:
 	static CProjectile_Yetuga*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

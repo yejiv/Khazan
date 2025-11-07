@@ -49,7 +49,8 @@ HRESULT CEffect_Prefab::Initialize_Clone(void* pArg)
 void CEffect_Prefab::Priority_Update(_float fTimeDelta)
 {
     ///*test 지울 거*/
-    //if (m_pGameInstance->Key_Down(DIK_L) && m_test.x == 1.f)    //000
+    //if (m_pGameInstance->Key_Down(
+    // ) && m_test.x == 1.f)    //000
     //    ResetChildren();
     //else if (m_pGameInstance->Key_Down(DIK_O) && m_test.y == 1.f) //100
     //    ResetChildren();
@@ -134,7 +135,7 @@ HRESULT CEffect_Prefab::Render()
 
 void CEffect_Prefab::ResetChildren()
 {
-    m_bPlaying = false;
+    m_bPlaying = true;
     m_fCurTime = 0.f;
     for (_uint i = 0; i < m_Children.size(); ++i)
         m_Children[i]->Reset();

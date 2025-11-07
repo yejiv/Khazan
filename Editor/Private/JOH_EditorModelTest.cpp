@@ -40,6 +40,8 @@ HRESULT CJOH_EditorModelTest::Initialize_Clone(void* pArg)
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(1.f, 0.f, 0.f, 1.f));
     //m_pTransformCom->Scale(_float3(0.01f, 0.01f, 0.01f));
 
+    m_fRand = m_pGameInstance->Rand(0.f, 10000000.f);
+
     return S_OK;
 }
 
@@ -148,22 +150,23 @@ HRESULT CJOH_EditorModelTest::Render()
 
 void CJOH_EditorModelTest::Debug_RenderState()
 {
-    _float3 vpos;
-    XMStoreFloat3(&vpos, m_pTransformCom->Get_State(STATE::POSITION));
+    _float3 vPos;
+    XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
 
-    ImGui::DragFloat3("pos : ", &vpos.x);
-    if (ImGui::Button("go zero "))
+      ImGui::DragFloat3(("pos : "+to_string(m_fRand)).c_str(), &vPos.x);
+    if (ImGui::Button(("go zero " + to_string(m_fRand)).c_str()))
     {
         m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
     }
 
     ImGui::SameLine();
 
-    if (ImGui::Button("matrix identity"))
+    if (ImGui::Button(("matrix identity" + to_string(m_fRand)).c_str()))
     {
         m_pTransformCom->Set_WorldMatrix(XMMatrixIdentity());
     }
 
+    m_pTransformCom->Set_State(STATE::POSITION,XMVectorSet(vPos.x, vPos.y, vPos.z,1.f));
 }
 
 _matrix CJOH_EditorModelTest::Debug_GetTransformMatrix()

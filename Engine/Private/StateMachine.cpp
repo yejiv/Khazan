@@ -51,9 +51,9 @@ HRESULT CStateMachine::Change_State(_uint iStateIndex, CGameObject* pOwner)
     return Set_State(pNext, pOwner);
 }
 
-void CStateMachine::OnCollision(COLLISION_DESC* pDesc)
+void CStateMachine::OnCollision(COLLISION_DESC* pDesc, CGameObject* pOwner)
 {
-    m_pCurrentState->OnCollision(pDesc);
+    m_pCurrentState->OnCollision(pDesc,pOwner);
 }
 
 HRESULT CStateMachine::Add_State(_uint iStateIndex, CAI_State* pState)

@@ -51,6 +51,9 @@ private:
 	vector<class CUI_State_List*>		m_pState;
 	vector<class CUI_State_MainPanel*>	m_pPanel;
 
+	class CUI_TextBox*					m_pGuide_Text = { nullptr };
+	class CUI_Atlas_Icon*				m_pGuide_Icon = { nullptr };
+
 	UI_TYPE								m_eType = { UI_TYPE::END };
 	UIANIMSTATE							m_eAnimState = { UIANIMSTATE::END };
 	_float								m_fAccTime = {};

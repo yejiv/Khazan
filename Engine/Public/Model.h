@@ -32,6 +32,8 @@ private:
 		/* event */
 		EVENT = 1 <<13,
 
+
+
 	};
 
 	typedef struct tagRootMotionInfo
@@ -61,9 +63,11 @@ public:
 	virtual HRESULT Initialize_Prototype( const _char* pModelFilePath);
 	virtual HRESULT Initialize_Clone(void* pArg);
 	virtual HRESULT Render(_uint iMeshIndex);
+	virtual HRESULT Deferred_Render(_uint iMeshIndex, ID3D11DeviceContext* pDeferredContext);
 
 public:
 	HRESULT Bind_Materials(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, _uint iTextureType, _uint iIndex);
+	HRESULT Bind_Materials(class CDeferredShader* pShader, const _char* pConstantName, _uint iMeshIndex, _uint iTextureType, _uint iIndex);
 	HRESULT Bind_BoneMatrices(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex);
 
 
@@ -118,7 +122,18 @@ public:
 	void			UnRegister_Event(const string& strEventKey, ANIM_EVENT_TRIGGERTYPE eTriggerType);
 	void			Clear_AllEvent();
 	
+	/* 스켈레톤 공유 */
+public:
+	void			Set_MasterSkeleton(CModel* pMaster);
+	void			Attach_Part(CModel* pPart);
+	void			Detach_Part(CModel* pPart);
+	void			Render_AllAttachedParts();
+	const			vector<_float4x4>& Get_PartLocalBoneMatrices() const { return m_PartLocalBoneMatrices; }
+	void			Update_PartLocalBones();
+
+
 #ifdef _DEBUG
+public:
 	void			Debug_RanderState();
 #endif // _DEBUG
 
@@ -158,7 +173,7 @@ private:
 
 	/* 애니메이션 세트 */
 	vector< ANIMATION_SET_DATA >		m_AnimationSets;					/* 애니메이션 세트 정보*/ 
-	ANIMATIONSET_INFO					m_AnimationSetInfo;					/* 애니메이션 세트 진행 정보 */	//-x
+	ANIMATIONSET_INFO					m_AnimationSetInfo;					/* 애니메이션 세트 진행 정보 */	
 
 	/* 루트 모션 */
 	ROOTMOTION_INFO						m_RootMotionInfo;					/* 루트 모션 정보 */
@@ -171,6 +186,13 @@ private:
 	unordered_map<string, function<void()>> m_EventCallbacks;	//콜백 관리
 	vector<ANIM_EVENT>						m_CurrentEvents;	//현재 이벤트 상태 추적
 	vector<_bool>							m_PrevFrameInRange;	//이전 프레임에 이벤트 발동 했는지
+
+	/* 스켈레톤 공유 */
+	CModel*								m_pMasterSkeleton = { nullptr };
+	vector<CModel*>						m_AttachedParts;
+	vector<_float4x4>					m_PartLocalBoneMatrices;  //파츠 로컬 본 행렬
+	_bool								m_isMaterSkeleton = { false };
+	_bool								m_isSharedSkeleton = { false };
 
 
 	/* const val */

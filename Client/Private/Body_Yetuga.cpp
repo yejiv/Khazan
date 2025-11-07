@@ -89,7 +89,7 @@ HRESULT CBody_Yetuga::Initialize_Clone(void* pArg)
    if (FAILED(Ready_Colliders()))
         return E_FAIL;
 
-    m_pTransformCom->Scale(_float3(1.5f,1.5f,1.5f));
+    m_pTransformCom->Scale(_float3(1.3f,1.3f,1.3f));
 
     m_pLH_BodyCom->Activate(false);
     m_pRH_BodyCom->Activate(false);
@@ -105,18 +105,18 @@ void CBody_Yetuga::Priority_Update(_float fTimeDelta)
 void CBody_Yetuga::Update(_float fTimeDelta)
 {
 
-    if (m_pGameInstance->Get_BlackBoard()->Get_Value<_bool>("Yetuga", "AttackInterrupt"))
+    if (m_isOnAttackCollision)
     {
         m_pLH_BodyCom->Activate(true);
         m_pRH_BodyCom->Activate(true);
-        //m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
+        m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
 
     }
     else
     {
         m_pLH_BodyCom->Activate(false);
         m_pRH_BodyCom->Activate(false);
-        //m_pGameInstance->Remove_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
+        m_pGameInstance->Remove_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
     }
 
 
@@ -163,8 +163,7 @@ void CBody_Yetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLaye
     COLLISION_LAYER eType = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
     if (COLLISION_LAYER::PLAYER == eType)
     {
-        // 여기서 플레이어를 감지해서 BT로 알려줘야하나
-        m_pOwner->Get_Controller()->AI_React_Collision(pDesc);
+        m_pOwner->Get_Controller()->AI_React_Collision(pDesc,m_pOwner);
     }
 }
 
@@ -232,13 +231,12 @@ void CBody_Yetuga::Carculate_Matrix(_float fTimeDelta)
     BoneMatrix = *m_pModelCom->Get_BoneMatrix("Weapon_L");
     XMStoreFloat4x4(&m_LeftHandMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
     m_pLH_BodyCom->Sync_Update(XMLoadFloat4x4(&m_LeftHandMatrix));
-    m_pLH_BodyCom->Update(fTimeDelta,XMLoadFloat4x4(&m_LeftHandMatrix),vOutQuat,vOutPos);
+    m_pLH_BodyCom->Update(fTimeDelta, XMLoadFloat4x4(&m_LeftHandMatrix), vOutQuat, vOutPos);
 
     m_LeftHandMatrix._41 = vOutPos.m128_f32[0];
     m_LeftHandMatrix._42 = vOutPos.m128_f32[1];
     m_LeftHandMatrix._43 = vOutPos.m128_f32[2];
     m_LeftHandMatrix._44 = vOutPos.m128_f32[3];
-    
 
 }
 
@@ -247,7 +245,7 @@ HRESULT CBody_Yetuga::Ready_Colliders()
     CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
 
     // 오른손
-    BodyDesc.fRadius = 2.f;
+    BodyDesc.fRadius = 1.5f;
     BodyDesc.eMotion = EMotionType::Kinematic;
     BodyDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
     BodyDesc.eShapeType = SHAPE::SPHERE;
@@ -266,7 +264,7 @@ HRESULT CBody_Yetuga::Ready_Colliders()
         TEXT("Com_Body_RH"), reinterpret_cast<CComponent**>(&m_pRH_BodyCom), &BodyDesc)))
         return E_FAIL;
 
-    BodyDesc.fRadius = 2.f;
+    BodyDesc.fRadius = 1.5f;
     BodyDesc.eMotion = EMotionType::Kinematic;
     BodyDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
     BodyDesc.eShapeType = SHAPE::SPHERE;
@@ -289,6 +287,9 @@ HRESULT CBody_Yetuga::Ready_Colliders()
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body_LH"), reinterpret_cast<CComponent**>(&m_pLH_BodyCom), &BodyDesc)))
         return E_FAIL;
+
+   
+
 
  //   // 등
  //   BodyDesc.fRadius = 15.f;

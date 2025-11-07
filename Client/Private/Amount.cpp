@@ -65,9 +65,6 @@ void CAmount::Priority_Update(_float fTimeDelta)
 
 void CAmount::Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_Z))
-		Add_Value(AMOUNT_TYPE::LACHRYMA, 1000);
-
 	__super::Update(fTimeDelta);
 }
 

@@ -30,7 +30,7 @@ private:
     enum class STATE { Idle, Playing, Paused, End };
     STATE  m_State{ STATE::Idle };
     SEQ_ID m_Id{};
-    _float  m_Time{ 0.f };
+    _float  m_fTime{ 0.f };
 
     _bool   m_isCameraStart = { false };
     _bool   m_isFieldName = { false };

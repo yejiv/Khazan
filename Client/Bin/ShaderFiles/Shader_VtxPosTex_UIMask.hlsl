@@ -178,6 +178,7 @@ PS_OUT PS_MASK_BOTTOM(PS_IN In)
     
     return Out;
 }
+
 technique11 DefaultTechnique
 {
     pass PS_MASK_PASS_0

@@ -131,6 +131,14 @@ void CObject_Manager::Clear(_uint iLevelIndex)
 	m_pLayers[iLevelIndex].clear();
 }
 
+void CObject_Manager::Static_Clear()
+{
+	for (auto& Pair : m_pLayers[m_pGameInstance->Get_StaticLevel()])
+	{
+		Pair.second->DeadObject_Clear();
+	}
+}
+
 CLayer* CObject_Manager::Find_Layer(_uint iLayerLevelIndex, const _wstring& strLayerTag)
 {
 	auto	iter = m_pLayers[iLayerLevelIndex].find(strLayerTag);

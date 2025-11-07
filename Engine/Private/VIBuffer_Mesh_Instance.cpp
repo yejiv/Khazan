@@ -9,10 +9,11 @@ CVIBuffer_Mesh_Instance::CVIBuffer_Mesh_Instance(ID3D11Device* pDevice, ID3D11De
 
 CVIBuffer_Mesh_Instance::CVIBuffer_Mesh_Instance(const CVIBuffer_Mesh_Instance& Prototype)
 	: CVIBuffer_Instance { Prototype }
-	, m_vRange{ Prototype.m_vRange }
-	, m_IsLoop{ Prototype.m_IsLoop }
-	, m_fOffset{ Prototype.m_fOffset }	//나중에 필요하면 상수버퍼로 넘기기
+	//, m_pSRVNoise{ Prototype.m_pSRVNoise } //나중에 필요하면 상수버퍼로 넘기기
+	, m_pParticleParams{ Prototype.m_pParticleParams }
+	, m_sData {Prototype.m_sData}
 {
+	//Safe_AddRef(m_pSRVNoise);	//이거 해줘야되는지 확인좀
 }
 
 void CVIBuffer_Mesh_Instance::Reset()
@@ -61,10 +62,14 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 	m_eIndexFormat = DXGI_FORMAT_R32_UINT;
 	m_ePrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
-	m_bIsCircle = pMeshDesc->IsCircle;
-	m_fOffset = pMeshDesc->fOffset;
-	m_IsLoop = pMeshDesc->bIsLoop;
-	m_vRange = pMeshDesc->vRange;
+	m_sData.IsCircle = pMeshDesc->IsCircle;
+	m_sData.fOffset = pMeshDesc->fOffset;
+	m_sData.bIsLoop = pMeshDesc->bIsLoop;
+	m_sData.vRange = pMeshDesc->vRange;
+	m_sData.fTurbulenceSpeed = pMeshDesc->fTurbulenceSpeed;
+	m_sData.fTurbulenceSampleSize = pMeshDesc->fTurbulenceSampleSize;
+	memcpy(m_sData.pNoiseFilePath, pMeshDesc->pNoiseFilePath, sizeof(pMeshDesc->pNoiseFilePath));
+
 
 	D3D11_BUFFER_DESC		VBDesc{};
 	VBDesc.ByteWidth = m_iNumVertices * m_iVertexStride;
@@ -143,14 +148,14 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 		//XMStoreFloat4(&pInstanceVertices[i].vUp, XMVector4Transform(XMVectorSet(0.f, fScale, 0.f, 0.f), RotationMatrix));
 		//XMStoreFloat4(&pInstanceVertices[i].vLook, XMVector4Transform(XMVectorSet(0.f, 0.f, fScale * pMeshDesc->fSizeRatio, 0.f), RotationMatrix));
 
-		XMStoreFloat4(&pInstanceVertices[i].vRight, XMVector3Normalize(XMVectorSet(1.f, 0.f, 0.f, 0.f) * fScale));
-		XMStoreFloat4(&pInstanceVertices[i].vUp, XMVector3Normalize(XMVectorSet(0.f, 1.f, 0.f, 0.f) * fScale));
-		XMStoreFloat4(&pInstanceVertices[i].vLook, XMVector3Normalize(XMVectorSet(0.f, 0.f, 1.f, 0.f) * fScale));
+		XMStoreFloat4(&pInstanceVertices[i].vRight, XMVectorSet(1.f, 0.f, 0.f, 0.f) * fScale);
+		XMStoreFloat4(&pInstanceVertices[i].vUp, XMVectorSet(0.f, 1.f, 0.f, 0.f) * fScale);
+		XMStoreFloat4(&pInstanceVertices[i].vLook, XMVectorSet(0.f, 0.f, 1.f, 0.f) * fScale);
 
-		if (m_bIsCircle)
+		if (m_sData.IsCircle)
 		{
 			_vector Dir = XMVectorSet(m_pGameInstance->Rand(-1.f, 1.f), 0.f, m_pGameInstance->Rand(-1.f, 1.f), 0.f);
-			XMStoreFloat4(&pInstanceVertices[i].vTranslation, XMVectorSetW(XMVector4Normalize(Dir) * m_fOffset, 1.f));
+			XMStoreFloat4(&pInstanceVertices[i].vTranslation, XMVectorSetW(XMVector4Normalize(Dir) * m_sData.fOffset, 1.f));
 		}
 		else
 		{
@@ -199,8 +204,8 @@ _bool CVIBuffer_Mesh_Instance::Update(_float fTimeDelta)
 		pPointInstanceCB->vPivot = m_vPivot;
 		pPointInstanceCB->fTimeDelta = fTimeDelta;
 		pPointInstanceCB->iNumInstances = m_iNumInstance;
-		pPointInstanceCB->bIsLoop = m_IsLoop;
-		pPointInstanceCB->vSpawnRange = m_vRange;
+		pPointInstanceCB->bIsLoop = m_sData.bIsLoop;
+		pPointInstanceCB->vSpawnRange = m_sData.vRange;
 		m_pContext->Unmap(m_pCB, 0);
 	}
 
@@ -223,7 +228,7 @@ _bool CVIBuffer_Mesh_Instance::Update(_float fTimeDelta)
 
 	m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
 
-	return m_IsLoop ? false : IsFinish();
+	return m_sData.bIsLoop ? false : IsFinish();
 }
 
 void CVIBuffer_Mesh_Instance::UpdateGravity(_float fTimeDelta)
@@ -240,6 +245,41 @@ void CVIBuffer_Mesh_Instance::UpdateGravity(_float fTimeDelta)
 
 	CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
 	JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::GRAVITY)];
+	JobDesc.PassDesc = PassDesc;
+
+	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
+
+	m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
+}
+
+void CVIBuffer_Mesh_Instance::UpdateTurbulence(_float fTimeDelta, _float fAccTime)
+{
+
+	D3D11_MAPPED_SUBRESOURCE SubResource;
+	if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
+	{
+		POINT_INSTANCE_CB* pPointInstanceCB = reinterpret_cast<POINT_INSTANCE_CB*>(SubResource.pData);
+		pPointInstanceCB->fTotalTime = fAccTime;
+		pPointInstanceCB->fTimeDelta = fTimeDelta;
+		pPointInstanceCB->iNumInstances = m_iNumInstance;
+		pPointInstanceCB->fTurbulenceSpeed = m_sData.fTurbulenceSpeed;
+		pPointInstanceCB->fTurbulenceSampleSize = m_sData.fTurbulenceSampleSize;
+		m_pContext->Unmap(m_pCB, 0);
+	}
+
+	COMPUTE_PASS_DESC PassDesc{};
+	PassDesc.SRVs.push_back(m_pSRV);
+	PassDesc.SRVs.push_back(m_pSRVNoise);
+	PassDesc.UAVs.push_back(m_pUAV);
+	PassDesc.ConstantBuffers.push_back(m_pCB);
+	_uint iNumThreadPerGroup = 256;
+	_uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
+	PassDesc.x = iNumGroups;
+	PassDesc.y = 1;
+	PassDesc.z = 1;
+
+	CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
+	JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::TURBULENCE)];
 	JobDesc.PassDesc = PassDesc;
 
 	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
@@ -371,6 +411,24 @@ HRESULT CVIBuffer_Mesh_Instance::Ready_SRV(void* pSysmem)
 	if (FAILED(m_pDevice->CreateShaderResourceView(pBuffer, &SRVDesc, &m_pSRV)))
 		return E_FAIL;
 
+	_char fullpath[MAX_PATH];
+	HRESULT     hr = {};
+	_tchar		tpath[MAX_PATH] = {};
+	MultiByteToWideChar(CP_UTF8, 0, m_sData.pNoiseFilePath, -1, tpath, 100);
+	filesystem::path path(tpath);
+	string FileExt = path.extension().string();
+
+	if (FileExt == ".dds")
+		hr = CreateDDSTextureFromFile(m_pDevice, tpath, nullptr, &m_pSRVNoise);
+	else //png
+		hr = CreateWICTextureFromFile(m_pDevice, tpath, nullptr, &m_pSRVNoise);
+
+	if (FAILED(hr))
+	{
+		MSG_BOX(TEXT("Noise Texture :: Create Error!"));
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 HRESULT CVIBuffer_Mesh_Instance::Ready_UAV()
@@ -465,6 +523,10 @@ HRESULT CVIBuffer_Mesh_Instance::Ready_ComputeShader()
 	if (nullptr == m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET_SPEED)])
 		return E_FAIL; 
 
+	m_ComputeShaders[ENUM_CLASS(CS_PASS::TURBULENCE)] = CComputeShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Model_Instance_Compute.hlsl"), "CS_TURBULENCE");
+	if (nullptr == m_ComputeShaders[ENUM_CLASS(CS_PASS::TURBULENCE)])
+		return E_FAIL;
+
 	return S_OK;
 }
 _bool CVIBuffer_Mesh_Instance::IsFinish()
@@ -512,5 +574,22 @@ void CVIBuffer_Mesh_Instance::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pCB);
+	Safe_Release(m_pStructuredBuffer);
+	Safe_Release(m_pSpeedBuffer);
+	Safe_Release(m_pStagingBuffer);
+	Safe_Release(m_pSRV);
+	Safe_Release(m_pSRVNoise);
+	Safe_Release(m_pUAV);
+	Safe_Release(m_pUAVSpeed);
+
+	for (_uint i = 0; i < CS_PASS::END; ++i)
+		Safe_Release(m_ComputeShaders[i]);
+
+	if (false == m_isCloned)
+	{
+		Safe_Delete_Array(m_pParticleParams);
+		//Safe_Release(m_pSRVNoise);
+	}
 }
 

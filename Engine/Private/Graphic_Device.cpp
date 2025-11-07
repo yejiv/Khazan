@@ -66,12 +66,6 @@ HRESULT CGraphic_Device::Initialize(HWND hWnd, WINMODE isWindowed, _uint iWinSiz
 	Safe_AddRef(m_pDeviceContext);
 
 
-	// 디퍼드 컨텍스트 설정
-	for (size_t i = 0; i < ENUM_CLASS(DEFERRED_CONTEXT::END); i++)
-	{
-		m_pDevice->CreateDeferredContext(0, &m_pDeferredContext[i]);
-	}
-
 	return S_OK;
 }
 
@@ -257,6 +251,8 @@ void CGraphic_Device::Free()
 	Safe_Release(m_pBackBufferRTV);
 	Safe_Release(m_pDeviceContext);
 
+	for (auto* dc : m_DeferredContexts) Safe_Release(dc);
+	m_DeferredContexts.clear();
 
 #if defined(DEBUG) || defined(_DEBUG)
 	ID3D11Debug* d3dDebug;

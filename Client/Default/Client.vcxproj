@@ -171,6 +171,7 @@
     <ClInclude Include="..\Public\AS_JumpAttack_Yetuga.h" />
     <ClInclude Include="..\Public\AS_JumpGrab_Yetuga.h" />
     <ClInclude Include="..\Public\AS_LieDown_Yetuga.h" />
+    <ClInclude Include="..\Public\AS_LockOn_Yetuga.h" />
     <ClInclude Include="..\Public\AS_RightHand_5Hit_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Rush_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Smash_Yetuga.h" />
@@ -214,7 +215,11 @@
     <ClInclude Include="..\public\Equip_Slot.h" />
     <ClInclude Include="..\Public\Event_Defines.h" />
     <ClInclude Include="..\Public\FSM_Yetuga.h" />
+    <ClInclude Include="..\public\Skill_Slot.h" />
+    <ClInclude Include="..\public\UI_Guide_Icon.h" />
     <ClInclude Include="..\Public\HeaderGroup_UI.h" />
+    <ClInclude Include="..\Public\HeinMach_Trigger.h" />
+    <ClInclude Include="..\Public\Head_Yetuga.h" />
     <ClInclude Include="..\Public\IdleState_Yetuga.h" />
     <ClInclude Include="..\public\Interaction_Guide.h" />
     <ClInclude Include="..\public\Interaction_Icon.h" />
@@ -269,6 +274,7 @@
     <ClInclude Include="..\Public\ScreenTrail.h" />
     <ClInclude Include="..\Public\Sequence_Dummy.h" />
     <ClInclude Include="..\Public\Sequence_HeinMach_Field.h" />
+    <ClInclude Include="..\Public\Sequence_HeinMach_Yetuga.h" />
     <ClInclude Include="..\Public\Shader_Controller.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\SkySphere.h" />
@@ -279,6 +285,9 @@
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="..\Public\TombStone.h" />
     <ClInclude Include="..\Public\Trigger.h" />
+    <ClInclude Include="..\public\Tutorial_Tex.h" />
+    <ClInclude Include="..\public\UI_Default_Button.h" />
+    <ClInclude Include="..\public\Tutorial_Panel.h" />
     <ClInclude Include="..\public\UI_Announce_MapName.h" />
     <ClInclude Include="..\public\UI_Announce_Talk.h" />
     <ClInclude Include="..\public\UI_BladeNexus.h" />
@@ -322,6 +331,7 @@
     <ClInclude Include="..\Public\UI_Tap.h" />
     <ClInclude Include="..\public\UI_BackGround.h" />
     <ClInclude Include="..\public\UI_Atlas_Icon.h" />
+    <ClInclude Include="..\public\UI_Tutorial.h" />
     <ClInclude Include="..\Public\Yetuga.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="ClientPch.h" />
@@ -342,6 +352,7 @@
     <ClCompile Include="..\Private\AS_JumpAttack_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_JumpGrab_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_LieDown_Yetuga.cpp" />
+    <ClCompile Include="..\Private\AS_LockOn_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_RightHand_5Hit_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Rush_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Smash_Yetuga.cpp" />
@@ -381,6 +392,10 @@
     <ClCompile Include="..\private\Equip_Panel.cpp" />
     <ClCompile Include="..\private\Equip_Slot.cpp" />
     <ClCompile Include="..\Private\FSM_Yetuga.cpp" />
+    <ClCompile Include="..\private\Skill_Slot.cpp" />
+    <ClCompile Include="..\private\UI_Guide_Icon.cpp" />
+    <ClCompile Include="..\Private\HeinMach_Trigger.cpp" />
+    <ClCompile Include="..\Private\Head_Yetuga.cpp" />
     <ClCompile Include="..\Private\IdleState_Yetuga.cpp" />
     <ClCompile Include="..\private\Interaction_Guide.cpp" />
     <ClCompile Include="..\private\Interaction_Icon.cpp" />
@@ -434,6 +449,7 @@
     <ClCompile Include="..\Private\ScreenTrail.cpp" />
     <ClCompile Include="..\Private\Sequence_Dummy.cpp" />
     <ClCompile Include="..\Private\Sequence_HeinMach_Field.cpp" />
+    <ClCompile Include="..\Private\Sequence_HeinMach_Yetuga.cpp" />
     <ClCompile Include="..\Private\Shader_Controller.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\SkySphere.cpp" />
@@ -444,6 +460,9 @@
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="..\Private\TombStone.cpp" />
     <ClCompile Include="..\Private\Trigger.cpp" />
+    <ClCompile Include="..\private\Tutorial_Tex.cpp" />
+    <ClCompile Include="..\private\UI_Default_Button.cpp" />
+    <ClCompile Include="..\private\Tutorial_Panel.cpp" />
     <ClCompile Include="..\private\UI_Announce_MapName.cpp" />
     <ClCompile Include="..\private\UI_Announce_Talk.cpp" />
     <ClCompile Include="..\private\UI_BladeNexus.cpp" />
@@ -487,6 +506,7 @@
     <ClCompile Include="..\Private\UI_Tap.cpp" />
     <ClCompile Include="..\private\UI_BackGround.cpp" />
     <ClCompile Include="..\private\UI_Atlas_Icon.cpp" />
+    <ClCompile Include="..\private\UI_Tutorial.cpp" />
     <ClCompile Include="..\Private\Yetuga.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="ClientPch.cpp">
