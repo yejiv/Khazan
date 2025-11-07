@@ -39,6 +39,7 @@ void CAS_Rush_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fT
         m_isCrashed = true;
     }
 
+
     if (pModel->Play_Animation(fTimeDelta))
     {
         m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isRushFinished", true);
@@ -50,6 +51,22 @@ void CAS_Rush_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isCrahsedWall", false);
     m_isCrashed = false;
+}
+
+void CAS_Rush_Yetuga::OnCollision(COLLISION_DESC* pDesc, CGameObject* pOwner)
+{
+    CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
+
+    COLLISION_LAYER eLayerType = static_cast<COLLISION_LAYER>(pDesc->pGameObject->Get_Layer());
+    switch (eLayerType)
+    {
+    case Client::COLLISION_LAYER::MAP_STATIC:
+        break;
+    case Client::COLLISION_LAYER::PLAYER:
+        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isCrahsedWall", true);
+        break;
+    }
+
 }
 
 CAS_Rush_Yetuga* CAS_Rush_Yetuga::Create()

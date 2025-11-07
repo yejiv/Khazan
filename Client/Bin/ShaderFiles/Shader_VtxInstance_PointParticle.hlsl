@@ -102,7 +102,7 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
         vUp = normalize(In[0].vPosition - In[0].vPrevPosition) * In[0].fSize * g_fSizeRatio * 0.5f;
         vLook = normalize(g_vCamPosition - In[0].vPosition);
         vRight = normalize(vector(cross(vUp.xyz, vLook.xyz), 0.f)) * In[0].fSize * 0.5f;
-        vUp += (In[0].vPosition - In[0].vPrevPosition) * 7.f;
+        vUp += (In[0].vPosition - In[0].vPrevPosition) * 2.f;
     }
     
     float Width = 1.0f / g_numCols;

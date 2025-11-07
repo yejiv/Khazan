@@ -33,6 +33,8 @@ HRESULT CRenderer::Initialize()
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
+    m_threadCLs.resize(m_pGameInstance->Get_ThreadCount(), nullptr);
+
     XMStoreFloat4x4(&m_WorldMatrix, XMMatrixScaling(m_fViewportWidth, m_fViewportHeight, 1.f));
     XMStoreFloat4x4(&m_ViewMatrix, XMMatrixIdentity());
     XMStoreFloat4x4(&m_ProjMatrix, XMMatrixOrthographicLH(m_fViewportWidth, m_fViewportHeight, 0.f, 1.f));
@@ -84,10 +86,13 @@ HRESULT CRenderer::Draw()
         if (FAILED(Render_Shadow()))
             return E_FAIL;
 
-    if (FAILED(Render_NonBlend()))
+    if (FAILED(Render_Static()))
         return E_FAIL;
 
     if (FAILED(Render_Decal()))
+        return E_FAIL;
+
+    if (FAILED(Render_Dynamic()))
         return E_FAIL;
 
     if (FAILED(Render_Outline()))
@@ -112,7 +117,6 @@ HRESULT CRenderer::Draw()
     if (FAILED(Render_Fog()))
         return E_FAIL;
 
-    // Bloom
     if (FAILED(Render_Blur()))
         return E_FAIL;
 
@@ -194,21 +198,49 @@ HRESULT CRenderer::Render_Shadow()
     return S_OK;
 }
 
-HRESULT CRenderer::Render_NonBlend()
+HRESULT CRenderer::Render_Static()
 {
-    /* Diffuse + Normal */
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_GameObjects"))))
         return E_FAIL;
 
-    for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::NONBLEND)])
-    {
+    vector<CGameObject*> Deferred;
+    for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::STATIC)]) {
+        
         if (nullptr != pRenderObject)
-            pRenderObject->Render();
-
-        Safe_Release(pRenderObject);
+        {
+            if (pRenderObject->Get_IsDeferred())
+            {
+                Deferred.push_back(pRenderObject);
+            }
+            else
+            {
+                pRenderObject->Render();
+                Safe_Release(pRenderObject);
+            }
+        }
+        
     }
 
-    m_RenderObjects[ENUM_CLASS(RENDERGROUP::NONBLEND)].clear();
+    m_RenderObjects[ENUM_CLASS(RENDERGROUP::STATIC)].clear();
+
+
+    Deferred_Job(Deferred);
+
+    if (FAILED(m_pGameInstance->End_MRT()))
+        return E_FAIL;
+
+    return S_OK;
+
+}
+
+HRESULT CRenderer::Render_Decal()
+{
+    /* Diffuse */
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Decal"), false)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Render_Decals()))
+        return E_FAIL;
 
     if (FAILED(m_pGameInstance->End_MRT()))
         return E_FAIL;
@@ -216,15 +248,20 @@ HRESULT CRenderer::Render_NonBlend()
     return S_OK;
 }
 
-HRESULT CRenderer::Render_Decal()
+HRESULT CRenderer::Render_Dynamic()
 {
-    /* Diffuse */
-    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Decal"), nullptr, false)))
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_GameObjects"), false)))
         return E_FAIL;
 
-    // Render_Decals
-    if (FAILED(m_pGameInstance->Render_Decals()))
-        return E_FAIL;
+    for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::DYNAMIC)])
+    {
+        if (nullptr != pRenderObject)
+            pRenderObject->Render();
+
+        Safe_Release(pRenderObject);
+    }
+
+    m_RenderObjects[ENUM_CLASS(RENDERGROUP::DYNAMIC)].clear();
 
     if (FAILED(m_pGameInstance->End_MRT()))
         return E_FAIL;
@@ -346,7 +383,7 @@ HRESULT CRenderer::Render_Lights()
 
 HRESULT CRenderer::Render_PostScene()
 {
-    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_PostScene"), nullptr, false)))
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_PostScene"), false)))
         return E_FAIL;
 
     if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
@@ -409,7 +446,7 @@ HRESULT CRenderer::Render_PostScene()
 
 HRESULT CRenderer::Render_NonLight()
 {
-    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), nullptr, false)))
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
         return E_FAIL;
 
     for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::NONLIGHT)])
@@ -430,7 +467,7 @@ HRESULT CRenderer::Render_NonLight()
 
 HRESULT CRenderer::Render_Blend()
 {
-    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), nullptr, false)))
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
         return E_FAIL;
 
     for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::BLEND)])
@@ -771,6 +808,85 @@ HRESULT CRenderer::SetUp_Viewport(_float fWidth, _float fHeight)
     m_pContext->RSSetViewports(1, &ViewPortDesc);
 
     return S_OK;
+}
+
+void CRenderer::InitCLSlots(uint32_t N) {
+    std::lock_guard<std::mutex> lk(m_Mutex);
+    m_threadCLs.assign(N, nullptr);
+}
+
+void CRenderer::StoreRecordedCL(uint32_t idx, ID3D11CommandList* pCL) {
+    std::lock_guard<std::mutex> lk(m_Mutex);
+    Safe_Release(m_threadCLs[idx]);
+    m_threadCLs[idx] = pCL; // 소유권 보유
+}
+
+ID3D11CommandList* CRenderer::ConsumeRecordedCL(uint32_t idx) {
+    lock_guard<mutex> lk(m_Mutex);
+    ID3D11CommandList* p = m_threadCLs[idx];
+    m_threadCLs[idx] = nullptr;
+    return p; // 호출자가 Release
+}
+
+void CRenderer::Deferred_Job(vector<class CGameObject*> Deferred)
+{
+    // [메인] 4) 뷰포트/상태 캐시 (Get은 메인만!)
+    D3D11_VIEWPORT cachedVP{}; UINT vpCount = 1;
+    m_pContext->RSGetViewports(&vpCount, &cachedVP);
+
+    const uint32_t Context_Count = m_pGameInstance->GetDeferredContext_Count();
+    auto chunks = SplitEvenly(Deferred, Context_Count);
+    vector<future<HRESULT>> futures;
+    futures.reserve(Context_Count);
+
+    ID3D11DepthStencilView* pCurDSV = m_pGameInstance->Get_CurrentDSV_AddRef();
+
+    for (uint32_t i = 0; i < Context_Count; ++i) {
+        auto batch = move(chunks[i]);
+        futures.emplace_back(
+            m_pGameInstance->Add_Task([this, i, batch = move(batch), cachedVP, pCurDSV]() mutable -> HRESULT
+                {
+                    // 빈 배치는 커맨드리스트 없이 스킵
+                    if (batch.empty()) { StoreRecordedCL(i, nullptr); return S_OK; }
+
+                    ID3D11DeviceContext* pDef = m_pGameInstance->GetDeferredContext(i);
+
+                    // (A) 디퍼드 컨텍스트에 같은 MRT를 '바인딩' (클리어X)
+                    if (FAILED(m_pGameInstance->Apply_MRT_OnContext(TEXT("MRT_GameObjects"), pDef, pCurDSV, /*isClear=*/false)))
+                        return E_FAIL;
+
+                    // (B) 뷰포트/필요상태 SET (Get 금지)
+                    pDef->RSSetViewports(1, &cachedVP);
+                    // pDef->OMSetBlendState(pBlend, blendFactor, sampleMask) ... (선택)
+
+                    // (C) 녹화
+                    for (auto* o : batch) { o->Deferred_Render(pDef); Safe_Release(o); }
+                    batch.clear();
+
+                    // (D) CL 생성 및 기록
+                    ID3D11CommandList* pCL = nullptr;
+                    HRESULT hr = pDef->FinishCommandList(FALSE, &pCL);
+                    if (FAILED(hr)) return hr;
+
+                    StoreRecordedCL(i, pCL);
+                    return S_OK;
+                })
+        );
+    }
+
+    // [메인] 6) 워커 완료 대기 → 순서대로 Execute
+    for (auto& f : futures) if (f.valid()) f.get();
+
+    for (uint32_t i = 0; i < Context_Count; ++i) {
+        ID3D11CommandList* CommandList = ConsumeRecordedCL(i);
+        if (CommandList) {
+            m_pContext->ExecuteCommandList(CommandList, TRUE);
+            CommandList->Release();
+        }
+    }
+
+    Safe_Release(pCurDSV);
+
 }
 
 #ifdef _DEBUG

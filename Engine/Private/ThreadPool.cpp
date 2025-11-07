@@ -1,8 +1,12 @@
 #include "ThreadPool.h"
+#include "GameInstance.h"
+
+extern thread_local uint32_t t_worker_idx = 0;
 
 CThreadPool::CThreadPool()
+    : m_pGameInstance { CGameInstance::GetInstance() }
 {
-
+    Safe_AddRef(m_pGameInstance);
 }
 
 HRESULT CThreadPool::Initialize(_uint thread_count)
@@ -13,8 +17,10 @@ HRESULT CThreadPool::Initialize(_uint thread_count)
     }
     m_Workers.reserve(thread_count);
     for (unsigned int i = 0; i < thread_count; ++i) {
-        m_Workers.emplace_back([this] { this->Worker_Thread(); });
+        m_Workers.emplace_back([this, i] { this->Worker_Thread(i); });
     }
+    m_iNumWokers = thread_count;
+    m_pGameInstance->CreateDeferredContexts(m_iNumWokers);
 
     return S_OK;
 }
@@ -62,8 +68,9 @@ void CThreadPool::PushJob(function<void()> job)
 
 }
 
-void CThreadPool::Worker_Thread()
+void CThreadPool::Worker_Thread(uint32_t worker_idx)
 {
+    t_worker_idx = worker_idx;
     HRESULT hrCo = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
     auto coGuard = std::unique_ptr<void, void(*)(void*)>{ (void*)1, [](void*) { CoUninitialize(); } };
 
@@ -116,5 +123,7 @@ void CThreadPool::Free()
     }
 
     __super::Free();
+
+    Safe_Release(m_pGameInstance);
 }
 

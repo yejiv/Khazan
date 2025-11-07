@@ -153,10 +153,11 @@ HRESULT CUI_Text::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void
 	string FontTag = pInData.value("FontTag", "");
 	m_wstrTexttag = AnsiToWString(FontTag);
 	m_wstrText = AnsiToWString(pInData.value("Text", ""), CP_UTF8);;
-
-	m_iPivotX = pInData["iPivot"].value("x", 0);
-	m_iPivotY = pInData["iPivot"].value("y", 0);
-
+	if (pInData.contains("iPivot"))
+	{
+		m_iPivotX = pInData["iPivot"].value("x", 0);
+		m_iPivotY = pInData["iPivot"].value("y", 0);
+	}
 	m_pTransformCom->Scale(_float3{ m_vLocalSize.x, m_vLocalSize.y, 1.f });
 	__super::Update_Rotation(0.f);
 	__super::Update_Transform(nullptr, m_vLocalPos);

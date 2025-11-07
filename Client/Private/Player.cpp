@@ -117,7 +117,7 @@ void CPlayer::Late_Update(_float fTimeDelta)
     /*   m_pTransformCom->Set_State(Engine::STATE::POSITION,
            m_pNavigationCom->Compute_OnCell(m_pTransformCom->Get_State(Engine::STATE::POSITION)));*/
 
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this)))
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 
 #ifdef _DEBUG

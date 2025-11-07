@@ -12,6 +12,10 @@ public:
 	virtual void				Update(class CStateMachine* pFSM, class CGameObject* pOwner, _float fTimeDelta) override;
 	virtual void				Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
+
+private:
+	void						Start_Decel();
+
 private:
 	_float						m_fSpeedPerSec = {};
 	_uint						m_iPrevMovementFlag = {};

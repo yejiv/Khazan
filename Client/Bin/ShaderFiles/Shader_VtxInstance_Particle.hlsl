@@ -81,9 +81,8 @@ struct PS_OUT
 
 float Mask_Scrolling(float2 vLifetime, float2 vTexcoord)
 {
-    float safeProgress = saturate(vLifetime.x * g_MaskScrollSpeed / vLifetime.y) * 2;
-    float maskOffset = (safeProgress * 2.0f) - 2.0f;
     float2 maskUV;
+    float maskOffset = saturate((vLifetime.x * g_MaskScrollSpeed) / vLifetime.y) - 1.f;
     
     if (g_MaskScrollYDir)
     {
@@ -169,7 +168,6 @@ PS_OUT PS_PRESNEL(PS_IN In)
     
     vector vEffectTexture = g_DiffuseTexture.Sample(PointSampler, fScrolledEffectUV);
     vector vFinalColor = float4(g_vSourceColor.xyz, min(vEffectTexture.r, g_vSourceColor.a));
-    
     
     float fresnelFactor = 1.0 - abs(dot(In.vNormal.xyz, normalize(g_vCamPosition - In.vWorldPos)));
     vFinalColor.xyz = vFinalColor.xyz * pow(fresnelFactor, 1.4f);

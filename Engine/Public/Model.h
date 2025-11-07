@@ -63,9 +63,11 @@ public:
 	virtual HRESULT Initialize_Prototype( const _char* pModelFilePath);
 	virtual HRESULT Initialize_Clone(void* pArg);
 	virtual HRESULT Render(_uint iMeshIndex);
+	virtual HRESULT Deferred_Render(_uint iMeshIndex, ID3D11DeviceContext* pDeferredContext);
 
 public:
 	HRESULT Bind_Materials(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, _uint iTextureType, _uint iIndex);
+	HRESULT Bind_Materials(class CDeferredShader* pShader, const _char* pConstantName, _uint iMeshIndex, _uint iTextureType, _uint iIndex);
 	HRESULT Bind_BoneMatrices(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex);
 
 

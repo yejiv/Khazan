@@ -14,6 +14,13 @@ public:
 	virtual void Update(class CStateMachine* pFSM, class CGameObject* pOwner, _float fTimeDelta);
 	virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner);
 
+public:
+	virtual void OnCollision(COLLISION_DESC* pDesc, class CGameObject* pOwner = nullptr) override;
+
+
+private:
+	_uint	m_iComboCount = {};
+	_bool	m_bisHit = {};
 
 public:
 	static CAS_RightHand_5Hit_Yetuga*	Create();

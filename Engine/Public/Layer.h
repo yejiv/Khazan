@@ -30,6 +30,8 @@ public:
 	void Late_Update(_float fTimeDelta);
 
 
+	void DeadObject_Clear();
+
 private:
 	list<class CGameObject*>			m_GameObjects;
 	list<class CGameObject*>			m_DeadGameObjects;

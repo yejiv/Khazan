@@ -16,6 +16,7 @@
 #include "AS_IceBreath_Yetuga.h"
 #include "AS_Groggy_Yetuga.h"
 #include "AS_Dead_Yetuga.h"
+#include "AS_LockOn_Yetuga.h"
 
 CFSM_Yetuga::CFSM_Yetuga()
 {
@@ -50,6 +51,8 @@ HRESULT CFSM_Yetuga::Initialize()
         return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::ICEBREATH), CAS_IceBreath_Yetuga::Create())))
         return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::LOCKON), CAS_LockOn_Yetuga::Create())))
+        return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::HIT), CAS_Hit_Yetuga::Create())))
         return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::DODGE), CAS_Dodge_Yetuga::Create())))
@@ -59,8 +62,6 @@ HRESULT CFSM_Yetuga::Initialize()
     if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::DEAD), CAS_Dead_Yetuga::Create())))
         return E_FAIL;
     
-
-  
     m_pCurrentState = m_States[ENUM_CLASS(YETUGA_STATE::IDLE)];
     if (nullptr == m_pCurrentState)
         return E_FAIL;

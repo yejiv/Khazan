@@ -43,16 +43,16 @@ void CUI_CombatSpirit_Penal::Priority_Update(_float fTimeDelta)
 
 void CUI_CombatSpirit_Penal::Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_U))
-	{
-		m_fCulGaugeValue = 0;
-	}
-	if (m_pGameInstance->Key_Down(DIK_I, INPUT_TYPE::UI))
-	{
-		m_iCulSlotNum++;
-		if (m_iCulSlotNum > m_iMaxSlotNum)
-			m_iCulSlotNum = 0;
-	}
+	//if (m_pGameInstance->Key_Down(DIK_U))
+	//{
+	//	m_fCulGaugeValue = 0;
+	//}
+	//if (m_pGameInstance->Key_Down(DIK_I, INPUT_TYPE::UI))
+	//{
+	//	m_iCulSlotNum++;
+	//	if (m_iCulSlotNum > m_iMaxSlotNum)
+	//		m_iCulSlotNum = 0;
+	//}
 
 	if (m_fCulGaugeValue > m_iCulSlotNum)
 		m_fCulGaugeValue = m_iCulSlotNum;

@@ -1,6 +1,7 @@
 ﻿
 #include "MeshMaterial.h"
 #include "Shader.h"
+#include "DeferredShader.h"
 
 CMeshMaterial::CMeshMaterial(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice { pDevice }
@@ -97,6 +98,24 @@ HRESULT CMeshMaterial::Bind_Resources(class CShader* pShader, const _char* pCons
 		OutputDebugStringW(cache.first.c_str());*/
 	//OutputDebugStringA("\n");
 
+	return pShader->Bind_SRV(pConstantName, m_SRVs[iTextureType][iIndex]);
+}
+
+HRESULT CMeshMaterial::Bind_Resources(CDeferredShader* pShader, const _char* pConstantName, _uint iTextureType, _uint iIndex)
+{
+	if (iIndex >= m_SRVs[iTextureType].size())
+		return E_FAIL;
+
+	//OutputDebugStringA(to_string(iIndex).c_str());
+	/*for (auto cache : m_TextureCache)
+		OutputDebugStringW(cache.first.c_str());*/
+		//OutputDebugStringA("\n");
+
+	return pShader->Bind_SRV(pConstantName, m_SRVs[iTextureType][iIndex]);
+}
+
+HRESULT CMeshMaterial::Deferred_Bind_Resources(ID3D11DeviceContext* pDeferredContext, CShader* pShader, const _char* pConstantName, _uint iTextureType, _uint iIndex)
+{
 	return pShader->Bind_SRV(pConstantName, m_SRVs[iTextureType][iIndex]);
 }
 

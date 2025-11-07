@@ -75,7 +75,7 @@ HRESULT CLogo_BG::Render()
 HRESULT CLogo_BG::Ready_Prototype()
 {
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_Component_UI_Movie_Logo"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Movie/Logo/logo_%d.jpg"), 251)), E_FAIL);
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Movie/Logo/logo_%d.dds"), 251)), E_FAIL);
 
 	return S_OK;
 }

@@ -57,6 +57,30 @@ HRESULT CVIBuffer_Instance::Bind_Resources()
 	return S_OK;
 }
 
+HRESULT CVIBuffer_Instance::Deferred_Bind_Resources(ID3D11DeviceContext* pDeferredContext)
+{
+	ID3D11Buffer* pVertexBuffers[] = {
+		m_pVB,
+		m_pVBInstance,
+	};
+
+	_uint		iVertexStrides[] = {
+		m_iVertexStride,
+		m_iInstanceVertexStride,
+	};
+
+	_uint		iOffsets[] = {
+		0,
+		0
+	};
+
+	pDeferredContext->IASetVertexBuffers(0, m_iNumVertexBuffers, pVertexBuffers, iVertexStrides, iOffsets);
+	pDeferredContext->IASetIndexBuffer(m_pIB, m_eIndexFormat, 0);
+	pDeferredContext->IASetPrimitiveTopology(m_ePrimitiveType);
+
+	return S_OK;
+}
+
 HRESULT CVIBuffer_Instance::Render()
 {
 
@@ -65,6 +89,16 @@ HRESULT CVIBuffer_Instance::Render()
 	return S_OK;
 
 	
+}
+
+HRESULT CVIBuffer_Instance::Deferred_Render(ID3D11DeviceContext* pDeferredContext)
+{
+
+	pDeferredContext->DrawIndexedInstanced(m_iNumIndexPerInstance, m_iNumInstance, 0, 0, 0);
+
+	return S_OK;
+
+
 }
 
 void CVIBuffer_Instance::Free()

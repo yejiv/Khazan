@@ -19,7 +19,9 @@ CUI_Loading::CUI_Loading(const CUI_Loading& Prototype)
 
 void CUI_Loading::On_Panel()
 {
+	_float2 vPos = m_pPointIcon->Get_WolrdPos();
 	m_IsUpdate = true;
+	m_pPointIcon->Set_Pos({ vPos.x - 30.f * m_iSelete ,vPos.y });
 	m_iSelete = 0;
 	Update_Text();
 

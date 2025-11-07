@@ -22,7 +22,7 @@ public:
 
 public:
 	HRESULT				Change_State(_uint iStateIndex, class CGameObject* pOwner);
-	void				OnCollision(COLLISION_DESC* pDesc);
+	void				OnCollision(COLLISION_DESC* pDesc, class CGameObject* pOwner = nullptr);
 
 
 protected:

@@ -13,11 +13,6 @@
 #include "UI_Inven.h"
 #pragma endregion
 
-#pragma region 락온, 브루탈어택 테스트
-#include "Target_LockOn.h"
-#include "Target_BrutalAttack.h"
-#pragma endregion
-
 CKhazan_Sample::CKhazan_Sample(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CCreature{ pDevice, pContext }
 {
@@ -82,23 +77,10 @@ void CKhazan_Sample::Priority_Update(_float fTimeDelta)
     __super::Priority_Update(fTimeDelta);
 
     if(m_pGameInstance->Key_Down(DIK_F5))
-        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(457.f, -12.f, 241.f, 1.f));
+        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(516.f, -11.f, 264.f, 1.f));
 
     XMStoreFloat4(&m_vPos, XMVectorSetW(m_pTransformCom->Get_State(STATE::POSITION),1.f));
 
-    if(m_pGameInstance->Key_Down(DIK_M))
-        static_cast<CTarget_LockOn*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("LockOn")))->LockOn(&m_vPos);
-    
-    if (m_pGameInstance->Key_Down(DIK_N))
-        static_cast<CTarget_LockOn*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("LockOn")))->LockOff();
-
-    if (m_pGameInstance->Key_Down(DIK_B))
-    {
-        CTarget_BrutalAttack* pObject = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
-        pObject->Setting_BrutalAttack(&m_vPos, 0.f);
-
-        m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), pObject);
-    }
 }
 
 void CKhazan_Sample::Update(_float fTimeDelta)
