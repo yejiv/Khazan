@@ -86,8 +86,10 @@ HRESULT CTrigger::Ready_Components(void* pArg)
 
 HRESULT CTrigger::Ready_Collision(void* pArg)
 {
+    _float3 vScale = m_pTransformCom->Get_Scaled();
+
     CBody::BODY_BOXSHAPE_DESC TriggerDesc{};
-    TriggerDesc.vExtent = _float3(3.f, 3.f, 3.f);
+    TriggerDesc.vExtent = _float3(vScale.x * 0.5f, vScale.y * 0.5f, vScale.z * 0.5f);
     TriggerDesc.bIsTrigger = true;
     TriggerDesc.bStartActive = true;
     TriggerDesc.eMotion = EMotionType::Kinematic;
@@ -99,6 +101,7 @@ HRESULT CTrigger::Ready_Collision(void* pArg)
     TriggerDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT);
     _float3 vPos{};
     XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
+    vPos.y += TriggerDesc.vExtent.y;
     _float4 vQuat{};
     XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
     TriggerDesc.vPos = vPos;
