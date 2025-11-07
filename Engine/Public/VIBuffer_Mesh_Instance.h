@@ -70,7 +70,7 @@ private:
 	ID3D11Buffer*				m_pStagingBuffer = { nullptr };
 	//Debug
 	//ID3D11Buffer*				m_pDebugInstanceBuffer = { nullptr };
-	POINT_INSTANCE_PARAMS*		m_pParticleParams; 
+	MESH_INSTANCE_PARAMS*		m_pParticleParams;
 
 private:
 	_float3*					m_pVertexPositions = { nullptr };

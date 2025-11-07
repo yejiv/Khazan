@@ -32,11 +32,11 @@ HRESULT CLevel_HeinMach::Initialize()
 {
 
 	m_pGameInstance->Add_FireTask([this]() {
-		CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
-		//CHECK_FAILED(Ready_Layer_Test(TEXT("Layer_Creature_Test")), E_FAIL);
+		//CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
+		CHECK_FAILED(Ready_Layer_Test(TEXT("Layer_Creature_Test")), E_FAIL);
 		if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 			return E_FAIL;
-		CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
+		//CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
 		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
 			HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
@@ -185,7 +185,7 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
 
 	/*Effect test => 혹시 보게되면 지우셔도 됩니다!!!!!!!!! */
 	if (m_pGameInstance->Key_Down(DIK_I))
-		m_pGameInstance->Spwan_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle1"), XMVectorSet(0.f, 0.f, 0.f, 1.f));
+		m_pGameInstance->Spwan_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpaceTime_SpearBlood"), XMVectorSet(1.f, 1.f, 1.f, 1.f));
 	//Test End
 
 	return;
@@ -250,8 +250,8 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 	CCamera_Compre* pCamera_Player = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Camera_Compre"), &PlayerCameraDesc));
 	pCamera_Player->Set_IsActive(false);
-	//CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Test"));
-	CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player"));
+	CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Test"));
+	//CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player"));
 	pCamera_Player->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
 	m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::HEINMACH), pCamera_Player);
 
@@ -317,8 +317,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Test(const _wstring& strLayerTag)
 HRESULT CLevel_HeinMach::Ready_Layer_TestEffect(const _wstring& strLayerTag)
 {
 
-	m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle1"), 3);
-	//m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle2"), 3);
+	m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpaceTime_SpearBlood"), 3);
 
 	return S_OK;
 }

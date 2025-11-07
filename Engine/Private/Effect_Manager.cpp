@@ -46,6 +46,13 @@ void CEffect_Manager::Add_Effect_ToPool(_uint iLayerLevelIndex, const _wstring& 
 	for (_uint i = 0; i < iPoolSize; ++i)
 	{
 		effect = dynamic_cast<CPrefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iLayerLevelIndex, strPrototypeTag));
+
+		if (Pool == nullptr)
+		{
+			MSG_BOX(TEXT("EFFECT :: 풀링하려고 Clone하려는데 프로토타입 없음! 프로토 타입 만드세요"));
+			return;
+		}
+
 		_uint ID = Layer->size();
 		
 		Layer->push_back(effect);

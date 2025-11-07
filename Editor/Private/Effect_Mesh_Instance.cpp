@@ -112,6 +112,7 @@ void CEffect_Mesh_Instance::Edit_Element()
 
     ImGui::InputFloat2("Size : ", reinterpret_cast<_float*>(&m_sEditingData.vSize));
     ImGui::InputFloat("Size Ratio : ", &m_sEditingData.fSizeRatio);
+    ImGui::InputFloat3("Rotation : ", reinterpret_cast<_float*>(&m_sEditingData.fRotation));
     ImGui::InputFloat2("LifeTime : ", reinterpret_cast<_float*>(&m_sEditingData.vLifeTime));
     ImGui::InputFloat2("Scrolling Speed : ", reinterpret_cast<_float*>(&m_sEditingData.iScrollSpeed));
     ImGui::Checkbox("Element Loop", &loop);

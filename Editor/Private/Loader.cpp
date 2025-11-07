@@ -359,7 +359,7 @@ HRESULT CLoader::Loading_For_Effect_Level()
 
 	// Prototype_Component_Texture_MeshEffect(Dissolve)
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_MeshEffect_Dissolve"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/Dissolve/Dissolve%d.png"), 2))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/Dissolve/Dissolve%d.png"), 3))))
 		return E_FAIL;
 
 	// Prototype_Component_Texture_Terrain_Texture

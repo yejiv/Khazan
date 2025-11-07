@@ -2,6 +2,9 @@
 
 struct PARTICLE_PARAMS
 {
+    float4 vRight;
+    float4 vUp;
+    float4 vLook;
     float4 vInitTranslation;
     float fSize;   
 };
@@ -94,7 +97,10 @@ void ResetParticle(inout VTXINSTANCE_PARTICLE Particle, uint iIndex)
     //}
     
     Particle.vTranslation = g_InputData[iIndex].vInitTranslation;
-
+    Particle.vRight = g_InputData[iIndex].vRight;
+    Particle.vUp = g_InputData[iIndex].vUp;
+    Particle.vLook = g_InputData[iIndex].vLook;
+   
     if (g_bIsLoop == 0)
     {
         Particle.bDead = true;
@@ -117,10 +123,13 @@ void CS_MOVE(uint3 DTid : SV_DispatchThreadID)
         g_SpeedData[0].bDead = 0;
         
     //Scale
-    Particle.vRight.x += SpeedData.fSpeed.w;
-    Particle.vUp.y += SpeedData.fSpeed.w;
-    Particle.vLook.z += SpeedData.fSpeed.w;
-	
+    //Particle.vRight.x = Particle.vRight.x + SpeedData.fSpeed.w;
+    //Particle.vUp.y = Particle.vUp.y + SpeedData.fSpeed.w;
+    //Particle.vLook.z = Particle.vLook.z + SpeedData.fSpeed.w;
+    Particle.vRight.x = Particle.vRight.x + 2.f;
+    Particle.vUp.y = Particle.vUp.y + 2.f;
+    Particle.vLook.z = Particle.vLook.z + 2.f;
+    
 	//Rotation
     if (SpeedData.fSpeed.y)
         RotateParticle(Particle, iIndex);
@@ -140,9 +149,12 @@ void CS_MOVE(uint3 DTid : SV_DispatchThreadID)
 	
     if (Particle.vRight.x <= 0.f)
     {
-        Particle.vRight = float4(g_InputData[iIndex].fSize, 0.f, 0.f, 0.f);
-        Particle.vUp = float4(0.f, g_InputData[iIndex].fSize, 0.f, 0.f);
-        Particle.vLook = float4(0.f, 0.f, g_InputData[iIndex].fSize, 0.f);
+        //Particle.vRight = float4(g_InputData[iIndex].fSize, 0.f, 0.f, 0.f);
+        //Particle.vUp = float4(0.f, g_InputData[iIndex].fSize, 0.f, 0.f);
+        //Particle.vLook = float4(0.f, 0.f, g_InputData[iIndex].fSize, 0.f);
+        Particle.vRight = g_InputData[iIndex].vRight;
+        Particle.vUp = g_InputData[iIndex].vUp;
+        Particle.vLook = g_InputData[iIndex].vLook;
     }
     
     g_OutputData[iIndex] = Particle;
@@ -184,9 +196,12 @@ void CS_RESET_SPEED(uint3 DTid : SV_DispatchThreadID)
     else if (g_iSpeedType == 2)
     {
         SpeedData.fSpeed.z = 0.f;
-        Particle.vRight = float4(g_InputData[iIndex].fSize, 0.f, 0.f, 0.f);
-        Particle.vUp = float4(0.f, g_InputData[iIndex].fSize, 0.f, 0.f);
-        Particle.vLook = float4(0.f, 0.f, g_InputData[iIndex].fSize, 0.f);
+        //Particle.vRight = float4(g_InputData[iIndex].fSize, 0.f, 0.f, 0.f);
+        //Particle.vUp = float4(0.f, g_InputData[iIndex].fSize, 0.f, 0.f);
+        //Particle.vLook = float4(0.f, 0.f, g_InputData[iIndex].fSize, 0.f);
+        Particle.vRight = g_InputData[iIndex].vRight;
+        Particle.vUp = g_InputData[iIndex].vUp;
+        Particle.vLook = g_InputData[iIndex].vLook;
     }
     else
         SpeedData.fSpeed.w = 0.f;
@@ -232,6 +247,9 @@ void CS_RESET(uint3 DTid : SV_DispatchThreadID)
     VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
 
     Particle.vTranslation = g_InputData[iIndex].vInitTranslation;
+    //Particle.vRight = g_InputData[iIndex].vRight;
+    //Particle.vUp = g_InputData[iIndex].vUp;
+    //Particle.vLook = g_InputData[iIndex].vLook;
     Particle.bDead = false;
     Particle.vLifeTime.x = 0.f;
     SpeedData.fGravity = 0.f;

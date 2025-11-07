@@ -134,7 +134,7 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 	m_VBInstanceDesc.StructureByteStride = m_iInstanceVertexStride;
 
 	m_pInstanceVertices = new IB_MESHINSTANCE_EFFECT[m_iNumInstance];
-	m_pParticleParams = new POINT_INSTANCE_PARAMS[m_iNumInstance];
+	m_pParticleParams = new MESH_INSTANCE_PARAMS[m_iNumInstance];
 
 	for (size_t i = 0; i < m_iNumInstance; i++)
 	{
@@ -145,9 +145,9 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 
 		XMVECTOR rotation;
 		if (m_sData.fRotation.x == 0.f && m_sData.fRotation.y == 0.f && m_sData.fRotation.z == 0.f && m_sData.iNumInstance > 1)
-			rotation = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(m_pGameInstance->Rand(0, 360)), 
-														XMConvertToRadians(m_pGameInstance->Rand(0, 360)), 
-														XMConvertToRadians(m_pGameInstance->Rand(0, 360)));
+			rotation = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(m_pGameInstance->Rand(0, 360)),
+				XMConvertToRadians(m_pGameInstance->Rand(0, 360)),
+				XMConvertToRadians(m_pGameInstance->Rand(0, 360)));
 		else
 			rotation = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(m_sData.fRotation.x), XMConvertToRadians(m_sData.fRotation.y), XMConvertToRadians(m_sData.fRotation.z));
 
@@ -156,7 +156,7 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 		XMStoreFloat4(&pInstanceVertices[i].vLook, XMVector3Rotate(XMVectorSet(0.f, 0.f, fScale * pMeshDesc->fSizeRatio, 0.f), rotation));
 
 		//_matrix		RotationMatrix = XMMatrixRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(m_pGameInstance->Rand(0, 360)));
-		//
+
 		//XMStoreFloat4(&pInstanceVertices[i].vRight, XMVector4Transform(XMVectorSet(fScale, 0.f, 0.f, 0.f), RotationMatrix));
 		//XMStoreFloat4(&pInstanceVertices[i].vUp, XMVector4Transform(XMVectorSet(0.f, fScale, 0.f, 0.f), RotationMatrix));
 		//XMStoreFloat4(&pInstanceVertices[i].vLook, XMVector4Transform(XMVectorSet(0.f, 0.f, fScale * pMeshDesc->fSizeRatio, 0.f), RotationMatrix));
@@ -164,7 +164,7 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 		//XMStoreFloat4(&pInstanceVertices[i].vRight, XMVectorSet(1.f, 0.f, 0.f, 0.f) * fScale);
 		//XMStoreFloat4(&pInstanceVertices[i].vUp, XMVectorSet(0.f, 1.f, 0.f, 0.f) * fScale);
 		//XMStoreFloat4(&pInstanceVertices[i].vLook, XMVectorSet(0.f, 0.f, 1.f, 0.f) * fScale);
-	
+
 		if (m_sData.IsCircle)
 		{
 			_vector Dir = XMVectorSet(m_pGameInstance->Rand(-1.f, 1.f), 0.f, m_pGameInstance->Rand(-1.f, 1.f), 0.f);
@@ -182,6 +182,9 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 
 		pInstanceVertices[i].vLifeTime = _float2(0.f, fLifeTime);
 		m_pParticleParams[i].vInitTranslation = pInstanceVertices[i].vTranslation;
+		m_pParticleParams[i].vRight = pInstanceVertices[i].vRight;
+		m_pParticleParams[i].vUp = pInstanceVertices[i].vUp;
+		m_pParticleParams[i].vLook= pInstanceVertices[i].vLook;
 		m_pParticleParams[i].fSize = fScale;
 	}
 
@@ -209,7 +212,7 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Clone(void* pArg)
 }
 
 _bool CVIBuffer_Mesh_Instance::Update(_float fTimeDelta)
-{  
+{
 	D3D11_MAPPED_SUBRESOURCE SubResource;
 	if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
 	{
@@ -337,9 +340,9 @@ void CVIBuffer_Mesh_Instance::Remove_Speed(SPEED_VALUE type)
 		pInstanceSpeedCB->iSpeedType = static_cast<_uint>(type);
 		pInstanceSpeedCB->iNumInstances = m_iNumInstance;
 		m_pContext->Unmap(m_pCB, 0);
-	}	
-	
-	COMPUTE_PASS_DESC PassDesc{}; 
+	}
+
+	COMPUTE_PASS_DESC PassDesc{};
 	PassDesc.SRVs.push_back(m_pSRV);
 	PassDesc.UAVs.push_back(m_pUAV);
 	PassDesc.UAVs.push_back(m_pUAVSpeed);
@@ -394,7 +397,7 @@ HRESULT CVIBuffer_Mesh_Instance::Bind_Resources()
 	//
 	//	m_pContext->Unmap(m_pDebugInstanceBuffer, 0);
 	//}
-	
+
 	return S_OK;;
 }
 HRESULT CVIBuffer_Mesh_Instance::Ready_SRV(void* pSysmem)
@@ -402,12 +405,12 @@ HRESULT CVIBuffer_Mesh_Instance::Ready_SRV(void* pSysmem)
 	ID3D11Buffer* pBuffer = { nullptr };
 
 	D3D11_BUFFER_DESC ParticleParamsBufferDesc{};
-	ParticleParamsBufferDesc.ByteWidth = sizeof(POINT_INSTANCE_PARAMS) * m_iNumInstance;
+	ParticleParamsBufferDesc.ByteWidth = sizeof(MESH_INSTANCE_PARAMS) * m_iNumInstance;
 	ParticleParamsBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	ParticleParamsBufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 	ParticleParamsBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	ParticleParamsBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-	ParticleParamsBufferDesc.StructureByteStride = sizeof(POINT_INSTANCE_PARAMS);
+	ParticleParamsBufferDesc.StructureByteStride = sizeof(MESH_INSTANCE_PARAMS);
 
 	D3D11_SUBRESOURCE_DATA ParticleParamsInitialData{};
 	ParticleParamsInitialData.pSysMem = pSysmem;
