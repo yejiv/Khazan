@@ -20,14 +20,27 @@ public:
 	virtual void			Reset() override;
 
 public:
+	HRESULT					Bind_ShaderResources(class CShader* pShader, class CTexture** pTexture, class CVIBuffer_Cube* pVIBuffer);
+
+public:
 	_float					Get_Opacity() { return m_fOpacity; }
-	_float					Get_LifeRatio() { return m_fTimeAcc / m_fLifeTime; }
+	
+	DECAL_DESC				Get_Desc() { return m_Desc; }
+	void					Set_Desc(DECAL_DESC Desc);
+	
+	_uint					Get_TextureIndex() { return m_iTextureIndex; }
+	void					Set_TextureIndex(_uint iIndex) { m_iTextureIndex = iIndex; }
+
+	_uint					Get_RandomSeed() { return m_iRandSeed; }
+	void					Set_RandomSeed(_uint iSeed) { m_iRandSeed = iSeed; }
 
 private:
 	_float					m_fTimeAcc = {};
-	_float					m_fLifeTime = {};
 	_float					m_fOpacity = {};
-	_float					m_fFadeOutStartTime{}, m_fFadeInEndTime{};
+	_uint					m_iTextureIndex = {};
+	_uint					m_iRandSeed = {};
+
+	DECAL_DESC				m_Desc = {};
 
 public:
 	static CDecal*			Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

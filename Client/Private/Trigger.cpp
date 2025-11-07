@@ -48,7 +48,7 @@ void CTrigger::Update(_float fTimeDelta)
 void CTrigger::Late_Update(_float fTimeDelta)
 {
     if (true == m_isRender)
-        m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
 }
 
 HRESULT CTrigger::Render()

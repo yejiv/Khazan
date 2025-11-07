@@ -103,6 +103,7 @@ void CEffect_Point_Instance::Edit_Element()
     _bool            IsVerticalScroll = (_int)m_sEditingData.bIsScrollVertical;
     _bool            IsInverseScroll = (_int)m_sEditingData.bIsScrollInverse;
     _bool            bIsTurbulence = (_int)m_sEditingData.bIsTurbulence;
+    _bool            bIsDissolve = (_int)m_sEditingData.sDissolveData.bIsDissolve;
 
     ImGui::RadioButton("Spawn_BoundingBox", &isCircle, 0);
     ImGui::RadioButton("Spawn_Circle", &isCircle, 1);
@@ -141,12 +142,25 @@ void CEffect_Point_Instance::Edit_Element()
     else
         m_sEditingData.fMaskScrollSpeed = 0.f;
 
+    ImGui::Checkbox("Dissolve", &bIsDissolve);
+    if (bIsDissolve)
+    {
+        ImGui::Indent();
+        const char* DissolveTex[] = { "Mesh0", "Mesh1" };
+        ImGui::Combo("Dissolve Texture", reinterpret_cast<int*>(&m_sEditingData.sDissolveData.iDissolveTextureIdx), DissolveTex, IM_ARRAYSIZE(DissolveTex));
+        ImGui::InputFloat("Dissolve Edge Width : ", reinterpret_cast<_float*>(&m_sEditingData.sDissolveData.fDissolveEdgeWidth));
+        ImGui::ColorEdit4("Edge Color", (float*)&m_sEditingData.sDissolveData.fDissolveEdgeColor);
+        ImGui::Unindent();
+    }
+
+    ImGui::Checkbox("Turbulence", &bIsTurbulence);
     if (bIsTurbulence)
     {
         ImGui::Indent();
         const char* MaskTexture[] = { "texture0", "texture1", "texture2",  "texture3" };
         ImGui::Combo("Turbulence Textures", reinterpret_cast<int*>(&m_sEditingData.iTurbulenceTextureIdx), MaskTexture, IM_ARRAYSIZE(MaskTexture));
         ImGui::InputFloat("Turbulence Speed : ", &m_sEditingData.fTurbulenceSpeed);
+        ImGui::InputFloat("Turbulence Sample Size: ", &m_sEditingData.fTurbulenceSampleSize);
         ImGui::Unindent();
     }
 
@@ -155,6 +169,7 @@ void CEffect_Point_Instance::Edit_Element()
     m_sEditingData.bIsScrollInverse = IsInverseScroll;
     m_sEditingData.bIsScrollVertical = IsVerticalScroll;
     m_sEditingData.bIsTurbulence = bIsTurbulence;
+    m_sEditingData.sDissolveData.bIsDissolve = bIsDissolve;
 
     if (ImGui::Button("Apply"))
         Apply(&m_sEditingData);
@@ -275,9 +290,9 @@ HRESULT CEffect_Point_Instance::Bind_ShaderResources()
     if (FAILED(m_pShaderCom->Bind_Bool("g_IsDisolve", &IsDissolve)))
         return E_FAIL;
 
-    if (FAILED(m_pShaderCom->Bind_RawValue("g_EdgeWidth", &m_sEditingData.vColor, sizeof(_float))))
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_EdgeWidth", &m_sEditingData.sDissolveData.fDissolveEdgeWidth, sizeof(_float))))
         return E_FAIL;
-    if (FAILED(m_pShaderCom->Bind_RawValue("g_EdgeColor", &m_sEditingData.vColor, sizeof(_float4))))
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_EdgeColor", &m_sEditingData.sDissolveData.fDissolveEdgeColor, sizeof(_float4))))
         return E_FAIL;
 
     if (FAILED(m_pShaderCom->Bind_RawValue("g_MaskScrollSpeed", &m_sData.fMaskScrollSpeed, sizeof(_float))))

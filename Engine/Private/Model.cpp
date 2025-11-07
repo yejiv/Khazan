@@ -318,11 +318,22 @@ HRESULT CModel::Bind_BoneMatrices(CShader* pShader, const _char* pConstantName, 
     if (iMeshIndex >= m_iNumMeshes)
         return E_FAIL;
 
-    return m_Meshes[iMeshIndex]->Bind_BoneMatrices(pShader, pConstantName, m_Bones);
+        // 파츠는 마스터의 본을 사용
+    if (m_isSharedSkeleton && m_pMasterSkeleton != nullptr)
+    {
+        // 마스터 본으로 바인딩 (Mesh 내부에서 본 이름으로 매칭)
+        Update_PartLocalBones();
+        return m_Meshes[iMeshIndex]->Bind_BoneMatrices(pShader, pConstantName, m_pMasterSkeleton->m_Bones, &m_PartLocalBoneMatrices);
+    }
+    return m_Meshes[iMeshIndex]->Bind_BoneMatrices(pShader, pConstantName, m_Bones, nullptr);
 }
 
 _bool CModel::Play_Animation(_float fTimeDelta)
 {
+    /* 파츠들은 애니메이션 안돌림 */
+    //if (m_pMasterSkeleton != nullptr )
+    //    return false;
+
     m_isFinished = false;
 
     /* 애니메이션 세트  */
@@ -461,6 +472,7 @@ _bool CModel::Play_Animation(_float fTimeDelta)
 
     }
 
+     
     return m_isFinished;
 }
 
@@ -548,10 +560,12 @@ _bool CModel::Check_MinAnimationTime()
 
 void CModel::Update_BoneCombinedMatrices()
 {
+	//if (m_isSharedSkeleton)
+	//	return;
+
 	for (auto bone : m_Bones)
-	{
 		bone->Update_CombinedTransformationMatrix(m_PreTransformMatrix, m_Bones);
-	}
+
 }
 
 void CModel::Register_Event(const string& strEventKey, ANIM_EVENT_TRIGGERTYPE eTriggerType, function<void()> OnEvent)
@@ -570,6 +584,127 @@ void CModel::Clear_AllEvent()
 {
     m_EventCallbacks.clear();
 }
+
+
+void CModel::Set_MasterSkeleton(CModel* pMaster)
+{
+    if (nullptr == pMaster)
+        return;
+
+    if (m_pMasterSkeleton != nullptr)
+        Safe_Release(m_pMasterSkeleton);
+
+    m_pMasterSkeleton = pMaster;
+    Safe_AddRef(m_pMasterSkeleton);
+
+    m_isSharedSkeleton = true;
+    m_isMaterSkeleton = false;
+
+    // 메시 본 매핑
+    for (auto& pMesh : m_Meshes)
+    {
+        pMesh->Build_BoneNameList(m_Bones);
+        pMesh->Build_MasterBoneCache(m_pMasterSkeleton->m_Bones);
+        pMesh->Build_FallbackBoneCache(m_Bones, m_pMasterSkeleton->m_Bones);
+    }
+}
+
+void CModel::Attach_Part(CModel* pPart)
+{
+    if (nullptr == pPart)
+        return;
+
+    /* 이미 부착되어 있느지 */
+    auto iter = find(m_AttachedParts.begin(), m_AttachedParts.end(), pPart);
+    if (iter != m_AttachedParts.end())
+        return;
+
+    pPart->Set_MasterSkeleton(this);
+    m_AttachedParts.emplace_back(pPart);
+    Safe_AddRef(pPart);
+
+    m_isMaterSkeleton = true;
+
+}
+
+void CModel::Detach_Part(CModel* pPart)
+{
+    auto iter = find(m_AttachedParts.begin(), m_AttachedParts.end(), pPart);
+    if (iter == m_AttachedParts.end())
+        return;
+
+    if (pPart->m_pMasterSkeleton == this)
+    {
+        Safe_Release(pPart->m_pMasterSkeleton);
+        pPart->m_pMasterSkeleton = nullptr;
+        pPart->m_isSharedSkeleton = false;
+    }
+
+    Safe_Release(*iter);
+    m_AttachedParts.erase(iter);
+}
+
+
+void CModel::Render_AllAttachedParts()
+{
+    for (auto& pPart : m_AttachedParts)
+    {
+        for (_uint i = 0; i < pPart->Get_NumMeshes(); ++i)
+        {
+            pPart->Render(i); 
+        }
+    }
+}
+
+void CModel::Update_PartLocalBones()
+{
+    if (!m_isSharedSkeleton || nullptr == m_pMasterSkeleton)
+        return;
+
+    m_PartLocalBoneMatrices.clear();
+    m_PartLocalBoneMatrices.resize(m_Bones.size());
+
+    // 중요: 순차적으로 처리 (부모 -> 자식 순서)
+    for (size_t i = 0; i < m_Bones.size(); ++i)
+    {
+        CBone* pBone = m_Bones[i];
+        _wstring boneName = pBone->Get_Name();
+
+        // 마스터에 있는 본인지 확인
+        _bool foundInMaster = false;
+        for (size_t j = 0; j < m_pMasterSkeleton->m_Bones.size(); ++j)
+        {
+            if (m_pMasterSkeleton->m_Bones[j]->Compare_Name(boneName))
+            {
+                // 마스터 본: 마스터의 Combined Matrix 사용
+                m_PartLocalBoneMatrices[i] =
+                    *m_pMasterSkeleton->m_Bones[j]->Get_CombinedTransformationMatrixPtr();
+                foundInMaster = true;
+                break;
+            }
+        }
+
+        // 파츠 전용 본 처리
+        if (!foundInMaster)
+        {
+            _int iParentIndex = pBone->Get_ParentBoneIndex();
+
+            if (iParentIndex >= 0 && iParentIndex < m_PartLocalBoneMatrices.size())
+            {
+                // 핵심: 부모 Combined * 자신의 Local
+                _matrix matParent = XMLoadFloat4x4(&m_PartLocalBoneMatrices[iParentIndex]);
+                _matrix matLocal = pBone->Get_TransformationMatrix();  // 초기 로컬 변환
+
+                XMStoreFloat4x4(&m_PartLocalBoneMatrices[i], matLocal * matParent);
+            }
+            else
+            {
+                XMStoreFloat4x4(&m_PartLocalBoneMatrices[i], XMMatrixIdentity());
+            }
+        }
+    }
+}
+
 
 #ifdef _DEBUG
 void CModel::Debug_RanderState()
@@ -945,6 +1080,9 @@ HRESULT CModel::Ready_Meshes(MODEL_DATA& data)
 			return E_FAIL;
 		}
 		m_Meshes.emplace_back(pMesh);
+
+        /* 파츠가 사용할 본 인덱스 넘겨주기 */
+      //  pMesh->Build_BoneNameList(m_Bones);
 	}
 
 	return S_OK;

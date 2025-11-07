@@ -15,7 +15,7 @@ public:
 	HRESULT Add_RenderTarget(const _wstring& strTargetTag, _uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vClearColor);
 	HRESULT Bind_ShaderResource(const _wstring& strTargetTag, class CShader* pShader, const _char* pConstantName);
 	HRESULT Add_MRT(const _wstring& strMRTTag, const _wstring& strTargetTag);
-	HRESULT Begin_MRT(const _wstring& strMRTTag, ID3D11DepthStencilView* pDSV, _bool isClear);
+	HRESULT Begin_MRT(const _wstring& strMRTTag, _bool isClear, ID3D11DepthStencilView* pDSV);
 	HRESULT End_MRT();
 	HRESULT Copy_Resource(const _wstring& strTargetTag, ID3D11Texture2D* pSourTexture);
 
@@ -39,14 +39,14 @@ public:
 #endif
 
 private:
-	ID3D11Device* m_pDevice = { nullptr };
-	ID3D11DeviceContext* m_pContext = { nullptr };
+	ID3D11Device*				m_pDevice = { nullptr };
+	ID3D11DeviceContext*		m_pContext = { nullptr };
 
-	ID3D11RenderTargetView* m_pBackBuffer = { nullptr };
-	ID3D11DepthStencilView* m_pOriginalDSV = { nullptr };
+	ID3D11RenderTargetView*		m_pBackBuffer = { nullptr };
+	ID3D11DepthStencilView*		m_pOriginalDSV = { nullptr };
+
 private:
 	map<const _wstring, class CRenderTarget*>			m_RenderTargets;
-	/* 장치에 동시에 바인딩되어야할 타겟들을 미리 모아서 저장해놓는다 .*/
 	map<const _wstring, list<class CRenderTarget*>>		m_MRTs;
 
 private:

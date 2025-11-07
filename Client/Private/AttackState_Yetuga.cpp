@@ -26,7 +26,7 @@ void CAttackState_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 
     if (pModel->Play_Animation(fTimeDelta))
     {
-        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>("Yetuga", "isAttackFinished", true);
+        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "is2HitFinished", true);
     }
 
 }
@@ -36,10 +36,10 @@ void CAttackState_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 
 }
 
-void CAttackState_Yetuga::OnCollision(COLLISION_DESC* pDesc)
+void CAttackState_Yetuga::OnCollision(COLLISION_DESC* pDesc, CGameObject* pOwner)
 {
     CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
-    pTarget->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK); 
+    pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK);
 }
 
 CAttackState_Yetuga* CAttackState_Yetuga::Create()

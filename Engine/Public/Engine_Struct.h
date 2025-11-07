@@ -215,13 +215,15 @@ namespace Engine
 		float		fMaxIntensity;
 	}VIGNETTE_CONFIG;
 
-	typedef struct tagDecalParams
+	typedef struct tagDecalDesc
 	{
-		XMFLOAT4X4	vWorldMarixInv;
-		float		fOpacity;
-		float		fLifeRatio;
-		float		fPadding[2];
-	}DECAL_PARAMS;
+		float		fLifeTime;
+		XMFLOAT2	vFadeTime;
+		DECALTYPE	eType;
+		XMFLOAT3	vPosition;
+		XMFLOAT3	vScale;
+		XMFLOAT3	vColor;
+	}DECAL_DESC;
 
 	struct HitStopState
 	{

@@ -27,7 +27,7 @@ protected:
 
 public:
 	void						Set_Text(_wstring wstrText);
-	void						Setting_Text(const TEXTBOX_DESC& pDesc);
+	virtual void				Setting_Text(const TEXTBOX_DESC& pDesc);
 	void						Setting_Pivot(_int iPivotX, _int iPivotY);
 public:
 	virtual HRESULT				Initialize_Prototype() override;

@@ -155,23 +155,21 @@ HRESULT CCursor::Ready_Component()
 
 void CCursor::Play_Mode()
 {
-	ShowCursor(TRUE);
 	m_eMode = MOUSE_MODE::PLAY_MODE;
 	RECT clientRect;
 	POINT centerPoint;
 
-	GetClientRect(g_hWnd, &clientRect);
-	centerPoint.x = (clientRect.right - clientRect.left) / 2;
-	centerPoint.y = (clientRect.bottom - clientRect.top) / 2;
+	//GetClientRect(g_hWnd, &clientRect);
+	//centerPoint.x = (clientRect.right - clientRect.left) / 2;
+	//centerPoint.y = (clientRect.bottom - clientRect.top) / 2;
 
-	ClientToScreen(g_hWnd, &centerPoint);
+	//ClientToScreen(g_hWnd, &centerPoint);
 
 	//SetCursorPos(centerPoint.x, centerPoint.y);
 }
 
 void CCursor::UI_Mode()
 {
-	ShowCursor(FALSE);
 	POINT ptMouse{};
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);

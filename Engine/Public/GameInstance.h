@@ -152,7 +152,7 @@ public:
 #pragma region TARGET_MANAGER
 	HRESULT Add_RenderTarget(const _wstring& strTargetTag, _uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vClearColor);
 	HRESULT Add_MRT(const _wstring& strMRTTag, const _wstring& strTargetTag);
-	HRESULT Begin_MRT(const _wstring& strMRTTag, ID3D11DepthStencilView* pDSV = nullptr, _bool isClear = true);
+	HRESULT Begin_MRT(const _wstring& strMRTTag, _bool isClear = true, ID3D11DepthStencilView* pDSV = nullptr);
 	HRESULT End_MRT();
 	HRESULT Bind_RT_ShaderResource(const _wstring& strTargetTag, class CShader* pShader, const _char* pConstantName);
 	HRESULT Copy_RT_Resource(const _wstring& strTargetTag, ID3D11Texture2D* pSourTexture);
@@ -362,14 +362,8 @@ public:
 #pragma endregion
 
 #pragma region DECAL_MANAGER
-	HRESULT						Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag,
-								const _float3& vPosition, const _float3& vScale);
+	HRESULT						Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, const DECAL_DESC& Desc);
 	HRESULT						Render_Decals();
-	_float3						Get_DecalColor();
-		void					Set_DecalColor(_float3 vColor);
-	_uint						Get_NumDecalTextures();
-	ID3D11ShaderResourceView*	Get_DecalTexture(_uint iTextureIndex);
-	void						Set_DecalTextureIndex(_uint iTextureIndex);
 #pragma endregion
 
 #pragma region EFFECT_MANAGER

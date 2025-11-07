@@ -86,10 +86,27 @@ HRESULT CProp_Interactive::Bind_ShaderResources()
 
 HRESULT CProp_Interactive::Bind_Materials(_uint iMeshIndex)
 {
-    m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0);
-    m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", iMeshIndex, aiTextureType_NORMALS, 0);
-    m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", iMeshIndex, aiTextureType_EMISSIVE, 0);
-    m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0);
+    _bool isDiffuse = { false };
+    _bool isNormal = { false };
+    _bool isEmissive = { false };
+    _bool isSpecular = { false };
+
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0)))
+        isDiffuse = true;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", iMeshIndex, aiTextureType_NORMALS, 0)))
+        isNormal = true;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", iMeshIndex, aiTextureType_EMISSIVE, 0)))
+        isEmissive = true;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
+        isSpecular = true;
+
+    isSpecular = false;
+    isEmissive = false;
+
+    m_pShaderCom->Bind_RawValue("g_isDiffuse", &isDiffuse, sizeof(_bool));
+    m_pShaderCom->Bind_RawValue("g_isNormal", &isNormal, sizeof(_bool));
+    m_pShaderCom->Bind_RawValue("g_isEmissive", &isEmissive, sizeof(_bool));
+    m_pShaderCom->Bind_RawValue("g_isSpecular", &isSpecular, sizeof(_bool));
 
     return S_OK;
 }

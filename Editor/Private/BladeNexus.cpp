@@ -113,7 +113,7 @@ void CBladeNexus::Update(_float fTimeDelta)
 
 void CBladeNexus::Late_Update(_float fTimeDelta)
 {
-    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this), );
+    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this), );
 }
 
 HRESULT CBladeNexus::Render()
@@ -125,6 +125,33 @@ HRESULT CBladeNexus::Render()
     for (_uint i = 0; i < iNumMeshes; ++i)
     {
         Bind_Materials(i);
+
+        // 0 Ä®¼ÕÀâÀÌ
+        // 1 ¼Õ Àß¸² º¸È£´ë
+        // 2 ¹¹ Á¸³ª ÀÛÀº ´«
+        // 3 ¹Ø¿¡ ÀÛÀº ³¯Ä«·Î¿î
+        // 4 ¹Ø¿¡ Å« ³¯Ä«·Î¿î
+        // 5 ´«
+        if (5 == i)
+        {
+            _bool isEmissive = { false };
+            _bool isSpecular = { false };
+
+            _bool isSpecToEmmi = true;
+
+            if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_EMISSIVE, 0)))
+                isEmissive = true;
+            if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR, 0)))
+                isSpecular = true;
+            //if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_EMISSIVE, 0)))
+            //    isEmissive = true;
+            //if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_SPECULAR, 0)))
+            //    isSpecular = true;
+
+            m_pShaderCom->Bind_RawValue("g_isEmissive", &isEmissive, sizeof(_bool));
+            m_pShaderCom->Bind_RawValue("g_isSpecular", &isSpecular, sizeof(_bool));
+            m_pShaderCom->Bind_RawValue("g_isTest", &isSpecToEmmi, sizeof(_bool));
+        }
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
@@ -170,8 +197,8 @@ HRESULT CBladeNexus::Bind_Materials(_uint iMeshIndex)
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
         isSpecular = true;
 
-    //isSpecular = false;
-    //isEmissive = false;
+    isSpecular = false;
+    isEmissive = false;
 
     m_pShaderCom->Bind_RawValue("g_isDiffuse", &isDiffuse, sizeof(_bool));
     m_pShaderCom->Bind_RawValue("g_isNormal", &isNormal, sizeof(_bool));

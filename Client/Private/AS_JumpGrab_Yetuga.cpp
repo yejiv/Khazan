@@ -54,10 +54,10 @@ void CAS_JumpGrab_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 
     if (m_isGrabbed)
     {
-        m_vGrabPoint = pYetuga->Get_Body()->Get_BonePoint("Holding");  
+       /* m_vGrabPoint = pYetuga->Get_Body()->Get_BonePoint("Holding");  
         CGameObject* pTarget = pBB->Get_Value<CGameObject*>(pYetuga->Get_Name(), "Target");
         CTransform* pTargetTransform = static_cast<CTransform*>(pTarget->Get_Component(TEXT("Com_Transform")));
-        pTargetTransform->Set_State(STATE::POSITION, XMLoadFloat3(&m_vGrabPoint));
+        pTargetTransform->Set_State(STATE::POSITION, XMLoadFloat3(&m_vGrabPoint));*/
     }
 
     if (pModel->Play_Animation(fTimeDelta))

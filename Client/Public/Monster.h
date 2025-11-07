@@ -57,6 +57,9 @@ public:
 	virtual void				Consume_Stamina(_float fAmout) override;
 	virtual void				Recovery_Stamina(_float fTimeDelta) override;
 	virtual void				Look_Target();
+	virtual void				Look_Target_Lerp(_float fTimeDleta, _float AnimRatio, _float fTurnSpeed);
+	virtual void				Start_Decel(_float fDuration);
+	virtual void				Update_Velocity(_float fTimeDelta);
 public:
 	virtual HRESULT				Initialize_Prototype() override;
 	virtual HRESULT				Initialize_Clone(void* pArg) override;
@@ -68,7 +71,7 @@ public:
 
 
 protected:
-	//CRigidBody*				m_pRigidBodyCom = { nullptr };
+	//CRigidBody*						m_pRigidBodyCom = { nullptr };
 
 protected:
 	class CAI_Controller*			m_pController = { nullptr };
@@ -82,6 +85,13 @@ protected:
 	string							m_strName;
 	_float							m_fRecoveryPerSec = {};
 	_bool							m_isRequestRecoveryStamina = {};
+
+	_float3							m_vVelocity = {}; // 현재 이동속도
+	_float3							m_vVelocutyTarget = {}; // 목표 속도 (0)
+	_float							m_fDecelTime = {}; // 감속 지속 시간
+	_float							m_fDecelElapsed = {}; // 경과 시간
+	_bool							m_isDecelerating = {}; // 감속 중 플래그
+
 
 //private:
 //	HRESULT Ready_Components();

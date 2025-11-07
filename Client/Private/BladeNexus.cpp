@@ -66,7 +66,7 @@ void CBladeNexus::Update(_float fTimeDelta)
 
 void CBladeNexus::Late_Update(_float fTimeDelta)
 {
-    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this), );
+    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this), );
 }
 
 HRESULT CBladeNexus::Render()

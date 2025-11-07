@@ -41,11 +41,6 @@ void CUI_PlayerHP_Gauge::Priority_Update(_float fTimeDelta)
 
 void CUI_PlayerHP_Gauge::Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_O))
-		m_fCurrentValue -=30.f;
-	if (m_pGameInstance->Key_Pressing(DIK_P, 0))
-		m_fCurrentValue += fTimeDelta * 100.f;
-
 	if (m_fCurrentValue < 0)
 		m_fCurrentValue = 0;
 	if (m_fCurrentValue > m_fMaxValue)
