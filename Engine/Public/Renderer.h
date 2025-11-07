@@ -15,6 +15,37 @@ private:
 	virtual ~CRenderer() = default;
 
 public:
+	template <typename T>
+	static std::vector<std::vector<T>> SplitEvenly(std::vector<T>& items, uint32_t N)
+	{
+		std::vector<std::vector<T>> chunks;
+		chunks.resize(N);
+
+		const size_t total = items.size();
+		if (N == 0 || total == 0) return chunks;
+
+		// 몫/나머지로 분할
+		const size_t q = total / N;
+		size_t r = total % N;
+
+		size_t start = 0;
+		for (uint32_t i = 0; i < N; ++i)
+		{
+			size_t count = q + (r > 0 ? 1 : 0);
+			if (r > 0) --r;
+
+			if (count > 0)
+			{
+				chunks[i].reserve(count);
+				for (size_t k = 0; k < count; ++k)
+					chunks[i].push_back(items[start + k]);
+				start += count;
+			}
+		}
+		return chunks;
+	}
+
+public:
 	HRESULT Initialize();
 	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pRenderObject);
 	HRESULT Draw();
@@ -44,6 +75,7 @@ private:
 	class CGameInstance*		m_pGameInstance = { nullptr };
 
 	list<class CGameObject*>	m_RenderObjects[ENUM_CLASS(RENDERGROUP::END)];
+	vector<class CShader*>		m_pThreadEffect = { nullptr };
 
 private:
 	class CShader*				m_pShader = { nullptr };
@@ -57,6 +89,10 @@ private:
 
 	// Outline
 	OUTLINE_CONFIG				m_OutlineConfig = { _float3(0.f, 0.f, 0.f), 0.f, 1.f, 0.01f };
+
+	vector<ID3D11CommandList*>	m_threadCLs;
+	mutex						m_Mutex;
+
 
 #ifdef _DEBUG
 private:
@@ -73,8 +109,9 @@ private:
 private:
 	HRESULT Render_Priority();
 	HRESULT Render_Shadow();
-	HRESULT Render_NonBlend();
+	HRESULT Render_Static();
 	HRESULT Render_Decal();
+	HRESULT Render_Dynamic();
 	HRESULT Render_Outline();
 	HRESULT Render_SSAO();
 	HRESULT Render_Lights();
@@ -91,6 +128,12 @@ private:
 	HRESULT Ready_MRTs();
 	HRESULT Ready_Components();
 	HRESULT SetUp_Viewport(_float fWidth, _float fHeight);
+
+	void InitCLSlots(uint32_t N);
+	void StoreRecordedCL(uint32_t idx, ID3D11CommandList* pCL);
+	ID3D11CommandList* ConsumeRecordedCL(uint32_t idx);
+
+	void Deferred_Job(vector<class CGameObject*> Deferred);
 
 #ifdef _DEBUG
 	HRESULT Render_Debug();

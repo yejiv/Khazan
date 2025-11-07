@@ -33,18 +33,6 @@ void CUI_QuickSlot_Skill::Priority_Update(_float fTimeDelta)
 
 void CUI_QuickSlot_Skill::Update(_float fTimeDelta)
 {
-    //if (m_pGameInstance->Key_Down(DIK_4))
-    //{
-    //    m_iState = ENUM_CLASS(QUICKITMESLOTSTATE::NONITEM);
-    //}
-    //if (m_pGameInstance->Key_Down(DIK_5))
-    //{
-    //    m_iState = ENUM_CLASS(QUICKITMESLOTSTATE::DISABLE);
-    //}
-    //if (m_pGameInstance->Key_Down(DIK_6))
-    //{
-    //    m_iState = ENUM_CLASS(QUICKITMESLOTSTATE::ENABLE);
-    //}
 
 }
 

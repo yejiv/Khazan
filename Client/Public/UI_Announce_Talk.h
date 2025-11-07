@@ -39,14 +39,16 @@ private:
 	_float							m_fAccTime = {};
 	_float							m_fDeleyTime = {};
 
-
 	_bool							m_isOneLine = {};
 
+	_wstring						m_wstrTalkName = {};
 	_wstring						m_wstrText_1 = {};
 	_wstring						m_wstrText_2 = {};
 
+	_float4							m_vNameColor = {};
 	UIAnimeStae						m_eState = { UIAnimeStae::END};
 private:
+	void							NameColor();
 	HRESULT							Ready_Prototype();
 	HRESULT							Ready_Component();
 

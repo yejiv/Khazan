@@ -1,5 +1,6 @@
 #include "Transform.h"
 #include "Shader.h"
+#include "DeferredShader.h"
 #include "Navigation.h"
 #include "RigidBody.h"
 
@@ -32,6 +33,11 @@ HRESULT CTransform::Initialize_Clone(void* pArg)
 }
 
 HRESULT CTransform::Bind_Shader_Resource(CShader* pShader, const _char* pConstantName)
+{
+	return pShader->Bind_Matrix(pConstantName, &m_WorldMatrix);
+}
+
+HRESULT CTransform::Bind_Shader_Resource(CDeferredShader* pShader, const _char* pConstantName)
 {
 	return pShader->Bind_Matrix(pConstantName, &m_WorldMatrix);
 }
@@ -199,6 +205,24 @@ void CTransform::LookAt(_fvector vAt)
 	Set_State(STATE::RIGHT, XMVector3Normalize(vRight) * vScaled.x);
 	Set_State(STATE::UP, XMVector3Normalize(vUp) * vScaled.y);
 	Set_State(STATE::LOOK, XMVector3Normalize(vLook) * vScaled.z);
+
+}
+
+void CTransform::LookAt_Lerp(_fvector vAt, _float fTimeDelta, _float fTurnSpeed)
+{
+	_vector vPosition = Get_State(STATE::POSITION);
+	_vector vLook = Get_State(STATE::LOOK);
+	vLook = XMVector3Normalize(XMVectorSetY(vLook, 0.f));
+	_vector vTargetDir = XMVector3Normalize(XMVectorSetY(vAt - vPosition, 0.f));
+
+	_vector vNewLook = XMVector3Normalize(XMVectorLerp(vLook,vTargetDir,fTimeDelta * fTurnSpeed));
+	_vector vRight = XMVector3Normalize(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vNewLook));
+	_vector vUp = XMVector3Normalize(XMVector3Cross(vNewLook, vRight));
+
+	_float3 vScale = Get_Scaled();
+	Set_State(STATE::RIGHT, XMVector3Normalize(vRight) * vScale.x);
+	Set_State(STATE::UP, XMVector3Normalize(vUp) * vScale.y);
+	Set_State(STATE::LOOK, XMVector3Normalize(vNewLook) * vScale.z);
 
 }
 

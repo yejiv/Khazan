@@ -111,7 +111,7 @@ void CKhazan_Spear::Priority_Update(_float fTimeDelta)
     __super::Priority_Update(fTimeDelta);
 
     if (m_pGameInstance->Key_Down(DIK_F5))
-        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(457.f, -12.f, 241.f, 1.f));
+        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(516.f, -11.f, 264.f, 1.f));
 
 
 }
@@ -253,7 +253,7 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
 	else if (Has_State(CAT::M_WEAPON_CHANGE))
     {
 
-    }
+    }  
     else
     {
 

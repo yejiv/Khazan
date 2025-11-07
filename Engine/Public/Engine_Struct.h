@@ -14,6 +14,7 @@ namespace Engine
 		unsigned int	iNumLevels;
 		unsigned int	iNumJoltObjectLayer;
 		unsigned int	iNumDecals;
+		unsigned int	iStaticLevel;
 
 		unsigned int	iWinSizeX_Imgui, iWinSizeY_Imgui;
 		list<wstring>	Menu_Imgui;
@@ -214,17 +215,20 @@ namespace Engine
 		float		fMaxIntensity;
 	}VIGNETTE_CONFIG;
 
-	typedef struct tagDecalParams
+	typedef struct tagDecalDesc
 	{
-		XMFLOAT4X4	vWorldMarixInv;
-		float		fOpacity;
-		float		fLifeRatio;
-		float		fPadding[2];
-	}DECAL_PARAMS;
+		float		fLifeTime;
+		XMFLOAT2	vFadeTime;
+		DECALTYPE	eType;
+		XMFLOAT3	vPosition;
+		XMFLOAT3	vScale;
+		XMFLOAT3	vColor;
+	}DECAL_DESC;
 
 	struct HitStopState
 	{
 		bool isActive = false;
+		bool isFix = false;
 		float fTargetScale = 0.1f; // 히트 순간 속도(0~1)
 		float fHold = 0.03f; // 완전 고정 구간
 		float fRecover = 0.06f; // 1.0으로 복귀까지 시간

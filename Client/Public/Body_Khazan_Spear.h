@@ -42,6 +42,7 @@ public:
 	virtual void Late_Update(_float fTimeDelta);
 	virtual HRESULT Render();
 	virtual HRESULT Render_Shadow() override;
+	void			Render_Part(CModel* pModel);
 
 public:
 	CModel* Get_Model() { return m_pModelCom; }
@@ -50,6 +51,12 @@ private:
 	class CTransform*	m_pParentTransform = { nullptr };
 	CShader*			m_pShaderCom = { nullptr };
 	CModel*				m_pModelCom = { nullptr };
+	CModel*				m_pModelCom_Arm = { nullptr };
+	CModel*				m_pModelCom_Face = { nullptr };
+	CModel*				m_pModelCom_Hair = { nullptr };
+	CModel*				m_pModelCom_Leg = { nullptr };
+	CModel*				m_pModelCom_Shoes = { nullptr };
+	CModel*				m_pModelCom_Torso= { nullptr };
 
 	_float4x4*			m_pSpearFX_Matrix = { nullptr };
 	_matrix				m_SpearOffset_Matrix = {};

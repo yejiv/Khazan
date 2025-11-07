@@ -43,7 +43,7 @@ void CProjectile_Breath_Yetuga::Update(_float fTimeDelta)
 void CProjectile_Breath_Yetuga::Late_Update(_float fTimeDelta)
 {
 	if (m_isVisible)
-		m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
+		m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
 }
 
 HRESULT CProjectile_Breath_Yetuga::Render()

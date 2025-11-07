@@ -66,7 +66,7 @@ void CTombStone::Update(_float fTimeDelta)
 
 void CTombStone::Late_Update(_float fTimeDelta)
 {
-    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this), );
+    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this), );
 }
 
 HRESULT CTombStone::Render()

@@ -13,11 +13,6 @@
 #include "UI_Inven.h"
 #pragma endregion
 
-#pragma region 락온, 브루탈어택 테스트
-#include "Target_LockOn.h"
-#include "Target_BrutalAttack.h"
-#pragma endregion
-
 CKhazan_Sample::CKhazan_Sample(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CCreature{ pDevice, pContext }
 {
@@ -82,23 +77,10 @@ void CKhazan_Sample::Priority_Update(_float fTimeDelta)
     __super::Priority_Update(fTimeDelta);
 
     if(m_pGameInstance->Key_Down(DIK_F5))
-        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(457.f, -12.f, 241.f, 1.f));
+        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(516.f, -11.f, 264.f, 1.f));
 
     XMStoreFloat4(&m_vPos, XMVectorSetW(m_pTransformCom->Get_State(STATE::POSITION),1.f));
 
-    if(m_pGameInstance->Key_Down(DIK_M))
-        static_cast<CTarget_LockOn*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("LockOn")))->LockOn(&m_vPos);
-    
-    if (m_pGameInstance->Key_Down(DIK_N))
-        static_cast<CTarget_LockOn*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("LockOn")))->LockOff();
-
-    if (m_pGameInstance->Key_Down(DIK_B))
-    {
-        CTarget_BrutalAttack* pObject = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
-        pObject->Setting_BrutalAttack(&m_vPos, 0.f);
-
-        m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), pObject);
-    }
 }
 
 void CKhazan_Sample::Update(_float fTimeDelta)
@@ -503,6 +485,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
 		Clear_State();
         m_isMove = 0; 
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_FastAtk01"));
+        m_StrongComboIndex = 0;
 
 		Add_State(ATTACK_FAST);
 	}
@@ -511,7 +494,26 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
     {
         Clear_State();
         m_isMove = 0;
-        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk01"));
+
+        _bool isNext = false;
+        if(m_StrongComboIndex > 0 )
+        {
+            if (*m_pBody->Get_Model()->Get_CurTrackPosition() > 16.f)
+                isNext = true;
+        }
+
+        if (m_StrongComboIndex == 0) {
+            m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk01"));
+            m_StrongComboIndex++;
+        }
+        if (isNext && m_StrongComboIndex == 1) {
+            m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk01"));
+            m_StrongComboIndex++;
+        }
+        if (isNext && m_StrongComboIndex == 2) {
+            m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk01"));
+            m_StrongComboIndex =0 ;
+        }
         Add_State(ATTACK_STRONG);
     }
 
@@ -520,6 +522,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         Clear_State();
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_SpaceTimeCutter03"));
+        m_StrongComboIndex = 0;
 
         Add_State(ATTACK_FULLMOON);
     }
@@ -528,6 +531,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         Clear_State();
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk01"));
+        m_StrongComboIndex = 0;
 
         Add_State(ATTACK_STRONG);
     }
@@ -536,6 +540,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         Clear_State();
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Tempest_SpiralSpear"));
+        m_StrongComboIndex = 0;
 
         Add_State(ATTACK_SPIRAL);
     }
@@ -544,6 +549,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         Clear_State();
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Tempest_TwisterSpear"));
+        m_StrongComboIndex = 0;
 
         Add_State(ATTACK_TWISTE);
     }
@@ -552,6 +558,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         Clear_State();
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_PureMind_SeismicKick"));
+        m_StrongComboIndex = 0;
 
         Add_State(ATTACK_STRIKE);
     }
@@ -560,6 +567,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         Clear_State();
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_LowFlying_F"));
+        m_StrongComboIndex = 0;
 
         Add_State(ATTACK_SOON);
     }
@@ -568,6 +576,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         Clear_State();
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Crescent"));
+        m_StrongComboIndex = 0;
 
         Add_State(ATTACK_VITALPOINT);
     }
@@ -576,6 +585,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         Clear_State();
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Tempest_MoonVeil"));
+        m_StrongComboIndex = 0;
 
         Add_State(ATTACK_SHADOW2);
     }
@@ -584,6 +594,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         Clear_State();
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_PureMind_TranceSpirit_GrappleAtk01"));
+        m_StrongComboIndex = 0;
 
         Add_State(ATTACK_BRUTAL);
     }

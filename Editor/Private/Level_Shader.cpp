@@ -24,7 +24,7 @@ HRESULT CLevel_Shader::Initialize()
 
 	// Decal
 	if (FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Decal"),
-		ENUM_CLASS(LEVEL::SHADER), TEXT("Pool_Decal"), nullptr, g_iNumDecals)))
+		ENUM_CLASS(LEVEL::SHADER), TEXT("Pool_Decal"), nullptr, 10)))
 		return E_FAIL;
 
 	//	if (FAILED(Ready_Lights()))
@@ -51,8 +51,11 @@ HRESULT CLevel_Shader::Initialize()
 	m_OutlineConfig.fAlpha = RendererOutlineConfig.fAlpha;
 	m_OutlineConfig.fBias = RendererOutlineConfig.fBias;
 	m_VignetteConfig = m_pGameInstance->Get_VignetteConfig();
-	m_vDecalColor = m_pGameInstance->Get_DecalColor();
-	m_vDecalBoxSize = _float3(40.f, 10.f, 40.f);
+	
+	m_DecalDesc.fLifeTime = 5.f;
+	m_DecalDesc.vFadeTime = { 0.5f, 0.5f };
+	m_DecalDesc.vScale = { 40.f, 10.f, 40.f };
+	m_DecalDesc.vColor = _float3(0.47f, 0.08f, 0.08f);
 
 	m_iNumCascades = m_pGameInstance->Get_NumCascades();
 
@@ -391,44 +394,31 @@ HRESULT CLevel_Shader::Initialize()
 
 		if (ImGui::CollapsingHeader("Decal"), ImGuiTreeNodeFlags_DefaultOpen)
 		{
-			// 컬러
-			if (ImGui::ColorEdit3("Decal Color", reinterpret_cast<_float*>(&m_vDecalColor)))
-				m_pGameInstance->Set_DecalColor(m_vDecalColor);
+			// 라이프 타임
+			ImGui::SliderFloat("Decal LifeTime", &m_DecalDesc.fLifeTime, 1.f, 20.f, "%.0f");
+
+			// 페이드 타임
+			ImGui::SliderFloat2("Decal FadeTime (In / Out)", reinterpret_cast<_float*>(&m_DecalDesc.vFadeTime), 0.1f, 10.f, "%.1f");
+
+			// 데칼 타입
+			_bool isChanged = {};
+			_int iDecalType = static_cast<_int>(m_DecalDesc.eType);
+
+			isChanged |= ImGui::RadioButton("Blood Linear", &iDecalType, static_cast<_int>(DECALTYPE::LINEAR));
+			ImGui::SameLine();
+			isChanged |= ImGui::RadioButton("Blood Circle", &iDecalType, static_cast<_int>(DECALTYPE::CIRCLE));
+			ImGui::SameLine();
+			isChanged |= ImGui::RadioButton("Blood Curve", &iDecalType, static_cast<_int>(DECALTYPE::CURVE));
+
+			if (true == isChanged)
+				m_DecalDesc.eType = static_cast<DECALTYPE>(iDecalType);
 
 			// 바운딩 박스 사이즈
-			if (ImGui::SliderFloat3("Decal Bounding Box Size", reinterpret_cast<_float*>(&m_vDecalBoxSize), 1.f, 50.f, "%.0f"))
-				m_pGameInstance->Set_OutlineConfig(m_OutlineConfig);
-
-			// 텍스처
-			ImGui::Separator();
-			ImGui::Text("Decal Texture");
-			ImGui::Separator();
+			ImGui::SliderFloat3("Decal Bounding Box Size", reinterpret_cast<_float*>(&m_DecalDesc.vScale), 1.f, 50.f, "%.0f");
 			
-			ImGui::BeginChild("Decal Texture", ImVec2(0, 70), true, ImGuiWindowFlags_HorizontalScrollbar);
-
-			for (_uint i = 0; i < m_pGameInstance->Get_NumFogNoiseTextures(); ++i)
-			{
-				ID3D11ShaderResourceView* pSRV = m_pGameInstance->Get_DecalTexture(i);
-
-				if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
-					m_pGameInstance->Set_DecalTextureIndex(i);
-
-				ImGui::SameLine();
-			}
-
-			ImGui::EndChild();
-
-			// Picking Test
-			if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::WB))
-			{
-				_float3 vPos, vNorm;
-				m_pGameInstance->isPicked(&vPos, &vNorm);
-
-				if (FAILED(m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_Decal"),
-					vPos, m_vDecalBoxSize)))
-					MSG_BOX(TEXT("Failed to Spawn : Decal"));
-			}
-
+			// 컬러
+			ImGui::ColorEdit3("Decal Color", reinterpret_cast<_float*>(&m_DecalDesc.vColor));
+		
 			ImGui::Separator();
 		}
 
@@ -440,7 +430,16 @@ HRESULT CLevel_Shader::Initialize()
 
 void CLevel_Shader::Update(_float fTimeDelta)
 {
-	
+	// Picking Test
+	if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::WB))
+	{
+		_float3 vPos, vNorm;
+		m_pGameInstance->isPicked(&vPos, &vNorm);
+		m_DecalDesc.vPosition = vPos;
+
+		if (FAILED(m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_Decal"), m_DecalDesc)))
+			MSG_BOX(TEXT("Failed to Spawn : Decal"));
+	}
 
 #ifdef _DEBUG
 	m_fTimeAcc += fTimeDelta;

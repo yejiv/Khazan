@@ -41,13 +41,13 @@ void CAI_Controller::AI_ApplyDamage(CGameObject* pAttacker, _float fDamage, _uin
 
 }
 
-void CAI_Controller::AI_React_Collision(COLLISION_DESC* pDesc)
+void CAI_Controller::AI_React_Collision(COLLISION_DESC* pDesc, CGameObject* pOwner)
 {
     if (nullptr == m_pFSM)
         return;
-    
-    m_pFSM->OnCollision(pDesc);
-   
+
+    m_pFSM->OnCollision(pDesc,pOwner);
+
 }
 
 HRESULT CAI_Controller::Initialize(CGameObject* pOwner, string FileName)

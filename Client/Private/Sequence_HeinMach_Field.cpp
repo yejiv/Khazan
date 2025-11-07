@@ -13,7 +13,7 @@ CSequence_HeinMach_Field::CSequence_HeinMach_Field(CCamera_Compre* pCamera)
 HRESULT CSequence_HeinMach_Field::Initialize(const SEQ_REQ_PLAY_DESC& tDesc)
 {
     m_Id = tDesc.tId;
-    m_Time = tDesc.fStartTime;
+	m_fTime = tDesc.fStartTime;
     m_State = STATE::Playing;
 
     
@@ -64,7 +64,7 @@ HRESULT CSequence_HeinMach_Field::Initialize(const SEQ_REQ_PLAY_DESC& tDesc)
 void CSequence_HeinMach_Field::Update(_float fTimeDelta)
 {
     if (m_State != STATE::Playing) return;
-    m_Time += fTimeDelta;
+	m_fTime += fTimeDelta;
 
     if (!m_isCameraStart)
     {
@@ -73,7 +73,7 @@ void CSequence_HeinMach_Field::Update(_float fTimeDelta)
         m_isCameraStart = true;
     }
 
-    if (m_Time >= 5.f && !m_isFieldName)
+    if (m_fTime >= 5.f && !m_isFieldName)
     {
 		EVENT_ANNOUNCE_MAPNAME Desc = {};
 		//화면에 표시할 시간
@@ -94,7 +94,7 @@ void CSequence_HeinMach_Field::Update(_float fTimeDelta)
 		m_isFieldName = true;
     }
 
-    if (m_Time >= 16.f)
+    if (m_fTime >= 16.f)
         m_State = STATE::End;
 }
 
@@ -117,7 +117,7 @@ void CSequence_HeinMach_Field::StopImmediate()
 
 void CSequence_HeinMach_Field::Jump(_float fTime)
 {
-    m_Time = fTime;
+	m_fTime = fTime;
 }
 
 _bool CSequence_HeinMach_Field::IsEnd() const

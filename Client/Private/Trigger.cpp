@@ -48,7 +48,7 @@ void CTrigger::Update(_float fTimeDelta)
 void CTrigger::Late_Update(_float fTimeDelta)
 {
     if (true == m_isRender)
-        m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
 }
 
 HRESULT CTrigger::Render()
@@ -115,17 +115,6 @@ HRESULT CTrigger::Ready_Collision(void* pArg)
     return S_OK;
 }
 
-void CTrigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
-{
-}
-
-void CTrigger::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
-{
-}
-
-void CTrigger::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
-{
-}
 
 CTrigger* CTrigger::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {

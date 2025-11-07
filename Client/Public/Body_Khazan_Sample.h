@@ -101,7 +101,7 @@ private:
 	공격 진입~ 공격 끝날 때까지 ( 트리거 진입 , 범위, 탈출 이벤트 있음 )
 	필요 시 함수 만들어서 사용하셔도 됩니다.
 
-	LCTRL + Z	  : 달빛 베기
+	LCTRL + Z	  : 달빛 베기 
 	LCTRL + X	  : 강공 세트
 	LCTRL + C	  : 보름달
 	LCTRL + V	  : 그림자베기
@@ -158,6 +158,7 @@ private:
 	void    Effect11_Enter();        //c 보름달
 	void    Effect11_Exit();
 	void    Effect11_Continue();
+
 
 	void    Effect12_Enter();        //j  그림자 참격 1 타
 	void    Effect12_Exit();

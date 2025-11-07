@@ -9,7 +9,7 @@ NS_END
 
 NS_BEGIN(Client)
 
-class CTrigger final : public CProp_Interactive
+class CTrigger : public CProp_Interactive
 {
 public:
 	typedef struct tagTriggerDesc : public CProp_Interactive::PROP_INTERACTIVE_DESC
@@ -18,7 +18,7 @@ public:
 
 	}TRIGGER_DESC;
 
-private:
+protected:
 	CTrigger(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CTrigger(const CTrigger& Prototype);
 	virtual ~CTrigger() = default;
@@ -34,23 +34,23 @@ public:
 	string Get_TriggerKey() { return m_strTriggerKey; }
 	void Set_TriggerKey(const string strTriggerKey) { m_strTriggerKey = strTriggerKey; }
 
-private:
+protected:
 	CBody* m_pTriggerCom = { nullptr };
 
 	string m_strTriggerKey = {};
 
 	_bool m_isRender = { false };
 
-private:
+protected:
 	virtual HRESULT Ready_Components(void* pArg) override;
 	HRESULT Ready_Collision(void* pArg);
 
-private:
-	virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint	iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
-	virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
-	virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
+protected:
+	virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint	iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) {};
+	virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) {};
+	virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) {};
 
-public:
+protected:
 	static CTrigger* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;

@@ -51,7 +51,7 @@ void CProp_Test::Update(_float fTimeDelta)
 
 void CProp_Test::Late_Update(_float fTimeDelta)
 {
-    m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
+    m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
 }
 
 HRESULT CProp_Test::Render()

@@ -53,6 +53,7 @@ private:
 	_bool		m_test1 = { false };
 	_bool		m_test2 = { false };
 
+	_float		m_fRand = {};
 private:
 	HRESULT Ready_Components(const _wstring& strModelTag);
 	HRESULT Bind_ShaderResources();

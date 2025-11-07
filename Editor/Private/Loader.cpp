@@ -425,7 +425,7 @@ HRESULT CLoader::Loading_For_UI_Level()
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_Hud_Player_HPGauge_BG"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Hud/State/T_Hud_Hp_Bg_0%d.png"), 5))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Hud/State/T_Hud_Hp_Bg_0%d.png"), 8))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_Hud_ComBatSpirit"),
@@ -462,6 +462,14 @@ HRESULT CLoader::Loading_For_UI_Level()
 
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_UI_Log_Tex"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Logo/Logo_Tex_%d.png"), 5))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_UI_GuidePage"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/TutorialGuide/GuidePage_%d.dds"), 6))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_UI_GuideTex"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/TutorialGuide/GuideTex_%d.dds"), 3))))
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("게임오브젝트원형를 로딩중입니다."));

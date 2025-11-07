@@ -75,6 +75,8 @@ private:
 	_float m_fLockOnDelay = {};
 	vector<class CGameObject*> m_CollMonsters;
 	class CGameObject* m_pLockMonster = { nullptr };
+	_float4* m_pLockOnPos = {};
+	class CTarget_LockOn* m_pLockOnUI = { nullptr };
 	
 	_float m_fTargetHalfFovDegrees = { 50.f };
 	_float m_fTargetHalfFovCos = 0.f;

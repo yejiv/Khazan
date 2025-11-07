@@ -22,6 +22,10 @@ public:
 
 	}PROJECTILE_DESC;
 
+	enum PRJSTATE { IDLE, LOOP, CRASHED, END };
+
+
+
 protected:
 	CProjectile(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CProjectile(const CProjectile& Prototype);
@@ -31,7 +35,7 @@ public:
 	void					Set_SpanwPoint(_float3 vSpanwPoint) { m_vSpawnPoint = vSpanwPoint; }
 	void					Set_SpawnDir(_float3 vSpawnDir) { m_vSpawnDir = vSpawnDir; };
 	void					Set_Visible(_bool isVisible) { m_isVisible = isVisible; }
-
+	void					Fire_Projectile() { m_eState = PRJSTATE::LOOP; }
 public:
 	virtual HRESULT			Initialize_Prototype() override;
 	virtual HRESULT			Initialize_Clone(void* pArg) override;
@@ -56,6 +60,10 @@ protected:
 	_bool					m_isVisible = { false };
 
 	_float4x4				m_OriginMatrix = {};
+
+	PRJSTATE				m_eState = { PRJSTATE::END };
+
+
 
 public:
 	virtual CGameObject*	Clone(void* pArg) = 0;
