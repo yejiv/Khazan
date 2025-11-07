@@ -21,6 +21,7 @@ vector g_vMtrlAmbient = { 1.f, 1.f, 1.f, 1.f }, g_vMtrlSpecular = { 1.f, 1.f, 1.
 // ===== Textures =====
 Texture2D g_DiffuseTexture, g_NormalTexture, g_DepthTexture, g_ShadeTexture, g_SpecularTexture, g_EmissiveTexture;
 Texture2D g_LightDepthTexture, g_PostSceneTexture, g_BlurXTexture, g_BloomTexture, g_FogTexture, g_OutlineTexture;
+Texture2D g_NoiseTexture, g_SSAOTexture, g_CombinedTexture, g_MaskTexture;
 
 // ===== Cascade Shadow =====
 int g_iTextureArrayIndex;
@@ -35,7 +36,6 @@ bool g_isEnableShadow = { true };
 Texture2DArray<float> g_TextureArray;
 
 // ===== SSAO =====
-Texture2D g_NoiseTexture, g_SSAOTexture;
 float2 g_vScreenSize;
 StructuredBuffer<float3> g_Kernels;
 uint g_iNumKernels;
@@ -72,6 +72,17 @@ float g_fVignettePower = { 1.f };
 float g_fVignetteIntensity = { 1.f };
 float3 g_vVignetteColor = { 0.f, 0.f, 0.f };
 bool g_isEnableVignette;
+
+// ===== Distortion =====
+bool g_isEnableDistortion;
+float g_fPower = { 1.5f };
+float g_fSpeed;
+float3 g_vCenter;
+float g_fTime;
+
+//  float g_fDistortionRange = { 0.2f };
+float2 g_vTextureSize = { 300.f, 300.f };
+float2 g_vDistNoiseScale = { 1.f, 1.f };
 
 struct VS_IN
 {
@@ -480,14 +491,9 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
     vector vBloomDesc = g_BloomTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vFogDesc = g_FogTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    //  if (1.f == vPostSceneDesc.r && 0.f == vPostSceneDesc.g && 1.f == vPostSceneDesc.b)
-    //      discard;
+    if (1.f == vPostSceneDesc.r && 1.f == vPostSceneDesc.g && 1.f == vPostSceneDesc.b && 0.f == vPostSceneDesc.a)
+        discard;
 
-    //  if (true == g_isEnableFog)
-    //      Out.vColor = vFogDesc + vEmissiveDesc + vBloomDesc;
-    //  else
-    //      Out.vColor = vPostSceneDesc + vEmissiveDesc + vBloomDesc;
-    
     float4 vFinalColor;
     
     if (true == g_isEnableFog)
@@ -500,33 +506,7 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
     {
         vector vOutlineDesc = g_OutlineTexture.Sample(DefaultSampler, In.vTexcoord);
         vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-        //  // Depth View Space
-        //  vector vNDCPos;
-        //  float4 vViewPos;
-        //  
-        //  vNDCPos.x = In.vTexcoord.x * 2.f - 1.f;
-        //  vNDCPos.y = In.vTexcoord.y * -2.f + 1.f;
-        //  vNDCPos.z = vDepthDesc.x;
-        //  vNDCPos.w = 1.f;
-        //  
-        //  vNDCPos = vNDCPos * vDepthDesc.y; // View.Z
-        //  vViewPos = mul(vNDCPos, g_ProjMatrixInv); // 현재 픽셀의 View Space 위치
-        //  float fViewDepth = vViewPos.z;
-        //  
-        //  // Outline View Space
-        //  vNDCPos.x = In.vTexcoord.x * 2.f - 1.f;
-        //  vNDCPos.y = In.vTexcoord.y * -2.f + 1.f;
-        //  vNDCPos.z = vOutlineDesc.w;
-        //  vNDCPos.w = 1.f;
-        //  
-        //  vNDCPos = vNDCPos * vDepthDesc.y; // View.Z
-        //  vViewPos = mul(vNDCPos, g_ProjMatrixInv); // 현재 픽셀의 View Space 위치
-        //  float fOutlineDepth = vViewPos.z;
-        //  
-        //  // View 비교
-        //  bool isOutline = (fViewDepth >= g_fCameraFar - g_fOutlineBias && fOutlineDepth < fViewDepth);
-        
+
         // 0~1 비교
         bool isOutline = (vDepthDesc.x >= 1.f - g_fOutlineBias && vOutlineDesc.w <= 1.f);
 
@@ -544,7 +524,7 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
         vFinalColor.rgb = lerp(g_vVignetteColor, vFinalColor.rgb, fVignetteFactor);
         vFinalColor.a = vPostSceneDesc.a;
     }
-
+    
     Out.vColor = vFinalColor;
     
     return Out;
@@ -619,6 +599,63 @@ PS_OUT_BACKBUFFER PS_MAIN_FOG(PS_IN In)
     vResultColor = lerp(vPostSceneDesc, g_vFogColor, fFogFactor);
     Out.vColor = vResultColor;
     //  Out.vColor = float4(vResultColor.rgb, vPostSceneDesc.a);
+    
+    return Out;
+}
+
+PS_OUT_BACKBUFFER PS_MAIN_DISTORTION(PS_IN In)
+{
+    PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
+    
+    // Combined Sample
+    float4 vFinalColor;
+    
+    if (g_isEnableDistortion)
+    {
+        // 노이즈 샘플링부터
+        //  float2 vNoise = g_NoiseTexture.Sample(ClampSampler, In.vTexcoord).rg * 2.f - 1.f;
+        
+        // 월드 센터 -> 투영 센터 -> UV
+        //  float4 vCenterPos;
+        //  
+        //  vCenterPos = mul(float4(g_vCenter, 1.f), g_CameraViewMatrix);
+        //  vCenterPos = mul(vCenterPos, g_CameraProjMatrix);
+        //  vCenterPos /= vCenterPos.w; // -1 ~ 1
+        //  
+        //  float2 vCenterUV;
+        //  vCenterUV.x = vCenterPos.x * 0.5f + 0.5f;
+        //  vCenterUV.y = vCenterPos.y * -0.5f + 0.5f;
+        //  
+        //  // 중심점 기준 사이즈 UV
+        //  float2 vDir = (In.vTexcoord - vCenterUV) / (g_vTextureSize / g_vScreenSize);
+        //  
+        //  // 종횡비 보정
+        //  vDir.x *= g_vScreenSize.x / g_vScreenSize.y;
+        //  
+        //  //  float fDistance = length(vDir);
+        //  
+        //  // 마스크 UV 계산
+        //  float2 vMaskUV;
+        //  vMaskUV.x = vDir * 0.5f + 0.5f;
+        //  vMaskUV.y = vDir * -0.5f + 0.5f;
+        //  
+        //  // 노이즈 UV 계산
+        //  float2 vNoiseUV = vMaskUV * g_vDistNoiseScale + g_fTime * g_fSpeed;
+        //  
+        //  // 각각의 텍스처 샘플링
+        //  float fMask = g_MaskTexture.Sample(ClampSampler, vMaskUV);
+        //  float2 vNoise = g_NoiseTexture.Sample(ClampSampler, In.vTexcoord).rg * 2.f - 1.f;
+        //  
+        //  float2 vOffset = vNoise * g_fPower * fMask * g_vTextureSize;
+        //  float2 vDistortionUV = saturate(In.vTexcoord + vOffset);
+        //  vFinalColor = g_CombinedTexture.Sample(DefaultSampler, vDistortionUV);
+        
+        vFinalColor = g_CombinedTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    else
+        vFinalColor = g_CombinedTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    Out.vColor = vFinalColor;
     
     return Out;
 }
@@ -733,5 +770,16 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_FOG();
+    }
+
+    pass Distortion
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+    
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_DISTORTION();
     }
 }
