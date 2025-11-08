@@ -107,16 +107,16 @@ void CBody_Yetuga::Update(_float fTimeDelta)
 
     if (m_isOnAttackCollision)
     {
-        m_pLH_BodyCom->Activate(true);
+       /* m_pLH_BodyCom->Activate(true);
         m_pRH_BodyCom->Activate(true);
-        m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
+        m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));*/
 
     }
     else
     {
-        m_pLH_BodyCom->Activate(false);
+        /*m_pLH_BodyCom->Activate(false);
         m_pRH_BodyCom->Activate(false);
-        m_pGameInstance->Remove_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
+        m_pGameInstance->Remove_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));*/
     }
 
 
@@ -160,9 +160,9 @@ HRESULT CBody_Yetuga::Render()
 
 void CBody_Yetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
-    COLLISION_LAYER eType = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
+    //COLLISION_LAYER eType = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
    
-    m_pOwner->Get_Controller()->AI_React_Collision(pDesc,iOtherObjectLayer,m_pOwner);
+    //m_pOwner->Get_Controller()->AI_React_Collision(pDesc,iOtherObjectLayer,m_pOwner);
 }
 
 void CBody_Yetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)

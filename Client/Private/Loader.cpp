@@ -33,6 +33,10 @@
 #include "Head_Yetuga.h"
 #include "Projectile_Yetuga.h"
 #include "Projectile_Rock_Yetuga.h"
+
+#include "Gomdol.h"
+#include "Body_Gomdol.h"
+
 #pragma endregion
 
 #pragma region UI
@@ -345,6 +349,19 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 		return E_FAIL;
 
 #pragma endregion
+
+
+#pragma region Gomdol
+	//// Prototype_Component_Model_Gomdel
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Gomdol"),
+	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/BigBear/BigBear.dat"))))
+	//	return E_FAIL;
+#pragma endregion
+
+
+
+
+
 	/////* Prototype_Component_Model_Khazan */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan"),
 	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Test/Khazan/Khazan.dat"))))
@@ -442,6 +459,27 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 		return E_FAIL;
 
 #pragma endregion
+
+
+#pragma region GOMDOL
+
+	/* Prototype_GameObject_Monster_Yetuga */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Gomdol"),
+		CGomdol::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	// Prototype_PartObject_Yetuga_Body
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Gomdol_Body"),
+		CBody_Gomdol::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	//// Prototype_PartObject_Yetuga_Body
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Yetuga_Head"),
+	//	CHead_Yetuga::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
+
+#pragma endregion
+
 
 	/////* Prototype_GameObject_Dummy */
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Dummy"),

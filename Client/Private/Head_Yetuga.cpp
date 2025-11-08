@@ -105,7 +105,6 @@ void CHead_Yetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLaye
     
     COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
 
-
 }
 
 void CHead_Yetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)

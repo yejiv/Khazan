@@ -67,7 +67,7 @@ void CPerception::Check_Sight(CGameObject* pOwner)
 
 	// 시야 감지 사이클에 들어왔을때만 갱신
 	m_pGameInstance->Get_BlackBoard()->Set_Value<_float>(m_strName, "TargetDist", fDistsq);
-	
+
 	//_vector vSide = XMVector3Cross(vLook,vDist);
 	_vector vSide = XMVector3Cross(vDist,vLook);
 	_float fSide = XMVectorGetY(vSide);

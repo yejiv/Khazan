@@ -36,7 +36,9 @@ HRESULT CLevel_HeinMach::Initialize()
 		//CHECK_FAILED(Ready_Layer_Test(TEXT("Layer_Creature_Test")), E_FAIL);
 		if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 			return E_FAIL;
-		//CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
+		CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
+
+		//CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Gomdol")), E_FAIL);
 		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
 			HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
@@ -284,10 +286,15 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster(const _wstring& strLayerTag)
 	MonsterDesc.fSpeedPerSec = 3.f;
 	MonsterDesc.fRotationPerSec = 180.f;
 	MonsterDesc.strName = "Yetuga";
+	//MonsterDesc.strName = "Gomdol";
 
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
 		ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Yetuga"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
 		return E_FAIL;
+
+	/*if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+		ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Gomdol"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+		return E_FAIL;*/
 
 	return S_OK;
 }
