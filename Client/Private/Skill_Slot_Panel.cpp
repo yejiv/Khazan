@@ -6,10 +6,7 @@
 #include "Skill_Slot.h"
 
 #include "UI_Atlas_Icon.h"
-#include "UI_Default_Button.h"
 #include "UI_TextBox.h"
-#include "UI_Guide_Icon.h"
-#include "UI_Default_Tex.h"
 
 CSkill_Slot_Panel::CSkill_Slot_Panel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
@@ -46,12 +43,16 @@ HRESULT CSkill_Slot_Panel::Setting_Slot(_int iTapIndex, _int iPanelIndex)
 			SkillDesc.szName = "Skill_Slot";
 			SkillDesc.fDepth = 3;
 			SkillDesc.iSkillIndex = ID;
-			m_Children.push_back(static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, m_iLevel, TEXT("Prototype_GameObject_UI_Skill"), &SkillDesc)));
+			CSkill_Slot* pSkill = static_cast<CSkill_Slot*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, m_iLevel, TEXT("Prototype_GameObject_UI_Skill"), &SkillDesc));
+			m_Children.push_back(pSkill);
+			m_Skill.push_back(pSkill);
+			Safe_AddRef(pSkill);
 		}
 	}
 
 	Update_Transform(nullptr, m_vWorldPos);
 
+	Panel_NameMapping(iTapIndex, iPanelIndex);
 	return S_OK;
 }
 
@@ -74,7 +75,6 @@ HRESULT CSkill_Slot_Panel::Initialize_Prototype(_int iLevel)
 HRESULT CSkill_Slot_Panel::Initialize_Clone(void* pArg)
 {
 	CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
-	CHECK_FAILED(Ready_Children(), E_FAIL);
 	return S_OK;
 }
 
@@ -85,15 +85,17 @@ void CSkill_Slot_Panel::Priority_Update(_float fTimeDelta)
 
 void CSkill_Slot_Panel::Update(_float fTimeDelta)
 {
-	for (auto pChild : m_Children)
+	if (IsPick(g_hWnd))
 	{
-		string strName = pChild->Get_Name();
-
-		if (strName == "Skill_Slot_Line_R")
-		{
-			pChild->Update_Rotation(100.f);
-		}
+		m_pTextBox->Set_Color({ 1.f, 1.f, 1.f, 1.f });
+		m_pAtlasIcon->Update_Color_Child({ 1.f, 1.f, 1.f, 1.f });
 	}
+	else
+	{
+		m_pTextBox->Set_Color({ 1.f, 1.f, 1.f, 0.6f });
+		m_pAtlasIcon->Update_Color_Child({ 1.f, 1.f, 1.f, 0.6f });
+	}
+
 	__super::Update(fTimeDelta);
 }
 
@@ -110,10 +112,17 @@ HRESULT CSkill_Slot_Panel::Load_UI(nlohmann::json& pInData, _uint iPrototypeLeve
 	{
 		string strName = pChild->Get_Name();
 	
-		if (strName == "Skill_Slot_Line_R")
+		if (strName == "Skill_Slot_Name")
 		{
-			pChild->Update_Rotation(180.f);
+			m_pTextBox = static_cast<CUI_TextBox*>(pChild);
+			Safe_AddRef(m_pTextBox);
 		}
+		else if (strName == "Skill_Slot_Icon")
+		{
+			m_pAtlasIcon = static_cast<CUI_Atlas_Icon*>(pChild);
+			Safe_AddRef(m_pAtlasIcon);
+		}
+		
 	}
 
 	return S_OK;
@@ -127,74 +136,45 @@ HRESULT CSkill_Slot_Panel::Ready_Prototype()
 	return S_OK;
 }
 
-HRESULT CSkill_Slot_Panel::Ready_Children()
+void CSkill_Slot_Panel::Panel_NameMapping(_int iTapIndex, _int iPanelIndex)
 {
-
-	CSkill_Slot::UISKILLSLOT_DESC SkillDesc = {};
-	//SkillDesc.vLocalSize = { 64.f, 64.f };
-	//SkillDesc.vLocalPos = { 0, 100 };
-	//SkillDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
-	//SkillDesc.szName = "Skill_Slot";
-	//SkillDesc.fDepth = 3;
-	//SkillDesc.iSkillIndex = 101;
-	//m_Children.push_back(static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, m_iLevel, TEXT("Prototype_GameObject_UI_Skill"), &SkillDesc)));
-
-	//SkillDesc.vLocalSize = { 64.f, 64.f };
-	//SkillDesc.vLocalPos = { -70, 100 };
-	//SkillDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
-	//SkillDesc.szName = "Skill_Slot";
-	//SkillDesc.fDepth = 3;
-	//SkillDesc.iSkillIndex = 101;
-	//m_Children.push_back(static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, m_iLevel, TEXT("Prototype_GameObject_UI_Skill"), &SkillDesc)));
-
-	//SkillDesc.vLocalSize = { 64.f, 64.f };
-	//SkillDesc.vLocalPos = { 70, 100 };
-	//SkillDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
-	//SkillDesc.szName = "Skill_Slot";
-	//SkillDesc.fDepth = 3;
-	//SkillDesc.iSkillIndex = 101;
-	//m_Children.push_back(static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, m_iLevel, TEXT("Prototype_GameObject_UI_Skill"), &SkillDesc)));
-
-	/*SkillDesc.vLocalSize = { 64.f, 64.f };
-	SkillDesc.vLocalPos = { -105, -175 };
-	SkillDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
-	SkillDesc.szName = "Skill_Slot";
-	SkillDesc.fDepth = 3;
-	SkillDesc.iSkillIndex = 101;
-	m_Children.push_back(static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, m_iLevel, TEXT("Prototype_GameObject_UI_Skill"), &SkillDesc)));
-
-	SkillDesc.vLocalSize = { 64.f, 64.f };
-	SkillDesc.vLocalPos = { -105, -95 };
-	SkillDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
-	SkillDesc.szName = "Skill_Slot";
-	SkillDesc.fDepth = 3;
-	SkillDesc.iSkillIndex = 101;
-	m_Children.push_back(static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, m_iLevel, TEXT("Prototype_GameObject_UI_Skill"), &SkillDesc)));
-
-	SkillDesc.vLocalSize = { 64.f, 64.f };
-	SkillDesc.vLocalPos = { -105, -15 };
-	SkillDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
-	SkillDesc.szName = "Skill_Slot";
-	SkillDesc.fDepth = 3;
-	SkillDesc.iSkillIndex = 101;
-	m_Children.push_back(static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, m_iLevel, TEXT("Prototype_GameObject_UI_Skill"), &SkillDesc)));
-
-	SkillDesc.vLocalSize = { 64.f, 64.f };
-	SkillDesc.vLocalPos = { -105, 65 };
-	SkillDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
-	SkillDesc.szName = "Skill_Slot";
-	SkillDesc.fDepth = 3;
-	SkillDesc.iSkillIndex = 101;
-	m_Children.push_back(static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, m_iLevel, TEXT("Prototype_GameObject_UI_Skill"), &SkillDesc)));
-
-	SkillDesc.vLocalSize = { 64.f, 64.f };
-	SkillDesc.vLocalPos = { -105, 145 };
-	SkillDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
-	SkillDesc.szName = "Skill_Slot";
-	SkillDesc.fDepth = 3;
-	SkillDesc.iSkillIndex = 101;
-	m_Children.push_back(static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, m_iLevel, TEXT("Prototype_GameObject_UI_Skill"), &SkillDesc)));
-	*/return S_OK;
+	if (iTapIndex == 0)
+	{
+		if (iPanelIndex == 0)
+			m_pTextBox->Set_Text(TEXT("빠른 공격"));
+		else if (iPanelIndex == 1)
+			m_pTextBox->Set_Text(TEXT("강한 공격"));
+		else if (iPanelIndex == 2)
+			m_pTextBox->Set_Text(TEXT("연계"));
+		else if (iPanelIndex == 3)
+			m_pTextBox->Set_Text(TEXT("기교"));
+		else if (iPanelIndex == 4)
+			m_pTextBox->Set_Text(TEXT("가드"));
+	}
+	else if (iTapIndex == 1)
+	{
+		if (iPanelIndex == 0)
+			m_pTextBox->Set_Text(TEXT("빠른 공격"));
+		else if (iPanelIndex == 1)
+			m_pTextBox->Set_Text(TEXT("강한 공격"));
+		else if (iPanelIndex == 2)
+			m_pTextBox->Set_Text(TEXT("불굴"));
+		else if (iPanelIndex == 3)
+			m_pTextBox->Set_Text(TEXT("약진"));
+		else if (iPanelIndex == 4)
+			m_pTextBox->Set_Text(TEXT("가드"));
+	}
+	else if (iTapIndex == 2)
+	{
+		if (iPanelIndex == 0)
+			m_pTextBox->Set_Text(TEXT("자원"));
+		else if (iPanelIndex == 1)
+			m_pTextBox->Set_Text(TEXT("브루탈 어택"));
+		else if (iPanelIndex == 2)
+			m_pTextBox->Set_Text(TEXT("투창"));
+		else if (iPanelIndex == 3)
+			m_pTextBox->Set_Text(TEXT("카운트 어택"));
+	}
 }
 
 CSkill_Slot_Panel* CSkill_Slot_Panel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)
@@ -223,4 +203,9 @@ void CSkill_Slot_Panel::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pTextBox);
+	Safe_Release(m_pAtlasIcon);
+	for (auto pSkill : m_Skill)
+		Safe_Release(pSkill);
+	m_Skill.clear();
 }

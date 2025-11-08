@@ -215,6 +215,7 @@
     <ClInclude Include="..\public\Equip_Slot.h" />
     <ClInclude Include="..\Public\Event_Defines.h" />
     <ClInclude Include="..\Public\FSM_Yetuga.h" />
+    <ClInclude Include="..\public\Player_Manager.h" />
     <ClInclude Include="..\public\Skill_Gauge.h" />
     <ClInclude Include="..\public\Skill_Panel.h" />
     <ClInclude Include="..\public\Skill_Slot.h" />
@@ -398,6 +399,7 @@
     <ClCompile Include="..\private\Equip_Panel.cpp" />
     <ClCompile Include="..\private\Equip_Slot.cpp" />
     <ClCompile Include="..\Private\FSM_Yetuga.cpp" />
+    <ClCompile Include="..\private\Player_Manager.cpp" />
     <ClCompile Include="..\private\Skill_Gauge.cpp" />
     <ClCompile Include="..\private\Skill_Panel.cpp" />
     <ClCompile Include="..\private\Skill_Slot.cpp" />

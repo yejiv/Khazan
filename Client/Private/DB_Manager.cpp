@@ -315,7 +315,7 @@ HRESULT CDB_Manager::Load_Skill_DB(const _tchar* pFilePath)
 		data.iSlotX = Read_UInt(ss);
 		data.iTexPass = Read_UInt(ss);
 		data.wstrIcon = Read_WString(ss);
-		data.wstrText = Read_WString(ss);
+		data.iPreSkill = Read_UInt(ss);
 		m_Skill_Data.emplace(ID, data);
 	}
 

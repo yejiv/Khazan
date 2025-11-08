@@ -123,7 +123,7 @@ namespace Client
 		_int iSlotX{};
 		_int iTexPass{};
 		_wstring wstrIcon{};
-		wstring wstrText{};
+		_int iPreSkill{};
 	}SKILL_DB;
 
 	typedef struct tagKhazanAnimationFindInfo
@@ -141,4 +141,15 @@ namespace Client
 		{
 		}
 	}kHAZAN_ANIM_INFO;
+
+	typedef struct tag_Player_Data
+	{
+		_uint	iLachryma = {};
+		_uint	iGold = {};
+		_uint	iLevel = {};
+		_uint	iSkillLevel = {};
+		_float	fSkillLevel_EXP = {};
+		_uint	iSkilPoint = {};
+
+	}PLAYER_DATA;
 }

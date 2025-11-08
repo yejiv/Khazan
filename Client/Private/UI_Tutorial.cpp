@@ -79,6 +79,11 @@ void CUI_Tutorial::On_Panel(GUIDE_TYPE eType)
 	Setting_GuidePagae();
 	m_ePreInputType = m_pGameInstance->Get_InputType();
 	m_pGameInstance->Change_InputType(INPUT_TYPE::POPUP);
+
+	m_pGameInstance->Fix_HitStop(TIME_CHANNEL::PLAYER);
+	m_pGameInstance->Fix_HitStop(TIME_CHANNEL::EFFECT);
+	m_pGameInstance->Fix_HitStop(TIME_CHANNEL::ENEMY);
+	m_pGameInstance->Fix_HitStop(TIME_CHANNEL::MAP);
 }
 
 void CUI_Tutorial::Off_Panel()
@@ -89,6 +94,11 @@ void CUI_Tutorial::Off_Panel()
 	m_eAnimState = UIANIMSTATE::OFF;
 	m_fAccTime = 1.f;
 	m_pGameInstance->Change_InputType(m_ePreInputType);
+
+	m_pGameInstance->UnFix_HitStop(TIME_CHANNEL::PLAYER);
+	m_pGameInstance->UnFix_HitStop(TIME_CHANNEL::EFFECT);
+	m_pGameInstance->UnFix_HitStop(TIME_CHANNEL::ENEMY);
+	m_pGameInstance->UnFix_HitStop(TIME_CHANNEL::MAP);
 }
 
 HRESULT CUI_Tutorial::Initialize_Prototype(_uint iLevel)

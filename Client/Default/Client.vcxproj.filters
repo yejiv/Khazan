@@ -595,6 +595,9 @@
     <Filter Include="02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel">
       <UniqueIdentifier>{d867245e-67c6-4dd3-9887-177b55c11097}</UniqueIdentifier>
     </Filter>
+    <Filter Include="94.ClientInstance\Player_Manger">
+      <UniqueIdentifier>{b86e2937-1cab-43ad-aecc-1f09c038ebef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1125,9 +1128,6 @@
     <ClInclude Include="..\Public\Head_Yetuga.h">
       <Filter>02.GameObject\Creature\Monster\Yetuga\Head</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\UI_SkillTree.h">
-      <Filter>02.GameObject\UI\Skill_Tree</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\Skill_Tap.h">
       <Filter>02.GameObject\UI\Skill_Tree\Tap</Filter>
     </ClInclude>
@@ -1142,6 +1142,12 @@
     </ClInclude>
     <ClInclude Include="..\public\Skill_Slot_Panel.h">
       <Filter>02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_SkillTree.h">
+      <Filter>02.GameObject\UI\Skill_Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Player_Manager.h">
+      <Filter>94.ClientInstance\Player_Manger</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1676,6 +1682,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Skill_Slot_Panel.cpp">
       <Filter>02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Player_Manager.cpp">
+      <Filter>94.ClientInstance\Player_Manger</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
