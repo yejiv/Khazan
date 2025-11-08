@@ -30,6 +30,7 @@
 #include "Sequence_Interface.h"
 #include "Decal_Manager.h"
 #include "Effect_Manager.h"
+#include "Distortion.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -139,6 +140,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pFog)
 		return E_FAIL;
 
+	m_pDistortion = CDistortion::Create(*ppDevice, *ppContext);
+	if (nullptr == m_pDistortion)
+		return E_FAIL;
+
 	m_pVignette = CVignette::Create();
 	if (nullptr == m_pVignette)
 		return E_FAIL;
@@ -212,6 +217,7 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 	m_pShadow->Update();
 	m_pFog->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 	m_pVignette->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
+	m_pDistortion->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
 	m_pLevel_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
@@ -1252,6 +1258,35 @@ void CGameInstance::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strProto
 
 #pragma endregion
 
+#pragma region DISTORTION
+
+HRESULT CGameInstance::Bind_Distortion_ShaderResources(CShader* pShader)
+{
+	return m_pDistortion->Bind_Distortion_ShaderResources(pShader);
+}
+
+void CGameInstance::Start_Distortion(const DISTORTION_DESC& Desc)
+{
+	m_pDistortion->Start_Distortion(Desc);
+}
+
+DISTORTION_DESC CGameInstance::Get_DistortionDesc()
+{
+	return m_pDistortion->Get_DistortionDesc();
+}
+
+_uint CGameInstance::Get_NumDistortionNoiseTextures()
+{
+	return m_pDistortion->Get_NumDistortionNoiseTextures();
+}
+
+ID3D11ShaderResourceView* CGameInstance::Get_DistortionNoiseTexture(_uint iTextureIndex)
+{
+	return m_pDistortion->Get_DistortionNoiseTexture(iTextureIndex);
+}
+
+#pragma endregion
+
 #pragma region OCTREE
 
 void CGameInstance::DeleteOctree()
@@ -1304,6 +1339,7 @@ void CGameInstance::Release_Engine()
 
 	Safe_Release(m_pOctree);
 	
+	Safe_Release(m_pDistortion);
 	Safe_Release(m_pVignette);
 	Safe_Release(m_pFog);
 	Safe_Release(m_pBlur);
