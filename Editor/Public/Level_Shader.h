@@ -72,12 +72,15 @@ private:
 	// Decal
 	DECAL_DESC				m_DecalDesc = {};
 
+	// Distortion
+	DISTORTION_DESC			m_DistortionDesc = {};
+
 private:
-	// фд╤С╧лем ( 1. ╣Н╥огр ╥╧юл╬Н еб╠в | 2. ╣╔юлем фдюо юл╦╖ | 3. гЖюГ ╥н╣Егр ╥╧╨╖ | 4. ╦й е╦ют ( ╬хЁжю╦╦И фЗ╢У Ё╩╨н X ) )
+	// М▄▄К²╪К╞╦М└╟ ( 1. К⌠╠К║²М∙═ К═┬Л²╢Л√╢ М┐°Й╥╦ | 2. К█╟Л²╢М└╟ М▄▄Л²╪ Л²╢К╕└ | 3. М≤└Л·╛ К║°К⌠°М∙═ К═┬К╡╗ | 4. К╖╣ М┐─Л·┘ ( Л∙┬К└ёЛ°╪К╘╢ М▐╢К█■ К┌╢К╤─ X ) )
 	HRESULT Ready_Layer_MapObject(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
-	// фд╤С╧лем ( 1. ╣Н╥огр ╥╧юл╬Н еб╠в | 2. ╣╔юлем фдюо юл╦╖ | 3. гЖюГ ╥н╣Егр ╥╧╨╖ | 4. ╦й е╦ют ( ╬хЁжю╦╦И фЗ╢У Ё╩╨н X ) )
+	// М▄▄К²╪К╞╦М└╟ ( 1. К⌠╠К║²М∙═ К═┬Л²╢Л√╢ М┐°Й╥╦ | 2. К█╟Л²╢М└╟ М▄▄Л²╪ Л²╢К╕└ | 3. М≤└Л·╛ К║°К⌠°М∙═ К═┬К╡╗ | 4. К╖╣ М┐─Л·┘ ( Л∙┬К└ёЛ°╪К╘╢ М▐╢К█■ К┌╢К╤─ X ) )
 	HRESULT Ready_Layer_MapObject_Inst(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
-	// фд╤С╧лем ( 1. ╣╔юлем фдюо юл╦╖ | 2. гЖюГ ╥н╣Егр ╥╧╨╖ | 3. ╦й е╦ют ( ╬хЁжю╦╦И фЗ╢У Ё╩╨н X ) )
+	// М▄▄К²╪К╞╦М└╟ ( 1. К█╟Л²╢М└╟ М▄▄Л²╪ Л²╢К╕└ | 2. М≤└Л·╛ К║°К⌠°М∙═ К═┬К╡╗ | 3. К╖╣ М┐─Л·┘ ( Л∙┬К└ёЛ°╪К╘╢ М▐╢К█■ К┌╢К╤─ X ) )
 	HRESULT Ready_Lights(const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
 
 public:

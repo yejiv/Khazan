@@ -1,4 +1,4 @@
-﻿#include "Khazan_Spear_ASMachine.h"
+#include "Khazan_Spear_ASMachine.h"
 #include "GameInstance.h"
 #include <codecvt>
 

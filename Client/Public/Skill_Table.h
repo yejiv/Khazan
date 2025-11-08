@@ -19,6 +19,11 @@ public:
 	virtual void						Late_Update(_float fTimeDelta) override;
 	virtual HRESULT						Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
 
+private:
+	_uint								m_iPreSkillLevel = { 0 };
+	vector<class CUI_Atlas_Icon*>		m_pLine;
+	const _uint*						m_iSkillLevel = { nullptr };
+
 public:
 	static CSkill_Table*				Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject*				Clone(void* pArg) override;

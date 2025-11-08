@@ -70,7 +70,7 @@ HRESULT CDB_Manager::Load_ItemDB(const _tchar* pFilePath)
 
 	if (wText.empty())
 	{
-		MSG_BOX(TEXT("CSV ÆÄÀÏ ·Îµå ½ÇÆĞ"));
+		MSG_BOX(TEXT("CSV íŒŒì¼ ë¡œë“œ ì‹¤íŒ¨"));
 		return E_FAIL;
 	}
 
@@ -120,7 +120,7 @@ HRESULT CDB_Manager::Load_Equip_EffectDB(const _tchar* pFilePath)
 
 	if (wText.empty())
 	{
-		MSG_BOX(TEXT("CSV ÆÄÀÏ ·Îµå ½ÇÆĞ"));
+		MSG_BOX(TEXT("CSV íŒŒì¼ ë¡œë“œ ì‹¤íŒ¨"));
 		return E_FAIL;
 	}
 
@@ -163,7 +163,7 @@ HRESULT CDB_Manager::Load_Other_EffectDB(const _tchar* pFilePath)
 
 	if (wText.empty())
 	{
-		MSG_BOX(TEXT("CSV ÆÄÀÏ ·Îµå ½ÇÆĞ"));
+		MSG_BOX(TEXT("CSV íŒŒì¼ ë¡œë“œ ì‹¤íŒ¨"));
 		return E_FAIL;
 	}
 
@@ -207,7 +207,7 @@ HRESULT CDB_Manager::Load_StateDB(const _tchar* pFilePath)
 
 	if (wText.empty())
 	{
-		MSG_BOX(TEXT("CSV ÆÄÀÏ ·Îµå ½ÇÆĞ"));
+		MSG_BOX(TEXT("CSV íŒŒì¼ ë¡œë“œ ì‹¤íŒ¨"));
 		return E_FAIL;
 	}
 
@@ -248,7 +248,7 @@ HRESULT CDB_Manager::Load_Announce_TalkDB(const _tchar* pFilePath)
 
 	if (wText.empty())
 	{
-		MSG_BOX(TEXT("CSV ÆÄÀÏ ·Îµå ½ÇÆĞ"));
+		MSG_BOX(TEXT("CSV íŒŒì¼ ë¡œë“œ ì‹¤íŒ¨"));
 		return E_FAIL;
 	}
 
@@ -285,7 +285,7 @@ HRESULT CDB_Manager::Load_Skill_DB(const _tchar* pFilePath)
 
 	if (wText.empty())
 	{
-		MSG_BOX(TEXT("CSV ÆÄÀÏ ·Îµå ½ÇÆĞ"));
+		MSG_BOX(TEXT("CSV íŒŒì¼ ë¡œë“œ ì‹¤íŒ¨"));
 		return E_FAIL;
 	}
 
@@ -315,7 +315,7 @@ HRESULT CDB_Manager::Load_Skill_DB(const _tchar* pFilePath)
 		data.iSlotX = Read_UInt(ss);
 		data.iTexPass = Read_UInt(ss);
 		data.wstrIcon = Read_WString(ss);
-		data.wstrText = Read_WString(ss);
+		data.iPreSkill = Read_UInt(ss);
 		m_Skill_Data.emplace(ID, data);
 	}
 

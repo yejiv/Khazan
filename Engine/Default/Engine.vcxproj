@@ -118,6 +118,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ForcedIncludeFiles>EnginePch.h</ForcedIncludeFiles>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -151,6 +152,7 @@ call Copy.bat</Command>
       <ForcedIncludeFiles>EnginePch.h</ForcedIncludeFiles>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>EnginePch.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -196,6 +198,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\Decal_Manager.cpp" />
     <ClCompile Include="..\Private\Decorator_Node.cpp" />
     <ClCompile Include="..\Private\DeferredShader.cpp" />
+    <ClCompile Include="..\Private\Distortion.cpp" />
     <ClCompile Include="..\Private\Effect_Element.cpp" />
     <ClCompile Include="..\Private\Effect_Manager.cpp" />
     <ClCompile Include="..\Private\Prefab.cpp" />
@@ -327,6 +330,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\public\Decal_Manager.h" />
     <ClInclude Include="..\Public\Decorator_Node.h" />
     <ClInclude Include="..\Public\DeferredShader.h" />
+    <ClInclude Include="..\Public\Distortion.h" />
     <ClInclude Include="..\Public\Effect_Element.h" />
     <ClInclude Include="..\Public\Effect_Manager.h" />
     <ClInclude Include="..\Public\Prefab.h" />

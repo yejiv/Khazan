@@ -206,7 +206,7 @@ HRESULT CUI_CombatSpirit_Penal::Load_UI(nlohmann::json& pInData, _uint iPrototyp
 
 				if (pChild == nullptr)
 				{
-					MSG_BOX(TEXT("ÀÚ½Ä Å¬·Ð »ý¼º ½ÇÆÐ"));
+					MSG_BOX(TEXT("ìžì‹ í´ë¡  ìƒì„± ì‹¤íŒ¨"));
 					return E_FAIL;
 				}
 				if (pChild->Load_UI(child, iPrototypeLevelID, pArg))

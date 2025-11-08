@@ -167,13 +167,13 @@ HRESULT CBladeNexus_List::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevel
 	switch (m_eMenuType)
 	{
 	case CUI_BladeNexus::MENULIST::STATE:
-		szText = TEXT("´É·Â °­È­");
+		szText = TEXT("ëŠ¥ë ¥ ê°•í™”");
 		break;
 	case CUI_BladeNexus::MENULIST::WARP:
-		szText = TEXT("±Í°Ë ÀÌµ¿");
+		szText = TEXT("ê·€ê²€ ì´ë™");
 		break;
 	case CUI_BladeNexus::MENULIST::CREVICE:
-		szText = TEXT("°æ°èÀÇ Æ´");
+		szText = TEXT("ê²½ê³„ì˜ í‹ˆ");
 		break;
 	}
 

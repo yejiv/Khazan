@@ -211,12 +211,12 @@ HRESULT CItemInfo_Other::Update_Switch(void* pArg)
 	{
 	case 1:
 		if(pData->iEffect_ID < 10)
-			wstrType = TEXT("¼Ò¸ðÇ°");
+			wstrType = TEXT("ì†Œëª¨í’ˆ");
 		else
-			wstrType = TEXT("µîºÒ");
+			wstrType = TEXT("ë“±ë¶ˆ");
 		break;
-	case 2: wstrType = TEXT("¼öÁýÇ°"); break;
-	case 3: wstrType = TEXT("Àç·á"); break;
+	case 2: wstrType = TEXT("ìˆ˜ì§‘í’ˆ"); break;
+	case 3: wstrType = TEXT("ìž¬ë£Œ"); break;
 	}
 	m_pTypeText->Set_Text(wstrType);
 	return S_OK;
@@ -251,12 +251,12 @@ void CItemInfo_Other::Item_GradeCheck(const ITEM_DATA* pData)
 
 	switch (pData->iGrade)
 	{
-	case 0: wstrGrade = TEXT("Ä¿¸Õ"); iTexNum = 2; break;
-	case 1: wstrGrade = TEXT("¾ðÄ¿¸Õ"); iTexNum = 3; break;
-	case 2: wstrGrade = TEXT("·¹¾î"); iTexNum = 2; break;
-	case 3: wstrGrade = TEXT("À¯´ÏÅ©"); iTexNum = 3; break;
-	case 4: wstrGrade = TEXT("·¹Àü´õ¸®"); iTexNum = 4; break;
-	case 5: wstrGrade = TEXT("¿¡ÇÈ"); iTexNum = 2; break;
+	case 0: wstrGrade = TEXT("ì»¤ë¨¼"); iTexNum = 2; break;
+	case 1: wstrGrade = TEXT("ì–¸ì»¤ë¨¼"); iTexNum = 3; break;
+	case 2: wstrGrade = TEXT("ë ˆì–´"); iTexNum = 2; break;
+	case 3: wstrGrade = TEXT("ìœ ë‹ˆí¬"); iTexNum = 3; break;
+	case 4: wstrGrade = TEXT("ë ˆì „ë”ë¦¬"); iTexNum = 4; break;
+	case 5: wstrGrade = TEXT("ì—í”½"); iTexNum = 2; break;
 	}
 	m_pGradeText->Set_Text(wstrGrade);
 	if (iTexNum == 2)

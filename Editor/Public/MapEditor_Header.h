@@ -1,7 +1,7 @@
 #ifndef MapEditor_Header_h__
 #define MapEditor_Header_h__
 
-// Map Editor¿¡ ÇÊ¿äÇÑ Çì´õ ¸ğ¾Æ³õ´Â ¿ë
+// Map Editorì— í•„ìš”í•œ í—¤ë” ëª¨ì•„ë†“ëŠ” ìš©
 
 // Camera
 #include "Camera_Map.h"
@@ -20,23 +20,23 @@
 // Interactive Properties
 #include "Prop_Interactive.h"
 
-#include "BladeNexus.h"					// ±Í°Ë
-#include "BigChest.h"					// »óÀÚ
-#include "TombStone.h"					// °æ°èÀÇ Æ´ Åù½ºÅæ
+#include "BladeNexus.h"					// ê·€ê²€
+#include "BigChest.h"					// ìƒì
+#include "TombStone.h"					// ê²½ê³„ì˜ í‹ˆ íˆ¼ìŠ¤í†¤
 
 // Properties Test
 #include "Prop_Test.h"
 
-// ÇÃ·¹ÀÌ¾î ¸ğµ¨ Å×½ºÆ®
+// í”Œë ˆì´ì–´ ëª¨ë¸ í…ŒìŠ¤íŠ¸
 #include "Map_TestPlayer.h"
 
-// ¸Ê Æ®¸®°Å ( Á» ¾ß¸Å )
+// ë§µ íŠ¸ë¦¬ê±° ( ì¢€ ì•¼ë§¤ )
 #include "Trigger.h"
 
 // Terrain
 #include "Map_Terrain.h"
 
-// Model °ü·Ã
+// Model ê´€ë ¨
 #include "Editor_Model.h"
 #include "Editor_Model_Instance.h"
 #include "Editor_ModelMesh_Instance.h"

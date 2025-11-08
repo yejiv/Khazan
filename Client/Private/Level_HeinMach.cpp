@@ -1,8 +1,7 @@
-﻿#include "Level_HeinMach.h"
+#include "Level_HeinMach.h"
 #include "GameInstance.h"
 #include "Level_Loading.h"
 #include "Event_Defines.h"
-//#include "Camera_Free.h"
 #include "Player.h"
 #include "Camera_Compre.h"
 #include "Dummy.h"
@@ -30,33 +29,25 @@ CLevel_HeinMach::CLevel_HeinMach(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 
 HRESULT CLevel_HeinMach::Initialize()
 {
-
-	m_pGameInstance->Add_FireTask([this]() {
-		CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
-		//CHECK_FAILED(Ready_Layer_Test(TEXT("Layer_Creature_Test")), E_FAIL);
-		if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
-			return E_FAIL;
-		CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
-
-		//CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Gomdol")), E_FAIL);
-		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
-			HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-		CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-		return S_OK;
-		});
-
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
 			HEINMACH_1ST_BLADENEXUS, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		return S_OK;
 		}));
 
-	//m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-	//	
-	//	
-	//	return S_OK;
-	//	}));
+	m_pGameInstance->Add_FireTask([this]() {
+		CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
+		if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
+			return E_FAIL;
+		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
+			HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+		CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
+		//CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Gomdol")), E_FAIL);
+		CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+		return S_OK;
+		});
 
+	
 	m_pGameInstance->Add_FireTask([this]() {
 
 		CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
@@ -66,7 +57,6 @@ HRESULT CLevel_HeinMach::Initialize()
 		CHECK_FAILED(Ready_Layer_Cloud(TEXT("Layer_Sky"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		return S_OK;
 		});
-
 
 	
 	m_pGameInstance->Add_FireTask([this]() {
@@ -89,8 +79,7 @@ HRESULT CLevel_HeinMach::Initialize()
 				continue;
 			
 			CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), i, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-		}
-		
+		}		
 		return S_OK;
 		});
 
@@ -103,22 +92,15 @@ HRESULT CLevel_HeinMach::Initialize()
 		return S_OK;
 		});
 
-	//CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-	//m_pGameInstance->Add_FireTask([this]() mutable { 
-	//	CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); 
-	//	return S_OK;
-	//	});
-
-
-	if (FAILED(Ready_Layer_TestEffect(TEXT("Layer_EffectTest"))))
-		return E_FAIL;
-
-
 	/*if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
 		return E_FAIL;*/
 	CClientInstance::GetInstance()->Fade_Out();
 
 	while (true) {
+
+		if (!m_isFillFutures)
+			continue;
+
 		bool all_ready = true;
 
 		for (auto it = m_futures.begin(); it != m_futures.end(); /* no ++ here */) {
@@ -166,11 +148,6 @@ HRESULT CLevel_HeinMach::Initialize()
 
 void CLevel_HeinMach::Update(_float fTimeDelta)
 {
-	//if (GetKeyState(VK_RETURN) & 0x8000)
-	//	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::GAMEPLAY))))
-	//		return;
-	//}
-
 	if (m_pGameInstance->Key_Down(DIK_Q))
 	{
 		m_pGameInstance->isPickRenderTargetPixel(TEXT("Target_Normal"));
@@ -185,10 +162,8 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
 		m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::HEINMACH), ENUM_CLASS(CAMERATYPE::PLAYER));
 	}
 
-	/*Effect test => 혹시 보게되면 지우셔도 됩니다!!!!!!!!! */
-	if (m_pGameInstance->Key_Down(DIK_I))
-		m_pGameInstance->Spwan_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpaceTime_SpearBlood"), XMVectorSet(1.f, 1.f, 1.f, 1.f));
-	//Test End
+	//if (m_pGameInstance->Key_Down(DIK_RETURN))
+	//	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::VIPER))));
 
 	return;
 }
@@ -252,7 +227,6 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 	CCamera_Compre* pCamera_Player = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Camera_Compre"), &PlayerCameraDesc));
 	pCamera_Player->Set_IsActive(false);
-	//CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Test"));
 	CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player"));
 	pCamera_Player->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
 	m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::HEINMACH), pCamera_Player);
@@ -295,36 +269,6 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster(const _wstring& strLayerTag)
 	/*if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
 		ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Gomdol"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
 		return E_FAIL;*/
-
-	return S_OK;
-}
-
-HRESULT CLevel_HeinMach::Ready_Layer_Test(const _wstring& strLayerTag)
-{
-	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-		ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Sample"), TIME_CHANNEL::PLAYER)))
-		return E_FAIL;
-
-	return S_OK;
-}
-
-HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Test(const _wstring& strLayerTag)
-{
-	//CProp_Test::PROP_TEST_DESC ObjectDesc = {};
-
-	//memcpy(ObjectDesc.szModelName, TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"), sizeof(ObjectDesc.szModelName));
-	//ObjectDesc.eLevel = LEVEL::HEINMACH;
-
-	//CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-	//	ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Test"), &ObjectDesc), E_FAIL);
-
-	return S_OK;
-}
-
-HRESULT CLevel_HeinMach::Ready_Layer_TestEffect(const _wstring& strLayerTag)
-{
-
-	m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpaceTime_SpearBlood"), 3);
 
 	return S_OK;
 }
@@ -557,7 +501,11 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag
 				return S_OK;
 				});
 		}
-		
+	}
+
+	if (iSubLV == HEINMACH_1ST_BLADENEXUS)
+	{
+		m_isFillFutures = true;
 	}
 
 	CloseHandle(hFile);

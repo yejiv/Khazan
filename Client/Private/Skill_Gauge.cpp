@@ -3,12 +3,12 @@
 #include "ClientInstance.h"
 
 CSkill_Gauge::CSkill_Gauge(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: CUI_Panel{ pDevice, pContext }
+	: CUI_ProgressBar{ pDevice, pContext }
 {
 }
 
 CSkill_Gauge::CSkill_Gauge(const CSkill_Gauge& Prototype)
-	: CUI_Panel(Prototype)
+	: CUI_ProgressBar(Prototype)
 {
 }
 
@@ -21,6 +21,9 @@ HRESULT CSkill_Gauge::Initialize_Clone(void* pArg)
 {
 	CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 	CHECK_FAILED(Ready_Component(), E_FAIL);
+
+	m_fExp = &CClientInstance::GetInstance()->Get_PlayerData().fSkillLevel_EXP;
+	m_fMaxValue = 100.f;
 	return S_OK;
 }
 
@@ -30,6 +33,13 @@ void CSkill_Gauge::Priority_Update(_float fTimeDelta)
 
 void CSkill_Gauge::Update(_float fTimeDelta)
 {
+	m_fCurrentValue = *m_fExp;
+	if (m_fCurrentValue < 0)
+		m_fCurrentValue = 0;
+	if (m_fCurrentValue > m_fMaxValue)
+		m_fCurrentValue = m_fMaxValue;
+
+	Progress_Update();
 }
 
 void CSkill_Gauge::Late_Update(_float fTimeDelta)
@@ -50,30 +60,25 @@ HRESULT CSkill_Gauge::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, 
 	if (FAILED(__super::Load_UI(pInData, iPrototypeLevelID, pArg)))
 		return E_FAIL;
 
+	m_iShaderPass = 4;
+
 	return S_OK;
 }
 
 HRESULT CSkill_Gauge::Render()
 {
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
-		return E_FAIL;
-
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
-		return E_FAIL;
-
-	if (FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix")))
-		return E_FAIL;
-
-	if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_Texture", m_iTexPass)))
-		return E_FAIL;
+	CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix), E_FAIL);
+	CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix), E_FAIL);
+	CHECK_FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix"), E_FAIL);
+	CHECK_FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_Texture", m_iTexPass), E_FAIL);
 
 	CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
 	CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof(_float4)), E_FAIL);
+	CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fProgressValue", &m_fProgress_Value, sizeof(_float)), E_FAIL);
 
 	m_pShaderCom->Begin(m_iShaderPass);
 	m_pVIBufferCom->Bind_Resources();
 	m_pVIBufferCom->Render();
-
 	return S_OK;
 }
 

@@ -42,15 +42,15 @@ void CAS_RightHand_5Hit_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollis
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
         //if (m_iComboCount < 5)
-   //    m_iComboCount++;
+        //    m_iComboCount++;
 
-   //if (4 == m_iComboCount)
-   //{
-   //    // if ¸·Å¸¸¦ ÆÐ¸®ÇÏ¸é ½ºÆ®·Õ ´ë¹ÌÁö ÇÇ°Ý ÀÎÅÍ·ìÆ® È£Ãâ ÇÏ´Â½ÄÀ¸·Î
-       /*CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
-       pYetuga->Take_Damage(15.f,HITREACTION::KNOCKBACK_STRONG,1.f);*/
-       
-   //}
+        //if (4 == m_iComboCount)
+        //{
+        //    // if ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½Ð¸ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ç°ï¿½ ï¿½ï¿½ï¿½Í·ï¿½Æ® È£ï¿½ï¿½ ï¿½Ï´Â½ï¿½ï¿½ï¿½ï¿½ï¿½
+            /*CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
+            pYetuga->Take_Damage(15.f,HITREACTION::KNOCKBACK_STRONG,1.f);*/
+            
+        //}
     
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
         if (nullptr == pTarget)

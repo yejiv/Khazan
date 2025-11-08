@@ -1,4 +1,4 @@
-﻿#include "AnimationTransitionManager.h"
+#include "AnimationTransitionManager.h"
 #include "GameInstance.h"
 
 CAnimationTransitionManager::CAnimationTransitionManager()

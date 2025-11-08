@@ -48,7 +48,7 @@ HRESULT CModel_Instance::Initialize_Prototype(const _char* pModelFilePath, const
     ifstream ifs(pModelFilePath, std::ios::binary);
     if (!ifs.is_open())
     {
-        MSG_BOX(TEXT("∆ƒ¿œ ø≠±‚ Ω«∆–"));
+        MSG_BOX(TEXT("ÌååÏùº Ïó¥Í∏∞ Ïã§Ìå®"));
         return E_FAIL;
     }
 
@@ -162,11 +162,11 @@ _bool CModel_Instance::Play_Animation(_float fTimeDelta)
 {
     m_isFinished = false;
 
-    /* «ˆ¿Á Ω√∞£ø° ∏¬¥¬ ª¿¿« ªÛ≈¬¥Î∑Œ ∆Ø¡§ ª¿µÈ¿« TransformationMatrix∏¶ ∞ªΩ≈«ÿ¡ÿ¥Ÿ. */
+    /* ÌòÑÏû¨ ÏãúÍ∞ÑÏóê ÎßûÎäî ÎºàÏùò ÏÉÅÌÉúÎåÄÎ°ú ÌäπÏ†ï ÎºàÎì§Ïùò TransformationMatrixÎ•º Í∞±Ïã†Ìï¥Ï§ÄÎã§. */
     m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrices(m_Bones, m_isLoop, &m_isFinished, fTimeDelta);
 
 
-    /* πŸ≤„æﬂ«“ ª¿µÈ¿« Transforemation«‡∑ƒ¿Ã ∞ªΩ≈µ«æ˙¥Ÿ∏È, ¡§¡°µÈø°∞‘ ¡˜¡¢ ¿¸¥ﬁµ«æﬂ«“ CombindTransformationMatrix∏¶ ∏∏µÈæÓ¡ÿ¥Ÿ. */
+    /* Î∞îÍøîÏïºÌï† ÎºàÎì§Ïùò TransforemationÌñâÎ†¨Ïù¥ Í∞±Ïã†ÎêòÏóàÎã§Î©¥, Ï†ïÏ†êÎì§ÏóêÍ≤å ÏßÅÏ†ë Ï†ÑÎã¨ÎêòÏïºÌï† CombindTransformationMatrixÎ•º ÎßåÎì§Ïñ¥Ï§ÄÎã§. */
     for (auto& pBone : m_Bones)
     {
         pBone->Update_CombinedTransformationMatrix(m_PreTransformMatrix, m_Bones);
@@ -191,7 +191,7 @@ HRESULT CModel_Instance::Ready_Meshes(MODEL_DATA& Data, const CModelMesh_Instanc
         CModelMesh_Instance* pMesh = CModelMesh_Instance::Create(m_pDevice, m_pContext, m_eModelType, XMLoadFloat4x4(&m_PreTransformMatrix), Data.vecMeshes[i], pDesc);
         if (pMesh == nullptr)
         {
-            MSG_BOX(TEXT("∫ÒªÛ CMesh::Create() Ω«∆–!!!!!!"));
+            MSG_BOX(TEXT("ÎπÑÏÉÅ CMesh::Create() Ïã§Ìå®!!!!!!"));
             return E_FAIL;
         }
         m_Meshes.push_back(pMesh);

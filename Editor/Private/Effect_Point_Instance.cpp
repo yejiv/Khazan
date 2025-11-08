@@ -1,4 +1,4 @@
-﻿#include "Effect_Point_Instance.h"
+#include "Effect_Point_Instance.h"
 #include "Effect_Prefab.h"
 #include "GameInstance.h"
 

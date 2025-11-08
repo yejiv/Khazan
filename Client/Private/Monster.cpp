@@ -113,13 +113,13 @@ HRESULT CMonster::Initialize_Clone(void* pArg)
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
-    // ÀÌ¸§
+    // ì´ë¦„
     m_strName = pDesc->strName;
-    // Å¸°Ù
+    // íƒ€ê²Ÿ
     m_pTarget = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH),TEXT("Layer_Creature_Player"),0);
     if (nullptr == m_pTarget)
         return E_FAIL;
-    // ºí·¢º¸µå¿¡ ¼³Á¤
+    // ë¸”ëž™ë³´ë“œì— ì„¤ì •
     CBlackBoard* pBlackBoard = m_pGameInstance->Get_BlackBoard();
     pBlackBoard->Set_Value(m_strName, "Target", m_pTarget);
 

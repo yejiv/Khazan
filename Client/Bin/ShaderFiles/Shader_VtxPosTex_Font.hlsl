@@ -80,8 +80,8 @@ PS_OUT PS_MAP_MASK_PASS(PS_IN In)
     float mask = g_FontTexture.Sample(DefaultSampler, In.vUV).r;
     float2 uvFill = (In.vPosition.xy - g_TextRect.xy) / g_TextRect.zw;
 
-    // clamp / frac ¿É¼Ç
-    // uvFill = saturate(uvFill);   // ¹üÀ§ ¹Û=0/1
+    // clamp / frac ì˜µì…˜
+    // uvFill = saturate(uvFill);   // ë²”ìœ„ ë°–=0/1
     // uvFill = frac(uvFill);       // tile
 
     float rectAspect = g_TextRect.z / g_TextRect.w;
@@ -118,7 +118,7 @@ PS_OUT PS_MAP_DISSOLVE_PASS(PS_IN In)
 
     float rectAspect = g_TextRect.z / g_TextRect.w;
 
-    //µðÁ¹ºê Ã³¸®
+    //ë””ì¡¸ë¸Œ ì²˜ë¦¬
     if (rectAspect > g_fDissovleTexAspect)
     {
         float scale = g_fDissovleTexAspect / rectAspect;
@@ -135,7 +135,7 @@ PS_OUT PS_MAP_DISSOLVE_PASS(PS_IN In)
     if (DissoveleRGB.r > g_fDissovle)
         discard;
     
-    //ÅØ½ºÃ³ Ã³¸®
+    //í…ìŠ¤ì²˜ ì²˜ë¦¬
     if (rectAspect > g_fTexAspect)
     {
         float scale = g_fTexAspect / rectAspect;

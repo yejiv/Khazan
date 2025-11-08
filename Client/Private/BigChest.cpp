@@ -29,7 +29,7 @@ HRESULT CBigChest::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Collision(pArg), E_FAIL);
 
-#pragma region ¹ü¼ö »óÈ£ÀÛ¿ë ½»½»
+#pragma region ë²”ìˆ˜ ìƒí˜¸ì‘ìš© ìŠ¥ìŠ¥
 
     CHECK_FAILED(Ready_Interaction_Guide(pArg), E_FAIL);
 
@@ -78,7 +78,7 @@ void CBigChest::Late_Update(_float fTimeDelta)
 
 HRESULT CBigChest::Render()
 {
-    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources ÇÔ¼ö E_FAIL"), E_FAIL);
+    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources í•¨ìˆ˜ E_FAIL"), E_FAIL);
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -102,9 +102,9 @@ HRESULT CBigChest::Ready_Components(void* pArg)
     CHECK_NULLPTR(pDesc, E_FAIL);
 
     LEVEL eLevel = pDesc->eLevel;
-    CHECK_EQUAL_MSG(LEVEL::END, eLevel, TEXT("LAYER ÇÔ¼ö¿¡¼­ LEVEL ¹ÌÀÔ·Â"), E_FAIL);
+    CHECK_EQUAL_MSG(LEVEL::END, eLevel, TEXT("LAYER í•¨ìˆ˜ì—ì„œ LEVEL ë¯¸ì…ë ¥"), E_FAIL);
 
-    // °³º° ½¦ÀÌ´õ »ı¼ºÇÒÁö °í¹Î
+    // ê°œë³„ ì‰ì´ë” ìƒì„±í• ì§€ ê³ ë¯¼
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr), E_FAIL);
 
@@ -116,7 +116,7 @@ HRESULT CBigChest::Ready_Components(void* pArg)
 
 HRESULT CBigChest::Ready_Collision(void* pArg)
 {
-#pragma region ½ºÅÂÆ½ ¸öÃ¼
+#pragma region ìŠ¤íƒœí‹± ëª¸ì²´
     CBody::BODY_BOXSHAPE_DESC StaticBodyDesc{};
     StaticBodyDesc.vExtent = _float3(1.f, 0.5f, 0.5f);
     StaticBodyDesc.bIsTrigger = false;
@@ -137,7 +137,7 @@ HRESULT CBigChest::Ready_Collision(void* pArg)
     StaticBodyDesc.vQuat = vQuat;
     StaticBodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
     m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // ÀÛ¼ºÇÏ±â
+    //pCollDesc.pInfo = ?? // ì‘ì„±í•˜ê¸°
     StaticBodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
@@ -145,7 +145,7 @@ HRESULT CBigChest::Ready_Collision(void* pArg)
         return E_FAIL;
 #pragma endregion
 
-#pragma region Æ®¸®°Å ¿µ¿ª
+#pragma region íŠ¸ë¦¬ê±° ì˜ì—­
     CBody::BODY_BOXSHAPE_DESC TriggerDesc{};
     TriggerDesc.vExtent = _float3(0.75f, 0.5f, 0.75f);
     TriggerDesc.bIsTrigger = true;
@@ -165,7 +165,7 @@ HRESULT CBigChest::Ready_Collision(void* pArg)
 
     TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
     m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // ÀÛ¼ºÇÏ±â
+    //pCollDesc.pInfo = ?? // ì‘ì„±í•˜ê¸°
     TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
@@ -183,7 +183,7 @@ HRESULT CBigChest::Ready_Interaction_Guide(void* pArg)
 
     Safe_AddRef(m_pGuide);
 
-    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("¿­±â"), 1.f);
+    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("ì—´ê¸°"), 1.f);
 
     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pGuide);
 
@@ -242,13 +242,13 @@ void CBigChest::Animation_Update(_float fTimeDelta)
 
     Input_Interact_Event(fTimeDelta);
 
-    if (m_Event.isOn())               // ÄÒ´Ù´Â ½ÅÈ£
+    if (m_Event.isOn())               // ì¼ ë‹¤ëŠ” ì‹ í˜¸
     {
         if (ANIM_STATE::CLOSE == m_eAnimState)
         {
             m_pGuide->Update_Visible(false);
 
-            // ´İ±ä »óÀÚ »óÈ£ ÀÛ¿ë ½Ã
+            // ë‹«ê¸´ ìƒì ìƒí˜¸ ì‘ìš© ì‹œ
             m_eAnimState = ANIM_STATE::OPENING;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
@@ -269,11 +269,11 @@ void CBigChest::Animation_Update(_float fTimeDelta)
 
             InteractType.ChestEvent = ChestEvent;
 
-            // OPENING Áß¿¡´Â UI, Player ¿ë Active º¯¼ö´Â false, »óÀÚ ¾Õ À§Ä¡¶û »óÀÚ À§Ä¡ ´øÁö±â
+            // OPENING ì¤‘ì—ëŠ” UI, Player ìš© Active ë³€ìˆ˜ëŠ” false, ìƒì ì• ìœ„ì¹˜ë‘ ìƒì ìœ„ì¹˜ ë˜ì§€ê¸°
             m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
         }
     }
-    else if (m_Event.isOff())         // ²ö´Ù´Â ½ÅÈ£ ( ³»°¡ ¹Ş±â¸¸ ÇÏ¸é µÊ
+    else if (m_Event.isOff())         // ëˆë‹¤ëŠ” ì‹ í˜¸ ( ë‚´ê°€ ë°›ê¸°ë§Œ í•˜ë©´ ë¨
     {
         if (ANIM_STATE::OPEN == m_eAnimState)
         {
@@ -288,7 +288,7 @@ void CBigChest::Animation_Change(_float fTimeDelta)
 {
     if (ANIM_STATE::OPENING == m_eAnimState)
     {
-        // Ã³À½ »óÈ£ ÀÛ¿ëÀÌ ³¡³­ ÈÄ After Idle »óÅÂ·Î ÀüÈ¯
+        // ì²˜ìŒ ìƒí˜¸ ì‘ìš©ì´ ëë‚œ í›„ After Idle ìƒíƒœë¡œ ì „í™˜
         m_eAnimState = ANIM_STATE::OPEN;
         m_pModelCom->Set_Animation(ANIM_STATE::OPEN);
         m_pModelCom->Set_AnimationLoop(true);
@@ -309,7 +309,7 @@ void CBigChest::Animation_Change(_float fTimeDelta)
 
         InteractType.ChestEvent = ChestEvent;
 
-        // OPENING Áß¿¡´Â UI, Player ¿ë Active º¯¼ö´Â false, »óÀÚ ¾Õ À§Ä¡¶û »óÀÚ À§Ä¡ ´øÁö±â
+        // OPENING ì¤‘ì—ëŠ” UI, Player ìš© Active ë³€ìˆ˜ëŠ” false, ìƒì ì• ìœ„ì¹˜ë‘ ìƒì ìœ„ì¹˜ ë˜ì§€ê¸°
         m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
     }
     if (ANIM_STATE::CLOSING == m_eAnimState)
@@ -317,7 +317,7 @@ void CBigChest::Animation_Change(_float fTimeDelta)
         if (true == m_isCollision)
             m_pGuide->Update_Visible(true);
 
-        // Ã³À½ »óÈ£ ÀÛ¿ë ÈÄ ¾Ö´Ï¸ŞÀÌ¼Ç ·çÇÁ·Î ÀüÈ¯
+        // ì²˜ìŒ ìƒí˜¸ ì‘ìš© í›„ ì• ë‹ˆë©”ì´ì…˜ ë£¨í”„ë¡œ ì „í™˜
         m_eAnimState = ANIM_STATE::CLOSE;
         m_pModelCom->Set_Animation(ANIM_STATE::CLOSE);
         m_pModelCom->Set_AnimationLoop(true);
@@ -326,6 +326,9 @@ void CBigChest::Animation_Change(_float fTimeDelta)
 
 void CBigChest::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+        return;
+
     if(ANIM_STATE::CLOSE == m_eAnimState)
         m_pGuide->Update_Visible(true);
 
@@ -334,11 +337,17 @@ void CBigChest::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, 
 
 void CBigChest::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+        return;
+
     m_isCollision = true;
 }
 
 void CBigChest::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 {
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+        return;
+
     m_pGuide->Update_Visible(false);
 
     m_isCollision = false;

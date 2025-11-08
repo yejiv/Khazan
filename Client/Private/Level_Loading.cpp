@@ -9,6 +9,7 @@
 #include "Level_Crevice.h"
 #include "Level_Embars.h"
 #include "Level_Viper.h"
+#include "Level_Test.h"
 
 #pragma region MAP OBJECT HEADER
 #include "MapObject_Header.h"
@@ -34,11 +35,11 @@ HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
 {
 	m_eNextLevelID = eNextLevelID;
 
-	/* ÇöÀç ·¹º§À» ±¸¼ºÇØÁÖ±â À§ÇÑ °´Ã¼µéÀ» »ı¼ºÇÑ´Ù. */
+	/* í˜„ì¬ ë ˆë²¨ì„ êµ¬ì„±í•´ì£¼ê¸° ìœ„í•œ ê°ì²´ë“¤ì„ ìƒì„±í•œë‹¤. */
 	if (FAILED(Ready_GameObjects()))
 		return E_FAIL;
 
-	/* ´ÙÀ½ ·¹º§À» À§ÇÑ ·ÎµùÀÛ¾÷À» ½ÃÀÛ ÇÑ´Ù. */
+	/* ë‹¤ìŒ ë ˆë²¨ì„ ìœ„í•œ ë¡œë”©ì‘ì—…ì„ ì‹œì‘ í•œë‹¤. */
 	if (FAILED(Ready_LoadingThread()))
 		return E_FAIL;
 	CClientInstance::GetInstance()->Fade_In();
@@ -92,6 +93,11 @@ void CLevel_Loading::Update(_float fTimeDelta)
 			m_pGameInstance->CreateOctree({ 260.f, 0.f, 215.f }, 1500.f, 3);
 			pNewLevel = CLevel_HeinMach::Create(m_pDevice, m_pContext);
 			break;
+		case LEVEL::TEST:
+			m_pGameInstance->DeleteOctree();
+			m_pGameInstance->CreateOctree({ 0.f, 0.f, 0.f }, 200.f, 3);
+			pNewLevel = CLevel_Test::Create(m_pDevice, m_pContext);
+			break;
 		case LEVEL::CREVICE:
 			m_pGameInstance->DeleteOctree();
 			m_pGameInstance->CreateOctree({ 0.f, 0.f, 20.f }, 200.f, 3);
@@ -101,6 +107,8 @@ void CLevel_Loading::Update(_float fTimeDelta)
 			pNewLevel = CLevel_Embars::Create(m_pDevice, m_pContext);
 			break;
 		case LEVEL::VIPER:
+			m_pGameInstance->DeleteOctree();
+			m_pGameInstance->CreateOctree({ 0.f, 0.f, 150.f }, 300.f, 3);
 			pNewLevel = CLevel_Viper::Create(m_pDevice, m_pContext);
 			break;
 		}
@@ -112,7 +120,7 @@ void CLevel_Loading::Update(_float fTimeDelta)
 
 HRESULT CLevel_Loading::Render()
 {
-	/* »ı¼ºÇØ³õÀº °´Ã¼µéÀ» ·»´õÇÑ´Ù. */
+	/* ìƒì„±í•´ë†“ì€ ê°ì²´ë“¤ì„ ë Œë”í•œë‹¤. */
 	m_pLoader->Show_LoadingText();
 
 	return S_OK;
@@ -188,7 +196,7 @@ HRESULT CLevel_Loading::Ready_Layer_Sky(const _wstring& strLayerTag, const _tcha
 	HANDLE hFile = CreateFile(strDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (INVALID_HANDLE_VALUE == hFile)
 	{
-		// ÆÄÀÏ ¾øÀ¸¸é »ı¼º
+		// íŒŒì¼ ì—†ìœ¼ë©´ ìƒì„±
 		SkySphereDesc.SkyDesc.vNebulaColorR = { 0.1f, 0.1f, 0.1f };
 		SkySphereDesc.SkyDesc.vNebulaColorG = { 0.1f, 0.1f, 0.1f };
 		SkySphereDesc.SkyDesc.vNebulaColorB = { 0.1f, 0.1f, 0.1f };

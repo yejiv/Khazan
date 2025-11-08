@@ -18,7 +18,7 @@
 //    if (nullptr == pOwner)
 //        return E_FAIL;
 //
-//    // ·çÆ® ¼¿·ºÅÍ ³ëµå (ÃÖ»óÀ§)
+//    // ë£¨íŠ¸ ì…€ë ‰í„° ë…¸ë“œ (ìµœìƒìœ„)
 //    CSelector_Node* pRoot = CSelector_Node::Create();
 //    Set_Root(pRoot);
 //    
@@ -66,7 +66,7 @@
 //                cout << "Attack_Success" << endl;
 //                return BTNODESTATE::SUCCESS;
 //            }
-//            // ¾ÆÁ÷ ¾Ö´Ï¸ŞÀÌ¼Ç ÁøÇà Áß
+//            // ì•„ì§ ì• ë‹ˆë©”ì´ì…˜ ì§„í–‰ ì¤‘
 //            return BTNODESTATE::RUNNING;
 //        },
 //        [pOwner](CBlackBoard* BB, BTNODESTATE eState)
@@ -91,7 +91,7 @@
 //
 //    CSequence_Node* pChaseSequence = CSequence_Node::Create();
 //
-//    // °¨ÁöµÈ »óÅÂ && °Å¸® ¹üÀ§ ³»
+//    // ê°ì§€ëœ ìƒíƒœ && ê±°ë¦¬ ë²”ìœ„ ë‚´
 //    CAction_Node* pMoveCondition = CAction_Node::Create(
 //        [pOwner](CBlackBoard* BB)
 //        {
@@ -111,7 +111,7 @@
 //        nullptr
 //    ); 
 //
-//    // MOVE »óÅÂ ÁøÀÔ
+//    // MOVE ìƒíƒœ ì§„ì…
 //    CAction_Node* pMoveAction = CAction_Node::Create(
 //        [pOwner](CBlackBoard* BB)
 //        {
@@ -149,7 +149,7 @@
 //    );
 //#pragma endregion
 //
-//    // ·çÆ®¿¡ Ãß°¡
+//    // ë£¨íŠ¸ì— ì¶”ê°€
 //    pRoot->Add_Child(pAttackSequence);
 //    pRoot->Add_Child(pChaseSequence);
 //    pRoot->Add_Child(pIdleAction);

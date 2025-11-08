@@ -1,4 +1,4 @@
-﻿#include "Khazan_Spear.h"
+#include "Khazan_Spear.h"
 #include "Body_Khazan_Spear.h"
 #include "Spear_Khazan_Spear.h"
 #include "GameInstance.h"
@@ -175,6 +175,7 @@ HRESULT CKhazan_Spear::Render()
 
 void CKhazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
+
 }
 
 void CKhazan_Spear::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
@@ -829,10 +830,11 @@ HRESULT CKhazan_Spear::Ready_Collision()
     tCharVirDesc.fRadius = 0.5f;
     tCharVirDesc.fHeight = 0.5f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
-    tCharVirDesc.fMass = 100000.f;
+    //tCharVirDesc.fMass = 100000.f;
     m_tCollisionDesc.pGameObject = this;
     //pCollDesc.pInfo = ?? // 작성하기
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
+    tCharVirDesc.fMaxStrength = 0.f;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
