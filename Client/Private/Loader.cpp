@@ -123,6 +123,11 @@ HRESULT CLoader::Loading()
 			return Loading_For_Title_Level();
 			}));
 		break;
+	case LEVEL::TEST:
+		m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+			return Loading_For_Test_Level();
+			}));
+		break;
 	case LEVEL::HEINMACH:
 		m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 			return Loading_For_Stage1_Level();
@@ -162,6 +167,97 @@ HRESULT CLoader::Loading_For_Title_Level()
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 	
 	m_isFinished = true;
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Test_Level()
+{
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		return Loading_For_Test_Texture();
+		}));
+
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		Loading_For_Test_Model();
+		Loading_For_Test_GameObject();
+		return E_FAIL;
+		}));
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		return Loading_For_Test_Shader();
+		}));
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("HeinMach"), LEVEL::TEST), E_FAIL);
+		}));
+
+	
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Test_Texture()
+{
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Test_Model()
+{
+
+	/* Prototype_Component_Model_Khazan_Sample*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_Component_Model_Khazan_Sample"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Khazan_Sample.dat"))))
+		return E_FAIL;
+
+	/* Prototype_Component_Model_Spear_Khazan_Sample*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_Component_Model_Spear_Khazan_Sample"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Spear/Spear.dat"))))
+		return E_FAIL;
+
+	/* Prototype_Component_Model_Khazan_Spear*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_Component_Model_Khazan_Spear"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Spear/Khazan_Spear.dat"))))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Test_Shader()
+{
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Test_GameObject()
+{
+	/* Prototype_GameObject_Prop_Object */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_GameObject_Prop_Object"),
+		CProp_Object::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	/* Prototype_GameObject_Prop_Static */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_GameObject_Prop_Static"),
+		CProp_Static::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	/* Prototype_GameObject_Camera_Compre */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_GameObject_Camera_Compre"),
+		CCamera_Compre::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_GameObject_Khazan_Sample */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_GameObject_Khazan_Sample"),
+		CKhazan_Sample::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_GameObject_Body_Khazan_Sample */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_GameObject_Body_Khazan_Sample"),
+		CBody_Khazan_Sample::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_GameObject_Spear_Khazan_Sample */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_GameObject_Spear_Khazan_Sample"),
+		CSpear_Khazan_Sample::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("SpaceTime_SpearBlood"),
+		CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/blood"))))
+		return E_FAIL;
 
 	return S_OK;
 }

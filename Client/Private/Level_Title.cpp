@@ -36,11 +36,28 @@ HRESULT CLevel_Title::Initialize()
 void CLevel_Title::Update(_float fTimeDelta)
 {
 
+	if (m_pGameInstance->Key_Down(DIK_F8, INPUT_TYPE::UI))
+	{
+		if (!m_isOpenLevel) {
 
+			if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::TEST))))
+				return;
+
+			m_isOpenLevel = true;
+		}
+			
+
+			
+	}
 	if (m_eNextLevel != LEVEL::END)
 	{
-		if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, m_eNextLevel))))
-			return;
+		if (!m_isOpenLevel) {
+
+			if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, m_eNextLevel))))
+				return;
+
+			m_isOpenLevel = true;
+		}
 	}
 
 	return;

@@ -595,6 +595,9 @@
     <Filter Include="02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel">
       <UniqueIdentifier>{d867245e-67c6-4dd3-9887-177b55c11097}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Levels\Test">
+      <UniqueIdentifier>{59b05a38-249f-445f-bb87-bf72ea8b8d0d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1143,6 +1146,9 @@
     <ClInclude Include="..\public\Skill_Slot_Panel.h">
       <Filter>02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Level_Test.h">
+      <Filter>01.Levels\Test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1676,6 +1682,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Skill_Slot_Panel.cpp">
       <Filter>02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Test.cpp">
+      <Filter>01.Levels\Test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

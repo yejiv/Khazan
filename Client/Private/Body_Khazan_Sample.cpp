@@ -152,7 +152,7 @@ void CBody_Khazan_Sample::Update(_float fTimeDelta)
 
     m_pTrail->Update(fTimeDelta);
     if (m_pGameInstance->Key_Down(DIK_Y))
-        m_pGameInstance->Spwan_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpaceTime_SpearBlood"), XMVectorSet(1.f, 1.f, 1.f, 1.f));
+        m_pGameInstance->Spwan_Effect(ENUM_CLASS(LEVEL::TEST), TEXT("SpaceTime_SpearBlood"), XMVectorSet(1.f, 1.f, 1.f, 1.f));
     //Test End
 }
 
@@ -261,7 +261,7 @@ HRESULT CBody_Khazan_Sample::Ready_Components()
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Sample"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_Component_Model_Khazan_Sample"),
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
 
@@ -701,7 +701,7 @@ void CBody_Khazan_Sample::Effect11_Continue()
 
 void CBody_Khazan_Sample::SpaceTime_SpearBlood()
 {
-    m_pGameInstance->Spwan_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpaceTime_SpearBlood"), m_pParentTransform->Get_State(STATE::POSITION));
+    m_pGameInstance->Spwan_Effect(ENUM_CLASS(LEVEL::TEST), TEXT("SpaceTime_SpearBlood"), m_pParentTransform->Get_State(STATE::POSITION));
 }
 
 
