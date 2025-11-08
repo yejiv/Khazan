@@ -9,6 +9,7 @@
 #include "Level_Crevice.h"
 #include "Level_Embars.h"
 #include "Level_Viper.h"
+#include "Level_Test.h"
 
 #pragma region MAP OBJECT HEADER
 #include "MapObject_Header.h"
@@ -91,6 +92,11 @@ void CLevel_Loading::Update(_float fTimeDelta)
 			m_pGameInstance->DeleteOctree();
 			m_pGameInstance->CreateOctree({ 260.f, 0.f, 215.f }, 1500.f, 3);
 			pNewLevel = CLevel_HeinMach::Create(m_pDevice, m_pContext);
+			break;
+		case LEVEL::TEST:
+			m_pGameInstance->DeleteOctree();
+			m_pGameInstance->CreateOctree({ 0.f, 0.f, 0.f }, 200.f, 3);
+			pNewLevel = CLevel_Test::Create(m_pDevice, m_pContext);
 			break;
 		case LEVEL::CREVICE:
 			m_pGameInstance->DeleteOctree();
