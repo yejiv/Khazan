@@ -98,6 +98,8 @@ private :
 	_float							m_fDissolveEdgeWidth;
 	_float4							m_fDissolveEdgeColor;
 
+	//[Rotation]
+	_float							m_fRotation[3];
 
 	//[Save / Load]
 	char							FilePath[128];

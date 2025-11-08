@@ -318,6 +318,15 @@ namespace Engine
 		float fSize;
 	}POINT_INSTANCE_PARAMS;
 
+	typedef struct tagMeshInstanceParams
+	{
+		XMFLOAT4 vRight;
+		XMFLOAT4 vUp;
+		XMFLOAT4 vLook;
+		XMFLOAT4 vInitTranslation;
+		float fSize;
+	}MESH_INSTANCE_PARAMS;
+
 	typedef struct tagPointInstanceSpeedParams
 	{
 		XMFLOAT4			fSpeed;
