@@ -355,12 +355,6 @@
     <Filter Include="01.Utility\94.RenderingResources\Vignette">
       <UniqueIdentifier>{5a514760-80ef-4a39-828d-44fdfc11fc37}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\19.Decal">
-      <UniqueIdentifier>{86ca67f8-c6d1-410a-8674-6252450cbc2b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\19.Decal\Manager">
-      <UniqueIdentifier>{a64e4049-d756-4b51-af2b-6f50a0d345fb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\03.Component\VIBuffer\Trail">
       <UniqueIdentifier>{5465306f-5fd6-47a4-83c0-e9515b6df4cf}</UniqueIdentifier>
     </Filter>
@@ -393,6 +387,15 @@
     </Filter>
     <Filter Include="01.Utility\03.Component\DeferredShader">
       <UniqueIdentifier>{dac9fbab-a4ee-4aa1-b692-032aeaaae363}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\18.Decal">
+      <UniqueIdentifier>{86ca67f8-c6d1-410a-8674-6252450cbc2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\18.Decal\Manager">
+      <UniqueIdentifier>{a64e4049-d756-4b51-af2b-6f50a0d345fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\94.RenderingResources\Distortion">
+      <UniqueIdentifier>{86f561e8-54eb-4786-a8c9-1024f6b5efae}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -730,7 +733,7 @@
       <Filter>01.Utility\94.RenderingResources\Vignette</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Decal.cpp">
-      <Filter>01.Utility\19.Decal</Filter>
+      <Filter>01.Utility\18.Decal</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_QuadTrail.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Trail\VIBuffer_QuadTrail</Filter>
@@ -739,7 +742,7 @@
       <Filter>01.Utility\03.Component\VIBuffer\Trail\VIBuffer_LineTrail</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Decal_Manager.cpp">
-      <Filter>01.Utility\19.Decal\Manager</Filter>
+      <Filter>01.Utility\18.Decal\Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\BoneChainPhysic.cpp">
       <Filter>01.Utility\20.BoneChainPhysic</Filter>
@@ -761,6 +764,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\DeferredShader.cpp">
       <Filter>01.Utility\03.Component\DeferredShader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Distortion.cpp">
+      <Filter>01.Utility\94.RenderingResources\Distortion</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1143,7 +1149,7 @@
       <Filter>01.Utility\94.RenderingResources\Vignette</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Decal.h">
-      <Filter>01.Utility\19.Decal</Filter>
+      <Filter>01.Utility\18.Decal</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_QuadTrail.h">
       <Filter>01.Utility\03.Component\VIBuffer\Trail\VIBuffer_QuadTrail</Filter>
@@ -1152,7 +1158,7 @@
       <Filter>01.Utility\03.Component\VIBuffer\Trail\VIBuffer_LineTrail</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Decal_Manager.h">
-      <Filter>01.Utility\19.Decal\Manager</Filter>
+      <Filter>01.Utility\18.Decal\Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\BoneChainPhysic.h">
       <Filter>01.Utility\20.BoneChainPhysic</Filter>
@@ -1174,6 +1180,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\DeferredShader.h">
       <Filter>01.Utility\03.Component\DeferredShader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Distortion.h">
+      <Filter>01.Utility\94.RenderingResources\Distortion</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -33,57 +33,6 @@ HRESULT CRenderer::Initialize()
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-
-
-    // Distortion Test
-    vector<const _tchar*> TextureTags;
-    TextureTags =
-    {
-        TEXT("FT_Ring_01_n.png"),
-        TEXT("FT_2Ch_Noise_001.png"),
-        TEXT("FT_2ch_Tile_01.png"),
-        TEXT("FT_Colormap_002.png"),
-        TEXT("FT_ColormapMarbling_001.png"),
-        TEXT("FT_Ele_Noise.png"),
-        TEXT("FT_Fire_Noise.png"),
-        TEXT("FT_Flow_07.png"),
-        TEXT("FT_FlowRGB_001.png"),
-        TEXT("FT_Noise_3ch_001.png"),
-        TEXT("FT_Noise_007.png"),
-        TEXT("FT_Noise_Beam_002.png"),
-        TEXT("FT_Noise_Beam_003.png"),
-        TEXT("FT_Noise_RG_Fire_001.png"),
-        TEXT("FT_Noise_Soft_001.png"),
-        TEXT("FT_NoiseStreakyColorfulBlurred.png"),
-        TEXT("FT_PerlinNoise_RG.png"),
-        TEXT("FT_PrismTex_01.png"),
-        TEXT("FT_Sparkle_Noise_002.png"),
-    };
-
-    m_pNoiseTexture = CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Shader/Noise/"), TextureTags);
-    if (nullptr == m_pNoiseTexture)
-        return E_FAIL;
-
-    TextureTags =
-    {
-        TEXT("FT_Ring_01.png"),
-        TEXT("FT_Bsse_Particle.png"),
-        TEXT("FT_Circle_001.png"),
-        TEXT("FT_OrbMask_001.png"),
-        TEXT("FT_PointGlow_001.png"),
-        TEXT("FT_S_Spheremask_01.png"),
-        TEXT("T_ring_01.png"),
-        TEXT("FT_Mask_Flow_Radial_001.png"),
-        TEXT("FT_Circle_002.png"),
-    };
-
-    m_pMaskTexture = CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Shader/Mask/"), TextureTags);
-    if (nullptr == m_pMaskTexture)
-        return E_FAIL;
-
-
-
-
     m_threadCLs.resize(m_pGameInstance->Get_ThreadCount(), nullptr);
 
     XMStoreFloat4x4(&m_WorldMatrix, XMMatrixScaling(m_fViewportWidth, m_fViewportHeight, 1.f));
@@ -717,25 +666,12 @@ HRESULT CRenderer::Render_Distortion()
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Combined"), m_pShader, "g_CombinedTexture")))
         return E_FAIL;
 
-    if (FAILED(m_pNoiseTexture->Bind_Shader_Resource(m_pShader, "g_NoiseTexture", m_iTextureIndex)))
+    if (FAILED(m_pGameInstance->Bind_Distortion_ShaderResources(m_pShader)))
         return E_FAIL;
 
-    if (FAILED(m_pNoiseTexture->Bind_Shader_Resource(m_pShader, "g_MaskTexture", m_iTextureIndex)))
+    _float fAspect = m_fViewportWidth / m_fViewportHeight;
+    if (FAILED(m_pShader->Bind_RawValue("g_fAspect", &fAspect, sizeof(_float))))
         return E_FAIL;
-
-    _float2 vScreenSize = _float2(m_fViewportWidth, m_fViewportHeight);
-    if (FAILED(m_pShader->Bind_RawValue("g_vScreenSize", &vScreenSize, sizeof(_float2))))
-        return E_FAIL;
-
-    m_fTimeAcc += 0.016f;
-    
-    if (FAILED(m_pShader->Bind_RawValue("g_fTime", &m_fTimeAcc, sizeof(_float))))
-        return E_FAIL;
-
-#ifdef _DEBUG
-    if (FAILED(m_pShader->Bind_Bool("g_isEnableDistortion", &m_isEnableDistortion)))
-        return E_FAIL;
-#endif
 
     m_pShader->Begin(10);
 

@@ -75,14 +75,8 @@ bool g_isEnableVignette;
 
 // ===== Distortion =====
 bool g_isEnableDistortion;
-float g_fPower = { 1.5f };
-float g_fSpeed;
+float g_fPower, g_fSpeed, g_fTime, g_fAspect;
 float3 g_vCenter;
-float g_fTime;
-
-//  float g_fDistortionRange = { 0.2f };
-float2 g_vTextureSize = { 300.f, 300.f };
-float2 g_vDistNoiseScale = { 1.f, 1.f };
 
 struct VS_IN
 {
@@ -612,45 +606,37 @@ PS_OUT_BACKBUFFER PS_MAIN_DISTORTION(PS_IN In)
     
     if (g_isEnableDistortion)
     {
-        // 노이즈 샘플링부터
-        //  float2 vNoise = g_NoiseTexture.Sample(ClampSampler, In.vTexcoord).rg * 2.f - 1.f;
+        // ������ ��ũ��
+        float2 vNoiseUV = In.vTexcoord;
+        vNoiseUV += g_fTime * g_fSpeed;
         
-        // 월드 센터 -> 투영 센터 -> UV
-        //  float4 vCenterPos;
-        //  
-        //  vCenterPos = mul(float4(g_vCenter, 1.f), g_CameraViewMatrix);
-        //  vCenterPos = mul(vCenterPos, g_CameraProjMatrix);
-        //  vCenterPos /= vCenterPos.w; // -1 ~ 1
-        //  
-        //  float2 vCenterUV;
-        //  vCenterUV.x = vCenterPos.x * 0.5f + 0.5f;
-        //  vCenterUV.y = vCenterPos.y * -0.5f + 0.5f;
-        //  
-        //  // 중심점 기준 사이즈 UV
-        //  float2 vDir = (In.vTexcoord - vCenterUV) / (g_vTextureSize / g_vScreenSize);
-        //  
-        //  // 종횡비 보정
-        //  vDir.x *= g_vScreenSize.x / g_vScreenSize.y;
-        //  
-        //  //  float fDistance = length(vDir);
-        //  
-        //  // 마스크 UV 계산
-        //  float2 vMaskUV;
-        //  vMaskUV.x = vDir * 0.5f + 0.5f;
-        //  vMaskUV.y = vDir * -0.5f + 0.5f;
-        //  
-        //  // 노이즈 UV 계산
-        //  float2 vNoiseUV = vMaskUV * g_vDistNoiseScale + g_fTime * g_fSpeed;
-        //  
-        //  // 각각의 텍스처 샘플링
-        //  float fMask = g_MaskTexture.Sample(ClampSampler, vMaskUV);
-        //  float2 vNoise = g_NoiseTexture.Sample(ClampSampler, In.vTexcoord).rg * 2.f - 1.f;
-        //  
-        //  float2 vOffset = vNoise * g_fPower * fMask * g_vTextureSize;
-        //  float2 vDistortionUV = saturate(In.vTexcoord + vOffset);
-        //  vFinalColor = g_CombinedTexture.Sample(DefaultSampler, vDistortionUV);
+        // ������ ���ø�
+        float2 vNoise = g_NoiseTexture.Sample(DefaultSampler, vNoiseUV).rg * 2.f - 1.f;
         
-        vFinalColor = g_CombinedTexture.Sample(DefaultSampler, In.vTexcoord);
+        // ���� ���� -> ���� ���� -> UV
+        float4 vCenterPos;
+        
+        vCenterPos = mul(float4(g_vCenter, 1.f), g_CameraViewMatrix);
+        vCenterPos = mul(vCenterPos, g_CameraProjMatrix);
+        vCenterPos /= vCenterPos.w; // -1 ~ 1
+        
+        float2 vCenterUV;
+        vCenterUV.x = vCenterPos.x * 0.5f + 0.5f;
+        vCenterUV.y = vCenterPos.y * -0.5f + 0.5f;
+        
+        // �߽����κ����� �Ÿ� ���ϱ�
+        float2 vDir = In.vTexcoord - vCenterUV;
+        
+        // ��Ⱦ�� ����
+        vDir.x *= g_fAspect;
+        
+        float fDistance = length(vDir) / g_fRange;
+        
+        // �����ڸ� ȿ�� ����
+        float fMask = pow(saturate(1.f - fDistance), 2.f);  // ���� ���� ���ȭ
+        
+        float2 vDistortionUV = In.vTexcoord + vNoise * g_fPower * fMask;
+        vFinalColor = g_CombinedTexture.Sample(DefaultSampler, vDistortionUV);
     }
     else
         vFinalColor = g_CombinedTexture.Sample(DefaultSampler, In.vTexcoord);

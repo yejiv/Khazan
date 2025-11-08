@@ -57,6 +57,8 @@ HRESULT CLevel_Shader::Initialize()
 	m_DecalDesc.vScale = { 40.f, 10.f, 40.f };
 	m_DecalDesc.vColor = _float3(0.47f, 0.08f, 0.08f);
 
+	m_DistortionDesc = m_pGameInstance->Get_DistortionDesc();
+
 	m_iNumCascades = m_pGameInstance->Get_NumCascades();
 
 	m_pGameInstance->AddWidget(TEXT("Shader"), [&]()
@@ -267,9 +269,9 @@ HRESULT CLevel_Shader::Initialize()
 					if (ImGui::SliderFloat("Noise Contrast", &m_FogConfig.Noise.fContrast, 0.1f, 5.0f, "%.2f"))
 						m_pGameInstance->Set_FogConfig(m_FogConfig);
 
-					if (ImGui::CollapsingHeader("Noise Texture"), ImGuiTreeNodeFlags_DefaultOpen)
+					if (ImGui::CollapsingHeader("Fog Noise"), ImGuiTreeNodeFlags_DefaultOpen)
 					{
-						ImGui::BeginChild("Noise Texture", ImVec2(0, 70), true, ImGuiWindowFlags_HorizontalScrollbar);
+						ImGui::BeginChild("Fog Noise", ImVec2(0, 70), true, ImGuiWindowFlags_HorizontalScrollbar);
 
 						for (_uint i = 0; i < m_pGameInstance->Get_NumFogNoiseTextures(); ++i)
 						{
@@ -352,8 +354,9 @@ HRESULT CLevel_Shader::Initialize()
 				// 듀레이션
 				ImGui::SliderFloat("Vignette Duration", &m_fVignetteAnimDuration, 0.f, 5.f, "%.2f");
 
+
 				// 스타트 버튼
-				if (ImGui::Button("Start"))
+				if (ImGui::Button("Start Vignette"))
 					m_pGameInstance->Start_VignetteAnimation(m_fVignetteAnimDuration, m_VignetteConfig.eMode);
 			}
 		}
@@ -419,6 +422,47 @@ HRESULT CLevel_Shader::Initialize()
 			// 컬러
 			ImGui::ColorEdit3("Decal Color", reinterpret_cast<_float*>(&m_DecalDesc.vColor));
 		
+			ImGui::Separator();
+		}
+
+		if (ImGui::CollapsingHeader("Distortion"), ImGuiTreeNodeFlags_DefaultOpen)
+		{
+			// ����
+			ImGui::SliderFloat("Distortion Range", &m_DistortionDesc.fRange, 0.f, 1.f, "%.2f");
+
+			// ����
+			ImGui::SliderFloat("Distortion Power", &m_DistortionDesc.fPower, 0.f, 10.f, "%.2f");
+
+			// ���� �ð�
+			ImGui::SliderFloat("Distortion Duration", &m_DistortionDesc.fDuration, 0.f, 20.f, "%.1f");
+
+			// ���̵� Ÿ��
+			ImGui::SliderFloat2("Distortion FadeTime (In / Out)", reinterpret_cast<_float*>(&m_DistortionDesc.vFadeTime), 0.1f, 10.f, "%.1f");
+
+			// ���ǵ�
+			ImGui::SliderFloat("Distortion fSpeed", &m_DistortionDesc.fSpeed, 0.f, 10.f, "%.2f");
+			
+			// ������ �ؽ�ó
+			if (ImGui::CollapsingHeader("Distortion Noise"), ImGuiTreeNodeFlags_DefaultOpen)
+			{
+				ImGui::BeginChild("Distortion Noise", ImVec2(0, 70), true, ImGuiWindowFlags_HorizontalScrollbar);
+
+				for (_uint i = 0; i < m_pGameInstance->Get_NumDistortionNoiseTextures(); ++i)
+				{
+					ID3D11ShaderResourceView* pSRV = m_pGameInstance->Get_DistortionNoiseTexture(i);
+
+					if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
+						m_DistortionDesc.iNoiseIndex = i;
+
+					ImGui::SameLine();
+				}
+
+				ImGui::EndChild();
+			}
+
+			if (ImGui::Button("Start Distortion"))
+				m_pGameInstance->Start_Distortion(m_DistortionDesc);
+
 			ImGui::Separator();
 		}
 

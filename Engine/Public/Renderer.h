@@ -93,15 +93,6 @@ private:
 	vector<ID3D11CommandList*>	m_threadCLs;
 	mutex						m_Mutex;
 
-	// Distortion Test
-	// Noise
-	class CTexture*				m_pNoiseTexture = { nullptr };
-	class CTexture*				m_pMaskTexture = { nullptr };
-
-	_bool						m_isEnableDistortion = { true };
-	_uint						m_iTextureIndex = {};
-	_float						m_fTimeAcc = {};
-
 #ifdef _DEBUG
 private:
 	list<class CComponent*>		m_DebugComponent;
@@ -112,6 +103,7 @@ private:
 	_bool						m_isEnableToonShade = {};
 	_bool						m_isEnableOutline = {};
 	_bool						m_isEnableVignette = {};
+	_bool						m_isEnableDistortion = {};
 #endif
 
 private:
