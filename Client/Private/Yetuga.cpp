@@ -353,7 +353,7 @@ void CYetuga::Smash()
         _vector vGoalPos = vTargetPos - vDir * fLimit;
 
 
-        _vector vNewPos = XMVectorLerp(vPosition, vGoalPos, fAnimRatio - 0.5f);
+        _vector vNewPos = XMVectorLerp(vPosition, vGoalPos, fAnimRatio - 0.25f);
         m_pTransformCom->Set_State(STATE::POSITION, vNewPos);
     }
     else
@@ -363,7 +363,6 @@ void CYetuga::Smash()
         m_pTransformCom->Set_State(STATE::POSITION, vStopPos);
     }
 
-    m_pTransformCom->Set_State(STATE::POSITION, vTargetLoc);
 
 }
 
