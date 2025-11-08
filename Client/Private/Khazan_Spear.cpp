@@ -147,17 +147,6 @@ void CKhazan_Spear::Update(_float fTimeDelta)
         m_vGravity = XMVectorSet(0.f, g_fGravity * 2.f, 0.f, 0.f);
     }
 
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD0))
-    {
-        //m_pCharVirCom->Collision_Active(false);
-        m_isGhost = true;
-    }
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
-    {
-        //m_pCharVirCom->Collision_Active(true);
-        m_isGhost = false;
-    }
-
     __super::Update(fTimeDelta);
 
     XMStoreFloat4x4(&m_pSpearFX_WorldMatrix, m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pTransformCom->Get_WorldMatrix());
