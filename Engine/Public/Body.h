@@ -38,7 +38,7 @@ public:
 		EMotionType	eMotion = EMotionType::Static;
 		_uint		iObjectLayer;
 
-		_float		fFriction = 0.8f;
+		_float		fFriction = 0.2f;
 		_float		fRestitution = 0.0f;
 
 		_bool		bStartActive = true;
@@ -49,7 +49,7 @@ public:
 		// Dynamic 전용 옵션
 		_float          fMass = 1.0f; // 필요 시 사용
 		EMotionQuality  eQuality = EMotionQuality::Discrete;
-		_float		fAngularDamping = 0.5;
+		_float		fAngularDamping = 0.05f;
 
 		_float		fGravity = 1.f;
 

@@ -5,13 +5,13 @@
 NS_BEGIN(Engine)
 class CNavigation;
 class CCharacterVirtual;
-class CRigidBody; 
+class CRigidBody;
 class CCollider;
 NS_END
 
 NS_BEGIN(Client)
 
-class CKhazan_Sample final:  public CCreature
+class CKhazan_Sample final : public CCreature
 {
 public:
 	enum PLAYER_STATE {
@@ -44,14 +44,14 @@ public:
 		ATTACK_SOON |
 		ATTACK_VITALPOINT |
 		ATTACK_SHADOW2 |
-		ATTACK_BRUTAL ,
+		ATTACK_BRUTAL,
 		//ATTACK_COUNT,
 
 		ATTACK_FAST_ING = 1 << 15,
 		ATTACK_STRING_ING = 1 << 16,
 
 
-		END = 1<<17,
+		END = 1 << 17,
 	};
 
 private:
@@ -90,7 +90,7 @@ public:
 	_matrix Get_BoneSpearFX_Offset() { return m_SpearOffset_Matrix; }
 
 private:
-	class CBody_Khazan_Sample*	m_pBody = { nullptr };
+	class CBody_Khazan_Sample* m_pBody = { nullptr };
 	class CSpear_Khazan_Sample* m_pSpear = { nullptr };
 
 	_uint						m_iState = { };
@@ -98,13 +98,20 @@ private:
 
 	//class CRigidBody*			m_pRigidBodyCom = { nullptr };
 	//CCharacterVirtual*			m_pCharVirCom = { nullptr };
-	_float4x4*					m_pWeaponR_Matrix = { nullptr };
-	_float4x4*					m_pSpearFX_Matrix = { nullptr };
+	_float4x4* m_pWeaponR_Matrix = { nullptr };
+	_float4x4* m_pSpearFX_Matrix = { nullptr };
 	_float4x4					m_SpearFX_WorldMatrix = {};
+	//_float4x4					m_pSpearEndFX_Matrix = {};
+	_float4x4					m_SpearEndFX_WorldMatrix = {};
 	_matrix						m_SpearOffset_Matrix = {};
 
+
+	_float						m_fLocalDistBaseRatio = {};
+	_float						m_fBladeDist = { 1.f }; //손잡이 부분에서 창날 fx 까지의 거리 배율
+	_float						m_fEndDist = { 1.f };//손잡이 부분에서 창 끝부분 fx 까지의 거리 배율
+
 	_bool						m_isEnableControl = { true };
-	_int						m_isMove = {0};
+	_int						m_isMove = { 0 };
 
 	//락온 테스트
 	_float4						m_vPos = {};
@@ -143,6 +150,7 @@ private:
 	_int			m_iStamina = {};
 
 	_uint			m_StrongComboIndex = { 0 };
+	_uint			m_FastComboIndex = { 0 };
 
 private:
 	inline void		Add_State(_uint i) { m_iState |= i; }

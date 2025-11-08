@@ -1,9 +1,9 @@
 #pragma once
-#include "UI_Texture.h"
+#include "UI_Panel.h"
 #include "Client_Defines.h"
 
 NS_BEGIN(Client)
-class CUI_Atlas_Icon final : public CUI_Texture
+class CUI_Atlas_Icon final : public CUI_Panel
 {
 public:
 	typedef struct UI_Atlas_Icon_tag : public CUIObject::UIOBJECT_DESC

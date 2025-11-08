@@ -17,6 +17,7 @@
 #include "UI_Logo.h"
 #include "UI_Loading.h"
 #include "UI_Tutorial.h"
+#include "UI_SkillTree.h"
 
 //서브 UI
 #include "MainMenu_Deco.h"
@@ -28,6 +29,7 @@
 
 #include "Cursor.h"
 #include "Item_Slot.h"
+#include "Skill_Slot.h"
 
 //HUD  관련
 #include "BossHp.h"

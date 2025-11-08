@@ -56,16 +56,16 @@ void CHeinMach_Trigger::Late_Update(_float fTimeDelta)
 
 HRESULT CHeinMach_Trigger::Render()
 {
-    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources 함수 E_FAIL"), E_FAIL);
+    //CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources 함수 E_FAIL"), E_FAIL);
 
-    _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
+    //_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-    for (_uint i = 0; i < iNumMeshes; ++i)
-    {
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(1), E_FAIL);
+    //for (_uint i = 0; i < iNumMeshes; ++i)
+    //{
+    //    CHECK_FAILED_ASSERT(m_pShaderCom->Begin(1), E_FAIL);
 
-        CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
-    }
+    //    CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
+    //}
 
     return S_OK;
 }

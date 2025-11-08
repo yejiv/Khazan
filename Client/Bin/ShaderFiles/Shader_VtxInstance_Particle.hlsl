@@ -6,7 +6,7 @@ float4 g_vSourceColor = float4(1.f, 1.f, 1.f, 1.f);
 float2 g_ScrollSpeed = 0.f; //Texture scroll
 bool g_MaskScrollYDir;
 bool g_MaskScrollInv;
-bool g_IsDisolve = false;
+bool g_IsDissolve = false;
 
 float g_MaskScrollSpeed;
 
@@ -17,7 +17,7 @@ float4 g_EdgeColor;
 
 texture2D g_DiffuseTexture;
 texture2D g_MaskTexture;
-texture2D g_DisolveTexture;
+texture2D g_DissolveTexture;
 
 
 struct VS_IN
@@ -79,10 +79,10 @@ struct PS_OUT
     float4 vEmissiveColor : SV_TARGET1; 
 };
 
-float Mask_Scrolling(float2 vLifetime, float2 vTexcoord)
+float Mask_Scrolling(float2 vLifetime, float2 vTexcoord)    //이거 버텍스 셰이더로 넘기면 좀 더 최적화 가능할 듯
 {
     float2 maskUV;
-    float maskOffset = saturate((vLifetime.x * g_MaskScrollSpeed) / vLifetime.y) - 1.f;
+    float maskOffset = saturate((vLifetime.x * g_MaskScrollSpeed) / vLifetime.y) - 1.f; // -1 ~ 0
     
     if (g_MaskScrollYDir)
     {
@@ -108,7 +108,7 @@ float4 Dissolve(float4 InColor, float fDecreaseAlpha, float2 UV)
 {
     float4 rt = InColor;
     
-    float noise = g_DisolveTexture.Sample(PointSampler, UV).r;
+    float noise = g_DissolveTexture.Sample(PointSampler, UV).r;
     
     if (noise < fDecreaseAlpha)
     {
@@ -137,14 +137,16 @@ PS_OUT PS_MAIN(PS_IN In)
     vector vEffectTexture = g_DiffuseTexture.Sample(PointSampler, fScrolledEffectUV);
     vector vFinalColor = float4(g_vSourceColor.xyz, min(vEffectTexture.r, g_vSourceColor.a));
     
-    if (g_MaskScrollSpeed)
-        vFinalColor.a = vFinalColor.a * Mask_Scrolling(In.vLifeTime, In.vTexcoord);
+    
     
     float fDecreaseAlpha = (In.vLifeTime.x / In.vLifeTime.y);
-    if (g_IsDisolve == false) 
+    if (g_IsDissolve == false) 
         vFinalColor.a -= fDecreaseAlpha;
     else
         vFinalColor = Dissolve(vFinalColor, fDecreaseAlpha, fScrolledEffectUV);
+    
+    if (g_MaskScrollSpeed)
+        vFinalColor.a = vFinalColor.a * Mask_Scrolling(In.vLifeTime, In.vTexcoord);
     
     if (vFinalColor.a <= 0.f)
         discard;
@@ -169,11 +171,11 @@ PS_OUT PS_PRESNEL(PS_IN In)
     vector vEffectTexture = g_DiffuseTexture.Sample(PointSampler, fScrolledEffectUV);
     vector vFinalColor = float4(g_vSourceColor.xyz, min(vEffectTexture.r, g_vSourceColor.a));
     
-    float fresnelFactor = 1.0 - abs(dot(In.vNormal.xyz, normalize(g_vCamPosition - In.vWorldPos)));
+    float fresnelFactor = 1.0 - abs(dot(In.vNormal.xyz, normalize(g_vCamPosition.xyz - In.vWorldPos.xyz)));
     vFinalColor.xyz = vFinalColor.xyz * pow(fresnelFactor, 1.4f);
     
     float fDecreaseAlpha = (In.vLifeTime.x / In.vLifeTime.y);
-    if (g_IsDisolve == false) 
+    if (g_IsDissolve == false) 
         vFinalColor.a -= fDecreaseAlpha; 
     else
         vFinalColor = Dissolve(vFinalColor, fDecreaseAlpha, fScrolledEffectUV);
