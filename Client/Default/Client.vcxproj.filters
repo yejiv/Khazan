@@ -610,6 +610,36 @@
     <Filter Include="94.ClientInstance\Player_Manger">
       <UniqueIdentifier>{b86e2937-1cab-43ad-aecc-1f09c038ebef}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Gomdolzzing">
+      <UniqueIdentifier>{6cf68861-f9b1-42bc-8280-afe5e503de49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Gomdolzzing\Head">
+      <UniqueIdentifier>{af3b0474-79c0-451f-8366-b1ef7dadd8b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Gomdolzzing\Body">
+      <UniqueIdentifier>{8ab5f034-585d-4334-8a1d-f90ce485b5cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\Controller\Gomdol">
+      <UniqueIdentifier>{39358531-9bfc-47e0-a248-399e020da107}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\StateMachine\Gomdol">
+      <UniqueIdentifier>{b882875a-78a0-44e7-b283-a4bdab140662}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Gomdol">
+      <UniqueIdentifier>{499b6d86-4a6d-4ac7-8300-5613db052062}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Gomdol\Sleep">
+      <UniqueIdentifier>{5ccdd26b-35ce-4bb4-94e6-10557f7f1c91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Gomdol\Idle">
+      <UniqueIdentifier>{2049157e-3394-4d58-bf33-4c2c44377e14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Gomdol\Move">
+      <UniqueIdentifier>{227cf7ca-5f94-48b4-a45e-1d1a6636a4c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Gomdol\FrontAttack">
+      <UniqueIdentifier>{63fd2152-db9f-4552-8463-bae7b126c9dc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1167,6 +1197,30 @@
     <ClInclude Include="..\public\Player_Manager.h">
       <Filter>94.ClientInstance\Player_Manger</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Gomdol.h">
+      <Filter>02.GameObject\Creature\Monster\Gomdolzzing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Body_Gomdol.h">
+      <Filter>02.GameObject\Creature\Monster\Gomdolzzing\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AI_Controller_Gomdol.h">
+      <Filter>92.AI\Controller\Gomdol</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FSM_Gomdol.h">
+      <Filter>92.AI\StateMachine\Gomdol</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Sleep_Gomdol.h">
+      <Filter>92.AI\State\Gomdol\Sleep</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Idle_Gomdol.h">
+      <Filter>92.AI\State\Gomdol\Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Move_Gomdol.h">
+      <Filter>92.AI\State\Gomdol\Move</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_FrontAttack_Gomdol.h">
+      <Filter>92.AI\State\Gomdol\FrontAttack</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1709,6 +1763,30 @@
     </ClCompile>
     <ClCompile Include="..\private\Player_Manager.cpp">
       <Filter>94.ClientInstance\Player_Manger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Gomdol.cpp">
+      <Filter>02.GameObject\Creature\Monster\Gomdolzzing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Body_Gomdol.cpp">
+      <Filter>02.GameObject\Creature\Monster\Gomdolzzing\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AI_Controller_Gomdol.cpp">
+      <Filter>92.AI\Controller\Gomdol</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FSM_Gomdol.cpp">
+      <Filter>92.AI\StateMachine\Gomdol</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Sleep_Gomdol.cpp">
+      <Filter>92.AI\State\Gomdol\Sleep</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Idle_Gomdol.cpp">
+      <Filter>92.AI\State\Gomdol\Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Move_Gomdol.cpp">
+      <Filter>92.AI\State\Gomdol\Move</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_FrontAttack_Gomdol.cpp">
+      <Filter>92.AI\State\Gomdol\FrontAttack</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
