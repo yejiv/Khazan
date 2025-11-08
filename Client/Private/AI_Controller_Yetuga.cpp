@@ -470,7 +470,7 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 				_float fAttackRanage = BB->Get_Value<_float>(pYetuga->Get_Name(), "AttackRange");
 				if (fDist != 0 && fDist <= fAttackRanage && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "is2Hit"))
 				{
-					BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", true);
+					//BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", true);
 					return true;
 				}
 				else
@@ -939,14 +939,25 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 				if (isDamaged)
 					return BTNODESTATE::SUCCESS;
 
-				if (BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist") <=
-					BB->Get_Value<_float>("Yetuga", "AttackRange"))
-					return BTNODESTATE::SUCCESS;
 
 				_float fDist = BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
 				_float fChaseRange = BB->Get_Value<_float>(pYetuga->Get_Name(), "ChaseRange");
 				_float fSprintRange = BB->Get_Value<_float>(pYetuga->Get_Name(), "SprintRange");
 				_float fRunRange = BB->Get_Value<_float>(pYetuga->Get_Name(), "RunRange");
+
+				_float fAttackRange = BB->Get_Value<_float>("Yetuga", "AttackRange");
+
+				cout << "fDist" << fDist << endl;
+				cout << "fAttackRange" << fAttackRange << endl;
+
+
+				if (fDist <= fAttackRange)
+				{
+					return BTNODESTATE::SUCCESS;
+
+				}
+
+				
 
 				CYetuga::MONSTER_INFO Info{};
 				Info.Clear_State();
@@ -1323,6 +1334,11 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 				}
 			};
 	}
+
+
+	
+
+
 
 #pragma endregion
 

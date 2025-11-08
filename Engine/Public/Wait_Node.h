@@ -17,12 +17,16 @@ public:
 private:
 	_float				m_fWaitTime = {};
 	_float				m_fElapsed = {};
+	_float				m_fStartTime = {};
+
 	string				m_strTag;
 	string				m_strName;
 
+	_bool				m_isStart = { false };
+
 
 public:
-	static CWait_Node*	Create(const string& strTag, const string& strName,_float fWaitTime);
+	static CWait_Node*	Create(const string& strName, const string& strTag, _float fWaitTime);
 	virtual void		Free() override;
 
 };
