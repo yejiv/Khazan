@@ -7,6 +7,7 @@ class CUI_SkillTree final : public CUI_Panel
 {
 private:
 	enum class UIANIMSTATE { ON, OFF, END};
+	enum TAP_TYPE { SPEAR, GS, PUBLIC, END };
 
 private:
 	CUI_SkillTree(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -27,6 +28,8 @@ public:
 	virtual	HRESULT						Update_Switch(void* pArg);
 private:
 	class CUI_BackGround*				m_pBackGround = { nullptr };
+	vector<class CSkill_Tap*>			m_SkillTap;
+	
 	_float								m_fAccTime = {};
 	UIANIMSTATE							m_eAnimState = { UIANIMSTATE::END };
 

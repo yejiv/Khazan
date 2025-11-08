@@ -120,6 +120,7 @@ namespace Client
 		_int iLevel{};
 		_int iMaxPoint{};
 		_int iIndex{};
+		_int iSlotX{};
 		_int iTexPass{};
 		_wstring wstrIcon{};
 		wstring wstrText{};

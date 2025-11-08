@@ -86,23 +86,33 @@ void CUI_SkillTree::Late_Update(_float fTimeDelta)
 
 HRESULT CUI_SkillTree::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
 {
-	//m_szName = pInData.value("name", "");
-	//CClientInstance::GetInstance()->Add_UIEvent(AnsiToWString(m_szName), TEXT("NextPage"), [this]() {NextPage(); });
-	//CClientInstance::GetInstance()->Add_UIEvent(AnsiToWString(m_szName), TEXT("ReturnPage"), [this]() {ReturnPage(); });
-	//CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
 	__super::Load_UI(pInData, iPrototypeLevelID, pArg);
 
-	//for (auto pChild : m_Children)
-	//{
-	//	string strName = pChild->Get_Name();
+	m_SkillTap.resize(TAP_TYPE::END);
 
-	//	if (strName == "Guide_Button_Down")
-	//	{
-	//		m_pButtonDown = static_cast<CUI_Default_Button*>(pChild);
-	//		Safe_AddRef(m_pButtonDown);
-	//		m_pButtonDown->Set_State(CUI_Button::STATE::SELETE);
-	//	}
-	//}
+	for (auto pChild : m_Children)
+	{
+		string strName = pChild->Get_Name();
+
+		if (strName == "Spear")
+		{
+			m_SkillTap[TAP_TYPE::SPEAR] = static_cast<CSkill_Tap*>(pChild);
+			Safe_AddRef(pChild);
+			m_SkillTap[TAP_TYPE::SPEAR]->Setting_Panel(TAP_TYPE::SPEAR);
+		}
+		else if (strName == "GS")
+		{
+			m_SkillTap[TAP_TYPE::GS] = static_cast<CSkill_Tap*>(pChild);
+			Safe_AddRef(pChild);
+			m_SkillTap[TAP_TYPE::GS]->Setting_Panel(TAP_TYPE::GS);
+		}
+		else if (strName == "Public")
+		{
+			m_SkillTap[TAP_TYPE::PUBLIC] = static_cast<CSkill_Tap*>(pChild);
+			Safe_AddRef(pChild);
+			m_SkillTap[TAP_TYPE::PUBLIC]->Setting_Panel(TAP_TYPE::PUBLIC);
+		}
+	}
 	m_IsUpdate = true;
 	CHECK_FAILED(Ready_Object(), E_FAIL);
 	return S_OK;
@@ -213,5 +223,9 @@ void CUI_SkillTree::Free()
 	__super::Free();
 
 	Safe_Release(m_pBackGround);
+
+	for (auto pTap : m_SkillTap)
+		Safe_Release(pTap);
+	m_SkillTap.clear();
 
 }

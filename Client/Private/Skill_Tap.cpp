@@ -15,6 +15,17 @@ CSkill_Tap::CSkill_Tap(const CSkill_Tap& Prototype)
 {
 }
 
+HRESULT CSkill_Tap::Setting_Panel(_int iTapIndex)
+{
+	m_iTapIndex = iTapIndex;
+
+	for (_int i = 0; i < m_pPanel.size(); ++i)
+	{
+		m_pPanel[i]->Setting_Slot(iTapIndex, i);
+	}
+	return S_OK;
+}
+
 HRESULT CSkill_Tap::Initialize_Prototype(_int iLevel)
 {
 	m_iLevel = iLevel;
@@ -29,6 +40,9 @@ HRESULT CSkill_Tap::Initialize_Clone(void* pArg)
 
 void CSkill_Tap::Priority_Update(_float fTimeDelta)
 {
+	if (m_iState == ENUM_CLASS(UISTATE::DISABLE))
+		return;
+
 	for (auto pPanel : m_pPanel)
 		pPanel->Priority_Update(fTimeDelta);
 	__super::Priority_Update(fTimeDelta);
@@ -37,6 +51,9 @@ void CSkill_Tap::Priority_Update(_float fTimeDelta)
 
 void CSkill_Tap::Update(_float fTimeDelta)
 {
+	if (m_iState == ENUM_CLASS(UISTATE::DISABLE))
+		return;
+
 	for (auto pPanel : m_pPanel)
 		pPanel->Update(fTimeDelta);
 	__super::Update(fTimeDelta);
@@ -44,6 +61,9 @@ void CSkill_Tap::Update(_float fTimeDelta)
 
 void CSkill_Tap::Late_Update(_float fTimeDelta)
 {
+	if (m_iState == ENUM_CLASS(UISTATE::DISABLE))
+		return;
+
 	for (auto pPanel : m_pPanel)
 		pPanel->Late_Update(fTimeDelta);
 	__super::Late_Update(fTimeDelta);

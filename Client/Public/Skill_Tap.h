@@ -17,6 +17,9 @@ private:
 	virtual ~CSkill_Tap() = default;
 
 public:
+	HRESULT								Setting_Panel(_int iTapIndex);
+
+public:
 	virtual HRESULT						Initialize_Prototype(_int iLevel);
 	virtual HRESULT						Initialize_Clone(void* pArg) override;
 	virtual void						Priority_Update(_float fTimeDelta) override;
@@ -29,6 +32,7 @@ private:
 	_bool								m_bIsSelete = { false };
 	_float								m_fAccTime = {1.f};
 
+	_int								m_iTapIndex = { -1 };
 	vector<class CSkill_Slot_Panel*>	m_pPanel;
 private:
 	HRESULT								Ready_Children();

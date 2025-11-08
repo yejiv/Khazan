@@ -11,6 +11,7 @@ private:
 	virtual ~CSkill_Slot_Panel() = default;
 
 public:
+	HRESULT								Setting_Slot(_int iTapIndex, _int iPanelIndex);
 	void								LocalPos_Set(_float2 vPos, CUIObject* pParent);
 public:
 	virtual HRESULT						Initialize_Prototype(_int iLevel);

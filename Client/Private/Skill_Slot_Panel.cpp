@@ -1,6 +1,7 @@
 #include "Skill_Slot_Panel.h"
 #include "GameInstance.h"
 #include "ClientInstance.h"
+#include "DB_Manager.h"
 
 #include "Skill_Slot.h"
 
@@ -18,6 +19,40 @@ CSkill_Slot_Panel::CSkill_Slot_Panel(ID3D11Device* pDevice, ID3D11DeviceContext*
 CSkill_Slot_Panel::CSkill_Slot_Panel(const CSkill_Slot_Panel& Prototype)
 	: CUI_Panel(Prototype)
 {
+}
+
+HRESULT CSkill_Slot_Panel::Setting_Slot(_int iTapIndex, _int iPanelIndex)
+{
+	const SKILL_TABLE* pData = CClientInstance::GetInstance()->Get_DataTalbe<SKILL_TABLE>();
+	_int iMaxIndexX = { -1 };
+	for (const auto& [ID, Skill] : *pData)
+	{
+		if (Skill.iType == iTapIndex && Skill.iSubID == iPanelIndex)
+			if(Skill.iSlotX > iMaxIndexX)
+				iMaxIndexX = Skill.iSlotX;
+	}
+
+	for (const auto& [ID, Skill] : *pData)
+	{
+		if (Skill.iType == iTapIndex && Skill.iSubID == iPanelIndex)
+		{
+			CSkill_Slot::UISKILLSLOT_DESC SkillDesc = {};
+			SkillDesc.vLocalSize = { 64.f, 64.f };
+			if(iMaxIndexX < 3)
+				SkillDesc.vLocalPos = { -70.f + (Skill.iSlotX * 70.f), -175.f + (Skill.iLevel * 80.f) };
+			else //70 0 70 // 105 35 35 
+				SkillDesc.vLocalPos = { -105.f + (Skill.iSlotX * 70.f), -175.f + (Skill.iLevel * 80.f) };
+			SkillDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+			SkillDesc.szName = "Skill_Slot";
+			SkillDesc.fDepth = 3;
+			SkillDesc.iSkillIndex = ID;
+			m_Children.push_back(static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, m_iLevel, TEXT("Prototype_GameObject_UI_Skill"), &SkillDesc)));
+		}
+	}
+
+	Update_Transform(nullptr, m_vWorldPos);
+
+	return S_OK;
 }
 
 void CSkill_Slot_Panel::LocalPos_Set(_float2 vPos, CUIObject* pParent)
@@ -120,7 +155,7 @@ HRESULT CSkill_Slot_Panel::Ready_Children()
 	//SkillDesc.iSkillIndex = 101;
 	//m_Children.push_back(static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, m_iLevel, TEXT("Prototype_GameObject_UI_Skill"), &SkillDesc)));
 
-	SkillDesc.vLocalSize = { 64.f, 64.f };
+	/*SkillDesc.vLocalSize = { 64.f, 64.f };
 	SkillDesc.vLocalPos = { -105, -175 };
 	SkillDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
 	SkillDesc.szName = "Skill_Slot";
@@ -159,7 +194,7 @@ HRESULT CSkill_Slot_Panel::Ready_Children()
 	SkillDesc.fDepth = 3;
 	SkillDesc.iSkillIndex = 101;
 	m_Children.push_back(static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, m_iLevel, TEXT("Prototype_GameObject_UI_Skill"), &SkillDesc)));
-	return S_OK;
+	*/return S_OK;
 }
 
 CSkill_Slot_Panel* CSkill_Slot_Panel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)

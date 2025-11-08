@@ -312,6 +312,7 @@ HRESULT CDB_Manager::Load_Skill_DB(const _tchar* pFilePath)
 		data.iLevel = Read_UInt(ss);
 		data.iMaxPoint = Read_UInt(ss);
 		data.iIndex = Read_UInt(ss);
+		data.iSlotX = Read_UInt(ss);
 		data.iTexPass = Read_UInt(ss);
 		data.wstrIcon = Read_WString(ss);
 		data.wstrText = Read_WString(ss);
