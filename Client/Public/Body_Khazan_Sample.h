@@ -67,10 +67,11 @@ private:
 	_float4x4*			m_pSpearFX_Matrix = { nullptr };		//창날 
 	_matrix				m_SpearOffset_Matrix = {};
 
+	_float4x4			m_SpearWeaponR_WorldMatrix;
 	_float4x4*			m_SpearFX_WorldMatrix = { nullptr };
 	_float4x4*			m_SpearEndFX_WorldMatrix = { nullptr };
 
-	_uint* m_pParentState = { nullptr };
+	_uint*				m_pParentState = { nullptr };
 	_uint				m_iCurState = {  };
 
 
@@ -166,6 +167,7 @@ private:
 	void	Effect11_Exit();
 	void	Effect11_Continue();
 	void    SpaceTime_SpearBlood();	//보름달 창 끝 피 이펙트 진입점
+	void    SpaceTime_SpearTrail();	//보름달 창 끝 피 이펙트 진입점
 
 	void	Effect12_Enter();		//j  그림자 참격 1 타
 	void	Effect12_Exit();

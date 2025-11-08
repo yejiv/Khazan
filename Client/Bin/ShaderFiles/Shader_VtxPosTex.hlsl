@@ -150,8 +150,12 @@ PS_OUT PS_TRAIL(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
 
-    Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
-    //Out.vColor = float4(1.f, 1.f, 1.f, 1.f);
+    //Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+    
+    vector vEffectTexture = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+    //vector vFinalColor = float4(vEffectTexture.rgb, vEffectTexture.r);
+    vector vFinalColor = float4(1.f, 1.f, 1.f, vEffectTexture.r);
+    Out.vColor = vFinalColor;
 
     //alpha fading
     Out.vColor.a *= In.vTexcoord.x;

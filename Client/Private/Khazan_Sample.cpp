@@ -170,7 +170,7 @@ void CKhazan_Sample::Update(_float fTimeDelta)
     __super::Update(fTimeDelta);
 
     /* 창 뼈 위치 구하기  */
-    XMStoreFloat4x4(&m_SpearFX_WorldMatrix, m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pTransformCom->Get_WorldMatrix());
+    XMStoreFloat4x4(&m_SpearFX_WorldMatrix,/* m_SpearOffset_Matrix **/ XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pTransformCom->Get_WorldMatrix());
 
     _vector vSpearMidPos = XMVectorSet(m_pWeaponR_Matrix->_41, m_pWeaponR_Matrix->_42, m_pWeaponR_Matrix->_43, 0.f);
     _vector vSpearBladePos = XMVectorSet(m_pSpearFX_Matrix->_41, m_pSpearFX_Matrix->_42, m_pSpearFX_Matrix->_43, 0.f);
