@@ -225,6 +225,15 @@ namespace Engine
 		XMFLOAT3	vColor;
 	}DECAL_DESC;
 
+	typedef struct tagDistortionDesc
+	{
+		XMFLOAT3	vCenter;
+		float		fRange;
+		float		fPower;
+		float		fDuration;
+		float		fSpeed;
+	}DISTORTION_DESC;
+
 	struct HitStopState
 	{
 		bool isActive = false;

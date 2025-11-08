@@ -3,7 +3,6 @@
 #include "ClientInstance.h"
 
 #include "Level_Loading.h"
-#include "Level_Loading.h"
 #include "Event_Defines.h"
 #include "Player.h"
 #include "Camera_Compre.h"
@@ -842,6 +841,5 @@ void CLevel_Crevice::Free()
 {
 	__super::Free();
 
-
-
+	Safe_Release(m_pClientInstance);
 }

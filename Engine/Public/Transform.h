@@ -88,6 +88,7 @@ public:
 	void Chase(_fvector vTargetPos, _float fTimeDelta, _float fLimit = 0.f);
 	void AI_Chase(_fvector vTargetPos, _float fTimeDelta, _float SpeedPerSec ,_float fLimit = 0.f);
 	void Look_Dir(_fvector vDir);
+	
 
 private:
 	_float4x4				m_WorldMatrix = {};

@@ -115,13 +115,15 @@ namespace Client
 	{
 		_int iType{};
 		_int iSubID{};
-		_int SkillType{};
+		_int iSkillType{};
 		_wstring wstrName{};
 		_int iLevel{};
 		_int iMaxPoint{};
 		_int iIndex{};
-		_int iTaxPass{};
+		_int iSlotX{};
+		_int iTexPass{};
 		_wstring wstrIcon{};
+		wstring wstrText{};
 	}SKILL_DB;
 
 	typedef struct tagKhazanAnimationFindInfo

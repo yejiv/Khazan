@@ -37,6 +37,9 @@ public:
 	virtual HRESULT			Render() override;
 
 public:
+	HRESULT RayCast(_float fTimeDelta);
+
+public:
 	virtual void			Collision_Enter(COLLISION_DESC* pDesc, _uint	iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
 	virtual void			Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
 	virtual void			Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
@@ -60,6 +63,7 @@ private:
 
 private:
 	CBody*					m_pHeadBodyCom = { nullptr };
+
 
 private:
 	_float4x4				m_HeadMatrix = {};

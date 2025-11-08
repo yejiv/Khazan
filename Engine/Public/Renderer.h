@@ -93,6 +93,14 @@ private:
 	vector<ID3D11CommandList*>	m_threadCLs;
 	mutex						m_Mutex;
 
+	// Distortion Test
+	// Noise
+	class CTexture*				m_pNoiseTexture = { nullptr };
+	class CTexture*				m_pMaskTexture = { nullptr };
+
+	_bool						m_isEnableDistortion = { true };
+	_uint						m_iTextureIndex = {};
+	_float						m_fTimeAcc = {};
 
 #ifdef _DEBUG
 private:
@@ -121,6 +129,7 @@ private:
 	HRESULT Render_Fog();
 	HRESULT Render_Blur();
 	HRESULT Render_Combined();
+	HRESULT Render_Distortion();
 	HRESULT Render_UI();
 
 private:

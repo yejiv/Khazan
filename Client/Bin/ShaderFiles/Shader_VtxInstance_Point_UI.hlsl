@@ -42,6 +42,7 @@ struct VS_DEFAULT_OUT
 {
     float4 vPosition : SV_POSITION;
     float2 fSize     : PSIZE;
+    float  fRot      : ROT;
     float4 vUV       : TEXCOORD0;
     float4 vColor    : TEXCOORD1;
     float  vAlpha    : TEXCOORD2;
@@ -64,6 +65,10 @@ VS_DEFAULT_OUT VS_MAIN(VS_IN In)
     Out.vAlpha = In.vAlpha;
     Out.vPass = In.vPass;
     
+    float3 vRight = normalize(float3(In.TransformMatrix._11, In.TransformMatrix._12, In.TransformMatrix._13));
+    vRight = -vRight;
+    Out.fRot = atan2(vRight.y, vRight.x);
+ 
     return Out;
 }
 
@@ -71,6 +76,7 @@ struct GS_IN
 {
     float4 vPosition : SV_POSITION;
     float2 fSize     : PSIZE;
+    float  fRot      : ROT;
     float4 vUV       : TEXCOORD0;
     float4 vColor    : TEXCOORD1;
     float vAlpha     : TEXCOORD2;
@@ -94,36 +100,67 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
     
     vector vRight = normalize(float4(g_ViewMatrix._11, g_ViewMatrix._12, g_ViewMatrix._13, 0.f)) * In[0].fSize.x * -0.5f;
     vector vUp = normalize(float4(g_ViewMatrix._21, g_ViewMatrix._22, g_ViewMatrix._23, 0.f)) * In[0].fSize.y * 0.5f;
-
+    vUp = -vUp;
+    
     matrix matVP = mul(g_ViewMatrix, g_ProjMatrix);
 
-    Out[0].vPosition = mul(In[0].vPosition + vRight + vUp, matVP);
-    Out[0].vTexcoord = float2(0.f, 0.f);
-    Out[0].vUV = In[0].vUV;
-    Out[0].vColor = In[0].vColor;
-    Out[0].vAlpha = In[0].vAlpha;
-    Out[0].vPass = In[0].vPass;
+    float fRot = In[0].fRot;
+    float c = cos(fRot);
+    float s = sin(fRot);
     
-    Out[1].vPosition = mul(In[0].vPosition - vRight + vUp, matVP);
-    Out[1].vTexcoord = float2(1.f, 0.f);
-    Out[1].vUV = In[0].vUV;
-    Out[1].vColor = In[0].vColor;
-    Out[1].vAlpha = In[0].vAlpha;
-    Out[1].vPass = In[0].vPass;
+    float4 worldPos = In[0].vPosition;
     
-    Out[2].vPosition = mul(In[0].vPosition - vRight - vUp, matVP);
-    Out[2].vTexcoord = float2(1.f, 1.f);
-    Out[2].vUV = In[0].vUV;
-    Out[2].vColor = In[0].vColor;
-    Out[2].vAlpha = In[0].vAlpha;
-    Out[2].vPass = In[0].vPass;
+    {
+        float2 p = float2(-1, +1);
+        float2 r = float2(p.x * c - p.y * s, p.x * s + p.y * c);
+        float3 offset = r.x * vRight + r.y * vUp;
+
+        Out[0].vPosition = mul(worldPos + float4(offset, 0), matVP);
+        Out[0].vTexcoord = float2(0.f, 0.f);
+        Out[0].vUV = In[0].vUV;
+        Out[0].vColor = In[0].vColor;
+        Out[0].vAlpha = In[0].vAlpha;
+        Out[0].vPass = In[0].vPass;
+    }
     
-    Out[3].vPosition = mul(In[0].vPosition + vRight - vUp, matVP);
-    Out[3].vTexcoord = float2(0.f, 1.f);
-    Out[3].vUV = In[0].vUV;
-    Out[3].vColor = In[0].vColor;
-    Out[3].vAlpha = In[0].vAlpha;
-    Out[3].vPass = In[0].vPass;
+    {
+        float2 p = float2(+1, +1);
+        float2 r = float2(p.x * c - p.y * s, p.x * s + p.y * c);
+        float3 offset = r.x * vRight + r.y * vUp;
+
+        Out[1].vPosition = mul(worldPos + float4(offset, 0), matVP);
+        Out[1].vTexcoord = float2(1.f, 0.f);
+        Out[1].vUV = In[0].vUV;
+        Out[1].vColor = In[0].vColor;
+        Out[1].vAlpha = In[0].vAlpha;
+        Out[1].vPass = In[0].vPass;
+    }
+    
+    {
+        float2 p = float2(+1, -1);
+        float2 r = float2(p.x * c - p.y * s, p.x * s + p.y * c);
+        float3 offset = r.x * vRight + r.y * vUp;
+
+        Out[2].vPosition = mul(worldPos + float4(offset, 0), matVP);
+        Out[2].vTexcoord = float2(1.f, 1.f);
+        Out[2].vUV = In[0].vUV;
+        Out[2].vColor = In[0].vColor;
+        Out[2].vAlpha = In[0].vAlpha;
+        Out[2].vPass = In[0].vPass;
+    }
+    
+    {
+        float2 p = float2(-1, -1);
+        float2 r = float2(p.x * c - p.y * s, p.x * s + p.y * c);
+        float3 offset = r.x * vRight + r.y * vUp;
+
+        Out[3].vPosition = mul(worldPos + float4(offset, 0), matVP);
+        Out[3].vTexcoord = float2(0.f, 1.f);
+        Out[3].vUV = In[0].vUV;
+        Out[3].vColor = In[0].vColor;
+        Out[3].vAlpha = In[0].vAlpha;
+        Out[3].vPass = In[0].vPass;
+    }
     
     Vertices.Append(Out[0]);
     Vertices.Append(Out[1]);
