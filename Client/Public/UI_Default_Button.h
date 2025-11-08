@@ -2,6 +2,12 @@
 #include "UI_Button.h"
 #include "Client_Defines.h"
 
+NS_BEGIN(Engine)
+class CShader;
+class CTexture;
+class CVIBuffer_Rect;
+NS_END
+
 NS_BEGIN(Client)
 class CUI_Default_Button final : public CUI_Button
 {
@@ -29,6 +35,7 @@ public:
 	virtual void				Update(_float fTimeDelta) override;
 	virtual void				Late_Update(_float fTimeDelta) override;
 	virtual HRESULT				Render() override;
+
 
 public:
 	static CUI_Default_Button*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

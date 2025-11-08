@@ -33,6 +33,57 @@ HRESULT CRenderer::Initialize()
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
+
+
+    // Distortion Test
+    vector<const _tchar*> TextureTags;
+    TextureTags =
+    {
+        TEXT("FT_Ring_01_n.png"),
+        TEXT("FT_2Ch_Noise_001.png"),
+        TEXT("FT_2ch_Tile_01.png"),
+        TEXT("FT_Colormap_002.png"),
+        TEXT("FT_ColormapMarbling_001.png"),
+        TEXT("FT_Ele_Noise.png"),
+        TEXT("FT_Fire_Noise.png"),
+        TEXT("FT_Flow_07.png"),
+        TEXT("FT_FlowRGB_001.png"),
+        TEXT("FT_Noise_3ch_001.png"),
+        TEXT("FT_Noise_007.png"),
+        TEXT("FT_Noise_Beam_002.png"),
+        TEXT("FT_Noise_Beam_003.png"),
+        TEXT("FT_Noise_RG_Fire_001.png"),
+        TEXT("FT_Noise_Soft_001.png"),
+        TEXT("FT_NoiseStreakyColorfulBlurred.png"),
+        TEXT("FT_PerlinNoise_RG.png"),
+        TEXT("FT_PrismTex_01.png"),
+        TEXT("FT_Sparkle_Noise_002.png"),
+    };
+
+    m_pNoiseTexture = CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Shader/Noise/"), TextureTags);
+    if (nullptr == m_pNoiseTexture)
+        return E_FAIL;
+
+    TextureTags =
+    {
+        TEXT("FT_Ring_01.png"),
+        TEXT("FT_Bsse_Particle.png"),
+        TEXT("FT_Circle_001.png"),
+        TEXT("FT_OrbMask_001.png"),
+        TEXT("FT_PointGlow_001.png"),
+        TEXT("FT_S_Spheremask_01.png"),
+        TEXT("T_ring_01.png"),
+        TEXT("FT_Mask_Flow_Radial_001.png"),
+        TEXT("FT_Circle_002.png"),
+    };
+
+    m_pMaskTexture = CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Shader/Mask/"), TextureTags);
+    if (nullptr == m_pMaskTexture)
+        return E_FAIL;
+
+
+
+
     m_threadCLs.resize(m_pGameInstance->Get_ThreadCount(), nullptr);
 
     XMStoreFloat4x4(&m_WorldMatrix, XMMatrixScaling(m_fViewportWidth, m_fViewportHeight, 1.f));
@@ -56,7 +107,9 @@ HRESULT CRenderer::Initialize()
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Outline"), 750.0f, 450.0f, 300.f, 300.f)))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Fog"), 1050.0f, 150.0f, 300.f, 300.f)))
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Fog"), 750.0f, 750.0f, 300.f, 300.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Combined"), 1050.0f, 150.0f, 300.f, 300.f)))
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_CSM_Debug(m_fViewportWidth - 150.0f, 150.0f, 300.f, 300.f)))
         return E_FAIL;
@@ -121,6 +174,9 @@ HRESULT CRenderer::Draw()
         return E_FAIL;
 
     if (FAILED(Render_Combined()))
+        return E_FAIL;
+
+    if (FAILED(Render_Distortion()))
         return E_FAIL;
 
     if (FAILED(Render_UI()))
@@ -585,6 +641,9 @@ HRESULT CRenderer::Render_Blur()
 
 HRESULT CRenderer::Render_Combined()
 {
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Combined"))))
+        return E_FAIL;
+
     if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
         return E_FAIL;
     if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
@@ -626,9 +685,59 @@ HRESULT CRenderer::Render_Combined()
         return E_FAIL;
     if (FAILED(m_pShader->Bind_Bool("g_isEnableOutline", &m_isEnableOutline)))
         return E_FAIL;
+    if (FAILED(m_pShader->Bind_Bool("g_isEnableDistortion", &m_isEnableDistortion)))
+        return E_FAIL;
 #endif
 
     m_pShader->Begin(8);
+
+    m_pVIBuffer->Bind_Resources();
+    m_pVIBuffer->Render();
+
+    if (FAILED(m_pGameInstance->End_MRT()))
+        return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CRenderer::Render_Distortion()
+{
+    if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_Matrix("g_CameraViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Matrix("g_CameraProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Combined"), m_pShader, "g_CombinedTexture")))
+        return E_FAIL;
+
+    if (FAILED(m_pNoiseTexture->Bind_Shader_Resource(m_pShader, "g_NoiseTexture", m_iTextureIndex)))
+        return E_FAIL;
+
+    if (FAILED(m_pNoiseTexture->Bind_Shader_Resource(m_pShader, "g_MaskTexture", m_iTextureIndex)))
+        return E_FAIL;
+
+    _float2 vScreenSize = _float2(m_fViewportWidth, m_fViewportHeight);
+    if (FAILED(m_pShader->Bind_RawValue("g_vScreenSize", &vScreenSize, sizeof(_float2))))
+        return E_FAIL;
+
+    m_fTimeAcc += 0.016f;
+    
+    if (FAILED(m_pShader->Bind_RawValue("g_fTime", &m_fTimeAcc, sizeof(_float))))
+        return E_FAIL;
+
+#ifdef _DEBUG
+    if (FAILED(m_pShader->Bind_Bool("g_isEnableDistortion", &m_isEnableDistortion)))
+        return E_FAIL;
+#endif
+
+    m_pShader->Begin(10);
 
     m_pVIBuffer->Bind_Resources();
     m_pVIBuffer->Render();
@@ -713,6 +822,10 @@ HRESULT CRenderer::Ready_RenderTargets()
     if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Outline"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 1.f))))
         return E_FAIL;
 
+    /* For.Target_Combined */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Combined"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 1.f, 0.f, 0.f))))
+        return E_FAIL;
+
     return S_OK;
 }
 
@@ -776,6 +889,10 @@ HRESULT CRenderer::Ready_MRTs()
 
     /* For.MRT_Decal */
     if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Decal"), TEXT("Target_Diffuse"))))
+        return E_FAIL;
+
+    /* For.MRT_Combined */
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Combined"), TEXT("Target_Combined"))))
         return E_FAIL;
 
     return S_OK;

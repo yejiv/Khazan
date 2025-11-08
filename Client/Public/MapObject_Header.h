@@ -37,6 +37,7 @@
 #define CREVICE_SUBLV 2						// ∞Ê∞Ë¿« ∆¥ 
 
 #define EMBARS_SUBLV 0
-#define VIPER_SUBLV 0
+
+#define VIPER_SUBLV 1
 
 #endif // MapObject_Header_h__

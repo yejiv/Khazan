@@ -225,6 +225,15 @@ namespace Engine
 		XMFLOAT3	vColor;
 	}DECAL_DESC;
 
+	typedef struct tagDistortionDesc
+	{
+		XMFLOAT3	vCenter;
+		float		fRange;
+		float		fPower;
+		float		fDuration;
+		float		fSpeed;
+	}DISTORTION_DESC;
+
 	struct HitStopState
 	{
 		bool isActive = false;
@@ -308,6 +317,15 @@ namespace Engine
 		XMFLOAT4 vInitTranslation; 
 		float fSize;
 	}POINT_INSTANCE_PARAMS;
+
+	typedef struct tagMeshInstanceParams
+	{
+		XMFLOAT4 vRight;
+		XMFLOAT4 vUp;
+		XMFLOAT4 vLook;
+		XMFLOAT4 vInitTranslation;
+		float fSize;
+	}MESH_INSTANCE_PARAMS;
 
 	typedef struct tagPointInstanceSpeedParams
 	{

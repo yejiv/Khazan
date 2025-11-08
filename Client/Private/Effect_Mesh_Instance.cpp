@@ -199,7 +199,7 @@ HRESULT CEffect_Mesh_Instance::Bind_ShaderResources()
         return E_FAIL;
 
     _bool IsDissolve = m_sData.sDissolveData.bIsDissolve;
-    if (FAILED(m_pShaderCom->Bind_Bool("g_IsDisolve", &IsDissolve)))
+    if (FAILED(m_pShaderCom->Bind_Bool("g_IsDissolve", &IsDissolve)))
         return E_FAIL;
 
     if (FAILED(m_pShaderCom->Bind_RawValue("g_EdgeWidth", &m_sData.sDissolveData.fDissolveEdgeWidth, sizeof(_float))))
@@ -217,7 +217,7 @@ HRESULT CEffect_Mesh_Instance::Bind_ShaderResources()
     if (FAILED(m_pMaskTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_MaskTexture", m_sData.iMaskTextureIdx)))
         return E_FAIL;
 
-    if (FAILED(m_pDissolveTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DisolveTexture", m_sData.sDissolveData.iDissolveTextureIdx)))
+    if (FAILED(m_pDissolveTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DissolveTexture", m_sData.sDissolveData.iDissolveTextureIdx)))
         return E_FAIL;
 
     return S_OK;

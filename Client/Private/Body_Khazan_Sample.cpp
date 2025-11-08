@@ -50,13 +50,13 @@ HRESULT CBody_Khazan_Sample::Initialize_Clone(void* pArg)
     m_pModelCom->Set_OwnerTransform(&m_pParentTransform);
 
 #ifdef _DEBUG
-	m_pGameInstance->AddWidget(TEXT("Client"), [this]() {
+    m_pGameInstance->AddWidget(TEXT("Client"), [this]() {
 
-		ImGui::Begin("Sample Model State");
+        ImGui::Begin("Sample Model State");
 
-		m_pModelCom->Debug_RanderState();
-		ImGui::End();
-		});
+        m_pModelCom->Debug_RanderState();
+        ImGui::End();
+        });
 
     m_fEmissiveIntensity = 1.f;
 #endif
@@ -76,13 +76,13 @@ void CBody_Khazan_Sample::Priority_Update(_float fTimeDelta)
 
 void CBody_Khazan_Sample::Update(_float fTimeDelta)
 {
-	_bool isChanged = false;
+    _bool isChanged = false;
 
-	if (m_iCurState != *m_pParentState)
-	{
-		m_iCurState = *m_pParentState;
+    if (m_iCurState != *m_pParentState)
+    {
+        m_iCurState = *m_pParentState;
         isChanged = true;
-	}
+    }
 
     if (m_isFinishedAnimation)
     {
@@ -129,18 +129,18 @@ void CBody_Khazan_Sample::Update(_float fTimeDelta)
         }
         else
         {
-			if (isChanged && Has_State(CKhazan_Sample::IDLE))
-			{
+            if (isChanged && Has_State(CKhazan_Sample::IDLE))
+            {
                 m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_Spear_Stand"));
             }
-			if (isChanged && Has_State(CKhazan_Sample::WALK))
-			{
+            if (isChanged && Has_State(CKhazan_Sample::WALK))
+            {
                 m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_Spear_Walk_F"));
-			}
-			if (isChanged && Has_State(CKhazan_Sample::RUN))
-			{
+            }
+            if (isChanged && Has_State(CKhazan_Sample::RUN))
+            {
                 m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_Spear_Run_F"));
-			}
+            }
         }
 
     }
@@ -151,6 +151,9 @@ void CBody_Khazan_Sample::Update(_float fTimeDelta)
     Update_CombinedMatrix();
 
     m_pTrail->Update(fTimeDelta);
+    if (m_pGameInstance->Key_Down(DIK_Y))
+        m_pGameInstance->Spwan_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpaceTime_SpearBlood"), XMVectorSet(1.f, 1.f, 1.f, 1.f));
+    //Test End
 }
 
 void CBody_Khazan_Sample::Late_Update(_float fTimeDelta)
@@ -262,79 +265,74 @@ HRESULT CBody_Khazan_Sample::Ready_Components()
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
 
-
-    CMeshTrail::TRAIL_DESC dsc;
-    dsc.fLifeTime = 0.5f;
-    dsc.iDivisionCount = 20;
-    dsc.iTextureIdx = 0;
-    m_pTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &dsc));
+    m_pTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), nullptr));
 
     return S_OK;
 }
 
 HRESULT CBody_Khazan_Sample::Ready_AnimationEvent()
 {
-    m_pModelCom->Register_Event("e1", ANIM_EVENT_TRIGGERTYPE::ENTER,       [this]() {Effect1_Enter(); });
-    m_pModelCom->Register_Event("e1", ANIM_EVENT_TRIGGERTYPE::EXIT,        [this]() {Effect1_Exit(); });
-    m_pModelCom->Register_Event("e1", ANIM_EVENT_TRIGGERTYPE::CONTINUE,    [this]() {Effect1_Continue(); });
+    m_pModelCom->Register_Event("e1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect1_Enter(); });
+    m_pModelCom->Register_Event("e1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Effect1_Exit(); });
+    m_pModelCom->Register_Event("e1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Effect1_Continue(); });
 
-    m_pModelCom->Register_Event("e2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()       {Effect2_Enter(); }); 
-    m_pModelCom->Register_Event("e2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()        {Effect2_Exit(); });
-    m_pModelCom->Register_Event("e2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()    {Effect2_Continue(); });
+    m_pModelCom->Register_Event("e2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect2_Enter(); });
+    m_pModelCom->Register_Event("e2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Effect2_Exit(); });
+    m_pModelCom->Register_Event("e2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Effect2_Continue(); });
 
-    m_pModelCom->Register_Event("e3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()       {Effect3_Enter(); });
-    m_pModelCom->Register_Event("e3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()        {Effect3_Exit(); });
-    m_pModelCom->Register_Event("e3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()    {Effect3_Continue(); });
+    m_pModelCom->Register_Event("e3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect3_Enter(); });
+    m_pModelCom->Register_Event("e3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Effect3_Exit(); });
+    m_pModelCom->Register_Event("e3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Effect3_Continue(); });
 
-    m_pModelCom->Register_Event("e4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()       {Effect4_Enter(); }); 
-    m_pModelCom->Register_Event("e4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()        {Effect4_Exit(); });
-    m_pModelCom->Register_Event("e4", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()    {Effect4_Continue(); });
+    m_pModelCom->Register_Event("e4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect4_Enter(); });
+    m_pModelCom->Register_Event("e4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Effect4_Exit(); });
+    m_pModelCom->Register_Event("e4", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Effect4_Continue(); });
 
-    m_pModelCom->Register_Event("e5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()       {Effect5_Enter(); });
-    m_pModelCom->Register_Event("e5", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()        {Effect5_Exit(); });
-    m_pModelCom->Register_Event("e5", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()    {Effect5_Continue(); });
+    m_pModelCom->Register_Event("e5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect5_Enter(); });
+    m_pModelCom->Register_Event("e5", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Effect5_Exit(); });
+    m_pModelCom->Register_Event("e5", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Effect5_Continue(); });
 
-    m_pModelCom->Register_Event("e6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()       {Effect6_Enter(); });
-    m_pModelCom->Register_Event("e6", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()        {Effect6_Exit(); });
-    m_pModelCom->Register_Event("e6", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()    {Effect6_Continue(); });
+    m_pModelCom->Register_Event("e6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect6_Enter(); });
+    m_pModelCom->Register_Event("e6", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Effect6_Exit(); });
+    m_pModelCom->Register_Event("e6", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Effect6_Continue(); });
 
-    m_pModelCom->Register_Event("e7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()       {Effect7_Enter(); });
-    m_pModelCom->Register_Event("e7", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()        {Effect7_Exit(); });
-    m_pModelCom->Register_Event("e7", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()    {Effect7_Continue(); });
+    m_pModelCom->Register_Event("e7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect7_Enter(); });
+    m_pModelCom->Register_Event("e7", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Effect7_Exit(); });
+    m_pModelCom->Register_Event("e7", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Effect7_Continue(); });
 
-    m_pModelCom->Register_Event("e8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()       {Effect8_Enter(); });
-    m_pModelCom->Register_Event("e8", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()        {Effect8_Exit(); });
-    m_pModelCom->Register_Event("e8", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()    {Effect8_Continue(); });
+    m_pModelCom->Register_Event("e8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect8_Enter(); });
+    m_pModelCom->Register_Event("e8", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Effect8_Exit(); });
+    m_pModelCom->Register_Event("e8", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Effect8_Continue(); });
 
-    m_pModelCom->Register_Event("e9", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()       {Effect9_Enter(); });
-    m_pModelCom->Register_Event("e9", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()        {Effect9_Exit(); });
-    m_pModelCom->Register_Event("e9", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()    {Effect9_Continue(); });
+    m_pModelCom->Register_Event("e9", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect9_Enter(); });
+    m_pModelCom->Register_Event("e9", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Effect9_Exit(); });
+    m_pModelCom->Register_Event("e9", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Effect9_Continue(); });
 
-    m_pModelCom->Register_Event("e10", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()      {Effect10_Enter(); });
-    m_pModelCom->Register_Event("e10", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()       {Effect10_Exit(); });
-    m_pModelCom->Register_Event("e10", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()   {Effect10_Continue(); });
+    m_pModelCom->Register_Event("e10", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect10_Enter(); });
+    m_pModelCom->Register_Event("e10", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Effect10_Exit(); });
+    m_pModelCom->Register_Event("e10", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Effect10_Continue(); });
 
-    m_pModelCom->Register_Event("e11", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()      {Effect11_Enter(); }); 
-    m_pModelCom->Register_Event("e11", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()       {Effect11_Exit(); });
-    m_pModelCom->Register_Event("e11", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()   {Effect11_Continue(); });
+    m_pModelCom->Register_Event("e11", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect11_Enter(); });
+    m_pModelCom->Register_Event("e11", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Effect11_Exit(); });
+    m_pModelCom->Register_Event("e11", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Effect11_Continue(); });
 
-    m_pModelCom->Register_Event("e12", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()      {Effect12_Enter(); });
-    m_pModelCom->Register_Event("e12", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()       {Effect12_Exit(); });
-    m_pModelCom->Register_Event("e12", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()   {Effect12_Continue(); });
+    m_pModelCom->Register_Event("e12", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect12_Enter(); });
+    m_pModelCom->Register_Event("e12", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Effect12_Exit(); });
+    m_pModelCom->Register_Event("e12", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Effect12_Continue(); });
 
-    m_pModelCom->Register_Event("e13", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()      {Effect13_Enter(); });
-    m_pModelCom->Register_Event("e13", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()       {Effect13_Exit(); });
-    m_pModelCom->Register_Event("e13", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()   {Effect13_Continue(); });
+    m_pModelCom->Register_Event("e13", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect13_Enter(); });
+    m_pModelCom->Register_Event("e13", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Effect13_Exit(); });
+    m_pModelCom->Register_Event("e13", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Effect13_Continue(); });
 
-    m_pModelCom->Register_Event("e14", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()      {Effect14_Enter(); });
-    m_pModelCom->Register_Event("e14", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()       {Effect14_Exit(); });
-    m_pModelCom->Register_Event("e14", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()   {Effect14_Continue(); });
+    m_pModelCom->Register_Event("e14", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect14_Enter(); });
+    m_pModelCom->Register_Event("e14", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Effect14_Exit(); });
+    m_pModelCom->Register_Event("e14", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Effect14_Continue(); });
 
-    m_pModelCom->Register_Event("e15", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()      {Effect15_Enter(); });
-    m_pModelCom->Register_Event("e15", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()       {Effect15_Exit(); });
-    m_pModelCom->Register_Event("e15", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()   {Effect15_Continue(); });
+    m_pModelCom->Register_Event("e15", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect15_Enter(); });
+    m_pModelCom->Register_Event("e15", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Effect15_Exit(); });
+    m_pModelCom->Register_Event("e15", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Effect15_Continue(); });
 
-
+    m_pModelCom->Register_Event("SpaceTime_SpearBlood", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SpaceTime_SpearBlood(); });
 
     return S_OK;
 }
@@ -536,13 +534,13 @@ HRESULT CBody_Khazan_Sample::Bind_ShaderResources()
         return E_FAIL;
 
 
-	return S_OK;
+    return S_OK;
 }
 
 void CBody_Khazan_Sample::Effect1_Enter()
 {
     char msg[256];
-    sprintf_s(msg,"Local Bone SpearFX\n %.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n", 
+    sprintf_s(msg, "Local Bone SpearFX\n %.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n",
         m_pSpearFX_Matrix->_11, m_pSpearFX_Matrix->_12, m_pSpearFX_Matrix->_13, m_pSpearFX_Matrix->_14,
         m_pSpearFX_Matrix->_21, m_pSpearFX_Matrix->_22, m_pSpearFX_Matrix->_23, m_pSpearFX_Matrix->_24,
         m_pSpearFX_Matrix->_31, m_pSpearFX_Matrix->_32, m_pSpearFX_Matrix->_33, m_pSpearFX_Matrix->_34,
@@ -557,25 +555,18 @@ void CBody_Khazan_Sample::Effect1_Enter()
         matWorldSpearFX._31, matWorldSpearFX._32, matWorldSpearFX._33, matWorldSpearFX._34,
         matWorldSpearFX._41, matWorldSpearFX._42, matWorldSpearFX._43, matWorldSpearFX._44);
     OutputDebugStringA(msg);
-
-    int a = 0;
-
 }
 
 void CBody_Khazan_Sample::Effect1_Exit()
 {
     //cout << "[Effect1_Exit]" << endl;
    // OutputDebugStringA("[Effect1_Exit] \n");
-    int a = 0;
 }
 
 void CBody_Khazan_Sample::Effect1_Continue()
 {
     //cout << "[Effect1_Continue]" << endl;
     //OutputDebugStringA("[Effect1_Continue] \n");
-
-
-   
 }
 
 void CBody_Khazan_Sample::Effect2_Enter()
@@ -588,7 +579,6 @@ void CBody_Khazan_Sample::Effect2_Exit()
 
 void CBody_Khazan_Sample::Effect2_Continue()
 {
-    
 }
 
 void CBody_Khazan_Sample::Effect3_Enter()
@@ -708,6 +698,13 @@ void CBody_Khazan_Sample::Effect11_Continue()
 {
 }
 
+
+void CBody_Khazan_Sample::SpaceTime_SpearBlood()
+{
+    m_pGameInstance->Spwan_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpaceTime_SpearBlood"), m_pParentTransform->Get_State(STATE::POSITION));
+}
+
+
 void CBody_Khazan_Sample::Effect12_Enter()
 {
 }
@@ -760,13 +757,13 @@ void CBody_Khazan_Sample::Effect15_Continue()
 inline _bool CBody_Khazan_Sample::Has_States()
 {
 
-	for (_uint i = 0; i < GetBitPosition(CKhazan_Sample::END); ++i)
-	{
+    for (_uint i = 0; i < GetBitPosition(CKhazan_Sample::END); ++i)
+    {
         if (Has_State(1 << i))
             return true;
 
-	}
-	return false;
+    }
+    return false;
 }
 
 CBody_Khazan_Sample* CBody_Khazan_Sample::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

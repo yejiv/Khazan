@@ -41,6 +41,8 @@ public:
 	template <typename T>
 	const T* Get_Data(_uint iID) const;
 
+	template <typename T>
+	const T* Get_DataTalbe() const;
 #pragma endregion
 
 #pragma region UI_MANGER
@@ -144,4 +146,11 @@ inline const T* CClientInstance::Get_Data(_uint iID) const
 {
 	return m_pDB_Manager->Get_Data<T>(iID);;
 }
+
+template<typename T>
+inline const T* CClientInstance::Get_DataTalbe() const
+{
+	return m_pDB_Manager->Get_DataTalbe<T>();;
+}
+
 NS_END

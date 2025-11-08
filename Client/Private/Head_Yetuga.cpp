@@ -42,8 +42,8 @@ HRESULT CHead_Yetuga::Initialize_Clone(void* pArg)
         return E_FAIL;
 ;
 
-    m_pHeadBodyCom->Activate(false);
     m_isOnAttackCollision = false;
+
     return S_OK;
 }
 
@@ -53,39 +53,59 @@ void CHead_Yetuga::Priority_Update(_float fTimeDelta)
 
 void CHead_Yetuga::Update(_float fTimeDelta)
 {
-    if (m_isOnAttackCollision)
-    {
-        m_pHeadBodyCom->Activate(true);
-        m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
-
-    }
-    else
-    {
-        m_pHeadBodyCom->Activate(false);
-        m_pGameInstance->Remove_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
-    }
-
-
+  
     Update_CombinedMatrix();
-
     Carculate_Matrix(fTimeDelta);
-
-
+  
 }
 
 void CHead_Yetuga::Late_Update(_float fTimeDelta)
 {
 }
 
+
 HRESULT CHead_Yetuga::Render()
 {
     return S_OK;
 }
 
+
+HRESULT CHead_Yetuga::RayCast(_float fTimeDelta)
+{
+
+    CModel* pModel = static_cast<CModel*>(m_pOwner->Get_Component(TEXT("Part_Body"), TEXT("Com_Model")));
+    if (pModel == nullptr)
+        return E_FAIL;
+    // 위치 받아와서
+    _float4x4 BoneMatrix = *pModel->Get_BoneMatrix("Bip001-Head");
+    _vector vRootDeltaPos = pModel->Get_RootMotion_Info().matDeltaRootMotion.r[3];
+    _matrix WorldMatrix = m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix);
+
+    _vector vPos = XMVectorSet(WorldMatrix.r[3].m128_f32[0], WorldMatrix.r[3].m128_f32[1], WorldMatrix.r[3].m128_f32[2], 1.f);
+    _vector vLook = XMVector3Normalize(XMVectorSet(WorldMatrix.r[2].m128_f32[0], WorldMatrix.r[2].m128_f32[1], WorldMatrix.r[2].m128_f32[2], 0.f));
+    _vector vTargetPos = vPos + vLook * 5.f;
+
+    _float fFraction;
+    _float4 vPosition;
+
+    if (m_pGameInstance->RayCast(
+        _float3(vPos.m128_f32[0], vPos.m128_f32[1], vPos.m128_f32[2]),
+        _float3(vTargetPos.m128_f32[0], vTargetPos.m128_f32[1], vTargetPos.m128_f32[2]),
+        fFraction,
+        vPosition
+    ))
+    {
+    }
+
+    return S_OK;
+}
+
 void CHead_Yetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
-    COLLISION_LAYER eType = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
-         m_pOwner->Get_Controller()->AI_React_Collision(pDesc,m_pOwner);
+    
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
+
+
 }
 
 void CHead_Yetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
@@ -98,37 +118,37 @@ void CHead_Yetuga::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer
 
 }
 
-
-
 void CHead_Yetuga::Carculate_Matrix(_float fTimeDelta)
 {
-
     CModel* pModel = static_cast<CModel*>(m_pOwner->Get_Component(TEXT("Part_Body"), TEXT("Com_Model")));
     if (pModel == nullptr)
         return;
 
+    // 뼈 행렬을 가져온다.
     _float4x4 BoneMatrix = *pModel->Get_BoneMatrix("Bip001-Head");
-    _vector vOutQuat, vOutPos;
+    // 오른쪽 뼈 행렬을 자체 행렬 * 뼈 로컬행렬  * 부모 행렬을 곱해서 최종 행렬을 만들어준다.
     XMStoreFloat4x4(&m_HeadMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
+    _vector vOutQuat, vOutPos;
+    // 콜라이더를 갱신시킨다.
     m_pHeadBodyCom->Sync_Update(XMLoadFloat4x4(&m_HeadMatrix));
     m_pHeadBodyCom->Update(fTimeDelta, XMLoadFloat4x4(&m_HeadMatrix), vOutQuat, vOutPos);
 
     m_HeadMatrix._41 = vOutPos.m128_f32[0];
     m_HeadMatrix._42 = vOutPos.m128_f32[1];
     m_HeadMatrix._43 = vOutPos.m128_f32[2];
-    m_HeadMatrix._44 = vOutPos.m128_f32[3];
+    m_HeadMatrix._44 = 1.f;
 
 }
 
 HRESULT CHead_Yetuga::Ready_Colliders()
 {
-    // 머리
+     //머리
 
     CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
 
-    BodyDesc.fRadius = 2.f;
+    BodyDesc.fRadius = 1.f;
     BodyDesc.eMotion = EMotionType::Kinematic;
-    BodyDesc.eQuality = EMotionQuality::LinearCast;
+    BodyDesc.eQuality = EMotionQuality::Discrete;
     BodyDesc.eShapeType = SHAPE::SPHERE;
     BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
     CModel* pModel = static_cast<CModel*>(m_pOwner->Get_Component(TEXT("Part_Body"), TEXT("Com_Model")));
@@ -155,6 +175,42 @@ HRESULT CHead_Yetuga::Ready_Colliders()
         return E_FAIL;
 
     return S_OK;
+
+    //CCharacterVirtual::CV_CAPSULESHAPE_DESC tCharVirDesc{};
+
+    //XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(m_pParentMatrix));
+
+    //_vector vScale, vRotation, vPosition;
+    //// 쪼갠다.
+    //XMMatrixDecompose(&vScale, &vRotation, &vPosition, XMLoadFloat4x4(&m_CombinedWorldMatrix));
+    //tCharVirDesc.eShapeType = SHAPE::CAPSULE;
+    //tCharVirDesc.fRadius = 0.5f;
+    //tCharVirDesc.fHeight = 1.f;
+    //tCharVirDesc.vShapeOffset = _float3(0.f,4.f,4.f);
+    //tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+    //tCharVirDesc.vPos = _float3(vPosition.m128_f32[0], vPosition.m128_f32[1], vPosition.m128_f32[2]);
+    //tCharVirDesc.vQuat = _float4(vRotation.m128_f32[0], vRotation.m128_f32[1], vRotation.m128_f32[2], vRotation.m128_f32[3]);
+
+    //// collision desc 연결
+    //m_tCollisionDesc.pGameObject = this;
+    //tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
+
+    //// component 생성
+    //if (FAILED(CGameObject::Add_Component(
+    //    ENUM_CLASS(LEVEL::STATIC),
+    //    TEXT("Prototype_Component_CharacterVirtual"),
+    //    TEXT("Com_CharacterVirtual"),
+    //    reinterpret_cast<CComponent**>(&m_pCharVirCom),
+    //    &tCharVirDesc)))
+    //{
+    //    return E_FAIL;
+    //}
+
+
+    return S_OK;
+
+
+
 }
 
 CHead_Yetuga* CHead_Yetuga::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
