@@ -67,11 +67,21 @@ private:
 	HRESULT Loading_For_HeinMach_Shader();
 	HRESULT Loading_For_HeinMach_GameObject();
 
+#pragma region 경계의 틈
 	HRESULT Loading_For_Crevice_Level();
 	HRESULT Loading_For_Crevice_Texture();
 	HRESULT Loading_For_Crevice_Model();
 	HRESULT Loading_For_Crevice_Shader();
 	HRESULT Loading_For_Crevice_GameObject();
+#pragma endregion
+
+#pragma region 바이퍼
+	HRESULT Loading_For_Viper_Level();
+	HRESULT Loading_For_Viper_Texture();
+	HRESULT Loading_For_Viper_Model();
+	HRESULT Loading_For_Viper_Shader();
+	HRESULT Loading_For_Viper_GameObject();
+#pragma endregion
 
 private:
 	// 모델 : 맵 오브젝트 Dat 로 프로토타입 불러오는 함수 ( 1. 프로토타입 데이터 파일 명 | 2. 레벨 | 3. 맵 ( 안넣으면 폴더 X ) )

@@ -41,6 +41,7 @@ void CLevel_Map::Update(_float fTimeDelta)
 	Select_Multi_Fix_Object(fTimeDelta);
 	Select_Add_LightPoint(fTimeDelta);
 	Measure_Distance(fTimeDelta);
+	Update_MultiFix(fTimeDelta);
 
 	return;
 }
@@ -240,12 +241,10 @@ void CLevel_Map::Select_Fix_Object(_float fTimeDelta)
 
 void CLevel_Map::Select_Multi_Fix_Object(_float fTimeDelta)
 {
-	return;
-
-	if (true == m_isFixObjectWindow)
+	if (true == m_isFixObjectWindow || false == m_isMultiFixWindow)
 		return;
 
-	if (m_pGameInstance->Key_Pressing(DIK_F2, fTimeDelta) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+	if (m_pGameInstance->Key_Pressing(DIK_F8, fTimeDelta) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
 	{
 		_float3 vPosition = {};
 		_uint iObjectID = {};
@@ -258,45 +257,22 @@ void CLevel_Map::Select_Multi_Fix_Object(_float fTimeDelta)
 				{
 					if (iObjectID == pObject->Get_MapObjectID())
 					{
-						if (0 == m_MultiFixObjList.size())
+						// 이미 리스트에 존재하는지 확인
+						auto iter = std::find(m_MultiFixList.begin(), m_MultiFixList.end(), pObject);
+						if (iter == m_MultiFixList.end())
 						{
-							m_pFixPropObj = pObject;
-							m_pFixTransformCom = static_cast<CTransform*>(pObject->Get_Component(TEXT("Com_Transform")));
-							CHECK_NULLPTR_MSG(m_pFixTransformCom, TEXT("Fix Transform == nullptr"), );
+							m_MultiFixList.push_back(pObject);
 
-							m_FixBaseMatrix = XMMatrixIdentity();
+							if (m_MultiFixList.size() == 1)
+								m_pParentFixObject = pObject; // 첫 번째는 부모로 설정
 
-							ZeroMemory(&m_vFixScale, sizeof(_float3));
-							ZeroMemory(&m_vFixRotation, sizeof(_float3));
-							ZeroMemory(&m_vFixPosition, sizeof(_float3));
-
-							m_vFixScale = m_pFixTransformCom->Get_Scaled();
-							XMStoreFloat3(&m_vFixPosition, m_pFixTransformCom->Get_State(STATE::POSITION));
-
-							m_FixBaseMatrix = m_FixWorldMatrix = m_pFixTransformCom->Get_WorldMatrix();
-
-							// ======================================================
-							// ======================================================
-
-							m_iSubLevel = m_pFixPropObj->Get_SubLevel();
-
-							m_isFixObjectWindow = true;
-							m_eFixType = FIX_OBJECT::FIX;
-
-#ifdef _DEBUG
-							m_pGameInstance->Set_GizmoObject(m_pFixPropObj);
-#endif // _DEBUG
-
-							m_MultiFixObjList.push_back(m_pFixPropObj);
+							_wstring msg = TEXT("[MultiFix] Selected: ");
+							msg += pObject->Get_ModelName();
+							OutputDebugString(msg.c_str());
 						}
 						else
 						{
-							auto pFound = find(m_MultiFixObjList.begin(), m_MultiFixObjList.end(), pObject);
-
-							if (pFound == m_MultiFixObjList.end())
-							{
-								m_MultiFixObjList.push_back(pObject);
-							}
+							OutputDebugString(TEXT("[MultiFix] Already in list.\n"));
 						}
 
 						return;
@@ -347,6 +323,44 @@ void CLevel_Map::Measure_Distance(_float fTimeDelta)
 	m_fDistance = XMVectorGetX(XMVector3Length(XMLoadFloat3(&m_vDistancePos[0]) - XMLoadFloat3(&m_vDistancePos[1])));
 }
 
+void CLevel_Map::Update_MultiFix(_float fTimeDelta)
+{
+	if (false == m_isMultiFix)
+		return;
+
+	CTransform* pParentTransform = static_cast<CTransform*>(m_pParentFixObject->Get_Component(TEXT("Com_Transform")));
+	CHECK_NULLPTR_MSG(pParentTransform, TEXT("부모 멀티 트랜스폼 널 피 티 알"), );
+
+	_float4x4 matParent = *pParentTransform->Get_WorldMatrixPtr();
+	_float4x4 matBefore = m_matParentBefore;
+	
+	_bool isChanged = { false };
+
+	for (_uint i = 0; i < 4; ++i)
+	{
+		for (_uint j = 0; j < 4; ++j)
+		{
+			if (matParent.m[i][j] != matBefore.m[i][j])
+			{
+				isChanged = true;
+			}
+		}
+	}
+
+	// 행렬이 달라졌다면
+	if (isChanged)
+	{
+		for (auto& info : m_MultiFixRelatives)
+		{
+			_matrix matLocal = XMLoadFloat4x4(&info.RelativeMatrix);
+			_matrix matWorld = matLocal * XMLoadFloat4x4(&matParent);
+			info.pTransform->Set_WorldMatrix(matWorld);
+		}
+
+		m_matParentBefore = matParent;
+	}
+}
+
 HRESULT CLevel_Map::Ready_DefaultImGui_For_MapTool()
 {
 	CHECK_FAILED(Ready_Main_Window(), E_FAIL);
@@ -368,6 +382,8 @@ HRESULT CLevel_Map::Ready_DefaultImGui_For_MapTool()
 	CHECK_FAILED(Ready_Object_SaveLoad_Window(), E_FAIL);
 
 	CHECK_FAILED(Ready_SkySphere_Window(), E_FAIL);
+
+	CHECK_FAILED(Ready_MultiFix_Window(), E_FAIL);
 
 	return S_OK;
 }
@@ -472,6 +488,7 @@ HRESULT CLevel_Map::Ready_Main_Window()
 
 				SEPARATOR;
 
+				ImGui::Text("CUBE COLLIDER RENDER");
 				if (ImGui::Button("CUBE WIRE FRAME") || m_pGameInstance->Key_Down(DIK_TAB))
 				{
 					for (auto& pProp : m_ObjectList)
@@ -494,6 +511,9 @@ HRESULT CLevel_Map::Ready_Main_Window()
 				}
 
 				SEPARATOR;
+
+				ImGui::Text("MULTI FIX WINDOW");
+				if (ImGui::Button("ON/OFF")) m_isMultiFixWindow = !m_isMultiFixWindow;
 
 				ImGui::Text("LIGHT");
 				if (ImGui::Button("LIGHT EDIT"))
@@ -2546,6 +2566,100 @@ HRESULT CLevel_Map::Ready_SkySphere_Window()
 			ImGui::End();
 		}
 		});
+#endif // _DEBUG
+
+	return S_OK;
+}
+
+HRESULT CLevel_Map::Ready_MultiFix_Window()
+{
+#ifdef _DEBUG
+	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
+		if (m_isMultiFixWindow)
+		{
+			ImGui::Begin("MULTI FIX WINDOW", &m_isMultiFixWindow, ImGuiWindowFlags_AlwaysAutoResize);
+
+			ImGui::Text("MULTI FIX LIST ( 0 == PARENT )");
+
+			if (ImGui::BeginListBox("##multifix_list"))
+			{
+				_wstring strFixModelName = {};
+				string strFixModel = {};
+
+				for (_uint i = 0; i < m_MultiFixList.size(); ++i)
+				{
+					_bool isSelected = (m_iMultiFixIndex == i);
+
+					strFixModelName = m_MultiFixList[i]->Get_ModelName();
+					strFixModel = WStringToAnsi(strFixModelName);
+
+					if (ImGui::Selectable(strFixModel.c_str(), isSelected))
+						m_iMultiFixIndex = i;
+				}
+
+				ImGui::EndListBox();
+			} SEPARATOR;
+
+			ImGui::Text("LIST COUNT : %d", m_MultiFixList.size());
+			SEPARATOR;
+
+			if (ImGui::Button("FIX"))
+			{
+				if (m_MultiFixList.size() > 1)
+				{
+					m_isMultiFix = true;
+
+					m_pGameInstance->Set_GizmoObject(m_pParentFixObject);
+
+					CTransform* pParentTransform = static_cast<CTransform*>(m_pParentFixObject->Get_Component(TEXT("Com_Transform")));
+					XMMATRIX matParent = pParentTransform->Get_WorldMatrix();
+					XMMATRIX invParent = XMMatrixInverse(nullptr, matParent);
+
+					XMStoreFloat4x4(&m_matOriginalParentMatrix, matParent);
+
+					m_MultiFixRelatives.clear();
+
+					for (size_t i = 1; i < m_MultiFixList.size(); ++i)
+					{
+						CTransform* pChildTransform = static_cast<CTransform*>(m_MultiFixList[i]->Get_Component(TEXT("Com_Transform")));
+						if (pChildTransform == nullptr)
+							continue;
+
+						XMMATRIX matChild = pChildTransform->Get_WorldMatrix();
+						XMMATRIX matRelative = matChild * invParent;
+
+						FIX_RELATIVE_DESC tDesc{};
+						tDesc.pTransform = pChildTransform;
+						XMStoreFloat4x4(&tDesc.RelativeMatrix, matRelative);
+
+						m_MultiFixRelatives.push_back(tDesc);
+					}
+
+					// 부모 행렬 저장 (변화 감지용)
+					XMStoreFloat4x4(&m_matParentBefore, matParent);
+
+					OutputDebugString(TEXT("[MultiFix] Fixed relative transforms.\n"));
+				}
+			}
+			if (ImGui::Button("RESET"))
+			{
+				static_cast<CTransform*>(m_pParentFixObject->Get_Component(TEXT("Com_Transform")))->Set_WorldMatrix(XMLoadFloat4x4(&m_matOriginalParentMatrix));
+			}
+			if (ImGui::Button("DONE"))
+			{
+				m_pGameInstance->Clear_GizmoObject();
+
+				m_isMultiFix = false;
+				m_MultiFixRelatives.clear();
+				m_MultiFixList.clear();
+				m_iMultiFixIndex = 0;
+				m_pParentFixObject = nullptr;
+			}
+
+			ImGui::End();
+		}
+		});
+
 #endif // _DEBUG
 
 	return S_OK;

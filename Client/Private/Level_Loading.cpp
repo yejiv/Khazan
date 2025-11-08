@@ -107,6 +107,8 @@ void CLevel_Loading::Update(_float fTimeDelta)
 			pNewLevel = CLevel_Embars::Create(m_pDevice, m_pContext);
 			break;
 		case LEVEL::VIPER:
+			m_pGameInstance->DeleteOctree();
+			m_pGameInstance->CreateOctree({ 0.f, 0.f, 150.f }, 300.f, 3);
 			pNewLevel = CLevel_Viper::Create(m_pDevice, m_pContext);
 			break;
 		}

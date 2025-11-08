@@ -598,6 +598,15 @@
     <Filter Include="01.Levels\Test">
       <UniqueIdentifier>{59b05a38-249f-445f-bb87-bf72ea8b8d0d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\01.Trigger\01.Embars">
+      <UniqueIdentifier>{28ff4c9d-284a-4e4a-9bf2-52e3b66dfc59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\01.Trigger\02.Viper">
+      <UniqueIdentifier>{e21af4ec-6dfc-46f4-ab35-c0db1f9d6d85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\01.Trigger\02.Viper\Viper_Trigger">
+      <UniqueIdentifier>{485e7ed5-dcf7-48e1-bc79-e69aea67fc4a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1149,6 +1158,9 @@
     <ClInclude Include="..\Public\Level_Test.h">
       <Filter>01.Levels\Test</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Viper_Trigger.h">
+      <Filter>02.GameObject\MapObject\01.Trigger\02.Viper\Viper_Trigger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1685,6 +1697,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Level_Test.cpp">
       <Filter>01.Levels\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Viper_Trigger.cpp">
+      <Filter>02.GameObject\MapObject\01.Trigger\02.Viper\Viper_Trigger</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

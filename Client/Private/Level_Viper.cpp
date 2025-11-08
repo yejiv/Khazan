@@ -19,19 +19,41 @@ CLevel_Viper::CLevel_Viper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 HRESULT CLevel_Viper::Initialize()
 {
-	CHECK_FAILED(Ready_Lights(TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+	// 플레이어, 카메라, 트리거
+	m_pGameInstance->Add_FireTask([this]() {
 
-	CHECK_FAILED(Ready_Layer_Sky(TEXT("Layer_Sky"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
-	CHECK_FAILED(Ready_Layer_Cloud(TEXT("Layer_Sky"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+		CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
 
-	// 첫번째 서브 레벨 로드 ( 스폰 ~ 첫 귀검 )
-	m_futures.push_back(m_pGameInstance->Add_Task([this]() {CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Viper"),
-		0, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL); }));
+		CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera")), E_FAIL);
 
+		CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+
+		return S_OK;
+		});
+
+	// 우선 맵 오브젝트 서브 레벨 로드
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Viper"),
+			0, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+		return S_OK;
+		}));
+
+	// 조명, 스카이박스 설정
+	m_pGameInstance->Add_FireTask([this]() {
+
+		CHECK_FAILED(Ready_Lights(TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+
+		CHECK_FAILED(Ready_Layer_Sky(TEXT("Layer_Sky"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+
+		CHECK_FAILED(Ready_Layer_Cloud(TEXT("Layer_Sky"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+
+		return S_OK;
+		});
+
+	// 맵 오브젝트 서브 레벨 로드
 	m_pGameInstance->Add_FireTask([this]() {
 		for (_uint i = 0; i < VIPER_SUBLV; ++i)
 		{
-			// 첫번째 서브 레벨 로드 주석 해제하면 여기서 스킵
 			if (0 == i)
 				continue;
 
@@ -41,20 +63,13 @@ HRESULT CLevel_Viper::Initialize()
 		return S_OK;
 		});
 
-	// 맵 오브젝트 : 메쉬 인스턴싱
-	//CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("Viper"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-	m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL); });
-	// 맵 오브젝트 : 상호 작용
-	//CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
-	m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL); });
+	m_pGameInstance->Add_FireTask([this]() mutable {
+		//CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+		CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+		return S_OK;
+		});
 
-	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
-		return E_FAIL;
-
-	CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
-
-	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
-		return E_FAIL;
+	CClientInstance::GetInstance()->Fade_Out();
 
 	while (true) {
 		bool all_ready = true;
@@ -93,34 +108,51 @@ HRESULT CLevel_Viper::Initialize()
 			all_ok = false;
 		}
 	}
+
 	m_futures.clear();
 
-
-	//m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL); });
-	//m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL); });
-
-	return S_OK;
-
-
+	CClientInstance::GetInstance()->Fade_In();
 
 	return S_OK;
 }
 
 void CLevel_Viper::Update(_float fTimeDelta)
 {
-	if (GetKeyState(VK_RETURN) & 0x8000)
+	//if (GetKeyState(VK_RETURN) & 0x8000)
+	//{
+	//	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::HEINMACH))))
+	//		return;
+	//}
+	//if (GetKeyState(VK_RETURN) & 0x8000)
+	//	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::GAMEPLAY))))
+	//		return;
+	//}
+
+	if (m_pGameInstance->Key_Down(DIK_Q))
 	{
-		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::HEINMACH))))
-			return;
+		m_pGameInstance->isPickRenderTargetPixel(TEXT("Target_Normal"));
 	}
 
+	if (m_pGameInstance->Key_Down(DIK_F1))
+	{
+		m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::VIPER), ENUM_CLASS(CAMERATYPE::FREE));
+	}
+	else if (m_pGameInstance->Key_Down(DIK_F2))
+	{
+		m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::VIPER), ENUM_CLASS(CAMERATYPE::PLAYER));
+	}
+
+	/*Effect test => 혹시 보게되면 지우셔도 됩니다!!!!!!!!! */
+	if (m_pGameInstance->Key_Down(DIK_I))
+		m_pGameInstance->Spwan_Effect(ENUM_CLASS(LEVEL::VIPER), TEXT("TestParticle1"), XMVectorSet(0.f, 0.f, 0.f, 1.f));
+	//Test End
 
 	return;
 }
 
 HRESULT CLevel_Viper::Render()
 {
-	SetWindowText(g_hWnd, TEXT("엠바스 유적지 레벨입니다."));
+	SetWindowText(g_hWnd, TEXT("바이퍼 레벨입니다."));
 
 	return S_OK;
 }
@@ -801,6 +833,64 @@ HRESULT CLevel_Viper::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurrentLe
 	}
 
 	CloseHandle(hFile);
+
+	return S_OK;
+}
+
+HRESULT CLevel_Viper::Ready_Trigger(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
+{
+	// Json 기본 경로
+	_wstring strJsonFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+
+	switch (eMap)
+	{
+	case KHAZAN_MAP::HEINMACH:
+		strJsonFilePath += TEXT("HeinMach/");
+		break;
+	case KHAZAN_MAP::CREVICE:
+		strJsonFilePath += TEXT("Crevice/");
+		break;
+	case KHAZAN_MAP::EMBARS:
+		strJsonFilePath += TEXT("Embars/");
+		break;
+	case KHAZAN_MAP::VIPER:
+		strJsonFilePath += TEXT("Viper/");
+		break;
+	default:
+		break;
+	}
+
+	strJsonFilePath += pDataFileName;
+
+	strJsonFilePath += TEXT("_trigger.json");
+
+	ifstream ifs(strJsonFilePath);
+	if (!ifs.is_open())
+	{
+		MSG_BOX(TEXT("Json read failed"));
+		return E_FAIL;
+	}
+
+	JSON j = {};
+	ifs >> j;
+	ifs.close();
+
+	JSON_MAP_TRIGGER_DATA TriggerData = j.get<JSON_MAP_TRIGGER_DATA>();
+
+	_uint iNumTrigger = TriggerData.iNumTrigger;
+
+	for (_uint i = 0; i < iNumTrigger; ++i)
+	{
+		CTrigger::TRIGGER_DESC TriggerDesc = {};
+
+		_float4x4 WorldMatrix = {};
+		memcpy(&TriggerDesc.WorldMatrix, &TriggerData.WorldMatrix[i], sizeof(_float4x4));
+
+		TriggerDesc.strTriggerKey = TriggerData.TriggerKey[i];
+
+		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_HeinMach_Trigger"), TIME_CHANNEL::MAP, &TriggerDesc), E_FAIL);
+	}
 
 	return S_OK;
 }

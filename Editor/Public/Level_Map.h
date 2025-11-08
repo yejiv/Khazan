@@ -32,6 +32,12 @@ private:
 		vector<VTXINSTANCE_MESH> InstanceData;
 
 	}SAVE_PROTOTYPE_INSTANCE;
+	
+	typedef struct tagFixRelativeDesc
+	{
+		CTransform* pTransform = nullptr;
+		XMFLOAT4X4 RelativeMatrix;
+	}FIX_RELATIVE_DESC;
 
 private:
 	CLevel_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -59,6 +65,7 @@ private:
 	void Select_Multi_Fix_Object(_float fTimeDelta);			// 기능 아직 X
 	void Select_Add_LightPoint(_float fTimeDelta);
 	void Measure_Distance(_float fTimeDelta);
+	void Update_MultiFix(_float fTimeDelta);
 
 #pragma region 변수
 private:
@@ -144,9 +151,18 @@ private:
 
 #pragma endregion
 
-#pragma region OBJECT 크기 이동 스케일 동시 수정 ( 아직 X )
+#pragma region MULTI FIX 용 변수
 
-	vector<class CProp*> m_MultiFixObjList;
+	_bool m_isMultiFix = { false };
+
+	vector<class CProp*> m_MultiFixList;
+	class CProp* m_pParentFixObject = { nullptr };
+	_uint m_iMultiFixIndex = {};
+
+	vector<FIX_RELATIVE_DESC> m_MultiFixRelatives;
+	_float4x4 m_matParentBefore;
+
+	_float4x4 m_matOriginalParentMatrix = {};
 
 #pragma endregion
 
@@ -210,6 +226,8 @@ private:
 	_bool m_isSkySphereWindow = { false };
 
 	_bool m_isCloudSphereWindow = { false };
+
+	_bool m_isMultiFixWindow = { false };
 
 #pragma endregion
 
@@ -286,6 +304,8 @@ private:
 	HRESULT Ready_Object_SaveLoad_Window();
 	// MapEditor SkySphere 수정 윈도우
 	HRESULT Ready_SkySphere_Window();
+	// MapEditor Multi Fix 윈도우
+	HRESULT Ready_MultiFix_Window();
 
 private:
 	// 폴더에 있는 .fbx 파일들 전부 순회하면서 지정한 경로 ( Bin/Data/Map/ ) 에 모델폴더/모델 생성 해주는 함수

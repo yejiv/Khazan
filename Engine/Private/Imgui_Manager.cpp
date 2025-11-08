@@ -257,6 +257,30 @@ void CImgui_Manager::Render_Gizmo()
     bool useSnap = false;
     float snap[3] = { 0.25f, 15.0f, 0.1f };
     float* pSnap = nullptr;
+
+    // Shift / Ctrl / Alt 키로 단위 스냅 활성화
+    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, 0.0001f))
+    {
+        useSnap = true;
+        snap[0] = 5.0f;     // 이동 5
+        snap[1] = 15.0f;    // 회전 15도
+        snap[2] = 0.002f;   // 스케일 0.002
+    }
+    else if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, 0.0001f))
+    {
+        useSnap = true;
+        snap[0] = 1.0f;     // 이동 1
+        snap[1] = 5.0f;     // 회전 5도
+        snap[2] = 0.001f;   // 스케일 0.001
+    }
+    else if (m_pGameInstance->Key_Pressing(DIK_LALT, 0.0001f))
+    {
+        useSnap = true;
+        snap[0] = 0.5f;     // 이동 0.5
+        snap[1] = 1.0f;     // 회전 1도
+        snap[2] = 0.0005f;  // 스케일 0.0005
+    }
+
     if (useSnap)
     {
         if (m_GizmoOp == ImGuizmo::TRANSLATE) pSnap = &snap[0];
