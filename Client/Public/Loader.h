@@ -61,11 +61,11 @@ private:
 	HRESULT Loading_For_Test_GameObject();
 
 
-	HRESULT Loading_For_Stage1_Level();
-	HRESULT Loading_For_Stage1_Texture();
-	HRESULT Loading_For_Stage1_Model();
-	HRESULT Loading_For_Stage1_Shader();
-	HRESULT Loading_For_Stage1_GameObject();
+	HRESULT Loading_For_HeinMach_Level();
+	HRESULT Loading_For_HeinMach_Texture();
+	HRESULT Loading_For_HeinMach_Model();
+	HRESULT Loading_For_HeinMach_Shader();
+	HRESULT Loading_For_HeinMach_GameObject();
 
 	HRESULT Loading_For_Crevice_Level();
 	HRESULT Loading_For_Crevice_Texture();

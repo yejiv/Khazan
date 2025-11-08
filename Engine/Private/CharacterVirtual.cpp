@@ -43,6 +43,7 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 	SettingDesc.mShapeOffset = LoadVec3(pDesc->vShapeOffset);
 	SettingDesc.mSupportingVolume = pDesc->fSupportingVolume;
 	SettingDesc.mMaxSlopeAngle = DegreesToRadians(pDesc->fMaxSlopeAngle);
+	SettingDesc.mMaxStrength = pDesc->fMaxStrength;
 	switch (pDesc->eShapeType)
 	{
 	case SHAPE::BOX:
@@ -78,12 +79,15 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 
 	m_pCharVir = m_pGameInstance->CreateCharacterVirtual(&SettingDesc, RVec3Arg(LoadVec3(pDesc->vPos)), QuatArg(LoadQuat(pDesc->vQuat)), 0, &m_pBodyInterface);
 	m_BodyId = m_pCharVir->GetInnerBodyID();
+	pDesc->pCollisionDesc->iObjectLayer = m_iNumObjectLayer;
 	m_pCharVir->SetUserData(static_cast<uint64>(reinterpret_cast<uintptr_t>(pDesc->pCollisionDesc)));
+	
 	if (!m_BodyId.IsInvalid())
 	{
 		m_pBodyInterface->SetObjectLayer(m_BodyId, m_iNumObjectLayer);
 		m_pBodyInterface->SetIsSensor(m_BodyId, false);
 		m_pBodyInterface->SetUserData(m_BodyId, static_cast<uint64>(reinterpret_cast<uintptr_t>(pDesc->pCollisionDesc)));
+		m_pGameInstance->Push_BodyDesc(m_BodyId, static_cast<uint64>(reinterpret_cast<uintptr_t>(pDesc->pCollisionDesc)));
 	}
 	
 
@@ -375,6 +379,24 @@ void CCharacterVirtual::Set_VelocityPower(_vector vDir, _float fPower, _float fL
 {
 	m_vVelocity = Vec3(vDir.m128_f32[0], vDir.m128_f32[1], vDir.m128_f32[2]) * fPower;
 	m_fLoss = fLoss;
+}
+
+void CCharacterVirtual::Collision_Active(_bool isActive)
+{
+	if (isActive)
+	{
+		if (!m_pBodyInterface->IsAdded(m_BodyId))
+		{
+			m_pBodyInterface->AddBody(m_BodyId, EActivation::Activate);
+		}
+	}
+	else 
+	{
+		if (m_pBodyInterface->IsAdded(m_BodyId))
+		{
+			m_pBodyInterface->RemoveBody(m_BodyId);
+		}
+	}
 }
 
 _bool CCharacterVirtual::Get_isGround()

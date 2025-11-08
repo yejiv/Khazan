@@ -113,6 +113,8 @@ public:
 public:
 	void	Set_Velocity(const _float3& vVelocity);
 
+	void	Collision_Active(_bool isActive);
+
 public:
 	virtual void	Set_PosRot(_vector vPos, _vector vRot);
 	BodyID           Get_BodyID() const { return m_BodyID; }

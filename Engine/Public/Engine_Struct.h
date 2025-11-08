@@ -655,6 +655,7 @@ namespace Engine
 	typedef struct tagCollsion
 	{
 		class CGameObject* pGameObject = nullptr;
+		unsigned int iObjectLayer;
 		void* pInfo = nullptr;	
 	}COLLISION_DESC;
 

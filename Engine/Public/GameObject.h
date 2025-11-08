@@ -41,6 +41,9 @@ public:
 	void Set_IsActive(_bool isActive) { m_isActive = isActive; }
 	_bool Get_IsActive() { return m_isActive; }
 
+	void Set_IsGhost(_bool isGhost) { m_isGhost = isGhost; }
+	_bool Get_IsGhost() { return m_isGhost; }
+
 	void Set_IsDeferred(_bool isDeferred) { m_isDeferredContext = isDeferred; }
 	_bool Get_IsDeferred() { return m_isDeferredContext; }
 
@@ -80,6 +83,7 @@ protected:
 
 	_bool						m_isDead = { false };
 	_bool						m_isActive = { true };
+	_bool						m_isGhost = { false };
 	_bool						m_isDeferredContext = { false };
 
 	// 추후에 파생 클래스 나눠지게 되면 옮기거나 다른 방법으로 바꿔보겠습니다.

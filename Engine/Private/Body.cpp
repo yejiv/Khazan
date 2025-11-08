@@ -31,6 +31,7 @@ HRESULT CBody::Initialize_Clone(void* pArg)
 
     m_eMotion = pDesc->eMotion;
     m_iObjectLayer = pDesc->iObjectLayer;
+    pDesc->pCollisionDesc->iObjectLayer = m_iObjectLayer;
     BodyCreationSettings BCS(
         BodyShape,
         Vec3(pDesc->vPos.x, pDesc->vPos.y, pDesc->vPos.z),
@@ -170,6 +171,24 @@ void CBody::Add_Impulse(_float fMass)
 void CBody::Set_Velocity(const _float3& vVelocity)
 {
     m_pBody->SetLinearVelocity(LoadVec3(vVelocity));
+}
+
+void CBody::Collision_Active(_bool isActive)
+{
+    if (isActive)
+    {
+        if (!m_pBodyInterface->IsAdded(m_BodyID))
+        {
+            m_pBodyInterface->AddBody(m_BodyID, EActivation::Activate);
+        }
+    }
+    else
+    {
+        if (m_pBodyInterface->IsAdded(m_BodyID))
+        {
+            m_pBodyInterface->RemoveBody(m_BodyID);
+        }
+    }
 }
 
 void CBody::Build_Shape(BODY_DESC* pDesc, RefConst<Shape>& pShape)

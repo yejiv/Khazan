@@ -79,6 +79,8 @@ Body* CJolt_Manager::CreateAndAdd_Body(const BodyCreationSettings& BodySetting, 
 
     *pBodyInterface = &m_pPhysics->GetBodyInterface();
 
+    m_BodyDescs.emplace(body->GetID(), body->GetUserData());
+
     return body;
 }
 
@@ -134,7 +136,6 @@ HRESULT CJolt_Manager::Set_PhysicsSystem()
         return E_FAIL;
 
     m_pPhysics->SetContactListener(m_pContactListener);
-
     // 기본 중력
     m_pPhysics->SetGravity(Vec3(0.0f, g_fGravity, 0.0f));
 
@@ -194,6 +195,28 @@ void CJolt_Manager::Remove_CharacterVirtual(CharacterID id)
 		m_pCharVsCharCollision->Remove(iter->second);
 		m_CharacterVirtuals.erase(iter);
 	}
+}
+
+void CJolt_Manager::Push_BodyDesc(BodyID id, uint64 BodyDesc)
+{
+    m_BodyDescs.emplace(id, BodyDesc);
+}
+
+uint64 CJolt_Manager::Find_BodyDesc(BodyID id)
+{
+    auto iter = m_BodyDescs.find(id);
+    if (iter != m_BodyDescs.end())
+        return iter->second;
+    return 0;
+}
+
+void CJolt_Manager::Remove_BodyDesc(BodyID id)
+{
+    auto iter = m_BodyDescs.find(id);
+    if (iter != m_BodyDescs.end())
+    {
+        m_BodyDescs.erase(iter);
+    }
 }
 
 _bool CJolt_Manager::RayCast(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition, _float3* outNormal)
