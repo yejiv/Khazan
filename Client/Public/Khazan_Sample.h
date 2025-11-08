@@ -141,7 +141,7 @@ private:
 private:
 	HRESULT				Ready_Components();
 	HRESULT				Ready_PartObjects();
-	HRESULT				Ready_Collision();
+	//HRESULT				Ready_Collision();
 
 private:
 	_int			m_iMaxHp = {};

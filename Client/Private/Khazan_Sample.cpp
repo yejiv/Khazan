@@ -56,8 +56,8 @@ HRESULT CKhazan_Sample::Initialize_Clone(void* pArg)
     if (FAILED(Ready_PartObjects()))
         return E_FAIL;
 
-    if (FAILED(Ready_Collision()))
-        return E_FAIL;
+    //if (FAILED(Ready_Collision()))
+    //    return E_FAIL;
 
 
 
@@ -156,7 +156,7 @@ void CKhazan_Sample::Update(_float fTimeDelta)
             if (true == isPicked)
             {
                 m_pTransformCom->Set_State(Engine::STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPickedPos), 1.f));
-                m_pCharVirCom->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 1.f));
+                //m_pCharVirCom->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 1.f));
             }
         }
 
@@ -716,32 +716,32 @@ HRESULT CKhazan_Sample::Ready_PartObjects()
 
 }
 
-HRESULT CKhazan_Sample::Ready_Collision()
-{
-    CCharacterVirtual::CV_CAPSULESHAPE_DESC tCharVirDesc{};
-    _float3 vPos{};
-    _float4 vQuat{};
-    XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
-    XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
-    tCharVirDesc.eShapeType = SHAPE::CAPSULE;
-    tCharVirDesc.vPos = vPos;
-    tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 0.7f, 0.f);
-    tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
-    tCharVirDesc.fRadius = 0.5f;
-    tCharVirDesc.fHeight = 0.5f;
-    tCharVirDesc.fMaxSlopeAngle = 45.f;
-    tCharVirDesc.fMass = 100000.f;
-    m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // 작성하기
-    tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
-
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
-        TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
-        return E_FAIL;
-
-    return S_OK;
-}
+//HRESULT CKhazan_Sample::Ready_Collision()
+//{
+//    CCharacterVirtual::CV_CAPSULESHAPE_DESC tCharVirDesc{};
+//    _float3 vPos{};
+//    _float4 vQuat{};
+//    XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
+//    XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
+//    tCharVirDesc.eShapeType = SHAPE::CAPSULE;
+//    tCharVirDesc.vPos = vPos;
+//    tCharVirDesc.vQuat = vQuat;
+//    tCharVirDesc.vShapeOffset = _float3(0.f, 0.7f, 0.f);
+//    tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
+//    tCharVirDesc.fRadius = 0.5f;
+//    tCharVirDesc.fHeight = 0.5f;
+//    tCharVirDesc.fMaxSlopeAngle = 45.f;
+//    tCharVirDesc.fMass = 100000.f;
+//    m_tCollisionDesc.pGameObject = this;
+//    //pCollDesc.pInfo = ?? // 작성하기
+//    tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
+//
+//    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
+//        TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
+//        return E_FAIL;
+//
+//    return S_OK;
+//}
 #ifdef _DEBUG
 inline _bool CKhazan_Sample::Has_States()
 {

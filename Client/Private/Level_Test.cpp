@@ -33,7 +33,7 @@ HRESULT CLevel_Test::Initialize()
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 		return E_FAIL;
 
-	CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Test_Level"), 0, LEVEL::TEST), E_FAIL);
+	//CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Test_Level"), 0, LEVEL::TEST), E_FAIL);
 
 	if (FAILED(Ready_Layer_TestEffect(TEXT("Layer_EffectTest"))))
 		return E_FAIL;
