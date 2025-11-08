@@ -58,6 +58,8 @@ protected:
 	_float						m_fMaxStamina = {};
 	_float						m_fMoveSpeed = {};
 
+	_vector						m_vGravity = XMVectorSet(0.f, g_fGravity, 0.f, 0.f);
+
 protected:
 	CCharacterVirtual*			m_pCharVirCom = { nullptr };
 

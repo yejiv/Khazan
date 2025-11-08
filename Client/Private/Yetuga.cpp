@@ -116,7 +116,11 @@ HRESULT CYetuga::Render()
 
 void CYetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
-
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MAP_STATIC))
+    {
+        int a = 0;
+    }
+    
 }
 
 void CYetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
@@ -474,7 +478,7 @@ HRESULT CYetuga::Ready_Components()
     tCharVirDesc.vQuat = vQuat;
     tCharVirDesc.vShapeOffset = _float3(0.f, 4.1f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
-    tCharVirDesc.fRadius = 2.f;
+    tCharVirDesc.fRadius = 3.f;
     tCharVirDesc.fHeight = 4.f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
 
