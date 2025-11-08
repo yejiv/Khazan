@@ -43,8 +43,8 @@ HRESULT CMainApp::Initialize()
 	if (FAILED(Ready_Prototype_ForStatic()))
 		return E_FAIL;
 
-
 	CHECK_FAILED(Ready_ClientInstance(&m_pDevice, &m_pContext), E_FAIL);
+	CHECK_FAILED(Ready_DB(), E_FAIL);
 
 	if (Ready_Prototype_ForStatic_UI())
 		return E_FAIL;
@@ -56,7 +56,6 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	CHECK_FAILED(Ready_Prototype_ForStatic_Effect(), E_FAIL);
-	CHECK_FAILED(Ready_DB(), E_FAIL);
 	CHECK_FAILED(Ready_Font(), E_FAIL);
 	CHECK_FAILED(Ready_DebugTool(), E_FAIL);
 	return S_OK;
@@ -344,7 +343,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Hud/State/T_Hud_Gauge_HP_BG_0%d.png"), 10)), E_FAIL);
 
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Hud_Player_HPGauge_BG"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Hud/State/T_Hud_Hp_Bg_0%d.png"), 5)), E_FAIL);
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Hud/State/T_Hud_Hp_Bg_0%d.png"), 8)), E_FAIL);
 
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_Common_MenuList"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Common/T_Img_List_Menu_%d.png"), 8)), E_FAIL);
@@ -393,7 +392,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Item"),
 		CItem_Slot::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
-
+	
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_MainMenu"),
 		CUI_MainMenu::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
 
@@ -456,6 +455,10 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Tutorial"),
 		CUI_Tutorial::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_SkillTree"),
+		CUI_SkillTree::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
+
 
 	CUIObject::UIOBJECT_DESC AnnounceDesc = {};
 	AnnounceDesc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
@@ -526,6 +529,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
 		TEXT("../Bin/Resources/UI/UIData/Loading.json"))))
 		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -566,7 +570,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_Effect()
 
 	// Prototype_Component_Texture_MeshEffect(Masking)
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MeshEffect_Masking"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Mask/Masking%d.png"), 12)), E_FAIL);
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Mask/Masking%d.png"), 14)), E_FAIL);
 
 	// Prototype_Component_Texture_MeshEffect(Dissolve)
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MeshEffect_Dissolve"),
@@ -589,6 +593,7 @@ HRESULT CMainApp::Ready_DB()
 	CHECK_FAILED(m_pClientInstance->Load_Data(DATATYPE::OTHEREFFECT, TEXT("../Bin/Data/DB/OtherItem_DB.csv")), E_FAIL);
 	CHECK_FAILED(m_pClientInstance->Load_Data(DATATYPE::STATE, TEXT("../Bin/Data/DB/State_DB.csv")), E_FAIL);
 	CHECK_FAILED(m_pClientInstance->Load_Data(DATATYPE::ANNOUNCE_TALK, TEXT("../Bin/Data/DB/Announce_Talk_DB.csv")), E_FAIL);
+	CHECK_FAILED(m_pClientInstance->Load_Data(DATATYPE::SKill, TEXT("../Bin/Data/DB/Skill_DB.csv")), E_FAIL);
 
 	return S_OK;
 }
@@ -626,12 +631,12 @@ HRESULT CMainApp::Ready_ObjectLayer()
 	// MONSTER
 	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
 	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
-	/*m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER));*/
+
 	// MONSTER ATTACK
 	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
 	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
-
 	//m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
+
 
 	m_pGameInstance->Set_ObjectLayerFilter(ENUM_CLASS(COLLISION_LAYER::MAP_STATIC), true);
 	m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT));

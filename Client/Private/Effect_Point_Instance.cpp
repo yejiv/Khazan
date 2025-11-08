@@ -26,7 +26,6 @@ HRESULT CEffect_Point_Instance::Initialize_Prototype(void* pArg)
     sprintf_s(finalNoisePathBuffer, MAX_PATH, NoiseFormat, m_sData.iTurbulenceTextureIdx);
     strcpy_s(m_sData.pNoiseFilePath, MAX_PATH, finalNoisePathBuffer);
 
-
     m_pVIBufferCom = CVIBuffer_Point_Instance::Create(m_pDevice, m_pContext, &m_sData);
     m_iEffect_Type = 0; //필요할까
 

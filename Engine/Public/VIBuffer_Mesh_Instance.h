@@ -20,6 +20,7 @@ public:
 		_float	fTurbulenceSampleSize;
 		_char	pFilePath[MAX_PATH];
 		_char	pNoiseFilePath[MAX_PATH];
+		_float3	fRotation{ 0.f, 0.f, 0.f };
 	}POINT_MESH_DESC;
 
 private:
@@ -69,7 +70,7 @@ private:
 	ID3D11Buffer*				m_pStagingBuffer = { nullptr };
 	//Debug
 	//ID3D11Buffer*				m_pDebugInstanceBuffer = { nullptr };
-	POINT_INSTANCE_PARAMS*		m_pParticleParams; 
+	MESH_INSTANCE_PARAMS*		m_pParticleParams;
 
 private:
 	_float3*					m_pVertexPositions = { nullptr };
