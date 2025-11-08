@@ -36,7 +36,7 @@ void CAS_RightHand_5Hit_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 
 }
 
-void CAS_RightHand_5Hit_Yetuga::OnCollision(COLLISION_DESC* pDesc, CGameObject* pOwner)
+void CAS_RightHand_5Hit_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
 {
     //if (m_iComboCount < 5)
     //    m_iComboCount++;

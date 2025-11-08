@@ -139,6 +139,14 @@ void CKhazan_Spear::Update(_float fTimeDelta)
     Event_Interact_Object(fTimeDelta);
 #pragma endregion
 
+    if (m_pCharVirCom->Get_isGround())
+    {
+        m_vGravity = XMVectorSet(0.f, g_fGravity, 0.f, 0.f);
+    }
+    else {
+        m_vGravity = XMVectorSet(0.f, g_fGravity * 2.f, 0.f, 0.f);
+    }
+
     __super::Update(fTimeDelta);
 
     XMStoreFloat4x4(&m_pSpearFX_WorldMatrix, m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pTransformCom->Get_WorldMatrix());

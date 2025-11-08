@@ -112,6 +112,7 @@ void CEffect_Mesh_Instance::Edit_Element()
 
     ImGui::InputFloat2("Size : ", reinterpret_cast<_float*>(&m_sEditingData.vSize));
     ImGui::InputFloat("Size Ratio : ", &m_sEditingData.fSizeRatio);
+    ImGui::InputFloat3("Rotation : ", reinterpret_cast<_float*>(&m_sEditingData.fRotation));
     ImGui::InputFloat2("LifeTime : ", reinterpret_cast<_float*>(&m_sEditingData.vLifeTime));
     ImGui::InputFloat2("Scrolling Speed : ", reinterpret_cast<_float*>(&m_sEditingData.iScrollSpeed));
     ImGui::Checkbox("Element Loop", &loop);
@@ -121,8 +122,18 @@ void CEffect_Mesh_Instance::Edit_Element()
     const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19",  "test20",  "test21" };
     ImGui::Combo("Mesh Textures", reinterpret_cast<int*>(&m_sEditingData.iTextureIdx), textures, IM_ARRAYSIZE(textures));
 
-    const char* Meshes[] = { "Mesh0", "Mesh1", "Mesh2", "Mesh3",  "Mesh4",  "Mesh5",  "Mesh6",  "Mesh7",  "Mesh8",  "Mesh9",  "Mesh10",  "Mesh11",  "Mesh12",  "Mesh13",  "Mesh14",  "Mesh15",  "Mesh16",  "Mesh17",  "Mesh18",  "Mesh19",  "Mesh20",  "Mesh21",  "Mesh22" };
-    ImGui::Combo("Mesh Shape", reinterpret_cast<int*>(&m_sEditingData.iMeshTypeIdx), Meshes, IM_ARRAYSIZE(Meshes));
+    const char* Meshes[] = { "Helix0", "Helix1", "Helix2", "Helix3",  "Helix4",  "Helix5",  "Helix6",  "Helix7",  "Helix8",  "Helix9",  "Helix10",  "Helix11",  "Helix12",  "Helix13",  "Helix14",  "Helix15",  "Helix16",  "Helix17",  "Helix18",  "Helix19",  "Helix20",
+                                        "Spline0",  "Spline1", "Spline2",  "Spline3", "Spline4",  "Spline5",
+                                        "Spline_Cylinder",  "Spline_Helix0", "Spline_Helix1",
+                                        "Spline_Twist0", "Spline_Twist1",  "Spline_Twist2", "Spline_Twist3",  "Spline_Twist4", "Spline_Twist5",  "Spline_Twist6", "Spline_Twist7",
+                                        "TombStone_Spline0", "TombStone_Spline1", "TombStone_Spline2", "TombStone_Spline3", "WorldSpline",
+                                        "Helix21", "absolb_Spiral", "Focus", "HelixSimple", "Lightning0", "Lightning1", "Lightning2" , "Lightning3", "Helix22", "Helix23", "Helix24", "Helix25", "Helix26",
+                                        "Trail", "TwistRing0", "TwistRing1", "Spiral", "Wave0", "Wave1", "windLine", "Mash_Helix_Simple_mid", "T_blunt_slash_test", "Mash_Helix", "Mash_circle_twist",
+                                        "Attack_ShockWave", "AttackTrail_First", "AttackTrail_Fluid", "AttackTrail_Spin", "AttackTrail_Wind", "Curve0", "Curve1" , "Curve2", "Helix27",
+                                        "Lupers_Spear", "Particle_001", "ShockWave_Flow", "Spiral_001", "Wind_001",
+                                        "IN_Spiral_02", "Swirl_Spine_X", "SwirlHelix",
+                                        "FastAtk_1", "FastAtk_2L", "FastAtk_2R", "FastAtk_3L", "FastAtk_3R", "Grapple_Atk_2", "CounterATK", "DodgeATK", "FastATK1","FastATK2_L", "FastATK2_R",  "FastATK3_L" ,  "FastATK3_R", "FastATK4",
+                                        "StrongAtk0", "StrongAtk1", "FastAtk03_Slash", "GrappleAtk02_Slash", "StrongAtk03_Slash" };    ImGui::Combo("Mesh Shape", reinterpret_cast<int*>(&m_sEditingData.iMeshTypeIdx), Meshes, IM_ARRAYSIZE(Meshes));
 
     ImGui::Checkbox("Do Mask Scrolling", &m_bIsMaskScrolling);
     if (m_bIsMaskScrolling)
@@ -276,13 +287,14 @@ HRESULT CEffect_Mesh_Instance::Bind_ShaderResources()
         return E_FAIL;
 
     _bool IsDissolve = m_sData.sDissolveData.bIsDissolve;
-    if (FAILED(m_pShaderCom->Bind_Bool("g_IsDisolve", &IsDissolve)))
+    if (FAILED(m_pShaderCom->Bind_Bool("g_IsDissolve", &IsDissolve)))
         return E_FAIL;
 
     if (FAILED(m_pShaderCom->Bind_RawValue("g_EdgeWidth", &m_sEditingData.sDissolveData.fDissolveEdgeWidth, sizeof(_float))))
         return E_FAIL;
+
     if (FAILED(m_pShaderCom->Bind_RawValue("g_EdgeColor", &m_sEditingData.sDissolveData.fDissolveEdgeColor, sizeof(_float4))))
-        return E_FAIL;
+        return E_FAIL;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 
     if (FAILED(m_pShaderCom->Bind_RawValue("g_MaskScrollSpeed", &m_sData.fMaskScrollSpeed, sizeof(_float))))
         return E_FAIL;
@@ -293,9 +305,8 @@ HRESULT CEffect_Mesh_Instance::Bind_ShaderResources()
     if (FAILED(m_pMaskTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_MaskTexture", m_sData.iMaskTextureIdx)))
         return E_FAIL;
 
-    if (FAILED(m_pDissolveTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DisolveTexture", m_sData.sDissolveData.iDissolveTextureIdx)))
+    if (FAILED(m_pDissolveTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DissolveTexture", m_sData.sDissolveData.iDissolveTextureIdx)))
         return E_FAIL;
-
 
     return S_OK;
 }
@@ -303,7 +314,7 @@ HRESULT CEffect_Mesh_Instance::Bind_ShaderResources()
 void CEffect_Mesh_Instance::Apply(void* pArg)
 {
     m_sData = *static_cast<PARTICLE_DESC*>(pArg);
-    const char* format = "../../Client/Bin/Data/Effect/MeshTrail/MeshTrail%d.dat";
+    const char* format = "../../Client/Bin/Data/Effect/MeshTrail/Mesh%d.dat";
 
     char finalPathBuffer[MAX_PATH] = {};
     sprintf_s(finalPathBuffer, MAX_PATH, format, m_sData.iMeshTypeIdx);

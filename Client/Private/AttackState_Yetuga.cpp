@@ -36,7 +36,7 @@ void CAttackState_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 
 }
 
-void CAttackState_Yetuga::OnCollision(COLLISION_DESC* pDesc, CGameObject* pOwner)
+void CAttackState_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
 {
     CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
     pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK);

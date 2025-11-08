@@ -1,0 +1,231 @@
+#include "UI_SkillTree.h"
+#include "GameInstance.h"
+#include "ClientInstance.h"
+
+#include "UI_BackGround.h"
+#include "UI_Default_Button.h"
+#include "UI_TextBox.h"
+#include "UI_Guide_Icon.h"
+#include "UI_Default_Tex.h"
+
+#include "Skill_Tap.h"
+#include "Skill_Table.h"
+#include "Skill_Panel.h"
+#include "Skill_Gauge.h"
+#include "Skill_Slot_Panel.h"
+
+
+CUI_SkillTree::CUI_SkillTree(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+	: CUI_Panel{ pDevice, pContext }
+{
+}
+
+CUI_SkillTree::CUI_SkillTree(const CUI_SkillTree& Prototype)
+	: CUI_Panel(Prototype)
+{
+}
+
+void CUI_SkillTree::On_Panel(GUIDE_TYPE eType)
+{
+	if (m_IsUpdate)
+		return;
+
+	m_eAnimState = UIANIMSTATE::ON;
+	m_fAccTime = 0.5f;
+	m_IsUpdate = true;
+}
+
+void CUI_SkillTree::Off_Panel()
+{
+	if (!m_IsUpdate)
+		return;
+
+	m_eAnimState = UIANIMSTATE::OFF;
+	m_fAccTime = 1.f;
+}
+
+HRESULT CUI_SkillTree::Initialize_Prototype(_uint iLevel)
+{
+	m_iLevel = iLevel;
+	CHECK_FAILED(Ready_Prototype(), E_FAIL);
+	return S_OK;
+}
+
+HRESULT CUI_SkillTree::Initialize_Clone(void* pArg)
+{
+	CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
+
+	return S_OK;
+}
+
+void CUI_SkillTree::Priority_Update(_float fTimeDelta)
+{
+	if (!m_IsUpdate)
+		return;
+	if (m_pGameInstance->Key_Down(DIK_ESCAPE, INPUT_TYPE::POPUP))
+		Off_Panel();
+
+	UI_Animation(fTimeDelta);
+	__super::Priority_Update(fTimeDelta);
+}
+
+void CUI_SkillTree::Update(_float fTimeDelta)
+{
+	if (!m_IsUpdate)
+		return;
+	__super::Update(fTimeDelta);
+}
+
+void CUI_SkillTree::Late_Update(_float fTimeDelta)
+{
+	if (!m_IsUpdate)
+		return;
+
+	__super::Late_Update(fTimeDelta);
+}
+
+HRESULT CUI_SkillTree::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
+{
+	__super::Load_UI(pInData, iPrototypeLevelID, pArg);
+
+	m_SkillTap.resize(TAP_TYPE::END);
+
+	for (auto pChild : m_Children)
+	{
+		string strName = pChild->Get_Name();
+
+		if (strName == "Spear")
+		{
+			m_SkillTap[TAP_TYPE::SPEAR] = static_cast<CSkill_Tap*>(pChild);
+			Safe_AddRef(pChild);
+			m_SkillTap[TAP_TYPE::SPEAR]->Setting_Panel(TAP_TYPE::SPEAR);
+		}
+		else if (strName == "GS")
+		{
+			m_SkillTap[TAP_TYPE::GS] = static_cast<CSkill_Tap*>(pChild);
+			Safe_AddRef(pChild);
+			m_SkillTap[TAP_TYPE::GS]->Setting_Panel(TAP_TYPE::GS);
+		}
+		else if (strName == "Public")
+		{
+			m_SkillTap[TAP_TYPE::PUBLIC] = static_cast<CSkill_Tap*>(pChild);
+			Safe_AddRef(pChild);
+			m_SkillTap[TAP_TYPE::PUBLIC]->Setting_Panel(TAP_TYPE::PUBLIC);
+		}
+	}
+	m_IsUpdate = true;
+	CHECK_FAILED(Ready_Object(), E_FAIL);
+	return S_OK;
+}
+
+void CUI_SkillTree::Bubble_EventCall(BUBBLEEVENT* pArg)
+{
+
+}
+
+HRESULT CUI_SkillTree::Update_Switch(void* pArg)
+{
+	return S_OK;
+}
+
+HRESULT CUI_SkillTree::Ready_Prototype()
+{
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Skill_Tap"),
+		CSkill_Tap::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Skill_Table"),
+		CSkill_Table::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Skill_Panel"),
+		CSkill_Panel::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Skill_Gaugel"),
+		CSkill_Gauge::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Skill_SlotPanel"),
+		CSkill_Slot_Panel::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
+
+	return S_OK;
+}
+
+HRESULT CUI_SkillTree::Ready_Object()
+{
+	UIOBJECT_DESC Desc = {};
+	Desc.fDepth = 5.1f;
+	Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+	Desc.szName = "BackGround";
+	Desc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
+	Desc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
+
+	m_pBackGround = static_cast<CUI_BackGround*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_BackGround"), &Desc));
+	if (m_pBackGround == nullptr)
+		return E_FAIL;
+	m_pBackGround->Setting_BG(CUI_BackGround::UIBGTYPE::END);
+	m_pBackGround->Set_Color({ 0.0f, 0.0f, 0.0f, 0.8f });
+	m_Children.push_back(m_pBackGround);
+	Safe_AddRef(m_pBackGround);
+
+	return S_OK;
+
+}
+
+void CUI_SkillTree::UI_Animation(_float fTimeDelta)
+{
+	if (m_eAnimState == UIANIMSTATE::ON)
+	{
+		m_fAccTime += fTimeDelta * 3.f;
+		__super::Update_Alpha(m_fAccTime);
+
+		if (m_fAccTime >= 1.f)
+		{
+			m_fAccTime = 1.f;
+			m_eAnimState = UIANIMSTATE::END;
+		}
+	}
+	else if (m_eAnimState == UIANIMSTATE::OFF)
+	{
+		m_fAccTime -= fTimeDelta * 3.f;
+		__super::Update_Alpha(m_fAccTime);
+
+		if (m_fAccTime <= 0.f)
+		{
+			m_fAccTime = 0.f;
+			m_eAnimState = UIANIMSTATE::END;
+			m_IsUpdate = false;
+		}
+	}
+}
+
+CUI_SkillTree* CUI_SkillTree::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)
+{
+	CUI_SkillTree* pInstance = new CUI_SkillTree(pDevice, pContext);
+	if (FAILED(pInstance->Initialize_Prototype(iLevel)))
+	{
+		MSG_BOX(TEXT("Failed Created : CUI_SkillTree"));
+		Safe_Release(pInstance);
+	}
+	return pInstance;
+}
+
+CGameObject* CUI_SkillTree::Clone(void* pArg)
+{
+	CUI_SkillTree* pInstance = new CUI_SkillTree(*this);
+	if (FAILED(pInstance->Initialize_Clone(pArg)))
+	{
+		MSG_BOX(TEXT("Failed Cloned : CUI_SkillTree"));
+		Safe_Release(pInstance);
+	}
+	return pInstance;
+}
+
+void CUI_SkillTree::Free()
+{
+	__super::Free();
+
+	Safe_Release(m_pBackGround);
+
+	for (auto pTap : m_SkillTap)
+		Safe_Release(pTap);
+	m_SkillTap.clear();
+
+}

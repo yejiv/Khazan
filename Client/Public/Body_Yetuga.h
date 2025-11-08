@@ -68,7 +68,6 @@ private:
 	CBody*					m_pRH_BodyCom = { nullptr }; // 오른손
 	CBody*					m_pLH_BodyCom = { nullptr }; // 왼손
 	CBody*					m_pBack_BodyCom = { nullptr }; // 등
-	CBody*					m_pHeadBodyCom = { nullptr };
 
 private:
 	_float3					m_vThrowPoint = {};
