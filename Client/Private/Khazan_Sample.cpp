@@ -103,7 +103,7 @@ void CKhazan_Sample::Priority_Update(_float fTimeDelta)
         CTarget_BrutalAttack* pObject = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
         pObject->Setting_BrutalAttack(&m_vPos, 0.f);
 
-        m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), pObject);
+        m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::TEST), TEXT("Layer_UI"), pObject);
     }
 }
 
@@ -686,7 +686,7 @@ HRESULT CKhazan_Sample::Ready_PartObjects()
     BodyDesc.pState = &m_iState;
     BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     BodyDesc.pParentTransform = m_pTransformCom;
-    if (FAILED(__super::Add_PartObject(TEXT("Part_CKhazan_Sample_Body"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Body_Khazan_Sample"), &BodyDesc)))
+    if (FAILED(__super::Add_PartObject(TEXT("Part_CKhazan_Sample_Body"), ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_GameObject_Body_Khazan_Sample"), &BodyDesc)))
         return E_FAIL;
 
     m_pBody = static_cast<CBody_Khazan_Sample*>(Find_PartObject(TEXT("Part_CKhazan_Sample_Body")));
@@ -697,7 +697,7 @@ HRESULT CKhazan_Sample::Ready_PartObjects()
     SpearDesc.pState = &m_iState;
     SpearDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     SpearDesc.pParentTransform = m_pTransformCom;
-    if (FAILED(__super::Add_PartObject(TEXT("Part_CKhazan_Sample_Weapon_Spear"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Spear_Khazan_Sample"), &SpearDesc)))
+    if (FAILED(__super::Add_PartObject(TEXT("Part_CKhazan_Sample_Weapon_Spear"), ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_GameObject_Spear_Khazan_Sample"), &SpearDesc)))
         return E_FAIL;
 
     m_pSpear = static_cast<CSpear_Khazan_Sample*>(Find_PartObject(TEXT("Part_CKhazan_Sample_Weapon_Spear")));

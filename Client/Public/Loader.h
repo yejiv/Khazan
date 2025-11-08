@@ -54,6 +54,13 @@ private:
 private:
 	HRESULT Loading_For_Title_Level();
 
+	HRESULT Loading_For_Test_Level();
+	HRESULT Loading_For_Test_Texture();
+	HRESULT Loading_For_Test_Model();
+	HRESULT Loading_For_Test_Shader();
+	HRESULT Loading_For_Test_GameObject();
+
+
 	HRESULT Loading_For_Stage1_Level();
 	HRESULT Loading_For_Stage1_Texture();
 	HRESULT Loading_For_Stage1_Model();

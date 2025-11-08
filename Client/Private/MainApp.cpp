@@ -639,7 +639,7 @@ HRESULT CMainApp::Ready_ObjectLayer()
 
 
 	m_pGameInstance->Set_ObjectLayerFilter(ENUM_CLASS(COLLISION_LAYER::MAP_STATIC), true);
-	m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT));
+	//m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT));
 	m_pGameInstance->Set_PhysicsSystem();
 
 	return S_OK;
