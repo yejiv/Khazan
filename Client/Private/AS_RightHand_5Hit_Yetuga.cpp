@@ -38,16 +38,33 @@ void CAS_RightHand_5Hit_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 
 void CAS_RightHand_5Hit_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
 {
-    //if (m_iComboCount < 5)
-    //    m_iComboCount++;
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iCollisionLayer);
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+        //if (m_iComboCount < 5)
+        //    m_iComboCount++;
 
-    //if (4 == m_iComboCount)
-    //{
-    //    // if 막타를 패리하면 스트롱 대미지 피격 인터룹트 호출 하는식으로
+        //if (4 == m_iComboCount)
+        //{
+        //    // if ��Ÿ�� �и��ϸ� ��Ʈ�� ����� �ǰ� ���ͷ�Ʈ ȣ�� �ϴ½�����
+            /*CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
+            pYetuga->Take_Damage(15.f,HITREACTION::KNOCKBACK_STRONG,1.f);*/
+            
+        //}
+    
+        CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        if (nullptr == pTarget)
+            return;
+        CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+        if (nullptr == pOwnerTransform)
+            return;
+        _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+        pTarget->KnockBack(vLook, 10.f, 30.f);
 
-    //    CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
-    //    pYetuga->Take_Damage(15.f,HITREACTION::KNOCKBACK_STRONG,1.f);
-    //}
+    }
+
+
+   
 }
 
 

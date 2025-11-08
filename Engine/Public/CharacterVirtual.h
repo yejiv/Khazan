@@ -121,7 +121,7 @@ public:
 	virtual void	Set_Rotation(_vector vRotation);
 	virtual void	Set_Gravity(_float fGravity);
 
-	void Set_VelocityPower(_vector vDir, _float fPower, _float fLoss);
+	void			Set_VelocityPower(_vector vDir, _float fPower, _float fLoss);
 
 	void Collision_Active(_bool isActive);
 

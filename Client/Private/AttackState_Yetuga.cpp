@@ -24,6 +24,8 @@ void CAttackState_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
 
+    m_fCurrentTime += fTimeDelta;
+
     if (pModel->Play_Animation(fTimeDelta))
     {
         m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "is2HitFinished", true);
@@ -38,8 +40,19 @@ void CAttackState_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 
 void CAttackState_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
 {
-    CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
-    pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK);
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iCollisionLayer);
+
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+        CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK);
+        CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+        if (nullptr == pOwnerTransform)
+            return;
+        _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+        pTarget->KnockBack(vLook,10.f,50.f);
+        
+    }
 }
 
 CAttackState_Yetuga* CAttackState_Yetuga::Create()

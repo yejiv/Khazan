@@ -13,6 +13,11 @@ CCreature::CCreature(const CCreature& Prototype)
 }
 
 
+void CCreature::KnockBack(_vector vDir, _float fPower, _float fLoss)
+{
+    m_pCharVirCom->Set_VelocityPower(vDir,fPower,fLoss);
+}
+
 HRESULT CCreature::Initialize_Prototype()
 {
     return S_OK;
