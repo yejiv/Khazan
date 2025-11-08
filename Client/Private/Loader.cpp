@@ -133,6 +133,9 @@ HRESULT CLoader::Loading()
 	case LEVEL::EMBARS:
 		break;
 	case LEVEL::VIPER:
+		m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+			return Loading_For_Viper_Level();
+			}));
 		break;
 	}
 
@@ -652,6 +655,183 @@ HRESULT CLoader::Loading_For_Crevice_GameObject()
 		return E_FAIL;
 #pragma endregion
 
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Viper_Level()
+{
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		return Loading_For_Viper_Texture();
+		}));
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		return Loading_For_Viper_Model();
+		}));
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		return Loading_For_Viper_Shader();
+		}));
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		return Loading_For_Viper_GameObject();
+		}));
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+		}));
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		CHECK_FAILED(Loading_Prototype_MapObject_Inst_From_DAT(TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+		}));
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Viper_Texture()
+{
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Viper_Model()
+{
+#pragma region KHAZAN
+	/* Prototype_Component_Model_Khazan_Sample*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Sample"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Khazan_Sample.dat"))))
+		return E_FAIL;
+
+	/* Prototype_Component_Model_Spear_Khazan_Sample*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Spear_Khazan_Sample"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Spear/Spear.dat"))))
+		return E_FAIL;
+
+	/* Prototype_Component_Model_Khazan_Spear*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Spear"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Spear/Khazan_Spear.dat"))))
+		return E_FAIL;
+
+	/* Prototype_Component_Model_Khazan_Prisoner_Torso1*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso1"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Prisoner_Torso1/Prisoner_Torso1.dat"))))
+		return E_FAIL;
+	/* Prototype_Component_Model_Khazan_Prisoner_Torso2*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso2"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Prisoner_Torso2/Prisoner_Torso2.dat"))))
+		return E_FAIL;
+	/* Prototype_Component_Model_Khazan_Prisoner_Torso3*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso3"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Prisoner_Torso3/Prisoner_Torso3.dat"))))
+		return E_FAIL;
+
+	/* Prototype_Component_Model_Khazan_Prisoner_Shoes1*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Shoes1"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Prisoner_Shoes1/Prisoner_Shoes1.dat"))))
+		return E_FAIL;
+	///* Prototype_Component_Model_Khazan_Prisoner_Shoes2*/
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Shoes2"),
+	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Prisoner_Shoes2/Prisoner_Shoes2.dat"))))
+	//	return E_FAIL;
+
+	/* Prototype_Component_Model_Khazan_Prisoner_Leg1*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg1"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Prisoner_Leg1/Prisoner_Leg1.dat"))))
+		return E_FAIL;
+	/* Prototype_Component_Model_Khazan_Prisoner_Leg2*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg2"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Prisoner_Leg2/Prisoner_Leg2.dat"))))
+		return E_FAIL;
+	/* Prototype_Component_Model_Khazan_Prisoner_Leg3*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg3"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Prisoner_Leg3/Prisoner_Leg3.dat"))))
+		return E_FAIL;
+
+	/* Prototype_Component_Model_Khazan_Prisoner_Hair1*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Hair1"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Prisoner_Hair1/Prisoner_Hair1.dat"))))
+		return E_FAIL;
+
+	/* Prototype_Component_Model_Khazan_Prisoner_Face1*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Face1"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Face/Prisoner_Face1/Prisoner_Face1.dat"))))
+		return E_FAIL;
+
+
+	/* Prototype_Component_Model_Khazan_Prisoner_Arm1*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Arm1"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Prisoner_Arm1/Prisoner_Arm1.dat"))))
+		return E_FAIL;
+
+	/* Prototype_Component_Model_Khazan_Prisoner_Arm2*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Arm2"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Prisoner_Arm2/Prisoner_Arm2.dat"))))
+		return E_FAIL;
+#pragma endregion
+
+#pragma region 모델 원형 : 상호 작용 맵 오브젝트
+	/* Prototype_Component_Model_BladeNexus */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_BladeNexus"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_DamagedTS/WIP_COM_DamagedTS.dat")), E_FAIL);
+
+	/* Prototype_Component_Model_BigChest */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_BigChest"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_BigChest_Open_003/WIP_COM_BigChest_Open_003.dat")), E_FAIL);
+#pragma endregion
+
+#pragma region 모델 원형 : 트리거
+	/* Prototype_Component_Model_Trigger */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Trigger"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Base/Cube/Cube.dat")), E_FAIL);
+#pragma endregion
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Viper_Shader()
+{
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Viper_GameObject()
+{
+	/* Prototype_GameObject_Camera_Compre */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Camera_Compre"),
+		CCamera_Compre::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_GameObject_Prop_Object */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Prop_Object"),
+		CProp_Object::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	/* Prototype_GameObject_Prop_Static */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Prop_Static"),
+		CProp_Static::Create(m_pDevice, m_pContext)), E_FAIL);
+
+#pragma region 게임 오브젝트 원형 : 상호 작용 맵 오브젝트
+	/* Prototype_GameObject_Prop_BladeNexus */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Prop_BladeNexus"),
+		CBladeNexus::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	/* Prototype_GameObject_Prop_BigChest */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Prop_BigChest"),
+		CBigChest::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 게임 오브젝트 원형 : 트리거
+	/* Prototype_GameObject_Prop_Trigger */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Prop_HeinMach_Trigger"),
+		CHeinMach_Trigger::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+	/* Prototype_GameObject_Khazan_Spear */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Khazan_Spear"),
+		CKhazan_Spear::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_GameObject_Body_Khazan_Spear */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Body_Khazan_Spear"),
+		CBody_Khazan_Spear::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_GameObject_Spear_Khazan_Spear */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Spear_Khazan_Spear"),
+		CSpear_Khazan_Spear::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 	return S_OK;
 }
