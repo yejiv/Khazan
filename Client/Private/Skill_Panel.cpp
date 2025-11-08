@@ -33,24 +33,16 @@ HRESULT CSkill_Panel::Initialize_Clone(void* pArg)
 
 void CSkill_Panel::Priority_Update(_float fTimeDelta)
 {
-	if (!m_IsUpdate)
-		return;
-
 	__super::Priority_Update(fTimeDelta);
 }
 
 void CSkill_Panel::Update(_float fTimeDelta)
 {
-	if (!m_IsUpdate)
-		return;
 	__super::Update(fTimeDelta);
 }
 
 void CSkill_Panel::Late_Update(_float fTimeDelta)
 {
-	if (!m_IsUpdate)
-		return;
-
 	__super::Late_Update(fTimeDelta);
 }
 

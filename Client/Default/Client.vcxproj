@@ -218,8 +218,8 @@
     <ClInclude Include="..\public\Skill_Gauge.h" />
     <ClInclude Include="..\public\Skill_Panel.h" />
     <ClInclude Include="..\public\Skill_Slot.h" />
+    <ClInclude Include="..\public\Skill_Slot_Panel.h" />
     <ClInclude Include="..\public\Skill_Table.h" />
-    <ClInclude Include="..\public\Skill_Table_Panel.h" />
     <ClInclude Include="..\public\Skill_Tap.h" />
     <ClInclude Include="..\public\UI_Guide_Icon.h" />
     <ClInclude Include="..\Public\HeaderGroup_UI.h" />
@@ -401,8 +401,8 @@
     <ClCompile Include="..\private\Skill_Gauge.cpp" />
     <ClCompile Include="..\private\Skill_Panel.cpp" />
     <ClCompile Include="..\private\Skill_Slot.cpp" />
+    <ClCompile Include="..\private\Skill_Slot_Panel.cpp" />
     <ClCompile Include="..\private\Skill_Table.cpp" />
-    <ClCompile Include="..\private\Skill_Table_Panel.cpp" />
     <ClCompile Include="..\private\Skill_Tap.cpp" />
     <ClCompile Include="..\private\UI_Guide_Icon.cpp" />
     <ClCompile Include="..\Private\HeinMach_Trigger.cpp" />

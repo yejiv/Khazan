@@ -586,14 +586,14 @@
     <Filter Include="02.GameObject\UI\Skill_Tree\Table">
       <UniqueIdentifier>{78284e8b-a8e0-4d29-8c7a-b256a7abf27a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\UI\Skill_Tree\Table\Panel">
-      <UniqueIdentifier>{d48d9e7a-8145-407e-96f0-8580e09dfddb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\UI\Skill_Tree\SkillPanel">
       <UniqueIdentifier>{e491b225-6a76-4ad3-bcf1-f9b105bf6a11}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObject\UI\Skill_Tree\SkillPanel\Gauge">
       <UniqueIdentifier>{f1c35b12-9d73-42ef-94d0-e5df51b6fd26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel">
+      <UniqueIdentifier>{d867245e-67c6-4dd3-9887-177b55c11097}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1140,8 +1140,8 @@
     <ClInclude Include="..\public\Skill_Gauge.h">
       <Filter>02.GameObject\UI\Skill_Tree\SkillPanel\Gauge</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Skill_Table_Panel.h">
-      <Filter>02.GameObject\UI\Skill_Tree\Table\Panel</Filter>
+    <ClInclude Include="..\public\Skill_Slot_Panel.h">
+      <Filter>02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1674,8 +1674,8 @@
     <ClCompile Include="..\private\Skill_Gauge.cpp">
       <Filter>02.GameObject\UI\Skill_Tree\SkillPanel\Gauge</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Skill_Table_Panel.cpp">
-      <Filter>02.GameObject\UI\Skill_Tree\Table\Panel</Filter>
+    <ClCompile Include="..\private\Skill_Slot_Panel.cpp">
+      <Filter>02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

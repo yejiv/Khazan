@@ -18,10 +18,19 @@ public:
 	virtual void						Update(_float fTimeDelta) override;
 	virtual void						Late_Update(_float fTimeDelta) override;
 	virtual HRESULT						Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
+	virtual HRESULT						Render() override;
+
+private:
+	CShader*							m_pShaderCom = { nullptr };
+	CTexture*							m_pTextureCom = { nullptr };
+	CVIBuffer_Rect*						m_pVIBufferCom = { nullptr };
+
+private:
+	HRESULT								Ready_Component();
 
 public:
-	static CSkill_Gauge* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	virtual CGameObject* Clone(void* pArg) override;
+	static CSkill_Gauge*				Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	virtual CGameObject*				Clone(void* pArg) override;
 	virtual void						Free() override;
 };
 

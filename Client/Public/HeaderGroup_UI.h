@@ -17,6 +17,7 @@
 #include "UI_Logo.h"
 #include "UI_Loading.h"
 #include "UI_Tutorial.h"
+#include "UI_SkillTree.h"
 
 //¼­ºê UI
 #include "MainMenu_Deco.h"

@@ -14,7 +14,7 @@ private:
 	virtual ~CUI_SkillTree() = default;
 
 public:
-void								On_Panel(GUIDE_TYPE eType);
+void									On_Panel(GUIDE_TYPE eType);
 	void								Off_Panel();
 public:
 	virtual HRESULT						Initialize_Prototype(_uint iLevel);
@@ -29,8 +29,6 @@ private:
 	class CUI_BackGround*				m_pBackGround = { nullptr };
 	_float								m_fAccTime = {};
 	UIANIMSTATE							m_eAnimState = { UIANIMSTATE::END };
-
-	INPUT_TYPE							m_ePreInputType = {};
 
 private:
 	HRESULT								Ready_Prototype();

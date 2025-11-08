@@ -8,6 +8,13 @@
 #include "UI_Guide_Icon.h"
 #include "UI_Default_Tex.h"
 
+#include "Skill_Tap.h"
+#include "Skill_Table.h"
+#include "Skill_Panel.h"
+#include "Skill_Gauge.h"
+#include "Skill_Slot_Panel.h"
+
+
 CUI_SkillTree::CUI_SkillTree(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
 {
@@ -20,7 +27,6 @@ CUI_SkillTree::CUI_SkillTree(const CUI_SkillTree& Prototype)
 
 void CUI_SkillTree::On_Panel(GUIDE_TYPE eType)
 {
-	static_cast<CUI_SkillTree*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Tutorial")))->On_Panel(GUIDE_TYPE::BURTALATTACK);
 	if (m_IsUpdate)
 		return;
 
@@ -36,7 +42,6 @@ void CUI_SkillTree::Off_Panel()
 
 	m_eAnimState = UIANIMSTATE::OFF;
 	m_fAccTime = 1.f;
-	m_pGameInstance->Change_InputType(m_ePreInputType);
 }
 
 HRESULT CUI_SkillTree::Initialize_Prototype(_uint iLevel)
@@ -98,7 +103,7 @@ HRESULT CUI_SkillTree::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID,
 	//		m_pButtonDown->Set_State(CUI_Button::STATE::SELETE);
 	//	}
 	//}
-
+	m_IsUpdate = true;
 	CHECK_FAILED(Ready_Object(), E_FAIL);
 	return S_OK;
 }
@@ -115,14 +120,20 @@ HRESULT CUI_SkillTree::Update_Switch(void* pArg)
 
 HRESULT CUI_SkillTree::Ready_Prototype()
 {
-	/*CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Tutorial_Panel"),
-		CTutorial_Panel::Create(m_pDevice, m_pContext)), E_FAIL);
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Skill_Tap"),
+		CSkill_Tap::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
 
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Tutorial_Tex"),
-		CTutorial_Tex::Create(m_pDevice, m_pContext)), E_FAIL);
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Skill_Table"),
+		CSkill_Table::Create(m_pDevice, m_pContext)), E_FAIL);
 
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_Component_UI_GuidePage"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/TutorialGuide/GuidePage_%d.dds"), 6)), E_FAIL);*/
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Skill_Panel"),
+		CSkill_Panel::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Skill_Gaugel"),
+		CSkill_Gauge::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Skill_SlotPanel"),
+		CSkill_Slot_Panel::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
 
 	return S_OK;
 }
@@ -130,7 +141,7 @@ HRESULT CUI_SkillTree::Ready_Prototype()
 HRESULT CUI_SkillTree::Ready_Object()
 {
 	UIOBJECT_DESC Desc = {};
-	Desc.fDepth = 2.2f;
+	Desc.fDepth = 5.1f;
 	Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
 	Desc.szName = "BackGround";
 	Desc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };

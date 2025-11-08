@@ -1,7 +1,6 @@
 #pragma once
 #include "UI_Tap.h"
 #include "Client_Defines.h"
-#include "UI_MainMenu.h"
 
 NS_BEGIN(Engine)
 class CShader;
@@ -18,7 +17,7 @@ private:
 	virtual ~CSkill_Tap() = default;
 
 public:
-	virtual HRESULT						Initialize_Prototype(_uint iLevel);
+	virtual HRESULT						Initialize_Prototype(_int iLevel);
 	virtual HRESULT						Initialize_Clone(void* pArg) override;
 	virtual void						Priority_Update(_float fTimeDelta) override;
 	virtual void						Update(_float fTimeDelta) override;
@@ -27,12 +26,14 @@ public:
 
 	virtual HRESULT						Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
 private:
-
 	_bool								m_bIsSelete = { false };
 	_float								m_fAccTime = {1.f};
 
+	vector<class CSkill_Slot_Panel*>	m_pPanel;
+private:
+	HRESULT								Ready_Children();
 public:
-	static CSkill_Tap*					Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
+	static CSkill_Tap*					Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
 	virtual CGameObject*				Clone(void* pArg) override;
 	virtual void						Free() override;
 };

@@ -373,7 +373,7 @@ HRESULT CUI_Manager::Ready_Prototype()
 {
 	/* Prototype_Component_VIBuffer_Instance_UI */
 	CVIBuffer_Instance_UI::INSTANCE_DESC UIInstanceDesc = {};
-	UIInstanceDesc.iNumInstance = 100;
+	UIInstanceDesc.iNumInstance = 200;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Instance_UI"),
 		CVIBuffer_Instance_UI::Create(m_pDevice, m_pContext, &UIInstanceDesc))))
