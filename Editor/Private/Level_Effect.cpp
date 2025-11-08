@@ -165,7 +165,7 @@ void CLevel_Effect::Create_Element()
 			ImGui::Checkbox("Dissolve", &m_bIsDissolve);
 			if (m_bIsDissolve)
 			{
-				const char* DissolveTex[] = { "Mesh0", "Mesh1"};
+				const char* DissolveTex[] = { "DissolveTexture0", "DissolveTexture1"};
 				ImGui::Combo("Dissolve Texture", reinterpret_cast<int*>(&m_iDissolveTextureIdx), DissolveTex, IM_ARRAYSIZE(DissolveTex));
 				ImGui::InputFloat("Dissolve Edge Width : ", reinterpret_cast<_float*>(&m_fDissolveEdgeWidth));
 				ImGui::ColorEdit4("Edge Color", (float*)&m_fDissolveEdgeColor);
@@ -194,6 +194,7 @@ void CLevel_Effect::Create_Element()
 			ImGui::InputFloat2("Scrolling Speed : ", reinterpret_cast<_float*>(&m_fScrollSpeed));
 			ImGui::InputFloat2("Size : ", m_fSize);
 			ImGui::InputFloat("Size Ratio : ", &m_fSizeRatio);
+			ImGui::InputFloat3("Rotation : ", m_fRotation);
 			GetMaksingScrollData();
 
 			ImGui::Checkbox("Turbulence", &m_bIsTurbulence);
@@ -367,7 +368,18 @@ void CLevel_Effect::GetParticleColor()
 		const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19",  "test20",  "test21"};
 		ImGui::Combo("Mesh Textures", reinterpret_cast<int*>(&m_iTextureIdx), textures, IM_ARRAYSIZE(textures));
 
-		const char* Meshes[] = { "Mesh0", "Mesh1", "Mesh2", "Mesh3",  "Mesh4",  "Mesh5",  "Mesh6",  "Mesh7",  "Mesh8",  "Mesh9",  "Mesh10",  "Mesh11",  "Mesh12",  "Mesh13",  "Mesh14",  "Mesh15",  "Mesh16",  "Mesh17",  "Mesh18",  "Mesh19",  "Mesh20",  "Mesh21",  "Mesh22" };
+		const char* Meshes[] = { "Helix0", "Helix1", "Helix2", "Helix3",  "Helix4",  "Helix5",  "Helix6",  "Helix7",  "Helix8",  "Helix9",  "Helix10",  "Helix11",  "Helix12",  "Helix13",  "Helix14",  "Helix15",  "Helix16",  "Helix17",  "Helix18",  "Helix19",  "Helix20",  
+									"Spline0",  "Spline1", "Spline2",  "Spline3", "Spline4",  "Spline5", 
+									"Spline_Cylinder",  "Spline_Helix0", "Spline_Helix1",  
+									"Spline_Twist0", "Spline_Twist1",  "Spline_Twist2", "Spline_Twist3",  "Spline_Twist4", "Spline_Twist5",  "Spline_Twist6", "Spline_Twist7", 
+									"TombStone_Spline0", "TombStone_Spline1", "TombStone_Spline2", "TombStone_Spline3", "WorldSpline",
+									"Helix21", "absolb_Spiral", "Focus", "HelixSimple", "Lightning0", "Lightning1", "Lightning2" , "Lightning3", "Helix22", "Helix23", "Helix24", "Helix25", "Helix26",
+									"Trail", "TwistRing0", "TwistRing1", "Spiral", "Wave0", "Wave1", "windLine", "Mash_Helix_Simple_mid", "T_blunt_slash_test", "Mash_Helix", "Mash_circle_twist",
+									"Attack_ShockWave", "AttackTrail_First", "AttackTrail_Fluid", "AttackTrail_Spin", "AttackTrail_Wind", "Curve0", "Curve1" , "Curve2", "Helix27",
+									"Lupers_Spear", "Particle_001", "ShockWave_Flow", "Spiral_001", "Wind_001", 
+									"IN_Spiral_02", "Swirl_Spine_X", "SwirlHelix",
+									"FastAtk_1", "FastAtk_2L", "FastAtk_2R", "FastAtk_3L", "FastAtk_3R", "Grapple_Atk_2", "CounterATK", "DodgeATK", "FastATK1","FastATK2_L", "FastATK2_R",  "FastATK3_L" ,  "FastATK3_R", "FastATK4",
+									"StrongAtk0", "StrongAtk1", "FastAtk03_Slash", "GrappleAtk02_Slash", "StrongAtk03_Slash"};
 		ImGui::Combo("Mesh Shape", reinterpret_cast<int*>(&m_iMeshTypeIdx), Meshes, IM_ARRAYSIZE(Meshes));
 	}
 
@@ -463,6 +475,8 @@ void CLevel_Effect::Create_MeshInstance_Element()
 	data.fTurbulenceSpeed = m_fTurbulenceSpeed;
 	data.fTurbulenceSampleSize = m_fTurbulenceSampleSize;
 	data.iTurbulenceTextureIdx = m_iTurbulenceTextureIdx;
+
+	data.fRotation = _float3(m_fRotation[0], m_fRotation[1], m_fRotation[2]);
 
 	m_PrefabPrototype->Add_Effect_Element(m_EffectType, &data);
 }

@@ -279,7 +279,7 @@ HRESULT CUI_Tutorial::Ready_Object()
 	if (m_pBackGround == nullptr)
 		return E_FAIL;
 	m_pBackGround->Setting_BG(CUI_BackGround::UIBGTYPE::END);
-	m_pBackGround->Set_Color({ 0.0f, 0.0f, 0.0f, 0.8f });
+	m_pBackGround->Set_Color({ 0.0f, 0.0f, 0.0f, 0.6f });
 	m_Children.push_back(m_pBackGround);
 	Safe_AddRef(m_pBackGround);
 
