@@ -122,13 +122,19 @@ void CS_MOVE(uint3 DTid : SV_DispatchThreadID)
     if (0 == iIndex)
         g_SpeedData[0].bDead = 0;
         
-    //Scale
-    //Particle.vRight.x = Particle.vRight.x + SpeedData.fSpeed.w;
-    //Particle.vUp.y = Particle.vUp.y + SpeedData.fSpeed.w;
-    //Particle.vLook.z = Particle.vLook.z + SpeedData.fSpeed.w;
-    Particle.vRight.x = Particle.vRight.x + 2.f;
-    Particle.vUp.y = Particle.vUp.y + 2.f;
-    Particle.vLook.z = Particle.vLook.z + 2.f;
+    //Scale -> ¿Ã∞« ∞ˆ«ÿ¡‡æﬂµ  1.f ¿Ã Ω∫ƒ…¿œ ±◊¥Î∑Œ!
+    
+    //Particle.vRight.x += SpeedData.fSpeed.w * g_fTimeDelta;
+    //Particle.vUp.y += SpeedData.fSpeed.w * g_fTimeDelta;
+    //Particle.vLook.z += SpeedData.fSpeed.w * g_fTimeDelta;
+    
+    //Particle.vRight.x = Particle.vRight.x + 4.f * g_fTimeDelta;
+    //Particle.vUp.y = Particle.vUp.y + 4.f * g_fTimeDelta;
+    //Particle.vLook.z = Particle.vLook.z + 4.f * g_fTimeDelta;
+    
+    Particle.vRight.x += g_InputData[iIndex].vRight.x * SpeedData.fSpeed.w * g_fTimeDelta;
+    Particle.vUp.y += g_InputData[iIndex].vUp.y * SpeedData.fSpeed.w * g_fTimeDelta;
+    Particle.vLook.z += g_InputData[iIndex].vLook.z * SpeedData.fSpeed.w * g_fTimeDelta;
     
 	//Rotation
     if (SpeedData.fSpeed.y)
@@ -147,7 +153,7 @@ void CS_MOVE(uint3 DTid : SV_DispatchThreadID)
 		|| (SpeedData.fSpeed.x < 0 && length(vMoveDir).x < 0.1f)) 
         ResetParticle(Particle, iIndex); 
 	
-    if (Particle.vRight.x <= 0.f)
+    if (abs(Particle.vRight.x) <= 0.f)
     {
         //Particle.vRight = float4(g_InputData[iIndex].fSize, 0.f, 0.f, 0.f);
         //Particle.vUp = float4(0.f, g_InputData[iIndex].fSize, 0.f, 0.f);
@@ -228,7 +234,7 @@ void CS_UPDATE_GRAVITY(uint3 DTid : SV_DispatchThreadID)
         SpeedData.fGravity = 0.f;
         return;
     }
-    SpeedData.fGravity += g_fTimeDelta * 2.2f;
+    SpeedData.fGravity += g_fTimeDelta * 4.f;
     Particle.vTranslation.y -= 1.5f * SpeedData.fGravity * g_fTimeDelta;
     g_OutputData[iIndex] = Particle;
     g_SpeedData[iIndex].fGravity = SpeedData.fGravity;
