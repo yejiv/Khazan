@@ -95,7 +95,7 @@ void CYetuga::Update(_float fTimeDelta)
 
     m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
 
-    __super::Update(fTimeDelta);
+    //__super::Update(fTimeDelta);
 
 }
 
@@ -116,11 +116,10 @@ HRESULT CYetuga::Render()
 
 void CYetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MAP_STATIC))
-    {
-        int a = 0;
-    }
-    
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
+    if (eLayer == COLLISION_LAYER::MAP_STATIC)
+        int a = 10;
+
 }
 
 void CYetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
@@ -272,34 +271,6 @@ void CYetuga::Pick_Rock()
 
 void CYetuga::Hold_Rock()
 {
-    /*if (nullptr == m_pHoldRock)
-        return;
-
-    // 뼈 위치 가져오기
-    _float3 vLHTemp = m_pBody->Get_BonePoint("Weapon_L");
-    _float3 vRHTemp = m_pBody->Get_BonePoint("Weapon_L");
-
-    _vector vLH = XMLoadFloat3(&vLHTemp);
-    _vector vRH = XMLoadFloat3(&vRHTemp);
-
-    _vector vSpawnTemp = (vLH + vRH) * 0.5f;
-    _float3 vSpawnPoint = {};
-
-    XMStoreFloat3(&vSpawnPoint, vSpawnTemp);
-
-    // 오프셋 적용 (월드 기준)
-    XMStoreFloat3(&vSpawnPoint, XMLoadFloat3(&vSpawnPoint));
-
-    // 위치와 방향 갱신
-    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
-    _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
-    _float3 vNormalize{};
-    XMStoreFloat3(&vNormalize, vTempVec);
-    m_pHoldRock->Set_SpawnDir(vNormalize);
-    m_pHoldRock->Set_SpanwPoint(vSpawnPoint);
-    
-    m_pHoldRock->Reset();*/
-
 
     if (!m_isRockPlay)
         return;
@@ -478,7 +449,7 @@ HRESULT CYetuga::Ready_Components()
     tCharVirDesc.vQuat = vQuat;
     tCharVirDesc.vShapeOffset = _float3(0.f, 4.1f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
-    tCharVirDesc.fRadius = 3.f;
+    tCharVirDesc.fRadius = 2.f;
     tCharVirDesc.fHeight = 4.f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
 
@@ -811,14 +782,12 @@ HRESULT CYetuga::Ready_AnimEvent()
 
 
     pModel->Register_Event("Dampsey_Forth", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        cout << "7777777777777777777777777777777777777777777777" << endl;
 
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
 
         });
     pModel->Register_Event("Dampsey_Forth", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        cout << "888888888888888888888888888888888888888888888888" << endl;
 
         m_isLookAt = false;
         m_pBody->Set_OnAttackCollision(false);
@@ -826,14 +795,12 @@ HRESULT CYetuga::Ready_AnimEvent()
         });
 
     pModel->Register_Event("Dampsey_Final", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        cout << "999999999999999999999999999999999999999999999999999" << endl;
 
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
 
         });
     pModel->Register_Event("Dampsey_Final", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        cout << "123123213214123512354351515413532412343124312" << endl;
 
         m_isLookAt = false;
         m_pBody->Set_OnAttackCollision(false);
@@ -842,13 +809,11 @@ HRESULT CYetuga::Ready_AnimEvent()
 
 
     pModel->Register_Event("Dampsey_After", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        cout << "50005000055050505050505050000505050505050" << endl;
 
         m_isLookAt = true;
 
         });
     pModel->Register_Event("Dampsey_After", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        cout << "fdasfdjfjasdfljdaslkfjlkasjflajsfkjdaslfjkasjdfkas;flkjsl;" << endl;
         m_isLookAt = false;
 
         });
@@ -919,23 +884,34 @@ HRESULT CYetuga::Ready_AnimEvent()
    /* "Grab_Hand",
         "Grab_Hold"*/
 
-    pModel->Register_Event("Grab_Hand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+
+    pModel->Register_Event("Jump_Grab_Jump", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", true);
+        });
+
+    pModel->Register_Event("Jump_Grab_Jump", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", false);
+
+        });
+
+    pModel->Register_Event("Grab_Hand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
             m_isGrab = true;
 
         });
+
     pModel->Register_Event("Grab_Hand", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()
         {
            // 손뼈행렬 전달
-            Grab_Check_Begin("Weapon_R");
+            Grab_Check_Begin("Weapon_L");
         });
 
     pModel->Register_Event("Grab_Hold", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             
         });
-
 
     pModel->Register_Event("Grab_Hold", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()
         {

@@ -16,7 +16,7 @@ public:
 	virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
 public:
-	virtual void OnCollision(COLLISION_DESC* pDesc, class CGameObject* pOwner = nullptr) override;
+	virtual void OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, class CGameObject* pOwner = nullptr) override;
 
 
 private:
