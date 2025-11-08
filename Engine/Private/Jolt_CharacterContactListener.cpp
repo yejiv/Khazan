@@ -17,7 +17,7 @@ CJolt_CharacterContactListener::~CJolt_CharacterContactListener()
 
 bool CJolt_CharacterContactListener::OnContactValidate(const JPH::CharacterVirtual* inCharacter, const JPH::BodyID& inBodyID2, const JPH::SubShapeID& inSubShapeID2)
 {
-    return true;
+    return false;
 }
 
 bool CJolt_CharacterContactListener::OnCharacterContactValidate(const JPH::CharacterVirtual* inCharacter, const JPH::CharacterVirtual* inOtherCharacter, const JPH::SubShapeID& inSubShapeID2)
@@ -27,7 +27,7 @@ bool CJolt_CharacterContactListener::OnCharacterContactValidate(const JPH::Chara
 
 void CJolt_CharacterContactListener::OnContactAdded(const JPH::CharacterVirtual* inCharacter, const JPH::BodyID& inBodyID2, const JPH::SubShapeID& inSubShapeID2, JPH::RVec3Arg inContactPosition, JPH::Vec3Arg inContactNormal, JPH::CharacterContactSettings& ioSettings)
 {
-    COLLISION_DESC* pCharDesc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
+  /*  COLLISION_DESC* pCharDesc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
     COLLISION_DESC* pBodyDesc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(m_pBodyInterface->GetUserData(inBodyID2)));
 
     ObjectLayer CharObj = m_pBodyInterface->GetObjectLayer(inCharacter->GetInnerBodyID());
@@ -50,13 +50,13 @@ void CJolt_CharacterContactListener::OnContactAdded(const JPH::CharacterVirtual*
         pBodyDesc->pGameObject->Collision_Enter(pCharDesc, static_cast<_uint>(CharObj),
             _float3(inContactPosition.GetX(), inContactPosition.GetY(), inContactPosition.GetZ()),
             _float3(inContactNormal.GetX(), inContactNormal.GetY(), inContactNormal.GetZ()));
-    }
+    }*/
 }
 
 void CJolt_CharacterContactListener::OnContactPersisted(const JPH::CharacterVirtual* inCharacter, const JPH::BodyID& inBodyID2, const JPH::SubShapeID& inSubShapeID2, JPH::RVec3Arg inContactPosition, JPH::Vec3Arg inContactNormal, JPH::CharacterContactSettings& ioSettings)
 {
 
-    COLLISION_DESC* pCharDesc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
+   /* COLLISION_DESC* pCharDesc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
     COLLISION_DESC* pBodyDesc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(m_pBodyInterface->GetUserData(inBodyID2)));
 
     ObjectLayer CharObj = m_pBodyInterface->GetObjectLayer(inCharacter->GetInnerBodyID());
@@ -79,13 +79,13 @@ void CJolt_CharacterContactListener::OnContactPersisted(const JPH::CharacterVirt
         pBodyDesc->pGameObject->Collision_Stay(pCharDesc, static_cast<_uint>(CharObj),
             _float3(inContactPosition.GetX(), inContactPosition.GetY(), inContactPosition.GetZ()),
             _float3(inContactNormal.GetX(), inContactNormal.GetY(), inContactNormal.GetZ()));
-    }
+    }*/
         
 }
 
 void CJolt_CharacterContactListener::OnContactRemoved(const JPH::CharacterVirtual* inCharacter, const JPH::BodyID& inBodyID2, const JPH::SubShapeID& inSubShapeID2)
 {
-    COLLISION_DESC* pCharDesc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
+   /* COLLISION_DESC* pCharDesc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
     COLLISION_DESC* pBodyDesc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(m_pBodyInterface->GetUserData(inBodyID2)));
 
 	ObjectLayer CharObj = m_pBodyInterface->GetObjectLayer(inCharacter->GetInnerBodyID());
@@ -104,7 +104,7 @@ void CJolt_CharacterContactListener::OnContactRemoved(const JPH::CharacterVirtua
 	{
         pCharDesc->pGameObject->Collision_Exit(pBodyDesc, static_cast<_uint>(BodyObj));
         pBodyDesc->pGameObject->Collision_Exit(pCharDesc, static_cast<_uint>(CharObj));
-	}
+	}*/
 }
 
 void CJolt_CharacterContactListener::OnCharacterContactAdded(const CharacterVirtual* inCharacter, const CharacterVirtual* inOtherCharacter, const SubShapeID& inSubShapeID2, RVec3Arg inContactPosition, Vec3Arg inContactNormal, CharacterContactSettings& ioSettings)
