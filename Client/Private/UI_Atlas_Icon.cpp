@@ -3,12 +3,12 @@
 #include "ClientInstance.h"
 
 CUI_Atlas_Icon::CUI_Atlas_Icon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: CUI_Texture{pDevice, pContext}
+	: CUI_Panel{pDevice, pContext}
 {
 }
 
 CUI_Atlas_Icon::CUI_Atlas_Icon(const CUI_Atlas_Icon& Prototype)
-	: CUI_Texture( Prototype )
+	: CUI_Panel( Prototype )
 {
 }
 
@@ -61,16 +61,27 @@ HRESULT CUI_Atlas_Icon::Initialize_Clone(void* pArg)
 }
 void CUI_Atlas_Icon::Priority_Update(_float fTimeDelta)
 {
+	if (!m_isVisible)
+		return;
+
+	__super::Priority_Update(fTimeDelta);
 }
 
 void CUI_Atlas_Icon::Update(_float fTimeDelta)
 {
+	if (!m_isVisible)
+		return;
+
+	__super::Update(fTimeDelta);
 }
 
 void CUI_Atlas_Icon::Late_Update(_float fTimeDelta)
 {
-	if(m_isVisible)
-		CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::ATLAS, this);
+	if (!m_isVisible)
+		return;
+
+	CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::ATLAS, this);
+	__super::Late_Update(fTimeDelta);
 }
 
 HRESULT CUI_Atlas_Icon::Render()

@@ -15,8 +15,13 @@ public:
 	template <typename T>
 	const T*								Get_Data(_uint iID) const;
 
+	template <typename T>
+	const T*								Get_DataTalbe() const;
+
 private:
+
 	unordered_map<_uint, ITEM_DATA>			m_ItemData = {};
+
 	unordered_map<_uint, EQUIPITEM_DATA>	m_EquipEffectData = {};
 	unordered_map<_uint, OTHERITEM_DATA>	m_OtherEffectData = {};
 	unordered_map<_uint, STATE_DATA>		m_StateData = {};
@@ -35,14 +40,15 @@ private:
 	HRESULT									Load_Other_EffectDB(const _tchar* pFilePath);
 	HRESULT									Load_StateDB(const _tchar* pFilePath);
 	HRESULT									Load_Announce_TalkDB(const _tchar* pFilePath);
+	HRESULT									Load_Skill_DB(const _tchar* pFilePath);
 
 
 public:
 	static CDB_Manager*						Create();
 	virtual void							Free() override;
-
 };
 
+//Data접근
 template<typename T>
 inline const T* CDB_Manager::Get_Data(_uint iID) const
 {
@@ -90,5 +96,54 @@ inline const SKILL_DB* CDB_Manager::Get_Data<SKILL_DB>(_uint iID) const
 {
 	auto Data = m_Skill_Data.find(iID);
 	return (Data != m_Skill_Data.end()) ? &Data->second : nullptr;
+}
+
+//Table접근
+template<typename T>
+inline const T* CDB_Manager::Get_DataTalbe() const
+{
+	MSG_BOX(TEXT("DB : 없는 데이터 타입 접근"));
+	return nullptr;
+}
+using ITEM_TABLE = unordered_map<_uint, ITEM_DATA>;
+template <>
+inline const ITEM_TABLE* CDB_Manager::Get_DataTalbe<ITEM_TABLE>() const 
+{
+	return &m_ItemData;
+}
+
+using EQUIIPEFFECT_TABLE = unordered_map<_uint, EQUIPITEM_DATA>;
+template <>
+inline const EQUIIPEFFECT_TABLE* CDB_Manager::Get_DataTalbe<EQUIIPEFFECT_TABLE>() const
+{
+	return &m_EquipEffectData;
+}
+
+using OTHERITEM_TABLE = unordered_map<_uint, OTHERITEM_DATA>;
+template <>
+inline const OTHERITEM_TABLE* CDB_Manager::Get_DataTalbe<OTHERITEM_TABLE>() const
+{
+	return &m_OtherEffectData;
+}
+
+using STATE_TABLE = unordered_map<_uint, STATE_DATA>;
+template <>
+inline const STATE_TABLE* CDB_Manager::Get_DataTalbe<STATE_TABLE>() const
+{
+	return &m_StateData;
+}
+
+using ANNOUNCE_TABLE = unordered_map<_uint, ANNOUNCE_TALK_DB>;
+template <>
+inline const ANNOUNCE_TABLE* CDB_Manager::Get_DataTalbe<ANNOUNCE_TABLE>() const
+{
+	return &m_Announce_Talk_Data;
+}
+
+using SKILL_TABLE = unordered_map<_uint, SKILL_DB>;
+template <>
+inline const SKILL_TABLE* CDB_Manager::Get_DataTalbe<SKILL_TABLE>() const
+{
+	return &m_Skill_Data;
 }
 NS_END

@@ -5,6 +5,11 @@
 NS_BEGIN(Client)
 class CSkill_Slot final :public CUI_Slot
 {
+public:
+	typedef struct UI_Skill_Slot_tag : public CUIObject::UIOBJECT_DESC
+	{
+		_int iSkillIndex = {};
+	}UISKILLSLOT_DESC;
 private:
 	CSkill_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CSkill_Slot(const CSkill_Slot& Prototype);
@@ -16,6 +21,14 @@ public:
 	virtual void						Priority_Update(_float fTimeDelta) override;
 	virtual void						Update(_float fTimeDelta) override;
 	virtual void						Late_Update(_float fTimeDelta) override;
+
+private:
+	class CUI_Atlas_Icon*				m_pLine = { nullptr };
+	class CUI_Atlas_Icon*				m_pIcon = { nullptr };
+
+	_int								m_iSkillIndex = { -1 };
+private:
+	HRESULT								Ready_Child(const SKILL_DB* pData);
 
 public:
 	static CSkill_Slot*					Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
