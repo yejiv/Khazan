@@ -161,10 +161,8 @@ HRESULT CBody_Yetuga::Render()
 void CBody_Yetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
     COLLISION_LAYER eType = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
-    if (COLLISION_LAYER::PLAYER == eType)
-    {
-        m_pOwner->Get_Controller()->AI_React_Collision(pDesc,m_pOwner);
-    }
+   
+    m_pOwner->Get_Controller()->AI_React_Collision(pDesc,iOtherObjectLayer,m_pOwner);
 }
 
 void CBody_Yetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)

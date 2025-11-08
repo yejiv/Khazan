@@ -19,6 +19,9 @@ public:
 	}TRIGGER_HEINMACH_DESC;
 
 private:
+	enum class DAY_CIRCLE { DAWN, DAY, NONE };
+
+private:
 	CHeinMach_Trigger(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CHeinMach_Trigger(const CHeinMach_Trigger& Prototype);
 	virtual ~CHeinMach_Trigger() = default;
@@ -51,6 +54,8 @@ private:
 
 private:
 	GUIDE_TYPE m_eGuideType = { GUIDE_TYPE::END };
+
+	DAY_CIRCLE m_eDayCircle = { DAY_CIRCLE::NONE };
 
 public:
 	static CHeinMach_Trigger* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
