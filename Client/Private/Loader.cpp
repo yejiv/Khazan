@@ -84,7 +84,7 @@ _bool CLoader::AllReady(const std::vector<std::future<HRESULT>>& futures)
 {
 	for (auto const& f : futures) {
 		if (f.wait_for(0ms) != std::future_status::ready)
-			return false; // �ϳ��� �غ� �� ������ ��� false
+			return false; 
 	}
 	return true;
 }
@@ -92,7 +92,7 @@ _bool CLoader::AllReady(const std::vector<std::future<HRESULT>>& futures)
 void CLoader::Update()
 {
 	if (!AllReady(m_futures)) {
-		// ���� �ε� ��
+		
 		return;
 	}
 

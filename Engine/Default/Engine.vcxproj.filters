@@ -364,9 +364,6 @@
     <Filter Include="01.Utility\03.Component\VIBuffer\Trail\VIBuffer_LineTrail">
       <UniqueIdentifier>{2c9058cd-319d-42b5-af77-42d5cda9ba53}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\03.Component\HairPhysic">
-      <UniqueIdentifier>{d7234e79-a641-4433-a670-35d0d6ea2cbc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\20.BoneChainPhysic">
       <UniqueIdentifier>{425e255b-b518-42ec-8ca9-f0cf2d6f4b40}</UniqueIdentifier>
     </Filter>

@@ -162,12 +162,8 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
 		m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::HEINMACH), ENUM_CLASS(CAMERATYPE::PLAYER));
 	}
 
-	//if (GetKeyState(VK_RETURN) & 0x8000)
-	//	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::GAMEPLAY))))
-	//		return;
-	//}
-
-
+	//if (m_pGameInstance->Key_Down(DIK_RETURN))
+	//	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::VIPER))));
 
 	return;
 }
@@ -505,10 +501,11 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag
 				return S_OK;
 				});
 		}
-		if (iSubLV == HEINMACH_1ST_BLADENEXUS)
-		{
-			m_isFillFutures = true;
-		}
+	}
+
+	if (iSubLV == HEINMACH_1ST_BLADENEXUS)
+	{
+		m_isFillFutures = true;
 	}
 
 	CloseHandle(hFile);
