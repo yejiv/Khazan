@@ -238,6 +238,10 @@ public:
 	CharacterVirtual* Find_CharacterVirtual(CharacterID id);
 	void Remove_CharacterVirtual(CharacterID id);
 
+	void Push_BodyDesc(BodyID id, uint64 BodyDesc);
+	uint64 Find_BodyDesc(BodyID id);
+	void Remove_BodyDesc(BodyID id);
+
 	void Set_Gravity(_vector vGravity);
 	void Reset_Gravity();
 

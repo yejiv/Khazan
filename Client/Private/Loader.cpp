@@ -130,7 +130,7 @@ HRESULT CLoader::Loading()
 		break;
 	case LEVEL::HEINMACH:
 		m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-			return Loading_For_Stage1_Level();
+			return Loading_For_HeinMach_Level();
 			}));
 		break;
 	case LEVEL::CREVICE:
@@ -262,21 +262,21 @@ HRESULT CLoader::Loading_For_Test_GameObject()
 	return S_OK;
 }
 
-HRESULT CLoader::Loading_For_Stage1_Level()
+HRESULT CLoader::Loading_For_HeinMach_Level()
 {
 
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-		return Loading_For_Stage1_Texture();
+		return Loading_For_HeinMach_Texture();
 		}));
 	
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-		return Loading_For_Stage1_Model();
+		return Loading_For_HeinMach_Model();
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-		return Loading_For_Stage1_Shader();
+		return Loading_For_HeinMach_Shader();
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-		return Loading_For_Stage1_GameObject();
+		return Loading_For_HeinMach_GameObject();
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
@@ -285,16 +285,6 @@ HRESULT CLoader::Loading_For_Stage1_Level()
 		CHECK_FAILED(Loading_Prototype_MapObject_Inst_From_DAT(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		}));
 
-	//Loading_For_Stage1_Model();
-
-	//Loading_For_Stage1_Shader();
-
-	//Loading_For_Stage1_GameObject();
-
-	//CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-
-	//CHECK_FAILED(Loading_Prototype_MapObject_Inst_From_DAT(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-
 	//lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 
 	//m_isFinished = true;
@@ -302,7 +292,7 @@ HRESULT CLoader::Loading_For_Stage1_Level()
 	return S_OK;
 }
 
-HRESULT CLoader::Loading_For_Stage1_Texture()
+HRESULT CLoader::Loading_For_HeinMach_Texture()
 {
 
 	/* Prototype_Component_Texture_Sky */
@@ -325,36 +315,14 @@ HRESULT CLoader::Loading_For_Stage1_Texture()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Terrain/Brush.png"), 1))))
 		return E_FAIL;
 
-	///* Prototype_Component_Texture_Brush */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Texture_BackGround"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/BG/T_Hud_BG_Deco_Pathfinder_01.png"), 1))))
-	//	return E_FAIL;
-
-	//vector<const _tchar*> TextureList;
-	//TextureList.reserve(2);
-	//TextureList.push_back(TEXT("T_BG_GrandFlores.png"));
-	//TextureList.push_back(TEXT("T_BG_ValleyOfTheFallenSouls.png"));
-
-	///* Prototype_Component_Texture_Test */
- //  	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Texture_Test"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Textures/UI/BackGround/"), TextureList))))
-	//	return E_FAIL;
 
 	return S_OK;
 }
 
-HRESULT CLoader::Loading_For_Stage1_Model()
+HRESULT CLoader::Loading_For_HeinMach_Model()
 {
-	/* Prototype_Component_Model_Fiona */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Fiona"),
-	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Test/Fiona/Fiona.dat"))))
-	//	return E_FAIL;
 
 #pragma region KHAZAN
-	/* Prototype_Component_Model_Khazan_Sample*/
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Sample"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Khazan_Sample.dat"))))
-		return E_FAIL;
 
 	/* Prototype_Component_Model_Spear_Khazan_Sample*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Spear_Khazan_Sample"),
@@ -441,20 +409,6 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 		return E_FAIL;
 
 #pragma endregion
-	/////* Prototype_Component_Model_Khazan */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan"),
-	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Test/Khazan/Khazan.dat"))))
-	//	return E_FAIL;
-
-	/////* Prototype_Component_Model_WP_WOD_Ground_Base_004 */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"),
-	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Map/Test/WP_WOD_Ground_Base_004/WP_WOD_Ground_Base_004.dat"))))
-	//	return E_FAIL;
-
-	/* Prototype_Component_Model_JOH_TestModel */
- 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_JOH_TestModel"),
-		//CModel::Create(m_pDevice, m_pContext, "../Data/Test/Test_Player/Test_Player.dat"))))
-		//return E_FAIL;
 
 #pragma region 모델 원형 : 상호 작용 맵 오브젝트
 	/* Prototype_Component_Model_BladeNexus */
@@ -475,12 +429,12 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 	return S_OK;
 }
 
-HRESULT CLoader::Loading_For_Stage1_Shader()
+HRESULT CLoader::Loading_For_HeinMach_Shader()
 {
 	return S_OK;
 }
 
-HRESULT CLoader::Loading_For_Stage1_GameObject()
+HRESULT CLoader::Loading_For_HeinMach_GameObject()
 {
 	/* Prototype_GameObject_Terrain*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Terrain"),
@@ -492,25 +446,11 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 		CSky::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	///* Prototype_GameObject_Camera_Free */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Camera_Free"),
-	//	CCamera_Free::Create(m_pDevice, m_pContext))))
-	//	return E_FAIL;
-
 	/* Prototype_GameObject_Camera_Compre */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Camera_Compre"),
 		CCamera_Compre::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	///* Prototype_GameObject_Player */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Player"),
-	//	CPlayer::Create(m_pDevice, m_pContext))))
-	//	return E_FAIL;
-
-	///* Prototype_GameObject_Body_Player */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Body_Player"),
-	//	CBody_Player::Create(m_pDevice, m_pContext))))
-	//	return E_FAIL;
 
 #pragma region YETUGA
 
@@ -539,16 +479,6 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 
 #pragma endregion
 
-	/////* Prototype_GameObject_Dummy */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Dummy"),
-	//	CDummy::Create(m_pDevice, m_pContext))))
-	//	return E_FAIL;
-
-	///* Prototype_GameObject_Prop_Test */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Test"),
-	//	CProp_Test::Create(m_pDevice, m_pContext))))
-	//	return E_FAIL;
-
 	/* Prototype_GameObject_Prop_Object */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Object"),
 		CProp_Object::Create(m_pDevice, m_pContext)), E_FAIL);
@@ -573,30 +503,10 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 		CHeinMach_Trigger::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
-	/* Prototype_GameObject_JOH_Test1 */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_JOH_Test1"),
-		CJOH_Test1::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
-
-	/* Prototype_GameObject_Khazan_Sample */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Sample"),
-		CKhazan_Sample::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
-
-	/* Prototype_GameObject_Body_Khazan_Sample */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Body_Khazan_Sample"),
-		CBody_Khazan_Sample::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
-
-	/* Prototype_GameObject_Spear_Khazan_Sample */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Spear_Khazan_Sample"),
-		CSpear_Khazan_Sample::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
-
 	/* Prototype_GameObject_Khazan_Spear */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"),
 		CKhazan_Spear::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+ 		return E_FAIL;
 
 	/* Prototype_GameObject_Body_Khazan_Spear */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Body_Khazan_Spear"),
@@ -607,16 +517,6 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Spear_Khazan_Spear"),
 		CSpear_Khazan_Spear::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
-
-#pragma region 이펙트 테스트 중!
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpaceTime_SpearBlood"),
-		CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/blood"))))
-		return E_FAIL;
-
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle2"),
-	//	CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/test2"))))
-	//	return E_FAIL;
-#pragma endregion
 
 
 	return S_OK;

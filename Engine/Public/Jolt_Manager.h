@@ -91,6 +91,10 @@ public:
     CharacterVirtual* Find_CharacterVirtual(CharacterID id);
 	void Remove_CharacterVirtual(CharacterID id);
 
+    void Push_BodyDesc(BodyID id, uint64 pBodyDesc);
+    uint64 Find_BodyDesc(BodyID id);
+    void Remove_BodyDesc(BodyID id);
+
 public:
     _bool RayCast(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition, _float3* outNormal = nullptr);
 
@@ -123,7 +127,9 @@ private:
     CJolt_ObjectLayerFilter*             m_pObjectLayerFilter = { nullptr };
     GroupFilterTable*                    m_pGroupFilterTable = { nullptr };
 
-	map<CharacterID, CharacterVirtual*>           m_CharacterVirtuals;
+	map<CharacterID, CharacterVirtual*>  m_CharacterVirtuals;
+
+    map<BodyID, uint64>                 m_BodyDescs;
 
     vector<RayCastDesc>  m_RayCasts;
 private:

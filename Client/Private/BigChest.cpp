@@ -326,6 +326,9 @@ void CBigChest::Animation_Change(_float fTimeDelta)
 
 void CBigChest::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+        return;
+
     if(ANIM_STATE::CLOSE == m_eAnimState)
         m_pGuide->Update_Visible(true);
 
@@ -334,11 +337,17 @@ void CBigChest::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, 
 
 void CBigChest::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+        return;
+
     m_isCollision = true;
 }
 
 void CBigChest::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 {
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+        return;
+
     m_pGuide->Update_Visible(false);
 
     m_isCollision = false;

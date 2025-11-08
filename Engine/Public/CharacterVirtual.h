@@ -41,7 +41,7 @@ public:
 		WORLDUP			eUp = WORLDUP::Y; // 월드 Up
 		_float			fMaxSlopeAngle = 50.0f; // 오를 수 있는 경사
 		_float			fPadding = 0.02f; // 벽/바닥과 여유 거리
-		_float			fPenetrationRecoverySpeed = 1.0f; // 겹침 복구 속도
+		_float			fPenetrationRecoverySpeed = 4.5f; // 겹침 복구 속도
 		_float			fPredictiveContactDistance = 0.1f; // 에측 접촉(미리 감지)
 		EBackFaceMode	eBackFaceMode = EBackFaceMode::CollideWithBackFaces;
 
@@ -122,6 +122,8 @@ public:
 	virtual void	Set_Gravity(_float fGravity);
 
 	void Set_VelocityPower(_vector vDir, _float fPower, _float fLoss);
+
+	void Collision_Active(_bool isActive);
 
 public:
 	_bool Get_isGround();

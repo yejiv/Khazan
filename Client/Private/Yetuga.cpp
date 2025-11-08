@@ -445,13 +445,13 @@ HRESULT CYetuga::Ready_Components()
     XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
     XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
     tCharVirDesc.eShapeType = SHAPE::CAPSULE;
-    tCharVirDesc.vPos = vPos;
     tCharVirDesc.vQuat = vQuat;
     tCharVirDesc.vShapeOffset = _float3(0.f, 4.1f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
     tCharVirDesc.fRadius = 2.f;
     tCharVirDesc.fHeight = 4.f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
+    tCharVirDesc.fMaxStrength = 0.f;
 
     m_tCollisionDesc.pGameObject = this;
     //pCollDesc.pInfo = ?? // 작성하기
