@@ -1,4 +1,4 @@
-﻿#include "Khazan_Spear_Anim_Attack.h"
+#include "Khazan_Spear_Anim_Attack.h"
 #include "GameInstance.h"
 #include "ClientInstance.h"
 

@@ -19,12 +19,17 @@ public:
 	virtual void						Priority_Update(_float fTimeDelta) override;
 	virtual void						Update(_float fTimeDelta) override;
 	virtual void						Late_Update(_float fTimeDelta) override;
-	
 	virtual HRESULT						Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
+
+private:
+	class CUI_TextBox*					m_pTextBox = { nullptr };
+	class CUI_Atlas_Icon*				m_pAtlasIcon = { nullptr };
+	vector<class CSkill_Slot*>			m_Skill;
+
 private:
 	HRESULT								Ready_Prototype();
-	HRESULT								Ready_Children();
 
+	void								Panel_NameMapping(_int iTapIndex, _int iPanelIndex);
 public:
 	static CSkill_Slot_Panel*			Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
 	virtual CGameObject*				Clone(void* pArg) override;

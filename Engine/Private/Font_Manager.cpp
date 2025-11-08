@@ -26,7 +26,7 @@ HRESULT CFont_Manager::Initialize()
 HRESULT CFont_Manager::Font_Load(const _wstring& strFontTag, const _char* pFontFilePath, _uint iWidth, _uint iHeight)
 {
     if (m_Fonts.find(strFontTag) != m_Fonts.end())
-        return S_OK; // ÀÌ¹Ì ·ÎµåµÊ
+        return S_OK; // ì´ë¯¸ ë¡œë“œë¨
 
     CFont_Face* pFont = CFont_Face::Create(m_pDevice, m_pContext, m_FT, pFontFilePath, iWidth, iHeight);
     if (pFont == nullptr)
@@ -41,7 +41,7 @@ HRESULT CFont_Manager::Font_Load_Data(const _char* pFontFilePath)
     ifstream In(pFontFilePath);
     if (!In.is_open())
     {
-        MSG_BOX(TEXT("Font json ÆÄÀÏ ºÒ·¯¿À±â ½ÇÆĞ"));
+        MSG_BOX(TEXT("Font json íŒŒì¼ ë¶ˆëŸ¬ì˜¤ê¸° ì‹¤íŒ¨"));
         In.close();
     }
     else

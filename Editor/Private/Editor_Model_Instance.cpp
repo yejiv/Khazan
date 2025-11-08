@@ -81,9 +81,9 @@ HRESULT CEditor_Model_Instance::Initialize_Prototype(MODELTYPE eModelType, const
 
     if (isGLTF)
     {
-        // GLTFÀÇ ºó º» Á¦°Å ¹æÁö (GLTF´Â º» ±¸Á¶°¡ Áß¿äÇÔ)
+        // GLTFì˜ ë¹ˆ ë³¸ ì œê±° ë°©ì§€ (GLTFëŠ” ë³¸ êµ¬ì¡°ê°€ ì¤‘ìš”í•¨)
         m_Importer.SetPropertyBool(AI_CONFIG_IMPORT_REMOVE_EMPTY_BONES, false);
-        // GLTFÀÇ ÇÇ¹ş Æ÷ÀÎÆ® º¸Á¸
+        // GLTFì˜ í”¼ë²— í¬ì¸íŠ¸ ë³´ì¡´
         m_Importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, false);
     }
 
@@ -225,13 +225,13 @@ uint CEditor_Model_Instance::Get_NumInstances()
 
 void CEditor_Model_Instance::ExportModel()
 {
-    // ±âº» °æ·Î ¼³Á¤
+    // ê¸°ë³¸ ê²½ë¡œ ì„¤ì •
     string strBasePath = "../../Client/Bin/Resources/Data/";
 
-    // ¸ğµ¨ ÀÌ¸§À¸·Î Æú´õ °æ·Î »ı¼º
+    // ëª¨ë¸ ì´ë¦„ìœ¼ë¡œ í´ë” ê²½ë¡œ ìƒì„±
     string strModelFolder = strBasePath + m_Model_Data.strModelName + "/";
 
-    // Æú´õ°¡ ¾øÀ¸¸é »ı¼º
+    // í´ë”ê°€ ì—†ìœ¼ë©´ ìƒì„±
     if (!filesystem::exists(strModelFolder))
     {
         try
@@ -240,71 +240,71 @@ void CEditor_Model_Instance::ExportModel()
         }
         catch (const filesystem::filesystem_error& e)
         {
-            string errorMsg = "Æú´õ »ı¼º ½ÇÆĞ: " + string(e.what());
+            string errorMsg = "í´ë” ìƒì„± ì‹¤íŒ¨: " + string(e.what());
             MessageBoxA(nullptr, errorMsg.c_str(), "Error", MB_OK | MB_ICONERROR);
             return;
         }
     }
 
-    // ÆÄÀÏ °æ·Î »ı¼º
+    // íŒŒì¼ ê²½ë¡œ ìƒì„±
     string strDatPath = strModelFolder + m_Model_Data.strModelName + ".dat";
     string strAnimJsonPath = strModelFolder + m_Model_Data.strModelName + "_Anim.json";
     string strSummayAnimJsonPath = strModelFolder + m_Model_Data.strModelName + "_Summay_Anim.json";
     string strMaterialJsonPath = strModelFolder + m_Model_Data.strModelName + "_Material.json";
 
-    // µ¤¾î¾²±â È®ÀÎ
+    // ë®ì–´ì“°ê¸° í™•ì¸
     _bool bDatExists = filesystem::exists(strDatPath);
     _bool bAnimExists = filesystem::exists(strAnimJsonPath);
     _bool bMaterialExists = filesystem::exists(strMaterialJsonPath);
 
     if (bDatExists || bAnimExists || bMaterialExists)
     {
-        wstring msg = TEXT("´ÙÀ½ ÆÄÀÏÀÌ ÀÌ¹Ì Á¸ÀçÇÕ´Ï´Ù:\n\n");
+        wstring msg = TEXT("ë‹¤ìŒ íŒŒì¼ì´ ì´ë¯¸ ì¡´ì¬í•©ë‹ˆë‹¤:\n\n");
         if (bDatExists)
             msg += AnsiToWString(m_Model_Data.strModelName) + TEXT(".dat\n");
         if (bAnimExists)
             msg += AnsiToWString(m_Model_Data.strModelName) + TEXT("_Anim.json\n");
         if (bMaterialExists)
             msg += AnsiToWString(m_Model_Data.strModelName) + TEXT("_Material.json\n");
-        msg += L"\nµ¤¾î¾²½Ã°Ú½À´Ï±î?";
+        msg += L"\në®ì–´ì“°ì‹œê² ìŠµë‹ˆê¹Œ?";
 
         _int result = MessageBox(
             nullptr,
             msg.c_str(),
-            TEXT("ÆÄÀÏ µ¤¾î¾²±â È®ÀÎ"),
+            TEXT("íŒŒì¼ ë®ì–´ì“°ê¸° í™•ì¸"),
             MB_YESNO | MB_ICONQUESTION
         );
 
         if (result == IDNO)
         {
-            MSG_BOX(TEXT("ÀúÀåÀ» Ãë¼ÒÇß½À´Ï´Ù."));
+            MSG_BOX(TEXT("ì €ì¥ì„ ì·¨ì†Œí–ˆìŠµë‹ˆë‹¤."));
             return;
         }
     }
 
-    // 1. Binary ÀúÀå (.dat) - ÀüÃ¼ µ¥ÀÌÅÍ
+    // 1. Binary ì €ì¥ (.dat) - ì „ì²´ ë°ì´í„°
     Export_Binary(strDatPath);
 
-    // 2. Animation JSON ÀúÀå
+    // 2. Animation JSON ì €ì¥
     if (m_eModelType == MODELTYPE::ANIM) {
         if (!Export_AnimationJson(strAnimJsonPath, strSummayAnimJsonPath))
         {
-            MSG_BOX(TEXT("Animation JSON ÀúÀå ½ÇÆĞ"));
+            MSG_BOX(TEXT("Animation JSON ì €ì¥ ì‹¤íŒ¨"));
             return;
         }
     }
 
-    // 3. Material JSON ÀúÀå
+    // 3. Material JSON ì €ì¥
     if (!Export_MaterialJson(strMaterialJsonPath))
     {
-        MSG_BOX(TEXT("Material JSON ÀúÀå ½ÇÆĞ"));
+        MSG_BOX(TEXT("Material JSON ì €ì¥ ì‹¤íŒ¨"));
         return;
     }
 
-    // ¼º°ø ¸Ş½ÃÁö
-    _wstring successMsg = TEXT("Export ¿Ï·á!\n\n");
-    successMsg += TEXT("Æú´õ: ") + AnsiToWString(strModelFolder) + TEXT("\n");
-    successMsg += AnsiToWString(m_Model_Data.strModelName) + TEXT(".dat (ÀüÃ¼)\n");
+    // ì„±ê³µ ë©”ì‹œì§€
+    _wstring successMsg = TEXT("Export ì™„ë£Œ!\n\n");
+    successMsg += TEXT("í´ë”: ") + AnsiToWString(strModelFolder) + TEXT("\n");
+    successMsg += AnsiToWString(m_Model_Data.strModelName) + TEXT(".dat (ì „ì²´)\n");
     if (m_eModelType == MODELTYPE::ANIM) successMsg += AnsiToWString(m_Model_Data.strModelName) + TEXT("_Anim.json\n");
     successMsg += AnsiToWString(m_Model_Data.strModelName) + TEXT("_Material.json");
 
@@ -320,14 +320,14 @@ void CEditor_Model_Instance::LoadModel(_wstring strModelName)
 
     if (!filesystem::exists(strDatPath))
     {
-        MSG_BOX(TEXT(".dat ÆÄÀÏÀÌ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù."));
+        MSG_BOX(TEXT(".dat íŒŒì¼ì´ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤."));
         return;
     }
 
     std::ifstream ifs(strDatPath, std::ios::binary);
     if (!ifs.is_open())
     {
-        MSG_BOX(TEXT("binary ÆÄÀÏ ¿­±â ½ÇÆĞ"));
+        MSG_BOX(TEXT("binary íŒŒì¼ ì—´ê¸° ì‹¤íŒ¨"));
         return;
     }
 
@@ -344,32 +344,32 @@ void CEditor_Model_Instance::Update_DAT_From_JSON()
     string strAnimJsonPath = strModelFolder + m_Model_Data.strModelName + "_Anim.json";
     string strMaterialJsonPath = strModelFolder + m_Model_Data.strModelName + "_Material.json";
 
-    // ÆÄÀÏ Á¸Àç È®ÀÎ
+    // íŒŒì¼ ì¡´ì¬ í™•ì¸
     if (!filesystem::exists(strDatPath))
     {
-        MSG_BOX(TEXT(".dat ÆÄÀÏÀÌ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù."));
+        MSG_BOX(TEXT(".dat íŒŒì¼ì´ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤."));
         return;
     }
 
-    // 1. ±âÁ¸ .dat ÆÄÀÏ ·Îµå
+    // 1. ê¸°ì¡´ .dat íŒŒì¼ ë¡œë“œ
     {
         std::ifstream ifs(strDatPath, std::ios::binary);
         if (!ifs.is_open())
         {
-            MSG_BOX(TEXT(".dat ÆÄÀÏ ¿­±â ½ÇÆĞ"));
+            MSG_BOX(TEXT(".dat íŒŒì¼ ì—´ê¸° ì‹¤íŒ¨"));
             return;
         }
         m_Model_Data.LoadBinary(ifs);
         ifs.close();
     }
 
-    // 2. Animation JSON ·Îµå (ÆÄÀÏÀÌ ÀÖÀ¸¸é)
+    // 2. Animation JSON ë¡œë“œ (íŒŒì¼ì´ ìˆìœ¼ë©´)
     if (filesystem::exists(strAnimJsonPath))
     {
         std::ifstream ifs(strAnimJsonPath);
         if (!ifs.is_open())
         {
-            MSG_BOX(TEXT("Animation JSON ÆÄÀÏ ¿­±â ½ÇÆĞ"));
+            MSG_BOX(TEXT("Animation JSON íŒŒì¼ ì—´ê¸° ì‹¤íŒ¨"));
             return;
         }
 
@@ -377,18 +377,18 @@ void CEditor_Model_Instance::Update_DAT_From_JSON()
         ifs >> j;
         ifs.close();
 
-        // ¾Ö´Ï¸ŞÀÌ¼Ç ±³Ã¼
+        // ì• ë‹ˆë©”ì´ì…˜ êµì²´
         m_Model_Data.vecAnimation = j["Animations"].get<std::vector<ANIMATION_DATA>>();
         m_Model_Data.iNumAnimations = static_cast<_uint>(m_Model_Data.vecAnimation.size());
     }
 
-    // 3. Material JSON ·Îµå (ÆÄÀÏÀÌ ÀÖÀ¸¸é)
+    // 3. Material JSON ë¡œë“œ (íŒŒì¼ì´ ìˆìœ¼ë©´)
     if (filesystem::exists(strMaterialJsonPath))
     {
         std::ifstream ifs(strMaterialJsonPath);
         if (!ifs.is_open())
         {
-            MSG_BOX(TEXT("Material JSON ÆÄÀÏ ¿­±â ½ÇÆĞ"));
+            MSG_BOX(TEXT("Material JSON íŒŒì¼ ì—´ê¸° ì‹¤íŒ¨"));
             return;
         }
 
@@ -396,30 +396,30 @@ void CEditor_Model_Instance::Update_DAT_From_JSON()
         ifs >> j;
         ifs.close();
 
-        // ¸ÓÆ¼¸®¾ó ±³Ã¼
+        // ë¨¸í‹°ë¦¬ì–¼ êµì²´
         m_Model_Data.vecMaterials = j["Materials"].get<std::vector<MATERIAL_DATA>>();
         m_Model_Data.iNumMaterials = static_cast<_uint>(m_Model_Data.vecMaterials.size());
     }
 
-    // 4. ¾÷µ¥ÀÌÆ®µÈ µ¥ÀÌÅÍ¸¦ .dat¿¡ ´Ù½Ã ÀúÀå
+    // 4. ì—…ë°ì´íŠ¸ëœ ë°ì´í„°ë¥¼ .datì— ë‹¤ì‹œ ì €ì¥
     {
         std::ofstream ofs(strDatPath, std::ios::binary);
         if (!ofs.is_open())
         {
-            MSG_BOX(TEXT(".dat ÆÄÀÏ ¾²±â ½ÇÆĞ"));
+            MSG_BOX(TEXT(".dat íŒŒì¼ ì“°ê¸° ì‹¤íŒ¨"));
             return;
         }
         m_Model_Data.SaveBinary(ofs);
         ofs.close();
     }
 
-    MSG_BOX(TEXT(".dat ÆÄÀÏ ¾÷µ¥ÀÌÆ® ¿Ï·á!"));
+    MSG_BOX(TEXT(".dat íŒŒì¼ ì—…ë°ì´íŠ¸ ì™„ë£Œ!"));
 }
 
 
 HRESULT CEditor_Model_Instance::Ready_Meshes(const CEditor_ModelMesh_Instance::INSTANCE_DESC* pDesc)
 {
-    /* ¸Å½¬ ¸î °³ÀÎÁö ÀúÀåÇÏ±â */
+    /* ë§¤ì‰¬ ëª‡ ê°œì¸ì§€ ì €ì¥í•˜ê¸° */
     m_iNumMeshes = m_pAIScene->mNumMeshes;
 
     for (size_t i = 0; i < m_iNumMeshes; i++)
@@ -427,7 +427,7 @@ HRESULT CEditor_Model_Instance::Ready_Meshes(const CEditor_ModelMesh_Instance::I
         CEditor_ModelMesh_Instance* pMesh = CEditor_ModelMesh_Instance::Create(m_pDevice, m_pContext, m_eModelType, m_pAIScene->mMeshes[i], m_Bones, XMLoadFloat4x4(&m_PreTransformMatrix), pDesc);
         if (pMesh == nullptr)
         {
-            MSG_BOX(TEXT("ÁøÂ¥ ºñ»ó CEditor_Mesh::Create() ½ÇÆĞ!!!!!!"));
+            MSG_BOX(TEXT("ì§„ì§œ ë¹„ìƒ CEditor_Mesh::Create() ì‹¤íŒ¨!!!!!!"));
             return E_FAIL;
 
         }
@@ -502,7 +502,7 @@ HRESULT CEditor_Model_Instance::Ready_Animation()
 
 _bool CEditor_Model_Instance::Export_AnimationJson(const string& strFilePath, const string& strFilePath2)
 {
-    /* ÀüÃ¼ ¾Ö´Ï¸ŞÀÌ¼Ç JSON ÀúÀå*/
+    /* ì „ì²´ ì• ë‹ˆë©”ì´ì…˜ JSON ì €ì¥*/
 
     JSON j = m_Model_Data.vecAnimation;
     std::ofstream ofs(strFilePath);
@@ -516,7 +516,7 @@ _bool CEditor_Model_Instance::Export_AnimationJson(const string& strFilePath, co
         return false;
 
 
-    /* ¿ä¾àº» ÀúÀå */
+    /* ìš”ì•½ë³¸ ì €ì¥ */
 
     ANIMATION_SUMMARIES_DATA AnimSummaries;
 
@@ -576,7 +576,7 @@ void CEditor_Model_Instance::Export_Binary(const string& strFilePath)
     std::ofstream ofs(strFilePath, std::ios::binary);
     if (!ofs.is_open())
     {
-        MSG_BOX(TEXT("binary ÆÄÀÏ ¿­±â ½ÇÆĞ"));
+        MSG_BOX(TEXT("binary íŒŒì¼ ì—´ê¸° ì‹¤íŒ¨"));
         return;
     }
 
@@ -584,7 +584,7 @@ void CEditor_Model_Instance::Export_Binary(const string& strFilePath)
 
     ofs.close();
 
-    MSG_BOX(TEXT("Binary ÆÄÀÏ ÀúÀå ¼º°ø"));
+    MSG_BOX(TEXT("Binary íŒŒì¼ ì €ì¥ ì„±ê³µ"));
 }
 
 string CEditor_Model_Instance::PostProcessJSON(const string& jsonStr)
@@ -597,11 +597,11 @@ string CEditor_Model_Instance::PostProcessJSON(const string& jsonStr)
 
     while (std::getline(iss, line))
     {
-        // ¹è¿­ ½ÃÀÛ °¨Áö
+        // ë°°ì—´ ì‹œì‘ ê°ì§€
         if (line.find('[') != string::npos &&
             line.find(']') == string::npos)
         {
-            // ´ÙÀ½ ¸î ÁÙÀ» È®ÀÎÇØ¼­ ÂªÀº ¹è¿­ÀÎÁö ÆÇ´Ü
+            // ë‹¤ìŒ ëª‡ ì¤„ì„ í™•ì¸í•´ì„œ ì§§ì€ ë°°ì—´ì¸ì§€ íŒë‹¨
             arrayBuffer = line;
             inShortArray = true;
             continue;
@@ -611,10 +611,10 @@ string CEditor_Model_Instance::PostProcessJSON(const string& jsonStr)
         {
             arrayBuffer += line;
 
-            // ¹è¿­ ³¡ °¨Áö
+            // ë°°ì—´ ë ê°ì§€
             if (line.find(']') != string::npos)
             {
-                // ÇÑ ÁÙ·Î ¾ĞÃà
+                // í•œ ì¤„ë¡œ ì••ì¶•
                 string compressed = CompressArray(arrayBuffer);
                 oss << compressed << "\n";
                 inShortArray = false;
@@ -635,11 +635,11 @@ string CEditor_Model_Instance::CompressArray(const string& arrayStr)
 {
     string result = arrayStr;
 
-    // ÁÙ¹Ù²Ş Á¦°Å
+    // ì¤„ë°”ê¿ˆ ì œê±°
     result.erase(remove(result.begin(), result.end(), '\n'), result.end());
     result.erase(remove(result.begin(), result.end(), '\r'), result.end());
 
-    // ¿¬¼ÓµÈ °ø¹éÀ» ÇÏ³ª·Î
+    // ì—°ì†ëœ ê³µë°±ì„ í•˜ë‚˜ë¡œ
     result = regex_replace(result, regex(R"(\s+)"), " ");
 
     return result;

@@ -601,7 +601,7 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 		return [pYetuga](CBlackBoard* BB) -> BTNODESTATE
 			{
 
-				// ¾Ö´Ï Á¾·á ÇÃ·¡±×°¡ true¸é SUCCESS
+				// ì• ë‹ˆ ì¢…ë£Œ í”Œëž˜ê·¸ê°€ trueë©´ SUCCESS
 				if (true == BB->Get_Value<_bool>(pYetuga->Get_Name(), "isDodgeFinished"))
 				{
 					return BTNODESTATE::SUCCESS;
@@ -622,7 +622,7 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 		return [pYetuga](CBlackBoard* BB) -> BTNODESTATE
 			{
 				
-				// ¾Ö´Ï Á¾·á ÇÃ·¡±×°¡ true¸é SUCCESS
+				// ì• ë‹ˆ ì¢…ë£Œ í”Œëž˜ê·¸ê°€ trueë©´ SUCCESS
 				if (true == BB->Get_Value<_bool>(pYetuga->Get_Name(), "isHitFinished"))
 				{
 					return BTNODESTATE::SUCCESS;

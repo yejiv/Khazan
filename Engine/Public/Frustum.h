@@ -20,7 +20,7 @@ public:
 	ContainmentType isIn_WorldSpace(const BoundingBox& BoundingBox);
 	_bool isIn_LocalSpace(_fvector vLocalPos, _float fRange = 0.f);
 
-	/*XMPlaneTransform(, ¿ùµåÇà·Ä¿ªÀüÄ¡)*/
+	/*XMPlaneTransform(, ì›”ë“œí–‰ë ¬ì—­ì „ì¹˜)*/
 	const _float4* Get_Point() const { return m_vPoints; }
 	const _float4* Get_WorldPoints() const { return m_vWorldPoints; }
 	const _float4* Get_WorldPlanes() const { return m_vWorldPlanes; }

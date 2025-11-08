@@ -1,4 +1,4 @@
-﻿#include "MeshTrail.h"
+#include "MeshTrail.h"
 #include "GameInstance.h"
 
 CMeshTrail::CMeshTrail(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)

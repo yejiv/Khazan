@@ -1,4 +1,4 @@
-﻿#include "Level_HeinMach.h"
+#include "Level_HeinMach.h"
 #include "GameInstance.h"
 #include "Level_Loading.h"
 #include "Event_Defines.h"
@@ -42,6 +42,7 @@ HRESULT CLevel_HeinMach::Initialize()
 		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
 			HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
+		//CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Gomdol")), E_FAIL);
 		CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		return S_OK;
 		});
@@ -147,11 +148,6 @@ HRESULT CLevel_HeinMach::Initialize()
 
 void CLevel_HeinMach::Update(_float fTimeDelta)
 {
-	//if (GetKeyState(VK_RETURN) & 0x8000)
-	//	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::GAMEPLAY))))
-	//		return;
-	//}
-
 	if (m_pGameInstance->Key_Down(DIK_Q))
 	{
 		m_pGameInstance->isPickRenderTargetPixel(TEXT("Target_Normal"));
@@ -165,6 +161,13 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
 	{
 		m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::HEINMACH), ENUM_CLASS(CAMERATYPE::PLAYER));
 	}
+
+	//if (GetKeyState(VK_RETURN) & 0x8000)
+	//	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::GAMEPLAY))))
+	//		return;
+	//}
+
+
 
 	return;
 }
@@ -261,10 +264,15 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster(const _wstring& strLayerTag)
 	MonsterDesc.fSpeedPerSec = 3.f;
 	MonsterDesc.fRotationPerSec = 180.f;
 	MonsterDesc.strName = "Yetuga";
+	//MonsterDesc.strName = "Gomdol";
 
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
 		ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Yetuga"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
 		return E_FAIL;
+
+	/*if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+		ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Gomdol"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+		return E_FAIL;*/
 
 	return S_OK;
 }

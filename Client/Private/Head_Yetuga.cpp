@@ -76,7 +76,7 @@ HRESULT CHead_Yetuga::RayCast(_float fTimeDelta)
     CModel* pModel = static_cast<CModel*>(m_pOwner->Get_Component(TEXT("Part_Body"), TEXT("Com_Model")));
     if (pModel == nullptr)
         return E_FAIL;
-    // ¿ßƒ° πﬁæ∆øÕº≠
+    // ÏúÑÏπò Î∞õÏïÑÏôÄÏÑú
     _float4x4 BoneMatrix = *pModel->Get_BoneMatrix("Bip001-Head");
     _vector vRootDeltaPos = pModel->Get_RootMotion_Info().matDeltaRootMotion.r[3];
     _matrix WorldMatrix = m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix);
@@ -105,7 +105,6 @@ void CHead_Yetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLaye
     
     COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
 
-
 }
 
 void CHead_Yetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
@@ -124,12 +123,12 @@ void CHead_Yetuga::Carculate_Matrix(_float fTimeDelta)
     if (pModel == nullptr)
         return;
 
-    // ª¿ «‡∑ƒ¿ª ∞°¡Æø¬¥Ÿ.
+    // Îºà ÌñâÎ†¨ÏùÑ Í∞ÄÏ†∏Ïò®Îã§.
     _float4x4 BoneMatrix = *pModel->Get_BoneMatrix("Bip001-Head");
-    // ø¿∏•¬  ª¿ «‡∑ƒ¿ª ¿⁄√º «‡∑ƒ * ª¿ ∑Œƒ√«‡∑ƒ  * ∫Œ∏ «‡∑ƒ¿ª ∞ˆ«ÿº≠ √÷¡æ «‡∑ƒ¿ª ∏∏µÈæÓ¡ÿ¥Ÿ.
+    // Ïò§Î•∏Ï™Ω Îºà ÌñâÎ†¨ÏùÑ ÏûêÏ≤¥ ÌñâÎ†¨ * Îºà Î°úÏª¨ÌñâÎ†¨  * Î∂ÄÎ™® ÌñâÎ†¨ÏùÑ Í≥±Ìï¥ÏÑú ÏµúÏ¢Ö ÌñâÎ†¨ÏùÑ ÎßåÎì§Ïñ¥Ï§ÄÎã§.
     XMStoreFloat4x4(&m_HeadMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
     _vector vOutQuat, vOutPos;
-    // ƒ›∂Û¿Ã¥ı∏¶ ∞ªΩ≈Ω√≈≤¥Ÿ.
+    // ÏΩúÎùºÏù¥ÎçîÎ•º Í∞±Ïã†ÏãúÌÇ®Îã§.
     m_pHeadBodyCom->Sync_Update(XMLoadFloat4x4(&m_HeadMatrix));
     m_pHeadBodyCom->Update(fTimeDelta, XMLoadFloat4x4(&m_HeadMatrix), vOutQuat, vOutPos);
 
@@ -142,7 +141,7 @@ void CHead_Yetuga::Carculate_Matrix(_float fTimeDelta)
 
 HRESULT CHead_Yetuga::Ready_Colliders()
 {
-     //∏”∏Æ
+     //Î®∏Î¶¨
 
     CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
 
@@ -159,11 +158,11 @@ HRESULT CHead_Yetuga::Ready_Colliders()
     XMStoreFloat4x4(&m_HeadMatrix, m_pTransformCom->Get_WorldMatrix() *
         XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
      _vector vScale, vQuat, vTrans;
-     // ¬…∞µ¥Ÿ.
+     // Ï™ºÍ∞†Îã§.
     XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_HeadMatrix));
-    // ¿ßƒ°∞™
+    // ÏúÑÏπòÍ∞í
     BodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
-    // ƒı≈Õ¥œæ
+    // ÏøºÌÑ∞ÎãàÏñ∏
     BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
 
     BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
@@ -181,7 +180,7 @@ HRESULT CHead_Yetuga::Ready_Colliders()
     //XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(m_pParentMatrix));
 
     //_vector vScale, vRotation, vPosition;
-    //// ¬…∞µ¥Ÿ.
+    //// Ï™ºÍ∞†Îã§.
     //XMMatrixDecompose(&vScale, &vRotation, &vPosition, XMLoadFloat4x4(&m_CombinedWorldMatrix));
     //tCharVirDesc.eShapeType = SHAPE::CAPSULE;
     //tCharVirDesc.fRadius = 0.5f;
@@ -191,11 +190,11 @@ HRESULT CHead_Yetuga::Ready_Colliders()
     //tCharVirDesc.vPos = _float3(vPosition.m128_f32[0], vPosition.m128_f32[1], vPosition.m128_f32[2]);
     //tCharVirDesc.vQuat = _float4(vRotation.m128_f32[0], vRotation.m128_f32[1], vRotation.m128_f32[2], vRotation.m128_f32[3]);
 
-    //// collision desc ø¨∞·
+    //// collision desc Ïó∞Í≤∞
     //m_tCollisionDesc.pGameObject = this;
     //tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
 
-    //// component ª˝º∫
+    //// component ÏÉùÏÑ±
     //if (FAILED(CGameObject::Add_Component(
     //    ENUM_CLASS(LEVEL::STATIC),
     //    TEXT("Prototype_Component_CharacterVirtual"),

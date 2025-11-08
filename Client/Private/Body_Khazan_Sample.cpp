@@ -1,4 +1,4 @@
-﻿#include "Body_Khazan_Sample.h"
+#include "Body_Khazan_Sample.h"
 #include "Khazan_Sample.h"
 #include "GameInstance.h"
 #include "MeshTrail.h"

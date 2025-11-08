@@ -79,7 +79,7 @@ void CProp_Object::Late_Update(_float fTimeDelta)
 
 HRESULT CProp_Object::Render()
 {
-    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources ÇÔ¼ö E_FAIL"), E_FAIL);
+    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources í•¨ìˆ˜ E_FAIL"), E_FAIL);
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -99,7 +99,7 @@ HRESULT CProp_Object::Render()
 
 HRESULT CProp_Object::Deferred_Render(ID3D11DeviceContext* pDeferredContext)
 {
-    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources ÇÔ¼ö E_FAIL"), E_FAIL);
+    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources í•¨ìˆ˜ E_FAIL"), E_FAIL);
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -188,7 +188,7 @@ HRESULT CProp_Object::Ready_Collision(void* pArg)
     BodyDesc.vQuat = vQuat;
     BodyDesc.vShapeOffset = _float3(0.f, 0.0f, 0.f);
     m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // ÀÛ¼ºÇÏ±â
+    //pCollDesc.pInfo = ?? // ìž‘ì„±í•˜ê¸°
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
@@ -200,16 +200,16 @@ HRESULT CProp_Object::Ready_Collision(void* pArg)
 
 HRESULT CProp_Object::Bind_ShaderResources()
 {
-    // ¿ùµå Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // ì›”ë“œ í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pTransformCom->Bind_Shader_Resource(m_pDeferredShader, "g_WorldMatrix"), E_FAIL);
 
-    // ºä Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // ë·° í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pDeferredShader->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW)), E_FAIL);
 
-    // Åõ¿µ Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // íˆ¬ì˜ í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pDeferredShader->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ)), E_FAIL);
 
-    // Ä«¸Þ¶ó ¹ÙÀÎµù
+    // ì¹´ë©”ë¼ ë°”ì¸ë”©
     CHECK_FAILED(m_pDeferredShader->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4)), E_FAIL);
 
     return S_OK;
@@ -217,16 +217,16 @@ HRESULT CProp_Object::Bind_ShaderResources()
 
 HRESULT CProp_Object::Bind_DeferredShaderResources()
 {
-    // ¿ùµå Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // ì›”ë“œ í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix"), E_FAIL);
 
-    // ºä Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // ë·° í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW)), E_FAIL);
 
-    // Åõ¿µ Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // íˆ¬ì˜ í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ)), E_FAIL);
 
-    // Ä«¸Þ¶ó ¹ÙÀÎµù
+    // ì¹´ë©”ë¼ ë°”ì¸ë”©
     CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4)), E_FAIL);
 
     return S_OK;

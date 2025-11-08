@@ -7,6 +7,7 @@
 #include "Camera.h"
 
 #include "PlayerData_Manager.h"
+#include "Player_Manager.h"
 
 #ifdef _DEBUG
 #include "Debug_Manager.h"
@@ -43,6 +44,9 @@ HRESULT CClientInstance::Initialize(ID3D11Device** ppDevice, ID3D11DeviceContext
 	if (nullptr == m_pPlayerData_Manager)
 		return E_FAIL;
 
+	m_pPlayer_Manager = CPlayer_Manager::Create();
+	if (nullptr == m_pPlayer_Manager)
+		return E_FAIL;
 
 #ifdef _DEBUG
 	m_pDebug_Manager = CDebug_Manager::Create();
@@ -155,7 +159,24 @@ _float4 CClientInstance::Get_AtlasUV(const string pFrameName, _uint iTextureInde
 
 #pragma endregion
 
+#pragma region Player_Manager
+const PLAYER_DATA& CClientInstance::Get_PlayerData()
+{
+	return m_pPlayer_Manager->Get_PlayerData();
+}
+
+void CClientInstance::Add_SkillExp(_float fExp)
+{
+	m_pPlayer_Manager->Add_SkillExp(fExp);
+}
+_bool CClientInstance::Add_SkillPoint(_int iPoint)
+{
+	return m_pPlayer_Manager->Add_SkillPoint(iPoint);
+}
+#pragma endregion
+
 #pragma region CAMERA_MANAGER
+
 HRESULT CClientInstance::Add_Camera(_uint iLevelIndex, CCamera* pCamera)
 {
 	return m_pCamera_Manager->Add_Camera(iLevelIndex, pCamera);
@@ -276,7 +297,7 @@ void CClientInstance::Release_Client()
 	Safe_Release(m_pDB_Manager);
 	Safe_Release(m_pCamera_Manager);
 	Safe_Release(m_pPlayerData_Manager);
-	
+	Safe_Release(m_pPlayer_Manager);
 #ifdef _DEBUG	
 	Safe_Release(m_pDebug_Manager);
 	Safe_Release(m_pCamera_Controller);

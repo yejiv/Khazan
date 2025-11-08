@@ -1,4 +1,4 @@
-﻿#ifndef Engine_Struct_h__
+#ifndef Engine_Struct_h__
 #define Engine_Struct_h__
 
 
@@ -227,11 +227,13 @@ namespace Engine
 
 	typedef struct tagDistortionDesc
 	{
-		XMFLOAT3	vCenter;
-		float		fRange;
-		float		fPower;
-		float		fDuration;
-		float		fSpeed;
+		XMFLOAT3		vCenter;
+		float			fRange;
+		float			fPower;
+		float			fDuration;
+		XMFLOAT2		vFadeTime;
+		float			fSpeed;
+		unsigned int	iNoiseIndex;
 	}DISTORTION_DESC;
 
 	struct HitStopState

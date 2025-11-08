@@ -1,4 +1,4 @@
-﻿
+
 #include "MeshMaterial.h"
 #include "Shader.h"
 #include "DeferredShader.h"

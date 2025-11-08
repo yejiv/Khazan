@@ -25,22 +25,24 @@ private:
 	HRESULT Ready_Layer_Player(const _wstring& strLayerTag);
 	HRESULT Ready_Layer_Monster(const _wstring& strLayerTag);
 
-	// ÆÄ¶ó¹ÌÅÍ ( 1. µî·ÏÇÒ ·¹ÀÌ¾î ÅÂ±× | 2. µ¥ÀÌÅÍ ÆÄÀÏ ÀÌ¸§ | 3. ¼­ºê ·¹º§ ÀÎµ¦½º | 4. ÇöÀç ·ÎµåÇÒ ·¹º§ | 5. ¸Ê Å¸ÀÔ ( ¾È³ÖÀ¸¸é Æú´õ ³»ºÎ X ) )
-	// ¼­ºê ·¹º§ ¿ÀºêÁ§Æ®
+	// íŒŒë¼ë¯¸í„° ( 1. ë“±ë¡í•  ë ˆì´ì–´ íƒœê·¸ | 2. ë°ì´í„° íŒŒì¼ ì´ë¦„ | 3. ì„œë¸Œ ë ˆë²¨ ì¸ë±ìŠ¤ | 4. í˜„ì¬ ë¡œë“œí•  ë ˆë²¨ | 5. ë§µ íƒ€ì… ( ì•ˆë„£ìœ¼ë©´ í´ë” ë‚´ë¶€ X ) )
+	// ì„œë¸Œ ë ˆë²¨ ì˜¤ë¸Œì íŠ¸
 	HRESULT Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag, const _tchar* pDataFileName, _uint iSubLV, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
 
-	// ÆÄ¶ó¹ÌÅÍ ( 1. µî·ÏÇÒ ·¹ÀÌ¾î ÅÂ±× | 2. µ¥ÀÌÅÍ ÆÄÀÏ ÀÌ¸§ | 3. ÇöÀç ·ÎµåÇÒ ·¹º§ | 4. ¸Ê Å¸ÀÔ ( ¾È³ÖÀ¸¸é Æú´õ ³»ºÎ X ) )
-	// Æ¯Á¤ ¼­ºê ·¹º§ ¿ÀºêÁ§Æ®
+	// íŒŒë¼ë¯¸í„° ( 1. ë“±ë¡í•  ë ˆì´ì–´ íƒœê·¸ | 2. ë°ì´í„° íŒŒì¼ ì´ë¦„ | 3. í˜„ì¬ ë¡œë“œí•  ë ˆë²¨ | 4. ë§µ íƒ€ì… ( ì•ˆë„£ìœ¼ë©´ í´ë” ë‚´ë¶€ X ) )
+	// íŠ¹ì • ì„œë¸Œ ë ˆë²¨ ì˜¤ë¸Œì íŠ¸
 	HRESULT Ready_Layer_MapObject(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
-	// »óÈ£ ÀÛ¿ë ¿ÀºêÁ§Æ®
+	// ìƒí˜¸ ì‘ìš© ì˜¤ë¸Œì íŠ¸
 	HRESULT Ready_Layer_MapObject_Interactive(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
-	// ÀÎ½ºÅÏ½Ì ¿ÀºêÁ§Æ®
+	// ì¸ìŠ¤í„´ì‹± ì˜¤ë¸Œì íŠ¸
 	HRESULT Ready_Layer_MapObject_Inst(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
 
-	// ÆÄ¶ó¹ÌÅÍ ( 1. µ¥ÀÌÅÍ ÆÄÀÏ ÀÌ¸§ | 2. ÇöÀç ·ÎµåÇÒ ·¹º§ | 3. ¸Ê Å¸ÀÔ ( ¾È³ÖÀ¸¸é Æú´õ ³»ºÎ X ) )
-	// Á¶¸í ºÒ·¯¿À±â
+	// íŒŒë¼ë¯¸í„° ( 1. ë°ì´í„° íŒŒì¼ ì´ë¦„ | 2. í˜„ì¬ ë¡œë“œí•  ë ˆë²¨ | 3. ë§µ íƒ€ì… ( ì•ˆë„£ìœ¼ë©´ í´ë” ë‚´ë¶€ X ) )
+	// ì¡°ëª… ë¶ˆëŸ¬ì˜¤ê¸°
 	HRESULT Ready_Lights(const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
 
+	// íŒŒë¼ë¯¸í„° ( 1. ë“±ë¡í•  ë ˆì´ì–´ íƒœê·¸ | 2. ë°ì´í„° íŒŒì¼ ì´ë¦„ | 3. í˜„ì¬ ë¡œë“œí•  ë ˆë²¨ | 4. ë§µ íƒ€ì… ( ì•ˆë„£ìœ¼ë©´ í´ë” ë‚´ë¶€ X ) )
+	// ì¡°ëª… ë¶ˆëŸ¬ì˜¤ê¸°
 	HRESULT Ready_Trigger(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
 
 private:

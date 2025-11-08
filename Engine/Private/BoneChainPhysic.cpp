@@ -2,7 +2,7 @@
 #include "Model.h"
 #include "Transform.h"
 #include <algorithm> // std::clamp, std::max
-#include <atomic>    // GroupID ¹ß±Ş
+#include <atomic>    // GroupID ë°œê¸‰
 
 using namespace DirectX;
 using namespace JPH;
@@ -70,12 +70,12 @@ HRESULT CBoneChainPhysic::Initialize(CModel* pModel, const BCP_BuildDesc& tBuild
     m_GroupID = sNextGroupID++;
     m_NextSubGroup = 0; // 0 = root
 
-    // 1. ·çÆ® ÇÁ·Ï½Ã(Å°³×¸¶Æ½)
+    // 1. ë£¨íŠ¸ í”„ë¡ì‹œ(í‚¤ë„¤ë§ˆí‹±)
     const _int iHeadBone = pModel->Get_BoneIndex("Hair_BoneRoot");
     m_iHeadBone = iHeadBone;
     m_tRootProxy = CreateRootKinematicProxy(pModel, iHeadBone, m_fRootProxyRadius, m_fRootProxyHalf);
 
-    // 2. Ã¼ÀÎ
+    // 2. ì²´ì¸
     for (const auto& vChain : tBuild.vBoneChains)
         BuildChain(pModel, vChain, tBuild.fCapsuleRadius);
 
@@ -105,10 +105,10 @@ void CBoneChainPhysic::SyncRootProxy_PrePhysics(CModel* pModel, _float fTimeDelt
     Vec3 p = ToJ(headPos);
     Quat q = ToJQ(headRot);
 
-    // 1) ·çÆ® À§Ä¡/È¸Àü µ¿±âÈ­ (È¸Àü Identity ±İÁö)
+    // 1) ë£¨íŠ¸ ìœ„ì¹˜/íšŒì „ ë™ê¸°í™” (íšŒì „ Identity ê¸ˆì§€)
     m_pBI->SetPositionAndRotation(m_tRootProxy, p, q, EActivation::DontActivate);
 
-    // 2) ·çÆ® ¼Óµµ ÃßÁ¤
+    // 2) ë£¨íŠ¸ ì†ë„ ì¶”ì •
     Vec3 linV = Vec3::sZero(), angV = Vec3::sZero();
     if (m_hasPrevRoot && m_lastDT > 0.f)
     {
@@ -124,15 +124,15 @@ void CBoneChainPhysic::SyncRootProxy_PrePhysics(CModel* pModel, _float fTimeDelt
     m_prevRootPos = p;
     m_prevRootRot = q;
 
-    // 3) ·çÆ®¿¡ ¼Óµµ ¹İ¿µ(¿¬¼ÓÈ­)
+    // 3) ë£¨íŠ¸ì— ì†ë„ ë°˜ì˜(ì—°ì†í™”)
     m_pBI->SetLinearAndAngularVelocity(m_tRootProxy, linV, angV);
 
-    // 4) Ä³¸¯ÅÍ ¼Óµµ ±â¹İ °¨¼è/Áß·Â ½ºÄÉÀÏ
+    // 4) ìºë¦­í„° ì†ë„ ê¸°ë°˜ ê°ì‡ /ì¤‘ë ¥ ìŠ¤ì¼€ì¼
     const float fCharSpeed = linV.Length();
-    const float k = std::clamp(fCharSpeed / 0.5f, 0.f, 1.f); // 0~0.5 m/s ¡æ 0~1
+    const float k = std::clamp(fCharSpeed / 0.5f, 0.f, 1.f); // 0~0.5 m/s â†’ 0~1
 
     auto myLerp = [](float a, float b, float t) { return a + (b - a) * t; };
-    const float linDamp = myLerp(0.4f, 0.2f, k); // Á¤Áö¡è ÀÌµ¿¡é
+    const float linDamp = myLerp(0.4f, 0.2f, k); // ì •ì§€â†‘ ì´ë™â†“
     const float angDamp = myLerp(1.0f, 0.8f, k);
     const float gravitySc = myLerp(0.4f, 1.0f, k);
 
@@ -140,14 +140,14 @@ void CBoneChainPhysic::SyncRootProxy_PrePhysics(CModel* pModel, _float fTimeDelt
     {
         for (auto id : Chain.vBodies)
         {
-            // ÇÊ¿ä ½Ã °¨¼èµµ ÇÁ·¹ÀÓº° Á¶Á¤
+            // í•„ìš” ì‹œ ê°ì‡ ë„ í”„ë ˆì„ë³„ ì¡°ì •
             // m_pBI->SetLinearDamping(id, linDamp);
             // m_pBI->SetAngularDamping(id, angDamp);
             m_pBI->SetGravityFactor(id, gravitySc);
         }
     }
 
-    // 5) Á¤Áö¸é ÇÏµå ¾ÈÁ¤È­(¿É¼Ç)
+    // 5) ì •ì§€ë©´ í•˜ë“œ ì•ˆì •í™”(ì˜µì…˜)
     const float sleepLin = 0.02f; // m/s
     const float sleepAng = 0.10f; // rad/s
     if (fCharSpeed < 0.02f && linV.Length() < sleepLin && angV.Length() < sleepAng)
@@ -233,7 +233,7 @@ BodyID CBoneChainPhysic::CreateRootKinematicProxy(CModel* pModel, _int iHeadBone
     cs.mFriction = m_tParams.fFriction;
     cs.mRestitution = m_tParams.fRestitution;
 
-    // ¡Ú ·çÆ® SubGroup = 0
+    // â˜… ë£¨íŠ¸ SubGroup = 0
     const uint32_t sg_root = m_NextSubGroup++; // 0
     cs.mCollisionGroup = CollisionGroup(m_pGroupFilter, m_GroupID, sg_root);
 
@@ -250,7 +250,7 @@ void CBoneChainPhysic::BuildChain(CModel* pModel, const std::vector<int>& vBoneI
 
     const int N = (int)vBoneIdx.size();
 
-    // ¿ùµå ÁÂÇ¥ ¸ğÀ¸±â
+    // ì›”ë“œ ì¢Œí‘œ ëª¨ìœ¼ê¸°
     std::vector<Vec3> vWorldPos(N);
     _matrix ownerW = m_pOwnerTransform ? m_pOwnerTransform->Get_WorldMatrix() : XMMatrixIdentity();
     for (int i = 0; i < N; ++i)
@@ -261,7 +261,7 @@ void CBoneChainPhysic::BuildChain(CModel* pModel, const std::vector<int>& vBoneI
     for (int i = 0; i < N; ++i) if (!isZero(vWorldPos[i])) { all_zero = false; break; }
     if (all_zero) return;
 
-    // ÃÖ¼Ò ±æÀÌ º¸Àå
+    // ìµœì†Œ ê¸¸ì´ ë³´ì¥
     constexpr float kMinLen = 1e-3f;  // 1mm
     constexpr float kMinHalf = 5e-3f;  // 5mm
 
@@ -317,7 +317,7 @@ void CBoneChainPhysic::BuildChain(CModel* pModel, const std::vector<int>& vBoneI
         tChain.vBodies[i] = id;
     }
 
-    // ·çÆ®(ÇÁ·Ï½Ã) ¡ê Ã¹ ¼¼±×¸ÕÆ® : SwingTwist (µ¿ÀÏ ¾ŞÄ¿)
+    // ë£¨íŠ¸(í”„ë¡ì‹œ) â†” ì²« ì„¸ê·¸ë¨¼íŠ¸ : SwingTwist (ë™ì¼ ì•µì»¤)
     {
         const BodyID a = m_tRootProxy;
         const BodyID b = tChain.vBodies[0];
@@ -330,7 +330,7 @@ void CBoneChainPhysic::BuildChain(CModel* pModel, const std::vector<int>& vBoneI
         sts.mTwistAxis1 = WorldToBodyLocalDir(m_pBI, a, zW);
         sts.mPlaneAxis1 = WorldToBodyLocalDir(m_pBI, a, xW);
 
-        sts.mPosition2 = WorldToBodyLocalPoint(m_pBI, b, vWorldPos[0]); // µ¿ÀÏ ¾ŞÄ¿
+        sts.mPosition2 = WorldToBodyLocalPoint(m_pBI, b, vWorldPos[0]); // ë™ì¼ ì•µì»¤
         sts.mTwistAxis2 = WorldToBodyLocalDir(m_pBI, b, zW);
         sts.mPlaneAxis2 = WorldToBodyLocalDir(m_pBI, b, xW);
 
@@ -344,7 +344,7 @@ void CBoneChainPhysic::BuildChain(CModel* pModel, const std::vector<int>& vBoneI
         }
     }
 
-    // ÀÎÁ¢ ¼¼±×¸ÕÆ® : SwingTwist(µ¿ÀÏ ¾ŞÄ¿)  / Distance Á¦°Å
+    // ì¸ì ‘ ì„¸ê·¸ë¨¼íŠ¸ : SwingTwist(ë™ì¼ ì•µì»¤)  / Distance ì œê±°
     for (int i = 1; i < N - 1; ++i)
     {
         const BodyID a = tChain.vBodies[i - 1];
@@ -358,7 +358,7 @@ void CBoneChainPhysic::BuildChain(CModel* pModel, const std::vector<int>& vBoneI
         sts.mTwistAxis1 = WorldToBodyLocalDir(m_pBI, a, zW);
         sts.mPlaneAxis1 = WorldToBodyLocalDir(m_pBI, a, xW);
 
-        sts.mPosition2 = WorldToBodyLocalPoint(m_pBI, b, vWorldPos[i]); // µ¿ÀÏ ¾ŞÄ¿
+        sts.mPosition2 = WorldToBodyLocalPoint(m_pBI, b, vWorldPos[i]); // ë™ì¼ ì•µì»¤
         sts.mTwistAxis2 = WorldToBodyLocalDir(m_pBI, b, zW);
         sts.mPlaneAxis2 = WorldToBodyLocalDir(m_pBI, b, xW);
 

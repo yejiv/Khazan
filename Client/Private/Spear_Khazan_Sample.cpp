@@ -1,4 +1,4 @@
-﻿#include "Spear_Khazan_Sample.h"
+#include "Spear_Khazan_Sample.h"
 #include "Khazan_Sample.h"
 #include "GameInstance.h"
 

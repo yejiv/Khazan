@@ -25,27 +25,27 @@ void CUI_State_List::Setting_List(_int iIndex, _float2 vPos, _float fOffSetY, _i
 
     if (m_iIndex == 0)
     {
-        m_pName_TextBox->Set_Text(TEXT("È°·Â"));
+        m_pName_TextBox->Set_Text(TEXT("í™œë ¥"));
         m_pStateIcon->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_Bullet_03_Body.png", 2), 2);
     }
     else if (m_iIndex == 1)
     {
-        m_pName_TextBox->Set_Text(TEXT("Áö±¸·Â"));
+        m_pName_TextBox->Set_Text(TEXT("ì§€êµ¬ë ¥"));
         m_pStateIcon->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_Bullet_04_Heart.png", 2), 2);
     }
     else if (m_iIndex == 2)
     {
-        m_pName_TextBox->Set_Text(TEXT("Èû"));
+        m_pName_TextBox->Set_Text(TEXT("íž˜"));
         m_pStateIcon->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_Bullet_07_Strength.png", 2), 2);
     }
     else if (m_iIndex == 3)
     {
-        m_pName_TextBox->Set_Text(TEXT("ÀÇÁö"));
+        m_pName_TextBox->Set_Text(TEXT("ì˜ì§€"));
         m_pStateIcon->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_Bullet_06_Force.png", 2), 2);
     }
     else if (m_iIndex == 4)
     {
-        m_pName_TextBox->Set_Text(TEXT("¿ª·®"));
+        m_pName_TextBox->Set_Text(TEXT("ì—­ëŸ‰"));
         m_pStateIcon->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_Bullet_05_Skill.png", 2), 2);
     }
     m_pValue = pValue;

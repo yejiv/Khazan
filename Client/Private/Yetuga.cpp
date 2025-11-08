@@ -149,8 +149,8 @@ void CYetuga::Pick_Stone()
     _float3 vNormalize{};
     XMStoreFloat3(&vNormalize, vTempVec);
     m_pHoldStone->Set_SpawnDir(vNormalize);
-    m_pHoldStone->Set_IsActive(false);   // ´øÁöÁö ¾ÊÀ½
-    m_pHoldStone->Set_Visible(true);     // º¸ÀÌ°Ô
+    m_pHoldStone->Set_IsActive(false);   // ë˜ì§€ì§€ ì•ŠìŒ
+    m_pHoldStone->Set_Visible(true);     // ë³´ì´ê²Œ
     m_pHoldStone->Set_SpanwPoint(vSpawnPoint);
     m_pHoldStone->Reset();
 
@@ -219,7 +219,7 @@ void CYetuga::Grab_Check_Begin(const _char* pBoneName)
 
 void CYetuga::Grab_Check_End()
 {
-    // Ãæµ¹À» ²¨ÁØ´Ù.
+    // ì¶©ëŒì„ êº¼ì¤€ë‹¤.
 }
 
 void CYetuga::Pick_Rock()
@@ -249,13 +249,13 @@ void CYetuga::Pick_Rock()
 
     m_isRockPlay = true;
 
-    // Å¸°Ù ¹æÇâ °¡Á®¿À±â
+    // íƒ€ê²Ÿ ë°©í–¥ ê°€ì ¸ì˜¤ê¸°
     _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
     _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
     _float3 vNormalize{};
     XMStoreFloat3(&vNormalize, vTempVec);
 
-    // µ¹ ÃÊ±â ¼¼ÆÃ
+    // ëŒ ì´ˆê¸° ì„¸íŒ…
     m_pHoldRock->Set_IsActive(false);
     m_pHoldRock->Set_Visible(true);
     m_pHoldRock->Set_SpanwPoint(vSpawnPoint);
@@ -353,7 +353,7 @@ void CYetuga::Smash()
         _vector vGoalPos = vTargetPos - vDir * fLimit;
 
 
-        _vector vNewPos = XMVectorLerp(vPosition, vGoalPos, fAnimRatio - 0.5f);
+        _vector vNewPos = XMVectorLerp(vPosition, vGoalPos, fAnimRatio - 0.25f);
         m_pTransformCom->Set_State(STATE::POSITION, vNewPos);
     }
     else
@@ -363,7 +363,6 @@ void CYetuga::Smash()
         m_pTransformCom->Set_State(STATE::POSITION, vStopPos);
     }
 
-    m_pTransformCom->Set_State(STATE::POSITION, vTargetLoc);
 
 }
 
@@ -454,7 +453,7 @@ HRESULT CYetuga::Ready_Components()
     tCharVirDesc.fMaxStrength = 0.f;
 
     m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // ÀÛ¼ºÇÏ±â
+    //pCollDesc.pInfo = ?? // ìž‘ì„±í•˜ê¸°
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
@@ -904,7 +903,7 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("Grab_Hand", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()
         {
-           // ¼Õ»ÀÇà·Ä Àü´Þ
+           // ì†ë¼ˆí–‰ë ¬ ì „ë‹¬
             Grab_Check_Begin("Weapon_L");
         });
 
@@ -921,7 +920,7 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("Grab_Hold", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() 
         {
-            // Å¸°Ù Ç®¾îÁÖ±â
+            // íƒ€ê²Ÿ í’€ì–´ì£¼ê¸°
             m_isGrab = false;
         });
 
@@ -945,21 +944,21 @@ HRESULT CYetuga::Ready_AnimEvent()
 #pragma endregion
 
 #pragma region Amageddon
-    // µ¹À» Ç®¿¡ ¼­ ²¨³½´Ù.
+    // ëŒì„ í’€ì— ì„œ êº¼ë‚¸ë‹¤.
     pModel->Register_Event("AMG_RockEvent", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Pick_Rock(); });
-    // ´ë¹ÌÁö¸¦ ÁÖ°í Ãæµ¹²ô°í Ç®·Î º¸³½´Ù.
+    // ëŒ€ë¯¸ì§€ë¥¼ ì£¼ê³  ì¶©ëŒë„ê³  í’€ë¡œ ë³´ë‚¸ë‹¤.
     pModel->Register_Event("AMG_RockEvent", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { m_isRockPlay = false; });
-    // HoldÇÑ´Ù.
+    // Holdí•œë‹¤.
     pModel->Register_Event("AMG_RockEvent", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Hold_Rock(); });
 
-    // Á¡ÇÁ ½ÃÀÛ
+    // ì í”„ ì‹œìž‘
     pModel->Register_Event("AMG_JumpEvent", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { });
-    // ÃÖ°í ³ôÀÌ±îÁöµµ´Þ
+    // ìµœê³  ë†’ì´ê¹Œì§€ë„ë‹¬
     pModel->Register_Event("AMG_JumpEvent", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { });
-    // ¼Óµµ, Á¶Àý
+    // ì†ë„, ì¡°ì ˆ
     pModel->Register_Event("AMG_JumpEvent", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { });
 
-    // ÇÃ·¹ÀÌ¾î À§Ä¡·Î ¹æÇâ Á¶Àý
+    // í”Œë ˆì´ì–´ ìœ„ì¹˜ë¡œ ë°©í–¥ ì¡°ì ˆ
     pModel->Register_Event("AMG_AimEvent", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
         {
             Look_Target();

@@ -19,7 +19,7 @@ BTNODESTATE CCoolDown_Node::Tick(CBlackBoard* BB)
 
     //m_fElapsed = fTimeDelta;
 
-    // ÄðÅ¸ÀÓ ÁßÀÌ¸é ÀÚ½Ä ½ÇÇà¾ÈÇÏµµ·Ï ¸·´Â´Ù.
+    // ì¿¨íƒ€ìž„ ì¤‘ì´ë©´ ìžì‹ ì‹¤í–‰ì•ˆí•˜ë„ë¡ ë§‰ëŠ”ë‹¤.
     if (m_isCooling)
     {
         m_fElapsed = fCurrentTime - m_fStartTime;
@@ -37,7 +37,7 @@ BTNODESTATE CCoolDown_Node::Tick(CBlackBoard* BB)
     if (m_pChild && !m_isCooling)
     {
         BTNODESTATE eState = m_pChild->Tick(BB);
-        // ÀÚ½ÄÀÌ ¼º°øÇÏ¸é ´Ù½Ã ÄðÅ¸ÀÓ µ¹¸®±â
+        // ìžì‹ì´ ì„±ê³µí•˜ë©´ ë‹¤ì‹œ ì¿¨íƒ€ìž„ ëŒë¦¬ê¸°
         if (BTNODESTATE::SUCCESS == eState)
         {
             m_isCooling = true;

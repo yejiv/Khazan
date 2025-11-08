@@ -25,7 +25,7 @@ void CLevel_Camera::Update(_float fTimeDelta)
 
 HRESULT CLevel_Camera::Render()
 {
-	SetWindowText(g_hWnd, TEXT("д╚╦ч╤С ╥╧╨╖ют╢о╢ы."));
+	SetWindowText(g_hWnd, TEXT("Л╧╢К╘■К²╪ К═┬К╡╗Л·┘К▀┬К▀╓."));
 
 	return S_OK;
 }

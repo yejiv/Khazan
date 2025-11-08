@@ -307,7 +307,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 		return E_FAIL;
 #pragma endregion
 
-#pragma region ÇÏ´Ã ±¸¸§ °´Ã¼ ¿øÇü
+#pragma region í•˜ëŠ˜ êµ¬ë¦„ ê°ì²´ ì›í˜•
 
 	/* Prototype_GameObject_SkyShpere */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_SkySphere"),
@@ -321,7 +321,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 
 #pragma endregion
 
-#pragma region Ä«¸Þ¶ó
+#pragma region ì¹´ë©”ë¼
 	/* Prototype_GameObject_Camera_Free */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Camera_Free"),
 		CCamera_Free::Create(m_pDevice, m_pContext))))
@@ -335,7 +335,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 
 HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 {
-	//ÅØ½ºÃ³
+	//í…ìŠ¤ì²˜
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Hud_HPGauge"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Hud/State/T_Hud_Gauge_HP_0%d.png"), 7)), E_FAIL);
 
@@ -352,7 +352,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Mask/T_Fx_%d.png"), 5)), E_FAIL);
 
 
-	//¾ÆÀÌÅÛ ÀÎÆ÷ ÅØ½ºÃ³
+	//ì•„ì´í…œ ì¸í¬ í…ìŠ¤ì²˜
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_ItemInfo_BG"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/ItemInfo/T_BG_ItemInfo_%d.png"), 2)), E_FAIL);
 
@@ -362,7 +362,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_ItemInfo_Bottom"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/ItemInfo/T_BG_ItemInfo_Bottom_%d.png"), 6)), E_FAIL);
 
-	//UI °´Ã¼
+	//UI ê°ì²´
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Atlas_Icon"),
 		CUI_Atlas_Icon::Create(m_pDevice, m_pContext)), E_FAIL);
 
@@ -536,7 +536,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 HRESULT CMainApp::Ready_Prototype_ForStatic_Effect()
 {
 	/* Prototype_Component_Shader_VtxInstance_PointParticle*/
-	// ÀÌ°Å È¤½Ã ´Ù¸¥»ç¶÷ ¾²´Â Áö È®ÀÎ ÇÊ¿ä
+	// ì´ê±° í˜¹ì‹œ ë‹¤ë¥¸ì‚¬ëžŒ ì“°ëŠ” ì§€ í™•ì¸ í•„ìš”
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxInstance_PointParticle"),
 	//	CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxInstance_PointParticle.hlsl"), VTXPOINTPARTICLE::Elements, VTXPOINTPARTICLE::iNumElements))))
 	//	return E_FAIL;
@@ -600,19 +600,19 @@ HRESULT CMainApp::Ready_DB()
 
 HRESULT CMainApp::Ready_ObjectLayer()
 {
-	// Static ÁöÇü
+	// Static ì§€í˜•
 	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MAP_STATIC), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
 
-	// »óÈ£ÀÛ¿ë ¿ÀºêÁ§Æ®¿¡ ´Þ¸° Æ®¸®°Å
+	// ìƒí˜¸ìž‘ìš© ì˜¤ë¸Œì íŠ¸ì— ë‹¬ë¦° íŠ¸ë¦¬ê±°
 	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
 
-	// µ¿Àû ¹°Ã¼
+	// ë™ì  ë¬¼ì²´
 	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
 	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
 	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
 	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::CAMERA), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
 
-	// µ¿Àû-µ¿Àû & µ¿Àû-ÁöÇü & µ¿Àû-Æ®¸®°Å
+	// ë™ì -ë™ì  & ë™ì -ì§€í˜• & ë™ì -íŠ¸ë¦¬ê±°
 	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MONSTER));
 	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MAP_STATIC));
 	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT));

@@ -46,33 +46,39 @@ public:
 #pragma endregion
 
 #pragma region UI_MANGER
-	//Fade ∞¸∑√
+	//Fade Í¥ÄÎ†®
 	void						Fade_In(function<void()> FadeEvent = nullptr);
 	void						Fade_Out(function<void()> FadeEvent = nullptr);
 	_bool						Fade_End();
 
-	//Event ∞¸∑√
+	//Event Í¥ÄÎ†®
 	HRESULT						Add_UIEvent(const _wstring& strLayerTag, const _wstring& strEventTag, std::function<void()> Event);
 	HRESULT						Add_UIParamEvent(const _wstring& strLayerTag, const _wstring& strEventTag, std::function<void(void*)> Event);
 	function<void()>			Pop_UIEvent(const _wstring& strLayerTag, const _wstring& strEventTag);
 	function<void(void*)>		Pop_UIParamEvent(const _wstring& strLayerTag, const _wstring& strEventTag);
 	HRESULT						Erase_UIEventLayer(const _wstring& strLayerTag);
 
-	//UI JSON ∑ŒµÂ
+	//UI JSON Î°úÎìú
 	HRESULT						Load_UIData(_uint iLayerLevelID, const _wstring& strLayerTag, _uint iPrototypeLevelID, const _tchar* pTextureFilePath);
 	CUIObject*					Load_UIObject(_uint iPrototypeLevelID, const _tchar* pFilePath);
 	
 	_int						UIType_StringToEnum(string szUIType);
 
-	//UI ∑£¥ı ±◊∑Ïø° √ﬂ∞°
+	//UI ÎûúÎçî Í∑∏Î£πÏóê Ï∂îÍ∞Ä
 	HRESULT						Add_UIRender(UI_RENDER_TYPE eRender, class CUIObject* pUIObject);
 
-	//UI ∞¸∑√ «‘ºˆ
+	//UI Í¥ÄÎ†® Ìï®Ïàò
 	HRESULT						UI_UpdateSwitch(const _wstring& szRootUIName, void* pArg = nullptr);
 	class CUIObject*			Get_RootUI(const _wstring& szRootUIName);
 	HRESULT						Add_RootUI(const _wstring& szRootUIName, CUIObject* pUIObject);
 	//ETC
 	_float4						Get_AtlasUV(const string pFrameName, _uint iTextureIndex);
+#pragma endregion
+
+#pragma region Player_Mager
+	const PLAYER_DATA&			Get_PlayerData();
+	void						Add_SkillExp(_float fExp);
+	_bool						Add_SkillPoint(_int iPoint);
 #pragma endregion
 
 #pragma region CAMERA_MANAGER
@@ -126,9 +132,10 @@ private:
 	LEVEL				m_ePrevLevel = { LEVEL::TITLE };
 	LEVEL				m_eCurrLevel = { LEVEL::TITLE };
 	
-	class CUI_Manager*	m_pUI_Manager = { nullptr };
-	CDB_Manager*		m_pDB_Manager = { nullptr };
-	class CCamera_Manager* m_pCamera_Manager = { nullptr };
+	class CUI_Manager*		m_pUI_Manager = { nullptr };
+	class CPlayer_Manager*	m_pPlayer_Manager = { nullptr };
+	CDB_Manager*			m_pDB_Manager = { nullptr };
+	class CCamera_Manager*	m_pCamera_Manager = { nullptr };
 	 CPlayerData_Manager* m_pPlayerData_Manager = { nullptr };
 	
 

@@ -2,11 +2,9 @@
 #include "GameInstance.h"
 #include "ClientInstance.h"
 
-#include "UI_BackGround.h"
-#include "UI_Default_Button.h"
+#include "Skill_Gauge.h"
 #include "UI_TextBox.h"
-#include "UI_Guide_Icon.h"
-#include "UI_Default_Tex.h"
+
 
 CSkill_Panel::CSkill_Panel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
@@ -28,6 +26,10 @@ HRESULT CSkill_Panel::Initialize_Clone(void* pArg)
 {
 	CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 
+	m_iLevel = &CClientInstance::GetInstance()->Get_PlayerData().iSkillLevel;
+	m_iPoint = &CClientInstance::GetInstance()->Get_PlayerData().iSkilPoint;
+	m_fExp = &CClientInstance::GetInstance()->Get_PlayerData().fSkillLevel_EXP;
+
 	return S_OK;
 }
 
@@ -39,6 +41,22 @@ void CSkill_Panel::Priority_Update(_float fTimeDelta)
 void CSkill_Panel::Update(_float fTimeDelta)
 {
 	__super::Update(fTimeDelta);
+
+	m_pPoint->Set_Text(to_wstring(*m_iPoint));
+	m_pLevel->Set_Text(to_wstring(*m_iLevel));
+
+	_float fValue = *m_fExp;
+	_int iTextValue = {};
+	if (fValue >= 100)
+		iTextValue = 3;
+	else if (fValue >= 10)
+		iTextValue = 2;
+	else
+		iTextValue = 1;
+
+	_wstring wstrTemp = TEXT("숙련 레벨 + ") + to_wstring(fValue).substr(0, iTextValue) + TEXT("%");
+	m_pExp->Set_Text(wstrTemp);
+
 }
 
 void CSkill_Panel::Late_Update(_float fTimeDelta)
@@ -48,23 +66,33 @@ void CSkill_Panel::Late_Update(_float fTimeDelta)
 
 HRESULT CSkill_Panel::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
 {
-	//m_szName = pInData.value("name", "");
-	//CClientInstance::GetInstance()->Add_UIEvent(AnsiToWString(m_szName), TEXT("NextPage"), [this]() {NextPage(); });
-	//CClientInstance::GetInstance()->Add_UIEvent(AnsiToWString(m_szName), TEXT("ReturnPage"), [this]() {ReturnPage(); });
-	//CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
 	__super::Load_UI(pInData, iPrototypeLevelID, pArg);
 
-	//for (auto pChild : m_Children)
-	//{
-	//	string strName = pChild->Get_Name();
+	for (auto pChild : m_Children)
+	{
+		string strName = pChild->Get_Name();
 
-	//	if (strName == "Guide_Button_Down")
-	//	{
-	//		m_pButtonDown = static_cast<CUI_Default_Button*>(pChild);
-	//		Safe_AddRef(m_pButtonDown);
-	//		m_pButtonDown->Set_State(CUI_Button::STATE::SELETE);
-	//	}
-	//}
+		if (strName == "Point_Value")
+		{
+			m_pPoint = static_cast<CUI_TextBox*>(pChild);
+			Safe_AddRef(m_pPoint);
+		}
+		else if (strName == "Exp_Gauge")
+		{
+			m_pGauge = static_cast<CSkill_Gauge*>(pChild);
+			Safe_AddRef(m_pGauge);
+		}
+		else if (strName == "SkillLevel")
+		{
+			m_pLevel = static_cast<CUI_TextBox*>(pChild);
+			Safe_AddRef(m_pLevel);
+		}
+		else if (strName == "Level_Level_Per")
+		{
+			m_pExp = static_cast<CUI_TextBox*>(pChild);
+			Safe_AddRef(m_pExp);
+		}
+	}
 
 
 	return S_OK;
@@ -95,5 +123,10 @@ CGameObject* CSkill_Panel::Clone(void* pArg)
 void CSkill_Panel::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pGauge);
+	Safe_Release(m_pPoint);
+	Safe_Release(m_pLevel);
+	Safe_Release(m_pExp);
 
 }

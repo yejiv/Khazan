@@ -37,12 +37,12 @@ public:
 public:
 	void Update_PipeLines(_float fTimeDelta);
 
-	// ¾Ö´Ï¸ŞÀÌ¼Ç
+	// ì• ë‹ˆë©”ì´ì…˜
 public:
 	void Set_Animation(_wstring strAnimationTag);
 	void Play_Animation(_float fTimeDelta);
 
-	// Åø °ü·Ã
+	// íˆ´ ê´€ë ¨
 public:
 	void Create_Animation(_wstring strAnimationTag);
 	void Create_Event(_wstring strAnimationTag);
@@ -75,13 +75,13 @@ public:
 	HRESULT Load(map<_wstring, vector<CAMERA_KEYFRAME>> Animations, map<_wstring, vector<CAMERA_EVENT_DATA>> Events);
 	HRESULT Load_Animation(map<_wstring, vector<CAMERA_KEYFRAME>> Animations);
 
-// ½¦ÀÌÅ·
+// ì‰ì´í‚¹
 public:
 	void Shaking_Start(_float fPower, _float fDuration);
 	void Shaking(_float fTimeDelta);
 	_bool Shaking_Active() const { return m_fShaking_Time < m_fShaking_Duration && m_fShaking_Power > 0.f; }
 
-// Fov °ü·Ã
+// Fov ê´€ë ¨
 public:
 	void    Set_BaseFOV(_float fDegree) { m_fBaseFOV = fDegree; }
 	_float	Get_CurrentFOV() const { return m_fFovy; }
@@ -96,7 +96,7 @@ private:
 
 
 protected:
-	// ±âº» ÅõÀÔ°ªµé
+	// ê¸°ë³¸ íˆ¬ì…ê°’ë“¤
 	_wstring			m_strCameraTag = {};
 	_uint				m_iCameraType = {};
 
@@ -127,20 +127,20 @@ protected:
 	map<_wstring, vector<CAMERA_EVENT_DATA>> m_Events;
 
 
-	// ½¦ÀÌÅ· °ü·Ã
-	_float m_fShaking_Time = { 0.f }; // °è»ê¿ë ½Ã°£
-	_float m_fShaking_Duration = { 0.f }; // Áö¼Ó½Ã°£
-	_float m_fShaking_Power = { 0.f }; // ¼¼±â
-	_uint m_fShaking_Seed = 1337u; // ¸Å ½ÇÇà¸¶´Ù À§»ó ·£´ıÈ­¿ë
-	_float3 m_vShaking_Amplitude = { 0.1f, 0.08f, 0.09f }; // ÁøÆø
-	_float3 m_vShaking_Phase = { 0.f, 0.f, 0.f }; // À§»ó
-	_float m_fShaking_Freq = { 0.f }; // ÁÖÆÄ¼ö
+	// ì‰ì´í‚¹ ê´€ë ¨
+	_float m_fShaking_Time = { 0.f }; // ê³„ì‚°ìš© ì‹œê°„
+	_float m_fShaking_Duration = { 0.f }; // ì§€ì†ì‹œê°„
+	_float m_fShaking_Power = { 0.f }; // ì„¸ê¸°
+	_uint m_fShaking_Seed = 1337u; // ë§¤ ì‹¤í–‰ë§ˆë‹¤ ìœ„ìƒ ëœë¤í™”ìš©
+	_float3 m_vShaking_Amplitude = { 0.1f, 0.08f, 0.09f }; // ì§„í­
+	_float3 m_vShaking_Phase = { 0.f, 0.f, 0.f }; // ìœ„ìƒ
+	_float m_fShaking_Freq = { 0.f }; // ì£¼íŒŒìˆ˜
 	_vector m_vShaking_BasePos;
 	_vector m_vShaking_BaseRight;
 	_vector m_vShaking_BaseUp;
 	_vector m_vShaking_BaseLook;
 
-	// Animation °ü·Ã
+	// Animation ê´€ë ¨
 	_bool							m_isAnimation = {false};
 	_bool							m_isLoop = { false };
 	vector<CAMERA_KEYFRAME>*		m_pCurrentAnimation = { nullptr };
@@ -161,11 +161,11 @@ protected:
 	_bool m_isCurPos = { false };
 	_bool m_isStarted = { true };
 
-	// Fov °ü·Ã
+	// Fov ê´€ë ¨
 	_float				m_fFovy = {};
-	_float				m_fBaseFOV = XMConvertToRadians(60.f);   // ±âº» FOV
+	_float				m_fBaseFOV = XMConvertToRadians(60.f);   // ê¸°ë³¸ FOV
 	vector<FOVModifier> m_vFOVMods;
-	_float				m_fFOVSmooth = 20.f;   // Å¬¼ö·Ï ºü¸£°Ô µû¶ó°¨
+	_float				m_fFOVSmooth = 20.f;   // í´ìˆ˜ë¡ ë¹ ë¥´ê²Œ ë”°ë¼ê°
 	_float				m_fFOVMin = XMConvertToRadians(30.f);
 	_float				m_fFOVMax = XMConvertToRadians(110.f);
 	
