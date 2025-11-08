@@ -25,7 +25,7 @@ CUI_SkillTree::CUI_SkillTree(const CUI_SkillTree& Prototype)
 {
 }
 
-void CUI_SkillTree::On_Panel(GUIDE_TYPE eType)
+void CUI_SkillTree::On_Panel()
 {
 	if (m_IsUpdate)
 		return;
@@ -33,6 +33,17 @@ void CUI_SkillTree::On_Panel(GUIDE_TYPE eType)
 	m_eAnimState = UIANIMSTATE::ON;
 	m_fAccTime = 0.5f;
 	m_IsUpdate = true;
+
+	m_iSelete = 0;
+	for (_int i = 0; i < TAP_TYPE::END; ++i)
+	{
+		if (m_iSelete == i)
+			m_SkillTap[i]->Set_Selete(true);
+		else
+			m_SkillTap[i]->Set_Selete(false);
+	}
+
+	m_pGameInstance->Emit_Event<EVENT_SKILL_OPEN>(ENUM_CLASS(EVENT_TYPE::SKILL_EVENT), EVENT_SKILL_OPEN{ });
 }
 
 void CUI_SkillTree::Off_Panel()
@@ -62,17 +73,22 @@ void CUI_SkillTree::Priority_Update(_float fTimeDelta)
 {
 	if (!m_IsUpdate)
 		return;
-	if (m_pGameInstance->Key_Down(DIK_ESCAPE, INPUT_TYPE::POPUP))
-		Off_Panel();
 
-	UI_Animation(fTimeDelta);
 	__super::Priority_Update(fTimeDelta);
 }
 
 void CUI_SkillTree::Update(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_8, INPUT_TYPE::UI))
+		On_Panel();
+
+	if (m_pGameInstance->Key_Down(DIK_P, INPUT_TYPE::UI))
+		CClientInstance::GetInstance()->Add_SkillExp(40.f);
+
 	if (!m_IsUpdate)
 		return;
+	InputKey();
+	UI_Animation(fTimeDelta);
 	__super::Update(fTimeDelta);
 }
 
@@ -113,14 +129,22 @@ HRESULT CUI_SkillTree::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID,
 			m_SkillTap[TAP_TYPE::PUBLIC]->Setting_Panel(TAP_TYPE::PUBLIC);
 		}
 	}
-	m_IsUpdate = true;
+
 	CHECK_FAILED(Ready_Object(), E_FAIL);
 	return S_OK;
 }
 
 void CUI_SkillTree::Bubble_EventCall(BUBBLEEVENT* pArg)
 {
+	SKillBUBBLE_DESC* pDesc = static_cast<SKillBUBBLE_DESC*>(pArg);
 
+	for (_int i = 0; i < TAP_TYPE::END; ++i)
+	{
+		if (pDesc->iIndex == i)
+			m_SkillTap[i]->Set_Selete(true);
+		else
+			m_SkillTap[i]->Set_Selete(false);
+	}
 }
 
 HRESULT CUI_SkillTree::Update_Switch(void* pArg)
@@ -139,7 +163,7 @@ HRESULT CUI_SkillTree::Ready_Prototype()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Skill_Panel"),
 		CSkill_Panel::Create(m_pDevice, m_pContext)), E_FAIL);
 
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Skill_Gaugel"),
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Skill_Gauge"),
 		CSkill_Gauge::Create(m_pDevice, m_pContext)), E_FAIL);
 
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Skill_SlotPanel"),
@@ -160,8 +184,8 @@ HRESULT CUI_SkillTree::Ready_Object()
 	m_pBackGround = static_cast<CUI_BackGround*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_BackGround"), &Desc));
 	if (m_pBackGround == nullptr)
 		return E_FAIL;
-	m_pBackGround->Setting_BG(CUI_BackGround::UIBGTYPE::END);
-	m_pBackGround->Set_Color({ 0.0f, 0.0f, 0.0f, 0.8f });
+	m_pBackGround->Setting_BG(CUI_BackGround::UIBGTYPE::DEFAULT);
+	m_pBackGround->Set_Color({ 0.0f, 0.0f, 0.0f, 1.f });
 	m_Children.push_back(m_pBackGround);
 	Safe_AddRef(m_pBackGround);
 
@@ -194,6 +218,39 @@ void CUI_SkillTree::UI_Animation(_float fTimeDelta)
 			m_IsUpdate = false;
 		}
 	}
+}
+
+void CUI_SkillTree::InputKey()
+{
+	if (m_pGameInstance->Key_Down(DIK_ESCAPE, INPUT_TYPE::UI))
+		Off_Panel();
+
+	_bool isInput = false;
+	if (m_pGameInstance->Key_Down(DIK_E, INPUT_TYPE::UI))
+	{
+		isInput = true;
+		++m_iSelete;
+
+		if (m_iSelete >= TAP_TYPE::END)
+			m_iSelete = 0;
+	}
+	else if (m_pGameInstance->Key_Down(DIK_Q, INPUT_TYPE::UI))
+	{
+		isInput = true;
+		--m_iSelete;
+
+		if (m_iSelete < 0)
+			m_iSelete = TAP_TYPE::END - 1;
+	}
+
+	if(isInput)
+		for (_int i = 0; i < TAP_TYPE::END; ++i)
+		{
+			if (m_iSelete == i)
+				m_SkillTap[i]->Set_Selete(true);
+			else
+				m_SkillTap[i]->Set_Selete(false);
+		}
 }
 
 CUI_SkillTree* CUI_SkillTree::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)

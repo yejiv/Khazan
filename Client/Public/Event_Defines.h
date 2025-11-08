@@ -7,6 +7,7 @@ namespace Client {
 		INTERACT_TYPE,								// 상호 작용할 오브젝트에 접촉 ( 플레이어가 구독 )
 		ANNOUNCE_MAPNAME,							// 지역 이름, 연출 이름 출력
 		LOCKON_VISIBLE,								// 록온 랜더 온/오프
+		SKILL_EVENT,								// 스킬 슬롯 관련 이벤트들
 		END };
 
 	// Structs
@@ -112,4 +113,6 @@ namespace Client {
 		const _float4* pTargetPos;
 		_bool isVisible;
 	};
+
+	struct EVENT_SKILL_OPEN {};
 }

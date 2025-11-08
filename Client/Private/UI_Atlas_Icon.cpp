@@ -29,6 +29,13 @@ void CUI_Atlas_Icon::Update_Color(_float4 vColor)
 	m_vColor = vColor;
 }
 
+void CUI_Atlas_Icon::Update_Color_Child(_float4 vColor)
+{
+	m_vColor = vColor;
+	for (auto pChild : m_Children)
+		pChild->Set_Color(vColor);
+}
+
 void CUI_Atlas_Icon::Set_Texture(_float4 vUV, _uint iTexPass)
 {
 	m_vUV[0] = vUV;

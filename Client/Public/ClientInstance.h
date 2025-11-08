@@ -75,6 +75,12 @@ public:
 	_float4						Get_AtlasUV(const string pFrameName, _uint iTextureIndex);
 #pragma endregion
 
+#pragma region Player_Mager
+	const PLAYER_DATA&			Get_PlayerData();
+	void						Add_SkillExp(_float fExp);
+	_bool						Add_SkillPoint(_int iPoint);
+#pragma endregion
+
 #pragma region CAMERA_MANAGER
 	HRESULT Add_Camera(_uint iLevelIndex, class CCamera* pCamera);
 	void Change_Camera(_uint iLevelIndex, _uint iCameraType);
@@ -126,9 +132,10 @@ private:
 	LEVEL				m_ePrevLevel = { LEVEL::TITLE };
 	LEVEL				m_eCurrLevel = { LEVEL::TITLE };
 	
-	class CUI_Manager*	m_pUI_Manager = { nullptr };
-	CDB_Manager*		m_pDB_Manager = { nullptr };
-	class CCamera_Manager* m_pCamera_Manager = { nullptr };
+	class CUI_Manager*		m_pUI_Manager = { nullptr };
+	class CPlayer_Manager*	m_pPlayer_Manager = { nullptr };
+	CDB_Manager*			m_pDB_Manager = { nullptr };
+	class CCamera_Manager*	m_pCamera_Manager = { nullptr };
 	 CPlayerData_Manager* m_pPlayerData_Manager = { nullptr };
 	
 

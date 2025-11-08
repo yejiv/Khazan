@@ -187,7 +187,7 @@ void CUI_Loading::Update_Text()
 		break;
 	case 3:
 		m_pInfoName->Set_Text(TEXT("기력 관리"));
-		m_pInfoText->Set_Text(TEXT("공격 방어 회피 등 전투 중 액션을 사용하면\\ 기력이 소모되며 기력을 모두 소모하면\\기력 기반의 액션을 사용할 수 없다"));
+		m_pInfoText->Set_Text(TEXT("공격 방어 회피 등 전투 중 액션을 사용하면\\기력이 소모되며 기력을 모두 소모하면\\기력 기반의 액션을 사용할 수 없다"));
 		break;
 	}
 }

@@ -607,6 +607,9 @@
     <Filter Include="02.GameObject\MapObject\01.Trigger\02.Viper\Viper_Trigger">
       <UniqueIdentifier>{485e7ed5-dcf7-48e1-bc79-e69aea67fc4a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="94.ClientInstance\Player_Manger">
+      <UniqueIdentifier>{b86e2937-1cab-43ad-aecc-1f09c038ebef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1137,9 +1140,6 @@
     <ClInclude Include="..\Public\Head_Yetuga.h">
       <Filter>02.GameObject\Creature\Monster\Yetuga\Head</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\UI_SkillTree.h">
-      <Filter>02.GameObject\UI\Skill_Tree</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\Skill_Tap.h">
       <Filter>02.GameObject\UI\Skill_Tree\Tap</Filter>
     </ClInclude>
@@ -1160,6 +1160,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\Viper_Trigger.h">
       <Filter>02.GameObject\MapObject\01.Trigger\02.Viper\Viper_Trigger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_SkillTree.h">
+      <Filter>02.GameObject\UI\Skill_Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Player_Manager.h">
+      <Filter>94.ClientInstance\Player_Manger</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1700,6 +1706,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Viper_Trigger.cpp">
       <Filter>02.GameObject\MapObject\01.Trigger\02.Viper\Viper_Trigger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Player_Manager.cpp">
+      <Filter>94.ClientInstance\Player_Manger</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
