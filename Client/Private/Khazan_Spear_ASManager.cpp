@@ -1,4 +1,4 @@
-﻿
+
 #include "Khazan_Spear_ASManager.h"
 #include "Khazan_Spear_ASMachine.h"
 

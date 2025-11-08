@@ -203,7 +203,7 @@ HRESULT CCamera_Compre::Ready_Body()
     XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
     TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
     m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // ÀÛ¼ºÇÏ±â
+    //pCollDesc.pInfo = ?? // ì‘ì„±í•˜ê¸°
     TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
@@ -222,7 +222,7 @@ HRESULT CCamera_Compre::Spring(_float fTimeDelta)
 
     _vector vCamPos = Cal_CamPos(fTimeDelta, vTargetPos, vDir);
 
-    // Y ½º¹«µù
+    // Y ìŠ¤ë¬´ë”©
     /*_float fDesiredY = vCamPos.m128_f32[1];
     _float fCurrentY = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
 
@@ -406,19 +406,19 @@ _float CCamera_Compre::UpdateY_Stable(_float fCurrentY, _float fDesiredY, _float
 {
     if (!m_isInited) { m_fSmoothY = fCurrentY; m_fYVel = 0.f; m_isInited = true; }
 
-    // 1) µ¥µåÁ¸: ¹Ì¼¼ÇÑ ¿äÃ¶ º¯È­ ¹«½Ã
+    // 1) ë°ë“œì¡´: ë¯¸ì„¸í•œ ìš”ì²  ë³€í™” ë¬´ì‹œ
     float delta = fDesiredY - m_fSmoothY;
     if (fabsf(delta) < m_fDeadZone)
         fDesiredY = m_fSmoothY;
 
-    // 2) »ó½Â/ÇÏ°­ ¼Óµµ Á¦ÇÑ
+    // 2) ìƒìŠ¹/í•˜ê°• ì†ë„ ì œí•œ
     {
         float raw = fDesiredY - m_fSmoothY;
         float maxStep = (raw >= 0 ? m_fMaxRise : m_fMaxFall) * fTimeDelta;
         fDesiredY = m_fSmoothY + std::clamp(raw, -fabsf(maxStep), fabsf(maxStep));
     }
 
-    // 3) Å©¸®Æ¼ÄÃ °¨¼è
+    // 3) í¬ë¦¬í‹°ì»¬ ê°ì‡ 
     m_fSmoothY = SmoothDampScalar(m_fSmoothY, fDesiredY, m_fYVel, m_fYSmoothTime, fTimeDelta);
 
     return m_fSmoothY;

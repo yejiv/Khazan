@@ -176,12 +176,12 @@ HRESULT CBody_Gomdol::Bind_ShaderResources()
 
 void CBody_Gomdol::Carculate_Matrix(_float fTimeDelta)
 {
-    // »À Çà·ÄÀ» °¡Á®¿Â´Ù.
+    // ë¼ˆ í–‰ë ¬ì„ ê°€ì ¸ì˜¨ë‹¤.
     _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix("Bip001-R-Hand");
-    // ¿À¸¥ÂÊ »À Çà·ÄÀ» ÀÚÃ¼ Çà·Ä * »À ·ÎÄÃÇà·Ä  * ºÎ¸ð Çà·ÄÀ» °öÇØ¼­ ÃÖÁ¾ Çà·ÄÀ» ¸¸µé¾îÁØ´Ù.
+    // ì˜¤ë¥¸ìª½ ë¼ˆ í–‰ë ¬ì„ ìžì²´ í–‰ë ¬ * ë¼ˆ ë¡œì»¬í–‰ë ¬  * ë¶€ëª¨ í–‰ë ¬ì„ ê³±í•´ì„œ ìµœì¢… í–‰ë ¬ì„ ë§Œë“¤ì–´ì¤€ë‹¤.
     XMStoreFloat4x4(&m_RightHandMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
     _vector vOutQuat, vOutPos;
-    // ÄÝ¶óÀÌ´õ¸¦ °»½Å½ÃÅ²´Ù.
+    // ì½œë¼ì´ë”ë¥¼ ê°±ì‹ ì‹œí‚¨ë‹¤.
     m_pRH_BodyCom->Sync_Update(XMLoadFloat4x4(&m_RightHandMatrix));
     m_pRH_BodyCom->Update(fTimeDelta, XMLoadFloat4x4(&m_RightHandMatrix), vOutQuat, vOutPos);
 
@@ -209,12 +209,12 @@ HRESULT CBody_Gomdol::Ready_Colliders()
 
     CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
 
-    // ¿À¸¥¼Õ
+    // ì˜¤ë¥¸ì†
     BodyDesc.fRadius = 1.5f;
     BodyDesc.eMotion = EMotionType::Kinematic;
-    BodyDesc.eQuality = EMotionQuality::Discrete; // ±âº» ¸ðµå
+    BodyDesc.eQuality = EMotionQuality::Discrete; // ê¸°ë³¸ ëª¨ë“œ
     BodyDesc.eShapeType = SHAPE::SPHERE;
-    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK); // ÃßÈÄ¿¡ Enum Monster attack º¯°æ ÇÒ¼öµµ
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK); // ì¶”í›„ì— Enum Monster attack ë³€ê²½ í• ìˆ˜ë„
     _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix("Bip001-R-Hand");
     XMStoreFloat4x4(&m_RightHandMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
     _vector vScale, vQuat, vTrans;
@@ -231,18 +231,18 @@ HRESULT CBody_Gomdol::Ready_Colliders()
 
     BodyDesc.fRadius = 1.5f;
     BodyDesc.eMotion = EMotionType::Kinematic;
-    BodyDesc.eQuality = EMotionQuality::Discrete; // ±âº» ¸ðµå
+    BodyDesc.eQuality = EMotionQuality::Discrete; // ê¸°ë³¸ ëª¨ë“œ
     BodyDesc.eShapeType = SHAPE::SPHERE;
     BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
     BoneMatrix = *m_pModelCom->Get_BoneMatrix("Bip001-L-Hand");
     XMStoreFloat4x4(&m_RightHandMatrix, m_pTransformCom->Get_WorldMatrix() *
         XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
     /* _vector vScale, vQuat, vTrans;*/
-     // ÂÉ°µ´Ù.
+     // ìª¼ê° ë‹¤.
     XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_RightHandMatrix));
-    // À§Ä¡°ª
+    // ìœ„ì¹˜ê°’
     BodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
-    // ÄõÅÍ´Ï¾ð
+    // ì¿¼í„°ë‹ˆì–¸
     BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
 
     BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);

@@ -1,4 +1,4 @@
-﻿#include "Level_HeinMach.h"
+#include "Level_HeinMach.h"
 #include "GameInstance.h"
 #include "Level_Loading.h"
 #include "Event_Defines.h"

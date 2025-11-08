@@ -65,10 +65,10 @@ private:
 	_bool m_isInited = { false };
 	_float m_fSmoothY = { 0.f };
 
-	_float m_fYSmoothTime = { 0.16f }; // °¨¼è ½Ã°£
-	_float m_fDeadZone = { 0.1f }; // ¹Ì¼¼ ¿äÃ¶ ¹«½Ã
-	_float m_fMaxRise = { 5.f }; // ÃÊ´ç »ó½Â ÇÑµµ
-	_float m_fMaxFall = { 9.f }; // ÃÊ´ç ÇÏ°­ÇÑµµ
+	_float m_fYSmoothTime = { 0.16f }; // ê°ì‡  ì‹œê°„
+	_float m_fDeadZone = { 0.1f }; // ë¯¸ì„¸ ìš”ì²  ë¬´ì‹œ
+	_float m_fMaxRise = { 5.f }; // ì´ˆë‹¹ ìƒìŠ¹ í•œë„
+	_float m_fMaxFall = { 9.f }; // ì´ˆë‹¹ í•˜ê°•í•œë„
 
 	CBody* m_pBody = { nullptr };
 	_bool m_isLockOn = { false };

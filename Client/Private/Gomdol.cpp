@@ -49,7 +49,7 @@ HRESULT CGomdol::Initialize_Clone(void* pArg)
 
    
 
-    // HP µÓ∑œ
+    // HP Îì±Î°ù
 
 
     return S_OK;
@@ -108,7 +108,7 @@ HRESULT CGomdol::Ready_Components()
     tCharVirDesc.fMaxSlopeAngle = 45.f;
 
     m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // ¿€º∫«œ±‚
+    //pCollDesc.pInfo = ?? // ÏûëÏÑ±ÌïòÍ∏∞
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),

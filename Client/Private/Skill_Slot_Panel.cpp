@@ -141,39 +141,39 @@ void CSkill_Slot_Panel::Panel_NameMapping(_int iTapIndex, _int iPanelIndex)
 	if (iTapIndex == 0)
 	{
 		if (iPanelIndex == 0)
-			m_pTextBox->Set_Text(TEXT("ºü¸¥ °ø°Ý"));
+			m_pTextBox->Set_Text(TEXT("ë¹ ë¥¸ ê³µê²©"));
 		else if (iPanelIndex == 1)
-			m_pTextBox->Set_Text(TEXT("°­ÇÑ °ø°Ý"));
+			m_pTextBox->Set_Text(TEXT("ê°•í•œ ê³µê²©"));
 		else if (iPanelIndex == 2)
-			m_pTextBox->Set_Text(TEXT("¿¬°è"));
+			m_pTextBox->Set_Text(TEXT("ì—°ê³„"));
 		else if (iPanelIndex == 3)
-			m_pTextBox->Set_Text(TEXT("±â±³"));
+			m_pTextBox->Set_Text(TEXT("ê¸°êµ"));
 		else if (iPanelIndex == 4)
-			m_pTextBox->Set_Text(TEXT("°¡µå"));
+			m_pTextBox->Set_Text(TEXT("ê°€ë“œ"));
 	}
 	else if (iTapIndex == 1)
 	{
 		if (iPanelIndex == 0)
-			m_pTextBox->Set_Text(TEXT("ºü¸¥ °ø°Ý"));
+			m_pTextBox->Set_Text(TEXT("ë¹ ë¥¸ ê³µê²©"));
 		else if (iPanelIndex == 1)
-			m_pTextBox->Set_Text(TEXT("°­ÇÑ °ø°Ý"));
+			m_pTextBox->Set_Text(TEXT("ê°•í•œ ê³µê²©"));
 		else if (iPanelIndex == 2)
-			m_pTextBox->Set_Text(TEXT("ºÒ±¼"));
+			m_pTextBox->Set_Text(TEXT("ë¶ˆêµ´"));
 		else if (iPanelIndex == 3)
-			m_pTextBox->Set_Text(TEXT("¾àÁø"));
+			m_pTextBox->Set_Text(TEXT("ì•½ì§„"));
 		else if (iPanelIndex == 4)
-			m_pTextBox->Set_Text(TEXT("°¡µå"));
+			m_pTextBox->Set_Text(TEXT("ê°€ë“œ"));
 	}
 	else if (iTapIndex == 2)
 	{
 		if (iPanelIndex == 0)
-			m_pTextBox->Set_Text(TEXT("ÀÚ¿ø"));
+			m_pTextBox->Set_Text(TEXT("ìžì›"));
 		else if (iPanelIndex == 1)
-			m_pTextBox->Set_Text(TEXT("ºê·çÅ» ¾îÅÃ"));
+			m_pTextBox->Set_Text(TEXT("ë¸Œë£¨íƒˆ ì–´íƒ"));
 		else if (iPanelIndex == 2)
-			m_pTextBox->Set_Text(TEXT("ÅõÃ¢"));
+			m_pTextBox->Set_Text(TEXT("íˆ¬ì°½"));
 		else if (iPanelIndex == 3)
-			m_pTextBox->Set_Text(TEXT("Ä«¿îÆ® ¾îÅÃ"));
+			m_pTextBox->Set_Text(TEXT("ì¹´ìš´íŠ¸ ì–´íƒ"));
 	}
 }
 

@@ -229,7 +229,7 @@ HRESULT CItem_Slot::Ready_Children()
     m_Children.push_back(m_pOverFx);
     Safe_AddRef(m_pOverFx);
     
-    //ÀåÂø
+    //ìž¥ì°©
     if (m_iItemType <= ENUM_CLASS(CUI_Inven::ITEMTYPE::ATIVE))
     {
         AtlasDesc.fDepth = m_fDepth - 0.5;
@@ -258,7 +258,7 @@ HRESULT CItem_Slot::Ready_Children()
         m_Children.push_back(m_pEquipIcon);
         Safe_AddRef(m_pEquipIcon);
     }
-    //¼¿·ºÆ®
+    //ì…€ë ‰íŠ¸
     AtlasDesc.fDepth = m_fDepth - 2;
     AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
     AtlasDesc.szName = "Item_Selet";

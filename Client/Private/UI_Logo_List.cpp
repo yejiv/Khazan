@@ -24,13 +24,13 @@ void CUI_Logo_List::Update_Pos(CUI_Logo::LISTTYPE eType, _float2 vPos, _float fO
 	switch (m_eType)
 	{
 	case CUI_Logo::LISTTYPE::NEWGAME:
-		m_pText->Set_Text(TEXT("»õ °ÔÀÓ"));
+		m_pText->Set_Text(TEXT("ìƒˆ ê²Œìž„"));
 		break;
 	case CUI_Logo::LISTTYPE::OPTION:
-		m_pText->Set_Text(TEXT("¼³Á¤"));
+		m_pText->Set_Text(TEXT("ì„¤ì •"));
 		break;
 	case CUI_Logo::LISTTYPE::EXIT:
-		m_pText->Set_Text(TEXT("Á¾·á"));
+		m_pText->Set_Text(TEXT("ì¢…ë£Œ"));
 		break;
 	}
 	__super::Update_Transform(nullptr, m_vWorldPos);
@@ -254,7 +254,7 @@ HRESULT CUI_Logo_List::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID,
 
 			if (pChild == nullptr)
 			{
-				MSG_BOX(TEXT("ÀÚ½Ä Å¬·Ð »ý¼º ½ÇÆÐ"));
+				MSG_BOX(TEXT("ìžì‹ í´ë¡  ìƒì„± ì‹¤íŒ¨"));
 				return E_FAIL;
 			}
 			if (pChild->Load_UI(child, iPrototypeLevelID, pArg))
