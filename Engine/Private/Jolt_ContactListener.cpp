@@ -18,7 +18,7 @@ ValidateResult CJolt_ContactListener::OnContactValidate(const Body& inBody1, con
 
 void CJolt_ContactListener::OnContactAdded(const Body& inBody1, const Body& inBody2, const ContactManifold& inManifold, ContactSettings& ioSettings)
 {
-
+	
 	COLLISION_DESC* pBody1Desc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inBody1.GetUserData()));
 	COLLISION_DESC* pBody2Desc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inBody2.GetUserData()));
 
@@ -66,15 +66,15 @@ void CJolt_ContactListener::OnContactPersisted(const Body& inBody1, const Body& 
 
 void CJolt_ContactListener::OnContactRemoved(const SubShapeIDPair& inSubShapePair)
 {
-	COLLISION_DESC* pBody1Desc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(m_pBodyInterface->GetUserData(inSubShapePair.GetBody1ID())));
-	COLLISION_DESC* pBody2Desc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(m_pBodyInterface->GetUserData(inSubShapePair.GetBody2ID())));
+	//COLLISION_DESC* pBody1Desc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(m_pBodyInterface->GetUserData(inSubShapePair.GetBody1ID())));
+	//COLLISION_DESC* pBody2Desc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(m_pBodyInterface->GetUserData(inSubShapePair.GetBody2ID())));
 
-	if(pBody1Desc == nullptr || pBody2Desc == nullptr || pBody1Desc->pGameObject == nullptr || pBody2Desc->pGameObject == nullptr)
-		return;
+	//if(pBody1Desc == nullptr || pBody2Desc == nullptr || pBody1Desc->pGameObject == nullptr || pBody2Desc->pGameObject == nullptr)
+	//	return;
 
-	if (!pBody1Desc->pGameObject->Get_IsDead() && !pBody2Desc->pGameObject->Get_IsDead())
-	{
-		pBody1Desc->pGameObject->Collision_Exit(pBody2Desc, static_cast<_uint>(m_pBodyInterface->GetObjectLayer(inSubShapePair.GetBody2ID())));
-		pBody2Desc->pGameObject->Collision_Exit(pBody1Desc, static_cast<_uint>(m_pBodyInterface->GetObjectLayer(inSubShapePair.GetBody1ID())));
-	}
+	//if (!pBody1Desc->pGameObject->Get_IsDead() && !pBody2Desc->pGameObject->Get_IsDead())
+	//{
+	//	pBody1Desc->pGameObject->Collision_Exit(pBody2Desc, static_cast<_uint>(m_pBodyInterface->GetObjectLayer(inSubShapePair.GetBody2ID())));
+	//	pBody2Desc->pGameObject->Collision_Exit(pBody1Desc, static_cast<_uint>(m_pBodyInterface->GetObjectLayer(inSubShapePair.GetBody1ID())));
+	//}
 }

@@ -49,21 +49,21 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 	{
 		CV_BOXSHAPE_DESC* pBoxDesc = static_cast<CV_BOXSHAPE_DESC*>(pDesc);
 		SettingDesc.mShape = new BoxShape(Vec3(pBoxDesc->vExtent.x, pBoxDesc->vExtent.y, pBoxDesc->vExtent.z));
-		//SettingDesc.mInnerBodyShape = new BoxShape(Vec3(pBoxDesc->vExtent.x, pBoxDesc->vExtent.y, pBoxDesc->vExtent.z));
+		SettingDesc.mInnerBodyShape = new BoxShape(Vec3(pBoxDesc->vExtent.x, pBoxDesc->vExtent.y, pBoxDesc->vExtent.z));
 		break;
 	}
 	case SHAPE::SPHERE:
 	{
 		CV_SPHERESHAPE_DESC* pSphereDesc = static_cast<CV_SPHERESHAPE_DESC*>(pDesc);
 		SettingDesc.mShape = new SphereShape(pSphereDesc->fRadius);
-		//SettingDesc.mInnerBodyShape = new SphereShape(pSphereDesc->fRadius);
+		SettingDesc.mInnerBodyShape = new SphereShape(pSphereDesc->fRadius);
 		break;
 	}
 	case SHAPE::CAPSULE:
 	{
 		CV_CAPSULESHAPE_DESC* pCapsuleDesc = static_cast<CV_CAPSULESHAPE_DESC*>(pDesc);
 		SettingDesc.mShape = new CapsuleShape(pCapsuleDesc->fHeight * 0.5f, pCapsuleDesc->fRadius);
-		//SettingDesc.mInnerBodyShape = new CapsuleShape(pCapsuleDesc->fHeight * 0.5f, pCapsuleDesc->fRadius);
+		SettingDesc.mInnerBodyShape = new CapsuleShape(pCapsuleDesc->fHeight * 0.5f, pCapsuleDesc->fRadius);
 		break;
 	}
 	}
@@ -77,11 +77,11 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 	SettingDesc.mInnerBodyLayer = m_iNumObjectLayer;
 
 	m_pCharVir = m_pGameInstance->CreateCharacterVirtual(&SettingDesc, RVec3Arg(LoadVec3(pDesc->vPos)), QuatArg(LoadQuat(pDesc->vQuat)), 0, &m_pBodyInterface);
-	//m_BodyId = m_pCharVir->GetInnerBodyID();
+	m_BodyId = m_pCharVir->GetInnerBodyID();
 	m_pCharVir->SetUserData(static_cast<uint64>(reinterpret_cast<uintptr_t>(pDesc->pCollisionDesc)));
 	if (!m_BodyId.IsInvalid())
 	{
-		//m_pBodyInterface->SetObjectLayer(m_BodyId, m_iNumObjectLayer);
+		m_pBodyInterface->SetObjectLayer(m_BodyId, m_iNumObjectLayer);
 		m_pBodyInterface->SetIsSensor(m_BodyId, false);
 		m_pBodyInterface->SetUserData(m_BodyId, static_cast<uint64>(reinterpret_cast<uintptr_t>(pDesc->pCollisionDesc)));
 	}
@@ -371,7 +371,7 @@ void CCharacterVirtual::Set_Gravity(_float fGravity)
 	m_pBodyInterface->SetGravityFactor(m_pCharVir->GetInnerBodyID(), fGravity);
 }
 
-void CCharacterVirtual::Set_DirPower(_vector vDir, _float fPower, _float fLoss)
+void CCharacterVirtual::Set_VelocityPower(_vector vDir, _float fPower, _float fLoss)
 {
 	m_vVelocity = Vec3(vDir.m128_f32[0], vDir.m128_f32[1], vDir.m128_f32[2]) * fPower;
 	m_fLoss = fLoss;

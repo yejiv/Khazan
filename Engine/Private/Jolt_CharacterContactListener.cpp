@@ -17,7 +17,7 @@ CJolt_CharacterContactListener::~CJolt_CharacterContactListener()
 
 bool CJolt_CharacterContactListener::OnContactValidate(const JPH::CharacterVirtual* inCharacter, const JPH::BodyID& inBodyID2, const JPH::SubShapeID& inSubShapeID2)
 {
-    return false;
+    return true;
 }
 
 bool CJolt_CharacterContactListener::OnCharacterContactValidate(const JPH::CharacterVirtual* inCharacter, const JPH::CharacterVirtual* inOtherCharacter, const JPH::SubShapeID& inSubShapeID2)
@@ -27,6 +27,10 @@ bool CJolt_CharacterContactListener::OnCharacterContactValidate(const JPH::Chara
 
 void CJolt_CharacterContactListener::OnContactAdded(const JPH::CharacterVirtual* inCharacter, const JPH::BodyID& inBodyID2, const JPH::SubShapeID& inSubShapeID2, JPH::RVec3Arg inContactPosition, JPH::Vec3Arg inContactNormal, JPH::CharacterContactSettings& ioSettings)
 {
+    if (m_pBodyInterface->GetMotionType(inBodyID2) == EMotionType::Static)
+        ioSettings.mCanPushCharacter = true;
+    
+
   /*  COLLISION_DESC* pCharDesc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
     COLLISION_DESC* pBodyDesc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(m_pBodyInterface->GetUserData(inBodyID2)));
 
@@ -55,7 +59,8 @@ void CJolt_CharacterContactListener::OnContactAdded(const JPH::CharacterVirtual*
 
 void CJolt_CharacterContactListener::OnContactPersisted(const JPH::CharacterVirtual* inCharacter, const JPH::BodyID& inBodyID2, const JPH::SubShapeID& inSubShapeID2, JPH::RVec3Arg inContactPosition, JPH::Vec3Arg inContactNormal, JPH::CharacterContactSettings& ioSettings)
 {
-
+    if (m_pBodyInterface->GetMotionType(inBodyID2) == EMotionType::Static)
+        ioSettings.mCanPushCharacter = true;
    /* COLLISION_DESC* pCharDesc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
     COLLISION_DESC* pBodyDesc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(m_pBodyInterface->GetUserData(inBodyID2)));
 
@@ -109,7 +114,7 @@ void CJolt_CharacterContactListener::OnContactRemoved(const JPH::CharacterVirtua
 
 void CJolt_CharacterContactListener::OnCharacterContactAdded(const CharacterVirtual* inCharacter, const CharacterVirtual* inOtherCharacter, const SubShapeID& inSubShapeID2, RVec3Arg inContactPosition, Vec3Arg inContactNormal, CharacterContactSettings& ioSettings)
 {
-    COLLISION_DESC* pCharDesc1 = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
+    /*COLLISION_DESC* pCharDesc1 = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
     COLLISION_DESC* pCharDesc2 = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inOtherCharacter->GetUserData()));
 
     ObjectLayer CharObj1 = m_pBodyInterface->GetObjectLayer(inCharacter->GetInnerBodyID());
@@ -136,7 +141,7 @@ void CJolt_CharacterContactListener::OnCharacterContactAdded(const CharacterVirt
         pCharDesc2->pGameObject->Collision_Enter(pCharDesc1, static_cast<_uint>(CharObj1),
             _float3(inContactPosition.GetX(), inContactPosition.GetY(), inContactPosition.GetZ()),
             _float3(inContactNormal.GetX(), inContactNormal.GetY(), inContactNormal.GetZ()));
-    }
+    }*/
         
     ioSettings.mCanPushCharacter = true;
     
@@ -145,7 +150,7 @@ void CJolt_CharacterContactListener::OnCharacterContactAdded(const CharacterVirt
 
 void CJolt_CharacterContactListener::OnCharacterContactPersisted(const CharacterVirtual* inCharacter, const CharacterVirtual* inOtherCharacter, const SubShapeID& inSubShapeID2, RVec3Arg inContactPosition, Vec3Arg inContactNormal, CharacterContactSettings& ioSettings)
 {
-    COLLISION_DESC* pCharDesc1 = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
+    /*COLLISION_DESC* pCharDesc1 = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
     COLLISION_DESC* pCharDesc2 = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inOtherCharacter->GetUserData()));
 
     ObjectLayer CharObj1 = m_pBodyInterface->GetObjectLayer(inCharacter->GetInnerBodyID());
@@ -172,7 +177,7 @@ void CJolt_CharacterContactListener::OnCharacterContactPersisted(const Character
         pCharDesc2->pGameObject->Collision_Stay(pCharDesc1, static_cast<_uint>(CharObj1),
             _float3(inContactPosition.GetX(), inContactPosition.GetY(), inContactPosition.GetZ()),
             _float3(inContactNormal.GetX(), inContactNormal.GetY(), inContactNormal.GetZ()));
-    }
+    }*/
 
     ioSettings.mCanPushCharacter = true;
 
@@ -181,7 +186,7 @@ void CJolt_CharacterContactListener::OnCharacterContactPersisted(const Character
 
 void CJolt_CharacterContactListener::OnCharacterContactRemoved(const CharacterVirtual* inCharacter, const CharacterID& inOtherCharacterID, const SubShapeID& inSubShapeID2)
 {
-    COLLISION_DESC* pCharDesc1 = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
+    /*COLLISION_DESC* pCharDesc1 = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
     
 	CharacterVirtual* pCharVir = m_pGameInstance->Find_CharacterVirtual(inOtherCharacterID);
     COLLISION_DESC* pCharDesc2 = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(pCharVir->GetUserData()));
@@ -204,7 +209,7 @@ void CJolt_CharacterContactListener::OnCharacterContactRemoved(const CharacterVi
     {
         pCharDesc1->pGameObject->Collision_Exit(pCharDesc2, static_cast<_uint>(CharObj2));
         pCharDesc2->pGameObject->Collision_Exit(pCharDesc1, static_cast<_uint>(CharObj1));
-    }
+    }*/
     
     return;
 }
