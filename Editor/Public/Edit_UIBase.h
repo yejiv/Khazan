@@ -95,7 +95,7 @@ private:
 	_int					m_iSeleteTrackIndex = {};
 	_uint					m_iCurrentKeyFrameIndex = {};
 
-	//ÆùÆ® °ü·Ã
+	//í°íŠ¸ ê´€ë ¨
 	CShader*				m_pFontShaderCom = { nullptr };
 
 	_bool					m_bIsTextBox = { false };

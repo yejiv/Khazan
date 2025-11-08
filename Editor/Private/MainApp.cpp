@@ -1,4 +1,4 @@
-﻿#include "MainApp.h"
+#include "MainApp.h"
 #include "GameInstance.h"
 #include "Level_Loading.h"
 
