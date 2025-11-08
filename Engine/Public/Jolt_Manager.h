@@ -27,7 +27,7 @@
 #include <Jolt/Physics//Collision/CollisionCollectorImpl.h>
 #include <Jolt/Physics/Collision/GroupFilterTable.h>
 #ifdef new
-#pragma pop_macro("new") // DBG_NEW º¹¿ø
+#pragma pop_macro("new") // DBG_NEW ë³µì›
 #endif
 
 #ifdef _DEBUG
@@ -50,7 +50,7 @@ private:
     virtual ~CJolt_Manager() = default;
 
 public:
-    // ÃÊ±âÈ­/Á¾·á/½ºÅÜ
+    // ì´ˆê¸°í™”/ì¢…ë£Œ/ìŠ¤í…
     HRESULT Initialize(_uint iNumObjectLayer);
     void    Update(_float fDeltaTime);
 
@@ -110,14 +110,14 @@ private:
     ID3D11DeviceContext* m_pContext = { nullptr };
     class CGameInstance* m_pGameInstance = { nullptr };
 
-    // ÇÊ¼ö ±¸¼º¿ä¼Ò
+    // í•„ìˆ˜ êµ¬ì„±ìš”ì†Œ
     PhysicsSystem* m_pPhysics = { nullptr };
     TempAllocatorImpl* m_pTempAlloc = { nullptr };
     JobSystemThreadPool* m_pJobSystem = { nullptr };
 
     PhysicsSettings		m_PhysicsSetting;
 
-    // ·¹ÀÌ¾î/ÇÊÅÍ/¸®½º³Ê
+    // ë ˆì´ì–´/í•„í„°/ë¦¬ìŠ¤ë„ˆ
     CJolt_BPLayerIF*                     m_pBPLayerIF = { nullptr };
     CJolt_ObjectLayerPairFilter*         m_pObjectLayerPairFilter = { nullptr };
     CJolt_ObjectVsBPLayerFilter*         m_pObjectVsBPLayerFilter = { nullptr };
@@ -133,7 +133,7 @@ private:
 
     vector<RayCastDesc>  m_RayCasts;
 private:
-    // »ı¼º ÆÄ¶ó¹ÌÅÍ º¸°ü(¼±ÅÃ)
+    // ìƒì„± íŒŒë¼ë¯¸í„° ë³´ê´€(ì„ íƒ)
     _uint m_iMaxBodies = { 2048 };
     _uint m_iNumBodyMutexes = {};
     _uint m_iMaxBodyPairs = { 10240 };
@@ -150,7 +150,7 @@ private:
 #endif
 
 public:
-    // ¿£Áø ¸Å´ÏÀú ÆĞÅÏ
+    // ì—”ì§„ ë§¤ë‹ˆì € íŒ¨í„´
     static CJolt_Manager* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iNumObjectLayer);
     virtual void Free() override;
 };

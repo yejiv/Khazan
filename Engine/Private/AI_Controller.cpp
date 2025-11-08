@@ -207,7 +207,7 @@ HRESULT CAI_Controller::LoadBTNode(const JSON& j, AIBTNODE_DATA& Node)
                 delete pChild;
                 return E_FAIL;
             }
-             //ºÎ¸ð Æ÷ÀÎÅÍ ¼³Á¤
+             //ë¶€ëª¨ í¬ì¸í„° ì„¤ì •
             pChild->Parent = &Node;
             Node.Children.push_back(pChild);
         }

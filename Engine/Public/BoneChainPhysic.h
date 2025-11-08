@@ -17,11 +17,11 @@
 #include <Jolt/Physics/Constraints/SwingTwistConstraint.h>
 #include <Jolt/Physics/Body/BodyLockMulti.h>
 #include <Jolt/Physics/Constraints/DistanceConstraint.h>
-#include <Jolt/Physics/Collision/GroupFilterTable.h>   // ¡Ú
-#include <Jolt/Physics/Collision/CollisionGroup.h>     // ¡Ú
+#include <Jolt/Physics/Collision/GroupFilterTable.h>   // â˜…
+#include <Jolt/Physics/Collision/CollisionGroup.h>     // â˜…
 
 #ifdef new
-#pragma pop_macro("new") // DBG_NEW º¹¿ø
+#pragma pop_macro("new") // DBG_NEW ë³µì›
 #endif
 
 NS_BEGIN(Engine)
@@ -32,17 +32,17 @@ public:
     enum EBCP_Preset : _uint
     {
         BCP_PRESET_Hair = 0,
-        BCP_PRESET_ClothStrip, // Ä¡¸À´Ü/¸ÁÅä µî ¼¼·Î ½ºÆ®¸³
+        BCP_PRESET_ClothStrip, // ì¹˜ë§›ë‹¨/ë§í†  ë“± ì„¸ë¡œ ìŠ¤íŠ¸ë¦½
         BCP_PRESET_Custom
     };
 
     struct BCP_BuildDesc
     {
-        std::vector<std::vector<int>> vBoneChains; // °¢ Ã¼ÀÎ: [root, b1, b2, ...]
+        std::vector<std::vector<int>> vBoneChains; // ê° ì²´ì¸: [root, b1, b2, ...]
         EBCP_Preset ePreset = BCP_PRESET_Hair;
         _float      fCapsuleRadius = 0.015f;
         _bool       isTipCCD = true;
-        _bool       isSelfCollide = false; // Ã¼ÀÎ³¢¸® Ãæµ¹
+        _bool       isSelfCollide = false; // ì²´ì¸ë¼ë¦¬ ì¶©ëŒ
     };
 
     struct BCP_RuntimeParams
@@ -60,15 +60,15 @@ public:
         _float fMassRoot = 0.08f;
         _float fMassTip = 0.02f;
 
-        _int   iSolverIters = 10; // Jolt Àü¿ª
+        _int   iSolverIters = 10; // Jolt ì „ì—­
     };
 
     struct BCP_Chain
     {
-        std::vector<JPH::BodyID>             vBodies;   // ¼¼±×¸ÕÆ®´ç 1°³ (N-1)
-        std::vector<JPH::TwoBodyConstraint*> vCons;     // ¸ğµç ¿¬°á/Á¦ÇÑ
-        std::vector<int>                     vBoneIdx;  // [root, b1, ...] (N°³)
-        std::vector<uint32_t>                vSubGroup; // ¡Ú °¢ ¹Ùµğ SubGroupID
+        std::vector<JPH::BodyID>             vBodies;   // ì„¸ê·¸ë¨¼íŠ¸ë‹¹ 1ê°œ (N-1)
+        std::vector<JPH::TwoBodyConstraint*> vCons;     // ëª¨ë“  ì—°ê²°/ì œí•œ
+        std::vector<int>                     vBoneIdx;  // [root, b1, ...] (Nê°œ)
+        std::vector<uint32_t>                vSubGroup; // â˜… ê° ë°”ë”” SubGroupID
         _float                               fRadius = 0.015f;
     };
 
@@ -80,25 +80,25 @@ public:
     HRESULT Initialize(class CModel* pModel, const BCP_BuildDesc& tBuild, const BCP_RuntimeParams& tParams,
         _uint iRootObjectLayer, _uint iBoneChainObjectLayer, class CTransform** pTransform);
 
-    // ÇÁ·¹ÀÓ ·çÆ¾
-    void SyncRootProxy_PrePhysics(class CModel* pModel, _float fTimeDelta);          // ¡Ú dt ¹İ¿µ
+    // í”„ë ˆì„ ë£¨í‹´
+    void SyncRootProxy_PrePhysics(class CModel* pModel, _float fTimeDelta);          // â˜… dt ë°˜ì˜
     void ApplyBodiesToBones_PostPhysics(class CModel* pModel, _float fTimeDelta);
 
-    // ÀÌº¥Æ®/Á¦¾î
+    // ì´ë²¤íŠ¸/ì œì–´
     void TeleportSnapToSkeleton(class CModel* pModel);
     void SetEnabled(_bool isEnable);
 
-    // ÇÁ¸®¼Â ½ºÀ§Ä¡
+    // í”„ë¦¬ì…‹ ìŠ¤ìœ„ì¹˜
     void ApplyPreset(EBCP_Preset ePreset);
 
 private:
-    // »ı¼º/ÆÄ±«
+    // ìƒì„±/íŒŒê´´
     JPH::BodyID CreateRootKinematicProxy(class CModel* pModel, _int iHeadBone, _float fRadius, _float fHalfHeight);
     void        BuildChain(class CModel* pModel, const std::vector<int>& vBoneIdx, _float fRadius);
     void        DestroyAll();
 
 private:
-    // ³»ºÎ À¯Æ¿
+    // ë‚´ë¶€ ìœ í‹¸
     static JPH::Vec3  ToJ(const _float3& v);
     static JPH::Quat  ToJQ(const _float4& q);
     static _float3    GetBoneWorldPos(CModel* pModel, _int iBoneIdx, _matrix OwnerMatrix);
@@ -108,23 +108,23 @@ private:
     void              ConfigureByPreset(EBCP_Preset ePreset);
 
 private:
-    // ¿ÜºÎ
+    // ì™¸ë¶€
     JPH::PhysicsSystem* m_pPhysics = nullptr;
     JPH::BodyInterface* m_pBI = nullptr;
 
-    // ¸®¼Ò½º
-    JPH::BodyID         m_tRootProxy; // Kinematic (Head/Neck µî)
+    // ë¦¬ì†ŒìŠ¤
+    JPH::BodyID         m_tRootProxy; // Kinematic (Head/Neck ë“±)
     std::vector<BCP_Chain> m_vChains;
 
-    // ÆÄ¶ó¹ÌÅÍ
+    // íŒŒë¼ë¯¸í„°
     BCP_RuntimeParams   m_tParams;
     EBCP_Preset         m_ePreset = BCP_PRESET_Hair;
 
-    // ·çÆ® ÇÁ·Ï½Ã ¸ğ¾ç
+    // ë£¨íŠ¸ í”„ë¡ì‹œ ëª¨ì–‘
     _float m_fRootProxyRadius = 0.02f;
     _float m_fRootProxyHalf = 0.03f;
 
-    // »óÅÂ
+    // ìƒíƒœ
     _bool  m_isEnabled = true;
     _int   m_iHeadBone = -1;
 
@@ -133,14 +133,14 @@ private:
 
     class CTransform* m_pOwnerTransform = { nullptr };
 
-    // ·çÆ® Æ÷Áî/¼Óµµ ÃßÁ¤
+    // ë£¨íŠ¸ í¬ì¦ˆ/ì†ë„ ì¶”ì •
     JPH::Vec3  m_prevRootPos = JPH::Vec3::sZero();
     JPH::Quat  m_prevRootRot = JPH::Quat::sIdentity();
     _bool      m_hasPrevRoot = false;
     _float     m_lastDT = 1.f / 60.f;
 
-    // ¡Ú Ãæµ¹ ±×·ì/ÇÊÅÍ
-    JPH::Ref<JPH::GroupFilterTable> m_pGroupFilter; // Ä³¸¯ÅÍ Àü¿ë
+    // â˜… ì¶©ëŒ ê·¸ë£¹/í•„í„°
+    JPH::Ref<JPH::GroupFilterTable> m_pGroupFilter; // ìºë¦­í„° ì „ìš©
     uint32_t                        m_GroupID = 0;
     uint32_t                        m_NextSubGroup = 0;
 

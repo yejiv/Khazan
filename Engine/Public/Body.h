@@ -22,7 +22,7 @@
 #include <Jolt/Physics/Collision/Shape/ScaledShape.h>
 
 #ifdef new
-#pragma pop_macro("new") // DBG_NEW º¹¿ø
+#pragma pop_macro("new") // DBG_NEW ë³µì›
 #endif
 
 NS_BEGIN(Engine)
@@ -46,8 +46,8 @@ public:
 
 		_float3		vShapeOffset = { 0.f, 0.f, 0.f };
 		_float4		vShapeRotation = { 0.f, 0.f, 0.f, 1.f };
-		// Dynamic Àü¿ë ¿É¼Ç
-		_float          fMass = 1.0f; // ÇÊ¿ä ½Ã »ç¿ë
+		// Dynamic ì „ìš© ì˜µì…˜
+		_float          fMass = 1.0f; // í•„ìš” ì‹œ ì‚¬ìš©
 		EMotionQuality  eQuality = EMotionQuality::Discrete;
 		_float		fAngularDamping = 0.05f;
 
@@ -126,7 +126,7 @@ private:
 	BodyID			m_BodyID;
 	BodyInterface* m_pBodyInterface = { nullptr };
 
-	// º¸Á¶ ÀúÀå
+	// ë³´ì¡° ì €ì¥
 	EMotionType				m_eMotion = EMotionType::Static;
 	_uint					m_iObjectLayer = 0;
 

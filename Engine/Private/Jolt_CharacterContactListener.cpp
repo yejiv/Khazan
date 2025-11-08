@@ -2,7 +2,7 @@
 #include "GameObject.h"
 #include "GameInstance.h"
 
-// -------------------- »ı¼ºÀÚ --------------------
+// -------------------- ìƒì„±ì --------------------
 CJolt_CharacterContactListener::CJolt_CharacterContactListener(BodyInterface* pBodyInterface)
     : m_pBodyInterface { pBodyInterface }
     , m_pGameInstance { CGameInstance::GetInstance() }

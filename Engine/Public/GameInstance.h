@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Engine_Defines.h"
 #include "Prototype_Manager.h"

@@ -18,7 +18,7 @@ unsigned int CBase::Release()
 	{
 		Free();
 
-		/* »èÁ¦ÇÑ´Ù. */
+		/* ì‚­ì œí•œë‹¤. */
 		delete this;
 
 		return 0;

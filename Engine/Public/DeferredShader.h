@@ -20,7 +20,7 @@ public:
 
     HRESULT Begin(_uint iPassIdx, ID3D11DeviceContext* pContext);
 
-    // === Bind helpers (ÇöÀç ¿öÄ¿ÀÇ Effect¿¡ ¹ÙÀÎµå) ===
+    // === Bind helpers (í˜„ì¬ ì›Œì»¤ì˜ Effectì— ë°”ì¸ë“œ) ===
     HRESULT Bind_RawValue(const _char* szName, const void* data, _uint byteSize);
     HRESULT Bind_Matrix(const _char* szName, const _float4x4* m);
     HRESULT Bind_Matrices(const _char* szName, const _float4x4* m, _uint count);
@@ -32,7 +32,7 @@ public:
     HRESULT Bind_IntArray(const _char* szName, const _int* pData, _uint count);
     HRESULT Bind_BoolArray(const _char* szName, const _bool* pData, _uint count);
 
-    // ÆĞ½º °³¼ö Á¶È¸(µğ¹ö±ë¿ë)
+    // íŒ¨ìŠ¤ ê°œìˆ˜ ì¡°íšŒ(ë””ë²„ê¹…ìš©)
     _uint GetNumPasses() const { return m_iNumPasses; }
 
 public:
@@ -44,14 +44,14 @@ public:
     virtual void Free() override;
 
 private:
-    // ³»ºÎ À¯Æ¿
+    // ë‚´ë¶€ ìœ í‹¸
     ID3DX11Effect* GetEffectForCurrentThread() const;
     HRESULT         BuildInputLayoutsFromEffect(ID3DX11Effect* pEffect,
         const D3D11_INPUT_ELEMENT_DESC* pElements, _uint iNumElements);
 
 private:
-    vector<ID3DX11Effect*>      m_vEffects;        // threadº° µ¶¸³ Effect
-    vector<ID3D11InputLayout*>  m_InputLayouts;    // passº° °øÀ¯ InputLayout
+    vector<ID3DX11Effect*>      m_vEffects;        // threadë³„ ë…ë¦½ Effect
+    vector<ID3D11InputLayout*>  m_InputLayouts;    // passë³„ ê³µìœ  InputLayout
 
     _uint                       m_iNumPasses = 0;
 };

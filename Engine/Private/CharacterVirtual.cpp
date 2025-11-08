@@ -126,7 +126,7 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vecto
 		const bool onGround =
 			(ground_state == JPH::CharacterVirtual::EGroundState::OnGround);
 
-		// === 1) m_vVelocity¸¦ ±âÁØÀ¸·Î Áß·Â / Áö¸é º¸Á¤ ===
+		// === 1) m_vVelocityë¥¼ ê¸°ì¤€ìœ¼ë¡œ ì¤‘ë ¥ / ì§€ë©´ ë³´ì • ===
 
 		if (!onGround)
 		{
@@ -147,8 +147,8 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vecto
 			m_vVelocity.SetX(horiz.GetX());
 			m_vVelocity.SetZ(horiz.GetZ());
 
-			// 3) (¼±ÅÃ) ÅÍ¹Ì³Î ¼Óµµ Á¦ÇÑ
-			float maxFallSpeed = -50.0f;               // ¿øÇÏ´Â °ª
+			// 3) (ì„ íƒ) í„°ë¯¸ë„ ì†ë„ ì œí•œ
+			float maxFallSpeed = -50.0f;               // ì›í•˜ëŠ” ê°’
 			if (m_vVelocity.GetY() < maxFallSpeed)
 				m_vVelocity.SetY(maxFallSpeed);
 		}
@@ -163,7 +163,7 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vecto
 			_float speed = horiz.Length();
 			if (speed > 0.0f)
 			{
-				_float decel = m_fLoss * fFixedDt; // ÃÊ´ç 25¾¿ ÁÙÀÌ±â (Æ©´×)
+				_float decel = m_fLoss * fFixedDt; // ì´ˆë‹¹ 25ì”© ì¤„ì´ê¸° (íŠœë‹)
 				_float newSpeed = max(0.0f, speed - decel);
 				horiz *= (newSpeed / speed);
 			}
@@ -183,7 +183,7 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vecto
 
 		m_pCharVir->SetLinearVelocity(final_vel);
 
-		// === 3) Ãæµ¹ / °è´Ü / °æ»ç Ã³¸® ===
+		// === 3) ì¶©ëŒ / ê³„ë‹¨ / ê²½ì‚¬ ì²˜ë¦¬ ===
 		m_pGameInstance->CharVir_ExtendedUpdate(
 			fFixedDt,
 			m_pCharVir,
@@ -212,7 +212,7 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vecto
 		m_fAcc -= fFixedDt;
 	}
 
-	// === 5) º¸°£ÇØ¼­ Transform¿¡ Àû¿ë ===
+	// === 5) ë³´ê°„í•´ì„œ Transformì— ì ìš© ===
 	const _float fAlpha = (fFixedDt > 0.f) ? (m_fAcc / fFixedDt) : 1.f;
 	const _float fSmoothAlpha = Smoothstep(fAlpha);
 
@@ -249,7 +249,7 @@ void CCharacterVirtual::Update(_float fTimeDelta, _vector& outQuatRotation, _vec
 		const bool onGround =
 			(ground_state == JPH::CharacterVirtual::EGroundState::OnGround);
 
-		// === 1) m_vVelocity¸¦ ±âÁØÀ¸·Î Áß·Â / Áö¸é º¸Á¤ ===
+		// === 1) m_vVelocityë¥¼ ê¸°ì¤€ìœ¼ë¡œ ì¤‘ë ¥ / ì§€ë©´ ë³´ì • ===
 
 		if (!onGround)
 		{
@@ -270,8 +270,8 @@ void CCharacterVirtual::Update(_float fTimeDelta, _vector& outQuatRotation, _vec
 			m_vVelocity.SetX(horiz.GetX());
 			m_vVelocity.SetZ(horiz.GetZ());
 
-			// 3) (¼±ÅÃ) ÅÍ¹Ì³Î ¼Óµµ Á¦ÇÑ
-			float maxFallSpeed = -50.0f;               // ¿øÇÏ´Â °ª
+			// 3) (ì„ íƒ) í„°ë¯¸ë„ ì†ë„ ì œí•œ
+			float maxFallSpeed = -50.0f;               // ì›í•˜ëŠ” ê°’
 			if (m_vVelocity.GetY() < maxFallSpeed)
 				m_vVelocity.SetY(maxFallSpeed);
 		}
@@ -286,7 +286,7 @@ void CCharacterVirtual::Update(_float fTimeDelta, _vector& outQuatRotation, _vec
 			_float speed = horiz.Length();
 			if (speed > 0.0f)
 			{
-				_float decel = m_fLoss * fFixedDt; // ÃÊ´ç 25¾¿ ÁÙÀÌ±â (Æ©´×)
+				_float decel = m_fLoss * fFixedDt; // ì´ˆë‹¹ 25ì”© ì¤„ì´ê¸° (íŠœë‹)
 				_float newSpeed = max(0.0f, speed - decel);
 				horiz *= (newSpeed / speed);
 			}
@@ -306,7 +306,7 @@ void CCharacterVirtual::Update(_float fTimeDelta, _vector& outQuatRotation, _vec
 
 		m_pCharVir->SetLinearVelocity(final_vel);
 
-		// === 3) Ãæµ¹ / °è´Ü / °æ»ç Ã³¸® ===
+		// === 3) ì¶©ëŒ / ê³„ë‹¨ / ê²½ì‚¬ ì²˜ë¦¬ ===
 		m_pGameInstance->CharVir_ExtendedUpdate(
 			fFixedDt,
 			m_pCharVir,
@@ -335,7 +335,7 @@ void CCharacterVirtual::Update(_float fTimeDelta, _vector& outQuatRotation, _vec
 		m_fAcc -= fFixedDt;
 	}
 
-	// === 5) º¸°£ÇØ¼­ Transform¿¡ Àû¿ë ===
+	// === 5) ë³´ê°„í•´ì„œ Transformì— ì ìš© ===
 	const _float fAlpha = (fFixedDt > 0.f) ? (m_fAcc / fFixedDt) : 1.f;
 	const _float fSmoothAlpha = Smoothstep(fAlpha);
 
