@@ -9,6 +9,7 @@ NS_BEGIN(Engine)
 class CShader;
 class CModel;
 class CXPBD;
+class CBody;
 NS_END
 
 NS_BEGIN(Client)
@@ -29,12 +30,13 @@ private:
 	virtual ~CBody_Khazan_Sample() = default;
 
 public:
-	_float4x4* Get_BoneMatrix(const _char* pBoneName);
-	void		Set_matSpearFX(_float4x4* mat) { m_pSpearFX_Matrix = mat; }
-	void		Set_matSpearWeaponR(_float4x4* mat) { m_pSpearWeaponR_Matrix = mat; }
-	void		Set_matSpearOffset(_matrix mat) { m_SpearOffset_Matrix = mat; }
-	void		Set_matWorldSpearBladeFX(_float4x4* mat) { m_SpearFX_WorldMatrix = mat; }
-	void		Set_matWorldSpearEndFX(_float4x4* mat) { m_SpearEndFX_WorldMatrix = mat; }
+
+	_float4x4*  Get_BoneMatrix(const _char* pBoneName);
+	//void		Set_matSpearFX(_float4x4* mat) { m_pSpearFX_Matrix = mat; }
+	//void		Set_matSpearWeaponR(_float4x4* mat) { m_pSpearWeaponR_Matrix = mat; }
+	//void		Set_matSpearOffset(_matrix mat) { m_SpearOffset_Matrix = mat; }
+	//void		Set_matWorldSpearBladeFX(_float4x4* mat) { m_SpearFX_WorldMatrix = mat; }
+	//void		Set_matWorldSpearEndFX(_float4x4* mat) { m_SpearEndFX_WorldMatrix = mat; }
 
 public:
 	OUTLINE_CONFIG Get_OutlineConfig() { return m_OutlineConfig; }
@@ -63,9 +65,22 @@ private:
 	CShader*			m_pShaderCom = { nullptr };
 	CModel*				m_pModelCom = { nullptr };
 
-	_float4x4*			m_pSpearWeaponR_Matrix = { nullptr };  //손잡는 부분
-	_float4x4*			m_pSpearFX_Matrix = { nullptr };		//창날 
-	_matrix				m_SpearOffset_Matrix = {};
+
+	/* 로컬  */
+	_float4x4*	m_pSpearTip1_Matrix = { nullptr };		//창 날1
+	_float4x4*	m_pSpearTip2_Matrix = { nullptr };		//창 날2
+	_float4x4*	m_pWeaponR_Matrix   = { nullptr };		//손잡이
+	_float4x4*	m_pSpearEnd1_Matrix = { nullptr };		//창 끝1
+	_float4x4*	m_pSpearEnd2_Matrix = { nullptr };		//창 끝2
+
+	/* 월드 (포인터형 아님!!) */
+	_float4x4	m_pSpearTip1_MatrixW;		//창 날1
+	_float4x4	m_pSpearTip2_MatrixW;		//창 날2
+	_float4x4	m_pWeaponR_MatrixW;			//손잡이
+	_float4x4	m_pSpearEnd1_MatrixW;		//창 끝1
+	_float4x4	m_pSpearEnd2_MatrixW;		//창 끝2
+	
+
 
 	_float4x4*			m_SpearFX_WorldMatrix = { nullptr };
 	_float4x4*			m_SpearEndFX_WorldMatrix = { nullptr };
@@ -95,11 +110,20 @@ private:
 	class CXPBD* m_pXPBD = { nullptr };
 	class CMeshTrail* m_pTrail = { nullptr };
 
+	/* 디버그용 */
+	CBody* m_pBody1 = { nullptr };
+	CBody* m_pBody2 = { nullptr };
+	CBody* m_pBody3 = { nullptr };
+	CBody* m_pBody4 = { nullptr };
+	CBody* m_pBody5 = { nullptr };
+
 private:
 	HRESULT Ready_Components();
 	HRESULT Ready_AnimationEvent();
 
 	HRESULT Ready_BonePhysics();
+	HRESULT	Ready_Collider();
+	void	Update_Collider(_float fTimeDelta);
 
 	HRESULT Bind_ShaderResources();
 
