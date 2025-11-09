@@ -3,6 +3,7 @@
 #include "ClientInstance.h"
 
 #include "UI_Atlas_Icon.h"
+#include "UI_TextBox.h"
 
 CSkill_Slot::CSkill_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Slot{ pDevice , pContext}
@@ -27,12 +28,22 @@ void CSkill_Slot::Setting_Skill()
         m_pIcon->Update_Scaling(1.5f);
         m_pIcon->Set_Color({ 1.f,1.f,1.f,0.8f });
         m_pLine->Set_Color({ 1.f,1.f,1.f,0.8f });
-        m_vColor = { 1.f,1.f,1.f, 0.8f };
+       
+        if (m_pSkilData->iMaxPoint >= 2)
+        {
+            m_pPointBG->Update_Visible(false);
+            m_pSkillPointText->Update_Visible(false);
+        }
     }
     else
     {
         m_pIcon->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV(WStringToAnsi(m_pSkilData->wstrIcon), m_pSkilData->iTexPass), m_pSkilData->iTexPass);
         m_pIcon->Update_Scaling(1.f);
+        if (m_pSkilData->iMaxPoint >= 2)
+        {
+            m_pPointBG->Update_Visible(true);
+            m_pSkillPointText->Update_Visible(true);
+        }
     }
 }
 
@@ -88,6 +99,7 @@ HRESULT CSkill_Slot::Initialize_Clone(void* pArg)
     m_pGameInstance->Subscribe_Event<EVENT_SKILL_OPEN>(ENUM_CLASS(EVENT_TYPE::SKILL_EVENT), [&](const EVENT_SKILL_OPEN& e)
         { Setting_Skill();});
 
+
 	return S_OK;
 }
 
@@ -124,18 +136,28 @@ void CSkill_Slot::Update(_float fTimeDelta)
 
     if (m_iSkillPoint <= 0)
     {
-        m_pIcon->Set_Color({ 1.f,1.f,1.f,0.6f });
+        m_pIcon->Set_Color({ 0.898f, 0.965f, 1.f,0.6f });
         m_pLine->Set_Color({ 1.f,1.f,1.f,0.6f });
-        m_vColor = { 1.f,1.f,1.f, 0.6f };
+
+        for (auto pLine : m_pPreSkillLine)
+            pLine->Set_Color({ 0.f,0.f,0.f,0.6f });
     }
     else
     {
         if (m_pSkilData->iSkillType == 1)
-            m_pIcon->Set_Color({ 0.898f, 0.965f, 1.f,0.8f });
+            m_pIcon->Set_Color({ 0.898f, 0.965f, 1.f, 1.0f });
         else
             m_pIcon->Set_Color({ 0.929f, 0.741f, 0.376f,1.f });
         m_pLine->Set_Color({ 1.f,1.f,1.f,1.f });
-        m_vColor = { 1.f,1.f,1.f, 1.f };
+
+        for (auto pLine : m_pPreSkillLine)
+            pLine->Set_Color({ 1.f,1.f,1.f,1.f });
+    }
+
+    if (m_pSkilData->iMaxPoint >= 2)
+    {
+        _wstring wstrPoint = to_wstring(m_iSkillPoint) + m_wstrMaxCount;
+        m_pSkillPointText->Set_Text(wstrPoint);
     }
     __super::Update(fTimeDelta);
 }
@@ -193,25 +215,118 @@ HRESULT CSkill_Slot::Ready_Child(const SKILL_DB* pData)
         const SKILL_DB* pPreData = CClientInstance::GetInstance()->Get_Data<SKILL_DB>(iPreIndex);
 
         _int iValueY = m_pSkilData->iLevel - pPreData->iLevel;
-        //_int iValueX = m_pSkilData->iSlotX - pPreData->iSlotX;
+        _int iValueX = m_pSkilData->iSlotX - pPreData->iSlotX;
+
+        if (iValueX < 0)
+        {
+            AtlasDesc.fDepth = m_fDepth + 1;
+            AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+            AtlasDesc.szName = "PreSkill_Line";
+            AtlasDesc.vLocalPos = _float2{ 35.f, -80.f + (-80.f * (iValueY - 1)) };
+            AtlasDesc.vLocalSize = { 74.f, 8.f };
+            AtlasDesc.vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_TreeConnect_Bg02_UI.png", 4);
+            AtlasDesc.iShaderPass = 2;
+            AtlasDesc.iTexPass = 4;
+            AtlasDesc.vColor = { 0.f,0.f,0.f,1.f };
+            CUI_Atlas_Icon* pAtlas = static_cast<CUI_Atlas_Icon*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Atlas_Icon"), &AtlasDesc));
+            pAtlas->Update_Rotation(-90.f);
+            m_pPreSkillLine.push_back(pAtlas);
+            m_Children.push_back(pAtlas);
+            Safe_AddRef(pAtlas);
+        }
+        else if(iValueX > 0)
+        {
+            AtlasDesc.fDepth = m_fDepth + 1;
+            AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+            AtlasDesc.szName = "PreSkill_Line";
+            AtlasDesc.vLocalPos = _float2{ -35.f, -80.f + (-80.f * (iValueY - 1)) };
+            AtlasDesc.vLocalSize = { 74.f, 8.f };
+            AtlasDesc.vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_TreeConnect_Bg02_UI.png", 4);
+            AtlasDesc.iShaderPass = 2;
+            AtlasDesc.iTexPass = 4;
+            AtlasDesc.vColor = { 0.f,0.f,0.f,1.f };
+            CUI_Atlas_Icon* pAtlas = static_cast<CUI_Atlas_Icon*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Atlas_Icon"), &AtlasDesc));
+            pAtlas->Update_Rotation(-90.f);
+            m_pPreSkillLine.push_back(pAtlas);
+            m_Children.push_back(pAtlas);
+            Safe_AddRef(pAtlas);
+        }
 
         for (; iValueY > 0; --iValueY)
         {
             AtlasDesc.fDepth = m_fDepth + 1;
             AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
             AtlasDesc.szName = "PreSkill_Line";
-            AtlasDesc.vLocalPos = _float2{ 0.f,32 + (-32.f * iValueY) };
-            AtlasDesc.vLocalSize = { 4.f, 32.f };
-            AtlasDesc.vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Common_ListScroll_Con_UI.png", 4);
-            AtlasDesc.iShaderPass = 1;
+            AtlasDesc.vLocalPos = _float2{ 0.f, -40.f + (-80.f * (iValueY - 1)) };
+            AtlasDesc.vLocalSize = { 8.f, 84.f };
+            AtlasDesc.vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_TreeConnect_Bg02_UI.png", 4);
+            AtlasDesc.iShaderPass = 2;
             AtlasDesc.iTexPass = 4;
-            AtlasDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+            AtlasDesc.vColor = { 0.f,0.f,0.f,0.8f };
             CUI_Atlas_Icon* pAtlas = static_cast<CUI_Atlas_Icon*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Atlas_Icon"), &AtlasDesc));
             m_pPreSkillLine.push_back(pAtlas);
             m_Children.push_back(pAtlas);
             Safe_AddRef(pAtlas);
         }
+
+ 
     }
+
+
+    AtlasDesc.fDepth = m_fDepth - 1.f;
+    AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+    AtlasDesc.szName = "PreSkill_Line";
+    AtlasDesc.vLocalPos = _float2{ 0.f, 28.f };
+    AtlasDesc.vLocalSize = { 70.f, 24.f };
+    AtlasDesc.vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_SlotLevelInfo_Bg.png", 4);
+    AtlasDesc.iShaderPass = 2;
+    AtlasDesc.iTexPass = 4;
+    AtlasDesc.vColor = { 1.f,1.f,1.f,1.f };
+    m_pPointBG = static_cast<CUI_Atlas_Icon*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Atlas_Icon"), &AtlasDesc));
+    m_Children.push_back(m_pPointBG);
+    Safe_AddRef(m_pPointBG);
+
+
+
+    CUIObject::UIOBJECT_DESC TextDesc = {};
+    TextDesc.fDepth = m_fDepth - 1.5f;
+    TextDesc.iUIType = ENUM_CLASS(UITYPE::TEXT);
+    TextDesc.szName = "Skill_Count";
+    TextDesc.vLocalPos = _float2{ 0.f, 0.f };
+    TextDesc.vLocalSize = { m_vLocalSize.x, m_vLocalSize.y };
+    TextDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+    m_pSkillPointText = static_cast<CUI_TextBox*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_TextBox"), &TextDesc));
+
+    if (m_pSkillPointText == nullptr)
+        return E_FAIL;
+
+    CUI_TextBox::TEXTBOX_DESC TextSet = {};
+    TextSet.bIsTextBox = false;
+    TextSet.eTextAlign = TEXT_ALIGN::RIGHT_CENTER;
+    TextSet.fMaxWidth = 0;
+    TextSet.fOffsetHeight = 0;
+    TextSet.iPivotX = 30;
+    TextSet.iPivotY = 42;
+    TextSet.wstrTexttag = TEXT("Blade_Medium_18");
+    TextSet.wstrText = TEXT("1 / 3");
+    TextSet.vColor = { 1.f, 1.f, 1.f, 1.f };
+    m_pSkillPointText->Setting_Text(TextSet);
+    m_Children.push_back(m_pSkillPointText);
+    Safe_AddRef(m_pSkillPointText);
+
+    m_iMaxCount = m_pSkilData->iMaxPoint;
+    m_wstrMaxCount = TEXT(" / ") + to_wstring(m_pSkilData->iMaxPoint);
+    if (m_pSkilData->iMaxPoint >= 2)
+    {
+        m_pPointBG->Update_Visible(true);
+        m_pSkillPointText->Update_Visible(true);
+    }
+    else
+    {
+        m_pPointBG->Update_Visible(false);
+        m_pSkillPointText->Update_Visible(false);
+    }
+    Update_Transform(this, m_vWorldPos);
     return S_OK;
 }
 
@@ -246,4 +361,7 @@ void CSkill_Slot::Free()
     for (auto pLine : m_pPreSkillLine)
         Safe_Release(pLine);
     m_pPreSkillLine.clear();
+
+    Safe_Release(m_pPointBG);
+    Safe_Release(m_pSkillPointText);
 }   

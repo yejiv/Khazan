@@ -297,6 +297,13 @@ _bool CJolt_Manager::RayCast(_float3 vStart, _float3 vEnd, _float& outFraction, 
     return true;
 }
 
+//void CJolt_Manager::Clear()
+//{
+//    m_CharacterVirtuals.clear();
+//    m_BodyDescs.clear();
+//    m_RayCasts.clear();
+//}
+
 #ifdef  _DEBUG
 
 
@@ -357,6 +364,7 @@ void CJolt_Manager::Free()
     Safe_Delete(m_pDebugRenderer);
 #endif
     m_CharacterVirtuals.clear();
+    m_BodyDescs.clear();
 #ifdef _DEBUG
     Safe_Delete(m_DrawFilter);
 #endif

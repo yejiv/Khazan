@@ -640,6 +640,9 @@
     <Filter Include="92.AI\State\Gomdol\FrontAttack">
       <UniqueIdentifier>{63fd2152-db9f-4552-8463-bae7b126c9dc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation\Guard">
+      <UniqueIdentifier>{0fc723ef-4978-4d9e-b7d0-1ad4574510a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1221,6 +1224,15 @@
     <ClInclude Include="..\Public\AS_FrontAttack_Gomdol.h">
       <Filter>92.AI\State\Gomdol\FrontAttack</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Khazan_Spear_Anim_Guard.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Guard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Khazan_Spear_Anim_Guard.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Guard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Khazan_Spear_Anim_Guard.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Guard</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1787,6 +1799,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_FrontAttack_Gomdol.cpp">
       <Filter>92.AI\State\Gomdol\FrontAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Khazan_Spear_Anim_Guard.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Guard</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

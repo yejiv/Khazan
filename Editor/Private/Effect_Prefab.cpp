@@ -36,13 +36,22 @@ HRESULT CEffect_Prefab::Initialize_Prototype()
     m_PrevTrackIdx = -1;
     m_TrackIdx = 0;
 
+    CMeshTrail::TRAIL_DESC MeshDsc;
+    MeshDsc.iTextureIdx = 9;
+    MeshDsc.fLifeTime = .7f;
+    MeshDsc.iDivisionCount = 10.f;
+
     //trail test
     //m_pLineTrail = static_cast<CLineTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_LineTrail"), nullptr));
+    m_pMeshTrail = static_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_MeshTrail"), &MeshDsc));
     CScreenTrail::LINE_TRAIL_DESC dsc;
     dsc.fOffset = 10.f;
     dsc.fLifeTime = 0.2f;
     dsc.iDivisionCount = 10.f;
     dsc.iTextureIdx = 0;
+
+
+
     //offset default : 8.f;
     //lifetime default : 0.4;
     m_pScreenTrail = static_cast<CScreenTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_ScreenTrail"), &dsc));
@@ -65,6 +74,8 @@ void CEffect_Prefab::Priority_Update(_float fTimeDelta)
         ResetChildren();
     else if (!m_bPlaying)
         return ;
+
+    m_fCurTime += fTimeDelta;
 
     /* [DEBUG] */
     if (m_pGameInstance->Key_Pressing(DIK_UP, fTimeDelta))
@@ -126,7 +137,7 @@ void CEffect_Prefab::Priority_Update(_float fTimeDelta)
 
     /* Trail Test */
     //m_pLineTrail->Priority_Update(fTimeDelta);
-    //m_pMeshTrail->Priority_Update(fTimeDelta);
+    m_pMeshTrail->Priority_Update(fTimeDelta);
     m_pScreenTrail->Priority_Update(fTimeDelta);
 }
 
@@ -160,8 +171,12 @@ void CEffect_Prefab::Update(_float fTimeDelta)
 
     //m_pLineTrail->Add_ControlPoint(m_pTransformCom->Get_State(STATE::POSITION));
     //m_pLineTrail->Update(fTimeDelta);
-    //m_pMeshTrail->Add_ControlPoint(m_pTransformCom->Get_State(STATE::POSITION), XMVectorSetY(m_pTransformCom->Get_State(STATE::POSITION), XMVectorGetY(m_pTransformCom->Get_State(STATE::POSITION)) + 2.f));
-    //m_pMeshTrail->Update(fTimeDelta);
+
+    _matrix world = m_pTransformCom->Get_WorldMatrix() * XMMatrixTranslation(0.f, 2.f, 0.f);
+
+
+    m_pMeshTrail->Add_ControlPoint(world.r[3], m_pTransformCom->Get_State(STATE::POSITION));
+    m_pMeshTrail->Update(fTimeDelta);
 
     
     POINT ptMouse{};
@@ -185,7 +200,7 @@ void CEffect_Prefab::Late_Update(_float fTimeDelta)
 
     /* Trail Test */
     //m_pLineTrail->Late_Update(fTimeDelta);
-    //m_pMeshTrail->Late_Update(fTimeDelta);
+    m_pMeshTrail->Late_Update(fTimeDelta);
     m_pScreenTrail->Late_Update(fTimeDelta);
 }
 

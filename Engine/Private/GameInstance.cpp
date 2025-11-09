@@ -879,6 +879,8 @@ HRESULT CGameInstance::Initialize_Jolt(_uint iNumObjectLayer)
 	m_pJolt_Manager = CJolt_Manager::Create(GetDevice(), GetImmediate(), iNumObjectLayer);
 	if (nullptr == m_pJolt_Manager)
 		return E_FAIL;
+
+	return S_OK;
 }
 void CGameInstance::Destroy_Jolt()
 {
@@ -1177,6 +1179,10 @@ void CGameInstance::Set_FogNoiseWorldSpace(_bool isEnable)
 {
 	m_pFog->Set_FogNoiseWorldSpace(isEnable);
 }
+void CGameInstance::Start_FogTransition(_float fDuration, const FOG_TRANSITION_DESC& Desc)
+{
+	m_pFog->Start_FogTransition(fDuration, Desc);
+}
 #pragma endregion
 
 #pragma region VIGNETTE
@@ -1264,14 +1270,24 @@ void CGameInstance::Add_Effect_ToPool(_uint iLayerLevelIndex, const _wstring& st
 	m_pEffect_Manager->Add_Effect_ToPool(iLayerLevelIndex, strPrototypeTag, iPoolSize);
 }
 
-_uint CGameInstance::Spwan_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector SpwanPos)
+_uint CGameInstance::Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector SpawnPos)
 {
-	return m_pEffect_Manager->Spwan_Effect(iLayerLevelIndex, strPrototypeTag, SpwanPos);
+	return m_pEffect_Manager->Spawn_Effect(iLayerLevelIndex, strPrototypeTag, SpawnPos);
 }
 
-void CGameInstance::Update_Effect_Position(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector SpwanPos)
+_uint CGameInstance::Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector Quaternion, _gvector Position)
 {
-	m_pEffect_Manager->Update_Effect_Position(iLayerLevelIndex, strPrototypeTag, ID, SpwanPos);
+	return m_pEffect_Manager->Spawn_Effect(iLayerLevelIndex, strPrototypeTag, Quaternion, Position);
+}
+
+void CGameInstance::Update_Effect_Position(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector SpawnPos)
+{
+	m_pEffect_Manager->Update_Effect_Position(iLayerLevelIndex, strPrototypeTag, ID, SpawnPos);
+}
+
+void CGameInstance::Update_Effect_World(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector Quaternion, _gvector Position)
+{
+	m_pEffect_Manager->Update_Effect_World(iLayerLevelIndex, strPrototypeTag, ID, Quaternion, Position);
 }
 
 void CGameInstance::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID)

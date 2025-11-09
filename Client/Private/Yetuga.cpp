@@ -79,7 +79,10 @@ void CYetuga::Priority_Update(_float fTimeDelta)
 
 void CYetuga::Update(_float fTimeDelta)
 {
+
     m_pController->Update(this, fTimeDelta);
+
+    //CheckMinDistanceWithPlayer(fTimeDelta);
 
     if (m_isLookAt)
     {
@@ -95,7 +98,6 @@ void CYetuga::Update(_float fTimeDelta)
 
     m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
 
-    //__super::Update(fTimeDelta);
 
 }
 
@@ -569,6 +571,15 @@ HRESULT CYetuga::Ready_AnimEvent()
         });
     pModel->Register_Event("2Hit_Fake", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { 
         m_isLookAt = false; });
+
+    pModel->Register_Event("2Hit_Fake", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+
+        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+        _float fAnimRatio = pModel->MakeRatio();
+        CheckMinDistanceWithPlayer(3.f,fAnimRatio);
+
+        });
+
     pModel->Register_Event("2Hit_One", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
         m_fTurnSpeed = 40.f;
         m_pBody->Set_OnAttackCollision(true);
@@ -578,6 +589,15 @@ HRESULT CYetuga::Ready_AnimEvent()
         m_pBody->Set_OnAttackCollision(false);
         m_isLookAt = false; });
 
+    pModel->Register_Event("2Hit_One", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+
+        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+        _float fAnimRatio = pModel->MakeRatio();
+        CheckMinDistanceWithPlayer(3.f, fAnimRatio);
+
+            });
+
+
     pModel->Register_Event("2Hit_Two", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_fTurnSpeed = 40.f;
         m_pBody->Set_OnAttackCollision(true);
@@ -585,6 +605,15 @@ HRESULT CYetuga::Ready_AnimEvent()
     pModel->Register_Event("2Hit_Two", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { 
         m_pBody->Set_OnAttackCollision(false);
         m_isLookAt = false; });
+
+
+    pModel->Register_Event("2Hit_Two", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+
+        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+        _float fAnimRatio = pModel->MakeRatio();
+        CheckMinDistanceWithPlayer(3.f, fAnimRatio);
+
+            });
 
 #pragma endregion
 
@@ -736,46 +765,73 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("Dampsey_First", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
-        cout << "11111111111111111111111111111111111111111" << endl;
+        
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
 
         });
     pModel->Register_Event("Dampsey_First", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
 
-        cout << "2222222222222222222222222222222222222222222" << endl;
+       
         m_isLookAt = false;
         m_pBody->Set_OnAttackCollision(false);
 
         });
 
+    pModel->Register_Event("Dampsey_First", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+
+        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+        _float fAnimRatio = pModel->MakeRatio();
+        CheckMinDistanceWithPlayer(5.f, fAnimRatio);
+
+        });
+
+
     pModel->Register_Event("Dampsey_Second", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
-        cout << "333333333333333333333333333333333333333333333333" << endl;
+        
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
 
         });
     pModel->Register_Event("Dampsey_Second", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        cout << "444444444444444444444444444444444444444444444444444" << endl;
+        
 
         m_isLookAt = false;
         m_pBody->Set_OnAttackCollision(false);
 
         });
 
+    pModel->Register_Event("Dampsey_Second", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+
+        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+        _float fAnimRatio = pModel->MakeRatio();
+        CheckMinDistanceWithPlayer(5.f, fAnimRatio);
+
+        });
+
+
+
     pModel->Register_Event("Dampsey_Third", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        cout << "5555555555555555555555555555555555555555555" << endl;
+       
 
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
 
         });
     pModel->Register_Event("Dampsey_Third", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        cout << "66666666666666666666666666666666666666666666666" << endl;
+       
 
         m_isLookAt = false;
         m_pBody->Set_OnAttackCollision(false);
+
+        });
+
+    pModel->Register_Event("Dampsey_Third", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+
+        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+        _float fAnimRatio = pModel->MakeRatio();
+        CheckMinDistanceWithPlayer(5.f, fAnimRatio);
 
         });
 
@@ -793,6 +849,15 @@ HRESULT CYetuga::Ready_AnimEvent()
 
         });
 
+    pModel->Register_Event("Dampsey_Forth", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+
+        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+        _float fAnimRatio = pModel->MakeRatio();
+        CheckMinDistanceWithPlayer(5.f, fAnimRatio);
+
+        });
+
+
     pModel->Register_Event("Dampsey_Final", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
         m_isLookAt = true;
@@ -805,6 +870,15 @@ HRESULT CYetuga::Ready_AnimEvent()
         m_pBody->Set_OnAttackCollision(false);
 
         });
+
+    pModel->Register_Event("Dampsey_Final", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+
+        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+        _float fAnimRatio = pModel->MakeRatio();
+        CheckMinDistanceWithPlayer(5.f, fAnimRatio);
+
+        });
+
 
 
     pModel->Register_Event("Dampsey_After", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -887,17 +961,21 @@ HRESULT CYetuga::Ready_AnimEvent()
     pModel->Register_Event("Jump_Grab_Jump", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", true);
+            m_pBody->Set_OnAttackCollision(true);
+
         });
 
     pModel->Register_Event("Jump_Grab_Jump", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", false);
+         
 
         });
 
     pModel->Register_Event("Grab_Hand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isGrab = true;
+            m_pBody->Set_OnAttackCollision(false);
 
         });
 
@@ -922,6 +1000,7 @@ HRESULT CYetuga::Ready_AnimEvent()
         {
             // 타겟 풀어주기
             m_isGrab = false;
+
         });
 
 #pragma endregion
@@ -931,13 +1010,13 @@ HRESULT CYetuga::Ready_AnimEvent()
     pModel->Register_Event("RushCheck", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_pHead->Set_OnAttackCollision(true);
-            //m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
+            
         });
 
     pModel->Register_Event("RushCheck", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             m_pHead->Set_OnAttackCollision(false);
-            //m_pGameInstance->Remove_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
+            //m_pCharVirCom.Set
         });
 
 

@@ -24,10 +24,44 @@ void CKhazan_Spear_Anim_Attack::Enter()
 void CKhazan_Spear_Anim_Attack::Continue(_float fTimeDelta)
 {
 
+   // if (m_isFastCombo)
+   // {
+   //     /* 콤보공격에서 다음 공격이 가능 한 구간이라면  */
+   //     if (m_pModel->Check_MinAnimationTime() && (*m_pModel->Get_CurTrackPosition() <= m_fFastAttackComboPossibleMaxFrame)) {
+   //         m_isCanNextCombo = true;
+   //     }
+   //     /* 공격 중 */
+   //     else if (!m_pModel->Check_MinAnimationTime())
+   //     {
+   //         m_isAttacking = true;
+   //         m_isCanNextCombo = false;
+   //     }
+   //  
+   //     //else if (m_iCurrentCombo == 3)
+   //     //{
+   //     //    m_isAttacking = false;
+   //     //    m_isCanNextCombo = false;
+   //     //    m_iCurrentCombo = 0;
+   //     //    m_isFastCombo = false;
+
+   //     //    cout << " f33333333333333333333333333" << endl;
+   //     //} 
+   //     /* 다음 공격 가능 한 구간까지 지나감 */
+   //     else
+   //     {
+   //         m_isAttacking = false;
+   //         m_isCanNextCombo = false;
+			//m_iCurrentCombo = 0;
+			//m_isFastCombo = false;
+   //         cout << " fast combo  end section" << endl;
+   //     }
+   // }
+
     if (m_isFastCombo)
     {
-        /* 콤보공격에서 다음 공격이 가능 한 구간이라면  */
-        if (m_pModel->Check_MinAnimationTime() && (*m_pModel->Get_CurTrackPosition() <= m_fFastAttackComboPossibleMaxFrame)) {
+        /* 콤보공격에서 다음 공격이 가능한 구간 */
+        if (m_pModel->Check_MinAnimationTime() && (*m_pModel->Get_CurTrackPosition() <= m_fFastAttackComboPossibleMaxFrame))
+        {
             m_isCanNextCombo = true;
         }
         /* 공격 중 */
@@ -36,18 +70,35 @@ void CKhazan_Spear_Anim_Attack::Continue(_float fTimeDelta)
             m_isAttacking = true;
             m_isCanNextCombo = false;
         }
-        /* 다음 공격 가능 한 구간까지 지나감 */
-        else
+        /* 콤보 3 완료 - 애니메이션이 끝났을 때 */
+        else if (m_iCurrentCombo == 3 && (m_pModel->Check_MinAnimationTime() || m_pModel->IsFinished()))  // IsFinished() 체크 추가
         {
             m_isAttacking = false;
             m_isCanNextCombo = false;
-            //if (m_iCurrentCombo >= 3)
-            //{
-                m_iCurrentCombo = 0;
-                m_isFastCombo = false;
-            //}
+            m_iCurrentCombo = 0;  // 리셋
+            m_isFastCombo = false;
+            cout << "Fast Combo 3 Finished - Reset" << endl;
+        }
+        /* 콤보 중간에 입력이 끊긴 경우 */
+        else if (m_pModel->IsFinished())  // 애니메이션 완료 체크
+        {
+            m_isAttacking = false;
+            m_isCanNextCombo = false;
+            m_iCurrentCombo = 0;  // 리셋
+            m_isFastCombo = false;
+            cout << "Fast combo timeout - Reset" << endl;
+        }
+        /* 다음 공격 가능 한 구간까지 지나감  */
+        else
+        {
+            m_isAttacking = false;
+			m_isCanNextCombo = false;
+			m_iCurrentCombo = 0;
+			m_isFastCombo = false;
+			cout << " fast combo  end section" << endl;
         }
     }
+
     else if (m_isStrongCombo)
     {
         /* 콤보공격에서 다음 공격이 가능 한 구간이라면  */
@@ -64,12 +115,10 @@ void CKhazan_Spear_Anim_Attack::Continue(_float fTimeDelta)
         else
         {
             m_isAttacking = false;
-            m_isCanNextCombo = false;
-            //if (m_iCurrentCombo >= 3)
-            //{
-                m_iCurrentCombo = 0;
-                m_isStrongCombo = false;
-            //}
+			m_isCanNextCombo = false;
+			m_iCurrentCombo = 0;
+			m_isStrongCombo = false;
+
         }
     }
     else if (m_isStrongCharge)
@@ -125,17 +174,18 @@ _bool CKhazan_Spear_Anim_Attack::Try_FallAttack()
 
 _bool CKhazan_Spear_Anim_Attack::Try_FastAttack()
 {
-    if (m_isAttacking && !m_isCanNextCombo)
+    if (m_iCurrentCombo == 3/* &&  !m_pModel->Check_MinAnimationTime()*/)
     {
-        OutputDebugStringA("[Attack] Cannot attack yet\n");
-        return false;
+        m_iCurrentCombo = 0;
+        //cout << "Try_FastAttack blocked - Combo 3 in progress" << endl;
+        //return false;
     }
+    if (m_isAttacking && !m_isCanNextCombo)
+        return false;
+    
     // 최소 애니메이션 시간 체크
     if (!m_pModel->Check_MinAnimationTime() && m_iCurrentCombo > 0)
-    {
-        OutputDebugStringA("[Attack] Min time not passed\n");
         return false;
-    }
 
     if (m_isStrongCombo)
     {
@@ -154,12 +204,14 @@ _bool CKhazan_Spear_Anim_Attack::Try_FastAttack()
         m_iCurrentCombo = 1;
         m_isCanNextCombo = false;
         m_isFastCombo = true;
+        cout << " Try_FastAttack1" << endl;
     }
     else if (m_iCurrentCombo == 1) {
         m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_FastAtk02");
         m_pModel->Set_Animation(m_iSelectedAnimationIndex);
         m_iCurrentCombo = 2;
         m_isCanNextCombo = false;
+        cout << " Try_FastAttack2" << endl;
     }
     else if (m_iCurrentCombo == 2) {
         if (m_pClientInstance->Check_SpearSkill(SPEARSKILL::FULL_MOON))  m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_LightningSpear_Advanced");
@@ -168,7 +220,10 @@ _bool CKhazan_Spear_Anim_Attack::Try_FastAttack()
         m_pModel->Set_Animation(m_iSelectedAnimationIndex);
         m_iCurrentCombo = 3;
         m_isFastCombo = false;
+        cout << " Try_FastAttack3" << endl;
     }
+
+    cout << " Try_FastAttack(end)" << endl;
 
     return true;
 
@@ -242,7 +297,7 @@ _bool CKhazan_Spear_Anim_Attack::Try_SprintFastAttack()
     if (m_isAttacking)
         return false;
     m_isAttacking = true;
-
+    cout << " Try_SprintFastAttack  1111" << endl;
     m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_SprintAtk_Fast");
     m_pModel->Set_Animation(m_iSelectedAnimationIndex);
 
@@ -254,6 +309,7 @@ _bool CKhazan_Spear_Anim_Attack::Try_SprintStrongAttack()
     if (m_isAttacking)
         return false;
     m_isAttacking = true;
+    cout << " Try_SprintStrongAttack  2222" << endl;
 
     m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_SprintAtk_Strong");
     m_pModel->Set_Animation(m_iSelectedAnimationIndex);

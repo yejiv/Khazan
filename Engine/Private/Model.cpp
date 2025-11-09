@@ -591,11 +591,11 @@ void CModel::Set_MasterSkeleton(CModel* pMaster)
     if (nullptr == pMaster)
         return;
 
-    if (m_pMasterSkeleton != nullptr)
+    if (m_pMasterSkeleton != nullptr)       //마스터를 가지고 있었다면 해제하고
         Safe_Release(m_pMasterSkeleton);
 
     m_pMasterSkeleton = pMaster;
-    Safe_AddRef(m_pMasterSkeleton);
+    Safe_AddRef(m_pMasterSkeleton);         //마스터를 add 
 
     m_isSharedSkeleton = true;
     m_isMaterSkeleton = false;
@@ -619,9 +619,9 @@ void CModel::Attach_Part(CModel* pPart)
     if (iter != m_AttachedParts.end())
         return;
 
-    pPart->Set_MasterSkeleton(this);
+    pPart->Set_MasterSkeleton(this);        //여기서 파츠가 마스터를 add (+마스터)
     m_AttachedParts.emplace_back(pPart);
-    Safe_AddRef(pPart);
+    Safe_AddRef(pPart);                 //마스터가 파츠 add (+파츠)
 
     m_isMaterSkeleton = true;
 
@@ -635,12 +635,12 @@ void CModel::Detach_Part(CModel* pPart)
 
     if (pPart->m_pMasterSkeleton == this)
     {
-        Safe_Release(pPart->m_pMasterSkeleton);
+        Safe_Release(pPart->m_pMasterSkeleton); //마스터에서 파츠가 들고있는 마스터를 release (-마스터)
         pPart->m_pMasterSkeleton = nullptr;
         pPart->m_isSharedSkeleton = false;
     }
 
-    Safe_Release(*iter);
+    Safe_Release(*iter);            //마스터가 파츠를 release (-파츠)
     m_AttachedParts.erase(iter);
 }
 

@@ -98,6 +98,8 @@ public:
 public:
     _bool RayCast(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition, _float3* outNormal = nullptr);
 
+//public:
+//    void Clear();
 #ifdef _DEBUG
 
 public:

@@ -10,9 +10,21 @@ CWait_Node::CWait_Node(_float fWaitTime)
 
 BTNODESTATE CWait_Node::Tick(CBlackBoard* BB)
 {
-    m_fElapsed += BB->Get_Value<_float>(m_strName, m_strTag);
+
+    _float fCurrentTime = BB->Get_Value<_float>(m_strName, m_strTag);
+
+    if (!m_isStart)
+    {
+        m_fStartTime = fCurrentTime;
+        m_isStart = true;
+        m_fElapsed = 0.f;
+    }
+
+    m_fElapsed = fCurrentTime - m_fStartTime;
+
     if (m_fElapsed >= m_fWaitTime)
     {
+        m_isStart = false;
         m_fElapsed = 0.f;
         return BTNODESTATE::SUCCESS;
     }
@@ -22,16 +34,15 @@ BTNODESTATE CWait_Node::Tick(CBlackBoard* BB)
 
 void CWait_Node::Terminate(BTNODESTATE eState, CBlackBoard* BB)
 {
-    m_fElapsed = 0.f;
 
 }
 
 void CWait_Node::Abort()
 {
-    m_fElapsed = 0.f;
+
 }
 
-CWait_Node* CWait_Node::Create(const string& strTag, const string& strName, _float fWaitTime)
+CWait_Node* CWait_Node::Create(const string& strName, const string& strTag, _float fWaitTime)
 {
     CWait_Node* pInstance = new CWait_Node(fWaitTime);
     pInstance->m_strName = strName;

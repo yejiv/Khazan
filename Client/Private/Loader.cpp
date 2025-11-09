@@ -84,7 +84,7 @@ _bool CLoader::AllReady(const std::vector<std::future<HRESULT>>& futures)
 {
 	for (auto const& f : futures) {
 		if (f.wait_for(0ms) != std::future_status::ready)
-			return false; // �ϳ��� �غ� �� ������ ��� false
+			return false; 
 	}
 	return true;
 }
@@ -92,7 +92,7 @@ _bool CLoader::AllReady(const std::vector<std::future<HRESULT>>& futures)
 void CLoader::Update()
 {
 	if (!AllReady(m_futures)) {
-		// ���� �ε� ��
+		
 		return;
 	}
 
@@ -263,7 +263,11 @@ HRESULT CLoader::Loading_For_Test_GameObject()
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("SpaceTime_SpearBlood"),
-		CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/blood"))))
+		CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/bloodInv"))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("SpearWind"),
+		CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Spear"))))
 		return E_FAIL;
 
 	return S_OK;
@@ -552,6 +556,16 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
 		CSpear_Khazan_Spear::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+#pragma region ����Ʈ �׽�Ʈ ��!
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"),
+		CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Spear"))))
+		return E_FAIL;
+
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle2"),
+	//	CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/test2"))))
+	//	return E_FAIL;
+#pragma endregion
+
 
 	return S_OK;
 }
@@ -681,7 +695,6 @@ HRESULT CLoader::Loading_For_Crevice_GameObject()
 		CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/test1"))))
 		return E_FAIL;
 #pragma endregion
-
 
 	return S_OK;
 }

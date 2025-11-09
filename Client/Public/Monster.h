@@ -51,6 +51,7 @@ public:
 	const string&				Get_Name() const { return m_strName; }
 	virtual _float4*			Get_LockOnPosition() const { return m_vLockOnPosition; }
 	void						RequestRecoveryStamina() { m_isRequestRecoveryStamina = true; }
+	void						CheckMinDistanceWithPlayer(_float MinDist, _float fAnimRatio);
 
 public:
 	virtual void				Take_Damage(_float fDamage, HITREACTION eHitreaction, _float fValidTime ,CGameObject* pGameObject = nullptr);

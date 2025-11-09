@@ -250,6 +250,7 @@
     <ClInclude Include="..\Public\Khazan_Spear.h" />
     <ClInclude Include="..\public\Khazan_Spear_Animation.h" />
     <ClInclude Include="..\public\Khazan_Spear_Anim_Attack.h" />
+    <ClInclude Include="..\Public\Khazan_Spear_Anim_Guard.h" />
     <ClInclude Include="..\public\Khazan_Spear_Anim_Move.h" />
     <ClInclude Include="..\public\Khazan_Spear_ASMachine.h" />
     <ClInclude Include="..\public\Khazan_Spear_ASManager.h" />
@@ -443,6 +444,7 @@
     <ClCompile Include="..\Private\Khazan_Spear.cpp" />
     <ClCompile Include="..\private\Khazan_Spear_Animation.cpp" />
     <ClCompile Include="..\private\Khazan_Spear_Anim_Attack.cpp" />
+    <ClCompile Include="..\Private\Khazan_Spear_Anim_Guard.cpp" />
     <ClCompile Include="..\private\Khazan_Spear_Anim_Move.cpp" />
     <ClCompile Include="..\private\Khazan_Spear_ASMachine.cpp" />
     <ClCompile Include="..\private\Khazan_Spear_ASManager.cpp" />

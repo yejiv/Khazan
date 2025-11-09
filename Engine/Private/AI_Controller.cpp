@@ -223,7 +223,7 @@ CBTNode* CAI_Controller::CreateBTNode(CGameObject* pOwner, const AIBTNODE_DATA& 
     if (NodeData.strNodeType == "Leaf")
     {
         if (NodeData.strSubtype == "Wait")
-            return CWait_Node::Create(m_strMonstertag, NodeData.strNodeName, NodeData.fWaitTime);
+            return CWait_Node::Create(m_strMonstertag, "CurrentTime", NodeData.fWaitTime);
         else if (NodeData.strSubtype == "Condition")
             return CCondition_Node::Create(GetCallbackCondition(pOwner,NodeData.strCallbackFunction));
         else if (NodeData.strSubtype == "Action")
