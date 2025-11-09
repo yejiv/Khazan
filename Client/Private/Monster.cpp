@@ -17,6 +17,33 @@ CMonster::CMonster(const CMonster& Prototype)
 
 }
 
+void CMonster::CheckMinDistanceWithPlayer(_float fMinDist, _float fAnimRatio)
+{
+    if (nullptr == m_pTarget)
+        return;
+
+    CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+    if (nullptr == pTargetTransform)
+        return;
+
+    _vector vPlayerPos = pTargetTransform->Get_State(STATE::POSITION);
+    _vector vOwnerPos = m_pTransformCom->Get_State(STATE::POSITION);
+
+    _vector vDist = vPlayerPos - vOwnerPos;
+    _float  fDist = XMVectorGetX(XMVector3Length(vDist));
+
+    if (fDist < fMinDist)
+    {
+        _vector vDir = XMVector3Normalize(vDist);
+        _vector vTargetPos = vPlayerPos - vDir * fMinDist;
+
+        _float fLerpSpeed = fAnimRatio * 0.2f;
+
+        _vector vNewOwnerPos = XMVectorLerp(vOwnerPos, vTargetPos, fLerpSpeed);
+        m_pTransformCom->Set_State(STATE::POSITION, vNewOwnerPos);
+    }
+}
+
 void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction, _float fValidTime,CGameObject* pGameObject)
 {
     m_fCurrentHP -= fDamage;

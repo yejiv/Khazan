@@ -22,9 +22,7 @@ BTNODESTATE CWait_Node::Tick(CBlackBoard* BB)
 
     m_fElapsed = fCurrentTime - m_fStartTime;
 
-
-    //if (m_fElapsed >= m_fWaitTime)
-    if(m_fElapsed >= 0.f)
+    if (m_fElapsed >= m_fWaitTime)
     {
         m_isStart = false;
         m_fElapsed = 0.f;

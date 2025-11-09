@@ -90,9 +90,9 @@ HRESULT CBody_Yetuga::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     m_pTransformCom->Scale(_float3(1.3f,1.3f,1.3f));
-
-    m_pLH_BodyCom->Activate(false);
-    m_pRH_BodyCom->Activate(false);
+    
+    m_pLH_BodyCom->Collision_Active(false);
+    m_pRH_BodyCom->Collision_Active(false);
 
     return S_OK;
 }
@@ -107,22 +107,22 @@ void CBody_Yetuga::Update(_float fTimeDelta)
 
     if (m_isOnAttackCollision)
     {
-        m_pLH_BodyCom->Activate(true);
-        m_pRH_BodyCom->Activate(true);
-        m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
 
+        m_pLH_BodyCom->Collision_Active(true);
+        m_pRH_BodyCom->Collision_Active(true);
+        Carculate_Matrix(fTimeDelta);
+        m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
     }
     else
     {
-        m_pLH_BodyCom->Activate(false);
-        m_pRH_BodyCom->Activate(false);
+        m_pLH_BodyCom->Collision_Active(false);
+        m_pRH_BodyCom->Collision_Active(false);
         m_pGameInstance->Remove_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
     }
 
 
     Update_CombinedMatrix();
 
-    Carculate_Matrix(fTimeDelta);
 
 }
 
@@ -210,12 +210,10 @@ HRESULT CBody_Yetuga::Bind_ShaderResources()
 
 void CBody_Yetuga::Carculate_Matrix(_float fTimeDelta)
 {
-    // �� ����� �����´�.
+
     _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix("Weapon_R");
-    // ������ �� ����� ��ü ��� * �� �������  * �θ� ����� ���ؼ� ���� ����� ������ش�.
     XMStoreFloat4x4(&m_RightHandMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
     _vector vOutQuat, vOutPos;
-    // �ݶ��̴��� ���Ž�Ų��.
     m_pRH_BodyCom->Sync_Update(XMLoadFloat4x4(&m_RightHandMatrix));
     m_pRH_BodyCom->Update(fTimeDelta, XMLoadFloat4x4(&m_RightHandMatrix), vOutQuat, vOutPos);
 

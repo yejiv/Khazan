@@ -44,8 +44,6 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
     if (FAILED(Ready_AnimationEvent()))
         return E_FAIL;
 
-
-   // m_pModelCom->Set_Animation(5);
     /* 부모 트랜스폼 연결 */
     m_pModelCom->Set_OwnerTransform(&m_pParentTransform);
 

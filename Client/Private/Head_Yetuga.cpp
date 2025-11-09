@@ -43,6 +43,7 @@ HRESULT CHead_Yetuga::Initialize_Clone(void* pArg)
 ;
 
     m_isOnAttackCollision = false;
+    m_pHeadBodyCom->Collision_Active(false);
 
     return S_OK;
 }
@@ -53,10 +54,21 @@ void CHead_Yetuga::Priority_Update(_float fTimeDelta)
 
 void CHead_Yetuga::Update(_float fTimeDelta)
 {
-  
+ 
+    if (m_isOnAttackCollision)
+    {
+
+        m_pHeadBodyCom->Collision_Active(true);
+        Carculate_Matrix(fTimeDelta);
+    }
+    else
+    {
+        m_pHeadBodyCom->Collision_Active(false);
+    }
+
+
     Update_CombinedMatrix();
-    Carculate_Matrix(fTimeDelta);
-  
+
 }
 
 void CHead_Yetuga::Late_Update(_float fTimeDelta)
@@ -104,6 +116,9 @@ void CHead_Yetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLaye
 {
     
     COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
+
+    if (COLLISION_LAYER::MAP_STATIC == eLayer)
+        m_pOwner->Get_Controller()->AI_React_Collision(pDesc,iOtherObjectLayer,m_pOwner);
 
 }
 
@@ -165,7 +180,7 @@ HRESULT CHead_Yetuga::Ready_Colliders()
     // 쿼터니언
     BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
 
-    BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+    BodyDesc.vShapeOffset = _float3(2.f, 2.f, 0.f);
     m_tCollisionDesc.pGameObject = this;
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
     BodyDesc.bIsTrigger = true;
@@ -174,40 +189,6 @@ HRESULT CHead_Yetuga::Ready_Colliders()
         return E_FAIL;
 
     return S_OK;
-
-    //CCharacterVirtual::CV_CAPSULESHAPE_DESC tCharVirDesc{};
-
-    //XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(m_pParentMatrix));
-
-    //_vector vScale, vRotation, vPosition;
-    //// 쪼갠다.
-    //XMMatrixDecompose(&vScale, &vRotation, &vPosition, XMLoadFloat4x4(&m_CombinedWorldMatrix));
-    //tCharVirDesc.eShapeType = SHAPE::CAPSULE;
-    //tCharVirDesc.fRadius = 0.5f;
-    //tCharVirDesc.fHeight = 1.f;
-    //tCharVirDesc.vShapeOffset = _float3(0.f,4.f,4.f);
-    //tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
-    //tCharVirDesc.vPos = _float3(vPosition.m128_f32[0], vPosition.m128_f32[1], vPosition.m128_f32[2]);
-    //tCharVirDesc.vQuat = _float4(vRotation.m128_f32[0], vRotation.m128_f32[1], vRotation.m128_f32[2], vRotation.m128_f32[3]);
-
-    //// collision desc 연결
-    //m_tCollisionDesc.pGameObject = this;
-    //tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
-
-    //// component 생성
-    //if (FAILED(CGameObject::Add_Component(
-    //    ENUM_CLASS(LEVEL::STATIC),
-    //    TEXT("Prototype_Component_CharacterVirtual"),
-    //    TEXT("Com_CharacterVirtual"),
-    //    reinterpret_cast<CComponent**>(&m_pCharVirCom),
-    //    &tCharVirDesc)))
-    //{
-    //    return E_FAIL;
-    //}
-
-
-    return S_OK;
-
 
 
 }
