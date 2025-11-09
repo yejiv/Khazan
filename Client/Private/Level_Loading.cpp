@@ -292,7 +292,6 @@ HRESULT CLevel_Loading::Ready_LoadingThread()
 
 HRESULT CLevel_Loading::Ready_ObjectLayer()
 {
-
     // BP
 	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MAP_STATIC), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
 	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));

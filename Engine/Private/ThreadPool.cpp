@@ -1,7 +1,7 @@
 #include "ThreadPool.h"
 #include "GameInstance.h"
 
-thread_local uint32_t t_worker_idx = 0;
+extern thread_local uint32_t t_worker_idx = 0;
 
 CThreadPool::CThreadPool()
     : m_pGameInstance { CGameInstance::GetInstance() }

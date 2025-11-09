@@ -262,12 +262,18 @@ void CBody_Khazan_Spear::Render_Part_Outline(CModel* pModel)
 
 void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
-
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
+    {
+        int a = 0;
+    }
 }
 
 void CBody_Khazan_Spear::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
-
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
+    {
+        int a = 0;
+    }
 }
 
 void CBody_Khazan_Spear::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
