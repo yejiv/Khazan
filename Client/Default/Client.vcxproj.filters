@@ -643,6 +643,15 @@
     <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation\Guard">
       <UniqueIdentifier>{0fc723ef-4978-4d9e-b7d0-1ad4574510a1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Skill_Info">
+      <UniqueIdentifier>{5a56cc7f-5756-44c7-8ce9-18e933763897}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Skill_Info\Panel">
+      <UniqueIdentifier>{333715df-81d1-4cbf-bc0b-06cc54ca0c88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Skill_Info\Info_Tex">
+      <UniqueIdentifier>{0d3cc4f0-3af7-4a50-ad5d-57210adb9347}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1233,6 +1242,18 @@
     <ClInclude Include="..\Public\Khazan_Spear_Anim_Guard.h">
       <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Guard</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Skill_Info.h">
+      <Filter>02.GameObject\UI\Skill_Info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_Info_Panel.h">
+      <Filter>02.GameObject\UI\Skill_Info\Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_Condition_Panel.h">
+      <Filter>02.GameObject\UI\Skill_Info\Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_Info_Tex.h">
+      <Filter>02.GameObject\UI\Skill_Info\Info_Tex</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1802,6 +1823,18 @@
     </ClCompile>
     <ClCompile Include="..\Private\Khazan_Spear_Anim_Guard.cpp">
       <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Guard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_Info.cpp">
+      <Filter>02.GameObject\UI\Skill_Info</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_Info_Panel.cpp">
+      <Filter>02.GameObject\UI\Skill_Info\Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_Condition_Panel.cpp">
+      <Filter>02.GameObject\UI\Skill_Info\Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_Info_Tex.cpp">
+      <Filter>02.GameObject\UI\Skill_Info\Info_Tex</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

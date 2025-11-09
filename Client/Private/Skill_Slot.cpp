@@ -4,6 +4,7 @@
 
 #include "UI_Atlas_Icon.h"
 #include "UI_TextBox.h"
+#include "Skill_Info.h"
 
 CSkill_Slot::CSkill_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Slot{ pDevice , pContext}
@@ -17,7 +18,7 @@ CSkill_Slot::CSkill_Slot(const CSkill_Slot& Prototype)
 
 void CSkill_Slot::Setting_Skill()
 {
-    if (CClientInstance::GetInstance()->Get_PlayerData().iSkillLevel >= m_iLevel)
+    if ((_int)CClientInstance::GetInstance()->Get_PlayerData().iSkillLevel >= m_iLevel)
         m_isLock = false;
     else
         m_isLock = true;
@@ -59,6 +60,27 @@ void CSkill_Slot::On_PreSkill(const EVENT_SKILL_ON& e)
             m_iSkillPoint = 0;
         }
     }
+}
+
+void CSkill_Slot::Render_SkillInfo()
+{
+    CSkill_Info::SKILLINFO_DESC Desc = {};
+    Desc.iSkillIndex = m_iSkillIndex;
+
+    switch (m_pSkilData->iSubID)
+    {
+    case 0: Desc.iOffsetPos = { 720.f, 595.f }; break;
+    case 1: Desc.iOffsetPos = { 1020.f, 595.f }; break;
+    case 2: Desc.iOffsetPos = { 1320.f, 595.f }; break;
+    case 3: Desc.iOffsetPos = { 920.f, 595.f }; break;
+    case 4: Desc.iOffsetPos = { 1220.f, 595.f }; break;
+    }
+ 
+    Desc.isEquip = false;
+    m_iSkillPoint > 0 ? Desc.isGet = true : Desc.isGet = false;
+    m_iSkillPoint >= m_iMaxCount ? Desc.isMaxLevel = true : Desc.isMaxLevel = false;
+
+    CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("SkillInfo"), &Desc);
 }
 
 HRESULT CSkill_Slot::Initialize_Prototype(_uint iLevel)
@@ -131,6 +153,7 @@ void CSkill_Slot::Update(_float fTimeDelta)
 
     if (IsPick(g_hWnd))
     {
+        Render_SkillInfo();
         if (CClientInstance::GetInstance()->Get_PlayerData().iSkilPoint > 0 && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB, INPUT_TYPE::UI))
         {
             if (m_iPreSkillIndex == 0 || m_isPreSkillOn)
@@ -398,7 +421,7 @@ HRESULT CSkill_Slot::Ready_Child(const SKILL_DB* pData)
 
 
     CUIObject::UIOBJECT_DESC TextDesc = {};
-    TextDesc.fDepth = m_fDepth - 1.5f;
+    TextDesc.fDepth = m_fDepth - 1.1f;
     TextDesc.iUIType = ENUM_CLASS(UITYPE::TEXT);
     TextDesc.szName = "Skill_Count";
     TextDesc.vLocalPos = _float2{ 0.f, 0.f };
