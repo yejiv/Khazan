@@ -81,13 +81,13 @@ public:
 
 	HRESULT RayCast(_float fTimeDelta);
 
-	const _float4x4* Get_BoneSpearFX_WorldMatrixPtr() { return &m_SpearFX_WorldMatrix; }
-	_matrix Get_BoneSpearFX_WorldMatrix() { return XMLoadFloat4x4(&m_SpearFX_WorldMatrix); }
+	//const _float4x4* Get_BoneSpearFX_WorldMatrixPtr() { return &m_SpearFX_WorldMatrix; }
+	//_matrix Get_BoneSpearFX_WorldMatrix() { return XMLoadFloat4x4(&m_SpearFX_WorldMatrix); }
 
-	const _float4x4* Get_BoneSpearFX_CombinedMatrixPtr() { return m_pSpearFX_Matrix; }
-	_matrix Get_BoneSpearFX_CombinedMatrix() { return XMLoadFloat4x4(m_pSpearFX_Matrix); }
+	//const _float4x4* Get_BoneSpearFX_CombinedMatrixPtr() { return m_pSpearFX_Matrix; }
+	//_matrix Get_BoneSpearFX_CombinedMatrix() { return XMLoadFloat4x4(m_pSpearFX_Matrix); }
 
-	_matrix Get_BoneSpearFX_Offset() { return m_SpearOffset_Matrix; }
+	//_matrix Get_BoneSpearFX_Offset() { return m_SpearOffset_Matrix; }
 
 private:
 	class CBody_Khazan_Sample* m_pBody = { nullptr };
@@ -99,16 +99,18 @@ private:
 	//class CRigidBody*			m_pRigidBodyCom = { nullptr };
 	//CCharacterVirtual*			m_pCharVirCom = { nullptr };
 	_float4x4* m_pWeaponR_Matrix = { nullptr };
-	_float4x4* m_pSpearFX_Matrix = { nullptr };
-	_float4x4					m_SpearFX_WorldMatrix = {};
-	//_float4x4					m_pSpearEndFX_Matrix = {};
-	_float4x4					m_SpearEndFX_WorldMatrix = {};
-	_matrix						m_SpearOffset_Matrix = {};
+	//_float4x4*					m_pSpearFX_Matrix = { nullptr };
+	//_float4x4					m_SpearFX_WorldMatrix = {};
+	////_float4x4					m_pSpearEndFX_Matrix = {};
+	//_float4x4					m_SpearEndFX_WorldMatrix = {};
+	//_matrix						m_SpearOffset_Matrix = {};
+
+	//_float						m_fLocalDistBaseRatio = {};
+	//_float						m_fBladeDist = { 1.f }; //손잡이 부분에서 창날 fx 까지의 거리 배율
+	//_float						m_fEndDist = { 1.f };//손잡이 부분에서 창 끝부분 fx 까지의 거리 배율
 
 
-	_float						m_fLocalDistBaseRatio = {};
-	_float						m_fBladeDist = { 1.f }; //손잡이 부분에서 창날 fx 까지의 거리 배율
-	_float						m_fEndDist = { 1.f };//손잡이 부분에서 창 끝부분 fx 까지의 거리 배율
+
 
 	_bool						m_isEnableControl = { true };
 	_int						m_isMove = { 0 };
@@ -141,7 +143,7 @@ private:
 private:
 	HRESULT				Ready_Components();
 	HRESULT				Ready_PartObjects();
-	//HRESULT				Ready_Collision();
+	HRESULT				Ready_Collision();
 
 private:
 	_int			m_iMaxHp = {};

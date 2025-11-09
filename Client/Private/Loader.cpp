@@ -256,7 +256,11 @@ HRESULT CLoader::Loading_For_Test_GameObject()
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("SpaceTime_SpearBlood"),
-		CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/blood"))))
+		CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/bloodInv"))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("SpearWind"),
+		CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Spear"))))
 		return E_FAIL;
 
 	return S_OK;
@@ -608,17 +612,6 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 		CSpear_Khazan_Spear::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-#pragma region 이펙트 테스트 중!
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpaceTime_SpearBlood"),
-		CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/blood"))))
-		return E_FAIL;
-
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle2"),
-	//	CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/test2"))))
-	//	return E_FAIL;
-#pragma endregion
-
-
 	return S_OK;
 }
 
@@ -741,13 +734,6 @@ HRESULT CLoader::Loading_For_Crevice_GameObject()
 		CSpear_Khazan_Spear::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 #pragma endregion
-
-#pragma region 이펙트 테스트 중!
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_TestParticle"),
-		CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/test1"))))
-		return E_FAIL;
-#pragma endregion
-
 
 	return S_OK;
 }

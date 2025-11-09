@@ -185,7 +185,7 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
 
 	/*Effect test => 혹시 보게되면 지우셔도 됩니다!!!!!!!!! */
 	if (m_pGameInstance->Key_Down(DIK_I))
-		m_pGameInstance->Spwan_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpaceTime_SpearBlood"), XMVectorSet(1.f, 1.f, 1.f, 1.f));
+		m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpaceTime_SpearBlood"), XMVectorSet(1.f, 1.f, 1.f, 1.f));
 	//Test End
 
 	return;

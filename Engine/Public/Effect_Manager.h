@@ -21,10 +21,12 @@ public:
 	void		Add_Effect_ToPool(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint iPoolSize);
 
 	// 2. GameInstance로 호출할 Spwan 함수
-	_uint		Spwan_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector SpwanPos);
+	_uint		Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector SpwanPos);
+	_uint		Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector Quaternion, _gvector Position);
 
 	// 3. Running중인 객체들에 대한 position 업데이트 -> Effect Layers 컨테이너에 접근해서 적용해줄거임
 	void		Update_Effect_Position(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector SpwanPos);
+	void		Update_Effect_World(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector Quaternion, _gvector Position);
 
 	// 4. Loop인 이펙트를 멈추고(Loop를 끈다?) Pool로 돌아가게한다. 주로 맵 이펙트이 자주 쓰일 것 같다. 마찬가지로 Effect Layers 컨테이너에 ID로 접근
 	void		Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID);

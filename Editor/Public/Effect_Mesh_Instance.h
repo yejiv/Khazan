@@ -70,7 +70,6 @@ private :
 	PARTICLE_DESC					m_sEditingData;
 	/*Editing data*/
 	_bool							m_bIsMaskScrolling;
-
 	_float							m_fAccTime;
 
 

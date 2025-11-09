@@ -56,8 +56,8 @@ HRESULT CKhazan_Sample::Initialize_Clone(void* pArg)
     if (FAILED(Ready_PartObjects()))
         return E_FAIL;
 
-    //if (FAILED(Ready_Collision()))
-    //    return E_FAIL;
+    /*if (FAILED(Ready_Collision()))
+        return E_FAIL;*/
 
 
 
@@ -75,9 +75,9 @@ HRESULT CKhazan_Sample::Initialize_Clone(void* pArg)
 
 
     // 손잡이와 창날 거리 비율 구하기
-    _vector vSpearMid = XMVectorSet(m_pWeaponR_Matrix->_41, m_pWeaponR_Matrix->_42, m_pWeaponR_Matrix->_43, 0.f);
-    _vector vSpearBlade = XMVectorSet(m_pSpearFX_Matrix->_41, m_pSpearFX_Matrix->_42, m_pSpearFX_Matrix->_43, 0.f);
-    m_fLocalDistBaseRatio = XMVectorGetX(XMVector3Length(vSpearBlade - vSpearMid));
+    //_vector vSpearMid = XMVectorSet(m_pWeaponR_Matrix->_41, m_pWeaponR_Matrix->_42, m_pWeaponR_Matrix->_43, 0.f);
+    //_vector vSpearBlade = XMVectorSet(m_pSpearFX_Matrix->_41, m_pSpearFX_Matrix->_42, m_pSpearFX_Matrix->_43, 0.f);
+    //m_fLocalDistBaseRatio = XMVectorGetX(XMVector3Length(vSpearBlade - vSpearMid));
 
     return S_OK;
 
@@ -156,7 +156,7 @@ void CKhazan_Sample::Update(_float fTimeDelta)
             if (true == isPicked)
             {
                 m_pTransformCom->Set_State(Engine::STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPickedPos), 1.f));
-                //m_pCharVirCom->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 1.f));
+                m_pCharVirCom->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 1.f));
             }
         }
 
@@ -169,27 +169,6 @@ void CKhazan_Sample::Update(_float fTimeDelta)
 
     __super::Update(fTimeDelta);
 
-    /* 창 뼈 위치 구하기  */
-    XMStoreFloat4x4(&m_SpearFX_WorldMatrix,/* m_SpearOffset_Matrix **/ XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pTransformCom->Get_WorldMatrix());
-
-    _vector vSpearMidPos = XMVectorSet(m_pWeaponR_Matrix->_41, m_pWeaponR_Matrix->_42, m_pWeaponR_Matrix->_43, 0.f);
-    _vector vSpearBladePos = XMVectorSet(m_pSpearFX_Matrix->_41, m_pSpearFX_Matrix->_42, m_pSpearFX_Matrix->_43, 0.f);
-
-    _matrix matMidWorld = m_SpearOffset_Matrix * XMLoadFloat4x4(m_pWeaponR_Matrix) * m_pTransformCom->Get_WorldMatrix();
-    XMStoreFloat4x4(&m_SpearEndFX_WorldMatrix, matMidWorld);
-
-    _vector vSpearMidWorldPos = matMidWorld.r[3];
-    _vector vSpearEnd;
-    vSpearEnd = vSpearMidWorldPos - XMVector3Normalize(vSpearBladePos - vSpearMidPos) * m_fLocalDistBaseRatio * m_fEndDist;
-    m_SpearEndFX_WorldMatrix._41 = vSpearEnd.m128_f32[0];
-    m_SpearEndFX_WorldMatrix._42 = vSpearEnd.m128_f32[1];
-    m_SpearEndFX_WorldMatrix._43 = vSpearEnd.m128_f32[2];
-
-    _vector vWorldbladePos = XMVectorSet(m_SpearFX_WorldMatrix._41, m_SpearFX_WorldMatrix._42, m_SpearFX_WorldMatrix._43, 1.f);
-    vWorldbladePos = vWorldbladePos * m_fLocalDistBaseRatio * m_fBladeDist;
-    m_SpearFX_WorldMatrix._41 = vWorldbladePos.m128_f32[0];
-    m_SpearFX_WorldMatrix._42 = vWorldbladePos.m128_f32[1];
-    m_SpearFX_WorldMatrix._43 = vWorldbladePos.m128_f32[2];
 
 
     RayCast(fTimeDelta);
@@ -701,47 +680,49 @@ HRESULT CKhazan_Sample::Ready_PartObjects()
         return E_FAIL;
 
     m_pSpear = static_cast<CSpear_Khazan_Sample*>(Find_PartObject(TEXT("Part_CKhazan_Sample_Weapon_Spear")));
-    m_pSpearFX_Matrix = m_pSpear->Get_BoneMatrix("FX");
-    m_SpearOffset_Matrix = m_pSpear->Get_OffestMatrix();
+    //m_pSpearFX_Matrix = m_pSpear->Get_BoneMatrix("FX");
+    //m_SpearOffset_Matrix = m_pSpear->Get_OffestMatrix();
     Safe_AddRef(m_pSpear);
 
     /* 넘겨주기  */
     m_pSpear->Set_matWeaponR(m_pWeaponR_Matrix);
-    m_pBody->Set_matSpearFX(m_pSpearFX_Matrix);
-    m_pBody->Set_matSpearOffset(m_SpearOffset_Matrix);
-    m_pBody->Set_matSpearWeaponR(m_pWeaponR_Matrix);
-    m_pBody->Set_matWorldSpearBladeFX(&m_SpearFX_WorldMatrix);
-    m_pBody->Set_matWorldSpearEndFX(&m_SpearEndFX_WorldMatrix);
+    //m_pBody->Set_matSpearWeaponR(m_pWeaponR_Matrix);
+
+    //m_pBody->Set_matSpearFX(m_pSpearFX_Matrix);
+    //m_pBody->Set_matSpearOffset(m_SpearOffset_Matrix);
+    //m_pBody->Set_matWorldSpearBladeFX(&m_SpearFX_WorldMatrix);
+
+    //m_pBody->Set_matWorldSpearEndFX(&m_SpearEndFX_WorldMatrix);
     return S_OK;
 
 }
 
-//HRESULT CKhazan_Sample::Ready_Collision()
-//{
-//    CCharacterVirtual::CV_CAPSULESHAPE_DESC tCharVirDesc{};
-//    _float3 vPos{};
-//    _float4 vQuat{};
-//    XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
-//    XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
-//    tCharVirDesc.eShapeType = SHAPE::CAPSULE;
-//    tCharVirDesc.vPos = vPos;
-//    tCharVirDesc.vQuat = vQuat;
-//    tCharVirDesc.vShapeOffset = _float3(0.f, 0.7f, 0.f);
-//    tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
-//    tCharVirDesc.fRadius = 0.5f;
-//    tCharVirDesc.fHeight = 0.5f;
-//    tCharVirDesc.fMaxSlopeAngle = 45.f;
-//    tCharVirDesc.fMass = 100000.f;
-//    m_tCollisionDesc.pGameObject = this;
-//    //pCollDesc.pInfo = ?? // 작성하기
-//    tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
-//
-//    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
-//        TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
-//        return E_FAIL;
-//
-//    return S_OK;
-//}
+HRESULT CKhazan_Sample::Ready_Collision()
+{
+    CCharacterVirtual::CV_CAPSULESHAPE_DESC tCharVirDesc{};
+    _float3 vPos{};
+    _float4 vQuat{};
+    XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
+    XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
+    tCharVirDesc.eShapeType = SHAPE::CAPSULE;
+    tCharVirDesc.vPos = vPos;
+    tCharVirDesc.vQuat = vQuat;
+    tCharVirDesc.vShapeOffset = _float3(0.f, 0.7f, 0.f);
+    tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
+    tCharVirDesc.fRadius = 0.5f;
+    tCharVirDesc.fHeight = 0.5f;
+    tCharVirDesc.fMaxSlopeAngle = 45.f;
+    tCharVirDesc.fMass = 100000.f;
+    m_tCollisionDesc.pGameObject = this;
+    //pCollDesc.pInfo = ?? // 작성하기
+    tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
+        TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
+        return E_FAIL;
+
+    return S_OK;
+}
 #ifdef _DEBUG
 inline _bool CKhazan_Sample::Has_States()
 {
@@ -771,9 +752,9 @@ void CKhazan_Sample::Debug_Widget()
             ImGui::BulletText("R key Turn Right");
             ImGui::BulletText("U key + LSHIFT  Run (RUN)");
 
-            ImGui::Text("Spear Ratio");
-            ImGui::DragFloat("Blade Dist Ratio ", &m_fBladeDist, 0.01f);
-            ImGui::DragFloat("End Dist Ratio ", &m_fEndDist, 0.01f);
+            //ImGui::Text("Spear Ratio");
+            //ImGui::DragFloat("Blade Dist Ratio ", &m_fBladeDist, 0.01f);
+            //ImGui::DragFloat("End Dist Ratio ", &m_fEndDist, 0.01f);
 
         }
         ImGui::EndChild();
@@ -793,7 +774,7 @@ void CKhazan_Sample::Debug_Widget()
             ImGui::BulletText("LShift + Mouse(LB) Ground click -> teleport");
             ImGui::BulletText("Idle state when not moving");
 
-            _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
+            /*_vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
             char szPlayerPos[128];
             sprintf_s(szPlayerPos, sizeof(szPlayerPos), "Sample Pos : %.2f, %.2f, %.2f",
                 vPos.m128_f32[0],
@@ -803,9 +784,9 @@ void CKhazan_Sample::Debug_Widget()
 
             char szOffset[128];
             sprintf_s(szOffset, sizeof(szOffset), "Offset Pos : %.2f, %.2f, %.2f",
-                m_SpearOffset_Matrix.r[3].m128_f32[0],
-                m_SpearOffset_Matrix.r[3].m128_f32[1],
-                m_SpearOffset_Matrix.r[3].m128_f32[2]);
+               m_SpearOffset_Matrix.r[3].m128_f32[0],
+               m_SpearOffset_Matrix.r[3].m128_f32[1],
+               m_SpearOffset_Matrix.r[3].m128_f32[2]);
             ImGui::Text(szOffset);
 
             char szSpearBlade[128];
@@ -834,7 +815,7 @@ void CKhazan_Sample::Debug_Widget()
                 m_SpearEndFX_WorldMatrix._41,
                 m_SpearEndFX_WorldMatrix._42,
                 m_SpearEndFX_WorldMatrix._43);
-            ImGui::Text(szSpearEnd);
+            ImGui::Text(szSpearEnd);*/
         }
         ImGui::EndChild();
 

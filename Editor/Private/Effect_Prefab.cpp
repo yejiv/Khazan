@@ -75,6 +75,8 @@ void CEffect_Prefab::Priority_Update(_float fTimeDelta)
     else if (!m_bPlaying)
         return ;
 
+    m_fCurTime += fTimeDelta;
+
     /* [DEBUG] */
     if (m_pGameInstance->Key_Pressing(DIK_UP, fTimeDelta))
     {

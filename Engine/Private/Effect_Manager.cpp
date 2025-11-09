@@ -62,7 +62,7 @@ void CEffect_Manager::Add_Effect_ToPool(_uint iLayerLevelIndex, const _wstring& 
 	}
 }
 
-_uint CEffect_Manager::Spwan_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector SpwanPos)
+_uint CEffect_Manager::Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector SpwanPos)
 {
 	auto Pool = Find_Effect_Pool(iLayerLevelIndex, strPrototypeTag);
 	auto RunningLayer = Find_RunningEffect_Layer(strPrototypeTag);
@@ -82,10 +82,37 @@ _uint CEffect_Manager::Spwan_Effect(_uint iLayerLevelIndex, const _wstring& strP
 	return effect->GetID();
 }
 
+_uint CEffect_Manager::Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector Quaternion, _gvector Position)
+{
+	auto Pool = Find_Effect_Pool(iLayerLevelIndex, strPrototypeTag);
+	auto RunningLayer = Find_RunningEffect_Layer(strPrototypeTag);
+
+	if (Pool == nullptr || Pool->size() == 0)
+	{
+		MSG_BOX(TEXT("Effect Pool이 없거나 Pool에 객체가 없어서 Spwan 실패!!! 아마도 객체가 모자를 확률이 큼"));
+		return 0;
+	}
+
+	CPrefab* effect = Pool->back();
+	Pool->pop_back();
+	RunningLayer->push_back(effect);
+	effect->ResetChildren();
+	effect->UpdateWorldMatrix(Quaternion, Position);
+
+	return effect->GetID();
+}
+
 void CEffect_Manager::Update_Effect_Position(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector SpwanPos)
 {
-	auto Layer = Find_Effect_Layer(iLayerLevelIndex, strPrototypeTag); 
+	auto Layer = Find_Effect_Layer(iLayerLevelIndex, strPrototypeTag);
 	(*Layer)[ID]->UpdatePosition(SpwanPos);
+}
+
+void CEffect_Manager::Update_Effect_World(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector Quaternion, _gvector Position)
+{
+	auto Layer = Find_Effect_Layer(iLayerLevelIndex, strPrototypeTag);
+	(*Layer)[ID]->UpdateWorldMatrix(Quaternion, Position);
+
 }
 
 void CEffect_Manager::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID)

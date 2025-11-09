@@ -137,8 +137,6 @@ PS_OUT PS_MAIN(PS_IN In)
     vector vEffectTexture = g_DiffuseTexture.Sample(PointSampler, fScrolledEffectUV);
     vector vFinalColor = float4(g_vSourceColor.xyz, min(vEffectTexture.r, g_vSourceColor.a));
     
-    
-    
     float fDecreaseAlpha = (In.vLifeTime.x / In.vLifeTime.y);
     if (g_IsDissolve == false) 
         vFinalColor.a -= fDecreaseAlpha;
@@ -151,6 +149,8 @@ PS_OUT PS_MAIN(PS_IN In)
     if (vFinalColor.a <= 0.f)
         discard;
 
+    
+    //vFinalColor.a *= 0.2f;
     Out.vColor = vFinalColor;
     //Out.vEmissiveColor = vFinalColor * 3.f;
     //Out.vEmissiveColor.a = 1;
