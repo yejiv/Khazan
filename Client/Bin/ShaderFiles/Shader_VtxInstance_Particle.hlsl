@@ -152,6 +152,10 @@ PS_OUT PS_MAIN(PS_IN In)
         discard;
 
     Out.vColor = vFinalColor;
+    Out.vColor.a = 0.01f;
+    
+    //  Out.vColor = float4(0.f, 1.f, 0.f, 0.01f);
+
     //Out.vEmissiveColor = vFinalColor * 3.f;
     //Out.vEmissiveColor.a = 1;
     

@@ -267,9 +267,41 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster(const _wstring& strLayerTag)
 		ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Yetuga"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
 		return E_FAIL;
 
+
 	/*if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
 		ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Gomdol"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
 		return E_FAIL;*/
+
+	return S_OK;
+}
+
+HRESULT CLevel_HeinMach::Ready_Layer_Test(const _wstring& strLayerTag)
+{
+	// if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+	// 	ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Sample"), TIME_CHANNEL::PLAYER)))
+	// 	return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Test(const _wstring& strLayerTag)
+{
+	//CProp_Test::PROP_TEST_DESC ObjectDesc = {};
+
+	//memcpy(ObjectDesc.szModelName, TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"), sizeof(ObjectDesc.szModelName));
+	//ObjectDesc.eLevel = LEVEL::HEINMACH;
+
+	//CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+	//	ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Test"), &ObjectDesc), E_FAIL);
+
+	return S_OK;
+}
+
+HRESULT CLevel_HeinMach::Ready_Layer_TestEffect(const _wstring& strLayerTag)
+{
+
+	m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), 10);
+>>>>>>> feature/ldb
 
 	return S_OK;
 }

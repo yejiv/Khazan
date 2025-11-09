@@ -346,6 +346,7 @@ public:
 	ID3D11ShaderResourceView*	Get_FogNoiseTexture(_uint iTextureIndex);
 	void						Set_FogNoiseTextureIndex(_uint iTextureIndex);
 	void						Set_FogNoiseWorldSpace(_bool isEnable);
+	void						Start_FogTransition(_float fDuration, const FOG_TRANSITION_DESC& Desc);
 #pragma endregion
 
 #pragma region VIGNETTE
