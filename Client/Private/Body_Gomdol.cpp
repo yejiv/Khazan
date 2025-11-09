@@ -83,14 +83,14 @@ void CBody_Gomdol::Update(_float fTimeDelta)
     {
         m_pLH_BodyCom->Activate(true);
         m_pRH_BodyCom->Activate(true);
-        m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
+        //m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
 
     }
     else
     {
         m_pLH_BodyCom->Activate(false);
         m_pRH_BodyCom->Activate(false);
-        m_pGameInstance->Remove_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
+        //m_pGameInstance->Remove_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
     }
 
 

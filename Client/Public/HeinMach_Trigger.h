@@ -40,7 +40,7 @@ public:
 private:
 	virtual HRESULT Ready_Components(void* pArg) override;
 	HRESULT Ready_Collision(void* pArg);
-	HRESULT Ready_TriggerType(void* pArg);      // Æ®¸®°Å Å¸ÀÔ ¼¼ÆÃ
+	HRESULT Ready_TriggerType(void* pArg);      // íŠ¸ë¦¬ê±° íƒ€ìž… ì„¸íŒ…
     HRESULT Ready_TriggerSetting(void* pArg);
 
 private:

@@ -107,17 +107,17 @@ void CBody_Yetuga::Update(_float fTimeDelta)
 
     if (m_isOnAttackCollision)
     {
-
         m_pLH_BodyCom->Collision_Active(true);
         m_pRH_BodyCom->Collision_Active(true);
         Carculate_Matrix(fTimeDelta);
-        m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
+#ifdef _DEBUG
+        m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK));
+#endif
     }
     else
     {
         m_pLH_BodyCom->Collision_Active(false);
         m_pRH_BodyCom->Collision_Active(false);
-        m_pGameInstance->Remove_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
     }
 
 

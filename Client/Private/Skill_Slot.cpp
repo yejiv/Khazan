@@ -4,6 +4,7 @@
 
 #include "UI_Atlas_Icon.h"
 #include "UI_TextBox.h"
+#include "Skill_Info.h"
 
 CSkill_Slot::CSkill_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Slot{ pDevice , pContext}
@@ -17,7 +18,7 @@ CSkill_Slot::CSkill_Slot(const CSkill_Slot& Prototype)
 
 void CSkill_Slot::Setting_Skill()
 {
-    if (CClientInstance::GetInstance()->Get_PlayerData().iSkillLevel >= m_iLevel)
+    if ((_int)CClientInstance::GetInstance()->Get_PlayerData().iSkillLevel >= m_iLevel)
         m_isLock = false;
     else
         m_isLock = true;
@@ -45,6 +46,41 @@ void CSkill_Slot::Setting_Skill()
             m_pSkillPointText->Update_Visible(true);
         }
     }
+}
+
+void CSkill_Slot::On_PreSkill(const EVENT_SKILL_ON& e)
+{
+    if (m_iPreSkillIndex == e.SkillIndex)
+    {
+        m_isPreSkillOn = e.isUp;
+        if (!e.isUp && m_iSkillPoint >= 1)
+        {
+            CClientInstance::GetInstance()->Add_SkillPoint(m_iSkillPoint);
+            m_pGameInstance->Emit_Event< EVENT_SKILL_ON>(ENUM_CLASS(EVENT_TYPE::PreSKILL_On), { false, m_iSkillIndex });
+            m_iSkillPoint = 0;
+        }
+    }
+}
+
+void CSkill_Slot::Render_SkillInfo()
+{
+    CSkill_Info::SKILLINFO_DESC Desc = {};
+    Desc.iSkillIndex = m_iSkillIndex;
+
+    switch (m_pSkilData->iSubID)
+    {
+    case 0: Desc.iOffsetPos = { 720.f, 595.f }; break;
+    case 1: Desc.iOffsetPos = { 1020.f, 595.f }; break;
+    case 2: Desc.iOffsetPos = { 1320.f, 595.f }; break;
+    case 3: Desc.iOffsetPos = { 920.f, 595.f }; break;
+    case 4: Desc.iOffsetPos = { 1220.f, 595.f }; break;
+    }
+ 
+    Desc.isEquip = false;
+    m_iSkillPoint > 0 ? Desc.isGet = true : Desc.isGet = false;
+    m_iSkillPoint >= m_iMaxCount ? Desc.isMaxLevel = true : Desc.isMaxLevel = false;
+
+    CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("SkillInfo"), &Desc);
 }
 
 HRESULT CSkill_Slot::Initialize_Prototype(_uint iLevel)
@@ -99,7 +135,9 @@ HRESULT CSkill_Slot::Initialize_Clone(void* pArg)
     m_pGameInstance->Subscribe_Event<EVENT_SKILL_OPEN>(ENUM_CLASS(EVENT_TYPE::SKILL_EVENT), [&](const EVENT_SKILL_OPEN& e)
         { Setting_Skill();});
 
-
+    m_pGameInstance->Subscribe_Event<EVENT_SKILL_ON>(ENUM_CLASS(EVENT_TYPE::PreSKILL_On), [&](const EVENT_SKILL_ON& e)
+        { On_PreSkill(e); });
+    
 	return S_OK;
 }
 
@@ -115,12 +153,25 @@ void CSkill_Slot::Update(_float fTimeDelta)
 
     if (IsPick(g_hWnd))
     {
+        Render_SkillInfo();
         if (CClientInstance::GetInstance()->Get_PlayerData().iSkilPoint > 0 && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB, INPUT_TYPE::UI))
         {
-            if (m_iSkillPoint + 1 <= m_pSkilData->iMaxPoint)
+            if (m_iPreSkillIndex == 0 || m_isPreSkillOn)
             {
-                ++m_iSkillPoint;
-                CClientInstance::GetInstance()->Add_SkillPoint(-1);
+                if (m_iSkillPoint + 1 <= m_pSkilData->iMaxPoint)
+                {
+                    ++m_iSkillPoint;
+                    CClientInstance::GetInstance()->Add_SkillPoint(-1);
+                    if (m_iSkillPoint == 1)
+                    {
+                        m_pGameInstance->Emit_Event< EVENT_SKILL_ON>(ENUM_CLASS(EVENT_TYPE::PreSKILL_On), { true, m_iSkillIndex });
+                        
+                        if (m_pSkilData->iType == 0)
+                        {
+                            CClientInstance::GetInstance()->Unlock_SpearSkill(1 << m_pSkilData->iIndex);
+                        }
+                    }
+                }
             }
         }
         else if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB, INPUT_TYPE::UI))
@@ -129,6 +180,15 @@ void CSkill_Slot::Update(_float fTimeDelta)
             {
                 --m_iSkillPoint;
                 CClientInstance::GetInstance()->Add_SkillPoint(1);
+                if (m_iSkillPoint == 0)
+                {
+                    m_pGameInstance->Emit_Event< EVENT_SKILL_ON>(ENUM_CLASS(EVENT_TYPE::PreSKILL_On), { false, m_iSkillIndex });
+
+                    if (m_pSkilData->iType == 0)
+                    {
+                        CClientInstance::GetInstance()->lock_SpearSkill(1 << m_pSkilData->iIndex);
+                    }
+                }
             }
         }
 
@@ -140,7 +200,10 @@ void CSkill_Slot::Update(_float fTimeDelta)
         m_pLine->Set_Color({ 1.f,1.f,1.f,0.6f });
 
         for (auto pLine : m_pPreSkillLine)
+        {
             pLine->Set_Color({ 0.f,0.f,0.f,0.6f });
+            pLine->Set_Depth(m_fDepth + 2.f);
+        }
     }
     else
     {
@@ -151,7 +214,10 @@ void CSkill_Slot::Update(_float fTimeDelta)
         m_pLine->Set_Color({ 1.f,1.f,1.f,1.f });
 
         for (auto pLine : m_pPreSkillLine)
+        {
+            pLine->Set_Depth(m_fDepth + 1.f);
             pLine->Set_Color({ 1.f,1.f,1.f,1.f });
+        }
     }
 
     if (m_pSkilData->iMaxPoint >= 2)
@@ -208,11 +274,12 @@ HRESULT CSkill_Slot::Ready_Child(const SKILL_DB* pData)
     m_Children.push_back(m_pIcon);
     Safe_AddRef(m_pIcon);
    
-    _int iPreIndex = m_pSkilData->iPreSkill;
+    m_iPreSkillIndex = m_pSkilData->iPreSkill;
 
-    if (m_pSkilData->iType == 0 && iPreIndex > 0)
+
+    if (m_pSkilData->iType == 0 && m_iPreSkillIndex > 0)
     {
-        const SKILL_DB* pPreData = CClientInstance::GetInstance()->Get_Data<SKILL_DB>(iPreIndex);
+        const SKILL_DB* pPreData = CClientInstance::GetInstance()->Get_Data<SKILL_DB>(m_iPreSkillIndex);
 
         _int iValueY = m_pSkilData->iLevel - pPreData->iLevel;
         _int iValueX = m_pSkilData->iSlotX - pPreData->iSlotX;
@@ -271,7 +338,72 @@ HRESULT CSkill_Slot::Ready_Child(const SKILL_DB* pData)
 
  
     }
+    else if (m_pSkilData->iType != 0 && m_iPreSkillIndex > 0)
+    {
+        const SKILL_DB* pPreData = CClientInstance::GetInstance()->Get_Data<SKILL_DB>(m_iPreSkillIndex);
 
+        _int iValueY = m_pSkilData->iLevel - pPreData->iLevel;
+        _int iValueX = m_pSkilData->iSlotX - pPreData->iSlotX;
+
+      
+        for (; iValueY > 0; --iValueY)
+        {
+            AtlasDesc.fDepth = m_fDepth + 1;
+            AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+            AtlasDesc.szName = "PreSkill_Line";
+            if(iValueX < 0)
+                AtlasDesc.vLocalPos = _float2{ 70.f, -40.f + (-80.f * (iValueY - 1)) };
+            else if (iValueX > 0)
+                AtlasDesc.vLocalPos = _float2{ -70.f, -40.f + (-80.f * (iValueY - 1)) };
+            else
+                AtlasDesc.vLocalPos = _float2{ 0.f, -40.f + (-80.f * (iValueY - 1)) };
+
+            AtlasDesc.vLocalSize = { 8.f, 84.f };
+            AtlasDesc.vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_TreeConnect_Bg02_UI.png", 4);
+            AtlasDesc.iShaderPass = 2;
+            AtlasDesc.iTexPass = 4;
+            AtlasDesc.vColor = { 0.f,0.f,0.f,0.8f };
+            CUI_Atlas_Icon* pAtlas = static_cast<CUI_Atlas_Icon*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Atlas_Icon"), &AtlasDesc));
+            m_pPreSkillLine.push_back(pAtlas);
+            m_Children.push_back(pAtlas);
+            Safe_AddRef(pAtlas);
+        }
+
+        if (iValueX < 0)
+        {
+            AtlasDesc.fDepth = m_fDepth + 1;
+            AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+            AtlasDesc.szName = "PreSkill_Line";
+            AtlasDesc.vLocalPos = _float2{ 35.f, -80.f + (-80.f * (iValueY - 1)) };
+            AtlasDesc.vLocalSize = { 74.f, 8.f };
+            AtlasDesc.vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_TreeConnect_Bg02_UI.png", 4);
+            AtlasDesc.iShaderPass = 2;
+            AtlasDesc.iTexPass = 4;
+            AtlasDesc.vColor = { 0.f,0.f,0.f,1.f };
+            CUI_Atlas_Icon* pAtlas = static_cast<CUI_Atlas_Icon*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Atlas_Icon"), &AtlasDesc));
+            pAtlas->Update_Rotation(-90.f);
+            m_pPreSkillLine.push_back(pAtlas);
+            m_Children.push_back(pAtlas);
+            Safe_AddRef(pAtlas);
+        }
+        else if (iValueX > 0)
+        {
+            AtlasDesc.fDepth = m_fDepth + 1;
+            AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+            AtlasDesc.szName = "PreSkill_Line";
+            AtlasDesc.vLocalPos = _float2{ -35.f, -80.f + (-80.f * (iValueY - 1)) };
+            AtlasDesc.vLocalSize = { 74.f, 8.f };
+            AtlasDesc.vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_TreeConnect_Bg02_UI.png", 4);
+            AtlasDesc.iShaderPass = 2;
+            AtlasDesc.iTexPass = 4;
+            AtlasDesc.vColor = { 0.f,0.f,0.f,1.f };
+            CUI_Atlas_Icon* pAtlas = static_cast<CUI_Atlas_Icon*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Atlas_Icon"), &AtlasDesc));
+            pAtlas->Update_Rotation(-90.f);
+            m_pPreSkillLine.push_back(pAtlas);
+            m_Children.push_back(pAtlas);
+            Safe_AddRef(pAtlas);
+        }
+    }
 
     AtlasDesc.fDepth = m_fDepth - 1.f;
     AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
@@ -289,7 +421,7 @@ HRESULT CSkill_Slot::Ready_Child(const SKILL_DB* pData)
 
 
     CUIObject::UIOBJECT_DESC TextDesc = {};
-    TextDesc.fDepth = m_fDepth - 1.5f;
+    TextDesc.fDepth = m_fDepth - 1.1f;
     TextDesc.iUIType = ENUM_CLASS(UITYPE::TEXT);
     TextDesc.szName = "Skill_Count";
     TextDesc.vLocalPos = _float2{ 0.f, 0.f };

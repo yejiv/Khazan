@@ -13,10 +13,10 @@ CSSAO::CSSAO(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 HRESULT CSSAO::Initialize()
 {
-    m_Config.iNumKernels = 16;
+    m_Config.iNumKernels = 36;
     m_Config.fRadius = 1.f;
-    m_Config.fIntensity = 1.f;
-    m_Config.fConstrast = 1.f;
+    m_Config.fIntensity = 0.85f;
+    m_Config.fConstrast = 2.f;
 
 	if (FAILED(Ready_Kernel()))
 		return E_FAIL;
