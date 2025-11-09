@@ -40,7 +40,8 @@ public:
 private:
 	virtual HRESULT Ready_Components(void* pArg) override;
 	HRESULT Ready_Collision(void* pArg);
-	HRESULT Ready_TriggerType(void* pArg);
+	HRESULT Ready_TriggerType(void* pArg);      // 트리거 타입 세팅
+    HRESULT Ready_TriggerSetting(void* pArg);
 
 private:
 	virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint	iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
@@ -56,6 +57,10 @@ private:
 	GUIDE_TYPE m_eGuideType = { GUIDE_TYPE::END };
 
 	DAY_CIRCLE m_eDayCircle = { DAY_CIRCLE::NONE };
+
+private:
+    SKY_DESC m_Sky_Dawn = {};
+    SKY_DESC m_Sky_Day = {};
 
 public:
 	static CHeinMach_Trigger* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
