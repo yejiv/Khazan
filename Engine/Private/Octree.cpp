@@ -243,7 +243,7 @@ void COctree::Destroy()
     {
         if (m_pChilds[i])
         {
-            Safe_Release(m_pChilds[i]); // ³»ºÎÀûÀ¸·Î Free() È£ÃâµÉ °ÍÀ¸·Î °¡Á¤
+            Safe_Release(m_pChilds[i]); // ë‚´ë¶€ì ìœ¼ë¡œ Free() í˜¸ì¶œë  ê²ƒìœ¼ë¡œ ê°€ì •
             m_pChilds[i] = nullptr;
         }
     }
@@ -306,17 +306,17 @@ void COctree::Free()
 {
 	__super::Free();
 
-	// 1) ³»°¡ °¡Áø °ÔÀÓ¿ÀºêÁ§Æ® ÇØÁ¦
+	// 1) ë‚´ê°€ ê°€ì§„ ê²Œì„ì˜¤ë¸Œì íŠ¸ í•´ì œ
 	for (auto* p : m_GameObjects) Safe_Release(p);
 	m_GameObjects.clear();
 
-	// 2) ÀÎ½ºÅÏ½º ¾ÈÀÇ °ÔÀÓ¿ÀºêÁ§Æ® ÇØÁ¦
+	// 2) ì¸ìŠ¤í„´ìŠ¤ ì•ˆì˜ ê²Œì„ì˜¤ë¸Œì íŠ¸ í•´ì œ
 	for (auto& kv : m_Instances)
 		for (auto& inst : kv.second)
 			Safe_Release(inst.pGameObject);
 	m_Instances.clear();
 
-	// 3) ÀÚ½Ä ³ëµå ÇØÁ¦ (°¢ ÀÚ½ÄÀÇ Free¿¡¼­ ÀÚ±â °Í Á¤¸®)
+	// 3) ìì‹ ë…¸ë“œ í•´ì œ (ê° ìì‹ì˜ Freeì—ì„œ ìê¸° ê²ƒ ì •ë¦¬)
 	Destroy();
 
 	m_isVisible = false;

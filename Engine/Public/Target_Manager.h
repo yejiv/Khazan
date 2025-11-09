@@ -19,8 +19,8 @@ public:
 	HRESULT End_MRT();
 	HRESULT Copy_Resource(const _wstring& strTargetTag, ID3D11Texture2D* pSourTexture);
 
-	void Backup_RT();	// BackBuffer, DSV º¸°ü(¹é¾÷)
-	void Restore_RT();	// BackBuffer, DSV º¹¿ø(º¹±¸)
+	void Backup_RT();	// BackBuffer, DSV ë³´ê´€(ë°±ì—…)
+	void Restore_RT();	// BackBuffer, DSV ë³µì›(ë³µêµ¬)
 
 public:
 	HRESULT Apply_MRT_OnContext(const wstring& mrtTag,
@@ -28,7 +28,7 @@ public:
 		ID3D11DepthStencilView* pDSV,
 		bool isClear);
 
-	// (¼±ÅÃ) ÇöÀç DSV¸¦ AddRefÇØ¼­ µ¹·ÁÁÖ´Â ÇÔ¼ö
+	// (ì„ íƒ) í˜„ì¬ DSVë¥¼ AddRefí•´ì„œ ëŒë ¤ì£¼ëŠ” í•¨ìˆ˜
 	ID3D11DepthStencilView* Get_CurrentDSV_AddRef();
 
 

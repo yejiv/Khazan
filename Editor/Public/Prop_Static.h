@@ -3,7 +3,7 @@
 #include "Editor_Defines.h"
 #include "Prop.h"
 
-// Á¤Àû ¸Ê ¿ÀºêÁ§Æ® ( ÀÎ½ºÅÏ½Ì O )
+// ì •ì  ë§µ ì˜¤ë¸Œì íŠ¸ ( ì¸ìŠ¤í„´ì‹± O )
 
 NS_BEGIN(Engine)
 class CModel_Instance;
@@ -23,7 +23,7 @@ public:
 
 	}PROP_STATIC_DESC;
 
-	enum class SHADER_PASS { AB, BC, END };			// ¼öÁ¤ ¿¹Á¤
+	enum class SHADER_PASS { AB, BC, END };			// ìˆ˜ì • ì˜ˆì •
 
 private:
 	CProp_Static(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

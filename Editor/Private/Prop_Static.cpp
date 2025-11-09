@@ -58,7 +58,7 @@ void CProp_Static::Late_Update(_float fTimeDelta)
 
 HRESULT CProp_Static::Render()
 {
-    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Static : Bind_ShaderResources ÇÔ¼ö E_FAIL"), E_FAIL);
+    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Static : Bind_ShaderResources í•¨ìˆ˜ E_FAIL"), E_FAIL);
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -96,13 +96,13 @@ HRESULT CProp_Static::Ready_Components(void* pArg)
 
 HRESULT CProp_Static::Bind_ShaderResources()
 {
-    // ¿ùµå Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // ì›”ë“œ í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix"), E_FAIL);
 
-    // ºä Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // ë·° í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW)), E_FAIL);
 
-    // Åõ¿µ Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // íˆ¬ì˜ í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ)), E_FAIL);
 
     return S_OK;

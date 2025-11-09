@@ -3,7 +3,7 @@
 #include "Editor_Defines.h"
 #include "Prop.h"
 
-// Á¤Àû ¸Ê ¿ÀºêÁ§Æ® ( ÀÎ½ºÅÏ½Ì O )
+// ì •ì  ë§µ ì˜¤ë¸Œì íŠ¸ ( ì¸ìŠ¤í„´ì‹± O )
 
 NS_BEGIN(Engine)
 class CModel;

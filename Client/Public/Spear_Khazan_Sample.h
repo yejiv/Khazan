@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Client_Defines.h"
 #include "PartObject.h"
@@ -51,7 +51,7 @@ private:
 
 	_uint*						m_pParentState = { nullptr };
 	_float4x4*					m_pWeaponR_Matrix = { nullptr };
-
+	
 	_matrix						m_matOffset;
 
 private:

@@ -33,12 +33,13 @@ public:
 	_float						Get_MaxStamina() const { return m_fMaxStamina; }
 	_float						Get_MoveSpeed() const{ return m_fMoveSpeed; }
 	
-	// SetÇÔ¼ö´Â ´Ù¸£°Ô ÀÛµ¿ÇÒ¼öµµ ÀÖÀ» °Í °°¾Æ¼­  ÀÏ´Ü Get¸¸ ¸¸µé¾ú½À´Ï´Ù.
+	// Setí•¨ìˆ˜ëŠ” ë‹¤ë¥´ê²Œ ì‘ë™í• ìˆ˜ë„ ìˆì„ ê²ƒ ê°™ì•„ì„œ  ì¼ë‹¨ Getë§Œ ë§Œë“¤ì—ˆìŠµë‹ˆë‹¤.
 
 public:
 	virtual void				Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject = nullptr) {};
 	virtual void				Consume_Stamina(_float fAmout) {};
 	virtual void				Recovery_Stamina(_float fTimeDelta) {};
+	virtual void				KnockBack(_vector vDir, _float fPower, _float fLoss);
 
 public:
 	virtual HRESULT				Initialize_Prototype() override;

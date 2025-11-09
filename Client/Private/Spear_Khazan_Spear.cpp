@@ -1,7 +1,7 @@
-﻿#include "Spear_Khazan_Spear.h"
+#include "Spear_Khazan_Spear.h"
 #include "Khazan_Sample.h"
 #include "GameInstance.h"
-
+#include "ClientInstance.h"
 CSpear_Khazan_Spear::CSpear_Khazan_Spear(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CPartObject{ pDevice, pContext }
 {

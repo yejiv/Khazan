@@ -1,4 +1,4 @@
-﻿#include "Effect_Mesh_Instance.h"
+#include "Effect_Mesh_Instance.h"
 #include "Effect_Prefab.h"
 #include "GameInstance.h"
 
@@ -31,8 +31,6 @@ HRESULT CEffect_Mesh_Instance::Initialize_Prototype(void* pArg)
     strcpy_s(m_sData.pNoiseFilePath, MAX_PATH, finalNoisePathBuffer);
 
     m_pVIBufferCom = CVIBuffer_Mesh_Instance::Create(m_pDevice, m_pContext, &m_sData);  //이걸 프로토타입으로 바꾸고 객체 클론할 땐 m_pVIBuffer->Clone 직접 호출
-    //m_iEffect_Type = 1; //필요할까
-    m_fScrollSpeed = m_sData.iScrollSpeed;
 
     return S_OK;
 }
@@ -184,10 +182,11 @@ HRESULT CEffect_Mesh_Instance::Bind_ShaderResources()
     if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
         return E_FAIL;
 
+
     if(FAILED(m_pShaderCom->Bind_RawValue("g_vSourceColor", &m_sData.vColor, sizeof(_float4))))
         return E_FAIL;
 
-    if (FAILED(m_pShaderCom->Bind_RawValue("g_ScrollSpeed", &m_fScrollSpeed, sizeof(_float2))))
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_ScrollSpeed", &m_sData.iScrollSpeed, sizeof(_float2))))
         return E_FAIL; 
 
     _bool ScrollDir = m_sData.bIsScrollVertical;

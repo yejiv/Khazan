@@ -30,7 +30,7 @@ void CAction_Node::Terminate(BTNODESTATE eState, CBlackBoard* BB)
 
 void CAction_Node::Abort()
 {
-    // °­Á¦ Áß´Ü
+    // ê°•ì œ ì¤‘ë‹¨
     if (m_Terminate)
         m_Terminate(nullptr, BTNODESTATE::FAILURE);
 }

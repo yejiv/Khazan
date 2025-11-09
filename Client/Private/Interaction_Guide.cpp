@@ -168,7 +168,7 @@ HRESULT CInteraction_Guide::Ready_Children()
 	TextSet.vColor = { 1.f, 1.f, 1.f, 1.f };
 	m_pTextBox->Setting_Text(TextSet);
 	
-	//°¡ÀÌµå ¾ÆÀÌÄÜ
+	//ê°€ì´ë“œ ì•„ì´ì½˜
 
 	CUIObject::UIOBJECT_DESC IconDesc = {};
 	IconDesc.fDepth = m_fDepth;
@@ -186,7 +186,7 @@ HRESULT CInteraction_Guide::Ready_Children()
 	m_Children.push_back(m_pIcon);
 	Safe_AddRef(m_pIcon);
 
-	//°¡ÀÌµå °ÔÀÌÁö
+	//ê°€ì´ë“œ ê²Œì´ì§€
 	CUI_Guide_Gauge::GUIDEGAUGE_DESC GuideDesc = {};
 	GuideDesc.fDepth = m_fDepth;
 	GuideDesc.iUIType = ENUM_CLASS(UITYPE::PROGRESSBAR);

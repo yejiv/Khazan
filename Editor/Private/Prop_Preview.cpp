@@ -73,7 +73,7 @@ HRESULT CProp_Preview::Render()
     if (nullptr == m_pModelCom)
         return S_OK;
 
-    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Preview : Bind_ShaderResources ÇÔ¼ö E_FAIL"), E_FAIL);
+    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Preview : Bind_ShaderResources í•¨ìˆ˜ E_FAIL"), E_FAIL);
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -111,16 +111,16 @@ HRESULT CProp_Preview::Ready_Components(void* pArg)
 
 HRESULT CProp_Preview::Bind_ShaderResources()
 {
-    // ¿ùµå Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // ì›”ë“œ í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix"), E_FAIL);
 
-    // ºä Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // ë·° í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW)), E_FAIL);
 
-    // Åõ¿µ Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // íˆ¬ì˜ í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ)), E_FAIL);
 
-    // ¸Ê ¿ÀºêÁ§Æ® ID ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // ë§µ ì˜¤ë¸Œì íŠ¸ ID ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_iMapObjectID", &m_iMapObjectID, sizeof(_uint)), E_FAIL);
 
     return S_OK;

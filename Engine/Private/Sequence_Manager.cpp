@@ -73,7 +73,7 @@ void CSequence_Manager::ProcessRequests()
 		if (it == m_MapInstances.end()) continue;
 
 		if (tDesc.pMarker) {
-			// TODO: ¸¶Ä¿¸í ¡æ ½Ã°£ º¯È¯ (Å¬¶ó ½ÃÄö½º ³»ºÎ/ÀÚ»ê ·Î´õ¿Í ÇùÀÇ)
+			// TODO: ë§ˆì»¤ëª… â†’ ì‹œê°„ ë³€í™˜ (í´ë¼ ì‹œí€€ìŠ¤ ë‚´ë¶€/ìžì‚° ë¡œë”ì™€ í˜‘ì˜)
 		}
 		else {
 			it->second->Jump(tDesc.fTime);
@@ -177,7 +177,7 @@ HRESULT CSequence_Manager::Jump(const SEQ_REQ_JUMP_DESC& tDesc)
 		return E_FAIL;
 
 	if (tDesc.pMarker) {
-		// TODO: ¸¶Ä¿¸í ¡æ ½Ã°£ º¯È¯
+		// TODO: ë§ˆì»¤ëª… â†’ ì‹œê°„ ë³€í™˜
 		return S_OK;
 	}
 	else {
@@ -253,7 +253,7 @@ void CSequence_Manager::Subscribe_REQ()
 			[this](const SEQ_REQ_JUMP_DESC& d) { m_qJump.push_back(d); })
 	);
 
-	//// REQ_* ¼ö½Å ¡æ ³»ºÎ Å¥ ÀûÀç
+	//// REQ_* ìˆ˜ì‹  â†’ ë‚´ë¶€ í ì ìž¬
 	//m_pGameInstance->Subscribe_Event<SEQ_REQ_PLAY_DESC>(SEQ_REQ_PLAY,
 	//	[this](const SEQ_REQ_PLAY_DESC& d) { m_qPlay.push_back(d); });
 

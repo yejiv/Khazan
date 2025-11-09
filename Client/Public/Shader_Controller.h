@@ -33,7 +33,7 @@ private:
 	// Render Flag
 	_bool					m_isRenderShadow = { true };
 	_bool					m_isRenderSSAO = { true };
-	_bool					m_isEnableFog = {};
+	_bool					m_isEnableFog = { true };
 	_bool					m_isEnableToonShade = {};
 	_bool					m_isEnableOutline = {};
 
@@ -42,11 +42,13 @@ private:
 
 	// Fog
 	FOG_CONFIG				m_FogConfig = {};
-	_bool					    m_isWorldSpaceFog = {};
+	_bool					m_isWorldSpaceFog = {};
+	_float					m_fFogTransDuration = {};	
+	FOG_TRANSITION_DESC		m_TargetFogDesc = {};
 
 	// Cartoon Rendering
-	_float					   m_fToonShadeLevel = { 3.f };
-	OUTLINE_CONFIG		 m_OutlineConfig = {};
+	_float					m_fToonShadeLevel = { 3.f };
+	OUTLINE_CONFIG			m_OutlineConfig = {};
 
 	LEVEL m_eCurrentLevel = { LEVEL::TITLE };
 	_bool m_isSelectLevel[ENUM_CLASS(LEVEL::END)];

@@ -54,7 +54,7 @@ void CSkill_Panel::Update(_float fTimeDelta)
 	else
 		iTextValue = 1;
 
-	_wstring wstrTemp = TEXT("¼÷·Ã ·¹º§ + ") + to_wstring(fValue).substr(0, iTextValue) + TEXT("%");
+	_wstring wstrTemp = TEXT("ìˆ™ë ¨ ë ˆë²¨ + ") + to_wstring(fValue).substr(0, iTextValue) + TEXT("%");
 	m_pExp->Set_Text(wstrTemp);
 
 }

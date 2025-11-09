@@ -46,28 +46,28 @@ public:
 #pragma endregion
 
 #pragma region UI_MANGER
-	//Fade °ü·Ã
+	//Fade ê´€ë ¨
 	void						Fade_In(function<void()> FadeEvent = nullptr);
 	void						Fade_Out(function<void()> FadeEvent = nullptr);
 	_bool						Fade_End();
 
-	//Event °ü·Ã
+	//Event ê´€ë ¨
 	HRESULT						Add_UIEvent(const _wstring& strLayerTag, const _wstring& strEventTag, std::function<void()> Event);
 	HRESULT						Add_UIParamEvent(const _wstring& strLayerTag, const _wstring& strEventTag, std::function<void(void*)> Event);
 	function<void()>			Pop_UIEvent(const _wstring& strLayerTag, const _wstring& strEventTag);
 	function<void(void*)>		Pop_UIParamEvent(const _wstring& strLayerTag, const _wstring& strEventTag);
 	HRESULT						Erase_UIEventLayer(const _wstring& strLayerTag);
 
-	//UI JSON ·Îµå
+	//UI JSON ë¡œë“œ
 	HRESULT						Load_UIData(_uint iLayerLevelID, const _wstring& strLayerTag, _uint iPrototypeLevelID, const _tchar* pTextureFilePath);
 	CUIObject*					Load_UIObject(_uint iPrototypeLevelID, const _tchar* pFilePath);
 	
 	_int						UIType_StringToEnum(string szUIType);
 
-	//UI ·£´õ ±×·ì¿¡ Ãß°¡
+	//UI ëœë” ê·¸ë£¹ì— ì¶”ê°€
 	HRESULT						Add_UIRender(UI_RENDER_TYPE eRender, class CUIObject* pUIObject);
 
-	//UI °ü·Ã ÇÔ¼ö
+	//UI ê´€ë ¨ í•¨ìˆ˜
 	HRESULT						UI_UpdateSwitch(const _wstring& szRootUIName, void* pArg = nullptr);
 	class CUIObject*			Get_RootUI(const _wstring& szRootUIName);
 	HRESULT						Add_RootUI(const _wstring& szRootUIName, CUIObject* pUIObject);

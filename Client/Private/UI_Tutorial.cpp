@@ -221,7 +221,7 @@ HRESULT CUI_Tutorial::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, 
 			Desc.iPivotY = 15.f;
 			Desc.vColor = { 1.f, 1.f, 1.f, 1.f };
 			Desc.wstrTexttag = TEXT("Blade_Medium_20");
-			Desc.wstrText = TEXT("ÆäÀÌÁö ÀÌµ¿");
+			Desc.wstrText = TEXT("íŽ˜ì´ì§€ ì´ë™");
 
 			m_pIconPageMove->Setting_Text(Desc);
 		}
@@ -235,7 +235,7 @@ HRESULT CUI_Tutorial::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, 
 			Desc.iPivotX = 20.f;
 			Desc.iPivotY = 15.f;
 			Desc.wstrTexttag = TEXT("Blade_Medium_20");
-			Desc.wstrText = TEXT("´Ý±â");
+			Desc.wstrText = TEXT("ë‹«ê¸°");
 			Desc.vColor = { 1.f, 1.f, 1.f, 1.f };
 			m_pIconPageExit->Setting_Text(Desc);
 		}
@@ -331,49 +331,49 @@ void CUI_Tutorial::Setting_GuidePagae()
 		m_iMaxPage = 0;
 		m_pButtonUp->Update_Visible(false);
 		m_pButtonDown->Update_Visible(false);
-		m_pTitleName->Set_Text(TEXT("¶ô¿Â"));
+		m_pTitleName->Set_Text(TEXT("ë½ì˜¨"));
 	}
 	else if (m_eGuideType == GUIDE_TYPE::GUARD)
 	{
 		m_iMaxPage = 1;
 		m_pButtonUp->Update_Visible(true);
 		m_pButtonDown->Update_Visible(false);
-		m_pTitleName->Set_Text(TEXT("°¡µå"));
+		m_pTitleName->Set_Text(TEXT("ê°€ë“œ"));
 	}
 	else if (m_eGuideType == GUIDE_TYPE::UNDERWORLD)
 	{
 		m_iMaxPage = 0;
 		m_pButtonUp->Update_Visible(false);
 		m_pButtonDown->Update_Visible(false);
-		m_pTitleName->Set_Text(TEXT("¸í°èÀÇ ±â¿î"));
+		m_pTitleName->Set_Text(TEXT("ëª…ê³„ì˜ ê¸°ìš´"));
 	}
 	else if (m_eGuideType == GUIDE_TYPE::DODGE)
 	{
 		m_iMaxPage = 1;
 		m_pButtonUp->Update_Visible(true);
 		m_pButtonDown->Update_Visible(false);
-		m_pTitleName->Set_Text(TEXT("È¸ÇÇ"));
+		m_pTitleName->Set_Text(TEXT("íšŒí”¼"));
 	}
 	else if (m_eGuideType == GUIDE_TYPE::BURTALATTACK)
 	{
 		m_iMaxPage = 1;
 		m_pButtonUp->Update_Visible(true);
 		m_pButtonDown->Update_Visible(false);
-		m_pTitleName->Set_Text(TEXT("ºê·çÅ» ¾îÅÃ"));
+		m_pTitleName->Set_Text(TEXT("ë¸Œë£¨íƒˆ ì–´íƒ"));
 	}
 	else if (m_eGuideType == GUIDE_TYPE::FALLATTACK)
 	{
 		m_iMaxPage = 0;
 		m_pButtonUp->Update_Visible(false);
 		m_pButtonDown->Update_Visible(false);
-		m_pTitleName->Set_Text(TEXT("³«ÇÏ °ø°Ý"));
+		m_pTitleName->Set_Text(TEXT("ë‚™í•˜ ê³µê²©"));
 	}
 	else if (m_eGuideType == GUIDE_TYPE::IMPULSE)
 	{
 		m_iMaxPage = 0;
 		m_pButtonUp->Update_Visible(false);
 		m_pButtonDown->Update_Visible(false);
-		m_pTitleName->Set_Text(TEXT("Ãæ°Ý·®"));
+		m_pTitleName->Set_Text(TEXT("ì¶©ê²©ëŸ‰"));
 	}
 
 	if (m_iMaxPage == 0)

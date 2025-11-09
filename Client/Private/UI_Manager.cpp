@@ -178,7 +178,7 @@ HRESULT CUI_Manager::Load_UIData(_uint iLayerLevelID, const _wstring& strLayerTa
 	ifstream In(pFilePath);
 	if (!In.is_open())
 	{
-		MSG_BOX(TEXT("UI JSON ÆÄÀÏ ºÒ·¯¿À±â ½ÇÆĞ"));
+		MSG_BOX(TEXT("UI JSON íŒŒì¼ ë¶ˆëŸ¬ì˜¤ê¸° ì‹¤íŒ¨"));
 		In.close();
 		return E_FAIL;
 	}
@@ -201,13 +201,13 @@ HRESULT CUI_Manager::Load_UIData(_uint iLayerLevelID, const _wstring& strLayerTa
 
 		if (pRootUI == nullptr)
 		{
-			MSG_BOX(TEXT("UI Load : Å¬·Ğ ½ÇÆĞ"));
+			MSG_BOX(TEXT("UI Load : í´ë¡  ì‹¤íŒ¨"));
 			return E_FAIL;
 		}
 		
 		if (FAILED(pRootUI->Load_UI(jsonData, iPrototypeLevelID, &UIDesc)))
 		{
-			MSG_BOX(TEXT("UI Load : µ¥ÀÌÅÍ ·Îµå ½ÇÆĞ"));
+			MSG_BOX(TEXT("UI Load : ë°ì´í„° ë¡œë“œ ì‹¤íŒ¨"));
 			return E_FAIL;
 		}
 
@@ -228,7 +228,7 @@ CUIObject* CUI_Manager::Load_UIObject(_uint iPrototypeLevelID, const _tchar* pFi
 	ifstream In(pFilePath);
 	if (!In.is_open())
 	{
-		MSG_BOX(TEXT("UI JSON ÆÄÀÏ ºÒ·¯¿À±â ½ÇÆĞ"));
+		MSG_BOX(TEXT("UI JSON íŒŒì¼ ë¶ˆëŸ¬ì˜¤ê¸° ì‹¤íŒ¨"));
 		In.close();
 		return nullptr;
 	}
@@ -251,13 +251,13 @@ CUIObject* CUI_Manager::Load_UIObject(_uint iPrototypeLevelID, const _tchar* pFi
 
 		if (pRootUI == nullptr)
 		{
-			MSG_BOX(TEXT("UI Load : Å¬·Ğ ½ÇÆĞ"));
+			MSG_BOX(TEXT("UI Load : í´ë¡  ì‹¤íŒ¨"));
 			return nullptr;
 		}
 
 		if (FAILED(pRootUI->Load_UI(jsonData, iPrototypeLevelID, &UIDesc)))
 		{
-			MSG_BOX(TEXT("UI Load : µ¥ÀÌÅÍ ·Îµå ½ÇÆĞ"));
+			MSG_BOX(TEXT("UI Load : ë°ì´í„° ë¡œë“œ ì‹¤íŒ¨"));
 			return nullptr;
 		}
 

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Engine_Defines.h"
 #include "Prototype_Manager.h"
@@ -223,6 +223,8 @@ public:
 #pragma endregion
 
 #pragma region JOLT_MANAGER
+	HRESULT Initialize_Jolt(_uint iNumObjectLayer);
+	void Destroy_Jolt();
 	void Set_PhysicsSystem();
 	void Set_ObjectToBP(_uint iObjectLayer, _uint iBPLayer);
 	void Set_ObjectFilter(_uint iSrc, _uint iDst);
@@ -237,6 +239,10 @@ public:
 
 	CharacterVirtual* Find_CharacterVirtual(CharacterID id);
 	void Remove_CharacterVirtual(CharacterID id);
+
+	void Push_BodyDesc(BodyID id, uint64 BodyDesc);
+	uint64 Find_BodyDesc(BodyID id);
+	void Remove_BodyDesc(BodyID id);
 
 	void Set_Gravity(_vector vGravity);
 	void Reset_Gravity();
@@ -340,6 +346,7 @@ public:
 	ID3D11ShaderResourceView*	Get_FogNoiseTexture(_uint iTextureIndex);
 	void						Set_FogNoiseTextureIndex(_uint iTextureIndex);
 	void						Set_FogNoiseWorldSpace(_bool isEnable);
+	void						Start_FogTransition(_float fDuration, const FOG_TRANSITION_DESC& Desc);
 #pragma endregion
 
 #pragma region VIGNETTE
@@ -362,15 +369,25 @@ public:
 #pragma endregion
 
 #pragma region DECAL_MANAGER
-	HRESULT						Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, const DECAL_DESC& Desc);
-	HRESULT						Render_Decals();
+	HRESULT		Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, const DECAL_DESC& Desc);
+	HRESULT		Render_Decals();
 #pragma endregion
 
 #pragma region EFFECT_MANAGER
 	void		Add_Effect_ToPool(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint iPoolSize);
-	_uint		Spwan_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector SpwanPos);
-	void		Update_Effect_Position(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector SpwanPos);
+	_uint		Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector SpawnPos);
+	_uint		Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector Quaternion, _gvector Position);
+	void		Update_Effect_Position(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector SpawnPos);
+	void		Update_Effect_World(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector Quaternion, _gvector Position);
 	void		Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID);
+#pragma endregion
+
+#pragma region DISTORTION
+	HRESULT						Bind_Distortion_ShaderResources(class CShader* pShader);
+	void						Start_Distortion(const DISTORTION_DESC& Desc);
+	DISTORTION_DESC				Get_DistortionDesc();
+	_uint						Get_NumDistortionNoiseTextures();
+	ID3D11ShaderResourceView*	Get_DistortionNoiseTexture(_uint iTextureIndex);
 #pragma endregion
 
 private:
@@ -405,6 +422,7 @@ private:
 	class CBlur*				m_pBlur = { nullptr };
 	class CFog*					m_pFog = { nullptr };
 	class CVignette*			m_pVignette = { nullptr };
+	class CDistortion*			m_pDistortion = { nullptr };
 
 
 #ifdef _DEBUG

@@ -1,4 +1,4 @@
-﻿#include "Editor_Channel.h"
+#include "Editor_Channel.h"
 #include "Editor_Bone.h"
 
 CEditor_Channel::CEditor_Channel()

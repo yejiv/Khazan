@@ -28,7 +28,7 @@ HRESULT CProp_Interactive::Initialize_Clone(void* pArg)
 
     memcpy(m_szInteractiveTag, pDesc->szInteractiveTag, MAX_PATH);
 
-    // ¸Ê ¿ÀºêÁ§Æ®ÀÇ ¿ùµå Çà·Ä °»½Å ( ÆÄÀÏ ÀÔÃâ·Â ¹ÞÀº°É·Î )
+    // ë§µ ì˜¤ë¸Œì íŠ¸ì˜ ì›”ë“œ í–‰ë ¬ ê°±ì‹  ( íŒŒì¼ ìž…ì¶œë ¥ ë°›ì€ê±¸ë¡œ )
     m_pTransformCom->Set_WorldMatrix_4x4(pDesc->WorldMatrix);
 
     return S_OK;
@@ -53,16 +53,16 @@ HRESULT CProp_Interactive::Render()
 
 HRESULT CProp_Interactive::Bind_ShaderResources()
 {
-    // ¿ùµå Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // ì›”ë“œ í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix"), E_FAIL);
 
-    // ºä Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // ë·° í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW)), E_FAIL);
 
-    // Åõ¿µ Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // íˆ¬ì˜ í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ)), E_FAIL);
 
-    // ¸Ê ¿ÀºêÁ§Æ® ID ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // ë§µ ì˜¤ë¸Œì íŠ¸ ID ì‰ì´ë”ì— ë°”ì¸ë”©
     //CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_iMapObjectID", &m_iMapObjectID, sizeof(_uint)), E_FAIL);
 
     return S_OK;

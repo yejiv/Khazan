@@ -2,7 +2,7 @@
 
 using namespace Engine;
 
-extern thread_local uint32_t t_worker_idx; // ThreadPool¿¡¼­ Worker_Thread(i) ½ÃÀÛ ½Ã ¼¼ÆÃ
+extern thread_local uint32_t t_worker_idx; // ThreadPoolì—ì„œ Worker_Thread(i) ì‹œì‘ ì‹œ ì„¸íŒ…
 
 static HRESULT CompileEffect(ID3D11Device* dev, const _tchar* path, ID3DX11Effect** outEff)
 {
@@ -97,7 +97,7 @@ HRESULT CDeferredShader::BuildInputLayoutsFromEffect(ID3DX11Effect* pEffect,
 ID3DX11Effect* CDeferredShader::GetEffectForCurrentThread() const
 {
     uint32_t idx = t_worker_idx;
-    if (idx >= m_vEffects.size()) idx = 0; // ¾ÈÀüÀåÄ¡: ¸ŞÀÎ½º·¹µå µî
+    if (idx >= m_vEffects.size()) idx = 0; // ì•ˆì „ì¥ì¹˜: ë©”ì¸ìŠ¤ë ˆë“œ ë“±
     return m_vEffects[idx];
 }
 

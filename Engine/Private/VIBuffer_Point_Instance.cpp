@@ -1,4 +1,4 @@
-﻿#include "VIBuffer_Point_Instance.h"
+#include "VIBuffer_Point_Instance.h"
 #include "GameInstance.h"
 #include "ComputeShader.h"
 

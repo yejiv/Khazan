@@ -54,7 +54,7 @@ void CCloudSphere::Late_Update(_float fTimeDelta)
 
 HRESULT CCloudSphere::Render()
 {
-    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources ÇÔ¼ö E_FAIL"), E_FAIL);
+    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources í•¨ìˆ˜ E_FAIL"), E_FAIL);
 
     m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4));
 
@@ -87,7 +87,7 @@ HRESULT CCloudSphere::Ready_Components(void* pArg)
         TEXT("Com_Model_Cloud"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
 
-#pragma region ±¸ Å¬¶ó¿ìµå °ü·Ã ÅØ½ºÃÄµé
+#pragma region êµ¬ í´ë¼ìš°ë“œ ê´€ë ¨ í…ìŠ¤ì³ë“¤
     /* Prototype_Component_Texture_Cloud_Dist_Gradation */
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Cloud_Dist_Gradation"),
         TEXT("Com_Texture_Gradation"), reinterpret_cast<CComponent**>(&m_pTextureCom[DISTANCE_GRADATION]), nullptr)))
