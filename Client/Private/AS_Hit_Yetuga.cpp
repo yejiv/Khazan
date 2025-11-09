@@ -63,11 +63,11 @@ _uint CAS_Hit_Yetuga::Make_AnimIndex(HITREACTION eHitreaction, HIT_DIR eHitDir)
         // WEAK
         {74,75,76,77},
         // NORMAL
-        {65,64,68,69},
+        {63,62,66,67},
         // STRONG
-        {79,81,82,83},
+        {79,80,81,82},
         // PARRY
-        {74,74,74,74},
+        {73,73,73,73},
     };
 
     return table[ENUM_CLASS(eHitreaction)][ENUM_CLASS(eHitDir)];

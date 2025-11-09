@@ -3,11 +3,13 @@
 namespace Client {
 	// ENUMs
 	enum class EVENT_TYPE { LEVEL_CHANGE, UI_QUICK_SLOT,
-		OBJECT_INTERACT,							// ?곹샇 ?묒슜???ㅻ툕?앺듃???묒큺 ( 留??ㅻ툕?앺듃媛 援щ룆 )
-		INTERACT_TYPE,								// ?곹샇 ?묒슜???ㅻ툕?앺듃???묒큺 ( ?뚮젅?댁뼱媛 援щ룆 )
-		ANNOUNCE_MAPNAME,							// 吏???대쫫, ?곗텧 ?대쫫 異쒕젰
-		LOCKON_VISIBLE,								// 濡앹삩 ?쒕뜑 ???ㅽ봽
-		SKILL_EVENT,								// ?ㅽ궗 ?щ’ 愿???대깽?몃뱾
+		OBJECT_INTERACT,
+		INTERACT_TYPE,	
+		ANNOUNCE_MAPNAME,
+        ANNOUNCE_TALK,	
+		LOCKON_VISIBLE,	
+		SKILL_EVENT,		
+        PreSKILL_On,
 		END };
 
 	// Structs
@@ -15,9 +17,8 @@ namespace Client {
 		_int iLevel;
 	};
 
-	// ?곹샇?묒슜 ?ㅻ툕?앺듃 ?쒖꽦???대깽??援ъ“泥?( 1. ?ㅻ툕?앺듃 ?쒖꽦?? 2. ?ㅻ툕?앺듃 鍮꾪솢?깊솕 ) ( ?뚮젅?댁뼱 -> ?ㅻ툕?앺듃 )
 	struct EventObject {
-		enum class EVENT_STATE { NONE, ON, OFF };			// NONE : ???≪뀡 | ON : ?쒖꽦??| OFF : 鍮꾪솢?깊솕
+		enum class EVENT_STATE { NONE, ON, OFF };	
 		EVENT_STATE eState{ EVENT_STATE::NONE };
 
 		void On() { eState = EVENT_STATE::ON; }
@@ -27,7 +28,7 @@ namespace Client {
 		_bool isOn() const { return eState == EVENT_STATE::ON; }
 		_bool isOff() const { return eState == EVENT_STATE::OFF; }
 
-		// ?뚮젅?댁뼱 -> ?ㅻ툕?앺듃 ( ?대깽???쒖꽦??)
+
 		static EventObject OnEvent()
 		{
 			EventObject e = {};
@@ -35,7 +36,6 @@ namespace Client {
 			return e;
 		}
 
-		// ?뚮젅?댁뼱 -> ?ㅻ툕?앺듃 ( ?대깽???앸궗??)
 		static EventObject OffEvent()
 		{
 			EventObject e = {};
@@ -43,7 +43,6 @@ namespace Client {
 			return e;
 		}
 
-		// ?뚮젅?댁뼱 -> ?ㅻ툕?앺듃 ( ?대깽???녿떎 )
 		static EventObject NoneEvent()
 		{
 			EventObject e = {};
@@ -52,47 +51,47 @@ namespace Client {
 		}
 	};
 
-	// 洹寃 愿???대깽??( 1. 洹寃 ?붾뱶 ?ъ???( LOOK ?뚮젅?댁뼱 -> 洹寃 諛⑺뼢 ??), 2. 洹寃 ?쒖꽦??)
+
 	struct EventBladeNexus {
-		XMFLOAT3 vPosition{};			// 洹寃???붾뱶 ?꾩튂
-		bool isUnLock{ false };			// 洹寃 泥??닿툑?몄? ?꾨땶吏 ?щ? ( TRUE 硫?泥??닿툑, FALSE 硫??닿툑 ??洹寃 )
-		bool isBNOpened{ false };		// 洹寃 媛???좊땲硫붿씠??醫낅즺?섎㈃ TRUE
+		XMFLOAT3 vPosition{};
+		bool isUnLock{ false };
+		bool isBNOpened{ false };
 	};
 
-	// ?곸옄 愿???대깽??( 1. ?곸옄 ?붾뱶 ?ъ???( LOOK ?뚮젅?댁뼱 -> 洹寃 諛⑺뼢 ??), 2. ?곸옄 ???뚮젅?댁뼱 ?꾩튂 ( 濡쒖뺄 蹂??됰젹 * ?대떦 ?ㅻ툕?앺듃???붾뱶 ?됰젹 ).r[3], 3. ?곸옄媛 媛吏??꾩씠?쒕뱾, 4. ?곸옄 ?쒖꽦??)
+	
 	struct EventChest {
-		XMFLOAT3 vPosition{};			// ?곸옄 ?붾뱶 ?꾩튂
-		XMFLOAT3 vPlayerPosition{};		// ?곸옄???뚮젅?댁뼱 蹂댁젙 ?꾩튂
-		BOX_ITEMS Items{};				// ?곸옄?덉뿉 ?덈뒗 ?꾩씠??0, 1, 2
-		bool isChestOpened{ false };	// ?곸옄 ?대┝ ?좊땲硫붿씠??醫낅즺?섎㈃ TRUE
+		XMFLOAT3 vPosition{};
+		XMFLOAT3 vPlayerPosition{};
+		BOX_ITEMS Items{};
+		bool isChestOpened{ false };
 	};
 
-	// 寃쎄퀎?????쇱뒪??愿???대깽??( 1. ?곸옄 ?붾뱶 ?ъ???( LOOK ?뚮젅?댁뼱 -> 洹寃 諛⑺뼢 ??), 2. ?곸옄 ???뚮젅?댁뼱 ?꾩튂 ( 濡쒖뺄 蹂??됰젹 * ?대떦 ?ㅻ툕?앺듃???붾뱶 ?됰젹 ).r[3], 3. ?곸옄媛 媛吏??꾩씠?쒕뱾, 4. ?곸옄 ?쒖꽦??)
+	
 	struct EventTombStone {
-		XMFLOAT3 vPosition{};			// ?쇱뒪???붾뱶 ?꾩튂
-		XMFLOAT3 vPlayerPosition{};		// ?쇱뒪?ㅼ쓽 ?뚮젅?댁뼱 蹂댁젙 ?꾩튂			( 遺?쒖쭊 嫄? ??遺?쒖쭊嫄??꾩튂媛 ?ㅻ쫫 )
-		bool isTSOpened{ false };	    // ?쇱뒪??媛???좊땲硫붿씠??醫낅즺?섎㈃ TRUE
+		XMFLOAT3 vPosition{};
+		XMFLOAT3 vPlayerPosition{};
+		bool isTSOpened{ false };
 	};
 
-	// ?곹샇?묒슜 ?ㅻ툕?앺듃 ?대뼡 醫낅쪟?몄? 諛쏆븘?ㅻ뒗 ?대깽??援ъ“泥?( ?ㅻ툕?앺듃 -> ?뚮젅?댁뼱 )
+	
 	struct EventInteractType {
-		enum EVENT_STATE { BEGIN, END, NONE };						// ?대깽???쒖옉, ???щ?
-		EVENT_STATE eState = { EVENT_STATE::NONE };					// ?대깽???곹깭 ?щ?
-		_bool isEvent{ false };										// ?대깽??諛쒖깮 ??TRUE
-		INTERACTIVE_TYPE eInteractType{ INTERACTIVE_TYPE::END };	// ?곹샇?묒슜 ?ㅻ툕?앺듃?????( 泥댄겕?ъ씤?? ?곸옄, ?щ떎由??깅벑 )
-		EventBladeNexus BNEvent{};									// 洹寃 援ъ“泥?
-		EventChest ChestEvent{};									// ?곸옄 援ъ“泥?
-		EventTombStone TSEvent{};									// 寃쎄퀎?????쇱뒪??援ъ“泥?
+		enum EVENT_STATE { BEGIN, END, NONE };						
+		EVENT_STATE eState = { EVENT_STATE::NONE };					
+		_bool isEvent{ false };										
+		INTERACTIVE_TYPE eInteractType{ INTERACTIVE_TYPE::END };	
+		EventBladeNexus BNEvent{};									
+		EventChest ChestEvent{};									
+		EventTombStone TSEvent{};									
 
 		void End_Event() { isEvent = false; }
 	};
 
-	// ?곸옄 愿???대깽??
+
 	struct EventBigChest {
 		XMFLOAT3 vPosition{};
 	};
 
-	//UI ?듭뒳濡?愿???대깽??
+
 	struct EVENT_HUD_QUICKSLOT {
 		_bool isEquip;
 		_int  iIndex;
@@ -100,12 +99,12 @@ namespace Client {
 		_int* iItemCount;
 	};
 
-	//吏???대쫫 ?쒖떆?섎뒗 ?대깽??
+
 	struct EVENT_ANNOUNCE_MAPNAME {
-		_wstring	wstrName;				//吏??씠由?
-		_int		iMapType;				//?붾㈃???쒖떆?섎뒗 吏???대쫫
-		_float		fTime;					//?붾㈃??異쒕젰?쒓컙
-		_int		fFadeOutTime;			//?붾㈃?먯꽌 ?щ씪吏???쒓컙
+		_wstring	wstrName;				
+		_int		iMapType;				
+		_float		fTime;					
+		_int		fFadeOutTime;			
 		_bool		isDissovle;
 	};
 
@@ -118,4 +117,15 @@ namespace Client {
     //스킬 트리 오픈
 	struct EVENT_SKILL_OPEN {};
 
+
+    struct EVENT_SKILL_ON {
+        _bool isUp;
+        _int  SkillIndex;
+    };
+
+
+
+    struct EVENT_ANNOUNCE_TALK {
+        _int  iTalkIndex;
+    };
 }

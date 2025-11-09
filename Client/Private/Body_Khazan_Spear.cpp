@@ -44,17 +44,32 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
     if (FAILED(Ready_AnimationEvent()))
         return E_FAIL;
 
-    /* 부모 트랜스폼 연결 */
+
+    // m_pModelCom->Set_Animation(5);
+     /* 부모 트랜스폼 연결 */
     m_pModelCom->Set_OwnerTransform(&m_pParentTransform);
 
+    /* 뼈 행렬 가지고오기 */
+    m_pSpearTip1_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R_SpearTip");
+    //m_pSpearTip2_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R_SpearTip_02");
+    //m_pWeaponR_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R");
+    //m_pSpearEnd1_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R_Spear_End01");
+    //m_pSpearEnd2_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R_Spear_End02");
+
+
+    if (FAILED(Ready_Collider()))
+        return E_FAIL;
+
+
 #ifdef _DEBUG
-	/*m_pGameInstance->AddWidget(TEXT("Client"), [this]() {
+    m_pGameInstance->AddWidget(TEXT("Client"), [this]() {
 
-		ImGui::Begin("Sample Model State");
+        ImGui::Begin("Sample Model State");
 
-		m_pModelCom->Debug_RanderState();
-		ImGui::End();
-		});*/
+
+        m_pModelCom->Debug_RanderState();
+        ImGui::End();
+        });
 #endif
 
     return S_OK;
@@ -74,13 +89,14 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
     //m_pModelCom_Hair->Play_Animation(fTimeDelta);
     //m_pModelCom_Shoes->Play_Animation(fTimeDelta);
     //m_pModelCom_Torso->Play_Animation(fTimeDelta);
-  
+
     Update_CombinedMatrix();
+    Update_Collider(fTimeDelta);
 }
 
 void CBody_Khazan_Spear::Late_Update(_float fTimeDelta)
 {
-	// ========== Before Render ==========
+    // ========== Before Render ==========
     //  if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONLIGHT, this)))
     //      return;
     //  //if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
@@ -90,8 +106,8 @@ void CBody_Khazan_Spear::Late_Update(_float fTimeDelta)
         return;
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
         return;
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::OUTLINE, this)))
-        return;
+    //  if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::OUTLINE, this)))
+    //      return;
 #ifdef _DEBUG
 
 #endif
@@ -114,9 +130,9 @@ HRESULT CBody_Khazan_Spear::Render()
         if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;
 
-      //  m_pShaderCom->Begin(1);
+        //  m_pShaderCom->Begin(1);
 
-      //  m_pModelCom->Render(i);
+        //  m_pModelCom->Render(i);
     }
 
     Render_Part(m_pModelCom_Arm);
@@ -146,12 +162,42 @@ HRESULT CBody_Khazan_Spear::Render_Shadow()
     {
         if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;
-
-        m_pShaderCom->Begin(2);
-
-        m_pModelCom->Render(i);
     }
 
+    Render_Part_Shadow(m_pModelCom_Arm);
+    Render_Part_Shadow(m_pModelCom_Face);
+    Render_Part_Shadow(m_pModelCom_Hair);
+    Render_Part_Shadow(m_pModelCom_Leg);
+    Render_Part_Shadow(m_pModelCom_Shoes);
+    Render_Part_Shadow(m_pModelCom_Torso);
+
+    return S_OK;
+}
+
+HRESULT CBody_Khazan_Spear::Render_Outline()
+{
+    if (FAILED(Bind_ShaderResources()))
+        return E_FAIL;
+
+    _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vOutlineColor", &m_OutlineConfig.vColor, sizeof(_float3))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fOutlineSize", &m_OutlineConfig.fSize, sizeof(_float))))
+        return E_FAIL;
+
+    for (size_t i = 0; i < iNumMeshes; i++)
+    {
+        m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+    }
+
+    Render_Part_Outline(m_pModelCom_Arm);
+    Render_Part_Outline(m_pModelCom_Face);
+    Render_Part_Outline(m_pModelCom_Hair);
+    Render_Part_Outline(m_pModelCom_Leg);
+    Render_Part_Outline(m_pModelCom_Shoes);
+    Render_Part_Outline(m_pModelCom_Torso);
 
     return S_OK;
 }
@@ -160,9 +206,11 @@ void CBody_Khazan_Spear::Render_Part(CModel* pModel)
 {
     if (nullptr == pModel)
         return;
+
     pModel->Update_PartLocalBones();
 
     _uint iNumMeshes = pModel->Get_NumMeshes();
+
     for (size_t i = 0; i < iNumMeshes; i++)
     {
         pModel->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
@@ -174,6 +222,68 @@ void CBody_Khazan_Spear::Render_Part(CModel* pModel)
         m_pShaderCom->Begin(1);
         pModel->Render(i);
     }
+}
+
+void CBody_Khazan_Spear::Render_Part_Shadow(CModel* pModel)
+{
+    if (nullptr == pModel)
+        return;
+
+    _uint iNumMeshes = pModel->Get_NumMeshes();
+
+    for (size_t i = 0; i < iNumMeshes; i++)
+    {
+        // 마스터의 본을 자동으로 사용
+        if (FAILED(pModel->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
+            continue;
+
+        m_pShaderCom->Begin(2);
+        pModel->Render(i);
+    }
+}
+
+void CBody_Khazan_Spear::Render_Part_Outline(CModel* pModel)
+{
+    if (nullptr == pModel)
+        return;
+
+    _uint iNumMeshes = pModel->Get_NumMeshes();
+
+    for (size_t i = 0; i < iNumMeshes; i++)
+    {
+        // 마스터의 본을 자동으로 사용
+        if (FAILED(pModel->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
+            continue;
+
+        m_pShaderCom->Begin(3);
+        pModel->Render(i);
+    }
+}
+
+void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+{
+
+}
+
+void CBody_Khazan_Spear::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+{
+
+}
+
+void CBody_Khazan_Spear::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+{
+
+}
+
+void CBody_Khazan_Spear::Update_Collider(_float fTimeDelta)
+{
+    const XMMATRIX matWorld = XMLoadFloat4x4(m_pSpearTip1_Matrix) * XMLoadFloat4x4(m_pParentMatrix);
+    m_pBodyCom_SpearTip1->Sync_Update(matWorld);
+    _vector vOutQuat, vOutPos;
+    m_pBodyCom_SpearTip1->Update(fTimeDelta, matWorld, vOutQuat, vOutPos);
+    XMStoreFloat4x4(&m_pSpearTip1_MatrixW, matWorld);
+    XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&m_pSpearTip1_MatrixW._41), vOutPos);
+
 
 }
 
@@ -213,7 +323,7 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
     m_pModelCom->Attach_Part(m_pModelCom_Arm);
     m_pModelCom->Attach_Part(m_pModelCom_Face);
     m_pModelCom->Attach_Part(m_pModelCom_Hair);
-    m_pModelCom->Attach_Part(m_pModelCom_Leg );
+    m_pModelCom->Attach_Part(m_pModelCom_Leg);
     m_pModelCom->Attach_Part(m_pModelCom_Shoes);
     m_pModelCom->Attach_Part(m_pModelCom_Torso);
 
@@ -223,17 +333,45 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
 
 HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 {
-    m_pModelCom->Register_Event("Effect1", ANIM_EVENT_TRIGGERTYPE::ENTER,       [this]() {Effect1_Enter(); });
-    m_pModelCom->Register_Event("Effect1", ANIM_EVENT_TRIGGERTYPE::EXIT,        [this]() {Effect1_Exit(); });
-    m_pModelCom->Register_Event("Effect1", ANIM_EVENT_TRIGGERTYPE::CONTINUE,    [this]() {Effect1_Continue(); });
-    m_pModelCom->Register_Event("Effect2", ANIM_EVENT_TRIGGERTYPE::ENTER,       [this]() {Effect2(); });
-    m_pModelCom->Register_Event("Effect3", ANIM_EVENT_TRIGGERTYPE::ENTER,       [this]() {Effect3(); });
-    m_pModelCom->Register_Event("Effect4", ANIM_EVENT_TRIGGERTYPE::ENTER,       [this]() {Effect4(); });
-    m_pModelCom->Register_Event("Effect5", ANIM_EVENT_TRIGGERTYPE::ENTER,       [this]() {Effect5(); });
-    m_pModelCom->Register_Event("Effect6", ANIM_EVENT_TRIGGERTYPE::ENTER,       [this]() {Effect6(); });
-    m_pModelCom->Register_Event("Effect7", ANIM_EVENT_TRIGGERTYPE::ENTER,       [this]() {Effect7_Enter(); });
-    m_pModelCom->Register_Event("Effect7", ANIM_EVENT_TRIGGERTYPE::EXIT,        [this]() {Effect7_Exit(); });
-    m_pModelCom->Register_Event("Effect7", ANIM_EVENT_TRIGGERTYPE::CONTINUE,    [this]() {Effect7_Continue(); });
+    m_pModelCom->Register_Event("Effect1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect1_Enter(); });
+    m_pModelCom->Register_Event("Effect1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Effect1_Exit(); });
+    m_pModelCom->Register_Event("Effect1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Effect1_Continue(); });
+    m_pModelCom->Register_Event("Effect2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect2(); });
+    m_pModelCom->Register_Event("Effect3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect3(); });
+    m_pModelCom->Register_Event("Effect4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect4(); });
+    m_pModelCom->Register_Event("Effect5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect5(); });
+    m_pModelCom->Register_Event("Effect6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect6(); });
+    m_pModelCom->Register_Event("Effect7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect7_Enter(); });
+    m_pModelCom->Register_Event("Effect7", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Effect7_Exit(); });
+    m_pModelCom->Register_Event("Effect7", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Effect7_Continue(); });
+
+    return S_OK;
+}
+
+HRESULT CBody_Khazan_Spear::Ready_Collider()
+{
+    CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
+    {
+        BodyDesc.fRadius = 0.1f;
+        BodyDesc.eMotion = EMotionType::Kinematic;
+        BodyDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
+        BodyDesc.eShapeType = SHAPE::SPHERE;
+        BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK); // 추후에 Enum Monster attack 변경 할수도
+
+        XMStoreFloat4x4(&m_pSpearTip1_MatrixW, XMLoadFloat4x4(m_pSpearTip1_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
+        _vector vScale, vQuat, vTrans;
+        XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_pSpearTip1_MatrixW));
+        BodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
+        BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
+        BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+        m_tCollisionDesc.pGameObject = this;
+        BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+        BodyDesc.bIsTrigger = true;
+        if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+            TEXT("Com_Body1"), reinterpret_cast<CComponent**>(&m_pBodyCom_SpearTip1), &BodyDesc)))
+            return E_FAIL;
+
+    }
 
     return S_OK;
 }
@@ -250,13 +388,13 @@ HRESULT CBody_Khazan_Spear::Bind_ShaderResources()
         return E_FAIL;
 
 
-	return S_OK;
+    return S_OK;
 }
 
 void CBody_Khazan_Spear::Effect1_Enter()
 {
     char msg[256];
-    sprintf_s(msg,"Local Bone SpearFX\n %.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n", 
+    sprintf_s(msg, "Local Bone SpearFX\n %.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n",
         m_pSpearFX_Matrix->_11, m_pSpearFX_Matrix->_12, m_pSpearFX_Matrix->_13, m_pSpearFX_Matrix->_14,
         m_pSpearFX_Matrix->_21, m_pSpearFX_Matrix->_22, m_pSpearFX_Matrix->_23, m_pSpearFX_Matrix->_24,
         m_pSpearFX_Matrix->_31, m_pSpearFX_Matrix->_32, m_pSpearFX_Matrix->_33, m_pSpearFX_Matrix->_34,
@@ -341,13 +479,13 @@ void CBody_Khazan_Spear::Effect7_Continue()
 inline _bool CBody_Khazan_Spear::Has_States()
 {
 
-	for (_uint i = 0; i < GetBitPosition(CKhazan_Sample::END); ++i)
-	{
+    for (_uint i = 0; i < GetBitPosition(CKhazan_Sample::END); ++i)
+    {
         if (Has_State(1 << i))
             return true;
 
-	}
-	return false;
+    }
+    return false;
 }
 
 CBody_Khazan_Spear* CBody_Khazan_Spear::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -389,15 +527,15 @@ void CBody_Khazan_Spear::Free()
         m_pModelCom->Detach_Part(m_pModelCom_Shoes);
         m_pModelCom->Detach_Part(m_pModelCom_Torso);
     }
-    
-	Safe_Release(m_pParentTransform);
-	Safe_Release(m_pShaderCom);
 
-	Safe_Release(m_pModelCom_Torso);
-	Safe_Release(m_pModelCom_Arm);
-	Safe_Release(m_pModelCom_Face);
-	Safe_Release(m_pModelCom_Hair);
-	Safe_Release(m_pModelCom_Leg);
-	Safe_Release(m_pModelCom_Shoes);
+    Safe_Release(m_pParentTransform);
+    Safe_Release(m_pShaderCom);
+
+    Safe_Release(m_pModelCom_Torso);
+    Safe_Release(m_pModelCom_Arm);
+    Safe_Release(m_pModelCom_Face);
+    Safe_Release(m_pModelCom_Hair);
+    Safe_Release(m_pModelCom_Leg);
+    Safe_Release(m_pModelCom_Shoes);
     Safe_Release(m_pModelCom);
 }

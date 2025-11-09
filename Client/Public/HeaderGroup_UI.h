@@ -27,6 +27,8 @@
 #include "ItemInfo_Other.h"
 #include "ItemInfo_Weapon.h"
 
+#include "Skill_Info.h"
+
 #include "Cursor.h"
 #include "Item_Slot.h"
 #include "Skill_Slot.h"
