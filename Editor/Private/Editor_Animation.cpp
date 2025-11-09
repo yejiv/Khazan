@@ -1,4 +1,4 @@
-﻿#include "Editor_Animation.h"
+#include "Editor_Animation.h"
 #include "Editor_Channel.h"
 #include "GameInstance.h"
 

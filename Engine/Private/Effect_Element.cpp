@@ -1,4 +1,4 @@
-﻿#include "Effect_Element.h"
+#include "Effect_Element.h"
 #include "GameInstance.h"
 
 CEffect_Element::CEffect_Element(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)

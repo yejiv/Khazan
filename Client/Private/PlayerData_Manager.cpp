@@ -1,4 +1,4 @@
-﻿#include "PlayerData_Manager.h"
+#include "PlayerData_Manager.h"
 
 
 CPlayerData_Manager::CPlayerData_Manager()

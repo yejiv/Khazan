@@ -50,7 +50,7 @@ void CLevel_Animation::Update(_float fTimeDelta)
 
 HRESULT CLevel_Animation::Render()
 {
-	SetWindowText(g_hWnd, TEXT("¾Ö´Ï¸ŞÀÌ¼ÇÅø"));
+	SetWindowText(g_hWnd, TEXT("ì• ë‹ˆë©”ì´ì…˜íˆ´"));
 
 	return S_OK;
 }

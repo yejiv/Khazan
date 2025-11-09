@@ -40,7 +40,7 @@ HRESULT CEditor_MeshMaterial::Initialize(const _char* pModelFilePath, const aiMa
 		
 			if (isGLTF)
 			{	
-				// .gltf πÊΩƒ 
+				// .gltf Î∞©Ïãù 
 				string texturePath = strTexturePath.data;
 
 				_splitpath_s(pModelFilePath, szDrive, MAX_PATH, szDir, MAX_PATH, nullptr, 0, nullptr, 0);
@@ -60,7 +60,7 @@ HRESULT CEditor_MeshMaterial::Initialize(const _char* pModelFilePath, const aiMa
 			}
 			else
 			{
-				//.fbx πÊΩƒ
+				//.fbx Î∞©Ïãù
 				_splitpath_s(strTexturePath.data, nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
 				_splitpath_s(pModelFilePath, szDrive, MAX_PATH, szDir, MAX_PATH, nullptr, 0, nullptr, 0);
 

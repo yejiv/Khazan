@@ -1,13 +1,16 @@
-﻿#include "ScreenTrail.h"
+#include "ScreenTrail.h"
 #include "GameInstance.h"
 
 CScreenTrail::CScreenTrail(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
-    : CLineTrail{pDevice, pDeviceContext}
+    : CGameObject{pDevice, pDeviceContext}
 {
 }
 
 CScreenTrail::CScreenTrail(const CScreenTrail& Prototype)
-    : CLineTrail(Prototype)
+    : CGameObject(Prototype)
+    , m_iTextureIdx{ Prototype.m_iTextureIdx }
+    , m_fLifeTime{ Prototype.m_fLifeTime }
+    , m_iDivisionCount{ Prototype.m_iDivisionCount }
     , m_fViewportSize{ Prototype.m_fViewportSize }
 {
 }
@@ -30,9 +33,64 @@ HRESULT CScreenTrail::Initialize_Prototype()
 
 HRESULT CScreenTrail::Initialize_Clone(void* pArg)
 {
-    __super::Initialize_Clone(pArg);
+    if (FAILED(Ready_Component(pArg)))
+        return E_FAIL;
+
+    if (pArg)
+    {
+        LINE_TRAIL_DESC* dsc = static_cast<LINE_TRAIL_DESC*>(pArg);
+
+        m_iTextureIdx = dsc->iTextureIdx;
+        m_fLifeTime = dsc->fLifeTime;
+        m_iDivisionCount = dsc->iDivisionCount;
+        if (m_iDivisionCount < 1)
+        {
+            MSG_BOX(TEXT("Division Count is too low"));
+            return E_FAIL;
+        }
+    }
 
     return S_OK;
+}
+
+void CScreenTrail::Priority_Update(_float fTimeDelta)
+{
+    for (auto it = m_ControlPoints.begin(); it != m_ControlPoints.end(); )
+    {
+        it->fLifeTime += fTimeDelta;
+
+        if (it->fLifeTime > m_fLifeTime)
+            it = m_ControlPoints.erase(it);
+        else
+            ++it;
+    }
+}
+
+void CScreenTrail::Update(_float fTimeDelta)
+{
+    if (m_ControlPoints.size() < 2)
+        return;
+
+    m_TrailPoints.clear();
+
+    m_TrailPoints.push_back(m_ControlPoints[0].vPos);
+
+    for (_int i = 0; i < m_ControlPoints.size() - 1; ++i)
+    {
+        for (_int j = 0; j < m_iDivisionCount; ++j)
+        {
+            _float weight = (float)(j + 1) / (float)(m_iDivisionCount);
+
+            _vector pos = XMVectorCatmullRom(XMLoadFloat4(&m_ControlPoints[(i - 1) < 0 ? 0 : i - 1].vPos),
+                XMLoadFloat4(&m_ControlPoints[i].vPos),
+                XMLoadFloat4(&m_ControlPoints[i + 1].vPos),
+                XMLoadFloat4(&m_ControlPoints[(i + 2) > m_ControlPoints.size() - 1 ? i + 1 : i + 2].vPos),
+                weight);
+            _float4 NewNode;
+            XMStoreFloat4(&NewNode, pos);
+            m_TrailPoints.push_back(NewNode);
+        }
+    }
 }
 
 void CScreenTrail::Late_Update(_float fTimeDelta)
@@ -61,9 +119,6 @@ void CScreenTrail::Add_ControlPoint(POINT pos)
 {
     if (m_ControlPoints.size() && XMVector4Equal(XMLoadFloat4(&m_ControlPoints.back().vPos), XMVectorSet(pos.x, pos.y, 1.f, 1.f)))
         return;
-
-    if (m_ControlPoints.size() > 2)
-        int a = 0;
 
     CVIBuffer_LineTrail::LINE_TRAIL_POINT newNode;
 

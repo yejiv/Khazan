@@ -37,6 +37,8 @@ HRESULT CGameObject::Initialize_Prototype()
 
 HRESULT CGameObject::Initialize_Clone(void* pArg)
 {
+	m_isPrototype = false;
+
 	m_pTransformCom = CTransform::Create(m_pDevice, m_pContext);
 	if (nullptr == m_pTransformCom)
 		return E_FAIL;

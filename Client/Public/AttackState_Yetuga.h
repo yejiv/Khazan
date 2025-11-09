@@ -15,6 +15,7 @@ public:
 public:
 	virtual void				OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, class CGameObject* pOwner = nullptr) override;
 
+	_float						m_fCurrentTime = {};
 
 public:
 	static CAttackState_Yetuga* Create();

@@ -207,7 +207,7 @@ HRESULT CAI_Controller::LoadBTNode(const JSON& j, AIBTNODE_DATA& Node)
                 delete pChild;
                 return E_FAIL;
             }
-             //ºÎ¸ð Æ÷ÀÎÅÍ ¼³Á¤
+             //ë¶€ëª¨ í¬ì¸í„° ì„¤ì •
             pChild->Parent = &Node;
             Node.Children.push_back(pChild);
         }
@@ -223,7 +223,7 @@ CBTNode* CAI_Controller::CreateBTNode(CGameObject* pOwner, const AIBTNODE_DATA& 
     if (NodeData.strNodeType == "Leaf")
     {
         if (NodeData.strSubtype == "Wait")
-            return CWait_Node::Create(m_strMonstertag, NodeData.strNodeName, NodeData.fWaitTime);
+            return CWait_Node::Create(m_strMonstertag, "CurrentTime", NodeData.fWaitTime);
         else if (NodeData.strSubtype == "Condition")
             return CCondition_Node::Create(GetCallbackCondition(pOwner,NodeData.strCallbackFunction));
         else if (NodeData.strSubtype == "Action")

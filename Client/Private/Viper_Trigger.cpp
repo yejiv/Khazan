@@ -56,7 +56,7 @@ void CViper_Trigger::Late_Update(_float fTimeDelta)
 
 HRESULT CViper_Trigger::Render()
 {
-    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources ÇÔ¼ö E_FAIL"), E_FAIL);
+    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources í•¨ìˆ˜ E_FAIL"), E_FAIL);
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 

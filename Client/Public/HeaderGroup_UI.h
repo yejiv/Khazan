@@ -8,7 +8,7 @@
 #include "UI_Guide_Icon.h"
 #include "UI_Default_Button.h"
 
-//¸ŞÀÎ UI
+//ë©”ì¸ UI
 #include "UI_HUD.h"
 #include "UI_Inven.h"
 #include "UI_MainMenu.h"
@@ -19,7 +19,7 @@
 #include "UI_Tutorial.h"
 #include "UI_SkillTree.h"
 
-//¼­ºê UI
+//ì„œë¸Œ UI
 #include "MainMenu_Deco.h"
 #include "UI_Announce_MapName.h"
 #include "UI_Announce_Talk.h"
@@ -31,11 +31,11 @@
 #include "Item_Slot.h"
 #include "Skill_Slot.h"
 
-//HUD  °ü·Ã
+//HUD  ê´€ë ¨
 #include "BossHp.h"
 #include "Amount.h"
 
-//¿ùµå UI
+//ì›”ë“œ UI
 #include "Damage_Text.h"
 #include "Mon_HP.h"
 #include "Interaction_Guide.h"

@@ -236,7 +236,7 @@ void CImgui_Manager::Render_Gizmo()
     float objM[16];
     memcpy(objM, &worldFloat, sizeof(float) * 16);
 
-    // Á¶ÀÛ ¸ğµå ÀüÈ¯
+    // ì¡°ì‘ ëª¨ë“œ ì „í™˜
     if (m_pGameInstance->Key_Down(DIK_F1))
         m_GizmoOp = ImGuizmo::TRANSLATE;
     if (m_pGameInstance->Key_Down(DIK_F2))
@@ -244,7 +244,7 @@ void CImgui_Manager::Render_Gizmo()
     if (m_pGameInstance->Key_Down(DIK_F3))
         m_GizmoOp = ImGuizmo::SCALE;
 
-    // F4/F5 ·Î ¸ğµå ÀüÈ¯
+    // F4/F5 ë¡œ ëª¨ë“œ ì „í™˜
     if (m_pGameInstance->Key_Down(DIK_F4))
     {
         if (ImGuizmo::WORLD == m_GizmoMode)
@@ -253,32 +253,32 @@ void CImgui_Manager::Render_Gizmo()
             m_GizmoMode = ImGuizmo::WORLD;
     }
 
-    // ½º³À ¼³Á¤
+    // ìŠ¤ëƒ… ì„¤ì •
     bool useSnap = false;
     float snap[3] = { 0.25f, 15.0f, 0.1f };
     float* pSnap = nullptr;
 
-    // Shift / Ctrl / Alt Å°·Î ´ÜÀ§ ½º³À È°¼ºÈ­
+    // Shift / Ctrl / Alt í‚¤ë¡œ ë‹¨ìœ„ ìŠ¤ëƒ… í™œì„±í™”
     if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, 0.0001f))
     {
         useSnap = true;
-        snap[0] = 5.0f;     // ÀÌµ¿ 5
-        snap[1] = 15.0f;    // È¸Àü 15µµ
-        snap[2] = 0.002f;   // ½ºÄÉÀÏ 0.002
+        snap[0] = 5.0f;     // ì´ë™ 5
+        snap[1] = 15.0f;    // íšŒì „ 15ë„
+        snap[2] = 0.002f;   // ìŠ¤ì¼€ì¼ 0.002
     }
     else if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, 0.0001f))
     {
         useSnap = true;
-        snap[0] = 1.0f;     // ÀÌµ¿ 1
-        snap[1] = 5.0f;     // È¸Àü 5µµ
-        snap[2] = 0.001f;   // ½ºÄÉÀÏ 0.001
+        snap[0] = 1.0f;     // ì´ë™ 1
+        snap[1] = 5.0f;     // íšŒì „ 5ë„
+        snap[2] = 0.001f;   // ìŠ¤ì¼€ì¼ 0.001
     }
     else if (m_pGameInstance->Key_Pressing(DIK_LALT, 0.0001f))
     {
         useSnap = true;
-        snap[0] = 0.5f;     // ÀÌµ¿ 0.5
-        snap[1] = 1.0f;     // È¸Àü 1µµ
-        snap[2] = 0.0005f;  // ½ºÄÉÀÏ 0.0005
+        snap[0] = 0.5f;     // ì´ë™ 0.5
+        snap[1] = 1.0f;     // íšŒì „ 1ë„
+        snap[2] = 0.0005f;  // ìŠ¤ì¼€ì¼ 0.0005
     }
 
     if (useSnap)
@@ -294,7 +294,7 @@ void CImgui_Manager::Render_Gizmo()
         viewM,
         projM,
         m_GizmoOp,
-        m_GizmoMode,  // F4/F5 ·Î ¼öµ¿ ÀüÈ¯µÈ ¸ğµå »ç¿ë
+        m_GizmoMode,  // F4/F5 ë¡œ ìˆ˜ë™ ì „í™˜ëœ ëª¨ë“œ ì‚¬ìš©
         objM,
         nullptr,
         pSnap

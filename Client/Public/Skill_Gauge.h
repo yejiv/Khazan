@@ -1,9 +1,15 @@
 #pragma once
-#include "UI_Panel.h"
+#include "UI_ProgressBar.h"
 #include "Client_Defines.h"
 
+NS_BEGIN(Engine)
+class CShader;
+class CTexture;
+class CVIBuffer_Rect;
+NS_END
+
 NS_BEGIN(Client)
-class CSkill_Gauge final : public CUI_Panel
+class CSkill_Gauge final : public CUI_ProgressBar
 {
 private:
 	CSkill_Gauge(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -25,6 +31,7 @@ private:
 	CTexture*							m_pTextureCom = { nullptr };
 	CVIBuffer_Rect*						m_pVIBufferCom = { nullptr };
 
+	const _float*						m_fExp = { nullptr };
 private:
 	HRESULT								Ready_Component();
 

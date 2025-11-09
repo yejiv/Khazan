@@ -29,7 +29,7 @@ void CUI_State::On_Panel(UI_TYPE eType)
 		return;
 
 	m_eType = eType;
-	m_eType == UI_TYPE::DEFAULT ? m_pTitle->Set_Text(TEXT("»óÅÂ")) : m_pTitle->Set_Text(TEXT("´É·Â °­È­"));
+	m_eType == UI_TYPE::DEFAULT ? m_pTitle->Set_Text(TEXT("ìƒíƒœ")) : m_pTitle->Set_Text(TEXT("ëŠ¥ë ¥ ê°•í™”"));
 
 	m_pPanel[ENUM_CLASS(STATE_PANEL::LACHRYMA)]->Setting_Type(m_eType, this);
 	m_pPanel[ENUM_CLASS(STATE_PANEL::LEVEL)]->Setting_Type(m_eType, this);
@@ -239,7 +239,7 @@ HRESULT CUI_State::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, voi
 					string strClass = child.value("class", "");
 					CUI_State_List* pChild = static_cast<CUI_State_List*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelID, AnsiToWString(strClass).c_str(), &UIDesc));
 
-					CHECK_NULLPTR_MSG(pChild, TEXT("ÀÚ½Ä Å¬·Ğ »ı¼º ½ÇÆĞ"), E_FAIL);
+					CHECK_NULLPTR_MSG(pChild, TEXT("ìì‹ í´ë¡  ìƒì„± ì‹¤íŒ¨"), E_FAIL);
 					CHECK_FAILED(pChild->Load_UI(child, iPrototypeLevelID, pArg), E_FAIL);
 
 					pChild->Insert_Bubble([this](BUBBLEEVENT* pArg) {this->Bubble_EventCall(pArg); });
@@ -256,7 +256,7 @@ HRESULT CUI_State::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, voi
 				string strClass = child.value("class", "");
 				CUIObject* pChild = static_cast<CUIObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelID, AnsiToWString(strClass).c_str(), &UIDesc));
 
-				CHECK_NULLPTR_MSG(pChild, TEXT("ÀÚ½Ä Å¬·Ğ »ı¼º ½ÇÆĞ"), E_FAIL);
+				CHECK_NULLPTR_MSG(pChild, TEXT("ìì‹ í´ë¡  ìƒì„± ì‹¤íŒ¨"), E_FAIL);
 				CHECK_FAILED(pChild->Load_UI(child, iPrototypeLevelID, pArg), E_FAIL);
 
 				pChild->Insert_Bubble([this](BUBBLEEVENT* pArg) {this->Bubble_EventCall(pArg); });
@@ -396,7 +396,7 @@ HRESULT CUI_State::Ready_Object()
 void CUI_State::Ready_PlayerData()
 {
 	m_iLachryma									= 3000;
-	//ÇÃ·¹ÀÌ¾î ±âº» Á¤º¸
+	//í”Œë ˆì´ì–´ ê¸°ë³¸ ì •ë³´
 	m_Player_Data.iLevel						= 3;
 	m_Player_Data.iUPPoint						= 0;
 	m_Player_Data.iUpLachryma					= 0;
@@ -424,7 +424,7 @@ void CUI_State::Ready_PlayerData()
 	m_Player_Data.iDisease						= 500;
 	m_Player_Data.iPoison						= 500;
 
-	//ÇÃ·¹ÀÌ¾î ½ºÅİ¾÷ Á¤º¸
+	//í”Œë ˆì´ì–´ ìŠ¤í…Ÿì—… ì •ë³´
 	m_UpPlayer_Data.iMaxHp						= 0;
 	m_UpPlayer_Data.iMaxStamina					= 0;
 	m_UpPlayer_Data.iAtk						= 0;
@@ -452,7 +452,7 @@ void CUI_State::Ready_PlayerData()
 	m_UpPlayer_Data.iUpLachryma					= 0;
 	m_UpPlayer_Data.iLachryma					= 0;
 	
-	//½ºÅİÃ¢ ·¹º§
+	//ìŠ¤í…Ÿì°½ ë ˆë²¨
 	m_CulStateLevel.resize(ENUM_CLASS(STATE_LIST::END));
 	m_UpStateLevel.resize(ENUM_CLASS(STATE_LIST::END));
 

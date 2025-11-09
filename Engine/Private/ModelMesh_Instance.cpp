@@ -41,13 +41,13 @@ HRESULT CModelMesh_Instance::Initialize_Prototype(MODELTYPE eType, _fmatrix PreT
 
 	HRESULT hr = MODELTYPE::NONANIM == eType ? Ready_Vertices_For_NonAnim(Data) : Ready_Vertices_For_Anim(Data);
 
-	CHECK_FAILED_MSG(hr, TEXT("Mesh Instance - Ready Vertices ½ÇÆÐ"), E_FAIL);
+	CHECK_FAILED_MSG(hr, TEXT("Mesh Instance - Ready Vertices ì‹¤íŒ¨"), E_FAIL);
 
 #pragma endregion
 
 #pragma region INDEX_SETTING
 
-	CHECK_FAILED_MSG(Ready_Indices(Data), TEXT("Mesh Instance - Ready Indices ½ÇÆÐ"), E_FAIL);
+	CHECK_FAILED_MSG(Ready_Indices(Data), TEXT("Mesh Instance - Ready Indices ì‹¤íŒ¨"), E_FAIL);
 
 #pragma endregion
 

@@ -50,7 +50,7 @@ void CTrigger::Late_Update(_float fTimeDelta)
 
 HRESULT CTrigger::Render()
 {
-    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources гт╪Ж E_FAIL"), E_FAIL);
+    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources М∙╗Л┬≤ E_FAIL"), E_FAIL);
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -72,9 +72,9 @@ HRESULT CTrigger::Ready_Components(void* pArg)
     CHECK_NULLPTR(pDesc, E_FAIL);
 
     LEVEL eLevel = pDesc->eLevel;
-    CHECK_EQUAL_MSG(LEVEL::END, eLevel, TEXT("LAYER гт╪Ж©║╪╜ LEVEL ╧лют╥б"), E_FAIL);
+    CHECK_EQUAL_MSG(LEVEL::END, eLevel, TEXT("LAYER М∙╗Л┬≤Л≈░Л└° LEVEL К╞╦Л·┘К═╔"), E_FAIL);
 
-    // ╟Ё╨╟ ╫╕юл╢У ╩Щ╪╨граЖ ╟М╧н
+    // Й╟°КЁ└ Л┴░Л²╢К█■ Л┐²Л└╠М∙═Л╖─ ЙЁ═К╞╪
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr), E_FAIL);
 

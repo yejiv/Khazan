@@ -1,4 +1,4 @@
-﻿#include "Khazan_Sample.h"
+#include "Khazan_Sample.h"
 #include "Body_Khazan_Sample.h"
 #include "Spear_Khazan_Sample.h"
 #include "GameInstance.h"
@@ -56,8 +56,8 @@ HRESULT CKhazan_Sample::Initialize_Clone(void* pArg)
     if (FAILED(Ready_PartObjects()))
         return E_FAIL;
 
-    if (FAILED(Ready_Collision()))
-        return E_FAIL;
+    /*if (FAILED(Ready_Collision()))
+        return E_FAIL;*/
 
 
 
@@ -75,9 +75,9 @@ HRESULT CKhazan_Sample::Initialize_Clone(void* pArg)
 
 
     // 손잡이와 창날 거리 비율 구하기
-    _vector vSpearMid = XMVectorSet(m_pWeaponR_Matrix->_41, m_pWeaponR_Matrix->_42, m_pWeaponR_Matrix->_43, 0.f);
-    _vector vSpearBlade = XMVectorSet(m_pSpearFX_Matrix->_41, m_pSpearFX_Matrix->_42, m_pSpearFX_Matrix->_43, 0.f);
-    m_fLocalDistBaseRatio = XMVectorGetX(XMVector3Length(vSpearBlade - vSpearMid));
+    //_vector vSpearMid = XMVectorSet(m_pWeaponR_Matrix->_41, m_pWeaponR_Matrix->_42, m_pWeaponR_Matrix->_43, 0.f);
+    //_vector vSpearBlade = XMVectorSet(m_pSpearFX_Matrix->_41, m_pSpearFX_Matrix->_42, m_pSpearFX_Matrix->_43, 0.f);
+    //m_fLocalDistBaseRatio = XMVectorGetX(XMVector3Length(vSpearBlade - vSpearMid));
 
     return S_OK;
 
@@ -103,7 +103,7 @@ void CKhazan_Sample::Priority_Update(_float fTimeDelta)
         CTarget_BrutalAttack* pObject = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
         pObject->Setting_BrutalAttack(&m_vPos, 0.f);
 
-        m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), pObject);
+        m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::TEST), TEXT("Layer_UI"), pObject);
     }
 }
 
@@ -169,27 +169,6 @@ void CKhazan_Sample::Update(_float fTimeDelta)
 
     __super::Update(fTimeDelta);
 
-    /* 창 뼈 위치 구하기  */
-    XMStoreFloat4x4(&m_SpearFX_WorldMatrix, m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pTransformCom->Get_WorldMatrix());
-
-    _vector vSpearMidPos = XMVectorSet(m_pWeaponR_Matrix->_41, m_pWeaponR_Matrix->_42, m_pWeaponR_Matrix->_43, 0.f);
-    _vector vSpearBladePos = XMVectorSet(m_pSpearFX_Matrix->_41, m_pSpearFX_Matrix->_42, m_pSpearFX_Matrix->_43, 0.f);
-
-    _matrix matMidWorld = m_SpearOffset_Matrix * XMLoadFloat4x4(m_pWeaponR_Matrix) * m_pTransformCom->Get_WorldMatrix();
-    XMStoreFloat4x4(&m_SpearEndFX_WorldMatrix, matMidWorld);
-
-    _vector vSpearMidWorldPos = matMidWorld.r[3];
-    _vector vSpearEnd;
-    vSpearEnd = vSpearMidWorldPos - XMVector3Normalize(vSpearBladePos - vSpearMidPos) * m_fLocalDistBaseRatio * m_fEndDist;
-    m_SpearEndFX_WorldMatrix._41 = vSpearEnd.m128_f32[0];
-    m_SpearEndFX_WorldMatrix._42 = vSpearEnd.m128_f32[1];
-    m_SpearEndFX_WorldMatrix._43 = vSpearEnd.m128_f32[2];
-
-    _vector vWorldbladePos = XMVectorSet(m_SpearFX_WorldMatrix._41, m_SpearFX_WorldMatrix._42, m_SpearFX_WorldMatrix._43, 1.f);
-    vWorldbladePos = vWorldbladePos * m_fLocalDistBaseRatio * m_fBladeDist;
-    m_SpearFX_WorldMatrix._41 = vWorldbladePos.m128_f32[0];
-    m_SpearFX_WorldMatrix._42 = vWorldbladePos.m128_f32[1];
-    m_SpearFX_WorldMatrix._43 = vWorldbladePos.m128_f32[2];
 
 
     RayCast(fTimeDelta);
@@ -206,7 +185,7 @@ void CKhazan_Sample::Late_Update(_float fTimeDelta)
 
 
 
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONLIGHT, this)))
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 
     __super::Late_Update(fTimeDelta);
@@ -420,16 +399,16 @@ void CKhazan_Sample::Update_State(_float fTimeDelta)
         {
             if (m_iFastAttackIndex == 0)
             {
-                m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_FastAtk02"));
-                ++m_iFastAttackIndex;
-            }
-            else if (m_iFastAttackIndex == 1)
-            {
-                m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_FastAtk03_02"));
-                //m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_LightningSpear_Advanced"));
-                m_iFastAttackIndex = 0;
-                Remove_State(ATTACK_FAST);
-            }
+				m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_FastAtk02"));
+				++m_iFastAttackIndex;
+			}
+			else if (m_iFastAttackIndex == 1)
+			{
+				m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_FastAtk03_02"));
+				//m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_LightningSpear_Advanced"));
+				m_iFastAttackIndex = 0;
+				Remove_State(ATTACK_FAST);
+			}
         }
         return;
     }
@@ -552,8 +531,8 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
             m_FastComboIndex = 0;
         }
 
-        Add_State(ATTACK_FAST);
-    }
+		Add_State(ATTACK_FAST);
+	}
 
     if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_X))
     {
@@ -573,6 +552,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
             m_StrongComboIndex++;
         }
         if (isNext && m_StrongComboIndex == 1) {
+            m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk02"));
             m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk02"));
             m_StrongComboIndex++;
         }
@@ -598,6 +578,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk01"));
         m_FastComboIndex = m_StrongComboIndex = 0;
+        m_FastComboIndex = m_StrongComboIndex = 0;
 
         Add_State(ATTACK_STRONG);
     }
@@ -606,6 +587,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         Clear_State();
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Tempest_SpiralSpear"));
+        m_FastComboIndex = m_StrongComboIndex = 0;
         m_FastComboIndex = m_StrongComboIndex = 0;
 
         Add_State(ATTACK_SPIRAL);
@@ -616,6 +598,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Tempest_TwisterSpear"));
         m_FastComboIndex = m_StrongComboIndex = 0;
+        m_FastComboIndex = m_StrongComboIndex = 0;
 
         Add_State(ATTACK_TWISTE);
     }
@@ -624,6 +607,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         Clear_State();
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_PureMind_SeismicKick"));
+        m_FastComboIndex = m_StrongComboIndex = 0;
         m_FastComboIndex = m_StrongComboIndex = 0;
 
         Add_State(ATTACK_STRIKE);
@@ -634,6 +618,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_LowFlying_F"));
         m_FastComboIndex = m_StrongComboIndex = 0;
+        m_FastComboIndex = m_StrongComboIndex = 0;
 
         Add_State(ATTACK_SOON);
     }
@@ -642,6 +627,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         Clear_State();
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Crescent"));
+        m_FastComboIndex = m_StrongComboIndex = 0;
         m_FastComboIndex = m_StrongComboIndex = 0;
 
         Add_State(ATTACK_VITALPOINT);
@@ -652,6 +638,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Tempest_MoonVeil"));
         m_FastComboIndex = m_StrongComboIndex = 0;
+        m_FastComboIndex = m_StrongComboIndex = 0;
 
         Add_State(ATTACK_SHADOW2);
     }
@@ -660,6 +647,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         Clear_State();
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_PureMind_TranceSpirit_GrappleAtk01"));
+        m_FastComboIndex = m_StrongComboIndex = 0;
         m_FastComboIndex = m_StrongComboIndex = 0;
 
         Add_State(ATTACK_BRUTAL);
@@ -686,7 +674,7 @@ HRESULT CKhazan_Sample::Ready_PartObjects()
     BodyDesc.pState = &m_iState;
     BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     BodyDesc.pParentTransform = m_pTransformCom;
-    if (FAILED(__super::Add_PartObject(TEXT("Part_CKhazan_Sample_Body"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Body_Khazan_Sample"), &BodyDesc)))
+    if (FAILED(__super::Add_PartObject(TEXT("Part_CKhazan_Sample_Body"), ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_GameObject_Body_Khazan_Sample"), &BodyDesc)))
         return E_FAIL;
 
     m_pBody = static_cast<CBody_Khazan_Sample*>(Find_PartObject(TEXT("Part_CKhazan_Sample_Body")));
@@ -697,23 +685,25 @@ HRESULT CKhazan_Sample::Ready_PartObjects()
     SpearDesc.pState = &m_iState;
     SpearDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     SpearDesc.pParentTransform = m_pTransformCom;
-    if (FAILED(__super::Add_PartObject(TEXT("Part_CKhazan_Sample_Weapon_Spear"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Spear_Khazan_Sample"), &SpearDesc)))
+    if (FAILED(__super::Add_PartObject(TEXT("Part_CKhazan_Sample_Weapon_Spear"), ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_GameObject_Spear_Khazan_Sample"), &SpearDesc)))
         return E_FAIL;
 
     m_pSpear = static_cast<CSpear_Khazan_Sample*>(Find_PartObject(TEXT("Part_CKhazan_Sample_Weapon_Spear")));
-    m_pSpearFX_Matrix = m_pSpear->Get_BoneMatrix("FX");
-    m_SpearOffset_Matrix = m_pSpear->Get_OffestMatrix();
+    //m_pSpearFX_Matrix = m_pSpear->Get_BoneMatrix("FX");
+    //m_SpearOffset_Matrix = m_pSpear->Get_OffestMatrix();
     Safe_AddRef(m_pSpear);
 
     /* 넘겨주기  */
     m_pSpear->Set_matWeaponR(m_pWeaponR_Matrix);
-    m_pBody->Set_matSpearFX(m_pSpearFX_Matrix);
-    m_pBody->Set_matSpearOffset(m_SpearOffset_Matrix);
-    m_pBody->Set_matSpearWeaponR(m_pWeaponR_Matrix);
-    m_pBody->Set_matWorldSpearBladeFX(&m_SpearFX_WorldMatrix);
-    m_pBody->Set_matWorldSpearEndFX(&m_SpearEndFX_WorldMatrix);
-    return S_OK;
+    //m_pBody->Set_matSpearWeaponR(m_pWeaponR_Matrix);
 
+    //m_pBody->Set_matSpearFX(m_pSpearFX_Matrix);
+    //m_pBody->Set_matSpearOffset(m_SpearOffset_Matrix);
+    //m_pBody->Set_matWorldSpearBladeFX(&m_SpearFX_WorldMatrix);
+
+    //m_pBody->Set_matWorldSpearEndFX(&m_SpearEndFX_WorldMatrix);
+
+	return S_OK;
 }
 
 HRESULT CKhazan_Sample::Ready_Collision()
@@ -742,7 +732,7 @@ HRESULT CKhazan_Sample::Ready_Collision()
 
     return S_OK;
 }
-#ifdef _DEBUG
+
 inline _bool CKhazan_Sample::Has_States()
 {
     for (_uint i = 0; i < GetBitPosition(CKhazan_Sample::END); ++i)
@@ -753,6 +743,7 @@ inline _bool CKhazan_Sample::Has_States()
     }
     return false;
 }
+
 #ifdef _DEBUG
 void CKhazan_Sample::Debug_Widget()
 {
@@ -771,9 +762,9 @@ void CKhazan_Sample::Debug_Widget()
             ImGui::BulletText("R key Turn Right");
             ImGui::BulletText("U key + LSHIFT  Run (RUN)");
 
-            ImGui::Text("Spear Ratio");
-            ImGui::DragFloat("Blade Dist Ratio ", &m_fBladeDist, 0.01f);
-            ImGui::DragFloat("End Dist Ratio ", &m_fEndDist, 0.01f);
+            //ImGui::Text("Spear Ratio");
+            //ImGui::DragFloat("Blade Dist Ratio ", &m_fBladeDist, 0.01f);
+            //ImGui::DragFloat("End Dist Ratio ", &m_fEndDist, 0.01f);
 
         }
         ImGui::EndChild();
@@ -793,7 +784,7 @@ void CKhazan_Sample::Debug_Widget()
             ImGui::BulletText("LShift + Mouse(LB) Ground click -> teleport");
             ImGui::BulletText("Idle state when not moving");
 
-            _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
+            /*_vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
             char szPlayerPos[128];
             sprintf_s(szPlayerPos, sizeof(szPlayerPos), "Sample Pos : %.2f, %.2f, %.2f",
                 vPos.m128_f32[0],
@@ -803,9 +794,9 @@ void CKhazan_Sample::Debug_Widget()
 
             char szOffset[128];
             sprintf_s(szOffset, sizeof(szOffset), "Offset Pos : %.2f, %.2f, %.2f",
-                m_SpearOffset_Matrix.r[3].m128_f32[0],
-                m_SpearOffset_Matrix.r[3].m128_f32[1],
-                m_SpearOffset_Matrix.r[3].m128_f32[2]);
+               m_SpearOffset_Matrix.r[3].m128_f32[0],
+               m_SpearOffset_Matrix.r[3].m128_f32[1],
+               m_SpearOffset_Matrix.r[3].m128_f32[2]);
             ImGui::Text(szOffset);
 
             char szSpearBlade[128];
@@ -834,7 +825,7 @@ void CKhazan_Sample::Debug_Widget()
                 m_SpearEndFX_WorldMatrix._41,
                 m_SpearEndFX_WorldMatrix._42,
                 m_SpearEndFX_WorldMatrix._43);
-            ImGui::Text(szSpearEnd);
+            ImGui::Text(szSpearEnd);*/
         }
         ImGui::EndChild();
 
@@ -1025,7 +1016,7 @@ void CKhazan_Sample::Debug_Widget()
         });
 }
 #endif // _DEBUG
-#endif // _DEBUG
+
 
 CKhazan_Sample* CKhazan_Sample::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {

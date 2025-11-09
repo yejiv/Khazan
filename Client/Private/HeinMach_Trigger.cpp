@@ -56,7 +56,7 @@ void CHeinMach_Trigger::Late_Update(_float fTimeDelta)
 
 HRESULT CHeinMach_Trigger::Render()
 {
-    //CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources ÇÔ¼ö E_FAIL"), E_FAIL);
+    //CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources í•¨ìˆ˜ E_FAIL"), E_FAIL);
 
     //_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -152,7 +152,7 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
         }
         else if (GUIDE_TYPE::END != m_eGuideType)
         {
-            // BURTALATTACK ¤¤¤¤
+            // BURTALATTACK ã„´ã„´
             // Guide_LockOn
             // Guide_Guard
             //enum class GUIDE_TYPE { LOCKON, GUARD, UNDERWORLD, DODGE, BURTALATTACK, FALLATTACK, IMPULSE, END };

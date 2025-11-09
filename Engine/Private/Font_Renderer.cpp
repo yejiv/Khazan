@@ -15,7 +15,7 @@ HRESULT CFont_Renderer::Initialize()
     cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     m_pDevice->CreateBuffer(&cbDesc, nullptr, &m_pCB);
 
-    const _uint maxVerts = 8192; // 1300±ÛÀÚ?
+    const _uint maxVerts = 8192; // 1300ê¸€ìž?
     const _uint maxIndices = maxVerts;
 
     D3D11_SAMPLER_DESC samp{};
@@ -106,14 +106,14 @@ HRESULT CFont_Renderer::DrawText(CFont_Face* pFont, const _wstring& strText, _fl
     memcpy(mappedIB.pData, indices.data(), indices.size() * sizeof(_uint));
     m_pContext->Unmap(m_pIB, 0);
 
-    // IA ¼¼ÆÃ
+    // IA ì„¸íŒ…
     _uint stride = sizeof(FONTVERTEX);
     _uint offset = 0;
     m_pContext->IASetVertexBuffers(0, 1, &m_pVB, &stride, &offset);
     m_pContext->IASetIndexBuffer(m_pIB, DXGI_FORMAT_R32_UINT, 0);
     m_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    // »ó¼ö¹öÆÛ (»ö»ó + Åõ¿µ)
+    // ìƒìˆ˜ë²„í¼ (ìƒ‰ìƒ + íˆ¬ì˜)
     struct CBData { _float4x4 mtx; _float4 color; _float4 rect;} cb;
     XMStoreFloat4x4(&cb.mtx, XMMatrixTranspose(XMMatrixOrthographicOffCenterLH(0, 1920, 1080, 0, 0, 1)));
 
@@ -123,7 +123,7 @@ HRESULT CFont_Renderer::DrawText(CFont_Face* pFont, const _wstring& strText, _fl
     m_pContext->VSSetConstantBuffers(0, 1, &m_pCB);
     m_pContext->PSSetConstantBuffers(0, 1, &m_pCB);
 
-    // ÅØ½ºÃ³, »ùÇÃ·¯
+    // í…ìŠ¤ì²˜, ìƒ˜í”ŒëŸ¬
     ID3D11ShaderResourceView* srv = pFont->GetSRV();
     m_pContext->PSSetShaderResources(0, 1, &srv);
     m_pContext->PSSetSamplers(0, 1, &m_pSampler);
@@ -242,14 +242,14 @@ HRESULT CFont_Renderer::DrawTextBox(CFont_Face* pFont, const _wstring& strText, 
     memcpy(mappedIB.pData, indices.data(), indices.size() * sizeof(_uint));
     m_pContext->Unmap(m_pIB, 0);
 
-    // IA ¼¼ÆÃ
+    // IA ì„¸íŒ…
     _uint stride = sizeof(FONTVERTEX);
     _uint offset = 0;
     m_pContext->IASetVertexBuffers(0, 1, &m_pVB, &stride, &offset);
     m_pContext->IASetIndexBuffer(m_pIB, DXGI_FORMAT_R32_UINT, 0);
     m_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    // »ó¼ö¹öÆÛ (»ö»ó + Åõ¿µ)
+    // ìƒìˆ˜ë²„í¼ (ìƒ‰ìƒ + íˆ¬ì˜)
     struct CBData { _float4x4 mtx; _float4 color; _float4 rect; } cb;
     XMStoreFloat4x4(&cb.mtx, XMMatrixTranspose(XMMatrixOrthographicOffCenterLH(0, 1920, 1080, 0, 0, 1)));
 
@@ -259,7 +259,7 @@ HRESULT CFont_Renderer::DrawTextBox(CFont_Face* pFont, const _wstring& strText, 
     m_pContext->VSSetConstantBuffers(0, 1, &m_pCB);
     m_pContext->PSSetConstantBuffers(0, 1, &m_pCB);
 
-    // ÅØ½ºÃ³, »ùÇÃ·¯
+    // í…ìŠ¤ì²˜, ìƒ˜í”ŒëŸ¬
     ID3D11ShaderResourceView* srv = pFont->GetSRV();
     m_pContext->PSSetShaderResources(0, 1, &srv);
     m_pContext->PSSetSamplers(0, 1, &m_pSampler);

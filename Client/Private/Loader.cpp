@@ -33,6 +33,10 @@
 #include "Head_Yetuga.h"
 #include "Projectile_Yetuga.h"
 #include "Projectile_Rock_Yetuga.h"
+
+#include "Gomdol.h"
+#include "Body_Gomdol.h"
+
 #pragma endregion
 
 #pragma region UI
@@ -80,7 +84,7 @@ _bool CLoader::AllReady(const std::vector<std::future<HRESULT>>& futures)
 {
 	for (auto const& f : futures) {
 		if (f.wait_for(0ms) != std::future_status::ready)
-			return false; // ÇÏ³ª¶óµµ ÁØºñ ¾È µÆÀ¸¸é Áï½Ã false
+			return false; 
 	}
 	return true;
 }
@@ -88,7 +92,7 @@ _bool CLoader::AllReady(const std::vector<std::future<HRESULT>>& futures)
 void CLoader::Update()
 {
 	if (!AllReady(m_futures)) {
-		// ¾ÆÁ÷ ·Îµù Áß
+		
 		return;
 	}
 
@@ -106,9 +110,9 @@ void CLoader::Update()
 
 	m_isFinished = all_ok;
 	if (m_isFinished)
-		lstrcpy(m_szLoadingText, TEXT("·ÎµùÀÌ ¿Ï·áµÇ¾ú½À´Ï´Ù."));
+		lstrcpy(m_szLoadingText, TEXT("ï¿½Îµï¿½ï¿½ï¿½ ï¿½Ï·ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½Ï´ï¿½."));
 	else
-		lstrcpy(m_szLoadingText, TEXT("·Îµù ½ÇÆÐÇÏ¿´½À´Ï´Ù."));
+		lstrcpy(m_szLoadingText, TEXT("ï¿½Îµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ï¿½Ï´ï¿½."));
 }
 
 HRESULT CLoader::Loading()
@@ -123,9 +127,14 @@ HRESULT CLoader::Loading()
 			return Loading_For_Title_Level();
 			}));
 		break;
+	case LEVEL::TEST:
+		m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+			return Loading_For_Test_Level();
+			}));
+		break;
 	case LEVEL::HEINMACH:
 		m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-			return Loading_For_Stage1_Level();
+			return Loading_For_HeinMach_Level();
 			}));
 		break;
 	case LEVEL::CREVICE:
@@ -148,13 +157,13 @@ HRESULT CLoader::Loading()
 
 HRESULT CLoader::Loading_For_Title_Level()
 {
-	lstrcpy(m_szLoadingText, TEXT("ÅØ½ºÃÄ¸¦ ·ÎµùÁßÀÔ´Ï´Ù."));
+	lstrcpy(m_szLoadingText, TEXT("ï¿½Ø½ï¿½ï¿½Ä¸ï¿½ ï¿½Îµï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½."));
 
-	lstrcpy(m_szLoadingText, TEXT("¸ðµ¨À» ·ÎµùÁßÀÔ´Ï´Ù."));
+	lstrcpy(m_szLoadingText, TEXT("ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½."));
 
-	lstrcpy(m_szLoadingText, TEXT("½¦ÀÌ´õ¸¦ ·ÎµùÁßÀÔ´Ï´Ù."));
+	lstrcpy(m_szLoadingText, TEXT("ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½."));
 
-	lstrcpy(m_szLoadingText, TEXT("°ÔÀÓ¿ÀºêÁ§Æ®¸¦ ·ÎµùÁßÀÔ´Ï´Ù."));
+	lstrcpy(m_szLoadingText, TEXT("ï¿½ï¿½ï¿½Ó¿ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½."));
 
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TITLE), TEXT("Prototype_GameObject_Logo_BG"),
 		CLogo_BG::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::TITLE))), E_FAIL);
@@ -162,28 +171,123 @@ HRESULT CLoader::Loading_For_Title_Level()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TITLE), TEXT("Prototype_GameObject_UI_Logo"),
 		CUI_Logo::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::TITLE))), E_FAIL);
 
-	lstrcpy(m_szLoadingText, TEXT("·ÎµùÀÌ ¿Ï·áµÇ¾ú½À´Ï´Ù."));
+	lstrcpy(m_szLoadingText, TEXT("ï¿½Îµï¿½ï¿½ï¿½ ï¿½Ï·ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½Ï´ï¿½."));
 	
 	m_isFinished = true;
 
 	return S_OK;
 }
 
-HRESULT CLoader::Loading_For_Stage1_Level()
+HRESULT CLoader::Loading_For_Test_Level()
+{
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		return Loading_For_Test_Texture();
+		}));
+
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		Loading_For_Test_Model();
+		Loading_For_Test_GameObject();
+		return E_FAIL;
+		}));
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		return Loading_For_Test_Shader();
+		}));
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+		CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("HeinMach"), LEVEL::TEST), E_FAIL);
+		}));
+
+	
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Test_Texture()
+{
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Test_Model()
+{
+
+	/* Prototype_Component_Model_Khazan_Sample*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_Component_Model_Khazan_Sample"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Khazan_Sample.dat"))))
+		return E_FAIL;
+
+	/* Prototype_Component_Model_Spear_Khazan_Sample*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_Component_Model_Spear_Khazan_Sample"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Spear/Spear.dat"))))
+		return E_FAIL;
+
+	/* Prototype_Component_Model_Khazan_Spear*/
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_Component_Model_Khazan_Spear"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Spear/Khazan_Spear.dat"))))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Test_Shader()
+{
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Test_GameObject()
+{
+	/* Prototype_GameObject_Prop_Object */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_GameObject_Prop_Object"),
+		CProp_Object::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	/* Prototype_GameObject_Prop_Static */
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_GameObject_Prop_Static"),
+		CProp_Static::Create(m_pDevice, m_pContext)), E_FAIL);
+
+	/* Prototype_GameObject_Camera_Compre */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_GameObject_Camera_Compre"),
+		CCamera_Compre::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_GameObject_Khazan_Sample */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_GameObject_Khazan_Sample"),
+		CKhazan_Sample::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_GameObject_Body_Khazan_Sample */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_GameObject_Body_Khazan_Sample"),
+		CBody_Khazan_Sample::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* Prototype_GameObject_Spear_Khazan_Sample */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_GameObject_Spear_Khazan_Sample"),
+		CSpear_Khazan_Sample::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("SpaceTime_SpearBlood"),
+		CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/bloodInv"))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("SpearWind"),
+		CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Spear"))))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_HeinMach_Level()
 {
 
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-		return Loading_For_Stage1_Texture();
+		return Loading_For_HeinMach_Texture();
 		}));
 	
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-		return Loading_For_Stage1_Model();
+		return Loading_For_HeinMach_Model();
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-		return Loading_For_Stage1_Shader();
+		return Loading_For_HeinMach_Shader();
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-		return Loading_For_Stage1_GameObject();
+		return Loading_For_HeinMach_GameObject();
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
@@ -192,24 +296,14 @@ HRESULT CLoader::Loading_For_Stage1_Level()
 		CHECK_FAILED(Loading_Prototype_MapObject_Inst_From_DAT(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		}));
 
-	//Loading_For_Stage1_Model();
-
-	//Loading_For_Stage1_Shader();
-
-	//Loading_For_Stage1_GameObject();
-
-	//CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-
-	//CHECK_FAILED(Loading_Prototype_MapObject_Inst_From_DAT(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-
-	//lstrcpy(m_szLoadingText, TEXT("·ÎµùÀÌ ¿Ï·áµÇ¾ú½À´Ï´Ù."));
+	//lstrcpy(m_szLoadingText, TEXT("ï¿½Îµï¿½ï¿½ï¿½ ï¿½Ï·ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½Ï´ï¿½."));
 
 	//m_isFinished = true;
 
 	return S_OK;
 }
 
-HRESULT CLoader::Loading_For_Stage1_Texture()
+HRESULT CLoader::Loading_For_HeinMach_Texture()
 {
 
 	/* Prototype_Component_Texture_Sky */
@@ -232,36 +326,14 @@ HRESULT CLoader::Loading_For_Stage1_Texture()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Terrain/Brush.png"), 1))))
 		return E_FAIL;
 
-	///* Prototype_Component_Texture_Brush */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Texture_BackGround"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/BG/T_Hud_BG_Deco_Pathfinder_01.png"), 1))))
-	//	return E_FAIL;
-
-	//vector<const _tchar*> TextureList;
-	//TextureList.reserve(2);
-	//TextureList.push_back(TEXT("T_BG_GrandFlores.png"));
-	//TextureList.push_back(TEXT("T_BG_ValleyOfTheFallenSouls.png"));
-
-	///* Prototype_Component_Texture_Test */
- //  	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Texture_Test"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Textures/UI/BackGround/"), TextureList))))
-	//	return E_FAIL;
 
 	return S_OK;
 }
 
-HRESULT CLoader::Loading_For_Stage1_Model()
+HRESULT CLoader::Loading_For_HeinMach_Model()
 {
-	/* Prototype_Component_Model_Fiona */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Fiona"),
-	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Test/Fiona/Fiona.dat"))))
-	//	return E_FAIL;
 
 #pragma region KHAZAN
-	/* Prototype_Component_Model_Khazan_Sample*/
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Sample"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Khazan_Sample.dat"))))
-		return E_FAIL;
 
 	/* Prototype_Component_Model_Spear_Khazan_Sample*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Spear_Khazan_Sample"),
@@ -348,22 +420,16 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 		return E_FAIL;
 
 #pragma endregion
-	/////* Prototype_Component_Model_Khazan */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan"),
-	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Test/Khazan/Khazan.dat"))))
+
+#pragma region Gomdol
+	//// Prototype_Component_Model_Gomdel
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Gomdol"),
+	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/BigBear/BigBear.dat"))))
 	//	return E_FAIL;
+#pragma endregion
 
-	/////* Prototype_Component_Model_WP_WOD_Ground_Base_004 */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"),
-	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Map/Test/WP_WOD_Ground_Base_004/WP_WOD_Ground_Base_004.dat"))))
-	//	return E_FAIL;
 
-	/* Prototype_Component_Model_JOH_TestModel */
- 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_JOH_TestModel"),
-		//CModel::Create(m_pDevice, m_pContext, "../Data/Test/Test_Player/Test_Player.dat"))))
-		//return E_FAIL;
-
-#pragma region ¸ðµ¨ ¿øÇü : »óÈ£ ÀÛ¿ë ¸Ê ¿ÀºêÁ§Æ®
+#pragma region ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ : ï¿½ï¿½È£ ï¿½Û¿ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
 	/* Prototype_Component_Model_BladeNexus */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_BladeNexus"),
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_DamagedTS/WIP_COM_DamagedTS.dat")), E_FAIL);
@@ -373,7 +439,7 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_BigChest_Open_003/WIP_COM_BigChest_Open_003.dat")), E_FAIL);
 #pragma endregion
 
-#pragma region ¸ðµ¨ ¿øÇü : Æ®¸®°Å
+#pragma region ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ : Æ®ï¿½ï¿½ï¿½ï¿½
 	/* Prototype_Component_Model_Trigger */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Trigger"),
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Base/Cube/Cube.dat")), E_FAIL);
@@ -382,12 +448,12 @@ HRESULT CLoader::Loading_For_Stage1_Model()
 	return S_OK;
 }
 
-HRESULT CLoader::Loading_For_Stage1_Shader()
+HRESULT CLoader::Loading_For_HeinMach_Shader()
 {
 	return S_OK;
 }
 
-HRESULT CLoader::Loading_For_Stage1_GameObject()
+HRESULT CLoader::Loading_For_HeinMach_GameObject()
 {
 	/* Prototype_GameObject_Terrain*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Terrain"),
@@ -399,25 +465,11 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 		CSky::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	///* Prototype_GameObject_Camera_Free */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Camera_Free"),
-	//	CCamera_Free::Create(m_pDevice, m_pContext))))
-	//	return E_FAIL;
-
 	/* Prototype_GameObject_Camera_Compre */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Camera_Compre"),
 		CCamera_Compre::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	///* Prototype_GameObject_Player */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Player"),
-	//	CPlayer::Create(m_pDevice, m_pContext))))
-	//	return E_FAIL;
-
-	///* Prototype_GameObject_Body_Player */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Body_Player"),
-	//	CBody_Player::Create(m_pDevice, m_pContext))))
-	//	return E_FAIL;
 
 #pragma region YETUGA
 
@@ -446,15 +498,24 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 
 #pragma endregion
 
-	/////* Prototype_GameObject_Dummy */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Dummy"),
-	//	CDummy::Create(m_pDevice, m_pContext))))
+#pragma region GOMDOL
+
+	/* Prototype_GameObject_Monster_Yetuga */
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Gomdol"),
+		CGomdol::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	// Prototype_PartObject_Yetuga_Body
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Gomdol_Body"),
+		CBody_Gomdol::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	//// Prototype_PartObject_Yetuga_Body
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Yetuga_Head"),
+	//	CHead_Yetuga::Create(m_pDevice, m_pContext))))
 	//	return E_FAIL;
 
-	///* Prototype_GameObject_Prop_Test */
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Test"),
-	//	CProp_Test::Create(m_pDevice, m_pContext))))
-	//	return E_FAIL;
+#pragma endregion
 
 	/* Prototype_GameObject_Prop_Object */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Object"),
@@ -464,7 +525,7 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Static"),
 		CProp_Static::Create(m_pDevice, m_pContext)), E_FAIL);
 
-#pragma region °ÔÀÓ ¿ÀºêÁ§Æ® ¿øÇü : »óÈ£ ÀÛ¿ë ¸Ê ¿ÀºêÁ§Æ®
+#pragma region ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ : ï¿½ï¿½È£ ï¿½Û¿ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
 	/* Prototype_GameObject_Prop_BladeNexus */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_BladeNexus"),
 		CBladeNexus::Create(m_pDevice, m_pContext)), E_FAIL);
@@ -474,36 +535,16 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 		CBigChest::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
-#pragma region °ÔÀÓ ¿ÀºêÁ§Æ® ¿øÇü : Æ®¸®°Å
+#pragma region ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ : Æ®ï¿½ï¿½ï¿½ï¿½
 	/* Prototype_GameObject_Prop_Trigger */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_HeinMach_Trigger"),
 		CHeinMach_Trigger::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
-	/* Prototype_GameObject_JOH_Test1 */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_JOH_Test1"),
-		CJOH_Test1::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
-
-	/* Prototype_GameObject_Khazan_Sample */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Sample"),
-		CKhazan_Sample::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
-
-	/* Prototype_GameObject_Body_Khazan_Sample */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Body_Khazan_Sample"),
-		CBody_Khazan_Sample::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
-
-	/* Prototype_GameObject_Spear_Khazan_Sample */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Spear_Khazan_Sample"),
-		CSpear_Khazan_Sample::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
-
 	/* Prototype_GameObject_Khazan_Spear */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"),
 		CKhazan_Spear::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+ 		return E_FAIL;
 
 	/* Prototype_GameObject_Body_Khazan_Spear */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Body_Khazan_Spear"),
@@ -515,9 +556,9 @@ HRESULT CLoader::Loading_For_Stage1_GameObject()
 		CSpear_Khazan_Spear::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-#pragma region ÀÌÆåÆ® Å×½ºÆ® Áß!
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpaceTime_SpearBlood"),
-		CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/blood"))))
+#pragma region ï¿½ï¿½ï¿½ï¿½Æ® ï¿½×½ï¿½Æ® ï¿½ï¿½!
+	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"),
+		CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Spear"))))
 		return E_FAIL;
 
 	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TestParticle2"),
@@ -577,7 +618,7 @@ HRESULT CLoader::Loading_For_Crevice_Model()
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Spear/Khazan_Spear.dat"))))
 		return E_FAIL;
 
-#pragma region ¸ðµ¨ ¿øÇü : »óÈ£ ÀÛ¿ë ¸Ê ¿ÀºêÁ§Æ®
+#pragma region ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ : ï¿½ï¿½È£ ï¿½Û¿ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
 	/* Prototype_Component_Model_BladeNexus */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_BladeNexus"),
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_DamagedTS/WIP_COM_DamagedTS.dat")), E_FAIL);
@@ -607,7 +648,7 @@ HRESULT CLoader::Loading_For_Crevice_GameObject()
 		CCamera_Compre::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-#pragma region °ÔÀÓ ¿ÀºêÁ§Æ® : ¸Ê
+#pragma region ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® : ï¿½ï¿½
 
 	/* Prototype_GameObject_Prop_Object */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Prop_Object"),
@@ -617,7 +658,7 @@ HRESULT CLoader::Loading_For_Crevice_GameObject()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Prop_Static"),
 		CProp_Static::Create(m_pDevice, m_pContext)), E_FAIL);
 
-#pragma region °ÔÀÓ ¿ÀºêÁ§Æ® ¿øÇü : »óÈ£ ÀÛ¿ë ¸Ê ¿ÀºêÁ§Æ®
+#pragma region ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ : ï¿½ï¿½È£ ï¿½Û¿ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
 	/* Prototype_GameObject_Prop_BladeNexus */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Prop_BladeNexus"),
 		CBladeNexus::Create(m_pDevice, m_pContext)), E_FAIL);
@@ -649,12 +690,11 @@ HRESULT CLoader::Loading_For_Crevice_GameObject()
 		return E_FAIL;
 #pragma endregion
 
-#pragma region ÀÌÆåÆ® Å×½ºÆ® Áß!
+#pragma region ï¿½ï¿½ï¿½ï¿½Æ® ï¿½×½ï¿½Æ® ï¿½ï¿½!
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_TestParticle"),
 		CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/test1"))))
 		return E_FAIL;
 #pragma endregion
-
 
 	return S_OK;
 }
@@ -763,7 +803,7 @@ HRESULT CLoader::Loading_For_Viper_Model()
 		return E_FAIL;
 #pragma endregion
 
-#pragma region ¸ðµ¨ ¿øÇü : »óÈ£ ÀÛ¿ë ¸Ê ¿ÀºêÁ§Æ®
+#pragma region ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ : ï¿½ï¿½È£ ï¿½Û¿ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
 	/* Prototype_Component_Model_BladeNexus */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_BladeNexus"),
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_DamagedTS/WIP_COM_DamagedTS.dat")), E_FAIL);
@@ -773,7 +813,7 @@ HRESULT CLoader::Loading_For_Viper_Model()
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_BigChest_Open_003/WIP_COM_BigChest_Open_003.dat")), E_FAIL);
 #pragma endregion
 
-#pragma region ¸ðµ¨ ¿øÇü : Æ®¸®°Å
+#pragma region ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ : Æ®ï¿½ï¿½ï¿½ï¿½
 	/* Prototype_Component_Model_Trigger */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Trigger"),
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Base/Cube/Cube.dat")), E_FAIL);
@@ -802,7 +842,7 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Prop_Static"),
 		CProp_Static::Create(m_pDevice, m_pContext)), E_FAIL);
 
-#pragma region °ÔÀÓ ¿ÀºêÁ§Æ® ¿øÇü : »óÈ£ ÀÛ¿ë ¸Ê ¿ÀºêÁ§Æ®
+#pragma region ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ : ï¿½ï¿½È£ ï¿½Û¿ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
 	/* Prototype_GameObject_Prop_BladeNexus */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Prop_BladeNexus"),
 		CBladeNexus::Create(m_pDevice, m_pContext)), E_FAIL);
@@ -812,7 +852,7 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
 		CBigChest::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
-#pragma region °ÔÀÓ ¿ÀºêÁ§Æ® ¿øÇü : Æ®¸®°Å
+#pragma region ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ : Æ®ï¿½ï¿½ï¿½ï¿½
 	/* Prototype_GameObject_Prop_Trigger */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Prop_HeinMach_Trigger"),
 		CHeinMach_Trigger::Create(m_pDevice, m_pContext)), E_FAIL);
@@ -838,7 +878,7 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
 
 HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDataFileName, LEVEL eLevel, KHAZAN_MAP eMap)
 {
-	// Dat ÆÄÀÏ ±âº» °æ·Î
+	// Dat ï¿½ï¿½ï¿½ï¿½ ï¿½âº» ï¿½ï¿½ï¿½
 	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
 
 	switch (eMap)
@@ -866,29 +906,29 @@ HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDa
 	DWORD dwByte = {};
 
 	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("[DAT ERROR] ¹ÙÀÌ³Ê¸® ÆÄÀÏ ¿ÀÇÂ ¹®Á¦"), E_FAIL);
+	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("[DAT ERROR] ï¿½ï¿½ï¿½Ì³Ê¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½"), E_FAIL);
 
-	// 1. ÇÁ·ÎÅä Å¸ÀÔÀÇ ÃÑ °³¼ö
+	// 1. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	_uint iPrototypeCnt = {};
 	CHECK_FALSE(ReadFile(hFile, &iPrototypeCnt, sizeof(_uint), &dwByte, nullptr), E_FAIL);
 
-	// ÇÁ·ÎÅä Å¸ÀÔÀÇ ÃÑ °³¼ö¸¸Å­ ¼øÈ¸
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å­ ï¿½ï¿½È¸
 	for (_uint i = 0; i < iPrototypeCnt; ++i)
 	{
-		// CModel À» ¿­¾î¾ß ÇÏ´Â °æ¿ì ( Instance X )
-		// 2. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ±æÀÌ ÀúÀå
+		// CModel ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ ( Instance X )
+		// 2. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½Â±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		_uint iPrototypeTagLen = {};
 		CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
 
-		// 3. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ÀÌ¸§ ÀúÀå
+		// 3. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½Â±ï¿½ ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½
 		_tchar szPrototypeTag[MAX_PATH] = {};
 		CHECK_FALSE(ReadFile(hFile, &szPrototypeTag, sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr), E_FAIL);
 
-		// 4. ¸ðµ¨ °æ·Î ±æÀÌ ÀúÀå
+		// 4. ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		_uint iModelPathLen = {};
 		CHECK_FALSE(ReadFile(hFile, &iModelPathLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
 
-		// 5. ¸ðµ¨ °æ·Î ÀÌ¸§ ÀúÀå
+		// 5. ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½
 		_char szModelPath[MAX_PATH] = {};
 		CHECK_FALSE(ReadFile(hFile, &szModelPath, sizeof(_char) * iModelPathLen, &dwByte, nullptr), E_FAIL);
 
@@ -896,7 +936,7 @@ HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDa
 			CModel::Create(m_pDevice, m_pContext, szModelPath))))
 		{
 			CloseHandle(hFile);
-			MSG_BOX(TEXT("[DAT ERROR] ¸Ê ¿ÀºêÁ§Æ® ÇÁ·ÎÅäÅ¸ÀÔ µî·Ï ½ÇÆÐ ( CModel )"));
+			MSG_BOX(TEXT("[DAT ERROR] ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ( CModel )"));
 			return E_FAIL;
 		}
 	}
@@ -908,7 +948,7 @@ HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDa
 
 HRESULT CLoader::Loading_Prototype_MapObject_Inst_From_DAT(const _tchar* pPrototypeDataFileName, LEVEL eLevel, KHAZAN_MAP eMap)
 {
-	// Dat ÆÄÀÏ ±âº» °æ·Î
+	// Dat ï¿½ï¿½ï¿½ï¿½ ï¿½âº» ï¿½ï¿½ï¿½
 	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
 
 	switch (eMap)
@@ -936,43 +976,43 @@ HRESULT CLoader::Loading_Prototype_MapObject_Inst_From_DAT(const _tchar* pProtot
 	DWORD dwByte = {};
 
 	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("[DAT ERROR] ¹ÙÀÌ³Ê¸® ÆÄÀÏ ¿ÀÇÂ ¹®Á¦"), E_FAIL);
+	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("[DAT ERROR] ï¿½ï¿½ï¿½Ì³Ê¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½"), E_FAIL);
 
-	// 1. ÇÁ·ÎÅä Å¸ÀÔÀÇ ÃÑ °³¼ö
+	// 1. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	_uint iPrototypeCnt = {};
 	CHECK_FALSE(ReadFile(hFile, &iPrototypeCnt, sizeof(_uint), &dwByte, nullptr), E_FAIL);
 
-	// ÇÁ·ÎÅä Å¸ÀÔÀÇ ÃÑ °³¼ö¸¸Å­ ¼øÈ¸
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å­ ï¿½ï¿½È¸
 	for (_uint i = 0; i < iPrototypeCnt; ++i)
 	{
-		// CModel À» ¿­¾î¾ß ÇÏ´Â °æ¿ì ( Instance X )
+		// CModel ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ ( Instance X )
 
-		// 2. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ±æÀÌ ÀúÀå
+		// 2. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½Â±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		_uint iPrototypeTagLen = {};
 		CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
 
-		// 3. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ÀÌ¸§ ÀúÀå
+		// 3. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½Â±ï¿½ ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½
 		_tchar szPrototypeTag[MAX_PATH] = {};
 		CHECK_FALSE(ReadFile(hFile, &szPrototypeTag, sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr), E_FAIL);
 
-		// 4. ¸ðµ¨ °æ·Î ±æÀÌ ÀúÀå
+		// 4. ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		_uint iModelPathLen = {};
 		CHECK_FALSE(ReadFile(hFile, &iModelPathLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
 
-		// 5. ¸ðµ¨ °æ·Î ÀÌ¸§ ÀúÀå
+		// 5. ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½
 		_char szModelPath[MAX_PATH] = {};
 		CHECK_FALSE(ReadFile(hFile, &szModelPath, sizeof(_char) * iModelPathLen, &dwByte, nullptr), E_FAIL);
 
-		// 6. ÀÎ½ºÅÏ½º Çà·Ä ÃÑ °³¼ö ÀúÀå
+		// 6. ï¿½Î½ï¿½ï¿½Ï½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		_uint iNumInstances = {};
 		CHECK_FALSE(ReadFile(hFile, &iNumInstances, sizeof(_uint), &dwByte, nullptr), E_FAIL);
 
-		// ÀÎ½ºÅÏ½º Á¤º¸ ³Ñ±â±â
+		// ï¿½Î½ï¿½ï¿½Ï½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ±ï¿½ï¿½
 		CModelMesh_Instance::MODELMESH_INSTANCE_DESC MeshInstanceDesc = {};
 
 		MeshInstanceDesc.iNumInstance = iNumInstances;
 
-		// 7. Çà·Ä °³¼ö¸¸Å­ º¤ÅÍ resize ¹× read file
+		// 7. ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å­ ï¿½ï¿½ï¿½ï¿½ resize ï¿½ï¿½ read file
 		MeshInstanceDesc.InstanceData.resize(static_cast<size_t>(iNumInstances));
 
 		for (_uint i = 0; i < iNumInstances; ++i)
@@ -988,7 +1028,7 @@ HRESULT CLoader::Loading_Prototype_MapObject_Inst_From_DAT(const _tchar* pProtot
 			CModel_Instance::Create(m_pDevice, m_pContext, szModelPath, &MeshInstanceDesc))))
 		{
 			CloseHandle(hFile);
-			MSG_BOX(TEXT("[DAT ERROR] ¸Ê ¿ÀºêÁ§Æ® ÇÁ·ÎÅäÅ¸ÀÔ µî·Ï ½ÇÆÐ ( CModel )"));
+			MSG_BOX(TEXT("[DAT ERROR] ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ( CModel )"));
 			return E_FAIL;
 		}
 	}

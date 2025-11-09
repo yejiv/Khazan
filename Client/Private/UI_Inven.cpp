@@ -383,12 +383,12 @@ HRESULT CUI_Inven::Update_Switch(void* pArg)
 		if (!m_bIsEquip)
 		{
 			m_iTapGroupIndex = ENUM_CLASS(TapGroup::OTHER);
-			m_pUIText->Set_Text(TEXT("¼ÒÁöÇ°"));
+			m_pUIText->Set_Text(TEXT("ì†Œì§€í’ˆ"));
 			Change_Tap(0);
 		}
 		else
 		{
-			m_pUIText->Set_Text(TEXT("Àåºñ"));
+			m_pUIText->Set_Text(TEXT("ìž¥ë¹„"));
 		}
 		m_strReturnName = pDesc->szName;
 	}
