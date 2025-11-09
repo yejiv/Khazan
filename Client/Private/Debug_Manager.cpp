@@ -120,6 +120,7 @@ void CDebug_Manager::Ready_JoltDebug()
 		Labels.push_back("EFFECT");
 		Labels.push_back("SKILL");
 		Labels.push_back("CAMERA");
+        Labels.push_back("PLAYER_TRIGGER");
 
 		for (size_t i = 0; i < Labels.size(); i++)
 		{

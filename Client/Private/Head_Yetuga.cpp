@@ -184,6 +184,7 @@ HRESULT CHead_Yetuga::Ready_Colliders()
     m_tCollisionDesc.pGameObject = this;
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
     BodyDesc.bIsTrigger = true;
+    BodyDesc.isCollideKinematicVsNonDynamic = true;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body_Head"), reinterpret_cast<CComponent**>(&m_pHeadBodyCom), &BodyDesc)))
         return E_FAIL;
