@@ -74,6 +74,10 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
 
 void CYetuga::Priority_Update(_float fTimeDelta)
 {
+    if (m_fCurrentHP <= 0.f)
+        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isDead", true);
+
+
     CContainerObject::Priority_Update(fTimeDelta);
 }
 
@@ -203,8 +207,6 @@ void CYetuga::Throw_Stone()
     pModel->Set_Animation(1);
 
     Safe_Release(m_pHoldStone);
-
-
 }
 
 void CYetuga::Grab_Check_Begin(const _char* pBoneName)
@@ -215,13 +217,20 @@ void CYetuga::Grab_Check_Begin(const _char* pBoneName)
     _matrix BoneWorld = m_pBody->Get_BoneMatrix(pBoneName);
     
     _vector vGrabPosition = BoneWorld.r[3];
-    pTargetTransform->Set_State(STATE::POSITION, vGrabPosition);
+    _vector vOffset = XMVectorSet(0.f, -1.f, 0.f, 0.f);
+    pTargetTransform->Set_State(STATE::POSITION, vGrabPosition + vOffset);
 
 }
 
-void CYetuga::Grab_Check_End()
+void CYetuga::Grab_Check_End(const _char* pBoneName)
 {
-    // 충돌을 꺼준다.
+    CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+    if (nullptr == pTargetTransform)
+        return;
+    _matrix BoneWorld = m_pBody->Get_BoneMatrix(pBoneName);
+
+    _vector vGrabPosition = BoneWorld.r[3];
+    pTargetTransform->Set_State(STATE::POSITION, vGrabPosition);
 }
 
 void CYetuga::Pick_Rock()
@@ -519,7 +528,7 @@ HRESULT CYetuga::Ready_Projectiles()
     RockDesc.fRotationPerSec = 180.f;
 
        m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Yetuga_Rock"),
-        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Rock"), &RockDesc, 2);
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Rock"), &RockDesc, 5);
 
 
        CProjectile_Breath_Yetuga::PROJECTILE_DESC BreathDesc{};
@@ -528,8 +537,8 @@ HRESULT CYetuga::Ready_Projectiles()
        BreathDesc.fLifeTime = 10.f;
        RockDesc.fRotationPerSec = 180.f;
 
-       m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Yetuga_Breath"),
-           ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Breath"), &BreathDesc ,2);
+       m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Yetuga_Rock"),
+           ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Breath"), &BreathDesc ,5);
 
     return S_OK;
 }
@@ -561,7 +570,6 @@ HRESULT CYetuga::Ready_AnimEvent()
         });
 
 #pragma endregion
-
 
 #pragma region 2HIT
 
@@ -657,7 +665,6 @@ HRESULT CYetuga::Ready_AnimEvent()
 
 
 #pragma endregion
-
 
 #pragma region TurnAttack
 
@@ -975,6 +982,7 @@ HRESULT CYetuga::Ready_AnimEvent()
     pModel->Register_Event("Grab_Hand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isGrab = true;
+            m_isGhost = true;
             m_pBody->Set_OnAttackCollision(false);
 
         });
@@ -992,19 +1000,23 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("Grab_Hold", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()
         {
-            Grab_Check_Begin("Holding");
+            Grab_Check_End("Holding");
         });
 
 
-    pModel->Register_Event("Grab_Hold", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() 
+
+    //Grab_After
+    pModel->Register_Event("Grab_After", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             // 타겟 풀어주기
             m_isGrab = false;
+            m_isGhost = false;
+
 
         });
 
-#pragma endregion
 
+#pragma endregion
 
 #pragma region RUSH
     pModel->Register_Event("RushCheck", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()

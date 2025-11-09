@@ -1,6 +1,11 @@
 #pragma once
 #include "Projectile.h"
 
+NS_BEGIN(Engine)
+class CBody;
+NS_END
+
+
 NS_BEGIN(Client)
 
 class CProjectile_Rock_Yetuga final : public CProjectile
@@ -21,9 +26,21 @@ public:
 public:
 	virtual void						Reset() override;
 
+public:
+    virtual void                        Collision_Enter(COLLISION_DESC* pDesc, _uint	iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
+    virtual void                        Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
+    virtual void                        Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
+
+
 private:
 	HRESULT								Ready_Components();
+    HRESULT						        Ready_Colliders();
 	HRESULT								Bind_ShaderResources();
+
+private:
+    CBody*                              m_pBody = { nullptr };
+
+    _bool						        m_isPicked = { false };
 
 
 public:
