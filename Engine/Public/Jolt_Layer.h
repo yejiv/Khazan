@@ -8,7 +8,7 @@ class CJolt_BPLayerIF final : public BroadPhaseLayerInterface
 public:
 	explicit CJolt_BPLayerIF(_uint iNumObjectLayer) {
 		m_iNumObjectLayer = iNumObjectLayer;
-		m_ObjectToBroadPhase = new BroadPhaseLayer[m_iNumObjectLayer];
+        m_ObjectToBroadPhase = new BroadPhaseLayer[m_iNumObjectLayer];
 	}
 	virtual ~CJolt_BPLayerIF() {
 		Safe_Delete_Array(m_ObjectToBroadPhase);
@@ -55,7 +55,7 @@ public:
 		m_iNumObjectLayer = iNumObjectLayer;
 		m_ObjectLayerFilter = new _bool*[m_iNumObjectLayer];
 		for (_uint i = 0; i < m_iNumObjectLayer; ++i)
-			m_ObjectLayerFilter[i] = new _bool[m_iNumObjectLayer];
+            m_ObjectLayerFilter[i] = new _bool[m_iNumObjectLayer]{};
 	}
 	virtual ~CJolt_ObjectLayerPairFilter() {
 		for (_uint i = 0; i < m_iNumObjectLayer; ++i)
@@ -88,8 +88,8 @@ public:
 	explicit CJolt_ObjectVsBPLayerFilter(_uint iNumObjectLayer) {
 		m_iNumObjectLayer = iNumObjectLayer;
 		m_ObjectVsBPLayerFilter = new _bool*[m_iNumObjectLayer];
-		for (_uint i = 0; i < m_iNumObjectLayer; ++i)
-			m_ObjectVsBPLayerFilter[i] = new _bool[ENUM_CLASS(JOLT_BP_LAYER::END)];
+        for (_uint i = 0; i < m_iNumObjectLayer; ++i)
+            m_ObjectVsBPLayerFilter[i] = new _bool[ENUM_CLASS(JOLT_BP_LAYER::END)]{};
 	}
 	virtual ~CJolt_ObjectVsBPLayerFilter() {
 		for (_uint i = 0; i < m_iNumObjectLayer; ++i)

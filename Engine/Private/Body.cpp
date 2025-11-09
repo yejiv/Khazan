@@ -58,8 +58,11 @@ HRESULT CBody::Initialize_Clone(void* pArg)
     if (pDesc->eShapeType != SHAPE::MESH)
     {
         m_pBody = m_pGameInstance->CreateAndAdd_Body(BCS, &m_pBodyInterface);
+        m_pBody->SetCollideKinematicVsNonDynamic(pDesc->isCollideKinematicVsNonDynamic);
         m_BodyID = m_pBody->GetID();
     }
+
+    
     //// 머티리얼 반영
     //{
     //    BodyLockWrite lock(m_pPhysics->GetBodyLockInterface(), m_BodyID);
