@@ -134,7 +134,7 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 	{
 		return [pYetuga](CBlackBoard* BB)->_bool
 			{
-				if (pYetuga->Get_CurrentHP() <= 0.f)
+				if (pYetuga->Get_CurrentHP() <= 0.f/* && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "isDead")*/)
 					return true;
 				else
 					return false;
@@ -574,15 +574,12 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 					return BTNODESTATE::SUCCESS;
 				}
 
-				BB->Set_Value(pYetuga->Get_Name(), "isDeadFinished", false);
+				BB->Set_Value(pYetuga->Get_Name(), "isDead", true);
                
-
 				pYetuga->Get_Controller()->Get_State_Machine()->
 					Change_State(ENUM_CLASS(YETUGA_STATE::DEAD), pYetuga);
 				return BTNODESTATE::RUNNING;
-
 			};
-
 	}
 
 	else if ("Groggy" == name)
@@ -1042,9 +1039,8 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 
 				if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
 				{
+
 					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isDeadFinished", false);
-					BB->Set_Value<_bool>(pYetuga->Get_Name(), "DamageInterrupt", false);
-					pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
 				}
 			};
 	}

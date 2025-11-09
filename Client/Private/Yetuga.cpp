@@ -60,14 +60,6 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
     if (nullptr == m_pController)
         return E_FAIL;
 
-    CBossHp::BOSSMON_UPDATE_DESC HPDesc{};
-    HPDesc.isOpen = true;
-    HPDesc.pHpMaxValue = &m_fMaxHP;
-    HPDesc.pHpValue = &m_fCurrentHP;
-    HPDesc.pStaminaMaxValue = &m_fMaxStamina;
-    HPDesc.pStaminaCulValue = &m_fCurrentStamina;
-
-    CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"),&HPDesc);
 
     return S_OK;
 }
@@ -76,6 +68,25 @@ void CYetuga::Priority_Update(_float fTimeDelta)
 {
     if (m_fCurrentHP <= 0.f)
         m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isDead", true);
+
+  /*  if (m_pGameInstance->Get_BlackBoard()->Get_Value<_bool>(m_strName, "isDetected"))
+    {
+        CBossHp::BOSSMON_UPDATE_DESC HPDesc{};
+        HPDesc.isOpen = true;
+        HPDesc.pHpMaxValue = &m_fMaxHP;
+        HPDesc.pHpValue = &m_fCurrentHP;
+        HPDesc.pStaminaMaxValue = &m_fMaxStamina;
+        HPDesc.pStaminaCulValue = &m_fCurrentStamina;
+
+        CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &HPDesc);
+    }
+    else
+    {
+        CBossHp::BOSSMON_UPDATE_DESC Desc;
+        Desc.isOpen = false;
+        CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &Desc);
+    }*/
+ 
 
 
     CContainerObject::Priority_Update(fTimeDelta);

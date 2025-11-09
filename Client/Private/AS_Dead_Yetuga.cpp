@@ -6,6 +6,8 @@
 #include "FSM_Yetuga.h"
 #include "Body_Yetuga.h"
 #include "ClientInstance.h"
+#include "UI_Inven.h"
+#include "Event_Defines.h"
 
 CAS_Dead_Yetuga::CAS_Dead_Yetuga()
 {
@@ -27,7 +29,9 @@ void CAS_Dead_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fT
 
     if (pModel->Play_Animation(fTimeDelta))
     {
-
+        EventChest ChestEvent;
+        //static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(ChestEvent.Items.iItem_0);
+        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isDeadFinished", true);
     }
 
 }
