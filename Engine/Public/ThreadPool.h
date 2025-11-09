@@ -2,7 +2,7 @@
 #include "Base.h"
 
 NS_BEGIN(Engine)
-
+extern thread_local uint32_t t_worker_idx;
 class CThreadPool final : public CBase
 {
 private:
