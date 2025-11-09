@@ -36,26 +36,31 @@ public:
 
 
 public:
-    virtual HRESULT Initialize_Prototype();
-    virtual HRESULT Initialize_Clone(void* pArg);
-    virtual void Priority_Update(_float fTimeDelta);
-    virtual void Update(_float fTimeDelta);
-    virtual void Late_Update(_float fTimeDelta);
-    virtual HRESULT Render();
-    virtual HRESULT Render_Shadow() override;
-    void			Render_Part(CModel* pModel);
+	virtual HRESULT Initialize_Prototype();
+	virtual HRESULT Initialize_Clone(void* pArg);
+	virtual void    Priority_Update(_float fTimeDelta);
+	virtual void    Update(_float fTimeDelta);
+	virtual void    Late_Update(_float fTimeDelta);
+	virtual HRESULT Render();
+	virtual HRESULT Render_Shadow() override;
+    virtual HRESULT Render_Outline() override;
+	void			Render_Part(CModel* pModel);
+	void			Render_Part_Shadow(CModel* pModel);
+    void            Render_Part_Outline(CModel* pModel);
 
 public:
-    CModel* Get_Model() { return m_pModelCom; }
+	CModel* Get_Model() { return m_pModelCom; }
 
 public:
-    virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint	iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
-    virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
-    virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
-
+    OUTLINE_CONFIG Get_OutlineConfig() { return m_OutlineConfig; }
+    void Set_OutlineConfig(OUTLINE_CONFIG Config)
+    {
+        m_OutlineConfig.vColor = Config.vColor;
+        m_OutlineConfig.fSize = Config.fSize;
+    }
 
 private:
-    class CTransform* m_pParentTransform = { nullptr };
+	class CTransform* m_pParentTransform = { nullptr };
     CShader* m_pShaderCom = { nullptr };
     CModel* m_pModelCom = { nullptr };
     CModel* m_pModelCom_Arm = { nullptr };
@@ -83,6 +88,13 @@ private:
     /* 뼈 위치 */
     _float4x4* m_pSpearTip1_Matrix = { nullptr };
     _float4x4			m_pSpearTip1_MatrixW;
+
+    OUTLINE_CONFIG      m_OutlineConfig = { _float3(1.f, 0.f, 1.f), 0.001f, 0.f, 0.f };
+
+public:
+    virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint	iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
+    virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
+    virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
 
 
 private:

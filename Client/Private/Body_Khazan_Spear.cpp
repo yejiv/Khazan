@@ -66,6 +66,7 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
 
         ImGui::Begin("Sample Model State");
 
+
         m_pModelCom->Debug_RanderState();
         ImGui::End();
         });
@@ -105,8 +106,8 @@ void CBody_Khazan_Spear::Late_Update(_float fTimeDelta)
         return;
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
         return;
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::OUTLINE, this)))
-        return;
+    //  if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::OUTLINE, this)))
+    //      return;
 #ifdef _DEBUG
 
 #endif
@@ -161,12 +162,42 @@ HRESULT CBody_Khazan_Spear::Render_Shadow()
     {
         if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;
-
-        m_pShaderCom->Begin(2);
-
-        m_pModelCom->Render(i);
     }
 
+    Render_Part_Shadow(m_pModelCom_Arm);
+    Render_Part_Shadow(m_pModelCom_Face);
+    Render_Part_Shadow(m_pModelCom_Hair);
+    Render_Part_Shadow(m_pModelCom_Leg);
+    Render_Part_Shadow(m_pModelCom_Shoes);
+    Render_Part_Shadow(m_pModelCom_Torso);
+
+    return S_OK;
+}
+
+HRESULT CBody_Khazan_Spear::Render_Outline()
+{
+    if (FAILED(Bind_ShaderResources()))
+        return E_FAIL;
+
+    _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vOutlineColor", &m_OutlineConfig.vColor, sizeof(_float3))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fOutlineSize", &m_OutlineConfig.fSize, sizeof(_float))))
+        return E_FAIL;
+
+    for (size_t i = 0; i < iNumMeshes; i++)
+    {
+        m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+    }
+
+    Render_Part_Outline(m_pModelCom_Arm);
+    Render_Part_Outline(m_pModelCom_Face);
+    Render_Part_Outline(m_pModelCom_Hair);
+    Render_Part_Outline(m_pModelCom_Leg);
+    Render_Part_Outline(m_pModelCom_Shoes);
+    Render_Part_Outline(m_pModelCom_Torso);
 
     return S_OK;
 }
@@ -175,9 +206,11 @@ void CBody_Khazan_Spear::Render_Part(CModel* pModel)
 {
     if (nullptr == pModel)
         return;
+
     pModel->Update_PartLocalBones();
 
     _uint iNumMeshes = pModel->Get_NumMeshes();
+
     for (size_t i = 0; i < iNumMeshes; i++)
     {
         pModel->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
@@ -189,7 +222,42 @@ void CBody_Khazan_Spear::Render_Part(CModel* pModel)
         m_pShaderCom->Begin(1);
         pModel->Render(i);
     }
+}
 
+void CBody_Khazan_Spear::Render_Part_Shadow(CModel* pModel)
+{
+    if (nullptr == pModel)
+        return;
+
+    _uint iNumMeshes = pModel->Get_NumMeshes();
+
+    for (size_t i = 0; i < iNumMeshes; i++)
+    {
+        // 마스터의 본을 자동으로 사용
+        if (FAILED(pModel->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
+            continue;
+
+        m_pShaderCom->Begin(2);
+        pModel->Render(i);
+    }
+}
+
+void CBody_Khazan_Spear::Render_Part_Outline(CModel* pModel)
+{
+    if (nullptr == pModel)
+        return;
+
+    _uint iNumMeshes = pModel->Get_NumMeshes();
+
+    for (size_t i = 0; i < iNumMeshes; i++)
+    {
+        // 마스터의 본을 자동으로 사용
+        if (FAILED(pModel->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
+            continue;
+
+        m_pShaderCom->Begin(3);
+        pModel->Render(i);
+    }
 }
 
 void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)

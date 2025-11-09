@@ -152,7 +152,6 @@ void CKhazan_Spear::Update(_float fTimeDelta)
 
     XMStoreFloat4x4(&m_pSpearFX_WorldMatrix, m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pTransformCom->Get_WorldMatrix());
 
-
 }
 
 void CKhazan_Spear::Late_Update(_float fTimeDelta)
@@ -182,6 +181,7 @@ void CKhazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLay
 
 void CKhazan_Spear::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
+
 }
 
 
@@ -1830,8 +1830,8 @@ void CKhazan_Spear::Free()
 {
     __super::Free();
 
-	Safe_Release(m_pBody);
-	Safe_Release(m_pSpear);
+	/*Safe_Release(m_pBody);
+	Safe_Release(m_pSpear);*/
 	Safe_Release(m_pAnimMove);
     Safe_Release(m_pAnimAttack);
     Safe_Release(m_pAnimGuard);

@@ -164,6 +164,7 @@ HRESULT CProjectile_Yetuga::Ready_Colliders()
 	BodyDesc.eQuality = EMotionQuality::LinearCast; // 기본 모드
 	BodyDesc.eShapeType = SHAPE::SPHERE;
 	BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+    BodyDesc.isCollideKinematicVsNonDynamic = true;
 	
 
 	XMStoreFloat3(&BodyDesc.vPos,m_pTransformCom->Get_State(STATE::POSITION));

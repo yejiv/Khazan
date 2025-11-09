@@ -47,8 +47,9 @@ HRESULT CUI_Announce_Talk::Initialize_Clone(void* pArg)
 	Update_Transform(nullptr, m_vLocalPos);
 	m_eTextAlign = TEXT_ALIGN::CENTER;
 
-	//m_pGameInstance->Subscribe_Event<EVENT_ANNOUNCE_MAPNAME>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_MAPNAME), [&](const EVENT_ANNOUNCE_MAPNAME& e)
-	//	{ Setting_Text(e); });
+    m_pGameInstance->Subscribe_Event<EVENT_ANNOUNCE_TALK>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_TALK), [&](const EVENT_ANNOUNCE_TALK& e)
+        { ShowUI(e.iTalkIndex); });
+
 	m_vColor.w = 0.7f;
 
 	m_wstrText_1 = TEXT("명계의 기운이 깃들었다.");

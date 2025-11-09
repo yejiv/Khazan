@@ -23,12 +23,13 @@ HRESULT CLevel_Map::Initialize()
 
 	Build_ModelPathCache();
 
+#ifdef _DEBUG
 	m_pGameInstance->Set_EnableSSAO(false);
 	m_pGameInstance->Set_EnableShadow(false);
 	m_pGameInstance->Set_EnableFog(false);
 	m_pGameInstance->Set_EnableOutline(false);
 	m_pGameInstance->Set_EnableToonShade(false);
-
+#endif
 	return S_OK;
 }
 
@@ -512,14 +513,26 @@ HRESULT CLevel_Map::Ready_Main_Window()
 
 				SEPARATOR;
 
-				ImGui::Text("MULTI FIX WINDOW");
+                ImGui::Text("SHORTCUT KEY STATUS : "); SAMELINE;
+                if (false == m_isActiveShortCutKey)
+                {
+                    if (ImGui::Button("OFF")) m_isActiveShortCutKey = true;
+                }
+                if (true == m_isActiveShortCutKey)
+                {
+                    if (ImGui::Button("ON")) m_isActiveShortCutKey = false;
+                }
+
+                SEPARATOR;
+
+                ImGui::Text("MULTI FIX WINDOW : "); SAMELINE;
 				if (ImGui::Button("ON/OFF")) m_isMultiFixWindow = !m_isMultiFixWindow;
 
-				ImGui::Text("LIGHT");
-				if (ImGui::Button("LIGHT EDIT"))
-				{
-					m_isLightSettingWindow = !m_isLightSettingWindow;
-				}
+                SEPARATOR;
+
+                ImGui::Text("LIGHT : "); SAMELINE;
+				if (ImGui::Button("LIGHT EDIT")) m_isLightSettingWindow = !m_isLightSettingWindow;
+
 				SEPARATOR;
 
 				ImGui::Text("MAP DATA SAVE & LOAD");
@@ -726,7 +739,7 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 
 			// 단일 오브젝트 Layer 추가
 			if (false == m_isLightSettingWindow && false == m_isFixObjectWindow && false == m_isFixInteractObjectWindow &&
-				(ImGui::Button("ADD OBJECT (Y)") || m_pGameInstance->Key_Down(DIK_Y)))
+				(ImGui::Button("ADD OBJECT (Y)") || (true == m_isActiveShortCutKey && m_pGameInstance->Key_Down(DIK_Y))))
 			{
 				CProp_Object::PROP_OBJECT_DESC ObjectDesc = {};
 
@@ -1131,7 +1144,7 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 				m_eFixType = FIX_OBJECT::END;
 
 			} SAMELINE;
-			if (ImGui::Button("RESET (R)") || m_pGameInstance->Key_Down(DIK_R) || true == isReset)
+			if (ImGui::Button("RESET (R)") || (true == m_isActiveShortCutKey && m_pGameInstance->Key_Down(DIK_R)) || true == isReset)
 			{
 #ifdef _DEBUG
 				m_pGameInstance->Clear_GizmoObject();
@@ -1155,7 +1168,7 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 			}
 			SEPARATOR;
 			SEPARATOR;
-			if (ImGui::Button("DELETE (ESC)") || m_pGameInstance->Key_Down(DIK_ESCAPE))
+			if (ImGui::Button("DELETE (ESC)") || (true == m_isActiveShortCutKey && m_pGameInstance->Key_Down(DIK_ESCAPE)))
 			{
 #ifdef _DEBUG
 				m_pGameInstance->Clear_GizmoObject();
@@ -1309,7 +1322,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
 				m_eFixType = FIX_OBJECT::END;
 
 			} SAMELINE;
-			if (ImGui::Button("RESET (R)") || m_pGameInstance->Key_Down(DIK_R) || true == isReset)
+			if (ImGui::Button("RESET (R)") || (true == m_isActiveShortCutKey && m_pGameInstance->Key_Down(DIK_R)) || true == isReset)
 			{
 				m_pGameInstance->Clear_GizmoObject();
 
@@ -1333,7 +1346,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
 			}
 			SEPARATOR;
 			SEPARATOR;
-			if (ImGui::Button("DELETE (ESC)") || m_pGameInstance->Key_Down(DIK_ESCAPE))
+			if (ImGui::Button("DELETE (ESC)") || (true == m_isActiveShortCutKey && m_pGameInstance->Key_Down(DIK_ESCAPE)))
 			{
 				m_pGameInstance->Clear_GizmoObject();
 
@@ -2342,34 +2355,6 @@ HRESULT CLevel_Map::Ready_SkySphere_Window()
 			ImGui::Text("SKY COLOR");
 			ImGui::Text("COLOR PALHETT");
 			ImGui::ColorPicker3("##r_edit", reinterpret_cast<_float*>(&m_FixSkyDesc.vNebulaColorR));
-			//ImGui::ColorPicker3("##g_edit", (_float*)&m_FixSkyDesc.vNebulaColorG);
-			//ImGui::ColorPicker3("##b_edit", (_float*)&m_FixSkyDesc.vNebulaColorB);
-			/*
-			ImGui::Text("R"); SAMELINE;
-			ImGui::InputFloat("##fix_sky_R_color_R", &m_FixSkyDesc.vNebulaColorR.x, 0.01f, 0.1f);
-			ImGui::Text("G"); SAMELINE;
-			ImGui::InputFloat("##fix_sky_R_color_G", &m_FixSkyDesc.vNebulaColorR.y, 0.01f, 0.1f);
-			ImGui::Text("B"); SAMELINE;
-			ImGui::InputFloat("##fix_sky_R_color_B", &m_FixSkyDesc.vNebulaColorR.z, 0.01f, 0.1f);
-			*/
-			/*
-			ImGui::Text("GREEN AREA");
-			ImGui::Text("R"); SAMELINE;
-			ImGui::InputFloat("##fix_sky_G_color_R", &m_FixSkyDesc.vNebulaColorG.x, 0.01f, 0.1f);
-			ImGui::Text("G"); SAMELINE;
-			ImGui::InputFloat("##fix_sky_G_color_G", &m_FixSkyDesc.vNebulaColorG.y, 0.01f, 0.1f);
-			ImGui::Text("B"); SAMELINE;
-			ImGui::InputFloat("##fix_sky_G_color_B", &m_FixSkyDesc.vNebulaColorG.z, 0.01f, 0.1f);
-			*/
-			/*
-			ImGui::Text("BLUE AREA");
-			ImGui::Text("R"); SAMELINE;
-			ImGui::InputFloat("##fix_sky_B_color_R", &m_FixSkyDesc.vNebulaColorB.x, 0.01f, 0.1f);
-			ImGui::Text("G"); SAMELINE;
-			ImGui::InputFloat("##fix_sky_B_color_G", &m_FixSkyDesc.vNebulaColorB.y, 0.01f, 0.1f);
-			ImGui::Text("B"); SAMELINE;
-			ImGui::InputFloat("##fix_sky_B_color_B", &m_FixSkyDesc.vNebulaColorB.z, 0.01f, 0.1f);
-			*/
 			SEPARATOR;
 
 			ImGui::Text("MOON SIZE"); SAMELINE;
@@ -2379,14 +2364,6 @@ HRESULT CLevel_Map::Ready_SkySphere_Window()
 			ImGui::Text("MOON COLOR");
 			ImGui::Text("COLOR PALHETT");
 			ImGui::ColorPicker3("##moon_color_edit", reinterpret_cast<_float*>(&m_FixSkyDesc.vMoonColor));
-			/*
-			ImGui::Text("R"); SAMELINE;
-			ImGui::InputFloat("##fix_moon_color_R", &m_FixSkyDesc.vMoonColor.x, 0.01f, 0.1f);
-			ImGui::Text("G"); SAMELINE;
-			ImGui::InputFloat("##fix_moon_color_G", &m_FixSkyDesc.vMoonColor.y, 0.01f, 0.1f);
-			ImGui::Text("B"); SAMELINE;
-			ImGui::InputFloat("##fix_moon_color_B", &m_FixSkyDesc.vMoonColor.z, 0.01f, 0.1f);
-			*/
 			SEPARATOR;
 
 			ImGui::Text("MOON INTENSITY"); SAMELINE;
@@ -2473,12 +2450,8 @@ HRESULT CLevel_Map::Ready_SkySphere_Window()
 			_float isDynamic = m_FixCloudDesc.fDynamic;
 			 
 			ImGui::Text("CLOUD COLOR");
-			ImGui::Text("R"); SAMELINE;
-			ImGui::InputFloat("##fix_cloud_color_R", &m_FixCloudDesc.vCloudColor.x, 0.01f, 0.1f);
-			ImGui::Text("G"); SAMELINE;
-			ImGui::InputFloat("##fix_cloud_color_G", &m_FixCloudDesc.vCloudColor.y, 0.01f, 0.1f);
-			ImGui::Text("B"); SAMELINE;
-			ImGui::InputFloat("##fix_cloud_color_B", &m_FixCloudDesc.vCloudColor.z, 0.01f, 0.1f);
+            ImGui::Text("COLOR PALHETT");
+            ImGui::ColorPicker3("##r_edit", reinterpret_cast<_float*>(&m_FixCloudDesc.vCloudColor.x));
 			SEPARATOR;
 
 			ImGui::Text("CLOUD SCALE"); SAMELINE;
