@@ -59,8 +59,8 @@ void CAS_RightHand_5Hit_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollis
         if (nullptr == pOwnerTransform)
             return;
         _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
-        pTarget->KnockBack(vLook, 10.f, 30.f);
-
+        pTarget->KnockBack(vLook, 20.f, 60.f);
+        //pTarget->KnockBack(vLook, 15.f, 50.f);
     }
 
 
