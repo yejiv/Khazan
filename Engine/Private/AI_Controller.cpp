@@ -36,7 +36,6 @@ void CAI_Controller::AI_ApplyDamage(CGameObject* pAttacker, _float fDamage, _uin
     XMStoreFloat3(&DamageStim.vLocation, vTempLocation);
     DamageStim.iDamageType = iHitreaction;
     DamageStim.fVaildTime = fValidTime;
-
     m_pPerception->Notify_Damage(pAttacker,DamageStim);
 
 }

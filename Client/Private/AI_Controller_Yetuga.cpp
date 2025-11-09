@@ -592,6 +592,7 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 
 				if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isGroggyFinished"))
 				{
+                    BB->Set_Value<_bool>(pYetuga->Get_Name(), "DamageInterrupt", false);
 					return BTNODESTATE::SUCCESS;
 				}
 
@@ -613,6 +614,7 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 				// 애니 종료 플래그가 true면 SUCCESS
 				if (true == BB->Get_Value<_bool>(pYetuga->Get_Name(), "isDodgeFinished"))
 				{
+                    BB->Set_Value<_bool>(pYetuga->Get_Name(), "DamageInterrupt", false);
 					return BTNODESTATE::SUCCESS;
 				}
 				
@@ -633,6 +635,7 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 				// 애니 종료 플래그가 true면 SUCCESS
 				if (true == BB->Get_Value<_bool>(pYetuga->Get_Name(), "isHitFinished"))
 				{
+                    BB->Set_Value<_bool>(pYetuga->Get_Name(), "DamageInterrupt", false);
 					return BTNODESTATE::SUCCESS;
 				}
 
@@ -1010,6 +1013,8 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 				if (isDamaged)
 					return BTNODESTATE::FAILURE;
 
+                cout << "Idle RUNNING" << endl;
+
 				pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
 				return BTNODESTATE::RUNNING;
 			};
@@ -1027,6 +1032,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 
 
 #pragma region HIT SELECTOR
+
 	if ("Dead" == name)
 	{
 		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
@@ -1037,7 +1043,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 				if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
 				{
 					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isDeadFinished", false);
-					BB->Set_Value<_bool>(pYetuga->Get_Name(), "DamageInterrupt", false);
+					/*BB->Set_Value<_bool>(pYetuga->Get_Name(), "DamageInterrupt", false);*/
 					pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
 				}
 			};
@@ -1054,7 +1060,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 				if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
 				{
 					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isGroggyFinished", false);
-					BB->Set_Value<_bool>(pYetuga->Get_Name(), "DamageInterrupt", false);
+					//BB->Set_Value<_bool>(pYetuga->Get_Name(), "DamageInterrupt", false);
 
 					pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
 				}
@@ -1072,7 +1078,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 
 					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isDodge", false);
 					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isDodgeFinished", false);
-					BB->Set_Value<_bool>(pYetuga->Get_Name(), "DamageInterrupt", false);
+					//BB->Set_Value<_bool>(pYetuga->Get_Name(), "DamageInterrupt", false);
 					pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
 				}
 			};
@@ -1092,7 +1098,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isHit", false);
 					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isHitFinished", false);
 					BB->Set_Value<_uint>(pYetuga->Get_Name(), "DamageType",ENUM_CLASS(HITREACTION::NONE));
-					BB->Set_Value<_bool>(pYetuga->Get_Name(), "DamageInterrupt", false);
+					//BB->Set_Value<_bool>(pYetuga->Get_Name(), "DamageInterrupt", false);
 					pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
 				}
 			};
@@ -1349,7 +1355,6 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 
 				if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
 				{
-					//if(BB->Get_Value<_bool>(pYetuga->Get_Name(),"AttackInterrupt"))
 						pYetuga->Start_Decel(3.f);
 				}
 			};
