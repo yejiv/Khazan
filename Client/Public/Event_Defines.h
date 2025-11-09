@@ -109,10 +109,13 @@ namespace Client {
 		_bool		isDissovle;
 	};
 
+    //락온
 	struct EVENT_LOCKON_VISIBLE {
 		const _float4* pTargetPos;
 		_bool isVisible;
 	};
-
+    
+    //스킬 트리 오픈
 	struct EVENT_SKILL_OPEN {};
+
 }
