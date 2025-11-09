@@ -33,7 +33,7 @@ private:
 	// Render Flag
 	_bool					m_isRenderShadow = { true };
 	_bool					m_isRenderSSAO = { true };
-	_bool					m_isEnableFog = {};
+	_bool					m_isEnableFog = { true };
 	_bool					m_isEnableToonShade = {};
 	_bool					m_isEnableOutline = {};
 
