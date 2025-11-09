@@ -1043,7 +1043,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 				if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
 				{
 					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isDeadFinished", false);
-					/*BB->Set_Value<_bool>(pYetuga->Get_Name(), "DamageInterrupt", false);*/
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "DamageInterrupt", false);
 					pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
 				}
 			};
@@ -1060,8 +1060,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 				if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
 				{
 					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isGroggyFinished", false);
-					//BB->Set_Value<_bool>(pYetuga->Get_Name(), "DamageInterrupt", false);
-
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "DamageInterrupt", false);
 					pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
 				}
 			};
@@ -1078,7 +1077,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 
 					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isDodge", false);
 					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isDodgeFinished", false);
-					//BB->Set_Value<_bool>(pYetuga->Get_Name(), "DamageInterrupt", false);
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "DamageInterrupt", false);
 					pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
 				}
 			};
@@ -1098,7 +1097,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isHit", false);
 					BB->Set_Value<_bool>(pYetuga->Get_Name(), "isHitFinished", false);
 					BB->Set_Value<_uint>(pYetuga->Get_Name(), "DamageType",ENUM_CLASS(HITREACTION::NONE));
-					//BB->Set_Value<_bool>(pYetuga->Get_Name(), "DamageInterrupt", false);
+					BB->Set_Value<_bool>(pYetuga->Get_Name(), "DamageInterrupt", false);
 					pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
 				}
 			};
@@ -1106,6 +1105,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 #pragma endregion
 
 #pragma region ATTACK READY SELECTOR
+
 	else if ("StepBack" == name)
 	{
 		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)

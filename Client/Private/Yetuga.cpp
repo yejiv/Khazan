@@ -97,10 +97,15 @@ void CYetuga::Update(_float fTimeDelta)
         Look_Target_Lerp(fTimeDelta,fRatio,m_fTurnSpeed);
     }
         
-    if(!m_isGrab)
-        __super::Update(fTimeDelta);
+
+    __super::Update(fTimeDelta);
 
     m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
+
+#ifdef _DEBUG
+    //m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
+#endif // _DEBUG
+
 
 
 }
@@ -123,8 +128,14 @@ HRESULT CYetuga::Render()
 void CYetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
     COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
-    if (eLayer == COLLISION_LAYER::MAP_STATIC)
-        int a = 10;
+   
+    _bool isRush = m_pGameInstance->Get_BlackBoard()->Get_Value<_bool>(m_strName, "isRush");
+    if (isRush)
+    {
+        if (eLayer == COLLISION_LAYER::PLAYER)
+            m_pController->AI_React_Collision(pDesc,iOtherObjectLayer,this);
+    }
+
 
 }
 
@@ -189,7 +200,7 @@ void CYetuga::Throw_Stone()
         return;
 
     CTransform* pTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
-    _vector vOffset = XMVectorSet(-0.5f, -0.3f, 0.f, 0.f);
+    _vector vOffset = XMVectorSet(-0.f, -0.01f, 0.f, 0.f);
     _vector vTargetLoc = pTransform->Get_State(STATE::POSITION) + vOffset;
     _float3 vSpawnPoint = m_pBody->Get_BonePoint("Weapon_L");
     _vector vDir = vTargetLoc - XMLoadFloat3(&vSpawnPoint);
@@ -471,6 +482,9 @@ HRESULT CYetuga::Ready_Components()
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
         return E_FAIL;
 
+    m_pCharVirCom->Collision_Active(true);
+
+    
 
     return S_OK;
 }
@@ -981,7 +995,6 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("Grab_Hand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            m_isGrab = true;
             m_isGhost = true;
             m_pBody->Set_OnAttackCollision(false);
 
@@ -1003,32 +1016,30 @@ HRESULT CYetuga::Ready_AnimEvent()
             Grab_Check_End("Holding");
         });
 
-
-
     //Grab_After
     pModel->Register_Event("Grab_After", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             // 타겟 풀어주기
-            m_isGrab = false;
             m_isGhost = false;
-
-
         });
 
 
 #pragma endregion
 
 #pragma region RUSH
+
     pModel->Register_Event("RushCheck", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_pHead->Set_OnAttackCollision(true);
-            
+            m_pBody->Set_AttackCollision_Back(true);
+            m_isGhost = true;
         });
 
     pModel->Register_Event("RushCheck", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             m_pHead->Set_OnAttackCollision(false);
-            //m_pCharVirCom.Set
+            m_pBody->Set_AttackCollision_Back(false);
+            m_isGhost = false;
         });
 
 
