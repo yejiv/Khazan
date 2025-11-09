@@ -45,6 +45,7 @@ HRESULT CBody_Khazan_Sample::Initialize_Clone(void* pArg)
         return E_FAIL;
 
 
+    
     m_pModelCom->Set_Animation(5);
     /* 부모 트랜스폼 연결 */
     m_pModelCom->Set_OwnerTransform(&m_pParentTransform);
@@ -64,6 +65,16 @@ HRESULT CBody_Khazan_Sample::Initialize_Clone(void* pArg)
     m_pModelCom->Update_BoneCombinedMatrices();
 
 
+    m_pSpearTip1_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R_SpearTip");
+    m_pSpearTip2_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R_SpearTip_02");
+    m_pWeaponR_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R");
+    m_pSpearEnd1_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R_Spear_End01");
+    m_pSpearEnd2_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R_Spear_End02");
+
+
+    if (FAILED(Ready_Collider()))
+        return E_FAIL;
+   // m_SpearOffset_Matrix = XMMatrixRotationX(XMConvertToRadians(-90.0f));
 
     return S_OK;
 }
@@ -149,6 +160,9 @@ void CBody_Khazan_Sample::Update(_float fTimeDelta)
 
 
     Update_CombinedMatrix();
+
+    Update_Collider(fTimeDelta);
+
 
     m_pTrail->Update(fTimeDelta);
     if (m_pGameInstance->Key_Down(DIK_Y))
@@ -522,6 +536,163 @@ HRESULT CBody_Khazan_Sample::Ready_BonePhysics()
     return S_OK;
 }
 
+HRESULT CBody_Khazan_Sample::Ready_Collider()
+{
+    CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
+    {
+        BodyDesc.fRadius = 0.02f;
+        BodyDesc.eMotion = EMotionType::Kinematic;
+        BodyDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
+        BodyDesc.eShapeType = SHAPE::SPHERE;
+        BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER); // 추후에 Enum Monster attack 변경 할수도
+
+        XMStoreFloat4x4(&m_pSpearTip1_MatrixW, XMLoadFloat4x4(m_pSpearTip1_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
+        _vector vScale, vQuat, vTrans;
+        XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_pSpearTip1_MatrixW));
+        BodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
+        BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
+        BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+        m_tCollisionDesc.pGameObject = this;
+        BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+        BodyDesc.bIsTrigger = true;
+        if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+            TEXT("Com_Body1"), reinterpret_cast<CComponent**>(&m_pBody1), &BodyDesc)))
+            return E_FAIL;
+
+    }
+    {
+        BodyDesc.fRadius = 0.03f;
+        BodyDesc.eMotion = EMotionType::Kinematic;
+        BodyDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
+        BodyDesc.eShapeType = SHAPE::SPHERE;
+        BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER); // 추후에 Enum Monster attack 변경 할수도
+  
+        XMStoreFloat4x4(&m_pSpearTip2_MatrixW, /*m_pTransformCom->Get_WorldMatrix() * */XMLoadFloat4x4( m_pSpearTip2_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
+        _vector vScale, vQuat, vTrans;
+        XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_pSpearTip2_MatrixW));
+        BodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
+        BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
+        BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+        m_tCollisionDesc.pGameObject = this;
+        BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+        BodyDesc.bIsTrigger = true;
+        if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+            TEXT("Com_Body2"), reinterpret_cast<CComponent**>(&m_pBody2), &BodyDesc)))
+            return E_FAIL;
+
+    }
+    {
+        BodyDesc.fRadius = 0.7f;
+        BodyDesc.eMotion = EMotionType::Kinematic;
+        BodyDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
+        BodyDesc.eShapeType = SHAPE::SPHERE;
+        BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER); // 추후에 Enum Monster attack 변경 할수도
+   
+        XMStoreFloat4x4(&m_pWeaponR_MatrixW, /*m_pTransformCom->Get_WorldMatrix() **/ XMLoadFloat4x4(m_pWeaponR_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
+        _vector vScale, vQuat, vTrans;
+        XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_pWeaponR_MatrixW));
+        BodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
+        BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
+        BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+        m_tCollisionDesc.pGameObject = this;
+        BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+        BodyDesc.bIsTrigger = true;
+        if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+            TEXT("Com_Body3"), reinterpret_cast<CComponent**>(&m_pBody3), &BodyDesc)))
+            return E_FAIL;
+
+    }
+    {
+        BodyDesc.fRadius = 0.04f;
+        BodyDesc.eMotion = EMotionType::Kinematic;
+        BodyDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
+        BodyDesc.eShapeType = SHAPE::SPHERE;
+        BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER); // 추후에 Enum Monster attack 변경 할수도
+        XMStoreFloat4x4(&m_pSpearEnd1_MatrixW,/* m_pTransformCom->Get_WorldMatrix() * */XMLoadFloat4x4(m_pSpearEnd1_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
+        _vector vScale, vQuat, vTrans;
+        XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_pSpearEnd1_MatrixW));
+        BodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
+        BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
+        BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+        m_tCollisionDesc.pGameObject = this;
+        BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+        BodyDesc.bIsTrigger = true;
+        if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+            TEXT("Com_Body4"), reinterpret_cast<CComponent**>(&m_pBody4), &BodyDesc)))
+            return E_FAIL;
+
+    }
+    {
+        BodyDesc.fRadius = 0.05f;
+        BodyDesc.eMotion = EMotionType::Kinematic;
+        BodyDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
+        BodyDesc.eShapeType = SHAPE::SPHERE;
+        BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER); // 추후에 Enum Monster attack 변경 할수도
+        XMStoreFloat4x4(&m_pSpearEnd2_MatrixW, /*m_pTransformCom->Get_WorldMatrix() **/ XMLoadFloat4x4(m_pSpearEnd2_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
+        _vector vScale, vQuat, vTrans;
+        XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_pSpearEnd2_MatrixW));
+        BodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
+        BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
+        BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+        m_tCollisionDesc.pGameObject = this;
+        BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+        BodyDesc.bIsTrigger = true;
+        if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+            TEXT("Com_Body5"), reinterpret_cast<CComponent**>(&m_pBody5), &BodyDesc)))
+            return E_FAIL;
+
+    }
+    return S_OK;
+}
+
+void CBody_Khazan_Sample::Update_Collider(_float fTimeDelta)
+{
+    /////////////-----------------------------------------------------------
+
+    XMStoreFloat4x4(&m_pSpearTip1_MatrixW,  XMLoadFloat4x4(m_pSpearTip1_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
+    _vector vOutQuat, vOutPos;
+    m_pBody1->Sync_Update(XMLoadFloat4x4(&m_pSpearTip1_MatrixW));
+    m_pBody1->Update(fTimeDelta, XMLoadFloat4x4(&m_pSpearTip1_MatrixW), vOutQuat, vOutPos);
+    m_pSpearTip1_MatrixW._41 = vOutPos.m128_f32[0];
+    m_pSpearTip1_MatrixW._42 = vOutPos.m128_f32[1];
+    m_pSpearTip1_MatrixW._43 = vOutPos.m128_f32[2];
+    m_pSpearTip1_MatrixW._44 = 1.f;
+
+
+    XMStoreFloat4x4(&m_pSpearTip2_MatrixW, XMLoadFloat4x4(m_pSpearTip2_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
+    m_pBody2->Sync_Update(XMLoadFloat4x4(&m_pSpearTip2_MatrixW));
+    m_pBody2->Update(fTimeDelta, XMLoadFloat4x4(&m_pSpearTip2_MatrixW), vOutQuat, vOutPos);
+    m_pSpearTip2_MatrixW._41 = vOutPos.m128_f32[0];
+    m_pSpearTip2_MatrixW._42 = vOutPos.m128_f32[1]; 
+    m_pSpearTip2_MatrixW._43 = vOutPos.m128_f32[2];
+    m_pSpearTip2_MatrixW._44 = vOutPos.m128_f32[3];
+
+    XMStoreFloat4x4(&m_pWeaponR_MatrixW, XMLoadFloat4x4(m_pWeaponR_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
+    m_pBody3->Sync_Update(XMLoadFloat4x4(&m_pWeaponR_MatrixW));
+    m_pBody3->Update(fTimeDelta, XMLoadFloat4x4(&m_pWeaponR_MatrixW), vOutQuat, vOutPos);
+    m_pWeaponR_MatrixW._41 = vOutPos.m128_f32[0];
+    m_pWeaponR_MatrixW._42 = vOutPos.m128_f32[1];
+    m_pWeaponR_MatrixW._43 = vOutPos.m128_f32[2];
+    m_pWeaponR_MatrixW._44 = vOutPos.m128_f32[3];
+
+    XMStoreFloat4x4(&m_pSpearEnd1_MatrixW, XMLoadFloat4x4(m_pSpearEnd1_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
+    m_pBody4->Sync_Update(XMLoadFloat4x4(&m_pSpearEnd1_MatrixW));
+    m_pBody4->Update(fTimeDelta, XMLoadFloat4x4(&m_pSpearEnd1_MatrixW), vOutQuat, vOutPos);
+    m_pSpearEnd1_MatrixW._41 = vOutPos.m128_f32[0];
+    m_pSpearEnd1_MatrixW._42 = vOutPos.m128_f32[1];
+    m_pSpearEnd1_MatrixW._43 = vOutPos.m128_f32[2];
+    m_pSpearEnd1_MatrixW._44 = vOutPos.m128_f32[3];
+
+    XMStoreFloat4x4(&m_pSpearEnd2_MatrixW, XMLoadFloat4x4(m_pSpearEnd2_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
+    m_pBody5->Sync_Update(XMLoadFloat4x4(&m_pSpearEnd2_MatrixW));
+    m_pBody5->Update(fTimeDelta, XMLoadFloat4x4(&m_pSpearEnd2_MatrixW), vOutQuat, vOutPos);
+    m_pSpearEnd2_MatrixW._41 = vOutPos.m128_f32[0];
+    m_pSpearEnd2_MatrixW._42 = vOutPos.m128_f32[1];
+    m_pSpearEnd2_MatrixW._43 = vOutPos.m128_f32[2];
+    m_pSpearEnd2_MatrixW._44 = vOutPos.m128_f32[3];
+
+}
+
 HRESULT CBody_Khazan_Sample::Bind_ShaderResources()
 {
     if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix)))
@@ -539,22 +710,25 @@ HRESULT CBody_Khazan_Sample::Bind_ShaderResources()
 
 void CBody_Khazan_Sample::Effect1_Enter()
 {
-    char msg[256];
-    sprintf_s(msg, "Local Bone SpearFX\n %.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n",
-        m_pSpearFX_Matrix->_11, m_pSpearFX_Matrix->_12, m_pSpearFX_Matrix->_13, m_pSpearFX_Matrix->_14,
-        m_pSpearFX_Matrix->_21, m_pSpearFX_Matrix->_22, m_pSpearFX_Matrix->_23, m_pSpearFX_Matrix->_24,
-        m_pSpearFX_Matrix->_31, m_pSpearFX_Matrix->_32, m_pSpearFX_Matrix->_33, m_pSpearFX_Matrix->_34,
-        m_pSpearFX_Matrix->_41, m_pSpearFX_Matrix->_42, m_pSpearFX_Matrix->_43, m_pSpearFX_Matrix->_44);
-    OutputDebugStringA(msg);
+    //char msg[256];
+    //sprintf_s(msg,"Local Bone SpearFX\n %.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n", 
+    //    m_pSpearFX_Matrix->_11, m_pSpearFX_Matrix->_12, m_pSpearFX_Matrix->_13, m_pSpearFX_Matrix->_14,
+    //    m_pSpearFX_Matrix->_21, m_pSpearFX_Matrix->_22, m_pSpearFX_Matrix->_23, m_pSpearFX_Matrix->_24,
+    //    m_pSpearFX_Matrix->_31, m_pSpearFX_Matrix->_32, m_pSpearFX_Matrix->_33, m_pSpearFX_Matrix->_34,
+    //    m_pSpearFX_Matrix->_41, m_pSpearFX_Matrix->_42, m_pSpearFX_Matrix->_43, m_pSpearFX_Matrix->_44);
+    //OutputDebugStringA(msg);
 
-    _float4x4 matWorldSpearFX;
-    XMStoreFloat4x4(&matWorldSpearFX, m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pParentTransform->Get_WorldMatrix());
-    sprintf_s(msg, "Local Bone SpearFX\n %.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n",
-        matWorldSpearFX._11, matWorldSpearFX._12, matWorldSpearFX._13, matWorldSpearFX._14,
-        matWorldSpearFX._21, matWorldSpearFX._22, matWorldSpearFX._23, matWorldSpearFX._24,
-        matWorldSpearFX._31, matWorldSpearFX._32, matWorldSpearFX._33, matWorldSpearFX._34,
-        matWorldSpearFX._41, matWorldSpearFX._42, matWorldSpearFX._43, matWorldSpearFX._44);
-    OutputDebugStringA(msg);
+    //_float4x4 matWorldSpearFX;
+    //XMStoreFloat4x4(&matWorldSpearFX, m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pParentTransform->Get_WorldMatrix());
+    //sprintf_s(msg, "Local Bone SpearFX\n %.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n",
+    //    matWorldSpearFX._11, matWorldSpearFX._12, matWorldSpearFX._13, matWorldSpearFX._14,
+    //    matWorldSpearFX._21, matWorldSpearFX._22, matWorldSpearFX._23, matWorldSpearFX._24,
+    //    matWorldSpearFX._31, matWorldSpearFX._32, matWorldSpearFX._33, matWorldSpearFX._34,
+    //    matWorldSpearFX._41, matWorldSpearFX._42, matWorldSpearFX._43, matWorldSpearFX._44);
+    //OutputDebugStringA(msg);
+
+    int a = 0;
+
 }
 
 void CBody_Khazan_Sample::Effect1_Exit()
@@ -567,6 +741,11 @@ void CBody_Khazan_Sample::Effect1_Continue()
 {
     //cout << "[Effect1_Continue]" << endl;
     //OutputDebugStringA("[Effect1_Continue] \n");
+
+
+ /*   _matrix tip = m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pParentTransform->Get_WorldMatrix();
+    _matrix hand = m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearWeaponR_Matrix) * m_pParentTransform->Get_WorldMatrix();
+    m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);*/
 }
 
 void CBody_Khazan_Sample::Effect2_Enter()
