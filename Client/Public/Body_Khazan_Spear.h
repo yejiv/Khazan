@@ -8,6 +8,7 @@
 NS_BEGIN(Engine)
 class CShader;
 class CModel;
+class CBody;
 NS_END
 
 NS_BEGIN(Client)
@@ -57,6 +58,8 @@ private:
 	CModel*				m_pModelCom_Leg = { nullptr };
 	CModel*				m_pModelCom_Shoes = { nullptr };
 	CModel*				m_pModelCom_Torso= { nullptr };
+
+	CBody*				m_pBodyCom_SpearTip = { nullptr };
 
 	_float4x4*			m_pSpearFX_Matrix = { nullptr };
 	_matrix				m_SpearOffset_Matrix = {};
