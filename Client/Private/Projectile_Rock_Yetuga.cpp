@@ -1,4 +1,6 @@
 #include "Projectile_Rock_Yetuga.h"
+#include "GameInstance.h"
+#include "Creature.h"
 
 CProjectile_Rock_Yetuga::CProjectile_Rock_Yetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CProjectile{ pDevice,pContext }
@@ -23,8 +25,12 @@ HRESULT CProjectile_Rock_Yetuga::Initialize_Clone(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	m_isActive = false;
+    if (FAILED(Ready_Colliders()))
+        return E_FAIL;
 
+    m_pBody->Collision_Active(false);
+    m_isVisible = true;
+    m_isPicked = false;
 	m_pTransformCom->Rotation(XMConvertToRadians(90.f),0.f,0.f);
 
 	return S_OK;
@@ -36,7 +42,18 @@ void CProjectile_Rock_Yetuga::Priority_Update(_float fTimeDelta)
 
 void CProjectile_Rock_Yetuga::Update(_float fTimeDelta)
 {
+    if (m_isPicked)
+    {
+        m_pBody->Sync_Update(m_pTransformCom);
+        m_pBody->Update(fTimeDelta, m_pTransformCom);
+        m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
 
+    }
+    else
+    {
+        m_pBody->Collision_Active(false);
+    }
+   
 }
 
 void CProjectile_Rock_Yetuga::Late_Update(_float fTimeDelta)
@@ -71,6 +88,10 @@ HRESULT CProjectile_Rock_Yetuga::Render()
 
 void CProjectile_Rock_Yetuga::Reset()
 {
+
+    m_isPicked = true;
+    m_pBody->Collision_Active(true);
+
 	m_fCurrentTime = 0.f;
 	_vector vDir = XMVector3Normalize(XMLoadFloat3(&m_vSpawnDir));
 
@@ -89,6 +110,32 @@ void CProjectile_Rock_Yetuga::Reset()
 
 }
 
+void CProjectile_Rock_Yetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+{
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+        CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        {
+            //pTarget->Take_Damage();
+            cout << "11111111111111111111111111111111111111111111111111" << endl;
+            m_isDead = true;
+            m_isVisible = false;
+            m_isPicked = false;
+        }
+    }
+}
+
+void CProjectile_Rock_Yetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+{
+
+}
+
+void CProjectile_Rock_Yetuga::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+{
+
+}
+
 HRESULT CProjectile_Rock_Yetuga::Ready_Components()
 {
 	if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
@@ -101,6 +148,31 @@ HRESULT CProjectile_Rock_Yetuga::Ready_Components()
 
 
 	return S_OK;
+}
+
+HRESULT CProjectile_Rock_Yetuga::Ready_Colliders()
+{
+    CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
+
+    BodyDesc.fRadius = 5.f;
+    BodyDesc.eMotion = EMotionType::Kinematic;
+    BodyDesc.eQuality = EMotionQuality::LinearCast; // 기본 모드
+    BodyDesc.eShapeType = SHAPE::SPHERE;
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+
+
+    XMStoreFloat3(&BodyDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
+    XMStoreFloat4(&BodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
+
+    BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+    m_tCollisionDesc.pGameObject = this;
+    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    BodyDesc.bIsTrigger = true;
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+        TEXT("Com_Body_Yetuga_Stone"), reinterpret_cast<CComponent**>(&m_pBody), &BodyDesc)))
+        return E_FAIL;
+
+    return S_OK;
 }
 
 HRESULT CProjectile_Rock_Yetuga::Bind_ShaderResources()
