@@ -1,6 +1,7 @@
 #include "Body_Khazan_Spear.h"
 #include "Khazan_Sample.h"
 #include "GameInstance.h"
+#include "ClientInstance.h"
 
 CBody_Khazan_Spear::CBody_Khazan_Spear(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CPartObject{ pDevice, pContext }
@@ -82,7 +83,7 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
 
 void CBody_Khazan_Spear::Late_Update(_float fTimeDelta)
 {
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONLIGHT, this)))
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
     //if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
     //    return;
@@ -374,8 +375,18 @@ void CBody_Khazan_Spear::Free()
 {
     __super::Free();
 
+    if (!m_isPrototype)
+    {
+        m_pModelCom->Detach_Part(m_pModelCom_Arm);
+        m_pModelCom->Detach_Part(m_pModelCom_Face);
+        m_pModelCom->Detach_Part(m_pModelCom_Hair);
+        m_pModelCom->Detach_Part(m_pModelCom_Leg);
+        m_pModelCom->Detach_Part(m_pModelCom_Shoes);
+        m_pModelCom->Detach_Part(m_pModelCom_Torso);
+    }
+    
+
 	Safe_Release(m_pParentTransform);
-	Safe_Release(m_pModelCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pModelCom_Torso);
 	Safe_Release(m_pModelCom_Arm);
@@ -383,4 +394,5 @@ void CBody_Khazan_Spear::Free()
 	Safe_Release(m_pModelCom_Hair);
 	Safe_Release(m_pModelCom_Leg);
 	Safe_Release(m_pModelCom_Shoes);
+    Safe_Release(m_pModelCom);
 }

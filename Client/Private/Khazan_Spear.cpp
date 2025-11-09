@@ -159,7 +159,7 @@ void CKhazan_Spear::Late_Update(_float fTimeDelta)
 
 
 
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONLIGHT, this)))
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 
     __super::Late_Update(fTimeDelta);

@@ -223,6 +223,8 @@ public:
 #pragma endregion
 
 #pragma region JOLT_MANAGER
+	HRESULT Initialize_Jolt(_uint iNumObjectLayer);
+	void Destroy_Jolt();
 	void Set_PhysicsSystem();
 	void Set_ObjectToBP(_uint iObjectLayer, _uint iBPLayer);
 	void Set_ObjectFilter(_uint iSrc, _uint iDst);
