@@ -371,12 +371,12 @@ HRESULT CRenderer::Render_Lights()
     if (FAILED(m_pShader->Bind_RawValue("g_fToonShadeLevel", &m_fToonShadeLevel, sizeof(_float))))
         return E_FAIL;
 
-#ifdef _DEBUG
-    if (FAILED(m_pShader->Bind_Bool("g_isEnableSSAO", &m_isEnableSSAO)))
-        return E_FAIL;
-    if (FAILED(m_pShader->Bind_Bool("g_isEnableToonShade", &m_isEnableToonShade)))
-        return E_FAIL;
-#endif
+	_bool isSSAO = isEnableSSAO();
+	if (FAILED(m_pShader->Bind_Bool("g_isEnableSSAO", &isSSAO)))
+		return E_FAIL;
+	_bool isToonShade = isEnableToonShade();
+	if (FAILED(m_pShader->Bind_Bool("g_isEnableToonShade", &isToonShade)))
+		return E_FAIL;
 
     m_pGameInstance->Render_Lights(m_pShader, m_pVIBuffer, m_pGameInstance->Get_CurrentLevelID());
 
@@ -738,10 +738,6 @@ HRESULT CRenderer::Ready_RenderTargets()
     if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_PostScene"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
-    /* For.Target_BackBuffer */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_BackBuffer"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
-        return E_FAIL;
-
     /* For.Target_BlurX */
     if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_BlurX"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
@@ -993,6 +989,15 @@ _bool CRenderer::isEnableFog()
 {
 #ifdef _DEBUG
     return m_isEnableFog;
+#else
+    return true;
+#endif
+}
+
+_bool CRenderer::isEnableToonShade()
+{
+#ifdef _DEBUG
+    return m_isEnableToonShade;
 #else
     return true;
 #endif

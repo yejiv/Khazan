@@ -200,6 +200,25 @@ void CShader_Controller::Ready_Shader()
 					if (ImGui::ColorEdit4("Fog Color", reinterpret_cast<_float*>(&m_FogConfig.vColor)))
 						m_pGameInstance->Set_FogConfig(m_FogConfig);
 
+					if (ImGui::SliderFloat("Fog Base Height", &m_FogConfig.fBaseHeight, -1000.f, 2000.f))
+						m_pGameInstance->Set_FogConfig(m_FogConfig);
+
+					if (ImGui::SliderFloat("Fog Height Density", &m_FogConfig.fHeightDensity, 0.001f, 1.f))
+						m_pGameInstance->Set_FogConfig(m_FogConfig);
+
+					ImGui::Separator();
+
+					ImGui::SliderFloat("Fog Transition Duration", &m_fFogTransDuration, 0.1f, 10.f, "%.2f");
+					ImGui::SliderFloat("Fog Transition Density", &m_TargetFogDesc.fDensity, 0.0001f, 0.05f, "%.4f");
+					ImGui::ColorEdit4("Fog Transition Color", reinterpret_cast<_float*>(&m_TargetFogDesc.vColor));
+
+					if (ImGui::Button("Start Fog Transition"))
+					{
+						m_pGameInstance->Start_FogTransition(m_fFogTransDuration, m_TargetFogDesc);
+						m_FogConfig.fDensity = m_TargetFogDesc.fDensity;
+						m_FogConfig.vColor = m_TargetFogDesc.vColor;
+					}
+
 					ImGui::Separator();
 
 					if (ImGui::Checkbox("Fog Noise", &m_FogConfig.Noise.isEnable))
@@ -288,7 +307,7 @@ void CShader_Controller::Ready_Shader()
 						}
 					}
 
-					m_pGameInstance->Set_FogConfig(m_FogConfig);
+					//	m_pGameInstance->Set_FogConfig(m_FogConfig);
 
 					ImGui::Separator();
 				}

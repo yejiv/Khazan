@@ -185,7 +185,7 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
 
 	/*Effect test => 혹시 보게되면 지우셔도 됩니다!!!!!!!!! */
 	if (m_pGameInstance->Key_Down(DIK_I))
-		m_pGameInstance->Spwan_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpaceTime_SpearBlood"), XMVectorSet(1.f, 1.f, 1.f, 1.f));
+		m_pGameInstance->Spwan_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), XMVectorSet(1.f, 1.f, 1.f, 1.f));
 	//Test End
 
 	return;
@@ -317,7 +317,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Test(const _wstring& strLayerTag)
 HRESULT CLevel_HeinMach::Ready_Layer_TestEffect(const _wstring& strLayerTag)
 {
 
-	m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpaceTime_SpearBlood"), 3);
+	m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), 10);
 
 	return S_OK;
 }
