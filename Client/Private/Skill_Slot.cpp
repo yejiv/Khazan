@@ -79,6 +79,7 @@ void CSkill_Slot::Render_SkillInfo()
     Desc.isEquip = false;
     m_iSkillPoint > 0 ? Desc.isGet = true : Desc.isGet = false;
     m_iSkillPoint >= m_iMaxCount ? Desc.isMaxLevel = true : Desc.isMaxLevel = false;
+    m_isPreSkillOn ? Desc.isOnPreSkill = true : Desc.isOnPreSkill = false;
 
     CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("SkillInfo"), &Desc);
 }

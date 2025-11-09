@@ -198,8 +198,12 @@ HRESULT CSkill_Info::Update_Switch(void* pArg)
     else
     {
         m_pConditionPanel->Update_Visible(true);
-
+        m_pConditionPanel->Setting_Condition(pDesc->isOnPreSkill, CClientInstance::GetInstance()->Get_Data<SKILL_DB>(pSkillData->iPreSkill)->wstrName);
     }
+
+    m_pInfo_Tex->Setting_Tex(m_iSkillIndex);
+
+    
     return S_OK;
 }
 

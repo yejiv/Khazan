@@ -16,6 +16,24 @@ CSkill_Condition_Panel::CSkill_Condition_Panel(const CSkill_Condition_Panel& Pro
 {
 }
 
+void CSkill_Condition_Panel::Setting_Condition(_bool isOnPreSkill, _wstring wstrPreSkillName)
+{
+    if (!isOnPreSkill)
+    {
+        m_pGetText->Set_Color({ 0.8941f, 0.223f, 0.223f, 1.f});
+        m_pIcon->Set_Color({ 0.8941f, 0.223f, 0.223f, 1.f});
+        m_pSKilName->Set_Color({ 0.8941f, 0.223f, 0.223f, 1.f});
+    }
+    else
+    {
+        m_pGetText->Set_Color({ 1.f,1.f,1.f, 1.f });
+        m_pIcon->Set_Color({ 0.278f, 0.827f, 0.251f, 1.f });
+        m_pSKilName->Set_Color({ 0.278f, 0.827f, 0.251f, 1.f });
+    }
+    _wstring wstrName = TEXT("[") + wstrPreSkillName + TEXT("]");
+    m_pSKilName->Set_Text(wstrName);
+}
+
 HRESULT CSkill_Condition_Panel::Initialize_Prototype()
 {
     return S_OK;
@@ -49,6 +67,28 @@ HRESULT CSkill_Condition_Panel::Load_UI(nlohmann::json& pInData, _uint iPrototyp
 {
     __super::Load_UI(pInData, iPrototypeLevelID, pArg);
 
+    for (auto Child : m_Children)
+    {
+        string strName = Child->Get_Name();
+        if (strName == "Skill_Condition_Skill_Name")
+        {
+            m_pSKilName = static_cast<CUI_TextBox*>(Child);
+            Safe_AddRef(m_pSKilName);
+        }
+        else if (strName == "Skill_Condition_Skill_Get")
+        {
+            m_pGetText = static_cast<CUI_TextBox*>(Child);
+            Safe_AddRef(m_pSKilName);
+        }
+        else if (strName == "Skill_Condition_Skill_Get_Icon")
+        {
+            m_pIcon = static_cast<CUI_Atlas_Icon*>(Child);
+            Safe_AddRef(m_pSKilName);
+            m_pIcon->Set_ShaderPass(2);
+        }
+    }
+
+
     return S_OK;
 }
 
@@ -78,4 +118,7 @@ void CSkill_Condition_Panel::Free()
 {
     __super::Free();
 
+    Safe_Release(m_pGetText);
+    Safe_Release(m_pSKilName);
+    Safe_Release(m_pIcon);
 }
