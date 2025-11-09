@@ -40,9 +40,12 @@ private:
     _int                                m_iMaxCount = {};
     _wstring                            m_wstrMaxCount = {};
    
+    _int                                m_iPreSkillIndex = { -1 };
+    _bool                               m_isPreSkillOn = {};
 private:
 	HRESULT								Ready_Child(const SKILL_DB* pData);
 	void								Setting_Skill();
+    void                                On_PreSkill(const EVENT_SKILL_ON& e);
 
 public:
 	static CSkill_Slot*					Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);

@@ -32,6 +32,7 @@ public:
 	const _float&				Get_Depth() { return m_fDepth; }
 	void						Get_Data(VTXINSTANCE_UI& pOutData);
 
+    void						Set_Depth(_float fDepth) { m_fDepth = fDepth; }
 	void						Set_Color(_float4 vColor) { m_vColor = vColor; }
 	void						Set_ShaderPass(_uint iShaderIndex) { m_iShaderPass = iShaderIndex; }
 	void						Set_TexPass(_uint iTexIndex) { m_iTexPass = iTexIndex; }

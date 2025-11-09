@@ -15,32 +15,32 @@ ID,Type,Sub_ID,Skill_Type,Name,Level,MaxPoint,Index,SlotX,TexPass,Icon,Preceding
 114,0,3,3,그림자 참격,2,3,13,1,5,T_Icon_Skill_Spear_D05_UI.png,0
 115,0,4,1,무너뜨리기,0,1,14,0,5,T_Icon_Skill_Spear_E01_UI.png,0
 116,0,4,1,인내심,0,3,15,1,5,T_Icon_Skill_Spear_E02_UI.png,0
-201,1,0,1,거센 기세,0,1,24,0,5,T_Icon_Skill_Common_F07_UI.png,0
-202,1,0,2,숨통 끊기,0,3,24,1,5,T_Icon_Skill_Common_F07_UI.png,0
-203,1,0,1,숨통 끊기 : 태동,1,1,24,2,5,T_Icon_Skill_Common_F07_UI.png,0
-204,1,0,1,숨통 끊기 : 선혈,2,1,24,3,5,T_Icon_Skill_Common_F07_UI.png,0
-205,1,1,1,강기 발현,0,1,24,0,5,T_Icon_Skill_Common_F07_UI.png,0
-206,1,1,3,거인사냥,1,3,24,1,5,T_Icon_Skill_Common_F07_UI.png,0
-207,1,1,1,투지 증폭,2,1,24,2,5,T_Icon_Skill_Common_F07_UI.png,0
-208,1,1,2,귀신 : 어둠의 그림자,2,3,24,3,5,T_Icon_Skill_Common_F07_UI.png,0
-209,1,1,1,한계 극복,3,1,24,0,5,T_Icon_Skill_Common_F07_UI.png,0
-210,1,2,1,전장의 열기,0,1,24,1,5,T_Icon_Skill_Common_F07_UI.png,0
-211,1,2,2,정면 돌파,2,3,24,2,5,T_Icon_Skill_Common_F07_UI.png,0
-212,1,2,3,거대한 포효,3,3,24,3,5,T_Icon_Skill_Common_F07_UI.png,0
-213,1,2,3,내재된 분노,4,3,24,0,5,T_Icon_Skill_Common_F07_UI.png,0
-214,1,3,1,전투의 굴레,0,1,24,1,5,T_Icon_Skill_Common_F07_UI.png,0
-215,1,3,1,회피 : 기력,1,3,24,2,5,T_Icon_Skill_Common_F07_UI.png,0
-216,1,4,1,역공의 기회,0,1,24,3,5,T_Icon_Skill_Common_F07_UI.png,0
-217,1,4,1,방어 : 기력,1,3,24,0,5,T_Icon_Skill_Common_F07_UI.png,0
-218,1,4,1,방어 : 투지,1,3,24,1,5,T_Icon_Skill_Common_F07_UI.png,0
-301,2,0,1,투지 추출 ,0,1,16,2,5,T_Icon_Skill_Common_A01_UI.png,0
-302,2,0,1,호전적인 투지 ,1,1,17,3,5,T_Icon_Skill_Common_A04_UI.png,0
+201,1,0,1,거센 기세,0,1,24,1,5,T_Icon_Skill_GSword_A01_UI.png,0
+202,1,0,2,숨통 끊기,0,3,24,2,5,T_Icon_Skill_GSword_A03_UI.png,0
+203,1,0,1,숨통 끊기 : 태동,1,1,24,1,5,T_Icon_Skill_GSword_A03b_UI.png,202
+204,1,0,1,숨통 끊기 : 선혈,2,1,24,2,5,T_Icon_Skill_GSword_A03c_UI.png,202
+205,1,1,1,강기 발현,0,1,24,1,5,T_Icon_Skill_GSword_B01_UI.png,0
+206,1,1,3,거인사냥,1,3,24,0,5,T_Icon_Skill_GSword_B02_UI.png,0
+207,1,1,1,투지 증폭,2,1,24,2,5,T_Icon_Skill_GSword_B04_UI.png,0
+208,1,1,2,귀신 : 어둠의 그림자,2,3,24,3,5,T_Icon_Skill_GSword_B05_UI.png,0
+209,1,1,1,한계 극복,3,1,24,2,5,T_Icon_Skill_GSword_D02b_UI.png,0
+210,1,2,1,전장의 열기,0,1,24,1,5,T_Icon_Skill_GSword_C01_UI.png,0
+211,1,2,2,정면 돌파,1,3,24,2,5,T_Icon_Skill_GSword_C03_UI.png,0
+212,1,2,3,거대한 포효,2,3,24,1,5,T_Icon_Skill_GSword_C04a_UI.png,0
+213,1,2,3,내재된 분노,3,3,24,0,5,T_Icon_Skill_GSword_C05_UI.png,0
+214,1,3,1,전투의 굴레,0,1,24,1,5,T_Icon_Skill_GSword_D01_UI.png,0
+215,1,3,1,회피 : 기력,1,3,24,1,5,T_Icon_Skill_GSword_D03_UI.png,0
+216,1,4,1,역공의 기회,0,1,24,1,5,T_Icon_Skill_GSword_E01_UI.png,0
+217,1,4,1,방어 : 기력,1,3,24,1,5,T_Icon_Skill_GSword_E03_UI.png,0
+218,1,4,1,방어 : 투지,1,3,24,2,5,T_Icon_Skill_GSword_E04_UI.png,0
+301,2,0,1,투지 추출 ,0,1,16,1,5,T_Icon_Skill_Common_A01_UI.png,0
+302,2,0,1,호전적인 투지 ,1,1,17,2,5,T_Icon_Skill_Common_A04_UI.png,0
 303,2,1,2,브루탈 어택 : 처형,0,1,18,0,5,T_Icon_Skill_Common_C01_UI.png,0
 304,2,1,1,브루탈 어택 : 수확 ,1,1,19,1,5,T_Icon_Skill_Common_C02_UI.png,0
-305,2,2,2,투창,0,1,20,2,5,T_Icon_Skill_Common_D01_UI.png,0
-306,2,2,1,투창 : 안식,1,1,21,3,5,T_Icon_Skill_Common_D03_UI.png,0
+305,2,2,2,투창,0,1,20,1,5,T_Icon_Skill_Common_D01_UI.png,0
+306,2,2,1,투창 : 안식,1,1,21,2,5,T_Icon_Skill_Common_D03_UI.png,305
 307,2,3,2,카운터 어택,0,1,22,1,5,T_Icon_Skill_Common_E01_UI.png,0
-308,2,3,1,카운터 어택 : 공세,3,1,23,3,5,T_Icon_Skill_Common_E02_UI.png,0
+308,2,3,1,카운터 어택 : 공세,3,1,23,1,5,T_Icon_Skill_Common_E02_UI.png,307
 401,0,0,1,달빛 밟기,2,1,99,0,5,T_Icon_Skill_Spear_A03_UI.png,102
 402,0,0,1,달빛 밟기 : 요격,3,1,99,0,5,T_Icon_Skill_Spear_A03b_UI.png,401
 403,0,0,1,달빛 밟기 : 잔상,4,1,99,0,5,T_Icon_Skill_Spear_A03d_UI.png,402
@@ -74,3 +74,39 @@ ID,Type,Sub_ID,Skill_Type,Name,Level,MaxPoint,Index,SlotX,TexPass,Icon,Preceding
 431,0,4,3,독수리 바람,3,1,99,2,5,T_Icon_Skill_Spear_E05_UI.png,0
 432,0,4,1,독수리 바람 : 질풍,4,1,99,2,5,T_Icon_Skill_Spear_E05b_UI.png,431
 433,0,4,1,독수리 바람 : 폭풍,5,1,99,2,5,T_Icon_Skill_Spear_E05c_UI.png,432
+501,1,0,1,압도,1,1,99,0,5,T_Icon_Skill_GSword_A02_UI.png,0
+502,1,0,3,붕산격,3,3,99,0,5,T_Icon_Skill_Spear_E05c_UI.png,0
+503,1,0,1,붕산격 : 폭발,4,1,99,0,5,T_Icon_Skill_GSword_A04_UI.png,502
+504,1,1,1,거인사냥 : 도약,5,1,99,0,5,T_Icon_Skill_GSword_B02b_UI.png,206
+505,1,1,2,귀수 경화,1,1,99,1,5,T_Icon_Skill_GSword_B03_UI.png,0
+506,1,1,1,한계 극복,3,1,99,2,5,T_Icon_Skill_GSword_A04b_UI.png,0
+507,1,2,1,묵직한 압박,2,1,99,0,5,T_Icon_Skill_GSword_C04_UI.png,0
+508,1,2,1,거대한 포효 : 인내,4,1,99,1,5,T_Icon_Skill_GSword_C04b_UI.png,212
+509,1,2,1,거대한 포효 : 결의,5,1,99,1,5,T_Icon_Skill_GSword_C04c_UI.png,509
+510,1,2,1,정면 돌파 : 상승,2,1,99,2,5,T_Icon_Skill_GSword_C03b_UI.png,0
+511,1,2,1,정면 돌파 : 한계,5,1,99,2,5,T_Icon_Skill_GSword_C03c_UI.png,510
+512,1,3,1,투구 깨기,1,1,99,0,5,T_Icon_Skill_GSword_D02_UI.png,0
+513,1,3,1,투구 깨기 : 맹공,3,1,99,0,5,T_Icon_Skill_GSword_D02b_UI.png,512
+514,1,3,1,극한 회피,3,1,99,1,5,T_Icon_Skill_GSword_D05_UI.png,0
+515,1,3,1,들끓는 피,4,1,99,1,5,T_Icon_Skill_GSword_D05b_UI.png,514
+516,1,3,3,분노 휩쓸기,1,3,99,2,5,T_Icon_Skill_GSword_D04_UI.png,0
+517,1,3,1,분노 휩쓸기 : 추격,3,3,99,2,5,T_Icon_Skill_GSword_D04b_UI.png,516
+518,1,4,2,철갑 베기,1,1,99,0,5,T_Icon_Skill_GSword_E02_UI.png,0
+519,1,4,2,심장 꿰뚫기,3,1,99,0,5,T_Icon_Skill_GSword_E02b_UI.png,518
+520,1,4,1,견고한 자세,3,1,99,1,5,T_Icon_Skill_GSword_E06_UI.png,0
+521,1,4,3,반격,2,3,99,2,5,T_Icon_Skill_GSword_E05_UI.png,0
+522,1,4,1,반격 : 기회,4,1,99,1,5,T_Icon_Skill_GSword_E05b_UI.png,521
+523,1,4,1,반격 : 강타,4,1,99,3,5,T_Icon_Skill_GSword_E05c_UI.png,521
+524,1,4,1,반격 : 전환,5,1,99,2,5,T_Icon_Skill_GSword_E05d_UI.png,521
+525,1,2,1,불굴의 의지,1,1,99,0,5,T_Icon_Skill_GSword_C02_UI.png,0
+526,1,2,1,내재된 분노 : 신속,5,1,99,0,5,T_Icon_Skill_GSword_C05b_UI.png,213
+601,2,0,1,인내하는 투지,1,1,99,0,5,T_Icon_Skill_Common_A02_UI.png,0
+602,2,0,1,기회를 노리는 투지,1,1,99,1,5,T_Icon_Skill_Common_A03_UI.png,0
+603,2,0,1,꺽이지 않는 투지,2,1,99,1,5,T_Icon_Skill_Common_A05_UI.png,0
+604,2,1,2,브루탈 어택 : 낙하,0,1,99,2,5,T_Icon_Skill_Common_C02_UI.png,0
+605,2,1,1,브루탈 어택 : 투지,2,1,99,1,5,T_Icon_Skill_Common_C04_UI.png,0
+606,2,2,1,투창 : 모으기,1,1,99,0,5,T_Icon_Skill_Common_D02_UI.png,305
+607,2,2,1,투창 : 벼리기,2,1,99,0,5,T_Icon_Skill_Common_D04_UI.png,305
+608,2,2,1,투창 : 투지,2,1,99,2,5,T_Icon_Skill_Common_D05_UI.png,305
+609,2,3,1,카운터 어택 : 숙련,5,1,99,0,5,T_Icon_Skill_Common_E03_UI.png,308
+610,2,3,1,카운터 어택 : 투지,5,1,99,2,5,T_Icon_Skill_Common_E04_UI.png,308
