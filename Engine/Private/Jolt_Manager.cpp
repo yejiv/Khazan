@@ -14,7 +14,7 @@ CJolt_Manager::CJolt_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 
 HRESULT CJolt_Manager::Initialize(_uint iNumObjectLayer)
 {
-    // Jolt ±Û·Î¹ú ÃÊ±âÈ­(ÇÊ¼ö)
+    // Jolt ê¸€ë¡œë²Œ ì´ˆê¸°í™”(í•„ìˆ˜)
     RegisterDefaultAllocator();
     Factory::sInstance = new Factory();
     RegisterTypes();
@@ -28,13 +28,13 @@ HRESULT CJolt_Manager::Initialize(_uint iNumObjectLayer)
     if (m_pTempAlloc == nullptr)
         return E_FAIL;
 
-    // ½º·¹µåÇ®
+    // ìŠ¤ë ˆë“œí’€
     m_pJobSystem = new JobSystemThreadPool(cMaxPhysicsJobs, cMaxPhysicsBarriers, m_iJobThreadCount);
     if (m_pJobSystem == nullptr)
         return E_FAIL;
 
 
-    //·¹ÀÌ¾î
+    //ë ˆì´ì–´
     m_pBPLayerIF = new CJolt_BPLayerIF(m_iNumObjectLayer);
     if (m_pBPLayerIF == nullptr)
         return E_FAIL;
@@ -79,6 +79,8 @@ Body* CJolt_Manager::CreateAndAdd_Body(const BodyCreationSettings& BodySetting, 
 
     *pBodyInterface = &m_pPhysics->GetBodyInterface();
 
+    m_BodyDescs.emplace(body->GetID(), body->GetUserData());
+
     return body;
 }
 
@@ -106,7 +108,7 @@ CBoneChainPhysic* CJolt_Manager::CreateBoneChain(CModel* pModel, CBoneChainPhysi
 
 HRESULT CJolt_Manager::Set_PhysicsSystem()
 {
-    // PhysicsSystem ÃÊ±âÈ­
+    // PhysicsSystem ì´ˆê¸°í™”
     m_pPhysics = new PhysicsSystem();
     m_pPhysics->Init(
         m_iMaxBodies,
@@ -120,7 +122,7 @@ HRESULT CJolt_Manager::Set_PhysicsSystem()
 
     m_pPhysics->SetPhysicsSettings(m_PhysicsSetting);
 
-    //¸®½º³Ê
+    //ë¦¬ìŠ¤ë„ˆ
     m_pContactListener = new CJolt_ContactListener(&m_pPhysics->GetBodyInterface());
     if (m_pContactListener == nullptr)
         return E_FAIL;
@@ -134,8 +136,7 @@ HRESULT CJolt_Manager::Set_PhysicsSystem()
         return E_FAIL;
 
     m_pPhysics->SetContactListener(m_pContactListener);
-
-    // ±âº» Áß·Â
+    // ê¸°ë³¸ ì¤‘ë ¥
     m_pPhysics->SetGravity(Vec3(0.0f, g_fGravity, 0.0f));
 
     return S_OK;
@@ -196,6 +197,28 @@ void CJolt_Manager::Remove_CharacterVirtual(CharacterID id)
 	}
 }
 
+void CJolt_Manager::Push_BodyDesc(BodyID id, uint64 BodyDesc)
+{
+    m_BodyDescs.emplace(id, BodyDesc);
+}
+
+uint64 CJolt_Manager::Find_BodyDesc(BodyID id)
+{
+    auto iter = m_BodyDescs.find(id);
+    if (iter != m_BodyDescs.end())
+        return iter->second;
+    return 0;
+}
+
+void CJolt_Manager::Remove_BodyDesc(BodyID id)
+{
+    auto iter = m_BodyDescs.find(id);
+    if (iter != m_BodyDescs.end())
+    {
+        m_BodyDescs.erase(iter);
+    }
+}
+
 _bool CJolt_Manager::RayCast(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition, _float3* outNormal)
 {
     Vec3 origin = LoadVec3(vStart);
@@ -234,7 +257,7 @@ _bool CJolt_Manager::RayCast(_float3 vStart, _float3 vEnd, _float& outFraction, 
 
     if (outNormal)
     {
-        // Body ÀÐ±â ¶ô ÈÄ ¹Ùµð Æ÷ÀÎÅÍ È¹µæ
+        // Body ì½ê¸° ë½ í›„ ë°”ë”” í¬ì¸í„° íšë“
         BodyLockRead lock(m_pPhysics->GetBodyLockInterfaceNoLock(), hit.mBodyID);
         if (lock.Succeeded())
         {
@@ -242,7 +265,7 @@ _bool CJolt_Manager::RayCast(_float3 vStart, _float3 vEnd, _float& outFraction, 
             const Vec3 n = pBody.GetWorldSpaceSurfaceNormal(hit.mSubShapeID2, hitPos);
             _float3 N = { n.GetX(), n.GetY(), n.GetZ() };
 
-            // ·¹ÀÌ ¹æÇâ°ú °°Àº ¹æÇâÀ» º¸°í ÀÖÀ¸¸é µÚÁý¾î µ¥Ä®ÀÌ Ç×»ó Ç¥¸é À§·Î ÇâÇÏ°Ô
+            // ë ˆì´ ë°©í–¥ê³¼ ê°™ì€ ë°©í–¥ì„ ë³´ê³  ìžˆìœ¼ë©´ ë’¤ì§‘ì–´ ë°ì¹¼ì´ í•­ìƒ í‘œë©´ ìœ„ë¡œ í–¥í•˜ê²Œ
             Vec3 vDir = dir.Normalized();
             if (vDir.Dot(n) > 0.0f) {
                 N.x *= -1.f; N.y *= -1.f; N.z *= -1.f;
@@ -274,6 +297,13 @@ _bool CJolt_Manager::RayCast(_float3 vStart, _float3 vEnd, _float& outFraction, 
     return true;
 }
 
+//void CJolt_Manager::Clear()
+//{
+//    m_CharacterVirtuals.clear();
+//    m_BodyDescs.clear();
+//    m_RayCasts.clear();
+//}
+
 #ifdef  _DEBUG
 
 
@@ -300,13 +330,13 @@ void CJolt_Manager::Debug_Render()
 {
     if (!m_pPhysics)
         return;
-    // µð¹ö±× ·»´õ ÆÐ½º ½ÃÀÛ
+    // ë””ë²„ê·¸ ë Œë” íŒ¨ìŠ¤ ì‹œìž‘
     m_pDebugRenderer->BeginFrame();
-    // Jolt°¡ ³»ºÎÀûÀ¸·Î ¼ö¹é/¼öÃµ¹ø DrawLine()À» È£Ãâ
+    // Joltê°€ ë‚´ë¶€ì ìœ¼ë¡œ ìˆ˜ë°±/ìˆ˜ì²œë²ˆ DrawLine()ì„ í˜¸ì¶œ
     m_pPhysics->DrawBodies(m_DrawSetting, m_pDebugRenderer, m_DrawFilter);
     for (RayCastDesc RC : m_RayCasts)
         m_pDebugRenderer->DrawLine(LoadVec3(RC.vStart), LoadVec3(RC.vEnd), RC.vColor);
-    // µð¹ö±× ·»´õ ÆÐ½º Á¾·á
+    // ë””ë²„ê·¸ ë Œë” íŒ¨ìŠ¤ ì¢…ë£Œ
     m_pDebugRenderer->EndFrame();
 }
 void CJolt_Manager::RayCast_Render_Clear()
@@ -334,6 +364,7 @@ void CJolt_Manager::Free()
     Safe_Delete(m_pDebugRenderer);
 #endif
     m_CharacterVirtuals.clear();
+    m_BodyDescs.clear();
 #ifdef _DEBUG
     Safe_Delete(m_DrawFilter);
 #endif

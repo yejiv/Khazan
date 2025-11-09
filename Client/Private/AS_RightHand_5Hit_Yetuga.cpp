@@ -38,16 +38,33 @@ void CAS_RightHand_5Hit_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 
 void CAS_RightHand_5Hit_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
 {
-    //if (m_iComboCount < 5)
-    //    m_iComboCount++;
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iCollisionLayer);
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+        //if (m_iComboCount < 5)
+        //    m_iComboCount++;
 
-    //if (4 == m_iComboCount)
-    //{
-    //    // if ¸·Å¸¸¦ ÆÐ¸®ÇÏ¸é ½ºÆ®·Õ ´ë¹ÌÁö ÇÇ°Ý ÀÎÅÍ·ìÆ® È£Ãâ ÇÏ´Â½ÄÀ¸·Î
+        //if (4 == m_iComboCount)
+        //{
+        //    // if ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½Ð¸ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ç°ï¿½ ï¿½ï¿½ï¿½Í·ï¿½Æ® È£ï¿½ï¿½ ï¿½Ï´Â½ï¿½ï¿½ï¿½ï¿½ï¿½
+            /*CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
+            pYetuga->Take_Damage(15.f,HITREACTION::KNOCKBACK_STRONG,1.f);*/
+            
+        //}
+    
+        CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        if (nullptr == pTarget)
+            return;
+        CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+        if (nullptr == pOwnerTransform)
+            return;
+        _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+        pTarget->KnockBack(vLook, 20.f, 60.f);
+        //pTarget->KnockBack(vLook, 15.f, 50.f);
+    }
 
-    //    CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
-    //    pYetuga->Take_Damage(15.f,HITREACTION::KNOCKBACK_STRONG,1.f);
-    //}
+
+   
 }
 
 

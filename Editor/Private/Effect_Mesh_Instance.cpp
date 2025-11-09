@@ -1,4 +1,4 @@
-﻿#include "Effect_Mesh_Instance.h"
+#include "Effect_Mesh_Instance.h"
 #include "Effect_Prefab.h"
 #include "GameInstance.h"
 
@@ -119,21 +119,24 @@ void CEffect_Mesh_Instance::Edit_Element()
 
     ImGui::ColorEdit4("MyColorWithAlpha",(float*)&m_sEditingData.vColor);
 
-    const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19",  "test20",  "test21" };
+    const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19",  "test20",  "shock", "smoke", "cloud" };
     ImGui::Combo("Mesh Textures", reinterpret_cast<int*>(&m_sEditingData.iTextureIdx), textures, IM_ARRAYSIZE(textures));
 
     const char* Meshes[] = { "Helix0", "Helix1", "Helix2", "Helix3",  "Helix4",  "Helix5",  "Helix6",  "Helix7",  "Helix8",  "Helix9",  "Helix10",  "Helix11",  "Helix12",  "Helix13",  "Helix14",  "Helix15",  "Helix16",  "Helix17",  "Helix18",  "Helix19",  "Helix20",
-                                        "Spline0",  "Spline1", "Spline2",  "Spline3", "Spline4",  "Spline5",
-                                        "Spline_Cylinder",  "Spline_Helix0", "Spline_Helix1",
-                                        "Spline_Twist0", "Spline_Twist1",  "Spline_Twist2", "Spline_Twist3",  "Spline_Twist4", "Spline_Twist5",  "Spline_Twist6", "Spline_Twist7",
-                                        "TombStone_Spline0", "TombStone_Spline1", "TombStone_Spline2", "TombStone_Spline3", "WorldSpline",
-                                        "Helix21", "absolb_Spiral", "Focus", "HelixSimple", "Lightning0", "Lightning1", "Lightning2" , "Lightning3", "Helix22", "Helix23", "Helix24", "Helix25", "Helix26",
-                                        "Trail", "TwistRing0", "TwistRing1", "Spiral", "Wave0", "Wave1", "windLine", "Mash_Helix_Simple_mid", "T_blunt_slash_test", "Mash_Helix", "Mash_circle_twist",
-                                        "Attack_ShockWave", "AttackTrail_First", "AttackTrail_Fluid", "AttackTrail_Spin", "AttackTrail_Wind", "Curve0", "Curve1" , "Curve2", "Helix27",
-                                        "Lupers_Spear", "Particle_001", "ShockWave_Flow", "Spiral_001", "Wind_001",
-                                        "IN_Spiral_02", "Swirl_Spine_X", "SwirlHelix",
-                                        "FastAtk_1", "FastAtk_2L", "FastAtk_2R", "FastAtk_3L", "FastAtk_3R", "Grapple_Atk_2", "CounterATK", "DodgeATK", "FastATK1","FastATK2_L", "FastATK2_R",  "FastATK3_L" ,  "FastATK3_R", "FastATK4",
-                                        "StrongAtk0", "StrongAtk1", "FastAtk03_Slash", "GrappleAtk02_Slash", "StrongAtk03_Slash" };    ImGui::Combo("Mesh Shape", reinterpret_cast<int*>(&m_sEditingData.iMeshTypeIdx), Meshes, IM_ARRAYSIZE(Meshes));
+                                    "Spline0",  "Spline1", "Spline2",  "Spline3", "Spline4",  "Spline5",
+                                    "Spline_Cylinder",  "Spline_Helix0", "Spline_Helix1",
+                                    "Spline_Twist0", "Spline_Twist1",  "Spline_Twist2", "Spline_Twist3",  "Spline_Twist4", "Spline_Twist5",  "Spline_Twist6", "Spline_Twist7",
+                                    "TombStone_Spline0", "TombStone_Spline1", "TombStone_Spline2", "TombStone_Spline3", "WorldSpline",
+                                    "Helix21", "absolb_Spiral", "Focus", "HelixSimple", "Lightning0", "Lightning1", "Lightning2" , "Lightning3", "Helix22", "Helix23", "Helix24", "Helix25", "Helix26",
+                                    "Trail", "TwistRing0", "TwistRing1", "Spiral", "Wave0", "Wave1", "windLine", "Mash_Helix_Simple_mid", "T_blunt_slash_test", "Mash_Helix", "Mash_circle_twist",
+                                    "Attack_ShockWave", "AttackTrail_First", "AttackTrail_Fluid", "AttackTrail_Spin", "AttackTrail_Wind", "Curve0", "Curve1" , "Curve2", "Helix27",
+                                    "Lupers_Spear", "Particle_001", "ShockWave_Flow", "Spiral_001", "Wind_001",
+                                    "IN_Spiral_02", "Swirl_Spine_X", "SwirlHelix",
+                                    "FastAtk_1", "FastAtk_2L", "FastAtk_2R", "FastAtk_3L", "FastAtk_3R", "Grapple_Atk_2", "CounterATK", "DodgeATK", "FastATK1","FastATK2_L", "FastATK2_R",  "FastATK3_L" ,  "FastATK3_R", "FastATK4",
+                                    "StrongAtk0", "StrongAtk1", "FastAtk03_Slash", "GrappleAtk02_Slash", "StrongAtk03_Slash"
+                                    , "Cylinder_003", "Cylinder_003_02", "Cylinder_003_Noise" , "Spine", "Circle_002" ,"Sphere"};
+
+    ImGui::Combo("Mesh Shape", reinterpret_cast<int*>(&m_sEditingData.iMeshTypeIdx), Meshes, IM_ARRAYSIZE(Meshes));
 
     ImGui::Checkbox("Do Mask Scrolling", &m_bIsMaskScrolling);
     if (m_bIsMaskScrolling)
@@ -157,7 +160,7 @@ void CEffect_Mesh_Instance::Edit_Element()
         ImGui::Combo("Dissolve Texture", reinterpret_cast<int*>(&m_sEditingData.sDissolveData.iDissolveTextureIdx), DissolveTex, IM_ARRAYSIZE(DissolveTex));
         ImGui::InputFloat("Dissolve Edge Width : ", reinterpret_cast<_float*>(&m_sEditingData.sDissolveData.fDissolveEdgeWidth));
         ImGui::ColorEdit4("Edge Color", (float*)&m_sEditingData.sDissolveData.fDissolveEdgeColor);
-        ImGui::Unindent();
+        ImGui::Unindent(); 
     }
 
     ImGui::Checkbox("Turbulence", &bIsTurbulence);
@@ -275,7 +278,7 @@ HRESULT CEffect_Mesh_Instance::Bind_ShaderResources()
     if(FAILED(m_pShaderCom->Bind_RawValue("g_vSourceColor", &m_sEditingData.vColor, sizeof(_float4))))
         return E_FAIL;
 
-    if (FAILED(m_pShaderCom->Bind_RawValue("g_ScrollSpeed", &m_fScrollSpeed, sizeof(_float2))))
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_ScrollSpeed", &m_sEditingData.iScrollSpeed, sizeof(_float2))))
         return E_FAIL; 
 
     _bool ScrollDir = m_sData.bIsScrollVertical;
@@ -333,6 +336,10 @@ void CEffect_Mesh_Instance::Apply(void* pArg)
 
     m_sEditingData = m_sData;
     m_fScrollSpeed = m_sData.iScrollSpeed;
+    if (m_sData.fMaskScrollSpeed == 0)
+        m_bIsMaskScrolling = false;
+    else
+        m_bIsMaskScrolling = true;
 }
 
 CEffect_Mesh_Instance* CEffect_Mesh_Instance::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, void* pArg)

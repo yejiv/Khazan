@@ -48,7 +48,7 @@ void CThreadPool::Add_FireTask(std::function<HRESULT()> task)
             HRESULT hr = t();
         }
         catch (...) {
-            throw runtime_error("ThreadPool ¹®Á¦ÀÖÀ½");
+            throw runtime_error("ThreadPool ë¬¸ì œìˆìŒ");
         }
         });
 
@@ -60,7 +60,7 @@ void CThreadPool::PushJob(function<void()> job)
 {
     std::unique_lock<std::mutex> lock(m_Mutex);
     if (m_isStopAll)
-        throw std::runtime_error("ThreadPool »ç¿ë ÁßÁöµÊ");
+        throw std::runtime_error("ThreadPool ì‚¬ìš© ì¤‘ì§€ë¨");
 
     m_Tasks.push(std::move(job));
     lock.unlock();
@@ -79,7 +79,7 @@ void CThreadPool::Worker_Thread(uint32_t worker_idx)
         m_CV.wait(lock, [this] { return m_isStopAll || !m_Tasks.empty(); });
 
         if (m_isStopAll && m_Tasks.empty())
-            break; // return ¸»°í break
+            break; // return ë§ê³  break
 
         auto task = std::move(m_Tasks.front());
         m_Tasks.pop();

@@ -189,7 +189,7 @@ HRESULT CEdit_UIBase::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID)
     }
 
     string szType = pInData.value("type", "");
-    m_iUIType = UIType_StringToEnum(szType); // ¡ç Á÷Á¢ ¸¸µç º¯È¯ ÇÔ¼ö
+    m_iUIType = UIType_StringToEnum(szType); // â† ì§ì ‘ ë§Œë“  ë³€í™˜ í•¨ìˆ˜
 
     m_iShaderPass = pInData.value("shaderPass", -1);
     m_fDepth = pInData.value("depth", 0.f);
@@ -478,7 +478,7 @@ void CEdit_UIBase::Update_Option(string& szSeleteUIName, const string pFrameName
         else
         {
             m_wstrTexttag = strFontTag;
-            //ÅØ½ºÆ® ¹Ú½º
+            //í…ìŠ¤íŠ¸ ë°•ìŠ¤
             ImGui::Checkbox("UITexBox", &m_bIsTextBox);
 
             ImGui::RadioButton("##Option0", &m_iTextAlign, ENUM_CLASS(TEXT_ALIGN::LEFT_TOP));
@@ -499,7 +499,7 @@ void CEdit_UIBase::Update_Option(string& szSeleteUIName, const string pFrameName
             ImGui::SameLine();
             ImGui::RadioButton("##Option8", &m_iTextAlign, ENUM_CLASS(TEXT_ALIGN::RIGHT_BOTTOM));
 
-            //ÅØ½ºÆ®
+            //í…ìŠ¤íŠ¸
             if(ImGui::InputText("##UIEventLabel", m_szText, MAX_PATH))
             {
                 string strText = m_szText;
@@ -510,10 +510,10 @@ void CEdit_UIBase::Update_Option(string& szSeleteUIName, const string pFrameName
                 m_wstrText = wstr;
             }
 
-            //ÆĞ³Î ³» À§Ä¡
+            //íŒ¨ë„ ë‚´ ìœ„ì¹˜
             ImGui::InputInt2("Pivot", m_iPivot);
 
-            //»ö»ó
+            //ìƒ‰ìƒ
             ImGui::ColorEdit4("FontColor", (_float*)&m_vFrameColor);
 
             if (m_bIsTextBox)

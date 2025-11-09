@@ -1,4 +1,4 @@
-﻿#ifndef Engine_Struct_h__
+#ifndef Engine_Struct_h__
 #define Engine_Struct_h__
 
 
@@ -176,7 +176,7 @@ namespace Engine
 		float			fNormalization;
 	}GAUSSIAN_BLUR_CONFIG;
 
-	typedef struct tagFogNoise_DESC
+	typedef struct tagFogNoiseDesc
 	{
 		bool			isEnable;
 		XMFLOAT2		vSpeed;
@@ -184,6 +184,12 @@ namespace Engine
 		float			fStrength;
 		float			fContrast;
 	}FOG_NOISE_DESC;
+
+	typedef struct tagFogTransitionDesc
+	{
+		float			fDensity;		// 지수용
+		XMFLOAT4		vColor;
+	}FOG_TRANSITION_DESC;
 
 	typedef struct tagFogConfig
 	{
@@ -194,6 +200,8 @@ namespace Engine
 		float			fDensity;		// 지수용
 		XMFLOAT4		vColor;
 		FOG_NOISE_DESC	Noise;
+		float			fBaseHeight;
+		float			fHeightDensity;
 	}FOG_CONFIG;
 
 	typedef struct tagOutlineConfig
@@ -227,11 +235,13 @@ namespace Engine
 
 	typedef struct tagDistortionDesc
 	{
-		XMFLOAT3	vCenter;
-		float		fRange;
-		float		fPower;
-		float		fDuration;
-		float		fSpeed;
+		XMFLOAT3		vCenter;
+		float			fRange;
+		float			fPower;
+		float			fDuration;
+		XMFLOAT2		vFadeTime;
+		float			fSpeed;
+		unsigned int	iNoiseIndex;
 	}DISTORTION_DESC;
 
 	struct HitStopState
@@ -655,6 +665,7 @@ namespace Engine
 	typedef struct tagCollsion
 	{
 		class CGameObject* pGameObject = nullptr;
+		unsigned int iObjectLayer;
 		void* pInfo = nullptr;	
 	}COLLISION_DESC;
 

@@ -595,6 +595,51 @@
     <Filter Include="02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel">
       <UniqueIdentifier>{d867245e-67c6-4dd3-9887-177b55c11097}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Levels\Test">
+      <UniqueIdentifier>{59b05a38-249f-445f-bb87-bf72ea8b8d0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\01.Trigger\01.Embars">
+      <UniqueIdentifier>{28ff4c9d-284a-4e4a-9bf2-52e3b66dfc59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\01.Trigger\02.Viper">
+      <UniqueIdentifier>{e21af4ec-6dfc-46f4-ab35-c0db1f9d6d85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\01.Trigger\02.Viper\Viper_Trigger">
+      <UniqueIdentifier>{485e7ed5-dcf7-48e1-bc79-e69aea67fc4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\Player_Manger">
+      <UniqueIdentifier>{b86e2937-1cab-43ad-aecc-1f09c038ebef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Gomdolzzing">
+      <UniqueIdentifier>{6cf68861-f9b1-42bc-8280-afe5e503de49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Gomdolzzing\Head">
+      <UniqueIdentifier>{af3b0474-79c0-451f-8366-b1ef7dadd8b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Gomdolzzing\Body">
+      <UniqueIdentifier>{8ab5f034-585d-4334-8a1d-f90ce485b5cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\Controller\Gomdol">
+      <UniqueIdentifier>{39358531-9bfc-47e0-a248-399e020da107}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\StateMachine\Gomdol">
+      <UniqueIdentifier>{b882875a-78a0-44e7-b283-a4bdab140662}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Gomdol">
+      <UniqueIdentifier>{499b6d86-4a6d-4ac7-8300-5613db052062}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Gomdol\Sleep">
+      <UniqueIdentifier>{5ccdd26b-35ce-4bb4-94e6-10557f7f1c91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Gomdol\Idle">
+      <UniqueIdentifier>{2049157e-3394-4d58-bf33-4c2c44377e14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Gomdol\Move">
+      <UniqueIdentifier>{227cf7ca-5f94-48b4-a45e-1d1a6636a4c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Gomdol\FrontAttack">
+      <UniqueIdentifier>{63fd2152-db9f-4552-8463-bae7b126c9dc}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation\Guard">
       <UniqueIdentifier>{0fc723ef-4978-4d9e-b7d0-1ad4574510a1}</UniqueIdentifier>
     </Filter>
@@ -1128,9 +1173,6 @@
     <ClInclude Include="..\Public\Head_Yetuga.h">
       <Filter>02.GameObject\Creature\Monster\Yetuga\Head</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\UI_SkillTree.h">
-      <Filter>02.GameObject\UI\Skill_Tree</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\Skill_Tap.h">
       <Filter>02.GameObject\UI\Skill_Tree\Tap</Filter>
     </ClInclude>
@@ -1145,6 +1187,42 @@
     </ClInclude>
     <ClInclude Include="..\public\Skill_Slot_Panel.h">
       <Filter>02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Test.h">
+      <Filter>01.Levels\Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Viper_Trigger.h">
+      <Filter>02.GameObject\MapObject\01.Trigger\02.Viper\Viper_Trigger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_SkillTree.h">
+      <Filter>02.GameObject\UI\Skill_Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Player_Manager.h">
+      <Filter>94.ClientInstance\Player_Manger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Gomdol.h">
+      <Filter>02.GameObject\Creature\Monster\Gomdolzzing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Body_Gomdol.h">
+      <Filter>02.GameObject\Creature\Monster\Gomdolzzing\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AI_Controller_Gomdol.h">
+      <Filter>92.AI\Controller\Gomdol</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FSM_Gomdol.h">
+      <Filter>92.AI\StateMachine\Gomdol</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Sleep_Gomdol.h">
+      <Filter>92.AI\State\Gomdol\Sleep</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Idle_Gomdol.h">
+      <Filter>92.AI\State\Gomdol\Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Move_Gomdol.h">
+      <Filter>92.AI\State\Gomdol\Move</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_FrontAttack_Gomdol.h">
+      <Filter>92.AI\State\Gomdol\FrontAttack</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Khazan_Spear_Anim_Guard.h">
       <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Guard</Filter>
@@ -1688,6 +1766,39 @@
     </ClCompile>
     <ClCompile Include="..\private\Skill_Slot_Panel.cpp">
       <Filter>02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Test.cpp">
+      <Filter>01.Levels\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Viper_Trigger.cpp">
+      <Filter>02.GameObject\MapObject\01.Trigger\02.Viper\Viper_Trigger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Player_Manager.cpp">
+      <Filter>94.ClientInstance\Player_Manger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Gomdol.cpp">
+      <Filter>02.GameObject\Creature\Monster\Gomdolzzing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Body_Gomdol.cpp">
+      <Filter>02.GameObject\Creature\Monster\Gomdolzzing\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AI_Controller_Gomdol.cpp">
+      <Filter>92.AI\Controller\Gomdol</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FSM_Gomdol.cpp">
+      <Filter>92.AI\StateMachine\Gomdol</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Sleep_Gomdol.cpp">
+      <Filter>92.AI\State\Gomdol\Sleep</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Idle_Gomdol.cpp">
+      <Filter>92.AI\State\Gomdol\Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Move_Gomdol.cpp">
+      <Filter>92.AI\State\Gomdol\Move</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_FrontAttack_Gomdol.cpp">
+      <Filter>92.AI\State\Gomdol\FrontAttack</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Khazan_Spear_Anim_Guard.cpp">
       <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Guard</Filter>

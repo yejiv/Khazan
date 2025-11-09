@@ -76,7 +76,7 @@ void CLevel_UI::Update(_float fTimeDelta)
 
 HRESULT CLevel_UI::Render()
 {
-	SetWindowText(g_hWnd, TEXT("UIÅø"));
+	SetWindowText(g_hWnd, TEXT("UIíˆ´"));
 
 	return S_OK;
 }

@@ -86,7 +86,7 @@ void CJOH_Test1::Update(_float fTimeDelta)
 
 void CJOH_Test1::Late_Update(_float fTimeDelta)
 {
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONLIGHT, this)))
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 
 #ifdef _DEBUG

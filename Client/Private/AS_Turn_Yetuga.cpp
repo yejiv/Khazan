@@ -23,13 +23,13 @@ void CAS_Turn_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     {
         if (!Info.Check_Flag(DIRECTION_INFO::DIR::B))
         {
-            // ¿ÞÂÊ 90µµ È¸Àü
+            // ì™¼ìª½ 90ë„ íšŒì „
             pModel->Set_Animation(8);
         }
             
         else
         {
-            // ¿ÞÂÊ µÚ (180µµ È¸Àü)
+            // ì™¼ìª½ ë’¤ (180ë„ íšŒì „)
             pModel->Set_Animation(10);
         }
            
@@ -38,13 +38,13 @@ void CAS_Turn_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     {
         if (!Info.Check_Flag(DIRECTION_INFO::DIR::B))
         {
-            // ¿À¸¥ÂÊ 90µµ È¸Àü
+            // ì˜¤ë¥¸ìª½ 90ë„ íšŒì „
             pModel->Set_Animation(9);
         }
             
         else
         {
-            // ¿À¸¥ÂÊ µÚ (180µµ È¸Àü)
+            // ì˜¤ë¥¸ìª½ ë’¤ (180ë„ íšŒì „)
             pModel->Set_Animation(11);
         }
     }
@@ -84,7 +84,7 @@ void CAS_Turn_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fT
 
     if (fAngle < XMConvertToRadians(5.f) || pModel->Play_Animation(fTimeDelta))
     {
-        // ºí·¢º¸µå °»½Å
+        // ë¸”ëž™ë³´ë“œ ê°±ì‹ 
         m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>("Yetuga", "isTurnFinished", true);
         pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pOwner);
     }

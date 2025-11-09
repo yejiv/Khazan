@@ -1,6 +1,7 @@
-﻿#include "Body_Khazan_Spear.h"
+#include "Body_Khazan_Spear.h"
 #include "Khazan_Sample.h"
 #include "GameInstance.h"
+#include "ClientInstance.h"
 
 CBody_Khazan_Spear::CBody_Khazan_Spear(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CPartObject{ pDevice, pContext }
@@ -43,8 +44,6 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
     if (FAILED(Ready_AnimationEvent()))
         return E_FAIL;
 
-
-   // m_pModelCom->Set_Animation(5);
     /* 부모 트랜스폼 연결 */
     m_pModelCom->Set_OwnerTransform(&m_pParentTransform);
 
@@ -81,11 +80,18 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
 
 void CBody_Khazan_Spear::Late_Update(_float fTimeDelta)
 {
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONLIGHT, this)))
+	// ========== Before Render ==========
+    //  if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONLIGHT, this)))
+    //      return;
+    //  //if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
+    //  //    return;
+    // ========== After Render ==========
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
-    //if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
-    //    return;
-
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
+        return;
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::OUTLINE, this)))
+        return;
 #ifdef _DEBUG
 
 #endif
@@ -374,13 +380,16 @@ void CBody_Khazan_Spear::Free()
 {
     __super::Free();
 
-    m_pModelCom->Detach_Part(m_pModelCom_Arm);
-    m_pModelCom->Detach_Part(m_pModelCom_Face);
-    m_pModelCom->Detach_Part(m_pModelCom_Hair);
-    m_pModelCom->Detach_Part(m_pModelCom_Leg);
-    m_pModelCom->Detach_Part(m_pModelCom_Shoes);
-    m_pModelCom->Detach_Part(m_pModelCom_Torso);
-
+    if (!m_isPrototype)
+    {
+        m_pModelCom->Detach_Part(m_pModelCom_Arm);
+        m_pModelCom->Detach_Part(m_pModelCom_Face);
+        m_pModelCom->Detach_Part(m_pModelCom_Hair);
+        m_pModelCom->Detach_Part(m_pModelCom_Leg);
+        m_pModelCom->Detach_Part(m_pModelCom_Shoes);
+        m_pModelCom->Detach_Part(m_pModelCom_Torso);
+    }
+    
 	Safe_Release(m_pParentTransform);
 	Safe_Release(m_pShaderCom);
 
@@ -391,5 +400,4 @@ void CBody_Khazan_Spear::Free()
 	Safe_Release(m_pModelCom_Leg);
 	Safe_Release(m_pModelCom_Shoes);
     Safe_Release(m_pModelCom);
-    int a = 0;
 }

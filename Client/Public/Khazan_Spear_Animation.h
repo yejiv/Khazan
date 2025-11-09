@@ -55,7 +55,7 @@ protected:
 	inline void		Remove_State(_uint i) { m_iState &= ~i; }
 	inline _bool	Has_State(_uint i) { return (m_iState & i) != 0; }
 	inline _bool	Has_AllStates(_uint i) { return (m_iState & i) == i; }
-	inline _bool	Has_States(_uint iMaxState);	//ÇÏ³ªÀÇ »óÅÂ¶óµµ ÀÖ´ÂÁö ¾ø´ÂÁö
+	inline _bool	Has_States(_uint iMaxState);	//í•˜ë‚˜ì˜ ìƒíƒœë¼ë„ ìˆëŠ”ì§€ ì—†ëŠ”ì§€
 	inline void		Clear_State() { m_iState = 0; }
 
 public:

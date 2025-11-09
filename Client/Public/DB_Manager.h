@@ -30,10 +30,10 @@ private:
 
 	
 private:
-	_wstring								Load_UTF8ToWString(const wstring& filePath);	//UTF8 º¯È¯
+	_wstring								Load_UTF8ToWString(const wstring& filePath);	//UTF8 ë³€í™˜
 	_float									Read_float(wstringstream& s);
-	_uint									Read_UInt(wstringstream& s);					//ÀÎÆ® °ª ÀĞ±â
-	_wstring								Read_WString(wstringstream& s);					//½ºÆ®¸µ °ª ÀĞ±â
+	_uint									Read_UInt(wstringstream& s);					//ì¸íŠ¸ ê°’ ì½ê¸°
+	_wstring								Read_WString(wstringstream& s);					//ìŠ¤íŠ¸ë§ ê°’ ì½ê¸°
 
 	HRESULT									Load_ItemDB(const _tchar* pFilePath);
 	HRESULT									Load_Equip_EffectDB(const _tchar* pFilePath);
@@ -48,11 +48,11 @@ public:
 	virtual void							Free() override;
 };
 
-//DataÁ¢±Ù
+//Dataì ‘ê·¼
 template<typename T>
 inline const T* CDB_Manager::Get_Data(_uint iID) const
 {
-	MSG_BOX(TEXT("DB : ¾ø´Â µ¥ÀÌÅÍ Å¸ÀÔ Á¢±Ù"));
+	MSG_BOX(TEXT("DB : ì—†ëŠ” ë°ì´í„° íƒ€ì… ì ‘ê·¼"));
 	return nullptr;
 }
 
@@ -98,11 +98,11 @@ inline const SKILL_DB* CDB_Manager::Get_Data<SKILL_DB>(_uint iID) const
 	return (Data != m_Skill_Data.end()) ? &Data->second : nullptr;
 }
 
-//TableÁ¢±Ù
+//Tableì ‘ê·¼
 template<typename T>
 inline const T* CDB_Manager::Get_DataTalbe() const
 {
-	MSG_BOX(TEXT("DB : ¾ø´Â µ¥ÀÌÅÍ Å¸ÀÔ Á¢±Ù"));
+	MSG_BOX(TEXT("DB : ì—†ëŠ” ë°ì´í„° íƒ€ì… ì ‘ê·¼"));
 	return nullptr;
 }
 using ITEM_TABLE = unordered_map<_uint, ITEM_DATA>;

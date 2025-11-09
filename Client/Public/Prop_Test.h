@@ -3,7 +3,7 @@
 #include "Client_Defines.h"
 #include "Prop.h"
 
-// ´ÜÀÏ ¸Ê ¿ÀºêÁ§Æ®
+// ë‹¨ì¼ ë§µ ì˜¤ë¸Œì íŠ¸
 
 NS_BEGIN(Engine)
 class CModel;
@@ -21,7 +21,7 @@ public:
 
 	}PROP_TEST_DESC;
 
-	enum class SHADER_PASS { MAIN, WIREFRAME, MAPOBJECT, END };			// ¼öÁ¤ ¿¹Á¤
+	enum class SHADER_PASS { MAIN, WIREFRAME, MAPOBJECT, END };			// ìˆ˜ì • ì˜ˆì •
 
 private:
 	CProp_Test(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

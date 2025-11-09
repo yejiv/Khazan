@@ -151,7 +151,7 @@ HRESULT CEquip_Panel::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, 
 
 					if (pChild == nullptr)
 					{
-						MSG_BOX(TEXT("ÀÚ½Ä Å¬·Ğ »ı¼º ½ÇÆĞ"));
+						MSG_BOX(TEXT("ìì‹ í´ë¡  ìƒì„± ì‹¤íŒ¨"));
 						return E_FAIL;
 					}
 					if (pChild->Load_UI(child, iPrototypeLevelID, pArg))
@@ -176,11 +176,11 @@ string CEquip_Panel::MapPing_Label(_int iIndex)
 {
 	switch (iIndex)
 	{
-	case 0:	return "¹«±â";
-	case 1:	return "¹æ¾î±¸";
-	case 2:	return "Àå½Å±¸";
-	case 3:	return "¼ôÄÆ ¾ÆÀÌÅÛ";
-	case 4:	return "¸í°èÀÇ ±â¿î";
+	case 0:	return "ë¬´ê¸°";
+	case 1:	return "ë°©ì–´êµ¬";
+	case 2:	return "ì¥ì‹ êµ¬";
+	case 3:	return "ìˆì»· ì•„ì´í…œ";
+	case 4:	return "ëª…ê³„ì˜ ê¸°ìš´";
 	}
 
 	return "";

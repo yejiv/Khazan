@@ -43,7 +43,7 @@ void CAS_LockOn_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
     
     _float fDot = pBB->Get_Value<_float>(pYetuga->Get_Name(), "fDot");
 
-    // ¿©±â¼­ Å»ÃâÁ¶°Ç
+    // ì—¬ê¸°ì„œ íƒˆì¶œì¡°ê±´
     if (fDot > m_fDotThreshold)
     {
         pBB->Set_Value<_bool>("Yetuga", "isLockOnFinished", true);

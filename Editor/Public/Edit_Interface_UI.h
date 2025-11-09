@@ -38,7 +38,7 @@ private:
 	_int						m_iSeletRootUI = { -1 };
 	string						m_szSeleteUIName = {};
 
-	//UI ผยฦร ฐüทร
+	//UI ์…ํ… ๊ด€๋ จ
 	_char						m_szUIName[MAX_PATH] = {};
 	_char						m_szClassName[MAX_PATH] = {};
 	_char						m_szUIReName[MAX_PATH] = {};
@@ -52,7 +52,7 @@ private:
 
 	_char						m_szFilePath[MAX_PATH] = {};
 
-	//Tex ฐüทร
+	//Tex ๊ด€๋ จ
 	_char						m_szPrototypePath[MAX_PATH] = {};
 	_char						m_szFrameName[MAX_PATH] = {};
 
@@ -65,7 +65,7 @@ private:
 	_float						m_fAccTime = {};
 	_bool						m_isAnime = { false };
 
-	//ฦ๙ฦฎ ฐüทร
+	//ํฐํธ ๊ด€๋ จ
 	vector<FONTDATA>			m_FontData;
 	_char						m_szDataPath[MAX_PATH] = {};
 	_char						m_szTextPath[MAX_PATH] = {};

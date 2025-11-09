@@ -4,7 +4,7 @@
 
 #include "UI_TextBox.h"
 #include "Skill_Slot_Panel.h"
-
+#include "UI_SkillTree.h"
 CSkill_Tap::CSkill_Tap(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Tap{ pDevice, pContext }
 {
@@ -40,33 +40,56 @@ HRESULT CSkill_Tap::Initialize_Clone(void* pArg)
 
 void CSkill_Tap::Priority_Update(_float fTimeDelta)
 {
-	if (m_iState == ENUM_CLASS(UISTATE::DISABLE))
-		return;
+	for (auto Childe : m_Children)
+		Childe->Priority_Update(fTimeDelta);
 
-	for (auto pPanel : m_pPanel)
-		pPanel->Priority_Update(fTimeDelta);
-	__super::Priority_Update(fTimeDelta);
+	if (m_bIsSelete)
+		for (auto pPanel : m_pPanel)
+			pPanel->Priority_Update(fTimeDelta);
 
 }
 
 void CSkill_Tap::Update(_float fTimeDelta)
 {
-	if (m_iState == ENUM_CLASS(UISTATE::DISABLE))
-		return;
+	if (!m_bIsSelete)
+	{
+		if (ButtonClick(g_hWnd, false, true, INPUT_TYPE::UI))
+		{
+			CUI_SkillTree::SKillBUBBLE_DESC Desc = {};
+			Desc.iIndex = m_iTapIndex;
+			Bubble_EventCall(&Desc);
+		}
+		
+		if (ButtonOver(g_hWnd))
+			m_Children[1]->Set_Color({ 1.f, 1.f, 1.f, 1.f });
+		else
+			m_Children[1]->Set_Color({ 1.f, 1.f, 1.f, 0.5f });
+	}
+	else
+	{
+		m_Children[1]->Set_Color({ 0.941f, 0.769f, 0.329f, 1.f });
+	}
 
-	for (auto pPanel : m_pPanel)
-		pPanel->Update(fTimeDelta);
-	__super::Update(fTimeDelta);
+	for (auto Childe : m_Children)
+		Childe->Update(fTimeDelta);
+
+	if (m_bIsSelete)
+		for (auto pPanel : m_pPanel)
+			pPanel->Update(fTimeDelta);
 }
 
 void CSkill_Tap::Late_Update(_float fTimeDelta)
 {
-	if (m_iState == ENUM_CLASS(UISTATE::DISABLE))
-		return;
-
-	for (auto pPanel : m_pPanel)
-		pPanel->Late_Update(fTimeDelta);
-	__super::Late_Update(fTimeDelta);
+	if (!m_bIsSelete)
+		m_Children[1]->Late_Update(fTimeDelta);
+	else
+	{
+		m_Children[0]->Late_Update(fTimeDelta);
+		m_Children[1]->Late_Update(fTimeDelta);
+	}
+	if (m_bIsSelete)
+		for (auto pPanel : m_pPanel)
+			pPanel->Late_Update(fTimeDelta);
 }
 
 HRESULT CSkill_Tap::Render()
@@ -85,12 +108,26 @@ HRESULT CSkill_Tap::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, vo
 	return S_OK;
 }
 
+void CSkill_Tap::Update_Alpha(_float fAlpha)
+{
+	for (auto pPanel : m_pPanel)
+		pPanel->Update_Alpha(fAlpha);
+	
+	__super::Update_Alpha(fAlpha);
+}
+
 HRESULT CSkill_Tap::Ready_Children()
 {
-	_float2 vPos = { 350, 540 };
+	_bool isPublice = m_szName == "Public";
+	_float2 vPos = {};
+
+	isPublice ? vPos = { 505, 540 } : vPos = { 350, 540 };
 
 	for (_int i = 0; i < 5; ++i)
 	{
+		if (isPublice && i == 4)
+			continue;
+
 		CSkill_Slot_Panel* pPanel = static_cast<CSkill_Slot_Panel*>(CClientInstance::GetInstance()->Load_UIObject(m_iLevel, TEXT("../Bin/Resources/UI/UIData/Skill_Slot_Panel.json")));
 		if (pPanel == nullptr)
 			return E_FAIL;

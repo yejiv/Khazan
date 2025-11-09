@@ -1,4 +1,4 @@
-﻿#include "Prefab.h"
+#include "Prefab.h"
 #include "Effect_Element.h"
 
 CPrefab::CPrefab(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
@@ -23,7 +23,18 @@ HRESULT CPrefab::Initialize_Clone(void* pArg)
 
 void CPrefab::UpdatePosition(_fvector Pos)
 {
-    m_pTransformCom->Set_State(STATE::POSITION, Pos);
+    _matrix Parents_Translation = XMMatrixTranslationFromVector(Pos);
+
+    XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * Parents_Translation);
+}
+
+void CPrefab::UpdateWorldMatrix(_fvector Quaternion, _gvector Position)
+{
+    _matrix Paraent_Rotation = XMMatrixRotationQuaternion(Quaternion);
+    _matrix Parents_Translation = XMMatrixTranslationFromVector(Position);
+    _matrix Parentle = Paraent_Rotation * Parents_Translation;
+
+    XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * Parentle);
 }
 
 void CPrefab::Add_Effect_Element(CEffect_Element* newElement)

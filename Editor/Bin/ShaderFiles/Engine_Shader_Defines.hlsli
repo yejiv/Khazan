@@ -62,21 +62,21 @@ RasterizerState RS_Cull_None
 
 DepthStencilState DSS_Default
 {
-    DepthEnable = true;     // ±íÀÌ Å×½ºÆ® O
-    DepthWriteMask = all;   // ±íÀÌ ±â·Ï O
+    DepthEnable = true;     // ê¹Šì´ í…ŒìŠ¤íŠ¸ O
+    DepthWriteMask = all;   // ê¹Šì´ ê¸°ë¡ O
     DepthFunc = LESS_EQUAL;
 };
 
 DepthStencilState DSS_None
 {
-    DepthEnable = false;    // ±íÀÌ Å×½ºÆ® X
-    DepthWriteMask = zero;  // ±íÀÌ ±â·Ï X
+    DepthEnable = false;    // ê¹Šì´ í…ŒìŠ¤íŠ¸ X
+    DepthWriteMask = zero;  // ê¹Šì´ ê¸°ë¡ X
 };
 
 DepthStencilState DSS_DepthTestOnly
 {
-    DepthEnable = true;     // ±íÀÌ Å×½ºÆ® O
-    DepthWriteMask = zero;  // ±íÀÌ ±â·Ï X
+    DepthEnable = true;     // ê¹Šì´ í…ŒìŠ¤íŠ¸ O
+    DepthWriteMask = zero;  // ê¹Šì´ ê¸°ë¡ X
     DepthFunc = LESS_EQUAL; 
 };
 

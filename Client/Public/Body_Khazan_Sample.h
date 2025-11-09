@@ -30,8 +30,7 @@ private:
 	virtual ~CBody_Khazan_Sample() = default;
 
 public:
-
-	_float4x4*  Get_BoneMatrix(const _char* pBoneName);
+	_float4x4* Get_BoneMatrix(const _char* pBoneName);
 	//void		Set_matSpearFX(_float4x4* mat) { m_pSpearFX_Matrix = mat; }
 	//void		Set_matSpearWeaponR(_float4x4* mat) { m_pSpearWeaponR_Matrix = mat; }
 	//void		Set_matSpearOffset(_matrix mat) { m_SpearOffset_Matrix = mat; }
@@ -61,17 +60,17 @@ public:
 	CModel* Get_Model() { return m_pModelCom; }
 
 private:
-	class CTransform*	m_pParentTransform = { nullptr };
-	CShader*			m_pShaderCom = { nullptr };
-	CModel*				m_pModelCom = { nullptr };
+	class CTransform* m_pParentTransform = { nullptr };
+	CShader* m_pShaderCom = { nullptr };
+	CModel* m_pModelCom = { nullptr };
 
 
 	/* 로컬  */
-	_float4x4*	m_pSpearTip1_Matrix = { nullptr };		//창 날1
-	_float4x4*	m_pSpearTip2_Matrix = { nullptr };		//창 날2
-	_float4x4*	m_pWeaponR_Matrix   = { nullptr };		//손잡이
-	_float4x4*	m_pSpearEnd1_Matrix = { nullptr };		//창 끝1
-	_float4x4*	m_pSpearEnd2_Matrix = { nullptr };		//창 끝2
+	_float4x4* m_pSpearTip1_Matrix = { nullptr };		//창 날1
+	_float4x4* m_pSpearTip2_Matrix = { nullptr };		//창 날2
+	_float4x4* m_pWeaponR_Matrix = { nullptr };		//손잡이
+	_float4x4* m_pSpearEnd1_Matrix = { nullptr };		//창 끝1
+	_float4x4* m_pSpearEnd2_Matrix = { nullptr };		//창 끝2
 
 	/* 월드 (포인터형 아님!!) */
 	_float4x4	m_pSpearTip1_MatrixW;		//창 날1
@@ -79,11 +78,7 @@ private:
 	_float4x4	m_pWeaponR_MatrixW;			//손잡이
 	_float4x4	m_pSpearEnd1_MatrixW;		//창 끝1
 	_float4x4	m_pSpearEnd2_MatrixW;		//창 끝2
-	
 
-
-	_float4x4*			m_SpearFX_WorldMatrix = { nullptr };
-	_float4x4*			m_SpearEndFX_WorldMatrix = { nullptr };
 
 	_uint* m_pParentState = { nullptr };
 	_uint				m_iCurState = {  };
@@ -187,7 +182,7 @@ private:
 	void	Effect11_Enter();		//c 보름달
 	void	Effect11_Exit();
 	void	Effect11_Continue();
-	void    SpaceTime_SpearBlood();	//보름달 창 끝 피 이펙트 진입점
+	void	Effect11_SpearBlood();
 
 	void	Effect12_Enter();		//j  그림자 참격 1 타
 	void	Effect12_Exit();
@@ -204,6 +199,12 @@ private:
 	void	Effect15_Enter();		//n 나선 찌르기소용돌이
 	void	Effect15_Exit();
 	void	Effect15_Continue();
+
+
+
+	private:
+		_uint	EffectID_SpearWind;
+
 
 private:
 	inline void		Add_State(_uint i) { *m_pParentState |= i; }

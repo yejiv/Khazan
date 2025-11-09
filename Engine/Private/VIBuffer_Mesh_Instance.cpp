@@ -1,4 +1,4 @@
-﻿#include "VIBuffer_Mesh_Instance.h"
+#include "VIBuffer_Mesh_Instance.h"
 #include "GameInstance.h"
 #include "ComputeShader.h"
 

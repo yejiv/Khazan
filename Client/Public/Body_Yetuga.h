@@ -65,9 +65,9 @@ private:
 	CTransform*				m_pOwnerTransform = { nullptr };
 
 private:
-	CBody*					m_pRH_BodyCom = { nullptr }; // ø¿∏•º’
-	CBody*					m_pLH_BodyCom = { nullptr }; // øﬁº’
-	CBody*					m_pBack_BodyCom = { nullptr }; // µÓ
+	CBody*					m_pRH_BodyCom = { nullptr }; // Ïò§Î•∏ÏÜê
+	CBody*					m_pLH_BodyCom = { nullptr }; // ÏôºÏÜê
+	CBody*					m_pBack_BodyCom = { nullptr }; // Îì±
 
 private:
 	_float3					m_vThrowPoint = {};

@@ -98,7 +98,7 @@ void CVIBuffer_QuadTrail::Update(deque<QUAD_TRAIL_POINT>& vertices)
 
 HRESULT CVIBuffer_QuadTrail::Render()
 {
-	m_pContext->DrawIndexed(m_iNumDrawIndices, 0, 0);	//Update¿¡¼­ ¸Å¹ø °»½Å
+	m_pContext->DrawIndexed(m_iNumDrawIndices, 0, 0);	//Updateì—ì„œ ë§¤ë²ˆ ê°±ì‹ 
 
 	return S_OK;
 }

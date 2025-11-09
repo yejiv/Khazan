@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Editor_Defines.h"
 #include "Effect_Element.h"
 #include "VIBuffer_Mesh_Instance.h"
@@ -70,7 +70,6 @@ private :
 	PARTICLE_DESC					m_sEditingData;
 	/*Editing data*/
 	_bool							m_bIsMaskScrolling;
-
 	_float							m_fAccTime;
 
 

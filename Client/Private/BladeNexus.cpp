@@ -71,7 +71,7 @@ void CBladeNexus::Late_Update(_float fTimeDelta)
 
 HRESULT CBladeNexus::Render()
 {
-    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources ÇÔ¼ö E_FAIL"), E_FAIL);
+    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources í•¨ìˆ˜ E_FAIL"), E_FAIL);
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -110,9 +110,9 @@ HRESULT CBladeNexus::Ready_Components(void* pArg)
     CHECK_NULLPTR(pDesc, E_FAIL);
 
     LEVEL eLevel = pDesc->eLevel;
-    CHECK_EQUAL_MSG(LEVEL::END, eLevel, TEXT("LAYER ÇÔ¼ö¿¡¼­ LEVEL ¹ÌÀÔ·Â"), E_FAIL);
+    CHECK_EQUAL_MSG(LEVEL::END, eLevel, TEXT("LAYER í•¨ìˆ˜ì—ì„œ LEVEL ë¯¸ì…ë ¥"), E_FAIL);
 
-    // °³º° ½¦ÀÌ´õ »ı¼ºÇÒÁö °í¹Î
+    // ê°œë³„ ì‰ì´ë” ìƒì„±í• ì§€ ê³ ë¯¼
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr), E_FAIL);
 
@@ -124,7 +124,7 @@ HRESULT CBladeNexus::Ready_Components(void* pArg)
 
 HRESULT CBladeNexus::Ready_Collision(void* pArg)
 {
-#pragma region ½ºÅÂÆ½ ¸öÃ¼
+#pragma region ìŠ¤íƒœí‹± ëª¸ì²´
     CBody::BODY_BOXSHAPE_DESC StaticBodyDesc{};
     StaticBodyDesc.vExtent = _float3(0.3f, 1.f, 0.3f);
     StaticBodyDesc.bIsTrigger = false;
@@ -145,7 +145,7 @@ HRESULT CBladeNexus::Ready_Collision(void* pArg)
     StaticBodyDesc.vQuat = vQuat;
     StaticBodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
     m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // ÀÛ¼ºÇÏ±â
+    //pCollDesc.pInfo = ?? // ì‘ì„±í•˜ê¸°
     StaticBodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
@@ -153,7 +153,7 @@ HRESULT CBladeNexus::Ready_Collision(void* pArg)
         return E_FAIL;
 #pragma endregion
 
-#pragma region Æ®¸®°Å ¿µ¿ª
+#pragma region íŠ¸ë¦¬ê±° ì˜ì—­
     CBody::BODY_BOXSHAPE_DESC TriggerDesc{};
     TriggerDesc.vExtent = _float3(2.f, 1.f, 2.f);
     TriggerDesc.bIsTrigger = true;
@@ -171,7 +171,7 @@ HRESULT CBladeNexus::Ready_Collision(void* pArg)
     XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
     TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
     m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // ÀÛ¼ºÇÏ±â
+    //pCollDesc.pInfo = ?? // ì‘ì„±í•˜ê¸°
     TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
@@ -189,7 +189,7 @@ HRESULT CBladeNexus::Ready_Interaction_Guide(void* pArg)
 
     Safe_AddRef(m_pGuide);
 
-    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("Á¢ÃË"), 1.5f);
+    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("ì ‘ì´‰"), 1.5f);
 
     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pGuide);
 
@@ -211,13 +211,13 @@ HRESULT CBladeNexus::Ready_PlaceName(void* pArg)
     switch (m_eBladeNexus_ID)
     {
     case HEINMACH_ENTER:
-        memcpy(m_szPlaceName, TEXT("ÃÊÀÔ"), sizeof(m_szPlaceName));
+        memcpy(m_szPlaceName, TEXT("ì´ˆì…"), sizeof(m_szPlaceName));
         break;
     case HEINMACH_CAVE:
-        memcpy(m_szPlaceName, TEXT("µ¿±¼"), sizeof(m_szPlaceName));
+        memcpy(m_szPlaceName, TEXT("ë™êµ´"), sizeof(m_szPlaceName));
         break;
     case HEINMACH_YETUGA:
-        memcpy(m_szPlaceName, TEXT("¿¹Åõ°¡ Àü"), sizeof(m_szPlaceName));
+        memcpy(m_szPlaceName, TEXT("ì˜ˆíˆ¬ê°€ ì „"), sizeof(m_szPlaceName));
         break;
     }
 
@@ -287,14 +287,14 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
 
     Input_Interact_Event(fTimeDelta);
 
-    if (m_Event.isOn())               // ÄÒ´Ù´Â ½ÅÈ£
+    if (m_Event.isOn())               // ì¼ ë‹¤ëŠ” ì‹ í˜¸
     {
-        // ÇØ±İ Àü IDLE »óÅÂ
+        // í•´ê¸ˆ ì „ IDLE ìƒíƒœ
         if (ANIM_STATE::BEFORE_IDLE == m_eAnimState)
         {
             m_pGuide->Update_Visible(false);
 
-            // Ã³À½ »óÈ£ ÀÛ¿ë ½Ã
+            // ì²˜ìŒ ìƒí˜¸ ì‘ìš© ì‹œ
             m_eAnimState = ANIM_STATE::BEFORE_START;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
@@ -312,15 +312,15 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
 
             InteractType.BNEvent = BNEvent;
 
-            // ±Í°ËÀ» ¹Ù¶óº¼ ¼ö ÀÖµµ·Ï Æ÷Áö¼Ç¸¸ ´øÁü ( ±Í°Ë ¾Ö´Ï¸ŞÀÌ¼Ç ¾ÆÁ÷ Á¾·á X )
+            // ê·€ê²€ì„ ë°”ë¼ë³¼ ìˆ˜ ìˆë„ë¡ í¬ì§€ì…˜ë§Œ ë˜ì§ ( ê·€ê²€ ì• ë‹ˆë©”ì´ì…˜ ì•„ì§ ì¢…ë£Œ X )
             m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
         }
-        // ÇØ±İ ÈÄ IDLE »óÅÂ
+        // í•´ê¸ˆ í›„ IDLE ìƒíƒœ
         else if (ANIM_STATE::AFTER_IDLE == m_eAnimState)
         {
             m_pGuide->Update_Visible(false);
 
-            // 2¹ø ÀÌ»óÀÇ »óÈ£ ÀÛ¿ë ½Ã
+            // 2ë²ˆ ì´ìƒì˜ ìƒí˜¸ ì‘ìš© ì‹œ
             m_eAnimState = ANIM_STATE::AFTER_START;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
@@ -338,11 +338,11 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
 
             InteractType.BNEvent = BNEvent;
 
-            // ±Í°ËÀ» ¹Ù¶óº¼ ¼ö ÀÖµµ·Ï Æ÷Áö¼Ç¸¸ ´øÁü ( ±Í°Ë ¾Ö´Ï¸ŞÀÌ¼Ç ¾ÆÁ÷ Á¾·á X )
+            // ê·€ê²€ì„ ë°”ë¼ë³¼ ìˆ˜ ìˆë„ë¡ í¬ì§€ì…˜ë§Œ ë˜ì§ ( ê·€ê²€ ì• ë‹ˆë©”ì´ì…˜ ì•„ì§ ì¢…ë£Œ X )
             m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
         }
     }
-    else if (m_Event.isOff())         // ²ö´Ù´Â ½ÅÈ£ ( ³»°¡ ¹Ş±â¸¸ ÇÏ¸é µÊ
+    else if (m_Event.isOff())         // ëˆë‹¤ëŠ” ì‹ í˜¸ ( ë‚´ê°€ ë°›ê¸°ë§Œ í•˜ë©´ ë¨
     {
         if (ANIM_STATE::BEFORE_LOOP == m_eAnimState)
         {
@@ -361,13 +361,13 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
 
 void CBladeNexus::Animation_Change(_float fTimeDelta)
 {
-    // ±Í°Ë °¡µ¿ ³¡³ª¸é ( Ã¹ ÇØ±İ O )
-    if (ANIM_STATE::BEFORE_START == m_eAnimState)       // BEFORE_START °¡ ³¡³ª¸é BEFORE_LOOP ( ÇÃ·¹ÀÌ¾î°¡ UI¶û »óÈ£ ÀÛ¿ë )
+    // ê·€ê²€ ê°€ë™ ëë‚˜ë©´ ( ì²« í•´ê¸ˆ O )
+    if (ANIM_STATE::BEFORE_START == m_eAnimState)       // BEFORE_START ê°€ ëë‚˜ë©´ BEFORE_LOOP ( í”Œë ˆì´ì–´ê°€ UIë‘ ìƒí˜¸ ì‘ìš© )
     {
-        // ±Í°Ë ¾Ö´Ï¸ŞÀÌ¼Ç ³¡³ª¸é ±Í°Ë UI Ã¢ ÆË¾÷
+        // ê·€ê²€ ì• ë‹ˆë©”ì´ì…˜ ëë‚˜ë©´ ê·€ê²€ UI ì°½ íŒì—…
         static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(CUI_BladeNexus::ONTYPE::DEFAULT, m_szPlaceName);
 
-        // Ã³À½ »óÈ£ ÀÛ¿ë ÈÄ ¾Ö´Ï¸ŞÀÌ¼Ç ·çÇÁ·Î ÀüÈ¯ ¹× ÀÌº¥Æ® ¹ß»ı
+        // ì²˜ìŒ ìƒí˜¸ ì‘ìš© í›„ ì• ë‹ˆë©”ì´ì…˜ ë£¨í”„ë¡œ ì „í™˜ ë° ì´ë²¤íŠ¸ ë°œìƒ
         m_eAnimState = ANIM_STATE::BEFORE_LOOP;
         m_pModelCom->Set_Animation(ANIM_STATE::BEFORE_LOOP);
         m_pModelCom->Set_AnimationLoop(true);
@@ -381,38 +381,38 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
 
         XMStoreFloat3(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
         BNEvent.isUnLock = true;
-        BNEvent.isBNOpened = true;              // ÀÌÁ¦ ±Í°Ë UI ¿­¸®°Ô
+        BNEvent.isBNOpened = true;              // ì´ì œ ê·€ê²€ UI ì—´ë¦¬ê²Œ
 
         InteractType.BNEvent = BNEvent;
 
-        // ±Í°ËÀ» ¹Ù¶óº¼ ¼ö ÀÖµµ·Ï Æ÷Áö¼Ç¸¸ ´øÁü ( ±Í°Ë ¾Ö´Ï¸ŞÀÌ¼Ç Á¾·á O, UI Ã¢ ÆË¾÷? )
+        // ê·€ê²€ì„ ë°”ë¼ë³¼ ìˆ˜ ìˆë„ë¡ í¬ì§€ì…˜ë§Œ ë˜ì§ ( ê·€ê²€ ì• ë‹ˆë©”ì´ì…˜ ì¢…ë£Œ O, UI ì°½ íŒì—…? )
         m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 
         m_Event.None();
     }
-    // ±Í°Ë »óÈ£ ÀÛ¿ë Á¾·á ÈÄ ( Ã¹ ÇØ±İ O )
+    // ê·€ê²€ ìƒí˜¸ ì‘ìš© ì¢…ë£Œ í›„ ( ì²« í•´ê¸ˆ O )
     if (ANIM_STATE::BEFORE_END == m_eAnimState)
     {
         if (true == m_isCollision)
             m_pGuide->Update_Visible(true);
 
-        // Ã³À½ »óÈ£ ÀÛ¿ëÀÌ ³¡³­ ÈÄ After Idle »óÅÂ·Î ÀüÈ¯
+        // ì²˜ìŒ ìƒí˜¸ ì‘ìš©ì´ ëë‚œ í›„ After Idle ìƒíƒœë¡œ ì „í™˜
         m_eAnimState = ANIM_STATE::AFTER_IDLE;
         m_pModelCom->Set_Animation(ANIM_STATE::AFTER_IDLE);
         m_pModelCom->Set_AnimationLoop(true);
 
         m_Event.None();
 
-        // Ã¹ ÇØ±İ ÈÄ Á¢ÃË -> °á¼Ó À¸·Î º¯°æ
-        m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("°á¼Ó"), 1.5f);
+        // ì²« í•´ê¸ˆ í›„ ì ‘ì´‰ -> ê²°ì† ìœ¼ë¡œ ë³€ê²½
+        m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("ê²°ì†"), 1.5f);
     }
-    // ±Í°Ë °¡µ¿ ³¡³ª¸é ( Ã¹ ÇØ±İ X )
+    // ê·€ê²€ ê°€ë™ ëë‚˜ë©´ ( ì²« í•´ê¸ˆ X )
     if (ANIM_STATE::AFTER_START == m_eAnimState)
     {
-        // ±Í°Ë ¾Ö´Ï¸ŞÀÌ¼Ç ³¡³ª¸é ±Í°Ë UI Ã¢ ÆË¾÷
-        static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(CUI_BladeNexus::ONTYPE::DEFAULT, TEXT("ÇÏÀÎ¸¶Èå ±¸¼®Áø À¸½»ÇÑ ¾î¶°ÇÑ °÷"));
+        // ê·€ê²€ ì• ë‹ˆë©”ì´ì…˜ ëë‚˜ë©´ ê·€ê²€ UI ì°½ íŒì—…
+        static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(CUI_BladeNexus::ONTYPE::DEFAULT, TEXT("í•˜ì¸ë§ˆí êµ¬ì„ì§„ ìœ¼ìŠ¥í•œ ì–´ë– í•œ ê³³"));
 
-        // ´ÙÈ¸ »óÈ£ ÀÛ¿ë ÈÄ ¾Ö´Ï¸ŞÀÌ¼Ç ·çÇÁ·Î ÀüÈ¯
+        // ë‹¤íšŒ ìƒí˜¸ ì‘ìš© í›„ ì• ë‹ˆë©”ì´ì…˜ ë£¨í”„ë¡œ ì „í™˜
         m_eAnimState = ANIM_STATE::AFTER_LOOP;
         m_pModelCom->Set_Animation(ANIM_STATE::AFTER_LOOP);
         m_pModelCom->Set_AnimationLoop(true);
@@ -426,22 +426,22 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
 
         XMStoreFloat3(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
         BNEvent.isUnLock = false;
-        BNEvent.isBNOpened = true;              // ÀÌÁ¦ ±Í°Ë UI ¿­¸®°Ô
+        BNEvent.isBNOpened = true;              // ì´ì œ ê·€ê²€ UI ì—´ë¦¬ê²Œ
 
         InteractType.BNEvent = BNEvent;
 
-        // ±Í°ËÀ» ¹Ù¶óº¼ ¼ö ÀÖµµ·Ï Æ÷Áö¼Ç¸¸ ´øÁü ( ±Í°Ë ¾Ö´Ï¸ŞÀÌ¼Ç Á¾·á O, UI Ã¢ ÆË¾÷? )
+        // ê·€ê²€ì„ ë°”ë¼ë³¼ ìˆ˜ ìˆë„ë¡ í¬ì§€ì…˜ë§Œ ë˜ì§ ( ê·€ê²€ ì• ë‹ˆë©”ì´ì…˜ ì¢…ë£Œ O, UI ì°½ íŒì—…? )
         m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 
         m_Event.None();
     }
-    // ±Í°Ë »óÈ£ ÀÛ¿ë Á¾·á ÈÄ ( Ã¹ ÇØ±İ X )
+    // ê·€ê²€ ìƒí˜¸ ì‘ìš© ì¢…ë£Œ í›„ ( ì²« í•´ê¸ˆ X )
     if (ANIM_STATE::AFTER_END == m_eAnimState)
     {
         if (true == m_isCollision)
             m_pGuide->Update_Visible(true);
 
-        // ´ÙÈ¸ »óÈ£ ÀÛ¿ëÀÌ ³¡³­ ÈÄ After Idle »óÅÂ·Î ÀüÈ¯
+        // ë‹¤íšŒ ìƒí˜¸ ì‘ìš©ì´ ëë‚œ í›„ After Idle ìƒíƒœë¡œ ì „í™˜
         m_eAnimState = ANIM_STATE::AFTER_IDLE;
         m_pModelCom->Set_Animation(ANIM_STATE::AFTER_IDLE);
         m_pModelCom->Set_AnimationLoop(true);
@@ -452,6 +452,9 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
 
 void CBladeNexus::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
+     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+        return;
+
     if (ANIM_STATE::AFTER_IDLE == m_eAnimState || ANIM_STATE::BEFORE_IDLE == m_eAnimState)
         m_pGuide->Update_Visible(true);
 
@@ -460,11 +463,17 @@ void CBladeNexus::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer
 
 void CBladeNexus::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+        return;
+
     m_isCollision = true;
 }
 
 void CBladeNexus::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 {
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+        return;
+
     m_pGuide->Update_Visible(false);
 
     m_isCollision = false;

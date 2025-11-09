@@ -20,28 +20,28 @@ public:
 	HRESULT						Initialize();
 	void						UIObjectToRenderer();
 
-	//Fade ∞¸∑√
+	//Fade Í¥ÄÎ†®
 	void						Fade_In(function<void()> FadeEvent);
 	void						Fade_Out(function<void()> FadeEvent);
 	_bool						Fade_End();
 
-	//UI ∞¸∑√
+	//UI Í¥ÄÎ†®
 	CUIObject*					Get_RootUI(const _wstring& szRootUIName);
 	HRESULT						UI_UpdateSwitch(const _wstring& szRootUIName, void* pArg);
 	HRESULT						Add_RootUI(const _wstring& szRootUIName, CUIObject* pUIObject);
 
-	//Event ∞¸∑√
+	//Event Í¥ÄÎ†®
 	HRESULT						Add_Event(const _wstring& strLayerTag, const _wstring& strEventTag, std::function<void()> Event);
 	HRESULT						Add_ParamEvent(const _wstring& strLayerTag, const _wstring& strEventTag, std::function<void(void*)> Event);
 	function<void()>			Pop_Event(const _wstring& strLayerTag, const _wstring& strEventTag);
 	function<void(void*)>		Pop_ParamEvent(const _wstring& strLayerTag, const _wstring& strEventTag);
 	HRESULT						Erase_EventLayer(const _wstring& strLayerTag);
 
-	//∑ŒµÂ
+	//Î°úÎìú
 	HRESULT						Load_UIData(_uint iLayerLevelID, const _wstring& strLayerTag, _uint iPrototypeLevelID, const _tchar* pFilePath);
 	CUIObject*					Load_UIObject(_uint iPrototypeLevelID, const _tchar* pFilePath);
 
-	//∑£¥ı ∞¸∑√
+	//ÎûúÎçî Í¥ÄÎ†®
 	HRESULT						Add_UIRender(UI_RENDER_TYPE eRender, CUIObject* pUIObject);
 	
 	//ETC
