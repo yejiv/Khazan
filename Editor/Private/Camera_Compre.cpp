@@ -136,7 +136,7 @@ void CCamera_Compre::Update_Spring(_float fTimeDelta)
 
     //if (m_CCDesc.isValid)
     //{
-    //    // push-out: x += n * max(0, (n¡¤c + (r+skin) - n¡¤x))
+    //    // push-out: x += n * max(0, (nÂ·c + (r+skin) - nÂ·x))
     //    const _float fInflate = m_fRadius + m_fSkin;
     //    _vector vN = XMVectorSet(m_CCDesc.vNormal.x, m_CCDesc.vNormal.y, m_CCDesc.vNormal.z, 0.f);
     //    _vector vCpt = XMVectorSet(m_CCDesc.vPoint.x, m_CCDesc.vPoint.y, m_CCDesc.vPoint.z, 0.f);
@@ -148,7 +148,7 @@ void CCamera_Compre::Update_Spring(_float fTimeDelta)
     //    if (fS > 0.f)
     //        vCamPos = XMVectorMultiplyAdd(vN, XMVectorReplicate(fS), vCamPos);
 
-    //    // slide: V ¡ç V - n(n¡¤V)  (Ç¥¸é µû¶ó°¡±â)
+    //    // slide: V â† V - n(nÂ·V)  (í‘œë©´ ë”°ë¼ê°€ê¸°)
     //    _vector vMove = XMVectorSubtract(vCamPos, vCamPosPrev);
     //    _float  fVn = XMVectorGetX(XMVector3Dot(vMove, vN));
     //    if (fVn < 0.f)
@@ -157,7 +157,7 @@ void CCamera_Compre::Update_Spring(_float fTimeDelta)
     //        vCamPos = XMVectorAdd(vCamPosPrev, vMove);
     //    }
 
-    //    // (¼±ÅÃ) ÇÑ ÇÁ·¹ÀÓ¸¸ ¾²°í ³¡³»°í ½ÍÀ¸¸é ÁÖ¼® ÇØÁ¦
+    //    // (ì„ íƒ) í•œ í”„ë ˆì„ë§Œ ì“°ê³  ëë‚´ê³  ì‹¶ìœ¼ë©´ ì£¼ì„ í•´ì œ
     //     //m_CCDesc.isValid = false;
     //}
     //else

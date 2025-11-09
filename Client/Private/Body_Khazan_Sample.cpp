@@ -1,4 +1,4 @@
-﻿#include "Body_Khazan_Sample.h"
+#include "Body_Khazan_Sample.h"
 #include "Khazan_Sample.h"
 #include "GameInstance.h"
 #include "MeshTrail.h"
@@ -45,7 +45,6 @@ HRESULT CBody_Khazan_Sample::Initialize_Clone(void* pArg)
         return E_FAIL;
 
 
-
     m_pModelCom->Set_Animation(5);
     /* 부모 트랜스폼 연결 */
     m_pModelCom->Set_OwnerTransform(&m_pParentTransform);
@@ -72,9 +71,11 @@ HRESULT CBody_Khazan_Sample::Initialize_Clone(void* pArg)
     m_pSpearEnd2_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R_Spear_End02");
 
 
+
     /*if (FAILED(Ready_Collider()))
         return E_FAIL;*/
     // m_SpearOffset_Matrix = XMMatrixRotationX(XMConvertToRadians(-90.0f));
+
 
     return S_OK;
 }
@@ -162,6 +163,7 @@ void CBody_Khazan_Sample::Update(_float fTimeDelta)
     Update_CombinedMatrix();
 
     //Update_Collider(fTimeDelta);
+
 
 
     m_pTrail->Update(fTimeDelta);
@@ -571,7 +573,6 @@ HRESULT CBody_Khazan_Sample::Ready_Collider()
         BodyDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
         BodyDesc.eShapeType = SHAPE::SPHERE;
         BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER); // 추후에 Enum Monster attack 변경 할수도
-
         XMStoreFloat4x4(&m_pSpearTip2_MatrixW, /*m_pTransformCom->Get_WorldMatrix() * */XMLoadFloat4x4(m_pSpearTip2_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
         _vector vScale, vQuat, vTrans;
         XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_pSpearTip2_MatrixW));
@@ -592,7 +593,6 @@ HRESULT CBody_Khazan_Sample::Ready_Collider()
         BodyDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
         BodyDesc.eShapeType = SHAPE::SPHERE;
         BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER); // 추후에 Enum Monster attack 변경 할수도
-
         XMStoreFloat4x4(&m_pWeaponR_MatrixW, /*m_pTransformCom->Get_WorldMatrix() **/ XMLoadFloat4x4(m_pWeaponR_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
         _vector vScale, vQuat, vTrans;
         XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_pWeaponR_MatrixW));
@@ -653,6 +653,7 @@ HRESULT CBody_Khazan_Sample::Ready_Collider()
 void CBody_Khazan_Sample::Update_Collider(_float fTimeDelta)
 {
     /////////////-----------------------------------------------------------
+
 
     XMStoreFloat4x4(&m_pSpearTip1_MatrixW, XMLoadFloat4x4(m_pSpearTip1_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
     _vector vOutQuat, vOutPos;

@@ -12,7 +12,7 @@ NS_BEGIN(Client)
 class CUI_BackGround final : public CUI_Texture
 {
 public:
-	enum class UIBGTYPE { MAIN, ITEM, BLADENEXUS, STATE, LOADING, END  };
+	enum class UIBGTYPE { MAIN, ITEM, BLADENEXUS, STATE, LOADING,DEFAULT, END  };
 private:
 	CUI_BackGround(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CUI_BackGround(const CUI_BackGround& Prototype);

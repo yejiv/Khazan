@@ -1,4 +1,4 @@
-﻿#include "ScreenTrail.h"
+#include "ScreenTrail.h"
 #include "GameInstance.h"
 
 CScreenTrail::CScreenTrail(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)

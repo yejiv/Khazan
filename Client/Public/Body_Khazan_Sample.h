@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Client_Defines.h"
 #include "PartObject.h"
@@ -80,7 +80,6 @@ private:
 	_float4x4	m_pSpearEnd2_MatrixW;		//창 끝2
 
 
-
 	_uint* m_pParentState = { nullptr };
 	_uint				m_iCurState = {  };
 
@@ -95,8 +94,6 @@ private:
 	void Set_EnableBloom(_bool isEnable) { m_isEnableBloom = isEnable; }
 
 	void Set_EmissiveIntensity(_float fIntensity) { m_fEmissiveIntensity = fIntensity; }
-
-
 
 	_float m_fEmissiveIntensity = {};
 	_bool m_isEnableEmissive = {};

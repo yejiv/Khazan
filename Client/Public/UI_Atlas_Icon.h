@@ -23,6 +23,7 @@ public:
 	void					Set_Texture(_float4 vUV, _uint iTexPass);
 	void					Set_Shader(_uint iShaderPass);
 	void					Update_Color(_float4 vColor);
+	void					Update_Color_Child(_float4 vColor);
 
 	_float2					Get_LocalPos() { return m_vLocalPos; }
 

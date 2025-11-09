@@ -167,25 +167,25 @@ HRESULT CMainMenu_List::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID
 	switch (m_eMenuType)
 	{
 	case CUI_MainMenu::MENULIST::WEAPON:
-		szText = TEXT("Àåºñ");
+		szText = TEXT("ì¥ë¹„");
 		break;
 	case CUI_MainMenu::MENULIST::OTHER:
-		szText = TEXT("¼ÒÁöÇ°");
+		szText = TEXT("ì†Œì§€í’ˆ");
 		break;
 	case CUI_MainMenu::MENULIST::SKILL:
-		szText = TEXT("½ºÅ³ Æ®¸®");
+		szText = TEXT("ìŠ¤í‚¬ íŠ¸ë¦¬");
 		break;
 	case CUI_MainMenu::MENULIST::STATE:
-		szText = TEXT("»óÅÂ");
+		szText = TEXT("ìƒíƒœ");
 		break;
 	case CUI_MainMenu::MENULIST::OPTION:
-		szText = TEXT("¼³Á¤");
+		szText = TEXT("ì„¤ì •");
 		break;
 	case CUI_MainMenu::MENULIST::TITLE:
-		szText = TEXT("Å¸ÀÌÆ²·Î ÀÌµ¿");
+		szText = TEXT("íƒ€ì´í‹€ë¡œ ì´ë™");
 		break;
 	case CUI_MainMenu::MENULIST::EXIT:
-		szText = TEXT("°ÔÀÓ Á¾·á");
+		szText = TEXT("ê²Œì„ ì¢…ë£Œ");
 		break;
 	}
 

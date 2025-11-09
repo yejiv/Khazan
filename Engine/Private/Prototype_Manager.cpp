@@ -83,7 +83,7 @@ CBase* CPrototype_Manager::Find_Prototype_ForPreview(_uint iPrototypeLevelIndex,
 
 CBase* CPrototype_Manager::Find_Prototype(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag)
 {
-	/* ÀÌÁøÅ½»ö */
+	/* ì´ì§„íƒìƒ‰ */
 	auto	iter = m_pPrototypes[iPrototypeLevelIndex].find(strPrototypeTag);
 
 	if (iter == m_pPrototypes[iPrototypeLevelIndex].end())

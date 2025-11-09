@@ -40,8 +40,8 @@ private:
 	ID3D11DeviceContext*				m_pContext = { nullptr };
 	class CGameInstance*				m_pGameInstance = { nullptr };
 
-	CASCADE_DATA						m_Cascade = {};		// Cascade ÇÊ¼ö ±¸¼º ¿ä¼Ò
-	CASCADE_CONFIG						m_Config = {};		// Cascade ¼öÄ¡ Á¶Àý¿ë ¼³Á¤ Á¤º¸
+	CASCADE_DATA						m_Cascade = {};		// Cascade í•„ìˆ˜ êµ¬ì„± ìš”ì†Œ
+	CASCADE_CONFIG						m_Config = {};		// Cascade ìˆ˜ì¹˜ ì¡°ì ˆìš© ì„¤ì • ì •ë³´
 
 	_uint								m_iCurrentCascade = {};
 	_float								m_fCameraNear{}, m_fCameraFar{};

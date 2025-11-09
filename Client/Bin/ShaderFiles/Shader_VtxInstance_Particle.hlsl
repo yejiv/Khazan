@@ -79,7 +79,7 @@ struct PS_OUT
     float4 vEmissiveColor : SV_TARGET1; 
 };
 
-float Mask_Scrolling(float2 vLifetime, float2 vTexcoord)    //ÀÌ°Å ¹öÅØ½º ¼ÎÀÌ´õ·Î ³Ñ±â¸é Á» ´õ ÃÖÀûÈ­ °¡´ÉÇÒ µí
+float Mask_Scrolling(float2 vLifetime, float2 vTexcoord)    //ì´ê±° ë²„í…ìŠ¤ ì…°ì´ë”ë¡œ ë„˜ê¸°ë©´ ì¢€ ë” ìµœì í™” ê°€ëŠ¥í•  ë“¯
 {
     float2 maskUV;
     float maskOffset = saturate((vLifetime.x * g_MaskScrollSpeed) / vLifetime.y) - 1.f; // -1 ~ 0
@@ -152,6 +152,10 @@ PS_OUT PS_MAIN(PS_IN In)
     
     //vFinalColor.a *= 0.2f;
     Out.vColor = vFinalColor;
+    Out.vColor.a = 0.01f;
+    
+    //  Out.vColor = float4(0.f, 1.f, 0.f, 0.01f);
+
     //Out.vEmissiveColor = vFinalColor * 3.f;
     //Out.vEmissiveColor.a = 1;
     

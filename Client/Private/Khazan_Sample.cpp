@@ -1,4 +1,4 @@
-﻿#include "Khazan_Sample.h"
+#include "Khazan_Sample.h"
 #include "Body_Khazan_Sample.h"
 #include "Spear_Khazan_Sample.h"
 #include "GameInstance.h"
@@ -185,7 +185,7 @@ void CKhazan_Sample::Late_Update(_float fTimeDelta)
 
 
 
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONLIGHT, this)))
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 
     __super::Late_Update(fTimeDelta);
@@ -399,16 +399,16 @@ void CKhazan_Sample::Update_State(_float fTimeDelta)
         {
             if (m_iFastAttackIndex == 0)
             {
-                m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_FastAtk02"));
-                ++m_iFastAttackIndex;
-            }
-            else if (m_iFastAttackIndex == 1)
-            {
-                m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_FastAtk03_02"));
-                //m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_LightningSpear_Advanced"));
-                m_iFastAttackIndex = 0;
-                Remove_State(ATTACK_FAST);
-            }
+				m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_FastAtk02"));
+				++m_iFastAttackIndex;
+			}
+			else if (m_iFastAttackIndex == 1)
+			{
+				m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_FastAtk03_02"));
+				//m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_LightningSpear_Advanced"));
+				m_iFastAttackIndex = 0;
+				Remove_State(ATTACK_FAST);
+			}
         }
         return;
     }
@@ -531,8 +531,8 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
             m_FastComboIndex = 0;
         }
 
-        Add_State(ATTACK_FAST);
-    }
+		Add_State(ATTACK_FAST);
+	}
 
     if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_X))
     {
@@ -552,6 +552,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
             m_StrongComboIndex++;
         }
         if (isNext && m_StrongComboIndex == 1) {
+            m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk02"));
             m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk02"));
             m_StrongComboIndex++;
         }
@@ -577,6 +578,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk01"));
         m_FastComboIndex = m_StrongComboIndex = 0;
+        m_FastComboIndex = m_StrongComboIndex = 0;
 
         Add_State(ATTACK_STRONG);
     }
@@ -585,6 +587,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         Clear_State();
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Tempest_SpiralSpear"));
+        m_FastComboIndex = m_StrongComboIndex = 0;
         m_FastComboIndex = m_StrongComboIndex = 0;
 
         Add_State(ATTACK_SPIRAL);
@@ -595,6 +598,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Tempest_TwisterSpear"));
         m_FastComboIndex = m_StrongComboIndex = 0;
+        m_FastComboIndex = m_StrongComboIndex = 0;
 
         Add_State(ATTACK_TWISTE);
     }
@@ -603,6 +607,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         Clear_State();
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_PureMind_SeismicKick"));
+        m_FastComboIndex = m_StrongComboIndex = 0;
         m_FastComboIndex = m_StrongComboIndex = 0;
 
         Add_State(ATTACK_STRIKE);
@@ -613,6 +618,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_LowFlying_F"));
         m_FastComboIndex = m_StrongComboIndex = 0;
+        m_FastComboIndex = m_StrongComboIndex = 0;
 
         Add_State(ATTACK_SOON);
     }
@@ -621,6 +627,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         Clear_State();
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Crescent"));
+        m_FastComboIndex = m_StrongComboIndex = 0;
         m_FastComboIndex = m_StrongComboIndex = 0;
 
         Add_State(ATTACK_VITALPOINT);
@@ -631,6 +638,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Tempest_MoonVeil"));
         m_FastComboIndex = m_StrongComboIndex = 0;
+        m_FastComboIndex = m_StrongComboIndex = 0;
 
         Add_State(ATTACK_SHADOW2);
     }
@@ -639,6 +647,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         Clear_State();
         m_isMove = 0;
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_PureMind_TranceSpirit_GrappleAtk01"));
+        m_FastComboIndex = m_StrongComboIndex = 0;
         m_FastComboIndex = m_StrongComboIndex = 0;
 
         Add_State(ATTACK_BRUTAL);
@@ -693,8 +702,8 @@ HRESULT CKhazan_Sample::Ready_PartObjects()
     //m_pBody->Set_matWorldSpearBladeFX(&m_SpearFX_WorldMatrix);
 
     //m_pBody->Set_matWorldSpearEndFX(&m_SpearEndFX_WorldMatrix);
-    return S_OK;
 
+	return S_OK;
 }
 
 HRESULT CKhazan_Sample::Ready_Collision()
@@ -723,7 +732,7 @@ HRESULT CKhazan_Sample::Ready_Collision()
 
     return S_OK;
 }
-#ifdef _DEBUG
+
 inline _bool CKhazan_Sample::Has_States()
 {
     for (_uint i = 0; i < GetBitPosition(CKhazan_Sample::END); ++i)
@@ -734,6 +743,7 @@ inline _bool CKhazan_Sample::Has_States()
     }
     return false;
 }
+
 #ifdef _DEBUG
 void CKhazan_Sample::Debug_Widget()
 {
@@ -1006,7 +1016,7 @@ void CKhazan_Sample::Debug_Widget()
         });
 }
 #endif // _DEBUG
-#endif // _DEBUG
+
 
 CKhazan_Sample* CKhazan_Sample::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {

@@ -9,24 +9,15 @@ CCoolDown_Node::CCoolDown_Node(_float fCoolTime)
 
 BTNODESTATE CCoolDown_Node::Tick(CBlackBoard* BB)
 {
-    //_float fTimeDelta = BB->Get_Value<_float>(m_strName, m_strTag);
     _float fCurrentTime = BB->Get_Value<_float>(m_strName, m_strTag);
-   /* if(m_fCoolTime == 10.f)
-       cout << "m_fElapsed 5HIT  : " << m_fElapsed << endl;*/
-
-   /* if(m_fCoolTime == 5.f)
-        cout << "m_fElapsed 2HIT : " << m_fElapsed << endl;*/
-
-    //m_fElapsed = fTimeDelta;
-
-    // ÄğÅ¸ÀÓ ÁßÀÌ¸é ÀÚ½Ä ½ÇÇà¾ÈÇÏµµ·Ï ¸·´Â´Ù.
+ 
+    // ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½Ú½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â´ï¿½.
     if (m_isCooling)
     {
         m_fElapsed = fCurrentTime - m_fStartTime;
         if (m_fElapsed >= m_fCoolTime)
         {
             m_isCooling = false;
-            //m_fElapsed = 0.f;
         }
         else
         {
@@ -37,7 +28,7 @@ BTNODESTATE CCoolDown_Node::Tick(CBlackBoard* BB)
     if (m_pChild && !m_isCooling)
     {
         BTNODESTATE eState = m_pChild->Tick(BB);
-        // ÀÚ½ÄÀÌ ¼º°øÇÏ¸é ´Ù½Ã ÄğÅ¸ÀÓ µ¹¸®±â
+        // ìì‹ì´ ì„±ê³µí•˜ë©´ ë‹¤ì‹œ ì¿¨íƒ€ì„ ëŒë¦¬ê¸°
         if (BTNODESTATE::SUCCESS == eState)
         {
             m_isCooling = true;

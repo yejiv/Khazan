@@ -17,7 +17,7 @@ CLevel_Title::CLevel_Title(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 HRESULT CLevel_Title::Initialize()
 {
-	/* ÇöÀç ·¹º§À» ±¸¼ºÇØÁÖ±â À§ÇÑ °´Ã¼µéÀ» »ý¼ºÇÑ´Ù. */
+	/* í˜„ìž¬ ë ˆë²¨ì„ êµ¬ì„±í•´ì£¼ê¸° ìœ„í•œ ê°ì²´ë“¤ì„ ìƒì„±í•œë‹¤. */
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
 
@@ -65,7 +65,7 @@ void CLevel_Title::Update(_float fTimeDelta)
 
 HRESULT CLevel_Title::Render()
 {
-	SetWindowText(g_hWnd, TEXT("·Î°í·¹º§ÀÔ´Ï´Ù."));
+	SetWindowText(g_hWnd, TEXT("ë¡œê³ ë ˆë²¨ìž…ë‹ˆë‹¤."));
 
 	return S_OK;
 }
@@ -102,57 +102,57 @@ HRESULT CLevel_Title::Ready_Layer_UI()
 		ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Cursor"), TIME_CHANNEL::WORLD, &Desc)))
 		return E_FAIL;
 
-	//if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
-	//	TEXT("../Bin/Resources/UI/UIData/HUD.json"))))
-	//	return E_FAIL;
-	//
-	//if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
-	//	TEXT("../Bin/Resources/UI/UIData/Inven.json"))))
-	//	return E_FAIL;
-	//
-	//if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
-	//	TEXT("../Bin/Resources/UI/UIData/MainMenu.json"))))
-	//	return E_FAIL;
-	//
-	//if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
-	//	TEXT("../Bin/Resources/UI/UIData/BladeNexus.json"))))
-	//	return E_FAIL;
-	//
-	//if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
-	//	TEXT("../Bin/Resources/UI/UIData/State.json"))))
-	//	return E_FAIL;
-	//
-	//if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
-	//	TEXT("../Bin/Resources/UI/UIData/ItemInfo_Other.json"))))
-	//	return E_FAIL;
-	//
-	//if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
-	//	TEXT("../Bin/Resources/UI/UIData/ItemInfo_Weapon.json"))))
-	//	return E_FAIL;
-	//
-	//if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
-	//	TEXT("../Bin/Resources/UI/UIData/ItemInfo_Equip.json"))))
-	//	return E_FAIL;
-	//
-	//if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
-	//	TEXT("../Bin/Resources/UI/UIData/BossHp.json"))))
-	//	return E_FAIL;
-	//
-	//if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
-	//	TEXT("../Bin/Resources/UI/UIData/HUD_Amount.json"))))
-	//	return E_FAIL;
-	//
-	//if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::TITLE), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::TITLE),
-	//	TEXT("../Bin/Resources/UI/UIData/Logo.json"))))
-	//	return E_FAIL;
-	//
-	//if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
-	//	TEXT("../Bin/Resources/UI/UIData/Tutorial.json"))))
-	//	return E_FAIL;
+	if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+		TEXT("../Bin/Resources/UI/UIData/HUD.json"))))
+		return E_FAIL;
+	
+	if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+		TEXT("../Bin/Resources/UI/UIData/Inven.json"))))
+		return E_FAIL;
+	
+	if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+		TEXT("../Bin/Resources/UI/UIData/MainMenu.json"))))
+		return E_FAIL;
+	
+	if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+		TEXT("../Bin/Resources/UI/UIData/BladeNexus.json"))))
+		return E_FAIL;
+	
+	if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+		TEXT("../Bin/Resources/UI/UIData/State.json"))))
+		return E_FAIL;
+	
+	if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+		TEXT("../Bin/Resources/UI/UIData/ItemInfo_Other.json"))))
+		return E_FAIL;
+	
+	if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+		TEXT("../Bin/Resources/UI/UIData/ItemInfo_Weapon.json"))))
+		return E_FAIL;
+	
+	if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+		TEXT("../Bin/Resources/UI/UIData/ItemInfo_Equip.json"))))
+		return E_FAIL;
+	
+	if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+		TEXT("../Bin/Resources/UI/UIData/BossHp.json"))))
+		return E_FAIL;
+	
+	if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+		TEXT("../Bin/Resources/UI/UIData/HUD_Amount.json"))))
+		return E_FAIL;
+	
+	if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::TITLE), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::TITLE),
+		TEXT("../Bin/Resources/UI/UIData/Logo.json"))))
+		return E_FAIL;
+	
+	if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+		TEXT("../Bin/Resources/UI/UIData/Tutorial.json"))))
+		return E_FAIL;
 
-	//if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
-	//	TEXT("../Bin/Resources/UI/UIData/Skill.json"))))
-	//	return E_FAIL;
+	if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+		TEXT("../Bin/Resources/UI/UIData/Skill.json"))))
+		return E_FAIL;
 	return S_OK;
 }
 

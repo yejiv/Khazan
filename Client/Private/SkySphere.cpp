@@ -56,7 +56,7 @@ void CSkySphere::Late_Update(_float fTimeDelta)
 
 HRESULT CSkySphere::Render()
 {
-    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources ÇÔ¼ö E_FAIL"), E_FAIL);
+    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources í•¨ìˆ˜ E_FAIL"), E_FAIL);
 
     m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4));
 
@@ -87,7 +87,7 @@ HRESULT CSkySphere::Ready_Components(void* pArg)
         TEXT("Com_Model_Sky"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
 
-#pragma region ±¸ ½ºÄ«ÀÌ °ü·Ã ÅØ½ºÃÄµé
+#pragma region êµ¬ ìŠ¤ì¹´ì´ ê´€ë ¨ í…ìŠ¤ì³ë“¤
     /* Prototype_Component_Texture_Sky_Nebula */
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sky_Nebula"),
         TEXT("Com_Texture_Nebula"), reinterpret_cast<CComponent**>(&m_pTextureCom[NEBULA]), nullptr)))

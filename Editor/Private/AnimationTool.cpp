@@ -1,4 +1,4 @@
-﻿#include "AnimationTool.h"
+#include "AnimationTool.h"
 #include "GameInstance.h"
 #include "Editor_Model.h"
 #include "JOH_EditorModelTest.h"

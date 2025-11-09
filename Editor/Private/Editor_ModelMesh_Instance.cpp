@@ -43,17 +43,17 @@ HRESULT CEditor_ModelMesh_Instance::Initialize_Prototype(MODELTYPE eType, const 
 	HRESULT hr = MODELTYPE::NONANIM == eType ?
 		Ready_Vertices_For_NonAnim(pAIMesh, PreTransformMatrix) : Ready_Vertices_For_Anim(pAIMesh, Bones);
 
-	CHECK_FAILED_MSG(hr, TEXT("Mesh Instance - Ready Vertices ½ÇÆÐ"), E_FAIL);
+	CHECK_FAILED_MSG(hr, TEXT("Mesh Instance - Ready Vertices ì‹¤íŒ¨"), E_FAIL);
 
 #pragma endregion
 
 #pragma region INDEX_SETTING
 
-	CHECK_FAILED_MSG(Ready_Indices(pAIMesh), TEXT("Mesh Instance - Ready Indices ½ÇÆÐ"), E_FAIL);
+	CHECK_FAILED_MSG(Ready_Indices(pAIMesh), TEXT("Mesh Instance - Ready Indices ì‹¤íŒ¨"), E_FAIL);
 
 #pragma endregion
 
-#pragma region ÆÄÀÏ ÀÔÃâ·Â¿ë
+#pragma region íŒŒì¼ ìž…ì¶œë ¥ìš©
 
 	m_Mesh_Data.iMaterialIndex		= m_iMaterialIndex;
 	m_Mesh_Data.iNumVertices		= m_iNumVertices;
@@ -190,13 +190,13 @@ HRESULT CEditor_ModelMesh_Instance::Ready_Vertices_For_Anim(const aiMesh* pAIMes
 		m_pVertexPositions[i] = pVertices[i].vPosition;
 	}
 
-	// ÀÌ ¸Å½¬¿¡ ¿µÇâÀ» ÁÖ´Â »ÀµéÀÇ °¹¼ö
+	// ì´ ë§¤ì‰¬ì— ì˜í–¥ì„ ì£¼ëŠ” ë¼ˆë“¤ì˜ ê°¯ìˆ˜
 	m_iNumBones = pAIMesh->mNumBones;
 
-	/* ÀÌ ¸Þ½Ã¿¡ ¿µÇâÀ» ÁÖ´Â »ÀµéÀ» ÇÏ³ª¾¿ ¼øÈ¸ÇÒ°Í */
+	/* ì´ ë©”ì‹œì— ì˜í–¥ì„ ì£¼ëŠ” ë¼ˆë“¤ì„ í•˜ë‚˜ì”© ìˆœíšŒí• ê²ƒ */
 	for (_uint i = 0; i < m_iNumBones; ++i)
 	{
-		/* i¹øÂ° »À°¡ ¿µÇâÀ» ÁÖ´Â Á¤Á¡ÀÇ °¹¼ö */
+		/* ië²ˆì§¸ ë¼ˆê°€ ì˜í–¥ì„ ì£¼ëŠ” ì •ì ì˜ ê°¯ìˆ˜ */
 		aiBone* pAIBone = pAIMesh->mBones[i];
 
 		_float4x4	OffsetMatrix;
@@ -225,7 +225,7 @@ HRESULT CEditor_ModelMesh_Instance::Ready_Vertices_For_Anim(const aiMesh* pAIMes
 		{
 			aiVertexWeight	AIVertexWeight = pAIBone->mWeights[j];
 
-			/* i¹øÂ° »À°¡ ¿µÇâÀ» ÁÖ´Â j¹øÂ° Á¤Á¡ÀÇ Á¤Á¡¹öÆÛ»óÀÇ ÀÎµ¦½º */
+			/* ië²ˆì§¸ ë¼ˆê°€ ì˜í–¥ì„ ì£¼ëŠ” jë²ˆì§¸ ì •ì ì˜ ì •ì ë²„í¼ìƒì˜ ì¸ë±ìŠ¤ */
 			if (0.f == pVertices[AIVertexWeight.mVertexId].vBlendWeight.x)
 			{
 				pVertices[AIVertexWeight.mVertexId].vBlendIndex.x = i;

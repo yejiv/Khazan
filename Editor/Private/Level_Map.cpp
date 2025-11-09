@@ -41,13 +41,14 @@ void CLevel_Map::Update(_float fTimeDelta)
 	Select_Multi_Fix_Object(fTimeDelta);
 	Select_Add_LightPoint(fTimeDelta);
 	Measure_Distance(fTimeDelta);
+	Update_MultiFix(fTimeDelta);
 
 	return;
 }
 
 HRESULT CLevel_Map::Render()
 {
-	SetWindowText(g_hWnd, TEXT("¸Ê Åø"));
+	SetWindowText(g_hWnd, TEXT("ë§µ íˆ´"));
 
 	return S_OK;
 }
@@ -240,12 +241,10 @@ void CLevel_Map::Select_Fix_Object(_float fTimeDelta)
 
 void CLevel_Map::Select_Multi_Fix_Object(_float fTimeDelta)
 {
-	return;
-
-	if (true == m_isFixObjectWindow)
+	if (true == m_isFixObjectWindow || false == m_isMultiFixWindow)
 		return;
 
-	if (m_pGameInstance->Key_Pressing(DIK_F2, fTimeDelta) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+	if (m_pGameInstance->Key_Pressing(DIK_F8, fTimeDelta) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
 	{
 		_float3 vPosition = {};
 		_uint iObjectID = {};
@@ -258,45 +257,22 @@ void CLevel_Map::Select_Multi_Fix_Object(_float fTimeDelta)
 				{
 					if (iObjectID == pObject->Get_MapObjectID())
 					{
-						if (0 == m_MultiFixObjList.size())
+						// ì´ë¯¸ ë¦¬ìŠ¤íŠ¸ì— ì¡´ì¬í•˜ëŠ”ì§€ í™•ì¸
+						auto iter = std::find(m_MultiFixList.begin(), m_MultiFixList.end(), pObject);
+						if (iter == m_MultiFixList.end())
 						{
-							m_pFixPropObj = pObject;
-							m_pFixTransformCom = static_cast<CTransform*>(pObject->Get_Component(TEXT("Com_Transform")));
-							CHECK_NULLPTR_MSG(m_pFixTransformCom, TEXT("Fix Transform == nullptr"), );
+							m_MultiFixList.push_back(pObject);
 
-							m_FixBaseMatrix = XMMatrixIdentity();
+							if (m_MultiFixList.size() == 1)
+								m_pParentFixObject = pObject; // ì²« ë²ˆì§¸ëŠ” ë¶€ëª¨ë¡œ ì„¤ì •
 
-							ZeroMemory(&m_vFixScale, sizeof(_float3));
-							ZeroMemory(&m_vFixRotation, sizeof(_float3));
-							ZeroMemory(&m_vFixPosition, sizeof(_float3));
-
-							m_vFixScale = m_pFixTransformCom->Get_Scaled();
-							XMStoreFloat3(&m_vFixPosition, m_pFixTransformCom->Get_State(STATE::POSITION));
-
-							m_FixBaseMatrix = m_FixWorldMatrix = m_pFixTransformCom->Get_WorldMatrix();
-
-							// ======================================================
-							// ======================================================
-
-							m_iSubLevel = m_pFixPropObj->Get_SubLevel();
-
-							m_isFixObjectWindow = true;
-							m_eFixType = FIX_OBJECT::FIX;
-
-#ifdef _DEBUG
-							m_pGameInstance->Set_GizmoObject(m_pFixPropObj);
-#endif // _DEBUG
-
-							m_MultiFixObjList.push_back(m_pFixPropObj);
+							_wstring msg = TEXT("[MultiFix] Selected: ");
+							msg += pObject->Get_ModelName();
+							OutputDebugString(msg.c_str());
 						}
 						else
 						{
-							auto pFound = find(m_MultiFixObjList.begin(), m_MultiFixObjList.end(), pObject);
-
-							if (pFound == m_MultiFixObjList.end())
-							{
-								m_MultiFixObjList.push_back(pObject);
-							}
+							OutputDebugString(TEXT("[MultiFix] Already in list.\n"));
 						}
 
 						return;
@@ -347,6 +323,44 @@ void CLevel_Map::Measure_Distance(_float fTimeDelta)
 	m_fDistance = XMVectorGetX(XMVector3Length(XMLoadFloat3(&m_vDistancePos[0]) - XMLoadFloat3(&m_vDistancePos[1])));
 }
 
+void CLevel_Map::Update_MultiFix(_float fTimeDelta)
+{
+	if (false == m_isMultiFix)
+		return;
+
+	CTransform* pParentTransform = static_cast<CTransform*>(m_pParentFixObject->Get_Component(TEXT("Com_Transform")));
+	CHECK_NULLPTR_MSG(pParentTransform, TEXT("ë¶€ëª¨ ë©€í‹° íŠ¸ëœìŠ¤í¼ ë„ í”¼ í‹° ì•Œ"), );
+
+	_float4x4 matParent = *pParentTransform->Get_WorldMatrixPtr();
+	_float4x4 matBefore = m_matParentBefore;
+	
+	_bool isChanged = { false };
+
+	for (_uint i = 0; i < 4; ++i)
+	{
+		for (_uint j = 0; j < 4; ++j)
+		{
+			if (matParent.m[i][j] != matBefore.m[i][j])
+			{
+				isChanged = true;
+			}
+		}
+	}
+
+	// í–‰ë ¬ì´ ë‹¬ë¼ì¡Œë‹¤ë©´
+	if (isChanged)
+	{
+		for (auto& info : m_MultiFixRelatives)
+		{
+			_matrix matLocal = XMLoadFloat4x4(&info.RelativeMatrix);
+			_matrix matWorld = matLocal * XMLoadFloat4x4(&matParent);
+			info.pTransform->Set_WorldMatrix(matWorld);
+		}
+
+		m_matParentBefore = matParent;
+	}
+}
+
 HRESULT CLevel_Map::Ready_DefaultImGui_For_MapTool()
 {
 	CHECK_FAILED(Ready_Main_Window(), E_FAIL);
@@ -368,6 +382,8 @@ HRESULT CLevel_Map::Ready_DefaultImGui_For_MapTool()
 	CHECK_FAILED(Ready_Object_SaveLoad_Window(), E_FAIL);
 
 	CHECK_FAILED(Ready_SkySphere_Window(), E_FAIL);
+
+	CHECK_FAILED(Ready_MultiFix_Window(), E_FAIL);
 
 	return S_OK;
 }
@@ -472,6 +488,7 @@ HRESULT CLevel_Map::Ready_Main_Window()
 
 				SEPARATOR;
 
+				ImGui::Text("CUBE COLLIDER RENDER");
 				if (ImGui::Button("CUBE WIRE FRAME") || m_pGameInstance->Key_Down(DIK_TAB))
 				{
 					for (auto& pProp : m_ObjectList)
@@ -494,6 +511,9 @@ HRESULT CLevel_Map::Ready_Main_Window()
 				}
 
 				SEPARATOR;
+
+				ImGui::Text("MULTI FIX WINDOW");
+				if (ImGui::Button("ON/OFF")) m_isMultiFixWindow = !m_isMultiFixWindow;
 
 				ImGui::Text("LIGHT");
 				if (ImGui::Button("LIGHT EDIT"))
@@ -614,12 +634,12 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 			if (ImGui::BeginListBox("##prototype_object_list"))
 			{
 				string strSearchName = m_szSearchPrototypeName;
-				transform(strSearchName.begin(), strSearchName.end(), strSearchName.begin(), ::tolower);		// °Ë»öÇÒ ¸ğµ¨À» ¼Ò¹®ÀÚ·Î º¯È¯
+				transform(strSearchName.begin(), strSearchName.end(), strSearchName.begin(), ::tolower);		// ê²€ìƒ‰í•  ëª¨ë¸ì„ ì†Œë¬¸ìë¡œ ë³€í™˜
 
 				for (_uint i = 0; i < m_Prototypes_Obj.size(); ++i)
 				{
 					string strModelName = m_Prototypes_Obj[i];
-					transform(strModelName.begin(), strModelName.end(), strModelName.begin(), ::tolower);		// Ã£À» ¸ğµ¨À» ¼Ò¹®ÀÚ·Î º¯È¯
+					transform(strModelName.begin(), strModelName.end(), strModelName.begin(), ::tolower);		// ì°¾ì„ ëª¨ë¸ì„ ì†Œë¬¸ìë¡œ ë³€í™˜
 
 					if (true == strSearchName.empty() || strModelName.find(strSearchName) != string::npos)
 					{
@@ -631,7 +651,7 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 							CProp_Preview* pProp = static_cast<CProp_Preview*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_Preview")));
 							if (nullptr == pProp)
 							{
-								OutputDebugStringA("ÇÁ¸®ºä == nullptr");
+								OutputDebugStringA("í”„ë¦¬ë·° == nullptr");
 							}
 							else
 							{
@@ -696,7 +716,7 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 				//ImGui::Text("INSTANCE NUM : "); SAMELINE;
 				//ImGui::InputInt("##instancing_count", &m_iNumInstance);
 
-				// ÀÎ½ºÅÏ½ºÀÏ¶§, ¹İÁö¸§, ±× ¾È¿¡ »ı±æ ÀÎ½ºÅÏ½Ì ¸ğµ¨ÀÇ °³¼ö ³Ñ±â°í ·£´ıÇÏ°Ô »ı±â°Ô
+				// ì¸ìŠ¤í„´ìŠ¤ì¼ë•Œ, ë°˜ì§€ë¦„, ê·¸ ì•ˆì— ìƒê¸¸ ì¸ìŠ¤í„´ì‹± ëª¨ë¸ì˜ ê°œìˆ˜ ë„˜ê¸°ê³  ëœë¤í•˜ê²Œ ìƒê¸°ê²Œ
 			}
 			else if (false == m_AddObjectProperties.isInstance)
 				m_isRandomRotation = false;
@@ -704,7 +724,7 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 			ImGui::Text("PUT SUB LEVEL : ");
 			ImGui::InputInt("##input_sub_level", &m_iAddSubLevel); SEPARATOR;
 
-			// ´ÜÀÏ ¿ÀºêÁ§Æ® Layer Ãß°¡
+			// ë‹¨ì¼ ì˜¤ë¸Œì íŠ¸ Layer ì¶”ê°€
 			if (false == m_isLightSettingWindow && false == m_isFixObjectWindow && false == m_isFixInteractObjectWindow &&
 				(ImGui::Button("ADD OBJECT (Y)") || m_pGameInstance->Key_Down(DIK_Y)))
 			{
@@ -747,7 +767,7 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 					WorldMatrix = XMMatrixRotationY(fRandomRadian_Y);
 				}
 
-				// ½ºÄÉÀÏ ±âÁ¸ 0.005f, À§Ä¡´Â ¸¶¿ì½º ÇÇÅ· À§Ä¡ È¤Àº Ä«¸Ş¶ó À§Ä¡
+				// ìŠ¤ì¼€ì¼ ê¸°ì¡´ 0.005f, ìœ„ì¹˜ëŠ” ë§ˆìš°ìŠ¤ í”¼í‚¹ ìœ„ì¹˜ í˜¹ì€ ì¹´ë©”ë¼ ìœ„ì¹˜
 				WorldMatrix.r[0] *= m_fAddScale;
 				WorldMatrix.r[1] *= m_fAddScale;
 				WorldMatrix.r[2] *= m_fAddScale;
@@ -763,7 +783,7 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"), TIME_CHANNEL::WORLD, &ObjectDesc), );
 
 				CProp* pObject_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj")));
-				CHECK_NULLPTR_MSG(pObject_Prop, TEXT("¿¨"), );
+				CHECK_NULLPTR_MSG(pObject_Prop, TEXT("ì—¥"), );
 
 				if (pObject_Prop->Get_Properties().isCollider && pObject_Prop->Get_Properties().isBackGround)
 					pObject_Prop->Set_ShaderPass(m_iRenderFrame);
@@ -814,7 +834,7 @@ HRESULT CLevel_Map::Ready_Prototype_List_Window()
 
 HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 {
-	// ÀÌÂ¦¿¡ Ãß°¡µÉ »óÈ£ÀÛ¿ëµé ·Î´õ¿¡µµ ³Ö°í ¿©Â¦¿¡µµ ³Ö°í ( ÅÂ±× µŞºÎºĞ¸¸ )
+	// ì´ì§ì— ì¶”ê°€ë  ìƒí˜¸ì‘ìš©ë“¤ ë¡œë”ì—ë„ ë„£ê³  ì—¬ì§ì—ë„ ë„£ê³  ( íƒœê·¸ ë’·ë¶€ë¶„ë§Œ )
 	m_Prototypes_Inter.push_back("BladeNexus");
 	m_Prototypes_Inter.push_back("BigChest");
 	m_Prototypes_Inter.push_back("TombStone");
@@ -885,18 +905,18 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 				WorldMatrix.r[2] *= 1.f;
 				WorldMatrix.r[3] = XMVectorSetW(XMLoadFloat3(&vPos), 1.f);
 
-#pragma region »óÈ£ ÀÛ¿ë ¿ÀºêÁ§Æ® ·¹ÀÌ¾î »ı¼º
+#pragma region ìƒí˜¸ ì‘ìš© ì˜¤ë¸Œì íŠ¸ ë ˆì´ì–´ ìƒì„±
 				if ("BladeNexus" == m_Prototypes_Inter[m_iIndex_PrtInter])
 				{
 					CBladeNexus::BLADENEXUS_DESC BladeNexusDesc = {};
 
-					BladeNexusDesc.iMapObjectID = m_iMapObjectCnt++;					// »ç½Ç»ó ÀÇ¹Ì X
+					BladeNexusDesc.iMapObjectID = m_iMapObjectCnt++;					// ì‚¬ì‹¤ìƒ ì˜ë¯¸ X
 					BladeNexusDesc.eLevel = LEVEL::MAP;									
-					memcpy(BladeNexusDesc.szModelName, strModelTag.c_str(), sizeof(BladeNexusDesc.szModelName));		// ÇÁ·ÎÅäÅ¸ÀÔ ÅÂ±×¸í
+					memcpy(BladeNexusDesc.szModelName, strModelTag.c_str(), sizeof(BladeNexusDesc.szModelName));		// í”„ë¡œí† íƒ€ì… íƒœê·¸ëª…
 
-					XMStoreFloat4x4(&BladeNexusDesc.WorldMatrix, WorldMatrix);											// Çà·Ä
+					XMStoreFloat4x4(&BladeNexusDesc.WorldMatrix, WorldMatrix);											// í–‰ë ¬
 
-					BladeNexusDesc.eInteractiveType = INTERACTIVE_TYPE::CHECKPOINT;										// »óÈ£ ÀÛ¿ë ¿ÀºêÁ§Æ® Å¸ÀÔ
+					BladeNexusDesc.eInteractiveType = INTERACTIVE_TYPE::CHECKPOINT;										// ìƒí˜¸ ì‘ìš© ì˜¤ë¸Œì íŠ¸ íƒ€ì…
 
 					CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
 						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BladeNexus"), TIME_CHANNEL::WORLD, &BladeNexusDesc), );
@@ -905,43 +925,43 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 				{
 					CBigChest::BIGCHEST_DESC BigChestDesc = {};
 
-					BigChestDesc.iMapObjectID = m_iMapObjectCnt++;					// »ç½Ç»ó ÀÇ¹Ì X
+					BigChestDesc.iMapObjectID = m_iMapObjectCnt++;					// ì‚¬ì‹¤ìƒ ì˜ë¯¸ X
 					BigChestDesc.eLevel = LEVEL::MAP;
-					memcpy(BigChestDesc.szModelName, strModelTag.c_str(), sizeof(BigChestDesc.szModelName));		// ÇÁ·ÎÅäÅ¸ÀÔ ÅÂ±×¸í
+					memcpy(BigChestDesc.szModelName, strModelTag.c_str(), sizeof(BigChestDesc.szModelName));		// í”„ë¡œí† íƒ€ì… íƒœê·¸ëª…
 
-					XMStoreFloat4x4(&BigChestDesc.WorldMatrix, WorldMatrix);										// Çà·Ä
+					XMStoreFloat4x4(&BigChestDesc.WorldMatrix, WorldMatrix);										// í–‰ë ¬
 
-					BigChestDesc.eInteractiveType = INTERACTIVE_TYPE::CHEST;										// »óÈ£ ÀÛ¿ë ¿ÀºêÁ§Æ® Å¸ÀÔ
+					BigChestDesc.eInteractiveType = INTERACTIVE_TYPE::CHEST;										// ìƒí˜¸ ì‘ìš© ì˜¤ë¸Œì íŠ¸ íƒ€ì…
 
 					CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
 						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BigChest"), TIME_CHANNEL::WORLD, &BigChestDesc), );
 				}
-				else if ("TombStone" == m_Prototypes_Inter[m_iIndex_PrtInter]) // »óÈ£ÀÛ¿ë °è¼Ó Ãß°¡ ¿¹Á¤ ( ÀÌ ÇÔ¼ö À§ÂÊµµ )
+				else if ("TombStone" == m_Prototypes_Inter[m_iIndex_PrtInter]) // ìƒí˜¸ì‘ìš© ê³„ì† ì¶”ê°€ ì˜ˆì • ( ì´ í•¨ìˆ˜ ìœ„ìª½ë„ )
 				{
 					CTombStone::TOMBSTONE_DESC TombStoneDesc = {};
 
-					TombStoneDesc.iMapObjectID = m_iMapObjectCnt++;					// »ç½Ç»ó ÀÇ¹Ì X
+					TombStoneDesc.iMapObjectID = m_iMapObjectCnt++;					// ì‚¬ì‹¤ìƒ ì˜ë¯¸ X
 					TombStoneDesc.eLevel = LEVEL::MAP;
-					memcpy(TombStoneDesc.szModelName, strModelTag.c_str(), sizeof(TombStoneDesc.szModelName));		// ÇÁ·ÎÅäÅ¸ÀÔ ÅÂ±×¸í
+					memcpy(TombStoneDesc.szModelName, strModelTag.c_str(), sizeof(TombStoneDesc.szModelName));		// í”„ë¡œí† íƒ€ì… íƒœê·¸ëª…
 
-					XMStoreFloat4x4(&TombStoneDesc.WorldMatrix, WorldMatrix);										// Çà·Ä
+					XMStoreFloat4x4(&TombStoneDesc.WorldMatrix, WorldMatrix);										// í–‰ë ¬
 
-					TombStoneDesc.eInteractiveType = INTERACTIVE_TYPE::TOMBSTONE;										// »óÈ£ ÀÛ¿ë ¿ÀºêÁ§Æ® Å¸ÀÔ
+					TombStoneDesc.eInteractiveType = INTERACTIVE_TYPE::TOMBSTONE;										// ìƒí˜¸ ì‘ìš© ì˜¤ë¸Œì íŠ¸ íƒ€ì…
 
 					CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
 						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_TombStone"), TIME_CHANNEL::WORLD, &TombStoneDesc), );
 				}
-				else if ("Trigger" == m_Prototypes_Inter[m_iIndex_PrtInter]) // »óÈ£ÀÛ¿ë °è¼Ó Ãß°¡ ¿¹Á¤ ( ÀÌ ÇÔ¼ö À§ÂÊµµ )
+				else if ("Trigger" == m_Prototypes_Inter[m_iIndex_PrtInter]) // ìƒí˜¸ì‘ìš© ê³„ì† ì¶”ê°€ ì˜ˆì • ( ì´ í•¨ìˆ˜ ìœ„ìª½ë„ )
 				{
 					CTrigger::TRIGGER_DESC TriggerDesc = {};
 
-					TriggerDesc.iMapObjectID = m_iMapObjectCnt++;					// »ç½Ç»ó ÀÇ¹Ì X
+					TriggerDesc.iMapObjectID = m_iMapObjectCnt++;					// ì‚¬ì‹¤ìƒ ì˜ë¯¸ X
 					TriggerDesc.eLevel = LEVEL::MAP;
-					memcpy(TriggerDesc.szModelName, strModelTag.c_str(), sizeof(TriggerDesc.szModelName));		// ÇÁ·ÎÅäÅ¸ÀÔ ÅÂ±×¸í
+					memcpy(TriggerDesc.szModelName, strModelTag.c_str(), sizeof(TriggerDesc.szModelName));		// í”„ë¡œí† íƒ€ì… íƒœê·¸ëª…
 
-					XMStoreFloat4x4(&TriggerDesc.WorldMatrix, WorldMatrix);										// Çà·Ä
+					XMStoreFloat4x4(&TriggerDesc.WorldMatrix, WorldMatrix);										// í–‰ë ¬
 
-					TriggerDesc.eInteractiveType = INTERACTIVE_TYPE::TRIGGER;										// »óÈ£ ÀÛ¿ë ¿ÀºêÁ§Æ® Å¸ÀÔ
+					TriggerDesc.eInteractiveType = INTERACTIVE_TYPE::TRIGGER;										// ìƒí˜¸ ì‘ìš© ì˜¤ë¸Œì íŠ¸ íƒ€ì…
 
 					CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
 						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Trigger"), TIME_CHANNEL::WORLD, &TriggerDesc), );
@@ -949,7 +969,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 #pragma endregion
 
 				CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));
-				CHECK_NULLPTR_MSG(pInteractive_Prop, TEXT("¿¨"), );
+				CHECK_NULLPTR_MSG(pInteractive_Prop, TEXT("ì—¥"), );
 
 				m_InteractiveList.push_back(pInteractive_Prop);
 
@@ -1036,7 +1056,7 @@ HRESULT CLevel_Map::Ready_Prop_Fix_Window()
 				SEPARATOR;
 			}
 
-#pragma region ¼Ó¼º ¼³Á¤
+#pragma region ì†ì„± ì„¤ì •
 
 			if (m_pGameInstance->Key_Pressing(DIK_F4, 0.000001f) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
 			{
@@ -1211,7 +1231,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
 				SEPARATOR;
 			}
 
-#pragma region ¼Ó¼º ¼³Á¤
+#pragma region ì†ì„± ì„¤ì •
 
 			if (INTERACTIVE_TYPE::CHECKPOINT== m_pFixPropObj->Get_InteractiveType())
 			{
@@ -1382,12 +1402,12 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 							m_iObjectListIndex = m_ObjectList.size() - 1;
 
 						string strSearchName = m_szSearchObjectName;
-						transform(strSearchName.begin(), strSearchName.end(), strSearchName.begin(), ::tolower);		// °Ë»öÇÒ ¸ğµ¨À» ¼Ò¹®ÀÚ·Î º¯È¯
+						transform(strSearchName.begin(), strSearchName.end(), strSearchName.begin(), ::tolower);		// ê²€ìƒ‰í•  ëª¨ë¸ì„ ì†Œë¬¸ìë¡œ ë³€í™˜
 
 						for (_uint i = 0; i < m_ObjectList.size(); ++i)
 						{
 							_wstring strModelName = m_ObjectList[i]->Get_ModelName();
-							transform(strModelName.begin(), strModelName.end(), strModelName.begin(), ::tolower);		// Ã£À» ¸ğµ¨À» ¼Ò¹®ÀÚ·Î º¯È¯
+							transform(strModelName.begin(), strModelName.end(), strModelName.begin(), ::tolower);		// ì°¾ì„ ëª¨ë¸ì„ ì†Œë¬¸ìë¡œ ë³€í™˜
 
 							if (true == strSearchName.empty() || strModelName.find(AnsiToWString(strSearchName)) != string::npos)
 							{
@@ -1484,7 +1504,7 @@ HRESULT CLevel_Map::Ready_Prop_List_Window()
 					ImGui::Text("MODEL NAME : %s", strTempModelName.c_str());
 					SEPARATOR;
 
-#pragma region ¼Ó¼º ¼³Á¤
+#pragma region ì†ì„± ì„¤ì •
 
 					if (false == m_isCheckRender)
 					{
@@ -1618,7 +1638,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 					m_iInteractiveListIndex = m_InteractiveList.size() - 1;
 
 				string strSearchName = m_szSearchObjectName;
-				transform(strSearchName.begin(), strSearchName.end(), strSearchName.begin(), ::tolower);		// °Ë»öÇÒ ¸ğµ¨À» ¼Ò¹®ÀÚ·Î º¯È¯
+				transform(strSearchName.begin(), strSearchName.end(), strSearchName.begin(), ::tolower);		// ê²€ìƒ‰í•  ëª¨ë¸ì„ ì†Œë¬¸ìë¡œ ë³€í™˜
 
 				for (_uint i = 0; i < m_InteractiveList.size(); ++i)
 				{
@@ -1942,7 +1962,7 @@ HRESULT CLevel_Map::Ready_Light_Window()
 					m_LightDesc.eType = LIGHT_DESC::END;
 				} SEPARATOR;
 
-				// Add Light ¶ç¿ì±â
+				// Add Light ë„ìš°ê¸°
 				if (true == m_isAddLight)
 				{
 					if (ImGui::Button("DIRECTIONAL"))
@@ -1993,7 +2013,7 @@ HRESULT CLevel_Map::Ready_Light_Window()
 
 							if (true == isCheckSameTag)
 							{
-								OutputDebugStringA("Á¶¸í ÅÂ±× Áßº¹");
+								OutputDebugStringA("ì¡°ëª… íƒœê·¸ ì¤‘ë³µ");
 							}
 							else
 							{
@@ -2013,7 +2033,7 @@ HRESULT CLevel_Map::Ready_Light_Window()
 						}
 					}
 				};
-				// Fix Light ¶ç¿ì±â
+				// Fix Light ë„ìš°ê¸°
 				if (true == m_isFixLight)
 				{
 					m_isFindFixLight = false;
@@ -2049,7 +2069,7 @@ HRESULT CLevel_Map::Ready_Light_Window()
 
 HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 {
-#pragma region WIDGET : OBJECT SAVE À©µµ¿ì
+#pragma region WIDGET : OBJECT SAVE ìœˆë„ìš°
 
 #ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
@@ -2080,35 +2100,35 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 			SAMELINE;
 			if (ImGui::Button("ALL_SAVE"))
 			{
-				// m_strMapInfoFilePath : µÚ¿¡ _prototypes.dat, _objs.dat, insts.dat ÀÌ·±½ÄÀ¸·Î ¤¡¤¡
+				// m_strMapInfoFilePath : ë’¤ì— _prototypes.dat, _objs.dat, insts.dat ì´ëŸ°ì‹ìœ¼ë¡œ ã„±ã„±
 				m_strMapInfoFilePath = m_szMapInfoFilePath;
 				m_strMapInfoFilePath += m_szMapInfoFileName;
 
-#pragma region ÇÁ·ÎÅäÅ¸ÀÔ ÀÏ°ı ÀúÀå
+#pragma region í”„ë¡œí† íƒ€ì… ì¼ê´„ ì €ì¥
 
 				if (false == Prototypes_Save_Binary())
 				{
 #ifdef _DEBUG
-					OutputDebugStringA("ÇÁ·ÎÅä Å¸ÀÔ Á¤º¸ ¹ÙÀÌ³Ê¸®È­ ½ÇÆĞ");
+					OutputDebugStringA("í”„ë¡œí†  íƒ€ì… ì •ë³´ ë°”ì´ë„ˆë¦¬í™” ì‹¤íŒ¨");
 #endif // _DEBUG
 					return;
 				}
 
 #pragma endregion
 
-#pragma region ¿ÀºêÁ§Æ® ÀÏ°ı ÀúÀå
+#pragma region ì˜¤ë¸Œì íŠ¸ ì¼ê´„ ì €ì¥
 
 				if (false == Objects_Save_Binary())
 				{
 #ifdef _DEBUG
-					OutputDebugStringA("´ÜÀÏ ¿ÀºêÁ§Æ® Á¤º¸ ¹ÙÀÌ³Ê¸®È­ ½ÇÆĞ");
+					OutputDebugStringA("ë‹¨ì¼ ì˜¤ë¸Œì íŠ¸ ì •ë³´ ë°”ì´ë„ˆë¦¬í™” ì‹¤íŒ¨");
 #endif // _DEBUG
 					return;
 				}
 
 #pragma endregion
 
-#pragma region Å¬¶ó³ª ´Ù¸¥°÷¿¡¼­ »ç¿ëÇÒ ¹ÙÀÌ³Ê¸® ÀúÀå
+#pragma region í´ë¼ë‚˜ ë‹¤ë¥¸ê³³ì—ì„œ ì‚¬ìš©í•  ë°”ì´ë„ˆë¦¬ ì €ì¥
 
 				if (false == Prototype_Save_Binary())
 				{
@@ -2130,12 +2150,12 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 #pragma endregion
 
 
-#pragma region Á¶¸í ÀÏ°ı ÀúÀå
+#pragma region ì¡°ëª… ì¼ê´„ ì €ì¥
 
 				if (false == Lights_Save_Binary())
 				{
 #ifdef _DEBUG
-					OutputDebugStringA("´ÜÀÏ ¿ÀºêÁ§Æ® Á¤º¸ ¹ÙÀÌ³Ê¸®È­ ½ÇÆĞ");
+					OutputDebugStringA("ë‹¨ì¼ ì˜¤ë¸Œì íŠ¸ ì •ë³´ ë°”ì´ë„ˆë¦¬í™” ì‹¤íŒ¨");
 #endif // _DEBUG
 					return;
 				}
@@ -2153,7 +2173,7 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 				if (false == Lights_Save_Binary())
 				{
 #ifdef _DEBUG
-					OutputDebugStringA("´ÜÀÏ ¿ÀºêÁ§Æ® Á¤º¸ ¹ÙÀÌ³Ê¸®È­ ½ÇÆĞ");
+					OutputDebugStringA("ë‹¨ì¼ ì˜¤ë¸Œì íŠ¸ ì •ë³´ ë°”ì´ë„ˆë¦¬í™” ì‹¤íŒ¨");
 #endif // _DEBUG
 					return;
 				}
@@ -2165,7 +2185,7 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 
 #pragma endregion
 
-#pragma region WIDGET : OBJECT LOAD À©µµ¿ì
+#pragma region WIDGET : OBJECT LOAD ìœˆë„ìš°
 
 #ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
@@ -2184,18 +2204,18 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 			{
 				if (ImGui::Button("LOAD"))
 			{
-				// m_strMapInfoFilePath : µÚ¿¡ _prototypes.dat, _objs.dat, insts.dat ÀÌ·±½ÄÀ¸·Î ¤¡¤¡
+				// m_strMapInfoFilePath : ë’¤ì— _prototypes.dat, _objs.dat, insts.dat ì´ëŸ°ì‹ìœ¼ë¡œ ã„±ã„±
 				m_strMapInfoFilePath = m_szMapInfoFilePath;
 				m_strMapInfoFilePath += m_szMapInfoFileName;
 
 				_bool isLoadComplete = { true };
 				
-#pragma region ÇÁ·ÎÅäÅ¸ÀÔ ÀÏ°ı ºÒ·¯¿À±â
+#pragma region í”„ë¡œí† íƒ€ì… ì¼ê´„ ë¶ˆëŸ¬ì˜¤ê¸°
 
 				if (false == Prototypes_Load_Binary())
 				{
 #ifdef _DEBUG
-OutputDebugStringA("ÇÁ·ÎÅäÅ¸ÀÔ Á¤º¸ ¹ÙÀÌ³Ê¸® ºÒ·¯¿À±â ½ÇÆĞ");
+OutputDebugStringA("í”„ë¡œí† íƒ€ì… ì •ë³´ ë°”ì´ë„ˆë¦¬ ë¶ˆëŸ¬ì˜¤ê¸° ì‹¤íŒ¨");
 #endif // _DEBUG
 
 					isLoadComplete = false;
@@ -2203,18 +2223,18 @@ OutputDebugStringA("ÇÁ·ÎÅäÅ¸ÀÔ Á¤º¸ ¹ÙÀÌ³Ê¸® ºÒ·¯¿À±â ½ÇÆĞ");
 				}
 				else
 				{
-					// ÇÁ·ÎÅäÅ¸ÀÔ À©µµ¿ì ¶ç¿ì±â
+					// í”„ë¡œí† íƒ€ì… ìœˆë„ìš° ë„ìš°ê¸°
 					m_isPrototypeWindow = true;
 				}
 
 #pragma endregion
 
-#pragma region ¿ÀºêÁ§Æ® ÀÏ°ı ºÒ·¯¿À±â
+#pragma region ì˜¤ë¸Œì íŠ¸ ì¼ê´„ ë¶ˆëŸ¬ì˜¤ê¸°
 
 				if (false == Objects_Load_Binary())
 				{
 #ifdef _DEBUG
-OutputDebugStringA("´ÜÀÏ ¿ÀºêÁ§Æ® Á¤º¸ ¹ÙÀÌ³Ê¸® ºÒ·¯¿À±â ½ÇÆĞ");
+OutputDebugStringA("ë‹¨ì¼ ì˜¤ë¸Œì íŠ¸ ì •ë³´ ë°”ì´ë„ˆë¦¬ ë¶ˆëŸ¬ì˜¤ê¸° ì‹¤íŒ¨");
 #endif // _DEBUG
 
 					isLoadComplete = false;
@@ -2222,18 +2242,18 @@ OutputDebugStringA("´ÜÀÏ ¿ÀºêÁ§Æ® Á¤º¸ ¹ÙÀÌ³Ê¸® ºÒ·¯¿À±â ½ÇÆĞ");
 				}
 				else
 				{
-					// ¿ÀºêÁ§Æ® ¸®½ºÆ® À©µµ¿ì ¶ç¿ì±â
+					// ì˜¤ë¸Œì íŠ¸ ë¦¬ìŠ¤íŠ¸ ìœˆë„ìš° ë„ìš°ê¸°
 					m_isObjectWindow = true;
 				}
 
 #pragma endregion
 
-#pragma region »óÈ£ ÀÛ¿ë ¿ÀºêÁ§Æ® ÀÏ°ı ºÒ·¯¿À±â
+#pragma region ìƒí˜¸ ì‘ìš© ì˜¤ë¸Œì íŠ¸ ì¼ê´„ ë¶ˆëŸ¬ì˜¤ê¸°
 
 				if (false == Interactive_Objects_Load_Binary())
 				{
 #ifdef _DEBUG
-					OutputDebugStringA("´ÜÀÏ ¿ÀºêÁ§Æ® Á¤º¸ ¹ÙÀÌ³Ê¸® ºÒ·¯¿À±â ½ÇÆĞ");
+					OutputDebugStringA("ë‹¨ì¼ ì˜¤ë¸Œì íŠ¸ ì •ë³´ ë°”ì´ë„ˆë¦¬ ë¶ˆëŸ¬ì˜¤ê¸° ì‹¤íŒ¨");
 #endif // _DEBUG
 
 					isLoadComplete = false;
@@ -2241,18 +2261,18 @@ OutputDebugStringA("´ÜÀÏ ¿ÀºêÁ§Æ® Á¤º¸ ¹ÙÀÌ³Ê¸® ºÒ·¯¿À±â ½ÇÆĞ");
 				}
 				else
 				{
-					// ¿ÀºêÁ§Æ® ¸®½ºÆ® À©µµ¿ì ¶ç¿ì±â
+					// ì˜¤ë¸Œì íŠ¸ ë¦¬ìŠ¤íŠ¸ ìœˆë„ìš° ë„ìš°ê¸°
 					m_isObjectWindow = true;
 				}
 
 #pragma endregion
 
-#pragma region Á¶¸í ÀÏ°ı ºÒ·¯¿À±â
+#pragma region ì¡°ëª… ì¼ê´„ ë¶ˆëŸ¬ì˜¤ê¸°
 
 				if (false == Lights_Load_Binary())
 				{
 #ifdef _DEBUG
-OutputDebugStringA("Á¶¸í Á¤º¸ ¹ÙÀÌ³Ê¸® ºÒ·¯¿À±â ½ÇÆĞ");
+OutputDebugStringA("ì¡°ëª… ì •ë³´ ë°”ì´ë„ˆë¦¬ ë¶ˆëŸ¬ì˜¤ê¸° ì‹¤íŒ¨");
 #endif // _DEBUG
 
 					isLoadComplete = false;
@@ -2260,7 +2280,7 @@ OutputDebugStringA("Á¶¸í Á¤º¸ ¹ÙÀÌ³Ê¸® ºÒ·¯¿À±â ½ÇÆĞ");
 				}
 				else
 				{
-					// Á¶¸í À©µµ¿ì ¶ç¿ì±â
+					// ì¡°ëª… ìœˆë„ìš° ë„ìš°ê¸°
 					//m_isLightSettingWindow = true;
 				}
 
@@ -2551,6 +2571,100 @@ HRESULT CLevel_Map::Ready_SkySphere_Window()
 	return S_OK;
 }
 
+HRESULT CLevel_Map::Ready_MultiFix_Window()
+{
+#ifdef _DEBUG
+	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
+		if (m_isMultiFixWindow)
+		{
+			ImGui::Begin("MULTI FIX WINDOW", &m_isMultiFixWindow, ImGuiWindowFlags_AlwaysAutoResize);
+
+			ImGui::Text("MULTI FIX LIST ( 0 == PARENT )");
+
+			if (ImGui::BeginListBox("##multifix_list"))
+			{
+				_wstring strFixModelName = {};
+				string strFixModel = {};
+
+				for (_uint i = 0; i < m_MultiFixList.size(); ++i)
+				{
+					_bool isSelected = (m_iMultiFixIndex == i);
+
+					strFixModelName = m_MultiFixList[i]->Get_ModelName();
+					strFixModel = WStringToAnsi(strFixModelName);
+
+					if (ImGui::Selectable(strFixModel.c_str(), isSelected))
+						m_iMultiFixIndex = i;
+				}
+
+				ImGui::EndListBox();
+			} SEPARATOR;
+
+			ImGui::Text("LIST COUNT : %d", m_MultiFixList.size());
+			SEPARATOR;
+
+			if (ImGui::Button("FIX"))
+			{
+				if (m_MultiFixList.size() > 1)
+				{
+					m_isMultiFix = true;
+
+					m_pGameInstance->Set_GizmoObject(m_pParentFixObject);
+
+					CTransform* pParentTransform = static_cast<CTransform*>(m_pParentFixObject->Get_Component(TEXT("Com_Transform")));
+					XMMATRIX matParent = pParentTransform->Get_WorldMatrix();
+					XMMATRIX invParent = XMMatrixInverse(nullptr, matParent);
+
+					XMStoreFloat4x4(&m_matOriginalParentMatrix, matParent);
+
+					m_MultiFixRelatives.clear();
+
+					for (size_t i = 1; i < m_MultiFixList.size(); ++i)
+					{
+						CTransform* pChildTransform = static_cast<CTransform*>(m_MultiFixList[i]->Get_Component(TEXT("Com_Transform")));
+						if (pChildTransform == nullptr)
+							continue;
+
+						XMMATRIX matChild = pChildTransform->Get_WorldMatrix();
+						XMMATRIX matRelative = matChild * invParent;
+
+						FIX_RELATIVE_DESC tDesc{};
+						tDesc.pTransform = pChildTransform;
+						XMStoreFloat4x4(&tDesc.RelativeMatrix, matRelative);
+
+						m_MultiFixRelatives.push_back(tDesc);
+					}
+
+					// ë¶€ëª¨ í–‰ë ¬ ì €ì¥ (ë³€í™” ê°ì§€ìš©)
+					XMStoreFloat4x4(&m_matParentBefore, matParent);
+
+					OutputDebugString(TEXT("[MultiFix] Fixed relative transforms.\n"));
+				}
+			}
+			if (ImGui::Button("RESET"))
+			{
+				static_cast<CTransform*>(m_pParentFixObject->Get_Component(TEXT("Com_Transform")))->Set_WorldMatrix(XMLoadFloat4x4(&m_matOriginalParentMatrix));
+			}
+			if (ImGui::Button("DONE"))
+			{
+				m_pGameInstance->Clear_GizmoObject();
+
+				m_isMultiFix = false;
+				m_MultiFixRelatives.clear();
+				m_MultiFixList.clear();
+				m_iMultiFixIndex = 0;
+				m_pParentFixObject = nullptr;
+			}
+
+			ImGui::End();
+		}
+		});
+
+#endif // _DEBUG
+
+	return S_OK;
+}
+
 void CLevel_Map::Fbxs_Convert_To_Dat(const _char* pFolderName)
 {
 	vector<string> FBXPaths;
@@ -2575,7 +2689,7 @@ void CLevel_Map::Fbxs_Convert_To_Dat(const _char* pFolderName)
 
 	_matrix PreTransformMatrix = XMMatrixIdentity();
 
-	// ½ºÄÉÀÏ º¯È¯ ( 1 / 100 )
+	// ìŠ¤ì¼€ì¼ ë³€í™˜ ( 1 / 100 )
 	PreTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 
 	for (auto& pPath : FBXPaths)
@@ -2638,7 +2752,7 @@ void CLevel_Map::Add_Prototype_ByFolder(const _char* pFolderName, _bool isAnim)
 
 	_matrix PreTransformMatrix = XMMatrixIdentity();
 
-	// ½ºÄÉÀÏ º¯È¯ ( 1 / 100 )
+	// ìŠ¤ì¼€ì¼ ë³€í™˜ ( 1 / 100 )
 	PreTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 
 	for (auto& pPath : FBXPaths)
@@ -2655,7 +2769,7 @@ void CLevel_Map::Add_Prototype_ByFolder(const _char* pFolderName, _bool isAnim)
 		if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), AnsiToWString(strModelName),
 			CModel::Create(m_pDevice, m_pContext, pPath.c_str()))))
 		{
-			string failed = { "\nÇÁ·ÎÅäÅ¸ÀÔ µî·ÏµÇ¾îÀÖ´Âµí" };
+			string failed = { "\ní”„ë¡œí† íƒ€ì… ë“±ë¡ë˜ì–´ìˆëŠ”ë“¯" };
 
 			OutputDebugStringA(failed.c_str());
 
@@ -2701,27 +2815,27 @@ string CLevel_Map::Find_ModelPath(const string& strModelName, const string& strF
 
 _bool CLevel_Map::Prototypes_Save_Binary()
 {
-	// ÇÁ·ÎÅä Å¸ÀÔ ÀúÀåÇÒ¶§´Â ÀÎ½ºÅÏ½º¿ë ¸ğµ¨ÀÎÁö, ¾Æ´Ï¸é ÀÏ¹İ ¸ğµ¨ÀÎÁö ±¸ºĞÇØ¼­ ÀúÀåÀ» ÇØ¾ßÇÑ´Ù.
-	// Object·Î »ç¿ëÇÑ Model¸¸ ÇÁ·ÎÅäÅ¸ÀÔ µî·Ï
+	// í”„ë¡œí†  íƒ€ì… ì €ì¥í• ë•ŒëŠ” ì¸ìŠ¤í„´ìŠ¤ìš© ëª¨ë¸ì¸ì§€, ì•„ë‹ˆë©´ ì¼ë°˜ ëª¨ë¸ì¸ì§€ êµ¬ë¶„í•´ì„œ ì €ì¥ì„ í•´ì•¼í•œë‹¤.
+	// Objectë¡œ ì‚¬ìš©í•œ Modelë§Œ í”„ë¡œí† íƒ€ì… ë“±ë¡
 	_wstring strPrototypeInfoPath = AnsiToWString(m_strMapInfoFilePath);
 
 	strPrototypeInfoPath += TEXT("_prototypes.dat");
 
 	DWORD dwByte = {};
 	
-	// Æú´õ°¡ Á¸ÀçÇÏÁö ¾ÊÀ¸¸é »ı¼º
+	// í´ë”ê°€ ì¡´ì¬í•˜ì§€ ì•Šìœ¼ë©´ ìƒì„±
 	if (false == filesystem::exists(m_szMapInfoFilePath))
 	{
 		if (false == filesystem::create_directories(m_szMapInfoFilePath))
 		{
 #ifdef _DEBUG
-			OutputDebugStringA("Æú´õ »ı¼º ½ÇÆĞ");
+			OutputDebugStringA("í´ë” ìƒì„± ì‹¤íŒ¨");
 #endif // _DEBUg
 			return false;
 		}
 	}
 
-	// ÇÁ·ÎÅäÅ¸ÀÔ ÇÚµé °³¹æ
+	// í”„ë¡œí† íƒ€ì… í•¸ë“¤ ê°œë°©
 	HANDLE hPrototypeFile = CreateFile(strPrototypeInfoPath.c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (INVALID_HANDLE_VALUE == hPrototypeFile)
 	{
@@ -2730,20 +2844,20 @@ _bool CLevel_Map::Prototypes_Save_Binary()
 	}
 	else
 	{
-		// ÇÁ·ÎÅä Å¸ÀÔ °³¼ö Ä«¿îÆ®
+		// í”„ë¡œí†  íƒ€ì… ê°œìˆ˜ ì¹´ìš´íŠ¸
 		_uint iPrototypeCnt = {};
 
 		map<const _wstring, SAVE_PROTOTYPE> Prototypes;
 
 		JSON_MAP_PROTOTYPE_DATA PrototypeJson = {};
 
-		// ´ÜÀÏ ¿ÀºêÁ§Æ® ¼øÈ¸ÇÏ¸é¼­ ¸ğµ¨ ÀÌ¸§ ¾Ë¾Æ¿À±â ( Prototype ÅÂ±×·Î »ç¿ëÇÒ °Í )
+		// ë‹¨ì¼ ì˜¤ë¸Œì íŠ¸ ìˆœíšŒí•˜ë©´ì„œ ëª¨ë¸ ì´ë¦„ ì•Œì•„ì˜¤ê¸° ( Prototype íƒœê·¸ë¡œ ì‚¬ìš©í•  ê²ƒ )
 		for (auto& pProp : m_ObjectList)
 		{
-			// ±âº» ¾ç½Ä ÁöÅ°±â ( Prototype_Component_Model_¸ğµ¨ÆÄÀÏ¸í )
+			// ê¸°ë³¸ ì–‘ì‹ ì§€í‚¤ê¸° ( Prototype_Component_Model_ëª¨ë¸íŒŒì¼ëª… )
 			_wstring strPrototypeTag = TEXT("Prototype_Component_Model_");
 
-			// ±âÁ¸ ¸ğµ¨ ¸í
+			// ê¸°ì¡´ ëª¨ë¸ ëª…
 			wstring strModelName = pProp->Get_ModelName();
 
 			strPrototypeTag += strModelName;
@@ -2754,7 +2868,7 @@ _bool CLevel_Map::Prototypes_Save_Binary()
 			{
 				string strModelPath = Find_ModelPath(WStringToAnsi(strModelName).c_str(), ".dat");
 
-				CHECK_EQUAL_MSG("NOTFOUND", strModelPath, TEXT("¸ğµ¨ °æ·Î ¸øÃ£À½"), false);
+				CHECK_EQUAL_MSG("NOTFOUND", strModelPath, TEXT("ëª¨ë¸ ê²½ë¡œ ëª»ì°¾ìŒ"), false);
 
 				PrototypeJson.FileName.push_back(WStringToAnsi(strModelName));
 
@@ -2766,39 +2880,39 @@ _bool CLevel_Map::Prototypes_Save_Binary()
 
 				Prototypes.emplace(strPrototypeTag, Save_Proto);
 
-				// Áßº¹ ¾Æ´Ò¶§¸¸ Count Áõ°¡
+				// ì¤‘ë³µ ì•„ë‹ë•Œë§Œ Count ì¦ê°€
 				++iPrototypeCnt;
 			}
 		}
 		
-		// 1. ÇÁ·ÎÅä Å¸ÀÔÀÇ ÃÑ °³¼ö ÀúÀå ( ÀÌ¸¸Å­ ·çÇÁ µ¹¸±°Å )
+		// 1. í”„ë¡œí†  íƒ€ì…ì˜ ì´ ê°œìˆ˜ ì €ì¥ ( ì´ë§Œí¼ ë£¨í”„ ëŒë¦´ê±° )
 		WriteFile(hPrototypeFile, &iPrototypeCnt, sizeof(_uint), &dwByte, nullptr);
 
 		PrototypeJson.iNumPrototypes = iPrototypeCnt;
 
 		for (auto& pPrototype : Prototypes)
 		{
-			// 2. ¾î¶² Å¸ÀÔÀÎÁö ÀúÀå ( Object, Instance, Dynamic, Interactive ) , enum class MAPOBJECT_TYPEÀº unsigned short »ç¿ëÀ¸·Î Á¶±İ ¸Ş¸ğ¸® Àı¾à
+			// 2. ì–´ë–¤ íƒ€ì…ì¸ì§€ ì €ì¥ ( Object, Instance, Dynamic, Interactive ) , enum class MAPOBJECT_TYPEì€ unsigned short ì‚¬ìš©ìœ¼ë¡œ ì¡°ê¸ˆ ë©”ëª¨ë¦¬ ì ˆì•½
 			_ushort sMapObjType = static_cast<_ushort>(pPrototype.second.eType);
 			WriteFile(hPrototypeFile, &sMapObjType, sizeof(_ushort), &dwByte, nullptr);
 
-			// ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ±æÀÌ
+			// í”„ë¡œí†  íƒ€ì… íƒœê·¸ ê¸¸ì´
 			_uint iPrototypeTagLen = pPrototype.first.size();
-			// ¸ğµ¨ °æ·Î ±æÀÌ
+			// ëª¨ë¸ ê²½ë¡œ ê¸¸ì´
 			_uint iModelPathLen = pPrototype.second.strModelPath.size();
 
 			PrototypeJson.PrototypeTag.push_back(WStringToAnsi(pPrototype.first));
 
 			PrototypeJson.FilePath.push_back(pPrototype.second.strModelPath);
 
-			// 3. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ±æÀÌ ÀúÀå
+			// 3. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ê¸¸ì´ ì €ì¥
 			WriteFile(hPrototypeFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr);
-			// 4. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ÀÌ¸§ ÀúÀå
+			// 4. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ì´ë¦„ ì €ì¥
 			WriteFile(hPrototypeFile, pPrototype.first.c_str(), sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr);
 
-			// 5. ¸ğµ¨ °æ·Î ±æÀÌ ÀúÀå
+			// 5. ëª¨ë¸ ê²½ë¡œ ê¸¸ì´ ì €ì¥
 			WriteFile(hPrototypeFile, &iModelPathLen, sizeof(_uint), &dwByte, nullptr);
-			// 6. ¸ğµ¨ °æ·Î ÀÌ¸§ ÀúÀå
+			// 6. ëª¨ë¸ ê²½ë¡œ ì´ë¦„ ì €ì¥
 			WriteFile(hPrototypeFile, pPrototype.second.strModelPath.c_str(), sizeof(_char) * iModelPathLen, &dwByte, nullptr);
 		}
 
@@ -2812,17 +2926,17 @@ _bool CLevel_Map::Prototypes_Save_Binary()
 
 		if (!ofs.is_open())
 		{
-			OutputDebugStringA("ÇÁ·ÎÅäÅ¸ÀÔ Json ÆÄÀÏÀÔÃâ·Â ½ÇÆĞ");
+			OutputDebugStringA("í”„ë¡œí† íƒ€ì… Json íŒŒì¼ì…ì¶œë ¥ ì‹¤íŒ¨");
 		}
 
 		ofs << j.dump(4);
 		ofs.close();
 
-		// °Ë»ç¿ë map clear;
+		// ê²€ì‚¬ìš© map clear;
 		Prototypes.clear();
 	}
 
-	// ÇÁ·ÎÅäÅ¸ÀÔ ÇÚµé ´İ±â
+	// í”„ë¡œí† íƒ€ì… í•¸ë“¤ ë‹«ê¸°
 	CloseHandle(hPrototypeFile);
 
 	return true;
@@ -2836,7 +2950,7 @@ _bool CLevel_Map::Objects_Save_Binary()
 
 	DWORD dwByte = {};
 
-	// ÇÁ·ÎÅäÅ¸ÀÔ ÇÚµé °³¹æ
+	// í”„ë¡œí† íƒ€ì… í•¸ë“¤ ê°œë°©
 	HANDLE hObjectFile = CreateFile(strObjectInfoPath.c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (INVALID_HANDLE_VALUE == hObjectFile)
 	{
@@ -2845,31 +2959,31 @@ _bool CLevel_Map::Objects_Save_Binary()
 	}
 	else
 	{
-		// ¿ÀºêÁ§Æ® ÃÑ °³¼ö Ä«¿îÆ®
+		// ì˜¤ë¸Œì íŠ¸ ì´ ê°œìˆ˜ ì¹´ìš´íŠ¸
 		_uint iObjectCnt = {};
 
 		for (auto& pProp : m_ObjectList)
 			++iObjectCnt;
 
-		// 1. ¿ÀºêÁ§Æ®ÀÇ ÃÑ °³¼ö ÀúÀå
+		// 1. ì˜¤ë¸Œì íŠ¸ì˜ ì´ ê°œìˆ˜ ì €ì¥
 		WriteFile(hObjectFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr);
 
-		// ´ÜÀÏ ¿ÀºêÁ§Æ® ¼øÈ¸ÇÏ¸é¼­ ¸ğµ¨ ÀÌ¸§ ¾Ë¾Æ¿À±â ( Prototype ÅÂ±×·Î »ç¿ëÇÒ °Í )
+		// ë‹¨ì¼ ì˜¤ë¸Œì íŠ¸ ìˆœíšŒí•˜ë©´ì„œ ëª¨ë¸ ì´ë¦„ ì•Œì•„ì˜¤ê¸° ( Prototype íƒœê·¸ë¡œ ì‚¬ìš©í•  ê²ƒ )
 		for (auto& pProp : m_ObjectList)
 		{
-			// ±âº» ¾ç½Ä ÁöÅ°±â ( Prototype_Component_Model_¸ğµ¨ÆÄÀÏ¸í ) ( Layer Ãß°¡¿¡ »ç¿ëÇÒ °Í, ¸ğµ¨¸í ´øÁ®ÁÖ±â )
+			// ê¸°ë³¸ ì–‘ì‹ ì§€í‚¤ê¸° ( Prototype_Component_Model_ëª¨ë¸íŒŒì¼ëª… ) ( Layer ì¶”ê°€ì— ì‚¬ìš©í•  ê²ƒ, ëª¨ë¸ëª… ë˜ì ¸ì£¼ê¸° )
 			_wstring strPrototypeTag = TEXT("Prototype_Component_Model_");
 			strPrototypeTag += pProp->Get_ModelName();
 
-			// ¸ğµ¨ ÀÌ¸§ ±æÀÌ
+			// ëª¨ë¸ ì´ë¦„ ê¸¸ì´
 			_uint iPrototypeLen = strPrototypeTag.size();
 
-			// 2. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ±æÀÌ ÀúÀå
+			// 2. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ê¸¸ì´ ì €ì¥
 			WriteFile(hObjectFile, &iPrototypeLen, sizeof(_uint), &dwByte, nullptr);
-			// 3. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ÀÌ¸§ ÀúÀå
+			// 3. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ì´ë¦„ ì €ì¥
 			WriteFile(hObjectFile, strPrototypeTag.c_str(), sizeof(_tchar) * iPrototypeLen, &dwByte, nullptr);
 
-			// °´Ã¼´ç ¿ùµåÇà·Ä »©¿À±â
+			// ê°ì²´ë‹¹ ì›”ë“œí–‰ë ¬ ë¹¼ì˜¤ê¸°
 			CTransform* pTransform = static_cast<CTransform*>(pProp->Get_Component(TEXT("Com_Transform")));
 			CHECK_NULLPTR_MSG(pTransform, TEXT("nullptr == pTransform"), false);
 
@@ -2877,50 +2991,50 @@ _bool CLevel_Map::Objects_Save_Binary()
 
 			XMStoreFloat4x4(&WorldMatrix, pTransform->Get_WorldMatrix());
 
-			// 4. °´Ã¼´ç ¿ùµåÇà·Ä ÀúÀå
+			// 4. ê°ì²´ë‹¹ ì›”ë“œí–‰ë ¬ ì €ì¥
 			WriteFile(hObjectFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr);
 
-			// 5. °´Ã¼´ç ¼Ó¼º ÀúÀå
+			// 5. ê°ì²´ë‹¹ ì†ì„± ì €ì¥
 			MAPOBJECT_PROPERTIES PropDesc = pProp->Get_Properties();
 			WriteFile(hObjectFile, &PropDesc, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr);
 
-			// 6. °´Ã¼ÀÇ SaveLevel ÀúÀå
+			// 6. ê°ì²´ì˜ SaveLevel ì €ì¥
 			_int iSaveLevel = pProp->Get_SubLevel();
 			WriteFile(hObjectFile, &iSaveLevel, sizeof(_int), &dwByte, nullptr);
 		}
-		// ´ÜÀÏ ¿ÀºêÁ§Æ® ÀÌ¿ÜÀÇ °Íµé Ãß°¡ ¿¹Á¤
+		// ë‹¨ì¼ ì˜¤ë¸Œì íŠ¸ ì´ì™¸ì˜ ê²ƒë“¤ ì¶”ê°€ ì˜ˆì •
 	}
 
-	// ÇÁ·ÎÅäÅ¸ÀÔ ÇÚµé ´İ±â
+	// í”„ë¡œí† íƒ€ì… í•¸ë“¤ ë‹«ê¸°
 	CloseHandle(hObjectFile);
 
 	return true;
 }
 
-#pragma region ½ÇÁúÀûÀÎ »ç¿ëÇÏ´Â ¹ÙÀÌ³Ê¸® ÆÄÀÏ
+#pragma region ì‹¤ì§ˆì ì¸ ì‚¬ìš©í•˜ëŠ” ë°”ì´ë„ˆë¦¬ íŒŒì¼
 _bool CLevel_Map::Prototype_Save_Binary()
 {
-	// ÇÁ·ÎÅä Å¸ÀÔ ÀúÀåÇÒ¶§´Â ÀÎ½ºÅÏ½º¿ë ¸ğµ¨ÀÎÁö, ¾Æ´Ï¸é ÀÏ¹İ ¸ğµ¨ÀÎÁö ±¸ºĞÇØ¼­ ÀúÀåÀ» ÇØ¾ßÇÑ´Ù.
-	// Object·Î »ç¿ëÇÑ Model¸¸ ÇÁ·ÎÅäÅ¸ÀÔ µî·Ï
+	// í”„ë¡œí†  íƒ€ì… ì €ì¥í• ë•ŒëŠ” ì¸ìŠ¤í„´ìŠ¤ìš© ëª¨ë¸ì¸ì§€, ì•„ë‹ˆë©´ ì¼ë°˜ ëª¨ë¸ì¸ì§€ êµ¬ë¶„í•´ì„œ ì €ì¥ì„ í•´ì•¼í•œë‹¤.
+	// Objectë¡œ ì‚¬ìš©í•œ Modelë§Œ í”„ë¡œí† íƒ€ì… ë“±ë¡
 	_wstring strPrototypeInfoPath = AnsiToWString(m_strMapInfoFilePath);
 
 	strPrototypeInfoPath += TEXT("_prototype.dat");
 
 	DWORD dwByte = {};
 
-	// Æú´õ°¡ Á¸ÀçÇÏÁö ¾ÊÀ¸¸é »ı¼º
+	// í´ë”ê°€ ì¡´ì¬í•˜ì§€ ì•Šìœ¼ë©´ ìƒì„±
 	if (false == filesystem::exists(m_szMapInfoFilePath))
 	{
 		if (false == filesystem::create_directories(m_szMapInfoFilePath))
 		{
 #ifdef _DEBUG
-			OutputDebugStringA("Æú´õ »ı¼º ½ÇÆĞ");
+			OutputDebugStringA("í´ë” ìƒì„± ì‹¤íŒ¨");
 #endif // _DEBUg
 			return false;
 		}
 	}
 
-	// ÇÁ·ÎÅäÅ¸ÀÔ ÇÚµé °³¹æ
+	// í”„ë¡œí† íƒ€ì… í•¸ë“¤ ê°œë°©
 	HANDLE hPrototypeFile = CreateFile(strPrototypeInfoPath.c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (INVALID_HANDLE_VALUE == hPrototypeFile)
 	{
@@ -2929,22 +3043,22 @@ _bool CLevel_Map::Prototype_Save_Binary()
 	}
 	else
 	{
-		// ÇÁ·ÎÅä Å¸ÀÔ °³¼ö Ä«¿îÆ®
+		// í”„ë¡œí†  íƒ€ì… ê°œìˆ˜ ì¹´ìš´íŠ¸
 		_uint iPrototypeCnt = {};
 
 		map<const _wstring, SAVE_PROTOTYPE> Prototypes;
 
-		// ´ÜÀÏ ¿ÀºêÁ§Æ® ¼øÈ¸ÇÏ¸é¼­ ¸ğµ¨ ÀÌ¸§ ¾Ë¾Æ¿À±â ( Prototype ÅÂ±×·Î »ç¿ëÇÒ °Í )
+		// ë‹¨ì¼ ì˜¤ë¸Œì íŠ¸ ìˆœíšŒí•˜ë©´ì„œ ëª¨ë¸ ì´ë¦„ ì•Œì•„ì˜¤ê¸° ( Prototype íƒœê·¸ë¡œ ì‚¬ìš©í•  ê²ƒ )
 		for (auto& pProp : m_ObjectList)
 		{
-			// ÀÎ½ºÅÏ½º ¸ğµ¨ ÇÁ·ÎÅäÅ¸ÀÔ ¼¼ÀÌºê´Â ´Ù¸¥ ÇÔ¼ö¿¡¼­
+			// ì¸ìŠ¤í„´ìŠ¤ ëª¨ë¸ í”„ë¡œí† íƒ€ì… ì„¸ì´ë¸ŒëŠ” ë‹¤ë¥¸ í•¨ìˆ˜ì—ì„œ
 			if (true == pProp->Get_Properties().isInstance)
 				continue;
 
-			// ±âº» ¾ç½Ä ÁöÅ°±â ( Prototype_Component_Model_¸ğµ¨ÆÄÀÏ¸í )
+			// ê¸°ë³¸ ì–‘ì‹ ì§€í‚¤ê¸° ( Prototype_Component_Model_ëª¨ë¸íŒŒì¼ëª… )
 			_wstring strPrototypeTag = TEXT("Prototype_Component_Model_");
 
-			// ±âÁ¸ ¸ğµ¨ ¸í
+			// ê¸°ì¡´ ëª¨ë¸ ëª…
 			wstring strModelName = pProp->Get_ModelName();
 
 			strPrototypeTag += strModelName;
@@ -2955,7 +3069,7 @@ _bool CLevel_Map::Prototype_Save_Binary()
 			{
 				string strModelPath = Find_ModelPath(WStringToAnsi(strModelName).c_str(), ".dat");
 
-				CHECK_EQUAL_MSG("NOTFOUND", strModelPath, TEXT("¸ğµ¨ °æ·Î ¸øÃ£À½"), false);
+				CHECK_EQUAL_MSG("NOTFOUND", strModelPath, TEXT("ëª¨ë¸ ê²½ë¡œ ëª»ì°¾ìŒ"), false);
 
 				replace(strModelPath.begin(), strModelPath.end(), '\\', '/');
 
@@ -2964,37 +3078,37 @@ _bool CLevel_Map::Prototype_Save_Binary()
 
 				Prototypes.emplace(strPrototypeTag, Save_Proto);
 
-				// Áßº¹ ¾Æ´Ò¶§¸¸ Count Áõ°¡
+				// ì¤‘ë³µ ì•„ë‹ë•Œë§Œ Count ì¦ê°€
 				++iPrototypeCnt;
 			}
 		}
 
-		// 1. ÇÁ·ÎÅä Å¸ÀÔÀÇ ÃÑ °³¼ö ÀúÀå ( ÀÌ¸¸Å­ ·çÇÁ µ¹¸±°Å )
+		// 1. í”„ë¡œí†  íƒ€ì…ì˜ ì´ ê°œìˆ˜ ì €ì¥ ( ì´ë§Œí¼ ë£¨í”„ ëŒë¦´ê±° )
 		WriteFile(hPrototypeFile, &iPrototypeCnt, sizeof(_uint), &dwByte, nullptr);
 
 		for (auto& pPrototype : Prototypes)
 		{
-			// ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ±æÀÌ
+			// í”„ë¡œí†  íƒ€ì… íƒœê·¸ ê¸¸ì´
 			_uint iPrototypeTagLen = pPrototype.first.size();
-			// ¸ğµ¨ °æ·Î ±æÀÌ
+			// ëª¨ë¸ ê²½ë¡œ ê¸¸ì´
 			_uint iModelPathLen = pPrototype.second.strModelPath.size();
 
-			// 2. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ±æÀÌ ÀúÀå
+			// 2. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ê¸¸ì´ ì €ì¥
 			WriteFile(hPrototypeFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr);
-			// 3. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ÀÌ¸§ ÀúÀå
+			// 3. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ì´ë¦„ ì €ì¥
 			WriteFile(hPrototypeFile, pPrototype.first.c_str(), sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr);
 
-			// 4. ¸ğµ¨ °æ·Î ±æÀÌ ÀúÀå
+			// 4. ëª¨ë¸ ê²½ë¡œ ê¸¸ì´ ì €ì¥
 			WriteFile(hPrototypeFile, &iModelPathLen, sizeof(_uint), &dwByte, nullptr);
-			// 5. ¸ğµ¨ °æ·Î ÀÌ¸§ ÀúÀå
+			// 5. ëª¨ë¸ ê²½ë¡œ ì´ë¦„ ì €ì¥
 			WriteFile(hPrototypeFile, pPrototype.second.strModelPath.c_str(), sizeof(_char) * iModelPathLen, &dwByte, nullptr);
 		}
 
-		// °Ë»ç¿ë map clear;
+		// ê²€ì‚¬ìš© map clear;
 		Prototypes.clear();
 	}
 
-	// ÇÁ·ÎÅäÅ¸ÀÔ ÇÚµé ´İ±â
+	// í”„ë¡œí† íƒ€ì… í•¸ë“¤ ë‹«ê¸°
 	CloseHandle(hPrototypeFile);
 
 	return true;
@@ -3003,27 +3117,27 @@ _bool CLevel_Map::Prototype_Save_Binary()
 
 _bool CLevel_Map::Instance_Prototype_Save_Binary()
 {
-	// ÇÁ·ÎÅä Å¸ÀÔ ÀúÀåÇÒ¶§´Â ÀÎ½ºÅÏ½º¿ë ¸ğµ¨ÀÎÁö, ¾Æ´Ï¸é ÀÏ¹İ ¸ğµ¨ÀÎÁö ±¸ºĞÇØ¼­ ÀúÀåÀ» ÇØ¾ßÇÑ´Ù.
-	// Object·Î »ç¿ëÇÑ Model¸¸ ÇÁ·ÎÅäÅ¸ÀÔ µî·Ï
+	// í”„ë¡œí†  íƒ€ì… ì €ì¥í• ë•ŒëŠ” ì¸ìŠ¤í„´ìŠ¤ìš© ëª¨ë¸ì¸ì§€, ì•„ë‹ˆë©´ ì¼ë°˜ ëª¨ë¸ì¸ì§€ êµ¬ë¶„í•´ì„œ ì €ì¥ì„ í•´ì•¼í•œë‹¤.
+	// Objectë¡œ ì‚¬ìš©í•œ Modelë§Œ í”„ë¡œí† íƒ€ì… ë“±ë¡
 	_wstring strPrototypeInfoPath = AnsiToWString(m_strMapInfoFilePath);
 
 	strPrototypeInfoPath += TEXT("_prototype_inst.dat");
 
 	DWORD dwByte = {};
 
-	// Æú´õ°¡ Á¸ÀçÇÏÁö ¾ÊÀ¸¸é »ı¼º
+	// í´ë”ê°€ ì¡´ì¬í•˜ì§€ ì•Šìœ¼ë©´ ìƒì„±
 	if (false == filesystem::exists(m_szMapInfoFilePath))
 	{
 		if (false == filesystem::create_directories(m_szMapInfoFilePath))
 		{
 #ifdef _DEBUG
-			OutputDebugStringA("Æú´õ »ı¼º ½ÇÆĞ");
+			OutputDebugStringA("í´ë” ìƒì„± ì‹¤íŒ¨");
 #endif // _DEBUg
 			return false;
 		}
 	}
 
-	// ÇÁ·ÎÅäÅ¸ÀÔ ÇÚµé °³¹æ
+	// í”„ë¡œí† íƒ€ì… í•¸ë“¤ ê°œë°©
 	HANDLE hPrototypeFile = CreateFile(strPrototypeInfoPath.c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (INVALID_HANDLE_VALUE == hPrototypeFile)
 	{
@@ -3032,29 +3146,29 @@ _bool CLevel_Map::Instance_Prototype_Save_Binary()
 	}
 	else
 	{
-		// ÇÁ·ÎÅä Å¸ÀÔ °³¼ö Ä«¿îÆ®
+		// í”„ë¡œí†  íƒ€ì… ê°œìˆ˜ ì¹´ìš´íŠ¸
 		_uint iPrototypeCnt = {};
 
 		map<const _wstring, SAVE_PROTOTYPE_INSTANCE> Prototypes;
 
 		_uint iInstanceCnt = {};
 
-		// ´ÜÀÏ ¿ÀºêÁ§Æ® ¼øÈ¸ÇÏ¸é¼­ ¸ğµ¨ ÀÌ¸§ ¾Ë¾Æ¿À±â ( Prototype ÅÂ±×·Î »ç¿ëÇÒ °Í )
+		// ë‹¨ì¼ ì˜¤ë¸Œì íŠ¸ ìˆœíšŒí•˜ë©´ì„œ ëª¨ë¸ ì´ë¦„ ì•Œì•„ì˜¤ê¸° ( Prototype íƒœê·¸ë¡œ ì‚¬ìš©í•  ê²ƒ )
 		for (auto& pProp : m_ObjectList)
 		{
-			// ÀÎ½ºÅÏ½º ¾Æ´Ñ ¸ğµ¨Àº ´Ù¸¥ ÇÔ¼ö¿¡¼­
+			// ì¸ìŠ¤í„´ìŠ¤ ì•„ë‹Œ ëª¨ë¸ì€ ë‹¤ë¥¸ í•¨ìˆ˜ì—ì„œ
 			if (false == pProp->Get_Properties().isInstance)
 				continue;
 
-			// ±âº» ¾ç½Ä ÁöÅ°±â ( Prototype_Component_Model_¸ğµ¨ÆÄÀÏ¸í )
+			// ê¸°ë³¸ ì–‘ì‹ ì§€í‚¤ê¸° ( Prototype_Component_Model_ëª¨ë¸íŒŒì¼ëª… )
 			_wstring strPrototypeTag = TEXT("Prototype_Component_Model_");
 
-			// ±âÁ¸ ¸ğµ¨ ¸í
+			// ê¸°ì¡´ ëª¨ë¸ ëª…
 			wstring strModelName = pProp->Get_ModelName();
 
 			strPrototypeTag += strModelName;
 
-			// ÀÎ½ºÅÏ½º ¸ğµ¨Àº ÅÂ±× µÚ¿¡ _Inst ºÙÀÌ±â
+			// ì¸ìŠ¤í„´ìŠ¤ ëª¨ë¸ì€ íƒœê·¸ ë’¤ì— _Inst ë¶™ì´ê¸°
 			strPrototypeTag += TEXT("_Inst");
 
 			auto iter = Prototypes.find(strPrototypeTag);
@@ -3063,7 +3177,7 @@ _bool CLevel_Map::Instance_Prototype_Save_Binary()
 			{
 				string strModelPath = Find_ModelPath(WStringToAnsi(strModelName).c_str(), ".dat");
 
-				CHECK_EQUAL_MSG("NOTFOUND", strModelPath, TEXT("¸ğµ¨ °æ·Î ¸øÃ£À½"), false);
+				CHECK_EQUAL_MSG("NOTFOUND", strModelPath, TEXT("ëª¨ë¸ ê²½ë¡œ ëª»ì°¾ìŒ"), false);
 
 				replace(strModelPath.begin(), strModelPath.end(), '\\', '/');
 
@@ -3085,7 +3199,7 @@ _bool CLevel_Map::Instance_Prototype_Save_Binary()
 
 				Prototypes.emplace(strPrototypeTag, Save_Proto_Inst);
 
-				// Áßº¹ ¾Æ´Ò¶§¸¸ Count Áõ°¡
+				// ì¤‘ë³µ ì•„ë‹ë•Œë§Œ Count ì¦ê°€
 				++iPrototypeCnt;
 			}
 			else
@@ -3105,31 +3219,31 @@ _bool CLevel_Map::Instance_Prototype_Save_Binary()
 			}
 		}
 
-		// 1. ÇÁ·ÎÅä Å¸ÀÔÀÇ ÃÑ °³¼ö ÀúÀå ( ÀÌ¸¸Å­ ·çÇÁ µ¹¸±°Å )
+		// 1. í”„ë¡œí†  íƒ€ì…ì˜ ì´ ê°œìˆ˜ ì €ì¥ ( ì´ë§Œí¼ ë£¨í”„ ëŒë¦´ê±° )
 		WriteFile(hPrototypeFile, &iPrototypeCnt, sizeof(_uint), &dwByte, nullptr);
 
 		for (auto& pPrototype : Prototypes)
 		{
-			// ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ±æÀÌ
+			// í”„ë¡œí†  íƒ€ì… íƒœê·¸ ê¸¸ì´
 			_uint iPrototypeTagLen = pPrototype.first.size();
-			// ¸ğµ¨ °æ·Î ±æÀÌ
+			// ëª¨ë¸ ê²½ë¡œ ê¸¸ì´
 			_uint iModelPathLen = pPrototype.second.strModelPath.size();
 
-			// 2. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ±æÀÌ ÀúÀå
+			// 2. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ê¸¸ì´ ì €ì¥
 			WriteFile(hPrototypeFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr);
-			// 3. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ÀÌ¸§ ÀúÀå
+			// 3. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ì´ë¦„ ì €ì¥
 			WriteFile(hPrototypeFile, pPrototype.first.c_str(), sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr);
 
-			// 4. ¸ğµ¨ °æ·Î ±æÀÌ ÀúÀå
+			// 4. ëª¨ë¸ ê²½ë¡œ ê¸¸ì´ ì €ì¥
 			WriteFile(hPrototypeFile, &iModelPathLen, sizeof(_uint), &dwByte, nullptr);
-			// 5. ¸ğµ¨ °æ·Î ÀÌ¸§ ÀúÀå
+			// 5. ëª¨ë¸ ê²½ë¡œ ì´ë¦„ ì €ì¥
 			WriteFile(hPrototypeFile, pPrototype.second.strModelPath.c_str(), sizeof(_char) * iModelPathLen, &dwByte, nullptr);
 
-			// 6. Çà·Ä ÃÑ °³¼ö ÀúÀå
+			// 6. í–‰ë ¬ ì´ ê°œìˆ˜ ì €ì¥
 			_uint iNumInstances = static_cast<_uint>(pPrototype.second.InstanceData.size());
 			WriteFile(hPrototypeFile, &iNumInstances, sizeof(_uint), &dwByte, nullptr);
 
-			// 7. ÀÎ½ºÅÏ½Ì °³¼ö¸¸Å­ ·çÇÁ
+			// 7. ì¸ìŠ¤í„´ì‹± ê°œìˆ˜ë§Œí¼ ë£¨í”„
 			for (_uint i = 0; i < iNumInstances; ++i)
 			{
 				WriteFile(hPrototypeFile, &pPrototype.second.InstanceData[i].vRight, sizeof(_float4), &dwByte, nullptr);
@@ -3140,11 +3254,11 @@ _bool CLevel_Map::Instance_Prototype_Save_Binary()
 			}
 		}
 
-		// °Ë»ç¿ë map clear;
+		// ê²€ì‚¬ìš© map clear;
 		Prototypes.clear();
 	}
 
-	// ÇÁ·ÎÅäÅ¸ÀÔ ÇÚµé ´İ±â
+	// í”„ë¡œí† íƒ€ì… í•¸ë“¤ ë‹«ê¸°
 	CloseHandle(hPrototypeFile);
 
 	return true;
@@ -3160,46 +3274,46 @@ _bool CLevel_Map::Object_Save_Binary()
 
 	DWORD dwByte = {};
 
-	// ÇÁ·ÎÅäÅ¸ÀÔ ÇÚµé °³¹æ
+	// í”„ë¡œí† íƒ€ì… í•¸ë“¤ ê°œë°©
 	HANDLE hObjectFile = CreateFile(strObjectInfoPath.c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (INVALID_HANDLE_VALUE == hObjectFile)
 	{
 		return false;
 	}
 
-	// ¿ÀºêÁ§Æ® ÃÑ °³¼ö Ä«¿îÆ®
+	// ì˜¤ë¸Œì íŠ¸ ì´ ê°œìˆ˜ ì¹´ìš´íŠ¸
 	_uint iObjectCnt = {};
 
 	for (auto& pProp : m_ObjectList)
 	{
-		// ÀÎ½ºÅÏ½º ¼Ó¼ºÀÌ ¾Æ´Ï¸é Ä«¿îÆ® Áõ°¡ X
+		// ì¸ìŠ¤í„´ìŠ¤ ì†ì„±ì´ ì•„ë‹ˆë©´ ì¹´ìš´íŠ¸ ì¦ê°€ X
 		if (false == pProp->Get_Properties().isInstance)
 			++iObjectCnt;
 	}
 
-	// 1. ¿ÀºêÁ§Æ®ÀÇ ÃÑ °³¼ö ÀúÀå
+	// 1. ì˜¤ë¸Œì íŠ¸ì˜ ì´ ê°œìˆ˜ ì €ì¥
 	WriteFile(hObjectFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr);
 
-	// ´ÜÀÏ ¿ÀºêÁ§Æ® ¼øÈ¸ÇÏ¸é¼­ ¸ğµ¨ ÀÌ¸§ ¾Ë¾Æ¿À±â ( Prototype ÅÂ±×·Î »ç¿ëÇÒ °Í )
+	// ë‹¨ì¼ ì˜¤ë¸Œì íŠ¸ ìˆœíšŒí•˜ë©´ì„œ ëª¨ë¸ ì´ë¦„ ì•Œì•„ì˜¤ê¸° ( Prototype íƒœê·¸ë¡œ ì‚¬ìš©í•  ê²ƒ )
 	for (auto& pProp : m_ObjectList)
 	{
-		// ÀÎ½ºÅÏ½º ¼Ó¼ºÀÌ¸é ´ÜÀÏ ¿ÀºêÁ§Æ®´Ï±î ´ÙÀ½ ¼øÈ¸
+		// ì¸ìŠ¤í„´ìŠ¤ ì†ì„±ì´ë©´ ë‹¨ì¼ ì˜¤ë¸Œì íŠ¸ë‹ˆê¹Œ ë‹¤ìŒ ìˆœíšŒ
 		if (true == pProp->Get_Properties().isInstance)
 			continue;
 
-		// ±âº» ¾ç½Ä ÁöÅ°±â ( Prototype_Component_Model_¸ğµ¨ÆÄÀÏ¸í ) ( Layer Ãß°¡¿¡ »ç¿ëÇÒ °Í, ¸ğµ¨¸í ´øÁ®ÁÖ±â )
+		// ê¸°ë³¸ ì–‘ì‹ ì§€í‚¤ê¸° ( Prototype_Component_Model_ëª¨ë¸íŒŒì¼ëª… ) ( Layer ì¶”ê°€ì— ì‚¬ìš©í•  ê²ƒ, ëª¨ë¸ëª… ë˜ì ¸ì£¼ê¸° )
 		_wstring strPrototypeTag = TEXT("Prototype_Component_Model_");
 		strPrototypeTag += pProp->Get_ModelName();
 
-		// ¸ğµ¨ ÀÌ¸§ ±æÀÌ
+		// ëª¨ë¸ ì´ë¦„ ê¸¸ì´
 		_uint iPrototypeLen = strPrototypeTag.size();
 
-		// 2. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ±æÀÌ ÀúÀå
+		// 2. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ê¸¸ì´ ì €ì¥
 		WriteFile(hObjectFile, &iPrototypeLen, sizeof(_uint), &dwByte, nullptr);
-		// 3. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ÀÌ¸§ ÀúÀå
+		// 3. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ì´ë¦„ ì €ì¥
 		WriteFile(hObjectFile, strPrototypeTag.c_str(), sizeof(_tchar) * iPrototypeLen, &dwByte, nullptr);
 
-		// °´Ã¼´ç ¿ùµåÇà·Ä »©¿À±â
+		// ê°ì²´ë‹¹ ì›”ë“œí–‰ë ¬ ë¹¼ì˜¤ê¸°
 		CTransform* pTransform = static_cast<CTransform*>(pProp->Get_Component(TEXT("Com_Transform")));
 		CHECK_NULLPTR_MSG(pTransform, TEXT("nullptr == pTransform"), false);
 
@@ -3207,15 +3321,15 @@ _bool CLevel_Map::Object_Save_Binary()
 
 		XMStoreFloat4x4(&WorldMatrix, pTransform->Get_WorldMatrix());
 
-		// 4. °´Ã¼´ç ¿ùµåÇà·Ä ÀúÀå
+		// 4. ê°ì²´ë‹¹ ì›”ë“œí–‰ë ¬ ì €ì¥
 		WriteFile(hObjectFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr);
 
-		// 5. °´Ã¼´ç ¼Ó¼º ÀúÀå
+		// 5. ê°ì²´ë‹¹ ì†ì„± ì €ì¥
 		MAPOBJECT_PROPERTIES PropDesc = pProp->Get_Properties();
 		WriteFile(hObjectFile, &PropDesc, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr);
 	}
 
-	// ÇÁ·ÎÅäÅ¸ÀÔ ÇÚµé ´İ±â
+	// í”„ë¡œí† íƒ€ì… í•¸ë“¤ ë‹«ê¸°
 	CloseHandle(hObjectFile);
 
 	return true;
@@ -3229,7 +3343,7 @@ _bool CLevel_Map::Instance_Object_Save_Binary()
 
 	DWORD dwByte = {};
 
-	// ÇÁ·ÎÅäÅ¸ÀÔ ÇÚµé °³¹æ
+	// í”„ë¡œí† íƒ€ì… í•¸ë“¤ ê°œë°©
 	HANDLE hObjectFile = CreateFile(strObjectInfoPath.c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (INVALID_HANDLE_VALUE == hObjectFile)
 	{
@@ -3237,15 +3351,15 @@ _bool CLevel_Map::Instance_Object_Save_Binary()
 	}
 	else
 	{
-		// Áßº¹ ¸ğµ¨ Ã¼Å©
+		// ì¤‘ë³µ ëª¨ë¸ ì²´í¬
 		map<_wstring, CProp*> InstObj;
 
-		// ¿ÀºêÁ§Æ® ÃÑ °³¼ö Ä«¿îÆ®
+		// ì˜¤ë¸Œì íŠ¸ ì´ ê°œìˆ˜ ì¹´ìš´íŠ¸
 		_uint iObjectCnt = {};
 
 		for (auto& pProp : m_ObjectList)
 		{
-			// ÀÎ½ºÅÏ½º ¼Ó¼ºÀÏ¶§¸¸
+			// ì¸ìŠ¤í„´ìŠ¤ ì†ì„±ì¼ë•Œë§Œ
 			if (true == pProp->Get_Properties().isInstance)
 			{
 				auto iter = InstObj.find(pProp->Get_ModelName());
@@ -3259,35 +3373,35 @@ _bool CLevel_Map::Instance_Object_Save_Binary()
 			}
 		}
 
-		// 1. ÀÎ½ºÅÏ½º¿¡ »ç¿ëÇÒ ¿ÀºêÁ§Æ®ÀÇ ÃÑ °³¼ö ÀúÀå
+		// 1. ì¸ìŠ¤í„´ìŠ¤ì— ì‚¬ìš©í•  ì˜¤ë¸Œì íŠ¸ì˜ ì´ ê°œìˆ˜ ì €ì¥
 		WriteFile(hObjectFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr);
 
-		// ´ÜÀÏ ¿ÀºêÁ§Æ® ¼øÈ¸ÇÏ¸é¼­ ¸ğµ¨ ÀÌ¸§ ¾Ë¾Æ¿À±â ( Prototype ÅÂ±×·Î »ç¿ëÇÒ °Í )
+		// ë‹¨ì¼ ì˜¤ë¸Œì íŠ¸ ìˆœíšŒí•˜ë©´ì„œ ëª¨ë¸ ì´ë¦„ ì•Œì•„ì˜¤ê¸° ( Prototype íƒœê·¸ë¡œ ì‚¬ìš©í•  ê²ƒ )
 		for (auto& pInstProp : InstObj)
 		{
-			// ±âº» ¾ç½Ä ÁöÅ°±â ( Prototype_Component_Model_¸ğµ¨ÆÄÀÏ¸í ) ( Layer Ãß°¡¿¡ »ç¿ëÇÒ °Í, ¸ğµ¨¸í ´øÁ®ÁÖ±â )
+			// ê¸°ë³¸ ì–‘ì‹ ì§€í‚¤ê¸° ( Prototype_Component_Model_ëª¨ë¸íŒŒì¼ëª… ) ( Layer ì¶”ê°€ì— ì‚¬ìš©í•  ê²ƒ, ëª¨ë¸ëª… ë˜ì ¸ì£¼ê¸° )
 			_wstring strPrototypeTag = TEXT("Prototype_Component_Model_");
 			strPrototypeTag += pInstProp.second->Get_ModelName();
 
-			// ÀÎ½ºÅÏ½º´Â ÇÁ·ÎÅäÅ¸ÀÔ ¼¼ÀÌºê¿Í µ¿ÀÏÇÏ°Ô _Inst ·Î ÀúÀå
+			// ì¸ìŠ¤í„´ìŠ¤ëŠ” í”„ë¡œí† íƒ€ì… ì„¸ì´ë¸Œì™€ ë™ì¼í•˜ê²Œ _Inst ë¡œ ì €ì¥
 			strPrototypeTag += TEXT("_Inst");
 
-			// ¸ğµ¨ ÀÌ¸§ ±æÀÌ
+			// ëª¨ë¸ ì´ë¦„ ê¸¸ì´
 			_uint iPrototypeLen = strPrototypeTag.size();
 
-			// 2. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ±æÀÌ ÀúÀå
+			// 2. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ê¸¸ì´ ì €ì¥
 			WriteFile(hObjectFile, &iPrototypeLen, sizeof(_uint), &dwByte, nullptr);
-			// 3. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ÀÌ¸§ ÀúÀå
+			// 3. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ì´ë¦„ ì €ì¥
 			WriteFile(hObjectFile, strPrototypeTag.c_str(), sizeof(_tchar) * iPrototypeLen, &dwByte, nullptr);
 
-			// 4. °´Ã¼´ç ¼Ó¼º ÀúÀå
+			// 4. ê°ì²´ë‹¹ ì†ì„± ì €ì¥
 			MAPOBJECT_PROPERTIES PropDesc = pInstProp.second->Get_Properties();
 			WriteFile(hObjectFile, &PropDesc, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr);
 		}
-		// ´ÜÀÏ ¿ÀºêÁ§Æ® ÀÌ¿ÜÀÇ °Íµé Ãß°¡ ¿¹Á¤
+		// ë‹¨ì¼ ì˜¤ë¸Œì íŠ¸ ì´ì™¸ì˜ ê²ƒë“¤ ì¶”ê°€ ì˜ˆì •
 	}
 
-	// ÇÁ·ÎÅäÅ¸ÀÔ ÇÚµé ´İ±â
+	// í”„ë¡œí† íƒ€ì… í•¸ë“¤ ë‹«ê¸°
 	CloseHandle(hObjectFile);
 
 	return true;
@@ -3301,7 +3415,7 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 
 	DWORD dwByte = {};
 
-	// ÇÁ·ÎÅäÅ¸ÀÔ ÇÚµé °³¹æ
+	// í”„ë¡œí† íƒ€ì… í•¸ë“¤ ê°œë°©
 	HANDLE hObjectFile = CreateFile(strObjectInfoPath.c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (INVALID_HANDLE_VALUE == hObjectFile)
 	{
@@ -3309,41 +3423,41 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 	}
 	else
 	{
-		// ¿ÀºêÁ§Æ® ÃÑ °³¼ö Ä«¿îÆ®
+		// ì˜¤ë¸Œì íŠ¸ ì´ ê°œìˆ˜ ì¹´ìš´íŠ¸
 		_uint iObjectCnt = {};
 
 		for (auto& pProp : m_InteractiveList)
 		{
-			// Æ®¸®°Å Å¸ÀÔÀÏ °æ¿ì ÄÁÆ¼´º
+			// íŠ¸ë¦¬ê±° íƒ€ì…ì¼ ê²½ìš° ì»¨í‹°ë‰´
 			if (INTERACTIVE_TYPE::TRIGGER == pProp->Get_InteractiveType())
 				continue;
 
-			// ÇöÀç µî·ÏµÇ¾îÀÖ´Â »óÈ£ ÀÛ¿ë °´Ã¼ Ä«¿îÆ® Áõ°¡
+			// í˜„ì¬ ë“±ë¡ë˜ì–´ìˆëŠ” ìƒí˜¸ ì‘ìš© ê°ì²´ ì¹´ìš´íŠ¸ ì¦ê°€
 			++iObjectCnt;
 		}
 
-		// 1. ¿ÀºêÁ§Æ®ÀÇ ÃÑ °³¼ö ÀúÀå
+		// 1. ì˜¤ë¸Œì íŠ¸ì˜ ì´ ê°œìˆ˜ ì €ì¥
 		WriteFile(hObjectFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr);
 
-		// ´ÜÀÏ ¿ÀºêÁ§Æ® ¼øÈ¸ÇÏ¸é¼­ ¸ğµ¨ ÀÌ¸§ ¾Ë¾Æ¿À±â ( Prototype ÅÂ±×·Î »ç¿ëÇÒ °Í ) ( »óÈ£ÀÛ¿ëÀº Prototype_Component_Model_±Í°Ë, »óÀÚ, ÀÌ·±½ÄÀ¸·Î °£´ÜÇÏ°Ô °¥°Í )
+		// ë‹¨ì¼ ì˜¤ë¸Œì íŠ¸ ìˆœíšŒí•˜ë©´ì„œ ëª¨ë¸ ì´ë¦„ ì•Œì•„ì˜¤ê¸° ( Prototype íƒœê·¸ë¡œ ì‚¬ìš©í•  ê²ƒ ) ( ìƒí˜¸ì‘ìš©ì€ Prototype_Component_Model_ê·€ê²€, ìƒì, ì´ëŸ°ì‹ìœ¼ë¡œ ê°„ë‹¨í•˜ê²Œ ê°ˆê²ƒ )
 		for (auto& pProp : m_InteractiveList)
 		{
-			// Æ®¸®°Å Å¸ÀÔ ÀÏ °æ¿ì ÆĞ½º
+			// íŠ¸ë¦¬ê±° íƒ€ì… ì¼ ê²½ìš° íŒ¨ìŠ¤
 			if (INTERACTIVE_TYPE::TRIGGER == pProp->Get_InteractiveType())
 				continue;
 
-			// »óÈ£ÀÛ¿ë ¾ÖµéÀº ¾ÖÃÊ¿¡ Prototype_Component_Model_±Í°Ë, »óÀÚ, ÀÌ·±½ÄÀÓ )
+			// ìƒí˜¸ì‘ìš© ì• ë“¤ì€ ì• ì´ˆì— Prototype_Component_Model_ê·€ê²€, ìƒì, ì´ëŸ°ì‹ì„ )
 			_wstring strPrototypeTag = pProp->Get_ModelName();
 
-			// ¸ğµ¨ ÀÌ¸§ ±æÀÌ
+			// ëª¨ë¸ ì´ë¦„ ê¸¸ì´
 			_uint iPrototypeLen = strPrototypeTag.size();
 
-			// 2. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ±æÀÌ ÀúÀå
+			// 2. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ê¸¸ì´ ì €ì¥
 			WriteFile(hObjectFile, &iPrototypeLen, sizeof(_uint), &dwByte, nullptr);
-			// 3. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ÀÌ¸§ ÀúÀå
+			// 3. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ì´ë¦„ ì €ì¥
 			WriteFile(hObjectFile, strPrototypeTag.c_str(), sizeof(_tchar) * iPrototypeLen, &dwByte, nullptr);
 
-			// °´Ã¼´ç ¿ùµåÇà·Ä »©¿À±â
+			// ê°ì²´ë‹¹ ì›”ë“œí–‰ë ¬ ë¹¼ì˜¤ê¸°
 			CTransform* pTransform = static_cast<CTransform*>(pProp->Get_Component(TEXT("Com_Transform")));
 			CHECK_NULLPTR_MSG(pTransform, TEXT("nullptr == pTransform"), false);
 
@@ -3351,15 +3465,15 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 
 			XMStoreFloat4x4(&WorldMatrix, pTransform->Get_WorldMatrix());
 
-			// 4. °´Ã¼´ç ¿ùµåÇà·Ä ÀúÀå
+			// 4. ê°ì²´ë‹¹ ì›”ë“œí–‰ë ¬ ì €ì¥
 			WriteFile(hObjectFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr);
 
-			// 5. °´Ã¼ÀÇ »óÈ£ÀÛ¿ë ¿ÀºêÁ§Æ® ÀúÀå ( Å¬¶ó¶û ¿¡µğÅÍ¶û ¸ÂÃß±â ) ( MapObject::MAPOBJECT_DESC::INTERACTIVE_TYPE )
+			// 5. ê°ì²´ì˜ ìƒí˜¸ì‘ìš© ì˜¤ë¸Œì íŠ¸ ì €ì¥ ( í´ë¼ë‘ ì—ë””í„°ë‘ ë§ì¶”ê¸° ) ( MapObject::MAPOBJECT_DESC::INTERACTIVE_TYPE )
 			INTERACTIVE_TYPE eType = pProp->Get_InteractiveType();
 			CHECK_EQUAL(INTERACTIVE_TYPE::END, eType, false);
 			WriteFile(hObjectFile, &eType, sizeof(INTERACTIVE_TYPE), &dwByte, nullptr);
 
-			// Ãß°¡ÀûÀ¸·Î ³Ö¾îÁà¾ß ÇÒ °Ô ÀÖ´Â °æ¿ì ¿©±â Ã¤¿ì±â
+			// ì¶”ê°€ì ìœ¼ë¡œ ë„£ì–´ì¤˜ì•¼ í•  ê²Œ ìˆëŠ” ê²½ìš° ì—¬ê¸° ì±„ìš°ê¸°
 			if (INTERACTIVE_TYPE::CHECKPOINT == eType)
 			{
 				_int iBladeNexusID = {};
@@ -3368,7 +3482,7 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 			}
 			if (INTERACTIVE_TYPE::CHEST == eType)
 			{
-				// 6. ¾ÆÀÌÅÛ 3°³ ID ³Ñ±â±â ( ±¸Á¶Ã¼ Editor, Client µ¿ÀÏÇÏ°Ô )
+				// 6. ì•„ì´í…œ 3ê°œ ID ë„˜ê¸°ê¸° ( êµ¬ì¡°ì²´ Editor, Client ë™ì¼í•˜ê²Œ )
 				CMapObject::ITEMBOX_DESC ItemBoxDesc = {};
 				ItemBoxDesc = pProp->Get_ItemBox();
 				WriteFile(hObjectFile, &ItemBoxDesc, sizeof(CMapObject::ITEMBOX_DESC), &dwByte, nullptr);
@@ -3380,7 +3494,7 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 		}
 	}
 
-	// ÇÁ·ÎÅäÅ¸ÀÔ ÇÚµé ´İ±â
+	// í”„ë¡œí† íƒ€ì… í•¸ë“¤ ë‹«ê¸°
 	CloseHandle(hObjectFile);
 
 	return true;
@@ -3396,7 +3510,7 @@ _bool CLevel_Map::Trigger_Save_Json()
 
 	JSON_MAP_TRIGGER_DATA TriggerJson = {};
 
-	// Æ®¸®°Å ¾ß¸Å ( °¡Á®¿À±ë
+	// íŠ¸ë¦¬ê±° ì•¼ë§¤ ( ê°€ì ¸ì˜¤ê¹…
 	for (auto& pProp : m_InteractiveList)
 	{
 		if (INTERACTIVE_TYPE::TRIGGER == pProp->Get_InteractiveType())
@@ -3422,7 +3536,7 @@ _bool CLevel_Map::Trigger_Save_Json()
 
 	if (!ofs.is_open())
 	{
-		OutputDebugStringA("ÇÁ·ÎÅäÅ¸ÀÔ Json ÆÄÀÏÀÔÃâ·Â ½ÇÆĞ");
+		OutputDebugStringA("í”„ë¡œí† íƒ€ì… Json íŒŒì¼ì…ì¶œë ¥ ì‹¤íŒ¨");
 	}
 
 	ofs << j.dump(4);
@@ -3445,19 +3559,19 @@ _bool CLevel_Map::Object_Save_Binary_ByLevel(_uint iLevel)
 
 	DWORD dwByte = {};
 
-	// ÇÁ·ÎÅäÅ¸ÀÔ ÇÚµé °³¹æ
+	// í”„ë¡œí† íƒ€ì… í•¸ë“¤ ê°œë°©
 	HANDLE hObjectFile = CreateFile(szObjectLevelInfoPath, GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (INVALID_HANDLE_VALUE == hObjectFile)
 	{
 		return false;
 	}
 
-	// ¿ÀºêÁ§Æ® ÃÑ °³¼ö Ä«¿îÆ®
+	// ì˜¤ë¸Œì íŠ¸ ì´ ê°œìˆ˜ ì¹´ìš´íŠ¸
 	_uint iObjectCnt = {};
 
 	for (auto& pProp : m_ObjectList)
 	{
-		// ÀÎ½ºÅÏ½º ¼Ó¼ºÀÌ ¾Æ´Ï¸é Ä«¿îÆ® Áõ°¡ X
+		// ì¸ìŠ¤í„´ìŠ¤ ì†ì„±ì´ ì•„ë‹ˆë©´ ì¹´ìš´íŠ¸ ì¦ê°€ X
 		if (true == pProp->Get_Properties().isInstance)
 			continue;
 
@@ -3467,33 +3581,33 @@ _bool CLevel_Map::Object_Save_Binary_ByLevel(_uint iLevel)
 		++iObjectCnt;
 	}
 
-	// 1. ¿ÀºêÁ§Æ®ÀÇ ÃÑ °³¼ö ÀúÀå ( ÁöÁ¤ÇÑ Æ¯Á¤ ·¹º§ÀÇ )
+	// 1. ì˜¤ë¸Œì íŠ¸ì˜ ì´ ê°œìˆ˜ ì €ì¥ ( ì§€ì •í•œ íŠ¹ì • ë ˆë²¨ì˜ )
 	WriteFile(hObjectFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr);
 
-	// ´ÜÀÏ ¿ÀºêÁ§Æ® ¼øÈ¸ÇÏ¸é¼­ ¸ğµ¨ ÀÌ¸§ ¾Ë¾Æ¿À±â ( Prototype ÅÂ±×·Î »ç¿ëÇÒ °Í )
+	// ë‹¨ì¼ ì˜¤ë¸Œì íŠ¸ ìˆœíšŒí•˜ë©´ì„œ ëª¨ë¸ ì´ë¦„ ì•Œì•„ì˜¤ê¸° ( Prototype íƒœê·¸ë¡œ ì‚¬ìš©í•  ê²ƒ )
 	for (auto& pProp : m_ObjectList)
 	{
-		// ÀÎ½ºÅÏ½º ¼Ó¼ºÀÌ¸é ´ÜÀÏ ¿ÀºêÁ§Æ®´Ï±î ´ÙÀ½ ¼øÈ¸
+		// ì¸ìŠ¤í„´ìŠ¤ ì†ì„±ì´ë©´ ë‹¨ì¼ ì˜¤ë¸Œì íŠ¸ë‹ˆê¹Œ ë‹¤ìŒ ìˆœíšŒ
 		if (true == pProp->Get_Properties().isInstance)
 			continue;
 
-		// ÀúÀåµÈ Level °ªÀÌ¶û ÀÏÄ¡ÇÏÁö ¾ÊÀ¸¸é ´ÙÀ½ ¼øÈ¸
+		// ì €ì¥ëœ Level ê°’ì´ë‘ ì¼ì¹˜í•˜ì§€ ì•Šìœ¼ë©´ ë‹¤ìŒ ìˆœíšŒ
 		if (iLevel != pProp->Get_SubLevel())
 			continue;
 
-		// ±âº» ¾ç½Ä ÁöÅ°±â ( Prototype_Component_Model_¸ğµ¨ÆÄÀÏ¸í ) ( Layer Ãß°¡¿¡ »ç¿ëÇÒ °Í, ¸ğµ¨¸í ´øÁ®ÁÖ±â )
+		// ê¸°ë³¸ ì–‘ì‹ ì§€í‚¤ê¸° ( Prototype_Component_Model_ëª¨ë¸íŒŒì¼ëª… ) ( Layer ì¶”ê°€ì— ì‚¬ìš©í•  ê²ƒ, ëª¨ë¸ëª… ë˜ì ¸ì£¼ê¸° )
 		_wstring strPrototypeTag = TEXT("Prototype_Component_Model_");
 		strPrototypeTag += pProp->Get_ModelName();
 
-		// ¸ğµ¨ ÀÌ¸§ ±æÀÌ
+		// ëª¨ë¸ ì´ë¦„ ê¸¸ì´
 		_uint iPrototypeLen = strPrototypeTag.size();
 
-		// 2. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ±æÀÌ ÀúÀå
+		// 2. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ê¸¸ì´ ì €ì¥
 		WriteFile(hObjectFile, &iPrototypeLen, sizeof(_uint), &dwByte, nullptr);
-		// 3. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ÀÌ¸§ ÀúÀå
+		// 3. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ì´ë¦„ ì €ì¥
 		WriteFile(hObjectFile, strPrototypeTag.c_str(), sizeof(_tchar) * iPrototypeLen, &dwByte, nullptr);
 
-		// °´Ã¼´ç ¿ùµåÇà·Ä »©¿À±â
+		// ê°ì²´ë‹¹ ì›”ë“œí–‰ë ¬ ë¹¼ì˜¤ê¸°
 		CTransform* pTransform = static_cast<CTransform*>(pProp->Get_Component(TEXT("Com_Transform")));
 		CHECK_NULLPTR_MSG(pTransform, TEXT("nullptr == pTransform"), false);
 
@@ -3501,15 +3615,15 @@ _bool CLevel_Map::Object_Save_Binary_ByLevel(_uint iLevel)
 
 		XMStoreFloat4x4(&WorldMatrix, pTransform->Get_WorldMatrix());
 
-		// 4. °´Ã¼´ç ¿ùµåÇà·Ä ÀúÀå
+		// 4. ê°ì²´ë‹¹ ì›”ë“œí–‰ë ¬ ì €ì¥
 		WriteFile(hObjectFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr);
 
-		// 5. °´Ã¼´ç ¼Ó¼º ÀúÀå
+		// 5. ê°ì²´ë‹¹ ì†ì„± ì €ì¥
 		MAPOBJECT_PROPERTIES PropDesc = pProp->Get_Properties();
 		WriteFile(hObjectFile, &PropDesc, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr);
 	}
 
-	// ÇÁ·ÎÅäÅ¸ÀÔ ÇÚµé ´İ±â
+	// í”„ë¡œí† íƒ€ì… í•¸ë“¤ ë‹«ê¸°
 	CloseHandle(hObjectFile);
 
 	return true;
@@ -3523,7 +3637,7 @@ _bool CLevel_Map::Lights_Save_Binary()
 
 	DWORD dwByte = {};
 
-	// ÇÁ·ÎÅäÅ¸ÀÔ ÇÚµé °³¹æ
+	// í”„ë¡œí† íƒ€ì… í•¸ë“¤ ê°œë°©
 	HANDLE hLightFile = CreateFile(strLightInfoPath.c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (INVALID_HANDLE_VALUE == hLightFile)
 	{
@@ -3539,7 +3653,7 @@ _bool CLevel_Map::Lights_Save_Binary()
 				++iLightCnt;
 		}
 
-		// 1. ÇÁ·ÎÅä Å¸ÀÔÀÇ ÃÑ °³¼ö ÀúÀå ( ÀÌ¸¸Å­ ·çÇÁ µ¹¸±°Å )
+		// 1. í”„ë¡œí†  íƒ€ì…ì˜ ì´ ê°œìˆ˜ ì €ì¥ ( ì´ë§Œí¼ ë£¨í”„ ëŒë¦´ê±° )
 		WriteFile(hLightFile, &iLightCnt, sizeof(_uint), &dwByte, nullptr);
 
 		for (auto& pLightTag : m_LightTags)
@@ -3552,18 +3666,18 @@ _bool CLevel_Map::Lights_Save_Binary()
 
 			_uint iLightTagLen = static_cast<_uint>(pLightTag.size());
 
-			// 2. Á¶¸í ÅÂ±× ±æÀÌ ÀúÀå
+			// 2. ì¡°ëª… íƒœê·¸ ê¸¸ì´ ì €ì¥
 			WriteFile(hLightFile, &iLightTagLen, sizeof(_uint), &dwByte, nullptr);
 
-			// 3. Á¶¸í ÅÂ±× ÀúÀå ( _wstringÀ¸·Î ³ÖÀ»¼öÀÖ°Ô ¹Ù·Î º¯È¯ )
+			// 3. ì¡°ëª… íƒœê·¸ ì €ì¥ ( _wstringìœ¼ë¡œ ë„£ì„ìˆ˜ìˆê²Œ ë°”ë¡œ ë³€í™˜ )
 			WriteFile(hLightFile, AnsiToWString(pLightTag).c_str(), sizeof(_tchar) * iLightTagLen, &dwByte, nullptr);
 
-			// 4. Á¶¸í ±¸Á¶Ã¼ ÀúÀå
+			// 4. ì¡°ëª… êµ¬ì¡°ì²´ ì €ì¥
 			WriteFile(hLightFile, pLightDesc, sizeof(LIGHT_DESC), &dwByte, nullptr);
 		}
 	}
 
-	// ÇÁ·ÎÅäÅ¸ÀÔ ÇÚµé ´İ±â
+	// í”„ë¡œí† íƒ€ì… í•¸ë“¤ ë‹«ê¸°
 	CloseHandle(hLightFile);
 
 	return true;
@@ -3580,43 +3694,43 @@ _bool CLevel_Map::Prototypes_Load_Binary()
 	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	CHECK_EQUAL(INVALID_HANDLE_VALUE, hFile, false);
 
-	// 1. ÇÁ·ÎÅä Å¸ÀÔÀÇ ÃÑ °³¼ö
+	// 1. í”„ë¡œí†  íƒ€ì…ì˜ ì´ ê°œìˆ˜
 	_uint iPrototypeCnt = {};
 	CHECK_FALSE(ReadFile(hFile, &iPrototypeCnt, sizeof(_uint), &dwByte, nullptr), false);
 
-	// ÇÁ·ÎÅä Å¸ÀÔÀÇ ÃÑ °³¼ö¸¸Å­ ¼øÈ¸
+	// í”„ë¡œí†  íƒ€ì…ì˜ ì´ ê°œìˆ˜ë§Œí¼ ìˆœíšŒ
 	for (_uint i = 0; i < iPrototypeCnt; ++i)
 	{
-		// 2. MapObject Å¸ÀÔ °¡Á®¿À±â ( _ushortÇüÀ¸·Î ÀúÀåÇØ¼­ Çüº¯È¯ ÈÄ »ç¿ë )
+		// 2. MapObject íƒ€ì… ê°€ì ¸ì˜¤ê¸° ( _ushortí˜•ìœ¼ë¡œ ì €ì¥í•´ì„œ í˜•ë³€í™˜ í›„ ì‚¬ìš© )
 		_ushort sMapObjectType = {};
 		CHECK_FALSE(ReadFile(hFile, &sMapObjectType, sizeof(_ushort), &dwByte, nullptr), false);
 
 		MAPOBJECT_TYPE eMapObjType = static_cast<MAPOBJECT_TYPE>(sMapObjectType);
 
-		// MapObject Å¸ÀÔ¿¡ µû¸¥ Á¶°Ç¹®
+		// MapObject íƒ€ì…ì— ë”°ë¥¸ ì¡°ê±´ë¬¸
 		if (MAPOBJECT_TYPE::OBJECT == eMapObjType ||
 			MAPOBJECT_TYPE::INTERACTIVE == eMapObjType ||
 			MAPOBJECT_TYPE::DYNAMIC == eMapObjType)
 		{
-			// CModel À» ¿­¾î¾ß ÇÏ´Â °æ¿ì ( Instance X )
+			// CModel ì„ ì—´ì–´ì•¼ í•˜ëŠ” ê²½ìš° ( Instance X )
 
-			// 3. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ±æÀÌ ÀúÀå
+			// 3. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ê¸¸ì´ ì €ì¥
 			_uint iPrototypeTagLen = {};
 			CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), false);
 
-			// 4. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ÀÌ¸§ ÀúÀå
+			// 4. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ì´ë¦„ ì €ì¥
 			_tchar szPrototypeTag[MAX_PATH] = {};
 			CHECK_FALSE(ReadFile(hFile, &szPrototypeTag, sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr), false);
 
-			// 5. ¸ğµ¨ °æ·Î ±æÀÌ ÀúÀå
+			// 5. ëª¨ë¸ ê²½ë¡œ ê¸¸ì´ ì €ì¥
 			_uint iModelPathLen = {};
 			CHECK_FALSE(ReadFile(hFile, &iModelPathLen, sizeof(_uint), &dwByte, nullptr), false);
 
-			// 6. ¸ğµ¨ °æ·Î ÀÌ¸§ ÀúÀå
+			// 6. ëª¨ë¸ ê²½ë¡œ ì´ë¦„ ì €ì¥
 			_char szModelPath[MAX_PATH] = {};
 			CHECK_FALSE(ReadFile(hFile, &szModelPath, sizeof(_char) * iModelPathLen, &dwByte, nullptr), false);
 
-			// Prototype_Component_Model_ ÀÚ¸£±â ½ÃÀÛ ( ¿¡µğÅÍ¿¡¼­ º¸±â ÆíÇÏ°Ô ÅÂ±× Á¦°Å )
+			// Prototype_Component_Model_ ìë¥´ê¸° ì‹œì‘ ( ì—ë””í„°ì—ì„œ ë³´ê¸° í¸í•˜ê²Œ íƒœê·¸ ì œê±° )
 			_wstring strFullPrototypeTag = szPrototypeTag;
 			_wstring strPreFix = { TEXT("Prototype_Component_Model_") };
 
@@ -3628,7 +3742,7 @@ _bool CLevel_Map::Prototypes_Load_Binary()
 			}
 
 			wcscpy_s(szPrototypeTag, strFullPrototypeTag.c_str());
-			// Prototype_Component_Model_ ÀÚ¸£±â ³¡
+			// Prototype_Component_Model_ ìë¥´ê¸° ë
 
 			if (true == m_pGameInstance->Already_Registered_Prototype(ENUM_CLASS(LEVEL::MAP), szPrototypeTag))
 				continue;
@@ -3637,7 +3751,7 @@ _bool CLevel_Map::Prototypes_Load_Binary()
 				CModel::Create(m_pDevice, m_pContext, szModelPath))))
 			{
 				CloseHandle(hFile);
-				MSG_BOX(TEXT("[DAT ERROR] ¸Ê ¿ÀºêÁ§Æ® ÇÁ·ÎÅäÅ¸ÀÔ µî·Ï ½ÇÆĞ ( CModel )"));
+				MSG_BOX(TEXT("[DAT ERROR] ë§µ ì˜¤ë¸Œì íŠ¸ í”„ë¡œí† íƒ€ì… ë“±ë¡ ì‹¤íŒ¨ ( CModel )"));
 				return false;
 			}
 
@@ -3668,30 +3782,30 @@ _bool CLevel_Map::Objects_Load_Binary()
 	HANDLE hFile = CreateFile(strObjectInfoPath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	CHECK_EQUAL(INVALID_HANDLE_VALUE, hFile, false);
 
-	// 1. ¿ÀºêÁ§Æ®ÀÇ ÃÑ °³¼ö
+	// 1. ì˜¤ë¸Œì íŠ¸ì˜ ì´ ê°œìˆ˜
 	_uint iObjectCnt = {};
 	CHECK_FALSE(ReadFile(hFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr), false);
 
-	// ¿ÀºêÁ§Æ® ÃÑ °³¼ö¸¸Å­ ¼øÈ¸
+	// ì˜¤ë¸Œì íŠ¸ ì´ ê°œìˆ˜ë§Œí¼ ìˆœíšŒ
 	for (_uint i = 0; i < iObjectCnt; ++i)
 	{
 		CProp_Object::PROP_OBJECT_DESC ObjectDesc = {};
 
-		// ¸Ê ¿¡µğÅÍ¿ë MapObjectID
+		// ë§µ ì—ë””í„°ìš© MapObjectID
 		ObjectDesc.iMapObjectID = m_iMapObjectCnt++;
 
-		// 2. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ±æÀÌ ºÒ·¯¿À±â
+		// 2. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ê¸¸ì´ ë¶ˆëŸ¬ì˜¤ê¸°
 		_uint iPrototypeTagLen = {};
 		CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), false);
 
-		// 3. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ÀÌ¸§ ºÒ·¯¿À±â
+		// 3. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ì´ë¦„ ë¶ˆëŸ¬ì˜¤ê¸°
 		_tchar szPrototypeTag[MAX_PATH] = {};
 		CHECK_FALSE(ReadFile(hFile, &szPrototypeTag, sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr), false);
 
-		// ºÒ·¯¿Â ÅÂ±× Ä«ÇÇ
+		// ë¶ˆëŸ¬ì˜¨ íƒœê·¸ ì¹´í”¼
 		memcpy(ObjectDesc.szModelName, szPrototypeTag, sizeof(ObjectDesc.szModelName));
 
-		// Prototype_Component_Model_ ÀÚ¸£±â ½ÃÀÛ ( ¿¡µğÅÍ¿¡¼­ º¸±â ÆíÇÏ°Ô ÅÂ±× Á¦°Å )
+		// Prototype_Component_Model_ ìë¥´ê¸° ì‹œì‘ ( ì—ë””í„°ì—ì„œ ë³´ê¸° í¸í•˜ê²Œ íƒœê·¸ ì œê±° )
 		_wstring strFullPrototypeTag = ObjectDesc.szModelName;
 		_wstring strPreFix = { TEXT("Prototype_Component_Model_") };
 
@@ -3703,24 +3817,24 @@ _bool CLevel_Map::Objects_Load_Binary()
 		}
 
 		wcscpy_s(ObjectDesc.szModelName, strFullPrototypeTag.c_str());
-		// Prototype_Component_Model_ ÀÚ¸£±â ³¡
+		// Prototype_Component_Model_ ìë¥´ê¸° ë
 
-		// ÇöÀç ÀÌ ·¹º§À» ³Ñ°ÜÁÜ
+		// í˜„ì¬ ì´ ë ˆë²¨ì„ ë„˜ê²¨ì¤Œ
 		ObjectDesc.eLevel = LEVEL::MAP;
 
-		// 4. °´Ã¼´ç ¿ùµå Çà·Ä ¶§¿À±â
+		// 4. ê°ì²´ë‹¹ ì›”ë“œ í–‰ë ¬ ë•Œì˜¤ê¸°
 		_float4x4 WorldMatrix = {};
 		CHECK_FALSE(ReadFile(hFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr), false);
 
 		ObjectDesc.WorldMatrix = WorldMatrix;
 
-		// 5. °´Ã¼ÀÇ ¼Ó¼º ºÒ·¯¿À±â
+		// 5. ê°ì²´ì˜ ì†ì„± ë¶ˆëŸ¬ì˜¤ê¸°
 		MAPOBJECT_PROPERTIES PropProperties = {};
 		CHECK_FALSE(ReadFile(hFile, &PropProperties, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr), false);
 
 		ObjectDesc.Properties = PropProperties;
 
-		// 6. °´Ã¼ÀÇ ¼Ò ·¹º§ ºÒ·¯¿À±â
+		// 6. ê°ì²´ì˜ ì†Œ ë ˆë²¨ ë¶ˆëŸ¬ì˜¤ê¸°
 		_int iSaveLevel = {};
 		CHECK_FALSE(ReadFile(hFile, &iSaveLevel, sizeof(_int), &dwByte, nullptr), false);
 
@@ -3730,7 +3844,7 @@ _bool CLevel_Map::Objects_Load_Binary()
 			ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"), TIME_CHANNEL::WORLD, &ObjectDesc), false);
 
 		CProp* pProp = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj")));
-		CHECK_NULLPTR_MSG(pProp, TEXT("[OBJECT LOAD] ¿ÀºêÁ§Æ® Ã£±â ½ÇÆĞ"), false);
+		CHECK_NULLPTR_MSG(pProp, TEXT("[OBJECT LOAD] ì˜¤ë¸Œì íŠ¸ ì°¾ê¸° ì‹¤íŒ¨"), false);
 
 		m_ObjectList.push_back(pProp);
 	}
@@ -3748,7 +3862,7 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 
 	DWORD dwByte = {};
 
-	// ÇÁ·ÎÅäÅ¸ÀÔ ÇÚµé °³¹æ
+	// í”„ë¡œí† íƒ€ì… í•¸ë“¤ ê°œë°©
 	HANDLE hObjectFile = CreateFile(strObjectInfoPath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (INVALID_HANDLE_VALUE == hObjectFile)
 	{
@@ -3757,31 +3871,31 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 	}
 	else
 	{
-		// ¿ÀºêÁ§Æ® ÃÑ °³¼ö Ä«¿îÆ®
+		// ì˜¤ë¸Œì íŠ¸ ì´ ê°œìˆ˜ ì¹´ìš´íŠ¸
 		_uint iObjectCnt = {};
-		// 1. ¿ÀºêÁ§Æ®ÀÇ ÃÑ °³¼ö ºÒ·¯¿À±â
+		// 1. ì˜¤ë¸Œì íŠ¸ì˜ ì´ ê°œìˆ˜ ë¶ˆëŸ¬ì˜¤ê¸°
 		CHECK_FALSE(ReadFile(hObjectFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr), false);
 
-		// ´ÜÀÏ ¿ÀºêÁ§Æ® ¼øÈ¸ÇÏ¸é¼­ ¸ğµ¨ ÀÌ¸§ ¾Ë¾Æ¿À±â ( Prototype ÅÂ±×·Î »ç¿ëÇÒ °Í ) ( »óÈ£ÀÛ¿ëÀº Prototype_Component_Model_±Í°Ë, »óÀÚ, ÀÌ·±½ÄÀ¸·Î °£´ÜÇÏ°Ô °¥°Í )
+		// ë‹¨ì¼ ì˜¤ë¸Œì íŠ¸ ìˆœíšŒí•˜ë©´ì„œ ëª¨ë¸ ì´ë¦„ ì•Œì•„ì˜¤ê¸° ( Prototype íƒœê·¸ë¡œ ì‚¬ìš©í•  ê²ƒ ) ( ìƒí˜¸ì‘ìš©ì€ Prototype_Component_Model_ê·€ê²€, ìƒì, ì´ëŸ°ì‹ìœ¼ë¡œ ê°„ë‹¨í•˜ê²Œ ê°ˆê²ƒ )
 		for (_uint i = 0; i < iObjectCnt; ++i)
 		{
-			// »óÈ£ÀÛ¿ë ¾ÖµéÀº ¾ÖÃÊ¿¡ Prototype_Component_Model_±Í°Ë, »óÀÚ, ÀÌ·±½ÄÀÓ )
+			// ìƒí˜¸ì‘ìš© ì• ë“¤ì€ ì• ì´ˆì— Prototype_Component_Model_ê·€ê²€, ìƒì, ì´ëŸ°ì‹ì„ )
 			_tchar szPrototypeTag[MAX_PATH] = {};
 
-			// ¸ğµ¨ ÀÌ¸§ ±æÀÌ
+			// ëª¨ë¸ ì´ë¦„ ê¸¸ì´
 			_uint iPrototypeLen = {};
 
-			// 2. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ±æÀÌ ÀúÀå
+			// 2. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ê¸¸ì´ ì €ì¥
 			CHECK_FALSE(ReadFile(hObjectFile, &iPrototypeLen, sizeof(_uint), &dwByte, nullptr), false);
-			// 3. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ÀÌ¸§ ÀúÀå
+			// 3. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ì´ë¦„ ì €ì¥
 			CHECK_FALSE(ReadFile(hObjectFile, szPrototypeTag, sizeof(_tchar) * iPrototypeLen, &dwByte, nullptr), false);
 
 			_float4x4 WorldMatrix = {};
 
-			// 4. °´Ã¼´ç ¿ùµåÇà·Ä ÀúÀå
+			// 4. ê°ì²´ë‹¹ ì›”ë“œí–‰ë ¬ ì €ì¥
 			CHECK_FALSE(ReadFile(hObjectFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr), false);
 
-			// 5. °´Ã¼ÀÇ »óÈ£ÀÛ¿ë ¿ÀºêÁ§Æ® ÀúÀå ( Å¬¶ó¶û ¿¡µğÅÍ¶û ¸ÂÃß±â ) ( MapObject::MAPOBJECT_DESC::INTERACTIVE_TYPE )
+			// 5. ê°ì²´ì˜ ìƒí˜¸ì‘ìš© ì˜¤ë¸Œì íŠ¸ ì €ì¥ ( í´ë¼ë‘ ì—ë””í„°ë‘ ë§ì¶”ê¸° ) ( MapObject::MAPOBJECT_DESC::INTERACTIVE_TYPE )
 			INTERACTIVE_TYPE eType = { INTERACTIVE_TYPE::END };
 			CHECK_FALSE(ReadFile(hObjectFile, &eType, sizeof(INTERACTIVE_TYPE), &dwByte, nullptr), false);
 			CHECK_EQUAL(INTERACTIVE_TYPE::END, eType, false);
@@ -3790,55 +3904,55 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 			{
 				CBladeNexus::BLADENEXUS_DESC BladeNexusDesc = {};
 
-				BladeNexusDesc.iMapObjectID = m_iMapObjectCnt++;					// »ç½Ç»ó ÀÇ¹Ì X
+				BladeNexusDesc.iMapObjectID = m_iMapObjectCnt++;					// ì‚¬ì‹¤ìƒ ì˜ë¯¸ X
 				BladeNexusDesc.eLevel = LEVEL::MAP;
-				memcpy(BladeNexusDesc.szModelName, TEXT("Prototype_Component_Model_BladeNexus"), sizeof(BladeNexusDesc.szModelName));		// ÇÁ·ÎÅäÅ¸ÀÔ ÅÂ±×¸í
+				memcpy(BladeNexusDesc.szModelName, TEXT("Prototype_Component_Model_BladeNexus"), sizeof(BladeNexusDesc.szModelName));		// í”„ë¡œí† íƒ€ì… íƒœê·¸ëª…
 
-				BladeNexusDesc.WorldMatrix = WorldMatrix;										// Çà·Ä
+				BladeNexusDesc.WorldMatrix = WorldMatrix;										// í–‰ë ¬
 
-				BladeNexusDesc.eInteractiveType = eType;										// »óÈ£ ÀÛ¿ë ¿ÀºêÁ§Æ® Å¸ÀÔ
+				BladeNexusDesc.eInteractiveType = eType;										// ìƒí˜¸ ì‘ìš© ì˜¤ë¸Œì íŠ¸ íƒ€ì…
 
 				CHECK_FALSE(ReadFile(hObjectFile, &BladeNexusDesc.iBladeNexus_ID, sizeof(_int), &dwByte, nullptr), false);
 
 				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
 					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BladeNexus"), TIME_CHANNEL::WORLD, &BladeNexusDesc), false);
 			}
-			else if (INTERACTIVE_TYPE::CHEST == eType) // »óÈ£ÀÛ¿ë °è¼Ó Ãß°¡ ¿¹Á¤ ( ÀÌ ÇÔ¼ö À§ÂÊµµ )
+			else if (INTERACTIVE_TYPE::CHEST == eType) // ìƒí˜¸ì‘ìš© ê³„ì† ì¶”ê°€ ì˜ˆì • ( ì´ í•¨ìˆ˜ ìœ„ìª½ë„ )
 			{
 				CBigChest::BIGCHEST_DESC BigChestDesc = {};
 
-				BigChestDesc.iMapObjectID = m_iMapObjectCnt++;					// »ç½Ç»ó ÀÇ¹Ì X
+				BigChestDesc.iMapObjectID = m_iMapObjectCnt++;					// ì‚¬ì‹¤ìƒ ì˜ë¯¸ X
 				BigChestDesc.eLevel = LEVEL::MAP;
-				memcpy(BigChestDesc.szModelName, TEXT("Prototype_Component_Model_BigChest"), sizeof(BigChestDesc.szModelName));		// ÇÁ·ÎÅäÅ¸ÀÔ ÅÂ±×¸í
+				memcpy(BigChestDesc.szModelName, TEXT("Prototype_Component_Model_BigChest"), sizeof(BigChestDesc.szModelName));		// í”„ë¡œí† íƒ€ì… íƒœê·¸ëª…
 
-				BigChestDesc.WorldMatrix = WorldMatrix;									// Çà·Ä
+				BigChestDesc.WorldMatrix = WorldMatrix;									// í–‰ë ¬
 
-				BigChestDesc.eInteractiveType = eType;										// »óÈ£ ÀÛ¿ë ¿ÀºêÁ§Æ® Å¸ÀÔ
+				BigChestDesc.eInteractiveType = eType;										// ìƒí˜¸ ì‘ìš© ì˜¤ë¸Œì íŠ¸ íƒ€ì…
 
-				// »óÀÚ Å¸ÀÔÀÎ °æ¿ì ¾ÆÀÌÅÛ ¹Ú½º ±¸Á¶Ã¼µµ ½»½» ¼ï¼ï
+				// ìƒì íƒ€ì…ì¸ ê²½ìš° ì•„ì´í…œ ë°•ìŠ¤ êµ¬ì¡°ì²´ë„ ìŠ¥ìŠ¥ ì‡½ì‡½
 				CHECK_FALSE(ReadFile(hObjectFile, &BigChestDesc.ItemBox, sizeof(CMapObject::ITEMBOX_DESC), &dwByte, nullptr), false);
 
 				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
 					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BigChest"), TIME_CHANNEL::WORLD, &BigChestDesc), false);
 			}
-			else if (INTERACTIVE_TYPE::TOMBSTONE == eType) // »óÈ£ÀÛ¿ë °è¼Ó Ãß°¡ ¿¹Á¤ ( ÀÌ ÇÔ¼ö À§ÂÊµµ )
+			else if (INTERACTIVE_TYPE::TOMBSTONE == eType) // ìƒí˜¸ì‘ìš© ê³„ì† ì¶”ê°€ ì˜ˆì • ( ì´ í•¨ìˆ˜ ìœ„ìª½ë„ )
 			{
 				CTombStone::TOMBSTONE_DESC TombStoneDesc = {};
 
-				TombStoneDesc.iMapObjectID = m_iMapObjectCnt++;					// »ç½Ç»ó ÀÇ¹Ì X
+				TombStoneDesc.iMapObjectID = m_iMapObjectCnt++;					// ì‚¬ì‹¤ìƒ ì˜ë¯¸ X
 				TombStoneDesc.eLevel = LEVEL::MAP;
-				memcpy(TombStoneDesc.szModelName, TEXT("Prototype_Component_Model_TombStone"), sizeof(TombStoneDesc.szModelName));		// ÇÁ·ÎÅäÅ¸ÀÔ ÅÂ±×¸í
+				memcpy(TombStoneDesc.szModelName, TEXT("Prototype_Component_Model_TombStone"), sizeof(TombStoneDesc.szModelName));		// í”„ë¡œí† íƒ€ì… íƒœê·¸ëª…
 
-				TombStoneDesc.WorldMatrix = WorldMatrix;									// Çà·Ä
+				TombStoneDesc.WorldMatrix = WorldMatrix;									// í–‰ë ¬
 
-				TombStoneDesc.eInteractiveType = eType;										// »óÈ£ ÀÛ¿ë ¿ÀºêÁ§Æ® Å¸ÀÔ
+				TombStoneDesc.eInteractiveType = eType;										// ìƒí˜¸ ì‘ìš© ì˜¤ë¸Œì íŠ¸ íƒ€ì…
 
 				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
 					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_TombStone"), TIME_CHANNEL::WORLD, &TombStoneDesc), false);
 			}
 
 			CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));
-			CHECK_NULLPTR_MSG(pInteractive_Prop, TEXT("¿¨"), false);
+			CHECK_NULLPTR_MSG(pInteractive_Prop, TEXT("ì—¥"), false);
 
 			m_InteractiveList.push_back(pInteractive_Prop);
 		}
@@ -3846,7 +3960,7 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 		m_iInteractiveListIndex = m_InteractiveList.size() - 1;
 	}
 
-	// ÇÁ·ÎÅäÅ¸ÀÔ ÇÚµé ´İ±â
+	// í”„ë¡œí† íƒ€ì… í•¸ë“¤ ë‹«ê¸°
 	CloseHandle(hObjectFile);
 
 	return true;
@@ -3862,7 +3976,7 @@ _bool CLevel_Map::Trigger_objects_Load_Json()
 
 	if (!ifs.is_open())
 	{
-		OutputDebugStringA("Æ®¸®°Å Á¦ÀÌ½¼ ¾ø°Å³ª ¹®Á¦ÀÕÀ½ ÀÏ´Ü true ¹İÈ¯");
+		OutputDebugStringA("íŠ¸ë¦¬ê±° ì œì´ìŠ¨ ì—†ê±°ë‚˜ ë¬¸ì œì‡ìŒ ì¼ë‹¨ true ë°˜í™˜");
 		return true;
 	}
 
@@ -3878,20 +3992,20 @@ _bool CLevel_Map::Trigger_objects_Load_Json()
 	{
 		CTrigger::TRIGGER_DESC TriggerDesc = {};
 
-		TriggerDesc.iMapObjectID = m_iMapObjectCnt++;					// »ç½Ç»ó ÀÇ¹Ì X
+		TriggerDesc.iMapObjectID = m_iMapObjectCnt++;					// ì‚¬ì‹¤ìƒ ì˜ë¯¸ X
 		TriggerDesc.eLevel = LEVEL::MAP;
-		memcpy(TriggerDesc.szModelName, TEXT("Prototype_Component_Model_Trigger"), sizeof(TriggerDesc.szModelName));		// ÇÁ·ÎÅäÅ¸ÀÔ ÅÂ±×¸í
+		memcpy(TriggerDesc.szModelName, TEXT("Prototype_Component_Model_Trigger"), sizeof(TriggerDesc.szModelName));		// í”„ë¡œí† íƒ€ì… íƒœê·¸ëª…
 		TriggerDesc.strTriggerKey = TriggerData.TriggerKey[i];
 
-		memcpy(&TriggerDesc.WorldMatrix, &TriggerData.WorldMatrix[i], sizeof(_float4x4));										// Çà·Ä
+		memcpy(&TriggerDesc.WorldMatrix, &TriggerData.WorldMatrix[i], sizeof(_float4x4));										// í–‰ë ¬
 
-		TriggerDesc.eInteractiveType = INTERACTIVE_TYPE::TRIGGER;										// »óÈ£ ÀÛ¿ë ¿ÀºêÁ§Æ® Å¸ÀÔ
+		TriggerDesc.eInteractiveType = INTERACTIVE_TYPE::TRIGGER;										// ìƒí˜¸ ì‘ìš© ì˜¤ë¸Œì íŠ¸ íƒ€ì…
 
 		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
 			ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Trigger"), TIME_CHANNEL::WORLD, &TriggerDesc), false);
 
 		CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));
-		CHECK_NULLPTR_MSG(pInteractive_Prop, TEXT("¿¨"), false);
+		CHECK_NULLPTR_MSG(pInteractive_Prop, TEXT("ì—¥"), false);
 
 		m_InteractiveList.push_back(pInteractive_Prop);
 	}
@@ -3910,24 +4024,24 @@ _bool CLevel_Map::Lights_Load_Binary()
 	HANDLE hFile = CreateFile(strLightInfoPath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	CHECK_EQUAL(INVALID_HANDLE_VALUE, hFile, false);
 
-	// 1. ¿ÀºêÁ§Æ®ÀÇ ÃÑ °³¼ö
+	// 1. ì˜¤ë¸Œì íŠ¸ì˜ ì´ ê°œìˆ˜
 	_uint iLightCnt = {};
 	CHECK_FALSE(ReadFile(hFile, &iLightCnt, sizeof(_uint), &dwByte, nullptr), false);
 
-	// ¿ÀºêÁ§Æ® ÃÑ °³¼ö¸¸Å­ ¼øÈ¸
+	// ì˜¤ë¸Œì íŠ¸ ì´ ê°œìˆ˜ë§Œí¼ ìˆœíšŒ
 	for (_uint i = 0; i < iLightCnt; ++i)
 	{
 		LIGHT_DESC LightDesc = {};
 
-		// 2. Á¶¸í ÅÂ±× ±æÀÌ ºÒ·¯¿À±â
+		// 2. ì¡°ëª… íƒœê·¸ ê¸¸ì´ ë¶ˆëŸ¬ì˜¤ê¸°
 		_uint iLightTagLen = {};
 		CHECK_FALSE(ReadFile(hFile, &iLightTagLen, sizeof(_uint), &dwByte, nullptr), false);
 
-		// 3. Á¶¸í ÅÂ±× ÀÌ¸§ ºÒ·¯¿À±â
+		// 3. ì¡°ëª… íƒœê·¸ ì´ë¦„ ë¶ˆëŸ¬ì˜¤ê¸°
 		_tchar szLightTag[MAX_PATH] = {};
 		CHECK_FALSE(ReadFile(hFile, &szLightTag, sizeof(_tchar) * iLightTagLen, &dwByte, nullptr), false);
 
-		// 4. Á¶¸í ±¸Á¶Ã¼ ºÒ·¯¿À±â
+		// 4. ì¡°ëª… êµ¬ì¡°ì²´ ë¶ˆëŸ¬ì˜¤ê¸°
 		CHECK_FALSE(ReadFile(hFile, &LightDesc, sizeof(LIGHT_DESC), &dwByte, nullptr), false);
 
 		m_pGameInstance->Add_Light(szLightTag, ENUM_CLASS(LEVEL::MAP), LightDesc, true);
@@ -3971,7 +4085,7 @@ void CLevel_Map::Build_ModelPathCache()
 				string name = entry.path().stem().string();
 				string path = entry.path().string();
 
-				// .fbx / .dat µÑ ´Ù ÀÖÀ» ¼ö ÀÖÀ¸¹Ç·Î ±¸ºĞ
+				// .fbx / .dat ë‘˜ ë‹¤ ìˆì„ ìˆ˜ ìˆìœ¼ë¯€ë¡œ êµ¬ë¶„
 				string key = name + ext;
 				m_ModelPathCache[key] = path;
 			}

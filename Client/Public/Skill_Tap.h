@@ -18,7 +18,7 @@ private:
 
 public:
 	HRESULT								Setting_Panel(_int iTapIndex);
-
+	void								Set_Selete(_bool isSelete) { m_bIsSelete = isSelete; }
 public:
 	virtual HRESULT						Initialize_Prototype(_int iLevel);
 	virtual HRESULT						Initialize_Clone(void* pArg) override;
@@ -28,6 +28,7 @@ public:
 	virtual HRESULT						Render() override;
 
 	virtual HRESULT						Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
+	virtual void						Update_Alpha(_float fAlpha) override;
 private:
 	_bool								m_bIsSelete = { false };
 	_float								m_fAccTime = {1.f};

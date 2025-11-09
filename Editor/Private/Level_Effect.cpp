@@ -282,7 +282,7 @@ void CLevel_Effect::Edit_Element_List()
 	for (const auto& name : Names)
 		cstr_Names.push_back(name.c_str());
 
-	// Á¦¸ñ ¾²±â
+	// ì œëª© ì“°ê¸°
 
 	if (cstr_Names.size() > 0)
 	{
@@ -534,7 +534,7 @@ void CLevel_Effect::SelectFilePath()
 					strcpy_s(SaveFileName, sizeof(SaveFileName), FilePath);
 					strcpy_s(LoadFileName, sizeof(LoadFileName), FilePath);
 
-					CoTaskMemFree(pszPath); // ¸Þ¸ð¸® ÇØÁ¦
+					CoTaskMemFree(pszPath); // ë©”ëª¨ë¦¬ í•´ì œ
 				}
 				psiResult->Release();
 			}

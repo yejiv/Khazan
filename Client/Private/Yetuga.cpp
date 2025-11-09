@@ -79,7 +79,10 @@ void CYetuga::Priority_Update(_float fTimeDelta)
 
 void CYetuga::Update(_float fTimeDelta)
 {
+
     m_pController->Update(this, fTimeDelta);
+
+    //CheckMinDistanceWithPlayer(fTimeDelta);
 
     if (m_isLookAt)
     {
@@ -95,7 +98,6 @@ void CYetuga::Update(_float fTimeDelta)
 
     m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
 
-    //__super::Update(fTimeDelta);
 
 }
 
@@ -149,8 +151,8 @@ void CYetuga::Pick_Stone()
     _float3 vNormalize{};
     XMStoreFloat3(&vNormalize, vTempVec);
     m_pHoldStone->Set_SpawnDir(vNormalize);
-    m_pHoldStone->Set_IsActive(false);   // ´øÁöÁö ¾ÊÀ½
-    m_pHoldStone->Set_Visible(true);     // º¸ÀÌ°Ô
+    m_pHoldStone->Set_IsActive(false);   // ë˜ì§€ì§€ ì•ŠìŒ
+    m_pHoldStone->Set_Visible(true);     // ë³´ì´ê²Œ
     m_pHoldStone->Set_SpanwPoint(vSpawnPoint);
     m_pHoldStone->Reset();
 
@@ -219,7 +221,7 @@ void CYetuga::Grab_Check_Begin(const _char* pBoneName)
 
 void CYetuga::Grab_Check_End()
 {
-    // Ãæµ¹À» ²¨ÁØ´Ù.
+    // ì¶©ëŒì„ êº¼ì¤€ë‹¤.
 }
 
 void CYetuga::Pick_Rock()
@@ -249,13 +251,13 @@ void CYetuga::Pick_Rock()
 
     m_isRockPlay = true;
 
-    // Å¸°Ù ¹æÇâ °¡Á®¿À±â
+    // íƒ€ê²Ÿ ë°©í–¥ ê°€ì ¸ì˜¤ê¸°
     _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
     _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
     _float3 vNormalize{};
     XMStoreFloat3(&vNormalize, vTempVec);
 
-    // µ¹ ÃÊ±â ¼¼ÆÃ
+    // ëŒ ì´ˆê¸° ì„¸íŒ…
     m_pHoldRock->Set_IsActive(false);
     m_pHoldRock->Set_Visible(true);
     m_pHoldRock->Set_SpanwPoint(vSpawnPoint);
@@ -353,7 +355,7 @@ void CYetuga::Smash()
         _vector vGoalPos = vTargetPos - vDir * fLimit;
 
 
-        _vector vNewPos = XMVectorLerp(vPosition, vGoalPos, fAnimRatio - 0.5f);
+        _vector vNewPos = XMVectorLerp(vPosition, vGoalPos, fAnimRatio - 0.25f);
         m_pTransformCom->Set_State(STATE::POSITION, vNewPos);
     }
     else
@@ -363,7 +365,6 @@ void CYetuga::Smash()
         m_pTransformCom->Set_State(STATE::POSITION, vStopPos);
     }
 
-    m_pTransformCom->Set_State(STATE::POSITION, vTargetLoc);
 
 }
 
@@ -445,16 +446,16 @@ HRESULT CYetuga::Ready_Components()
     XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
     XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
     tCharVirDesc.eShapeType = SHAPE::CAPSULE;
-    tCharVirDesc.vPos = vPos;
     tCharVirDesc.vQuat = vQuat;
     tCharVirDesc.vShapeOffset = _float3(0.f, 4.1f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
     tCharVirDesc.fRadius = 2.f;
     tCharVirDesc.fHeight = 4.f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
+    tCharVirDesc.fMaxStrength = 0.f;
 
     m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // ÀÛ¼ºÇÏ±â
+    //pCollDesc.pInfo = ?? // ìž‘ì„±í•˜ê¸°
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
@@ -570,6 +571,15 @@ HRESULT CYetuga::Ready_AnimEvent()
         });
     pModel->Register_Event("2Hit_Fake", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { 
         m_isLookAt = false; });
+
+    pModel->Register_Event("2Hit_Fake", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+
+        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+        _float fAnimRatio = pModel->MakeRatio();
+        CheckMinDistanceWithPlayer(3.f,fAnimRatio);
+
+        });
+
     pModel->Register_Event("2Hit_One", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
         m_fTurnSpeed = 40.f;
         m_pBody->Set_OnAttackCollision(true);
@@ -579,6 +589,15 @@ HRESULT CYetuga::Ready_AnimEvent()
         m_pBody->Set_OnAttackCollision(false);
         m_isLookAt = false; });
 
+    pModel->Register_Event("2Hit_One", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+
+        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+        _float fAnimRatio = pModel->MakeRatio();
+        CheckMinDistanceWithPlayer(3.f, fAnimRatio);
+
+            });
+
+
     pModel->Register_Event("2Hit_Two", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_fTurnSpeed = 40.f;
         m_pBody->Set_OnAttackCollision(true);
@@ -586,6 +605,15 @@ HRESULT CYetuga::Ready_AnimEvent()
     pModel->Register_Event("2Hit_Two", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { 
         m_pBody->Set_OnAttackCollision(false);
         m_isLookAt = false; });
+
+
+    pModel->Register_Event("2Hit_Two", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+
+        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+        _float fAnimRatio = pModel->MakeRatio();
+        CheckMinDistanceWithPlayer(3.f, fAnimRatio);
+
+            });
 
 #pragma endregion
 
@@ -737,46 +765,73 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("Dampsey_First", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
-        cout << "11111111111111111111111111111111111111111" << endl;
+        
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
 
         });
     pModel->Register_Event("Dampsey_First", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
 
-        cout << "2222222222222222222222222222222222222222222" << endl;
+       
         m_isLookAt = false;
         m_pBody->Set_OnAttackCollision(false);
 
         });
 
+    pModel->Register_Event("Dampsey_First", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+
+        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+        _float fAnimRatio = pModel->MakeRatio();
+        CheckMinDistanceWithPlayer(5.f, fAnimRatio);
+
+        });
+
+
     pModel->Register_Event("Dampsey_Second", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
-        cout << "333333333333333333333333333333333333333333333333" << endl;
+        
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
 
         });
     pModel->Register_Event("Dampsey_Second", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        cout << "444444444444444444444444444444444444444444444444444" << endl;
+        
 
         m_isLookAt = false;
         m_pBody->Set_OnAttackCollision(false);
 
         });
 
+    pModel->Register_Event("Dampsey_Second", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+
+        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+        _float fAnimRatio = pModel->MakeRatio();
+        CheckMinDistanceWithPlayer(5.f, fAnimRatio);
+
+        });
+
+
+
     pModel->Register_Event("Dampsey_Third", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        cout << "5555555555555555555555555555555555555555555" << endl;
+       
 
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
 
         });
     pModel->Register_Event("Dampsey_Third", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        cout << "66666666666666666666666666666666666666666666666" << endl;
+       
 
         m_isLookAt = false;
         m_pBody->Set_OnAttackCollision(false);
+
+        });
+
+    pModel->Register_Event("Dampsey_Third", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+
+        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+        _float fAnimRatio = pModel->MakeRatio();
+        CheckMinDistanceWithPlayer(5.f, fAnimRatio);
 
         });
 
@@ -794,6 +849,15 @@ HRESULT CYetuga::Ready_AnimEvent()
 
         });
 
+    pModel->Register_Event("Dampsey_Forth", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+
+        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+        _float fAnimRatio = pModel->MakeRatio();
+        CheckMinDistanceWithPlayer(5.f, fAnimRatio);
+
+        });
+
+
     pModel->Register_Event("Dampsey_Final", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
         m_isLookAt = true;
@@ -806,6 +870,15 @@ HRESULT CYetuga::Ready_AnimEvent()
         m_pBody->Set_OnAttackCollision(false);
 
         });
+
+    pModel->Register_Event("Dampsey_Final", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+
+        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+        _float fAnimRatio = pModel->MakeRatio();
+        CheckMinDistanceWithPlayer(5.f, fAnimRatio);
+
+        });
+
 
 
     pModel->Register_Event("Dampsey_After", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -888,23 +961,27 @@ HRESULT CYetuga::Ready_AnimEvent()
     pModel->Register_Event("Jump_Grab_Jump", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", true);
+            m_pBody->Set_OnAttackCollision(true);
+
         });
 
     pModel->Register_Event("Jump_Grab_Jump", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", false);
+         
 
         });
 
     pModel->Register_Event("Grab_Hand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isGrab = true;
+            m_pBody->Set_OnAttackCollision(false);
 
         });
 
     pModel->Register_Event("Grab_Hand", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()
         {
-           // ¼Õ»ÀÇà·Ä Àü´Þ
+           // ì†ë¼ˆí–‰ë ¬ ì „ë‹¬
             Grab_Check_Begin("Weapon_L");
         });
 
@@ -921,8 +998,9 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("Grab_Hold", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() 
         {
-            // Å¸°Ù Ç®¾îÁÖ±â
+            // íƒ€ê²Ÿ í’€ì–´ì£¼ê¸°
             m_isGrab = false;
+
         });
 
 #pragma endregion
@@ -932,34 +1010,34 @@ HRESULT CYetuga::Ready_AnimEvent()
     pModel->Register_Event("RushCheck", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_pHead->Set_OnAttackCollision(true);
-            //m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
+            
         });
 
     pModel->Register_Event("RushCheck", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             m_pHead->Set_OnAttackCollision(false);
-            //m_pGameInstance->Remove_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
+            //m_pCharVirCom.Set
         });
 
 
 #pragma endregion
 
 #pragma region Amageddon
-    // µ¹À» Ç®¿¡ ¼­ ²¨³½´Ù.
+    // ëŒì„ í’€ì— ì„œ êº¼ë‚¸ë‹¤.
     pModel->Register_Event("AMG_RockEvent", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Pick_Rock(); });
-    // ´ë¹ÌÁö¸¦ ÁÖ°í Ãæµ¹²ô°í Ç®·Î º¸³½´Ù.
+    // ëŒ€ë¯¸ì§€ë¥¼ ì£¼ê³  ì¶©ëŒë„ê³  í’€ë¡œ ë³´ë‚¸ë‹¤.
     pModel->Register_Event("AMG_RockEvent", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { m_isRockPlay = false; });
-    // HoldÇÑ´Ù.
+    // Holdí•œë‹¤.
     pModel->Register_Event("AMG_RockEvent", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Hold_Rock(); });
 
-    // Á¡ÇÁ ½ÃÀÛ
+    // ì í”„ ì‹œìž‘
     pModel->Register_Event("AMG_JumpEvent", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { });
-    // ÃÖ°í ³ôÀÌ±îÁöµµ´Þ
+    // ìµœê³  ë†’ì´ê¹Œì§€ë„ë‹¬
     pModel->Register_Event("AMG_JumpEvent", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { });
-    // ¼Óµµ, Á¶Àý
+    // ì†ë„, ì¡°ì ˆ
     pModel->Register_Event("AMG_JumpEvent", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { });
 
-    // ÇÃ·¹ÀÌ¾î À§Ä¡·Î ¹æÇâ Á¶Àý
+    // í”Œë ˆì´ì–´ ìœ„ì¹˜ë¡œ ë°©í–¥ ì¡°ì ˆ
     pModel->Register_Event("AMG_AimEvent", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
         {
             Look_Target();

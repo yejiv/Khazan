@@ -3,7 +3,7 @@
 #include "Client_Defines.h"
 #include "Prop.h"
 
-// ´ÜÀÏ ¸Ê ¿ÀºêÁ§Æ®
+// ë‹¨ì¼ ë§µ ì˜¤ë¸Œì íŠ¸
 
 NS_BEGIN(Engine)
 class CModel_Instance;
@@ -50,7 +50,7 @@ private:
 private:
 	SHADER_PASS m_eShaderPass = { SHADER_PASS::MAP };
 
-#pragma region Ç®¶§±â
+#pragma region í’€ë•Œê¸°
 private:
 	_float m_fTime = {};
 	_float3 m_vWindDir = { _float3(1.f, 0.f, 0.35f) };

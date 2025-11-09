@@ -21,7 +21,7 @@ struct VTXINSTANCE_DYNAMIC_DATA
 {
     float4 fSpeed;
     float fGravity;
-    float bDead;    //CPUø°º≠ ¿–¿ª ∞™.
+    float bDead;    //CPUÏóêÏÑú ÏùΩÏùÑ Í∞í.
 };
 
 cbuffer CB_PARTICLE : register(b0)
@@ -86,7 +86,7 @@ void ResetParticle(inout VTXINSTANCE_PARTICLE Particle, uint iIndex)
 {
     Particle.vLifeTime.x = 0.f;
 
-    //if (g_bIsfFollow) //true∞° ±‚∫ª∞™
+    //if (g_bIsfFollow) //trueÍ∞Ä Í∏∞Î≥∏Í∞í
     //    Particle.vTranslation = g_InputData[iIndex].vInitTranslation;
     //else
     //{
@@ -277,7 +277,7 @@ void CS_TURBULENCE(uint3 DTid : SV_DispatchThreadID)
     VTXINSTANCE_PARTICLE Particle = g_OutputData[iIndex];
     float3 pos = Particle.vTranslation.xyz;
 
-    // πÊ«‚ ∆Ì«‚ πÊ¡ˆ ===
+    // Î∞©Ìñ• Ìé∏Ìñ• Î∞©ÏßÄ ===
     float2 offset1 = float2(sin(g_TotalTime), cos(g_TotalTime)) * 0.5f;
     float2 offset2 = float2(sin(g_TotalTime * 1.37f), cos(g_TotalTime * 1.91f)) * 0.5f;
     float2 offset3 = float2(sin(g_TotalTime * 0.77f), cos(g_TotalTime * 1.21f)) * 0.5f;

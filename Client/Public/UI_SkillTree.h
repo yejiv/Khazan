@@ -5,6 +5,11 @@
 NS_BEGIN(Client)
 class CUI_SkillTree final : public CUI_Panel
 {
+public:
+	typedef struct tagInvenBubbleEventTag : public CUIObject::BUBBLEEVENT
+	{
+		_int iIndex = {};
+	}SKillBUBBLE_DESC;
 private:
 	enum class UIANIMSTATE { ON, OFF, END};
 	enum TAP_TYPE { SPEAR, GS, PUBLIC, END };
@@ -15,7 +20,7 @@ private:
 	virtual ~CUI_SkillTree() = default;
 
 public:
-void									On_Panel(GUIDE_TYPE eType);
+void									On_Panel();
 	void								Off_Panel();
 public:
 	virtual HRESULT						Initialize_Prototype(_uint iLevel);
@@ -33,12 +38,14 @@ private:
 	_float								m_fAccTime = {};
 	UIANIMSTATE							m_eAnimState = { UIANIMSTATE::END };
 
+	_int								m_iSelete = {};
+
 private:
 	HRESULT								Ready_Prototype();
 	HRESULT								Ready_Object();
 
 	void								UI_Animation(_float fTimeDelta);
-
+	void								InputKey();
 public:
 	static CUI_SkillTree*				Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
 	virtual CGameObject*				Clone(void* pArg) override;

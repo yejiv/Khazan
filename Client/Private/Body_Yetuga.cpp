@@ -90,9 +90,9 @@ HRESULT CBody_Yetuga::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     m_pTransformCom->Scale(_float3(1.3f,1.3f,1.3f));
-
-    m_pLH_BodyCom->Activate(false);
-    m_pRH_BodyCom->Activate(false);
+    
+    m_pLH_BodyCom->Collision_Active(false);
+    m_pRH_BodyCom->Collision_Active(false);
 
     return S_OK;
 }
@@ -107,22 +107,22 @@ void CBody_Yetuga::Update(_float fTimeDelta)
 
     if (m_isOnAttackCollision)
     {
-        m_pLH_BodyCom->Activate(true);
-        m_pRH_BodyCom->Activate(true);
-        //m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
 
+        m_pLH_BodyCom->Collision_Active(true);
+        m_pRH_BodyCom->Collision_Active(true);
+        Carculate_Matrix(fTimeDelta);
+        m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
     }
     else
     {
-        m_pLH_BodyCom->Activate(false);
-        m_pRH_BodyCom->Activate(false);
-        //m_pGameInstance->Remove_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
+        m_pLH_BodyCom->Collision_Active(false);
+        m_pRH_BodyCom->Collision_Active(false);
+        m_pGameInstance->Remove_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
     }
 
 
     Update_CombinedMatrix();
 
-    Carculate_Matrix(fTimeDelta);
 
 }
 
@@ -161,7 +161,6 @@ HRESULT CBody_Yetuga::Render()
 void CBody_Yetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
     COLLISION_LAYER eType = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
-   
     m_pOwner->Get_Controller()->AI_React_Collision(pDesc,iOtherObjectLayer,m_pOwner);
 }
 
@@ -211,12 +210,10 @@ HRESULT CBody_Yetuga::Bind_ShaderResources()
 
 void CBody_Yetuga::Carculate_Matrix(_float fTimeDelta)
 {
-    // »À Çà·ÄÀ» °¡Á®¿Â´Ù.
+
     _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix("Weapon_R");
-    // ¿À¸¥ÂÊ »À Çà·ÄÀ» ÀÚÃ¼ Çà·Ä * »À ·ÎÄÃÇà·Ä  * ºÎ¸ð Çà·ÄÀ» °öÇØ¼­ ÃÖÁ¾ Çà·ÄÀ» ¸¸µé¾îÁØ´Ù.
     XMStoreFloat4x4(&m_RightHandMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
     _vector vOutQuat, vOutPos;
-    // ÄÝ¶óÀÌ´õ¸¦ °»½Å½ÃÅ²´Ù.
     m_pRH_BodyCom->Sync_Update(XMLoadFloat4x4(&m_RightHandMatrix));
     m_pRH_BodyCom->Update(fTimeDelta, XMLoadFloat4x4(&m_RightHandMatrix), vOutQuat, vOutPos);
 
@@ -242,12 +239,12 @@ HRESULT CBody_Yetuga::Ready_Colliders()
 {
     CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
 
-    // ¿À¸¥¼Õ
-    BodyDesc.fRadius = 1.5f;
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    BodyDesc.fRadius = 2.f;
     BodyDesc.eMotion = EMotionType::Kinematic;
-    BodyDesc.eQuality = EMotionQuality::Discrete; // ±âº» ¸ðµå
+    BodyDesc.eQuality = EMotionQuality::Discrete; // ï¿½âº» ï¿½ï¿½ï¿½
     BodyDesc.eShapeType = SHAPE::SPHERE;
-    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK); // ÃßÈÄ¿¡ Enum Monster attack º¯°æ ÇÒ¼öµµ
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK); // ï¿½ï¿½ï¿½Ä¿ï¿½ Enum Monster attack ï¿½ï¿½ï¿½ï¿½ ï¿½Ò¼ï¿½ï¿½ï¿½
     _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix("Weapon_R");
     XMStoreFloat4x4(&m_RightHandMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
     _vector vScale, vQuat, vTrans;
@@ -262,20 +259,20 @@ HRESULT CBody_Yetuga::Ready_Colliders()
         TEXT("Com_Body_RH"), reinterpret_cast<CComponent**>(&m_pRH_BodyCom), &BodyDesc)))
         return E_FAIL;
 
-    BodyDesc.fRadius = 1.5f;
+    BodyDesc.fRadius = 2.f;
     BodyDesc.eMotion = EMotionType::Kinematic;
-    BodyDesc.eQuality = EMotionQuality::Discrete; // ±âº» ¸ðµå
+    BodyDesc.eQuality = EMotionQuality::Discrete; // ï¿½âº» ï¿½ï¿½ï¿½
     BodyDesc.eShapeType = SHAPE::SPHERE;
     BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
     BoneMatrix = *m_pModelCom->Get_BoneMatrix("Weapon_L");
     XMStoreFloat4x4(&m_RightHandMatrix, m_pTransformCom->Get_WorldMatrix() * 
         XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
    /* _vector vScale, vQuat, vTrans;*/
-    // ÂÉ°µ´Ù.
+    // ï¿½É°ï¿½ï¿½ï¿½.
     XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_RightHandMatrix));
-    // À§Ä¡°ª
+    // ï¿½ï¿½Ä¡ï¿½ï¿½
     BodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
-    // ÄõÅÍ´Ï¾ð
+    // ï¿½ï¿½ï¿½Í´Ï¾ï¿½
     BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
 
     BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
@@ -289,12 +286,12 @@ HRESULT CBody_Yetuga::Ready_Colliders()
    
 
 
- //   // µî
+ //   // ï¿½ï¿½
  //   BodyDesc.fRadius = 15.f;
  //   BodyDesc.eMotion = EMotionType::Kinematic;
- //   BodyDesc.eQuality = EMotionQuality::Discrete; // ±âº» ¸ðµå
+ //   BodyDesc.eQuality = EMotionQuality::Discrete; // ï¿½âº» ï¿½ï¿½ï¿½
  //   BodyDesc.eShapeType = SHAPE::SPHERE;
- //   BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER); // ÃßÈÄ¿¡ Enum Monster attack º¯°æ ÇÒ¼öµµ
+ //   BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER); // ï¿½ï¿½ï¿½Ä¿ï¿½ Enum Monster attack ï¿½ï¿½ï¿½ï¿½ ï¿½Ò¼ï¿½ï¿½ï¿½
  ///*   vPosition.x = m_pModelCom->Get_BoneMatrix("B_Spine2_12_01_S")->m[3][0];
  //   vPosition.y = m_pModelCom->Get_BoneMatrix("B_Spine2_12_01_S")->m[3][1];
  //   vPosition.z = m_pModelCom->Get_BoneMatrix("B_Spine2_12_01_S")->m[3][2];*/

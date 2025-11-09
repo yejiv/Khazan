@@ -14,6 +14,9 @@ public:
 	virtual void Update(class CStateMachine* pFSM, class CGameObject* pOwner, _float fTimeDelta);
 	virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner);
 
+public:
+	virtual void OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, class CGameObject* pOwner = nullptr) override;
+
 
 public:
 	static CAS_LieDown_Yetuga*			Create();
@@ -22,3 +25,6 @@ public:
 };
 
 NS_END
+
+
+

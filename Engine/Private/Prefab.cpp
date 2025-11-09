@@ -1,4 +1,4 @@
-﻿#include "Prefab.h"
+#include "Prefab.h"
 #include "Effect_Element.h"
 
 CPrefab::CPrefab(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)

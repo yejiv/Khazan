@@ -1,4 +1,4 @@
-﻿#include "LineTrail.h"
+#include "LineTrail.h"
 #include "GameInstance.h"
 
 CLineTrail::CLineTrail(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)

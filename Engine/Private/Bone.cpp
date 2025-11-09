@@ -1,4 +1,4 @@
-﻿
+
 #include "Bone.h"
 
 CBone::CBone()

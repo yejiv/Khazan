@@ -86,7 +86,7 @@ void CCamera_Controller::Ready_ImGui_Create()
 	ImGui::InputFloat("Speed", &m_tCreateCameraDesc.fSpeedPerSec);
 
 
-	if (ImGui::Button(U8STR("»ı¼º"), ImVec2(60.f, 30.f)))
+	if (ImGui::Button(U8STR("ìƒì„±"), ImVec2(60.f, 30.f)))
 	{
 		Create_Camera();
 	};
@@ -98,7 +98,7 @@ void CCamera_Controller::Ready_ImGui_Create()
 		ifstream In(filePath);
 		if (!In.is_open())
 		{
-			MSG_BOX(TEXT("UI JSON ÆÄÀÏ ºÒ·¯¿À±â ½ÇÆĞ"));
+			MSG_BOX(TEXT("UI JSON íŒŒì¼ ë¶ˆëŸ¬ì˜¤ê¸° ì‹¤íŒ¨"));
 			In.close();
 		}
 		else
@@ -253,12 +253,12 @@ void CCamera_Controller::Ready_ImGui_List()
 			ofstream Out(filePath, ios::out | ios::trunc);
 			if (!Out.is_open())
 			{
-				MSG_BOX(TEXT("Json ÆÄÀÏ ÀúÀå ½ÇÆĞ"));
+				MSG_BOX(TEXT("Json íŒŒì¼ ì €ì¥ ì‹¤íŒ¨"));
 				Out.close();
 			}
 			else
 			{
-				MSG_BOX(TEXT("Json ÆÄÀÏ ÀúÀå ¼º°ø"));
+				MSG_BOX(TEXT("Json íŒŒì¼ ì €ì¥ ì„±ê³µ"));
 				Out << SaveData.dump(4);
 				Out.close();
 			}
@@ -339,12 +339,12 @@ void CCamera_Controller::Ready_ImGui_Active_Camera_Animation()
 			ofstream Out(filePath, ios::out | ios::trunc);
 			if (!Out.is_open())
 			{
-				MSG_BOX(TEXT("Json ÆÄÀÏ ÀúÀå ½ÇÆĞ"));
+				MSG_BOX(TEXT("Json íŒŒì¼ ì €ì¥ ì‹¤íŒ¨"));
 				Out.close();
 			}
 			else
 			{
-				MSG_BOX(TEXT("Json ÆÄÀÏ ÀúÀå ¼º°ø"));
+				MSG_BOX(TEXT("Json íŒŒì¼ ì €ì¥ ì„±ê³µ"));
 				Out << SaveData.dump(4);
 				Out.close();
 			}
@@ -359,7 +359,7 @@ void CCamera_Controller::Ready_ImGui_Active_Camera_Animation()
 			ifstream In(filePath);
 			if (!In.is_open())
 			{
-				MSG_BOX(TEXT("UI JSON ÆÄÀÏ ºÒ·¯¿À±â ½ÇÆĞ"));
+				MSG_BOX(TEXT("UI JSON íŒŒì¼ ë¶ˆëŸ¬ì˜¤ê¸° ì‹¤íŒ¨"));
 				In.close();
 			}
 			else
@@ -431,7 +431,7 @@ void CCamera_Controller::Ready_ImGui_Active_Camera_Animation_Item()
 				ImVec2 rect_min = ImGui::GetItemRectMin();
 				ImVec2 rect_max = ImGui::GetItemRectMax();
 
-				// ¿Ü°û¼±¸¸ ±×¸®±â (µÎ²²¿Í ¶ó¿îµùÀº ½ºÅ¸ÀÏ¿¡ ¸ÂÃã)
+				// ì™¸ê³½ì„ ë§Œ ê·¸ë¦¬ê¸° (ë‘ê»˜ì™€ ë¼ìš´ë”©ì€ ìŠ¤íƒ€ì¼ì— ë§ì¶¤)
 				float thickness = 1.0f;
 				float rounding = ImGui::GetStyle().FrameRounding;
 				ImGui::GetWindowDrawList()->AddRect(
@@ -440,8 +440,8 @@ void CCamera_Controller::Ready_ImGui_Active_Camera_Animation_Item()
 					rounding, 0, thickness
 				);
 
-				// ¾Æ·¡ÂÊ ÆĞµù¸¸
-				ImGui::Dummy(ImVec2(0.0f, 5.0f)); // ÇÊ¿äÇÏ¸é 8.0f Á¶Àı
+				// ì•„ë˜ìª½ íŒ¨ë”©ë§Œ
+				ImGui::Dummy(ImVec2(0.0f, 5.0f)); // í•„ìš”í•˜ë©´ 8.0f ì¡°ì ˆ
 				ImGui::PopID();
 				_char szRemoveBuffer[10];
 				snprintf(szRemoveBuffer, sizeof(szRemoveBuffer), "Remove_%d", i);
@@ -510,7 +510,7 @@ void CCamera_Controller::Ready_ImGui_Active_Camera_Event_Item()
 					ImVec2 rect_min = ImGui::GetItemRectMin();
 					ImVec2 rect_max = ImGui::GetItemRectMax();
 
-					// ¿Ü°û¼±¸¸ ±×¸®±â (µÎ²²¿Í ¶ó¿îµùÀº ½ºÅ¸ÀÏ¿¡ ¸ÂÃã)
+					// ì™¸ê³½ì„ ë§Œ ê·¸ë¦¬ê¸° (ë‘ê»˜ì™€ ë¼ìš´ë”©ì€ ìŠ¤íƒ€ì¼ì— ë§ì¶¤)
 					float thickness = 1.0f;
 					float rounding = ImGui::GetStyle().FrameRounding;
 					ImGui::GetWindowDrawList()->AddRect(
@@ -519,8 +519,8 @@ void CCamera_Controller::Ready_ImGui_Active_Camera_Event_Item()
 						rounding, 0, thickness
 					);
 
-					// ¾Æ·¡ÂÊ ÆĞµù¸¸
-					ImGui::Dummy(ImVec2(0.0f, 5.0f)); // ÇÊ¿äÇÏ¸é 8.0f Á¶Àı
+					// ì•„ë˜ìª½ íŒ¨ë”©ë§Œ
+					ImGui::Dummy(ImVec2(0.0f, 5.0f)); // í•„ìš”í•˜ë©´ 8.0f ì¡°ì ˆ
 					ImGui::PopID();
 				}
 
@@ -541,10 +541,10 @@ void CCamera_Controller::Ready_Guizmo()
 {
 	//CGameObject* pPlayer = m_pGameInstance->Get_BackGameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Player"));
 	//CTransform* pTransform = dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")));
-	//// 1) Ä«¸Ş¶ó Çà·Ä ÁØºñ
+	//// 1) ì¹´ë©”ë¼ í–‰ë ¬ ì¤€ë¹„
 	//XMMATRIX view = m_pGameInstance->Get_Transform_Matrix(D3DTS::VIEW);
 	//XMMATRIX proj = m_pGameInstance->Get_Transform_Matrix(D3DTS::PROJ);
-	//XMMATRIX model = pTransform->Get_WorldMatrix();     // ÆíÁıÇÒ ¿ÀºêÁ§Æ® ¿ùµåÇà·Ä
+	//XMMATRIX model = pTransform->Get_WorldMatrix();     // í¸ì§‘í•  ì˜¤ë¸Œì íŠ¸ ì›”ë“œí–‰ë ¬
 
 	//XMMATRIX viewT = XMMatrixTranspose(view);
 	//XMMATRIX projT = XMMatrixTranspose(proj);
@@ -554,11 +554,11 @@ void CCamera_Controller::Ready_Guizmo()
 	//float projM[16];  XMStoreFloat4x4((XMFLOAT4X4*)projM, projT);
 	//float modelM[16]; XMStoreFloat4x4((XMFLOAT4X4*)modelM, modelT);
 
-	////// 2) ±âÁî¸ğ ÆÄ¶ó¹ÌÅÍ ¼³Á¤
+	////// 2) ê¸°ì¦ˆëª¨ íŒŒë¼ë¯¸í„° ì„¤ì •
 	//ImGuizmo::OPERATION op = ImGuizmo::TRANSLATE; // ROTATE, SCALE
 	//ImGuizmo::MODE      mode = ImGuizmo::LOCAL;     // WORLD/LOCAL
 	////bool useSnap = false;
-	////float snap[3] = { 1.f, 1.f, 1.f };            // ½º³À ±×¸®µå °£°İ(¿øÇÏ¸é »ç¿ë)
+	////float snap[3] = { 1.f, 1.f, 1.f };            // ìŠ¤ëƒ… ê·¸ë¦¬ë“œ ê°„ê²©(ì›í•˜ë©´ ì‚¬ìš©)
 
 	////ImGui::Begin("Scene");
 	//////ImVec2 winPos = ImGui::GetWindowPos();
@@ -570,21 +570,21 @@ void CCamera_Controller::Ready_Guizmo()
 	////const ImGuiViewport* vp = ImGui::GetMainViewport();
 	////ImGuizmo::SetRect(vp->Pos.x, vp->Pos.y, vp->Size.x, vp->Size.y);
 
-	////// 3) µğ¹ö±×: ±×¸®µå/Å¥ºê ±×·Áº¸±â (Ä«¸Ş¶ó°¡ ¿øÁ¡ ¾È º¸¸é ¾È º¸ÀÏ ¼ö ÀÖÀ¸´Ï ¸ğµ¨µµ °°ÀÌ)
+	////// 3) ë””ë²„ê·¸: ê·¸ë¦¬ë“œ/íë¸Œ ê·¸ë ¤ë³´ê¸° (ì¹´ë©”ë¼ê°€ ì›ì  ì•ˆ ë³´ë©´ ì•ˆ ë³´ì¼ ìˆ˜ ìˆìœ¼ë‹ˆ ëª¨ë¸ë„ ê°™ì´)
 	////float I[16] = { 1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1 };
 	////ImGuizmo::DrawGrid(viewM, projM, I, 10.0f);
 	////ImGuizmo::DrawCubes(viewM, projM, modelM, 1);
-	//////// 3) Á¶ÀÛ
+	//////// 3) ì¡°ì‘
 	//////ImGuizmo::Manipulate(
 	//////	viewM, projM, op, mode,
 	//////	modelM,                 // in/out
-	//////	nullptr,                // µ¨Å¸Çà·Ä ÇÊ¿äÇÏ¸é ¿©±â¿¡
+	//////	nullptr,                // ë¸íƒ€í–‰ë ¬ í•„ìš”í•˜ë©´ ì—¬ê¸°ì—
 	//////	useSnap ? snap : nullptr
 	//////);
 
 	////ImGui::End();
 
-	//// 4) °á°ú µÇµ¹¸®±â(´Ù½Ã row-major·Î)
+	//// 4) ê²°ê³¼ ë˜ëŒë¦¬ê¸°(ë‹¤ì‹œ row-majorë¡œ)
 	///*XMMATRIX modelT2 = XMLoadFloat4x4((XMFLOAT4X4*)modelM);
 	//XMMATRIX model2 = XMMatrixTranspose(modelT2);
 	//pTransform->Set_WorldMatrix(model2);*/
@@ -597,8 +597,8 @@ void CCamera_Controller::Ready_Guizmo()
 	//	ImVec2 pos = ImVec2(winPos.x + cmin.x, winPos.y + cmin.y);
 	//	ImVec2 size = ImVec2(cmax.x - cmin.x, cmax.y - cmin.y);
 
-	//	// Ã¢ Æ÷±×¶ó¿îµå(ÇöÀç ºäÆ÷Æ®)·Î
-	//	ImGuizmo::SetDrawlist();                // Áß¿ä: ÀÎÀÚ ¾ø´Â ¹öÀü
+	//	// ì°½ í¬ê·¸ë¼ìš´ë“œ(í˜„ì¬ ë·°í¬íŠ¸)ë¡œ
+	//	ImGuizmo::SetDrawlist();                // ì¤‘ìš”: ì¸ì ì—†ëŠ” ë²„ì „
 	//	ImGuizmo::SetRect(pos.x, pos.y, size.x, size.y);
 
 	//	ImGuizmo::Manipulate(viewM, projM, op, mode, modelM);
@@ -616,16 +616,16 @@ void CCamera_Controller::Ready_Level()
 	{ "VIPER",    LEVEL::VIPER    },
 	};
 
-	// ÇöÀç ¼±ÅÃÀ» int·Î º¸À¯(¶óµğ¿À ±×·ìÀº int Æ÷ÀÎÅÍ »ç¿ë ±ÇÀå)
+	// í˜„ì¬ ì„ íƒì„ intë¡œ ë³´ìœ (ë¼ë””ì˜¤ ê·¸ë£¹ì€ int í¬ì¸í„° ì‚¬ìš© ê¶Œì¥)
 	int iCurrent = static_cast<int>(m_eCurrentLevel);
 
 	for (const auto& it : kItems)
 	{
 		const int v_button = static_cast<int>(it.value);
-		// µ¿ÀÏ int*¸¦ °øÀ¯ÇÏ¸é "±×·ì"À¸·Î µ¿ÀÛ (ÇÏ³ª¸¸ ¼±ÅÃµÊ)
+		// ë™ì¼ int*ë¥¼ ê³µìœ í•˜ë©´ "ê·¸ë£¹"ìœ¼ë¡œ ë™ì‘ (í•˜ë‚˜ë§Œ ì„ íƒë¨)
 		if (ImGui::RadioButton(it.label, &iCurrent, v_button))
 		{
-			m_eCurrentLevel = static_cast<LEVEL>(iCurrent); // ¡ç ´ëÀÔ!
+			m_eCurrentLevel = static_cast<LEVEL>(iCurrent); // â† ëŒ€ì…!
 		}
 	}
 

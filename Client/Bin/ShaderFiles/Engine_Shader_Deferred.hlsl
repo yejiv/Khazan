@@ -60,6 +60,7 @@ float g_fTimeDelta;
 bool g_isEnableNoise, g_isWorldFog;
 float2 g_vNoiseSpeed, g_vNoiseScale;
 float g_fNoiseStrength, g_fNoiseContrast;
+float g_fFogBaseHeight, g_fFogHeightDensity;
 
 // ===== Outline =====
 float g_fOutlineAlpha = { 1.f };
@@ -75,14 +76,8 @@ bool g_isEnableVignette;
 
 // ===== Distortion =====
 bool g_isEnableDistortion;
-float g_fPower = { 1.5f };
-float g_fSpeed;
+float g_fPower, g_fSpeed, g_fTime, g_fAspect;
 float3 g_vCenter;
-float g_fTime;
-
-//  float g_fDistortionRange = { 0.2f };
-float2 g_vTextureSize = { 300.f, 300.f };
-float2 g_vDistNoiseScale = { 1.f, 1.f };
 
 struct VS_IN
 {
@@ -350,20 +345,20 @@ PS_OUT_BLUR_X PS_MAIN_BLUR_X(PS_IN In)
         vTexcoord.x = In.vTexcoord.x + i / g_fViewportWidth;
         vTexcoord.y = In.vTexcoord.y;
         
-        // ±âÁ¸ »ùÇÃ¸µ
+        // ê¸°ì¡´ ìƒ˜í”Œë§
         float4 vEmissive = g_EmissiveTexture.SampleLevel(ClampSampler, vTexcoord, 0.f);
         float3 vEmissiveColor = vEmissive.rgb * vEmissive.a;
         
-        // Æ÷½ºÆ®¾À »ùÇÃ¸µ
+        // í¬ìŠ¤íŠ¸ì”¬ ìƒ˜í”Œë§
         float3 vPostSceneColor = g_PostSceneTexture.SampleLevel(ClampSampler, vTexcoord, 0.f).rgb;
         
-        // ÀÓ°èÄ¡ ³Ñ´Â ¿µ¿ª¸¸ ÃßÃâ
-        float3 vBrightColor = max(vPostSceneColor - 1.f, 0.f); // ¾À ÄÃ·¯ - ÀÓ°èÄ¡
+        // ìž„ê³„ì¹˜ ë„˜ëŠ” ì˜ì—­ë§Œ ì¶”ì¶œ
+        float3 vBrightColor = max(vPostSceneColor - 1.f, 0.f); // ì”¬ ì»¬ëŸ¬ - ìž„ê³„ì¹˜
         
-        // ÀÌ¹Ì½Ãºê + ¹àÀº ¿µ¿ª
+        // ì´ë¯¸ì‹œë¸Œ + ë°ì€ ì˜ì—­
         float3 vCombinedColor = vEmissiveColor + vBrightColor;
         
-        // ÇÕÄ£ ÄÃ·¯¿¡ °¡ÁßÄ¡ °ö
+        // í•©ì¹œ ì»¬ëŸ¬ì— ê°€ì¤‘ì¹˜ ê³±
         vColor += g_Weights[i + g_iWeightRadius] * vCombinedColor;
     }
 
@@ -435,7 +430,7 @@ PS_OUT_SSAO PS_MAIN_SSAO(PS_IN In)
 
     // Projection -> View
     vNDCPos = vNDCPos * vDepthDesc.y; // View.Z
-    float4 vViewPos = mul(vNDCPos, g_ProjMatrixInv); // ÇöÀç ÇÈ¼¿ÀÇ View Space À§Ä¡
+    float4 vViewPos = mul(vNDCPos, g_ProjMatrixInv); // í˜„ìž¬ í”½ì…€ì˜ View Space ìœ„ì¹˜
     
     // Occlusion
     float fOcclusion = 0.f;
@@ -447,32 +442,32 @@ PS_OUT_SSAO PS_MAIN_SSAO(PS_IN In)
         float3 vSampleDir = mul(g_Kernels[i], TBNMatrix);
         
         // View Sample Position
-        float3 vSamplePos = vViewPos.xyz + vSampleDir * g_fRadius; // ÁÖº¯ SampleDir ¹æÇâÀ¸·Î Radius ¹Ý°æ¸¸Å­ ¶³¾îÁø »ùÇÃ À§Ä¡
+        float3 vSamplePos = vViewPos.xyz + vSampleDir * g_fRadius; // ì£¼ë³€ SampleDir ë°©í–¥ìœ¼ë¡œ Radius ë°˜ê²½ë§Œí¼ ë–¨ì–´ì§„ ìƒ˜í”Œ ìœ„ì¹˜
         
         // Sample Position -> UV
-        // »ùÇÃ Æ÷Áö¼Ç Åõ¿µ º¯È¯ -> Åõ¿µ Çà·Ä °öÇØÁÖ°í w³ª´©±â ÈÄ -1 ~ 1 => 0 ~ 1 ¹üÀ§·Î º¯È¯ * 0.5 + 0.5
+        // ìƒ˜í”Œ í¬ì§€ì…˜ íˆ¬ì˜ ë³€í™˜ -> íˆ¬ì˜ í–‰ë ¬ ê³±í•´ì£¼ê³  wë‚˜ëˆ„ê¸° í›„ -1 ~ 1 => 0 ~ 1 ë²”ìœ„ë¡œ ë³€í™˜ * 0.5 + 0.5
         float4 vProjSamplePos = mul(float4(vSamplePos, 1.f), g_CameraProjMatrix);
         vProjSamplePos /= vProjSamplePos.w;
         float2 vSampleTexcoord;
         vSampleTexcoord.x = vProjSamplePos.x * 0.5f + 0.5f;
         vSampleTexcoord.y = vProjSamplePos.y * -0.5f + 0.5f;
         
-        // »ùÇÃ ±íÀÌ ºñ±³
-        float fSampleDepth = g_DepthTexture.Sample(PointSampler, vSampleTexcoord).y; // »ùÇÃ ÇÈ¼¿(ÁÖº¯ ÇÈ¼¿)ÀÇ ±íÀÌ
+        // ìƒ˜í”Œ ê¹Šì´ ë¹„êµ
+        float fSampleDepth = g_DepthTexture.Sample(PointSampler, vSampleTexcoord).y; // ìƒ˜í”Œ í”½ì…€(ì£¼ë³€ í”½ì…€)ì˜ ê¹Šì´
         
-        // »ùÇÃ ±íÀÌ°¡ ÇöÀç ÇÈ¼¿ÀÇ ±íÀÌº¸´Ù ´õ Å©¸é Â÷Æó°¡ ¾øÀ½, »ùÇÃ ±íÀÌ°¡ ÇöÀç ÇÈ¼¿ÀÇ ±íÀÌº¸´Ù ´õ ÀÛÀ¸¸é ±× ¹æÇâ¿¡ ´Ù¸¥ ¿ÀºêÁ§Æ®°¡ ÀÖ¾î¼­ ½Ã¾ß°¡ ¸·Èù °Í
+        // ìƒ˜í”Œ ê¹Šì´ê°€ í˜„ìž¬ í”½ì…€ì˜ ê¹Šì´ë³´ë‹¤ ë” í¬ë©´ ì°¨íê°€ ì—†ìŒ, ìƒ˜í”Œ ê¹Šì´ê°€ í˜„ìž¬ í”½ì…€ì˜ ê¹Šì´ë³´ë‹¤ ë” ìž‘ìœ¼ë©´ ê·¸ ë°©í–¥ì— ë‹¤ë¥¸ ì˜¤ë¸Œì íŠ¸ê°€ ìžˆì–´ì„œ ì‹œì•¼ê°€ ë§‰ížŒ ê²ƒ
         
-        // Smoothstep -> °©ÀÚ±â 0 ~ 1 ¾È µÇ°Ô °æ°è¸¦ ºÎµå·´°Ô ¸¸µé¾îÁÜ
-        // ¹Ý°æ / ±íÀÌ Â÷ÀÌ -> ¸Ö¼ö·Ï °ªÀÌ ÀÛ¾ÆÁü
-        // => ±íÀÌ Â÷ÀÌ°¡ Å©¸é Â÷Æóµµ ¿µÇâ Àû°Ô, °¡±î¿ì¸é ¿µÇâ Å©°Ô ÇØ¼­ ºÎµå·´°Ô ¸¸µé¾îÁÜ
+        // Smoothstep -> ê°‘ìžê¸° 0 ~ 1 ì•ˆ ë˜ê²Œ ê²½ê³„ë¥¼ ë¶€ë“œëŸ½ê²Œ ë§Œë“¤ì–´ì¤Œ
+        // ë°˜ê²½ / ê¹Šì´ ì°¨ì´ -> ë©€ìˆ˜ë¡ ê°’ì´ ìž‘ì•„ì§
+        // => ê¹Šì´ ì°¨ì´ê°€ í¬ë©´ ì°¨íë„ ì˜í–¥ ì ê²Œ, ê°€ê¹Œìš°ë©´ ì˜í–¥ í¬ê²Œ í•´ì„œ ë¶€ë“œëŸ½ê²Œ ë§Œë“¤ì–´ì¤Œ
         float fRangeLerp = smoothstep(0.f, 1.f, g_fRadius / abs(vViewPos.z - fSampleDepth));
         
-        // Â÷Æóµµ ´©Àû
+        // ì°¨íë„ ëˆ„ì 
         fOcclusion += (vSamplePos.z >= fSampleDepth ? 1.f : 0.f) * fRangeLerp;
     }
 
-    // Á¤±ÔÈ­ ¹× º¸Á¤ -> ¸·Èû ºñÀ² -> ºûÀÌ ´ê´Â Á¤µµ·Î ¹ÝÀü
-    // Occlusion = ¸·Èù ¹æÇâÀÇ ¼ö
+    // ì •ê·œí™” ë° ë³´ì • -> ë§‰íž˜ ë¹„ìœ¨ -> ë¹›ì´ ë‹¿ëŠ” ì •ë„ë¡œ ë°˜ì „
+    // Occlusion = ë§‰ížŒ ë°©í–¥ì˜ ìˆ˜
     fOcclusion = 1.f - (fOcclusion / (float)g_iNumKernels);
     
     float fAO = pow(saturate(fOcclusion * g_fIntensity), g_fContrast);
@@ -507,7 +502,7 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
         vector vOutlineDesc = g_OutlineTexture.Sample(DefaultSampler, In.vTexcoord);
         vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
 
-        // 0~1 ºñ±³
+        // 0~1 ë¹„êµ
         bool isOutline = (vDepthDesc.x >= 1.f - g_fOutlineBias && vOutlineDesc.w <= 1.f);
 
         if (isOutline)
@@ -560,7 +555,7 @@ PS_OUT_BACKBUFFER PS_MAIN_FOG(PS_IN In)
     float fExp = saturate(1.f - exp(-g_fFogDensity * fDistance));
     
     // Exponential^2 -> (1 - e^{-(rho * d)^2})
-    float fOpticalDepth = g_fFogDensity * fDistance;    // ±¤ÇÐ ±íÀÌ
+    float fOpticalDepth = g_fFogDensity * fDistance;    // ê´‘í•™ ê¹Šì´
     float fExpSquare = saturate(1.f - exp(-(fOpticalDepth * fOpticalDepth)));
     
     float4 vResultColor;
@@ -596,7 +591,12 @@ PS_OUT_BACKBUFFER PS_MAIN_FOG(PS_IN In)
         fFogFactor = lerp(fFogFactor, fFogFactor * fNoise, g_fNoiseStrength);
     }
     
-    vResultColor = lerp(vPostSceneDesc, g_vFogColor, fFogFactor);
+    // Height °è»ê
+    float fFogDiff = vWorldPos.y - g_fFogBaseHeight;
+    fFogDiff = max(fFogDiff, 0.f);
+    float fFogHeightFactor = saturate(exp(-fFogDiff * g_fFogHeightDensity));
+    
+    vResultColor = lerp(vPostSceneDesc, g_vFogColor, fFogFactor * fFogHeightFactor);
     Out.vColor = vResultColor;
     //  Out.vColor = float4(vResultColor.rgb, vPostSceneDesc.a);
     
@@ -612,45 +612,37 @@ PS_OUT_BACKBUFFER PS_MAIN_DISTORTION(PS_IN In)
     
     if (g_isEnableDistortion)
     {
-        // ³ëÀÌÁî »ùÇÃ¸µºÎÅÍ
-        //  float2 vNoise = g_NoiseTexture.Sample(ClampSampler, In.vTexcoord).rg * 2.f - 1.f;
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å©ï¿½ï¿½
+        float2 vNoiseUV = In.vTexcoord;
+        vNoiseUV += g_fTime * g_fSpeed;
         
-        // ¿ùµå ¼¾ÅÍ -> Åõ¿µ ¼¾ÅÍ -> UV
-        //  float4 vCenterPos;
-        //  
-        //  vCenterPos = mul(float4(g_vCenter, 1.f), g_CameraViewMatrix);
-        //  vCenterPos = mul(vCenterPos, g_CameraProjMatrix);
-        //  vCenterPos /= vCenterPos.w; // -1 ~ 1
-        //  
-        //  float2 vCenterUV;
-        //  vCenterUV.x = vCenterPos.x * 0.5f + 0.5f;
-        //  vCenterUV.y = vCenterPos.y * -0.5f + 0.5f;
-        //  
-        //  // Áß½ÉÁ¡ ±âÁØ »çÀÌÁî UV
-        //  float2 vDir = (In.vTexcoord - vCenterUV) / (g_vTextureSize / g_vScreenSize);
-        //  
-        //  // Á¾È¾ºñ º¸Á¤
-        //  vDir.x *= g_vScreenSize.x / g_vScreenSize.y;
-        //  
-        //  //  float fDistance = length(vDir);
-        //  
-        //  // ¸¶½ºÅ© UV °è»ê
-        //  float2 vMaskUV;
-        //  vMaskUV.x = vDir * 0.5f + 0.5f;
-        //  vMaskUV.y = vDir * -0.5f + 0.5f;
-        //  
-        //  // ³ëÀÌÁî UV °è»ê
-        //  float2 vNoiseUV = vMaskUV * g_vDistNoiseScale + g_fTime * g_fSpeed;
-        //  
-        //  // °¢°¢ÀÇ ÅØ½ºÃ³ »ùÇÃ¸µ
-        //  float fMask = g_MaskTexture.Sample(ClampSampler, vMaskUV);
-        //  float2 vNoise = g_NoiseTexture.Sample(ClampSampler, In.vTexcoord).rg * 2.f - 1.f;
-        //  
-        //  float2 vOffset = vNoise * g_fPower * fMask * g_vTextureSize;
-        //  float2 vDistortionUV = saturate(In.vTexcoord + vOffset);
-        //  vFinalColor = g_CombinedTexture.Sample(DefaultSampler, vDistortionUV);
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ã¸ï¿½
+        float2 vNoise = g_NoiseTexture.Sample(DefaultSampler, vNoiseUV).rg * 2.f - 1.f;
         
-        vFinalColor = g_CombinedTexture.Sample(DefaultSampler, In.vTexcoord);
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ -> ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ -> UV
+        float4 vCenterPos;
+        
+        vCenterPos = mul(float4(g_vCenter, 1.f), g_CameraViewMatrix);
+        vCenterPos = mul(vCenterPos, g_CameraProjMatrix);
+        vCenterPos /= vCenterPos.w; // -1 ~ 1
+        
+        float2 vCenterUV;
+        vCenterUV.x = vCenterPos.x * 0.5f + 0.5f;
+        vCenterUV.y = vCenterPos.y * -0.5f + 0.5f;
+        
+        // ï¿½ß½ï¿½ï¿½ï¿½ï¿½Îºï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Å¸ï¿½ ï¿½ï¿½ï¿½Ï±ï¿½
+        float2 vDir = In.vTexcoord - vCenterUV;
+        
+        // ï¿½ï¿½È¾ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        vDir.x *= g_fAspect;
+        
+        float fDistance = length(vDir) / g_fRange;
+        
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸ï¿½ È¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        float fMask = pow(saturate(1.f - fDistance), 2.f);  // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½È­
+        
+        float2 vDistortionUV = In.vTexcoord + vNoise * g_fPower * fMask;
+        vFinalColor = g_CombinedTexture.Sample(DefaultSampler, vDistortionUV);
     }
     else
         vFinalColor = g_CombinedTexture.Sample(DefaultSampler, In.vTexcoord);
