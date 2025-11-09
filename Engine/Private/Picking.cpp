@@ -109,7 +109,7 @@ _bool CPicking::isPicked(_float3* pOut, _uint* iObjectID)
 
     _vector     vPosition = { m_pPixels[iIndex].x, m_pPixels[iIndex].y, m_pPixels[iIndex].z, m_pPixels[iIndex].w };
 
-    *iObjectID = static_cast<_uint>(m_pPixels[iIndex].w);
+    *iObjectID = static_cast<_uint>(roundf(m_pPixels[iIndex].w));
     XMStoreFloat3(pOut, vPosition);
 
     return true;

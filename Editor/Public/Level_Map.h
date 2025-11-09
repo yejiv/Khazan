@@ -82,6 +82,8 @@ private:
 
 	unordered_map<string, string> m_ModelPathCache;
 
+    _bool m_isActiveShortCutKey = { false };
+
 #pragma region 트리거 관련 변수
 
 

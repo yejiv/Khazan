@@ -106,14 +106,26 @@ HRESULT CHeinMach_Trigger::Ready_TriggerType(void* pArg)
     {
         m_eGuideType = GUIDE_TYPE::GUARD;
     }
-    // else if (m_strTriggerKey == "Guide_LockOn")
-    // {
-    //     m_eGuideType = GUIDE_TYPE::LOCKON;
-    // }
-    // else if (m_strTriggerKey == "Guide_LockOn")
-    // {
-    //     m_eGuideType = GUIDE_TYPE::LOCKON;
-    // }
+    else if (m_strTriggerKey == "Guide_UnderWorld")
+    {
+        m_eGuideType = GUIDE_TYPE::UNDERWORLD;
+    }
+    else if (m_strTriggerKey == "Guide_Dodge")
+    {
+        m_eGuideType = GUIDE_TYPE::DODGE;
+    }
+    else if (m_strTriggerKey == "Guide_Brutal")
+    {
+        m_eGuideType = GUIDE_TYPE::BURTALATTACK;
+    }
+    else if (m_strTriggerKey == "Guide_FallAttack")
+    {
+        m_eGuideType = GUIDE_TYPE::FALLATTACK;
+    }
+    else if (m_strTriggerKey == "Guide_Impulse")
+    {
+        m_eGuideType = GUIDE_TYPE::IMPULSE;
+    }
     else if (m_strTriggerKey == "Day")
     {
         m_eDayCircle = DAY_CIRCLE::DAY;
@@ -123,6 +135,30 @@ HRESULT CHeinMach_Trigger::Ready_TriggerType(void* pArg)
         m_eDayCircle = DAY_CIRCLE::DAWN;
     }
 
+
+    return S_OK;
+}
+
+HRESULT CHeinMach_Trigger::Ready_TriggerSetting(void* pArg)
+{
+    if (m_strTriggerKey == "CaveEntry")
+    {
+        DWORD dwByte = {};
+
+        HANDLE hFile = CreateFile(TEXT("../../Client/Bin/Data/Map/MapData/HeinMach/HeinMach_Dawn_sky.dat"), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        CHECK_EQUAL(INVALID_HANDLE_VALUE, hFile, E_FAIL);
+
+        WriteFile(hFile, &m_Sky_Dawn, sizeof(SKY_DESC), &dwByte, nullptr);
+    }
+    if (m_strTriggerKey == "CaveExit")
+    {
+        DWORD dwByte = {};
+
+        HANDLE hFile = CreateFile(TEXT("../../Client/Bin/Data/Map/MapData/HeinMach/HeinMach_Day_sky.dat"), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        CHECK_EQUAL(INVALID_HANDLE_VALUE, hFile, E_FAIL);
+
+        WriteFile(hFile, &m_Sky_Day, sizeof(SKY_DESC), &dwByte, nullptr);
+    }
 
     return S_OK;
 }
@@ -150,13 +186,9 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             m_pGameInstance->SEQ_AdoptAndPlay(m_pHeinMach_Yetuga, tPlayDesc);
             m_isDead = true;
         }
+        // UI GUIDE 타입일 때
         else if (GUIDE_TYPE::END != m_eGuideType)
         {
-            // BURTALATTACK ㄴㄴ
-            // Guide_LockOn
-            // Guide_Guard
-            //enum class GUIDE_TYPE { LOCKON, GUARD, UNDERWORLD, DODGE, BURTALATTACK, FALLATTACK, IMPULSE, END };
-
             CUI_Tutorial* pUI_Tutorial = static_cast<CUI_Tutorial*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Tutorial")));
             CHECK_NULLPTR_MSG(pUI_Tutorial, TEXT("pUI_Tutorial == nullptr"), );
 
@@ -164,11 +196,34 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             {
             case GUIDE_TYPE::LOCKON:
             case GUIDE_TYPE::GUARD:
+            case GUIDE_TYPE::UNDERWORLD:
+            case GUIDE_TYPE::DODGE:
+            case GUIDE_TYPE::BURTALATTACK:
+            case GUIDE_TYPE::FALLATTACK:
+            case GUIDE_TYPE::IMPULSE:
                 pUI_Tutorial->On_Panel(m_eGuideType);
+                break;
+            default:
+                MSG_BOX(TEXT("트리거 - 가이드 타입 default 뜸 엥"));
                 break;
             }
 
             m_isDead = true;
+        }
+        else if (m_strTriggerKey == "CaveEntry")
+        {
+
+            //static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Sky"), 0))->Set_SkyDesc(m_Sky_Dawn);
+        }
+        else if (m_strTriggerKey == "CaveMidEntry")
+        {
+
+        }
+        else if (m_strTriggerKey == "CaveExit")
+        {
+
+
+            //static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Sky"), 0))->Set_SkyDesc(m_Sky_Day);
         }
         else if (DAY_CIRCLE::NONE != m_eDayCircle)
         {

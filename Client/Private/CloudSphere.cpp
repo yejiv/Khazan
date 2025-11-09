@@ -32,6 +32,16 @@ HRESULT CCloudSphere::Initialize_Clone(void* pArg)
 
     m_pTransformCom->Scale(_float3(0.0001f, 0.0001f, 0.0001f));
 
+#ifdef _DEBUG
+    m_FixDesc = m_CloudDesc;
+
+    LEVEL eLevel = CClientInstance::GetInstance()->Get_CurrLevel();
+    if (LEVEL::LOADING == eLevel || LEVEL::TITLE == eLevel)
+        return S_OK;
+
+    Debug_CloudEdit();
+#endif // _DEBUG
+
     return S_OK;
 }
 
@@ -42,6 +52,11 @@ void CCloudSphere::Priority_Update(_float fTimeDelta)
 void CCloudSphere::Update(_float fTimeDelta)
 {
     m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(m_pGameInstance->Get_CamPosition()));
+
+#ifdef _DEBUG
+    if (m_pGameInstance->Key_Pressing(DIK_NUMPAD7, 0.f) && m_pGameInstance->Key_Pressing(DIK_NUMPAD8, 0.f) && m_pGameInstance->Key_Down(DIK_NUMPAD9))
+        m_isCloudWindow = !m_isCloudWindow;
+#endif // _DEBUG
 
     m_fTimeAcc += fTimeDelta;
 }
@@ -139,6 +154,132 @@ HRESULT CCloudSphere::Bind_Cloud_ShaderResources()
     m_pShaderCom->Bind_RawValue("g_vLightDir", &m_CloudDesc.vLightDir, sizeof(_float3));
 
     return S_OK;
+}
+
+void CCloudSphere::Debug_CloudEdit()
+{
+    m_pGameInstance->AddWidget(TEXT("Client"), [this]() {
+        if (m_isCloudWindow)
+        {
+            // 메인 윈도우
+            ImGui::Begin("Cloud Sphere Edit", &m_isCloudWindow, ImGuiWindowFlags_AlwaysAutoResize);
+
+            ImGui::Text("CLOUD COLOR");
+            ImGui::Text("COLOR PALHETT");
+            ImGui::ColorPicker3("##r_edit", reinterpret_cast<_float*>(&m_CloudDesc.vCloudColor));
+            ImGui::Separator;
+
+            ImGui::Text("CLOUD SCALE"); ImGui::SameLine;
+            ImGui::InputFloat("##fix_cloud_scale", &m_CloudDesc.fCloudScale, 0.01f, 0.1f);
+            ImGui::Separator;
+
+            ImGui::Text("CLOUD SPEED"); ImGui::SameLine;
+            ImGui::InputFloat("##fix_cloud_speed", &m_CloudDesc.fCloudSpeed, 0.01f, 0.1f);
+            ImGui::Separator;
+
+            ImGui::Text("CLOUD DENSITY"); ImGui::SameLine;
+            ImGui::InputFloat("##fix_cloud_density", &m_CloudDesc.fCloudDensity, 0.01f, 0.1f);
+            ImGui::Separator;
+
+            ImGui::Text("CLOUD INTENSITY"); ImGui::SameLine;
+            ImGui::InputFloat("##fix_cloud_inten", &m_CloudDesc.fCloudLightIntensity, 0.01f, 0.1f);
+            ImGui::Separator;
+
+            ImGui::Text("LIGHT DIRECTION");
+            ImGui::Text("X"); ImGui::SameLine;
+            ImGui::InputFloat("##fix_cloudlight_dir_X", &m_CloudDesc.vLightDir.x, 0.01f, 0.1f);
+            ImGui::Text("Y"); ImGui::SameLine;
+            ImGui::InputFloat("##fix_cloudlight_dir_Y", &m_CloudDesc.vLightDir.y, 0.01f, 0.1f);
+            ImGui::Text("Z"); ImGui::SameLine;
+            ImGui::InputFloat("##fix_cloudlight_dir_Z", &m_CloudDesc.vLightDir.z, 0.01f, 0.1f);
+            ImGui::Separator;
+
+            ImGui::Text("CLOUD DYNAMIC"); ImGui::SameLine();
+            if (ImGui::Button("ON"))
+                m_CloudDesc.fDynamic = 1.f;
+            ImGui::SameLine;
+            if (ImGui::Button("OFF"))
+                m_CloudDesc.fDynamic = 0.f;
+
+            ImGui::Separator();
+            ImGui::Text("DEFAULT FILE PATH : %s", m_szFilePath);
+            if (ImGui::Button("HEINMACH")) m_eMapType = KHAZAN_MAP::HEINMACH; ImGui::SameLine();
+            if (ImGui::Button("EMBARS")) m_eMapType = KHAZAN_MAP::EMBARS; ImGui::SameLine();
+            if (ImGui::Button("VIPER")) m_eMapType = KHAZAN_MAP::VIPER;
+
+            switch (m_eMapType)
+            {
+            case KHAZAN_MAP::HEINMACH:
+                m_strFolderName = "HeinMach/";
+                ImGui::Text("CURRENT : HEINMACH FOLDER");
+                break;
+            case KHAZAN_MAP::EMBARS:
+                m_strFolderName = "Embars/";
+                ImGui::Text("CURRENT : EMBARS FOLDER");
+                break;
+            case KHAZAN_MAP::VIPER:
+                m_strFolderName = "Viper/";
+                ImGui::Text("CURRENT : VIPER FOLDER");
+                break;
+            default:
+                break;
+            }
+
+            ImGui::Text("SAVE FILE NAME : "); ImGui::SameLine();
+            ImGui::InputText("##cloud_file_name", m_szFileName, IM_ARRAYSIZE(m_szFileName));
+
+            ImGui::Separator();
+            if (ImGui::Button("RESET")) m_CloudDesc = m_FixDesc;
+            if (ImGui::Button("REFRESH ORIGIN DATA")) m_FixDesc = m_CloudDesc;
+
+            ImGui::Separator();
+            if (ImGui::Button("SAVE"))
+            {
+                string strPath = m_szFilePath;
+                strPath += m_strFolderName;
+                strPath += m_szFileName;
+                strPath += "_cloud.dat";
+
+                DWORD dwByte = {};
+
+                HANDLE hFile = CreateFile(AnsiToWString(strPath).c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+                if (INVALID_HANDLE_VALUE == hFile)
+                {
+                    _int a = 10;
+                }
+                else
+                {
+                    WriteFile(hFile, &m_CloudDesc, sizeof(CLOUD_DESC), &dwByte, nullptr);
+                }
+
+                CloseHandle(hFile);
+
+            } ImGui::SameLine();
+            if (ImGui::Button("LOAD"))
+            {
+                string strPath = m_szFilePath;
+                strPath += m_strFolderName;
+                strPath += m_szFileName;
+                strPath += "_cloud.dat";
+
+                DWORD dwByte = {};
+
+                HANDLE hFile = CreateFile(AnsiToWString(strPath).c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+                if (INVALID_HANDLE_VALUE == hFile)
+                {
+                    _int a = 10;
+                }
+                else
+                {
+                    ReadFile(hFile, &m_CloudDesc, sizeof(CLOUD_DESC), &dwByte, nullptr);
+                }
+
+                CloseHandle(hFile);
+            }
+
+            ImGui::End();
+        }
+        });
 }
 
 CCloudSphere* CCloudSphere::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
