@@ -46,7 +46,7 @@ ID,Type,Sub_ID,Skill_Type,Name,Level,MaxPoint,Index,SlotX,TexPass,Icon,Preceding
 403,0,0,1,달빛 밟기 : 잔상,4,1,99,0,5,T_Icon_Skill_Spear_A03d_UI.png,402
 404,0,0,1,달빛 태세 : 끈기,4,1,99,1,5,T_Icon_Skill_Spear_A04b_UI.png,103
 405,0,0,1,붉은 일격,3,1,99,2,5,T_Icon_Skill_Spear_A05b_UI.png,104
-406,0,0,1,달빛 태세 : 진노,4,1,99,2,5,T_Icon_Skill_Spear_A05c_UI.png,105
+406,0,0,1,달빛 태세 : 진노,4,1,99,2,5,T_Icon_Skill_Spear_A05c_UI.png,405
 407,0,1,2,쾌속 찌르기,1,1,99,0,5,T_Icon_Skill_Spear_A05c_UI.png,0
 408,0,1,1,쾌속 찌르기 : 요새,2,1,99,0,5,T_Icon_Skill_Spear_B02b_UI.png,407
 409,0,1,1,나선 찌르기 : 대회전,5,1,99,1,5,T_Icon_Skill_Spear_B03c_UI.png,107
