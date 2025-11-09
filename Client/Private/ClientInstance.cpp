@@ -291,6 +291,8 @@ void CClientInstance::CameraTool_Clear()
 
 #pragma endregion
 #endif
+
+
 void CClientInstance::Release_Client()
 {
 	Safe_Release(m_pUI_Manager);

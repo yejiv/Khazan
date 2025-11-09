@@ -37,6 +37,9 @@ void CLevel_Loading::Update(_float fTimeDelta)
 	if (true == m_pLoader->isFinished())
 	{
 		CleanImgui();
+		m_pGameInstance->Destroy_Jolt();
+		m_pGameInstance->Initialize_Jolt(ENUM_CLASS(COLLISION_LAYER::END));
+		Ready_ObjectLayer();
 		CLevel* pNewLevel = { nullptr };
 
 		switch (m_eNextLevelID)
@@ -103,6 +106,21 @@ HRESULT CLevel_Loading::CleanImgui()
 	m_pGameInstance->CleanMenu(TEXT("UI"));
 	m_pGameInstance->CleanMenu(TEXT("Shader"));
 	m_pGameInstance->CleanMenu(TEXT("Camera"));
+
+	return S_OK;
+}
+
+HRESULT CLevel_Loading::Ready_ObjectLayer()
+{
+	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
+	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
+
+	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MONSTER));
+
+	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
+	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
+
+	m_pGameInstance->Set_PhysicsSystem();
 
 	return S_OK;
 }

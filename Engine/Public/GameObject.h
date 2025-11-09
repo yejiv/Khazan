@@ -85,11 +85,14 @@ protected:
 	_bool						m_isActive = { true };
 	_bool						m_isGhost = { false };
 	_bool						m_isDeferredContext = { false };
+	_bool						m_isPrototype = { true };
 
 	// 추후에 파생 클래스 나눠지게 되면 옮기거나 다른 방법으로 바꿔보겠습니다.
 	_uint						m_iTeam = {};
 
 	COLLISION_DESC				m_tCollisionDesc = {};
+
+	
 
 protected:
 	HRESULT Add_Component(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, 

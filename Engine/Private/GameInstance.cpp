@@ -91,10 +91,6 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pLight_Manager)
 		return E_FAIL;
 
-	m_pJolt_Manager = CJolt_Manager::Create(*ppDevice, *ppContext, EngineDesc.iNumJoltObjectLayer);
-	if (nullptr == m_pJolt_Manager)
-		return E_FAIL;
-
 	m_pPool_Manager = CPool_Manager::Create(EngineDesc.iNumLevels);
 	if (nullptr == m_pPool_Manager)
 		return E_FAIL;
@@ -221,7 +217,8 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 
 	m_pLevel_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
-	m_pJolt_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
+	if (m_pJolt_Manager)
+		m_pJolt_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
 	m_pComputeShader_Manager->Execute_Job(COMPUTEJOB::UPDATE);
 
@@ -241,6 +238,7 @@ HRESULT CGameInstance::Clear_Resources(_uint iClearLevelID)
 	m_pPrototype_Manager->Clear(iClearLevelID);
 
 	m_pObject_Manager->Clear(iClearLevelID);
+
 	m_pObject_Manager->Static_Clear();
 
 	m_pLight_Manager->Clear(iClearLevelID);
@@ -876,6 +874,18 @@ void CGameInstance::Clear_GizmoObject()
 #pragma endregion
 
 #pragma region JOLT_MANAGER
+HRESULT CGameInstance::Initialize_Jolt(_uint iNumObjectLayer)
+{
+	m_pJolt_Manager = CJolt_Manager::Create(GetDevice(), GetImmediate(), iNumObjectLayer);
+	if (nullptr == m_pJolt_Manager)
+		return E_FAIL;
+
+	return S_OK;
+}
+void CGameInstance::Destroy_Jolt()
+{
+	Safe_Release(m_pJolt_Manager);
+}
 void CGameInstance::Set_PhysicsSystem()
 {
 	m_pJolt_Manager->Set_PhysicsSystem();
