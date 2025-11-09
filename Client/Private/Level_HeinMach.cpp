@@ -163,8 +163,8 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
 	}
 
 
-	//if (m_pGameInstance->Key_Down(DIK_RETURN))
-	//	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::VIPER))));
+	if (m_pGameInstance->Key_Down(DIK_RETURN))
+		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::VIPER))));
 
 
 	return;
@@ -506,12 +506,11 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag
 		}
 	}
 
-	if (iSubLV == HEINMACH_1ST_BLADENEXUS)
-	{
-		m_isFillFutures = true;
-	}
 	CloseHandle(hFile);
-
+    if (iSubLV == HEINMACH_1ST_BLADENEXUS)
+    {
+        m_isFillFutures = true;
+    }
 	return S_OK;
 }
 

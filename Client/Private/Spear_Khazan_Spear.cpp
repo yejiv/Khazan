@@ -69,10 +69,10 @@ void CSpear_Khazan_Spear::Update(_float fTimeDelta)
 
 void CSpear_Khazan_Spear::Late_Update(_float fTimeDelta)
 {
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONLIGHT, this)))
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
-    //if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
-    //    return;
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
+        return;
 
 #ifdef _DEBUG
 
@@ -84,9 +84,7 @@ HRESULT CSpear_Khazan_Spear::Render()
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
-
-
-    _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
+    _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
     for (size_t i = 0; i < iNumMeshes; i++)
     {
@@ -102,8 +100,6 @@ HRESULT CSpear_Khazan_Spear::Render()
 
         m_pModelCom->Render(i);
     }
-
-
 
     return S_OK;
 }
@@ -126,7 +122,7 @@ HRESULT CSpear_Khazan_Spear::Render_Shadow()
         if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;
 
-        m_pShaderCom->Begin(0);
+        m_pShaderCom->Begin(2);
 
         m_pModelCom->Render(i);
     }

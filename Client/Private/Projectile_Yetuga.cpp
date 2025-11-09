@@ -51,12 +51,16 @@ void CProjectile_Yetuga::Update(_float fTimeDelta)
 			m_isDead = true;
 			// Active 끄고
 			m_isActive = false;
-			m_pBody->Activate(false);
+			m_isCrashed = true;
+			m_pBody->Collision_Active(true);
 		}
 		m_pTransformCom->Go_Straight(fTimeDelta);
 		// 콜라이더를 갱신시킨다.
-		m_pBody->Sync_Update(m_pTransformCom);
-		m_pBody->Update(fTimeDelta, m_pTransformCom);
+		if (!m_isCrashed)
+		{
+			m_pBody->Sync_Update(m_pTransformCom);
+			m_pBody->Update(fTimeDelta, m_pTransformCom);
+		}
 	}
 
 	if (m_pModelCom->Play_Animation(fTimeDelta))
@@ -100,7 +104,8 @@ HRESULT CProjectile_Yetuga::Render()
 
 void CProjectile_Yetuga::Reset()
 {
-	m_pBody->Activate(true);
+	m_isCrashed = false;
+	m_pBody->Collision_Active(true);
 
 	m_fCurrentTime = 0.f;
 	_vector vDir = XMVector3Normalize(XMLoadFloat3(&m_vSpawnDir));
@@ -159,6 +164,7 @@ HRESULT CProjectile_Yetuga::Ready_Colliders()
 	BodyDesc.eQuality = EMotionQuality::LinearCast; // 기본 모드
 	BodyDesc.eShapeType = SHAPE::SPHERE;
 	BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+    BodyDesc.isCollideKinematicVsNonDynamic = true;
 	
 
 	XMStoreFloat3(&BodyDesc.vPos,m_pTransformCom->Get_State(STATE::POSITION));
@@ -204,9 +210,12 @@ void CProjectile_Yetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjec
 	if (PRJSTATE::LOOP == m_eState)
 	{
 		COLLISION_LAYER eType = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
-		if (COLLISION_LAYER::PLAYER == eType || COLLISION_LAYER::MAP_STATIC == eType)
+		if (/*COLLISION_LAYER::PLAYER == eType ||*/ COLLISION_LAYER::MAP_STATIC == eType)
 		{
 			Enter_State(PRJSTATE::CRASHED);
+			m_isCrashed = true;
+			m_pBody->Collision_Active(false);
+			
 		}
 	}
 }

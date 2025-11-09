@@ -1,8 +1,8 @@
 #include "Shader_Controller.h"
 #include "GameInstance.h"
 #include "ClientInstance.h"
-#include "Body_Khazan_Sample.h"
-#include "Khazan_Sample.h"
+#include "Body_Khazan_Spear.h"
+#include "Khazan_Spear.h"
 #include "ContainerObject.h"
 #include "Creature.h"
 
@@ -62,9 +62,9 @@ void CShader_Controller::Ready_Level()
 
 					if (m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Creature_Test")) != nullptr)
 					{
-						CKhazan_Sample* pKhazan = dynamic_cast<CKhazan_Sample*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel),
+                        CKhazan_Spear* pKhazan = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel),
 							TEXT("Layer_Creature_Test"), 0));
-						CBody_Khazan_Sample* pBody = dynamic_cast<CBody_Khazan_Sample*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
+						CBody_Khazan_Spear* pBody = dynamic_cast<CBody_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
 						OUTLINE_CONFIG PlayerOutlineConfig = pBody->Get_OutlineConfig();
 						m_OutlineConfig.vColor = PlayerOutlineConfig.vColor;
 						m_OutlineConfig.fSize = PlayerOutlineConfig.fSize;
@@ -126,6 +126,15 @@ void CShader_Controller::Ready_Shader()
 
 					if (ImGui::SliderFloat("Shadow Bias", &m_CascadeConfig.fBias, 0.0001f, 0.005f, "%.4f"))
 						m_pGameInstance->Set_CascadeConfig(m_CascadeConfig);
+
+					ImGui::Separator();
+					ImGui::Text("Shadow Intensity Lerp");
+
+					ImGui::SliderFloat("Shadow Transition Duration", &m_fShadowTransDuration, 0.1f, 10.f, "%.1f");
+					ImGui::SliderFloat("Shadow Target Intensity", &m_fTargetShadowIntensity, 0.f, 1.f, "%.1f");
+
+					if (ImGui::Button("Start Shadow Intensity Transition"))
+						m_pGameInstance->Start_ShadowIntensityTransition(m_fShadowTransDuration, m_fTargetShadowIntensity);
 
 					ImGui::Separator();
 				}
@@ -207,6 +216,7 @@ void CShader_Controller::Ready_Shader()
 						m_pGameInstance->Set_FogConfig(m_FogConfig);
 
 					ImGui::Separator();
+					ImGui::Text("Fog Transition Lerp");
 
 					ImGui::SliderFloat("Fog Transition Duration", &m_fFogTransDuration, 0.1f, 10.f, "%.2f");
 					ImGui::SliderFloat("Fog Transition Density", &m_TargetFogDesc.fDensity, 0.0001f, 0.05f, "%.4f");
@@ -329,20 +339,20 @@ void CShader_Controller::Ready_Shader()
 
 				if (m_isEnableOutline)
 				{
-					if (ImGui::SliderFloat("Outline Size", &m_OutlineConfig.fSize, 0.001f, 0.01f, "%.3f"))
+					if (ImGui::SliderFloat("Outline Size", &m_OutlineConfig.fSize, 0.0001f, 0.01f, "%.4f"))
 					{
-						CKhazan_Sample* pKhazan = dynamic_cast<CKhazan_Sample*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel),
-							TEXT("Layer_Creature_Test"), 0));
-						CBody_Khazan_Sample* pBody = dynamic_cast<CBody_Khazan_Sample*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
+						CKhazan_Spear* pKhazan = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel),
+							TEXT("Layer_Creature_Player"), 0));
+						CBody_Khazan_Spear* pBody = dynamic_cast<CBody_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
 						pBody->Set_OutlineConfig(m_OutlineConfig);
-						/*dynamic_cast<CBody_Khazan_Sample*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel),
+						/*dynamic_cast<CBody_Khazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel),
 							TEXT("Layer_Creature_Test"), 0))->Set_OutlineConfig(m_OutlineConfig);*/
 					}
 					if (ImGui::ColorEdit3("Outline Color", reinterpret_cast<_float*>(&m_OutlineConfig.vColor)))
 					{
-						CKhazan_Sample* pKhazan = dynamic_cast<CKhazan_Sample*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel),
-							TEXT("Layer_Creature_Test"), 0));
-						CBody_Khazan_Sample* pBody = dynamic_cast<CBody_Khazan_Sample*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
+						CKhazan_Spear* pKhazan = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel),
+							TEXT("Layer_Creature_Player"), 0));
+						CBody_Khazan_Spear* pBody = dynamic_cast<CBody_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
 						pBody->Set_OutlineConfig(m_OutlineConfig);
 
 						/*dynamic_cast<CBody_Khazan_Sample*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel),

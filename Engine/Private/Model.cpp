@@ -227,7 +227,7 @@ const vector<_int>& CModel::Get_ChildIndices(_int boneIndex) const
 void CModel::Set_OwnerTransform(CTransform** pTransform)
 {
     m_pOwnerTransform = *pTransform;
-    Safe_AddRef(m_pOwnerTransform);
+    //Safe_AddRef(m_pOwnerTransform);
 }
 
 _vector CModel::Get_BoneWorldRotationQuat(_int iBone) const
@@ -1213,8 +1213,8 @@ void CModel::Free()
 {
 	__super::Free();
 
-    if(m_pOwnerTransform)
-        Safe_Release(m_pOwnerTransform);
+    /*if(m_pOwnerTransform)
+        Safe_Release(m_pOwnerTransform);*/
 
 
     for (auto& pAnimation : m_Animations)

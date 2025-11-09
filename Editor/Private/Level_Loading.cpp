@@ -99,6 +99,7 @@ HRESULT CLevel_Loading::Ready_LoadingThread()
 
 HRESULT CLevel_Loading::CleanImgui()
 {
+#ifdef _DEBUG
 	m_pGameInstance->CleanMenu(TEXT("Animation"));
 	m_pGameInstance->CleanMenu(TEXT("Map"));
 	m_pGameInstance->CleanMenu(TEXT("Effect"));
@@ -106,7 +107,7 @@ HRESULT CLevel_Loading::CleanImgui()
 	m_pGameInstance->CleanMenu(TEXT("UI"));
 	m_pGameInstance->CleanMenu(TEXT("Shader"));
 	m_pGameInstance->CleanMenu(TEXT("Camera"));
-
+#endif
 	return S_OK;
 }
 
