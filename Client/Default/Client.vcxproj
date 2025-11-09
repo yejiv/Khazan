@@ -226,7 +226,11 @@
     <ClInclude Include="..\Public\FSM_Yetuga.h" />
     <ClInclude Include="..\Public\Level_Test.h" />
     <ClInclude Include="..\public\Player_Manager.h" />
+    <ClInclude Include="..\public\Skill_Condition_Panel.h" />
     <ClInclude Include="..\public\Skill_Gauge.h" />
+    <ClInclude Include="..\public\Skill_Info.h" />
+    <ClInclude Include="..\public\Skill_Info_Panel.h" />
+    <ClInclude Include="..\public\Skill_Info_Tex.h" />
     <ClInclude Include="..\public\Skill_Panel.h" />
     <ClInclude Include="..\Public\Gomdol.h" />
     <ClInclude Include="..\public\Skill_Slot.h" />
@@ -421,7 +425,11 @@
     <ClCompile Include="..\Private\FSM_Yetuga.cpp" />
     <ClCompile Include="..\Private\Level_Test.cpp" />
     <ClCompile Include="..\private\Player_Manager.cpp" />
+    <ClCompile Include="..\private\Skill_Condition_Panel.cpp" />
     <ClCompile Include="..\private\Skill_Gauge.cpp" />
+    <ClCompile Include="..\private\Skill_Info.cpp" />
+    <ClCompile Include="..\private\Skill_Info_Panel.cpp" />
+    <ClCompile Include="..\private\Skill_Info_Tex.cpp" />
     <ClCompile Include="..\private\Skill_Panel.cpp" />
     <ClCompile Include="..\Private\Gomdol.cpp" />
     <ClCompile Include="..\private\Skill_Slot.cpp" />

@@ -124,6 +124,8 @@ namespace Client
 		_int iTexPass{};
 		_wstring wstrIcon{};
 		_int iPreSkill{};
+        _wstring wstrInfo{};
+        _int iGauge;
 	}SKILL_DB;
 
 	typedef struct tagKhazanAnimationFindInfo

@@ -3,11 +3,13 @@
 namespace Client {
 	// ENUMs
 	enum class EVENT_TYPE { LEVEL_CHANGE, UI_QUICK_SLOT,
-		OBJECT_INTERACT,							// ?�호 ?�용???�브?�트???�촉 ( �??�브?�트가 구독 )
-		INTERACT_TYPE,								// ?�호 ?�용???�브?�트???�촉 ( ?�레?�어가 구독 )
-		ANNOUNCE_MAPNAME,							// 지???�름, ?�출 ?�름 출력
-		LOCKON_VISIBLE,								// 록온 ?�더 ???�프
-		SKILL_EVENT,								// ?�킬 ?�롯 관???�벤?�들
+		OBJECT_INTERACT,							// ��ȣ �ۿ��� ������Ʈ�� ���� ( �� ������Ʈ�� ���� )
+		INTERACT_TYPE,								// ��ȣ �ۿ��� ������Ʈ�� ���� ( �÷��̾ ���� )
+		ANNOUNCE_MAPNAME,							// ���� �̸�, ���� �̸� ���
+        ANNOUNCE_TALK,			    				// ���� �̸�, ���� �̸� ���
+		LOCKON_VISIBLE,								// �Ͽ� ���� ��/����
+		SKILL_EVENT,								// ��ų ���� ���� �̺�Ʈ��
+        PreSKILL_On,
 		END };
 
 	// Structs
@@ -15,9 +17,10 @@ namespace Client {
 		_int iLevel;
 	};
 
-	// ?�호?�용 ?�브?�트 ?�성???�벤??구조�?( 1. ?�브?�트 ?�성?? 2. ?�브?�트 비활?�화 ) ( ?�레?�어 -> ?�브?�트 )
+
 	struct EventObject {
 		enum class EVENT_STATE { NONE, ON, OFF };			// NONE : ???�션 | ON : ?�성??| OFF : 비활?�화
+
 		EVENT_STATE eState{ EVENT_STATE::NONE };
 
 		void On() { eState = EVENT_STATE::ON; }
@@ -34,12 +37,14 @@ namespace Client {
 			return e;
 		}
 
+
 		static EventObject OffEvent()
 		{
 			EventObject e = {};
 			e.Off();
 			return e;
 		}
+
 
 		static EventObject NoneEvent()
 		{
@@ -95,7 +100,6 @@ namespace Client {
 		_int* iItemCount;
 	};
 
-
 	//지???�름 ?�시?�는 ?�벤??
 	struct EVENT_ANNOUNCE_MAPNAME {
 		_wstring	wstrName;				//지??���?
@@ -114,4 +118,15 @@ namespace Client {
     //스킬 트리 오픈
 	struct EVENT_SKILL_OPEN {};
 
+    //��ų Ʈ�� ����
+    struct EVENT_SKILL_ON {
+        _bool isUp;
+        _int  SkillIndex;
+    };
+
+
+    //�� ��ȭ
+    struct EVENT_ANNOUNCE_TALK {
+        _int  iTalkIndex;
+    };
 }
