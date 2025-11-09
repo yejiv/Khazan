@@ -51,7 +51,7 @@ private:
 
 	_uint*						m_pParentState = { nullptr };
 	_float4x4*					m_pWeaponR_Matrix = { nullptr };
-
+	
 	_matrix						m_matOffset;
 
 private:

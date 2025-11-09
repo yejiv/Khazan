@@ -60,6 +60,7 @@ float g_fTimeDelta;
 bool g_isEnableNoise, g_isWorldFog;
 float2 g_vNoiseSpeed, g_vNoiseScale;
 float g_fNoiseStrength, g_fNoiseContrast;
+float g_fFogBaseHeight, g_fFogHeightDensity;
 
 // ===== Outline =====
 float g_fOutlineAlpha = { 1.f };
@@ -590,7 +591,12 @@ PS_OUT_BACKBUFFER PS_MAIN_FOG(PS_IN In)
         fFogFactor = lerp(fFogFactor, fFogFactor * fNoise, g_fNoiseStrength);
     }
     
-    vResultColor = lerp(vPostSceneDesc, g_vFogColor, fFogFactor);
+    // Height °è»ê
+    float fFogDiff = vWorldPos.y - g_fFogBaseHeight;
+    fFogDiff = max(fFogDiff, 0.f);
+    float fFogHeightFactor = saturate(exp(-fFogDiff * g_fFogHeightDensity));
+    
+    vResultColor = lerp(vPostSceneDesc, g_vFogColor, fFogFactor * fFogHeightFactor);
     Out.vColor = vResultColor;
     //  Out.vColor = float4(vResultColor.rgb, vPostSceneDesc.a);
     

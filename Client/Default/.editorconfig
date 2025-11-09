@@ -75,7 +75,11 @@ cpp_space_around_ternary_operator = insert
 cpp_use_unreal_engine_macro_formatting = true
 cpp_wrap_preserve_blocks = one_liners
 
+<<<<<<< HEAD
 # 정리 설정 포함 Visual C++
+=======
+# Visual C++ 정리 설정
+>>>>>>> feature/kbs
 
 cpp_include_cleanup_add_missing_error_tag_type = suggestion
 cpp_include_cleanup_remove_unused_error_tag_type = dimmed

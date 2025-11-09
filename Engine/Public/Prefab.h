@@ -20,6 +20,7 @@ public:
 	virtual void					Late_Update(_float fTimeDelta) PURE;
 	virtual void					ResetChildren() PURE;
 	virtual void					UpdatePosition(_fvector Pos);
+	virtual void					UpdateWorldMatrix(_fvector Quaternion, _gvector Position);
 
 	void							Add_Effect_Element(class CEffect_Element* newElement);
 
@@ -34,6 +35,9 @@ protected:
 	_float							m_fCurTime;
 	_uint							m_iID;
 	_bool							m_bPlaying;
+
+	_float4x4						m_CombinedWorldMatrix = {};
+
 
 public:
 	virtual CGameObject*			Clone(void* pArg) PURE;

@@ -85,7 +85,7 @@ private:
 	_float						m_fViewportWidth{}, m_fViewportHeight{};
 
 	// Toon Shade
-	_float						m_fToonShadeLevel = { 3.f };
+	_float						m_fToonShadeLevel = { 5.f };
 
 	// Outline
 	OUTLINE_CONFIG				m_OutlineConfig = { _float3(0.f, 0.f, 0.f), 0.f, 1.f, 0.01f };
@@ -99,7 +99,7 @@ private:
 	_bool						m_isEnableDebugRender = {};
 	_bool						m_isEnableShadow = { true };
 	_bool						m_isEnableSSAO = { true };
-	_bool						m_isEnableFog = {};
+	_bool						m_isEnableFog = { true };
 	_bool						m_isEnableToonShade = {};
 	_bool						m_isEnableOutline = {};
 	_bool						m_isEnableVignette = {};
@@ -144,6 +144,7 @@ private:
 	_bool isEnableShadow();
 	_bool isEnableSSAO();
 	_bool isEnableFog();
+	_bool isEnableToonShade();
 
 #ifdef _DEBUG
 private:

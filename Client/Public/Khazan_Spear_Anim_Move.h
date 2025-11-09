@@ -39,8 +39,14 @@ public:
 
 public:
 	_bool	Try_ChangeAnimation(SPEAR_MOVE moveInfo);
-	_bool	m_isEndMoveAnimantionFinished() const { return m_isEndAnimationFinished; }
-
+	void	Reserve_Animation(SPEAR_MOVE moveInfo);
+	_bool	IsEndMoveAnimantionFinished() const { return m_isEndAnimationFinished; }
+	_bool	IsMoving() const { return m_isMoving; }
+	_bool	IsDodgeing() const { return m_isDodging; }
+	void Clear_Reserve() {
+		m_isReserve = false;
+		m_eReserveInfo = {};
+	}
 
 private:
 	FOOT_INFO	m_FootInfo[3]; // walk, run ,  sprint
@@ -53,11 +59,14 @@ private:
 	//_bool		m_isEquipSpear = { false }; /* 180도 회전시 사용  */
 
 	_bool		m_isEndAnimationFinished = { false };
+	_bool		m_isMoving = { false };
+	_bool		m_isDodging = { false };
 
 	_bool		m_isStopRunAnim = { false };
 	_bool		m_isStopWalkAnim = { false };
 
-
+	_bool		m_isReserve = { false };
+	SPEAR_MOVE	m_eReserveInfo = {};
 
 public:
 	static CKhazan_Spear_Anim_Move* Create();
