@@ -1830,8 +1830,8 @@ void CKhazan_Spear::Free()
 {
     __super::Free();
 
-	Safe_Release(m_pBody);
-	Safe_Release(m_pSpear);
+	/*Safe_Release(m_pBody);
+	Safe_Release(m_pSpear);*/
 	Safe_Release(m_pAnimMove);
     Safe_Release(m_pAnimAttack);
     Safe_Release(m_pAnimGuard);

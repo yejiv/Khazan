@@ -41,12 +41,12 @@ public:
 		WORLDUP			eUp = WORLDUP::Y; // 월드 Up
 		_float			fMaxSlopeAngle = 60.0f; // 오를 수 있는 경사
 		_float			fPadding = 0.02f; // 벽/바닥과 여유 거리
-		_float			fPenetrationRecoverySpeed = 4.5f; // 겹침 복구 속도
-		_float			fPredictiveContactDistance = 0.1f; // 에측 접촉(미리 감지)
+		_float			fPenetrationRecoverySpeed = 1.7f; // 겹침 복구 속도
+		_float			fPredictiveContactDistance = 0.2f; // 에측 접촉(미리 감지)
 		EBackFaceMode	eBackFaceMode = EBackFaceMode::IgnoreBackFaces;
 
 		_float			fMinTimeRemaining = 1.0e-4f;  //서브스텝 통합 중 잔여 시간 최소치.
-		_float			fCollisionTolerance = 1.0e-3f;	 //충돌 허용 오차
+		_float			fCollisionTolerance = 0.003f;	 //충돌 허용 오차
 		_uint			fMaxNumHits = 256; // 한 프레임 업데이트 동안 저장할 최대 충돌 히트 개수 제한.
 		_float			fHitReductionCosMaxAngle = 0.999f; // 히트 축약 기준 각도(코사인 값)
 		_float3			vShapeOffset;

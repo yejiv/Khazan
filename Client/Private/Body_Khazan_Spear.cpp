@@ -48,13 +48,13 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
     m_pModelCom->Set_OwnerTransform(&m_pParentTransform);
 
 #ifdef _DEBUG
-	m_pGameInstance->AddWidget(TEXT("Client"), [this]() {
+	/*m_pGameInstance->AddWidget(TEXT("Client"), [this]() {
 
 		ImGui::Begin("Sample Model State");
 
 		m_pModelCom->Debug_RanderState();
 		ImGui::End();
-		});
+		});*/
 #endif
 
     return S_OK;

@@ -34,7 +34,7 @@ void CLevel_Loading::Complete()
 HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
 {
 	m_eNextLevelID = eNextLevelID;
-
+    m_pGameInstance->DeleteOctree();
 	m_pGameInstance->Destroy_Jolt();
 	m_pGameInstance->Initialize_Jolt(ENUM_CLASS(COLLISION_LAYER::END));
 	Ready_ObjectLayer();
@@ -93,17 +93,14 @@ void CLevel_Loading::Update(_float fTimeDelta)
 			pNewLevel = CLevel_Title::Create(m_pDevice, m_pContext);
 			break;
 		case LEVEL::HEINMACH:
-			m_pGameInstance->DeleteOctree();
 			m_pGameInstance->CreateOctree({ 260.f, 0.f, 215.f }, 1500.f, 3);
 			pNewLevel = CLevel_HeinMach::Create(m_pDevice, m_pContext);
 			break;
 		case LEVEL::TEST:
-			m_pGameInstance->DeleteOctree();
 			m_pGameInstance->CreateOctree({ 0.f, 0.f, 0.f }, 200.f, 3);
 			pNewLevel = CLevel_Test::Create(m_pDevice, m_pContext);
 			break;
 		case LEVEL::CREVICE:
-			m_pGameInstance->DeleteOctree();
 			m_pGameInstance->CreateOctree({ 0.f, 0.f, 20.f }, 200.f, 3);
 			pNewLevel = CLevel_Crevice::Create(m_pDevice, m_pContext);
 			break;
@@ -111,7 +108,6 @@ void CLevel_Loading::Update(_float fTimeDelta)
 			pNewLevel = CLevel_Embars::Create(m_pDevice, m_pContext);
 			break;
 		case LEVEL::VIPER:
-			m_pGameInstance->DeleteOctree();
 			m_pGameInstance->CreateOctree({ 0.f, 0.f, 150.f }, 300.f, 3);
 			pNewLevel = CLevel_Viper::Create(m_pDevice, m_pContext);
 			break;
