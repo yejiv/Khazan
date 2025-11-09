@@ -732,7 +732,7 @@ HRESULT CKhazan_Sample::Ready_Collision()
 
     return S_OK;
 }
-#ifdef _DEBUG
+
 inline _bool CKhazan_Sample::Has_States()
 {
     for (_uint i = 0; i < GetBitPosition(CKhazan_Sample::END); ++i)
@@ -743,7 +743,7 @@ inline _bool CKhazan_Sample::Has_States()
     }
     return false;
 }
-#ifdef _DEBUG
+
 #ifdef _DEBUG
 void CKhazan_Sample::Debug_Widget()
 {
@@ -1016,7 +1016,7 @@ void CKhazan_Sample::Debug_Widget()
         });
 }
 #endif // _DEBUG
-#endif // _DEBUG
+
 
 CKhazan_Sample* CKhazan_Sample::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {

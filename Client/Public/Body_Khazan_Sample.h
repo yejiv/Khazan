@@ -82,6 +82,9 @@ private:
 	
 
 
+	_float4x4*			m_SpearFX_WorldMatrix = { nullptr };
+	_float4x4*			m_SpearEndFX_WorldMatrix = { nullptr };
+
 	_uint* m_pParentState = { nullptr };
 	_uint				m_iCurState = {  };
 

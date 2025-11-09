@@ -782,9 +782,7 @@ void CBody_Khazan_Sample::Effect4_Exit()
 
 void CBody_Khazan_Sample::Effect4_Continue()
 {
-    _matrix tip = m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pParentTransform->Get_WorldMatrix();
-    _matrix hand = m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearWeaponR_Matrix) * m_pParentTransform->Get_WorldMatrix();
-    m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
+
 }
 
 void CBody_Khazan_Sample::Effect5_Enter()
@@ -797,9 +795,7 @@ void CBody_Khazan_Sample::Effect5_Exit()
 
 void CBody_Khazan_Sample::Effect5_Continue()
 {
-    _matrix tip = m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pParentTransform->Get_WorldMatrix();
-    _matrix hand = m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearWeaponR_Matrix) * m_pParentTransform->Get_WorldMatrix();
-    m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
+
 }
 
 void CBody_Khazan_Sample::Effect6_Enter()
@@ -812,9 +808,7 @@ void CBody_Khazan_Sample::Effect6_Exit()
 
 void CBody_Khazan_Sample::Effect6_Continue()
 {
-    _matrix tip = m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pParentTransform->Get_WorldMatrix();
-    _matrix hand = m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearWeaponR_Matrix) * m_pParentTransform->Get_WorldMatrix();
-    m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
+
 }
 
 void CBody_Khazan_Sample::Effect7_Enter()
