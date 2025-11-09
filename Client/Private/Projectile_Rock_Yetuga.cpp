@@ -46,8 +46,9 @@ void CProjectile_Rock_Yetuga::Update(_float fTimeDelta)
     {
         m_pBody->Sync_Update(m_pTransformCom);
         m_pBody->Update(fTimeDelta, m_pTransformCom);
+#ifdef _DEBUG
         m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
-
+#endif
     }
     else
     {
@@ -156,7 +157,7 @@ HRESULT CProjectile_Rock_Yetuga::Ready_Colliders()
 
     BodyDesc.fRadius = 5.f;
     BodyDesc.eMotion = EMotionType::Kinematic;
-    BodyDesc.eQuality = EMotionQuality::LinearCast; // ±âº» ¸ðµå
+    BodyDesc.eQuality = EMotionQuality::LinearCast; // ê¸°ë³¸ ëª¨ë“œ
     BodyDesc.eShapeType = SHAPE::SPHERE;
     BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
 

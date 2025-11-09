@@ -159,6 +159,7 @@ namespace Engine
 		float			fLamda;
 		float			fBias;
 		XMFLOAT4		vLightDir;
+		float			fIntensity;
 	}CASCADE_CONFIG;
 
 	typedef struct tagSSAOConfig

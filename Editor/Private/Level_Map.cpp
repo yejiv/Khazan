@@ -23,12 +23,13 @@ HRESULT CLevel_Map::Initialize()
 
 	Build_ModelPathCache();
 
+#ifdef _DEBUG
 	m_pGameInstance->Set_EnableSSAO(false);
 	m_pGameInstance->Set_EnableShadow(false);
 	m_pGameInstance->Set_EnableFog(false);
 	m_pGameInstance->Set_EnableOutline(false);
 	m_pGameInstance->Set_EnableToonShade(false);
-
+#endif
 	return S_OK;
 }
 

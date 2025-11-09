@@ -155,7 +155,7 @@ HRESULT CCloudSphere::Bind_Cloud_ShaderResources()
 
     return S_OK;
 }
-
+#ifdef _DEBUG
 void CCloudSphere::Debug_CloudEdit()
 {
     m_pGameInstance->AddWidget(TEXT("Client"), [this]() {
@@ -281,7 +281,7 @@ void CCloudSphere::Debug_CloudEdit()
         }
         });
 }
-
+#endif
 CCloudSphere* CCloudSphere::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     CCloudSphere* pInstance = new CCloudSphere(pDevice, pContext);
