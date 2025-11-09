@@ -17,6 +17,7 @@ public:
 
 private:
 	class BodyInterface* m_pBodyInterface = { nullptr };
+	class CGameInstance* m_pGameInstance = { nullptr };
 };
 
 NS_END

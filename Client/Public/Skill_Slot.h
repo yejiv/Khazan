@@ -25,10 +25,24 @@ public:
 private:
 	class CUI_Atlas_Icon*				m_pLine = { nullptr };
 	class CUI_Atlas_Icon*				m_pIcon = { nullptr };
+	vector<CUI_Atlas_Icon*>				m_pPreSkillLine;
+    
+    class CUI_Atlas_Icon*               m_pPointBG = { nullptr };
+    class CUI_TextBox*                  m_pSkillPointText = { nullptr };
 
 	_int								m_iSkillIndex = { -1 };
+	_int								m_iSkillPoint = { };
+
+	_bool								m_isLock = {};
+	const SKILL_DB*						m_pSkilData = {nullptr};
+	_int								m_iLevel = {};
+
+    _int                                m_iMaxCount = {};
+    _wstring                            m_wstrMaxCount = {};
+   
 private:
 	HRESULT								Ready_Child(const SKILL_DB* pData);
+	void								Setting_Skill();
 
 public:
 	static CSkill_Slot*					Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);

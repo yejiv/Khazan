@@ -97,12 +97,12 @@ void CEdit_Interface_UI::SaveLoad_UI()
 			ofstream Out(filePath, ios::binary);
 			if (!Out.is_open())
 			{
-				MSG_BOX(TEXT("Json ÆÄÀÏ ÀúÀå ½ÇÆĞ"));
+				MSG_BOX(TEXT("Json íŒŒì¼ ì €ì¥ ì‹¤íŒ¨"));
 				Out.close();
 			}
 			else
 			{
-				MSG_BOX(TEXT("Json ÆÄÀÏ ÀúÀå ¼º°ø"));
+				MSG_BOX(TEXT("Json íŒŒì¼ ì €ì¥ ì„±ê³µ"));
 				Out << SaveData.dump(4);
 				Out.close();
 			}
@@ -116,7 +116,7 @@ void CEdit_Interface_UI::SaveLoad_UI()
 			ifstream In(filePath);
 			if (!In.is_open())
 			{
-				MSG_BOX(TEXT("UI JSON ÆÄÀÏ ºÒ·¯¿À±â ½ÇÆĞ"));
+				MSG_BOX(TEXT("UI JSON íŒŒì¼ ë¶ˆëŸ¬ì˜¤ê¸° ì‹¤íŒ¨"));
 				In.close();
 			}
 			else
@@ -136,12 +136,12 @@ void CEdit_Interface_UI::SaveLoad_UI()
 				if (pRootUI != nullptr)
 				{
 					if (FAILED(pRootUI->Load_UI(jsonData, ENUM_CLASS(m_eLevel))))
-						MSG_BOX(TEXT("UI Load ½ÇÆĞ"));
+						MSG_BOX(TEXT("UI Load ì‹¤íŒ¨"));
 					else
 					{
 						m_szSeleteUIName = jsonData.value("name", "");
 						m_pRootUIs.push_back(pRootUI);
-						MSG_BOX(TEXT("UI Load ¼º°ø"));
+						MSG_BOX(TEXT("UI Load ì„±ê³µ"));
 						m_iSeletRootUI = m_pRootUIs.size() - 1;
 					}
 				}
@@ -174,12 +174,12 @@ void CEdit_Interface_UI::SaveLoad_Font()
 			ofstream Out(filePath, ios::out | ios::trunc);
 			if (!Out.is_open())
 			{
-				MSG_BOX(TEXT("Json ÆÄÀÏ ÀúÀå ½ÇÆĞ"));
+				MSG_BOX(TEXT("Json íŒŒì¼ ì €ì¥ ì‹¤íŒ¨"));
 				Out.close();
 			}
 			else
 			{
-				MSG_BOX(TEXT("Json ÆÄÀÏ ÀúÀå ¼º°ø"));
+				MSG_BOX(TEXT("Json íŒŒì¼ ì €ì¥ ì„±ê³µ"));
 				Out << SaveData.dump(4);
 				Out.close();
 			}
@@ -191,7 +191,7 @@ void CEdit_Interface_UI::SaveLoad_Font()
 			ifstream In(filePath);
 			if (!In.is_open())
 			{
-				MSG_BOX(TEXT("Font json ÆÄÀÏ ºÒ·¯¿À±â ½ÇÆĞ"));
+				MSG_BOX(TEXT("Font json íŒŒì¼ ë¶ˆëŸ¬ì˜¤ê¸° ì‹¤íŒ¨"));
 				In.close();
 			}
 			else
@@ -235,7 +235,7 @@ void CEdit_Interface_UI::SaveLoad_Font()
 			string strTextPaths = "../../Client";
 			strTextPaths +=	m_szTextPath;
 			if (FAILED((m_pGameInstance->Font_Load(AnsiToWString(strFontTag).c_str(), strTextPaths.c_str(), m_iHeight, 0))))
-				MSG_BOX(TEXT("ÆùÆ® Ãß°¡ ½ÇÆĞ"));
+				MSG_BOX(TEXT("í°íŠ¸ ì¶”ê°€ ì‹¤íŒ¨"));
 			else
 				m_FontData.push_back(Data);
 		}
@@ -289,7 +289,7 @@ void CEdit_Interface_UI::Create_UI()
 				}
 			}
 			else
-				MSG_BOX(TEXT("ÀÌ¸§ ÀÔ·Â!!"));
+				MSG_BOX(TEXT("ì´ë¦„ ì…ë ¥!!"));
 		}
 		if (ImGui::Button("Create_Chiled"))
 		{
@@ -305,10 +305,10 @@ void CEdit_Interface_UI::Create_UI()
 					m_pRootUIs[m_iSeletRootUI]->Create_Child(ENUM_CLASS(m_eLevel), TEXT("Prototype_GameObject_UI_Base"), &UIDesc, m_szSeleteUIName);
 				}
 				else
-					MSG_BOX(TEXT("ÀÌ¸§ ÀÔ·Â!!"));
+					MSG_BOX(TEXT("ì´ë¦„ ì…ë ¥!!"));
 			}
 			else
-				MSG_BOX(TEXT("RootUI ¼±ÅÃ ÇÊ¿ä!!"));
+				MSG_BOX(TEXT("RootUI ì„ íƒ í•„ìš”!!"));
 		}
 		if (ImGui::Button("Clear_Panel"))
 		{

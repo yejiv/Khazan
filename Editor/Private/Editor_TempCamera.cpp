@@ -30,7 +30,7 @@ HRESULT CEditor_TempCamera::Initialize_Clone(void* pArg)
         ImGui::Begin("Camera");
         ImGui::DragFloat("Camera Speed", &m_fCameraSpeed, 0.01f, 0.f, 1000.f);
 
-        // Å° °¡ÀÌµå ¹Ú½º
+        // í‚¤ ê°€ì´ë“œ ë°•ìŠ¤
         ImGui::BeginChild("KeyGuide", ImVec2(0, 150), true, ImGuiWindowFlags_NoScrollbar);
 
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Quick Reference:");

@@ -41,10 +41,13 @@ public:
 	void Set_IsActive(_bool isActive) { m_isActive = isActive; }
 	_bool Get_IsActive() { return m_isActive; }
 
+	void Set_IsGhost(_bool isGhost) { m_isGhost = isGhost; }
+	_bool Get_IsGhost() { return m_isGhost; }
+
 	void Set_IsDeferred(_bool isDeferred) { m_isDeferredContext = isDeferred; }
 	_bool Get_IsDeferred() { return m_isDeferredContext; }
 
-	// Team °ü·Ã
+	// Team ê´€ë ¨
 	_uint				Get_Team() { return m_iTeam; }
 
 	void Set_Tag(_wstring strTag) { m_strTag = strTag; }
@@ -80,12 +83,16 @@ protected:
 
 	_bool						m_isDead = { false };
 	_bool						m_isActive = { true };
+	_bool						m_isGhost = { false };
 	_bool						m_isDeferredContext = { false };
+	_bool						m_isPrototype = { true };
 
-	// ÃßÈÄ¿¡ ÆÄ»ı Å¬·¡½º ³ª´²Áö°Ô µÇ¸é ¿Å±â°Å³ª ´Ù¸¥ ¹æ¹ıÀ¸·Î ¹Ù²ãº¸°Ú½À´Ï´Ù.
+	// ì¶”í›„ì— íŒŒìƒ í´ë˜ìŠ¤ ë‚˜ëˆ ì§€ê²Œ ë˜ë©´ ì˜®ê¸°ê±°ë‚˜ ë‹¤ë¥¸ ë°©ë²•ìœ¼ë¡œ ë°”ê¿”ë³´ê² ìŠµë‹ˆë‹¤.
 	_uint						m_iTeam = {};
 
 	COLLISION_DESC				m_tCollisionDesc = {};
+
+	
 
 protected:
 	HRESULT Add_Component(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, 

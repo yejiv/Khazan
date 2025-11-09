@@ -38,7 +38,7 @@ void CBigChest::Priority_Update(_float fTimeDelta)
 
 void CBigChest::Update(_float fTimeDelta)
 {
-    // CLOSE > OPENING > OPEN > CLOSING >> CLOSE                    // »óÀÚ »óÈ£ ÀÛ¿ë ( ¼­¼ø )
+    // CLOSE > OPENING > OPEN > CLOSING >> CLOSE                    // ìƒì ìƒí˜¸ ì‘ìš© ( ì„œìˆœ )
 
     // 7 > 8 > 7 > 8 > 7 . . .
 
@@ -59,7 +59,7 @@ void CBigChest::Update(_float fTimeDelta)
 
     if (isisisis == true)
     {
-        // ¿­°í ´İ±â
+        // ì—´ê³  ë‹«ê¸°
         m_pModelCom->Set_Animation(m_eAnimState);
         m_pModelCom->Set_AnimationLoop(false);
     }
@@ -68,14 +68,14 @@ void CBigChest::Update(_float fTimeDelta)
     {
         if (ANIM_STATE::CLOSING == m_eAnimState)
         {
-            // Ã³À½ »óÈ£ ÀÛ¿ë ÈÄ ¾Ö´Ï¸ŞÀÌ¼Ç ·çÇÁ·Î ÀüÈ¯
+            // ì²˜ìŒ ìƒí˜¸ ì‘ìš© í›„ ì• ë‹ˆë©”ì´ì…˜ ë£¨í”„ë¡œ ì „í™˜
             m_eAnimState = ANIM_STATE::CLOSE;
             m_pModelCom->Set_Animation(ANIM_STATE::CLOSE);
             m_pModelCom->Set_AnimationLoop(true);
         }
         if (ANIM_STATE::OPENING == m_eAnimState)
         {
-            // Ã³À½ »óÈ£ ÀÛ¿ëÀÌ ³¡³­ ÈÄ After Idle »óÅÂ·Î ÀüÈ¯
+            // ì²˜ìŒ ìƒí˜¸ ì‘ìš©ì´ ëë‚œ í›„ After Idle ìƒíƒœë¡œ ì „í™˜
             m_eAnimState = ANIM_STATE::OPEN;
             m_pModelCom->Set_Animation(ANIM_STATE::OPEN);
             m_pModelCom->Set_AnimationLoop(true);
@@ -90,7 +90,7 @@ void CBigChest::Late_Update(_float fTimeDelta)
 
 HRESULT CBigChest::Render()
 {
-    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources ÇÔ¼ö E_FAIL"), E_FAIL);
+    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources í•¨ìˆ˜ E_FAIL"), E_FAIL);
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -114,9 +114,9 @@ HRESULT CBigChest::Ready_Components(void* pArg)
     CHECK_NULLPTR(pDesc, E_FAIL);
 
     LEVEL eLevel = pDesc->eLevel;
-    CHECK_EQUAL_MSG(LEVEL::END, eLevel, TEXT("LAYER ÇÔ¼ö¿¡¼­ LEVEL ¹ÌÀÔ·Â"), E_FAIL);
+    CHECK_EQUAL_MSG(LEVEL::END, eLevel, TEXT("LAYER í•¨ìˆ˜ì—ì„œ LEVEL ë¯¸ì…ë ¥"), E_FAIL);
 
-    // °³º° ½¦ÀÌ´õ »ı¼ºÇÒÁö °í¹Î
+    // ê°œë³„ ì‰ì´ë” ìƒì„±í• ì§€ ê³ ë¯¼
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr), E_FAIL);
 

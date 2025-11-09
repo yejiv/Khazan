@@ -30,7 +30,7 @@ HRESULT CLevel_Shader::Initialize()
 	//	if (FAILED(Ready_Lights()))
 	//		return E_FAIL;
 
-#pragma region Å×½ºÆ®¿ë ( ¹ÚÁØ¿µÀÌ ³²±â°í °£°Å )
+#pragma region í…ŒìŠ¤íŠ¸ìš© ( ë°•ì¤€ì˜ì´ ë‚¨ê¸°ê³  ê°„ê±° )
 	CHECK_FAILED(Ready_Lights(TEXT("Test"), LEVEL::SHADER), E_FAIL);
 	
 	CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("Test"), LEVEL::SHADER), E_FAIL);
@@ -163,15 +163,15 @@ HRESULT CLevel_Shader::Initialize()
 
 			if (m_isEnableBloom)
 			{
-				// °¡¿ì½Ã¾È ºí·¯ ¹üÀ§(¹İ°æ)
+				// ê°€ìš°ì‹œì•ˆ ë¸”ëŸ¬ ë²”ìœ„(ë°˜ê²½)
 				if (ImGui::InputInt("Blur Radius", &m_BlurConfig.iRadius, 2, 4))
 					m_pGameInstance->Set_BlurConfig(m_BlurConfig);
 
-				// °¡¿ì½Ã¾È ºí·¯ °¡ÁßÄ¡ ¹ĞÁıµµ
+				// ê°€ìš°ì‹œì•ˆ ë¸”ëŸ¬ ê°€ì¤‘ì¹˜ ë°€ì§‘ë„
 				if (ImGui::SliderFloat("Concentration", &m_BlurConfig.fSigma, 1.f, 10.f))
 					m_pGameInstance->Set_BlurConfig(m_BlurConfig);
 
-				// °¡¿ì½Ã¾È ºí·¯ °¡ÁßÄ¡ ÇÕ Á¤±ÔÈ­ ¼öÄ¡
+				// ê°€ìš°ì‹œì•ˆ ë¸”ëŸ¬ ê°€ì¤‘ì¹˜ í•© ì •ê·œí™” ìˆ˜ì¹˜
 				if (ImGui::SliderFloat("Normalization", &m_BlurConfig.fNormalization, 0.f, 15.f))
 					m_pGameInstance->Set_BlurConfig(m_BlurConfig);
 
@@ -332,7 +332,7 @@ HRESULT CLevel_Shader::Initialize()
 				ImGui::Text("Vignette Animation");
 				ImGui::Separator();
 
-				// ¶óµğ¿À ¹öÆ°À¸·Î ¾Ö´Ï¸ŞÀÌ¼Ç ¸ğµå °í¸£±â
+				// ë¼ë””ì˜¤ ë²„íŠ¼ìœ¼ë¡œ ì• ë‹ˆë©”ì´ì…˜ ëª¨ë“œ ê³ ë¥´ê¸°
 				_bool isChanged = {};
 				_int iVignetteMode = static_cast<_int>(m_VignetteConfig.eMode);
 
@@ -347,14 +347,15 @@ HRESULT CLevel_Shader::Initialize()
 				if (true == isChanged)
 					m_VignetteConfig.eMode = static_cast<VIGNETTE_CONFIG::ANIMMODE>(iVignetteMode);
 
-				// ÃÖ´ë °­µµ
+				// ìµœëŒ€ ê°•ë„
 				if (ImGui::SliderFloat("Vignette Max Intensity", &m_VignetteConfig.fMaxIntensity, 0.f, 10.f, "%.2f"))
 					m_pGameInstance->Set_VignetteConfig(m_VignetteConfig);
 				
-				// µà·¹ÀÌ¼Ç
+				// ë“€ë ˆì´ì…˜
 				ImGui::SliderFloat("Vignette Duration", &m_fVignetteAnimDuration, 0.f, 5.f, "%.2f");
 
-				// ½ºÅ¸Æ® ¹öÆ°
+
+				// ìŠ¤íƒ€íŠ¸ ë²„íŠ¼
 				if (ImGui::Button("Start Vignette"))
 					m_pGameInstance->Start_VignetteAnimation(m_fVignetteAnimDuration, m_VignetteConfig.eMode);
 			}
@@ -396,13 +397,13 @@ HRESULT CLevel_Shader::Initialize()
 
 		if (ImGui::CollapsingHeader("Decal"), ImGuiTreeNodeFlags_DefaultOpen)
 		{
-			// ¶óÀÌÇÁ Å¸ÀÓ
+			// ë¼ì´í”„ íƒ€ì„
 			ImGui::SliderFloat("Decal LifeTime", &m_DecalDesc.fLifeTime, 1.f, 20.f, "%.0f");
 
-			// ÆäÀÌµå Å¸ÀÓ
+			// í˜ì´ë“œ íƒ€ì„
 			ImGui::SliderFloat2("Decal FadeTime (In / Out)", reinterpret_cast<_float*>(&m_DecalDesc.vFadeTime), 0.1f, 10.f, "%.1f");
 
-			// µ¥Ä® Å¸ÀÔ
+			// ë°ì¹¼ íƒ€ì…
 			_bool isChanged = {};
 			_int iDecalType = static_cast<_int>(m_DecalDesc.eType);
 
@@ -415,10 +416,10 @@ HRESULT CLevel_Shader::Initialize()
 			if (true == isChanged)
 				m_DecalDesc.eType = static_cast<DECALTYPE>(iDecalType);
 
-			// ¹Ù¿îµù ¹Ú½º »çÀÌÁî
+			// ë°”ìš´ë”© ë°•ìŠ¤ ì‚¬ì´ì¦ˆ
 			ImGui::SliderFloat3("Decal Bounding Box Size", reinterpret_cast<_float*>(&m_DecalDesc.vScale), 1.f, 50.f, "%.0f");
 			
-			// ÄÃ·¯
+			// ì»¬ëŸ¬
 			ImGui::ColorEdit3("Decal Color", reinterpret_cast<_float*>(&m_DecalDesc.vColor));
 		
 			ImGui::Separator();
@@ -426,22 +427,22 @@ HRESULT CLevel_Shader::Initialize()
 
 		if (ImGui::CollapsingHeader("Distortion"), ImGuiTreeNodeFlags_DefaultOpen)
 		{
-			// ¹üÀ§
+			// ï¿½ï¿½ï¿½ï¿½
 			ImGui::SliderFloat("Distortion Range", &m_DistortionDesc.fRange, 0.f, 1.f, "%.2f");
 
-			// °­µµ
+			// ï¿½ï¿½ï¿½ï¿½
 			ImGui::SliderFloat("Distortion Power", &m_DistortionDesc.fPower, 0.f, 10.f, "%.2f");
 
-			// Áö¼Ó ½Ã°£
+			// ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
 			ImGui::SliderFloat("Distortion Duration", &m_DistortionDesc.fDuration, 0.f, 20.f, "%.1f");
 
-			// ÆäÀÌµå Å¸ÀÓ
+			// ï¿½ï¿½ï¿½Ìµï¿½ Å¸ï¿½ï¿½
 			ImGui::SliderFloat2("Distortion FadeTime (In / Out)", reinterpret_cast<_float*>(&m_DistortionDesc.vFadeTime), 0.1f, 10.f, "%.1f");
 
-			// ½ºÇÇµå
+			// ï¿½ï¿½ï¿½Çµï¿½
 			ImGui::SliderFloat("Distortion fSpeed", &m_DistortionDesc.fSpeed, 0.f, 10.f, "%.2f");
 			
-			// ³ëÀÌÁî ÅØ½ºÃ³
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Ã³
 			if (ImGui::CollapsingHeader("Distortion Noise"), ImGuiTreeNodeFlags_DefaultOpen)
 			{
 				ImGui::BeginChild("Distortion Noise", ImVec2(0, 70), true, ImGuiWindowFlags_HorizontalScrollbar);
@@ -491,7 +492,7 @@ void CLevel_Shader::Update(_float fTimeDelta)
 
 HRESULT CLevel_Shader::Render()
 {
-	SetWindowText(g_hWnd, TEXT("½¦ÀÌ´õÅø"));
+	SetWindowText(g_hWnd, TEXT("ì‰ì´ë”íˆ´"));
 
 #ifdef _DEBUG
 	++m_iRenderCount;
@@ -597,49 +598,49 @@ HRESULT CLevel_Shader::Ready_Layer_MapObject(const _wstring& strLayerTag, const 
 
 	pDataFilePath += pDataFileName;
 
-	// µ¿ÀÏÇÑ ÆÄÀÏ¸íÀÇ _objects.dat ºÒ·¯¿À±â
+	// ë™ì¼í•œ íŒŒì¼ëª…ì˜ _objects.dat ë¶ˆëŸ¬ì˜¤ê¸°
 	pDataFilePath += TEXT("_object.dat");
 
 	DWORD dwByte = {};
 
 	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("µ¥ÀÌÅÍ ÆÄÀÏÀÌ ¾ø°Å³ª ¹ÚÁØ¿µ ¹®Á¦"), E_FAIL);
+	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("ë°ì´í„° íŒŒì¼ì´ ì—†ê±°ë‚˜ ë°•ì¤€ì˜ ë¬¸ì œ"), E_FAIL);
 
-	// 1. ¿ÀºêÁ§Æ®ÀÇ ÃÑ °³¼ö
+	// 1. ì˜¤ë¸Œì íŠ¸ì˜ ì´ ê°œìˆ˜
 	_uint iObjectCnt = {};
 	CHECK_FALSE(ReadFile(hFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr), E_FAIL);
 
-	// ¿ÀºêÁ§Æ® ÃÑ °³¼ö¸¸Å­ ¼øÈ¸
+	// ì˜¤ë¸Œì íŠ¸ ì´ ê°œìˆ˜ë§Œí¼ ìˆœíšŒ
 	for (_uint i = 0; i < iObjectCnt; ++i)
 	{
 		CProp_Object::PROP_OBJECT_DESC ObjectDesc = {};
 
 		ObjectDesc.eLevel = eCurrentLevel;
 
-		// 2. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ±æÀÌ ºÒ·¯¿À±â
+		// 2. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ê¸¸ì´ ë¶ˆëŸ¬ì˜¤ê¸°
 		_uint iPrototypeTagLen = {};
 		CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
 
-		// 3. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ÀÌ¸§ ºÒ·¯¿À±â
+		// 3. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ì´ë¦„ ë¶ˆëŸ¬ì˜¤ê¸°
 		_tchar szPrototypeTag[MAX_PATH] = {};
 		CHECK_FALSE(ReadFile(hFile, &szPrototypeTag, sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr), E_FAIL);
 
-		// ºÒ·¯¿Â ÅÂ±× Ä«ÇÇ
+		// ë¶ˆëŸ¬ì˜¨ íƒœê·¸ ì¹´í”¼
 		memcpy(ObjectDesc.szModelName, szPrototypeTag, sizeof(ObjectDesc.szModelName));
 
-		// 4. °´Ã¼´ç ¿ùµå Çà·Ä ¶§¿À±â
+		// 4. ê°ì²´ë‹¹ ì›”ë“œ í–‰ë ¬ ë•Œì˜¤ê¸°
 		_float4x4 WorldMatrix = {};
 		CHECK_FALSE(ReadFile(hFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr), E_FAIL);
 
 		ObjectDesc.WorldMatrix = WorldMatrix;
 
-		// 5. °´Ã¼ÀÇ ¼Ó¼º ºÒ·¯¿À±â
+		// 5. ê°ì²´ì˜ ì†ì„± ë¶ˆëŸ¬ì˜¤ê¸°
 		MAPOBJECT_PROPERTIES PropProperties = {};
 		CHECK_FALSE(ReadFile(hFile, &PropProperties, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr), false);
 
 		ObjectDesc.Properties = PropProperties;
 
-		// ÀÏ´Ü ´ÜÀÏ ¿ÀºêÁ§Æ®·Î ¹èÄ¡ÇÏ°í ÃßÈÄ¿¡ ÀÎ½ºÅÏ½º, ÀÎÅÍ·ºÆ¼ºê, ´ÙÀÌ³ª¹Í À¸·Î ³ª´©°Ú½À´Ï´Ù.
+		// ì¼ë‹¨ ë‹¨ì¼ ì˜¤ë¸Œì íŠ¸ë¡œ ë°°ì¹˜í•˜ê³  ì¶”í›„ì— ì¸ìŠ¤í„´ìŠ¤, ì¸í„°ë ‰í‹°ë¸Œ, ë‹¤ì´ë‚˜ë¯¹ ìœ¼ë¡œ ë‚˜ëˆ„ê² ìŠµë‹ˆë‹¤.
 		//	m_pGameInstance->Add_FireTask([this, objDesc = ObjectDesc, curLevel = eCurrentLevel]() mutable {
 		//		});
 
@@ -650,7 +651,7 @@ HRESULT CLevel_Shader::Ready_Layer_MapObject(const _wstring& strLayerTag, const 
 				ENUM_CLASS(eCurrentLevel),
 				TEXT("Prototype_GameObject_Prop_Object"),
 				TIME_CHANNEL::WORLD,
-				&ObjectDesc // Ä¸Ã³µÈ °ªÀÇ ÁÖ¼Ò -> ¾ÈÀü
+				&ObjectDesc // ìº¡ì²˜ëœ ê°’ì˜ ì£¼ì†Œ -> ì•ˆì „
 			),
 			E_FAIL
 		);
@@ -689,43 +690,43 @@ HRESULT CLevel_Shader::Ready_Layer_MapObject_Inst(const _wstring& strLayerTag, c
 
 	pDataFilePath += pDataFileName;
 
-	// µ¿ÀÏÇÑ ÆÄÀÏ¸íÀÇ _inst.dat ºÒ·¯¿À±â
+	// ë™ì¼í•œ íŒŒì¼ëª…ì˜ _inst.dat ë¶ˆëŸ¬ì˜¤ê¸°
 	pDataFilePath += TEXT("_inst.dat");
 
 	DWORD dwByte = {};
 
 	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("µ¥ÀÌÅÍ ÆÄÀÏÀÌ ¾ø°Å³ª ¹ÚÁØ¿µ ¹®Á¦"), E_FAIL);
+	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("ë°ì´í„° íŒŒì¼ì´ ì—†ê±°ë‚˜ ë°•ì¤€ì˜ ë¬¸ì œ"), E_FAIL);
 
-	// 1. ¿ÀºêÁ§Æ®ÀÇ ÃÑ °³¼ö
+	// 1. ì˜¤ë¸Œì íŠ¸ì˜ ì´ ê°œìˆ˜
 	_uint iObjectCnt = {};
 	CHECK_FALSE(ReadFile(hFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr), E_FAIL);
 
-	// ¿ÀºêÁ§Æ® ÃÑ °³¼ö¸¸Å­ ¼øÈ¸
+	// ì˜¤ë¸Œì íŠ¸ ì´ ê°œìˆ˜ë§Œí¼ ìˆœíšŒ
 	for (_uint i = 0; i < iObjectCnt; ++i)
 	{
 		CProp_Object::PROP_OBJECT_DESC ObjectDesc = {};
 
 		ObjectDesc.eLevel = eCurrentLevel;
 
-		// 2. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ±æÀÌ ºÒ·¯¿À±â
+		// 2. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ê¸¸ì´ ë¶ˆëŸ¬ì˜¤ê¸°
 		_uint iPrototypeTagLen = {};
 		CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
 
-		// 3. ÇÁ·ÎÅä Å¸ÀÔ ÅÂ±× ÀÌ¸§ ºÒ·¯¿À±â
+		// 3. í”„ë¡œí†  íƒ€ì… íƒœê·¸ ì´ë¦„ ë¶ˆëŸ¬ì˜¤ê¸°
 		_tchar szPrototypeTag[MAX_PATH] = {};
 		CHECK_FALSE(ReadFile(hFile, &szPrototypeTag, sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr), E_FAIL);
 
-		// ºÒ·¯¿Â ÅÂ±× Ä«ÇÇ
+		// ë¶ˆëŸ¬ì˜¨ íƒœê·¸ ì¹´í”¼
 		memcpy(ObjectDesc.szModelName, szPrototypeTag, sizeof(ObjectDesc.szModelName));
 
-		// 4. °´Ã¼ÀÇ ¼Ó¼º ºÒ·¯¿À±â
+		// 4. ê°ì²´ì˜ ì†ì„± ë¶ˆëŸ¬ì˜¤ê¸°
 		MAPOBJECT_PROPERTIES PropProperties = {};
 		CHECK_FALSE(ReadFile(hFile, &PropProperties, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr), false);
 
 		ObjectDesc.Properties = PropProperties;
 
-		// ÀÎ½ºÅÏ½º °´Ã¼ ½´¿ô
+		// ì¸ìŠ¤í„´ìŠ¤ ê°ì²´ ìŠˆì›ƒ
 		m_pGameInstance->Add_FireTask([this, objDesc = ObjectDesc, curLevel = eCurrentLevel]() mutable {
 			CHECK_FAILED(
 				m_pGameInstance->Add_GameObject_ToLayer(
@@ -734,7 +735,7 @@ HRESULT CLevel_Shader::Ready_Layer_MapObject_Inst(const _wstring& strLayerTag, c
 					ENUM_CLASS(curLevel),
 					TEXT("Prototype_GameObject_Prop_Static"),
 					TIME_CHANNEL::WORLD,
-					&objDesc // Ä¸Ã³µÈ °ªÀÇ ÁÖ¼Ò -> ¾ÈÀü
+					&objDesc // ìº¡ì²˜ëœ ê°’ì˜ ì£¼ì†Œ -> ì•ˆì „
 				),
 				E_FAIL);
 			});
@@ -745,7 +746,7 @@ HRESULT CLevel_Shader::Ready_Layer_MapObject_Inst(const _wstring& strLayerTag, c
 
 HRESULT CLevel_Shader::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
 {
-	// Dat ±âº» °æ·Î
+	// Dat ê¸°ë³¸ ê²½ë¡œ
 	_wstring pDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
 
 	switch (eMap)
@@ -778,27 +779,27 @@ HRESULT CLevel_Shader::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurrentL
 	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	CHECK_EQUAL(INVALID_HANDLE_VALUE, hFile, E_FAIL);
 
-	// 1. Á¶¸íÀÇ ÃÑ °³¼ö
+	// 1. ì¡°ëª…ì˜ ì´ ê°œìˆ˜
 	_uint iLightCnt = {};
 	CHECK_FALSE(ReadFile(hFile, &iLightCnt, sizeof(_uint), &dwByte, nullptr), false);
 
-	// Á¶¸í ÃÑ °³¼ö¸¸Å­ ¼øÈ¸
+	// ì¡°ëª… ì´ ê°œìˆ˜ë§Œí¼ ìˆœíšŒ
 	for (_uint i = 0; i < iLightCnt; ++i)
 	{
 		LIGHT_DESC LightDesc = {};
 
-		// 2. Á¶¸í ÅÂ±× ±æÀÌ ºÒ·¯¿À±â
+		// 2. ì¡°ëª… íƒœê·¸ ê¸¸ì´ ë¶ˆëŸ¬ì˜¤ê¸°
 		_uint iLightTagLen = {};
 		CHECK_FALSE(ReadFile(hFile, &iLightTagLen, sizeof(_uint), &dwByte, nullptr), false);
 
-		// 3. Á¶¸í ÅÂ±× ÀÌ¸§ ºÒ·¯¿À±â
+		// 3. ì¡°ëª… íƒœê·¸ ì´ë¦„ ë¶ˆëŸ¬ì˜¤ê¸°
 		_tchar szLightTag[MAX_PATH] = {};
 		CHECK_FALSE(ReadFile(hFile, &szLightTag, sizeof(_tchar) * iLightTagLen, &dwByte, nullptr), false);
 
-		// 4. Á¶¸í ±¸Á¶Ã¼ ºÒ·¯¿À±â
+		// 4. ì¡°ëª… êµ¬ì¡°ì²´ ë¶ˆëŸ¬ì˜¤ê¸°
 		CHECK_FALSE(ReadFile(hFile, &LightDesc, sizeof(LIGHT_DESC), &dwByte, nullptr), false);
 
-		// Á¶¸í µî·Ï
+		// ì¡°ëª… ë“±ë¡
 		m_pGameInstance->Add_FireTask([this, szLightTag = szLightTag, eCurrentLevel = ENUM_CLASS(eCurrentLevel), LightDesc = LightDesc]() mutable {
 			m_pGameInstance->Add_Light(szLightTag, ENUM_CLASS(eCurrentLevel), LightDesc, true);
 			return S_OK;

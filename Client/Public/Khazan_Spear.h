@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Client_Defines.h"
 #include "Creature.h"
 
@@ -33,7 +33,7 @@ private:
 		
 		CHARGING_STRONG_ATTACK = 1 << 6,
 
-
+		AGAIN_REQUEST = 1 << 7,
 
 
 	};
@@ -64,10 +64,11 @@ public:
 
 
 private:
-	class CBody_Khazan_Spear*		m_pBody = { nullptr };
-	class CSpear_Khazan_Spear*		m_pSpear = { nullptr };
-	class CKhazan_Spear_Anim_Move*	m_pAnimMove = { nullptr };
-	class CKhazan_Spear_Anim_Attack* m_pAnimAttack = { nullptr };
+	class CBody_Khazan_Spear*			m_pBody = { nullptr };
+	class CSpear_Khazan_Spear*			m_pSpear = { nullptr };
+	class CKhazan_Spear_Anim_Move*		m_pAnimMove = { nullptr };
+	class CKhazan_Spear_Anim_Attack*	m_pAnimAttack = { nullptr };
+	class CKhazan_Spear_Anim_Guard*		m_pAnimGuard = { nullptr };
 	//kHAZAN_ANIM_INFO			m_eCurAnimInfo = {}; //후보지에서 선택된 애님인포 
 	//vector<kHAZAN_ANIM_INFO>	m_AnimCandidates; // 매 프레임 후보 리스트 적립
 
@@ -79,7 +80,7 @@ private:
 	_uint						m_iPrevSubState = {};
 	_uint						m_iCycle;
 	_uint						m_iPrevCycle;
-	DIR							m_eDir = {};		//플레이어 dir
+	DIR							m_eDir = {};		//플레이어의 로컬 방향  dir(애니메이션 선택용)
 	_uint						m_ePrevDir = {};
 
 	_uint						m_iCurAnimIndex = {};
@@ -95,10 +96,11 @@ private:
 	vector<_float2>				m_vCoolTime;
 
 	/* Move*/
-	DIR							m_eWorldDir = {}; // 키 입력 방향
+	DIR							m_eWorldDir = {}; // 카메라 기준 월드 방향 
 	_float						m_fRotateTime[2] = { 0.f,0.1f };
 	_vector						m_vRotateStart;
 	_float						m_fSprintTime = { 0.f };
+	//_float						m_fDodgeTime = { 0.f };
 	uint						m_iStopMoveIndexTable[9];	/* 스탑 애니메이션일 때 움직임 x  */
 
 	/* Attack  */
@@ -106,11 +108,12 @@ private:
 
 	/* const */
 	const	_float				m_fMinSprintTime = { 0.15f };
+	//const	_float				m_fMinDodgeTime = { 0.2f };
 
 	/* Move Speed */
 	const _float				m_fWalkSpeed = { 1.6f };
 	const _float				m_fRunSpeed = { 4.f };
-	const _float				m_fSprintSpeed = { 7.f };
+	const _float				m_fSprintSpeed = { 9.f };
 
 	/*  Attack */
 	const _float				m_fChargingStrongIntervalTime = { 0.25f };
@@ -120,6 +123,7 @@ private:
 	void			Update_State(_float fTimeDelta);
 	void			Move_Input(_float fTimeDelta);
 	_bool			Attack_Input(_float fTimeDelta);
+	_bool			Guard_Input(_float fTimeDelta);
 	void			ChangeAnimation();
 	void			ExecuteAnimationExit();
 	void			Apply_PlayerMovement(_float fTimeDelta);

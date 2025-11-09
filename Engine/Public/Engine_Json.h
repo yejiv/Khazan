@@ -1,4 +1,4 @@
-﻿#ifndef Engine_Json_h__
+#ifndef Engine_Json_h__
 #define Engine_Json_h__
 
 #include "Json/json.hpp"

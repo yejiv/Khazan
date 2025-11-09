@@ -27,10 +27,10 @@ public:
         auto it = mLayers.find(key);
         if (it != mLayers.end())
         {
-            mLayers.erase(it);        // ¶Ç´Â mLayers.erase(key); (µ¿ÀÏ È¿°ú)
-            return true;              // Áö¿üÀ½
+            mLayers.erase(it);        // ë˜ëŠ” mLayers.erase(key); (ë™ì¼ íš¨ê³¼)
+            return true;              // ì§€ì› ìŒ
         }
-        return false;                 // ¾ø¾úÀ½
+        return false;                 // ì—†ì—ˆìŒ
     }
 
 private:

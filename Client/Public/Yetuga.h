@@ -55,7 +55,7 @@ private:
 	void							Breath_Start();
 	void							Breath_Loop();
 
-public:
+private:
 	class CBody_Yetuga*				m_pBody = { nullptr };
 	class CHead_Yetuga*				m_pHead = { nullptr };
 	class CProjectile_Yetuga*		m_pHoldStone = { nullptr };

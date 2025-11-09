@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Client_Defines.h"
 #include "Base.h"
 
@@ -58,28 +58,28 @@ public:
 
     enum CATEGORY : _uint
     {
-        M_DIE         = 1 << 0,
+        M_DIE         = 1 << 0, //30분 컷
 
         M_HOLD        = 1 << 1,
-        M_GROGGY      = 1 << 2,
-        M_DAMAGED     = 1 << 3,
-        M_CLIMB        = 1<< 4,
+        M_GROGGY      = 1 << 2, //2시간 컷 마지막
+        M_DAMAGED     = 1 << 3,  //
+        M_CLIMB        = 1<< 4,  //마지막
         ORDER2 = M_HOLD | M_GROGGY | M_DAMAGED | M_CLIMB,
 
-        M_SKILL       = 1 << 5,
+        M_SKILL       = 1 << 5,//
 
-        M_GUARD         = 1 << 6,
+        M_GUARD         = 1 << 6,//
 
    
-        M_ATTACK        = 1 << 7, 
-        M_MOVE          = 1 << 8,  
-        M_LOCKON        = 1 << 9,
+        M_ATTACK        = 1 << 7, //
+        M_MOVE          = 1 << 8,  //
+        M_LOCKON        = 1 << 9,  //
         ORDER5 = M_ATTACK | M_MOVE | M_LOCKON,
 
     
         M_INTERACT      = 1 << 10,
         M_WEAPON_CHANGE = 1<< 11,
-        M_IDLE          = 1 <<12, 
+        M_IDLE          = 1 <<12, //
         M_END            = 1<<13,
     };
 
@@ -171,6 +171,11 @@ public:
     
     enum GUARD : _uint
     {
+        GAURD_NORRMAL = 1<<0,
+        GAURD_JUST = 1 << 1,
+        GAURD_WALK = 1 << 2,
+        GAURD_SUCCESS = 1 << 3,
+        GAURD_GROGGY = 1 << 3,
 
     };
     

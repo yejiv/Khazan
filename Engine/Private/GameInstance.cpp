@@ -1,4 +1,4 @@
-﻿#include "GameInstance.h"
+#include "GameInstance.h"
 
 #include "Graphic_Device.h"
 #include "Input_Device.h"
@@ -89,10 +89,6 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 
 	m_pLight_Manager = CLight_Manager::Create(EngineDesc.iNumLevels);
 	if (nullptr == m_pLight_Manager)
-		return E_FAIL;
-
-	m_pJolt_Manager = CJolt_Manager::Create(*ppDevice, *ppContext, EngineDesc.iNumJoltObjectLayer);
-	if (nullptr == m_pJolt_Manager)
 		return E_FAIL;
 
 	m_pPool_Manager = CPool_Manager::Create(EngineDesc.iNumLevels);
@@ -221,7 +217,8 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 
 	m_pLevel_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
-	m_pJolt_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
+	if (m_pJolt_Manager)
+		m_pJolt_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
 	m_pComputeShader_Manager->Execute_Job(COMPUTEJOB::UPDATE);
 
@@ -241,6 +238,7 @@ HRESULT CGameInstance::Clear_Resources(_uint iClearLevelID)
 	m_pPrototype_Manager->Clear(iClearLevelID);
 
 	m_pObject_Manager->Clear(iClearLevelID);
+
 	m_pObject_Manager->Static_Clear();
 
 	m_pLight_Manager->Clear(iClearLevelID);
@@ -876,6 +874,18 @@ void CGameInstance::Clear_GizmoObject()
 #pragma endregion
 
 #pragma region JOLT_MANAGER
+HRESULT CGameInstance::Initialize_Jolt(_uint iNumObjectLayer)
+{
+	m_pJolt_Manager = CJolt_Manager::Create(GetDevice(), GetImmediate(), iNumObjectLayer);
+	if (nullptr == m_pJolt_Manager)
+		return E_FAIL;
+
+	return S_OK;
+}
+void CGameInstance::Destroy_Jolt()
+{
+	Safe_Release(m_pJolt_Manager);
+}
 void CGameInstance::Set_PhysicsSystem()
 {
 	m_pJolt_Manager->Set_PhysicsSystem();
@@ -928,6 +938,21 @@ CharacterVirtual* CGameInstance::Find_CharacterVirtual(CharacterID id)
 void CGameInstance::Remove_CharacterVirtual(CharacterID id)
 {
 	m_pJolt_Manager->Remove_CharacterVirtual(id);
+}
+
+void CGameInstance::Push_BodyDesc(BodyID id, uint64 pBodyDesc)
+{
+	return m_pJolt_Manager->Push_BodyDesc(id, pBodyDesc);
+}
+
+uint64 CGameInstance::Find_BodyDesc(BodyID id)
+{
+	return m_pJolt_Manager->Find_BodyDesc(id);
+}
+
+void CGameInstance::Remove_BodyDesc(BodyID id)
+{
+	m_pJolt_Manager->Remove_BodyDesc(id);
 }
 
 void CGameInstance::Set_Gravity(_vector vGravity)
@@ -1245,14 +1270,24 @@ void CGameInstance::Add_Effect_ToPool(_uint iLayerLevelIndex, const _wstring& st
 	m_pEffect_Manager->Add_Effect_ToPool(iLayerLevelIndex, strPrototypeTag, iPoolSize);
 }
 
-_uint CGameInstance::Spwan_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector SpwanPos)
+_uint CGameInstance::Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector SpawnPos)
 {
-	return m_pEffect_Manager->Spwan_Effect(iLayerLevelIndex, strPrototypeTag, SpwanPos);
+	return m_pEffect_Manager->Spawn_Effect(iLayerLevelIndex, strPrototypeTag, SpawnPos);
 }
 
-void CGameInstance::Update_Effect_Position(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector SpwanPos)
+_uint CGameInstance::Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector Quaternion, _gvector Position)
 {
-	m_pEffect_Manager->Update_Effect_Position(iLayerLevelIndex, strPrototypeTag, ID, SpwanPos);
+	return m_pEffect_Manager->Spawn_Effect(iLayerLevelIndex, strPrototypeTag, Quaternion, Position);
+}
+
+void CGameInstance::Update_Effect_Position(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector SpawnPos)
+{
+	m_pEffect_Manager->Update_Effect_Position(iLayerLevelIndex, strPrototypeTag, ID, SpawnPos);
+}
+
+void CGameInstance::Update_Effect_World(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector Quaternion, _gvector Position)
+{
+	m_pEffect_Manager->Update_Effect_World(iLayerLevelIndex, strPrototypeTag, ID, Quaternion, Position);
 }
 
 void CGameInstance::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID)

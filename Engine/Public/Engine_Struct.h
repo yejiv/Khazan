@@ -1,4 +1,4 @@
-﻿#ifndef Engine_Struct_h__
+#ifndef Engine_Struct_h__
 #define Engine_Struct_h__
 
 
@@ -665,6 +665,7 @@ namespace Engine
 	typedef struct tagCollsion
 	{
 		class CGameObject* pGameObject = nullptr;
+		unsigned int iObjectLayer;
 		void* pInfo = nullptr;	
 	}COLLISION_DESC;
 

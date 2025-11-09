@@ -1,6 +1,7 @@
-﻿#include "Body_Khazan_Spear.h"
+#include "Body_Khazan_Spear.h"
 #include "Khazan_Sample.h"
 #include "GameInstance.h"
+#include "ClientInstance.h"
 
 CBody_Khazan_Spear::CBody_Khazan_Spear(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CPartObject{ pDevice, pContext }
@@ -43,8 +44,6 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
     if (FAILED(Ready_AnimationEvent()))
         return E_FAIL;
 
-
-   // m_pModelCom->Set_Animation(5);
     /* 부모 트랜스폼 연결 */
     m_pModelCom->Set_OwnerTransform(&m_pParentTransform);
 
@@ -73,10 +72,9 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
     //m_pModelCom_Arm->Play_Animation(fTimeDelta);
     //m_pModelCom_Face->Play_Animation(fTimeDelta);
     //m_pModelCom_Hair->Play_Animation(fTimeDelta);
-    //m_pModelCom_Leg->Play_Animation(fTimeDelta);
     //m_pModelCom_Shoes->Play_Animation(fTimeDelta);
     //m_pModelCom_Torso->Play_Animation(fTimeDelta);
-
+  
     Update_CombinedMatrix();
 }
 
@@ -162,6 +160,7 @@ void CBody_Khazan_Spear::Render_Part(CModel* pModel)
 {
     if (nullptr == pModel)
         return;
+    pModel->Update_PartLocalBones();
 
     _uint iNumMeshes = pModel->Get_NumMeshes();
     for (size_t i = 0; i < iNumMeshes; i++)
@@ -214,7 +213,7 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
     m_pModelCom->Attach_Part(m_pModelCom_Arm);
     m_pModelCom->Attach_Part(m_pModelCom_Face);
     m_pModelCom->Attach_Part(m_pModelCom_Hair);
-    m_pModelCom->Attach_Part(m_pModelCom_Leg);
+    m_pModelCom->Attach_Part(m_pModelCom_Leg );
     m_pModelCom->Attach_Part(m_pModelCom_Shoes);
     m_pModelCom->Attach_Part(m_pModelCom_Torso);
 
@@ -381,13 +380,24 @@ void CBody_Khazan_Spear::Free()
 {
     __super::Free();
 
+    if (!m_isPrototype)
+    {
+        m_pModelCom->Detach_Part(m_pModelCom_Arm);
+        m_pModelCom->Detach_Part(m_pModelCom_Face);
+        m_pModelCom->Detach_Part(m_pModelCom_Hair);
+        m_pModelCom->Detach_Part(m_pModelCom_Leg);
+        m_pModelCom->Detach_Part(m_pModelCom_Shoes);
+        m_pModelCom->Detach_Part(m_pModelCom_Torso);
+    }
+    
 	Safe_Release(m_pParentTransform);
-	Safe_Release(m_pModelCom);
 	Safe_Release(m_pShaderCom);
+
 	Safe_Release(m_pModelCom_Torso);
 	Safe_Release(m_pModelCom_Arm);
 	Safe_Release(m_pModelCom_Face);
 	Safe_Release(m_pModelCom_Hair);
 	Safe_Release(m_pModelCom_Leg);
 	Safe_Release(m_pModelCom_Shoes);
+    Safe_Release(m_pModelCom);
 }

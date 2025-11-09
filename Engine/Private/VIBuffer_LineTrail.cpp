@@ -89,7 +89,7 @@ void CVIBuffer_LineTrail::Update(deque<_float4>& vertices, const _float4* CamPos
 		_uint dataIdx{};
 		for (_uint i = 0; i < NumDrawVertices - 2; i += 2)
 		{
-			//À§¾Æ·¡ Á¤Á¡ ºôº¸µùÇØ¼­ Á÷Á¢ ¸¸µé±â
+			//ìœ„ì•„ë˜ ì •ì  ë¹Œë³´ë”©í•´ì„œ ì§ì ‘ ë§Œë“¤ê¸°
 			_vector vDir = XMLoadFloat4(&vertices[dataIdx]) - XMLoadFloat4(&vertices[dataIdx + 1]);
 			_vector vLookDir = XMVector4Normalize(XMLoadFloat4(CamPos) - XMLoadFloat4(&vertices[dataIdx]));
 			_vector vRight = XMVector4Normalize(XMVector3Cross(vDir, vLookDir)) * m_fOffset * 0.5f;
@@ -101,7 +101,7 @@ void CVIBuffer_LineTrail::Update(deque<_float4>& vertices, const _float4* CamPos
 			pVertices[i + 1].vTexcoord = _float2((_float)i / (_float)(NumDrawVertices - 2), 1);
 		}
 
-		//¸¶Áö¸· ½Ö ¿¹¿ÜÃ³¸®
+		//ë§ˆì§€ë§‰ ìŒ ì˜ˆì™¸ì²˜ë¦¬
 		_vector vDir = XMLoadFloat4(&vertices[dataIdx - 1]) - XMLoadFloat4(&vertices[dataIdx]);
 		_vector vLookDir = XMVector4Normalize(XMLoadFloat4(CamPos) - XMLoadFloat4(&vertices[dataIdx]));
 		_vector vRight = XMVector4Normalize(XMVector3Cross(vDir, vLookDir)) * m_fOffset * 0.5f;
@@ -131,7 +131,7 @@ void CVIBuffer_LineTrail::Update(deque<_float4>& vertices)
 		_uint dataIdx{};
 		for (_uint i = 0; i < NumDrawVertices - 2; i += 2)
 		{
-			//À§¾Æ·¡ Á¤Á¡ ºôº¸µùÇØ¼­ Á÷Á¢ ¸¸µé±â
+			//ìœ„ì•„ë˜ ì •ì  ë¹Œë³´ë”©í•´ì„œ ì§ì ‘ ë§Œë“¤ê¸°
 			_vector vDir = XMLoadFloat4(&vertices[dataIdx]) - XMLoadFloat4(&vertices[dataIdx + 1]);
 			_vector vRight = XMVector4Normalize(XMVectorSet(-XMVectorGetY(vDir), XMVectorGetX(vDir), 0.f, 0.f)) * m_fOffset * 0.5f;
 
@@ -142,7 +142,7 @@ void CVIBuffer_LineTrail::Update(deque<_float4>& vertices)
 			pVertices[i + 1].vTexcoord = _float2((_float)i / (_float)(NumDrawVertices - 2), 1);
 		}
 
-		//¸¶Áö¸· ½Ö ¿¹¿ÜÃ³¸®
+		//ë§ˆì§€ë§‰ ìŒ ì˜ˆì™¸ì²˜ë¦¬
 		_vector vDir = XMLoadFloat4(&vertices[dataIdx - 1]) - XMLoadFloat4(&vertices[dataIdx]);
 		_vector vRight = XMVector4Normalize(XMVectorSet(-XMVectorGetY(vDir), XMVectorGetX(vDir), 0.f, 0.f)) * m_fOffset * 0.5f;
 
@@ -158,7 +158,7 @@ void CVIBuffer_LineTrail::Update(deque<_float4>& vertices)
 
 HRESULT CVIBuffer_LineTrail::Render()
 {
-	m_pContext->DrawIndexed(m_iNumDrawIndices, 0, 0);	//Update¿¡¼­ ¸Å¹ø °»½Å
+	m_pContext->DrawIndexed(m_iNumDrawIndices, 0, 0);	//Updateì—ì„œ ë§¤ë²ˆ ê°±ì‹ 
 
 	return S_OK;
 }

@@ -46,8 +46,6 @@ public:
 
 
 private:
-	//HRESULT					Ready_Components();
-	//HRESULT					Bind_ShaderResources();
 	void					Carculate_Matrix(_float fTimeDelta);
 
 

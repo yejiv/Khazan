@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Client_Defines.h"
 #include "Effect_Element.h"
 #include "VIBuffer_Point_Instance.h"

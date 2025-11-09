@@ -149,7 +149,7 @@ HRESULT CDummy::Ready_Components()
     BodyDesc.vQuat = vQuat;
     BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
     m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // ÀÛ¼ºÇÏ±â
+    //pCollDesc.pInfo = ?? // ìž‘ì„±í•˜ê¸°
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),

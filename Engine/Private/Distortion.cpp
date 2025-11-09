@@ -40,20 +40,20 @@ void CDistortion::Update(_float fTimeDelta)
 
 	_float fPowerRatio = 0.f;
 
-    // ÆäÀÌµå ¾Æ¿ô °è»ê
+    // íŽ˜ì´ë“œ ì•„ì›ƒ ê³„ì‚°
     if (m_fTimeAcc > m_Desc.vFadeTime.y)
     {
-        _float fFadeDuration = m_Desc.fDuration - m_Desc.vFadeTime.y;	// ÆäÀÌµå ¾Æ¿ô ÃÑ ½Ã°£
-        _float fFadeTimeAcc = m_fTimeAcc - m_Desc.vFadeTime.y;			// ÆäÀÌµå ¾Æ¿ô ½ÃÀÛ ÈÄ ´©Àû ½Ã°£
-        _float fRatio = (fFadeTimeAcc / fFadeDuration);					// ÆäÀÌµå ¾Æ¿ô ºñÀ²
+        _float fFadeDuration = m_Desc.fDuration - m_Desc.vFadeTime.y;	// íŽ˜ì´ë“œ ì•„ì›ƒ ì´ ì‹œê°„
+        _float fFadeTimeAcc = m_fTimeAcc - m_Desc.vFadeTime.y;			// íŽ˜ì´ë“œ ì•„ì›ƒ ì‹œìž‘ í›„ ëˆ„ì  ì‹œê°„
+        _float fRatio = (fFadeTimeAcc / fFadeDuration);					// íŽ˜ì´ë“œ ì•„ì›ƒ ë¹„ìœ¨
         fPowerRatio = 1.f - fRatio;
-        fPowerRatio = max(0.f, fPowerRatio);							// ºñÀ² 0 -> ºÒÅõ¸í, ºñÀ² 1 -> Åõ¸í
+        fPowerRatio = max(0.f, fPowerRatio);							// ë¹„ìœ¨ 0 -> ë¶ˆíˆ¬ëª…, ë¹„ìœ¨ 1 -> íˆ¬ëª…
     }
 
     // Fade In
     if (m_fTimeAcc < m_Desc.vFadeTime.x)
     {
-        fPowerRatio = m_fTimeAcc / m_Desc.vFadeTime.x;		// ÆäÀÌµå ÀÎ ÃÑ ½Ã°£
+        fPowerRatio = m_fTimeAcc / m_Desc.vFadeTime.x;		// íŽ˜ì´ë“œ ì¸ ì´ ì‹œê°„
         fPowerRatio = min(1.f, fPowerRatio);
     }
 

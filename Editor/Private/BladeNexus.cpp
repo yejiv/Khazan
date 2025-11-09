@@ -38,8 +38,8 @@ void CBladeNexus::Priority_Update(_float fTimeDelta)
 
 void CBladeNexus::Update(_float fTimeDelta)
 {
-    // BEFORE_IDLE > _START > _LOOP > _END >>                       // Ã¹ ÅÍÄ¡‹š
-    // >> AFTER_IDLE > _START > _LOOP > _END > AFTER_IDLE >>        // ¹İº¹
+    // BEFORE_IDLE > _START > _LOOP > _END >>                       // ì²« í„°ì¹˜ë–„
+    // >> AFTER_IDLE > _START > _LOOP > _END > AFTER_IDLE >>        // ë°˜ë³µ
 
     // 7 > 9 > 8 > 9 > 8 > 9 >>> ...
 
@@ -73,7 +73,7 @@ void CBladeNexus::Update(_float fTimeDelta)
         if (ANIM_STATE::AFTER_LOOP == m_eAnimState || ANIM_STATE::AFTER_IDLE == m_eAnimState ||
             ANIM_STATE::BEFORE_LOOP == m_eAnimState || ANIM_STATE::BEFORE_IDLE == m_eAnimState)
         {
-            // È°¼ºÈ­ ÈÄ ÀÛ¾÷ ÁßÀÏ ¶§
+            // í™œì„±í™” í›„ ì‘ì—… ì¤‘ì¼ ë•Œ
             m_pModelCom->Set_AnimationLoop(true);
         }
     }
@@ -82,28 +82,28 @@ void CBladeNexus::Update(_float fTimeDelta)
     {
         if (ANIM_STATE::BEFORE_START == m_eAnimState)
         {
-            // Ã³À½ »óÈ£ ÀÛ¿ë ÈÄ ¾Ö´Ï¸ŞÀÌ¼Ç ·çÇÁ·Î ÀüÈ¯
+            // ì²˜ìŒ ìƒí˜¸ ì‘ìš© í›„ ì• ë‹ˆë©”ì´ì…˜ ë£¨í”„ë¡œ ì „í™˜
             m_eAnimState = ANIM_STATE::BEFORE_LOOP;
             m_pModelCom->Set_Animation(ANIM_STATE::BEFORE_LOOP);
             m_pModelCom->Set_AnimationLoop(true);
         }
         if (ANIM_STATE::BEFORE_END == m_eAnimState)
         {
-            // Ã³À½ »óÈ£ ÀÛ¿ëÀÌ ³¡³­ ÈÄ After Idle »óÅÂ·Î ÀüÈ¯
+            // ì²˜ìŒ ìƒí˜¸ ì‘ìš©ì´ ëë‚œ í›„ After Idle ìƒíƒœë¡œ ì „í™˜
             m_eAnimState = ANIM_STATE::AFTER_IDLE;
             m_pModelCom->Set_Animation(ANIM_STATE::AFTER_IDLE);
             m_pModelCom->Set_AnimationLoop(true);
         }
         if (ANIM_STATE::AFTER_START == m_eAnimState)
         {
-            // ´ÙÈ¸ »óÈ£ ÀÛ¿ë ÈÄ ¾Ö´Ï¸ŞÀÌ¼Ç ·çÇÁ·Î ÀüÈ¯
+            // ë‹¤íšŒ ìƒí˜¸ ì‘ìš© í›„ ì• ë‹ˆë©”ì´ì…˜ ë£¨í”„ë¡œ ì „í™˜
             m_eAnimState = ANIM_STATE::AFTER_LOOP;
             m_pModelCom->Set_Animation(ANIM_STATE::AFTER_LOOP);
             m_pModelCom->Set_AnimationLoop(true);
         }
         if (ANIM_STATE::AFTER_END == m_eAnimState)
         {
-            // ´ÙÈ¸ »óÈ£ ÀÛ¿ëÀÌ ³¡³­ ÈÄ After Idle »óÅÂ·Î ÀüÈ¯
+            // ë‹¤íšŒ ìƒí˜¸ ì‘ìš©ì´ ëë‚œ í›„ After Idle ìƒíƒœë¡œ ì „í™˜
             m_eAnimState = ANIM_STATE::AFTER_IDLE;
             m_pModelCom->Set_Animation(ANIM_STATE::AFTER_IDLE);
             m_pModelCom->Set_AnimationLoop(true);
@@ -118,7 +118,7 @@ void CBladeNexus::Late_Update(_float fTimeDelta)
 
 HRESULT CBladeNexus::Render()
 {
-    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources ÇÔ¼ö E_FAIL"), E_FAIL);
+    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources í•¨ìˆ˜ E_FAIL"), E_FAIL);
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -126,12 +126,12 @@ HRESULT CBladeNexus::Render()
     {
         Bind_Materials(i);
 
-        // 0 Ä®¼ÕÀâÀÌ
-        // 1 ¼Õ Àß¸² º¸È£´ë
-        // 2 ¹¹ Á¸³ª ÀÛÀº ´«
-        // 3 ¹Ø¿¡ ÀÛÀº ³¯Ä«·Î¿î
-        // 4 ¹Ø¿¡ Å« ³¯Ä«·Î¿î
-        // 5 ´«
+        // 0 ì¹¼ì†ì¡ì´
+        // 1 ì† ì˜ë¦¼ ë³´í˜¸ëŒ€
+        // 2 ë­ ì¡´ë‚˜ ì‘ì€ ëˆˆ
+        // 3 ë°‘ì— ì‘ì€ ë‚ ì¹´ë¡œìš´
+        // 4 ë°‘ì— í° ë‚ ì¹´ë¡œìš´
+        // 5 ëˆˆ
         if (5 == i)
         {
             _bool isEmissive = { false };
@@ -169,9 +169,9 @@ HRESULT CBladeNexus::Ready_Components(void* pArg)
     CHECK_NULLPTR(pDesc, E_FAIL);
 
     LEVEL eLevel = pDesc->eLevel;
-    CHECK_EQUAL_MSG(LEVEL::END, eLevel, TEXT("LAYER ÇÔ¼ö¿¡¼­ LEVEL ¹ÌÀÔ·Â"), E_FAIL);
+    CHECK_EQUAL_MSG(LEVEL::END, eLevel, TEXT("LAYER í•¨ìˆ˜ì—ì„œ LEVEL ë¯¸ì…ë ¥"), E_FAIL);
 
-    // °³º° ½¦ÀÌ´õ »ı¼ºÇÒÁö °í¹Î
+    // ê°œë³„ ì‰ì´ë” ìƒì„±í• ì§€ ê³ ë¯¼
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr), E_FAIL);
 

@@ -1,4 +1,4 @@
-﻿#include "Spear_Khazan_Sample.h"
+#include "Spear_Khazan_Sample.h"
 #include "Khazan_Sample.h"
 #include "GameInstance.h"
 
@@ -69,7 +69,7 @@ void CSpear_Khazan_Sample::Update(_float fTimeDelta)
 
 void CSpear_Khazan_Sample::Late_Update(_float fTimeDelta)
 {
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONLIGHT, this)))
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
     //if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
     //    return;
@@ -141,7 +141,7 @@ HRESULT CSpear_Khazan_Sample::Ready_Components()
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Spear_Khazan_Sample"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_Component_Model_Spear_Khazan_Sample"),
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
 

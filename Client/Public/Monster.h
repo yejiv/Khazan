@@ -51,6 +51,7 @@ public:
 	const string&				Get_Name() const { return m_strName; }
 	virtual _float4*			Get_LockOnPosition() const { return m_vLockOnPosition; }
 	void						RequestRecoveryStamina() { m_isRequestRecoveryStamina = true; }
+	void						CheckMinDistanceWithPlayer(_float MinDist, _float fAnimRatio);
 
 public:
 	virtual void				Take_Damage(_float fDamage, HITREACTION eHitreaction, _float fValidTime ,CGameObject* pGameObject = nullptr);
@@ -86,11 +87,11 @@ protected:
 	_float							m_fRecoveryPerSec = {};
 	_bool							m_isRequestRecoveryStamina = {};
 
-	_float3							m_vVelocity = {}; // ÇöÀç ÀÌµ¿¼Óµµ
-	_float3							m_vVelocutyTarget = {}; // ¸ñÇ¥ ¼Óµµ (0)
-	_float							m_fDecelTime = {}; // °¨¼Ó Áö¼Ó ½Ã°£
-	_float							m_fDecelElapsed = {}; // °æ°ú ½Ã°£
-	_bool							m_isDecelerating = {}; // °¨¼Ó Áß ÇÃ·¡±×
+	_float3							m_vVelocity = {}; // í˜„ì¬ ì´ë™ì†ë„
+	_float3							m_vVelocutyTarget = {}; // ëª©í‘œ ì†ë„ (0)
+	_float							m_fDecelTime = {}; // ê°ì† ì§€ì† ì‹œê°„
+	_float							m_fDecelElapsed = {}; // ê²½ê³¼ ì‹œê°„
+	_bool							m_isDecelerating = {}; // ê°ì† ì¤‘ í”Œë˜ê·¸
 
 
 //private:

@@ -82,7 +82,7 @@ void CProp_Static::Late_Update(_float fTimeDelta)
 
 HRESULT CProp_Static::Render()
 {
-    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Static : Bind_ShaderResources ÇÔ¼ö E_FAIL"), E_FAIL);
+    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Static : Bind_ShaderResources í•¨ìˆ˜ E_FAIL"), E_FAIL);
 
     if (isPlant()) CHECK_FAILED(Bind_Waving_Plants(), E_FAIL);
 
@@ -104,7 +104,7 @@ HRESULT CProp_Static::Render()
 
 HRESULT CProp_Static::Deferred_Render(ID3D11DeviceContext* pDeferredContext)
 {
-    CHECK_FAILED_MSG(Deferred_Bind_ShaderResources(), TEXT("CProp_Static : Bind_ShaderResources ÇÔ¼ö E_FAIL"), E_FAIL);
+    CHECK_FAILED_MSG(Deferred_Bind_ShaderResources(), TEXT("CProp_Static : Bind_ShaderResources í•¨ìˆ˜ E_FAIL"), E_FAIL);
 
     if (isPlant()) CHECK_FAILED(Deferred_Bind_Waving_Plants(), E_FAIL);
 
@@ -178,16 +178,16 @@ HRESULT CProp_Static::Ready_Collision(void* pArg)
 
 HRESULT CProp_Static::Bind_ShaderResources()
 {
-    // ¿ùµå Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // ì›”ë“œ í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix"), E_FAIL);
 
-    // ºä Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // ë·° í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW)), E_FAIL);
 
-    // Åõ¿µ Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // íˆ¬ì˜ í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ)), E_FAIL);
 
-    // Ä«¸Þ¶ó ¹ÙÀÎµù
+    // ì¹´ë©”ë¼ ë°”ì¸ë”©
     CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4)), E_FAIL);
 
     return S_OK;
@@ -195,16 +195,16 @@ HRESULT CProp_Static::Bind_ShaderResources()
 
 HRESULT CProp_Static::Deferred_Bind_ShaderResources()
 {
-    // ¿ùµå Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // ì›”ë“œ í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pTransformCom->Bind_Shader_Resource(m_pDeferredShader, "g_WorldMatrix"), E_FAIL);
 
-    // ºä Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // ë·° í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pDeferredShader->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW)), E_FAIL);
 
-    // Åõ¿µ Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // íˆ¬ì˜ í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pDeferredShader->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ)), E_FAIL);
 
-    // Ä«¸Þ¶ó ¹ÙÀÎµù
+    // ì¹´ë©”ë¼ ë°”ì¸ë”©
     CHECK_FAILED(m_pDeferredShader->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4)), E_FAIL);
 
     return S_OK;
