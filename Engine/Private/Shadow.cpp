@@ -48,7 +48,7 @@ HRESULT CShadow::Initialize()
 	// Z-fighting 방지
 	m_Config.fBias = 0.001f;
 	// 그림자 강도(세기)
-	m_Config.fIntensity = 0.3f;
+	m_Config.fIntensity = 0.6f;
 
     return S_OK;
 }

@@ -165,23 +165,31 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
     
     float fShade = max(dot(vNormal * -1.f, normalize(g_vLightDir)), 0.f);
 
-    // Toon Shade
-    float fLightIntensity = saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient));
+    // Toon Shade 명암 대비 강화
+    
+    // 엠비언트 따로 계산
+    float fAmbient = g_vLightAmbient * g_vMtrlAmbient;
+    
     float fLevel = floor(g_fToonShadeLevel);
-    float fToonShade = ceil(fLightIntensity * fLevel) / fLevel;
+
+    // 엠비언트를 제외한 순수한 fShade 값으로 툰 셰이딩
+    float fToonShade = ceil(fShade * fLevel) / fLevel;
+    
+    // 엠비언트 분리 후 합산
+    float fLightIntensity = saturate(fShade);
     
     if (g_isEnableSSAO)
     {
         float fAO = g_SSAOTexture.Sample(PointSampler, In.vTexcoord).r;
         fToonShade *= fAO;
-        
         fLightIntensity *= fAO;
+        fAmbient *= fAO;
     }
     
     if (g_isEnableToonShade)
-        Out.vShade = g_vLightDiffuse * fToonShade;
+        Out.vShade = g_vLightDiffuse * (fToonShade + fAmbient);
     else
-        Out.vShade = g_vLightDiffuse * fLightIntensity;
+        Out.vShade = g_vLightDiffuse * (fLightIntensity + fAmbient);
     
     // Specular
     vector vSpecularDesc = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
@@ -223,23 +231,29 @@ PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
     
     float fShade = max(dot(vNormal * -1.f, normalize(g_vLightDir)), 0.f);
 
-    // Toon Shade
-    float fLightIntensity = saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient));
+    // 엠비언트 따로 계산
+    float fAmbient = g_vLightAmbient * g_vMtrlAmbient;
+    
     float fLevel = floor(g_fToonShadeLevel);
-    float fToonShade = ceil(fLightIntensity * fLevel) / fLevel;
+
+    // 엠비언트를 제외한 순수한 fShade 값으로 툰 셰이딩
+    float fToonShade = ceil(fShade * fLevel) / fLevel;
+    
+    // 엠비언트 분리 후 합산
+    float fLightIntensity = saturate(fShade);
     
     if (g_isEnableSSAO)
     {
         float fAO = g_SSAOTexture.Sample(PointSampler, In.vTexcoord).r;
         fToonShade *= fAO;
-        
         fLightIntensity *= fAO;
+        fAmbient *= fAO;
     }
     
     if (g_isEnableToonShade)
-        Out.vShade = g_vLightDiffuse * fToonShade * fAtt;
+        Out.vShade = g_vLightDiffuse * (fToonShade + fAmbient) * fAtt;
     else
-        Out.vShade = g_vLightDiffuse * fLightIntensity * fAtt;
+        Out.vShade = g_vLightDiffuse * (fLightIntensity + fAmbient) * fAtt;
 
     // Specular
     vector vSpecularDesc = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
@@ -556,7 +570,7 @@ PS_OUT_BACKBUFFER PS_MAIN_FOG(PS_IN In)
     float fExp = saturate(1.f - exp(-g_fFogDensity * fDistance));
     
     // Exponential^2 -> (1 - e^{-(rho * d)^2})
-    float fOpticalDepth = g_fFogDensity * fDistance;    // 愿묓븰 源딆씠
+    float fOpticalDepth = g_fFogDensity * fDistance;
     float fExpSquare = saturate(1.f - exp(-(fOpticalDepth * fOpticalDepth)));
     
     float4 vResultColor;

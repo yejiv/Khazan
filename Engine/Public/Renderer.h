@@ -100,7 +100,7 @@ private:
 	_bool						m_isEnableShadow = { true };
 	_bool						m_isEnableSSAO = { true };
 	_bool						m_isEnableFog = { true };
-	_bool						m_isEnableToonShade = {};
+	_bool						m_isEnableToonShade = { true };
 	_bool						m_isEnableOutline = {};
 	_bool						m_isEnableVignette = {};
 	_bool						m_isEnableDistortion = {};

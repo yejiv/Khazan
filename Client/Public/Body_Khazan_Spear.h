@@ -38,16 +38,26 @@ public:
 public:
 	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize_Clone(void* pArg);
-	virtual void Priority_Update(_float fTimeDelta);
-	virtual void Update(_float fTimeDelta);
-	virtual void Late_Update(_float fTimeDelta);
+	virtual void    Priority_Update(_float fTimeDelta);
+	virtual void    Update(_float fTimeDelta);
+	virtual void    Late_Update(_float fTimeDelta);
 	virtual HRESULT Render();
 	virtual HRESULT Render_Shadow() override;
+    virtual HRESULT Render_Outline() override;
 	void			Render_Part(CModel* pModel);
 	void			Render_Part_Shadow(CModel* pModel);
+    void            Render_Part_Outline(CModel* pModel);
 
 public:
 	CModel* Get_Model() { return m_pModelCom; }
+
+public:
+    OUTLINE_CONFIG Get_OutlineConfig() { return m_OutlineConfig; }
+    void Set_OutlineConfig(OUTLINE_CONFIG Config)
+    {
+        m_OutlineConfig.vColor = Config.vColor;
+        m_OutlineConfig.fSize = Config.fSize;
+    }
 
 private:
 	class CTransform*	m_pParentTransform = { nullptr };
@@ -75,6 +85,7 @@ private:
 
 	const _uint			m_iSetAnimation[3] = { 3,2,1 };
 
+    OUTLINE_CONFIG      m_OutlineConfig = { _float3(1.f, 0.f, 1.f), 0.001f, 0.f, 0.f };
 
 private:
 	HRESULT Ready_Components();
