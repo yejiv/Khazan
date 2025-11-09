@@ -98,8 +98,7 @@ private:
 
 	//class CRigidBody*			m_pRigidBodyCom = { nullptr };
 	//CCharacterVirtual*			m_pCharVirCom = { nullptr };
-
-	_float4x4*					m_pWeaponR_Matrix = { nullptr };
+	_float4x4* m_pWeaponR_Matrix = { nullptr };
 	//_float4x4*					m_pSpearFX_Matrix = { nullptr };
 	//_float4x4					m_SpearFX_WorldMatrix = {};
 	////_float4x4					m_pSpearEndFX_Matrix = {};

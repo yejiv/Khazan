@@ -80,7 +80,6 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
 
 void CBody_Khazan_Spear::Late_Update(_float fTimeDelta)
 {
-=======
 	// ========== Before Render ==========
     //  if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONLIGHT, this)))
     //      return;
@@ -92,6 +91,7 @@ void CBody_Khazan_Spear::Late_Update(_float fTimeDelta)
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
         return;
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::OUTLINE, this)))
+        return;
 #ifdef _DEBUG
 
 #endif

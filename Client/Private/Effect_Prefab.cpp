@@ -38,7 +38,8 @@ HRESULT CEffect_Prefab::Initialize_Clone(void* pArg)
     //m_bPlaying = true;
 
     for(auto& element : m_Children)
-        element->SetParentsMatrix(m_pTransformCom->Get_WorldMatrixPtr());
+        //element->SetParentsMatrix(m_pTransformCom->Get_WorldMatrixPtr());
+        element->SetParentsMatrix(&m_CombinedWorldMatrix);
 
     //m_test = *static_cast<_float3*>(pArg);
     //m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(m_test.x, m_test.y, m_test.z, 1.f));

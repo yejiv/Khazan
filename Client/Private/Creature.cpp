@@ -50,8 +50,11 @@ void CCreature::Update(_float fTimeDelta)
 {
     __super::Update(fTimeDelta);
 
-    m_pCharVirCom->Sync_Update(m_pTransformCom);
-    m_pCharVirCom->Update(fTimeDelta, m_pTransformCom, m_vGravity);
+    if (m_pCharVirCom != nullptr)
+    {
+        m_pCharVirCom->Sync_Update(m_pTransformCom);
+        m_pCharVirCom->Update(fTimeDelta, m_pTransformCom, m_vGravity);
+    }
 }
 
 void CCreature::Late_Update(_float fTimeDelta)

@@ -45,7 +45,6 @@ HRESULT CBody_Khazan_Sample::Initialize_Clone(void* pArg)
         return E_FAIL;
 
 
-    
     m_pModelCom->Set_Animation(5);
     /* 부모 트랜스폼 연결 */
     m_pModelCom->Set_OwnerTransform(&m_pParentTransform);
@@ -72,9 +71,11 @@ HRESULT CBody_Khazan_Sample::Initialize_Clone(void* pArg)
     m_pSpearEnd2_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R_Spear_End02");
 
 
-    if (FAILED(Ready_Collider()))
-        return E_FAIL;
-   // m_SpearOffset_Matrix = XMMatrixRotationX(XMConvertToRadians(-90.0f));
+
+    /*if (FAILED(Ready_Collider()))
+        return E_FAIL;*/
+    // m_SpearOffset_Matrix = XMMatrixRotationX(XMConvertToRadians(-90.0f));
+
 
     return S_OK;
 }
@@ -161,13 +162,18 @@ void CBody_Khazan_Sample::Update(_float fTimeDelta)
 
     Update_CombinedMatrix();
 
-    Update_Collider(fTimeDelta);
+    //Update_Collider(fTimeDelta);
+
 
 
     m_pTrail->Update(fTimeDelta);
-    if (m_pGameInstance->Key_Down(DIK_Y))
-        m_pGameInstance->Spwan_Effect(ENUM_CLASS(LEVEL::TEST), TEXT("SpaceTime_SpearBlood"), XMVectorSet(1.f, 1.f, 1.f, 1.f));
-    //Test End
+
+    XMStoreFloat4x4(&m_pSpearTip1_MatrixW, XMLoadFloat4x4(m_pSpearTip1_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
+    XMStoreFloat4x4(&m_pSpearTip2_MatrixW, XMLoadFloat4x4(m_pSpearTip2_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
+    XMStoreFloat4x4(&m_pWeaponR_MatrixW, XMLoadFloat4x4(m_pWeaponR_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
+    XMStoreFloat4x4(&m_pSpearEnd1_MatrixW, XMLoadFloat4x4(m_pSpearEnd1_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
+    XMStoreFloat4x4(&m_pSpearEnd2_MatrixW, XMLoadFloat4x4(m_pSpearEnd2_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
+
 }
 
 void CBody_Khazan_Sample::Late_Update(_float fTimeDelta)
@@ -346,7 +352,8 @@ HRESULT CBody_Khazan_Sample::Ready_AnimationEvent()
     m_pModelCom->Register_Event("e15", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Effect15_Exit(); });
     m_pModelCom->Register_Event("e15", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Effect15_Continue(); });
 
-    m_pModelCom->Register_Event("SpaceTime_SpearBlood", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SpaceTime_SpearBlood(); });
+    m_pModelCom->Register_Event("SpaceTime_SpearBlood", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect11_SpearBlood(); });
+
 
     return S_OK;
 }
@@ -566,8 +573,7 @@ HRESULT CBody_Khazan_Sample::Ready_Collider()
         BodyDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
         BodyDesc.eShapeType = SHAPE::SPHERE;
         BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER); // 추후에 Enum Monster attack 변경 할수도
-  
-        XMStoreFloat4x4(&m_pSpearTip2_MatrixW, /*m_pTransformCom->Get_WorldMatrix() * */XMLoadFloat4x4( m_pSpearTip2_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
+        XMStoreFloat4x4(&m_pSpearTip2_MatrixW, /*m_pTransformCom->Get_WorldMatrix() * */XMLoadFloat4x4(m_pSpearTip2_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
         _vector vScale, vQuat, vTrans;
         XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_pSpearTip2_MatrixW));
         BodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
@@ -587,7 +593,6 @@ HRESULT CBody_Khazan_Sample::Ready_Collider()
         BodyDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
         BodyDesc.eShapeType = SHAPE::SPHERE;
         BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER); // 추후에 Enum Monster attack 변경 할수도
-   
         XMStoreFloat4x4(&m_pWeaponR_MatrixW, /*m_pTransformCom->Get_WorldMatrix() **/ XMLoadFloat4x4(m_pWeaponR_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
         _vector vScale, vQuat, vTrans;
         XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_pWeaponR_MatrixW));
@@ -649,7 +654,8 @@ void CBody_Khazan_Sample::Update_Collider(_float fTimeDelta)
 {
     /////////////-----------------------------------------------------------
 
-    XMStoreFloat4x4(&m_pSpearTip1_MatrixW,  XMLoadFloat4x4(m_pSpearTip1_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
+
+    XMStoreFloat4x4(&m_pSpearTip1_MatrixW, XMLoadFloat4x4(m_pSpearTip1_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
     _vector vOutQuat, vOutPos;
     m_pBody1->Sync_Update(XMLoadFloat4x4(&m_pSpearTip1_MatrixW));
     m_pBody1->Update(fTimeDelta, XMLoadFloat4x4(&m_pSpearTip1_MatrixW), vOutQuat, vOutPos);
@@ -663,7 +669,7 @@ void CBody_Khazan_Sample::Update_Collider(_float fTimeDelta)
     m_pBody2->Sync_Update(XMLoadFloat4x4(&m_pSpearTip2_MatrixW));
     m_pBody2->Update(fTimeDelta, XMLoadFloat4x4(&m_pSpearTip2_MatrixW), vOutQuat, vOutPos);
     m_pSpearTip2_MatrixW._41 = vOutPos.m128_f32[0];
-    m_pSpearTip2_MatrixW._42 = vOutPos.m128_f32[1]; 
+    m_pSpearTip2_MatrixW._42 = vOutPos.m128_f32[1];
     m_pSpearTip2_MatrixW._43 = vOutPos.m128_f32[2];
     m_pSpearTip2_MatrixW._44 = vOutPos.m128_f32[3];
 
@@ -735,6 +741,7 @@ void CBody_Khazan_Sample::Effect1_Exit()
 {
     //cout << "[Effect1_Exit]" << endl;
    // OutputDebugStringA("[Effect1_Exit] \n");
+    int a = 0;
 }
 
 void CBody_Khazan_Sample::Effect1_Continue()
@@ -759,9 +766,34 @@ void CBody_Khazan_Sample::Effect2_Exit()
 void CBody_Khazan_Sample::Effect2_Continue()
 {
 }
-
 void CBody_Khazan_Sample::Effect3_Enter()
 {
+    //테스트용............
+    _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+
+    _vector S, Q, T;
+
+    if (!XMMatrixDecompose(&S, &Q, &T, W))
+    {
+        XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
+
+
+        _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
+        _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
+        _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
+
+
+        _matrix RotationMatrix(
+            r0,
+            r1,
+            r2,
+            XMVectorSet(0.f, 0.f, 0.f, 1.f)
+        );
+
+        Q = XMQuaternionRotationMatrix(RotationMatrix);
+    }
+
+    EffectID_SpearWind = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::TEST), TEXT("SpearWind"), Q, W.r[3]);
 }
 
 void CBody_Khazan_Sample::Effect3_Exit()
@@ -770,6 +802,32 @@ void CBody_Khazan_Sample::Effect3_Exit()
 
 void CBody_Khazan_Sample::Effect3_Continue()
 {
+    //테스트용............
+    _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+
+    _vector S, Q, T;
+
+    if (!XMMatrixDecompose(&S, &Q, &T, W))
+    {
+
+        XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
+
+
+        _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
+        _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
+        _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
+
+
+        _matrix RotationMatrix(
+            r0,
+            r1,
+            r2,
+            XMVectorSet(0.f, 0.f, 0.f, 1.f)
+        );
+
+        Q = XMQuaternionRotationMatrix(RotationMatrix);
+    }
+    m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::TEST), TEXT("SpearWind"), EffectID_SpearWind, Q, W.r[3]);
 }
 
 void CBody_Khazan_Sample::Effect4_Enter()
@@ -779,10 +837,13 @@ void CBody_Khazan_Sample::Effect4_Enter()
 void CBody_Khazan_Sample::Effect4_Exit()
 {
 }
-
 void CBody_Khazan_Sample::Effect4_Continue()
 {
-
+    //_matrix tip = m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pParentTransform->Get_WorldMatrix();
+    //_matrix hand = m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearWeaponR_Matrix) * m_pParentTransform->Get_WorldMatrix();
+    _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+    _matrix hand = XMLoadFloat4x4(&m_pSpearTip2_MatrixW);
+    m_pTrail->Add_ControlPoint(hand.r[3], tip.r[3]);
 }
 
 void CBody_Khazan_Sample::Effect5_Enter()
@@ -795,7 +856,11 @@ void CBody_Khazan_Sample::Effect5_Exit()
 
 void CBody_Khazan_Sample::Effect5_Continue()
 {
-
+    //_matrix tip = m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pParentTransform->Get_WorldMatrix();
+    //_matrix hand = m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearWeaponR_Matrix) * m_pParentTransform->Get_WorldMatrix();
+    _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+    _matrix hand = XMLoadFloat4x4(&m_pSpearTip2_MatrixW);
+    m_pTrail->Add_ControlPoint(hand.r[3], tip.r[3]);
 }
 
 void CBody_Khazan_Sample::Effect6_Enter()
@@ -808,7 +873,11 @@ void CBody_Khazan_Sample::Effect6_Exit()
 
 void CBody_Khazan_Sample::Effect6_Continue()
 {
-
+    //_matrix tip = m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pParentTransform->Get_WorldMatrix();
+    //_matrix hand = m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearWeaponR_Matrix) * m_pParentTransform->Get_WorldMatrix();
+    _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+    _matrix hand = XMLoadFloat4x4(&m_pSpearTip2_MatrixW);
+    m_pTrail->Add_ControlPoint(hand.r[3], tip.r[3]);
 }
 
 void CBody_Khazan_Sample::Effect7_Enter()
@@ -871,12 +940,10 @@ void CBody_Khazan_Sample::Effect11_Continue()
 {
 }
 
-
-void CBody_Khazan_Sample::SpaceTime_SpearBlood()
+void CBody_Khazan_Sample::Effect11_SpearBlood()
 {
-    m_pGameInstance->Spwan_Effect(ENUM_CLASS(LEVEL::TEST), TEXT("SpaceTime_SpearBlood"), m_pParentTransform->Get_State(STATE::POSITION));
+    EffectID_SpearWind = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::TEST), TEXT("SpaceTime_SpearBlood"), m_pParentTransform->Get_State(STATE::POSITION));
 }
-
 
 void CBody_Khazan_Sample::Effect12_Enter()
 {

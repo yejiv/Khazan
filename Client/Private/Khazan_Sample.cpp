@@ -56,8 +56,8 @@ HRESULT CKhazan_Sample::Initialize_Clone(void* pArg)
     if (FAILED(Ready_PartObjects()))
         return E_FAIL;
 
-    if (FAILED(Ready_Collision()))
-        return E_FAIL;
+    /*if (FAILED(Ready_Collision()))
+        return E_FAIL;*/
 
 
 
@@ -702,8 +702,8 @@ HRESULT CKhazan_Sample::Ready_PartObjects()
     //m_pBody->Set_matWorldSpearBladeFX(&m_SpearFX_WorldMatrix);
 
     //m_pBody->Set_matWorldSpearEndFX(&m_SpearEndFX_WorldMatrix);
-	return S_OK;
 
+	return S_OK;
 }
 
 HRESULT CKhazan_Sample::Ready_Collision()

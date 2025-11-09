@@ -142,10 +142,6 @@ void CLevel_Viper::Update(_float fTimeDelta)
 		m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::VIPER), ENUM_CLASS(CAMERATYPE::PLAYER));
 	}
 
-	/*Effect test => 혹시 보게되면 지우셔도 됩니다!!!!!!!!! */
-	if (m_pGameInstance->Key_Down(DIK_I))
-		m_pGameInstance->Spwan_Effect(ENUM_CLASS(LEVEL::VIPER), TEXT("TestParticle1"), XMVectorSet(0.f, 0.f, 0.f, 1.f));
-	//Test End
 
 	return;
 }
