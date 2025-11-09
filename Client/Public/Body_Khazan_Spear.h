@@ -44,6 +44,7 @@ public:
 	virtual HRESULT Render();
 	virtual HRESULT Render_Shadow() override;
 	void			Render_Part(CModel* pModel);
+	void			Render_Part_Shadow(CModel* pModel);
 
 public:
 	CModel* Get_Model() { return m_pModelCom; }

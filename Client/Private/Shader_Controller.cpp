@@ -128,6 +128,15 @@ void CShader_Controller::Ready_Shader()
 						m_pGameInstance->Set_CascadeConfig(m_CascadeConfig);
 
 					ImGui::Separator();
+					ImGui::Text("Shadow Intensity Lerp");
+
+					ImGui::SliderFloat("Shadow Transition Duration", &m_fShadowTransDuration, 0.1f, 10.f, "%.1f");
+					ImGui::SliderFloat("Shadow Target Intensity", &m_fTargetShadowIntensity, 0.f, 1.f, "%.1f");
+
+					if (ImGui::Button("Start Shadow Intensity Transition"))
+						m_pGameInstance->Start_ShadowIntensityTransition(m_fShadowTransDuration, m_fTargetShadowIntensity);
+
+					ImGui::Separator();
 				}
 			}
 
@@ -207,6 +216,7 @@ void CShader_Controller::Ready_Shader()
 						m_pGameInstance->Set_FogConfig(m_FogConfig);
 
 					ImGui::Separator();
+					ImGui::Text("Fog Transition Lerp");
 
 					ImGui::SliderFloat("Fog Transition Duration", &m_fFogTransDuration, 0.1f, 10.f, "%.2f");
 					ImGui::SliderFloat("Fog Transition Density", &m_TargetFogDesc.fDensity, 0.0001f, 0.05f, "%.4f");

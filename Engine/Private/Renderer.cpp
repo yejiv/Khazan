@@ -179,6 +179,8 @@ HRESULT CRenderer::Render_Shadow()
 
     m_pGameInstance->Backup_RT();
 
+    m_pGameInstance->Clear_ShadowDSVs();
+
     for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::SHADOW)])
     {
         for (_uint i = 0; i < m_pGameInstance->Get_NumCascades(); ++i)

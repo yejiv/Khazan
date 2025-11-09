@@ -147,11 +147,17 @@ HRESULT CBody_Khazan_Spear::Render_Shadow()
         if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;
 
-        m_pShaderCom->Begin(2);
-
-        m_pModelCom->Render(i);
+        //  m_pShaderCom->Begin(2);
+        //  
+        //  m_pModelCom->Render(i);
     }
 
+    Render_Part_Shadow(m_pModelCom_Arm);
+    Render_Part_Shadow(m_pModelCom_Face);
+    Render_Part_Shadow(m_pModelCom_Hair);
+    Render_Part_Shadow(m_pModelCom_Leg);
+    Render_Part_Shadow(m_pModelCom_Shoes);
+    Render_Part_Shadow(m_pModelCom_Torso);
 
     return S_OK;
 }
@@ -175,6 +181,23 @@ void CBody_Khazan_Spear::Render_Part(CModel* pModel)
         pModel->Render(i);
     }
 
+}
+
+void CBody_Khazan_Spear::Render_Part_Shadow(CModel* pModel)
+{
+    if (nullptr == pModel)
+        return;
+
+    _uint iNumMeshes = pModel->Get_NumMeshes();
+    for (size_t i = 0; i < iNumMeshes; i++)
+    {
+        // 마스터의 본을 자동으로 사용
+        if (FAILED(pModel->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
+            continue;
+
+        m_pShaderCom->Begin(2);
+        pModel->Render(i);
+    }
 }
 
 HRESULT CBody_Khazan_Spear::Ready_Components()
