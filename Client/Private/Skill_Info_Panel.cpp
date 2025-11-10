@@ -59,6 +59,7 @@ HRESULT CSkill_Info_Panel::Load_UI(nlohmann::json& pInData, _uint iPrototypeLeve
         if (strName == "Skill_Effect_Text")
         {
             m_pSKillInfo = static_cast<CUI_TextBox*>(Child);
+            Safe_AddRef(m_pSKillInfo);
         }
     }
 
