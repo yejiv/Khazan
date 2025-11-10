@@ -47,6 +47,7 @@ HRESULT CShadow::Initialize()
 	m_Config.Splits = m_Cascade.Splits;
 	// Z-fighting 방지
 	m_Config.fBias = 0.001f;
+
 	// 그림자 강도(세기)
 	m_Config.fIntensity = 0.6f;
 
@@ -222,11 +223,6 @@ void CShadow::Clear_DSVs()
 {
 	for (_uint i = 0; i < m_Cascade.iNumCascades; ++i)
 		m_pContext->ClearDepthStencilView(m_ShadowDSVs[i], D3D11_CLEAR_DEPTH, 1.f, 0);
-}
-void CShadow::Update_Cascade_CameraInfo(_float fNear, _float fFar)
-{
-	m_fCameraNear = fNear;
-	m_fCameraFar = fFar;
 }
 
 void CShadow::Start_ShadowIntensityTransition(_float fDuration, _float fTargetIntensity)
