@@ -60,7 +60,7 @@ HRESULT CCamera_Compre::Initialize_Clone(void* pArg)
     m_strCameraTag = TEXT("Default");
 
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
-
+    
     CHECK_FAILED(Ready_Camera(pArg), E_FAIL);
 
 
@@ -75,6 +75,19 @@ HRESULT CCamera_Compre::Initialize_Clone(void* pArg)
 
 void CCamera_Compre::Priority_Update(_float fTimeDelta)
 {
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
+    {
+        Start_ForceOrbit(CAMERA_FORCE_DIR::FRONT);
+    }
+    else if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
+    {
+        Start_ForceOrbit(CAMERA_FORCE_DIR::BACK);
+    }
+    else if (m_pGameInstance->Key_Down(DIK_NUMPAD3))
+    {
+        Start_ForceOrbit(CAMERA_FORCE_DIR::NONE);
+    }
+
     if (!m_isActive)
         return;
 
@@ -92,7 +105,14 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
             if (m_iCameraType == ENUM_CLASS(CAMERATYPE::FREE))
                 Update_Free(fTimeDelta);
             else if (m_iCameraType == ENUM_CLASS(CAMERATYPE::PLAYER))
-                Update_Spring(fTimeDelta);
+            {
+
+                if(m_isForceOrbit)
+                    Update_ForceOrbit(fTimeDelta);
+                else
+                    Update_Spring(fTimeDelta);
+            }
+                
         }
 
         m_vShaking_BasePos = m_pTransformCom->Get_State(STATE::POSITION);
@@ -547,6 +567,102 @@ void CCamera_Compre::Apply_MoveOrbitYaw(_float fTimeDelta, _vector vTargetPosWS)
     float fYawDelta = -fSide * m_fOrbitYawSpeed * fTimeDelta;
 
     m_fYaw = WrapAngle(m_fYaw + fYawDelta);
+}
+
+void CCamera_Compre::SyncOrbitFromCurrentPose()
+{
+    if (!m_pObjMatrix || !m_pTransformCom)
+        return;
+
+    const _float fEyeOffsetY = 1.5f;
+
+    _vector vTargetPos = XMVectorSet(
+        m_pObjMatrix->_41,
+        m_pObjMatrix->_42 + fEyeOffsetY,
+        m_pObjMatrix->_43,
+        1.f
+    );
+
+    _vector vCamPos = m_pTransformCom->Get_State(STATE::POSITION);
+
+    // 카메라가 "타겟을 바라보는" 방향: 타겟 - 카메라
+    _vector vToTarget = XMVectorSubtract(vTargetPos, vCamPos);
+
+    _float fRadius = XMVectorGetX(XMVector3Length(vToTarget));
+    if (fRadius < 0.1f)
+        fRadius = max(m_fRadius, 1.f);
+
+    _vector vLook = XMVector3Normalize(vToTarget); // 이것이 카메라 Look
+    _float fX = XMVectorGetX(vLook);
+    _float fY = XMVectorGetY(vLook);
+    _float fZ = XMVectorGetZ(vLook);
+
+    _float yaw = atan2f(fZ, fX);
+    _float pitch = asinf(Clamp(fY, -1.f, 1.f));
+
+    m_fYaw = WrapAngle(yaw);
+    m_fPitch = Clamp(pitch, m_fPitchMin, m_fPitchMax);
+}
+
+void CCamera_Compre::Start_ForceOrbit(CAMERA_FORCE_DIR eForceDir)
+{
+    if (eForceDir == CAMERA_FORCE_DIR::NONE || !m_pObjMatrix)
+        return;
+
+    // 지금 실제 시점 기준으로 동기화 (순간이동 방지 핵심)
+    SyncOrbitFromCurrentPose();
+
+    m_eForceOrbit = eForceDir;
+    m_isForceOrbit = true;
+    m_fForceOrbitTime = 0.f;
+
+    m_fForceStartYaw = m_fYaw;
+    m_fForceStartPitch = m_fPitch;
+
+    // 캐릭터 정면 yaw
+    _vector vCharLook = XMVector3Normalize(
+        XMVectorSet(m_pObjMatrix->_31, 0.f, m_pObjMatrix->_33, 0.f));
+    float fCharYaw = atan2f(
+        XMVectorGetZ(vCharLook),
+        XMVectorGetX(vCharLook));
+
+    if (eForceDir == CAMERA_FORCE_DIR::BACK)
+    {
+        m_fForceTargetYaw = WrapAngle(fCharYaw);      // 뒤에서 보는 시점
+        m_fForceTargetPitch = m_fForceStartPitch;   // 필요하면 그대로 두거나 살짝 조정
+    }
+    else // FRONT
+    {
+        m_fForceTargetYaw = WrapAngle(fCharYaw + XM_PI); // 앞에서 보는 시점
+
+        // 여기: "플레이어 정면 보기 좋은" pitch로 유도
+        float targetPitch = XMConvertToRadians(-5.f); // 살짝 내려다보는 각도, 튜닝 가능
+        m_fForceTargetPitch = Clamp(targetPitch, m_fPitchMin, m_fPitchMax);
+    }
+}
+
+void CCamera_Compre::Update_ForceOrbit(_float fTimeDelta)
+{
+    m_fForceOrbitTime += fTimeDelta;
+    _float fRatio = Clamp(m_fForceOrbitTime / m_fForceOrbitDuration, 0.f, 1.f);
+
+    _float fSmooth = fRatio * fRatio * (3.f - 2.f * fRatio); // smoothstep
+
+    _float dyaw = DeltaAngle(m_fForceStartYaw, m_fForceTargetYaw);
+    m_fYaw = WrapAngle(m_fForceStartYaw + dyaw * fSmooth);
+
+    m_fPitch = m_fForceStartPitch +
+        (m_fForceTargetPitch - m_fForceStartPitch) * fSmooth;
+    m_fPitch = Clamp(m_fPitch, m_fPitchMin, m_fPitchMax);
+
+    // yaw/pitch만 손대고, 위치 계산은 기존 Spring/Cal_CamPos에 맡김
+    Spring(fTimeDelta);
+
+    if (fRatio >= 1.f)
+    {
+        m_isForceOrbit = false;
+        m_eForceOrbit = CAMERA_FORCE_DIR::NONE;
+    }
 }
 
 
