@@ -132,26 +132,31 @@ HRESULT CBladeNexus::Render()
         // 3 밑에 작은 날카로운
         // 4 밑에 큰 날카로운
         // 5 눈
-        if (5 == i)
-        {
+        //if (5 == i)
+        //{
             _bool isEmissive = { false };
             _bool isSpecular = { false };
+            _bool isMetalic = { false };
+            _bool isRoughness = { false };
 
-            _bool isSpecToEmmi = true;
+            // 0 == off, 1 == metal, 2 == rough, 3 == combined
+            _int iTest = 0;
 
             if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_EMISSIVE, 0)))
                 isEmissive = true;
             if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR, 0)))
                 isSpecular = true;
-            //if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_EMISSIVE, 0)))
-            //    isEmissive = true;
-            //if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_SPECULAR, 0)))
-            //    isSpecular = true;
+            if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_MetalicTexture", i, aiTextureType_METALNESS, 0)))
+                isMetalic = true;
+            if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_RoughnessTexture", i, aiTextureType_DIFFUSE_ROUGHNESS, 0)))
+                isRoughness = true;
 
             m_pShaderCom->Bind_RawValue("g_isEmissive", &isEmissive, sizeof(_bool));
             m_pShaderCom->Bind_RawValue("g_isSpecular", &isSpecular, sizeof(_bool));
-            m_pShaderCom->Bind_RawValue("g_isTest", &isSpecToEmmi, sizeof(_bool));
-        }
+            m_pShaderCom->Bind_RawValue("g_isMetalic", &isMetalic, sizeof(_bool));
+            m_pShaderCom->Bind_RawValue("g_isRoughness", &isRoughness, sizeof(_bool));
+            m_pShaderCom->Bind_RawValue("g_iTest", &iTest, sizeof(_int));
+        //}
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 

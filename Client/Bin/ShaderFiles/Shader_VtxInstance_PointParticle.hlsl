@@ -222,44 +222,28 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     vector vSourColor = float4(g_vSourceColor.xyz, 1.f);
     vector vFinalColor = vSourColor * vMask;
     
-    float vDestAlpha = max(max(vMask.r, vMask.g), vMask.b);
-    
-    vFinalColor.a = 1.f * vDestAlpha;
-    
+    vFinalColor.a = max(max(vMask.r, vMask.g), vMask.b);
+        
     if (g_MaskScrollSpeed)
         vFinalColor.a = vFinalColor.a * Mask_Scrolling(In.vLifeTime, In.vTexcoord);
-
+    
     //float fDecreaseAlpha = In.vLifeTime.x / In.vLifeTime.y;
     //float fDecreaseAlpha = GetAlphaFadeInOut(In.vLifeTime.x / In.vLifeTime.y);
-    float fDecreaseAlpha = 1.0f - abs((In.vLifeTime.x / In.vLifeTime.y) * 2.0f - 1.0f);
-    //float fDecreaseAlpha = 0.2;
+    
+    float fDecreaseAlpha = 1.0f - abs((In.vLifeTime.x / In.vLifeTime.y) * 2.0f - 1.0f); 
+                               
     if (g_IsDisolve == false) 
+        //vFinalColor.a = min(vFinalColor.a, fDecreaseAlpha);
         vFinalColor.a *= fDecreaseAlpha;
     else
         vFinalColor = Dissolve(vFinalColor, fDecreaseAlpha, In.vTexcoord);
     
     if (vFinalColor.a <= 0.f)
         discard;
+
+    //Out.vBackBufferColor = vFinalColor;
+    Out.vBackBufferColor = vFinalColor * (g_vSourceColor.a + 1);
     
-    Out.vBackBufferColor = vFinalColor;
-
-    //Out.vEmissiveColor = vFinalColor * 3.f;
-    //Out.vEmissiveColor.a = 1;
-
-    //if(g_IsEmissive)
-    //{
-    //    float fLuminance = Luminance(vFinalColor.rgb);
-    //
-    //    vector vEmissiveColor = 0.f;
-    //
-    //    if (fLuminance > 0.3f)
-    //    {
-    //        vEmissiveColor = vector(vFinalColor.rgb * 3.f, vFinalColor.a);
-    //    }
-    //
-    //    Out.vEmissiveColor = vEmissiveColor;
-    //}
-        
     return Out;
 }
 

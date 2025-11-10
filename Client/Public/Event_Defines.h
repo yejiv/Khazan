@@ -53,23 +53,23 @@ namespace Client {
 
 
 	struct EventBladeNexus {
-		XMFLOAT3 vPosition{};
+		XMFLOAT4 vPosition{};
 		bool isUnLock{ false };
 		bool isBNOpened{ false };
 	};
 
 	
 	struct EventChest {
-		XMFLOAT3 vPosition{};
-		XMFLOAT3 vPlayerPosition{};
+		XMFLOAT4 vPosition{};
+		XMFLOAT4 vPlayerPosition{};
 		BOX_ITEMS Items{};
 		bool isChestOpened{ false };
 	};
 
 	
 	struct EventTombStone {
-		XMFLOAT3 vPosition{};
-		XMFLOAT3 vPlayerPosition{};
+		XMFLOAT4 vPosition{};
+		XMFLOAT4 vPlayerPosition{};
 		bool isTSOpened{ false };
 	};
 
@@ -81,16 +81,14 @@ namespace Client {
 		INTERACTIVE_TYPE eInteractType{ INTERACTIVE_TYPE::END };	
 		EventBladeNexus BNEvent{};									
 		EventChest ChestEvent{};									
-		EventTombStone TSEvent{};									
+		EventTombStone TSEvent{};
 
 		void End_Event() { isEvent = false; }
 	};
 
-
 	struct EventBigChest {
 		XMFLOAT3 vPosition{};
 	};
-
 
 	struct EVENT_HUD_QUICKSLOT {
 		_bool isEquip;
@@ -99,22 +97,21 @@ namespace Client {
 		_int* iItemCount;
 	};
 
-
 	struct EVENT_ANNOUNCE_MAPNAME {
 		_wstring	wstrName;				
 		_int		iMapType;				
 		_float		fTime;					
-		_int		fFadeOutTime;			
+		_int		fFadeOutTime;
 		_bool		isDissovle;
 	};
 
-    //락온
+    //?�온
 	struct EVENT_LOCKON_VISIBLE {
 		const _float4* pTargetPos;
 		_bool isVisible;
 	};
     
-    //스킬 트리 오픈
+    //?�킬 ?�리 ?�픈
 	struct EVENT_SKILL_OPEN {};
 
 

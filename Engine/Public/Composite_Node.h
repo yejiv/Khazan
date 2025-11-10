@@ -12,9 +12,11 @@ protected:
 public:
     virtual BTNODESTATE         Tick(class CBlackBoard* BB) = 0;
     virtual void                Terminate(BTNODESTATE eState, class CBlackBoard* BB = nullptr) {};
-    virtual void                Abort() { Terminate(BTNODESTATE::FAILURE); };
+    virtual void                Abort(class CBlackBoard* BB) { Terminate(BTNODESTATE::FAILURE, BB); }
 
     void                        Add_Child(CBTNode* pChild);
+    vector<CBTNode*>            Get_Children() const { return m_Children; }
+
 
 protected:
     vector<CBTNode*>            m_Children;

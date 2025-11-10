@@ -12,7 +12,6 @@ float g_fRange;
 vector g_vLightDiffuse;
 vector g_vLightAmbient;
 vector g_vLightSpecular;
-bool g_isEnableToonShade;
 float g_fToonShadeLevel = { 3.f };
 
 // ===== Material =====
@@ -30,7 +29,6 @@ float g_Splits[4];
 matrix g_LightViewMatrices[4], g_LightProjMatrices[4];
 float2 g_vShadowMapSize;
 float g_fBias;
-bool g_isEnableShadow = { true };
 float g_fShadowIntensity;
 
 // ===== PCF =====
@@ -42,7 +40,6 @@ StructuredBuffer<float3> g_Kernels;
 uint g_iNumKernels;
 float g_fRadius = { 1.f };
 float g_fIntensity = { 1.f }, g_fContrast = { 1.f };
-bool g_isEnableSSAO = { true };
 matrix g_CameraViewMatrix, g_CameraProjMatrix;
 
 // ===== Blur =====
@@ -56,7 +53,6 @@ uint g_iFogMode;
 float g_fFogNear, g_fFogFar;
 float g_fFogDensity;
 float4 g_vFogColor = { 1.f, 1.f, 1.f, 1.f };
-bool g_isEnableFog;
 float g_fTimeDelta;
 bool g_isEnableNoise, g_isWorldFog;
 float2 g_vNoiseSpeed, g_vNoiseScale;
@@ -79,6 +75,12 @@ bool g_isEnableVignette;
 bool g_isEnableDistortion;
 float g_fPower, g_fSpeed, g_fTime, g_fAspect;
 float3 g_vCenter;
+
+// ===== Render Flags =====
+bool g_isEnableToonShade = { true };
+bool g_isEnableShadow = { true };
+bool g_isEnableSSAO = { true };
+bool g_isEnableFog = { true };
 
 struct VS_IN
 {

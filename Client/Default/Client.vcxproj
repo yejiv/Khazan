@@ -144,6 +144,8 @@
       <PrecompiledHeaderFile>ClientPch.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>ClientPch.h</ForcedIncludeFiles>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -226,6 +228,7 @@
     <ClInclude Include="..\Public\FSM_Yetuga.h" />
     <ClInclude Include="..\Public\Level_Test.h" />
     <ClInclude Include="..\public\Player_Manager.h" />
+    <ClInclude Include="..\Public\Sequence_HeinMach_Start.h" />
     <ClInclude Include="..\public\Skill_Condition_Panel.h" />
     <ClInclude Include="..\public\Skill_Gauge.h" />
     <ClInclude Include="..\public\Skill_Info.h" />
@@ -427,6 +430,7 @@
     <ClCompile Include="..\Private\FSM_Yetuga.cpp" />
     <ClCompile Include="..\Private\Level_Test.cpp" />
     <ClCompile Include="..\private\Player_Manager.cpp" />
+    <ClCompile Include="..\Private\Sequence_HeinMach_Start.cpp" />
     <ClCompile Include="..\private\Skill_Condition_Panel.cpp" />
     <ClCompile Include="..\private\Skill_Gauge.cpp" />
     <ClCompile Include="..\private\Skill_Info.cpp" />
