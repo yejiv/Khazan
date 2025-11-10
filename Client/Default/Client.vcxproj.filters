@@ -661,6 +661,15 @@
     <Filter Include="02.GameObject\UI\Skill_QuickSlot\List">
       <UniqueIdentifier>{559041ba-24b8-4d52-8bad-394da64a40b4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Announce\Result">
+      <UniqueIdentifier>{e36625db-9712-4143-9d23-dbf55a7dbdf4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Announce\Result\Symbol">
+      <UniqueIdentifier>{51192cfa-a1b9-406e-841d-cb6dfe031f0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Announce\Over">
+      <UniqueIdentifier>{ca322ead-5a4f-4014-b9d0-6ad88900be06}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1272,6 +1281,15 @@
     <ClInclude Include="..\public\Skill_QuickSlot_List.h">
       <Filter>02.GameObject\UI\Skill_QuickSlot\List</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\UI_Announce_Result.h">
+      <Filter>02.GameObject\UI\Announce\Result</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Announce_Symbol.h">
+      <Filter>02.GameObject\UI\Announce\Result\Symbol</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Announce_Over.h">
+      <Filter>02.GameObject\UI\Announce\Over</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1862,6 +1880,15 @@
     </ClCompile>
     <ClCompile Include="..\private\Skill_QuickSlot_List.cpp">
       <Filter>02.GameObject\UI\Skill_QuickSlot\List</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Announce_Result.cpp">
+      <Filter>02.GameObject\UI\Announce\Result</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Announce_Symbol.cpp">
+      <Filter>02.GameObject\UI\Announce\Result\Symbol</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Announce_Over.cpp">
+      <Filter>02.GameObject\UI\Announce\Over</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
