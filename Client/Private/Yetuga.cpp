@@ -60,6 +60,8 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
     if (nullptr == m_pController)
         return E_FAIL;
 
+    m_fRecoveryPerSec = 5.f;
+
     return S_OK;
 }
 
@@ -139,21 +141,21 @@ void CYetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _f
 
         _vector vLook = m_pTransformCom->Get_State(STATE::LOOK);
         _float fDot = XMVectorGetX(XMVector3Dot(vLook, vHitDir));
-
+        _vector vUp = XMVector3Cross(vLook, vHitDir);
+        _float vUpY = XMVectorGetY(vUp);
         DIRECTION_INFO DirInfo{};
 
-        if (fDot > 0.f)
+        if (fDot >= 0.f)
         {
             DirInfo.Add_Flag(DirInfo.F);
         }
-        else
+        else if(fDot < 0.f)
         {
             DirInfo.Add_Flag(DirInfo.B);
         }
 
-        _vector vUp = XMVector3Cross(vLook, vHitDir);
-        _float vUpY = XMVectorGetY(vUp);
-        if (vUpY > 0.f)
+      
+        else if (vUpY >= 0.f)
         {
             DirInfo.Add_Flag(DirInfo.R);
         }
@@ -165,7 +167,7 @@ void CYetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _f
 
         m_pGameInstance->Get_BlackBoard()->Set_Value<_uint>(m_strName, "HitDirection", DirInfo.iDirFlag);
         DAMAGEINFO* pDamageInfo = static_cast<DAMAGEINFO*>(pDesc->pInfo);
-        Take_Damage(pDamageInfo->fDamage, pDamageInfo->eHitreaction, 2.f, pDesc->pGameObject);
+        Take_Damage(10, HITREACTION::KNOCKBACK_NORMAL , 0.1f, pDesc->pGameObject);
     }
    
     

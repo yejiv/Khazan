@@ -18,7 +18,6 @@ void CAS_Hit_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     HITREACTION eHitreaction = static_cast<HITREACTION>(m_pGameInstance->Get_BlackBoard()->Get_Value<_uint>(pYetuga->Get_Name(), "DamageType"));
     DIRECTION_INFO Info{};
-    //Info.iDirFlag = m_pGameInstance->Get_BlackBoard()->Get_Value<_uint>("Yetuga", "TargetDirection");
     Info.iDirFlag = m_pGameInstance->Get_BlackBoard()->Get_Value<_uint>("Yetuga", "HitDirection");
 
     HIT_DIR eHitDir = Convert_HitFlag(Info);

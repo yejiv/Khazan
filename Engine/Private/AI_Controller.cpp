@@ -51,6 +51,14 @@ void CAI_Controller::AI_React_Collision(COLLISION_DESC* pDesc, _uint iCollisionL
 
 }
 
+void CAI_Controller::AI_Terminate_All()
+{
+    if (nullptr == m_pBT)
+        return;
+
+    m_pBT->Terminate_AllNode(m_pBT->Get_Root());
+}
+
 HRESULT CAI_Controller::Initialize(CGameObject* pOwner, string FileName)
 {
     string BasePath = "../../Client/Bin/Data/Monster/";

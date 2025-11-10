@@ -111,8 +111,7 @@ void CEffect_Manager::Update_Effect_Position(_uint iLayerLevelIndex, const _wstr
 void CEffect_Manager::Update_Effect_World(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector Quaternion, _gvector Position)
 {
 	auto Layer = Find_Effect_Layer(iLayerLevelIndex, strPrototypeTag);
-	(*Layer)[ID]->UpdateWorldMatrix(Quaternion, Position);
-
+	(*Layer)[ID]->UpdateWorldMatrix(Quaternion, Position); 
 }
 
 void CEffect_Manager::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID)
