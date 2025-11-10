@@ -32,7 +32,7 @@ public:
 
 	virtual HRESULT				Ready_Perception(class CGameObject* pOwner, const AIPERCEPTION_DATA& Desc);
 	virtual HRESULT				Ready_BlackBoard(class CGameObject* pOwner);
-	virtual HRESULT				Ready_BehaviorTree();
+	virtual HRESULT				Ready_BehaviorTree(class CGameObject* pOwner);
 
 public:
 	virtual PERCEPTIONCALLBACK	GetCallBackPerception(class CGameObject* pOwner, const string& name);

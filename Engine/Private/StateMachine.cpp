@@ -65,6 +65,7 @@ HRESULT CStateMachine::Add_State(_uint iStateIndex, CAI_State* pState)
         return E_FAIL;
 
     m_States.emplace(iStateIndex, pState);
+    Safe_AddRef(pState);
     return S_OK;
 
 }

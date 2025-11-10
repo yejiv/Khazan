@@ -10,6 +10,8 @@
 #include "Condition_Node.h"
 #include "Action_Node.h"
 #include "Wait_Node.h"
+#include "Composite_Node.h"
+#include "Decorator_Node.h"
 
 
 typedef function<_bool(class CBlackBoard*)> CONDITION;

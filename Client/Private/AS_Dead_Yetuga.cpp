@@ -7,6 +7,7 @@
 #include "Body_Yetuga.h"
 #include "ClientInstance.h"
 
+
 CAS_Dead_Yetuga::CAS_Dead_Yetuga()
 {
 }
@@ -26,8 +27,9 @@ void CAS_Dead_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fT
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
 
     if (pModel->Play_Animation(fTimeDelta))
-    {
-
+    {  
+      
+        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isDeadFinished", true);
     }
 
 }

@@ -2,6 +2,8 @@
 
 CSelector_Node::CSelector_Node()
 {
+    m_eNodeType = NODETYPE::COMPOSITE;
+
 }
 
 BTNODESTATE CSelector_Node::Tick(CBlackBoard* BB)
@@ -50,12 +52,13 @@ void CSelector_Node::Terminate(BTNODESTATE eState, CBlackBoard* BB)
 	m_iCurrentIndex = 0;
 }
 
-void CSelector_Node::Abort()
+void CSelector_Node::Abort(CBlackBoard* BB)
 {
-	if (m_iCurrentIndex < m_Children.size())
-		m_Children[m_iCurrentIndex]->Abort();
-	m_iCurrentIndex = 0;
+    if (m_iCurrentIndex < m_Children.size())
+        m_Children[m_iCurrentIndex]->Abort(BB);
+    m_iCurrentIndex = 0;
 }
+
 
 CSelector_Node* CSelector_Node::Create()
 {
