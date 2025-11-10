@@ -714,10 +714,10 @@ HRESULT CLoader::Loading_For_Viper_Level()
 		return Loading_For_Viper_GameObject();
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-		CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+		return Loading_Prototype_MapObject_From_DAT(TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER);
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-		CHECK_FAILED(Loading_Prototype_MapObject_Inst_From_DAT(TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+        return Loading_Prototype_MapObject_Inst_From_DAT(TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER);
 		}));
 
 	return S_OK;
