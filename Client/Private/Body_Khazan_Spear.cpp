@@ -61,16 +61,15 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
         return E_FAIL;
 
 
-#ifdef _DEBUG
-    m_pGameInstance->AddWidget(TEXT("Client"), [this]() {
-
-        ImGui::Begin("Sample Model State");
-
-
-        m_pModelCom->Debug_RanderState();
-        ImGui::End();
-        });
-#endif
+//#ifdef _DEBUG
+//	m_pGameInstance->AddWidget(TEXT("Client"), [this]() {
+//
+//		ImGui::Begin("Sample Model State");
+//        if(m_pModelCom)
+//		    m_pModelCom->Debug_RanderState();
+//		ImGui::End();
+//		});
+//#endif
 
     return S_OK;
 }

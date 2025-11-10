@@ -73,7 +73,7 @@ namespace Client {
 		bool isTSOpened{ false };
 	};
 
-	
+    //상호작용 오브젝트 어떤 종류인지 받아오는 이벤트 구조체(오브젝트->플레이어)
 	struct EventInteractType {
 		enum EVENT_STATE { BEGIN, END, NONE };						
 		EVENT_STATE eState = { EVENT_STATE::NONE };					
