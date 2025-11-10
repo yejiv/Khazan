@@ -171,6 +171,10 @@ private:
 	_float						m_fEventTimeAcc = { 0.f };
 	_ushort						m_sNextItem = { 0 };
 
+    _float4                     m_vStartPos_Event = {};
+    _float                      m_fLerpTime_Event = { 0.f };
+    _bool                       m_isInteractEventSetting = { false };
+
 private:
 	void						Subscribe_Events();
 	void						Event_Interact_Object(_float fTimeDelta);

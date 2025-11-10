@@ -34,6 +34,16 @@ namespace Client
 
 	enum class HITREACTION { NONE, GROGGY, KNOCKBACK_WEAK, KNOCKBACK_NORMAL, KNOCKBACK_STRONG, PARRY, GRAB, END };
 
+
+    typedef struct tagDamageInfo 
+    {
+        _float          fDamage = {};
+        HITREACTION     eHitreaction = {};
+
+    }DAMAGEINFO;
+    
+
+
 }
 
 extern HWND g_hWnd;

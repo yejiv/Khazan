@@ -41,7 +41,7 @@ HRESULT CSkill_Slot_Panel::Setting_Slot(_int iTapIndex, _int iPanelIndex)
 				SkillDesc.vLocalPos = { -105.f + (Skill.iSlotX * 70.f), -175.f + (Skill.iLevel * 80.f) };
 			SkillDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
 			SkillDesc.szName = "Skill_Slot";
-			SkillDesc.fDepth = 3;
+			SkillDesc.fDepth = 4.f;
 			SkillDesc.iSkillIndex = ID;
 			CSkill_Slot* pSkill = static_cast<CSkill_Slot*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, m_iLevel, TEXT("Prototype_GameObject_UI_Skill"), &SkillDesc));
 			m_Children.push_back(pSkill);

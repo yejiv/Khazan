@@ -4,6 +4,7 @@ CAction_Node::CAction_Node(ACTION Action, TERMINATE Terminate)
     :m_Action{ Action }
     , m_Terminate{Terminate}
 {
+    m_eNodeType = NODETYPE::LEAF;
 }
 
 BTNODESTATE CAction_Node::Tick(CBlackBoard* BB)
@@ -27,13 +28,14 @@ void CAction_Node::Terminate(BTNODESTATE eState, CBlackBoard* BB)
         return m_Terminate(BB, eState);
 }
 
-
-void CAction_Node::Abort()
+void CAction_Node::Abort(CBlackBoard* BB)
 {
     // 강제 중단
     if (m_Terminate)
-        m_Terminate(nullptr, BTNODESTATE::FAILURE);
+        m_Terminate(BB, BTNODESTATE::FAILURE);
 }
+
+
 
 CAction_Node* CAction_Node::Create(ACTION Action, TERMINATE Terminate)
 {

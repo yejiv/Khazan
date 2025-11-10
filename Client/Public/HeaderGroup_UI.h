@@ -32,6 +32,7 @@
 #include "Cursor.h"
 #include "Item_Slot.h"
 #include "Skill_Slot.h"
+#include "Skill_QuickSlot.h"
 
 //HUD  관련
 #include "BossHp.h"

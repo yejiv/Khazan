@@ -198,8 +198,12 @@ HRESULT CSkill_Info::Update_Switch(void* pArg)
     else
     {
         m_pConditionPanel->Update_Visible(true);
-
+        m_pConditionPanel->Setting_Condition(pDesc->isOnPreSkill, CClientInstance::GetInstance()->Get_Data<SKILL_DB>(pSkillData->iPreSkill)->wstrName);
     }
+
+    m_pInfo_Tex->Setting_Tex(m_iSkillIndex);
+
+    
     return S_OK;
 }
 
@@ -273,9 +277,11 @@ void CSkill_Info::Free()
    
    Safe_Release(m_pSKillName);
    Safe_Release(m_pSkillGaugeText);
+
    Safe_Release(m_pPointIcon);
    Safe_Release(m_pPointText);
    Safe_Release(m_pGetIcon);
+
    Safe_Release(m_pInfoPanel);
    Safe_Release(m_pConditionPanel);
    Safe_Release(m_pInfo_Tex);

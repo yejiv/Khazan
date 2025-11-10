@@ -1728,6 +1728,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 						{
 							CTrigger* pTrigger = static_cast<CTrigger*>(m_pFixPropObj);
 							m_strFixTriggerKey = m_strTriggerKey = pTrigger->Get_TriggerKey();
+                            memcpy(m_szFixTriggerKey, m_strFixTriggerKey.c_str(), MAX_PATH);
 						}
 
 						m_isFixInteractObjectWindow = true;
