@@ -230,6 +230,8 @@ HRESULT CBladeNexus::Bind_Materials(_uint iMeshIndex)
     _bool isNormal = { false };
     _bool isEmissive = { false };
     _bool isSpecular = { false };
+    _bool isMetalic = { false };
+    _bool isRoughness = { false };
 
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0)))
         isDiffuse = true;
@@ -239,14 +241,17 @@ HRESULT CBladeNexus::Bind_Materials(_uint iMeshIndex)
         isEmissive = true;
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
         isSpecular = true;
-
-    isSpecular = false;
-    isEmissive = false;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_MetalicTexture", iMeshIndex, aiTextureType_METALNESS, 0)))
+        isMetalic = true;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_RoughnessTexture", iMeshIndex, aiTextureType_DIFFUSE_ROUGHNESS, 0)))
+        isRoughness = true;
 
     m_pShaderCom->Bind_RawValue("g_isDiffuse", &isDiffuse, sizeof(_bool));
     m_pShaderCom->Bind_RawValue("g_isNormal", &isNormal, sizeof(_bool));
     m_pShaderCom->Bind_RawValue("g_isEmissive", &isEmissive, sizeof(_bool));
     m_pShaderCom->Bind_RawValue("g_isSpecular", &isSpecular, sizeof(_bool));
+    m_pShaderCom->Bind_RawValue("g_isMetalic", &isMetalic, sizeof(_bool));
+    m_pShaderCom->Bind_RawValue("g_isRoughness", &isRoughness, sizeof(_bool));
 
     return S_OK;
 }

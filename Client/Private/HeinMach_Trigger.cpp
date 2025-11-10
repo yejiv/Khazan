@@ -298,6 +298,41 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Sky"), 1))->Set_CloudDesc(m_Cloud_Dawn);
         }
 #pragma endregion
+        else if (m_strTriggerKey == "Talk_03")
+        {
+
+            m_isDead = true;
+        }
+        else if (m_strTriggerKey == "Talk_04")
+        {
+
+            m_isDead = true;
+        }
+        else if (m_strTriggerKey == "Talk_05")
+        {
+
+            m_isDead = true;
+        }
+        else if (m_strTriggerKey == "Talk_06")
+        {
+
+            m_isDead = true;
+        }
+        else if (m_strTriggerKey == "Talk_07")
+        {
+
+            m_isDead = true;
+        }
+        else if (m_strTriggerKey == "Talk_08")
+        {
+
+            m_isDead = true;
+        }
+        else if (m_strTriggerKey == "Talk_09")
+        {
+
+            m_isDead = true;
+        }
     }
     
 }
