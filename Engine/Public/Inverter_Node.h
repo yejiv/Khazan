@@ -12,7 +12,8 @@ private:
 public:
 	virtual BTNODESTATE		Tick(class CBlackBoard* BB) override;
 	virtual void			Terminate(BTNODESTATE eState, class CBlackBoard* BB = nullptr) override;
-	virtual void			Abort() override;
+    virtual void            Abort(class CBlackBoard* BB) override;
+
 
 public:
 	static CInverter_Node*	Create();

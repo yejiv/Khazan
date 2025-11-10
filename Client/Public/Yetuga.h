@@ -44,7 +44,7 @@ private:
 
 	// JumpGrab
 	void							Grab_Check_Begin(const _char* BoneName);
-	void							Grab_Check_End();
+	void							Grab_Check_End(const _char* pBoneName);
 
 	// Armageddon
 	void							Pick_Rock();

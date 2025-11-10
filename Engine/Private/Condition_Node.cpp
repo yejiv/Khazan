@@ -3,6 +3,7 @@
 CCondition_Node::CCondition_Node(CONDITION Condition)
     :m_Condition{ Condition }
 {
+    m_eNodeType = NODETYPE::LEAF;
 }
 
 BTNODESTATE CCondition_Node::Tick(CBlackBoard* BB)

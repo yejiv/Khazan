@@ -21,7 +21,7 @@ public:
 
 	virtual HRESULT				Ready_Perception(class CGameObject* pOwner, const AIPERCEPTION_DATA& Desc) override;
 	virtual HRESULT				Ready_BlackBoard(class CGameObject* pOwner) override;
-	HRESULT						Ready_BehaviorTree();
+	HRESULT						Ready_BehaviorTree(class CGameObject* pOwner) override;
 
 	virtual CONDITION			GetCallbackCondition(class CGameObject* pOwner, const string& name);
 	virtual ACTION				GetCallbackAction(CGameObject* pOwner, const string& name);

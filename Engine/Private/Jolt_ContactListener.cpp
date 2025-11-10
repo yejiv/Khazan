@@ -22,7 +22,7 @@ ValidateResult CJolt_ContactListener::OnContactValidate(const Body& inBody1, con
 		return ValidateResult::RejectContact;
 	}
 	
-	return ValidateResult::AcceptAllContactsForThisBodyPair;
+    return ValidateResult();
 }
 
 void CJolt_ContactListener::OnContactAdded(const Body& inBody1, const Body& inBody2, const ContactManifold& inManifold, ContactSettings& ioSettings)

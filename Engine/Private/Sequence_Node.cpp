@@ -2,6 +2,7 @@
 
 CSequence_Node::CSequence_Node()
 {
+    m_eNodeType = NODETYPE::COMPOSITE;
 }
 
 BTNODESTATE CSequence_Node::Tick(CBlackBoard* BB)
@@ -47,12 +48,13 @@ void CSequence_Node::Terminate(BTNODESTATE eState, CBlackBoard* BB)
 	m_iCurrentIndex = 0;
 }
 
-void CSequence_Node::Abort()
+void CSequence_Node::Abort(CBlackBoard* BB)
 {
-	for (auto& Child : m_Children)
-		Child->Abort();
-	m_iCurrentIndex = 0;
+    for (auto& Child : m_Children)
+        Child->Abort(BB);
+    m_iCurrentIndex = 0;
 }
+
 
 
 CSequence_Node* CSequence_Node::Create()

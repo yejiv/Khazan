@@ -5,7 +5,7 @@ CWait_Node::CWait_Node(_float fWaitTime)
     : m_fWaitTime{fWaitTime}
     , m_fElapsed{ 0.f }
 {
-
+    m_eNodeType = NODETYPE::LEAF;
 }
 
 BTNODESTATE CWait_Node::Tick(CBlackBoard* BB)
@@ -37,10 +37,10 @@ void CWait_Node::Terminate(BTNODESTATE eState, CBlackBoard* BB)
 
 }
 
-void CWait_Node::Abort()
+void CWait_Node::Abort(CBlackBoard* BB)
 {
-
 }
+
 
 CWait_Node* CWait_Node::Create(const string& strName, const string& strTag, _float fWaitTime)
 {

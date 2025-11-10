@@ -93,6 +93,7 @@ HRESULT CBody_Yetuga::Initialize_Clone(void* pArg)
     
     m_pLH_BodyCom->Collision_Active(false);
     m_pRH_BodyCom->Collision_Active(false);
+    m_pBack_BodyCom->Collision_Active(false);
 
     return S_OK;
 }
@@ -107,7 +108,6 @@ void CBody_Yetuga::Update(_float fTimeDelta)
 
     if (m_isOnAttackCollision)
     {
-
         m_pLH_BodyCom->Collision_Active(true);
         m_pRH_BodyCom->Collision_Active(true);
         Carculate_Matrix(fTimeDelta);
@@ -119,6 +119,16 @@ void CBody_Yetuga::Update(_float fTimeDelta)
     {
         m_pLH_BodyCom->Collision_Active(false);
         m_pRH_BodyCom->Collision_Active(false);
+    }
+
+    if (m_isOnAttackCollision_Back)
+    {
+        m_pBack_BodyCom->Collision_Active(true);
+        Carculate_BakckMatrix(fTimeDelta);
+    }
+    else
+    {
+        m_pBack_BodyCom->Collision_Active(false);
 #ifdef _DEBUG
         m_pGameInstance->Remove_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
 #endif
@@ -237,6 +247,21 @@ void CBody_Yetuga::Carculate_Matrix(_float fTimeDelta)
     m_LeftHandMatrix._43 = vOutPos.m128_f32[2];
     m_LeftHandMatrix._44 = vOutPos.m128_f32[3];
 
+
+}
+
+void CBody_Yetuga::Carculate_BakckMatrix(_float fTimeDelta)
+{
+    _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix("FX_Body_ExpGained");
+    _vector vOutQuat, vOutPos;
+    XMStoreFloat4x4(&m_BackMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
+    m_pBack_BodyCom->Sync_Update(XMLoadFloat4x4(&m_BackMatrix));
+    m_pBack_BodyCom->Update(fTimeDelta, XMLoadFloat4x4(&m_BackMatrix), vOutQuat, vOutPos);
+
+    m_BackMatrix._41 = vOutPos.m128_f32[0];
+    m_BackMatrix._42 = vOutPos.m128_f32[1];
+    m_BackMatrix._43 = vOutPos.m128_f32[2];
+    m_BackMatrix._44 = vOutPos.m128_f32[3];
 }
 
 HRESULT CBody_Yetuga::Ready_Colliders()
@@ -246,9 +271,9 @@ HRESULT CBody_Yetuga::Ready_Colliders()
     // ������
     BodyDesc.fRadius = 2.f;
     BodyDesc.eMotion = EMotionType::Kinematic;
-    BodyDesc.eQuality = EMotionQuality::Discrete; // �⺻ ���
+    BodyDesc.eQuality = EMotionQuality::Discrete; 
     BodyDesc.eShapeType = SHAPE::SPHERE;
-    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK); // ���Ŀ� Enum Monster attack ���� �Ҽ���
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK); 
     _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix("Weapon_R");
     XMStoreFloat4x4(&m_RightHandMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
     _vector vScale, vQuat, vTrans;
@@ -265,18 +290,16 @@ HRESULT CBody_Yetuga::Ready_Colliders()
 
     BodyDesc.fRadius = 2.f;
     BodyDesc.eMotion = EMotionType::Kinematic;
-    BodyDesc.eQuality = EMotionQuality::Discrete; // �⺻ ���
+    BodyDesc.eQuality = EMotionQuality::Discrete; 
     BodyDesc.eShapeType = SHAPE::SPHERE;
     BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
     BoneMatrix = *m_pModelCom->Get_BoneMatrix("Weapon_L");
     XMStoreFloat4x4(&m_RightHandMatrix, m_pTransformCom->Get_WorldMatrix() * 
         XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
-   /* _vector vScale, vQuat, vTrans;*/
-    // �ɰ���.
+  
     XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_RightHandMatrix));
-    // ��ġ��
+
     BodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
-    // ���ʹϾ�
     BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
 
     BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
@@ -287,36 +310,32 @@ HRESULT CBody_Yetuga::Ready_Colliders()
         TEXT("Com_Body_LH"), reinterpret_cast<CComponent**>(&m_pLH_BodyCom), &BodyDesc)))
         return E_FAIL;
 
-   
+    BodyDesc.fRadius = 3.f;
+    BodyDesc.eMotion = EMotionType::Kinematic;
+    BodyDesc.eQuality = EMotionQuality::Discrete; 
+    BodyDesc.eShapeType = SHAPE::SPHERE;
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+    BoneMatrix = *m_pModelCom->Get_BoneMatrix("FX_Body_ExpGained");
+    XMStoreFloat4x4(&m_BackMatrix, m_pTransformCom->Get_WorldMatrix() *
+        XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
 
+    XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_BackMatrix));
 
- //   // ��
- //   BodyDesc.fRadius = 15.f;
- //   BodyDesc.eMotion = EMotionType::Kinematic;
- //   BodyDesc.eQuality = EMotionQuality::Discrete; // �⺻ ���
- //   BodyDesc.eShapeType = SHAPE::SPHERE;
- //   BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER); // ���Ŀ� Enum Monster attack ���� �Ҽ���
- ///*   vPosition.x = m_pModelCom->Get_BoneMatrix("B_Spine2_12_01_S")->m[3][0];
- //   vPosition.y = m_pModelCom->Get_BoneMatrix("B_Spine2_12_01_S")->m[3][1];
- //   vPosition.z = m_pModelCom->Get_BoneMatrix("B_Spine2_12_01_S")->m[3][2];*/
- //   vPosition = Get_BonePoint("B_Spine2_12_01_S");
- //   XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
- //   BodyDesc.vPos = vPosition;
- //   BodyDesc.vQuat = vQuat;
- //   BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
- //   m_tCollisionDesc.pGameObject = this;
- //   BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    BodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
+    BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
 
- //   if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
- //       TEXT("Com_Body_Back"), reinterpret_cast<CComponent**>(&m_pBack_BodyCom), &BodyDesc)))
- //       return E_FAIL;
+    BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+    m_tCollisionDesc.pGameObject = this;
+    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    BodyDesc.bIsTrigger = true;
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+        TEXT("Com_Body_Back"), reinterpret_cast<CComponent**>(&m_pBack_BodyCom), &BodyDesc)))
+        return E_FAIL;
+ 
 
 
     return S_OK;
 }
-
-
-
 
 
 CBody_Yetuga* CBody_Yetuga::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

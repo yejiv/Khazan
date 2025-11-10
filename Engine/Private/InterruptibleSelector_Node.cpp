@@ -3,6 +3,7 @@
 CInterruptibleSelector_Node::CInterruptibleSelector_Node(INTERRUPTCONDITION Func)
 	:m_pInterruptCondition{Func}
 {
+    m_eNodeType = NODETYPE::COMPOSITE;
 }
 
 BTNODESTATE CInterruptibleSelector_Node::Tick(CBlackBoard* BB)
@@ -10,7 +11,7 @@ BTNODESTATE CInterruptibleSelector_Node::Tick(CBlackBoard* BB)
     if (m_pInterruptCondition && m_pInterruptCondition(BB))
     {
         if (m_iCurrentIndex < m_Children.size())
-            m_Children[m_iCurrentIndex]->Abort();
+            m_Children[m_iCurrentIndex]->Abort(BB);
 
         m_iCurrentIndex = 0;
         return BTNODESTATE::FAILURE; // 인터룹트 발생시 현재 노드는 FAIL처리한다.
@@ -64,13 +65,12 @@ void CInterruptibleSelector_Node::Terminate(BTNODESTATE eState, CBlackBoard* BB)
 
 }
 
-void CInterruptibleSelector_Node::Abort()
+void CInterruptibleSelector_Node::Abort(CBlackBoard* BB)
 {
-	if (m_iCurrentIndex < m_Children.size())
-		m_Children[m_iCurrentIndex]->Abort();
+    if (m_iCurrentIndex < m_Children.size())
+        m_Children[m_iCurrentIndex]->Terminate(BTNODESTATE::FAILURE, BB);
 
-	m_iCurrentIndex = 0;
-
+    m_iCurrentIndex = 0;
 }
 
 CInterruptibleSelector_Node* CInterruptibleSelector_Node::Create(INTERRUPTCONDITION Func)
