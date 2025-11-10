@@ -144,6 +144,8 @@
       <PrecompiledHeaderFile>ClientPch.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>ClientPch.h</ForcedIncludeFiles>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
