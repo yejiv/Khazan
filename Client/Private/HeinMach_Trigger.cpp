@@ -272,6 +272,9 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             Desc.isUseNoise = false;
             m_pGameInstance->Start_FogTransition(5.f, Desc);
 
+            // 그림자 보간 추가
+            m_pGameInstance->Start_ShadowIntensityTransition(5.f, 1.f);
+
             static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Sky"), 0))->Set_SkyDesc(m_Sky_Dawn);
             static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Sky"), 1))->Set_CloudDesc(m_Cloud_Dawn);
         }
@@ -299,6 +302,9 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             Desc.iNoiseIndex = 8;
             m_pGameInstance->Start_FogTransition(7.f, Desc);
 
+            // 그림자 보간 추가
+            m_pGameInstance->Start_ShadowIntensityTransition(7.f, 0.6f);
+
             static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Sky"), 0))->Set_SkyDesc(m_Sky_Day);
             static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Sky"), 1))->Set_CloudDesc(m_Cloud_Day);
         }
@@ -312,6 +318,9 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             Desc.isUseHeight = false;
             Desc.isUseNoise = false;
             m_pGameInstance->Start_FogTransition(5.f, Desc);
+
+            // 그림자 보간 추가
+            m_pGameInstance->Start_ShadowIntensityTransition(5.f, 0.6f);
         }
         else if (m_strTriggerKey == "CaveMidEntry_Rev")
         {
@@ -332,6 +341,9 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             Desc.isUseHeight = false;
             Desc.isUseNoise = false;
             m_pGameInstance->Start_FogTransition(2.f, Desc);
+
+            // 그림자 보간 추가
+            m_pGameInstance->Start_ShadowIntensityTransition(2.f, 1.f);
 
             static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Sky"), 0))->Set_SkyDesc(m_Sky_Dawn);
             static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Sky"), 1))->Set_CloudDesc(m_Cloud_Dawn);
