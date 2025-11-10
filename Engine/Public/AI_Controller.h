@@ -18,7 +18,7 @@ public:
 	void						AI_MoveTo(class CGameObject* pOwner, class CGameObject* pTarget, _float fSpeedPerSec ,_float fLimit, _float fTimeDelta);
 	void						AI_ApplyDamage(class CGameObject* pAttacker, _float fDamage, _uint iHitreaction, _float fValidTime = 0.f);
 	void						AI_React_Collision(COLLISION_DESC* pDesc, _uint iCollisionLayer, class CGameObject* pOwner);
-
+    void                        AI_Terminate_All();
 
 public:
 	virtual HRESULT				Initialize(class CGameObject* pOwner, string FileName);
