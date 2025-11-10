@@ -268,7 +268,7 @@ HRESULT CCamera_Compre::Spring(_float fTimeDelta)
 
 HRESULT CCamera_Compre::RayCast(_float fTimeDelta)
 {
-    _vector vPos = m_pTransformCom->Get_State(STATE::POSITION) - XMVectorSetW(XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK)), 0.f) * 1.5f;
+    _vector vPos = m_pTransformCom->Get_State(STATE::POSITION) - XMVectorSetW(XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK)), 0.f);
     _vector vTargetPos = XMVectorSet(m_pObjMatrix->_41, m_pObjMatrix->_42 + 1.5f, m_pObjMatrix->_43, 1.f);
 
     _float fFraction;
