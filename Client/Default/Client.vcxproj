@@ -164,10 +164,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\AI_Controller_Gomdol.h" />
+    <ClInclude Include="..\Public\AI_Controller_Imp_Range.h" />
     <ClInclude Include="..\Public\AI_Controller_Yetuga.h" />
     <ClInclude Include="..\public\Amount.h" />
     <ClInclude Include="..\public\Amount_Panel.h" />
     <ClInclude Include="..\Public\AS_Amageddon_Yetuga.h" />
+    <ClInclude Include="..\Public\AS_Attack_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_Dead_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Dodge_Yetuga.h" />
     <ClInclude Include="..\Public\AS_FrontAttack_Gomdol.h" />
@@ -175,14 +177,17 @@
     <ClInclude Include="..\Public\AS_Hit_Yetuga.h" />
     <ClInclude Include="..\Public\AS_IceBreath_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Idle_Gomdol.h" />
+    <ClInclude Include="..\Public\AS_Idle_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_JumpAttack_Yetuga.h" />
     <ClInclude Include="..\Public\AS_JumpGrab_Yetuga.h" />
     <ClInclude Include="..\Public\AS_LieDown_Yetuga.h" />
     <ClInclude Include="..\Public\AS_LockOn_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Move_Gomdol.h" />
+    <ClInclude Include="..\Public\AS_Move_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_RightHand_5Hit_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Rush_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Sleep_Gomdol.h" />
+    <ClInclude Include="..\Public\AS_Sleep_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_Smash_Yetuga.h" />
     <ClInclude Include="..\Public\AS_ThrowBall_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Turn_Yetuga.h" />
@@ -191,6 +196,7 @@
     <ClInclude Include="..\Public\BigChest.h" />
     <ClInclude Include="..\public\BladeNexus_List.h" />
     <ClInclude Include="..\Public\Body_Gomdol.h" />
+    <ClInclude Include="..\Public\Body_Imp_Range.h" />
     <ClInclude Include="..\Public\Body_Khazan_Sample.h" />
     <ClInclude Include="..\Public\BladeNexus.h" />
     <ClInclude Include="..\Public\Body_Khazan_Spear.h" />
@@ -225,7 +231,9 @@
     <ClInclude Include="..\public\Equip_Slot.h" />
     <ClInclude Include="..\Public\Event_Defines.h" />
     <ClInclude Include="..\Public\FSM_Gomdol.h" />
+    <ClInclude Include="..\Public\FSM_Imp_Range.h" />
     <ClInclude Include="..\Public\FSM_Yetuga.h" />
+    <ClInclude Include="..\Public\Imp_Range.h" />
     <ClInclude Include="..\Public\Level_Test.h" />
     <ClInclude Include="..\public\Player_Manager.h" />
     <ClInclude Include="..\Public\Sequence_HeinMach_Start.h" />
@@ -370,10 +378,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\AI_Controller_Gomdol.cpp" />
+    <ClCompile Include="..\Private\AI_Controller_Imp_Range.cpp" />
     <ClCompile Include="..\Private\AI_Controller_Yetuga.cpp" />
     <ClCompile Include="..\private\Amount.cpp" />
     <ClCompile Include="..\private\Amount_Panel.cpp" />
     <ClCompile Include="..\Private\AS_Amageddon_Yetuga.cpp" />
+    <ClCompile Include="..\Private\AS_Attack_Imp_Range.cpp" />
     <ClCompile Include="..\Private\AS_Dead_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Dodge_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_FrontAttack_Gomdol.cpp" />
@@ -381,14 +391,17 @@
     <ClCompile Include="..\Private\AS_Hit_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_IceBreath_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Idle_Gomdol.cpp" />
+    <ClCompile Include="..\Private\AS_Idle_Imp_Range.cpp" />
     <ClCompile Include="..\Private\AS_JumpAttack_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_JumpGrab_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_LieDown_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_LockOn_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Move_Gomdol.cpp" />
+    <ClCompile Include="..\Private\AS_Move_Imp_Range.cpp" />
     <ClCompile Include="..\Private\AS_RightHand_5Hit_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Rush_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Sleep_Gomdol.cpp" />
+    <ClCompile Include="..\Private\AS_Sleep_Imp_Range.cpp" />
     <ClCompile Include="..\Private\AS_Smash_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_ThrowBall_Yetuga.cpp" />
     <ClCompile Include="..\private\AS_Turn_Yetuga.cpp" />
@@ -398,6 +411,7 @@
     <ClCompile Include="..\Private\BladeNexus.cpp" />
     <ClCompile Include="..\private\BladeNexus_List.cpp" />
     <ClCompile Include="..\Private\Body_Gomdol.cpp" />
+    <ClCompile Include="..\Private\Body_Imp_Range.cpp" />
     <ClCompile Include="..\Private\Body_Khazan_Sample.cpp" />
     <ClCompile Include="..\Private\Body_Khazan_Spear.cpp" />
     <ClCompile Include="..\Private\Body_Player.cpp" />
@@ -427,7 +441,9 @@
     <ClCompile Include="..\private\Equip_Panel.cpp" />
     <ClCompile Include="..\private\Equip_Slot.cpp" />
     <ClCompile Include="..\Private\FSM_Gomdol.cpp" />
+    <ClCompile Include="..\Private\FSM_Imp_Range.cpp" />
     <ClCompile Include="..\Private\FSM_Yetuga.cpp" />
+    <ClCompile Include="..\Private\Imp_Range.cpp" />
     <ClCompile Include="..\Private\Level_Test.cpp" />
     <ClCompile Include="..\private\Player_Manager.cpp" />
     <ClCompile Include="..\Private\Sequence_HeinMach_Start.cpp" />

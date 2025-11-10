@@ -11,6 +11,11 @@ enum class GOMDOL_STATE
 	ATTACK,
 };
 
+NS_BEGIN(Engine)
+class CGameObject;
+NS_END
+
+
 NS_BEGIN(Client)
 
 class CFSM_Gomdol final : public CStateMachine

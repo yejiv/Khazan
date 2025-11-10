@@ -181,7 +181,7 @@ CGameObject* CGomdol::Clone(void* pArg)
 
 void CGomdol::Free()
 {
-   /* Safe_Release(m_pBody);
-    Safe_Release(m_pHead);*/
+    Safe_Release(m_pBody);
+    //Safe_Release(m_pHead);
     __super::Free();
 }
