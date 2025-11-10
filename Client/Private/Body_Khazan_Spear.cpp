@@ -371,6 +371,12 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
         BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
         m_tCollisionDesc.pGameObject = this;
         BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+
+        DAMAGEINFO DamageInfo = {};
+        DamageInfo.fDamage = 10.f;
+        DamageInfo.eHitreaction = HITREACTION::KNOCKBACK_NORMAL;
+        BodyDesc.pCollisionDesc->pInfo = &DamageInfo;
+
         BodyDesc.bIsTrigger = true;
         if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
             TEXT("Com_Body1"), reinterpret_cast<CComponent**>(&m_pBodyCom_SpearTip1), &BodyDesc)))

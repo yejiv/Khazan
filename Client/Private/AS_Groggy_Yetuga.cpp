@@ -9,7 +9,7 @@
 #include "Target_BrutalAttack.h"
 
 CAS_Groggy_Yetuga::CAS_Groggy_Yetuga()
-	:m_fGroggyTime{ 5.f }
+	:m_fGroggyTime{ 7.f }
 {
 }
 
@@ -57,7 +57,7 @@ void CAS_Groggy_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 
 		if (m_fCurrentTime >= m_fGroggyTime)
 		{
-			m_eState = GROGGY::END;
+			m_eState = GROGGY::RECOVERY;
 			pModel->Set_Animation(91);
 
 			if (m_isBrutalAttackSuccess)
@@ -75,13 +75,25 @@ void CAS_Groggy_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 		}
 		break;
 
-	case GROGGY::END:
-		if (pModel->Play_Animation(fTimeDelta))
-		{
-			m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isGroggyFinished", true);
-		}
-		break;
-	}
+    case GROGGY::RECOVERY:
+        if (pModel->Play_Animation(fTimeDelta))
+        {
+            m_eState = GROGGY::END;              
+            pModel->Set_Animation(93);   
+            pYetuga->Set_RequestRecoveryStamina(true);
+        }
+        break;
+
+    case GROGGY::END:
+        pYetuga->Recovery_Stamina(fTimeDelta * 10.f);
+        if (pModel->Play_Animation(fTimeDelta))
+        {
+            pYetuga->Set_RequestRecoveryStamina(false);
+            m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isGroggyFinished", true);
+        }
+        break;
+    }
+
 }
 
 void CAS_Groggy_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)
