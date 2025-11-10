@@ -68,42 +68,6 @@ HRESULT CCamera::Render()
 
 void CCamera::Set_Animation(_wstring strAnimationTag)
 {
-	//m_pCurrentAnimation = Get_Animations(strAnimationTag);
-	//if ((*m_pCurrentAnimation).size() < 3)
-	//{
-	//	m_pCurrentAnimation = nullptr;
-	//	return;
-	//}
-	//	
-
-	//m_isAnimation = true;
-	//m_iAnimationIndex = 0;
-	//m_vOldLook = m_pTransformCom->Get_State(STATE::LOOK);
-
-	//m_tPosCatmullrom.v1 = XMVectorSet(
-	//	(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.x,
-	//	(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.y,
-	//	(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.z,
-	//	1.f
-	//);
-	//m_tPosCatmullrom.v2 = XMVectorSet(
-	//	(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.x,
-	//	(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.y,
-	//	(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.z,
-	//	1.f
-	//);
-	//m_tPosCatmullrom.v3 = XMVectorSet(
-	//	(*m_pCurrentAnimation)[m_iAnimationIndex + 1].vTranslation.x,
-	//	(*m_pCurrentAnimation)[m_iAnimationIndex + 1].vTranslation.y,
-	//	(*m_pCurrentAnimation)[m_iAnimationIndex + 1].vTranslation.z,
-	//	1.f
-	//);
-	//m_tPosCatmullrom.v4 = XMVectorSet(
-	//	(*m_pCurrentAnimation)[m_iAnimationIndex + 2].vTranslation.x,
-	//	(*m_pCurrentAnimation)[m_iAnimationIndex + 2].vTranslation.y,
-	//	(*m_pCurrentAnimation)[m_iAnimationIndex + 2].vTranslation.z,
-	//	1.f
-	//);
 	auto it = m_Animations.find(strAnimationTag);
 	if (it == m_Animations.end() || it->second.size() < 2) {
 		m_pCurrentAnimation = nullptr; m_isAnimation = false; return;
