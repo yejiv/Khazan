@@ -190,6 +190,14 @@ namespace Engine
 	{
 		float			fDensity;		// 지수용
 		XMFLOAT4		vColor;
+        bool            isUseHeight;
+        float           fBaseHeight;
+        bool            isUseNoise;
+        XMFLOAT2        vNoiseSpeed;
+        XMFLOAT2        vNoiseScale;
+        float           fNoiseStrength;
+        float           fNoiseContrast;
+        unsigned int    iNoiseIndex;
 	}FOG_TRANSITION_DESC;
 
 	typedef struct tagFogConfig

@@ -31,7 +31,7 @@ public:
 	_bool	Try_FallAttack();
 	_bool	Try_FastAttack();
 	_bool	Try_GrappleAttack(); //브루탈 공격 
-	_bool	Try_SingleSkillAttack(_uint iSkill);
+	_bool	Try_SkillAttack(_uint iSkill);
 	_bool	Try_CounterAttack();
 	_bool	Try_DodgeAttack(_uint iDir);  //방향
 	//_bool	Try_ReflectionAttack();
@@ -41,16 +41,25 @@ public:
 	//_bool	Try_ChageFastAttack();
 	_bool	Try_ChageStrongAttack();
 
-	_bool	Is_Attacking() { return m_isAttacking; }
+    void    Reserve_SkillAttack(_uint iSkill);
+    void    Cancelation_Skill() { m_isReserve = false; m_iReserveSkillIndex = 0; }
+
+	_bool	Is_Attacking() const { return m_isAttacking; }
+    _bool   Is_Skilling() const { return m_isSkilling; }
 	_bool	Can_NextCombo() const { return m_isCanNextCombo; }
+    _bool   Is_Reserve() const { return m_isReserve; }
 	_uint	Get_CurrentCombo() const { return m_iCurrentCombo; }
+
 
 
 private:
 	class CClientInstance* m_pClientInstance = { nullptr };
 
+    _bool           m_isSkilling = { false };
 	_bool			m_isAttacking = { false };
 	_bool			m_isCanNextCombo = { false };
+    _bool           m_isReserve = { false };
+    _uint           m_iReserveSkillIndex = {};
 
 	/* Combo */
 	_uint			m_iCurrentCombo = { };
@@ -61,7 +70,8 @@ private:
 	const _float	m_fFastAttackComboPossibleMaxFrame = { 30.f };
 	const _float	m_fStrongAttackComboPossibleMaxFrame = { 30.f };
 
-	/* Charge */
+	/* SKill */
+    _uint           m_iCurSkillIndex = { };
 
 public:
 	static CKhazan_Spear_Anim_Attack* Create();

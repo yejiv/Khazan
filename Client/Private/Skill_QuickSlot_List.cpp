@@ -3,6 +3,8 @@
 #include "GameInstance.h"
 
 #include "UI_TextBox.h"
+#include "UI_Atlas_Icon.h"
+#include "Skill_QuickSlot.h"
 
 CSkill_QuickSlot_List::CSkill_QuickSlot_List(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Tap{ pDevice, pContext }
@@ -14,12 +16,59 @@ CSkill_QuickSlot_List::CSkill_QuickSlot_List(const CSkill_QuickSlot_List& Protot
 {
 }
 
+void CSkill_QuickSlot_List::UnEquipSlot(_int iSkillIndex)
+{
+    if (m_iEquipSkillIndex == iSkillIndex)
+    {
+        m_iEquipSkillIndex = 0;
+
+        m_pLineIcon->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_SkillSlot_Bg_Deco_UI.png", 4), 4);
+
+        m_pSkillIcon->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_Skill_NotEquip_UI.png", 4),4);
+        m_pSkillIcon->Set_Color({ 1.f, 1.f, 1.f,1.f });
+        m_pSkillIcon->Update_Scaling(1.f);
+        wstring wstrTemp = TEXT("장착 중인 스킬이 없습니다.");
+        m_pSkillName->Set_Text(wstrTemp);
+    }
+}
+
+void CSkill_QuickSlot_List::Set_SkillIndex(_int iSKillIndex)
+{
+    m_iSkillIndex = iSKillIndex;
+}
+
 void CSkill_QuickSlot_List::Update_Pos(_int iIndex, _float2 vPos, _float fOffSetY)
 {
+    m_iIndex = iIndex;
     m_vLocalPos.x = vPos.x;
     m_vLocalPos.y = vPos.y + iIndex * fOffSetY;
 
-    __super::Update_Transform(nullptr, m_vWorldPos);
+    if (m_iIndex == 1)
+    {
+        m_pGuideIcon[2]->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_Mouse_Rmb.png", 3), 3);
+    }
+    else if (m_iIndex == 2)
+    {
+        m_pGuideIcon[2]->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_KB_F.png", 3), 3);
+    }
+    else if (m_iIndex == 3)
+    {
+        m_pGuideIcon[0]->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_KB_Q.png", 3), 3);
+        m_pGuideIcon[1]->Update_Visible(false);
+        m_pGuideIcon[2]->Update_Visible(false);
+    }
+    else if (m_iIndex == 4)
+    {
+        m_pGuideIcon[0]->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_KB_E.png", 3), 3);
+        m_pGuideIcon[1]->Update_Visible(false);
+        m_pGuideIcon[2]->Update_Visible(false);
+    }
+    else if (m_iIndex == 5)
+    {
+        m_pGuideIcon[0]->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_KB_R.png", 3), 3);
+        m_pGuideIcon[1]->Update_Visible(false);
+        m_pGuideIcon[2]->Update_Visible(false);
+    }
 }
 
 HRESULT CSkill_QuickSlot_List::Initialize_Prototype(_uint iLevel)
@@ -39,6 +88,27 @@ HRESULT CSkill_QuickSlot_List::Initialize_Clone(void* pArg)
 
 void CSkill_QuickSlot_List::Priority_Update(_float fTimeDelta)
 {
+    if (ButtonOver(g_hWnd))
+    {
+
+    }
+    if (ButtonClick(g_hWnd, false, true, INPUT_TYPE::POPUP))
+    {
+        m_iEquipSkillIndex = m_iSkillIndex;
+        m_pLineIcon->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_SkillSlot_Bg_SpecialLine_UI.png", 4), 4);
+
+        const SKILL_DB* pDB = CClientInstance::GetInstance()->Get_Data<SKILL_DB>(m_iEquipSkillIndex);
+        m_pSkillIcon->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV(WStringToAnsi(pDB->wstrIcon), pDB->iTexPass), pDB->iTexPass);
+        m_pSkillIcon->Set_Color({ 0.929f, 0.741f, 0.376f,1.f });
+        m_pSkillIcon->Update_Scaling(0.5f);
+        m_pSkillName->Set_Text(pDB->wstrName);
+
+        CSkill_QuickSlot::BUBBLE_DESC Desc;
+        Desc.iIndex = m_iIndex;
+        Desc.iSkillIndex = m_iEquipSkillIndex;
+        
+        m_UIBubbleCallBack(&Desc);
+    }
 }
 
 void CSkill_QuickSlot_List::Update(_float fTimeDelta)
@@ -82,21 +152,34 @@ HRESULT CSkill_QuickSlot_List::Load_UI(nlohmann::json& pInData, _uint iPrototype
     /*m_iShaderPass = 6;
     m_iState = ENUM_CLASS(UISTATE::ENABLE);*/
 
-    //for (auto pChild : m_Children)
-    //{
-    //    string strName = pChild->Get_Name();
-    //    if (strName == "Menu_Name")
-    //    {
-    //        m_pTextBox = static_cast<CUI_TextBox*>(pChild);
-    //        Safe_AddRef(m_pTextBox);
-    //    }
-    //    else if (strName == "Menu_List_Deco")
-    //    {
-    //        m_pDeco = static_cast<CMainMune_Deco*>(pChild);
-    //        Safe_AddRef(m_pDeco);
-    //    }
-    //}
+    for (auto pChild : m_Children)
+    {
+        string strName = pChild->Get_Name();
+        if (strName == "Skill_Slot_Line")
+        {
+            m_pLineIcon = static_cast<CUI_Atlas_Icon*>(pChild);
+            Safe_AddRef(m_pLineIcon);
+        }
+        else if (strName == "Skill_Slot_Plus")
+        {
+            m_pSkillIcon = static_cast<CUI_Atlas_Icon*>(pChild);
+            Safe_AddRef(m_pSkillIcon);
+        }
+        else if (strName == "Skill_Slot_Text")
+        {
+            m_pSkillName = static_cast<CUI_TextBox*>(pChild);
+            Safe_AddRef(m_pSkillName);
+        }
+        else if (strName == "Skill_Key_1" || strName == "Skill_Key_2" || strName == "Skill_Key_3")
+        {
+            m_pGuideIcon.push_back(static_cast<CUI_Atlas_Icon*>(pChild));
+ 
+        }
+    }
 
+    m_pSkillIcon->Set_ShaderPass(2);
+
+    m_iState = ENUM_CLASS(UISTATE::ENABLE);
     return S_OK;
 }
 
@@ -146,4 +229,11 @@ void CSkill_QuickSlot_List::Free()
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pTextureCom);
     Safe_Release(m_pVIBufferCom);
+
+    Safe_Release(m_pLineIcon);
+    Safe_Release(m_pSkillIcon);
+    Safe_Release(m_pSkillName);
+    for (auto pIcon : m_pGuideIcon)
+        Safe_Release(pIcon);
+    m_pGuideIcon.clear();
 }

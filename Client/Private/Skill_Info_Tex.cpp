@@ -222,10 +222,10 @@ void CSkill_Info_Tex::Free()
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pVIBufferCom);
+    Safe_Release(m_pIcon);
 
 	for (auto Movie : m_pMovieCom)
 		Safe_Release(Movie);
 	m_pMovieCom.clear();
 
-    Safe_Release(m_pIcon);
 }

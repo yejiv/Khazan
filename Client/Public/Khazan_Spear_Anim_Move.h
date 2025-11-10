@@ -10,6 +10,7 @@ public:
 	typedef struct	tagKhazanSpearAnimMove
 	{
 		_bool				isEquipWeapon = {};
+        _bool               isLockOn = {};
 		_uint				iSubState;
 		_uint				iCycle;
 		DIRECTION_INFO		eDir;
@@ -67,6 +68,12 @@ private:
 
 	_bool		m_isReserve = { false };
 	SPEAR_MOVE	m_eReserveInfo = {};
+
+    static const string s_strSprinStartAnims[];
+
+private:
+    _uint       GetLockOnWalkAnimation(DIRECTION_INFO eDir);
+    _uint       GetLockOnRunAnimation(DIRECTION_INFO eDir);
 
 public:
 	static CKhazan_Spear_Anim_Move* Create();

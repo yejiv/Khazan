@@ -173,6 +173,27 @@ _bool CClientInstance::Add_SkillPoint(_int iPoint)
 {
 	return m_pPlayer_Manager->Add_SkillPoint(iPoint);
 }
+void CClientInstance::BindSkillToButton(CONTROL_BUTTON eButton, _uint iSkill)
+{
+    return m_pPlayer_Manager->BindSkillToButton(eButton, iSkill);
+}
+void CClientInstance::UnBindSkillToButton(CONTROL_BUTTON eButton)
+{
+    return m_pPlayer_Manager->UnBindSkillToButton(eButton);
+}
+_uint CClientInstance::Get_ButtonSkill(CONTROL_BUTTON eButton)
+{
+    return m_pPlayer_Manager->Get_ButtonSkill(eButton);
+}
+void CClientInstance::Set_UsedSkill(_uint iSkill, _bool isUsed)
+{
+    return m_pPlayer_Manager->Set_UsedSkill(iSkill, isUsed);
+}
+_bool CClientInstance::Is_UsedSkill(_uint iSkill)
+{
+    return m_pPlayer_Manager->Is_UsedSkill(iSkill);
+
+}
 #pragma endregion
 
 #pragma region CAMERA_MANAGER

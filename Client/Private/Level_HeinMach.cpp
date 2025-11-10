@@ -7,8 +7,8 @@
 #include "Dummy.h"
 #include "Monster.h"
 #include "ClientInstance.h"
+#include "Khazan_Spear.h"
 #include "Sequence_HeinMach_Start.h"
-
 
 #pragma region MAP OBJECT
 #include "MapObject_Header.h"
@@ -43,8 +43,8 @@ HRESULT CLevel_HeinMach::Initialize()
 		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
 			HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
-		//CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Gomdol")), E_FAIL);
 		CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+		CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL); 
 		return S_OK;
 		});
 
@@ -117,8 +117,8 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
 	}
 
 
-	if (m_pGameInstance->Key_Down(DIK_RETURN))
-		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::VIPER))));
+	//if (m_pGameInstance->Key_Down(DIK_RETURN))
+	//	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::VIPER))));
 
     if (!m_isStart)
     {
@@ -198,6 +198,9 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
 	pCamera_Player->Set_IsActive(false);
 	CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player"));
 	pCamera_Player->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
+
+    static_cast<CKhazan_Spear*>(pPlayer)->Set_Camera(pCamera_Player);
+
 	m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::HEINMACH), pCamera_Player);
 
 	m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag, pCamera_Player);
@@ -239,6 +242,14 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster(const _wstring& strLayerTag)
     /*if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Gomdol"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
         return E_FAIL;*/
+
+    return S_OK;
+}
+
+HRESULT CLevel_HeinMach::Ready_Layer_Effect(const _wstring& strLayerTag)
+{
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust"), 3);
 
     return S_OK;
 }

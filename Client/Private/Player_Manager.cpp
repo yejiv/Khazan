@@ -13,6 +13,14 @@ HRESULT CPlayer_Manager::Initialize()
 	m_Data.fSkillLevel_EXP = 55.f;
 	m_Data.iSkilPoint = 10;
 
+    m_UsedSkill.assign(GetBitPosition(CPlayerData_Manager::SPEAR_END), false);
+
+    /* 임시  */
+    BindSkillToButton(Q, CPlayerData_Manager::FULL_MOON);
+    BindSkillToButton(E, CPlayerData_Manager::SPIRAL_THRUST);
+    BindSkillToButton(R, CPlayerData_Manager::SHADOW_CLEAVE);
+
+
 	return S_OK;
 }
 
@@ -35,6 +43,35 @@ _bool CPlayer_Manager::Add_SkillPoint(_int iPoint)
 	m_Data.iSkilPoint += iPoint;
 
 	return true;
+}
+
+void CPlayer_Manager::BindSkillToButton(CONTROL_BUTTON eButton, _uint iSkill)
+{
+    m_ButtonToSkill[eButton] = iSkill;
+}
+
+void CPlayer_Manager::UnBindSkillToButton(CONTROL_BUTTON eButton)
+{
+    m_ButtonToSkill.erase(eButton);
+}
+
+_uint CPlayer_Manager::Get_ButtonSkill(CONTROL_BUTTON eButton)
+{
+    unordered_map<CONTROL_BUTTON, _uint>::iterator  it = m_ButtonToSkill.find(eButton);
+    if (it != m_ButtonToSkill.end())  return it->second;
+    return 0; // 바인딩된 스킬 없음
+}
+
+void CPlayer_Manager::Set_UsedSkill(_uint iSkill, _bool isUsed)
+{
+    if (iSkill >= GetBitPosition(CPlayerData_Manager::SPEAR_END))
+        return;
+    m_UsedSkill[GetBitPosition(iSkill)] = isUsed;
+}
+
+_bool CPlayer_Manager::Is_UsedSkill(_uint iSkill)
+{
+    return  m_UsedSkill[GetBitPosition(iSkill)];
 }
 
 CPlayer_Manager* CPlayer_Manager::Create()

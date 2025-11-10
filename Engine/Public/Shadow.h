@@ -45,8 +45,8 @@ private:
 
 	_uint								m_iCurrentCascade = {};
 	_float								m_fCameraNear{}, m_fCameraFar{};
-
-	vector<_float4x4>					m_WorldMatrices = {};
+    _float4                             m_vFrustumWorldPoints[8] = {};
+    array<_float4, 8>                   m_FustumCorners = {};
 
 	_bool								m_isTransition = {};
 	_float								m_fTransTimeAcc = {};
@@ -56,6 +56,11 @@ private:
 private:
 	vector<ID3D11DepthStencilView*>		m_ShadowDSVs;
 	ID3D11ShaderResourceView*			m_pShadowSRVArray = { nullptr };
+
+#ifdef _DEBUG
+private:
+	vector<_float4x4>					m_WorldMatrices = {};
+#endif
 
 private:
 	HRESULT				Ready_ShaderResources();
