@@ -652,6 +652,9 @@
     <Filter Include="02.GameObject\UI\Skill_Info\Info_Tex">
       <UniqueIdentifier>{0d3cc4f0-3af7-4a50-ad5d-57210adb9347}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04.Sequence\HeinMach\Start">
+      <UniqueIdentifier>{83ab3725-44d3-4e7d-9e2b-f400c36ca0ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1254,6 +1257,9 @@
     <ClInclude Include="..\public\Skill_Info_Tex.h">
       <Filter>02.GameObject\UI\Skill_Info\Info_Tex</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Sequence_HeinMach_Start.h">
+      <Filter>04.Sequence\HeinMach\Start</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1835,6 +1841,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Skill_Info_Tex.cpp">
       <Filter>02.GameObject\UI\Skill_Info\Info_Tex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_HeinMach_Start.cpp">
+      <Filter>04.Sequence\HeinMach\Start</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

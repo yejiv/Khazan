@@ -78,12 +78,22 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
     if (!m_isActive)
         return;
 
-    if (!m_isAnimation)
+    if (m_isAnimation)
     {
-        if (m_iCameraType == ENUM_CLASS(CAMERATYPE::FREE))
-            Update_Free(fTimeDelta);
-        else if (m_iCameraType == ENUM_CLASS(CAMERATYPE::PLAYER))
-            Update_Spring(fTimeDelta);
+        __super::Play_Animation(fTimeDelta);
+    }
+    else
+    {
+        if (m_isBlendBack)
+        {
+            Update_BlendBack(fTimeDelta);
+        }
+        else {
+            if (m_iCameraType == ENUM_CLASS(CAMERATYPE::FREE))
+                Update_Free(fTimeDelta);
+            else if (m_iCameraType == ENUM_CLASS(CAMERATYPE::PLAYER))
+                Update_Spring(fTimeDelta);
+        }
 
         m_vShaking_BasePos = m_pTransformCom->Get_State(STATE::POSITION);
         m_vShaking_BaseRight = m_pTransformCom->Get_State(STATE::RIGHT);
@@ -106,7 +116,7 @@ void CCamera_Compre::Update(_float fTimeDelta)
         m_pBody->Update(fTimeDelta, m_pTransformCom);
         m_pBody->Sync_Update(m_pTransformCom);
     }
-    __super::Play_Animation(fTimeDelta);
+    
 }
 
 void CCamera_Compre::Late_Update(_float fTimeDelta)
@@ -318,6 +328,43 @@ HRESULT CCamera_Compre::LockOn(_float fTimeDelta)
     return S_OK;
 }
 
+void CCamera_Compre::Update_BlendBack(_float fTimeDelta)
+{
+    if (!m_isBlendBack)
+        return;
+
+    m_fBlendBackTime += fTimeDelta;
+    float BlendTime = Clamp(m_fBlendBackTime / m_fBlendBackDuration, 0.f, 1.f);
+
+    // 1) 현재 프레임 기준 "정상 플레이 카메라" 목표값 계산
+    _vector vTargetPosWS, vTargetDir;
+    _vector vSpringCamPos = Cal_CamPos(fTimeDelta, vTargetPosWS, vTargetDir);
+
+    _vector vWorldUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+    _vector vLookTarget = XMVector3Normalize(XMVectorSubtract(vTargetPosWS, vSpringCamPos));
+    _vector vRightTarget = XMVector3Normalize(XMVector3Cross(vWorldUp, vLookTarget));
+    _vector vUpTarget = XMVector3Normalize(XMVector3Cross(vLookTarget, vRightTarget));
+
+    // 2) 시작 포즈 → 타겟 포즈로 부드럽게 보간
+    _vector vPos = XMVectorLerp(m_vBlendStartPos, vSpringCamPos, BlendTime);
+    _vector vRight = XMVector3Normalize(XMVectorLerp(m_vBlendStartRight, vRightTarget, BlendTime));
+    _vector vUp = XMVector3Normalize(XMVectorLerp(m_vBlendStartUp, vUpTarget, BlendTime));
+    _vector vLook = XMVector3Normalize(XMVectorLerp(m_vBlendStartLook, vLookTarget, BlendTime));
+
+    m_pTransformCom->Set_State(STATE::RIGHT, vRight);
+    m_pTransformCom->Set_State(STATE::UP, vUp);
+    m_pTransformCom->Set_State(STATE::LOOK, vLook);
+    m_pTransformCom->Set_State(STATE::POSITION, vPos);
+
+    // 3) 끝나면 정상 Spring 모드로 전환
+    if (BlendTime >= 1.f)
+    {
+        m_isBlendBack = false;
+    }
+
+    return;
+}
+
 void CCamera_Compre::LockOn_Check(_float fTimeDelta)
 {
     m_fLockOnDelay += fTimeDelta;
@@ -400,6 +447,27 @@ _vector CCamera_Compre::Cal_CamPos(_float fTimeDelta, _vector& vTargetPos, _vect
     _vector vCamPos = XMVectorMultiplyAdd(XMVectorReplicate(-m_fRadius), vDir, vTargetPos);
 
     return vCamPos;
+}
+
+void CCamera_Compre::OnCameraAniEnd()
+{
+    m_isBlendBack = true;
+    m_fBlendBackTime = 0.f;
+
+    m_vBlendStartPos = m_pTransformCom->Get_State(STATE::POSITION);
+    m_vBlendStartRight = m_pTransformCom->Get_State(STATE::RIGHT);
+    m_vBlendStartUp = m_pTransformCom->Get_State(STATE::UP);
+    m_vBlendStartLook = m_pTransformCom->Get_State(STATE::LOOK);
+
+    // Spring 카메라랑 이어질 때 튀지 않도록
+    // 현재 Look 기준으로 yaw/pitch를 역산해서 세팅
+    _vector vLookN = XMVector3Normalize(m_vBlendStartLook);
+    float x = XMVectorGetX(vLookN);
+    float y = XMVectorGetY(vLookN);
+    float z = XMVectorGetZ(vLookN);
+
+    m_fYaw = atan2f(z, x);
+    m_fPitch = Clamp(asinf(Clamp(y, -1.f, 1.f)), m_fPitchMin, m_fPitchMax);
 }
 
 _float CCamera_Compre::UpdateY_Stable(_float fCurrentY, _float fDesiredY, _float fTimeDelta)
