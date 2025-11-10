@@ -285,7 +285,12 @@ HRESULT CBody_Khazan_Sample::Ready_Components()
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
 
-    m_pTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), nullptr));
+    CMeshTrail::TRAIL_DESC MeshDsc;
+    MeshDsc.iTextureIdx = 9;
+    MeshDsc.fLifeTime = .2f;
+    MeshDsc.iDivisionCount = 10.f;
+
+    m_pTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDsc));
 
     return S_OK;
 }
@@ -842,8 +847,8 @@ void CBody_Khazan_Sample::Effect4_Continue()
     //_matrix tip = m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pParentTransform->Get_WorldMatrix();
     //_matrix hand = m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearWeaponR_Matrix) * m_pParentTransform->Get_WorldMatrix();
     _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-    _matrix hand = XMLoadFloat4x4(&m_pSpearTip2_MatrixW);
-    m_pTrail->Add_ControlPoint(hand.r[3], tip.r[3]);
+    _matrix hand = XMLoadFloat4x4(&m_pWeaponR_MatrixW);
+    m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
 }
 
 void CBody_Khazan_Sample::Effect5_Enter()
@@ -859,8 +864,8 @@ void CBody_Khazan_Sample::Effect5_Continue()
     //_matrix tip = m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pParentTransform->Get_WorldMatrix();
     //_matrix hand = m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearWeaponR_Matrix) * m_pParentTransform->Get_WorldMatrix();
     _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-    _matrix hand = XMLoadFloat4x4(&m_pSpearTip2_MatrixW);
-    m_pTrail->Add_ControlPoint(hand.r[3], tip.r[3]);
+    _matrix hand = XMLoadFloat4x4(&m_pWeaponR_MatrixW);
+    m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
 }
 
 void CBody_Khazan_Sample::Effect6_Enter()
@@ -876,8 +881,8 @@ void CBody_Khazan_Sample::Effect6_Continue()
     //_matrix tip = m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pParentTransform->Get_WorldMatrix();
     //_matrix hand = m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearWeaponR_Matrix) * m_pParentTransform->Get_WorldMatrix();
     _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-    _matrix hand = XMLoadFloat4x4(&m_pSpearTip2_MatrixW);
-    m_pTrail->Add_ControlPoint(hand.r[3], tip.r[3]);
+    _matrix hand = XMLoadFloat4x4(&m_pWeaponR_MatrixW);
+    m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
 }
 
 void CBody_Khazan_Sample::Effect7_Enter()

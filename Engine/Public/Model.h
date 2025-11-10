@@ -130,7 +130,8 @@ public:
 	void			Detach_Part(CModel* pPart);
 	void			Render_AllAttachedParts();
 	const			vector<_float4x4>& Get_PartLocalBoneMatrices() const { return m_PartLocalBoneMatrices; }
-	void			Update_PartLocalBones();
+    void            Build_PartToMasterMap();
+    void			Update_PartLocalBones();
 
 
 #ifdef _DEBUG
@@ -199,6 +200,10 @@ private:
 	/* const val */
 	const _float					m_fBaseRootMotionBlendTime = { 0.15f };   /* 만약 블랜딩 시간이 안써져있으면 사용할 기본 블랜딩 시간 */
 	_float3							m_vDelta = {};
+
+
+    /* 최적화용 */
+    vector<_int>      m_PartToMasterIndex;     // [partBone] = masterBoneIndex or -1
 private:
 	/* 루트 모션 */
 	void			Check_RootMotion();

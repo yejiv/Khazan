@@ -2,6 +2,7 @@
 
 CInverter_Node::CInverter_Node()
 {
+    m_eNodeType = NODETYPE::DECORATOR;
 }
 
 BTNODESTATE CInverter_Node::Tick(CBlackBoard* BB)
@@ -30,11 +31,12 @@ void CInverter_Node::Terminate(BTNODESTATE eState, CBlackBoard* BB)
         m_pChild->Terminate(eState);
 }
 
-void CInverter_Node::Abort()
+void CInverter_Node::Abort(CBlackBoard* BB)
 {
     if (m_pChild)
-        m_pChild->Abort();
+         m_pChild->Abort(BB);
 }
+
 
 CInverter_Node* CInverter_Node::Create()
 {

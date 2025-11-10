@@ -128,7 +128,7 @@ void CLevel_Effect::Create_Element()
 		if (ImGui::BeginTabItem("Point Effect"))
 		{
 			ImGui::Checkbox("Element Loop", &m_bLoop);
-			ImGui::Text("Spwan Type");
+			ImGui::Text("Spawn Type");
 			ImGui::SameLine();
 			ImGui::Separator();
 			ImGui::RadioButton("Spawn_BoundingBox", &m_SpawnType, 0);
@@ -225,7 +225,7 @@ void CLevel_Effect::Create_Element()
 		}
 		if (ImGui::BeginTabItem("Sprite Effect"))
 		{
-			const char* textures[] = { "test0","test1" };
+			const char* textures[] = { "test0","test1", "test2", "test3", "Snow", "Fire"};
 			ImGui::Combo("Textures", reinterpret_cast<int*>(&m_iTextureIdx), textures, IM_ARRAYSIZE(textures));
 
 			ImGui::InputFloat("Sprite Speed : ", reinterpret_cast<_float*>(&m_fSpriteSpeed));
@@ -362,12 +362,13 @@ void CLevel_Effect::GetParticleColor()
 
 	if (m_EffectType == 0)
 	{
-		const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19",  "test20",  "shock", "smoke", "cloud" };
+		const char* textures[] = { "test0", "test1", "test2",  "test3",  "flare", "Fire_Sprite" "Fire_Sprite2"};
 		ImGui::Combo("Point Particles Textures", reinterpret_cast<int*>(&m_iTextureIdx), textures, IM_ARRAYSIZE(textures));
 	}
 	else if (m_EffectType == 1)
 	{
-		const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19",  "test20",  "test21"};
+		const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19",  "test20",  "shock", "smoke", "cloud" };
+
 		ImGui::Combo("Mesh Textures", reinterpret_cast<int*>(&m_iTextureIdx), textures, IM_ARRAYSIZE(textures));
 
 		const char* Meshes[] = { "Helix0", "Helix1", "Helix2", "Helix3",  "Helix4",  "Helix5",  "Helix6",  "Helix7",  "Helix8",  "Helix9",  "Helix10",  "Helix11",  "Helix12",  "Helix13",  "Helix14",  "Helix15",  "Helix16",  "Helix17",  "Helix18",  "Helix19",  "Helix20",  

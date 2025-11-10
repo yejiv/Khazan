@@ -135,7 +135,8 @@ PS_OUT PS_MAIN(PS_IN In)
     float2 fScrolledEffectUV = In.vTexcoord + fEffectOffset;
     
     vector vEffectTexture = g_DiffuseTexture.Sample(PointSampler, fScrolledEffectUV);
-    vector vFinalColor = float4(g_vSourceColor.xyz, min(vEffectTexture.r, g_vSourceColor.a));
+    //vector vFinalColor = float4(g_vSourceColor.xyz, min(vEffectTexture.r, g_vSourceColor.a));
+    vector vFinalColor = float4(g_vSourceColor.xyz, vEffectTexture.r);
     
     float fDecreaseAlpha = (In.vLifeTime.x / In.vLifeTime.y);
     if (g_IsDissolve == false) 
@@ -151,11 +152,10 @@ PS_OUT PS_MAIN(PS_IN In)
 
     
     //vFinalColor.a *= 0.2f;
-    Out.vColor = vFinalColor;
-    Out.vColor.a = 0.01f;
     
-    //  Out.vColor = float4(0.f, 1.f, 0.f, 0.01f);
-
+    // 0 ~ 1 -> 1 ~  3
+    // (g_vSourceColor.a * 2  + 1);
+    Out.vColor = vFinalColor * (g_vSourceColor.a + 1);
     //Out.vEmissiveColor = vFinalColor * 3.f;
     //Out.vEmissiveColor.a = 1;
     
@@ -173,7 +173,8 @@ PS_OUT PS_PRESNEL(PS_IN In)
     float2 fScrolledEffectUV = In.vTexcoord + fEffectOffset;
     
     vector vEffectTexture = g_DiffuseTexture.Sample(PointSampler, fScrolledEffectUV);
-    vector vFinalColor = float4(g_vSourceColor.xyz, min(vEffectTexture.r, g_vSourceColor.a));
+    //vector vFinalColor = float4(g_vSourceColor.xyz, min(vEffectTexture.r, g_vSourceColor.a));
+    vector vFinalColor = float4(g_vSourceColor.xyz, vEffectTexture.r);
     
     float fresnelFactor = 1.0 - abs(dot(In.vNormal.xyz, normalize(g_vCamPosition.xyz - In.vWorldPos.xyz)));
     vFinalColor.xyz = vFinalColor.xyz * pow(fresnelFactor, 1.4f);
@@ -187,8 +188,9 @@ PS_OUT PS_PRESNEL(PS_IN In)
     if (vFinalColor.a <= 0.f)
         discard;
 
-    Out.vColor = vFinalColor;
-    
+    //Out.vColor = vFinalColor;
+    Out.vColor = vFinalColor * (g_vSourceColor.a + 1);
+
     return Out;
 }
 

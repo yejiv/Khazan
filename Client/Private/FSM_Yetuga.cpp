@@ -66,6 +66,7 @@ HRESULT CFSM_Yetuga::Initialize()
     Safe_AddRef(m_pCurrentState);
     if (nullptr == m_pCurrentState)
         return E_FAIL;
+    Safe_AddRef(m_pCurrentState);
 
     return S_OK;
 }

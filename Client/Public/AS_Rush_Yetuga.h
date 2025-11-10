@@ -4,6 +4,8 @@
 
 NS_BEGIN(Client)
 
+
+
 class CAS_Rush_Yetuga final : public CAI_State
 {
 private:
@@ -20,7 +22,11 @@ public:
 
 
 private:
+    _bool                       m_isEnd = { false };
 	_bool						m_isCrashed = { false };
+    _float                      m_fCurrentTime = { 0.f };
+    _float                      m_fLoseTime = { 3.f };
+    _float                      m_fSpeed = {};
 
 public:
 	static CAS_Rush_Yetuga*		Create();

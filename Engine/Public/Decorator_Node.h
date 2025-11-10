@@ -11,10 +11,12 @@ protected:
 
 	virtual BTNODESTATE		Tick(class CBlackBoard* BB) = 0;
 	virtual void			Terminate(BTNODESTATE eState, class CBlackBoard* BB = nullptr) override;
-	virtual void			Abort() { Terminate(BTNODESTATE::FAILURE); };
+    virtual void            Abort(class CBlackBoard* BB) { Terminate(BTNODESTATE::FAILURE, BB); }
+
 
 public:
 	void					Set_Child(CBTNode* pChild);
+    CBTNode*                Get_Child() const { return m_pChild; }
 
 protected:
 	CBTNode*				m_pChild = { nullptr };

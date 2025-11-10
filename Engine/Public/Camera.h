@@ -41,6 +41,7 @@ public:
 public:
 	void Set_Animation(_wstring strAnimationTag);
 	void Play_Animation(_float fTimeDelta);
+    virtual void OnCameraAniEnd() {};
 
 	// 툴 관련
 public:
@@ -117,7 +118,7 @@ protected:
 	_float				m_fRadiusMax = 12.f;
 	_float				m_fSkin = 0.02f;
 
-	_float				m_fFollowValue = 4.f;
+	_float				m_fFollowValue = 5.f;
 	_vector				m_vLerpMove = { 0.f, 0.f, 0.f, 1.f };
 
 	const _float4x4*	m_pObjMatrix = { nullptr };

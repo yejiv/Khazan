@@ -37,7 +37,7 @@ public:
 	virtual HRESULT			Render() override;
 
 public:
-	HRESULT RayCast(_float fTimeDelta);
+	HRESULT                 RayCast(_float fTimeDelta);
 
 public:
 	virtual void			Collision_Enter(COLLISION_DESC* pDesc, _uint	iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;

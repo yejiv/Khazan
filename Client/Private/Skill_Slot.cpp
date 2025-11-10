@@ -79,6 +79,7 @@ void CSkill_Slot::Render_SkillInfo()
     Desc.isEquip = false;
     m_iSkillPoint > 0 ? Desc.isGet = true : Desc.isGet = false;
     m_iSkillPoint >= m_iMaxCount ? Desc.isMaxLevel = true : Desc.isMaxLevel = false;
+    m_isPreSkillOn ? Desc.isOnPreSkill = true : Desc.isOnPreSkill = false;
 
     CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("SkillInfo"), &Desc);
 }
@@ -165,11 +166,11 @@ void CSkill_Slot::Update(_float fTimeDelta)
                     if (m_iSkillPoint == 1)
                     {
                         m_pGameInstance->Emit_Event< EVENT_SKILL_ON>(ENUM_CLASS(EVENT_TYPE::PreSKILL_On), { true, m_iSkillIndex });
-                        
+                        if(m_pSkilData->iSkillType == 3)
+                            CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("SkillSlot_Quick"));
                         if (m_pSkilData->iType == 0)
-                        {
                             CClientInstance::GetInstance()->Unlock_SpearSkill(1 << m_pSkilData->iIndex);
-                        }
+                    
                     }
                 }
             }

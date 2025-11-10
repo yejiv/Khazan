@@ -116,7 +116,9 @@ void CHead_Yetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLaye
 {
     
     COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
-
+    
+    if (COLLISION_LAYER::MAP_STATIC == eLayer)
+        m_pOwner->Get_Controller()->AI_React_Collision(pDesc,iOtherObjectLayer,m_pOwner);
    
 
 }

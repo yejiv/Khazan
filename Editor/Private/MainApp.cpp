@@ -191,7 +191,7 @@ void CMainApp::Ready_DefaultImgui()
 {
 	m_pGameInstance->AddWidget(TEXT("Default"), [this]() {
 		ImGui::Begin("Default");
-		ImGui::Text("Select Level");
+		ImGui::Text("Select Level");  
 		if (ImGui::Button("Map", ImVec2(120, 32))) { 
 			m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::MAP));
 		}
