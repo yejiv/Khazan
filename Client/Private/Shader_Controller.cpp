@@ -23,6 +23,7 @@ HRESULT CShader_Controller::Initialize()
 	m_SSAOConfig = m_pGameInstance->Get_SSAOConfig();
 	m_FogConfig = m_pGameInstance->Get_FogConfig();
 	m_iNumCascades = m_pGameInstance->Get_NumCascades();
+    m_InitFogConfig = m_FogConfig;
 
 	Ready_Level();
 	Ready_Shader();
@@ -228,6 +229,14 @@ void CShader_Controller::Ready_Shader()
 						m_FogConfig.fDensity = m_TargetFogDesc.fDensity;
 						m_FogConfig.vColor = m_TargetFogDesc.vColor;
 					}
+
+                    ImGui::SameLine();
+
+                    if (ImGui::Button("Reset Fog"))
+                    {
+                        m_FogConfig = m_InitFogConfig;
+                        m_pGameInstance->Set_FogConfig(m_InitFogConfig);
+                    }
 
 					ImGui::Separator();
 

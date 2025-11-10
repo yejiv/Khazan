@@ -59,6 +59,19 @@ public:
         m_OutlineConfig.fSize = Config.fSize;
     }
 
+    //[Effect] Khazan_Sample 복붙!
+        /* 로컬  */
+        _float4x4*          m_pSpearTip1_Matrix = { nullptr };		//창 날1
+        _float4x4*          m_pWeaponR_Matrix = { nullptr };		//손잡이
+
+        /* 월드 (포인터형 아님!!) */
+        _float4x4	        m_pSpearTip1_MatrixW;		//창 날1
+        _float4x4	        m_pWeaponR_MatrixW;			//손잡이
+
+        class CMeshTrail* m_pTrail = { nullptr };
+        _uint	EffectID_SpearWind;
+
+
 private:
 	class CTransform* m_pParentTransform = { nullptr };
     CShader* m_pShaderCom = { nullptr };
@@ -70,12 +83,12 @@ private:
     CModel* m_pModelCom_Shoes = { nullptr };
     CModel* m_pModelCom_Torso = { nullptr };
 
-    CBody* m_pBodyCom_SpearTip1 = { nullptr };
+    CBody*              m_pBodyCom_SpearTip1 = { nullptr };
 
-    _float4x4* m_pSpearFX_Matrix = { nullptr };
+    _float4x4*          m_pSpearFX_Matrix = { nullptr };
     _matrix				m_SpearOffset_Matrix = {};
 
-    _uint* m_pParentState = { nullptr };
+    _uint*              m_pParentState = { nullptr };
     _uint				m_iCurState = {  };
 
 
@@ -85,16 +98,14 @@ private:
 
     const _uint			m_iSetAnimation[3] = { 3,2,1 };
 
-    /* 뼈 위치 */
-    _float4x4* m_pSpearTip1_Matrix = { nullptr };
-    _float4x4			m_pSpearTip1_MatrixW;
-
     OUTLINE_CONFIG      m_OutlineConfig = { _float3(1.f, 0.f, 1.f), 0.001f, 0.f, 0.f };
 
 public:
     virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint	iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
     virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
     virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
+
+
 
 
 private:
@@ -134,6 +145,16 @@ private:
     void	Effect7_Enter();
     void	Effect7_Exit();
     void	Effect7_Continue();
+
+    void	FX_StrongAtk01_Trail();
+    void	FX_StrongAtk02_Trail();
+    void	FX_StrongAtk03_Trail();
+    void	FX_FastAtk01_Trail();
+    void	FX_FastAtk02_Trail();
+    void	FX_FastAtk03_Trail();
+    void	FX_FastAtk_SpawnWind();
+    void	FX_StrongAtk_Charge_Blust();
+    void	FX_StrongAtk_Charge_Trail();
 
 
 private:

@@ -205,6 +205,7 @@ public:
 	ContainmentType isIn_Frustum_WorldSpace(const BoundingBox& BoundingBox);
 	_bool isIn_Frustum_LocalSpace(_fvector vLocalPos, _float fRange = 0.f);
 	const _float4* Get_Frustum_Point() const;
+    void Get_Frustum_WorldPoints(_float4* pOut);
 	const _float4* Get_Frustum_WorldPoints() const;
 	const _float4* Get_Frustum_WorldPlanes() const;
 	const _float4* Get_Frustum_LocalPlanes() const;

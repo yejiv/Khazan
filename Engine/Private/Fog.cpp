@@ -16,11 +16,13 @@ HRESULT CFog::Initialize()
     m_Config.fFar = 100.f;
     m_Config.fDensity = 0.05f;
     m_Config.vColor = { 0.f, 0.106f, 0.137f, 1.f };
+
+    m_Config.Noise.isEnable = false;
     m_Config.Noise.vSpeed = { 0.05f, 0.f };
     m_Config.Noise.vScale = { 0.05f, 0.05f };
     m_Config.Noise.fStrength = 0.5f;
     m_Config.Noise.fContrast = 1.f;
-    m_Config.Noise.isEnable = false;
+
     m_Config.fBaseHeight = 63.5f;
     m_Config.fHeightDensity = 0.001f;
 
@@ -120,6 +122,23 @@ void CFog::Start_FogTransition(_float fDuration, const FOG_TRANSITION_DESC& Desc
 	m_TargetFog = Desc;
 	m_StartFog.fDensity = m_Config.fDensity;
 	m_StartFog.vColor = m_Config.vColor;
+
+    if (true == Desc.isUseHeight)
+    {
+        m_Config.fBaseHeight = Desc.fBaseHeight;
+    }
+
+    if (true == Desc.isUseNoise)
+    {
+        m_Config.Noise.isEnable = true;
+        m_Config.Noise.vSpeed = Desc.vNoiseSpeed;
+        m_Config.Noise.vScale = Desc.vNoiseScale;
+        m_Config.Noise.fStrength = Desc.fNoiseStrength;
+        m_Config.Noise.fContrast = Desc.fNoiseContrast;
+        m_iTextureIndex = Desc.iNoiseIndex % Get_NumFogNoiseTextures();
+    }
+    else
+        m_Config.Noise.isEnable = false;
 }
 
 HRESULT CFog::Ready_NoiseTexture()

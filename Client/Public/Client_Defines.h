@@ -34,6 +34,14 @@ namespace Client
 
 	enum class HITREACTION { NONE, GROGGY, KNOCKBACK_WEAK, KNOCKBACK_NORMAL, KNOCKBACK_STRONG, PARRY, GRAB, END };
 
+    enum class CAMERA_FORCE_DIR
+    {
+        NONE,
+        FRONT,
+        BACK,
+        END
+    };
+
 
     typedef struct tagDamageInfo 
     {

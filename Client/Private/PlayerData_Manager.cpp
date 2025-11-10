@@ -3,6 +3,7 @@
 
 CPlayerData_Manager::CPlayerData_Manager()
 {
+    AllUnlock_SpearSkill();
 }
 
 
