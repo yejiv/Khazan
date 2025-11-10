@@ -6,16 +6,17 @@ float g_Splits[4];
 
 Texture2D g_DiffuseTexture, g_NormalTexture, g_SpecularTexture;
 
-// 諛뺤???쁺?씠 ?엫?떆濡? 異붽???빐?넃?쓬
-texture2D g_EmissiveTexture;
+Texture2D g_EmissiveTexture, g_MetalicTexture, g_RoughnessTexture;
 
 
 bool g_isDiffuse = false;
 bool g_isNormal = false;
 bool g_isEmissive = false;
 bool g_isSpecular = false;
+bool g_isMetalic = false;
+bool g_isRoughness = false;
 
-bool g_isTest = false;
+int g_iTest = 0;
 
 /* 모델 전체 뼈기준(x) */
 /* 특정 메시에 영향ㅇ르 주는 뼈들 */
@@ -362,19 +363,26 @@ PS_OUT PS_BLADENEXUS(PS_IN In)
     if (true == g_isSpecular)
     {
         vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
-        vMtrlSpecular.a = 1.f;
     }
-
+    
+    vector vMtrlMetalic = float4(0.f, 0.f, 0.f, 0.f);
+    if (true == g_isMetalic)
+    {
+        vMtrlMetalic = g_MetalicTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlRoughness = float4(0.f, 0.f, 0.f, 0.f);
+    if (true == g_isRoughness)
+    {
+        vMtrlRoughness = g_RoughnessTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
     Out.vDiffuse = vMtrlDiffuse;
     Out.vNormal = vector(vMtrlNormal);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = In.vWorldPos;
     //Out.vSpecular = vMtrlSpecular;
     //Out.vEmissive = vMtrlEmissive;
-    if (true == g_isTest)
-        Out.vEmissive = vMtrlSpecular;
-    else
-        Out.vEmissive = vMtrlEmissive;
 
     return Out;
 }
@@ -406,7 +414,6 @@ PS_OUT PS_TOMBSTONE(PS_IN In)
     if (true == g_isSpecular)
     {
         vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
-        vMtrlSpecular.a = 1.f;
     }
 
     Out.vDiffuse = vMtrlDiffuse;
@@ -415,17 +422,13 @@ PS_OUT PS_TOMBSTONE(PS_IN In)
     Out.vWorld = In.vWorldPos;
     //Out.vSpecular = vMtrlSpecular;
     //Out.vEmissive = vMtrlEmissive;
-    if (true == g_isTest)
-        Out.vEmissive = vMtrlSpecular;
-    else
-        Out.vEmissive = vMtrlEmissive;
 
     return Out;
 }
 
 technique11 DefaultTechnique
 {
-    pass DefaultPass
+    pass DefaultPass        // 0 번
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -436,7 +439,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN();
     }
 
-    pass NonPick
+    pass NonPick            // 1 번
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -447,7 +450,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN_NONPICK();
     }
 
-    pass Cascade // Depth Only
+    pass Cascade // Depth Only          // 2 번
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -458,7 +461,7 @@ technique11 DefaultTechnique
         PixelShader = NULL;
     }
 
-    pass Outline
+    pass Outline                        // 3 번
     {
         SetRasterizerState(RS_Cull_CW);
         SetDepthStencilState(DSS_DepthTestOnly, 0);
@@ -469,7 +472,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN_OUTLINE();
     }
 
-    pass Debug
+    pass Debug                          // 4 번
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -480,7 +483,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN_DEBUG();
     }
 
-    pass DebugNonLight
+    pass DebugNonLight                  // 5 번
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -491,7 +494,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN_DEBUG_EMISSIVE();
     }
 
-    pass DebugBlend
+    pass DebugBlend                     // 6 번
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -502,7 +505,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN_DEBUG_EMISSIVE();
     }
 
-    pass SimpleColorView
+    pass SimpleColorView                // 7 번
     {
 
         SetRasterizerState(RS_Wireframe);

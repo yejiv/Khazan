@@ -162,7 +162,7 @@ void CItem_Slot::Late_Update(_float fTimeDelta)
 
     if (m_iState == ENUM_CLASS(UISTATE::ENABLE))
     {
-        if (ButtonOver(g_hWnd))
+        if (ButtonOver(g_hWnd) && m_pGameInstance->Get_InputType() == INPUT_TYPE::UI)
         {
             m_pOverFx->Late_Update(fTimeDelta);
             Render_ItemInfo();

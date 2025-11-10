@@ -12,9 +12,20 @@ NS_BEGIN(Client)
 class CSkill_Info_Tex final : public CUI_Texture
 {
 private:
+    enum MOVIE_TYPE {
+        Assault, FullMoon, MoonLight, MoonlightStance, QuickSlash,
+        ShadowSlash, ShadowStrike, SpiralThrust, VitalStrike, Thrust_Vortex,
+        Breakthrough, BreathTaking, Bloodshed, Embryonic, BridleOfBattle, GiantHunt,
+        InnerFury, LimitBreak, ManifestStrength, Momentum, Phantom, WarCry,
+        END };
+
+private:
 	CSkill_Info_Tex(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CSkill_Info_Tex(const CSkill_Info_Tex& Prototype);
 	virtual ~CSkill_Info_Tex() = default;
+
+public:
+    void								Setting_Tex(_int iSkillIndex);
 
 public:
 	virtual HRESULT						Initialize_Prototype();
@@ -34,6 +45,8 @@ private:
     class CUI_Atlas_Icon*               m_pIcon = { nullptr };
 
 	_bool								m_isMovie = { false };
+    MOVIE_TYPE                          m_eMovieType = {};
+    _float                              m_fDeltaTime = {};
 private:
 	HRESULT								Ready_Component();
 	

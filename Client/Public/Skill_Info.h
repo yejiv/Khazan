@@ -18,7 +18,7 @@ public:
         _bool isEquip;
         _bool isMaxLevel;
         _bool isGet;
-
+        _bool isOnPreSkill;
     }SKILLINFO_DESC;
 
 private:

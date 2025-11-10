@@ -34,20 +34,21 @@ HRESULT CShadow::Initialize()
 		m_Cascade.Splits[i - 1] = Lerp(fLinear, fLog, m_Config.fLamda);
 	}
 
-	// ÀÓ½Ã Ä³½ºÄÉÀÌµå ±¸°£
+	// ìž„ì‹œ ìºìŠ¤ì¼€ì´ë“œ êµ¬ê°„
 	m_Cascade.Splits[0] = 35.f;
 	m_Cascade.Splits[1] = 90.f;
 	m_Cascade.Splits[2] = 450.f;
 	m_Cascade.Splits[3] = 6000.f;
 
-	// ÀÌÈÄ Directional Light Ãß°¡ µÉ ½Ã °»½Å ÇØÁÖ±â
+	// ì´í›„ Directional Light ì¶”ê°€ ë  ì‹œ ê°±ì‹  í•´ì£¼ê¸°
 	m_Config.vLightDir = { 1.f, -1.f, 1.f, 0.f };
 	// log, linear mix
 	m_Config.fLamda = 0.5f;
 	m_Config.Splits = m_Cascade.Splits;
-	// Z-fighting ¹æÁö
+	// Z-fighting ë°©ì§€
 	m_Config.fBias = 0.001f;
-	// ±×¸²ÀÚ °­µµ(¼¼±â)
+
+	// ê·¸ë¦¼ìž ê°•ë„(ì„¸ê¸°)
 	m_Config.fIntensity = 0.6f;
 
     return S_OK;
@@ -69,7 +70,7 @@ void CShadow::Update(_float fTimeDelta)
 		m_Config.fIntensity = Lerp(m_Config.fIntensity, m_fTargetIntensity, fRatio);
 	}
 
-	// Ä³½ºÄÉÀÌµå ÄÚ³Ê Ä«¸Þ¶ó ÀýµÎÃ¼ °¡Á®¿Í¼­ ºñÀ²·Î °è»ê
+	// ìºìŠ¤ì¼€ì´ë“œ ì½”ë„ˆ ì¹´ë©”ë¼ ì ˆë‘ì²´ ê°€ì ¸ì™€ì„œ ë¹„ìœ¨ë¡œ ê³„ì‚°
 	const _float4* pWorldPoints = m_pGameInstance->Get_Frustum_WorldPoints();
 
 	for (_uint i = 0; i < m_Cascade.iNumCascades; ++i)
@@ -132,7 +133,7 @@ void CShadow::Update(_float fTimeDelta)
 			vMaxPoint.z = max(vMaxPoint.z, FustumCorners[j].z);
 		}
 
-		// ===== ?¬ì˜ ?‰ë ¬ êµ¬í•˜ê¸?=====
+		// ===== ?ÑŠìº ?ë°ì ¹ æ´Ñ‹ë¸¯æ¹²?=====
 		_matrix LightProjMatrix = XMMatrixOrthographicOffCenterLH
 		(
 			vMinPoint.x,
@@ -222,11 +223,6 @@ void CShadow::Clear_DSVs()
 {
 	for (_uint i = 0; i < m_Cascade.iNumCascades; ++i)
 		m_pContext->ClearDepthStencilView(m_ShadowDSVs[i], D3D11_CLEAR_DEPTH, 1.f, 0);
-}
-void CShadow::Update_Cascade_CameraInfo(_float fNear, _float fFar)
-{
-	m_fCameraNear = fNear;
-	m_fCameraFar = fFar;
 }
 
 void CShadow::Start_ShadowIntensityTransition(_float fDuration, _float fTargetIntensity)

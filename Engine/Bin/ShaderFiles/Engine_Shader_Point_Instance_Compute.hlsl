@@ -82,24 +82,14 @@ void RotateParticle(inout VTXINSTANCE_PARTICLE Particle, uint iIndex)
     Particle.vTranslation = mul(pos, final_Matrix);
 }
 
-void ResetParticle(inout VTXINSTANCE_PARTICLE Particle, uint iIndex)
+void ResetParticle(uint iIndex)
 {
-    Particle.vLifeTime.x = 0.f;
-
-    //if (g_bIsfFollow) //true가 기본값
-    //    Particle.vTranslation = g_InputData[iIndex].vInitTranslation;
-    //else
-    //{
-    //    Particle.vTranslation.x = rand_between(g_vPrefabPosition.x - g_SpawnRange.x * 0.5f, g_vPrefabPosition.x - g_SpawnRange.x * 0.5f, iIndex);
-    //    Particle.vTranslation.y = rand_between(g_vPrefabPosition.y - g_SpawnRange.y * 0.5f, g_vPrefabPosition.y - g_SpawnRange.x * 0.5f, iIndex);
-    //    Particle.vTranslation.z = rand_between(g_vPrefabPosition.z - g_SpawnRange.z * 0.5f, g_vPrefabPosition.z - g_SpawnRange.z * 0.5f, iIndex);
-    //}
-    
-    Particle.vTranslation = g_InputData[iIndex].vInitTranslation;
-    Particle.vPrevPosition = g_InputData[iIndex].vInitTranslation;
+    g_OutputData[iIndex].vLifeTime.x = 0.f;
+    g_OutputData[iIndex].vTranslation = g_InputData[iIndex].vInitTranslation;
+    g_OutputData[iIndex].vPrevPosition = g_InputData[iIndex].vInitTranslation;
     if (g_bIsLoop == 0)
     {
-        Particle.bDead = true;
+        g_OutputData[iIndex].bDead = true;
         g_SpeedData[0].bDead = 1;
     }
 }
@@ -139,8 +129,18 @@ void CS_MOVE(uint3 DTid : SV_DispatchThreadID)
     Particle.vLifeTime.x += g_fTimeDelta;
 
     if (Particle.vLifeTime.x >= Particle.vLifeTime.y
-		|| (SpeedData.fSpeed.x < 0 && length(vMoveDir).x < 0.1f)) 
-        ResetParticle(Particle, iIndex);
+		|| (SpeedData.fSpeed.x < 0 && length(vMoveDir).x < 0.1f))
+    {
+        //ResetParticle(iIndex);
+        g_OutputData[iIndex].vLifeTime.x = 0.f;
+        g_OutputData[iIndex].vTranslation = g_InputData[iIndex].vInitTranslation;
+        g_OutputData[iIndex].vPrevPosition = g_InputData[iIndex].vInitTranslation;
+        if (g_bIsLoop == 0)
+        {
+            g_OutputData[iIndex].bDead = true;
+            g_SpeedData[0].bDead = 1;
+        }
+    }
 	
     if (Particle.vRight.x <= 0.f)
     {

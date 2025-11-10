@@ -39,6 +39,11 @@ void CEffect_Point_Instance::Update(_float fTimeDelta)
 
         if(it->fCurTime > it->fDurTime && it->EventType != 0)
         {
+            if (m_sData.bIsLoop == true && m_TimeTracks.size() == 1)
+            {
+                ++it;
+                continue;
+            }
             dynamic_cast<CVIBuffer_Point_Instance*>(m_pVIBufferCom)->Remove_Speed(CVIBuffer_Point_Instance::SPEED_VALUE(it->EventType - 1));
             it = m_TimeTracks.erase(it);
         }
@@ -54,7 +59,7 @@ void CEffect_Point_Instance::Update(_float fTimeDelta)
     if (m_sData.bIsTurbulence)
         m_pVIBufferCom->UpdateTurbulence(fTimeDelta, m_fAccTime);
 
-    if (m_fSpriteTime > m_sData.fSpriteSpeed)
+    if (m_fSpriteTime  > m_sData.fSpriteSpeed * 20.f)
     {
         ++m_iUVIdx;
         m_fSpriteTime = 0.f;
@@ -125,7 +130,7 @@ void CEffect_Point_Instance::Edit_Element()
 
     ImGui::ColorEdit4("MyColorWithAlpha",(float*)&m_sEditingData.vColor);
 
-    const char* textures[] = { "test0", "test1", "test2",  "test3" };
+    const char* textures[] = { "test0", "test1", "test2",  "test3",  "flare", "SpriteFire", "SpriteFire2"};
     ImGui::Combo("Point Particles Textures", reinterpret_cast<int*>(&m_sEditingData.iTextureIdx), textures, IM_ARRAYSIZE(textures));
 
     ImGui::Checkbox("Do Mask Scrolling", &m_bIsMaskScrolling);

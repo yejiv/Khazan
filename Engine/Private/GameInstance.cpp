@@ -774,11 +774,6 @@ void CGameInstance::Clear_ShadowDSVs()
 	m_pShadow->Clear_DSVs();
 }
 
-void CGameInstance::Update_Cascade_CameraInfo(_float fNear, _float fFar)
-{
-	m_pShadow->Update_Cascade_CameraInfo(fNear, fFar);
-}
-
 void CGameInstance::Start_ShadowIntensityTransition(_float fDuration, _float fTargetIntensity)
 {
 	m_pShadow->Start_ShadowIntensityTransition(fDuration, fTargetIntensity);

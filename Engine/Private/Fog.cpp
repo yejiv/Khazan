@@ -37,7 +37,7 @@ void CFog::Update(_float fTimeDelta)
     if (false == m_isTransition)
         return;
 
-    // Density, Color º¸°£
+    // Density, Color ë³´ê°„
     m_fTransTimeAcc += fTimeDelta;
 
 	_float fRatio = m_fTransTimeAcc / m_fDuration;
