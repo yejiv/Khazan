@@ -3,7 +3,9 @@
 #include "Base.h"
 #include "DB_Manager.h"
 #include "PlayerData_Manager.h"
+#include "Player_Manager.h"
 
+using CONTROL_BUTTON = CPlayer_Manager::CONTROL_BUTTON;
 using SPEARSKILL = CPlayerData_Manager::SPEARSKILL;
 //using GSWORDSKILL = CPlayerData_Manager::GSWORDSKILL;
 
@@ -79,6 +81,15 @@ public:
 	const PLAYER_DATA&			Get_PlayerData();
 	void						Add_SkillExp(_float fExp);
 	_bool						Add_SkillPoint(_int iPoint);
+    void                        BindSkillToButton(CONTROL_BUTTON eButton, _uint iSkill);
+    void                        UnBindSkillToButton(CONTROL_BUTTON eButton);
+    _uint                       Get_ButtonSkill(CONTROL_BUTTON eButton);
+    void                        Set_UsedSkill(_uint iSkill, _bool isUsed);
+    _bool                       Is_UsedSkill(_uint iSkill);
+    
+    void                        Set_PlayerInput(_bool isInput) { m_isPlayerInput = isInput; }
+    inline _bool                Get_PlayerInput() const { return m_isPlayerInput; }
+
 #pragma endregion
 
 #pragma region CAMERA_MANAGER
@@ -138,7 +149,7 @@ private:
 	class CCamera_Manager*	m_pCamera_Manager = { nullptr };
 	 CPlayerData_Manager* m_pPlayerData_Manager = { nullptr };
 	
-
+     _bool                  m_isPlayerInput = { true };
 #ifdef _DEBUG
 	class CDebug_Manager* m_pDebug_Manager = { nullptr };
 	class CCamera_Controller* m_pCamera_Controller = { nullptr };

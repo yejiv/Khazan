@@ -97,7 +97,7 @@ CONDITION CAI_Controller_Gomdol::GetCallbackCondition(CGameObject* pOwner, const
 
                 if (!BB->Get_Value<_bool>(pGomdol->Get_Name(), "isSleep"))
                 {
-                    cout << "SLEEPTURE!!!!!!!!!!" << endl;
+
                     return true;
                 }
                 else

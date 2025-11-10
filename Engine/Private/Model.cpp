@@ -802,6 +802,7 @@ void CModel::Debug_RanderState()
     ImGui::SeparatorText("Model State");
 
     // 전체 State 값 표시
+
     ImGui::Text("State Value: 0x%08X", m_iState);
     ImGui::Spacing();
 

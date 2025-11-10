@@ -148,7 +148,6 @@ HRESULT CHeinMach_Trigger::Ready_TriggerType(void* pArg)
     }
     else if (m_strTriggerKey == "CaveMidEntry")
     {
-
     }
     else if (m_strTriggerKey == "CaveExit")
     {
@@ -266,17 +265,45 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
         }
         else if (m_strTriggerKey == "CaveEntry")
         {
+            FOG_TRANSITION_DESC Desc{};
+            Desc.fDensity = 0.035f;
+            Desc.vColor = _float4(0.031f, 0.137f, 0.200f, 1.f);
+            Desc.isUseHeight = false;
+            Desc.isUseNoise = false;
+            m_pGameInstance->Start_FogTransition(5.f, Desc);
+
+            // 그림자 보간 추가
+            m_pGameInstance->Start_ShadowIntensityTransition(5.f, 1.f);
 
             static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Sky"), 0))->Set_SkyDesc(m_Sky_Dawn);
             static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Sky"), 1))->Set_CloudDesc(m_Cloud_Dawn);
         }
         else if (m_strTriggerKey == "CaveMidEntry")
         {
-
+            FOG_TRANSITION_DESC Desc{};
+            Desc.fDensity = 0.015f;
+            Desc.vColor = _float4(0.031f, 0.137f, 0.200f, 1.f);
+            Desc.isUseHeight = false;
+            Desc.isUseNoise = false;
+            m_pGameInstance->Start_FogTransition(2.f, Desc);
         }
         else if (m_strTriggerKey == "CaveExit")
         {
+            FOG_TRANSITION_DESC Desc{};
+            Desc.fDensity = 0.025f;
+            Desc.vColor = _float4(0.631f, 0.522f, 0.471f, 1.f);
+            Desc.isUseHeight = true;
+            Desc.fBaseHeight = -240.f;
+            Desc.isUseNoise = true;
+            Desc.vNoiseSpeed = _float2(0.01f, 0.f);
+            Desc.vNoiseScale = _float2(1.f, 1.f);
+            Desc.fNoiseStrength = 0.5f;
+            Desc.fNoiseContrast = 1.f;
+            Desc.iNoiseIndex = 8;
+            m_pGameInstance->Start_FogTransition(7.f, Desc);
 
+            // 그림자 보간 추가
+            m_pGameInstance->Start_ShadowIntensityTransition(7.f, 0.6f);
 
             static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Sky"), 0))->Set_SkyDesc(m_Sky_Day);
             static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Sky"), 1))->Set_CloudDesc(m_Cloud_Day);
@@ -284,15 +311,39 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
 #pragma region 동굴 역방향
         else if (m_strTriggerKey == "CaveEntry_Rev")
         {
+            // 동굴 전 포그
+            FOG_TRANSITION_DESC Desc{};
+            Desc.fDensity = 0.05f;
+            Desc.vColor = _float4(0.f, 0.106f, 0.137f, 1.f);
+            Desc.isUseHeight = false;
+            Desc.isUseNoise = false;
+            m_pGameInstance->Start_FogTransition(5.f, Desc);
 
+            // 그림자 보간 추가
+            m_pGameInstance->Start_ShadowIntensityTransition(5.f, 0.6f);
         }
         else if (m_strTriggerKey == "CaveMidEntry_Rev")
         {
-
+            // 동굴 입구 ~ 중간 포그
+            FOG_TRANSITION_DESC Desc{};
+            Desc.fDensity = 0.035f;
+            Desc.vColor = _float4(0.031f, 0.137f, 0.200f, 1.f);
+            Desc.isUseHeight = false;
+            Desc.isUseNoise = false;
+            m_pGameInstance->Start_FogTransition(2.f, Desc);
         }
         else if (m_strTriggerKey == "CaveExit_Rev")
         {
+            // 동굴 중간 ~ 출구 포그
+            FOG_TRANSITION_DESC Desc{};
+            Desc.fDensity = 0.015f;
+            Desc.vColor = _float4(0.031f, 0.137f, 0.200f, 1.f);
+            Desc.isUseHeight = false;
+            Desc.isUseNoise = false;
+            m_pGameInstance->Start_FogTransition(2.f, Desc);
 
+            // 그림자 보간 추가
+            m_pGameInstance->Start_ShadowIntensityTransition(2.f, 1.f);
 
             static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Sky"), 0))->Set_SkyDesc(m_Sky_Dawn);
             static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Sky"), 1))->Set_CloudDesc(m_Cloud_Dawn);

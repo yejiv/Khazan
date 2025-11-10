@@ -26,29 +26,29 @@ HRESULT CShadow::Initialize()
 	if (FAILED(Ready_ShaderResources()))
 		return E_FAIL;
 
-	for (_uint i = 1; i <= m_Cascade.iNumCascades; ++i)
-	{
-		_float fSplitIndex = static_cast<_float>(i) / static_cast<_float>(m_Cascade.iNumCascades);
-		_float fLinear = m_fCameraNear + (m_fCameraFar - m_fCameraNear) * fSplitIndex;
-		_float fLog = m_fCameraNear * powf(m_fCameraFar / m_fCameraNear, fSplitIndex);
-		m_Cascade.Splits[i - 1] = Lerp(fLinear, fLog, m_Config.fLamda);
-	}
+	//  for (_uint i = 1; i <= m_Cascade.iNumCascades; ++i)
+	//  {
+	//  	_float fSplitIndex = static_cast<_float>(i) / static_cast<_float>(m_Cascade.iNumCascades);
+	//  	_float fLinear = m_fCameraNear + (m_fCameraFar - m_fCameraNear) * fSplitIndex;
+	//  	_float fLog = m_fCameraNear * powf(m_fCameraFar / m_fCameraNear, fSplitIndex);
+	//  	m_Cascade.Splits[i - 1] = Lerp(fLinear, fLog, m_Config.fLamda);
+	//  }
 
-	// 임시 캐스케이드 구간
+	// ?�시 캐스케?�드 구간
 	m_Cascade.Splits[0] = 35.f;
 	m_Cascade.Splits[1] = 90.f;
 	m_Cascade.Splits[2] = 450.f;
 	m_Cascade.Splits[3] = 6000.f;
 
-	// 이후 Directional Light 추가 될 시 갱신 해주기
+	// ?�후 Directional Light 추�? ????갱신 ?�주�?
 	m_Config.vLightDir = { 1.f, -1.f, 1.f, 0.f };
 	// log, linear mix
 	m_Config.fLamda = 0.5f;
 	m_Config.Splits = m_Cascade.Splits;
-	// Z-fighting 방지
+	// Z-fighting 방�?
 	m_Config.fBias = 0.001f;
 
-	// 그림자 강도(세기)
+	// 그림??강도(?�기)
 	m_Config.fIntensity = 0.6f;
 
     return S_OK;
@@ -70,40 +70,36 @@ void CShadow::Update(_float fTimeDelta)
 		m_Config.fIntensity = Lerp(m_Config.fIntensity, m_fTargetIntensity, fRatio);
 	}
 
-	// 캐스케이드 코너 카메라 절두체 가져와서 비율로 계산
-	const _float4* pWorldPoints = m_pGameInstance->Get_Frustum_WorldPoints();
+	// ĳ�����̵� �ڳ� ī�޶� ����ü �����ͼ� ������ ���
+    m_pGameInstance->Get_Frustum_WorldPoints(m_vFrustumWorldPoints);
 
 	for (_uint i = 0; i < m_Cascade.iNumCascades; ++i)
 	{
-		_float fCascadeNear = (i == 0) ? m_fCameraNear : m_Cascade.Splits[i - 1];
-		_float fCascadeFar = m_Cascade.Splits[i];
+        _float fCascadeNear = (i == 0) ? m_fCameraNear : m_Cascade.Splits[i - 1];
+        _float fCascadeFar = m_Cascade.Splits[i];
 
-		_float fNearRatio = (fCascadeNear - m_fCameraNear) / (m_fCameraFar - m_fCameraNear);
-		_float fFarRatio = (fCascadeFar - m_fCameraNear) / (m_fCameraFar - m_fCameraNear);
-
-		array<_float4, 8> FustumCorners = {};
+        _float fNearRatio = (fCascadeNear - m_fCameraNear) / (m_fCameraFar - m_fCameraNear);
+        _float fFarRatio = (fCascadeFar - m_fCameraNear) / (m_fCameraFar - m_fCameraNear);
 
 		for (_uint j = 0; j < 4; ++j)
 		{
-			FustumCorners[j] = Lerp(pWorldPoints[j], pWorldPoints[j + 4], fNearRatio);
-			FustumCorners[j + 4] = Lerp(pWorldPoints[j], pWorldPoints[j + 4], fFarRatio);
-			FustumCorners[j].w = 1.f;
-			FustumCorners[j + 4].w = 1.f;
+            m_FustumCorners[j] = Lerp(m_vFrustumWorldPoints[j], m_vFrustumWorldPoints[j + 4], fNearRatio);
+            m_FustumCorners[j + 4] = Lerp(m_vFrustumWorldPoints[j], m_vFrustumWorldPoints[j + 4], fFarRatio);
+            m_FustumCorners[j].w = 1.f;
+            m_FustumCorners[j + 4].w = 1.f;
 		}
-
-		// ===== Frustum Corner =====
 
 		_vector vCenter = {};
 		
 		for (_uint j = 0; j < 8; ++j)
-			vCenter += XMLoadFloat4(&FustumCorners[j]);
+			vCenter += XMLoadFloat4(&m_FustumCorners[j]);
 		vCenter /= 8.f;
 
 		_float fRadius = {};
 
 		for (_uint j = 0; j < 8; ++j)
 		{
-			_float fDistance = XMVectorGetX(XMVector3Length(XMLoadFloat4(&FustumCorners[j]) - vCenter));
+			_float fDistance = XMVectorGetX(XMVector3Length(XMLoadFloat4(&m_FustumCorners[j]) - vCenter));
 			fRadius = max(fRadius, fDistance);
 		}
 
@@ -122,18 +118,18 @@ void CShadow::Update(_float fTimeDelta)
 
 		for (_uint j = 0; j < 8; ++j)
 		{
-			XMStoreFloat4(&FustumCorners[j], XMVector3TransformCoord(XMLoadFloat4(&FustumCorners[j]), LightViewMatrix));
+			XMStoreFloat4(&m_FustumCorners[j], XMVector3TransformCoord(XMLoadFloat4(&m_FustumCorners[j]), LightViewMatrix));
 		
-			vMinPoint.x = min(vMinPoint.x, FustumCorners[j].x);
-			vMinPoint.y = min(vMinPoint.y, FustumCorners[j].y);
-			vMinPoint.z = min(vMinPoint.z, FustumCorners[j].z);
+			vMinPoint.x = min(vMinPoint.x, m_FustumCorners[j].x);
+            vMinPoint.y = min(vMinPoint.y, m_FustumCorners[j].y);
+            vMinPoint.z = min(vMinPoint.z, m_FustumCorners[j].z);
 
-			vMaxPoint.x = max(vMaxPoint.x, FustumCorners[j].x);
-			vMaxPoint.y = max(vMaxPoint.y, FustumCorners[j].y);
-			vMaxPoint.z = max(vMaxPoint.z, FustumCorners[j].z);
+            vMaxPoint.x = max(vMaxPoint.x, m_FustumCorners[j].x);
+            vMaxPoint.y = max(vMaxPoint.y, m_FustumCorners[j].y);
+            vMaxPoint.z = max(vMaxPoint.z, m_FustumCorners[j].z);
 		}
 
-		// ===== ?ъ쁺 ?됰젹 援ы븯湲?=====
+		// ===== ??????�젹 ?�ы븯�?=====
 		_matrix LightProjMatrix = XMMatrixOrthographicOffCenterLH
 		(
 			vMinPoint.x,

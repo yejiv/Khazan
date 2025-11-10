@@ -95,6 +95,7 @@ HRESULT CSkill_Info::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, v
         if (strName == "Skill_Name")
         {
             m_pSKillName = static_cast<CUI_TextBox*>(Child);
+            Safe_AddRef(m_pSKillName);
         }
         else if (strName == "Skill_Stamina_Text")
         {
@@ -262,18 +263,6 @@ CGameObject* CSkill_Info::Clone(void* pArg)
 void CSkill_Info::Free()
 {
     __super::Free();
-
-   // for (auto Icon : m_pEffectIcon)
-   //    Safe_Release(Icon);
-   //m_pEffectIcon.clear();
-   //
-   //for (auto Text : m_pEffectText)
-   //    Safe_Release(Text);
-   //m_pEffectText.clear();
-   //
-   //for (auto Text : m_pEffectValue)
-   //    Safe_Release(Text);
-   //m_pEffectValue.clear();
    
    Safe_Release(m_pSKillName);
    Safe_Release(m_pSkillGaugeText);
