@@ -52,6 +52,7 @@ public:
 	virtual _float4*			Get_LockOnPosition() const { return m_vLockOnPosition; }
 	void						RequestRecoveryStamina() { m_isRequestRecoveryStamina = true; }
 	void						CheckMinDistanceWithPlayer(_float MinDist, _float fAnimRatio);
+    void                        Set_RequestRecoveryStamina(_bool isToggle) { m_isRequestRecoveryStamina = isToggle; }
 
 public:
 	virtual void				Take_Damage(_float fDamage, HITREACTION eHitreaction, _float fValidTime ,CGameObject* pGameObject = nullptr);

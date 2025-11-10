@@ -30,10 +30,14 @@ private:
 		ROTATION = 1 << 5,
 		//KEY_ROTATION = 1 << 6,
 		//SAMEDIRECTION = 1 << 7,  // 키입력 방향과 플레이어의 룩방향 일치성
-		
+
 		CHARGING_STRONG_ATTACK = 1 << 6,
 
-		AGAIN_REQUEST = 1 << 7,
+		AGAIN_REQUEST = 1 << 7, //스페이스바 유연하게 사용하도록 스프린트 제어
+		LOCKON = 1 << 8,  // 락 온
+        READY_ASSAULT = 1<< 9, // 강습 스킬 준비 
+
+       
 
 
 	};
@@ -62,6 +66,7 @@ public:
 	const _float4x4* Get_BoneSpearFXMatrixPtr() { return &m_pSpearFX_WorldMatrix; }
 	_matrix Get_BoneSpearFXMatrix() { return XMLoadFloat4x4(&m_pSpearFX_WorldMatrix); }
 
+    void	Set_Camera(class CCamera_Compre* pCamera);
 
 private:
 	class CBody_Khazan_Spear*			m_pBody = { nullptr };
@@ -69,6 +74,10 @@ private:
 	class CKhazan_Spear_Anim_Move*		m_pAnimMove = { nullptr };
 	class CKhazan_Spear_Anim_Attack*	m_pAnimAttack = { nullptr };
 	class CKhazan_Spear_Anim_Guard*		m_pAnimGuard = { nullptr };
+
+	class CCamera_Compre*				m_pCamera = { nullptr };
+    class CClientInstance*              m_pClientInstance = { nullptr };
+
 	//kHAZAN_ANIM_INFO			m_eCurAnimInfo = {}; //후보지에서 선택된 애님인포 
 	//vector<kHAZAN_ANIM_INFO>	m_AnimCandidates; // 매 프레임 후보 리스트 적립
 
@@ -97,7 +106,7 @@ private:
 
 	/* Move*/
 	DIR							m_eWorldDir = {}; // 카메라 기준 월드 방향 
-	_float						m_fRotateTime[2] = { 0.f,0.1f };
+	_float						m_fRotateTime[2] = { 0.f,0.15f };
 	_vector						m_vRotateStart;
 	_float						m_fSprintTime = { 0.f };
 	//_float						m_fDodgeTime = { 0.f };
@@ -105,6 +114,7 @@ private:
 
 	/* Attack  */
 	_float						m_fChargingStrongTime = { 0.f };
+    _uint                       m_iCurSkillIndex = {};
 
 	/* const */
 	const	_float				m_fMinSprintTime = { 0.15f };
@@ -113,7 +123,7 @@ private:
 	/* Move Speed */
 	const _float				m_fWalkSpeed = { 1.6f };
 	const _float				m_fRunSpeed = { 4.f };
-	const _float				m_fSprintSpeed = { 9.f };
+	const _float				m_fSprintSpeed = { 8.f };
 
 	/*  Attack */
 	const _float				m_fChargingStrongIntervalTime = { 0.25f };
@@ -122,12 +132,18 @@ private:
 private:
 	void			Update_State(_float fTimeDelta);
 	void			Move_Input(_float fTimeDelta);
-	_bool			Attack_Input(_float fTimeDelta);
+    _bool			Skill_Input(_float fTimeDelta);
+    _bool			Attack_Input(_float fTimeDelta);
 	_bool			Guard_Input(_float fTimeDelta);
-	void			ChangeAnimation();
+	void			Change_MoveIdle(_float fTimeDelta);
 	void			ExecuteAnimationExit();
 	void			Apply_PlayerMovement(_float fTimeDelta);
 	void			Check_KeyInput_Direction(_float fTimeDelta);
+    DIRECTION_INFO  Calculate_LockOnDirection(_float fTimeDelta);
+    void            LockOn_Rotation(_float fTimeDelta);
+
+    void            Update_LockOn( );   //카메라 락온과 동기화
+
 
 private:
 	HRESULT			Ready_Components();
@@ -139,7 +155,8 @@ private:
 	inline void		Add_Status(_uint i) { m_iStatus |= i; }
 	inline void		Remove_Status(_uint i) { m_iStatus &= ~i; }
 	inline _bool	Has_Status(_uint i) { return (m_iStatus & i) != 0; }
-	inline void		Clear_Status( ) { m_iStatus = 0; }
+    inline void     Toggle_Status(_uint i) { m_iStatus ^= i; }
+	//inline void		Clear_Status( ) { m_iStatus = 0; }
 
 	inline void		Add_State(_uint i) { m_iCurMainState |= i; }
 	inline void		Toggle_State(_uint i) { m_iCurMainState ^= i; }

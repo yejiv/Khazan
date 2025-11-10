@@ -39,7 +39,7 @@ HRESULT CSkySphere::Initialize_Clone(void* pArg)
     if (LEVEL::LOADING == eLevel || LEVEL::TITLE == eLevel)
         return S_OK;
 
-    Debug_SkyEdit();
+    //Debug_SkyEdit();
 #endif // _DEBUG
 
     return S_OK;

@@ -85,7 +85,7 @@ void CSkill_Slot_Panel::Priority_Update(_float fTimeDelta)
 
 void CSkill_Slot_Panel::Update(_float fTimeDelta)
 {
-	if (IsPick(g_hWnd))
+	if (IsPick(g_hWnd) && m_pGameInstance->Get_InputType() == INPUT_TYPE::UI)
 	{
 		m_pTextBox->Set_Color({ 1.f, 1.f, 1.f, 1.f });
 		m_pAtlasIcon->Update_Color_Child({ 1.f, 1.f, 1.f, 1.f });

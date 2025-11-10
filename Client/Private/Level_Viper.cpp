@@ -207,7 +207,7 @@ HRESULT CLevel_Viper::Ready_Layer_Camera(const _wstring& strLayerTag)
 	CameraSpringDesc.fSpeedPerSec = 10.f;
 	CameraSpringDesc.fRotationPerSec = XMConvertToRadians(90.0f);
 	CameraSpringDesc.fMouseSensor = 0.2f;
-	CameraSpringDesc.iCameraType = ENUM_CLASS(CAMERATYPE::SPRING);
+	CameraSpringDesc.iCameraType = ENUM_CLASS(CAMERATYPE::PLAYER);
 
 
 	CCamera_Compre* pCamera_Spring = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Camera_Compre"), &CameraSpringDesc));

@@ -47,6 +47,8 @@ void CMonster::CheckMinDistanceWithPlayer(_float fMinDist, _float fAnimRatio)
 void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction, _float fValidTime,CGameObject* pGameObject)
 {
     m_fCurrentHP -= fDamage;
+    if (m_fCurrentHP <= 0.f)
+        m_pController->AI_Terminate_All();
 
     m_pController->AI_ApplyDamage(pGameObject,fDamage,ENUM_CLASS(eHitreaction),fValidTime);
 }
@@ -56,8 +58,10 @@ void CMonster::Consume_Stamina(_float fAmout)
     if (m_fCurrentStamina > 0.f)
         m_fCurrentStamina -= fAmout;
 
-    if (m_fCurrentStamina <= 0)
-        m_fCurrentStamina = 0.1f;
+    if (m_fCurrentStamina <= 0.f)
+    {
+        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "DamageInterrupt",true);
+    }
 }
 
 void CMonster::Recovery_Stamina(_float fTimeDelta)

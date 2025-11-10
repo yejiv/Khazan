@@ -60,7 +60,7 @@ HRESULT CCamera_Compre::Initialize_Clone(void* pArg)
     m_strCameraTag = TEXT("Default");
 
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
-
+    
     CHECK_FAILED(Ready_Camera(pArg), E_FAIL);
 
 
@@ -75,6 +75,19 @@ HRESULT CCamera_Compre::Initialize_Clone(void* pArg)
 
 void CCamera_Compre::Priority_Update(_float fTimeDelta)
 {
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
+    {
+        Start_ForceOrbit(CAMERA_FORCE_DIR::FRONT);
+    }
+    else if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
+    {
+        Start_ForceOrbit(CAMERA_FORCE_DIR::BACK);
+    }
+    else if (m_pGameInstance->Key_Down(DIK_NUMPAD3))
+    {
+        Start_ForceOrbit(CAMERA_FORCE_DIR::NONE);
+    }
+
     if (!m_isActive)
         return;
 
@@ -92,7 +105,14 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
             if (m_iCameraType == ENUM_CLASS(CAMERATYPE::FREE))
                 Update_Free(fTimeDelta);
             else if (m_iCameraType == ENUM_CLASS(CAMERATYPE::PLAYER))
-                Update_Spring(fTimeDelta);
+            {
+
+                if(m_isForceOrbit)
+                    Update_ForceOrbit(fTimeDelta);
+                else
+                    Update_Spring(fTimeDelta);
+            }
+                
         }
 
         m_vShaking_BasePos = m_pTransformCom->Get_State(STATE::POSITION);
@@ -231,16 +251,6 @@ HRESULT CCamera_Compre::Spring(_float fTimeDelta)
     _vector vTargetPos, vDir;
 
     _vector vCamPos = Cal_CamPos(fTimeDelta, vTargetPos, vDir);
-
-    // Y 스무딩
-    /*_float fDesiredY = vCamPos.m128_f32[1];
-    _float fCurrentY = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
-
-    _float smoothedY = UpdateY_Stable(fCurrentY, fDesiredY, fTimeDelta);
-    vCamPos = XMVectorSetY(vCamPos, smoothedY);*/
-
-    //_float fAlphaTarget = 1.f - expf(-m_fFollowValue * fTimeDelta);
-    //m_vLerpMove = XMVectorLerp(m_vLerpMove, vTargetPos, fAlphaTarget);
 
     _vector vWorldUp, vLook, vRight, vUp;
     vWorldUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
@@ -433,18 +443,54 @@ CGameObject* CCamera_Compre::Pick_ClosetTarget()
 
 _vector CCamera_Compre::Cal_CamPos(_float fTimeDelta, _vector& vTargetPos, _vector& vDir)
 {
-    if (!m_isLockOn) {
+    // 1) 타겟(플레이어) 위치
+    vTargetPos = XMVectorSet(
+        m_pObjMatrix->_41,
+        m_pObjMatrix->_42 + 1.5f,
+        m_pObjMatrix->_43,
+        1.f
+    );
+
+    // 2) 마우스 회전 (락온 아닐 때)
+    if (!m_isLockOn)
+    {
         _int iMouseMoveX = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::X);
         _int iMouseMoveY = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::Y);
 
         m_fYaw = WrapAngle(m_fYaw - fTimeDelta * iMouseMoveX * m_fMouseSensor);
-        m_fPitch = Clamp(m_fPitch - fTimeDelta * iMouseMoveY * m_fMouseSensor, m_fPitchMin, m_fPitchMax);
+        m_fPitch = Clamp(
+            m_fPitch - fTimeDelta * iMouseMoveY * m_fMouseSensor,
+            m_fPitchMin,
+            m_fPitchMax
+        );
     }
-    vTargetPos = XMVectorSet(m_pObjMatrix->_41, m_pObjMatrix->_42 + 1.5f, m_pObjMatrix->_43, 1.f);
-    vDir = XMVectorSet(cosf(m_fPitch) * cosf(m_fYaw), sinf(m_fPitch), cosf(m_fPitch) * sinf(m_fYaw), 0.f);
+
+    // 3) 이동값 기반 궤도 회전 (락온 아닐 때만)
+    if (!m_isLockOn)
+    {
+        Apply_MoveOrbitYaw(fTimeDelta, vTargetPos);
+    }
+    else
+    {
+        // 락온 중에는 원한다면 궤도 회전 끄기:
+        m_isHasPrevTargetPos = false;
+    }
+
+    // 4) 최종 방향 벡터 계산
+    vDir = XMVectorSet(
+        cosf(m_fPitch) * cosf(m_fYaw),
+        sinf(m_fPitch),
+        cosf(m_fPitch) * sinf(m_fYaw),
+        0.f
+    );
     vDir = XMVector3Normalize(vDir);
 
-    _vector vCamPos = XMVectorMultiplyAdd(XMVectorReplicate(-m_fRadius), vDir, vTargetPos);
+    // 5) 카메라 위치 = 타겟 - dir * radius
+    _vector vCamPos = XMVectorMultiplyAdd(
+        XMVectorReplicate(-m_fRadius),
+        vDir,
+        vTargetPos
+    );
 
     return vCamPos;
 }
@@ -470,27 +516,155 @@ void CCamera_Compre::OnCameraAniEnd()
     m_fPitch = Clamp(asinf(Clamp(y, -1.f, 1.f)), m_fPitchMin, m_fPitchMax);
 }
 
-_float CCamera_Compre::UpdateY_Stable(_float fCurrentY, _float fDesiredY, _float fTimeDelta)
+void CCamera_Compre::Apply_MoveOrbitYaw(_float fTimeDelta, _vector vTargetPosWS)
 {
-    if (!m_isInited) { m_fSmoothY = fCurrentY; m_fYVel = 0.f; m_isInited = true; }
-
-    // 1) 데드존: 미세한 요철 변화 무시
-    float delta = fDesiredY - m_fSmoothY;
-    if (fabsf(delta) < m_fDeadZone)
-        fDesiredY = m_fSmoothY;
-
-    // 2) 상승/하강 속도 제한
+    // 이전 프레임 타겟 위치 없으면 초기화
+    if (!m_isHasPrevTargetPos)
     {
-        float raw = fDesiredY - m_fSmoothY;
-        float maxStep = (raw >= 0 ? m_fMaxRise : m_fMaxFall) * fTimeDelta;
-        fDesiredY = m_fSmoothY + std::clamp(raw, -fabsf(maxStep), fabsf(maxStep));
+        XMStoreFloat4(&m_vPrevTargetPosWS, vTargetPosWS);
+        m_isHasPrevTargetPos = true;
+        return;
     }
 
-    // 3) 크리티컬 감쇠
-    m_fSmoothY = SmoothDampScalar(m_fSmoothY, fDesiredY, m_fYVel, m_fYSmoothTime, fTimeDelta);
+    _vector vPrev = XMLoadFloat4(&m_vPrevTargetPosWS);
+    _vector vVel = XMVectorSubtract(vTargetPosWS, vPrev);
+    XMStoreFloat4(&m_vPrevTargetPosWS, vTargetPosWS);
 
-    return m_fSmoothY;
+    float fDist = XMVectorGetX(XMVector3Length(vVel));
+    if (fDist < 1e-5f || fTimeDelta <= 0.f)
+        return;
+
+    float fSpeed = fDist / fTimeDelta;
+    if (fSpeed < m_fMoveSpeedMin)
+        return; // 너무 느리면 노이즈로 보고 무시
+
+    _vector vMoveDir = XMVector3Normalize(vVel);
+
+    // 현재 카메라 기준 축 (이미 m_fYaw에 마우스 입력 반영된 상태라고 가정)
+    _vector vWorldUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+    _vector vCamForward = XMVectorSet(cosf(m_fYaw), 0.f, sinf(m_fYaw), 0.f);
+    _vector vCamRight = XMVector3Normalize(XMVector3Cross(vWorldUp, vCamForward));
+
+    // 이동 방향의 "카메라 오른쪽 성분"
+    float fSide = XMVectorGetX(XMVector3Dot(vMoveDir, vCamRight));
+    // fSide > 0 : 카메라 기준 오른쪽으로 이동
+    // fSide < 0 : 카메라 기준 왼쪽으로 이동
+
+    // 여기서 핵심:
+    // "캐릭터가 왼쪽으로 이동하면 카메라는 오른쪽으로 이동" → 반대 방향으로 궤도 회전
+    // fSide < 0 (왼쪽)이면, 카메라는 +yaw 또는 -yaw 중 하나로 "오른쪽으로" 돌아야 함.
+    // 축 헷갈릴 수 있으니, 일단 직관 기준 공식을 만들고, 반대로 돌면 부호만 바꾸면 된다.
+
+    float fSideAbs = fabsf(fSide);
+    if (fSideAbs < 0.05f)
+        return; // 거의 정면/후면일 땐 회전 X
+
+    // side 성분에 비례해서 회전 속도 생성
+    // NOTE: 부호 중요!
+    //  - 캐릭터가 카메라 기준 왼쪽(fSide < 0) → 카메라를 "오른쪽"으로 돌리고 싶으면:
+    //    yawDelta = -fSide * ...  (fSide<0 → yawDelta>0)
+    //  - 반대로 느껴지면 아래 한 줄의 부호를 반대로 바꾸면 된다.
+    float fYawDelta = -fSide * m_fOrbitYawSpeed * fTimeDelta;
+
+    m_fYaw = WrapAngle(m_fYaw + fYawDelta);
 }
+
+void CCamera_Compre::SyncOrbitFromCurrentPose()
+{
+    if (!m_pObjMatrix || !m_pTransformCom)
+        return;
+
+    const _float fEyeOffsetY = 1.5f;
+
+    _vector vTargetPos = XMVectorSet(
+        m_pObjMatrix->_41,
+        m_pObjMatrix->_42 + fEyeOffsetY,
+        m_pObjMatrix->_43,
+        1.f
+    );
+
+    _vector vCamPos = m_pTransformCom->Get_State(STATE::POSITION);
+
+    // 카메라가 "타겟을 바라보는" 방향: 타겟 - 카메라
+    _vector vToTarget = XMVectorSubtract(vTargetPos, vCamPos);
+
+    _float fRadius = XMVectorGetX(XMVector3Length(vToTarget));
+    if (fRadius < 0.1f)
+        fRadius = max(m_fRadius, 1.f);
+
+    _vector vLook = XMVector3Normalize(vToTarget); // 이것이 카메라 Look
+    _float fX = XMVectorGetX(vLook);
+    _float fY = XMVectorGetY(vLook);
+    _float fZ = XMVectorGetZ(vLook);
+
+    _float yaw = atan2f(fZ, fX);
+    _float pitch = asinf(Clamp(fY, -1.f, 1.f));
+
+    m_fYaw = WrapAngle(yaw);
+    m_fPitch = Clamp(pitch, m_fPitchMin, m_fPitchMax);
+}
+
+void CCamera_Compre::Start_ForceOrbit(CAMERA_FORCE_DIR eForceDir)
+{
+    if (eForceDir == CAMERA_FORCE_DIR::NONE || !m_pObjMatrix)
+        return;
+
+    // 지금 실제 시점 기준으로 동기화 (순간이동 방지 핵심)
+    SyncOrbitFromCurrentPose();
+
+    m_eForceOrbit = eForceDir;
+    m_isForceOrbit = true;
+    m_fForceOrbitTime = 0.f;
+
+    m_fForceStartYaw = m_fYaw;
+    m_fForceStartPitch = m_fPitch;
+
+    // 캐릭터 정면 yaw
+    _vector vCharLook = XMVector3Normalize(
+        XMVectorSet(m_pObjMatrix->_31, 0.f, m_pObjMatrix->_33, 0.f));
+    float fCharYaw = atan2f(
+        XMVectorGetZ(vCharLook),
+        XMVectorGetX(vCharLook));
+
+    if (eForceDir == CAMERA_FORCE_DIR::BACK)
+    {
+        m_fForceTargetYaw = WrapAngle(fCharYaw);      // 뒤에서 보는 시점
+        m_fForceTargetPitch = m_fForceStartPitch;   // 필요하면 그대로 두거나 살짝 조정
+    }
+    else // FRONT
+    {
+        m_fForceTargetYaw = WrapAngle(fCharYaw + XM_PI); // 앞에서 보는 시점
+
+        // 여기: "플레이어 정면 보기 좋은" pitch로 유도
+        float targetPitch = XMConvertToRadians(-5.f); // 살짝 내려다보는 각도, 튜닝 가능
+        m_fForceTargetPitch = Clamp(targetPitch, m_fPitchMin, m_fPitchMax);
+    }
+}
+
+void CCamera_Compre::Update_ForceOrbit(_float fTimeDelta)
+{
+    m_fForceOrbitTime += fTimeDelta;
+    _float fRatio = Clamp(m_fForceOrbitTime / m_fForceOrbitDuration, 0.f, 1.f);
+
+    _float fSmooth = fRatio * fRatio * (3.f - 2.f * fRatio); // smoothstep
+
+    _float dyaw = DeltaAngle(m_fForceStartYaw, m_fForceTargetYaw);
+    m_fYaw = WrapAngle(m_fForceStartYaw + dyaw * fSmooth);
+
+    m_fPitch = m_fForceStartPitch +
+        (m_fForceTargetPitch - m_fForceStartPitch) * fSmooth;
+    m_fPitch = Clamp(m_fPitch, m_fPitchMin, m_fPitchMax);
+
+    // yaw/pitch만 손대고, 위치 계산은 기존 Spring/Cal_CamPos에 맡김
+    Spring(fTimeDelta);
+
+    if (fRatio >= 1.f)
+    {
+        m_isForceOrbit = false;
+        m_eForceOrbit = CAMERA_FORCE_DIR::NONE;
+    }
+}
+
 
 CCamera_Compre::CAMERA_COMPRE_DESC CCamera_Compre::Get_Desc()
 {
