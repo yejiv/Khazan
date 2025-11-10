@@ -19,9 +19,6 @@ public:
 	}TRIGGER_HEINMACH_DESC;
 
 private:
-	enum class DAY_CIRCLE { DAWN, DAY, NONE };
-
-private:
 	CHeinMach_Trigger(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CHeinMach_Trigger(const CHeinMach_Trigger& Prototype);
 	virtual ~CHeinMach_Trigger() = default;
@@ -40,6 +37,7 @@ public:
 private:
 	virtual HRESULT Ready_Components(void* pArg) override;
 	HRESULT Ready_Collision(void* pArg);
+    // 트리거 이니셜라이즈 단계에서 채울거 있으면 채우는
 	HRESULT Ready_TriggerType(void* pArg);
 
 private:
@@ -55,7 +53,13 @@ private:
 private:
 	GUIDE_TYPE m_eGuideType = { GUIDE_TYPE::END };
 
-	DAY_CIRCLE m_eDayCircle = { DAY_CIRCLE::NONE };
+private:
+    // 동굴 전 하늘, 구름
+    SKY_DESC m_Sky_Dawn = {};
+    CLOUD_DESC m_Cloud_Dawn = {};
+    // 동굴 후 하늘, 구름
+    SKY_DESC m_Sky_Day = {};
+    CLOUD_DESC m_Cloud_Day = {};
 
 public:
 	static CHeinMach_Trigger* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

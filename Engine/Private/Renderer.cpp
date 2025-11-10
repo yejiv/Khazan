@@ -179,6 +179,8 @@ HRESULT CRenderer::Render_Shadow()
 
     m_pGameInstance->Backup_RT();
 
+    m_pGameInstance->Clear_ShadowDSVs();
+
     for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::SHADOW)])
     {
         for (_uint i = 0; i < m_pGameInstance->Get_NumCascades(); ++i)
@@ -208,7 +210,7 @@ HRESULT CRenderer::Render_Static()
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_GameObjects"))))
         return E_FAIL;
 
-    vector<CGameObject*> Deferred;
+    vector<CGameObject*> Deferred, Immediate;
     for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::STATIC)]) {
         
         if (nullptr != pRenderObject)
@@ -219,8 +221,7 @@ HRESULT CRenderer::Render_Static()
             }
             else
             {
-                pRenderObject->Render();
-                Safe_Release(pRenderObject);
+                Immediate.push_back(pRenderObject);
             }
         }
         
@@ -228,8 +229,7 @@ HRESULT CRenderer::Render_Static()
 
     m_RenderObjects[ENUM_CLASS(RENDERGROUP::STATIC)].clear();
 
-
-    Deferred_Job(Deferred);
+    Deferred_JobAndImmediate(Deferred, Immediate);
 
     if (FAILED(m_pGameInstance->End_MRT()))
         return E_FAIL;
@@ -876,8 +876,7 @@ ID3D11CommandList* CRenderer::ConsumeRecordedCL(uint32_t idx) {
     m_threadCLs[idx] = nullptr;
     return p; // 호출자가 Release
 }
-
-void CRenderer::Deferred_Job(vector<class CGameObject*> Deferred)
+void CRenderer::Deferred_JobAndImmediate(vector<class CGameObject*>& Deferred, vector<class CGameObject*>& Immediate)
 {
     // [메인] 4) 뷰포트/상태 캐시 (Get은 메인만!)
     D3D11_VIEWPORT cachedVP{}; UINT vpCount = 1;
@@ -923,6 +922,12 @@ void CRenderer::Deferred_Job(vector<class CGameObject*> Deferred)
         );
     }
 
+    for (auto& pRenderObject : Immediate)
+    {
+        pRenderObject->Render();
+        Safe_Release(pRenderObject);
+    }
+
     // [메인] 6) 워커 완료 대기 → 순서대로 Execute
     for (auto& f : futures) if (f.valid()) f.get();
 
@@ -933,6 +938,9 @@ void CRenderer::Deferred_Job(vector<class CGameObject*> Deferred)
             CommandList->Release();
         }
     }
+    Deferred.clear();
+    Immediate.clear();
+
 
     Safe_Release(pCurDSV);
 

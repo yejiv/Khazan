@@ -17,6 +17,11 @@ public:
 	virtual void Update(class CStateMachine* pFSM, class CGameObject* pOwner, _float fTimeDelta) override;
 	virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
+
+    virtual void OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, class CGameObject* pOwner = nullptr) override;
+
+
+
 private:
 	HIT_DIR		Convert_HitFlag(DIRECTION_INFO Info);
 	_uint		Make_AnimIndex(HITREACTION eHitreaction, HIT_DIR eHitDir);

@@ -12,13 +12,13 @@ private:
 
 public:
 	HRESULT Initialize();
-	void Update();
+	void Update(_float fTimeDelta);
 
 public:
 	HRESULT				Bind_ShadowDSV(_uint iIndex);
 	HRESULT				Bind_Shadow_ShaderResources(class CShader* pShader);
 	void				Clear_DSVs();
-	void				Update_Cascade_CameraInfo(_float fNear, _float fFar);
+	void				Start_ShadowIntensityTransition(_float fDuration, _float fTargetIntensity);
 
 public:
 	void				Set_CurrentCascade(_uint iIndex) { m_iCurrentCascade = iIndex; }
@@ -47,6 +47,11 @@ private:
 	_float								m_fCameraNear{}, m_fCameraFar{};
 
 	vector<_float4x4>					m_WorldMatrices = {};
+
+	_bool								m_isTransition = {};
+	_float								m_fTransTimeAcc = {};
+	_float								m_fDuration = {};
+	_float								m_fTargetIntensity = {};
 
 private:
 	vector<ID3D11DepthStencilView*>		m_ShadowDSVs;

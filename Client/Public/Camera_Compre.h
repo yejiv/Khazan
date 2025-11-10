@@ -43,11 +43,13 @@ public:
 	HRESULT Spring(_float fTimeDelta);
 	HRESULT RayCast(_float fTimeDelta);
 	HRESULT LockOn(_float fTimeDelta);
-
+    void Update_BlendBack(_float fTimeDelta);
 public:
 	void LockOn_Check(_float fTimeDelta);
 	class CGameObject* Pick_ClosetTarget();
 	_vector Cal_CamPos(_float fTimeDelta, _vector& vTargetPos, _vector& vDir);
+
+    virtual void OnCameraAniEnd() override;
 
 public:
 	_float UpdateY_Stable(_float fCurrentY, _float fDesiredY, _float fTimeDelta);
@@ -65,7 +67,7 @@ private:
 	_bool m_isInited = { false };
 	_float m_fSmoothY = { 0.f };
 
-	_float m_fYSmoothTime = { 0.16f }; // 감쇠 시간
+	_float m_fYSmoothTime = { 0.25f }; // 감쇠 시간
 	_float m_fDeadZone = { 0.1f }; // 미세 요철 무시
 	_float m_fMaxRise = { 5.f }; // 초당 상승 한도
 	_float m_fMaxFall = { 9.f }; // 초당 하강한도
@@ -82,6 +84,16 @@ private:
 	_float m_fTargetHalfFovCos = 0.f;
 	_float m_fTargetMaxDistance = 20.f;
 
+
+    // 특정위치에서 강제 이동시 보간
+    _bool m_isBlendBack = false;
+    _float m_fBlendBackTime = 0.f;
+    _float m_fBlendBackDuration = 1.5f;
+
+    _vector m_vBlendStartPos = XMVectorZero();
+    _vector m_vBlendStartRight = XMVectorZero();
+    _vector m_vBlendStartUp = XMVectorZero();
+    _vector m_vBlendStartLook = XMVectorZero();
 
 public:
 	void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;

@@ -258,8 +258,8 @@ void CTombStone::Input_Interact_Event(_float fTimeDelta)
 
         _matrix OffSetMatrix = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("IA_BeginLoc")) * m_pTransformCom->Get_WorldMatrix();
 
-        XMStoreFloat3(&TSEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
-        XMStoreFloat3(&TSEvent.vPlayerPosition, OffSetMatrix.r[3]);
+        XMStoreFloat4(&TSEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+        XMStoreFloat4(&TSEvent.vPlayerPosition, OffSetMatrix.r[3]);
 
         InteractType.TSEvent = TSEvent;
 
@@ -311,8 +311,8 @@ void CTombStone::Animation_Update(_float fTimeDelta)
 
             _matrix OffSetMatrix = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("IA_BeginLoc")) * m_pTransformCom->Get_WorldMatrix();
 
-            XMStoreFloat3(&TSEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
-            XMStoreFloat3(&TSEvent.vPlayerPosition, OffSetMatrix.r[3]);
+            XMStoreFloat4(&TSEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+            XMStoreFloat4(&TSEvent.vPlayerPosition, OffSetMatrix.r[3]);
             TSEvent.isTSOpened = false;
 
             InteractType.TSEvent = TSEvent;
@@ -362,7 +362,7 @@ void CTombStone::Animation_Change(_float fTimeDelta)
 
         EventTombStone TSEvent = {};
 
-        XMStoreFloat3(&TSEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+        XMStoreFloat4(&TSEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
         TSEvent.isTSOpened = true;              // 이제 툼스톤 UI 열리게
 
         InteractType.TSEvent = TSEvent;

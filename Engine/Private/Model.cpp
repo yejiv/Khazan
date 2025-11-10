@@ -178,7 +178,7 @@ _float4x4* CModel::Get_BoneMatrix(const _char* pBoneName)
 
 _float4x4* CModel::Get_BoneMatrix(const _int iBoneIndex)
 {
-    if (m_Bones.size() < iBoneIndex || 0 > iBoneIndex)
+    if (m_Bones.size() > iBoneIndex || 0 < iBoneIndex)
         return nullptr;
 
     return m_Bones[iBoneIndex]->Get_CombinedTransformationMatrixPtr();
@@ -227,7 +227,7 @@ const vector<_int>& CModel::Get_ChildIndices(_int boneIndex) const
 void CModel::Set_OwnerTransform(CTransform** pTransform)
 {
     m_pOwnerTransform = *pTransform;
-    Safe_AddRef(m_pOwnerTransform);
+    //Safe_AddRef(m_pOwnerTransform);
 }
 
 _vector CModel::Get_BoneWorldRotationQuat(_int iBone) const
@@ -620,6 +620,8 @@ void CModel::Attach_Part(CModel* pPart)
         return;
 
     pPart->Set_MasterSkeleton(this);        //여기서 파츠가 마스터를 add (+마스터)
+    pPart->Build_PartToMasterMap();
+
     m_AttachedParts.emplace_back(pPart);
     Safe_AddRef(pPart);                 //마스터가 파츠 add (+파츠)
 
@@ -656,53 +658,141 @@ void CModel::Render_AllAttachedParts()
     }
 }
 
-void CModel::Update_PartLocalBones()
+
+void CModel::Build_PartToMasterMap()
 {
-    if (!m_isSharedSkeleton || nullptr == m_pMasterSkeleton)
+    if (!m_isSharedSkeleton || m_pMasterSkeleton == nullptr)
         return;
 
-    m_PartLocalBoneMatrices.clear();
-    m_PartLocalBoneMatrices.resize(m_Bones.size());
+    const auto& masterBones = m_pMasterSkeleton->m_Bones;
+    const _uint iMasterCount = masterBones.size();
+    const _uint iPartCount = m_Bones.size();
 
-    // 중요: 순차적으로 처리 (부모 -> 자식 순서)
-    for (size_t i = 0; i < m_Bones.size(); ++i)
+    m_PartToMasterIndex.assign(iPartCount, -1);
+
+    // master bone name -> index 매핑
+    unordered_map<_wstring, _int> masterMap;
+    masterMap.reserve(iMasterCount * 2);
+
+    for (_int i = 0; i < (_int)iMasterCount; ++i)
+    {
+        masterMap.emplace(masterBones[i]->Get_Name(), i);
+    }
+
+    // 파트 본 이름으로 마스터 인덱스 찾기
+    for (_int i = 0; i < (_int)iPartCount; ++i)
+    {
+        const _wstring& name = m_Bones[i]->Get_Name();
+        auto it = masterMap.find(name);
+        if (it != masterMap.end())
+            m_PartToMasterIndex[i] = it->second;
+    }
+
+    // 파트 본 행렬 버퍼도 사이즈 맞춰 준비
+    m_PartLocalBoneMatrices.resize(iPartCount);
+}
+
+void CModel::Update_PartLocalBones()
+{
+    //if (!m_isSharedSkeleton || nullptr == m_pMasterSkeleton)
+    //    return;
+
+    //m_PartLocalBoneMatrices.clear();
+    //m_PartLocalBoneMatrices.resize(m_Bones.size());
+
+    //// 중요: 순차적으로 처리 (부모 -> 자식 순서)
+    //for (size_t i = 0; i < m_Bones.size(); ++i)
+    //{
+    //    CBone* pBone = m_Bones[i];
+    //    _wstring boneName = pBone->Get_Name();
+
+    //    // 마스터에 있는 본인지 확인
+    //    _bool foundInMaster = false;
+    //    for (size_t j = 0; j < m_pMasterSkeleton->m_Bones.size(); ++j)
+    //    {
+    //        if (m_pMasterSkeleton->m_Bones[j]->Compare_Name(boneName))
+    //        {
+    //            // 마스터 본: 마스터의 Combined Matrix 사용
+    //            m_PartLocalBoneMatrices[i] =
+    //                *m_pMasterSkeleton->m_Bones[j]->Get_CombinedTransformationMatrixPtr();
+    //            foundInMaster = true;
+    //            break;
+    //        }
+    //    }
+
+    //    // 파츠 전용 본 처리
+    //    if (!foundInMaster)
+    //    {
+    //        _int iParentIndex = pBone->Get_ParentBoneIndex();
+
+    //        if (iParentIndex >= 0 && iParentIndex < m_PartLocalBoneMatrices.size())
+    //        {
+    //            // 핵심: 부모 Combined * 자신의 Local
+    //            _matrix matParent = XMLoadFloat4x4(&m_PartLocalBoneMatrices[iParentIndex]);
+    //            _matrix matLocal = pBone->Get_TransformationMatrix();  // 초기 로컬 변환
+
+    //            XMStoreFloat4x4(&m_PartLocalBoneMatrices[i], matLocal * matParent);
+    //        }
+    //        else
+    //        {
+    //            XMStoreFloat4x4(&m_PartLocalBoneMatrices[i], XMMatrixIdentity());
+    //        }
+    //    }
+    //}
+
+    if (!m_isSharedSkeleton || m_pMasterSkeleton == nullptr)
+        return;
+
+    const _uint iPartCount = m_Bones.size();
+    if (iPartCount == 0)
+        return;
+
+    const auto& masterBones = m_pMasterSkeleton->m_Bones;
+
+    // 방어적: 매핑/버퍼 사이즈 맞추기
+    if (m_PartToMasterIndex.size() != iPartCount)
+        Build_PartToMasterMap();
+    if (m_PartLocalBoneMatrices.size() != iPartCount)
+        m_PartLocalBoneMatrices.resize(iPartCount);
+
+    // 부모 -> 자식 순서라고 가정(m_Bones 생성 시 그렇게 되어 있음)
+    for (size_t i = 0; i < iPartCount; ++i)
     {
         CBone* pBone = m_Bones[i];
-        _wstring boneName = pBone->Get_Name();
+        const _int iMasterIdx = (i < m_PartToMasterIndex.size()) ? m_PartToMasterIndex[i] : -1;
 
-        // 마스터에 있는 본인지 확인
-        _bool foundInMaster = false;
-        for (size_t j = 0; j < m_pMasterSkeleton->m_Bones.size(); ++j)
+        if (iMasterIdx >= 0)
         {
-            if (m_pMasterSkeleton->m_Bones[j]->Compare_Name(boneName))
-            {
-                // 마스터 본: 마스터의 Combined Matrix 사용
-                m_PartLocalBoneMatrices[i] =
-                    *m_pMasterSkeleton->m_Bones[j]->Get_CombinedTransformationMatrixPtr();
-                foundInMaster = true;
-                break;
-            }
+            // 마스터와 공유되는 본: 마스터 Combined 그대로 사용
+            m_PartLocalBoneMatrices[i] =
+                *masterBones[iMasterIdx]->Get_CombinedTransformationMatrixPtr();
         }
-
-        // 파츠 전용 본 처리
-        if (!foundInMaster)
+        else
         {
-            _int iParentIndex = pBone->Get_ParentBoneIndex();
+            // 파츠 전용 본: 부모 기준으로 조합
+            const _int iParentIndex = pBone->Get_ParentBoneIndex();
 
-            if (iParentIndex >= 0 && iParentIndex < m_PartLocalBoneMatrices.size())
+            if (iParentIndex >= 0 && iParentIndex < (_int)iPartCount)
             {
-                // 핵심: 부모 Combined * 자신의 Local
-                _matrix matParent = XMLoadFloat4x4(&m_PartLocalBoneMatrices[iParentIndex]);
-                _matrix matLocal = pBone->Get_TransformationMatrix();  // 초기 로컬 변환
+                const _matrix ParentCombinedMatrix =
+                    XMLoadFloat4x4(&m_PartLocalBoneMatrices[iParentIndex]);
+                const _matrix localMatrix =
+                    pBone->Get_TransformationMatrix(); // 파츠 로컬
 
-                XMStoreFloat4x4(&m_PartLocalBoneMatrices[i], matLocal * matParent);
+                // DirectX 스켈레톤 컨벤션: Combined = Local * ParentCombined
+                XMStoreFloat4x4(&m_PartLocalBoneMatrices[i], localMatrix * ParentCombinedMatrix);
             }
             else
             {
-                XMStoreFloat4x4(&m_PartLocalBoneMatrices[i], XMMatrixIdentity());
+                // 부모가 마스터에 붙어 있을 가능성도 있지만,
+                // 여기선 파츠 루트면 자기 로컬(또는 identity)로 처리
+                const _matrix localMatrix = pBone->Get_TransformationMatrix();
+                XMStoreFloat4x4(&m_PartLocalBoneMatrices[i], localMatrix);
+                // 필요하면 XMMatrixIdentity()로 바꿔도 됨 (디자인 선택)
             }
         }
     }
+
 }
 
 
@@ -1213,8 +1303,8 @@ void CModel::Free()
 {
 	__super::Free();
 
-    if(m_pOwnerTransform)
-        Safe_Release(m_pOwnerTransform);
+    /*if(m_pOwnerTransform)
+        Safe_Release(m_pOwnerTransform);*/
 
 
     for (auto& pAnimation : m_Animations)

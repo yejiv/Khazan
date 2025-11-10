@@ -20,9 +20,8 @@ HRESULT CShadow::Initialize()
 	m_Cascade.LightProjMatrices.resize(m_Cascade.iNumCascades);
 	m_ShadowDSVs.resize(m_Cascade.iNumCascades);
 
-	// 이후 카메라 매니저 추가 시 실제 카메라 Near, Far Get으로 가져오기 / Camera Create -> Shadow Create
 	m_fCameraNear = 0.1f;
-	m_fCameraFar = 1000.f;
+	m_fCameraFar = 6000.f;
 
 	if (FAILED(Ready_ShaderResources()))
 		return E_FAIL;
@@ -35,19 +34,42 @@ HRESULT CShadow::Initialize()
 		m_Cascade.Splits[i - 1] = Lerp(fLinear, fLog, m_Config.fLamda);
 	}
 
+	// 임시 캐스케이드 구간
+	m_Cascade.Splits[0] = 35.f;
+	m_Cascade.Splits[1] = 90.f;
+	m_Cascade.Splits[2] = 450.f;
+	m_Cascade.Splits[3] = 6000.f;
+
 	// 이후 Directional Light 추가 될 시 갱신 해주기
 	m_Config.vLightDir = { 1.f, -1.f, 1.f, 0.f };
-	// log, linear mix 수치
+	// log, linear mix
 	m_Config.fLamda = 0.5f;
 	m_Config.Splits = m_Cascade.Splits;
-	// Z-fighting 방지 수치
+	// Z-fighting 방지
 	m_Config.fBias = 0.001f;
+
+	// 그림자 강도(세기)
+	m_Config.fIntensity = 0.6f;
 
     return S_OK;
 }
 
-void CShadow::Update()
+void CShadow::Update(_float fTimeDelta)
 {
+	if (true == m_isTransition)
+	{
+		m_fTransTimeAcc += fTimeDelta;
+
+		_float fRatio = m_fTransTimeAcc / m_fDuration;
+		if (1.f <= fRatio)
+		{
+			fRatio = 1.f;
+			m_isTransition = false;
+		}
+
+		m_Config.fIntensity = Lerp(m_Config.fIntensity, m_fTargetIntensity, fRatio);
+	}
+
 	// 캐스케이드 코너 카메라 절두체 가져와서 비율로 계산
 	const _float4* pWorldPoints = m_pGameInstance->Get_Frustum_WorldPoints();
 
@@ -69,16 +91,14 @@ void CShadow::Update()
 			FustumCorners[j + 4].w = 1.f;
 		}
 
-		// ===== 뷰 행렬 구하기 =====
+		// ===== Frustum Corner =====
 
-		// 1. 각 절두체의 중심점 구하기
 		_vector vCenter = {};
 		
 		for (_uint j = 0; j < 8; ++j)
 			vCenter += XMLoadFloat4(&FustumCorners[j]);
 		vCenter /= 8.f;
 
-		// 2. 중점과 코너 사이의 길이가 가장 큰 길이를 구하고 그 길이를 반지름으로 사용
 		_float fRadius = {};
 
 		for (_uint j = 0; j < 8; ++j)
@@ -87,14 +107,11 @@ void CShadow::Update()
 			fRadius = max(fRadius, fDistance);
 		}
 
-		// 반올림 후 나눠서 소수점을 0.0625..단위로 맞춤 -> 그림자 정밀도에서 사용
 		fRadius = ceil(fRadius * 16.f) / 16.f;
 
-		// 3. 반지름 구하기
 		_vector vMaxExtents = XMVectorSet(fRadius, fRadius, fRadius, 1.f);
 		_vector vMinExtents = -vMaxExtents;
 
-		// 4. 광원 기준 뷰 위치 만들기 == Eye
 		_vector vShadowCamPos = vCenter - XMVector3Normalize(XMLoadFloat4(&m_Config.vLightDir)) * fRadius;
 
 		_matrix LightViewMatrix = XMMatrixLookAtLH(vShadowCamPos, vCenter, XMVectorSet(0.f, 1.f, 0.f, 0.f));
@@ -116,7 +133,7 @@ void CShadow::Update()
 			vMaxPoint.z = max(vMaxPoint.z, FustumCorners[j].z);
 		}
 
-		// ===== 투영 행렬 구하기 =====
+		// ===== ?ъ쁺 ?됰젹 援ы븯湲?=====
 		_matrix LightProjMatrix = XMMatrixOrthographicOffCenterLH
 		(
 			vMinPoint.x,
@@ -137,7 +154,6 @@ HRESULT CShadow::Bind_ShadowDSV(_uint iIndex)
 		return E_FAIL;
 
 	m_pContext->OMSetRenderTargets(0, nullptr, m_ShadowDSVs[iIndex]);
-	m_pContext->ClearDepthStencilView(m_ShadowDSVs[iIndex], D3D11_CLEAR_DEPTH, 1.f, 0);
 
 	return S_OK;
 }
@@ -160,6 +176,9 @@ HRESULT CShadow::Bind_Shadow_ShaderResources(CShader* pShader)
 		return E_FAIL;
 
 	if (FAILED(pShader->Bind_RawValue("g_fBias", &m_Config.fBias, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(pShader->Bind_RawValue("g_fShadowIntensity", &m_Config.fIntensity, sizeof(_float))))
 		return E_FAIL;
 
 	_float2 vShadowMapSize = _float2(g_iMaxWidth, g_iMaxHeight);
@@ -185,7 +204,6 @@ void CShadow::Set_CascadeConfig(CASCADE_CONFIG Config)
 	{
 		m_Config = Config;
 
-		// Lamda 변경 시 스플릿 자동 분할 재계산
 		for (_uint i = 1; i <= m_Cascade.iNumCascades; ++i)
 		{
 			_float fSplitIndex = static_cast<_float>(i) / static_cast<_float>(m_Cascade.iNumCascades);
@@ -206,10 +224,13 @@ void CShadow::Clear_DSVs()
 	for (_uint i = 0; i < m_Cascade.iNumCascades; ++i)
 		m_pContext->ClearDepthStencilView(m_ShadowDSVs[i], D3D11_CLEAR_DEPTH, 1.f, 0);
 }
-void CShadow::Update_Cascade_CameraInfo(_float fNear, _float fFar)
+
+void CShadow::Start_ShadowIntensityTransition(_float fDuration, _float fTargetIntensity)
 {
-	m_fCameraNear = fNear;
-	m_fCameraFar = fFar;
+	m_isTransition = true;
+	m_fTransTimeAcc = 0.f;
+	m_fDuration = fDuration;
+	m_fTargetIntensity = fTargetIntensity;
 }
 
 #ifdef _DEBUG
@@ -291,7 +312,6 @@ HRESULT CShadow::Ready_ShaderResources()
 			return E_FAIL;
 	}
 
-	// Depth Stencil 1 초기화
 	Clear_DSVs();
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc{};

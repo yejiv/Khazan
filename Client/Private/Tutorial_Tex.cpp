@@ -82,7 +82,7 @@ void CTutorial_Tex::Late_Update(_float fTimeDelta)
 	{
 		++m_iTexPass;
 
-		if (m_iTexPass >= m_pMovieCom[m_eMovieType]->Get_NumTextures())
+		if (m_iTexPass >= (_int)m_pMovieCom[m_eMovieType]->Get_NumTextures())
 			m_iTexPass = 0;
 	}
 

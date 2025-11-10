@@ -73,8 +73,9 @@ PS_OUT PS_MAIN_BLEND(PS_IN In)
     float vDestAlpha = max(max(vMask.r, vMask.g), vMask.b);
     
     vFinalColor.a = 1.f * vDestAlpha;
-    
+
     Out.vColor = vFinalColor;
+    //Out.vColor = vFinalColor * (g_vSourceColor.a + 1);
     
    // Out.vColor = float4(1.f, 1.f, 1.f, 1.f);
     

@@ -100,7 +100,7 @@ private:
 	_bool						m_isEnableShadow = { true };
 	_bool						m_isEnableSSAO = { true };
 	_bool						m_isEnableFog = { true };
-	_bool						m_isEnableToonShade = {};
+	_bool						m_isEnableToonShade = { true };
 	_bool						m_isEnableOutline = {};
 	_bool						m_isEnableVignette = {};
 	_bool						m_isEnableDistortion = {};
@@ -134,7 +134,7 @@ private:
 	void StoreRecordedCL(uint32_t idx, ID3D11CommandList* pCL);
 	ID3D11CommandList* ConsumeRecordedCL(uint32_t idx);
 
-	void Deferred_Job(vector<class CGameObject*> Deferred);
+	void Deferred_JobAndImmediate(vector<class CGameObject*>& Deferred, vector<class CGameObject*>& Immediate);
 
 #ifdef _DEBUG
 	HRESULT Render_Debug();

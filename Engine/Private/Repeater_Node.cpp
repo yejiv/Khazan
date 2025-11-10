@@ -3,6 +3,7 @@
 CRepeater_Node::CRepeater_Node(_int iRepeatCount)
 	:m_iRepeatCount{iRepeatCount}
 {
+    m_eNodeType = NODETYPE::DECORATOR;
 }
 
 BTNODESTATE CRepeater_Node::Tick(CBlackBoard* BB)
@@ -26,11 +27,11 @@ void CRepeater_Node::Terminate(BTNODESTATE eState, CBlackBoard* BB)
 	m_iCurrentCount = 0;
 }
 
-
-void CRepeater_Node::Abort()
+void CRepeater_Node::Abort(CBlackBoard* BB)
 {
-	m_iCurrentCount = 0;
+    m_iCurrentCount = 0;
 }
+
 
 CRepeater_Node* CRepeater_Node::Create(_int iRepeatCount)
 {

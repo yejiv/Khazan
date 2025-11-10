@@ -16,7 +16,7 @@ private:
 public:
 	virtual BTNODESTATE		Tick(class CBlackBoard* BB = nullptr) override;
 	virtual void			Terminate(BTNODESTATE eState, class CBlackBoard* BB = nullptr) override;
-	virtual void			Abort() override;
+    virtual void            Abort(class CBlackBoard* BB) override;
 
 private:
 	ACTION					m_Action;

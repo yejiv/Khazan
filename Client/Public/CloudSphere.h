@@ -57,6 +57,25 @@ private:
 
 	HRESULT Bind_Cloud_ShaderResources();
 
+#ifdef _DEBUG
+private:
+    _bool m_isCloudWindow = { false };
+
+    CLOUD_DESC m_FixDesc = {};
+
+    _char m_szFilePath[MAX_PATH] = { "../../Client/Bin/Data/Map/MapData/" };
+    KHAZAN_MAP m_eMapType = { KHAZAN_MAP::END };
+
+    string m_strFolderName = {};
+
+    _char m_szFileName[MAX_PATH] = {};
+
+    string m_strFileName = {};
+
+private:
+    void Debug_CloudEdit();
+#endif // _DEBUG
+
 public:
 	static CCloudSphere* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg) override;

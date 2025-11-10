@@ -216,6 +216,8 @@ void CBigChest::Input_Interact_Event(_float fTimeDelta)
 
     if (true == isPressing)
     {
+        m_pGuide->Update_Visible(false);
+
         EventInteractType InteractType = {};
 
         InteractType.eInteractType = INTERACTIVE_TYPE::CHEST;
@@ -226,8 +228,8 @@ void CBigChest::Input_Interact_Event(_float fTimeDelta)
 
         _matrix OffSetMatrix = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Position_Ch")) * m_pTransformCom->Get_WorldMatrix();
 
-        XMStoreFloat3(&ChestEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
-        XMStoreFloat3(&ChestEvent.vPlayerPosition, OffSetMatrix.r[3]);
+        XMStoreFloat4(&ChestEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+        XMStoreFloat4(&ChestEvent.vPlayerPosition, OffSetMatrix.r[3]);
 
         InteractType.ChestEvent = ChestEvent;
 
@@ -262,8 +264,8 @@ void CBigChest::Animation_Update(_float fTimeDelta)
 
             _matrix OffSetMatrix = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Position_Ch")) * m_pTransformCom->Get_WorldMatrix();
 
-            XMStoreFloat3(&ChestEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
-            XMStoreFloat3(&ChestEvent.vPlayerPosition, OffSetMatrix.r[3]);
+            XMStoreFloat4(&ChestEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+            XMStoreFloat4(&ChestEvent.vPlayerPosition, OffSetMatrix.r[3]);
             ChestEvent.Items = m_Items;
             ChestEvent.isChestOpened = false;
 
@@ -302,8 +304,8 @@ void CBigChest::Animation_Change(_float fTimeDelta)
 
         _matrix OffSetMatrix = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Position_Ch")) * m_pTransformCom->Get_WorldMatrix();
 
-        XMStoreFloat3(&ChestEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
-        XMStoreFloat3(&ChestEvent.vPlayerPosition, OffSetMatrix.r[3]);
+        XMStoreFloat4(&ChestEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+        XMStoreFloat4(&ChestEvent.vPlayerPosition, OffSetMatrix.r[3]);
         ChestEvent.Items = m_Items;
         ChestEvent.isChestOpened = true;
 
