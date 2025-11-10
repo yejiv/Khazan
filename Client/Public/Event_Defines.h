@@ -105,7 +105,6 @@ namespace Client {
 		_bool		isDissovle;
 	};
 
- 
 	struct EVENT_LOCKON_VISIBLE {
 		const _float4* pTargetPos;
 		_bool isVisible;

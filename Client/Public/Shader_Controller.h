@@ -48,6 +48,7 @@ private:
 	_bool					m_isWorldSpaceFog = {};
 	_float					m_fFogTransDuration = {};	
 	FOG_TRANSITION_DESC		m_TargetFogDesc = {};
+    FOG_CONFIG              m_InitFogConfig = {};
 
 	// Cartoon Rendering
 	_float					m_fToonShadeLevel = { 3.f };

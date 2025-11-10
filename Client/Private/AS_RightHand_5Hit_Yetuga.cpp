@@ -41,16 +41,17 @@ void CAS_RightHand_5Hit_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollis
     COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iCollisionLayer);
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
-        //if (m_iComboCount < 5)
-        //    m_iComboCount++;
+        if (m_iComboCount < 5)
+            m_iComboCount++;
 
-        //if (4 == m_iComboCount)
-        //{
-        //    // if ��Ÿ�� �и��ϸ� ��Ʈ�� ����� �ǰ� ���ͷ�Ʈ ȣ�� �ϴ½�����
-            /*CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
-            pYetuga->Take_Damage(15.f,HITREACTION::KNOCKBACK_STRONG,1.f);*/
-            
-        //}
+        if (4 == m_iComboCount)
+        {
+            if (m_pGameInstance->Key_Down(DIK_F))
+            {
+                CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
+                pYetuga->Take_Damage(15.f, HITREACTION::KNOCKBACK_STRONG, 1.f);
+            }
+        }
     
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
         if (nullptr == pTarget)
