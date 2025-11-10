@@ -35,8 +35,10 @@ HRESULT CLevel_Crevice::Initialize()
 	CHECK_FAILED(Ready_Layer_Cloud(TEXT("Layer_Sky"), TEXT("Crevice"), LEVEL::CREVICE, KHAZAN_MAP::CREVICE), E_FAIL);
 
 	// 첫번째 서브 레벨 로드 ( 스폰 ~ 첫 귀검 )
-	m_futures.push_back(m_pGameInstance->Add_Task([this]() {CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Crevice"),
-		0, LEVEL::CREVICE, KHAZAN_MAP::CREVICE), E_FAIL); }));
+	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+        CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Crevice"), 0, LEVEL::CREVICE, KHAZAN_MAP::CREVICE), E_FAIL);
+        return S_OK;
+        }));
 
 	m_pGameInstance->Add_FireTask([this]() {
 		for (_uint i = 0; i < CREVICE_SUBLV; ++i)
@@ -53,10 +55,16 @@ HRESULT CLevel_Crevice::Initialize()
 
 	// 맵 오브젝트 : 메쉬 인스턴싱
 	//CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("Crevice"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-	m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("Crevice"), LEVEL::CREVICE, KHAZAN_MAP::CREVICE), E_FAIL); });
+	m_pGameInstance->Add_FireTask([this]() mutable {
+        CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("Crevice"), LEVEL::CREVICE, KHAZAN_MAP::CREVICE), E_FAIL);
+        return S_OK;
+        });
 	// 맵 오브젝트 : 상호 작용
 	//CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Crevice"), LEVEL::CREVICE, KHAZAN_MAP::CREVICE), E_FAIL);
-	m_pGameInstance->Add_FireTask([this]() mutable { CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Crevice"), LEVEL::CREVICE, KHAZAN_MAP::CREVICE), E_FAIL); });
+	m_pGameInstance->Add_FireTask([this]() mutable {
+        CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Crevice"), LEVEL::CREVICE, KHAZAN_MAP::CREVICE), E_FAIL);
+        return S_OK;
+        });
 
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
