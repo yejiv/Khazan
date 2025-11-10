@@ -166,11 +166,11 @@ void CSkill_Slot::Update(_float fTimeDelta)
                     if (m_iSkillPoint == 1)
                     {
                         m_pGameInstance->Emit_Event< EVENT_SKILL_ON>(ENUM_CLASS(EVENT_TYPE::PreSKILL_On), { true, m_iSkillIndex });
-                        
+                        if(m_pSkilData->iSkillType == 3)
+                            CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("SkillSlot_Quick"));
                         if (m_pSkilData->iType == 0)
-                        {
                             CClientInstance::GetInstance()->Unlock_SpearSkill(1 << m_pSkilData->iIndex);
-                        }
+                    
                     }
                 }
             }

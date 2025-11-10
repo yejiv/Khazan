@@ -277,9 +277,11 @@ void CSkill_Info::Free()
    
    Safe_Release(m_pSKillName);
    Safe_Release(m_pSkillGaugeText);
+
    Safe_Release(m_pPointIcon);
    Safe_Release(m_pPointText);
    Safe_Release(m_pGetIcon);
+
    Safe_Release(m_pInfoPanel);
    Safe_Release(m_pConditionPanel);
    Safe_Release(m_pInfo_Tex);

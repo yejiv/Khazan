@@ -233,6 +233,8 @@
     <ClInclude Include="..\public\Skill_Info_Tex.h" />
     <ClInclude Include="..\public\Skill_Panel.h" />
     <ClInclude Include="..\Public\Gomdol.h" />
+    <ClInclude Include="..\public\Skill_QuickSlot.h" />
+    <ClInclude Include="..\public\Skill_QuickSlot_List.h" />
     <ClInclude Include="..\public\Skill_Slot.h" />
     <ClInclude Include="..\public\Skill_Slot_Panel.h" />
     <ClInclude Include="..\public\Skill_Table.h" />
@@ -432,6 +434,8 @@
     <ClCompile Include="..\private\Skill_Info_Tex.cpp" />
     <ClCompile Include="..\private\Skill_Panel.cpp" />
     <ClCompile Include="..\Private\Gomdol.cpp" />
+    <ClCompile Include="..\private\Skill_QuickSlot.cpp" />
+    <ClCompile Include="..\private\Skill_QuickSlot_List.cpp" />
     <ClCompile Include="..\private\Skill_Slot.cpp" />
     <ClCompile Include="..\private\Skill_Slot_Panel.cpp" />
     <ClCompile Include="..\private\Skill_Table.cpp" />
