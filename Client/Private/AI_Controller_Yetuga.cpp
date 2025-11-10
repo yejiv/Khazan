@@ -988,8 +988,8 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 
 				_float fAttackRange = BB->Get_Value<_float>("Yetuga", "AttackRange");
 
-				cout << "fDist" << fDist << endl;
-				cout << "fAttackRange" << fAttackRange << endl;
+				//cout << "fDist" << fDist << endl;
+				//cout << "fAttackRange" << fAttackRange << endl;
 
 
 				if (fDist <= fAttackRange)

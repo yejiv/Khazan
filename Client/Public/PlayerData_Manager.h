@@ -12,30 +12,30 @@ class CPlayerData_Manager final: public CBase
 public:
     enum SPEARSKILL : _uint
     {
-        MOONLIGHT_SLASH = 1 << 0,   // 달빛 베기        
-        MOONLIGHT_STANCE = 1 << 1,   // 달빛 태세 (패시브)  
-        MOONLIGHT_STANCE_VITALITY = 1 << 2,   // 달빛 태세: 활력 (패시브)
-        FULL_MOON = 1 << 3,   // 보름달              
-        SHADOW_SLASH = 1 << 4,   // 그림자 베기           
-        SPIRAL_THRUST = 1 << 5,   // 나선 찌르기          
-        SPIRAL_THRUST_WHIRLWIND = 1 << 6,   // 나선 찌르기: 소용돌이
-        PURSUIT = 1 << 7,   // 추격 (패시브)                
-        PURSUIT_DEVOUR = 1 << 8,   // 추격: 포식 (패시브)         
-        ASSAULT = 1 << 9,   // 강습                
-        MOMENT_SLASH = 1 << 10,   // 찰나 베기           
-        AGILITY = 1 << 11,   // 기민함 (패시브)                
-        CRITICAL_STRIKE = 1 << 12,   // 급소 타격        
-        SHADOW_CLEAVE = 1 << 13,   // 그림자 참격          
-        SMASH_DOWN = 1 << 14,   // 무너뜨리기 (패시브)             
-        ENDURANCE = 1 << 15,   // 인내심 (패시브)              
-        WILL_EXTRACTION = 1 << 16,   // 투지 추출 (패시브)        
-        COMBATIVE_SPIRIT = 1 << 17,   // 호전적인 투지 (패시브)       
-        BRUTAL_ATTACK_EXECUTION = 1 << 18,   // 브루탈 어택: 처형
-        BRUTAL_ATTACK_HARVEST = 1 << 19,   // 브루탈 어택: 수확 (패시브)  
-        SPEAR_THROW = 1 << 20,   // 투창 (추후 추가)
-        SPEAR_THROW_REPOSE = 1 << 21,   // 투창: 안식 (추후 추가)
-        COUNTER_ATTACK = 1 << 22,   // 카운터 어택         
-        COUNTER_ATTACK_ONSLAUGHT = 1 << 23,   // 카운터 어택: 공세 (패시브)  
+        MOONLIGHT_SLASH = 1 << 0,   // 달빛 베기                            (패시브)        
+        MOONLIGHT_STANCE = 1 << 1,   // 달빛 태세                           (패시브)  
+        MOONLIGHT_STANCE_VITALITY = 1 << 2,   // 달빛 태세: 활력             (패시브)
+        FULL_MOON = 1 << 3,   // 보름달                                     (액티브 @@)      
+        SHADOW_SLASH = 1 << 4,   // 그림자 베기                              (패시브) 
+        SPIRAL_THRUST = 1 << 5,   // 나선 찌르기                             (액티브 @@)
+        SPIRAL_THRUST_WHIRLWIND = 1 << 6,   // 나선 찌르기: 소용돌이         (패시브)
+        PURSUIT = 1 << 7,   // 추격                                           (패시브)                                 
+        PURSUIT_DEVOUR = 1 << 8,   // 추격: 포식                            (패시브)         
+        ASSAULT = 1 << 9,   // 강습                                       (조작키 고정되어있음)
+        MOMENT_SLASH = 1 << 10,   // 찰나 베기                              (패시브) 
+        AGILITY = 1 << 11,   // 기민함                                     (패시브)                
+        CRITICAL_STRIKE = 1 << 12,   // 급소 타격                           (패시브)
+        SHADOW_CLEAVE = 1 << 13,   // 그림자 참격                            (액티브 @@ )
+        SMASH_DOWN = 1 << 14,   // 무너뜨리기                                (패시브)             
+        ENDURANCE = 1 << 15,   // 인내심                                   (패시브)              
+        WILL_EXTRACTION = 1 << 16,   // 투지 추출                        (패시브)        
+        COMBATIVE_SPIRIT = 1 << 17,   // 호전적인 투지                    (패시브)       
+        BRUTAL_ATTACK_EXECUTION = 1 << 18,   // 브루탈 어택: 처형          (?)
+        BRUTAL_ATTACK_HARVEST = 1 << 19,   // 브루탈 어택: 수확            (패시브)  
+        SPEAR_THROW = 1 << 20,   // 투창                              (추후 추가)
+        SPEAR_THROW_REPOSE = 1 << 21,   // 투창: 안식                   (추후 추가)
+        COUNTER_ATTACK = 1 << 22,   // 카운터 어택                       (?)
+        COUNTER_ATTACK_ONSLAUGHT = 1 << 23,   // 카운터 어택: 공세     (패시브)  
 
         SPEAR_END = 1 << 24,
     };

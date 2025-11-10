@@ -60,8 +60,9 @@ public:
 	void  ResetYState(_float fY = 0.f) { m_fYVel = 0.f; m_isInited = false; m_fSmoothY = fY; }
 
 public:
-	CAMERA_COMPRE_DESC Get_Desc();
-
+	CAMERA_COMPRE_DESC  Get_Desc();
+    _bool               Get_IsLockOn() const { return m_isLockOn; }
+    _float4*            Get_LockOnPosition() { return m_pLockOnPos; }
 private:
 	_float m_fYVel = { 0.f };
 	_bool m_isInited = { false };
