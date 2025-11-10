@@ -674,7 +674,5 @@ _int CCamera::FindModIndexByID(const _wstring& strID) const
 void CCamera::Free()
 {
 	__super::Free();
-	m_pObjMatrix = nullptr;
-	m_pSocketMatrix = nullptr;
 
 }
