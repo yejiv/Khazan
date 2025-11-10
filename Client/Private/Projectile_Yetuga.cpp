@@ -51,18 +51,23 @@ void CProjectile_Yetuga::Update(_float fTimeDelta)
 			m_isDead = true;
 			// Active 끄고
 			m_isActive = false;
-			m_pBody->Activate(false);
+			m_isCrashed = true;
+			m_pBody->Collision_Active(false);
 		}
 		m_pTransformCom->Go_Straight(fTimeDelta);
 		// 콜라이더를 갱신시킨다.
-		m_pBody->Sync_Update(m_pTransformCom);
-		m_pBody->Update(fTimeDelta, m_pTransformCom);
+		if (!m_isCrashed)
+		{
+			m_pBody->Sync_Update(m_pTransformCom);
+			m_pBody->Update(fTimeDelta, m_pTransformCom);
+		}
 	}
 
 	if (m_pModelCom->Play_Animation(fTimeDelta))
 	{
 		if (CRASHED == m_eState)
 		{
+            m_pBody->Collision_Active(false);
 			Enter_State(PRJSTATE::END);
 		}
 	}
@@ -100,7 +105,9 @@ HRESULT CProjectile_Yetuga::Render()
 
 void CProjectile_Yetuga::Reset()
 {
-	m_pBody->Activate(true);
+	m_isCrashed = false;
+	m_pBody->Collision_Active(true);
+    Enter_State(PRJSTATE::IDLE);
 
 	m_fCurrentTime = 0.f;
 	_vector vDir = XMVector3Normalize(XMLoadFloat3(&m_vSpawnDir));
@@ -112,6 +119,8 @@ void CProjectile_Yetuga::Reset()
 	m_pTransformCom->Set_State(STATE::RIGHT, vRight);
 	m_pTransformCom->Set_State(STATE::UP, vUp);
 	m_pTransformCom->Set_State(STATE::LOOK, vDir);
+
+    m_pTransformCom->Scale(_float3(1.3f, 1.3f, 1.3f));
 
 	m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&m_vSpawnPoint), 1.f));
 }
@@ -131,7 +140,6 @@ void CProjectile_Yetuga::Enter_State(PRJSTATE eNextState)
 		break;
 	case Client::CProjectile::END:
 		m_isDead = true;
-		m_pBody->Activate(false);
 		break;
 	}
 }
@@ -154,12 +162,12 @@ HRESULT CProjectile_Yetuga::Ready_Colliders()
 {
 	CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
 
-	BodyDesc.fRadius = 1.5f;
+	BodyDesc.fRadius = 0.3f;
 	BodyDesc.eMotion = EMotionType::Kinematic;
-	BodyDesc.eQuality = EMotionQuality::LinearCast; // 기본 모드
+	BodyDesc.eQuality = EMotionQuality::LinearCast;
 	BodyDesc.eShapeType = SHAPE::SPHERE;
 	BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
-	
+    BodyDesc.isCollideKinematicVsNonDynamic = true;
 
 	XMStoreFloat3(&BodyDesc.vPos,m_pTransformCom->Get_State(STATE::POSITION));
 	XMStoreFloat4(&BodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
@@ -207,6 +215,8 @@ void CProjectile_Yetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjec
 		if (COLLISION_LAYER::PLAYER == eType || COLLISION_LAYER::MAP_STATIC == eType)
 		{
 			Enter_State(PRJSTATE::CRASHED);
+			m_isCrashed = true;
+			
 		}
 	}
 }

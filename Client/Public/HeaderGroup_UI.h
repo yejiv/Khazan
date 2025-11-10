@@ -27,9 +27,12 @@
 #include "ItemInfo_Other.h"
 #include "ItemInfo_Weapon.h"
 
+#include "Skill_Info.h"
+
 #include "Cursor.h"
 #include "Item_Slot.h"
 #include "Skill_Slot.h"
+#include "Skill_QuickSlot.h"
 
 //HUD  관련
 #include "BossHp.h"

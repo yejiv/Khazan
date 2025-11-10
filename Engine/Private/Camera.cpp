@@ -161,70 +161,6 @@ void CCamera::Set_Animation(_wstring strAnimationTag)
 
 void CCamera::Play_Animation(_float fTimeDelta)
 {
-	/*if (m_isAnimation && m_pCurrentAnimation)
-	{
-		m_fCurrentTrackPosition = fTimeDelta * (*m_pCurrentAnimation)[m_iAnimationIndex].fSpeed;
-		m_fAnimationRatio += m_fCurrentTrackPosition / (*m_pCurrentAnimation)[m_iAnimationIndex].fTrackPosition;
-
-		XMVECTOR vPos = XMVectorCatmullRom(
-			m_tPosCatmullrom.v1,
-			m_tPosCatmullrom.v2,
-			m_tPosCatmullrom.v3,
-			m_tPosCatmullrom.v4,
-			m_fAnimationRatio
-		);
-
-		_vector vLook = XMVector3Normalize(XMVectorLerp(m_vOldLook, XMLoadFloat4(&(*m_pCurrentAnimation)[m_iAnimationIndex].vLookAt), m_fAnimationRatio));
-
-		_vector vUp = XMVectorSet(0, 1, 0, 0);
-		_vector vRight = XMVector3Normalize(XMVector3Cross(vUp, vLook));
-		vUp = XMVector3Normalize(XMVector3Cross(vLook, vRight));
-
-		m_pTransformCom->Set_State(STATE::RIGHT, vRight);
-		m_pTransformCom->Set_State(STATE::UP, vUp);
-		m_pTransformCom->Set_State(STATE::LOOK, vLook);
-		m_pTransformCom->Set_State(STATE::POSITION, vPos);
-
-		if (m_fAnimationRatio >= 1.f)
-		{
-			m_iAnimationIndex++;
-			if ((*m_pCurrentAnimation).size() <= m_iAnimationIndex + 2)
-			{
-				m_iAnimationIndex = 0;
-				m_fCurrentTrackPosition = 0.f;
-				m_pCurrentAnimation = nullptr;
-				m_isAnimation = false;
-			}
-			else {
-				m_vOldLook = m_pTransformCom->Get_State(STATE::LOOK);
-				m_tPosCatmullrom.v1 = XMVectorSet(
-					(*m_pCurrentAnimation)[m_iAnimationIndex - 1].vTranslation.x,
-					(*m_pCurrentAnimation)[m_iAnimationIndex - 1].vTranslation.y,
-					(*m_pCurrentAnimation)[m_iAnimationIndex - 1].vTranslation.z,
-					1.f
-				);
-				m_tPosCatmullrom.v2 = XMVectorSet(
-					(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.x,
-					(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.y,
-					(*m_pCurrentAnimation)[m_iAnimationIndex].vTranslation.z,
-					1.f
-				);
-				m_tPosCatmullrom.v3 = XMVectorSet(
-					(*m_pCurrentAnimation)[m_iAnimationIndex + 1].vTranslation.x,
-					(*m_pCurrentAnimation)[m_iAnimationIndex + 1].vTranslation.y,
-					(*m_pCurrentAnimation)[m_iAnimationIndex + 1].vTranslation.z,
-					1.f
-				);
-				m_tPosCatmullrom.v4 = XMVectorSet(
-					(*m_pCurrentAnimation)[m_iAnimationIndex + 2].vTranslation.x,
-					(*m_pCurrentAnimation)[m_iAnimationIndex + 2].vTranslation.y,
-					(*m_pCurrentAnimation)[m_iAnimationIndex + 2].vTranslation.z,
-					1.f
-				);
-			}
-			m_fAnimationRatio = 0.f;
-		}
-	}*/
 	if (!m_isAnimation || !m_pCurrentAnimation || m_pCurrentAnimation->size() < 2) return;
 
 	const _int iCurrAniSize = (_int)m_pCurrentAnimation->size();
@@ -239,8 +175,18 @@ void CCamera::Play_Animation(_float fTimeDelta)
 		m_fSegTime -= fDuration;
 		m_iSeg++;
 		if (m_iSeg >= iCurrAniSize - 1) {
-			if (m_isLoop) m_iSeg = 0;
-			else { m_iSeg = iCurrAniSize - 2; m_isAnimation = false; m_fSegTime = fDuration; break; }
+			if (m_isLoop) 
+                m_iSeg = 0;
+			else 
+            { 
+                m_iSeg = iCurrAniSize - 2; 
+                m_isAnimation = false; 
+                m_fSegTime = fDuration;
+
+                OnCameraAniEnd();
+
+                break;
+            }
 		}
 		// 다음 세그 duration 갱신
 		fSpeed = max(1e-4f, (*m_pCurrentAnimation)[m_iSeg].fSpeed);

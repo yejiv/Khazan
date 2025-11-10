@@ -68,7 +68,7 @@ void CAS_Smash_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer,
         if (nullptr == pOwnerTransform)
             return;
         _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
-        pTarget->KnockBack(vLook, 10.f, 50.f);
+        pTarget->KnockBack(vLook, 20.f, 60.f);
 
     }
 }

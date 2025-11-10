@@ -152,7 +152,6 @@ void CKhazan_Spear::Update(_float fTimeDelta)
 
     XMStoreFloat4x4(&m_pSpearFX_WorldMatrix, m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pTransformCom->Get_WorldMatrix());
 
-
 }
 
 void CKhazan_Spear::Late_Update(_float fTimeDelta)
@@ -182,6 +181,7 @@ void CKhazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLay
 
 void CKhazan_Spear::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
+
 }
 
 
@@ -1150,10 +1150,10 @@ _uint CKhazan_Spear::ConvertCameraToPlayerDir(PLAYER_CAMERA_DIR playerCamDir)
     return conversionTable[playerCamDir][inputIdx];
 }
 
-#pragma region 상호 작용 맵 오브젝트 임시 테스트 용
+#pragma region 상호 작용 맵 오브젝트 이벤트
 void CKhazan_Spear::Subscribe_Events()
 {
-#pragma region 상호 작용 맵 오브젝트 임시 테스트용
+#pragma region 상호 작용 맵 오브젝트 이벤트
     m_pGameInstance->Subscribe_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), [&](const EventInteractType& e) { m_EventInteract = e; });
 #pragma endregion
 }
@@ -1162,22 +1162,53 @@ void CKhazan_Spear::Event_Interact_Object(_float fTimeDelta)
     // 상호 작용 오브젝트 쪽에서 BEGIN STATE 내보낼 시
     if (EventInteractType::EVENT_STATE::BEGIN == m_EventInteract.eState)
     {
+        if (false == m_isInteractEventSetting)
+        {
+            m_isInteractEventSetting = true;
+
+            XMStoreFloat4(&m_vStartPos_Event, m_pTransformCom->Get_State(STATE::POSITION));
+            m_fLerpTime_Event = 0.f;
+        }
         // 플레이어 이동, LOOK 보간??
         // 완료하면 이벤트 반대로 던져주기
         _bool isDone = { true };
 
         if (INTERACTIVE_TYPE::CHEST == m_EventInteract.eInteractType)
         {
+            /*
             isDone = false;
 
-            // 상자 오브젝트에 슉슉 가는
-            if (true)
+            _float4 vTargetPos = m_EventInteract.ChestEvent.vPlayerPosition;
+            vTargetPos.y = m_vStartPos_Event.y;
+
+            m_fLerpTime_Event += fTimeDelta;
+            _float fLerpTime = min(m_fLerpTime_Event * 1.f, 1.f);
+
+            _float4 vLerpPos = Lerp(m_vStartPos_Event, vTargetPos, fLerpTime);
+
+            _float fDistance = XMVectorGetX(XMVector4Length(XMLoadFloat4(&vTargetPos) - XMLoadFloat4(&vLerpPos)));
+
+            if (0.1f < fDistance)
+            {
+                m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&vLerpPos));
+                vTargetPos.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+                m_pTransformCom->LookAt(XMLoadFloat4(&vTargetPos));
+            }
+
+            // 상자 오브젝트에 슉슉 도착
+            if (fLerpTime >= 1.f)
+            {
                 isDone = true;
+            }
+            */
         }
 
         if (isDone)               // 특정 조건 완성하면 이벤트 발생
         {
-            // 상호작용 활성화시 맵 오브젝트한테 ObjectOn 을 true 로 던져주고, ObjectOff 를 false 로 던져준다.
+            // 내 이벤트 변수 초기화
+            m_isInteractEventSetting = false;
+
+            // 상호작용 활성화시 맵 오브젝트한테 EVENT_STATE를 ON 으로 던져준다
             m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { EventObject::OnEvent() });
             // 내 상태를 STATE::NONE 으로 변경해준다.
             m_EventInteract.eState = EventInteractType::EVENT_STATE::NONE;
@@ -1189,7 +1220,7 @@ void CKhazan_Spear::Event_Interact_Object(_float fTimeDelta)
     {
         if (true)               // 특정 조건 완성하면 이벤트 발생
         {
-            // 상호작용 비 활성화시 맵 오브젝트한테 ObjectOn 을 false 로 던져주고, ObjectOff 를 true 로 던져준다.
+            // 상호작용 비활성화시 맵 오브젝트한테 EVENT_STATE를 OFF 로 던져준다
             m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { EventObject::OffEvent() });
             // 내 상태를 STATE::NONE 으로 변경해준다.
             m_EventInteract.eState = EventInteractType::EVENT_STATE::NONE;
@@ -1237,7 +1268,7 @@ void CKhazan_Spear::BladeNexus_Event(_float fTimeDelta)
 
         // 플레이어 Look -> 귀검 ( 기우는거 보정하려고 이렇게 코드 넣어놨습니다. )
         BNEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
-        m_pTransformCom->LookAt(XMVectorSetW(XMLoadFloat3(&BNEvent.vPosition), 1.f));
+        m_pTransformCom->LookAt(XMLoadFloat4(&BNEvent.vPosition));
     }
     // 귀검 가동 끝나고 UI 팝업 ( 귀검 UI 창 활성화 )
     else if (true == BNEvent.isBNOpened)
@@ -1264,10 +1295,11 @@ void CKhazan_Spear::Chest_Event(_float fTimeDelta)
     // 상자에 접촉 후 상호 작용 ( 닫힌 상태 )
     if (false == ChestEvent.isChestOpened)
     {
+        ChestEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
         // 플레이어 Look -> 상자, Position 상자 본 위치로 이동 ( 기우는거 보정 )
-        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&ChestEvent.vPlayerPosition), 1.f));
+        m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&ChestEvent.vPlayerPosition));
         ChestEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
-        m_pTransformCom->LookAt(XMVectorSetW(XMLoadFloat3(&ChestEvent.vPosition), 1.f));
+        m_pTransformCom->LookAt(XMLoadFloat4(&ChestEvent.vPosition));
 
         m_EventInteract.End_Event();
     }
@@ -1313,9 +1345,9 @@ void CKhazan_Spear::TombStone_Event(_float fTimeDelta)
     if (false == TSEvent.isTSOpened)
     {
         // 플레이어 Look -> 툼스톤 ( 기우는거 보정하려고 이렇게 코드 넣어놨습니다. )
-        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&TSEvent.vPlayerPosition), 1.f));
+        m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&TSEvent.vPlayerPosition));
         TSEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
-        m_pTransformCom->LookAt(XMVectorSetW(XMLoadFloat3(&TSEvent.vPosition), 1.f));
+        m_pTransformCom->LookAt(XMLoadFloat4(&TSEvent.vPosition));
     }
     // 툼스톤 가동 끝나고 가동 LOOP 진입
     else if (true == TSEvent.isTSOpened)
@@ -1830,8 +1862,8 @@ void CKhazan_Spear::Free()
 {
     __super::Free();
 
-	Safe_Release(m_pBody);
-	Safe_Release(m_pSpear);
+	/*Safe_Release(m_pBody);
+	Safe_Release(m_pSpear);*/
 	Safe_Release(m_pAnimMove);
     Safe_Release(m_pAnimAttack);
     Safe_Release(m_pAnimGuard);

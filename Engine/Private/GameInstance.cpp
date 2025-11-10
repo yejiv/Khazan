@@ -210,7 +210,7 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 	//	m_pDecal_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
 	// Renderer Resources
-	m_pShadow->Update();
+	m_pShadow->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 	m_pFog->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 	m_pVignette->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 	m_pDistortion->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
@@ -774,9 +774,9 @@ void CGameInstance::Clear_ShadowDSVs()
 	m_pShadow->Clear_DSVs();
 }
 
-void CGameInstance::Update_Cascade_CameraInfo(_float fNear, _float fFar)
+void CGameInstance::Start_ShadowIntensityTransition(_float fDuration, _float fTargetIntensity)
 {
-	m_pShadow->Update_Cascade_CameraInfo(fNear, fFar);
+	m_pShadow->Start_ShadowIntensityTransition(fDuration, fTargetIntensity);
 }
 
 #ifdef _DEBUG

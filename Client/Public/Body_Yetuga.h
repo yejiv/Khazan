@@ -27,7 +27,7 @@ public:
 	_matrix					Get_BoneMatrix(const _char* pBoneName);
 
 	void					Set_OnAttackCollision(_bool isToggle) { m_isOnAttackCollision = isToggle; }
-
+    void                    Set_AttackCollision_Back(_bool isToggle) { m_isOnAttackCollision_Back = isToggle; }
 private:
 	CBody_Yetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CBody_Yetuga(const CBody_Yetuga& Prototype);
@@ -51,7 +51,7 @@ private:
 	HRESULT					Ready_Components();
 	HRESULT					Bind_ShaderResources();
 	void					Carculate_Matrix(_float fTimeDelta);
-
+    void                    Carculate_BakckMatrix(_float fTimeDelta);
 
 private:
 	HRESULT					Ready_Colliders();
@@ -80,7 +80,8 @@ private:
 	_float4x4				m_HeadMatrix = {};
 
 	_bool					m_isOnAttackCollision = { false };
-
+	_bool					m_isOnAttackCollision_Back = { false };
+    
 public:
 	static CBody_Yetuga*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject*	Clone(void* pArg) override;

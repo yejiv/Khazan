@@ -27,8 +27,11 @@ private:
 	CASCADE_CONFIG			m_CascadeConfig = {};
 
 	_float					m_fCameraNear = { 0.1f };
-	_float					m_fCameraFar = { 1000.f };
+	_float					m_fCameraFar = { 6000.f };
 	_uint					m_iNumCascades = {};
+
+	_float					m_fShadowTransDuration = {};
+	_float					m_fTargetShadowIntensity = {};
 
 	// Render Flag
 	_bool					m_isRenderShadow = { true };

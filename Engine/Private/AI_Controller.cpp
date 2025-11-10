@@ -38,6 +38,7 @@ void CAI_Controller::AI_ApplyDamage(CGameObject* pAttacker, _float fDamage, _uin
     DamageStim.fVaildTime = fValidTime;
 
     m_pPerception->Notify_Damage(pAttacker,DamageStim);
+    //m_pBT->Notify_Event(BTEVENT::HIT);
 
 }
 
@@ -280,10 +281,11 @@ HRESULT CAI_Controller::Ready_BlackBoard(CGameObject* pOwner)
     return S_OK;
 }
 
-HRESULT CAI_Controller::Ready_BehaviorTree()
+HRESULT CAI_Controller::Ready_BehaviorTree(CGameObject* pOwner)
 {
     return S_OK;
 }
+
 
 PERCEPTIONCALLBACK CAI_Controller::GetCallBackPerception(CGameObject* pOwner, const string& name)
 {

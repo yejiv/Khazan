@@ -53,6 +53,8 @@ public:
 
 		_float		fGravity = 1.f;
 
+        _bool       isCollideKinematicVsNonDynamic = false;
+
 		//class CGameObject* pGameObject = nullptr;
 		COLLISION_DESC* pCollisionDesc = nullptr;
 	}BODY_DESC;

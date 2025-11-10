@@ -7,17 +7,18 @@
 #include "Transform.h"
 #include "Creature.h"
 #include "UI_Tutorial.h"
-#include "SkySphere.h"
+
+#include "MapObject_Header.h"
 
 CHeinMach_Trigger::CHeinMach_Trigger(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    : CTrigger{ pDevice, pContext }
+    : CTrigger { pDevice, pContext }
     , m_pClientInstance { CClientInstance::GetInstance() }
 {
     Safe_AddRef(m_pClientInstance);
 }
 
 CHeinMach_Trigger::CHeinMach_Trigger(const CHeinMach_Trigger& Prototype)
-    : CTrigger{ Prototype }
+    : CTrigger { Prototype }
     , m_pClientInstance { Prototype.m_pClientInstance }
 {
     Safe_AddRef(m_pClientInstance);
@@ -106,23 +107,112 @@ HRESULT CHeinMach_Trigger::Ready_TriggerType(void* pArg)
     {
         m_eGuideType = GUIDE_TYPE::GUARD;
     }
-    // else if (m_strTriggerKey == "Guide_LockOn")
-    // {
-    //     m_eGuideType = GUIDE_TYPE::LOCKON;
-    // }
-    // else if (m_strTriggerKey == "Guide_LockOn")
-    // {
-    //     m_eGuideType = GUIDE_TYPE::LOCKON;
-    // }
-    else if (m_strTriggerKey == "Day")
+    else if (m_strTriggerKey == "Guide_UnderWorld")
     {
-        m_eDayCircle = DAY_CIRCLE::DAY;
+        m_eGuideType = GUIDE_TYPE::UNDERWORLD;
     }
-    else if (m_strTriggerKey == "Dawn")
+    else if (m_strTriggerKey == "Guide_Dodge")
     {
-        m_eDayCircle = DAY_CIRCLE::DAWN;
+        m_eGuideType = GUIDE_TYPE::DODGE;
     }
+    else if (m_strTriggerKey == "Guide_Brutal")
+    {
+        m_eGuideType = GUIDE_TYPE::BURTALATTACK;
+    }
+    else if (m_strTriggerKey == "Guide_FallAttack")
+    {
+        m_eGuideType = GUIDE_TYPE::FALLATTACK;
+    }
+    else if (m_strTriggerKey == "Guide_Impulse")
+    {
+        m_eGuideType = GUIDE_TYPE::IMPULSE;
+    }
+    else if (m_strTriggerKey == "CaveEntry")
+    {
+        /* 파일 입출력으로 이니셜라이즈에서 구조체 채우기 */
+        DWORD dwByte = {};
 
+        // 하늘 ( 새벽 )
+        HANDLE hSkyFile = CreateFile(TEXT("../../Client/Bin/Data/Map/MapData/HeinMach/HeinMach_Dawn_sky.dat"), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        CHECK_EQUAL(INVALID_HANDLE_VALUE, hSkyFile, E_FAIL);
+        CHECK_FALSE(ReadFile(hSkyFile, &m_Sky_Dawn, sizeof(SKY_DESC), &dwByte, nullptr), E_FAIL);
+
+        CloseHandle(hSkyFile);
+
+        // 구름 ( 새벽 )
+        HANDLE hCloudFile = CreateFile(TEXT("../../Client/Bin/Data/Map/MapData/HeinMach/HeinMach_Dawn_cloud.dat"), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        CHECK_EQUAL(INVALID_HANDLE_VALUE, hCloudFile, E_FAIL);
+        CHECK_FALSE(ReadFile(hCloudFile, &m_Cloud_Dawn, sizeof(CLOUD_DESC), &dwByte, nullptr), E_FAIL);
+
+        CloseHandle(hCloudFile);
+    }
+    else if (m_strTriggerKey == "CaveMidEntry")
+    {
+
+    }
+    else if (m_strTriggerKey == "CaveExit")
+    {
+        /* 파일 입출력으로 이니셜라이즈에서 구조체 채우기 */
+        DWORD dwByte = {};
+
+        // 하늘 ( 밝음 )
+        HANDLE hSkyFile = CreateFile(TEXT("../../Client/Bin/Data/Map/MapData/HeinMach/HeinMach_Day_sky.dat"), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        CHECK_EQUAL(INVALID_HANDLE_VALUE, hSkyFile, E_FAIL);
+        CHECK_FALSE(ReadFile(hSkyFile, &m_Sky_Day, sizeof(SKY_DESC), &dwByte, nullptr), E_FAIL);
+
+        CloseHandle(hSkyFile);
+
+        // 구름 ( 밝음 )
+        HANDLE hCloudFile = CreateFile(TEXT("../../Client/Bin/Data/Map/MapData/HeinMach/HeinMach_Day_cloud.dat"), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        CHECK_EQUAL(INVALID_HANDLE_VALUE, hCloudFile, E_FAIL);
+        CHECK_FALSE(ReadFile(hCloudFile, &m_Cloud_Day, sizeof(CLOUD_DESC), &dwByte, nullptr), E_FAIL);
+
+        CloseHandle(hCloudFile);
+    }
+#pragma region 동굴 역방향
+    else if (m_strTriggerKey == "CaveEntry_Rev")
+    {
+        /* 파일 입출력으로 이니셜라이즈에서 구조체 채우기 */
+        DWORD dwByte = {};
+
+        // 하늘 ( 밝음 )
+        HANDLE hSkyFile = CreateFile(TEXT("../../Client/Bin/Data/Map/MapData/HeinMach/HeinMach_Day_sky.dat"), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        CHECK_EQUAL(INVALID_HANDLE_VALUE, hSkyFile, E_FAIL);
+        CHECK_FALSE(ReadFile(hSkyFile, &m_Sky_Day, sizeof(SKY_DESC), &dwByte, nullptr), E_FAIL);
+
+        CloseHandle(hSkyFile);
+
+        // 구름 ( 밝음 )
+        HANDLE hCloudFile = CreateFile(TEXT("../../Client/Bin/Data/Map/MapData/HeinMach/HeinMach_Day_cloud.dat"), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        CHECK_EQUAL(INVALID_HANDLE_VALUE, hCloudFile, E_FAIL);
+        CHECK_FALSE(ReadFile(hCloudFile, &m_Cloud_Day, sizeof(CLOUD_DESC), &dwByte, nullptr), E_FAIL);
+
+        CloseHandle(hCloudFile);
+    }
+    else if (m_strTriggerKey == "CaveMidEntry_Rev")
+    {
+
+    }
+    else if (m_strTriggerKey == "CaveExit_Rev")
+    {
+        /* 파일 입출력으로 이니셜라이즈에서 구조체 채우기 */
+        DWORD dwByte = {};
+
+        // 하늘 ( 새벽 )
+        HANDLE hSkyFile = CreateFile(TEXT("../../Client/Bin/Data/Map/MapData/HeinMach/HeinMach_Dawn_sky.dat"), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        CHECK_EQUAL(INVALID_HANDLE_VALUE, hSkyFile, E_FAIL);
+        CHECK_FALSE(ReadFile(hSkyFile, &m_Sky_Dawn, sizeof(SKY_DESC), &dwByte, nullptr), E_FAIL);
+
+        CloseHandle(hSkyFile);
+
+        // 구름 ( 새벽 )
+        HANDLE hCloudFile = CreateFile(TEXT("../../Client/Bin/Data/Map/MapData/HeinMach/HeinMach_Dawn_cloud.dat"), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        CHECK_EQUAL(INVALID_HANDLE_VALUE, hCloudFile, E_FAIL);
+        CHECK_FALSE(ReadFile(hCloudFile, &m_Cloud_Dawn, sizeof(CLOUD_DESC), &dwByte, nullptr), E_FAIL);
+
+        CloseHandle(hCloudFile);
+    }
+#pragma endregion
 
     return S_OK;
 }
@@ -150,13 +240,9 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             m_pGameInstance->SEQ_AdoptAndPlay(m_pHeinMach_Yetuga, tPlayDesc);
             m_isDead = true;
         }
+        // UI GUIDE 타입일 때
         else if (GUIDE_TYPE::END != m_eGuideType)
         {
-            // BURTALATTACK ㄴㄴ
-            // Guide_LockOn
-            // Guide_Guard
-            //enum class GUIDE_TYPE { LOCKON, GUARD, UNDERWORLD, DODGE, BURTALATTACK, FALLATTACK, IMPULSE, END };
-
             CUI_Tutorial* pUI_Tutorial = static_cast<CUI_Tutorial*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Tutorial")));
             CHECK_NULLPTR_MSG(pUI_Tutorial, TEXT("pUI_Tutorial == nullptr"), );
 
@@ -164,21 +250,88 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             {
             case GUIDE_TYPE::LOCKON:
             case GUIDE_TYPE::GUARD:
+            case GUIDE_TYPE::UNDERWORLD:
+            case GUIDE_TYPE::DODGE:
+            case GUIDE_TYPE::BURTALATTACK:
+            case GUIDE_TYPE::FALLATTACK:
+            case GUIDE_TYPE::IMPULSE:
                 pUI_Tutorial->On_Panel(m_eGuideType);
+                break;
+            default:
+                MSG_BOX(TEXT("트리거 - 가이드 타입 default 뜸 엥"));
                 break;
             }
 
             m_isDead = true;
         }
-        else if (DAY_CIRCLE::NONE != m_eDayCircle)
+        else if (m_strTriggerKey == "CaveEntry")
         {
-            switch (m_eDayCircle)
-            {
-            case DAY_CIRCLE::DAWN:
-                break;
-            case DAY_CIRCLE::DAY:
-                break;
-            }
+
+            static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Sky"), 0))->Set_SkyDesc(m_Sky_Dawn);
+            static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Sky"), 1))->Set_CloudDesc(m_Cloud_Dawn);
+        }
+        else if (m_strTriggerKey == "CaveMidEntry")
+        {
+
+        }
+        else if (m_strTriggerKey == "CaveExit")
+        {
+
+
+            static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Sky"), 0))->Set_SkyDesc(m_Sky_Day);
+            static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Sky"), 1))->Set_CloudDesc(m_Cloud_Day);
+        }
+#pragma region 동굴 역방향
+        else if (m_strTriggerKey == "CaveEntry_Rev")
+        {
+
+        }
+        else if (m_strTriggerKey == "CaveMidEntry_Rev")
+        {
+
+        }
+        else if (m_strTriggerKey == "CaveExit_Rev")
+        {
+
+
+            static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Sky"), 0))->Set_SkyDesc(m_Sky_Dawn);
+            static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Sky"), 1))->Set_CloudDesc(m_Cloud_Dawn);
+        }
+#pragma endregion
+        else if (m_strTriggerKey == "Talk_03")
+        {
+
+            m_isDead = true;
+        }
+        else if (m_strTriggerKey == "Talk_04")
+        {
+
+            m_isDead = true;
+        }
+        else if (m_strTriggerKey == "Talk_05")
+        {
+
+            m_isDead = true;
+        }
+        else if (m_strTriggerKey == "Talk_06")
+        {
+
+            m_isDead = true;
+        }
+        else if (m_strTriggerKey == "Talk_07")
+        {
+
+            m_isDead = true;
+        }
+        else if (m_strTriggerKey == "Talk_08")
+        {
+
+            m_isDead = true;
+        }
+        else if (m_strTriggerKey == "Talk_09")
+        {
+
+            m_isDead = true;
         }
     }
     
