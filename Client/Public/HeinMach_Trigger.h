@@ -19,9 +19,6 @@ public:
 	}TRIGGER_HEINMACH_DESC;
 
 private:
-	enum class DAY_CIRCLE { DAWN, DAY, NONE };
-
-private:
 	CHeinMach_Trigger(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CHeinMach_Trigger(const CHeinMach_Trigger& Prototype);
 	virtual ~CHeinMach_Trigger() = default;
@@ -40,8 +37,8 @@ public:
 private:
 	virtual HRESULT Ready_Components(void* pArg) override;
 	HRESULT Ready_Collision(void* pArg);
-	HRESULT Ready_TriggerType(void* pArg);      // íŠ¸ë¦¬ê±° íƒ€ìž… ì„¸íŒ…
-    HRESULT Ready_TriggerSetting(void* pArg);
+    // Æ®¸®°Å ÀÌ´Ï¼È¶óÀÌÁî ´Ü°è¿¡¼­ Ã¤¿ï°Å ÀÖÀ¸¸é Ã¤¿ì´Â
+	HRESULT Ready_TriggerType(void* pArg);
 
 private:
 	virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint	iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
@@ -56,11 +53,13 @@ private:
 private:
 	GUIDE_TYPE m_eGuideType = { GUIDE_TYPE::END };
 
-	DAY_CIRCLE m_eDayCircle = { DAY_CIRCLE::NONE };
-
 private:
+    // µ¿±¼ Àü ÇÏ´Ã, ±¸¸§
     SKY_DESC m_Sky_Dawn = {};
+    CLOUD_DESC m_Cloud_Dawn = {};
+    // µ¿±¼ ÈÄ ÇÏ´Ã, ±¸¸§
     SKY_DESC m_Sky_Day = {};
+    CLOUD_DESC m_Cloud_Day = {};
 
 public:
 	static CHeinMach_Trigger* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

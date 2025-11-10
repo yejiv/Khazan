@@ -272,7 +272,7 @@ void CBladeNexus::Input_Interact_Event(_float fTimeDelta)
 
         EventBladeNexus BNEvent = {};
 
-        XMStoreFloat3(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+        XMStoreFloat4(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
 
         InteractType.BNEvent = BNEvent;
 
@@ -306,7 +306,7 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
 
             EventBladeNexus BNEvent = {};
 
-            XMStoreFloat3(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+            XMStoreFloat4(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
             BNEvent.isUnLock = true;
             BNEvent.isBNOpened = false;
 
@@ -332,7 +332,7 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
 
             EventBladeNexus BNEvent = {};
 
-            XMStoreFloat3(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+            XMStoreFloat4(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
             BNEvent.isUnLock = false;
             BNEvent.isBNOpened = false;
 
@@ -379,7 +379,7 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
 
         EventBladeNexus BNEvent = {};
 
-        XMStoreFloat3(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+        XMStoreFloat4(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
         BNEvent.isUnLock = true;
         BNEvent.isBNOpened = true;              // 이제 귀검 UI 열리게
 
@@ -424,7 +424,7 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
 
         EventBladeNexus BNEvent = {};
 
-        XMStoreFloat3(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+        XMStoreFloat4(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
         BNEvent.isUnLock = false;
         BNEvent.isBNOpened = true;              // 이제 귀검 UI 열리게
 

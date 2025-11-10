@@ -301,7 +301,7 @@ void CKhazan_Sample::BladeNexus_Event(_float fTimeDelta)
 
         // 플레이어 Look -> 귀검 ( 기우는거 보정하려고 이렇게 코드 넣어놨습니다. )
         BNEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
-        m_pTransformCom->LookAt(XMVectorSetW(XMLoadFloat3(&BNEvent.vPosition), 1.f));
+        m_pTransformCom->LookAt(XMLoadFloat4(&BNEvent.vPosition));
     }
     // 귀검 가동 끝나고 UI 팝업 ( 귀검 UI 창 활성화 )
     else if (true == BNEvent.isBNOpened)
@@ -329,9 +329,9 @@ void CKhazan_Sample::Chest_Event(_float fTimeDelta)
     if (false == ChestEvent.isChestOpened)
     {
         // 플레이어 Look -> 상자, Position 상자 본 위치로 이동 ( 기우는거 보정 )
-        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&ChestEvent.vPlayerPosition), 1.f));
+        m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&ChestEvent.vPlayerPosition));
         ChestEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
-        m_pTransformCom->LookAt(XMVectorSetW(XMLoadFloat3(&ChestEvent.vPosition), 1.f));
+        m_pTransformCom->LookAt(XMLoadFloat4(&ChestEvent.vPosition));
 
         m_EventInteract.End_Event();
     }
@@ -377,9 +377,9 @@ void CKhazan_Sample::TombStone_Event(_float fTimeDelta)
     if (false == TSEvent.isTSOpened)
     {
         // 플레이어 Look -> 툼스톤 ( 기우는거 보정하려고 이렇게 코드 넣어놨습니다. )
-        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&TSEvent.vPlayerPosition), 1.f));
+        m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&TSEvent.vPlayerPosition));
         TSEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
-        m_pTransformCom->LookAt(XMVectorSetW(XMLoadFloat3(&TSEvent.vPosition), 1.f));
+        m_pTransformCom->LookAt(XMLoadFloat4(&TSEvent.vPosition));
     }
     // 툼스톤 가동 끝나고 가동 LOOP 진입
     else if (true == TSEvent.isTSOpened)
