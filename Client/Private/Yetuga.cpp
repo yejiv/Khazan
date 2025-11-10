@@ -60,7 +60,6 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
     if (nullptr == m_pController)
         return E_FAIL;
 
-
     return S_OK;
 }
 
@@ -69,7 +68,8 @@ void CYetuga::Priority_Update(_float fTimeDelta)
     if (m_fCurrentHP <= 0.f)
         m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isDead", true);
 
-  /*  if (m_pGameInstance->Get_BlackBoard()->Get_Value<_bool>(m_strName, "isDetected"))
+    // 범수 한테 물어보기
+    if (m_pGameInstance->Get_BlackBoard()->Get_Value<_bool>(m_strName, "isDetected"))
     {
         CBossHp::BOSSMON_UPDATE_DESC HPDesc{};
         HPDesc.isOpen = true;
@@ -80,15 +80,7 @@ void CYetuga::Priority_Update(_float fTimeDelta)
 
         CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &HPDesc);
     }
-    else
-    {
-        CBossHp::BOSSMON_UPDATE_DESC Desc;
-        Desc.isOpen = false;
-        CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &Desc);
-    }*/
- 
-
-
+   
     CContainerObject::Priority_Update(fTimeDelta);
 }
 
@@ -139,15 +131,45 @@ HRESULT CYetuga::Render()
 void CYetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
     COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
-   
-    _bool isRush = m_pGameInstance->Get_BlackBoard()->Get_Value<_bool>(m_strName, "isRush");
-    if (isRush)
+
+    if (COLLISION_LAYER::PLAYER_ATTACK == eLayer)
     {
-        if (eLayer == COLLISION_LAYER::PLAYER)
-            m_pController->AI_React_Collision(pDesc,iOtherObjectLayer,this);
+        _vector vPosition = m_pTransformCom->Get_State(STATE::POSITION);
+        _vector vHitDir = XMLoadFloat3(&vContactPoint) - vPosition;
+
+        _vector vLook = m_pTransformCom->Get_State(STATE::LOOK);
+        _float fDot = XMVectorGetX(XMVector3Dot(vLook, vHitDir));
+
+        DIRECTION_INFO DirInfo{};
+
+        if (fDot > 0.f)
+        {
+            DirInfo.Add_Flag(DirInfo.F);
+        }
+        else
+        {
+            DirInfo.Add_Flag(DirInfo.B);
+        }
+
+        _vector vUp = XMVector3Cross(vLook, vHitDir);
+        _float vUpY = XMVectorGetY(vUp);
+        if (vUpY > 0.f)
+        {
+            DirInfo.Add_Flag(DirInfo.R);
+        }
+        else
+        {
+            DirInfo.Add_Flag(DirInfo.L);
+
+        }
+
+        m_pGameInstance->Get_BlackBoard()->Set_Value<_uint>(m_strName, "HitDirection", DirInfo.iDirFlag);
+        DAMAGEINFO* pDamageInfo = static_cast<DAMAGEINFO*>(pDesc->pInfo);
+        Take_Damage(pDamageInfo->fDamage, pDamageInfo->eHitreaction, 2.f, pDesc->pGameObject);
     }
-
-
+   
+    
+    
 }
 
 void CYetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)

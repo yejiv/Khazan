@@ -18,7 +18,8 @@ void CAS_Hit_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     HITREACTION eHitreaction = static_cast<HITREACTION>(m_pGameInstance->Get_BlackBoard()->Get_Value<_uint>(pYetuga->Get_Name(), "DamageType"));
     DIRECTION_INFO Info{};
-    Info.iDirFlag = m_pGameInstance->Get_BlackBoard()->Get_Value<_uint>("Yetuga", "TargetDirection");
+    //Info.iDirFlag = m_pGameInstance->Get_BlackBoard()->Get_Value<_uint>("Yetuga", "TargetDirection");
+    Info.iDirFlag = m_pGameInstance->Get_BlackBoard()->Get_Value<_uint>("Yetuga", "HitDirection");
 
     HIT_DIR eHitDir = Convert_HitFlag(Info);
     _uint iAnimIndex = Make_AnimIndex(eHitreaction,eHitDir);
@@ -36,12 +37,19 @@ void CAS_Hit_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTi
     if (pModel->Play_Animation(fTimeDelta))
     {
         m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isHitFinished", true);
+        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "IsHitEvent", false);
     }
 
 }
 
 void CAS_Hit_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
+
+}
+
+void CAS_Hit_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
+{
+   
 
 }
 

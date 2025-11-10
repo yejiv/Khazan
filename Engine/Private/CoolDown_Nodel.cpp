@@ -5,13 +5,13 @@ CCoolDown_Node::CCoolDown_Node(_float fCoolTime)
     : m_fCoolTime{fCoolTime}
     , m_fElapsed {0.f}
 {
+    m_eNodeType = NODETYPE::DECORATOR;
 }
 
 BTNODESTATE CCoolDown_Node::Tick(CBlackBoard* BB)
 {
     _float fCurrentTime = BB->Get_Value<_float>(m_strName, m_strTag);
  
-    // ��Ÿ�� ���̸� �ڽ� ������ϵ��� ���´�.
     if (m_isCooling)
     {
         m_fElapsed = fCurrentTime - m_fStartTime;
@@ -50,11 +50,11 @@ void CCoolDown_Node::Terminate(BTNODESTATE eState, CBlackBoard* BB)
 
 }
 
-void CCoolDown_Node::Abort()
+void CCoolDown_Node::Abort(CBlackBoard* BB)
 {
-    m_pChild->Abort();
-
+    m_pChild->Abort(BB);
 }
+
 
 CCoolDown_Node* CCoolDown_Node::Create(const string& strName, const string& strTag, _float fCoolTime)
 {
