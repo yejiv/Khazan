@@ -458,14 +458,14 @@ HRESULT CHeinMach_Trigger::Ready_TriggerType(void* pArg)
         // 하늘 ( 새벽 )
         HANDLE hSkyFile = CreateFile(TEXT("../../Client/Bin/Data/Map/MapData/HeinMach/HeinMach_Dawn_sky.dat"), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
         CHECK_EQUAL(INVALID_HANDLE_VALUE, hSkyFile, E_FAIL);
-        CHECK_FALSE(ReadFile(hSkyFile, &m_Sky_Dawn, sizeof(SKY_DESC), &dwByte, nullptr), E_FAIL);
+        CHECK_FALSE(ReadFile(hSkyFile, &m_Sky_Desc, sizeof(SKY_DESC), &dwByte, nullptr), E_FAIL);
 
         CloseHandle(hSkyFile);
 
         // 구름 ( 새벽 )
         HANDLE hCloudFile = CreateFile(TEXT("../../Client/Bin/Data/Map/MapData/HeinMach/HeinMach_Dawn_cloud.dat"), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
         CHECK_EQUAL(INVALID_HANDLE_VALUE, hCloudFile, E_FAIL);
-        CHECK_FALSE(ReadFile(hCloudFile, &m_Cloud_Dawn, sizeof(CLOUD_DESC), &dwByte, nullptr), E_FAIL);
+        CHECK_FALSE(ReadFile(hCloudFile, &m_Cloud_Desc, sizeof(CLOUD_DESC), &dwByte, nullptr), E_FAIL);
 
         CloseHandle(hCloudFile);
     }
@@ -480,14 +480,14 @@ HRESULT CHeinMach_Trigger::Ready_TriggerType(void* pArg)
         // 하늘 ( 밝음 )
         HANDLE hSkyFile = CreateFile(TEXT("../../Client/Bin/Data/Map/MapData/HeinMach/HeinMach_Day_sky.dat"), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
         CHECK_EQUAL(INVALID_HANDLE_VALUE, hSkyFile, E_FAIL);
-        CHECK_FALSE(ReadFile(hSkyFile, &m_Sky_Day, sizeof(SKY_DESC), &dwByte, nullptr), E_FAIL);
+        CHECK_FALSE(ReadFile(hSkyFile, &m_Sky_Desc, sizeof(SKY_DESC), &dwByte, nullptr), E_FAIL);
 
         CloseHandle(hSkyFile);
 
         // 구름 ( 밝음 )
         HANDLE hCloudFile = CreateFile(TEXT("../../Client/Bin/Data/Map/MapData/HeinMach/HeinMach_Day_cloud.dat"), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
         CHECK_EQUAL(INVALID_HANDLE_VALUE, hCloudFile, E_FAIL);
-        CHECK_FALSE(ReadFile(hCloudFile, &m_Cloud_Day, sizeof(CLOUD_DESC), &dwByte, nullptr), E_FAIL);
+        CHECK_FALSE(ReadFile(hCloudFile, &m_Cloud_Desc, sizeof(CLOUD_DESC), &dwByte, nullptr), E_FAIL);
 
         CloseHandle(hCloudFile);
     }
@@ -500,14 +500,14 @@ HRESULT CHeinMach_Trigger::Ready_TriggerType(void* pArg)
         // 하늘 ( 밝음 )
         HANDLE hSkyFile = CreateFile(TEXT("../../Client/Bin/Data/Map/MapData/HeinMach/HeinMach_Day_sky.dat"), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
         CHECK_EQUAL(INVALID_HANDLE_VALUE, hSkyFile, E_FAIL);
-        CHECK_FALSE(ReadFile(hSkyFile, &m_Sky_Day, sizeof(SKY_DESC), &dwByte, nullptr), E_FAIL);
+        CHECK_FALSE(ReadFile(hSkyFile, &m_Sky_Desc, sizeof(SKY_DESC), &dwByte, nullptr), E_FAIL);
 
         CloseHandle(hSkyFile);
 
         // 구름 ( 밝음 )
         HANDLE hCloudFile = CreateFile(TEXT("../../Client/Bin/Data/Map/MapData/HeinMach/HeinMach_Day_cloud.dat"), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
         CHECK_EQUAL(INVALID_HANDLE_VALUE, hCloudFile, E_FAIL);
-        CHECK_FALSE(ReadFile(hCloudFile, &m_Cloud_Day, sizeof(CLOUD_DESC), &dwByte, nullptr), E_FAIL);
+        CHECK_FALSE(ReadFile(hCloudFile, &m_Cloud_Desc, sizeof(CLOUD_DESC), &dwByte, nullptr), E_FAIL);
 
         CloseHandle(hCloudFile);
     }
@@ -523,14 +523,14 @@ HRESULT CHeinMach_Trigger::Ready_TriggerType(void* pArg)
         // 하늘 ( 새벽 )
         HANDLE hSkyFile = CreateFile(TEXT("../../Client/Bin/Data/Map/MapData/HeinMach/HeinMach_Dawn_sky.dat"), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
         CHECK_EQUAL(INVALID_HANDLE_VALUE, hSkyFile, E_FAIL);
-        CHECK_FALSE(ReadFile(hSkyFile, &m_Sky_Dawn, sizeof(SKY_DESC), &dwByte, nullptr), E_FAIL);
+        CHECK_FALSE(ReadFile(hSkyFile, &m_Sky_Desc, sizeof(SKY_DESC), &dwByte, nullptr), E_FAIL);
 
         CloseHandle(hSkyFile);
 
         // 구름 ( 새벽 )
         HANDLE hCloudFile = CreateFile(TEXT("../../Client/Bin/Data/Map/MapData/HeinMach/HeinMach_Dawn_cloud.dat"), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
         CHECK_EQUAL(INVALID_HANDLE_VALUE, hCloudFile, E_FAIL);
-        CHECK_FALSE(ReadFile(hCloudFile, &m_Cloud_Dawn, sizeof(CLOUD_DESC), &dwByte, nullptr), E_FAIL);
+        CHECK_FALSE(ReadFile(hCloudFile, &m_Cloud_Desc, sizeof(CLOUD_DESC), &dwByte, nullptr), E_FAIL);
 
         CloseHandle(hCloudFile);
     }
@@ -595,8 +595,6 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
 #pragma region 동굴 정방향
         else if (m_strTriggerKey == "CaveEntry")
         {
-            // 동굴 입구 -> 동굴 미드 입구
-            Set_FogConfig(m_FogConfig);
             FOG_TRANSITION_DESC Desc{};
             Desc.fDensity = 0.035f;
             Desc.vColor = _float4(0.031f, 0.137f, 0.200f, 1.f);
@@ -611,15 +609,6 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
         }
         else if (m_strTriggerKey == "CaveMidEntry")
         {
-            // 동굴 미드 입구 -> 동굴 출구
-            Set_FogConfig(m_FogConfig);
-        }
-        else if (m_strTriggerKey == "CaveExit")
-        {
-            // 동굴 출구 -> 동굴 밖
-            Set_FogConfig(m_FogConfig);
-
-            Set_SkyBox(m_Sky_Desc, m_Cloud_Desc);
             FOG_TRANSITION_DESC Desc{};
             Desc.fDensity = 0.015f;
             Desc.vColor = _float4(0.031f, 0.137f, 0.200f, 1.f);
@@ -629,6 +618,8 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
         }
         else if (m_strTriggerKey == "CaveExit")
         {
+            Set_SkyBox(m_Sky_Desc, m_Cloud_Desc);
+
             FOG_TRANSITION_DESC Desc{};
             Desc.fDensity = 0.025f;
             Desc.vColor = _float4(0.631f, 0.522f, 0.471f, 1.f);
@@ -644,9 +635,6 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
 
             // 그림자 보간 추가
             m_pGameInstance->Start_ShadowIntensityTransition(7.f, 0.6f);
-
-            static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Sky"), 0))->Set_SkyDesc(m_Sky_Day);
-            static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Sky"), 1))->Set_CloudDesc(m_Cloud_Day);
         }
 #pragma endregion
 #pragma region 동굴 역방향
@@ -665,10 +653,18 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
         }
         else if (m_strTriggerKey == "CaveMidEntry_Rev")
         {
-
+            // 동굴 입구 ~ 중간 포그
+            FOG_TRANSITION_DESC Desc{};
+            Desc.fDensity = 0.035f;
+            Desc.vColor = _float4(0.031f, 0.137f, 0.200f, 1.f);
+            Desc.isUseHeight = false;
+            Desc.isUseNoise = false;
+            m_pGameInstance->Start_FogTransition(2.f, Desc);
         }
         else if (m_strTriggerKey == "CaveExit_Rev")
         {
+            Set_SkyBox(m_Sky_Desc, m_Cloud_Desc);
+            
             // 동굴 중간 ~ 출구 포그
             FOG_TRANSITION_DESC Desc{};
             Desc.fDensity = 0.015f;
@@ -676,10 +672,9 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             Desc.isUseHeight = false;
             Desc.isUseNoise = false;
             m_pGameInstance->Start_FogTransition(2.f, Desc);
+
             // 그림자 보간 추가
             m_pGameInstance->Start_ShadowIntensityTransition(2.f, 1.f);
-
-            Set_SkyBox(m_Sky_Desc, m_Cloud_Desc);
         }
 #pragma endregion
         else if (m_strTriggerKey == "Talk_03")
