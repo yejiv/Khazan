@@ -39,7 +39,7 @@ HRESULT CCloudSphere::Initialize_Clone(void* pArg)
     if (LEVEL::LOADING == eLevel || LEVEL::TITLE == eLevel)
         return S_OK;
 
-    Debug_CloudEdit();
+    //Debug_CloudEdit();
 #endif // _DEBUG
 
     return S_OK;

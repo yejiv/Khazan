@@ -43,13 +43,6 @@ private:
 
     _int						m_iSkillIndex = { -1 };
 
-    //vector<class CUI_Atlas_Icon*> m_pEffectIcon;
-    //vector<class CUI_TextBox*>	m_pEffectText;
-    //vector<class CUI_TextBox*>	m_pEffectValue;
-
-    //class CUI_Default_Tex* m_pTopBg = { nullptr };
-    //class CUI_Default_Tex* m_pBottomBg = { nullptr };
-
     class CUI_TextBox*               m_pSKillName = { nullptr };
     class CUI_TextBox*               m_pSkillGaugeText = { nullptr };
 
@@ -61,8 +54,8 @@ private:
     class CSkill_Condition_Panel*    m_pConditionPanel = { nullptr };
     class CSkill_Info_Tex*           m_pInfo_Tex = {nullptr};
 
-    class CUI_Default_Tex*  m_pEquip_Deco = { nullptr };
-    class CUI_TextBox*      m_pEquip_Text = { nullptr };
+    class CUI_Default_Tex*           m_pEquip_Deco = { nullptr };
+    class CUI_TextBox*               m_pEquip_Text = { nullptr };
         
 private:
     HRESULT						Ready_Prototype();

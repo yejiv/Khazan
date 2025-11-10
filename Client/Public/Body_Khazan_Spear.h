@@ -106,6 +106,8 @@ public:
     virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
 
 
+
+
 private:
     void				Update_Collider(_float fTimeDelta);
 

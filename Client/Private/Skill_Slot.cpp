@@ -5,6 +5,7 @@
 #include "UI_Atlas_Icon.h"
 #include "UI_TextBox.h"
 #include "Skill_Info.h"
+#include "Skill_QuickSlot.h"
 
 CSkill_Slot::CSkill_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Slot{ pDevice , pContext}
@@ -67,13 +68,26 @@ void CSkill_Slot::Render_SkillInfo()
     CSkill_Info::SKILLINFO_DESC Desc = {};
     Desc.iSkillIndex = m_iSkillIndex;
 
-    switch (m_pSkilData->iSubID)
+    if (m_pSkilData->iType < 2)
     {
-    case 0: Desc.iOffsetPos = { 720.f, 595.f }; break;
-    case 1: Desc.iOffsetPos = { 1020.f, 595.f }; break;
-    case 2: Desc.iOffsetPos = { 1320.f, 595.f }; break;
-    case 3: Desc.iOffsetPos = { 920.f, 595.f }; break;
-    case 4: Desc.iOffsetPos = { 1220.f, 595.f }; break;
+        switch (m_pSkilData->iSubID)
+        {
+        case 0: Desc.iOffsetPos = { 720.f, 595.f }; break;
+        case 1: Desc.iOffsetPos = { 1020.f, 595.f }; break;
+        case 2: Desc.iOffsetPos = { 1320.f, 595.f }; break;
+        case 3: Desc.iOffsetPos = { 920.f, 595.f }; break;
+        case 4: Desc.iOffsetPos = { 1220.f, 595.f }; break;
+        }
+    }
+    else
+    {
+        switch (m_pSkilData->iSubID)
+        {
+        case 0: Desc.iOffsetPos = { 900.f, 595.f }; break;
+        case 1: Desc.iOffsetPos = { 1200.f, 595.f }; break;
+        case 2: Desc.iOffsetPos = { 760.f, 595.f }; break;
+        case 3: Desc.iOffsetPos = { 1060.f, 595.f }; break;
+        }
     }
  
     Desc.isEquip = false;
@@ -154,7 +168,8 @@ void CSkill_Slot::Update(_float fTimeDelta)
 
     if (IsPick(g_hWnd))
     {
-        Render_SkillInfo();
+        if(m_pGameInstance->Get_InputType() == INPUT_TYPE::UI)
+            Render_SkillInfo();
         if (CClientInstance::GetInstance()->Get_PlayerData().iSkilPoint > 0 && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB, INPUT_TYPE::UI))
         {
             if (m_iPreSkillIndex == 0 || m_isPreSkillOn)
@@ -166,8 +181,12 @@ void CSkill_Slot::Update(_float fTimeDelta)
                     if (m_iSkillPoint == 1)
                     {
                         m_pGameInstance->Emit_Event< EVENT_SKILL_ON>(ENUM_CLASS(EVENT_TYPE::PreSKILL_On), { true, m_iSkillIndex });
-                        if(m_pSkilData->iSkillType == 3)
-                            CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("SkillSlot_Quick"));
+                        if (m_pSkilData->iSkillType == 3)
+                        {
+                            CSkill_QuickSlot::SKILLQUICK_DESC Desc = {};
+                            Desc.iSkillIndex = m_iSkillIndex;
+                            CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("SkillSlot_Quick"),&Desc);
+                        }
                         if (m_pSkilData->iType == 0)
                             CClientInstance::GetInstance()->Unlock_SpearSkill(1 << m_pSkilData->iIndex);
                     
@@ -188,6 +207,7 @@ void CSkill_Slot::Update(_float fTimeDelta)
                     if (m_pSkilData->iType == 0)
                     {
                         CClientInstance::GetInstance()->lock_SpearSkill(1 << m_pSkilData->iIndex);
+                        static_cast<CSkill_QuickSlot*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("SkillSlot_Quick")))->Equip_Check(m_iSkillIndex);
                     }
                 }
             }
@@ -406,7 +426,7 @@ HRESULT CSkill_Slot::Ready_Child(const SKILL_DB* pData)
         }
     }
 
-    AtlasDesc.fDepth = m_fDepth - 1.f;
+    AtlasDesc.fDepth = m_fDepth - 0.1f;
     AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
     AtlasDesc.szName = "PreSkill_Line";
     AtlasDesc.vLocalPos = _float2{ 0.f, 28.f };
@@ -497,4 +517,6 @@ void CSkill_Slot::Free()
 
     Safe_Release(m_pPointBG);
     Safe_Release(m_pSkillPointText);
+
+    m_pSkilData = nullptr;
 }   

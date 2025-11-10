@@ -64,16 +64,15 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
     m_pWeaponR_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R");
 
 
-#ifdef _DEBUG
-    m_pGameInstance->AddWidget(TEXT("Client"), [this]() {
-
-        ImGui::Begin("Sample Model State");
-
-
-        m_pModelCom->Debug_RanderState();
-        ImGui::End();
-        });
-#endif
+//#ifdef _DEBUG
+//	m_pGameInstance->AddWidget(TEXT("Client"), [this]() {
+//
+//		ImGui::Begin("Sample Model State");
+//        if(m_pModelCom)
+//		    m_pModelCom->Debug_RanderState();
+//		ImGui::End();
+//		});
+//#endif
 
     return S_OK;
 }
@@ -408,6 +407,12 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
         BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
         m_tCollisionDesc.pGameObject = this;
         BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+
+        DAMAGEINFO DamageInfo = {};
+        DamageInfo.fDamage = 10.f;
+        DamageInfo.eHitreaction = HITREACTION::KNOCKBACK_NORMAL;
+        BodyDesc.pCollisionDesc->pInfo = &DamageInfo;
+
         BodyDesc.bIsTrigger = true;
         if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
             TEXT("Com_Body1"), reinterpret_cast<CComponent**>(&m_pBodyCom_SpearTip1), &BodyDesc)))

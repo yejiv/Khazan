@@ -831,6 +831,11 @@ const _float4* CGameInstance::Get_Frustum_Point() const
 	return m_pFrustum->Get_Point();
 }
 
+void CGameInstance::Get_Frustum_WorldPoints(_float4* pOut)
+{
+    m_pFrustum->Get_WorldPoints(pOut);
+}
+
 const _float4* CGameInstance::Get_Frustum_WorldPoints() const
 {
 	return m_pFrustum->Get_WorldPoints();

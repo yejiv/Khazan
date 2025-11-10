@@ -17,15 +17,11 @@ public:
 	void						Set_Root(class CBTNode* pRoot);
 	void						Set_BlackBoard(class CBlackBoard* BB);
     void                        Set_Name(const string& strName) { m_strName = strName; }
-
+    CBTNode*                    Get_Root() const { return m_pRoot; }
 
 public:
     BTEVENT                     Notify_Event(BTEVENT Event);
-
-
-protected:
     void                        Terminate_AllNode(CBTNode* pNode);
-
 
 protected:
 	class CBTNode*				m_pRoot = { nullptr };

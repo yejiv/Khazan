@@ -7,8 +7,8 @@
 #include "Dummy.h"
 #include "Monster.h"
 #include "ClientInstance.h"
+#include "Khazan_Spear.h"
 #include "Sequence_HeinMach_Start.h"
-
 
 #pragma region MAP OBJECT
 #include "MapObject_Header.h"
@@ -117,8 +117,8 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
 	}
 
 
-	if (m_pGameInstance->Key_Down(DIK_RETURN))
-		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::VIPER))));
+	//if (m_pGameInstance->Key_Down(DIK_RETURN))
+	//	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::VIPER))));
 
     if (!m_isStart)
     {
@@ -198,6 +198,9 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
 	pCamera_Player->Set_IsActive(false);
 	CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player"));
 	pCamera_Player->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
+
+    static_cast<CKhazan_Spear*>(pPlayer)->Set_Camera(pCamera_Player);
+
 	m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::HEINMACH), pCamera_Player);
 
 	m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag, pCamera_Player);
