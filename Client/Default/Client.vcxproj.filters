@@ -661,6 +661,9 @@
     <Filter Include="02.GameObject\UI\Skill_QuickSlot\List">
       <UniqueIdentifier>{559041ba-24b8-4d52-8bad-394da64a40b4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04.Sequence\HeinMach\Start_Chat">
+      <UniqueIdentifier>{f9a9efff-bd5a-4199-8d0e-ae1adf5e0c43}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1272,6 +1275,9 @@
     <ClInclude Include="..\public\Skill_QuickSlot_List.h">
       <Filter>02.GameObject\UI\Skill_QuickSlot\List</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Sequence_HeinMach_Start_Chat.h">
+      <Filter>04.Sequence\HeinMach\Start_Chat</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1862,6 +1868,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Skill_QuickSlot_List.cpp">
       <Filter>02.GameObject\UI\Skill_QuickSlot\List</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_HeinMach_Start_Chat.cpp">
+      <Filter>04.Sequence\HeinMach\Start_Chat</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -47,6 +47,7 @@ private:
 private:
 	class CSequence_HeinMach_Field* m_pHeinMach_Field = { nullptr };
 	class CSequence_HeinMach_Yetuga* m_pHeinMach_Yetuga = { nullptr };
+    class CSequence_HeinMach_Start_Chat* m_pHeinMach_Start_Chat = { nullptr };
 	class CClientInstance* m_pClientInstance = { nullptr };
 
 private:
