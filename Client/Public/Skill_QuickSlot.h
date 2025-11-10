@@ -5,6 +5,15 @@
 NS_BEGIN(Client)
 class CSkill_QuickSlot final : public CUI_Panel
 {
+public:
+    typedef struct Skill_Info {
+        _int iSkillIndex;
+    }SKILLQUICK_DESC;
+
+    typedef struct Skill_Bubble_Tag : public CUIObject::BUBBLEEVENT{
+        _int iSkillIndex;
+        _int iIndex;
+    }BUBBLE_DESC;
 private:
     enum class UIANIMSTATE { ON, OFF, END };
 
@@ -14,6 +23,7 @@ private:
     virtual ~CSkill_QuickSlot() = default;
 
 public:
+    void                                Equip_Check(_int iSkillIndex);
     void								On_Panel();
     void								Off_Panel();
 public:
@@ -31,6 +41,10 @@ private:
     _float								m_fAccTime = {};
     UIANIMSTATE							m_eAnimState = { UIANIMSTATE::END };
 
+    vector<class CSkill_QuickSlot_List*> m_pList;
+    class CUI_TextBox*                  m_pSkillName = { nullptr };
+
+    _int                                m_iSkillIndex = {};
 private:
     HRESULT								Ready_Prototype();
     HRESULT								Ready_Object();

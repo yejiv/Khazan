@@ -18,7 +18,9 @@ private:
 	virtual ~CSkill_QuickSlot_List() = default;
 
 public:
-	void								Update_Pos(_int iIndex, _float2 vPos, _float fOffSetY);
+    void                                UnEquipSlot(_int iSkillIndex);
+    void                                Set_SkillIndex(_int iSKillIndex);
+    void								Update_Pos(_int iIndex, _float2 vPos, _float fOffSetY);
 public:
 	virtual HRESULT						Initialize_Prototype(_uint iLevel);
 	virtual HRESULT						Initialize_Clone(void* pArg) override;
@@ -33,6 +35,13 @@ private:
 	CTexture*                           m_pTextureCom = { nullptr };
 	CVIBuffer_Rect*                     m_pVIBufferCom = { nullptr };
 
+    _int                                m_iIndex = { -1 };
+    _int                                m_iSkillIndex = {};
+    _int                                m_iEquipSkillIndex = {};
+    vector<class CUI_Atlas_Icon*>       m_pGuideIcon;
+    class CUI_Atlas_Icon*               m_pLineIcon = { nullptr };
+    class CUI_Atlas_Icon*               m_pSkillIcon = { nullptr };
+    class CUI_TextBox*                  m_pSkillName = { nullptr };
 private:
 	HRESULT								Ready_Componet();
 public:
