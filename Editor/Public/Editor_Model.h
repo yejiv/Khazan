@@ -49,7 +49,8 @@ public:
 public:
 	void			ExportModel(string& strPath);
 	void			ExportModel_NoMsg(string& strPath);	// 확인 창 말고 디버그 창에 띄우는 추출 함수
-	void			LoadModel(string& strPath);
+    void			LoadModel(string& strPath);
+    void			LoadNewModel(string& strPath);  //애니메이션이 추가될 경우 기존 .dat과 병합
 	void			Update_DAT_From_JSON(string& strPath);
 	_bool			Test()
 	{
@@ -151,6 +152,14 @@ private:
 	void			Export_Binary(const string& strFilePath);
 	// 확인 창 말고 디버그 창에 띄우는 추출 함수
 	void			Export_Binary_NoMsg(const string& strFilePath);
+
+    /* 모델에 애니메이션이 추가될 경우 사용하는 함수. 기존 .dat파일과 새로운 모델하고 병합*/
+    void MergeModelData(
+        const MODEL_DATA& datFileData,
+        const vector<ANIMATION_DATA>& currentAnimations,
+        const vector<ANIMATION_SET_DATA>& currentAnimSets,
+        const vector<BONE_DATA>& newBones);
+
 
 	/* Json에 이쁘게 쓰기  */
 	string			PostProcessJSON(const string& jsonStr);
