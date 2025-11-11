@@ -41,6 +41,7 @@
 #include "Body_Imp_Range.h"
 #include "Imp_Wand.h"
 #include "Projectile_Imp_MagicBall.h"
+#include "Projectile_Boomarang.h"
 
 #pragma endregion
 
@@ -552,6 +553,10 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Imp_Magic_Ball"),
         CProjectile_Imp_MagicBall::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Imp_Boomarang"),
+        CProjectile_Boomarang::Create(m_pDevice, m_pContext))))
         return E_FAIL;
 
     

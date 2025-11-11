@@ -512,7 +512,7 @@ HRESULT CYetuga::Ready_Components()
     m_tCollisionDesc.pGameObject = this;
     //pCollDesc.pInfo = ?? // 작성하기
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
-
+   
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
         return E_FAIL;

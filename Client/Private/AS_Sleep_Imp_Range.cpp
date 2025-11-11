@@ -11,15 +11,10 @@ CAS_Sleep_Imp_Range::CAS_Sleep_Imp_Range()
 void CAS_Sleep_Imp_Range::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
     CImp_Range* pImp = static_cast<CImp_Range*>(pOwner);
-<<<<<<< Updated upstream
 
     CModel* pModel = static_cast<CModel*>(pImp->Get_Body()->Get_Component(TEXT("Com_Model")));
     pModel->Set_Animation(1);
 
-=======
-    CModel* pModel = static_cast<CModel*>(pImp->Get_Body()->Get_Component(TEXT("Com_Model")));
-    pModel->Set_Animation(1);
->>>>>>> Stashed changes
     m_eState = IMP_SlEEP_STATE::SLEEP;
     m_isChanged = false;
 }

@@ -36,9 +36,13 @@ private:
     HRESULT							Ready_AnimEvent();
 
 private:
-    void                            Make_MagicBall();
     void                            Cast_MagicBall(_uint iIndex);
     void                            Shoot_MagicBall(_uint iIndex);
+
+
+    void                            Cast_Boomarang();
+    void                            Hold_Boomarang();
+    void                            Shoot_Boomarang();
                                 
 
 private:
@@ -46,7 +50,7 @@ private:
     class CImp_Wand*                m_pWeapon = { nullptr };
 
     vector<class CProjectile_Imp_MagicBall*> m_MagicBalls;
-
+    class CProjectile_Boomarang*    m_pBoomarang = { nullptr };
 public:
     static CImp_Range*              Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual CGameObject*            Clone(void* pArg) override;

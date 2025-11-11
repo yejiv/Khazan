@@ -170,10 +170,13 @@
     <ClInclude Include="..\public\Amount_Panel.h" />
     <ClInclude Include="..\Public\AS_Amageddon_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Attack_Imp_Range.h" />
+    <ClInclude Include="..\Public\AS_Boomarang_Imp_Range.h" />
+    <ClInclude Include="..\Public\AS_Dead_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_Dead_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Dodge_Yetuga.h" />
     <ClInclude Include="..\Public\AS_FrontAttack_Gomdol.h" />
     <ClInclude Include="..\Public\AS_Groggy_Yetuga.h" />
+    <ClInclude Include="..\Public\AS_Hit_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_Hit_Yetuga.h" />
     <ClInclude Include="..\Public\AS_IceBreath_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Idle_Gomdol.h" />
@@ -196,6 +199,7 @@
     <ClInclude Include="..\Public\BigChest.h" />
     <ClInclude Include="..\public\BladeNexus_List.h" />
     <ClInclude Include="..\public\BladeNexus_Map_BG.h" />
+    <ClInclude Include="..\Public\Projectile_Boomarang.h" />
     <ClInclude Include="..\public\UI_BladeNexus_Map.h" />
     <ClInclude Include="..\public\BladeNexus_Map_List.h" />
     <ClInclude Include="..\Public\Body_Gomdol.h" />
@@ -395,10 +399,13 @@
     <ClCompile Include="..\private\Amount_Panel.cpp" />
     <ClCompile Include="..\Private\AS_Amageddon_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Attack_Imp_Range.cpp" />
+    <ClCompile Include="..\Private\AS_Boomarang_Imp_Range.cpp" />
+    <ClCompile Include="..\Private\AS_Dead_Imp_Range.cpp" />
     <ClCompile Include="..\Private\AS_Dead_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Dodge_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_FrontAttack_Gomdol.cpp" />
     <ClCompile Include="..\Private\AS_Groggy_Yetuga.cpp" />
+    <ClCompile Include="..\Private\AS_Hit_Imp_Range.cpp" />
     <ClCompile Include="..\Private\AS_Hit_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_IceBreath_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Idle_Gomdol.cpp" />
@@ -422,6 +429,7 @@
     <ClCompile Include="..\Private\BladeNexus.cpp" />
     <ClCompile Include="..\private\BladeNexus_List.cpp" />
     <ClCompile Include="..\private\BladeNexus_Map_BG.cpp" />
+    <ClCompile Include="..\Private\Projectile_Boomarang.cpp" />
     <ClCompile Include="..\private\UI_BladeNexus_Map.cpp" />
     <ClCompile Include="..\private\BladeNexus_Map_List.cpp" />
     <ClCompile Include="..\Private\Body_Gomdol.cpp" />
