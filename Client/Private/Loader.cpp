@@ -37,6 +37,9 @@
 #include "Gomdol.h"
 #include "Body_Gomdol.h"
 
+#include "Imp_Range.h"
+#include "Body_Imp_Range.h"
+
 #pragma endregion
 
 #pragma region UI
@@ -428,6 +431,14 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
 	//	return E_FAIL;
 #pragma endregion
 
+#pragma region Imp_Range
+
+    //Goblin_Range.dat
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Goblin_Range"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Goblin_Range/Goblin_Range.dat"))))
+        return E_FAIL;
+
+#pragma endregion
 
 #pragma region �� ���� : ��ȣ �ۿ� �� ������Ʈ
 	/* Prototype_Component_Model_BladeNexus */
@@ -516,6 +527,22 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
 	//	return E_FAIL;
 
 #pragma endregion
+
+#pragma region Imp_Range
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"),
+        CImp_Range::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Monster_Imp_Range_Body"),
+        CBody_Imp_Range::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    
+
+#pragma endregion
+
+
 
 	/* Prototype_GameObject_Prop_Object */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Object"),

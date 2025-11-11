@@ -157,7 +157,6 @@ HRESULT CBody_Gomdol::Ready_Components()
         return E_FAIL;
 
     m_pModelCom->Set_OwnerTransform(&m_pOwnerTransform);
-    //m_pModelCom->Set_Animation(36);
 
     return S_OK;
 }
