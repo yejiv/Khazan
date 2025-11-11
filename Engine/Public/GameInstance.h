@@ -7,19 +7,6 @@
 #include "Event_Manager.h"
 #include "BoneChainPhysic.h"
 
-#ifdef new
-#pragma push_macro("new")
-#undef new
-#endif
-
-#include "imgui.h"
-#include "imgui_impl_win32.h"
-#include "imgui_impl_dx11.h"
-#include "ImGuizmo.h"
-
-#ifdef new
-#pragma pop_macro("new") // DBG_NEW 복원
-#endif
 
 NS_BEGIN(Engine)
 
