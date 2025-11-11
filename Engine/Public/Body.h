@@ -101,7 +101,6 @@ public:
 
 	virtual void Update(_float fTimeDelta, _matrix WorldMatirx, _vector& outQuatRotation, _vector& outPosition);
 	virtual void Sync_Update(_matrix WorldMatirx);
-	void MeshUpdate();
 
 public:
 	void	Activate(_bool isActivate) { true == isActivate ? m_pBodyInterface->ActivateBody(m_BodyID) : m_pBodyInterface->DeactivateBody(m_BodyID); }

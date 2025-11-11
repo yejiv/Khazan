@@ -135,7 +135,7 @@ HRESULT CBladeNexus::Ready_Collision(void* pArg)
     StaticBodyDesc.fFriction = 0.8f;
     StaticBodyDesc.fMass = 1.0f;
     StaticBodyDesc.fRestitution = 0.0f;
-    StaticBodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_STATIC);
+    StaticBodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_STATIC_TRIGGER);
     _float3 vPos{};
     XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
     vPos.y += StaticBodyDesc.vExtent.y;

@@ -3,6 +3,7 @@
 #include "ClientInstance.h"
 #include "Sequence_HeinMach_Field.h"
 #include "Sequence_HeinMach_Yetuga.h"
+#include "Sequence_HeinMach_Start_Chat.h"
 #include "Camera_Compre.h"
 #include "Transform.h"
 #include "Creature.h"
@@ -534,6 +535,10 @@ HRESULT CHeinMach_Trigger::Ready_TriggerType(void* pArg)
 
         CloseHandle(hCloudFile);
     }
+    else if (m_strTriggerKey == "Talk_03")
+    {
+        m_pHeinMach_Start_Chat = CSequence_HeinMach_Start_Chat::Create();
+    }
 #pragma endregion
 
     return S_OK;
@@ -679,37 +684,12 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
 #pragma endregion
         else if (m_strTriggerKey == "Talk_03")
         {
-            Event_Announce_Talk(3);
-            m_isDead = true;
-        }
-        else if (m_strTriggerKey == "Talk_04")
-        {
-            Event_Announce_Talk(4);
-            m_isDead = true;
-        }
-        else if (m_strTriggerKey == "Talk_05")
-        {
-            Event_Announce_Talk(5);
-            m_isDead = true;
-        }
-        else if (m_strTriggerKey == "Talk_06")
-        {
-            Event_Announce_Talk(6);
-            m_isDead = true;
-        }
-        else if (m_strTriggerKey == "Talk_07")
-        {
-            Event_Announce_Talk(7);
-            m_isDead = true;
-        }
-        else if (m_strTriggerKey == "Talk_08")
-        {
-            Event_Announce_Talk(8);
-            m_isDead = true;
-        }
-        else if (m_strTriggerKey == "Talk_09")
-        {
-            Event_Announce_Talk(9);
+            SEQ_REQ_PLAY_DESC tPlayDesc{};
+            tPlayDesc.tId.iSeq = 1100;
+            tPlayDesc.pAsset = L"Start_Chat";
+            tPlayDesc.fStartTime = 0.f;
+            m_pGameInstance->SEQ_AdoptAndPlay(m_pHeinMach_Start_Chat, tPlayDesc);
+
             m_isDead = true;
         }
     }
@@ -724,11 +704,6 @@ void CHeinMach_Trigger::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObject
 void CHeinMach_Trigger::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 {
 
-}
-
-void CHeinMach_Trigger::Event_Announce_Talk(_int iIndex)
-{
-    m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_TALK>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_TALK), EVENT_ANNOUNCE_TALK{ iIndex });
 }
 
 void CHeinMach_Trigger::Set_FogConfig(FOG_CONFIG FogConfig)
@@ -775,4 +750,5 @@ void CHeinMach_Trigger::Free()
     Safe_Release(m_pClientInstance);
     m_pHeinMach_Field = nullptr;
     m_pHeinMach_Yetuga = nullptr;
+    m_pHeinMach_Start_Chat = nullptr;
 }
