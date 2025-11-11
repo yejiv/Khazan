@@ -9,7 +9,7 @@
 
 #include "BladeNexus_Map_BG.h"
 #include "BladeNexus_Map_List.h"
-
+#include "UI_BladeNexus.h"
 
 CUI_BladeNexus_Map::CUI_BladeNexus_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Panel{ pDevice, pContext }
@@ -41,10 +41,11 @@ void CUI_BladeNexus_Map::On_Panel(ONTYPE eType)
     }
     else
     {
-        m_pMapList[0]->Update_Visible(true);
-        m_pMapList[0]->Setting_List(ENUM_CLASS(m_eOnType));
-        m_pMapList[1]->Update_Visible(false);
-        m_pMapList[2]->Update_Visible(false);
+        for (_int i = 0; i < (_int)m_pMapList.size(); ++i)
+        {
+            m_pMapList[i]->Setting_List(ENUM_CLASS(m_eOnType));
+            m_pMapList[i]->Update_Visible(true);
+        }
         m_pMapBg->Set_TexPass(1);
         m_pMapTex->Set_TexPass(8);
         m_iMaxSelete = 0;
@@ -72,8 +73,11 @@ void CUI_BladeNexus_Map::Off_Panel()
     if (!m_IsUpdate)
         return;
 
-    m_eAnimState = UIANIMSTATE::OFF;
-    m_fAccTime = 1.f;
+    CUI_BladeNexus::BLADENEXUS_ON_DESC Desc;
+
+    Desc.eType = CUI_BladeNexus::ONTYPE::END;
+    CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BladeNexus"), &Desc);
+    m_IsUpdate = false;
 }
 
 HRESULT CUI_BladeNexus_Map::Initialize_Prototype(_uint iLevel)

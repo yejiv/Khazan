@@ -6,6 +6,8 @@ CPlayer_Manager::CPlayer_Manager()
 
 HRESULT CPlayer_Manager::Initialize()
 {
+    m_Data.iMaxDoggednessCount = 5;
+    m_Data.fCulDoggedness = 5;
 	m_Data.iLevel = 1;
 	m_Data.iGold = 1000;
 	m_Data.iLachryma = 500;

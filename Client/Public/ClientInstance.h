@@ -78,6 +78,7 @@ public:
 #pragma endregion
 
 #pragma region Player_Mager
+    PLAYER_DATA&                Get_ptrPlayerData();
 	const PLAYER_DATA&			Get_PlayerData();
 	void						Add_SkillExp(_float fExp);
 	_bool						Add_SkillPoint(_int iPoint);

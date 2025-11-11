@@ -41,7 +41,7 @@ private:
     _int                                m_iIndex = { -1 };
 
     _bool                               m_bIsOn = { false };
-private:
+private: 
     HRESULT								Ready_Componet();
 public:
     static CUI_BladeNexus_Map_List*     Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);

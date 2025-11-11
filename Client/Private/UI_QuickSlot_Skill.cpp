@@ -53,16 +53,6 @@ void CUI_QuickSlot_Skill::Late_Update(_float fTimeDelta)
     }
 }
 
-HRESULT CUI_QuickSlot_Skill::Render()
-{
-    return S_OK;
-}
-
-HRESULT CUI_QuickSlot_Skill::Ready_Prototype()
-{
-    return S_OK;
-}
-
 CUI_QuickSlot_Skill* CUI_QuickSlot_Skill::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)
 {
     CUI_QuickSlot_Skill* pInstance = new CUI_QuickSlot_Skill(pDevice, pContext);

@@ -160,6 +160,10 @@ _float4 CClientInstance::Get_AtlasUV(const string pFrameName, _uint iTextureInde
 #pragma endregion
 
 #pragma region Player_Manager
+PLAYER_DATA& CClientInstance::Get_ptrPlayerData()
+{
+    return m_pPlayer_Manager->Get_ptrPlayerData();
+}
 const PLAYER_DATA& CClientInstance::Get_PlayerData()
 {
 	return m_pPlayer_Manager->Get_PlayerData();

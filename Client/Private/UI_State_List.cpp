@@ -301,6 +301,9 @@ void CUI_State_List::List_RenderUpdate(_float fTimeDelta)
         m_pName_TextBox->Late_Update(fTimeDelta);
         m_pCulLevel_TextBox->Late_Update(fTimeDelta);
         m_pStateIcon->Late_Update(fTimeDelta);
+
+        for (auto pTex : m_pTexture)
+            pTex->Late_Update(fTimeDelta);
     }
     else
     {

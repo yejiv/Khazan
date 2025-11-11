@@ -32,17 +32,21 @@ void CUI_BladeNexus_Map_List::Setting_List(_int iType)
     if (iType == 0)
     {
         if (m_iIndex == 0) 
-            m_pListText->Set_Text(TEXT("초반"));
+            m_pListText->Set_Text(TEXT("눈보라 협곡"));
         else if(m_iIndex == 1)  
-            m_pListText->Set_Text(TEXT("중반"));
+            m_pListText->Set_Text(TEXT("냉기 서린 동굴"));
         else if (m_iIndex == 2) 
-            m_pListText->Set_Text(TEXT("후반"));
+            m_pListText->Set_Text(TEXT("설인의 대지"));
 
     }
     else
     {
         if (m_iIndex == 0)
-            m_pListText->Set_Text(TEXT("보스"));
+            m_pListText->Set_Text(TEXT("잊혀진 사원의 지하"));
+        else if (m_iIndex == 1)
+            m_pListText->Set_Text(TEXT("잊혀진 사원의 깊은 곳"));
+        else if (m_iIndex == 2)
+            m_pListText->Set_Text(TEXT("잊혀진 사원의 심장"));
     }
 
     if (m_bIsOn)

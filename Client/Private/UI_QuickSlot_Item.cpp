@@ -233,6 +233,7 @@ void CUI_QuickSlot_Item::Add_Item(EVENT_HUD_QUICKSLOT pItem)
         m_iState = ENUM_CLASS(QUICKITMESLOTSTATE::NONITEM);
         m_iItemIndex = -1;
         m_iItemCount = nullptr;
+        Update_State();
     }
     else
     {
