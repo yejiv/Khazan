@@ -37,7 +37,7 @@ HRESULT CAnimation::Initialize(const vector<class CBone*>& Bones, ANIMATION_DATA
     m_fDuration = data.fDuration;
     m_iNumChannels = data.iNumChannels;
     m_fTickPerSecond = data.fTickPerSecond;
-    m_fBlendTime = data.fAnimationBlendTime;
+    //m_fBlendTime = data.fAnimationBlendTime;
     m_isLoop = data.animSetup.isLoop;
 
     m_CurrentKeyFrameIndices.resize(m_iNumChannels);

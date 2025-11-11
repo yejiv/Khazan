@@ -36,6 +36,8 @@ private:
 	MOUSE_MODE					m_eMode = { MOUSE_MODE::END };
 	_bool						m_IsDefalutMouse = { false };
 	_bool						m_IsPressing = { false };
+
+    _int                        m_iTrailTexIndex = {};
 private:
 	HRESULT						Ready_Prototype();
 	HRESULT						Ready_Component();

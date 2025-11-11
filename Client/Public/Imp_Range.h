@@ -32,10 +32,20 @@ public:
 private:
     HRESULT							Ready_Components();
     HRESULT							Ready_PartObjects();
+    HRESULT							Ready_Projectiles();
     HRESULT							Ready_AnimEvent();
 
 private:
+    void                            Make_MagicBall();
+    void                            Cast_MagicBall();
+    void                            Shoot_MagicBall();
+                                
+
+private:
     class CBody_Imp_Range*          m_pBody = { nullptr };
+    class CImp_Wand*                m_pWeapon = { nullptr };
+
+    class CProjectile_Imp_MagicBall* m_pMagicBall = { nullptr };
 
 public:
     static CImp_Range*              Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

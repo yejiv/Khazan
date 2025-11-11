@@ -202,6 +202,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\Distortion.cpp" />
     <ClCompile Include="..\Private\Effect_Element.cpp" />
     <ClCompile Include="..\Private\Effect_Manager.cpp" />
+    <ClCompile Include="..\private\LUT.cpp" />
     <ClCompile Include="..\Private\Prefab.cpp" />
     <ClCompile Include="..\private\Fog.cpp" />
     <ClCompile Include="..\private\Font_Face.cpp" />
@@ -278,6 +279,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\VIBuffer_LineTrail.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Mesh_Instance.cpp" />
     <ClCompile Include="..\private\VIBuffer_Instance_UI.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Point.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Point_Instance.cpp" />
     <ClCompile Include="..\Private\VIBuffer_QuadTrail.cpp" />
     <ClCompile Include="..\private\VIBuffer_Rect.cpp" />
@@ -349,6 +351,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Distortion.h" />
     <ClInclude Include="..\Public\Effect_Element.h" />
     <ClInclude Include="..\Public\Effect_Manager.h" />
+    <ClInclude Include="..\public\LUT.h" />
     <ClInclude Include="..\Public\Prefab.h" />
     <ClInclude Include="..\public\Fog.h" />
     <ClInclude Include="..\public\Engine_Sequence.h" />
@@ -450,6 +453,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\VIBuffer_LineTrail.h" />
     <ClInclude Include="..\Public\VIBuffer_Mesh_Instance.h" />
     <ClInclude Include="..\public\VIBuffer_Instance_UI.h" />
+    <ClInclude Include="..\Public\VIBuffer_Point.h" />
     <ClInclude Include="..\Public\VIBuffer_Point_Instance.h" />
     <ClInclude Include="..\Public\VIBuffer_QuadTrail.h" />
     <ClInclude Include="..\public\VIBuffer_Rect.h" />

@@ -15,6 +15,7 @@ HRESULT CFog::Initialize()
     m_Config.fNear = 0.1f;
     m_Config.fFar = 100.f;
     m_Config.fDensity = 0.05f;
+    m_Config.fBias = 0.8f;
     m_Config.vColor = { 0.f, 0.106f, 0.137f, 1.f };
 
     m_Config.Noise.isEnable = false;
@@ -23,7 +24,8 @@ HRESULT CFog::Initialize()
     m_Config.Noise.fStrength = 0.5f;
     m_Config.Noise.fContrast = 1.f;
 
-    m_Config.fBaseHeight = 63.5f;
+    m_Config.isUseHeight = false;
+    m_Config.fBaseHeight = 1120.f;
     m_Config.fHeightDensity = 0.001f;
 
     if (FAILED(Ready_NoiseTexture()))
@@ -51,6 +53,7 @@ void CFog::Update(_float fTimeDelta)
 
     m_Config.fDensity = Lerp(m_StartFog.fDensity, m_TargetFog.fDensity, fRatio);
     XMStoreFloat4(&m_Config.vColor, XMVectorLerp(XMLoadFloat4(&m_StartFog.vColor), XMLoadFloat4(&m_TargetFog.vColor), fRatio));
+    m_Config.fBias = Lerp(m_StartFog.fBias, m_TargetFog.fBias, fRatio);
 }
 
 HRESULT CFog::Bind_Fog_ShaderResources(CShader* pShader)
@@ -66,6 +69,9 @@ HRESULT CFog::Bind_Fog_ShaderResources(CShader* pShader)
         return E_FAIL;
 
     if (FAILED(pShader->Bind_RawValue("g_fFogFar", &m_Config.fFar, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(pShader->Bind_RawValue("g_fFogBias", &m_Config.fBias, sizeof(_float))))
         return E_FAIL;
 
     if (FAILED(pShader->Bind_RawValue("g_vFogColor", &m_Config.vColor, sizeof(_float4))))
@@ -95,6 +101,9 @@ HRESULT CFog::Bind_Fog_ShaderResources(CShader* pShader)
     if (FAILED(pShader->Bind_RawValue("g_fFogBaseHeight", &m_Config.fBaseHeight, sizeof(_float))))
         return E_FAIL;
 
+    if (FAILED(pShader->Bind_Bool("g_isUseHeightFog", &m_Config.isUseHeight)))
+        return E_FAIL;
+
     if (FAILED(pShader->Bind_RawValue("g_fFogHeightDensity", &m_Config.fHeightDensity, sizeof(_float))))
         return E_FAIL;
 
@@ -122,6 +131,9 @@ void CFog::Start_FogTransition(_float fDuration, const FOG_TRANSITION_DESC& Desc
 	m_TargetFog = Desc;
 	m_StartFog.fDensity = m_Config.fDensity;
 	m_StartFog.vColor = m_Config.vColor;
+    m_StartFog.fBias = m_Config.fBias;
+    m_Config.isUseHeight = Desc.isUseHeight;
+    m_Config.fBias = Desc.fBias;
 
     if (true == Desc.isUseHeight)
     {

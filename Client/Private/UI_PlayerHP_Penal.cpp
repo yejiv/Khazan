@@ -52,7 +52,7 @@ void CUI_PlayerHP_Penal::Priority_Update(_float fTimeDelta)
 
 void CUI_PlayerHP_Penal::Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_9, INPUT_TYPE::UI))
+	if (m_pGameInstance->Key_Down(DIK_9))
 		On_Penal();
 
 

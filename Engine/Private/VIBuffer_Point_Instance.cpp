@@ -179,14 +179,14 @@ HRESULT CVIBuffer_Point_Instance::Render()
 	m_pContext->DrawInstanced(1, m_iNumInstance, 0, 0);
 
 	//debug
-	m_pContext->CopyResource(m_pDebugStagingBuffer, m_pVBInstance);
-
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	if (SUCCEEDED(m_pContext->Map(m_pDebugStagingBuffer, 0, D3D11_MAP_READ, 0, &mappedResource)))
-	{
-		IB_POINTINSTANCE_EFFECT aliveCount = *reinterpret_cast<IB_POINTINSTANCE_EFFECT*>(mappedResource.pData);
-		m_pContext->Unmap(m_pStagingBuffer, 0);
-	}
+	// m_pContext->CopyResource(m_pDebugStagingBuffer, m_pVBInstance);
+    // 
+	// D3D11_MAPPED_SUBRESOURCE mappedResource;
+	// if (SUCCEEDED(m_pContext->Map(m_pDebugStagingBuffer, 0, D3D11_MAP_READ, 0, &mappedResource)))
+	// {
+	// 	IB_POINTINSTANCE_EFFECT aliveCount = *reinterpret_cast<IB_POINTINSTANCE_EFFECT*>(mappedResource.pData);
+	// 	m_pContext->Unmap(m_pStagingBuffer, 0);
+	// }
 	//debug end
 
 	return S_OK;
@@ -419,13 +419,13 @@ HRESULT CVIBuffer_Point_Instance::Ready_SRV(void* pSysmem)
 	//Debug
 	//여기서 Instance Buffer를 깔 수 있는 Staging Buffer를 만들어야됨
 	//m_pVBInstance 이 내용을 system으로 넣어주는 Staing버퍼 만들기
-	D3D11_BUFFER_DESC DebugStaingBufferDesc{};
-	DebugStaingBufferDesc = m_VBInstanceDesc;
-	DebugStaingBufferDesc.Usage = D3D11_USAGE_STAGING;
-	DebugStaingBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-	DebugStaingBufferDesc.BindFlags = 0;
-	if (FAILED(m_pDevice->CreateBuffer(&DebugStaingBufferDesc, nullptr, &m_pDebugStagingBuffer)))
-		return E_FAIL;
+	//D3D11_BUFFER_DESC DebugStaingBufferDesc{};
+	//DebugStaingBufferDesc = m_VBInstanceDesc;
+	//DebugStaingBufferDesc.Usage = D3D11_USAGE_STAGING;
+	//DebugStaingBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	//DebugStaingBufferDesc.BindFlags = 0;
+	//if (FAILED(m_pDevice->CreateBuffer(&DebugStaingBufferDesc, nullptr, &m_pDebugStagingBuffer)))
+	//	return E_FAIL;
 	//Debug End
 
 
@@ -574,7 +574,7 @@ void CVIBuffer_Point_Instance::Free()
 	Safe_Release(m_pSRVNoise);
 	Safe_Release(m_pUAV);
 	Safe_Release(m_pUAVSpeed);
-	Safe_Release(m_pDebugStagingBuffer);
+	//Safe_Release(m_pDebugStagingBuffer);
 
 	for(_uint i = 0; i < CS_PASS::END; ++i)
 		Safe_Release(m_ComputeShaders[i]);

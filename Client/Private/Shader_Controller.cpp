@@ -94,6 +94,9 @@ void CShader_Controller::Ready_Shader()
 
 			if (m_isRenderShadow)
 			{
+                if (ImGui::SliderFloat2("Specular", reinterpret_cast<_float*>(&m_vSpecularPower), 0.f, 256.f, "%.0f"))
+                    m_pGameInstance->Set_SpecularPower(m_vSpecularPower);
+
 				if (ImGui::CollapsingHeader("Shadow Light"), ImGuiTreeNodeFlags_DefaultOpen)
 				{
 					if (ImGui::SliderFloat3("Direction", reinterpret_cast<_float*>(&m_CascadeConfig.vLightDir), -1.f, 1.f))
@@ -207,10 +210,13 @@ void CShader_Controller::Ready_Shader()
 							m_pGameInstance->Set_FogConfig(m_FogConfig);
 					}
 
+                    if (ImGui::SliderFloat("Fog Bias", &m_FogConfig.fBias, 0.f, 1.f, "%.1f"))
+                        m_pGameInstance->Set_FogConfig(m_FogConfig);
+
 					if (ImGui::ColorEdit4("Fog Color", reinterpret_cast<_float*>(&m_FogConfig.vColor)))
 						m_pGameInstance->Set_FogConfig(m_FogConfig);
 
-					if (ImGui::SliderFloat("Fog Base Height", &m_FogConfig.fBaseHeight, -1000.f, 2000.f))
+					if (ImGui::SliderFloat("Fog Base Height", &m_FogConfig.fBaseHeight, -1000.f, 3000.f))
 						m_pGameInstance->Set_FogConfig(m_FogConfig);
 
 					if (ImGui::SliderFloat("Fog Height Density", &m_FogConfig.fHeightDensity, 0.001f, 1.f))

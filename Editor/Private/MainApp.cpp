@@ -100,6 +100,10 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 		CVIBuffer_Rect::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Point"),
+        CVIBuffer_Point::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
 	/* Prototype_Component_VIBuffer_Cube */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Cube"),
 		CVIBuffer_Cube::Create(m_pDevice, m_pContext))))
@@ -128,7 +132,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 
 	/* Prototype_Component_Shader_VtxPosTex */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxPosSpriteTex"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_VtxPosSpriteTex.hlsl"), VTXPOSTEX::Elements, VTXPOSTEX::iNumElements))))
+		CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_VtxPosSpriteTex.hlsl"), VTXPOS::Elements, VTXPOS::iNumElements))))
 		return E_FAIL;
 
 	/* Prototype_Component_Shader_VtxNorTex */

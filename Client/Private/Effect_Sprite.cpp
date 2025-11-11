@@ -25,10 +25,7 @@ HRESULT CEffect_Sprite::Initialize_Clone()
     __super::Initialize_Clone(nullptr);
 
     if (FAILED(Ready_Component()))
-        return E_FAIL;
-
-    //test
-    m_pTransformCom->Scale(_float3(2.f, 2.f, 2.f));
+        return E_FAIL; 
 
     return S_OK;
 }
@@ -108,7 +105,7 @@ HRESULT CEffect_Sprite::Ready_Component()
         TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr)))
         return E_FAIL;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Rect"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Point"),
         TEXT("Com_Buffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), nullptr)))
         return E_FAIL;
 
@@ -141,18 +138,23 @@ HRESULT CEffect_Sprite::Bind_ShaderResources()
 
     if (FAILED(m_pShaderCom->Bind_RawValue("g_FrameIdx", &UVIdx, sizeof(_float))))
         return E_FAIL;
+     
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fSizeRatio", &m_sData.fSizeRatio, sizeof(_float))))
+        return E_FAIL;
 
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fSize", &m_sData.fSize, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
+        return E_FAIL;
+     
     if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_Texture", m_sData.iTextureIdx)))
         return E_FAIL;
 
 
     return S_OK;
 }
-
-//void CEffect_Sprite::Apply(void* pArg)
-//{
-//    m_sData = *static_cast<SPRITE_DESC*>(pArg);
-//}
+ 
 
 CEffect_Sprite* CEffect_Sprite::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, void* pArg)
 {

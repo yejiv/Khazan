@@ -92,6 +92,7 @@ public:
 	void Set_ToonShadeLevel(_float fLevel);
 	OUTLINE_CONFIG Get_OutlineConfig();
 	void Set_OutlineConfig(OUTLINE_CONFIG Config);
+    void Set_SpecularPower(_float2 vPower);
 #pragma endregion
 
 #pragma region TIMER_MANAGER
@@ -378,6 +379,11 @@ public:
 	ID3D11ShaderResourceView*	Get_DistortionNoiseTexture(_uint iTextureIndex);
 #pragma endregion
 
+#pragma region LUT
+    HRESULT                     Bind_LUT_ShaderResources(class CShader* pShader);
+    void                        Set_EnableLUT(_bool isEnable);
+#pragma endregion
+
 private:
 	class CGraphic_Device*		m_pGraphic_Device = { nullptr };
 	class CLevel_Manager*		m_pLevel_Manager = { nullptr };
@@ -411,7 +417,7 @@ private:
 	class CFog*					m_pFog = { nullptr };
 	class CVignette*			m_pVignette = { nullptr };
 	class CDistortion*			m_pDistortion = { nullptr };
-
+    class CLUT*                 m_pLUT = { nullptr };
 
 #ifdef _DEBUG
 	class CImgui_Manager* m_pImgui_Manager = { nullptr };

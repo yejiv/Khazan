@@ -59,31 +59,21 @@ public:
         m_OutlineConfig.fSize = Config.fSize;
     }
 
-    //[Effect] Khazan_Sample 복붙!
-        /* 로컬  */
-        _float4x4*          m_pSpearTip1_Matrix = { nullptr };		//창 날1
-        _float4x4*          m_pWeaponR_Matrix = { nullptr };		//손잡이
-
-        /* 월드 (포인터형 아님!!) */
-        _float4x4	        m_pSpearTip1_MatrixW;		//창 날1
-        _float4x4	        m_pWeaponR_MatrixW;			//손잡이
-
-        class CMeshTrail* m_pTrail = { nullptr };
-        _uint	EffectID_SpearWind;
-
+    _bool       Is_SpearFullExtension() const { return m_isSpearFullExtension; }
 
 private:
-	class CTransform* m_pParentTransform = { nullptr };
-    CShader* m_pShaderCom = { nullptr };
-    CModel* m_pModelCom = { nullptr };
-    CModel* m_pModelCom_Arm = { nullptr };
-    CModel* m_pModelCom_Face = { nullptr };
-    CModel* m_pModelCom_Hair = { nullptr };
-    CModel* m_pModelCom_Leg = { nullptr };
-    CModel* m_pModelCom_Shoes = { nullptr };
-    CModel* m_pModelCom_Torso = { nullptr };
+	class CTransform*   m_pParentTransform = { nullptr };
+    CShader*            m_pShaderCom = { nullptr };
+    CModel*             m_pModelCom = { nullptr };
+    CModel*             m_pModelCom_Arm = { nullptr };
+    CModel*             m_pModelCom_Face = { nullptr };
+    CModel*             m_pModelCom_Hair = { nullptr };
+    CModel*             m_pModelCom_Leg = { nullptr };
+    CModel*             m_pModelCom_Shoes = { nullptr };
+    CModel*             m_pModelCom_Torso = { nullptr };
 
     CBody*              m_pBodyCom_SpearTip1 = { nullptr };
+    CBody*              m_pBodyCom_SpearPole = { nullptr };
 
     _float4x4*          m_pSpearFX_Matrix = { nullptr };
     _matrix				m_SpearOffset_Matrix = {};
@@ -93,10 +83,21 @@ private:
 
 
     _bool				m_isFinishedAnimation = { false };
-    _bool				m_isSetAnimation = { false };
+   // _bool				m_isSetAnimation = { false };
     _uint				m_iCurSetAnimIndex = { 0 };
+    _bool               m_isSpearFullExtension = { false }; //창을 완전히 뻗는 타이밍부터 true 
 
     const _uint			m_iSetAnimation[3] = { 3,2,1 };
+
+    /* 뼈 위치 */
+    _float4x4*          m_pSpearTip1_Matrix = { nullptr };
+    _float4x4			m_pSpearTip1_MatrixW;
+    _float4x4*          m_pSpearPole_Matrix = { nullptr };
+    _float4x4			m_pSpearPole_MatrixW;
+    _float4x4			m_pSpearPole_MatrixW_AxisCorrection; // 축보정한 창대  
+
+    class CMeshTrail* m_pTrail = { nullptr };
+    _uint	EffectID_SpearWind;
 
     OUTLINE_CONFIG      m_OutlineConfig = { _float3(1.f, 0.f, 1.f), 0.001f, 0.f, 0.f };
 
@@ -117,35 +118,7 @@ private:
     HRESULT				Ready_Collider();
     HRESULT				Bind_ShaderResources();
 
-
-    /*
-    공격 진입~ 공격 끝날 때까지 ( 트리거 진입 , 범위, 탈출 이벤트 다 있음 )
-    필요 시 함수 만들어서 사용하셔도 됩니다.
-
-    - 단일 찌르기 공격 -
-    Effect1 : Fast
-
-    - 연속 세트 찌르기 공격 -
-    Effect2	: Set   1 번째 공격
-    Effect3 : Set	2 번째 공격
-    Effect4 : Set	3 번째 공격
-    Effect5 : Set	4 번째 공격
-    Effect6 : Set	5 번째 공격
-    Effect7 : Set	6 번째 공격
-    */
 private:
-    void	Effect1_Enter();
-    void	Effect1_Exit();
-    void	Effect1_Continue();
-    void	Effect2();
-    void	Effect3();
-    void	Effect4();
-    void	Effect5();
-    void	Effect6();
-    void	Effect7_Enter();
-    void	Effect7_Exit();
-    void	Effect7_Continue();
-
     void	FX_StrongAtk01_Trail();
     void	FX_StrongAtk02_Trail();
     void	FX_StrongAtk03_Trail();
@@ -155,6 +128,8 @@ private:
     void	FX_FastAtk_SpawnWind();
     void	FX_StrongAtk_Charge_Blust();
     void	FX_StrongAtk_Charge_Trail();
+
+    void	Event_AttackTiming(_bool isAttackStart);
 
 
 private:
