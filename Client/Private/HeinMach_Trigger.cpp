@@ -3,6 +3,7 @@
 #include "ClientInstance.h"
 #include "Sequence_HeinMach_Field.h"
 #include "Sequence_HeinMach_Yetuga.h"
+#include "Sequence_HeinMach_Start_Chat.h"
 #include "Camera_Compre.h"
 #include "Transform.h"
 #include "Creature.h"
@@ -98,35 +99,6 @@ HRESULT CHeinMach_Trigger::Ready_TriggerType(void* pArg)
             dynamic_cast<CCreature*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player")))
         );
 
-#pragma region 예투가 보스존 FOG
-
-        m_FogConfig = m_pGameInstance->Get_FogConfig();
-
-        m_FogConfig.vColor = _float4(0.243f, 0.188f, 0.133f, 1.0f);
-        /*
-        m_FogConfig = {};
-
-        m_FogConfig.eType = FOG_CONFIG::TYPE::LINEAR;
-        m_FogConfig.fBaseHeight = 1.f;
-        m_FogConfig.fNear = 1.f;         // 선형 일 때
-        m_FogConfig.fFar = 1.f;          // 선형 일 때
-        m_FogConfig.fDensity = 1.f;      // 지수 일 때
-        m_FogConfig.fHeightDensity = 1.f;
-        m_FogConfig.vColor = _float4(1.f, 1.f, 1.f, 1.f);
-
-        FOG_NOISE_DESC FogNoiseDesc = {};
-
-        FogNoiseDesc.fContrast = 1.f;
-        FogNoiseDesc.fStrength = 1.f;
-        FogNoiseDesc.isEnable = true;
-        FogNoiseDesc.vScale = _float2(1.f, 1.f);
-        FogNoiseDesc.vSpeed = _float2(1.f, 1.f);
-
-        m_FogConfig.Noise = FogNoiseDesc;
-        */
-
-#pragma endregion
-
 #pragma region 예투가 보스존 스카이 박스
 
         /* 파일 입출력으로 이니셜라이즈에서 구조체 채우기 */
@@ -152,31 +124,6 @@ HRESULT CHeinMach_Trigger::Ready_TriggerType(void* pArg)
     else if (m_strTriggerKey == "CaveEntry")
     {
 #pragma region FOG ( 동굴 진입 -> 동굴 중간까지 )
-
-        m_FogConfig = m_pGameInstance->Get_FogConfig();
-
-        m_FogConfig.vColor = _float4(0.031f, 0.137f, 0.200f, 1.0f);
-        /*
-        m_FogConfig = {};
-
-        m_FogConfig.eType = FOG_CONFIG::TYPE::LINEAR;
-        m_FogConfig.fBaseHeight = 1.f;
-        m_FogConfig.fNear = 1.f;         // 선형 일 때
-        m_FogConfig.fFar = 1.f;          // 선형 일 때
-        m_FogConfig.fDensity = 1.f;      // 지수 일 때
-        m_FogConfig.fHeightDensity = 1.f;
-        m_FogConfig.vColor = _float4(1.f, 1.f, 1.f, 1.f);
-
-        FOG_NOISE_DESC FogNoiseDesc = {};
-
-        FogNoiseDesc.fContrast = 1.f;
-        FogNoiseDesc.fStrength = 1.f;
-        FogNoiseDesc.isEnable = true;
-        FogNoiseDesc.vScale = _float2(1.f, 1.f);
-        FogNoiseDesc.vSpeed = _float2(1.f, 1.f);
-
-        m_FogConfig.Noise = FogNoiseDesc;
-        */
 
 #pragma endregion
 
@@ -205,61 +152,11 @@ HRESULT CHeinMach_Trigger::Ready_TriggerType(void* pArg)
     {
 #pragma region FOG ( 동굴 중간 -> 동굴 출구까지 )
 
-        m_FogConfig = m_pGameInstance->Get_FogConfig();
-
-        m_FogConfig.vColor = _float4(0.031f, 0.137f, 0.200f, 1.0f);
-        /*
-        m_FogConfig = {};
-
-        m_FogConfig.eType = FOG_CONFIG::TYPE::LINEAR;
-        m_FogConfig.fBaseHeight = 1.f;
-        m_FogConfig.fNear = 1.f;         // 선형 일 때
-        m_FogConfig.fFar = 1.f;          // 선형 일 때
-        m_FogConfig.fDensity = 1.f;      // 지수 일 때
-        m_FogConfig.fHeightDensity = 1.f;
-        m_FogConfig.vColor = _float4(1.f, 1.f, 1.f, 1.f);
-
-        FOG_NOISE_DESC FogNoiseDesc = {};
-
-        FogNoiseDesc.fContrast = 1.f;
-        FogNoiseDesc.fStrength = 1.f;
-        FogNoiseDesc.isEnable = true;
-        FogNoiseDesc.vScale = _float2(1.f, 1.f);
-        FogNoiseDesc.vSpeed = _float2(1.f, 1.f);
-
-        m_FogConfig.Noise = FogNoiseDesc;
-        */
-
 #pragma endregion
     }
     else if (m_strTriggerKey == "CaveExit")
     {
 #pragma region FOG ( 동굴 출구 -> 동굴 정방향 출구 후 지역 )
-
-        m_FogConfig = m_pGameInstance->Get_FogConfig();
-
-        m_FogConfig.vColor = _float4(0.631f, 0.522f, 0.471f, 1.0f);
-        /*
-        m_FogConfig = {};
-
-        m_FogConfig.eType = FOG_CONFIG::TYPE::LINEAR;
-        m_FogConfig.fBaseHeight = 1.f;
-        m_FogConfig.fNear = 1.f;         // 선형 일 때
-        m_FogConfig.fFar = 1.f;          // 선형 일 때
-        m_FogConfig.fDensity = 1.f;      // 지수 일 때
-        m_FogConfig.fHeightDensity = 1.f;
-        m_FogConfig.vColor = _float4(1.f, 1.f, 1.f, 1.f);
-
-        FOG_NOISE_DESC FogNoiseDesc = {};
-
-        FogNoiseDesc.fContrast = 1.f;
-        FogNoiseDesc.fStrength = 1.f;
-        FogNoiseDesc.isEnable = true;
-        FogNoiseDesc.vScale = _float2(1.f, 1.f);
-        FogNoiseDesc.vSpeed = _float2(1.f, 1.f);
-
-        m_FogConfig.Noise = FogNoiseDesc;
-        */
 
 #pragma endregion
 
@@ -291,30 +188,6 @@ HRESULT CHeinMach_Trigger::Ready_TriggerType(void* pArg)
     {
 #pragma region FOG ( 동굴 정방향 입구 -> 동굴 정방향 입구 전지역 )
 
-        m_FogConfig = m_pGameInstance->Get_FogConfig();
-
-        m_FogConfig.vColor = _float4(0.f, 0.106f, 0.137f, 1.0f);
-        /*
-        m_FogConfig = {};
-
-        m_FogConfig.eType = FOG_CONFIG::TYPE::LINEAR;
-        m_FogConfig.fBaseHeight = 1.f;
-        m_FogConfig.fNear = 1.f;         // 선형 일 때
-        m_FogConfig.fFar = 1.f;          // 선형 일 때
-        m_FogConfig.fDensity = 1.f;      // 지수 일 때
-        m_FogConfig.fHeightDensity = 1.f;
-        m_FogConfig.vColor = _float4(1.f, 1.f, 1.f, 1.f);
-
-        FOG_NOISE_DESC FogNoiseDesc = {};
-
-        FogNoiseDesc.fContrast = 1.f;
-        FogNoiseDesc.fStrength = 1.f;
-        FogNoiseDesc.isEnable = true;
-        FogNoiseDesc.vScale = _float2(1.f, 1.f);
-        FogNoiseDesc.vSpeed = _float2(1.f, 1.f);
-
-        m_FogConfig.Noise = FogNoiseDesc;
-        */
 
 #pragma endregion
 
@@ -343,61 +216,11 @@ HRESULT CHeinMach_Trigger::Ready_TriggerType(void* pArg)
     {
 #pragma region FOG ( 동굴 정방향 중간 -> 동굴 정방향 입구까지 )
 
-        m_FogConfig = m_pGameInstance->Get_FogConfig();
-
-        m_FogConfig.vColor = _float4(0.031f, 0.137f, 0.200f, 1.0f);
-        /*
-        m_FogConfig = {};
-
-        m_FogConfig.eType = FOG_CONFIG::TYPE::LINEAR;
-        m_FogConfig.fBaseHeight = 1.f;
-        m_FogConfig.fNear = 1.f;         // 선형 일 때
-        m_FogConfig.fFar = 1.f;          // 선형 일 때
-        m_FogConfig.fDensity = 1.f;      // 지수 일 때
-        m_FogConfig.fHeightDensity = 1.f;
-        m_FogConfig.vColor = _float4(1.f, 1.f, 1.f, 1.f);
-
-        FOG_NOISE_DESC FogNoiseDesc = {};
-
-        FogNoiseDesc.fContrast = 1.f;
-        FogNoiseDesc.fStrength = 1.f;
-        FogNoiseDesc.isEnable = true;
-        FogNoiseDesc.vScale = _float2(1.f, 1.f);
-        FogNoiseDesc.vSpeed = _float2(1.f, 1.f);
-
-        m_FogConfig.Noise = FogNoiseDesc;
-        */
-
 #pragma endregion
     }
     else if (m_strTriggerKey == "CaveExit_Rev")
     {
 #pragma region FOG ( 동굴 정방향 출구 -> 동굴 정방향 중간까지 )
-
-        m_FogConfig = m_pGameInstance->Get_FogConfig();
-
-        m_FogConfig.vColor = _float4(0.031f, 0.137f, 0.200f, 1.0f);
-        /*
-        m_FogConfig = {};
-
-        m_FogConfig.eType = FOG_CONFIG::TYPE::LINEAR;
-        m_FogConfig.fBaseHeight = 1.f;
-        m_FogConfig.fNear = 1.f;         // 선형 일 때
-        m_FogConfig.fFar = 1.f;          // 선형 일 때
-        m_FogConfig.fDensity = 1.f;      // 지수 일 때
-        m_FogConfig.fHeightDensity = 1.f;
-        m_FogConfig.vColor = _float4(1.f, 1.f, 1.f, 1.f);
-
-        FOG_NOISE_DESC FogNoiseDesc = {};
-
-        FogNoiseDesc.fContrast = 1.f;
-        FogNoiseDesc.fStrength = 1.f;
-        FogNoiseDesc.isEnable = true;
-        FogNoiseDesc.vScale = _float2(1.f, 1.f);
-        FogNoiseDesc.vSpeed = _float2(1.f, 1.f);
-
-        m_FogConfig.Noise = FogNoiseDesc;
-        */
 
 #pragma endregion
 
@@ -533,6 +356,10 @@ HRESULT CHeinMach_Trigger::Ready_TriggerType(void* pArg)
         CHECK_FALSE(ReadFile(hCloudFile, &m_Cloud_Desc, sizeof(CLOUD_DESC), &dwByte, nullptr), E_FAIL);
 
         CloseHandle(hCloudFile);
+    }
+    else if (m_strTriggerKey == "Talk_03")
+    {
+        m_pHeinMach_Start_Chat = CSequence_HeinMach_Start_Chat::Create();
     }
 #pragma endregion
 
@@ -679,37 +506,12 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
 #pragma endregion
         else if (m_strTriggerKey == "Talk_03")
         {
-            Event_Announce_Talk(3);
-            m_isDead = true;
-        }
-        else if (m_strTriggerKey == "Talk_04")
-        {
-            Event_Announce_Talk(4);
-            m_isDead = true;
-        }
-        else if (m_strTriggerKey == "Talk_05")
-        {
-            Event_Announce_Talk(5);
-            m_isDead = true;
-        }
-        else if (m_strTriggerKey == "Talk_06")
-        {
-            Event_Announce_Talk(6);
-            m_isDead = true;
-        }
-        else if (m_strTriggerKey == "Talk_07")
-        {
-            Event_Announce_Talk(7);
-            m_isDead = true;
-        }
-        else if (m_strTriggerKey == "Talk_08")
-        {
-            Event_Announce_Talk(8);
-            m_isDead = true;
-        }
-        else if (m_strTriggerKey == "Talk_09")
-        {
-            Event_Announce_Talk(9);
+            SEQ_REQ_PLAY_DESC tPlayDesc{};
+            tPlayDesc.tId.iSeq = 1100;
+            tPlayDesc.pAsset = L"Start_Chat";
+            tPlayDesc.fStartTime = 0.f;
+            m_pGameInstance->SEQ_AdoptAndPlay(m_pHeinMach_Start_Chat, tPlayDesc);
+
             m_isDead = true;
         }
     }
@@ -724,11 +526,6 @@ void CHeinMach_Trigger::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObject
 void CHeinMach_Trigger::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 {
 
-}
-
-void CHeinMach_Trigger::Event_Announce_Talk(_int iIndex)
-{
-    m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_TALK>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_TALK), EVENT_ANNOUNCE_TALK{ iIndex });
 }
 
 void CHeinMach_Trigger::Set_FogConfig(FOG_CONFIG FogConfig)
@@ -775,4 +572,5 @@ void CHeinMach_Trigger::Free()
     Safe_Release(m_pClientInstance);
     m_pHeinMach_Field = nullptr;
     m_pHeinMach_Yetuga = nullptr;
+    m_pHeinMach_Start_Chat = nullptr;
 }

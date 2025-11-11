@@ -165,9 +165,9 @@ void CYetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _f
 
         }
 
-        m_pGameInstance->Get_BlackBoard()->Set_Value<_uint>(m_strName, "HitDirection", DirInfo.iDirFlag);
+       /* m_pGameInstance->Get_BlackBoard()->Set_Value<_uint>(m_strName, "HitDirection", DirInfo.iDirFlag);
         DAMAGEINFO* pDamageInfo = static_cast<DAMAGEINFO*>(pDesc->pInfo);
-        Take_Damage(10, HITREACTION::KNOCKBACK_NORMAL , 0.1f, pDesc->pGameObject);
+        Take_Damage(10, HITREACTION::KNOCKBACK_NORMAL , 0.1f, pDesc->pGameObject);*/
     }
    
     

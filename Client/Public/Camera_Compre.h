@@ -36,6 +36,10 @@ public:
 	void Update_Spring(_float fTimeDelta);
 
 public:
+    void Set_ObjMatrix(const _float4x4* pObjMatrix) { m_pObjMatrix = pObjMatrix; }
+    void Set_SocketMatrix(const _float4x4* pSocketMatrix) { m_pSocketMatrix = pSocketMatrix; }
+
+public:
 	HRESULT Ready_Camera(void* pArg);
 	HRESULT Ready_Body();
 
@@ -44,6 +48,7 @@ public:
 	HRESULT RayCast(_float fTimeDelta);
 	HRESULT LockOn(_float fTimeDelta);
     void Update_BlendBack(_float fTimeDelta);
+
 public:
 	void LockOn_Check(_float fTimeDelta);
 
@@ -65,20 +70,37 @@ public:
     void Update_ForceOrbit(_float fTimeDelta);
 
 public:
+    void Update_Cinematic(_float fTimeDelta);
+
+
+public:
+    void Yetuga_Holding_Start();
+    void Yetuga_Holding_End();
+    void Update_Yetuga_Holding(_float fTimeDelta);
+
+public:
 	CAMERA_COMPRE_DESC  Get_Desc();
     _bool               Get_IsLockOn() const { return m_isLockOn; }
     _float4*            Get_LockOnPosition() { return m_pLockOnPos; }
 private:
-	_float m_fYVel = { 0.f };
-	_bool m_isInited = { false };
-	_float m_fSmoothY = { 0.f };
-
-	_float m_fYSmoothTime = { 0.25f }; // 감쇠 시간
-	_float m_fDeadZone = { 0.1f }; // 미세 요철 무시
-	_float m_fMaxRise = { 5.f }; // 초당 상승 한도
-	_float m_fMaxFall = { 9.f }; // 초당 하강한도
-
 	CBody* m_pBody = { nullptr };
+
+    _float				m_fYaw = 0.f;
+    _float				m_fPitch = 0.6f;
+    _float				m_fRadius = 4.f;
+
+    _float				m_fPitchMin = -1.2f;
+    _float				m_fPitchMax = 0.7f;
+    _float				m_fRadiusMin = 2.f;
+    _float				m_fRadiusMax = 12.f;
+    _float				m_fSkin = 0.02f;
+
+    _float				m_fFollowValue = 2.f;
+    _vector				m_vLerpMove = { 0.f, 0.f, 0.f, 1.f };
+
+    const _float4x4* m_pObjMatrix = { nullptr };
+    const _float4x4* m_pSocketMatrix = { nullptr };
+
 	_bool m_isLockOn = { false };
 	_float m_fLockOnDelay = {};
 	vector<class CGameObject*> m_CollMonsters;
@@ -105,20 +127,51 @@ private:
     _bool   m_isHasPrevTargetPos = false;
     _float4 m_vPrevTargetPosWS = { 0.f, 0.f, 0.f, 1.f };
 
-    float   m_fOrbitYawSpeed = 1.5f;   // side=1일 때 초당 회전량(라디안). 튜닝용.
-    float   m_fMoveSpeedMin = 1.0f;   // 너무 느린 움직임은 무시
+    _float   m_fOrbitYawSpeed = { 1.5f };   // side=1일 때 초당 회전량(라디안). 튜닝용.
+    _float   m_fMoveSpeedMin = { 1.0f };   // 너무 느린 움직임은 무시
 
     // 카메라 뷰 강제 이동시 사용할 변수
-    CAMERA_FORCE_DIR m_eForceOrbit = CAMERA_FORCE_DIR::NONE;
-    _bool m_isForceOrbit = false;
-    _float m_fForceOrbitTime = 0.f;
-    _float m_fForceOrbitDuration = 0.35f;
+    CAMERA_FORCE_DIR m_eForceOrbit = { CAMERA_FORCE_DIR::NONE };
+    _bool m_isForceOrbit = { false };
+    _float m_fForceOrbitTime = { 0.f };
+    _float m_fForceOrbitDuration = { 0.35f };
 
-    _float m_fForceStartYaw = 0.f;
-    _float m_fForceTargetYaw = 0.f;
+    _float m_fForceStartYaw = { 0.f };
+    _float m_fForceTargetYaw = { 0.f };
            
-    _float m_fForceStartPitch = 0.f;
-    _float m_fForceTargetPitch = 0.f;
+    _float m_fForceStartPitch = { 0.f };
+    _float m_fForceTargetPitch = { 0.f };
+
+
+    // 시네마틱으로 돌려서 사용할 경우
+    _bool m_isCinematic = { false };
+
+
+    // 예투가 잡기 카메라 모드 여부
+    _bool    m_isYetuga_Holding = false;
+
+    // 잡기 시작 시 고정할 카메라 위치
+    _vector m_vYetugaHoldPos = XMVectorZero();
+
+    // 잡기 시작 시 기준 축 (fallback 용)
+    _vector m_vYetugaBaseRight = XMVectorZero();
+    _vector m_vYetugaBaseUp = XMVectorZero();
+    _vector m_vYetugaBaseLook = XMVectorZero();
+
+    // 시선 추적용 yaw/pitch + 속도
+    _float   m_fYetugaYaw = 0.f;
+    _float   m_fYetugaPitch = 0.f;
+    _float   m_fYetugaYawVel = 0.f;
+    _float   m_fYetugaPitchVel = 0.f;
+
+    // 피치 제한 (거의 수직까지 허용)
+    _float   m_fYetugaPitchMin = XMConvertToRadians(-80.f);
+    _float   m_fYetugaPitchMax = XMConvertToRadians(89.f);
+
+    // 부드러움 정도 (클수록 더 부드럽게, 느리게)
+    _float   m_fYetugaYawSmoothTime = 0.10f;
+    _float   m_fYetugaPitchSmoothTime = 0.10f;
+
 
 public:
 	void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
