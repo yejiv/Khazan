@@ -46,19 +46,24 @@ HRESULT CRenderer::Initialize()
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Specular"), 150.0f, 750.0f, 300.f, 300.f)))
         return E_FAIL;
+
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Shade"), 450.0f, 150.0f, 300.f, 300.f)))
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_SSAO"), 450.0f, 450.0f, 300.f, 300.f)))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Emissive"), 450.0f, 750.0f, 300.f, 300.f)))
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_SpecularLight"), 450.0f, 750.0f, 300.f, 300.f)))
         return E_FAIL;
+
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_PostScene"), 750.0f, 150.0f, 300.f, 300.f)))
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Outline"), 750.0f, 450.0f, 300.f, 300.f)))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Fog"), 750.0f, 750.0f, 300.f, 300.f)))
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Emissive"), 750.0f, 750.0f, 300.f, 300.f)))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Combined"), 1050.0f, 150.0f, 300.f, 300.f)))
+
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Fog"), 1050.0f, 150.0f, 300.f, 300.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Combined"), 1050.0f, 450.0f, 300.f, 300.f)))
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_CSM_Debug(m_fViewportWidth - 150.0f, 150.0f, 300.f, 300.f)))
         return E_FAIL;
@@ -370,6 +375,10 @@ HRESULT CRenderer::Render_Lights()
 
     if (FAILED(m_pShader->Bind_RawValue("g_fToonShadeLevel", &m_fToonShadeLevel, sizeof(_float))))
         return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_RawValue("g_vSpecularPower", &m_vSpecularPower, sizeof(_float2))))
+        return E_FAIL;
+
 
 	_bool isSSAO = isEnableSSAO();
 	if (FAILED(m_pShader->Bind_Bool("g_isEnableSSAO", &isSSAO)))

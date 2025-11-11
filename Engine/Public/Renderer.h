@@ -68,6 +68,7 @@ public:
 		m_OutlineConfig.fAlpha = Config.fAlpha;
 		m_OutlineConfig.fBias = Config.fBias;
 	}
+    void Set_SpecularPower(_float2 vPower) { m_vSpecularPower = vPower; }
 
 private:
 	ID3D11Device*				m_pDevice = { nullptr };
@@ -85,13 +86,16 @@ private:
 	_float						m_fViewportWidth{}, m_fViewportHeight{};
 
 	// Toon Shade
-	_float						m_fToonShadeLevel = { 5.f };
+	_float						m_fToonShadeLevel = { 3.f };
 
 	// Outline
 	OUTLINE_CONFIG				m_OutlineConfig = { _float3(0.f, 0.f, 0.f), 0.f, 1.f, 0.01f };
 
 	vector<ID3D11CommandList*>	m_threadCLs;
 	mutex						m_Mutex;
+
+    // Specular
+    _float2                    m_vSpecularPower = { 32.f, 64.f };
 
 #ifdef _DEBUG
 private:

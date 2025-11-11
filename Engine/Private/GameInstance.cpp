@@ -498,6 +498,11 @@ void CGameInstance::Set_OutlineConfig(OUTLINE_CONFIG Config)
 	m_pRenderer->Set_OutlineConfig(Config);
 }
 
+void CGameInstance::Set_SpecularPower(_float2 vPower)
+{
+    m_pRenderer->Set_SpecularPower(vPower);
+}
+
 #pragma endregion
 
 #pragma region TIMER_MANAGER

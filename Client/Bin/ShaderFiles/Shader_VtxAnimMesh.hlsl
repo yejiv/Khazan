@@ -192,6 +192,7 @@ PS_OUT PS_MAIN(PS_IN In)
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = In.vWorldPos;
     Out.vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    //  Out.vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     
     return Out;
 }
@@ -215,6 +216,7 @@ PS_OUT PS_MAIN_NONPICK(PS_IN In)
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = vector(0.f, 0.f, 0.f, 0.f);
     Out.vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    //  Out.vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     
     return Out;
 }
