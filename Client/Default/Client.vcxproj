@@ -164,6 +164,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\AI_Controller_Gomdol.h" />
+    <ClInclude Include="..\Public\AI_Controller_Imp_Melee.h" />
     <ClInclude Include="..\Public\AI_Controller_Imp_Range.h" />
     <ClInclude Include="..\Public\AI_Controller_Yetuga.h" />
     <ClInclude Include="..\public\Amount.h" />
@@ -199,6 +200,10 @@
     <ClInclude Include="..\Public\BigChest.h" />
     <ClInclude Include="..\public\BladeNexus_List.h" />
     <ClInclude Include="..\public\BladeNexus_Map_BG.h" />
+    <ClInclude Include="..\Public\Body_Imp_Melee.h" />
+    <ClInclude Include="..\Public\FSM_Imp_Melee.h" />
+    <ClInclude Include="..\Public\Imp_Melee.h" />
+    <ClInclude Include="..\Public\Imp_Sword.h" />
     <ClInclude Include="..\Public\Projectile_Boomarang.h" />
     <ClInclude Include="..\public\UI_BladeNexus_Map.h" />
     <ClInclude Include="..\public\BladeNexus_Map_List.h" />
@@ -393,6 +398,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\AI_Controller_Gomdol.cpp" />
+    <ClCompile Include="..\Private\AI_Controller_Imp_Melee.cpp" />
     <ClCompile Include="..\Private\AI_Controller_Imp_Range.cpp" />
     <ClCompile Include="..\Private\AI_Controller_Yetuga.cpp" />
     <ClCompile Include="..\private\Amount.cpp" />
@@ -429,6 +435,10 @@
     <ClCompile Include="..\Private\BladeNexus.cpp" />
     <ClCompile Include="..\private\BladeNexus_List.cpp" />
     <ClCompile Include="..\private\BladeNexus_Map_BG.cpp" />
+    <ClCompile Include="..\Private\Body_Imp_Melee.cpp" />
+    <ClCompile Include="..\Private\FSM_Imp_Melee.cpp" />
+    <ClCompile Include="..\Private\Imp_Melee.cpp" />
+    <ClCompile Include="..\Private\Imp_Sword.cpp" />
     <ClCompile Include="..\Private\Projectile_Boomarang.cpp" />
     <ClCompile Include="..\private\UI_BladeNexus_Map.cpp" />
     <ClCompile Include="..\private\BladeNexus_Map_List.cpp" />
