@@ -49,6 +49,8 @@ private:
 
 	BOX_ITEMS m_Items = {};
 
+    _float m_fColTimeAcc = { 0.f };
+
 private:
 	virtual HRESULT Ready_Components(void* pArg) override;
 	HRESULT Ready_Collision(void* pArg);
