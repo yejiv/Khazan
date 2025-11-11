@@ -58,7 +58,7 @@ private:
 private:
 	_int m_iBladeNexus_ID = {};
 	_tchar m_szPlaceName[MAX_PATH] = {};
-    _bool m_isUnLock = { false };                   // ±Í°Ë ÇØ±Ý ¿©ºÎ
+    _bool m_isUnLock = { false };                   // ê·€ê²€ í•´ê¸ˆ ì—¬ë¶€
 
 	_float3 m_vPlayerPosition = {};
 

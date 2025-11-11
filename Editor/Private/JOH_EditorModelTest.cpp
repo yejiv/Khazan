@@ -152,8 +152,9 @@ void CJOH_EditorModelTest::Debug_RenderState()
 {
     _float3 vPos;
     XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
+    ImGui::DragFloat3(("pos : "+to_string(m_fRand)).c_str(), &vPos.x);
+    m_pTransformCom->Set_State(STATE::POSITION,XMVectorSet(vPos.x, vPos.y, vPos.z,1.f));
 
-      ImGui::DragFloat3(("pos : "+to_string(m_fRand)).c_str(), &vPos.x);
     if (ImGui::Button(("go zero " + to_string(m_fRand)).c_str()))
     {
         m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
@@ -166,7 +167,7 @@ void CJOH_EditorModelTest::Debug_RenderState()
         m_pTransformCom->Set_WorldMatrix(XMMatrixIdentity());
     }
 
-    m_pTransformCom->Set_State(STATE::POSITION,XMVectorSet(vPos.x, vPos.y, vPos.z,1.f));
+
 }
 
 _matrix CJOH_EditorModelTest::Debug_GetTransformMatrix()

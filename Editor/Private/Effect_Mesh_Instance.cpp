@@ -39,6 +39,11 @@ void CEffect_Mesh_Instance::Update(_float fTimeDelta)
 
         if(it->fCurTime > it->fDurTime && it->EventType != 0)
         {
+            if (m_sData.bIsLoop && m_TimeTracks.size() == 1)
+            {
+                ++it;
+                continue;
+            }
             dynamic_cast<CVIBuffer_Mesh_Instance*>(m_pVIBufferCom)->Remove_Speed(CVIBuffer_Mesh_Instance::SPEED_VALUE(it->EventType - 1));
             it = m_TimeTracks.erase(it);
         }
@@ -71,7 +76,7 @@ HRESULT CEffect_Mesh_Instance::Render()
 
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
-    //m_pShaderCom->Begin((_uint)m_Data.TextureBindType);
+
     m_pShaderCom->Begin((_uint)m_sData.bIsFresnel);
 
     m_pVIBufferCom->Bind_Resources();
@@ -119,7 +124,7 @@ void CEffect_Mesh_Instance::Edit_Element()
 
     ImGui::ColorEdit4("MyColorWithAlpha",(float*)&m_sEditingData.vColor);
 
-    const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19",  "test20",  "shock", "smoke", "cloud" };
+    const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19",  "test20",  "shock", "smoke", "cloud" , "blood"  };
     ImGui::Combo("Mesh Textures", reinterpret_cast<int*>(&m_sEditingData.iTextureIdx), textures, IM_ARRAYSIZE(textures));
 
     const char* Meshes[] = { "Helix0", "Helix1", "Helix2", "Helix3",  "Helix4",  "Helix5",  "Helix6",  "Helix7",  "Helix8",  "Helix9",  "Helix10",  "Helix11",  "Helix12",  "Helix13",  "Helix14",  "Helix15",  "Helix16",  "Helix17",  "Helix18",  "Helix19",  "Helix20",
@@ -134,7 +139,7 @@ void CEffect_Mesh_Instance::Edit_Element()
                                     "IN_Spiral_02", "Swirl_Spine_X", "SwirlHelix",
                                     "FastAtk_1", "FastAtk_2L", "FastAtk_2R", "FastAtk_3L", "FastAtk_3R", "Grapple_Atk_2", "CounterATK", "DodgeATK", "FastATK1","FastATK2_L", "FastATK2_R",  "FastATK3_L" ,  "FastATK3_R", "FastATK4",
                                     "StrongAtk0", "StrongAtk1", "FastAtk03_Slash", "GrappleAtk02_Slash", "StrongAtk03_Slash"
-                                    , "Cylinder_003", "Cylinder_003_02", "Cylinder_003_Noise" , "Spine", "Circle_002" ,"Sphere"};
+                                    , "Cylinder_003", "Cylinder_003_02", "Cylinder_003_Noise" , "Spine", "Circle_002" ,"Sphere","CircleTwist", "CircleTwist2", "Plane", "circle001", "circle002" };
 
     ImGui::Combo("Mesh Shape", reinterpret_cast<int*>(&m_sEditingData.iMeshTypeIdx), Meshes, IM_ARRAYSIZE(Meshes));
 
@@ -156,7 +161,7 @@ void CEffect_Mesh_Instance::Edit_Element()
     if (bIsDissolve)
     {
         ImGui::Indent();
-        const char* DissolveTex[] = { "Mesh0", "Mesh1" };
+        const char* DissolveTex[] = { "DissolveTexture0", "DissolveTexture1", "DissolveTexture2" };
         ImGui::Combo("Dissolve Texture", reinterpret_cast<int*>(&m_sEditingData.sDissolveData.iDissolveTextureIdx), DissolveTex, IM_ARRAYSIZE(DissolveTex));
         ImGui::InputFloat("Dissolve Edge Width : ", reinterpret_cast<_float*>(&m_sEditingData.sDissolveData.fDissolveEdgeWidth));
         ImGui::ColorEdit4("Edge Color", (float*)&m_sEditingData.sDissolveData.fDissolveEdgeColor);
@@ -200,6 +205,7 @@ void CEffect_Mesh_Instance::Reset()
     __super::Reset();
     m_pVIBufferCom->Reset();
     m_fAccTime = 0.f;
+    m_bRunning = false;
 }
 
 void CEffect_Mesh_Instance::SetSpreadData(void* pArg)

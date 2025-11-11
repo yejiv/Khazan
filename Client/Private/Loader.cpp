@@ -39,6 +39,8 @@
 
 #include "Imp_Range.h"
 #include "Body_Imp_Range.h"
+#include "Imp_Wand.h"
+#include "Projectile_Imp_MagicBall.h"
 
 #pragma endregion
 
@@ -438,6 +440,11 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Goblin_Range/Goblin_Range.dat"))))
         return E_FAIL;
 
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_ImpWand"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Goblin_Range/ImpWand/ImpWand.dat"))))
+        return E_FAIL;
+
 #pragma endregion
 
 #pragma region �� ���� : ��ȣ �ۿ� �� ������Ʈ
@@ -530,12 +537,21 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
 
 #pragma region Imp_Range
     
+
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"),
         CImp_Range::Create(m_pDevice, m_pContext))))
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Monster_Imp_Range_Body"),
         CBody_Imp_Range::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Monster_Imp_Range_Wand"),
+        CImp_Wand::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Imp_Magic_Ball"),
+        CProjectile_Imp_MagicBall::Create(m_pDevice, m_pContext))))
         return E_FAIL;
 
     

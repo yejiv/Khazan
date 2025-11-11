@@ -31,13 +31,6 @@
 
 using namespace DirectX;
 
-#pragma once
-
-#ifdef new
-#pragma push_macro("new")
-#undef new
-#endif
-
 #include <Jolt.h>
 #include <Core/JobSystemThreadPool.h>
 #include <Physics/PhysicsSystem.h>
@@ -45,17 +38,27 @@ using namespace DirectX;
 #include <Physics/Character/CharacterVirtual.h>
 #include <RegisterTypes.h>
 #include <Core/TempAllocator.h>
-
+#include <Jolt/Physics/Body/BodyID.h>
+#include <Core/Factory.h>
+#include <Jolt/Physics/PhysicsScene.h>
+#include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
+#include <Jolt/Physics/Collision/Shape/RotatedTranslatedShape.h>
+#include <Jolt/Physics/Collision/Shape/BoxShape.h>
+#include <Jolt/Physics/Collision/Shape/SphereShape.h>
+#include <Jolt/Physics/Collision/Shape/StaticCompoundShape.h>
+#include <Jolt/Physics/Collision/Shape/MeshShape.h>
+#include <Jolt/Physics/Collision/RayCast.h>
+#include <Jolt/Physics/Collision/CastResult.h>
+#include <Jolt/Physics/Collision/NarrowPhaseQuery.h>
+#include <Jolt/Physics//Collision/CollisionCollectorImpl.h>
+#include <Jolt/Physics/Collision/GroupFilterTable.h>
+#include <Jolt/Physics/Collision/Shape/CylinderShape.h>
+#include <Jolt/Physics/Collision/Shape/ConvexHullShape.h>
+#include <Jolt/Physics/Collision/Shape/ScaledShape.h>
 using namespace JPH;
-
-#define IMGUI_DEFINE_MATH_OPERATORS
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
-
-#ifdef new
-#pragma pop_macro("new") // DBG_NEW 복원
-#endif
 
 #include "fmod.h"
 #include "fmod.hpp"
@@ -109,20 +112,11 @@ namespace Engine
 #include "Engine_ConstantBuffer.h"
 #include "Engine_Sequence.h"
 
-#ifdef _DEBUG
-
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-
-#ifndef DBG_NEW 
-
-#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ ) 
-#define new DBG_NEW 
-
-#endif
-#endif
-
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include "imgui.h"
+#include "imgui_impl_win32.h"
+#include "imgui_impl_dx11.h"
+#include "ImGuizmo.h"
 
 using namespace Engine;
 

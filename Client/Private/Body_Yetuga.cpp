@@ -89,6 +89,9 @@ HRESULT CBody_Yetuga::Initialize_Clone(void* pArg)
    if (FAILED(Ready_Colliders()))
         return E_FAIL;
 
+   if (FAILED(Ready_AnimationEvent()))
+       return E_FAIL;
+
     m_pTransformCom->Scale(_float3(1.3f,1.3f,1.3f));
     
     m_pLH_BodyCom->Collision_Active(false);
@@ -158,10 +161,9 @@ HRESULT CBody_Yetuga::Render()
     for (size_t i = 0; i < iNumMeshes; i++)
     {
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
-
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
-
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR, 0);
+        //  m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_EMISSIVE, 0);
 
         if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;
@@ -206,6 +208,15 @@ HRESULT CBody_Yetuga::Ready_Components()
 
     return S_OK;
 
+}
+
+HRESULT CBody_Yetuga::Ready_AnimationEvent()
+{
+    //m_pModelCom->Register_Event("FastAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_FastAtk01_Trail(); });
+    //m_pModelCom->Register_Event("FastAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_FastAtk_SpawnWind(); });
+    //m_pModelCom->Register_Event("Effect1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Effect1_Exit(); });
+
+    return S_OK;
 }
 
 HRESULT CBody_Yetuga::Bind_ShaderResources()

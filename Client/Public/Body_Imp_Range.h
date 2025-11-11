@@ -21,6 +21,7 @@ public:
     }BODY_DESC;
 
 public:
+    _float4x4*              Get_BoneMatrix_Ptr(const _char* pBoneName);
     _float4*                Get_BonePointEX(const _char* pBoneName);
     _matrix					Get_BoneMatrix(const _char* pBoneName);
 

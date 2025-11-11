@@ -19,10 +19,6 @@ public:
 	virtual void						Priority_Update(_float fTimeDelta) override;
 	virtual void						Update(_float fTimeDelta) override;
 	virtual void						Late_Update(_float fTimeDelta) override;
-	virtual HRESULT						Render() override;
-
-private:
-	virtual	HRESULT						Ready_Prototype();
 
 public:
 	static CUI_QuickSlot_Skill*			Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);

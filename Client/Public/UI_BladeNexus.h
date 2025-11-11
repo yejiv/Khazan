@@ -7,7 +7,7 @@ class CUI_BladeNexus final : public CUI_Panel
 {
 public:
 	enum class UIANIMSTATE { ON, OFF, END };
-	enum class ONTYPE { DEFAULT = 1, CREVICE = 3, END};
+	enum class ONTYPE { DEFAULT = 1, EMBARS = 2, END};
 	enum class MENULIST { STATE, WARP, CREVICE, END };
 
 	typedef struct tagMainBubbleEventTag : public CUIObject::BUBBLEEVENT

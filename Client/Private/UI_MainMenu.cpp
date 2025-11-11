@@ -9,6 +9,7 @@
 
 #include "UI_Inven.h"
 #include "UI_State.h"
+#include "UI_SkillTree.h"
 
 CUI_MainMenu::CUI_MainMenu(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
@@ -382,6 +383,7 @@ void CUI_MainMenu::Next_Event()
 	}
 	else if (m_eNextEvent == MENULIST::SKILL)
 	{
+        static_cast<CUI_SkillTree*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Skill")))->On_Panel();
 	}
 	else if (m_eNextEvent == MENULIST::STATE)
 	{
@@ -392,9 +394,19 @@ void CUI_MainMenu::Next_Event()
 	}
 	else if (m_eNextEvent == MENULIST::TITLE)
 	{
+        m_eNextEvent = MENULIST::END;
+        m_eAnimState = UIANIMSTATE::OFF;
+        m_fAccTime = 1.f;
+
+        m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
 	}
 	else if (m_eNextEvent == MENULIST::EXIT)
 	{
+        m_eNextEvent = MENULIST::END;
+        m_eAnimState = UIANIMSTATE::OFF;
+        m_fAccTime = 1.f;
+
+        m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
 	}
 }
 

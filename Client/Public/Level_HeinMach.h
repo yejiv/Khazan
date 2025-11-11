@@ -46,7 +46,8 @@ private:
 	// 조명 불러오기
 	HRESULT Ready_Trigger(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
 
-
+    // UI 랜더
+    HRESULT Ready_Layer_UI();
 
     _bool Wait_All_Futures();
 

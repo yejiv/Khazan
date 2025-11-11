@@ -41,7 +41,6 @@ HRESULT CEffect_Mesh_Instance::Initialize_Clone()
 
     if (FAILED(Ready_Component()))
         return E_FAIL;
-
     return S_OK;
 }
 
@@ -60,6 +59,12 @@ void CEffect_Mesh_Instance::Update(_float fTimeDelta)
 
         if(it->fCurTime > it->fDurTime && it->EventType != 0)
         {
+            if (m_sData.bIsLoop == true && m_TimeTracks.size() == 1)
+            {
+                ++it;
+                continue;
+            }
+
             dynamic_cast<CVIBuffer_Mesh_Instance*>(m_pVIBufferCom)->Remove_Speed(CVIBuffer_Mesh_Instance::SPEED_VALUE(it->EventType - 1));
             it = m_TimeTracks.erase(it);
         }
@@ -92,7 +97,7 @@ HRESULT CEffect_Mesh_Instance::Render()
 
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
-    //m_pShaderCom->Begin((_uint)m_Data.TextureBindType);
+
     m_pShaderCom->Begin((_uint)m_sData.bIsFresnel);
 
     m_pVIBufferCom->Bind_Resources();

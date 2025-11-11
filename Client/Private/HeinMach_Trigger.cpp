@@ -198,6 +198,15 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             tPlayDesc.fStartTime = 0.f;
             m_pGameInstance->SEQ_AdoptAndPlay(m_pHeinMach_Field, tPlayDesc);
 
+            FOG_TRANSITION_DESC Desc{};
+            Desc.fDensity = 0.03f;
+            Desc.fBias = 0.6f;
+            Desc.vColor = _float4(0.f, 0.106f, 0.137f, 1.f);
+            Desc.isUseHeight = true;
+            Desc.fBaseHeight = 1120.f;
+            Desc.isUseNoise = false;
+            m_pGameInstance->Start_FogTransition(3.f, Desc);
+
             m_isDead = true;
         }
         else if (m_strTriggerKey == "Yetuga")
@@ -210,7 +219,14 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             m_isDead = true;
 
             // 예투가 Fog
-            Set_FogConfig(m_FogConfig);
+            //  Set_FogConfig(m_FogConfig);
+            FOG_TRANSITION_DESC Desc{};
+            Desc.fDensity = 0.03f;
+            Desc.fBias = 0.6f;
+            Desc.vColor = _float4(0.338f, 0.545f, 0.749f, 1.f);
+            Desc.isUseHeight = false;
+            Desc.isUseNoise = false;
+            m_pGameInstance->Start_FogTransition(7.f, Desc);
 
             // 예투가 스카이 박스
             Start_SkyTransition(m_Sky_Desc, m_Cloud_Desc, 5.f);
@@ -244,6 +260,7 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
         {
             FOG_TRANSITION_DESC Desc{};
             Desc.fDensity = 0.035f;
+            Desc.fBias = 1.f;
             Desc.vColor = _float4(0.031f, 0.137f, 0.200f, 1.f);
             Desc.isUseHeight = false;
             Desc.isUseNoise = false;
@@ -258,6 +275,7 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
         {
             FOG_TRANSITION_DESC Desc{};
             Desc.fDensity = 0.015f;
+            Desc.fBias = 0.8f;
             Desc.vColor = _float4(0.031f, 0.137f, 0.200f, 1.f);
             Desc.isUseHeight = false;
             Desc.isUseNoise = false;
@@ -269,19 +287,22 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
 
             FOG_TRANSITION_DESC Desc{};
             Desc.fDensity = 0.025f;
+            Desc.fBias = 0.7f;
             Desc.vColor = _float4(0.631f, 0.522f, 0.471f, 1.f);
-            Desc.isUseHeight = true;
-            Desc.fBaseHeight = -240.f;
-            Desc.isUseNoise = true;
-            Desc.vNoiseSpeed = _float2(0.01f, 0.f);
-            Desc.vNoiseScale = _float2(1.f, 1.f);
-            Desc.fNoiseStrength = 0.5f;
-            Desc.fNoiseContrast = 1.f;
-            Desc.iNoiseIndex = 8;
-            m_pGameInstance->Start_FogTransition(7.f, Desc);
+            Desc.isUseHeight = false;
+            Desc.isUseNoise = false;
+            //  Desc.isUseHeight = true;
+            //  Desc.fBaseHeight = 3000.f;
+            //  Desc.isUseNoise = true;
+            //  Desc.vNoiseSpeed = _float2(0.01f, 0.f);
+            //  Desc.vNoiseScale = _float2(1.f, 1.f);
+            //  Desc.fNoiseStrength = 0.5f;
+            //  Desc.fNoiseContrast = 1.f;
+            //  Desc.iNoiseIndex = 8;
+            m_pGameInstance->Start_FogTransition(15.f, Desc);
 
             // 그림자 보간 추가
-            m_pGameInstance->Start_ShadowIntensityTransition(7.f, 0.6f);
+            m_pGameInstance->Start_ShadowIntensityTransition(15.f, 0.6f);
         }
 #pragma endregion
 #pragma region 동굴 역방향
@@ -290,8 +311,10 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             // 동굴 전 포그
             FOG_TRANSITION_DESC Desc{};
             Desc.fDensity = 0.05f;
+            Desc.fBias = 0.6f;
             Desc.vColor = _float4(0.f, 0.106f, 0.137f, 1.f);
-            Desc.isUseHeight = false;
+            Desc.isUseHeight = true;
+            Desc.fBaseHeight = 1120.f;
             Desc.isUseNoise = false;
             m_pGameInstance->Start_FogTransition(5.f, Desc);
 
@@ -303,6 +326,7 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             // 동굴 입구 ~ 중간 포그
             FOG_TRANSITION_DESC Desc{};
             Desc.fDensity = 0.035f;
+            Desc.fBias = 1.f;
             Desc.vColor = _float4(0.031f, 0.137f, 0.200f, 1.f);
             Desc.isUseHeight = false;
             Desc.isUseNoise = false;
@@ -315,13 +339,14 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             // 동굴 중간 ~ 출구 포그
             FOG_TRANSITION_DESC Desc{};
             Desc.fDensity = 0.015f;
+            Desc.fBias = 0.8f;
             Desc.vColor = _float4(0.031f, 0.137f, 0.200f, 1.f);
             Desc.isUseHeight = false;
             Desc.isUseNoise = false;
             m_pGameInstance->Start_FogTransition(2.f, Desc);
 
             // 그림자 보간 추가
-            m_pGameInstance->Start_ShadowIntensityTransition(2.f, 1.f);
+            m_pGameInstance->Start_ShadowIntensityTransition(7.f, 1.f);
         }
 #pragma endregion
         else if (m_strTriggerKey == "Talk_03")
