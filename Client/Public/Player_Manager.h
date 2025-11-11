@@ -31,11 +31,11 @@ private:
 
 public:
     //플레이어 데이터 셋팅 관련
-    PLAYER_DATA&                Get_ptrPlayerData() {return m_Data; }
-    const PLAYER_DATA&          Get_PlayerData() { return m_Data; }
+    PLAYER_DATA&                Get_ptrPlayerData() {return m_Data; }   //플레이어 데이터 (값을 바꿀 경우 사용)
+    const PLAYER_DATA&          Get_PlayerData() { return m_Data; }     //플레이어 데이터 참조용
 
-    void						Add_SkillExp(_float fExp);
-    _bool						Add_SkillPoint(_int iPoint);
+    void						Add_SkillExp(_float fExp);              //스킬 경험치 획득
+    _bool						Add_SkillPoint(_int iPoint);            //스킬 포인트 사용/획득
 
     /* 조작키 관련 */
     void                        BindSkillToButton(CONTROL_BUTTON eButton, _uint iSkill);    //버튼에 스킬을 바인딩

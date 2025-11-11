@@ -26,8 +26,9 @@ HRESULT CUI_PlayerStamina_Gauge::Initialize_Clone(void* pArg)
 	if (FAILED(Ready_Component()))
 		return E_FAIL;
 
-	m_fMaxValue = 100;
-	m_fCurrentValue = 100;
+    m_pCulStamina = &CClientInstance::GetInstance()->Get_PlayerData().fCulStamina;
+    m_pMaxStamina = &CClientInstance::GetInstance()->Get_PlayerData().fMaxStamina;
+
 	return S_OK;
 }
 
@@ -37,6 +38,9 @@ void CUI_PlayerStamina_Gauge::Priority_Update(_float fTimeDelta)
 
 void CUI_PlayerStamina_Gauge::Update(_float fTimeDelta)
 {
+    m_fMaxValue = *m_pMaxStamina;
+    m_fCurrentValue = *m_pCulStamina;
+     
 	if (m_fCurrentValue < 0)
 		m_fCurrentValue = 0;
 	if (m_fCurrentValue > m_fMaxValue)
