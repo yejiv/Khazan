@@ -35,7 +35,6 @@ HRESULT CLevel_Title::Initialize()
 
 void CLevel_Title::Update(_float fTimeDelta)
 {
-
 	if (m_pGameInstance->Key_Down(DIK_F8, INPUT_TYPE::UI))
 	{
 		if (!m_isOpenLevel) {
@@ -81,16 +80,36 @@ HRESULT CLevel_Title::Ready_Layer_BackGround(const _wstring& strLayerTag)
 
 HRESULT CLevel_Title::Ready_Layer_UI()
 {
-	CUIObject::UIOBJECT_DESC Desc = {};
-	Desc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
-	Desc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
-	Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
-	Desc.szName = "LogoBG";
-	Desc.fDepth = 10;
+    CUIObject::UIOBJECT_DESC Desc = {};
+    Desc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
+    Desc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
+    Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+    Desc.szName = "LogoBG";
+    Desc.fDepth = 2;
 
-	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::TITLE), TEXT("Layer_UI"),
-		ENUM_CLASS(LEVEL::TITLE), TEXT("Prototype_GameObject_Logo_BG"), TIME_CHANNEL::WORLD, &Desc)))
-		return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
+        ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Announce_Result"), TIME_CHANNEL::WORLD, &Desc)))
+        return E_FAIL;
+
+    Desc.vLocalSize = { 1042.f, 168.f };
+    Desc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
+    Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+    Desc.szName = "LogoBG";
+    Desc.fDepth = 2;
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
+        ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Announce_Over"), TIME_CHANNEL::WORLD, &Desc)))
+        return E_FAIL;
+
+	//Desc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
+	//Desc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
+	//Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+	//Desc.szName = "LogoBG";
+	//Desc.fDepth = 10;
+
+	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::TITLE), TEXT("Layer_UI"),
+	//	ENUM_CLASS(LEVEL::TITLE), TEXT("Prototype_GameObject_Logo_BG"), TIME_CHANNEL::WORLD, &Desc)))
+	//	return E_FAIL;
 
 	Desc.vLocalSize = { 48.f, 48.f };
 	Desc.vLocalPos = { 0.f, 0.f };
@@ -150,17 +169,19 @@ HRESULT CLevel_Title::Ready_Layer_UI()
 		TEXT("../Bin/Resources/UI/UIData/Tutorial.json"))))
 		return E_FAIL;
 
-    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
-	    TEXT("../Bin/Resources/UI/UIData/Skill.json"))))
-	    return E_FAIL;
+    //if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+	   // TEXT("../Bin/Resources/UI/UIData/Skill.json"))))
+	   // return E_FAIL;
 
-    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
-        TEXT("../Bin/Resources/UI/UIData/Skill_Info.json"))))
-        return E_FAIL;
+    //if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+    //    TEXT("../Bin/Resources/UI/UIData/Skill_Info.json"))))
+    //    return E_FAIL;
 
-    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
-        TEXT("../Bin/Resources/UI/UIData/SkillQuickSlot.json"))))
-        return E_FAIL;
+    //if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+    //    TEXT("../Bin/Resources/UI/UIData/SkillQuickSlot.json"))))
+    //    return E_FAIL;
+
+
 	return S_OK;
 }
 

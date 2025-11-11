@@ -243,6 +243,9 @@
     <ClInclude Include="..\public\Skill_Slot_Panel.h" />
     <ClInclude Include="..\public\Skill_Table.h" />
     <ClInclude Include="..\public\Skill_Tap.h" />
+    <ClInclude Include="..\public\UI_Announce_Over.h" />
+    <ClInclude Include="..\public\UI_Announce_Result.h" />
+    <ClInclude Include="..\public\UI_Announce_Symbol.h" />
     <ClInclude Include="..\public\UI_Guide_Icon.h" />
     <ClInclude Include="..\Public\HeaderGroup_UI.h" />
     <ClInclude Include="..\Public\HeinMach_Trigger.h" />
@@ -446,6 +449,9 @@
     <ClCompile Include="..\private\Skill_Slot_Panel.cpp" />
     <ClCompile Include="..\private\Skill_Table.cpp" />
     <ClCompile Include="..\private\Skill_Tap.cpp" />
+    <ClCompile Include="..\private\UI_Announce_Over.cpp" />
+    <ClCompile Include="..\private\UI_Announce_Result.cpp" />
+    <ClCompile Include="..\private\UI_Announce_Symbol.cpp" />
     <ClCompile Include="..\private\UI_Guide_Icon.cpp" />
     <ClCompile Include="..\Private\HeinMach_Trigger.cpp" />
     <ClCompile Include="..\Private\Head_Yetuga.cpp" />
