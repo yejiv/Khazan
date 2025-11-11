@@ -37,6 +37,9 @@
 #include "Gomdol.h"
 #include "Body_Gomdol.h"
 
+#include "Imp_Range.h"
+#include "Body_Imp_Range.h"
+
 #pragma endregion
 
 #pragma region UI
@@ -110,9 +113,9 @@ void CLoader::Update()
 
 	m_isFinished = all_ok;
 	if (m_isFinished)
-		lstrcpy(m_szLoadingText, TEXT("�ε��� �Ϸ�Ǿ����ϴ�."));
+		lstrcpy(m_szLoadingText, TEXT("성공"));
 	else
-		lstrcpy(m_szLoadingText, TEXT("�ε� �����Ͽ����ϴ�."));
+		lstrcpy(m_szLoadingText, TEXT("실패"));
 }
 
 HRESULT CLoader::Loading()
@@ -428,6 +431,14 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
 	//	return E_FAIL;
 #pragma endregion
 
+#pragma region Imp_Range
+
+    //Goblin_Range.dat
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Goblin_Range"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Goblin_Range/Goblin_Range.dat"))))
+        return E_FAIL;
+
+#pragma endregion
 
 #pragma region �� ���� : ��ȣ �ۿ� �� ������Ʈ
 	/* Prototype_Component_Model_BladeNexus */
@@ -516,6 +527,22 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
 	//	return E_FAIL;
 
 #pragma endregion
+
+#pragma region Imp_Range
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"),
+        CImp_Range::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Monster_Imp_Range_Body"),
+        CBody_Imp_Range::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    
+
+#pragma endregion
+
+
 
 	/* Prototype_GameObject_Prop_Object */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Object"),
@@ -906,7 +933,7 @@ HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDa
 	DWORD dwByte = {};
 
 	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("[DAT ERROR] ���̳ʸ� ���� ���� ����"), E_FAIL);
+	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("[DAT ERROR]"), E_FAIL);
 
 	// 1. ������ Ÿ���� �� ����
 	_uint iPrototypeCnt = {};
@@ -936,7 +963,7 @@ HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDa
 			CModel::Create(m_pDevice, m_pContext, szModelPath))))
 		{
 			CloseHandle(hFile);
-			MSG_BOX(TEXT("[DAT ERROR] �� ������Ʈ ������Ÿ�� ��� ���� ( CModel )"));
+			MSG_BOX(TEXT("[DAT ERROR] ( CModel )"));
 			return E_FAIL;
 		}
 	}
@@ -976,7 +1003,7 @@ HRESULT CLoader::Loading_Prototype_MapObject_Inst_From_DAT(const _tchar* pProtot
 	DWORD dwByte = {};
 
 	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("[DAT ERROR] ���̳ʸ� ���� ���� ����"), E_FAIL);
+	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("[DAT ERROR]"), E_FAIL);
 
 	// 1. ������ Ÿ���� �� ����
 	_uint iPrototypeCnt = {};
@@ -1028,7 +1055,7 @@ HRESULT CLoader::Loading_Prototype_MapObject_Inst_From_DAT(const _tchar* pProtot
 			CModel_Instance::Create(m_pDevice, m_pContext, szModelPath, &MeshInstanceDesc))))
 		{
 			CloseHandle(hFile);
-			MSG_BOX(TEXT("[DAT ERROR] �� ������Ʈ ������Ÿ�� ��� ���� ( CModel )"));
+			MSG_BOX(TEXT("[DAT ERROR]  ( CModel )"));
 			return E_FAIL;
 		}
 	}
