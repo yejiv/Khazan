@@ -2,6 +2,7 @@
 #include "Imp_Range.h"
 #include "GameInstance.h"
 #include "BlackBoard.h"
+#include "Body_Imp_Range.h"
 
 CAS_Sleep_Imp_Range::CAS_Sleep_Imp_Range()
 {
@@ -10,8 +11,10 @@ CAS_Sleep_Imp_Range::CAS_Sleep_Imp_Range()
 void CAS_Sleep_Imp_Range::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
     CImp_Range* pImp = static_cast<CImp_Range*>(pOwner);
-    CModel* pModel = static_cast<CModel*>(pOwner->Get_Component(TEXT("Com_Model")));
-    pModel->Set_Animation(0);
+
+    CModel* pModel = static_cast<CModel*>(pImp->Get_Body()->Get_Component(TEXT("Com_Model")));
+    pModel->Set_Animation(1);
+
     m_eState = IMP_SlEEP_STATE::SLEEP;
     m_isChanged = false;
 }
@@ -19,22 +22,20 @@ void CAS_Sleep_Imp_Range::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 void CAS_Sleep_Imp_Range::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
     CImp_Range* pImp = static_cast<CImp_Range*>(pOwner);
-    CModel* pModel = static_cast<CModel*>(pOwner->Get_Component(TEXT("Com_Model")));
+    CModel* pModel = static_cast<CModel*>(pImp->Get_Body()->Get_Component(TEXT("Com_Model")));
     CBlackBoard* pBB = m_pGameInstance->Get_BlackBoard();
-    
+
     switch (m_eState)
     {
-    case IMP_SlEEP_STATE::SLEEP: if (pBB->Get_Value<_bool>(pImp->Get_Name(), "isDetected"))
-    {
-        if (!m_isChanged)
+    case IMP_SlEEP_STATE::SLEEP: 
+        if (pBB->Get_Value<_bool>(pImp->Get_Name(), "isDetected"))
         {
-            pModel->Set_Animation(02);
-            m_isChanged = true;
+            if (!m_isChanged)
+            {
+                pModel->Set_Animation(2);
+                m_eState = IMP_SlEEP_STATE::WAKEUP;
+            }
         }
-
-        m_eState = IMP_SlEEP_STATE::WAKEUP;
-        m_isChanged = false;
-    }
         break;
     case IMP_SlEEP_STATE::WAKEUP:
         break;
@@ -43,11 +44,7 @@ void CAS_Sleep_Imp_Range::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 
     if (pModel->Play_Animation(fTimeDelta))
     {
-        if (m_eState == IMP_SlEEP_STATE::SLEEP)
-        {
-            m_isChanged = false;
-        }
-        else if (m_eState == IMP_SlEEP_STATE::WAKEUP)
+        if (m_eState == IMP_SlEEP_STATE::WAKEUP)
         {
             pBB->Set_Value<_bool>(pImp->Get_Name(), "isSleepFinished", true);
         }

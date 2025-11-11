@@ -30,33 +30,36 @@ void CDecal::Priority_Update(_float fTimeDelta)
 
 void CDecal::Update(_float fTimeDelta)
 {
-	m_fTimeAcc += fTimeDelta;
+    if (false == m_isDecoration)
+    {
+        m_fTimeAcc += fTimeDelta;
 
-	// 수명이 끝나면 사망 처리 -> 풀
-	if (m_fTimeAcc >= m_Desc.fLifeTime)
-	{
-		m_isDead = true;
-		m_fTimeAcc = 0.f;
-		m_fOpacity = 0.f;
-		return;
-	}
+        // 수명이 끝나면 사망 처리 -> 풀
+        if (m_fTimeAcc >= m_Desc.fLifeTime)
+        {
+            m_isDead = true;
+            m_fTimeAcc = 0.f;
+            m_fOpacity = 0.f;
+            return;
+        }
 
-	// 페이드 아웃 계산
-	if (m_fTimeAcc > m_Desc.vFadeTime.y)
-	{
-		_float fFadeDuration = m_Desc.fLifeTime - m_Desc.vFadeTime.y;	// 페이드 아웃 총 시간
-		_float fFadeTimeAcc = m_fTimeAcc - m_Desc.vFadeTime.y;			// 페이드 아웃 시작 후 누적 시간
-		_float fRatio = (fFadeTimeAcc / fFadeDuration);					// 페이드 아웃 비율
-		m_fOpacity = 1.f - fRatio;
-		m_fOpacity = max(0.f, m_fOpacity);								// 비율 0 -> 불투명, 비율 1 -> 투명
-	}
+        // 페이드 아웃 계산
+        if (m_fTimeAcc > m_Desc.vFadeTime.y)
+        {
+            _float fFadeDuration = m_Desc.fLifeTime - m_Desc.vFadeTime.y;	// 페이드 아웃 총 시간
+            _float fFadeTimeAcc = m_fTimeAcc - m_Desc.vFadeTime.y;			// 페이드 아웃 시작 후 누적 시간
+            _float fRatio = (fFadeTimeAcc / fFadeDuration);					// 페이드 아웃 비율
+            m_fOpacity = 1.f - fRatio;
+            m_fOpacity = max(0.f, m_fOpacity);								// 비율 0 -> 불투명, 비율 1 -> 투명
+        }
 
-	// Fade In
-	if (m_fTimeAcc < m_Desc.vFadeTime.x)
-	{
-		m_fOpacity = m_fTimeAcc / m_Desc.vFadeTime.x;		// 페이드 인 총 시간
-		m_fOpacity = min(1.f, m_fOpacity);
-	}
+        // Fade In
+        if (m_fTimeAcc < m_Desc.vFadeTime.x)
+        {
+            m_fOpacity = m_fTimeAcc / m_Desc.vFadeTime.x;		// 페이드 인 총 시간
+            m_fOpacity = min(1.f, m_fOpacity);
+        }
+    }
 }
 
 void CDecal::Late_Update(_float fTimeDelta)

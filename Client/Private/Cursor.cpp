@@ -41,7 +41,13 @@ HRESULT CCursor::Initialize_Clone(void* pArg)
 	m_pInputType = m_pGameInstance->Get_InputTypePtr();
 	m_IsUpdate = true;
 
-	m_pScreenTrail = static_cast<CScreenTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_ScreenTrail"), nullptr));
+    CScreenTrail::LINE_TRAIL_DESC dsc;
+    dsc.fOffset = 20.f;
+    dsc.fLifeTime = 0.6f;
+    dsc.iDivisionCount = 5.f;
+    dsc.iTextureIdx = 13;
+
+	m_pScreenTrail = static_cast<CScreenTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_ScreenTrail"), &dsc));
 	if (!m_pScreenTrail)
 		return E_FAIL;
 	return S_OK;
@@ -55,8 +61,25 @@ void CCursor::Priority_Update(_float fTimeDelta)
 
 void CCursor::Update(_float fTimeDelta)
 {
+    if (m_pGameInstance->Key_Down(DIK_COMMA, INPUT_TYPE::UI))
+    {
+        --m_iTrailTexIndex;
 
-	if (*m_pInputType == INPUT_TYPE::UI)
+        if (m_iTrailTexIndex < 0)
+            m_iTrailTexIndex = 21;
+        m_pScreenTrail->Set_TexIndex(m_iTrailTexIndex);
+    }
+    else if (m_pGameInstance->Key_Down(DIK_PERIOD, INPUT_TYPE::UI))
+    {
+        ++m_iTrailTexIndex;
+
+        if (m_iTrailTexIndex > 21)
+            m_iTrailTexIndex = 0;
+
+        m_pScreenTrail->Set_TexIndex(m_iTrailTexIndex);
+    }
+
+    if (*m_pInputType == INPUT_TYPE::UI)
 		UI_Mode();
 	else
 		Play_Mode();
@@ -173,8 +196,12 @@ void CCursor::UI_Mode()
 	POINT ptMouse{};
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);
-	m_pScreenTrail->Add_ControlPoint(ptMouse);
 	__super::Update_Transform(nullptr, { ptMouse.x + m_vLocalSize.x * 0.5f -7.f, ptMouse.y + m_vLocalSize.y * 0.5f });
+	
+    ptMouse.x += 15.f;
+    ptMouse.y += 25.f;
+
+    m_pScreenTrail->Add_ControlPoint(ptMouse);
 }
 
 CCursor* CCursor::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

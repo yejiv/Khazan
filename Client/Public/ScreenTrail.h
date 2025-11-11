@@ -1,6 +1,6 @@
 #pragma once
 #include "Client_Defines.h"
-#include "GameObject.h"
+#include "UIObject.h"
 #include "VIBuffer_LineTrail.h"
 
 NS_BEGIN(Engine)
@@ -11,7 +11,7 @@ NS_END
 
 NS_BEGIN(Client)
 
-class CScreenTrail : public CGameObject
+class CScreenTrail : public CUIObject
 {
 public:
 	typedef struct tagLineTrailDesc : public CVIBuffer_LineTrail::LINE_BUFFER_DESC
@@ -26,6 +26,9 @@ private:
 	CScreenTrail(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	CScreenTrail(const CScreenTrail& Prototype);
 	virtual ~CScreenTrail() = default;
+
+public:
+    void                    Set_TexIndex(_int iTexIndex) { m_iTextureIdx = iTexIndex; }
 
 public:
 	virtual HRESULT			Initialize_Prototype() override;
@@ -47,7 +50,7 @@ private:
 
 private:
 	deque<CVIBuffer_LineTrail::LINE_TRAIL_POINT>	m_ControlPoints;
-	deque<_float4>	m_TrailPoints;
+	deque<_float4>	        m_TrailPoints;
 
 private :
 	_float2					m_fViewportSize;

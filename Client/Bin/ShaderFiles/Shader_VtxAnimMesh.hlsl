@@ -16,7 +16,8 @@ bool g_isSpecular = false;
 bool g_isMetalic = false;
 bool g_isRoughness = false;
 
-int g_iTest = 0;
+// 귀검 관련 전역 변수
+bool g_isBNEye = false;
 
 /* 모델 전체 뼈기준(x) */
 /* 특정 메시에 영향ㅇ르 주는 뼈들 */
@@ -192,6 +193,7 @@ PS_OUT PS_MAIN(PS_IN In)
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = In.vWorldPos;
     Out.vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    //  Out.vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     
     return Out;
 }
@@ -215,6 +217,7 @@ PS_OUT PS_MAIN_NONPICK(PS_IN In)
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = vector(0.f, 0.f, 0.f, 0.f);
     Out.vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    //  Out.vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     
     return Out;
 }

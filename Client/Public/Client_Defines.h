@@ -25,7 +25,7 @@ namespace Client
 	
 	enum class CAMERATYPE { FREE, SPRING, PLAYER, END };
 
-	enum class TEAM { GOBLIN, YETI, BEAST ,END };
+	enum class TEAM { NONE ,GOBLIN, YETI, BEAST ,END };
 
 	enum class DATATYPE { ITEM, EQUIPEFFECT, OTHEREFFECT, KHAZAN_SPEAR_ANIM, STATE, ANNOUNCE_TALK, SKill, END };
 
@@ -50,6 +50,14 @@ namespace Client
 
     }DAMAGEINFO;
     
+    typedef struct tagBladeNexus
+    {
+        unsigned int iLevel;
+        unsigned int iID;
+        wstring strName;
+        bool   isUnLock = false;
+        XMFLOAT4 vPos;
+    }INTER_BLADENEXUS_DESC;
 
 
 }

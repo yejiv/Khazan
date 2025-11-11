@@ -1,7 +1,7 @@
 #include "AS_Idle_Imp_Range.h"
 #include "Imp_Range.h"
 #include "GameInstance.h"
-#include "BlackBoard.h"
+#include "Body_Imp_Range.h"
 
 CAS_Idle_Imp_Range::CAS_Idle_Imp_Range()
 {
@@ -11,8 +11,7 @@ CAS_Idle_Imp_Range::CAS_Idle_Imp_Range()
 void CAS_Idle_Imp_Range::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
     CImp_Range* pImp = static_cast<CImp_Range*>(pOwner);
-    CModel* pModel = static_cast<CModel*>(pOwner->Get_Component(TEXT("Com_Model")));
-
+    CModel* pModel = static_cast<CModel*>(pImp->Get_Body()->Get_Component(TEXT("Com_Model")));
     pModel->Set_Animation(0);
 
 }
@@ -20,7 +19,7 @@ void CAS_Idle_Imp_Range::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 void CAS_Idle_Imp_Range::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
     CImp_Range* pImp = static_cast<CImp_Range*>(pOwner);
-    CModel* pModel = static_cast<CModel*>(pOwner->Get_Component(TEXT("Com_Model")));
+    CModel* pModel = static_cast<CModel*>(pImp->Get_Body()->Get_Component(TEXT("Com_Model")));
     
     if (pModel->Play_Animation(fTimeDelta))
     {

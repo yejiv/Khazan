@@ -24,11 +24,12 @@ private:
 
 private:
 	vector<class CUI_ComBatSpirit_Slot*>	m_pSlot;
-	_int									m_iMaxSlotNum = {};
-	_int									m_iCulSlotNum = {};
+    _int                                    m_iMaxSlotNum = {};
+    const _int*                             m_pCulSlotNum = {};
+	const _float*							m_pCulGaugeValue = {};
+
 	_float									m_fOffsetX = {};
 
-	_float									m_fCulGaugeValue = {};
 public:
 	static CUI_CombatSpirit_Penal*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
 	virtual CGameObject*			Clone(void* pArg) override;

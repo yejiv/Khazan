@@ -45,6 +45,7 @@ public:
     void    Cancelation_Skill() { m_isReserve = false; m_iReserveSkillIndex = 0; }
 
 	_bool	Is_Attacking() const { return m_isAttacking; }
+    _bool   Is_FastAttacking() const { return m_isFastCombo; }
     _bool   Is_Skilling() const { return m_isSkilling; }
 	_bool	Can_NextCombo() const { return m_isCanNextCombo; }
     _bool   Is_Reserve() const { return m_isReserve; }

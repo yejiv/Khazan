@@ -1,0 +1,105 @@
+#include "Khazan_Spear_Anim_Interaction.h"
+#include "GameInstance.h"
+
+
+CKhazan_Spear_Anim_Interaction::CKhazan_Spear_Anim_Interaction()
+{
+}
+
+HRESULT CKhazan_Spear_Anim_Interaction::Initialize_Prototype()
+{
+    return S_OK;
+}
+
+void CKhazan_Spear_Anim_Interaction::Enter()
+{
+}
+
+void CKhazan_Spear_Anim_Interaction::Continue(_float fTimeDelta)
+{
+}
+
+void CKhazan_Spear_Anim_Interaction::Exit()
+{
+}
+
+_bool CKhazan_Spear_Anim_Interaction::Try_Lantern(_bool isEquip)
+{
+    if (!m_pModel->Check_MinAnimationTime())
+        return false;
+
+    if (isEquip) m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_Com_Lantern_On"));
+    else  m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_Com_Lantern_Off"));
+
+    return true;
+}
+
+_bool CKhazan_Spear_Anim_Interaction::Try_TobStone(_bool isWeapon)
+{
+    if (!m_pModel->Check_MinAnimationTime())
+        return false;
+
+    if (isWeapon) m_pModel->Set_AnimationSet("Set_SpearTobstone");
+    else m_pModel->Set_AnimationSet("Set_Tobstone");
+
+    return true;
+}
+
+_bool CKhazan_Spear_Anim_Interaction::Try_DamagedTS_Before(_bool isWeapon)
+{
+    if (!m_pModel->Check_MinAnimationTime())
+        return false;
+
+    if (isWeapon) m_pModel->Set_AnimationSet("Set_SpearDamagedTS_Before");
+    else m_pModel->Set_AnimationSet("Set_DamagedTS_Before");
+
+    return true;
+}
+
+_bool CKhazan_Spear_Anim_Interaction::Try_DamagedTS_After(_bool isWeapon)
+{
+    if (!m_pModel->Check_MinAnimationTime())
+        return false;
+
+    if (isWeapon) m_pModel->Set_AnimationSet("Set_SpearDamagedTS_After");
+    else m_pModel->Set_AnimationSet("Set_DamagedTS_After");
+
+    return true;
+}
+
+_bool CKhazan_Spear_Anim_Interaction::Try_BoxOpen(_bool isUsedSet)
+{
+    if (!m_pModel->Check_MinAnimationTime())
+        return false;
+
+    
+
+    if (isUsedSet) {
+        m_pModel->Set_AnimationSet("Set_OpenBox");  //무기 집어넣고 상자열고 다시 무기 들기
+        m_pModel->AnimationSetIndexIncrease();      //무기 집어 넣는건 플레이어에서 관리.
+
+    }
+    else  m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_BigChest_Open_003")); //상자만 여는 모션
+
+    return true;
+}
+
+
+
+CKhazan_Spear_Anim_Interaction* CKhazan_Spear_Anim_Interaction::Create()
+{
+    CKhazan_Spear_Anim_Interaction* pInstance = new CKhazan_Spear_Anim_Interaction();
+
+    if (FAILED(pInstance->Initialize_Prototype()))
+    {
+        MSG_BOX(TEXT("Failed to Created : CKhazan_Spear_Anim_Interaction"));
+        Safe_Release(pInstance);
+    }
+
+    return pInstance;
+}
+
+void CKhazan_Spear_Anim_Interaction::Free()
+{
+    __super::Free();
+}

@@ -64,8 +64,8 @@ void CMainApp::Update(_float fTimeDelta)
 	{
 		//m_pClientInstance->ActiveCamera_Shaking(2.f, 1.f);
 		//m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.3f, 0.003f, 3.f);
-		m_pGameInstance->Fix_HitStop(TIME_CHANNEL::ENEMY);
-		FOVModifier tMod{};
+		//m_pGameInstance->Fix_HitStop(TIME_CHANNEL::ENEMY);
+		//FOVModifier tMod{};
 
 		// PRIORITY
 		//tMod.strID = TEXT("Hit");
@@ -93,11 +93,13 @@ void CMainApp::Update(_float fTimeDelta)
 		//tMod.Ease = EaseOutQuad;
 
 		//m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
+
+        m_pClientInstance->Find_MapBladeNexus(KHAZAN_MAP::HEINMACH);
 	}
 	if (m_pGameInstance->Key_Down(DIK_RCONTROL))
 	{
 		//m_pClientInstance->ActiveCamera_KillFov(L"Hit");
-		m_pGameInstance->UnFix_HitStop(TIME_CHANNEL::ENEMY);
+		//m_pGameInstance->UnFix_HitStop(TIME_CHANNEL::ENEMY);
 	}
 
 	TIME_DELTA      tTimeDelta = {};
@@ -356,8 +358,11 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Common/T_Img_List_Menu_%d.png"), 8)), E_FAIL);
 
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_FX_Mask"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Mask/T_Fx_%d.png"), 5)), E_FAIL);
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Mask/T_Fx_%d.png"), 6)), E_FAIL);
 
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_State_Button"),
+        CTexture::Create(m_pDevice, m_pContext, TEXT("..//Bin/Resources/UI/State/NormalButton_%d.png"), 10))))
+        return E_FAIL;
 
 	//아이템 인포 텍스처
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_ItemInfo_BG"),
@@ -477,6 +482,9 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Announce_Over"),
         CUI_Announce_Over::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_BladeNexus_Map"),
+        CUI_BladeNexus_Map::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
 
 	CUIObject::UIOBJECT_DESC AnnounceDesc = {};
 	AnnounceDesc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };

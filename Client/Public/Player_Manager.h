@@ -19,12 +19,21 @@ public:
         END,
     };
 
+    enum class PLAYER_STATE {
+        HP,         //체력
+        STAMINA,    //스태미나
+        
+        END};
+
 private:
     CPlayer_Manager();
     virtual ~CPlayer_Manager() = default;
 
 public:
+    //플레이어 데이터 셋팅 관련
+    PLAYER_DATA&                Get_ptrPlayerData() {return m_Data; }
     const PLAYER_DATA&          Get_PlayerData() { return m_Data; }
+
     void						Add_SkillExp(_float fExp);
     _bool						Add_SkillPoint(_int iPoint);
 

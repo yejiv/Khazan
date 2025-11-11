@@ -27,7 +27,9 @@ HRESULT CUI_CombatSpirit_Penal::Initialize_Prototype(_uint iLevel)
 
 HRESULT CUI_CombatSpirit_Penal::Initialize_Clone(void* pArg)
 {
-	m_iMaxSlotNum = 10;
+    m_iMaxSlotNum = 10;
+    m_pCulSlotNum = &CClientInstance::GetInstance()->Get_PlayerData().iMaxDoggednessCount;
+    m_pCulGaugeValue = &CClientInstance::GetInstance()->Get_PlayerData().fCulDoggedness;
 	m_fOffsetX = 26.f;
 	if (FAILED(__super::Initialize_Clone(pArg)))
 		return E_FAIL;
@@ -37,49 +39,30 @@ HRESULT CUI_CombatSpirit_Penal::Initialize_Clone(void* pArg)
 
 void CUI_CombatSpirit_Penal::Priority_Update(_float fTimeDelta)
 {
-	for (_int i = 0; i < m_iCulSlotNum; ++i)
+	for (_int i = 0; i < (_int)*m_pCulSlotNum; ++i)
 		m_pSlot[i]->Priority_Update(fTimeDelta);
 }
 
 void CUI_CombatSpirit_Penal::Update(_float fTimeDelta)
 {
-	//if (m_pGameInstance->Key_Down(DIK_U))
-	//{
-	//	m_fCulGaugeValue = 0;
-	//}
-	//if (m_pGameInstance->Key_Down(DIK_I, INPUT_TYPE::UI))
-	//{
-	//	m_iCulSlotNum++;
-	//	if (m_iCulSlotNum > m_iMaxSlotNum)
-	//		m_iCulSlotNum = 0;
-	//}
 
-	if (m_fCulGaugeValue > m_iCulSlotNum)
-		m_fCulGaugeValue = m_iCulSlotNum;
-	else if(m_fCulGaugeValue < m_iCulSlotNum)
-		m_fCulGaugeValue += fTimeDelta;
-
-	if (m_iCulSlotNum > m_iMaxSlotNum)
-		m_iCulSlotNum = m_iMaxSlotNum;
-
-	for (_int i = 0; i < m_iCulSlotNum; ++i)
+	for (_int i = 0; i < (_int)*m_pCulSlotNum; ++i)
 		m_pSlot[i]->Update(fTimeDelta);
 
 }
 
 void CUI_CombatSpirit_Penal::Late_Update(_float fTimeDelta)
 {
-	for (_int i = 0; i < m_iCulSlotNum; ++i)
+	for (_int i = 0; i < (_int)*m_pCulSlotNum; ++i)
 	{
-		//1 <=1.5 2
-		if(i + 1 <= m_fCulGaugeValue)
-			m_pSlot[i]->Update_Gauge(1.f);
-		else if(i < m_fCulGaugeValue && i + 1 > m_fCulGaugeValue)
-			m_pSlot[i]->Update_Gauge(m_fCulGaugeValue - floorf(m_fCulGaugeValue));
+		if(i + 1 <= *m_pCulGaugeValue)
+            m_pSlot[i]->Update_Gauge(1.f);
+        else if (i < *m_pCulGaugeValue && i + 1 > *m_pCulGaugeValue)
+            m_pSlot[i]->Update_Gauge(*m_pCulGaugeValue - floorf(*m_pCulGaugeValue));
 		else
 			m_pSlot[i]->Update_Gauge(0.f);
 
-		m_pSlot[i]->Update_Pos(m_vWorldPos, m_fOffsetX, m_iCulSlotNum);
+		m_pSlot[i]->Update_Pos(m_vWorldPos, m_fOffsetX, (_int)*m_pCulSlotNum);
 		m_pSlot[i]->Late_Update(fTimeDelta);
 	}
 }

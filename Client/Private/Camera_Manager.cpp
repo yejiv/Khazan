@@ -246,7 +246,6 @@ CCamera_Manager* CCamera_Manager::Create(_uint iNumLevels)
 	return pInstance;
 }
 
-
 void CCamera_Manager::Free()
 {
 	__super::Free();

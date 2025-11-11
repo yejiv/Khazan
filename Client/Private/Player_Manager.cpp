@@ -6,6 +6,8 @@ CPlayer_Manager::CPlayer_Manager()
 
 HRESULT CPlayer_Manager::Initialize()
 {
+    m_Data.iMaxDoggednessCount = 5;
+    m_Data.fCulDoggedness = 5;
 	m_Data.iLevel = 1;
 	m_Data.iGold = 1000;
 	m_Data.iLachryma = 500;
@@ -64,13 +66,17 @@ _uint CPlayer_Manager::Get_ButtonSkill(CONTROL_BUTTON eButton)
 
 void CPlayer_Manager::Set_UsedSkill(_uint iSkill, _bool isUsed)
 {
-    if (iSkill >= GetBitPosition(CPlayerData_Manager::SPEAR_END))
+    if (0 >= iSkill && iSkill >= GetBitPosition(CPlayerData_Manager::SPEAR_END))
         return;
+
     m_UsedSkill[GetBitPosition(iSkill)] = isUsed;
 }
 
 _bool CPlayer_Manager::Is_UsedSkill(_uint iSkill)
 {
+    if (0 >= iSkill && iSkill >= GetBitPosition(CPlayerData_Manager::SPEAR_END))
+        return false;
+
     return  m_UsedSkill[GetBitPosition(iSkill)];
 }
 
