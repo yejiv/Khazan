@@ -235,6 +235,7 @@
     <ClInclude Include="..\Public\FSM_Yetuga.h" />
     <ClInclude Include="..\Public\Imp_Range.h" />
     <ClInclude Include="..\Public\Interact_Manager.h" />
+    <ClInclude Include="..\public\Khazan_Spear_Anim_Interaction.h" />
     <ClInclude Include="..\Public\Level_Test.h" />
     <ClInclude Include="..\public\Player_Manager.h" />
     <ClInclude Include="..\Public\Sequence_HeinMach_Start.h" />
@@ -450,6 +451,7 @@
     <ClCompile Include="..\Private\FSM_Yetuga.cpp" />
     <ClCompile Include="..\Private\Imp_Range.cpp" />
     <ClCompile Include="..\Private\Interact_Manager.cpp" />
+    <ClCompile Include="..\private\Khazan_Spear_Anim_Interaction.cpp" />
     <ClCompile Include="..\Private\Level_Test.cpp" />
     <ClCompile Include="..\private\Player_Manager.cpp" />
     <ClCompile Include="..\Private\Sequence_HeinMach_Start.cpp" />

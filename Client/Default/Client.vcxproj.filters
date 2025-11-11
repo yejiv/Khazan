@@ -706,6 +706,9 @@
     <Filter Include="94.ClientInstance\Interact">
       <UniqueIdentifier>{e19c8df3-6999-4b78-a14e-67c32016e767}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation\Interaction">
+      <UniqueIdentifier>{270828a5-297c-4341-8389-9141bb8804f0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1354,6 +1357,9 @@
     <ClInclude Include="..\Public\Interact_Manager.h">
       <Filter>94.ClientInstance\Interact</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Khazan_Spear_Anim_Interaction.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Interaction</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1981,6 +1987,9 @@
     <ClCompile Include="..\Private\Imp_Range.cpp" />
     <ClCompile Include="..\Private\Interact_Manager.cpp">
       <Filter>94.ClientInstance\Interact</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_Spear_Anim_Interaction.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Interaction</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

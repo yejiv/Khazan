@@ -396,7 +396,7 @@ void CAnimationTool::Tool_Export_Update_Widget()
             ImGui::SetTooltip("Save to: Client/Bin/Data/");
         }
 
-        ImGui::Spacing();
+        ImGui::SameLine();
 
         // ===== Update DAT From JSON 버튼 =====
         if (ImGui::Button("Update DAT From JSON ( Apply Model !! )", ImVec2(200, 25)))
@@ -431,6 +431,7 @@ void CAnimationTool::Tool_Export_Update_Widget()
 
             SetCurrentDirectoryA(savedDir);
         }
+        ImGui::SameLine();
 
 
         // ===== Road Data  버튼 =====
@@ -466,11 +467,50 @@ void CAnimationTool::Tool_Export_Update_Widget()
 
             SetCurrentDirectoryA(savedDir);
         }
+
         if (ImGui::IsItemHovered())
         {
             ImGui::SetTooltip("Load .dat file after exporting model");
         }
         ImGui::EndDisabled();
+
+        ImGui::SameLine();
+
+        // ===== Road Data  new model버튼 =====
+        if (ImGui::Button(" Load .N . E . W. Model Data (.dat)", ImVec2(250, 25)))
+        {
+            _char savedDir[MAX_PATH];
+            GetCurrentDirectoryA(MAX_PATH, savedDir);
+
+            OPENFILENAMEA ofn;
+            _char szFile[260] = { 0 };
+
+            // 기본 파일명
+            string defaultName = WStringToAnsi(m_ObjectNames[m_iSelectedIndex]);
+            strcpy_s(szFile, defaultName.c_str());
+
+            ZeroMemory(&ofn, sizeof(ofn));
+            ofn.lStructSize = sizeof(ofn);
+            ofn.hwndOwner = NULL;
+            ofn.lpstrFile = szFile;
+            ofn.nMaxFile = sizeof(szFile);
+            ofn.lpstrFilter = "Model Files\0*.dat\0All Files\0*.*\0";
+            ofn.nFilterIndex = 1;
+            ofn.lpstrInitialDir = "../../Client/Bin/Data/";
+            ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+            if (GetOpenFileNameA(&ofn) == TRUE)
+            {
+                string absolutePath = szFile;
+                string savePath = ConvertToRelativePath(absolutePath);
+
+                m_GameObjects[m_iSelectedIndex]->get_Model()->LoadNewModel(savePath);
+            }
+
+            SetCurrentDirectoryA(savedDir);
+        }
+
+
 
         ImGui::Spacing();
         ImGui::Separator();
@@ -1290,9 +1330,16 @@ void CAnimationTool::Tool_MakeAnimEvent_Widget()
     {
         //MODEL_DATA* data = m_GameObjects[m_iSelectedIndex]->get_Model()->Get_ModelData();
         ANIMATION_SETUP_DATA* data = m_GameObjects[m_iSelectedIndex]->get_Model()->Get_CurAnimSet();
-        data->vecEventFrames = m_vecEventFrames;
-        data->vecEventKeys = m_vecEventKeys;
-        data->vecEventTriggers = m_vecTriggers;
+        
+        for (size_t i = 0; i < m_vecEventFrames.size(); i++)
+        {
+            data->vecEventFrames.emplace_back(m_vecEventFrames[i]);
+            data->vecEventKeys.emplace_back(m_vecEventKeys[i]);
+            data->vecEventTriggers.emplace_back(m_vecTriggers[i]);
+        }
+        //data->vecEventFrames = m_vecEventFrames;
+        //data->vecEventKeys = m_vecEventKeys;
+        //data->vecEventTriggers = m_vecTriggers;
         data->isEvent = true;
 
         // 저장 후 초기화
