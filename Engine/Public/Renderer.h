@@ -125,6 +125,7 @@ private:
 	HRESULT Render_Fog();
 	HRESULT Render_Blur();
 	HRESULT Render_Combined();
+    HRESULT Render_LUT();
 	HRESULT Render_Distortion();
 	HRESULT Render_UI();
 

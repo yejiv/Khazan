@@ -31,6 +31,7 @@
 #include "Decal_Manager.h"
 #include "Effect_Manager.h"
 #include "Distortion.h"
+#include "LUT.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -143,6 +144,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	m_pVignette = CVignette::Create();
 	if (nullptr == m_pVignette)
 		return E_FAIL;
+
+    m_pLUT = CLUT::Create(*ppDevice, *ppContext);
+    if (nullptr == m_pLUT)
+        return E_FAIL;
 
 	m_pSequence_Manager = CSequence_Manager::Create();
 	if (nullptr == m_pSequence_Manager)
@@ -1333,6 +1338,19 @@ ID3D11ShaderResourceView* CGameInstance::Get_DistortionNoiseTexture(_uint iTextu
 {
 	return m_pDistortion->Get_DistortionNoiseTexture(iTextureIndex);
 }
+#pragma endregion
+
+#pragma region DISTORTION
+
+HRESULT CGameInstance::Bind_LUT_ShaderResources(CShader* pShader)
+{
+	return m_pLUT->Bind_LUT_ShaderResources(pShader);
+}
+
+void CGameInstance::Set_EnableLUT(_bool isEnable)
+{
+    m_pLUT->Set_EnableLUT(isEnable);
+}
 
 #pragma endregion
 
@@ -1388,6 +1406,7 @@ void CGameInstance::Release_Engine()
 
 	Safe_Release(m_pOctree);
 	
+    Safe_Release(m_pLUT);
 	Safe_Release(m_pDistortion);
 	Safe_Release(m_pVignette);
 	Safe_Release(m_pFog);

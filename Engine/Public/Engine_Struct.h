@@ -256,6 +256,13 @@ namespace Engine
 		unsigned int	iNoiseIndex;
 	}DISTORTION_DESC;
 
+    typedef struct tagLookUpTableDesc
+    {
+        float           fIntensity;
+        unsigned int    iSliceSize;
+        XMFLOAT2        vTextureSize;
+    }LUT_DESC;
+
 	struct HitStopState
 	{
 		bool isActive = false;

@@ -394,6 +394,9 @@
     <Filter Include="01.Utility\94.RenderingResources\Distortion">
       <UniqueIdentifier>{86f561e8-54eb-4786-a8c9-1024f6b5efae}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\94.RenderingResources\LUT">
+      <UniqueIdentifier>{3ec3d5b9-6ec0-44ef-b24a-19feafbd1093}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -764,6 +767,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Distortion.cpp">
       <Filter>01.Utility\94.RenderingResources\Distortion</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\LUT.cpp">
+      <Filter>01.Utility\94.RenderingResources\LUT</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1180,6 +1186,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Distortion.h">
       <Filter>01.Utility\94.RenderingResources\Distortion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\LUT.h">
+      <Filter>01.Utility\94.RenderingResources\LUT</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

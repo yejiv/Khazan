@@ -55,7 +55,7 @@ HRESULT CLevel_Shader::Initialize()
 	m_DecalDesc.fLifeTime = 5.f;
 	m_DecalDesc.vFadeTime = { 0.5f, 0.5f };
 	m_DecalDesc.vScale = { 40.f, 10.f, 40.f };
-	m_DecalDesc.vColor = _float3(0.47f, 0.08f, 0.08f);
+	m_DecalDesc.vColor = _float3(0.2745f, 0.08f, 0.08f);
 
 	m_DistortionDesc = m_pGameInstance->Get_DistortionDesc();
 
@@ -359,6 +359,16 @@ HRESULT CLevel_Shader::Initialize()
 				if (ImGui::Button("Start Vignette"))
 					m_pGameInstance->Start_VignetteAnimation(m_fVignetteAnimDuration, m_VignetteConfig.eMode);
 			}
+
+            if (ImGui::Checkbox("LUT", &m_isEnableLUT))
+                m_pGameInstance->Set_EnableLUT(m_isEnableLUT);
+
+            if (m_isEnableLUT)
+            {
+                // LUT 강도
+                if (ImGui::SliderFloat("LUT Intensity TestTestTest", &m_VignetteConfig.fIntensity, 0.f, 5.f, "%.2f"));
+                    //  m_pGameInstance->Set_LUTDesc(m_pGameInstance->Get_LUTDesc());
+            }
 		}
 
 		if (ImGui::CollapsingHeader("Cartoon Rendering"), ImGuiTreeNodeFlags_DefaultOpen)
