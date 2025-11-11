@@ -50,6 +50,14 @@ namespace Client
 
     }DAMAGEINFO;
     
+    typedef struct tagBladeNexus
+    {
+        unsigned int iLevel;
+        unsigned int iID;
+        wstring strName;
+        bool   isUnLock = false;
+        XMFLOAT4 vPos;
+    }INTER_BLADENEXUS_DESC;
 
 
 }

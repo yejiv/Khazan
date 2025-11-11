@@ -62,9 +62,9 @@ private:
     FOG_CONFIG m_FogConfig = {};
 
 private:
-    void Event_Announce_Talk(_int iIndex);
+    HRESULT Load_SkyBoxBinaryFile(const _tchar* pDataFile);
     void Set_FogConfig(FOG_CONFIG FogConfig);
-    void Set_SkyBox(SKY_DESC SkyDesc, CLOUD_DESC CloudDesc);
+    void Start_SkyTransition(SKY_DESC SkyDesc, CLOUD_DESC CloudDesc, _float fDuration);
 
 public:
 	static CHeinMach_Trigger* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

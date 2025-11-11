@@ -173,7 +173,7 @@ HRESULT CBladeNexus_List::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevel
 		szText = TEXT("귀검 이동");
 		break;
 	case CUI_BladeNexus::MENULIST::CREVICE:
-		szText = TEXT("경계의 틈");
+		szText = TEXT("엠바스 유적지");
 		break;
 	}
 

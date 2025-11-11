@@ -10,6 +10,9 @@
 
 #include "UI_Inven.h"
 #include "UI_State.h"
+
+#include "UI_BladeNexus_Map.h"
+
 CUI_BladeNexus::CUI_BladeNexus(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
 {
@@ -494,11 +497,8 @@ void CUI_BladeNexus::Next_Event()
 	}
 	else if (m_eNextEvent == MENULIST::WARP)
 	{
-		m_eNextEvent = MENULIST::END;
-		m_eAnimState = UIANIMSTATE::OFF;
-		m_fAccTime = 1.f;
-
-		m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
+        static_cast<CUI_BladeNexus_Map*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus_Map")))->On_Panel(
+            CUI_BladeNexus_Map::ONTYPE::HEINMACH);
 	}
 	else if (m_eNextEvent == MENULIST::CREVICE)
 	{

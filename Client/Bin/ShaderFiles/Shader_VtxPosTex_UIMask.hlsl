@@ -239,6 +239,18 @@ PS_OUT PS_MASK_OVER(PS_IN In)
     Out.vColor.a = fAlpha * g_vColor.a * g_fAlpha;
     return Out;
 }
+
+PS_OUT PS_MASK_ALPHA(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    float4 fMaskColor = g_MaskTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
+    Out.vColor.a = fMaskColor.a * g_vColor.a * g_fAlpha;
+    
+    return Out;
+}
 technique11 DefaultTechnique
 {
     pass PS_MASK_PASS_0
@@ -344,6 +356,15 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MASK_OVER();
     }
+    pass PS_MASK_ALPHA_10
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MASK_ALPHA();
+    }
 
 }

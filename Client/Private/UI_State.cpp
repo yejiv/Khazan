@@ -104,9 +104,6 @@ void CUI_State::Priority_Update(_float fTimeDelta)
 
 void CUI_State::Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_7,INPUT_TYPE::UI))
-		On_Panel(UI_TYPE::UPAGERD);
-
 	if (!m_IsUpdate)
 		return;
 
@@ -365,10 +362,6 @@ HRESULT CUI_State::Ready_Prototype()
 
 	if (FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_Component_UI_State_Arrow"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("..//Bin/Resources/UI/State/ArrowButton_UI_%d.png"), 2))))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_Component_UI_State_Button"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("..//Bin/Resources/UI/State/NormalButton_%d.png"), 10))))
 		return E_FAIL;
 
 	return S_OK;
