@@ -195,6 +195,9 @@
     <ClInclude Include="..\Public\AttackState_Yetuga.h" />
     <ClInclude Include="..\Public\BigChest.h" />
     <ClInclude Include="..\public\BladeNexus_List.h" />
+    <ClInclude Include="..\public\BladeNexus_Map_BG.h" />
+    <ClInclude Include="..\public\UI_BladeNexus_Map.h" />
+    <ClInclude Include="..\public\BladeNexus_Map_List.h" />
     <ClInclude Include="..\Public\Body_Gomdol.h" />
     <ClInclude Include="..\Public\Body_Imp_Range.h" />
     <ClInclude Include="..\Public\Body_Khazan_Sample.h" />
@@ -416,6 +419,9 @@
     <ClCompile Include="..\Private\BigChest.cpp" />
     <ClCompile Include="..\Private\BladeNexus.cpp" />
     <ClCompile Include="..\private\BladeNexus_List.cpp" />
+    <ClCompile Include="..\private\BladeNexus_Map_BG.cpp" />
+    <ClCompile Include="..\private\UI_BladeNexus_Map.cpp" />
+    <ClCompile Include="..\private\BladeNexus_Map_List.cpp" />
     <ClCompile Include="..\Private\Body_Gomdol.cpp" />
     <ClCompile Include="..\Private\Body_Imp_Range.cpp" />
     <ClCompile Include="..\Private\Body_Khazan_Sample.cpp" />

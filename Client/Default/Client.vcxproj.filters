@@ -709,6 +709,15 @@
     <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation\Interaction">
       <UniqueIdentifier>{270828a5-297c-4341-8389-9141bb8804f0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\BladeNexus_Map">
+      <UniqueIdentifier>{89b4fdfb-7249-4340-87ba-189bcf79f452}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\BladeNexus_Map\List">
+      <UniqueIdentifier>{64d9b043-5b96-4785-9c51-8130bbcad22b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\BladeNexus_Map\BG">
+      <UniqueIdentifier>{146cf3fc-807b-4ef5-82d1-56d6a87872c1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1360,6 +1369,15 @@
     <ClInclude Include="..\public\Khazan_Spear_Anim_Interaction.h">
       <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Interaction</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\UI_BladeNexus_Map.h">
+      <Filter>02.GameObject\UI\BladeNexus_Map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BladeNexus_Map_List.h">
+      <Filter>02.GameObject\UI\BladeNexus_Map\List</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BladeNexus_Map_BG.h">
+      <Filter>02.GameObject\UI\BladeNexus_Map\BG</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1990,6 +2008,15 @@
     </ClCompile>
     <ClCompile Include="..\private\Khazan_Spear_Anim_Interaction.cpp">
       <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Interaction</Filter>
+  </ClCompile>
+    <ClCompile Include="..\private\UI_BladeNexus_Map.cpp">
+      <Filter>02.GameObject\UI\BladeNexus_Map</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BladeNexus_Map_List.cpp">
+      <Filter>02.GameObject\UI\BladeNexus_Map\List</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BladeNexus_Map_BG.cpp">
+      <Filter>02.GameObject\UI\BladeNexus_Map\BG</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

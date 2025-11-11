@@ -71,6 +71,7 @@ void CEquip_Slot::Release_Item(CItem_Slot* pItem)
     m_iItemIndex = -1;
 
     Safe_Release(m_pItem_Slot);
+    m_pItem_Slot = nullptr;
     Update_State(0);
 
     if (ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::QUICK_1) <= m_iIndex)

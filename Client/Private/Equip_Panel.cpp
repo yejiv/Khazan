@@ -161,7 +161,7 @@ HRESULT CEquip_Panel::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, 
 					m_Children.push_back(pChild);
 
 					static_cast<CUI_TextBox*>(pChild)->Update_PosY(i, vPos, 155.f);
-					static_cast<CUI_TextBox*>(pChild)->Set_Text(AnsiToWString(MapPing_Label(i)));
+					static_cast<CUI_TextBox*>(pChild)->Set_Text(MapPing_Label(i));
 
 				}
 			}
@@ -172,18 +172,18 @@ HRESULT CEquip_Panel::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, 
 	return S_OK;
 }
 
-string CEquip_Panel::MapPing_Label(_int iIndex)
+_wstring CEquip_Panel::MapPing_Label(_int iIndex)
 {
 	switch (iIndex)
 	{
-	case 0:	return "무기";
-	case 1:	return "방어구";
-	case 2:	return "장신구";
-	case 3:	return "숏컷 아이템";
-	case 4:	return "명계의 기운";
+	case 0:	return TEXT("무기");
+	case 1:	return TEXT("방어구");
+	case 2:	return TEXT("장신구");
+	case 3:	return TEXT("숏컷 아이템");
+	case 4:	return TEXT("명계의 기운");
 	}
 
-	return "";
+	return TEXT("");
 }
 
 CEquip_Panel* CEquip_Panel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)

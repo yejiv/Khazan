@@ -51,8 +51,12 @@ void CUI_SkillTree::Off_Panel()
 	if (!m_IsUpdate)
 		return;
 
-	m_eAnimState = UIANIMSTATE::OFF;
-	m_fAccTime = 1.f;
+    m_IsUpdate = false;
+
+    CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("MainMeun"));
+
+	//m_eAnimState = UIANIMSTATE::OFF;
+	//m_fAccTime = 1.f;
 }
 
 HRESULT CUI_SkillTree::Initialize_Prototype(_uint iLevel)
@@ -79,9 +83,6 @@ void CUI_SkillTree::Priority_Update(_float fTimeDelta)
 
 void CUI_SkillTree::Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_8, INPUT_TYPE::UI))
-		On_Panel();
-
 	if (m_pGameInstance->Key_Down(DIK_P, INPUT_TYPE::UI))
 		CClientInstance::GetInstance()->Add_SkillExp(40.f);
 
