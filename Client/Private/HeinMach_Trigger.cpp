@@ -99,35 +99,6 @@ HRESULT CHeinMach_Trigger::Ready_TriggerType(void* pArg)
             dynamic_cast<CCreature*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player")))
         );
 
-#pragma region 예투가 보스존 FOG
-
-        m_FogConfig = m_pGameInstance->Get_FogConfig();
-
-        m_FogConfig.vColor = _float4(0.243f, 0.188f, 0.133f, 1.0f);
-        /*
-        m_FogConfig = {};
-
-        m_FogConfig.eType = FOG_CONFIG::TYPE::LINEAR;
-        m_FogConfig.fBaseHeight = 1.f;
-        m_FogConfig.fNear = 1.f;         // 선형 일 때
-        m_FogConfig.fFar = 1.f;          // 선형 일 때
-        m_FogConfig.fDensity = 1.f;      // 지수 일 때
-        m_FogConfig.fHeightDensity = 1.f;
-        m_FogConfig.vColor = _float4(1.f, 1.f, 1.f, 1.f);
-
-        FOG_NOISE_DESC FogNoiseDesc = {};
-
-        FogNoiseDesc.fContrast = 1.f;
-        FogNoiseDesc.fStrength = 1.f;
-        FogNoiseDesc.isEnable = true;
-        FogNoiseDesc.vScale = _float2(1.f, 1.f);
-        FogNoiseDesc.vSpeed = _float2(1.f, 1.f);
-
-        m_FogConfig.Noise = FogNoiseDesc;
-        */
-
-#pragma endregion
-
 #pragma region 예투가 보스존 스카이 박스
 
         /* 파일 입출력으로 이니셜라이즈에서 구조체 채우기 */
@@ -153,31 +124,6 @@ HRESULT CHeinMach_Trigger::Ready_TriggerType(void* pArg)
     else if (m_strTriggerKey == "CaveEntry")
     {
 #pragma region FOG ( 동굴 진입 -> 동굴 중간까지 )
-
-        m_FogConfig = m_pGameInstance->Get_FogConfig();
-
-        m_FogConfig.vColor = _float4(0.031f, 0.137f, 0.200f, 1.0f);
-        /*
-        m_FogConfig = {};
-
-        m_FogConfig.eType = FOG_CONFIG::TYPE::LINEAR;
-        m_FogConfig.fBaseHeight = 1.f;
-        m_FogConfig.fNear = 1.f;         // 선형 일 때
-        m_FogConfig.fFar = 1.f;          // 선형 일 때
-        m_FogConfig.fDensity = 1.f;      // 지수 일 때
-        m_FogConfig.fHeightDensity = 1.f;
-        m_FogConfig.vColor = _float4(1.f, 1.f, 1.f, 1.f);
-
-        FOG_NOISE_DESC FogNoiseDesc = {};
-
-        FogNoiseDesc.fContrast = 1.f;
-        FogNoiseDesc.fStrength = 1.f;
-        FogNoiseDesc.isEnable = true;
-        FogNoiseDesc.vScale = _float2(1.f, 1.f);
-        FogNoiseDesc.vSpeed = _float2(1.f, 1.f);
-
-        m_FogConfig.Noise = FogNoiseDesc;
-        */
 
 #pragma endregion
 
@@ -206,61 +152,11 @@ HRESULT CHeinMach_Trigger::Ready_TriggerType(void* pArg)
     {
 #pragma region FOG ( 동굴 중간 -> 동굴 출구까지 )
 
-        m_FogConfig = m_pGameInstance->Get_FogConfig();
-
-        m_FogConfig.vColor = _float4(0.031f, 0.137f, 0.200f, 1.0f);
-        /*
-        m_FogConfig = {};
-
-        m_FogConfig.eType = FOG_CONFIG::TYPE::LINEAR;
-        m_FogConfig.fBaseHeight = 1.f;
-        m_FogConfig.fNear = 1.f;         // 선형 일 때
-        m_FogConfig.fFar = 1.f;          // 선형 일 때
-        m_FogConfig.fDensity = 1.f;      // 지수 일 때
-        m_FogConfig.fHeightDensity = 1.f;
-        m_FogConfig.vColor = _float4(1.f, 1.f, 1.f, 1.f);
-
-        FOG_NOISE_DESC FogNoiseDesc = {};
-
-        FogNoiseDesc.fContrast = 1.f;
-        FogNoiseDesc.fStrength = 1.f;
-        FogNoiseDesc.isEnable = true;
-        FogNoiseDesc.vScale = _float2(1.f, 1.f);
-        FogNoiseDesc.vSpeed = _float2(1.f, 1.f);
-
-        m_FogConfig.Noise = FogNoiseDesc;
-        */
-
 #pragma endregion
     }
     else if (m_strTriggerKey == "CaveExit")
     {
 #pragma region FOG ( 동굴 출구 -> 동굴 정방향 출구 후 지역 )
-
-        m_FogConfig = m_pGameInstance->Get_FogConfig();
-
-        m_FogConfig.vColor = _float4(0.631f, 0.522f, 0.471f, 1.0f);
-        /*
-        m_FogConfig = {};
-
-        m_FogConfig.eType = FOG_CONFIG::TYPE::LINEAR;
-        m_FogConfig.fBaseHeight = 1.f;
-        m_FogConfig.fNear = 1.f;         // 선형 일 때
-        m_FogConfig.fFar = 1.f;          // 선형 일 때
-        m_FogConfig.fDensity = 1.f;      // 지수 일 때
-        m_FogConfig.fHeightDensity = 1.f;
-        m_FogConfig.vColor = _float4(1.f, 1.f, 1.f, 1.f);
-
-        FOG_NOISE_DESC FogNoiseDesc = {};
-
-        FogNoiseDesc.fContrast = 1.f;
-        FogNoiseDesc.fStrength = 1.f;
-        FogNoiseDesc.isEnable = true;
-        FogNoiseDesc.vScale = _float2(1.f, 1.f);
-        FogNoiseDesc.vSpeed = _float2(1.f, 1.f);
-
-        m_FogConfig.Noise = FogNoiseDesc;
-        */
 
 #pragma endregion
 
@@ -292,30 +188,6 @@ HRESULT CHeinMach_Trigger::Ready_TriggerType(void* pArg)
     {
 #pragma region FOG ( 동굴 정방향 입구 -> 동굴 정방향 입구 전지역 )
 
-        m_FogConfig = m_pGameInstance->Get_FogConfig();
-
-        m_FogConfig.vColor = _float4(0.f, 0.106f, 0.137f, 1.0f);
-        /*
-        m_FogConfig = {};
-
-        m_FogConfig.eType = FOG_CONFIG::TYPE::LINEAR;
-        m_FogConfig.fBaseHeight = 1.f;
-        m_FogConfig.fNear = 1.f;         // 선형 일 때
-        m_FogConfig.fFar = 1.f;          // 선형 일 때
-        m_FogConfig.fDensity = 1.f;      // 지수 일 때
-        m_FogConfig.fHeightDensity = 1.f;
-        m_FogConfig.vColor = _float4(1.f, 1.f, 1.f, 1.f);
-
-        FOG_NOISE_DESC FogNoiseDesc = {};
-
-        FogNoiseDesc.fContrast = 1.f;
-        FogNoiseDesc.fStrength = 1.f;
-        FogNoiseDesc.isEnable = true;
-        FogNoiseDesc.vScale = _float2(1.f, 1.f);
-        FogNoiseDesc.vSpeed = _float2(1.f, 1.f);
-
-        m_FogConfig.Noise = FogNoiseDesc;
-        */
 
 #pragma endregion
 
@@ -344,61 +216,11 @@ HRESULT CHeinMach_Trigger::Ready_TriggerType(void* pArg)
     {
 #pragma region FOG ( 동굴 정방향 중간 -> 동굴 정방향 입구까지 )
 
-        m_FogConfig = m_pGameInstance->Get_FogConfig();
-
-        m_FogConfig.vColor = _float4(0.031f, 0.137f, 0.200f, 1.0f);
-        /*
-        m_FogConfig = {};
-
-        m_FogConfig.eType = FOG_CONFIG::TYPE::LINEAR;
-        m_FogConfig.fBaseHeight = 1.f;
-        m_FogConfig.fNear = 1.f;         // 선형 일 때
-        m_FogConfig.fFar = 1.f;          // 선형 일 때
-        m_FogConfig.fDensity = 1.f;      // 지수 일 때
-        m_FogConfig.fHeightDensity = 1.f;
-        m_FogConfig.vColor = _float4(1.f, 1.f, 1.f, 1.f);
-
-        FOG_NOISE_DESC FogNoiseDesc = {};
-
-        FogNoiseDesc.fContrast = 1.f;
-        FogNoiseDesc.fStrength = 1.f;
-        FogNoiseDesc.isEnable = true;
-        FogNoiseDesc.vScale = _float2(1.f, 1.f);
-        FogNoiseDesc.vSpeed = _float2(1.f, 1.f);
-
-        m_FogConfig.Noise = FogNoiseDesc;
-        */
-
 #pragma endregion
     }
     else if (m_strTriggerKey == "CaveExit_Rev")
     {
 #pragma region FOG ( 동굴 정방향 출구 -> 동굴 정방향 중간까지 )
-
-        m_FogConfig = m_pGameInstance->Get_FogConfig();
-
-        m_FogConfig.vColor = _float4(0.031f, 0.137f, 0.200f, 1.0f);
-        /*
-        m_FogConfig = {};
-
-        m_FogConfig.eType = FOG_CONFIG::TYPE::LINEAR;
-        m_FogConfig.fBaseHeight = 1.f;
-        m_FogConfig.fNear = 1.f;         // 선형 일 때
-        m_FogConfig.fFar = 1.f;          // 선형 일 때
-        m_FogConfig.fDensity = 1.f;      // 지수 일 때
-        m_FogConfig.fHeightDensity = 1.f;
-        m_FogConfig.vColor = _float4(1.f, 1.f, 1.f, 1.f);
-
-        FOG_NOISE_DESC FogNoiseDesc = {};
-
-        FogNoiseDesc.fContrast = 1.f;
-        FogNoiseDesc.fStrength = 1.f;
-        FogNoiseDesc.isEnable = true;
-        FogNoiseDesc.vScale = _float2(1.f, 1.f);
-        FogNoiseDesc.vSpeed = _float2(1.f, 1.f);
-
-        m_FogConfig.Noise = FogNoiseDesc;
-        */
 
 #pragma endregion
 
