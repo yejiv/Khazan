@@ -203,6 +203,9 @@ private:
 	void						BladeNexus_Event(_float fTimeDelta);
 	void						Chest_Event(_float fTimeDelta);
 	void						TombStone_Event(_float fTimeDelta);
+
+private:
+    void                        Lerp_Position_ByInteractEvent(_float4 vTargetPos, _float4 vStartPos, _float fDuration, _float fTimeDelta, _bool& isDone);
 #pragma endregion
 
 #ifdef _DEBUG

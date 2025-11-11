@@ -41,6 +41,7 @@ public:
 public:
 	CLOUD_DESC Get_CloudDesc() { return m_CloudDesc; }
 	void Set_CloudDesc(CLOUD_DESC CloudDesc) { m_CloudDesc = CloudDesc; }
+    void Start_LerpCloud(CLOUD_DESC LerpCloudDesc, _float fDuration);
 
 private:
 	CModel* m_pModelCom = { nullptr };
@@ -48,8 +49,14 @@ private:
 	CTexture* m_pTextureCom[TEX_TYPE_END] = { nullptr };
 
 	CLOUD_DESC m_CloudDesc = {};
+    CLOUD_DESC m_StartCloudDesc = {};
+    CLOUD_DESC m_LerpCloudDesc = {};
 
 	_float m_fTimeAcc = { 0.f };
+
+    _bool m_isTransition = { false };
+    _float m_fTransTimeAcc = { 0.f };
+    _float m_fDuration = { 0.f };
 
 private:
 	HRESULT Ready_Components(void* pArg);

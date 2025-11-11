@@ -34,7 +34,7 @@ HRESULT CBladeNexus::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Interaction_Guide(pArg), E_FAIL);
 
-    CHECK_FAILED(Ready_PlaceName(pArg), E_FAIL);
+    CHECK_FAILED(Ready_DefaultSetting(pArg), E_FAIL);
 
     m_eAnimState = ANIM_STATE::BEFORE_IDLE;
     m_pModelCom->Set_Animation(ANIM_STATE::BEFORE_IDLE);
@@ -75,24 +75,13 @@ HRESULT CBladeNexus::Render()
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
+    // 0 칼손잡이 | 1 손 잘림 보호대 | 2 뭐 존나 작은 눈 | 3 밑에 작은 날카로운 | 4 밑에 큰 날카로운 | 5 눈
     for (_uint i = 0; i < iNumMeshes; ++i)
     {
         Bind_Materials(i);
 
-        m_fEmissiveIntensity = 1.5f;
-
-        /*
-        if (1 != i)
-        {
-            _bool isEmissive = { true };
-            m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_SPECULAR, 0);
-            m_pShaderCom->Bind_RawValue("g_isEmissive", &isEmissive, sizeof(_bool));
-        }
-        */
-
-        m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &m_fEmissiveIntensity, sizeof(_float));
-        m_pShaderCom->Bind_RawValue("g_isEnableEmissive", &m_isEnableEmissive, sizeof(_bool));
-        m_pShaderCom->Bind_RawValue("g_isEnableBloom", &m_isEnableBloom, sizeof(_bool));
+        _bool isBNEye = { 5 == i };
+        m_pShaderCom->Bind_RawValue("g_isBNEye", &isBNEye, sizeof(_bool));
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
@@ -198,7 +187,7 @@ HRESULT CBladeNexus::Ready_Interaction_Guide(void* pArg)
     return S_OK;
 }
 
-HRESULT CBladeNexus::Ready_PlaceName(void* pArg)
+HRESULT CBladeNexus::Ready_DefaultSetting(void* pArg)
 {
     BLADENEXUS_DESC* pDesc = static_cast<BLADENEXUS_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
@@ -206,18 +195,35 @@ HRESULT CBladeNexus::Ready_PlaceName(void* pArg)
     _int* pBladeNexusID = static_cast<_int*>(pDesc->pOtherDesc);
     CHECK_NULLPTR(pBladeNexusID, E_FAIL);
 
-    m_eBladeNexus_ID = static_cast<BLADENEXUS_ID>(*pBladeNexusID);
+    m_iBladeNexus_ID = *pBladeNexusID;
 
-    switch (m_eBladeNexus_ID)
+    switch (m_iBladeNexus_ID)
     {
-    case HEINMACH_ENTER:
-        memcpy(m_szPlaceName, TEXT("초입"), sizeof(m_szPlaceName));
+    case static_cast<_int>(BLADENEXUS_ID::HEINMACH_ENTER):
+        memcpy(m_szPlaceName, TEXT("눈보라 협곡"), sizeof(m_szPlaceName));
         break;
-    case HEINMACH_CAVE:
-        memcpy(m_szPlaceName, TEXT("동굴"), sizeof(m_szPlaceName));
+    case static_cast<_int>(BLADENEXUS_ID::HEINMACH_CAVE):
+        memcpy(m_szPlaceName, TEXT("냉기 서린 동굴"), sizeof(m_szPlaceName));
         break;
-    case HEINMACH_YETUGA:
-        memcpy(m_szPlaceName, TEXT("예투가 전"), sizeof(m_szPlaceName));
+    case static_cast<_int>(BLADENEXUS_ID::HEINMACH_CLIFF):
+        memcpy(m_szPlaceName, TEXT("설인의 대지"), sizeof(m_szPlaceName));
+        break;
+    case static_cast<_int>(BLADENEXUS_ID::HEINMACH_YETUGA):
+    {
+        memcpy(m_szPlaceName, TEXT("물음표"), sizeof(m_szPlaceName));
+
+        // 예투가 죽었다는 이벤트 받으면 위치 옮길 예정 ( 아래에서 뿅 )
+
+        break;
+    }
+    case static_cast<_int>(BLADENEXUS_ID::EMBARS_UNDER):
+        memcpy(m_szPlaceName, TEXT("잊혀진 사원의 지하"), sizeof(m_szPlaceName));
+        break;
+    case static_cast<_int>(BLADENEXUS_ID::EMBARS_DEEP):
+        memcpy(m_szPlaceName, TEXT("잊혀진 사원의 깊은 곳"), sizeof(m_szPlaceName));
+        break;
+    case static_cast<_int>(BLADENEXUS_ID::EMBARS_CORE):
+        memcpy(m_szPlaceName, TEXT("잊혀진 사원의 심장"), sizeof(m_szPlaceName));
         break;
     }
 
@@ -243,7 +249,7 @@ HRESULT CBladeNexus::Bind_Materials(_uint iMeshIndex)
         isSpecular = true;
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_MetalicTexture", iMeshIndex, aiTextureType_METALNESS, 0)))
         isMetalic = true;
-    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_RoughnessTexture", iMeshIndex, aiTextureType_DIFFUSE_ROUGHNESS, 0)))
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_RoughnessTexture", iMeshIndex, aiTextureType_SHININESS, 0)))
         isRoughness = true;
 
     m_pShaderCom->Bind_RawValue("g_isDiffuse", &isDiffuse, sizeof(_bool));
@@ -303,6 +309,8 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
             m_eAnimState = ANIM_STATE::BEFORE_START;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
+
+            m_isUnLock = true;
 
             EventInteractType InteractType = {};
 
@@ -395,7 +403,7 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
 
         m_Event.None();
 
-        CClientInstance::GetInstance()->Unlock_BladeNexus(ENUM_CLASS(m_eBladeNexus_ID));
+        CClientInstance::GetInstance()->Unlock_BladeNexus(static_cast<_uint>(m_iBladeNexus_ID));
     }
     // 귀검 상호 작용 종료 후 ( 첫 해금 O )
     if (ANIM_STATE::BEFORE_END == m_eAnimState)
