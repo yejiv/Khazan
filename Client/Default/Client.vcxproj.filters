@@ -721,6 +721,24 @@
     <Filter Include="02.GameObject\Projectile\Imp_Range">
       <UniqueIdentifier>{7eb4d9c5-fc1f-45b9-bb06-e9804903beb7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="92.AI\Controller\Imp_Melee">
+      <UniqueIdentifier>{dc0e1369-c3bb-401a-aed5-cdd2dbfcd5df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee">
+      <UniqueIdentifier>{3a42513d-9c49-4444-8c71-512b9902fbcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\StateMachine\Imp_Melee">
+      <UniqueIdentifier>{e59f7e2f-39fe-4420-91ef-de34dfa957db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Imp_Melee">
+      <UniqueIdentifier>{61d05502-fd8c-49b7-8c63-d5e7e3f841e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Imp_Melee\Body">
+      <UniqueIdentifier>{eee25bb8-385c-4040-adbc-2d574f096e4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Imp_Melee\Weapon">
+      <UniqueIdentifier>{ea415365-d3fc-4073-b06a-e38eb521563b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1388,6 +1406,21 @@
       <Filter>02.GameObject\Creature\Monster\Imp_Range\Weapon</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Projectile_Imp_MagicBall.h" />
+    <ClInclude Include="..\Public\AI_Controller_Imp_Melee.h">
+      <Filter>92.AI\Controller\Imp_Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FSM_Imp_Melee.h">
+      <Filter>92.AI\StateMachine\Imp_Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Imp_Melee.h">
+      <Filter>02.GameObject\Creature\Monster\Imp_Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Body_Imp_Melee.h">
+      <Filter>02.GameObject\Creature\Monster\Imp_Melee\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Imp_Sword.h">
+      <Filter>02.GameObject\Creature\Monster\Imp_Melee\Weapon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2018,7 +2051,7 @@
     </ClCompile>
     <ClCompile Include="..\private\Khazan_Spear_Anim_Interaction.cpp">
       <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Interaction</Filter>
-  </ClCompile>
+    </ClCompile>
     <ClCompile Include="..\private\UI_BladeNexus_Map.cpp">
       <Filter>02.GameObject\UI\BladeNexus_Map</Filter>
     </ClCompile>
@@ -2035,6 +2068,21 @@
       <Filter>02.GameObject\Creature\Monster\Imp_Range\Weapon</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Projectile_Imp_MagicBall.cpp" />
+    <ClCompile Include="..\Private\AI_Controller_Imp_Melee.cpp">
+      <Filter>92.AI\Controller\Imp_Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FSM_Imp_Melee.cpp">
+      <Filter>92.AI\StateMachine\Imp_Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Imp_Melee.cpp">
+      <Filter>02.GameObject\Creature\Monster\Imp_Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Body_Imp_Melee.cpp">
+      <Filter>02.GameObject\Creature\Monster\Imp_Melee\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Imp_Sword.cpp">
+      <Filter>02.GameObject\Creature\Monster\Imp_Melee\Weapon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
