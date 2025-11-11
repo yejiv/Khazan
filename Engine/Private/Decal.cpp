@@ -111,7 +111,7 @@ HRESULT CDecal::Bind_ShaderResources(CShader* pShader, class CTexture** pTexture
 	}
 
 	// 버퍼 렌더 및 텍스처 바인딩, 셰이더 비긴
-	pShader->Begin(1);
+	pShader->Begin(0);
 
 	pVIBuffer->Bind_Resources();
 	pVIBuffer->Render();
