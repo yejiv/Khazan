@@ -196,6 +196,8 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
     // Specular
     vector vSpecularDesc = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
     
+    // float fShininess = lerp(10.f, 256.f, vSpecularDesc.g);
+    
     vector vReflect = reflect(normalize(g_vLightDir), vNormal);
     vector vLook = vWorldPos - g_vCamPosition;
     float fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), 1.f);
