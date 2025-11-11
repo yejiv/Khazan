@@ -262,7 +262,7 @@ _bool CEditor_Model::Play_Animation(_float fTimeDelta)
     if (m_isSetAnimNextPlay)
     {
         _uint iIndex = static_cast<_uint>(m_Model_Data.vecAnimationSets[m_iCurSelectSetAnimIndex].vecAnimIndices[m_iCurSetAnimIndex]);
-        Set_Animation(iIndex, m_Model_Data.vecAnimation[m_Model_Data.vecAnimationSets[m_iCurSelectSetAnimIndex].vecAnimIndices[m_iCurSelectSetAnimIndex]].animSetup.isLoop);
+        Set_Animation(iIndex, m_Model_Data.vecAnimation[m_Model_Data.vecAnimationSets[m_iCurSelectSetAnimIndex].vecAnimIndices[m_iCurSetAnimIndex]].animSetup.isLoop);
         m_isSetAnimNextPlay = false;
     }
 
@@ -509,6 +509,7 @@ _bool CEditor_Model::Play_Animation(_float fTimeDelta)
             m_isSetAnimPlaying = false;
             m_isSetAnimFinished = true;
             m_isSetAnimNextPlay = false;
+            m_iCurSetAnimIndex = 0;
         }
     }
 
@@ -547,12 +548,13 @@ void CEditor_Model::Set_SetAnimation(const string& strKey)
 
     if (iter != m_Model_Data.vecAnimationSets.end())
     {
+        //m_iCurSelectSetAnimCurIndex = 0;
         m_isSetAnimPlaying = true;
         m_isSetAnimNextPlay = true;
         m_isSetAnimFinished = false;
         m_iCurSelectSetAnimIndex = static_cast<_uint>(distance(m_Model_Data.vecAnimationSets.begin(), iter));
         m_iCurSetAnimMaxIndex = static_cast<_uint>(iter->vecAnimIndices.size());
-        m_isLoop = m_Model_Data.vecAnimation[m_Model_Data.vecAnimationSets[m_iCurSelectSetAnimIndex].vecAnimIndices[m_iCurSelectSetAnimIndex]].animSetup.isLoop;
+        m_isLoop = m_Model_Data.vecAnimation[m_Model_Data.vecAnimationSets[m_iCurSelectSetAnimIndex].vecAnimIndices[m_iCurSetAnimIndex]].animSetup.isLoop;
         OutputDebugStringA(("[Animation Set Selected] " + strKey +
             "\n - Set Index: " + to_string(m_iCurSelectSetAnimIndex) +
             "\n - Total Animations: " + to_string(m_iCurSetAnimMaxIndex) + "\n").c_str());

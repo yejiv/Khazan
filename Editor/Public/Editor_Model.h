@@ -124,7 +124,8 @@ private:
 	_bool							m_isSetAnimFinished = { false };
 	_uint							m_iCurSetAnimIndex = { 0 };// 애님세트가 진행중인데 몇번째인지? 
 	_uint							m_iCurSetAnimMaxIndex = { 0 }; //애님 세트에서 총 몇개의 애님이 있는지
-	_uint							m_iCurSelectSetAnimIndex = { 0 }; // 키값에 해당하는 애니메이션 세트
+    _uint							m_iCurSelectSetAnimIndex = { 0 }; // 키값에 해당하는 애니메이션 세트
+    //_uint							m_iCurSelectSetAnimCurIndex = { 0 }; // 키값에 해당하는 애니메이션 세트의 현재 인덱스
 	//string							m_strSetAnimKey = "";
 
 	class CTransform* m_pOwnerTransform = nullptr;
