@@ -703,6 +703,9 @@
     <Filter Include="92.AI\State\Imp_Range\Idle">
       <UniqueIdentifier>{df70fe0b-2636-48a6-a6ef-4cf72232a82b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="94.ClientInstance\Interact">
+      <UniqueIdentifier>{e19c8df3-6999-4b78-a14e-67c32016e767}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1348,6 +1351,9 @@
       <Filter>92.AI\State\Imp_Range\Move</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Imp_Range.h" />
+    <ClInclude Include="..\Public\Interact_Manager.h">
+      <Filter>94.ClientInstance\Interact</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1973,6 +1979,9 @@
       <Filter>92.AI\State\Imp_Range\Move</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Imp_Range.cpp" />
+    <ClCompile Include="..\Private\Interact_Manager.cpp">
+      <Filter>94.ClientInstance\Interact</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">

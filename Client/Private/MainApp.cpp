@@ -64,8 +64,8 @@ void CMainApp::Update(_float fTimeDelta)
 	{
 		//m_pClientInstance->ActiveCamera_Shaking(2.f, 1.f);
 		//m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.3f, 0.003f, 3.f);
-		m_pGameInstance->Fix_HitStop(TIME_CHANNEL::ENEMY);
-		FOVModifier tMod{};
+		//m_pGameInstance->Fix_HitStop(TIME_CHANNEL::ENEMY);
+		//FOVModifier tMod{};
 
 		// PRIORITY
 		//tMod.strID = TEXT("Hit");
@@ -93,11 +93,13 @@ void CMainApp::Update(_float fTimeDelta)
 		//tMod.Ease = EaseOutQuad;
 
 		//m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
+
+        m_pClientInstance->Find_MapBladeNexus(KHAZAN_MAP::HEINMACH);
 	}
 	if (m_pGameInstance->Key_Down(DIK_RCONTROL))
 	{
 		//m_pClientInstance->ActiveCamera_KillFov(L"Hit");
-		m_pGameInstance->UnFix_HitStop(TIME_CHANNEL::ENEMY);
+		//m_pGameInstance->UnFix_HitStop(TIME_CHANNEL::ENEMY);
 	}
 
 	TIME_DELTA      tTimeDelta = {};

@@ -394,6 +394,8 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
         m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 
         m_Event.None();
+
+        CClientInstance::GetInstance()->Unlock_BladeNexus(ENUM_CLASS(m_eBladeNexus_ID));
     }
     // 귀검 상호 작용 종료 후 ( 첫 해금 O )
     if (ANIM_STATE::BEFORE_END == m_eAnimState)
