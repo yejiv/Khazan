@@ -31,6 +31,15 @@ HRESULT CLevel_Effect::Initialize()
 	strcpy_s(LoadFileName, sizeof(LoadFileName), "../../Client/Bin/Data/Effect/Baked/");
 	Init_GUI();
 
+    LIGHT_DESC LightDesc = {};
+    LightDesc.eType = LIGHT_DESC::DIRECTIONAL;
+    LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
+    LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
+    LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("default"), ENUM_CLASS(LEVEL::EFFECT), LightDesc)))
+        return E_FAIL;
+
 	return S_OK;
 }
 
@@ -165,7 +174,7 @@ void CLevel_Effect::Create_Element()
 			ImGui::Checkbox("Dissolve", &m_bIsDissolve);
 			if (m_bIsDissolve)
 			{
-				const char* DissolveTex[] = { "DissolveTexture0", "DissolveTexture1"};
+				const char* DissolveTex[] = { "DissolveTexture0", "DissolveTexture1", "DissolveTexture2" };
 				ImGui::Combo("Dissolve Texture", reinterpret_cast<int*>(&m_iDissolveTextureIdx), DissolveTex, IM_ARRAYSIZE(DissolveTex));
 				ImGui::InputFloat("Dissolve Edge Width : ", reinterpret_cast<_float*>(&m_fDissolveEdgeWidth));
 				ImGui::ColorEdit4("Edge Color", (float*)&m_fDissolveEdgeColor);
@@ -367,7 +376,7 @@ void CLevel_Effect::GetParticleColor()
 	}
 	else if (m_EffectType == 1)
 	{
-		const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19",  "test20",  "shock", "smoke", "cloud" };
+		const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19",  "test20",  "shock", "smoke", "cloud", "blood" };
 
 		ImGui::Combo("Mesh Textures", reinterpret_cast<int*>(&m_iTextureIdx), textures, IM_ARRAYSIZE(textures));
 
@@ -383,7 +392,7 @@ void CLevel_Effect::GetParticleColor()
 									"IN_Spiral_02", "Swirl_Spine_X", "SwirlHelix",
 									"FastAtk_1", "FastAtk_2L", "FastAtk_2R", "FastAtk_3L", "FastAtk_3R", "Grapple_Atk_2", "CounterATK", "DodgeATK", "FastATK1","FastATK2_L", "FastATK2_R",  "FastATK3_L" ,  "FastATK3_R", "FastATK4",
 									"StrongAtk0", "StrongAtk1", "FastAtk03_Slash", "GrappleAtk02_Slash", "StrongAtk03_Slash"
-									, "Cylinder_003", "Cylinder_003_02", "Cylinder_003_Noise" , "Spine", "Circle_002" ,"Sphere" };
+									, "Cylinder_003", "Cylinder_003_02", "Cylinder_003_Noise" , "Spine", "Circle_002" ,"Sphere","CircleTwist", "CircleTwist2", "Plane" , "circle001", "circle002" };
 		ImGui::Combo("Mesh Shape", reinterpret_cast<int*>(&m_iMeshTypeIdx), Meshes, IM_ARRAYSIZE(Meshes));
 	}
 

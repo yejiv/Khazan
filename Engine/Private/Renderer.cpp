@@ -40,28 +40,28 @@ HRESULT CRenderer::Initialize()
     XMStoreFloat4x4(&m_ProjMatrix, XMMatrixOrthographicLH(m_fViewportWidth, m_fViewportHeight, 0.f, 1.f));
 
 #ifdef _DEBUG
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Diffuse"), 150.0f, 150.0f, 300.f, 300.f)))
-        return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Normal"), 150.0f, 450.0f, 300.f, 300.f)))
-        return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Specular"), 150.0f, 750.0f, 300.f, 300.f)))
-        return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Shade"), 450.0f, 150.0f, 300.f, 300.f)))
-        return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_SSAO"), 450.0f, 450.0f, 300.f, 300.f)))
-        return E_FAIL;
+    //if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Diffuse"), 150.0f, 150.0f, 300.f, 300.f)))
+    //    return E_FAIL;
+    //if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Normal"), 150.0f, 450.0f, 300.f, 300.f)))
+    //    return E_FAIL;
+    //if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Specular"), 150.0f, 750.0f, 300.f, 300.f)))
+    //    return E_FAIL;
+    //if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Shade"), 450.0f, 150.0f, 300.f, 300.f)))
+    //    return E_FAIL;
+    //if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_SSAO"), 450.0f, 450.0f, 300.f, 300.f)))
+    //    return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Emissive"), 450.0f, 750.0f, 300.f, 300.f)))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_PostScene"), 750.0f, 150.0f, 300.f, 300.f)))
-        return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Outline"), 750.0f, 450.0f, 300.f, 300.f)))
-        return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Fog"), 750.0f, 750.0f, 300.f, 300.f)))
-        return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Combined"), 1050.0f, 150.0f, 300.f, 300.f)))
-        return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_CSM_Debug(m_fViewportWidth - 150.0f, 150.0f, 300.f, 300.f)))
-        return E_FAIL;
+    //if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_PostScene"), 750.0f, 150.0f, 300.f, 300.f)))
+    //    return E_FAIL;
+    //if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Outline"), 750.0f, 450.0f, 300.f, 300.f)))
+    //    return E_FAIL;
+    //if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Fog"), 750.0f, 750.0f, 300.f, 300.f)))
+    //    return E_FAIL;
+    //if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Combined"), 1050.0f, 150.0f, 300.f, 300.f)))
+    //    return E_FAIL;
+    //if (FAILED(m_pGameInstance->Ready_CSM_Debug(m_fViewportWidth - 150.0f, 150.0f, 300.f, 300.f)))
+    //    return E_FAIL;
 #endif
 
     return S_OK;
@@ -83,33 +83,33 @@ HRESULT CRenderer::Draw()
 {
     if (FAILED(Render_Priority()))
         return E_FAIL;
-
+    
     if (isEnableShadow())
         if (FAILED(Render_Shadow()))
             return E_FAIL;
-
+    
     if (FAILED(Render_Static()))
         return E_FAIL;
-
+    
     if (FAILED(Render_Decal()))
         return E_FAIL;
-
+    
     if (FAILED(Render_Dynamic()))
         return E_FAIL;
-
+    
     if (FAILED(Render_Outline()))
         return E_FAIL;
-
+    
     if (isEnableSSAO())
         if (FAILED(Render_SSAO()))
             return E_FAIL;
-
+    
     if (FAILED(Render_Lights()))
         return E_FAIL;
-
+    
     if (FAILED(Render_PostScene()))
         return E_FAIL;
-
+    
     if (FAILED(Render_NonLight()))
         return E_FAIL;
 
@@ -118,13 +118,13 @@ HRESULT CRenderer::Draw()
 
     if (FAILED(Render_Fog()))
         return E_FAIL;
-
+    
     if (FAILED(Render_Blur()))
         return E_FAIL;
-
+    
     if (FAILED(Render_Combined()))
         return E_FAIL;
-
+    
     if (FAILED(Render_Distortion()))
         return E_FAIL;
 

@@ -100,6 +100,12 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
     XMStoreFloat4x4(&m_pWeaponR_MatrixW, XMLoadFloat4x4(m_pWeaponR_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
 
     m_pTrail->Update(fTimeDelta);
+
+    //TEST
+    //if (m_pGameInstance->Key_Down(DIK_I))
+    //    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), XMVectorSet(1.f, 1.f, 1.f, 1.f));
+    //if (m_pGameInstance->Key_Down(DIK_O))
+    //    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust"), XMVectorSet(1.f, 1.f, 1.f, 1.f));
 }
 
 void CBody_Khazan_Spear::Late_Update(_float fTimeDelta)
@@ -355,8 +361,6 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
 
     m_pTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDsc));
 
-
-
     return S_OK;
 }
 
@@ -546,9 +550,9 @@ void CBody_Khazan_Spear::FX_StrongAtk03_Trail()
 
 void CBody_Khazan_Spear::FX_FastAtk01_Trail()
 {
-    //_matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-    //_matrix hand = XMLoadFloat4x4(&m_pWeaponR_MatrixW);
-    //m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
+    _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+    _matrix hand = XMLoadFloat4x4(&m_pWeaponR_MatrixW);
+    m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
 
     //테스트용............
     _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
@@ -580,9 +584,9 @@ void CBody_Khazan_Spear::FX_FastAtk01_Trail()
 
 void CBody_Khazan_Spear::FX_FastAtk02_Trail()
 {
-    //_matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-    //_matrix hand = XMLoadFloat4x4(&m_pWeaponR_MatrixW);
-    //m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
+    _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+    _matrix hand = XMLoadFloat4x4(&m_pWeaponR_MatrixW);
+    m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
 
     //테스트용............
     _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
@@ -609,14 +613,14 @@ void CBody_Khazan_Spear::FX_FastAtk02_Trail()
 
         Q = XMQuaternionRotationMatrix(RotationMatrix);
     }
-    m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), EffectID_SpearWind, Q, W.r[3]);
+   m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), EffectID_SpearWind, Q, W.r[3]);
 }
 
 void CBody_Khazan_Spear::FX_FastAtk03_Trail()
 {
-    //matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-    //matrix hand = XMLoadFloat4x4(&m_pWeaponR_MatrixW);
-    //_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
+    _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+    _matrix hand = XMLoadFloat4x4(&m_pWeaponR_MatrixW);
+    m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
 
     //테스트용............
     _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
@@ -643,7 +647,7 @@ void CBody_Khazan_Spear::FX_FastAtk03_Trail()
 
         Q = XMQuaternionRotationMatrix(RotationMatrix);
     }
-    m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), EffectID_SpearWind, Q, W.r[3]);
+   m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), EffectID_SpearWind, Q, W.r[3]);
 }
 
 void CBody_Khazan_Spear::FX_FastAtk_SpawnWind()
@@ -672,7 +676,7 @@ void CBody_Khazan_Spear::FX_FastAtk_SpawnWind()
 
         Q = XMQuaternionRotationMatrix(RotationMatrix);
     }
-    EffectID_SpearWind = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), Q, W.r[3]);
+    EffectID_SpearWind = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), Q, W.r[3]); 
 }
 
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust()
@@ -686,8 +690,7 @@ void CBody_Khazan_Spear::FX_StrongAtk_Charge_Trail()
     _matrix hand = XMLoadFloat4x4(&m_pWeaponR_MatrixW);
     m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
 }
-
-
+ 
 
 inline _bool CBody_Khazan_Spear::Has_States()
 {

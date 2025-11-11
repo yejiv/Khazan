@@ -40,6 +40,7 @@ cbuffer CB_PARTICLE : register(b0)
     
     float g_TurblunceSpeed;
     float g_TurblunceSampleSize;
+    float2 padding;
 };
 
 StructuredBuffer<PARTICLE_PARAMS> g_InputData : register(t0);
@@ -187,8 +188,8 @@ void CS_UPDATE_GRAVITY(uint3 DTid : SV_DispatchThreadID)
         SpeedData.fGravity = 0.f;
         return;
     }
-    SpeedData.fGravity += g_fTimeDelta * 2.2f;
-    Particle.vTranslation.y -= 1.5f * SpeedData.fGravity * g_fTimeDelta;
+    SpeedData.fGravity += g_fTimeDelta * 2.6f;
+    Particle.vTranslation.y -= 1.7f * SpeedData.fGravity * g_fTimeDelta;
     g_OutputData[iIndex] = Particle;
     g_SpeedData[iIndex].fGravity = SpeedData.fGravity;
 }
@@ -210,7 +211,10 @@ void CS_RESET(uint3 DTid : SV_DispatchThreadID)
     Particle.vLifeTime.x = 0.f;
     SpeedData.fGravity = 0.f;
     SpeedData.fSpeed = float4(0.f, 0.f, 0.f, 0.f);
-   
+    Particle.vRight = float4(g_InputData[iIndex].fSize, 0.f, 0.f, 0.f);
+    Particle.vUp = float4(0.f, g_InputData[iIndex].fSize, 0.f, 0.f);
+    Particle.vLook = float4(0.f, 0.f, g_InputData[iIndex].fSize, 0.f);
+    
     g_OutputData[iIndex] = Particle;
     g_SpeedData[iIndex] = SpeedData; 
 }

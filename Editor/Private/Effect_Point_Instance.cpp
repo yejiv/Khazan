@@ -39,7 +39,7 @@ void CEffect_Point_Instance::Update(_float fTimeDelta)
 
         if(it->fCurTime > it->fDurTime && it->EventType != 0)
         {
-            if (m_sData.bIsLoop == true && m_TimeTracks.size() == 1)
+            if (m_sData.bIsLoop && m_TimeTracks.size() == 1)
             {
                 ++it;
                 continue;
@@ -59,7 +59,7 @@ void CEffect_Point_Instance::Update(_float fTimeDelta)
     if (m_sData.bIsTurbulence)
         m_pVIBufferCom->UpdateTurbulence(fTimeDelta, m_fAccTime);
 
-    if (m_fSpriteTime  > m_sData.fSpriteSpeed * 20.f)
+    if (m_fSpriteTime * 100.f > m_sData.fSpriteSpeed )
     {
         ++m_iUVIdx;
         m_fSpriteTime = 0.f;
@@ -85,7 +85,6 @@ HRESULT CEffect_Point_Instance::Render()
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
-    //m_pShaderCom->Begin((_uint)m_Data.TextureBindType);
     m_pShaderCom->Begin(0);
 
     m_pVIBufferCom->Bind_Resources();
@@ -151,7 +150,7 @@ void CEffect_Point_Instance::Edit_Element()
     if (bIsDissolve)
     {
         ImGui::Indent();
-        const char* DissolveTex[] = { "Mesh0", "Mesh1" };
+        const char* DissolveTex[] = { "DissolveTexture0", "DissolveTexture1", "DissolveTexture2" };
         ImGui::Combo("Dissolve Texture", reinterpret_cast<int*>(&m_sEditingData.sDissolveData.iDissolveTextureIdx), DissolveTex, IM_ARRAYSIZE(DissolveTex));
         ImGui::InputFloat("Dissolve Edge Width : ", reinterpret_cast<_float*>(&m_sEditingData.sDissolveData.fDissolveEdgeWidth));
         ImGui::ColorEdit4("Edge Color", (float*)&m_sEditingData.sDissolveData.fDissolveEdgeColor);
@@ -168,6 +167,10 @@ void CEffect_Point_Instance::Edit_Element()
         ImGui::InputFloat("Turbulence Sample Size: ", &m_sEditingData.fTurbulenceSampleSize);
         ImGui::Unindent();
     }
+
+    ImGui::InputFloat("Sprite Speed : ", reinterpret_cast<_float*>(&m_sEditingData.fSpriteSpeed));
+    ImGui::InputInt("Col : ", reinterpret_cast<int*>(&m_sEditingData.iCol));
+    ImGui::InputInt("Row : ", reinterpret_cast<int*>(&m_sEditingData.iRow));
 
     m_sEditingData.IsCircle = isCircle;
     m_sEditingData.bIsLoop = loop;
@@ -194,7 +197,9 @@ void CEffect_Point_Instance::Reset()
     m_fAccTime = 0.f;
     m_fSpriteTime = 0.f;
     m_iUVIdx = 0;
+    m_bRunning = false;
 }
+const char* MaskTexture[] = { "texture0", "texture1", "texture2",  "texture3",  "texture4" ,  "texture5" };
 
 void CEffect_Point_Instance::SetSpreadData(void* pArg)
 {
@@ -323,6 +328,9 @@ HRESULT CEffect_Point_Instance::Bind_ShaderResources()
             return E_FAIL;
     }
    
+    _bool isBillboard = (m_sData.fSpriteSpeed) > 0 ? true : false;
+    if (FAILED(m_pShaderCom->Bind_Bool("g_IsBillboard", &isBillboard)))
+        return E_FAIL;
 
     if (FAILED(m_pMaskTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_MaskTexture", m_sData.iMaskTextureIdx)))
         return E_FAIL;
