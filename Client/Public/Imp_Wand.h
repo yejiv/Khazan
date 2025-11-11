@@ -24,7 +24,7 @@ public:
 public:
 	_float4*				Get_BonePointEX(const _char* pBoneName);
 	_matrix					Get_BoneMatrix(const _char* pBoneName);
-
+    _float4x4               Get_CombinedMatrix() const { return m_CombinedWorldMatrix; }
 	void					Set_OnAttackCollision(_bool isToggle) { m_isOnAttackCollision = isToggle; }
 
 private:

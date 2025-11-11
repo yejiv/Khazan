@@ -119,7 +119,7 @@ void CProjectile_Imp_MagicBall::Reset()
     m_pTransformCom->Set_State(STATE::UP, vUp);
     m_pTransformCom->Set_State(STATE::LOOK, vDir);
 
-    m_pTransformCom->Scale(_float3(1.3f, 1.3f, 1.3f));
+    m_pTransformCom->Scale(_float3(0.5f, 0.5f, 0.5f));
 
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&m_vSpawnPoint), 1.f));
 }

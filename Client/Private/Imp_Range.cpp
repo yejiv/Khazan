@@ -168,14 +168,44 @@ HRESULT CImp_Range::Ready_Projectiles()
 
 HRESULT CImp_Range::Ready_AnimEvent()
 {
+    CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+    if (nullptr == pModel)
+        return E_FAIL;
+
+#pragma region MagicBall
+
+    pModel->Register_Event("CastSpell1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        Cast_MagicBall();
+        });
+    pModel->Register_Event("CastSpell1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+      
+        });
+    pModel->Register_Event("CastSpell1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+      
+        });
+
+    pModel->Register_Event("ShotSpell1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        Shoot_MagicBall();
+        });
+
+
+#pragma endregion
+
+
     return S_OK;
 }
 
 void CImp_Range::Make_MagicBall()
 {
-    _float4 vTempSpawnPoint = *m_pWeapon->Get_BonePointEX("Weapon_L");
-    _float3 vSpawnPoint = _float3(vTempSpawnPoint.x, vTempSpawnPoint.y, vTempSpawnPoint.z);
-    CGameObject* pGameObject = m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Stone"));
+    _vector vTempSpawnPosition = {};
+    CTransform* pTransform = static_cast<CTransform*>(Get_Component(TEXT("Part_Weapon"), TEXT("Com_Transform")));
+    vTempSpawnPosition = pTransform->Get_State(STATE::POSITION) + XMVectorSet(0.f,3.f,0.f,0.f);
+
+    _float3 vSpawnPoint{};
+
+    XMStoreFloat3(&vSpawnPoint,vTempSpawnPosition);
+
+    CGameObject* pGameObject = m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Imp_MagicBall"));
     if (nullptr == pGameObject)
         return;
 
@@ -203,12 +233,73 @@ void CImp_Range::Make_MagicBall()
 
 void CImp_Range::Cast_MagicBall()
 {
+   
+    _float4x4 TempMatrix = m_pWeapon->Get_CombinedMatrix();
+    _matrix matWorld = XMLoadFloat4x4(&TempMatrix);
+    _vector vTempSpawnPosition = matWorld.r[3] + XMVectorSet(0.f, 3.f, 0.f, 0.f);
 
+    _float3 vSpawnPoint{};
+
+    XMStoreFloat3(&vSpawnPoint, vTempSpawnPosition);
+
+    CGameObject* pGameObject = m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Imp_MagicBall"));
+    if (nullptr == pGameObject)
+        return;
+
+    m_pMagicBall = static_cast<CProjectile_Imp_MagicBall*>(pGameObject);
+    if (m_pMagicBall == nullptr)
+        return;
+    Safe_AddRef(m_pMagicBall);
+
+    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
+    _float3 vNormalize{};
+    XMStoreFloat3(&vNormalize, vTempVec);
+    m_pMagicBall->Set_SpawnDir(vNormalize);
+    m_pMagicBall->Set_IsActive(false);
+    m_pMagicBall->Set_Visible(true);
+    m_pMagicBall->Set_SpanwPoint(vSpawnPoint);
+    m_pMagicBall->Reset();
+
+    m_pGameInstance->Push_PoolObject_ToLayer(
+        ENUM_CLASS(LEVEL::HEINMACH),
+        TEXT("Layer_Imp_MagicBall"),
+        m_pMagicBall
+    );
 }
 
 void CImp_Range::Shoot_MagicBall()
 {
+    if (m_pMagicBall == nullptr)
+        return;
 
+    CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+    _vector vTargetLoc = pTargetTransform->Get_State(STATE::POSITION);
+
+    _float4x4 TempMatrix = m_pWeapon->Get_CombinedMatrix();
+    _matrix matWorld = XMLoadFloat4x4(&TempMatrix);
+    _vector vTempSpawnPosition = matWorld.r[3] + XMVectorSet(0.f, 3.f, 0.f, 0.f);
+
+    _float3 vSpawnPoint{};
+
+    XMStoreFloat3(&vSpawnPoint, vTempSpawnPosition);
+
+    XMStoreFloat3(&vSpawnPoint, vTempSpawnPosition);
+    _vector vDir = vTargetLoc - XMLoadFloat3(&vSpawnPoint);
+    vDir = XMVector3Normalize(vDir);
+    _float3 vSpawnDir{};
+    XMStoreFloat3(&vSpawnDir, vDir);
+
+    m_pMagicBall->Set_SpanwPoint(vSpawnPoint);
+    m_pMagicBall->Set_SpawnDir(vSpawnDir);
+    m_pMagicBall->Reset();
+    m_pMagicBall->Set_IsActive(true);
+    m_pMagicBall->Fire_Projectile();
+
+    CModel* pModel = static_cast<CModel*>(m_pMagicBall->Get_Component(TEXT("Com_Model")));
+    pModel->Set_Animation(1);
+
+    Safe_Release(m_pMagicBall);
 }
 
 CImp_Range* CImp_Range::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
