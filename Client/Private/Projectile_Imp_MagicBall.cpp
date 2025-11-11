@@ -203,7 +203,7 @@ void CProjectile_Imp_MagicBall::Collision_Stay(COLLISION_DESC* pDesc, _uint iOth
     if (PRJSTATE::LOOP == m_eState)
     {
         COLLISION_LAYER eType = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
-        if (COLLISION_LAYER::PLAYER == eType || COLLISION_LAYER::MAP_STATIC == eType)
+        if (COLLISION_LAYER::PLAYER == eType)
         {
             Enter_State(PRJSTATE::CRASHED);
             m_isCrashed = true;

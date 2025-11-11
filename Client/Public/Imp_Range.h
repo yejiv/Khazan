@@ -37,15 +37,15 @@ private:
 
 private:
     void                            Make_MagicBall();
-    void                            Cast_MagicBall();
-    void                            Shoot_MagicBall();
+    void                            Cast_MagicBall(_uint iIndex);
+    void                            Shoot_MagicBall(_uint iIndex);
                                 
 
 private:
     class CBody_Imp_Range*          m_pBody = { nullptr };
     class CImp_Wand*                m_pWeapon = { nullptr };
 
-    class CProjectile_Imp_MagicBall* m_pMagicBall = { nullptr };
+    vector<class CProjectile_Imp_MagicBall*> m_MagicBalls;
 
 public:
     static CImp_Range*              Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
