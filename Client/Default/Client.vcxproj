@@ -234,8 +234,10 @@
     <ClInclude Include="..\Public\FSM_Imp_Range.h" />
     <ClInclude Include="..\Public\FSM_Yetuga.h" />
     <ClInclude Include="..\Public\Imp_Range.h" />
+    <ClInclude Include="..\Public\Imp_Wand.h" />
     <ClInclude Include="..\Public\Level_Test.h" />
     <ClInclude Include="..\public\Player_Manager.h" />
+    <ClInclude Include="..\Public\Projectile_Imp_MagicBall.h" />
     <ClInclude Include="..\Public\Sequence_HeinMach_Start.h" />
     <ClInclude Include="..\Public\Sequence_HeinMach_Start_Chat.h" />
     <ClInclude Include="..\public\Skill_Condition_Panel.h" />
@@ -448,8 +450,10 @@
     <ClCompile Include="..\Private\FSM_Imp_Range.cpp" />
     <ClCompile Include="..\Private\FSM_Yetuga.cpp" />
     <ClCompile Include="..\Private\Imp_Range.cpp" />
+    <ClCompile Include="..\Private\Imp_Wand.cpp" />
     <ClCompile Include="..\Private\Level_Test.cpp" />
     <ClCompile Include="..\private\Player_Manager.cpp" />
+    <ClCompile Include="..\Private\Projectile_Imp_MagicBall.cpp" />
     <ClCompile Include="..\Private\Sequence_HeinMach_Start.cpp" />
     <ClCompile Include="..\Private\Sequence_HeinMach_Start_Chat.cpp" />
     <ClCompile Include="..\private\Skill_Condition_Panel.cpp" />

@@ -1,7 +1,9 @@
 #include "Imp_Range.h"
 #include "CharacterVirtual.h"
 #include "Body_Imp_Range.h"
+#include "Imp_Wand.h"
 #include "AI_Controller_Imp_Range.h"
+#include "Projectile_Imp_MagicBall.h"
 
 CImp_Range::CImp_Range(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{pDevice,pContext}
@@ -37,6 +39,9 @@ HRESULT CImp_Range::Initialize_Clone(void* pArg)
     if (FAILED(Ready_PartObjects()))
         return E_FAIL;
 
+    if (FAILED(Ready_Projectiles()))
+        return E_FAIL;
+
     if (FAILED(Ready_AnimEvent()))
         return E_FAIL;
 
@@ -55,7 +60,6 @@ void CImp_Range::Priority_Update(_float fTimeDelta)
 void CImp_Range::Update(_float fTimeDelta)
 {
     m_pController->Update(this, fTimeDelta);
-
 
     __super::Update(fTimeDelta);
 }
@@ -127,12 +131,84 @@ HRESULT CImp_Range::Ready_PartObjects()
     m_pBody = dynamic_cast<CBody_Imp_Range*>(pBody);
     Safe_AddRef(m_pBody);
 
+
+    CImp_Wand::WEAPON_DESC WeaponDesc{};
+    WeaponDesc.pOwner = this;
+    WeaponDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
+    WeaponDesc.pOwnerTransform = m_pTransformCom;
+    WeaponDesc.pSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Weapon_R");
+
+    if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Weapon"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Monster_Imp_Range_Wand"), &WeaponDesc)))
+        return E_FAIL;
+
+    CPartObject* pWeapon = Find_PartObject(TEXT("Part_Weapon"));
+    if (nullptr == pWeapon)
+        return E_FAIL;
+
+    m_pWeapon = dynamic_cast<CImp_Wand*>(pWeapon);
+    if (nullptr == pWeapon)
+        return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CImp_Range::Ready_Projectiles()
+{
+    CProjectile_Imp_MagicBall::PROJECTILE_DESC Desc{};
+    Desc.fDamage = 10.f;
+    Desc.fSpeedPerSec = 30.f;
+    Desc.fLifeTime = 6.f;
+    Desc.fRotationPerSec = 180.f;
+
+    m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Imp_Magic_Ball"),
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Imp_MagicBall"), &Desc, 18);
+
     return S_OK;
 }
 
 HRESULT CImp_Range::Ready_AnimEvent()
 {
     return S_OK;
+}
+
+void CImp_Range::Make_MagicBall()
+{
+    _float4 vTempSpawnPoint = *m_pWeapon->Get_BonePointEX("Weapon_L");
+    _float3 vSpawnPoint = _float3(vTempSpawnPoint.x, vTempSpawnPoint.y, vTempSpawnPoint.z);
+    CGameObject* pGameObject = m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Stone"));
+    if (nullptr == pGameObject)
+        return;
+
+    m_pMagicBall = static_cast<CProjectile_Imp_MagicBall*>(pGameObject);
+    if (m_pMagicBall == nullptr)
+        return;
+    Safe_AddRef(m_pMagicBall);
+
+    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
+    _float3 vNormalize{};
+    XMStoreFloat3(&vNormalize, vTempVec);
+    m_pMagicBall->Set_SpawnDir(vNormalize);
+    m_pMagicBall->Set_IsActive(false);   
+    m_pMagicBall->Set_Visible(true);  
+    m_pMagicBall->Set_SpanwPoint(vSpawnPoint);
+    m_pMagicBall->Reset();
+
+    m_pGameInstance->Push_PoolObject_ToLayer(
+        ENUM_CLASS(LEVEL::HEINMACH),
+        TEXT("Layer_Imp_MagicBall"),
+        m_pMagicBall
+    );
+}
+
+void CImp_Range::Cast_MagicBall()
+{
+
+}
+
+void CImp_Range::Shoot_MagicBall()
+{
+
 }
 
 CImp_Range* CImp_Range::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -160,6 +236,8 @@ CGameObject* CImp_Range::Clone(void* pArg)
 void CImp_Range::Free()
 {
     Safe_Release(m_pBody);
+    Safe_Release(m_pWeapon);
+    Safe_Release(m_pMagicBall);
 
     __super::Free();
 }

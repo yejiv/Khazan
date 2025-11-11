@@ -703,6 +703,9 @@
     <Filter Include="92.AI\State\Imp_Range\Idle">
       <UniqueIdentifier>{df70fe0b-2636-48a6-a6ef-4cf72232a82b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Projectile\Imp_Range">
+      <UniqueIdentifier>{7eb4d9c5-fc1f-45b9-bb06-e9804903beb7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1347,7 +1350,13 @@
     <ClInclude Include="..\Public\AS_Move_Imp_Range.h">
       <Filter>92.AI\State\Imp_Range\Move</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Imp_Range.h" />
+    <ClInclude Include="..\Public\Imp_Range.h">
+      <Filter>02.GameObject\Creature\Monster\Imp_Range</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Imp_Wand.h">
+      <Filter>02.GameObject\Creature\Monster\Imp_Range\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Projectile_Imp_MagicBall.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1972,7 +1981,13 @@
     <ClCompile Include="..\Private\AS_Move_Imp_Range.cpp">
       <Filter>92.AI\State\Imp_Range\Move</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Imp_Range.cpp" />
+    <ClCompile Include="..\Private\Imp_Range.cpp">
+      <Filter>02.GameObject\Creature\Monster\Imp_Range</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Imp_Wand.cpp">
+      <Filter>02.GameObject\Creature\Monster\Imp_Range\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile_Imp_MagicBall.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">

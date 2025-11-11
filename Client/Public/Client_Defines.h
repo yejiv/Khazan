@@ -25,7 +25,7 @@ namespace Client
 	
 	enum class CAMERATYPE { FREE, SPRING, PLAYER, END };
 
-	enum class TEAM { GOBLIN, YETI, BEAST ,END };
+	enum class TEAM { NONE ,GOBLIN, YETI, BEAST ,END };
 
 	enum class DATATYPE { ITEM, EQUIPEFFECT, OTHEREFFECT, KHAZAN_SPEAR_ANIM, STATE, ANNOUNCE_TALK, SKill, END };
 

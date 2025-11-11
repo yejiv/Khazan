@@ -30,9 +30,9 @@ void CAI_Controller_Imp_Range::Update(CGameObject* pOwner, _float fTimeDelta)
 {
     m_pPerception->Update(pOwner, fTimeDelta);
 
-    _float fPervTime = m_pBB->Get_Value<_float>(pOwner->Get_Name(), "CurrentTime");
-    if (m_pBB->Get_Value<_bool>(pOwner->Get_Name(), "isDetected"))
-        m_pBB->Set_Value<_float>(pOwner->Get_Name(), "CurrentTime", fPervTime + fTimeDelta);
+    _float fPervTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
+    if (m_pBB->Get_Value<_bool>(m_strMonstertag, "isDetected"))
+        m_pBB->Set_Value<_float>(m_strMonstertag, "CurrentTime", fPervTime + fTimeDelta);
     else
         m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
 
@@ -109,14 +109,12 @@ CONDITION CAI_Controller_Imp_Range::GetCallbackCondition(CGameObject* pOwner, co
     }
 
 #pragma endregion
-
-
+//
+//
 #pragma region ATTACK SELECTOR
 
-  
-
-
-    else if ("Boomarang" == name)
+ 
+   /* else if ("Boomarang" == name)
     {
         return [pImp](CBlackBoard* BB)->_bool
             {
@@ -132,17 +130,22 @@ CONDITION CAI_Controller_Imp_Range::GetCallbackCondition(CGameObject* pOwner, co
                 else
                     return false;
             };
-    }
+    }*/
 
     else if ("Magic" == name)
     {
         return [pImp](CBlackBoard* BB)->_bool
             {
+                cout << "AttackCondition" << endl;
+
+ 
                 _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
                 _float fAttackRanage = BB->Get_Value<_float>(pImp->Get_Name(), "MagicRange");
 
                 if (fDist <= fAttackRanage && !BB->Get_Value<_bool>(pImp->Get_Name(), "isMagic"))
                 {
+                    cout << "AttackCondition TRUE " << endl;
+
                     return true;
                 }
                 else
@@ -163,21 +166,13 @@ CONDITION CAI_Controller_Imp_Range::GetCallbackCondition(CGameObject* pOwner, co
             {
                 _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
                 _float fChaseRange = BB->Get_Value<_float>(pImp->Get_Name(), "ChaseRange");
-                _float fRunRange = BB->Get_Value<_float>(pImp->Get_Name(), "RunRange");
-
-                CImp_Range::MONSTER_INFO Info{};
-                Info.Clear_State();
 
                 if (fDist <= fChaseRange)
-                {
                     return true;
-                }
                 else
                     return false;
             };
     }
-
-
 #pragma endregion
 
     return nullptr;
@@ -209,10 +204,9 @@ ACTION CAI_Controller_Imp_Range::GetCallbackAction(CGameObject* pOwner, const st
 
 #pragma endregion
 
-
 #pragma region ATTACK SELECTOR
 
-    else if ("Boomarang" == name)
+  /*  else if ("Boomarang" == name)
     {
         return [pImp](CBlackBoard* BB)-> BTNODESTATE
             {
@@ -229,22 +223,23 @@ ACTION CAI_Controller_Imp_Range::GetCallbackAction(CGameObject* pOwner, const st
                 return BTNODESTATE::RUNNING;
 
             };
-    }
+    }*/
 
     else if ("Magic" == name)
     {
         return [pImp](CBlackBoard* BB)-> BTNODESTATE
             {
-             
+            
                 if (BB->Get_Value<_bool>(pImp->Get_Name(), "isMagicFinished"))
-                {
                     return BTNODESTATE::SUCCESS;
-                }
-
-                BB->Set_Value(pImp->Get_Name(), "isMagicAttack", true);
 
                 pImp->Get_Controller()->Get_State_Machine()->
                     Change_State(ENUM_CLASS(IMPRANGE_STATE::MAGIC), pImp);
+
+                BB->Set_Value(pImp->Get_Name(), "isMagic", true);
+                BB->Set_Value(pImp->Get_Name(), "isMagicFinished", false);
+
+
                 return BTNODESTATE::RUNNING;
 
             };
@@ -259,34 +254,19 @@ ACTION CAI_Controller_Imp_Range::GetCallbackAction(CGameObject* pOwner, const st
     {
         return [pImp](CBlackBoard* BB)->BTNODESTATE
             {
-                _bool isDamaged = BB->Get_Value<_bool>(pImp->Get_Name(), "DamageInterrupt");
-                if (isDamaged)
-                    return BTNODESTATE::SUCCESS;
-
-                if (BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist") <=
-                    BB->Get_Value<_float>(pImp->Get_Name(), "AttackRange"))
-                    return BTNODESTATE::SUCCESS;
+                pImp->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(IMPRANGE_STATE::MOVE), pImp);
 
                 _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
-                _float fChaseRange = BB->Get_Value<_float>(pImp->Get_Name(), "ChaseRange");
-                _float fRunRange = BB->Get_Value<_float>(pImp->Get_Name(), "RunRange");
+                _float fAttackRange = BB->Get_Value<_float>(pImp->Get_Name(), "MagicRange");
 
-                /*  cout << "DIST: " << fDist << endl;
-              cout << "ChaseRange: " << fChaseRange << endl;
-              cout << "AttackRange: " << fRunRange << endl;*/
+               /* cout << "DIST: " << fDist << endl;
+                cout << "AttackRange: " << fAttackRange << endl;*/
 
-                CImp_Range::MONSTER_INFO Info{};
-                Info.Clear_State();
-
-                if (fDist <= fRunRange)
-                    Info.Add_State(Info.WALK);
-                else
-                    Info.Add_State(Info.RUN);
+                if (fDist >= fAttackRange - 0.5f && fDist <= fAttackRange + 0.5f)
+                    return BTNODESTATE::SUCCESS;
 
 
-                BB->Set_Value<_uint>(pImp->Get_Name(), "iMovementFlag", Info.iStateFlag);
-
-                pImp->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(IMPRANGE_STATE::MOVE), pImp);
+                cout << "MoveRunning" << endl;
 
                 return BTNODESTATE::RUNNING;
             };
@@ -301,6 +281,8 @@ ACTION CAI_Controller_Imp_Range::GetCallbackAction(CGameObject* pOwner, const st
                     return BTNODESTATE::FAILURE;
 
                 pImp->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(IMPRANGE_STATE::IDLE), pImp);
+                cout << "IDLERunning" << endl;
+
                 return BTNODESTATE::RUNNING;
             };
     }
@@ -327,18 +309,15 @@ TERMINATE CAI_Controller_Imp_Range::GetCallbackTeminate(CGameObject* pOwner, con
                     return;
 
                 if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
-                {
                     BB->Set_Value<_bool>(pImp->Get_Name(), "isSleepFinished", false);
-
-                }
             };
-            }
+    }
 
 #pragma endregion
 
 #pragma region ATTACK SELECTOR
 
-    else if ("Boomarang" == name)
+   /* else if ("Boomarang" == name)
     {
         return [pImp](CBlackBoard* BB, BTNODESTATE eState)
         {
@@ -351,22 +330,22 @@ TERMINATE CAI_Controller_Imp_Range::GetCallbackTeminate(CGameObject* pOwner, con
                 BB->Set_Value<_bool>(pImp->Get_Name(), "isBoomarangFinished", false);
             }
         };
-    }
+    }*/
 
 
     else if ("Magic" == name)
     {
         return [pImp](CBlackBoard* BB, BTNODESTATE eState)
-            {
-                if (nullptr == BB)
-                    return;
+        {
+            if (nullptr == BB)
+                return;
 
-                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
-                {
-                    BB->Set_Value<_bool>(pImp->Get_Name(), "isMagic", false);
-                    BB->Set_Value<_bool>(pImp->Get_Name(), "isMagicFinished", false);
-                }
-            };
+            if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+            {
+                BB->Set_Value<_bool>(pImp->Get_Name(), "isMagic", false);
+                BB->Set_Value<_bool>(pImp->Get_Name(), "isMagicFinished", false);
+            }
+        };
     }
 
 #pragma endregion
@@ -384,10 +363,11 @@ TERMINATE CAI_Controller_Imp_Range::GetCallbackTeminate(CGameObject* pOwner, con
 
             if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
             {
+                BB->Set_Value<_uint>(pImp->Get_Name(), "isMovementFlag", 0);
+                pImp->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(IMPRANGE_STATE::IDLE), pImp);
             }
         };
     }
-
         return nullptr;
 
 #pragma endregion
@@ -399,19 +379,23 @@ INTERRUPTCONDITION CAI_Controller_Imp_Range::GetCallbackInterruptCondition(CGame
     if (nullptr == pImp)
         return nullptr;
 
-    if ("DamagedInterrupt" == name)
+    if ("Root_Interrupt" == name)
     {
         return [pImp](CBlackBoard* BB)
             {
+                _bool isDead = BB->Get_Value<_bool>(pImp->Get_Name(), "isDead");
                 _bool isDamaged = BB->Get_Value<_bool>(pImp->Get_Name(), "DamageInterrupt");
-                if (isDamaged)
-                {
-                    return true;
-                }
+                _bool isGroggy = BB->Get_Value<_bool>(pImp->Get_Name(), "isGroogy");
+               
+                if (isDead) return true;
+
+                if (isGroggy) return true;
+
+                if (isDamaged) return true;
+             
                 return false;
             };
     }
-
     return nullptr;
 }
 
