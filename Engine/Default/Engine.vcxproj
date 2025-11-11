@@ -194,6 +194,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\Composite_Node.cpp" />
     <ClCompile Include="..\Private\Condition_Node.cpp" />
     <ClCompile Include="..\Private\CoolDown_Nodel.cpp" />
+    <ClCompile Include="..\Private\CRTReport.cpp" />
     <ClCompile Include="..\private\Decal.cpp" />
     <ClCompile Include="..\private\Decal_Manager.cpp" />
     <ClCompile Include="..\Private\Decorator_Node.cpp" />
@@ -290,13 +291,27 @@ call Copy.bat</Command>
     <ClCompile Include="..\Public\Guizmo\ImGradient.cpp" />
     <ClCompile Include="..\Public\Guizmo\ImGuizmo.cpp" />
     <ClCompile Include="..\Public\Guizmo\ImSequencer.cpp" />
-    <ClCompile Include="..\Public\ImGui\imgui.cpp" />
-    <ClCompile Include="..\Public\ImGui\imgui_demo.cpp" />
-    <ClCompile Include="..\Public\ImGui\imgui_draw.cpp" />
-    <ClCompile Include="..\Public\ImGui\imgui_impl_dx11.cpp" />
-    <ClCompile Include="..\Public\ImGui\imgui_impl_win32.cpp" />
-    <ClCompile Include="..\Public\ImGui\imgui_tables.cpp" />
-    <ClCompile Include="..\Public\ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="..\Public\ImGui\imgui.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Public\ImGui\imgui_demo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Public\ImGui\imgui_draw.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Public\ImGui\imgui_impl_dx11.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Public\ImGui\imgui_impl_win32.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Public\ImGui\imgui_tables.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Public\ImGui\imgui_widgets.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="EnginePch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -326,6 +341,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Composite_Node.h" />
     <ClInclude Include="..\Public\Condition_Node.h" />
     <ClInclude Include="..\Public\CoolDown_Nodel.h" />
+    <ClInclude Include="..\Public\DebugNew.h" />
     <ClInclude Include="..\public\Decal.h" />
     <ClInclude Include="..\public\Decal_Manager.h" />
     <ClInclude Include="..\Public\Decorator_Node.h" />

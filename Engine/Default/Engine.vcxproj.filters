@@ -394,6 +394,9 @@
     <Filter Include="01.Utility\94.RenderingResources\Distortion">
       <UniqueIdentifier>{86f561e8-54eb-4786-a8c9-1024f6b5efae}</UniqueIdentifier>
     </Filter>
+    <Filter Include="97.Debug">
+      <UniqueIdentifier>{27f9c5a9-13a4-4499-9cb0-273748af3a76}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -764,6 +767,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Distortion.cpp">
       <Filter>01.Utility\94.RenderingResources\Distortion</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CRTReport.cpp">
+      <Filter>97.Debug</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1180,6 +1186,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Distortion.h">
       <Filter>01.Utility\94.RenderingResources\Distortion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DebugNew.h">
+      <Filter>97.Debug</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

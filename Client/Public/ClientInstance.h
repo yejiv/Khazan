@@ -128,6 +128,13 @@ public:
 #pragma endregion
 
 
+#pragma region INTERACT_MANAGER
+    void Add_BladeNexus(KHAZAN_MAP eMapName, INTER_BLADENEXUS_DESC* pDesc);
+    INTER_BLADENEXUS_DESC* Find_BladeNexus(KHAZAN_MAP eMapName, _uint iID);
+    INTER_BLADENEXUS_DESC* Find_BladeNexus(_uint iID);
+    vector<INTER_BLADENEXUS_DESC*>* Find_MapBladeNexus(KHAZAN_MAP eMapName);
+    void Unlock_BladeNexus(_uint iID);
+#pragma endregion
 
 #ifdef _DEBUG
 #pragma region CAMERA_CONTROLLER
@@ -147,7 +154,8 @@ private:
 	class CPlayer_Manager*	m_pPlayer_Manager = { nullptr };
 	CDB_Manager*			m_pDB_Manager = { nullptr };
 	class CCamera_Manager*	m_pCamera_Manager = { nullptr };
-	 CPlayerData_Manager* m_pPlayerData_Manager = { nullptr };
+	CPlayerData_Manager* m_pPlayerData_Manager = { nullptr };
+    class CInteract_Manager* m_pInteract_Manager = { nullptr };
 	
      _bool                  m_isPlayerInput = { true };
 #ifdef _DEBUG

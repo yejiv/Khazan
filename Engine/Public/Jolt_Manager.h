@@ -5,30 +5,6 @@
 #include "Jolt_CharacterContactListener.h"
 #include "BodyDrawFilter.h"
 #include "BoneChainPhysic.h"
-#ifdef new
-#pragma push_macro("new")
-#undef new
-#endif
-
-#include <Core/Factory.h>
-
-#include <Jolt/Physics/PhysicsScene.h>
-#include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
-#include <Jolt/Physics/Collision/Shape/CylinderShape.h>
-#include <Jolt/Physics/Collision/Shape/RotatedTranslatedShape.h>
-#include <Jolt/Physics/Collision/Shape/BoxShape.h>
-#include <Jolt/Physics/Collision/Shape/SphereShape.h>
-#include <Jolt/Physics/Collision/Shape/StaticCompoundShape.h>
-#include <Jolt/Physics/Collision/Shape/MeshShape.h>
-#include <Jolt/Physics/Character/CharacterVirtual.h>
-#include <Jolt/Physics/Collision/RayCast.h>
-#include <Jolt/Physics/Collision/CastResult.h>
-#include <Jolt/Physics/Collision/NarrowPhaseQuery.h>
-#include <Jolt/Physics//Collision/CollisionCollectorImpl.h>
-#include <Jolt/Physics/Collision/GroupFilterTable.h>
-#ifdef new
-#pragma pop_macro("new") // DBG_NEW 복원
-#endif
 
 #ifdef _DEBUG
 #include "Jolt_DebugRenderer.h"

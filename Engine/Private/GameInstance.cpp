@@ -32,6 +32,32 @@
 #include "Effect_Manager.h"
 #include "Distortion.h"
 
+#ifdef _DEBUG
+#include <crtdbg.h>
+#include <Windows.h>
+
+
+int __cdecl MyCRTReportHook(int reportType, char* message, int* /*returnValue*/)
+{
+    const char* typeStr = "";
+    switch (reportType)
+    {
+    case _CRT_WARN:   typeStr = "WARN";   break;
+    case _CRT_ERROR:  typeStr = "ERROR";  break;
+    case _CRT_ASSERT: typeStr = "ASSERT"; break;
+    default:          typeStr = "INFO";   break;
+    }
+
+    // 여기서 형식 원하는 대로 꾸미면 됨
+    OutputDebugStringA("[CRT][");
+    OutputDebugStringA(typeStr);
+    OutputDebugStringA("] ");
+    OutputDebugStringA(message);
+
+    return TRUE;
+}
+#endif
+
 IMPLEMENT_SINGLETON(CGameInstance)
 
 CGameInstance::CGameInstance()
@@ -43,6 +69,21 @@ CGameInstance::CGameInstance()
 
 HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext)
 {
+#ifdef _DEBUG
+    // 1) 프로그램 종료 시 자동으로 메모리 릭 리포트
+    int flags = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
+    flags |= _CRTDBG_ALLOC_MEM_DF;    // 할당 추적
+    flags |= _CRTDBG_LEAK_CHECK_DF;   // 종료 시 자동 리크 체크
+    _CrtSetDbgFlag(flags);
+
+    // 2) 출력 대상 : VS Output 창으로
+    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
+    _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
+    _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
+
+    _CrtSetReportHook2(_CRT_RPTHOOK_INSTALL, MyCRTReportHook);
+#endif
+
 	m_pGraphic_Device = CGraphic_Device::Create(EngineDesc.hWnd, EngineDesc.eWinMode, EngineDesc.iWinSizeX, EngineDesc.iWinSizeY, ppDevice, ppContext);
 	if (nullptr == m_pGraphic_Device)
 		return E_FAIL;
