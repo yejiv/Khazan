@@ -162,7 +162,7 @@ HRESULT CEffect_Sprite::Bind_ShaderResources()
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
         return E_FAIL;
 
-    if(FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_sData.vColor, sizeof(_float4))))
+    if(FAILED(m_pShaderCom->Bind_RawValue("g_vSourceColor", &m_sData.vColor, sizeof(_float4))))
         return E_FAIL;
 
     if (FAILED(m_pShaderCom->Bind_RawValue("g_numCols", &iCol, sizeof(_float))))
@@ -174,6 +174,15 @@ HRESULT CEffect_Sprite::Bind_ShaderResources()
     if (FAILED(m_pShaderCom->Bind_RawValue("g_FrameIdx", &UVIdx, sizeof(_float))))
         return E_FAIL;
 
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fSizeRatio", &m_sData.fSizeRatio, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fSize", &m_sData.fSize, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
+        return E_FAIL;
+
     if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_Texture", m_sData.iTextureIdx)))
         return E_FAIL;
 
@@ -183,12 +192,7 @@ HRESULT CEffect_Sprite::Bind_ShaderResources()
 
 void CEffect_Sprite::Apply(void* pArg)
 {
-    m_sData = *static_cast<SPRITE_DESC*>(pArg);
-    //Safe_Release(m_pVIBufferCom);
-    //m_pVIBufferCom = CVIBuffer_Point_Instance::Create(m_pDevice, m_pContext, &m_sData);
-    //m_pVIBufferCom->Initialize_Clone(nullptr);
-    //m_iEffect_Type = 0;
-    //
+    m_sData = *static_cast<SPRITE_DESC*>(pArg); 
     m_sEditingData = m_sData;
 }
 

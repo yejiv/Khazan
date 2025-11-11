@@ -37,7 +37,7 @@ private:
 		LOCKON = 1 << 8,  // 락 온
         READY_ASSAULT = 1<< 9, // 강습 스킬 준비 
 
-       
+       INJURED  = 1 << 10,  //하인마흐에서 걸을 때 
 
 
 	};
@@ -69,14 +69,15 @@ public:
     void	Set_Camera(class CCamera_Compre* pCamera);
 
 private:
-	class CBody_Khazan_Spear*			m_pBody = { nullptr };
-	class CSpear_Khazan_Spear*			m_pSpear = { nullptr };
-	class CKhazan_Spear_Anim_Move*		m_pAnimMove = { nullptr };
-	class CKhazan_Spear_Anim_Attack*	m_pAnimAttack = { nullptr };
-	class CKhazan_Spear_Anim_Guard*		m_pAnimGuard = { nullptr };
+	class CBody_Khazan_Spear*			    m_pBody = { nullptr };
+	class CSpear_Khazan_Spear*			    m_pSpear = { nullptr };
+	class CKhazan_Spear_Anim_Move*		    m_pAnimMove = { nullptr };
+	class CKhazan_Spear_Anim_Attack*	    m_pAnimAttack = { nullptr };
+    class CKhazan_Spear_Anim_Guard*         m_pAnimGuard = { nullptr };
+    class CKhazan_Spear_Anim_Interaction*	m_pAnimInteraction = { nullptr };
 
-	class CCamera_Compre*				m_pCamera = { nullptr };
-    class CClientInstance*              m_pClientInstance = { nullptr };
+	class CCamera_Compre*				    m_pCamera = { nullptr };
+    class CClientInstance*                  m_pClientInstance = { nullptr };
 
 	//kHAZAN_ANIM_INFO			m_eCurAnimInfo = {}; //후보지에서 선택된 애님인포 
 	//vector<kHAZAN_ANIM_INFO>	m_AnimCandidates; // 매 프레임 후보 리스트 적립
@@ -121,7 +122,8 @@ private:
 	//const	_float				m_fMinDodgeTime = { 0.2f };
 
 	/* Move Speed */
-	const _float				m_fWalkSpeed = { 1.6f };
+    const _float				m_fInjuredSpeed = { 1.15f };
+    const _float				m_fWalkSpeed = { 1.6f };
 	const _float				m_fRunSpeed = { 4.f };
 	const _float				m_fSprintSpeed = { 8.f };
 
@@ -131,10 +133,12 @@ private:
 
 private:
 	void			Update_State(_float fTimeDelta);
+    void            InjuredMove_Input(_float fTimeDelta);
 	void			Move_Input(_float fTimeDelta);
     _bool			Skill_Input(_float fTimeDelta);
     _bool			Attack_Input(_float fTimeDelta);
 	_bool			Guard_Input(_float fTimeDelta);
+    _bool           Interaction_Input(_float fTimeDelta);
 	void			Change_MoveIdle(_float fTimeDelta);
 	void			ExecuteAnimationExit();
 	void			Apply_PlayerMovement(_float fTimeDelta);
@@ -144,6 +148,7 @@ private:
 
     void            Update_LockOn( );   //카메라 락온과 동기화
 
+    void            Clear_Injured();
 
 private:
 	HRESULT			Ready_Components();
@@ -198,6 +203,9 @@ private:
 	void						BladeNexus_Event(_float fTimeDelta);
 	void						Chest_Event(_float fTimeDelta);
 	void						TombStone_Event(_float fTimeDelta);
+
+private:
+    void                        Lerp_Position_ByInteractEvent(_float4 vTargetPos, _float4 vStartPos, _float fDuration, _float fTimeDelta, _bool& isDone);
 #pragma endregion
 
 #ifdef _DEBUG

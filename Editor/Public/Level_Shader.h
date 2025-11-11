@@ -47,6 +47,7 @@ private:
 	_bool					m_isEnableToonShade = {};
 	_bool					m_isEnableOutline = {};
 	_bool					m_isEnableVignette = {};
+    _bool                   m_isEnableLUT = {};
 
 	// SSAO
 	SSAO_CONFIG				m_SSAOConfig = {};

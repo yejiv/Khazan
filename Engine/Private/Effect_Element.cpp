@@ -86,7 +86,7 @@ void CEffect_Element::Active()
 void CEffect_Element::Reset()
 {
     m_TimeTracks.clear();
-    m_bRunning = true;
+    m_bRunning = false;
 }
 
 HRESULT CEffect_Element::Ready_Component()

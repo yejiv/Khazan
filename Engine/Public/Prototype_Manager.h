@@ -5,6 +5,7 @@
 #include "VIBuffer_LineTrail.h"
 #include "VIBuffer_QuadTrail.h"
 #include "VIBuffer_Terrain.h"
+#include "VIBuffer_Point.h"
 #include "VIBuffer_Rect.h"
 #include "VIBuffer_Cube.h"
 #include "Navigation.h"

@@ -1,7 +1,8 @@
 #include "FSM_Imp_Range.h"
 #include "AS_Idle_Imp_Range.h"
 #include "AS_Sleep_Imp_Range.h"
-
+#include "AS_Move_Imp_Range.h"
+#include "AS_Attack_Imp_Range.h"
 
 CFSM_Imp_Range::CFSM_Imp_Range()
 {
@@ -15,6 +16,10 @@ HRESULT CFSM_Imp_Range::Initialize(CGameObject* pOwner)
         return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(IMPRANGE_STATE::IDLE), CAS_Idle_Imp_Range::Create())))
         return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(IMPRANGE_STATE::MOVE), CAS_Move_Imp_Range::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(IMPRANGE_STATE::MAGIC), CAS_Attack_Imp_Range::Create())))
+        return E_FAIL;
 
     m_pCurrentState = m_States[ENUM_CLASS(IMPRANGE_STATE::SLEEP)];
     if (nullptr == m_pCurrentState)
@@ -24,6 +29,7 @@ HRESULT CFSM_Imp_Range::Initialize(CGameObject* pOwner)
 
     m_pCurrentState->Enter(this, pOwner);
 
+    return S_OK;
 }
 
 void CFSM_Imp_Range::Update(CGameObject* pOwner, _float fTimeDelta)

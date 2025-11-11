@@ -1,7 +1,11 @@
 #include "Body_Imp_Range.h"
 #include "GameInstance.h"
-#include "Gomdol.h"
-#include "AI_Controller.h"
+
+
+_float4x4* CBody_Imp_Range::Get_BoneMatrix_Ptr(const _char* pBoneName)
+{
+    return m_pModelCom->Get_BoneMatrix(pBoneName);
+}
 
 _float4* CBody_Imp_Range::Get_BonePointEX(const _char* pBoneName)
 {
