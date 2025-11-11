@@ -34,11 +34,16 @@ public:
 	_uint					Get_RandomSeed() { return m_iRandSeed; }
 	void					Set_RandomSeed(_uint iSeed) { m_iRandSeed = iSeed; }
 
+    // 单内饭捞记侩 单漠
+    void                    Set_EnableDecoration(_bool isEnable) { m_isDecoration = isEnable; }
+
 private:
 	_float					m_fTimeAcc = {};
 	_float					m_fOpacity = {};
 	_uint					m_iTextureIndex = {};
 	_uint					m_iRandSeed = {};
+
+    _bool                   m_isDecoration = {};
 
 	DECAL_DESC				m_Desc = {};
 
