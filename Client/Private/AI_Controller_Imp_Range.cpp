@@ -136,16 +136,14 @@ CONDITION CAI_Controller_Imp_Range::GetCallbackCondition(CGameObject* pOwner, co
     {
         return [pImp](CBlackBoard* BB)->_bool
             {
-                cout << "AttackCondition" << endl;
-
- 
                 _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
                 _float fAttackRanage = BB->Get_Value<_float>(pImp->Get_Name(), "MagicRange");
 
-                if (fDist <= fAttackRanage && !BB->Get_Value<_bool>(pImp->Get_Name(), "isMagic"))
+                if (fDist <= fAttackRanage &&
+                    !BB->Get_Value<_bool>(pImp->Get_Name(), "isMagic") &&
+                    !BB->Get_Value<_bool>(pImp->Get_Name(), "isMagicFinished"))
                 {
-                    cout << "AttackCondition TRUE " << endl;
-
+                   
                     return true;
                 }
                 else
@@ -164,6 +162,8 @@ CONDITION CAI_Controller_Imp_Range::GetCallbackCondition(CGameObject* pOwner, co
     {
         return [pImp](CBlackBoard* BB)->_bool
             {
+                cout << "MoveCondition" << endl;
+
                 _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
                 _float fChaseRange = BB->Get_Value<_float>(pImp->Get_Name(), "ChaseRange");
 
@@ -239,7 +239,6 @@ ACTION CAI_Controller_Imp_Range::GetCallbackAction(CGameObject* pOwner, const st
                 BB->Set_Value(pImp->Get_Name(), "isMagic", true);
                 BB->Set_Value(pImp->Get_Name(), "isMagicFinished", false);
 
-
                 return BTNODESTATE::RUNNING;
 
             };
@@ -259,14 +258,8 @@ ACTION CAI_Controller_Imp_Range::GetCallbackAction(CGameObject* pOwner, const st
                 _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
                 _float fAttackRange = BB->Get_Value<_float>(pImp->Get_Name(), "MagicRange");
 
-               /* cout << "DIST: " << fDist << endl;
-                cout << "AttackRange: " << fAttackRange << endl;*/
-
-                if (fDist >= fAttackRange - 0.5f && fDist <= fAttackRange + 0.5f)
+                if (fDist <= fAttackRange - 0.5f)
                     return BTNODESTATE::SUCCESS;
-
-
-                cout << "MoveRunning" << endl;
 
                 return BTNODESTATE::RUNNING;
             };
