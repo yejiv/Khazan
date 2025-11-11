@@ -28,7 +28,6 @@ HRESULT CEffect_Point_Instance::Initialize_Prototype(void* pArg)
 
     m_pVIBufferCom = CVIBuffer_Point_Instance::Create(m_pDevice, m_pContext, &m_sData);
     m_iEffect_Type = 0; //필요할까
-
     return S_OK;
 }
 
@@ -58,6 +57,11 @@ void CEffect_Point_Instance::Update(_float fTimeDelta)
 
         if(it->fCurTime > it->fDurTime && it->EventType != 0)
         {
+            if (m_sData.bIsLoop == true && m_TimeTracks.size() == 1)
+            {
+                ++it;
+                continue;
+            }
             dynamic_cast<CVIBuffer_Point_Instance*>(m_pVIBufferCom)->Remove_Speed(CVIBuffer_Point_Instance::SPEED_VALUE(it->EventType - 1));
             it = m_TimeTracks.erase(it);
         }
@@ -98,7 +102,6 @@ HRESULT CEffect_Point_Instance::Render()
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
-    //m_pShaderCom->Begin((_uint)m_Data.TextureBindType);
     m_pShaderCom->Begin(0);
 
     m_pVIBufferCom->Bind_Resources();
@@ -115,7 +118,6 @@ void CEffect_Point_Instance::Reset()
     m_fAccTime = 0.f;
     m_fSpriteTime = 0.f;
     m_iUVIdx = 0;
-    m_bRunning = true;
 }
 
 void CEffect_Point_Instance::SetSpreadData(void* pArg)
@@ -245,6 +247,9 @@ HRESULT CEffect_Point_Instance::Bind_ShaderResources()
             return E_FAIL;
     }
 
+    _bool isBillboard = (m_sData.fSpriteSpeed) > 0 ? true : false;
+    if (FAILED(m_pShaderCom->Bind_Bool("g_IsBillboard", &isBillboard)))
+        return E_FAIL;
 
     if (FAILED(m_pMaskTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_MaskTexture", m_sData.iMaskTextureIdx)))
         return E_FAIL;

@@ -53,12 +53,33 @@ void CCloudSphere::Update(_float fTimeDelta)
 {
     m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(m_pGameInstance->Get_CamPosition()));
 
+    m_fTimeAcc += fTimeDelta;
+
 #ifdef _DEBUG
     if (m_pGameInstance->Key_Pressing(DIK_NUMPAD7, 0.f) && m_pGameInstance->Key_Pressing(DIK_NUMPAD8, 0.f) && m_pGameInstance->Key_Down(DIK_NUMPAD9))
         m_isCloudWindow = !m_isCloudWindow;
 #endif // _DEBUG
 
-    m_fTimeAcc += fTimeDelta;
+    if (false == m_isTransition)
+        return;
+
+    // 스카이 박스 보간
+    m_fTransTimeAcc += fTimeDelta;
+
+    _float fRatio = m_fTransTimeAcc / m_fDuration;
+    if (1.f <= fRatio)
+    {
+        fRatio = 1.f;
+        m_isTransition = false;
+    }
+
+    m_CloudDesc.vCloudColor = Lerp(m_StartCloudDesc.vCloudColor, m_LerpCloudDesc.vCloudColor, fRatio);
+    m_CloudDesc.fCloudScale = Lerp(m_StartCloudDesc.fCloudScale, m_LerpCloudDesc.fCloudScale, fRatio);
+    m_CloudDesc.fCloudDensity = Lerp(m_StartCloudDesc.fCloudDensity, m_LerpCloudDesc.fCloudDensity, fRatio);
+    m_CloudDesc.fCloudLightIntensity = Lerp(m_StartCloudDesc.fCloudLightIntensity, m_LerpCloudDesc.fCloudLightIntensity, fRatio);
+
+    XMFLOAT3 vDir = Lerp(m_StartCloudDesc.vLightDir, m_LerpCloudDesc.vLightDir, fRatio);
+    XMStoreFloat3(&m_CloudDesc.vLightDir, XMVector3Normalize(XMLoadFloat3(&vDir)));
 }
 
 void CCloudSphere::Late_Update(_float fTimeDelta)
@@ -87,6 +108,20 @@ HRESULT CCloudSphere::Render()
     }
 
     return S_OK;
+}
+
+void CCloudSphere::Start_LerpCloud(CLOUD_DESC LerpCloudDesc, _float fDuration)
+{
+    m_isTransition = true;
+
+    m_fTransTimeAcc = 0.f;
+    m_fDuration = fDuration;
+
+    m_StartCloudDesc = m_CloudDesc;
+    m_LerpCloudDesc = LerpCloudDesc;
+
+    m_CloudDesc.fDynamic = LerpCloudDesc.fDynamic;
+    m_CloudDesc.fCloudSpeed = LerpCloudDesc.fCloudSpeed;
 }
 
 HRESULT CCloudSphere::Ready_Components(void* pArg)

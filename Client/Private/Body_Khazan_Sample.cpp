@@ -798,7 +798,7 @@ void CBody_Khazan_Sample::Effect3_Enter()
         Q = XMQuaternionRotationMatrix(RotationMatrix);
     }
 
-    EffectID_SpearWind = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::TEST), TEXT("SpearWind"), Q, W.r[3]);
+    //EffectID_SpearWind = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::TEST), TEXT("SpearWind"), Q, W.r[3]);
 }
 
 void CBody_Khazan_Sample::Effect3_Exit()
@@ -832,7 +832,7 @@ void CBody_Khazan_Sample::Effect3_Continue()
 
         Q = XMQuaternionRotationMatrix(RotationMatrix);
     }
-    m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::TEST), TEXT("SpearWind"), EffectID_SpearWind, Q, W.r[3]);
+    //m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::TEST), TEXT("SpearWind"), EffectID_SpearWind, Q, W.r[3]);
 }
 
 void CBody_Khazan_Sample::Effect4_Enter()
@@ -947,7 +947,7 @@ void CBody_Khazan_Sample::Effect11_Continue()
 
 void CBody_Khazan_Sample::Effect11_SpearBlood()
 {
-    EffectID_SpearWind = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::TEST), TEXT("SpaceTime_SpearBlood"), m_pParentTransform->Get_State(STATE::POSITION));
+    //EffectID_SpearWind = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::TEST), TEXT("SpaceTime_SpearBlood"), m_pParentTransform->Get_State(STATE::POSITION));
 }
 
 void CBody_Khazan_Sample::Effect12_Enter()

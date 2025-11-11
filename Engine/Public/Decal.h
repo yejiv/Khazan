@@ -34,7 +34,7 @@ public:
 	_uint					Get_RandomSeed() { return m_iRandSeed; }
 	void					Set_RandomSeed(_uint iSeed) { m_iRandSeed = iSeed; }
 
-    // 单内饭捞记侩 单漠
+    // 雿办綌霠堨澊靺橃毄 雿办辜
     void                    Set_EnableDecoration(_bool isEnable) { m_isDecoration = isEnable; }
 
 private:

@@ -339,6 +339,8 @@ _bool CModel::Play_Animation(_float fTimeDelta)
     /* 애니메이션 세트  */
     if (Has_State(ANIMSET_NEXT))
     {
+        if (m_AnimationSetInfo.iCurrentIndex >= static_cast<_int>(m_AnimationSets[m_AnimationSetInfo.iSelectedAnimIndex].vecAnimIndices.size()))
+            m_AnimationSetInfo.iCurrentIndex = 0;
         Set_Animation(m_AnimationSets[m_AnimationSetInfo.iSelectedAnimIndex].vecAnimIndices[m_AnimationSetInfo.iCurrentIndex]);
         Remove_State(ANIMSET_NEXT);
     }
@@ -556,6 +558,17 @@ _bool CModel::Check_MinAnimationTime()
     if (m_AnimationsSetup[m_iCurrentAnimIndex].fBlendOutTime < 1.f)
         return true;
     return m_AnimationsSetup[m_iCurrentAnimIndex].fBlendOutTime <= m_fCurrentTrackPosition;
+}
+
+void CModel::AnimationSetIndexIncrease()
+{
+    ++m_AnimationSetInfo.iCurrentIndex;
+    Add_State(ANIMSET_NEXT);
+
+    if (m_AnimationSetInfo.iCurrentIndex == m_AnimationSetInfo.iTotalCount)
+    {
+        Remove_State(ANIMSET_PLAYING | ANIMSET_NEXT);
+    }
 }
 
 void CModel::Update_BoneCombinedMatrices()

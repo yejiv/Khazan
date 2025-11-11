@@ -42,6 +42,7 @@ cbuffer CB_PARTICLE : register(b0)
 
     float g_TurblunceSpeed;
     float g_TurblunceSampleSize;
+    float2 padding;
 };
 
 StructuredBuffer<PARTICLE_PARAMS> g_InputData : register(t0);
@@ -253,9 +254,9 @@ void CS_RESET(uint3 DTid : SV_DispatchThreadID)
     VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
 
     Particle.vTranslation = g_InputData[iIndex].vInitTranslation;
-    //Particle.vRight = g_InputData[iIndex].vRight;
-    //Particle.vUp = g_InputData[iIndex].vUp;
-    //Particle.vLook = g_InputData[iIndex].vLook;
+    Particle.vRight = g_InputData[iIndex].vRight;
+    Particle.vUp = g_InputData[iIndex].vUp;
+    Particle.vLook = g_InputData[iIndex].vLook;
     Particle.bDead = false;
     Particle.vLifeTime.x = 0.f;
     SpeedData.fGravity = 0.f;
