@@ -42,6 +42,22 @@ public:
 public:
 	CAMERA_COMPRE_DESC Get_Desc();
 
+    _float				m_fYaw = 0.f;
+    _float				m_fPitch = 0.6f;
+    _float				m_fRadius = 4.f;
+
+    _float				m_fPitchMin = -1.2f;
+    _float				m_fPitchMax = 0.7f;
+    _float				m_fRadiusMin = 2.f;
+    _float				m_fRadiusMax = 12.f;
+    _float				m_fSkin = 0.02f;
+
+    _float				m_fFollowValue = 2.f;
+    _vector				m_vLerpMove = { 0.f, 0.f, 0.f, 1.f };
+
+    const _float4x4* m_pObjMatrix = { nullptr };
+    const _float4x4* m_pSocketMatrix = { nullptr };
+
 	/*_vector m_fMoveLerp;
 	_vector m_fMoveLerp;*/
 

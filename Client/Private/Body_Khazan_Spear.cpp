@@ -226,6 +226,8 @@ void CBody_Khazan_Spear::Render_Part(CModel* pModel)
     for (size_t i = 0; i < iNumMeshes; i++)
     {
         pModel->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
+        pModel->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
+        pModel->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR, 0);
 
         // 마스터의 본을 자동으로 사용
         if (FAILED(pModel->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))

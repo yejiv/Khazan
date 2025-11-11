@@ -49,12 +49,6 @@ struct VS_OUT
     float2 vTexcoord : TEXCOORD0;
     float4 vWorldPos : TEXCOORD1;
     float4 vProjPos : TEXCOORD2;
-    
-    //  float4 vPosition : SV_POSITION;
-    //  float4 vNormal : NORMAL;
-    //  float2 vTexcoord : TEXCOORD0;
-    //  float4 vWorldPos : TEXCOORD1;
-    //  float4 vProjPos : TEXCOORD2;
 };
 
 /* ?젙?젏?뎽?씠?뜑 : ?젙?젏 ?쐞移섏쓽 ?뒪?럹?씠?뒪 蹂??솚(濡쒖뺄 -> ?썡?뱶 -> 酉? -> ?닾?쁺). */ 
@@ -102,7 +96,6 @@ struct VS_OUT_SHADOW
 VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
 {
     VS_OUT_SHADOW Out;
-      /* ?젙?젏?쓽 濡쒖뺄?쐞移? * ?썡?뱶 * 酉? * ?닾?쁺 */ 
     
     float fWeightW = 1.f - (In.vBlendWeight.x + In.vBlendWeight.y + In.vBlendWeight.z);
     
@@ -185,15 +178,21 @@ PS_OUT PS_MAIN(PS_IN In)
     PS_OUT Out = (PS_OUT) 0;
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
     if (vMtrlDiffuse.a < 0.3f)
         discard;
 
     Out.vDiffuse = vMtrlDiffuse;
-    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = In.vWorldPos;
-
+    Out.vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    
     return Out;
 }
 
@@ -202,14 +201,21 @@ PS_OUT PS_MAIN_NONPICK(PS_IN In)
     PS_OUT Out = (PS_OUT) 0;
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
     
     if (vMtrlDiffuse.a < 0.3f)
         discard;
     
     Out.vDiffuse = vMtrlDiffuse;
-    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = vector(0.f, 0.f, 0.f, 0.f);
+    Out.vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    
     return Out;
 }
 

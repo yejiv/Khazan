@@ -39,6 +39,9 @@ void CProp_Object::Priority_Update(_float fTimeDelta)
 
 void CProp_Object::Update(_float fTimeDelta)
 {
+    if (true == (m_Properties.isCollider && m_Properties.isBackGround))
+        return;
+
     if (true == m_Properties.isSnow)
     {
         if (true == m_Properties.isIce)

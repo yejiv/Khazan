@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="98.Default">
@@ -661,6 +661,9 @@
     <Filter Include="02.GameObject\UI\Skill_QuickSlot\List">
       <UniqueIdentifier>{559041ba-24b8-4d52-8bad-394da64a40b4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04.Sequence\HeinMach\Start_Chat">
+      <UniqueIdentifier>{f9a9efff-bd5a-4199-8d0e-ae1adf5e0c43}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObject\UI\Announce\Result">
       <UniqueIdentifier>{e36625db-9712-4143-9d23-dbf55a7dbdf4}</UniqueIdentifier>
     </Filter>
@@ -669,6 +672,36 @@
     </Filter>
     <Filter Include="02.GameObject\UI\Announce\Over">
       <UniqueIdentifier>{ca322ead-5a4f-4014-b9d0-6ad88900be06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Imp_Range">
+      <UniqueIdentifier>{a84c5084-3491-465b-8433-5dd4482d1a56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Imp_Range\Body">
+      <UniqueIdentifier>{cb10d419-c31f-4ee4-97b3-bec607520b92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Imp_Range\Weapon">
+      <UniqueIdentifier>{eea85058-c071-46c7-88ce-3d9400ec4488}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\Controller\Imp_Range">
+      <UniqueIdentifier>{316af7bb-9246-4c9b-a252-a196374bc624}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\StateMachine\Imp_Range">
+      <UniqueIdentifier>{99e26c81-4b41-4165-8dd3-869490ca86f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Range">
+      <UniqueIdentifier>{87a82b83-b142-4023-990e-492683425591}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Range\Sleep">
+      <UniqueIdentifier>{e6f47d90-2b14-42d7-a039-55d76ffc72c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Range\Move">
+      <UniqueIdentifier>{6c5246a8-55a8-484f-998f-caa8b3917ec2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Range\Attack">
+      <UniqueIdentifier>{437d231e-344f-4f02-bdba-d49caa7890da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Range\Idle">
+      <UniqueIdentifier>{df70fe0b-2636-48a6-a6ef-4cf72232a82b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1281,6 +1314,9 @@
     <ClInclude Include="..\public\Skill_QuickSlot_List.h">
       <Filter>02.GameObject\UI\Skill_QuickSlot\List</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Sequence_HeinMach_Start_Chat.h">
+      <Filter>04.Sequence\HeinMach\Start_Chat</Filter>
+    </ClInclude>
     <ClInclude Include="..\public\UI_Announce_Result.h">
       <Filter>02.GameObject\UI\Announce\Result</Filter>
     </ClInclude>
@@ -1290,6 +1326,28 @@
     <ClInclude Include="..\public\UI_Announce_Over.h">
       <Filter>02.GameObject\UI\Announce\Over</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Body_Imp_Range.h">
+      <Filter>02.GameObject\Creature\Monster\Imp_Range\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AI_Controller_Imp_Range.h">
+      <Filter>92.AI\Controller\Imp_Range</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FSM_Imp_Range.h">
+      <Filter>92.AI\StateMachine\Imp_Range</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Sleep_Imp_Range.h">
+      <Filter>92.AI\State\Imp_Range\Sleep</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Idle_Imp_Range.h">
+      <Filter>92.AI\State\Imp_Range\Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Attack_Imp_Range.h">
+      <Filter>92.AI\State\Imp_Range\Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Move_Imp_Range.h">
+      <Filter>92.AI\State\Imp_Range\Move</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Imp_Range.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1881,6 +1939,9 @@
     <ClCompile Include="..\private\Skill_QuickSlot_List.cpp">
       <Filter>02.GameObject\UI\Skill_QuickSlot\List</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Sequence_HeinMach_Start_Chat.cpp">
+      <Filter>04.Sequence\HeinMach\Start_Chat</Filter>
+    </ClCompile>
     <ClCompile Include="..\private\UI_Announce_Result.cpp">
       <Filter>02.GameObject\UI\Announce\Result</Filter>
     </ClCompile>
@@ -1890,6 +1951,28 @@
     <ClCompile Include="..\private\UI_Announce_Over.cpp">
       <Filter>02.GameObject\UI\Announce\Over</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Body_Imp_Range.cpp">
+      <Filter>02.GameObject\Creature\Monster\Imp_Range\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AI_Controller_Imp_Range.cpp">
+      <Filter>92.AI\Controller\Imp_Range</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FSM_Imp_Range.cpp">
+      <Filter>92.AI\StateMachine\Imp_Range</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Sleep_Imp_Range.cpp">
+      <Filter>92.AI\State\Imp_Range\Sleep</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Idle_Imp_Range.cpp">
+      <Filter>92.AI\State\Imp_Range\Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Attack_Imp_Range.cpp">
+      <Filter>92.AI\State\Imp_Range\Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Move_Imp_Range.cpp">
+      <Filter>92.AI\State\Imp_Range\Move</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Imp_Range.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">

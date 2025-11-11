@@ -88,7 +88,8 @@ void CSequence_HeinMach_Yetuga::PlayerMove(_float fTimeDelta)
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pPlayer->CGameObject::Get_Component(TEXT("Com_Transform")));
 	CCharacterVirtual* pPlayerCharVir = dynamic_cast<CCharacterVirtual*>(m_pPlayer->CGameObject::Get_Component(TEXT("Com_CharacterVirtual")));
 
-	pPlayerTransform->Set_State(STATE::POSITION, XMVectorSet(516.f, -11.f, 264.f, 1.f));
+	pPlayerTransform->Set_State(STATE::POSITION, XMVectorSet(510.32f, -9.72f, 256.11f, 1.f));
+    pPlayerTransform->LookAt(XMVectorSet(0.47f, -0.04f, -0.88f, 0.f));
 	pPlayerCharVir->Sync_Update(pPlayerTransform);
 	pPlayerCharVir->Update(fTimeDelta, pPlayerTransform);
 }

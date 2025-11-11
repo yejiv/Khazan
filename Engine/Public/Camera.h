@@ -31,10 +31,6 @@ public:
 	virtual HRESULT Render();
 
 public:
-	void Set_ObjMatrix(const _float4x4* pObjMatrix) { m_pObjMatrix = pObjMatrix; }
-	void Set_SocketMatrix(const _float4x4* pSocketMatrix) { m_pSocketMatrix = pSocketMatrix; }
-
-public:
 	void Update_PipeLines(_float fTimeDelta);
 
 	// 애니메이션
@@ -107,22 +103,6 @@ protected:
 	_float4				m_vAt = {};
 	_float				m_fAspect = {};
 	_float				m_fNear{}, m_fFar{};
-
-	_float				m_fYaw = 0.f;
-	_float				m_fPitch = 0.6f;
-	_float				m_fRadius = 4.f;
-
-	_float				m_fPitchMin = -1.2f;
-	_float				m_fPitchMax = 0.7f;
-	_float				m_fRadiusMin = 2.f;
-	_float				m_fRadiusMax = 12.f;
-	_float				m_fSkin = 0.02f;
-
-	_float				m_fFollowValue = 2.f;
-	_vector				m_vLerpMove = { 0.f, 0.f, 0.f, 1.f };
-
-	const _float4x4*	m_pObjMatrix = { nullptr };
-	const _float4x4*	m_pSocketMatrix = { nullptr };
 
 	map<_wstring, vector<CAMERA_KEYFRAME>> m_Animations;
 	map<_wstring, vector<CAMERA_EVENT_DATA>> m_Events;

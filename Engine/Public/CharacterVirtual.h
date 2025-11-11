@@ -43,7 +43,7 @@ public:
 		_float			fPadding = 0.02f; // 벽/바닥과 여유 거리
 		_float			fPenetrationRecoverySpeed = 1.7f; // 겹침 복구 속도
 		_float			fPredictiveContactDistance = 0.2f; // 에측 접촉(미리 감지)
-		EBackFaceMode	eBackFaceMode = EBackFaceMode::IgnoreBackFaces;
+		EBackFaceMode	eBackFaceMode = EBackFaceMode::CollideWithBackFaces;
 
 		_float			fMinTimeRemaining = 1.0e-4f;  //서브스텝 통합 중 잔여 시간 최소치.
 		_float			fCollisionTolerance = 0.003f;	 //충돌 허용 오차
