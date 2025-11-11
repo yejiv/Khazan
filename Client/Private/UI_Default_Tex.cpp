@@ -22,6 +22,11 @@ HRESULT CUI_Default_Tex::Set_Texture(const _wstring& strPrototypeTag, _int iTexP
 	return E_NOTIMPL;
 }
 
+void CUI_Default_Tex::Tex_Scaling(_float fSizeX, _float fSizeY)
+{
+    m_pTransformCom->Scale(_float3{ m_vLocalSize.x * fSizeX, m_vLocalSize.y * fSizeY, 1.f });
+}
+
 HRESULT CUI_Default_Tex::Initialize_Prototype()
 {
 	return S_OK;

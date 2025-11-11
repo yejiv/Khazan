@@ -47,17 +47,18 @@ private:
 private:
 	class CSequence_HeinMach_Field* m_pHeinMach_Field = { nullptr };
 	class CSequence_HeinMach_Yetuga* m_pHeinMach_Yetuga = { nullptr };
+    class CSequence_HeinMach_Start_Chat* m_pHeinMach_Start_Chat = { nullptr };
 	class CClientInstance* m_pClientInstance = { nullptr };
 
 private:
 	GUIDE_TYPE m_eGuideType = { GUIDE_TYPE::END };
 
 private:
-    // Ω∫ƒ´¿Ãπ⁄Ω∫ ±∏¡∂√º
+    // Ïä§Ïπ¥Ïù¥Î∞ïÏä§ Íµ¨Ï°∞Ï≤¥
     SKY_DESC m_Sky_Desc = {};
     CLOUD_DESC m_Cloud_Desc = {};
 
-    // FOG ±∏¡∂√º
+    // FOG Íµ¨Ï°∞Ï≤¥
     FOG_CONFIG m_FogConfig = {};
 
 private:

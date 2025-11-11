@@ -15,7 +15,7 @@ HRESULT CPlayer_Manager::Initialize()
 
     m_UsedSkill.assign(GetBitPosition(CPlayerData_Manager::SPEAR_END), false);
 
-    /* ÀÓ½Ã  */
+    /* ì„ì‹œ  */
     BindSkillToButton(Q, CPlayerData_Manager::FULL_MOON);
     BindSkillToButton(E, CPlayerData_Manager::SPIRAL_THRUST);
     BindSkillToButton(R, CPlayerData_Manager::SHADOW_CLEAVE);
@@ -59,7 +59,7 @@ _uint CPlayer_Manager::Get_ButtonSkill(CONTROL_BUTTON eButton)
 {
     unordered_map<CONTROL_BUTTON, _uint>::iterator  it = m_ButtonToSkill.find(eButton);
     if (it != m_ButtonToSkill.end())  return it->second;
-    return 0; // ¹ÙÀÎµùµÈ ½ºÅ³ ¾øÀ½
+    return 0; // ë°”ì¸ë”©ëœ ìŠ¤í‚¬ ì—†ìŒ
 }
 
 void CPlayer_Manager::Set_UsedSkill(_uint iSkill, _bool isUsed)
