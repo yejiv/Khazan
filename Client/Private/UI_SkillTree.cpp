@@ -79,8 +79,8 @@ void CUI_SkillTree::Priority_Update(_float fTimeDelta)
 
 void CUI_SkillTree::Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_8, INPUT_TYPE::UI))
-		On_Panel();
+	//if (m_pGameInstance->Key_Down(DIK_8, INPUT_TYPE::UI))
+	//	On_Panel();
 
 	if (m_pGameInstance->Key_Down(DIK_P, INPUT_TYPE::UI))
 		CClientInstance::GetInstance()->Add_SkillExp(40.f);

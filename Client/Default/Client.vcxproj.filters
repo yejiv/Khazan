@@ -703,6 +703,15 @@
     <Filter Include="92.AI\State\Imp_Range\Idle">
       <UniqueIdentifier>{df70fe0b-2636-48a6-a6ef-4cf72232a82b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\BladeNexus_Map">
+      <UniqueIdentifier>{89b4fdfb-7249-4340-87ba-189bcf79f452}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\BladeNexus_Map\List">
+      <UniqueIdentifier>{64d9b043-5b96-4785-9c51-8130bbcad22b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\BladeNexus_Map\BG">
+      <UniqueIdentifier>{146cf3fc-807b-4ef5-82d1-56d6a87872c1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1348,6 +1357,15 @@
       <Filter>92.AI\State\Imp_Range\Move</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Imp_Range.h" />
+    <ClInclude Include="..\public\UI_BladeNexus_Map.h">
+      <Filter>02.GameObject\UI\BladeNexus_Map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BladeNexus_Map_List.h">
+      <Filter>02.GameObject\UI\BladeNexus_Map\List</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BladeNexus_Map_BG.h">
+      <Filter>02.GameObject\UI\BladeNexus_Map\BG</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1973,6 +1991,15 @@
       <Filter>92.AI\State\Imp_Range\Move</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Imp_Range.cpp" />
+    <ClCompile Include="..\private\UI_BladeNexus_Map.cpp">
+      <Filter>02.GameObject\UI\BladeNexus_Map</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BladeNexus_Map_List.cpp">
+      <Filter>02.GameObject\UI\BladeNexus_Map\List</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BladeNexus_Map_BG.cpp">
+      <Filter>02.GameObject\UI\BladeNexus_Map\BG</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
