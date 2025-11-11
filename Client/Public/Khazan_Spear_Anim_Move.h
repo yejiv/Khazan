@@ -56,6 +56,7 @@ private:
 	_uint		m_iSubState = {};
 	_uint		m_iFootPosition[2] = { 0,0 }; // l,r 몇 번째 프레임
 	//const _float	m_fMinTrackPostion = { 20.f };
+    _uint       m_iPrevSelectedAnimationIndex = {};
 
 	//_bool		m_isRun_Turn = { false };
 	//_bool		m_isEquipSpear = { false }; /* 180도 회전시 사용  */

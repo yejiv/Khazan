@@ -143,6 +143,8 @@ _bool CKhazan_Spear_Anim_Move::Try_ChangeAnimation(SPEAR_MOVE moveInfo)
             return false;
     }
 
+
+
     _uint iSelectedAnimationIndex{};
     m_isDodging = false;
     Clear_State();
@@ -244,13 +246,18 @@ _bool CKhazan_Spear_Anim_Move::Try_ChangeAnimation(SPEAR_MOVE moveInfo)
         else if (moveInfo.eDir.AllCheck_Flag(DIR::L)) iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Dodge_L");
         else if (moveInfo.eDir.AllCheck_Flag(DIR::R)) iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Dodge_R");
 		m_isDodging = true;
-
+        m_isEndAnimationFinished = true;
     }
 
-    if (m_pModel->Check_MinAnimationTime())
+
+
+    _bool isCheckMin = m_pModel->Check_MinAnimationTime();
+    if (m_iPrevSelectedAnimationIndex == iSelectedAnimationIndex && !isCheckMin)
+       return false;
+    else if (isCheckMin)
     {
         m_isMoving = true;
-
+        m_iPrevSelectedAnimationIndex = m_iSelectedAnimationIndex;
         m_iSelectedAnimationIndex = iSelectedAnimationIndex;
         m_pModel->Set_Animation(m_iSelectedAnimationIndex);
 

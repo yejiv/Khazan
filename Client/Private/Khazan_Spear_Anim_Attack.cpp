@@ -23,39 +23,6 @@ void CKhazan_Spear_Anim_Attack::Enter()
 
 void CKhazan_Spear_Anim_Attack::Continue(_float fTimeDelta)
 {
-   // if (m_isFastCombo)
-   // {
-   //     /* 콤보공격에서 다음 공격이 가능 한 구간이라면  */
-   //     if (m_pModel->Check_MinAnimationTime() && (*m_pModel->Get_CurTrackPosition() <= m_fFastAttackComboPossibleMaxFrame)) {
-   //         m_isCanNextCombo = true;
-   //     }
-   //     /* 공격 중 */
-   //     else if (!m_pModel->Check_MinAnimationTime())
-   //     {
-   //         m_isAttacking = true;
-   //         m_isCanNextCombo = false;
-   //     }
-   //  
-   //     //else if (m_iCurrentCombo == 3)
-   //     //{
-   //     //    m_isAttacking = false;
-   //     //    m_isCanNextCombo = false;
-   //     //    m_iCurrentCombo = 0;
-   //     //    m_isFastCombo = false;
-
-   //     //    cout << " f33333333333333333333333333" << endl;
-   //     //} 
-   //     /* 다음 공격 가능 한 구간까지 지나감 */
-   //     else
-   //     {
-   //         m_isAttacking = false;
-   //         m_isCanNextCombo = false;
-			//m_iCurrentCombo = 0;
-			//m_isFastCombo = false;
-   //         cout << " fast combo  end section" << endl;
-   //     }
-   // }
-
     if (m_isReserve)
     {
         /* 기다리는 중 다른 공격이 나오면 예약 취소 */
@@ -122,6 +89,22 @@ void CKhazan_Spear_Anim_Attack::Continue(_float fTimeDelta)
         {
             m_isAttacking = true;
             m_isCanNextCombo = false;
+        }
+        /* 콤보 3 완료 - 애니메이션이 끝났을 때 */
+        else if (m_iCurrentCombo == 3 && (m_pModel->Check_MinAnimationTime() || m_pModel->IsFinished()))  // IsFinished() 체크 추가
+        {
+            m_isAttacking = false;
+            m_isCanNextCombo = false;
+            m_iCurrentCombo = 0;  // 리셋
+            m_isStrongCombo = false;
+        }
+        /* 콤보 중간에 입력이 끊긴 경우 */
+        else if (m_pModel->IsFinished())  // 애니메이션 완료 체크
+        {
+            m_isAttacking = false;
+            m_isCanNextCombo = false;
+            m_iCurrentCombo = 0;  // 리셋
+            m_isStrongCombo = false;
         }
         /* 다음 공격 가능 한 구간까지 지나감 */
         else
@@ -214,6 +197,12 @@ _bool CKhazan_Spear_Anim_Attack::Try_FastAttack()
     if (m_isAttacking && !m_isCanNextCombo)
         return false;
 
+    if (m_isStrongCombo)
+    {
+        m_isStrongCombo = false;
+        m_iCurrentCombo = 0;
+    }
+
     _uint iAnimIndex{};
     if (m_iCurrentCombo == 0)iAnimIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_FastAtk01");
     if (m_iCurrentCombo == 1)iAnimIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_FastAtk02");
@@ -226,11 +215,6 @@ _bool CKhazan_Spear_Anim_Attack::Try_FastAttack()
     if (!m_pModel->Check_MinAnimationTime() && m_iCurrentCombo >= 0 && m_iSelectedAnimationIndex == iAnimIndex)
         return false;
 
-    if (m_isStrongCombo)
-    {
-        m_isStrongCombo = false;
-        m_iCurrentCombo = 0;
-    }
 
 
     m_isAttacking = true;
@@ -373,6 +357,12 @@ _bool CKhazan_Spear_Anim_Attack::Try_StrongAttack()
         return false;
     }
 
+    if (m_isFastCombo)
+    {
+        m_isFastCombo = false;
+        m_iCurrentCombo = 0;
+    }
+
     _uint iAnimIndex{};
     if (m_iCurrentCombo == 0)iAnimIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk01");
     if (m_iCurrentCombo == 1)iAnimIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk02");
@@ -385,11 +375,7 @@ _bool CKhazan_Spear_Anim_Attack::Try_StrongAttack()
     }
 
 
-    if (m_isFastCombo)
-    {
-        m_isFastCombo = false;
-        m_iCurrentCombo = 0;
-    }
+  
 
 
     m_isAttacking = true;
@@ -397,20 +383,25 @@ _bool CKhazan_Spear_Anim_Attack::Try_StrongAttack()
     m_isCanNextCombo = false;
     m_iReserveSkillIndex = 0;
 
+    cout << m_iCurrentCombo << endl;
+
     if (m_iCurrentCombo == 0)
     {
+        cout << "m_iCurrentCombo = 0" << endl;
         m_iSelectedAnimationIndex = iAnimIndex;
         m_pModel->Set_Animation(m_iSelectedAnimationIndex);
         m_iCurrentCombo = 1;
     }
     else if (m_iCurrentCombo == 1)
     {
+        cout << "m_iCurrentCombo =1" << endl;
         m_iSelectedAnimationIndex = iAnimIndex;
         m_pModel->Set_Animation(m_iSelectedAnimationIndex);
         m_iCurrentCombo = 2;
     }
     else if (m_iCurrentCombo == 2)
     {
+        cout << "m_iCurrentCombo = 2" << endl;
         m_iSelectedAnimationIndex = iAnimIndex;
         m_pModel->Set_Animation(m_iSelectedAnimationIndex);
         m_iCurrentCombo = 3; // 마지막 콤보

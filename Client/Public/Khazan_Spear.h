@@ -69,14 +69,15 @@ public:
     void	Set_Camera(class CCamera_Compre* pCamera);
 
 private:
-	class CBody_Khazan_Spear*			m_pBody = { nullptr };
-	class CSpear_Khazan_Spear*			m_pSpear = { nullptr };
-	class CKhazan_Spear_Anim_Move*		m_pAnimMove = { nullptr };
-	class CKhazan_Spear_Anim_Attack*	m_pAnimAttack = { nullptr };
-	class CKhazan_Spear_Anim_Guard*		m_pAnimGuard = { nullptr };
+	class CBody_Khazan_Spear*			    m_pBody = { nullptr };
+	class CSpear_Khazan_Spear*			    m_pSpear = { nullptr };
+	class CKhazan_Spear_Anim_Move*		    m_pAnimMove = { nullptr };
+	class CKhazan_Spear_Anim_Attack*	    m_pAnimAttack = { nullptr };
+    class CKhazan_Spear_Anim_Guard*         m_pAnimGuard = { nullptr };
+    class CKhazan_Spear_Anim_Interaction*	m_pAnimInteraction = { nullptr };
 
-	class CCamera_Compre*				m_pCamera = { nullptr };
-    class CClientInstance*              m_pClientInstance = { nullptr };
+	class CCamera_Compre*				    m_pCamera = { nullptr };
+    class CClientInstance*                  m_pClientInstance = { nullptr };
 
 	//kHAZAN_ANIM_INFO			m_eCurAnimInfo = {}; //후보지에서 선택된 애님인포 
 	//vector<kHAZAN_ANIM_INFO>	m_AnimCandidates; // 매 프레임 후보 리스트 적립
@@ -137,6 +138,7 @@ private:
     _bool			Skill_Input(_float fTimeDelta);
     _bool			Attack_Input(_float fTimeDelta);
 	_bool			Guard_Input(_float fTimeDelta);
+    _bool           Interaction_Input(_float fTimeDelta);
 	void			Change_MoveIdle(_float fTimeDelta);
 	void			ExecuteAnimationExit();
 	void			Apply_PlayerMovement(_float fTimeDelta);

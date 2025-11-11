@@ -397,7 +397,7 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
         BodyDesc.eMotion = EMotionType::Kinematic;
         BodyDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
         BodyDesc.eShapeType = SHAPE::SPHERE;
-        BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER); // 추후에 Enum Monster attack 변경 할수도
+        BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK); // 추후에 Enum Monster attack 변경 할수도
 
         XMStoreFloat4x4(&m_pSpearTip1_MatrixW, XMLoadFloat4x4(m_pSpearTip1_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
         _vector vScale, vQuat, vTrans;
@@ -425,7 +425,7 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
         BodyBoxDesc.eMotion = EMotionType::Kinematic;
         BodyBoxDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
         BodyBoxDesc.eShapeType = SHAPE::BOX;
-        BodyBoxDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER); // 추후에 Enum Monster attack 변경 할수도
+        BodyBoxDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK); // 추후에 Enum Monster attack 변경 할수도
 
         XMStoreFloat4x4(&m_pSpearPole_MatrixW, XMLoadFloat4x4(m_pSpearPole_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
         _vector vScale, vQuat, vTrans;
@@ -634,14 +634,13 @@ void CBody_Khazan_Spear::Event_AttackTiming(_bool isAttackStart)
     {
         m_isSpearFullExtension = false;
         m_iCurSetAnimIndex = m_pModelCom->Get_CurAnimIndex();
-        //m_pBodyCom_SpearTip1->Collision_Active(true);
-        cout << " collision Enter !! " << endl;
+        m_pBodyCom_SpearTip1->Collision_Active(true);
+       
     }
     else
     {
         m_isSpearFullExtension = true;
-        //m_pBodyCom_SpearTip1->Collision_Active(false);
-        cout << " collision Exit @@ " << endl;
+        m_pBodyCom_SpearTip1->Collision_Active(false);
     }
 
 }
