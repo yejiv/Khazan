@@ -290,7 +290,6 @@ _uint CKhazan_Spear_Anim_Move::GetLockOnWalkAnimation(DIRECTION_INFO eDir)
 
 _uint CKhazan_Spear_Anim_Move::GetLockOnRunAnimation(DIRECTION_INFO eDir)
 {
-
     if (eDir.AllCheck_Flag(DIR::F | DIR::L)) return m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_LockOn_Run_FL");
     else if (eDir.AllCheck_Flag(DIR::F | DIR::R)) return m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_LockOn_Run_FR");
     else if (eDir.AllCheck_Flag(DIR::B | DIR::R)) return m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_LockOn_Run_BR");

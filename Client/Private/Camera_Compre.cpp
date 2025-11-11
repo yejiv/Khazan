@@ -77,15 +77,11 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
 {
     if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
     {
-        Start_ForceOrbit(CAMERA_FORCE_DIR::FRONT);
+        Yetuga_Holding_Start();
     }
     else if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
     {
-        Start_ForceOrbit(CAMERA_FORCE_DIR::BACK);
-    }
-    else if (m_pGameInstance->Key_Down(DIK_NUMPAD3))
-    {
-        Start_ForceOrbit(CAMERA_FORCE_DIR::NONE);
+        Yetuga_Holding_End();
     }
 
     if (!m_isActive)
@@ -107,8 +103,12 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
             else if (m_iCameraType == ENUM_CLASS(CAMERATYPE::PLAYER))
             {
 
-                if(m_isForceOrbit)
+                if (m_isForceOrbit)
                     Update_ForceOrbit(fTimeDelta);
+                else if (m_isCinematic)
+                    Update_Cinematic(fTimeDelta);
+                else if (m_isYetuga_Holding)
+                    Update_Yetuga_Holding(fTimeDelta);
                 else
                     Update_Spring(fTimeDelta);
             }
@@ -268,7 +268,7 @@ HRESULT CCamera_Compre::Spring(_float fTimeDelta)
 
 HRESULT CCamera_Compre::RayCast(_float fTimeDelta)
 {
-    _vector vPos = m_pTransformCom->Get_State(STATE::POSITION) - XMVectorSetW(XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK)), 0.f) * 1.5f;
+    _vector vPos = m_pTransformCom->Get_State(STATE::POSITION) - XMVectorSetW(XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK)), 0.f);
     _vector vTargetPos = XMVectorSet(m_pObjMatrix->_41, m_pObjMatrix->_42 + 1.5f, m_pObjMatrix->_43, 1.f);
 
     _float fFraction;
@@ -665,6 +665,150 @@ void CCamera_Compre::Update_ForceOrbit(_float fTimeDelta)
     }
 }
 
+void CCamera_Compre::Update_Cinematic(_float fTimeDelta)
+{
+
+}
+
+void CCamera_Compre::Yetuga_Holding_Start()
+{
+    if (!m_pTransformCom || !m_pObjMatrix)
+        return;
+
+    // 다른 카메라 연출은 끈다 (LockOn flag는 건들지 않음)
+    m_isForceOrbit = false;
+    m_isBlendBack = false;
+    m_isCinematic = false;
+
+    m_isYetuga_Holding = true;
+
+    // 1) 현재 카메라 상태 고정
+    m_vYetugaHoldPos = m_pTransformCom->Get_State(STATE::POSITION);
+    m_vYetugaBaseRight = m_pTransformCom->Get_State(STATE::RIGHT);
+    m_vYetugaBaseUp = m_pTransformCom->Get_State(STATE::UP);
+    m_vYetugaBaseLook = XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK));
+
+    // 2) 현재 Look 기반 yaw/pitch 계산
+    _float fX = XMVectorGetX(m_vYetugaBaseLook);
+    _float fY = XMVectorGetY(m_vYetugaBaseLook);
+    _float fZ = XMVectorGetZ(m_vYetugaBaseLook);
+
+    m_fYetugaYaw = atan2f(fZ, fX);
+    m_fYetugaPitch = Clamp(asinf(Clamp(fY, -1.f, 1.f)), m_fYetugaPitchMin, m_fYetugaPitchMax);
+
+    m_fYetugaYawVel = 0.f;
+    m_fYetugaPitchVel = 0.f;
+}
+
+void CCamera_Compre::Yetuga_Holding_End()
+{
+    if (!m_isYetuga_Holding)
+        return;
+
+    m_isYetuga_Holding = false;
+
+    // 1) 블렌드백 시작 플래그
+    m_isBlendBack = true;
+    m_fBlendBackTime = 0.f;
+
+    // 2) 시작 포즈: 지금 예투가 연출용 카메라 포즈
+    m_vBlendStartPos = m_pTransformCom->Get_State(STATE::POSITION);
+    m_vBlendStartRight = m_pTransformCom->Get_State(STATE::RIGHT);
+    m_vBlendStartUp = m_pTransformCom->Get_State(STATE::UP);
+    m_vBlendStartLook = m_pTransformCom->Get_State(STATE::LOOK);
+
+    // 3) Spring 타겟과 자연스럽게 이어지도록
+    //    현재 Look 기반으로 yaw/pitch를 세팅해 둔다.
+    _vector vLookN = XMVector3Normalize(m_vBlendStartLook);
+    _float fX = XMVectorGetX(vLookN);
+    _float fY = XMVectorGetY(vLookN);
+    _float fZ = XMVectorGetZ(vLookN);
+
+    m_fYaw = atan2f(fZ, fX);
+    m_fPitch = Clamp(asinf(Clamp(fY, -1.f, 1.f)), m_fPitchMin, m_fPitchMax);
+
+}
+
+void CCamera_Compre::Update_Yetuga_Holding(_float fTimeDelta)
+{
+    if (!m_isYetuga_Holding || !m_pObjMatrix || !m_pTransformCom)
+        return;
+
+    if (fTimeDelta <= 0.f)
+        return;
+
+    // 1) 고정 카메라 위치
+    _vector vCamPos = m_vYetugaHoldPos;
+
+    // 2) 타겟(플레이어) 위치 (연출용 높이 조절 가능)
+    _vector vTargetPos = XMVectorSet(
+        m_pObjMatrix->_41,
+        m_pObjMatrix->_42 + 1.5f, // 필요하면 1.8, 2.0 등 튜닝
+        m_pObjMatrix->_43,
+        1.f
+    );
+
+    _vector vToTarget = XMVectorSubtract(vTargetPos, vCamPos);
+    _float fLenSq = XMVectorGetX(XMVector3LengthSq(vToTarget));
+    if (fLenSq < 1e-6f)
+    {
+        // 너무 가까우면 그냥 현재 자세 유지
+        m_pTransformCom->Set_State(STATE::POSITION, vCamPos);
+        m_pTransformCom->Set_State(STATE::RIGHT, m_vYetugaBaseRight);
+        m_pTransformCom->Set_State(STATE::UP, m_vYetugaBaseUp);
+        m_pTransformCom->Set_State(STATE::LOOK, m_vYetugaBaseLook);
+        return;
+    }
+
+    vToTarget = XMVector3Normalize(vToTarget);
+
+    _float fTargetX = XMVectorGetX(vToTarget);
+    _float fTargetY = XMVectorGetY(vToTarget);
+    _float fTargetZ = XMVectorGetZ(vToTarget);
+
+    // 3) 목표 yaw/pitch
+    float targetYaw = atan2f(fTargetZ, fTargetX);
+    float targetPitch = asinf(Clamp(fTargetY, -1.f, 1.f));
+    targetPitch = Clamp(targetPitch, m_fYetugaPitchMin, m_fYetugaPitchMax);
+
+    // 4) 스무딩 (떨림 방지)
+    m_fYetugaYaw = SmoothDampAngle(
+        m_fYetugaYaw,
+        targetYaw,
+        m_fYetugaYawVel,
+        m_fYetugaYawSmoothTime,
+        fTimeDelta
+    );
+
+    m_fYetugaPitch = SmoothDampScalar(
+        m_fYetugaPitch,
+        targetPitch,
+        m_fYetugaPitchVel,
+        m_fYetugaPitchSmoothTime,
+        fTimeDelta
+    );
+
+    // 5) 보간된 yaw/pitch → 최종 Look
+    _vector vLook = XMVectorSet(
+        cosf(m_fYetugaPitch) * cosf(m_fYetugaYaw),
+        sinf(m_fYetugaPitch),
+        cosf(m_fYetugaPitch) * sinf(m_fYetugaYaw),
+        0.f
+    );
+    vLook = XMVector3Normalize(vLook);
+
+    _vector vWorldUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+    _vector vRight = XMVector3Normalize(XMVector3Cross(vWorldUp, vLook));
+    if (XMVectorGetX(XMVector3LengthSq(vRight)) < 1e-6f)
+        vRight = m_vYetugaBaseRight; // 드물게 수직에 가까울 때 fallback
+    _vector vUp = XMVector3Normalize(XMVector3Cross(vLook, vRight));
+
+    // 6) 적용 (위치는 고정)
+    m_pTransformCom->Set_State(STATE::POSITION, vCamPos);
+    m_pTransformCom->Set_State(STATE::RIGHT, vRight);
+    m_pTransformCom->Set_State(STATE::UP, vUp);
+    m_pTransformCom->Set_State(STATE::LOOK, vLook);
+}
 
 CCamera_Compre::CAMERA_COMPRE_DESC CCamera_Compre::Get_Desc()
 {
@@ -762,4 +906,7 @@ void CCamera_Compre::Free()
 
     Safe_Release(m_pLockOnUI);
     Safe_Release(m_pBody);
+
+    m_pObjMatrix = nullptr;
+    m_pSocketMatrix = nullptr;
 }
