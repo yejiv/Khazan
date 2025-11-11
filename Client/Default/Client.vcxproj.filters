@@ -718,6 +718,9 @@
     <Filter Include="02.GameObject\UI\BladeNexus_Map\BG">
       <UniqueIdentifier>{146cf3fc-807b-4ef5-82d1-56d6a87872c1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Projectile\Imp_Range">
+      <UniqueIdentifier>{7eb4d9c5-fc1f-45b9-bb06-e9804903beb7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1378,6 +1381,13 @@
     <ClInclude Include="..\public\BladeNexus_Map_BG.h">
       <Filter>02.GameObject\UI\BladeNexus_Map\BG</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Imp_Range.h">
+      <Filter>02.GameObject\Creature\Monster\Imp_Range</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Imp_Wand.h">
+      <Filter>02.GameObject\Creature\Monster\Imp_Range\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Projectile_Imp_MagicBall.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2018,6 +2028,13 @@
     <ClCompile Include="..\private\BladeNexus_Map_BG.cpp">
       <Filter>02.GameObject\UI\BladeNexus_Map\BG</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Imp_Range.cpp">
+      <Filter>02.GameObject\Creature\Monster\Imp_Range</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Imp_Wand.cpp">
+      <Filter>02.GameObject\Creature\Monster\Imp_Range\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile_Imp_MagicBall.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
