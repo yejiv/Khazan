@@ -18,9 +18,7 @@ HRESULT CEffect_Manager::Initialize(_uint iNumLevels)
 
 	return S_OK;
 }
-
-//?щ쭔?섎㈃ 寃뚯엫 ?꾩쨷?먮뒗 ?몄텧 ???? Level??Initlize?먯꽌留??몄텧
-//留뚯빟 以묎컙???몄텧?쒕떎硫?Pool ??뉕쾶 留뚮뱾?댁＜??嫄?醫 ?섏젙?댁빞??
+ 
 void CEffect_Manager::Add_Effect_ToPool(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint iPoolSize)
 {
 	CPrefab* effect;
@@ -69,8 +67,8 @@ _uint CEffect_Manager::Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strP
 
 	if (Pool == nullptr || Pool->size() == 0)
 	{
-		MSG_BOX(TEXT("Effect Pool???녾굅??Pool??媛앹껜媛 ?놁뼱??Spwan ?ㅽ뙣!!! ?꾨쭏??媛앹껜媛 紐⑥옄瑜??뺣쪧????"));
-		return 0;
+        MSG_BOX(TEXT("Effect Pool이 없거나 Pool에 객체가 없어서 Spwan 실패!!! 아마도 객체가 모자를 확률이 큼"));
+        return 0;
 	}
 
 	CPrefab* effect = Pool->back();
@@ -167,15 +165,12 @@ void CEffect_Manager::Update(_float fEffectTimeDelta)
 
 void CEffect_Manager::Late_Update(_float fEffectTimeDelta)
 {
-	for (size_t i = 0; i < m_iNumLevels; i++)
+	for (auto& Pair : m_pRunningEffects[m_iCurLevel])
 	{
-		for (auto& Pair : m_pRunningEffects[m_iCurLevel])
+		for (auto& effect : Pair.second)
 		{
-			for (auto& effect : Pair.second)
-			{
-				if (nullptr != effect)
-					effect->Late_Update(fEffectTimeDelta);
-			}
+			if (nullptr != effect)
+				effect->Late_Update(fEffectTimeDelta);
 		}
 	}
 }

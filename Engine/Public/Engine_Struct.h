@@ -189,6 +189,7 @@ namespace Engine
 	typedef struct tagFogTransitionDesc
 	{
 		float			fDensity;		// 지수용
+		float	        fBias;          // 원색 방지 보정용
 		XMFLOAT4		vColor;
         bool            isUseHeight;
         float           fBaseHeight;
@@ -207,8 +208,10 @@ namespace Engine
 		TYPE			eType;
 		float			fNear, fFar;	// 선형용
 		float			fDensity;		// 지수용
+        float           fBias;          // 원색 방지 보정용
 		XMFLOAT4		vColor;
-		FOG_NOISE_DESC	Noise;
+        FOG_NOISE_DESC	Noise;
+        bool            isUseHeight;
 		float			fBaseHeight;
 		float			fHeightDensity;
 	}FOG_CONFIG;
@@ -252,6 +255,13 @@ namespace Engine
 		float			fSpeed;
 		unsigned int	iNoiseIndex;
 	}DISTORTION_DESC;
+
+    typedef struct tagLookUpTableDesc
+    {
+        float           fIntensity;
+        unsigned int    iSliceSize;
+        XMFLOAT2        vTextureSize;
+    }LUT_DESC;
 
 	struct HitStopState
 	{

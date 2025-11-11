@@ -31,6 +31,7 @@ private:
     void                Check_Sight(class CGameObject* pOwner);
     void                Forget();
     void                Forget_Damage();
+
 private:
     string              m_strName = {};
     AIPERCEPTION_DATA   m_tSightDesc{}; // 시야 센스의 설정값을 저장

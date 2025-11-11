@@ -1,18 +1,6 @@
 #pragma once
 #include "Engine_Defines.h"
 
-#ifdef new
-#pragma push_macro("new")
-#undef new
-#endif
-
-#include <Jolt/Physics/Character/CharacterVirtual.h>
-#include <Jolt/Physics/Body/BodyID.h>
-
-#ifdef new
-#pragma pop_macro("new")
-#endif
-
 NS_BEGIN(Engine)
 
 // JPH 네임스페이스를 자주 쓰면 using 해도 OK

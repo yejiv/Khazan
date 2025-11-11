@@ -146,12 +146,22 @@ namespace Client
 
 	typedef struct tag_Player_Data
 	{
+        _float  fMaxHp;
+        _float  fCulHp;
+        _float  fMaxStamina;
+        _float  fCulStamina;
+        _int    iMaxDoggednessCount = {};
+        _float  fCulDoggedness = {};
+
+        _float  fDamage = {};
+        _float  fGuard = {};
+
 		_uint	iLachryma = {};
 		_uint	iGold = {};
 		_uint	iLevel = {};
 		_uint	iSkillLevel = {};
 		_float	fSkillLevel_EXP = {};
 		_uint	iSkilPoint = {};
-
+        
 	}PLAYER_DATA;
 }

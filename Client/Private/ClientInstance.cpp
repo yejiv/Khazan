@@ -8,6 +8,7 @@
 
 #include "PlayerData_Manager.h"
 #include "Player_Manager.h"
+#include "Interact_Manager.h"
 
 #ifdef _DEBUG
 #include "Debug_Manager.h"
@@ -47,6 +48,10 @@ HRESULT CClientInstance::Initialize(ID3D11Device** ppDevice, ID3D11DeviceContext
 	m_pPlayer_Manager = CPlayer_Manager::Create();
 	if (nullptr == m_pPlayer_Manager)
 		return E_FAIL;
+
+    m_pInteract_Manager = CInteract_Manager::Create();
+    if (nullptr == m_pInteract_Manager)
+        return E_FAIL;
 
 #ifdef _DEBUG
 	m_pDebug_Manager = CDebug_Manager::Create();
@@ -160,6 +165,10 @@ _float4 CClientInstance::Get_AtlasUV(const string pFrameName, _uint iTextureInde
 #pragma endregion
 
 #pragma region Player_Manager
+PLAYER_DATA& CClientInstance::Get_ptrPlayerData()
+{
+    return m_pPlayer_Manager->Get_ptrPlayerData();
+}
 const PLAYER_DATA& CClientInstance::Get_PlayerData()
 {
 	return m_pPlayer_Manager->Get_PlayerData();
@@ -302,6 +311,30 @@ void CClientInstance::lock_GswordSkill(_uint skill)
 #pragma endregion
 
 
+#pragma region INTERACT_MANAGER
+void CClientInstance::Add_BladeNexus(KHAZAN_MAP eMapName, INTER_BLADENEXUS_DESC* pDesc)
+{
+    return m_pInteract_Manager->Add_BladeNexus(eMapName, pDesc);
+}
+INTER_BLADENEXUS_DESC* CClientInstance::Find_BladeNexus(KHAZAN_MAP eMapName, _uint iID)
+{
+    return m_pInteract_Manager->Find_BladeNexus(eMapName, iID);
+}
+INTER_BLADENEXUS_DESC* CClientInstance::Find_BladeNexus(_uint iID)
+{
+    return m_pInteract_Manager->Find_BladeNexus(iID);
+}
+vector<INTER_BLADENEXUS_DESC*>* CClientInstance::Find_MapBladeNexus(KHAZAN_MAP eMapName)
+{
+    return m_pInteract_Manager->Find_MapBladeNexus(eMapName);
+}
+void CClientInstance::Unlock_BladeNexus(_uint iID)
+{
+    m_pInteract_Manager->Unlock_BladeNexus(iID);
+}
+#pragma endregion
+
+
 #ifdef _DEBUG
 #pragma region CAMERA_MANAGER
 
@@ -321,6 +354,7 @@ void CClientInstance::Release_Client()
 	Safe_Release(m_pCamera_Manager);
 	Safe_Release(m_pPlayerData_Manager);
 	Safe_Release(m_pPlayer_Manager);
+    Safe_Release(m_pInteract_Manager);
 #ifdef _DEBUG	
 	Safe_Release(m_pDebug_Manager);
 	Safe_Release(m_pCamera_Controller);

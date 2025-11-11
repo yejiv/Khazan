@@ -2,12 +2,12 @@
 #include "GameInstance.h"
 
 CScreenTrail::CScreenTrail(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
-    : CGameObject{pDevice, pDeviceContext}
+    : CUIObject{pDevice, pDeviceContext}
 {
 }
 
 CScreenTrail::CScreenTrail(const CScreenTrail& Prototype)
-    : CGameObject(Prototype)
+    : CUIObject(Prototype)
     , m_iTextureIdx{ Prototype.m_iTextureIdx }
     , m_fLifeTime{ Prototype.m_fLifeTime }
     , m_iDivisionCount{ Prototype.m_iDivisionCount }
@@ -36,6 +36,7 @@ HRESULT CScreenTrail::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Component(pArg)))
         return E_FAIL;
 
+    m_fDepth = 0.6f;
     if (pArg)
     {
         LINE_TRAIL_DESC* dsc = static_cast<LINE_TRAIL_DESC*>(pArg);
@@ -98,7 +99,7 @@ void CScreenTrail::Late_Update(_float fTimeDelta)
     m_pVIBufferCom->Update(m_TrailPoints);
 
     if (m_ControlPoints.size() > 1)
-        m_pGameInstance->Add_RenderGroup(RENDERGROUP::UI, this);
+        CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
 }
 
 HRESULT CScreenTrail::Render()

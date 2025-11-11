@@ -13,6 +13,8 @@
 #include "UI_Inven.h"
 #include "UI_MainMenu.h"
 #include "UI_BladeNexus.h"
+#include "UI_BladeNexus_Map.h"
+
 #include "UI_State.h"
 #include "UI_Logo.h"
 #include "UI_Loading.h"

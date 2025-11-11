@@ -20,7 +20,7 @@ vector g_vMtrlAmbient = { 1.f, 1.f, 1.f, 1.f }, g_vMtrlSpecular = { 1.f, 1.f, 1.
 // ===== Textures =====
 Texture2D g_DiffuseTexture, g_NormalTexture, g_DepthTexture, g_ShadeTexture, g_SpecularTexture, g_EmissiveTexture;
 Texture2D g_LightDepthTexture, g_PostSceneTexture, g_BlurXTexture, g_BloomTexture, g_FogTexture, g_OutlineTexture;
-Texture2D g_NoiseTexture, g_SSAOTexture, g_CombinedTexture, g_MaskTexture;
+Texture2D g_NoiseTexture, g_SSAOTexture, g_CombinedTexture, g_LUTTexture;
 
 // ===== Cascade Shadow =====
 int g_iTextureArrayIndex;
@@ -52,11 +52,13 @@ int g_iWeightRadius;
 uint g_iFogMode;
 float g_fFogNear, g_fFogFar;
 float g_fFogDensity;
+float g_fFogBias;
 float4 g_vFogColor = { 1.f, 1.f, 1.f, 1.f };
 float g_fTimeDelta;
 bool g_isEnableNoise, g_isWorldFog;
 float2 g_vNoiseSpeed, g_vNoiseScale;
 float g_fNoiseStrength, g_fNoiseContrast;
+bool g_isUseHeightFog;
 float g_fFogBaseHeight, g_fFogHeightDensity;
 
 // ===== Outline =====
@@ -81,6 +83,15 @@ bool g_isEnableToonShade = { true };
 bool g_isEnableShadow = { true };
 bool g_isEnableSSAO = { true };
 bool g_isEnableFog = { true };
+bool g_isEnableLUT;
+
+// ===== Specular =====
+float2 g_vSpecularPower;
+
+// ===== LUT =====
+float g_fLUTIntensity;
+uint g_iLUTSliceSize;
+float2 g_vLUTTextureSize;
 
 struct VS_IN
 {
@@ -195,14 +206,19 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
     
     // Specular
     vector vSpecularDesc = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    float fSpecularValue = vSpecularDesc.g;
+    float fSpecularIntensity = vSpecularDesc.r;
     
-    // float fShininess = lerp(10.f, 256.f, vSpecularDesc.g);
+    float fShininess = lerp(g_vSpecularPower.x, g_vSpecularPower.y, fSpecularValue);
     
     vector vReflect = reflect(normalize(g_vLightDir), vNormal);
     vector vLook = vWorldPos - g_vCamPosition;
-    float fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), 1.f);
+    float fSpecularBase = max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f);
+    float fSpecular = pow(fSpecularBase, fShininess);
     
-    Out.vSpecular = (g_vLightSpecular * vSpecularDesc) * fSpecular;
+    Out.vSpecular = g_vLightSpecular * fSpecular * fSpecularValue + g_vLightSpecular * fSpecular * fSpecularIntensity * 2.f;
+    //  Out.vSpecular = float4(fSpecularValue, 0.f, fShininess, 1.f);
+    //  Out.vSpecular = float4(fSpecularValue, fSpecularValue, fSpecularValue, 1.f);
     
     return Out;
 }
@@ -261,12 +277,25 @@ PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
 
     // Specular
     vector vSpecularDesc = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    float fSpecularValue = vSpecularDesc.g;
+    float fSpecularIntensity = vSpecularDesc.r;
     
-    vector vReflect = reflect(normalize(vLightDir), vNormal);
+    float fShininess = lerp(g_vSpecularPower.x, g_vSpecularPower.y, fSpecularValue);
+    
+    vector vReflect = reflect(normalize(g_vLightDir), vNormal);
     vector vLook = vWorldPos - g_vCamPosition;
-    float fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), 50.f);
+    float fSpecularBase = max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f);
+    float fSpecular = pow(fSpecularBase, fShininess);
     
-    Out.vSpecular = (g_vLightSpecular * g_vMtrlSpecular) * fSpecular * fAtt;
+    Out.vSpecular = g_vLightSpecular * fSpecular * fSpecularValue * fAtt + g_vLightSpecular * fSpecular * fSpecularIntensity * 2.f * fAtt;
+    
+    //  vector vSpecularDesc = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    //  
+    //  vector vReflect = reflect(normalize(vLightDir), vNormal);
+    //  vector vLook = vWorldPos - g_vCamPosition;
+    //  float fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), 50.f);
+    //  
+    //  Out.vSpecular = (g_vLightSpecular * g_vMtrlSpecular) * fSpecular * fAtt;
     
     return Out;
 }
@@ -610,15 +639,24 @@ PS_OUT_BACKBUFFER PS_MAIN_FOG(PS_IN In)
         fFogFactor = lerp(fFogFactor, fFogFactor * fNoise, g_fNoiseStrength);
     }
     
-    // Height 계산
-    float fFogDiff = vWorldPos.y - g_fFogBaseHeight;
-    fFogDiff = max(fFogDiff, 0.f);
-    float fFogHeightFactor = saturate(exp(-fFogDiff * g_fFogHeightDensity));
+    fFogFactor = clamp(fFogFactor, 0.f, g_fFogBias);
     
-    vResultColor = lerp(vPostSceneDesc, g_vFogColor, fFogFactor * fFogHeightFactor);
+    if (true == g_isUseHeightFog)
+    {
+        // Height 계산
+        float fFogDiff = vWorldPos.y - g_fFogBaseHeight;
+        fFogDiff = max(fFogDiff, 0.f);
+        float fFogHeightFactor = saturate(exp(-fFogDiff * g_fFogHeightDensity));
+        
+        vResultColor = lerp(vPostSceneDesc, g_vFogColor, fFogFactor * fFogHeightFactor);
+    }
+    else
+    {
+        vResultColor = lerp(vPostSceneDesc, g_vFogColor, fFogFactor);
+    }
+    
     Out.vColor = vResultColor;
-    //  Out.vColor = float4(vResultColor.rgb, vPostSceneDesc.a);
-    
+
     return Out;
 }
 
@@ -667,6 +705,62 @@ PS_OUT_BACKBUFFER PS_MAIN_DISTORTION(PS_IN In)
         vFinalColor = g_CombinedTexture.Sample(DefaultSampler, In.vTexcoord);
 
     Out.vColor = vFinalColor;
+    
+    return Out;
+}
+
+PS_OUT_BACKBUFFER PS_MAIN_LUT(PS_IN In)
+{
+    PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
+
+    // 컴바인드 텍스처 읽기
+    float3 vSceneColor = g_CombinedTexture.Sample(ClampSampler, In.vTexcoord).rgb;
+    float3 vFinalColor = float3(0.f, 0.f, 0.f);
+    
+    if (true == g_isEnableLUT)
+    {
+        // LUT 텍스처 좌표 계산
+    
+        // LUT 한 슬라이스의 크기
+        float fSliceIndex = vSceneColor.b * (g_iLUTSliceSize - 1.f);
+        int iSliceLow = (int) floor(fSliceIndex);
+        int iSliceHigh = min(iSliceLow + 1, g_iLUTSliceSize - 1);
+    
+        // 두 슬라이스 간 보간 비율
+        float fSliceBlend = fSliceIndex - iSliceLow;
+    
+        // 현재 슬라이스 내부 좌표 계산
+        float fLutX = vSceneColor.r * (float) (g_iLUTSliceSize - 1);
+        float fLutY = vSceneColor.g * (float) (g_iLUTSliceSize - 1);
+    
+        // LUT 텍스처 상에서 실제 픽셀 위치 계산
+        float fSliceLowPixelX = (float) iSliceLow * (float) g_iLUTSliceSize + fLutX;
+        float fSliceHighPixelX = (float) iSliceHigh * (float) g_iLUTSliceSize + fLutX;
+        float fSlicePixelY = fLutY;
+    
+        // 픽셀 좌표 -> 정규화된 UV 좌표로 변환 (텍셀 중앙 맞춤)
+        float vLowUV = float2((fSliceLowPixelX + 0.5f) / g_vLUTTextureSize.x,
+                           (fSlicePixelY + 0.5f) / g_vLUTTextureSize.y);
+        float vHighUV = float2((fSliceHighPixelX + 0.5f) / g_vLUTTextureSize.x,
+                           (fSlicePixelY + 0.5f) / g_vLUTTextureSize.y);
+    
+        // 두 슬라이스에서 샘플링
+        float3 vLowColor = g_LUTTexture.Sample(DefaultSampler, vLowUV).rgb;
+        float3 vHighColor = g_LUTTexture.Sample(DefaultSampler, vHighUV).rgb;
+    
+        // 두 색을 보간
+        float3 vLUTColor = lerp(vLowColor, vHighColor, fSliceBlend);
+    
+        // LUT 강도만큼 원본과 보정된 색 사이를 보간
+        vFinalColor = lerp(vSceneColor, vLUTColor, saturate(g_fLUTIntensity));
+    }
+    else
+        vFinalColor = vSceneColor;
+    
+    // 최종 출력 시 감마 보정(일단 주석) -> Linear -> sRGB
+    //  vFinalColor = pow(vFinalColor, 1.f / 2.2f);
+
+    Out.vColor = float4(vFinalColor, 1.f);
     
     return Out;
 }
@@ -792,5 +886,16 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_DISTORTION();
+    }
+
+    pass LUT
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+    
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_LUT();
     }
 }
