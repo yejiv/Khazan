@@ -101,15 +101,15 @@ HRESULT CLevel_Title::Ready_Layer_UI()
         ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Announce_Over"), TIME_CHANNEL::WORLD, &Desc)))
         return E_FAIL;
 
-	//Desc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
-	//Desc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
-	//Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
-	//Desc.szName = "LogoBG";
-	//Desc.fDepth = 10;
+	Desc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
+	Desc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
+	Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+	Desc.szName = "LogoBG";
+	Desc.fDepth = 10;
 
-	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::TITLE), TEXT("Layer_UI"),
-	//	ENUM_CLASS(LEVEL::TITLE), TEXT("Prototype_GameObject_Logo_BG"), TIME_CHANNEL::WORLD, &Desc)))
-	//	return E_FAIL;
+	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::TITLE), TEXT("Layer_UI"),
+		ENUM_CLASS(LEVEL::TITLE), TEXT("Prototype_GameObject_Logo_BG"), TIME_CHANNEL::WORLD, &Desc)))
+		return E_FAIL;
 
 	Desc.vLocalSize = { 48.f, 48.f };
 	Desc.vLocalPos = { 0.f, 0.f };

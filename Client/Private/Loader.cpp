@@ -113,9 +113,9 @@ void CLoader::Update()
 
 	m_isFinished = all_ok;
 	if (m_isFinished)
-		lstrcpy(m_szLoadingText, TEXT("�ε��� �Ϸ�Ǿ����ϴ�."));
+		lstrcpy(m_szLoadingText, TEXT("성공"));
 	else
-		lstrcpy(m_szLoadingText, TEXT("�ε� �����Ͽ����ϴ�."));
+		lstrcpy(m_szLoadingText, TEXT("실패"));
 }
 
 HRESULT CLoader::Loading()
@@ -933,7 +933,7 @@ HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDa
 	DWORD dwByte = {};
 
 	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("[DAT ERROR] ���̳ʸ� ���� ���� ����"), E_FAIL);
+	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("[DAT ERROR]"), E_FAIL);
 
 	// 1. ������ Ÿ���� �� ����
 	_uint iPrototypeCnt = {};
@@ -963,7 +963,7 @@ HRESULT CLoader::Loading_Prototype_MapObject_From_DAT(const _tchar* pPrototypeDa
 			CModel::Create(m_pDevice, m_pContext, szModelPath))))
 		{
 			CloseHandle(hFile);
-			MSG_BOX(TEXT("[DAT ERROR] �� ������Ʈ ������Ÿ�� ��� ���� ( CModel )"));
+			MSG_BOX(TEXT("[DAT ERROR] ( CModel )"));
 			return E_FAIL;
 		}
 	}
@@ -1003,7 +1003,7 @@ HRESULT CLoader::Loading_Prototype_MapObject_Inst_From_DAT(const _tchar* pProtot
 	DWORD dwByte = {};
 
 	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("[DAT ERROR] ���̳ʸ� ���� ���� ����"), E_FAIL);
+	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("[DAT ERROR]"), E_FAIL);
 
 	// 1. ������ Ÿ���� �� ����
 	_uint iPrototypeCnt = {};
@@ -1055,7 +1055,7 @@ HRESULT CLoader::Loading_Prototype_MapObject_Inst_From_DAT(const _tchar* pProtot
 			CModel_Instance::Create(m_pDevice, m_pContext, szModelPath, &MeshInstanceDesc))))
 		{
 			CloseHandle(hFile);
-			MSG_BOX(TEXT("[DAT ERROR] �� ������Ʈ ������Ÿ�� ��� ���� ( CModel )"));
+			MSG_BOX(TEXT("[DAT ERROR]  ( CModel )"));
 			return E_FAIL;
 		}
 	}
