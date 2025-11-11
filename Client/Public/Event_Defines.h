@@ -10,6 +10,8 @@ namespace Client {
 		LOCKON_VISIBLE,	
 		SKILL_EVENT,		
         PreSKILL_On,
+        ANNOUNCE_RESULT,
+        ANNOUNCE_OVER,
 		END };
 
 	// Structs
@@ -123,4 +125,7 @@ namespace Client {
     struct EVENT_ANNOUNCE_TALK {
         _int  iTalkIndex;
     };
+
+    struct EVENT_ANNOUNCE_RESULT { };
+
 }

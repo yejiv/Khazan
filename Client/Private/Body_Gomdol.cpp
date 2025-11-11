@@ -84,7 +84,7 @@ void CBody_Gomdol::Update(_float fTimeDelta)
         m_pLH_BodyCom->Activate(true);
         m_pRH_BodyCom->Activate(true);
 #ifdef _DEBUG
-        m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
+        //m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
 #endif
     }
     else

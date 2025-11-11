@@ -133,6 +133,14 @@ HRESULT CUI_BackGround::Bind_Mask()
 	{
 		m_pShaderCom->Begin(6);
 	}
+    else if (m_eBGType == UIBGTYPE::TOP)
+    {
+        m_pShaderCom->Begin(7);
+    }
+    else if (m_eBGType == UIBGTYPE::CIRCLE)
+    {
+        m_pShaderCom->Begin(9);
+    }
 	else
 	{
 		m_pShaderCom->Begin(4);

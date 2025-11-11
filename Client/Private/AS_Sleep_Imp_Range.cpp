@@ -11,7 +11,7 @@ void CAS_Sleep_Imp_Range::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
     CImp_Range* pImp = static_cast<CImp_Range*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pOwner->Get_Component(TEXT("Com_Model")));
-    pModel->Set_Animation(01);
+    pModel->Set_Animation(0);
     m_eState = IMP_SlEEP_STATE::SLEEP;
     m_isChanged = false;
 }

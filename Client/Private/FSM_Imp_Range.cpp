@@ -24,7 +24,6 @@ HRESULT CFSM_Imp_Range::Initialize(CGameObject* pOwner)
 
     m_pCurrentState->Enter(this, pOwner);
 
-
 }
 
 void CFSM_Imp_Range::Update(CGameObject* pOwner, _float fTimeDelta)

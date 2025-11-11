@@ -19,6 +19,9 @@
 #include "UI_Tutorial.h"
 #include "UI_SkillTree.h"
 
+#include "UI_Announce_Result.h"
+#include "UI_Announce_Over.h"
+
 //서브 UI
 #include "MainMenu_Deco.h"
 #include "UI_Announce_MapName.h"

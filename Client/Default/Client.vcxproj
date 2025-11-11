@@ -237,6 +237,7 @@
     <ClInclude Include="..\Public\Level_Test.h" />
     <ClInclude Include="..\public\Player_Manager.h" />
     <ClInclude Include="..\Public\Sequence_HeinMach_Start.h" />
+    <ClInclude Include="..\Public\Sequence_HeinMach_Start_Chat.h" />
     <ClInclude Include="..\public\Skill_Condition_Panel.h" />
     <ClInclude Include="..\public\Skill_Gauge.h" />
     <ClInclude Include="..\public\Skill_Info.h" />
@@ -250,6 +251,9 @@
     <ClInclude Include="..\public\Skill_Slot_Panel.h" />
     <ClInclude Include="..\public\Skill_Table.h" />
     <ClInclude Include="..\public\Skill_Tap.h" />
+    <ClInclude Include="..\public\UI_Announce_Over.h" />
+    <ClInclude Include="..\public\UI_Announce_Result.h" />
+    <ClInclude Include="..\public\UI_Announce_Symbol.h" />
     <ClInclude Include="..\public\UI_Guide_Icon.h" />
     <ClInclude Include="..\Public\HeaderGroup_UI.h" />
     <ClInclude Include="..\Public\HeinMach_Trigger.h" />
@@ -447,6 +451,7 @@
     <ClCompile Include="..\Private\Level_Test.cpp" />
     <ClCompile Include="..\private\Player_Manager.cpp" />
     <ClCompile Include="..\Private\Sequence_HeinMach_Start.cpp" />
+    <ClCompile Include="..\Private\Sequence_HeinMach_Start_Chat.cpp" />
     <ClCompile Include="..\private\Skill_Condition_Panel.cpp" />
     <ClCompile Include="..\private\Skill_Gauge.cpp" />
     <ClCompile Include="..\private\Skill_Info.cpp" />
@@ -460,6 +465,9 @@
     <ClCompile Include="..\private\Skill_Slot_Panel.cpp" />
     <ClCompile Include="..\private\Skill_Table.cpp" />
     <ClCompile Include="..\private\Skill_Tap.cpp" />
+    <ClCompile Include="..\private\UI_Announce_Over.cpp" />
+    <ClCompile Include="..\private\UI_Announce_Result.cpp" />
+    <ClCompile Include="..\private\UI_Announce_Symbol.cpp" />
     <ClCompile Include="..\private\UI_Guide_Icon.cpp" />
     <ClCompile Include="..\Private\HeinMach_Trigger.cpp" />
     <ClCompile Include="..\Private\Head_Yetuga.cpp" />
