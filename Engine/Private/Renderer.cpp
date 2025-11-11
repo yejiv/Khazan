@@ -88,33 +88,33 @@ HRESULT CRenderer::Draw()
 {
     if (FAILED(Render_Priority()))
         return E_FAIL;
-
+    
     if (isEnableShadow())
         if (FAILED(Render_Shadow()))
             return E_FAIL;
-
+    
     if (FAILED(Render_Static()))
         return E_FAIL;
-
+    
     if (FAILED(Render_Decal()))
         return E_FAIL;
-
+    
     if (FAILED(Render_Dynamic()))
         return E_FAIL;
-
+    
     if (FAILED(Render_Outline()))
         return E_FAIL;
-
+    
     if (isEnableSSAO())
         if (FAILED(Render_SSAO()))
             return E_FAIL;
-
+    
     if (FAILED(Render_Lights()))
         return E_FAIL;
-
+    
     if (FAILED(Render_PostScene()))
         return E_FAIL;
-
+    
     if (FAILED(Render_NonLight()))
         return E_FAIL;
 
@@ -123,13 +123,13 @@ HRESULT CRenderer::Draw()
 
     if (FAILED(Render_Fog()))
         return E_FAIL;
-
+    
     if (FAILED(Render_Blur()))
         return E_FAIL;
-
+    
     if (FAILED(Render_Combined()))
         return E_FAIL;
-
+    
     if (FAILED(Render_Distortion()))
         return E_FAIL;
 

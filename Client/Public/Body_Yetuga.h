@@ -49,6 +49,7 @@ public:
 
 private:
 	HRESULT					Ready_Components();
+    HRESULT				    Ready_AnimationEvent();
 	HRESULT					Bind_ShaderResources();
 	void					Carculate_Matrix(_float fTimeDelta);
     void                    Carculate_BakckMatrix(_float fTimeDelta);

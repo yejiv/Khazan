@@ -2,24 +2,24 @@
 
 matrix      g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D   g_Texture;
-float4      g_vColor;
+float4      g_vSourceColor = float4(1.f, 1.f, 1.f, 1.f);
 
 float       g_numCols, g_numRows;
 float       g_FrameIdx;
 
+float       g_fSizeRatio = 1.f;
+float       g_fSize = 1.f;
+float4      g_vCamPosition;
+
 struct VS_IN
 {
-    float3 vPosition : POSITION;
-    float2 vTexcoord : TEXCOORD0;    
+    float3 vPosition : POSITION; 
 };
 
 struct VS_OUT
 {
     float4 vPosition : SV_POSITION;
-    float2 vTexcoord : TEXCOORD0;
-    float4 vWorldPos : TEXCOORD1;
-    float4 vProjPos : TEXCOORD2;
-    
+    //float4 vWorldPos : TEXCOORD0;
 };
 
 VS_OUT VS_MAIN(VS_IN In)
@@ -31,29 +31,72 @@ VS_OUT VS_MAIN(VS_IN In)
     matWV = mul(g_WorldMatrix, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
     
-    Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);    
-    Out.vWorldPos = mul(float4(In.vPosition, 1.f), g_WorldMatrix);
-    Out.vProjPos = Out.vPosition;
+    Out.vPosition = mul(float4(In.vPosition, 1.f), g_WorldMatrix);       
+    return Out;     
+}
+
+
+struct GS_IN
+{
+    float4 vPosition : SV_POSITION;
+};
+
+struct GS_OUT
+{
+    float4 vPosition : SV_POSITION;
+    float2 vTexcoord : TEXCOORD0; 
+};
+
+[maxvertexcount(6)]
+void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
+{
+    GS_OUT Out[4];
+
+    vector vLook = g_vCamPosition - In[0].vPosition;
+    vector vRight = normalize(vector(cross(float3(0.f, 1.f, 0.f), vLook.xyz), 0.f)) * g_fSize * 0.5f;
+    vector vUp = normalize(vector(cross(vLook.xyz, vRight.xyz), 0.f)) * g_fSize * g_fSizeRatio * 0.5f;
+   
     
     float Width = 1.0f / g_numCols;
     float Height = 1.0f / g_numRows;
     
     float startU = (g_FrameIdx % g_numCols) * Width;
     float startV = floor(g_FrameIdx / g_numCols) * Height;
-    float2 finalUV = float2(startU, startV) + (In.vTexcoord * float2(Width, Height));
-    Out.vTexcoord = finalUV;
     
-    Out.vTexcoord = In.vTexcoord;
+    matrix matrVP = mul(g_ViewMatrix, g_ProjMatrix);
     
-    return Out;     
+    Out[0].vPosition = mul(In[0].vPosition + vRight + vUp, matrVP);
+    Out[0].vTexcoord = float2(0.f, 0.f);
+    Out[0].vTexcoord = float2(startU, startV) + (Out[0].vTexcoord * float2(Width, Height));
+    
+    
+    Out[1].vPosition = mul(In[0].vPosition - vRight + vUp, matrVP);
+    Out[1].vTexcoord = float2(1.f, 0.f);
+    Out[1].vTexcoord = float2(startU, startV) + (Out[1].vTexcoord * float2(Width, Height)); 
+    
+    Out[2].vPosition = mul(In[0].vPosition - vRight - vUp, matrVP);
+    Out[2].vTexcoord = float2(1.f, 1.f);
+    Out[2].vTexcoord = float2(startU, startV) + (Out[2].vTexcoord * float2(Width, Height)); 
+    
+    Out[3].vPosition = mul(In[0].vPosition + vRight - vUp, matrVP);
+    Out[3].vTexcoord = float2(0.f, 1.f);
+    Out[3].vTexcoord = float2(startU, startV) + (Out[3].vTexcoord * float2(Width, Height)); 
+    
+    Vertices.Append(Out[0]);
+    Vertices.Append(Out[1]);
+    Vertices.Append(Out[2]);
+    Vertices.RestartStrip();
+    
+    Vertices.Append(Out[0]);
+    Vertices.Append(Out[2]);
+    Vertices.Append(Out[3]);
+    Vertices.RestartStrip();
 }
 
 struct PS_IN
 {
     float4 vPosition : SV_POSITION;
-    float2 vTexcoord : TEXCOORD0;    
-    float4 vWorldPos : TEXCOORD1;
-    float4 vProjPos : TEXCOORD2;
+    float2 vTexcoord : TEXCOORD0;
 };
 
 struct PS_OUT
@@ -65,20 +108,17 @@ struct PS_OUT
 PS_OUT PS_MAIN_BLEND(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
-    //Out.vColor = g_Texture.Sample(PointSampler, In.vTexcoord);
     
     vector vMask = g_Texture.Sample(PointSampler, In.vTexcoord);
-    vector vFinalColor = float4(g_vColor.xyz, min(vMask.r, g_vColor.a));
+    
+    vector vSourColor = float4(g_vSourceColor.xyz, 1.f);
+    vector vFinalColor = vSourColor * vMask;
+    vFinalColor.a = max(max(vMask.r, vMask.g), vMask.b);
 
     float vDestAlpha = max(max(vMask.r, vMask.g), vMask.b);
     
-    vFinalColor.a = 1.f * vDestAlpha;
-
-    Out.vColor = vFinalColor;
-    //Out.vColor = vFinalColor * (g_vSourceColor.a + 1);
-    
-   // Out.vColor = float4(1.f, 1.f, 1.f, 1.f);
-    
+    Out.vColor = vFinalColor * (g_vSourceColor.a + 1);
+       
     return Out;
 }
 
@@ -90,7 +130,7 @@ technique11 DefaultTechnique
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
-        GeometryShader = NULL;
+        GeometryShader = compile gs_5_0 GS_MAIN();
         PixelShader = compile ps_5_0 PS_MAIN_BLEND();
     }
 }

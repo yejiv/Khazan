@@ -38,7 +38,7 @@ void CEffect_Terrain::Update(_float fTimeDelta)
 
 void CEffect_Terrain::Late_Update(_float fTimeDelta)
 {
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONLIGHT, this)))
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this)))
         return;
 }
 

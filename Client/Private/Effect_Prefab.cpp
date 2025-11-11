@@ -41,34 +41,20 @@ HRESULT CEffect_Prefab::Initialize_Clone(void* pArg)
         //element->SetParentsMatrix(m_pTransformCom->Get_WorldMatrixPtr());
         element->SetParentsMatrix(&m_CombinedWorldMatrix);
 
-    //m_test = *static_cast<_float3*>(pArg);
-    //m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(m_test.x, m_test.y, m_test.z, 1.f));
-
     return S_OK;
 }
 
 void CEffect_Prefab::Priority_Update(_float fTimeDelta)
 {
-    ///*test 지울 거*/
-    //if (m_pGameInstance->Key_Down(
-    // ) && m_test.x == 1.f)    //000
-    //    ResetChildren();
-    //else if (m_pGameInstance->Key_Down(DIK_O) && m_test.y == 1.f) //100
-    //    ResetChildren();
-    //
-    //const _float4* cam;
-    //if (m_pGameInstance->Key_Down(DIK_D))    //000
-    //    cam = m_pGameInstance->Get_CamPosition();
-    ////test end 
-    
-    //if (!m_bPlaying)
-    //    return ;    //reset && pool로 돌아가기!
+    m_fCurTime += fTimeDelta * 0.1f;
 
     for (size_t i = 0; i < m_eEventTracks.size(); ++i)
     {
         EFFECT_EVENT track = m_eEventTracks[i];
         if (!m_bEventTriggered[i] && m_fCurTime >= track.fStartTime)
         {
+            if (track.fStartTime == 1.f)
+                int a = 0;
             switch (track.eEventType)
             {
             case EffectEventType::ACTIVATE:
@@ -76,13 +62,13 @@ void CEffect_Prefab::Priority_Update(_float fTimeDelta)
                 break;
             case EffectEventType::ANIMATE_SPREAD:
                 m_Children[track.iElementIdx]->SetSpreadData(&track);
-                break;  
+                break;
             case EffectEventType::ANIMATE_ROTATE:
                 m_Children[track.iElementIdx]->SetRotateData(&track);
                 break;
             case EffectEventType::ANIMATE_TWINLKE:
                 m_Children[track.iElementIdx]->SetTwinkleData(&track);
-                break; 
+                break;
             case EffectEventType::ANIMATE_LINEAR_MOVE:
                 m_Children[track.iElementIdx]->SetUpwardData(&track);
                 break;
@@ -114,9 +100,11 @@ void CEffect_Prefab::Update(_float fTimeDelta)
     if(isFin == true)
     {
         for (bool isTriggered : m_bEventTriggered)
-            if (isTriggered == true)
+        {
+            if (isTriggered == false)
                 break;
-        m_bPlaying = false;
+            m_bPlaying = false;
+        }
     }
 }
 

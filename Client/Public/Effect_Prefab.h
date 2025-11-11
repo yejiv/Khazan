@@ -54,9 +54,6 @@ private:
 	vector<EFFECT_EVENT>			m_eEventTracks;
 	vector<bool>					m_bEventTriggered;
 
-	 
-	_float3							m_test;
-
 public:
 	static CEffect_Prefab*			Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const char* filename);
 	virtual CGameObject*			Clone(void* pArg);

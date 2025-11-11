@@ -89,6 +89,9 @@ HRESULT CBody_Yetuga::Initialize_Clone(void* pArg)
    if (FAILED(Ready_Colliders()))
         return E_FAIL;
 
+   if (FAILED(Ready_AnimationEvent()))
+       return E_FAIL;
+
     m_pTransformCom->Scale(_float3(1.3f,1.3f,1.3f));
     
     m_pLH_BodyCom->Collision_Active(false);
@@ -205,6 +208,15 @@ HRESULT CBody_Yetuga::Ready_Components()
 
     return S_OK;
 
+}
+
+HRESULT CBody_Yetuga::Ready_AnimationEvent()
+{
+    //m_pModelCom->Register_Event("FastAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_FastAtk01_Trail(); });
+    //m_pModelCom->Register_Event("FastAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_FastAtk_SpawnWind(); });
+    //m_pModelCom->Register_Event("Effect1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Effect1_Exit(); });
+
+    return S_OK;
 }
 
 HRESULT CBody_Yetuga::Bind_ShaderResources()
