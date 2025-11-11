@@ -52,11 +52,13 @@ int g_iWeightRadius;
 uint g_iFogMode;
 float g_fFogNear, g_fFogFar;
 float g_fFogDensity;
+float g_fFogBias;
 float4 g_vFogColor = { 1.f, 1.f, 1.f, 1.f };
 float g_fTimeDelta;
 bool g_isEnableNoise, g_isWorldFog;
 float2 g_vNoiseSpeed, g_vNoiseScale;
 float g_fNoiseStrength, g_fNoiseContrast;
+bool g_isUseHeightFog;
 float g_fFogBaseHeight, g_fFogHeightDensity;
 
 // ===== Outline =====
@@ -81,6 +83,9 @@ bool g_isEnableToonShade = { true };
 bool g_isEnableShadow = { true };
 bool g_isEnableSSAO = { true };
 bool g_isEnableFog = { true };
+
+// ===== Specular =====
+float2 g_vSpecularPower;
 
 struct VS_IN
 {
@@ -195,14 +200,19 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
     
     // Specular
     vector vSpecularDesc = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    float fSpecularValue = vSpecularDesc.g;
+    float fSpecularIntensity = vSpecularDesc.r;
     
-    // float fShininess = lerp(10.f, 256.f, vSpecularDesc.g);
+    float fShininess = lerp(g_vSpecularPower.x, g_vSpecularPower.y, fSpecularValue);
     
     vector vReflect = reflect(normalize(g_vLightDir), vNormal);
     vector vLook = vWorldPos - g_vCamPosition;
-    float fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), 1.f);
+    float fSpecularBase = max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f);
+    float fSpecular = pow(fSpecularBase, fShininess);
     
-    Out.vSpecular = (g_vLightSpecular * vSpecularDesc) * fSpecular;
+    Out.vSpecular = g_vLightSpecular * fSpecular * fSpecularValue + g_vLightSpecular * fSpecular * fSpecularIntensity * 2.f;
+    //  Out.vSpecular = float4(fSpecularValue, 0.f, fShininess, 1.f);
+    //  Out.vSpecular = float4(fSpecularValue, fSpecularValue, fSpecularValue, 1.f);
     
     return Out;
 }
@@ -261,12 +271,25 @@ PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
 
     // Specular
     vector vSpecularDesc = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    float fSpecularValue = vSpecularDesc.g;
+    float fSpecularIntensity = vSpecularDesc.r;
     
-    vector vReflect = reflect(normalize(vLightDir), vNormal);
+    float fShininess = lerp(g_vSpecularPower.x, g_vSpecularPower.y, fSpecularValue);
+    
+    vector vReflect = reflect(normalize(g_vLightDir), vNormal);
     vector vLook = vWorldPos - g_vCamPosition;
-    float fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), 50.f);
+    float fSpecularBase = max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f);
+    float fSpecular = pow(fSpecularBase, fShininess);
     
-    Out.vSpecular = (g_vLightSpecular * g_vMtrlSpecular) * fSpecular * fAtt;
+    Out.vSpecular = g_vLightSpecular * fSpecular * fSpecularValue * fAtt + g_vLightSpecular * fSpecular * fSpecularIntensity * 2.f * fAtt;
+    
+    //  vector vSpecularDesc = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    //  
+    //  vector vReflect = reflect(normalize(vLightDir), vNormal);
+    //  vector vLook = vWorldPos - g_vCamPosition;
+    //  float fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), 50.f);
+    //  
+    //  Out.vSpecular = (g_vLightSpecular * g_vMtrlSpecular) * fSpecular * fAtt;
     
     return Out;
 }
@@ -610,15 +633,24 @@ PS_OUT_BACKBUFFER PS_MAIN_FOG(PS_IN In)
         fFogFactor = lerp(fFogFactor, fFogFactor * fNoise, g_fNoiseStrength);
     }
     
-    // Height 계산
-    float fFogDiff = vWorldPos.y - g_fFogBaseHeight;
-    fFogDiff = max(fFogDiff, 0.f);
-    float fFogHeightFactor = saturate(exp(-fFogDiff * g_fFogHeightDensity));
+    fFogFactor = clamp(fFogFactor, 0.f, g_fFogBias);
     
-    vResultColor = lerp(vPostSceneDesc, g_vFogColor, fFogFactor * fFogHeightFactor);
+    if (true == g_isUseHeightFog)
+    {
+        // Height 계산
+        float fFogDiff = vWorldPos.y - g_fFogBaseHeight;
+        fFogDiff = max(fFogDiff, 0.f);
+        float fFogHeightFactor = saturate(exp(-fFogDiff * g_fFogHeightDensity));
+        
+        vResultColor = lerp(vPostSceneDesc, g_vFogColor, fFogFactor * fFogHeightFactor);
+    }
+    else
+    {
+        vResultColor = lerp(vPostSceneDesc, g_vFogColor, fFogFactor);
+    }
+    
     Out.vColor = vResultColor;
-    //  Out.vColor = float4(vResultColor.rgb, vPostSceneDesc.a);
-    
+
     return Out;
 }
 

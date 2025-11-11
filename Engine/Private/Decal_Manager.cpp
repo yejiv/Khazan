@@ -98,6 +98,9 @@ HRESULT CDecal_Manager::Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLeve
     pDecal->Set_TextureIndex(iTextureIndex);
     pDecal->Set_RandomSeed(static_cast<_uint>(m_pGameInstance->Rand(0.f, 256.f)));
     
+    // Test
+    pDecal->Set_EnableDecoration(true);
+
     // 컨테이너에 저장
     m_Decals.push_back(pDecal);
 

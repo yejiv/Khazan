@@ -92,6 +92,7 @@ public:
 	void Set_ToonShadeLevel(_float fLevel);
 	OUTLINE_CONFIG Get_OutlineConfig();
 	void Set_OutlineConfig(OUTLINE_CONFIG Config);
+    void Set_SpecularPower(_float2 vPower);
 #pragma endregion
 
 #pragma region TIMER_MANAGER

@@ -54,6 +54,9 @@ private:
 	_float					m_fToonShadeLevel = { 3.f };
 	OUTLINE_CONFIG			m_OutlineConfig = {};
 
+    // Specular
+    _float2                 m_vSpecularPower = {};
+
 	LEVEL m_eCurrentLevel = { LEVEL::TITLE };
 	_bool m_isSelectLevel[ENUM_CLASS(LEVEL::END)];
 
