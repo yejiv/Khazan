@@ -2,7 +2,7 @@
 
 float4x4 g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 float4 g_vColor, g_fProgressValue;
-float g_fAlpha;
+float g_fAlpha, g_fMaskValue;
 texture2D g_Texture;
 texture2D g_MaskTexture;
 
@@ -189,6 +189,56 @@ PS_OUT PS_Default_BG(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_MASK_TOP(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
+    if (In.vTexcoord.y > 0.3f)
+    {  
+        float fAlpha = 1.f - (In.vTexcoord.y - 0.3f) / (1.0f - 0.3f);
+        fAlpha = clamp(fAlpha, 0.0f, 1.f);
+    
+        Out.vColor.a = fAlpha * g_vColor.a * g_fAlpha;
+    }
+    else
+        Out.vColor.a = g_vColor.a * g_fAlpha;
+    return Out;
+}
+
+PS_OUT PS_MASK_SYMBOL(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    float4 fMaskColor = g_MaskTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    if (fMaskColor.r > g_fMaskValue)
+        discard;
+    Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
+    Out.vColor.a = Out.vColor.a * g_vColor.a * g_fAlpha;
+    
+    return Out;
+}
+
+PS_OUT PS_MASK_OVER(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    float2 uv = In.vTexcoord;
+
+    float2 center = float2(0.5f, 0.5f);
+    float dist = distance(uv, center); // 0(중앙) ~ 약 0.707(모서리)
+
+    float innerRadius = 0.0f; // 중앙 완전 투명
+    float outerRadius = 0.5f; // 이 거리부터 불투명
+
+    float fAlpha = saturate((dist - innerRadius) / (outerRadius - innerRadius));
+
+    Out.vColor = 0.f;
+    Out.vColor.a = 1.f;
+    Out.vColor.a = fAlpha * g_vColor.a * g_fAlpha;
+    return Out;
+}
 technique11 DefaultTechnique
 {
     pass PS_MASK_PASS_0
@@ -263,6 +313,37 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Default_BG();
     }
 
+    pass PS_MASK_TOP_7
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MASK_TOP();
+    }
+
+    pass PS_MASK_SYMBOL_8
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MASK_SYMBOL();
+    }
+    pass PS_MASK_OVER_9
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MASK_OVER();
+    }
 
 
 }

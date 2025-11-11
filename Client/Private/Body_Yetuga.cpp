@@ -112,7 +112,7 @@ void CBody_Yetuga::Update(_float fTimeDelta)
         m_pRH_BodyCom->Collision_Active(true);
         Carculate_Matrix(fTimeDelta);
 #ifdef _DEBUG
-        m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
+        //m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
 #endif
     }
     else
@@ -160,6 +160,8 @@ HRESULT CBody_Yetuga::Render()
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
 
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
+
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR, 0);
 
         if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;

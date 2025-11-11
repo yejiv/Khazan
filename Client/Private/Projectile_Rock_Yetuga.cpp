@@ -47,7 +47,7 @@ void CProjectile_Rock_Yetuga::Update(_float fTimeDelta)
         m_pBody->Sync_Update(m_pTransformCom);
         m_pBody->Update(fTimeDelta, m_pTransformCom);
 #ifdef _DEBUG
-        m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
+        //m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
 #endif
     }
     else

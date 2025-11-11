@@ -78,6 +78,9 @@ HRESULT CBody::Initialize_Clone(void* pArg)
 
 void CBody::Update(_float fTimeDelta, class CTransform* pTransform)
 {
+    if (!m_pBodyInterface->IsAdded(m_BodyID))
+        return;
+
     if(!m_pBodyInterface->IsActive(m_BodyID))
         m_pBodyInterface->ActivateBody(m_BodyID);
 
@@ -103,12 +106,18 @@ void CBody::Update(_float fTimeDelta, class CTransform* pTransform)
 
 void CBody::Sync_Update(CTransform* pTransform)
 {
+    if (!m_pBodyInterface->IsAdded(m_BodyID))
+        return;
+
     if (m_pBody->GetMotionType() == EMotionType::Kinematic)
         Set_PosRot(pTransform->Get_State(STATE::POSITION), pTransform->Get_Rotation_Quat());
 }
 
 void CBody::Update(_float fTimeDelta, _matrix WorldMatirx, _vector& outQuatRotation, _vector& outPosition)
 {
+    if (!m_pBodyInterface->IsAdded(m_BodyID))
+        return;
+
     if (!m_pBodyInterface->IsActive(m_BodyID))
         m_pBodyInterface->ActivateBody(m_BodyID);
 
@@ -134,6 +143,9 @@ void CBody::Update(_float fTimeDelta, _matrix WorldMatirx, _vector& outQuatRotat
 
 void CBody::Sync_Update(_matrix WorldMatirx)
 {
+    if (!m_pBodyInterface->IsAdded(m_BodyID))
+        return;
+
     _vector vScale, vRotation, vTranslation;
 
     XMMatrixDecompose(&vScale, &vRotation, &vTranslation, WorldMatirx);
@@ -141,12 +153,6 @@ void CBody::Sync_Update(_matrix WorldMatirx)
     if (m_pBody->GetMotionType() == EMotionType::Kinematic)
         Set_PosRot(vTranslation, vRotation);
 }
-
-void CBody::MeshUpdate()
-{
-
-}
-
 
 void CBody::Set_PosRot(_vector vPos, _vector vRot)
 {
