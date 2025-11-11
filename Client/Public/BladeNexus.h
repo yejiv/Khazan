@@ -19,9 +19,10 @@ private:
 		END
 	};
 
-	enum BLADENEXUS_ID
+	enum class BLADENEXUS_ID
 	{
-		HEINMACH_ENTER = 0, HEINMACH_CAVE, HEINMACH_YETUGA,
+		HEINMACH_ENTER = 0, HEINMACH_CAVE, HEINMACH_CLIFF, HEINMACH_YETUGA,
+        EMBARS_UNDER, EMBARS_DEEP, EMBARS_CORE,
 		ID_END
 	};
 
@@ -55,8 +56,9 @@ private:
 	ANIM_STATE m_eAnimState = { ANIM_STATE::BEFORE_IDLE };
 
 private:
-	BLADENEXUS_ID m_eBladeNexus_ID = {};
+	_int m_iBladeNexus_ID = {};
 	_tchar m_szPlaceName[MAX_PATH] = {};
+    _bool m_isUnLock = { false };                   // 귀검 해금 여부
 
 	_float3 m_vPlayerPosition = {};
 
@@ -70,7 +72,7 @@ private:
 	virtual HRESULT Ready_Components(void* pArg) override;
 	HRESULT Ready_Collision(void* pArg);
 	HRESULT Ready_Interaction_Guide(void* pArg);
-	HRESULT Ready_PlaceName(void* pArg);
+	HRESULT Ready_DefaultSetting(void* pArg);
 	virtual HRESULT Bind_Materials(_uint iMeshIndex) override;
 
 	void Input_Interact_Event(_float fTimeDelta);

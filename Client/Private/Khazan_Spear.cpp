@@ -1464,7 +1464,7 @@ void CKhazan_Spear::Subscribe_Events()
 }
 void CKhazan_Spear::Event_Interact_Object(_float fTimeDelta)
 {
-    // 상호 작용 오브젝트 쪽에서 BEGIN STATE 내보낼 시
+    // 상호 작용 오브젝트 쪽에서 BEGIN STATE 내보내면 플레이어에서 행동 후, 행동 완료 시 이벤트 발생으로 상호 작용 오브젝트 동작
     if (EventInteractType::EVENT_STATE::BEGIN == m_EventInteract.eState)
     {
         if (false == m_isInteractEventSetting)
@@ -1474,43 +1474,34 @@ void CKhazan_Spear::Event_Interact_Object(_float fTimeDelta)
             XMStoreFloat4(&m_vStartPos_Event, m_pTransformCom->Get_State(STATE::POSITION));
             m_fLerpTime_Event = 0.f;
         }
-        // 플레이어 이동, LOOK 보간??
-        // 완료하면 이벤트 반대로 던져주기
+        // 플레이어 이동, LOOK 보간?? | 완료하면 이벤트 반대로 던져주기
         _bool isDone = { true };
 
-        if (INTERACTIVE_TYPE::CHEST == m_EventInteract.eInteractType)
+        switch (m_EventInteract.eInteractType)
         {
-            /*
+        case INTERACTIVE_TYPE::CHEST:
+        {
+            // 일단 이동 보간 후 플레이어가 도착하면 상호작용
+#pragma region 이동 보간
             isDone = false;
 
-            _float4 vTargetPos = m_EventInteract.ChestEvent.vPlayerPosition;
-            vTargetPos.y = m_vStartPos_Event.y;
+            // 애니메이션이나 보간 완료하면 isDone true
+            
+            Lerp_Position_ByInteractEvent(m_EventInteract.ChestEvent.vPlayerPosition, m_vStartPos_Event, 0.3f, fTimeDelta, isDone);
+#pragma endregion
+            break;
+        }
+        case INTERACTIVE_TYPE::CHECKPOINT:
+        {
+            // 귀검 BladeNexus 이벤트 함수에서 바로 애니메이션 재생 시키면 될 것 같습니다.
 
-            m_fLerpTime_Event += fTimeDelta;
-            _float fLerpTime = min(m_fLerpTime_Event * 1.f, 1.f);
-
-            _float4 vLerpPos = Lerp(m_vStartPos_Event, vTargetPos, fLerpTime);
-
-            _float fDistance = XMVectorGetX(XMVector4Length(XMLoadFloat4(&vTargetPos) - XMLoadFloat4(&vLerpPos)));
-
-            if (0.1f < fDistance)
-            {
-                m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&vLerpPos));
-                vTargetPos.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
-                m_pTransformCom->LookAt(XMLoadFloat4(&vTargetPos));
-            }
-
-            // 상자 오브젝트에 슉슉 도착
-            if (fLerpTime >= 1.f)
-            {
-                isDone = true;
-            }
-            */
+            break;
+        }
         }
 
         if (isDone)               // 특정 조건 완성하면 이벤트 발생
         {
-            // 내 이벤트 변수 초기화
+            // 이벤트에 필요한 세팅을 다음에 또 발생시 변경 가능하게 false로 변경
             m_isInteractEventSetting = false;
 
             // 상호작용 활성화시 맵 오브젝트한테 EVENT_STATE를 ON 으로 던져준다
@@ -1575,7 +1566,7 @@ void CKhazan_Spear::BladeNexus_Event(_float fTimeDelta)
         BNEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
         m_pTransformCom->LookAt(XMLoadFloat4(&BNEvent.vPosition));
     }
-    // 귀검 가동 끝나고 UI 팝업 ( 귀검 UI 창 활성화 )
+    // 귀검 가동 끝나고 UI 팝업 ( 귀검 UI 창 활성화 ) ( 플레이어는 LOOP 애니메이션 )
     else if (true == BNEvent.isBNOpened)
     {
         // 귀검 첫 해금 시
@@ -1600,6 +1591,8 @@ void CKhazan_Spear::Chest_Event(_float fTimeDelta)
     // 상자에 접촉 후 상호 작용 ( 닫힌 상태 )
     if (false == ChestEvent.isChestOpened)
     {
+        // 플레이어 상자와 상호작용하는 애니메이션 재생
+
         ChestEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
         // 플레이어 Look -> 상자, Position 상자 본 위치로 이동 ( 기우는거 보정 )
         m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&ChestEvent.vPlayerPosition));
@@ -1661,6 +1654,32 @@ void CKhazan_Spear::TombStone_Event(_float fTimeDelta)
     }
 
     m_EventInteract.End_Event();
+}
+void CKhazan_Spear::Lerp_Position_ByInteractEvent(_float4 vTargetPos, _float4 vStartPos, _float fDuration, _float fTimeDelta, _bool& isDone)
+{
+    _float4 vPos = vTargetPos;
+
+    // y값 보정
+    vPos.y = vStartPos.y;
+
+    m_fLerpTime_Event += fTimeDelta;
+
+    _float fLerpTime = m_fLerpTime_Event / fDuration;
+
+    _float4 vLerpPos = Lerp(vStartPos, vPos, fLerpTime);
+
+    _float fDistance = XMVectorGetX(XMVector4Length(XMLoadFloat4(&vPos) - XMLoadFloat4(&vLerpPos)));
+
+    if (0.1f > fDistance)
+    {
+        isDone = true;
+    }
+    else
+    {
+        m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&vLerpPos));
+        vPos.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+        m_pTransformCom->LookAt(XMLoadFloat4(&vPos));
+    }
 }
 #pragma endregion
 

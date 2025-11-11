@@ -32,12 +32,12 @@ HRESULT CSkySphere::Initialize_Clone(void* pArg)
 
     m_pTransformCom->Scale(_float3(0.0001f, 0.0001f, 0.0001f));
 
-#ifdef _DEBUG
-    m_FixDesc = m_SkyDesc;
-
     LEVEL eLevel = CClientInstance::GetInstance()->Get_CurrLevel();
     if (LEVEL::LOADING == eLevel || LEVEL::TITLE == eLevel)
         return S_OK;
+
+#ifdef _DEBUG
+    m_FixDesc = m_SkyDesc;
 
     //Debug_SkyEdit();
 #endif // _DEBUG
@@ -62,6 +62,27 @@ void CSkySphere::Update(_float fTimeDelta)
         m_isSkyWindow = !m_isSkyWindow;
 #endif // _DEBUG
 
+    if (false == m_isTransition)
+        return;
+
+    // 스카이 박스 보간
+    m_fTransTimeAcc += fTimeDelta;
+
+    _float fRatio = m_fTransTimeAcc / m_fDuration;
+    if (1.f <= fRatio)
+    {
+        fRatio = 1.f;
+        m_isTransition = false;
+    }
+
+    m_SkyDesc.vNebulaColorR = Lerp(m_StartSkyDesc.vNebulaColorR, m_LerpSkyDesc.vNebulaColorR, fRatio);
+    m_SkyDesc.vNebulaColorG = Lerp(m_StartSkyDesc.vNebulaColorG, m_LerpSkyDesc.vNebulaColorG, fRatio);
+    m_SkyDesc.vNebulaColorB = Lerp(m_StartSkyDesc.vNebulaColorB, m_LerpSkyDesc.vNebulaColorB, fRatio);
+    m_SkyDesc.vMoonColor = Lerp(m_StartSkyDesc.vMoonColor, m_LerpSkyDesc.vMoonColor, fRatio);
+
+    m_SkyDesc.fStarStrength = Lerp(m_StartSkyDesc.fStarStrength, m_LerpSkyDesc.fStarStrength, fRatio);
+    m_SkyDesc.fMoonSize = Lerp(m_StartSkyDesc.fMoonSize, m_LerpSkyDesc.fMoonSize, fRatio);
+    m_SkyDesc.fMoonIntensity = Lerp(m_StartSkyDesc.fMoonIntensity, m_LerpSkyDesc.fMoonIntensity, fRatio);
 }
 
 void CSkySphere::Late_Update(_float fTimeDelta)
@@ -88,6 +109,19 @@ HRESULT CSkySphere::Render()
     }
 
     return S_OK;
+}
+
+void CSkySphere::Start_LerpSky(SKY_DESC LerpSkyDesc, _float fDuration)
+{
+    m_isTransition = true;
+
+    m_fTransTimeAcc = 0.f;
+    m_fDuration = fDuration;
+
+    m_StartSkyDesc = m_SkyDesc;
+    m_LerpSkyDesc = LerpSkyDesc;
+
+    m_SkyDesc.vMoonDirection = m_LerpSkyDesc.vMoonDirection;
 }
 
 HRESULT CSkySphere::Ready_Components(void* pArg)

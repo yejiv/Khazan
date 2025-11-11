@@ -40,16 +40,25 @@ public:
 
 public:
 	SKY_DESC Get_SkyDesc() { return m_SkyDesc; }
-	void Set_SkyDesc(SKY_DESC SkyDesc) { m_SkyDesc = SkyDesc; }
+    void Set_SkyDesc(SKY_DESC SkyDesc) { m_SkyDesc = SkyDesc; }
+    void Start_LerpSky(SKY_DESC LerpSkyDesc, _float fDuration);
 
 private:
 	CModel* m_pModelCom = { nullptr };
 	CShader* m_pShaderCom = { nullptr };
 	CTexture* m_pTextureCom[TEX_TYPE_END] = {nullptr};
+
+    const LIGHT_DESC* m_pMainLightDesc = {};
 	
 	SKY_DESC m_SkyDesc = {};
+    SKY_DESC m_StartSkyDesc = {};
+    SKY_DESC m_LerpSkyDesc = {};
 
-	_float m_fTimeAcc = { 0.f };
+    _float m_fTimeAcc = { 0.f };
+
+    _bool m_isTransition = { false };
+    _float m_fTransTimeAcc = { 0.f };
+    _float m_fDuration = { 0.f };
 
 private:
 	HRESULT Ready_Components(void* pArg);

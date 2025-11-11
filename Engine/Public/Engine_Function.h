@@ -190,6 +190,15 @@ namespace Engine
 		return fA + (fB - fA) * fT;
 	}
 
+    // XMFLOAT3 Lerp
+    inline XMFLOAT3 Lerp(XMFLOAT3 fA, XMFLOAT3 fB, float fT) noexcept
+    {
+        fT = Clamp(fT);
+        XMFLOAT3 vLerp = {};
+        XMStoreFloat3(&vLerp, XMLoadFloat3(&fA) + (XMLoadFloat3(&fB) - XMLoadFloat3(&fA)) * fT);
+        return vLerp;
+    }
+
 	inline XMFLOAT4 Lerp(XMFLOAT4 fA, XMFLOAT4 fB, float fT) noexcept
 	{
 		fT = Clamp(fT);
