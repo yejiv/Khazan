@@ -31,11 +31,15 @@ HRESULT CKhazan_Spear_Anim_Move::Initialize_Prototype()
         {16.f, 36.f, 56.f, 76.f, 96.f, 116.f},
          120.f };
 
-    m_FootInfo[GetBitPosition(MOV::MOVE_SPRINT)] = {
-     { 6.f, 19.f, 34.f, 48.f, 62.f, 76.f, 90.f, 104.f},
-     {0.f, 12.f, 26.f, 40.f, 54.f, 68.f,82.f, 96.f, 110.f},
-      112.f };
+    //m_FootInfo[GetBitPosition(MOV::MOVE_SPRINT)] = {
+    // { 6.f, 19.f, 34.f, 48.f, 62.f, 76.f, 90.f, 104.f},
+    // {0.f, 12.f, 26.f, 40.f, 54.f, 68.f,82.f, 96.f, 110.f},
+    //  112.f };
 
+    m_FootInfo[GetBitPosition(MOV::MOVE_INJURED)] = {
+        { 0.f, 23.f, 53.f, 85.f, 114.f, 146.f, 179.f, 211.f,246.f,278.f},
+        {10.f, 42.f, 68.f, 100.f, 130.f,164.f,196.f, 230.f, 264.f},
+        284.f };
     return S_OK;
 }
 
@@ -79,7 +83,7 @@ void CKhazan_Spear_Anim_Move::Continue(_float fTimeDelta)
 
     /* 발 위치 계산 */
 
-    if (Has_State(MOV::MOVE_WALK | MOV::MOVE_RUN /*| MOV::MOVE_SPRINT)*/))
+    if (Has_State(MOV::MOVE_WALK | MOV::MOVE_RUN | MOV::MOVE_INJURED))
     {
         if (m_iFootPosition[0] >= m_FootInfo[GetBitPosition(m_iState)].vLeftFootFrames.size() ||
             m_iFootPosition[1] >= m_FootInfo[GetBitPosition(m_iState)].vRightFootFrames.size())
@@ -105,17 +109,6 @@ void CKhazan_Spear_Anim_Move::Continue(_float fTimeDelta)
 
     if (m_isReserve)
     {
-        // Sprint 중에는 Reserve 처리 x 
-        //if (Has_State(MOV::MOVE_SPRINT))
-        //{
-        //    _uint currentAnimIndex = m_pModel->Get_CurAnimIndex();
-        //    // Sprint Start 애니메이션 중에는 Reserve 무시
-        //    if (currentAnimIndex != m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Sprint_F"))
-        //    {
-        //        m_isReserve = false; 
-        //        return;
-        //    }
-        //}
 
         if (m_pModel->Check_MinAnimationTime()|| m_pModel->IsFinished()) {
             //todo : Reserve Clear
@@ -266,6 +259,61 @@ _bool CKhazan_Spear_Anim_Move::Try_ChangeAnimation(SPEAR_MOVE moveInfo)
     else
         Reserve_Animation(moveInfo);
         //return false;
+}
+
+_bool CKhazan_Spear_Anim_Move::Try_InjuredAnimaition(SPEAR_MOVE moveInfo)
+{
+    _uint iSelectedAnimationIndex{};
+
+    // 상태 초기화 후 설정
+    Clear_State();
+    Add_State(MOV::MOVE_INJURED);
+    m_isEndAnimationFinished = false;
+
+    // CYCLE_START 추가
+    if (moveInfo.iCycle & CYC::CYCLE_START)
+    {
+        iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Injured_Walk");
+        cout << "CYCLE_START" << endl;
+        m_isMoving = true;
+    }
+    else if (moveInfo.iCycle & CYC::CYCLE_LOOP)
+    {
+        // Loop 중에는 현재 애니메이션 유지
+        _uint currentAnim = m_pModel->Get_CurAnimIndex();
+        _uint injuredWalkAnim = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Injured_Walk");
+
+        // 이미 Walk 애니메이션이면 변경하지 않음
+        if (currentAnim == injuredWalkAnim)
+        {
+            return false;  //애니메이션 재설정 방지
+        }
+
+        iSelectedAnimationIndex = injuredWalkAnim;
+        m_isMoving = true;
+        cout << "CYCLE_LOOP" << endl;
+    }
+    else if (moveInfo.iCycle & CYC::CYCLE_END)
+    {
+        iSelectedAnimationIndex = (m_curFoot == FOOT_R)
+            ? m_pModel->Get_AnimIndexByName("CA_P_Kazan_Injured_Walk_Stop_F_LF")
+            : m_pModel->Get_AnimIndexByName("CA_P_Kazan_Injured_Walk_Stop_F_RF");
+
+        m_isEndAnimationFinished = true;
+        m_isMoving = false;
+        cout << "CYCLE_END" << endl;
+    }
+
+    // 최소 애니메이션 시간 체크
+    if ( moveInfo.iCycle & CYC::CYCLE_START || m_pModel->Check_MinAnimationTime() )
+    {
+        m_iSelectedAnimationIndex = iSelectedAnimationIndex;
+        m_pModel->Set_Animation(m_iSelectedAnimationIndex);
+        cout << "Set_Animation" << endl;
+        return true;
+    }
+
+    return false;
 }
 
 void CKhazan_Spear_Anim_Move::Reserve_Animation(SPEAR_MOVE moveInfo)

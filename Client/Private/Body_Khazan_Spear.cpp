@@ -53,16 +53,13 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
     /* 뼈 행렬 가지고오기 */
     m_pSpearTip1_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R_SpearTip");
     //m_pSpearTip2_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R_SpearTip_02");
-    //m_pWeaponR_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R");
+    m_pSpearPole_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R");
     //m_pSpearEnd1_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R_Spear_End01");
     //m_pSpearEnd2_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R_Spear_End02");
 
 
     if (FAILED(Ready_Collider()))
         return E_FAIL;
-    m_pSpearTip1_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R_SpearTip");
-    m_pWeaponR_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R");
-
 
 //#ifdef _DEBUG
 //	m_pGameInstance->AddWidget(TEXT("Client"), [this]() {
@@ -95,9 +92,6 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
 
     Update_CombinedMatrix();
     Update_Collider(fTimeDelta);
-
-    XMStoreFloat4x4(&m_pSpearTip1_MatrixW, XMLoadFloat4x4(m_pSpearTip1_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
-    XMStoreFloat4x4(&m_pWeaponR_MatrixW, XMLoadFloat4x4(m_pWeaponR_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
 
     m_pTrail->Update(fTimeDelta);
 }
@@ -297,14 +291,20 @@ void CBody_Khazan_Spear::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjec
 
 void CBody_Khazan_Spear::Update_Collider(_float fTimeDelta)
 {
-    const XMMATRIX matWorld = XMLoadFloat4x4(m_pSpearTip1_Matrix) * XMLoadFloat4x4(m_pParentMatrix);
-    m_pBodyCom_SpearTip1->Sync_Update(matWorld);
+    _matrix matParent = XMLoadFloat4x4(m_pParentMatrix);
     _vector vOutQuat, vOutPos;
-    m_pBodyCom_SpearTip1->Update(fTimeDelta, matWorld, vOutQuat, vOutPos);
-    XMStoreFloat4x4(&m_pSpearTip1_MatrixW, matWorld);
-    XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&m_pSpearTip1_MatrixW._41), vOutPos);
 
+    const XMMATRIX matWorld_SpearTip1 = XMLoadFloat4x4(m_pSpearTip1_Matrix) * matParent;
+    m_pBodyCom_SpearTip1->Sync_Update(matWorld_SpearTip1);
+    m_pBodyCom_SpearTip1->Update(fTimeDelta, matWorld_SpearTip1, vOutQuat, vOutPos);
+    XMStoreFloat4x4(&m_pSpearTip1_MatrixW, matWorld_SpearTip1);
+    XMStoreFloat3(reinterpret_cast<_float3*>(&m_pSpearTip1_MatrixW._41), vOutPos);
 
+    const XMMATRIX matWorld_SpearPole = m_SpearOffset_Matrix *  XMLoadFloat4x4(m_pSpearPole_Matrix) * matParent;
+    m_pBodyCom_SpearPole->Sync_Update(matWorld_SpearPole);
+    m_pBodyCom_SpearPole->Update(fTimeDelta, matWorld_SpearPole, vOutQuat, vOutPos);
+    XMStoreFloat4x4(&m_pSpearPole_MatrixW, matWorld_SpearPole);
+    XMStoreFloat3(reinterpret_cast<_float3*>(&m_pSpearPole_MatrixW._41), vOutPos);
 }
 
 HRESULT CBody_Khazan_Spear::Ready_Components()
@@ -362,18 +362,7 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
 
 HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 {
-    m_pModelCom->Register_Event("Effect1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect1_Enter(); });
-    m_pModelCom->Register_Event("Effect1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Effect1_Exit(); });
-    m_pModelCom->Register_Event("Effect1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Effect1_Continue(); });
-    m_pModelCom->Register_Event("Effect2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect2(); });
-    m_pModelCom->Register_Event("Effect3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect3(); });
-    m_pModelCom->Register_Event("Effect4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect4(); });
-    m_pModelCom->Register_Event("Effect5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect5(); });
-    m_pModelCom->Register_Event("Effect6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect6(); });
-    m_pModelCom->Register_Event("Effect7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Effect7_Enter(); });
-    m_pModelCom->Register_Event("Effect7", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Effect7_Exit(); });
-    m_pModelCom->Register_Event("Effect7", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Effect7_Continue(); });
-
+#pragma region Effect
     m_pModelCom->Register_Event("FastAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_FastAtk01_Trail(); });
     m_pModelCom->Register_Event("FastAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_FastAtk_SpawnWind(); });
     m_pModelCom->Register_Event("FastAtk02_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_FastAtk02_Trail(); });
@@ -387,7 +376,16 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
     m_pModelCom->Register_Event("StrongAtk_Charge_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_StrongAtk_Charge_Trail(); });
     m_pModelCom->Register_Event("StrongAtk_Charge_Blust", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_StrongAtk_Charge_Blust(); });
 
+#pragma endregion
 
+
+#pragma region Collider
+    m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Event_AttackTiming(true);});
+    m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Event_AttackTiming(false); });
+
+#pragma endregion
+
+   
     return S_OK;
 }
 
@@ -399,7 +397,7 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
         BodyDesc.eMotion = EMotionType::Kinematic;
         BodyDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
         BodyDesc.eShapeType = SHAPE::SPHERE;
-        BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK); // 추후에 Enum Monster attack 변경 할수도
+        BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER); // 추후에 Enum Monster attack 변경 할수도
 
         XMStoreFloat4x4(&m_pSpearTip1_MatrixW, XMLoadFloat4x4(m_pSpearTip1_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
         _vector vScale, vQuat, vTrans;
@@ -421,7 +419,32 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
             return E_FAIL;
 
     }
+    CBody::BODY_BOXSHAPE_DESC BodyBoxDesc{};
+    {
+        BodyBoxDesc.vExtent = _float3(0.1f, 1.8f, 0.1f);
+        BodyBoxDesc.eMotion = EMotionType::Kinematic;
+        BodyBoxDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
+        BodyBoxDesc.eShapeType = SHAPE::BOX;
+        BodyBoxDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER); // 추후에 Enum Monster attack 변경 할수도
 
+        XMStoreFloat4x4(&m_pSpearPole_MatrixW, XMLoadFloat4x4(m_pSpearPole_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
+        _vector vScale, vQuat, vTrans;
+        XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_pSpearPole_MatrixW));
+        BodyBoxDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
+        BodyBoxDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
+        BodyBoxDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+        m_tCollisionDesc.pGameObject = this;
+        BodyBoxDesc.pCollisionDesc = &m_tCollisionDesc;
+        BodyBoxDesc.bIsTrigger = true;
+        if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+            TEXT("Com_Body2"), reinterpret_cast<CComponent**>(&m_pBodyCom_SpearPole), &BodyBoxDesc)))
+            return E_FAIL;
+
+    }
+
+
+
+    
     return S_OK;
 }
 
@@ -440,114 +463,31 @@ HRESULT CBody_Khazan_Spear::Bind_ShaderResources()
     return S_OK;
 }
 
-void CBody_Khazan_Spear::Effect1_Enter()
-{
-    char msg[256];
-    sprintf_s(msg, "Local Bone SpearFX\n %.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n",
-        m_pSpearFX_Matrix->_11, m_pSpearFX_Matrix->_12, m_pSpearFX_Matrix->_13, m_pSpearFX_Matrix->_14,
-        m_pSpearFX_Matrix->_21, m_pSpearFX_Matrix->_22, m_pSpearFX_Matrix->_23, m_pSpearFX_Matrix->_24,
-        m_pSpearFX_Matrix->_31, m_pSpearFX_Matrix->_32, m_pSpearFX_Matrix->_33, m_pSpearFX_Matrix->_34,
-        m_pSpearFX_Matrix->_41, m_pSpearFX_Matrix->_42, m_pSpearFX_Matrix->_43, m_pSpearFX_Matrix->_44);
-    OutputDebugStringA(msg);
-    
-    _float4x4 matWorldSpearFX;
-    XMStoreFloat4x4(&matWorldSpearFX, m_SpearOffset_Matrix * XMLoadFloat4x4(m_pSpearFX_Matrix) * m_pParentTransform->Get_WorldMatrix());
-    sprintf_s(msg, "Local Bone SpearFX\n %.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n%.3f  %.3f  %.3f  %.3f\n",
-        matWorldSpearFX._11, matWorldSpearFX._12, matWorldSpearFX._13, matWorldSpearFX._14,
-        matWorldSpearFX._21, matWorldSpearFX._22, matWorldSpearFX._23, matWorldSpearFX._24,
-        matWorldSpearFX._31, matWorldSpearFX._32, matWorldSpearFX._33, matWorldSpearFX._34,
-        matWorldSpearFX._41, matWorldSpearFX._42, matWorldSpearFX._43, matWorldSpearFX._44);
-    OutputDebugStringA(msg);
-}
-
-void CBody_Khazan_Spear::Effect1_Exit()
-{
-    //cout << "[Effect1_Exit]" << endl;
-   // OutputDebugStringA("[Effect1_Exit] \n");
-
-}
-
-void CBody_Khazan_Spear::Effect1_Continue()
-{
-    //cout << "[Effect1_Continue]" << endl;
-    //OutputDebugStringA("[Effect1_Continue] \n");
-
-}
-
-void CBody_Khazan_Spear::Effect2()
-{
-    /* OutputDebugStringA 원래 출력이 느립니다! 정확한 시점의 디버그는 cout으로 하십시오! */
-    OutputDebugStringA("[Effect2] \n");
-
-}
-
-void CBody_Khazan_Spear::Effect3()
-{
-    OutputDebugStringA("[Effect3] \n");
-
-}
-
-void CBody_Khazan_Spear::Effect4()
-{
-    OutputDebugStringA("[Effect4] \n");
-
-}
-
-void CBody_Khazan_Spear::Effect5()
-{
-    OutputDebugStringA("[Effect5] \n");
-
-}
-
-void CBody_Khazan_Spear::Effect6()
-{
-    OutputDebugStringA("[Effect6] \n");
-
-}
-
-void CBody_Khazan_Spear::Effect7_Enter()
-{
-    OutputDebugStringA("[Effect7_Enter] \n");
-
-}
-
-void CBody_Khazan_Spear::Effect7_Exit()
-{
-    OutputDebugStringA("[Effect7_Exit] \n");
-
-}
-
-void CBody_Khazan_Spear::Effect7_Continue()
-{
-    OutputDebugStringA("[Effect7_Continue] \n");
-
-}
-
 void CBody_Khazan_Spear::FX_StrongAtk01_Trail()
 {
     _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-    _matrix hand = XMLoadFloat4x4(&m_pWeaponR_MatrixW);
+    _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
     m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
 }
 
 void CBody_Khazan_Spear::FX_StrongAtk02_Trail()
 {
     _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-    _matrix hand = XMLoadFloat4x4(&m_pWeaponR_MatrixW);
+    _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
     m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
 }
 
 void CBody_Khazan_Spear::FX_StrongAtk03_Trail()
 {
     _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-    _matrix hand = XMLoadFloat4x4(&m_pWeaponR_MatrixW);
+    _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
     m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
 }
 
 void CBody_Khazan_Spear::FX_FastAtk01_Trail()
 {
     //_matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-    //_matrix hand = XMLoadFloat4x4(&m_pWeaponR_MatrixW);
+    //_matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
     //m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
 
     //테스트용............
@@ -581,7 +521,7 @@ void CBody_Khazan_Spear::FX_FastAtk01_Trail()
 void CBody_Khazan_Spear::FX_FastAtk02_Trail()
 {
     //_matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-    //_matrix hand = XMLoadFloat4x4(&m_pWeaponR_MatrixW);
+    //_matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
     //m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
 
     //테스트용............
@@ -615,7 +555,7 @@ void CBody_Khazan_Spear::FX_FastAtk02_Trail()
 void CBody_Khazan_Spear::FX_FastAtk03_Trail()
 {
     //matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-    //matrix hand = XMLoadFloat4x4(&m_pWeaponR_MatrixW);
+    //matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
     //_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
 
     //테스트용............
@@ -683,9 +623,29 @@ void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust()
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_Trail()
 {
     _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-    _matrix hand = XMLoadFloat4x4(&m_pWeaponR_MatrixW);
+    _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
     m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
 }
+
+void CBody_Khazan_Spear::Event_AttackTiming(_bool isAttackStart)
+{
+    /* 공격 맞아서 중간에 끊길 경우는? */
+    if (isAttackStart)
+    {
+        m_isSpearFullExtension = false;
+        m_iCurSetAnimIndex = m_pModelCom->Get_CurAnimIndex();
+        //m_pBodyCom_SpearTip1->Collision_Active(true);
+        cout << " collision Enter !! " << endl;
+    }
+    else
+    {
+        m_isSpearFullExtension = true;
+        //m_pBodyCom_SpearTip1->Collision_Active(false);
+        cout << " collision Exit @@ " << endl;
+    }
+
+}
+
 
 
 

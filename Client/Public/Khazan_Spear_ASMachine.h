@@ -138,9 +138,11 @@ public:
         MOVE_MIRAGE_STEP = 1 << 4,         
         MOVE_GETUP       = 1 << 5,
         MOVE_FALL        = 1 << 6,
-        MOVE_DODGE       = 1 << 7,         
-                                
-        MOVE_ALL = MOVE_WALK | MOVE_RUN | MOVE_SPRINT | MOVE_MIRAGE_STEP | MOVE_GETUP | MOVE_FALL | MOVE_DODGE,
+        MOVE_DODGE       = 1 << 7,    
+        MOVE_INJURED     = 1 << 8,
+
+        MOVE_END         = 1<< 9,
+        MOVE_ALL = MOVE_WALK | MOVE_RUN | MOVE_SPRINT | MOVE_MIRAGE_STEP | MOVE_GETUP | MOVE_FALL | MOVE_DODGE | MOVE_INJURED,
     };
 
     enum MOVESUB : _uint

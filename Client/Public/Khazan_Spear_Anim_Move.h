@@ -40,6 +40,7 @@ public:
 
 public:
 	_bool	Try_ChangeAnimation(SPEAR_MOVE moveInfo);
+    _bool   Try_InjuredAnimaition(SPEAR_MOVE moveInfo);
 	void	Reserve_Animation(SPEAR_MOVE moveInfo);
 	_bool	IsEndMoveAnimantionFinished() const { return m_isEndAnimationFinished; }
 	_bool	IsMoving() const { return m_isMoving; }
@@ -50,7 +51,7 @@ public:
 	}
 
 private:
-	FOOT_INFO	m_FootInfo[3]; // walk, run ,  sprint
+	FOOT_INFO	m_FootInfo[GetBitPosition(MOV::MOVE_END)]; // walk, run ,  Injured
 	FOOT		m_curFoot;
 	_uint		m_iSubState = {};
 	_uint		m_iFootPosition[2] = { 0,0 }; // l,r 몇 번째 프레임

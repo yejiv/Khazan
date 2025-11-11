@@ -144,7 +144,7 @@ void CKhazan_Spear_Anim_Attack::Continue(_float fTimeDelta)
             m_pModel->Set_Animation(m_iSelectedAnimationIndex);
         }
         // Charge Attack 애니메이션 종료
-        else if (m_iSelectedAnimationIndex == m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk_ChargeAtk") && m_pModel->IsFinished())
+        else if (m_iSelectedAnimationIndex == m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk_ChargeAtk")&& m_pModel->Check_MinAnimationTime())
         {
             m_isAttacking = false;
             m_isStrongCharge = false;
@@ -152,24 +152,27 @@ void CKhazan_Spear_Anim_Attack::Continue(_float fTimeDelta)
         return;
     }
 
-    //_bool isFinish = m_pModel->IsFinished();
-    //_bool isMinTime = m_pModel->Check_MinAnimationTime();
+    _bool isFinish = m_pModel->IsFinished();
+    _bool isMinTime = m_pModel->Check_MinAnimationTime();
 
+    if (m_isSkilling)
+    {
+        if (m_iCurSkillIndex == m_pModel->Get_CurAnimIndex() && isFinish || isMinTime)
+        {
+            m_pClientInstance->Set_UsedSkill(m_iCurSkillIndex, false);
+
+            m_iCurSkillIndex = 0;
+            m_isSkilling = false;
+        }
+    }
     if (m_isAttacking)
     {
-        if (m_pModel->IsFinished() || m_pModel->Check_MinAnimationTime())
+        if (isFinish || isMinTime)
         {
             m_isAttacking = false;
         }
     }
-    //if (m_isSkilling)
-    //{
-    //    if (m_pModel->IsFinished() || m_pModel->Check_MinAnimationTime())
-    //    {
-    //        m_isSkilling = false;
-    //        m_pClientInstance->Set_UsedSkill(m_iCurSkillIndex, false);
-    //    }
-    //}
+
     
 }
 
@@ -207,11 +210,20 @@ _bool CKhazan_Spear_Anim_Attack::Try_FastAttack()
         //cout << "Try_FastAttack blocked - Combo 3 in progress" << endl;
         //return false;
     }
+
     if (m_isAttacking && !m_isCanNextCombo)
         return false;
-    
+
+    _uint iAnimIndex{};
+    if (m_iCurrentCombo == 0)iAnimIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_FastAtk01");
+    if (m_iCurrentCombo == 1)iAnimIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_FastAtk02");
+    if (m_iCurrentCombo == 2)
+        iAnimIndex = (m_pClientInstance->Check_SpearSkill(SPEARSKILL::MOONLIGHT_SLASH)) 
+       ? m_pModel->Get_AnimIndexByName("CA_P_Kazan_LightningSpear_Advanced")
+       : m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_FastAtk03_02");
+
     // 최소 애니메이션 시간 체크
-    if (!m_pModel->Check_MinAnimationTime() && m_iCurrentCombo > 0)
+    if (!m_pModel->Check_MinAnimationTime() && m_iCurrentCombo >= 0 && m_iSelectedAnimationIndex == iAnimIndex)
         return false;
 
     if (m_isStrongCombo)
@@ -240,7 +252,7 @@ _bool CKhazan_Spear_Anim_Attack::Try_FastAttack()
         m_isCanNextCombo = false;
     }
     else if (m_iCurrentCombo == 2) {
-        if (m_pClientInstance->Check_SpearSkill(SPEARSKILL::FULL_MOON))  m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_LightningSpear_Advanced");
+        if (m_pClientInstance->Check_SpearSkill(SPEARSKILL::MOONLIGHT_SLASH))  m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_LightningSpear_Advanced");
         else  m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_FastAtk03_02");
 
         m_pModel->Set_Animation(m_iSelectedAnimationIndex);
@@ -262,8 +274,6 @@ _bool CKhazan_Spear_Anim_Attack::Try_GrappleAttack()
 
 _bool CKhazan_Spear_Anim_Attack::Try_SkillAttack(_uint iSkill)
 {
-    //if (m_isAttacking)
-        //return false;
     if (!m_pModel->Check_MinAnimationTime())
         return false;
 
@@ -357,13 +367,11 @@ _bool CKhazan_Spear_Anim_Attack::Try_SprintStrongAttack()
 
 _bool CKhazan_Spear_Anim_Attack::Try_StrongAttack()
 {
-
     // 첫 공격이거나, 콤보 가능 상태일 때만 실행
     if (m_isAttacking && !m_isCanNextCombo)
     {
         return false;
     }
-
 
     _uint iAnimIndex{};
     if (m_iCurrentCombo == 0)iAnimIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk01");
@@ -371,7 +379,7 @@ _bool CKhazan_Spear_Anim_Attack::Try_StrongAttack()
     if (m_iCurrentCombo == 2)iAnimIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk03");
 
     // 최소 애니메이션 시간 체크 및 최소시간전에 최소시간 전에 같은 애니메이션 들어오면 
-    if (!m_pModel->Check_MinAnimationTime() && m_iCurrentCombo > 0 && m_iSelectedAnimationIndex == iAnimIndex)
+    if (!m_pModel->Check_MinAnimationTime() && m_iCurrentCombo >= 0 && m_iSelectedAnimationIndex == iAnimIndex)
     {
         return false;
     }

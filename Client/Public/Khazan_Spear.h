@@ -37,7 +37,7 @@ private:
 		LOCKON = 1 << 8,  // 락 온
         READY_ASSAULT = 1<< 9, // 강습 스킬 준비 
 
-       
+       INJURED  = 1 << 10,  //하인마흐에서 걸을 때 
 
 
 	};
@@ -121,7 +121,8 @@ private:
 	//const	_float				m_fMinDodgeTime = { 0.2f };
 
 	/* Move Speed */
-	const _float				m_fWalkSpeed = { 1.6f };
+    const _float				m_fInjuredSpeed = { 1.15f };
+    const _float				m_fWalkSpeed = { 1.6f };
 	const _float				m_fRunSpeed = { 4.f };
 	const _float				m_fSprintSpeed = { 8.f };
 
@@ -131,6 +132,7 @@ private:
 
 private:
 	void			Update_State(_float fTimeDelta);
+    void            InjuredMove_Input(_float fTimeDelta);
 	void			Move_Input(_float fTimeDelta);
     _bool			Skill_Input(_float fTimeDelta);
     _bool			Attack_Input(_float fTimeDelta);
@@ -144,6 +146,7 @@ private:
 
     void            Update_LockOn( );   //카메라 락온과 동기화
 
+    void            Clear_Injured();
 
 private:
 	HRESULT			Ready_Components();
