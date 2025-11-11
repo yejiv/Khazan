@@ -54,11 +54,11 @@ private:
 	GUIDE_TYPE m_eGuideType = { GUIDE_TYPE::END };
 
 private:
-    // Ω∫ƒ´¿Ãπ⁄Ω∫ ±∏¡∂√º
+    // Ïä§Ïπ¥Ïù¥Î∞ïÏä§ Íµ¨Ï°∞Ï≤¥
     SKY_DESC m_Sky_Desc = {};
     CLOUD_DESC m_Cloud_Desc = {};
 
-    // FOG ±∏¡∂√º
+    // FOG Íµ¨Ï°∞Ï≤¥
     FOG_CONFIG m_FogConfig = {};
 
 private:
