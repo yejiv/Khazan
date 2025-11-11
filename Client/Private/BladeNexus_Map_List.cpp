@@ -44,6 +44,12 @@ void CUI_BladeNexus_Map_List::Setting_List(_int iType)
         if (m_iIndex == 0)
             m_pListText->Set_Text(TEXT("보스"));
     }
+
+    if (m_bIsOn)
+        m_pListText->Set_Color({ 1.f, 1.f, 1.f, 1.f });
+    else
+        m_pListText->Set_Color({ 1.f, 1.f, 1.f, 0.6f });
+
 }
 
 void CUI_BladeNexus_Map_List::Set_Selete(_bool isSelete)
@@ -78,6 +84,10 @@ void CUI_BladeNexus_Map_List::Update(_float fTimeDelta)
     if (!m_isVisible)
         return;
 
+    if (!m_bIsOn)
+    {
+        return;
+    }
     if (ButtonOver(g_hWnd))
     {
         CUI_BladeNexus_Map::BUBBLE_MAP_DESC Desc = {};
@@ -99,10 +109,10 @@ void CUI_BladeNexus_Map_List::Late_Update(_float fTimeDelta)
     if (!m_isVisible)
         return;
 
-    if (m_bIsSelete)
-        m_pOverTex->Update_Visible(true);
-    else
+    if (!m_bIsSelete || !m_bIsOn)
         m_pOverTex->Update_Visible(false);
+    else
+        m_pOverTex->Update_Visible(true);
 
     CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
     __super::Late_Update(fTimeDelta);

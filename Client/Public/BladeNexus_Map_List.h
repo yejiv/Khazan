@@ -40,6 +40,7 @@ private:
     _bool								m_bIsSelete = { false };
     _int                                m_iIndex = { -1 };
 
+    _bool                               m_bIsOn = { false };
 private:
     HRESULT								Ready_Componet();
 public:
