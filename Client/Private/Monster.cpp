@@ -60,7 +60,8 @@ void CMonster::Consume_Stamina(_float fAmout)
 
     if (m_fCurrentStamina <= 0.f)
     {
-        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "DamageInterrupt",true);
+        CBlackBoard* pBB = m_pController->Get_BlackBoard();
+        pBB->Set_Value<_bool>(m_strName, "DamageInterrupt",true);
     }
 }
 
@@ -151,10 +152,6 @@ HRESULT CMonster::Initialize_Clone(void* pArg)
     m_pTarget = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH),TEXT("Layer_Creature_Player"),0);
     if (nullptr == m_pTarget)
         return E_FAIL;
-    // 블랙보드에 설정
-    CBlackBoard* pBlackBoard = m_pGameInstance->Get_BlackBoard();
-    pBlackBoard->Set_Value(m_strName, "Target", m_pTarget);
-
     return S_OK;
 }
 

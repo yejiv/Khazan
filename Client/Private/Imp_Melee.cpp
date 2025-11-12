@@ -44,6 +44,8 @@ HRESULT CImp_Melee::Initialize_Clone(void* pArg)
     if (nullptr == m_pController)
         return E_FAIL;
 
+    if (nullptr != m_pController)
+        m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
 
     return S_OK;
 }

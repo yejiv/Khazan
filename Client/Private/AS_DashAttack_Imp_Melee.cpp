@@ -28,10 +28,9 @@ void CAS_DashAttack_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwner, 
 {
     CImp_Melee* pImp = static_cast<CImp_Melee*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pOwner->Get_Component(TEXT("Com_Model")));
-
+    CBlackBoard* pBB = pImp->Get_Controller()->Get_BlackBoard();
     CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
-    CTransform* pTargetTransform = static_cast<CTransform*>(m_pGameInstance->Get_BlackBoard()->
-        Get_Value<CGameObject*>(pImp->Get_Name(), "Target")->Get_Component(TEXT("Com_Transform")));
+    CTransform* pTargetTransform = static_cast<CTransform*>(pBB -> Get_Value<CGameObject*>(pImp->Get_Name(), "Target")->Get_Component(TEXT("Com_Transform")));
     _vector vOwnerLoc = pTransform->Get_State(STATE::POSITION);
     _vector vTargetLoc = pTargetTransform->Get_State(STATE::POSITION);
     _vector vDir = XMVector3Normalize(vTargetLoc - vOwnerLoc);
@@ -51,13 +50,10 @@ void CAS_DashAttack_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwner, 
         }
         break;
     case Client::DASHATTACK_STATE::RUNNIG:
-        pImp->Get_Controller()->AI_MoveTo(pImp, m_pGameInstance->Get_BlackBoard()->
-            Get_Value<CGameObject*>(pImp->Get_Name(), "Target"),m_fSpeed,
-            m_pGameInstance->Get_BlackBoard()->
-            Get_Value<_float>(pImp->Get_Name(), "RunRange"),fTimeDelta);
+        pImp->Get_Controller()->AI_MoveTo(pImp, pBB->Get_Value<CGameObject*>(pImp->Get_Name(), "Target"),m_fSpeed,
+            pBB -> Get_Value<_float>(pImp->Get_Name(), "RunRange"),fTimeDelta);
 
-        if (m_pGameInstance->Get_BlackBoard()->
-            Get_Value<_float>(pImp->Get_Name(), "RunRange") - 0.5f >= fDist)
+        if (pBB->Get_Value<_float>(pImp->Get_Name(), "RunRange") - 0.5f >= fDist)
         {
             pModel->Set_Animation(9);
             m_eState = DASHATTACK_STATE::FINISHED;
@@ -74,13 +70,13 @@ void CAS_DashAttack_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwner, 
 
         if(pModel->Play_Animation(fTimeDelta))
         {
-            m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pImp->Get_Name(), "isDashAttackFinished", true);
+            pBB->Set_Value<_bool>(pImp->Get_Name(), "isDashAttackFinished", true);
         }
         break;
     case Client::DASHATTACK_STATE::DODGE:
         if (pModel->Play_Animation(fTimeDelta))
-        {
-            m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pImp->Get_Name(), "isDashAttackFinished", true);
+        {    
+            pBB->Set_Value<_bool>(pImp->Get_Name(), "isDashAttackFinished", true);
         }
         break;
 

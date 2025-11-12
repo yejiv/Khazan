@@ -20,7 +20,7 @@ public:
 
 public:
     HRESULT             Initialize(const AIPERCEPTION_DATA& Desc, _uint iTeamID);
-    void                Update(class CGameObject* pOwner, _float fTimeDelta);
+    void                Update(class CGameObject* pOwner,class CBlackBoard* pBB ,_float fTimeDelta);
 
 public:
     // 데미지 이벤트
@@ -28,7 +28,7 @@ public:
 
 private:
     // 시야 감지
-    void                Check_Sight(class CGameObject* pOwner);
+    void                Check_Sight(class CGameObject* pOwner, class CBlackBoard* pBB);
     void                Forget();
     void                Forget_Damage();
 

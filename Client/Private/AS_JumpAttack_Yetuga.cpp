@@ -14,9 +14,10 @@ void CAS_JumpAttack_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
+    CBlackBoard* BB = pYetuga->Get_Controller()->Get_BlackBoard();
 
     CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
-    CTransform* pTargetTransform = static_cast<CTransform*>(m_pGameInstance->Get_BlackBoard()->
+    CTransform* pTargetTransform = static_cast<CTransform*>(BB->
         Get_Value<CGameObject*>(pYetuga->Get_Name(), "Target")->Get_Component(TEXT("Com_Transform")));
     _vector vTargetLoc = pTargetTransform->Get_State(STATE::POSITION);
 
@@ -29,7 +30,8 @@ void CAS_JumpAttack_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _fl
 {
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
-    CBlackBoard* pBB = m_pGameInstance->Get_BlackBoard();
+    CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
+
 
     if (pBB->Get_Value<_bool>(pYetuga->Get_Name(), "JumpNotify"))
     {
@@ -43,7 +45,7 @@ void CAS_JumpAttack_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _fl
 
     if (pModel->Play_Animation(fTimeDelta))
     {
-        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isJumpAttackFinished", true);
+        pBB->Set_Value<_bool>(pYetuga->Get_Name(), "isJumpAttackFinished", true);
     }
 }
 

@@ -14,11 +14,12 @@ void CAS_Dodge_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
-
+    CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
     _uint iRand = static_cast<_uint>(m_pGameInstance->Rand(0.f, 3.f));
     _uint iAnimID = 0;
     HITREACTION eHitreaction = 
-        static_cast<HITREACTION>(m_pGameInstance->Get_BlackBoard()->Get_Value<_uint>(pYetuga->Get_Name(), "DamageType"));
+        //static_cast<HITREACTION>(m_pGameInstance->Get_BlackBoard()->Get_Value<_uint>(pYetuga->Get_Name(), "DamageType"));
+        static_cast<HITREACTION>(pBB->Get_Value<_uint>(pYetuga->Get_Name(), "DamageType"));
 
     if (HITREACTION::KNOCKBACK_STRONG == eHitreaction)
         iAnimID = 21;
@@ -50,7 +51,9 @@ void CAS_Dodge_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
 
     if (pModel->Play_Animation(fTimeDelta))
     {
-        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isDodgeFinished", true);
+        CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
+        //m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isDodgeFinished", true);
+        pBB->Set_Value<_bool>(pYetuga->Get_Name(), "isDodgeFinished", true);
     }
 
 
