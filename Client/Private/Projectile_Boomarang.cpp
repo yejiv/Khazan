@@ -163,7 +163,7 @@ HRESULT CProjectile_Boomarang::Ready_Colliders()
     BodyDesc.eQuality = EMotionQuality::LinearCast;
     BodyDesc.eShapeType = SHAPE::SPHERE;
     BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
-    BodyDesc.isCollideKinematicVsNonDynamic = true;
+    //BodyDesc.isCollideKinematicVsNonDynamic = true;
 
     XMStoreFloat3(&BodyDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
     XMStoreFloat4(&BodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());

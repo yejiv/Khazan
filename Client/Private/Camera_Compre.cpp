@@ -468,7 +468,7 @@ _vector CCamera_Compre::Cal_CamPos(_float fTimeDelta, _vector& vTargetPos, _vect
     // 3) 이동값 기반 궤도 회전 (락온 아닐 때만)
     if (!m_isLockOn)
     {
-        Apply_MoveOrbitYaw(fTimeDelta, vTargetPos);
+        //Apply_MoveOrbitYaw(fTimeDelta, vTargetPos);
     }
     else
     {

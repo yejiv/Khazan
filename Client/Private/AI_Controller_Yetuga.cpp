@@ -6,6 +6,7 @@
 #include "GameInstance.h"
 #include "Perception.h"
 #include "UI_Inven.h"
+#include "ClientInstance.h"
 
 
 CAI_Controller_Yetuga::CAI_Controller_Yetuga()
@@ -58,10 +59,12 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 
         m_pBT->Update();
 
-        m_pFSM->Update(pOwner, fTimeDelta * 1.2f);
+        
     }
 	else
 		m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
+
+    m_pFSM->Update(pOwner, fTimeDelta * 1.2f);
 
 	/*_uint iDirFlag = m_pBB->Get_Value<_uint>("Yetuga", "TargetDirection");
 	cout << "DirFlag : " << iDirFlag << "(";

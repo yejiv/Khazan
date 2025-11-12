@@ -19,7 +19,6 @@ public:
 		string		strName;
 
         _float4x4   WorldMatrix{};
-        _vector     vPos{};
 
 	}MONSTER_DESC;
 

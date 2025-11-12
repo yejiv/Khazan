@@ -1261,9 +1261,9 @@ void CGameInstance::Set_VignetteConfig(VIGNETTE_CONFIG Config)
 {
 	m_pVignette->Set_VignetteConfig(Config);
 }
-void CGameInstance::Start_VignetteAnimation(_float fDuration, VIGNETTE_CONFIG::ANIMMODE eMode)
+void CGameInstance::Start_VignetteAnimation(_float fDuration, VIGNETTE_CONFIG Config)
 {
-	m_pVignette->Start_VignetteAnimation(fDuration, eMode);
+	m_pVignette->Start_VignetteAnimation(fDuration, Config);
 }
 #pragma endregion
 

@@ -1780,15 +1780,24 @@ HRESULT CKhazan_Spear::Ready_Collision()
     tCharVirDesc.vQuat = vQuat;
     tCharVirDesc.vShapeOffset = _float3(0.f, 0.7f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
-    tCharVirDesc.fRadius = 0.5f;
-    tCharVirDesc.fHeight = 0.5f;
+    tCharVirDesc.fRadius = 0.3f;
+    tCharVirDesc.fHeight = 1.f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
-    //tCharVirDesc.fMass = 100000.f;
+    tCharVirDesc.fMass = 10.f;
+    tCharVirDesc.fMaxStrength = 0.f;
+    tCharVirDesc.fPredictiveContactDistance = 0.3f;
+    tCharVirDesc.iMaxConstraintIterations = 20;
+    tCharVirDesc.fCollisionTolerance = 0.03f;
+    tCharVirDesc.fPenetrationRecoverySpeed = 1.f;
     m_tCollisionDesc.pGameObject = this;
     m_tCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
-    //pCollDesc.pInfo = ?? // 작성하기
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
-    tCharVirDesc.fMaxStrength = 0.f;
+
+    tCharVirDesc.vStickToFloorStepDown = _float3(0.f, -0.5f, 0);
+    tCharVirDesc.vWalkStairsStepUp = _float3(0.f, 3.f, 0.f);
+    tCharVirDesc.fWalkStairsMinStepForward = 0.06f;
+    tCharVirDesc.fWalkStairsStepForwardTest = 0.15f;
+
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))

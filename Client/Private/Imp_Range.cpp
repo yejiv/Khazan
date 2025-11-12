@@ -33,7 +33,6 @@ HRESULT CImp_Range::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     MONSTER_DESC* pDesc = static_cast<MONSTER_DESC*>(pArg);
-    m_pTransformCom->Set_State(STATE::POSITION, pDesc->vPos);
 
     if (FAILED(Ready_Components()))
         return E_FAIL;

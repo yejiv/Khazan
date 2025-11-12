@@ -319,19 +319,6 @@ HRESULT CLevel_Shader::Initialize()
 
 			if (m_isEnableVignette)
 			{
-				if (ImGui::SliderFloat("Vignette Power", &m_VignetteConfig.fPower, 0.f, 10.f, "%.2f"))
-					m_pGameInstance->Set_VignetteConfig(m_VignetteConfig);
-
-				if (ImGui::SliderFloat("Vignette Intensity", &m_VignetteConfig.fIntensity, 0.f, 10.f, "%.2f"))
-					m_pGameInstance->Set_VignetteConfig(m_VignetteConfig);
-			
-				if (ImGui::ColorEdit3("Vignette Color", reinterpret_cast<_float*>(&m_VignetteConfig.vColor)))
-					m_pGameInstance->Set_VignetteConfig(m_VignetteConfig);
-
-				ImGui::Separator();
-				ImGui::Text("Vignette Animation");
-				ImGui::Separator();
-
 				// 라디오 버튼으로 애니메이션 모드 고르기
 				_bool isChanged = {};
 				_int iVignetteMode = static_cast<_int>(m_VignetteConfig.eMode);
@@ -347,17 +334,21 @@ HRESULT CLevel_Shader::Initialize()
 				if (true == isChanged)
 					m_VignetteConfig.eMode = static_cast<VIGNETTE_CONFIG::ANIMMODE>(iVignetteMode);
 
+                ImGui::ColorEdit3("Vignette Color", reinterpret_cast<_float*>(&m_VignetteConfig.vColor));
+
+                ImGui::SliderFloat("Vignette Power", &m_VignetteConfig.fPower, 0.f, 10.f, "%.2f");
+
+                ImGui::SliderFloat("Vignette Intensity", &m_VignetteConfig.fIntensity, 0.f, 10.f, "%.2f");
+
 				// 최대 강도
-				if (ImGui::SliderFloat("Vignette Max Intensity", &m_VignetteConfig.fMaxIntensity, 0.f, 10.f, "%.2f"))
-					m_pGameInstance->Set_VignetteConfig(m_VignetteConfig);
+                ImGui::SliderFloat("Vignette Max Intensity", &m_VignetteConfig.fMaxIntensity, 0.f, 10.f, "%.2f");
 				
 				// 듀레이션
 				ImGui::SliderFloat("Vignette Duration", &m_fVignetteAnimDuration, 0.f, 5.f, "%.2f");
 
-
 				// 스타트 버튼
 				if (ImGui::Button("Start Vignette"))
-					m_pGameInstance->Start_VignetteAnimation(m_fVignetteAnimDuration, m_VignetteConfig.eMode);
+					m_pGameInstance->Start_VignetteAnimation(m_fVignetteAnimDuration, m_VignetteConfig);
 			}
 
             if (ImGui::Checkbox("LUT", &m_isEnableLUT))
