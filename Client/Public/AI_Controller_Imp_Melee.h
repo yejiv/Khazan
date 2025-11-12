@@ -29,7 +29,7 @@ public:
     virtual PERCEPTIONCALLBACK		GetCallBackPerception(class CGameObject* pOwner, const string& name);
 
 public:
-    static CAI_Controller_Imp_Melee* Create(class CCreature* pOwner);
+    static CAI_Controller_Imp_Melee*    Create(class CCreature* pOwner);
     virtual void					    Free() override;
 
 };

@@ -754,6 +754,15 @@
     <Filter Include="92.AI\State\Imp_Range\Dead">
       <UniqueIdentifier>{446b686b-ea06-4dad-bf3c-79b3b8e1f86b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="92.AI\State\Imp_Melee\Sleep">
+      <UniqueIdentifier>{3b049ab2-97c0-4662-ba41-5767cda13864}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee\Idle">
+      <UniqueIdentifier>{3bcf256f-ee59-421e-b46c-785afb1e05a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee\Move">
+      <UniqueIdentifier>{ab152243-355f-46f6-8da5-4877ddaee2ac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1451,6 +1460,15 @@
     <ClInclude Include="..\Public\AS_Dead_Imp_Range.h">
       <Filter>92.AI\State\Imp_Range\Dead</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\AS_Sleep_Imp_Melee.h">
+      <Filter>92.AI\State\Imp_Melee\Sleep</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Move_Imp_Melee.h">
+      <Filter>92.AI\State\Imp_Melee\Move</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Idle_Imp_Melee.h">
+      <Filter>92.AI\State\Imp_Melee\Idle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2127,6 +2145,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_Dead_Imp_Range.cpp">
       <Filter>92.AI\State\Imp_Range\Dead</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Sleep_Imp_Melee.cpp">
+      <Filter>92.AI\State\Imp_Melee\Sleep</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Move_Imp_Melee.cpp">
+      <Filter>92.AI\State\Imp_Melee\Move</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Idle_Imp_Melee.cpp">
+      <Filter>92.AI\State\Imp_Melee\Idle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

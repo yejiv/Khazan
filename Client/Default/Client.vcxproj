@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -181,16 +181,19 @@
     <ClInclude Include="..\Public\AS_Hit_Yetuga.h" />
     <ClInclude Include="..\Public\AS_IceBreath_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Idle_Gomdol.h" />
+    <ClInclude Include="..\Public\AS_Idle_Imp_Melee.h" />
     <ClInclude Include="..\Public\AS_Idle_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_JumpAttack_Yetuga.h" />
     <ClInclude Include="..\Public\AS_JumpGrab_Yetuga.h" />
     <ClInclude Include="..\Public\AS_LieDown_Yetuga.h" />
     <ClInclude Include="..\Public\AS_LockOn_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Move_Gomdol.h" />
+    <ClInclude Include="..\Public\AS_Move_Imp_Melee.h" />
     <ClInclude Include="..\Public\AS_Move_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_RightHand_5Hit_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Rush_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Sleep_Gomdol.h" />
+    <ClInclude Include="..\Public\AS_Sleep_Imp_Melee.h" />
     <ClInclude Include="..\Public\AS_Sleep_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_Smash_Yetuga.h" />
     <ClInclude Include="..\Public\AS_ThrowBall_Yetuga.h" />
@@ -415,16 +418,19 @@
     <ClCompile Include="..\Private\AS_Hit_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_IceBreath_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Idle_Gomdol.cpp" />
+    <ClCompile Include="..\Private\AS_Idle_Imp_Melee.cpp" />
     <ClCompile Include="..\Private\AS_Idle_Imp_Range.cpp" />
     <ClCompile Include="..\Private\AS_JumpAttack_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_JumpGrab_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_LieDown_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_LockOn_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Move_Gomdol.cpp" />
+    <ClCompile Include="..\Private\AS_Move_Imp_Melee.cpp" />
     <ClCompile Include="..\Private\AS_Move_Imp_Range.cpp" />
     <ClCompile Include="..\Private\AS_RightHand_5Hit_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Rush_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Sleep_Gomdol.cpp" />
+    <ClCompile Include="..\private\AS_Sleep_Imp_Melee.cpp" />
     <ClCompile Include="..\Private\AS_Sleep_Imp_Range.cpp" />
     <ClCompile Include="..\Private\AS_Smash_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_ThrowBall_Yetuga.cpp" />
