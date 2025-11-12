@@ -6,8 +6,16 @@ CPlayer_Manager::CPlayer_Manager()
 
 HRESULT CPlayer_Manager::Initialize()
 {
+    m_Data.fMaxHp = 100;
+    m_Data.fCulHp = 100;
+    m_Data.fMaxStamina = 100;
+    m_Data.fCulStamina = 100;
     m_Data.iMaxDoggednessCount = 5;
     m_Data.fCulDoggedness = 5;
+
+    m_Data.fDamage = 0;
+    m_Data.fGuard = 0;
+
 	m_Data.iLevel = 1;
 	m_Data.iGold = 1000;
 	m_Data.iLachryma = 500;

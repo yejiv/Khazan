@@ -93,7 +93,6 @@ void CUI_Tutorial::Off_Panel()
 
 	m_eAnimState = UIANIMSTATE::OFF;
 	m_fAccTime = 1.f;
-	m_pGameInstance->Change_InputType(m_ePreInputType);
 
 	m_pGameInstance->UnFix_HitStop(TIME_CHANNEL::PLAYER);
 	m_pGameInstance->UnFix_HitStop(TIME_CHANNEL::EFFECT);
@@ -312,11 +311,13 @@ void CUI_Tutorial::UI_Animation(_float fTimeDelta)
 	}
 	else if (m_eAnimState == UIANIMSTATE::OFF)
 	{
+
 		m_fAccTime -= fTimeDelta * 3.f;
 		__super::Update_Alpha(m_fAccTime);
 
 		if (m_fAccTime <= 0.f)
 		{
+            m_pGameInstance->Change_InputType(m_ePreInputType);
 			m_fAccTime = 0.f;
 			m_eAnimState = UIANIMSTATE::END;
 			m_IsUpdate = false;

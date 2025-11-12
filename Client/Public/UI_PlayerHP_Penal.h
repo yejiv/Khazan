@@ -15,7 +15,7 @@ private:
 
 public:
 	void						On_Penal();
-
+    void                        Off_Penal();
 public:
 	virtual HRESULT				Initialize_Prototype(_uint iLevel);
 	virtual HRESULT				Initialize_Clone(void* pArg) override;
