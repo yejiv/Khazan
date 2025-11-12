@@ -54,6 +54,8 @@ void CBladeNexus::Priority_Update(_float fTimeDelta)
     {
         m_Event.None();
     }
+
+    Find_Target();
 }
 
 void CBladeNexus::Update(_float fTimeDelta)
@@ -299,7 +301,7 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
 {
     if (ANIM_STATE::BEFORE_IDLE != m_eAnimState && ANIM_STATE::BEFORE_START != m_eAnimState)
     {
-        _vector vPos = XMLoadFloat4(m_pGameInstance->Get_CamPosition());
+        _vector vPos = m_pTargetCom->Get_State(STATE::POSITION);
         vPos.m128_f32[1] = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
 
         m_pTransformCom->LookAt_Lerp(vPos, fTimeDelta, 2.f);
@@ -475,6 +477,17 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
 
         m_Event.None();
     }
+}
+
+void CBladeNexus::Find_Target()
+{
+    CHECK_TRUE(m_isFindTarget, );
+
+    LEVEL eLevel = CClientInstance::GetInstance()->Get_CurrLevel();
+    m_pTargetCom = static_cast<CTransform*>(m_pGameInstance->Find_Component(ENUM_CLASS(eLevel), TEXT("Layer_Creature_Player"), TEXT("Com_Transform")));
+    CHECK_NULLPTR(m_pTargetCom, );
+
+    m_isFindTarget = true;
 }
 
 void CBladeNexus::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)

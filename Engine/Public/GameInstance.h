@@ -359,8 +359,10 @@ public:
 #pragma endregion
 
 #pragma region DECAL_MANAGER
-	HRESULT		Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, const DECAL_DESC& Desc);
-	HRESULT		Render_Decals();
+	HRESULT                 Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, const DECAL_DESC& Desc);
+	HRESULT                 Render_Decals();
+    CTexture*               Get_DecalTexture(DECALTYPE eType);
+    void                    Batch_Decal(class CDecal* pDecal);
 #pragma endregion
 
 #pragma region EFFECT_MANAGER
