@@ -146,7 +146,7 @@ void CPerception::Notify_Damage(CGameObject* pAttacker, const STIMULUS& Stim)
 	Perceived.fLastUpdated = m_fCurrnetTime;
 	Perceived.isCurrentlySensed = Stim.bSensed;
 
-	m_DamageHistory.push_back(Stim);
+	m_DamageHistory.push(Stim);
 	m_fDamageAcc += Stim.fStrength;
 
 	if (m_PerceptionCallBack)
@@ -201,7 +201,7 @@ void CPerception::Forget_Damage()
 				OutStim.bSensed = false;
 				m_PerceptionCallBack(nullptr, OutStim);
 			}
-			m_DamageHistory.pop_front();
+			m_DamageHistory.pop();
 		}
 		else
 			break;

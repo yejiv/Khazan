@@ -19,6 +19,7 @@ public:
     typedef struct tagBodyKhazanSpearDesc : public CPartObject::PARTOBJECT_DESC
     {
         _uint* pState = { nullptr };
+        _uint* pStatus = { nullptr };
         _uint* pHitReation = { nullptr };
         //_bool* pIsGuarding = { nullptr };
         class CTransform* pParentTransform = { nullptr };
@@ -89,6 +90,7 @@ private:
     PLAYER_DATA*        m_pPlayerData;
 
     _uint*              m_pParentState = { nullptr };
+    _uint*              m_pParentStatus = { nullptr };
     _uint*              m_pHitReaction = { nullptr };
     _uint				m_iCurState = {  };
 
@@ -120,6 +122,7 @@ private:
 private:
     void				Update_Collider(_float fTimeDelta);
     void                Check_Guarding();
+    void                Damaged_Rotation();
 
 private:
     HRESULT				Ready_Components();
