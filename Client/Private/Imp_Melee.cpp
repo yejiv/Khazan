@@ -60,6 +60,8 @@ void CImp_Melee::Update(_float fTimeDelta)
     m_pController->Update(this, fTimeDelta);
 
     __super::Update(fTimeDelta);
+
+    m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
 }
 
 void CImp_Melee::Late_Update(_float fTimeDelta)

@@ -217,8 +217,7 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 				DIRECTION_INFO Info = {};
 				Info.iDirFlag = BB->Get_Value<_uint>("Yetuga", "TargetDirection");
 				
-				if (fDist != 0 && fDist >= fAttackRanage && fDist <= fRunRange &&
-					!BB->Get_Value<_bool>(pYetuga->Get_Name(), "isDodge"))
+				if (fDist <= fRunRange && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "isDodge"))
 				{
 					DIRECTION_INFO Info = {};
 					Info.iDirFlag = BB->Get_Value<_uint>("Yetuga", "TargetDirection");
@@ -472,8 +471,6 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 			};
 	}
 
-
-
 	else if ("RightHand_2Hit" == name)
 	{
 		return [pYetuga](CBlackBoard* BB)->_bool
@@ -493,8 +490,6 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 	}
 
 	
-
-
 #pragma endregion
 
 #pragma region NONATTACK SELECTOR
@@ -710,6 +705,7 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 	
 
 #pragma endregion
+
 	else if ("IceBreath" == name)
 	{
 		return [pYetuga](CBlackBoard* BB)-> BTNODESTATE

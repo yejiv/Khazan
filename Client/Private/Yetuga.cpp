@@ -78,7 +78,6 @@ void CYetuga::Priority_Update(_float fTimeDelta)
 
     }
 
-    // 범수 한테 물어보기
     if (pBB->Get_Value<_bool>(m_strName, "isDetected"))
     {
         CBossHp::BOSSMON_UPDATE_DESC HPDesc{};
@@ -98,8 +97,6 @@ void CYetuga::Update(_float fTimeDelta)
 {
 
     m_pController->Update(this, fTimeDelta);
-
-    //CheckMinDistanceWithPlayer(fTimeDelta);
 
     if (m_isLookAt)
     {
@@ -155,7 +152,7 @@ void CYetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _f
 
         if (fDot >= 0.f)
         {
-            DirInfo.Add_Flag(DirInfo.F);
+            DirInfo.Add_Flag(DirInfo.F); 
         }
         else if(fDot < 0.f)
         {
@@ -172,10 +169,6 @@ void CYetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _f
             DirInfo.Add_Flag(DirInfo.L);
 
         }
-
-       /* m_pGameInstance->Get_BlackBoard()->Set_Value<_uint>(m_strName, "HitDirection", DirInfo.iDirFlag);
-        DAMAGEINFO* pDamageInfo = static_cast<DAMAGEINFO*>(pDesc->pInfo);
-        Take_Damage(10, HITREACTION::KNOCKBACK_NORMAL , 0.1f, pDesc->pGameObject);*/
     }
    
     

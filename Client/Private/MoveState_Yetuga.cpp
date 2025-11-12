@@ -48,12 +48,12 @@ void CMoveState_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
 
 
-    _float fAttackRange = pBB->Get_Value<_float>("Yetuga", "AttackRange");
+    _float fRunRange = pBB->Get_Value<_float>("Yetuga", "RunRange");
 
     pYetuga->Get_Controller()->
         AI_MoveTo(pOwner, 
             pBB->Get_Value<CGameObject*>("Yetuga", "Target"),
-            fAttackRange - 0.5f, 
+            fRunRange - 0.5f, 
             m_fSpeedPerSec,
             fTimeDelta);
 
