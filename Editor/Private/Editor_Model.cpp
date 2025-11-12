@@ -519,7 +519,7 @@ _bool CEditor_Model::Play_Animation(_float fTimeDelta)
 
 void CEditor_Model::Set_Animation(_uint iIndex, _bool isLoop)
 {
-	if (iIndex >= m_iNumAnimations || m_iNumAnimations <= 0)
+	if (iIndex >= m_Model_Data.iNumAnimations || m_Model_Data.iNumAnimations <= 0)
 		return;
 
 	m_isLoop = isLoop;

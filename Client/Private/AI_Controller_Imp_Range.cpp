@@ -33,7 +33,7 @@ void CAI_Controller_Imp_Range::Update(CGameObject* pOwner, _float fTimeDelta)
     {
         CImp_Range* pImp = static_cast<CImp_Range*>(pOwner);
         CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(pImp->Get_Name(), "Target");
-        pImp->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK, 3.f, pTarget);
+        pImp->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK, pTarget);
     }
 
 

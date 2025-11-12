@@ -60,8 +60,10 @@ public:
 	virtual HRESULT Render();
 
 public:
-	void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
-	void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
+    virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
+    virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
+    virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
+    virtual void Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject);
 
 	const _float4x4* Get_BoneSpearFXMatrixPtr() { return &m_pSpearFX_WorldMatrix; }
 	_matrix Get_BoneSpearFXMatrix() { return XMLoadFloat4x4(&m_pSpearFX_WorldMatrix); }
@@ -75,6 +77,7 @@ private:
 	class CKhazan_Spear_Anim_Attack*	    m_pAnimAttack = { nullptr };
     class CKhazan_Spear_Anim_Guard*         m_pAnimGuard = { nullptr };
     class CKhazan_Spear_Anim_Interaction*	m_pAnimInteraction = { nullptr };
+    class CKhazan_Spaer_Anim_Damaged*       m_pAnimDamaged = { nullptr };
 
 	class CCamera_Compre*				    m_pCamera = { nullptr };
     class CClientInstance*                  m_pClientInstance = { nullptr };
@@ -83,6 +86,7 @@ private:
 	//vector<kHAZAN_ANIM_INFO>	m_AnimCandidates; // 매 프레임 후보 리스트 적립
 
 	/* state */
+    PLAYER_DATA*                m_pPlayerData;
 	_uint						m_iStatus = {};
 	_uint						m_iCurMainState = {};
 	_uint						m_iPrevMainState = {};
@@ -92,6 +96,7 @@ private:
 	_uint						m_iPrevCycle;
 	DIR							m_eDir = {};		//플레이어의 로컬 방향  dir(애니메이션 선택용)
 	_uint						m_ePrevDir = {};
+    _uint                       m_eHitReaction = {}; //몬스터한테 가할 넉백이나 저스트가드 내용 담기 
 
 	_uint						m_iCurAnimIndex = {};
 	_uint						m_iReserveAnimIndex = {};
@@ -103,7 +108,7 @@ private:
 	_matrix						m_SpearOffset_Matrix = {};
 	_bool						m_isEnableControl = { true };
 
-	vector<_float2>				m_vCoolTime;
+	//vector<_float2>				m_vCoolTime;
 
 	/* Move*/
 	DIR							m_eWorldDir = {}; // 카메라 기준 월드 방향 
@@ -116,6 +121,10 @@ private:
 	/* Attack  */
 	_float						m_fChargingStrongTime = { 0.f };
     _uint                       m_iCurSkillIndex = {};
+    DIR                         m_eHitNormalDir = {};       //맞은 위치 저장
+
+    /* Guard */
+    //_bool*                      m_isGuarding = { nullptr };
 
 	/* const */
 	const	_float				m_fMinSprintTime = { 0.15f };
@@ -144,17 +153,20 @@ private:
 	void			Apply_PlayerMovement(_float fTimeDelta);
 	void			Check_KeyInput_Direction(_float fTimeDelta);
     DIRECTION_INFO  Calculate_LockOnDirection(_float fTimeDelta);
+    void            Update_PlayerDate();
     void            LockOn_Rotation(_float fTimeDelta);
-
     void            Update_LockOn( );   //카메라 락온과 동기화
-
+    void            Update_Die(_float fTimeDelta);
     void            Clear_Injured();
+
+    void            Get_HitReaction(const _float3& vContactNormal);
 
 private:
 	HRESULT			Ready_Components();
 	HRESULT			Ready_PartObjects();
 	HRESULT			Ready_Collision();
-	HRESULT			Ready_AnimationStateMachine();
+    HRESULT			Ready_AnimationStateMachine();
+    //HRESULT			Ready_PlayerData();
 
 private:
 	inline void		Add_Status(_uint i) { m_iStatus |= i; }

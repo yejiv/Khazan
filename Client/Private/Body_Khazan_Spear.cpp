@@ -6,13 +6,15 @@
 
 CBody_Khazan_Spear::CBody_Khazan_Spear(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CPartObject{ pDevice, pContext }
+ 
 {
-
 }
 
 CBody_Khazan_Spear::CBody_Khazan_Spear(const CBody_Khazan_Spear& Prototype)
     : CPartObject{ Prototype }
+    , m_pClientInstance{ CClientInstance::GetInstance() }
 {
+    Safe_AddRef(m_pClientInstance);
 
 }
 
@@ -32,7 +34,9 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
 {
     BODY_KHAZAN_SPEAR_DESC* pDesc = static_cast<BODY_KHAZAN_SPEAR_DESC*>(pArg);
     m_pParentState = pDesc->pState;
+    m_pHitReaction = pDesc->pHitReation;
     m_iCurState = *m_pParentState;
+    //m_pIsGuarding = pDesc->pIsGuarding;
     m_pParentTransform = pDesc->pParentTransform;
     Safe_AddRef(m_pParentTransform);
 
@@ -61,6 +65,8 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Collider()))
         return E_FAIL;
 
+    m_pPlayerData = m_pClientInstance->Get_pInitailizePlayerData();
+
 //#ifdef _DEBUG
 //	m_pGameInstance->AddWidget(TEXT("Client"), [this]() {
 //
@@ -84,16 +90,12 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
 {
     m_isFinishedAnimation = m_pModelCom->Play_Animation(fTimeDelta);
 
-    //m_pModelCom_Arm->Play_Animation(fTimeDelta);
-    //m_pModelCom_Face->Play_Animation(fTimeDelta);
-    //m_pModelCom_Hair->Play_Animation(fTimeDelta);
-    //m_pModelCom_Shoes->Play_Animation(fTimeDelta);
-    //m_pModelCom_Torso->Play_Animation(fTimeDelta);
-
     Update_CombinedMatrix();
     Update_Collider(fTimeDelta);
 
     m_pTrail->Update(fTimeDelta);
+
+    Check_Guarding();
 
     //TEST
     //if (m_pGameInstance->Key_Down(DIK_I))
@@ -278,16 +280,32 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
     {
+        if (m_isSpearTipActive)
+        {
+            static_cast<CCreature*>(pDesc->pGameObject)->Take_Damage(m_pPlayerData->fDamage,static_cast<HITREACTION>(*m_pHitReaction), this);
+        }
+
+        if (m_isSpearPoleActive)
+        {
+            // 회전
+            // 성공 애니메이션
+            // 저스트가드 
+            // 
+        }
+
+        
+
         int a = 0;
+
     }
 }
 
 void CBody_Khazan_Spear::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
-    {
-        int a = 0;
-    }
+    //if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
+    //{
+    //    int a = 0;
+    //}
 }
 
 void CBody_Khazan_Spear::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
@@ -311,6 +329,20 @@ void CBody_Khazan_Spear::Update_Collider(_float fTimeDelta)
     m_pBodyCom_SpearPole->Update(fTimeDelta, matWorld_SpearPole, vOutQuat, vOutPos);
     XMStoreFloat4x4(&m_pSpearPole_MatrixW, matWorld_SpearPole);
     XMStoreFloat3(reinterpret_cast<_float3*>(&m_pSpearPole_MatrixW._41), vOutPos);
+}
+
+void CBody_Khazan_Spear::Check_Guarding()
+{
+    if (*m_pIsGuarding == true) {
+        m_pBodyCom_SpearPole->Collision_Active(true);
+        m_isSpearPoleActive = true;
+        cout << "  m_pBodyCom_SpearPole->Collision_Active(true); " << endl;
+    }
+    else {
+        m_pBodyCom_SpearPole->Collision_Active(false);
+        m_isSpearPoleActive = false;
+        cout << "  m_pBodyCom_SpearPole->Collision_Active(false); " << endl;
+    }
 }
 
 HRESULT CBody_Khazan_Spear::Ready_Components()
@@ -384,8 +416,8 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 
 
 #pragma region Collider
-    m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Event_AttackTiming(true);});
-    m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Event_AttackTiming(false); });
+    m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Event_AttackTiming(true); m_isSpearTipActive = true; });
+    m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Event_AttackTiming(false); m_isSpearTipActive = false; });
 
 #pragma endregion
 
@@ -446,8 +478,8 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
 
     }
 
-
-
+    m_pBodyCom_SpearTip1->Collision_Active(false);
+    m_pBodyCom_SpearPole->Collision_Active(false);
     
     return S_OK;
 }
@@ -690,6 +722,8 @@ CGameObject* CBody_Khazan_Spear::Clone(void* pArg)
 void CBody_Khazan_Spear::Free()
 {
     __super::Free();
+
+    Safe_Release(m_pClientInstance);
 
     if (!m_isPrototype)
     {
