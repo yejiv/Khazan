@@ -15,7 +15,7 @@ HRESULT CLUT::Initialize()
         return E_FAIL;
 
     m_isEnable = true;
-    m_Desc.fIntensity = 0.2f;
+    m_Desc.fIntensity = 0.1f;
     m_Desc.iSliceSize = 16;
     m_Desc.vTextureSize = _float2(256.f, 16.f);
 

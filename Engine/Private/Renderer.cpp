@@ -40,32 +40,32 @@ HRESULT CRenderer::Initialize()
     XMStoreFloat4x4(&m_ProjMatrix, XMMatrixOrthographicLH(m_fViewportWidth, m_fViewportHeight, 0.f, 1.f));
 
 #ifdef _DEBUG
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Diffuse"), 150.0f, 150.0f, 300.f, 300.f)))
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Diffuse"), 150.0f, 150.0f, 300.f, 300.f)))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Normal"), 150.0f, 450.0f, 300.f, 300.f)))
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Normal"), 150.0f, 450.0f, 300.f, 300.f)))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Specular"), 150.0f, 750.0f, 300.f, 300.f)))
-        return E_FAIL;
-
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Shade"), 450.0f, 150.0f, 300.f, 300.f)))
-        return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_SSAO"), 450.0f, 450.0f, 300.f, 300.f)))
-        return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_SpecularLight"), 450.0f, 750.0f, 300.f, 300.f)))
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Specular"), 150.0f, 750.0f, 300.f, 300.f)))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_PostScene"), 750.0f, 150.0f, 300.f, 300.f)))
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Shade"), 450.0f, 150.0f, 300.f, 300.f)))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Outline"), 750.0f, 450.0f, 300.f, 300.f)))
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_SSAO"), 450.0f, 450.0f, 300.f, 300.f)))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Emissive"), 750.0f, 750.0f, 300.f, 300.f)))
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_SpecularLight"), 450.0f, 750.0f, 300.f, 300.f)))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Fog"), 1050.0f, 150.0f, 300.f, 300.f)))
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_PostScene"), 750.0f, 150.0f, 300.f, 300.f)))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_Combined"), 1050.0f, 450.0f, 300.f, 300.f)))
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Outline"), 750.0f, 450.0f, 300.f, 300.f)))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("Target_LookUpTable"), 1050.0f, 750.0f, 300.f, 300.f)))
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Emissive"), 750.0f, 750.0f, 300.f, 300.f)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Fog"), 1050.0f, 150.0f, 300.f, 300.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Combined"), 1050.0f, 450.0f, 300.f, 300.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_LookUpTable"), 1050.0f, 750.0f, 300.f, 300.f)))
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Ready_CSM_Debug(m_fViewportWidth - 150.0f, 150.0f, 300.f, 300.f)))
@@ -127,11 +127,15 @@ HRESULT CRenderer::Draw()
     if (FAILED(Render_Fog()))
         return E_FAIL;
     
-    if (FAILED(Render_Blur()))
+    if (FAILED(Render_Bloom()))
         return E_FAIL;
     
     if (FAILED(Render_Combined()))
         return E_FAIL;
+
+    if (m_isEnableRadialBlur)
+        if (FAILED(Render_RadialBlur()))
+            return E_FAIL;
 
     if (FAILED(Render_LUT()))
         return E_FAIL;
@@ -328,9 +332,9 @@ HRESULT CRenderer::Render_SSAO()
     if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::PROJ))))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Normal"), m_pShader, "g_NormalTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Normal"), m_pShader, "g_NormalTexture")))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Depth"), m_pShader, "g_DepthTexture")))
         return E_FAIL;
 
     _float2 vScreenSize = _float2(m_fViewportWidth, m_fViewportHeight);
@@ -370,13 +374,13 @@ HRESULT CRenderer::Render_Lights()
     if (FAILED(m_pShader->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Normal"), m_pShader, "g_NormalTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Normal"), m_pShader, "g_NormalTexture")))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Depth"), m_pShader, "g_DepthTexture")))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_SSAO"), m_pShader, "g_SSAOTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_SSAO"), m_pShader, "g_SSAOTexture")))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Specular"), m_pShader, "g_SpecularTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Specular"), m_pShader, "g_SpecularTexture")))
         return E_FAIL;
 
     if (FAILED(m_pShader->Bind_RawValue("g_fToonShadeLevel", &m_fToonShadeLevel, sizeof(_float))))
@@ -418,16 +422,16 @@ HRESULT CRenderer::Render_PostScene()
     if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::PROJ))))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Diffuse"), m_pShader, "g_DiffuseTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Diffuse"), m_pShader, "g_DiffuseTexture")))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Shade"), m_pShader, "g_ShadeTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Shade"), m_pShader, "g_ShadeTexture")))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_SpecularLight"), m_pShader, "g_SpecularTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_SpecularLight"), m_pShader, "g_SpecularTexture")))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Depth"), m_pShader, "g_DepthTexture")))
         return E_FAIL;
 
 #ifdef _DEBUG
@@ -524,10 +528,10 @@ HRESULT CRenderer::Render_Fog()
     if (FAILED(m_pGameInstance->Bind_Fog_ShaderResources(m_pShader)))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_PostScene"), m_pShader, "g_PostSceneTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_PostScene"), m_pShader, "g_PostSceneTexture")))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Depth"), m_pShader, "g_DepthTexture")))
         return E_FAIL;
 
     m_pShader->Begin(9);
@@ -541,12 +545,12 @@ HRESULT CRenderer::Render_Fog()
     return S_OK;
 }
 
-HRESULT CRenderer::Render_Blur()
+HRESULT CRenderer::Render_Bloom()
 {
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_BlurX"))))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_Blur_ShaderResources(m_pShader)))
+    if (FAILED(m_pGameInstance->Bind_GaussianBlur_ShaderResources(m_pShader)))
         return E_FAIL;
 
     if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
@@ -556,10 +560,10 @@ HRESULT CRenderer::Render_Blur()
     if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Emissive"), m_pShader, "g_EmissiveTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Emissive"), m_pShader, "g_EmissiveTexture")))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_PostScene"), m_pShader, "g_PostSceneTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_PostScene"), m_pShader, "g_PostSceneTexture")))
         return E_FAIL;
 
     if (FAILED(m_pShader->Bind_RawValue("g_fViewportWidth", &m_fViewportWidth, sizeof(_float))))
@@ -576,7 +580,7 @@ HRESULT CRenderer::Render_Blur()
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_BlurY"))))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_Blur_ShaderResources(m_pShader)))
+    if (FAILED(m_pGameInstance->Bind_GaussianBlur_ShaderResources(m_pShader)))
         return E_FAIL;
 
     if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
@@ -586,7 +590,7 @@ HRESULT CRenderer::Render_Blur()
     if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_BlurX"), m_pShader, "g_BlurXTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_BlurX"), m_pShader, "g_BlurXTexture")))
         return E_FAIL;
 
     if (FAILED(m_pShader->Bind_RawValue("g_fViewportHeight", &m_fViewportHeight, sizeof(_float))))
@@ -615,22 +619,22 @@ HRESULT CRenderer::Render_Combined()
     if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_PostScene"), m_pShader, "g_PostSceneTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_PostScene"), m_pShader, "g_PostSceneTexture")))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Emissive"), m_pShader, "g_EmissiveTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Emissive"), m_pShader, "g_EmissiveTexture")))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Bloom"), m_pShader, "g_BloomTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Bloom"), m_pShader, "g_BloomTexture")))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Fog"), m_pShader, "g_FogTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Fog"), m_pShader, "g_FogTexture")))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Outline"), m_pShader, "g_OutlineTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Outline"), m_pShader, "g_OutlineTexture")))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Depth"), m_pShader, "g_DepthTexture")))
         return E_FAIL;
 
     if (FAILED(m_pShader->Bind_RawValue("g_fOutlineAlpha", &m_OutlineConfig.fAlpha, sizeof(_float))))
@@ -664,6 +668,35 @@ HRESULT CRenderer::Render_Combined()
     return S_OK;
 }
 
+HRESULT CRenderer::Render_RadialBlur()
+{
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_RadialBlur"))))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Combined"), m_pShader, "g_CombinedTexture")))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_RadialBlur_ShaderResources(m_pShader)))
+        return E_FAIL;
+    
+    m_pShader->Begin(12);
+
+    m_pVIBuffer->Bind_Resources();
+    m_pVIBuffer->Render();
+
+    if (FAILED(m_pGameInstance->End_MRT()))
+        return E_FAIL;
+
+    return S_OK;
+}
+
 HRESULT CRenderer::Render_LUT()
 {
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_LUT"))))
@@ -676,8 +709,16 @@ HRESULT CRenderer::Render_LUT()
     if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Combined"), m_pShader, "g_CombinedTexture")))
-        return E_FAIL;
+    if (m_isEnableRadialBlur)
+    {
+        if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_RadialBlur"), m_pShader, "g_CombinedTexture")))
+            return E_FAIL;
+    }
+    else
+    {
+        if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Combined"), m_pShader, "g_CombinedTexture")))
+            return E_FAIL;
+    }
 
     if (FAILED(m_pGameInstance->Bind_LUT_ShaderResources(m_pShader)))
         return E_FAIL;
@@ -707,7 +748,7 @@ HRESULT CRenderer::Render_Distortion()
     if (FAILED(m_pShader->Bind_Matrix("g_CameraProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_LookUpTable"), m_pShader, "g_CombinedTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_LookUpTable"), m_pShader, "g_CombinedTexture")))
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Bind_Distortion_ShaderResources(m_pShader)))
@@ -742,68 +783,72 @@ HRESULT CRenderer::Render_UI()
 
 HRESULT CRenderer::Ready_RenderTargets()
 {
-    /* For.Target_Diffuse */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Diffuse"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(1.f, 1.f, 1.f, 0.f))))
+    /* RT_Diffuse */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_Diffuse"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(1.f, 1.f, 1.f, 0.f))))
         return E_FAIL;
 
-    /* For.Target_Normal */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Normal"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(1.f, 1.f, 1.f, 1.f))))
+    /* RT_Normal */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_Normal"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(1.f, 1.f, 1.f, 1.f))))
         return E_FAIL;
 
-    /* For.Target_Depth */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Depth"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
+    /* RT_Depth */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_Depth"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
-    /* For.Target_World */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_World"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
+    /* RT_World */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_World"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
-    /* For.Target_Shade */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Shade"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+    /* RT_Shade */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_Shade"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
-    /* For.Target_SSAO */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_SSAO"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 1.f))))
+    /* RT_SSAO */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_SSAO"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 1.f))))
         return E_FAIL;
 
-    /* For.Target_Specular */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Specular"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+    /* RT_Specular */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_Specular"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
-    /* For.Target_SpecularLight -> LightAcc MRT */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_SpecularLight"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+    /* RT_SpecularLight -> LightAcc MRT */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_SpecularLight"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
-    /* For.Target_Emissive */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Emissive"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
+    /* RT_Emissive */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_Emissive"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
-    /* For.Target_PostScene */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_PostScene"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
+    /* RT_PostScene */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_PostScene"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
-    /* For.Target_BlurX */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_BlurX"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+    /* RT_BlurX */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_BlurX"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
-    /* For.Target_Bloom == Target_BlurY */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Bloom"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+    /* RT_Bloom == RT_BlurY */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_Bloom"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
-    /* For.Target_Fog */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Fog"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+    /* RT_Fog */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_Fog"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
-    /* For.Target_Outline */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Outline"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 1.f))))
+    /* RT_Outline */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_Outline"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 1.f))))
         return E_FAIL;
 
-    /* For.Target_Combined */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Combined"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
+    /* RT_Combined */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_Combined"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
-    /* For.Target_LookUpTable */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_LookUpTable"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
+    /* RT_LookUpTable */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_LookUpTable"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
+        return E_FAIL;
+
+    /* RT_RadialBlur */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_RadialBlur"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
     return S_OK;
@@ -811,72 +856,76 @@ HRESULT CRenderer::Ready_RenderTargets()
 
 HRESULT CRenderer::Ready_MRTs()
 {
-    /* For.MRT_GameObjects : 게임 오브젝트들의 정보를 저장받기위한 타겟들 */
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Diffuse"))))
+    /* MRT_GameObjects : 게임 오브젝트들의 정보를 저장받기위한 타겟들 */
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("RT_Diffuse"))))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Normal"))))
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("RT_Normal"))))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Depth"))))
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("RT_Depth"))))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_World"))))
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("RT_World"))))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Specular"))))
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("RT_Specular"))))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Emissive"))))
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("RT_Emissive"))))
         return E_FAIL;
 
-    /* For.MRT_LightAcc : 빛들의 연산 결과를 누적한다. */
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Shade"))))
+    /* MRT_LightAcc : 빛들의 연산 결과를 누적 */
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_LightAcc"), TEXT("RT_Shade"))))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_SpecularLight"))))
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_LightAcc"), TEXT("RT_SpecularLight"))))
         return E_FAIL;
 
-    /* For.MRT_PostScene : 원래 백버퍼에 그렸어야할 최종 장면을 그려놓는 타겟  */
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_PostScene"), TEXT("Target_PostScene"))))
+    /* MRT_PostScene : 원래 백버퍼에 그렸어야할 최종 장면을 그려놓는 타겟  */
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_PostScene"), TEXT("RT_PostScene"))))
         return E_FAIL;
 
-    /* For.MRT_EmissiveAcc : Emissive 결과 누적, Blur 적용할 객체들을 설정하는 타겟 */
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_EmissiveAcc"), TEXT("Target_PostScene"))))
+    /* MRT_EmissiveAcc : Emissive 결과 누적, Blur 적용할 객체들을 설정하는 타겟 */
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_EmissiveAcc"), TEXT("RT_PostScene"))))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_EmissiveAcc"), TEXT("Target_Emissive"))))
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_EmissiveAcc"), TEXT("RT_Emissive"))))
         return E_FAIL;
 
-    /* MRT_Blur */
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_BlurX"), TEXT("Target_BlurX"))))
+    /* MRT_Bloom */
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_BlurX"), TEXT("RT_BlurX"))))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_BlurY"), TEXT("Target_Bloom"))))
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_BlurY"), TEXT("RT_Bloom"))))
         return E_FAIL;
 
-    /* For.MRT_SSAO */
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_SSAO"), TEXT("Target_SSAO"))))
+    /* MRT_SSAO */
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_SSAO"), TEXT("RT_SSAO"))))
         return E_FAIL;
 
-    /* For.MRT_Fog */
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Fog"), TEXT("Target_Fog"))))
+    /* MRT_Fog */
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Fog"), TEXT("RT_Fog"))))
         return E_FAIL;
 
-    /* For.MRT_Outline */
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Outline"), TEXT("Target_Outline"))))
+    /* MRT_Outline */
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Outline"), TEXT("RT_Outline"))))
         return E_FAIL;
 
-    /* For.MRT_Decal */
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Decal"), TEXT("Target_Diffuse"))))
+    /* MRT_Decal */
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Decal"), TEXT("RT_Diffuse"))))
         return E_FAIL;
 
-    /* For.MRT_Combined */
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Combined"), TEXT("Target_Combined"))))
+    /* MRT_Combined */
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Combined"), TEXT("RT_Combined"))))
         return E_FAIL;
 
-    /* For.MRT_LUT */
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_LUT"), TEXT("Target_LookUpTable"))))
+    /* MRT_LUT */
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_LUT"), TEXT("RT_LookUpTable"))))
+        return E_FAIL;
+
+    /* MRT_RadialBlur */
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_RadialBlur"), TEXT("RT_RadialBlur"))))
         return E_FAIL;
 
     return S_OK;
