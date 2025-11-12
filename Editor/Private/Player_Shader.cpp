@@ -57,6 +57,7 @@ void CPlayer_Shader::Update(_float fTimeDelta)
     //      m_pGameInstance->Start_VignetteAnimation(1.f);
     //  }
 
+    m_pGameInstance->Set_RadialBlurCenter(m_pTransformCom->Get_State(STATE::POSITION));
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
         int a = 10;
