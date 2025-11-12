@@ -598,6 +598,10 @@ HRESULT CYetuga::Ready_AnimEvent()
     if (nullptr == pModel)
         return E_FAIL;
 
+    //pModel->Register_Event("CounterAttack_FinalAtackSnow", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+    //    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
+    //    });
+
 #pragma region ThrowRock
 
     pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
@@ -687,20 +691,18 @@ HRESULT CYetuga::Ready_AnimEvent()
         m_isLookAt = false;
         });
 
+    pModel->Register_Event("Smash_After", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_fTurnSpeed = 40.f;
+        m_isLookAt = false;
+        });
+
     // After_Smash
     pModel->Register_Event("Smash_Attack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_fTurnSpeed = 40.f;
         m_pBody->Set_OnAttackCollision(true);
         m_isLookAt = true;
         });
-
-    pModel->Register_Event("Smash_Attack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        m_fTurnSpeed = 40.f;
-        m_pBody->Set_OnAttackCollision(false);
-        m_isLookAt = false;
-        });
-
-
+     
     // After_Smash
     pModel->Register_Event("Smash_After", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_fTurnSpeed = 40.f;
