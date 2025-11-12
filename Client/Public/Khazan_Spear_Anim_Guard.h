@@ -25,6 +25,7 @@ public:
 	_bool	Try_JustGuard(_uint	m_iHitDir);
 	_bool	Play_FinishGuard();
 	
+    _bool*  Get_IsGuarding() { return &m_isGuarding; }
 	_bool	Is_Guarding() const { return m_isGuarding; }
 	_bool	Is_WalkGuarding() const { return m_isWalkGuarding; }
 	_bool	Is_JustGuarding() const { return m_isJustGuarding; }

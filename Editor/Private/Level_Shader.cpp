@@ -41,7 +41,7 @@ HRESULT CLevel_Shader::Initialize()
 	m_CascadeConfig.Splits.resize(m_iNumCascades);
 	m_CascadeConfig = m_pGameInstance->Get_CascadeConfig();
 	m_SSAOConfig = m_pGameInstance->Get_SSAOConfig();
-	m_BlurConfig = m_pGameInstance->Get_BlurConfig();
+	m_GaussianBlurConfig = m_pGameInstance->Get_GaussianBlurConfig();
 	m_FogConfig = m_pGameInstance->Get_FogConfig();
 	OUTLINE_CONFIG PlayerOutlineConfig = dynamic_cast<CPlayer_Shader*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
 		TEXT("Layer_Player"), 0))->Get_OutlineConfig();
@@ -58,6 +58,7 @@ HRESULT CLevel_Shader::Initialize()
 	m_DecalDesc.vColor = _float3(0.2745f, 0.08f, 0.08f);
 
 	m_DistortionDesc = m_pGameInstance->Get_DistortionDesc();
+    m_RadialBlurDesc = m_pGameInstance->Get_RadialBlurDesc();
 
 	m_iNumCascades = m_pGameInstance->Get_NumCascades();
 
@@ -164,16 +165,16 @@ HRESULT CLevel_Shader::Initialize()
 			if (m_isEnableBloom)
 			{
 				// 가우시안 블러 범위(반경)
-				if (ImGui::InputInt("Blur Radius", &m_BlurConfig.iRadius, 2, 4))
-					m_pGameInstance->Set_BlurConfig(m_BlurConfig);
+				if (ImGui::InputInt("Blur Radius", &m_GaussianBlurConfig.iRadius, 2, 4))
+					m_pGameInstance->Set_GaussianBlurConfig(m_GaussianBlurConfig);
 
 				// 가우시안 블러 가중치 밀집도
-				if (ImGui::SliderFloat("Concentration", &m_BlurConfig.fSigma, 1.f, 10.f))
-					m_pGameInstance->Set_BlurConfig(m_BlurConfig);
+				if (ImGui::SliderFloat("Concentration", &m_GaussianBlurConfig.fSigma, 1.f, 10.f))
+					m_pGameInstance->Set_GaussianBlurConfig(m_GaussianBlurConfig);
 
 				// 가우시안 블러 가중치 합 정규화 수치
-				if (ImGui::SliderFloat("Normalization", &m_BlurConfig.fNormalization, 0.f, 15.f))
-					m_pGameInstance->Set_BlurConfig(m_BlurConfig);
+				if (ImGui::SliderFloat("Normalization", &m_GaussianBlurConfig.fNormalization, 0.f, 15.f))
+					m_pGameInstance->Set_GaussianBlurConfig(m_GaussianBlurConfig);
 
 				ImGui::Separator();
 			}
@@ -319,19 +320,6 @@ HRESULT CLevel_Shader::Initialize()
 
 			if (m_isEnableVignette)
 			{
-				if (ImGui::SliderFloat("Vignette Power", &m_VignetteConfig.fPower, 0.f, 10.f, "%.2f"))
-					m_pGameInstance->Set_VignetteConfig(m_VignetteConfig);
-
-				if (ImGui::SliderFloat("Vignette Intensity", &m_VignetteConfig.fIntensity, 0.f, 10.f, "%.2f"))
-					m_pGameInstance->Set_VignetteConfig(m_VignetteConfig);
-			
-				if (ImGui::ColorEdit3("Vignette Color", reinterpret_cast<_float*>(&m_VignetteConfig.vColor)))
-					m_pGameInstance->Set_VignetteConfig(m_VignetteConfig);
-
-				ImGui::Separator();
-				ImGui::Text("Vignette Animation");
-				ImGui::Separator();
-
 				// 라디오 버튼으로 애니메이션 모드 고르기
 				_bool isChanged = {};
 				_int iVignetteMode = static_cast<_int>(m_VignetteConfig.eMode);
@@ -347,17 +335,21 @@ HRESULT CLevel_Shader::Initialize()
 				if (true == isChanged)
 					m_VignetteConfig.eMode = static_cast<VIGNETTE_CONFIG::ANIMMODE>(iVignetteMode);
 
+                ImGui::ColorEdit3("Vignette Color", reinterpret_cast<_float*>(&m_VignetteConfig.vColor));
+
+                ImGui::SliderFloat("Vignette Power", &m_VignetteConfig.fPower, 0.f, 10.f, "%.2f");
+
+                ImGui::SliderFloat("Vignette Intensity", &m_VignetteConfig.fIntensity, 0.f, 10.f, "%.2f");
+
 				// 최대 강도
-				if (ImGui::SliderFloat("Vignette Max Intensity", &m_VignetteConfig.fMaxIntensity, 0.f, 10.f, "%.2f"))
-					m_pGameInstance->Set_VignetteConfig(m_VignetteConfig);
+                ImGui::SliderFloat("Vignette Max Intensity", &m_VignetteConfig.fMaxIntensity, 0.f, 10.f, "%.2f");
 				
 				// 듀레이션
 				ImGui::SliderFloat("Vignette Duration", &m_fVignetteAnimDuration, 0.f, 5.f, "%.2f");
 
-
 				// 스타트 버튼
 				if (ImGui::Button("Start Vignette"))
-					m_pGameInstance->Start_VignetteAnimation(m_fVignetteAnimDuration, m_VignetteConfig.eMode);
+					m_pGameInstance->Start_VignetteAnimation(m_fVignetteAnimDuration, m_VignetteConfig);
 			}
 
             if (ImGui::Checkbox("LUT", &m_isEnableLUT))
@@ -366,8 +358,48 @@ HRESULT CLevel_Shader::Initialize()
             if (m_isEnableLUT)
             {
                 // LUT 강도
-                if (ImGui::SliderFloat("LUT Intensity TestTestTest", &m_VignetteConfig.fIntensity, 0.f, 5.f, "%.2f"));
-                    //  m_pGameInstance->Set_LUTDesc(m_pGameInstance->Get_LUTDesc());
+                if (ImGui::SliderFloat("LUT Intensity", &m_fLUTIntensity, 0.f, 1.f, "%.2f"));
+                    m_pGameInstance->Set_LUTIntensity(m_fLUTIntensity);
+            }
+
+            if (ImGui::Checkbox("Radial Blur", &m_isEnableRadialBlur))
+                m_pGameInstance->Set_EnableRadialBlur(m_isEnableRadialBlur);
+
+            if (m_isEnableRadialBlur)
+            {
+                // 중심 UV
+                if (ImGui::SliderFloat2("Radial Blur Center UV", reinterpret_cast<_float*>(&m_RadialBlurDesc.vCenterUV), 0.f, 1.f, "%.1f"))
+                    m_pGameInstance->Set_RadialBlurDesc(m_RadialBlurDesc);
+                
+                // 반경
+                if (ImGui::SliderFloat("Radial Blur Radius", &m_RadialBlurDesc.fSampleRadius, 0.01f, 1.5f, "%.2f"))
+                    m_pGameInstance->Set_RadialBlurDesc(m_RadialBlurDesc);
+                
+                // 마스크 반경
+                if (ImGui::SliderFloat("Radial Blur Mask Radius Iner", &m_RadialBlurDesc.vMaskRadius.x, 0.f, 1.f, "%.3f"))
+                    m_pGameInstance->Set_RadialBlurDesc(m_RadialBlurDesc);
+                if (ImGui::SliderFloat("Radial Blur Mask Radius Outer", &m_RadialBlurDesc.vMaskRadius.y, 0.f, 1.f, "%.3f"))
+                    m_pGameInstance->Set_RadialBlurDesc(m_RadialBlurDesc);
+
+                // 마스크 지수(곡선 강화)
+                if (ImGui::SliderFloat("Radial Blur Mask Exponent", &m_RadialBlurDesc.fExponent, 1.f, 5.f, "%.2f"))
+                    m_pGameInstance->Set_RadialBlurDesc(m_RadialBlurDesc);
+
+                // 샘플 개수
+                _int iNumSamples = static_cast<_int>(m_RadialBlurDesc.iNumSamples);
+                if (ImGui::InputInt("Radial Blur Num Samples", &iNumSamples, 2, 4))
+                {
+                    m_RadialBlurDesc.iNumSamples = iNumSamples;
+                    m_pGameInstance->Set_RadialBlurDesc(m_RadialBlurDesc);
+                }
+                
+                // 감쇠
+                if (ImGui::SliderFloat("Radial Blur Attenuation", &m_RadialBlurDesc.fAttenuation, 0.1f, 5.f, "%.2f"))
+                    m_pGameInstance->Set_RadialBlurDesc(m_RadialBlurDesc);
+
+                // 블러 강도
+                if (ImGui::SliderFloat("Radial Blur Strength", &m_RadialBlurDesc.fStrength, 0.f, 1.f, "%.2f"))
+                    m_pGameInstance->Set_RadialBlurDesc(m_RadialBlurDesc);
             }
 		}
 

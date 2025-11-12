@@ -78,6 +78,7 @@ public:
 #pragma endregion
 
 #pragma region Player_Mager
+    PLAYER_DATA*                Get_pInitailizePlayerData();
     PLAYER_DATA&                Get_ptrPlayerData();
 	const PLAYER_DATA&			Get_PlayerData();
 	void						Add_SkillExp(_float fExp);
@@ -88,6 +89,7 @@ public:
     void                        Set_UsedSkill(_uint iSkill, _bool isUsed);
     _bool                       Is_UsedSkill(_uint iSkill);
     
+    /* 플레이어 입력 막기 */
     void                        Set_PlayerInput(_bool isInput) { m_isPlayerInput = isInput; }
     inline _bool                Get_PlayerInput() const { return m_isPlayerInput; }
 

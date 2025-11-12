@@ -93,6 +93,7 @@ public:
 	OUTLINE_CONFIG Get_OutlineConfig();
 	void Set_OutlineConfig(OUTLINE_CONFIG Config);
     void Set_SpecularPower(_float2 vPower);
+    void Set_EnableRadialBlur(_bool isEnable);
 #pragma endregion
 
 #pragma region TIMER_MANAGER
@@ -306,7 +307,7 @@ public:
 #pragma endregion
 
 #pragma region CAMERA_MANAGER
-	class CBlackBoard* Get_BlackBoard() { return m_pBlackBoard; }
+	//class CBlackBoard* Get_BlackBoard() { return m_pBlackBoard; }
 #pragma endregion
 
 #pragma region SSAO
@@ -321,10 +322,10 @@ public:
 	bool AddStaticObject(class CGameObject* pGameObject, const _float3& vPoint, const _float& fRadius = 0.0f);
 #pragma endregion
 
-#pragma region BLUR
-	HRESULT						Bind_Blur_ShaderResources(class CShader* pShader);
-	GAUSSIAN_BLUR_CONFIG		Get_BlurConfig();
-	void						Set_BlurConfig(GAUSSIAN_BLUR_CONFIG Config);
+#pragma region GAUSSIAN_BLUR
+	HRESULT						Bind_GaussianBlur_ShaderResources(class CShader* pShader);
+	GAUSSIAN_BLUR_CONFIG		Get_GaussianBlurConfig();
+	void						Set_GaussianBlurConfig(GAUSSIAN_BLUR_CONFIG Config);
 #pragma endregion
 
 #pragma region FOG
@@ -343,7 +344,7 @@ public:
 	void						Set_EnableVignette(_bool isEnable);
 	VIGNETTE_CONFIG				Get_VignetteConfig();
 	void						Set_VignetteConfig(VIGNETTE_CONFIG Config);
-	void						Start_VignetteAnimation(_float fDuration, VIGNETTE_CONFIG::ANIMMODE eMode);
+	void						Start_VignetteAnimation(_float fDuration, VIGNETTE_CONFIG Config);
 #pragma endregion
 
 #pragma region SEQUENCE_MANAGER
@@ -382,45 +383,54 @@ public:
 #pragma region LUT
     HRESULT                     Bind_LUT_ShaderResources(class CShader* pShader);
     void                        Set_EnableLUT(_bool isEnable);
+    void                        Set_LUTIntensity(_float fIntensity);
+#pragma endregion
+
+#pragma region RADIAL_BLUR
+    HRESULT						Bind_RadialBlur_ShaderResources(class CShader* pShader);
+    RADIAL_BLUR_DESC		    Get_RadialBlurDesc();
+    void						Set_RadialBlurDesc(const RADIAL_BLUR_DESC& Desc);
+    void                        Set_RadialBlurCenter(_fvector vCenter);
 #pragma endregion
 
 private:
-	class CGraphic_Device*		m_pGraphic_Device = { nullptr };
-	class CLevel_Manager*		m_pLevel_Manager = { nullptr };
-	class CObject_Manager*		m_pObject_Manager = { nullptr };
-	class CPrototype_Manager*	m_pPrototype_Manager = { nullptr };
-	class CRenderer*			m_pRenderer = { nullptr };
-	class CTimer_Manager*		m_pTimer_Manager = { nullptr };
-	class CPicking*				m_pPicking = { nullptr };
-	class CPipeLine*			m_pPipeLine = { nullptr };
-	class CLight_Manager*		m_pLight_Manager = { nullptr };
-	class CFont_Manager*		m_pFont_Manager = { nullptr };
-	class CTarget_Manager*		m_pTarget_Manager = { nullptr };
-	class CFrustum*				m_pFrustum = { nullptr };
-	class CJolt_Manager*		m_pJolt_Manager = { nullptr };
-	CThreadPool*				m_pThreadPool = { nullptr };
-	class CInput_Manager*		m_pInput_Manager = { nullptr };
-	class CPool_Manager*		m_pPool_Manager = { nullptr };
-	class CEvent_Manager*		m_pEvent_Manager = { nullptr };
-	class CResource_Manager*	m_pResource_Manager = { nullptr };
-	class CComputeShader_Manager*	m_pComputeShader_Manager = { nullptr };
-	class CBlackBoard*			m_pBlackBoard = { nullptr };
-	class CSequence_Manager*	m_pSequence_Manager = { nullptr };
-	class CDecal_Manager*		m_pDecal_Manager = { nullptr };
-	class CEffect_Manager*		m_pEffect_Manager = { nullptr };
+	class CGraphic_Device*		    m_pGraphic_Device = { nullptr };
+	class CLevel_Manager*		    m_pLevel_Manager = { nullptr };
+	class CObject_Manager*		    m_pObject_Manager = { nullptr };
+	class CPrototype_Manager*	    m_pPrototype_Manager = { nullptr };
+	class CRenderer*			    m_pRenderer = { nullptr };
+	class CTimer_Manager*		    m_pTimer_Manager = { nullptr };
+	class CPicking*				    m_pPicking = { nullptr };
+	class CPipeLine*			    m_pPipeLine = { nullptr };
+	class CLight_Manager*		    m_pLight_Manager = { nullptr };
+	class CFont_Manager*		    m_pFont_Manager = { nullptr };
+	class CTarget_Manager*		    m_pTarget_Manager = { nullptr };
+	class CFrustum*				    m_pFrustum = { nullptr };
+	class CJolt_Manager*		    m_pJolt_Manager = { nullptr };
+	CThreadPool*				    m_pThreadPool = { nullptr };
+	class CInput_Manager*		    m_pInput_Manager = { nullptr };
+	class CPool_Manager*		    m_pPool_Manager = { nullptr };
+	class CEvent_Manager*		    m_pEvent_Manager = { nullptr };
+	class CResource_Manager*	    m_pResource_Manager = { nullptr };
+	class CComputeShader_Manager*   m_pComputeShader_Manager = { nullptr };
+	class CBlackBoard*			    m_pBlackBoard = { nullptr };
+	class CSequence_Manager*	    m_pSequence_Manager = { nullptr };
+	class CDecal_Manager*		    m_pDecal_Manager = { nullptr };
+	class CEffect_Manager*		    m_pEffect_Manager = { nullptr };
 	
 	// 임시(이후 렌더링 리소스 클래스 안으로 이전할 예정)
-	class CShadow*				m_pShadow = { nullptr };
-	class CSSAO*				m_pSSAO = { nullptr };
-	class COctree*				m_pOctree = { nullptr };
-	class CBlur*				m_pBlur = { nullptr };
-	class CFog*					m_pFog = { nullptr };
-	class CVignette*			m_pVignette = { nullptr };
-	class CDistortion*			m_pDistortion = { nullptr };
-    class CLUT*                 m_pLUT = { nullptr };
+	class CShadow*				    m_pShadow = { nullptr };
+	class CSSAO*				    m_pSSAO = { nullptr };
+	class COctree*				    m_pOctree = { nullptr };
+	class CGaussianBlur*		    m_pGaussianBlur = { nullptr };
+	class CFog*					    m_pFog = { nullptr };
+	class CVignette*			    m_pVignette = { nullptr };
+	class CDistortion*			    m_pDistortion = { nullptr };
+    class CLUT*                     m_pLUT = { nullptr };
+    class CRadialBlur*              m_pRadialBlur = { nullptr };
 
 #ifdef _DEBUG
-	class CImgui_Manager* m_pImgui_Manager = { nullptr };
+	class CImgui_Manager*           m_pImgui_Manager = { nullptr };
 #endif
 
 

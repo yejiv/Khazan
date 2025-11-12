@@ -26,7 +26,8 @@ void CAS_RightHand_5Hit_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner,
 
     if (pModel->Play_Animation(fTimeDelta))
     {
-        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isAttack2Finished", true);
+        CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
+        pBB->Set_Value<_bool>(pYetuga->Get_Name(), "isAttack2Finished", true);
     }
 }
 
@@ -48,8 +49,8 @@ void CAS_RightHand_5Hit_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollis
         {
             if (m_pGameInstance->Key_Down(DIK_F))
             {
-                CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
-                pYetuga->Take_Damage(15.f, HITREACTION::KNOCKBACK_STRONG, 1.f);
+                //CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
+                //pYetuga->Take_Damage(15.f, HITREACTION::KNOCKBACK_STRONG, nullptr);
             }
         }
     

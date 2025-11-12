@@ -28,7 +28,8 @@ void CAttackState_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 
     if (pModel->Play_Animation(fTimeDelta))
     {
-        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "is2HitFinished", true);
+        CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
+        pBB->Set_Value<_bool>(pYetuga->Get_Name(), "is2HitFinished", true);
     }
 
 }

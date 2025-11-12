@@ -263,6 +263,17 @@ namespace Engine
         XMFLOAT2        vTextureSize;
     }LUT_DESC;
 
+    typedef struct tagRadialBlurDesc
+    {
+        XMFLOAT2        vCenterUV;
+        float           fSampleRadius;
+        XMFLOAT2        vMaskRadius;
+        float           fExponent;
+        unsigned int    iNumSamples;
+        float           fAttenuation;
+        float           fStrength;
+    }RADIAL_BLUR_DESC;
+
 	struct HitStopState
 	{
 		bool isActive = false;

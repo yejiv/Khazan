@@ -229,6 +229,9 @@
     <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\02.TombStone">
       <UniqueIdentifier>{2bf29804-d405-4e56-b93b-c082d1d474fd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Monster">
+      <UniqueIdentifier>{dda5801c-8b51-4c02-a8ca-0386e8d4eb81}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -438,6 +441,9 @@
     <ClInclude Include="..\Public\TombStone.h">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\02.TombStone</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Map_Spawn.h">
+      <Filter>02.GameObject\MapObject\Monster</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -641,6 +647,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\TombStone.cpp">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\02.TombStone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Map_Spawn.cpp">
+      <Filter>02.GameObject\MapObject\Monster</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
