@@ -4960,8 +4960,6 @@ void CLevel_Map::MapEditor_Close_Windows()
     // 11. Sky / Cloud Sphere 초기화
     m_FixSkyDesc = {};
     m_FixCloudDesc = {};
-    Safe_Release(m_pSkySphere);
-    Safe_Release(m_pCloudSphere);
     m_pSkySphere = nullptr;
     m_pCloudSphere = nullptr;
 
