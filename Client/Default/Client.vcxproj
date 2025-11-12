@@ -196,6 +196,7 @@
     <ClInclude Include="..\Public\BigChest.h" />
     <ClInclude Include="..\public\BladeNexus_List.h" />
     <ClInclude Include="..\public\BladeNexus_Map_BG.h" />
+    <ClInclude Include="..\public\Khazan_Spaer_Anim_Damaged.h" />
     <ClInclude Include="..\public\UI_BladeNexus_Map.h" />
     <ClInclude Include="..\public\BladeNexus_Map_List.h" />
     <ClInclude Include="..\Public\Body_Gomdol.h" />
@@ -422,6 +423,7 @@
     <ClCompile Include="..\Private\BladeNexus.cpp" />
     <ClCompile Include="..\private\BladeNexus_List.cpp" />
     <ClCompile Include="..\private\BladeNexus_Map_BG.cpp" />
+    <ClCompile Include="..\private\Khazan_Spaer_Anim_Damaged.cpp" />
     <ClCompile Include="..\private\UI_BladeNexus_Map.cpp" />
     <ClCompile Include="..\private\BladeNexus_Map_List.cpp" />
     <ClCompile Include="..\Private\Body_Gomdol.cpp" />

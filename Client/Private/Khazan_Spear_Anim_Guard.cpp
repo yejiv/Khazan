@@ -64,6 +64,7 @@ _bool CKhazan_Spear_Anim_Guard::Try_Guard()
 	if (!m_pModel->Check_MinAnimationTime()/* || !m_pModel->IsFinished()*/)
 		return false;
 
+    /*  걷는 가드 -> 제자리 가드*/
 	if (m_isWalkGuarding)
 	{
 		m_isWalkGuarding = false;
@@ -71,6 +72,7 @@ _bool CKhazan_Spear_Anim_Guard::Try_Guard()
 		m_pModel->Set_Animation(m_iSelectedAnimationIndex);
 	}
 
+    /* 가드 시작 */
 	if (!m_isGuarding ) {
 		m_isGuarding = true;
 		m_isGuardStart = true;

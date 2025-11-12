@@ -36,7 +36,7 @@ public:
 	// Set함수는 다르게 작동할수도 있을 것 같아서  일단 Get만 만들었습니다.
 
 public:
-	virtual void				Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject = nullptr) {};
+    virtual void                Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject = nullptr) {};
 	virtual void				Consume_Stamina(_float fAmout) {};
 	virtual void				Recovery_Stamina(_float fTimeDelta) {};
 	virtual void				KnockBack(_vector vDir, _float fPower, _float fLoss);

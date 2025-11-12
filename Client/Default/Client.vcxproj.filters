@@ -721,6 +721,9 @@
     <Filter Include="02.GameObject\Projectile\Imp_Range">
       <UniqueIdentifier>{7eb4d9c5-fc1f-45b9-bb06-e9804903beb7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation\Damaged">
+      <UniqueIdentifier>{f031d52a-394e-4c44-99fe-4dc085c5093b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1388,6 +1391,9 @@
       <Filter>02.GameObject\Creature\Monster\Imp_Range\Weapon</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Projectile_Imp_MagicBall.h" />
+    <ClInclude Include="..\public\Khazan_Spaer_Anim_Damaged.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Damaged</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2018,7 +2024,7 @@
     </ClCompile>
     <ClCompile Include="..\private\Khazan_Spear_Anim_Interaction.cpp">
       <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Interaction</Filter>
-  </ClCompile>
+    </ClCompile>
     <ClCompile Include="..\private\UI_BladeNexus_Map.cpp">
       <Filter>02.GameObject\UI\BladeNexus_Map</Filter>
     </ClCompile>
@@ -2035,6 +2041,9 @@
       <Filter>02.GameObject\Creature\Monster\Imp_Range\Weapon</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Projectile_Imp_MagicBall.cpp" />
+    <ClCompile Include="..\private\Khazan_Spaer_Anim_Damaged.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Damaged</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">

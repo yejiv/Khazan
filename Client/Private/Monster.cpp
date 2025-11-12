@@ -44,12 +44,14 @@ void CMonster::CheckMinDistanceWithPlayer(_float fMinDist, _float fAnimRatio)
     }
 }
 
-void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction, _float fValidTime,CGameObject* pGameObject)
+void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject* pGameObject)
 {
     m_fCurrentHP -= fDamage;
     if (m_fCurrentHP <= 0.f)
         m_pController->AI_Terminate_All();
-
+    
+    _float fValidTime = 3.f;
+    
     m_pController->AI_ApplyDamage(pGameObject,fDamage,ENUM_CLASS(eHitreaction),fValidTime);
 }
 

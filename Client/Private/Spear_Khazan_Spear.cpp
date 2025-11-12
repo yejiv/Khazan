@@ -45,6 +45,9 @@ HRESULT CSpear_Khazan_Spear::Initialize_Clone(void* pArg)
     int a = m_pModelCom->Get_BoneIndex("Weapon_R");
     m_pModelCom->Set_RootBone(0);
 
+    /* 충돌 겹쳐지게*/
+    m_isGhost = true;
+
     return S_OK;
 }
 
