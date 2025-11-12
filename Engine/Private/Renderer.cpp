@@ -707,7 +707,7 @@ HRESULT CRenderer::Render_Distortion()
     if (FAILED(m_pShader->Bind_Matrix("g_CameraProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Combined"), m_pShader, "g_CombinedTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_LookUpTable"), m_pShader, "g_CombinedTexture")))
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Bind_Distortion_ShaderResources(m_pShader)))
@@ -799,7 +799,7 @@ HRESULT CRenderer::Ready_RenderTargets()
         return E_FAIL;
 
     /* For.Target_Combined */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Combined"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 1.f, 0.f, 0.f))))
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Combined"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
     /* For.Target_LookUpTable */

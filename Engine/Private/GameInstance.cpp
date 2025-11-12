@@ -1393,6 +1393,11 @@ void CGameInstance::Set_EnableLUT(_bool isEnable)
     m_pLUT->Set_EnableLUT(isEnable);
 }
 
+void CGameInstance::Set_LUTIntensity(_float fIntensity)
+{
+    m_pLUT->Set_LUTIntensity(fIntensity);
+}
+
 #pragma endregion
 
 #pragma region OCTREE

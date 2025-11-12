@@ -15,6 +15,7 @@ public:
 public:
     HRESULT                     Bind_LUT_ShaderResources(class CShader* pShader);
     void                        Set_EnableLUT(_bool isEnable) { m_isEnable = isEnable; }
+    void                        Set_LUTIntensity(_float fIntensity) { m_Desc.fIntensity = fIntensity; }
 
 private:
     ID3D11Device*               m_pDevice = { nullptr };

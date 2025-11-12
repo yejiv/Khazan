@@ -745,8 +745,8 @@ PS_OUT_BACKBUFFER PS_MAIN_LUT(PS_IN In)
                            (fSlicePixelY + 0.5f) / g_vLUTTextureSize.y);
     
         // 두 슬라이스에서 샘플링
-        float3 vLowColor = g_LUTTexture.Sample(DefaultSampler, vLowUV).rgb;
-        float3 vHighColor = g_LUTTexture.Sample(DefaultSampler, vHighUV).rgb;
+        float3 vLowColor = g_LUTTexture.Sample(PointClampSampler, vLowUV).rgb;
+        float3 vHighColor = g_LUTTexture.Sample(PointClampSampler, vHighUV).rgb;
     
         // 두 색을 보간
         float3 vLUTColor = lerp(vLowColor, vHighColor, fSliceBlend);

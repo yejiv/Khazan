@@ -336,6 +336,16 @@ void CShader_Controller::Ready_Shader()
 
 					ImGui::Separator();
 				}
+
+                if (ImGui::Checkbox("LUT", &m_isEnableLUT))
+                    m_pGameInstance->Set_EnableLUT(m_isEnableLUT);
+
+                if (m_isEnableLUT)
+                {
+                    // LUT 강도
+                    if (ImGui::SliderFloat("LUT Intensity", &m_fLUTIntensity, 0.f, 1.f, "%.2f"));
+                    m_pGameInstance->Set_LUTIntensity(m_fLUTIntensity);
+                }
 			}
 
 			if (ImGui::CollapsingHeader("Cartoon Rendering"), ImGuiTreeNodeFlags_DefaultOpen)

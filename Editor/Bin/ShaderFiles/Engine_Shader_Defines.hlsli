@@ -29,6 +29,13 @@ sampler PointSampler = sampler_state
     AddressV = wrap;
 };
 
+sampler PointClampSampler = sampler_state
+{
+    filter = min_mag_mip_point;
+    AddressU = clamp;
+    AddressV = clamp;
+};
+
 sampler SkySampler = sampler_state
 {
     filter = min_mag_mip_linear;

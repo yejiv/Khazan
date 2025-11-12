@@ -382,6 +382,7 @@ public:
 #pragma region LUT
     HRESULT                     Bind_LUT_ShaderResources(class CShader* pShader);
     void                        Set_EnableLUT(_bool isEnable);
+    void                        Set_LUTIntensity(_float fIntensity);
 #pragma endregion
 
 private:
