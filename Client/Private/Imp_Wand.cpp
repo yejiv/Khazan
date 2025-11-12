@@ -1,4 +1,5 @@
 #include "Imp_Wand.h"
+#include "Model.h"
 
 _float4* CImp_Wand::Get_BonePointEX(const _char* pBoneName)
 {

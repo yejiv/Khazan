@@ -5,6 +5,7 @@
 #include "AI_Controller_Imp_Range.h"
 #include "Projectile_Imp_MagicBall.h"
 #include "Projectile_Boomarang.h"
+#include "GameInstance.h"
 
 CImp_Range::CImp_Range(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{pDevice,pContext}
@@ -30,8 +31,6 @@ HRESULT CImp_Range::Initialize_Clone(void* pArg)
 {
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
-
-    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(513.f, -11.f, 225.f, 1.f));
 
     if (FAILED(Ready_Components()))
         return E_FAIL;
@@ -104,9 +103,10 @@ HRESULT CImp_Range::Ready_Components()
     tCharVirDesc.vQuat = vQuat;
     tCharVirDesc.vShapeOffset = _float3(0.f, 2.1f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
-    tCharVirDesc.fRadius = 1.f;
-    tCharVirDesc.fHeight = 2.f;
+    tCharVirDesc.fRadius = 0.5f;
+    tCharVirDesc.fHeight = 0.5f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
+    tCharVirDesc.fPenetrationRecoverySpeed = 0.1f;
 
     m_tCollisionDesc.pGameObject = this;
     //pCollDesc.pInfo = ?? // 작성하기
@@ -167,8 +167,6 @@ HRESULT CImp_Range::Ready_Projectiles()
 
     m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Imp_Magic_Ball"),
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Imp_MagicBall"), &Desc, 9);
-
-
 
     CProjectile_Boomarang::BOOMARANG_DESC BommarangDesc{};
     BommarangDesc.fDamage = 10.f;

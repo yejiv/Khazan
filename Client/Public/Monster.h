@@ -18,6 +18,8 @@ public:
 	{
 		string		strName;
 
+        _float4x4   WorldMatrix{};
+
 	}MONSTER_DESC;
 
 	typedef struct tagMonsterInfo
@@ -93,6 +95,11 @@ protected:
 	_float							m_fDecelTime = {}; // 감속 지속 시간
 	_float							m_fDecelElapsed = {}; // 경과 시간
 	_bool							m_isDecelerating = {}; // 감속 중 플래그
+
+
+
+    _bool                           m_isSpwan = { false };
+    _float                          m_fSpawnTime = { 0.f };
 
 
 //private:
