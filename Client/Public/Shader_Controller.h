@@ -37,8 +37,9 @@ private:
 	_bool					m_isRenderShadow = { true };
 	_bool					m_isRenderSSAO = { true };
 	_bool					m_isEnableFog = { true };
-	_bool					m_isEnableToonShade = {};
+	_bool					m_isEnableToonShade = { true };
 	_bool					m_isEnableOutline = {};
+    _bool                   m_isEnableLUT = { true };
 
 	// SSAO
 	SSAO_CONFIG				m_SSAOConfig = {};
@@ -56,6 +57,9 @@ private:
 
     // Specular
     _float2                 m_vSpecularPower = {};
+
+    // LUT
+    _float                  m_fLUTIntensity = { 0.2f };
 
 	LEVEL m_eCurrentLevel = { LEVEL::TITLE };
 	_bool m_isSelectLevel[ENUM_CLASS(LEVEL::END)];

@@ -366,8 +366,8 @@ HRESULT CLevel_Shader::Initialize()
             if (m_isEnableLUT)
             {
                 // LUT 강도
-                if (ImGui::SliderFloat("LUT Intensity TestTestTest", &m_VignetteConfig.fIntensity, 0.f, 5.f, "%.2f"));
-                    //  m_pGameInstance->Set_LUTDesc(m_pGameInstance->Get_LUTDesc());
+                if (ImGui::SliderFloat("LUT Intensity", &m_fLUTIntensity, 0.f, 1.f, "%.2f"));
+                    m_pGameInstance->Set_LUTIntensity(m_fLUTIntensity);
             }
 		}
 
