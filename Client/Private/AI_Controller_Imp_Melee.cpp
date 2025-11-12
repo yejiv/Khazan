@@ -33,7 +33,7 @@ void CAI_Controller_Imp_Melee::Update(CGameObject* pOwner, _float fTimeDelta)
     {
         CImp_Melee* pImp = static_cast<CImp_Melee*>(pOwner);
         CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(pImp->Get_Name(), "Target");
-        pImp->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK, 3.f, pTarget);
+        pImp->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK, pTarget);
     }
 
 
@@ -135,7 +135,7 @@ CONDITION CAI_Controller_Imp_Melee::GetCallbackCondition(CGameObject* pOwner, co
 
                 if (!BB->Get_Value<_bool>(pImp->Get_Name(), "isHit"))
                 {
-                    // DamageType √º≈©
+                    // DamageType Ï≤¥ÌÅ¨
                     HITREACTION eHitRection = static_cast<HITREACTION>(
                         BB->Get_Value<_uint>(pImp->Get_Name(), "DamageType"));
 
@@ -143,7 +143,7 @@ CONDITION CAI_Controller_Imp_Melee::GetCallbackCondition(CGameObject* pOwner, co
                         eHitRection == HITREACTION::KNOCKBACK_NORMAL ||
                         eHitRection == HITREACTION::KNOCKBACK_STRONG)
                     {
-                        // ¡∂∞« ≈Î∞˙ (∫Œºˆ»ø∞˙ æ¯¿Ω)
+                        // Ï°∞Í±¥ ÌÜµÍ≥º (Î∂ÄÏàòÌö®Í≥º ÏóÜÏùå)
                         return true;
                     }
                     return false;
@@ -297,7 +297,7 @@ ACTION CAI_Controller_Imp_Melee::GetCallbackAction(CGameObject* pOwner, const st
     {
         return [pImp](CBlackBoard* BB)->BTNODESTATE
             {
-                // æ÷¥œ ¡æ∑· «√∑°±◊∞° true∏È SUCCESS
+                // Ïï†Îãà Ï¢ÖÎ£å ÌîåÎûòÍ∑∏Í∞Ä trueÎ©¥ SUCCESS
                 if (true == BB->Get_Value<_bool>(pImp->Get_Name(), "isHitFinished"))
                 {
                     BB->Set_Value<_bool>(pImp->Get_Name(), "DamageInterrupt", false);

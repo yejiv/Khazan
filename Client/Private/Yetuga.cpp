@@ -169,10 +169,58 @@ void CYetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _f
             DirInfo.Add_Flag(DirInfo.L);
 
         }
+       /* m_pGameInstance->Get_BlackBoard()->Set_Value<_uint>(m_strName, "HitDirection", DirInfo.iDirFlag);
+        DAMAGEINFO* pDamageInfo = static_cast<DAMAGEINFO*>(pDesc->pInfo);
+        Take_Damage(10, HITREACTION::KNOCKBACK_NORMAL , 0.1f, pDesc->pGameObject);*/
+
+        // Decal
+        
+        //  _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
+        //  _vector vTargetPos = XMVectorSet(vPos.m128_f32[0], vPos.m128_f32[1] - 5.f, vPos.m128_f32[2], 1.f);
+        //  
+        //  _float fFraction;
+        //  _float4 vRayHitPos;
+        //  _float3 outNormal;
+        //  
+        //  if (m_pGameInstance->RayCast(
+        //      _float3(vPos.m128_f32[0], vPos.m128_f32[1], vPos.m128_f32[2]),
+        //      _float3(vTargetPos.m128_f32[0], vTargetPos.m128_f32[1], vTargetPos.m128_f32[2]),
+        //      fFraction,
+        //      vRayHitPos,
+        //      &outNormal
+        //  ))
+        //  {
+        //      DECAL_DESC Desc{};
+        //      Desc.fLifeTime = 5.f;
+        //      Desc.vFadeTime = _float2(0.5f, 0.5f);
+        //      Desc.eType = DECALTYPE::CIRCLE;
+        //      Desc.vPosition = _float3(vRayHitPos.x, vRayHitPos.y, vRayHitPos.z);
+        //      Desc.vScale = _float3(40.f, 40.f, 40.f);
+        //      Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
+        //  
+        //      m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
+        //  }
+
+        _vector vDecalPos = m_pTransformCom->Get_State(STATE::POSITION);
+        _float fOffset = 2.f;
+        _float fPosX = XMVectorGetX(vDecalPos);
+        _float fPosZ = XMVectorGetZ(vDecalPos);
+        vDecalPos = XMVectorSetX(vDecalPos, m_pGameInstance->Rand(fPosX - fOffset, fPosX + fOffset));
+        vDecalPos = XMVectorSetZ(vDecalPos, m_pGameInstance->Rand(fPosZ - fOffset, fPosZ + fOffset));
+        DECAL_DESC Desc{};
+        Desc.fLifeTime = 8.f;
+        Desc.vFadeTime = _float2(0.2f, 0.2f);
+        Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::END)));
+        XMStoreFloat3(&Desc.vPosition, vDecalPos);
+        Desc.vScale = _float3(
+            m_pGameInstance->Rand(4.f, 8.f),
+            2.f, 
+            m_pGameInstance->Rand(4.f, 8.f)
+            );
+        Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
+        
+        m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
     }
-   
-    
-    
 }
 
 void CYetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
@@ -508,7 +556,12 @@ HRESULT CYetuga::Ready_Components()
     tCharVirDesc.fRadius = 2.f;
     tCharVirDesc.fHeight = 4.f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
+    tCharVirDesc.fMass = 10.f;
     tCharVirDesc.fMaxStrength = 0.f;
+    tCharVirDesc.fPredictiveContactDistance = 0.3f;
+    tCharVirDesc.iMaxConstraintIterations = 20;
+    tCharVirDesc.fCollisionTolerance = 0.03f;
+    tCharVirDesc.fPenetrationRecoverySpeed = 1.7f;
 
     m_tCollisionDesc.pGameObject = this;
     //pCollDesc.pInfo = ?? // 작성하기
@@ -599,6 +652,10 @@ HRESULT CYetuga::Ready_AnimEvent()
     if (nullptr == pModel)
         return E_FAIL;
 
+    //pModel->Register_Event("CounterAttack_FinalAtackSnow", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+    //    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
+    //    });
+
 #pragma region ThrowRock
 
     pModel->Register_Event("ThrowBall", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
@@ -688,20 +745,18 @@ HRESULT CYetuga::Ready_AnimEvent()
         m_isLookAt = false;
         });
 
+    pModel->Register_Event("Smash_After", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_fTurnSpeed = 40.f;
+        m_isLookAt = false;
+        });
+
     // After_Smash
     pModel->Register_Event("Smash_Attack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_fTurnSpeed = 40.f;
         m_pBody->Set_OnAttackCollision(true);
         m_isLookAt = true;
         });
-
-    pModel->Register_Event("Smash_Attack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        m_fTurnSpeed = 40.f;
-        m_pBody->Set_OnAttackCollision(false);
-        m_isLookAt = false;
-        });
-
-
+     
     // After_Smash
     pModel->Register_Event("Smash_After", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_fTurnSpeed = 40.f;

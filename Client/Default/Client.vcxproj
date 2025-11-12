@@ -213,6 +213,7 @@
     <ClInclude Include="..\Public\Imp_Melee.h" />
     <ClInclude Include="..\Public\Imp_Sword.h" />
     <ClInclude Include="..\Public\Projectile_Boomarang.h" />
+    <ClInclude Include="..\public\Khazan_Spaer_Anim_Damaged.h" />
     <ClInclude Include="..\public\UI_BladeNexus_Map.h" />
     <ClInclude Include="..\public\BladeNexus_Map_List.h" />
     <ClInclude Include="..\Public\Body_Gomdol.h" />
@@ -456,6 +457,7 @@
     <ClCompile Include="..\Private\Imp_Melee.cpp" />
     <ClCompile Include="..\Private\Imp_Sword.cpp" />
     <ClCompile Include="..\Private\Projectile_Boomarang.cpp" />
+    <ClCompile Include="..\private\Khazan_Spaer_Anim_Damaged.cpp" />
     <ClCompile Include="..\private\UI_BladeNexus_Map.cpp" />
     <ClCompile Include="..\private\BladeNexus_Map_List.cpp" />
     <ClCompile Include="..\Private\Body_Gomdol.cpp" />

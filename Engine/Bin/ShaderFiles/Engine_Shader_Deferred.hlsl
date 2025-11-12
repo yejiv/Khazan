@@ -42,7 +42,7 @@ float g_fRadius = { 1.f };
 float g_fIntensity = { 1.f }, g_fContrast = { 1.f };
 matrix g_CameraViewMatrix, g_CameraProjMatrix;
 
-// ===== Blur =====
+// ===== Gaussian Blur =====
 float g_fViewportWidth, g_fViewportHeight;
 StructuredBuffer<float> g_Weights;
 float g_fNormalization;
@@ -93,6 +93,11 @@ float g_fLUTIntensity;
 uint g_iLUTSliceSize;
 float2 g_vLUTTextureSize;
 
+// ===== Radial Blur =====
+float2 g_vCenterUV, g_vMaskRadius;
+float g_fSampleRadius, g_fAttenuation, g_fExponent, g_fStrength;
+uint g_iNumSamples;
+
 struct VS_IN
 {
     float3 vPosition : POSITION;
@@ -131,7 +136,7 @@ struct PS_OUT_BACKBUFFER
     float4 vColor : SV_TARGET0;
 };
 
-PS_OUT_BACKBUFFER PS_MAIN_DEBUG(PS_IN In)
+PS_OUT_BACKBUFFER PS_DEBUG(PS_IN In)
 {
     PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
     
@@ -140,7 +145,7 @@ PS_OUT_BACKBUFFER PS_MAIN_DEBUG(PS_IN In)
     return Out;
 }
 
-PS_OUT_BACKBUFFER PS_MAIN_DEBUG_ARRAY(PS_IN In)
+PS_OUT_BACKBUFFER PS_DEBUG_ARRAY(PS_IN In)
 {
     PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
     
@@ -156,7 +161,7 @@ struct PS_OUT_LIGHT
     vector vSpecular : SV_TARGET1;
 };
 
-PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
+PS_OUT_LIGHT PS_DIRECTIONAL(PS_IN In)
 {
     PS_OUT_LIGHT Out = (PS_OUT_LIGHT) 0;
     
@@ -223,7 +228,7 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
     return Out;
 }
 
-PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
+PS_OUT_LIGHT PS_POINT(PS_IN In)
 {
     PS_OUT_LIGHT Out = (PS_OUT_LIGHT) 0;
     
@@ -300,7 +305,7 @@ PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
     return Out;
 }
 
-PS_OUT_BACKBUFFER PS_MAIN_POSTSCENE(PS_IN In)
+PS_OUT_BACKBUFFER PS_POSTSCENE(PS_IN In)
 {
     PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
     
@@ -381,7 +386,7 @@ struct PS_OUT_BLUR_X
     vector vBlurX : SV_TARGET0;
 };
 
-PS_OUT_BLUR_X PS_MAIN_BLUR_X(PS_IN In)
+PS_OUT_BLUR_X PS_BLUR_X(PS_IN In)
 {
     PS_OUT_BLUR_X Out;
 
@@ -415,7 +420,7 @@ PS_OUT_BLUR_X PS_MAIN_BLUR_X(PS_IN In)
     return Out;
 }
 
-PS_OUT_BACKBUFFER PS_MAIN_BLUR_Y(PS_IN In)
+PS_OUT_BACKBUFFER PS_BLUR_Y(PS_IN In)
 {
     PS_OUT_BACKBUFFER Out;
     
@@ -442,7 +447,7 @@ struct PS_OUT_SSAO
     float4 vSSAO : SV_TARGET0;
 };
 
-PS_OUT_SSAO PS_MAIN_SSAO(PS_IN In)
+PS_OUT_SSAO PS_SSAO(PS_IN In)
 {
     PS_OUT_SSAO Out;
 
@@ -525,7 +530,7 @@ PS_OUT_SSAO PS_MAIN_SSAO(PS_IN In)
     return Out;
 }
 
-PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
+PS_OUT_BACKBUFFER PS_COMBINED(PS_IN In)
 {
     PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
     
@@ -573,7 +578,7 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
     return Out;
 }
 
-PS_OUT_BACKBUFFER PS_MAIN_FOG(PS_IN In)
+PS_OUT_BACKBUFFER PS_FOG(PS_IN In)
 {
     PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
     
@@ -660,7 +665,7 @@ PS_OUT_BACKBUFFER PS_MAIN_FOG(PS_IN In)
     return Out;
 }
 
-PS_OUT_BACKBUFFER PS_MAIN_DISTORTION(PS_IN In)
+PS_OUT_BACKBUFFER PS_DISTORTION(PS_IN In)
 {
     PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
     
@@ -709,7 +714,7 @@ PS_OUT_BACKBUFFER PS_MAIN_DISTORTION(PS_IN In)
     return Out;
 }
 
-PS_OUT_BACKBUFFER PS_MAIN_LUT(PS_IN In)
+PS_OUT_BACKBUFFER PS_LUT(PS_IN In)
 {
     PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
 
@@ -745,8 +750,8 @@ PS_OUT_BACKBUFFER PS_MAIN_LUT(PS_IN In)
                            (fSlicePixelY + 0.5f) / g_vLUTTextureSize.y);
     
         // 두 슬라이스에서 샘플링
-        float3 vLowColor = g_LUTTexture.Sample(DefaultSampler, vLowUV).rgb;
-        float3 vHighColor = g_LUTTexture.Sample(DefaultSampler, vHighUV).rgb;
+        float3 vLowColor = g_LUTTexture.Sample(PointClampSampler, vLowUV).rgb;
+        float3 vHighColor = g_LUTTexture.Sample(PointClampSampler, vHighUV).rgb;
     
         // 두 색을 보간
         float3 vLUTColor = lerp(vLowColor, vHighColor, fSliceBlend);
@@ -765,6 +770,41 @@ PS_OUT_BACKBUFFER PS_MAIN_LUT(PS_IN In)
     return Out;
 }
 
+PS_OUT_BACKBUFFER PS_RADIAL_BLUR(PS_IN In)
+{
+    PS_OUT_BACKBUFFER Out;
+    
+    float3 vSceneColor = g_CombinedTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
+    
+    float2 vDir = normalize(g_vCenterUV - In.vTexcoord);
+    
+    // Mask
+    float fDist = length(In.vTexcoord - g_vCenterUV);
+    float fMask = smoothstep(g_vMaskRadius.x, g_vMaskRadius.y, fDist);
+    
+    // 곡선 강화
+    fMask = pow(fMask, g_fExponent);
+    
+    float3 vColor = float3(0.f, 0.f, 0.f);
+    float fWeightAcc = 0.f;
+    
+    for (uint i = 0; i < g_iNumSamples; ++i)
+    {
+        float fRatio = (i + 1) / (float) g_iNumSamples;
+        float2 vSampleUV = In.vTexcoord + vDir * fRatio * g_fSampleRadius;
+        float fWeight = pow(fRatio, g_fAttenuation);
+        vColor += g_CombinedTexture.Sample(DefaultSampler, vSampleUV) * fWeight;
+        fWeightAcc += fWeight;
+    }
+    
+    float3 vFinalColor = vColor / max(fWeightAcc, 1e-6); // 10^-6
+    vFinalColor = lerp(vSceneColor, vFinalColor, fMask * g_fStrength);
+    
+    Out.vColor = float4(vFinalColor, 1.f);
+    
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     pass Debug
@@ -775,7 +815,7 @@ technique11 DefaultTechnique
 
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_DEBUG();
+        PixelShader = compile ps_5_0 PS_DEBUG();
     }
 
     pass Directional
@@ -786,7 +826,7 @@ technique11 DefaultTechnique
 
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_DIRECTIONAL();
+        PixelShader = compile ps_5_0 PS_DIRECTIONAL();
     }
 
     pass Point
@@ -797,7 +837,7 @@ technique11 DefaultTechnique
 
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_POINT();
+        PixelShader = compile ps_5_0 PS_POINT();
     }
 
     pass PostScene
@@ -808,7 +848,7 @@ technique11 DefaultTechnique
 
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_POSTSCENE();
+        PixelShader = compile ps_5_0 PS_POSTSCENE();
     }
 
     pass BlurX
@@ -819,7 +859,7 @@ technique11 DefaultTechnique
 
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_BLUR_X();
+        PixelShader = compile ps_5_0 PS_BLUR_X();
     }
 
     pass BlurY
@@ -830,7 +870,7 @@ technique11 DefaultTechnique
 
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_BLUR_Y();
+        PixelShader = compile ps_5_0 PS_BLUR_Y();
     }
 
     pass DebugArray
@@ -841,7 +881,7 @@ technique11 DefaultTechnique
 
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_DEBUG_ARRAY();
+        PixelShader = compile ps_5_0 PS_DEBUG_ARRAY();
     }
 
     pass SSAO
@@ -852,7 +892,7 @@ technique11 DefaultTechnique
 
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_SSAO();
+        PixelShader = compile ps_5_0 PS_SSAO();
     }
 
     pass Combined
@@ -863,7 +903,7 @@ technique11 DefaultTechnique
     
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_COMBINED();
+        PixelShader = compile ps_5_0 PS_COMBINED();
     }
 
     pass Fog
@@ -874,7 +914,7 @@ technique11 DefaultTechnique
     
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_FOG();
+        PixelShader = compile ps_5_0 PS_FOG();
     }
 
     pass Distortion
@@ -885,7 +925,7 @@ technique11 DefaultTechnique
     
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_DISTORTION();
+        PixelShader = compile ps_5_0 PS_DISTORTION();
     }
 
     pass LUT
@@ -896,6 +936,17 @@ technique11 DefaultTechnique
     
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_LUT();
+        PixelShader = compile ps_5_0 PS_LUT();
+    }
+
+    pass RadialBlur
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_RADIAL_BLUR();
     }
 }

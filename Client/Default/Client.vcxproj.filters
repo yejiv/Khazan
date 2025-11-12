@@ -754,6 +754,9 @@
     <Filter Include="92.AI\State\Imp_Range\Dead">
       <UniqueIdentifier>{446b686b-ea06-4dad-bf3c-79b3b8e1f86b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation\Damaged">
+      <UniqueIdentifier>{f031d52a-394e-4c44-99fe-4dc085c5093b}</UniqueIdentifier>
+    </Filter>
     <Filter Include="92.AI\State\Imp_Melee\Sleep">
       <UniqueIdentifier>{3b049ab2-97c0-4662-ba41-5767cda13864}</UniqueIdentifier>
     </Filter>
@@ -1475,6 +1478,9 @@
     <ClInclude Include="..\Public\AS_Dead_Imp_Range.h">
       <Filter>92.AI\State\Imp_Range\Dead</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Khazan_Spaer_Anim_Damaged.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Damaged</Filter>
+    </ClInclude>
     <ClInclude Include="..\Public\AS_Sleep_Imp_Melee.h">
       <Filter>92.AI\State\Imp_Melee\Sleep</Filter>
     </ClInclude>
@@ -2175,6 +2181,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_Dead_Imp_Range.cpp">
       <Filter>92.AI\State\Imp_Range\Dead</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_Spaer_Anim_Damaged.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Damaged</Filter>
     </ClCompile>
     <ClCompile Include="..\private\AS_Sleep_Imp_Melee.cpp">
       <Filter>92.AI\State\Imp_Melee\Sleep</Filter>

@@ -112,10 +112,10 @@ private:
     vector<RayCastDesc>  m_RayCasts;
 private:
     // 생성 파라미터 보관(선택)
-    _uint m_iMaxBodies = { 2048 };
+    _uint m_iMaxBodies = { 1024 };
     _uint m_iNumBodyMutexes = {};
-    _uint m_iMaxBodyPairs = { 10240 };
-    _uint m_iMaxContactConstraints = { 10240 };
+    _uint m_iMaxBodyPairs = { 1024 };
+    _uint m_iMaxContactConstraints = { 1024 };
     _uint m_iJobThreadCount = {};
 
     _uint m_iNumObjectLayer = {};

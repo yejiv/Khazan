@@ -6,6 +6,7 @@
 #include "GameInstance.h"
 #include "Perception.h"
 #include "UI_Inven.h"
+#include "ClientInstance.h"
 
 
 CAI_Controller_Yetuga::CAI_Controller_Yetuga()
@@ -33,7 +34,7 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 	{
 		CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
 		CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(pYetuga->Get_Name(), "Target");
-		pYetuga->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK, 3.f ,pTarget);
+		pYetuga->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK ,pTarget);
 	}
 
 	if (m_pGameInstance->Key_Down(DIK_U))
@@ -46,10 +47,18 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 	m_pPerception->Update(pOwner,m_pBB,fTimeDelta);
 	_float fPrevTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
 
-	if (m_pBB->Get_Value<_bool>("Yetuga", "isDetected"))
-		m_pBB->Set_Value(m_strMonstertag, "CurrentTime", fPrevTime + fTimeDelta);
+    if (m_pBB->Get_Value<_bool>("Yetuga", "isDetected"))
+    {
+        m_pBB->Set_Value(m_strMonstertag, "CurrentTime", fPrevTime + fTimeDelta);
+
+        m_pBT->Update();
+
+        
+    }
 	else
 		m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
+
+    m_pFSM->Update(pOwner, fTimeDelta * 1.2f);
 
 	/*_uint iDirFlag = m_pBB->Get_Value<_uint>("Yetuga", "TargetDirection");
 	cout << "DirFlag : " << iDirFlag << "(";
@@ -66,9 +75,7 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 	cout << ")" << endl;*/
 	
 
-	m_pBT->Update();
-
-	m_pFSM->Update(pOwner,fTimeDelta * 1.2f);
+	
 
 }
 

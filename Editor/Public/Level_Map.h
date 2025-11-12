@@ -101,10 +101,17 @@ private:
 	CMapObject::ITEMBOX_DESC m_ItemBox = {};
 	CMapObject::ITEMBOX_DESC m_FixItemBox = {};
 
-	string m_strTriggerKey = {};
+    string m_strTriggerKey = {};
+    string m_strMonsterKey = {};
 
-	_char m_szFixTriggerKey[MAX_PATH];
-	string m_strFixTriggerKey = {};
+    _char m_szFixTriggerKey[MAX_PATH];
+    string m_strFixTriggerKey = {};
+
+    _char m_szFixMonsterKey[MAX_PATH];
+    string m_strFixMonsterKey = {};
+
+    _int m_iMonsterSubLevel = {};
+    _int m_iFixMonsterSubLevel = {};
 
 #pragma endregion
 
@@ -259,8 +266,9 @@ private:
 	vector<string> m_Prototypes_Inter;					// Prototype 목록 ( Interactive 용 모델 )
 	_int m_iIndex_PrtInter = {};						// Prototype Interactive 용 인덱스
 
-	_char m_szSearchPrototypeName[MAX_PATH] = {};		// 등록된 프로토 타입 태그 검색용
-	_char m_szSearchObjectName[MAX_PATH] = {};			// 등록된 오브젝트 모델 검색용
+	_char m_szSearchPrototypeName[MAX_PATH] = {};		        // 등록된 프로토 타입 태그 검색용
+    _char m_szSearchObjectName[MAX_PATH] = {};			        // 등록된 오브젝트 모델 검색용
+    _char m_szSearchInteractObjectName[MAX_PATH] = {};			// 등록된 상호 작용 오브젝트 모델 검색용
 
 #pragma endregion
 
@@ -328,6 +336,9 @@ private:
 	// 맵 에디터에서 사용할 오브젝트 바이너리 파일
 	_bool Objects_Save_Binary();
 
+    // 맵 에디터에서 사용할 몬스터 Json 정보
+    _bool Monster_Save_Json();
+
 #pragma region 실질적인 사용할 바이너리 파일들
 
 	// CLoader 에서 사용할 모델 바이너리 파일
@@ -348,6 +359,9 @@ private:
 	// 특정 레벨에서 사용할 트리거 Json 정보
 	_bool Trigger_Save_Json();
 
+    // 특정 레벨에서 사용할 몬스터 Json 정보
+    _bool Monster_Save_Json_ByLevel(_uint iLevel);
+
 	// 특정 레벨에서 사용할 모델 바이너리 파일 ( LV_1, LV_2 이런식으로 구분 )
 	_bool Object_Save_Binary_ByLevel(_uint iLevel);
 
@@ -362,8 +376,10 @@ private:
 	_bool Objects_Load_Binary();
 	// MapEditor에서 상호 작용 오브젝트 불러오기 ( 나중에 코드 채우기 )
 	_bool Interactive_Objects_Load_Binary();
-	// MapEditor에서 트리거 오브젝트 불러오기
-	_bool Trigger_objects_Load_Json();
+    // MapEditor에서 트리거 오브젝트 불러오기
+    _bool Trigger_objects_Load_Json();
+    // MapEditor에서 몬스터 오브젝트 불러오기
+    _bool Monster_objects_Load_Json();
 	// MapEditor에서 조명 불러오기
 	_bool Lights_Load_Binary();
 

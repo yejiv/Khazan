@@ -12,6 +12,7 @@ namespace Client {
         PreSKILL_On,
         ANNOUNCE_RESULT,
         ANNOUNCE_OVER,
+        SKILL_QUICKSLOT,
 		END };
 
 	// Structs
@@ -129,4 +130,9 @@ namespace Client {
 
     struct EVENT_ANNOUNCE_RESULT { };
 
+    struct EVENT_SKILL_SLOT    {
+        _int    iIndex;
+        _int    iSkillIndex;
+        _bool   isEquip;
+    };
 }

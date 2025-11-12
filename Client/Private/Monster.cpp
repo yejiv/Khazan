@@ -44,12 +44,14 @@ void CMonster::CheckMinDistanceWithPlayer(_float fMinDist, _float fAnimRatio)
     }
 }
 
-void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction, _float fValidTime,CGameObject* pGameObject)
+void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject* pGameObject)
 {
     m_fCurrentHP -= fDamage;
     if (m_fCurrentHP <= 0.f)
         m_pController->AI_Terminate_All();
-
+    
+    _float fValidTime = 3.f;
+    
     m_pController->AI_ApplyDamage(pGameObject,fDamage,ENUM_CLASS(eHitreaction),fValidTime);
 }
 
@@ -146,6 +148,8 @@ HRESULT CMonster::Initialize_Clone(void* pArg)
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
+    m_pTransformCom->Set_WorldMatrix_4x4(pDesc->WorldMatrix);
+
     // 이름
     m_strName = pDesc->strName;
     // 타겟
@@ -162,6 +166,7 @@ void CMonster::Priority_Update(_float fTimeDelta)
 
 void CMonster::Update(_float fTimeDelta)
 {
+
     __super::Update(fTimeDelta);
 
     //m_pRigidBodyCom->Sync_Update(m_pTransformCom);
