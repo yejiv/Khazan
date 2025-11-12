@@ -1,7 +1,7 @@
-#include "Blur.h"
+#include "GaussianBlur.h"
 #include "GameInstance.h"
 
-CBlur::CBlur(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CGaussianBlur::CGaussianBlur(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : m_pDevice{ pDevice }
     , m_pContext{ pContext }
     , m_pGameInstance{ CGameInstance::GetInstance() }
@@ -11,7 +11,7 @@ CBlur::CBlur(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     Safe_AddRef(m_pGameInstance);
 }
 
-HRESULT CBlur::Initialize()
+HRESULT CGaussianBlur::Initialize()
 {
     //  m_Config.fSigma = 2.5f;
     //  m_Config.iRadius = 6;
@@ -32,7 +32,7 @@ HRESULT CBlur::Initialize()
     return S_OK;
 }
 
-HRESULT CBlur::Bind_Blur_ShaderResources(class CShader* pShader)
+HRESULT CGaussianBlur::Bind_GaussianBlur_ShaderResources(class CShader* pShader)
 {
     if (FAILED(pShader->Bind_SRV("g_Weights", m_pWeightSRV)))
         return E_FAIL;
@@ -46,7 +46,7 @@ HRESULT CBlur::Bind_Blur_ShaderResources(class CShader* pShader)
     return S_OK;
 }
 
-void CBlur::Set_BlurConfig(GAUSSIAN_BLUR_CONFIG Config)
+void CGaussianBlur::Set_GaussianBlurConfig(GAUSSIAN_BLUR_CONFIG Config)
 {
     m_Config = Config;
 
@@ -58,7 +58,7 @@ void CBlur::Set_BlurConfig(GAUSSIAN_BLUR_CONFIG Config)
     Ready_Weight();
 }
 
-HRESULT CBlur::Ready_Weight()
+HRESULT CGaussianBlur::Ready_Weight()
 {
     m_iNumWeights = 2 * m_Config.iRadius + 1;
     vector<_float> Weights;
@@ -97,20 +97,20 @@ HRESULT CBlur::Ready_Weight()
     return S_OK;
 }
 
-CBlur* CBlur::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CGaussianBlur* CGaussianBlur::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-    CBlur* pInstance = new CBlur(pDevice, pContext);
+    CGaussianBlur* pInstance = new CGaussianBlur(pDevice, pContext);
 
     if (FAILED(pInstance->Initialize()))
     {
-        MSG_BOX(TEXT("Failed to Create : CBlur"));
+        MSG_BOX(TEXT("Failed to Create : CGaussianBlur"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-void CBlur::Free()
+void CGaussianBlur::Free()
 {
     __super::Free();
 

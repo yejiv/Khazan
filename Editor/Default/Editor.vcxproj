@@ -206,6 +206,7 @@
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\MapEditor_Header.h" />
     <ClInclude Include="..\Public\MapObject.h" />
+    <ClInclude Include="..\Public\Map_Spawn.h" />
     <ClInclude Include="..\Public\Map_Terrain.h" />
     <ClInclude Include="..\Public\Trigger.h" />
     <ClInclude Include="..\Public\Map_TestPlayer.h" />
@@ -274,6 +275,7 @@
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\Private\MapObject.cpp" />
+    <ClCompile Include="..\Private\Map_Spawn.cpp" />
     <ClCompile Include="..\Private\Map_Terrain.cpp" />
     <ClCompile Include="..\Private\Trigger.cpp" />
     <ClCompile Include="..\Private\Map_TestPlayer.cpp" />

@@ -31,7 +31,7 @@ void CAS_IceBreath_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _flo
 {
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
-    CBlackBoard* BB = m_pGameInstance->Get_BlackBoard();
+    CBlackBoard* BB = pYetuga->Get_Controller()->Get_BlackBoard();
 
     switch (m_eState)
     {
@@ -54,7 +54,10 @@ void CAS_IceBreath_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _flo
             BB->Set_Value<_bool>(pYetuga->Get_Name(), "isReadyiceBreath", true);
 
         if (PHASE::ROOP == m_eState)
-            m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isIceBreathFinished", true);
+        {
+            CBlackBoard* BB = pYetuga->Get_Controller()->Get_BlackBoard();
+            BB->Set_Value<_bool>(pYetuga->Get_Name(), "isIceBreathFinished", true);
+        }
         
     }
 

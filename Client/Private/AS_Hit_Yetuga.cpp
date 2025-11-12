@@ -5,6 +5,7 @@
 #include "BlackBoard.h"
 #include "FSM_Yetuga.h"
 #include "Body_Yetuga.h"
+#include "AI_Controller.h"
 
 CAS_Hit_Yetuga::CAS_Hit_Yetuga()
 {
@@ -15,10 +16,11 @@ void CAS_Hit_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
+    CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
 
-    HITREACTION eHitreaction = static_cast<HITREACTION>(m_pGameInstance->Get_BlackBoard()->Get_Value<_uint>(pYetuga->Get_Name(), "DamageType"));
+    HITREACTION eHitreaction = static_cast<HITREACTION>(pBB->Get_Value<_uint>(pYetuga->Get_Name(), "DamageType"));
     DIRECTION_INFO Info{};
-    Info.iDirFlag = m_pGameInstance->Get_BlackBoard()->Get_Value<_uint>("Yetuga", "HitDirection");
+    Info.iDirFlag = pBB->Get_Value<_uint>("Yetuga", "HitDirection");
 
     HIT_DIR eHitDir = Convert_HitFlag(Info);
     _uint iAnimIndex = Make_AnimIndex(eHitreaction,eHitDir);
@@ -35,8 +37,9 @@ void CAS_Hit_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTi
 
     if (pModel->Play_Animation(fTimeDelta))
     {
-        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isHitFinished", true);
-        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "IsHitEvent", false);
+        CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
+        pBB->Set_Value<_bool>(pYetuga->Get_Name(), "isHitFinished", true);
+        pBB->Set_Value<_bool>(pYetuga->Get_Name(), "IsHitEvent", false);
     }
 
 }

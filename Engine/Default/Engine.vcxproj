@@ -183,7 +183,8 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\Base.cpp" />
     <ClCompile Include="..\Private\BehaviorTree.cpp" />
     <ClCompile Include="..\Private\BlackBoard.cpp" />
-    <ClCompile Include="..\private\Blur.cpp" />
+    <ClCompile Include="..\private\RadialBlur.cpp" />
+    <ClCompile Include="..\private\GaussianBlur.cpp" />
     <ClCompile Include="..\Private\Body.cpp" />
     <ClCompile Include="..\private\Bone.cpp" />
     <ClCompile Include="..\Private\BoneChainPhysic.cpp" />
@@ -329,7 +330,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Base.h" />
     <ClInclude Include="..\Public\BehaviorTree.h" />
     <ClInclude Include="..\Public\BlackBoard.h" />
-    <ClInclude Include="..\public\Blur.h" />
+    <ClInclude Include="..\public\GaussianBlur.h" />
     <ClInclude Include="..\Public\Body.h" />
     <ClInclude Include="..\Public\BodyDrawFilter.h" />
     <ClInclude Include="..\public\Bone.h" />
@@ -410,6 +411,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Octree.h" />
     <ClInclude Include="..\Public\Perception.h" />
     <ClInclude Include="..\Public\Perception_Defines.h" />
+    <ClInclude Include="..\public\RadialBlur.h" />
     <ClInclude Include="..\Public\Repeater_Node.h" />
     <ClInclude Include="..\Public\Selector_Node.h" />
     <ClInclude Include="..\Public\SequenceAdapter.h" />

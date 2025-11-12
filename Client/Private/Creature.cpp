@@ -67,11 +67,8 @@ HRESULT CCreature::Render()
     return S_OK;
 }
 
-
-
 void CCreature::Free()
 {
-
     Safe_Release(m_pCharVirCom);
 
     __super::Free();

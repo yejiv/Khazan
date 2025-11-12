@@ -59,7 +59,7 @@ HRESULT CBody_Imp_Range::Initialize_Clone(void* pArg)
     if (nullptr == m_pOwnerTransform)
         return E_FAIL;
 
-    Safe_Release(m_pOwnerTransform);
+    Safe_AddRef(m_pOwnerTransform);
 
     m_pOwner = pDesc->pOwner;
     if (nullptr == m_pOwner)
@@ -116,14 +116,17 @@ HRESULT CBody_Imp_Range::Render()
 
 void CBody_Imp_Range::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
+
 }
 
 void CBody_Imp_Range::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
+
 }
 
 void CBody_Imp_Range::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 {
+
 }
 
 HRESULT CBody_Imp_Range::Ready_Components()
