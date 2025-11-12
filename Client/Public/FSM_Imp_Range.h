@@ -6,12 +6,9 @@ enum class  IMPRANGE_STATE
 {
     IDLE,
     MOVE,
-    TURN,
     MAGIC,
     BOOMARANG,
     HIT,
-    GROGGY,
-    DODGE,
     DEAD,
     SLEEP,
     END,

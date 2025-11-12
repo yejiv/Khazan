@@ -26,9 +26,10 @@ HRESULT CUI_PlayerHP_Gauge::Initialize_Clone(void* pArg)
 
     if (FAILED(Ready_Component()))
         return E_FAIL;
+    
+    m_pCulHp = &CClientInstance::GetInstance()->Get_PlayerData().fCulHp;
+    m_pMaxHp = &CClientInstance::GetInstance()->Get_PlayerData().fMaxHp;
 
-	m_fMaxValue = 100;
-	m_fCurrentValue = 100;
 	m_fLerpSpeed = 0.5f;
 	m_fLerpValue = 1.f;
 	m_fDeleyTime = 0.5f;
@@ -41,6 +42,9 @@ void CUI_PlayerHP_Gauge::Priority_Update(_float fTimeDelta)
 
 void CUI_PlayerHP_Gauge::Update(_float fTimeDelta)
 {
+    m_fMaxValue = *m_pMaxHp;
+    m_fCurrentValue = *m_pCulHp;
+
 	if (m_fCurrentValue < 0)
 		m_fCurrentValue = 0;
 	if (m_fCurrentValue > m_fMaxValue)

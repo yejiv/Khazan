@@ -721,6 +721,66 @@
     <Filter Include="02.GameObject\Projectile\Imp_Range">
       <UniqueIdentifier>{7eb4d9c5-fc1f-45b9-bb06-e9804903beb7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="92.AI\Controller\Imp_Melee">
+      <UniqueIdentifier>{dc0e1369-c3bb-401a-aed5-cdd2dbfcd5df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee">
+      <UniqueIdentifier>{3a42513d-9c49-4444-8c71-512b9902fbcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\StateMachine\Imp_Melee">
+      <UniqueIdentifier>{e59f7e2f-39fe-4420-91ef-de34dfa957db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Imp_Melee">
+      <UniqueIdentifier>{61d05502-fd8c-49b7-8c63-d5e7e3f841e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Imp_Melee\Body">
+      <UniqueIdentifier>{eee25bb8-385c-4040-adbc-2d574f096e4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Imp_Melee\Weapon">
+      <UniqueIdentifier>{ea415365-d3fc-4073-b06a-e38eb521563b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Projectile\Imp_Range\Magic">
+      <UniqueIdentifier>{b467a4ad-f3af-490a-a2a1-49c7db665fda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Projectile\Imp_Range\Boomarang">
+      <UniqueIdentifier>{753de682-fb54-42cc-846b-07da7e2630d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Range\Boomarang">
+      <UniqueIdentifier>{0e1aa9f6-4486-49bd-b374-4c47c917f124}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Range\Hit">
+      <UniqueIdentifier>{cf94db5d-cfb9-4a9c-a2d0-4a490ad1272d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Range\Dead">
+      <UniqueIdentifier>{446b686b-ea06-4dad-bf3c-79b3b8e1f86b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation\Damaged">
+      <UniqueIdentifier>{f031d52a-394e-4c44-99fe-4dc085c5093b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee\Sleep">
+      <UniqueIdentifier>{3b049ab2-97c0-4662-ba41-5767cda13864}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee\Idle">
+      <UniqueIdentifier>{3bcf256f-ee59-421e-b46c-785afb1e05a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee\Move">
+      <UniqueIdentifier>{ab152243-355f-46f6-8da5-4877ddaee2ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee\ChainSmash">
+      <UniqueIdentifier>{92b46441-c154-4102-9875-4662aa7961e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee\NonStopAttack">
+      <UniqueIdentifier>{a8a4e709-0031-4d42-b9e7-16bc521b7338}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee\DashAttack">
+      <UniqueIdentifier>{6c0a2971-c94a-45de-85c0-21595cb0bbb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee\Hit">
+      <UniqueIdentifier>{963405f7-4c54-47c1-97d4-82f064ae75a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee\Dead">
+      <UniqueIdentifier>{689219ac-a03d-4d2d-8f56-d3da6e31c225}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1388,6 +1448,63 @@
       <Filter>02.GameObject\Creature\Monster\Imp_Range\Weapon</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Projectile_Imp_MagicBall.h" />
+    <ClInclude Include="..\Public\AI_Controller_Imp_Melee.h">
+      <Filter>92.AI\Controller\Imp_Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FSM_Imp_Melee.h">
+      <Filter>92.AI\StateMachine\Imp_Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Imp_Melee.h">
+      <Filter>02.GameObject\Creature\Monster\Imp_Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Body_Imp_Melee.h">
+      <Filter>02.GameObject\Creature\Monster\Imp_Melee\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Imp_Sword.h">
+      <Filter>02.GameObject\Creature\Monster\Imp_Melee\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Projectile_Imp_MagicBall.h">
+      <Filter>02.GameObject\Projectile\Imp_Range\Magic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Boomarang_Imp_Range.h">
+      <Filter>92.AI\State\Imp_Range\Boomarang</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Projectile_Boomarang.h">
+      <Filter>02.GameObject\Projectile\Imp_Range\Boomarang</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Hit_Imp_Range.h">
+      <Filter>92.AI\State\Imp_Range\Hit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Dead_Imp_Range.h">
+      <Filter>92.AI\State\Imp_Range\Dead</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_Spaer_Anim_Damaged.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Damaged</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Sleep_Imp_Melee.h">
+      <Filter>92.AI\State\Imp_Melee\Sleep</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Move_Imp_Melee.h">
+      <Filter>92.AI\State\Imp_Melee\Move</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Idle_Imp_Melee.h">
+      <Filter>92.AI\State\Imp_Melee\Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_ChainSmash_Imp_Melee.h">
+      <Filter>92.AI\State\Imp_Melee\ChainSmash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_NonStopAttack_Imp_Melee.h">
+      <Filter>92.AI\State\Imp_Melee\NonStopAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_DashAttack_Imp_Melee.h">
+      <Filter>92.AI\State\Imp_Melee\DashAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Dead_Imp_Melee.h">
+      <Filter>92.AI\State\Imp_Melee\Dead</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Hit_Imp_Melee.h">
+      <Filter>92.AI\State\Imp_Melee\Hit</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2018,7 +2135,7 @@
     </ClCompile>
     <ClCompile Include="..\private\Khazan_Spear_Anim_Interaction.cpp">
       <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Interaction</Filter>
-  </ClCompile>
+    </ClCompile>
     <ClCompile Include="..\private\UI_BladeNexus_Map.cpp">
       <Filter>02.GameObject\UI\BladeNexus_Map</Filter>
     </ClCompile>
@@ -2035,6 +2152,63 @@
       <Filter>02.GameObject\Creature\Monster\Imp_Range\Weapon</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Projectile_Imp_MagicBall.cpp" />
+    <ClCompile Include="..\Private\AI_Controller_Imp_Melee.cpp">
+      <Filter>92.AI\Controller\Imp_Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FSM_Imp_Melee.cpp">
+      <Filter>92.AI\StateMachine\Imp_Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Imp_Melee.cpp">
+      <Filter>02.GameObject\Creature\Monster\Imp_Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Body_Imp_Melee.cpp">
+      <Filter>02.GameObject\Creature\Monster\Imp_Melee\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Imp_Sword.cpp">
+      <Filter>02.GameObject\Creature\Monster\Imp_Melee\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile_Imp_MagicBall.cpp">
+      <Filter>02.GameObject\Projectile\Imp_Range\Magic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Boomarang_Imp_Range.cpp">
+      <Filter>92.AI\State\Imp_Range\Boomarang</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile_Boomarang.cpp">
+      <Filter>02.GameObject\Projectile\Imp_Range\Boomarang</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Hit_Imp_Range.cpp">
+      <Filter>92.AI\State\Imp_Range\Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Dead_Imp_Range.cpp">
+      <Filter>92.AI\State\Imp_Range\Dead</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_Spaer_Anim_Damaged.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Damaged</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Sleep_Imp_Melee.cpp">
+      <Filter>92.AI\State\Imp_Melee\Sleep</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Move_Imp_Melee.cpp">
+      <Filter>92.AI\State\Imp_Melee\Move</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Idle_Imp_Melee.cpp">
+      <Filter>92.AI\State\Imp_Melee\Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_ChainSmash_Imp_Melee.cpp">
+      <Filter>92.AI\State\Imp_Melee\ChainSmash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_NonStopAttack_Imp_Melee.cpp">
+      <Filter>92.AI\State\Imp_Melee\NonStopAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_DashAttack_Imp_Melee.cpp">
+      <Filter>92.AI\State\Imp_Melee\DashAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Dead_Imp_Melee.cpp">
+      <Filter>92.AI\State\Imp_Melee\Dead</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Hit_Imp_Melee.cpp">
+      <Filter>92.AI\State\Imp_Melee\Hit</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">

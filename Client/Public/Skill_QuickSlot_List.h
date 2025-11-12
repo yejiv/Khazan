@@ -42,6 +42,8 @@ private:
     class CUI_Atlas_Icon*               m_pLineIcon = { nullptr };
     class CUI_Atlas_Icon*               m_pSkillIcon = { nullptr };
     class CUI_TextBox*                  m_pSkillName = { nullptr };
+    class CUI_Default_Tex*              m_pHover = { nullptr };
+
 private:
 	HRESULT								Ready_Componet();
 public:

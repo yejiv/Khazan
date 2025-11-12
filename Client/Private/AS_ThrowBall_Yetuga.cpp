@@ -26,7 +26,8 @@ void CAS_ThrowBall_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _flo
     
     if (pModel->Play_Animation(fTimeDelta))
     {
-        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>("Yetuga", "isThrowBallFinished", true);
+        CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
+        pBB->Set_Value<_bool>("Yetuga", "isThrowBallFinished", true);
     }
 }
 

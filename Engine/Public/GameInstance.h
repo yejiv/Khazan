@@ -307,7 +307,7 @@ public:
 #pragma endregion
 
 #pragma region CAMERA_MANAGER
-	class CBlackBoard* Get_BlackBoard() { return m_pBlackBoard; }
+	//class CBlackBoard* Get_BlackBoard() { return m_pBlackBoard; }
 #pragma endregion
 
 #pragma region SSAO

@@ -15,30 +15,26 @@ using DIR = DIRECTION_INFO;
 
 class CKhazan_Spear final:  public CCreature
 {
-private:
+public:
 
 	enum PLAYER_STATUS : _uint
 	{
 		BAREHAND = 1 << 0,
 		SPEAR = 1 << 1,
-
 		RESERVED = 1 << 2,
-
 		CHARGING_SPRINT = 1 << 3,
 		BACK_DODGE = 1 << 4,
-
 		ROTATION = 1 << 5,
-		//KEY_ROTATION = 1 << 6,
-		//SAMEDIRECTION = 1 << 7,  // 키입력 방향과 플레이어의 룩방향 일치성
-
 		CHARGING_STRONG_ATTACK = 1 << 6,
-
 		AGAIN_REQUEST = 1 << 7, //스페이스바 유연하게 사용하도록 스프린트 제어
 		LOCKON = 1 << 8,  // 락 온
         READY_ASSAULT = 1<< 9, // 강습 스킬 준비 
+        INJURED  = 1 << 10,  //하인마흐에서 걸을 때 
 
-       INJURED  = 1 << 10,  //하인마흐에서 걸을 때 
-
+        /* 가드 */
+        GUARD   = 1 << 11,
+        GUARD_SUCCESS = 1 << 12,
+        JUST_GUARD = 1 << 13,
 
 	};
 	enum PLAYER_CAMERA_DIR {
@@ -60,8 +56,10 @@ public:
 	virtual HRESULT Render();
 
 public:
-	void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
-	void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
+    virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
+    virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
+    virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
+    virtual void Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject);
 
 	const _float4x4* Get_BoneSpearFXMatrixPtr() { return &m_pSpearFX_WorldMatrix; }
 	_matrix Get_BoneSpearFXMatrix() { return XMLoadFloat4x4(&m_pSpearFX_WorldMatrix); }
@@ -75,6 +73,7 @@ private:
 	class CKhazan_Spear_Anim_Attack*	    m_pAnimAttack = { nullptr };
     class CKhazan_Spear_Anim_Guard*         m_pAnimGuard = { nullptr };
     class CKhazan_Spear_Anim_Interaction*	m_pAnimInteraction = { nullptr };
+    class CKhazan_Spaer_Anim_Damaged*       m_pAnimDamaged = { nullptr };
 
 	class CCamera_Compre*				    m_pCamera = { nullptr };
     class CClientInstance*                  m_pClientInstance = { nullptr };
@@ -83,6 +82,7 @@ private:
 	//vector<kHAZAN_ANIM_INFO>	m_AnimCandidates; // 매 프레임 후보 리스트 적립
 
 	/* state */
+    PLAYER_DATA*                m_pPlayerData;
 	_uint						m_iStatus = {};
 	_uint						m_iCurMainState = {};
 	_uint						m_iPrevMainState = {};
@@ -92,6 +92,7 @@ private:
 	_uint						m_iPrevCycle;
 	DIR							m_eDir = {};		//플레이어의 로컬 방향  dir(애니메이션 선택용)
 	_uint						m_ePrevDir = {};
+    _uint                       m_eHitReaction = {}; //몬스터한테 가할 넉백이나 저스트가드 내용 담기 
 
 	_uint						m_iCurAnimIndex = {};
 	_uint						m_iReserveAnimIndex = {};
@@ -103,7 +104,7 @@ private:
 	_matrix						m_SpearOffset_Matrix = {};
 	_bool						m_isEnableControl = { true };
 
-	vector<_float2>				m_vCoolTime;
+	//vector<_float2>				m_vCoolTime;
 
 	/* Move*/
 	DIR							m_eWorldDir = {}; // 카메라 기준 월드 방향 
@@ -116,6 +117,11 @@ private:
 	/* Attack  */
 	_float						m_fChargingStrongTime = { 0.f };
     _uint                       m_iCurSkillIndex = {};
+    DIR                         m_eHitNormalDir = {};       //맞은 방향  저장
+    DIR                         m_eHitStrongDir = {};       //맞은 방향  저장
+
+    /* Guard */
+    //_bool*                      m_isGuarding = { nullptr };
 
 	/* const */
 	const	_float				m_fMinSprintTime = { 0.15f };
@@ -144,17 +150,20 @@ private:
 	void			Apply_PlayerMovement(_float fTimeDelta);
 	void			Check_KeyInput_Direction(_float fTimeDelta);
     DIRECTION_INFO  Calculate_LockOnDirection(_float fTimeDelta);
+    void            Update_PlayerDate();
     void            LockOn_Rotation(_float fTimeDelta);
-
     void            Update_LockOn( );   //카메라 락온과 동기화
-
+    void            Update_Die(_float fTimeDelta);
     void            Clear_Injured();
+
+    void            Get_HitReaction( _float3 vContactPoint);
 
 private:
 	HRESULT			Ready_Components();
 	HRESULT			Ready_PartObjects();
 	HRESULT			Ready_Collision();
-	HRESULT			Ready_AnimationStateMachine();
+    HRESULT			Ready_AnimationStateMachine();
+    //HRESULT			Ready_PlayerData();
 
 private:
 	inline void		Add_Status(_uint i) { m_iStatus |= i; }
@@ -217,6 +226,7 @@ private:
 	const char*		GetStateName(_uint state);
 	const char*		GetSubStateName(_uint subState);
 	const char*		GetCycleName(_uint cycle);
+	const char*		GetStatusName(_uint status);
 	std::string		GetDirectionString();
 #endif // _DEBUG
 

@@ -34,6 +34,9 @@ private:
 	_float						m_fAccTime = {};
 	_bool						m_isDelay = {};
 	
+    const _float*               m_pMaxHp = { nullptr };
+    const _float*               m_pCulHp = { nullptr };
+
 	class CUI_Gague_Tip*		m_pUITip = {nullptr};
 private:
 	HRESULT						Ready_Component();
