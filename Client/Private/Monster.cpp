@@ -173,7 +173,7 @@ void CMonster::Update(_float fTimeDelta)
 {
     m_fSpawnTime += fTimeDelta;
 
-    if (!m_isSpwan && m_fSpawnTime > 3.f)
+    if (!m_isSpwan && m_fSpawnTime > 10.f)
     {
         m_vGravity = XMVectorSet(0.f, g_fGravity, 0.f, 0.f);
         m_isSpwan = true;
