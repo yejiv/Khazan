@@ -107,7 +107,7 @@ HRESULT CImp_Range::Ready_Components()
     tCharVirDesc.vShapeOffset = _float3(0.f, 1.2f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
     tCharVirDesc.fRadius = 0.5f;
-    tCharVirDesc.fHeight = 0.5f;
+    tCharVirDesc.fHeight = 1.f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
     tCharVirDesc.fPenetrationRecoverySpeed = 0.1f;
 

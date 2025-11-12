@@ -828,7 +828,7 @@ CCamera_Compre::CAMERA_COMPRE_DESC CCamera_Compre::Get_Desc()
 
 void CCamera_Compre::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
+   /* if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
     {
         if (pDesc->pGameObject == nullptr)
             return;
@@ -837,7 +837,7 @@ void CCamera_Compre::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLa
         CMonster* pMonster = dynamic_cast<CMonster*>(pDesc->pGameObject);
         if (pObj && find(m_CollMonsters.begin(), m_CollMonsters.end(), pObj) == m_CollMonsters.end())
             m_CollMonsters.push_back(pObj);
-    }
+    }*/
 }
 
 void CCamera_Compre::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
@@ -866,13 +866,13 @@ void CCamera_Compre::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLay
 
 void CCamera_Compre::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 {
-   if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
+  /* if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
     {
         CGameObject* pObj = pDesc->pGameObject;
         if (!pObj) return;
         auto it = std::remove(m_CollMonsters.begin(), m_CollMonsters.end(), pObj);
         if (it != m_CollMonsters.end()) m_CollMonsters.erase(it, m_CollMonsters.end());
-    }
+    }*/
 }
 
 CCamera_Compre* CCamera_Compre::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

@@ -52,8 +52,14 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 	m_pPerception->Update(pOwner, fTimeDelta);
 	_float fPrevTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
 
-	if (m_pBB->Get_Value<_bool>("Yetuga", "isDetected"))
-		m_pBB->Set_Value(m_strMonstertag, "CurrentTime", fPrevTime + fTimeDelta);
+    if (m_pBB->Get_Value<_bool>("Yetuga", "isDetected"))
+    {
+        m_pBB->Set_Value(m_strMonstertag, "CurrentTime", fPrevTime + fTimeDelta);
+
+        m_pBT->Update();
+
+        m_pFSM->Update(pOwner, fTimeDelta * 1.2f);
+    }
 	else
 		m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
 
@@ -72,9 +78,7 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 	cout << ")" << endl;*/
 	
 
-	m_pBT->Update();
-
-	m_pFSM->Update(pOwner,fTimeDelta * 1.2f);
+	
 
 }
 

@@ -41,13 +41,15 @@ void CAI_Controller_Imp_Range::Update(CGameObject* pOwner, _float fTimeDelta)
 
     _float fPervTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
     if (m_pBB->Get_Value<_bool>(m_strMonstertag, "isDetected"))
+    {
         m_pBB->Set_Value<_float>(m_strMonstertag, "CurrentTime", fPervTime + fTimeDelta);
+        m_pBT->Update();
+        m_pFSM->Update(pOwner, fTimeDelta);
+    }
     else
         m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
 
-    m_pBT->Update();
-
-    m_pFSM->Update(pOwner, fTimeDelta);
+    
 }
 
 HRESULT CAI_Controller_Imp_Range::Ready_Perception(CGameObject* pOwner, const AIPERCEPTION_DATA& Desc)
