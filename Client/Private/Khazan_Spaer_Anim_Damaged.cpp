@@ -17,12 +17,11 @@ void CKhazan_Spaer_Anim_Damaged::Enter()
 
 void CKhazan_Spaer_Anim_Damaged::Continue(_float fTimeDelta)
 {
-    if(m_iSelectedAnimationIndex == m_pModel->Get_CurAnimIndex() 
-        && /*(m_pModel->Check_MinAnimationTime()
-          ||*/m_pModel->IsFinished())
+    if (m_iSelectedAnimationIndex == m_pModel->Get_CurAnimIndex()
+        && (m_pModel->Check_MinAnimationTime() || m_pModel->IsFinished())) {
         m_isDamaged = false;
-
-    cout << " Continue" << endl;
+        cout << "  m_isDamaged = false" << endl;
+    }
 
 }
 

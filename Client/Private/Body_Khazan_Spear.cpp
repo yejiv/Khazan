@@ -34,6 +34,7 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
 {
     BODY_KHAZAN_SPEAR_DESC* pDesc = static_cast<BODY_KHAZAN_SPEAR_DESC*>(pArg);
     m_pParentState = pDesc->pState;
+    m_pParentStatus = pDesc->pStatus;
     m_pHitReaction = pDesc->pHitReation;
     m_iCurState = *m_pParentState;
     //m_pIsGuarding = pDesc->pIsGuarding;
@@ -76,6 +77,7 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
 //		ImGui::End();
 //		});
 //#endif
+    
 
     return S_OK;
 }
@@ -287,10 +289,13 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
 
         if (m_isSpearPoleActive)
         {
-            // 회전
-            // 성공 애니메이션
-            // 저스트가드 
-            // 
+            // 테이크대미지 막기 
+            // 회전 - 여기서 주기 
+            // 성공 애니메이션 - ( 일단 스킵)
+            // 저스트가드 -  부모 status 변경시켜주기 ,
+            // 저스트가드가 성공했다는건? -> 프레임 계산
+            // 가드가 지금 시작됐다는건? m_isSpearPoleActive true 타이밍 
+
         }
 
         
@@ -324,24 +329,23 @@ void CBody_Khazan_Spear::Update_Collider(_float fTimeDelta)
     XMStoreFloat4x4(&m_pSpearTip1_MatrixW, matWorld_SpearTip1);
     XMStoreFloat3(reinterpret_cast<_float3*>(&m_pSpearTip1_MatrixW._41), vOutPos);
 
+    _vector vOutQuat2, vOutPos2;
     const XMMATRIX matWorld_SpearPole = m_SpearOffset_Matrix *  XMLoadFloat4x4(m_pSpearPole_Matrix) * matParent;
     m_pBodyCom_SpearPole->Sync_Update(matWorld_SpearPole);
-    m_pBodyCom_SpearPole->Update(fTimeDelta, matWorld_SpearPole, vOutQuat, vOutPos);
+    m_pBodyCom_SpearPole->Update(fTimeDelta, matWorld_SpearPole, vOutQuat2, vOutPos2);
     XMStoreFloat4x4(&m_pSpearPole_MatrixW, matWorld_SpearPole);
-    XMStoreFloat3(reinterpret_cast<_float3*>(&m_pSpearPole_MatrixW._41), vOutPos);
+    XMStoreFloat3(reinterpret_cast<_float3*>(&m_pSpearPole_MatrixW._41), vOutPos2);
 }
 
 void CBody_Khazan_Spear::Check_Guarding()
 {
-    if (*m_pIsGuarding == true) {
-        m_pBodyCom_SpearPole->Collision_Active(true);
+    if (*m_pIsGuarding == true && !m_isSpearPoleActive) {
+
         m_isSpearPoleActive = true;
-        cout << "  m_pBodyCom_SpearPole->Collision_Active(true); " << endl;
     }
-    else {
-        m_pBodyCom_SpearPole->Collision_Active(false);
+    if (*m_pIsGuarding == false && m_isSpearPoleActive) {
+
         m_isSpearPoleActive = false;
-        cout << "  m_pBodyCom_SpearPole->Collision_Active(false); " << endl;
     }
 }
 
@@ -416,8 +420,8 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 
 
 #pragma region Collider
-    m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Event_AttackTiming(true); m_isSpearTipActive = true; });
-    m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Event_AttackTiming(false); m_isSpearTipActive = false; });
+    m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Event_AttackTiming(true); });
+    m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Event_AttackTiming(false);  });
 
 #pragma endregion
 
@@ -478,8 +482,8 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
 
     }
 
-    m_pBodyCom_SpearTip1->Collision_Active(false);
-    m_pBodyCom_SpearPole->Collision_Active(false);
+    //m_pBodyCom_SpearTip1->Collision_Active(false);
+    //m_pBodyCom_SpearPole->Collision_Active(false);
     
     return S_OK;
 }
@@ -668,15 +672,17 @@ void CBody_Khazan_Spear::Event_AttackTiming(_bool isAttackStart)
     /* 공격 맞아서 중간에 끊길 경우는? */
     if (isAttackStart)
     {
+        m_isSpearTipActive = true;
         m_isSpearFullExtension = false;
         m_iCurSetAnimIndex = m_pModelCom->Get_CurAnimIndex();
-        m_pBodyCom_SpearTip1->Collision_Active(true);
+        //m_pBodyCom_SpearTip1->Collision_Active(true);
        
     }
     else
     {
+        m_isSpearTipActive = false;
         m_isSpearFullExtension = true;
-        m_pBodyCom_SpearTip1->Collision_Active(false);
+        //m_pBodyCom_SpearTip1->Collision_Active(false);
     }
 
 }

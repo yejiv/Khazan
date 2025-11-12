@@ -223,7 +223,7 @@ void CKhazan_Spear::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLaye
 
 void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject)
 {
-    m_pPlayerData->fCulHp -= fDamage;
+    //m_pPlayerData->fCulHp -= fDamage;
 
     /* 플레이어 죽었을 때 세팅하는 법  */
     if (m_pPlayerData->fCulHp <= 0.f)
@@ -253,14 +253,26 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
 
     //    break;
     case Client::HITREACTION::KNOCKBACK_WEAK:
+        Clear_CycleState();
+        Clear_SubState();
+        Clear_State();
+       // m_eDir.iDirFlag = 0;
         Add_State(CAT::M_DAMAGED);
         m_pAnimDamaged->Force_DamagedNormal(Has_Status(SPEAR), m_eHitNormalDir.iDirFlag);
         break;
     case Client::HITREACTION::KNOCKBACK_NORMAL:
+        Clear_CycleState();
+        Clear_SubState();
+        Clear_State();
+        //m_eDir.iDirFlag = 0;
         Add_State(CAT::M_DAMAGED);
         m_pAnimDamaged->Force_DamagedNormal(Has_Status(SPEAR), m_eHitNormalDir.iDirFlag);
         break;
     case Client::HITREACTION::KNOCKBACK_STRONG:
+        Clear_CycleState();
+        Clear_SubState();
+        Clear_State();
+       // m_eDir.iDirFlag = 0;
         Add_State(CAT::M_DAMAGED);
         m_pAnimDamaged->Force_DamagedStrong(Has_Status(SPEAR), m_eHitNormalDir.iDirFlag);
         break;
@@ -294,6 +306,10 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
 
     /* 방향 결정 */
     Check_KeyInput_Direction(fTimeDelta);
+
+    _bool IsDamaged = m_pAnimDamaged->Is_Damaged();
+    if (!IsDamaged)
+        Remove_State(CAT::M_DAMAGED);
 
     /* 키 입력 막기  */
     if (m_pClientInstance->Get_PlayerInput())
@@ -344,7 +360,7 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
         Change_MoveIdle(fTimeDelta);
 
     /* 실제 이동값 주기 */
-    if (Has_State(CAT::M_MOVE | CAT::M_GUARD) && !Has_State(CAT::M_ATTACK | CAT::M_SKILL) && !m_pAnimMove->IsDodgeing() && !m_pAnimAttack->Is_Attacking())
+    if (Has_State(CAT::M_MOVE | CAT::M_GUARD) && !Has_State(CAT::M_ATTACK | CAT::M_SKILL | CAT::M_DAMAGED) && !m_pAnimMove->IsDodgeing() && !m_pAnimAttack->Is_Attacking()&& !IsDamaged)
         Apply_PlayerMovement(fTimeDelta);
 
     /* Exit 실행 */
@@ -1307,9 +1323,8 @@ void CKhazan_Spear::ExecuteAnimationExit()
     //if(m_iPrevMainState & CAT::M_DIE)
     //if(m_iPrevMainState &   CAT::M_HOLD             )
     //if(m_iPrevMainState &   CAT::M_GROGGY           )
-    //if(m_iPrevMainState &   CAT::M_DAMAGED          )
+    if ((m_iCurMainState != m_iPrevMainState) && m_iPrevMainState & CAT::M_DAMAGED) m_pAnimDamaged->Exit();
     //if(m_iPrevMainState &   CAT::M_CLIMB            )
-
     if ((m_iCurMainState != m_iPrevMainState) && m_iPrevMainState & CAT::M_SKILL) m_pAnimAttack->Exit();
     if ((m_iCurMainState != m_iPrevMainState) && m_iPrevMainState & CAT::M_GUARD) m_pAnimGuard->Exit();
     if ((m_iCurMainState != m_iPrevMainState) && m_iPrevMainState & CAT::M_ATTACK) m_pAnimAttack->Exit();
@@ -1723,6 +1738,7 @@ HRESULT CKhazan_Spear::Ready_PartObjects()
 
     CBody_Khazan_Spear::BODY_KHAZAN_SPEAR_DESC         BodyDesc{};
     BodyDesc.pState = &m_iCurMainState;
+    BodyDesc.pStatus = &m_iStatus;
     //BodyDesc.pIsGuarding = m_pAnimGuard->Get_IsGuarding();
     BodyDesc.pHitReation = &m_eHitReaction;
     BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
