@@ -1,5 +1,5 @@
 #include "Body_Khazan_Spear.h"
-#include "Khazan_Sample.h"
+#include "Khazan_Spear.h"
 #include "GameInstance.h"
 #include "ClientInstance.h"
 #include "MeshTrail.h"
@@ -97,7 +97,8 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
 
     m_pTrail->Update(fTimeDelta);
 
-    Check_Guarding();
+    Check_Guarding(fTimeDelta);
+    Update_GuardRotation(fTimeDelta);
 
     //TEST
     //if (m_pGameInstance->Key_Down(DIK_I))
@@ -289,6 +290,14 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
 
         if (m_isSpearPoleActive)
         {
+            //*m_pParentStatus |= CKhazan_Spear::GUARD;
+
+            /* 저스트 가드 타이밍 */
+            if (m_fJustGuardTime.x <= m_fJustGuardTime.y)
+                *m_pParentStatus |= CKhazan_Spear::JUST_GUARD;
+
+            /* 가드후 충돌되면 충돌된 지점 봐라보게*/
+            Start_GuardRotation(vContactPoint);
             // 테이크대미지 막기 
             // 회전 - 여기서 주기 
             // 성공 애니메이션 - ( 일단 스킵)
@@ -337,7 +346,7 @@ void CBody_Khazan_Spear::Update_Collider(_float fTimeDelta)
     XMStoreFloat3(reinterpret_cast<_float3*>(&m_pSpearPole_MatrixW._41), vOutPos2);
 }
 
-void CBody_Khazan_Spear::Check_Guarding()
+void CBody_Khazan_Spear::Check_Guarding(_float fTimeDelta)
 {
     if (*m_pIsGuarding == true && !m_isSpearPoleActive) {
 
@@ -347,6 +356,89 @@ void CBody_Khazan_Spear::Check_Guarding()
 
         m_isSpearPoleActive = false;
     }
+
+    if (m_isSpearPoleActive)
+        m_fJustGuardTime.x += fTimeDelta;
+    else
+        m_fJustGuardTime.x = 0.f;
+}
+
+void CBody_Khazan_Spear::Update_GuardRotation(_float fTimeDelta)
+{
+    if (!m_isGuardRotating)
+        return;
+
+    m_fGuardRotationTime += fTimeDelta;
+
+    // 회전 시간이 끝났으면 정확히 목표 방향으로 설정
+    if (m_fGuardRotationTime >= m_fGuardRotationDuration)
+    {
+        m_isGuardRotating = false;
+
+        // 정확히 목표 방향으로 설정
+        _vector vRight = XMVector3Normalize(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), m_vTargetRotationDir));
+        _vector vUp = XMVector3Normalize(XMVector3Cross(m_vTargetRotationDir, vRight));
+
+        m_pParentTransform->Set_State(STATE::RIGHT, vRight);
+        m_pParentTransform->Set_State(STATE::UP, vUp);
+        m_pParentTransform->Set_State(STATE::LOOK, m_vTargetRotationDir);
+
+        return;
+    }
+
+    // Ease-Out 보간 (처음엔 빠르게, 끝으로 갈수록 천천히)
+    _float fRatio = m_fGuardRotationTime / m_fGuardRotationDuration;
+    fRatio = 1.f - (1.f - fRatio) * (1.f - fRatio); // Ease-Out Quadratic
+
+    // 현재 각도 계산
+    _float fCurrentAngle = m_fStartAngle + (m_fTargetAngle - m_fStartAngle) * fRatio;
+
+    // 방향 벡터 생성
+    _vector vNewLook = XMVectorSet(cosf(fCurrentAngle), 0.f, sinf(fCurrentAngle), 0.f);
+    vNewLook = XMVector3Normalize(vNewLook);
+
+    // Right, Up 벡터 계산
+    _vector vRight = XMVector3Normalize(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vNewLook));
+    _vector vUp = XMVector3Normalize(XMVector3Cross(vNewLook, vRight));
+
+    // Transform에 적용
+    m_pParentTransform->Set_State(STATE::RIGHT, vRight);
+    m_pParentTransform->Set_State(STATE::UP, vUp);
+    m_pParentTransform->Set_State(STATE::LOOK, vNewLook);
+}
+
+void CBody_Khazan_Spear::Start_GuardRotation(_float3 vContactPoint)
+{
+    // 1. 캐릭터의 위치
+    _vector vCharacterPos = m_pParentTransform->Get_State(STATE::POSITION);
+
+    // 2. 캐릭터 -> 접촉점 방향 벡터 계산
+    _vector vHitDir = XMLoadFloat3(&vContactPoint) - vCharacterPos;
+    vHitDir = XMVectorSetY(vHitDir, 0.f); // XZ 평면으로 투영
+    vHitDir = XMVector3Normalize(vHitDir);
+
+    // 3. 현재 캐릭터의 Forward 방향
+    _vector vCurrentForward = m_pParentTransform->Get_State(STATE:: LOOK);
+    vCurrentForward = XMVectorSetY(vCurrentForward, 0.f);
+    vCurrentForward = XMVector3Normalize(vCurrentForward);
+
+    // 4. 현재 각도와 목표 각도 계산
+    m_fStartAngle = atan2f(XMVectorGetZ(vCurrentForward), XMVectorGetX(vCurrentForward));
+    m_fTargetAngle = atan2f(XMVectorGetZ(vHitDir), XMVectorGetX(vHitDir));
+
+    // 5. 최단 거리로 회전하도록 각도 보정 (-π ~ π)
+    _float fAngleDiff = m_fTargetAngle - m_fStartAngle;
+    if (fAngleDiff > XM_PI)
+        fAngleDiff -= XM_2PI;
+    else if (fAngleDiff < -XM_PI)
+        fAngleDiff += XM_2PI;
+
+    m_fTargetAngle = m_fStartAngle + fAngleDiff;
+
+    // 6. 회전 시작
+    m_isGuardRotating = true;
+    m_fGuardRotationTime = 0.f;
+    m_vTargetRotationDir = vHitDir;
 }
 
 HRESULT CBody_Khazan_Spear::Ready_Components()
@@ -433,7 +525,7 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
 {
     CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
     {
-        BodyDesc.fRadius = 0.1f;
+        BodyDesc.fRadius = 0.2f;
         BodyDesc.eMotion = EMotionType::Kinematic;
         BodyDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
         BodyDesc.eShapeType = SHAPE::SPHERE;
@@ -709,18 +801,6 @@ void CBody_Khazan_Spear::Event_AttackTiming(_bool isAttackStart)
         //m_pBodyCom_SpearTip1->Collision_Active(false);
     }
 
-}
-
-inline _bool CBody_Khazan_Spear::Has_States()
-{
-
-    for (_uint i = 0; i < GetBitPosition(CKhazan_Sample::END); ++i)
-    {
-        if (Has_State(1 << i))
-            return true;
-
-    }
-    return false;
 }
 
 CBody_Khazan_Spear* CBody_Khazan_Spear::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

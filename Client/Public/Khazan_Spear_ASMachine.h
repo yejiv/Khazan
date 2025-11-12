@@ -171,11 +171,11 @@ public:
     
     enum GUARD : _uint
     {
-        GAURD_NORRMAL = 1<<0,
-        GAURD_JUST = 1 << 1,
-        GAURD_WALK = 1 << 2,
-        GAURD_SUCCESS = 1 << 3,
-        GAURD_GROGGY = 1 << 3,
+        GUARD_NORRMAL = 1<<0,
+        GUARD_JUST = 1 << 1,
+        GUARD_WALK = 1 << 2,
+        GUARD_SUCCESS = 1 << 3,
+        GUARD_GROGGY = 1 << 4,
 
     };
     
