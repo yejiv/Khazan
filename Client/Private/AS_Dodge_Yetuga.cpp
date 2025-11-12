@@ -18,7 +18,6 @@ void CAS_Dodge_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     _uint iRand = static_cast<_uint>(m_pGameInstance->Rand(0.f, 3.f));
     _uint iAnimID = 0;
     HITREACTION eHitreaction = 
-        //static_cast<HITREACTION>(m_pGameInstance->Get_BlackBoard()->Get_Value<_uint>(pYetuga->Get_Name(), "DamageType"));
         static_cast<HITREACTION>(pBB->Get_Value<_uint>(pYetuga->Get_Name(), "DamageType"));
 
     if (HITREACTION::KNOCKBACK_STRONG == eHitreaction)
