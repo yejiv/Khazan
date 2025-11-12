@@ -560,7 +560,12 @@ HRESULT CYetuga::Ready_Components()
     tCharVirDesc.fRadius = 2.f;
     tCharVirDesc.fHeight = 4.f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
+    tCharVirDesc.fMass = 10.f;
     tCharVirDesc.fMaxStrength = 0.f;
+    tCharVirDesc.fPredictiveContactDistance = 0.3f;
+    tCharVirDesc.iMaxConstraintIterations = 20;
+    tCharVirDesc.fCollisionTolerance = 0.03f;
+    tCharVirDesc.fPenetrationRecoverySpeed = 1.7f;
 
     m_tCollisionDesc.pGameObject = this;
     //pCollDesc.pInfo = ?? // 작성하기

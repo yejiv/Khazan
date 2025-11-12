@@ -1788,7 +1788,7 @@ HRESULT CKhazan_Spear::Ready_Collision()
     tCharVirDesc.fPredictiveContactDistance = 0.3f;
     tCharVirDesc.iMaxConstraintIterations = 20;
     tCharVirDesc.fCollisionTolerance = 0.03f;
-    tCharVirDesc.fPenetrationRecoverySpeed = 1.f;
+    tCharVirDesc.fPenetrationRecoverySpeed = 1.7f;
     m_tCollisionDesc.pGameObject = this;
     m_tCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;

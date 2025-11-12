@@ -94,6 +94,7 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 		m_pBodyInterface->SetObjectLayer(m_BodyId, m_iNumObjectLayer);
 		m_pBodyInterface->SetIsSensor(m_BodyId, false);
 		m_pBodyInterface->SetUserData(m_BodyId, static_cast<uint64>(reinterpret_cast<uintptr_t>(pDesc->pCollisionDesc)));
+        m_pBodyInterface->SetMotionQuality(m_BodyId, EMotionQuality::LinearCast);
 		m_pGameInstance->Push_BodyDesc(m_BodyId, static_cast<uint64>(reinterpret_cast<uintptr_t>(pDesc->pCollisionDesc)));
 	}
 	

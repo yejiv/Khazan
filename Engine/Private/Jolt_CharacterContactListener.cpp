@@ -158,7 +158,7 @@ void CJolt_CharacterContactListener::OnCharacterContactAdded(const CharacterVirt
         return;
     }
 
-    ioSettings.mCanPushCharacter = true;
+    ioSettings.mCanPushCharacter = false;
 
     return;
 }
@@ -209,7 +209,7 @@ void CJolt_CharacterContactListener::OnCharacterContactPersisted(const Character
     }
 
 
-    ioSettings.mCanPushCharacter = true;
+    ioSettings.mCanPushCharacter = false;
 
     return;
 }
