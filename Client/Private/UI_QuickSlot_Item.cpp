@@ -201,7 +201,7 @@ void CUI_QuickSlot_Item::Update_State()
         m_iState = ENUM_CLASS(QUICKITMESLOTSTATE::ENABLE);
         m_vColor.w = 1.f;
         m_pIcon->Set_Color(_float4{ 1.f, 1.f, 1.f, 1.f });
-        m_pTextBox->Set_Color({ 1.f, 1.f,1.f,1.f });
+        m_pTextBox->Set_Color({ 1.f, 1.f,1.f,1.f });    
     }
 }
 

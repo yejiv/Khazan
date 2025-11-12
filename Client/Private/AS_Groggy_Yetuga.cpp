@@ -62,8 +62,10 @@ void CAS_Groggy_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 
 			if (m_isBrutalAttackSuccess)
 			{
+                CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
 				HITREACTION eHitreaction = 
-					static_cast<HITREACTION>(m_pGameInstance->Get_BlackBoard()->Get_Value<_uint>(pYetuga->Get_Name(), "DamageType"));
+					//static_cast<HITREACTION>(m_pGameInstance->Get_BlackBoard()->Get_Value<_uint>(pYetuga->Get_Name(), "DamageType"));
+					static_cast<HITREACTION>(pBB->Get_Value<_uint>(pYetuga->Get_Name(), "DamageType"));
 
 				if (HITREACTION::GROGGY == eHitreaction)
 				{
@@ -89,7 +91,8 @@ void CAS_Groggy_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
         if (pModel->Play_Animation(fTimeDelta))
         {
             pYetuga->Set_RequestRecoveryStamina(false);
-            m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isGroggyFinished", true);
+            CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
+            pBB->Set_Value<_bool>(pYetuga->Get_Name(), "isGroggyFinished", true);
         }
         break;
     }

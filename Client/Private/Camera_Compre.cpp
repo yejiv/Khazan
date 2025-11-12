@@ -468,7 +468,7 @@ _vector CCamera_Compre::Cal_CamPos(_float fTimeDelta, _vector& vTargetPos, _vect
     // 3) 이동값 기반 궤도 회전 (락온 아닐 때만)
     if (!m_isLockOn)
     {
-        Apply_MoveOrbitYaw(fTimeDelta, vTargetPos);
+        //Apply_MoveOrbitYaw(fTimeDelta, vTargetPos);
     }
     else
     {
@@ -834,7 +834,8 @@ void CCamera_Compre::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLa
             return;
 
         CGameObject* pObj = pDesc->pGameObject;
-        if (pObj && std::find(m_CollMonsters.begin(), m_CollMonsters.end(), pObj) == m_CollMonsters.end())
+        CMonster* pMonster = dynamic_cast<CMonster*>(pDesc->pGameObject);
+        if (pObj && find(m_CollMonsters.begin(), m_CollMonsters.end(), pObj) == m_CollMonsters.end())
             m_CollMonsters.push_back(pObj);
     }
 }
@@ -865,7 +866,7 @@ void CCamera_Compre::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLay
 
 void CCamera_Compre::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
+   if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
     {
         CGameObject* pObj = pDesc->pGameObject;
         if (!pObj) return;

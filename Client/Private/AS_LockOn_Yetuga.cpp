@@ -21,9 +21,8 @@ void CAS_LockOn_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
-
-   
-    m_eDirInfo.iDirFlag = m_pGameInstance->Get_BlackBoard()->Get_Value<_uint>(pYetuga->Get_Name(), "TargetDirection");
+    CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
+    m_eDirInfo.iDirFlag = pBB->Get_Value<_uint>(pYetuga->Get_Name(), "TargetDirection");
 
     if (m_eDirInfo.Check_Flag(m_eDirInfo.L))
         pModel->Set_Animation(4);
@@ -39,8 +38,7 @@ void CAS_LockOn_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
     CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
-    CBlackBoard* pBB = m_pGameInstance->Get_BlackBoard();
-    
+    CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
     _float fDot = pBB->Get_Value<_float>(pYetuga->Get_Name(), "fDot");
 
     // 여기서 탈출조건

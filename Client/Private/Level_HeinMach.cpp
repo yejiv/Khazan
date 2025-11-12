@@ -19,6 +19,7 @@
 #include "UI_BackGround.h"
 #include "Damage_Text.h"
 #include "UI_Announce_MapName.h"
+#include "UI_HUD.h"
 #pragma endregion
 
 CLevel_HeinMach::CLevel_HeinMach(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -32,8 +33,8 @@ HRESULT CLevel_HeinMach::Initialize()
 {
     CHECK_FAILED(Ready_Layer_UI(), E_FAIL);
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
-			HEINMACH_1ST_BLADENEXUS, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), HEINMACH_1ST_BLADENEXUS, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+        CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Monster"), TEXT("HeinMach"), HEINMACH_1ST_BLADENEXUS, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		return S_OK;
 		}));
 
@@ -41,11 +42,13 @@ HRESULT CLevel_HeinMach::Initialize()
 		CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
 		if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 			return E_FAIL;
-		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"),
-			HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-		CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
+		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+        CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Monster"), TEXT("HeinMach"), HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+        Ready_Layer_Monster(TEXT("Layer_Monster"));
 		CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL); 
+        if (FAILED(Ready_Layer_Decal()))
+            return E_FAIL;
 		return S_OK;
 		});
 
@@ -81,9 +84,16 @@ HRESULT CLevel_HeinMach::Initialize()
 				continue;
 			
 			CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), i, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+            CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Monster"), TEXT("HeinMach"), i, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		}		
 		return S_OK;
 		});
+
+    for (_uint i = 0; i < HEINMACH_SUBLV; ++i)
+    {
+        //CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), i, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+        //CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), i, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+    }
 
 	m_pGameInstance->Add_FireTask([this]() mutable { 
 		CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
@@ -98,11 +108,18 @@ HRESULT CLevel_HeinMach::Initialize()
         return E_FAIL;
 
 	m_futures.clear();
+
+    //Ready_Layer_NorMonster(TEXT("Normal"));
 	return S_OK;
 }
 
 void CLevel_HeinMach::Update(_float fTimeDelta)
 {
+    if (m_pGameInstance->Key_Down(DIK_9))
+        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+    if (m_pGameInstance->Key_Down(DIK_8))
+        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
+
 	if (m_pGameInstance->Key_Down(DIK_Q))
 	{
 		m_pGameInstance->isPickRenderTargetPixel(TEXT("Target_Normal"));
@@ -235,7 +252,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster(const _wstring& strLayerTag)
     MonsterDesc.strName = "Yetuga";
     //MonsterDesc.strName = "Gomdol";
     //MonsterDesc.strName = "ImpRange";
-    
+    // MonsterDesc.strName = "ImpMelee";
 
     if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Yetuga"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
@@ -246,11 +263,13 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster(const _wstring& strLayerTag)
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Gomdol"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
         return E_FAIL;*/
 
-
-  /*  if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+    /*if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
         return E_FAIL;*/
 
+    //if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+    //    ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Melee"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+    //    return E_FAIL;
 
     return S_OK;
 }
@@ -259,6 +278,24 @@ HRESULT CLevel_HeinMach::Ready_Layer_Effect(const _wstring& strLayerTag)
 {
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust2"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust3"), 3);
+    //m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Fire"), 50);
+    //m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TreasureBox"), 3);
+    //m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Spawn"), 3);
+    //m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), 100);
+    //m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), 200);
+    //m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"), 10);
+
+    return S_OK;
+}
+
+HRESULT CLevel_HeinMach::Ready_Layer_Decal()
+{
+    // Decal
+    if (FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Decal"),
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Pool_Decal"), nullptr, 100)))
+        return E_FAIL;
 
     return S_OK;
 }
@@ -454,34 +491,6 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag
 
 		ObjectDesc.Properties = PropProperties;
 
-		//if (iSubLV == HEINMACH_1ST_BLADENEXUS)
-		//{
-
-		//	// 일단 단일 오브젝트로 배치하고 추후에 인스턴스, 인터렉티브, 다이나믹 으로 나누겠습니다.
-		//	m_futures.push_back(m_pGameInstance->Add_Task([this, CurLevel = eCurrentLevel, Desc = ObjectDesc, WorldMat = WorldMatrix, LayerTag = strLayerTag]() mutable {
-		//		
-  //                  
-		//		return S_OK;
-		//		}));
-		//}
-		//else {
-		//	m_pGameInstance->Add_FireTask([this, CurLevel = eCurrentLevel, Desc = ObjectDesc, WorldMat = WorldMatrix, LayerTag = strLayerTag]() mutable {
-		//		lock_guard<mutex> lock(m_Mutex);
-		//		CGameObject* pObject = dynamic_cast<CGameObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(CurLevel), TEXT("Prototype_GameObject_Prop_Object"), &Desc));
-		//		if (!pObject)
-		//			return E_FAIL;
-		//		_bool isAdd = m_pGameInstance->AddStaticObject(pObject, { WorldMat._41, WorldMat._42, WorldMat._43 }, 3.f);
-		//		//Safe_Release(pObject);
-		//		/*CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(CurLevel), LayerTag,
-		//			ENUM_CLASS(CurLevel), TEXT("Prototype_GameObject_Prop_Object"), &Desc), E_FAIL);*/
-		//		if (isAdd)
-		//			Safe_Release(pObject);
-		//		else
-		//			return E_FAIL;
-		//		return S_OK;
-		//		});
-		//}
-
         lock_guard<mutex> lock(m_Mutex);
         CGameObject* pObject = dynamic_cast<CGameObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc));
         if (!pObject)
@@ -500,7 +509,111 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag
 
 	CloseHandle(hFile);
 
+    _tchar szDone[MAX_PATH] = {};
+    _wstring strDone = { TEXT("MAP LV : %d LOAD DONE\n") };
+
+    wsprintf(szDone, strDone.c_str(), iSubLV);
+
+    OutputDebugStringW(szDone);
+
 	return S_OK;
+}
+
+HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, const _tchar* pDataFileName, _uint iSubLV, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
+{
+    // Json 기본 경로
+    _wstring strJsonFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+
+    switch (eMap)
+    {
+    case KHAZAN_MAP::HEINMACH:
+        strJsonFilePath += TEXT("HeinMach/");
+        break;
+    case KHAZAN_MAP::CREVICE:
+        strJsonFilePath += TEXT("Crevice/");
+        break;
+    case KHAZAN_MAP::EMBARS:
+        strJsonFilePath += TEXT("Embars/");
+        break;
+    case KHAZAN_MAP::VIPER:
+        strJsonFilePath += TEXT("Viper/");
+        break;
+    default:
+        break;
+    }
+
+    strJsonFilePath += pDataFileName;
+
+    _tchar szJsonFilePath[MAX_PATH] = {};
+
+    wsprintf(szJsonFilePath, TEXT("%s_LV%d_spawn.json"), strJsonFilePath.c_str(), iSubLV);
+
+    strJsonFilePath = szJsonFilePath;
+
+    ifstream ifs(strJsonFilePath);
+    if (!ifs.is_open())
+    {
+        // 해당 서브 레벨에 몬스터 정보가 존재하지 않음 ( 몬스터 키값, 월드 행렬 등등 )
+        return S_OK;
+    }
+
+    JSON j = {};
+    ifs >> j;
+    ifs.close();
+
+    JSON_MAP_MONSTER_SPAWN_DATA MonsterData = j.get<JSON_MAP_MONSTER_SPAWN_DATA>();
+
+    _uint iNumMonster = MonsterData.iNumMonster;
+
+    for (_uint i = 0; i < iNumMonster; ++i)
+    {
+        _float4x4 WorldMatrix = {};
+        memcpy(&WorldMatrix, &MonsterData.WorldMatrix[i], sizeof(_float4x4));
+
+        if ("Yetuga" == MonsterData.MonsterKey[i])
+        {
+            CMonster::MONSTER_DESC MonsterDesc{};
+            MonsterDesc.fAttack = 10.f;
+            MonsterDesc.fMaxHP = 100.f;
+            MonsterDesc.fMaxStamina = 100.f;
+            MonsterDesc.fMoveSpeed = 10.f;
+            MonsterDesc.fSpeedPerSec = 3.f;
+            MonsterDesc.fRotationPerSec = 180.f;
+
+            MonsterDesc.WorldMatrix = WorldMatrix;
+            MonsterDesc.strName = MonsterData.MonsterKey[i];
+
+            if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+                ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Yetuga"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+                return E_FAIL;
+        }
+        else if ("ImpRange" == MonsterData.MonsterKey[i])
+        {
+            CMonster::MONSTER_DESC MonsterDesc{};
+            MonsterDesc.fAttack = 10.f;
+            MonsterDesc.fMaxHP = 100.f;
+            MonsterDesc.fMaxStamina = 100.f;
+            MonsterDesc.fMoveSpeed = 10.f;
+            MonsterDesc.fSpeedPerSec = 3.f;
+            MonsterDesc.fRotationPerSec = 180.f;
+
+            MonsterDesc.WorldMatrix = WorldMatrix;
+            MonsterDesc.strName = MonsterData.MonsterKey[i];
+
+            if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+                ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+                return E_FAIL;
+        }
+    }
+
+    _tchar szDone[MAX_PATH] = {};
+    _wstring strDone = { TEXT("MONSTER LV : %d LOAD DONE\n") };
+
+    wsprintf(szDone, strDone.c_str(), iSubLV);
+
+    OutputDebugStringW(szDone);
+
+    return S_OK;
 }
 
 HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Interactive(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)

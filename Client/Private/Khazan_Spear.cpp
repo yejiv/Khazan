@@ -2067,15 +2067,24 @@ HRESULT CKhazan_Spear::Ready_Collision()
     tCharVirDesc.vQuat = vQuat;
     tCharVirDesc.vShapeOffset = _float3(0.f, 0.7f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
-    tCharVirDesc.fRadius = 0.5f;
-    tCharVirDesc.fHeight = 0.5f;
+    tCharVirDesc.fRadius = 0.3f;
+    tCharVirDesc.fHeight = 1.f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
-    //tCharVirDesc.fMass = 100000.f;
+    tCharVirDesc.fMass = 10.f;
+    tCharVirDesc.fMaxStrength = 0.f;
+    tCharVirDesc.fPredictiveContactDistance = 0.3f;
+    tCharVirDesc.iMaxConstraintIterations = 20;
+    tCharVirDesc.fCollisionTolerance = 0.03f;
+    tCharVirDesc.fPenetrationRecoverySpeed = 1.7f;
     m_tCollisionDesc.pGameObject = this;
     m_tCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
-    //pCollDesc.pInfo = ?? // 작성하기
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
-    tCharVirDesc.fMaxStrength = 0.f;
+
+    tCharVirDesc.vStickToFloorStepDown = _float3(0.f, -0.5f, 0);
+    tCharVirDesc.vWalkStairsStepUp = _float3(0.f, 3.f, 0.f);
+    tCharVirDesc.fWalkStairsMinStepForward = 0.06f;
+    tCharVirDesc.fWalkStairsStepForwardTest = 0.15f;
+
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
@@ -2159,7 +2168,7 @@ void CKhazan_Spear::Event_Interact_Object(_float fTimeDelta)
             m_isInteractEventSetting = true;
 
             /*  창 들고 있으면 UnArmed 애니메이션 재생 */
-            if(Has_Status(SPEAR))
+            if (Has_Status(SPEAR))
                 m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed"));
 
             XMStoreFloat4(&m_vStartPos_Event, m_pTransformCom->Get_State(STATE::POSITION));
@@ -2173,20 +2182,30 @@ void CKhazan_Spear::Event_Interact_Object(_float fTimeDelta)
         case INTERACTIVE_TYPE::CHEST:
         {
             isDone = false;
+            _bool isMove = false;
 
-           // Lerp_Position_ByInteractEvent(m_EventInteract.ChestEvent.vPlayerPosition, m_vStartPos_Event, 0.3f, fTimeDelta, isDone);
-            
-                /* 현재 재생되는 애니메이션이 UnArmed이고 끝났으면 true로 */
-            if (/*m_pBody->Get_Model()->Get_CurAnimIndex() == m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed") && */m_pBody->Get_Model()->IsFinished())
-                isDone = true;
+            CModel* pBodyModel = m_pBody->Get_Model();
+
+            if (pBodyModel->Get_CurAnimIndex() != pBodyModel->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed"))
+                isMove = true;
+            else if (pBodyModel->IsFinished())
+            {
+                isMove = true;
+                pBodyModel->Set_Animation(pBodyModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Walk_F"));
+            }
+
+            if (true == isMove)
+                Lerp_Position_ByInteractEvent(m_EventInteract.ChestEvent.vPlayerPosition, m_vStartPos_Event, 0.3f, fTimeDelta, isDone);
 
             break;
         }
         case INTERACTIVE_TYPE::CHECKPOINT:
         {
-            // 귀검 BladeNexus 이벤트 함수에서 바로 애니메이션 재생 시키면 될 것 같습니다.
             isDone = false;
 
+            // Lerp_Position_ByInteractEvent(m_EventInteract.ChestEvent.vPlayerPosition, m_vStartPos_Event, 0.3f, fTimeDelta, isDone);
+
+                 /* 현재 재생되는 애니메이션이 UnArmed이고 끝났으면 true로 */
             if (/*m_pBody->Get_Model()->Get_CurAnimIndex() == m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed") && */m_pBody->Get_Model()->IsFinished())
                 isDone = true;
 

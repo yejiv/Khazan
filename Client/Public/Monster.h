@@ -18,6 +18,8 @@ public:
 	{
 		string		strName;
 
+        _float4x4   WorldMatrix{};
+
 	}MONSTER_DESC;
 
 	typedef struct tagMonsterInfo

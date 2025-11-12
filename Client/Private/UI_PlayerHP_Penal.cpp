@@ -19,10 +19,21 @@ CUI_PlayerHP_Penal::CUI_PlayerHP_Penal(const CUI_PlayerHP_Penal& Prototype)
 
 void CUI_PlayerHP_Penal::On_Penal()
 {
-	m_IsUpdate ? m_eAnimState = UIANIMSTATE::OFF : m_eAnimState = UIANIMSTATE::ON;
+    if (m_IsUpdate)
+        return;
+
+	m_eAnimState = UIANIMSTATE::ON;
 	m_iCurrentKeyFrameIndex = 0;
-	m_eAnimState == UIANIMSTATE::ON ? m_fAccTime = 0.f : m_fAccTime = 1.f;
+    m_fAccTime = 0.f;
 	m_IsUpdate = true;
+}
+
+void CUI_PlayerHP_Penal::Off_Penal()
+{
+    if (!m_IsUpdate)
+        return;
+    m_eAnimState = UIANIMSTATE::OFF;
+    m_fAccTime = 1.f;
 }
 
 HRESULT CUI_PlayerHP_Penal::Initialize_Prototype(_uint iLevel)
@@ -52,10 +63,6 @@ void CUI_PlayerHP_Penal::Priority_Update(_float fTimeDelta)
 
 void CUI_PlayerHP_Penal::Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_9))
-		On_Penal();
-
-
 	if (m_eAnimState == UIANIMSTATE::ON)
 	{
 		m_fAccTime += fTimeDelta;

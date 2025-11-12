@@ -5,6 +5,7 @@
 #include "UI_TextBox.h"
 #include "UI_Atlas_Icon.h"
 #include "Skill_QuickSlot.h"
+#include "UI_Default_Tex.h"
 
 CSkill_QuickSlot_List::CSkill_QuickSlot_List(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Tap{ pDevice, pContext }
@@ -29,6 +30,19 @@ void CSkill_QuickSlot_List::UnEquipSlot(_int iSkillIndex)
         m_pSkillIcon->Update_Scaling(1.f);
         wstring wstrTemp = TEXT("장착 중인 스킬이 없습니다.");
         m_pSkillName->Set_Text(wstrTemp);
+        m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::SKILL_QUICKSLOT), EVENT_SKILL_SLOT{ m_iIndex,m_iEquipSkillIndex , false });
+        if (m_iIndex == 0)
+            CClientInstance::GetInstance()->UnBindSkillToButton(CONTROL_BUTTON::CTRL_LB);
+        else if (m_iIndex == 1)
+            CClientInstance::GetInstance()->UnBindSkillToButton(CONTROL_BUTTON::CTRL_RB);
+        else if (m_iIndex == 2)
+            CClientInstance::GetInstance()->UnBindSkillToButton(CONTROL_BUTTON::CTRL_F);
+        else if (m_iIndex == 3)
+            CClientInstance::GetInstance()->UnBindSkillToButton(CONTROL_BUTTON::Q);
+        else if (m_iIndex == 4)
+            CClientInstance::GetInstance()->UnBindSkillToButton(CONTROL_BUTTON::E);
+        else if (m_iIndex == 5)
+            CClientInstance::GetInstance()->UnBindSkillToButton(CONTROL_BUTTON::R);
     }
 }
 
@@ -89,9 +103,10 @@ HRESULT CSkill_QuickSlot_List::Initialize_Clone(void* pArg)
 void CSkill_QuickSlot_List::Priority_Update(_float fTimeDelta)
 {
     if (ButtonOver(g_hWnd))
-    {
+        m_pHover->Update_Visible(true);
+    else
+        m_pHover->Update_Visible(false);
 
-    }
     if (ButtonClick(g_hWnd, false, true, INPUT_TYPE::POPUP))
     {
         m_iEquipSkillIndex = m_iSkillIndex;
@@ -108,6 +123,21 @@ void CSkill_QuickSlot_List::Priority_Update(_float fTimeDelta)
         Desc.iSkillIndex = m_iEquipSkillIndex;
         
         m_UIBubbleCallBack(&Desc);
+
+        m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::SKILL_QUICKSLOT), EVENT_SKILL_SLOT{ m_iIndex,m_iEquipSkillIndex , true });
+        
+        if (m_iIndex == 0)
+            CClientInstance::GetInstance()->BindSkillToButton(CONTROL_BUTTON::CTRL_LB, 1 << pDB->iIndex);
+        else if (m_iIndex == 1)
+            CClientInstance::GetInstance()->BindSkillToButton(CONTROL_BUTTON::CTRL_RB, 1 << pDB->iIndex);
+        else if (m_iIndex == 2)
+            CClientInstance::GetInstance()->BindSkillToButton(CONTROL_BUTTON::CTRL_F, 1 << pDB->iIndex);
+        else if (m_iIndex == 3)
+            CClientInstance::GetInstance()->BindSkillToButton(CONTROL_BUTTON::Q, 1 << pDB->iIndex);
+        else if (m_iIndex == 4)
+            CClientInstance::GetInstance()->BindSkillToButton(CONTROL_BUTTON::E, 1 << pDB->iIndex);
+        else if (m_iIndex == 5)
+            CClientInstance::GetInstance()->BindSkillToButton(CONTROL_BUTTON::R, 1 << pDB->iIndex);
     }
 }
 
@@ -173,7 +203,12 @@ HRESULT CSkill_QuickSlot_List::Load_UI(nlohmann::json& pInData, _uint iPrototype
         else if (strName == "Skill_Key_1" || strName == "Skill_Key_2" || strName == "Skill_Key_3")
         {
             m_pGuideIcon.push_back(static_cast<CUI_Atlas_Icon*>(pChild));
- 
+            Safe_AddRef(pChild);
+        }
+        else if (strName == "Hover")
+        {
+            m_pHover = static_cast<CUI_Default_Tex*>(pChild);
+            Safe_AddRef(m_pHover);
         }
     }
 
@@ -233,7 +268,10 @@ void CSkill_QuickSlot_List::Free()
     Safe_Release(m_pLineIcon);
     Safe_Release(m_pSkillIcon);
     Safe_Release(m_pSkillName);
+    Safe_Release(m_pHover);
+
     for (auto pIcon : m_pGuideIcon)
         Safe_Release(pIcon);
     m_pGuideIcon.clear();
+
 }

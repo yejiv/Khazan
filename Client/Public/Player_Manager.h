@@ -19,12 +19,6 @@ public:
         END,
     };
 
-    enum class PLAYER_STATE {
-        HP,         //체력
-        STAMINA,    //스태미나
-        
-        END};
-
 private:
     CPlayer_Manager();
     virtual ~CPlayer_Manager() = default;
@@ -36,10 +30,8 @@ public:
     const PLAYER_DATA&          Get_PlayerData() { return m_Data; }
     void                        Initialize_PlayerData(); // Get_pPlayerData()이걸로 데이터 연결 후, 초기화는 이것을 통해 초기화하기
 
-
-
-    void						Add_SkillExp(_float fExp);
-    _bool						Add_SkillPoint(_int iPoint);
+    void						Add_SkillExp(_float fExp);              //스킬 경험치 획득
+    _bool						Add_SkillPoint(_int iPoint);            //스킬 포인트 사용/획득
 
     /* 조작키 관련 */
     void                        BindSkillToButton(CONTROL_BUTTON eButton, _uint iSkill);    //버튼에 스킬을 바인딩

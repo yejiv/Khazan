@@ -1,0 +1,49 @@
+#include "AS_Boomarang_Imp_Range.h"
+#include "Imp_Range.h"
+#include "GameInstance.h"
+#include "Body_Imp_Range.h"
+#include "BlackBoard.h"
+#include "AI_Controller.h"
+
+
+CAS_Boomarang_Imp_Range::CAS_Boomarang_Imp_Range()
+{
+    
+}
+
+void CAS_Boomarang_Imp_Range::Enter(CStateMachine* pFSM, CGameObject* pOwner)
+{
+    CImp_Range* pImp = static_cast<CImp_Range*>(pOwner);
+    CModel* pModel = static_cast<CModel*>(pImp->Get_Body()->Get_Component(TEXT("Com_Model")));
+    pModel->Set_Animation(13);
+}
+
+void CAS_Boomarang_Imp_Range::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
+{
+    CImp_Range* pImp = static_cast<CImp_Range*>(pOwner);
+    CModel* pModel = static_cast<CModel*>(pImp->Get_Body()->Get_Component(TEXT("Com_Model")));
+
+
+    if (pModel->Play_Animation(fTimeDelta))
+    {
+        pImp->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pImp->Get_Name(), "isBoomarangFinished", true);
+        //m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pImp->Get_Name(), "isBoomarangFinished", true);
+    }
+
+
+}
+
+void CAS_Boomarang_Imp_Range::Exit(CStateMachine* pFSM, CGameObject* pOwner)
+{
+
+}
+
+CAS_Boomarang_Imp_Range* CAS_Boomarang_Imp_Range::Create()
+{
+    return new CAS_Boomarang_Imp_Range();
+}
+
+void CAS_Boomarang_Imp_Range::Free()
+{
+    __super::Free();
+}

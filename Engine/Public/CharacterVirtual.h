@@ -14,8 +14,6 @@
 
 NS_BEGIN(Engine)
 
-constexpr float fFixedDt = 1.0f / 120.0f;
-
 class ENGINE_DLL CCharacterVirtual final : public CRigidBody
 {
 public:
@@ -102,8 +100,12 @@ public:
 	virtual void Sync_Update(_matrix WorldMatirx);
 	virtual void Update(_float fTimeDelta, _vector& outQuatRotation, _vector& outPosition, _vector vGravity = XMVectorSet(0.f, g_fGravity, 0.f, 0.f));
 
+    void ApplyInterpolatedPose(float alpha, CTransform* pTransform);
+    void ApplyInterpolatedPose(float alpha, _vector& outQuatRotation, _vector& outPosition);
+
 public:
 	virtual void	Set_PosRot(_vector vPos, _vector vRot);
+    void            StepFixed(_float fTimeDelta);
 	virtual void    Set_Position(_vector vPos);
 	virtual void	Set_Velocity(_vector vVelocity);
 	virtual void	Set_Rotation(_vector vRotation);
@@ -131,12 +133,22 @@ private:
 
 	_uint		m_iNumObjectLayer = {};
 
-	PHYSPOSE m_tPrevPose = {};
-	PHYSPOSE m_tCurrPose = {};
-	_float m_fAcc = {};
-	_float m_isFirstSync = { true };
+    _float              m_fFixedDt = 1.f / 60.f;
+    _float              m_fAcc = 0.f;
+    _float              m_fMaxLagClamp = 0.25f;
+    _int                m_iMaxSubsteps = 2;
 
+    struct Pose {
+        JPH::RVec3 vPos = JPH::RVec3::sZero();
+        JPH::Quat  vRot = JPH::Quat::sIdentity();
+        JPH::Vec3  vLinvel = JPH::Vec3::sZero();
+    } m_tPrevPose, m_tCurrPose;
+    _bool               m_isFirstSync = true;
 
+    _bool               m_prevOnGround = false;
+    JPH::Vec3          m_cachedGroundVel = JPH::Vec3::sZero();
+    _int                m_groundVelQueryDefer = 0;
+    _int                m_groundVelQueryInterval = 2;
 	_float m_fAirLoss = 2.f;
 	_float m_fLoss = 25.f;
 

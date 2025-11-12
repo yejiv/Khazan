@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 #include "BlackBoard.h"
 
+
 CPerception::CPerception()
 	:m_pGameInstance{ CGameInstance::GetInstance() }
 {
@@ -23,7 +24,7 @@ HRESULT CPerception::Initialize(const AIPERCEPTION_DATA& Desc, _uint iTeamID)
 	return S_OK;
 }
 
-void CPerception::Update(CGameObject* pOwner, _float fTimeDelta)
+void CPerception::Update(class CGameObject* pOwner, class CBlackBoard* pBB, _float fTimeDelta)
 {
 	m_fCheckAcc += fTimeDelta;
 	m_fCurrnetTime += fTimeDelta;
@@ -31,7 +32,7 @@ void CPerception::Update(CGameObject* pOwner, _float fTimeDelta)
 	if (m_fCheckAcc >= m_tSightDesc.fCheckInterval)
 	{
 		m_fCheckAcc = 0.f;
-		Check_Sight(pOwner);
+		Check_Sight(pOwner,pBB);
 	}
 
 
@@ -40,9 +41,11 @@ void CPerception::Update(CGameObject* pOwner, _float fTimeDelta)
 
 }
 
-void CPerception::Check_Sight(CGameObject* pOwner)
+void CPerception::Check_Sight(class CGameObject* pOwner, class CBlackBoard* pBB)
 {
-	CGameObject* pTarget = m_pGameInstance->Get_BlackBoard()->Get_Value<CGameObject*>(m_strName, "Target");
+    
+	//CGameObject* pTarget = m_pGameInstance->Get_BlackBoard()->Get_Value<CGameObject*>(m_strName, "Target");
+	CGameObject* pTarget = pBB->Get_Value<CGameObject*>(m_strName,"Target");
 	CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
 	CTransform* pTargetTransform = static_cast<CTransform*>(pTarget->Get_Component(TEXT("Com_Transform")));
 
@@ -66,7 +69,9 @@ void CPerception::Check_Sight(CGameObject* pOwner)
 		return;
 
 	// 시야 감지 사이클에 들어왔을때만 갱신
-  	m_pGameInstance->Get_BlackBoard()->Set_Value<_float>(m_strName, "TargetDist", fDistsq);
+   	//m_pGameInstance->Get_BlackBoard()->Set_Value<_float>(m_strName, "TargetDist", fDistsq);
+    pBB->Set_Value<_float>(m_strName, "TargetDist", fDistsq);
+
 
 	//_vector vSide = XMVector3Cross(vLook,vDist);
 	_vector vSide = XMVector3Cross(vDist,vLook);
@@ -112,10 +117,12 @@ void CPerception::Check_Sight(CGameObject* pOwner)
 	}
 	_float3 vTargetDir;
 	XMStoreFloat3(&vTargetDir, vDirToTarget);
-	m_pGameInstance->Get_BlackBoard()->Set_Value<_float3>(m_strName, "TargetDir", vTargetDir);
+	/*m_pGameInstance->Get_BlackBoard()->Set_Value<_float3>(m_strName, "TargetDir", vTargetDir);
 	m_pGameInstance->Get_BlackBoard()->Set_Value<_float>(m_strName, "fDot", fDot);
-	m_pGameInstance->Get_BlackBoard()->Set_Value<_uint>(m_strName,"TargetDirection",m_tDirInfo.iDirFlag);
-
+	m_pGameInstance->Get_BlackBoard()->Set_Value<_uint>(m_strName,"TargetDirection",m_tDirInfo.iDirFlag);*/
+    pBB->Set_Value<_float3>(m_strName, "TargetDir", vTargetDir);
+    pBB->Set_Value<_float>(m_strName, "fDot", fDot);
+    pBB->Set_Value<_uint>(m_strName, "TargetDirection", m_tDirInfo.iDirFlag);
 
 	STIMULUS Stim;
 	Stim.eType = SENSETYPE::SIGHT;

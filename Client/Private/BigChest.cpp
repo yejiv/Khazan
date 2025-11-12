@@ -239,6 +239,17 @@ void CBigChest::Input_Interact_Event(_float fTimeDelta)
 
 void CBigChest::Animation_Update(_float fTimeDelta)
 {
+    if (0.f != m_fColTimeAcc)
+    {
+        m_fColTimeAcc += fTimeDelta;
+
+        if (0.931f <= m_fColTimeAcc)
+        {
+            m_fColTimeAcc = 0.f;
+            m_pStaticCom->Collision_Active(true);
+        }
+    }
+
     if (false == m_isCollision)
         return;
 
@@ -248,6 +259,8 @@ void CBigChest::Animation_Update(_float fTimeDelta)
     {
         if (ANIM_STATE::CLOSE == m_eAnimState)
         {
+            m_pStaticCom->Collision_Active(false);
+
             m_pGuide->Update_Visible(false);
 
             // 닫긴 상자 상호 작용 시
@@ -290,6 +303,8 @@ void CBigChest::Animation_Change(_float fTimeDelta)
 {
     if (ANIM_STATE::OPENING == m_eAnimState)
     {
+        m_fColTimeAcc += fTimeDelta;
+
         // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
         m_eAnimState = ANIM_STATE::OPEN;
         m_pModelCom->Set_Animation(ANIM_STATE::OPEN);

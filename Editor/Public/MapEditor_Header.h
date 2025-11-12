@@ -33,6 +33,9 @@
 // 맵 트리거 ( 좀 야매 )
 #include "Trigger.h"
 
+// 몬스터 스폰 ( 많이 야매 )
+#include "Map_Spawn.h"
+
 // Terrain
 #include "Map_Terrain.h"
 

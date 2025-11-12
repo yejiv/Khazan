@@ -750,6 +750,30 @@ void CBody_Khazan_Spear::FX_FastAtk_SpawnWind()
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust()
 {
     m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust"), m_pParentTransform->Get_WorldMatrix().r[3]);
+
+    // Distortion
+    DISTORTION_DESC Desc{};
+    _vector vCenterPos = m_pParentTransform->Get_WorldMatrix().r[3];
+    _float fPosY = XMVectorGetY(m_pParentTransform->Get_WorldMatrix().r[3]);
+    _float fOffset = 2.f;
+    vCenterPos = XMVectorSetY(vCenterPos, fPosY + fOffset);
+    XMStoreFloat3(&Desc.vCenter, vCenterPos);
+    Desc.fRange = 0.5f;
+    Desc.fPower = 0.03f;
+    Desc.fDuration = 2.f;
+    Desc.vFadeTime = _float2(1.f, 0.2f);
+    Desc.fSpeed = 1.f;
+    Desc.iNoiseIndex = 9;
+    m_pGameInstance->Start_Distortion(Desc);
+
+    // Vignette
+    VIGNETTE_CONFIG Config{};
+    Config.eMode = VIGNETTE_CONFIG::SMOOTH_SMOOTH;
+    Config.vColor = _float3(0.f, 0.f, 0.f);
+    Config.fPower = 3.5f;
+    Config.fIntensity = 1.f;
+    Config.fMaxIntensity = 4.f;
+    m_pGameInstance->Start_VignetteAnimation(2.f, Config);
 }
 
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_Trail()
