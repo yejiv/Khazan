@@ -33,6 +33,14 @@ void CUI_HUD::Add_Item(_int iIndex)
 	}
 }
 
+void CUI_HUD::Switch_Panel(_bool isOn)
+{
+    if(isOn)
+        m_pHPPanel->On_Penal();
+    else
+        m_pHPPanel->Off_Penal();
+}
+
 HRESULT CUI_HUD::Initialize_Prototype(_uint iLevel)
 {
 	m_iLevel = iLevel;
@@ -85,6 +93,24 @@ HRESULT CUI_HUD::Render()
 
 void CUI_HUD::Bubble_EventCall()
 {
+}
+
+HRESULT CUI_HUD::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
+{
+    CHECK_FAILED(__super::Load_UI(pInData, iPrototypeLevelID, pArg), E_FAIL);
+
+    for (auto pChild : m_Children)
+    {
+        string strName = pChild->Get_Name();
+
+        if (strName == "HUD_State_Penal")
+        {
+            m_pHPPanel = static_cast<CUI_PlayerHP_Penal*>(pChild);
+            Safe_AddRef(m_pHPPanel);
+        }
+    }
+
+    return S_OK;
 }
 
 HRESULT CUI_HUD::Ready_Prototype()
@@ -152,5 +178,5 @@ void CUI_HUD::Free()
 	}
 
 	__super::Free();
-	
+    Safe_Release(m_pHPPanel);
 }

@@ -31,24 +31,42 @@ void CUI_BladeNexus_Map_List::Setting_List(_int iType)
 {
     if (iType == 0)
     {
-        if (m_iIndex == 0) 
+        if (m_iIndex == 0)
+        {
             m_pListText->Set_Text(TEXT("눈보라 협곡"));
-        else if(m_iIndex == 1)  
+            m_bIsOn = CClientInstance::GetInstance()->Find_BladeNexus(0)->isUnLock;
+        }
+        else if (m_iIndex == 1)
+        {
             m_pListText->Set_Text(TEXT("냉기 서린 동굴"));
-        else if (m_iIndex == 2) 
+            m_bIsOn = CClientInstance::GetInstance()->Find_BladeNexus(1)->isUnLock;
+        }
+        else if (m_iIndex == 2)
+        {
             m_pListText->Set_Text(TEXT("설인의 대지"));
-
+            m_bIsOn = CClientInstance::GetInstance()->Find_BladeNexus(2)->isUnLock;
+        }
     }
     else
     {
         if (m_iIndex == 0)
+        {
             m_pListText->Set_Text(TEXT("잊혀진 사원의 지하"));
+            m_bIsOn = CClientInstance::GetInstance()->Find_BladeNexus(4)->isUnLock;
+        }
         else if (m_iIndex == 1)
+        {
             m_pListText->Set_Text(TEXT("잊혀진 사원의 깊은 곳"));
+            m_bIsOn = CClientInstance::GetInstance()->Find_BladeNexus(5)->isUnLock;
+        }
         else if (m_iIndex == 2)
+        {
             m_pListText->Set_Text(TEXT("잊혀진 사원의 심장"));
+            m_bIsOn = CClientInstance::GetInstance()->Find_BladeNexus(6)->isUnLock;
+        }
     }
 
+    
     if (m_bIsOn)
         m_pListText->Set_Color({ 1.f, 1.f, 1.f, 1.f });
     else

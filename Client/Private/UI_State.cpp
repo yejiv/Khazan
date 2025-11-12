@@ -34,7 +34,7 @@ void CUI_State::On_Panel(UI_TYPE eType)
 	m_pPanel[ENUM_CLASS(STATE_PANEL::LACHRYMA)]->Setting_Type(m_eType, this);
 	m_pPanel[ENUM_CLASS(STATE_PANEL::LEVEL)]->Setting_Type(m_eType, this);
 
-	_int iLacryma = m_iLachryma;
+	_int iLacryma = *m_pLachryma;
 	_int iPreUpPoint = m_Player_Data.iLevel;
 	_int iUpPoint = 0;
 	while (iLacryma > (300 + (iPreUpPoint - 1 + iUpPoint) * 280))
@@ -44,7 +44,7 @@ void CUI_State::On_Panel(UI_TYPE eType)
 	}
 
 	m_Player_Data.iUPPoint = iUpPoint;
-	m_Player_Data.iLachryma = m_iLachryma;
+	m_Player_Data.iLachryma = *m_pLachryma;
 	m_Player_Data.iUpLachryma = (300 + (m_Player_Data.iLevel - 1 + m_UpPlayer_Data.iLevel) * 280);
 
 	for (auto pList : m_pState)
@@ -88,6 +88,7 @@ HRESULT CUI_State::Initialize_Clone(void* pArg)
 
 	Ready_PlayerData();
 
+    m_pLachryma = &CClientInstance::GetInstance()->Get_ptrPlayerData().iLachryma;
 	return S_OK;
 }
 
@@ -388,7 +389,6 @@ HRESULT CUI_State::Ready_Object()
 
 void CUI_State::Ready_PlayerData()
 {
-	m_iLachryma									= 3000;
 	//플레이어 기본 정보
 	m_Player_Data.iLevel						= 3;
 	m_Player_Data.iUPPoint						= 0;
@@ -577,7 +577,7 @@ void CUI_State::List_Bubble_Event(UI_STATE_BUBLLE* pDesc)
 		if (pDesc->isUp)
 		{
 			m_UpPlayer_Data.iLevel += 1;
-			m_Player_Data.iLachryma = m_iLachryma - m_Player_Data.iUpLachryma;
+			m_Player_Data.iLachryma = *m_pLachryma - m_Player_Data.iUpLachryma;
 			m_Player_Data.iUpLachryma += (300 + ((m_Player_Data.iLevel) - 1 + (m_UpPlayer_Data.iLevel)) * 280);
 		}
 		else
@@ -619,9 +619,9 @@ void CUI_State::Button_Bubble_Event(UI_STATE_BUBLLE* pDesc)
 	m_Player_Data.iLevel += m_UpPlayer_Data.iLevel;
 	m_UpPlayer_Data.iLevel = 0;
 
-	m_iLachryma = m_Player_Data.iLachryma;
+    *m_pLachryma = m_Player_Data.iLachryma;
 
-	_int iLacryma = m_iLachryma;
+	_int iLacryma = *m_pLachryma;
 	_int iPreUpPoint = m_Player_Data.iLevel;
 	_int iUpPoint = 0;
 	while (iLacryma > (300 + (iPreUpPoint - 1 + iUpPoint) * 280))
@@ -631,7 +631,7 @@ void CUI_State::Button_Bubble_Event(UI_STATE_BUBLLE* pDesc)
 	}
 
 	m_Player_Data.iUPPoint = iUpPoint;
-	m_Player_Data.iLachryma = m_iLachryma;
+	m_Player_Data.iLachryma = *m_pLachryma;
 	m_Player_Data.iUpLachryma = (300 + (m_Player_Data.iLevel - 1 + m_UpPlayer_Data.iLevel) * 280);
 
 	for (_int i = 0; i < ENUM_CLASS(STATE_LIST::END); ++i)
@@ -683,6 +683,14 @@ void CUI_State::Button_Bubble_Event(UI_STATE_BUBLLE* pDesc)
 	m_UpPlayer_Data.iChaos				= 0;
 	m_UpPlayer_Data.iDisease			= 0;
 	m_UpPlayer_Data.iPoison				= 0;
+
+    PLAYER_DATA* pData = &CClientInstance::GetInstance()->Get_ptrPlayerData();
+
+    pData->fMaxHp = m_Player_Data.iMaxHp;
+    pData->fMaxStamina = m_Player_Data.iMaxStamina;
+    pData->fDamage = m_Player_Data.iAtk;
+    pData->fGuard = m_Player_Data.iDef;
+   
 }
 
 CUI_State* CUI_State::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)
