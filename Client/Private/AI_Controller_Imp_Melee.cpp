@@ -13,6 +13,7 @@ CAI_Controller_Imp_Melee::CAI_Controller_Imp_Melee()
 HRESULT CAI_Controller_Imp_Melee::Initialize(CCreature* pOwner)
 {
     CImp_Melee* pImp = static_cast<CImp_Melee*>(pOwner);
+
     if (FAILED(__super::Initialize(pImp, pImp->Get_Name())))
         return E_FAIL;
 
@@ -281,9 +282,6 @@ INTERRUPTCONDITION CAI_Controller_Imp_Melee::GetCallbackInterruptCondition(CGame
                 _bool isGroggy = BB->Get_Value<_bool>(pImp->Get_Name(), "isGroogy");
 
                 if (isDead) return true;
-
-                if (isGroggy) return true;
-
                 if (isDamaged) return true;
 
                 return false;

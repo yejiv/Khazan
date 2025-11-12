@@ -1,7 +1,7 @@
 #include "Imp_Melee.h"
 #include "CharacterVirtual.h"
 #include "Body_Imp_Melee.h"
-#include "Imp_Sword.h"
+//#include "Imp_Sword.h"
 #include "AI_Controller_Imp_Melee.h"
 
 CImp_Melee::CImp_Melee(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -37,7 +37,6 @@ HRESULT CImp_Melee::Initialize_Clone(void* pArg)
     if (FAILED(Ready_PartObjects()))
         return E_FAIL;
 
-
     if (FAILED(Ready_AnimEvent()))
         return E_FAIL;
 
@@ -56,7 +55,7 @@ void CImp_Melee::Priority_Update(_float fTimeDelta)
 
 void CImp_Melee::Update(_float fTimeDelta)
 {
-    //m_pController->Update(this, fTimeDelta);
+    m_pController->Update(this, fTimeDelta);
 
     __super::Update(fTimeDelta);
 }
@@ -73,14 +72,17 @@ HRESULT CImp_Melee::Render()
 
 void CImp_Melee::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
+
 }
 
 void CImp_Melee::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
+
 }
 
 void CImp_Melee::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 {
+
 }
 
 HRESULT CImp_Melee::Ready_Components()
@@ -182,7 +184,7 @@ CGameObject* CImp_Melee::Clone(void* pArg)
 void CImp_Melee::Free()
 {
     Safe_Release(m_pBody);
-    Safe_Release(m_pWeapon);
+    //Safe_Release(m_pWeapon);
 
     __super::Free();
 }

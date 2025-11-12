@@ -43,6 +43,9 @@
 #include "Projectile_Imp_MagicBall.h"
 #include "Projectile_Boomarang.h"
 
+#include "Imp_Melee.h"
+#include "Body_Imp_Melee.h"
+
 #pragma endregion
 
 #pragma region UI
@@ -449,6 +452,7 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
 #pragma endregion
 
 #pragma region Imp_Melee
+
     //Goblin_Melee.dat
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Goblin_Melee"),
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Goblin_Melee/Goblin_Melee.dat"))))
@@ -572,7 +576,18 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
         CProjectile_Boomarang::Create(m_pDevice, m_pContext))))
         return E_FAIL;
 
-    
+#pragma endregion
+
+  
+#pragma region Imp_Melee
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Melee"),
+        CImp_Melee::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Monster_Imp_Melee_Body"),
+        CBody_Imp_Melee::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
 
 #pragma endregion
 
