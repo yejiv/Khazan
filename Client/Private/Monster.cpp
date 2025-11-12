@@ -147,7 +147,7 @@ HRESULT CMonster::Initialize_Clone(void* pArg)
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
-    m_pTransformCom->Set_WorldMatrix_4x4(pDesc->WorldMatrix);
+    //m_pTransformCom->Set_WorldMatrix_4x4(pDesc->WorldMatrix);
 
     // 이름
     m_strName = pDesc->strName;
@@ -159,8 +159,6 @@ HRESULT CMonster::Initialize_Clone(void* pArg)
     CBlackBoard* pBlackBoard = m_pGameInstance->Get_BlackBoard();
     pBlackBoard->Set_Value(m_strName, "Target", m_pTarget);
 
-    m_vGravity = XMVectorSet(0.f, 0.f, 0.f, 0.f);
-
     return S_OK;
 }
 
@@ -171,13 +169,6 @@ void CMonster::Priority_Update(_float fTimeDelta)
 
 void CMonster::Update(_float fTimeDelta)
 {
-    m_fSpawnTime += fTimeDelta;
-
-    if (!m_isSpwan && m_fSpawnTime > 10.f)
-    {
-        m_vGravity = XMVectorSet(0.f, g_fGravity, 0.f, 0.f);
-        m_isSpwan = true;
-    }
 
     __super::Update(fTimeDelta);
 

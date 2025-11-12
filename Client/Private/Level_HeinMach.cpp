@@ -106,6 +106,8 @@ HRESULT CLevel_HeinMach::Initialize()
         return E_FAIL;
 
 	m_futures.clear();
+
+    Ready_Layer_NorMonster(TEXT("Normal"));
 	return S_OK;
 }
 
@@ -259,14 +261,123 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster(const _wstring& strLayerTag)
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Gomdol"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
         return E_FAIL;*/
 
-    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+    /*if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
-        return E_FAIL;
+        return E_FAIL;*/
 
     //if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
     //    ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Melee"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
     //    return E_FAIL;
 
+
+    return S_OK;
+}
+
+HRESULT CLevel_HeinMach::Ready_Layer_NorMonster(const _wstring& strLayerTag)
+{
+    CMonster::MONSTER_DESC MonsterDesc{};
+    MonsterDesc.fAttack = 10.f;
+    MonsterDesc.fMaxHP = 100.f;
+    MonsterDesc.fMaxStamina = 100.f;
+    MonsterDesc.fMoveSpeed = 10.f;
+    MonsterDesc.fSpeedPerSec = 3.f;
+    MonsterDesc.fRotationPerSec = 180.f;
+    MonsterDesc.strName = "ImpRange";
+    MonsterDesc.vPos = XMVectorSet(54.623981f, 1.238958f, 85.203117f, 1.0f);
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+        return E_FAIL;
+
+    MonsterDesc.vPos = XMVectorSet(61.736542f, 1.988753f, 78.775009f, 1.0f);
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+        return E_FAIL;
+
+    /*MonsterDesc.vPos = XMVectorSet(102.422752f, 1.263376f, 63.737751f, 1.0f);
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+        return E_FAIL;
+
+    MonsterDesc.vPos = XMVectorSet(94.333748f, 1.133255f, 59.551620f, 1.0f);
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+        return E_FAIL;
+
+    MonsterDesc.vPos = XMVectorSet(117.824562f, 10.633522f, 110.338989f, 1.0f);
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+        return E_FAIL;
+
+    MonsterDesc.vPos = XMVectorSet(132.185669f, -2.518638f, 114.366768f, 1.0f);
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+        return E_FAIL;
+
+    MonsterDesc.vPos = XMVectorSet(178.140656f, 3.899144f, 161.461426f, 1.0f);
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+        return E_FAIL;
+
+    MonsterDesc.vPos = XMVectorSet(183.403778f, 5.093318f, 164.544693f, 1.0f);
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+        return E_FAIL;
+
+    MonsterDesc.vPos = XMVectorSet(240.545563f, 4.856929f, 147.155014f, 1.0f);
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+        return E_FAIL;
+
+    MonsterDesc.vPos = XMVectorSet(242.612549f, 4.567466f, 153.363266f, 1.0f);
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+        return E_FAIL;
+
+    MonsterDesc.vPos = XMVectorSet(336.907745f, -0.359161f, 114.850830f, 1.0f);
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+        return E_FAIL;
+
+    MonsterDesc.vPos = XMVectorSet(343.355194f, 4.597403f, 176.510803f, 1.0f);
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+        return E_FAIL;
+
+    MonsterDesc.vPos = XMVectorSet(300.085144f, 21.997122f, 295.931671f, 1.0f);
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+        return E_FAIL;
+
+    MonsterDesc.vPos = XMVectorSet(306.865814f, 21.176941f, 299.545410f, 1.0f);
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+        return E_FAIL;
+
+    MonsterDesc.vPos = XMVectorSet(345.694000f, -3.067375f, 354.117065f, 1.0f);
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+        return E_FAIL;
+
+    MonsterDesc.vPos = XMVectorSet(367.720886f, 1.541743f, 382.366302f, 1.0f);
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+        return E_FAIL;*/
 
     return S_OK;
 }
