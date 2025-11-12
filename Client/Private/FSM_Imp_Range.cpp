@@ -3,6 +3,9 @@
 #include "AS_Sleep_Imp_Range.h"
 #include "AS_Move_Imp_Range.h"
 #include "AS_Attack_Imp_Range.h"
+#include "AS_Boomarang_Imp_Range.h"
+#include "AS_Hit_Imp_Range.h"
+#include "AS_Dead_Imp_Range.h"
 
 CFSM_Imp_Range::CFSM_Imp_Range()
 {
@@ -19,6 +22,12 @@ HRESULT CFSM_Imp_Range::Initialize(CGameObject* pOwner)
     if (FAILED(Add_State(ENUM_CLASS(IMPRANGE_STATE::MOVE), CAS_Move_Imp_Range::Create())))
         return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(IMPRANGE_STATE::MAGIC), CAS_Attack_Imp_Range::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(IMPRANGE_STATE::BOOMARANG), CAS_Boomarang_Imp_Range::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(IMPRANGE_STATE::HIT), CAS_Hit_Imp_Range::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(IMPRANGE_STATE::DEAD), CAS_Dead_Imp_Range::Create())))
         return E_FAIL;
 
     m_pCurrentState = m_States[ENUM_CLASS(IMPRANGE_STATE::SLEEP)];

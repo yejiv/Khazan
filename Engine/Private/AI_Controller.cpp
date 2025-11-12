@@ -38,7 +38,7 @@ void CAI_Controller::AI_ApplyDamage(CGameObject* pAttacker, _float fDamage, _uin
     DamageStim.fVaildTime = fValidTime;
 
     m_pPerception->Notify_Damage(pAttacker,DamageStim);
-    //m_pBT->Notify_Event(BTEVENT::HIT);
+    //m_pBT->Terminate_AllNode(m_pBT->Get_Root());
 
 }
 

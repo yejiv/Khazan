@@ -19,6 +19,7 @@
 #include "UI_BackGround.h"
 #include "Damage_Text.h"
 #include "UI_Announce_MapName.h"
+#include "UI_HUD.h"
 #pragma endregion
 
 CLevel_HeinMach::CLevel_HeinMach(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -30,7 +31,6 @@ CLevel_HeinMach::CLevel_HeinMach(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 
 HRESULT CLevel_HeinMach::Initialize()
 {
-    m_pGameInstance->Set_Gravity(XMVectorSet(0.f, 0.f, 0.f, 0.f));
     CHECK_FAILED(Ready_Layer_UI(), E_FAIL);
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), HEINMACH_1ST_BLADENEXUS, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
@@ -44,9 +44,11 @@ HRESULT CLevel_HeinMach::Initialize()
 			return E_FAIL;
 		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
         CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Monster"), TEXT("HeinMach"), HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-		//CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
+        Ready_Layer_Monster(TEXT("Layer_Monster"));
 		CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL); 
+        if (FAILED(Ready_Layer_Decal()))
+            return E_FAIL;
 		return S_OK;
 		});
 
@@ -106,12 +108,18 @@ HRESULT CLevel_HeinMach::Initialize()
         return E_FAIL;
 
 	m_futures.clear();
-    m_pGameInstance->Set_Gravity(XMVectorSet(0.f, g_fGravity, 0.f, 0.f));
+
+    //Ready_Layer_NorMonster(TEXT("Normal"));
 	return S_OK;
 }
 
 void CLevel_HeinMach::Update(_float fTimeDelta)
 {
+    if (m_pGameInstance->Key_Down(DIK_9))
+        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+    if (m_pGameInstance->Key_Down(DIK_8))
+        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
+
 	if (m_pGameInstance->Key_Down(DIK_Q))
 	{
 		m_pGameInstance->isPickRenderTargetPixel(TEXT("Target_Normal"));
@@ -241,25 +249,27 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster(const _wstring& strLayerTag)
     MonsterDesc.fMoveSpeed = 10.f;
     MonsterDesc.fSpeedPerSec = 3.f;
     MonsterDesc.fRotationPerSec = 180.f;
-    //MonsterDesc.strName = "Yetuga";
+    MonsterDesc.strName = "Yetuga";
     //MonsterDesc.strName = "Gomdol";
-    MonsterDesc.strName = "ImpRange";
-    
+    //MonsterDesc.strName = "ImpRange";
+    // MonsterDesc.strName = "ImpMelee";
 
-  /*  if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Yetuga"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
-        return E_FAIL;*/
+        return E_FAIL;
 
 
     /*if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Gomdol"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
         return E_FAIL;*/
 
-
-    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+    /*if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
-        return E_FAIL;
+        return E_FAIL;*/
 
+    //if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+    //    ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Melee"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+    //    return E_FAIL;
 
     return S_OK;
 }
@@ -268,6 +278,24 @@ HRESULT CLevel_HeinMach::Ready_Layer_Effect(const _wstring& strLayerTag)
 {
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust2"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust3"), 3);
+    //m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Fire"), 50);
+    //m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TreasureBox"), 3);
+    //m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Spawn"), 3);
+    //m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), 100);
+    //m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), 200);
+    //m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"), 10);
+
+    return S_OK;
+}
+
+HRESULT CLevel_HeinMach::Ready_Layer_Decal()
+{
+    // Decal
+    if (FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Decal"),
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Pool_Decal"), nullptr, 100)))
+        return E_FAIL;
 
     return S_OK;
 }

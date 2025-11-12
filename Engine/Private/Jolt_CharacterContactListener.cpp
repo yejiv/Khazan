@@ -17,10 +17,8 @@ CJolt_CharacterContactListener::~CJolt_CharacterContactListener()
 
 bool CJolt_CharacterContactListener::OnContactValidate(const JPH::CharacterVirtual* inCharacter, const JPH::BodyID& inBodyID2, const JPH::SubShapeID& inSubShapeID2)
 {
-    if (m_pBodyInterface->GetMotionType(inBodyID2) == EMotionType::Static)
-        return true;
 
-    return false;
+    return true;
 }
 
 bool CJolt_CharacterContactListener::OnCharacterContactValidate(const JPH::CharacterVirtual* inCharacter, const JPH::CharacterVirtual* inOtherCharacter, const JPH::SubShapeID& inSubShapeID2)
@@ -160,7 +158,7 @@ void CJolt_CharacterContactListener::OnCharacterContactAdded(const CharacterVirt
         return;
     }
 
-    ioSettings.mCanPushCharacter = true;
+    ioSettings.mCanPushCharacter = false;
 
     return;
 }
@@ -211,7 +209,7 @@ void CJolt_CharacterContactListener::OnCharacterContactPersisted(const Character
     }
 
 
-    ioSettings.mCanPushCharacter = true;
+    ioSettings.mCanPushCharacter = false;
 
     return;
 }

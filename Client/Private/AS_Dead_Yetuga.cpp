@@ -28,8 +28,8 @@ void CAS_Dead_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fT
 
     if (pModel->Play_Animation(fTimeDelta))
     {  
-      
-        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isDeadFinished", true);
+        CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
+        pBB->Set_Value<_bool>(pYetuga->Get_Name(), "isDeadFinished", true);
     }
 
 }

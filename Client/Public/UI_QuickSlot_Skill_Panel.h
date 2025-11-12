@@ -17,13 +17,16 @@ public:
 	virtual void						Update(_float fTimeDelta) override;
 	virtual void						Late_Update(_float fTimeDelta) override;
 	virtual HRESULT						Render() override;
+    virtual HRESULT				        Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
+
+private:
+    vector<class CUI_QuickSlot_Skill*>  m_pSkillSlot;
 
 private:
 	virtual	HRESULT						Ready_Prototype();
-
 public:
-	static CUI_QuickSlot_Skill_Panel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
-	virtual CGameObject* Clone(void* pArg) override;
+	static CUI_QuickSlot_Skill_Panel*   Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
+	virtual CGameObject*                Clone(void* pArg) override;
 	virtual void						Free() override;
 };
 

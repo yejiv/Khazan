@@ -51,13 +51,13 @@ HRESULT CDecal_Manager::Render()
         return E_FAIL;
 
     // 디퓨즈, 뎁스, 노말
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Diffuse"), m_pShader, "g_DiffuseTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Diffuse"), m_pShader, "g_DiffuseTexture")))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Depth"), m_pShader, "g_DepthTexture")))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("Target_Normal"), m_pShader, "g_NormalTexture")))
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Normal"), m_pShader, "g_NormalTexture")))
         return E_FAIL;
 
     _uint           iNumViewports = { 1 };

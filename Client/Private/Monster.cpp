@@ -44,12 +44,14 @@ void CMonster::CheckMinDistanceWithPlayer(_float fMinDist, _float fAnimRatio)
     }
 }
 
-void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction, _float fValidTime,CGameObject* pGameObject)
+void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject* pGameObject)
 {
     m_fCurrentHP -= fDamage;
     if (m_fCurrentHP <= 0.f)
         m_pController->AI_Terminate_All();
-
+    
+    _float fValidTime = 3.f;
+    
     m_pController->AI_ApplyDamage(pGameObject,fDamage,ENUM_CLASS(eHitreaction),fValidTime);
 }
 
@@ -60,7 +62,8 @@ void CMonster::Consume_Stamina(_float fAmout)
 
     if (m_fCurrentStamina <= 0.f)
     {
-        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "DamageInterrupt",true);
+        CBlackBoard* pBB = m_pController->Get_BlackBoard();
+        pBB->Set_Value<_bool>(m_strName, "DamageInterrupt",true);
     }
 }
 
@@ -153,10 +156,6 @@ HRESULT CMonster::Initialize_Clone(void* pArg)
     m_pTarget = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH),TEXT("Layer_Creature_Player"),0);
     if (nullptr == m_pTarget)
         return E_FAIL;
-    // 블랙보드에 설정
-    CBlackBoard* pBlackBoard = m_pGameInstance->Get_BlackBoard();
-    pBlackBoard->Set_Value(m_strName, "Target", m_pTarget);
-
     return S_OK;
 }
 
@@ -167,6 +166,7 @@ void CMonster::Priority_Update(_float fTimeDelta)
 
 void CMonster::Update(_float fTimeDelta)
 {
+
     __super::Update(fTimeDelta);
 
     //m_pRigidBodyCom->Sync_Update(m_pTransformCom);

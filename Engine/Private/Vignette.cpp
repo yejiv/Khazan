@@ -60,8 +60,6 @@ void CVignette::Update(_float fTimeDelta)
     // SI -> 0 -> 1 -> t
     // IS -> 1 -> 0 -> 1 - t
     // Intensity = Max Intensity * Progress
-
-    // Set 함수로 모드, 지속 시간 받기
 }
 
 HRESULT CVignette::Bind_Vignette_ShaderResources(CShader* pShader)
@@ -81,11 +79,11 @@ HRESULT CVignette::Bind_Vignette_ShaderResources(CShader* pShader)
     return S_OK;
 }
 
-void CVignette::Start_VignetteAnimation(_float fDuration, VIGNETTE_CONFIG::ANIMMODE eMode)
+void CVignette::Start_VignetteAnimation(_float fDuration, const VIGNETTE_CONFIG& Config)
 {
     m_isEnable = true;
     m_fDuration = fDuration;
-    m_Config.eMode = eMode;
+    m_Config = Config;
 }
 
 CVignette* CVignette::Create()

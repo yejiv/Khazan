@@ -14,10 +14,10 @@ void CAS_JumpGrab_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
+    CBlackBoard* BB = pYetuga->Get_Controller()->Get_BlackBoard();
 
     CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
-    CTransform* pTargetTransform = static_cast<CTransform*>(m_pGameInstance->Get_BlackBoard()->
-        Get_Value<CGameObject*>(pYetuga->Get_Name(), "Target")->Get_Component(TEXT("Com_Transform")));
+    CTransform* pTargetTransform = static_cast<CTransform*>(BB->Get_Value<CGameObject*>(pYetuga->Get_Name(), "Target")->Get_Component(TEXT("Com_Transform")));
     _vector vTargetLoc = pTargetTransform->Get_State(STATE::POSITION);
 
     pTransform->LookAt(vTargetLoc);
@@ -31,10 +31,10 @@ void CAS_JumpGrab_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 {
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
+    CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
 
-    _bool isGrabbed = m_pGameInstance->Get_BlackBoard()->Get_Value<_bool>(pYetuga->Get_Name(), "isGrabbed");
+    _bool isGrabbed = pBB->Get_Value<_bool>(pYetuga->Get_Name(), "isGrabbed");
 
-    CBlackBoard* pBB = m_pGameInstance->Get_BlackBoard();
 
     if (pBB->Get_Value<_bool>(pYetuga->Get_Name(), "JumpNotify"))
     {
@@ -54,7 +54,7 @@ void CAS_JumpGrab_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 
     if (pModel->Play_Animation(fTimeDelta))
     {
-        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isJumpGrabFinished", true);
+        pBB->Set_Value<_bool>(pYetuga->Get_Name(), "isJumpGrabFinished", true);
     }
 
 }
@@ -62,15 +62,21 @@ void CAS_JumpGrab_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 void CAS_JumpGrab_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
-    m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isGrabbed", false);
+    CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
+    pBB->Set_Value<_bool>(pYetuga->Get_Name(), "isGrabbed", false);
     m_isGrabbed = false;
 }
 
 void CAS_JumpGrab_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
 {
     COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iCollisionLayer);
-    if(COLLISION_LAYER::PLAYER == eLayer)
-        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>("Yetuga", "isGrabbed", true);
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+        CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
+        CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
+        pBB->Set_Value<_bool>("Yetuga", "isGrabbed", true);
+
+    }
 }
 
 

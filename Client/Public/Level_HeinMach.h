@@ -25,6 +25,7 @@ private:
 	HRESULT Ready_Layer_Player(const _wstring& strLayerTag);
 	HRESULT Ready_Layer_Monster(const _wstring& strLayerTag);
 	HRESULT Ready_Layer_Effect(const _wstring& strLayerTag);
+    HRESULT Ready_Layer_Decal();
 
 	// 파라미터 ( 1. 등록할 레이어 태그 | 2. 데이터 파일 이름 | 3. 서브 레벨 인덱스 | 4. 현재 로드할 레벨 | 5. 맵 타입 ( 안넣으면 폴더 내부 X ) )
 	// 서브 레벨 오브젝트

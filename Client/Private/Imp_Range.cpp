@@ -4,6 +4,8 @@
 #include "Imp_Wand.h"
 #include "AI_Controller_Imp_Range.h"
 #include "Projectile_Imp_MagicBall.h"
+#include "Projectile_Boomarang.h"
+#include "GameInstance.h"
 
 CImp_Range::CImp_Range(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{pDevice,pContext}
@@ -30,8 +32,7 @@ HRESULT CImp_Range::Initialize_Clone(void* pArg)
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
-    //-4 0 27
-    //m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(513.f, -11.f, 225.f, 1.f));
+    MONSTER_DESC* pDesc = static_cast<MONSTER_DESC*>(pArg);
 
     if (FAILED(Ready_Components()))
         return E_FAIL;
@@ -49,6 +50,11 @@ HRESULT CImp_Range::Initialize_Clone(void* pArg)
       if (nullptr == m_pController)
           return E_FAIL;
 
+      if (nullptr != m_pController)
+          m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
+
+      m_MagicBalls.resize(3, nullptr);
+
       return S_OK;
 }
 
@@ -62,6 +68,9 @@ void CImp_Range::Update(_float fTimeDelta)
     m_pController->Update(this, fTimeDelta);
 
     __super::Update(fTimeDelta);
+
+    m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
+
 }
 
 void CImp_Range::Late_Update(_float fTimeDelta)
@@ -97,11 +106,12 @@ HRESULT CImp_Range::Ready_Components()
     tCharVirDesc.eShapeType = SHAPE::CAPSULE;
     tCharVirDesc.vPos = vPos;
     tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 2.1f, 0.f);
+    tCharVirDesc.vShapeOffset = _float3(0.f, 0.6f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
-    tCharVirDesc.fRadius = 1.f;
-    tCharVirDesc.fHeight = 2.f;
+    tCharVirDesc.fRadius = 0.3f;
+    tCharVirDesc.fHeight = 0.7f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
+    tCharVirDesc.fPenetrationRecoverySpeed = 0.1f;
 
     m_tCollisionDesc.pGameObject = this;
     //pCollDesc.pInfo = ?? // 작성하기
@@ -161,7 +171,17 @@ HRESULT CImp_Range::Ready_Projectiles()
     Desc.fRotationPerSec = 180.f;
 
     m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Imp_Magic_Ball"),
-        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Imp_MagicBall"), &Desc, 18);
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Imp_MagicBall"), &Desc, 9);
+
+    CProjectile_Boomarang::BOOMARANG_DESC BommarangDesc{};
+    BommarangDesc.fDamage = 10.f;
+    BommarangDesc.fSpeedPerSec = 10.f;
+    BommarangDesc.fLifeTime = 6.f;
+    BommarangDesc.fRotationPerSec = 180.f;
+    BommarangDesc.pTarget = m_pTarget;
+
+    m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Imp_Boomarang"),
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Imp_Boomarang"), &BommarangDesc, 5);
 
     return S_OK;
 }
@@ -175,7 +195,7 @@ HRESULT CImp_Range::Ready_AnimEvent()
 #pragma region MagicBall
 
     pModel->Register_Event("CastSpell1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        Cast_MagicBall();
+        Cast_MagicBall(0);
         });
     pModel->Register_Event("CastSpell1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
       
@@ -185,58 +205,75 @@ HRESULT CImp_Range::Ready_AnimEvent()
         });
 
     pModel->Register_Event("ShotSpell1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        Shoot_MagicBall();
+        Shoot_MagicBall(0);
         });
+
+
+    pModel->Register_Event("CastSpell2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        Cast_MagicBall(1);
+        });
+    pModel->Register_Event("CastSpell2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+
+        });
+    pModel->Register_Event("CastSpell2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+
+        });
+
+    pModel->Register_Event("ShotSpell2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        Shoot_MagicBall(1);
+        });
+
+
+    pModel->Register_Event("CastSpell3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        Cast_MagicBall(2);
+        });
+    pModel->Register_Event("CastSpell3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+
+        });
+    pModel->Register_Event("CastSpell3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+
+        });
+
+    pModel->Register_Event("ShotSpell3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        Shoot_MagicBall(2);
+        });
+
+
 
 
 #pragma endregion
 
+#pragma region Boomarang
+    pModel->Register_Event("CastBoomarang", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        Cast_Boomarang();
+        });
+    pModel->Register_Event("HoldBoomarang", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+        Hold_Boomarang();
+        });
+    pModel->Register_Event("ShootBoomarang", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        Shoot_Boomarang();
+        });
+
+#pragma endregion
 
     return S_OK;
 }
 
-void CImp_Range::Make_MagicBall()
-{
-    _vector vTempSpawnPosition = {};
-    CTransform* pTransform = static_cast<CTransform*>(Get_Component(TEXT("Part_Weapon"), TEXT("Com_Transform")));
-    vTempSpawnPosition = pTransform->Get_State(STATE::POSITION) + XMVectorSet(0.f,3.f,0.f,0.f);
 
-    _float3 vSpawnPoint{};
-
-    XMStoreFloat3(&vSpawnPoint,vTempSpawnPosition);
-
-    CGameObject* pGameObject = m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Imp_MagicBall"));
-    if (nullptr == pGameObject)
-        return;
-
-    m_pMagicBall = static_cast<CProjectile_Imp_MagicBall*>(pGameObject);
-    if (m_pMagicBall == nullptr)
-        return;
-    Safe_AddRef(m_pMagicBall);
-
-    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
-    _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
-    _float3 vNormalize{};
-    XMStoreFloat3(&vNormalize, vTempVec);
-    m_pMagicBall->Set_SpawnDir(vNormalize);
-    m_pMagicBall->Set_IsActive(false);   
-    m_pMagicBall->Set_Visible(true);  
-    m_pMagicBall->Set_SpanwPoint(vSpawnPoint);
-    m_pMagicBall->Reset();
-
-    m_pGameInstance->Push_PoolObject_ToLayer(
-        ENUM_CLASS(LEVEL::HEINMACH),
-        TEXT("Layer_Imp_MagicBall"),
-        m_pMagicBall
-    );
-}
-
-void CImp_Range::Cast_MagicBall()
+void CImp_Range::Cast_MagicBall(_uint iIndex)
 {
    
     _float4x4 TempMatrix = m_pWeapon->Get_CombinedMatrix();
     _matrix matWorld = XMLoadFloat4x4(&TempMatrix);
-    _vector vTempSpawnPosition = matWorld.r[3] + XMVectorSet(0.f, 3.f, 0.f, 0.f);
+    _vector vOffset = {};
+    if (0 == iIndex)
+        vOffset = XMVectorSet(1.f, 1.5f, 0.f, 0.f);
+    else if (1 == iIndex)
+        vOffset = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+    else if (2 == iIndex)
+        vOffset = XMVectorSet(-1.f,1.5f,0.f,0.f);
+
+    _vector vTempSpawnPosition = matWorld.r[3] + vOffset;
 
     _float3 vSpawnPoint{};
 
@@ -246,31 +283,31 @@ void CImp_Range::Cast_MagicBall()
     if (nullptr == pGameObject)
         return;
 
-    m_pMagicBall = static_cast<CProjectile_Imp_MagicBall*>(pGameObject);
-    if (m_pMagicBall == nullptr)
+    m_MagicBalls[iIndex] = static_cast<CProjectile_Imp_MagicBall*>(pGameObject);
+    if (m_MagicBalls[iIndex] == nullptr)
         return;
-    Safe_AddRef(m_pMagicBall);
+    Safe_AddRef(m_MagicBalls[iIndex]);
 
-    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    _float3 vTargetDir = m_pController->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
     _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
     _float3 vNormalize{};
     XMStoreFloat3(&vNormalize, vTempVec);
-    m_pMagicBall->Set_SpawnDir(vNormalize);
-    m_pMagicBall->Set_IsActive(false);
-    m_pMagicBall->Set_Visible(true);
-    m_pMagicBall->Set_SpanwPoint(vSpawnPoint);
-    m_pMagicBall->Reset();
+    m_MagicBalls[iIndex]->Set_SpawnDir(vNormalize);
+    m_MagicBalls[iIndex]->Set_IsActive(false);
+    m_MagicBalls[iIndex]->Set_Visible(true);
+    m_MagicBalls[iIndex]->Set_SpanwPoint(vSpawnPoint);
+    m_MagicBalls[iIndex]->Reset();
 
     m_pGameInstance->Push_PoolObject_ToLayer(
         ENUM_CLASS(LEVEL::HEINMACH),
         TEXT("Layer_Imp_MagicBall"),
-        m_pMagicBall
+        m_MagicBalls[iIndex]
     );
 }
 
-void CImp_Range::Shoot_MagicBall()
+void CImp_Range::Shoot_MagicBall(_uint iIndex)
 {
-    if (m_pMagicBall == nullptr)
+    if (m_MagicBalls[iIndex] == nullptr)
         return;
 
     CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
@@ -278,7 +315,15 @@ void CImp_Range::Shoot_MagicBall()
 
     _float4x4 TempMatrix = m_pWeapon->Get_CombinedMatrix();
     _matrix matWorld = XMLoadFloat4x4(&TempMatrix);
-    _vector vTempSpawnPosition = matWorld.r[3] + XMVectorSet(0.f, 3.f, 0.f, 0.f);
+    _vector vOffset = {};
+    if (0 == iIndex)
+        vOffset = XMVectorSet(1.f, 1.5f, 0.f, 0.f);
+    else if (1 == iIndex)
+        vOffset = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+    else if (2 == iIndex)
+        vOffset = XMVectorSet(-1.f, 1.5f, 0.f, 0.f);
+
+    _vector vTempSpawnPosition = matWorld.r[3] + vOffset;
 
     _float3 vSpawnPoint{};
 
@@ -290,16 +335,97 @@ void CImp_Range::Shoot_MagicBall()
     _float3 vSpawnDir{};
     XMStoreFloat3(&vSpawnDir, vDir);
 
-    m_pMagicBall->Set_SpanwPoint(vSpawnPoint);
-    m_pMagicBall->Set_SpawnDir(vSpawnDir);
-    m_pMagicBall->Reset();
-    m_pMagicBall->Set_IsActive(true);
-    m_pMagicBall->Fire_Projectile();
+    CProjectile_Imp_MagicBall* pMagicBall = m_MagicBalls[iIndex];
+    if (pMagicBall == nullptr)
+        return;
 
-    CModel* pModel = static_cast<CModel*>(m_pMagicBall->Get_Component(TEXT("Com_Model")));
+    pMagicBall->Set_SpanwPoint(vSpawnPoint);
+    pMagicBall->Set_SpawnDir(vSpawnDir);
+    pMagicBall->Reset();
+    pMagicBall->Set_IsActive(true);
+    pMagicBall->Fire_Projectile();
+
+    CModel* pModel = static_cast<CModel*>(pMagicBall->Get_Component(TEXT("Com_Model")));
     pModel->Set_Animation(1);
 
-    Safe_Release(m_pMagicBall);
+    Safe_Release(pMagicBall);
+
+    
+}
+
+void CImp_Range::Cast_Boomarang()
+{
+    _float4 vTempSpawnPoint = *m_pBody->Get_BonePointEX("Weapon_L");
+    CGameObject* pGameObject = m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Imp_Boomarang"));
+    if (nullptr == pGameObject)
+        return;
+
+    _float3 vSpawnPoint = _float3(vTempSpawnPoint.x, vTempSpawnPoint.y, vTempSpawnPoint.z);
+
+    m_pBoomarang = static_cast<CProjectile_Boomarang*>(pGameObject);
+    if (m_pBoomarang == nullptr)
+        return;
+    Safe_AddRef(m_pBoomarang);
+
+    _float3 vTargetDir = m_pController->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
+    _float3 vNormalize{};
+    XMStoreFloat3(&vNormalize, vTempVec);
+    m_pBoomarang->Set_SpawnDir(vNormalize);
+    m_pBoomarang->Set_IsActive(false);   
+    m_pBoomarang->Set_Visible(true);
+    m_pBoomarang->Set_SpanwPoint(vSpawnPoint);
+    m_pBoomarang->Reset();
+
+    m_pGameInstance->Push_PoolObject_ToLayer(
+        ENUM_CLASS(LEVEL::HEINMACH),
+        TEXT("Layer_Imp_Boomarang"),
+        m_pBoomarang
+    );
+}
+
+void CImp_Range::Hold_Boomarang()
+{
+    if (nullptr == m_pBoomarang)
+        return;
+
+    _float4 vTempSpawnPoint = *m_pBody->Get_BonePointEX("Weapon_L");
+    _float3 vSpawnPoint = _float3(vTempSpawnPoint.x, vTempSpawnPoint.y, vTempSpawnPoint.z);
+    
+    _float3 vTargetDir = m_pController->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
+    _float3 vNormalize{};
+    XMStoreFloat3(&vNormalize, vTempVec);
+    m_pBoomarang->Set_SpawnDir(vNormalize);
+    m_pBoomarang->Set_SpanwPoint(vSpawnPoint);
+    m_pBoomarang->Reset();
+}
+
+void CImp_Range::Shoot_Boomarang()
+{
+    if (m_pBoomarang == nullptr)
+        return;
+
+    CTransform* pTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+    _vector vTargetLoc = pTransform->Get_State(STATE::POSITION);
+    _float4 vTempSpawnPoint = *m_pBody->Get_BonePointEX("Weapon_L");
+    _float3 vSpawnPoint = _float3(vTempSpawnPoint.x, vTempSpawnPoint.y, vTempSpawnPoint.z);
+    vTargetLoc = XMVectorSetY(vTargetLoc, XMLoadFloat3(&vSpawnPoint).m128_f32[1]);
+    _vector vDir = vTargetLoc - XMLoadFloat3(&vSpawnPoint);
+    vDir = XMVector3Normalize(vDir);
+    _float3 vSpawnDir{};
+    XMStoreFloat3(&vSpawnDir, vDir);
+
+    m_pBoomarang->Set_SpanwPoint(vSpawnPoint);
+    m_pBoomarang->Set_SpawnDir(vSpawnDir);
+    m_pBoomarang->Reset();
+    m_pBoomarang->Set_IsActive(true);
+    m_pBoomarang->Fire_Projectile();
+
+    CModel* pModel = static_cast<CModel*>(m_pBoomarang->Get_Component(TEXT("Com_Model")));
+    pModel->Set_Animation(1);
+
+    Safe_Release(m_pBoomarang);
 }
 
 CImp_Range* CImp_Range::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -328,7 +454,12 @@ void CImp_Range::Free()
 {
     Safe_Release(m_pBody);
     Safe_Release(m_pWeapon);
-    Safe_Release(m_pMagicBall);
+    for (_uint i = 0; i < m_MagicBalls.size(); i++)
+        Safe_Release(m_MagicBalls[i]);
+
+    m_MagicBalls.clear();
+    
+    Safe_Release(m_pBoomarang);
 
     __super::Free();
 }

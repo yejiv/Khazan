@@ -61,11 +61,10 @@ private:
 	vector<_int>						m_CulStateLevel;
 	vector<_int>						m_UpStateLevel;
 
-	_int								m_iLachryma = {};
-
 	UI_PLAYER_STATE_DATA				m_Player_Data;
 	UI_PLAYER_STATE_DATA				m_UpPlayer_Data;
 
+    _uint*                               m_pLachryma = { nullptr };
 private:
 	virtual	HRESULT						Ready_Prototype();
 	HRESULT								Ready_Object();
