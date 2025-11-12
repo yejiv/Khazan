@@ -13,50 +13,50 @@ NS_BEGIN(Client)
 class CCamera_Compre final : public CCamera
 {
 public:
-	typedef struct tagCameraCompreDesc : public CCamera::CAMERA_DESC
-	{
+    typedef struct tagCameraCompreDesc : public CCamera::CAMERA_DESC
+    {
 
-	}CAMERA_COMPRE_DESC;
+    }CAMERA_COMPRE_DESC;
 
 private:
-	CCamera_Compre(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CCamera_Compre(const CCamera_Compre& Prototype);
-	virtual ~CCamera_Compre() = default;
+    CCamera_Compre(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+    CCamera_Compre(const CCamera_Compre& Prototype);
+    virtual ~CCamera_Compre() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype() override;
-	virtual HRESULT Initialize_Clone(void* pArg) override;
-	virtual void Priority_Update(_float fTimeDelta) override;
-	virtual void Update(_float fTimeDelta) override;
-	virtual void Late_Update(_float fTimeDelta) override;
-	virtual HRESULT Render() override;
+    virtual HRESULT Initialize_Prototype() override;
+    virtual HRESULT Initialize_Clone(void* pArg) override;
+    virtual void Priority_Update(_float fTimeDelta) override;
+    virtual void Update(_float fTimeDelta) override;
+    virtual void Late_Update(_float fTimeDelta) override;
+    virtual HRESULT Render() override;
 
 public:
-	void Update_Free(_float fTimeDelta);
-	void Update_Spring(_float fTimeDelta);
+    void Update_Free(_float fTimeDelta);
+    void Update_Spring(_float fTimeDelta);
 
 public:
     void Set_ObjMatrix(const _float4x4* pObjMatrix) { m_pObjMatrix = pObjMatrix; }
     void Set_SocketMatrix(const _float4x4* pSocketMatrix) { m_pSocketMatrix = pSocketMatrix; }
 
 public:
-	HRESULT Ready_Camera(void* pArg);
-	HRESULT Ready_Body();
+    HRESULT Ready_Camera(void* pArg);
+    HRESULT Ready_Body();
 
 public:
-	HRESULT Spring(_float fTimeDelta);
-	HRESULT RayCast(_float fTimeDelta);
-	HRESULT LockOn(_float fTimeDelta);
+    HRESULT Spring(_float fTimeDelta);
+    HRESULT RayCast(_float fTimeDelta);
+    HRESULT LockOn(_float fTimeDelta);
     void Update_BlendBack(_float fTimeDelta);
 
 public:
-	void LockOn_Check(_float fTimeDelta);
+    void LockOn_Check(_float fTimeDelta);
 
 public:
-	class CGameObject* Pick_ClosetTarget();
+    class CGameObject* Pick_ClosetTarget();
 
 public:
-	_vector Cal_CamPos(_float fTimeDelta, _vector& vTargetPos, _vector& vDir);
+    _vector Cal_CamPos(_float fTimeDelta, _vector& vTargetPos, _vector& vDir);
 
 public:
     virtual void OnCameraAniEnd() override;
@@ -79,11 +79,11 @@ public:
     void Update_Yetuga_Holding(_float fTimeDelta);
 
 public:
-	CAMERA_COMPRE_DESC  Get_Desc();
+    CAMERA_COMPRE_DESC  Get_Desc();
     _bool               Get_IsLockOn() const { return m_isLockOn; }
-    _float4*            Get_LockOnPosition() { return m_pLockOnPos; }
+    _float4* Get_LockOnPosition() { return m_pLockOnPos; }
 private:
-	CBody* m_pBody = { nullptr };
+    CBody* m_pBody = { nullptr };
 
     _float				m_fYaw = 0.f;
     _float				m_fPitch = 0.6f;
@@ -101,12 +101,17 @@ private:
     const _float4x4* m_pObjMatrix = { nullptr };
     const _float4x4* m_pSocketMatrix = { nullptr };
 
-	_bool m_isLockOn = { false };
-	_float m_fLockOnDelay = {};
-	vector<class CGameObject*> m_CollMonsters;
-	class CGameObject* m_pLockMonster = { nullptr };
-	_float4* m_pLockOnPos = {};
-	class CTarget_LockOn* m_pLockOnUI = { nullptr };
+    _bool m_isLockOn = { false };
+    _float m_fLockOnDelay = {};
+    vector<class CGameObject*> m_CollMonsters;
+    class CGameObject* m_pLockMonster = { nullptr };
+    _float4* m_pLockOnPos = {};
+    class CTarget_LockOn* m_pLockOnUI = { nullptr };
+
+    // LockOn 보정
+    _float m_fTopClampNearDist = 2.5f;   // 이 이하에서 강하게 개입
+    _float m_fTopClampFarDist = 6.0f;   // 이 이상이면 개입 해제
+    _float m_fTopViewClampDeg = -2.0f;  // 근접 시 허용하는 최소(가장 내려다보는) pitch(도). -2~-5 추천
 	
 	_float m_fTargetHalfFovDegrees = { 50.f };
     _float m_fTargetHalfFovCos = { 0.f };
@@ -171,6 +176,12 @@ private:
     // 부드러움 정도 (클수록 더 부드럽게, 느리게)
     _float   m_fYetugaYawSmoothTime = 0.10f;
     _float   m_fYetugaPitchSmoothTime = 0.10f;
+
+
+
+    // 콜리전 시작 호출
+    _float m_fCollTime = {};
+    _bool  m_isCollTime = { false };
 
 
 public:

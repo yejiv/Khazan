@@ -3,6 +3,8 @@
 #include "ClientInstance.h"
 #include "Target_LockOn.h"
 #include "Monster.h"
+static inline float Saturate(float x) { return Clamp(x, 0.f, 1.f); }
+
 
 static inline float SmoothDampScalar(float current, float target, float& currentVel, float smoothTime, float dt)
 {
@@ -75,6 +77,17 @@ HRESULT CCamera_Compre::Initialize_Clone(void* pArg)
 
 void CCamera_Compre::Priority_Update(_float fTimeDelta)
 {
+    
+    if (!m_isCollTime)
+    {
+        m_fCollTime += fTimeDelta;
+        if (m_fCollTime > 5.f)
+        {
+            m_isCollTime = true;
+        }
+    }
+
+
     if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
     {
         Yetuga_Holding_Start();
@@ -235,6 +248,7 @@ HRESULT CCamera_Compre::Ready_Body()
     m_tCollisionDesc.pGameObject = this;
     //pCollDesc.pInfo = ?? // 작성하기
     TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
+    TriggerDesc.bStartActive = false;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body"), reinterpret_cast<CComponent**>(&m_pBody), &TriggerDesc)))
@@ -291,7 +305,7 @@ HRESULT CCamera_Compre::LockOn(_float fTimeDelta)
 {
     if (!m_pObjMatrix || !m_pLockMonster) return S_OK;
 
-    const float playerEyeOffsetY = 1.5f;
+    const _float playerEyeOffsetY = 1.5f;
 
     const _vector playerWorldPosition = XMVectorSet(
         m_pObjMatrix->_41,
@@ -301,24 +315,41 @@ HRESULT CCamera_Compre::LockOn(_float fTimeDelta)
     );
 
     _vector playerToTargetVector = XMVectorSubtract(XMLoadFloat4(m_pLockOnPos), playerWorldPosition);
-    float playerToTargetDistance = XMVectorGetX(XMVector3Length(playerToTargetVector));
+    _float playerToTargetDistance = XMVectorGetX(XMVector3Length(playerToTargetVector));
 
     if (playerToTargetDistance < 1e-4f)
         return S_OK;
 
     _vector directionNormalized = XMVectorScale(playerToTargetVector, 1.0f / playerToTargetDistance);
 
-    float normalizedX = XMVectorGetX(directionNormalized);
-    float normalizedY = XMVectorGetY(directionNormalized) - 0.3f;   
-    float normalizedZ = XMVectorGetZ(directionNormalized);
+    _float normalizedX = XMVectorGetX(directionNormalized);
+    _float normalizedY = XMVectorGetY(directionNormalized) - 0.3f;
+    // 근접일수록 내려다보기 바이어스(-0.3f)를 0으로 완화
+    {
+        const _float rawY = XMVectorGetY(directionNormalized);
+        const _float yBiasFar = -0.3f;
+        // k = 근접일수록 1, 멀수록 0
+        const _float k = 1.f - Saturate((playerToTargetDistance - m_fTopClampNearDist) / (m_fTopClampFarDist - m_fTopClampNearDist));
+        const _float yBias = Lerp(0.0f, yBiasFar, 1.f - k); // 근접(k=1)→0, 멀(k=0)→-0.3
+        normalizedY = rawY + yBias;
+    }
 
-    float targetYaw = atan2f(normalizedZ, normalizedX);
-    float targetPitch = asinf(Clamp(normalizedY, -1.f, 1.f));
+    _float normalizedZ = XMVectorGetZ(directionNormalized);
+    _float targetYaw = atan2f(normalizedZ, normalizedX);
+    _float targetPitch = asinf(Clamp(normalizedY, -1.f, 1.f));
+
+    const _float topClampPitch = XMConvertToRadians(m_fTopViewClampDeg); // 예: -3도
+    // k = 근접일수록 1, 멀수록 0
+    const _float k = 1.f - Saturate((playerToTargetDistance - m_fTopClampNearDist) / (m_fTopClampFarDist - m_fTopClampNearDist));
+    if (k > 0.f && targetPitch < topClampPitch) {
+        // targetPitch가 너무 "내려가면"(음수 더 큼) 근접 비율(k)에 따라 topClampPitch 쪽으로 보간
+        targetPitch = Lerp(targetPitch, topClampPitch, k);
+    }
 
     targetPitch = Clamp(targetPitch, m_fPitchMin, m_fPitchMax);
 
-    static float smoothingVelocityYaw = 0.f;
-    static float smoothingVelocityPitch = 0.f;
+    static _float smoothingVelocityYaw = 0.f;
+    static _float smoothingVelocityPitch = 0.f;
 
     m_fYaw = SmoothDampAngle(
         m_fYaw,
@@ -472,7 +503,6 @@ _vector CCamera_Compre::Cal_CamPos(_float fTimeDelta, _vector& vTargetPos, _vect
     }
     else
     {
-        // 락온 중에는 원한다면 궤도 회전 끄기:
         m_isHasPrevTargetPos = false;
     }
 
@@ -830,6 +860,9 @@ void CCamera_Compre::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLa
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
     {
+        if (!m_isCollTime)
+            return;
+
         if (pDesc->pGameObject == nullptr)
             return;
 
@@ -846,6 +879,9 @@ void CCamera_Compre::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLay
     {
         if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         {
+            if (!m_isCollTime)
+                return;
+
             if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::WB))
             {
                 if (m_fLockOnDelay > 0.3f)
@@ -868,6 +904,9 @@ void CCamera_Compre::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLay
 {
    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
     {
+       if (!m_isCollTime)
+           return;
+
         CGameObject* pObj = pDesc->pGameObject;
         if (!pObj) return;
         auto it = std::remove(m_CollMonsters.begin(), m_CollMonsters.end(), pObj);
