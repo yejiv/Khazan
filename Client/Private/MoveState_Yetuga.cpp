@@ -14,10 +14,10 @@ void CMoveState_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
-
+    CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
     
     CYetuga::MONSTER_INFO Info{};
-    Info.iStateFlag = m_pGameInstance->Get_BlackBoard()->Get_Value<_uint>(pYetuga->Get_Name(), "iMovementFlag");
+    Info.iStateFlag = pBB->Get_Value<_uint>(pYetuga->Get_Name(), "iMovementFlag");
     m_iPrevMovementFlag = Info.iStateFlag;
     if (Info.iStateFlag == Info.WALK)
     {
@@ -27,13 +27,13 @@ void CMoveState_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     }
     else if (Info.iStateFlag == Info.RUN)
     {
-        m_fSpeedPerSec = m_pGameInstance->Get_BlackBoard()->Get_Value<_float>(pYetuga->Get_Name(), "RunSpeed");
+        m_fSpeedPerSec = pBB->Get_Value<_float>(pYetuga->Get_Name(), "RunSpeed");
         pModel->Set_Animation(6);
 
     }
     else if (Info.iStateFlag == Info.SPRINT)
     {
-        m_fSpeedPerSec = m_pGameInstance->Get_BlackBoard()->Get_Value<_float>(pYetuga->Get_Name(), "SprintSpeed");
+        m_fSpeedPerSec = pBB->Get_Value<_float>(pYetuga->Get_Name(), "SprintSpeed");
         pModel->Set_Animation(7);
 
     }  
@@ -43,7 +43,7 @@ void CMoveState_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 {
  
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
-    CBlackBoard* pBB = m_pGameInstance->Get_BlackBoard();
+    CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
     CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
 

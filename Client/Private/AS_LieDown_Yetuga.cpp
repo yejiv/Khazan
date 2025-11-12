@@ -24,7 +24,8 @@ void CAS_LieDown_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
     if (pModel->Play_Animation(fTimeDelta))
     {
-        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>("Yetuga", "isAttackFinished3", true);
+        CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
+        pBB->Set_Value<_bool>("Yetuga", "isAttackFinished3", true);
     }
 }
 

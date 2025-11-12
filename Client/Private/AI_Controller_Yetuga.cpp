@@ -36,12 +36,6 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 		CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(pYetuga->Get_Name(), "Target");
 		pYetuga->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK ,pTarget);
 	}
-	
-	if (m_pGameInstance->Key_Down(DIK_Y))
-	{
-		CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
-		m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pYetuga->Get_Name(), "isCrahsedWall", true);
-	}
 
 	if (m_pGameInstance->Key_Down(DIK_U))
 	{
@@ -50,7 +44,7 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 	}
 
 
-	m_pPerception->Update(pOwner, fTimeDelta);
+	m_pPerception->Update(pOwner,m_pBB,fTimeDelta);
 	_float fPrevTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
 
     if (m_pBB->Get_Value<_bool>("Yetuga", "isDetected"))
@@ -108,7 +102,7 @@ HRESULT CAI_Controller_Yetuga::Ready_Perception(CGameObject* pOwner, const AIPER
 
 HRESULT CAI_Controller_Yetuga::Ready_BlackBoard(CGameObject* pOwner)
 {
-	m_pBB = m_pGameInstance->Get_BlackBoard();
+	m_pBB = CBlackBoard::Create();
 	if (nullptr == m_pBB)
 		return E_FAIL;
 

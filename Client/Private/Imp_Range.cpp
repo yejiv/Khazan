@@ -50,6 +50,9 @@ HRESULT CImp_Range::Initialize_Clone(void* pArg)
       if (nullptr == m_pController)
           return E_FAIL;
 
+      if (nullptr != m_pController)
+          m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
+
       m_MagicBalls.resize(3, nullptr);
 
       return S_OK;
@@ -285,7 +288,7 @@ void CImp_Range::Cast_MagicBall(_uint iIndex)
         return;
     Safe_AddRef(m_MagicBalls[iIndex]);
 
-    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    _float3 vTargetDir = m_pController->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
     _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
     _float3 vNormalize{};
     XMStoreFloat3(&vNormalize, vTempVec);
@@ -364,7 +367,7 @@ void CImp_Range::Cast_Boomarang()
         return;
     Safe_AddRef(m_pBoomarang);
 
-    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    _float3 vTargetDir = m_pController->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
     _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
     _float3 vNormalize{};
     XMStoreFloat3(&vNormalize, vTempVec);
@@ -388,7 +391,8 @@ void CImp_Range::Hold_Boomarang()
 
     _float4 vTempSpawnPoint = *m_pBody->Get_BonePointEX("Weapon_L");
     _float3 vSpawnPoint = _float3(vTempSpawnPoint.x, vTempSpawnPoint.y, vTempSpawnPoint.z);
-    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    
+    _float3 vTargetDir = m_pController->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
     _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
     _float3 vNormalize{};
     XMStoreFloat3(&vNormalize, vTempVec);

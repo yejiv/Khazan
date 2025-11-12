@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 #include "Body_Imp_Melee.h"
 #include "BlackBoard.h"
+#include "AI_Controller.h"
 
 
 CAS_NonStopAttack_Imp_Melee::CAS_NonStopAttack_Imp_Melee()
@@ -23,7 +24,8 @@ void CAS_NonStopAttack_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwne
 
     if (pModel->Play_Animation(fTimeDelta))
     {
-        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pImp->Get_Name(), "isNonStopAttackFinished", true);
+        CBlackBoard* pBB = pImp->Get_Controller()->Get_BlackBoard();
+        pBB->Set_Value<_bool>(pImp->Get_Name(), "isNonStopAttackFinished", true);
     }
 }
 

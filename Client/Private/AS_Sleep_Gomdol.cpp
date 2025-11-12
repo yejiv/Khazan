@@ -25,7 +25,7 @@ void CAS_Sleep_Gomdol::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
 
     CGomdol* pGomdol = static_cast<CGomdol*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pGomdol->Get_Body()->Get_Component(TEXT("Com_Model")));
-    CBlackBoard* pBB = m_pGameInstance->Get_BlackBoard();
+    CBlackBoard* pBB = pGomdol->Get_Controller()->Get_BlackBoard();
 
     switch (m_eState)
     {

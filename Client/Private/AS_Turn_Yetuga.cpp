@@ -15,9 +15,10 @@ void CAS_Turn_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
-  
+    CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
+
     DIRECTION_INFO Info{};
-    Info.iDirFlag = m_pGameInstance->Get_BlackBoard()->Get_Value<_uint>("Yetuga", "TargetDirection");
+    Info.iDirFlag = pBB->Get_Value<_uint>("Yetuga", "TargetDirection");
 
     if (Info.Check_Flag(DIRECTION_INFO::DIR::L))
     {
@@ -54,10 +55,11 @@ void CAS_Turn_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fT
 {
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
+    CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
 
     CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
     _vector vLook = XMVector3Normalize(pOwnerTransform->Get_State(STATE::LOOK));
-    _float3 vTempDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>("Yetuga", "TargetDir");
+    _float3 vTempDir = pBB->Get_Value<_float3>("Yetuga", "TargetDir");
     _vector vTargetDir = XMVector3Normalize(XMLoadFloat3(&vTempDir));
     
     vLook = XMVectorSetY(vLook, 0.f);
@@ -85,7 +87,7 @@ void CAS_Turn_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fT
     if (fAngle < XMConvertToRadians(5.f) || pModel->Play_Animation(fTimeDelta))
     {
         // 블랙보드 갱신
-        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>("Yetuga", "isTurnFinished", true);
+        pBB->Set_Value<_bool>("Yetuga", "isTurnFinished", true);
         pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pOwner);
     }
 

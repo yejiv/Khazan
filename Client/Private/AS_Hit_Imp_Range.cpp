@@ -3,7 +3,7 @@
 #include "GameInstance.h"
 #include "Body_Imp_Range.h"
 #include "BlackBoard.h"
-
+#include "AI_Controller.h"
 CAS_Hit_Imp_Range::CAS_Hit_Imp_Range()
 {
 
@@ -13,10 +13,11 @@ void CAS_Hit_Imp_Range::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
     CImp_Range* pImp = static_cast<CImp_Range*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pImp->Get_Body()->Get_Component(TEXT("Com_Model")));
-    
-    HITREACTION eHitreaction = static_cast<HITREACTION>(m_pGameInstance->Get_BlackBoard()->Get_Value<_uint>(pImp->Get_Name(), "DamageType"));
+    CBlackBoard* pBB = pImp->Get_Controller()->Get_BlackBoard();
+
+    HITREACTION eHitreaction = static_cast<HITREACTION>(pBB->Get_Value<_uint>(pImp->Get_Name(), "DamageType"));
     DIRECTION_INFO Info{};
-    Info.iDirFlag = m_pGameInstance->Get_BlackBoard()->Get_Value<_uint>(pImp->Get_Name(), "HitDirection");
+    Info.iDirFlag = pBB->Get_Value<_uint>(pImp->Get_Name(), "HitDirection");
 
     HIT_DIR eHitDir = Convert_HitFlag(Info);
     _uint iAnimIndex = Make_AnimIndex(eHitreaction, eHitDir);
@@ -34,7 +35,8 @@ void CAS_Hit_Imp_Range::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 
     if (pModel->Play_Animation(fTimeDelta))
     {
-        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pImp->Get_Name(), "isHitFinished", true);
+        CBlackBoard* pBB = pImp->Get_Controller()->Get_BlackBoard();
+        pBB->Set_Value<_bool>(pImp->Get_Name(), "isHitFinished", true);
     }
 
 }

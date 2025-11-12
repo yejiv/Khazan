@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 #include "Body_Imp_Range.h"
 #include "BlackBoard.h"
+#include "AI_Controller.h"
 
 CAS_Dead_Imp_Range::CAS_Dead_Imp_Range()
 {
@@ -24,7 +25,9 @@ void CAS_Dead_Imp_Range::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
 
     if (pModel->Play_Animation(fTimeDelta))
     {
-        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pImp->Get_Name(), "isDeadFinished", true);
+        CBlackBoard* pBB = pImp->Get_Controller()->Get_BlackBoard();
+        //m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pImp->Get_Name(), "isDeadFinished", true);
+        pBB->Set_Value<_bool>(pImp->Get_Name(), "isDeadFinished", true);
     }
 
 

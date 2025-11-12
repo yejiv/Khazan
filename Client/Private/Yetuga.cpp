@@ -60,6 +60,10 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
     if (nullptr == m_pController)
         return E_FAIL;
 
+    if(nullptr != m_pController)
+        m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
+
+
     m_fRecoveryPerSec = 5.f;
 
     return S_OK;
@@ -67,11 +71,15 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
 
 void CYetuga::Priority_Update(_float fTimeDelta)
 {
+    CBlackBoard* pBB = m_pController->Get_BlackBoard();
     if (m_fCurrentHP <= 0.f)
-        m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isDead", true);
+    {
+        pBB->Set_Value<_bool>(m_strName, "isDead", true);
+
+    }
 
     // 범수 한테 물어보기
-    if (m_pGameInstance->Get_BlackBoard()->Get_Value<_bool>(m_strName, "isDetected"))
+    if (pBB->Get_Value<_bool>(m_strName, "isDetected"))
     {
         CBossHp::BOSSMON_UPDATE_DESC HPDesc{};
         HPDesc.isOpen = true;
@@ -241,7 +249,7 @@ void CYetuga::Pick_Stone()
         return;
     Safe_AddRef(m_pHoldStone);
 
-    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    _float3 vTargetDir = m_pController->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
     _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
     _float3 vNormalize{};
     XMStoreFloat3(&vNormalize, vTempVec);
@@ -264,7 +272,7 @@ void CYetuga::Hold_Stone()
         return;
 
     _float3 vSpawnPoint = m_pBody->Get_BonePoint("Weapon_L");
-    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    _float3 vTargetDir = m_pController->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
     _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
     _float3 vNormalize{};
     XMStoreFloat3(&vNormalize, vTempVec);
@@ -352,7 +360,7 @@ void CYetuga::Pick_Rock()
     m_isRockPlay = true;
 
     // 타겟 방향 가져오기
-    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    _float3 vTargetDir = m_pController->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
     _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
     _float3 vNormalize{};
     XMStoreFloat3(&vNormalize, vTempVec);
@@ -403,7 +411,7 @@ void CYetuga::Hold_Rock()
     _float3 vSpawnPoint{};
     XMStoreFloat3(&vSpawnPoint, vResult);
 
-    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    _float3 vTargetDir = m_pController->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
     _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
     _float3 vNormalize{};
     XMStoreFloat3(&vNormalize, vTempVec);
@@ -427,7 +435,7 @@ void CYetuga::Smash()
     _float3 vSpawnPoint = {};
 
     XMStoreFloat3(&vSpawnPoint, vSpawnTemp);
-    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    _float3 vTargetDir = m_pController->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
     _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
     _float3 vNormalize{};
     XMStoreFloat3(&vNormalize, vTempVec);
@@ -437,7 +445,7 @@ void CYetuga::Smash()
     m_pHoldRock->Reset();
 
     CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
-    CBlackBoard* BB = m_pGameInstance->Get_BlackBoard();
+    CBlackBoard* BB = m_pController->Get_BlackBoard();
     CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
     _vector vTargetLoc = pTargetTransform->Get_State(STATE::POSITION);
     _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
@@ -487,7 +495,7 @@ void CYetuga::Breath_Start()
         return;
     Safe_AddRef(m_pBreath);
 
-    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    _float3 vTargetDir = m_pController->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
     _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
     _float3 vNormalize{};
     XMStoreFloat3(&vNormalize, vTempVec);
@@ -517,7 +525,7 @@ void CYetuga::Breath_Loop()
     _float3 vSpawnPoint{};
     XMStoreFloat3(&vSpawnPoint, vTempSpawnPoint);
 
-    _float3 vTargetDir = m_pGameInstance->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    _float3 vTargetDir = m_pController->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
     _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
     _float3 vNormalize{};
     XMStoreFloat3(&vNormalize, vTempVec);
@@ -1024,11 +1032,11 @@ HRESULT CYetuga::Ready_AnimEvent()
 #pragma region JumpAttack
     pModel->Register_Event("JumpAttack_Jump", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
         { 
-            m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", true);
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", true);
         });
     pModel->Register_Event("JumpAttack_Jump", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() 
         {
-            m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", false);
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", false);
 
         });
 
@@ -1063,14 +1071,14 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("Jump_Grab_Jump", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", true);
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", true);
             m_pBody->Set_OnAttackCollision(true);
 
         });
 
     pModel->Register_Event("Jump_Grab_Jump", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", false);
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", false);
          
 
         });

@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 #include "BlackBoard.h"
 #include "Body_Imp_Melee.h"
+#include "AI_Controller.h"
 
 CAS_Sleep_Imp_Melee::CAS_Sleep_Imp_Melee()
 {
@@ -23,7 +24,8 @@ void CAS_Sleep_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 {
     CImp_Melee* pImp = static_cast<CImp_Melee*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pImp->Get_Body()->Get_Component(TEXT("Com_Model")));
-    CBlackBoard* pBB = m_pGameInstance->Get_BlackBoard();
+    CBlackBoard* pBB = pImp->Get_Controller()->Get_BlackBoard();
+
 
     switch (m_eState)
     {
