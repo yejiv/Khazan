@@ -763,6 +763,21 @@
     <Filter Include="92.AI\State\Imp_Melee\Move">
       <UniqueIdentifier>{ab152243-355f-46f6-8da5-4877ddaee2ac}</UniqueIdentifier>
     </Filter>
+    <Filter Include="92.AI\State\Imp_Melee\ChainSmash">
+      <UniqueIdentifier>{92b46441-c154-4102-9875-4662aa7961e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee\NonStopAttack">
+      <UniqueIdentifier>{a8a4e709-0031-4d42-b9e7-16bc521b7338}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee\DashAttack">
+      <UniqueIdentifier>{6c0a2971-c94a-45de-85c0-21595cb0bbb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee\Hit">
+      <UniqueIdentifier>{963405f7-4c54-47c1-97d4-82f064ae75a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee\Dead">
+      <UniqueIdentifier>{689219ac-a03d-4d2d-8f56-d3da6e31c225}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1469,6 +1484,21 @@
     <ClInclude Include="..\Public\AS_Idle_Imp_Melee.h">
       <Filter>92.AI\State\Imp_Melee\Idle</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\AS_ChainSmash_Imp_Melee.h">
+      <Filter>92.AI\State\Imp_Melee\ChainSmash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_NonStopAttack_Imp_Melee.h">
+      <Filter>92.AI\State\Imp_Melee\NonStopAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_DashAttack_Imp_Melee.h">
+      <Filter>92.AI\State\Imp_Melee\DashAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Dead_Imp_Melee.h">
+      <Filter>92.AI\State\Imp_Melee\Dead</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Hit_Imp_Melee.h">
+      <Filter>92.AI\State\Imp_Melee\Hit</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2154,6 +2184,21 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_Idle_Imp_Melee.cpp">
       <Filter>92.AI\State\Imp_Melee\Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_ChainSmash_Imp_Melee.cpp">
+      <Filter>92.AI\State\Imp_Melee\ChainSmash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_NonStopAttack_Imp_Melee.cpp">
+      <Filter>92.AI\State\Imp_Melee\NonStopAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_DashAttack_Imp_Melee.cpp">
+      <Filter>92.AI\State\Imp_Melee\DashAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Dead_Imp_Melee.cpp">
+      <Filter>92.AI\State\Imp_Melee\Dead</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Hit_Imp_Melee.cpp">
+      <Filter>92.AI\State\Imp_Melee\Hit</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

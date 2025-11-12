@@ -45,6 +45,7 @@
 
 #include "Imp_Melee.h"
 #include "Body_Imp_Melee.h"
+#include "Imp_Sword.h"
 
 #pragma endregion
 
@@ -460,7 +461,7 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
 
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_ImpSword"),
-        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Goblin_Melee/ImpSword/ImpSword.dat"))))
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Goblin_Melee/Imp_Sword/Imp_Sword.dat"))))
         return E_FAIL;
 
 #pragma endregion
@@ -587,6 +588,10 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Monster_Imp_Melee_Body"),
         CBody_Imp_Melee::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Monster_Imp_Melee_Sword"),
+        CImp_Sword::Create(m_pDevice, m_pContext))))
         return E_FAIL;
 
 #pragma endregion

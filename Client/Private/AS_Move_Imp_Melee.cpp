@@ -15,8 +15,10 @@ void CAS_Move_Imp_Melee::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CImp_Melee* pImp = static_cast<CImp_Melee*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pImp->Get_Body()->Get_Component(TEXT("Com_Model")));
     CBlackBoard* BB = m_pGameInstance->Get_BlackBoard();
-    pModel->Set_Animation(5);
+    pModel->Set_Animation(30);
+    pModel->Set_AnimationLoop(true);
     m_fSpeed = BB->Get_Value<_float>(pImp->Get_Name(), "RunSpeed");
+    
 }
 
 void CAS_Move_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -30,7 +32,7 @@ void CAS_Move_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
     CBlackBoard* BB = m_pGameInstance->Get_BlackBoard();
 
     _float fTargetDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
-    _float fAttackRange = BB->Get_Value<_float>(pImp->Get_Name(), "AttackRange");
+    _float fAttackRange = BB->Get_Value<_float>(pImp->Get_Name(), "RunRange");
 
     _float fDesireDist = fAttackRange;
     _float fMoveSpeed = m_fSpeed;

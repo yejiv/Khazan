@@ -1,7 +1,7 @@
 #include "Imp_Melee.h"
 #include "CharacterVirtual.h"
 #include "Body_Imp_Melee.h"
-//#include "Imp_Sword.h"
+#include "Imp_Sword.h"
 #include "AI_Controller_Imp_Melee.h"
 
 CImp_Melee::CImp_Melee(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -131,13 +131,14 @@ HRESULT CImp_Melee::Ready_PartObjects()
     Safe_AddRef(m_pBody);
 
 
-   /* CImp_Sword::WEAPON_DESC WeaponDesc{};
+    CImp_Sword::WEAPON_DESC WeaponDesc{};
     WeaponDesc.pOwner = this;
     WeaponDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     WeaponDesc.pOwnerTransform = m_pTransformCom;
     WeaponDesc.pSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Weapon_R");
 
-    if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Weapon"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Monster_Imp_Melee_Wand"), &WeaponDesc)))
+
+    if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Weapon"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Monster_Imp_Melee_Sword"), &WeaponDesc)))
         return E_FAIL;
 
     CPartObject* pWeapon = Find_PartObject(TEXT("Part_Weapon"));
@@ -146,7 +147,7 @@ HRESULT CImp_Melee::Ready_PartObjects()
 
     m_pWeapon = dynamic_cast<CImp_Sword*>(pWeapon);
     if (nullptr == pWeapon)
-        return E_FAIL;*/
+        return E_FAIL;
 
     return S_OK;
 }
@@ -184,7 +185,7 @@ CGameObject* CImp_Melee::Clone(void* pArg)
 void CImp_Melee::Free()
 {
     Safe_Release(m_pBody);
-    //Safe_Release(m_pWeapon);
+    Safe_Release(m_pWeapon);
 
     __super::Free();
 }
