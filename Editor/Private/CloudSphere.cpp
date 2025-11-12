@@ -41,7 +41,11 @@ void CCloudSphere::Priority_Update(_float fTimeDelta)
 
 void CCloudSphere::Update(_float fTimeDelta)
 {
-    m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(m_pGameInstance->Get_CamPosition()));
+    _float4 vOffsetPos = *m_pGameInstance->Get_CamPosition();
+    vOffsetPos.y -= 4.f;
+    m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&vOffsetPos));
+
+    m_pTransformCom->Scale(_float3(0.0001f, 0.0001f, 0.0001f));
         
     m_fTimeAcc += fTimeDelta;
 }

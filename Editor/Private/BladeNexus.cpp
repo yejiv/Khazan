@@ -155,7 +155,7 @@ HRESULT CBladeNexus::Render()
             m_pShaderCom->Bind_RawValue("g_isSpecular", &isSpecular, sizeof(_bool));
             m_pShaderCom->Bind_RawValue("g_isMetalic", &isMetalic, sizeof(_bool));
             m_pShaderCom->Bind_RawValue("g_isRoughness", &isRoughness, sizeof(_bool));
-            m_pShaderCom->Bind_RawValue("g_iTest", &iTest, sizeof(_int));
+            //m_pShaderCom->Bind_RawValue("g_iTest", &iTest, sizeof(_int));
         //}
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
