@@ -87,14 +87,14 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
         }
     }
 
-
     if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
     {
-        Yetuga_Holding_Start();
+        Start_InteractFocus(CAMERA_FORCE_DIR::FRONT, 0.8f, 0.25f, true);
     }
-    else if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
     {
-        Yetuga_Holding_End();
+        Exit_PostForceFrameRight();
+        
     }
 
     if (!m_isActive)
@@ -106,7 +106,14 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
     }
     else
     {
-        if (m_isBlendBack)
+        if (m_isForceOrbit)
+            Update_ForceOrbit(fTimeDelta);
+        else if (m_isPostForceFrameRight || m_isPostFrameHold) {
+            Update_InteractFocus(fTimeDelta);
+
+            __super::Update_PipeLines(fTimeDelta);
+        }
+        else if (m_isBlendBack)
         {
             Update_BlendBack(fTimeDelta);
         }
@@ -115,10 +122,7 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
                 Update_Free(fTimeDelta);
             else if (m_iCameraType == ENUM_CLASS(CAMERATYPE::PLAYER))
             {
-
-                if (m_isForceOrbit)
-                    Update_ForceOrbit(fTimeDelta);
-                else if (m_isCinematic)
+                if (m_isCinematic)
                     Update_Cinematic(fTimeDelta);
                 else if (m_isYetuga_Holding)
                     Update_Yetuga_Holding(fTimeDelta);
@@ -146,10 +150,13 @@ void CCamera_Compre::Update(_float fTimeDelta)
 
     if (m_iCameraType == ENUM_CLASS(CAMERATYPE::PLAYER))
     {
-        m_pBody->Update(fTimeDelta, m_pTransformCom);
-        m_pBody->Sync_Update(m_pTransformCom);
+        if (!m_isPostFrameHold && !m_isPostForceFrameRight)
+        {
+            m_pBody->Update(fTimeDelta, m_pTransformCom);
+            m_pBody->Sync_Update(m_pTransformCom);
+        }
+        
     }
-    
 }
 
 void CCamera_Compre::Late_Update(_float fTimeDelta)
@@ -404,6 +411,66 @@ void CCamera_Compre::Update_BlendBack(_float fTimeDelta)
     }
 
     return;
+}
+
+void CCamera_Compre::Update_InteractFocus(_float fTimeDelta)
+{
+    if (!m_isPostForceFrameRight || !m_pObjMatrix || !m_pTransformCom) return;
+    if (fTimeDelta <= 0.f) return;
+
+    const _vector camPos = m_pTransformCom->Get_State(STATE::POSITION);
+
+    const _vector targetWS = XMVectorSet(
+        m_pObjMatrix->_41,
+        m_pObjMatrix->_42 + m_fPostFrameEyeOffsetY,
+        m_pObjMatrix->_43, 1.f);
+
+    _vector toTarget = XMVectorSubtract(targetWS, camPos);
+    float dist = XMVectorGetX(XMVector3Length(toTarget));
+    dist = max(dist, m_fPostFrameMinDist);
+
+    // 수직 FOV → 수평 FOV
+    const float aspect = (float)m_iWinSizeX / max(1.f, (float)m_iWinSizeY);
+    const float vFov = m_fFovy; // 라디안
+    const float hFov = 2.f * atanf(tanf(vFov * 0.5f) * aspect);
+
+    // 화면 X(0.5→target) 보간: 부드럽게 오른쪽으로
+    m_fPostFrameScreenXCur = SmoothDampScalar(
+        m_fPostFrameScreenXCur,
+        m_fPostFrameScreenXTarget,
+        m_fPostFrameScreenXVel,
+        m_fPostFrameDuration,
+        fTimeDelta
+    );
+
+    const float dx = (m_fPostFrameScreenXCur - 0.5f); // 중심 대비
+    const float offsetAng = hFov * dx;
+    const float offsetLen = dist * tanf(offsetAng);
+
+    const _vector worldUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+    _vector look = XMVector3Normalize(toTarget);
+    _vector right = XMVector3Normalize(XMVector3Cross(worldUp, look));
+    _vector up = XMVector3Normalize(XMVector3Cross(look, right));
+
+    // ‘왼쪽’을 조준하면 캐릭터가 화면 ‘오른쪽’에 위치
+    _vector aimWS = XMVectorMultiplyAdd(XMVectorReplicate(-offsetLen), right, targetWS);
+
+    _vector newLook = XMVector3Normalize(XMVectorSubtract(aimWS, camPos));
+    _vector newRight = XMVector3Normalize(XMVector3Cross(worldUp, newLook));
+    _vector newUp = XMVector3Normalize(XMVector3Cross(newLook, newRight));
+
+    m_pTransformCom->Set_State(STATE::POSITION, camPos); // 위치는 유지
+    m_pTransformCom->Set_State(STATE::RIGHT, newRight);
+    m_pTransformCom->Set_State(STATE::UP, newUp);
+    m_pTransformCom->Set_State(STATE::LOOK, newLook);
+
+    // 끝났는지 판정(충분히 근접 + 속도 거의 0)
+    const bool doneX = (fabsf(m_fPostFrameScreenXCur - m_fPostFrameScreenXTarget) < 1e-3f) &&
+        (fabsf(m_fPostFrameScreenXVel) < 1e-3f);
+    if (doneX) {
+        m_isPostForceFrameRight = false; // 프레이밍 종료 (원하면 유지해도 됨)
+    }
+
 }
 
 void CCamera_Compre::LockOn_Check(_float fTimeDelta)
@@ -692,6 +759,15 @@ void CCamera_Compre::Update_ForceOrbit(_float fTimeDelta)
     {
         m_isForceOrbit = false;
         m_eForceOrbit = CAMERA_FORCE_DIR::NONE;
+
+        //if (m_isPostFramePending)
+        //{
+        //    m_isPostFramePending = false; 
+        //    m_isPostForceFrameRight = true; 
+        //    m_fPostFrameScreenXCur = 0.5f;
+        //    m_fPostFrameScreenXVel = 0.f;
+
+        //}
     }
 }
 
@@ -838,6 +914,59 @@ void CCamera_Compre::Update_Yetuga_Holding(_float fTimeDelta)
     m_pTransformCom->Set_State(STATE::RIGHT, vRight);
     m_pTransformCom->Set_State(STATE::UP, vUp);
     m_pTransformCom->Set_State(STATE::LOOK, vLook);
+}
+
+void CCamera_Compre::Start_InteractFocus(CAMERA_FORCE_DIR eDir, _float fScreenX, _float fFrameDur, _bool isHold)
+{
+    m_fPostFrameScreenXTarget = Clamp(fScreenX, 0.f, 1.f);
+    m_fPostFrameDuration = max(0.05f, fFrameDur);
+    m_isPostFrameHold = isHold;
+
+    // 1) ForceOrbit 실행
+    //Start_ForceOrbit(eDir);
+
+    //// 2) “이번 ForceOrbit이 끝나면 프레이밍 하겠다”는 의사 표시
+    //m_isPostFramePending = true;
+
+    //// 초기화
+    //m_fPostFrameScreenXCur = 0.5f;
+    //m_fPostFrameScreenXVel = 0.f;
+
+    m_isPostFramePending = false;
+    m_isPostForceFrameRight = true;
+    m_fPostFrameScreenXCur = 0.5f;
+    m_fPostFrameScreenXVel = 0.f;
+
+    // (선택) 다른 모드 비활성화
+    m_isLockOn = false;
+    m_isBlendBack = false;
+    m_isCinematic = false;
+}
+
+void CCamera_Compre::Exit_PostForceFrameRight(_bool isSmoothReturn, _float fReturnDur)
+{
+    // 1) 프레이밍/고정 상태가 아니면 할 일 없음
+    if (!m_isPostForceFrameRight && !m_isPostFrameHold)
+        return;
+
+    if (!isSmoothReturn)
+    {
+        // 즉시 해제
+        m_isPostForceFrameRight = false;
+        m_isPostFrameHold = false;
+
+        // 스냅 방지: 현 시점(yaw/pitch)을 스프링/자유 카메라 기준으로 동기화
+        SyncOrbitFromCurrentPose();
+        return;
+    }
+
+    // 2) 부드러운 복귀: target을 중앙(0.5)로 변경하여 SmoothDamp로 복귀
+    m_fPostFrameScreenXTarget = 0.5f;
+    m_fPostFrameDuration = (fReturnDur > 0.f) ? fReturnDur : m_fPostFrameDuration;
+
+    // 보간 루틴이 계속 돌도록 유지
+    m_isPostFrameHold = false;   // 고정 모드 해제
+    m_isPostForceFrameRight = true;    // 보간 활성화 (이미 true여도 상관없음)
 }
 
 CCamera_Compre::CAMERA_COMPRE_DESC CCamera_Compre::Get_Desc()

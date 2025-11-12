@@ -2293,6 +2293,7 @@ void CKhazan_Spear::BladeNexus_Event(_float fTimeDelta)
         // 플레이어 Look -> 귀검 ( 기우는거 보정하려고 이렇게 코드 넣어놨습니다. )
         BNEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
         m_pTransformCom->LookAt(XMLoadFloat4(&BNEvent.vPosition));
+        m_pClientInstance->Start_ForceOrbit(CAMERA_FORCE_DIR::FRONT);
     }
     // 귀검 가동 끝나고 UI 팝업 ( 귀검 UI 창 활성화 ) ( 플레이어는 LOOP 애니메이션 )
     else if (true == BNEvent.isBNOpened)

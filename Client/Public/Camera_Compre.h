@@ -48,6 +48,7 @@ public:
     HRESULT RayCast(_float fTimeDelta);
     HRESULT LockOn(_float fTimeDelta);
     void Update_BlendBack(_float fTimeDelta);
+    void Update_InteractFocus(_float fTimeDelta);
 
 public:
     void LockOn_Check(_float fTimeDelta);
@@ -77,6 +78,10 @@ public:
     void Yetuga_Holding_Start();
     void Yetuga_Holding_End();
     void Update_Yetuga_Holding(_float fTimeDelta);
+
+public:
+    void Start_InteractFocus(CAMERA_FORCE_DIR eDir, _float fScreenX, _float fFrameDur, _bool isHold);
+    void Exit_PostForceFrameRight(_bool isSmoothReturn = true, _float fReturnDur = 0.22f);
 
 public:
     CAMERA_COMPRE_DESC  Get_Desc();
@@ -177,12 +182,22 @@ private:
     _float   m_fYetugaYawSmoothTime = 0.10f;
     _float   m_fYetugaPitchSmoothTime = 0.10f;
 
-
-
     // 콜리전 시작 호출
     _float m_fCollTime = {};
     _bool  m_isCollTime = { false };
 
+    // 인터렉션 전용 
+    _bool  m_isPostFramePending = false; // ForceOrbit 끝나면 프레이밍 시작할지
+    _bool  m_isPostForceFrameRight = false; // 현재 프레이밍 중인지
+    _bool  m_isPostFrameHold = false; // 목표에 도착해도 계속 고정 유지
+    
+    _float m_fPostFrameScreenXTarget = 0.75f; // 캐릭터 화면 X 위치(0~1) : 0.75 = 오른쪽 75%
+    _float m_fPostFrameScreenXCur = 0.5f;  // 현재 X (보간 시작점: 중앙)
+    _float m_fPostFrameScreenXVel = 0.f;   // SmoothDamp 속도
+    
+    _float m_fPostFrameDuration = 0.25f; // 오른쪽으로 미는 보간 시간
+    _float m_fPostFrameEyeOffsetY = 1.5f;  // 캐릭터 눈높이
+    _float m_fPostFrameMinDist = 0.5f;  // 너무 가까울 때 안정화용
 
 public:
 	void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;

@@ -271,6 +271,18 @@ void CClientInstance::Clear_CameraManager(_uint iLevelIndex)
 {
 	m_pCamera_Manager->Clear(iLevelIndex);
 }
+void CClientInstance::Start_ForceOrbit(CAMERA_FORCE_DIR eForceDir)
+{
+    m_pCamera_Manager->Start_ForceOrbit(eForceDir);
+}
+void CClientInstance::ActiveCamera_InteractMove()
+{
+    m_pCamera_Manager->ActiveCamera_InteractMove();
+}
+void CClientInstance::DeactivateCamera_InteractMove()
+{
+    m_pCamera_Manager->DeactivateCamera_InteractMove();
+}
 _bool CClientInstance::Check_SpearSkill(_uint skill)
 {
 	return m_pPlayerData_Manager->Check_SpearSkill(skill);
