@@ -65,7 +65,7 @@ HRESULT CLevel_Map::Ready_Defaults()
 	CHECK_FAILED(Ready_Layer_Preview(TEXT("Layer_Preview")), E_FAIL);
 
 	CHECK_FAILED(Ready_Layer_Sky(TEXT("Layer_Sky")), E_FAIL);
-
+    
 	return S_OK;
 }
 
@@ -851,7 +851,8 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 	m_Prototypes_Inter.push_back("BladeNexus");
 	m_Prototypes_Inter.push_back("BigChest");
 	m_Prototypes_Inter.push_back("TombStone");
-	m_Prototypes_Inter.push_back("Trigger");
+    m_Prototypes_Inter.push_back("Trigger");
+    m_Prototypes_Inter.push_back("Monster");
 
 #ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
@@ -964,21 +965,36 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 					CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
 						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_TombStone"), TIME_CHANNEL::WORLD, &TombStoneDesc), );
 				}
-				else if ("Trigger" == m_Prototypes_Inter[m_iIndex_PrtInter]) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
-				{
-					CTrigger::TRIGGER_DESC TriggerDesc = {};
+                else if ("Trigger" == m_Prototypes_Inter[m_iIndex_PrtInter]) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+                {
+                    CTrigger::TRIGGER_DESC TriggerDesc = {};
 
-					TriggerDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
-					TriggerDesc.eLevel = LEVEL::MAP;
-					memcpy(TriggerDesc.szModelName, strModelTag.c_str(), sizeof(TriggerDesc.szModelName));		// 프로토타입 태그명
+                    TriggerDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    TriggerDesc.eLevel = LEVEL::MAP;
+                    memcpy(TriggerDesc.szModelName, strModelTag.c_str(), sizeof(TriggerDesc.szModelName));		// 프로토타입 태그명
 
-					XMStoreFloat4x4(&TriggerDesc.WorldMatrix, WorldMatrix);										// 행렬
+                    XMStoreFloat4x4(&TriggerDesc.WorldMatrix, WorldMatrix);										// 행렬
 
-					TriggerDesc.eInteractiveType = INTERACTIVE_TYPE::TRIGGER;										// 상호 작용 오브젝트 타입
+                    TriggerDesc.eInteractiveType = INTERACTIVE_TYPE::TRIGGER;										// 상호 작용 오브젝트 타입
 
-					CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
-						ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Trigger"), TIME_CHANNEL::WORLD, &TriggerDesc), );
-				}
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Trigger"), TIME_CHANNEL::WORLD, &TriggerDesc), );
+                }
+                else if ("Monster" == m_Prototypes_Inter[m_iIndex_PrtInter]) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+                {
+                    CMap_Spawn::SPAWN_DESC SpawnDesc = {};
+
+                    SpawnDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    SpawnDesc.eLevel = LEVEL::MAP;
+                    memcpy(SpawnDesc.szModelName, strModelTag.c_str(), sizeof(SpawnDesc.szModelName));		// 프로토타입 태그명
+
+                    XMStoreFloat4x4(&SpawnDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    SpawnDesc.eInteractiveType = INTERACTIVE_TYPE::SPAWN;										// 상호 작용 오브젝트 타입
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Spawn"), TIME_CHANNEL::WORLD, &SpawnDesc), );
+                }
 #pragma endregion
 
 				CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));
@@ -1280,16 +1296,29 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
 
 				SEPARATOR;
 			}
-			if (INTERACTIVE_TYPE::TRIGGER == m_pFixPropObj->Get_InteractiveType())
-			{
-				ImGui::Text("== TRIGGER INFORMATION ==");
-				ImGui::Text("BEFORE");
+            if (INTERACTIVE_TYPE::TRIGGER == m_pFixPropObj->Get_InteractiveType())
+            {
+                ImGui::Text("== TRIGGER INFORMATION ==");
+                ImGui::Text("BEFORE");
 
-				ImGui::Text("TRIGGER KEY : %s", m_strTriggerKey.c_str());
-				SEPARATOR;
-				ImGui::Text("FIX TRIGGER KEY");
-				ImGui::InputText("##fix_trigger_key", m_szFixTriggerKey, IM_ARRAYSIZE(m_szFixTriggerKey));
-			}
+                ImGui::Text("TRIGGER KEY : %s", m_strTriggerKey.c_str());
+                SEPARATOR;
+                ImGui::Text("FIX TRIGGER KEY");
+                ImGui::InputText("##fix_trigger_key", m_szFixTriggerKey, IM_ARRAYSIZE(m_szFixTriggerKey));
+            }
+            if (INTERACTIVE_TYPE::SPAWN == m_pFixPropObj->Get_InteractiveType())
+            {
+                ImGui::Text("== MONSTER INFORMATION ==");
+                ImGui::Text("BEFORE");
+
+                ImGui::Text("MONSTER KEY : %s", m_strMonsterKey.c_str());
+                ImGui::Text("MONSTER SUB LEVEL : %d", m_iMonsterSubLevel);
+                SEPARATOR;
+                ImGui::Text("FIX MONSTER KEY");
+                ImGui::InputText("##fix_monster_key", m_szFixMonsterKey, IM_ARRAYSIZE(m_szFixMonsterKey));
+                ImGui::Text("FIX MONSTER SUB LEVEL");
+                ImGui::InputInt("##fix_monster_sub_level", &m_iFixMonsterSubLevel);
+            }
 
 #pragma endregion
 
@@ -1299,14 +1328,23 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
 				m_pGameInstance->Clear_GizmoObject();
 #endif // _DEBUG
 
-				if (INTERACTIVE_TYPE::TRIGGER == m_pFixPropObj->Get_InteractiveType())
-				{	
-					m_strFixTriggerKey = m_szFixTriggerKey;
+                if (INTERACTIVE_TYPE::TRIGGER == m_pFixPropObj->Get_InteractiveType())
+                {
+                    m_strFixTriggerKey = m_szFixTriggerKey;
 
-					static_cast<CTrigger*>(m_pFixPropObj)->Set_TriggerKey(m_strFixTriggerKey);
+                    static_cast<CTrigger*>(m_pFixPropObj)->Set_TriggerKey(m_strFixTriggerKey);
 
-					ZeroMemory(m_szFixTriggerKey, sizeof(m_szFixTriggerKey));
-				}
+                    ZeroMemory(m_szFixTriggerKey, sizeof(m_szFixTriggerKey));
+                }
+                if (INTERACTIVE_TYPE::SPAWN == m_pFixPropObj->Get_InteractiveType())
+                {
+                    m_strFixMonsterKey = m_szFixMonsterKey;
+
+                    static_cast<CMap_Spawn*>(m_pFixPropObj)->Set_MonsterKey(m_strFixMonsterKey);
+                    static_cast<CMap_Spawn*>(m_pFixPropObj)->Set_SubLevel(m_iFixMonsterSubLevel);
+
+                    ZeroMemory(m_szFixMonsterKey, sizeof(m_szFixMonsterKey));
+                }
 
 				m_FixBaseMatrix = XMMatrixIdentity();
 
@@ -1644,27 +1682,49 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 		{
 			ImGui::Begin("PROP INTERACTIVE WINDOW", &m_isInteractiveWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
+            ImGui::Text("INTERACT OBJECT LIST");
+            ImGui::Text("SEARCH : "); SAMELINE;
+            ImGui::InputText("##search_interact_object_name", m_szSearchInteractObjectName, IM_ARRAYSIZE(m_szSearchInteractObjectName)); SAMELINE;
+
+            if (ImGui::Button("CLEAR"))
+                ZeroMemory(m_szSearchInteractObjectName, sizeof(m_szSearchInteractObjectName));
+
 			ITEMWIDTH(300.f);
 			if (ImGui::BeginListBox("##prop_interactive_list"))
 			{
 				if (m_iInteractiveListIndex >= m_InteractiveList.size())
 					m_iInteractiveListIndex = m_InteractiveList.size() - 1;
 
-				string strSearchName = m_szSearchObjectName;
-				transform(strSearchName.begin(), strSearchName.end(), strSearchName.begin(), ::tolower);		// 검색할 모델을 소문자로 변환
+                string strSearchName = m_szSearchInteractObjectName;
+                transform(strSearchName.begin(), strSearchName.end(), strSearchName.begin(), ::tolower);		// 검색할 모델을 소문자로 변환
 
 				for (_uint i = 0; i < m_InteractiveList.size(); ++i)
 				{
-					_bool isSelected = (m_iInteractiveListIndex == i);
+                    _wstring strSearchModelName = {};
+                    _wstring strDPModelName = {};
+                    if (INTERACTIVE_TYPE::SPAWN == m_InteractiveList[i]->Get_InteractiveType())
+                        strSearchModelName = AnsiToWString(static_cast<CMap_Spawn*>(m_InteractiveList[i])->Get_MonsterKey());
+                    else if (INTERACTIVE_TYPE::TRIGGER == m_InteractiveList[i]->Get_InteractiveType())
+                        strSearchModelName = AnsiToWString(static_cast<CTrigger*>(m_InteractiveList[i])->Get_TriggerKey());
+                    else
+                        strSearchModelName = m_InteractiveList[i]->Get_ModelName();
 
-					string strModelName = WStringToAnsi(m_InteractiveList[i]->Get_ModelName()) + "##id_%d";
+                    strDPModelName = strSearchModelName;
+                    transform(strSearchModelName.begin(), strSearchModelName.end(), strSearchModelName.begin(), ::tolower);		// 찾을 모델을 소문자로 변환
 
-					_char szModelName[MAX_PATH] = {};
+                    if (true == strSearchName.empty() || strSearchModelName.find(AnsiToWString(strSearchName)) != string::npos)
+                    {
+                        _bool isSelected = (m_iInteractiveListIndex == i);
 
-					sprintf_s(szModelName, strModelName.c_str(), i);
+                        string strModelName = WStringToAnsi(strDPModelName) + "##id_%d";
 
-					if (ImGui::Selectable(szModelName, isSelected))
-						m_iInteractiveListIndex = i;
+                        _char szModelName[MAX_PATH] = {};
+
+                        sprintf_s(szModelName, strModelName.c_str(), i);
+
+                        if (ImGui::Selectable(szModelName, isSelected))
+                            m_iInteractiveListIndex = i;
+                    }
 				}
 
 				ImGui::EndListBox();
@@ -1677,16 +1737,33 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 			}
 			if (0 != m_InteractiveList.size() && m_iInteractiveListIndex < m_InteractiveList.size())
 			{
+                CTransform* pTransform = static_cast<CTransform*>(m_InteractiveList[m_iInteractiveListIndex]->Get_Component(TEXT("Com_Transform")));
+                if (nullptr != pTransform)
+                {
+                    ImGui::Text("POSITION");
+                    ImGui::Text("X : %.4f", pTransform->Get_WorldMatrixPtr()->_41);
+                    ImGui::Text("Y : %.4f", pTransform->Get_WorldMatrixPtr()->_42);
+                    ImGui::Text("Z : %.4f", pTransform->Get_WorldMatrixPtr()->_43);
+                    SEPARATOR;
+                }
+
 				_wstring strModelName = m_InteractiveList[m_iInteractiveListIndex]->Get_ModelName();
 				string strTempModelName = WStringToAnsi(strModelName);
 
 				ImGui::Text("MODEL NAME : %s", strTempModelName.c_str());
 				SEPARATOR;
 
-				if (INTERACTIVE_TYPE::TRIGGER == m_InteractiveList[m_iInteractiveListIndex]->Get_InteractiveType())
-				{
-					ImGui::Text("TRIGGER KEY : %s", static_cast<CTrigger*>(m_InteractiveList[m_iInteractiveListIndex])->Get_TriggerKey().c_str());
-				}
+                if (INTERACTIVE_TYPE::TRIGGER == m_InteractiveList[m_iInteractiveListIndex]->Get_InteractiveType())
+                {
+                    ImGui::Text("TRIGGER KEY : %s", static_cast<CTrigger*>(m_InteractiveList[m_iInteractiveListIndex])->Get_TriggerKey().c_str());
+                    SEPARATOR;
+                }
+                if (INTERACTIVE_TYPE::SPAWN == m_InteractiveList[m_iInteractiveListIndex]->Get_InteractiveType())
+                {
+                    ImGui::Text("MONSTER KEY : %s", static_cast<CMap_Spawn*>(m_InteractiveList[m_iInteractiveListIndex])->Get_MonsterKey().c_str());
+                    ImGui::Text("MONSTER SUB LEVEL : %d", static_cast<CMap_Spawn*>(m_InteractiveList[m_iInteractiveListIndex])->Get_SubLevel());
+                    SEPARATOR;
+                }
 			}
 			if (0 != m_InteractiveList.size())
 			{
@@ -1724,12 +1801,20 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 							m_FixItemBox = m_ItemBox = m_pFixPropObj->Get_ItemBox();
 						}
 
-						if (INTERACTIVE_TYPE::TRIGGER == m_pFixPropObj->Get_InteractiveType())
-						{
-							CTrigger* pTrigger = static_cast<CTrigger*>(m_pFixPropObj);
-							m_strFixTriggerKey = m_strTriggerKey = pTrigger->Get_TriggerKey();
+                        if (INTERACTIVE_TYPE::TRIGGER == m_pFixPropObj->Get_InteractiveType())
+                        {
+                            CTrigger* pTrigger = static_cast<CTrigger*>(m_pFixPropObj);
+                            m_strFixTriggerKey = m_strTriggerKey = pTrigger->Get_TriggerKey();
                             memcpy(m_szFixTriggerKey, m_strFixTriggerKey.c_str(), MAX_PATH);
-						}
+                        }
+
+                        if (INTERACTIVE_TYPE::SPAWN == m_pFixPropObj->Get_InteractiveType())
+                        {
+                            CMap_Spawn* pSpawn = static_cast<CMap_Spawn*>(m_pFixPropObj);
+                            m_strFixMonsterKey = m_strMonsterKey = pSpawn->Get_MonsterKey();
+                            m_iFixMonsterSubLevel = m_iMonsterSubLevel = pSpawn->Get_SubLevel();
+                            memcpy(m_szFixMonsterKey, m_strFixMonsterKey.c_str(), MAX_PATH);
+                        }
 
 						m_isFixInteractObjectWindow = true;
 						m_eFixType = FIX_OBJECT::FIX;
@@ -1779,16 +1864,27 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 				}
 			}
 
-			if (ImGui::Button("EXPORT ONLY TRIGGER"))
-			{
-				m_strMapInfoFilePath = m_szMapInfoFilePath;
-				m_strMapInfoFilePath += m_szMapInfoFileName;
+            if (ImGui::Button("EXPORT ONLY TRIGGER"))
+            {
+                m_strMapInfoFilePath = m_szMapInfoFilePath;
+                m_strMapInfoFilePath += m_szMapInfoFileName;
 
-				if (false == Trigger_Save_Json())
-				{
-					_int a = 10;
-				}
-			}
+                if (false == Trigger_Save_Json())
+                {
+                    _int a = 10;
+                }
+            }
+
+            if (ImGui::Button("EXPORT ONLY MONSTER"))
+            {
+                m_strMapInfoFilePath = m_szMapInfoFilePath;
+                m_strMapInfoFilePath += m_szMapInfoFileName;
+
+                if (false == Monster_Save_Json())
+                {
+                    _int a = 10;
+                }
+            }
 
 			ImGui::End();
 		}
@@ -2109,6 +2205,7 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 				for (_int i = 0; i <= m_iMaxSubLevel; ++i)
 				{
 					Object_Save_Binary_ByLevel(i);
+                    Monster_Save_Json_ByLevel(i);
 				}
 			}
 			SAMELINE;
@@ -2308,13 +2405,21 @@ OutputDebugStringA("조명 정보 바이너리 불러오기 실패");
 			}
 			}
 
-			if (ImGui::Button("TRIGGER LOAD"))
-			{
-				m_strMapInfoFilePath = m_szMapInfoFilePath;
-				m_strMapInfoFilePath += m_szMapInfoFileName;
+            if (ImGui::Button("TRIGGER LOAD"))
+            {
+                m_strMapInfoFilePath = m_szMapInfoFilePath;
+                m_strMapInfoFilePath += m_szMapInfoFileName;
 
-				Trigger_objects_Load_Json();
-			}
+                Trigger_objects_Load_Json();
+            }
+
+            if (ImGui::Button("MONSTER LOAD"))
+            {
+                m_strMapInfoFilePath = m_szMapInfoFilePath;
+                m_strMapInfoFilePath += m_szMapInfoFileName;
+
+                Monster_objects_Load_Json();
+            }
 
 			ImGui::End();
 		}
@@ -2985,6 +3090,60 @@ _bool CLevel_Map::Objects_Save_Binary()
 	return true;
 }
 
+_bool CLevel_Map::Monster_Save_Json()
+{
+    _wstring strMonsterFilePath = AnsiToWString(m_strMapInfoFilePath);
+
+    strMonsterFilePath += TEXT("_spawn.json");
+
+    _uint iMonsterCnt = { 0 };
+
+    JSON_MAP_MONSTER_SPAWN_DATA MonsterJson = {};
+
+    // 트리거 야매 ( 가져오깅
+    for (auto& pProp : m_InteractiveList)
+    {
+        if (INTERACTIVE_TYPE::SPAWN == pProp->Get_InteractiveType())
+        {
+            CTransform* pTransform = static_cast<CTransform*>(pProp->Get_Component(TEXT("Com_Transform")));
+
+            pTransform->Scale(_float3(1.f, 1.f, 1.f));
+            _float4x4 WorldMatrix = *pTransform->Get_WorldMatrixPtr();
+            pTransform->Scale(_float3(0.005f, 0.005f, 0.005f));
+
+            string MonsterKey = static_cast<CMap_Spawn*>(pProp)->Get_MonsterKey();
+            _int iSubLevel = static_cast<CMap_Spawn*>(pProp)->Get_SubLevel();
+
+            FLOAT4X4_DATA matWorldData = {};
+            memcpy(&matWorldData, &WorldMatrix, sizeof(_float4x4));
+
+            MonsterJson.WorldMatrix.push_back(matWorldData);
+            MonsterJson.MonsterKey.push_back(MonsterKey);
+            MonsterJson.SubLevel.push_back(iSubLevel);
+
+            ++iMonsterCnt;
+        }
+    }
+
+    MonsterJson.iNumMonster = iMonsterCnt;
+
+    JSON j = MonsterJson;
+
+    ofstream ofs(strMonsterFilePath);
+
+    if (!ofs.is_open())
+    {
+        OutputDebugStringA("몬스터 스폰 Json 파일입출력 실패");
+    }
+
+    ofs << j.dump(4);
+    ofs.close();
+
+#pragma endregion
+
+    return true;
+}
+
 #pragma region 실질적인 사용하는 바이너리 파일
 _bool CLevel_Map::Prototype_Save_Binary()
 {
@@ -3402,9 +3561,12 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 
 		for (auto& pProp : m_InteractiveList)
 		{
-			// 트리거 타입일 경우 컨티뉴
-			if (INTERACTIVE_TYPE::TRIGGER == pProp->Get_InteractiveType())
-				continue;
+            // 트리거 타입일 경우 컨티뉴
+            if (INTERACTIVE_TYPE::TRIGGER == pProp->Get_InteractiveType())
+                continue;
+            // 몬스터 타입일 경우 컨티뉴
+            if (INTERACTIVE_TYPE::SPAWN == pProp->Get_InteractiveType())
+                continue;
 
 			// 현재 등록되어있는 상호 작용 객체 카운트 증가
 			++iObjectCnt;
@@ -3416,9 +3578,12 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 		// 단일 오브젝트 순회하면서 모델 이름 알아오기 ( Prototype 태그로 사용할 것 ) ( 상호작용은 Prototype_Component_Model_귀검, 상자, 이런식으로 간단하게 갈것 )
 		for (auto& pProp : m_InteractiveList)
 		{
-			// 트리거 타입 일 경우 패스
-			if (INTERACTIVE_TYPE::TRIGGER == pProp->Get_InteractiveType())
-				continue;
+            // 트리거 타입 일 경우 패스
+            if (INTERACTIVE_TYPE::TRIGGER == pProp->Get_InteractiveType())
+                continue;
+            // 몬스터 타입 일 경우 패스
+            if (INTERACTIVE_TYPE::SPAWN == pProp->Get_InteractiveType())
+                continue;
 
 			// 상호작용 애들은 애초에 Prototype_Component_Model_귀검, 상자, 이런식임 )
 			_wstring strPrototypeTag = pProp->Get_ModelName();
@@ -3519,6 +3684,73 @@ _bool CLevel_Map::Trigger_Save_Json()
 #pragma endregion
 
 	return true;
+}
+
+_bool CLevel_Map::Monster_Save_Json_ByLevel(_uint iLevel)
+{
+    _wstring strMonsterFilePath = AnsiToWString(m_strMapInfoFilePath);
+
+    _tchar szMonsterLevelInfoPath[MAX_PATH] = {};
+
+    wsprintf(szMonsterLevelInfoPath, TEXT("%s_LV%d_spawn.json"), strMonsterFilePath.c_str(), iLevel);
+
+    strMonsterFilePath = szMonsterLevelInfoPath;
+
+    _int iCheck = {};
+
+    for (auto& pProp : m_InteractiveList)
+    {
+        if (INTERACTIVE_TYPE::SPAWN == pProp->Get_InteractiveType() && iLevel == pProp->Get_SubLevel())
+            ++iCheck;
+    }
+    CHECK_EQUAL(0, iCheck, true);
+
+    _uint iMonsterCnt = { 0 };
+
+    JSON_MAP_MONSTER_SPAWN_DATA MonsterJson = {};
+
+    // 몬스터 스폰 야매 ( 가져오깅
+    for (auto& pProp : m_InteractiveList)
+    {
+        if (INTERACTIVE_TYPE::SPAWN == pProp->Get_InteractiveType() && iLevel == pProp->Get_SubLevel())
+        {
+            CTransform* pTransform = static_cast<CTransform*>(pProp->Get_Component(TEXT("Com_Transform")));
+
+            pTransform->Scale(_float3(1.f, 1.f, 1.f));
+            _float4x4 WorldMatrix = *pTransform->Get_WorldMatrixPtr();
+            pTransform->Scale(_float3(0.005f, 0.005f, 0.005f));
+
+            string MonsterKey = static_cast<CMap_Spawn*>(pProp)->Get_MonsterKey();
+            _int iSubLevel = static_cast<CMap_Spawn*>(pProp)->Get_SubLevel();
+
+            FLOAT4X4_DATA matWorldData = {};
+            memcpy(&matWorldData, &WorldMatrix, sizeof(_float4x4));
+
+            MonsterJson.WorldMatrix.push_back(matWorldData);
+            MonsterJson.MonsterKey.push_back(MonsterKey);
+            MonsterJson.SubLevel.push_back(iSubLevel);
+
+            ++iMonsterCnt;
+        }
+    }
+
+    MonsterJson.iNumMonster = iMonsterCnt;
+
+    JSON j = MonsterJson;
+
+    ofstream ofs(strMonsterFilePath);
+
+    if (!ofs.is_open())
+    {
+        OutputDebugStringA("몬스터 스폰 Json 파일입출력 실패");
+    }
+
+    ofs << j.dump(4);
+    ofs.close();
+
+#pragma endregion
+
+    return true;
 }
 
 _bool CLevel_Map::Object_Save_Binary_ByLevel(_uint iLevel)
@@ -3987,6 +4219,54 @@ _bool CLevel_Map::Trigger_objects_Load_Json()
 	return true;
 }
 
+_bool CLevel_Map::Monster_objects_Load_Json()
+{
+    _wstring strMonsterInfoPath = AnsiToWString(m_strMapInfoFilePath);
+
+    strMonsterInfoPath += TEXT("_spawn.json");
+
+    ifstream ifs(strMonsterInfoPath);
+
+    if (!ifs.is_open())
+    {
+        OutputDebugStringA("몬스터 제이슨 없거나 문제잇음 일단 true 반환");
+        return true;
+    }
+
+    JSON j = {};
+    ifs >> j;
+    ifs.close();
+
+    JSON_MAP_MONSTER_SPAWN_DATA MonsterData = j.get<JSON_MAP_MONSTER_SPAWN_DATA>();
+
+    _uint iNumMonster = MonsterData.iNumMonster;
+
+    for (_uint i = 0; i < iNumMonster; ++i)
+    {
+        CMap_Spawn::SPAWN_DESC SpawnDesc = {};
+
+        SpawnDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+        SpawnDesc.eLevel = LEVEL::MAP;
+        memcpy(SpawnDesc.szModelName, TEXT("Prototype_Component_Model_Monster"), sizeof(SpawnDesc.szModelName));		// 프로토타입 태그명
+        SpawnDesc.strMonsterKey = MonsterData.MonsterKey[i];
+        SpawnDesc.iSubLevel = MonsterData.SubLevel[i];
+
+        memcpy(&SpawnDesc.WorldMatrix, &MonsterData.WorldMatrix[i], sizeof(_float4x4));										// 행렬
+
+        SpawnDesc.eInteractiveType = INTERACTIVE_TYPE::SPAWN;										// 상호 작용 오브젝트 타입
+
+        CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+            ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Spawn"), TIME_CHANNEL::WORLD, &SpawnDesc), false);
+
+        CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));
+        CHECK_NULLPTR_MSG(pInteractive_Prop, TEXT("엥"), false);
+
+        m_InteractiveList.push_back(pInteractive_Prop);
+    }
+
+    return true;
+}
+
 _bool CLevel_Map::Lights_Load_Binary()
 {
 	_wstring strLightInfoPath = AnsiToWString(m_strMapInfoFilePath);
@@ -4073,17 +4353,135 @@ void CLevel_Map::Build_ModelPathCache()
 
 void CLevel_Map::MapEditor_Close_Windows()
 {
-	m_isPrototypeWindow = false;
+    m_isMainWindow = true;
+    m_isPrototypeInteractiveWindow = false;
+    m_isInteractiveWindow = false;
+    m_isFixInteractObjectWindow = false;
+    m_isSkySphereWindow = false;
+    m_isCloudSphereWindow = false;
+    m_isMultiFixWindow = false;
+    m_isInformation = false;
 
-	m_isObjectWindow = false;
+    // 2. 오브젝트 / 인터랙티브 리스트 초기화
+    m_ObjectList.clear();
+    m_InteractiveList.clear();
+    m_iObjectListIndex = {};
+    m_iInteractiveListIndex = {};
+    m_iInstObjectCnt = {};
+    m_iMapObjectCnt = {};
+    m_iBN_ID = {};
+    m_iFix_BN_ID = {};
+    m_iSubLevel = {};
+    m_iAddSubLevel = {};
+    m_iRenderFrame = {};
+    m_iRenderSubLevel = {};
+    m_iMaxSubLevel = {};
+    m_iNumInstance = 5;
+    m_fInstanceRange = 3.f;
 
-	m_isFixObjectWindow = false;
+    Safe_Release(m_pFixPropObj);
+    Safe_Release(m_pFixTransformCom);
+    m_pFixPropObj = nullptr;
+    m_pFixTransformCom = nullptr;
 
-	m_isLightSettingWindow = false;
+    // 3. 오브젝트 수정용 데이터 초기화
+    m_vFixScale = {};
+    m_vFixRotation = {};
+    m_vFixPosition = {};
+    m_FixBaseMatrix = XMMatrixIdentity();
+    m_FixWorldMatrix = {};
+    m_fAddScale = 0.005f;
+    m_isCameraPosAdd = false;
+    m_fAddPositionY = 0.f;
+    m_AddObjectProperties = {};
+    m_RenderProperties = {};
+    m_isRandomRotation = false;
+    m_isCheckRender = false;
 
-	m_isSaveObjectWindow = false;
+    // 4. 멀티픽스 관련 초기화
+    m_isMultiFix = false;
+    m_MultiFixList.clear();
+    m_MultiFixRelatives.clear();
+    m_pParentFixObject = nullptr;
+    m_iMultiFixIndex = {};
+    m_matParentBefore = {};
+    m_matOriginalParentMatrix = {};
 
-	m_isLoadObjectWindow = false;
+    // 5. 트리거 관련 초기화
+    m_strTriggerKey.clear();
+    m_strMonsterKey.clear();
+    ZeroMemory(m_szFixTriggerKey, sizeof(m_szFixTriggerKey));
+    ZeroMemory(m_szFixMonsterKey, sizeof(m_szFixMonsterKey));
+    m_strFixTriggerKey.clear();
+    m_strFixMonsterKey.clear();
+    m_iMonsterSubLevel = {};
+    m_iFixMonsterSubLevel = {};
+
+    // 6. 맵 저장/로드 관련 초기화
+    ZeroMemory(m_szMapInfoFilePath, sizeof(m_szMapInfoFilePath));
+    strcpy_s(m_szMapInfoFilePath, "../../Client/Bin/Data/Map/MapData/");
+    m_strMapInfoFilePath.clear();
+
+    ZeroMemory(m_szMapInfoFileName, sizeof(m_szMapInfoFileName));
+    m_strMapInfoFileName.clear();
+    m_isLoaded = false;
+
+    // 7. 라이트 관련 초기화
+    m_LightDesc = {};
+    m_FixLightDesc = {};
+    ZeroMemory(m_szLightTag, sizeof(m_szLightTag));
+    ZeroMemory(m_szFixLightTag, sizeof(m_szFixLightTag));
+    m_strLightTag.clear();
+    m_strFixLightTag.clear();
+    m_LightTags.clear();
+    m_iLightTagIndex = {};
+    m_isAddLight = false;
+    m_isFixLight = false;
+    m_isFindFixLight = false;
+    m_isAddLightPoint = false;
+    m_vLightPoint = {};
+
+    // 8. FBX 변환 관련
+    ZeroMemory(m_szFolderName, sizeof(m_szFolderName));
+    m_iPropPrototype = 0;
+    ZeroMemory(m_szPropFolder, sizeof(m_szPropFolder));
+    m_isAnim = false;
+    ZeroMemory(m_szDataSavePath, sizeof(m_szDataSavePath));
+    strcpy_s(m_szDataSavePath, "../../Client/Bin/Data/Map/");
+    m_strDataSavePath.clear();
+
+    // 9. 프로토타입 리스트 초기화
+    m_Prototypes_Obj.clear();
+    m_Prototypes_Inter.clear();
+    m_iIndex_PrtObj = {};
+    m_iIndex_PrtInter = {};
+    ZeroMemory(m_szSearchPrototypeName, sizeof(m_szSearchPrototypeName));
+    ZeroMemory(m_szSearchObjectName, sizeof(m_szSearchObjectName));
+    ZeroMemory(m_szSearchInteractObjectName, sizeof(m_szSearchInteractObjectName));
+
+    // 10. 픽킹 및 거리 관련 변수 초기화
+    m_vPickedPos = {};
+    m_vDistancePos[0] = {};
+    m_vDistancePos[1] = {};
+    m_fDistance = 0.f;
+    m_isRenderOption = false;
+    m_isObjectListView = true;
+    m_isActiveShortCutKey = false;
+
+    // 11. Sky / Cloud Sphere 초기화
+    m_FixSkyDesc = {};
+    m_FixCloudDesc = {};
+    Safe_Release(m_pSkySphere);
+    Safe_Release(m_pCloudSphere);
+    m_pSkySphere = nullptr;
+    m_pCloudSphere = nullptr;
+
+    // 12. 캐시 정리
+    m_ModelPathCache.clear();
+    m_ModelPathCache.rehash(0);
+
+    // 13. 부모 클래스 정리
+    __super::Free();
 }
 
 CLevel_Map* CLevel_Map::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -4104,4 +4502,7 @@ void CLevel_Map::Free()
 	MapEditor_Close_Windows();
 
 	__super::Free();
+
+    m_ModelPathCache.clear();
+    m_ModelPathCache.rehash(0);
 }

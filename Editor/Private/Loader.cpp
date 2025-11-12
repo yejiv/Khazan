@@ -230,9 +230,17 @@ HRESULT CLoader::Loading_For_Map_Level()
 
 #pragma region 트리거 모델 원형 ( 야매? )
 
-	/* Prototype_Component_Model_Trigger */
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_Trigger"),
-		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Base/Cube/Cube.dat")), E_FAIL);
+    /* Prototype_Component_Model_Trigger */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_Trigger"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Base/Cube/Cube.dat")), E_FAIL);
+
+#pragma endregion
+
+#pragma region 몬스터 모델 원형 ( 야매 )
+
+    /* Prototype_Component_Model_Monster */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_Monster"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Symbol/WP_TDL_Statue_Stone_002_b/WP_TDL_Statue_Stone_002_b.dat")), E_FAIL);
 
 #pragma endregion
 
@@ -297,10 +305,15 @@ HRESULT CLoader::Loading_For_Map_Level()
 	/* Prototype_GameObject_Prop_TombStone */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_TombStone"),
 		CTombStone::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
 
-	/* Prototype_GameObject_Prop_Trigger */
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Trigger"),
-		CTrigger::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma region 게임오브젝트 원형 로딩 ( 트리거 및 몬스터 )
+    /* Prototype_GameObject_Prop_Trigger */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Trigger"),
+        CTrigger::Create(m_pDevice, m_pContext)), E_FAIL);
+    /* Prototype_GameObject_Prop_Spawn */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Spawn"),
+        CMap_Spawn::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 #pragma endregion
