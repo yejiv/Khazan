@@ -19,12 +19,6 @@ public:
         END,
     };
 
-    enum class PLAYER_STATE {
-        HP,         //체력
-        STAMINA,    //스태미나
-        
-        END};
-
 private:
     CPlayer_Manager();
     virtual ~CPlayer_Manager() = default;
