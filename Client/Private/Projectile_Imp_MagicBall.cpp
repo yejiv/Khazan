@@ -31,6 +31,8 @@ HRESULT CProjectile_Imp_MagicBall::Initialize_Clone(void* pArg)
 
     m_pModelCom->Set_Animation(0);
 
+    //m_pTransformCom->Scale(_float3(0.5f, 0.5f, 0.5f));
+
     return S_OK;
 }
 
@@ -43,17 +45,18 @@ void CProjectile_Imp_MagicBall::Update(_float fTimeDelta)
 {
     m_fCurrentTime += fTimeDelta;
 
+    if (m_fCurrentTime >= m_fLifeTime)
+    {
+        // 풀로 돌아가고
+        m_isDead = true;
+        // Active 끄고
+        m_isActive = false;
+        m_isCrashed = true;
+        m_pBody->Collision_Active(false);
+    }
+
     if (m_isActive)
     {
-        if (m_fCurrentTime >= m_fLifeTime)
-        {
-            // 풀로 돌아가고
-            m_isDead = true;
-            // Active 끄고
-            m_isActive = false;
-            m_isCrashed = true;
-            m_pBody->Collision_Active(false);
-        }
         m_pTransformCom->Go_Straight(fTimeDelta);
         // 콜라이더를 갱신시킨다.
         if (!m_isCrashed)
@@ -119,7 +122,7 @@ void CProjectile_Imp_MagicBall::Reset()
     m_pTransformCom->Set_State(STATE::UP, vUp);
     m_pTransformCom->Set_State(STATE::LOOK, vDir);
 
-    m_pTransformCom->Scale(_float3(0.5f, 0.5f, 0.5f));
+    //m_pTransformCom->Scale(_float3(0.5f, 0.5f, 0.5f));
 
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&m_vSpawnPoint), 1.f));
 }
@@ -166,7 +169,6 @@ HRESULT CProjectile_Imp_MagicBall::Ready_Colliders()
     BodyDesc.eQuality = EMotionQuality::LinearCast;
     BodyDesc.eShapeType = SHAPE::SPHERE;
     BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
-    BodyDesc.isCollideKinematicVsNonDynamic = true;
 
     XMStoreFloat3(&BodyDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
     XMStoreFloat4(&BodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());

@@ -23,7 +23,7 @@
 #include "BlackBoard.h"
 #include "SSAO.h"
 #include "Octree.h"
-#include "Blur.h"
+#include "GaussianBlur.h"
 #include "Fog.h"
 #include "Vignette.h"
 #include "Sequence_Manager.h"
@@ -32,6 +32,7 @@
 #include "Effect_Manager.h"
 #include "Distortion.h"
 #include "LUT.h"
+#include "RadialBlur.h"
 
 #ifdef _DEBUG
 #include <crtdbg.h>
@@ -165,13 +166,13 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pBlackBoard)
 		return E_FAIL;
 
-	// 임시
+#pragma region RENDERING_RESOURCES
 	m_pSSAO = CSSAO::Create(*ppDevice, *ppContext);
 	if (nullptr == m_pSSAO)
 		return E_FAIL;
 
-	m_pBlur = CBlur::Create(*ppDevice, *ppContext);
-	if (nullptr == m_pBlur)
+	m_pGaussianBlur = CGaussianBlur::Create(*ppDevice, *ppContext);
+	if (nullptr == m_pGaussianBlur)
 		return E_FAIL;
 
 	m_pFog = CFog::Create(*ppDevice, *ppContext);
@@ -189,6 +190,11 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
     m_pLUT = CLUT::Create(*ppDevice, *ppContext);
     if (nullptr == m_pLUT)
         return E_FAIL;
+
+    m_pRadialBlur = CRadialBlur::Create();
+    if (nullptr == m_pRadialBlur)
+        return E_FAIL;
+#pragma endregion
 
 	m_pSequence_Manager = CSequence_Manager::Create();
 	if (nullptr == m_pSequence_Manager)
@@ -547,6 +553,11 @@ void CGameInstance::Set_OutlineConfig(OUTLINE_CONFIG Config)
 void CGameInstance::Set_SpecularPower(_float2 vPower)
 {
     m_pRenderer->Set_SpecularPower(vPower);
+}
+
+void CGameInstance::Set_EnableRadialBlur(_bool isEnable)
+{
+    m_pRenderer->Set_EnableRadialBlur(isEnable);
 }
 
 #pragma endregion
@@ -1191,18 +1202,18 @@ HRESULT CGameInstance::Bind_SSAO_ShaderResources(CShader* pShader)
 }
 #pragma endregion
 
-#pragma region BLUR
-HRESULT CGameInstance::Bind_Blur_ShaderResources(CShader* pShader)
+#pragma region GAUSSIANBLUR
+HRESULT CGameInstance::Bind_GaussianBlur_ShaderResources(CShader* pShader)
 {
-	return m_pBlur->Bind_Blur_ShaderResources(pShader);
+	return m_pGaussianBlur->Bind_GaussianBlur_ShaderResources(pShader);
 }
-GAUSSIAN_BLUR_CONFIG CGameInstance::Get_BlurConfig()
+GAUSSIAN_BLUR_CONFIG CGameInstance::Get_GaussianBlurConfig()
 {
-	return m_pBlur->Get_BlurConfig();
+	return m_pGaussianBlur->Get_GaussianBlurConfig();
 }
-void CGameInstance::Set_BlurConfig(GAUSSIAN_BLUR_CONFIG Config)
+void CGameInstance::Set_GaussianBlurConfig(GAUSSIAN_BLUR_CONFIG Config)
 {
-	m_pBlur->Set_BlurConfig(Config);
+	m_pGaussianBlur->Set_GaussianBlurConfig(Config);
 }
 #pragma endregion
 
@@ -1261,9 +1272,9 @@ void CGameInstance::Set_VignetteConfig(VIGNETTE_CONFIG Config)
 {
 	m_pVignette->Set_VignetteConfig(Config);
 }
-void CGameInstance::Start_VignetteAnimation(_float fDuration, VIGNETTE_CONFIG::ANIMMODE eMode)
+void CGameInstance::Start_VignetteAnimation(_float fDuration, VIGNETTE_CONFIG Config)
 {
-	m_pVignette->Start_VignetteAnimation(fDuration, eMode);
+	m_pVignette->Start_VignetteAnimation(fDuration, Config);
 }
 #pragma endregion
 
@@ -1379,6 +1390,7 @@ ID3D11ShaderResourceView* CGameInstance::Get_DistortionNoiseTexture(_uint iTextu
 {
 	return m_pDistortion->Get_DistortionNoiseTexture(iTextureIndex);
 }
+
 #pragma endregion
 
 #pragma region DISTORTION
@@ -1391,6 +1403,35 @@ HRESULT CGameInstance::Bind_LUT_ShaderResources(CShader* pShader)
 void CGameInstance::Set_EnableLUT(_bool isEnable)
 {
     m_pLUT->Set_EnableLUT(isEnable);
+}
+
+void CGameInstance::Set_LUTIntensity(_float fIntensity)
+{
+    m_pLUT->Set_LUTIntensity(fIntensity);
+}
+
+#pragma endregion
+
+#pragma region RADIAL_BLUR
+
+HRESULT CGameInstance::Bind_RadialBlur_ShaderResources(CShader* pShader)
+{
+    return m_pRadialBlur->Bind_RadialBlur_ShaderResources(pShader);
+}
+
+RADIAL_BLUR_DESC CGameInstance::Get_RadialBlurDesc()
+{
+    return m_pRadialBlur->Get_RadialBlurDesc();
+}
+
+void CGameInstance::Set_RadialBlurDesc(const RADIAL_BLUR_DESC& Desc)
+{
+    m_pRadialBlur->Set_RadialBlurDesc(Desc);
+}
+
+void CGameInstance::Set_RadialBlurCenter(_fvector vCenter)
+{
+    m_pRadialBlur->Set_RadialBlurCenter(vCenter);
 }
 
 #pragma endregion
@@ -1447,11 +1488,12 @@ void CGameInstance::Release_Engine()
 
 	Safe_Release(m_pOctree);
 	
+    Safe_Release(m_pRadialBlur);
     Safe_Release(m_pLUT);
 	Safe_Release(m_pDistortion);
 	Safe_Release(m_pVignette);
 	Safe_Release(m_pFog);
-	Safe_Release(m_pBlur);
+	Safe_Release(m_pGaussianBlur);
 	Safe_Release(m_pSSAO);
 	Safe_Release(m_pShadow);
 

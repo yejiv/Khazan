@@ -1,455 +1,679 @@
-//#include "AI_Controller_Imp_Melee.h"
-//#include "Imp_Melee.h"
-//#include "FSM_Imp_Melee.h"
-//#include "BehaviorTree.h"
-//#include "GameInstance.h"
-//#include "Perception.h"
-//
-//
-//CAI_Controller_Imp_Melee::CAI_Controller_Imp_Melee()
-//{
-//}
-//
-//HRESULT CAI_Controller_Imp_Melee::Initialize(CCreature* pOwner)
-//{
-//    CImp_Melee* pImp = static_cast<CImp_Melee*>(pOwner);
-//    if (FAILED(__super::Initialize(pImp, pImp->Get_Name())))
-//        return E_FAIL;
-//
-//    m_pFSM = CFSM_Imp_Melee::Create(pOwner);
-//    if (nullptr == m_pFSM)
-//        return E_FAIL;
-//
-//    m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
-//
-//    return S_OK;
-//
-//}
-//
-//void CAI_Controller_Imp_Melee::Update(CGameObject* pOwner, _float fTimeDelta)
-//{
-//    m_pPerception->Update(pOwner, fTimeDelta);
-//
-//    _float fPervTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
-//    if (m_pBB->Get_Value<_bool>(m_strMonstertag, "isDetected"))
-//        m_pBB->Set_Value<_float>(m_strMonstertag, "CurrentTime", fPervTime + fTimeDelta);
-//    else
-//        m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
-//
-//    m_pBT->Update();
-//
-//    m_pFSM->Update(pOwner, fTimeDelta);
-//}
-//
-//HRESULT CAI_Controller_Imp_Melee::Ready_Perception(CGameObject* pOwner, const AIPERCEPTION_DATA& Desc)
-//{
-//    m_pPerception = CPerception::Create(Desc, ENUM_CLASS(TEAM::GOBLIN));
-//    if (nullptr == m_pPerception)
-//        return E_FAIL;
-//
-//    m_pPerception->Set_PerceptionCallBack([this, pOwner, Desc](CGameObject* pTarget, const STIMULUS& Stim)
-//        {
-//            for (_uint i = 0; i < Desc.CallbackTags.size(); i++)
-//            {
-//                string strCallbackTag = Desc.CallbackTags[i];
-//                auto cb = GetCallBackPerception(pOwner, strCallbackTag);
-//                cb(pTarget, Stim);
-//            }
-//        });
-//
-//    return S_OK;
-//
-//}
-//
-//HRESULT CAI_Controller_Imp_Melee::Ready_BlackBoard(CGameObject* pOwner)
-//{
-//    m_pBB = m_pGameInstance->Get_BlackBoard();
-//    if (nullptr == m_pBB)
-//        return E_FAIL;
-//
-//    return S_OK;
-//}
-//
-//HRESULT CAI_Controller_Imp_Melee::Ready_BehaviorTree()
-//{
-//    if (nullptr == m_pBB)
-//        return E_FAIL;
-//
-//    m_pBT->Set_BlackBoard(m_pBB);
-//
-//    if (nullptr == m_pBT)
-//        return E_FAIL;
-//
-//    return S_OK;
-//}
-//
-//CONDITION CAI_Controller_Imp_Melee::GetCallbackCondition(CGameObject* pOwner, const string& name)
-//{
-//    CImp_Melee* pImp = static_cast<CImp_Melee*>(pOwner);
-//    if (nullptr == pImp)
-//        return nullptr;
-//
-//#pragma region SLEEP SEQUENCE
-//
-//    if ("Sleep" == name)
-//    {
-//        return [pImp](CBlackBoard* BB)->_bool
-//            {
-//
-//                if (!BB->Get_Value<_bool>(pImp->Get_Name(), "isSleep"))
-//                {
-//
-//                    return true;
-//                }
-//                else
-//                {
-//                    return false;
-//                }
-//            };
-//    }
-//
-//#pragma endregion
-//    //
-//    //
-//#pragma region ATTACK SELECTOR
-//
-//
-//   /* else if ("Boomarang" == name)
-//    {
-//        return [pImp](CBlackBoard* BB)->_bool
-//            {
-//                cout << "FrontAttack Condition" << endl;
-//
-//                _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
-//                _float fAttackRanage = BB->Get_Value<_float>(pImp->Get_Name(), "BoomarangRange");
-//
-//                if (fDist <= fAttackRanage && !BB->Get_Value<_bool>(pImp->Get_Name(), "isBoomarang"))
-//                {
-//                    return true;
-//                }
-//                else
-//                    return false;
-//            };
-//    }*/
-//
-//    else if ("Magic" == name)
-//    {
-//        return [pImp](CBlackBoard* BB)->_bool
-//            {
-//                _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
-//                _float fAttackRanage = BB->Get_Value<_float>(pImp->Get_Name(), "MagicRange");
-//
-//                if (fDist <= fAttackRanage &&
-//                    !BB->Get_Value<_bool>(pImp->Get_Name(), "isMagic") &&
-//                    !BB->Get_Value<_bool>(pImp->Get_Name(), "isMagicFinished"))
-//                {
-//
-//                    return true;
-//                }
-//                else
-//                    return false;
-//            };
-//    }
-//
-//
-//
-//#pragma endregion
-//
-//
-//#pragma region NON ATTACK SELECTOR
-//
-//    if ("Move" == name)
-//    {
-//        return [pImp](CBlackBoard* BB)->_bool
-//            {
-//                cout << "MoveCondition" << endl;
-//
-//                _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
-//                _float fChaseRange = BB->Get_Value<_float>(pImp->Get_Name(), "ChaseRange");
-//
-//                if (fDist <= fChaseRange)
-//                    return true;
-//                else
-//                    return false;
-//            };
-//    }
-//#pragma endregion
-//
-//    return nullptr;
-//}
-//
-//ACTION CAI_Controller_Imp_Melee::GetCallbackAction(CGameObject* pOwner, const string& name)
-//{
-//    CImp_Melee* pImp = static_cast<CImp_Melee*>(pOwner);
-//    if (nullptr == pImp)
-//        return nullptr;
-//
-//
-//#pragma region SLEEP SEQUENCE
-//
-//    if ("Sleep" == name)
-//    {
-//        return [pImp](CBlackBoard* BB)->BTNODESTATE
-//            {
-//                if (BB->Get_Value<_bool>(pImp->Get_Name(), "isSleepFinished"))
-//                {
-//
-//                    return BTNODESTATE::SUCCESS;
-//                }
-//                BB->Set_Value<_bool>(pImp->Get_Name(), "isSleep", true);
-//                pImp->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(IMPRANGE_STATE::SLEEP), pImp);
-//                return BTNODESTATE::RUNNING;
-//            };
-//    }
-//
-//#pragma endregion
-//
-//#pragma region ATTACK SELECTOR
-//
-//    /*  else if ("Boomarang" == name)
-//      {
-//          return [pImp](CBlackBoard* BB)-> BTNODESTATE
-//              {
-//
-//                  if (BB->Get_Value<_bool>(pImp->Get_Name(), "isBoomarangFinished"))
-//                  {
-//                      return BTNODESTATE::SUCCESS;
-//                  }
-//
-//                  BB->Set_Value(pImp->Get_Name(), "isBoomarangAttack", true);
-//
-//                  pImp->Get_Controller()->Get_State_Machine()->
-//                      Change_State(ENUM_CLASS(IMPRANGE_STATE::BOOMARANG), pImp);
-//                  return BTNODESTATE::RUNNING;
-//
-//              };
-//      }*/
-//
-//    else if ("Magic" == name)
-//    {
-//        return [pImp](CBlackBoard* BB)-> BTNODESTATE
-//            {
-//
-//                if (BB->Get_Value<_bool>(pImp->Get_Name(), "isMagicFinished"))
-//                    return BTNODESTATE::SUCCESS;
-//
-//                pImp->Get_Controller()->Get_State_Machine()->
-//                    Change_State(ENUM_CLASS(IMPRANGE_STATE::MAGIC), pImp);
-//
-//                BB->Set_Value(pImp->Get_Name(), "isMagic", true);
-//                BB->Set_Value(pImp->Get_Name(), "isMagicFinished", false);
-//
-//                return BTNODESTATE::RUNNING;
-//
-//            };
-//    }
-//
-//#pragma endregion
-//
-//
-//#pragma region NON ATTACK SELECTOR
-//
-//    if ("Move" == name)
-//    {
-//        return [pImp](CBlackBoard* BB)->BTNODESTATE
-//            {
-//                pImp->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(IMPRANGE_STATE::MOVE), pImp);
-//
-//                _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
-//                _float fAttackRange = BB->Get_Value<_float>(pImp->Get_Name(), "MagicRange");
-//
-//                if (fDist <= fAttackRange - 0.5f)
-//                    return BTNODESTATE::SUCCESS;
-//
-//                return BTNODESTATE::RUNNING;
-//            };
-//    }
-//
-//    if ("Idle" == name)
-//    {
-//        return [pImp](CBlackBoard* BB)->BTNODESTATE
-//            {
-//                _bool isDamaged = BB->Get_Value<_bool>(pImp->Get_Name(), "DamageInterrupt");
-//                if (isDamaged)
-//                    return BTNODESTATE::FAILURE;
-//
-//                pImp->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(IMPRANGE_STATE::IDLE), pImp);
-//                cout << "IDLERunning" << endl;
-//
-//                return BTNODESTATE::RUNNING;
-//            };
-//    }
-//
-//
-//#pragma endregion
-//
-//    return nullptr;
-//}
-//
-//TERMINATE CAI_Controller_Imp_Melee::GetCallbackTeminate(CGameObject* pOwner, const string& name)
-//{
-//    CImp_Melee* pImp = static_cast<CImp_Melee*>(pOwner);
-//    if (nullptr == pImp)
-//        return nullptr;
-//
-//#pragma region SLEEP SEQUENCE
-//
-//    if ("Sleep" == name)
-//    {
-//        return [pImp](CBlackBoard* BB, BTNODESTATE eState)
-//            {
-//                if (nullptr == BB)
-//                    return;
-//
-//                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
-//                    BB->Set_Value<_bool>(pImp->Get_Name(), "isSleepFinished", false);
-//            };
-//    }
-//
-//#pragma endregion
-//
-//#pragma region ATTACK SELECTOR
-//
-//    /* else if ("Boomarang" == name)
-//     {
-//         return [pImp](CBlackBoard* BB, BTNODESTATE eState)
-//         {
-//             if (nullptr == BB)
-//                 return;
-//
-//             if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
-//             {
-//                 BB->Set_Value<_bool>(pImp->Get_Name(), "isBoomarang", false);
-//                 BB->Set_Value<_bool>(pImp->Get_Name(), "isBoomarangFinished", false);
-//             }
-//         };
-//     }*/
-//
-//
-//    else if ("Magic" == name)
-//    {
-//        return [pImp](CBlackBoard* BB, BTNODESTATE eState)
-//            {
-//                if (nullptr == BB)
-//                    return;
-//
-//                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
-//                {
-//                    BB->Set_Value<_bool>(pImp->Get_Name(), "isMagic", false);
-//                    BB->Set_Value<_bool>(pImp->Get_Name(), "isMagicFinished", false);
-//                }
-//            };
-//    }
-//
-//#pragma endregion
-//
-//
-//#pragma region NON ATTACK SELECTOR
-//
-//
-//    else if ("Move" == name)
-//    {
-//        return [pImp](CBlackBoard* BB, BTNODESTATE eState)
-//            {
-//                if (nullptr == BB)
-//                    return;
-//
-//                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
-//                {
-//                    BB->Set_Value<_uint>(pImp->Get_Name(), "isMovementFlag", 0);
-//                    pImp->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(IMPRANGE_STATE::IDLE), pImp);
-//                }
-//            };
-//    }
-//    return nullptr;
-//
-//#pragma endregion
-//}
-//
-//INTERRUPTCONDITION CAI_Controller_Imp_Melee::GetCallbackInterruptCondition(CGameObject* pOwner, const string& name)
-//{
-//    CImp_Melee* pImp = static_cast<CImp_Melee*>(pOwner);
-//    if (nullptr == pImp)
-//        return nullptr;
-//
-//    if ("Root_Interrupt" == name)
-//    {
-//        return [pImp](CBlackBoard* BB)
-//            {
-//                _bool isDead = BB->Get_Value<_bool>(pImp->Get_Name(), "isDead");
-//                _bool isDamaged = BB->Get_Value<_bool>(pImp->Get_Name(), "DamageInterrupt");
-//                _bool isGroggy = BB->Get_Value<_bool>(pImp->Get_Name(), "isGroogy");
-//
-//                if (isDead) return true;
-//
-//                if (isGroggy) return true;
-//
-//                if (isDamaged) return true;
-//
-//                return false;
-//            };
-//    }
-//    return nullptr;
-//}
-//
-//PERCEPTIONCALLBACK CAI_Controller_Imp_Melee::GetCallBackPerception(CGameObject* pOwner, const string& name)
-//{
-//    if (name == "Target")
-//    {
-//        return [this](CGameObject* pTarget, const STIMULUS& Stim)
-//            {
-//                if (Stim.eType == SENSETYPE::SIGHT)
-//                {
-//                    if (Stim.bSensed)
-//                    {
-//                        m_pBB->Set_Value(m_strMonstertag, "Target", pTarget);
-//                        m_pBB->Set_Value(m_strMonstertag, "isDetected", true);
-//                    }
-//                    else
-//                    {
-//                        m_pBB->Set_Value(m_strMonstertag, "isDetected", false);
-//                    }
-//                }
-//            };
-//    }
-//
-//    else if (name == "DamageInterrupt")
-//    {
-//        return[this](CGameObject* pTarget, const STIMULUS& Stim)
-//            {
-//                if (Stim.eType == SENSETYPE::DAMAGE)
-//                {
-//
-//                    if (Stim.bSensed)
-//                    {
-//                        m_pBB->Set_Value<_uint>(m_strMonstertag, "DamageType", Stim.iDamageType);
-//                        m_pBB->Set_Value(m_strMonstertag, "DamageInterrupt", true);
-//                        m_pBB->Set_Value(m_strMonstertag, "DamageACC", m_pPerception->Get_DamageAcc());
-//                    }
-//                    else
-//                    {
-//                        m_pBB->Set_Value(m_strMonstertag, "DamageACC", m_pPerception->Get_DamageAcc());
-//                    }
-//                }
-//            };
-//    };
-//
-//    return nullptr;
-//}
-//
-//CAI_Controller_Imp_Melee* CAI_Controller_Imp_Melee::Create(CCreature* pOwner)
-//{
-//    CAI_Controller_Imp_Melee* pInstance = new CAI_Controller_Imp_Melee();
-//    if (FAILED(pInstance->Initialize(pOwner)))
-//    {
-//        Safe_Release(pInstance);
-//        MSG_BOX(TEXT("Failed Create : CAI_Controller_Imp_Melee"));
-//    }
-//
-//    return pInstance;
-//}
-//
-//void CAI_Controller_Imp_Melee::Free()
-//{
-//    __super::Free();
-//}
+#include "AI_Controller_Imp_Melee.h"
+#include "Imp_Melee.h"
+#include "FSM_Imp_Melee.h"
+#include "BehaviorTree.h"
+#include "GameInstance.h"
+#include "Perception.h"
+
+
+CAI_Controller_Imp_Melee::CAI_Controller_Imp_Melee()
+{
+}
+
+HRESULT CAI_Controller_Imp_Melee::Initialize(CCreature* pOwner)
+{
+    CImp_Melee* pImp = static_cast<CImp_Melee*>(pOwner);
+
+    if (FAILED(__super::Initialize(pImp, pImp->Get_Name())))
+        return E_FAIL;
+
+    m_pFSM = CFSM_Imp_Melee::Create(pOwner);
+    if (nullptr == m_pFSM)
+        return E_FAIL;
+
+    m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
+
+    return S_OK;
+
+}
+
+void CAI_Controller_Imp_Melee::Update(CGameObject* pOwner, _float fTimeDelta)
+{
+    if (m_pGameInstance->Key_Down(DIK_T))
+    {
+        CImp_Melee* pImp = static_cast<CImp_Melee*>(pOwner);
+        CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(pImp->Get_Name(), "Target");
+        pImp->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK, pTarget);
+    }
+
+
+    m_pPerception->Update(pOwner,m_pBB,fTimeDelta);
+
+    _float fPervTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
+    if (m_pBB->Get_Value<_bool>(m_strMonstertag, "isDetected"))
+        m_pBB->Set_Value<_float>(m_strMonstertag, "CurrentTime", fPervTime + fTimeDelta);
+    else
+        m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
+
+    m_pBT->Update();
+
+    m_pFSM->Update(pOwner, fTimeDelta);
+}
+
+HRESULT CAI_Controller_Imp_Melee::Ready_Perception(CGameObject* pOwner, const AIPERCEPTION_DATA& Desc)
+{
+    m_pPerception = CPerception::Create(Desc, ENUM_CLASS(TEAM::GOBLIN));
+    if (nullptr == m_pPerception)
+        return E_FAIL;
+
+    m_pPerception->Set_PerceptionCallBack([this, pOwner, Desc](CGameObject* pTarget, const STIMULUS& Stim)
+        {
+            for (_uint i = 0; i < Desc.CallbackTags.size(); i++)
+            {
+                string strCallbackTag = Desc.CallbackTags[i];
+                auto cb = GetCallBackPerception(pOwner, strCallbackTag);
+                cb(pTarget, Stim);
+            }
+        });
+
+    return S_OK;
+
+}
+
+HRESULT CAI_Controller_Imp_Melee::Ready_BlackBoard(CGameObject* pOwner)
+{
+    //m_pBB = m_pGameInstance->Get_BlackBoard();
+    m_pBB = CBlackBoard::Create();
+    if (nullptr == m_pBB)
+        return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CAI_Controller_Imp_Melee::Ready_BehaviorTree()
+{
+    if (nullptr == m_pBB)
+        return E_FAIL;
+
+    m_pBT->Set_BlackBoard(m_pBB);
+
+    if (nullptr == m_pBT)
+        return E_FAIL;
+
+    return S_OK;
+}
+
+CONDITION CAI_Controller_Imp_Melee::GetCallbackCondition(CGameObject* pOwner, const string& name)
+{
+    CImp_Melee* pImp = static_cast<CImp_Melee*>(pOwner);
+    if (nullptr == pImp)
+        return nullptr;
+
+
+
+    if ("Dead" == name)
+    {
+        return [pImp](CBlackBoard* BB)->_bool
+            {
+
+                BB->Set_Value<_bool>(pImp->Get_Name(), "DamageInterrupt", false);
+
+                if (pImp->Get_CurrentHP() <= 0.f)
+                {
+                    /* static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1001);
+                     static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1002);
+                     static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1003);*/
+                    return true;
+
+                }
+                else
+                    return false;
+            };
+    }
+
+
+
+#pragma region HIT SEQUENCE
+
+
+    if ("Hit" == name)
+    {
+        return [pImp](CBlackBoard* BB) -> _bool
+            {
+
+                BB->Set_Value<_bool>(pImp->Get_Name(), "DamageInterrupt", false);
+
+                if (!BB->Get_Value<_bool>(pImp->Get_Name(), "isHit"))
+                {
+                    // DamageType 체크
+                    HITREACTION eHitRection = static_cast<HITREACTION>(
+                        BB->Get_Value<_uint>(pImp->Get_Name(), "DamageType"));
+
+                    if (eHitRection == HITREACTION::KNOCKBACK_WEAK ||
+                        eHitRection == HITREACTION::KNOCKBACK_NORMAL ||
+                        eHitRection == HITREACTION::KNOCKBACK_STRONG)
+                    {
+                        // 조건 통과 (부수효과 없음)
+                        return true;
+                    }
+                    return false;
+                }
+                return false;
+            };
+    }
+
+
+#pragma endregion
+
+
+
+#pragma region SLEEP SEQUENCE
+
+    if ("Sleep" == name)
+    {
+        return [pImp](CBlackBoard* BB)->_bool
+            {
+
+                if (!BB->Get_Value<_bool>(pImp->Get_Name(), "isSleep"))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            };
+    }
+
+#pragma endregion
+  
+#pragma region ATTACK SELECTOR
+
+   
+  /*  else if ("DashAttack" == name)
+    {
+        return [pImp](CBlackBoard* BB)->_bool
+            {
+                cout << "DashAttack Condition" << endl;
+
+                _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
+                _float fAttackRanage = BB->Get_Value<_float>(pImp->Get_Name(), "DashAttackRange");
+
+                if (fDist <= fAttackRanage && !BB->Get_Value<_bool>(pImp->Get_Name(), "isDashAttack"))
+                {
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }*/
+
+    else if ("ChainSmash" == name)
+    {
+        return [pImp](CBlackBoard* BB)->_bool
+            {
+                cout << "ChainSmash Condition" << endl;
+
+                _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
+                _float fAttackRanage = BB->Get_Value<_float>(pImp->Get_Name(), "AttackRange");
+
+                if (fDist <= fAttackRanage && !BB->Get_Value<_bool>(pImp->Get_Name(), "isChainSmash"))
+                {
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }
+
+    else if ("NonStopAttack" == name)
+    {
+        return [pImp](CBlackBoard* BB)->_bool
+            {
+
+                cout << "NonStopAttack Condition" << endl;
+
+                _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
+                _float fAttackRanage = BB->Get_Value<_float>(pImp->Get_Name(), "AttackRange");
+
+                if (fDist <= fAttackRanage &&
+                    !BB->Get_Value<_bool>(pImp->Get_Name(), "isNonStopAttack") &&
+                    !BB->Get_Value<_bool>(pImp->Get_Name(), "isNonStopAttackFinished"))
+                {
+
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }
+
+#pragma endregion
+
+
+#pragma region NON ATTACK SELECTOR
+
+    if ("Move" == name)
+    {
+        return [pImp](CBlackBoard* BB)->_bool
+            {
+                cout << "MoveCondition" << endl;
+
+                _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
+                _float fChaseRange = BB->Get_Value<_float>(pImp->Get_Name(), "ChaseRange");
+
+                if (fDist <= fChaseRange)
+                    return true;
+                else
+                    return false;
+            };
+    }
+#pragma endregion
+
+    return nullptr;
+}
+
+ACTION CAI_Controller_Imp_Melee::GetCallbackAction(CGameObject* pOwner, const string& name)
+{
+    CImp_Melee* pImp = static_cast<CImp_Melee*>(pOwner);
+    if (nullptr == pImp)
+        return nullptr;
+
+
+    if ("Dead" == name)
+    {
+
+        return [pImp](CBlackBoard* BB)-> BTNODESTATE
+            {
+                if (BB->Get_Value<_bool>(pImp->Get_Name(), "isDeadFinished"))
+                {
+
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pImp->Get_Name(), "isDead", true);
+
+                pImp->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(IMPMELEE_STATE::DEAD), pImp);
+                return BTNODESTATE::RUNNING;
+            };
+    }
+
+
+
+#pragma region HIT SEQUENCE
+
+    if ("Hit" == name)
+    {
+        return [pImp](CBlackBoard* BB)->BTNODESTATE
+            {
+                // 애니 종료 플래그가 true면 SUCCESS
+                if (true == BB->Get_Value<_bool>(pImp->Get_Name(), "isHitFinished"))
+                {
+                    BB->Set_Value<_bool>(pImp->Get_Name(), "DamageInterrupt", false);
+                    return BTNODESTATE::SUCCESS;
+                }
+                cout << "Hit RUNNING" << endl;
+                BB->Set_Value(pImp->Get_Name(), "isHit", true);
+                BB->Set_Value(pImp->Get_Name(), "isHitFinished", false);
+
+                pImp->Get_Controller()->Get_State_Machine()->Change_State(
+                    ENUM_CLASS(IMPMELEE_STATE::HIT), pImp);
+
+                return BTNODESTATE::RUNNING;
+
+            };
+    }
+
+
+
+#pragma region SLEEP SEQUENCE
+
+    if ("Sleep" == name)
+    {
+        return [pImp](CBlackBoard* BB)->BTNODESTATE
+            {
+                if (BB->Get_Value<_bool>(pImp->Get_Name(), "isSleepFinished"))
+                {
+                    return BTNODESTATE::SUCCESS;
+                }
+                BB->Set_Value<_bool>(pImp->Get_Name(), "isSleep", true);
+                pImp->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(IMPMELEE_STATE::SLEEP), pImp);
+                return BTNODESTATE::RUNNING;
+            };
+    }
+
+#pragma endregion
+
+#pragma region ATTACK SELECTOR
+
+
+   /* else if ("DashAttack" == name)
+    {
+        return [pImp](CBlackBoard* BB)-> BTNODESTATE
+            {
+                _bool isDamaged = BB->Get_Value<_bool>(pImp->Get_Name(), "DamageInterrupt");
+                if (isDamaged)
+                    return BTNODESTATE::SUCCESS;
+
+                if (BB->Get_Value<_bool>(pImp->Get_Name(), "isDashAttackFinished"))
+                {
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pImp->Get_Name(), "isDashAttack", true);
+
+                pImp->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(IMPMELEE_STATE::DASHATTACK), pImp);
+                return BTNODESTATE::RUNNING;
+
+            };
+    }*/
+
+
+    else if ("NonStopAttack" == name)
+    {
+        return [pImp](CBlackBoard* BB)-> BTNODESTATE
+            {
+                _bool isDamaged = BB->Get_Value<_bool>(pImp->Get_Name(), "DamageInterrupt");
+                if (isDamaged)
+                    return BTNODESTATE::SUCCESS;
+
+                if (BB->Get_Value<_bool>(pImp->Get_Name(), "isNonStopAttackFinished"))
+                {
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pImp->Get_Name(), "isNonStopAttack", true);
+
+                pImp->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(IMPMELEE_STATE::HIT2), pImp);
+                return BTNODESTATE::RUNNING;
+
+            };
+    }
+
+    else if ("ChainSmash" == name)
+    {
+        return [pImp](CBlackBoard* BB)-> BTNODESTATE
+            {
+
+                _bool isDamaged = BB->Get_Value<_bool>(pImp->Get_Name(), "DamageInterrupt");
+                if (isDamaged)
+                    return BTNODESTATE::SUCCESS;
+
+                if (BB->Get_Value<_bool>(pImp->Get_Name(), "isChainSmashFinished"))
+                    return BTNODESTATE::SUCCESS;
+
+                pImp->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(IMPMELEE_STATE::HIT3), pImp);
+
+                BB->Set_Value(pImp->Get_Name(), "isChainSmash", true);
+                BB->Set_Value(pImp->Get_Name(), "isChainSmashFinished", false);
+
+                return BTNODESTATE::RUNNING;
+
+            };
+    }
+
+
+#pragma endregion
+
+
+#pragma region NON ATTACK SELECTOR
+
+    if ("Move" == name)
+    {
+        return [pImp](CBlackBoard* BB)->BTNODESTATE
+            {
+                _bool isDamaged = BB->Get_Value<_bool>(pImp->Get_Name(), "DamageInterrupt");
+                if (isDamaged)
+                    return BTNODESTATE::SUCCESS;
+
+                pImp->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(IMPMELEE_STATE::MOVE), pImp);
+
+                _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
+                _float fAttackRange = BB->Get_Value<_float>(pImp->Get_Name(), "AttackRange");
+
+                if (fDist <= fAttackRange - 1.f)
+                    return BTNODESTATE::SUCCESS;
+
+                return BTNODESTATE::RUNNING;
+            };
+    }
+
+    if ("Idle" == name)
+    {
+        return [pImp](CBlackBoard* BB)->BTNODESTATE
+            {
+                _bool isDamaged = BB->Get_Value<_bool>(pImp->Get_Name(), "DamageInterrupt");
+                if (isDamaged)
+                    return BTNODESTATE::FAILURE;
+
+                pImp->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(IMPMELEE_STATE::IDLE), pImp);
+                cout << "IDLERunning" << endl;
+
+                return BTNODESTATE::RUNNING;
+            };
+    }
+
+
+#pragma endregion
+
+    return nullptr;
+}
+
+TERMINATE CAI_Controller_Imp_Melee::GetCallbackTeminate(CGameObject* pOwner, const string& name)
+{
+    CImp_Melee* pImp = static_cast<CImp_Melee*>(pOwner);
+    if (nullptr == pImp)
+        return nullptr;
+
+
+
+    if ("Dead" == name)
+    {
+        return [pImp](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+
+                    BB->Set_Value<_bool>(pImp->Get_Name(), "isDeadFinished", false);
+                }
+            };
+    }
+
+
+
+#pragma region HIT SEQUENCE
+
+    if ("Hit" == name)
+    {
+        return [pImp](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pImp->Get_Name(), "isHit", false);
+                    BB->Set_Value<_bool>(pImp->Get_Name(), "isHitFinished", false);
+                    BB->Set_Value<_uint>(pImp->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                }
+            };
+    }
+
+#pragma endregion
+
+
+#pragma region SLEEP SEQUENCE
+
+    if ("Sleep" == name)
+    {
+        return [pImp](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                    BB->Set_Value<_bool>(pImp->Get_Name(), "isSleepFinished", false);
+            };
+    }
+
+#pragma endregion
+
+#pragma region ATTACK SELECTOR
+
+
+  /*  else if ("DashAttack" == name)
+    {
+        return [pImp](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pImp->Get_Name(), "isDashAttackAttack", false);
+                    BB->Set_Value<_bool>(pImp->Get_Name(), "isDashAttackFinished", false);
+                }
+            };
+    }*/
+
+
+
+
+    else if ("NonStopAttack" == name)
+    {
+        return [pImp](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pImp->Get_Name(), "isNonStopAttack", false);
+                    BB->Set_Value<_bool>(pImp->Get_Name(), "isNonStopAttackFinished", false);
+                }
+            };
+    }
+
+
+    else if ("ChainSmash" == name)
+    {
+        return [pImp](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pImp->Get_Name(), "isChainSmash", false);
+                    BB->Set_Value<_bool>(pImp->Get_Name(), "isChainSmashFinished", false);
+                }
+            };
+    }
+
+#pragma endregion
+
+
+#pragma region NON ATTACK SELECTOR
+
+
+    else if ("Move" == name)
+    {
+        return [pImp](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_uint>(pImp->Get_Name(), "isMovementFlag", 0);
+                    pImp->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(IMPMELEE_STATE::IDLE), pImp);
+                }
+            };
+    }
+    return nullptr;
+
+#pragma endregion
+}
+
+INTERRUPTCONDITION CAI_Controller_Imp_Melee::GetCallbackInterruptCondition(CGameObject* pOwner, const string& name)
+{
+    CImp_Melee* pImp = static_cast<CImp_Melee*>(pOwner);
+    if (nullptr == pImp)
+        return nullptr;
+
+    if ("Root_Interrupt" == name)
+    {
+        return [pImp](CBlackBoard* BB)
+            {
+                _bool isDead = BB->Get_Value<_bool>(pImp->Get_Name(), "isDead");
+                _bool isDamaged = BB->Get_Value<_bool>(pImp->Get_Name(), "DamageInterrupt");
+                _bool isGroggy = BB->Get_Value<_bool>(pImp->Get_Name(), "isGroogy");
+
+                if (isDead) return true;
+                if (isDamaged) return true;
+
+                return false;
+            };
+    }
+    return nullptr;
+}
+
+PERCEPTIONCALLBACK CAI_Controller_Imp_Melee::GetCallBackPerception(CGameObject* pOwner, const string& name)
+{
+    if (name == "Target")
+    {
+        return [this](CGameObject* pTarget, const STIMULUS& Stim)
+            {
+                if (Stim.eType == SENSETYPE::SIGHT)
+                {
+                    if (Stim.bSensed)
+                    {
+                        m_pBB->Set_Value(m_strMonstertag, "Target", pTarget);
+                        m_pBB->Set_Value(m_strMonstertag, "isDetected", true);
+                    }
+                    else
+                    {
+                        m_pBB->Set_Value(m_strMonstertag, "isDetected", false);
+                    }
+                }
+            };
+    }
+
+    else if (name == "DamageInterrupt")
+    {
+        return[this](CGameObject* pTarget, const STIMULUS& Stim)
+            {
+                if (Stim.eType == SENSETYPE::DAMAGE)
+                {
+
+                    if (Stim.bSensed)
+                    {
+                        m_pBB->Set_Value<_uint>(m_strMonstertag, "DamageType", Stim.iDamageType);
+                        m_pBB->Set_Value(m_strMonstertag, "DamageInterrupt", true);
+                        m_pBB->Set_Value(m_strMonstertag, "DamageACC", m_pPerception->Get_DamageAcc());
+                    }
+                    else
+                    {
+                        m_pBB->Set_Value(m_strMonstertag, "DamageACC", m_pPerception->Get_DamageAcc());
+                    }
+                }
+            };
+    };
+
+    return nullptr;
+
+}
+
+CAI_Controller_Imp_Melee* CAI_Controller_Imp_Melee::Create(CCreature* pOwner)
+{
+    CAI_Controller_Imp_Melee* pInstance = new CAI_Controller_Imp_Melee();
+    if (FAILED(pInstance->Initialize(pOwner)))
+    {
+        Safe_Release(pInstance);
+        MSG_BOX(TEXT("Failed Create : CAI_Controller_Imp_Melee"));
+    }
+
+    return pInstance;
+}
+
+void CAI_Controller_Imp_Melee::Free()
+{
+    __super::Free();
+}

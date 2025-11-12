@@ -277,7 +277,11 @@ void CBladeNexus::Input_Interact_Event(_float fTimeDelta)
 
     if (true == isPressing)
     {
+        m_pGuide->Update_Visible(false);
+
         EventInteractType InteractType = {};
+
+        InteractType.eInteractType = INTERACTIVE_TYPE::CHECKPOINT;
 
         InteractType.eState = EventInteractType::BEGIN;
 
@@ -293,6 +297,14 @@ void CBladeNexus::Input_Interact_Event(_float fTimeDelta)
 
 void CBladeNexus::Animation_Update(_float fTimeDelta)
 {
+    if (ANIM_STATE::BEFORE_IDLE != m_eAnimState && ANIM_STATE::BEFORE_START != m_eAnimState)
+    {
+        _vector vPos = XMLoadFloat4(m_pGameInstance->Get_CamPosition());
+        vPos.m128_f32[1] = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+
+        m_pTransformCom->LookAt_Lerp(vPos, fTimeDelta, 2.f);
+    }
+
     if (false == m_isCollision)
         return;
 

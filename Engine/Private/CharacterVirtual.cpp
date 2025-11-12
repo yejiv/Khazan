@@ -1,7 +1,14 @@
 #include "CharacterVirtual.h"
 #include "GameInstance.h"
 
-inline _float Smoothstep(_float t) { return t * t * (3.f - 2.f * t); }
+// ===== 유틸 =====
+static inline bool IsFiniteVec3(const JPH::Vec3& v) {
+    return std::isfinite(v.GetX()) && std::isfinite(v.GetY()) && std::isfinite(v.GetZ());
+}
+static inline float Clamp01(float x) { return x < 0.f ? 0.f : (x > 1.f ? 1.f : x); }
+
+// 필요 시 매끄러움 유지용 (원하면 생략해도 됨)
+static inline float Smoothstep(float a) { a = Clamp01(a); return a * a * (3.f - 2.f * a); }
 
 CCharacterVirtual::CCharacterVirtual(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CRigidBody { pDevice, pContext }
@@ -87,6 +94,7 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 		m_pBodyInterface->SetObjectLayer(m_BodyId, m_iNumObjectLayer);
 		m_pBodyInterface->SetIsSensor(m_BodyId, false);
 		m_pBodyInterface->SetUserData(m_BodyId, static_cast<uint64>(reinterpret_cast<uintptr_t>(pDesc->pCollisionDesc)));
+        m_pBodyInterface->SetMotionQuality(m_BodyId, EMotionQuality::LinearCast);
 		m_pGameInstance->Push_BodyDesc(m_BodyId, static_cast<uint64>(reinterpret_cast<uintptr_t>(pDesc->pCollisionDesc)));
 	}
 	
@@ -114,245 +122,231 @@ void CCharacterVirtual::Sync_Update(CTransform* pTransform)
 
 void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vector vGravity)
 {
-	m_fAcc += fTimeDelta;
+    if (!pTransform) return;
 
-	while (m_fAcc >= fFixedDt)
-	{
-		if (!m_pCharVir) return;
+    // ---- 고정 스텝 유효성 보장 ----
+    if (!(m_fFixedDt > 0.f) || !std::isfinite(m_fFixedDt))
+        m_fFixedDt = 1.f / 60.f;
 
-		m_vGravity = LoadVec3(vGravity);
+    // 델타/누적 상한 (프레임 드랍 대비)
+    if (!std::isfinite(fTimeDelta) || fTimeDelta < 0.f) fTimeDelta = 0.f;
+    m_fAcc += fTimeDelta;
+    if (m_fAcc > m_fMaxLagClamp) m_fAcc = m_fMaxLagClamp;
 
-		const auto ground_state = m_pCharVir->GetGroundState();
-		const bool onGround =
-			(ground_state == JPH::CharacterVirtual::EGroundState::OnGround);
+    // 캐릭터 핸들이 없으면 보간 생략 (포즈만 유지)
+    if (!m_pCharVir) return;
 
-		// === 1) m_vVelocity를 기준으로 중력 / 지면 보정 ===
+    // 중력 세팅 (Vec3에 IsFinite 없음 → 구성요소 검사)
+    JPH::Vec3 g;
+    {
+        float gx = XMVectorGetX(vGravity);
+        float gy = XMVectorGetY(vGravity);
+        float gz = XMVectorGetZ(vGravity);
+        if (std::isfinite(gx) && std::isfinite(gy) && std::isfinite(gz))
+            g = JPH::Vec3(gx, gy, gz);
+        else
+            g = JPH::Vec3(0, -980.f, 0);
+    }
+    m_vGravity = g;
 
-		if (!onGround)
-		{
-			m_vVelocity += m_vGravity * fFixedDt;
+    // ===== 고정 스텝 수행 (상한 적용) =====
+    int numSteps = (int)floor(m_fAcc / m_fFixedDt);
+    if (numSteps > m_iMaxSubsteps) numSteps = m_iMaxSubsteps;
+    m_fAcc -= numSteps * m_fFixedDt;
 
-			JPH::Vec3 horiz = m_vVelocity;
-			horiz.SetY(0.0f);
+    for (int i = 0; i < numSteps; ++i)
+        StepFixed(m_fFixedDt);
 
-			_float speed = horiz.Length();
-			if (speed > 0.0f)
-			{
-				_float delta = m_fAirLoss * fFixedDt;
-
-				_float newSpeed = max(0.0f, speed - delta);
-				horiz *= (newSpeed / speed);
-			}
-
-			m_vVelocity.SetX(horiz.GetX());
-			m_vVelocity.SetZ(horiz.GetZ());
-
-			// 3) (선택) 터미널 속도 제한
-			float maxFallSpeed = -50.0f;               // 원하는 값
-			if (m_vVelocity.GetY() < maxFallSpeed)
-				m_vVelocity.SetY(maxFallSpeed);
-		}
-		else
-		{
-			if (m_vVelocity.GetY() < 0.0f)
-				m_vVelocity.SetY(0.0f);
-
-			JPH::Vec3 horiz = m_vVelocity;
-			horiz.SetY(0.0f);
-
-			_float speed = horiz.Length();
-			if (speed > 0.0f)
-			{
-				_float decel = m_fLoss * fFixedDt; // 초당 25씩 줄이기 (튜닝)
-				_float newSpeed = max(0.0f, speed - decel);
-				horiz *= (newSpeed / speed);
-			}
-
-			m_vVelocity.SetX(horiz.GetX());
-			m_vVelocity.SetZ(horiz.GetZ());
-		}
-
-		JPH::Vec3 final_vel = m_vVelocity;
-
-		if (onGround)
-		{
-			JPH::Vec3 ground_vel = m_pCharVir->GetGroundVelocity();
-			ground_vel.SetY(0.0f);
-			final_vel += ground_vel;
-		}
-
-		m_pCharVir->SetLinearVelocity(final_vel);
-
-		// === 3) 충돌 / 계단 / 경사 처리 ===
-		m_pGameInstance->CharVir_ExtendedUpdate(
-			fFixedDt,
-			m_pCharVir,
-			m_vGravity,
-			m_iNumObjectLayer,
-			m_pBodyFilter,
-			m_pShapeFilter,
-			m_tEXUpdateSetting
-		);
-
-		m_tPrevPose = m_tCurrPose;
-		m_tCurrPose.vPos = m_pCharVir->GetPosition();
-		m_tCurrPose.vRot = m_pCharVir->GetRotation();
-		m_tCurrPose.vLinvel = final_vel; 
-
-
-		if (onGround && m_vVelocity.GetY() < 0.0f)
-			m_vVelocity.SetY(0.0f);
-
-		if (m_isFirstSync)
-		{
-			m_tPrevPose = m_tCurrPose;
-			m_isFirstSync = false;
-		}
-
-		m_fAcc -= fFixedDt;
-	}
-
-	// === 5) 보간해서 Transform에 적용 ===
-	const _float fAlpha = (fFixedDt > 0.f) ? (m_fAcc / fFixedDt) : 1.f;
-	const _float fSmoothAlpha = Smoothstep(fAlpha);
-
-	JPH::RVec3 ipos = LerpRVec3(m_tPrevPose.vPos, m_tCurrPose.vPos, fSmoothAlpha);
-	JPH::Quat  irot = SlerpQuat(m_tPrevPose.vRot, m_tCurrPose.vRot, fSmoothAlpha);
-
-	_vector vPos = XMVectorSet((float)ipos.GetX(), (float)ipos.GetY(), (float)ipos.GetZ(), 1.f);
-	_vector vRot = XMVectorSet(irot.GetX(), irot.GetY(), irot.GetZ(), irot.GetW());
-
-	pTransform->Set_State(STATE::POSITION, vPos);
-	pTransform->Set_Quaternion(vRot);
+    // ===== 보간 (렌더로 못 옮긴다고 했으니 여기서 1회만) =====
+    float alpha = (m_fFixedDt > 0.f) ? (m_fAcc / m_fFixedDt) : 1.f;
+    // alpha = Smoothstep(alpha); // 부드럽게 하고 싶으면 주석 해제
+    ApplyInterpolatedPose(alpha, pTransform);
 }
 
 void CCharacterVirtual::Sync_Update(_matrix WorldMatirx)
 {
-	_vector vScale, vRotation, vTranslation;
+    _vector vScale, vRotation, vTranslation;
 
-	XMMatrixDecompose(&vScale, &vRotation, &vTranslation, WorldMatirx);
+    XMMatrixDecompose(&vScale, &vRotation, &vTranslation, WorldMatirx);
 
-	Set_PosRot(vTranslation, vRotation);
+    Set_PosRot(vTranslation, vRotation);
 }
 
 void CCharacterVirtual::Update(_float fTimeDelta, _vector& outQuatRotation, _vector& outPosition, _vector vGravity)
 {
-	m_fAcc += fTimeDelta;
+    // ---- 고정 스텝 유효성 보장 ----
+    if (!(m_fFixedDt > 0.f) || !std::isfinite(m_fFixedDt))
+        m_fFixedDt = 1.f / 60.f;
 
-	while (m_fAcc >= fFixedDt)
-	{
-		if (!m_pCharVir) return;
+    // 델타/누적 상한 (프레임 드랍 대비)
+    if (!std::isfinite(fTimeDelta) || fTimeDelta < 0.f) fTimeDelta = 0.f;
+    m_fAcc += fTimeDelta;
+    if (m_fAcc > m_fMaxLagClamp) m_fAcc = m_fMaxLagClamp;
 
-		m_vGravity = LoadVec3(vGravity);
+    // 캐릭터 핸들이 없으면 보간 생략 (포즈만 유지)
+    if (!m_pCharVir) return;
 
-		const auto ground_state = m_pCharVir->GetGroundState();
-		const bool onGround =
-			(ground_state == JPH::CharacterVirtual::EGroundState::OnGround);
+    // 중력 세팅 (Vec3에 IsFinite 없음 → 구성요소 검사)
+    JPH::Vec3 g;
+    {
+        float gx = XMVectorGetX(vGravity);
+        float gy = XMVectorGetY(vGravity);
+        float gz = XMVectorGetZ(vGravity);
+        if (std::isfinite(gx) && std::isfinite(gy) && std::isfinite(gz))
+            g = JPH::Vec3(gx, gy, gz);
+        else
+            g = JPH::Vec3(0, -980.f, 0);
+    }
+    m_vGravity = g;
 
-		// === 1) m_vVelocity를 기준으로 중력 / 지면 보정 ===
+    // ===== 고정 스텝 수행 (상한 적용) =====
+    int numSteps = (int)floor(m_fAcc / m_fFixedDt);
+    if (numSteps > m_iMaxSubsteps) numSteps = m_iMaxSubsteps;
+    m_fAcc -= numSteps * m_fFixedDt;
 
-		if (!onGround)
-		{
-			m_vVelocity += m_vGravity * fFixedDt;
+    for (int i = 0; i < numSteps; ++i)
+        StepFixed(m_fFixedDt);
 
-			JPH::Vec3 horiz = m_vVelocity;
-			horiz.SetY(0.0f);
-
-			_float speed = horiz.Length();
-			if (speed > 0.0f)
-			{
-				_float delta = m_fAirLoss * fFixedDt;
-
-				_float newSpeed = max(0.0f, speed - delta);
-				horiz *= (newSpeed / speed);
-			}
-
-			m_vVelocity.SetX(horiz.GetX());
-			m_vVelocity.SetZ(horiz.GetZ());
-
-			// 3) (선택) 터미널 속도 제한
-			float maxFallSpeed = -50.0f;               // 원하는 값
-			if (m_vVelocity.GetY() < maxFallSpeed)
-				m_vVelocity.SetY(maxFallSpeed);
-		}
-		else
-		{
-			if (m_vVelocity.GetY() < 0.0f)
-				m_vVelocity.SetY(0.0f);
-
-			JPH::Vec3 horiz = m_vVelocity;
-			horiz.SetY(0.0f);
-
-			_float speed = horiz.Length();
-			if (speed > 0.0f)
-			{
-				_float decel = m_fLoss * fFixedDt; // 초당 25씩 줄이기 (튜닝)
-				_float newSpeed = max(0.0f, speed - decel);
-				horiz *= (newSpeed / speed);
-			}
-
-			m_vVelocity.SetX(horiz.GetX());
-			m_vVelocity.SetZ(horiz.GetZ());
-		}
-
-		JPH::Vec3 final_vel = m_vVelocity;
-
-		if (onGround)
-		{
-			JPH::Vec3 ground_vel = m_pCharVir->GetGroundVelocity();
-			ground_vel.SetY(0.0f);
-			final_vel += ground_vel;
-		}
-
-		m_pCharVir->SetLinearVelocity(final_vel);
-
-		// === 3) 충돌 / 계단 / 경사 처리 ===
-		m_pGameInstance->CharVir_ExtendedUpdate(
-			fFixedDt,
-			m_pCharVir,
-			m_vGravity,
-			m_iNumObjectLayer,
-			m_pBodyFilter,
-			m_pShapeFilter,
-			m_tEXUpdateSetting
-		);
-
-		m_tPrevPose = m_tCurrPose;
-		m_tCurrPose.vPos = m_pCharVir->GetPosition();
-		m_tCurrPose.vRot = m_pCharVir->GetRotation();
-		m_tCurrPose.vLinvel = final_vel;
-
-
-		if (onGround && m_vVelocity.GetY() < 0.0f)
-			m_vVelocity.SetY(0.0f);
-
-		if (m_isFirstSync)
-		{
-			m_tPrevPose = m_tCurrPose;
-			m_isFirstSync = false;
-		}
-
-		m_fAcc -= fFixedDt;
-	}
-
-	// === 5) 보간해서 Transform에 적용 ===
-	const _float fAlpha = (fFixedDt > 0.f) ? (m_fAcc / fFixedDt) : 1.f;
-	const _float fSmoothAlpha = Smoothstep(fAlpha);
-
-	JPH::RVec3 ipos = LerpRVec3(m_tPrevPose.vPos, m_tCurrPose.vPos, fSmoothAlpha);
-	JPH::Quat  irot = SlerpQuat(m_tPrevPose.vRot, m_tCurrPose.vRot, fSmoothAlpha);
-
-	_vector vPos = XMVectorSet((float)ipos.GetX(), (float)ipos.GetY(), (float)ipos.GetZ(), 1.f);
-	_vector vRot = XMVectorSet(irot.GetX(), irot.GetY(), irot.GetZ(), irot.GetW());
-
-	outPosition = vPos;
-	outQuatRotation = vRot;
+    // ===== 보간 (렌더로 못 옮긴다고 했으니 여기서 1회만) =====
+    float alpha = (m_fFixedDt > 0.f) ? (m_fAcc / m_fFixedDt) : 1.f;
+    // alpha = Smoothstep(alpha); // 부드럽게 하고 싶으면 주석 해제
+    ApplyInterpolatedPose(alpha, outQuatRotation, outPosition);
 }
 
 void CCharacterVirtual::Set_PosRot(_vector vPos, _vector vRot)
 {
 	m_pCharVir->SetPosition(LoadVec3(vPos));
 	m_pCharVir->SetRotation(LoadQuat(vRot));
+}
+
+void CCharacterVirtual::StepFixed(_float fTimeDelta)
+{
+    // 이전 포즈 백업
+    m_tPrevPose = m_tCurrPose;
+
+    // 접지 상태 1회만 쿼리
+    const auto ground_state = m_pCharVir->GetGroundState();
+    const _bool onGround = (ground_state == JPH::CharacterVirtual::EGroundState::OnGround);
+
+    // ===== 속도 적분 & 감쇠(가벼운 지수 감쇠) =====
+    if (!onGround)
+    {
+        // 중력
+        m_vVelocity += m_vGravity * fTimeDelta;
+
+        // XZ 지수 감쇠
+        const _float damp = expf(-m_fAirLoss * fTimeDelta);
+        m_vVelocity.SetX(m_vVelocity.GetX() * damp);
+        m_vVelocity.SetZ(m_vVelocity.GetZ() * damp);
+
+        // 낙하 속도 제한
+        const _float maxFallSpeed = -50.0f;
+        if (m_vVelocity.GetY() < maxFallSpeed) m_vVelocity.SetY(maxFallSpeed);
+    }
+    else
+    {
+        // 접지 시 Y- 음수 정리
+        if (m_vVelocity.GetY() < 0.0f) m_vVelocity.SetY(0.0f);
+
+        // XZ 지수 감쇠
+        const _float damp = expf(-m_fLoss * fTimeDelta);
+        m_vVelocity.SetX(m_vVelocity.GetX() * damp);
+        m_vVelocity.SetZ(m_vVelocity.GetZ() * damp);
+    }
+
+    // ===== 지면 속도 더하기 (캐시/지연 갱신) =====
+    JPH::Vec3 final_vel = m_vVelocity;
+
+    if (onGround)
+    {
+        if (!m_prevOnGround || ++m_groundVelQueryDefer >= m_groundVelQueryInterval)
+        {
+            JPH::Vec3 gv = m_pCharVir->GetGroundVelocity();
+            gv.SetY(0.0f);
+            m_cachedGroundVel = IsFiniteVec3(gv) ? gv : JPH::Vec3::sZero();
+            m_groundVelQueryDefer = 0;
+        }
+        final_vel += m_cachedGroundVel;
+    }
+    m_prevOnGround = onGround;
+
+    if (!IsFiniteVec3(final_vel))
+        final_vel = JPH::Vec3::sZero();
+
+    // ===== Jolt 업데이트 (1회) =====
+    m_pCharVir->SetLinearVelocity(final_vel);
+
+    m_pGameInstance->CharVir_ExtendedUpdate(
+        fTimeDelta,
+        m_pCharVir,
+        m_vGravity,
+        m_iNumObjectLayer,
+        m_pBodyFilter,
+        m_pShapeFilter,
+        m_tEXUpdateSetting
+    );
+
+    // ===== 스텝 이후 현재 포즈 갱신 =====
+    m_tCurrPose.vPos = m_pCharVir->GetPosition();
+    m_tCurrPose.vRot = m_pCharVir->GetRotation();
+    m_tCurrPose.vLinvel = final_vel;
+
+    // 안정화: 접지 & 낙하 중이면 Y속도 0
+    if (onGround && m_vVelocity.GetY() < 0.0f)
+        m_vVelocity.SetY(0.0f);
+
+    if (m_isFirstSync) { m_tPrevPose = m_tCurrPose; m_isFirstSync = false; }
+}
+
+void CCharacterVirtual::ApplyInterpolatedPose(float alpha, CTransform* pTransform)
+{
+    alpha = Clamp01(alpha);
+
+    // RVec3 → Vec3 다운캐스트 후 선형보간 (float로 가볍게)
+    const JPH::Vec3 a((float)m_tPrevPose.vPos.GetX(), (float)m_tPrevPose.vPos.GetY(), (float)m_tPrevPose.vPos.GetZ());
+    const JPH::Vec3 b((float)m_tCurrPose.vPos.GetX(), (float)m_tCurrPose.vPos.GetY(), (float)m_tCurrPose.vPos.GetZ());
+    const JPH::Vec3 ip = a + (b - a) * alpha;
+
+    // 회전: nlerp (slerp보다 훨씬 가벼움)
+    JPH::Quat qa = m_tPrevPose.vRot;
+    JPH::Quat qb = m_tCurrPose.vRot;
+    if (qa.Dot(qb) < 0.0f) qb = JPH::Quat(-qb.GetX(), -qb.GetY(), -qb.GetZ(), -qb.GetW());
+    JPH::Quat qi(
+        qa.GetX() + (qb.GetX() - qa.GetX()) * alpha,
+        qa.GetY() + (qb.GetY() - qa.GetY()) * alpha,
+        qa.GetZ() + (qb.GetZ() - qa.GetZ()) * alpha,
+        qa.GetW() + (qb.GetW() - qa.GetW()) * alpha
+    );
+    qi = qi.Normalized();
+
+    // Transform 한 번만 세팅
+    pTransform->Set_State(STATE::POSITION, XMVectorSet(ip.GetX(), ip.GetY(), ip.GetZ(), 1.f));
+    pTransform->Set_Quaternion(XMVectorSet(qi.GetX(), qi.GetY(), qi.GetZ(), qi.GetW()));
+}
+
+void CCharacterVirtual::ApplyInterpolatedPose(_float alpha, _vector& outQuatRotation, _vector& outPosition)
+{
+    alpha = Clamp01(alpha);
+
+    // RVec3 → Vec3 다운캐스트 후 선형보간 (float로 가볍게)
+    const JPH::Vec3 a((_float)m_tPrevPose.vPos.GetX(), (_float)m_tPrevPose.vPos.GetY(), (_float)m_tPrevPose.vPos.GetZ());
+    const JPH::Vec3 b((_float)m_tCurrPose.vPos.GetX(), (_float)m_tCurrPose.vPos.GetY(), (_float)m_tCurrPose.vPos.GetZ());
+    const JPH::Vec3 ip = a + (b - a) * alpha;
+
+    // 회전: nlerp (slerp보다 훨씬 가벼움)
+    JPH::Quat qa = m_tPrevPose.vRot;
+    JPH::Quat qb = m_tCurrPose.vRot;
+    if (qa.Dot(qb) < 0.0f) qb = JPH::Quat(-qb.GetX(), -qb.GetY(), -qb.GetZ(), -qb.GetW());
+    JPH::Quat qi(
+        qa.GetX() + (qb.GetX() - qa.GetX()) * alpha,
+        qa.GetY() + (qb.GetY() - qa.GetY()) * alpha,
+        qa.GetZ() + (qb.GetZ() - qa.GetZ()) * alpha,
+        qa.GetW() + (qb.GetW() - qa.GetW()) * alpha
+    );
+    qi = qi.Normalized();
+
+    outQuatRotation = XMVectorSet(qi.GetX(), qi.GetY(), qi.GetZ(), qi.GetW());
+    outPosition = XMVectorSet(ip.GetX(), ip.GetY(), ip.GetZ(), 1.f);
 }
 
 void CCharacterVirtual::Set_Position(_vector vPos)

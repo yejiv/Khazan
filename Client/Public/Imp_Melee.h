@@ -36,12 +36,12 @@ private:
 
 
 private:
-    class CBody_Imp_Melee* m_pBody = { nullptr };
-    class CImp_Sword* m_pWeapon = { nullptr };
+    class CBody_Imp_Melee*          m_pBody = { nullptr };
+    class CImp_Sword*               m_pWeapon = { nullptr };    
 
 public:
-    static CImp_Melee* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    virtual CGameObject* Clone(void* pArg) override;
+    static CImp_Melee*              Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+    virtual CGameObject*            Clone(void* pArg) override;
     virtual void					Free() override;
 
 };

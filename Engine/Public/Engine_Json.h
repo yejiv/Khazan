@@ -795,11 +795,21 @@ namespace Engine
     typedef struct tagJsonTriggerDataSet
     {
         unsigned int iNumTrigger{};
-        
+
         std::vector<FLOAT4X4_DATA> WorldMatrix{};
         std::vector<string> TriggerKey{};
 
     }JSON_MAP_TRIGGER_DATA;
+
+    typedef struct tagJsonMonsterSpawnDataSet
+    {
+        unsigned int iNumMonster{};
+
+        std::vector<FLOAT4X4_DATA> WorldMatrix{};
+        std::vector<string> MonsterKey{};
+        std::vector<_int> SubLevel{};
+
+    }JSON_MAP_MONSTER_SPAWN_DATA;
 
 
 #pragma endregion
@@ -975,6 +985,8 @@ namespace Engine
     // 트리거 개수, 행렬, 트리거 키 직렬화
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(JSON_MAP_TRIGGER_DATA, iNumTrigger, WorldMatrix, TriggerKey);
 
+    // 몬스터 개수, 행렬, 몬스터 키 직렬화
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(JSON_MAP_MONSTER_SPAWN_DATA, iNumMonster, WorldMatrix, MonsterKey, SubLevel);
 
 #pragma endregion
 

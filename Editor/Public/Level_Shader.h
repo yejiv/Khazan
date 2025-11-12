@@ -48,6 +48,7 @@ private:
 	_bool					m_isEnableOutline = {};
 	_bool					m_isEnableVignette = {};
     _bool                   m_isEnableLUT = {};
+    _bool                   m_isEnableRadialBlur = {};
 
 	// SSAO
 	SSAO_CONFIG				m_SSAOConfig = {};
@@ -56,7 +57,7 @@ private:
 	_float					m_fEmissiveIntensity = {};
 
 	// Blur
-	GAUSSIAN_BLUR_CONFIG	m_BlurConfig = {};
+	GAUSSIAN_BLUR_CONFIG	m_GaussianBlurConfig = {};
 
 	// Fog
 	FOG_CONFIG				m_FogConfig = {};
@@ -75,6 +76,12 @@ private:
 
 	// Distortion
 	DISTORTION_DESC			m_DistortionDesc = {};
+
+    // LUT
+    _float                  m_fLUTIntensity = { 1.f };
+
+    // Radial Blur
+    RADIAL_BLUR_DESC        m_RadialBlurDesc = {};
 
 private:
 	// 파라미터 ( 1. 등록할 레이어 태그 | 2. 데이터 파일 이름 | 3. 현재 로드할 레벨 | 4. 맵 타입 ( 안넣으면 폴더 내부 X ) )
