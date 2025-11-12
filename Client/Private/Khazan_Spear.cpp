@@ -168,12 +168,12 @@ void CKhazan_Spear::Update(_float fTimeDelta)
 
 
     /* Test Injured key input */
-    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_0))
+    if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_0))
     {
         Clear_Injured();
         Add_Status(INJURED);
     }
-    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_9))
+    if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_9))
     {
         Clear_Injured();
     }
@@ -204,9 +204,7 @@ void CKhazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLay
 
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK)) {
       //  cout << " hit !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
-       // cout << "ContactNormal : " << ContactNormal.x << " " << ContactNormal.y << " " << ContactNormal.z << endl;
-
-        Get_HitReaction(ContactNormal);
+        Get_HitReaction(vContactPoint); 
     }
 
 
@@ -223,7 +221,12 @@ void CKhazan_Spear::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLaye
 
 void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject)
 {
-    //m_pPlayerData->fCulHp -= fDamage;
+    if (m_pAnimGuard->Is_Guarding())
+    {
+
+    }
+
+    m_pPlayerData->fCulHp -= fDamage;
 
     /* 플레이어 죽었을 때 세팅하는 법  */
     if (m_pPlayerData->fCulHp <= 0.f)
@@ -235,6 +238,9 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
         Clear_CycleState();
         Clear_SubState();
         Clear_State();
+        m_eDir.iDirFlag = 0;
+        //m_eWorldDir.iDirFlag = 0;
+        m_iStatus = 0; 
 
         /* 상태 DIE로 재정비 */
         m_iStatus = Has_Status(SPEAR) ? SPEAR : BAREHAND;
@@ -253,34 +259,62 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
 
     //    break;
     case Client::HITREACTION::KNOCKBACK_WEAK:
+        if (Has_State(CAT::M_ATTACK)) m_pAnimAttack->Exit();
+        if (Has_State(CAT::M_SKILL))  m_pAnimAttack->Exit();
+        if (Has_State(CAT::M_GUARD)) m_pAnimGuard->Exit();
+        if (Has_State(CAT::M_MOVE)) m_pAnimMove->Exit();
+
         Clear_CycleState();
         Clear_SubState();
         Clear_State();
-       // m_eDir.iDirFlag = 0;
+        Remove_Status(RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_STRONG_ATTACK | AGAIN_REQUEST | READY_ASSAULT);
+        m_eDir.iDirFlag = 0;
+       // m_eWorldDir.iDirFlag = 0;
+        cout << "        KNOCKBACK_WEAK    " << endl;
+
         Add_State(CAT::M_DAMAGED);
         m_pAnimDamaged->Force_DamagedNormal(Has_Status(SPEAR), m_eHitNormalDir.iDirFlag);
         break;
     case Client::HITREACTION::KNOCKBACK_NORMAL:
+        if (Has_State(CAT::M_ATTACK)) m_pAnimAttack->Exit();
+        if (Has_State(CAT::M_SKILL))  m_pAnimAttack->Exit();
+        if (Has_State(CAT::M_GUARD)) m_pAnimGuard->Exit();
+        if (Has_State(CAT::M_MOVE)) m_pAnimMove->Exit();
+        cout << "       KNOCKBACK_NORMAL     " << endl;
+
         Clear_CycleState();
         Clear_SubState();
         Clear_State();
-        //m_eDir.iDirFlag = 0;
+        Remove_Status(RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_STRONG_ATTACK | AGAIN_REQUEST | READY_ASSAULT);
+        m_eDir.iDirFlag = 0;
+       // m_eWorldDir.iDirFlag = 0;
+
         Add_State(CAT::M_DAMAGED);
         m_pAnimDamaged->Force_DamagedNormal(Has_Status(SPEAR), m_eHitNormalDir.iDirFlag);
         break;
     case Client::HITREACTION::KNOCKBACK_STRONG:
+        if (Has_State(CAT::M_ATTACK)) m_pAnimAttack->Exit();
+        if (Has_State(CAT::M_SKILL))  m_pAnimAttack->Exit();
+        if (Has_State(CAT::M_GUARD)) m_pAnimGuard->Exit();
+        if (Has_State(CAT::M_MOVE)) m_pAnimMove->Exit();
+        cout << "        KNOCKBACK_STRONG       " << endl;
+
         Clear_CycleState();
         Clear_SubState();
         Clear_State();
-       // m_eDir.iDirFlag = 0;
+        Remove_Status(RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_STRONG_ATTACK | AGAIN_REQUEST | READY_ASSAULT);
+        m_eDir.iDirFlag = 0;
+       // m_eWorldDir.iDirFlag = 0;
+
         Add_State(CAT::M_DAMAGED);
-        m_pAnimDamaged->Force_DamagedStrong(Has_Status(SPEAR), m_eHitNormalDir.iDirFlag);
+        m_pAnimDamaged->Force_DamagedStrong(Has_Status(SPEAR), m_eHitStrongDir.iDirFlag);
         break;
     case Client::HITREACTION::PARRY:
 
         break;
     case Client::HITREACTION::GRAB:
-
+        cout << " GRAB !!! "  << endl;
+        m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_DamageHold_Yetuga_RushGrab");
         break;
 
     }
@@ -295,11 +329,40 @@ void CKhazan_Spear::Set_Camera(CCamera_Compre* pCamera)
 
 void CKhazan_Spear::Update_State(_float fTimeDelta)
 {
+    if (Has_State(CAT::M_DIE))
+        return;
+
     /* 이전 상태 저장*/
     m_iPrevMainState = m_iCurMainState;
     m_iPrevSubState = m_iCurSubState;
     m_ePrevDir = m_eDir.iDirFlag;
     m_iPrevCycle = m_iCycle;
+
+    /* 대미지 상태 최우선 체크 */
+    _bool IsDamaged = m_pAnimDamaged->Is_Damaged();
+    _bool IsGuarding = m_pAnimGuard->Is_Guarding();
+
+    // 대미지 상태가 끝났을 때만 상태 제거
+    if (!IsDamaged && (m_iPrevMainState & CAT::M_DAMAGED))
+    {
+        Remove_State(CAT::M_DAMAGED);
+        m_eDir.iDirFlag = 0;
+        m_eWorldDir.iDirFlag = 0;
+        cout << "Damage state cleared" << endl;
+    }
+
+    // 가드 빼고 대미지 받는 중이면 입력 및 다른 모든 처리 차단
+    if (!IsGuarding && IsDamaged)
+    {
+        // 대미지 로직만 실행
+        if (Has_State(CAT::M_DAMAGED))
+        {
+            _bool isEnter = (m_iCurMainState != m_iPrevMainState);
+            if (isEnter) m_pAnimDamaged->Enter();
+            m_pAnimDamaged->Continue(fTimeDelta);
+        }
+        return;  // 대미지 중에는 다른 모든 처리 차단
+    }
 
     /* 락온상태 체크  */
     Update_LockOn();
@@ -307,11 +370,7 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
     /* 방향 결정 */
     Check_KeyInput_Direction(fTimeDelta);
 
-    _bool IsDamaged = m_pAnimDamaged->Is_Damaged();
-    if (!IsDamaged)
-        Remove_State(CAT::M_DAMAGED);
-
-    /* 키 입력 막기  */
+    /* 키 입력 */
     if (m_pClientInstance->Get_PlayerInput())
     {
         if (Has_Status(INJURED))
@@ -320,18 +379,16 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
         }
         else
         {
-            /* 키 입력 */
             Interaction_Input(fTimeDelta);
             Guard_Input(fTimeDelta);
             Skill_Input(fTimeDelta);
             Attack_Input(fTimeDelta);
 
-
-            // 공격 중일 때는 Move_Input을 완전히 차단  - 무브 애니메이션 결정
-            if (!Has_State(CAT::M_ATTACK | CAT::M_GUARD | CAT::M_SKILL) && !m_pAnimAttack->Is_Attacking()) Move_Input(fTimeDelta);
+            // 공격 중일 때는 Move_Input을 완전히 차단
+            if (!Has_State(CAT::M_ATTACK | CAT::M_GUARD | CAT::M_SKILL) && !m_pAnimAttack->Is_Attacking())
+                Move_Input(fTimeDelta);
             else if (Has_State(CAT::M_ATTACK | CAT::M_SKILL))
             {
-                // 공격 중일 때 Move 상태와 Reserve 초기화
                 if (Has_State(CAT::M_MOVE))
                 {
                     Remove_State(CAT::M_MOVE);
@@ -339,17 +396,12 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
                     AllClear_CycleState();
                 }
 
-                // Move Reserve 취소
                 if (m_pAnimMove) m_pAnimMove->Clear_Reserve();
 
-                /* 공격 중이고 락온 상태일 때 회전 처리만  */
                 if (Has_Status(LOCKON)) LockOn_Rotation(fTimeDelta);
-
             }
         }
     }
-
-    /* 대미지 및 스태미나 업데이트 */
 
     /*  상태 전환 여부*/
     _bool isEnter = (m_iCurMainState != m_iPrevMainState) || (m_iCurSubState != m_iPrevSubState);
@@ -360,13 +412,17 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
         Change_MoveIdle(fTimeDelta);
 
     /* 실제 이동값 주기 */
-    if (Has_State(CAT::M_MOVE | CAT::M_GUARD) && !Has_State(CAT::M_ATTACK | CAT::M_SKILL | CAT::M_DAMAGED) && !m_pAnimMove->IsDodgeing() && !m_pAnimAttack->Is_Attacking()&& !IsDamaged)
+    if (Has_State(CAT::M_MOVE | CAT::M_GUARD) &&
+        !Has_State(CAT::M_ATTACK | CAT::M_SKILL | CAT::M_DAMAGED) &&
+        !m_pAnimMove->IsDodgeing() &&
+        !m_pAnimAttack->Is_Attacking())
+    {
         Apply_PlayerMovement(fTimeDelta);
+    }
 
     /* Exit 실행 */
     if (isEnter)
         ExecuteAnimationExit();
-
 
     /* 상태별 로직 실행 */
     if (Has_State(CAT::M_DIE)) {
@@ -374,18 +430,11 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
     }
     else if (Has_State(CAT::ORDER2))
     {
-        //if (Has_State(CAT::M_HOLD));
-        //if (Has_State(CAT::M_GROGGY));
         if (Has_State(CAT::M_DAMAGED))
         {
             if (isEnter) m_pAnimDamaged->Enter();
             m_pAnimDamaged->Continue(fTimeDelta);
-            if (!m_pAnimDamaged->Is_Damaged())
-            {
-                Remove_State(CAT::M_DAMAGED);
-            }
         }
-        //if (Has_State(CAT::M_CLIMB));
     }
     else if (Has_State(CAT::M_SKILL))
     {
@@ -397,7 +446,6 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
             Remove_State(CAT::M_SKILL);
             Clear_SubState();
 
-            // 공격이 끝나고 방향키가 눌려있으면 Move로 전환
             if (m_eDir.iDirFlag > 0)
             {
                 Add_State(CAT::M_MOVE);
@@ -430,7 +478,6 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
                 Remove_Status(CHARGING_STRONG_ATTACK);
                 Clear_SubState();
 
-                // 공격이 끝나고 방향키가 눌려있으면 Move로 전환
                 if (m_eDir.iDirFlag > 0)
                 {
                     Add_State(CAT::M_MOVE);
@@ -445,7 +492,6 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
             if (isEnter) m_pAnimMove->Enter();
             if (isEnter || isContinue) m_pAnimMove->Continue(fTimeDelta);
         }
-        //if (Has_State(CAT::M_LOCKON));
     }
     else if (Has_State(CAT::M_INTERACT))
     {
@@ -459,8 +505,182 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
     {
 
     }
-
 }
+//void CKhazan_Spear::Update_State(_float fTimeDelta)
+//{
+//    /* 이전 상태 저장*/
+//    m_iPrevMainState = m_iCurMainState;
+//    m_iPrevSubState = m_iCurSubState;
+//    m_ePrevDir = m_eDir.iDirFlag;
+//    m_iPrevCycle = m_iCycle;
+//
+//    /* 락온상태 체크  */
+//    Update_LockOn();
+//
+//    /* 방향 결정 */
+//    Check_KeyInput_Direction(fTimeDelta);
+//
+//    /* 키 입력 막기  */
+//    if (m_pClientInstance->Get_PlayerInput())
+//    {
+//        if (Has_Status(INJURED))
+//        {
+//            InjuredMove_Input(fTimeDelta);
+//        }
+//        else
+//        {
+//            /* 키 입력 */
+//            if (!Has_State(CAT::M_DAMAGED)) {
+//                Interaction_Input(fTimeDelta);
+//                Guard_Input(fTimeDelta);
+//                Skill_Input(fTimeDelta);
+//                Attack_Input(fTimeDelta);
+//            }
+//
+//            // 공격 중일 때는 Move_Input을 완전히 차단  - 무브 애니메이션 결정
+//            if (!Has_State(CAT::M_ATTACK | CAT::M_GUARD | CAT::M_SKILL) && !m_pAnimAttack->Is_Attacking()) Move_Input(fTimeDelta);
+//            else if (Has_State(CAT::M_ATTACK | CAT::M_SKILL))
+//            {
+//                // 공격 중일 때 Move 상태와 Reserve 초기화
+//                if (Has_State(CAT::M_MOVE))
+//                {
+//                    Remove_State(CAT::M_MOVE);
+//                    Clear_SubState();
+//                    AllClear_CycleState();
+//                }
+//
+//                // Move Reserve 취소
+//                if (m_pAnimMove) m_pAnimMove->Clear_Reserve();
+//
+//                /* 공격 중이고 락온 상태일 때 회전 처리만  */
+//                if (Has_Status(LOCKON)) LockOn_Rotation(fTimeDelta);
+//
+//            }
+//        }
+//    }
+//
+//    /* 대미지 및 스태미나 업데이트 */
+//
+//    /*  상태 전환 여부*/
+//    _bool isEnter = (m_iCurMainState != m_iPrevMainState) || (m_iCurSubState != m_iPrevSubState);
+//    _bool isContinue = (m_iCurMainState == m_iPrevMainState) && (m_iCurSubState == m_iPrevSubState);
+//
+//    /* (move , idle 애니메이션 재생 시도 */
+//    if (!Has_Status(INJURED))
+//        Change_MoveIdle(fTimeDelta);
+//
+//    _bool IsDamaged = m_pAnimDamaged->Is_Damaged();
+//    if (!IsDamaged)
+//    {
+//        Remove_State(CAT::M_DAMAGED);
+//    }
+//
+//    /* 실제 이동값 주기 */
+//    if (Has_State(CAT::M_MOVE | CAT::M_GUARD) && !Has_State(CAT::M_ATTACK | CAT::M_SKILL | CAT::M_DAMAGED) && !m_pAnimMove->IsDodgeing() && !m_pAnimAttack->Is_Attacking()&& !IsDamaged)
+//        Apply_PlayerMovement(fTimeDelta);
+//
+//    /* Exit 실행 */
+//    if (isEnter)
+//        ExecuteAnimationExit();
+//
+//
+//
+//
+//    /* 상태별 로직 실행 */
+//    if (Has_State(CAT::M_DIE)) {
+//        Update_Die(fTimeDelta);
+//    }
+//    else if (Has_State(CAT::ORDER2))
+//    {
+//        //if (Has_State(CAT::M_HOLD));
+//        //if (Has_State(CAT::M_GROGGY));
+//        if (Has_State(CAT::M_DAMAGED))
+//        {
+//            if (isEnter) m_pAnimDamaged->Enter();
+//            m_pAnimDamaged->Continue(fTimeDelta);
+//            if (!m_pAnimDamaged->Is_Damaged())
+//            {
+//                Remove_State(CAT::M_DAMAGED);
+//                cout << "        Remove_State(CAT::M_DAMAGED); 22 " << endl;
+//
+//            }
+//        }
+//        //if (Has_State(CAT::M_CLIMB));
+//    }
+//    else if (Has_State(CAT::M_SKILL))
+//    {
+//        if (isEnter) m_pAnimAttack->Enter();
+//        m_pAnimAttack->Continue(fTimeDelta);
+//
+//        if (!m_pAnimAttack->Is_Skilling())
+//        {
+//            Remove_State(CAT::M_SKILL);
+//            Clear_SubState();
+//
+//            // 공격이 끝나고 방향키가 눌려있으면 Move로 전환
+//            if (m_eDir.iDirFlag > 0)
+//            {
+//                Add_State(CAT::M_MOVE);
+//                Add_SubState(MOV::MOVE_RUN);
+//                Add_CycleState(CYC::CYCLE_START);
+//            }
+//        }
+//    }
+//    else if (Has_State(CAT::M_GUARD))
+//    {
+//        if (isEnter) m_pAnimGuard->Enter();
+//        if (isEnter || isContinue) m_pAnimGuard->Continue(fTimeDelta);
+//
+//        if (!m_pAnimGuard->Is_Guarding())
+//        {
+//            Remove_State(CAT::M_GUARD | CAT::M_MOVE);
+//            Clear_SubState();
+//        }
+//    }
+//    else if (Has_State(CAT::ORDER5))
+//    {
+//        if (Has_State(CAT::M_ATTACK))
+//        {
+//            if (isEnter) m_pAnimAttack->Enter();
+//            m_pAnimAttack->Continue(fTimeDelta);
+//
+//            if (!m_pAnimAttack->Is_Attacking())
+//            {
+//                Remove_State(CAT::M_ATTACK);
+//                Remove_Status(CHARGING_STRONG_ATTACK);
+//                Clear_SubState();
+//
+//                // 공격이 끝나고 방향키가 눌려있으면 Move로 전환
+//                if (m_eDir.iDirFlag > 0)
+//                {
+//                    Add_State(CAT::M_MOVE);
+//                    Add_SubState(MOV::MOVE_RUN);
+//                    Add_CycleState(CYC::CYCLE_START);
+//                }
+//            }
+//        }
+//
+//        if (!Has_State(CAT::M_ATTACK | CAT::M_SKILL) && Has_State(CAT::M_MOVE))
+//        {
+//            if (isEnter) m_pAnimMove->Enter();
+//            if (isEnter || isContinue) m_pAnimMove->Continue(fTimeDelta);
+//        }
+//        //if (Has_State(CAT::M_LOCKON));
+//    }
+//    else if (Has_State(CAT::M_INTERACT))
+//    {
+//
+//    }
+//    else if (Has_State(CAT::M_WEAPON_CHANGE))
+//    {
+//
+//    }
+//    else
+//    {
+//
+//    }
+//
+//}
 
 void CKhazan_Spear::InjuredMove_Input(_float fTimeDelta)
 {
@@ -1663,34 +1883,101 @@ void CKhazan_Spear::Clear_Injured()
     Remove_Status(INJURED);
 }
 
-void CKhazan_Spear::Get_HitReaction(const _float3& vContactNormal)
+void CKhazan_Spear::Get_HitReaction(_float3 vContactPoint)
 {
-    _vector vPlayerLook = XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK));
-    _vector vPlayerRight = XMVector3Normalize(m_pTransformCom->Get_State(STATE::RIGHT));
-    _vector vNormal = XMVector3Normalize(XMLoadFloat3(&vContactNormal));
+    // 1. 캐릭터의 위치 구하기
+    _vector vCharacterPos = m_pTransformCom->Get_State(STATE::POSITION);
 
-    _vector vFlatNormal = XMVectorSet(XMVectorGetX(vNormal), 0.f, XMVectorGetZ(vNormal), 0.f);
-    if (XMVector3Equal(vFlatNormal, XMVectorZero())) 
-        vFlatNormal = XMVectorSet(0.f, 0.f, 1.f, 0.f);  // 수평 성분이 전혀 없음 (즉, 위나 아래에서 맞은 경우)
-    else 
-        vFlatNormal = XMVector3Normalize(vFlatNormal);
-    
-    _float fForwardDot = XMVectorGetX(XMVector3Dot(vFlatNormal, vPlayerLook));
-    _float fRightDot = XMVectorGetX(XMVector3Dot(vFlatNormal, vPlayerRight));
-    _float fUpDot = XMVectorGetY(vNormal);
+    // 2. 캐릭터 -> 접촉점 방향 벡터 계산
+    _vector vHitDir = XMLoadFloat3(&vContactPoint) - vCharacterPos;
+
+    // 3. 높이 차이 계산 (Y축)
+    _float fHeightDiff = XMVectorGetY(vHitDir);
+
+    // 4. XZ 평면 방향 계산
+    _vector vHitDirXZ = XMVectorSetY(vHitDir, 0.f);
+
+    _float fLengthSq = XMVectorGetX(XMVector3LengthSq(vHitDirXZ));
+    if (fLengthSq < 0.0001f) // 거의 0인 경우
+    {
+        // 기본값: 캐릭터의 정면 방향을 사용
+        vHitDirXZ = m_pTransformCom->Get_State(STATE::LOOK);
+        vHitDirXZ = XMVectorSetY(vHitDirXZ, 0.f);
+    }
+
+    vHitDirXZ = XMVector3Normalize(vHitDirXZ);
+ 
+    // 5. 캐릭터의 Forward와 Right 벡터 구하기
+    _vector vCharacterForward = m_pTransformCom->Get_State(STATE::LOOK);
+    vCharacterForward = XMVector3Normalize(vCharacterForward);
+
+    _vector vCharacterRight = m_pTransformCom->Get_State(STATE::RIGHT);
+    vCharacterRight = XMVector3Normalize(vCharacterRight);
+
+    // 6. 내적으로 방향 계산
+    _float fDotForward = XMVectorGetX(XMVector3Dot(vCharacterForward, vHitDirXZ));
+    _float fDotRight = XMVectorGetX(XMVector3Dot(vCharacterRight, vHitDirXZ));
+
+    // 7. 각도 계산
+    _float fAngle = atan2f(fDotRight, fDotForward);
+    fAngle = XMConvertToDegrees(fAngle);
+
+    // 8. 높이 판단
+    _float fHeightThreshold = 0.5f;
+    bool bIsUp = (fHeightDiff > fHeightThreshold);
+
+
+    m_eHitStrongDir.Clear_Flag();
+
+    if (bIsUp) {
+        m_eHitStrongDir.Add_Flag(DIRECTION_INFO::DIR::U);
+        m_eHitStrongDir.Add_Flag(DIRECTION_INFO::DIR::F);
+    }
+    else {
+        m_eHitStrongDir.Add_Flag(DIRECTION_INFO::DIR::D);
+
+        if (fabs(fDotRight) > fabs(fDotForward) && fDotRight > 0.f) {
+            m_eHitStrongDir.Add_Flag(DIRECTION_INFO::DIR::R);
+            m_eHitStrongDir.Add_Flag(DIRECTION_INFO::DIR::F);
+        }
+        else {
+            m_eHitStrongDir.Add_Flag(DIRECTION_INFO::DIR::F);
+        }
+    }
+
 
     m_eHitNormalDir.Clear_Flag();
 
-    if (fUpDot > 0.5f) m_eHitNormalDir.Add_Flag(DIRECTION_INFO::U);
-    else if (fUpDot < -0.5f) m_eHitNormalDir.Add_Flag(DIRECTION_INFO::D);
+    if (bIsUp) {
+        m_eHitNormalDir.Add_Flag(DIRECTION_INFO::DIR::U);
 
-    if (fRightDot > 0.3f) m_eHitNormalDir.Add_Flag(DIRECTION_INFO::R);
-    else if (fRightDot < -0.3f) m_eHitNormalDir.Add_Flag(DIRECTION_INFO::L);
+        if (fDotForward < 0.f) {
+            m_eHitNormalDir.Add_Flag(DIRECTION_INFO::DIR::B);
+        }
+        else {
+            m_eHitNormalDir.Add_Flag(DIRECTION_INFO::DIR::F);
+        }
+    }
+    else {
+        m_eHitNormalDir.Add_Flag(DIRECTION_INFO::DIR::D);
 
-    if (fForwardDot > 0.3f) m_eHitNormalDir.Add_Flag(DIRECTION_INFO::F);
-    else if (fForwardDot < -0.3f) m_eHitNormalDir.Add_Flag(DIRECTION_INFO::B);
+        if (fAngle >= -22.5f && fAngle < 22.5f) {
+            m_eHitNormalDir.Add_Flag(DIRECTION_INFO::DIR::F);
+        }
+        else if (fAngle >= 22.5f && fAngle < 157.5f) {
+            m_eHitNormalDir.Add_Flag(DIRECTION_INFO::DIR::R);
+            m_eHitNormalDir.Add_Flag(DIRECTION_INFO::DIR::F);
+        }
+        else if (fAngle >= 157.5f || fAngle < -157.5f) {
+            m_eHitNormalDir.Add_Flag(DIRECTION_INFO::DIR::B);
+        }
+        else if (fAngle >= -157.5f && fAngle < -22.5f) {
+            m_eHitNormalDir.Add_Flag(DIRECTION_INFO::DIR::L);
+            m_eHitNormalDir.Add_Flag(DIRECTION_INFO::DIR::F);
+        }
+    }
+
 }
-
 
 HRESULT CKhazan_Spear::Ready_Components()
 {
@@ -2194,8 +2481,8 @@ void CKhazan_Spear::Debug_Widget_States()
 
     ImGui::BeginChild("StateBits", ImVec2(0, 200), true);
 
-    // Main States
-    ImGui::Text("Main States (0x%08X)", m_iCurMainState);
+    // Status
+    ImGui::Text("Statusss (0x%08X)", m_iStatus);
     ImGui::Indent();
 
     auto DisplayState = [](const char* label, bool isActive) {
@@ -2204,6 +2491,28 @@ void CKhazan_Spear::Debug_Widget_States()
         else
             ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "[ ] %s", label);
         };
+
+    DisplayState("BAREHAND", m_iStatus & BAREHAND);
+    DisplayState("SPEAR", m_iStatus & SPEAR);
+    DisplayState("RESERVED", m_iStatus & RESERVED);
+    DisplayState("CHARGING_SPRINT", m_iStatus & CHARGING_SPRINT);
+    DisplayState("BACK_DODGE", m_iStatus & BACK_DODGE);
+    DisplayState("ROTATION", m_iStatus & ROTATION);
+    DisplayState("CHARGING_STRONG_ATTACK", m_iStatus & CHARGING_STRONG_ATTACK);
+    DisplayState("AGAIN_REQUEST", m_iStatus & AGAIN_REQUEST);
+    DisplayState("LOCKON", m_iStatus & LOCKON);
+    DisplayState("READY_ASSAULT", m_iStatus & READY_ASSAULT);
+    DisplayState("INJURED", m_iStatus & INJURED);
+
+
+    ImGui::Unindent();
+
+    ImGui::Separator();
+
+
+    // Main States
+    ImGui::Text("Main States (0x%08X)", m_iCurMainState);
+    ImGui::Indent();
 
     DisplayState("M_DIE", m_iCurMainState & CAT::M_DIE);
     DisplayState("M_HOLD", m_iCurMainState & CAT::M_HOLD);
@@ -2562,6 +2871,32 @@ const char* CKhazan_Spear::GetCycleName(_uint cycle)
     if (cycle & CYC::CYCLE_BREAK) result += "BREAK | ";
     if (cycle & CYC::CYCLE_SHOT) result += "SHOT | ";
     if (cycle & CYC::CYCLE_FAIL) result += "FAIL | ";
+
+    if (!result.empty())
+        result = result.substr(0, result.length() - 3);
+
+    return result.c_str();
+}
+
+const char* CKhazan_Spear::GetStatusName(_uint status)
+{
+    if (status == 0) return "NONE";
+
+    static std::string result;
+    result.clear();
+
+    if (status & BAREHAND) result += "BAREHAND | ";
+    if (status & SPEAR) result += "SPEAR | ";
+    if (status & RESERVED) result += "RESERVED | ";
+    if (status & CHARGING_SPRINT) result += "CHARGING_SPRINT | ";
+    if (status & BACK_DODGE) result += "BACK_DODGE | ";
+    if (status & ROTATION) result += "ROTATION | ";
+    if (status & CHARGING_STRONG_ATTACK) result += "CHARGING_STRONG_ATTACK | ";
+    if (status & AGAIN_REQUEST) result += "AGAIN_REQUEST | ";
+    if (status & LOCKON) result += "LOCKON | ";
+    if (status & READY_ASSAULT) result += "READY_ASSAULT | ";
+    if (status & INJURED) result += "INJURED | ";
+
 
     if (!result.empty())
         result = result.substr(0, result.length() - 3);

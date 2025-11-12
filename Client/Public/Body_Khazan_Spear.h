@@ -118,11 +118,22 @@ private:
     _bool               m_isSpearTipActive = { false };
     _bool               m_isSpearPoleActive = { false };
 
+    /* 가드 */
+    _float2             m_fJustGuardTime = { 0.f, 0.83f };
+    _bool               m_isGuardRotating = { false };
+    _float              m_fGuardRotationTime = { 0.f };
+    _float              m_fGuardRotationDuration = { 0.15f }; // 0.15초 동안 회전
+    _vector             m_vTargetRotationDir = {};
+    _float              m_fStartAngle = { 0.f };
+    _float              m_fTargetAngle = { 0.f };
+
+
 
 private:
-    void				Update_Collider(_float fTimeDelta);
-    void                Check_Guarding();
-    void                Damaged_Rotation();
+    void				Update_Collider(_float fTimeDelta);                     
+    void                Check_Guarding(_float fTimeDelta);
+    void                Update_GuardRotation(_float fTimeDelta);
+    void                Start_GuardRotation(_float3 vContactPoint);
 
 private:
     HRESULT				Ready_Components();
@@ -150,7 +161,7 @@ private:
     inline void		Remove_State(_uint i) { *m_pParentState &= ~i; }
     inline _bool	Has_State(_uint i) { return (*m_pParentState & i) != 0; }
     inline void		Clear_State() { *m_pParentState = 0; }
-    inline _bool	Has_States();
+
 
 public:
     static CBody_Khazan_Spear* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

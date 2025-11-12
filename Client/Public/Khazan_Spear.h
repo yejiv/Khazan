@@ -15,30 +15,26 @@ using DIR = DIRECTION_INFO;
 
 class CKhazan_Spear final:  public CCreature
 {
-private:
+public:
 
 	enum PLAYER_STATUS : _uint
 	{
 		BAREHAND = 1 << 0,
 		SPEAR = 1 << 1,
-
 		RESERVED = 1 << 2,
-
 		CHARGING_SPRINT = 1 << 3,
 		BACK_DODGE = 1 << 4,
-
 		ROTATION = 1 << 5,
-		//KEY_ROTATION = 1 << 6,
-		//SAMEDIRECTION = 1 << 7,  // 키입력 방향과 플레이어의 룩방향 일치성
-
 		CHARGING_STRONG_ATTACK = 1 << 6,
-
 		AGAIN_REQUEST = 1 << 7, //스페이스바 유연하게 사용하도록 스프린트 제어
 		LOCKON = 1 << 8,  // 락 온
         READY_ASSAULT = 1<< 9, // 강습 스킬 준비 
+        INJURED  = 1 << 10,  //하인마흐에서 걸을 때 
 
-       INJURED  = 1 << 10,  //하인마흐에서 걸을 때 
-
+        /* 가드 */
+        GUARD   = 1 << 11,
+        GUARD_SUCCESS = 1 << 12,
+        JUST_GUARD = 1 << 13,
 
 	};
 	enum PLAYER_CAMERA_DIR {
@@ -121,7 +117,8 @@ private:
 	/* Attack  */
 	_float						m_fChargingStrongTime = { 0.f };
     _uint                       m_iCurSkillIndex = {};
-    DIR                         m_eHitNormalDir = {};       //맞은 위치 저장
+    DIR                         m_eHitNormalDir = {};       //맞은 방향  저장
+    DIR                         m_eHitStrongDir = {};       //맞은 방향  저장
 
     /* Guard */
     //_bool*                      m_isGuarding = { nullptr };
@@ -159,7 +156,7 @@ private:
     void            Update_Die(_float fTimeDelta);
     void            Clear_Injured();
 
-    void            Get_HitReaction(const _float3& vContactNormal);
+    void            Get_HitReaction( _float3 vContactPoint);
 
 private:
 	HRESULT			Ready_Components();
@@ -229,6 +226,7 @@ private:
 	const char*		GetStateName(_uint state);
 	const char*		GetSubStateName(_uint subState);
 	const char*		GetCycleName(_uint cycle);
+	const char*		GetStatusName(_uint status);
 	std::string		GetDirectionString();
 #endif // _DEBUG
 

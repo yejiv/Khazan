@@ -17,16 +17,28 @@ void CKhazan_Spaer_Anim_Damaged::Enter()
 
 void CKhazan_Spaer_Anim_Damaged::Continue(_float fTimeDelta)
 {
-    if (m_iSelectedAnimationIndex == m_pModel->Get_CurAnimIndex()
-        && (m_pModel->Check_MinAnimationTime() || m_pModel->IsFinished())) {
+
+    //현재 재생중인 애니메이션이 대미지 애니메이션이 아니면 종료
+    if (m_iSelectedAnimationIndex != m_pModel->Get_CurAnimIndex())
+    {
         m_isDamaged = false;
-        cout << "  m_isDamaged = false" << endl;
+        return;
+       // cout << "  m_isDamaged = false (animation interrupted)" << endl;
+    
+    }
+    //애니메이션이 끝났으면 종료
+    if (m_pModel->Check_MinAnimationTime() || m_pModel->IsFinished())
+    {
+        m_isDamaged = false;
+        return;
+        //cout << "  m_isDamaged = false (animation finished)" << endl;
     }
 
 }
 
 void CKhazan_Spaer_Anim_Damaged::Exit()
 {
+    m_isDamaged = false;
 }
 
 void CKhazan_Spaer_Anim_Damaged::Force_DamagedNormal(_bool isWeapon, _uint iDir)
