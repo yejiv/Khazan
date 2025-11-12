@@ -20,8 +20,8 @@ private:
 	
 
 private:
-	class CGameInstance* m_pGameInstance = { nullptr };
-	class CClientInstance* m_pClientInstance = { nullptr };
+	class CGameInstance*    m_pGameInstance = { nullptr };
+	class CClientInstance*  m_pClientInstance = { nullptr };
 
 	// Cascade
 	CASCADE_CONFIG			m_CascadeConfig = {};
@@ -61,8 +61,8 @@ private:
     // LUT
     _float                  m_fLUTIntensity = { 0.2f };
 
-	LEVEL m_eCurrentLevel = { LEVEL::TITLE };
-	_bool m_isSelectLevel[ENUM_CLASS(LEVEL::END)];
+	LEVEL                   m_eCurrentLevel = { LEVEL::TITLE };
+	_bool                   m_isSelectLevel[ENUM_CLASS(LEVEL::END)];
 
 public:
 	static CShader_Controller* Create();

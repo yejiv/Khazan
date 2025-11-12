@@ -609,6 +609,11 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
         return E_FAIL;
 #pragma endregion
 
+#pragma region Shader
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Decal"),
+        CDecal::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+#pragma endregion
 
 	return S_OK;
 }

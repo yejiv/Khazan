@@ -343,7 +343,7 @@ public:
 	void						Set_EnableVignette(_bool isEnable);
 	VIGNETTE_CONFIG				Get_VignetteConfig();
 	void						Set_VignetteConfig(VIGNETTE_CONFIG Config);
-	void						Start_VignetteAnimation(_float fDuration, VIGNETTE_CONFIG::ANIMMODE eMode);
+	void						Start_VignetteAnimation(_float fDuration, VIGNETTE_CONFIG Config);
 #pragma endregion
 
 #pragma region SEQUENCE_MANAGER
