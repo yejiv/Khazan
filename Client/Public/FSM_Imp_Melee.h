@@ -2,20 +2,20 @@
 #include "StateMachine.h"
 #include "Client_Defines.h"
 
-enum class  IMPMELEE_STATE
+enum class IMPMELEE_STATE
 {
+    SLEEP,
     IDLE,
     MOVE,
-    TURN,
-    MAGIC,
-    BOOMARANG,
-    HIT,
-    GROGGY,
+    HIT2,
+    HIT3,
+    DASHATTACK,
+    AMBUSH,
     DODGE,
-    DEAD,
-    SLEEP,
-    END,
+    HIT,
+    DEAD
 };
+
 NS_BEGIN(Engine)
 class CGameObject;
 NS_END
@@ -34,7 +34,7 @@ public:
     virtual void				Update(class CGameObject* pOwner, _float fTimeDelta) override;
 
 public:
-    static CFSM_Imp_Melee* Create(CGameObject* pOwner);
+    static CFSM_Imp_Melee*      Create(CGameObject* pOwner);
     virtual void				Free() override;
 };
 

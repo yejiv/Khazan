@@ -27,8 +27,8 @@ HRESULT CProjectile_Boomarang::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    /*if (FAILED(Ready_Colliders()))
-        return E_FAIL;*/
+    if (FAILED(Ready_Colliders()))
+        return E_FAIL;
 
     m_isActive = false;
 

@@ -21,8 +21,8 @@ public:
     }BODY_DESC;
 
 public:
-    _float4x4* Get_BoneMatrix_Ptr(const _char* pBoneName);
-    _float4* Get_BonePointEX(const _char* pBoneName);
+    _float4x4*              Get_BoneMatrix_Ptr(const _char* pBoneName);
+    _float4*                Get_BonePointEX(const _char* pBoneName);
     _matrix					Get_BoneMatrix(const _char* pBoneName);
 
     void					Set_OnAttackCollision(_bool isToggle) { m_isOnAttackCollision = isToggle; }
@@ -51,12 +51,12 @@ private:
     HRESULT					Bind_ShaderResources();
 
 private:
-    class CImp_Melee* m_pOwner = { nullptr };
+    class CImp_Melee*       m_pOwner = { nullptr };
 
 private:
-    CShader* m_pShaderCom = { nullptr };
-    CModel* m_pModelCom = { nullptr };
-    CTransform* m_pOwnerTransform = { nullptr };
+    CShader*                m_pShaderCom = { nullptr };
+    CModel*                 m_pModelCom = { nullptr };
+    CTransform*             m_pOwnerTransform = { nullptr };
 
     _bool					m_isOnAttackCollision = { false };
 
@@ -67,7 +67,7 @@ private:
 
 public:
     static CBody_Imp_Melee* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    virtual CGameObject* Clone(void* pArg) override;
+    virtual CGameObject*    Clone(void* pArg) override;
     virtual void			Free() override;
 };
 

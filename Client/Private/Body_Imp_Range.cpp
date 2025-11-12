@@ -59,7 +59,7 @@ HRESULT CBody_Imp_Range::Initialize_Clone(void* pArg)
     if (nullptr == m_pOwnerTransform)
         return E_FAIL;
 
-    Safe_Release(m_pOwnerTransform);
+    Safe_AddRef(m_pOwnerTransform);
 
     m_pOwner = pDesc->pOwner;
     if (nullptr == m_pOwner)
