@@ -172,11 +172,15 @@
     <ClInclude Include="..\Public\AS_Amageddon_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Attack_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_Boomarang_Imp_Range.h" />
+    <ClInclude Include="..\Public\AS_ChainSmash_Imp_Melee.h" />
+    <ClInclude Include="..\Public\AS_DashAttack_Imp_Melee.h" />
+    <ClInclude Include="..\Public\AS_Dead_Imp_Melee.h" />
     <ClInclude Include="..\Public\AS_Dead_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_Dead_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Dodge_Yetuga.h" />
     <ClInclude Include="..\Public\AS_FrontAttack_Gomdol.h" />
     <ClInclude Include="..\Public\AS_Groggy_Yetuga.h" />
+    <ClInclude Include="..\Public\AS_Hit_Imp_Melee.h" />
     <ClInclude Include="..\Public\AS_Hit_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_Hit_Yetuga.h" />
     <ClInclude Include="..\Public\AS_IceBreath_Yetuga.h" />
@@ -190,6 +194,7 @@
     <ClInclude Include="..\Public\AS_Move_Gomdol.h" />
     <ClInclude Include="..\Public\AS_Move_Imp_Melee.h" />
     <ClInclude Include="..\Public\AS_Move_Imp_Range.h" />
+    <ClInclude Include="..\Public\AS_NonStopAttack_Imp_Melee.h" />
     <ClInclude Include="..\Public\AS_RightHand_5Hit_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Rush_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Sleep_Gomdol.h" />
@@ -410,11 +415,15 @@
     <ClCompile Include="..\Private\AS_Amageddon_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Attack_Imp_Range.cpp" />
     <ClCompile Include="..\Private\AS_Boomarang_Imp_Range.cpp" />
+    <ClCompile Include="..\Private\AS_ChainSmash_Imp_Melee.cpp" />
+    <ClCompile Include="..\Private\AS_DashAttack_Imp_Melee.cpp" />
+    <ClCompile Include="..\Private\AS_Dead_Imp_Melee.cpp" />
     <ClCompile Include="..\Private\AS_Dead_Imp_Range.cpp" />
     <ClCompile Include="..\Private\AS_Dead_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Dodge_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_FrontAttack_Gomdol.cpp" />
     <ClCompile Include="..\Private\AS_Groggy_Yetuga.cpp" />
+    <ClCompile Include="..\Private\AS_Hit_Imp_Melee.cpp" />
     <ClCompile Include="..\Private\AS_Hit_Imp_Range.cpp" />
     <ClCompile Include="..\Private\AS_Hit_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_IceBreath_Yetuga.cpp" />
@@ -428,6 +437,7 @@
     <ClCompile Include="..\Private\AS_Move_Gomdol.cpp" />
     <ClCompile Include="..\Private\AS_Move_Imp_Melee.cpp" />
     <ClCompile Include="..\Private\AS_Move_Imp_Range.cpp" />
+    <ClCompile Include="..\Private\AS_NonStopAttack_Imp_Melee.cpp" />
     <ClCompile Include="..\Private\AS_RightHand_5Hit_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Rush_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Sleep_Gomdol.cpp" />
