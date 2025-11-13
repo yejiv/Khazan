@@ -47,7 +47,7 @@ private:
     function<void(class CGameObject*, const STIMULUS&)> m_PerceptionCallBack; // 감지 이베트를 AI_Controller에 알리기 위한 콜백
     
     DIRECTION_INFO      m_tDirInfo = {};
-
+    _bool               m_isOnForgetDamage = { false };
 
     class CGameInstance*    m_pGameInstance = { nullptr };
 
