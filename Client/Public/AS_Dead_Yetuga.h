@@ -16,6 +16,9 @@ public:
 	virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
 
+private:
+    _bool                       isClearMission = { false };
+
 public:
 	static CAS_Dead_Yetuga*		Create();
 	virtual void				Free() override;
