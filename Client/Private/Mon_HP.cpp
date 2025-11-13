@@ -155,8 +155,8 @@ HRESULT CMon_HP::Ready_Children()
 
 void CMon_HP::Update_WorldPos()
 {
-   _float4 vTemp = *m_pTargetPos;
-   _vector vTargetPos = XMLoadFloat4(&vTemp);
+	_float4 vTemp = *m_pTargetPos;
+	_vector vTargetPos = XMLoadFloat4(&vTemp);
 
    vTemp = CClientInstance::GetInstance()->Get_ActiveCameraLook();
    _vector vCamLook = XMLoadFloat4(&vTemp);
