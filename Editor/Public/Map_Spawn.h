@@ -32,6 +32,9 @@ public:
     string Get_MonsterKey() { return m_strMonsterKey; }
     void Set_MonsterKey(const string strMonsterKey) { m_strMonsterKey = strMonsterKey; }
 
+    void Set_Red() { m_vWireColor = _float4(1.f, 0.f, 0.f, 1.f); }
+    void Set_Picked() { m_vWireColor = _float4(0.f, 1.f, 1.f, 1.f); }
+
 private:
     _float4 m_vWireColor = { 1.f, 0.f, 0.f, 1.f };
 

@@ -493,6 +493,8 @@ HRESULT CGameInstance::Push_GameObject_ToLayer(_uint iLayerLevelIndex, const _ws
 	return m_pObject_Manager->Push_GameObject_ToLayer(iLayerLevelIndex, strLayerTag, eTimeChannel, pGameObject);
 }
 
+
+
 #pragma endregion
 
 #pragma region RENDERER
@@ -1326,6 +1328,16 @@ HRESULT CGameInstance::Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevel
 HRESULT CGameInstance::Render_Decals()
 {
 	return m_pDecal_Manager->Render();
+}
+
+CTexture* CGameInstance::Get_DecalTexture(DECALTYPE eType)
+{
+    return m_pDecal_Manager->Get_DecalTexture(eType);
+}
+
+void CGameInstance::Batch_Decal(CDecal* pDecal)
+{
+    m_pDecal_Manager->Batch_Decal(pDecal);
 }
 
 #pragma endregion

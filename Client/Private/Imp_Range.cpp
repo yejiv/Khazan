@@ -54,6 +54,7 @@ HRESULT CImp_Range::Initialize_Clone(void* pArg)
           m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
 
       m_MagicBalls.resize(3, nullptr);
+      
 
       return S_OK;
 }
@@ -67,6 +68,14 @@ void CImp_Range::Update(_float fTimeDelta)
 {
     m_pController->Update(this, fTimeDelta);
 
+    if (m_isLookAt)
+    {
+        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+        if (nullptr == pModel)
+            return;
+        _float fRatio = pModel->MakeRatio();
+        Look_Target_Lerp(fTimeDelta, fRatio, 3.f);
+    }
     __super::Update(fTimeDelta);
 
     m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
@@ -85,6 +94,10 @@ HRESULT CImp_Range::Render()
 
 void CImp_Range::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
+    if (eLayer == COLLISION_LAYER::PLAYER_ATTACK)
+        int a = 10;
+
 }
 
 void CImp_Range::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
@@ -195,13 +208,14 @@ HRESULT CImp_Range::Ready_AnimEvent()
 #pragma region MagicBall
 
     pModel->Register_Event("CastSpell1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_isLookAt = true;
+
         Cast_MagicBall(0);
         });
     pModel->Register_Event("CastSpell1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-      
         });
     pModel->Register_Event("CastSpell1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
-      
+
         });
 
     pModel->Register_Event("ShotSpell1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -221,6 +235,8 @@ HRESULT CImp_Range::Ready_AnimEvent()
 
     pModel->Register_Event("ShotSpell2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         Shoot_MagicBall(1);
+        m_isLookAt = false;
+
         });
 
 

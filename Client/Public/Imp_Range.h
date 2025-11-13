@@ -46,6 +46,7 @@ private:
                                 
 
 private:
+    _bool							m_isLookAt = { false };
     class CBody_Imp_Range*          m_pBody = { nullptr };
     class CImp_Wand*                m_pWeapon = { nullptr };
 

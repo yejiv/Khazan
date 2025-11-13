@@ -51,7 +51,9 @@ void CCloudSphere::Priority_Update(_float fTimeDelta)
 
 void CCloudSphere::Update(_float fTimeDelta)
 {
-    m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(m_pGameInstance->Get_CamPosition()));
+    _float4 vOffsetPos = *m_pGameInstance->Get_CamPosition();
+    vOffsetPos.y -= 4.f;
+    m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&vOffsetPos));
 
     m_fTimeAcc += fTimeDelta;
 
@@ -202,37 +204,37 @@ void CCloudSphere::Debug_CloudEdit()
             ImGui::Text("CLOUD COLOR");
             ImGui::Text("COLOR PALHETT");
             ImGui::ColorPicker3("##r_edit", reinterpret_cast<_float*>(&m_CloudDesc.vCloudColor));
-            ImGui::Separator;
+            ImGui::Separator();
 
-            ImGui::Text("CLOUD SCALE"); ImGui::SameLine;
+            ImGui::Text("CLOUD SCALE"); ImGui::SameLine();
             ImGui::InputFloat("##fix_cloud_scale", &m_CloudDesc.fCloudScale, 0.01f, 0.1f);
-            ImGui::Separator;
+            ImGui::Separator();
 
-            ImGui::Text("CLOUD SPEED"); ImGui::SameLine;
+            ImGui::Text("CLOUD SPEED"); ImGui::SameLine();
             ImGui::InputFloat("##fix_cloud_speed", &m_CloudDesc.fCloudSpeed, 0.01f, 0.1f);
-            ImGui::Separator;
+            ImGui::Separator();
 
-            ImGui::Text("CLOUD DENSITY"); ImGui::SameLine;
+            ImGui::Text("CLOUD DENSITY"); ImGui::SameLine();
             ImGui::InputFloat("##fix_cloud_density", &m_CloudDesc.fCloudDensity, 0.01f, 0.1f);
-            ImGui::Separator;
+            ImGui::Separator();
 
-            ImGui::Text("CLOUD INTENSITY"); ImGui::SameLine;
+            ImGui::Text("CLOUD INTENSITY"); ImGui::SameLine();
             ImGui::InputFloat("##fix_cloud_inten", &m_CloudDesc.fCloudLightIntensity, 0.01f, 0.1f);
-            ImGui::Separator;
+            ImGui::Separator();
 
             ImGui::Text("LIGHT DIRECTION");
-            ImGui::Text("X"); ImGui::SameLine;
+            ImGui::Text("X"); ImGui::SameLine();
             ImGui::InputFloat("##fix_cloudlight_dir_X", &m_CloudDesc.vLightDir.x, 0.01f, 0.1f);
-            ImGui::Text("Y"); ImGui::SameLine;
+            ImGui::Text("Y"); ImGui::SameLine();
             ImGui::InputFloat("##fix_cloudlight_dir_Y", &m_CloudDesc.vLightDir.y, 0.01f, 0.1f);
-            ImGui::Text("Z"); ImGui::SameLine;
+            ImGui::Text("Z"); ImGui::SameLine();
             ImGui::InputFloat("##fix_cloudlight_dir_Z", &m_CloudDesc.vLightDir.z, 0.01f, 0.1f);
-            ImGui::Separator;
+            ImGui::Separator();
 
             ImGui::Text("CLOUD DYNAMIC"); ImGui::SameLine();
             if (ImGui::Button("ON"))
                 m_CloudDesc.fDynamic = 1.f;
-            ImGui::SameLine;
+            ImGui::SameLine();
             if (ImGui::Button("OFF"))
                 m_CloudDesc.fDynamic = 0.f;
 

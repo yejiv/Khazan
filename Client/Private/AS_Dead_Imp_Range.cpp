@@ -26,8 +26,8 @@ void CAS_Dead_Imp_Range::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
     if (pModel->Play_Animation(fTimeDelta))
     {
         CBlackBoard* pBB = pImp->Get_Controller()->Get_BlackBoard();
-        //m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pImp->Get_Name(), "isDeadFinished", true);
         pBB->Set_Value<_bool>(pImp->Get_Name(), "isDeadFinished", true);
+        pImp->Get_Controller()->Set_ControllerActivate(false);
     }
 
 

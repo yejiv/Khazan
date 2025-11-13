@@ -34,6 +34,11 @@ public:
 	void ActiveCamera_Shaking(_float fPower, _float fDuration);
 	void ActiveCamera_PushFOVModifier(const FOVModifier& tNewModifier);
 	void ActiveCamera_KillFov(const _wstring& strID);
+    void Start_ForceOrbit(CAMERA_FORCE_DIR eForceDir);
+    void ActiveCamera_InteractMove();
+    void DeactivateCamera_InteractMove();
+    void Yetuga_Holding_Start();
+    void Yetuga_Holding_End();
 
 
 	void Save_Json(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
