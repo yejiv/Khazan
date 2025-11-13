@@ -272,6 +272,8 @@ namespace Engine
         unsigned int    iNumSamples;
         float           fAttenuation;
         float           fStrength;
+        float           fDuration;
+        XMFLOAT2        vFadeTime;
     }RADIAL_BLUR_DESC;
 
 	struct HitStopState
