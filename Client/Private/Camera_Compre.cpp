@@ -65,12 +65,10 @@ HRESULT CCamera_Compre::Initialize_Clone(void* pArg)
     
     CHECK_FAILED(Ready_Camera(pArg), E_FAIL);
 
-
     if(m_iCameraType == ENUM_CLASS(CAMERATYPE::PLAYER))
         CHECK_FAILED(Ready_Body(), E_FAIL);
 
     m_isActive = false;
-    
 
     return S_OK;
 }
@@ -138,6 +136,12 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
         m_vShaking_BaseLook = m_pTransformCom->Get_State(STATE::LOOK);
         Shaking(fTimeDelta);
 
+    }
+
+    if (m_fStartTime < 2.f)
+    {
+        m_fStartTime += fTimeDelta;
+        m_pTransformCom->LookAt(XMLoadFloat4(&m_vAt));
     }
 
     __super::Update_PipeLines(fTimeDelta);
