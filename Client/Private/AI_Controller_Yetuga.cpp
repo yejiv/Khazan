@@ -30,19 +30,6 @@ HRESULT CAI_Controller_Yetuga::Initialize(CCreature* pOwner)
 
 void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_T))
-	{
-		CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
-		CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(pYetuga->Get_Name(), "Target");
-		pYetuga->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK ,pTarget);
-	}
-
-	if (m_pGameInstance->Key_Down(DIK_U))
-	{
-		CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
-		pYetuga->Consume_Stamina(10.f);
-	}
-
 
 	m_pPerception->Update(pOwner,m_pBB,fTimeDelta);
 	_float fPrevTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");

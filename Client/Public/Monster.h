@@ -53,8 +53,10 @@ public:
 	const string&				Get_Name() const { return m_strName; }
 	virtual _float4*			Get_LockOnPosition() const { return m_vLockOnPosition; }
 	void						RequestRecoveryStamina() { m_isRequestRecoveryStamina = true; }
-	void						CheckMinDistanceWithPlayer(_float MinDist, _float fAnimRatio);
     void                        Set_RequestRecoveryStamina(_bool isToggle) { m_isRequestRecoveryStamina = isToggle; }
+    
+    void						CheckMinDistanceWithPlayer(_float MinDist, _float fAnimRatio);
+
 
 public:
 	virtual void				Take_Damage(_float fDamage, HITREACTION eHitreaction,CGameObject* pGameObject = nullptr) override;
@@ -64,6 +66,7 @@ public:
 	virtual void				Look_Target_Lerp(_float fTimeDleta, _float AnimRatio, _float fTurnSpeed);
 	virtual void				Start_Decel(_float fDuration);
 	virtual void				Update_Velocity(_float fTimeDelta);
+
 public:
 	virtual HRESULT				Initialize_Prototype() override;
 	virtual HRESULT				Initialize_Clone(void* pArg) override;

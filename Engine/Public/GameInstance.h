@@ -72,6 +72,7 @@ public:
 	class CGameObject* Get_BackGameObject(_uint iLayerLevelIndex, const _wstring& strLayerTag);
 	HRESULT Add_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, TIME_CHANNEL eTimeChannel = TIME_CHANNEL::WORLD, void* pArg = nullptr);
 	HRESULT Push_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, class CGameObject* pGameObject, TIME_CHANNEL eTimeChannel = TIME_CHANNEL::WORLD);
+
 #pragma endregion
 
 #pragma region RENDERER
