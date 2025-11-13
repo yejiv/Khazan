@@ -835,6 +835,7 @@ namespace Engine
         float   fFovCos = {};
         bool    isRequireLineOfSight = { false };
         float   fHeightOffset = {};
+        float   fAggroHoldTime = {};
 
     }AIPERCEPTION_DATA;
 
@@ -1002,7 +1003,9 @@ namespace Engine
         fCheckInterval,
         fFovCos,
         isRequireLineOfSight,
-        fHeightOffset );
+        fHeightOffset,
+        fAggroHoldTime
+    );
 
 
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(AIBLACKBOARD_DATA,

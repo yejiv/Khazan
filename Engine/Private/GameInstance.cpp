@@ -493,6 +493,8 @@ HRESULT CGameInstance::Push_GameObject_ToLayer(_uint iLayerLevelIndex, const _ws
 	return m_pObject_Manager->Push_GameObject_ToLayer(iLayerLevelIndex, strLayerTag, eTimeChannel, pGameObject);
 }
 
+
+
 #pragma endregion
 
 #pragma region RENDERER

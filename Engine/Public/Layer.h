@@ -15,6 +15,7 @@ public:
 	class CGameObject* Get_GameObject(_uint iIndex);
 	class CGameObject* Get_BackGameObject() { return m_GameObjects.back(); }
 	TIME_CHANNEL		Get_TimeChannel() { return m_eTimeChannel; }
+    list<class CGameObject*> Get_GameObjects() { return m_GameObjects; }
 
 public:
 	void				Set_TimeChannel(TIME_CHANNEL eChannel) { m_eTimeChannel = eChannel; }

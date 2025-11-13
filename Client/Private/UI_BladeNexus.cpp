@@ -45,6 +45,7 @@ void CUI_BladeNexus::On_Panel(ONTYPE eType, _wstring strMapName)
 	m_eNextEvent = MENULIST::END;
 
 	m_pGameInstance->Change_InputType(INPUT_TYPE::UI);
+    CClientInstance::GetInstance()->ActiveCamera_InteractMove();
 }
 
 
@@ -61,6 +62,7 @@ void CUI_BladeNexus::Off_Panel()
 		m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { EventObject::OffEvent() });
 
 		m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
+        CClientInstance::GetInstance()->DeactivateCamera_InteractMove();
 	}
 	else
 	{
