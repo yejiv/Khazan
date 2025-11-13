@@ -25,7 +25,7 @@ private:
 	virtual ~CUI_State_List() = default;
 
 public:
-	void								Setting_List(_int iIndex, _float2 vPos, _float fOffSetY, _int* pValue, _int* pUpValue, _int* pPoint);
+	void								Setting_List(_int iIndex, _float2 vPos, _float fOffSetY, _uint* pValue, _int* pUpValue, _int* pPoint);
 	void								Setting_Button(_int* pUpValue);
 
 	void								Setting_Type(CUI_State::UI_TYPE eType);
@@ -46,7 +46,7 @@ private:
 	CVIBuffer_Rect*						m_pVIBufferCom = { nullptr };
 
 	_int								m_iIndex = { -1 };
-	_int*								m_pValue = { nullptr };
+	_uint*								m_pValue = { nullptr };
 	_int*								m_pUpValue = { nullptr };
 	_int*								m_pPoint = { nullptr };
 

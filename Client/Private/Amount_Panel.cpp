@@ -27,7 +27,7 @@ void CAmount_Panel::Add_Value(_int IValue)
 	m_iAddValue += IValue;
 }
 
-void CAmount_Panel::Setting_Index(CAmount::AMOUNT_TYPE eType, _int* iCulValue)
+void CAmount_Panel::Setting_Index(CAmount::AMOUNT_TYPE eType, _uint* iCulValue)
 {
 	m_eType = eType;
 	m_iCulValue = iCulValue;

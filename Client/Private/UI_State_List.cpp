@@ -17,7 +17,7 @@ CUI_State_List::CUI_State_List(const CUI_State_List& Prototype)
 {
 }
 
-void CUI_State_List::Setting_List(_int iIndex, _float2 vPos, _float fOffSetY, _int* pValue, _int* pUpValue, _int* pPoint)
+void CUI_State_List::Setting_List(_int iIndex, _float2 vPos, _float fOffSetY, _uint* pValue, _int* pUpValue, _int* pPoint)
 {
     m_iIndex = iIndex;
     m_vLocalPos.x = vPos.x;

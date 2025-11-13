@@ -7,6 +7,7 @@
 
 #include "UI_Atlas_Icon.h"
 #include "UI_TextBox.h"
+#include "Skill_Slot_Flag.h"
 
 CSkill_Slot_Panel::CSkill_Slot_Panel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
@@ -89,11 +90,13 @@ void CSkill_Slot_Panel::Update(_float fTimeDelta)
 	{
 		m_pTextBox->Set_Color({ 1.f, 1.f, 1.f, 1.f });
 		m_pAtlasIcon->Update_Color_Child({ 1.f, 1.f, 1.f, 1.f });
+        m_pFlag->Update_Visible(true);
 	}
 	else
 	{
 		m_pTextBox->Set_Color({ 1.f, 1.f, 1.f, 0.6f });
 		m_pAtlasIcon->Update_Color_Child({ 1.f, 1.f, 1.f, 0.6f });
+        m_pFlag->Update_Visible(false);
 	}
 
 	__super::Update(fTimeDelta);
@@ -122,7 +125,11 @@ HRESULT CSkill_Slot_Panel::Load_UI(nlohmann::json& pInData, _uint iPrototypeLeve
 			m_pAtlasIcon = static_cast<CUI_Atlas_Icon*>(pChild);
 			Safe_AddRef(m_pAtlasIcon);
 		}
-		
+        else if (strName == "Flag")
+        {
+            m_pFlag = static_cast<CSkill_Slot_Flag*>(pChild);
+            Safe_AddRef(m_pFlag);
+        }
 	}
 
 	return S_OK;
@@ -208,4 +215,6 @@ void CSkill_Slot_Panel::Free()
 	for (auto pSkill : m_Skill)
 		Safe_Release(pSkill);
 	m_Skill.clear();
+
+    Safe_Release(m_pFlag);
 }
