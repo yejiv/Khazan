@@ -113,6 +113,8 @@ public:
     void Start_ForceOrbit(CAMERA_FORCE_DIR eForceDir);
     void ActiveCamera_InteractMove();
     void DeactivateCamera_InteractMove();
+    void Yetuga_Holding_Start();
+    void Yetuga_Holding_End();
 
 	void Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
 	void Save_Json_Animation(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);

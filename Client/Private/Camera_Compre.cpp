@@ -1031,6 +1031,7 @@ void CCamera_Compre::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLay
 
 void CCamera_Compre::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 {
+
    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
     {
        if (!m_isCollTime)

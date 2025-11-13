@@ -37,6 +37,8 @@ public:
     void		Set_matSpearFX(_float4x4* mat) { m_pSpearFX_Matrix = mat; }
     void		Set_matSpearOffset(_matrix mat) { m_SpearOffset_Matrix = mat; }
     void        Set_IsGuarding(_bool* pIsGuarding) { m_pIsGuarding = pIsGuarding; }
+    void        Set_Spear(class CSpear_Khazan_Spear* pSpear);
+   // void        Set_Lantern(_bool* pIsLantern) { m_isEquipLantern = pIsLantern;}
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -72,6 +74,8 @@ public:
 private:
     class CClientInstance* m_pClientInstance = { nullptr };
 	class CTransform*   m_pParentTransform = { nullptr };   
+    class CSpear_Khazan_Spear* m_pSpear = { nullptr };
+
     CShader*            m_pShaderCom = { nullptr };
     CModel*             m_pModelCom = { nullptr };
     CModel*             m_pModelCom_Arm = { nullptr };
@@ -104,6 +108,8 @@ private:
    // const _uint			m_iSetAnimation[3] = { 3,2,1 };
 
     /* 뼈 위치 */
+    //_float4x4*           m_LanternSocket_Matrix; //랜턴 소켓
+    //_float4x4*           m_BackPack_Matrix; //창 소켓 
     _float4x4*          m_pSpearTip1_Matrix = { nullptr };
     _float4x4			m_pSpearTip1_MatrixW;
     _float4x4*          m_pSpearPole_Matrix = { nullptr };
@@ -127,7 +133,9 @@ private:
     _float              m_fStartAngle = { 0.f };
     _float              m_fTargetAngle = { 0.f };
 
-
+    /* 기타 */
+    _bool*              m_isEquipSpear = { nullptr };
+    _bool*              m_isEquipLantern = { nullptr };
 
 private:
     void				Update_Collider(_float fTimeDelta);                     

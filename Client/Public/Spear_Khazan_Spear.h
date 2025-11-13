@@ -30,8 +30,11 @@ private:
 public:
 	_float4x4*  Get_BoneMatrix(const _char* pBoneName);
 	const _matrix& Get_OffestMatrix() const { return m_matOffset; }
-	void		Set_matWeaponR(_float4x4* mat) { m_pWeaponR_Matrix = mat; }
+    void		Set_matWeaponR(_float4x4* mat) { m_pWeaponR_Matrix = mat; }
+    void		Set_matBackPack(_float4x4* mat) { m_pBackPack_Matrix = mat; }
 
+   // _bool*      Get_isEquip() { return &m_isEquip; }
+    void        Set_Equipped(bool equip) { m_isEquip = equip; }
 public:
 	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize_Clone(void* pArg);
@@ -43,6 +46,7 @@ public:
 
 public:
 	CModel* Get_Model() { return m_pModelCom; }
+    void    Set_Enble(_bool isEnble) { m_isEnble = isEnble; }
 
 private:
 	CShader*					m_pShaderCom = { nullptr };
@@ -51,8 +55,11 @@ private:
 
 	_uint*						m_pParentState = { nullptr };
 	_float4x4*					m_pWeaponR_Matrix = { nullptr };
+    _float4x4*                  m_pBackPack_Matrix = { nullptr };
 
 	_matrix						m_matOffset;
+    _bool                       m_isEnble = { true };
+    _bool                       m_isEquip = { false };
 
 private:
 	HRESULT Ready_Components();

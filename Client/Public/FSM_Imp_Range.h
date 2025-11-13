@@ -11,6 +11,7 @@ enum class  IMPRANGE_STATE
     HIT,
     DEAD,
     SLEEP,
+    LOCKON,
     END,
 };
 NS_BEGIN(Engine)

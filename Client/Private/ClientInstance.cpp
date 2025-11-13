@@ -283,6 +283,14 @@ void CClientInstance::DeactivateCamera_InteractMove()
 {
     m_pCamera_Manager->DeactivateCamera_InteractMove();
 }
+void CClientInstance::Yetuga_Holding_Start()
+{
+    m_pCamera_Manager->Yetuga_Holding_Start();
+}
+void CClientInstance::Yetuga_Holding_End()
+{
+    m_pCamera_Manager->Yetuga_Holding_End();
+}
 _bool CClientInstance::Check_SpearSkill(_uint skill)
 {
 	return m_pPlayerData_Manager->Check_SpearSkill(skill);

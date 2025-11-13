@@ -190,6 +190,7 @@
     <ClInclude Include="..\Public\AS_JumpAttack_Yetuga.h" />
     <ClInclude Include="..\Public\AS_JumpGrab_Yetuga.h" />
     <ClInclude Include="..\Public\AS_LieDown_Yetuga.h" />
+    <ClInclude Include="..\Public\AS_LockOn_ImpRange.h" />
     <ClInclude Include="..\Public\AS_LockOn_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Move_Gomdol.h" />
     <ClInclude Include="..\Public\AS_Move_Imp_Melee.h" />
@@ -433,6 +434,7 @@
     <ClCompile Include="..\Private\AS_JumpAttack_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_JumpGrab_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_LieDown_Yetuga.cpp" />
+    <ClCompile Include="..\Private\AS_LockOn_ImpRange.cpp" />
     <ClCompile Include="..\Private\AS_LockOn_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Move_Gomdol.cpp" />
     <ClCompile Include="..\Private\AS_Move_Imp_Melee.cpp" />

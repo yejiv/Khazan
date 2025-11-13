@@ -7,6 +7,8 @@
 
 NS_BEGIN(Engine)
 class CTransform;
+class CTexture;
+class CDecal;
 NS_END
 
 NS_BEGIN(Editor)
@@ -238,6 +240,14 @@ private:
 
 	_bool m_isMultiFixWindow = { false };
 
+    _bool m_isDecalWindow = { false };
+
+    _bool m_isDecalListWindow = { false };
+
+    _bool m_isDecalFixWindow = { false };
+
+    _bool m_isOnOffWindow = { true };
+
 #pragma endregion
 
 #pragma region ImGui > MainWindow 관련 변수
@@ -288,6 +298,29 @@ private:
 
 #pragma endregion
 
+#pragma region DECAL 용 변수
+
+    CTexture* m_pDecalTexture[ENUM_CLASS(DECALTYPE::END)] = { nullptr };
+    DECALTYPE m_eDecalType = { DECALTYPE::END };
+    _int m_iDecalTextureIndex = {};
+
+    _float m_fDecalThreshold = {};
+
+    vector<CDecal*> m_DecalList;
+    _int m_iDecalListIndex = {};
+
+    _int m_iTextureIndex = {};
+    CDecal* m_pDecal = { nullptr };
+    CDecal* m_pFixDecal = { nullptr };
+
+    DECAL_DESC m_DecalDesc = {};
+    DECAL_DESC m_FixDecalDesc = {};
+    _float4x4 m_DecalWorldMatrix = {};
+
+    _bool m_isDecalWireFrame = { false };
+
+#pragma endregion
+
 #pragma endregion
 
 private:
@@ -314,8 +347,12 @@ private:
 	HRESULT Ready_Object_SaveLoad_Window();
 	// MapEditor SkySphere 수정 윈도우
 	HRESULT Ready_SkySphere_Window();
-	// MapEditor Multi Fix 윈도우
-	HRESULT Ready_MultiFix_Window();
+    // MapEditor Multi Fix 윈도우
+    HRESULT Ready_MultiFix_Window();
+    // MapEditor 데칼 추가 수정 윈도우
+    HRESULT Ready_Map_Decal_Window();
+    // MapEditor 온 오프 윈도우
+    HRESULT Ready_OnOff_Window();
 
 private:
 	// 폴더에 있는 .fbx 파일들 전부 순회하면서 지정한 경로 ( Bin/Data/Map/ ) 에 모델폴더/모델 생성 해주는 함수
@@ -365,10 +402,13 @@ private:
 	// 특정 레벨에서 사용할 모델 바이너리 파일 ( LV_1, LV_2 이런식으로 구분 )
 	_bool Object_Save_Binary_ByLevel(_uint iLevel);
 
-#pragma endregion
+    // 특정 레벨에서 사용할 라이트 바이너리 파일
+    _bool Lights_Save_Binary();
 
-	// 특정 레벨에서 사용할 라이트 바이너리 파일
-	_bool Lights_Save_Binary();
+    // 특정 레벨에서 사용할 데칼 바이너리 파일
+    _bool Decals_Save_Binary();
+
+#pragma endregion
 
 	// MapEditor에서 프로토 타입 불러오기
 	_bool Prototypes_Load_Binary();
@@ -380,8 +420,10 @@ private:
     _bool Trigger_objects_Load_Json();
     // MapEditor에서 몬스터 오브젝트 불러오기
     _bool Monster_objects_Load_Json();
-	// MapEditor에서 조명 불러오기
-	_bool Lights_Load_Binary();
+    // MapEditor에서 조명 불러오기
+    _bool Lights_Load_Binary();
+    // MapEditor에서 데칼 불러오기
+    _bool Decals_Load_Binary();
 
 #pragma endregion
 
