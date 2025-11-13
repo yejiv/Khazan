@@ -199,6 +199,9 @@ private:
     _float m_fPostFrameEyeOffsetY = 1.5f;  // 캐릭터 눈높이
     _float m_fPostFrameMinDist = 0.5f;  // 너무 가까울 때 안정화용
 
+
+    _float m_fStartTime = {};
+
 public:
 	void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
 	void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;

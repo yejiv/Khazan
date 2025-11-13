@@ -109,10 +109,9 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
     Update_GuardRotation(fTimeDelta);
 
     //TEST
-    //if (m_pGameInstance->Key_Down(DIK_I))
-    //    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), XMVectorSet(1.f, 1.f, 1.f, 1.f));
-    //if (m_pGameInstance->Key_Down(DIK_O))
-    //    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust"), XMVectorSet(1.f, 1.f, 1.f, 1.f));
+    if (m_pGameInstance->Key_Down(DIK_I))
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("BloodHit"), XMVectorSet(1.f, 1.f, 1.f, 1.f) );
+        //m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("BloodHit"), m_pParentTransform->Get_WorldMatrix().r[3] );
 }
 
 void CBody_Khazan_Spear::Late_Update(_float fTimeDelta)
@@ -510,16 +509,25 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
     m_pModelCom->Register_Event("FastAtk03_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_FastAtk03_Trail(); });
     m_pModelCom->Register_Event("FastAtk03_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_FastAtk_SpawnWind(); });
 
-    m_pModelCom->Register_Event("StrongAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_StrongAtk01_Trail(); });
-    m_pModelCom->Register_Event("StrongAtk02_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_StrongAtk02_Trail(); });
-    m_pModelCom->Register_Event("StrongAtk03_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_StrongAtk03_Trail(); });
-    m_pModelCom->Register_Event("StrongAtk_Charge_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_StrongAtk_Charge_Trail(); });
-    m_pModelCom->Register_Event("StrongAtk_Charge_Blust", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_StrongAtk_Charge_Blust(); });
+    m_pModelCom->Register_Event("StrongAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
+    m_pModelCom->Register_Event("StrongAtk02_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
+    m_pModelCom->Register_Event("StrongAtk03_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
+    m_pModelCom->Register_Event("StrongAtk_Charge_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
+    m_pModelCom->Register_Event("StrongAtk_Charge_Blust", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_StrongAtk_Charge_Blust1(m_pParentTransform->Get_WorldMatrix().r[3]); });
+
+    /*보름달 트레일*/
+    m_pModelCom->Register_Event("Full_Moon_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_Trail(); });
+    m_pModelCom->Register_Event("Full_Moon_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
+    /*보름달 Blust*/
+    m_pModelCom->Register_Event("Full_Moon_Spike0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_StrongAtk_Charge_Blust4(m_pParentTransform->Get_WorldMatrix().r[3]); });
+    m_pModelCom->Register_Event("Full_Moon_Spike1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
+        {   _matrix hand = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+            FX_StrongAtk_Charge_BlustSmall(hand.r[3]); });
 
 #pragma endregion
 
 
-#pragma region Collider
+#pragma region Collider  
     m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Event_AttackTiming(true); });
     m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Event_AttackTiming(false);  });
 
@@ -582,8 +590,7 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
         BodyBoxDesc.bIsTrigger = true;
         if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
             TEXT("Com_Body2"), reinterpret_cast<CComponent**>(&m_pBodyCom_SpearPole), &BodyBoxDesc)))
-            return E_FAIL;
-
+            return E_FAIL; 
     }
 
     //m_pBodyCom_SpearTip1->Collision_Active(false);
@@ -607,21 +614,7 @@ HRESULT CBody_Khazan_Spear::Bind_ShaderResources()
     return S_OK;
 }
 
-void CBody_Khazan_Spear::FX_StrongAtk01_Trail()
-{
-    _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-    _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
-    m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
-}
-
-void CBody_Khazan_Spear::FX_StrongAtk02_Trail()
-{
-    _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-    _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
-    m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
-}
-
-void CBody_Khazan_Spear::FX_StrongAtk03_Trail()
+void CBody_Khazan_Spear::FX_Trail()
 {
     _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
     _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
@@ -759,13 +752,14 @@ void CBody_Khazan_Spear::FX_FastAtk_SpawnWind()
     EffectID_SpearWind = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), Q, W.r[3]); 
 }
 
-void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust()
+
+void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust1(_fvector pos)
 {
-    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust"), m_pParentTransform->Get_WorldMatrix().r[3]);
+    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust"), pos);
 
     // Distortion
     DISTORTION_DESC Desc{};
-    _vector vCenterPos = m_pParentTransform->Get_WorldMatrix().r[3];
+    _vector vCenterPos = pos;
     _float fPosY = XMVectorGetY(m_pParentTransform->Get_WorldMatrix().r[3]);
     _float fOffset = 2.f;
     vCenterPos = XMVectorSetY(vCenterPos, fPosY + fOffset);
@@ -788,11 +782,24 @@ void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust()
     m_pGameInstance->Start_VignetteAnimation(2.f, Config);
 }
 
-void CBody_Khazan_Spear::FX_StrongAtk_Charge_Trail()
+void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust2(_fvector pos)
 {
-    _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-    _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
-    m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
+    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust2"), pos);
+}
+
+void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust3(_fvector pos)
+{
+    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust3"), pos);
+}
+
+void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust4(_fvector pos)
+{
+    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust4"), pos);
+}
+
+void CBody_Khazan_Spear::FX_StrongAtk_Charge_BlustSmall(_fvector pos)
+{
+    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("BlustSmall"), pos);
 }
 
 void CBody_Khazan_Spear::Event_AttackTiming(_bool isAttackStart)

@@ -10,18 +10,47 @@ CRadialBlur::CRadialBlur()
 HRESULT CRadialBlur::Initialize()
 {
     m_Desc.vCenterUV = { 0.5f, 0.5f };
-    m_Desc.fSampleRadius = 0.25f;
+    m_Desc.fSampleRadius = 0.05f;
     m_Desc.vMaskRadius = { 0.f, 0.3f };
     m_Desc.fExponent = 1.f;
-    m_Desc.iNumSamples = 8;
-    m_Desc.fAttenuation = 1.f;
-    m_Desc.fStrength = 1.f;
+    m_Desc.iNumSamples = 16;
+    m_Desc.fAttenuation = 0.1f;
+    m_Desc.fStrength = 0.f;
 
     return S_OK;
 }
 
 void CRadialBlur::Update(_float fTimeDelta)
 {
+    if (false == m_pGameInstance->isEnableRadialBlur())
+        return;
+    
+    m_fTimeAcc += fTimeDelta;
+
+    if (m_fTimeAcc >= m_fDuration)
+    {
+        m_pGameInstance->Set_EnableRadialBlur(false);
+        m_fTimeAcc = 0.f;
+        m_Desc.fStrength = 0.f;
+        return;
+    }
+
+    // Fade Out
+    if (m_fTimeAcc > m_vFadeTime.y)
+    {
+        _float fFadeDuration = m_fDuration - m_vFadeTime.y;
+        _float fFadeTimeAcc = m_fTimeAcc - m_vFadeTime.y;
+        _float fRatio = (fFadeTimeAcc / fFadeDuration);
+        m_Desc.fStrength = 1.f - fRatio;
+        m_Desc.fStrength = max(0.f, m_Desc.fStrength);
+    }
+
+    // Fade In
+    if (m_fTimeAcc < m_vFadeTime.x)
+    {
+        m_Desc.fStrength = m_fTimeAcc / m_vFadeTime.x;
+        m_Desc.fStrength = min(1.f, m_Desc.fStrength);
+    }
 }
 
 HRESULT CRadialBlur::Bind_RadialBlur_ShaderResources(CShader* pShader)
@@ -60,15 +89,14 @@ void CRadialBlur::Set_RadialBlurCenter(_fvector vCenter)
     m_Desc.vCenterUV = _float2(fU, fV);
 }
 
-void CRadialBlur::Start_RadialBlur(_float fDuration, const RADIAL_BLUR_DESC& Desc)
+void CRadialBlur::Start_RadialBlur(_float fDuration, const _float2& vFadeTime, const RADIAL_BLUR_DESC& Desc)
 {
-    // ·»´õ·¯ ·¹µð¾ó ºí·¯ Enable True
-    // µð½ºÅ©¸³¼Ç ¼¼ÆÃ
-    // ¾÷µ¥ÀÌÆ®¿¡¼­ ½Ã°£ ´©Àû, Áö¼Ó ½Ã°£ ³Ñ¾î°¡¸é ·»´õ·¯ ·¹µð¾ó ºí·¯ ºñÈ°¼ºÈ­
-    // ¾÷µ¥ÀÌÆ®¿¡¼­ sinÀ¸·Î ¾Ö´Ï¸ÞÀÌ¼Ç ½ÇÇà
-    // ¾÷µ¥ÀÌÆ®¿¡¼­ Å¸°Ù ¾Æ¿ìÅÍ Radius¶û Å¸°Ù °­µµ·Î º¸°£ÇÏ±â
-    // ¿Ü°¢¿¡¼­ºÎÅÍ °¡¿îµ¥·Î ¼­¼­È÷ ÁýÁßµÇµíÀÌ
-    // ¹Ý´ë·Î ³¡³¯ ¶§Âë¿¡´Â Áß¾Ó¿¡¼­ºÎÅÍ ÆÛÁöµíÀÌ
+    // ê°•ë„ ì¡°ì ˆë§Œ, ë‹¤ë¥¸ ì„¤ì •ì€ ìœ ì§€, ë‹¤ë¥¸ ì„¤ì • ë³€ê²½í•˜ê³  ì‹¶ìœ¼ë©´ ì¸ìž Desc ì¶”ê°€ í›„ ì‹œìž‘, íƒ€ê²Ÿ ë©¤ë²„ ë³€ìˆ˜ ì¶”ê°€
+    m_pGameInstance->Set_EnableRadialBlur(true);
+    m_fDuration = fDuration;
+    //  m_Desc = Desc;
+    m_vFadeTime = vFadeTime;
+    m_vFadeTime.y = m_fDuration - m_vFadeTime.y;
 }
 
 CRadialBlur* CRadialBlur::Create()

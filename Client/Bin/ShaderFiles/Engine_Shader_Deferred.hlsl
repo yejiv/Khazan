@@ -793,7 +793,7 @@ PS_OUT_BACKBUFFER PS_RADIAL_BLUR(PS_IN In)
         float fRatio = (i + 1) / (float) g_iNumSamples;
         float2 vSampleUV = In.vTexcoord + vDir * fRatio * g_fSampleRadius;
         float fWeight = pow(fRatio, g_fAttenuation);
-        vColor += g_CombinedTexture.Sample(DefaultSampler, vSampleUV) * fWeight;
+        vColor += g_CombinedTexture.Sample(ClampSampler, vSampleUV) * fWeight;
         fWeightAcc += fWeight;
     }
     
