@@ -19,6 +19,7 @@ void CMoveState_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CYetuga::MONSTER_INFO Info{};
     Info.iStateFlag = pBB->Get_Value<_uint>(pYetuga->Get_Name(), "iMovementFlag");
     m_iPrevMovementFlag = Info.iStateFlag;
+
     if (Info.iStateFlag == Info.WALK)
     {
         m_fSpeedPerSec = pTransform->Get_SpeedPerSec();
@@ -29,13 +30,11 @@ void CMoveState_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     {
         m_fSpeedPerSec = pBB->Get_Value<_float>(pYetuga->Get_Name(), "RunSpeed");
         pModel->Set_Animation(6);
-        m_fSpeedPerSec = 7.8f;
     }
     else if (Info.iStateFlag == Info.SPRINT)
     {
         m_fSpeedPerSec = pBB->Get_Value<_float>(pYetuga->Get_Name(), "SprintSpeed");
         pModel->Set_Animation(7);
-        /*m_fSpeedPerSec = 10.f;*/
 
     }  
 }
