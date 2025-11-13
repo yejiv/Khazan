@@ -70,6 +70,7 @@ public:
 	}
     void Set_SpecularPower(_float2 vPower) { m_vSpecularPower = vPower; }
     void Set_EnableRadialBlur(_bool isEnable) { m_isEnableRadialBlur = isEnable; }
+    _bool isEnableRadialBlur() { return m_isEnableRadialBlur; }
 
 private:
 	ID3D11Device*				m_pDevice = { nullptr };
