@@ -10,18 +10,47 @@ CRadialBlur::CRadialBlur()
 HRESULT CRadialBlur::Initialize()
 {
     m_Desc.vCenterUV = { 0.5f, 0.5f };
-    m_Desc.fSampleRadius = 0.25f;
+    m_Desc.fSampleRadius = 0.05f;
     m_Desc.vMaskRadius = { 0.f, 0.3f };
     m_Desc.fExponent = 1.f;
-    m_Desc.iNumSamples = 8;
-    m_Desc.fAttenuation = 1.f;
-    m_Desc.fStrength = 1.f;
+    m_Desc.iNumSamples = 16;
+    m_Desc.fAttenuation = 0.1f;
+    m_Desc.fStrength = 0.f;
 
     return S_OK;
 }
 
 void CRadialBlur::Update(_float fTimeDelta)
 {
+    if (false == m_pGameInstance->isEnableRadialBlur())
+        return;
+    
+    m_fTimeAcc += fTimeDelta;
+
+    if (m_fTimeAcc >= m_fDuration)
+    {
+        m_pGameInstance->Set_EnableRadialBlur(false);
+        m_fTimeAcc = 0.f;
+        m_Desc.fStrength = 0.f;
+        return;
+    }
+
+    // Fade Out
+    if (m_fTimeAcc > m_vFadeTime.y)
+    {
+        _float fFadeDuration = m_fDuration - m_vFadeTime.y;
+        _float fFadeTimeAcc = m_fTimeAcc - m_vFadeTime.y;
+        _float fRatio = (fFadeTimeAcc / fFadeDuration);
+        m_Desc.fStrength = 1.f - fRatio;
+        m_Desc.fStrength = max(0.f, m_Desc.fStrength);
+    }
+
+    // Fade In
+    if (m_fTimeAcc < m_vFadeTime.x)
+    {
+        m_Desc.fStrength = m_fTimeAcc / m_vFadeTime.x;
+        m_Desc.fStrength = min(1.f, m_Desc.fStrength);
+    }
 }
 
 HRESULT CRadialBlur::Bind_RadialBlur_ShaderResources(CShader* pShader)
@@ -60,15 +89,14 @@ void CRadialBlur::Set_RadialBlurCenter(_fvector vCenter)
     m_Desc.vCenterUV = _float2(fU, fV);
 }
 
-void CRadialBlur::Start_RadialBlur(_float fDuration, const RADIAL_BLUR_DESC& Desc)
+void CRadialBlur::Start_RadialBlur(_float fDuration, const _float2& vFadeTime, const RADIAL_BLUR_DESC& Desc)
 {
-    // 렌더러 레디얼 블러 Enable True
-    // 디스크립션 세팅
-    // 업데이트에서 시간 누적, 지속 시간 넘어가면 렌더러 레디얼 블러 비활성화
-    // 업데이트에서 sin으로 애니메이션 실행
-    // 업데이트에서 타겟 아우터 Radius랑 타겟 강도로 보간하기
-    // 외각에서부터 가운데로 서서히 집중되듯이
-    // 반대로 끝날 때쯤에는 중앙에서부터 퍼지듯이
+    // 강도 조절만, 다른 설정은 유지, 다른 설정 변경하고 싶으면 인자 Desc 추가 후 시작, 타겟 멤버 변수 추가
+    m_pGameInstance->Set_EnableRadialBlur(true);
+    m_fDuration = fDuration;
+    //  m_Desc = Desc;
+    m_vFadeTime = vFadeTime;
+    m_vFadeTime.y = m_fDuration - m_vFadeTime.y;
 }
 
 CRadialBlur* CRadialBlur::Create()
