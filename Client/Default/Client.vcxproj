@@ -217,6 +217,7 @@
     <ClInclude Include="..\public\Inven_State_Panel.h" />
     <ClInclude Include="..\Public\Projectile_Boomarang.h" />
     <ClInclude Include="..\public\Khazan_Spaer_Anim_Damaged.h" />
+    <ClInclude Include="..\public\Skill_Slot_Flag.h" />
     <ClInclude Include="..\public\UI_BladeNexus_Map.h" />
     <ClInclude Include="..\public\BladeNexus_Map_List.h" />
     <ClInclude Include="..\Public\Body_Gomdol.h" />
@@ -464,6 +465,7 @@
     <ClCompile Include="..\private\Inven_State_Panel.cpp" />
     <ClCompile Include="..\Private\Projectile_Boomarang.cpp" />
     <ClCompile Include="..\private\Khazan_Spaer_Anim_Damaged.cpp" />
+    <ClCompile Include="..\private\Skill_Slot_Flag.cpp" />
     <ClCompile Include="..\private\UI_BladeNexus_Map.cpp" />
     <ClCompile Include="..\private\BladeNexus_Map_List.cpp" />
     <ClCompile Include="..\Private\Body_Gomdol.cpp" />
