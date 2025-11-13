@@ -75,7 +75,6 @@ void CYetuga::Priority_Update(_float fTimeDelta)
     if (m_fCurrentHP <= 0.f)
     {
         pBB->Set_Value<_bool>(m_strName, "isDead", true);
-
     }
 
     if (pBB->Get_Value<_bool>(m_strName, "isDetected"))

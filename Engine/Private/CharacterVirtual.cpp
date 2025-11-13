@@ -273,7 +273,7 @@ void CCharacterVirtual::StepFixed(_float fTimeDelta)
     if (!IsFiniteVec3(final_vel))
         final_vel = JPH::Vec3::sZero();
 
-    // ===== Jolt 업데이트 (1회) =====
+
     m_pCharVir->SetLinearVelocity(final_vel);
 
     m_pGameInstance->CharVir_ExtendedUpdate(
@@ -285,6 +285,17 @@ void CCharacterVirtual::StepFixed(_float fTimeDelta)
         m_pShapeFilter,
         m_tEXUpdateSetting
     );
+
+    // ===== Jolt 업데이트 (1회) =====
+    if (m_pCharVir->GetGroundState() == JPH::CharacterVirtual::EGroundState::OnGround) {
+        const JPH::Vec3 n = m_pCharVir->GetGroundNormal();          // 단위 법선
+        JPH::Vec3 v = m_pCharVir->GetLinearVelocity();
+
+        v -= n * v.Dot(n);
+
+
+        m_pCharVir->SetLinearVelocity(v);
+    }
 
     // ===== 스텝 이후 현재 포즈 갱신 =====
     m_tCurrPose.vPos = m_pCharVir->GetPosition();
