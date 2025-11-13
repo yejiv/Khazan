@@ -64,7 +64,8 @@ void CMainApp::Update(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_LCONTROL))
 	{
-		//m_pClientInstance->ActiveCamera_Shaking(2.f, 1.f);
+		m_pClientInstance->ActiveCamera_Shaking(1.5f, 1.f);
+
 		//m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.3f, 0.003f, 3.f);
 		//m_pGameInstance->Fix_HitStop(TIME_CHANNEL::ENEMY);
 		//FOVModifier tMod{};
@@ -96,7 +97,7 @@ void CMainApp::Update(_float fTimeDelta)
 
 		//m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
 
-        m_pClientInstance->Find_MapBladeNexus(KHAZAN_MAP::HEINMACH);
+        //m_pClientInstance->Find_MapBladeNexus(KHAZAN_MAP::HEINMACH);
 	}
 	if (m_pGameInstance->Key_Down(DIK_RCONTROL))
 	{
@@ -318,8 +319,13 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 		return E_FAIL;
 #pragma endregion
 
-#pragma region 하늘 구름 객체 원형
+#pragma region 귀검 모델 원형
+    /* Prototype_Component_Model_BladeNexus */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Model_BladeNexus"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_DamagedTS/WIP_COM_DamagedTS.dat")), E_FAIL);
+#pragma endregion
 
+#pragma region 하늘 구름 객체 원형
 	/* Prototype_GameObject_SkyShpere */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_SkySphere"),
 		CSkySphere::Create(m_pDevice, m_pContext))))
@@ -329,7 +335,12 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_CloudSphere"),
 		CCloudSphere::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+#pragma endregion
 
+#pragma region 귀검 객체 원형
+    /* Prototype_GameObject_Loading_BladeNexus */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Loading_BladeNexus"),
+        CLoadingObj_BN::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 #pragma region 카메라
@@ -366,7 +377,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Common/T_Img_List_Menu_%d.png"), 8)), E_FAIL);
 
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_FX_Mask"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Mask/T_Fx_%d.png"), 6)), E_FAIL);
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Mask/T_Fx_%d.png"), 9)), E_FAIL);
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_State_Button"),
         CTexture::Create(m_pDevice, m_pContext, TEXT("..//Bin/Resources/UI/State/NormalButton_%d.png"), 10))))

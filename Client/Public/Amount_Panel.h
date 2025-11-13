@@ -13,7 +13,7 @@ private:
 
 public:
 	void								Add_Value(_int IValue);
-	void								Setting_Index(CAmount::AMOUNT_TYPE eType, _int* iCulValue);
+	void								Setting_Index(CAmount::AMOUNT_TYPE eType, _uint* iCulValue);
 public:
 	virtual HRESULT						Initialize_Prototype();
 	virtual HRESULT						Initialize_Clone(void* pArg) override;
@@ -33,7 +33,7 @@ private:
 	class CUI_TextBox*					m_pCulValueText = { nullptr };
 	class CUI_TextBox*					m_pAddValueText = { nullptr };
 
-	_int*								m_iCulValue = {};
+	_uint*								m_iCulValue = {};
 	_int								m_iAddValue = {};
 
 	_int								m_iAccValue = {};

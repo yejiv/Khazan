@@ -58,6 +58,7 @@ private:
 
 	class CUI_Atlas_Icon*				m_pQIcon = { nullptr };
 	class CUI_Atlas_Icon*				m_pEIcon = { nullptr };
+    class CInven_State_Panel*           m_pState_Panel = {nullptr };
 
 	vector<class CUI_Atlas_Icon*>		m_pGuideIcon;
 	vector<class CUI_TextBox*>			m_pGuideText;

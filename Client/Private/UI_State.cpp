@@ -246,7 +246,7 @@ HRESULT CUI_State::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, voi
 					m_pState.push_back(pChild);
 
 					Safe_AddRef(pChild);
-					pChild->Setting_List(i, vPos, 65.f, &m_CulStateLevel[i], &m_UpStateLevel[i], &m_Player_Data.iUPPoint);
+					pChild->Setting_List(i, vPos, 65.f, m_CulStateLevel[i], &m_UpStateLevel[i], &m_Player_Data.iUPPoint);
 				}
 			}
 			else
@@ -390,15 +390,15 @@ HRESULT CUI_State::Ready_Object()
 void CUI_State::Ready_PlayerData()
 {
 	//플레이어 기본 정보
-	m_Player_Data.iLevel						= 3;
+	m_Player_Data.iLevel						= CClientInstance::GetInstance()->Get_PlayerData().iLevel;
 	m_Player_Data.iUPPoint						= 0;
 	m_Player_Data.iUpLachryma					= 0;
-	m_Player_Data.iLachryma						= 1;
+	m_Player_Data.iLachryma						= CClientInstance::GetInstance()->Get_PlayerData().iLachryma;
 	
-	m_Player_Data.iMaxHp						= 100;
-	m_Player_Data.iMaxStamina					= 100;
-	m_Player_Data.iAtk							= 1111;
-	m_Player_Data.iDef							= 934;
+	m_Player_Data.iMaxHp						= CClientInstance::GetInstance()->Get_PlayerData().fMaxHp;
+	m_Player_Data.iMaxStamina					= CClientInstance::GetInstance()->Get_PlayerData().fMaxStamina;
+	m_Player_Data.iAtk							= CClientInstance::GetInstance()->Get_PlayerData().fDamage;
+	m_Player_Data.iDef							= CClientInstance::GetInstance()->Get_PlayerData().fGuard;
 	m_Player_Data.fWeight						= 15.f;
 	m_Player_Data.fMaxWeight					= 35.f;
 	m_Player_Data.fAgile						= 100.f;
@@ -449,11 +449,11 @@ void CUI_State::Ready_PlayerData()
 	m_CulStateLevel.resize(ENUM_CLASS(STATE_LIST::END));
 	m_UpStateLevel.resize(ENUM_CLASS(STATE_LIST::END));
 
-	m_CulStateLevel[ENUM_CLASS(STATE_LIST::VITALITY)] = 10;
-	m_CulStateLevel[ENUM_CLASS(STATE_LIST::ENDURANCE)] = 10;
-	m_CulStateLevel[ENUM_CLASS(STATE_LIST::POWER)] = 10;
-	m_CulStateLevel[ENUM_CLASS(STATE_LIST::COMPETENCY)] = 10;
-	m_CulStateLevel[ENUM_CLASS(STATE_LIST::WILL)] = 10;
+	m_CulStateLevel[ENUM_CLASS(STATE_LIST::VITALITY)] = &CClientInstance::GetInstance()->Get_ptrPlayerData().iVitality;
+	m_CulStateLevel[ENUM_CLASS(STATE_LIST::ENDURANCE)] = &CClientInstance::GetInstance()->Get_ptrPlayerData().iEndurance;
+	m_CulStateLevel[ENUM_CLASS(STATE_LIST::POWER)] = &CClientInstance::GetInstance()->Get_ptrPlayerData().iPower;
+	m_CulStateLevel[ENUM_CLASS(STATE_LIST::COMPETENCY)] = &CClientInstance::GetInstance()->Get_ptrPlayerData().iCompetency;
+	m_CulStateLevel[ENUM_CLASS(STATE_LIST::WILL)] = &CClientInstance::GetInstance()->Get_ptrPlayerData().iWill;
 
 	m_UpStateLevel[ENUM_CLASS(STATE_LIST::VITALITY)] = 0;
 	m_UpStateLevel[ENUM_CLASS(STATE_LIST::ENDURANCE)] = 0;
@@ -636,7 +636,7 @@ void CUI_State::Button_Bubble_Event(UI_STATE_BUBLLE* pDesc)
 
 	for (_int i = 0; i < ENUM_CLASS(STATE_LIST::END); ++i)
 	{
-		m_CulStateLevel[i] += m_UpStateLevel[i];
+		*m_CulStateLevel[i] += m_UpStateLevel[i];
 		m_UpStateLevel[i] = 0;
 	}
 

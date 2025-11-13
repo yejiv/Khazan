@@ -43,7 +43,7 @@ private:
 	_bool					m_isRenderSSAO = { true };
 	_bool					m_isEnableEmissive = {};
 	_bool					m_isEnableBloom = {};
-	_bool					m_isEnableFog = {};
+	_bool					m_isEnableFog = { true };
 	_bool					m_isEnableToonShade = {};
 	_bool					m_isEnableOutline = {};
 	_bool					m_isEnableVignette = {};
@@ -82,8 +82,6 @@ private:
 
     // Radial Blur
     RADIAL_BLUR_DESC        m_RadialBlurDesc = {};
-    _float2                 m_vRadialBlurFadeTime = {};
-    _float                  m_fRadialBlurDuration = {};
 
 private:
 	// 파라미터 ( 1. 등록할 레이어 태그 | 2. 데이터 파일 이름 | 3. 현재 로드할 레벨 | 4. 맵 타입 ( 안넣으면 폴더 내부 X ) )

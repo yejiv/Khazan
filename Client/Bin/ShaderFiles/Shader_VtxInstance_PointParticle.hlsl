@@ -18,8 +18,7 @@ float g_numCols, g_numRows;
 float g_FrameIdx;
 
 float g_EdgeWidth;
-float4 g_EdgeColor;
-
+float4 g_EdgeColor; 
 texture2D g_DiffuseTexture;
 texture2D g_MaskTexture;
 texture2D g_DisolveTexture;
@@ -79,6 +78,7 @@ struct GS_OUT
     float2 vTexcoord : TEXCOORD0;
     float2 vLifeTime : TEXCOORD1;
     float bDead : TEXCOORD2;
+    float4 vPrevPosition : TEXCOORD3;
 };
 
 [maxvertexcount(6)]
@@ -119,24 +119,28 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
     Out[0].vTexcoord = float2(startU, startV) + (Out[0].vTexcoord * float2(Width, Height));
     Out[0].vLifeTime = In[0].vLifeTime;
     Out[0].bDead = In[0].bDead;
+    Out[0].vPrevPosition = In[0].vPrevPosition;
     
     Out[1].vPosition = mul(In[0].vPosition - vRight + vUp, matrVP);
     Out[1].vTexcoord = float2(1.f, 0.f);
     Out[1].vTexcoord = float2(startU, startV) + (Out[1].vTexcoord * float2(Width, Height));
     Out[1].vLifeTime = In[0].vLifeTime;
     Out[1].bDead = In[0].bDead;
+    Out[1].vPrevPosition = In[0].vPrevPosition;
     
     Out[2].vPosition = mul(In[0].vPosition - vRight - vUp, matrVP);
     Out[2].vTexcoord = float2(1.f, 1.f);
     Out[2].vTexcoord = float2(startU, startV) + (Out[2].vTexcoord * float2(Width, Height));
     Out[2].vLifeTime = In[0].vLifeTime;
     Out[2].bDead = In[0].bDead;
+    Out[2].vPrevPosition = In[0].vPrevPosition;
     
     Out[3].vPosition = mul(In[0].vPosition + vRight - vUp, matrVP);
     Out[3].vTexcoord = float2(0.f, 1.f);
     Out[3].vTexcoord = float2(startU, startV) + (Out[3].vTexcoord * float2(Width, Height));
     Out[3].vLifeTime = In[0].vLifeTime;
     Out[3].bDead = In[0].bDead;
+    Out[3].vPrevPosition = In[0].vPrevPosition;
     
     Vertices.Append(Out[0]);
     Vertices.Append(Out[1]);
@@ -155,6 +159,7 @@ struct PS_DEFAULT_IN
     float2 vTexcoord : TEXCOORD0;
     float2 vLifeTime : TEXCOORD1;
     float vDead : TEXCOORD2;
+    float4 vPrevPosition : TEXCOORD3;
 };
 
 struct PS_OUT
@@ -218,6 +223,12 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     if (In.vDead == true)
         discard;
     
+    float3 diff = In.vPosition.xyz - In.vPrevPosition.xyz;
+    float distSq = dot(diff, diff);
+    
+    if (distSq < 0.0f) 
+        discard;
+    
     vector vMask = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
     
     vector vSourColor = float4(g_vSourceColor.xyz, 1.f);
@@ -260,10 +271,4 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN();
     }
 }
-
-/*
-
-
-클론 내용 바꾸기
-
-*/
+ 
