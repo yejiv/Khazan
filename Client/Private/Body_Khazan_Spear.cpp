@@ -70,6 +70,7 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
     //m_pSpearEnd1_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R_Spear_End01");
     //m_pSpearEnd2_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R_Spear_End02");
 
+    m_pParentTransform->Set_State(STATE::POSITION, XMVectorSet(0.f, 0.f, 0.f, 0.f));
 
     if (FAILED(Ready_Collider()))
         return E_FAIL;
@@ -86,7 +87,6 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
 //		});
 //#endif
     m_pModelCom->WarmupAnimations();
-
     m_pParentTransform->Set_State(STATE::POSITION, XMVectorSet(0.f, 0.f, 0.f, 0.f));
 
     return S_OK;
