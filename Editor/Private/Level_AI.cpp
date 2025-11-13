@@ -20,6 +20,7 @@ HRESULT CLevel_AI::Initialize()
 	if (FAILED(Ready_Edit_Objects()))
 		return E_FAIL;
 
+
 	m_pGameInstance->AddWidget(TEXT("AI"), [&]() {
 
 		ImGui::Begin("AI TOOL", nullptr, ImGuiWindowFlags_MenuBar);

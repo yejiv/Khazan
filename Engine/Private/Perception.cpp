@@ -196,7 +196,7 @@ void CPerception::Forget()
 
 void CPerception::Forget_Damage()
 {
-	_float fNow = m_fCurrnetTime;
+	/*_float fNow = m_fCurrnetTime;
 	while (!m_DamageHistory.empty())
 	{
 		const STIMULUS& Front = m_DamageHistory.front();
@@ -214,9 +214,29 @@ void CPerception::Forget_Damage()
 		}
 		else
 			break;
-	}
+	}*/
 
 
+    _float fNow = m_fCurrnetTime;
+
+    while (!m_DamageHistory.empty())
+    {
+        STIMULUS Front = m_DamageHistory.front();
+        if (fNow - Front.fTimeStamp > Front.fVaildTime)
+        {
+            m_fDamageAcc -= Front.fStrength;
+
+            if (m_PerceptionCallBack)
+            {
+                Front.bSensed = false;
+                m_PerceptionCallBack(nullptr, Front);
+            }
+
+            m_DamageHistory.pop();
+        }
+        else
+            break;
+    }
 
 }
 
