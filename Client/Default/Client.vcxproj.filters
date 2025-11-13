@@ -781,6 +781,9 @@
     <Filter Include="92.AI\State\Imp_Melee\Dead">
       <UniqueIdentifier>{689219ac-a03d-4d2d-8f56-d3da6e31c225}</UniqueIdentifier>
     </Filter>
+    <Filter Include="92.AI\State\Imp_Range\LockOn">
+      <UniqueIdentifier>{02cbf283-7191-4046-b891-4dd86bd388f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1505,6 +1508,9 @@
     <ClInclude Include="..\Public\AS_Hit_Imp_Melee.h">
       <Filter>92.AI\State\Imp_Melee\Hit</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\AS_LockOn_ImpRange.h">
+      <Filter>92.AI\State\Imp_Range\LockOn</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2208,6 +2214,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_Hit_Imp_Melee.cpp">
       <Filter>92.AI\State\Imp_Melee\Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_LockOn_ImpRange.cpp">
+      <Filter>92.AI\State\Imp_Range\LockOn</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
