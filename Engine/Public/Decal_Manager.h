@@ -15,6 +15,14 @@ public:
 	HRESULT						Render();
 	HRESULT						Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, const DECAL_DESC& Desc);
 
+#pragma region 맵 에디터 + 클라이언트에서 사용할 함수 ( 감사합니다 )
+public:
+    // 맵 에디터에서 이미지 볼때 사용
+    class CTexture*             Get_DecalTexture(DECALTYPE eType) { return m_pTexture[ENUM_CLASS(eType)]; }
+    // 클론 후 Decal에 푸시만
+    void                        Batch_Decal(class CDecal* pDecal) { m_Decals.push_back(pDecal); }
+#pragma endregion
+
 private:
 	ID3D11Device*				m_pDevice = { nullptr };
 	ID3D11DeviceContext*		m_pContext = { nullptr };

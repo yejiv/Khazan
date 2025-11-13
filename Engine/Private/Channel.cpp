@@ -61,7 +61,7 @@ HRESULT CChannel::Initialize(CHANNEL_DATA& data)
         m_KeyFrames.push_back(KeyFrame);
     }
 
-    m_vPrevScale = XMVectorSet(1.f, 1.f, 1.f, 0.f);
+    m_vPrevScale = XMVectorSet(1.f, 1.f, 1.f, 1.f);
     m_vPrevRotQuat = XMQuaternionIdentity();
 	m_vPrevPositon = XMVectorSet(0.f, 0.f, 0.f, 1.f);
     //m_TransformationMatrix = XMMatrixIdentity();
@@ -104,9 +104,6 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
         vTranslation = XMVectorSetW(XMVectorLerp(XMVectorSetW(XMLoadFloat3(&m_KeyFrames[*pCurrentKeyFrameIndex].vTranslation), 1.f), XMVectorSetW(XMLoadFloat3(&m_KeyFrames[*pCurrentKeyFrameIndex + 1].vTranslation), 1.f), fRatio), 1.f);
     }
 
-    //_float3 scaleBeforeBlend;//
-    //XMStoreFloat3(&scaleBeforeBlend, vScale);//
-
     // 이전 애니메이션과의 보간 처리 
 	if (m_isBlendPreAnimation)
 	{
@@ -116,6 +113,7 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
             vTranslation = XMVectorLerp(m_vPrevPositon, vTranslation, m_fAnimationRatio);
         m_isBlendPreAnimation = false;
     }
+
 
     m_TransformationMatrix = XMMatrixAffineTransformation(vScale, XMVectorSet(0.f, 0.f, 0.f, 1.f), vRotation, vTranslation);
 
@@ -128,13 +126,14 @@ void CChannel::Set_PrevAnimationBlend(const _float& fAnimationRatio, _matrix& Pr
 
     m_fAnimationRatio = fAnimationRatio;
     m_isBlendPreAnimation = true;
+
 }
 
 void CChannel::Reset_AnimationBlend()
 {
     m_isBlendPreAnimation = false;
     m_fAnimationRatio = 0.f;
-    m_vPrevScale = XMVectorSet(1.f, 1.f, 1.f, 0.f);
+    m_vPrevScale = XMVectorSet(1.f, 1.f, 1.f, 1.f);
     m_vPrevRotQuat = XMQuaternionIdentity();
     m_vPrevPositon = XMVectorSet(0.f, 0.f, 0.f, 1.f);
 

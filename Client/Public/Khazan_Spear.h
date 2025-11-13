@@ -98,6 +98,8 @@ private:
 	_uint						m_iReserveAnimIndex = {};
 
 	/* info */
+    _float4x4*                  m_LanternSocket_Matrix;         //랜턴 소켓
+    _float4x4*                  m_BackPack_Matrix;              //창 소켓 
 	_float4x4*					m_pWeaponR_Matrix = { nullptr };
 	_float4x4*					m_pSpearFX_Matrix = { nullptr };
 	_float4x4					m_pSpearFX_WorldMatrix = {};
@@ -164,6 +166,11 @@ private:
 	HRESULT			Ready_Collision();
     HRESULT			Ready_AnimationStateMachine();
     //HRESULT			Ready_PlayerData();
+
+    void            Clear_Step0();  // 이전 상태 빼고 거의 다 클리어
+    void            Clear_Step1();  //이전 상태 , lockOn, dir,worldDir 빼고 다 클리어
+
+
 
 private:
 	inline void		Add_Status(_uint i) { m_iStatus |= i; }

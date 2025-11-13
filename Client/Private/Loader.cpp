@@ -1091,41 +1091,41 @@ HRESULT CLoader::Loading_Prototype_MapObject_Inst_From_DAT(const _tchar* pProtot
 	HANDLE hFile = CreateFile(pDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("[DAT ERROR]"), E_FAIL);
 
-	// 1. ������ Ÿ���� �� ����
+	// 1. 프로토 타입 총 개수 불러오기
 	_uint iPrototypeCnt = {};
 	CHECK_FALSE(ReadFile(hFile, &iPrototypeCnt, sizeof(_uint), &dwByte, nullptr), E_FAIL);
 
-	// ������ Ÿ���� �� ������ŭ ��ȸ
+	// 프로토 타입 개수만큼 LOOP
 	for (_uint i = 0; i < iPrototypeCnt; ++i)
 	{
 		// CModel �� ����� �ϴ� ��� ( Instance X )
 
-		// 2. ������ Ÿ�� �±� ���� ����
+		// 2. 프로토 타입 태그 길이
 		_uint iPrototypeTagLen = {};
 		CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
 
-		// 3. ������ Ÿ�� �±� �̸� ����
+		// 3. 프로토 타입 태그
 		_tchar szPrototypeTag[MAX_PATH] = {};
 		CHECK_FALSE(ReadFile(hFile, &szPrototypeTag, sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr), E_FAIL);
 
-		// 4. �� ��� ���� ����
+		// 4. 모델 주소 길이
 		_uint iModelPathLen = {};
 		CHECK_FALSE(ReadFile(hFile, &iModelPathLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
 
-		// 5. �� ��� �̸� ����
+		// 5. 모델 주소
 		_char szModelPath[MAX_PATH] = {};
 		CHECK_FALSE(ReadFile(hFile, &szModelPath, sizeof(_char) * iModelPathLen, &dwByte, nullptr), E_FAIL);
 
-		// 6. �ν��Ͻ� ��� �� ���� ����
+		// 6. 인스턴싱할 개수
 		_uint iNumInstances = {};
 		CHECK_FALSE(ReadFile(hFile, &iNumInstances, sizeof(_uint), &dwByte, nullptr), E_FAIL);
 
-		// �ν��Ͻ� ���� �ѱ��
+		// 인스턴싱 정보 구조체
 		CModelMesh_Instance::MODELMESH_INSTANCE_DESC MeshInstanceDesc = {};
 
 		MeshInstanceDesc.iNumInstance = iNumInstances;
 
-		// 7. ��� ������ŭ ���� resize �� read file
+		// 인스턴싱할 개수만큼 백터 Resize
 		MeshInstanceDesc.InstanceData.resize(static_cast<size_t>(iNumInstances));
 
 		for (_uint i = 0; i < iNumInstances; ++i)

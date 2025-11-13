@@ -39,7 +39,8 @@ HRESULT CCamera::Initialize_Clone(void* pArg)
 	m_fAspect = ViewportDesc.Width / ViewportDesc.Height;
 	m_fNear = pDesc->fNear;
 	m_fFar = pDesc->fFar;
-
+    m_iWinSizeX = ViewportDesc.Width;
+    m_iWinSizeY = ViewportDesc.Height;
 	m_fMouseSensor = pDesc->fMouseSensor;
 
 	m_iCameraType = pDesc->iCameraType;
