@@ -49,6 +49,7 @@ private:
     _bool							m_isLookAt = { false };
     class CBody_Imp_Range*          m_pBody = { nullptr };
     class CImp_Wand*                m_pWeapon = { nullptr };
+    class CMon_HP*                  m_pUI_HP = { nullptr };
 
     vector<class CProjectile_Imp_MagicBall*> m_MagicBalls;
     class CProjectile_Boomarang*    m_pBoomarang = { nullptr };
