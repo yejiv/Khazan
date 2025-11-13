@@ -266,6 +266,7 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 	m_pFog->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 	m_pVignette->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 	m_pDistortion->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
+    m_pRadialBlur->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
 	m_pLevel_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
@@ -560,6 +561,11 @@ void CGameInstance::Set_SpecularPower(_float2 vPower)
 void CGameInstance::Set_EnableRadialBlur(_bool isEnable)
 {
     m_pRenderer->Set_EnableRadialBlur(isEnable);
+}
+
+_bool CGameInstance::isEnableRadialBlur()
+{
+    return m_pRenderer->isEnableRadialBlur();
 }
 
 #pragma endregion
@@ -1444,6 +1450,11 @@ void CGameInstance::Set_RadialBlurDesc(const RADIAL_BLUR_DESC& Desc)
 void CGameInstance::Set_RadialBlurCenter(_fvector vCenter)
 {
     m_pRadialBlur->Set_RadialBlurCenter(vCenter);
+}
+
+void CGameInstance::Start_RadialBlur(_float fDuration, const _float2& vFadeTime, const RADIAL_BLUR_DESC& Desc)
+{
+    m_pRadialBlur->Start_RadialBlur(fDuration, vFadeTime, Desc);
 }
 
 #pragma endregion

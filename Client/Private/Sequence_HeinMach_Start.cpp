@@ -22,14 +22,20 @@ void CSequence_HeinMach_Start::Update(_float fTimeDelta)
 {
     m_fTime += fTimeDelta;
 
-
-    if (m_fTime > 2.f && !m_isFadeIn)
+    if (m_fTime > 1.f && !m_isCamera)
     {
-        m_pClientInstance->Fade_In();
+        m_pClientInstance->Start_ForceOrbit(CAMERA_FORCE_DIR::FRONT);
+        m_isCamera = true;
     }
 
+    if (m_fTime > 3.f && !m_isFadeIn)
+    {
+        m_pClientInstance->Start_ForceOrbit(CAMERA_FORCE_DIR::FRONT);
+        m_pClientInstance->Fade_In();
+        m_isFadeIn = true;
+    }
 
-    if (m_fTime > 3.f)
+    if (m_fTime > 4.f)
     {
         m_isEnd = true;
     }

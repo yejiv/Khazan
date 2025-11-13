@@ -118,8 +118,7 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
     //m_fCurrentStamina = m_pData->fCulStamina;
     //m_fMaxStamina = m_pData->fMaxStamina;
 
-    m_pSpear->Set_Enble(true);
-    m_pSpear->Set_Equipped(true);
+    m_pSpear->Set_Enble(false);
     return S_OK;
 
 }

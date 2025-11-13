@@ -133,7 +133,8 @@ public:
     void            Build_PartToMasterMap();
     void			Update_PartLocalBones();
 
-
+    /* 임시 */
+    void            WarmupAnimations();
 #ifdef _DEBUG
 public:
 	void			Debug_RanderState();

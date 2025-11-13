@@ -95,7 +95,6 @@ void CYetuga::Priority_Update(_float fTimeDelta)
 
 void CYetuga::Update(_float fTimeDelta)
 {
-
     m_pController->Update(this, fTimeDelta);
 
     if (m_isLookAt)
@@ -116,8 +115,20 @@ void CYetuga::Update(_float fTimeDelta)
     //m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
 #endif // _DEBUG
 
+    // ========== Radial Blur ==========
+    // 예투가 업데이트
+    //  m_pGameInstance->Set_RadialBlurCenter(m_pTransformCom->Get_State(STATE::POSITION));
 
-
+    // 애니메이션 노티파이에 추가할 레디얼 블러 애니메이션 함수
+    //  RADIAL_BLUR_DESC Desc{};
+    //  Desc.vCenterUV = _float2(0.5f, 0.5f);
+    //  Desc.fSampleRadius = 0.05f;
+    //  Desc.vMaskRadius = _float2(0.f, 0.4f);
+    //  Desc.fExponent = 1.f;
+    //  Desc.iNumSamples = 16;
+    //  Desc.fAttenuation = 0.1f;
+    //  Desc.fStrength = 0.f;
+    //  m_pGameInstance->Start_RadialBlur(2.f, _float2(0.3, 1.f), m_RadialBlurDesc);
 }
 
 void CYetuga::Late_Update(_float fTimeDelta)
@@ -169,9 +180,10 @@ void CYetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _f
             DirInfo.Add_Flag(DirInfo.L);
 
         }
-       /* m_pGameInstance->Get_BlackBoard()->Set_Value<_uint>(m_strName, "HitDirection", DirInfo.iDirFlag);
-        DAMAGEINFO* pDamageInfo = static_cast<DAMAGEINFO*>(pDesc->pInfo);
-        Take_Damage(10, HITREACTION::KNOCKBACK_NORMAL , 0.1f, pDesc->pGameObject);*/
+
+
+
+       
 
         // Decal
         
