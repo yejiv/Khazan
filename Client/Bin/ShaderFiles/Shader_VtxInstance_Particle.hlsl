@@ -134,7 +134,7 @@ PS_OUT PS_MAIN(PS_IN In)
     float2 fEffectOffset = float2(In.vLifeTime.x * g_ScrollSpeed.x, In.vLifeTime.x * g_ScrollSpeed.y);
     float2 fScrolledEffectUV = In.vTexcoord + fEffectOffset;
     
-    vector vEffectTexture = g_DiffuseTexture.Sample(PointSampler, fScrolledEffectUV);
+    vector vEffectTexture = g_DiffuseTexture.Sample(DefaultSampler, fScrolledEffectUV);
     //vector vFinalColor = float4(g_vSourceColor.xyz, min(vEffectTexture.r, g_vSourceColor.a));
     vector vFinalColor = float4(g_vSourceColor.xyz, vEffectTexture.r);
     
@@ -172,7 +172,7 @@ PS_OUT PS_PRESNEL(PS_IN In)
     float2 fEffectOffset = float2(In.vLifeTime.x * g_ScrollSpeed.x, In.vLifeTime.x * g_ScrollSpeed.y);
     float2 fScrolledEffectUV = In.vTexcoord + fEffectOffset;
     
-    vector vEffectTexture = g_DiffuseTexture.Sample(PointSampler, fScrolledEffectUV);
+    vector vEffectTexture = g_DiffuseTexture.Sample(DefaultSampler, fScrolledEffectUV);
     //vector vFinalColor = float4(g_vSourceColor.xyz, min(vEffectTexture.r, g_vSourceColor.a));
     vector vFinalColor = float4(g_vSourceColor.xyz, vEffectTexture.r);
     

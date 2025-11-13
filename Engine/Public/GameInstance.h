@@ -95,6 +95,7 @@ public:
 	void Set_OutlineConfig(OUTLINE_CONFIG Config);
     void Set_SpecularPower(_float2 vPower);
     void Set_EnableRadialBlur(_bool isEnable);
+    _bool isEnableRadialBlur();
 #pragma endregion
 
 #pragma region TIMER_MANAGER
@@ -394,6 +395,7 @@ public:
     RADIAL_BLUR_DESC		    Get_RadialBlurDesc();
     void						Set_RadialBlurDesc(const RADIAL_BLUR_DESC& Desc);
     void                        Set_RadialBlurCenter(_fvector vCenter);
+    void                        Start_RadialBlur(_float fDuration, const _float2& vFadeTime, const RADIAL_BLUR_DESC& Desc);
 #pragma endregion
 
 private:
