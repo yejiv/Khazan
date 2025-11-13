@@ -4870,8 +4870,6 @@ void CLevel_Map::MapEditor_Close_Windows()
     m_iNumInstance = 5;
     m_fInstanceRange = 3.f;
 
-    Safe_Release(m_pFixPropObj);
-    Safe_Release(m_pFixTransformCom);
     m_pFixPropObj = nullptr;
     m_pFixTransformCom = nullptr;
 
@@ -4968,9 +4966,6 @@ void CLevel_Map::MapEditor_Close_Windows()
     // 12. 캐시 정리
     m_ModelPathCache.clear();
     m_ModelPathCache.rehash(0);
-
-    // 13. 부모 클래스 정리
-    __super::Free();
 }
 
 CLevel_Map* CLevel_Map::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
