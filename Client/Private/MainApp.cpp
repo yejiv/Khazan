@@ -64,7 +64,8 @@ void CMainApp::Update(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_LCONTROL))
 	{
-		//m_pClientInstance->ActiveCamera_Shaking(2.f, 1.f);
+		m_pClientInstance->ActiveCamera_Shaking(1.5f, 1.f);
+
 		//m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.3f, 0.003f, 3.f);
 		//m_pGameInstance->Fix_HitStop(TIME_CHANNEL::ENEMY);
 		//FOVModifier tMod{};
@@ -96,7 +97,7 @@ void CMainApp::Update(_float fTimeDelta)
 
 		//m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
 
-        m_pClientInstance->Find_MapBladeNexus(KHAZAN_MAP::HEINMACH);
+        //m_pClientInstance->Find_MapBladeNexus(KHAZAN_MAP::HEINMACH);
 	}
 	if (m_pGameInstance->Key_Down(DIK_RCONTROL))
 	{

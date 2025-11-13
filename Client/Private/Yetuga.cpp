@@ -1192,7 +1192,10 @@ HRESULT CYetuga::Ready_AnimEvent()
         });
 
 
-    pModel->Register_Event("AMG_SmashEvent", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Smash(); });
+    pModel->Register_Event("AMG_SmashEvent", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { 
+        Smash(); 
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 1.f);
+        });
 
 #pragma endregion
 
@@ -1228,6 +1231,17 @@ HRESULT CYetuga::Ready_AnimEvent()
             CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &Desc);
         });
 
+#pragma endregion
+
+
+#pragma region GrapCamera
+    pModel->Register_Event("GrapCamera", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        CClientInstance::GetInstance()->Yetuga_Holding_Start();
+        });
+    pModel->Register_Event("GrapCamera", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        CClientInstance::GetInstance()->Yetuga_Holding_End();
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(0.7f, 0.5f);
+        });
 #pragma endregion
 
 
@@ -1267,14 +1281,17 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
     //counter attack - 내려찍기
     pModel->Register_Event("CounterAttack_LeftHandSnow", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(0.2f, 0.3f);
         });
 
     pModel->Register_Event("CounterAttack_RightHandSnow", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(0.2f, 0.3f);
         });
 
     pModel->Register_Event("CounterAttack_FinalAtackSnow", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(0.5f, 0.5f);
         });
 
 
@@ -1282,6 +1299,7 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
     pModel->Register_Event("JumpAttack_Land", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         cout << "JumpAttack_Land :: Enter" << endl;
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_R")));
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(0.3f, 0.3f);
         });
 
     pModel->Register_Event("JumpAttack_Land", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
@@ -1291,6 +1309,7 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
 
     pModel->Register_Event("JumpAttack_RightHand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_R")));
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(0.2f, 0.3f);
         });
 
     //Turn_Attack -> 한번 긁는 거 
