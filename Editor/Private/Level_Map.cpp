@@ -2895,9 +2895,9 @@ HRESULT CLevel_Map::Ready_Map_Decal_Window()
             m_DecalDesc.vScale = _float3(1.f, 1.f, 1.f);
 
             ImGui::Text("SELECT MASK COLOR"); SAMELINE;
-            if (ImGui::Button("R")) m_fDecalThreshold = 0.f; SAMELINE;
-            if (ImGui::Button("G")) m_fDecalThreshold = 0.5f; SAMELINE;
-            if (ImGui::Button("B")) m_fDecalThreshold = 1.f;
+            if (ImGui::Button("RED")) m_fDecalThreshold = 0.f; SAMELINE;
+            if (ImGui::Button("GREEN")) m_fDecalThreshold = 0.5f; SAMELINE;
+            if (ImGui::Button("BLUE")) m_fDecalThreshold = 1.f;
 
             SEPARATOR;
             if (ImGui::Button("ADD"))
@@ -2972,6 +2972,8 @@ HRESULT CLevel_Map::Ready_Map_Decal_Window()
 
                     m_FixDecalDesc = m_DecalDesc = m_pFixDecal->Get_Desc();
 
+                    m_fDecalThreshold = m_pFixDecal->Get_Threshold();
+
                     m_DecalWorldMatrix = *static_cast<CTransform*>(m_pFixDecal->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr();
 
                     m_isDecalFixWindow = true;
@@ -3024,9 +3026,9 @@ HRESULT CLevel_Map::Ready_Map_Decal_Window()
                 SEPARATOR;
 
                 ImGui::Text("SELECT MASK COLOR"); SAMELINE;
-                if (ImGui::Button("R")) m_fDecalThreshold = 0.f; SAMELINE;
-                if (ImGui::Button("G")) m_fDecalThreshold = 0.5f; SAMELINE;
-                if (ImGui::Button("B")) m_fDecalThreshold = 1.f;
+                if (ImGui::Button("RED")) m_fDecalThreshold = 0.f; SAMELINE;
+                if (ImGui::Button("GREEN")) m_fDecalThreshold = 0.5f; SAMELINE;
+                if (ImGui::Button("BLUE")) m_fDecalThreshold = 1.f;
                 SEPARATOR;
 
                 m_pFixDecal->Set_Threshold(m_fDecalThreshold);
