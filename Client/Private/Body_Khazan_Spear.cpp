@@ -510,18 +510,18 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
 HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 {
 #pragma region Effect
-    //m_pModelCom->Register_Event("FastAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_FastAtk01_Trail(); });
-    //m_pModelCom->Register_Event("FastAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_FastAtk_SpawnWind(); });
-    //m_pModelCom->Register_Event("FastAtk02_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_FastAtk02_Trail(); });
-    //m_pModelCom->Register_Event("FastAtk02_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_FastAtk_SpawnWind(); });
-    //m_pModelCom->Register_Event("FastAtk03_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_FastAtk03_Trail(); });
-    //m_pModelCom->Register_Event("FastAtk03_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_FastAtk_SpawnWind(); });
+    m_pModelCom->Register_Event("FastAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_FastAtk01_Trail(); });
+    m_pModelCom->Register_Event("FastAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_FastAtk_SpawnWind(); });
+    m_pModelCom->Register_Event("FastAtk02_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_FastAtk02_Trail(); });
+    m_pModelCom->Register_Event("FastAtk02_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_FastAtk_SpawnWind(); });
+    m_pModelCom->Register_Event("FastAtk03_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_FastAtk03_Trail(); });
+    m_pModelCom->Register_Event("FastAtk03_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_FastAtk_SpawnWind(); });
 
-    //m_pModelCom->Register_Event("StrongAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
-    //m_pModelCom->Register_Event("StrongAtk02_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
-    //m_pModelCom->Register_Event("StrongAtk03_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
-    //m_pModelCom->Register_Event("StrongAtk_Charge_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
-    //m_pModelCom->Register_Event("StrongAtk_Charge_Blust", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_StrongAtk_Charge_Blust1(m_pParentTransform->Get_WorldMatrix().r[3]); });
+    m_pModelCom->Register_Event("StrongAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
+    m_pModelCom->Register_Event("StrongAtk02_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
+    m_pModelCom->Register_Event("StrongAtk03_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
+    m_pModelCom->Register_Event("StrongAtk_Charge_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
+    m_pModelCom->Register_Event("StrongAtk_Charge_Blust", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_StrongAtk_Charge_Blust1(m_pParentTransform->Get_WorldMatrix().r[3]); });
 
     /*보름달 트레일*/
     m_pModelCom->Register_Event("Full_Moon_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_Trail(); });
@@ -833,6 +833,21 @@ void CBody_Khazan_Spear::FX_FastAtk_SpawnWind()
         Q = XMQuaternionRotationMatrix(RotationMatrix);
     }
     EffectID_SpearWind = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), Q, W.r[3]); 
+
+    // Distortion
+    DISTORTION_DESC Desc{};
+    _vector vCenterPos = m_pParentTransform->Get_WorldMatrix().r[3];
+    _float fPosY = XMVectorGetY(vCenterPos);
+    _float fOffset = 2.f;
+    vCenterPos = XMVectorSetY(vCenterPos, fPosY + fOffset);
+    XMStoreFloat3(&Desc.vCenter, vCenterPos);
+    Desc.fRange = 1.f;
+    Desc.fPower = 0.01f;
+    Desc.fDuration = 0.5f;
+    Desc.vFadeTime = _float2(0.3f, 0.1f);
+    Desc.fSpeed = 1.f;
+    Desc.iNoiseIndex = 4;
+    m_pGameInstance->Start_Distortion(Desc);
 }
 
 
@@ -873,6 +888,21 @@ void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust2(_fvector pos)
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust3(_fvector pos)
 {
     m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust3"), pos);
+
+    // Distortion
+    DISTORTION_DESC Desc{};
+    _vector vCenterPos = pos;
+    _float fPosY = XMVectorGetY(vCenterPos);
+    _float fOffset = 2.f;
+    vCenterPos = XMVectorSetY(vCenterPos, fPosY + fOffset);
+    XMStoreFloat3(&Desc.vCenter, vCenterPos);
+    Desc.fRange = 1.f;
+    Desc.fPower = 0.02f;
+    Desc.fDuration = 1.f;
+    Desc.vFadeTime = _float2(0.4f, 0.2f);
+    Desc.fSpeed = 1.5f;
+    Desc.iNoiseIndex = 18;
+    m_pGameInstance->Start_Distortion(Desc);
 }
 
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust4(_fvector pos)

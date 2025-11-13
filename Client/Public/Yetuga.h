@@ -57,7 +57,7 @@ private:
 	void							Breath_Loop();
 
 private:
-    void                            Start_RadialBlur();
+    void                            Start_DefaultRadialBlur();
 
 private:
 	class CBody_Yetuga*				m_pBody = { nullptr };
