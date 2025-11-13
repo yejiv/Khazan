@@ -87,6 +87,8 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
 //#endif
     m_pModelCom->WarmupAnimations();
 
+    m_pParentTransform->Set_State(STATE::POSITION, XMVectorSet(0.f, 0.f, 0.f, 0.f));
+
     return S_OK;
 }
 
