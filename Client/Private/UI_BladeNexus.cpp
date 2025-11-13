@@ -61,8 +61,7 @@ void CUI_BladeNexus::Off_Panel()
 
 		m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { EventObject::OffEvent() });
 
-		m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
-        CClientInstance::GetInstance()->DeactivateCamera_InteractMove();
+		m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);        
 	}
 	else
 	{
@@ -483,6 +482,7 @@ void CUI_BladeNexus::UI_Animation(_float fTimeDelta)
 			m_fAccTime = 0.f;
 			m_eAnimState = UIANIMSTATE::END;
 			m_IsUpdate = false;
+            CClientInstance::GetInstance()->DeactivateCamera_InteractMove();
 		}
 	}
 }

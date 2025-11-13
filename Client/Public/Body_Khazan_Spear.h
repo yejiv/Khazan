@@ -150,15 +150,16 @@ private:
     HRESULT				Bind_ShaderResources();
 
 private:
-    void	FX_StrongAtk01_Trail();
-    void	FX_StrongAtk02_Trail();
-    void	FX_StrongAtk03_Trail();
+    void	FX_Trail();
     void	FX_FastAtk01_Trail();
     void	FX_FastAtk02_Trail();
     void	FX_FastAtk03_Trail();
     void	FX_FastAtk_SpawnWind();
-    void	FX_StrongAtk_Charge_Blust();
-    void	FX_StrongAtk_Charge_Trail();
+    void	FX_StrongAtk_Charge_Blust1(_fvector pos);
+    void	FX_StrongAtk_Charge_Blust2(_fvector pos);
+    void	FX_StrongAtk_Charge_Blust3(_fvector pos);
+    void	FX_StrongAtk_Charge_Blust4(_fvector pos);
+    void	FX_StrongAtk_Charge_BlustSmall(_fvector pos);
 
     void	Event_AttackTiming(_bool isAttackStart);
 
