@@ -30,6 +30,7 @@ private:
     SEQ_ID m_Id{};
     _float  m_fTime{ 0.f };
 
+    _bool m_isCamera = { false };
     _bool m_isFadeIn = { false };
 
     _bool m_isEnd = { false };

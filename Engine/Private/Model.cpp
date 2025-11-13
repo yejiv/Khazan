@@ -494,13 +494,18 @@ _bool CModel::Play_Animation(_float fTimeDelta)
 
 void CModel::Set_Animation(_uint iIndex)
 {    
-    //if (m_fCurrentTrackPosition < 0.2f) // 0.2초 미만 재생
+    //if (m_fCurrentTrackPosition < 4.f) 
     //{
+    //    /* 같은 애니메이션이 들어오면 pass*/
+    //    if (m_iCurrentAnimIndex == iIndex)
+    //        return;
+
     //    // 블렌딩 없이 바로 전환
     //    m_iCurrentAnimIndex = iIndex;
     //    m_fCurrentTrackPosition = 0.f;
     //    return;
     //}
+
     if (m_iCurrentAnimIndex == iIndex && m_AnimationsSetup[m_iCurrentAnimIndex].isLoop)
         return;
         
@@ -831,6 +836,48 @@ void CModel::Update_PartLocalBones()
             }
         }
     }
+
+}
+
+void CModel::WarmupAnimations()
+{
+    if (m_eModelType != MODELTYPE::ANIM)
+        return;
+
+#ifdef _DEBUG
+    OutputDebugStringA("[Model] Starting animation warmup...\n");
+#endif
+
+    _int originalAnimIndex = m_iCurrentAnimIndex;
+    _float originalTrackPos = m_fCurrentTrackPosition;
+
+    // 모든 애니메이션을 0.1초씩 재생
+    for (_uint i = 0; i < m_iNumAnimations; ++i)
+    {
+        Set_Animation(i);
+
+        for (int frame = 0; frame < 3; ++frame)
+        {
+            Play_Animation(0.066f); // 60fps 기준
+        }
+
+#ifdef _DEBUG
+        if (i % 10 == 0)
+        {
+            char buffer[64];
+            sprintf_s(buffer, "  Warmed up %d/%d animations\n", i + 1, m_iNumAnimations);
+            OutputDebugStringA(buffer);
+        }
+#endif
+    }
+
+    // 원래 상태로 복원
+    Set_Animation(originalAnimIndex);
+    m_fCurrentTrackPosition = originalTrackPos;
+
+#ifdef _DEBUG
+    OutputDebugStringA("[Model] Animation warmup complete!\n");
+#endif
 
 }
 

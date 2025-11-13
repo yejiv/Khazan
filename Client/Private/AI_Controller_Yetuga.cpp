@@ -40,7 +40,6 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 
         m_pBT->Update();
 
-        
     }
 	else
 		m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);

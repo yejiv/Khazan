@@ -34,6 +34,7 @@ private:
 	HRESULT							Ready_PartObjects();
 	HRESULT							Ready_Projectiles();
 	HRESULT							Ready_AnimEvent();
+	HRESULT							Ready_AnimEffectEvent(CModel* pModel);
 
 private:
 	// ThrowBall
@@ -70,6 +71,7 @@ private:
 	_float3							m_vHoldRockOffset = {};
 	_bool							m_isGrab = { false };
 
+    _uint                           m_iFX_ID_Dampsey;
 
 public:
 	static CYetuga*					Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

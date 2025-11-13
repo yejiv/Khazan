@@ -268,6 +268,8 @@ HRESULT CImp_Range::Ready_AnimEvent()
         });
     pModel->Register_Event("ShootBoomarang", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         Shoot_Boomarang();
+        if (nullptr == m_pTarget)
+            Look_Target();
         });
 
 #pragma endregion
