@@ -13,6 +13,8 @@ CVIBuffer_Point_Instance::CVIBuffer_Point_Instance(const CVIBuffer_Point_Instanc
 	, m_sData {Prototype.m_sData}
 
 {
+    for (_uint i = 0; i < CS_PASS::END; ++i) 
+        m_ComputeShaders[i] = Prototype.m_ComputeShaders[i]; 
 	//Safe_AddRef(m_pSRVNoise); //이거 해줘야되는지 확인좀
 }
 
@@ -127,6 +129,9 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDes
 		m_pParticleParams[i].vInitTranslation = pInstanceVertices[i].vTranslation;
 		m_pParticleParams[i].fSize = fScale;
 	}
+     
+    if (FAILED(Ready_ComputeShader()))
+        return E_FAIL;
 	 
 	return S_OK;
 }
@@ -144,10 +149,7 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Clone(void* pArg)
 
 	if (FAILED(Ready_CB()))
 		return E_FAIL;
-
-	if (FAILED(Ready_ComputeShader()))
-		return E_FAIL;
-
+     
 	return S_OK;
 }
 
@@ -574,14 +576,13 @@ void CVIBuffer_Point_Instance::Free()
 	Safe_Release(m_pSRVNoise);
 	Safe_Release(m_pUAV);
 	Safe_Release(m_pUAVSpeed);
-	//Safe_Release(m_pDebugStagingBuffer);
-
-	for(_uint i = 0; i < CS_PASS::END; ++i)
-		Safe_Release(m_ComputeShaders[i]);
+	//Safe_Release(m_pDebugStagingBuffer); 
 
 	if (false == m_isCloned)
 	{
 		Safe_Delete_Array(m_pParticleParams);
 		//Safe_Release(m_pSRVNoise);
+        for (_uint i = 0; i < CS_PASS::END; ++i)
+            Safe_Release(m_ComputeShaders[i]);
 	}
 }
