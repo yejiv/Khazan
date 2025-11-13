@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 #include "ClientInstance.h"
 #include "MeshTrail.h"
+#include "Spear_Khazan_Spear.h"
 
 CBody_Khazan_Spear::CBody_Khazan_Spear(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CPartObject{ pDevice, pContext }
@@ -24,6 +25,11 @@ _float4x4* CBody_Khazan_Spear::Get_BoneMatrix(const _char* pBoneName)
 }
 
 
+
+void CBody_Khazan_Spear::Set_Spear(CSpear_Khazan_Spear* pSpear)
+{
+    m_pSpear = pSpear; Safe_AddRef(m_pSpear);
+}
 
 HRESULT CBody_Khazan_Spear::Initialize_Prototype()
 {
@@ -56,6 +62,8 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
     m_pModelCom->Set_OwnerTransform(&m_pParentTransform);
 
     /* 뼈 행렬 가지고오기 */
+   // m_LanternSocket_Matrix = m_pModelCom->Get_BoneMatrix("Lantern_Socket_L");
+    //m_BackPack_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_C_BackPack_Spear");
     m_pSpearTip1_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R_SpearTip");
     //m_pSpearTip2_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R_SpearTip_02");
     m_pSpearPole_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R");
@@ -517,6 +525,10 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 
 #pragma endregion
 
+   // m_pModelCom->Register_Event("LanternOn", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {*m_isEquipLantern = true; });
+   // m_pModelCom->Register_Event("LanternOff", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { *m_isEquipLantern = false;  });
+    m_pModelCom->Register_Event("SpearOn", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_pSpear->Set_Equipped(true); cout << "Equip" << endl; });
+    m_pModelCom->Register_Event("SpearOff", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_pSpear->Set_Equipped(false); cout << "UnEquip" << endl;  });
    
     return S_OK;
 }
@@ -833,6 +845,7 @@ void CBody_Khazan_Spear::Free()
 {
     __super::Free();
 
+    Safe_Release(m_pSpear);
     Safe_Release(m_pClientInstance);
 
     if (!m_isPrototype)

@@ -363,6 +363,102 @@ HRESULT CMesh::Bind_BoneMatrices(CShader* pShader, const _char* pConstantName,
 	return pShader->Bind_Matrices(pConstantName, m_BoneMatrices, m_iNumBones);
 }
 
+//HRESULT CMesh::Bind_BoneMatrices(CShader* pShader, const _char* pConstantName,
+//    const vector<class CBone*>& Bones, const vector<_float4x4>* PartLocalBoneMatrices)
+//{
+//    if (m_BoneNames.empty())
+//    {
+//        // 마스터 메시
+//        for (size_t i = 0; i < m_iNumBones; i++)
+//        {
+//            _matrix offsetMat = XMLoadFloat4x4(&m_OffsetMatrices[i]);
+//            _matrix combinedMat = Bones[m_BoneIndices[i]]->Get_CombinedTransformationMatrix();
+//            _matrix finalMat = offsetMat * combinedMat;
+//
+//#ifdef _DEBUG
+//            // 최종 본 행렬의 스케일 확인
+//            _vector scale, rot, pos;
+//            if (XMMatrixDecompose(&scale, &rot, &pos, finalMat))
+//            {
+//                _float3 scaleF;
+//                XMStoreFloat3(&scaleF, scale);
+//
+//                if (i == 0 || scaleF.x < 0.01f) // 루트 본 또는 비정상 스케일
+//                {
+//                    char buffer[256];
+//                    sprintf_s(buffer, "[Bind_BoneMatrices] Bone[%d]: FinalScale=(%.6f, %.6f, %.6f)\n",
+//                        i, scaleF.x, scaleF.y, scaleF.z);
+//                    OutputDebugStringA(buffer);
+//
+//                    // OffsetMatrix 스케일도 확인
+//                    _vector offsetScale, offsetRot, offsetPos;
+//                    if (XMMatrixDecompose(&offsetScale, &offsetRot, &offsetPos, offsetMat))
+//                    {
+//                        _float3 offsetScaleF;
+//                        XMStoreFloat3(&offsetScaleF, offsetScale);
+//                        sprintf_s(buffer, "  -> OffsetScale=(%.6f, %.6f, %.6f)\n",
+//                            offsetScaleF.x, offsetScaleF.y, offsetScaleF.z);
+//                        OutputDebugStringA(buffer);
+//                    }
+//
+//                    // CombinedMatrix 스케일도 확인
+//                    _vector combScale, combRot, combPos;
+//                    if (XMMatrixDecompose(&combScale, &combRot, &combPos, combinedMat))
+//                    {
+//                        _float3 combScaleF;
+//                        XMStoreFloat3(&combScaleF, combScale);
+//                        sprintf_s(buffer, "  -> CombinedScale=(%.6f, %.6f, %.6f)\n",
+//                            combScaleF.x, combScaleF.y, combScaleF.z);
+//                        OutputDebugStringA(buffer);
+//                    }
+//                }
+//            }
+//#endif
+//
+//            XMStoreFloat4x4(&m_BoneMatrices[i], finalMat);
+//        }
+//    }
+//    else
+//    {
+//        // 파츠 메시 - 동일하게 디버깅 추가
+//        for (size_t i = 0; i < m_iNumBones; i++)
+//        {
+//            _int partBoneIdx = m_BoneIndices[i];
+//
+//            if (partBoneIdx >= 0 && partBoneIdx < PartLocalBoneMatrices->size())
+//            {
+//                _matrix offsetMat = XMLoadFloat4x4(&m_OffsetMatrices[i]);
+//                _matrix localMat = XMLoadFloat4x4(&(*PartLocalBoneMatrices)[partBoneIdx]);
+//                _matrix finalMat = offsetMat * localMat;
+//
+//#ifdef _DEBUG
+//                _vector scale, rot, pos;
+//                if (XMMatrixDecompose(&scale, &rot, &pos, finalMat))
+//                {
+//                    _float3 scaleF;
+//                    XMStoreFloat3(&scaleF, scale);
+//
+//                    if (scaleF.x < 0.01f)
+//                    {
+//                        char buffer[256];
+//                        sprintf_s(buffer, "[Part Bind] Bone[%d]: FinalScale=(%.6f, %.6f, %.6f)\n",
+//                            i, scaleF.x, scaleF.y, scaleF.z);
+//                        OutputDebugStringA(buffer);
+//                    }
+//                }
+//#endif
+//
+//                XMStoreFloat4x4(&m_BoneMatrices[i], finalMat);
+//            }
+//            else
+//            {
+//                XMStoreFloat4x4(&m_BoneMatrices[i], XMMatrixIdentity());
+//            }
+//        }
+//    }
+//
+//    return pShader->Bind_Matrices(pConstantName, m_BoneMatrices, m_iNumBones);
+//}
 
 HRESULT CMesh::Ready_Vertices_For_NonAnim(MESH_DATA& data)
 {
