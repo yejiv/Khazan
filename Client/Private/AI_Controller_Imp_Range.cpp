@@ -32,9 +32,11 @@ void CAI_Controller_Imp_Range::Update(CGameObject* pOwner, _float fTimeDelta)
         return;
     
     m_pPerception->Update(pOwner,m_pBB,fTimeDelta);
+
     Update_Aggro(pOwner,fTimeDelta);
+
     _float fPervTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
-    //if (m_pBB->Get_Value<_bool>(m_strMonstertag, "isDetected"))
+
     if (m_pBB->Get_Value<_bool>(m_strMonstertag, "HasAggro"))
     {
         m_pBB->Set_Value<_float>(m_strMonstertag, "CurrentTime", fPervTime + fTimeDelta);
@@ -67,6 +69,7 @@ void CAI_Controller_Imp_Range::Update_Aggro(CGameObject* pOwner, _float fTimeDel
             fLostSightTime += fTimeDelta;
             if (fLostSightTime > fFrogetDelay)
             {
+                m_pBB->Set_Value<_bool>(m_strMonstertag, "isDetected", false);
                 m_pBB->Set_Value<_bool>(m_strMonstertag, "HasAggro", false);
             }
         }
@@ -696,24 +699,25 @@ PERCEPTIONCALLBACK CAI_Controller_Imp_Range::GetCallBackPerception(CGameObject* 
 
     else if (name == "DamageInterrupt")
     {
-        return[this](CGameObject* pTarget, const STIMULUS& Stim)
+        return [this](CGameObject* pTarget, const STIMULUS& Stim)
             {
                 if (Stim.eType == SENSETYPE::DAMAGE)
                 {
-
                     if (Stim.bSensed)
                     {
                         m_pBB->Set_Value<_uint>(m_strMonstertag, "DamageType", Stim.iDamageType);
                         m_pBB->Set_Value(m_strMonstertag, "DamageInterrupt", true);
-                        m_pBB->Set_Value(m_strMonstertag, "DamageACC", m_pPerception->Get_DamageAcc());
+                        m_pBB->Set_Value(m_strMonstertag, "DamageACC", m_pPerception ? m_pPerception->Get_DamageAcc() : 0.f);
+                        m_pBB->Set_Value(m_strMonstertag, "isDetected", true);
                     }
                     else
                     {
-                        m_pBB->Set_Value(m_strMonstertag, "DamageACC", m_pPerception->Get_DamageAcc());
+                        if (m_pPerception)
+                            m_pBB->Set_Value(m_strMonstertag, "DamageACC", m_pPerception->Get_DamageAcc());
                     }
                 }
             };
-    };
+    }
 
     return nullptr;
 }

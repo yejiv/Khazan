@@ -69,7 +69,6 @@ void CPerception::Check_Sight(class CGameObject* pOwner, class CBlackBoard* pBB)
 		return;
 
 	// 시야 감지 사이클에 들어왔을때만 갱신
-   	//m_pGameInstance->Get_BlackBoard()->Set_Value<_float>(m_strName, "TargetDist", fDistsq);
     pBB->Set_Value<_float>(m_strName, "TargetDist", fDistsq);
 
 
@@ -117,9 +116,6 @@ void CPerception::Check_Sight(class CGameObject* pOwner, class CBlackBoard* pBB)
 	}
 	_float3 vTargetDir;
 	XMStoreFloat3(&vTargetDir, vDirToTarget);
-	/*m_pGameInstance->Get_BlackBoard()->Set_Value<_float3>(m_strName, "TargetDir", vTargetDir);
-	m_pGameInstance->Get_BlackBoard()->Set_Value<_float>(m_strName, "fDot", fDot);
-	m_pGameInstance->Get_BlackBoard()->Set_Value<_uint>(m_strName,"TargetDirection",m_tDirInfo.iDirFlag);*/
     pBB->Set_Value<_float3>(m_strName, "TargetDir", vTargetDir);
     pBB->Set_Value<_float>(m_strName, "fDot", fDot);
     pBB->Set_Value<_uint>(m_strName, "TargetDirection", m_tDirInfo.iDirFlag);
@@ -155,8 +151,8 @@ void CPerception::Notify_Damage(CGameObject* pAttacker, const STIMULUS& Stim)
 	Perceived.fLastUpdated = m_fCurrnetTime;
 	Perceived.isCurrentlySensed = Stim.bSensed;
 
-	m_DamageHistory.push(Stim);
-	m_fDamageAcc += Stim.fStrength;
+	/*m_DamageHistory.push(Stim);
+	m_fDamageAcc += Stim.fStrength;*/
 
 	if (m_PerceptionCallBack)
 		m_PerceptionCallBack(pAttacker, Stim);
@@ -196,48 +192,36 @@ void CPerception::Forget()
 
 void CPerception::Forget_Damage()
 {
-	/*_float fNow = m_fCurrnetTime;
-	while (!m_DamageHistory.empty())
-	{
-		const STIMULUS& Front = m_DamageHistory.front();
-		if (fNow - Front.fTimeStamp > Front.fVaildTime)
-		{
-			m_fDamageAcc -= Front.fStrength;
+    //if (m_isOnForgetDamage)
+    //    return;
 
-			if (m_PerceptionCallBack)
-			{
-				STIMULUS OutStim = Front;
-				OutStim.bSensed = false;
-				m_PerceptionCallBack(nullptr, OutStim);
-			}
-			m_DamageHistory.pop();
-		}
-		else
-			break;
-	}*/
+    //m_isOnForgetDamage = true;
 
+    //_float fNow = m_fCurrnetTime;
+    //std::vector<STIMULUS> vExpired;
 
-    _float fNow = m_fCurrnetTime;
+    //while (!m_DamageHistory.empty())
+    //{
+    //    STIMULUS& Front = m_DamageHistory.front();
 
-    while (!m_DamageHistory.empty())
-    {
-        STIMULUS Front = m_DamageHistory.front();
-        if (fNow - Front.fTimeStamp > Front.fVaildTime)
-        {
-            m_fDamageAcc -= Front.fStrength;
+    //    if (fNow - Front.fTimeStamp > Front.fVaildTime)
+    //    {
+    //        m_fDamageAcc -= Front.fStrength;
+    //        Front.bSensed = false;
+    //        vExpired.push_back(Front);
+    //        m_DamageHistory.pop();
+    //    }
+    //    else 
+    //        break;
+    //}
 
-            if (m_PerceptionCallBack)
-            {
-                Front.bSensed = false;
-                m_PerceptionCallBack(nullptr, Front);
-            }
-
-            m_DamageHistory.pop();
-        }
-        else
-            break;
-    }
-
+    ////pop이 전부 끝난 뒤 콜백 호출
+    //for (auto& s : vExpired)
+    //{
+    //    if (m_PerceptionCallBack)
+    //        m_PerceptionCallBack(nullptr, s);
+    //}
+    //m_isOnForgetDamage = false;
 }
 
 

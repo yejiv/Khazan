@@ -62,7 +62,8 @@ HRESULT CAI_Controller_Imp_Melee::Ready_Perception(CGameObject* pOwner, const AI
             {
                 string strCallbackTag = Desc.CallbackTags[i];
                 auto cb = GetCallBackPerception(pOwner, strCallbackTag);
-                cb(pTarget, Stim);
+                if(nullptr != cb)
+                    cb(pTarget, Stim);
             }
         });
 
@@ -98,8 +99,6 @@ CONDITION CAI_Controller_Imp_Melee::GetCallbackCondition(CGameObject* pOwner, co
     CImp_Melee* pImp = static_cast<CImp_Melee*>(pOwner);
     if (nullptr == pImp)
         return nullptr;
-
-
 
     if ("Dead" == name)
     {
@@ -638,24 +637,25 @@ PERCEPTIONCALLBACK CAI_Controller_Imp_Melee::GetCallBackPerception(CGameObject* 
 
     else if (name == "DamageInterrupt")
     {
-        return[this](CGameObject* pTarget, const STIMULUS& Stim)
+        return [this](CGameObject* pTarget, const STIMULUS& Stim)
             {
                 if (Stim.eType == SENSETYPE::DAMAGE)
                 {
-
                     if (Stim.bSensed)
                     {
                         m_pBB->Set_Value<_uint>(m_strMonstertag, "DamageType", Stim.iDamageType);
                         m_pBB->Set_Value(m_strMonstertag, "DamageInterrupt", true);
-                        m_pBB->Set_Value(m_strMonstertag, "DamageACC", m_pPerception->Get_DamageAcc());
+                        m_pBB->Set_Value(m_strMonstertag, "DamageACC", m_pPerception ? m_pPerception->Get_DamageAcc() : 0.f);
+                        m_pBB->Set_Value(m_strMonstertag, "isDetected", true);
                     }
                     else
                     {
-                        m_pBB->Set_Value(m_strMonstertag, "DamageACC", m_pPerception->Get_DamageAcc());
+                        if (m_pPerception)
+                            m_pBB->Set_Value(m_strMonstertag, "DamageACC", m_pPerception->Get_DamageAcc());
                     }
                 }
             };
-    };
+    }
 
     return nullptr;
 

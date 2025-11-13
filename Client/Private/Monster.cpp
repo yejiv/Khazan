@@ -47,6 +47,9 @@ void CMonster::CheckMinDistanceWithPlayer(_float fMinDist, _float fAnimRatio)
 
 void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject* pGameObject)
 {
+    if (m_pController->Get_BlackBoard()->Get_Value<_bool>(m_strName, "isHit"))
+        return;
+
     m_fCurrentHP -= fDamage;
 
     if (m_fCurrentHP <= 0.f)
@@ -59,13 +62,10 @@ void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject
 
     if (pDamage != nullptr)
     {
-      
         _vector vDamagePos = XMLoadFloat4(m_vLockOnPosition);
-        
-        
         pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::DEFAULT, vDamagePos , fDamage, { 0.f, 10.f });
-
         m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
+
     }
 
 
