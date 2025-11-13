@@ -110,24 +110,12 @@ void CYetuga::Update(_float fTimeDelta)
 
     m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
 
+    // Radial Blur Focus Update
+    m_pGameInstance->Set_RadialBlurCenter(m_pTransformCom->Get_State(STATE::POSITION), 5.f);
+
 #ifdef _DEBUG
     //m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
 #endif // _DEBUG
-
-    // ========== Radial Blur ==========
-    // 예투가 업데이트
-    //  m_pGameInstance->Set_RadialBlurCenter(m_pTransformCom->Get_State(STATE::POSITION));
-
-    // 애니메이션 노티파이에 추가할 레디얼 블러 애니메이션 함수
-    //  RADIAL_BLUR_DESC Desc{};
-    //  Desc.vCenterUV = _float2(0.5f, 0.5f);
-    //  Desc.fSampleRadius = 0.05f;
-    //  Desc.vMaskRadius = _float2(0.f, 0.4f);
-    //  Desc.fExponent = 1.f;
-    //  Desc.iNumSamples = 16;
-    //  Desc.fAttenuation = 0.1f;
-    //  Desc.fStrength = 0.f;
-    //  m_pGameInstance->Start_RadialBlur(2.f, _float2(0.3, 1.f), m_RadialBlurDesc);
 }
 
 void CYetuga::Late_Update(_float fTimeDelta)
@@ -180,38 +168,7 @@ void CYetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _f
 
         }
 
-
-
-       
-
-        // Decal
-        
-        //  _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
-        //  _vector vTargetPos = XMVectorSet(vPos.m128_f32[0], vPos.m128_f32[1] - 5.f, vPos.m128_f32[2], 1.f);
-        //  
-        //  _float fFraction;
-        //  _float4 vRayHitPos;
-        //  _float3 outNormal;
-        //  
-        //  if (m_pGameInstance->RayCast(
-        //      _float3(vPos.m128_f32[0], vPos.m128_f32[1], vPos.m128_f32[2]),
-        //      _float3(vTargetPos.m128_f32[0], vTargetPos.m128_f32[1], vTargetPos.m128_f32[2]),
-        //      fFraction,
-        //      vRayHitPos,
-        //      &outNormal
-        //  ))
-        //  {
-        //      DECAL_DESC Desc{};
-        //      Desc.fLifeTime = 5.f;
-        //      Desc.vFadeTime = _float2(0.5f, 0.5f);
-        //      Desc.eType = DECALTYPE::CIRCLE;
-        //      Desc.vPosition = _float3(vRayHitPos.x, vRayHitPos.y, vRayHitPos.z);
-        //      Desc.vScale = _float3(40.f, 40.f, 40.f);
-        //      Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
-        //  
-        //      m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
-        //  }
-
+        // Decal Spawn
         _vector vDecalPos = m_pTransformCom->Get_State(STATE::POSITION);
         _float fOffset = 2.f;
         _float fPosX = XMVectorGetX(vDecalPos);
@@ -550,6 +507,21 @@ void CYetuga::Breath_Loop()
     std::cout << "WorldPos : " << WorldPos.x << " , " << WorldPos.y << " , " << dbgPos.z << std::endl;
     std::cout << "Spawn Pos : " << vSpawnPoint.x << " , " << vSpawnPoint.y << " , " << vSpawnPoint.z << std::endl;*/
 
+}
+
+void CYetuga::Start_RadialBlur()
+{
+    RADIAL_BLUR_DESC Desc{};
+    Desc.vCenterUV = _float2(0.5f, 0.5f);
+    Desc.fSampleRadius = 0.05f;
+    Desc.vMaskRadius = _float2(0.f, 0.7f);
+    Desc.fExponent = 1.f;
+    Desc.iNumSamples = 16;
+    Desc.fAttenuation = 0.1f;
+    Desc.fStrength = 0.5f;       // == Target Strength(0 ~ 1) -> 이 강도를 최대값으로 사용하여 보간 적용됨
+    Desc.fDuration = 3.f;
+    Desc.vFadeTime = _float2(0.3f, 1.f);
+    m_pGameInstance->Start_RadialBlur(Desc);
 }
 
 HRESULT CYetuga::Ready_Components()
@@ -1275,6 +1247,7 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
 
     pModel->Register_Event("CounterAttack_FinalAtackSnow", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
+        Start_RadialBlur();
         });
 
 
@@ -1282,6 +1255,7 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
     pModel->Register_Event("JumpAttack_Land", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         cout << "JumpAttack_Land :: Enter" << endl;
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_R")));
+        Start_RadialBlur();
         });
 
     pModel->Register_Event("JumpAttack_Land", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
@@ -1306,6 +1280,7 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
 #pragma region FOOT
     pModel->Register_Event("ChargeTackle_StampFoot_Run0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-R-Foot")));
+        Start_RadialBlur();
         });
     pModel->Register_Event("ChargeTackle_StampFoot_Run1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
