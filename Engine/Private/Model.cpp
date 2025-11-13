@@ -458,28 +458,52 @@ _bool CModel::Play_Animation(_float fTimeDelta)
 
             if (m_AnimationSetInfo.iCurrentIndex == m_AnimationSetInfo.iTotalCount)
             {
-#ifdef _DEBUG
-                OutputDebugStringA(("[Set_AnimationSet End !! \n]"));
-#endif // _DEBUG
-
                 Remove_State(ANIMSET_PLAYING | ANIMSET_NEXT);
                 return true;
             }
-#ifdef _DEBUG
-            OutputDebugStringA(("[Set_AnimationSet N E X T \n]"));
-#endif // _DEBUG
+
 
             return false;
         }
 
     }
 
-     
+//#ifdef _DEBUG
+//    static int frameCount = 0;
+//    if (++frameCount % 60 == 0) // 60프레임마다
+//    {
+//        OutputDebugStringA("=== Bone Matrix Debug ===\n");
+//
+//        // 루트 본 Combined 행렬 확인
+//        _matrix rootCombined = m_Bones[0]->Get_CombinedTransformationMatrix();
+//        _vector scale, rot, pos;
+//        if (XMMatrixDecompose(&scale, &rot, &pos, rootCombined))
+//        {
+//            _float3 scaleF;
+//            XMStoreFloat3(&scaleF, scale);
+//            char buffer[256];
+//            sprintf_s(buffer, "Root Combined Scale: (%.6f, %.6f, %.6f)\n",
+//                scaleF.x, scaleF.y, scaleF.z);
+//            OutputDebugStringA(buffer);
+//        }
+//    }
+//#endif
+
     return m_isFinished;
 }
 
 void CModel::Set_Animation(_uint iIndex)
-{
+{    
+    //if (m_fCurrentTrackPosition < 0.2f) // 0.2초 미만 재생
+    //{
+    //    // 블렌딩 없이 바로 전환
+    //    m_iCurrentAnimIndex = iIndex;
+    //    m_fCurrentTrackPosition = 0.f;
+    //    return;
+    //}
+    if (m_iCurrentAnimIndex == iIndex && m_AnimationsSetup[m_iCurrentAnimIndex].isLoop)
+        return;
+        
     if (iIndex >= m_iNumAnimations || m_iNumAnimations <= 0)
         return;
 
@@ -510,6 +534,8 @@ void CModel::Set_Animation(_uint iIndex)
 
 	/* 이벤트 설정 */
 	Setup_Events();
+
+
 
     cout << m_iCurrentAnimIndex<<" : "+ Get_CurAnimName() << endl;
 }
