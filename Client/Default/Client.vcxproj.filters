@@ -787,6 +787,9 @@
     <Filter Include="02.GameObject\UI\Inven\Panel">
       <UniqueIdentifier>{84664222-4927-4b26-8399-6d8fbab8c84b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel\Flag">
+      <UniqueIdentifier>{d4ea7c73-7f04-4bc3-9f75-829e01b0378e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1517,6 +1520,9 @@
     <ClInclude Include="..\public\Inven_State_Panel.h">
       <Filter>02.GameObject\UI\Inven\Panel</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Skill_Slot_Flag.h">
+      <Filter>02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel\Flag</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2226,6 +2232,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Inven_State_Panel.cpp">
       <Filter>02.GameObject\UI\Inven\Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_Slot_Flag.cpp">
+      <Filter>02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel\Flag</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
