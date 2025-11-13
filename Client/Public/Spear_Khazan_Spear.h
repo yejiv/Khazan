@@ -59,7 +59,7 @@ private:
 
 	_matrix						m_matOffset;
     _bool                       m_isEnble = { true };
-    _bool                       m_isEquip = { false };
+    _bool                       m_isEquip = { true };
 
 private:
 	HRESULT Ready_Components();

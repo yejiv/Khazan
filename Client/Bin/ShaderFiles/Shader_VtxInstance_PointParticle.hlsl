@@ -218,7 +218,7 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     if (In.vDead == true)
         discard;
     
-    vector vMask = g_DiffuseTexture.Sample(PointSampler, In.vTexcoord);
+    vector vMask = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
     
     vector vSourColor = float4(g_vSourceColor.xyz, 1.f);
     vector vFinalColor = vSourColor * vMask;
