@@ -13,7 +13,7 @@
 #include "Skill_Panel.h"
 #include "Skill_Gauge.h"
 #include "Skill_Slot_Panel.h"
-
+#include "Skill_Slot_Flag.h"
 
 CUI_SkillTree::CUI_SkillTree(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
@@ -170,13 +170,19 @@ HRESULT CUI_SkillTree::Ready_Prototype()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Skill_SlotPanel"),
 		CSkill_Slot_Panel::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
 
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Skill_Flag"),
+        CSkill_Slot_Flag::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_Flag"),
+        CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Flag/T_SkillTreeBg_0%d.png"), 2)), E_FAIL);
+
 	return S_OK;
 }
 
 HRESULT CUI_SkillTree::Ready_Object()
 {
 	UIOBJECT_DESC Desc = {};
-	Desc.fDepth = 5.1f;
+	Desc.fDepth = 5.4f;
 	Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
 	Desc.szName = "BackGround";
 	Desc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };

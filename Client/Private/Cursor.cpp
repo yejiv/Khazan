@@ -202,6 +202,7 @@ void CCursor::UI_Mode()
     ptMouse.y += 25.f;
 
     m_pScreenTrail->Add_ControlPoint(ptMouse);
+    m_eMode = MOUSE_MODE::UI_MODE;
 }
 
 CCursor* CCursor::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

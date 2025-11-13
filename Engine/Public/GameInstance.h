@@ -394,8 +394,8 @@ public:
     HRESULT						Bind_RadialBlur_ShaderResources(class CShader* pShader);
     RADIAL_BLUR_DESC		    Get_RadialBlurDesc();
     void						Set_RadialBlurDesc(const RADIAL_BLUR_DESC& Desc);
-    void                        Set_RadialBlurCenter(_fvector vCenter);
-    void                        Start_RadialBlur(_float fDuration, const _float2& vFadeTime, const RADIAL_BLUR_DESC& Desc);
+    void                        Set_RadialBlurCenter(_fvector vCenter, _float fOffset = 0.f);
+    void                        Start_RadialBlur(const RADIAL_BLUR_DESC& Desc);
 #pragma endregion
 
 private:

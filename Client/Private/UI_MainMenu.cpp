@@ -10,6 +10,7 @@
 #include "UI_Inven.h"
 #include "UI_State.h"
 #include "UI_SkillTree.h"
+#include "Amount.h"
 
 CUI_MainMenu::CUI_MainMenu(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
@@ -35,12 +36,16 @@ void CUI_MainMenu::On_Panel()
 	m_eNextEvent = MENULIST::END;
 
 	m_pGameInstance->Change_InputType(INPUT_TYPE::UI);
+
+    static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->On_Panel();
 }
 
 void CUI_MainMenu::Off_Panel()
 {
 	if (!m_IsUpdate)
 		return;
+
+    static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Off_Panel();
 	if (m_eNextEvent == MENULIST::END)
 	{
 		m_eNextEvent = MENULIST::END;

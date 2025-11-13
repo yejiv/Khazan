@@ -24,6 +24,8 @@ public:
 private:
 	class CUI_TextBox*					m_pTextBox = { nullptr };
 	class CUI_Atlas_Icon*				m_pAtlasIcon = { nullptr };
+    class CSkill_Slot_Flag*             m_pFlag = { nullptr };
+    
 	vector<class CSkill_Slot*>			m_Skill;
 
 private:
