@@ -33,6 +33,7 @@ void CUI_BladeNexus::On_Panel(ONTYPE eType, _wstring strMapName)
 		m_pText[1]->Set_Text(strMapName);
 
 		m_iListeType = ENUM_CLASS(eType);
+        CClientInstance::GetInstance()->ActiveCamera_InteractMove();
 	}
 	
 	m_iSeleteIndex = 0;
@@ -44,8 +45,7 @@ void CUI_BladeNexus::On_Panel(ONTYPE eType, _wstring strMapName)
 	m_IsUpdate = true;
 	m_eNextEvent = MENULIST::END;
 
-	m_pGameInstance->Change_InputType(INPUT_TYPE::UI);
-    CClientInstance::GetInstance()->ActiveCamera_InteractMove();
+	m_pGameInstance->Change_InputType(INPUT_TYPE::UI);    
 }
 
 

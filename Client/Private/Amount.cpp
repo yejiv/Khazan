@@ -54,6 +54,10 @@ HRESULT CAmount::Initialize_Clone(void* pArg)
 		return E_FAIL;
 
 	m_IsUpdate = false;
+
+    m_iGold = &CClientInstance::GetInstance()->Get_ptrPlayerData().iGold;
+    m_iLachryma = &CClientInstance::GetInstance()->Get_ptrPlayerData().iLachryma;
+    m_iStone = &CClientInstance::GetInstance()->Get_ptrPlayerData().iStone;
 	return S_OK;
 }
 
@@ -96,19 +100,19 @@ HRESULT CAmount::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void*
 		{
 			m_pAmount[ENUM_CLASS(AMOUNT_TYPE::GOLD)] = static_cast<CAmount_Panel*>(child);
 			Safe_AddRef(child);
-			m_pAmount[ENUM_CLASS(AMOUNT_TYPE::GOLD)]->Setting_Index(AMOUNT_TYPE::GOLD, &m_iGold);
+			m_pAmount[ENUM_CLASS(AMOUNT_TYPE::GOLD)]->Setting_Index(AMOUNT_TYPE::GOLD, m_iGold);
 		}
 		else if (strName == "Lachryma")
 		{
 			m_pAmount[ENUM_CLASS(AMOUNT_TYPE::LACHRYMA)] = static_cast<CAmount_Panel*>(child);
 			Safe_AddRef(child);
-			m_pAmount[ENUM_CLASS(AMOUNT_TYPE::LACHRYMA)]->Setting_Index(AMOUNT_TYPE::LACHRYMA, &m_iLachryma);
+			m_pAmount[ENUM_CLASS(AMOUNT_TYPE::LACHRYMA)]->Setting_Index(AMOUNT_TYPE::LACHRYMA, m_iLachryma);
 		}
 		else if (strName == "Stone")
 		{
 			m_pAmount[ENUM_CLASS(AMOUNT_TYPE::STONE)] = static_cast<CAmount_Panel*>(child);
 			Safe_AddRef(child);
-			m_pAmount[ENUM_CLASS(AMOUNT_TYPE::STONE)]->Setting_Index(AMOUNT_TYPE::STONE, &m_iStone);
+			m_pAmount[ENUM_CLASS(AMOUNT_TYPE::STONE)]->Setting_Index(AMOUNT_TYPE::STONE, m_iStone);
 		}
 		child->Set_ShaderPass(12);
 	}

@@ -57,6 +57,9 @@ private:
 	void							Breath_Loop();
 
 private:
+    void                            Start_RadialBlur();
+
+private:
 	class CBody_Yetuga*				m_pBody = { nullptr };
 	class CHead_Yetuga*				m_pHead = { nullptr };
 	class CProjectile_Yetuga*		m_pHoldStone = { nullptr };

@@ -1447,14 +1447,14 @@ void CGameInstance::Set_RadialBlurDesc(const RADIAL_BLUR_DESC& Desc)
     m_pRadialBlur->Set_RadialBlurDesc(Desc);
 }
 
-void CGameInstance::Set_RadialBlurCenter(_fvector vCenter)
+void CGameInstance::Set_RadialBlurCenter(_fvector vCenter, _float fOffset)
 {
-    m_pRadialBlur->Set_RadialBlurCenter(vCenter);
+    m_pRadialBlur->Set_RadialBlurCenter(vCenter, fOffset);
 }
 
-void CGameInstance::Start_RadialBlur(_float fDuration, const _float2& vFadeTime, const RADIAL_BLUR_DESC& Desc)
+void CGameInstance::Start_RadialBlur(const RADIAL_BLUR_DESC& Desc)
 {
-    m_pRadialBlur->Start_RadialBlur(fDuration, vFadeTime, Desc);
+    m_pRadialBlur->Start_RadialBlur(Desc);
 }
 
 #pragma endregion

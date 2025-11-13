@@ -64,7 +64,8 @@ void CMainApp::Update(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_LCONTROL))
 	{
-		//m_pClientInstance->ActiveCamera_Shaking(2.f, 1.f);
+		m_pClientInstance->ActiveCamera_Shaking(1.5f, 1.f);
+
 		//m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.3f, 0.003f, 3.f);
 		//m_pGameInstance->Fix_HitStop(TIME_CHANNEL::ENEMY);
 		//FOVModifier tMod{};
@@ -96,7 +97,7 @@ void CMainApp::Update(_float fTimeDelta)
 
 		//m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
 
-        m_pClientInstance->Find_MapBladeNexus(KHAZAN_MAP::HEINMACH);
+        //m_pClientInstance->Find_MapBladeNexus(KHAZAN_MAP::HEINMACH);
 	}
 	if (m_pGameInstance->Key_Down(DIK_RCONTROL))
 	{
@@ -376,7 +377,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Common/T_Img_List_Menu_%d.png"), 8)), E_FAIL);
 
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_FX_Mask"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Mask/T_Fx_%d.png"), 6)), E_FAIL);
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Mask/T_Fx_%d.png"), 9)), E_FAIL);
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_State_Button"),
         CTexture::Create(m_pDevice, m_pContext, TEXT("..//Bin/Resources/UI/State/NormalButton_%d.png"), 10))))
@@ -540,7 +541,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	Desc.fDepth = 9.f;
 
 	CHECK_FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Mon_HP"),
-		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Mon_HP"), &Desc, 20), E_FAIL);
+		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Mon_HP"), &Desc, 60), E_FAIL);
 
 	Desc.vLocalSize = { 48.f, 48.f };
 	Desc.vLocalPos = { 0.f, 0.f };

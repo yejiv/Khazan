@@ -58,7 +58,7 @@ private:
 	UIANIMSTATE							m_eAnimState = { UIANIMSTATE::END };
 	_float								m_fAccTime = {};
 
-	vector<_int>						m_CulStateLevel;
+	vector<_uint*>				        m_CulStateLevel;
 	vector<_int>						m_UpStateLevel;
 
 	UI_PLAYER_STATE_DATA				m_Player_Data;
