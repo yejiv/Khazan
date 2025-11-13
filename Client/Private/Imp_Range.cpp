@@ -6,6 +6,7 @@
 #include "Projectile_Imp_MagicBall.h"
 #include "Projectile_Boomarang.h"
 #include "GameInstance.h"
+#include "Mon_HP.h"
 
 CImp_Range::CImp_Range(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{pDevice,pContext}
@@ -56,12 +57,34 @@ HRESULT CImp_Range::Initialize_Clone(void* pArg)
       m_MagicBalls.resize(3, nullptr);
       
 
+      CBlackBoard* pBB = m_pController->Get_BlackBoard();
+      if (pBB->Get_Value<_bool>(m_strName, "isDetected"))
+      {
+          
+          m_pUI_HP = static_cast<CMon_HP*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Mon_HP")));
+
+          if (m_pUI_HP != nullptr)
+          {
+              Safe_AddRef(m_pUI_HP);
+
+              m_pUI_HP->Setting_HP(m_vLockOnPosition, { 0.f, 200.f }, &m_fCurrentHP, &m_fMaxHP, &m_fCurrentStamina, &m_fMaxStamina);
+              m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pUI_HP);
+          }
+      }
       return S_OK;
 }
 
 void CImp_Range::Priority_Update(_float fTimeDelta)
 {
     CContainerObject::Priority_Update(fTimeDelta);
+
+    if (m_fCurrentHP <= 0.f)
+    {
+        m_pUI_HP->Set_IsDead(true);
+        Safe_Release(m_pUI_HP);
+    }
+
+
 }
 
 void CImp_Range::Update(_float fTimeDelta)
@@ -478,6 +501,7 @@ void CImp_Range::Free()
     m_MagicBalls.clear();
     
     Safe_Release(m_pBoomarang);
+    Safe_Release(m_pUI_HP);
 
     __super::Free();
 }
