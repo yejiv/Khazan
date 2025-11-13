@@ -319,8 +319,13 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 		return E_FAIL;
 #pragma endregion
 
-#pragma region 하늘 구름 객체 원형
+#pragma region 귀검 모델 원형
+    /* Prototype_Component_Model_BladeNexus */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Model_BladeNexus"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_DamagedTS/WIP_COM_DamagedTS.dat")), E_FAIL);
+#pragma endregion
 
+#pragma region 하늘 구름 객체 원형
 	/* Prototype_GameObject_SkyShpere */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_SkySphere"),
 		CSkySphere::Create(m_pDevice, m_pContext))))
@@ -330,7 +335,12 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_CloudSphere"),
 		CCloudSphere::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+#pragma endregion
 
+#pragma region 귀검 객체 원형
+    /* Prototype_GameObject_Loading_BladeNexus */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Loading_BladeNexus"),
+        CLoadingObj_BN::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 #pragma region 카메라

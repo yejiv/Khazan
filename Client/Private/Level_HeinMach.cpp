@@ -638,7 +638,6 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
 }
 
 HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Interactive(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
-
 {
 	_wstring strDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
 
