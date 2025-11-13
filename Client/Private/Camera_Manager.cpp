@@ -163,6 +163,25 @@ void CCamera_Manager::DeactivateCamera_InteractMove()
     }
 }
 
+void CCamera_Manager::Yetuga_Holding_Start()
+{
+    if (Get_ActiveCamera()->Get_CameraType() == ENUM_CLASS(CAMERATYPE::PLAYER))
+    {
+        CCamera_Compre* pCamera = dynamic_cast<CCamera_Compre*>(Get_ActiveCamera());
+
+        pCamera->Yetuga_Holding_Start();
+    }
+}
+void CCamera_Manager::Yetuga_Holding_End()
+{
+    if (Get_ActiveCamera()->Get_CameraType() == ENUM_CLASS(CAMERATYPE::PLAYER))
+    {
+        CCamera_Compre* pCamera = dynamic_cast<CCamera_Compre*>(Get_ActiveCamera());
+
+        pCamera->Yetuga_Holding_End();
+    }
+}
+
 void CCamera_Manager::Save_Json(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData)
 {
 	CCamera* pCamera = Find_Camera(iLevelIndex, strCameraTag);
