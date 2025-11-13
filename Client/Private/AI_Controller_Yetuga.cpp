@@ -7,6 +7,7 @@
 #include "Perception.h"
 #include "UI_Inven.h"
 #include "ClientInstance.h"
+#include "Amount.h"
 
 
 CAI_Controller_Yetuga::CAI_Controller_Yetuga()
@@ -30,6 +31,15 @@ HRESULT CAI_Controller_Yetuga::Initialize(CCreature* pOwner)
 
 void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 {
+
+    if (m_pGameInstance->Key_Down(DIK_T))
+    {
+        CCreature* pCreature = static_cast<CCreature*>(pOwner);
+        CGameObject* pTarget = static_cast<CGameObject*>(m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target"));
+        pCreature->Take_Damage(10,HITREACTION::KNOCKBACK_STRONG,pTarget);
+    }
+   
+
 
 	m_pPerception->Update(pOwner,m_pBB,fTimeDelta);
 	_float fPrevTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
@@ -132,6 +142,7 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
                     static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1001);
                     static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1002);
                     static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1003);
+                    static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 100000);
                     return true;
 
                 }
