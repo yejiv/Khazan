@@ -50,12 +50,14 @@ private:
     _int								    m_iSeleteIndex = {};
     _int                                    m_iMaxSelete = {};
 
+    _int                                    m_iNexusIndex = {};
 private:
     virtual	HRESULT						Ready_Prototype();
     HRESULT								Ready_Object();
 
     void								UI_Animation(_float fTimeDelta);
-    void								Next_Event();
+    void                                Move_Player();
+   
 public:
     static CUI_BladeNexus_Map*          Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
     virtual CGameObject*                Clone(void* pArg) override;

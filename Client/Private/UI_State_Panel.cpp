@@ -158,6 +158,7 @@ HRESULT CUI_State_Panel::Setting_PanelLevel(_int iPanelType, UI_PLAYER_STATE_DAT
                 else if (child->Get_Name() == "AddState_List_Up_Regen")
                 {
                     m_pUpValue_TextBox = static_cast<CUI_TextBox*>(child);
+                    Safe_AddRef(child);
                 }
                 else if (child->Get_Name() == "AddState_List_Up_Min")
                 {

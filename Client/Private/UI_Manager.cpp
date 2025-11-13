@@ -58,6 +58,7 @@ HRESULT CUI_Manager::Initialize()
 		return E_FAIL;
 
 	m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), m_pFadeUI);
+    Safe_AddRef(m_pFadeUI);
 	return S_OK;
 }
 

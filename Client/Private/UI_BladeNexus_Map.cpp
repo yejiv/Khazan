@@ -11,6 +11,8 @@
 #include "BladeNexus_Map_List.h"
 #include "UI_BladeNexus.h"
 
+#include "Khazan_Spear.h"
+
 CUI_BladeNexus_Map::CUI_BladeNexus_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Panel{ pDevice, pContext }
 {
@@ -109,10 +111,10 @@ void CUI_BladeNexus_Map::Priority_Update(_float fTimeDelta)
 
 void CUI_BladeNexus_Map::Update(_float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_8, INPUT_TYPE::UI))
+    if (m_pGameInstance->Key_Down(DIK_8))
         On_Panel(ONTYPE::HEINMACH);
 
-    if (m_pGameInstance->Key_Down(DIK_7, INPUT_TYPE::UI))
+    if (m_pGameInstance->Key_Down(DIK_7))
         On_Panel(ONTYPE::EMBARS);
 
     if (!m_IsUpdate)
@@ -321,7 +323,38 @@ void CUI_BladeNexus_Map::Bubble_EventCall(BUBBLEEVENT* pArg)
 
     if (pDesc->isClick)
     {
-        Off_Panel();
+        m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
+
+      
+ 
+
+        _int iNexusIndex = { -1};
+        if (m_eOnType == ONTYPE::HEINMACH)
+        {
+            if (pDesc->iIndex == 0)
+                iNexusIndex = 0;
+            else if (pDesc->iIndex == 1)
+                iNexusIndex = 1;
+            else if (pDesc->iIndex == 2)
+                iNexusIndex = 2;
+        }
+        else  if (m_eOnType == ONTYPE::EMBARS)
+        {
+            if (pDesc->iIndex == 0)
+                iNexusIndex = 4;
+            else if (pDesc->iIndex == 1)
+                iNexusIndex = 5;
+            else if (pDesc->iIndex == 2)
+                iNexusIndex = 6;
+        }
+        m_iNexusIndex = iNexusIndex;
+        
+        if (m_iNexusIndex > -1)
+        {
+            CClientInstance::GetInstance()->Fade_Out([this]() {this->Move_Player(); });
+        }
+           
+        m_IsUpdate = false;
     }
     else
     {
@@ -416,6 +449,16 @@ void CUI_BladeNexus_Map::UI_Animation(_float fTimeDelta)
             m_IsUpdate = false;
         }
     }
+}
+
+void CUI_BladeNexus_Map::Move_Player()
+{
+    CClientInstance::GetInstance()->Fade_Out();
+    CKhazan_Spear* pKhazan = static_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_Creature_Player"), 0));
+    if (pKhazan == nullptr)
+        MSG_BOX(TEXT("플레이어 없음"));
+    pKhazan->Set_Position(CClientInstance::GetInstance()->Find_BladeNexus(m_iNexusIndex)->vPos);
+    CClientInstance::GetInstance()->Fade_In();
 }
 
 CUI_BladeNexus_Map* CUI_BladeNexus_Map::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)
