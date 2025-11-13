@@ -29,8 +29,6 @@ HRESULT CImp_Melee::Initialize_Clone(void* pArg)
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
-    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(513.f, -11.f, 239.f, 1.f));
-
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
