@@ -13,9 +13,9 @@ CMon_HP::CMon_HP(const CMon_HP& Prototype)
 {
 }
 
-void CMon_HP::Setting_HP(const _float4x4* pTagetMat, _float2 vOffset, const _int* pHpValue, const _int* pHpMaxValue, const _int* pStaminaCulValue, const _int* pStaminaMaxValue)
+void CMon_HP::Setting_HP(const _float4* pTagetMat, _float2 vOffset, const _float* pHpValue, const _float* pHpMaxValue, const _float* pStaminaCulValue, const _float* pStaminaMaxValue)
 {
-	m_pTagetMat = pTagetMat;
+    m_pTargetPos = pTagetMat;
 	m_vLocalPos = { vOffset.x, -vOffset.y };
 
 	m_pHPGauge->Setting_Progress(pHpValue, pHpMaxValue);
@@ -88,7 +88,7 @@ HRESULT CMon_HP::Render()
 
 void CMon_HP::Reset()
 {
-	m_pTagetMat = nullptr;
+    m_pTargetPos = nullptr;
 	m_pHPGauge->Reset_Progress();
 	m_pStaminaGauge->Reset_Progress();
 }
@@ -155,7 +155,7 @@ HRESULT CMon_HP::Ready_Children()
 
 void CMon_HP::Update_WorldPos()
 {
-	_float4 vTemp = _float4{ m_pTagetMat->m[3] };
+	_float4 vTemp = *m_pTargetPos;
 	_vector vTargetPos = XMLoadFloat4(&vTemp);
 
 	vTemp = CClientInstance::GetInstance()->Get_ActiveCameraLook();

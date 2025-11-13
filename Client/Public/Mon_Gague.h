@@ -23,7 +23,7 @@ private:
 	virtual ~CMon_Gauge() = default;
 
 public:
-	void							Setting_Progress(const _int* pCulValue, const _int* pMaxValue);
+	void							Setting_Progress(const _float* pCulValue, const _float* pMaxValue);
 	void							Reset_Progress();
 public:
 	virtual HRESULT					Initialize_Prototype();
@@ -38,8 +38,8 @@ private:
 	CTexture*						m_pTextureCom = { nullptr };
 	CVIBuffer_Rect*					m_pVIBufferCom = { nullptr };
 
-	const _int*						m_pMaxValue = { nullptr };
-	const _int*						m_pCulValue = { nullptr };
+	const _float*				    m_pMaxValue = { nullptr };
+	const _float*				    m_pCulValue = { nullptr };
 
 
 private:
