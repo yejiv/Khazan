@@ -31,6 +31,62 @@ CLevel_HeinMach::CLevel_HeinMach(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 
 HRESULT CLevel_HeinMach::Initialize()
 {
+#pragma region 수정된 코드
+
+    // 연동되지 않는 것들을 쓰레드풀로 돌리기
+    m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+
+        CHECK_FAILED(Ready_Layer_UI(), E_FAIL);
+
+        CHECK_FAILED(Ready_Layer_Decal(), E_FAIL);
+
+        return S_OK;
+        }));
+
+    m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+
+        CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
+
+        CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+
+        CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+
+        CHECK_FAILED(Ready_Map_Decal(TEXT("Layer_Decal"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+
+        CHECK_FAILED(Ready_Layer_Sky(TEXT("Layer_Sky"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+
+        CHECK_FAILED(Ready_Layer_Cloud(TEXT("Layer_Sky"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+
+        return S_OK;
+        }));
+
+
+    CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
+
+    CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera")), E_FAIL);
+
+    for (_uint i = 0; i < HEINMACH_SUBLV; ++i)
+    {
+        CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), i, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+        CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), i, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+    }
+
+    CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+    
+    CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+
+    CClientInstance::GetInstance()->Fade_Out();
+
+    if (!Wait_All_Futures())
+        return E_FAIL;
+
+    m_futures.clear();
+
+#pragma endregion
+
+#pragma region 기존 코드
+
+    /*
     CHECK_FAILED(Ready_Layer_UI(), E_FAIL);
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), HEINMACH_1ST_BLADENEXUS, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
@@ -112,8 +168,11 @@ HRESULT CLevel_HeinMach::Initialize()
         return E_FAIL;
 
 	m_futures.clear();
-
+    */
     //Ready_Layer_NorMonster(TEXT("Normal"));
+
+#pragma endregion
+
 	return S_OK;
 }
 
@@ -639,13 +698,16 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
 
     wsprintf(szDone, strDone.c_str(), iSubLV);
 
+#ifdef _DEBUG
+
     OutputDebugStringW(szDone);
+
+#endif // _DEBUG
 
     return S_OK;
 }
 
 HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Interactive(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
-
 {
 	_wstring strDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
 

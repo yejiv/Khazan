@@ -39,6 +39,7 @@ public:
     void        Set_IsGuarding(_bool* pIsGuarding) { m_pIsGuarding = pIsGuarding; }
     void        Set_Spear(class CSpear_Khazan_Spear* pSpear);
    // void        Set_Lantern(_bool* pIsLantern) { m_isEquipLantern = pIsLantern;}
+    void	    Event_AttackTiming(_bool isAttackStart);
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -165,7 +166,6 @@ private:
     void	FX_StrongAtk_Charge_BlustSmall(_fvector pos);
     void	Spear_Spike();
 
-    void	Event_AttackTiming(_bool isAttackStart);
 
 
 private:

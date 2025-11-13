@@ -362,49 +362,10 @@ HRESULT CLevel_Shader::Initialize()
                     m_pGameInstance->Set_LUTIntensity(m_fLUTIntensity);
             }
 
-            if (ImGui::Checkbox("Radial Blur", &m_isEnableRadialBlur));
-                //m_pGameInstance->Set_EnableRadialBlur(m_isEnableRadialBlur);
+            ImGui::Checkbox("Radial Blur", &m_isEnableRadialBlur);
 
             if (m_isEnableRadialBlur)
             {
-                //  // 중심 UV
-                //  if (ImGui::SliderFloat2("Radial Blur Center UV", reinterpret_cast<_float*>(&m_RadialBlurDesc.vCenterUV), 0.f, 1.f, "%.1f"))
-                //      m_pGameInstance->Set_RadialBlurDesc(m_RadialBlurDesc);
-                //  
-                //  // 반경
-                //  if (ImGui::SliderFloat("Radial Blur Radius", &m_RadialBlurDesc.fSampleRadius, 0.01f, 1.5f, "%.2f"))
-                //      m_pGameInstance->Set_RadialBlurDesc(m_RadialBlurDesc);
-                //  
-                //  // 마스크 반경
-                //  if (ImGui::SliderFloat("Radial Blur Mask Radius Iner", &m_RadialBlurDesc.vMaskRadius.x, 0.f, 1.f, "%.3f"))
-                //      m_pGameInstance->Set_RadialBlurDesc(m_RadialBlurDesc);
-                //  if (ImGui::SliderFloat("Radial Blur Mask Radius Outer", &m_RadialBlurDesc.vMaskRadius.y, 0.f, 1.f, "%.3f"))
-                //      m_pGameInstance->Set_RadialBlurDesc(m_RadialBlurDesc);
-                //  
-                //  // 마스크 지수(곡선 강화)
-                //  if (ImGui::SliderFloat("Radial Blur Mask Exponent", &m_RadialBlurDesc.fExponent, 1.f, 5.f, "%.2f"))
-                //      m_pGameInstance->Set_RadialBlurDesc(m_RadialBlurDesc);
-                //  
-                //  // 샘플 개수
-                //  _int iNumSamples = static_cast<_int>(m_RadialBlurDesc.iNumSamples);
-                //  if (ImGui::InputInt("Radial Blur Num Samples", &iNumSamples, 2, 4))
-                //  {
-                //      m_RadialBlurDesc.iNumSamples = iNumSamples;
-                //      m_pGameInstance->Set_RadialBlurDesc(m_RadialBlurDesc);
-                //  }
-                //  
-                //  // 감쇠
-                //  if (ImGui::SliderFloat("Radial Blur Attenuation", &m_RadialBlurDesc.fAttenuation, 0.1f, 5.f, "%.2f"))
-                //      m_pGameInstance->Set_RadialBlurDesc(m_RadialBlurDesc);
-                //  
-                //  // 블러 강도
-                //  if (ImGui::SliderFloat("Radial Blur Strength", &m_RadialBlurDesc.fStrength, 0.f, 1.f, "%.2f"))
-                //      m_pGameInstance->Set_RadialBlurDesc(m_RadialBlurDesc);
-                //  
-                //  ImGui::Separator();
-
-                // ================ Radial Blur Animation ================
-
                 // 중심 UV
                 ImGui::SliderFloat2("Radial Blur Center UV", reinterpret_cast<_float*>(&m_RadialBlurDesc.vCenterUV), 0.f, 1.f, "%.1f");
                 
@@ -429,25 +390,14 @@ HRESULT CLevel_Shader::Initialize()
                 // 블러 강도
                 ImGui::SliderFloat("Radial Blur Strength", &m_RadialBlurDesc.fStrength, 0.f, 1.f, "%.2f");
                 
-                ImGui::SliderFloat("Radial Blur Duration", &m_fRadialBlurDuration, 0.f, 10.f, "%.2f");
-
-                ImGui::SliderFloat2("Radial Blur Fade Time", reinterpret_cast<_float*>(&m_vRadialBlurFadeTime), 0.f, 5.f, "%.1f");
+                // 지속 시간
+                ImGui::SliderFloat("Radial Blur Duration", &m_RadialBlurDesc.fDuration, 0.f, 10.f, "%.2f");
+                
+                // 페이드 시간
+                ImGui::SliderFloat2("Radial Blur Fade Time", reinterpret_cast<_float*>(&m_RadialBlurDesc.vFadeTime), 0.f, 5.f, "%.1f");
                 
                 if (ImGui::Button("Start Radial Blur Animation"))
-                    m_pGameInstance->Start_RadialBlur(m_fRadialBlurDuration, m_vRadialBlurFadeTime, m_RadialBlurDesc);
-                
-                if (ImGui::Button("Test Radial Blur"))
-                {
-                    RADIAL_BLUR_DESC Desc{};
-                    Desc.vCenterUV = _float2(0.5f, 0.5f);
-                    Desc.fSampleRadius = 0.05f;
-                    Desc.vMaskRadius = _float2(0.f, 0.4f);
-                    Desc.fExponent = 1.f;
-                    Desc.iNumSamples = 16;
-                    Desc.fAttenuation = 0.1f;
-                    Desc.fStrength = 0.f;
-                    m_pGameInstance->Start_RadialBlur(2.f, _float2(0.3, 1.f), m_RadialBlurDesc);
-                }
+                    m_pGameInstance->Start_RadialBlur(m_RadialBlurDesc);
 
                 ImGui::Separator();
             }

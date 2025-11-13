@@ -7,6 +7,9 @@
 #include "SkySphere.h"
 #include "CloudSphere.h"
 
+// 로딩용 귀검
+#include "LoadingObj_BN.h"
+
 // Properties
 #include "Prop_Object.h"
 #include "Prop_Static.h"

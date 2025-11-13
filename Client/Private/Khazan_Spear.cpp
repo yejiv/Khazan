@@ -16,6 +16,9 @@
 #include "Khazan_Spaer_Anim_Damaged.h"
 
 #include "Camera_Compre.h"
+#include "UI_HUD.h"
+#include "Damage_Text.h"
+
 
 #pragma region 이벤트 - 인벤토리
 #include "UI_Inven.h"
@@ -256,8 +259,38 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
         Add_State(CAT::M_DIE);
         m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Die_F");
         m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
+
+        /* UI */
+        m_pGameInstance->Emit_Event< EVENT_ANNOUNCE_RESULT>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_OVER), {});
     }
 
+    /* Damage UI font */
+    CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
+    if (pDamage != nullptr)
+    {
+        pDamage->Render_Damage(  CDamage_Text::DAMAGE_TYPE::DEFAULT ,m_pTransformCom->Get_State(STATE::POSITION), fDamage, { 0.f, 4.f });
+        m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
+    }
+
+    /*  Decal */
+    _vector vDecalPos = m_pTransformCom->Get_State(STATE::POSITION);
+    _float fOffset = 2.f;
+    _float fPosX = XMVectorGetX(vDecalPos);
+    _float fPosZ = XMVectorGetZ(vDecalPos);
+    vDecalPos = XMVectorSetX(vDecalPos, m_pGameInstance->Rand(fPosX - fOffset, fPosX + fOffset));
+    vDecalPos = XMVectorSetZ(vDecalPos, m_pGameInstance->Rand(fPosZ - fOffset, fPosZ + fOffset));
+    DECAL_DESC Desc{};
+    Desc.fLifeTime = 8.f;
+    Desc.vFadeTime = _float2(0.2f, 0.2f);
+    Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::END)));
+    XMStoreFloat3(&Desc.vPosition, vDecalPos);
+    Desc.vScale = _float3(
+        m_pGameInstance->Rand(3.f, 5.f),
+        2.f,
+        m_pGameInstance->Rand(3.f, 5.f)
+    );
+    Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
+    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
 
     switch (eHitreaction)
     {
@@ -336,6 +369,11 @@ void CKhazan_Spear::Set_Camera(CCamera_Compre* pCamera)
     Safe_AddRef(m_pCamera);
 }
 
+void CKhazan_Spear::Set_Position(_float4 vPos)
+{
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat4(&vPos), 1.f));
+}
+
 void CKhazan_Spear::Update_State(_float fTimeDelta)
 {
     if (Has_State(CAT::M_DIE))
@@ -395,9 +433,10 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
             Attack_Input(fTimeDelta);
 
             // 공격 중일 때는 Move_Input을 완전히 차단
-            if (!Has_State(CAT::M_ATTACK | CAT::M_GUARD | CAT::M_SKILL) && !m_pAnimAttack->Is_Attacking())
+            if (!Has_State(CAT::M_ATTACK | CAT::M_GUARD | CAT::M_SKILL) && !m_pAnimAttack->Is_Attacking() && m_pAnimAttack)
                 Move_Input(fTimeDelta);
-            else if (Has_State(CAT::M_ATTACK | CAT::M_SKILL))
+
+            if (Has_State(CAT::M_ATTACK | CAT::M_SKILL))
             {
                 if (Has_State(CAT::M_MOVE))
                 {
@@ -417,13 +456,18 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
     _bool isEnter = (m_iCurMainState != m_iPrevMainState) || (m_iCurSubState != m_iPrevSubState);
     _bool isContinue = (m_iCurMainState == m_iPrevMainState) && (m_iCurSubState == m_iPrevSubState);
 
+    /* 공격 상태가 아닐 때 공격 콜리더 끄기  */
+    if(!m_pAnimAttack->Is_Attacking())
+        m_pBody->Event_AttackTiming(false);
+
+
     /* (move , idle 애니메이션 재생 시도 */
     if (!Has_Status(INJURED))
         Change_MoveIdle(fTimeDelta);
 
     /* 실제 이동값 주기 */
     if (Has_State(CAT::M_MOVE | CAT::M_GUARD) &&
-        !Has_State(CAT::M_ATTACK | CAT::M_SKILL | CAT::M_DAMAGED) &&
+        !Has_State(CAT::M_ATTACK | CAT::M_SKILL | CAT::M_DAMAGED | CAT::M_INTERACT ) &&
         !Has_SubState(MOV::MOVE_DODGE) &&
         !m_pAnimMove->IsDodgeing() &&
         !m_pAnimAttack->Is_Attacking())
@@ -457,6 +501,12 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
         {
             if (isEnter) m_pAnimDamaged->Enter();
             m_pAnimDamaged->Continue(fTimeDelta);
+
+            if (!m_pAnimDamaged->Is_Damaged())
+            {
+                Remove_State(CAT::M_DAMAGED);
+                Clear_SubState();
+            }
         }
     }
     else if (Has_State(CAT::M_SKILL))
@@ -468,9 +518,11 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
         {
             Remove_State(CAT::M_SKILL);
             Clear_SubState();
+            m_pAnimAttack->Clear_Skill();
 
             if (m_eDir.iDirFlag > 0)
             {
+                Clear_Step2();
                 Add_State(CAT::M_MOVE);
                 Add_SubState(MOV::MOVE_RUN);
                 Add_CycleState(CYC::CYCLE_START);
@@ -493,6 +545,7 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
 
                 if (m_eDir.iDirFlag > 0)
                 {
+                    Clear_Step2();
                     Add_State(CAT::M_MOVE);
                     Add_SubState(MOV::MOVE_RUN);
                     Add_CycleState(CYC::CYCLE_START);
@@ -504,6 +557,8 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
         {
             if (isEnter) m_pAnimMove->Enter();
             if (isEnter || isContinue) m_pAnimMove->Continue(fTimeDelta);
+
+
         }
     }
     else if (Has_State(CAT::M_INTERACT))
@@ -576,6 +631,7 @@ void CKhazan_Spear::InjuredMove_Input(_float fTimeDelta)
     else if (isPlayingStop && m_pBody->Get_Model()->IsFinished())
     {
         Remove_State(CAT::M_MOVE);
+        Remove_SubState(MOV::MOVE_INJURED);
         Clear_SubState();
         Clear_CycleState();
 
@@ -1762,7 +1818,10 @@ void CKhazan_Spear::ExecuteAnimationExit()
     //if(m_iPrevMainState &   CAT::M_CLIMB            )
     if ((m_iCurMainState != m_iPrevMainState) && m_iPrevMainState & CAT::M_SKILL) m_pAnimAttack->Exit();
     if ((m_iCurMainState != m_iPrevMainState) && m_iPrevMainState & CAT::M_GUARD) m_pAnimGuard->Exit();
-    if ((m_iCurMainState != m_iPrevMainState) && m_iPrevMainState & CAT::M_ATTACK) m_pAnimAttack->Exit();
+    if ((m_iCurMainState != m_iPrevMainState) && m_iPrevMainState & CAT::M_ATTACK) {
+        m_pAnimAttack->Exit();
+        m_pBody->Event_AttackTiming(false);
+    }
     if ((m_iCurMainState != m_iPrevMainState) && m_iPrevMainState & CAT::M_MOVE) m_pAnimMove->Exit();
     //if(m_iPrevMainState &   CAT::M_LOCKON           )
     //if(m_iPrevMainState &   CAT::M_INTERACT         )
@@ -2276,6 +2335,27 @@ void CKhazan_Spear::Clear_Step1()
         m_pAnimAttack->Clear_Skill();
 }
 
+void CKhazan_Spear::Clear_Step2()
+{
+    if (Has_State(CAT::M_MOVE))
+    {
+        Clear_CycleState();
+        Clear_SubState();
+        Remove_State(CAT::M_MOVE);
+    }
+
+    Remove_Status(RESERVED | CHARGING_SPRINT | BACK_DODGE | ROTATION | AGAIN_REQUEST);
+
+
+    m_eDir.iDirFlag = 0;
+    m_eWorldDir.iDirFlag = 0;
+    m_fRotateTime[0] = 0.f;
+    m_fSprintTime = 0.f;
+
+    if (m_pAnimMove)
+        m_pAnimMove->Clear_Reserve();
+}
+
 HRESULT CKhazan_Spear::Ready_PartObjects()
 {
     LEVEL eCurrentLevel = CClientInstance::GetInstance()->Get_CurrLevel();
@@ -2413,20 +2493,22 @@ _uint CKhazan_Spear::ConvertCameraToPlayerDir(PLAYER_CAMERA_DIR playerCamDir)
 void CKhazan_Spear::Subscribe_Events()
 {
 #pragma region 상호 작용 맵 오브젝트 이벤트
-    m_pGameInstance->Subscribe_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), [&](const EventInteractType& e) { m_EventInteract = e;});
+    m_pGameInstance->Subscribe_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), [&](const EventInteractType& e) { m_EventInteract = e; });
 
     m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e) {
-        if (e.isOff()) 
+        if (e.isOff())
         {
-        m_pBody->Get_Model()->AnimationSetIndexIncrease();
-        m_pSpear->Set_Enble(true);
-       // m_pSpear->Equip();
-        Add_Status(SPEAR);
-        Remove_Status(BAREHAND | INJURED);
-    }  });
+            m_pBody->Get_Model()->AnimationSetIndexIncrease();
+            m_pSpear->Set_Enble(true);
+            // m_pSpear->Equip();
+            static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+            Add_Status(SPEAR);
+            Remove_Status(BAREHAND | INJURED);
+        }  });
 
 #pragma endregion
 }
+
 void CKhazan_Spear::Event_Interact_Object(_float fTimeDelta)
 {
     // 상호 작용 오브젝트 쪽에서 BEGIN STATE 내보내면 플레이어에서 행동 후, 행동 완료 시 이벤트 발생으로 상호 작용 오브젝트 동작
@@ -2442,6 +2524,7 @@ void CKhazan_Spear::Event_Interact_Object(_float fTimeDelta)
 
             XMStoreFloat4(&m_vStartPos_Event, m_pTransformCom->Get_State(STATE::POSITION));
             m_fLerpTime_Event = 0.f;
+
         }
         // 플레이어 이동, LOOK 보간?? | 완료하면 이벤트 반대로 던져주기
         _bool isDone = { true };
@@ -2644,6 +2727,7 @@ void CKhazan_Spear::Chest_Event(_float fTimeDelta)
 
             m_fEventTimeAcc = 0.f;
         }
+
     }
 }
 
@@ -3145,7 +3229,7 @@ const char* CKhazan_Spear::GetSubStateName(_uint subState)
     if (subState & MOV::MOVE_GETUP) result += "GETUP | ";
     if (subState & MOV::MOVE_FALL) result += "FALL | ";
     if (subState & MOV::MOVE_DODGE) result += "DODGE | ";
-    if (subState & MOV::MOVE_INJURED) result += "INJURED | ";
+    if (subState & MOV::MOVE_INJURED) result += "MOVE_INJURED | ";
 
     if (!result.empty())
         result = result.substr(0, result.length() - 3);

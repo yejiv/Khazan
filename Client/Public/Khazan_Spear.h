@@ -65,6 +65,7 @@ public:
 	_matrix Get_BoneSpearFXMatrix() { return XMLoadFloat4x4(&m_pSpearFX_WorldMatrix); }
 
     void	Set_Camera(class CCamera_Compre* pCamera);
+    void    Set_Position(_float4 vPos);
 
 private:
 	class CBody_Khazan_Spear*			    m_pBody = { nullptr };
@@ -169,6 +170,7 @@ private:
 
     void            Clear_Step0();  // 이전 상태 빼고 거의 다 클리어
     void            Clear_Step1();  //이전 상태 , lockOn, dir,worldDir 빼고 다 클리어
+    void            Clear_Step2();  // 무빙 관련 클리어
 
 
 
