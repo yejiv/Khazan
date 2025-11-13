@@ -91,8 +91,16 @@ HRESULT CDecal::Bind_ShaderResources(CShader* pShader, class CTexture** pTexture
 	if (FAILED(pShader->Bind_RawValue("g_fOpacity", &m_fOpacity, sizeof(_float))))
 		return E_FAIL;
 
-	if (FAILED(pShader->Bind_RawValue("g_iRandSeed", &m_iRandSeed, sizeof(_uint))))
-		return E_FAIL;
+    if (true == m_isDecoration)             // 데코용일 경우 고정 쓰레스 홀드
+    {
+        if (FAILED(pShader->Bind_RawValue("g_fThreshold", &m_fThreshold, sizeof(_float))))
+            return E_FAIL;
+    }
+    else
+    {
+        if (FAILED(pShader->Bind_RawValue("g_iRandSeed", &m_iRandSeed, sizeof(_uint))))
+            return E_FAIL;
+    }
 
 	switch (m_Desc.eType)
 	{
@@ -111,10 +119,22 @@ HRESULT CDecal::Bind_ShaderResources(CShader* pShader, class CTexture** pTexture
 	}
 
 	// 버퍼 렌더 및 텍스처 바인딩, 셰이더 비긴
-	pShader->Begin(0);
+    if (true == m_isDecoration)             // 데코용일 경우 패스 1번 ( 감사합니다 )
+    {
+        pShader->Begin(1);
+    }
+    else
+        pShader->Begin(0);
 
 	pVIBuffer->Bind_Resources();
 	pVIBuffer->Render();
+
+    // 맵 에디터에서 큐브 사이즈 확인 위한 . . .
+    if (true == m_isWireFrame)
+    {
+        pShader->Begin(2);
+        pVIBuffer->Render();
+    }
 
 	return S_OK;
 }

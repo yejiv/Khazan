@@ -174,52 +174,6 @@ map<_uint, _matrix>& CAnimation::Get_ChannelMatrices()
 }
 
 
-//map<_uint, _matrix> CAnimation::Get_ChannelMatrices()  
-//{
-//    map<_uint, _matrix> result;  // 로운 map 생성
-//
-//    for (_uint i = 0; i < m_iNumChannels; ++i)
-//    {
-//        _matrix channelMatrix = m_Channels[i]->Get_TransformationMatrix();
-//
-//#ifdef _DEBUG
-//        // 유효성 검증
-//        _vector scale, rotQuat, position;
-//        if (XMMatrixDecompose(&scale, &rotQuat, &position, channelMatrix))
-//        {
-//            _float3 scaleF3;
-//            XMStoreFloat3(&scaleF3, scale);
-//
-//            if (scaleF3.x < 0.01f || scaleF3.y < 0.01f || scaleF3.z < 0.01f)
-//            {
-//                char buffer[256];
-//                sprintf_s(buffer, "[Get_ChannelMatrices] Channel %d (Bone %d): Scale (%.3f, %.3f, %.3f) - Using Identity\n",
-//                    i, m_Channels[i]->Get_BoneIndex(), scaleF3.x, scaleF3.y, scaleF3.z);
-//                OutputDebugStringA(buffer);
-//
-//                channelMatrix = XMMatrixIdentity();
-//            }
-//        }
-//        else
-//        {
-//            char buffer[256];
-//            sprintf_s(buffer, "[Get_ChannelMatrices] Channel %d: Matrix decompose failed - Using Identity\n", i);
-//            OutputDebugStringA(buffer);
-//
-//            channelMatrix = XMMatrixIdentity();
-//        }
-//#endif
-//
-//        result.emplace(m_Channels[i]->Get_BoneIndex(), channelMatrix);
-//    }
-//
-//#ifdef _DEBUG
-//    OutputDebugStringA(("[Get_ChannelMatrices] Collected " + to_string(result.size()) + " matrices\n").c_str());
-//#endif
-//
-//    return result;  // RVO(Return Value Optimization)로 효율적으로 반환
-//}
-
 
 void CAnimation::Update_AnimationBlend(const vector<class CBone*>& Bones, _float fTimeDelta)
 {

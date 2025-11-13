@@ -43,6 +43,9 @@ HRESULT CLevel_HeinMach::Initialize()
 		if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 			return E_FAIL;
 		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+        // CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Monster"), TEXT("HeinMach"), HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+		//CHECK_FAILED(Ready_Layer_Monster(TEXT("Layer_Yetuga")), E_FAIL);
+        CHECK_FAILED(Ready_Map_Decal(TEXT("Layer_Decal"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
         //CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Monster"), TEXT("HeinMach"), HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
         //CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Monster"), TEXT("HeinMach"), 11, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
         Ready_Layer_Monster(TEXT("Layer_Monster"));
@@ -931,6 +934,84 @@ HRESULT CLevel_HeinMach::Ready_Trigger(const _wstring& strLayerTag, const _tchar
 	}
 
 	return S_OK;
+}
+
+HRESULT CLevel_HeinMach::Ready_Map_Decal(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
+{
+    // Dat 기본 경로
+    _wstring strDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+
+    switch (eMap)
+    {
+    case KHAZAN_MAP::HEINMACH:
+        strDataFilePath += TEXT("HeinMach/");
+        break;
+    case KHAZAN_MAP::CREVICE:
+        strDataFilePath += TEXT("Crevice/");
+        break;
+    case KHAZAN_MAP::EMBARS:
+        strDataFilePath += TEXT("Embars/");
+        break;
+    case KHAZAN_MAP::VIPER:
+        strDataFilePath += TEXT("Viper/");
+        break;
+    default:
+        break;
+    }
+
+    strDataFilePath += pDataFileName;
+
+    strDataFilePath += TEXT("_decals.dat");
+
+    DWORD dwByte = {};
+
+    HANDLE hFile = CreateFile(strDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        return E_FAIL;
+    }
+    CHECK_EQUAL(INVALID_HANDLE_VALUE, hFile, E_FAIL);
+
+    // 1. 데칼의 총 개수
+    _uint iDecalCnt = {};
+    CHECK_FALSE(ReadFile(hFile, &iDecalCnt, sizeof(_uint), &dwByte, nullptr), false);
+
+    // 데칼 총 개수만큼 순회
+    for (_uint i = 0; i < iDecalCnt; ++i)
+    {
+        CDecal* pDecal = static_cast<CDecal*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Decal")));
+        CHECK_NULLPTR(pDecal, E_FAIL);
+
+        DECAL_DESC DecalDesc = {};
+        // 2. 데칼의 구조체 불러오기
+        CHECK_FALSE(ReadFile(hFile, &DecalDesc, sizeof(DECAL_DESC), &dwByte, nullptr), false);
+        pDecal->Set_Desc(DecalDesc);
+
+        _float fThreshold = {};
+        // 3. 데칼의 쓰레스 홀드 불러오기 ( 마스크 )
+        CHECK_FALSE(ReadFile(hFile, &fThreshold, sizeof(_float), &dwByte, nullptr), false);
+        pDecal->Set_Threshold(fThreshold);
+
+        _uint iTextureIndex = {};
+        // 4. 데칼의 텍스쳐 인덱스 불러오기
+        CHECK_FALSE(ReadFile(hFile, &iTextureIndex, sizeof(_uint), &dwByte, nullptr), false);
+        pDecal->Set_TextureIndex(iTextureIndex);
+
+        _float4x4 WorldMatrix = {};
+        // 5. 데칼의 월드 행렬 불러오기
+        CHECK_FALSE(ReadFile(hFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr), false);
+        pDecal->Set_WorldMatrix(WorldMatrix);
+
+        // 데코용 데칼 true
+        pDecal->Set_EnableDecoration(true);
+
+        m_pGameInstance->Batch_Decal(pDecal);
+    }
+
+    CloseHandle(hFile);
+
+    return S_OK;
 }
 
 HRESULT CLevel_HeinMach::Ready_Layer_UI()

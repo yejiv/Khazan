@@ -68,6 +68,9 @@ private:
 	_bool m_isEnableEmissive = { true };
 	_bool m_isEnableBloom = { true };
 
+    _bool m_isFindTarget = { false };
+    CTransform* m_pTargetCom = { nullptr };
+
 private:
 	virtual HRESULT Ready_Components(void* pArg) override;
 	HRESULT Ready_Collision(void* pArg);
@@ -78,6 +81,8 @@ private:
 	void Input_Interact_Event(_float fTimeDelta);
 	void Animation_Update(_float fTimeDelta);
 	void Animation_Change(_float fTimeDelta);
+
+    void Find_Target();
 
 private:
 	virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint	iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;

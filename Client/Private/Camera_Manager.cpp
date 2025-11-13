@@ -1,6 +1,7 @@
 #include "Camera_Manager.h"
 #include "GameInstance.h"
 #include "Camera.h"
+#include "Camera_Compre.h"
 
 
 CCamera_Manager::CCamera_Manager()
@@ -130,6 +131,55 @@ void CCamera_Manager::ActiveCamera_KillFov(const _wstring& strID)
 		return;
 
 	m_pActiveCamera->Kill_FOVModifier(strID);
+}
+
+void CCamera_Manager::Start_ForceOrbit(CAMERA_FORCE_DIR eForceDir)
+{
+    if (Get_ActiveCamera()->Get_CameraType() == ENUM_CLASS(CAMERATYPE::PLAYER))
+    {
+        CCamera_Compre* pCamera = dynamic_cast<CCamera_Compre*>(Get_ActiveCamera());
+
+        pCamera->Start_ForceOrbit(eForceDir);
+    }
+}
+
+void CCamera_Manager::ActiveCamera_InteractMove()
+{
+    if (Get_ActiveCamera()->Get_CameraType() == ENUM_CLASS(CAMERATYPE::PLAYER))
+    {
+        CCamera_Compre* pCamera = dynamic_cast<CCamera_Compre*>(Get_ActiveCamera());
+
+        pCamera->Start_InteractFocus(CAMERA_FORCE_DIR::FRONT, 0.8f, 0.25f, true);
+    }
+}
+
+void CCamera_Manager::DeactivateCamera_InteractMove()
+{
+    if (Get_ActiveCamera()->Get_CameraType() == ENUM_CLASS(CAMERATYPE::PLAYER))
+    {
+        CCamera_Compre* pCamera = dynamic_cast<CCamera_Compre*>(Get_ActiveCamera());
+
+        pCamera->Exit_PostForceFrameRight();
+    }
+}
+
+void CCamera_Manager::Yetuga_Holding_Start()
+{
+    if (Get_ActiveCamera()->Get_CameraType() == ENUM_CLASS(CAMERATYPE::PLAYER))
+    {
+        CCamera_Compre* pCamera = dynamic_cast<CCamera_Compre*>(Get_ActiveCamera());
+
+        pCamera->Yetuga_Holding_Start();
+    }
+}
+void CCamera_Manager::Yetuga_Holding_End()
+{
+    if (Get_ActiveCamera()->Get_CameraType() == ENUM_CLASS(CAMERATYPE::PLAYER))
+    {
+        CCamera_Compre* pCamera = dynamic_cast<CCamera_Compre*>(Get_ActiveCamera());
+
+        pCamera->Yetuga_Holding_End();
+    }
 }
 
 void CCamera_Manager::Save_Json(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData)
