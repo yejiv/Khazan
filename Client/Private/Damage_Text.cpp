@@ -96,18 +96,12 @@ _bool CDamage_Text::Render_Damage(DAMAGE_TYPE eDamageType, _vector vPos, _uint i
 	m_iLength = strDamage.length();
 	for (_int i = 0; i < m_iLength; ++i)
 	{
-		m_vDamage_UV.push_back(Mapping_Number(strDamage[i] - '0'));
+        _float4 vUV = Mapping_Number(strDamage[i] - '0');
+		m_vDamage_UV.push_back(vUV);
 	}
-    if (m_vDamage_UV.empty())
-    {
-        m_vDamage_UV.push_back(_float4(0.f, 0.f, 0.f, 0.f));
-    }
+
 	XMStoreFloat4(&m_vWorldTranslation, vPos);
 
-    if (m_vDamage_UV.empty())
-    {
-        m_vDamage_UV.push_back({ 0.f,0.f,0.f,0.f });
-    }
 	return true;
 }
 
