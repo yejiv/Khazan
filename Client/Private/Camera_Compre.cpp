@@ -987,7 +987,7 @@ CCamera_Compre::CAMERA_COMPRE_DESC CCamera_Compre::Get_Desc()
 
 void CCamera_Compre::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
-    /*if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
     {
         if (!m_isCollTime)
             return;
@@ -999,7 +999,7 @@ void CCamera_Compre::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLa
         CMonster* pMonster = dynamic_cast<CMonster*>(pDesc->pGameObject);
         if (pObj && find(m_CollMonsters.begin(), m_CollMonsters.end(), pObj) == m_CollMonsters.end())
             m_CollMonsters.push_back(pObj);
-    }*/
+    }
 }
 
 void CCamera_Compre::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)

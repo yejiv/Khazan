@@ -1113,7 +1113,7 @@ HRESULT CYetuga::Ready_AnimEvent()
             // 타겟 풀어주기
             m_isGhost = false;
             CCreature* pTarget = static_cast<CCreature*>(m_pTarget);
-            pTarget->Take_Damage(100.f,HITREACTION::GRAB_FINISHED,nullptr);
+            pTarget->Take_Damage(5.f,HITREACTION::GRAB_FINISHED,nullptr);
             
         });
 
