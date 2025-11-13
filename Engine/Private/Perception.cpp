@@ -27,7 +27,7 @@ HRESULT CPerception::Initialize(const AIPERCEPTION_DATA& Desc, _uint iTeamID)
 
 void CPerception::Update(class CGameObject* pOwner, class CBlackBoard* pBB, _float fTimeDelta)
 {
-	m_fCheckAcc += fTimeDelta;
+	/*m_fCheckAcc += fTimeDelta;
 	m_fCurrnetTime += fTimeDelta;
 
 	if (m_fCheckAcc >= m_tSightDesc.fCheckInterval)
@@ -38,7 +38,28 @@ void CPerception::Update(class CGameObject* pOwner, class CBlackBoard* pBB, _flo
 
 
 	Forget();
-	Forget_Damage();
+
+	Forget_Damage();*/
+
+    if (nullptr == this || nullptr == pBB) 
+        return;
+
+    m_fCheckAcc += fTimeDelta;
+    m_fCurrnetTime += fTimeDelta;
+
+    // 시야 체크
+    if (m_fCheckAcc >= m_tSightDesc.fCheckInterval)
+    {
+        m_fCheckAcc = 0.f;
+        Check_Sight(pOwner, pBB);
+    }
+
+    // 망각 처리
+    Forget();
+
+    // Damage 큐가 비어있지 않을 때만 Forget_Damage 호출
+    if (!m_DamageHistory.empty())
+        Forget_Damage();
 
 }
 
@@ -146,16 +167,20 @@ void CPerception::Check_Sight(class CGameObject* pOwner, class CBlackBoard* pBB)
 
 void CPerception::Notify_Damage(CGameObject* pAttacker, const STIMULUS& Stim)
 {
+
+    if (nullptr == pAttacker)
+        return;
+
 	PERCEIVED_DESC& Perceived = m_Perceived[pAttacker];
 	Perceived.LastStimulus[SENSETYPE::DAMAGE] = Stim;
 	Perceived.fLastUpdated = m_fCurrnetTime;
 	Perceived.isCurrentlySensed = Stim.bSensed;
 
-	/*m_DamageHistory.push(Stim);
-	m_fDamageAcc += Stim.fStrength;*/
+	//m_DamageHistory.push(Stim);
+	//m_fDamageAcc += Stim.fStrength;
 
-	if (m_PerceptionCallBack)
-		m_PerceptionCallBack(pAttacker, Stim);
+	/*if (m_PerceptionCallBack)
+		m_PerceptionCallBack(pAttacker, Stim);*/
 }
 
 void CPerception::Forget()
@@ -195,14 +220,16 @@ void CPerception::Forget_Damage()
     //if (m_isOnForgetDamage)
     //    return;
 
+    //if (!this || m_DamageHistory.empty()) return;
+
     //m_isOnForgetDamage = true;
 
     //_float fNow = m_fCurrnetTime;
-    //std::vector<STIMULUS> vExpired;
+    //vector<STIMULUS> vExpired;
 
     //while (!m_DamageHistory.empty())
     //{
-    //    STIMULUS& Front = m_DamageHistory.front();
+    //    STIMULUS Front = m_DamageHistory.front();
 
     //    if (fNow - Front.fTimeStamp > Front.fVaildTime)
     //    {
