@@ -4,6 +4,7 @@
 #include "ContainerObject.h"
 #include "BlackBoard.h"
 #include "AI_Controller.h"
+#include "Damage_Text.h"
 
 CMonster::CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CCreature{ pDevice, pContext }
@@ -54,6 +55,20 @@ void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject
         m_pController->AI_Terminate_All();
     }
     
+    CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
+
+    if (pDamage != nullptr)
+    {
+      
+        _vector vDamagePos = XMLoadFloat4(m_vLockOnPosition);
+        
+        
+        pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::DEFAULT, vDamagePos , fDamage, { 0.f, 10.f });
+
+        m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
+    }
+
+
     _float fValidTime = 3.f;
     
     m_pController->AI_ApplyDamage(pGameObject,fDamage,ENUM_CLASS(eHitreaction),fValidTime);

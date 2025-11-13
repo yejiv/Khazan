@@ -6,6 +6,7 @@
 #include "Projectile_Imp_MagicBall.h"
 #include "Projectile_Boomarang.h"
 #include "GameInstance.h"
+#include "Mon_HP.h"
 
 CImp_Range::CImp_Range(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{pDevice,pContext}
@@ -55,6 +56,22 @@ HRESULT CImp_Range::Initialize_Clone(void* pArg)
 
       m_MagicBalls.resize(3, nullptr);
       
+
+      CMon_HP* m_pUI_HP = { nullptr };
+      m_pUI_HP = static_cast<CMon_HP*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Mon_HP")));
+
+      //if (m_pUI_HP != nullptr)
+      //{
+      //    Safe_AddRef(m_pUI_HP);
+      //    //2. 체력 UI 셋팅 (객체 WorldMatrix 주소, 위치 OffSet, 현재 체력 주소, 최대 체력 주소, 현재 스테미나 주소, 최대 스테미나 주소)
+      //    m_pUI_HP->Setting_HP(m_pTransformCom->Get_WorldMatrixPtr(), { 0.f, 200.f },  static_cast<_int*>(m_fCurrentHP), &m_iMaxHp, &m_iStamina, &m_iMaxStamina);
+
+      //    //3. 레이어에 넣는다.
+      //    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::STAGE1), TEXT("Layer_UI"), m_pUI_HP);
+      //}
+
+
+
 
       return S_OK;
 }
