@@ -167,6 +167,7 @@ void CLevel_AI::Show_Peception_Menu(const char* szDefaultFileName)
 		ImGui::DragFloat("Lose Sight Time", &desc.fLoseSightTime, 0.1f, 0.f, 10.f);
 		ImGui::DragFloat("Check Interval", &desc.fCheckInterval, 0.01f, 0.01f, 2.f);
 		ImGui::DragFloat("Height Offset", &desc.fHeightOffset, 0.1f, -10.f, 10.f);
+		//ImGui::DragFloat("AggroTime", &desc.fAggroTime, 0.1f, -10.f, 10.f);
 		ImGui::Checkbox("Require Line of Sight", &desc.isRequireLineOfSight);
 	}
 	else
@@ -186,6 +187,7 @@ void CLevel_AI::Show_Peception_Menu(const char* szDefaultFileName)
 		newDesc.fHeightOffset = 1.7f;
 		newDesc.isRequireLineOfSight = true;
 		newDesc.fFovCos = cosf(XMConvertToRadians(newDesc.fFov * 0.5f));
+        //newDesc.fAggroTime = 0.f;
 		SightList.push_back(newDesc);
 		iSelectedIndex = (_int)SightList.size() - 1;
 	}
@@ -248,7 +250,7 @@ void CLevel_AI::Save_Perception(const vector<SIGHT_DESC>& SightList, const strin
 		Data.fFovCos = cosf(Desc.fFov * 0.5f * XM_PI / 180.0f);
 		Data.isRequireLineOfSight = Desc.isRequireLineOfSight;
 		Data.fHeightOffset = {};
-
+        //Data.fAggroHoldTime = Desc.fAggroTime;
 		SaveList.push_back(Data);
 	}
 		
@@ -310,7 +312,7 @@ void CLevel_AI::Load_Perception(vector<SIGHT_DESC>& SightList, const string& Fil
 		Desc.fHeightOffset = elem.value("fHeightOffset", 1.7f);
 		Desc.isRequireLineOfSight = elem.value("isRequireLineOfSight", true);
 		Desc.fFovCos = cosf(XMConvertToRadians(Desc.fFov * 0.5f));
-
+        //Desc.fAggroTime = elem.value("fAggroHoldTime",1.f);
 		SightList.push_back(Desc);
 	}
 }

@@ -316,6 +316,12 @@ HRESULT CLoader::Loading_For_Map_Level()
         CMap_Spawn::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
+#pragma region 게임오브젝트 원형 로딩 ( 데칼 )
+    /* Prototype_GameObject_Prop_Trigger */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Decal"),
+        CDecal::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));

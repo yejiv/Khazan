@@ -11,6 +11,8 @@ float3 g_vDecalColor;
 float g_fOpacity;
 uint g_iRandSeed;
 
+float g_fThreshold;
+
 struct VS_IN
 {
     float3 vPosition : POSITION;    
@@ -203,19 +205,28 @@ PS_OUT PS_MAP_DECAL(PS_IN In)
     float fMask = 1.f;
 
     // 마스크 R, G, B 채널 중 랜덤으로 하나 선택
-    float fThresholdR = 1.f / 3.f;
-    float fThresholdG = 2.f / 3.f;
-    float fRandNum = rand_between(0.f, 1.f, g_iRandSeed);
+    float fThresholdR = 0.f;
+    float fThresholdG = 0.5f;
+    float fThresholdB = 1.f;
         
-    if (fRandNum < fThresholdR)
+    if (g_fThreshold == fThresholdR)
         fMask = vDecalDesc.r;
-    else if (fRandNum < fThresholdG)
+    else if (g_fThreshold == fThresholdG)
         fMask = vDecalDesc.g;
-    else
+    else if (g_fThreshold == fThresholdB)
         fMask = vDecalDesc.b;
 
     Out.vColor.rgb = g_vDecalColor;
     Out.vColor.a = fMask;
+   
+    return Out;
+}
+
+PS_OUT PS_MAP_DECAL_WIREFRAME(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    Out.vColor = float4(0.f, 1.0f, 1.0f, 1.f);
    
     return Out;
 }
@@ -240,5 +251,15 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAP_DECAL();
+    }
+
+    pass Map_WireFrame
+    {
+        SetRasterizerState(RS_Wireframe);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAP_DECAL_WIREFRAME();
     }
 }

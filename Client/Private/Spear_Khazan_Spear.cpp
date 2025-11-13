@@ -53,13 +53,18 @@ HRESULT CSpear_Khazan_Spear::Initialize_Clone(void* pArg)
 
 void CSpear_Khazan_Spear::Priority_Update(_float fTimeDelta)
 {
-    int a = 10;
+    if (!m_isEnble)
+        return;
+
 }
 
 void CSpear_Khazan_Spear::Update(_float fTimeDelta)
 {
+    if (!m_isEnble)
+        return;
+    
+	_matrix matWeapon = m_isEquip ? XMLoadFloat4x4(m_pWeaponR_Matrix) :  XMLoadFloat4x4(m_pBackPack_Matrix);
 
-	_matrix matWeapon = XMLoadFloat4x4(m_pWeaponR_Matrix);
     matWeapon.r[0] = XMVector4Normalize(matWeapon.r[0]);
     matWeapon.r[1] = XMVector4Normalize(matWeapon.r[1]);
     matWeapon.r[2] = XMVector4Normalize(matWeapon.r[2]);
@@ -72,6 +77,9 @@ void CSpear_Khazan_Spear::Update(_float fTimeDelta)
 
 void CSpear_Khazan_Spear::Late_Update(_float fTimeDelta)
 {
+    if (!m_isEnble)
+        return;
+
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))

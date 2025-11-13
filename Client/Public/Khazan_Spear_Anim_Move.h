@@ -72,6 +72,7 @@ private:
 	SPEAR_MOVE	m_eReserveInfo = {};
 
     static const string s_strSprinStartAnims[];
+    static const string s_strDodgeAnims[];
 
 private:
     _uint       GetLockOnWalkAnimation(DIRECTION_INFO eDir);
