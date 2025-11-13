@@ -12,7 +12,7 @@ CMon_Gauge::CMon_Gauge(const CMon_Gauge& Prototype)
 {
 }
 
-void CMon_Gauge::Setting_Progress(const _int* pCulValue, const _int* pMaxValue)
+void CMon_Gauge::Setting_Progress(const _float* pCulValue, const _float* pMaxValue)
 {
 	m_pMaxValue = pMaxValue;
 	m_pCulValue = pCulValue;

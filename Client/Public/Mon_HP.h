@@ -17,7 +17,7 @@ private:
 	virtual ~CMon_HP() = default;
 
 public:
-	void					Setting_HP(const _float4x4* pTagetMat, _float2 vOffset, const _int* pHpValue, const _int* pHpMaxValue, const _int* pStaminaCulValue, const _int* pStaminaMaxValue);
+	void					Setting_HP(const _float4* pTagetMat, _float2 vOffset, const _float* pHpValue, const _float* pHpMaxValue, const _float* pStaminaCulValue, const _float* pStaminaMaxValue);
 			
 public:
 	virtual HRESULT			Initialize_Prototype(_uint iLevel);
@@ -36,7 +36,7 @@ private:
 	class CMon_Gauge*		m_pHPGauge = { nullptr };
 	class CMon_Gauge*		m_pStaminaGauge = { nullptr };
 
-	const _float4x4*		m_pTagetMat = { nullptr };
+    const _float4*          m_pTargetPos = { nullptr };
 
 private:
 	HRESULT					Ready_Prototype();
