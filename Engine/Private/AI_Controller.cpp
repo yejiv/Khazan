@@ -97,7 +97,7 @@ HRESULT CAI_Controller::Load_Perception(CGameObject* pOwner, const string& FileP
         Desc.fFovCos = Data["fFovCos"].get<_float>();
         Desc.isRequireLineOfSight = Data["isRequireLineOfSight"].get<_bool>();
         Desc.fHeightOffset = Data["fHeightOffset"].get<_float>();
-
+        Desc.fAggroHoldTime = Data["fAggroHoldTime"].get<_float>();
     
         if (FAILED(Ready_Perception(pOwner,Desc)))
             return E_FAIL;

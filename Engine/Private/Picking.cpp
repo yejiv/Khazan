@@ -53,7 +53,7 @@ void CPicking::Update()
 
 _bool CPicking::isPicked(_float3* pOut)
 {
-    if (FAILED(m_pGameInstance->Copy_RT_Resource(TEXT("Target_World"), m_pTexture2D)))
+    if (FAILED(m_pGameInstance->Copy_RT_Resource(TEXT("RT_World"), m_pTexture2D)))
         return false;
 
     D3D11_MAPPED_SUBRESOURCE        SubResource{};
@@ -84,7 +84,7 @@ _bool CPicking::isPicked(_float3* pOut)
 
 _bool CPicking::isPicked(_float3* pOut, _uint* iObjectID)
 {
-    if (FAILED(m_pGameInstance->Copy_RT_Resource(TEXT("Target_World"), m_pTexture2D)))
+    if (FAILED(m_pGameInstance->Copy_RT_Resource(TEXT("RT_World"), m_pTexture2D)))
         return false;
 
     D3D11_MAPPED_SUBRESOURCE        SubResource{};
@@ -117,7 +117,7 @@ _bool CPicking::isPicked(_float3* pOut, _uint* iObjectID)
 
 _bool CPicking::isPicked(_float3* pOutPosition, _float3* pOutNormal)
 {
-    if (FAILED(m_pGameInstance->Copy_RT_Resource(TEXT("Target_World"), m_pTexture2D)))
+    if (FAILED(m_pGameInstance->Copy_RT_Resource(TEXT("RT_World"), m_pTexture2D)))
         return false;
 
     D3D11_MAPPED_SUBRESOURCE        SubResource{};
@@ -144,7 +144,7 @@ _bool CPicking::isPicked(_float3* pOutPosition, _float3* pOutNormal)
     XMStoreFloat3(pOutPosition, vPosition);
 
     // Normal
-    if (FAILED(m_pGameInstance->Copy_RT_Resource(TEXT("Target_Normal"), m_pTexture2D)))
+    if (FAILED(m_pGameInstance->Copy_RT_Resource(TEXT("RT_Normal"), m_pTexture2D)))
         return false;
 
     if (FAILED(m_pContext->Map(m_pTexture2D, 0, D3D11_MAP_READ, 0, &SubResource)))

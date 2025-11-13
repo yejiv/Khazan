@@ -3,6 +3,8 @@
 #include "ClientInstance.h"
 #include "Target_LockOn.h"
 #include "Monster.h"
+static inline float Saturate(float x) { return Clamp(x, 0.f, 1.f); }
+
 
 static inline float SmoothDampScalar(float current, float target, float& currentVel, float smoothTime, float dt)
 {
@@ -75,13 +77,24 @@ HRESULT CCamera_Compre::Initialize_Clone(void* pArg)
 
 void CCamera_Compre::Priority_Update(_float fTimeDelta)
 {
+    
+    if (!m_isCollTime)
+    {
+        m_fCollTime += fTimeDelta;
+        if (m_fCollTime > 5.f)
+        {
+            m_isCollTime = true;
+        }
+    }
+
     if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
     {
-        Yetuga_Holding_Start();
+        Start_InteractFocus(CAMERA_FORCE_DIR::FRONT, 0.8f, 0.25f, true);
     }
-    else if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
     {
-        Yetuga_Holding_End();
+        Exit_PostForceFrameRight();
+        
     }
 
     if (!m_isActive)
@@ -93,7 +106,14 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
     }
     else
     {
-        if (m_isBlendBack)
+        if (m_isForceOrbit)
+            Update_ForceOrbit(fTimeDelta);
+        else if (m_isPostForceFrameRight || m_isPostFrameHold) {
+            Update_InteractFocus(fTimeDelta);
+
+            __super::Update_PipeLines(fTimeDelta);
+        }
+        else if (m_isBlendBack)
         {
             Update_BlendBack(fTimeDelta);
         }
@@ -102,10 +122,7 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
                 Update_Free(fTimeDelta);
             else if (m_iCameraType == ENUM_CLASS(CAMERATYPE::PLAYER))
             {
-
-                if (m_isForceOrbit)
-                    Update_ForceOrbit(fTimeDelta);
-                else if (m_isCinematic)
+                if (m_isCinematic)
                     Update_Cinematic(fTimeDelta);
                 else if (m_isYetuga_Holding)
                     Update_Yetuga_Holding(fTimeDelta);
@@ -133,10 +150,13 @@ void CCamera_Compre::Update(_float fTimeDelta)
 
     if (m_iCameraType == ENUM_CLASS(CAMERATYPE::PLAYER))
     {
-        m_pBody->Update(fTimeDelta, m_pTransformCom);
-        m_pBody->Sync_Update(m_pTransformCom);
+        if (!m_isPostFrameHold && !m_isPostForceFrameRight)
+        {
+            m_pBody->Update(fTimeDelta, m_pTransformCom);
+            m_pBody->Sync_Update(m_pTransformCom);
+        }
+        
     }
-    
 }
 
 void CCamera_Compre::Late_Update(_float fTimeDelta)
@@ -235,6 +255,7 @@ HRESULT CCamera_Compre::Ready_Body()
     m_tCollisionDesc.pGameObject = this;
     //pCollDesc.pInfo = ?? // 작성하기
     TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
+    TriggerDesc.bStartActive = false;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body"), reinterpret_cast<CComponent**>(&m_pBody), &TriggerDesc)))
@@ -291,7 +312,7 @@ HRESULT CCamera_Compre::LockOn(_float fTimeDelta)
 {
     if (!m_pObjMatrix || !m_pLockMonster) return S_OK;
 
-    const float playerEyeOffsetY = 1.5f;
+    const _float playerEyeOffsetY = 1.5f;
 
     const _vector playerWorldPosition = XMVectorSet(
         m_pObjMatrix->_41,
@@ -301,24 +322,41 @@ HRESULT CCamera_Compre::LockOn(_float fTimeDelta)
     );
 
     _vector playerToTargetVector = XMVectorSubtract(XMLoadFloat4(m_pLockOnPos), playerWorldPosition);
-    float playerToTargetDistance = XMVectorGetX(XMVector3Length(playerToTargetVector));
+    _float playerToTargetDistance = XMVectorGetX(XMVector3Length(playerToTargetVector));
 
     if (playerToTargetDistance < 1e-4f)
         return S_OK;
 
     _vector directionNormalized = XMVectorScale(playerToTargetVector, 1.0f / playerToTargetDistance);
 
-    float normalizedX = XMVectorGetX(directionNormalized);
-    float normalizedY = XMVectorGetY(directionNormalized) - 0.3f;   
-    float normalizedZ = XMVectorGetZ(directionNormalized);
+    _float normalizedX = XMVectorGetX(directionNormalized);
+    _float normalizedY = XMVectorGetY(directionNormalized) - 0.3f;
+    // 근접일수록 내려다보기 바이어스(-0.3f)를 0으로 완화
+    {
+        const _float rawY = XMVectorGetY(directionNormalized);
+        const _float yBiasFar = -0.3f;
+        // k = 근접일수록 1, 멀수록 0
+        const _float k = 1.f - Saturate((playerToTargetDistance - m_fTopClampNearDist) / (m_fTopClampFarDist - m_fTopClampNearDist));
+        const _float yBias = Lerp(0.0f, yBiasFar, 1.f - k); // 근접(k=1)→0, 멀(k=0)→-0.3
+        normalizedY = rawY + yBias;
+    }
 
-    float targetYaw = atan2f(normalizedZ, normalizedX);
-    float targetPitch = asinf(Clamp(normalizedY, -1.f, 1.f));
+    _float normalizedZ = XMVectorGetZ(directionNormalized);
+    _float targetYaw = atan2f(normalizedZ, normalizedX);
+    _float targetPitch = asinf(Clamp(normalizedY, -1.f, 1.f));
+
+    const _float topClampPitch = XMConvertToRadians(m_fTopViewClampDeg); // 예: -3도
+    // k = 근접일수록 1, 멀수록 0
+    const _float k = 1.f - Saturate((playerToTargetDistance - m_fTopClampNearDist) / (m_fTopClampFarDist - m_fTopClampNearDist));
+    if (k > 0.f && targetPitch < topClampPitch) {
+        // targetPitch가 너무 "내려가면"(음수 더 큼) 근접 비율(k)에 따라 topClampPitch 쪽으로 보간
+        targetPitch = Lerp(targetPitch, topClampPitch, k);
+    }
 
     targetPitch = Clamp(targetPitch, m_fPitchMin, m_fPitchMax);
 
-    static float smoothingVelocityYaw = 0.f;
-    static float smoothingVelocityPitch = 0.f;
+    static _float smoothingVelocityYaw = 0.f;
+    static _float smoothingVelocityPitch = 0.f;
 
     m_fYaw = SmoothDampAngle(
         m_fYaw,
@@ -373,6 +411,66 @@ void CCamera_Compre::Update_BlendBack(_float fTimeDelta)
     }
 
     return;
+}
+
+void CCamera_Compre::Update_InteractFocus(_float fTimeDelta)
+{
+    if (!m_isPostForceFrameRight || !m_pObjMatrix || !m_pTransformCom) return;
+    if (fTimeDelta <= 0.f) return;
+
+    const _vector camPos = m_pTransformCom->Get_State(STATE::POSITION);
+
+    const _vector targetWS = XMVectorSet(
+        m_pObjMatrix->_41,
+        m_pObjMatrix->_42 + m_fPostFrameEyeOffsetY,
+        m_pObjMatrix->_43, 1.f);
+
+    _vector toTarget = XMVectorSubtract(targetWS, camPos);
+    float dist = XMVectorGetX(XMVector3Length(toTarget));
+    dist = max(dist, m_fPostFrameMinDist);
+
+    // 수직 FOV → 수평 FOV
+    const float aspect = (float)m_iWinSizeX / max(1.f, (float)m_iWinSizeY);
+    const float vFov = m_fFovy; // 라디안
+    const float hFov = 2.f * atanf(tanf(vFov * 0.5f) * aspect);
+
+    // 화면 X(0.5→target) 보간: 부드럽게 오른쪽으로
+    m_fPostFrameScreenXCur = SmoothDampScalar(
+        m_fPostFrameScreenXCur,
+        m_fPostFrameScreenXTarget,
+        m_fPostFrameScreenXVel,
+        m_fPostFrameDuration,
+        fTimeDelta
+    );
+
+    const float dx = (m_fPostFrameScreenXCur - 0.5f); // 중심 대비
+    const float offsetAng = hFov * dx;
+    const float offsetLen = dist * tanf(offsetAng);
+
+    const _vector worldUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+    _vector look = XMVector3Normalize(toTarget);
+    _vector right = XMVector3Normalize(XMVector3Cross(worldUp, look));
+    _vector up = XMVector3Normalize(XMVector3Cross(look, right));
+
+    // ‘왼쪽’을 조준하면 캐릭터가 화면 ‘오른쪽’에 위치
+    _vector aimWS = XMVectorMultiplyAdd(XMVectorReplicate(-offsetLen), right, targetWS);
+
+    _vector newLook = XMVector3Normalize(XMVectorSubtract(aimWS, camPos));
+    _vector newRight = XMVector3Normalize(XMVector3Cross(worldUp, newLook));
+    _vector newUp = XMVector3Normalize(XMVector3Cross(newLook, newRight));
+
+    m_pTransformCom->Set_State(STATE::POSITION, camPos); // 위치는 유지
+    m_pTransformCom->Set_State(STATE::RIGHT, newRight);
+    m_pTransformCom->Set_State(STATE::UP, newUp);
+    m_pTransformCom->Set_State(STATE::LOOK, newLook);
+
+    // 끝났는지 판정(충분히 근접 + 속도 거의 0)
+    const bool doneX = (fabsf(m_fPostFrameScreenXCur - m_fPostFrameScreenXTarget) < 1e-3f) &&
+        (fabsf(m_fPostFrameScreenXVel) < 1e-3f);
+    if (doneX) {
+        m_isPostForceFrameRight = false; // 프레이밍 종료 (원하면 유지해도 됨)
+    }
+
 }
 
 void CCamera_Compre::LockOn_Check(_float fTimeDelta)
@@ -472,7 +570,6 @@ _vector CCamera_Compre::Cal_CamPos(_float fTimeDelta, _vector& vTargetPos, _vect
     }
     else
     {
-        // 락온 중에는 원한다면 궤도 회전 끄기:
         m_isHasPrevTargetPos = false;
     }
 
@@ -662,6 +759,15 @@ void CCamera_Compre::Update_ForceOrbit(_float fTimeDelta)
     {
         m_isForceOrbit = false;
         m_eForceOrbit = CAMERA_FORCE_DIR::NONE;
+
+        //if (m_isPostFramePending)
+        //{
+        //    m_isPostFramePending = false; 
+        //    m_isPostForceFrameRight = true; 
+        //    m_fPostFrameScreenXCur = 0.5f;
+        //    m_fPostFrameScreenXVel = 0.f;
+
+        //}
     }
 }
 
@@ -810,6 +916,59 @@ void CCamera_Compre::Update_Yetuga_Holding(_float fTimeDelta)
     m_pTransformCom->Set_State(STATE::LOOK, vLook);
 }
 
+void CCamera_Compre::Start_InteractFocus(CAMERA_FORCE_DIR eDir, _float fScreenX, _float fFrameDur, _bool isHold)
+{
+    m_fPostFrameScreenXTarget = Clamp(fScreenX, 0.f, 1.f);
+    m_fPostFrameDuration = max(0.05f, fFrameDur);
+    m_isPostFrameHold = isHold;
+
+    // 1) ForceOrbit 실행
+    //Start_ForceOrbit(eDir);
+
+    //// 2) “이번 ForceOrbit이 끝나면 프레이밍 하겠다”는 의사 표시
+    //m_isPostFramePending = true;
+
+    //// 초기화
+    //m_fPostFrameScreenXCur = 0.5f;
+    //m_fPostFrameScreenXVel = 0.f;
+
+    m_isPostFramePending = false;
+    m_isPostForceFrameRight = true;
+    m_fPostFrameScreenXCur = 0.5f;
+    m_fPostFrameScreenXVel = 0.f;
+
+    // (선택) 다른 모드 비활성화
+    m_isLockOn = false;
+    m_isBlendBack = false;
+    m_isCinematic = false;
+}
+
+void CCamera_Compre::Exit_PostForceFrameRight(_bool isSmoothReturn, _float fReturnDur)
+{
+    // 1) 프레이밍/고정 상태가 아니면 할 일 없음
+    if (!m_isPostForceFrameRight && !m_isPostFrameHold)
+        return;
+
+    if (!isSmoothReturn)
+    {
+        // 즉시 해제
+        m_isPostForceFrameRight = false;
+        m_isPostFrameHold = false;
+
+        // 스냅 방지: 현 시점(yaw/pitch)을 스프링/자유 카메라 기준으로 동기화
+        SyncOrbitFromCurrentPose();
+        return;
+    }
+
+    // 2) 부드러운 복귀: target을 중앙(0.5)로 변경하여 SmoothDamp로 복귀
+    m_fPostFrameScreenXTarget = 0.5f;
+    m_fPostFrameDuration = (fReturnDur > 0.f) ? fReturnDur : m_fPostFrameDuration;
+
+    // 보간 루틴이 계속 돌도록 유지
+    m_isPostFrameHold = false;   // 고정 모드 해제
+    m_isPostForceFrameRight = true;    // 보간 활성화 (이미 true여도 상관없음)
+}
+
 CCamera_Compre::CAMERA_COMPRE_DESC CCamera_Compre::Get_Desc()
 {
     CAMERA_COMPRE_DESC tDesc{};
@@ -830,6 +989,9 @@ void CCamera_Compre::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLa
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
     {
+        if (!m_isCollTime)
+            return;
+
         if (pDesc->pGameObject == nullptr)
             return;
 
@@ -846,6 +1008,9 @@ void CCamera_Compre::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLay
     {
         if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         {
+            if (!m_isCollTime)
+                return;
+
             if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::WB))
             {
                 if (m_fLockOnDelay > 0.3f)
@@ -866,8 +1031,12 @@ void CCamera_Compre::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLay
 
 void CCamera_Compre::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 {
+
    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
     {
+       if (!m_isCollTime)
+           return;
+
         CGameObject* pObj = pDesc->pGameObject;
         if (!pObj) return;
         auto it = std::remove(m_CollMonsters.begin(), m_CollMonsters.end(), pObj);

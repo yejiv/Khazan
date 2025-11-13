@@ -164,6 +164,28 @@ void CLevel_Map::Clear_List()
 		else
 			++i;
 	}
+    for (_uint i = 0; i < m_DecalList.size(); )
+    {
+        if (nullptr == m_DecalList[i])
+        {
+            swap(m_DecalList[i], m_DecalList.back());
+            m_DecalList.pop_back();
+        }
+        else
+            ++i;
+    }
+    for (_uint i = 0; i < m_InteractiveList.size(); )
+    {
+        if (nullptr == m_InteractiveList[i])
+        {
+            swap(m_InteractiveList[i], m_InteractiveList.back());
+            m_InteractiveList.pop_back();
+        }
+        else
+            ++i;
+    }
+
+    
 }
 
 void CLevel_Map::Test_Player_Move(_float fTimeDelta)
@@ -384,7 +406,11 @@ HRESULT CLevel_Map::Ready_DefaultImGui_For_MapTool()
 
 	CHECK_FAILED(Ready_SkySphere_Window(), E_FAIL);
 
-	CHECK_FAILED(Ready_MultiFix_Window(), E_FAIL);
+    CHECK_FAILED(Ready_MultiFix_Window(), E_FAIL);
+
+    CHECK_FAILED(Ready_Map_Decal_Window(), E_FAIL);
+
+    CHECK_FAILED(Ready_OnOff_Window(), E_FAIL);
 
 	return S_OK;
 }
@@ -522,6 +548,11 @@ HRESULT CLevel_Map::Ready_Main_Window()
                 {
                     if (ImGui::Button("ON")) m_isActiveShortCutKey = false;
                 }
+
+                SEPARATOR;
+
+                ImGui::Text("ON OFF WINDOW : "); SAMELINE;
+                if (ImGui::Button("ON/OFF")) m_isOnOffWindow = !m_isOnOffWindow;
 
                 SEPARATOR;
 
@@ -1723,7 +1754,20 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
                         sprintf_s(szModelName, strModelName.c_str(), i);
 
                         if (ImGui::Selectable(szModelName, isSelected))
+                        {
                             m_iInteractiveListIndex = i;
+                            if (INTERACTIVE_TYPE::SPAWN == m_InteractiveList[m_iInteractiveListIndex]->Get_InteractiveType())
+                            {
+                                static_cast<CMap_Spawn*>(m_InteractiveList[m_iInteractiveListIndex])->Set_Picked();
+                            }
+                        }
+                        else
+                        {
+                            if (INTERACTIVE_TYPE::SPAWN == m_InteractiveList[m_iInteractiveListIndex]->Get_InteractiveType())
+                            {
+                                static_cast<CMap_Spawn*>(m_InteractiveList[i])->Set_Red();
+                            }
+                        }
                     }
 				}
 
@@ -2273,6 +2317,19 @@ HRESULT CLevel_Map::Ready_Object_SaveLoad_Window()
 
 #pragma endregion
 
+
+#pragma region 데칼 일괄 저장
+
+                if (false == Decals_Save_Binary())
+                {
+#ifdef _DEBUG
+                    OutputDebugStringA("단일 오브젝트 정보 바이너리화 실패");
+#endif // _DEBUG
+                    return;
+                }
+
+#pragma endregion
+
 				m_isSaveObjectWindow = false;
 			}
 			SAMELINE;
@@ -2380,20 +2437,39 @@ OutputDebugStringA("단일 오브젝트 정보 바이너리 불러오기 실패"
 
 #pragma region 조명 일괄 불러오기
 
-				if (false == Lights_Load_Binary())
-				{
+                if (false == Lights_Load_Binary())
+                {
 #ifdef _DEBUG
-OutputDebugStringA("조명 정보 바이너리 불러오기 실패");
+                    OutputDebugStringA("조명 정보 바이너리 불러오기 실패");
 #endif // _DEBUG
 
-					isLoadComplete = false;
+                    isLoadComplete = false;
 
-				}
-				else
-				{
-					// 조명 윈도우 띄우기
-					//m_isLightSettingWindow = true;
-				}
+                }
+                else
+                {
+                    // 조명 윈도우 띄우기
+                    //m_isLightSettingWindow = true;
+                }
+
+#pragma endregion
+
+#pragma region 데칼 일괄 불러오기
+
+                if (false == Decals_Load_Binary())
+                {
+#ifdef _DEBUG
+                    OutputDebugStringA("데칼 정보 바이너리 불러오기 실패");
+#endif // _DEBUG
+
+                    isLoadComplete = false;
+
+                }
+                else
+                {
+                    // 조명 윈도우 띄우기
+                    //m_isLightSettingWindow = true;
+                }
 
 #pragma endregion
 
@@ -2742,6 +2818,308 @@ HRESULT CLevel_Map::Ready_MultiFix_Window()
 #endif // _DEBUG
 
 	return S_OK;
+}
+
+HRESULT CLevel_Map::Ready_Map_Decal_Window()
+{
+    m_pDecalTexture[ENUM_CLASS(DECALTYPE::LINEAR)] = m_pGameInstance->Get_DecalTexture(DECALTYPE::LINEAR);
+    m_pDecalTexture[ENUM_CLASS(DECALTYPE::CURVE)] = m_pGameInstance->Get_DecalTexture(DECALTYPE::CURVE);
+    m_pDecalTexture[ENUM_CLASS(DECALTYPE::CIRCLE)] = m_pGameInstance->Get_DecalTexture(DECALTYPE::CIRCLE);
+
+#ifdef _DEBUG
+    m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
+        if (m_isDecalWindow)
+        {
+            ImGui::Begin("DECAL WINDOW", &m_isDecalWindow, ImGuiWindowFlags_AlwaysAutoResize);
+
+            ImGui::Text("LINEAR LIST");
+
+            for (_uint i = 0; i < m_pDecalTexture[ENUM_CLASS(DECALTYPE::LINEAR)]->Get_NumTextures(); ++i)
+            {
+                ImTextureID pTexture = (ImTextureID)m_pDecalTexture[ENUM_CLASS(DECALTYPE::LINEAR)]->Get_Texture(i);
+                ImVec2 vSize = ImVec2(75.f, 75.f);
+
+                if (ImGui::ImageButton(pTexture, vSize))
+                {
+                    m_iDecalTextureIndex = i;
+                    m_eDecalType = DECALTYPE::LINEAR;
+
+                    m_iTextureIndex = i;
+                }
+                if (0 == i || 0 != i % 4)
+                    SAMELINE;
+            }
+            SEPARATOR;
+
+            ImGui::Text("CIRCLE LIST");
+            for (_uint i = 0; i < m_pDecalTexture[ENUM_CLASS(DECALTYPE::CIRCLE)]->Get_NumTextures(); ++i)
+            {
+                ImTextureID pTexture = (ImTextureID)m_pDecalTexture[ENUM_CLASS(DECALTYPE::CIRCLE)]->Get_Texture(i);
+                ImVec2 vSize = ImVec2(75.f, 75.f);
+
+                if (ImGui::ImageButton(pTexture, vSize))
+                {
+                    m_iDecalTextureIndex = i;
+                    m_eDecalType = DECALTYPE::CIRCLE;
+
+                    m_iTextureIndex = i;
+                }
+                if (0 == i || 0 != i % 4)
+                    SAMELINE;
+            }
+            SEPARATOR;
+
+            ImGui::Text("CURVE LIST");
+            for (_uint i = 0; i < m_pDecalTexture[ENUM_CLASS(DECALTYPE::CURVE)]->Get_NumTextures(); ++i)
+            {
+                ImTextureID pTexture = (ImTextureID)m_pDecalTexture[ENUM_CLASS(DECALTYPE::CURVE)]->Get_Texture(i);
+                ImVec2 vSize = ImVec2(75.f, 75.f);
+
+                if (ImGui::ImageButton(pTexture, vSize))
+                {
+                    m_iDecalTextureIndex = i;
+                    m_eDecalType = DECALTYPE::CURVE;
+
+                    m_iTextureIndex = i;
+                }
+                if (0 == i || 0 != i % 4)
+                    SAMELINE;
+            }
+
+            SEPARATOR;
+
+            m_DecalDesc.eType = m_eDecalType;
+
+            ImGui::ColorPicker3("##decal_color_picker", reinterpret_cast<_float*>(&m_DecalDesc.vColor));
+            m_DecalDesc.vPosition = m_vPickedPos;
+            m_DecalDesc.vScale = _float3(1.f, 1.f, 1.f);
+
+            ImGui::Text("SELECT MASK COLOR"); SAMELINE;
+            if (ImGui::Button("RED")) m_fDecalThreshold = 0.f; SAMELINE;
+            if (ImGui::Button("GREEN")) m_fDecalThreshold = 0.5f; SAMELINE;
+            if (ImGui::Button("BLUE")) m_fDecalThreshold = 1.f;
+
+            SEPARATOR;
+            if (ImGui::Button("ADD"))
+            {
+                if (0 == m_DecalList.size()) m_isDecalListWindow = true;
+
+                CDecal* pDecal = static_cast<CDecal*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Decal")));
+                CHECK_NULLPTR(pDecal, false);
+
+                pDecal->Set_EnableDecoration(true);
+
+                pDecal->Set_Desc(m_DecalDesc);
+
+                pDecal->Set_Threshold(m_fDecalThreshold);
+
+                pDecal->Set_TextureIndex(m_iTextureIndex);
+
+                m_DecalList.push_back(pDecal);
+                m_pGameInstance->Batch_Decal(pDecal);
+
+                m_iDecalListIndex = m_DecalList.size() - 1;
+
+                m_pFixDecal = pDecal;
+
+                m_isDecalFixWindow = true;
+
+                m_pGameInstance->Set_GizmoObject(m_pFixDecal);
+            }
+
+            ImGui::End();
+        }
+        });
+
+    m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
+        if (m_isDecalListWindow)
+        {
+            ImGui::Begin("DECAL LIST WINDOW", &m_isDecalListWindow, ImGuiWindowFlags_AlwaysAutoResize);
+
+            ImGui::Text("DECAL LIST");
+
+            if (false == m_DecalList.empty())
+            {
+                if (ImGui::BeginListBox("##decal_list"))
+                {
+                    for (_uint i = 0; i < m_DecalList.size(); ++i)
+                    {
+                        _char szDecalName[MAX_PATH] = {};
+
+                        sprintf_s(szDecalName, "%d_DECAL", i);
+
+                        _bool isSelected = (m_iDecalListIndex == i);
+
+                        if (ImGui::Selectable(szDecalName, isSelected))
+                            m_iDecalListIndex = i;
+                    }
+
+                    ImGui::EndListBox();
+                } SEPARATOR;
+            }
+            if (ImGui::Checkbox("WIREFRAME", &m_isDecalWireFrame))
+            {
+                for (auto& pDecal : m_DecalList)
+                    pDecal->Set_WireFrame(m_isDecalWireFrame);
+            }
+            if (ImGui::Button("FIX"))
+            {
+                if (0 < m_DecalList.size())
+                {
+                    m_pFixDecal = m_DecalList[m_iDecalListIndex];
+
+                    m_pGameInstance->Set_GizmoObject(m_pFixDecal);
+
+                    m_FixDecalDesc = m_DecalDesc = m_pFixDecal->Get_Desc();
+
+                    m_fDecalThreshold = m_pFixDecal->Get_Threshold();
+
+                    m_DecalWorldMatrix = *static_cast<CTransform*>(m_pFixDecal->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr();
+
+                    m_isDecalFixWindow = true;
+                }
+            } SAMELINE;
+            if (ImGui::Button("DELETE"))
+            {
+                if (0 < m_DecalList.size())
+                {
+                    if (nullptr != m_DecalList[m_iDecalListIndex])
+                    {
+                        m_DecalList[m_iDecalListIndex]->Set_IsDead(true);
+                        m_DecalList[m_iDecalListIndex]->Set_IsPool(true);
+
+                        for (_uint i = 0; i < m_DecalList.size(); )
+                        {
+                            if (m_DecalList[m_iDecalListIndex] == m_DecalList[i])
+                            {
+                                swap(m_DecalList[m_iDecalListIndex], m_DecalList.back());
+                                m_DecalList.pop_back();
+                                break;
+                            }
+                            else
+                                ++i;
+                        }
+
+                        if (m_iDecalListIndex >= m_DecalList.size())
+                            m_iDecalListIndex = m_DecalList.size() - 1;
+
+                        m_pFixDecal = nullptr;
+                    }
+
+                    m_isDecalFixWindow = false;
+                }
+            }
+
+            ImGui::End();
+        }
+        });
+
+    m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
+            if (m_isDecalFixWindow)
+            {
+                ImGui::Begin("DECAL FIX WINDOW", &m_isDecalFixWindow, ImGuiWindowFlags_AlwaysAutoResize);
+
+                ImGui::Text("FIX DECAL COLOR");
+                ImGui::ColorPicker3("fix_decal_color", reinterpret_cast<_float*>(&m_FixDecalDesc.vColor));
+
+                m_pFixDecal->Set_DecalColor(m_FixDecalDesc.vColor);
+                SEPARATOR;
+
+                ImGui::Text("SELECT MASK COLOR"); SAMELINE;
+                if (ImGui::Button("RED")) m_fDecalThreshold = 0.f; SAMELINE;
+                if (ImGui::Button("GREEN")) m_fDecalThreshold = 0.5f; SAMELINE;
+                if (ImGui::Button("BLUE")) m_fDecalThreshold = 1.f;
+                SEPARATOR;
+
+                m_pFixDecal->Set_Threshold(m_fDecalThreshold);
+
+                if (ImGui::Button("DONE ( ENTER or MOUSE RB )") || m_pGameInstance->Key_Down(DIK_RETURN) || m_pGameInstance->Key_Down(DIK_NUMPADENTER) || m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
+                {
+                    m_pGameInstance->Clear_GizmoObject();
+
+                    ZeroMemory(&m_DecalDesc, sizeof(DECAL_DESC));
+
+                    m_isDecalFixWindow = false;
+                } SAMELINE;
+                if (ImGui::Button("RESET (R)") || (true == m_isActiveShortCutKey && m_pGameInstance->Key_Down(DIK_R)))
+                {
+                    m_pGameInstance->Clear_GizmoObject();
+
+                    m_pFixDecal->Set_Desc(m_DecalDesc);
+                    static_cast<CTransform*>(m_pFixDecal->Get_Component(TEXT("Com_Transform")))->Set_WorldMatrix_4x4(m_DecalWorldMatrix);
+
+                    m_pFixDecal = nullptr;
+                    m_isDecalFixWindow = false;
+                }
+                if (ImGui::Button("DELETE"))
+                {
+                    m_pGameInstance->Clear_GizmoObject();
+
+                    if (0 < m_DecalList.size())
+                    {
+                        if (nullptr != m_pFixDecal)
+                        {
+                            m_pFixDecal->Set_IsDead(true);
+                            m_pFixDecal->Set_IsPool(true);
+
+                            for (_uint i = 0; i < m_DecalList.size(); )
+                            {
+                                if (m_pFixDecal == m_DecalList[i])
+                                {
+                                    swap(m_pFixDecal, m_DecalList.back());
+                                    m_DecalList.pop_back();
+                                    break;
+                                }
+                                else
+                                    ++i;
+                            }
+
+                            if (m_iDecalListIndex >= m_DecalList.size())
+                                m_iDecalListIndex = m_DecalList.size() - 1;
+
+                            m_pFixDecal = nullptr;
+                        }
+                    }
+
+                    m_isDecalFixWindow = false;
+                }
+
+                ImGui::End();
+            }
+            });
+#endif // _DEBUG
+
+    return S_OK;
+}
+
+HRESULT CLevel_Map::Ready_OnOff_Window()
+{
+    m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
+        if (m_isOnOffWindow)
+        {
+            ImGui::Begin("ON/OFF WINDOW", &m_isOnOffWindow, ImGuiWindowFlags_AlwaysAutoResize);
+
+            ImGui::Text("EDITOR WINDOWS");
+            ImGui::Separator();
+
+            ImGui::Checkbox("PROTOTYPE WINDOW", &m_isPrototypeWindow);
+            ImGui::Checkbox("PROTOTYPE INTERACTIVE WINDOW", &m_isPrototypeInteractiveWindow);
+            ImGui::Checkbox("OBJECT WINDOW", &m_isObjectWindow);
+            ImGui::Checkbox("INTERACTIVE WINDOW", &m_isInteractiveWindow);
+            ImGui::Checkbox("LIGHT SETTING WINDOW", &m_isLightSettingWindow);
+            ImGui::Checkbox("SAVE OBJECT WINDOW", &m_isSaveObjectWindow);
+            ImGui::Checkbox("LOAD OBJECT WINDOW", &m_isLoadObjectWindow);
+            ImGui::Checkbox("SKYSPHERE WINDOW", &m_isSkySphereWindow);
+            ImGui::Checkbox("CLOUDSPHERE WINDOW", &m_isCloudSphereWindow);
+            ImGui::Checkbox("MULTI FIX WINDOW", &m_isMultiFixWindow);
+            ImGui::Checkbox("DECAL ADD WINDOW", &m_isDecalWindow);
+            ImGui::Checkbox("DECAL LIST WINDOW", &m_isDecalListWindow);
+
+            ImGui::End();
+        }
+        });
+
+    return S_OK;
 }
 
 void CLevel_Map::Fbxs_Convert_To_Dat(const _char* pFolderName)
@@ -3889,6 +4267,61 @@ _bool CLevel_Map::Lights_Save_Binary()
 	return true;
 }
 
+_bool CLevel_Map::Decals_Save_Binary()
+{
+    _wstring strDecalInfoPath = AnsiToWString(m_strMapInfoFilePath);
+
+    strDecalInfoPath += TEXT("_decals.dat");
+
+    DWORD dwByte = {};
+
+    // 프로토타입 핸들 개방
+    HANDLE hFile = CreateFile(strDecalInfoPath.c_str(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (INVALID_HANDLE_VALUE == hFile)
+    {
+        return false;
+    }
+    else
+    {
+        _uint iDecalCnt = {};
+
+        for (auto& pDecal : m_DecalList)
+        {
+            ++iDecalCnt;
+        }
+
+        // 1. 데칼의 총 개수 저장 ( 이만큼 루프 돌릴거 )
+        WriteFile(hFile, &iDecalCnt, sizeof(_uint), &dwByte, nullptr);
+
+        for (auto& pDecal : m_DecalList)
+        {
+            DECAL_DESC DecalDesc = pDecal->Get_Desc();
+
+            // 2. 데칼의 구조체 저장
+            WriteFile(hFile, &DecalDesc, sizeof(DECAL_DESC), &dwByte, nullptr);
+
+            _float fThreshold = pDecal->Get_Threshold();
+
+            // 3. 데칼의 쓰레스 홀드 저장 ( 마스크 )
+            WriteFile(hFile, &fThreshold, sizeof(_float), &dwByte, nullptr);
+
+            _uint iTextureIndex = pDecal->Get_TextureIndex();
+
+            // 4. 데칼의 텍스쳐 인덱스 저장
+            WriteFile(hFile, &iTextureIndex, sizeof(_uint), &dwByte, nullptr);
+
+            _float4x4 WorldMatrix = *static_cast<CTransform*>(pDecal->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr();
+            // 5. 데칼의 월드 행렬 저장
+            WriteFile(hFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr);
+        }
+    }
+
+    // 프로토타입 핸들 닫기
+    CloseHandle(hFile);
+
+    return true;
+}
+
 _bool CLevel_Map::Prototypes_Load_Binary()
 {
 	_wstring pDataFilePath = AnsiToWString(m_strMapInfoFilePath);
@@ -4321,6 +4754,64 @@ _bool CLevel_Map::Lights_Load_Binary()
 	return true;
 }
 
+_bool CLevel_Map::Decals_Load_Binary()
+{
+    _wstring strDecalInfoPath = AnsiToWString(m_strMapInfoFilePath);
+
+    strDecalInfoPath += TEXT("_decals.dat");
+
+    DWORD dwByte = {};
+
+    // 프로토타입 핸들 개방
+    HANDLE hFile = CreateFile(strDecalInfoPath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (INVALID_HANDLE_VALUE == hFile)
+    {
+        return false;
+    }
+    else
+    {
+        _uint iDecalCnt = {};
+        // 1. 데칼의 총 개수 불러오기
+        CHECK_FALSE(ReadFile(hFile, &iDecalCnt, sizeof(_uint), &dwByte, nullptr), false);
+
+        for (_uint i = 0; i < iDecalCnt; ++i)
+        {
+            CDecal* pDecal = static_cast<CDecal*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Decal")));
+            CHECK_NULLPTR(pDecal, false);
+
+            DECAL_DESC DecalDesc = {};
+            // 2. 데칼의 구조체 불러오기
+            CHECK_FALSE(ReadFile(hFile, &DecalDesc, sizeof(DECAL_DESC), &dwByte, nullptr), false);
+            pDecal->Set_Desc(DecalDesc);
+
+            _float fThreshold = {};
+            // 3. 데칼의 쓰레스 홀드 불러오기 ( 마스크 )
+            CHECK_FALSE(ReadFile(hFile, &fThreshold, sizeof(_float), &dwByte, nullptr), false);
+            pDecal->Set_Threshold(fThreshold);
+
+            _uint iTextureIndex = {};
+            // 4. 데칼의 텍스쳐 인덱스 불러오기
+            CHECK_FALSE(ReadFile(hFile, &iTextureIndex, sizeof(_uint), &dwByte, nullptr), false);
+            pDecal->Set_TextureIndex(iTextureIndex);
+
+            _float4x4 WorldMatrix = {};
+            // 5. 데칼의 월드 행렬 불러오기
+            CHECK_FALSE(ReadFile(hFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr), false);
+            pDecal->Set_WorldMatrix(WorldMatrix);
+
+            pDecal->Set_EnableDecoration(true);
+
+            m_DecalList.push_back(pDecal);
+            m_pGameInstance->Batch_Decal(pDecal);
+        }
+    }
+
+    // 프로토타입 핸들 닫기
+    CloseHandle(hFile);
+
+    return true;
+}
+
 void CLevel_Map::Build_ModelPathCache()
 {
 	m_ModelPathCache.clear();
@@ -4471,8 +4962,6 @@ void CLevel_Map::MapEditor_Close_Windows()
     // 11. Sky / Cloud Sphere 초기화
     m_FixSkyDesc = {};
     m_FixCloudDesc = {};
-    Safe_Release(m_pSkySphere);
-    Safe_Release(m_pCloudSphere);
     m_pSkySphere = nullptr;
     m_pCloudSphere = nullptr;
 
@@ -4505,4 +4994,8 @@ void CLevel_Map::Free()
 
     m_ModelPathCache.clear();
     m_ModelPathCache.rehash(0);
+
+    for (auto& pDecal : m_DecalList)
+        Safe_Release(pDecal);
+    m_DecalList.clear();
 }

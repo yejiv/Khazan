@@ -106,13 +106,7 @@ PS_OUT PS_MAIN(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
     
-    //Out.vColor = g_LookUpTexture.Sample(DefaultSampler, In.vTexcoord);
-    //Out.vColor = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
-    //Out.vColor = g_DistortionTexture.Sample(DefaultSampler, In.vTexcoord);
-    //Out.vColor = g_NebulaTexture.Sample(DefaultSampler, In.vTexcoord);
     Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-    //Out.vColor *= g_vColor.r;
     
     return Out;
 }
@@ -190,6 +184,86 @@ PS_OUT PS_SKY(PS_IN In)
     return Out;
 }
 
+float3 SafeUp(float3 n)
+{
+    return (abs(n.y) < 0.99f) ? float3(0.f, 1.f, 0.f) : float3(0.f, 0.f, 1.f);
+}
+
+void BuildSphericalTBN(float3 n, out float3 T, out float3 B, out float3 N)
+{
+    N = normalize(n);
+    float3 up = SafeUp(n);
+    T = normalize(cross(up, N));
+    B = cross(N, T);
+}
+
+float2 WrapU(float2 uv)
+{
+    uv.x = uv.x - floor(uv.x);
+    return uv;
+}
+
+float4 SampleSeamless2D(Texture2D tex, SamplerState samp, float2 uv, float seamWidth)
+{
+    float u = uv.x;
+    float wL = 1.0 - smoothstep(0.0, seamWidth, u);
+    float wR = 1.0 - smoothstep(0.0, seamWidth, 1.0 - u);
+    float wC = saturate(1.0 - (wL + wR));
+    float4 cC = tex.Sample(samp, uv);
+    float4 cL = tex.Sample(samp, float2(u + 1.0, uv.y));
+    float4 cR = tex.Sample(samp, float2(u - 1.0, uv.y));
+    return cC * wC + cL * wL + cR * wR;
+}
+
+PS_OUT PS_CLOUD(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    float3 vDir = normalize(In.vWorldPos.xyz - g_vCamPosition.xyz);
+
+    float2 uv;
+    uv.x = atan2(vDir.x, vDir.z) * 0.159155f + 0.5f;
+    uv.y = saturate(vDir.y * 0.5f + 0.5f);
+    uv = WrapU(uv);
+
+    uv.x = WrapU(float2(uv.x + g_fTime * g_fCloudSpeed * 0.02f * g_isDynamic, 0)).x;
+
+    float polar = 1.0f - abs(uv.y * 2.0f - 1.0f);
+    float2 dUV = (g_DistortionTexture.Sample(SkySampler, uv * 0.5f).rg - 0.5f) * (0.035f * polar * polar);
+    uv.x = WrapU(float2(uv.x + dUV.x * g_isDynamic, 0)).x;
+
+    float seamW = 0.0025f;
+    float4 vCloud = SampleSeamless2D(g_LookUpTexture, SkySampler, uv * g_fCloudScale, seamW);
+
+    float gradRaw = g_GradationTexture.Sample(ClampSampler, float2(0.5f, uv.y)).r;
+    float fGrad = pow(gradRaw, 1.2f);
+
+    float3 T, B, N;
+    BuildSphericalTBN(vDir, T, B, N);
+
+    float3 nTS = SampleSeamless2D(g_NormalTexture, SkySampler, uv, seamW).xyz * 2.0f - 1.0f;
+    float3 nW = normalize(T * nTS.x + B * nTS.y + N * nTS.z);
+
+    float3 L = normalize(g_vLightDir);
+    float fLight = saturate(dot(L, nW));
+    fLight = lerp(0.35f, 1.0f, fLight);
+
+    float mask = (vCloud.r + vCloud.g + vCloud.b) * (1.0f / 3.0f);
+    float fAlpha = saturate((mask + 0.12f) * fGrad * g_fCloudDensity);
+
+    // 반구 전용 수직 페이드: 위 희미, 아래 진함
+    float skyY = saturate((uv.y - 0.5f) / 0.5f); // 0=지평선, 1=천정
+    float fVerticalFade = 1.0f - smoothstep(0.0f, 0.8f, skyY);
+    fAlpha *= fVerticalFade;
+
+    float3 vColor = g_vCloudColor * vCloud.rgb * fGrad * fLight * g_fCloudLightIntensity;
+    Out.vColor = float4(vColor, fAlpha);
+
+    return Out;
+
+}
+
+/*
 PS_OUT PS_CLOUD(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
@@ -229,6 +303,7 @@ PS_OUT PS_CLOUD(PS_IN In)
     
     return Out;
 }
+*/
 
 technique11 DefaultTechnique
 {

@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "GameInstance.h"
 #include "BlackBoard.h"
+#include "Layer.h"
 
 
 CPerception::CPerception()
@@ -44,7 +45,6 @@ void CPerception::Update(class CGameObject* pOwner, class CBlackBoard* pBB, _flo
 void CPerception::Check_Sight(class CGameObject* pOwner, class CBlackBoard* pBB)
 {
     
-	//CGameObject* pTarget = m_pGameInstance->Get_BlackBoard()->Get_Value<CGameObject*>(m_strName, "Target");
 	CGameObject* pTarget = pBB->Get_Value<CGameObject*>(m_strName,"Target");
 	CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
 	CTransform* pTargetTransform = static_cast<CTransform*>(pTarget->Get_Component(TEXT("Com_Transform")));
@@ -145,6 +145,8 @@ void CPerception::Check_Sight(class CGameObject* pOwner, class CBlackBoard* pBB)
 	if (m_PerceptionCallBack)
 		m_PerceptionCallBack(pTarget, Stim);
 }
+
+
 
 void CPerception::Notify_Damage(CGameObject* pAttacker, const STIMULUS& Stim)
 {

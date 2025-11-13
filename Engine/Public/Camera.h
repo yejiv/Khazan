@@ -103,6 +103,8 @@ protected:
 	_float4				m_vAt = {};
 	_float				m_fAspect = {};
 	_float				m_fNear{}, m_fFar{};
+    _float              m_iWinSizeX{};
+    _float              m_iWinSizeY{};
 
 	map<_wstring, vector<CAMERA_KEYFRAME>> m_Animations;
 	map<_wstring, vector<CAMERA_EVENT_DATA>> m_Events;
