@@ -784,6 +784,9 @@
     <Filter Include="92.AI\State\Imp_Range\LockOn">
       <UniqueIdentifier>{02cbf283-7191-4046-b891-4dd86bd388f8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\02.Loading">
+      <UniqueIdentifier>{0310ffcc-4a4a-4001-bbb6-3961da1d6259}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObject\UI\Inven\Panel">
       <UniqueIdentifier>{84664222-4927-4b26-8399-6d8fbab8c84b}</UniqueIdentifier>
     </Filter>
@@ -1517,6 +1520,9 @@
     <ClInclude Include="..\Public\AS_LockOn_ImpRange.h">
       <Filter>92.AI\State\Imp_Range\LockOn</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\LoadingObj_BN.h">
+      <Filter>02.GameObject\MapObject\02.Loading</Filter>
+    </ClInclude>
     <ClInclude Include="..\public\Inven_State_Panel.h">
       <Filter>02.GameObject\UI\Inven\Panel</Filter>
     </ClInclude>
@@ -2229,6 +2235,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_LockOn_ImpRange.cpp">
       <Filter>92.AI\State\Imp_Range\LockOn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\LoadingObj_BN.cpp">
+      <Filter>02.GameObject\MapObject\02.Loading</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Inven_State_Panel.cpp">
       <Filter>02.GameObject\UI\Inven\Panel</Filter>

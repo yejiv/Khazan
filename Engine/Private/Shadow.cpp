@@ -56,92 +56,102 @@ HRESULT CShadow::Initialize()
 
 void CShadow::Update(_float fTimeDelta)
 {
-	if (true == m_isTransition)
-	{
-		m_fTransTimeAcc += fTimeDelta;
+    if (true == m_isTransition)
+    {
+        m_fTransTimeAcc += fTimeDelta;
 
-		_float fRatio = m_fTransTimeAcc / m_fDuration;
-		if (1.f <= fRatio)
-		{
-			fRatio = 1.f;
-			m_isTransition = false;
-		}
+        _float fRatio = m_fTransTimeAcc / m_fDuration;
+        if (1.f <= fRatio)
+        {
+            fRatio = 1.f;
+            m_isTransition = false;
+        }
 
-		m_Config.fIntensity = Lerp(m_Config.fIntensity, m_fTargetIntensity, fRatio);
-	}
+        m_Config.fIntensity = Lerp(m_Config.fIntensity, m_fTargetIntensity, fRatio);
+    }
 
-	// 캐스케이드 코너 카메라 절두체 가져와서 비율로 계산
+    // 캐스케이드 코너 카메라 절두체 가져와서 비율로 계산
     m_pGameInstance->Get_Frustum_WorldPoints(m_vFrustumWorldPoints);
 
-	for (_uint i = 0; i < m_Cascade.iNumCascades; ++i)
-	{
+    for (_uint i = 0; i < m_Cascade.iNumCascades; ++i)
+    {
         _float fCascadeNear = (i == 0) ? m_fCameraNear : m_Cascade.Splits[i - 1];
         _float fCascadeFar = m_Cascade.Splits[i];
 
         _float fNearRatio = (fCascadeNear - m_fCameraNear) / (m_fCameraFar - m_fCameraNear);
         _float fFarRatio = (fCascadeFar - m_fCameraNear) / (m_fCameraFar - m_fCameraNear);
 
-		for (_uint j = 0; j < 4; ++j)
-		{
-            m_FustumCorners[j] = Lerp(m_vFrustumWorldPoints[j], m_vFrustumWorldPoints[j + 4], fNearRatio);
-            m_FustumCorners[j + 4] = Lerp(m_vFrustumWorldPoints[j], m_vFrustumWorldPoints[j + 4], fFarRatio);
-            m_FustumCorners[j].w = 1.f;
-            m_FustumCorners[j + 4].w = 1.f;
-		}
+        // 1. 코너 비율로 나누기
+        for (_uint j = 0; j < 4; ++j)
+        {
+            _vector vNear = XMLoadFloat4(&m_vFrustumWorldPoints[j]);
+            _vector vFar = XMLoadFloat4(&m_vFrustumWorldPoints[j + 4]);
 
-		_vector vCenter = {};
-		
-		for (_uint j = 0; j < 8; ++j)
-			vCenter += XMLoadFloat4(&m_FustumCorners[j]);
-		vCenter /= 8.f;
+            _vector vCornerNear = XMVectorLerp(vNear, vFar, fNearRatio);
+            _vector vCornerFar = XMVectorLerp(vNear, vFar, fFarRatio);
 
-		_float fRadius = {};
+            vCornerNear = XMVectorSetW(vCornerNear, 1.f);
+            vCornerFar = XMVectorSetW(vCornerFar, 1.f);
 
-		for (_uint j = 0; j < 8; ++j)
-		{
-			_float fDistance = XMVectorGetX(XMVector3Length(XMLoadFloat4(&m_FustumCorners[j]) - vCenter));
-			fRadius = max(fRadius, fDistance);
-		}
+            XMStoreFloat4(&m_FustumCorners[j], vCornerNear);
+            XMStoreFloat4(&m_FustumCorners[j + 4], vCornerFar);
+        }
 
-		fRadius = ceil(fRadius * 16.f) / 16.f;
+        // 2. 각 코너의 중심 위치 찾기
+        _vector vCenter = {};
 
-		_vector vMaxExtents = XMVectorSet(fRadius, fRadius, fRadius, 1.f);
-		_vector vMinExtents = -vMaxExtents;
+        for (_uint j = 0; j < 8; ++j)
+            vCenter += XMLoadFloat4(&m_FustumCorners[j]);
+        vCenter /= 8.f;
 
-		_vector vShadowCamPos = vCenter - XMVector3Normalize(XMLoadFloat4(&m_Config.vLightDir)) * fRadius;
+        // 3. 중심점 -> 코너의 대각선 중 최대 길이 구하기
+        _float fRadius = {};
 
-		_matrix LightViewMatrix = XMMatrixLookAtLH(vShadowCamPos, vCenter, XMVectorSet(0.f, 1.f, 0.f, 0.f));
+        for (_uint j = 0; j < 8; ++j)
+        {
+            _float fDistance = XMVectorGetX(XMVector3Length(XMLoadFloat4(&m_FustumCorners[j]) - vCenter));
+            fRadius = max(fRadius, fDistance);
+        }
 
-		XMStoreFloat4x4(&m_Cascade.LightViewMatrices[i], LightViewMatrix);
+        fRadius = ceil(fRadius * 16.f) / 16.f;
 
-		_float3 vMinPoint{ FLT_MAX, FLT_MAX, FLT_MAX }, vMaxPoint{ -FLT_MAX, -FLT_MAX, -FLT_MAX };
+        _vector vMaxExtents = XMVectorSet(fRadius, fRadius, fRadius, 1.f);
+        _vector vMinExtents = -vMaxExtents;
 
-		for (_uint j = 0; j < 8; ++j)
-		{
-			XMStoreFloat4(&m_FustumCorners[j], XMVector3TransformCoord(XMLoadFloat4(&m_FustumCorners[j]), LightViewMatrix));
-		
-			vMinPoint.x = min(vMinPoint.x, m_FustumCorners[j].x);
-            vMinPoint.y = min(vMinPoint.y, m_FustumCorners[j].y);
-            vMinPoint.z = min(vMinPoint.z, m_FustumCorners[j].z);
+        _vector vShadowCamPos = vCenter - XMVector3Normalize(XMLoadFloat4(&m_Config.vLightDir)) * fRadius;
 
-            vMaxPoint.x = max(vMaxPoint.x, m_FustumCorners[j].x);
-            vMaxPoint.y = max(vMaxPoint.y, m_FustumCorners[j].y);
-            vMaxPoint.z = max(vMaxPoint.z, m_FustumCorners[j].z);
-		}
+        _matrix LightViewMatrix = XMMatrixLookAtLH(vShadowCamPos, vCenter, XMVectorSet(0.f, 1.f, 0.f, 0.f));
 
-		// ===== ??????곗졊 ?닌뗫릭疫?=====
-		_matrix LightProjMatrix = XMMatrixOrthographicOffCenterLH
-		(
-			vMinPoint.x,
-			vMaxPoint.x,
-			vMinPoint.y,
-			vMaxPoint.y,
-			vMinPoint.z,
-			vMaxPoint.z
-		);
+        _vector vMinPoint = XMVectorSet(FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX);
+        _vector vMaxPoint = XMVectorSet(-FLT_MAX, -FLT_MAX, -FLT_MAX, -FLT_MAX);
 
-		XMStoreFloat4x4(&m_Cascade.LightProjMatrices[i], LightProjMatrix);
-	}
+        for (_uint j = 0; j < 8; ++j)
+        {
+            _vector vCornerWorld = XMLoadFloat4(&m_FustumCorners[j]);
+            _vector vCornerView = XMVector3TransformCoord(vCornerWorld, LightViewMatrix);
+
+            vMinPoint = XMVectorMin(vMinPoint, vCornerView);
+            vMaxPoint = XMVectorMax(vMaxPoint, vCornerView);
+        }
+
+        // 모든 루프가 끝난 후, 최종 Min/Max 레지스터 값을 스칼라로 추출
+        _float3 vMin{}, vMax{};
+        XMStoreFloat3(&vMin, vMinPoint);
+        XMStoreFloat3(&vMax, vMaxPoint);
+
+        _matrix LightProjMatrix = XMMatrixOrthographicOffCenterLH
+        (
+            vMin.x,
+            vMax.x,
+            vMin.y,
+            vMax.y,
+            vMin.z,
+            vMax.z
+        );
+
+        XMStoreFloat4x4(&m_Cascade.LightViewMatrices[i], LightViewMatrix);
+        XMStoreFloat4x4(&m_Cascade.LightProjMatrices[i], LightProjMatrix);
+    }
 }
 
 HRESULT CShadow::Bind_ShadowDSV(_uint iIndex)
