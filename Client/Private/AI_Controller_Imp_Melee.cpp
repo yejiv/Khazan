@@ -36,7 +36,6 @@ void CAI_Controller_Imp_Melee::Update(CGameObject* pOwner, _float fTimeDelta)
         pImp->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK, pTarget);
     }
 
-
     m_pPerception->Update(pOwner,m_pBB,fTimeDelta);
 
     _float fPervTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");

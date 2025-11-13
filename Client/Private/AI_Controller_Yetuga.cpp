@@ -137,12 +137,13 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 
                 BB->Set_Value<_bool>(pYetuga->Get_Name(), "DamageInterrupt",false);
                 
-                if (pYetuga->Get_CurrentHP() <= 0.f)
+                if (pYetuga->Get_CurrentHP() <= 0.f && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "isDead"))
                 {
                     static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1001);
                     static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1002);
                     static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1003);
                     static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 100000);
+
                     return true;
 
                 }
@@ -172,7 +173,6 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 	{
 		return [pYetuga](CBlackBoard* BB)->_bool
 			{
-				//DamageACC
 				_float fDamageAcc = BB->Get_Value<_float>(pYetuga->Get_Name(), "DamageACC");
 				_float fMaxHp = pYetuga->Get_MaxHP();
 				_float fRatio = fDamageAcc / fMaxHp;
@@ -573,7 +573,6 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
             {
                 if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isDeadFinished"))
                 {
-                   
                     return BTNODESTATE::SUCCESS;
                 }
 

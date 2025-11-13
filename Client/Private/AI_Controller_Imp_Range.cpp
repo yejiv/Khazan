@@ -707,13 +707,18 @@ PERCEPTIONCALLBACK CAI_Controller_Imp_Range::GetCallBackPerception(CGameObject* 
                     {
                         m_pBB->Set_Value<_uint>(m_strMonstertag, "DamageType", Stim.iDamageType);
                         m_pBB->Set_Value(m_strMonstertag, "DamageInterrupt", true);
-                        m_pBB->Set_Value(m_strMonstertag, "DamageACC", m_pPerception ? m_pPerception->Get_DamageAcc() : 0.f);
+                        _float fDamageAcc = m_pPerception->Get_DamageAcc();
+                        m_pBB->Set_Value(m_strMonstertag, "DamageACC", fDamageAcc);
                         m_pBB->Set_Value(m_strMonstertag, "isDetected", true);
                     }
                     else
                     {
                         if (m_pPerception)
-                            m_pBB->Set_Value(m_strMonstertag, "DamageACC", m_pPerception->Get_DamageAcc());
+                        {
+                            _float fDamageAcc = m_pPerception->Get_DamageAcc();
+                            m_pBB->Set_Value(m_strMonstertag, "DamageACC", fDamageAcc);
+
+                        }
                     }
                 }
             };
