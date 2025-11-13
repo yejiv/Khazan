@@ -37,12 +37,15 @@ HRESULT CProjectile_Boomarang::Initialize_Clone(void* pArg)
     m_pTarget = pDesc->pTarget;
     Safe_AddRef(m_pTarget);
     
+    m_fEffect = dynamic_cast<CEffect_Prefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Boomarang")));
+    m_fEffect->ResetChildren();
+
     return S_OK;
 }
 
 void CProjectile_Boomarang::Priority_Update(_float fTimeDelta)
 {
-
+    m_fEffect->Priority_Update(fTimeDelta); 
 }
 
 void CProjectile_Boomarang::Update(_float fTimeDelta)
@@ -85,6 +88,9 @@ void CProjectile_Boomarang::Update(_float fTimeDelta)
     {
        
     }
+    m_fEffect->UpdatePosition(m_pTransformCom->Get_State(STATE::POSITION));
+
+    m_fEffect->Update(fTimeDelta);
 }
 
 
@@ -92,10 +98,14 @@ void CProjectile_Boomarang::Late_Update(_float fTimeDelta)
 {
     if (m_isVisible)
         m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this);
+    
+    m_fEffect->Late_Update(fTimeDelta);
 }
 
 HRESULT CProjectile_Boomarang::Render()
 {
+    return S_OK;
+
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
@@ -137,6 +147,7 @@ void CProjectile_Boomarang::Reset()
     //m_pTransformCom->Scale(_float3(0.5f, 0.5f, 0.5f));
 
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&m_vSpawnPoint), 1.f));
+
 }
 
 void CProjectile_Boomarang::Enter_State(PRJSTATE eNextState)
@@ -233,4 +244,5 @@ CGameObject* CProjectile_Boomarang::Clone(void* pArg)
 void CProjectile_Boomarang::Free()
 {
     Safe_Release(m_pTarget);
+    Safe_Release(m_fEffect);
 }
