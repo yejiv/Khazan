@@ -63,6 +63,7 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
     if(nullptr != m_pController)
         m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
 
+    m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
 
     m_fRecoveryPerSec = 5.f;
 

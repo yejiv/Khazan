@@ -117,6 +117,7 @@ void CDamage_Text::Reset()
 	m_fAlpha = 1.f;
 	m_vDamage_UV.clear();
 	m_vLocalPos = {};
+    m_iLength = 0;
 }
 
 void CDamage_Text::Update_WolrdPos(_vector vPos)
