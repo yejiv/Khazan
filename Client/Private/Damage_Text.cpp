@@ -103,6 +103,11 @@ _bool CDamage_Text::Render_Damage(DAMAGE_TYPE eDamageType, _vector vPos, _uint i
         m_vDamage_UV.push_back(_float4(0.f, 0.f, 0.f, 0.f));
     }
 	XMStoreFloat4(&m_vWorldTranslation, vPos);
+
+    if (m_vDamage_UV.empty())
+    {
+        m_vDamage_UV.push_back({ 0.f,0.f,0.f,0.f });
+    }
 	return true;
 }
 

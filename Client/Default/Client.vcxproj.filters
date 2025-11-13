@@ -787,6 +787,9 @@
     <Filter Include="02.GameObject\MapObject\02.Loading">
       <UniqueIdentifier>{0310ffcc-4a4a-4001-bbb6-3961da1d6259}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Inven\Panel">
+      <UniqueIdentifier>{84664222-4927-4b26-8399-6d8fbab8c84b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1517,6 +1520,9 @@
     <ClInclude Include="..\Public\LoadingObj_BN.h">
       <Filter>02.GameObject\MapObject\02.Loading</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Inven_State_Panel.h">
+      <Filter>02.GameObject\UI\Inven\Panel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2226,6 +2232,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\LoadingObj_BN.cpp">
       <Filter>02.GameObject\MapObject\02.Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Inven_State_Panel.cpp">
+      <Filter>02.GameObject\UI\Inven\Panel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -157,11 +157,21 @@ namespace Client
         _float  fGuard = {};
 
 		_uint	iLevel = {};
+
 		_uint	iLachryma = {};
 		_uint	iGold = {};
+        _uint	iStone = {};
+
 		_uint	iSkillLevel = {};
 		_float	fSkillLevel_EXP = {};
 		_uint	iSkilPoint = {};
+
+        _uint   iVitality = {};
+        _uint   iEndurance = {};
+        _uint   iPower = {};
+        _uint   iCompetency = {};
+        _uint   iWill = {};
+
         
 	}PLAYER_DATA;
 }

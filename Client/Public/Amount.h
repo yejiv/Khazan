@@ -36,9 +36,9 @@ private:
 	vector<class CAmount_Panel*>		m_pAmount;
 
 	_bool								m_isAddValue = {};
-	_int								m_iGold = {};
-	_int								m_iLachryma = {};
-	_int								m_iStone = {};
+	_uint*								m_iGold = {};
+	_uint*								m_iLachryma = {};
+	_uint*								m_iStone = {};
 
 private:
 	HRESULT								Ready_Prototype();

@@ -7,6 +7,7 @@
 
 #include "UI_BackGround.h"
 #include "UI_Panel.h"
+#include "Inven_State_Panel.h"
 
 #include "Item_Slot.h"
 #include "Equip_Panel.h"
@@ -124,6 +125,7 @@ void CUI_Inven::Priority_Update(_float fTimeDelta)
 		for (auto Slot : m_pEquipSlot)
 			Slot->Priority_Update(fTimeDelta);
 	}
+    m_pState_Panel->Priority_Update(fTimeDelta);
 }
 
 void CUI_Inven::Update(_float fTimeDelta)
@@ -155,6 +157,8 @@ void CUI_Inven::Update(_float fTimeDelta)
 		for (auto Slot : m_pEquipSlot)
 			Slot->Update(fTimeDelta);
 	}
+    m_pState_Panel->Update(fTimeDelta);
+
 }
 
 void CUI_Inven::Late_Update(_float fTimeDelta)
@@ -193,6 +197,8 @@ void CUI_Inven::Late_Update(_float fTimeDelta)
 	for (auto Text : m_pGuideText)
 		Text->Late_Update(fTimeDelta);
 
+    m_pState_Panel->Late_Update(fTimeDelta);
+
 }
 
 HRESULT CUI_Inven::Render()
@@ -218,7 +224,7 @@ HRESULT CUI_Inven::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, voi
 			Safe_AddRef(m_pUIText);
 		}
 
-		if (ENUM_CLASS(UITYPE::PANEL) == pChild->Get_UIType())
+		if ("EQUIP" == pChild->Get_Name())
 		{
 			m_pEquip_Panel = static_cast<CEquip_Panel*>(pChild);
 			Safe_AddRef(m_pEquip_Panel);
@@ -247,6 +253,12 @@ HRESULT CUI_Inven::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, voi
 			m_pEIcon = static_cast<CUI_Atlas_Icon*>(pChild);
 			Safe_AddRef(pChild);
 		}
+
+        if ("State" == pChild->Get_Name())
+        {
+            m_pState_Panel = static_cast<CInven_State_Panel*>(pChild);
+            Safe_AddRef(pChild);
+        }
 	}
 
 	m_pInvenTap[0]->Tap_Enable();
@@ -405,6 +417,9 @@ HRESULT CUI_Inven::Ready_Prototype()
 		CEquip_Panel::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Inven_Equip_Slot"),
 		CEquip_Slot::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Inven_State_Panel"),
+        CInven_State_Panel::Create(m_pDevice, m_pContext)), E_FAIL);
 
 	return S_OK;
 }
@@ -857,4 +872,6 @@ void CUI_Inven::Free()
 	m_pInvenTap.clear();
 
 	Safe_Release(m_pBackGround);
+
+    Safe_Release(m_pState_Panel);
 }
