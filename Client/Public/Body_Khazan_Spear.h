@@ -155,9 +155,11 @@ private:
     void	FX_FastAtk02_Trail();
     void	FX_FastAtk03_Trail();
     void	FX_FastAtk_SpawnWind();
-    void	FX_StrongAtk_Charge_Blust1();
-    void	FX_StrongAtk_Charge_Blust2();
-    void	FX_StrongAtk_Charge_Blust3();
+    void	FX_StrongAtk_Charge_Blust1(_fvector pos);
+    void	FX_StrongAtk_Charge_Blust2(_fvector pos);
+    void	FX_StrongAtk_Charge_Blust3(_fvector pos);
+    void	FX_StrongAtk_Charge_Blust4(_fvector pos);
+    void	FX_StrongAtk_Charge_BlustSmall(_fvector pos);
 
     void	Event_AttackTiming(_bool isAttackStart);
 
