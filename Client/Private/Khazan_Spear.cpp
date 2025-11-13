@@ -120,6 +120,8 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
 
     m_pSpear->Set_Enble(false);
 
+   
+
     return S_OK;
 
 }

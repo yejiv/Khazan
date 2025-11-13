@@ -85,7 +85,7 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
 //		ImGui::End();
 //		});
 //#endif
-    
+    m_pModelCom->WarmupAnimations();
 
     return S_OK;
 }
