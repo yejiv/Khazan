@@ -26,6 +26,12 @@ void CAI_Controller::AI_ApplyDamage(CGameObject* pAttacker, _float fDamage, _uin
 {
     if (nullptr == m_pPerception)
         return;
+
+    if (nullptr == pAttacker)
+        return;
+
+    if (fDamage <= 0.f || fValidTime <= 0.f) 
+        return;
     
     STIMULUS DamageStim{};
     DamageStim.bSensed = true;
@@ -38,7 +44,6 @@ void CAI_Controller::AI_ApplyDamage(CGameObject* pAttacker, _float fDamage, _uin
     DamageStim.fVaildTime = fValidTime;
 
     m_pPerception->Notify_Damage(pAttacker,DamageStim);
-    //m_pBT->Terminate_AllNode(m_pBT->Get_Root());
 
 }
 

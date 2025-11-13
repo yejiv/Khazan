@@ -19,9 +19,19 @@ HRESULT CPlayer_Manager::Initialize()
 	m_Data.iLevel = 1;
 	m_Data.iGold = 1000;
 	m_Data.iLachryma = 500;
+    m_Data.iStone = 0;
+
 	m_Data.iSkillLevel = 10;
 	m_Data.fSkillLevel_EXP = 55.f;
 	m_Data.iSkilPoint = 10;
+    
+    m_Data.iVitality = 10;
+    m_Data.iEndurance = 10;
+    m_Data.iPower = 10;
+    m_Data.iCompetency = 10;
+    m_Data.iWill = 10;
+
+
 
     m_UsedSkill.assign(GetBitPosition(CPlayerData_Manager::SPEAR_END), false);
 

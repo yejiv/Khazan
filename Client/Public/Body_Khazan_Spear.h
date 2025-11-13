@@ -39,6 +39,7 @@ public:
     void        Set_IsGuarding(_bool* pIsGuarding) { m_pIsGuarding = pIsGuarding; }
     void        Set_Spear(class CSpear_Khazan_Spear* pSpear);
    // void        Set_Lantern(_bool* pIsLantern) { m_isEquipLantern = pIsLantern;}
+    void	    Event_AttackTiming(_bool isAttackStart);
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -118,6 +119,7 @@ private:
 
     class CMeshTrail* m_pTrail = { nullptr };
     _uint	EffectID_SpearWind;
+    _uint	EffectID_SpiralSpear;
 
     OUTLINE_CONFIG      m_OutlineConfig = { _float3(1.f, 0.f, 1.f), 0.001f, 0.f, 0.f };
 
@@ -159,9 +161,11 @@ private:
     void	FX_StrongAtk_Charge_Blust2(_fvector pos);
     void	FX_StrongAtk_Charge_Blust3(_fvector pos);
     void	FX_StrongAtk_Charge_Blust4(_fvector pos);
+    void	FX_StrongAtk_Charge_Blust5(_fvector pos);
+    void	FX_StrongAtk_Charge_Blust6(_fvector pos);
     void	FX_StrongAtk_Charge_BlustSmall(_fvector pos);
+    void	Spear_Spike();
 
-    void	Event_AttackTiming(_bool isAttackStart);
 
 
 private:

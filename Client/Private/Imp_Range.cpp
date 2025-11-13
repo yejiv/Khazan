@@ -56,21 +56,8 @@ HRESULT CImp_Range::Initialize_Clone(void* pArg)
 
       m_MagicBalls.resize(3, nullptr);
       
-
-      CBlackBoard* pBB = m_pController->Get_BlackBoard();
-      if (pBB->Get_Value<_bool>(m_strName, "isDetected"))
-      {
-          
-          m_pUI_HP = static_cast<CMon_HP*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Mon_HP")));
-
-          if (m_pUI_HP != nullptr)
-          {
-              Safe_AddRef(m_pUI_HP);
-
-              m_pUI_HP->Setting_HP(m_vLockOnPosition, { 0.f, 200.f }, &m_fCurrentHP, &m_fMaxHP, &m_fCurrentStamina, &m_fMaxStamina);
-              m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pUI_HP);
-          }
-      }
+      m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
+     
       return S_OK;
 }
 
@@ -78,12 +65,15 @@ void CImp_Range::Priority_Update(_float fTimeDelta)
 {
     CContainerObject::Priority_Update(fTimeDelta);
 
-    if (m_fCurrentHP <= 0.f)
+    if (m_fCurrentHP <= 0.f && !m_pUI_HP)
     {
-        m_pUI_HP->Set_IsDead(true);
         Safe_Release(m_pUI_HP);
+        m_pUI_HP->Set_IsDead(true);
     }
 
+   
+
+ 
 
 }
 
@@ -107,6 +97,27 @@ void CImp_Range::Update(_float fTimeDelta)
 
 void CImp_Range::Late_Update(_float fTimeDelta)
 {
+    if (!m_isDetected)
+    {
+
+        CBlackBoard* pBB = m_pController->Get_BlackBoard();
+        if (pBB->Get_Value<_bool>(m_strName, "isDetected"))
+        {
+            m_isDetected = true;
+
+            m_pUI_HP = static_cast<CMon_HP*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Mon_HP")));
+
+            if (m_pUI_HP != nullptr)
+            {
+                Safe_AddRef(m_pUI_HP);
+
+                m_pUI_HP->Setting_HP(m_vLockOnPosition, { 0.f, 200.f }, &m_fCurrentHP, &m_fMaxHP, &m_fCurrentStamina, &m_fMaxStamina);
+                m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pUI_HP);
+            }
+        }
+    }
+
+
     CContainerObject::Late_Update(fTimeDelta);
 }
 

@@ -316,25 +316,25 @@ HRESULT CLoader::Loading_For_HeinMach_Level()
 HRESULT CLoader::Loading_For_HeinMach_Texture()
 {
 
-	/* Prototype_Component_Texture_Sky */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Texture_Sky"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Sky/Sky_%d.dds"), 4))))
-		return E_FAIL;
+	///* Prototype_Component_Texture_Sky */
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Texture_Sky"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Sky/Sky_%d.dds"), 4))))
+	//	return E_FAIL;
 
-	/* Prototype_Component_Texture_Terrain */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Texture_Terrain"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Terrain/Tile%d.dds"), 2))))
-		return E_FAIL;
+	///* Prototype_Component_Texture_Terrain */
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Texture_Terrain"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Terrain/Tile%d.dds"), 2))))
+	//	return E_FAIL;
 
-	/* Prototype_Component_Texture_Mask_Terrain */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Texture_Mask_Terrain"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Terrain/TerrainMask.dds"), 1))))
-		return E_FAIL;
+	///* Prototype_Component_Texture_Mask_Terrain */
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Texture_Mask_Terrain"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Terrain/TerrainMask.dds"), 1))))
+	//	return E_FAIL;
 
-	/* Prototype_Component_Texture_Brush */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Texture_Brush"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Terrain/Brush.png"), 1))))
-		return E_FAIL;
+	///* Prototype_Component_Texture_Brush */
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Texture_Brush"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Terrain/Brush.png"), 1))))
+	//	return E_FAIL;
 
 
 	return S_OK;
@@ -410,6 +410,11 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Prisoner_Arm2"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Prisoner_Arm2/Prisoner_Arm2.dat"))))
 		return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_DanJin_Hair*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_DanJin_Hair"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Danjin_Hair/Danjin_Hair/Danjin_Hair.dat"))))
+        return E_FAIL;
 #pragma endregion
 
 #pragma region YETUGA
@@ -467,10 +472,6 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
 #pragma endregion
 
 #pragma region �� ���� : ��ȣ �ۿ� �� ������Ʈ
-	/* Prototype_Component_Model_BladeNexus */
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_BladeNexus"),
-		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_DamagedTS/WIP_COM_DamagedTS.dat")), E_FAIL);
-
 	/* Prototype_Component_Model_BigChest */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_BigChest"),
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_BigChest_Open_003/WIP_COM_BigChest_Open_003.dat")), E_FAIL);
@@ -653,6 +654,14 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust4"))))
         return E_FAIL;
 
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust5"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust5"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust6"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust6"))))
+        return E_FAIL;
+
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("BlustSmall"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/blustSmall"))))
         return E_FAIL;
@@ -687,6 +696,10 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("BloodHit"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/bloodhit"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpiralSpear_SpearFX"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/bloodhand"))))
         return E_FAIL;
 #pragma endregion
 
