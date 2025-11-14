@@ -1047,6 +1047,8 @@ HRESULT CLevel_HeinMach::Ready_FireLights(const _tchar* pDataFileName, LEVEL eCu
 
         // 조명 등록
         m_pGameInstance->Add_Light(szLightTag, ENUM_CLASS(eCurrentLevel), LightDesc, true);
+
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Fire"), XMLoadFloat4(&LightDesc.vPosition));
     }
 
     CloseHandle(hFile);
