@@ -253,8 +253,8 @@ CONDITION CAI_Controller_Imp_Melee::GetCallbackCondition(CGameObject* pOwner, co
 
                 if (fDist <= fChaseRange)
                 {
-                    if(fDist <= fMoveStopRange)
-                        BB->Set_Value<_bool>(pImp->Get_Name())
+                    //if (fDist <= fMoveStopRange)
+                        //BB->Set_Value<_bool>(pImp->Get_Name());
                 }
 
 
