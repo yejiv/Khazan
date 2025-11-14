@@ -164,8 +164,7 @@ HRESULT CProjectile_Imp_MagicBall::Ready_Colliders()
 {
     CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
 
-    BodyDesc.fRadius = 0.3f;
-    BodyDesc.eMotion = EMotionType::Kinematic;
+    BodyDesc.fRadius = 1.f;    BodyDesc.eMotion = EMotionType::Kinematic;
     BodyDesc.eQuality = EMotionQuality::LinearCast;
     BodyDesc.eShapeType = SHAPE::SPHERE;
     BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="98.Default">
@@ -793,6 +793,9 @@
     <Filter Include="02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel\Flag">
       <UniqueIdentifier>{d4ea7c73-7f04-4bc3-9f75-829e01b0378e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Lantern">
+      <UniqueIdentifier>{f87b61a1-ec55-4177-bc32-818e25784895}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1529,6 +1532,9 @@
     <ClInclude Include="..\public\Skill_Slot_Flag.h">
       <Filter>02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel\Flag</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Lantern_Khazan_Spear.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Lantern</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2244,6 +2250,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Skill_Slot_Flag.cpp">
       <Filter>02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel\Flag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Lantern_Khazan_Spear.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Lantern</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
