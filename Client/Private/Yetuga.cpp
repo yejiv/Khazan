@@ -510,6 +510,16 @@ void CYetuga::Breath_Loop()
 
 }
 
+void CYetuga::Abort_Node(_bool isToggle)
+{
+    _float fDist = m_pController->Get_BlackBoard()->Get_Value<_float>(m_strName, "TargetDist");
+    _float fAbortRange = m_pController->Get_BlackBoard()->Get_Value<_float>(m_strName, "JumpAttackRange");
+
+    if (fDist >= fAbortRange)
+        m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isAbort", isToggle);
+}
+
+
 void CYetuga::Start_RadialBlur()
 {
     RADIAL_BLUR_DESC Desc{};
@@ -725,6 +735,7 @@ HRESULT CYetuga::Ready_AnimEvent()
     pModel->Register_Event("Smash_Look", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_fTurnSpeed = 40.f;
         m_isLookAt = false;
+      
         });
 
     pModel->Register_Event("Smash_After", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -736,6 +747,7 @@ HRESULT CYetuga::Ready_AnimEvent()
     pModel->Register_Event("Smash_Attack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_fTurnSpeed = 40.f;
         m_pBody->Set_OnAttackCollision(true);
+        m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 0.2f, 0.4f, 1.5f);
         m_isLookAt = true;
         });
      
@@ -859,14 +871,14 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("Dampsey_First", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
-        
+        Abort_Node(true);
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
 
         });
     pModel->Register_Event("Dampsey_First", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
 
-       
+        Abort_Node(false);
         m_isLookAt = false;
         m_pBody->Set_OnAttackCollision(false);
 
@@ -883,13 +895,15 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("Dampsey_Second", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
-        
+        Abort_Node(true);
+
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
 
         });
     pModel->Register_Event("Dampsey_Second", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         
+        Abort_Node(false);
 
         m_isLookAt = false;
         m_pBody->Set_OnAttackCollision(false);
@@ -908,6 +922,7 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("Dampsey_Third", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
        
+        Abort_Node(true);
 
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
@@ -915,6 +930,7 @@ HRESULT CYetuga::Ready_AnimEvent()
         });
     pModel->Register_Event("Dampsey_Third", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
        
+        Abort_Node(false);
 
         m_isLookAt = false;
         m_pBody->Set_OnAttackCollision(false);
@@ -932,11 +948,15 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("Dampsey_Forth", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
+        Abort_Node(true);
+
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
 
         });
     pModel->Register_Event("Dampsey_Forth", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+
+        Abort_Node(false);
 
         m_isLookAt = false;
         m_pBody->Set_OnAttackCollision(false);
@@ -954,11 +974,15 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("Dampsey_Final", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
+        Abort_Node(true);
+
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
 
         });
     pModel->Register_Event("Dampsey_Final", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+
+        Abort_Node(false);
 
         m_isLookAt = false;
         m_pBody->Set_OnAttackCollision(false);

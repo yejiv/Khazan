@@ -39,27 +39,60 @@ void CMoveState_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     }  
 }
 
+//void CMoveState_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
+//{
+// 
+//    CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
+//    CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
+//    CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+//    CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
+//
+//
+//    _float fRunRange = pBB->Get_Value<_float>("Yetuga", "RunRange");
+//
+//    pYetuga->Get_Controller()->
+//        AI_MoveTo(pOwner, 
+//            pBB->Get_Value<CGameObject*>("Yetuga", "Target"),
+//            fRunRange - 0.5f, 
+//            m_fSpeedPerSec,
+//            fTimeDelta);
+//
+//    if (pModel->Play_Animation(fTimeDelta)) {}
+//
+//}
+
 void CMoveState_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
- 
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
     CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
+    CGameObject* pTarget = pBB->Get_Value<CGameObject*>("Yetuga", "Target");
 
+    _float fDist = pBB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
 
-    _float fRunRange = pBB->Get_Value<_float>("Yetuga", "RunRange");
+    // 상향 상태 판단
+    if (fDist > pBB->Get_Value<_float>("Yetuga", "SprintRange") && m_iPrevMovementFlag < CYetuga::MONSTER_INFO::SPRINT)
+    {
+        m_iPrevMovementFlag = CYetuga::MONSTER_INFO::SPRINT;
+        m_fSpeedPerSec = pBB->Get_Value<_float>(pYetuga->Get_Name(), "SprintSpeed");
+        pModel->Set_Animation(7);
+    }
+    else if (fDist > pBB->Get_Value<_float>("Yetuga", "RunRange") && m_iPrevMovementFlag < CYetuga::MONSTER_INFO::RUN)
+    {
+        m_iPrevMovementFlag = CYetuga::MONSTER_INFO::RUN;
+        m_fSpeedPerSec = pBB->Get_Value<_float>("Yetuga", "RunSpeed");
+        pModel->Set_Animation(6);
+    }
 
-    pYetuga->Get_Controller()->
-        AI_MoveTo(pOwner, 
-            pBB->Get_Value<CGameObject*>("Yetuga", "Target"),
-            fRunRange - 0.5f, 
-            m_fSpeedPerSec,
-            fTimeDelta);
+    // 이동
+    _float fMoveRange = pBB->Get_Value<_float>("Yetuga", "RunRange") - 0.5f;
+    pYetuga->Get_Controller()->AI_MoveTo(pOwner, pTarget, fMoveRange, m_fSpeedPerSec, fTimeDelta);
 
     if (pModel->Play_Animation(fTimeDelta)) {}
-
 }
+
+
 
 void CMoveState_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
