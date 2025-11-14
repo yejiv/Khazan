@@ -216,7 +216,9 @@ void CCharacterVirtual::Update(_float fTimeDelta, _vector& outQuatRotation, _vec
 void CCharacterVirtual::Set_PosRot(_vector vPos, _vector vRot)
 {
 	m_pCharVir->SetPosition(LoadVec3(vPos));
-	m_pCharVir->SetRotation(LoadQuat(vRot));
+
+    _vector vRotation = XMVector3Normalize(vRot);
+	m_pCharVir->SetRotation(LoadQuat(vRotation));
 }
 
 void CCharacterVirtual::StepFixed(_float fTimeDelta)

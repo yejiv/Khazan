@@ -163,6 +163,8 @@ HRESULT CProjectile_Boomarang::Ready_Components()
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Yetuga_Stone"),
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
+
+    return S_OK;
 }
 
 HRESULT CProjectile_Boomarang::Ready_Colliders()
@@ -200,6 +202,8 @@ HRESULT CProjectile_Boomarang::Bind_ShaderResources()
 
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
         return E_FAIL;
+
+    return S_OK;
 }
 
 void CProjectile_Boomarang::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
@@ -243,6 +247,8 @@ CGameObject* CProjectile_Boomarang::Clone(void* pArg)
 
 void CProjectile_Boomarang::Free()
 {
+    __super::Free();
+
     Safe_Release(m_pTarget);
     Safe_Release(m_fEffect);
 }

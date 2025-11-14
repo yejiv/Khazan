@@ -78,6 +78,7 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     m_pPlayerData = m_pClientInstance->Get_pInitailizePlayerData();
+    m_isCollision = false;
 
 //#ifdef _DEBUG
 //	m_pGameInstance->AddWidget(TEXT("Client"), [this]() {
@@ -117,6 +118,11 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
     if (m_pGameInstance->Key_Down(DIK_I))
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("BloodHit"), XMVectorSet(1.f, 1.f, 1.f, 1.f) );
         //m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("BloodHit"), m_pParentTransform->Get_WorldMatrix().r[3] );
+    if (m_isCollision)
+    {
+        m_isCollision = false;
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("BloodHit"), XMLoadFloat4(&m_fCollisionPos));
+    }
 }
 
 void CBody_Khazan_Spear::Late_Update(_float fTimeDelta)
@@ -305,9 +311,9 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
                 XMVector4Normalize(static_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")))->Get_State(STATE::POSITION) 
                 - m_pParentTransform->Get_State(STATE::POSITION))
                 , 15.f, 50.f);
-            
-    
-
+            m_isCollision = true;
+            CTransform* MonsterTransform = dynamic_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")));  
+            XMStoreFloat4(&m_fCollisionPos, MonsterTransform->Get_State(STATE::POSITION));
         }
 
         if (m_isSpearPoleActive)
