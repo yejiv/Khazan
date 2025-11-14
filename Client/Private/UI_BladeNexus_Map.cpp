@@ -12,6 +12,7 @@
 #include "UI_BladeNexus.h"
 
 #include "Khazan_Spear.h"
+#include "UI_Announce_MapName.h"
 
 CUI_BladeNexus_Map::CUI_BladeNexus_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Panel{ pDevice, pContext }
@@ -458,7 +459,17 @@ void CUI_BladeNexus_Map::Move_Player()
     if (pKhazan == nullptr)
         MSG_BOX(TEXT("플레이어 없음"));
     pKhazan->Set_Position(CClientInstance::GetInstance()->Find_BladeNexus(m_iNexusIndex)->vPos);
+
+
     CClientInstance::GetInstance()->Fade_In();
+
+    EVENT_ANNOUNCE_MAPNAME Desc = {};
+    Desc.fTime = 2.f;
+    Desc.iMapType = ENUM_CLASS(CUI_Announce_MapName::MAP_TYPE::DEFAULT);
+    Desc.fFadeOutTime = 1.0f;
+    Desc.isDissovle = true;
+    Desc.wstrName = CClientInstance::GetInstance()->Find_BladeNexus(m_iNexusIndex)->strName;
+    m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_MAPNAME>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_MAPNAME), Desc);
 }
 
 CUI_BladeNexus_Map* CUI_BladeNexus_Map::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)
