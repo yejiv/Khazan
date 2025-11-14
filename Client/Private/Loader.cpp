@@ -21,6 +21,7 @@
 #include "Khazan_Spear.h"
 #include "Body_Khazan_Spear.h"
 #include "Spear_Khazan_Spear.h"
+#include "Lantern_Khazan_Spear.h"
 #pragma endregion
 
 #pragma region MAP OBJECT
@@ -344,6 +345,10 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
 {
 
 #pragma region KHAZAN
+    /* Prototype_Component_Model_Khazan_Lantern*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Lantern"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/APC/Lantern/Lantern.dat"))))
+        return E_FAIL;
 
 	/* Prototype_Component_Model_Spear_Khazan_Sample*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Spear_Khazan_Sample"),
@@ -633,6 +638,10 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
 		CSpear_Khazan_Spear::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+    /* Prototype_GameObject_Lantern_Khazan_Spear */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Lantern_Khazan_Spear"),
+        CLantern_Khazan_Spear::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
 #pragma region Effect 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Spear"))))
@@ -842,6 +851,11 @@ HRESULT CLoader::Loading_For_Crevice_GameObject()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Spear_Khazan_Spear"),
 		CSpear_Khazan_Spear::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+
+    /* Prototype_GameObject_Lantern_Khazan_Spear */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Lantern_Khazan_Spear"),
+        CLantern_Khazan_Spear::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
 #pragma endregion
 
 #pragma region ����Ʈ �׽�Ʈ ��!
@@ -1027,6 +1041,10 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
 		CSpear_Khazan_Spear::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+    /* Prototype_GameObject_Lantern_Khazan_Spear */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Lantern_Khazan_Spear"),
+        CLantern_Khazan_Spear::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
 	return S_OK;
 }
 

@@ -123,8 +123,8 @@ private:
 
     OUTLINE_CONFIG      m_OutlineConfig = { _float3(1.f, 0.f, 1.f), 0.001f, 0.f, 0.f };
 
-    _bool               m_isSpearTipActive = { false };
-    _bool               m_isSpearPoleActive = { false };
+    _bool               m_isSpearTipActive = { true };
+    _bool               m_isSpearPoleActive = { true };
 
     /* 가드 */
     _float2             m_fJustGuardTime = { 0.f, 0.83f };

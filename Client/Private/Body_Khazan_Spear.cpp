@@ -265,7 +265,7 @@ void CBody_Khazan_Spear::Render_Part_Shadow(CModel* pModel)
     for (size_t i = 0; i < iNumMeshes; i++)
     {
         // 마스터의 본을 자동으로 사용
-        if (FAILED(pModel->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
+        if (FAILED(pModel->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i))) 
             continue;
 
         m_pShaderCom->Begin(2);
@@ -297,7 +297,17 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
     {
         if (m_isSpearTipActive)
         {
-            static_cast<CCreature*>(pDesc->pGameObject)->Take_Damage(m_pPlayerData->fDamage,static_cast<HITREACTION>(*m_pHitReaction), this);
+            CCreature* pMonster = static_cast<CCreature*>(pDesc->pGameObject);
+            if (pMonster == nullptr)
+                return;
+            pMonster->Take_Damage(m_pPlayerData->fDamage, static_cast<HITREACTION>(*m_pHitReaction), this);
+            pMonster->KnockBack(
+                XMVector4Normalize(static_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")))->Get_State(STATE::POSITION) 
+                - m_pParentTransform->Get_State(STATE::POSITION))
+                , 15.f, 50.f);
+            
+    
+
         }
 
         if (m_isSpearPoleActive)
@@ -427,7 +437,14 @@ void CBody_Khazan_Spear::Start_GuardRotation(_float3 vContactPoint)
     // 2. 캐릭터 -> 접촉점 방향 벡터 계산
     _vector vHitDir = XMLoadFloat3(&vContactPoint) - vCharacterPos;
     vHitDir = XMVectorSetY(vHitDir, 0.f); // XZ 평면으로 투영
-    vHitDir = XMVector3Normalize(vHitDir);
+    if (XMVectorGetX(XMVector3Length(vHitDir)) < 1e-4f)
+    {
+        vHitDir = m_pParentTransform->Get_State(STATE::LOOK);
+        vHitDir = XMVectorSetY(vHitDir, 0.f);
+        vHitDir = XMVector3Normalize(vHitDir);
+    }
+    else
+        vHitDir = XMVector3Normalize(vHitDir);
 
     // 3. 현재 캐릭터의 Forward 방향
     _vector vCurrentForward = m_pParentTransform->Get_State(STATE:: LOOK);
@@ -646,7 +663,7 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
 {
     CBody::BODY_BOXSHAPE_DESC TipBoxDesc{};
     {
-        TipBoxDesc.vExtent = _float3(0.8f, 0.25f, 0.25f);
+        TipBoxDesc.vExtent = _float3(0.9f, 0.6f, 0.6f);
         TipBoxDesc.eMotion = EMotionType::Kinematic;
         TipBoxDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
         TipBoxDesc.eShapeType = SHAPE::BOX;
@@ -657,7 +674,7 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
         XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_pSpearTip1_MatrixW));
         TipBoxDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
         TipBoxDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
-        TipBoxDesc.vShapeOffset = _float3(-0.4f, 0.f, 0.f);
+        TipBoxDesc.vShapeOffset = _float3(-0.45f, 0.f, 0.f);
         m_tCollisionDesc.pGameObject = this;
         TipBoxDesc.pCollisionDesc = &m_tCollisionDesc;
 
@@ -674,7 +691,7 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
     }
     CBody::BODY_BOXSHAPE_DESC BodyBoxDesc{};
     {
-        BodyBoxDesc.vExtent = _float3(0.1f, 1.8f, 0.1f);
+        BodyBoxDesc.vExtent = _float3(0.4f, 1.8f, 0.4f);
         BodyBoxDesc.eMotion = EMotionType::Kinematic;
         BodyBoxDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
         BodyBoxDesc.eShapeType = SHAPE::BOX;

@@ -854,7 +854,35 @@ void CModel::WarmupAnimations()
     // 모든 애니메이션을 0.1초씩 재생
     for (_uint i = 0; i < m_iNumAnimations; ++i)
     {
-        Set_Animation(i);
+        if (m_iCurrentAnimIndex == i && m_AnimationsSetup[m_iCurrentAnimIndex].isLoop)
+            return;
+
+        if (i >= m_iNumAnimations || m_iNumAnimations <= 0)
+            return;
+
+        if (Has_State(WAITFORCOMPLETE))
+        {
+            m_iReserveAnimIndex = i;
+
+            OnWaitForComplete([this]() {
+                Set_Animation(m_iReserveAnimIndex);
+                });
+
+            return;
+        }
+
+        m_iPrevAnimIndex = m_iCurrentAnimIndex;
+        m_iCurrentAnimIndex = i;
+
+        if (!Has_State(ANIMSET_PLAYING))
+            Clear_State();
+
+        Add_State(CHANGE_ANIMATION);
+
+        /*  루트 모션 옵션 설정 */
+        Check_RootMotion();
+
+        //Set_Animation(i);
 
         for (int frame = 0; frame < 3; ++frame)
         {

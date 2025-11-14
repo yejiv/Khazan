@@ -179,10 +179,10 @@ HRESULT CLevel_HeinMach::Initialize()
 
 void CLevel_HeinMach::Update(_float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_9))
-        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
-    if (m_pGameInstance->Key_Down(DIK_8))
-        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
+    //if (m_pGameInstance->Key_Down(DIK_9))
+    //    static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+    //if (m_pGameInstance->Key_Down(DIK_8))
+    //    static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
 
 	if (m_pGameInstance->Key_Down(DIK_Q))
 	{
@@ -239,6 +239,17 @@ HRESULT CLevel_HeinMach::Ready_Lights()
 
 	if (FAILED(m_pGameInstance->Add_Light(TEXT("Directional_Stage1"), ENUM_CLASS(LEVEL::HEINMACH), LightDesc)))
 		return E_FAIL;
+
+
+    LIGHT_DESC LightDesc1 = {};
+    LightDesc1.eType = LIGHT_DESC::POINT;
+    LightDesc1.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc1.vDiffuse = _float4(0.98f, 0.96f, 0.88f, 1.f);
+    LightDesc1.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
+    LightDesc1.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc1.fRange = 5.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Lantern"), ENUM_CLASS(LEVEL::HEINMACH), LightDesc1, true)))
+        return E_FAIL;
 
 	return S_OK;
 }
@@ -961,6 +972,17 @@ HRESULT CLevel_HeinMach::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurren
 	}
 
 	CloseHandle(hFile);
+
+
+    LIGHT_DESC LightDesc1 = {};
+    LightDesc1.eType = LIGHT_DESC::POINT;
+    LightDesc1.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc1.vDiffuse = _float4(0.98f, 0.96f, 0.88f, 1.f);
+    LightDesc1.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
+    LightDesc1.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc1.fRange = 2.45f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Lantern"), ENUM_CLASS(LEVEL::HEINMACH), LightDesc1, true)))
+        return E_FAIL;
 
 	return S_OK;
 }

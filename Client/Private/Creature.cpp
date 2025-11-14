@@ -15,7 +15,17 @@ CCreature::CCreature(const CCreature& Prototype)
 
 void CCreature::KnockBack(_vector vDir, _float fPower, _float fLoss)
 {
-    m_pCharVirCom->Set_VelocityPower(vDir,fPower,fLoss);
+   // m_pCharVirCom->Set_VelocityPower(vDir,fPower,fLoss);
+
+    if (m_strName == "Yetuga")
+        return;
+
+
+    m_isKnockBack = true;
+    m_fKnockBackDir = vDir;
+    m_fKnockBackPower = fPower;
+    m_fKnockBackLoss = fLoss;
+
 }
 
 HRESULT CCreature::Initialize_Prototype()
@@ -50,6 +60,8 @@ void CCreature::Update(_float fTimeDelta)
 {
     __super::Update(fTimeDelta);
 
+    Compute_KnockBack(fTimeDelta);
+
     if (m_pCharVirCom != nullptr)
     {
         m_pCharVirCom->Sync_Update(m_pTransformCom);
@@ -67,11 +79,32 @@ HRESULT CCreature::Render()
     return S_OK;
 }
 
+
 void CCreature::Creature_Release()
 {
     m_pCharVirCom->Fake_Release();
     m_isDead = true;
     m_isActive = false;
+}
+
+void CCreature::Compute_KnockBack(_float fTimeDelta)
+{
+    if (!m_isKnockBack)
+        return; 
+
+    m_fKnockBackPower -= m_fKnockBackLoss * fTimeDelta;
+
+    if(m_fKnockBackPower  <= 0.01f )
+    { 
+        m_fKnockBackPower = 0.f;
+        m_isKnockBack = false;
+        return; 
+    }
+
+    _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
+
+    m_pTransformCom->Set_State(STATE::POSITION, vPos + m_fKnockBackDir * m_fKnockBackPower * fTimeDelta);
+
 }
 
 void CCreature::Free()

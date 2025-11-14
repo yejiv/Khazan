@@ -39,7 +39,7 @@ public:
     virtual void                Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject = nullptr) {};
 	virtual void				Consume_Stamina(_float fAmout) {};
 	virtual void				Recovery_Stamina(_float fTimeDelta) {};
-	virtual void				KnockBack(_vector vDir, _float fPower, _float fLoss);
+    virtual void				KnockBack(_vector vDir, _float fPower, _float fLoss);
 
 public:
 	virtual HRESULT				Initialize_Prototype() override;
@@ -64,8 +64,17 @@ protected:
 
 	_vector						m_vGravity = XMVectorSet(0.f, g_fGravity, 0.f, 0.f);
 
+    _bool                       m_isKnockBack = { false };
+    _float                      m_fKnockBackPower = { };
+    _float                      m_fKnockBackLoss = { };
+    _vector                     m_fKnockBackDir = {};
+
+
 protected:
 	CCharacterVirtual*			m_pCharVirCom = { nullptr };
+    
+protected:
+    virtual void				Compute_KnockBack(_float fTimeDelta);
 
 
 public:
