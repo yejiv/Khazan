@@ -22,10 +22,12 @@ public:
     }WEAPON_DESC;
 
 public:
-    _float4* Get_BonePointEX(const _char* pBoneName);
+    _float4*                Get_BonePointEX(const _char* pBoneName);
     _matrix					Get_BoneMatrix(const _char* pBoneName);
     _float4x4               Get_CombinedMatrix() const { return m_CombinedWorldMatrix; }
     void					Set_OnAttackCollision(_bool isToggle) { m_isOnAttackCollision = isToggle; }
+    _float4                 Get_SwordTip() const { return m_vTipPos; }
+
 
 private:
     CImp_Sword(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
