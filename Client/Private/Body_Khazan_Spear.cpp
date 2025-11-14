@@ -116,7 +116,7 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
 
     //TEST
     if (m_pGameInstance->Key_Down(DIK_I))
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("BloodHit"), XMVectorSet(1.f, 1.f, 1.f, 1.f) );
+        //m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Fire"), 포지션 );
         //m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("BloodHit"), m_pParentTransform->Get_WorldMatrix().r[3] );
     if (m_isCollision)
     {
@@ -642,6 +642,9 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
     
     m_pModelCom->Register_Event("SpiralSpear_Spike1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {UpdateSpearWind(); FX_Trail(); });
 
+
+    m_pModelCom->Register_Event("SpaceTimeCutter_Trail0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+
 #pragma endregion
 
 
@@ -744,6 +747,7 @@ void CBody_Khazan_Spear::FX_Trail()
     _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
     m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
 }
+
 //
 //void CBody_Khazan_Spear::FX_FastAtk01_Trail()
 //{
@@ -1099,7 +1103,7 @@ void CBody_Khazan_Spear::Event_AttackTiming(_bool isAttackStart)
     {
         m_isSpearTipActive = false;
         m_isSpearFullExtension = true;
-        m_pBodyCom_SpearTip1->Collision_Active(false);
+       // m_pBodyCom_SpearTip1->Collision_Active(false);
     }
 
 }

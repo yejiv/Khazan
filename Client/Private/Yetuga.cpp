@@ -1343,9 +1343,9 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
         });
 
     //charge attack - 달리기 전에 왼발 구르기
-    pModel->Register_Event("ChargeTackle _StampFoot", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
-        }); 
+    //pModel->Register_Event("ChargeTackle _StampFoot", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+    //    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
+    //    }); 
 
 #pragma region FOOT
     pModel->Register_Event("ChargeTackle_StampFoot_Run0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -1410,7 +1410,14 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
     //        pModel->Register_Event("Armageddon_LeftHand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
     //            m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
     //            }); 
-    //        
+    //  
+
+    // pModel->Register_Event("IceBreath", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+    //     m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Breath"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-Head")));
+    //     });
+    // pModel->Register_Event("Focus", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+    //     m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Focus"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-Head")));
+    //     });
 
 
     return S_OK;
