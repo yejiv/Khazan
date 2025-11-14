@@ -542,7 +542,7 @@ void CModel::Set_Animation(_uint iIndex)
 
 
 
-    cout << m_iCurrentAnimIndex<<" : "+ Get_CurAnimName() << endl;
+    //cout << m_iCurrentAnimIndex<<" : "+ Get_CurAnimName() << endl;
 }
 
 void CModel::Set_AnimationSet(const string& strKey)

@@ -56,6 +56,9 @@ private:
 	void							Breath_Start();
 	void							Breath_Loop();
 
+    void                            Abort_Node(_bool isToggle);
+
+
 private:
     void                            Start_RadialBlur();
 
