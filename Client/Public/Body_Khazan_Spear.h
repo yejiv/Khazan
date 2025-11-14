@@ -123,8 +123,8 @@ private:
 
     OUTLINE_CONFIG      m_OutlineConfig = { _float3(1.f, 0.f, 1.f), 0.001f, 0.f, 0.f };
 
-    _bool               m_isSpearTipActive = { false };
-    _bool               m_isSpearPoleActive = { false };
+    _bool               m_isSpearTipActive = { true };
+    _bool               m_isSpearPoleActive = { true };
 
     /* 가드 */
     _float2             m_fJustGuardTime = { 0.f, 0.83f };
@@ -138,6 +138,9 @@ private:
     /* 기타 */
     _bool*              m_isEquipSpear = { nullptr };
     _bool*              m_isEquipLantern = { nullptr };
+
+    _bool               m_isCollision;
+    _float4             m_fCollisionPos;
 
 private:
     void				Update_Collider(_float fTimeDelta);                     
@@ -153,10 +156,8 @@ private:
 
 private:
     void	FX_Trail();
-    void	FX_FastAtk01_Trail();
-    void	FX_FastAtk02_Trail();
-    void	FX_FastAtk03_Trail();
-    void	FX_FastAtk_SpawnWind();
+    void	UpdateSpearWind();
+    void	SpawnSpearWind();
     void	FX_StrongAtk_Charge_Blust1(_fvector pos);
     void	FX_StrongAtk_Charge_Blust2(_fvector pos);
     void	FX_StrongAtk_Charge_Blust3(_fvector pos);
@@ -166,7 +167,7 @@ private:
     void	FX_StrongAtk_Charge_BlustSmall(_fvector pos);
     void	Spear_Spike();
 
-
+    //void	UpdateTrail();
 
 private:
     inline void		Add_State(_uint i) { *m_pParentState |= i; }

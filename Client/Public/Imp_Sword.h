@@ -17,15 +17,17 @@ public:
     {
         CTransform* pOwnerTransform = { nullptr };
         class CImp_Melee* pOwner = { nullptr };
-        const _float4x4* pSocketMatrix = { nullptr };
+        _float4x4* pSocketMatrix = { nullptr };
 
     }WEAPON_DESC;
 
 public:
-    _float4* Get_BonePointEX(const _char* pBoneName);
+    _float4*                Get_BonePointEX(const _char* pBoneName);
     _matrix					Get_BoneMatrix(const _char* pBoneName);
     _float4x4               Get_CombinedMatrix() const { return m_CombinedWorldMatrix; }
     void					Set_OnAttackCollision(_bool isToggle) { m_isOnAttackCollision = isToggle; }
+    _float4                 Get_SwordTip() const { return m_vTipPos; }
+
 
 private:
     CImp_Sword(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -48,28 +50,29 @@ public:
 
 private:
     HRESULT					Ready_Components();
+    HRESULT                 Ready_Collision();
     HRESULT					Bind_ShaderResources();
 
 private:
-    class CImp_Melee* m_pOwner = { nullptr };
+    class CImp_Melee*       m_pOwner = { nullptr };
 
 private:
-    CShader* m_pShaderCom = { nullptr };
-    CModel* m_pModelCom = { nullptr };
-    CTransform* m_pOwnerTransform = { nullptr };
+    CShader*                m_pShaderCom = { nullptr };
+    CModel*                 m_pModelCom = { nullptr };
+    CTransform*             m_pOwnerTransform = { nullptr };
 
     _bool					m_isOnAttackCollision = { false };
+    CBody*                  m_pBodyComp = { nullptr };
+    _float4x4*              m_pSocketMatrix = { nullptr };
 
-    const _float4x4* m_pSocketMatrix = { nullptr };
+    _float4                 m_vTipPos = {};
 
 private:
     _float4					m_vLockOnPoint = {};
 
-
-
 public:
-    static CImp_Sword* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    virtual CGameObject* Clone(void* pArg) override;
+    static CImp_Sword*      Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+    virtual CGameObject*    Clone(void* pArg) override;
     virtual void			Free() override;
 };
 

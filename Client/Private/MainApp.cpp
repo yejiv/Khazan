@@ -56,7 +56,6 @@ HRESULT CMainApp::Initialize()
 	CHECK_FAILED(Ready_Font(), E_FAIL);
 	CHECK_FAILED(Ready_DebugTool(), E_FAIL);
 
-    ShowCursor(false);
 	return S_OK;
 }
 

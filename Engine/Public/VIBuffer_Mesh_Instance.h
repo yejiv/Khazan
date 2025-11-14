@@ -43,7 +43,8 @@ public:
 	void						Remove_Speed(SPEED_VALUE type);
 	void						Remove_Speed();
 	void						Setting_Pivot(_float3 pivot);
-	void						Setting_Loop(_bool isLoop) { m_sData.bIsLoop = isLoop; };
+	void						Setting_Loop(_bool isLoop) { m_bLoop = isLoop;  };
+    bool                        isLoop() { return m_bLoop; }
 
 	/*Debug*/
 	virtual HRESULT				Bind_Resources() override;
@@ -75,7 +76,7 @@ private:
 private:
 	_float3*					m_pVertexPositions = { nullptr };
 	POINT_MESH_DESC				m_sData;
-	//_bool						m_IsLoop = {};
+    _bool                       m_bLoop;
 
 private :
 	_float3						m_vPivot = {};
