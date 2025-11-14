@@ -1963,41 +1963,20 @@ HRESULT CLevel_Map::Ready_Light_Window()
 					ImGui::Text("Axis Y : "); SAMELINE;
 					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRdiry", &m_FixLightDesc.vDirection.y);
 					ImGui::Text("Axis Z : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRdirz", &m_FixLightDesc.vDirection.z);
+                    ITEMWIDTH(160.f); ImGui::InputFloat("##DIRdirz", &m_FixLightDesc.vDirection.z);
 					SEPARATOR;
 
 					ImGui::Text("DIFFUSE");
-					ImGui::Text("R : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRdifx", &m_FixLightDesc.vDiffuse.x, 0.01f, 0.05f);
-					ImGui::Text("G : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRdify", &m_FixLightDesc.vDiffuse.y, 0.01f, 0.05f);
-					ImGui::Text("B : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRdifz", &m_FixLightDesc.vDiffuse.z, 0.01f, 0.05f);
-					ImGui::Text("A : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRdifw", &m_FixLightDesc.vDiffuse.w, 0.01f, 0.05f);
+                    ImGui::ColorPicker4("##direct_dif_light", reinterpret_cast<_float*>(&m_FixLightDesc.vDiffuse.x));
 					SEPARATOR;
 
 					ImGui::Text("AMBIENT");
-					ImGui::Text("R : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRambx", &m_FixLightDesc.vAmbient.x, 0.01f, 0.05f);
-					ImGui::Text("G : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRamby", &m_FixLightDesc.vAmbient.y, 0.01f, 0.05f);
-					ImGui::Text("B : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRambz", &m_FixLightDesc.vAmbient.z, 0.01f, 0.05f);
-					ImGui::Text("A : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRambw", &m_FixLightDesc.vAmbient.w, 0.01f, 0.05f);
-					SEPARATOR;
+                    ImGui::ColorPicker4("##direct_amb_light", reinterpret_cast<_float*>(&m_FixLightDesc.vAmbient.x));
+                    SEPARATOR;
 
 					ImGui::Text("SPECULAR");
-					ImGui::Text("R : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRspecx", &m_FixLightDesc.vSpecular.x, 0.01f, 0.05f);
-					ImGui::Text("G : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRspecy", &m_FixLightDesc.vSpecular.y, 0.01f, 0.05f);
-					ImGui::Text("B : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRspecz", &m_FixLightDesc.vSpecular.z, 0.01f, 0.05f);
-					ImGui::Text("A : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##DIRspecw", &m_FixLightDesc.vSpecular.w, 0.01f, 0.05f);
-					SEPARATOR;
+                    ImGui::ColorPicker4("##direct_spec_light", reinterpret_cast<_float*>(&m_FixLightDesc.vSpecular.x));
+                    SEPARATOR;
 				}
 				else if (LIGHT_DESC::POINT == m_FixLightDesc.eType)
 				{
@@ -2026,38 +2005,17 @@ HRESULT CLevel_Map::Ready_Light_Window()
 					ImGui::Text("RANGE"); SAMELINE; ITEMWIDTH(160.f); ImGui::InputFloat("##POIrange", &m_FixLightDesc.fRange, 0.1f, 0.5f);
 					SEPARATOR;
 
-					ImGui::Text("DIFFUSE");
-					ImGui::Text("R : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##POIdifx", &m_FixLightDesc.vDiffuse.x, 0.01f, 0.05f);
-					ImGui::Text("G : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##POIdify", &m_FixLightDesc.vDiffuse.y, 0.01f, 0.05f);
-					ImGui::Text("B : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##POIdifz", &m_FixLightDesc.vDiffuse.z, 0.01f, 0.05f);
-					ImGui::Text("A : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##POIdifw", &m_FixLightDesc.vDiffuse.w, 0.01f, 0.05f);
-					SEPARATOR;
+                    ImGui::Text("DIFFUSE");
+                    ImGui::ColorPicker4("##point_dif_light", reinterpret_cast<_float*>(&m_FixLightDesc.vDiffuse.x));
+                    SEPARATOR;
 
-					ImGui::Text("AMBIENT");
-					ImGui::Text("R : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##POIambx", &m_FixLightDesc.vAmbient.x, 0.01f, 0.05f);
-					ImGui::Text("G : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##POIamby", &m_FixLightDesc.vAmbient.y, 0.01f, 0.05f);
-					ImGui::Text("B : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##POIambz", &m_FixLightDesc.vAmbient.z, 0.01f, 0.05f);
-					ImGui::Text("A : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##POIambw", &m_FixLightDesc.vAmbient.w, 0.01f, 0.05f);
-					SEPARATOR;
+                    ImGui::Text("AMBIENT");
+                    ImGui::ColorPicker4("##point_amb_light", reinterpret_cast<_float*>(&m_FixLightDesc.vAmbient.x));
+                    SEPARATOR;
 
-					ImGui::Text("SPECULAR");
-					ImGui::Text("R : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##POIspecx", &m_FixLightDesc.vSpecular.x, 0.01f, 0.05f);
-					ImGui::Text("G : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##POIspecy", &m_FixLightDesc.vSpecular.y, 0.01f, 0.05f);
-					ImGui::Text("B : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##POIspecz", &m_FixLightDesc.vSpecular.z, 0.01f, 0.05f);
-					ImGui::Text("A : "); SAMELINE;
-					ITEMWIDTH(160.f); ImGui::InputFloat("##POIspecw", &m_FixLightDesc.vSpecular.w, 0.01f, 0.05f);
-					SEPARATOR;
+                    ImGui::Text("SPECULAR");
+                    ImGui::ColorPicker4("##point_spec_light", reinterpret_cast<_float*>(&m_FixLightDesc.vSpecular.x));
+                    SEPARATOR;
 				}
 
 				m_pGameInstance->Set_LightDesc(AnsiToWString(m_LightTags[m_iLightTagIndex]), ENUM_CLASS(LEVEL::MAP), m_FixLightDesc);
@@ -2172,6 +2130,14 @@ HRESULT CLevel_Map::Ready_Light_Window()
 							else
 							{
 								m_pGameInstance->Add_Light(AnsiToWString(m_strLightTag), ENUM_CLASS(LEVEL::MAP), m_LightDesc);
+
+                                CMap_Light::MAP_LIGHT_DESC MapLightDesc = {};
+
+                                MapLightDesc.pLightDesc = m_pGameInstance->Get_LightDesc(AnsiToWString(m_strLightTag), ENUM_CLASS(LEVEL::MAP));
+
+                                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_PointLight"), ENUM_CLASS(LEVEL::MAP),
+                                    TEXT("Prototype_GameObject_Prop_Light"), TIME_CHANNEL::WORLD, &MapLightDesc), false);
+
 								m_LightTags.push_back(m_strLightTag);
 
 								m_iLightTagIndex = m_LightTags.size() - 1;
@@ -4733,6 +4699,13 @@ _bool CLevel_Map::Lights_Load_Binary()
 
 		m_pGameInstance->Add_Light(szLightTag, ENUM_CLASS(LEVEL::MAP), LightDesc, true);
 
+        CMap_Light::MAP_LIGHT_DESC MapLightDesc = {};
+
+        MapLightDesc.pLightDesc = m_pGameInstance->Get_LightDesc(szLightTag, ENUM_CLASS(LEVEL::MAP));
+
+        CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_PointLight"), ENUM_CLASS(LEVEL::MAP),
+            TEXT("Prototype_GameObject_Prop_Light"), TIME_CHANNEL::WORLD, &MapLightDesc), false);
+
 		_wstring strLightTag = szLightTag;
 		m_LightTags.push_back(WStringToAnsi(strLightTag));
 
@@ -4990,7 +4963,5 @@ void CLevel_Map::Free()
     m_ModelPathCache.clear();
     m_ModelPathCache.rehash(0);
 
-    for (auto& pDecal : m_DecalList)
-        Safe_Release(pDecal);
     m_DecalList.clear();
 }
