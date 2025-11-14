@@ -16,7 +16,7 @@ void CAS_LockOn_ImpRange::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
     CTransform* pTargetTransform = static_cast<CTransform*>(pTarget->Get_Component(TEXT("Com_Transform")));
     CModel* pModel = static_cast<CModel*>(pImp->Get_Body()->Get_Component(TEXT("Com_Model")));
-    // ¿©±â¼­ ¹æÇâ¿¡ µû¸¥ ¾Ö´Ï¸ÞÀÌ¼Ç ¼¼ÆÃ
+    // ì—¬ê¸°ì„œ ë°©í–¥ì— ë”°ë¥¸ ì• ë‹ˆë©”ì´ì…˜ ì„¸íŒ…
     
     m_isRetreat = pBB->Get_Value<_bool>(pImp->Get_Name(), "isRetreat");
     m_isCircleRight = pBB->Get_Value<_bool>(pImp->Get_Name(), "isCircleRight");

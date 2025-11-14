@@ -37,7 +37,10 @@ private:
 
 private:
     class CBody_Imp_Melee*          m_pBody = { nullptr };
-    class CImp_Sword*               m_pWeapon = { nullptr };    
+    class CImp_Sword*               m_pWeapon = { nullptr };
+    class CMon_HP*                  m_pUI_HP = { nullptr };
+
+    _bool                           m_isDetected = { false };
 
 public:
     static CImp_Melee*              Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

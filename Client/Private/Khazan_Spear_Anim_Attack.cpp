@@ -214,13 +214,13 @@ void CKhazan_Spear_Anim_Attack::Continue(_float fTimeDelta)
             m_isStrongCombo = false;
         }
         /* 콤보 중간에 입력이 끊긴 경우 */
-        else if (m_pModel->IsFinished())  // 애니메이션 완료 체크
-        {
-            m_isAttacking = false;
-            m_isCanNextCombo = false;
-            m_iCurrentCombo = 0;  // 리셋
-            m_isStrongCombo = false;
-        }
+        //else if (m_pModel->IsFinished())  // 애니메이션 완료 체크
+        //{
+        //    m_isAttacking = false;
+        //    m_isCanNextCombo = false;
+        //    m_iCurrentCombo = 0;  // 리셋
+        //    m_isStrongCombo = false;
+        //}
         /* 다음 공격 가능 한 구간까지 지나감 */
         else
         {
@@ -233,22 +233,6 @@ void CKhazan_Spear_Anim_Attack::Continue(_float fTimeDelta)
         return;
     }
 
-    //if (m_isStrongCharge)
-    //{
-
-    //    if (m_iSelectedAnimationIndex == m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk_Charge") && m_pModel->IsFinished())
-    //    {
-    //        m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk_ChargeAtk");
-    //        m_pModel->Set_Animation(m_iSelectedAnimationIndex);
-    //    }
-    //    // Charge Attack 애니메이션 종료
-    //    else if (m_iSelectedAnimationIndex == m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk_ChargeAtk")&& m_pModel->Check_MinAnimationTime())
-    //    {
-    //        m_isAttacking = false;
-    //        m_isStrongCharge = false;
-    //    }
-    //    return;
-    //}
     if (m_isStrongCharge)
     {
         _uint curAnimIndex = m_pModel->Get_CurAnimIndex();
@@ -263,7 +247,7 @@ void CKhazan_Spear_Anim_Attack::Continue(_float fTimeDelta)
             cout << "Charge -> ChargeAtk transition" << endl;
         }
         // ChargeAtk 종료
-        else if (curAnimIndex == chargeAtkAnimIndex && m_pModel->IsFinished())
+        else if (curAnimIndex == chargeAtkAnimIndex && m_pModel->Check_MinAnimationTime())
         {
             m_isAttacking = false;
             m_isStrongCharge = false;

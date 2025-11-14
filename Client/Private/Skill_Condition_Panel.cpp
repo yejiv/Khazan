@@ -78,12 +78,12 @@ HRESULT CSkill_Condition_Panel::Load_UI(nlohmann::json& pInData, _uint iPrototyp
         else if (strName == "Skill_Condition_Skill_Get")
         {
             m_pGetText = static_cast<CUI_TextBox*>(Child);
-            Safe_AddRef(m_pSKilName);
+            Safe_AddRef(m_pGetText);
         }
         else if (strName == "Skill_Condition_Skill_Get_Icon")
         {
             m_pIcon = static_cast<CUI_Atlas_Icon*>(Child);
-            Safe_AddRef(m_pSKilName);
+            Safe_AddRef(m_pIcon);
             m_pIcon->Set_ShaderPass(2);
         }
     }

@@ -43,7 +43,6 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    //-4 0 27
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(513.f, -11.f, 225.f,1.f));
 
     if (FAILED(Ready_PartObjects()))
@@ -510,6 +509,15 @@ void CYetuga::Breath_Loop()
 
 }
 
+void CYetuga::Abort_Node(_bool isToggle)
+{
+    _float fDist = m_pController->Get_BlackBoard()->Get_Value<_float>(m_strName, "TargetDist");
+    _float fAbortRange = m_pController->Get_BlackBoard()->Get_Value<_float>(m_strName, "JumpAttackRange");
+
+    if (fDist >= fAbortRange)
+        m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isAbort", isToggle);
+}
+
 void CYetuga::Start_DefaultRadialBlur()
 {
     RADIAL_BLUR_DESC Desc{};
@@ -681,6 +689,7 @@ HRESULT CYetuga::Ready_AnimEvent()
         m_fTurnSpeed = 40.f;
         m_pBody->Set_OnAttackCollision(true);
         m_isLookAt = true;
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 0.5f);
         });
     pModel->Register_Event("2Hit_One", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { 
         m_pBody->Set_OnAttackCollision(false);
@@ -725,6 +734,7 @@ HRESULT CYetuga::Ready_AnimEvent()
     pModel->Register_Event("Smash_Look", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_fTurnSpeed = 40.f;
         m_isLookAt = false;
+      
         });
 
     pModel->Register_Event("Smash_After", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -736,6 +746,7 @@ HRESULT CYetuga::Ready_AnimEvent()
     pModel->Register_Event("Smash_Attack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_fTurnSpeed = 40.f;
         m_pBody->Set_OnAttackCollision(true);
+        m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 0.2f, 0.4f, 1.5f);
         m_isLookAt = true;
         });
      
@@ -859,14 +870,14 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("Dampsey_First", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
-        
+        Abort_Node(true);
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
 
         });
     pModel->Register_Event("Dampsey_First", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
 
-       
+        Abort_Node(false);
         m_isLookAt = false;
         m_pBody->Set_OnAttackCollision(false);
 
@@ -883,13 +894,15 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("Dampsey_Second", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
-        
+        Abort_Node(true);
+
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
 
         });
     pModel->Register_Event("Dampsey_Second", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         
+        Abort_Node(false);
 
         m_isLookAt = false;
         m_pBody->Set_OnAttackCollision(false);
@@ -908,6 +921,7 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("Dampsey_Third", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
        
+        Abort_Node(true);
 
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
@@ -915,6 +929,7 @@ HRESULT CYetuga::Ready_AnimEvent()
         });
     pModel->Register_Event("Dampsey_Third", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
        
+        Abort_Node(false);
 
         m_isLookAt = false;
         m_pBody->Set_OnAttackCollision(false);
@@ -932,11 +947,15 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("Dampsey_Forth", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
+        Abort_Node(true);
+
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
 
         });
     pModel->Register_Event("Dampsey_Forth", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+
+        Abort_Node(false);
 
         m_isLookAt = false;
         m_pBody->Set_OnAttackCollision(false);
@@ -954,11 +973,15 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("Dampsey_Final", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
+        Abort_Node(true);
+
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
 
         });
     pModel->Register_Event("Dampsey_Final", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+
+        Abort_Node(false);
 
         m_isLookAt = false;
         m_pBody->Set_OnAttackCollision(false);
@@ -1194,7 +1217,7 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("AMG_SmashEvent", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { 
         Smash(); 
-        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 1.f);
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(3.5f, 1.5f);
         });
 
 #pragma endregion
@@ -1240,7 +1263,7 @@ HRESULT CYetuga::Ready_AnimEvent()
         });
     pModel->Register_Event("GrapCamera", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         CClientInstance::GetInstance()->Yetuga_Holding_End();
-        CClientInstance::GetInstance()->ActiveCamera_Shaking(0.7f, 0.5f);
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.8f, 0.8f);
         });
 #pragma endregion
 
@@ -1281,18 +1304,18 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
     //counter attack - 내려찍기
     pModel->Register_Event("CounterAttack_LeftHandSnow", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
-        CClientInstance::GetInstance()->ActiveCamera_Shaking(0.2f, 0.3f);
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 0.6f);
         });
 
     pModel->Register_Event("CounterAttack_RightHandSnow", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
-        CClientInstance::GetInstance()->ActiveCamera_Shaking(0.2f, 0.3f);
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 0.6f);
         });
 
     pModel->Register_Event("CounterAttack_FinalAtackSnow", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
-        CClientInstance::GetInstance()->ActiveCamera_Shaking(0.5f, 0.5f);
         Start_DefaultRadialBlur();
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(2.5f, 0.8f);
         });
 
 
@@ -1300,8 +1323,8 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
     pModel->Register_Event("JumpAttack_Land", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         cout << "JumpAttack_Land :: Enter" << endl;
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_R")));
-        CClientInstance::GetInstance()->ActiveCamera_Shaking(0.3f, 0.3f);
         Start_DefaultRadialBlur();
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 0.6f);
         });
 
     pModel->Register_Event("JumpAttack_Land", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
@@ -1311,7 +1334,7 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
 
     pModel->Register_Event("JumpAttack_RightHand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_R")));
-        CClientInstance::GetInstance()->ActiveCamera_Shaking(0.2f, 0.3f);
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 0.8f);
         });
 
     //Turn_Attack -> 한번 긁는 거 
@@ -1320,9 +1343,9 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
         });
 
     //charge attack - 달리기 전에 왼발 구르기
-    pModel->Register_Event("ChargeTackle _StampFoot", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
-        }); 
+    //pModel->Register_Event("ChargeTackle _StampFoot", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+    //    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
+    //    }); 
 
 #pragma region FOOT
     pModel->Register_Event("ChargeTackle_StampFoot_Run0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -1387,7 +1410,14 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
     //        pModel->Register_Event("Armageddon_LeftHand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
     //            m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
     //            }); 
-    //        
+    //  
+
+    // pModel->Register_Event("IceBreath", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+    //     m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Breath"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-Head")));
+    //     });
+    // pModel->Register_Event("Focus", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+    //     m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Focus"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-Head")));
+    //     });
 
 
     return S_OK;

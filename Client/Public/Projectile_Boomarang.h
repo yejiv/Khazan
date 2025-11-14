@@ -1,5 +1,6 @@
 #pragma once
 #include "Projectile.h"
+#include "Effect_Prefab.h"
 
 NS_BEGIN(Engine)
 class CBody;
@@ -57,6 +58,7 @@ private:
     _float                              m_fPauseTime = { 2.f };
 
     CGameObject*                        m_pTarget = { nullptr };
+    class CEffect_Prefab*               m_fEffect = { nullptr };
 
 public:
     static CProjectile_Boomarang*       Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

@@ -35,6 +35,7 @@ void CVIBuffer_Point_Instance::Reset()
 	JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET)];
 	JobDesc.PassDesc = PassDesc;
 
+    m_bLoop = m_sData.bIsLoop;
 	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
 
 	m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
@@ -53,11 +54,12 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDes
 
 	m_sData.IsCircle = pPointDesc->IsCircle;
 	m_sData.fOffset = pPointDesc->fOffset;
-	m_sData.bIsLoop = pPointDesc->bIsLoop;
 	m_sData.vRange = pPointDesc->vRange;
 	m_sData.fTurbulenceSpeed = pPointDesc->fTurbulenceSpeed;
 	m_sData.fTurbulenceSampleSize = pPointDesc->fTurbulenceSampleSize;
-	memcpy(m_sData.pNoiseFilePath, pPointDesc->pNoiseFilePath, sizeof(pPointDesc->pNoiseFilePath));
+    m_sData.bIsLoop = pPointDesc->bIsLoop;
+    m_bLoop = m_sData.bIsLoop;
+    memcpy(m_sData.pNoiseFilePath, pPointDesc->pNoiseFilePath, sizeof(pPointDesc->pNoiseFilePath));
 
 	D3D11_BUFFER_DESC		VBDesc{};
 	VBDesc.ByteWidth = m_iNumVertices * m_iVertexStride;
@@ -203,7 +205,7 @@ _bool CVIBuffer_Point_Instance::Update(_float fTimeDelta)
 		pPointInstanceCB->vPivot = m_vPivot;
 		pPointInstanceCB->fTimeDelta = fTimeDelta;
 		pPointInstanceCB->iNumInstances = m_iNumInstance;
-		pPointInstanceCB->bIsLoop = m_sData.bIsLoop;
+		pPointInstanceCB->bIsLoop = m_bLoop;
 		pPointInstanceCB->vSpawnRange = m_sData.vRange;
 		m_pContext->Unmap(m_pCB, 0);
 	}
@@ -228,7 +230,7 @@ _bool CVIBuffer_Point_Instance::Update(_float fTimeDelta)
 	
 	m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
 
-	return  m_sData.bIsLoop ? false : IsFinish();	//다 끝나면 true 반환
+	return  m_bLoop ? false : IsFinish();	//다 끝나면 true 반환
 }
 
 void CVIBuffer_Point_Instance::UpdateGravity(_float fTimeDelta)
