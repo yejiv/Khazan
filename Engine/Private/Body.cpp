@@ -148,9 +148,9 @@ void CBody::Sync_Update(_matrix WorldMatirx)
 
     _vector vScale, vRotation, vTranslation;
 
-    vRotation = XMVector3Normalize(vRotation);
-
     XMMatrixDecompose(&vScale, &vRotation, &vTranslation, WorldMatirx);
+
+    /*vRotation = XMVector3Normalize(vRotation);*/
 
     if (m_pBody->GetMotionType() == EMotionType::Kinematic)
         Set_PosRot(vTranslation, vRotation);
