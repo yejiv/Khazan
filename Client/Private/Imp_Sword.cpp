@@ -2,6 +2,7 @@
 #include "Model.h"
 #include "GameInstance.h"
 
+
 _float4* CImp_Sword::Get_BonePointEX(const _char* pBoneName)
 {
     _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix(pBoneName);
@@ -11,7 +12,6 @@ _float4* CImp_Sword::Get_BonePointEX(const _char* pBoneName)
     _matrix MulMatrix = ConvertMatrix * WorldMatrix;
 
     _float4x4 ThrowMatrix{};
-
     XMStoreFloat4x4(&ThrowMatrix, MulMatrix);
 
     m_vLockOnPoint.x = ThrowMatrix.m[3][0];
@@ -25,7 +25,6 @@ _matrix CImp_Sword::Get_BoneMatrix(const _char* pBoneName)
 {
     _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix(pBoneName);
     _matrix BoneWorld = XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(&m_CombinedWorldMatrix);
-
     return BoneWorld;
 }
 
@@ -49,26 +48,19 @@ HRESULT CImp_Sword::Initialize_Clone(void* pArg)
     WEAPON_DESC* pDesc = static_cast<WEAPON_DESC*>(pArg);
 
     m_pOwnerTransform = pDesc->pOwnerTransform;
-    if (nullptr == m_pOwnerTransform)
-        return E_FAIL;
-
+    if (!m_pOwnerTransform) return E_FAIL;
     Safe_AddRef(m_pOwnerTransform);
 
     m_pOwner = pDesc->pOwner;
-    if (nullptr == m_pOwner)
-        return E_FAIL;
+    if (!m_pOwner) return E_FAIL;
 
     m_pSocketMatrix = pDesc->pSocketMatrix;
 
-    if (FAILED(__super::Initialize_Clone(pArg)))
-        return E_FAIL;
-
-
-    if (FAILED(Ready_Components()))
-        return E_FAIL;
+    if (FAILED(__super::Initialize_Clone(pArg))) return E_FAIL;
+    if (FAILED(Ready_Components())) return E_FAIL;
+    if (FAILED(Ready_Collision())) return E_FAIL;
 
     m_pTransformCom->Rotation(XMConvertToRadians(-90.f), 0.f, 0.f);
-
 
     return S_OK;
 }
@@ -79,12 +71,29 @@ void CImp_Sword::Priority_Update(_float fTimeDelta)
 
 void CImp_Sword::Update(_float fTimeDelta)
 {
+
     _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
 
-    for (_uint i = 0; i < 3; i++)
+    for (uint32_t i = 0; i < 3; i++)
         BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
 
-    XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
+    XMStoreFloat4x4(
+        &m_CombinedWorldMatrix,
+        m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix)
+    );
+
+
+    _matrix WeaponWorld = XMLoadFloat4x4(&m_CombinedWorldMatrix);
+
+    _vector vScale, vQuat, vPos;
+    XMMatrixDecompose(&vScale, &vQuat, &vPos, WeaponWorld);
+
+    m_pBodyComp->Sync_Update(WeaponWorld);
+    m_pBodyComp->Update(fTimeDelta, WeaponWorld, vQuat, vPos);
+
+   
+    XMStoreFloat4(&m_vTipPos,vPos);
+    
 }
 
 void CImp_Sword::Late_Update(_float fTimeDelta)
@@ -98,19 +107,14 @@ HRESULT CImp_Sword::Render()
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
-    _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
+    uint32_t iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-    for (size_t i = 0; i < iNumMeshes; i++)
+    for (uint32_t i = 0; i < iNumMeshes; i++)
     {
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
-
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
 
-        /*if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
-            return E_FAIL;*/
-
         m_pShaderCom->Begin(0);
-
         m_pModelCom->Render(i);
     }
 
@@ -132,15 +136,44 @@ void CImp_Sword::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 HRESULT CImp_Sword::Ready_Components()
 {
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
-        TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
+        TEXT("Com_Shader"), (CComponent**)&m_pShaderCom, nullptr)))
         return E_FAIL;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_ImpSword"),
-        TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
+        TEXT("Com_Model"), (CComponent**)&m_pModelCom, nullptr)))
         return E_FAIL;
 
     m_pModelCom->Set_OwnerTransform(&m_pOwnerTransform);
 
+    return S_OK;
+}
+
+HRESULT CImp_Sword::Ready_Collision()
+{
+    CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
+    BodyDesc.fRadius = 0.05f;
+    BodyDesc.eMotion = EMotionType::Kinematic;
+    BodyDesc.eQuality = EMotionQuality::Discrete;
+    BodyDesc.eShapeType = SHAPE::SPHERE;
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK);
+    BodyDesc.bIsTrigger = true;
+
+    _matrix Init = XMLoadFloat4x4(m_pSocketMatrix);
+    _vector vScale, vQuat, vPos;
+    XMMatrixDecompose(&vScale, &vQuat, &vPos, Init);
+
+    BodyDesc.vPos = _float3(vPos.m128_f32[0], vPos.m128_f32[1], vPos.m128_f32[2]);
+    BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
+
+    BodyDesc.vShapeOffset = _float3(0.f, 0.75f, 0.f);
+
+    m_tCollisionDesc.pGameObject = this;
+    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+
+    if (FAILED(CGameObject::Add_Component(
+        ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+        TEXT("Com_Body_RH"), (CComponent**)&m_pBodyComp, &BodyDesc)))
+        return E_FAIL;
 
     return S_OK;
 }
@@ -150,10 +183,12 @@ HRESULT CImp_Sword::Bind_ShaderResources()
     if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix)))
         return E_FAIL;
 
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix",
+        m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
         return E_FAIL;
 
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix",
+        m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
         return E_FAIL;
 
     return S_OK;

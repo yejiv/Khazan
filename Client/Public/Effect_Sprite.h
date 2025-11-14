@@ -40,6 +40,7 @@ public:
 	virtual void			Update(_float fTimeDelta) override;
 	virtual void			Late_Update(_float fTimeDelta) override;
 	virtual HRESULT			Render() override;
+    virtual void			SetLoopOff();
 
 public:
 	virtual void			Reset() override;
@@ -59,6 +60,8 @@ private :
 	_uint					m_iUVIdx;
 	SPRITE_DESC				m_sData;
 	
+    _bool                   m_bLoop;
+
 public:
 	static CEffect_Sprite*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, void* pArg);
 	virtual CEffect_Element*	Clone();

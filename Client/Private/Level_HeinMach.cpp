@@ -102,7 +102,6 @@ HRESULT CLevel_HeinMach::Initialize()
 		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
         CHECK_FAILED(Ready_Map_Decal(TEXT("Layer_Decal"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-		CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL); 
         if (FAILED(Ready_Layer_Decal()))
             return E_FAIL;
         CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Monster"), TEXT("HeinMach"), HEINMACH_1ST_BLADENEXUS, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
@@ -180,10 +179,10 @@ HRESULT CLevel_HeinMach::Initialize()
 
 void CLevel_HeinMach::Update(_float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_9))
-        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
-    if (m_pGameInstance->Key_Down(DIK_8))
-        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
+    //if (m_pGameInstance->Key_Down(DIK_9))
+    //    static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+    //if (m_pGameInstance->Key_Down(DIK_8))
+    //    static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
 
 	if (m_pGameInstance->Key_Down(DIK_Q))
 	{
@@ -240,6 +239,17 @@ HRESULT CLevel_HeinMach::Ready_Lights()
 
 	if (FAILED(m_pGameInstance->Add_Light(TEXT("Directional_Stage1"), ENUM_CLASS(LEVEL::HEINMACH), LightDesc)))
 		return E_FAIL;
+
+
+    LIGHT_DESC LightDesc1 = {};
+    LightDesc1.eType = LIGHT_DESC::POINT;
+    LightDesc1.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc1.vDiffuse = _float4(0.98f, 0.96f, 0.88f, 1.f);
+    LightDesc1.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
+    LightDesc1.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc1.fRange = 5.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Lantern"), ENUM_CLASS(LEVEL::HEINMACH), LightDesc1, true)))
+        return E_FAIL;
 
 	return S_OK;
 }
@@ -349,15 +359,16 @@ HRESULT CLevel_HeinMach::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust4"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust5"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust6"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Stamp"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("BlustSmall"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Fire"), 50);
-    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TreasureBox"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Spawn"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), 30);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_SnowUp"), 30);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), 30);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"), 10);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("BloodHit"), 10);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Open"), 3);
 
     return S_OK;
 }
@@ -959,8 +970,20 @@ HRESULT CLevel_HeinMach::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurren
 		// 조명 등록
 		m_pGameInstance->Add_Light(szLightTag, ENUM_CLASS(eCurrentLevel), LightDesc, true);
 	}
+    
 
 	CloseHandle(hFile);
+
+
+    LIGHT_DESC LightDesc1 = {};
+    LightDesc1.eType = LIGHT_DESC::POINT;
+    LightDesc1.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc1.vDiffuse = _float4(0.98f, 0.96f, 0.88f, 1.f);
+    LightDesc1.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
+    LightDesc1.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc1.fRange = 2.45f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Lantern"), ENUM_CLASS(LEVEL::HEINMACH), LightDesc1, false)))
+        return E_FAIL;
 
 	return S_OK;
 }
