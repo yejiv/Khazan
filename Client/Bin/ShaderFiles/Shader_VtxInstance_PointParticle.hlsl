@@ -220,14 +220,14 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
 
-    if (In.vDead == true)
-        discard;
+    //if (In.vDead == true)
+    //    discard;
     
-    float3 diff = In.vPosition.xyz - In.vPrevPosition.xyz;
-    float distSq = dot(diff, diff);
-    
-    if (distSq < 0.0f) 
-        discard;
+    //float3 diff = In.vPosition.xyz - In.vPrevPosition.xyz;
+    //float distSq = dot(diff, diff);
+    //
+    //if (distSq < 0.0f) 
+    //    discard;
     
     vector vMask = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
     
