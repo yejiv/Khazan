@@ -103,7 +103,7 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
         vUp = normalize(In[0].vPosition - In[0].vPrevPosition) * In[0].fSize * g_fSizeRatio * 0.5f;
         vLook = normalize(g_vCamPosition - In[0].vPosition);
         vRight = normalize(vector(cross(vUp.xyz, vLook.xyz), 0.f)) * In[0].fSize * 0.5f;
-        vUp += (In[0].vPosition - In[0].vPrevPosition) * 1.4f;
+        vUp += (In[0].vPosition - In[0].vPrevPosition) * 1.7f;
     }
     
     float Width = 1.0f / g_numCols;
@@ -239,13 +239,14 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     if (g_MaskScrollSpeed)
         vFinalColor.a = vFinalColor.a * Mask_Scrolling(In.vLifeTime, In.vTexcoord);
     
+    
     //float fDecreaseAlpha = In.vLifeTime.x / In.vLifeTime.y;
+    //fDecreaseAlpha = saturate(fDecreaseAlpha);
     //float fDecreaseAlpha = GetAlphaFadeInOut(In.vLifeTime.x / In.vLifeTime.y);
     
     float fDecreaseAlpha = 1.0f - abs((In.vLifeTime.x / In.vLifeTime.y) * 2.0f - 1.0f); 
-                               
+
     if (g_IsDisolve == false) 
-        //vFinalColor.a = min(vFinalColor.a, fDecreaseAlpha);
         vFinalColor.a *= fDecreaseAlpha;
     else
         vFinalColor = Dissolve(vFinalColor, fDecreaseAlpha, In.vTexcoord);
