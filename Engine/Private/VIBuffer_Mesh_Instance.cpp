@@ -34,7 +34,7 @@ void CVIBuffer_Mesh_Instance::Reset()
 	JobDesc.PassDesc = PassDesc;
     m_bLoop = m_sData.bIsLoop;
 
-	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
+	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc);
 
 	m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
 }

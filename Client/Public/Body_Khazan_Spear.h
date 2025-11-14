@@ -139,6 +139,9 @@ private:
     _bool*              m_isEquipSpear = { nullptr };
     _bool*              m_isEquipLantern = { nullptr };
 
+    _bool               m_isCollision;
+    _float4             m_fCollisionPos;
+
 private:
     void				Update_Collider(_float fTimeDelta);                     
     void                Check_Guarding(_float fTimeDelta);

@@ -53,7 +53,7 @@ HRESULT CBigChest::Initialize_Clone(void* pArg)
         });
 
     m_pModelCom->Register_Event("Open", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {  
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Fire"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Open"), m_pTransformCom->Get_State(STATE::POSITION));
         });
 
     return S_OK;
