@@ -62,7 +62,8 @@ void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject
     
     CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
 
-   if (pDamage != nullptr && m_vLockOnPosition != nullptr)
+
+    if (pDamage != nullptr && m_vLockOnPosition != nullptr)
     {
         _vector vDamagePos = XMLoadFloat4(m_vLockOnPosition);
 

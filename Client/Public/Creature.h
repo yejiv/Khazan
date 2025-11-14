@@ -53,6 +53,7 @@ public:
 public:
     virtual void                Creature_Release();
 
+
 protected:
 	_float						m_fCurrentHP = {};
 	_float						m_fMaxHP = {};

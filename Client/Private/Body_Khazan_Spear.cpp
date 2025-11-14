@@ -510,18 +510,39 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
 HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 {
 #pragma region Effect
-    m_pModelCom->Register_Event("FastAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_FastAtk01_Trail(); });
-    m_pModelCom->Register_Event("FastAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_FastAtk_SpawnWind(); });
-    m_pModelCom->Register_Event("FastAtk02_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_FastAtk02_Trail(); });
-    m_pModelCom->Register_Event("FastAtk02_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_FastAtk_SpawnWind(); });
-    m_pModelCom->Register_Event("FastAtk03_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_FastAtk03_Trail(); });
-    m_pModelCom->Register_Event("FastAtk03_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_FastAtk_SpawnWind(); });
+    m_pModelCom->Register_Event("FastAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {UpdateSpearWind(); FX_Trail(); });
+    m_pModelCom->Register_Event("FastAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SpawnSpearWind(); });
+    m_pModelCom->Register_Event("FastAtk02_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {UpdateSpearWind(); FX_Trail(); });
+    m_pModelCom->Register_Event("FastAtk02_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SpawnSpearWind(); });
+    m_pModelCom->Register_Event("FastAtk03_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {UpdateSpearWind(); FX_Trail(); });
+    m_pModelCom->Register_Event("FastAtk03_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SpawnSpearWind(); });
 
     m_pModelCom->Register_Event("StrongAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
     m_pModelCom->Register_Event("StrongAtk02_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
     m_pModelCom->Register_Event("StrongAtk03_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
     m_pModelCom->Register_Event("StrongAtk_Charge_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
     m_pModelCom->Register_Event("StrongAtk_Charge_Blust", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_StrongAtk_Charge_Blust1(m_pParentTransform->Get_WorldMatrix().r[3]); });
+    m_pModelCom->Register_Event("StrongAtk_Charge_Stamp", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+        //_matrix mBone = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+        //_matrix mOffset = XMMatrixTranslation(0.f, -8.f, 0.f);
+        //_matrix mResult = mOffset * mBone; 
+        //_matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW); 
+        //W = XMMatrixTranslation(0.f, 3.f, 0.f) * W;  
+        //m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Stamp"), W.r[3]); }
+
+        _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+        _matrix W_withOffset = XMMatrixTranslation(-1.f, 0.f, 1.f) * W;
+        _vector V_FinalPosition = W_withOffset.r[3];
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Stamp"), V_FinalPosition); }
+
+        //EffectID_SpearWind = m_pGameInstance->Spawn_Effect(
+        //    ENUM_CLASS(LEVEL::HEINMACH),
+        //    TEXT("Blust5"),
+        //    XMQuaternionIdentity(),  
+        //    V_FinalPosition  
+        //);
+    
+    );
 
     /*보름달 트레일*/
     m_pModelCom->Register_Event("Full_Moon_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_Trail(); });
@@ -537,69 +558,66 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 
 
     /*나선 찌르기*/
-    m_pModelCom->Register_Event("SpiralSpear_Spike0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        //_matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-        //
-        //_vector S, Q, T;
-        //
-        //if (!XMMatrixDecompose(&S, &Q, &T, W))
-        //{
-        //
-        //    XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
-        //
-        //
-        //    _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
-        //    _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
-        //    _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
-        //
-        //
-        //    _matrix RotationMatrix(
-        //        r0,
-        //        r1,
-        //        r2,
-        //        XMVectorSet(0.f, 0.f, 0.f, 1.f)
-        //    );
-        //
-        //    Q = XMQuaternionRotationMatrix(RotationMatrix);
-        //}
-        // EffectID_SpiralSpear = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpiralSpear_SpearFX"), W.r[3]);
+    m_pModelCom->Register_Event("SpiralSpear_Spike_Tmp", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+        _vector S, Q, T;
+        if (!XMMatrixDecompose(&S, &Q, &T, W))
+        {
+            XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
+            _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
+            _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
+            _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
+
+            _matrix RotationMatrix(
+                r0,
+                r1,
+                r2,
+                XMVectorSet(0.f, 0.f, 0.f, 1.f)
+            );
+            Q = XMQuaternionRotationMatrix(RotationMatrix);
+        }
+        EffectID_SpiralSpear = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpiralSpear_SpearFX"), W.r[3]);
+        FX_StrongAtk_Charge_Blust1(m_pParentTransform->Get_WorldMatrix().r[3]);
         });
 
-    m_pModelCom->Register_Event("SpiralSpear_Spike0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
-        //_matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-        //
-        //_vector S, Q, T;
-        //
-        //if (!XMMatrixDecompose(&S, &Q, &T, W))
-        //{
-        //
-        //    XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
-        //
-        //
-        //    _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
-        //    _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
-        //    _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
-        //
-        //
-        //    _matrix RotationMatrix(
-        //        r0,
-        //        r1,
-        //        r2,
-        //        XMVectorSet(0.f, 0.f, 0.f, 1.f)
-        //    );
-        //
-        //    Q = XMQuaternionRotationMatrix(RotationMatrix);
-        //}
-        //m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpiralSpear_SpearFX"), EffectID_SpiralSpear, Q, W.r[3]);
+    m_pModelCom->Register_Event("SpiralSpear_Spike_Tmp", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+        _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
 
+        _vector S, Q, T;
+
+        if (!XMMatrixDecompose(&S, &Q, &T, W))
+        {
+
+            XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
+
+
+            _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
+            _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
+            _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
+
+
+            _matrix RotationMatrix(
+                r0,
+                r1,
+                r2,
+                XMVectorSet(0.f, 0.f, 0.f, 1.f)
+            );
+
+            Q = XMQuaternionRotationMatrix(RotationMatrix);
+        }
+        m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpiralSpear_SpearFX"), EffectID_SpiralSpear, Q, W.r[3]);
+
+        });
+
+    m_pModelCom->Register_Event("SpiralSpear_Spike_Tmp_Stop", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Stop_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpiralSpear_SpearFX"), EffectID_SpiralSpear); 
+        });
+
+    m_pModelCom->Register_Event("SpiralSpear_Spike1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        SpawnSpearWind();
         });
     
-    //m_pModelCom->Register_Event("SpiralSpear_Spike0", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-    //    m_pGameInstance->Stop_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpiralSpear_SpearFX"), EffectID_SpiralSpear); 
-    //    });
-    //m_pModelCom->Register_Event("SpiralSpear_Spike1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-    //    });
-
+    m_pModelCom->Register_Event("SpiralSpear_Spike1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {UpdateSpearWind(); FX_Trail(); });
 
 #pragma endregion
 
@@ -703,153 +721,152 @@ void CBody_Khazan_Spear::FX_Trail()
     _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
     m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
 }
-
-void CBody_Khazan_Spear::FX_FastAtk01_Trail()
-{
-    _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-    _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
-    m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
-
-    //테스트용............
-    _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-
-    _vector S, Q, T;
-
-    if (!XMMatrixDecompose(&S, &Q, &T, W))
-    {
-
-        XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
-
-
-        _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
-        _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
-        _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
-
-
-        _matrix RotationMatrix(
-            r0,
-            r1,
-            r2,
-            XMVectorSet(0.f, 0.f, 0.f, 1.f)
-        );
-
-        Q = XMQuaternionRotationMatrix(RotationMatrix);
-    }
-    m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), EffectID_SpearWind, Q, W.r[3]);
-}
-
-void CBody_Khazan_Spear::FX_FastAtk02_Trail()
-{
-    _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-    _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
-    m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
-
-    //테스트용............
-    _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-
-    _vector S, Q, T;
-
-    if (!XMMatrixDecompose(&S, &Q, &T, W))
-    {
-
-        XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
-
-
-        _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
-        _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
-        _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
-
-
-        _matrix RotationMatrix(
-            r0,
-            r1,
-            r2,
-            XMVectorSet(0.f, 0.f, 0.f, 1.f)
-        );
-
-        Q = XMQuaternionRotationMatrix(RotationMatrix);
-    }
-    m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), EffectID_SpearWind, Q, W.r[3]);
-}
-
-void CBody_Khazan_Spear::FX_FastAtk03_Trail()
-{
-    _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-    _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
-    m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
-
-    //테스트용............
-    _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-
-    _vector S, Q, T;
-
-    if (!XMMatrixDecompose(&S, &Q, &T, W))
-    {
-
-        XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
-
-
-        _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
-        _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
-        _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
-
-
-        _matrix RotationMatrix(
-            r0,
-            r1,
-            r2,
-            XMVectorSet(0.f, 0.f, 0.f, 1.f)
-        );
-
-        Q = XMQuaternionRotationMatrix(RotationMatrix);
-    }
-   m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), EffectID_SpearWind, Q, W.r[3]);
-}
-
-void CBody_Khazan_Spear::FX_FastAtk_SpawnWind()
-{
-    _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-
-    _vector S, Q, T;
-
-    if (!XMMatrixDecompose(&S, &Q, &T, W))
-    {
-
-        XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
-
-
-        _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
-        _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
-        _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
-
-
-        _matrix RotationMatrix(
-            r0,
-            r1,
-            r2,
-            XMVectorSet(0.f, 0.f, 0.f, 1.f)
-        );
-
-        Q = XMQuaternionRotationMatrix(RotationMatrix);
-    }
-    EffectID_SpearWind = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), Q, W.r[3]); 
-
-    // Distortion
-    DISTORTION_DESC Desc{};
-    _vector vCenterPos = m_pParentTransform->Get_WorldMatrix().r[3];
-    _float fPosY = XMVectorGetY(vCenterPos);
-    _float fOffset = 2.f;
-    vCenterPos = XMVectorSetY(vCenterPos, fPosY + fOffset);
-    XMStoreFloat3(&Desc.vCenter, vCenterPos);
-    Desc.fRange = 1.f;
-    Desc.fPower = 0.01f;
-    Desc.fDuration = 0.5f;
-    Desc.vFadeTime = _float2(0.3f, 0.1f);
-    Desc.fSpeed = 1.f;
-    Desc.iNoiseIndex = 4;
-    m_pGameInstance->Start_Distortion(Desc);
-}
-
+//
+//void CBody_Khazan_Spear::FX_FastAtk01_Trail()
+//{
+//    _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+//    _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
+//    m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
+//
+//    //테스트용............
+//    _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+//
+//    _vector S, Q, T;
+//
+//    if (!XMMatrixDecompose(&S, &Q, &T, W))
+//    {
+//
+//        XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
+//
+//
+//        _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
+//        _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
+//        _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
+//
+//
+//        _matrix RotationMatrix(
+//            r0,
+//            r1,
+//            r2,
+//            XMVectorSet(0.f, 0.f, 0.f, 1.f)
+//        );
+//
+//        Q = XMQuaternionRotationMatrix(RotationMatrix);
+//    }
+//    m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), EffectID_SpearWind, Q, W.r[3]);
+//}
+//
+//void CBody_Khazan_Spear::FX_FastAtk02_Trail()
+//{
+//    _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+//    _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
+//    m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
+//
+//    //테스트용............
+//    _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+//
+//    _vector S, Q, T;
+//
+//    if (!XMMatrixDecompose(&S, &Q, &T, W))
+//    {
+//
+//        XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
+//
+//
+//        _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
+//        _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
+//        _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
+//
+//
+//        _matrix RotationMatrix(
+//            r0,
+//            r1,
+//            r2,
+//            XMVectorSet(0.f, 0.f, 0.f, 1.f)
+//        );
+//
+//        Q = XMQuaternionRotationMatrix(RotationMatrix);
+//    }
+//    m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), EffectID_SpearWind, Q, W.r[3]);
+//}
+//
+//void CBody_Khazan_Spear::FX_FastAtk03_Trail()
+//{
+//    _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+//    _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
+//    m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
+//
+//    //테스트용............
+//    _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+//
+//    _vector S, Q, T;
+//
+//    if (!XMMatrixDecompose(&S, &Q, &T, W))
+//    {
+//
+//        XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
+//
+//
+//        _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
+//        _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
+//        _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
+//
+//
+//        _matrix RotationMatrix(
+//            r0,
+//            r1,
+//            r2,
+//            XMVectorSet(0.f, 0.f, 0.f, 1.f)
+//        );
+//
+//        Q = XMQuaternionRotationMatrix(RotationMatrix);
+//    }
+//   m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), EffectID_SpearWind, Q, W.r[3]);
+//}
+//
+//void CBody_Khazan_Spear::FX_FastAtk_SpawnWind()
+//{
+//    _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+//
+//    _vector S, Q, T;
+//
+//    if (!XMMatrixDecompose(&S, &Q, &T, W))
+//    {
+//
+//        XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
+//
+//
+//        _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
+//        _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
+//        _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
+//
+//
+//        _matrix RotationMatrix(
+//            r0,
+//            r1,
+//            r2,
+//            XMVectorSet(0.f, 0.f, 0.f, 1.f)
+//        );
+//
+//        Q = XMQuaternionRotationMatrix(RotationMatrix);
+//    }
+//    EffectID_SpearWind = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), Q, W.r[3]); 
+//
+//    // Distortion
+//    DISTORTION_DESC Desc{};
+//    _vector vCenterPos = m_pParentTransform->Get_WorldMatrix().r[3];
+//    _float fPosY = XMVectorGetY(vCenterPos);
+//    _float fOffset = 2.f;
+//    vCenterPos = XMVectorSetY(vCenterPos, fPosY + fOffset);
+//    XMStoreFloat3(&Desc.vCenter, vCenterPos);
+//    Desc.fRange = 1.f;
+//    Desc.fPower = 0.01f;
+//    Desc.fDuration = 0.5f;
+//    Desc.vFadeTime = _float2(0.3f, 0.1f);
+//    Desc.fSpeed = 1.f;
+//    Desc.iNoiseIndex = 4;
+//    m_pGameInstance->Start_Distortion(Desc);
+//}
 
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust1(_fvector pos)
 {
@@ -984,6 +1001,64 @@ void CBody_Khazan_Spear::Spear_Spike()
 
 
     EffectID_SpearWind = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust5"), Q, V_FinalPosition);
+}
+
+void CBody_Khazan_Spear::UpdateSpearWind()
+{
+    _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+
+    _vector S, Q, T;
+
+    if (!XMMatrixDecompose(&S, &Q, &T, W))
+    {
+
+        XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
+
+
+        _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
+        _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
+        _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
+
+
+        _matrix RotationMatrix(
+            r0,
+            r1,
+            r2,
+            XMVectorSet(0.f, 0.f, 0.f, 1.f)
+        );
+
+        Q = XMQuaternionRotationMatrix(RotationMatrix);
+    }
+    m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), EffectID_SpearWind, Q, W.r[3]);
+}
+
+void CBody_Khazan_Spear::SpawnSpearWind()
+{
+    _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+
+    _vector S, Q, T;
+
+    if (!XMMatrixDecompose(&S, &Q, &T, W))
+    {
+
+        XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
+
+
+        _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
+        _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
+        _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
+
+
+        _matrix RotationMatrix(
+            r0,
+            r1,
+            r2,
+            XMVectorSet(0.f, 0.f, 0.f, 1.f)
+        );
+
+        Q = XMQuaternionRotationMatrix(RotationMatrix);
+    }
+    EffectID_SpearWind = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), Q, W.r[3]);
 }
 
 void CBody_Khazan_Spear::Event_AttackTiming(_bool isAttackStart)

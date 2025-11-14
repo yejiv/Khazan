@@ -27,6 +27,8 @@ HRESULT CEffect_Sprite::Initialize_Clone()
     if (FAILED(Ready_Component()))
         return E_FAIL; 
 
+    m_bLoop = m_sData.IsLoop;
+
     return S_OK;
 }
 
@@ -51,7 +53,7 @@ void CEffect_Sprite::Update(_float fTimeDelta)
  
     if (m_iUVIdx == (m_sData.iCol * m_sData.iRow))
     {
-        if (m_sData.IsLoop == false)
+        if (m_bLoop == false)
             m_TimeTracks.pop_back(); 
         m_iUVIdx = 0;
         m_bRunning = false;
@@ -81,9 +83,15 @@ HRESULT CEffect_Sprite::Render()
     return S_OK;
 }
 
+void CEffect_Sprite::SetLoopOff()
+{
+    m_bLoop = false;
+}
+
 void CEffect_Sprite::Reset()
 {
     __super::Reset();
+    m_bLoop = m_sData.IsLoop;
 }
 
 void CEffect_Sprite::Active()
