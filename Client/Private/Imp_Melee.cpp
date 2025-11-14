@@ -100,11 +100,12 @@ HRESULT CImp_Melee::Ready_Components()
     tCharVirDesc.eShapeType = SHAPE::CAPSULE;
     tCharVirDesc.vPos = vPos;
     tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 2.1f, 0.f);
+    tCharVirDesc.vShapeOffset = _float3(0.f, 0.6f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
-    tCharVirDesc.fRadius = 1.f;
-    tCharVirDesc.fHeight = 2.f;
+    tCharVirDesc.fRadius = 0.3f;
+    tCharVirDesc.fHeight = 0.7f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
+    tCharVirDesc.fPenetrationRecoverySpeed = 0.1f;
 
     m_tCollisionDesc.pGameObject = this;
     //pCollDesc.pInfo = ?? // 작성하기

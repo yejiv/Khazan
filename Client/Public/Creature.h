@@ -51,6 +51,7 @@ public:
 	virtual HRESULT				Render_Shadow() { return S_OK; }
 
 
+
 protected:
 	_float						m_fCurrentHP = {};
 	_float						m_fMaxHP = {};
