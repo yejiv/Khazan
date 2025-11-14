@@ -747,7 +747,7 @@ void CBody_Khazan_Spear::FX_Trail()
     _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
     m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
 }
-<<<<<<< HEAD
+
 //
 //void CBody_Khazan_Spear::FX_FastAtk01_Trail()
 //{
