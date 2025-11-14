@@ -68,7 +68,6 @@ void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject
 
     }*/
 
-
     _float fValidTime = 3.f;
     
     m_pController->AI_ApplyDamage(pGameObject,fDamage,ENUM_CLASS(eHitreaction),fValidTime);

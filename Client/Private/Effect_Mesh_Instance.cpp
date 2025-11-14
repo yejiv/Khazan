@@ -59,7 +59,7 @@ void CEffect_Mesh_Instance::Update(_float fTimeDelta)
 
         if(it->fCurTime > it->fDurTime && it->EventType != 0)
         {
-            if (m_sData.bIsLoop == true && m_TimeTracks.size() == 1)
+            if (m_pVIBufferCom->isLoop() && m_TimeTracks.size() == 1)
             {
                 ++it;
                 continue;
@@ -105,6 +105,11 @@ HRESULT CEffect_Mesh_Instance::Render()
     m_pVIBufferCom->Render();
 
     return S_OK;
+}
+
+void CEffect_Mesh_Instance::SetLoopOff()
+{
+    m_pVIBufferCom->Setting_Loop(false); 
 }
 
 void CEffect_Mesh_Instance::Reset()

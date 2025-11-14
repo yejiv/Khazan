@@ -1,6 +1,6 @@
 #pragma once
 #include "Projectile.h"
-
+#include "Effect_Prefab.h"
 NS_BEGIN(Engine)
 class CBody;
 NS_END
@@ -44,6 +44,7 @@ private:
 private:
     CBody*                              m_pBody = { nullptr };
     _bool						        m_isCrashed = { false };
+    class CEffect_Prefab* m_fEffect = { nullptr };
 
 
 public:
