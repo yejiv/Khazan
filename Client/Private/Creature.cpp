@@ -67,6 +67,13 @@ HRESULT CCreature::Render()
     return S_OK;
 }
 
+void CCreature::Creature_Release()
+{
+    m_pCharVirCom->Fake_Release();
+    m_isDead = true;
+    m_isActive = false;
+}
+
 void CCreature::Free()
 {
     Safe_Release(m_pCharVirCom);
