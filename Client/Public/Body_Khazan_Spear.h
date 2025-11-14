@@ -139,6 +139,9 @@ private:
     _bool*              m_isEquipSpear = { nullptr };
     _bool*              m_isEquipLantern = { nullptr };
 
+    _bool               m_isCollision;
+    _float4             m_fCollisionPos;
+
 private:
     void				Update_Collider(_float fTimeDelta);                     
     void                Check_Guarding(_float fTimeDelta);
@@ -153,10 +156,8 @@ private:
 
 private:
     void	FX_Trail();
-    void	FX_FastAtk01_Trail();
-    void	FX_FastAtk02_Trail();
-    void	FX_FastAtk03_Trail();
-    void	FX_FastAtk_SpawnWind();
+    void	UpdateSpearWind();
+    void	SpawnSpearWind();
     void	FX_StrongAtk_Charge_Blust1(_fvector pos);
     void	FX_StrongAtk_Charge_Blust2(_fvector pos);
     void	FX_StrongAtk_Charge_Blust3(_fvector pos);
@@ -166,7 +167,7 @@ private:
     void	FX_StrongAtk_Charge_BlustSmall(_fvector pos);
     void	Spear_Spike();
 
-
+    //void	UpdateTrail();
 
 private:
     inline void		Add_State(_uint i) { *m_pParentState |= i; }

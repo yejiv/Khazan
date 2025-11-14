@@ -50,6 +50,9 @@ public:
 	virtual HRESULT				Render() override;
 	virtual HRESULT				Render_Shadow() { return S_OK; }
 
+public:
+    virtual void                Creature_Release();
+
 
 protected:
 	_float						m_fCurrentHP = {};

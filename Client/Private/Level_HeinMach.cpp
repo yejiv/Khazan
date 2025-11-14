@@ -34,20 +34,22 @@ HRESULT CLevel_HeinMach::Initialize()
 #pragma region 수정된 코드
 
     // 연동되지 않는 것들을 쓰레드풀로 돌리기
+    //m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+
+        //return S_OK;
+        //}));
+
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 
         CHECK_FAILED(Ready_Layer_UI(), E_FAIL);
 
         CHECK_FAILED(Ready_Layer_Decal(), E_FAIL);
 
-        return S_OK;
-        }));
-
-    m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-
         CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
 
         CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+
+        CHECK_FAILED(Ready_FireLights(TEXT("HeinMach_Point"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
         CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
@@ -100,7 +102,6 @@ HRESULT CLevel_HeinMach::Initialize()
 		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
         CHECK_FAILED(Ready_Map_Decal(TEXT("Layer_Decal"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 		CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-		CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL); 
         if (FAILED(Ready_Layer_Decal()))
             return E_FAIL;
         CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Monster"), TEXT("HeinMach"), HEINMACH_1ST_BLADENEXUS, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
@@ -358,15 +359,18 @@ HRESULT CLevel_HeinMach::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust4"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust5"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust6"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Stamp"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("BlustSmall"), 3);
-    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Fire"), 50);
-    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TreasureBox"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Fire"), 10);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Spawn"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), 30);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_SnowUp"), 30);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), 30);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"), 10);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("BloodHit"), 10);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Open"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Breath"), 100);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Focus"), 1); 
 
     return S_OK;
 }
@@ -967,8 +971,8 @@ HRESULT CLevel_HeinMach::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurren
 
 		// 조명 등록
 		m_pGameInstance->Add_Light(szLightTag, ENUM_CLASS(eCurrentLevel), LightDesc, true);
-
 	}
+    
 
 	CloseHandle(hFile);
 
@@ -980,10 +984,78 @@ HRESULT CLevel_HeinMach::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurren
     LightDesc1.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
     LightDesc1.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
     LightDesc1.fRange = 2.45f;
-    if (FAILED(m_pGameInstance->Add_Light(TEXT("Lantern"), ENUM_CLASS(LEVEL::HEINMACH), LightDesc1, true)))
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Lantern"), ENUM_CLASS(LEVEL::HEINMACH), LightDesc1, false)))
         return E_FAIL;
 
 	return S_OK;
+}
+
+HRESULT CLevel_HeinMach::Ready_FireLights(const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
+{
+    // Dat 기본 경로
+    _wstring strDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+
+    switch (eMap)
+    {
+    case KHAZAN_MAP::HEINMACH:
+        strDataFilePath += TEXT("HeinMach/");
+        break;
+    case KHAZAN_MAP::CREVICE:
+        strDataFilePath += TEXT("Crevice/");
+        break;
+    case KHAZAN_MAP::EMBARS:
+        strDataFilePath += TEXT("Embars/");
+        break;
+    case KHAZAN_MAP::VIPER:
+        strDataFilePath += TEXT("Viper/");
+        break;
+    default:
+        break;
+    }
+
+    strDataFilePath += pDataFileName;
+
+    strDataFilePath += TEXT("_lights.dat");
+
+    DWORD dwByte = {};
+
+    HANDLE hFile = CreateFile(strDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        return E_FAIL;
+    }
+    CHECK_EQUAL(INVALID_HANDLE_VALUE, hFile, E_FAIL);
+
+    // 1. 조명의 총 개수
+    _uint iLightCnt = {};
+    CHECK_FALSE(ReadFile(hFile, &iLightCnt, sizeof(_uint), &dwByte, nullptr), false);
+
+    // 조명 총 개수만큼 순회
+    for (_uint i = 0; i < iLightCnt; ++i)
+    {
+        LIGHT_DESC LightDesc = {};
+
+        // 2. 조명 태그 길이 불러오기
+        _uint iLightTagLen = {};
+        CHECK_FALSE(ReadFile(hFile, &iLightTagLen, sizeof(_uint), &dwByte, nullptr), false);
+
+        // 3. 조명 태그 이름 불러오기
+        _tchar szLightTag[MAX_PATH] = {};
+        CHECK_FALSE(ReadFile(hFile, &szLightTag, sizeof(_tchar) * iLightTagLen, &dwByte, nullptr), false);
+
+        // 4. 조명 구조체 불러오기
+        CHECK_FALSE(ReadFile(hFile, &LightDesc, sizeof(LIGHT_DESC), &dwByte, nullptr), false);
+
+        // 조명 등록
+        m_pGameInstance->Add_Light(szLightTag, ENUM_CLASS(eCurrentLevel), LightDesc, true);
+
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Fire"), XMLoadFloat4(&LightDesc.vPosition));
+    }
+
+    CloseHandle(hFile);
+
+    return S_OK;
 }
 
 HRESULT CLevel_HeinMach::Ready_Trigger(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)

@@ -99,6 +99,7 @@ protected:
 	_float							m_fDecelElapsed = {}; // 경과 시간
 	_bool							m_isDecelerating = {}; // 감속 중 플래그
 
+    _bool                           m_isDeadFlag = { false };
 
 //private:
 //	HRESULT Ready_Components();

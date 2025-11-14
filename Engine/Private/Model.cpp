@@ -884,6 +884,7 @@ void CModel::WarmupAnimations()
 
         //Set_Animation(i);
 
+
         for (int frame = 0; frame < 3; ++frame)
         {
             Play_Animation(0.066f); // 60fps 기준

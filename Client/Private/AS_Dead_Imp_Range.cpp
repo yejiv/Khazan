@@ -28,6 +28,8 @@ void CAS_Dead_Imp_Range::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
         CBlackBoard* pBB = pImp->Get_Controller()->Get_BlackBoard();
         pBB->Set_Value<_bool>(pImp->Get_Name(), "isDeadFinished", true);
         pImp->Get_Controller()->Set_ControllerActivate(false);
+        pImp->Creature_Release();
+        pImp->HPUI_Dead();
     }
 
 

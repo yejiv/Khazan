@@ -24,12 +24,16 @@ public:
     virtual void						Update(_float fTimeDelta) override;
     virtual void						Late_Update(_float fTimeDelta) override;
     virtual HRESULT			            Render() override;
+    virtual HRESULT				Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg) override;
 
 private:
 	CShader*				            m_pShaderCom = { nullptr };
 	CTexture*				            m_pTextureCom = { nullptr };
+    CTexture*                           m_pMaskTextureCom = { nullptr };
 	CVIBuffer_Rect*			            m_pVIBufferCom = { nullptr };
 
+    _bool                               m_isUp = { false };
+    _float                              m_fWave = { 0.5f };
 private:
 	HRESULT					            Ready_Component();
 

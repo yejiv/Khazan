@@ -216,6 +216,8 @@ void CCharacterVirtual::Update(_float fTimeDelta, _vector& outQuatRotation, _vec
 void CCharacterVirtual::Set_PosRot(_vector vPos, _vector vRot)
 {
 	m_pCharVir->SetPosition(LoadVec3(vPos));
+
+    //_vector vRotation = XMVector3Normalize(vRot);
 	m_pCharVir->SetRotation(LoadQuat(vRot));
 }
 
@@ -409,6 +411,14 @@ _bool CCharacterVirtual::Get_isGround()
 	return m_pCharVir->GetGroundState() == JPH::CharacterVirtual::EGroundState::OnGround;
 }
 
+void CCharacterVirtual::Fake_Release()
+{
+    if (m_pBodyInterface->IsAdded(m_BodyId))
+    {
+        m_pBodyInterface->RemoveBody(m_BodyId);
+    }
+}
+
 CCharacterVirtual* CCharacterVirtual::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	CCharacterVirtual* pInstance = new CCharacterVirtual(pDevice, pContext);
@@ -439,8 +449,12 @@ CComponent* CCharacterVirtual::Clone(void* pArg)
 void CCharacterVirtual::Free()
 {
 	__super::Free();
+    if (m_pBodyInterface->IsAdded(m_BodyId))
+    {
+        m_pBodyInterface->RemoveBody(m_BodyId);
+    }
 
-	//Safe_Delete(m_pCharVir);
+	Safe_Delete(m_pCharVir);
 	Safe_Delete(m_pBodyFilter);
 	Safe_Delete(m_pShapeFilter);
 }

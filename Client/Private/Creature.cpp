@@ -79,6 +79,14 @@ HRESULT CCreature::Render()
     return S_OK;
 }
 
+
+void CCreature::Creature_Release()
+{
+    m_pCharVirCom->Fake_Release();
+    m_isDead = true;
+    m_isActive = false;
+}
+
 void CCreature::Compute_KnockBack(_float fTimeDelta)
 {
     if (!m_isKnockBack)

@@ -6,6 +6,7 @@
 #include "Perception.h"
 
 
+
 CAI_Controller_Imp_Melee::CAI_Controller_Imp_Melee()
 {
 }
@@ -111,6 +112,7 @@ CONDITION CAI_Controller_Imp_Melee::GetCallbackCondition(CGameObject* pOwner, co
                     /* static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1001);
                      static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1002);
                      static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1003);*/
+
                     return true;
 
                 }
@@ -243,17 +245,21 @@ CONDITION CAI_Controller_Imp_Melee::GetCallbackCondition(CGameObject* pOwner, co
 
     if ("Move" == name)
     {
-        return [pImp](CBlackBoard* BB)->_bool
+        return [pImp](CBlackBoard* BB)
             {
                 cout << "MoveCondition" << endl;
 
                 _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
                 _float fChaseRange = BB->Get_Value<_float>(pImp->Get_Name(), "ChaseRange");
+                _float fMoveStopRange = BB->Get_Value<_float>(pImp->Get_Name(), "MoveStopRange");
+
 
                 if (fDist <= fChaseRange)
                     return true;
-                else
+                {
+                    BB->Set_Value<_bool>(pImp->Get_Name(), "isMove", false);
                     return false;
+                };
             };
     }
 #pragma endregion
