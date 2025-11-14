@@ -32,8 +32,8 @@ void CAS_Dead_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fT
     if (pModel->Play_Animation(fTimeDelta))
     {  
         CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
-        pYetuga->Set_IsDead(true);
-        //pBB->Set_Value<_bool>(pYetuga->Get_Name(), "isDeadFinished", true);
+        // pBB->Set_Value<_bool>(pYetuga->Get_Name(), "isDeadFinished", true);
+        pYetuga->Creature_Release();
     }
 
 }

@@ -14,6 +14,7 @@
 #include "Khazan_Spear_Anim_Guard.h"
 #include "Khazan_Spear_Anim_Interaction.h"
 #include "Khazan_Spaer_Anim_Damaged.h"
+#include "Lantern_Khazan_Spear.h"
 
 #include "Camera_Compre.h"
 #include "UI_HUD.h"
@@ -121,8 +122,10 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
     //m_fCurrentStamina = m_pData->fCulStamina;
     //m_fMaxStamina = m_pData->fMaxStamina;
 
-    m_pSpear->Set_Enble(true);
-    m_pSpear->Set_Equipped(true);
+    m_pSpear->Set_Enble(false);
+
+    m_strName = "Khazan";
+
     return S_OK;
 
 }
@@ -182,6 +185,17 @@ void CKhazan_Spear::Update(_float fTimeDelta)
     if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_9))
     {
         Clear_Injured();
+    }
+
+
+
+    if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_2))
+    {
+        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Com_Lantern_On"));
+    }
+    if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_3))
+    {
+        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Com_Lantern_Off"));
     }
 }
 
@@ -262,6 +276,7 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
 
         /* UI */
         m_pGameInstance->Emit_Event< EVENT_ANNOUNCE_RESULT>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_OVER), {});
+        return;
     }
 
     /* Damage UI font */
@@ -392,9 +407,9 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
     // 가드중이 아니면  대미지 상태가 끝났을 때만 상태 제거
     if (!IsGuarding && !IsDamaged && (m_iPrevMainState & CAT::M_DAMAGED))
     {
-  /*      Remove_State(CAT::M_DAMAGED);
-        m_eDir.iDirFlag = 0;
-        m_eWorldDir.iDirFlag = 0;*/
+        /*      Remove_State(CAT::M_DAMAGED);
+              m_eDir.iDirFlag = 0;
+              m_eWorldDir.iDirFlag = 0;*/
         Clear_Step0();
         Remove_State(CAT::M_DAMAGED);
     }
@@ -412,15 +427,17 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
         return;  // 대미지 중에는 다른 모든 처리 차단
     }
 
-    /* 락온상태 체크  */
-    Update_LockOn();
-
-    /* 방향 결정 */
-    Check_KeyInput_Direction(fTimeDelta);
-
     /* 키 입력 */
     if (m_pClientInstance->Get_PlayerInput())
     {
+
+        /* 락온상태 체크  */
+        Update_LockOn();
+
+        /* 방향 결정 */
+        Check_KeyInput_Direction(fTimeDelta);
+
+
         if (Has_Status(INJURED))
         {
             InjuredMove_Input(fTimeDelta);
@@ -975,8 +992,14 @@ void CKhazan_Spear::Move_Input(_float fTimeDelta)
             m_fSprintTime = 0.f;
             Add_Status(CHARGING_SPRINT);
             Add_SubState(MOV::MOVE_DODGE);
+            /* 백 닷지라면 */
+            if (m_eDir.Check_Flag(DIR::B))
+            {
+                Add_CycleState(CYC::CYCLE_END);
+                Add_Status(BACK_DODGE);
+            }
             isSpaceHandled = true;
-            cout << "---------------------------------------------- " << endl;
+
         }
         /* 스페이스 떼고 방향키를 누르고 있다는 예약이 걸려있을 때 다시 스페이스를 누를 경우*/
         else if (Has_State(AGAIN_REQUEST) && m_pGameInstance->Key_Pressing(DIK_SPACE, fTimeDelta))
@@ -1055,6 +1078,7 @@ void CKhazan_Spear::Move_Input(_float fTimeDelta)
             Add_State(CAT::M_MOVE);
             Add_SubState(MOV::MOVE_DODGE);
             Add_CycleState(CYC::CYCLE_END);
+            m_eDir.Clear_Flag();
             m_eDir.Add_Flag(DIR::B);  // 뒤로 회피
             m_fSprintTime = 0.f;
             Add_Status(BACK_DODGE );
@@ -1640,6 +1664,13 @@ _bool CKhazan_Spear::Guard_Input(_float fTimeDelta)
 
 _bool CKhazan_Spear::Interaction_Input(_float fTimeDelta)
 {
+    //랜턴
+    if (m_pGameInstance->Key_Down(DIK_2)) {
+        _bool isEquip = !m_pLantern->Get_Equipped();
+        if(m_pAnimInteraction->Try_Lantern(isEquip))
+            m_pLantern->Set_Equipped(isEquip);
+    }
+
     /* 임시 */
 
     //if (m_pGameInstance->Key_Pressing(DIK_LCONTROL,fTimeDelta) &&  m_pGameInstance->Key_Down(DIK_T))
@@ -1746,8 +1777,9 @@ void CKhazan_Spear::Change_MoveIdle(_float fTimeDelt)
     if (Has_State(CAT::M_GUARD) && m_pAnimGuard->Is_Guarding())
         return;
 
-    /*  락온 체크*/
-    if (Has_Status(LOCKON))
+
+    /*  락온 체크 + 백 닷지 + 닷지가 아니면 */
+    if (Has_Status(LOCKON) && !Has_Status(BACK_DODGE) && !Has_SubState(MOV::MOVE_DODGE))
         m_eDir = Calculate_LockOnDirection(fTimeDelt);
 
     /* 이동중 스페이스바 누르는것 때문에 다시 요청하기  */
@@ -1763,7 +1795,8 @@ void CKhazan_Spear::Change_MoveIdle(_float fTimeDelt)
         Remove_Status(AGAIN_REQUEST);
     }
 
-    if (Has_Status(LOCKON) && m_eDir.iDirFlag != m_ePrevDir)
+    /* 락온상태에서 닷지중일 때는 방향 변경 건너뚜ㅣ기*/
+    if (Has_Status(LOCKON) && m_eDir.iDirFlag != m_ePrevDir && !Has_SubState(MOV::MOVE_DODGE))
     {
         CKhazan_Spear_Anim_Move::SPEAR_MOVE info;
         info.isEquipWeapon = Has_Status(WEA::SPEAR);
@@ -1901,59 +1934,64 @@ void CKhazan_Spear::Apply_PlayerMovement(_float fTimeDelta)
         m_pTransformCom->Set_State(STATE::POSITION, vPlayerPosition);
     }
 
+    // 뒤 방향 닷지인지 체크 (B, BR, BL 모두 포함)
+    _bool isBackwardDodge = Has_Status(BACK_DODGE) ||  (m_eDir.Check_Flag(DIR::B) && Has_SubState(MOV::MOVE_DODGE));
+
     // 회전 처리
-    if (!Has_SubState(MOV::MOVE_SPRINT) && Has_Status(LOCKON) && m_pCamera && m_pCamera->Get_IsLockOn())
-    {
-        LockOn_Rotation(fTimeDelta);
-    }
-    else
-    {
-        /* 락온이 아니면 평상시대로 */
-        if (Has_State(CAT::M_MOVE) && isMoving)
+    if (!isBackwardDodge) {
+        if (!Has_SubState(MOV::MOVE_SPRINT) && Has_Status(LOCKON) && m_pCamera && m_pCamera->Get_IsLockOn())
         {
-            _vector vPlayerLook = XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK));
-
-            // 타겟 룩 = 이동 방향 (카메라 기준!!!)
-            _vector vTargetLook = vMoveDirection;
-
-            _float fDotProduct = XMVectorGetX(XMVector3Dot(vPlayerLook, vTargetLook));
-
-            // 회전 시작 조건 (약 5도 이상 차이)
-            if (!Has_Status(ROTATION) && fDotProduct < 0.996f)
+            LockOn_Rotation(fTimeDelta);
+        }
+        else
+        {
+            /* 락온이 아니면 평상시대로 */
+            if (Has_State(CAT::M_MOVE) && isMoving)
             {
-                Add_Status(ROTATION);
-                m_fRotateTime[0] = 0.f;
-                m_vRotateStart = vPlayerLook;
-            }
+                _vector vPlayerLook = XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK));
 
-            if (Has_Status(ROTATION))
-            {
-                m_fRotateTime[0] += fTimeDelta;
-                _float t = min(m_fRotateTime[0] / m_fRotateTime[1], 1.0f);
+                // 타겟 룩 = 이동 방향 (카메라 기준!!!)
+                _vector vTargetLook = vMoveDirection;
 
-                if (t >= 1.0f)
+                _float fDotProduct = XMVectorGetX(XMVector3Dot(vPlayerLook, vTargetLook));
+
+                // 회전 시작 조건 (약 5도 이상 차이)
+                if (!Has_Status(ROTATION) && fDotProduct < 0.996f)
                 {
-                    // 회전 완료
-                    _float yaw = atan2f(XMVectorGetX(vTargetLook), XMVectorGetZ(vTargetLook));
-                    _vector q = XMQuaternionRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), yaw);
-                    m_pTransformCom->Set_Quaternion(q);
-                    Remove_Status(ROTATION);
+                    Add_Status(ROTATION);
+                    m_fRotateTime[0] = 0.f;
+                    m_vRotateStart = vPlayerLook;
+                }
+
+                if (Has_Status(ROTATION))
+                {
+                    m_fRotateTime[0] += fTimeDelta;
+                    _float t = min(m_fRotateTime[0] / m_fRotateTime[1], 1.0f);
+
+                    if (t >= 1.0f)
+                    {
+                        // 회전 완료
+                        _float yaw = atan2f(XMVectorGetX(vTargetLook), XMVectorGetZ(vTargetLook));
+                        _vector q = XMQuaternionRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), yaw);
+                        m_pTransformCom->Set_Quaternion(q);
+                        Remove_Status(ROTATION);
+                    }
+                    else
+                    {
+                        // 회전 중 - Slerp 보간
+                        _vector vInterpolated = XMVector3Normalize(XMVectorLerp(m_vRotateStart, vTargetLook, t));
+                        _float yaw = atan2f(XMVectorGetX(vInterpolated), XMVectorGetZ(vInterpolated));
+                        _vector q = XMQuaternionRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), yaw);
+                        m_pTransformCom->Set_Quaternion(q);
+                    }
                 }
                 else
                 {
-                    // 회전 중 - Slerp 보간
-                    _vector vInterpolated = XMVector3Normalize(XMVectorLerp(m_vRotateStart, vTargetLook, t));
-                    _float yaw = atan2f(XMVectorGetX(vInterpolated), XMVectorGetZ(vInterpolated));
+                    // 각도 차이가 작을 때 즉시 회전
+                    _float yaw = atan2f(XMVectorGetX(vTargetLook), XMVectorGetZ(vTargetLook));
                     _vector q = XMQuaternionRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), yaw);
                     m_pTransformCom->Set_Quaternion(q);
                 }
-            }
-            else
-            {
-                // 각도 차이가 작을 때 즉시 회전
-                _float yaw = atan2f(XMVectorGetX(vTargetLook), XMVectorGetZ(vTargetLook));
-                _vector q = XMQuaternionRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), yaw);
-                m_pTransformCom->Set_Quaternion(q);
             }
         }
     }
@@ -2369,21 +2407,31 @@ HRESULT CKhazan_Spear::Ready_PartObjects()
     BodyDesc.pParentTransform = m_pTransformCom;
     if (FAILED(__super::Add_PartObject(TEXT("Part_Body"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Body_Khazan_Spear"), &BodyDesc)))
         return E_FAIL;
-
     m_pBody = static_cast<CBody_Khazan_Spear*>(Find_PartObject(TEXT("Part_Body")));
     m_pWeaponR_Matrix = m_pBody->Get_BoneMatrix("Weapon_R");
     m_BackPack_Matrix = m_pBody->Get_BoneMatrix("Weapon_C_BackPack_Spear");
     m_LanternSocket_Matrix = m_pBody->Get_BoneMatrix("Lantern_Socket_L");
+    m_LHandSocket_Matrix = m_pBody->Get_BoneMatrix("L_Hand_Socket");
+
     CSpear_Khazan_Spear::SPEAR_KHAZAN_SPEAR_DESC         SpearDesc{};
     SpearDesc.pState = &m_iCurMainState;
     SpearDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     SpearDesc.pParentTransform = m_pTransformCom;
     if (FAILED(__super::Add_PartObject(TEXT("Part_Weapon_Spear"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Spear_Khazan_Spear"), &SpearDesc)))
         return E_FAIL;
-
     m_pSpear = static_cast<CSpear_Khazan_Spear*>(Find_PartObject(TEXT("Part_Weapon_Spear")));
     m_pSpearFX_Matrix = m_pSpear->Get_BoneMatrix("FX");
     m_SpearOffset_Matrix = m_pSpear->Get_OffestMatrix();
+
+    CLantern_Khazan_Spear::LANTERN_KHAZAN_SPEAR_DESC         LanternDesc{};
+    LanternDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
+    LanternDesc.pParentTransform = m_pTransformCom;
+    LanternDesc.pLHandSocket_Matrix = m_LHandSocket_Matrix;
+    LanternDesc.pLanternSocket_Matrix = m_LanternSocket_Matrix;
+    if (FAILED(__super::Add_PartObject(TEXT("Part_Lantern"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Lantern_Khazan_Spear"), &LanternDesc)))
+        return E_FAIL;
+    m_pLantern = static_cast<CLantern_Khazan_Spear*>(Find_PartObject(TEXT("Part_Lantern")));
+
 
     /* 넘겨주기  */
     m_pSpear->Set_matBackPack(m_BackPack_Matrix);

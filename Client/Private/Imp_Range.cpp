@@ -76,7 +76,6 @@ void CImp_Range::Priority_Update(_float fTimeDelta)
         m_pUI_HP->Set_IsDead(true);
     }
 
-  
 }
 
 void CImp_Range::Update(_float fTimeDelta)
@@ -484,6 +483,13 @@ void CImp_Range::Shoot_Boomarang()
     pModel->Set_Animation(1);
 
     Safe_Release(m_pBoomarang);
+}
+
+void CImp_Range::HPUI_Dead()
+{
+    m_pUI_HP->Update_Visible(false);
+    Safe_Release(m_pUI_HP);
+    m_pUI_HP->Set_IsDead(true);
 }
 
 CImp_Range* CImp_Range::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

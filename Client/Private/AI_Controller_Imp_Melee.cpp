@@ -245,7 +245,7 @@ CONDITION CAI_Controller_Imp_Melee::GetCallbackCondition(CGameObject* pOwner, co
 
     if ("Move" == name)
     {
-        return [pImp](CBlackBoard* BB)->_bool
+        return [pImp](CBlackBoard* BB)
             {
                 cout << "MoveCondition" << endl;
 
@@ -253,16 +253,13 @@ CONDITION CAI_Controller_Imp_Melee::GetCallbackCondition(CGameObject* pOwner, co
                 _float fChaseRange = BB->Get_Value<_float>(pImp->Get_Name(), "ChaseRange");
                 _float fMoveStopRange = BB->Get_Value<_float>(pImp->Get_Name(), "MoveStopRange");
 
+
                 if (fDist <= fChaseRange)
+                    return true;
                 {
-                    if (fDist <= fMoveStopRange)
-                    {
-                        BB->Set_Value<_bool>(pImp->Get_Name(), "isMove", false);
-                        return false;
-                    }
-                }
-                else
+                    BB->Set_Value<_bool>(pImp->Get_Name(), "isMove", false);
                     return false;
+                };
             };
     }
 #pragma endregion

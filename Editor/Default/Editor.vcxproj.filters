@@ -232,6 +232,9 @@
     <Filter Include="02.GameObject\MapObject\Monster">
       <UniqueIdentifier>{dda5801c-8b51-4c02-a8ca-0386e8d4eb81}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Light">
+      <UniqueIdentifier>{8b923b78-6723-45df-90ec-f9dc00bd6e7d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -444,6 +447,7 @@
     <ClInclude Include="..\Public\Map_Spawn.h">
       <Filter>02.GameObject\MapObject\Monster</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Map_Light.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -651,6 +655,7 @@
     <ClCompile Include="..\Private\Map_Spawn.cpp">
       <Filter>02.GameObject\MapObject\Monster</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Map_Light.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_Edit_UI.hlsl">

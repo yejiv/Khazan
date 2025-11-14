@@ -33,13 +33,15 @@ HRESULT CProjectile_Imp_MagicBall::Initialize_Clone(void* pArg)
     m_pModelCom->Set_Animation(0);
 
     //m_pTransformCom->Scale(_float3(0.5f, 0.5f, 0.5f));
+    m_fEffect = dynamic_cast<CEffect_Prefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("MagicBall")));
+    m_fEffect->ResetChildren();
 
     return S_OK;
 }
 
 void CProjectile_Imp_MagicBall::Priority_Update(_float fTimeDelta)
 {
-
+    m_fEffect->Priority_Update(fTimeDelta);
 }
 
 void CProjectile_Imp_MagicBall::Update(_float fTimeDelta)
@@ -75,16 +77,23 @@ void CProjectile_Imp_MagicBall::Update(_float fTimeDelta)
             Enter_State(PRJSTATE::END);
         }
     }
+
+    m_fEffect->UpdatePosition(m_pTransformCom->Get_State(STATE::POSITION));
+    m_fEffect->Update(fTimeDelta);
 }
 
 void CProjectile_Imp_MagicBall::Late_Update(_float fTimeDelta)
 {
     if (m_isVisible)
         m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this);
+
+    m_fEffect->Late_Update(fTimeDelta);
 }
 
 HRESULT CProjectile_Imp_MagicBall::Render()
 {
+    return S_OK;
+
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
@@ -165,8 +174,7 @@ HRESULT CProjectile_Imp_MagicBall::Ready_Colliders()
 {
     CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
 
-    BodyDesc.fRadius = 0.3f;
-    BodyDesc.eMotion = EMotionType::Kinematic;
+    BodyDesc.fRadius = 1.f;    BodyDesc.eMotion = EMotionType::Kinematic;
     BodyDesc.eQuality = EMotionQuality::LinearCast;
     BodyDesc.eShapeType = SHAPE::SPHERE;
     BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
@@ -251,6 +259,7 @@ CGameObject* CProjectile_Imp_MagicBall::Clone(void* pArg)
 void CProjectile_Imp_MagicBall::Free()
 {
     Safe_Release(m_pBody);
+    Safe_Release(m_fEffect);
 
     __super::Free();
 }

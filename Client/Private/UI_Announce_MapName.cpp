@@ -43,31 +43,48 @@ void CUI_Announce_MapName::Update(_float fTimeDelta)
 
 void CUI_Announce_MapName::Late_Update(_float fTimeDelta)
 {
-	m_iPivotY = 180.f;
-	if (m_fAccTime >= 0.f)
-	{
-		m_fAccTime -= fTimeDelta;
-		CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
-	}
-	else if (m_fFadeTime >= 0.f)
-	{
-		m_fFadeTime -= fTimeDelta;
-		_float fTime = (m_fFadeTime / m_fFadeDuration);
-		fTime = clamp(fTime, 0.0f, 1.0f);
-		if (m_isDissovle)
-			m_fDissolveTime = fTime;
-		else
-			m_fAlpha = fTime;
-		CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
-	}
+    if (MAP_TYPE::HEINMACH == m_eAnnounce_Type)
+    {
+        if (m_fAccTime >= 0.f)
+        {
+            m_fAccTime -= fTimeDelta;
+            CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
+        }
+        else if (m_fFadeTime >= 0.f)
+        {
+            m_fFadeTime -= fTimeDelta;
+            _float fTime = (m_fFadeTime / m_fFadeDuration);
+            fTime = clamp(fTime, 0.0f, 1.0f);
+            if (m_isDissovle)
+                m_fDissolveTime = fTime;
+            else
+                m_fAlpha = fTime;
+            CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
+        }
+    }
+    else
+    {
+        if (m_fDissolveTime < 1.f)
+            m_fDissolveTime += fTimeDelta * 0.7f;
+        else if (m_fAccTime >= 0.f)
+            m_fAccTime -= fTimeDelta;
+        else
+        {
+            m_fFadeTime -= fTimeDelta;
+            _float fTime = (m_fFadeTime / m_fFadeDuration);
+            fTime = clamp(fTime, 0.0f, 1.0f);
 
+            m_fAlpha = fTime;
+        }
+        CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
+    }
 }
 
 HRESULT CUI_Announce_MapName::Render()
 {
 	if (m_isDissovle)
 	{
-		CHECK_FAILED(m_pDissolveTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DissovleTexture", 3), E_FAIL);
+		CHECK_FAILED(m_pDissolveTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DissovleTexture", m_iDissolveTexPass), E_FAIL);
 		CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fDissovle", &m_fDissolveTime, sizeof(_float)), E_FAIL);
 		CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fDissovleTexAspect", &m_fDissovleAspect, sizeof(_float)), E_FAIL);
 		CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
@@ -116,9 +133,10 @@ HRESULT CUI_Announce_MapName::Ready_Component()
 void CUI_Announce_MapName::Setting_Text(const EVENT_ANNOUNCE_MAPNAME& e)
 {
 	MAP_TYPE eType = static_cast<MAP_TYPE>(e.iMapType);
-
+    m_eAnnounce_Type = eType;
 	if (MAP_TYPE::HEINMACH == eType)
 	{
+        m_iPivotY = 180.f;
 		m_fFadeTime = e.fFadeOutTime;
 		m_fFadeDuration = e.fFadeOutTime;
 		m_fAccTime = e.fTime;
@@ -131,9 +149,27 @@ void CUI_Announce_MapName::Setting_Text(const EVENT_ANNOUNCE_MAPNAME& e)
 		m_wstrTexttag = TEXT("Blade_Bold_250");
 		m_fTexAspect = { 720.f / 100.f };
 		m_fDissovleAspect = { 256.f/ 68.f };
-
+        m_iDissolveTexPass = 3;
 		m_isDissovle = e.isDissovle;
 	}
+    else if (MAP_TYPE::DEFAULT == eType)
+    {
+        m_iPivotY = -300.f;
+        m_fFadeTime = e.fFadeOutTime;
+        m_fFadeDuration = e.fFadeOutTime;
+        m_fAccTime = e.fTime;
+
+        m_iTexPass = 1;
+        m_iShaderPass = 1;
+        m_fDissolveTime = 0.f;
+        m_fAlpha = 1.f;
+        m_wstrText = e.wstrName;
+        m_wstrTexttag = TEXT("Blade_Bold_44");
+        m_fTexAspect = { 720.f / 100.f };
+        m_fDissovleAspect = { 256.f / 68.f };
+        m_iDissolveTexPass = 0;
+        m_isDissovle = e.isDissovle;
+    }
 }
 
 CUI_Announce_MapName* CUI_Announce_MapName::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)
