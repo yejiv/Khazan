@@ -36,6 +36,9 @@
 // 몬스터 스폰 ( 많이 야매 )
 #include "Map_Spawn.h"
 
+// 점 조명 라이트 메쉬
+#include "Map_Light.h"
+
 // Terrain
 #include "Map_Terrain.h"
 
