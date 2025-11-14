@@ -71,7 +71,7 @@ void CMoveState_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 
     _float fDist = pBB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
 
-    // »óÇâ »óÅÂ ÆÇ´Ü
+    // ìƒí–¥ ìƒíƒœ íŒë‹¨
     if (fDist > pBB->Get_Value<_float>("Yetuga", "SprintRange") && m_iPrevMovementFlag < CYetuga::MONSTER_INFO::SPRINT)
     {
         m_iPrevMovementFlag = CYetuga::MONSTER_INFO::SPRINT;
@@ -85,7 +85,7 @@ void CMoveState_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
         pModel->Set_Animation(6);
     }
 
-    // ÀÌµ¿
+    // ì´ë™
     _float fMoveRange = pBB->Get_Value<_float>("Yetuga", "RunRange") - 0.5f;
     pYetuga->Get_Controller()->AI_MoveTo(pOwner, pTarget, fMoveRange, m_fSpeedPerSec, fTimeDelta);
 
