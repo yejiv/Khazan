@@ -30,6 +30,8 @@ void CSkill_Slot_Flag::Priority_Update(_float fTimeDelta)
 
 void CSkill_Slot_Flag::Update(_float fTimeDelta)
 {
+    m_fWave += fTimeDelta;
+
 }
 
 void CSkill_Slot_Flag::Late_Update(_float fTimeDelta)
@@ -52,13 +54,25 @@ HRESULT CSkill_Slot_Flag::Render()
     if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_Texture", m_iTexPass)))
         return E_FAIL;
 
+    if (FAILED(m_pMaskTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_MaskTexture", 7)))
+        return E_FAIL;
+
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fValue", &m_fWave, sizeof(_float)), E_FAIL);
     CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
     CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof(_float4)), E_FAIL);
 
-    m_pShaderCom->Begin(m_iShaderPass);
+    m_pShaderCom->Begin(16);
     m_pVIBufferCom->Bind_Resources();
     m_pVIBufferCom->Render();
 
+    return S_OK;
+}
+
+HRESULT CSkill_Slot_Flag::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
+{
+    CHECK_FAILED(__super::Load_UI(pInData, iPrototypeLevelID, pArg), E_FAIL);
+
+    m_vColor = { 0.54f, 0.72f, 0.88f, 0.4f };
     return S_OK;
 }
 
@@ -74,6 +88,10 @@ HRESULT CSkill_Slot_Flag::Ready_Component()
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_Flag"),
         TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr)))
+        return E_FAIL;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_FX_Mask"),
+        TEXT("Com_MaskTexture"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom), nullptr)))
         return E_FAIL;
 
     return S_OK;
@@ -108,4 +126,5 @@ void CSkill_Slot_Flag::Free()
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pTextureCom);
     Safe_Release(m_pVIBufferCom);
+    Safe_Release(m_pMaskTextureCom);
 }

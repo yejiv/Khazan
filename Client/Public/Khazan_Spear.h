@@ -69,7 +69,8 @@ public:
 
 private:
 	class CBody_Khazan_Spear*			    m_pBody = { nullptr };
-	class CSpear_Khazan_Spear*			    m_pSpear = { nullptr };
+    class CSpear_Khazan_Spear*              m_pSpear = { nullptr };
+    class CLantern_Khazan_Spear*			m_pLantern = { nullptr };
 	class CKhazan_Spear_Anim_Move*		    m_pAnimMove = { nullptr };
 	class CKhazan_Spear_Anim_Attack*	    m_pAnimAttack = { nullptr };
     class CKhazan_Spear_Anim_Guard*         m_pAnimGuard = { nullptr };
@@ -99,6 +100,7 @@ private:
 	_uint						m_iReserveAnimIndex = {};
 
 	/* info */
+    _float4x4*                  m_LHandSocket_Matrix;  //왼손 소켓 
     _float4x4*                  m_LanternSocket_Matrix;         //랜턴 소켓
     _float4x4*                  m_BackPack_Matrix;              //창 소켓 
 	_float4x4*					m_pWeaponR_Matrix = { nullptr };

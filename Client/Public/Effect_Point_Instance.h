@@ -41,6 +41,7 @@ public:
 	virtual void					Update(_float fTimeDelta) override;
 	virtual void					Late_Update(_float fTimeDelta) override;
 	virtual HRESULT					Render() override;
+    virtual void				    SetLoopOff();
 
 public:
 	virtual void					Reset() override;

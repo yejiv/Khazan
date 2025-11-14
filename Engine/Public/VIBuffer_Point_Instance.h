@@ -43,8 +43,9 @@ public:
 	void						Remove_Speed(SPEED_VALUE type);
 	void						Remove_Speed();
 	void						Setting_Pivot(_float3 pivot);
-	void						Setting_Loop(_bool isLoop) { m_sData.bIsLoop = isLoop; };
-
+	void						Setting_Loop(_bool isLoop) { m_bLoop = isLoop; };
+    bool                        isLoop() { return m_bLoop; }
+     
 private:
 	HRESULT						Ready_SRV(void* pSysmem);
 	HRESULT						Ready_UAV();
@@ -72,6 +73,7 @@ private :
 private:
 	_float3								m_vPivot = {}; 
 	POINT_INSTANCE_DESC					m_sData;
+    _bool                               m_bLoop;
 
 public:
 	static CVIBuffer_Point_Instance*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const INSTANCE_DESC* pDesc);

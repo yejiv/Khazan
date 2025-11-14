@@ -32,8 +32,9 @@ void CVIBuffer_Mesh_Instance::Reset()
 	CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
 	JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET)];
 	JobDesc.PassDesc = PassDesc;
+    m_bLoop = m_sData.bIsLoop;
 
-	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
+	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc);
 
 	m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
 }
@@ -65,6 +66,7 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 	m_sData.IsCircle = pMeshDesc->IsCircle;
 	m_sData.fOffset = pMeshDesc->fOffset;
 	m_sData.bIsLoop = pMeshDesc->bIsLoop;
+    m_bLoop = m_sData.bIsLoop;
 	m_sData.vRange = pMeshDesc->vRange;
 	m_sData.fTurbulenceSpeed = pMeshDesc->fTurbulenceSpeed;
 	m_sData.fTurbulenceSampleSize = pMeshDesc->fTurbulenceSampleSize;
@@ -220,7 +222,7 @@ _bool CVIBuffer_Mesh_Instance::Update(_float fTimeDelta)
 		pPointInstanceCB->vPivot = m_vPivot;
 		pPointInstanceCB->fTimeDelta = fTimeDelta;
 		pPointInstanceCB->iNumInstances = m_iNumInstance;
-		pPointInstanceCB->bIsLoop = m_sData.bIsLoop;
+		pPointInstanceCB->bIsLoop = m_bLoop;
 		pPointInstanceCB->vSpawnRange = m_sData.vRange;
 		m_pContext->Unmap(m_pCB, 0);
 	}
@@ -244,7 +246,7 @@ _bool CVIBuffer_Mesh_Instance::Update(_float fTimeDelta)
 
 	m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
 
-	return m_sData.bIsLoop ? false : IsFinish();
+	return m_bLoop ? false : IsFinish();
 }
 
 void CVIBuffer_Mesh_Instance::UpdateGravity(_float fTimeDelta)

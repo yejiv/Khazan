@@ -43,6 +43,9 @@ private:
     void                            Cast_Boomarang();
     void                            Hold_Boomarang();
     void                            Shoot_Boomarang();
+
+public:
+    void                            HPUI_Dead();
                                 
 
 private:

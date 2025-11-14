@@ -339,6 +339,28 @@ PS_OUT PS_TUTORIAL(PS_IN In)
         Out.vColor.rgb *= 1.5f;
     return Out;
 }
+
+PS_OUT PS_FLAG(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+
+    Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+
+    float mask = g_MaskTexture.Sample(DefaultSampler, In.vTexcoord).r;
+
+    float wave = sin((g_fValue * 0.5f) * 6.28318 - In.vTexcoord.y * 20.0f);
+
+    wave *= (mask * 2.0f - 1.0f);
+    float alphaWave = 1.0 + wave * 0.1;
+    
+    Out.vColor.rgb = Out.vColor.r * g_vColor.rgb;
+    Out.vColor.a = Out.vColor.a * alphaWave * g_vColor.a * g_fAlpha;
+
+    return Out;
+
+}
+
 technique11 DefaultTechnique
 {
     pass DefaultPass
@@ -513,5 +535,18 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_TUTORIAL();
     }
+
+    pass PS_FLAG //16
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_FLAG();
+    }
+
+
 
 }

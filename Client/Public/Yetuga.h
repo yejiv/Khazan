@@ -56,8 +56,11 @@ private:
 	void							Breath_Start();
 	void							Breath_Loop();
 
+    void                            Abort_Node(_bool isToggle);
+
+
 private:
-    void                            Start_RadialBlur();
+    void                            Start_DefaultRadialBlur();
 
 private:
 	class CBody_Yetuga*				m_pBody = { nullptr };

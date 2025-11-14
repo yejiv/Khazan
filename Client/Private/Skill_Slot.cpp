@@ -223,7 +223,7 @@ void CSkill_Slot::Update(_float fTimeDelta)
         for (auto pLine : m_pPreSkillLine)
         {
             pLine->Set_Color({ 0.f,0.f,0.f,0.6f });
-            pLine->Set_Depth(m_fDepth + 2.f);
+            pLine->Set_Depth(m_fDepth + 1.f);
         }
     }
     else

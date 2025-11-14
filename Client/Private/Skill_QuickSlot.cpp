@@ -235,6 +235,7 @@ HRESULT CSkill_QuickSlot::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevel
         if (pChild->Get_Name() == "Name_Skill")
         {
             m_pSkillName = static_cast<CUI_TextBox*>(pChild);
+            Safe_AddRef(m_pSkillName);
         }
     }
     _float2 vPos = {-20.f, -280.f};
