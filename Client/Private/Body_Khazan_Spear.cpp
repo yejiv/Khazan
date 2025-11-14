@@ -744,6 +744,7 @@ void CBody_Khazan_Spear::FX_Trail()
     _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
     m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
 }
+<<<<<<< HEAD
 //
 //void CBody_Khazan_Spear::FX_FastAtk01_Trail()
 //{
@@ -1099,7 +1100,7 @@ void CBody_Khazan_Spear::Event_AttackTiming(_bool isAttackStart)
     {
         m_isSpearTipActive = false;
         m_isSpearFullExtension = true;
-        m_pBodyCom_SpearTip1->Collision_Active(false);
+       // m_pBodyCom_SpearTip1->Collision_Active(false);
     }
 
 }

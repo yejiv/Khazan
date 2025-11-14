@@ -276,6 +276,7 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
 
         /* UI */
         m_pGameInstance->Emit_Event< EVENT_ANNOUNCE_RESULT>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_OVER), {});
+        return;
     }
 
     /* Damage UI font */
