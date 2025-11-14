@@ -3,6 +3,9 @@
 #include "Body_Imp_Melee.h"
 #include "Imp_Sword.h"
 #include "AI_Controller_Imp_Melee.h"
+#include "Mon_HP.h"
+#include "ClientInstance.h"
+#include "Amount.h"
 
 CImp_Melee::CImp_Melee(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice,pContext }
@@ -53,6 +56,15 @@ HRESULT CImp_Melee::Initialize_Clone(void* pArg)
 void CImp_Melee::Priority_Update(_float fTimeDelta)
 {
     CContainerObject::Priority_Update(fTimeDelta);
+
+    if (m_fCurrentHP <= 0.f && !m_isDeadFlag)
+    {
+        CClientInstance::GetInstance()->Add_SkillExp(10.f);
+        static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 100);
+        m_isDeadFlag = true;
+        Safe_Release(m_pUI_HP);
+        m_pUI_HP->Set_IsDead(true);
+    }
 }
 
 void CImp_Melee::Update(_float fTimeDelta)
@@ -66,6 +78,27 @@ void CImp_Melee::Update(_float fTimeDelta)
 
 void CImp_Melee::Late_Update(_float fTimeDelta)
 {
+    if (!m_isDetected)
+    {
+
+        CBlackBoard* pBB = m_pController->Get_BlackBoard();
+        if (pBB->Get_Value<_bool>(m_strName, "isDetected"))
+        {
+            m_isDetected = true;
+
+            m_pUI_HP = static_cast<CMon_HP*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Mon_HP")));
+
+            if (m_pUI_HP != nullptr)
+            {
+                Safe_AddRef(m_pUI_HP);
+
+                m_pUI_HP->Setting_HP(m_vLockOnPosition, { 0.f, 50.f }, &m_fCurrentHP, &m_fMaxHP, &m_fCurrentStamina, &m_fMaxStamina);
+                m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pUI_HP);
+            }
+        }
+    }
+
+
     CContainerObject::Late_Update(fTimeDelta);
 }
 
@@ -191,6 +224,7 @@ void CImp_Melee::Free()
 {
     Safe_Release(m_pBody);
     Safe_Release(m_pWeapon);
+    Safe_Release(m_pUI_HP);
 
     __super::Free();
 }
