@@ -391,13 +391,13 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 	{
 		return [pYetuga](CBlackBoard* BB)->_bool
 			{
-                cout << "ThrowBallCON" << endl;
+                //cout << "ThrowBallCON" << endl;
 				_float fDist = BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
 				_float fAttackRanage = BB->Get_Value<_float>(pYetuga->Get_Name(), "ThrowBallRange");
 				_float fChasRange = BB->Get_Value<_float>(pYetuga->Get_Name(), "ChaseRange");
 
-                cout << "fDist " << fDist << endl;
-                cout << "fAttackRange " << fAttackRanage << endl;
+              /*  cout << "fDist " << fDist << endl;
+                cout << "fAttackRange " << fAttackRanage << endl;*/
 
 
 				if (fDist != 0 && 
@@ -477,7 +477,7 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 	{
 		return [pYetuga](CBlackBoard* BB)->_bool
 			{			
-                cout << "2HIT CONDITION " << endl;
+                //cout << "2HIT CONDITION " << endl;
 
 				_float fDist = BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
 				_float fAttackRanage = BB->Get_Value<_float>(pYetuga->Get_Name(), "AttackRange");
@@ -501,7 +501,7 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 			{
 				if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isDead")) return false;
 
-                cout << "TURN CONDITION " << endl;
+                //cout << "TURN CONDITION " << endl;
 
 				_float fDot = BB->Get_Value<_float>(pYetuga->Get_Name(), "fDot");
 				fDot = clamp(fDot, -1.f, 1.f);
@@ -529,7 +529,7 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 
 				if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isDead")) return false;
 
-                cout << "MOVE CONDITION " << endl;
+                //cout << "MOVE CONDITION " << endl;
 
 
 				_float fDist = BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
@@ -955,7 +955,7 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 				pYetuga->Get_Controller()->Get_State_Machine()->
 					Change_State(ENUM_CLASS(YETUGA_STATE::ATTACK), pYetuga);
 
-                cout << "2HIT ACTION " << endl;
+                //cout << "2HIT ACTION " << endl;
 
 				return BTNODESTATE::RUNNING;
 			};
@@ -983,7 +983,7 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 				pYetuga->Get_Controller()->Get_State_Machine()->
 					Change_State(ENUM_CLASS(YETUGA_STATE::TURN), pYetuga);
 
-                cout << "TURN ACTION " << endl;
+                //cout << "TURN ACTION " << endl;
 
 
 				return BTNODESTATE::RUNNING;
@@ -1032,7 +1032,7 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 				pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::MOVE), pYetuga);
 
 
-                cout << "MOVE ACTION " << endl;
+                //cout << "MOVE ACTION " << endl;
 
 
 				return BTNODESTATE::RUNNING;
@@ -1377,7 +1377,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 					return;
 
 
-                cout << "2HT TERMINATE " << endl;
+                //cout << "2HT TERMINATE " << endl;
 
 				if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
 				{
@@ -1401,7 +1401,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
 			{
 
-                cout << "TURN TERMINATE " << endl;
+                //cout << "TURN TERMINATE " << endl;
 
 
 				if (nullptr == BB)
@@ -1420,7 +1420,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
 			{
 
-                cout << "MOVE TERMINATE " << endl;
+               // cout << "MOVE TERMINATE " << endl;
 
 				if (nullptr == BB)
 					return;
