@@ -1,5 +1,6 @@
 #include "Projectile_Imp_MagicBall.h"
 #include "GameInstance.h"
+#include "Creature.h"
 
 CProjectile_Imp_MagicBall::CProjectile_Imp_MagicBall(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CProjectile{pDevice,pContext}
@@ -209,6 +210,11 @@ void CProjectile_Imp_MagicBall::Collision_Stay(COLLISION_DESC* pDesc, _uint iOth
         {
             Enter_State(PRJSTATE::CRASHED);
             m_isCrashed = true;
+            CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+            if (nullptr == pTarget)
+                return;
+            pTarget->Take_Damage(10.f,HITREACTION::KNOCKBACK_NORMAL,nullptr);
+            
 
         }
     }

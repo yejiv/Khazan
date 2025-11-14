@@ -6,6 +6,7 @@
 #include "Perception.h"
 
 
+
 CAI_Controller_Imp_Melee::CAI_Controller_Imp_Melee()
 {
 }
@@ -111,6 +112,7 @@ CONDITION CAI_Controller_Imp_Melee::GetCallbackCondition(CGameObject* pOwner, co
                     /* static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1001);
                      static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1002);
                      static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1003);*/
+
                     return true;
 
                 }
@@ -253,13 +255,12 @@ CONDITION CAI_Controller_Imp_Melee::GetCallbackCondition(CGameObject* pOwner, co
 
                 if (fDist <= fChaseRange)
                 {
-                    //if (fDist <= fMoveStopRange)
-                        //BB->Set_Value<_bool>(pImp->Get_Name());
+                    if (fDist <= fMoveStopRange)
+                    {
+                        BB->Set_Value<_bool>(pImp->Get_Name(), "isMove", false);
+                        return false;
+                    }
                 }
-
-
-                if (fDist <= fChaseRange)
-                    return true;
                 else
                     return false;
             };
