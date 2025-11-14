@@ -118,6 +118,9 @@ public:
 public:
 	_bool Get_isGround();
 
+public:
+    void Fake_Release();
+
 private:
 	JPH::CharacterVirtual* m_pCharVir = { nullptr };
 

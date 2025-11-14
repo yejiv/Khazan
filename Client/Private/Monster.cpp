@@ -45,6 +45,8 @@ void CMonster::CheckMinDistanceWithPlayer(_float fMinDist, _float fAnimRatio)
     }
 }
 
+
+
 void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject* pGameObject)
 {
     if (m_pController->Get_BlackBoard()->Get_Value<_bool>(m_strName, "isHit"))
@@ -60,13 +62,14 @@ void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject
     
     CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
 
-    /*if (pDamage != nullptr && m_vLockOnPosition != nullptr)
+    if (pDamage != nullptr && m_vLockOnPosition != nullptr)
     {
         _vector vDamagePos = XMLoadFloat4(m_vLockOnPosition);
-        pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::DEFAULT, vDamagePos , static_cast<_uint>(fDamage), { 0.f, 10.f });
-        m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
 
-    }*/
+        pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::DEFAULT, vDamagePos , static_cast<_uint>(fDamage), { 0.f, 10.f });
+        pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::DEFAULT, vDamagePos , 10, { 0.f, 10.f });
+        m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
+    }
 
     _float fValidTime = 3.f;
     

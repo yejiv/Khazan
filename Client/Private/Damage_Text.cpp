@@ -94,20 +94,15 @@ _bool CDamage_Text::Render_Damage(DAMAGE_TYPE eDamageType, _vector vPos, _uint i
 
 	string strDamage = to_string(iDamage);
 	m_iLength = strDamage.length();
+    m_vDamage_UV.resize(m_iLength);
 	for (_int i = 0; i < m_iLength; ++i)
 	{
-		m_vDamage_UV.push_back(Mapping_Number(strDamage[i] - '0'));
+        _float4 vUV = Mapping_Number(strDamage[i] - '0');
+        m_vDamage_UV[i] = vUV;
 	}
-    if (m_vDamage_UV.empty())
-    {
-        m_vDamage_UV.push_back(_float4(0.f, 0.f, 0.f, 0.f));
-    }
+
 	XMStoreFloat4(&m_vWorldTranslation, vPos);
 
-    if (m_vDamage_UV.empty())
-    {
-        m_vDamage_UV.push_back({ 0.f,0.f,0.f,0.f });
-    }
 	return true;
 }
 
@@ -262,6 +257,7 @@ _float4 CDamage_Text::Mapping_Number(_int iNumber)
 	else if (iNumber == 9) strNum = "T_icon_Key_9.png";
 	else return { 0.f,0.f,1.f,1.f };
 
+    
 	return CClientInstance::GetInstance()->Get_AtlasUV(strNum, 3);
 }
 

@@ -542,7 +542,7 @@ void CModel::Set_Animation(_uint iIndex)
 
 
 
-    cout << m_iCurrentAnimIndex<<" : "+ Get_CurAnimName() << endl;
+    //cout << m_iCurrentAnimIndex<<" : "+ Get_CurAnimName() << endl;
 }
 
 void CModel::Set_AnimationSet(const string& strKey)
@@ -881,6 +881,9 @@ void CModel::WarmupAnimations()
 
         /*  루트 모션 옵션 설정 */
         Check_RootMotion();
+
+        //Set_Animation(i);
+
 
         for (int frame = 0; frame < 3; ++frame)
         {

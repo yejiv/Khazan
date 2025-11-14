@@ -7,6 +7,8 @@
 #include "Projectile_Boomarang.h"
 #include "GameInstance.h"
 #include "Mon_HP.h"
+#include "ClientInstance.h"
+#include "Amount.h"
 
 CImp_Range::CImp_Range(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{pDevice,pContext}
@@ -65,15 +67,14 @@ void CImp_Range::Priority_Update(_float fTimeDelta)
 {
     CContainerObject::Priority_Update(fTimeDelta);
 
-    if (m_fCurrentHP <= 0.f && !m_pUI_HP)
+    if (m_fCurrentHP <= 0.f && !m_isDeadFlag)
     {
+        CClientInstance::GetInstance()->Add_SkillExp(10.f);
+        static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 100);
+        m_isDeadFlag = true;
         Safe_Release(m_pUI_HP);
         m_pUI_HP->Set_IsDead(true);
     }
-
-   
-
- 
 
 }
 
@@ -81,14 +82,18 @@ void CImp_Range::Update(_float fTimeDelta)
 {
     m_pController->Update(this, fTimeDelta);
 
-    if (m_isLookAt)
+    if (m_fCurrentHP <= 0.f)
     {
-        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
-        if (nullptr == pModel)
-            return;
-        _float fRatio = pModel->MakeRatio();
-        Look_Target_Lerp(fTimeDelta, fRatio, 3.f);
+        if (m_isLookAt)
+        {
+            CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+            if (nullptr == pModel)
+                return;
+            _float fRatio = pModel->MakeRatio();
+            Look_Target_Lerp(fTimeDelta, fRatio, 3.f);
+        }
     }
+  
     __super::Update(fTimeDelta);
 
     m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
@@ -111,7 +116,7 @@ void CImp_Range::Late_Update(_float fTimeDelta)
             {
                 Safe_AddRef(m_pUI_HP);
 
-                m_pUI_HP->Setting_HP(m_vLockOnPosition, { 0.f, 200.f }, &m_fCurrentHP, &m_fMaxHP, &m_fCurrentStamina, &m_fMaxStamina);
+                m_pUI_HP->Setting_HP(m_vLockOnPosition, { 0.f, 30.f }, &m_fCurrentHP, &m_fMaxHP, &m_fCurrentStamina, &m_fMaxStamina);
                 m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pUI_HP);
             }
         }
@@ -478,6 +483,13 @@ void CImp_Range::Shoot_Boomarang()
     pModel->Set_Animation(1);
 
     Safe_Release(m_pBoomarang);
+}
+
+void CImp_Range::HPUI_Dead()
+{
+    m_pUI_HP->Update_Visible(false);
+    Safe_Release(m_pUI_HP);
+    m_pUI_HP->Set_IsDead(true);
 }
 
 CImp_Range* CImp_Range::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
