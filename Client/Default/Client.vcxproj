@@ -213,6 +213,7 @@
     <ClInclude Include="..\Public\FSM_Imp_Melee.h" />
     <ClInclude Include="..\Public\Imp_Melee.h" />
     <ClInclude Include="..\Public\Imp_Sword.h" />
+    <ClInclude Include="..\public\ItemInfo_RandomEffect.h" />
     <ClInclude Include="..\Public\LoadingObj_BN.h" />
     <ClInclude Include="..\public\Inven_State_Panel.h" />
     <ClInclude Include="..\public\Lantern_Khazan_Spear.h" />
@@ -462,6 +463,7 @@
     <ClCompile Include="..\Private\FSM_Imp_Melee.cpp" />
     <ClCompile Include="..\Private\Imp_Melee.cpp" />
     <ClCompile Include="..\Private\Imp_Sword.cpp" />
+    <ClCompile Include="..\private\ItemInfo_RandomEffect.cpp" />
     <ClCompile Include="..\Private\LoadingObj_BN.cpp" />
     <ClCompile Include="..\private\Inven_State_Panel.cpp" />
     <ClCompile Include="..\private\Lantern_Khazan_Spear.cpp" />

@@ -25,6 +25,7 @@ void CUIObject::Get_Data(VTXINSTANCE_UI& pOutData)
     pOutData.fAlpha = m_fAlpha;
     pOutData.vUV = m_vUV[m_iState];
     pOutData.vColor = m_vColor;
+    pOutData.fDepth = m_fDepth;
 }
 
 HRESULT CUIObject::Initialize_Prototype()

@@ -281,8 +281,8 @@ CGameObject* CInteraction_Guide::Clone(void* pArg)
 
 void CInteraction_Guide::Free()
 {
+	__super::Free();
 	Safe_Release(m_pGauge);
 	Safe_Release(m_pTextBox);
 	Safe_Release(m_pIcon);
-	__super::Free();
 }

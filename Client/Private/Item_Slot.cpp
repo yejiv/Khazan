@@ -38,6 +38,14 @@ _bool CItem_Slot::Add_Item(_int iItemIndex)
         m_iItemMaxCount = ItemData.iMaxValue;
         ++m_iItemCount;
         Update_State(ItemData.iGrade);
+
+        if (ItemData.iType >= 4)
+        {
+            m_fMainValue = CClientInstance::GetInstance()->Get_Data<EQUIPITEM_DATA>(ItemData.iEffect_ID)->iValue_1;
+
+            Random_Effect_Setting(ItemData.iType);
+
+        }
         return true;
     }
     else if (m_iItemIndex == iItemIndex && m_iItemCount < m_iItemMaxCount)
@@ -106,6 +114,14 @@ void CItem_Slot::is_Equip(_bool isEquip, _int iIndex)
 
 }
 
+void CItem_Slot::Is_UpItem(_float fValue)
+{
+    if (m_fMainValue > fValue)
+        m_isUpIcon = true;
+    else
+        m_isUpIcon = false;
+}
+
 HRESULT CItem_Slot::Initialize_Prototype(_uint iLevel)
 {
     m_iLevel = iLevel;
@@ -151,12 +167,22 @@ void CItem_Slot::Late_Update(_float fTimeDelta)
 {
     CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::ATLAS, this);
     
-    //if (ButtonClick(g_hWnd, false, true))
-    //    Release_Item();
+    if (m_fEquipTime > 0.f)
+        m_fEquipTime -= fTimeDelta;
+    else
+        m_iEquipCount = 0;
 
     if (m_iItemIndex > -1 && ButtonClick(g_hWnd, false, true))
+    {
         Selete_Item();
-
+        ++m_iEquipCount;
+        m_fEquipTime = 0.5f;
+        if (m_iEquipCount >= 2)
+        {
+            Equip_Item();
+            m_iEquipCount = 0;
+        }
+    }
     if (m_bIsSelete && m_pGameInstance->Key_Down(DIK_F, INPUT_TYPE::UI))
         Equip_Item();
 
@@ -189,6 +215,9 @@ void CItem_Slot::Late_Update(_float fTimeDelta)
             Desc.iItemIndex = m_iItemIndex;
             Desc.iOffsetPos = { 1230.f, 595.f };
             Desc.isEquip = m_bIsEquip;
+            Desc.iEffect_Type = m_iRandomEffect_Type;
+            Desc.iEffect_Value = m_iRandomEffect_Value;
+
             CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("ItemInfo_Equip"), &Desc);
 
         }
@@ -198,6 +227,8 @@ void CItem_Slot::Late_Update(_float fTimeDelta)
         m_pTextBox->Set_Text(to_wstring(m_iItemCount));
         m_pTextBox->Late_Update(fTimeDelta);
     }
+    if(m_pUpIcon != nullptr && m_iItemIndex >= 0 && m_isUpIcon)
+        m_pUpIcon->Late_Update(fTimeDelta);
 }
 
 HRESULT CItem_Slot::Ready_Prototype()
@@ -234,7 +265,7 @@ HRESULT CItem_Slot::Ready_Children()
     {
         AtlasDesc.fDepth = m_fDepth - 0.5;
         AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
-        AtlasDesc.szName = "Item_Selet";
+        AtlasDesc.szName = "Item_Equip";
         AtlasDesc.vLocalPos = _float2{ -30.f, -30.f };
 
         if (m_iItemType < ENUM_CLASS(CUI_Inven::ITEMTYPE::ATIVE))
@@ -323,6 +354,29 @@ HRESULT CItem_Slot::Ready_Children()
         m_Children.push_back(m_pTextBox);
         Safe_AddRef(m_pTextBox);
     }
+
+    if (m_iItemType >= ENUM_CLASS(CUI_Inven::ITEMTYPE::SPEAR) && m_iItemType <= ENUM_CLASS(CUI_Inven::ITEMTYPE::RING))
+    {
+        AtlasDesc.fDepth = m_fDepth - 0.5;
+        AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+        AtlasDesc.szName = "Item_Up";
+        AtlasDesc.vLocalPos = _float2{ 32.f, 35.f };
+
+        AtlasDesc.vLocalSize = { 24.f, 16.f };
+        AtlasDesc.vUV = CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_MetaStat_Arrow.png", 1);
+
+        AtlasDesc.iShaderPass = 2;
+        AtlasDesc.iTexPass = 1;
+        AtlasDesc.vColor = { 0.302f, 0.584f, 1.f, 1.f };
+        m_pUpIcon = static_cast<CUI_Atlas_Icon*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Atlas_Icon"), &AtlasDesc));
+
+        if (m_pUpIcon == nullptr)
+            return E_FAIL;
+
+        m_Children.push_back(m_pUpIcon);
+        Safe_AddRef(m_pUpIcon);
+    }
+
     return S_OK;
 }
 
@@ -375,14 +429,28 @@ void CItem_Slot::Equip_Item()
 {
     if (m_iItemType > ENUM_CLASS(CUI_Inven::ITEMTYPE::ATIVE))
         return;
-
+    
     CUI_Inven::INVENBUBBLE_DESC Desc = {};
-    Desc.eBubbleType = CUI_Inven::EVENT_TYPE::ITEM_EQUIP;
-    Desc.iTypeIndex = m_iItemType;
-    Desc.iIndex = m_iIndex;
-    Desc.iItemIndex = m_iItemIndex;
-    Desc.pItem = this;
+    
+    if (!m_bIsEquip)
+    {
+        Desc.eBubbleType = CUI_Inven::EVENT_TYPE::ITEM_EQUIP;
+        Desc.iTypeIndex = m_iItemType;
+        Desc.iIndex = m_iIndex;
+        Desc.iItemIndex = m_iItemIndex;
+        Desc.pItem = this;
 
+    }
+    else
+    {
+        m_bIsEquip = false;
+        Desc.eBubbleType = CUI_Inven::EVENT_TYPE::ITEM_UNEQUIP;
+        Desc.iTypeIndex = m_iItemType;
+        Desc.iIndex = m_iIndex;
+        Desc.iItemIndex = m_iItemIndex;
+        Desc.pItem = this;
+
+    }
     __super::Bubble_EventCall(&Desc);
 }
 
@@ -418,8 +486,33 @@ void CItem_Slot::Render_ItemInfo()
         Desc.iItemIndex = m_iItemIndex;
         Desc.iOffsetPos = { 780.f, 595.f };
         Desc.isEquip = m_bIsEquip;
+        Desc.iEffect_Type = m_iRandomEffect_Type;
+        Desc.iEffect_Value = m_iRandomEffect_Value;
         CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("ItemInfo_Weapon"), &Desc);
     }
+}
+
+void CItem_Slot::Random_Effect_Setting(_int iItemType)
+{
+    if (iItemType == 4)
+        m_iRandomEffect_Type = (_int)m_pGameInstance->Rand(1, 3);
+    else if (iItemType == 5)
+        m_iRandomEffect_Type = 2 + (_int)m_pGameInstance->Rand(1, 5);
+    else if (iItemType == 6)
+        m_iRandomEffect_Type = 5 + (_int)m_pGameInstance->Rand(1, 2);
+
+    if (m_iRandomEffect_Type == 1)
+        m_iRandomEffect_Value = (_int)m_pGameInstance->Rand(5, 10);
+    else if (m_iRandomEffect_Type == 2 || m_iRandomEffect_Type == 3)
+        m_iRandomEffect_Value = (_int)m_pGameInstance->Rand(1, 3);
+    else if (m_iRandomEffect_Type == 4)
+        m_iRandomEffect_Value = (_int)m_pGameInstance->Rand(50, 150);
+    else if (m_iRandomEffect_Type == 5)
+        m_iRandomEffect_Value = (_int)m_pGameInstance->Rand(10, 20);
+    else if (m_iRandomEffect_Type == 6)
+        m_iRandomEffect_Value = (_int)m_pGameInstance->Rand(50, 300);
+    else if (m_iRandomEffect_Type == 7)
+        m_iRandomEffect_Value = 1;
 }
 
 CItem_Slot* CItem_Slot::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)
@@ -452,4 +545,5 @@ void CItem_Slot::Free()
     Safe_Release(m_pSeleteFx);
     Safe_Release(m_pIcon);
     Safe_Release(m_pTextBox);
+    Safe_Release(m_pUpIcon);
 }
