@@ -33,6 +33,7 @@ void CUI_State::On_Panel(UI_TYPE eType)
 
 	m_pPanel[ENUM_CLASS(STATE_PANEL::LACHRYMA)]->Setting_Type(m_eType, this);
 	m_pPanel[ENUM_CLASS(STATE_PANEL::LEVEL)]->Setting_Type(m_eType, this);
+    Update_Data();
 
 	_int iLacryma = *m_pLachryma;
 	_int iPreUpPoint = m_Player_Data.iLevel;
@@ -399,15 +400,15 @@ void CUI_State::Ready_PlayerData()
 	m_Player_Data.iMaxStamina					= CClientInstance::GetInstance()->Get_PlayerData().fMaxStamina;
 	m_Player_Data.iAtk							= CClientInstance::GetInstance()->Get_PlayerData().fDamage;
 	m_Player_Data.iDef							= CClientInstance::GetInstance()->Get_PlayerData().fGuard;
-	m_Player_Data.fWeight						= 15.f;
-	m_Player_Data.fMaxWeight					= 35.f;
+	m_Player_Data.fWeight						= CClientInstance::GetInstance()->Get_PlayerData().fWeight;
+    m_Player_Data.fMaxWeight                    = 200.f;
 	m_Player_Data.fAgile						= 100.f;
 	
 	m_Player_Data.fStaminaAttack				= 50.f;
-	m_Player_Data.fStaminaRegen					= 17.1f;
+	m_Player_Data.fStaminaRegen					= CClientInstance::GetInstance()->Get_PlayerData().fStaminaRegen;
 	m_Player_Data.fEvasion_StaminaDown			= 10.7f;
-	m_Player_Data.fDamage_StaminaDown			= 0.0f;
-	m_Player_Data.fGuard_StaminaDown			= 15.0f;
+	m_Player_Data.fDamage_StaminaDown			= 3.f;
+	m_Player_Data.fGuard_StaminaDown			= 10.f;
 	
 	m_Player_Data.iFire							= 500;
 	m_Player_Data.iWater						= 500;
@@ -691,6 +692,16 @@ void CUI_State::Button_Bubble_Event(UI_STATE_BUBLLE* pDesc)
     pData->fDamage = m_Player_Data.iAtk;
     pData->fGuard = m_Player_Data.iDef;
    
+}
+
+void CUI_State::Update_Data()
+{
+    m_Player_Data.iMaxHp = CClientInstance::GetInstance()->Get_PlayerData().fMaxHp;
+    m_Player_Data.iMaxStamina = CClientInstance::GetInstance()->Get_PlayerData().fMaxStamina;
+    m_Player_Data.iAtk = CClientInstance::GetInstance()->Get_PlayerData().fDamage;
+    m_Player_Data.iDef = CClientInstance::GetInstance()->Get_PlayerData().fGuard;
+    m_Player_Data.fWeight = CClientInstance::GetInstance()->Get_PlayerData().fWeight;
+    m_Player_Data.fStaminaRegen = CClientInstance::GetInstance()->Get_PlayerData().fStaminaRegen;
 }
 
 CUI_State* CUI_State::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)

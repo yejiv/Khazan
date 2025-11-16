@@ -796,6 +796,9 @@
     <Filter Include="02.GameObject\Creature\Khazan\Spear\Lantern">
       <UniqueIdentifier>{f87b61a1-ec55-4177-bc32-818e25784895}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Item_Info\Weapon\Random_Effect">
+      <UniqueIdentifier>{95ba0e07-689e-45e6-bafb-3a4d2de26ee4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1535,6 +1538,9 @@
     <ClInclude Include="..\public\Lantern_Khazan_Spear.h">
       <Filter>02.GameObject\Creature\Khazan\Spear\Lantern</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\ItemInfo_RandomEffect.h">
+      <Filter>02.GameObject\UI\Item_Info\Weapon\Random_Effect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2253,6 +2259,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Lantern_Khazan_Spear.cpp">
       <Filter>02.GameObject\Creature\Khazan\Spear\Lantern</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ItemInfo_RandomEffect.cpp">
+      <Filter>02.GameObject\UI\Item_Info\Weapon\Random_Effect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
