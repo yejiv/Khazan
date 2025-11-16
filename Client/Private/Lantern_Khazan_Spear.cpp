@@ -82,14 +82,6 @@ void CLantern_Khazan_Spear::Update(_float fTimeDelta)
 
     m_pGameInstance->Set_LightPosition(TEXT("Lantern"), ENUM_CLASS(m_eCurrentLevel), vPos);
 
-    // 그림자 없애기 (보간 시간, 1이면 없어짐)
-     // m_pGameInstance->Start_ShadowIntensityTransition(1.5f, 1.f);
-
-    // 그림자 만들기 0.6
-    //  m_pGameInstance->Start_ShadowIntensityTransition(1.5f, 0.6f);
-
-    
-
 }
 
 void CLantern_Khazan_Spear::Late_Update(_float fTimeDelta)

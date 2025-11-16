@@ -1050,7 +1050,7 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 				if (isDamaged)
 					return BTNODESTATE::FAILURE;
 
-                cout << "Idle ACTION" << endl;
+                //cout << "Idle ACTION" << endl;
 
 				pYetuga->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
 				return BTNODESTATE::RUNNING;

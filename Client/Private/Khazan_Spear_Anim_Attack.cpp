@@ -20,122 +20,7 @@ void CKhazan_Spear_Anim_Attack::Enter()
     m_isCanNextCombo = false;
 
 }
-//void CKhazan_Spear_Anim_Attack::Continue(_float fTimeDelta)
-//{
-//    if (m_isReserve)
-//    {
-//        if (m_iReserveSkillIndex == 0)
-//        {
-//            m_isReserve = false;
-//            return;
-//        }
-//
-//        if (Try_SkillAttack(m_iReserveSkillIndex))
-//            m_isReserve = false;
-//
-//        return;
-//    }
-//
-//    if (m_isFastCombo)
-//    {
-//        if (m_pModel->Check_MinAnimationTime() && (*m_pModel->Get_CurTrackPosition() <= m_fFastAttackComboPossibleMaxFrame))
-//        {
-//            m_isCanNextCombo = true;
-//        }
-//        else if (!m_pModel->Check_MinAnimationTime())
-//        {
-//            m_isAttacking = true;
-//            m_isCanNextCombo = false;
-//        }
-//        else if (m_iCurrentCombo == 3 && m_pModel->IsFinished())
-//        {
-//            m_isAttacking = false;
-//            m_isCanNextCombo = false;
-//            m_iCurrentCombo = 0;
-//            m_isFastCombo = false;
-//        }
-//        else if (m_pModel->IsFinished())
-//        {
-//            m_isAttacking = false;
-//            m_isCanNextCombo = false;
-//            m_iCurrentCombo = 0;
-//            m_isFastCombo = false;
-//        }
-//        return;
-//    }
-//
-//    if (m_isStrongCombo)
-//    {
-//        if (m_pModel->Check_MinAnimationTime() && *m_pModel->Get_CurTrackPosition() <= m_fStrongAttackComboPossibleMaxFrame)
-//        {
-//            m_isCanNextCombo = true;
-//        }
-//        else if (!m_pModel->Check_MinAnimationTime())
-//        {
-//            m_isAttacking = true;
-//            m_isCanNextCombo = false;
-//        }
-//        else if (m_iCurrentCombo == 3 && m_pModel->IsFinished())
-//        {
-//            m_isAttacking = false;
-//            m_isCanNextCombo = false;
-//            m_iCurrentCombo = 0;
-//            m_isStrongCombo = false;
-//        }
-//        else if (m_pModel->IsFinished())
-//        {
-//            m_isAttacking = false;
-//            m_isCanNextCombo = false;
-//            m_iCurrentCombo = 0;
-//            m_isStrongCombo = false;
-//        }
-//        return;
-//    }
-//
-//    if (m_isStrongCharge)
-//    {
-//        _uint curAnimIndex = m_pModel->Get_CurAnimIndex();
-//        _uint chargeAnimIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk_Charge");
-//        _uint chargeAtkAnimIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk_ChargeAtk");
-//
-//        // Charge -> ChargeAtk 전환
-//        if (curAnimIndex == chargeAnimIndex && m_pModel->IsFinished())
-//        {
-//            m_iSelectedAnimationIndex = chargeAtkAnimIndex;
-//            m_pModel->Set_Animation(m_iSelectedAnimationIndex);
-//            cout << "Charge -> ChargeAtk transition" << endl;
-//        }
-//        // ChargeAtk 종료
-//        else if (curAnimIndex == chargeAtkAnimIndex && m_pModel->IsFinished())
-//        {
-//            m_isAttacking = false;
-//            m_isStrongCharge = false;
-//            cout << "ChargeAtk finished" << endl;
-//        }
-//        return;
-//    }
-//
-//    _bool isFinish = m_pModel->IsFinished();
-//    _bool isMinTime = m_pModel->Check_MinAnimationTime();
-//
-//    if (m_isSkilling)
-//    {
-//        if (m_iCurSkillIndex == m_pModel->Get_CurAnimIndex() && (isFinish || isMinTime))
-//        {
-//            m_pClientInstance->Set_UsedSkill(m_iCurSkillIndex, false);
-//            m_iCurSkillIndex = 0;
-//            m_isSkilling = false;
-//        }
-//    }
-//
-//    if (m_isAttacking)
-//    {
-//        if (isFinish || isMinTime)
-//        {
-//            m_isAttacking = false;
-//        }
-//    }
-//}
+
 void CKhazan_Spear_Anim_Attack::Continue(_float fTimeDelta)
 {
     if (m_isReserve)
@@ -583,6 +468,48 @@ void CKhazan_Spear_Anim_Attack::Reserve_SkillAttack(_uint iSkill)
 {
     m_isReserve = true;
     m_iReserveSkillIndex = iSkill;
+}
+
+void CKhazan_Spear_Anim_Attack::Clear_Skill()
+{
+    m_isAttacking = false;
+    m_isSkilling = false;
+    m_isReserve = false;
+    if (m_isSkilling)
+        m_pClientInstance->Set_UsedSkill(m_iCurSkillIndex, false);
+    m_iCurSkillIndex = 0;
+    m_iReserveSkillIndex = 0;
+}
+
+void CKhazan_Spear_Anim_Attack::Clear_Attack()
+{
+    m_isAttacking = false;
+    m_isCanNextCombo = false;
+    m_isFastCombo = false;
+    m_isStrongCombo = false;
+    m_isStrongCharge = false;
+
+    m_fComboTime = 0.f;
+    m_iCurrentCombo = 0;
+}
+
+void CKhazan_Spear_Anim_Attack::Clear_All()
+{
+    m_isAttacking = false;
+    m_isCanNextCombo = false;
+    m_isFastCombo = false;
+    m_isStrongCombo = false;
+    m_isStrongCharge = false;
+    m_isSkilling = false;
+    m_isReserve = false;
+
+    if (m_isSkilling)
+        m_pClientInstance->Set_UsedSkill(m_iCurSkillIndex, false);
+
+    m_iCurSkillIndex = 0;
+    m_iReserveSkillIndex = 0;
+    m_iCurrentCombo = 0;
+    m_fComboTime = 0.f;
 }
 
 

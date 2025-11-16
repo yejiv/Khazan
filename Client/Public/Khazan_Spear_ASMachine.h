@@ -63,12 +63,12 @@ public:
         M_HOLD        = 1 << 1,
         M_GROGGY      = 1 << 2, 
         M_DAMAGED     = 1 << 3,  
-        M_CLIMB        = 1<< 4,  
-        ORDER2 = M_HOLD | M_GROGGY | M_DAMAGED | M_CLIMB,
+        M_GUARD       = 1<< 4,
+        ORDER2 = M_HOLD | M_GROGGY | M_DAMAGED | M_GUARD,
 
         M_SKILL       = 1 << 5,
 
-        M_GUARD         = 1 << 6,
+        M_CLIMB = 1 << 6,
 
    
         M_ATTACK        = 1 << 7, 
