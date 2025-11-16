@@ -29,6 +29,9 @@ public:
     virtual void					Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
     virtual void					Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
 
+public:
+    void                            HPUI_Dead();
+       
 private:
     HRESULT							Ready_Components();
     HRESULT							Ready_PartObjects();
@@ -41,6 +44,8 @@ private:
     class CMon_HP*                  m_pUI_HP = { nullptr };
 
     _bool                           m_isDetected = { false };
+    _bool                           m_isLookAt = { false };
+    _float							m_fTurnSpeed = { 10.f };
 
 public:
     static CImp_Melee*              Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

@@ -47,6 +47,7 @@ void CAS_Smash_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
     {
         CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
         pBB->Set_Value<_bool>(pYetuga->Get_Name(),"isNormalSmashFinished",true);
+        pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE),pOwner);
     }
 
 

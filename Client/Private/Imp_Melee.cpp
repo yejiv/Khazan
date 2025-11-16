@@ -62,14 +62,25 @@ void CImp_Melee::Priority_Update(_float fTimeDelta)
         CClientInstance::GetInstance()->Add_SkillExp(10.f);
         static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 100);
         m_isDeadFlag = true;
-        Safe_Release(m_pUI_HP);
-        m_pUI_HP->Set_IsDead(true);
+       /* Safe_Release(m_pUI_HP);
+        m_pUI_HP->Set_IsDead(true);*/
     }
 }
 
 void CImp_Melee::Update(_float fTimeDelta)
 {
     m_pController->Update(this, fTimeDelta);
+
+
+    if (m_isLookAt)
+    {
+        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+        if (nullptr == pModel)
+            return;
+        _float fRatio = pModel->MakeRatio();
+        Look_Target_Lerp(fTimeDelta, fRatio, m_fTurnSpeed);
+    }
+
 
     __super::Update(fTimeDelta);
 
@@ -119,6 +130,16 @@ void CImp_Melee::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, 
 
 void CImp_Melee::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 {
+
+}
+
+void CImp_Melee::HPUI_Dead()
+{
+    
+    m_pUI_HP->Update_Visible(false);
+    Safe_Release(m_pUI_HP);
+    m_pUI_HP->Set_IsDead(true);
+    
 
 }
 
@@ -192,6 +213,87 @@ HRESULT CImp_Melee::Ready_PartObjects()
 
 HRESULT CImp_Melee::Ready_AnimEvent()
 {
+    CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+    if (nullptr == pModel)
+        return E_FAIL;
+
+#pragma region NonStopAttack
+
+    pModel->Register_Event("NontStopAttack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_isLookAt = true;
+        m_pWeapon->Set_OnAttackCollision(true);
+        });
+
+    pModel->Register_Event("NontStopAttack1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_isLookAt = false;
+        m_pWeapon->Set_OnAttackCollision(false);
+        });
+
+
+    pModel->Register_Event("NontStopAttack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_isLookAt = true;
+        m_pWeapon->Set_OnAttackCollision(true);
+        });
+
+    pModel->Register_Event("NontStopAttack2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_isLookAt = false;
+        m_pWeapon->Set_OnAttackCollision(false);
+        });
+
+
+#pragma endregion
+
+
+
+
+#pragma region ChainAttack
+
+    pModel->Register_Event("ChainAttack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_isLookAt = true;
+        m_pWeapon->Set_OnAttackCollision(true);
+        });
+
+    pModel->Register_Event("ChainAttack1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_isLookAt = false;
+        m_pWeapon->Set_OnAttackCollision(false);
+        });
+
+
+    pModel->Register_Event("ChainAttack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_isLookAt = true;
+        m_pWeapon->Set_OnAttackCollision(true);
+        });
+
+    pModel->Register_Event("ChainAttack2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_isLookAt = false;
+        m_pWeapon->Set_OnAttackCollision(false);
+        });
+
+
+    pModel->Register_Event("ChainAttack3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_isLookAt = true;
+        m_pWeapon->Set_OnAttackCollision(true);
+
+        });
+
+    pModel->Register_Event("ChainAttack3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_isLookAt = false;
+        m_pWeapon->Set_OnAttackCollision(false);
+
+        });
+
+
+    pModel->Register_Event("ChainAttack_After", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_isLookAt = true;
+        });
+
+    pModel->Register_Event("ChainAttack_After", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_isLookAt = false;
+        });
+
+
+#pragma endregion
+
 
     return S_OK;
 }
