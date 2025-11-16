@@ -92,7 +92,7 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
     
     float legnth = length(In[0].vPosition - In[0].vPrevPosition);
     
-    if (legnth < 0.1f || g_IsBillboard == false)
+    if (legnth < 0.01f || g_IsBillboard)
     {
         vLook = g_vCamPosition - In[0].vPosition;
         vRight = normalize(vector(cross(float3(0.f, 1.f, 0.f), vLook.xyz), 0.f)) * In[0].fSize * 0.5f;
@@ -103,8 +103,9 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
         vUp = normalize(In[0].vPosition - In[0].vPrevPosition) * In[0].fSize * g_fSizeRatio * 0.5f;
         vLook = normalize(g_vCamPosition - In[0].vPosition);
         vRight = normalize(vector(cross(vUp.xyz, vLook.xyz), 0.f)) * In[0].fSize * 0.5f;
-        vUp += (In[0].vPosition - In[0].vPrevPosition) * 1.7f;
+        vUp += (In[0].vPosition - In[0].vPrevPosition) * 0.8f;
     }
+    
     
     float Width = 1.0f / g_numCols;
     float Height = 1.0f / g_numRows;
@@ -140,7 +141,7 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
     Out[3].vTexcoord = float2(startU, startV) + (Out[3].vTexcoord * float2(Width, Height));
     Out[3].vLifeTime = In[0].vLifeTime;
     Out[3].bDead = In[0].bDead;
-    Out[3].vPrevPosition = In[0].vPrevPosition;
+    Out[3].vPrevPosition = In[0].vPrevPosition; 
     
     Vertices.Append(Out[0]);
     Vertices.Append(Out[1]);
@@ -158,7 +159,7 @@ struct PS_DEFAULT_IN
     float4 vPosition : SV_POSITION;
     float2 vTexcoord : TEXCOORD0;
     float2 vLifeTime : TEXCOORD1;
-    float vDead : TEXCOORD2;
+    float bDead : TEXCOORD2;
     float4 vPrevPosition : TEXCOORD3;
 };
 
@@ -220,8 +221,8 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
 
-    //if (In.vDead == true)
-    //    discard;
+    if (In.bDead)
+        discard;
     
     //float3 diff = In.vPosition.xyz - In.vPrevPosition.xyz;
     //float distSq = dot(diff, diff);
@@ -238,8 +239,7 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
         
     if (g_MaskScrollSpeed)
         vFinalColor.a = vFinalColor.a * Mask_Scrolling(In.vLifeTime, In.vTexcoord);
-    
-    
+     
     //float fDecreaseAlpha = In.vLifeTime.x / In.vLifeTime.y;
     //fDecreaseAlpha = saturate(fDecreaseAlpha);
     //float fDecreaseAlpha = GetAlphaFadeInOut(In.vLifeTime.x / In.vLifeTime.y);
@@ -253,7 +253,7 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     
     if (vFinalColor.a <= 0.f)
         discard;
-
+    
     Out.vBackBufferColor = vFinalColor * (g_vSourceColor.a + 1);
     
     return Out;

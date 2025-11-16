@@ -182,6 +182,7 @@ namespace Engine
 			return 0.0f;
 		else if (fA > 1.0f) 
 			return 1.0f;
+        return fA;
 	}
 
 	// 기본 Lerp (Unclamped): t가 0~1 밖이어도 그대로 계산

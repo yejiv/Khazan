@@ -1,6 +1,8 @@
 #include "Imp_Sword.h"
 #include "Model.h"
 #include "GameInstance.h"
+#include "Imp_Melee.h"
+#include "AI_Controller.h"
 
 
 _float4* CImp_Sword::Get_BonePointEX(const _char* pBoneName)
@@ -123,6 +125,13 @@ HRESULT CImp_Sword::Render()
 
 void CImp_Sword::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+        m_pOwner->Get_Controller()->AI_React_Collision(pDesc,iOtherObjectLayer,m_pOwner);
+    }
+
+
 }
 
 void CImp_Sword::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
@@ -155,12 +164,16 @@ HRESULT CImp_Sword::Ready_Collision()
     BodyDesc.eMotion = EMotionType::Kinematic;
     BodyDesc.eQuality = EMotionQuality::Discrete;
     BodyDesc.eShapeType = SHAPE::SPHERE;
-    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK);
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
     BodyDesc.bIsTrigger = true;
 
-    _matrix Init = XMLoadFloat4x4(m_pSocketMatrix);
+    _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
+
+    XMStoreFloat4x4(&m_CombinedWorldMatrix,
+        m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
+
     _vector vScale, vQuat, vPos;
-    XMMatrixDecompose(&vScale, &vQuat, &vPos, Init);
+    XMMatrixDecompose(&vScale, &vQuat, &vPos, XMLoadFloat4x4(&m_CombinedWorldMatrix));
 
     BodyDesc.vPos = _float3(vPos.m128_f32[0], vPos.m128_f32[1], vPos.m128_f32[2]);
     BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);

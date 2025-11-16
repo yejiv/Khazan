@@ -6,6 +6,8 @@
 #include "UI_TextBox.h"
 #include "UI_Default_Tex.h"
 
+#include "ItemInfo_RandomEffect.h"
+
 CItemInfo_Weapon::CItemInfo_Weapon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
 {
@@ -210,6 +212,11 @@ HRESULT CItemInfo_Weapon::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevel
 			m_pItemLine = static_cast<CUI_Atlas_Icon*>(Child);
 			Safe_AddRef(Child);
 		}
+        else if (strName == "Rendom_Effect")
+        {
+            m_pEffect_Info = static_cast<CItemInfo_RandomEffect*>(Child);
+            Safe_AddRef(Child);
+        }
 	}
 
 
@@ -227,10 +234,17 @@ HRESULT CItemInfo_Weapon::Update_Switch(void* pArg)
 	pDesc->isEquip ? m_pEquip_Deco->Update_Visible(true) : m_pEquip_Deco->Update_Visible(false);
 	pDesc->isEquip ? m_pEquip_Text->Update_Visible(true) : m_pEquip_Text->Update_Visible(false);
 
+    const ITEM_DATA* pData = CClientInstance::GetInstance()->Get_Data<ITEM_DATA>(pDesc->iItemIndex);
+    
+    if(pData->iType == 4)
+        m_pEffect_Info->Set_LocalPos({0.f,-10.f}, this);
+    else
+        m_pEffect_Info->Set_LocalPos({ 0.f,-80.f }, this);
+
+    m_pEffect_Info->Set_Text(pDesc->iEffect_Type, pDesc->iEffect_Value);
 	if (m_iItemIndex == pDesc->iItemIndex)
 		return S_OK;
 
-	const ITEM_DATA* pData = CClientInstance::GetInstance()->Get_Data<ITEM_DATA>(pDesc->iItemIndex);
 	const EQUIPITEM_DATA* pEffectData = CClientInstance::GetInstance()->Get_Data<EQUIPITEM_DATA>(pData->iEffect_ID);
 	
 	m_pItemIcon->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV(WStringToAnsi(pData->strIconName), pData->iTexPass), pData->iTexPass);
@@ -261,6 +275,9 @@ HRESULT CItemInfo_Weapon::Update_Switch(void* pArg)
 
 HRESULT CItemInfo_Weapon::Ready_Prototype()
 {
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Item_Info_RandomEffect"),
+        CItemInfo_RandomEffect::Create(m_pDevice, m_pContext, m_iLevel)), E_FAIL);
+
 	return S_OK;
 }
 
@@ -286,9 +303,9 @@ void CItemInfo_Weapon::Item_TypeCheck(const EQUIPITEM_DATA* pEffectData)
 	if (pEffectData->iType <= 2)
 		m_pValueText->Set_Text(TEXT("최종 공격력"));
 	else if (pEffectData->iType == 8)
-		m_pValueText->Set_Text(TEXT("최대 기력"));
-	else if (pEffectData->iType == 9)
 		m_pValueText->Set_Text(TEXT("최대 생명력"));
+	else if (pEffectData->iType == 9)
+		m_pValueText->Set_Text(TEXT("최대 기력"));
 	else
 		m_pValueText->Set_Text(TEXT("최종 방어력"));
 }
@@ -378,17 +395,17 @@ void CItemInfo_Weapon::Item_EffectCheck(const EQUIPITEM_DATA* pEffectData)
 			Mapping_ValueType(pEffectData->iValue_Type_2, vUV, wstrText);
 			m_pEffectIcon[1]->Set_Texture(vUV, 2);
 			m_pEffectText[1]->Set_Text(wstrText);
-			m_pEffectValue[1]->Set_Text(to_wstring(pEffectData->iValue_1));
+			m_pEffectValue[1]->Set_Text(to_wstring(pEffectData->iValue_2));
 			m_pEffectIcon[1]->Update_Visible(true);
 			m_pEffectText[1]->Update_Visible(true);
 			m_pEffectValue[1]->Update_Visible(true);
 
 			if (pEffectData->iValue_Type_3 != 0)
 			{
-				Mapping_ValueType(pEffectData->iValue_Type_2, vUV, wstrText);
+				Mapping_ValueType(pEffectData->iValue_Type_3, vUV, wstrText);
 				m_pEffectIcon[2]->Set_Texture(vUV, 2);
 				m_pEffectText[2]->Set_Text(wstrText);
-				m_pEffectValue[2]->Set_Text(to_wstring(pEffectData->iValue_1));
+				m_pEffectValue[2]->Set_Text(to_wstring(pEffectData->iValue_3));
 				m_pEffectIcon[2]->Update_Visible(true);
 				m_pEffectText[2]->Update_Visible(true);
 				m_pEffectValue[2]->Update_Visible(true);
@@ -526,4 +543,6 @@ void CItemInfo_Weapon::Free()
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pVIBufferCom);
+
+    Safe_Release(m_pEffect_Info);
 }

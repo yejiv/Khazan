@@ -1,5 +1,6 @@
 #include "Projectile_Boomarang.h"
 #include "GameInstance.h"
+#include "Creature.h"
 
 CProjectile_Boomarang::CProjectile_Boomarang(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CProjectile{pDevice,pContext}
@@ -24,22 +25,21 @@ HRESULT CProjectile_Boomarang::Initialize_Clone(void* pArg)
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
-    if (FAILED(Ready_Components()))
-        return E_FAIL;
+    /*if (FAILED(Ready_Components()))
+        return E_FAIL;*/
 
     if (FAILED(Ready_Colliders()))
         return E_FAIL;
 
     m_isActive = false;
-
-    m_pModelCom->Set_Animation(0);
-
     m_pTarget = pDesc->pTarget;
     Safe_AddRef(m_pTarget);
+
+    m_pBody->Collision_Active(false);
+
     
     m_fEffect = dynamic_cast<CEffect_Prefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Boomarang")));
     m_fEffect->ResetChildren();
-
     return S_OK;
 }
 
@@ -52,14 +52,16 @@ void CProjectile_Boomarang::Update(_float fTimeDelta)
 {
     m_fCurrentTime += fTimeDelta;
 
+
+    m_pBody->Collision_Active(true);
+
     if (m_fCurrentTime >= m_fLifeTime)
     {
         // 풀로 돌아가고
         m_isDead = true;
         // Active 끄고
         m_isActive = false;
-        //m_isCrashed = true;
-        //m_pBody->Collision_Active(false);
+        m_pBody->Collision_Active(false);
     }
 
 
@@ -82,12 +84,15 @@ void CProjectile_Boomarang::Update(_float fTimeDelta)
         }
         else if(m_fCurrentTime >= m_fReturnTime + m_fPauseTime)
             m_pTransformCom->Go_Straight(fTimeDelta);
+
+        m_pBody->Sync_Update(m_pTransformCom);
+        m_pBody->Update(fTimeDelta, m_pTransformCom);
+
+
     }
 
-    if (m_pModelCom->Play_Animation(fTimeDelta))
-    {
-       
-    }
+
+     
     m_fEffect->UpdatePosition(m_pTransformCom->Get_State(STATE::POSITION));
 
     m_fEffect->Update(fTimeDelta);
@@ -98,40 +103,23 @@ void CProjectile_Boomarang::Late_Update(_float fTimeDelta)
 {
     if (m_isVisible)
         m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this);
-    
-    m_fEffect->Late_Update(fTimeDelta);
+
+    if(m_isVisible)
+        m_fEffect->Late_Update(fTimeDelta);
 }
 
 HRESULT CProjectile_Boomarang::Render()
 {
     return S_OK;
-
-    if (FAILED(Bind_ShaderResources()))
-        return E_FAIL;
-
-    _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
-
-    for (size_t i = 0; i < iNumMeshes; i++)
-    {
-        m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
-
-        m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
-
-        if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
-            return E_FAIL;
-
-        m_pShaderCom->Begin(0);
-
-        m_pModelCom->Render(i);
-    }
-    return S_OK;
 }
 
 void CProjectile_Boomarang::Reset()
 {
-    m_isCrashed = false;
+
     m_pBody->Collision_Active(true);
-    Enter_State(PRJSTATE::IDLE);
+    m_isDamageForward = false;
+    m_isDamageReturn = false;
+
 
     m_fCurrentTime = 0.f;
     _vector vDir = XMVector3Normalize(XMLoadFloat3(&m_vSpawnDir));
@@ -144,15 +132,10 @@ void CProjectile_Boomarang::Reset()
     m_pTransformCom->Set_State(STATE::UP, vUp);
     m_pTransformCom->Set_State(STATE::LOOK, vDir);
 
-    //m_pTransformCom->Scale(_float3(0.5f, 0.5f, 0.5f));
-
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&m_vSpawnPoint), 1.f));
 
 }
 
-void CProjectile_Boomarang::Enter_State(PRJSTATE eNextState)
-{
-}
 
 HRESULT CProjectile_Boomarang::Ready_Components()
 {
@@ -176,7 +159,7 @@ HRESULT CProjectile_Boomarang::Ready_Colliders()
     BodyDesc.eQuality = EMotionQuality::LinearCast;
     BodyDesc.eShapeType = SHAPE::SPHERE;
     BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
-    //BodyDesc.isCollideKinematicVsNonDynamic = true;
+    BodyDesc.isCollideKinematicVsNonDynamic = true;
 
     XMStoreFloat3(&BodyDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
     XMStoreFloat4(&BodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
@@ -186,7 +169,7 @@ HRESULT CProjectile_Boomarang::Ready_Colliders()
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
     BodyDesc.bIsTrigger = true;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
-        TEXT("Com_Body_Yetuga_Stone"), reinterpret_cast<CComponent**>(&m_pBody), &BodyDesc)))
+        TEXT("Com_Body_ImpRange_Boomarang"), reinterpret_cast<CComponent**>(&m_pBody), &BodyDesc)))
         return E_FAIL;
 
     return S_OK;
@@ -213,7 +196,36 @@ void CProjectile_Boomarang::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherO
 
 void CProjectile_Boomarang::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
+    COLLISION_LAYER eType = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
+   
 
+    if (COLLISION_LAYER::PLAYER == eType)
+    {
+
+        CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        if (nullptr == pTarget)
+            return;
+
+
+        _float fCurrnetTIme = m_fCurrentTime;
+        
+        if (fCurrnetTIme < m_fReturnTime)
+        {
+            if (!m_isDamageForward)
+            {
+                pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL, nullptr);
+                m_isDamageForward = true;
+            }
+        }
+        else if (fCurrnetTIme >= m_fReturnTime + m_fPauseTime)
+        {
+            if (!m_isDamageReturn)
+            {
+                pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL, nullptr);
+                m_isDamageReturn = true;
+            }
+        }
+    }
 }
 
 void CProjectile_Boomarang::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)

@@ -69,8 +69,6 @@ public:
 		m_OutlineConfig.fBias = Config.fBias;
 	}
     void Set_SpecularPower(_float2 vPower) { m_vSpecularPower = vPower; }
-    void Set_EnableRadialBlur(_bool isEnable) { m_isEnableRadialBlur = isEnable; }
-    _bool isEnableRadialBlur() { return m_isEnableRadialBlur; }
 
 private:
 	ID3D11Device*				m_pDevice = { nullptr };
@@ -99,9 +97,6 @@ private:
     // Specular
     _float2                     m_vSpecularPower = { 32.f, 64.f };
 
-    // Radial Blur
-    _bool                       m_isEnableRadialBlur = {};
-
 #ifdef _DEBUG
 private:
 	list<class CComponent*>		m_DebugComponent;
@@ -121,6 +116,7 @@ private:
 	HRESULT Render_Static();
 	HRESULT Render_Decal();
 	HRESULT Render_Dynamic();
+    HRESULT Render_VelocityMap();
 	HRESULT Render_Outline();
 	HRESULT Render_SSAO();
 	HRESULT Render_Lights();
@@ -131,6 +127,7 @@ private:
 	HRESULT Render_Bloom();
 	HRESULT Render_Combined();
     HRESULT Render_RadialBlur();
+    HRESULT Render_MotionBlur();
     HRESULT Render_LUT();
 	HRESULT Render_Distortion();
 	HRESULT Render_UI();

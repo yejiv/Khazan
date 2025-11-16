@@ -24,6 +24,7 @@ HRESULT CShader_Controller::Initialize()
 	m_FogConfig = m_pGameInstance->Get_FogConfig();
 	m_iNumCascades = m_pGameInstance->Get_NumCascades();
     m_InitFogConfig = m_FogConfig;
+    m_MotionBlurDesc = m_pGameInstance->Get_MotionBlurDesc();
 
 	Ready_Level();
 	Ready_Shader();
@@ -345,6 +346,28 @@ void CShader_Controller::Ready_Shader()
                     // LUT 강도
                     if (ImGui::SliderFloat("LUT Intensity", &m_fLUTIntensity, 0.f, 1.f, "%.2f"));
                     m_pGameInstance->Set_LUTIntensity(m_fLUTIntensity);
+                }
+
+                // ===== Motion Blur =====
+
+                if (ImGui::Checkbox("Motion Blur", &m_isEnableMotionBlur))
+                    m_pGameInstance->Set_EnableMotionBlur(m_isEnableMotionBlur);
+
+                if (m_isEnableMotionBlur)
+                {
+                    // 깊이 바이어스
+                    if (ImGui::SliderFloat("Motion Blur Bias", &m_MotionBlurDesc.fDepthBias, 0.f, 0.1f, "%.3f"))
+                        m_pGameInstance->Set_MotionBlurDesc(m_MotionBlurDesc);
+
+                    // 샘플 개수
+                    _int iNumSamples = static_cast<_int>(m_MotionBlurDesc.iNumSamples);
+                    if (ImGui::InputInt("Motion Blur Num Samples", &iNumSamples, 2, 4))
+                    {
+                        m_MotionBlurDesc.iNumSamples = iNumSamples;
+                        m_pGameInstance->Set_MotionBlurDesc(m_MotionBlurDesc);
+                    }
+
+                    ImGui::Separator();
                 }
 			}
 

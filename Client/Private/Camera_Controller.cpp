@@ -28,9 +28,9 @@ HRESULT CCamera_Controller::Initialize()
 	m_tCreateCameraDesc.fMouseSensor = 0.2f;
 	m_tCreateCameraDesc.iCameraType = ENUM_CLASS(CAMERATYPE::FREE);
 
-	FAILED_CHECK(Ready_Camera(TEXT("Layer_Camera")), E_FAIL);
+	CHECK_FAILED(Ready_Camera(TEXT("Layer_Camera")), E_FAIL);
 
-	FAILED_CHECK(Ready_ImGui(), E_FAIL);
+    CHECK_FAILED(Ready_ImGui(), E_FAIL);
 
 	return S_OK;
 }
