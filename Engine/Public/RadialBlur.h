@@ -19,10 +19,12 @@ public:
     void						Set_RadialBlurDesc(const RADIAL_BLUR_DESC& Desc) { m_Desc = Desc; }
     void                        Set_RadialBlurCenter(_fvector vCenter, _float fOffset);
     void                        Start_RadialBlur(const RADIAL_BLUR_DESC& Desc);
+    void                        Set_EnableRadialBlur(_bool isEnable) { m_isEnable = isEnable; }
 
 private:
     class CGameInstance*        m_pGameInstance = { nullptr };
 
+    _bool                       m_isEnable = {};
     RADIAL_BLUR_DESC            m_Desc = {};
 
     // Animation

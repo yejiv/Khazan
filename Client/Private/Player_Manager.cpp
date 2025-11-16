@@ -41,8 +41,8 @@ HRESULT CPlayer_Manager::Initialize()
     BindSkillToButton(R, CPlayerData_Manager::SHADOW_CLEAVE);
 
     /*  임시 숫자임 */
-    m_Data.fMaxHp = { 100.f };
-    m_Data.fCulHp = { 100.f };
+    m_Data.fMaxHp = { 15300.f };
+    m_Data.fCulHp = { 15300.f };
     m_Data.fMaxStamina = { 100.f };
     m_Data.fCulStamina = { 100.f };
     m_Data.iMaxDoggednessCount = { 5 };

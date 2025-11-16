@@ -29,6 +29,9 @@ public:
     virtual void					Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
     virtual void					Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
 
+public:
+    void                            HPUI_Dead();
+
 private:
     HRESULT							Ready_Components();
     HRESULT							Ready_PartObjects();

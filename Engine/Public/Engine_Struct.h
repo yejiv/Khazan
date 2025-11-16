@@ -276,6 +276,12 @@ namespace Engine
         XMFLOAT2        vFadeTime;
     }RADIAL_BLUR_DESC;
 
+    typedef struct tagMotionBlurDesc
+    {
+        float           fDepthBias;
+        unsigned int    iNumSamples;
+    }MOTION_BLUR_DESC;
+
 	struct HitStopState
 	{
 		bool isActive = false;
