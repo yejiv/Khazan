@@ -3,12 +3,12 @@
 #include "ClientInstance.h"
 
 CDamage_Text::CDamage_Text(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: CUI_Text(pDevice, pContext)
+	: CUI_Texture(pDevice, pContext)
 {
 }
 
 CDamage_Text::CDamage_Text(const CDamage_Text& Prototype)
-	: CUI_Text(Prototype)
+	: CUI_Texture(Prototype)
 {
 }
 
