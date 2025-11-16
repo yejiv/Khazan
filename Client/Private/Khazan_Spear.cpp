@@ -134,7 +134,7 @@ void CKhazan_Spear::Priority_Update(_float fTimeDelta)
 {
     __super::Priority_Update(fTimeDelta);
 
-    if (m_pGameInstance->Key_Down(DIK_F5))
+    if (m_pGameInstance->Key_Down(DIK_P))
         m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(516.f, -11.f, 264.f, 1.f));
 
 

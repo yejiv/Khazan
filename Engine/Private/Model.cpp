@@ -602,6 +602,7 @@ void CModel::AnimationSetIndexIncrease()
     }
 }
 
+
 void CModel::Update_BoneCombinedMatrices()
 {
 	//if (m_isSharedSkeleton)

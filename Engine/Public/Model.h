@@ -114,7 +114,8 @@ public:
 	void			Set_AnimationSet(const string& strKey);
 	void			Set_AnimationLoop(_bool isLoop);
 	_bool			Check_MinAnimationTime();
-    void            AnimationSetIndexIncrease(); //애니메이션세트 강제로 다음으로 넘기기 
+    void            AnimationSetIndexIncrease(); //애니메이션세트 강제로 다음으로 넘기기
+
 	/* rootBone Combined  */
 	void			Update_BoneCombinedMatrices();	
 
