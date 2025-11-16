@@ -76,6 +76,11 @@ namespace Client {
 		bool isTSOpened{ false };
 	};
 
+    struct EventCave
+    {
+        bool isInCave = { false };
+    };
+
     //상호작용 오브젝트 어떤 종류인지 받아오는 이벤트 구조체(오브젝트->플레이어)
 	struct EventInteractType {
 		enum EVENT_STATE { BEGIN, END, NONE };
@@ -86,8 +91,13 @@ namespace Client {
 		EventBladeNexus BNEvent{};	
 		EventChest ChestEvent{};
 		EventTombStone TSEvent{};
+        EventCave CaveEvent{};
 
 		void End_Event() { isEvent = false; }
+
+        bool isInCave() { return CaveEvent.isInCave; }
+        void CaveIn() { CaveEvent.isInCave = true; }
+        void CaveOut() { CaveEvent.isInCave = false; }
 	};
 
 	struct EventBigChest {
