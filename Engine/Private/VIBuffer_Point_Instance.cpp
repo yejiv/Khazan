@@ -38,7 +38,7 @@ void CVIBuffer_Point_Instance::Reset()
     m_bLoop = m_sData.bIsLoop;
 	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
 
-	m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
+	m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer); 
 }
 
 HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDesc)
@@ -519,12 +519,17 @@ HRESULT CVIBuffer_Point_Instance::Ready_ComputeShader()
 	if (nullptr == m_ComputeShaders[ENUM_CLASS(CS_PASS::TURBULENCE)])
 		return E_FAIL;
 
+    m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET_DEAD_FLAG)] = CComputeShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Point_Instance_Compute.hlsl"), "CS_RESET_DEAD_FLAG");
+    if (nullptr == m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET_DEAD_FLAG)])
+        return E_FAIL; 
 
 	return S_OK;
 }
 
 _bool CVIBuffer_Point_Instance::IsFinish()
 {
+    _bool flag = false;
+
 	m_pContext->CopyResource(m_pStagingBuffer, m_pSpeedBuffer);
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -534,10 +539,24 @@ _bool CVIBuffer_Point_Instance::IsFinish()
 		m_pContext->Unmap(m_pStagingBuffer, 0);
 
 		if (aliveCount.bDead)
-			return true;
+            flag = true;
 	}
 
-	return false;
+    COMPUTE_PASS_DESC PassDesc{}; 
+    PassDesc.UAVs.push_back(m_pUAV); 
+    _uint iNumThreadPerGroup = 256;
+    _uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
+    PassDesc.x = iNumGroups;
+    PassDesc.y = 1;
+    PassDesc.z = 1;
+
+    CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
+    JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET_DEAD_FLAG)];
+    JobDesc.PassDesc = PassDesc;
+
+    m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
+
+	return flag;
 }
 
 CVIBuffer_Point_Instance* CVIBuffer_Point_Instance::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const INSTANCE_DESC* pDesc)

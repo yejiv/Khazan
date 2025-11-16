@@ -92,7 +92,7 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
     
     float legnth = length(In[0].vPosition - In[0].vPrevPosition);
     
-    if (legnth < 0.1f || g_IsBillboard == false)
+    if (legnth < 0.01f || g_IsBillboard)
     {
         vLook = g_vCamPosition - In[0].vPosition;
         vRight = normalize(vector(cross(float3(0.f, 1.f, 0.f), vLook.xyz), 0.f)) * In[0].fSize * 0.5f;
@@ -103,8 +103,9 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
         vUp = normalize(In[0].vPosition - In[0].vPrevPosition) * In[0].fSize * g_fSizeRatio * 0.5f;
         vLook = normalize(g_vCamPosition - In[0].vPosition);
         vRight = normalize(vector(cross(vUp.xyz, vLook.xyz), 0.f)) * In[0].fSize * 0.5f;
-        vUp += (In[0].vPosition - In[0].vPrevPosition) * 1.7f;
+        vUp += (In[0].vPosition - In[0].vPrevPosition) * 1.25f;
     }
+    
     
     float Width = 1.0f / g_numCols;
     float Height = 1.0f / g_numRows;

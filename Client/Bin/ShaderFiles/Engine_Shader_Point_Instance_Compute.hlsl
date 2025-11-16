@@ -106,8 +106,8 @@ void CS_MOVE(uint3 DTid : SV_DispatchThreadID)
     VTXINSTANCE_PARTICLE Particle = g_OutputData[iIndex];
     VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
 	
-    if (0 == iIndex)
-        g_SpeedData[0].bDead = 0;
+    //if (0 == iIndex)
+    //    g_SpeedData[0].bDead = true;
     
     Particle.vPrevPosition = Particle.vTranslation.xyz;
     
@@ -127,21 +127,22 @@ void CS_MOVE(uint3 DTid : SV_DispatchThreadID)
 	//MoveLinear
     Particle.vTranslation = Particle.vTranslation + float4(0.f, 1.f, 0.f, 0.f) * SpeedData.fSpeed.z * g_fTimeDelta;
     
-    Particle.vLifeTime.x += g_fTimeDelta;
+    if (Particle.bDead == false)
+        Particle.vLifeTime.x += g_fTimeDelta;
 
     if (Particle.vLifeTime.x >= Particle.vLifeTime.y
 		|| (SpeedData.fSpeed.x < 0 && length(vMoveDir).x < 0.1f))
     {
         //ResetParticle(iIndex);
-        g_OutputData[iIndex].vLifeTime.x = 0.f;
-        g_OutputData[iIndex].vTranslation = g_InputData[iIndex].vInitTranslation;
-        g_OutputData[iIndex].vPrevPosition = g_InputData[iIndex].vInitTranslation;
-        if (g_bIsLoop == 0)
-        {
-            g_OutputData[iIndex].bDead = true;
-            g_SpeedData[0].bDead = 1;
-        }
+        Particle.vLifeTime.x = 0.f;
+        Particle.vTranslation = g_InputData[iIndex].vInitTranslation;
+        Particle.vPrevPosition = g_InputData[iIndex].vInitTranslation;
+        if (g_bIsLoop == 0) 
+            Particle.bDead = true; 
     }
+    
+    if (Particle.bDead == false)
+        g_SpeedData[0].bDead = false;
 	
     if (Particle.vRight.x <= 0.f)
     {
@@ -247,6 +248,7 @@ void CS_RESET_SPEED(uint3 DTid : SV_DispatchThreadID)
 
     g_OutputData[iIndex] = Particle;
     g_SpeedData[iIndex] = SpeedData;
+    g_SpeedData[0].bDead = 1.f;
 }
 
 //[numthreads(256, 1, 1)]
@@ -295,4 +297,14 @@ void CS_TURBULENCE(uint3 DTid : SV_DispatchThreadID)
     Particle.vTranslation.xyz += noiseDir * g_TurblunceSpeed * g_fTimeDelta;
 
     g_OutputData[iIndex] = Particle;
+}
+
+[numthreads(256, 1, 1)]
+void CS_RESET_DEAD_FLAG(uint3 DTid : SV_DispatchThreadID)
+{
+    uint iIndex = DTid.x;
+    if (0 > g_iNumInstances)
+        return;
+    
+    g_SpeedData[iIndex].bDead = 1.f;
 }
