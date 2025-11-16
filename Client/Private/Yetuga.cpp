@@ -878,7 +878,7 @@ HRESULT CYetuga::Ready_AnimEvent()
         });
     pModel->Register_Event("Dampsey_First", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
 
-        //Abort_Node(false);
+        Abort_Node(true);
         m_isLookAt = false;
         m_pBody->Set_OnAttackCollision(false);
 
@@ -895,7 +895,7 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("Dampsey_Second", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
-        //Abort_Node(true);
+        Abort_Node(false);
 
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
@@ -903,7 +903,7 @@ HRESULT CYetuga::Ready_AnimEvent()
         });
     pModel->Register_Event("Dampsey_Second", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         
-        //Abort_Node(false);
+        Abort_Node(true);
 
         m_isLookAt = false;
         m_pBody->Set_OnAttackCollision(false);
@@ -922,7 +922,7 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("Dampsey_Third", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
        
-        //Abort_Node(true);
+        Abort_Node(false);
 
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
@@ -930,7 +930,7 @@ HRESULT CYetuga::Ready_AnimEvent()
         });
     pModel->Register_Event("Dampsey_Third", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
        
-        //Abort_Node(false);
+        Abort_Node(true);
 
         m_isLookAt = false;
         m_pBody->Set_OnAttackCollision(false);
@@ -948,7 +948,7 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("Dampsey_Forth", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
-        //Abort_Node(true);
+        Abort_Node(false);
 
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
@@ -956,7 +956,7 @@ HRESULT CYetuga::Ready_AnimEvent()
         });
     pModel->Register_Event("Dampsey_Forth", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
 
-        //Abort_Node(false);
+        Abort_Node(true);
 
         m_isLookAt = false;
         m_pBody->Set_OnAttackCollision(false);
@@ -974,7 +974,7 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("Dampsey_Final", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
-        //Abort_Node(true);
+        Abort_Node(false);
 
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
@@ -982,7 +982,7 @@ HRESULT CYetuga::Ready_AnimEvent()
         });
     pModel->Register_Event("Dampsey_Final", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
 
-        //Abort_Node(false);
+        Abort_Node(true);
 
         m_isLookAt = false;
         m_pBody->Set_OnAttackCollision(false);
@@ -1001,6 +1001,7 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("Dampsey_After", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
+        Abort_Node(false);
         m_isLookAt = true;
 
         });

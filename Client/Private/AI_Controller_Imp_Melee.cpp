@@ -145,7 +145,7 @@ CONDITION CAI_Controller_Imp_Melee::GetCallbackCondition(CGameObject* pOwner, co
 
 #pragma region SLEEP SEQUENCE
 
-    if ("Sleep" == name)
+   /* else if ("Sleep" == name)
     {
         return [pImp](CBlackBoard* BB)->_bool
             {
@@ -159,7 +159,7 @@ CONDITION CAI_Controller_Imp_Melee::GetCallbackCondition(CGameObject* pOwner, co
                     return false;
                 }
             };
-    }
+    }*/
 
 #pragma endregion
   
@@ -309,19 +309,19 @@ ACTION CAI_Controller_Imp_Melee::GetCallbackAction(CGameObject* pOwner, const st
 
 #pragma region SLEEP SEQUENCE
 
-    if ("Sleep" == name)
-    {
-        return [pImp](CBlackBoard* BB)->BTNODESTATE
-            {
-                if (BB->Get_Value<_bool>(pImp->Get_Name(), "isSleepFinished"))
-                {
-                    return BTNODESTATE::SUCCESS;
-                }
-                BB->Set_Value<_bool>(pImp->Get_Name(), "isSleep", true);
-                pImp->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(IMPMELEE_STATE::SLEEP), pImp);
-                return BTNODESTATE::RUNNING;
-            };
-    }
+    //else if ("Sleep" == name)
+    //{
+    //    return [pImp](CBlackBoard* BB)->BTNODESTATE
+    //        {
+    //            if (BB->Get_Value<_bool>(pImp->Get_Name(), "isSleepFinished"))
+    //            {
+    //                return BTNODESTATE::SUCCESS;
+    //            }
+    //            BB->Set_Value<_bool>(pImp->Get_Name(), "isSleep", true);
+    //            pImp->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(IMPMELEE_STATE::SLEEP), pImp);
+    //            return BTNODESTATE::RUNNING;
+    //        };
+    //}
 
 #pragma endregion
 
@@ -521,7 +521,7 @@ TERMINATE CAI_Controller_Imp_Melee::GetCallbackTeminate(CGameObject* pOwner, con
 
 #pragma region SLEEP SEQUENCE
 
-    if ("Sleep" == name)
+    /*if ("Sleep" == name)
     {
         return [pImp](CBlackBoard* BB, BTNODESTATE eState)
             {
@@ -531,7 +531,7 @@ TERMINATE CAI_Controller_Imp_Melee::GetCallbackTeminate(CGameObject* pOwner, con
                 if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
                     BB->Set_Value<_bool>(pImp->Get_Name(), "isSleepFinished", false);
             };
-    }
+    }*/
 
 #pragma endregion
 

@@ -4,6 +4,7 @@
 #include "BlackBoard.h"
 #include "Body_Imp_Melee.h"
 #include "AI_Controller.h"
+#include "FSM_Imp_Melee.h"
 
 CAS_Sleep_Imp_Melee::CAS_Sleep_Imp_Melee()
 {
@@ -50,6 +51,7 @@ void CAS_Sleep_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
         if (m_eState == IMP_SlEEP_STATE::WAKEUP)
         {
             pBB->Set_Value<_bool>(pImp->Get_Name(), "isSleepFinished", true);
+            pFSM->Change_State(ENUM_CLASS(IMPMELEE_STATE::IDLE),pImp);
         }
     }
 

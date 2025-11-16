@@ -31,6 +31,8 @@ HRESULT CProjectile_Imp_MagicBall::Initialize_Clone(void* pArg)
     m_isActive = false;
 
     //m_pModelCom->Set_Animation(0);
+    m_pBody->Collision_Active(false);
+
 
     m_fEffect = dynamic_cast<CEffect_Prefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("MagicBall")));
     m_fEffect->ResetChildren();
@@ -49,12 +51,12 @@ void CProjectile_Imp_MagicBall::Update(_float fTimeDelta)
 
     if (m_fCurrentTime >= m_fLifeTime)
     {
+        m_pBody->Collision_Active(false);
         // 풀로 돌아가고
         m_isDead = true;
         // Active 끄고
         m_isActive = false;
         m_isCrashed = true;
-        m_pBody->Collision_Active(false);
     }
 
     if (m_isActive)
@@ -72,6 +74,7 @@ void CProjectile_Imp_MagicBall::Update(_float fTimeDelta)
     if (CRASHED == m_eState)
     {
         m_pBody->Collision_Active(false);
+        m_isDead = true;
         Enter_State(PRJSTATE::END);
     }
     

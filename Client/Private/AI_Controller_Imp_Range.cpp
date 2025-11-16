@@ -190,9 +190,7 @@ CONDITION CAI_Controller_Imp_Range::GetCallbackCondition(CGameObject* pOwner, co
         return [pImp](CBlackBoard* BB)->_bool
             {
 
-                cout << "Sleep SEQ" << endl;
-
-                if (!BB->Get_Value<_bool>(pImp->Get_Name(), "isSleep"))
+                if (!BB->Get_Value<_bool>(pImp->Get_Name(), "isWakeUp"))
                 {
 
                     return true;
@@ -364,7 +362,7 @@ ACTION CAI_Controller_Imp_Range::GetCallbackAction(CGameObject* pOwner, const st
 
                     return BTNODESTATE::SUCCESS;
                 }
-                BB->Set_Value<_bool>(pImp->Get_Name(), "isSleep", true);
+                BB->Set_Value<_bool>(pImp->Get_Name(), "isWakeUp", true);
                 pImp->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(IMPRANGE_STATE::SLEEP), pImp);
                 return BTNODESTATE::RUNNING;
             };
