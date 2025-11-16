@@ -65,7 +65,7 @@ HRESULT CRenderer::Initialize()
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Combined"), 1050.0f, 450.0f, 300.f, 300.f)))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_RadialBlur"), 1050.0f, 750.0f, 300.f, 300.f)))
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_StaticDepth"), 1050.0f, 750.0f, 300.f, 300.f)))
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Ready_CSM_Debug(m_fViewportWidth - 150.0f, 150.0f, 300.f, 300.f)))
@@ -251,8 +251,10 @@ HRESULT CRenderer::Render_Static()
     if (FAILED(m_pGameInstance->End_MRT()))
         return E_FAIL;
 
-    return S_OK;
+    // 복사 받을 대상, 복사할 대상
+    m_pGameInstance->Copy_RT_Resource(TEXT("RT_StaticDepth"), TEXT("RT_Depth"));
 
+    return S_OK;
 }
 
 HRESULT CRenderer::Render_Decal()
@@ -750,7 +752,11 @@ HRESULT CRenderer::Render_MotionBlur()
     if (FAILED(m_pGameInstance->Bind_MotionBlur_ShaderResources(m_pShader)))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Depth"), m_pShader, "g_DepthTexture")))
+    //  if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Depth"), m_pShader, "g_DepthTexture")))
+    //      return E_FAIL;
+
+    // 정적 오브젝트만 스크린 모션 블러 적용
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_StaticDepth"), m_pShader, "g_DepthTexture")))
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_RadialBlur"), m_pShader, "g_CombinedTexture")))
@@ -858,6 +864,11 @@ HRESULT CRenderer::Ready_RenderTargets()
 
     /* RT_Depth */
     if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_Depth"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
+        return E_FAIL;
+
+    // Test
+    /* RT_Depth */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_StaticDepth"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.f, 0.f, 1.f, 1.f))))
         return E_FAIL;
 
     /* RT_World */

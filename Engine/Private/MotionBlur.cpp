@@ -9,8 +9,8 @@ CMotionBlur::CMotionBlur()
 
 HRESULT CMotionBlur::Initialize()
 {
-    m_Desc.fDepthBias = 0.01f;
-    m_Desc.iNumSamples = 8;
+    m_Desc.fDepthBias = 0.001f;
+    m_Desc.iNumSamples = 16;
 
     return S_OK;
 }

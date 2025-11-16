@@ -743,6 +743,11 @@ HRESULT CGameInstance::Copy_RT_Resource(const _wstring& strTargetTag, ID3D11Text
 	return m_pTarget_Manager->Copy_Resource(strTargetTag, pSourTexture);
 }
 
+HRESULT CGameInstance::Copy_RT_Resource(const _wstring& strDestTargetTag, const _wstring& strSourTargetTag)
+{
+	return m_pTarget_Manager->Copy_Resource(strDestTargetTag, strSourTargetTag);
+}
+
 void CGameInstance::Backup_RT()
 {
 	m_pTarget_Manager->Backup_RT();

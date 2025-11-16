@@ -145,6 +145,7 @@ public:
 	HRESULT End_MRT();
 	HRESULT Bind_RT_ShaderResource(const _wstring& strTargetTag, class CShader* pShader, const _char* pConstantName);
 	HRESULT Copy_RT_Resource(const _wstring& strTargetTag, ID3D11Texture2D* pSourTexture);
+    HRESULT Copy_RT_Resource(const _wstring& strDestTargetTag, const _wstring& strSourTargetTag);
 	void	Backup_RT();
 	void	Restore_RT();
 
