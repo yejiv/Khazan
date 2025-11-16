@@ -22,6 +22,8 @@ void CAS_Hit_Imp_Range::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     HIT_DIR eHitDir = Convert_HitFlag(Info);
     _uint iAnimIndex = Make_AnimIndex(eHitreaction, eHitDir);
 
+    pImp->Cast_Failed();
+
     pModel->Set_Animation(iAnimIndex);
     pModel->Set_AnimationLoop(false);
 

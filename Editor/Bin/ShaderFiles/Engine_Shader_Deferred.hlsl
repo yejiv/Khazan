@@ -84,6 +84,8 @@ bool g_isEnableShadow = { true };
 bool g_isEnableSSAO = { true };
 bool g_isEnableFog = { true };
 bool g_isEnableLUT;
+bool g_isEnableRadialBlur;
+bool g_isEnableMotionBlur;
 
 // ===== Specular =====
 float2 g_vSpecularPower;
@@ -97,6 +99,9 @@ float2 g_vLUTTextureSize;
 float2 g_vCenterUV, g_vMaskRadius;
 float g_fSampleRadius, g_fAttenuation, g_fExponent, g_fStrength;
 uint g_iNumSamples;
+
+// ===== Motion Blur =====
+matrix g_PrevViewMatrix, g_PrevProjMatrix;
 
 struct VS_IN
 {
@@ -668,20 +673,16 @@ PS_OUT_BACKBUFFER PS_FOG(PS_IN In)
 PS_OUT_BACKBUFFER PS_DISTORTION(PS_IN In)
 {
     PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
-    
-    // Combined Sample
+
     float4 vFinalColor;
     
     if (g_isEnableDistortion)
     {
-        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å©ï¿½ï¿½
         float2 vNoiseUV = In.vTexcoord;
         vNoiseUV += g_fTime * g_fSpeed;
         
-        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ã¸ï¿½
         float2 vNoise = g_NoiseTexture.Sample(DefaultSampler, vNoiseUV).rg * 2.f - 1.f;
-        
-        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ -> ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ -> UV
+
         float4 vCenterPos;
         
         vCenterPos = mul(float4(g_vCenter, 1.f), g_CameraViewMatrix);
@@ -691,17 +692,14 @@ PS_OUT_BACKBUFFER PS_DISTORTION(PS_IN In)
         float2 vCenterUV;
         vCenterUV.x = vCenterPos.x * 0.5f + 0.5f;
         vCenterUV.y = vCenterPos.y * -0.5f + 0.5f;
-        
-        // ï¿½ß½ï¿½ï¿½ï¿½ï¿½Îºï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Å¸ï¿½ ï¿½ï¿½ï¿½Ï±ï¿½
+
         float2 vDir = In.vTexcoord - vCenterUV;
-        
-        // ï¿½ï¿½È¾ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+
         vDir.x *= g_fAspect;
         
         float fDistance = length(vDir) / g_fRange;
-        
-        // ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸ï¿½ È¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
-        float fMask = pow(saturate(1.f - fDistance), 2.f);  // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½È?
+
+        float fMask = pow(saturate(1.f - fDistance), 2.f);
         
         float2 vDistortionUV = In.vTexcoord + vNoise * g_fPower * fMask;
         vFinalColor = g_CombinedTexture.Sample(DefaultSampler, vDistortionUV);
@@ -775,39 +773,112 @@ PS_OUT_BACKBUFFER PS_RADIAL_BLUR(PS_IN In)
     PS_OUT_BACKBUFFER Out;
     
     float3 vSceneColor = g_CombinedTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
-    
-    float2 vDir = normalize(g_vCenterUV - In.vTexcoord);
-    
-    // Mask
-    float fDist = length(In.vTexcoord - g_vCenterUV);
-    float fMask = smoothstep(g_vMaskRadius.x, g_vMaskRadius.y, fDist);
-    
-    // °î¼± °­È­
-    fMask = pow(fMask, g_fExponent);
-    
-    float3 vColor = float3(0.f, 0.f, 0.f);
-    float fWeightAcc = 0.f;
-    
-    for (uint i = 0; i < g_iNumSamples; ++i)
+    float3 vFinalColor = float3(0.f, 0.f, 0.f);
+
+    if (true == g_isEnableRadialBlur)
     {
-        float fRatio = (i + 1) / (float) g_iNumSamples;
-        float2 vSampleUV = In.vTexcoord + vDir * fRatio * g_fSampleRadius;
-        float fWeight = pow(fRatio, g_fAttenuation);
-        vColor += g_CombinedTexture.Sample(ClampSampler, vSampleUV) * fWeight;
-        fWeightAcc += fWeight;
+        float2 vDir = normalize(g_vCenterUV - In.vTexcoord);
+    
+        // Mask
+        float fDist = length(In.vTexcoord - g_vCenterUV);
+        float fMask = smoothstep(g_vMaskRadius.x, g_vMaskRadius.y, fDist);
+    
+        // °î¼± °­È­
+        fMask = pow(fMask, g_fExponent);
+    
+        float3 vColor = float3(0.f, 0.f, 0.f);
+        float fWeightAcc = 0.f;
+    
+        for (uint i = 0; i < g_iNumSamples; ++i)
+        {
+            float fRatio = (float) (i + 1) / (float) g_iNumSamples;
+            float2 vSampleUV = In.vTexcoord + vDir * fRatio * g_fSampleRadius;
+            float fWeight = pow(fRatio, g_fAttenuation);
+            vColor += g_CombinedTexture.Sample(ClampSampler, vSampleUV) * fWeight;
+            fWeightAcc += fWeight;
+        }
+
+        vFinalColor = lerp(vSceneColor, vColor / max(fWeightAcc, 1e-6), fMask * g_fStrength); // 10^-6
     }
-    
-    float3 vFinalColor = vColor / max(fWeightAcc, 1e-6); // 10^-6
-    vFinalColor = lerp(vSceneColor, vFinalColor, fMask * g_fStrength);
-    
+    else
+    {
+        vFinalColor = vSceneColor;
+    }
+
     Out.vColor = float4(vFinalColor, 1.f);
     
     return Out;
 }
 
+PS_OUT_BACKBUFFER PS_MOTION_BLUR(PS_IN In)
+{
+    PS_OUT_BACKBUFFER Out;
+
+    float3 vSceneColor = g_CombinedTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
+    float3 vFinalColor = float3(0.f, 0.f, 0.f);
+    
+    if (g_isEnableMotionBlur)
+    {
+        vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
+        float fCurDepth = vDepthDesc.x;
+    
+        // Depth -> World Position
+        float4 vWorldPos;
+
+        vWorldPos.x = In.vTexcoord.x * 2.f - 1.f;
+        vWorldPos.y = In.vTexcoord.y * -2.f + 1.f;
+        vWorldPos.z = vDepthDesc.x;
+        vWorldPos.w = 1.f;
+
+        vWorldPos = vWorldPos * vDepthDesc.y;
+        vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
+        vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+    
+        // ¿ùµå Æ÷Áö¼Ç -> ÀÌÀü ºä Åõ¿µ Çà·Ä ½ºÆäÀÌ½º·Î º¯È¯
+        float4 vPrevPos = mul(vWorldPos, g_PrevViewMatrix);
+        vPrevPos = mul(vPrevPos, g_PrevProjMatrix);
+        vPrevPos /= vPrevPos.w;
+    
+        // Prev UV = Texcoord ¹üÀ§·Î º¯È¯ (-1 ~ 1 -> 0 ~ 1)
+        float2 vPrevUV;
+        vPrevUV.x = vPrevPos.x * 0.5f + 0.5f;
+        vPrevUV.y = vPrevPos.y * -0.5f + 0.5f;
+    
+        // ÇöÀç ÇÁ·¹ÀÓÀÇ UV ÁÂÇ¥¿ÍÀÇ Â÷ÀÌ °è»ê
+        float2 vCurUV = In.vTexcoord;
+        float2 vMotionVector = vCurUV - vPrevUV;
+    
+        float fSampleCount = 0.f;
+    
+        [loop]
+        for (uint i = 0; i < g_iNumSamples; ++i)
+        {
+            // Ratio, Sample UV, Depth ºñ±³ -> °æ°è¼± Ã³¸®, »ö ´©Àû, »ùÇÃ °³¼ö ´©Àû
+            float fRatio = (float) i / (float) (g_iNumSamples - 1);
+            float2 vSampleUV = vCurUV - vMotionVector * fRatio;
+        
+            float fSampleDepth = g_DepthTexture.Sample(PointSampler, vSampleUV).x;
+        
+            if (abs(fSampleDepth - fCurDepth) > g_fBias)
+                break;
+        
+            vFinalColor += g_CombinedTexture.Sample(ClampSampler, vSampleUV).rgb;
+            fSampleCount += 1.f;
+        }
+        
+        vFinalColor = vFinalColor / max(fSampleCount, 1e-6);
+    }
+    else
+        vFinalColor = vSceneColor;
+    
+    Out.vColor = float4(vFinalColor, 1.f);
+
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
-    pass Debug
+    pass Debug // 1
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -818,7 +889,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_DEBUG();
     }
 
-    pass Directional
+    pass Directional // 2
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -829,7 +900,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_DIRECTIONAL();
     }
 
-    pass Point
+    pass Point // 2
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -840,7 +911,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_POINT();
     }
 
-    pass PostScene
+    pass PostScene // 3
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -851,7 +922,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_POSTSCENE();
     }
 
-    pass BlurX
+    pass BlurX // 4
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -862,7 +933,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_BLUR_X();
     }
 
-    pass BlurY
+    pass BlurY // 5
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -873,7 +944,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_BLUR_Y();
     }
 
-    pass DebugArray
+    pass DebugArray // 6
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -884,7 +955,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_DEBUG_ARRAY();
     }
 
-    pass SSAO
+    pass SSAO // 7
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -895,7 +966,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_SSAO();
     }
 
-    pass Combined
+    pass Combined // 8
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -906,7 +977,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_COMBINED();
     }
 
-    pass Fog
+    pass Fog // 9
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -917,7 +988,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_FOG();
     }
 
-    pass Distortion
+    pass Distortion // 10
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -928,7 +999,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_DISTORTION();
     }
 
-    pass LUT
+    pass LUT // 11
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -939,7 +1010,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_LUT();
     }
 
-    pass RadialBlur
+    pass RadialBlur // 12
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -948,5 +1019,16 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_RADIAL_BLUR();
+    }
+
+    pass MotionBlur // 13
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MOTION_BLUR();
     }
 }

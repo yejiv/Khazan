@@ -1,12 +1,12 @@
 #pragma once
-#include "UI_Text.h"
+#include "UI_Texture.h"
 #include "Client_Defines.h"
 NS_BEGIN(Engine)
 class CShader;
 NS_END
 
 NS_BEGIN(Client)
-class CDamage_Text final : public CUI_Text
+class CDamage_Text final : public CUI_Texture
 {
 public:
 	enum class DAMAGE_TYPE { DEFAULT, BACK, SPECIAL, PLAYER, END};

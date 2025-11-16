@@ -59,6 +59,7 @@ HRESULT CLevel_Shader::Initialize()
 
 	m_DistortionDesc = m_pGameInstance->Get_DistortionDesc();
     m_RadialBlurDesc = m_pGameInstance->Get_RadialBlurDesc();
+    m_MotionBlurDesc = m_pGameInstance->Get_MotionBlurDesc();
 
 	m_iNumCascades = m_pGameInstance->Get_NumCascades();
 
@@ -398,6 +399,26 @@ HRESULT CLevel_Shader::Initialize()
                 
                 if (ImGui::Button("Start Radial Blur Animation"))
                     m_pGameInstance->Start_RadialBlur(m_RadialBlurDesc);
+
+                ImGui::Separator();
+            }
+
+            if (ImGui::Checkbox("Motion Blur", &m_isEnableMotionBlur))
+                m_pGameInstance->Set_EnableMotionBlur(m_isEnableMotionBlur);
+
+            if (m_isEnableMotionBlur)
+            {
+                // 깊이 바이어스
+                if (ImGui::SliderFloat("Motion Blur Bias", &m_MotionBlurDesc.fDepthBias, 0.f, 0.1f, "%.3f"))
+                    m_pGameInstance->Set_MotionBlurDesc(m_MotionBlurDesc);
+
+                // 샘플 개수
+                _int iNumSamples = static_cast<_int>(m_MotionBlurDesc.iNumSamples);
+                if (ImGui::InputInt("Motion Blur Num Samples", &iNumSamples, 2, 4))
+                {
+                    m_MotionBlurDesc.iNumSamples = iNumSamples;
+                    m_pGameInstance->Set_MotionBlurDesc(m_MotionBlurDesc);
+                }
 
                 ImGui::Separator();
             }

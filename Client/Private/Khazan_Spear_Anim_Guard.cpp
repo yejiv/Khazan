@@ -33,6 +33,13 @@ void CKhazan_Spear_Anim_Guard::Continue(_float fTimeDelta)
 		m_pModel->Set_Animation(m_iSelectedAnimationIndex);
 	}
 
+    // 저스트 가드 성공 ->루프로 복귀 
+    if (m_isJustGuarding && m_pModel->IsFinished()) {
+        m_isJustGuarding = false; 
+        m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Guard_Loop");
+        m_pModel->Set_Animation(m_iSelectedAnimationIndex);
+    }
+
 	// WalkGuard 시작 -> 실제 Walk 애니메이션으로 전환
 	if (m_isWalkGuardStart && m_pModel->Check_MinAnimationTime())
 	{
@@ -61,6 +68,9 @@ void CKhazan_Spear_Anim_Guard::Exit()
 
 _bool CKhazan_Spear_Anim_Guard::Try_Guard()
 {
+    if (m_isJustGuarding)
+        return false;
+
 	if (!m_pModel->Check_MinAnimationTime()/* || !m_pModel->IsFinished()*/)
 		return false;
 
@@ -86,18 +96,17 @@ _bool CKhazan_Spear_Anim_Guard::Try_Guard()
 
 _bool CKhazan_Spear_Anim_Guard::Try_SuccessGuard(_uint iHitDir)
 {
-	if (!m_isGuarding)
+	if (!m_isGuarding || !m_isJustGuarding)
 		return false;
 
 	m_isWalkGuarding = m_isJustGuarding = false;
 
-
-	if (m_iHitDir & DIRECTION_INFO::DIR::U) 
+     if (m_iHitDir & DIRECTION_INFO::DIR::L)
+        m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Guard_Suc_L");
+    else if (m_iHitDir & DIRECTION_INFO::DIR::R)
+        m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Guard_Suc_R");
+    else if (m_iHitDir & DIRECTION_INFO::DIR::U)
 		m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Guard_Suc_U");
-	else if (m_iHitDir & DIRECTION_INFO::DIR::L) 
-		m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Guard_Suc_L");	
-	else if (m_iHitDir & DIRECTION_INFO::DIR::R) 
-		m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Guard_Suc_R");
 	else 
 		m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Guard_Suc_D");
 
@@ -113,6 +122,9 @@ _bool CKhazan_Spear_Anim_Guard::Try_WalkGuard(_uint iMoveDir)
 {
 	//if (!m_pModel->Check_MinAnimationTime() /*|| !m_pModel->IsFinished()*/)
 	//	return false;
+
+    if (m_isJustGuarding)
+        return false;
 
 	   // 가드 중이 아니면 가드 시작
 	if (!m_isGuarding)
@@ -167,25 +179,23 @@ _bool CKhazan_Spear_Anim_Guard::Try_WalkGuard(_uint iMoveDir)
 
 _bool CKhazan_Spear_Anim_Guard::Try_JustGuard(_uint m_iHitDir)
 {
-	if (!m_pModel->Check_MinAnimationTime() /*|| !m_pModel->IsFinished()*/)
-		return false;
+   // if (!m_pModel->Check_MinAnimationTime() /*|| !m_pModel->IsFinished()*/)
+       // return false;
+    if (m_isJustGuarding)
+        return false ;
 
-	if (m_iHitDir & DIRECTION_INFO::DIR::U) {
-		m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_JustGuard_U");
-	}
-	else if (m_iHitDir & DIRECTION_INFO::DIR::L) {
-		m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_JustGuard_L");
-	}
-	else if (m_iHitDir & DIRECTION_INFO::DIR::R) {
-		m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_JustGuard_R");
-	}
-	else {
-		m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_JustGuard_D");
-	}
+    m_isJustGuarding = true;
 
-	m_pModel->Set_Animation(m_iSelectedAnimationIndex);
+    if (m_iHitDir & DIRECTION_INFO::DIR::L) 
+        m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_JustGuard_L");
+    else 
+        m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_JustGuard_R");
+    
 
-	return true;
+    cout << "=================== Just !!! : " << m_iSelectedAnimationIndex << endl;
+    m_pModel->Set_Animation(m_iSelectedAnimationIndex);
+
+    return true;
 }
 
 _bool CKhazan_Spear_Anim_Guard::Play_FinishGuard()
@@ -198,6 +208,21 @@ _bool CKhazan_Spear_Anim_Guard::Play_FinishGuard()
 	m_pModel->Set_Animation(m_iSelectedAnimationIndex);
 
 	return true;
+}
+
+void CKhazan_Spear_Anim_Guard::Clear()
+{
+    m_isGuarding = { false };
+    m_isWalkGuarding = { false };
+    m_isJustGuarding = { false };
+
+    m_isGuardStart = { false };
+    m_isWalkGuardStart = { false };
+    m_isGuardSuccess = { false };
+    m_isFinishedGuard = { false };
+
+    m_iHitDir = 0;
+    m_iMoveDir = 0;
 }
 
 CKhazan_Spear_Anim_Guard* CKhazan_Spear_Anim_Guard::Create()

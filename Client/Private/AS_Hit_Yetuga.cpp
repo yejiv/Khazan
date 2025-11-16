@@ -40,6 +40,7 @@ void CAS_Hit_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTi
         CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
         pBB->Set_Value<_bool>(pYetuga->Get_Name(), "isHitFinished", true);
         pBB->Set_Value<_bool>(pYetuga->Get_Name(), "IsHitEvent", false);
+        pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE),pOwner);
     }
 
 }

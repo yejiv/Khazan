@@ -53,9 +53,10 @@ void CRenderTarget::Clear()
 	m_pContext->ClearRenderTargetView(m_pRTV, reinterpret_cast<_float*>(&m_vClearColor));
 }
 
-HRESULT CRenderTarget::Copy_Resource(ID3D11Texture2D* pSourTexture)
+HRESULT CRenderTarget::Copy_Resource(ID3D11Texture2D* pDestTexture)
 {
-	m_pContext->CopyResource(pSourTexture, m_pTexture2D);
+    // 복사를 받을 대상, 복사할 대상
+	m_pContext->CopyResource(pDestTexture, m_pTexture2D);
 
 	return S_OK;
 }

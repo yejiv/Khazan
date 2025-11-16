@@ -13,7 +13,7 @@ private:
 public:
     virtual _float4*                Get_LockOnPosition();
     class   CBody_Imp_Range*        Get_Body() { return m_pBody; }
-
+    void                            Cast_Failed();
 
 public:
     virtual HRESULT					Initialize_Prototype() override;

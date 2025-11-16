@@ -71,7 +71,7 @@ private:
 
 
 	_bool							m_isLookAt = { false };
-	_float							m_fTurnSpeed = { false };
+	_float							m_fTurnSpeed = { 3.f };
 	_bool							m_isRockPlay = { false };
 	_bool							m_isSmash = { false };
 	_float3							m_vHoldRockOffset = {};

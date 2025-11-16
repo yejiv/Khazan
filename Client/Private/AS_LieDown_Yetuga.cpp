@@ -26,6 +26,7 @@ void CAS_LieDown_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
     {
         CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
         pBB->Set_Value<_bool>("Yetuga", "isAttackFinished3", true);
+        pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
     }
 }
 

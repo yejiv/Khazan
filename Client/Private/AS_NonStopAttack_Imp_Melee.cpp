@@ -4,6 +4,7 @@
 #include "Body_Imp_Melee.h"
 #include "BlackBoard.h"
 #include "AI_Controller.h"
+#include "FSM_Imp_Melee.h"
 
 
 CAS_NonStopAttack_Imp_Melee::CAS_NonStopAttack_Imp_Melee()
@@ -26,11 +27,22 @@ void CAS_NonStopAttack_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwne
     {
         CBlackBoard* pBB = pImp->Get_Controller()->Get_BlackBoard();
         pBB->Set_Value<_bool>(pImp->Get_Name(), "isNonStopAttackFinished", true);
+        pFSM->Change_State(ENUM_CLASS(IMPMELEE_STATE::IDLE), pOwner);
     }
 }
 
 void CAS_NonStopAttack_Imp_Melee::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
+}
+
+void CAS_NonStopAttack_Imp_Melee::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
+{
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iCollisionLayer);
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+        CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        pTarget->Take_Damage(10,HITREACTION::KNOCKBACK_WEAK,nullptr);
+    }
 }
 
 CAS_NonStopAttack_Imp_Melee* CAS_NonStopAttack_Imp_Melee::Create()

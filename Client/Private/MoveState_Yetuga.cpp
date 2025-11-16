@@ -39,27 +39,6 @@ void CMoveState_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     }  
 }
 
-//void CMoveState_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
-//{
-// 
-//    CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
-//    CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
-//    CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
-//    CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
-//
-//
-//    _float fRunRange = pBB->Get_Value<_float>("Yetuga", "RunRange");
-//
-//    pYetuga->Get_Controller()->
-//        AI_MoveTo(pOwner, 
-//            pBB->Get_Value<CGameObject*>("Yetuga", "Target"),
-//            fRunRange - 0.5f, 
-//            m_fSpeedPerSec,
-//            fTimeDelta);
-//
-//    if (pModel->Play_Animation(fTimeDelta)) {}
-//
-//}
 
 void CMoveState_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
@@ -85,7 +64,7 @@ void CMoveState_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
         m_fSpeedPerSec = pBB->Get_Value<_float>(pYetuga->Get_Name(), "RunSpeed");
         pModel->Set_Animation(6);
     }
-    // �̵�
+
     _float fMoveRange = pBB->Get_Value<_float>(pYetuga->Get_Name(), "RunRange") - 0.5f;
     pYetuga->Get_Controller()->AI_MoveTo(pOwner, pTarget, fMoveRange, m_fSpeedPerSec, fTimeDelta);
 

@@ -40,6 +40,7 @@ private:
 	_bool					m_isEnableToonShade = { true };
 	_bool					m_isEnableOutline = {};
     _bool                   m_isEnableLUT = { true };
+    _bool                   m_isEnableMotionBlur = {};
 
 	// SSAO
 	SSAO_CONFIG				m_SSAOConfig = {};
@@ -60,6 +61,9 @@ private:
 
     // LUT
     _float                  m_fLUTIntensity = { 0.2f };
+
+    // Motion Blur
+    MOTION_BLUR_DESC        m_MotionBlurDesc = {};
 
 	LEVEL                   m_eCurrentLevel = { LEVEL::TITLE };
 	_bool                   m_isSelectLevel[ENUM_CLASS(LEVEL::END)];
