@@ -270,6 +270,17 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             m_pGameInstance->Start_ShadowIntensityTransition(5.f, 1.f);
 
             Start_SkyTransition(m_Sky_Desc, m_Cloud_Desc, 5.f);
+
+#pragma region 동굴 들어갈때 플레이어 isInCave = true;
+
+            EventInteractType InteractType = {};
+
+            InteractType.eState = EventInteractType::NONE;
+            InteractType.CaveIn();
+
+            m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+
+#pragma endregion
         }
         else if (m_strTriggerKey == "CaveMidEntry")
         {
@@ -303,6 +314,17 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
 
             // 그림자 보간 추가
             m_pGameInstance->Start_ShadowIntensityTransition(15.f, 0.6f);
+
+#pragma region 동굴 나갈때 플레이어 isInCave = false;
+
+            EventInteractType InteractType = {};
+
+            InteractType.eState = EventInteractType::NONE;
+            InteractType.CaveOut();
+
+            m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+
+#pragma endregion
         }
 #pragma endregion
 #pragma region 동굴 역방향
@@ -320,6 +342,17 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
 
             // 그림자 보간 추가
             m_pGameInstance->Start_ShadowIntensityTransition(5.f, 0.6f);
+
+#pragma region 동굴 나갈때 ( 역방향 ) 플레이어 isInCave = false;
+
+            EventInteractType InteractType = {};
+
+            InteractType.eState = EventInteractType::NONE;
+            InteractType.CaveOut();
+
+            m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+
+#pragma endregion
         }
         else if (m_strTriggerKey == "CaveMidEntry_Rev")
         {
@@ -347,6 +380,17 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
 
             // 그림자 보간 추가
             m_pGameInstance->Start_ShadowIntensityTransition(7.f, 1.f);
+
+#pragma region 동굴 들어갈때 ( 역방향 ) 플레이어 isInCave = true;
+
+            EventInteractType InteractType = {};
+
+            InteractType.eState = EventInteractType::NONE;
+            InteractType.CaveIn();
+
+            m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+
+#pragma endregion
         }
 #pragma endregion
         else if (m_strTriggerKey == "Talk_03")
