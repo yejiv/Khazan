@@ -618,6 +618,7 @@ namespace Engine
 		float			fAlpha;
 		unsigned int	iTexPass;
 		unsigned int	iShaderPass;
+        float           fDepth;
 	}VTXINSTANCE_UI;
 
 	typedef struct tagUI_INSTANCING

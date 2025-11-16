@@ -47,6 +47,7 @@ void CAS_Smash_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
     {
         CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
         pBB->Set_Value<_bool>(pYetuga->Get_Name(),"isNormalSmashFinished",true);
+        pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE),pOwner);
     }
 
 
@@ -64,7 +65,7 @@ void CAS_Smash_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer,
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
-        pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK);
+        pTarget->Take_Damage(0.5f, HITREACTION::KNOCKBACK_WEAK);
         CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
         if (nullptr == pOwnerTransform)
             return;

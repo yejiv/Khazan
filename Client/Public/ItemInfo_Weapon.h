@@ -15,6 +15,9 @@ public:
 		_int iItemIndex;
 		_float2 iOffsetPos;
 		_bool isEquip;
+
+        _int iEffect_Type;
+        _int iEffect_Value;
 	}WEAPONINFO_DESC;
 
 private:
@@ -62,6 +65,7 @@ private:
 	class CUI_Default_Tex*		m_pEquip_Deco = { nullptr };
 	class CUI_TextBox*			m_pEquip_Text = { nullptr };
 
+    class CItemInfo_RandomEffect* m_pEffect_Info = { nullptr };
 private:
 	HRESULT						Ready_Prototype();
 	HRESULT						Ready_Componet();

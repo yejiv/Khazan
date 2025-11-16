@@ -42,7 +42,9 @@ public:
 	_bool	Try_ChageStrongAttack();
 
     void    Reserve_SkillAttack(_uint iSkill);
-    void    Clear_Skill() { m_isReserve = false; m_iReserveSkillIndex = 0; }
+    void    Clear_Skill();
+    void    Clear_Attack();
+    void    Clear_All();
 
 	_bool	Is_Attacking() const { return m_isAttacking; }
     _bool   Is_FastAttacking() const { return m_isFastCombo; }

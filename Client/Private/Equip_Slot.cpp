@@ -22,7 +22,7 @@ CEquip_Slot::CEquip_Slot(const CEquip_Slot& Prototype)
 
 _bool CEquip_Slot::Add_Item(_int iItemIndex, CItem_Slot* pItem)
 {
-    if (m_iItemIndex == iItemIndex || m_pItem_Slot == pItem)
+    if (m_pItem_Slot == pItem)
     {
         return true;
     }
@@ -30,6 +30,13 @@ _bool CEquip_Slot::Add_Item(_int iItemIndex, CItem_Slot* pItem)
     {
         if (m_pItem_Slot != nullptr)
         {
+            const ITEM_DATA* pData = CClientInstance::GetInstance()->Get_Data<ITEM_DATA>(m_iItemIndex);
+
+            if (pData->iType > 3)
+            {
+                EQUIPITEM_DATA pEquipData = *CClientInstance::GetInstance()->Get_Data<EQUIPITEM_DATA>(pData->iEffect_ID);
+                Setting_UnEquipData(pEquipData);
+            }
             m_pItem_Slot->is_Equip(false);
             Safe_Release(m_pItem_Slot);
         }
@@ -56,6 +63,11 @@ _bool CEquip_Slot::Add_Item(_int iItemIndex, CItem_Slot* pItem)
             EventDesc.iItemCount = m_pItem_Slot->Get_ptrItemCount();
             m_pGameInstance->Emit_Event<EVENT_HUD_QUICKSLOT>(ENUM_CLASS(EVENT_TYPE::UI_QUICK_SLOT), EventDesc);
         }
+        else
+        {
+            EQUIPITEM_DATA pEquipData = *CClientInstance::GetInstance()->Get_Data<EQUIPITEM_DATA>(ItemData.iEffect_ID);
+            Setting_EquipData(pEquipData);
+        }
         return true;
     }
     return false;
@@ -68,10 +80,10 @@ void CEquip_Slot::Release_Item(CItem_Slot* pItem)
 
     if (m_pItem_Slot != pItem)
         return;
+
+    ITEM_DATA ItemData = *CClientInstance::GetInstance()->Get_Data<ITEM_DATA>(m_iItemIndex);
     m_iItemIndex = -1;
 
-    Safe_Release(m_pItem_Slot);
-    m_pItem_Slot = nullptr;
     Update_State(0);
 
     if (ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::QUICK_1) <= m_iIndex)
@@ -84,7 +96,13 @@ void CEquip_Slot::Release_Item(CItem_Slot* pItem)
 
         m_pGameInstance->Emit_Event<EVENT_HUD_QUICKSLOT>(ENUM_CLASS(EVENT_TYPE::UI_QUICK_SLOT), EventDesc);
     }
-    
+    else
+    {
+        EQUIPITEM_DATA pEquipData = *CClientInstance::GetInstance()->Get_Data<EQUIPITEM_DATA>(ItemData.iEffect_ID);
+        Setting_UnEquipData(pEquipData);
+    }
+    Safe_Release(m_pItem_Slot);
+    m_pItem_Slot = nullptr;
 }
 
 void CEquip_Slot::Update_PosX(_int iIndex, _float2 vPos, _float fOffSetX, _float fOffSetY, CUIObject* pParent)
@@ -379,8 +397,107 @@ void CEquip_Slot::Render_ItemInfo()
         Desc.iItemIndex = m_iItemIndex;
         Desc.iOffsetPos = { 890.f, 595.f };
         Desc.isEquip = true;
+        Desc.iEffect_Type = m_pItem_Slot->Get_Random_Type();
+        Desc.iEffect_Value = m_pItem_Slot->Get_Random_Value();
+
         CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("ItemInfo_Weapon"), &Desc);
     }
+}
+
+void CEquip_Slot::Setting_EquipData(EQUIPITEM_DATA pData)
+{
+    if (pData.iValue_Type_1 == 1)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fDamage += pData.iValue_1;
+    else if (pData.iValue_Type_1 == 2)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fGuard += pData.iValue_1;
+    else if (pData.iValue_Type_1 == 3)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fMaxHp += pData.iValue_1;
+    else if (pData.iValue_Type_1 == 4)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fMaxStamina += pData.iValue_1;
+
+    if (pData.iValue_Type_2 == 1)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fDamage += pData.iValue_2;
+    else if (pData.iValue_Type_2 == 2)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fGuard += pData.iValue_2;
+    else if (pData.iValue_Type_2 == 3)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fMaxHp += pData.iValue_2;
+    else if (pData.iValue_Type_2 == 4)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fMaxStamina += pData.iValue_2;
+
+    if (pData.iValue_Type_3 == 1)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fDamage += pData.iValue_3;
+    else if (pData.iValue_Type_3 == 2)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fGuard += pData.iValue_3;
+    else if (pData.iValue_Type_3 == 3)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fMaxHp += pData.iValue_3;
+    else if (pData.iValue_Type_3 == 4)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fMaxStamina += pData.iValue_3;
+
+    if (pData.iClother_Type == 1)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fWeight += pData.fWeight;
+
+    if (m_pItem_Slot->Get_Random_Type() == 1)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fDamage += m_pItem_Slot->Get_Random_Value();
+    else if (m_pItem_Slot->Get_Random_Type() == 2)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fDamage += (_int)((pData.iValue_1 * 0.01f) * m_pItem_Slot->Get_Random_Value());
+    else if (m_pItem_Slot->Get_Random_Type() == 3)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fStaminaRegen += m_pItem_Slot->Get_Random_Value();
+    else if (m_pItem_Slot->Get_Random_Type() == 4)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fGuard += m_pItem_Slot->Get_Random_Value();
+    else if (m_pItem_Slot->Get_Random_Type() == 5)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fMaxStamina += m_pItem_Slot->Get_Random_Value();
+    else if (m_pItem_Slot->Get_Random_Type() == 6)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fMaxHp += m_pItem_Slot->Get_Random_Value();
+    else if (m_pItem_Slot->Get_Random_Type() == 7)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().iMaxDoggednessCount += m_pItem_Slot->Get_Random_Value();
+}
+
+void CEquip_Slot::Setting_UnEquipData(EQUIPITEM_DATA pData)
+{
+    if (pData.iValue_Type_1 == 1)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fDamage -= pData.iValue_1;
+    else if (pData.iValue_Type_1 == 2)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fGuard -= pData.iValue_1;
+    else if (pData.iValue_Type_1 == 3)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fMaxHp -= pData.iValue_1;
+    else if (pData.iValue_Type_1 == 4)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fMaxStamina -= pData.iValue_1;
+
+    if (pData.iValue_Type_2 == 1)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fDamage -= pData.iValue_2;
+    else if (pData.iValue_Type_2 == 2)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fGuard -= pData.iValue_2;
+    else if (pData.iValue_Type_2 == 3)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fMaxHp -= pData.iValue_2;
+    else if (pData.iValue_Type_2 == 4)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fMaxStamina -= pData.iValue_2;
+
+    if (pData.iValue_Type_3 == 1)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fDamage -= pData.iValue_3;
+    else if (pData.iValue_Type_3 == 2)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fGuard -= pData.iValue_3;
+    else if (pData.iValue_Type_3 == 3)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fMaxHp -= pData.iValue_3;
+    else if (pData.iValue_Type_3 == 4)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fMaxStamina -= pData.iValue_3;
+
+    if (pData.iClother_Type == 1)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fWeight -= pData.fWeight;
+
+    if (m_pItem_Slot->Get_Random_Type() == 1)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fDamage -= m_pItem_Slot->Get_Random_Value();
+    else if (m_pItem_Slot->Get_Random_Type() == 2)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fDamage -= (_int)((pData.iValue_1 * 0.01f) * m_pItem_Slot->Get_Random_Value());
+    else if (m_pItem_Slot->Get_Random_Type() == 3)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fStaminaRegen -= m_pItem_Slot->Get_Random_Value();
+    else if (m_pItem_Slot->Get_Random_Type() == 4)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fGuard -= m_pItem_Slot->Get_Random_Value();
+    else if (m_pItem_Slot->Get_Random_Type() == 5)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fMaxStamina -= m_pItem_Slot->Get_Random_Value();
+    else if (m_pItem_Slot->Get_Random_Type() == 6)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().fMaxHp -= m_pItem_Slot->Get_Random_Value();
+    else if (m_pItem_Slot->Get_Random_Type() == 7)
+        CClientInstance::GetInstance()->Get_ptrPlayerData().iMaxDoggednessCount -= m_pItem_Slot->Get_Random_Value();
 }
 
 CEquip_Slot* CEquip_Slot::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)

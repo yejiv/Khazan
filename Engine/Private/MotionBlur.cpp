@@ -17,21 +17,21 @@ HRESULT CMotionBlur::Initialize()
 
 HRESULT CMotionBlur::Bind_MotionBlur_ShaderResources(CShader* pShader)
 {
-    // ÀÌÀü ºä Åõ¿µ Çà·Ä
+    // ì´ì „ ë·° íˆ¬ì˜ í–‰ë ¬
     if (FAILED(pShader->Bind_Matrix("g_PrevViewMatrix", &m_PrevViewMatrix)))
         return E_FAIL;
 
     if (FAILED(pShader->Bind_Matrix("g_PrevProjMatrix", &m_PrevProjMatrix)))
         return E_FAIL;
 
-    // ¿ùµå º¹¿øÀ» À§ÇÑ ºä Åõ¿µ ¿ªÇà·Ä
+    // ì›”ë“œ ë³µì›ì„ ìœ„í•œ ë·° íˆ¬ì˜ ì—­í–‰ë ¬
     if (FAILED(pShader->Bind_Matrix("g_ViewMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::VIEW))))
         return E_FAIL;
 
     if (FAILED(pShader->Bind_Matrix("g_ProjMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::PROJ))))
         return E_FAIL;
 
-    // ¸ð¼Ç ºí·¯ Á¤º¸
+    // ëª¨ì…˜ ë¸”ëŸ¬ ì •ë³´
     if (FAILED(pShader->Bind_RawValue("g_iNumSamples", &m_Desc.iNumSamples, sizeof(_uint))))
         return E_FAIL;
 
@@ -46,7 +46,7 @@ HRESULT CMotionBlur::Bind_MotionBlur_ShaderResources(CShader* pShader)
 
 void CMotionBlur::Update_PrevMatrices()
 {
-    // ÀÌÀü Çà·Ä °»½Å
+    // ì´ì „ í–‰ë ¬ ê°±ì‹ 
     m_PrevViewMatrix = *m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW);
     m_PrevProjMatrix = *m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ);
 }

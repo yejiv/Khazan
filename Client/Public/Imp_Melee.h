@@ -37,13 +37,14 @@ private:
     HRESULT							Ready_PartObjects();
     HRESULT							Ready_AnimEvent();
 
-
 private:
     class CBody_Imp_Melee*          m_pBody = { nullptr };
     class CImp_Sword*               m_pWeapon = { nullptr };
     class CMon_HP*                  m_pUI_HP = { nullptr };
 
     _bool                           m_isDetected = { false };
+    _bool                           m_isLookAt = { false };
+    _float							m_fTurnSpeed = { 10.f };
 
 public:
     static CImp_Melee*              Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

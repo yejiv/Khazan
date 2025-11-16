@@ -418,7 +418,7 @@ void CUI_State_Panel::Update_Text()
         fValue = m_pData->fWeight / m_pData->fMaxWeight * 100.f;
         fValue >= 100.f ? iTextValue = 5 : iTextValue = 4;
 
-        wstrTemp = to_wstring(m_pData->fWeight).substr(0, 4) + TEXT(" / ") + to_wstring(m_pData->fMaxWeight).substr(0, 4);
+        wstrTemp = to_wstring(m_pData->fWeight).substr(0, 4) + TEXT(" / ") + to_wstring(m_pData->fMaxWeight).substr(0, 3);
         wstrTemp += TEXT(" (") + to_wstring(fValue).substr(0, iTextValue) + TEXT("%)");
         m_pValue_TextBox->Set_Text(wstrTemp);
        
@@ -486,7 +486,7 @@ void CUI_State_Panel::Update_Text()
         break;
     case PLAYTER_STATE::DAMAGE_STAMINADOWN:
         fValue = m_pData->fDamage_StaminaDown;
-        fValue <= 0.f ? iTextValue = 3 : iTextValue = 4;
+        fValue <= 0.f ? iTextValue = 2 : iTextValue = 3;
         wstrTemp = to_wstring(fValue).substr(0, iTextValue) + TEXT("%");
         m_pValue_TextBox->Set_Text(wstrTemp);
 

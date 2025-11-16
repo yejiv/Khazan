@@ -4,6 +4,7 @@
 #include "BlackBoard.h"
 #include "Body_Imp_Range.h"
 #include "AI_Controller.h"
+#include "FSM_Imp_Range.h"
 
 CAS_Sleep_Imp_Range::CAS_Sleep_Imp_Range()
 {
@@ -49,6 +50,9 @@ void CAS_Sleep_Imp_Range::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
         if (m_eState == IMP_SlEEP_STATE::WAKEUP)
         {
             pBB->Set_Value<_bool>(pImp->Get_Name(), "isSleepFinished", true);
+            pBB->Set_Value<_bool>(pImp->Get_Name(), "isSleep", true);
+            pFSM->Change_State(ENUM_CLASS(IMPRANGE_STATE::IDLE), pImp);
+
         }
     }
 }

@@ -40,6 +40,9 @@ private:
 
 	void								Equip_Item();
 	void								Render_ItemInfo();
+
+    void                                Setting_EquipData(EQUIPITEM_DATA pData);
+    void                                Setting_UnEquipData(EQUIPITEM_DATA pData);
 public:
 	static CEquip_Slot* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
 	virtual CGameObject* Clone(void* pArg) override;
