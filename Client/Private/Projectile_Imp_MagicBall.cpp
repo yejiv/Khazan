@@ -22,17 +22,18 @@ HRESULT CProjectile_Imp_MagicBall::Initialize_Clone(void* pArg)
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
-    if (FAILED(Ready_Components()))
-        return E_FAIL;
+   /* if (FAILED(Ready_Components()))
+        return E_FAIL;*/
 
     if (FAILED(Ready_Colliders()))
         return E_FAIL;
 
     m_isActive = false;
 
-    m_pModelCom->Set_Animation(0);
+    //m_pModelCom->Set_Animation(0);
+    m_pBody->Collision_Active(false);
 
-    //m_pTransformCom->Scale(_float3(0.5f, 0.5f, 0.5f));
+
     m_fEffect = dynamic_cast<CEffect_Prefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("MagicBall")));
     m_fEffect->ResetChildren();
 
@@ -50,12 +51,12 @@ void CProjectile_Imp_MagicBall::Update(_float fTimeDelta)
 
     if (m_fCurrentTime >= m_fLifeTime)
     {
+        m_pBody->Collision_Active(false);
         // 풀로 돌아가고
         m_isDead = true;
         // Active 끄고
         m_isActive = false;
         m_isCrashed = true;
-        m_pBody->Collision_Active(false);
     }
 
     if (m_isActive)
@@ -69,14 +70,14 @@ void CProjectile_Imp_MagicBall::Update(_float fTimeDelta)
         }
     }
 
-    if (m_pModelCom->Play_Animation(fTimeDelta))
+
+    if (CRASHED == m_eState)
     {
-        if (CRASHED == m_eState)
-        {
-            m_pBody->Collision_Active(false);
-            Enter_State(PRJSTATE::END);
-        }
+        m_pBody->Collision_Active(false);
+        m_isDead = true;
+        Enter_State(PRJSTATE::END);
     }
+    
 
     m_fEffect->UpdatePosition(m_pTransformCom->Get_State(STATE::POSITION));
     m_fEffect->Update(fTimeDelta);
@@ -92,26 +93,6 @@ void CProjectile_Imp_MagicBall::Late_Update(_float fTimeDelta)
 
 HRESULT CProjectile_Imp_MagicBall::Render()
 {
-    return S_OK;
-
-    if (FAILED(Bind_ShaderResources()))
-        return E_FAIL;
-
-    _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
-
-    for (size_t i = 0; i < iNumMeshes; i++)
-    {
-        m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
-
-        m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
-
-        if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
-            return E_FAIL;
-
-        m_pShaderCom->Begin(0);
-
-        m_pModelCom->Render(i);
-    }
     return S_OK;
 }
 
@@ -132,7 +113,7 @@ void CProjectile_Imp_MagicBall::Reset()
     m_pTransformCom->Set_State(STATE::UP, vUp);
     m_pTransformCom->Set_State(STATE::LOOK, vDir);
 
-    //m_pTransformCom->Scale(_float3(0.5f, 0.5f, 0.5f));
+
 
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&m_vSpawnPoint), 1.f));
 }
@@ -144,10 +125,8 @@ void CProjectile_Imp_MagicBall::Enter_State(PRJSTATE eNextState)
     switch (m_eState)
     {
     case Client::CProjectile::LOOP:
-        m_pModelCom->Set_Animation(1);
         break;
     case Client::CProjectile::CRASHED:
-        m_pModelCom->Set_Animation(2);
         m_isActive = false;
         break;
     case Client::CProjectile::END:
@@ -187,7 +166,7 @@ HRESULT CProjectile_Imp_MagicBall::Ready_Colliders()
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
     BodyDesc.bIsTrigger = true;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
-        TEXT("Com_Body_Yetuga_Stone"), reinterpret_cast<CComponent**>(&m_pBody), &BodyDesc)))
+        TEXT("Com_Body_ImpRange_MagicBall"), reinterpret_cast<CComponent**>(&m_pBody), &BodyDesc)))
         return E_FAIL;
 
     return S_OK;
@@ -203,6 +182,8 @@ HRESULT CProjectile_Imp_MagicBall::Bind_ShaderResources()
 
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
         return E_FAIL;
+
+    return S_OK;
 }
 
 void CProjectile_Imp_MagicBall::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)

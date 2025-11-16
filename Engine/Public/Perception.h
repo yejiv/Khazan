@@ -14,6 +14,12 @@ public:
     {
         m_PerceptionCallBack = CallBack;
     }
+
+    void                Set_Fov();
+    void                Reset_Fov();
+
+
+
 public:
     _float              Get_CurrentTime() const { return m_fCurrnetTime; }
     _float              Get_DamageAcc() const { return m_fDamageAcc; }
@@ -41,7 +47,9 @@ private:
     _float              m_LastSweepTime = { 0.f }; // 마지막으로 전체 시야 스캔을 수행한시간
     _float              m_fSenseRadiusCache = { 0.f }; // 센스 반경 최적화 용 캐시 (미리 계산해두고 거리 비교시 사용)
     _float              m_fDamageAcc = { 0.f };
+    _float              m_fOriginFOVCos = {};
     queue<STIMULUS>     m_DamageHistory;
+
 
     unordered_map<class CGameObject*, PERCEIVED_DESC>   m_Perceived; // AI의 현재까지 감지한 모든 대상 정보를 저장하는 테이블
     function<void(class CGameObject*, const STIMULUS&)> m_PerceptionCallBack; // 감지 이베트를 AI_Controller에 알리기 위한 콜백

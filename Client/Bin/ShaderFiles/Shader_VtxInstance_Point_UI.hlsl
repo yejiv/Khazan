@@ -249,8 +249,15 @@ float4 ShaderPass_2(float4 vColor, PS_IN In)
 float4 ShaderPass_3(float4 vColor, PS_IN In)
 {
     float exposure = 1.5f;
-
-    vColor.rg *= exposure;
+    
+    float lumin = dot(vColor.rgb, float3(0.299, 0.587, 0.114));
+    float mask = 1.0 - lumin; // 어두울수록 테두리
+    mask = saturate((mask - 0.3) * 2.0); // 원하는 영역으로 보정
+    
+    float3 highlightColor = float3(1.0, 0.93, 0.70);
+    float highlightIntensity = 1.7;
+    
+    vColor.rgb = lerp(vColor.rgb, highlightColor * highlightIntensity, mask);
     vColor.a = vColor.a * In.vColor.a * In.vAlpha;
     return vColor;
 }

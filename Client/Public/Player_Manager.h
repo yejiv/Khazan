@@ -26,6 +26,7 @@ private:
 public:
     //플레이어 데이터 셋팅 관련
     PLAYER_DATA*                Get_pInitailizePlayerData(); // 플레이어와 연결하면서 초기화까지 같이하기 
+
     PLAYER_DATA&                Get_ptrPlayerData() {return m_Data; }
     const PLAYER_DATA&          Get_PlayerData() { return m_Data; }
     void                        Initialize_PlayerData(); // Get_pPlayerData()이걸로 데이터 연결 후, 초기화는 이것을 통해 초기화하기
@@ -45,7 +46,6 @@ public:
 
 private:
     PLAYER_DATA					            m_Data = {};
-
     /* 조작키 관련 */
     unordered_map<CONTROL_BUTTON, _uint>    m_ButtonToSkill;
     vector<_bool>                           m_UsedSkill;
