@@ -4,6 +4,7 @@
 #include "Body_Imp_Range.h"
 #include "BlackBoard.h"
 #include "AI_Controller.h"
+#include "FSM_Imp_Range.h"
 
 
 CAS_Boomarang_Imp_Range::CAS_Boomarang_Imp_Range()
@@ -27,7 +28,8 @@ void CAS_Boomarang_Imp_Range::Update(CStateMachine* pFSM, CGameObject* pOwner, _
     if (pModel->Play_Animation(fTimeDelta))
     {
         pImp->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pImp->Get_Name(), "isBoomarangFinished", true);
-        //m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pImp->Get_Name(), "isBoomarangFinished", true);
+        pFSM->Change_State(ENUM_CLASS(IMPRANGE_STATE::IDLE), pImp);
+        
     }
 
 

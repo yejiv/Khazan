@@ -22,6 +22,7 @@ public:
         _uint* pStatus = { nullptr };
         _uint* pHitReation = { nullptr };
         //_bool* pIsGuarding = { nullptr };
+        _float4* pGuardRotationTarget = { nullptr };
         class CTransform* pParentTransform = { nullptr };
 
     }BODY_KHAZAN_SPEAR_DESC;
@@ -128,12 +129,13 @@ private:
 
     /* 가드 */
     _float2             m_fJustGuardTime = { 0.f, 0.83f };
-    _bool               m_isGuardRotating = { false };
-    _float              m_fGuardRotationTime = { 0.f };
-    _float              m_fGuardRotationDuration = { 0.15f }; // 0.15초 동안 회전
-    _vector             m_vTargetRotationDir = {};
-    _float              m_fStartAngle = { 0.f };
-    _float              m_fTargetAngle = { 0.f };
+   // _bool               m_isGuardRotating = { false };
+   // _float              m_fGuardRotationTime = { 0.f };
+   // _float              m_fGuardRotationDuration = { 0.15f }; // 0.15초 동안 회전
+   // _vector             m_vTargetRotationDir = {};
+  //  _float              m_fStartAngle = { 0.f };
+   // _float              m_fTargetAngle = { 0.f };
+    _float4*            m_pGuardRotationTarget = {nullptr};
 
     /* 기타 */
     _bool*              m_isEquipSpear = { nullptr };

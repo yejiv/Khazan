@@ -183,6 +183,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\Base.cpp" />
     <ClCompile Include="..\Private\BehaviorTree.cpp" />
     <ClCompile Include="..\Private\BlackBoard.cpp" />
+    <ClCompile Include="..\private\MotionBlur.cpp" />
     <ClCompile Include="..\private\RadialBlur.cpp" />
     <ClCompile Include="..\private\GaussianBlur.cpp" />
     <ClCompile Include="..\Private\Body.cpp" />
@@ -353,6 +354,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Effect_Element.h" />
     <ClInclude Include="..\Public\Effect_Manager.h" />
     <ClInclude Include="..\public\LUT.h" />
+    <ClInclude Include="..\public\MotionBlur.h" />
     <ClInclude Include="..\Public\Prefab.h" />
     <ClInclude Include="..\public\Fog.h" />
     <ClInclude Include="..\public\Engine_Sequence.h" />

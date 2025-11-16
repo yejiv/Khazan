@@ -39,6 +39,8 @@
 #include "Skill_Slot.h"
 #include "Skill_QuickSlot.h"
 
+#include "UI_Slot_Smoke.h"
+
 //HUD  관련
 #include "BossHp.h"
 #include "Amount.h"

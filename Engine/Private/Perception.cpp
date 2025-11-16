@@ -11,6 +11,16 @@ CPerception::CPerception()
 	Safe_AddRef(m_pGameInstance);
 }
 
+void CPerception::Set_Fov()
+{
+    m_tSightDesc.fFovCos = -1.f;
+}
+
+void CPerception::Reset_Fov()
+{
+    m_tSightDesc.fFovCos = m_fOriginFOVCos;
+}
+
 
 HRESULT CPerception::Initialize(const AIPERCEPTION_DATA& Desc, _uint iTeamID)
 {
@@ -20,6 +30,7 @@ HRESULT CPerception::Initialize(const AIPERCEPTION_DATA& Desc, _uint iTeamID)
 	m_fCurrnetTime = 0.f;
 	m_fCheckAcc = 0.f;
 	m_fSenseRadiusCache = m_tSightDesc.fRadius * m_tSightDesc.fRadius;
+    m_fOriginFOVCos = Desc.fFovCos;
 	m_Perceived.clear();
 
 	return S_OK;
@@ -179,8 +190,8 @@ void CPerception::Notify_Damage(CGameObject* pAttacker, const STIMULUS& Stim)
 	//m_DamageHistory.push(Stim);
 	//m_fDamageAcc += Stim.fStrength;
 
-	/*if (m_PerceptionCallBack)
-		m_PerceptionCallBack(pAttacker, Stim);*/
+	if (m_PerceptionCallBack)
+		m_PerceptionCallBack(pAttacker, Stim);
 }
 
 void CPerception::Forget()
@@ -269,3 +280,5 @@ void CPerception::Free()
 
 	Safe_Release(m_pGameInstance);
 }
+
+

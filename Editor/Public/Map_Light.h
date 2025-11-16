@@ -3,8 +3,6 @@
 #include "Editor_Defines.h"
 #include "GameObject.h"
 
-// 정적 맵 오브젝트 ( 인스턴싱 O )
-
 NS_BEGIN(Engine)
 class CModel;
 class CShader;

@@ -20,6 +20,7 @@ public:
     void            Force_DamagedStrong(_bool isWeapon, _uint iDir);
 
     //void            Force_DamagedAir();
+    void            Clear_Damaged() { m_isDamaged = false; }
 
     _bool           Is_Damaged() const { return m_isDamaged; }
 

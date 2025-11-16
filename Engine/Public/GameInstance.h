@@ -94,8 +94,6 @@ public:
 	OUTLINE_CONFIG Get_OutlineConfig();
 	void Set_OutlineConfig(OUTLINE_CONFIG Config);
     void Set_SpecularPower(_float2 vPower);
-    void Set_EnableRadialBlur(_bool isEnable);
-    _bool isEnableRadialBlur();
 #pragma endregion
 
 #pragma region TIMER_MANAGER
@@ -147,6 +145,7 @@ public:
 	HRESULT End_MRT();
 	HRESULT Bind_RT_ShaderResource(const _wstring& strTargetTag, class CShader* pShader, const _char* pConstantName);
 	HRESULT Copy_RT_Resource(const _wstring& strTargetTag, ID3D11Texture2D* pSourTexture);
+    HRESULT Copy_RT_Resource(const _wstring& strDestTargetTag, const _wstring& strSourTargetTag);
 	void	Backup_RT();
 	void	Restore_RT();
 
@@ -396,6 +395,15 @@ public:
     void						Set_RadialBlurDesc(const RADIAL_BLUR_DESC& Desc);
     void                        Set_RadialBlurCenter(_fvector vCenter, _float fOffset = 0.f);
     void                        Start_RadialBlur(const RADIAL_BLUR_DESC& Desc);
+    void                        Set_EnableRadialBlur(_bool isEnable);
+#pragma endregion
+
+#pragma region MOTION_BLUR
+    HRESULT						Bind_MotionBlur_ShaderResources(class CShader* pShader);
+    MOTION_BLUR_DESC		    Get_MotionBlurDesc();
+    void						Set_MotionBlurDesc(const MOTION_BLUR_DESC& Desc);
+    void                        Set_EnableMotionBlur(_bool isEnable);
+    void                        Update_MotionBlur_PrevMatrices();
 #pragma endregion
 
 private:
@@ -433,6 +441,7 @@ private:
 	class CDistortion*			    m_pDistortion = { nullptr };
     class CLUT*                     m_pLUT = { nullptr };
     class CRadialBlur*              m_pRadialBlur = { nullptr };
+    class CMotionBlur*              m_pMotionBlur = { nullptr };
 
 #ifdef _DEBUG
 	class CImgui_Manager*           m_pImgui_Manager = { nullptr };

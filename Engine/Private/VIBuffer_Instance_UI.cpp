@@ -109,6 +109,11 @@ HRESULT CVIBuffer_Instance_UI::Add_UIInstance(const VTXINSTANCE_UI* pUIData)
 
 HRESULT CVIBuffer_Instance_UI::Update_Buffer()
 {
+    sort(m_pInstanceVertices,m_pInstanceVertices + m_iRenderCount,
+        [](const VTXINSTANCE_UI& a, const VTXINSTANCE_UI& b) {
+            return a.fDepth > b.fDepth; 
+        });
+
 	D3D11_MAPPED_SUBRESOURCE	SubResource{};
 
 	m_pContext->Map(m_pVBInstance, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
