@@ -31,7 +31,6 @@ void CAS_Dead_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
         pImp->Creature_Release();
         pImp->HPUI_Dead();
     }
-
 }
 
 void CAS_Dead_Imp_Melee::Exit(CStateMachine* pFSM, CGameObject* pOwner)

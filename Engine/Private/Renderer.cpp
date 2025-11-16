@@ -65,7 +65,7 @@ HRESULT CRenderer::Initialize()
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Combined"), 1050.0f, 450.0f, 300.f, 300.f)))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_LookUpTable"), 1050.0f, 750.0f, 300.f, 300.f)))
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_StaticDepth"), 1050.0f, 750.0f, 300.f, 300.f)))
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Ready_CSM_Debug(m_fViewportWidth - 150.0f, 150.0f, 300.f, 300.f)))
@@ -104,7 +104,7 @@ HRESULT CRenderer::Draw()
     
     if (FAILED(Render_Dynamic()))
         return E_FAIL;
-    
+
     if (FAILED(Render_Outline()))
         return E_FAIL;
     
@@ -133,9 +133,11 @@ HRESULT CRenderer::Draw()
     if (FAILED(Render_Combined()))
         return E_FAIL;
 
-    if (m_isEnableRadialBlur)
-        if (FAILED(Render_RadialBlur()))
-            return E_FAIL;
+    if (FAILED(Render_RadialBlur()))
+        return E_FAIL;
+
+    if (FAILED(Render_MotionBlur()))
+        return E_FAIL;
 
     if (FAILED(Render_LUT()))
         return E_FAIL;
@@ -249,8 +251,10 @@ HRESULT CRenderer::Render_Static()
     if (FAILED(m_pGameInstance->End_MRT()))
         return E_FAIL;
 
-    return S_OK;
+    // 복사 받을 대상, 복사할 대상
+    m_pGameInstance->Copy_RT_Resource(TEXT("RT_StaticDepth"), TEXT("RT_Depth"));
 
+    return S_OK;
 }
 
 HRESULT CRenderer::Render_Decal()
@@ -282,6 +286,38 @@ HRESULT CRenderer::Render_Dynamic()
     }
 
     m_RenderObjects[ENUM_CLASS(RENDERGROUP::DYNAMIC)].clear();
+
+    if (FAILED(m_pGameInstance->End_MRT()))
+        return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CRenderer::Render_VelocityMap()
+{
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_MotionVector"))))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+        return E_FAIL;
+    
+    // 이전 월드 뷰 투영 행렬 필요 -> UI 렌더 이후 기록
+    //  if (FAILED(m_pShader->Bind_Matrix("g_PrevWorldMatrix", &m_PrevWorldMatrix)))
+    //      return E_FAIL;
+    //  if (FAILED(m_pShader->Bind_Matrix("g_PrevViewMatrix", &m_PrevViewMatrix)))
+    //      return E_FAIL;
+    //  if (FAILED(m_pShader->Bind_Matrix("g_PrevProjMatrix", &m_PrevProjMatrix)))
+    //      return E_FAIL;
+
+    // 패스 설정 필요
+    m_pShader->Begin(0);
+
+    m_pVIBuffer->Bind_Resources();
+    m_pVIBuffer->Render();
 
     if (FAILED(m_pGameInstance->End_MRT()))
         return E_FAIL;
@@ -697,6 +733,49 @@ HRESULT CRenderer::Render_RadialBlur()
     return S_OK;
 }
 
+HRESULT CRenderer::Render_MotionBlur()
+{
+    // Screen Space Motion Blur
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_MotionBlur"))))
+        return E_FAIL;
+
+    // 풀스크린 정사영 행렬
+    if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_MotionBlur_ShaderResources(m_pShader)))
+        return E_FAIL;
+
+    //  if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Depth"), m_pShader, "g_DepthTexture")))
+    //      return E_FAIL;
+
+    // 정적 오브젝트만 스크린 모션 블러 적용
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_StaticDepth"), m_pShader, "g_DepthTexture")))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_RadialBlur"), m_pShader, "g_CombinedTexture")))
+        return E_FAIL;
+
+    m_pShader->Begin(13);
+
+    m_pVIBuffer->Bind_Resources();
+    m_pVIBuffer->Render();
+
+    if (FAILED(m_pGameInstance->End_MRT()))
+        return E_FAIL;
+
+    // 이전 뷰 투영 행렬 갱신
+    m_pGameInstance->Update_MotionBlur_PrevMatrices();
+
+    return S_OK;
+}
+
 HRESULT CRenderer::Render_LUT()
 {
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_LUT"))))
@@ -709,16 +788,8 @@ HRESULT CRenderer::Render_LUT()
     if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
         return E_FAIL;
 
-    if (m_isEnableRadialBlur)
-    {
-        if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_RadialBlur"), m_pShader, "g_CombinedTexture")))
-            return E_FAIL;
-    }
-    else
-    {
-        if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Combined"), m_pShader, "g_CombinedTexture")))
-            return E_FAIL;
-    }
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_MotionBlur"), m_pShader, "g_CombinedTexture")))
+        return E_FAIL;
 
     if (FAILED(m_pGameInstance->Bind_LUT_ShaderResources(m_pShader)))
         return E_FAIL;
@@ -795,6 +866,11 @@ HRESULT CRenderer::Ready_RenderTargets()
     if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_Depth"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
+    // Test
+    /* RT_Depth */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_StaticDepth"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.f, 0.f, 1.f, 1.f))))
+        return E_FAIL;
+
     /* RT_World */
     if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_World"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
@@ -849,6 +925,10 @@ HRESULT CRenderer::Ready_RenderTargets()
 
     /* RT_RadialBlur */
     if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_RadialBlur"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
+        return E_FAIL;
+
+    /* RT_MotionBlur */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_MotionBlur"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
     return S_OK;
@@ -926,6 +1006,10 @@ HRESULT CRenderer::Ready_MRTs()
 
     /* MRT_RadialBlur */
     if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_RadialBlur"), TEXT("RT_RadialBlur"))))
+        return E_FAIL;
+
+    /* MRT_MotionBlur */
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_MotionBlur"), TEXT("RT_MotionBlur"))))
         return E_FAIL;
 
     return S_OK;

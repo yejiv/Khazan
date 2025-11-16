@@ -33,6 +33,7 @@
 #include "Distortion.h"
 #include "LUT.h"
 #include "RadialBlur.h"
+#include "MotionBlur.h"
 
 #ifdef _DEBUG
 #include <crtdbg.h>
@@ -193,6 +194,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 
     m_pRadialBlur = CRadialBlur::Create();
     if (nullptr == m_pRadialBlur)
+        return E_FAIL;
+
+    m_pMotionBlur = CMotionBlur::Create();
+    if (nullptr == m_pMotionBlur)
         return E_FAIL;
 #pragma endregion
 
@@ -558,16 +563,6 @@ void CGameInstance::Set_SpecularPower(_float2 vPower)
     m_pRenderer->Set_SpecularPower(vPower);
 }
 
-void CGameInstance::Set_EnableRadialBlur(_bool isEnable)
-{
-    m_pRenderer->Set_EnableRadialBlur(isEnable);
-}
-
-_bool CGameInstance::isEnableRadialBlur()
-{
-    return m_pRenderer->isEnableRadialBlur();
-}
-
 #pragma endregion
 
 #pragma region TIMER_MANAGER
@@ -746,6 +741,11 @@ HRESULT CGameInstance::Bind_RT_ShaderResource(const _wstring& strTargetTag, CSha
 HRESULT CGameInstance::Copy_RT_Resource(const _wstring& strTargetTag, ID3D11Texture2D* pSourTexture)
 {
 	return m_pTarget_Manager->Copy_Resource(strTargetTag, pSourTexture);
+}
+
+HRESULT CGameInstance::Copy_RT_Resource(const _wstring& strDestTargetTag, const _wstring& strSourTargetTag)
+{
+	return m_pTarget_Manager->Copy_Resource(strDestTargetTag, strSourTargetTag);
 }
 
 void CGameInstance::Backup_RT()
@@ -1457,6 +1457,40 @@ void CGameInstance::Start_RadialBlur(const RADIAL_BLUR_DESC& Desc)
     m_pRadialBlur->Start_RadialBlur(Desc);
 }
 
+void CGameInstance::Set_EnableRadialBlur(_bool isEnable)
+{
+    m_pRadialBlur->Set_EnableRadialBlur(isEnable);
+}
+
+#pragma endregion
+
+#pragma region MOTION_BLUR
+
+HRESULT CGameInstance::Bind_MotionBlur_ShaderResources(CShader* pShader)
+{
+    return m_pMotionBlur->Bind_MotionBlur_ShaderResources(pShader);
+}
+
+MOTION_BLUR_DESC CGameInstance::Get_MotionBlurDesc()
+{
+    return m_pMotionBlur->Get_MotionBlurDesc();
+}
+
+void CGameInstance::Set_MotionBlurDesc(const MOTION_BLUR_DESC& Desc)
+{
+    m_pMotionBlur->Set_MotionBlurDesc(Desc);
+}
+
+void CGameInstance::Set_EnableMotionBlur(_bool isEnable)
+{
+    m_pMotionBlur->Set_EnableMotionBlur(isEnable);
+}
+
+void CGameInstance::Update_MotionBlur_PrevMatrices()
+{
+    m_pMotionBlur->Update_PrevMatrices();
+}
+
 #pragma endregion
 
 #pragma region OCTREE
@@ -1510,7 +1544,8 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pThreadPool);
 
 	Safe_Release(m_pOctree);
-	
+
+    Safe_Release(m_pMotionBlur);
     Safe_Release(m_pRadialBlur);
     Safe_Release(m_pLUT);
 	Safe_Release(m_pDistortion);

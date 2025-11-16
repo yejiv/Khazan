@@ -133,12 +133,9 @@ void CImp_Melee::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 
 void CImp_Melee::HPUI_Dead()
 {
-    
     m_pUI_HP->Update_Visible(false);
     Safe_Release(m_pUI_HP);
     m_pUI_HP->Set_IsDead(true);
-    
-
 }
 
 HRESULT CImp_Melee::Ready_Components()

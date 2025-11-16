@@ -1098,6 +1098,21 @@ void CBody_Khazan_Spear::SpawnSpearWind()
         Q = XMQuaternionRotationMatrix(RotationMatrix);
     }
     EffectID_SpearWind = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), Q, W.r[3]);
+
+    // Distortion
+    DISTORTION_DESC Desc{};
+    _vector vCenterPos = m_pParentTransform->Get_WorldMatrix().r[3];
+    _float fPosY = XMVectorGetY(vCenterPos);
+    _float fOffset = 2.f;
+    vCenterPos = XMVectorSetY(vCenterPos, fPosY + fOffset);
+    XMStoreFloat3(&Desc.vCenter, vCenterPos);
+    Desc.fRange = 1.f;
+    Desc.fPower = 0.01f;
+    Desc.fDuration = 0.5f;
+    Desc.vFadeTime = _float2(0.3f, 0.1f);
+    Desc.fSpeed = 1.f;
+    Desc.iNoiseIndex = 4;
+    m_pGameInstance->Start_Distortion(Desc);
 }
 
 void CBody_Khazan_Spear::Event_AttackTiming(_bool isAttackStart)
