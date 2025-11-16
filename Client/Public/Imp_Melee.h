@@ -31,7 +31,7 @@ public:
 
 public:
     void                            HPUI_Dead();
-    
+
 private:
     HRESULT							Ready_Components();
     HRESULT							Ready_PartObjects();

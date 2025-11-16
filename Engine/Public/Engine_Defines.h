@@ -7,7 +7,7 @@
 #include <DirectXMath.h>
 #include <d3dcompiler.h>
 #include <DirectXCollision.h>
-
+#include <SimpleMath.h>
 
 
 #define DIRECTINPUT_VERSION 0x0800

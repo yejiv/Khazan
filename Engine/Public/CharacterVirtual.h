@@ -100,8 +100,6 @@ public:
 	virtual void Sync_Update(_matrix WorldMatirx);
 	virtual void Update(_float fTimeDelta, _vector& outQuatRotation, _vector& outPosition, _vector vGravity = XMVectorSet(0.f, g_fGravity, 0.f, 0.f));
 
-    void ApplyInterpolatedPose(float alpha, CTransform* pTransform);
-    void ApplyInterpolatedPose(float alpha, _vector& outQuatRotation, _vector& outPosition);
 
 public:
 	virtual void	Set_PosRot(_vector vPos, _vector vRot);
