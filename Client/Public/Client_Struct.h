@@ -150,6 +150,7 @@ namespace Client
         _float  fCulHp = {};
         _float  fMaxStamina = {};
         _float  fCulStamina = {};
+        _float  fStaminaRegen = {};
         _int    iMaxDoggednessCount = {};
         _float  fCulDoggedness = {};
 
@@ -172,6 +173,8 @@ namespace Client
         _uint   iCompetency = {};
         _uint   iWill = {};
 
+        _float  fWeight = {};
         
 	}PLAYER_DATA;
+
 }

@@ -62,8 +62,6 @@ void CImp_Melee::Priority_Update(_float fTimeDelta)
         CClientInstance::GetInstance()->Add_SkillExp(10.f);
         static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 100);
         m_isDeadFlag = true;
-       /* Safe_Release(m_pUI_HP);
-        m_pUI_HP->Set_IsDead(true);*/
     }
 }
 
@@ -135,12 +133,9 @@ void CImp_Melee::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 
 void CImp_Melee::HPUI_Dead()
 {
-    
     m_pUI_HP->Update_Visible(false);
     Safe_Release(m_pUI_HP);
     m_pUI_HP->Set_IsDead(true);
-    
-
 }
 
 HRESULT CImp_Melee::Ready_Components()

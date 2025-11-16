@@ -182,6 +182,8 @@ HRESULT CProjectile_Imp_MagicBall::Bind_ShaderResources()
 
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
         return E_FAIL;
+
+    return S_OK;
 }
 
 void CProjectile_Imp_MagicBall::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)

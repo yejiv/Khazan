@@ -88,6 +88,27 @@ HRESULT CUI_Inven::Initialize_Clone(void* pArg)
 
 void CUI_Inven::Priority_Update(_float fTimeDelta)
 {
+    if (m_pGameInstance->Key_Down(DIK_M))
+    {
+       Add_Item(1001);
+       Add_Item(1002);
+       Add_Item(1003);
+       Add_Item(1004);
+       Add_Item(1101);
+       
+       Add_Item(4001);
+       Add_Item(4011);
+
+       Add_Item(5001);
+       Add_Item(5002);
+       Add_Item(5003);
+       Add_Item(5004);
+       Add_Item(5005);
+       Add_Item(6001);
+       Add_Item(6011);
+    }
+
+
 	if (!m_IsUpdate)
 		return;
 
@@ -316,23 +337,67 @@ void CUI_Inven::Bubble_EventCall(BUBBLEEVENT* pArg)
 
 		if (pDesc->iTypeIndex >= 0 && m_iTapGroupIndex != ENUM_CLASS(TapGroup::OTHER))
 		{
-			if (pDesc->iTypeIndex <= ENUM_CLASS(ITEMTYPE::GREATE))
-				m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::WEAPON)]->Add_Item(pDesc->iItemIndex, pDesc->pItem);
-			else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::HEAD))
-				m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::HEAD)]->Add_Item(pDesc->iItemIndex, pDesc->pItem);
-			else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::TOP))
-				m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::TOP)]->Add_Item(pDesc->iItemIndex, pDesc->pItem);
-			else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::GLOVES))
-				m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::GLOVES)]->Add_Item(pDesc->iItemIndex, pDesc->pItem);
-			else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::BOTTOM))
-				m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::BOTTOM)]->Add_Item(pDesc->iItemIndex, pDesc->pItem);
-			else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::SHOES))
-				m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::SHOES)]->Add_Item(pDesc->iItemIndex, pDesc->pItem);
-			else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::NECK))
-				m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::NECK)]->Add_Item(pDesc->iItemIndex, pDesc->pItem);
-			else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::RING))
-				m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::RING)]->Add_Item(pDesc->iItemIndex, pDesc->pItem);
-			else if (pDesc->iItemType <= ENUM_CLASS(ITEMTYPE::ATIVE))
+           const ITEM_DATA* ItemData = CClientInstance::GetInstance()->Get_Data<ITEM_DATA>(pDesc->iItemIndex);
+           
+           if (pDesc->iTypeIndex <= ENUM_CLASS(ITEMTYPE::GREATE))
+           {
+               m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::WEAPON)]->Add_Item(pDesc->iItemIndex, pDesc->pItem);
+
+               for (auto pSlot : m_pItems[ENUM_CLASS(ITEMTYPE::GREATE)])
+                   pSlot->Is_UpItem(CClientInstance::GetInstance()->Get_Data<EQUIPITEM_DATA>(ItemData->iEffect_ID)->iValue_1);
+
+               for (auto pSlot : m_pItems[ENUM_CLASS(ITEMTYPE::SPEAR)])
+                   pSlot->Is_UpItem(CClientInstance::GetInstance()->Get_Data<EQUIPITEM_DATA>(ItemData->iEffect_ID)->iValue_1);
+           }
+           else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::HEAD))
+           {
+               m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::HEAD)]->Add_Item(pDesc->iItemIndex, pDesc->pItem);
+
+               for (auto pSlot : m_pItems[pDesc->iTypeIndex])
+                   pSlot->Is_UpItem(CClientInstance::GetInstance()->Get_Data<EQUIPITEM_DATA>(ItemData->iEffect_ID)->iValue_1);
+           }
+           else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::TOP))
+           {
+               m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::TOP)]->Add_Item(pDesc->iItemIndex, pDesc->pItem);
+
+               for (auto pSlot : m_pItems[pDesc->iTypeIndex])
+                   pSlot->Is_UpItem(CClientInstance::GetInstance()->Get_Data<EQUIPITEM_DATA>(ItemData->iEffect_ID)->iValue_1);
+           }
+           else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::GLOVES))
+           {
+               m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::GLOVES)]->Add_Item(pDesc->iItemIndex, pDesc->pItem);
+
+               for (auto pSlot : m_pItems[pDesc->iTypeIndex])
+                   pSlot->Is_UpItem(CClientInstance::GetInstance()->Get_Data<EQUIPITEM_DATA>(ItemData->iEffect_ID)->iValue_1);
+           }
+           else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::BOTTOM))
+           {
+               m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::BOTTOM)]->Add_Item(pDesc->iItemIndex, pDesc->pItem);
+
+               for (auto pSlot : m_pItems[pDesc->iTypeIndex])
+                   pSlot->Is_UpItem(CClientInstance::GetInstance()->Get_Data<EQUIPITEM_DATA>(ItemData->iEffect_ID)->iValue_1);
+           }
+           else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::SHOES))
+           {
+               m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::SHOES)]->Add_Item(pDesc->iItemIndex, pDesc->pItem);
+
+               for (auto pSlot : m_pItems[pDesc->iTypeIndex])
+                   pSlot->Is_UpItem(CClientInstance::GetInstance()->Get_Data<EQUIPITEM_DATA>(ItemData->iEffect_ID)->iValue_1);
+           }
+           else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::NECK))
+           {
+               m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::NECK)]->Add_Item(pDesc->iItemIndex, pDesc->pItem);
+               for (auto pSlot : m_pItems[pDesc->iTypeIndex])
+                   pSlot->Is_UpItem(CClientInstance::GetInstance()->Get_Data<EQUIPITEM_DATA>(ItemData->iEffect_ID)->iValue_1);
+           }
+           else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::RING))
+           {
+               m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::RING)]->Add_Item(pDesc->iItemIndex, pDesc->pItem);
+
+               for (auto pSlot : m_pItems[pDesc->iTypeIndex])
+                   pSlot->Is_UpItem(CClientInstance::GetInstance()->Get_Data<EQUIPITEM_DATA>(ItemData->iEffect_ID)->iValue_1);
+           }
+           else if (pDesc->iItemType <= ENUM_CLASS(ITEMTYPE::ATIVE))
 			{
 				_int iSeleteSlot = m_iSeleteTap - ENUM_CLASS(ITEMTYPE::QUICK_1) + ENUM_CLASS(EQUIPSLOT_TYPE::QUICK_1);
 
@@ -350,6 +415,81 @@ void CUI_Inven::Bubble_EventCall(BUBBLEEVENT* pArg)
 		}
 
 	}
+    else if (pDesc->eBubbleType == EVENT_TYPE::ITEM_UNEQUIP)
+    {
+
+        if (pDesc->iTypeIndex >= 0 && m_iTapGroupIndex != ENUM_CLASS(TapGroup::OTHER))
+        {
+            if (pDesc->iTypeIndex <= ENUM_CLASS(ITEMTYPE::GREATE))
+            {
+                for (auto pSlot : m_pItems[ENUM_CLASS(ITEMTYPE::GREATE)])
+                    pSlot->Is_UpItem(0);
+
+                for (auto pSlot : m_pItems[ENUM_CLASS(ITEMTYPE::SPEAR)])
+                    pSlot->Is_UpItem(0);
+
+                m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::WEAPON)]->Release_Item(pDesc->pItem);
+            }
+            else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::HEAD))
+            {
+                for (auto pSlot : m_pItems[pDesc->iTypeIndex])
+                    pSlot->Is_UpItem(0);
+                m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::HEAD)]->Release_Item(pDesc->pItem);
+            }
+            else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::TOP))
+            {
+                for (auto pSlot : m_pItems[pDesc->iTypeIndex])
+                    pSlot->Is_UpItem(0);
+                m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::TOP)]->Release_Item(pDesc->pItem);
+            }
+            else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::GLOVES))
+            {
+                for (auto pSlot : m_pItems[pDesc->iTypeIndex])
+                    pSlot->Is_UpItem(0);
+                m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::GLOVES)]->Release_Item(pDesc->pItem);
+            }
+            else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::BOTTOM))
+            {
+                for (auto pSlot : m_pItems[pDesc->iTypeIndex])
+                    pSlot->Is_UpItem(0);
+                m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::BOTTOM)]->Release_Item(pDesc->pItem);
+            }
+            else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::SHOES))
+            {
+                for (auto pSlot : m_pItems[pDesc->iTypeIndex])
+                    pSlot->Is_UpItem(0);
+                m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::SHOES)]->Release_Item(pDesc->pItem);
+            }
+            else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::NECK))
+            {
+                for (auto pSlot : m_pItems[pDesc->iTypeIndex])
+                    pSlot->Is_UpItem(0);
+                m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::NECK)]->Release_Item(pDesc->pItem);
+            }
+            else if (pDesc->iTypeIndex == ENUM_CLASS(ITEMTYPE::RING))
+            {
+                for (auto pSlot : m_pItems[pDesc->iTypeIndex])
+                    pSlot->Is_UpItem(0);
+                m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::RING)]->Release_Item(pDesc->pItem);
+            }
+            else if (pDesc->iItemType <= ENUM_CLASS(ITEMTYPE::ATIVE))
+            {
+                _int iSeleteSlot = m_iSeleteTap - ENUM_CLASS(ITEMTYPE::QUICK_1) + ENUM_CLASS(EQUIPSLOT_TYPE::QUICK_1);
+
+                m_pEquipSlot[iSeleteSlot]->Release_Item(pDesc->pItem);
+
+                for (_int i = ENUM_CLASS(EQUIPSLOT_TYPE::QUICK_1); i <= ENUM_CLASS(EQUIPSLOT_TYPE::QUICK_6); ++i)
+                {
+                    if (iSeleteSlot == i)
+                        continue;
+                    m_pEquipSlot[i]->Release_Item(pDesc->pItem);
+                }
+            }
+            else
+                m_pItems[pDesc->iTypeIndex][pDesc->iIndex]->is_Equip(false);
+        }
+
+    }
 	else if (pDesc->eBubbleType == EVENT_TYPE::SLOT_EQUIP)
 	{
 		EQUIPSLOT_TYPE eType = static_cast<EQUIPSLOT_TYPE>(pDesc->iIndex);

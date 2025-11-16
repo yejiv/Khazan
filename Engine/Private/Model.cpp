@@ -541,8 +541,8 @@ void CModel::Set_Animation(_uint iIndex)
 	Setup_Events();
 
 
-
-    //cout << m_iCurrentAnimIndex<<" : "+ Get_CurAnimName() << endl;
+    if(m_strModelName == L"Khazan_Spear")
+        cout << m_iCurrentAnimIndex << " : " << Get_CurAnimName() << endl;
 }
 
 void CModel::Set_AnimationSet(const string& strKey)

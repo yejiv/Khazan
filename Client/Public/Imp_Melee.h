@@ -31,12 +31,11 @@ public:
 
 public:
     void                            HPUI_Dead();
-       
+
 private:
     HRESULT							Ready_Components();
     HRESULT							Ready_PartObjects();
     HRESULT							Ready_AnimEvent();
-
 
 private:
     class CBody_Imp_Melee*          m_pBody = { nullptr };

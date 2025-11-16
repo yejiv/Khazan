@@ -27,7 +27,7 @@ void CKhazan_Spaer_Anim_Damaged::Continue(_float fTimeDelta)
     
     }
     //애니메이션이 끝났으면 종료
-    if (m_pModel->Check_MinAnimationTime() || m_pModel->IsFinished())
+    if (/*m_pModel->Check_MinAnimationTime() ||*/ m_pModel->IsFinished())
     {
         m_isDamaged = false;
         return;

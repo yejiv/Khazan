@@ -1386,15 +1386,15 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
         });
 #pragma endregion
 
-    //charge attack - 달리기 전에 왼발 구르기
-    pModel->Register_Event("ChargeTackle _StampFoot", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Roar_L"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
-        });
+    ////charge attack - 달리기 전에 왼발 구르기
+    //pModel->Register_Event("ChargeTackle _StampFoot", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+    //    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Roar_L"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
+    //    });
 
-    //charge attack - 달리기 전에 왼발 구르기
-    pModel->Register_Event("ChargeTackle _StampFoot", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Roar_R"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-R-Foot")));
-        });
+    ////charge attack - 달리기 전에 오른발 구르기
+    //pModel->Register_Event("ChargeTackle _StampFoot", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+    //    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Roar_R"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-R-Foot")));
+    //    });
 
     //pModel->Register_Event("BreathMashTwo ", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
     //    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"), m_pTransformCom->Get_State(STATE::POSITION)));

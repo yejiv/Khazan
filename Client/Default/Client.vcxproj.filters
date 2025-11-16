@@ -796,6 +796,12 @@
     <Filter Include="02.GameObject\Creature\Khazan\Spear\Lantern">
       <UniqueIdentifier>{f87b61a1-ec55-4177-bc32-818e25784895}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Item_Info\Weapon\Random_Effect">
+      <UniqueIdentifier>{95ba0e07-689e-45e6-bafb-3a4d2de26ee4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Slot\Slot_Fx">
+      <UniqueIdentifier>{0e5560b8-bb4b-4969-9da5-b14d5c01d347}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1535,6 +1541,12 @@
     <ClInclude Include="..\public\Lantern_Khazan_Spear.h">
       <Filter>02.GameObject\Creature\Khazan\Spear\Lantern</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\ItemInfo_RandomEffect.h">
+      <Filter>02.GameObject\UI\Item_Info\Weapon\Random_Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Slot_Smoke.h">
+      <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2253,6 +2265,12 @@
     </ClCompile>
     <ClCompile Include="..\private\Lantern_Khazan_Spear.cpp">
       <Filter>02.GameObject\Creature\Khazan\Spear\Lantern</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ItemInfo_RandomEffect.cpp">
+      <Filter>02.GameObject\UI\Item_Info\Weapon\Random_Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Slot_Smoke.cpp">
+      <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

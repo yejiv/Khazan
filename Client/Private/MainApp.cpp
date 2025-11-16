@@ -54,7 +54,7 @@ HRESULT CMainApp::Initialize()
 
 	CHECK_FAILED(Ready_Prototype_ForStatic_Effect(), E_FAIL);
 	CHECK_FAILED(Ready_Font(), E_FAIL);
-	CHECK_FAILED(Ready_DebugTool(), E_FAIL);
+	//CHECK_FAILED(Ready_DebugTool(), E_FAIL); 
 
 	return S_OK;
 }
@@ -376,7 +376,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Common/T_Img_List_Menu_%d.png"), 8)), E_FAIL);
 
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_FX_Mask"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Mask/T_Fx_%d.png"), 9)), E_FAIL);
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Mask/T_Fx_%d.png"), 12)), E_FAIL);
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_State_Button"),
         CTexture::Create(m_pDevice, m_pContext, TEXT("..//Bin/Resources/UI/State/NormalButton_%d.png"), 10))))
@@ -503,6 +503,9 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_BladeNexus_Map"),
         CUI_BladeNexus_Map::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Slot_Smoke"),
+        CUI_Slot_Smoke::Create(m_pDevice, m_pContext)), E_FAIL);
 
 	CUIObject::UIOBJECT_DESC AnnounceDesc = {};
 	AnnounceDesc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };

@@ -204,9 +204,7 @@ CONDITION CAI_Controller_Imp_Melee::GetCallbackCondition(CGameObject* pOwner, co
     {
         return [pImp](CBlackBoard* BB)->_bool
             {
-
                 //cout << "NonStopAttack Condition" << endl;
-
                 _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
                 _float fAttackRanage = BB->Get_Value<_float>(pImp->Get_Name(), "AttackRange");
 
@@ -231,7 +229,6 @@ CONDITION CAI_Controller_Imp_Melee::GetCallbackCondition(CGameObject* pOwner, co
     {
         return [pImp](CBlackBoard* BB)
             {
-
                 _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
                 _float fChaseRange = BB->Get_Value<_float>(pImp->Get_Name(), "ChaseRange");
                 _float fStopRange = BB->Get_Value<_float>(pImp->Get_Name(), "MoveStopRange");
@@ -293,7 +290,7 @@ ACTION CAI_Controller_Imp_Melee::GetCallbackAction(CGameObject* pOwner, const st
                     BB->Set_Value<_bool>(pImp->Get_Name(), "DamageInterrupt", false);
                     return BTNODESTATE::SUCCESS;
                 }
-                cout << "Hit RUNNING" << endl;
+   
                 BB->Set_Value(pImp->Get_Name(), "isHit", true);
                 BB->Set_Value(pImp->Get_Name(), "isHitFinished", false);
 
