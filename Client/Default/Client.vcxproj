@@ -385,6 +385,7 @@
     <ClInclude Include="..\public\UI_QuickSlot_Skill.h" />
     <ClInclude Include="..\public\UI_QuickSlot_Skill_Panel.h" />
     <ClInclude Include="..\public\UI_SkillTree.h" />
+    <ClInclude Include="..\public\UI_Slot_Smoke.h" />
     <ClInclude Include="..\public\UI_State.h" />
     <ClInclude Include="..\public\UI_State_Button.h" />
     <ClInclude Include="..\public\UI_State_List.h" />
@@ -628,6 +629,7 @@
     <ClCompile Include="..\private\UI_QuickSlot_Skill.cpp" />
     <ClCompile Include="..\private\UI_QuickSlot_Skill_Panel.cpp" />
     <ClCompile Include="..\private\UI_SkillTree.cpp" />
+    <ClCompile Include="..\private\UI_Slot_Smoke.cpp" />
     <ClCompile Include="..\private\UI_State.cpp" />
     <ClCompile Include="..\private\UI_State_Button.cpp" />
     <ClCompile Include="..\private\UI_State_List.cpp" />

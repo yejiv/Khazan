@@ -44,7 +44,8 @@ private:
 	class CUI_Atlas_Icon*				m_pEquipIcon = { nullptr };
     class CUI_Atlas_Icon*               m_pUpIcon = { nullptr };
 	class CUI_TextBox*					m_pTextBox = { nullptr };
-
+    class CUI_Slot_Smoke*               m_pSmoke_Fx = {nullptr };
+        
 	_bool								m_bIsSelete = { false };
 	_bool								m_bIsEquip = { false };
 	_int								m_iItemIndex = { -1 };
