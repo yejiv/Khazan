@@ -155,6 +155,45 @@ PS_OUT_EMISSIVE PS_BRUTALPointBG(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_SLOT_SMOKE(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    float2 noiseUV = In.vTexcoord;
+
+    float waveY = sin(g_fValue * 0.6f) * 0.1f; 
+    float waveX2 = sin(g_fValue * 5.0f + In.vTexcoord.y * 10.0f) * 0.03f;
+    float waveX = cos(g_fValue * 3.0f) * 0.12f + waveX2;
+
+    noiseUV += float2(waveX, waveY);
+
+    float2 noise1 = g_MaskTexture.Sample(DefaultSampler, noiseUV).rg;
+    float2 noise2 = g_MaskTexture.Sample(DefaultSampler, noiseUV * 1.7f + float2(0.1f, g_fValue * 0.1f)).rg;
+
+    float2 n1 = (noise1 - 0.5f);
+    float2 n2 = (noise2 - 0.5f);
+
+    float2 distort;
+    distort.x = n1.x * 0.02f + n2.x * 0.01f;
+    distort.y = n1.y * 0.05f + n2.y * 0.03f;
+
+    distort.x *= 1.6f;
+    distort.y *= 0.5f;
+    distort.y += sin((In.vTexcoord.y * 8.0f) + g_fValue * 4.0f) * 0.005f;
+
+    float2 smokeUV = In.vTexcoord + distort;
+
+    float smoke = g_Texture.Sample(DefaultSampler, smokeUV).r;
+
+    float fadeTop = smoothstep(0.05f, 0.18f, In.vTexcoord.y);
+    smoke *= fadeTop;
+
+    Out.vColor.rgb = float3(1, 1, 1);
+    Out.vColor.a = smoke * g_vColor.a * g_fAlpha;
+
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     pass DefaultPass
@@ -211,5 +250,18 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_BRUTALPointBG();
     }
+
+    pass PS_SLOT_SMOKE //5
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_SLOT_SMOKE();
+    }
+
+
 
 }

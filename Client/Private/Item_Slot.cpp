@@ -9,6 +9,8 @@
 #include "ItemInfo_Other.h"
 #include "ItemInfo_Weapon.h"
 
+#include "UI_Slot_Smoke.h"
+
 CItem_Slot::CItem_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Slot{ pDevice, pContext }
 {
@@ -199,6 +201,7 @@ void CItem_Slot::Late_Update(_float fTimeDelta)
             Render_ItemInfo();
         }
         m_pIcon->Late_Update(fTimeDelta);
+        m_pSmoke_Fx->Late_Update(fTimeDelta);
     }
 
     if (m_bIsEquip)
@@ -377,6 +380,21 @@ HRESULT CItem_Slot::Ready_Children()
         Safe_AddRef(m_pUpIcon);
     }
 
+    CUIObject::UIOBJECT_DESC TextDesc = {};
+    TextDesc.fDepth = 2.9f;
+    TextDesc.iUIType = ENUM_CLASS(UITYPE::TEXT);
+    TextDesc.szName = "Smoke";
+    TextDesc.vLocalPos = _float2{ 0.f, 0.f };
+    TextDesc.vLocalSize = { 90.f,90.f };
+    TextDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+    m_pSmoke_Fx = static_cast<CUI_Slot_Smoke*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Slot_Smoke"), &TextDesc));
+
+    if (m_pSmoke_Fx == nullptr)
+        return E_FAIL;
+
+    m_Children.push_back(m_pSmoke_Fx);
+    Safe_AddRef(m_pSmoke_Fx);
+
     return S_OK;
 }
 
@@ -546,4 +564,5 @@ void CItem_Slot::Free()
     Safe_Release(m_pIcon);
     Safe_Release(m_pTextBox);
     Safe_Release(m_pUpIcon);
+    Safe_Release(m_pSmoke_Fx);
 }
