@@ -83,31 +83,19 @@ void RotateParticle(inout VTXINSTANCE_PARTICLE Particle, uint iIndex)
     Particle.vTranslation = mul(pos, final_Matrix);
 }
 
-void ResetParticle(uint iIndex)
-{
-    g_OutputData[iIndex].vLifeTime.x = 0.f;
-    g_OutputData[iIndex].vTranslation = g_InputData[iIndex].vInitTranslation;
-    g_OutputData[iIndex].vPrevPosition = g_InputData[iIndex].vInitTranslation;
-    if (g_bIsLoop == 0)
-    {
-        g_OutputData[iIndex].bDead = true;
-        g_SpeedData[0].bDead = 1;
-    }
-}
-
 [numthreads(256, 1, 1)]
 void CS_MOVE(uint3 DTid : SV_DispatchThreadID)
 {
     uint iIndex = DTid.x;
     
     if (iIndex >= g_iNumInstances)
-        return;
+        return; 
     
     VTXINSTANCE_PARTICLE Particle = g_OutputData[iIndex];
     VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
 	
-    //if (0 == iIndex)
-    //    g_SpeedData[0].bDead = true;
+    if (Particle.bDead)
+        return;
     
     Particle.vPrevPosition = Particle.vTranslation.xyz;
     
@@ -127,22 +115,20 @@ void CS_MOVE(uint3 DTid : SV_DispatchThreadID)
 	//MoveLinear
     Particle.vTranslation = Particle.vTranslation + float4(0.f, 1.f, 0.f, 0.f) * SpeedData.fSpeed.z * g_fTimeDelta;
     
-    if (Particle.bDead == false)
-        Particle.vLifeTime.x += g_fTimeDelta;
+    Particle.vLifeTime.x += g_fTimeDelta;
 
     if (Particle.vLifeTime.x >= Particle.vLifeTime.y
 		|| (SpeedData.fSpeed.x < 0 && length(vMoveDir).x < 0.1f))
     {
-        //ResetParticle(iIndex);
         Particle.vLifeTime.x = 0.f;
         Particle.vTranslation = g_InputData[iIndex].vInitTranslation;
         Particle.vPrevPosition = g_InputData[iIndex].vInitTranslation;
-        if (g_bIsLoop == 0) 
-            Particle.bDead = true; 
+        if (g_bIsLoop == 0)
+            Particle.bDead = 1.f;
     }
     
-    if (Particle.bDead == false)
-        g_SpeedData[0].bDead = false;
+    if (Particle.bDead == 0.f)
+        g_SpeedData[0].bDead = 0.f;
 	
     if (Particle.vRight.x <= 0.f)
     {
@@ -200,8 +186,8 @@ void CS_RESET(uint3 DTid : SV_DispatchThreadID)
 {
     uint iIndex = DTid.x;
     
-    if (iIndex >= g_iNumInstances)
-        return;
+    //if (iIndex >= g_iNumInstances)
+    //    return;
     
     VTXINSTANCE_PARTICLE Particle = g_OutputData[iIndex];
     VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
@@ -218,6 +204,8 @@ void CS_RESET(uint3 DTid : SV_DispatchThreadID)
     
     g_OutputData[iIndex] = Particle;
     g_SpeedData[iIndex] = SpeedData; 
+    g_SpeedData[0].bDead = 1.f;
+
 }
 
 [numthreads(256, 1, 1)]
@@ -231,48 +219,24 @@ void CS_RESET_SPEED(uint3 DTid : SV_DispatchThreadID)
     VTXINSTANCE_PARTICLE Particle = g_OutputData[iIndex];
     VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
     
-    if (g_iSpeedType == 0)
+    if (g_iSpeedType == 0 || g_iSpeedType == 4)
         SpeedData.fSpeed.x = 0.f;
-    else if (g_iSpeedType == 1)
+    if (g_iSpeedType == 1 || g_iSpeedType == 4)
         SpeedData.fSpeed.y = 0.f;
-    else if (g_iSpeedType == 2)
+    if (g_iSpeedType == 2 || g_iSpeedType == 4)
     {
         SpeedData.fSpeed.z = 0.f;
         Particle.vRight = float4(g_InputData[iIndex].fSize, 0.f, 0.f, 0.f);
         Particle.vUp = float4(0.f, g_InputData[iIndex].fSize, 0.f, 0.f);
         Particle.vLook = float4(0.f, 0.f, g_InputData[iIndex].fSize, 0.f);
     }
-    else
-        SpeedData.fSpeed.w = 0.f;
-    SpeedData.fSpeed = float4(0.f, 0.f, 0.f, 0.f);
+    if (g_iSpeedType == 3 || g_iSpeedType == 4)
+        SpeedData.fSpeed.w = 0.f; 
 
     g_OutputData[iIndex] = Particle;
-    g_SpeedData[iIndex] = SpeedData;
-    g_SpeedData[0].bDead = 1.f;
+    g_SpeedData[iIndex] = SpeedData; 
 }
 
-//[numthreads(256, 1, 1)]
-//void CS_TURBULENCE(uint3 DTid : SV_DispatchThreadID)
-//{
-//    uint iIndex = DTid.x;
-//    
-//    if (iIndex >= g_iNumInstances)
-//        return;
-//    
-//    VTXINSTANCE_PARTICLE Particle = g_OutputData[iIndex];
-//    
-//    float3 pos = Particle.vTranslation.xyz;
-//    
-//    float forceX = g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.yz * 0.1f + g_TotalTime * 0.05f, 0.f).r;
-//    float forceY = g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.xz * 0.1f + g_TotalTime * 0.05f, 0.f).r;
-//    float forceZ = g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.xy * 0.1f + g_TotalTime * 0.05f, 0.f).r;
-//    
-//    float3 noiseDirection = (float3(forceX, forceY, forceZ) * 2.f - 1.f);   //0~1 -> -1 ~ 1
-//    
-//    Particle.vTranslation += float4(noiseDirection, 0.f) * g_TurblunceSpeed * g_fTimeDelta;
-//    
-//    g_OutputData[iIndex] = Particle;
-//}
 [numthreads(256, 1, 1)]
 void CS_TURBULENCE(uint3 DTid : SV_DispatchThreadID)
 {
@@ -303,8 +267,8 @@ void CS_TURBULENCE(uint3 DTid : SV_DispatchThreadID)
 void CS_RESET_DEAD_FLAG(uint3 DTid : SV_DispatchThreadID)
 {
     uint iIndex = DTid.x;
-    if (0 > g_iNumInstances)
+    if (0 < iIndex)
         return;
     
-    g_SpeedData[iIndex].bDead = 1.f;
+    g_SpeedData[0].bDead = 1.f;
 }

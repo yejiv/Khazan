@@ -182,17 +182,17 @@ HRESULT CVIBuffer_Point_Instance::Render()
 {
 	m_pContext->DrawInstanced(1, m_iNumInstance, 0, 0);
 
-	//debug
-	// m_pContext->CopyResource(m_pDebugStagingBuffer, m_pVBInstance);
-    // 
-	// D3D11_MAPPED_SUBRESOURCE mappedResource;
-	// if (SUCCEEDED(m_pContext->Map(m_pDebugStagingBuffer, 0, D3D11_MAP_READ, 0, &mappedResource)))
-	// {
-	// 	IB_POINTINSTANCE_EFFECT aliveCount = *reinterpret_cast<IB_POINTINSTANCE_EFFECT*>(mappedResource.pData);
-	// 	m_pContext->Unmap(m_pStagingBuffer, 0);
-	// }
-	//debug end
-
+    ////debug
+    //m_pContext->CopyResource(m_pDebugStagingBuffer, m_pVBInstance);
+    //
+    //D3D11_MAPPED_SUBRESOURCE mappedResource;
+    //if (SUCCEEDED(m_pContext->Map(m_pDebugStagingBuffer, 0, D3D11_MAP_READ, 0, &mappedResource)))
+    //{
+    //    IB_POINTINSTANCE_EFFECT aliveCount = *reinterpret_cast<IB_POINTINSTANCE_EFFECT*>(mappedResource.pData);
+    //    m_pContext->Unmap(m_pStagingBuffer, 0);
+    //}
+    ////debug end
+	
 	return S_OK;
 }
 
@@ -347,27 +347,37 @@ void CVIBuffer_Point_Instance::Remove_Speed(SPEED_VALUE type)
 	JobDesc.PassDesc = PassDesc;
 
 	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc);
+    m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
 }
 
 void CVIBuffer_Point_Instance::Remove_Speed()
 { 
-	COMPUTE_PASS_DESC PassDesc{};
-	PassDesc.SRVs.push_back(m_pSRV);
-	PassDesc.UAVs.push_back(m_pUAV);
-	PassDesc.UAVs.push_back(m_pUAVSpeed);
-	_uint iNumThreadPerGroup = 256;
-	_uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
-	PassDesc.x = iNumGroups;
-	PassDesc.y = 1;
-	PassDesc.z = 1;
+    D3D11_MAPPED_SUBRESOURCE SubResource;
+    if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
+    {
+        POINT_INSTANCE_CB* pInstanceSpeedCB = reinterpret_cast<POINT_INSTANCE_CB*>(SubResource.pData);
+        pInstanceSpeedCB->iSpeedType = 4;
+        pInstanceSpeedCB->iNumInstances = m_iNumInstance;
+        m_pContext->Unmap(m_pCB, 0);
+    }
 
-	CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
-	JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET)];
-	JobDesc.PassDesc = PassDesc;
+    COMPUTE_PASS_DESC PassDesc{};
+    PassDesc.SRVs.push_back(m_pSRV);
+    PassDesc.UAVs.push_back(m_pUAV);
+    PassDesc.UAVs.push_back(m_pUAVSpeed);
+    PassDesc.ConstantBuffers.push_back(m_pCB);
+    _uint iNumThreadPerGroup = 256;
+    _uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
+    PassDesc.x = iNumGroups;
+    PassDesc.y = 1;
+    PassDesc.z = 1;
 
-	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc);
+    CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
+    JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET_SPEED)];
+    JobDesc.PassDesc = PassDesc;
 
-	m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
+    m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc);
+    m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
 }
 
 void CVIBuffer_Point_Instance::Setting_Pivot(_float3 pivot)
@@ -420,17 +430,17 @@ HRESULT CVIBuffer_Point_Instance::Ready_SRV(void* pSysmem)
 		return E_FAIL;
 	}
 
-	//Debug
-	//여기서 Instance Buffer를 깔 수 있는 Staging Buffer를 만들어야됨
-	//m_pVBInstance 이 내용을 system으로 넣어주는 Staing버퍼 만들기
-	//D3D11_BUFFER_DESC DebugStaingBufferDesc{};
-	//DebugStaingBufferDesc = m_VBInstanceDesc;
-	//DebugStaingBufferDesc.Usage = D3D11_USAGE_STAGING;
-	//DebugStaingBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-	//DebugStaingBufferDesc.BindFlags = 0;
-	//if (FAILED(m_pDevice->CreateBuffer(&DebugStaingBufferDesc, nullptr, &m_pDebugStagingBuffer)))
-	//	return E_FAIL;
-	//Debug End
+	//  //Debug
+	//  //여기서 Instance Buffer를 깔 수 있는 Staging Buffer를 만들어야됨
+	//  //m_pVBInstance 이 내용을 system으로 넣어주는 Staing버퍼 만들기
+	//  D3D11_BUFFER_DESC DebugStaingBufferDesc{};
+	//  DebugStaingBufferDesc = m_VBInstanceDesc;
+	//  DebugStaingBufferDesc.Usage = D3D11_USAGE_STAGING;
+	//  DebugStaingBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	//  DebugStaingBufferDesc.BindFlags = 0;
+	//  if (FAILED(m_pDevice->CreateBuffer(&DebugStaingBufferDesc, nullptr, &m_pDebugStagingBuffer)))
+	//  	return E_FAIL;
+	//  //Debug End
 
 
 	return S_OK;
@@ -544,6 +554,7 @@ _bool CVIBuffer_Point_Instance::IsFinish()
 
     COMPUTE_PASS_DESC PassDesc{}; 
     PassDesc.UAVs.push_back(m_pUAV); 
+    PassDesc.UAVs.push_back(m_pUAVSpeed); 
     _uint iNumThreadPerGroup = 256;
     _uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
     PassDesc.x = iNumGroups;
