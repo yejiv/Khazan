@@ -138,7 +138,7 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vecto
         if (std::isfinite(gx) && std::isfinite(gy) && std::isfinite(gz))
             m_vGravity = JPH::Vec3(gx, gy, gz);
         else
-            m_vGravity = JPH::Vec3(0.f, -980.f, 0.f); // fallback
+            m_vGravity = JPH::Vec3(0.f, g_fGravity, 0.f); // fallback
     }
 
     // ===== 한 번만 고정 스텝 처리 =====
@@ -219,7 +219,7 @@ void CCharacterVirtual::StepFixed(_float fTimeDelta)
     if (!onGround)
     {
         // v = v + g * dt
-        m_vVelocity += m_vGravity * fTimeDelta;
+        m_vVelocity += m_vGravity * fTimeDelta * m_pCharVir->GetMass();
 
         // 낙하 속도 제한 (원하면 값 조절)
         const _float maxFallSpeed = -50.0f;

@@ -2051,7 +2051,7 @@ HRESULT CKhazan_Spear::Ready_Collision()
     tCharVirDesc.fRadius = 0.3f;
     tCharVirDesc.fHeight = 1.f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
-    tCharVirDesc.fMass = 10.f;
+    tCharVirDesc.fMass = 3.f;
     tCharVirDesc.fMaxStrength = 0.f;
     tCharVirDesc.fPredictiveContactDistance = 0.3f;
     tCharVirDesc.iMaxConstraintIterations = 20;
