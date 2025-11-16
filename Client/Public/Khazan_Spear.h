@@ -35,6 +35,8 @@ public:
         GUARD   = 1 << 11,
         GUARD_SUCCESS = 1 << 12,
         JUST_GUARD = 1 << 13,
+        GUARD_ROTATION = 1 << 14,
+        GUARD_ROTATION_REQUEST = 1 << 15,
 
 	};
 	enum PLAYER_CAMERA_DIR {
@@ -126,17 +128,21 @@ private:
     DIR                         m_eHitStrongDir = {};       //맞은 방향  저장
 
     /* Guard */
-    //_bool*                      m_isGuarding = { nullptr };
+    _vector                     m_vGuardRotationStart = {};
+    _vector                     m_vGuardRotationEnd = {};
+    _float4                     m_vGuardRotationTarget = {}; // 가드 시 충돌지점으로 회전
+    _float2                     m_fGuardRotationTime = { 0.f, 0.15f };
+
 
 	/* const */
 	const	_float				m_fMinSprintTime = { 0.15f };
 	//const	_float				m_fMinDodgeTime = { 0.2f };
 
 	/* Move Speed */
-    const _float				m_fInjuredSpeed = { 1.15f };
-    const _float				m_fWalkSpeed = { 1.6f };
-	const _float				m_fRunSpeed = { 4.f };
-	const _float				m_fSprintSpeed = { 8.f };
+     _float				m_fInjuredSpeed = { 1.15f };
+     _float				m_fWalkSpeed = { 2.6f };
+	 _float				m_fRunSpeed = { 5.5f };
+	 _float				m_fSprintSpeed = {11.5f };
 
 	/*  Attack */
 	const _float				m_fChargingStrongIntervalTime = { 0.25f };
@@ -157,6 +163,8 @@ private:
     DIRECTION_INFO  Calculate_LockOnDirection(_float fTimeDelta);
     void            Update_PlayerDate();
     void            LockOn_Rotation(_float fTimeDelta);
+    void            Setting_Guard_Rotation( );
+    void            Guard_Rotation(_float fTimeDelta);
     void            Update_LockOn( );   //카메라 락온과 동기화
     void            Update_Die(_float fTimeDelta);
     void            Clear_Injured();
@@ -170,9 +178,10 @@ private:
     HRESULT			Ready_AnimationStateMachine();
     //HRESULT			Ready_PlayerData();
 
-    void            Clear_Step0();  // 이전 상태 빼고 거의 다 클리어
+    void            Clear_Step0();  // 이전 상태 빼고 다 클리어
     void            Clear_Step1();  //이전 상태 , lockOn, dir,worldDir 빼고 다 클리어
     void            Clear_Step2();  // 무빙 관련 클리어
+    void            Clear_Step3();  // 가드 빼고 클리어
 
 
 
@@ -231,8 +240,15 @@ private:
 #ifdef _DEBUG
 	void			Debug_Widget();
 	void			Debug_Widget_States();      // 상태 디버깅
+    void Debug_Widget_Combat();
 	void			Debug_Widget_Animation();   // 애니메이션 디버깅
 	void			Debug_Widget_Movement();    // 이동 디버깅
+
+    void Debug_Widget_Guard();
+
+    std::string GetDirectionString(DIRECTION_INFO dir);
+
+    std::string GetHitReactionString();
 
 	const char*		GetStateName(_uint state);
 	const char*		GetSubStateName(_uint subState);

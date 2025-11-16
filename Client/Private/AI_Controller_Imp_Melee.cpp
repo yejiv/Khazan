@@ -202,7 +202,7 @@ CONDITION CAI_Controller_Imp_Melee::GetCallbackCondition(CGameObject* pOwner, co
     {
         return [pImp](CBlackBoard* BB)->_bool
             {
-                cout << "ChainSmash Condition" << endl;
+
 
                 _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
                 _float fAttackRanage = BB->Get_Value<_float>(pImp->Get_Name(), "AttackRange");
@@ -221,7 +221,6 @@ CONDITION CAI_Controller_Imp_Melee::GetCallbackCondition(CGameObject* pOwner, co
         return [pImp](CBlackBoard* BB)->_bool
             {
 
-                cout << "NonStopAttack Condition" << endl;
 
                 _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
                 _float fAttackRanage = BB->Get_Value<_float>(pImp->Get_Name(), "AttackRange");
@@ -247,7 +246,7 @@ CONDITION CAI_Controller_Imp_Melee::GetCallbackCondition(CGameObject* pOwner, co
     {
         return [pImp](CBlackBoard* BB)
             {
-                cout << "MoveCondition" << endl;
+
 
                 _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
                 _float fChaseRange = BB->Get_Value<_float>(pImp->Get_Name(), "ChaseRange");
@@ -307,7 +306,7 @@ ACTION CAI_Controller_Imp_Melee::GetCallbackAction(CGameObject* pOwner, const st
                     BB->Set_Value<_bool>(pImp->Get_Name(), "DamageInterrupt", false);
                     return BTNODESTATE::SUCCESS;
                 }
-                cout << "Hit RUNNING" << endl;
+   
                 BB->Set_Value(pImp->Get_Name(), "isHit", true);
                 BB->Set_Value(pImp->Get_Name(), "isHitFinished", false);
 
@@ -445,7 +444,6 @@ ACTION CAI_Controller_Imp_Melee::GetCallbackAction(CGameObject* pOwner, const st
                     return BTNODESTATE::FAILURE;
 
                 pImp->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(IMPMELEE_STATE::IDLE), pImp);
-                cout << "IDLERunning" << endl;
 
                 return BTNODESTATE::RUNNING;
             };

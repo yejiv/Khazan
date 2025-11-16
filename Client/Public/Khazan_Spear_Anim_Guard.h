@@ -29,6 +29,8 @@ public:
 	_bool	Is_Guarding() const { return m_isGuarding; }
 	_bool	Is_WalkGuarding() const { return m_isWalkGuarding; }
 	_bool	Is_JustGuarding() const { return m_isJustGuarding; }
+
+    void    Clear();
 	
 private:
 	_bool	m_isGuarding = { false };
