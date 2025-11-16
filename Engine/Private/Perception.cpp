@@ -11,6 +11,16 @@ CPerception::CPerception()
 	Safe_AddRef(m_pGameInstance);
 }
 
+void CPerception::Set_Fov()
+{
+    m_tSightDesc.fFovCos = -1.f;
+}
+
+void CPerception::Reset_Fov()
+{
+    m_tSightDesc.fFovCos = m_fOriginFOVCos;
+}
+
 
 HRESULT CPerception::Initialize(const AIPERCEPTION_DATA& Desc, _uint iTeamID)
 {
@@ -270,3 +280,5 @@ void CPerception::Free()
 
 	Safe_Release(m_pGameInstance);
 }
+
+

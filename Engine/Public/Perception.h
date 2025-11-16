@@ -15,8 +15,10 @@ public:
         m_PerceptionCallBack = CallBack;
     }
 
-    void                Set_Fov() { m_tSightDesc.fFovCos = -1.f; }
-    void                Reset_Fov() { m_tSightDesc.fFovCos = m_fOriginFOVCos; }
+    void                Set_Fov();
+    void                Reset_Fov();
+
+
 
 public:
     _float              Get_CurrentTime() const { return m_fCurrnetTime; }

@@ -71,6 +71,8 @@ void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject
         m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
     }
 
+    
+
     _float fValidTime = 3.f;
     
     m_pController->AI_ApplyDamage(pGameObject,fDamage,ENUM_CLASS(eHitreaction),fValidTime);

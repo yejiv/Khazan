@@ -36,7 +36,6 @@ public:
 
 public:
     virtual void				        Reset() override;
-    void						        Enter_State(PRJSTATE eNextState);
 
 
 private:
@@ -52,13 +51,16 @@ private:
 
 
 private:
-    CBody* m_pBody = { nullptr };
-    _bool						        m_isCrashed = { false };
+    CBody*                              m_pBody = { nullptr };
     _float                              m_fReturnTime = { 2.f };  
     _float                              m_fPauseTime = { 2.f };
 
     CGameObject*                        m_pTarget = { nullptr };
     class CEffect_Prefab*               m_fEffect = { nullptr };
+
+    _bool                               m_isDamageForward = { false };
+    _bool                               m_isDamageReturn = { false };
+
 
 public:
     static CProjectile_Boomarang*       Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

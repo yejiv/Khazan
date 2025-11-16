@@ -205,7 +205,7 @@ CONDITION CAI_Controller_Imp_Melee::GetCallbackCondition(CGameObject* pOwner, co
         return [pImp](CBlackBoard* BB)->_bool
             {
 
-                cout << "NonStopAttack Condition" << endl;
+                //cout << "NonStopAttack Condition" << endl;
 
                 _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
                 _float fAttackRanage = BB->Get_Value<_float>(pImp->Get_Name(), "AttackRange");
@@ -237,7 +237,7 @@ CONDITION CAI_Controller_Imp_Melee::GetCallbackCondition(CGameObject* pOwner, co
                 _float fStopRange = BB->Get_Value<_float>(pImp->Get_Name(), "MoveStopRange");
 
               
-                cout << "MoveCondition" << endl;
+                //cout << "MoveCondition" << endl;
 
                 if (!BB->Get_Value<_bool>(pImp->Get_Name(), "isDetected"))
                     return false;
@@ -369,7 +369,6 @@ ACTION CAI_Controller_Imp_Melee::GetCallbackAction(CGameObject* pOwner, const st
                     Change_State(ENUM_CLASS(IMPMELEE_STATE::HIT3), pImp);
 
                 BB->Set_Value(pImp->Get_Name(), "isChainSmash", true);
-                BB->Set_Value(pImp->Get_Name(), "isChainSmashFinished", false);
 
                 return BTNODESTATE::RUNNING;
 
@@ -655,6 +654,8 @@ PERCEPTIONCALLBACK CAI_Controller_Imp_Melee::GetCallBackPerception(CGameObject* 
                     else
                     {
                         m_pBB->Set_Value(m_strMonstertag, "isDetected", false);
+                        m_pPerception->Reset_Fov();
+
                     }
                 }
             };
@@ -671,11 +672,6 @@ PERCEPTIONCALLBACK CAI_Controller_Imp_Melee::GetCallBackPerception(CGameObject* 
                         m_pBB->Set_Value<_uint>(m_strMonstertag, "DamageType", Stim.iDamageType);
                         m_pBB->Set_Value(m_strMonstertag, "DamageInterrupt", true);
                         m_pBB->Set_Value(m_strMonstertag, "isDetected", true);
-                    }
-                    else
-                    {
-                        if (m_pPerception)
-                            m_pBB->Set_Value(m_strMonstertag, "DamageACC", m_pPerception->Get_DamageAcc());
                     }
                 }
             };

@@ -301,7 +301,8 @@ HRESULT CImp_Range::Ready_AnimEvent()
         Cast_Boomarang();
         });
     pModel->Register_Event("HoldBoomarang", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
-        Hold_Boomarang();
+       
+            Hold_Boomarang();
         });
     pModel->Register_Event("ShootBoomarang", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         Shoot_Boomarang();
@@ -400,8 +401,6 @@ void CImp_Range::Shoot_MagicBall(_uint iIndex)
     pMagicBall->Set_IsActive(true);
     pMagicBall->Fire_Projectile();
 
-    CModel* pModel = static_cast<CModel*>(pMagicBall->Get_Component(TEXT("Com_Model")));
-    pModel->Set_Animation(1);
 
     Safe_Release(pMagicBall);
 
@@ -439,11 +438,17 @@ void CImp_Range::Cast_Boomarang()
     );
 }
 
+void CImp_Range::Cast_Failed()
+{
+    if(nullptr != m_pBoomarang)
+        m_pBoomarang->Set_IsDead(true);
+}
+
 void CImp_Range::Hold_Boomarang()
 {
     if (nullptr == m_pBoomarang)
         return;
-
+  
     _float4 vTempSpawnPoint = *m_pBody->Get_BonePointEX("Weapon_L");
     _float3 vSpawnPoint = _float3(vTempSpawnPoint.x, vTempSpawnPoint.y, vTempSpawnPoint.z);
     
@@ -477,8 +482,6 @@ void CImp_Range::Shoot_Boomarang()
     m_pBoomarang->Set_IsActive(true);
     m_pBoomarang->Fire_Projectile();
 
-    CModel* pModel = static_cast<CModel*>(m_pBoomarang->Get_Component(TEXT("Com_Model")));
-    pModel->Set_Animation(1);
 
     Safe_Release(m_pBoomarang);
 }
