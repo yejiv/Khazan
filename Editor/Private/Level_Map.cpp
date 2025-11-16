@@ -2762,10 +2762,105 @@ HRESULT CLevel_Map::Ready_MultiFix_Window()
 					OutputDebugString(TEXT("[MultiFix] Fixed relative transforms.\n"));
 				}
 			}
-			if (ImGui::Button("RESET"))
-			{
-				static_cast<CTransform*>(m_pParentFixObject->Get_Component(TEXT("Com_Transform")))->Set_WorldMatrix(XMLoadFloat4x4(&m_matOriginalParentMatrix));
-			}
+            if (ImGui::Button("RESET"))
+            {
+                static_cast<CTransform*>(m_pParentFixObject->Get_Component(TEXT("Com_Transform")))->Set_WorldMatrix(XMLoadFloat4x4(&m_matOriginalParentMatrix));
+            } SAMELINE;
+            if (ImGui::Button("COPY"))
+            {
+                if (m_MultiFixList.empty())
+                    return;
+
+                vector<CProp*> CopyList;
+                CopyList.reserve(m_MultiFixList.size());
+
+                // 1. 현재 MultiFix 리스트의 오브젝트들을 그대로 복제
+                for (CProp* pProp : m_MultiFixList)
+                {
+                    CHECK_NULLPTR(pProp, );
+
+                    CTransform* pTransform = static_cast<CTransform*>(
+                        pProp->Get_Component(TEXT("Com_Transform")));
+                    CHECK_NULLPTR(pTransform, );
+
+                    CProp_Object::PROP_OBJECT_DESC ObjectDesc = {};
+
+                    ObjectDesc.iMapObjectID = m_iMapObjectCnt++;
+                    ObjectDesc.eLevel = LEVEL::MAP;
+
+                    memcpy(ObjectDesc.szModelName, pProp->Get_ModelName(), sizeof(ObjectDesc.szModelName));
+
+                    ObjectDesc.WorldMatrix = *pTransform->Get_WorldMatrixPtr();
+
+                    ObjectDesc.Properties = pProp->Get_Properties();
+                    ObjectDesc.iSubLevel = pProp->Get_SubLevel();
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Object"),
+                        TIME_CHANNEL::WORLD, &ObjectDesc), );
+
+                    CProp* pObject_Prop =
+                        static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(
+                            ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj")));
+                    CHECK_NULLPTR_MSG(pObject_Prop, TEXT("엥"), );
+
+                    m_ObjectList.push_back(pObject_Prop);
+                    CopyList.push_back(pObject_Prop);
+                }
+
+                // 2. 기존 MultiFix 리스트를 새 복제 리스트로 교체
+                m_MultiFixList.swap(CopyList);
+
+                // 3. 새 그룹의 첫 번째를 부모로 지정
+                if (!m_MultiFixList.empty())
+                {
+                    m_pParentFixObject = m_MultiFixList.front();
+                    m_iMultiFixIndex = 0;
+                }
+                else
+                {
+                    m_pParentFixObject = nullptr;
+                    m_iMultiFixIndex = 0;
+                    m_MultiFixRelatives.clear();
+                    m_isMultiFix = false;
+                    m_pGameInstance->Clear_GizmoObject();
+                    return;
+                }
+
+                // 4. 새 부모 기준으로 다시 FIX 상태 세팅 (자동 FIX)
+                CTransform* pParentTransform =
+                    static_cast<CTransform*>(m_pParentFixObject->Get_Component(TEXT("Com_Transform")));
+                CHECK_NULLPTR(pParentTransform, );
+
+                XMMATRIX matParent = pParentTransform->Get_WorldMatrix();
+                XMMATRIX invParent = XMMatrixInverse(nullptr, matParent);
+
+                XMStoreFloat4x4(&m_matOriginalParentMatrix, matParent);
+                XMStoreFloat4x4(&m_matParentBefore, matParent);
+
+                m_MultiFixRelatives.clear();
+
+                for (size_t i = 1; i < m_MultiFixList.size(); ++i)
+                {
+                    CTransform* pChildTransform =
+                        static_cast<CTransform*>(m_MultiFixList[i]->Get_Component(TEXT("Com_Transform")));
+                    if (pChildTransform == nullptr)
+                        continue;
+
+                    XMMATRIX matChild = pChildTransform->Get_WorldMatrix();
+                    XMMATRIX matRelative = matChild * invParent;
+
+                    FIX_RELATIVE_DESC tDesc{};
+                    tDesc.pTransform = pChildTransform;
+                    XMStoreFloat4x4(&tDesc.RelativeMatrix, matRelative);
+
+                    m_MultiFixRelatives.push_back(tDesc);
+                }
+
+                m_isMultiFix = true;
+                m_pGameInstance->Set_GizmoObject(m_pParentFixObject);
+            }
 			if (ImGui::Button("DONE"))
 			{
 				m_pGameInstance->Clear_GizmoObject();

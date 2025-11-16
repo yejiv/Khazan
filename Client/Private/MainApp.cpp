@@ -54,7 +54,7 @@ HRESULT CMainApp::Initialize()
 
 	CHECK_FAILED(Ready_Prototype_ForStatic_Effect(), E_FAIL);
 	CHECK_FAILED(Ready_Font(), E_FAIL);
-	CHECK_FAILED(Ready_DebugTool(), E_FAIL);
+	//CHECK_FAILED(Ready_DebugTool(), E_FAIL); 
 
 	return S_OK;
 }

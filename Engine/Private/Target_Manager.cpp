@@ -113,6 +113,21 @@ HRESULT CTarget_Manager::Copy_Resource(const _wstring& strTargetTag, ID3D11Textu
 	return pRenderTarget->Copy_Resource(pSourTexture);
 }
 
+HRESULT CTarget_Manager::Copy_Resource(const _wstring& strDestTargetTag, const _wstring& strSourTargetTag)
+{
+    CRenderTarget* pSourRenderTarget = Find_RenderTarget(strSourTargetTag);
+    if (nullptr == pSourRenderTarget)
+        return E_FAIL;
+
+    CRenderTarget* pDestRenderTarget = Find_RenderTarget(strDestTargetTag);
+    if (nullptr == pDestRenderTarget)
+        return E_FAIL;
+
+    ID3D11Texture2D* pDestTexture = pDestRenderTarget->Get_Texture2D();
+
+    return pSourRenderTarget->Copy_Resource(pDestTexture);
+}
+
 void CTarget_Manager::Backup_RT()
 {
 	m_pContext->OMGetRenderTargets(1, &m_pBackBuffer, &m_pOriginalDSV);
@@ -165,14 +180,20 @@ HRESULT CTarget_Manager::Ready_Debug(const _wstring& strTargetTag, _float fX, _f
 
 HRESULT CTarget_Manager::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
 {
-	for (auto& Pair : m_MRTs)
-	{
-		for (auto& pRenderTarget : Pair.second)
-		{
-			if (nullptr != pRenderTarget)
-				pRenderTarget->Render(pShader, pVIBuffer);
-		}
-	}
+    for (auto& Pair : m_RenderTargets)
+    {
+        if (nullptr != Pair.second)
+            Pair.second->Render(pShader, pVIBuffer);
+    }
+
+	//  for (auto& Pair : m_MRTs)
+	//  {
+	//  	for (auto& pRenderTarget : Pair.second)
+	//  	{
+	//  		if (nullptr != pRenderTarget)
+	//  			pRenderTarget->Render(pShader, pVIBuffer);
+	//  	}
+	//  }
 
 	return S_OK;
 }

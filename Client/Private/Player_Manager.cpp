@@ -41,6 +41,24 @@ HRESULT CPlayer_Manager::Initialize()
     BindSkillToButton(E, CPlayerData_Manager::SPIRAL_THRUST);
     BindSkillToButton(R, CPlayerData_Manager::SHADOW_CLEAVE);
 
+    /*  임시 숫자임 */
+    m_Data.fMaxHp = { 10000.f };
+    m_Data.fCulHp = { 10000.f };
+    m_Data.fMaxStamina = { 100.f };
+    m_Data.fCulStamina = { 100.f };
+    m_Data.iMaxDoggednessCount = { 5 };
+    m_Data.fCulDoggedness = { 5 };
+
+    m_Data.fDamage = {10.f};
+    m_Data.fGuard = {5.f};
+
+    m_Data.iLachryma = { 500 };
+    m_Data.iGold = { 1000 };
+    m_Data.iLevel = { 1 };
+    m_Data.iSkillLevel = { 10 };
+    m_Data.fSkillLevel_EXP = { 55.f };
+    m_Data.iSkilPoint = { 10 };
+
 	return S_OK;
 }
 

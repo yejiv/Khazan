@@ -24,7 +24,7 @@ HRESULT CRadialBlur::Initialize()
 
 void CRadialBlur::Update(_float fTimeDelta)
 {
-    if (false == m_pGameInstance->isEnableRadialBlur())
+    if (false == m_isEnable)
         return;
     
     m_fTimeAcc += fTimeDelta;
@@ -45,7 +45,7 @@ void CRadialBlur::Update(_float fTimeDelta)
     {
         if (m_fTimeAcc >= m_Desc.fDuration)
         {
-            m_pGameInstance->Set_EnableRadialBlur(false);
+            m_isEnable = false;
             m_fTimeAcc = 0.f;
             m_Desc.fStrength = 0.f;
             return;
@@ -72,6 +72,9 @@ void CRadialBlur::Update(_float fTimeDelta)
 
 HRESULT CRadialBlur::Bind_RadialBlur_ShaderResources(CShader* pShader)
 {
+    if (FAILED(pShader->Bind_Bool("g_isEnableRadialBlur", &m_isEnable)))
+        return E_FAIL;
+
     if (FAILED(pShader->Bind_RawValue("g_vCenterUV", &m_Desc.vCenterUV, sizeof(_float2))))
         return E_FAIL;
 
@@ -110,7 +113,7 @@ void CRadialBlur::Set_RadialBlurCenter(_fvector vCenter, _float fOffset)
 void CRadialBlur::Start_RadialBlur(const RADIAL_BLUR_DESC& Desc)
 {
     // 강도 조절만, 다른 설정은 유지, 다른 설정 변경하고 싶으면 인자 Desc 추가 후 시작, 타겟 멤버 변수 추가
-    m_pGameInstance->Set_EnableRadialBlur(true);
+    m_isEnable = true;
     m_Desc = Desc;
     m_fTargetStrength = Desc.fStrength;
     m_Desc.vFadeTime.y = m_Desc.fDuration - m_Desc.vFadeTime.y; // 페이드 아웃 시작 시간으로 변경
