@@ -399,6 +399,8 @@ HRESULT CHeinMach_Trigger::Load_SkyBoxBinaryFile(const _tchar* pDataFile)
     CHECK_FALSE(ReadFile(hCloudFile, &m_Cloud_Desc, sizeof(CLOUD_DESC), &dwByte, nullptr), E_FAIL);
 
     CloseHandle(hCloudFile);
+
+    return S_OK;
 }
 
 void CHeinMach_Trigger::Set_FogConfig(FOG_CONFIG FogConfig)
