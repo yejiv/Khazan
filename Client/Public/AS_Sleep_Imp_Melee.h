@@ -22,7 +22,7 @@ public:
     virtual void					OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, class CGameObject* pOwner = nullptr) {};
 
 private:
-    IMP_SlEEP_STATE				    m_eState = { IMP_SlEEP_STATE::END };
+    IMP_SlEEP_STATE				    m_eState = { IMP_SlEEP_STATE::SLEEP };
     _bool							m_isChanged = { false };
 
     _uint                           m_iAnimIndex = {};

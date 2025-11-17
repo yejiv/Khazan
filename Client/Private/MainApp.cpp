@@ -63,7 +63,12 @@ void CMainApp::Update(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_LCONTROL))
 	{
-		m_pClientInstance->ActiveCamera_Shaking(1.5f, 1.f);
+		//m_pClientInstance->ActiveCamera_Shaking(1.5f, 1.f);
+
+        _int a = m_pGameInstance->Rand_Normal(1, 10);
+
+
+        int b = 1;
 
 		//m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.3f, 0.003f, 3.f);
 		//m_pGameInstance->Fix_HitStop(TIME_CHANNEL::ENEMY);

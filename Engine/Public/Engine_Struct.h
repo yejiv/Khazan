@@ -280,6 +280,7 @@ namespace Engine
     {
         float           fDepthBias;
         unsigned int    iNumSamples;
+        float           fStrength;
     }MOTION_BLUR_DESC;
 
 	struct HitStopState
@@ -705,6 +706,7 @@ namespace Engine
 	{
 		class CGameObject* pGameObject = nullptr;
 		unsigned int iObjectLayer;
+        wstring strName;
 		void* pInfo = nullptr;	
 	}COLLISION_DESC;
 

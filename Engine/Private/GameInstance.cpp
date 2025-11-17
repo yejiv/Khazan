@@ -280,6 +280,7 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 
 	m_pComputeShader_Manager->Execute_Job(COMPUTEJOB::UPDATE);
 
+
 #ifdef _DEBUG
 
 #endif
@@ -351,9 +352,23 @@ _float CGameInstance::Rand_Normal()
 	return static_cast<_float>(rand()) / RAND_MAX;
 }
 
+
+_int CGameInstance::Rand_Normal(_int iMin, _int iMax)
+{
+    static std::mt19937 engine{ std::random_device{}() };
+    std::uniform_int_distribution<_int> dist(iMin, iMax);
+    return dist(engine);
+}
+
+
 _float CGameInstance::Rand(_float fMin, _float fMax)
 {
 	return fMin + Rand_Normal() * (fMax - fMin);
+}
+
+_int CGameInstance::Rand(_int iMin, _int iMax)
+{
+    return _int();
 }
 
 _uint CGameInstance::Get_StaticLevel()

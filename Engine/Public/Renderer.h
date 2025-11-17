@@ -114,9 +114,10 @@ private:
 	HRESULT Render_Priority();
 	HRESULT Render_Shadow();
 	HRESULT Render_Static();
+    HRESULT Render_StaticVelocity();
 	HRESULT Render_Decal();
 	HRESULT Render_Dynamic();
-    HRESULT Render_VelocityMap();
+    HRESULT Render_DynamicVelocity();
 	HRESULT Render_Outline();
 	HRESULT Render_SSAO();
 	HRESULT Render_Lights();
