@@ -30,6 +30,8 @@ void CJolt_CharacterContactListener::OnContactAdded(const JPH::CharacterVirtual*
 {
     if (m_pBodyInterface->GetMotionType(inBodyID2) == EMotionType::Static)
         ioSettings.mCanPushCharacter = true;
+
+    ioSettings.mCanReceiveImpulses = false;
     
 
   /*  COLLISION_DESC* pCharDesc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
@@ -62,6 +64,8 @@ void CJolt_CharacterContactListener::OnContactPersisted(const JPH::CharacterVirt
 {
     if (m_pBodyInterface->GetMotionType(inBodyID2) == EMotionType::Static)
         ioSettings.mCanPushCharacter = true;
+
+    ioSettings.mCanReceiveImpulses = false;
    /* COLLISION_DESC* pCharDesc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
     COLLISION_DESC* pBodyDesc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(m_pBodyInterface->GetUserData(inBodyID2)));
 

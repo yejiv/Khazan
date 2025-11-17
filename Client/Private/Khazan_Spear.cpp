@@ -202,9 +202,6 @@ void CKhazan_Spear::Update(_float fTimeDelta)
 void CKhazan_Spear::Late_Update(_float fTimeDelta)
 {
 
-
-
-
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 
@@ -2051,7 +2048,7 @@ HRESULT CKhazan_Spear::Ready_Collision()
     tCharVirDesc.fRadius = 0.3f;
     tCharVirDesc.fHeight = 1.f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
-    tCharVirDesc.fMass = 3.f;
+    tCharVirDesc.fMass = 60.f;
     tCharVirDesc.fMaxStrength = 0.f;
     tCharVirDesc.fPredictiveContactDistance = 0.3f;
     tCharVirDesc.iMaxConstraintIterations = 20;
