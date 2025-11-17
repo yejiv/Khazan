@@ -244,6 +244,18 @@
     <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\03.ElevatorS\01.Slate">
       <UniqueIdentifier>{28163f91-82e9-4b96-87f5-c86be3df14ed}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\04.Lever">
+      <UniqueIdentifier>{17946d75-2a56-4173-a524-733ed8513695}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\05.Gear">
+      <UniqueIdentifier>{9bc615e2-b31c-4e44-a4a4-9c7b3cf7383d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\05.Gear\00.Lever_Gear">
+      <UniqueIdentifier>{76d246d6-54b7-4963-a3a7-c29f74861b04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\05.Gear\01.Door_Gear">
+      <UniqueIdentifier>{a22ba3a5-385e-426b-8bf4-0ce42b0ef93a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -468,6 +480,15 @@
     <ClInclude Include="..\Public\Slate_Switch.h">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\03.ElevatorS\01.Slate</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Lever.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\04.Lever</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Door_Gear.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\05.Gear\01.Door_Gear</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Lever_Gear.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\05.Gear\00.Lever_Gear</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -686,6 +707,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\Slate_Switch.cpp">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\03.ElevatorS\01.Slate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Lever.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\04.Lever</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Door_Gear.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\05.Gear\01.Door_Gear</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Lever_Gear.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\05.Gear\00.Lever_Gear</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

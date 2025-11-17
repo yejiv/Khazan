@@ -1040,6 +1040,20 @@ HRESULT CLoader::Loading_For_Embars_Model()
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Slate_Switch_001/WIP_BGQ_Slate_Switch_001.dat")), E_FAIL);
 #pragma endregion
 
+#pragma region 레버, 기어
+    /* Prototype_Component_Model_Lever */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Lever"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Gear_Switch_001/WIP_BGQ_Gear_Switch_001.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_Lever_Gear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Lever_Gear"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Machine_Loop_001/WIP_BGQ_Machine_Loop_001.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_Door_Gear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Door_Gear"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Gear_Loop_001/WIP_BGQ_Gear_Loop_001.dat")), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 트리거
@@ -1098,6 +1112,20 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
     /* Prototype_GameObject_Prop_Slate_Switch */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Slate_Switch"),
         CSlate_Switch::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 레버, 기어
+    /* Prototype_GameObject_Prop_Lever */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Lever"),
+        CLever::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Lever_Gear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Lever_Gear"),
+        CLever_Gear::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Door_Gear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Door_Gear"),
+        CDoor_Gear::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 #pragma endregion

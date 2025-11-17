@@ -81,6 +81,12 @@ namespace Client {
         bool isInCave = { false };
     };
 
+    struct EventLever
+    {
+        XMFLOAT4 vPosition{};
+        XMFLOAT4 vPlayerPosition{};
+    };
+
     //상호작용 오브젝트 어떤 종류인지 받아오는 이벤트 구조체(오브젝트->플레이어)
 	struct EventInteractType {
 		enum EVENT_STATE { BEGIN, END, NONE };
@@ -92,6 +98,7 @@ namespace Client {
 		EventChest ChestEvent{};
 		EventTombStone TSEvent{};
         EventCave CaveEvent{};
+        EventLever LeverEvent{};
 
 		void End_Event() { isEvent = false; }
 
