@@ -85,6 +85,7 @@ void CYetuga::Priority_Update(_float fTimeDelta)
         HPDesc.pHpValue = &m_fCurrentHP;
         HPDesc.pStaminaMaxValue = &m_fMaxStamina;
         HPDesc.pStaminaCulValue = &m_fCurrentStamina;
+        HPDesc.wstrName = TEXT("예투가");
 
         CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &HPDesc);
     }
