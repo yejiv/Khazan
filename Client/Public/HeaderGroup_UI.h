@@ -40,7 +40,7 @@
 #include "Skill_QuickSlot.h"
 
 #include "UI_Slot_Smoke.h"
-
+#include "UI_QuickSlot_Skill_Fx.h"
 //HUD  관련
 #include "BossHp.h"
 #include "Amount.h"

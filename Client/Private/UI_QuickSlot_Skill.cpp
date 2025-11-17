@@ -3,6 +3,7 @@
 #include "ClientInstance.h"
 #include "UI_Atlas_Icon.h"
 
+#include "UI_QuickSlot_Skill_Fx.h"
 CUI_QuickSlot_Skill::CUI_QuickSlot_Skill(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Slot{pDevice, pContext}
 {
@@ -36,7 +37,19 @@ void CUI_QuickSlot_Skill::Priority_Update(_float fTimeDelta)
 
 void CUI_QuickSlot_Skill::Update(_float fTimeDelta)
 {
-
+    if (m_iSkillIndex < 0)
+        return;
+    if (CClientInstance::GetInstance()->Is_UsedSkill(m_iSkill))
+    {
+        if (!m_isInput)
+        {
+            m_pFx->On_Anim();
+            m_isInput = true;
+        }
+    }
+    else
+        m_isInput = false;
+    m_pFx->Update(fTimeDelta);
 }
 
 void CUI_QuickSlot_Skill::Late_Update(_float fTimeDelta)
@@ -60,7 +73,7 @@ void CUI_QuickSlot_Skill::Late_Update(_float fTimeDelta)
         m_pIcon->Late_Update(fTimeDelta);
     }
     CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::ATLAS, this);
-
+    m_pFx->Late_Update(fTimeDelta);
 
 }
 
@@ -111,6 +124,19 @@ HRESULT CUI_QuickSlot_Skill::Ready_Children()
     m_Children.push_back(m_pIcon);
     Safe_AddRef(m_pIcon);
 
+    CUIObject::UIOBJECT_DESC Desc;
+    Desc.fDepth = m_fDepth - 0.1f;
+    Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+    Desc.szName = "Fx";
+    Desc.vLocalSize = m_vLocalSize;
+    Desc.vLocalPos = { 0.f, 0.f };
+    m_pFx = static_cast<CUI_QuickSlot_Skill_Fx*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_QuickSlot_Skill_fx"), &Desc));
+    if (m_pFx == nullptr)
+        return E_FAIL;
+
+    m_Children.push_back(m_pFx);
+    Safe_AddRef(m_pFx);
+
     return S_OK;
 }
 
@@ -130,11 +156,14 @@ void CUI_QuickSlot_Skill::Skill_Equip(const EVENT_SKILL_SLOT& e)
 
         m_pIcon->Set_Texture(vUV, SkillDB.iTexPass);
         m_pIcon->Set_Color({ 0.929f, 0.741f, 0.376f,1.f });
+
+        m_iSkill = 1 << SkillDB.iIndex;
     }
     else
     {
         m_iState = ENUM_CLASS(QUICKITMESLOTSTATE::NONITEM);
         m_iSkillIndex = -1;
+        m_iSkill = 0;
     }
 }
 
@@ -180,4 +209,5 @@ void CUI_QuickSlot_Skill::Free()
 {
     __super::Free();
     Safe_Release(m_pIcon);
+    Safe_Release(m_pFx);
 }

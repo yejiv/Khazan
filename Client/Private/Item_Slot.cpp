@@ -385,7 +385,7 @@ HRESULT CItem_Slot::Ready_Children()
     TextDesc.iUIType = ENUM_CLASS(UITYPE::TEXT);
     TextDesc.szName = "Smoke";
     TextDesc.vLocalPos = _float2{ 0.f, 0.f };
-    TextDesc.vLocalSize = { 90.f,90.f };
+    TextDesc.vLocalSize = { 95.f,95.f };
     TextDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
     m_pSmoke_Fx = static_cast<CUI_Slot_Smoke*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Slot_Smoke"), &TextDesc));
 

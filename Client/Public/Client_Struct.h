@@ -146,34 +146,34 @@ namespace Client
 
 	typedef struct tag_Player_Data
 	{
-        _float  fMaxHp = {};
-        _float  fCulHp = {};
-        _float  fMaxStamina = {};
-        _float  fCulStamina = {};
-        _float  fStaminaRegen = {};
-        _int    iMaxDoggednessCount = {};
-        _float  fCulDoggedness = {};
+        _float  fMaxHp = {};                    //최대 체력
+        _float  fCulHp = {};                    //현재 체력
+        _float  fMaxStamina = {};               //최대 스태미나
+        _float  fCulStamina = {};               //현재 스태미나
+        _float  fStaminaRegen = {};             //스태미나 회복 속도
+        _int    iMaxDoggednessCount = {};       //최대 투지 개수
+        _float  fCulDoggedness = {};            //현재 투지
 
-        _float  fDamage = {};
-        _float  fGuard = {};
+        _float  fDamage = {};                   //공격력
+        _float  fGuard = {};                    //방어력
 
-		_uint	iLevel = {};
+		_uint	iLevel = {};                    //레벨
 
-		_uint	iLachryma = {};
-		_uint	iGold = {};
-        _uint	iStone = {};
+		_uint	iLachryma = {};                 //라크리마
+		_uint	iGold = {};                     //골드
+        _uint	iStone = {};                    //스톤
 
-		_uint	iSkillLevel = {};
-		_float	fSkillLevel_EXP = {};
-		_uint	iSkilPoint = {};
+		_uint	iSkillLevel = {};               //스킬 레벨
+		_float	fSkillLevel_EXP = {};           //스킬 레벨 경험치
+		_uint	iSkilPoint = {};                //스킬 포인트
 
-        _uint   iVitality = {};
-        _uint   iEndurance = {};
-        _uint   iPower = {};
-        _uint   iCompetency = {};
-        _uint   iWill = {};
+        _uint   iVitality = {};                 //스탯1
+        _uint   iEndurance = {};                //스탯2
+        _uint   iPower = {};                    //스탯3
+        _uint   iCompetency = {};               //스탯4
+        _uint   iWill = {};                     //스탯5
 
-        _float  fWeight = {};
+        _float  fWeight = {};                   //무게
         
 	}PLAYER_DATA;
 
