@@ -157,39 +157,47 @@ PS_OUT_EMISSIVE PS_BRUTALPointBG(PS_IN In)
 
 PS_OUT PS_SLOT_SMOKE(PS_IN In)
 {
-    PS_OUT Out = (PS_OUT) 0;
+    PS_OUT Out;
 
-    float2 noiseUV = In.vTexcoord;
+    float2 uv = In.vTexcoord;
 
-    float waveY = sin(g_fValue * 0.6f) * 0.1f; 
-    float waveX2 = sin(g_fValue * 5.0f + In.vTexcoord.y * 10.0f) * 0.03f;
-    float waveX = cos(g_fValue * 3.0f) * 0.12f + waveX2;
+    float2 nUV = uv + float2(g_fValue * 0.1f, -g_fValue * 0.1f);
+    float2 noise = g_Texture.Sample(DefaultSampler, nUV).rg;
 
-    noiseUV += float2(waveX, waveY);
+    // -0.5 ~ +0.5
+    float2 n = noise - 0.5f;
 
-    float2 noise1 = g_MaskTexture.Sample(DefaultSampler, noiseUV).rg;
-    float2 noise2 = g_MaskTexture.Sample(DefaultSampler, noiseUV * 1.7f + float2(0.1f, g_fValue * 0.1f)).rg;
+    // 기본 왜곡
+    float2 distort = n * 0.01f;
 
-    float2 n1 = (noise1 - 0.5f);
-    float2 n2 = (noise2 - 0.5f);
+    float waveU = sin(uv.y * 10 + g_fValue * 3.0f);
+    float waveV = cos(uv.x * 12 + g_fValue * 2.5f);
 
-    float2 distort;
-    distort.x = n1.x * 0.02f + n2.x * 0.01f;
-    distort.y = n1.y * 0.05f + n2.y * 0.03f;
+    distort.x += waveU * 0.01f;
+    distort.y += waveV * 0.01f;
 
-    distort.x *= 1.6f;
-    distort.y *= 0.5f;
-    distort.y += sin((In.vTexcoord.y * 8.0f) + g_fValue * 4.0f) * 0.005f;
+    float2 finalUV = uv + distort;
+    finalUV = saturate(finalUV);
 
-    float2 smokeUV = In.vTexcoord + distort;
+    float4 tex = g_Texture.Sample(DefaultSampler, finalUV);
 
-    float smoke = g_Texture.Sample(DefaultSampler, smokeUV).r;
+    // 밝기 계산 (0~1)
+    float luminance = dot(tex.rgb, float3(0.299f, 0.587f, 0.114f));
 
-    float fadeTop = smoothstep(0.05f, 0.18f, In.vTexcoord.y);
-    smoke *= fadeTop;
 
-    Out.vColor.rgb = float3(1, 1, 1);
-    Out.vColor.a = smoke * g_vColor.a * g_fAlpha;
+    Out.vColor.rgb = g_vColor; // 네가 지정한 단일 색
+    Out.vColor.a = luminance * g_vColor.a * g_fAlpha; // 텍스처의 밝기를 알파로
+
+    return Out;
+}
+
+PS_OUT PS_SLOT_SKILL_FX(PS_IN In)
+{
+    PS_OUT Out;
+
+
+    Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+    Out.vColor.a = Out.vColor.r * g_vColor.a * g_fAlpha; // 텍스처의 밝기를 알파로
 
     return Out;
 }
@@ -262,6 +270,16 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_SLOT_SMOKE();
     }
 
+    pass PS_SLOT_SKILL_FX //6
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_SLOT_SKILL_FX();
+    }
 
 
 }
