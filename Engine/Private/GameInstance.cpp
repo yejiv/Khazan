@@ -352,15 +352,6 @@ _float CGameInstance::Rand_Normal()
 	return static_cast<_float>(rand()) / RAND_MAX;
 }
 
-
-_int CGameInstance::Rand_Normal(_int iMin, _int iMax)
-{
-    static std::mt19937 engine{ std::random_device{}() };
-    std::uniform_int_distribution<_int> dist(iMin, iMax);
-    return dist(engine);
-}
-
-
 _float CGameInstance::Rand(_float fMin, _float fMax)
 {
 	return fMin + Rand_Normal() * (fMax - fMin);
@@ -368,7 +359,9 @@ _float CGameInstance::Rand(_float fMin, _float fMax)
 
 _int CGameInstance::Rand(_int iMin, _int iMax)
 {
-    return _int();
+    static std::mt19937 engine{ std::random_device{}() };
+    std::uniform_int_distribution<_int> dist(iMin, iMax);
+    return dist(engine);
 }
 
 _uint CGameInstance::Get_StaticLevel()
