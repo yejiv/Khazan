@@ -15,6 +15,9 @@
 #include "Skill_Slot_Panel.h"
 #include "Skill_Slot_Flag.h"
 
+#include "Cursor_Circle_Fx.h"
+#include "Skill_BG_Smoke.h"
+
 CUI_SkillTree::CUI_SkillTree(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
 {
@@ -176,6 +179,13 @@ HRESULT CUI_SkillTree::Ready_Prototype()
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_Flag"),
         CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Flag/T_SkillTreeBg_0%d.png"), 2)), E_FAIL);
 
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Cursor_Circle_Fx"),
+        CCursor_Circle_Fx::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Skill_BG_Smoke"),
+        CSkill_BG_Smoke::Create(m_pDevice, m_pContext)), E_FAIL);
+
+
 	return S_OK;
 }
 
@@ -196,6 +206,33 @@ HRESULT CUI_SkillTree::Ready_Object()
 	m_Children.push_back(m_pBackGround);
 	Safe_AddRef(m_pBackGround);
 
+    Desc.fDepth = 5.3f;
+    Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+    Desc.szName = "BG_SMOKE";
+    Desc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
+    Desc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
+
+    m_pBG_Smoke = static_cast<CSkill_BG_Smoke*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Skill_BG_Smoke"), &Desc));
+    if (m_pBG_Smoke == nullptr)
+        return E_FAIL;
+    m_Children.push_back(m_pBG_Smoke);
+    Safe_AddRef(m_pBG_Smoke);
+
+    
+
+
+    Desc.fDepth = 0.5f;
+    Desc.szName = "Cursor_Fx";
+    Desc.vLocalSize = { 96.f, 96.f };
+    Desc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
+
+    m_pCircle_Fx = static_cast<CCursor_Circle_Fx*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Cursor_Circle_Fx"), &Desc));
+    if (m_pCircle_Fx == nullptr)
+        return E_FAIL;
+    m_Children.push_back(m_pCircle_Fx);
+    Safe_AddRef(m_pCircle_Fx);
+
+    
 	return S_OK;
 
 }
@@ -289,6 +326,7 @@ void CUI_SkillTree::Free()
 	__super::Free();
 
 	Safe_Release(m_pBackGround);
+    Safe_Release(m_pCircle_Fx);
 
 	for (auto pTap : m_SkillTap)
 		Safe_Release(pTap);

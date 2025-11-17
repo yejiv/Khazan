@@ -805,6 +805,9 @@
     <Filter Include="02.GameObject\UI\HUD\State\QuickSlot_Skill\Slot\fx">
       <UniqueIdentifier>{126e6813-c496-4dc1-ac4f-165d9e16f2cd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Skill_Tree\FX">
+      <UniqueIdentifier>{df9920c8-541d-4bd2-8c7a-c7fcfdf95c37}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1553,6 +1556,18 @@
     <ClInclude Include="..\public\UI_QuickSlot_Skill_Fx.h">
       <Filter>02.GameObject\UI\HUD\State\QuickSlot_Skill\Slot\fx</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Cursor_Circle_Fx.h">
+      <Filter>02.GameObject\UI\Skill_Tree\FX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_BG_Smoke.h">
+      <Filter>02.GameObject\UI\Skill_Tree\FX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Slot_Over_Fx.h">
+      <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Slot_Selete_Fx.h">
+      <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2280,6 +2295,18 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_QuickSlot_Skill_Fx.cpp">
       <Filter>02.GameObject\UI\HUD\State\QuickSlot_Skill\Slot\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Cursor_Circle_Fx.cpp">
+      <Filter>02.GameObject\UI\Skill_Tree\FX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_BG_Smoke.cpp">
+      <Filter>02.GameObject\UI\Skill_Tree\FX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Slot_Over_Fx.cpp">
+      <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Slot_Selete_Fx.cpp">
+      <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

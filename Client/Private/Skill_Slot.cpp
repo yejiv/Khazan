@@ -7,6 +7,8 @@
 #include "Skill_Info.h"
 #include "Skill_QuickSlot.h"
 
+#include "UI_Slot_Over_Fx.h"
+#include "UI_Slot_Selete_Fx.h"
 CSkill_Slot::CSkill_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Slot{ pDevice , pContext}
 {
@@ -104,6 +106,7 @@ void CSkill_Slot::Reset_Slot()
     {
         CClientInstance::GetInstance()->Add_SkillPoint(m_iSkillPoint);
         m_iSkillPoint = 0;
+        m_pSlot_Selete->Update_Visible(false);
 
         m_pGameInstance->Emit_Event<EVENT_SKILL_ON>(ENUM_CLASS(EVENT_TYPE::PreSKILL_On), { false, m_iSkillIndex });
 
@@ -187,8 +190,9 @@ void CSkill_Slot::Update(_float fTimeDelta)
     if (m_isLock)
         return;
 
-    if (IsPick(g_hWnd))
+    if (IsPick(g_hWnd) && m_pGameInstance->Get_InputType() == INPUT_TYPE::UI)
     {
+        m_pSlot_Over->Anim_On();
         if(m_pGameInstance->Get_InputType() == INPUT_TYPE::UI)
             Render_SkillInfo();
         if (CClientInstance::GetInstance()->Get_PlayerData().iSkilPoint > 0 && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB, INPUT_TYPE::UI))
@@ -201,6 +205,8 @@ void CSkill_Slot::Update(_float fTimeDelta)
                     CClientInstance::GetInstance()->Add_SkillPoint(-1);
                     if (m_iSkillPoint == 1)
                     {
+                        m_pSlot_Selete->Update_Visible(true);
+
                         m_pGameInstance->Emit_Event< EVENT_SKILL_ON>(ENUM_CLASS(EVENT_TYPE::PreSKILL_On), { true, m_iSkillIndex });
                         if (m_pSkilData->iSkillType == 3)
                         {
@@ -223,6 +229,8 @@ void CSkill_Slot::Update(_float fTimeDelta)
                 CClientInstance::GetInstance()->Add_SkillPoint(1);
                 if (m_iSkillPoint == 0)
                 {
+                    m_pSlot_Selete->Update_Visible(false);
+
                     m_pGameInstance->Emit_Event< EVENT_SKILL_ON>(ENUM_CLASS(EVENT_TYPE::PreSKILL_On), { false, m_iSkillIndex });
 
                     if (m_pSkilData->iType == 0)
@@ -501,6 +509,39 @@ HRESULT CSkill_Slot::Ready_Child(const SKILL_DB* pData)
         m_pSkillPointText->Update_Visible(false);
     }
     Update_Transform(this, m_vWorldPos);
+
+
+    CUIObject::UIOBJECT_DESC FXDesc = {};
+    FXDesc.fDepth = m_fDepth + 1.f;
+    FXDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+    FXDesc.szName = "Over";
+    FXDesc.vLocalPos = { 0.f, 0.f };
+    FXDesc.vLocalSize = { 64.f, 64.f };
+
+    m_pSlot_Over = static_cast<CUI_Slot_Over_Fx*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Slot_Over_Fx"), &FXDesc));
+    
+    if (m_pSlot_Over == nullptr)
+        return E_FAIL;
+
+    m_Children.push_back(m_pSlot_Over);
+    Safe_AddRef(m_pSlot_Over);
+    
+    FXDesc.fDepth = m_fDepth + 1.1f;
+    FXDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+    FXDesc.szName = "Selete";
+    FXDesc.vLocalPos = { 0.f, 0.f };
+    FXDesc.vLocalSize = { 90.f, 90.f };
+
+    m_pSlot_Selete = static_cast<CUI_Slot_Selete_Fx*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Slot_Selete_Fx"), &FXDesc));
+
+    if (m_pSlot_Selete == nullptr)
+        return E_FAIL;
+
+    m_Children.push_back(m_pSlot_Selete);
+    Safe_AddRef(m_pSlot_Selete);
+
+    m_pSlot_Selete->Update_Visible(false);
+    
     return S_OK;
 }
 
@@ -531,13 +572,14 @@ void CSkill_Slot::Free()
 	__super::Free();
     Safe_Release(m_pLine);
     Safe_Release(m_pIcon);
-    
+
     for (auto pLine : m_pPreSkillLine)
         Safe_Release(pLine);
     m_pPreSkillLine.clear();
 
     Safe_Release(m_pPointBG);
     Safe_Release(m_pSkillPointText);
-
+    Safe_Release(m_pSlot_Over);
+    Safe_Release(m_pSlot_Selete);
     m_pSkilData = nullptr;
 }   
