@@ -56,7 +56,6 @@ void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject
 
     if (m_fCurrentHP <= 0.f)
     {
-        //m_isDead = true;
         m_pController->AI_Terminate_All();
     }
     

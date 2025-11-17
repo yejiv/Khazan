@@ -22,13 +22,14 @@ HRESULT CProjectile_Rock_Yetuga::Initialize_Clone(void* pArg)
 	if (FAILED(__super::Initialize_Clone(pArg)))
 		return E_FAIL;
 
-	//if (FAILED(Ready_Components()))
-	//	return E_FAIL;
+	if (FAILED(Ready_Components()))
+		return E_FAIL;
 
-  /*  if (FAILED(Ready_Colliders()))
-        return E_FAIL;*/
+    if (FAILED(Ready_Colliders()))
+        return E_FAIL;
 
-    //m_pBody->Collision_Active(false);
+    m_pBody->Collision_Active(false);
+
     m_isVisible = true;
     m_isPicked = false;
 
@@ -45,15 +46,15 @@ void CProjectile_Rock_Yetuga::Update(_float fTimeDelta)
 {
     if (m_isPicked)
     {
-        /*m_pBody->Sync_Update(m_pTransformCom);
-        m_pBody->Update(fTimeDelta, m_pTransformCom);*/
+        m_pBody->Sync_Update(m_pTransformCom);
+        m_pBody->Update(fTimeDelta, m_pTransformCom);
 #ifdef _DEBUG
         //  m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
 #endif
     }
     else
     {
-        //m_pBody->Collision_Active(false);
+        m_pBody->Collision_Active(false);
     }
    
 }
@@ -120,7 +121,6 @@ void CProjectile_Rock_Yetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOthe
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
         {
             //pTarget->Take_Damage();
-            cout << "11111111111111111111111111111111111111111111111111" << endl;
             m_isDead = true;
             m_isVisible = false;
             m_isPicked = false;

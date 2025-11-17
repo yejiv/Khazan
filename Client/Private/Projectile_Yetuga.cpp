@@ -67,6 +67,7 @@ void CProjectile_Yetuga::Update(_float fTimeDelta)
 	{
 		if (CRASHED == m_eState)
 		{
+            m_isDead = true;
             m_pBody->Collision_Active(false);
 			Enter_State(PRJSTATE::END);
 		}

@@ -14,7 +14,7 @@ HRESULT CPlayer_Manager::Initialize()
     m_Data.iMaxDoggednessCount = 5;
     m_Data.fCulDoggedness = 5;
 
-    m_Data.fDamage = 50;
+    m_Data.fDamage = 10;
     m_Data.fGuard = 0;
 
 	m_Data.iLevel = 1;
