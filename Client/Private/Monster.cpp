@@ -49,8 +49,8 @@ void CMonster::CheckMinDistanceWithPlayer(_float fMinDist, _float fAnimRatio)
 
 void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject* pGameObject)
 {
-    if (m_pController->Get_BlackBoard()->Get_Value<_bool>(m_strName, "isHit"))
-        return;
+   /* if (m_pController->Get_BlackBoard()->Get_Value<_bool>(m_strName, "isHit"))
+        return;*/
 
     m_fCurrentHP -= fDamage;
 
