@@ -31,13 +31,20 @@ HRESULT CAI_Controller_Yetuga::Initialize(CCreature* pOwner)
 
 void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 {
+     
 
+    if (m_pGameInstance->Key_Down(DIK_T))
+    {
+        m_pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::AMAGEDDON), pOwner);
+    }
+    
+   
 	m_pPerception->Update(pOwner,m_pBB,fTimeDelta);
 	_float fPrevTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
 
     if (m_pBB->Get_Value<_bool>("Yetuga", "isDetected"))
     {
-        m_pBB->Set_Value(m_strMonstertag, "CurrentTime", fPrevTime + fTimeDelta);
+        m_pBB->Set_Value(m_strMonstertag, "CurrentTime", fPrevTime + fTimeDelta); 
     }
 	else
 		m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
@@ -1097,7 +1104,11 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 
 #pragma region ATTACK SELECTOR
 
-	/*else if ("IceBreath" == name)
+
+
+
+
+	 else if ("IceBreath" == name)
 	{
 		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
 			{
