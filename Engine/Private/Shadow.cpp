@@ -13,43 +13,17 @@ CShadow::CShadow(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 HRESULT CShadow::Initialize()
 {
-	m_Cascade.iNumCascades = 4;
-
-	m_Cascade.Splits.resize(m_Cascade.iNumCascades);
-	m_Cascade.LightViewMatrices.resize(m_Cascade.iNumCascades);
-	m_Cascade.LightProjMatrices.resize(m_Cascade.iNumCascades);
-	m_ShadowDSVs.resize(m_Cascade.iNumCascades);
-
-	m_fCameraNear = 0.1f;
-	m_fCameraFar = 6000.f;
-
 	if (FAILED(Ready_ShaderResources()))
 		return E_FAIL;
 
-	//  for (_uint i = 1; i <= m_Cascade.iNumCascades; ++i)
-	//  {
-	//  	_float fSplitIndex = static_cast<_float>(i) / static_cast<_float>(m_Cascade.iNumCascades);
-	//  	_float fLinear = m_fCameraNear + (m_fCameraFar - m_fCameraNear) * fSplitIndex;
-	//  	_float fLog = m_fCameraNear * powf(m_fCameraFar / m_fCameraNear, fSplitIndex);
-	//  	m_Cascade.Splits[i - 1] = Lerp(fLinear, fLog, m_Config.fLamda);
-	//  }
+    m_fSplit = 35.f;
 
-	// ?꾩떆 罹먯뒪耳?대뱶 援ш컙
-	m_Cascade.Splits[0] = 35.f;
-	m_Cascade.Splits[1] = 90.f;
-	m_Cascade.Splits[2] = 450.f;
-	m_Cascade.Splits[3] = 6000.f;
+    m_fCameraNear = 0.1f;
+    m_fCameraFar = 6000.f;
 
-	// ?댄썑 Directional Light 異붽? ????媛깆떊 ?댁＜湲?
-	m_Config.vLightDir = { 1.f, -1.f, 1.f, 0.f };
-	// log, linear mix
-	m_Config.fLamda = 0.5f;
-	m_Config.Splits = m_Cascade.Splits;
-	// Z-fighting 諛⑹?
-	m_Config.fBias = 0.001f;
-
-	// 洹몃┝??媛뺣룄(?멸린)
-	m_Config.fIntensity = 0.6f;
+	m_vLightDir = { 1.f, -1.f, 1.f };
+	m_fBias = 0.001f;
+	m_fIntensity = 0.6f;
 
     return S_OK;
 }
@@ -67,125 +41,115 @@ void CShadow::Update(_float fTimeDelta)
             m_isTransition = false;
         }
 
-        m_Config.fIntensity = Lerp(m_Config.fIntensity, m_fTargetIntensity, fRatio);
+        m_fIntensity = Lerp(m_fIntensity, m_fTargetIntensity, fRatio);
     }
 
-    // 캐스케이드 코너 카메라 절두체 가져와서 비율로 계산
-    m_pGameInstance->Get_Frustum_WorldPoints(m_vFrustumWorldPoints);
+    m_pGameInstance->Get_Frustum_WorldPoints(m_vFrustumCorners);
 
-    for (_uint i = 0; i < m_Cascade.iNumCascades; ++i)
+    _float fNearRatio = (m_fCameraNear - m_fCameraNear) / (m_fCameraFar - m_fCameraNear);
+    _float fFarRatio = (m_fSplit - m_fCameraNear) / (m_fCameraFar - m_fCameraNear);
+
+    // 1. 코너 비율로 나누기
+    for (_uint j = 0; j < 4; ++j)
     {
-        _float fCascadeNear = (i == 0) ? m_fCameraNear : m_Cascade.Splits[i - 1];
-        _float fCascadeFar = m_Cascade.Splits[i];
+        _vector vNear = XMLoadFloat4(&m_vFrustumCorners[j]);
+        _vector vFar = XMLoadFloat4(&m_vFrustumCorners[j + 4]);
 
-        _float fNearRatio = (fCascadeNear - m_fCameraNear) / (m_fCameraFar - m_fCameraNear);
-        _float fFarRatio = (fCascadeFar - m_fCameraNear) / (m_fCameraFar - m_fCameraNear);
+        _vector vCornerNear = XMVectorLerp(vNear, vFar, fNearRatio);
+        _vector vCornerFar = XMVectorLerp(vNear, vFar, fFarRatio);
 
-        // 1. 코너 비율로 나누기
-        for (_uint j = 0; j < 4; ++j)
-        {
-            _vector vNear = XMLoadFloat4(&m_vFrustumWorldPoints[j]);
-            _vector vFar = XMLoadFloat4(&m_vFrustumWorldPoints[j + 4]);
+        vCornerNear = XMVectorSetW(vCornerNear, 1.f);
+        vCornerFar = XMVectorSetW(vCornerFar, 1.f);
 
-            _vector vCornerNear = XMVectorLerp(vNear, vFar, fNearRatio);
-            _vector vCornerFar = XMVectorLerp(vNear, vFar, fFarRatio);
-
-            vCornerNear = XMVectorSetW(vCornerNear, 1.f);
-            vCornerFar = XMVectorSetW(vCornerFar, 1.f);
-
-            XMStoreFloat4(&m_FustumCorners[j], vCornerNear);
-            XMStoreFloat4(&m_FustumCorners[j + 4], vCornerFar);
-        }
-
-        // 2. 각 코너의 중심 위치 찾기
-        _vector vCenter = {};
-
-        for (_uint j = 0; j < 8; ++j)
-            vCenter += XMLoadFloat4(&m_FustumCorners[j]);
-        vCenter /= 8.f;
-
-        // 3. 중심점 -> 코너의 대각선 중 최대 길이 구하기
-        _float fRadius = {};
-
-        for (_uint j = 0; j < 8; ++j)
-        {
-            _float fDistance = XMVectorGetX(XMVector3Length(XMLoadFloat4(&m_FustumCorners[j]) - vCenter));
-            fRadius = max(fRadius, fDistance);
-        }
-
-        fRadius = ceil(fRadius * 16.f) / 16.f;
-
-        _vector vMaxExtents = XMVectorSet(fRadius, fRadius, fRadius, 1.f);
-        _vector vMinExtents = -vMaxExtents;
-
-        _vector vShadowCamPos = vCenter - XMVector3Normalize(XMLoadFloat4(&m_Config.vLightDir)) * fRadius;
-
-        _matrix LightViewMatrix = XMMatrixLookAtLH(vShadowCamPos, vCenter, XMVectorSet(0.f, 1.f, 0.f, 0.f));
-
-        _vector vMinPoint = XMVectorSet(FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX);
-        _vector vMaxPoint = XMVectorSet(-FLT_MAX, -FLT_MAX, -FLT_MAX, -FLT_MAX);
-
-        for (_uint j = 0; j < 8; ++j)
-        {
-            _vector vCornerWorld = XMLoadFloat4(&m_FustumCorners[j]);
-            _vector vCornerView = XMVector3TransformCoord(vCornerWorld, LightViewMatrix);
-
-            vMinPoint = XMVectorMin(vMinPoint, vCornerView);
-            vMaxPoint = XMVectorMax(vMaxPoint, vCornerView);
-        }
-
-        // 모든 루프가 끝난 후, 최종 Min/Max 레지스터 값을 스칼라로 추출
-        _float3 vMin{}, vMax{};
-        XMStoreFloat3(&vMin, vMinPoint);
-        XMStoreFloat3(&vMax, vMaxPoint);
-
-        _matrix LightProjMatrix = XMMatrixOrthographicOffCenterLH
-        (
-            vMin.x,
-            vMax.x,
-            vMin.y,
-            vMax.y,
-            vMin.z,
-            vMax.z
-        );
-
-        XMStoreFloat4x4(&m_Cascade.LightViewMatrices[i], LightViewMatrix);
-        XMStoreFloat4x4(&m_Cascade.LightProjMatrices[i], LightProjMatrix);
+        XMStoreFloat4(&m_vFrustumCorners[j], vCornerNear);
+        XMStoreFloat4(&m_vFrustumCorners[j + 4], vCornerFar);
     }
+
+    // 2. 각 코너의 중심 위치 찾기
+    _vector vCenter = {};
+
+    for (_uint j = 0; j < 8; ++j)
+        vCenter += XMLoadFloat4(&m_vFrustumCorners[j]);
+    vCenter /= 8.f;
+
+    // 3. 중심점 -> 코너의 대각선 중 최대 길이 구하기
+    _float fRadius = {};
+
+    for (_uint j = 0; j < 8; ++j)
+    {
+        _float fDistance = XMVectorGetX(XMVector3Length(XMLoadFloat4(&m_vFrustumCorners[j]) - vCenter));
+        fRadius = max(fRadius, fDistance);
+    }
+
+    fRadius = ceil(fRadius * 16.f) / 16.f;
+
+    _vector vMaxExtents = XMVectorSet(fRadius, fRadius, fRadius, 1.f);
+    _vector vMinExtents = -vMaxExtents;
+
+    _vector vShadowCamPos = vCenter - XMVector3Normalize(XMVectorSetW(XMLoadFloat3(&m_vLightDir), 0.f)) * fRadius;
+
+    _matrix LightViewMatrix = XMMatrixLookAtLH(vShadowCamPos, vCenter, XMVectorSet(0.f, 1.f, 0.f, 0.f));
+
+    _vector vMinPoint = XMVectorSet(FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX);
+    _vector vMaxPoint = XMVectorSet(-FLT_MAX, -FLT_MAX, -FLT_MAX, -FLT_MAX);
+
+    for (_uint j = 0; j < 8; ++j)
+    {
+        _vector vCornerWorld = XMLoadFloat4(&m_vFrustumCorners[j]);
+        _vector vCornerView = XMVector3TransformCoord(vCornerWorld, LightViewMatrix);
+
+        vMinPoint = XMVectorMin(vMinPoint, vCornerView);
+        vMaxPoint = XMVectorMax(vMaxPoint, vCornerView);
+    }
+
+    // 모든 루프가 끝난 후, 최종 Min/Max 레지스터 값을 스칼라로 추출
+    _float3 vMin{}, vMax{};
+    XMStoreFloat3(&vMin, vMinPoint);
+    XMStoreFloat3(&vMax, vMaxPoint);
+
+    _matrix LightProjMatrix = XMMatrixOrthographicOffCenterLH
+    (
+        vMin.x,
+        vMax.x,
+        vMin.y,
+        vMax.y,
+        vMin.z,
+        vMax.z
+    );
+
+    XMStoreFloat4x4(&m_LightMatrices[ENUM_CLASS(D3DTS::VIEW)], LightViewMatrix);
+    XMStoreFloat4x4(&m_LightMatrices[ENUM_CLASS(D3DTS::PROJ)], LightProjMatrix);
 }
 
-HRESULT CShadow::Bind_ShadowDSV(_uint iIndex)
+const _float4x4* CShadow::Get_ShadowLightMatrix(D3DTS eTransformState) const
 {
-	if (iIndex >= m_Cascade.iNumCascades)
-		return E_FAIL;
+    return &m_LightMatrices[ENUM_CLASS(eTransformState)];
+}
 
-	m_pContext->OMSetRenderTargets(0, nullptr, m_ShadowDSVs[iIndex]);
-
-	return S_OK;
+void CShadow::Bind_ShadowDSV()
+{
+	m_pContext->OMSetRenderTargets(0, nullptr, m_pShadowDSV);
 }
 
 HRESULT CShadow::Bind_Shadow_ShaderResources(CShader* pShader)
 {
-	if (FAILED(pShader->Bind_FloatArray("g_Splits", m_Cascade.Splits.data(), m_Cascade.iNumCascades)))
+	if (FAILED(pShader->Bind_Matrix("g_LightViewMatrix", &m_LightMatrices[ENUM_CLASS(D3DTS::VIEW)])))
 		return E_FAIL;
 
-	if (FAILED(pShader->Bind_RawValue("g_iNumCascades", &m_Cascade.iNumCascades, sizeof(_uint))))
+	if (FAILED(pShader->Bind_Matrix("g_LightProjMatrix", &m_LightMatrices[ENUM_CLASS(D3DTS::PROJ)])))
 		return E_FAIL;
 
-	if (FAILED(pShader->Bind_Matrices("g_LightViewMatrices", m_Cascade.LightViewMatrices.data(), m_Cascade.iNumCascades)))
+	if (FAILED(pShader->Bind_SRV("g_ShadowTexture", m_pShadowSRV)))
 		return E_FAIL;
 
-	if (FAILED(pShader->Bind_Matrices("g_LightProjMatrices", m_Cascade.LightProjMatrices.data(), m_Cascade.iNumCascades)))
+	if (FAILED(pShader->Bind_RawValue("g_fBias", &m_fBias, sizeof(_float))))
 		return E_FAIL;
 
-	if (FAILED(pShader->Bind_SRV("g_TextureArray", m_pShadowSRVArray)))
+	if (FAILED(pShader->Bind_RawValue("g_fIntensity", &m_fIntensity, sizeof(_float))))
 		return E_FAIL;
 
-	if (FAILED(pShader->Bind_RawValue("g_fBias", &m_Config.fBias, sizeof(_float))))
-		return E_FAIL;
-
-	if (FAILED(pShader->Bind_RawValue("g_fShadowIntensity", &m_Config.fIntensity, sizeof(_float))))
-		return E_FAIL;
+    if (FAILED(pShader->Bind_RawValue("g_fSplitFar", &m_fSplit, sizeof(_float))))
+        return E_FAIL;
 
 	_float2 vShadowMapSize = _float2(g_iMaxWidth, g_iMaxHeight);
 	if (FAILED(pShader->Bind_RawValue("g_vShadowMapSize", &vShadowMapSize, sizeof(_float2))))
@@ -194,49 +158,17 @@ HRESULT CShadow::Bind_Shadow_ShaderResources(CShader* pShader)
 	return S_OK;
 }
 
-const _float4x4* CShadow::Get_CurrentLightViewMatrix() const
+void CShadow::Start_ShadowTransition(_float fDuration, _float fTargetIntensity)
 {
-	return &m_Cascade.LightViewMatrices[m_iCurrentCascade];
+    m_isTransition = true;
+    m_fTransTimeAcc = 0.f;
+    m_fDuration = fDuration;
+    m_fTargetIntensity = fTargetIntensity;
 }
 
-const _float4x4* CShadow::Get_CurrentLightProjMatrix() const
+void CShadow::Clear_DSV()
 {
-	return &m_Cascade.LightProjMatrices[m_iCurrentCascade];
-}
-
-void CShadow::Set_CascadeConfig(CASCADE_CONFIG Config)
-{
-	if (m_Config.fLamda != Config.fLamda)
-	{
-		m_Config = Config;
-
-		for (_uint i = 1; i <= m_Cascade.iNumCascades; ++i)
-		{
-			_float fSplitIndex = static_cast<_float>(i) / static_cast<_float>(m_Cascade.iNumCascades);
-			_float fLinear = m_fCameraNear + (m_fCameraFar - m_fCameraNear) * fSplitIndex;
-			_float fLog = m_fCameraNear * powf(m_fCameraFar / m_fCameraNear, fSplitIndex);
-			m_Cascade.Splits[i - 1] = Lerp(fLinear, fLog, m_Config.fLamda);
-		}
-	}
-	else
-	{
-		m_Config = Config;
-		m_Cascade.Splits = m_Config.Splits;
-	}
-}
-
-void CShadow::Clear_DSVs()
-{
-	for (_uint i = 0; i < m_Cascade.iNumCascades; ++i)
-		m_pContext->ClearDepthStencilView(m_ShadowDSVs[i], D3D11_CLEAR_DEPTH, 1.f, 0);
-}
-
-void CShadow::Start_ShadowIntensityTransition(_float fDuration, _float fTargetIntensity)
-{
-	m_isTransition = true;
-	m_fTransTimeAcc = 0.f;
-	m_fDuration = fDuration;
-	m_fTargetIntensity = fTargetIntensity;
+    m_pContext->ClearDepthStencilView(m_pShadowDSV, D3D11_CLEAR_DEPTH, 1.f, 0);	
 }
 
 #ifdef _DEBUG
@@ -247,40 +179,25 @@ HRESULT CShadow::Ready_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY)
 
 	m_pContext->RSGetViewports(&iNumViewports, &ViewportDesc);
 
-	m_WorldMatrices.resize(m_Cascade.iNumCascades);
-	
-	_float fStartY = fY;
-
-	for (_uint i = 0; i < m_Cascade.iNumCascades; ++i)
-	{
-		XMStoreFloat4x4(&m_WorldMatrices[i], XMMatrixScaling(fSizeX, fSizeY, 1.f));
-		m_WorldMatrices[i]._41 = fX - ViewportDesc.Width * 0.5f;
-		m_WorldMatrices[i]._42 = -fStartY + ViewportDesc.Height * 0.5f;
-
-		fStartY += fSizeY;
-	}
+    XMStoreFloat4x4(&m_WorldMatrix, XMMatrixScaling(fSizeX, fSizeY, 1.f));
+    m_WorldMatrix._41 = fX - ViewportDesc.Width * 0.5f;
+    m_WorldMatrix._42 = -fY + ViewportDesc.Height * 0.5f;
 
 	return S_OK;
 }
 
 HRESULT CShadow::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
 {
-	if (FAILED(pShader->Bind_SRV("g_TextureArray", m_pShadowSRVArray)))
+    if (FAILED(pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
+        return E_FAIL;
+
+	if (FAILED(pShader->Bind_SRV("g_Texture", m_pShadowSRV)))
 		return E_FAIL;
 
-	for (_uint i = 0; i < m_Cascade.iNumCascades; ++i)
-	{
-		if (FAILED(pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrices[i])))
-			return E_FAIL;
+    pShader->Begin(0);
 
-		if (FAILED(pShader->Bind_RawValue("g_iTextureArrayIndex", &i, sizeof(_int))))
-			return E_FAIL;
-
-		pShader->Begin(6);
-
-		pVIBuffer->Bind_Resources();
-		pVIBuffer->Render();
-	}
+    pVIBuffer->Bind_Resources();
+    pVIBuffer->Render();
 
 	return S_OK;
 }
@@ -288,49 +205,46 @@ HRESULT CShadow::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
 
 HRESULT CShadow::Ready_ShaderResources()
 {
-	ID3D11Texture2D* pDepthStencilTexture = { nullptr };
+    ID3D11Texture2D* pDepthStencilTexture = nullptr;
 
-	D3D11_TEXTURE2D_DESC Desc{};
-	Desc.Width = g_iMaxWidth;
-	Desc.Height = g_iMaxHeight;
-	Desc.MipLevels = 1;
-	Desc.ArraySize = m_Cascade.iNumCascades;
-	Desc.Format = DXGI_FORMAT_R32_TYPELESS;
-	Desc.SampleDesc.Count = 1;
-	Desc.SampleDesc.Quality = 0;
-	Desc.Usage = D3D11_USAGE_DEFAULT;
-	Desc.CPUAccessFlags = 0;
-	Desc.MiscFlags = 0;
-	Desc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+    D3D11_TEXTURE2D_DESC	TextureDesc;
+    ZeroMemory(&TextureDesc, sizeof(D3D11_TEXTURE2D_DESC));
 
-	if (FAILED(m_pDevice->CreateTexture2D(&Desc, nullptr, &pDepthStencilTexture)))
-		return E_FAIL;
+    TextureDesc.Width = g_iMaxWidth;
+    TextureDesc.Height = g_iMaxHeight;
+    TextureDesc.MipLevels = 1;
+    TextureDesc.ArraySize = 1;
+    TextureDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+    TextureDesc.SampleDesc.Quality = 0;
+    TextureDesc.SampleDesc.Count = 1;
+    TextureDesc.Usage = D3D11_USAGE_DEFAULT;
+    TextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+    TextureDesc.CPUAccessFlags = 0;
+    TextureDesc.MiscFlags = 0;
 
-	for (_uint i = 0; i < m_Cascade.iNumCascades; ++i)
-	{
-		D3D11_DEPTH_STENCIL_VIEW_DESC DSVDesc{};
-		DSVDesc.Format = DXGI_FORMAT_D32_FLOAT;
-		DSVDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
-		DSVDesc.Texture2DArray.MipSlice = 0;
-		DSVDesc.Texture2DArray.FirstArraySlice = i;
-		DSVDesc.Texture2DArray.ArraySize = 1;
-		if (FAILED(m_pDevice->CreateDepthStencilView(pDepthStencilTexture, &DSVDesc, &m_ShadowDSVs[i])))
-			return E_FAIL;
-	}
+    if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, nullptr, &pDepthStencilTexture)))
+        return E_FAIL;
 
-	Clear_DSVs();
+    D3D11_DEPTH_STENCIL_VIEW_DESC DSVDesc{};
+    DSVDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    DSVDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    DSVDesc.Texture2D.MipSlice = 0;
 
-	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc{};
-	SRVDesc.Format = DXGI_FORMAT_R32_FLOAT;
-	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
-	SRVDesc.Texture2DArray.MostDetailedMip = 0;
-	SRVDesc.Texture2DArray.MipLevels = 1;
-	SRVDesc.Texture2DArray.FirstArraySlice = 0;
-	SRVDesc.Texture2DArray.ArraySize = m_Cascade.iNumCascades;
-	if (FAILED(m_pDevice->CreateShaderResourceView(pDepthStencilTexture, &SRVDesc, &m_pShadowSRVArray)))
-		return E_FAIL;
+    if (FAILED(m_pDevice->CreateDepthStencilView(pDepthStencilTexture, &DSVDesc, &m_pShadowDSV)))
+        return E_FAIL;
 
-	Safe_Release(pDepthStencilTexture);
+    D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc{};
+    SRVDesc.Format = DXGI_FORMAT_R32_FLOAT;
+    SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    SRVDesc.Texture2D.MostDetailedMip = 0;
+    SRVDesc.Texture2D.MipLevels = 1;
+
+    if (FAILED(m_pDevice->CreateShaderResourceView(pDepthStencilTexture, &SRVDesc, &m_pShadowSRV)))
+        return E_FAIL;
+
+    Safe_Release(pDepthStencilTexture);
+    
+    Clear_DSV();
 
 	return S_OK;
 }
@@ -352,11 +266,8 @@ void CShadow::Free()
 {
     __super::Free();
 
-	for (auto& pDSV : m_ShadowDSVs)
-		Safe_Release(pDSV);
-	m_ShadowDSVs.clear();
-
-	Safe_Release(m_pShadowSRVArray);
+    Safe_Release(m_pShadowSRV);
+    Safe_Release(m_pShadowDSV);
 
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pContext);
