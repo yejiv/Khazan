@@ -78,6 +78,8 @@ private:
 	_bool							m_isGrab = { false };
 
     _uint                           m_iFX_ID_Dampsey;
+    _uint                           m_iBreathCount;
+    _float                          m_iBreathRotation;
 
 public:
 	static CYetuga*					Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

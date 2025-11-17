@@ -37,14 +37,14 @@ void CEffect_Mesh_Instance::Update(_float fTimeDelta)
     {
         it->fCurTime += fTimeDelta;
 
-        if(it->fCurTime > it->fDurTime && it->EventType != 0)
+        if(it->fCurTime > it->fDurTime && it->EventType != 1)
         {
-            if (m_sData.bIsLoop && m_TimeTracks.size() == 1)
+            if (m_pVIBufferCom->isLoop() && m_TimeTracks.size() == 1)
             {
                 ++it;
                 continue;
             }
-            dynamic_cast<CVIBuffer_Mesh_Instance*>(m_pVIBufferCom)->Remove_Speed(CVIBuffer_Mesh_Instance::SPEED_VALUE(it->EventType - 1));
+            dynamic_cast<CVIBuffer_Mesh_Instance*>(m_pVIBufferCom)->Remove_Speed(CVIBuffer_Mesh_Instance::SPEED_VALUE(it->EventType));
             it = m_TimeTracks.erase(it);
         }
         else
@@ -69,7 +69,10 @@ void CEffect_Mesh_Instance::Update(_float fTimeDelta)
 void CEffect_Mesh_Instance::Late_Update(_float fTimeDelta)
 {
     //__super::Late_Update(fTimeDelta);
-    m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
+    if (m_bIsNormal)
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
+    else
+        __super::Late_Update(fTimeDelta);
 
 }
 
@@ -219,7 +222,7 @@ void CEffect_Mesh_Instance::SetSpreadData(void* pArg)
     m_pVIBufferCom->Setting_Speed(CVIBuffer_Mesh_Instance::SPEED_VALUE::SPREAD_SPEED, data.fSpreadSpeed);
     m_pVIBufferCom->Setting_Pivot(data.fPivot);
     m_sData.bGravity = data.bGravity;
-    SetData(ENUM_CLASS(data.eEventType), data.fDuration); 
+    SetData(ENUM_CLASS(CVIBuffer_Mesh_Instance::SPEED_VALUE::SPREAD_SPEED), data.fDuration);
 }
 
 void CEffect_Mesh_Instance::SetRotateData(void* pArg)
@@ -227,14 +230,14 @@ void CEffect_Mesh_Instance::SetRotateData(void* pArg)
     CEffect_Prefab::EFFECT_EVENT data = *static_cast<CEffect_Prefab::EFFECT_EVENT*>(pArg);
     m_pVIBufferCom->Setting_Speed(CVIBuffer_Mesh_Instance::SPEED_VALUE::ROTATION_SPEED, data.fRotationSpeed);
     m_pVIBufferCom->Setting_Pivot(data.fPivot);
-    SetData(ENUM_CLASS(data.eEventType),data.fDuration);
+    SetData(ENUM_CLASS(CVIBuffer_Mesh_Instance::SPEED_VALUE::ROTATION_SPEED),data.fDuration);
 }
 
 void CEffect_Mesh_Instance::SetTwinkleData(void* pArg)
 {
     CEffect_Prefab::EFFECT_EVENT data = *static_cast<CEffect_Prefab::EFFECT_EVENT*>(pArg);
     m_pVIBufferCom->Setting_Speed(CVIBuffer_Mesh_Instance::SPEED_VALUE::SCALE_SPEED, data.fScaleSpeed);
-    SetData(ENUM_CLASS(data.eEventType),data.fDuration);
+    SetData(ENUM_CLASS(CVIBuffer_Mesh_Instance::SPEED_VALUE::SCALE_SPEED),data.fDuration);
 }
 
 void CEffect_Mesh_Instance::SetUpwardData(void* pArg)
@@ -242,7 +245,7 @@ void CEffect_Mesh_Instance::SetUpwardData(void* pArg)
     CEffect_Prefab::EFFECT_EVENT data = *static_cast<CEffect_Prefab::EFFECT_EVENT*>(pArg);
     m_pVIBufferCom->Setting_Speed(CVIBuffer_Mesh_Instance::SPEED_VALUE::UPWARD_SPEED, data.fUpwardSpeed);
     m_sData.bGravity = data.bGravity;
-    SetData(ENUM_CLASS(data.eEventType),data.fDuration);
+    SetData(ENUM_CLASS(CVIBuffer_Mesh_Instance::SPEED_VALUE::UPWARD_SPEED),data.fDuration);
 }
 
 void CEffect_Mesh_Instance::SetScrollData(void* pArg)
