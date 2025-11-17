@@ -60,7 +60,7 @@ HRESULT CLevel_Embars::Initialize()
 
     //CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
 
-    //CClientInstance::GetInstance()->Fade_Out();
+    CClientInstance::GetInstance()->Fade_In();
 
     if (!Wait_All_Futures())
         return E_FAIL;
