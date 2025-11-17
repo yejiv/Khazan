@@ -51,6 +51,7 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 	SettingDesc.mSupportingVolume = pDesc->fSupportingVolume;
 	SettingDesc.mMaxSlopeAngle = DegreesToRadians(pDesc->fMaxSlopeAngle);
 	SettingDesc.mMaxStrength = pDesc->fMaxStrength;
+    SettingDesc.mMass = pDesc->fMass;
 	switch (pDesc->eShapeType)
 	{
 	case SHAPE::BOX:
@@ -211,15 +212,11 @@ void CCharacterVirtual::StepFixed(_float fTimeDelta)
     if (!m_pCharVir)
         return;
 
-    // 현재 접지 상태
-    const auto ground_state = m_pCharVir->GetGroundState();
-    const bool onGround = (ground_state == JPH::CharacterVirtual::EGroundState::OnGround);
-
     // ===== 1) 중력 적용 =====
-    if (!onGround)
+    if (!m_pCharVir->IsSupported())
     {
         // v = v + g * dt
-        m_vVelocity += m_vGravity * fTimeDelta * m_pCharVir->GetMass();
+        m_vVelocity += m_vGravity * fTimeDelta;
 
         // 낙하 속도 제한 (원하면 값 조절)
         const _float maxFallSpeed = -50.0f;
@@ -235,7 +232,7 @@ void CCharacterVirtual::StepFixed(_float fTimeDelta)
 
     // ===== 2) 감쇠(마찰) =====
     // 땅에 있으면 m_fLoss, 공중이면 m_fAirLoss 사용
-    const _float loss = onGround ? m_fLoss : m_fAirLoss;
+    const _float loss = m_pCharVir->IsSupported() ? m_fLoss : m_fAirLoss;
     if (loss > 0.0f)
     {
         const _float k = expf(-loss * fTimeDelta); // 지수 감쇠
@@ -244,11 +241,10 @@ void CCharacterVirtual::StepFixed(_float fTimeDelta)
         m_vVelocity.SetZ(m_vVelocity.GetZ() * k);
     }
 
-    // NaN / inf 보호
+
     if (!IsFiniteVec3(m_vVelocity))
         m_vVelocity = JPH::Vec3::sZero();
 
-    // ===== 3) Jolt에 속도 적용 + ExtendedUpdate 호출 =====
     m_pCharVir->SetLinearVelocity(m_vVelocity);
 
     m_pGameInstance->CharVir_ExtendedUpdate(
@@ -261,7 +257,6 @@ void CCharacterVirtual::StepFixed(_float fTimeDelta)
         m_tEXUpdateSetting
     );
 
-    // Jolt가 충돌로 속도 조절했을 수 있으니, 다시 캐싱해도 됨
     m_vVelocity = m_pCharVir->GetLinearVelocity();
 }
 
@@ -311,7 +306,10 @@ void CCharacterVirtual::Collision_Active(_bool isActive)
 
 _bool CCharacterVirtual::Get_isGround()
 {
-	return m_pCharVir->GetGroundState() == JPH::CharacterVirtual::EGroundState::OnGround;
+    if (m_pCharVir->IsSupported())
+        return true;
+    
+	return false;
 }
 
 void CCharacterVirtual::Fake_Release()
