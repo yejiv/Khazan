@@ -241,7 +241,7 @@ HRESULT CCamera_Compre::Ready_Camera(void* pArg)
 HRESULT CCamera_Compre::Ready_Body()
 {
     CBody::BODY_SPHERESHAPE_DESC TriggerDesc{};
-    TriggerDesc.fRadius = 40.f;
+    TriggerDesc.fRadius = 20.f;
     TriggerDesc.bIsTrigger = true;
     TriggerDesc.bStartActive = true;
     TriggerDesc.eMotion = EMotionType::Kinematic;
@@ -491,6 +491,8 @@ void CCamera_Compre::LockOn_Check(_float fTimeDelta)
             m_isLockOn = false;
             m_pLockMonster = nullptr;
             m_pLockOnUI->LockOff();
+            m_iLockOrder = 0;
+            return;
         }
         
         if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::WB))
@@ -499,16 +501,43 @@ void CCamera_Compre::LockOn_Check(_float fTimeDelta)
             m_isLockOn = false;
             m_pLockMonster = nullptr;
             m_pLockOnUI->LockOff();
+            m_iLockOrder = 0;
+            return;
+        }
+
+        if (m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::WHEEL))
+        {
+            if (m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::WHEEL) > 0)
+            {
+                m_iLockOrder--;
+            }
+            else {
+                m_iLockOrder++;
+            }
+            m_pLockMonster = Pick_ClosetTarget();
+            if (m_pLockMonster)
+            {
+                m_pLockOnUI->LockOff();
+                m_pLockOnPos = dynamic_cast<CMonster*>(m_pLockMonster)->Get_LockOnPosition();
+                m_pLockOnUI->LockOn(m_pLockOnPos);
+            }
+            else {
+                m_fLockOnDelay = 0.f;
+                m_isLockOn = false;
+                m_pLockMonster = nullptr;
+                m_pLockOnUI->LockOff();
+                m_iLockOrder = 0;
+            }
         }
     }
 }
 
 CGameObject* CCamera_Compre::Pick_ClosetTarget()
 {
-    if (!m_pTransformCom || m_CollMonsters.empty())
+    /*if (!m_pTransformCom || m_CollMonsters.empty())
         return nullptr;
 
-    const _vector cameraWorldPosition = m_pTransformCom->Get_State(STATE::POSITION);
+    const _vector PlayerWorldPosition = XMVectorSet(m_pObjMatrix->_41, m_pObjMatrix->_42, m_pObjMatrix->_43, 1.f);
     const _vector cameraLookDirection = XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK));
 
     CGameObject* bestObject = nullptr;
@@ -521,7 +550,7 @@ CGameObject* CCamera_Compre::Pick_ClosetTarget()
         CTransform* pTransform = dynamic_cast<CTransform*>(pObj->Get_Component(TEXT("Com_Transform")));
         const _matrix world = pTransform->Get_WorldMatrix();
         const _vector objectWorldPosition = XMVectorSet(world.r[3].m128_f32[0], world.r[3].m128_f32[1], world.r[3].m128_f32[2], 1.f);
-        const _vector toTargetVector = XMVectorSubtract(objectWorldPosition, cameraWorldPosition);
+        const _vector toTargetVector = XMVectorSubtract(objectWorldPosition, PlayerWorldPosition);
 
         const float worldDistance = XMVectorGetX(XMVector3Length(toTargetVector));
         if (worldDistance > m_fTargetMaxDistance) continue;
@@ -540,7 +569,119 @@ CGameObject* CCamera_Compre::Pick_ClosetTarget()
         }
     }
 
-    return bestObject;
+    return bestObject;*/
+
+    if (!m_pTransformCom || m_CollMonsters.empty())
+        return nullptr;
+
+    if (m_iLockOrder < 0)
+        m_iLockOrder = m_CollMonsters.size() - 1;
+
+    if (m_iLockOrder >= m_CollMonsters.size())
+        m_iLockOrder = 0;
+
+    const _vector PlayerWorldPosition = XMVectorSet(
+        m_pObjMatrix->_41,
+        m_pObjMatrix->_42,
+        m_pObjMatrix->_43,
+        1.f
+    );
+    const _vector cameraLookDirection = XMVector3Normalize(
+        m_pTransformCom->Get_State(STATE::LOOK)
+    );
+
+    // (projectedDistance, Object) 쌍으로 저장
+    std::vector<std::pair<float, CGameObject*>> vCandidates;
+    vCandidates.reserve(m_CollMonsters.size());
+
+    for (CGameObject* pObj : m_CollMonsters)
+    {
+        if (!pObj || !pObj->Get_IsActive() || pObj->Get_IsDead())
+            continue;
+
+        CTransform* pTransform = dynamic_cast<CTransform*>(
+            pObj->Get_Component(TEXT("Com_Transform"))
+            );
+        if (!pTransform)
+            continue;
+
+        const _matrix world = pTransform->Get_WorldMatrix();
+        const _vector objectWorldPosition = XMVectorSet(
+            world.r[3].m128_f32[0],
+            world.r[3].m128_f32[1],
+            world.r[3].m128_f32[2],
+            1.f
+        );
+
+        const _vector toTargetVector = XMVectorSubtract(
+            objectWorldPosition,
+            PlayerWorldPosition
+        );
+
+        const float worldDistance = XMVectorGetX(XMVector3Length(toTargetVector));
+        if (worldDistance > m_fTargetMaxDistance)
+            continue;
+
+        const _vector toTargetNormalized = XMVector3Normalize(toTargetVector);
+        const float forwardCos = XMVectorGetX(
+            XMVector3Dot(toTargetNormalized, cameraLookDirection)
+        );
+        if (forwardCos < m_fTargetHalfFovCos)
+            continue;
+
+        const float projectedDistance = XMVectorGetX(
+            XMVector3Dot(toTargetVector, cameraLookDirection)
+        );
+        if (projectedDistance <= 0.0f)
+            continue;
+
+        vCandidates.emplace_back(projectedDistance, pObj);
+    }
+
+    // 유효 후보가 없음
+    if (vCandidates.empty())
+        return nullptr;
+
+    // 인덱스가 범위를 벗어나면 nullptr
+    if (m_iLockOrder >= static_cast<int>(vCandidates.size()))
+        return nullptr;
+
+    // iOrder번째로 가까운 놈만 앞쪽으로 가져오고 정렬은 거기까지만(nth_element)
+    nth_element(
+        vCandidates.begin(),
+        vCandidates.begin() + m_iLockOrder,
+        vCandidates.end(),
+        [](const auto& a, const auto& b)
+        {
+            return a.first < b.first; // projectedDistance 오름차순
+        }
+    );
+
+    if (m_pLockMonster)
+    {
+        if (vCandidates[m_iLockOrder].second == m_pLockMonster && vCandidates.size() >= 2)
+        {
+            if (m_iLockOrder == 0)
+                m_iLockOrder++;
+
+            if (vCandidates.size() <= m_iLockOrder)
+                m_iLockOrder--;
+
+            if (m_iLockOrder <= 0)
+                m_iLockOrder = vCandidates.size() - 1;
+            else {
+                m_iLockOrder = 0;
+            }
+
+
+        }
+
+        if (vCandidates.size() == 1)
+            m_iLockOrder = 0;
+
+    }
+
+    return vCandidates[m_iLockOrder].second;
 }
 
 _vector CCamera_Compre::Cal_CamPos(_float fTimeDelta, _vector& vTargetPos, _vector& vDir)
@@ -1017,7 +1158,7 @@ void CCamera_Compre::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLay
 
             if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::WB))
             {
-                if (m_fLockOnDelay > 0.3f)
+                if (m_fLockOnDelay > 0.15f)
                 {
                     
                     m_pLockMonster = Pick_ClosetTarget();
