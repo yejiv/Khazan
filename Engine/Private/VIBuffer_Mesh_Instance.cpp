@@ -88,7 +88,9 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 	for (_uint i = 0; i < m_iNumVertices; ++i)
 	{
 		memcpy(&pVertices[i].vPosition, &tMeshInfo.vecVertices[i].position, sizeof(_float3));
-		memcpy(&pVertices[i].vNormal, &tMeshInfo.vecVertices[i].normal, sizeof(_float3));
+		memcpy(&pVertices[i].vNormal, &tMeshInfo.vecVertices[i].normal, sizeof(_float3)); 
+		memcpy(&pVertices[i].vTangent, &tMeshInfo.vecVertices[i].tangent, sizeof(_float3)); 
+		memcpy(&pVertices[i].vBinormal, &tMeshInfo.vecVertices[i].binormal, sizeof(_float3)); 
 		memcpy(&pVertices[i].vTexcoord, &tMeshInfo.vecVertices[i].texcoord, sizeof(_float2));
 
 		m_pVertexPositions[i] = pVertices[i].vPosition;

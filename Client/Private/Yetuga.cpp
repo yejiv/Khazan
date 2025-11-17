@@ -1418,12 +1418,12 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
     //            }); 
     //  
 
-    // pModel->Register_Event("IceBreath", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
-    //     m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Breath"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-Head")));
-    //     });
-    // pModel->Register_Event("Focus", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-    //     m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Focus"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-Head")));
-    //     });
+    //pModel->Register_Event("IceBreath", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+    //    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Breath"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-Head")));
+    //    });
+    //pModel->Register_Event("Focus", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+    //    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Focus"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-Head")));
+    //    });
 
 
     return S_OK;
