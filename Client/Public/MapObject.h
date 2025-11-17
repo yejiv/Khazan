@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Client_Defines.h"
-#include "GameObject.h"
+#include "ContainerObject.h"
 
 NS_BEGIN(Engine)
 class CShader;
@@ -9,7 +9,7 @@ NS_END
 
 NS_BEGIN(Client)
 
-class CMapObject abstract : public CGameObject
+class CMapObject abstract : public CContainerObject
 {
 public:
 	typedef struct tagMapObjectDesc : public CGameObject::GAMEOBJECT_DESC

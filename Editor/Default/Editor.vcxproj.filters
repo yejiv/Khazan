@@ -235,6 +235,15 @@
     <Filter Include="02.GameObject\MapObject\Light">
       <UniqueIdentifier>{8b923b78-6723-45df-90ec-f9dc00bd6e7d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\03.ElevatorS">
+      <UniqueIdentifier>{da6043e2-ddfb-44dc-8ac9-65a290e82a25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\03.ElevatorS\00.Gear">
+      <UniqueIdentifier>{80e72505-ca3e-49fc-9c25-0d2c6de587b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\03.ElevatorS\01.Slate">
+      <UniqueIdentifier>{28163f91-82e9-4b96-87f5-c86be3df14ed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -447,7 +456,18 @@
     <ClInclude Include="..\Public\Map_Spawn.h">
       <Filter>02.GameObject\MapObject\Monster</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Map_Light.h" />
+    <ClInclude Include="..\Public\ElevatorS.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\03.ElevatorS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Map_Light.h">
+      <Filter>02.GameObject\MapObject\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Elevator_Gear.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\03.ElevatorS\00.Gear</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Slate_Switch.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\03.ElevatorS\01.Slate</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -655,7 +675,18 @@
     <ClCompile Include="..\Private\Map_Spawn.cpp">
       <Filter>02.GameObject\MapObject\Monster</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Map_Light.cpp" />
+    <ClCompile Include="..\Private\ElevatorS.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\03.ElevatorS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Map_Light.cpp">
+      <Filter>02.GameObject\MapObject\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Elevator_Gear.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\03.ElevatorS\00.Gear</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Slate_Switch.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\03.ElevatorS\01.Slate</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_Edit_UI.hlsl">
