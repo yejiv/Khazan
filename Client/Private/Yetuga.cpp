@@ -72,10 +72,6 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
 void CYetuga::Priority_Update(_float fTimeDelta)
 {
     CBlackBoard* pBB = m_pController->Get_BlackBoard();
-    if (m_fCurrentHP <= 0.f)
-    {
-        pBB->Set_Value<_bool>(m_strName, "isDead", true);
-    }
 
     if (pBB->Get_Value<_bool>(m_strName, "isDetected"))
     {
@@ -105,6 +101,13 @@ void CYetuga::Update(_float fTimeDelta)
         Look_Target_Lerp(fTimeDelta,fRatio,m_fTurnSpeed);
     }
         
+
+    //if (m_pGameInstance->Key_Down(DIK_Z))
+    //{
+    //    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(516.947f, -11.952f, 226.f, 1.f));
+    //    m_pCharVirCom->Set_Position(XMVectorSet(516.947f, -11.952f, 226.f, 1.f));
+    //}
+
 
     __super::Update(fTimeDelta);
 
@@ -520,17 +523,17 @@ void CYetuga::Abort_Node(_bool isToggle)
 
 void CYetuga::Start_DefaultRadialBlur()
 {
-    RADIAL_BLUR_DESC Desc{};
-    Desc.vCenterUV = _float2(0.5f, 0.5f);
-    Desc.fSampleRadius = 0.05f;
-    Desc.vMaskRadius = _float2(0.f, 0.7f);
-    Desc.fExponent = 1.f;
-    Desc.iNumSamples = 16;
-    Desc.fAttenuation = 0.1f;
-    Desc.fStrength = 0.5f;       // == Target Strength(0 ~ 1) -> 이 강도를 최대값으로 사용하여 보간 적용됨
-    Desc.fDuration = 3.f;
-    Desc.vFadeTime = _float2(0.3f, 1.f);
-    m_pGameInstance->Start_RadialBlur(Desc);
+    //RADIAL_BLUR_DESC Desc{};
+    //Desc.vCenterUV = _float2(0.5f, 0.5f);
+    //Desc.fSampleRadius = 0.05f;
+    //Desc.vMaskRadius = _float2(0.f, 0.7f);
+    //Desc.fExponent = 1.f;
+    //Desc.iNumSamples = 16;
+    //Desc.fAttenuation = 0.1f;
+    //Desc.fStrength = 0.5f;       // == Target Strength(0 ~ 1) -> 이 강도를 최대값으로 사용하여 보간 적용됨
+    //Desc.fDuration = 3.f;
+    //Desc.vFadeTime = _float2(0.3f, 1.f);
+    //m_pGameInstance->Start_RadialBlur(Desc);
 }
 
 HRESULT CYetuga::Ready_Components()
@@ -1260,6 +1263,7 @@ HRESULT CYetuga::Ready_AnimEvent()
 
 
 #pragma region GrapCamera
+
     pModel->Register_Event("GrapCamera", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         CClientInstance::GetInstance()->Yetuga_Holding_Start();
         });
