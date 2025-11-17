@@ -884,6 +884,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 	m_Prototypes_Inter.push_back("TombStone");
     m_Prototypes_Inter.push_back("Trigger");
     m_Prototypes_Inter.push_back("Monster");
+    m_Prototypes_Inter.push_back("SmallElevator");
 
 #ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
@@ -1011,7 +1012,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
                     CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                         ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Trigger"), TIME_CHANNEL::WORLD, &TriggerDesc), );
                 }
-                else if ("Monster" == m_Prototypes_Inter[m_iIndex_PrtInter]) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+                else if ("Monster" == m_Prototypes_Inter[m_iIndex_PrtInter])
                 {
                     CMap_Spawn::SPAWN_DESC SpawnDesc = {};
 
@@ -1025,6 +1026,21 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 
                     CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                         ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Spawn"), TIME_CHANNEL::WORLD, &SpawnDesc), );
+                }
+                else if ("SmallElevator" == m_Prototypes_Inter[m_iIndex_PrtInter])
+                {
+                    CElevatorS::SMALL_ELEVATOR_DESC SmallElevatorDesc = {};
+
+                    SmallElevatorDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    SmallElevatorDesc.eLevel = LEVEL::MAP;
+                    memcpy(SmallElevatorDesc.szModelName, strModelTag.c_str(), sizeof(SmallElevatorDesc.szModelName));		// 프로토타입 태그명
+
+                    XMStoreFloat4x4(&SmallElevatorDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    SmallElevatorDesc.eInteractiveType = INTERACTIVE_TYPE::ELEVATOR;										// 상호 작용 오브젝트 타입
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_SmallElevator"), TIME_CHANNEL::WORLD, &SmallElevatorDesc), );
                 }
 #pragma endregion
 
@@ -1349,6 +1365,36 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
                 ImGui::InputText("##fix_monster_key", m_szFixMonsterKey, IM_ARRAYSIZE(m_szFixMonsterKey));
                 ImGui::Text("FIX MONSTER SUB LEVEL");
                 ImGui::InputInt("##fix_monster_sub_level", &m_iFixMonsterSubLevel);
+            }
+            if (INTERACTIVE_TYPE::ELEVATOR == m_pFixPropObj->Get_InteractiveType())
+            {
+                CElevatorS* pElevator = static_cast<CElevatorS*>(m_pFixPropObj);
+
+                ImGui::Text("== ELEVATOR INFORMATION ==");
+
+                _float4 vElevatorUpPos = pElevator->Get_Elevator_UpPos();
+                _float4 vElevatorDownPos = pElevator->Get_Elevator_DownPos();
+
+                ImGui::Text("UP POSITION");
+                ImGui::Text("X : %.4f | Y : %.4f | Z : %.4f", vElevatorUpPos.x, vElevatorUpPos.y, vElevatorUpPos.z);
+
+                ImGui::Text("DOWN POSITION");
+                ImGui::Text("X : %.4f | Y : %.4f | Z : %.4f", vElevatorDownPos.x, vElevatorDownPos.y, vElevatorDownPos.z);
+
+                if (ImGui::Button("UP SETTING"))
+                {
+                    _float4 vSetPos = {};
+                    XMStoreFloat4(&vSetPos, m_pFixTransformCom->Get_State(STATE::POSITION));
+
+                    pElevator->Set_Elevator_UpPos(vSetPos);
+                } SAMELINE;
+                if (ImGui::Button("DOWN SETTING"))
+                {
+                    _float4 vSetPos = {};
+                    XMStoreFloat4(&vSetPos, m_pFixTransformCom->Get_State(STATE::POSITION));
+
+                    pElevator->Set_Elevator_DownPos(vSetPos);
+                } SEPARATOR;
             }
 
 #pragma endregion
@@ -1858,6 +1904,14 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
                             m_strFixMonsterKey = m_strMonsterKey = pSpawn->Get_MonsterKey();
                             m_iFixMonsterSubLevel = m_iMonsterSubLevel = pSpawn->Get_SubLevel();
                             memcpy(m_szFixMonsterKey, m_strFixMonsterKey.c_str(), MAX_PATH);
+                        }
+
+                        if (INTERACTIVE_TYPE::ELEVATOR == m_pFixPropObj->Get_InteractiveType())
+                        {
+                            CElevatorS* pElevator = static_cast<CElevatorS*>(m_pFixPropObj);
+
+                            m_vElevatorUpPos = pElevator->Get_Elevator_UpPos();
+                            m_vElevatorDownPos = pElevator->Get_Elevator_DownPos();
                         }
 
 						m_isFixInteractObjectWindow = true;
@@ -4065,10 +4119,19 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 				ItemBoxDesc = pProp->Get_ItemBox();
 				WriteFile(hObjectFile, &ItemBoxDesc, sizeof(CMapObject::ITEMBOX_DESC), &dwByte, nullptr);
 			}
-			if (INTERACTIVE_TYPE::TOMBSTONE == eType)
-			{
-				_int o_ing = 0;
-			}
+            if (INTERACTIVE_TYPE::TOMBSTONE == eType)
+            {
+                _int o_ing = 0;
+            }
+            if (INTERACTIVE_TYPE::ELEVATOR == eType)
+            {
+                CElevatorS::ELEVATOR_POS ElevatorPos = {};
+
+                ElevatorPos.vUp = static_cast<CElevatorS*>(pProp)->Get_Elevator_UpPos();
+                ElevatorPos.vDown = static_cast<CElevatorS*>(pProp)->Get_Elevator_DownPos();
+
+                WriteFile(hObjectFile, &ElevatorPos, sizeof(CElevatorS::ELEVATOR_POS), &dwByte, nullptr);
+            }
 		}
 	}
 
@@ -4635,21 +4698,39 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
 					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BigChest"), TIME_CHANNEL::WORLD, &BigChestDesc), false);
 			}
-			else if (INTERACTIVE_TYPE::TOMBSTONE == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
-			{
-				CTombStone::TOMBSTONE_DESC TombStoneDesc = {};
+            else if (INTERACTIVE_TYPE::TOMBSTONE == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CTombStone::TOMBSTONE_DESC TombStoneDesc = {};
 
-				TombStoneDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
-				TombStoneDesc.eLevel = LEVEL::MAP;
-				memcpy(TombStoneDesc.szModelName, TEXT("Prototype_Component_Model_TombStone"), sizeof(TombStoneDesc.szModelName));		// 프로토타입 태그명
+                TombStoneDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                TombStoneDesc.eLevel = LEVEL::MAP;
+                memcpy(TombStoneDesc.szModelName, TEXT("Prototype_Component_Model_TombStone"), sizeof(TombStoneDesc.szModelName));		// 프로토타입 태그명
 
-				TombStoneDesc.WorldMatrix = WorldMatrix;									// 행렬
+                TombStoneDesc.WorldMatrix = WorldMatrix;									// 행렬
 
-				TombStoneDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+                TombStoneDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
 
-				CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
-					ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_TombStone"), TIME_CHANNEL::WORLD, &TombStoneDesc), false);
-			}
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_TombStone"), TIME_CHANNEL::WORLD, &TombStoneDesc), false);
+            }
+            else if (INTERACTIVE_TYPE::ELEVATOR == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CElevatorS::SMALL_ELEVATOR_DESC ElevatorDesc = {};
+
+                ElevatorDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                ElevatorDesc.eLevel = LEVEL::MAP;
+                memcpy(ElevatorDesc.szModelName, TEXT("Prototype_Component_Model_SmallElevator"), sizeof(ElevatorDesc.szModelName));		// 프로토타입 태그명
+
+                ElevatorDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+                ElevatorDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+                // 상자 타입인 경우 아이템 박스 구조체도 슥슥 쇽쇽
+                CHECK_FALSE(ReadFile(hObjectFile, &ElevatorDesc.ElevatorPos, sizeof(CElevatorS::ELEVATOR_POS), &dwByte, nullptr), false);
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_SmallElevator"), TIME_CHANNEL::WORLD, &ElevatorDesc), false);
+            }
 
 			CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));
 			CHECK_NULLPTR_MSG(pInteractive_Prop, TEXT("엥"), false);

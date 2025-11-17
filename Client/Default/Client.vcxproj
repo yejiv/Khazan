@@ -210,6 +210,8 @@
     <ClInclude Include="..\public\BladeNexus_List.h" />
     <ClInclude Include="..\public\BladeNexus_Map_BG.h" />
     <ClInclude Include="..\Public\Body_Imp_Melee.h" />
+    <ClInclude Include="..\Public\ElevatorS.h" />
+    <ClInclude Include="..\Public\Elevator_Gear.h" />
     <ClInclude Include="..\Public\FSM_Imp_Melee.h" />
     <ClInclude Include="..\Public\Imp_Melee.h" />
     <ClInclude Include="..\Public\Imp_Sword.h" />
@@ -220,6 +222,7 @@
     <ClInclude Include="..\Public\Projectile_Boomarang.h" />
     <ClInclude Include="..\public\Khazan_Spaer_Anim_Damaged.h" />
     <ClInclude Include="..\public\Skill_Slot_Flag.h" />
+    <ClInclude Include="..\Public\Slate_Switch.h" />
     <ClInclude Include="..\public\UI_BladeNexus_Map.h" />
     <ClInclude Include="..\public\BladeNexus_Map_List.h" />
     <ClInclude Include="..\Public\Body_Gomdol.h" />
@@ -462,6 +465,8 @@
     <ClCompile Include="..\private\BladeNexus_List.cpp" />
     <ClCompile Include="..\private\BladeNexus_Map_BG.cpp" />
     <ClCompile Include="..\Private\Body_Imp_Melee.cpp" />
+    <ClCompile Include="..\Private\ElevatorS.cpp" />
+    <ClCompile Include="..\Private\Elevator_Gear.cpp" />
     <ClCompile Include="..\Private\FSM_Imp_Melee.cpp" />
     <ClCompile Include="..\Private\Imp_Melee.cpp" />
     <ClCompile Include="..\Private\Imp_Sword.cpp" />
@@ -472,6 +477,7 @@
     <ClCompile Include="..\Private\Projectile_Boomarang.cpp" />
     <ClCompile Include="..\private\Khazan_Spaer_Anim_Damaged.cpp" />
     <ClCompile Include="..\private\Skill_Slot_Flag.cpp" />
+    <ClCompile Include="..\Private\Slate_Switch.cpp" />
     <ClCompile Include="..\private\UI_BladeNexus_Map.cpp" />
     <ClCompile Include="..\private\BladeNexus_Map_List.cpp" />
     <ClCompile Include="..\Private\Body_Gomdol.cpp" />

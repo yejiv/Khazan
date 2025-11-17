@@ -115,6 +115,9 @@ private:
     _int m_iMonsterSubLevel = {};
     _int m_iFixMonsterSubLevel = {};
 
+    _float4 m_vElevatorUpPos = {};
+    _float4 m_vElevatorDownPos = {};
+
 #pragma endregion
 
 #pragma region Object 수정 변수
