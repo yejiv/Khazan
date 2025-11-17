@@ -202,9 +202,6 @@ void CKhazan_Spear::Update(_float fTimeDelta)
 void CKhazan_Spear::Late_Update(_float fTimeDelta)
 {
 
-
-
-
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 
@@ -2051,7 +2048,7 @@ HRESULT CKhazan_Spear::Ready_Collision()
     tCharVirDesc.fRadius = 0.3f;
     tCharVirDesc.fHeight = 1.f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
-    tCharVirDesc.fMass = 3.f;
+    tCharVirDesc.fMass = 60.f;
     tCharVirDesc.fMaxStrength = 0.f;
     tCharVirDesc.fPredictiveContactDistance = 0.3f;
     tCharVirDesc.iMaxConstraintIterations = 20;
@@ -2059,10 +2056,10 @@ HRESULT CKhazan_Spear::Ready_Collision()
     tCharVirDesc.fPenetrationRecoverySpeed = 1.7f;
     m_tCollisionDesc.pGameObject = this;
     m_tCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
+    m_tCollisionDesc.strName = TEXT("Khazan_Body");
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
-
     tCharVirDesc.vStickToFloorStepDown = _float3(0.f, -0.5f, 0);
-    tCharVirDesc.vWalkStairsStepUp = _float3(0.f, 3.f, 0.f);
+    tCharVirDesc.vWalkStairsStepUp = _float3(0.f, 0.5f, 0.f);
     tCharVirDesc.fWalkStairsMinStepForward = 0.06f;
     tCharVirDesc.fWalkStairsStepForwardTest = 0.15f;
 
