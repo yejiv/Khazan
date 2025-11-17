@@ -31,6 +31,7 @@ void CAI_Controller_Imp_Range::Update(CGameObject* pOwner, _float fTimeDelta)
     if (!m_isActive)
         return;
     
+
     m_pPerception->Update(pOwner,m_pBB,fTimeDelta);
 
     Update_Aggro(pOwner,fTimeDelta);

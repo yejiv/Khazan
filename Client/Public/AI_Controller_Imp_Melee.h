@@ -17,6 +17,8 @@ private:
 public:
     virtual HRESULT					Initialize(class CCreature* pOwner);
     virtual void					Update(CGameObject* pOwner, _float fTimeDelta) override;
+    void                            Update_Aggro(CGameObject* pOwner, _float fTimeDelta);
+
 
     virtual HRESULT					Ready_Perception(class CGameObject* pOwner, const AIPERCEPTION_DATA& Desc) override;
     virtual HRESULT					Ready_BlackBoard(class CGameObject* pOwner) override;
@@ -27,6 +29,10 @@ public:
     virtual TERMINATE				GetCallbackTeminate(class CGameObject* pOwner, const string& name);
     virtual INTERRUPTCONDITION		GetCallbackInterruptCondition(class CGameObject* pOwner, const string& name);
     virtual PERCEPTIONCALLBACK		GetCallBackPerception(class CGameObject* pOwner, const string& name);
+
+private:
+    _float                          m_fLostSightTime = {};
+
 
 public:
     static CAI_Controller_Imp_Melee*    Create(class CCreature* pOwner);
