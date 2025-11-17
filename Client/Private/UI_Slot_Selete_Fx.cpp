@@ -25,7 +25,7 @@ HRESULT CUI_Slot_Selete_Fx::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Component()))
         return E_FAIL;
 
-    m_vColor = { 0.68f, 0.89f, 1.f, 1.f };
+    m_vColor = { 0.55f, 0.8f, 1.f, 1.f };
     return S_OK;
 }
 void CUI_Slot_Selete_Fx::Priority_Update(_float fTimeDelta)

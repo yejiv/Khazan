@@ -251,7 +251,6 @@ PS_OUT PS_SKILL_SELETE(PS_IN In)
     float radius = 0.45f;
     float soft = 0.05f;
     float circleMask = smoothstep(radius, radius - soft, dist);
-
     float edgeFade = smoothstep(0.0f, radius, radius - dist);
 
     alpha *= circleMask;
