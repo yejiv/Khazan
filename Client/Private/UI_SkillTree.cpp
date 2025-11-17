@@ -233,7 +233,9 @@ void CUI_SkillTree::InputKey()
 		Off_Panel();
 
 	_bool isInput = false;
-	if (m_pGameInstance->Key_Down(DIK_E, INPUT_TYPE::UI))
+	if(m_pGameInstance->Key_Down(DIK_LCONTROL, INPUT_TYPE::UI))
+        m_pGameInstance->Emit_Event<EVENT_SKILL_RESET>(ENUM_CLASS(EVENT_TYPE::SKILL_RESET), {});
+    else if (m_pGameInstance->Key_Down(DIK_E, INPUT_TYPE::UI))
 	{
 		isInput = true;
 		++m_iSelete;

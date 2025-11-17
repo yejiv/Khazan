@@ -98,6 +98,24 @@ void CSkill_Slot::Render_SkillInfo()
     CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("SkillInfo"), &Desc);
 }
 
+void CSkill_Slot::Reset_Slot()
+{
+    if (m_iSkillPoint - 1 >= 0)
+    {
+        CClientInstance::GetInstance()->Add_SkillPoint(m_iSkillPoint);
+        m_iSkillPoint = 0;
+
+        m_pGameInstance->Emit_Event<EVENT_SKILL_ON>(ENUM_CLASS(EVENT_TYPE::PreSKILL_On), { false, m_iSkillIndex });
+
+        if (m_pSkilData->iType == 0)
+        {
+            CClientInstance::GetInstance()->lock_SpearSkill(1 << m_pSkilData->iIndex);
+            static_cast<CSkill_QuickSlot*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("SkillSlot_Quick")))->Equip_Check(m_iSkillIndex);
+        }
+        
+    }
+}
+
 HRESULT CSkill_Slot::Initialize_Prototype(_uint iLevel)
 {
     m_iLevel = iLevel;
@@ -153,6 +171,9 @@ HRESULT CSkill_Slot::Initialize_Clone(void* pArg)
     m_pGameInstance->Subscribe_Event<EVENT_SKILL_ON>(ENUM_CLASS(EVENT_TYPE::PreSKILL_On), [&](const EVENT_SKILL_ON& e)
         { On_PreSkill(e); });
     
+    m_pGameInstance->Subscribe_Event<EVENT_SKILL_RESET>(ENUM_CLASS(EVENT_TYPE::SKILL_RESET), [&](const EVENT_SKILL_RESET& e)
+        { Reset_Slot(); });
+
 	return S_OK;
 }
 

@@ -48,6 +48,7 @@ private:
     void                                On_PreSkill(const EVENT_SKILL_ON& e);
     void                                Render_SkillInfo();
 
+    void                                Reset_Slot();
 public:
 	static CSkill_Slot*					Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
 	virtual CGameObject*				Clone(void* pArg) override;

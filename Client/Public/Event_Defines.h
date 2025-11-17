@@ -13,6 +13,7 @@ namespace Client {
         ANNOUNCE_RESULT,
         ANNOUNCE_OVER,
         SKILL_QUICKSLOT,
+        SKILL_RESET,
 		END };
 
 	// Structs
@@ -145,4 +146,5 @@ namespace Client {
         _int    iSkillIndex;
         _bool   isEquip;
     };
+    struct EVENT_SKILL_RESET { };
 }
