@@ -367,6 +367,10 @@ void CShader_Controller::Ready_Shader()
                         m_pGameInstance->Set_MotionBlurDesc(m_MotionBlurDesc);
                     }
 
+                    // 블러 강도
+                    if (ImGui::SliderFloat("Motion Blur Strength", &m_MotionBlurDesc.fStrength, 0.f, 1.f, "%.1f"))
+                        m_pGameInstance->Set_MotionBlurDesc(m_MotionBlurDesc);
+
                     ImGui::Separator();
                 }
 			}

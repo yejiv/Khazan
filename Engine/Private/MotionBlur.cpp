@@ -11,6 +11,7 @@ HRESULT CMotionBlur::Initialize()
 {
     m_Desc.fDepthBias = 0.001f;
     m_Desc.iNumSamples = 16;
+    m_Desc.fStrength = 0.45f;
 
     return S_OK;
 }
@@ -36,6 +37,9 @@ HRESULT CMotionBlur::Bind_MotionBlur_ShaderResources(CShader* pShader)
         return E_FAIL;
 
     if (FAILED(pShader->Bind_RawValue("g_fBias", &m_Desc.fDepthBias, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(pShader->Bind_RawValue("g_fStrength", &m_Desc.fStrength, sizeof(_float))))
         return E_FAIL;
 
     if (FAILED(pShader->Bind_Bool("g_isEnableMotionBlur", &m_isEnable)))

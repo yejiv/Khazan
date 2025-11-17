@@ -22,7 +22,7 @@ public:
 private:
     class CGameInstance*        m_pGameInstance = { nullptr };
 
-    _bool                       m_isEnable = {};
+    _bool                       m_isEnable = { true };
     MOTION_BLUR_DESC            m_Desc = {};
 
     _float4x4                   m_PrevViewMatrix{}, m_PrevProjMatrix{};
