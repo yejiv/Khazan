@@ -280,6 +280,7 @@ namespace Engine
     {
         float           fDepthBias;
         unsigned int    iNumSamples;
+        float           fStrength;
     }MOTION_BLUR_DESC;
 
 	struct HitStopState
