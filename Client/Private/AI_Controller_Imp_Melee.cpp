@@ -202,6 +202,11 @@ CONDITION CAI_Controller_Imp_Melee::GetCallbackCondition(CGameObject* pOwner, co
     {
         return [pImp](CBlackBoard* BB)->_bool
             {
+
+                _bool isSleep = BB->Get_Value<_bool>(pImp->Get_Name(), "isSleep");
+
+                cout << "isSleep " << isSleep << endl;
+
                 _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
                 _float fAttackRanage = BB->Get_Value<_float>(pImp->Get_Name(), "AttackRange");
 
@@ -221,9 +226,6 @@ CONDITION CAI_Controller_Imp_Melee::GetCallbackCondition(CGameObject* pOwner, co
                 //cout << "NonStopAttack Condition" << endl;
                 _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
                 _float fAttackRanage = BB->Get_Value<_float>(pImp->Get_Name(), "AttackRange");
-
-                cout << "fDist" << fDist << endl;
-                cout << "fAttackRange" << fAttackRanage << endl;
 
                 if (fDist <= fAttackRanage)
                 {
@@ -429,10 +431,7 @@ ACTION CAI_Controller_Imp_Melee::GetCallbackAction(CGameObject* pOwner, const st
     {
           return [pImp](CBlackBoard* BB)->BTNODESTATE
               {
-                  _bool isDetected = BB->Get_Value<_bool>(pImp->Get_Name(), "isDetected");
-                  if (isDetected)
-                      BTNODESTATE::FAILURE;
-
+                 
                   if (BB->Get_Value<_bool>(pImp->Get_Name(), "isSleepFinished"))
                   {
                       return BTNODESTATE::SUCCESS;
@@ -594,8 +593,8 @@ TERMINATE CAI_Controller_Imp_Melee::GetCallbackTeminate(CGameObject* pOwner, con
 
                 if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
                 {
-                    BB->Set_Value<_bool>(pImp->Get_Name(), "isSleepFinished", false);
-                    BB->Set_Value<_bool>(pImp->Get_Name(), "isSleep", false);
+                   /* BB->Set_Value<_bool>(pImp->Get_Name(), "isSleepFinished", false);
+                    BB->Set_Value<_bool>(pImp->Get_Name(), "isSleep", false);*/
                 }
             };
     }
