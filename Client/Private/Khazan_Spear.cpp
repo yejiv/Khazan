@@ -2056,10 +2056,10 @@ HRESULT CKhazan_Spear::Ready_Collision()
     tCharVirDesc.fPenetrationRecoverySpeed = 1.7f;
     m_tCollisionDesc.pGameObject = this;
     m_tCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
+    m_tCollisionDesc.strName = TEXT("Khazan_Body");
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
-
     tCharVirDesc.vStickToFloorStepDown = _float3(0.f, -0.5f, 0);
-    tCharVirDesc.vWalkStairsStepUp = _float3(0.f, 3.f, 0.f);
+    tCharVirDesc.vWalkStairsStepUp = _float3(0.f, 0.5f, 0.f);
     tCharVirDesc.fWalkStairsMinStepForward = 0.06f;
     tCharVirDesc.fWalkStairsStepForwardTest = 0.15f;
 

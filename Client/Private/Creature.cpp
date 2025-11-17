@@ -64,7 +64,7 @@ void CCreature::Update(_float fTimeDelta)
 
     if (m_pCharVirCom != nullptr)
     {
-        m_pCharVirCom->Sync_Update(m_pTransformCom);
+        //m_pCharVirCom->Sync_Update(m_pTransformCom);
         m_pCharVirCom->Update(fTimeDelta, m_pTransformCom, m_vGravity);
     }
 }
