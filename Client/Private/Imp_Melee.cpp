@@ -216,11 +216,13 @@ HRESULT CImp_Melee::Ready_AnimEvent()
 
     pModel->Register_Event("NontStopAttack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_isLookAt = true;
+        m_fTurnSpeed = 10.f;
         m_pWeapon->Set_OnAttackCollision(true);
         });
 
     pModel->Register_Event("NontStopAttack1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_isLookAt = false;
+        m_fTurnSpeed = 10.f;
         m_pWeapon->Set_OnAttackCollision(false);
         });
 
