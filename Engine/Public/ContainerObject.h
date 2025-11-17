@@ -12,6 +12,7 @@ protected:
 	virtual ~CContainerObject() = default;
 
 public:
+    virtual class CComponent* Get_Component(const _wstring& strComponentTag);
 	class CComponent* Get_Component(const _wstring& strPartTag, const _wstring& strComponentTag);
 
 public:

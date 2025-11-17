@@ -226,6 +226,22 @@ HRESULT CLoader::Loading_For_Map_Level()
 	/* Prototype_Component_Model_TombStone */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_TombStone"),
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_BigTombStone_Destruct_001/WIP_BGQ_BigTombStone_Destruct_001.dat")), E_FAIL);
+
+#pragma region 엘리베이터 ( 스몰 사이즈 )
+    /* Prototype_Component_Model_SmallElevator */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_SmallElevator"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_TDl_Elevator_Move_001_a/WIP_TDl_Elevator_Move_001_a.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_Elevator_Gear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_Elevator_Gear"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_TDl_Elevator_Turn_001/WIP_TDl_Elevator_Turn_001.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_Slate_Switch */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_Slate_Switch"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Slate_Switch_001/WIP_BGQ_Slate_Switch_001.dat")), E_FAIL);
+#pragma endregion
+
+
 #pragma endregion
 
 #pragma region 트리거 모델 원형 ( 야매? )
@@ -310,9 +326,24 @@ HRESULT CLoader::Loading_For_Map_Level()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BigChest"),
 		CBigChest::Create(m_pDevice, m_pContext)), E_FAIL);
 
-	/* Prototype_GameObject_Prop_TombStone */
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_TombStone"),
-		CTombStone::Create(m_pDevice, m_pContext)), E_FAIL);
+    /* Prototype_GameObject_Prop_TombStone */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_TombStone"),
+        CTombStone::Create(m_pDevice, m_pContext)), E_FAIL);
+
+#pragma region 엘리베이터 ( 스몰 사이즈 )
+    /* Prototype_GameObject_Prop_SmallElevator */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_SmallElevator"),
+        CElevatorS::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Elevator_Gear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Elevator_Gear"),
+        CElevator_Gear::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Slate_Switch */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Slate_Switch"),
+        CSlate_Switch::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 게임오브젝트 원형 로딩 ( 트리거 및 몬스터 )
@@ -325,7 +356,7 @@ HRESULT CLoader::Loading_For_Map_Level()
 #pragma endregion
 
 #pragma region 게임오브젝트 원형 로딩 ( 데칼 )
-    /* Prototype_GameObject_Prop_Trigger */
+    /* Prototype_GameObject_Decal */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Decal"),
         CDecal::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion

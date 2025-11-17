@@ -36,14 +36,17 @@ HRESULT CProp_Interactive::Initialize_Clone(void* pArg)
 
 void CProp_Interactive::Priority_Update(_float fTimeDelta)
 {
+    __super::Priority_Update(fTimeDelta);
 }
 
 void CProp_Interactive::Update(_float fTimeDelta)
 {
+    __super::Update(fTimeDelta);
 }
 
 void CProp_Interactive::Late_Update(_float fTimeDelta)
 {
+    __super::Late_Update(fTimeDelta);
 }
 
 HRESULT CProp_Interactive::Render()

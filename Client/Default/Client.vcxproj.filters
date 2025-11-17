@@ -802,6 +802,15 @@
     <Filter Include="02.GameObject\UI\Slot\Slot_Fx">
       <UniqueIdentifier>{0e5560b8-bb4b-4969-9da5-b14d5c01d347}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\03.ElevatorS">
+      <UniqueIdentifier>{f165669e-af42-4f9d-8382-7c2999e0e467}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\03.ElevatorS\00.Gear">
+      <UniqueIdentifier>{a1bf8e89-de57-4bdc-9c41-bf3b35c8af9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\03.ElevatorS\01.Slate">
+      <UniqueIdentifier>{8db4d906-6b1f-4700-b312-b75ebf8f9c50}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1547,6 +1556,15 @@
     <ClInclude Include="..\public\UI_Slot_Smoke.h">
       <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Elevator_Gear.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\03.ElevatorS\00.Gear</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ElevatorS.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\03.ElevatorS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Slate_Switch.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\03.ElevatorS\01.Slate</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2271,6 +2289,15 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_Slot_Smoke.cpp">
       <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Elevator_Gear.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\03.ElevatorS\00.Gear</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ElevatorS.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\03.ElevatorS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Slate_Switch.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\03.ElevatorS\01.Slate</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
