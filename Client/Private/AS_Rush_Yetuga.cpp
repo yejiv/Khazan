@@ -65,6 +65,7 @@ void CAS_Rush_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fT
     {
         
         pBB->Set_Value<_bool>(pYetuga->Get_Name(), "isRushFinished", true);
+        pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
     }
 }
 

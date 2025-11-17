@@ -42,6 +42,44 @@ static inline float SmoothDampAngle(float current, float target, float& currentV
     return WrapAngle(current + out);
 }
 
+static inline void BuildSafeBasis(_vector vLookIn, _vector& outRight, _vector& outUp, _vector& outLook)
+{
+    const _vector vWorldUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+
+    // Look 정규화 + 너무 짧으면 이전 값이나 fallback 사용해야 함
+    _vector look = XMVector3Normalize(vLookIn);
+    if (XMVectorGetX(XMVector3LengthSq(look)) < 1e-6f)
+    {
+        // 완전 비는 경우를 방지하기 위해 아주 기본 방향으로 fallback
+        look = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+    }
+
+    _vector right = XMVector3Cross(vWorldUp, look);
+    float rightLenSq = XMVectorGetX(XMVector3LengthSq(right));
+
+    if (rightLenSq < 1e-6f)
+    {
+        // look 이 거의 (0, ±1, 0) 이면, 임의의 축을 하나 선택해서 다시 만든다.
+        // 예: x축 기반으로 새 basis 생성
+        _vector arbitrary = XMVectorSet(1.f, 0.f, 0.f, 0.f);
+        right = XMVector3Cross(arbitrary, look);
+        rightLenSq = XMVectorGetX(XMVector3LengthSq(right));
+
+        if (rightLenSq < 1e-6f)
+        {
+            // 그래도 0이면 마지막 fallback
+            right = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+        }
+    }
+
+    right = XMVector3Normalize(right);
+    _vector up = XMVector3Normalize(XMVector3Cross(look, right));
+
+    outLook = look;
+    outRight = right;
+    outUp = up;
+}
+
 CCamera_Compre::CCamera_Compre(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CCamera{ pDevice, pContext }
 {
@@ -75,6 +113,13 @@ HRESULT CCamera_Compre::Initialize_Clone(void* pArg)
 
 void CCamera_Compre::Priority_Update(_float fTimeDelta)
 {
+
+    if (m_fStartTime < 2.f)
+    {
+        m_fStartTime += fTimeDelta;
+        m_pTransformCom->LookAt(XMLoadFloat4(&m_vAt));
+    }
+
     
     if (!m_isCollTime)
     {
@@ -83,16 +128,6 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
         {
             m_isCollTime = true;
         }
-    }
-
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
-    {
-        Start_InteractFocus(CAMERA_FORCE_DIR::FRONT, 0.8f, 0.25f, true);
-    }
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
-    {
-        Exit_PostForceFrameRight();
-        
     }
 
     if (!m_isActive)
@@ -108,8 +143,6 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
             Update_ForceOrbit(fTimeDelta);
         else if (m_isPostForceFrameRight || m_isPostFrameHold) {
             Update_InteractFocus(fTimeDelta);
-
-            __super::Update_PipeLines(fTimeDelta);
         }
         else if (m_isBlendBack)
         {
@@ -136,12 +169,6 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
         m_vShaking_BaseLook = m_pTransformCom->Get_State(STATE::LOOK);
         Shaking(fTimeDelta);
 
-    }
-
-    if (m_fStartTime < 2.f)
-    {
-        m_fStartTime += fTimeDelta;
-        m_pTransformCom->LookAt(XMLoadFloat4(&m_vAt));
     }
 
     __super::Update_PipeLines(fTimeDelta);
@@ -280,8 +307,9 @@ HRESULT CCamera_Compre::Spring(_float fTimeDelta)
     _vector vWorldUp, vLook, vRight, vUp;
     vWorldUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
     vLook = XMVector3Normalize(XMVectorSubtract(vTargetPos, vCamPos));
-    vRight = XMVector3Normalize(XMVector3Cross(vWorldUp, vLook));
-    vUp = XMVector3Normalize(XMVector3Cross(vLook, vRight));
+    BuildSafeBasis(vLook, vRight, vUp, vLook);
+    //vRight = XMVector3Normalize(XMVector3Cross(vWorldUp, vLook));
+    //vUp = XMVector3Normalize(XMVector3Cross(vLook, vRight));
 
     m_pTransformCom->Set_State(STATE::RIGHT, vRight);
     m_pTransformCom->Set_State(STATE::UP, vUp);
@@ -359,13 +387,10 @@ HRESULT CCamera_Compre::LockOn(_float fTimeDelta)
 
     targetPitch = Clamp(targetPitch, m_fPitchMin, m_fPitchMax);
 
-    static _float smoothingVelocityYaw = 0.f;
-    static _float smoothingVelocityPitch = 0.f;
-
     m_fYaw = SmoothDampAngle(
         m_fYaw,
         targetYaw,
-        smoothingVelocityYaw,
+        m_fSmoothingVelocityYaw,
         0.08f,
         fTimeDelta
     );
@@ -373,7 +398,7 @@ HRESULT CCamera_Compre::LockOn(_float fTimeDelta)
     m_fPitch = SmoothDampScalar(
         m_fPitch,
         targetPitch,
-        smoothingVelocityPitch,
+        m_fSmoothingVelocityPitch,
         0.08f,
         fTimeDelta
     );
@@ -492,6 +517,8 @@ void CCamera_Compre::LockOn_Check(_float fTimeDelta)
             m_pLockMonster = nullptr;
             m_pLockOnUI->LockOff();
             m_iLockOrder = 0;
+            m_fSmoothingVelocityYaw = 0.f;
+            m_fSmoothingVelocityPitch = 0.f;
             return;
         }
         
@@ -502,6 +529,8 @@ void CCamera_Compre::LockOn_Check(_float fTimeDelta)
             m_pLockMonster = nullptr;
             m_pLockOnUI->LockOff();
             m_iLockOrder = 0;
+            m_fSmoothingVelocityYaw = 0.f;
+            m_fSmoothingVelocityPitch = 0.f;
             return;
         }
 
@@ -517,6 +546,8 @@ void CCamera_Compre::LockOn_Check(_float fTimeDelta)
             m_pLockMonster = Pick_ClosetTarget();
             if (m_pLockMonster)
             {
+                m_fSmoothingVelocityYaw = 0.f;
+                m_fSmoothingVelocityPitch = 0.f;
                 m_pLockOnUI->LockOff();
                 m_pLockOnPos = dynamic_cast<CMonster*>(m_pLockMonster)->Get_LockOnPosition();
                 m_pLockOnUI->LockOn(m_pLockOnPos);
@@ -527,6 +558,8 @@ void CCamera_Compre::LockOn_Check(_float fTimeDelta)
                 m_pLockMonster = nullptr;
                 m_pLockOnUI->LockOff();
                 m_iLockOrder = 0;
+                m_fSmoothingVelocityYaw = 0.f;
+                m_fSmoothingVelocityPitch = 0.f;
             }
         }
     }
@@ -1164,6 +1197,8 @@ void CCamera_Compre::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLay
                     m_pLockMonster = Pick_ClosetTarget();
                     if (m_pLockMonster)
                     {
+                        m_fSmoothingVelocityYaw = 0.f;
+                        m_fSmoothingVelocityPitch = 0.f;
                         m_isLockOn = true;
                         m_pLockOnPos = dynamic_cast<CMonster*>(m_pLockMonster)->Get_LockOnPosition();
                         m_pLockOnUI->LockOn(m_pLockOnPos);
