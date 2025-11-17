@@ -444,7 +444,7 @@ void CCamera_Controller::Ready_ImGui_Active_Camera_Animation_Item()
 				ImGui::Dummy(ImVec2(0.0f, 5.0f)); // 필요하면 8.0f 조절
 				ImGui::PopID();
 				_char szRemoveBuffer[10];
-				snprintf(szRemoveBuffer, sizeof(szRemoveBuffer), "Remove_%d", i);
+				snprintf(szRemoveBuffer, sizeof(szRemoveBuffer), "Remove_%d", static_cast<_int>(i));
 				if (ImGui::Button(szRemoveBuffer, ImVec2(60.f, 30.f)))
 				{
 					pCamera->Remove_Animation(m_strListSelectAnimation, i);
