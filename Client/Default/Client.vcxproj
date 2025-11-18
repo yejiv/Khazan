@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -221,6 +221,7 @@
     <ClInclude Include="..\public\ItemInfo_RandomEffect.h" />
     <ClInclude Include="..\Public\Lever.h" />
     <ClInclude Include="..\Public\Lever_Gear.h" />
+    <ClInclude Include="..\public\Khazan_Spear_Anim_Fall.h" />
     <ClInclude Include="..\Public\LoadingObj_BN.h" />
     <ClInclude Include="..\public\Inven_State_Panel.h" />
     <ClInclude Include="..\public\Lantern_Khazan_Spear.h" />
@@ -484,6 +485,7 @@
     <ClCompile Include="..\private\ItemInfo_RandomEffect.cpp" />
     <ClCompile Include="..\Private\Lever.cpp" />
     <ClCompile Include="..\Private\Lever_Gear.cpp" />
+    <ClCompile Include="..\private\Khazan_Spear_Anim_Fall.cpp" />
     <ClCompile Include="..\Private\LoadingObj_BN.cpp" />
     <ClCompile Include="..\private\Inven_State_Panel.cpp" />
     <ClCompile Include="..\private\Lantern_Khazan_Spear.cpp" />

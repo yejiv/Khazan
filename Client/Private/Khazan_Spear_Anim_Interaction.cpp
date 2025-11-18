@@ -1,13 +1,18 @@
 #include "Khazan_Spear_Anim_Interaction.h"
 #include "GameInstance.h"
+#include "ClientInstance.h"
 
 
 CKhazan_Spear_Anim_Interaction::CKhazan_Spear_Anim_Interaction()
+    : m_pClientInstance{ CClientInstance::GetInstance() }
 {
+    Safe_AddRef(m_pClientInstance);
 }
 
 HRESULT CKhazan_Spear_Anim_Interaction::Initialize_Prototype()
 {
+    m_pPlayerData = m_pClientInstance->Get_pInitailizePlayerData();
+
     return S_OK;
 }
 
@@ -84,6 +89,20 @@ _bool CKhazan_Spear_Anim_Interaction::Try_BoxOpen(_bool isUsedSet)
     return true;
 }
 
+_bool CKhazan_Spear_Anim_Interaction::Try_Lachryma()
+{
+    if (!m_pModel->Check_MinAnimationTime())
+        return false;
+
+    m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_LacrimaInteraction"));
+
+    m_pPlayerData->fCulHp += m_pPlayerData->fLachrymaItemRegen;
+    if (m_pPlayerData->fCulHp > m_pPlayerData->fMaxHp)
+        m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp;
+
+    return true;
+}
+
 
 
 CKhazan_Spear_Anim_Interaction* CKhazan_Spear_Anim_Interaction::Create()
@@ -102,4 +121,6 @@ CKhazan_Spear_Anim_Interaction* CKhazan_Spear_Anim_Interaction::Create()
 void CKhazan_Spear_Anim_Interaction::Free()
 {
     __super::Free();
+    Safe_Release(m_pClientInstance);
+
 }

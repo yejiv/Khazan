@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="98.Default">
@@ -832,6 +832,9 @@
     <Filter Include="02.GameObject\UI\Skill_Tree\FX">
       <UniqueIdentifier>{df9920c8-541d-4bd2-8c7a-c7fcfdf95c37}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation\Fall">
+      <UniqueIdentifier>{8c26f2fc-b26b-47a9-beae-dd1fd6b9e102}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1613,6 +1616,9 @@
     <ClInclude Include="..\public\UI_Slot_Selete_Fx.h">
       <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Khazan_Spear_Anim_Fall.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Fall</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2373,6 +2379,9 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_Slot_Selete_Fx.cpp">
       <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_Spear_Anim_Fall.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Fall</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

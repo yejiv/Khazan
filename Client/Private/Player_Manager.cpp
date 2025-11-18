@@ -6,33 +6,33 @@ CPlayer_Manager::CPlayer_Manager()
 
 HRESULT CPlayer_Manager::Initialize()
 {
-    m_Data.fMaxHp = 1000;
-    m_Data.fCulHp = 1000;
-    m_Data.fMaxStamina = 1000;
-    m_Data.fCulStamina = 1000;
-    m_Data.fStaminaRegen = 100.f;
-    m_Data.iMaxDoggednessCount = 5;
-    m_Data.fCulDoggedness = 5;
+    m_Data.fMaxHp = { 10000.f };
+    m_Data.fCulHp = { 10000.f };
+    m_Data.fMaxStamina = { 1000.f };
+    m_Data.fCulStamina = { 1000.f };
+    m_Data.fStaminaRegen = { 200.f };
+    m_Data.iMaxDoggednessCount = { 5 };
+    m_Data.fCulDoggedness = { 5.f };
 
     m_Data.fDamage = 10;
     m_Data.fGuard = 0;
 
-	m_Data.iLevel = 1;
-	m_Data.iGold = 1000;
-	m_Data.iLachryma = 500;
-    m_Data.iStone = 0;
+    m_Data.iLevel = { 1 };
+    m_Data.iGold = { 1000 };
+    m_Data.iLachryma = { 500 };
+    m_Data.iStone = { 0 };
 
-	m_Data.iSkillLevel = 10;
-	m_Data.iSkilPoint = 10;
-	m_Data.fSkillLevel_EXP = 0.f;
+    m_Data.iSkillLevel = { 10 };
+    m_Data.iSkilPoint = { 10 };
+    m_Data.fSkillLevel_EXP = { 0.f };
     
-    m_Data.iVitality = 10;
-    m_Data.iEndurance = 10;
-    m_Data.iPower = 10;
-    m_Data.iCompetency = 10;
-    m_Data.iWill = 10;
+    m_Data.iVitality = { 10 };
+    m_Data.iEndurance = { 10 };
+    m_Data.iPower = { 10 };
+    m_Data.iCompetency = { 10 };
+    m_Data.iWill = { 10 };
 
-    m_Data.fWeight = 0.f;
+    m_Data.fWeight = { 0.f };
 
     m_UsedSkill.assign(GetBitPosition(CPlayerData_Manager::SPEAR_END), false);
 

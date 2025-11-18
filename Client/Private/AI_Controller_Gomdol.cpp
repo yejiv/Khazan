@@ -116,7 +116,7 @@ CONDITION CAI_Controller_Gomdol::GetCallbackCondition(CGameObject* pOwner, const
     {
         return [pGomdol](CBlackBoard* BB)->_bool
             {
-                cout << "FrontAttack Condition" << endl;
+                //cout << "FrontAttack Condition" << endl;
 
                 _float fDist = BB->Get_Value<_float>(pGomdol->Get_Name(), "TargetDist");
                 _float fAttackRanage = BB->Get_Value<_float>(pGomdol->Get_Name(), "AttackRange");
@@ -124,7 +124,7 @@ CONDITION CAI_Controller_Gomdol::GetCallbackCondition(CGameObject* pOwner, const
                 if (fDist <= fAttackRanage && !BB->Get_Value<_bool>(pGomdol->Get_Name(), "isFrontAttack"))
                 {
                     BB->Set_Value<_bool>(pGomdol->Get_Name(), "AttackInterrupt", true);
-                    cout << "AttackCondtion True" << endl;
+                    //cout << "AttackCondtion True" << endl;
                     return true;
                 }
                 else
@@ -198,7 +198,7 @@ ACTION CAI_Controller_Gomdol::GetCallbackAction(CGameObject* pOwner, const strin
     {
         return [pGomdol](CBlackBoard* BB)-> BTNODESTATE
             {
-                cout << "FrontAttack Action" << endl;
+               // cout << "FrontAttack Action" << endl;
                 if (BB->Get_Value<_bool>(pGomdol->Get_Name(), "isFrontAttackFinished"))
                 {
                     return BTNODESTATE::SUCCESS;
