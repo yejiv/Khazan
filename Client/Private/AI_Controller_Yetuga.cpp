@@ -31,11 +31,12 @@ HRESULT CAI_Controller_Yetuga::Initialize(CCreature* pOwner)
 
 void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 {
-
+     
     if (m_pGameInstance->Key_Down(DIK_T))
     {
         m_pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::CUTSCENE), pOwner);
     }
+    
 
     //if (m_isActiveController)
     //{

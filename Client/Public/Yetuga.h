@@ -79,6 +79,8 @@ private:
 	_float3							m_vHoldRockOffset = {};
 	_bool							m_isGrab = { false };
     _uint                           m_iFX_ID_Dampsey;
+    _uint                           m_iBreathCount;
+    _float                          m_iBreathRotation;
 
 
 private:

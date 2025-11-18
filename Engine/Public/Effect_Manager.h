@@ -30,6 +30,7 @@ public:
 
 	// 4. Loop인 이펙트를 멈추고(Loop를 끈다?) Pool로 돌아가게한다. 주로 맵 이펙트이 자주 쓰일 것 같다. 마찬가지로 Effect Layers 컨테이너에 ID로 접근
 	void		Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID);
+	void		Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag);
 
 private:
 	class CGameInstance*								m_pGameInstance = { nullptr };
