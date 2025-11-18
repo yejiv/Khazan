@@ -249,7 +249,7 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     if (g_IsDisolve == false) 
         vFinalColor.a *= fDecreaseAlpha;
     else
-        vFinalColor = Dissolve(vFinalColor, fDecreaseAlpha, In.vTexcoord);
+        vFinalColor = Dissolve(vFinalColor, (In.vLifeTime.x / In.vLifeTime.y), In.vTexcoord);
     
     if (vFinalColor.a <= 0.f)
         discard;
