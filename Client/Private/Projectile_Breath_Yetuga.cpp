@@ -21,8 +21,8 @@ HRESULT CProjectile_Breath_Yetuga::Initialize_Clone(void* pArg)
 	if (FAILED(__super::Initialize_Clone(pArg)))
 		return E_FAIL;
 
-	if (FAILED(Ready_Components()))
-		return E_FAIL;
+	/*if (FAILED(Ready_Components()))
+		return E_FAIL;*/
 
 	m_isActive = false;
 
@@ -42,8 +42,8 @@ void CProjectile_Breath_Yetuga::Update(_float fTimeDelta)
 
 void CProjectile_Breath_Yetuga::Late_Update(_float fTimeDelta)
 {
-	if (m_isVisible)
-		m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
+	/*if (m_isVisible)
+		m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);*/
 }
 
 HRESULT CProjectile_Breath_Yetuga::Render()

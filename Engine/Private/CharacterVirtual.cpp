@@ -193,42 +193,6 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vecto
     );
 }
 
-void CCharacterVirtual::Sync_Update(_matrix WorldMatirx)
-{
-    _vector vScale, vRotation, vTranslation;
-
-    XMMatrixDecompose(&vScale, &vRotation, &vTranslation, WorldMatirx);
-
-    Set_PosRot(vTranslation, vRotation);
-}
-
-void CCharacterVirtual::Update(_float fTimeDelta, _vector& outQuatRotation, _vector& outPosition, _vector vGravity)
-{
-    if (!m_pCharVir)
-        return;
-
-    if (!std::isfinite(fTimeDelta) || fTimeDelta <= 0.f)
-        return;
-
-    {
-        float gx = XMVectorGetX(vGravity);
-        float gy = XMVectorGetY(vGravity);
-        float gz = XMVectorGetZ(vGravity);
-
-        if (std::isfinite(gx) && std::isfinite(gy) && std::isfinite(gz))
-            m_vGravity = JPH::Vec3(gx, gy, gz);
-        else
-            m_vGravity = JPH::Vec3(0.f, -980.f, 0.f);
-    }
-
-    StepFixed(fTimeDelta);
-
-    const RVec3 pos = m_pCharVir->GetPosition();
-    const JPH::Quat rot = m_pCharVir->GetRotation();
-
-    outPosition = XMVectorSet((float)pos.GetX(), (float)pos.GetY(), (float)pos.GetZ(), 1.f);
-    outQuatRotation = XMVectorSet(rot.GetX(), rot.GetY(), rot.GetZ(), rot.GetW());
-}
 
 void CCharacterVirtual::Set_PosRot(_vector vPos, _vector vRot)
 {
@@ -378,10 +342,6 @@ CComponent* CCharacterVirtual::Clone(void* pArg)
 void CCharacterVirtual::Free()
 {
 	__super::Free();
-    if (m_pBodyInterface->IsAdded(m_BodyId))
-    {
-        m_pBodyInterface->RemoveBody(m_BodyId);
-    }
 
 	Safe_Delete(m_pBodyFilter);
 	Safe_Delete(m_pShapeFilter);

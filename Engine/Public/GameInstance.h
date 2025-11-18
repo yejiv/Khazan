@@ -28,7 +28,9 @@ public:
 	void Render_End(HWND hWnd = 0);
 public:
 	_float Rand_Normal();
+    _int Rand_Normal(_int iMin, _int iMax);
 	_float Rand(_float fMin, _float fMax);
+    _int Rand(_int iMin, _int iMax);
 
 public:
 	_uint Get_StaticLevel();
@@ -170,25 +172,6 @@ public:
 	_bool isPicked(_float3* pOutPosition, _float3* pOutNormal);
 #pragma endregion
 
-#pragma region SHADOW
-	_uint				Get_NumCascades();
-	void				Set_CurrentCascade(_uint iIndex);
-	const _float4x4*	Get_CurrentShadowLightViewMatrix() const;
-	const _float4x4*	Get_CurrentShadowLightProjMatrix() const;
-	HRESULT				Bind_ShadowDSV(_uint iIndex);
-	HRESULT				Bind_Shadow_ShaderResources(class CShader* pShader);
-	void				Clear_ShadowDSVs();
-	void				Start_ShadowIntensityTransition(_float fDuration, _float fTargetIntensity);
-
-#ifdef _DEBUG
-	CASCADE_CONFIG		Get_CascadeConfig();
-	void				Set_CascadeConfig(CASCADE_CONFIG Config);
-	HRESULT				Ready_CSM_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY);
-	HRESULT				Render_CSM_Debug(CShader* pShader, CVIBuffer_Rect* pVIBuffer);
-#endif
-
-#pragma endregion
-
 #pragma region FRUSTUM
 	void Transform_Frustum_ToLocalSpace(_fmatrix WorldMatrix);
 	_bool isIn_Frustum_WorldSpace(_fvector vWorldPos, _float fRange = 0.f);
@@ -311,16 +294,47 @@ public:
 	//class CBlackBoard* Get_BlackBoard() { return m_pBlackBoard; }
 #pragma endregion
 
-#pragma region SSAO
-	SSAO_CONFIG	Get_SSAOConfig();
-	void		Set_SSAOConfig(SSAO_CONFIG Config);
-	HRESULT		Bind_SSAO_ShaderResources(class CShader* pShader);
-#pragma endregion
-
 #pragma region Octree
 	void DeleteOctree();
 	HRESULT CreateOctree(const _float3& _vCenter, const _float& fHalfWidth = 256.0f, const _int& _iDepthLimit = 4);
 	bool AddStaticObject(class CGameObject* pGameObject, const _float3& vPoint, const _float& fRadius = 0.0f);
+#pragma endregion
+
+#pragma region CSM
+    _uint				Get_NumCascades();
+    void				Set_CurrentCascade(_uint iIndex);
+    const _float4x4*    Get_CurrentCascadeLightViewMatrix() const;
+    const _float4x4*    Get_CurrentCascadeLightProjMatrix() const;
+    HRESULT				Bind_CascadeDSV(_uint iIndex);
+    HRESULT				Bind_Cascade_ShaderResources(class CShader* pShader);
+    void				Clear_CascadeDSVs();
+    void				Start_CascadeShadowTransition(_float fDuration, _float fTargetIntensity);
+    CASCADE_CONFIG		Get_CascadeConfig();
+    void				Set_CascadeConfig(CASCADE_CONFIG Config);
+
+#ifdef _DEBUG
+    HRESULT				Ready_CSM_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY);
+    HRESULT				Render_CSM_Debug(CShader* pShader, CVIBuffer_Rect* pVIBuffer);
+#endif
+#pragma endregion
+
+#pragma region Shadow
+    const _float4x4*    Get_ShadowLightMatrix(D3DTS eTransformState) const;
+    HRESULT             Bind_Shadow_ShaderResources(class CShader* pShader);
+    void                Bind_ShadowDSV();
+    void                Start_ShadowTransition(_float fDuration, _float fTargetIntensity);
+    void                Clear_ShadowDSV();
+
+#ifdef _DEBUG
+    HRESULT				Ready_Shadow_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY);
+    HRESULT				Render_Shadow_Debug(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
+#endif
+#pragma endregion
+
+#pragma region SSAO
+	SSAO_CONFIG	Get_SSAOConfig();
+	void		Set_SSAOConfig(SSAO_CONFIG Config);
+	HRESULT		Bind_SSAO_ShaderResources(class CShader* pShader);
 #pragma endregion
 
 #pragma region GAUSSIAN_BLUR
@@ -433,7 +447,8 @@ private:
 	class CEffect_Manager*		    m_pEffect_Manager = { nullptr };
 	
 	// 임시(이후 렌더링 리소스 클래스 안으로 이전할 예정)
-	class CShadow*				    m_pShadow = { nullptr };
+	class CCSM*				        m_pCSM = { nullptr };
+    class CShadow*                  m_pShadow = { nullptr };
 	class CSSAO*				    m_pSSAO = { nullptr };
 	class COctree*				    m_pOctree = { nullptr };
 	class CGaussianBlur*		    m_pGaussianBlur = { nullptr };
@@ -450,7 +465,6 @@ private:
 
 
 	_uint m_iStaticLevel = {};
-	
 
 public:
 	void Release_Engine();

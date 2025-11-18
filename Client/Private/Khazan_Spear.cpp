@@ -201,6 +201,14 @@ void CKhazan_Spear::Update(_float fTimeDelta)
     {
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Com_Lantern_Off"));
     }
+    if (m_pCharVirCom->Get_isGround())
+    {
+        int a = 0;
+    }
+    else
+    {
+        int a = 0;
+    }
 }
 
 void CKhazan_Spear::Late_Update(_float fTimeDelta)
@@ -2047,7 +2055,7 @@ HRESULT CKhazan_Spear::Ready_Collision()
     tCharVirDesc.eShapeType = SHAPE::CAPSULE;
     tCharVirDesc.vPos = vPos;
     tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 0.7f, 0.f);
+    tCharVirDesc.vShapeOffset = _float3(0.f, 0.75f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
     tCharVirDesc.fRadius = 0.3f;
     tCharVirDesc.fHeight = 1.f;
@@ -2205,12 +2213,24 @@ void CKhazan_Spear::Event_Interact_Object(_float fTimeDelta)
             isDone = false;
 
             if (m_pBody->Get_Model()->IsFinished()) {
-               // m_pSpear->UnEquip();
+                // m_pSpear->UnEquip();
                 isDone = true;
             }
 
             break;
         }
+        case INTERACTIVE_TYPE::LEVER:
+        {
+            isDone = false;
+
+            if (m_pBody->Get_Model()->IsFinished()) {
+                isDone = true;
+            }
+
+            break;
+        }
+        default:
+            break;
         }
 
         if (isDone)               // 특정 조건 완성하면 이벤트 발생
@@ -2254,6 +2274,11 @@ void CKhazan_Spear::Event_Interact_Object(_float fTimeDelta)
         if (INTERACTIVE_TYPE::TOMBSTONE == m_EventInteract.eInteractType)
         {
             TombStone_Event(fTimeDelta);
+        }
+        // 엠바스 레버일 때
+        if (INTERACTIVE_TYPE::LEVER == m_EventInteract.eInteractType)
+        {
+            Lever_Event(fTimeDelta);
         }
     }
 }
@@ -2388,6 +2413,35 @@ void CKhazan_Spear::TombStone_Event(_float fTimeDelta)
     else if (true == TSEvent.isTSOpened)
     {
         // 플레이어 툼스톤 LOOP 애니메이션?
+    }
+
+    m_EventInteract.End_Event();
+}
+void CKhazan_Spear::Lever_Event(_float fTimeDelta)
+{
+    EventLever LeverEvent = m_EventInteract.LeverEvent;
+
+    // 레버가 Active 로 전환 중일 때
+    if (EventLever::ACTIVE == LeverEvent.eState)
+    {
+        // 플레이어가 레버를 Active 시키는 애니메이션 재생
+
+        LeverEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+        // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+        m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&LeverEvent.vPlayerPosition));
+        LeverEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+        m_pTransformCom->LookAt(XMLoadFloat4(&LeverEvent.vPosition));
+    }
+    // 레버가 DeActive 로 전환 중일 때
+    else if (EventLever::DEACTIVE == LeverEvent.eState)
+    {
+        // 플레이어가 레버를 DeActive 시키는 애니메이션 재생
+
+        LeverEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+        // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+        m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&LeverEvent.vPlayerPosition));
+        LeverEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+        m_pTransformCom->LookAt(XMLoadFloat4(&LeverEvent.vPosition));
     }
 
     m_EventInteract.End_Event();

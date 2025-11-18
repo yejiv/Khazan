@@ -28,6 +28,8 @@ HRESULT CProp_Interactive::Initialize_Clone(void* pArg)
 
     memcpy(m_szInteractiveTag, pDesc->szInteractiveTag, MAX_PATH);
 
+    m_iEventID = pDesc->iEventID;
+
     // 맵 오브젝트의 월드 행렬 갱신 ( 파일 입출력 받은걸로 )
     m_pTransformCom->Set_WorldMatrix_4x4(pDesc->WorldMatrix);
 
@@ -36,14 +38,17 @@ HRESULT CProp_Interactive::Initialize_Clone(void* pArg)
 
 void CProp_Interactive::Priority_Update(_float fTimeDelta)
 {
+    __super::Priority_Update(fTimeDelta);
 }
 
 void CProp_Interactive::Update(_float fTimeDelta)
 {
+    __super::Update(fTimeDelta);
 }
 
 void CProp_Interactive::Late_Update(_float fTimeDelta)
 {
+    __super::Late_Update(fTimeDelta);
 }
 
 HRESULT CProp_Interactive::Render()

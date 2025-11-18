@@ -412,6 +412,9 @@
     <Filter Include="01.Utility\94.RenderingResources\Blur\Motion">
       <UniqueIdentifier>{cd81eb31-8661-482e-a920-b634fbcf0ded}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\94.RenderingResources\Shadow">
+      <UniqueIdentifier>{f58f086c-82b2-450f-8046-d4cb1c7b1dce}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -536,9 +539,6 @@
     </ClCompile>
     <ClCompile Include="..\private\Picking.cpp">
       <Filter>01.Utility\07.Picking</Filter>
-    </ClCompile>
-    <ClCompile Include="..\private\Shadow.cpp">
-      <Filter>01.Utility\94.RenderingResources\CSM</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Frustum.cpp">
       <Filter>01.Utility\08.Frustum</Filter>
@@ -798,6 +798,12 @@
     <ClCompile Include="..\private\MotionBlur.cpp">
       <Filter>01.Utility\94.RenderingResources\Blur\Motion</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Shadow.cpp">
+      <Filter>01.Utility\94.RenderingResources\Shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\CSM.cpp">
+      <Filter>01.Utility\94.RenderingResources\CSM</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -940,9 +946,6 @@
     </ClInclude>
     <ClInclude Include="..\public\Picking.h">
       <Filter>01.Utility\07.Picking</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\Shadow.h">
-      <Filter>01.Utility\94.RenderingResources\CSM</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Frustum.h">
       <Filter>01.Utility\08.Frustum</Filter>
@@ -1228,6 +1231,12 @@
     </ClInclude>
     <ClInclude Include="..\public\MotionBlur.h">
       <Filter>01.Utility\94.RenderingResources\Blur\Motion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Shadow.h">
+      <Filter>01.Utility\94.RenderingResources\Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\CSM.h">
+      <Filter>01.Utility\94.RenderingResources\CSM</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

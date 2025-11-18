@@ -17,6 +17,7 @@
 #include "AS_Groggy_Yetuga.h"
 #include "AS_Dead_Yetuga.h"
 #include "AS_LockOn_Yetuga.h"
+#include "AS_CutScene_Yetuga.h"
 
 CFSM_Yetuga::CFSM_Yetuga()
 {
@@ -60,6 +61,8 @@ HRESULT CFSM_Yetuga::Initialize()
     if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::GROGGY), CAS_Groggy_Yetuga::Create())))
         return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::DEAD), CAS_Dead_Yetuga::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(YETUGA_STATE::CUTSCENE), CAS_CutScene_Yetuga::Create())))
         return E_FAIL;
     
     m_pCurrentState = m_States[ENUM_CLASS(YETUGA_STATE::IDLE)];

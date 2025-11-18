@@ -29,6 +29,7 @@ HRESULT CUI_PlayerHP_Gauge::Initialize_Clone(void* pArg)
     
     m_pCulHp = &CClientInstance::GetInstance()->Get_PlayerData().fCulHp;
     m_pMaxHp = &CClientInstance::GetInstance()->Get_PlayerData().fMaxHp;
+    m_fDefaultValue = *m_pMaxHp;
 
 	m_fLerpSpeed = 0.5f;
 	m_fLerpValue = 1.f;
@@ -57,6 +58,12 @@ void CUI_PlayerHP_Gauge::Update(_float fTimeDelta)
 	vPos.y = m_vWorldPos.y;
 
 	m_pUITip->Update_Pos(vPos);
+
+    _float fAddValue = *m_pMaxHp - m_fDefaultValue;
+    _float fSize = Clamp(fAddValue / m_fDefaultValue);
+
+    m_pTransformCom->Scale(_float3{ m_vLocalSize.x * (1.f + fSize), m_vLocalSize.y, 1.f });
+
 }
 
 void CUI_PlayerHP_Gauge::Late_Update(_float fTimeDelta)

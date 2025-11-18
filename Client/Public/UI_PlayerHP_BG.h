@@ -31,6 +31,12 @@ private:
 	CTexture*				m_pTextureCom = { nullptr };
 	CVIBuffer_Rect*			m_pVIBufferCom = { nullptr };
 
+    const _float*           m_pMaxValue = { nullptr };
+    _float                  m_fDefaultValue = {};
+
+    class CUI_Default_Tex*  m_pBG_L = { nullptr };
+    class CUI_Default_Tex*  m_pBG_R = { nullptr };
+
 private:
 	HRESULT					Ready_Component();
 
