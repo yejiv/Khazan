@@ -147,6 +147,10 @@ private:
 	/*  Attack */
 	const _float				m_fChargingStrongIntervalTime = { 0.25f };
 
+/* SnowEffect SpawnTime*/
+private:
+    _float              m_EffectTimeDelta;
+
 
 private:
 	void			Update_State(_float fTimeDelta);
