@@ -16,6 +16,8 @@ public:
 	{
 		_tchar szInteractiveTag[MAX_PATH] = {};
 
+        _int iEventID{ 0 };
+
 		void* pOtherDesc{};
 
 	}PROP_INTERACTIVE_DESC;
@@ -37,6 +39,10 @@ protected:
 	CModel* m_pModelCom = { nullptr };
 
 	_tchar m_szInteractiveTag[MAX_PATH] = {};
+
+    EVENT_TYPE m_eEventType = {};
+
+    _int m_iEventID = {};
 
 	_bool m_isCollision = { false };
 

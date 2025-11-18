@@ -659,6 +659,11 @@ void CCamera::Update_FOVChannel(_float fTimeDelta)
 	const _float fSmoothingWeight = std::clamp(m_fFOVSmooth * fTimeDelta, 0.f, 1.f);
 	const _float fPrevFovy = m_fFovy;
 	m_fFovy = fPrevFovy + (fTargetFov - fPrevFovy) * fSmoothingWeight;
+
+    if (!(m_fFovy > 0.f && m_fFovy < XM_PI))
+    {
+        OutputDebugStringA("[Camera] Invalid FOV detected!\n");
+    }
 }
 
 _int CCamera::FindModIndexByID(const _wstring& strID) const

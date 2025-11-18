@@ -385,7 +385,7 @@ HRESULT CItem_Slot::Ready_Children()
     TextDesc.iUIType = ENUM_CLASS(UITYPE::TEXT);
     TextDesc.szName = "Smoke";
     TextDesc.vLocalPos = _float2{ 0.f, 0.f };
-    TextDesc.vLocalSize = { 90.f,90.f };
+    TextDesc.vLocalSize = { 95.f,95.f };
     TextDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
     m_pSmoke_Fx = static_cast<CUI_Slot_Smoke*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Slot_Smoke"), &TextDesc));
 
@@ -513,22 +513,22 @@ void CItem_Slot::Render_ItemInfo()
 void CItem_Slot::Random_Effect_Setting(_int iItemType)
 {
     if (iItemType == 4)
-        m_iRandomEffect_Type = (_int)m_pGameInstance->Rand(1, 3);
+        m_iRandomEffect_Type = m_pGameInstance->Rand(1, 3);
     else if (iItemType == 5)
-        m_iRandomEffect_Type = 2 + (_int)m_pGameInstance->Rand(1, 5);
+        m_iRandomEffect_Type = 2 + m_pGameInstance->Rand(1, 5);
     else if (iItemType == 6)
-        m_iRandomEffect_Type = 5 + (_int)m_pGameInstance->Rand(1, 2);
+        m_iRandomEffect_Type = 5 + m_pGameInstance->Rand(1, 2);
 
     if (m_iRandomEffect_Type == 1)
-        m_iRandomEffect_Value = (_int)m_pGameInstance->Rand(5, 10);
+        m_iRandomEffect_Value = m_pGameInstance->Rand(5, 10);
     else if (m_iRandomEffect_Type == 2 || m_iRandomEffect_Type == 3)
-        m_iRandomEffect_Value = (_int)m_pGameInstance->Rand(1, 3);
+        m_iRandomEffect_Value = m_pGameInstance->Rand(1, 3);
     else if (m_iRandomEffect_Type == 4)
-        m_iRandomEffect_Value = (_int)m_pGameInstance->Rand(50, 150);
+        m_iRandomEffect_Value = m_pGameInstance->Rand(50, 150);
     else if (m_iRandomEffect_Type == 5)
-        m_iRandomEffect_Value = (_int)m_pGameInstance->Rand(10, 20);
+        m_iRandomEffect_Value = m_pGameInstance->Rand(10, 20);
     else if (m_iRandomEffect_Type == 6)
-        m_iRandomEffect_Value = (_int)m_pGameInstance->Rand(50, 300);
+        m_iRandomEffect_Value = m_pGameInstance->Rand(50, 300);
     else if (m_iRandomEffect_Type == 7)
         m_iRandomEffect_Value = 1;
 }

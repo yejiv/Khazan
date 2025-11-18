@@ -54,7 +54,7 @@ void CLantern_Khazan_Spear::Update(_float fTimeDelta)
         m_fEquipTime2.x += fTimeDelta;
         if (m_fEquipTime2.x >= m_fEquipTime2.y)
         {
-            m_pGameInstance->Start_ShadowIntensityTransition(1.5f, 0.6f);
+            m_pGameInstance->Start_ShadowTransition(1.5f, 0.6f);
             m_pGameInstance->Set_LightEnable(TEXT("Lantern"), ENUM_CLASS(m_eCurrentLevel), false);
             m_isEnble = false;
             return;
@@ -129,7 +129,7 @@ void CLantern_Khazan_Spear::Set_Equipped(bool equip)
         m_isEnble = m_isEquip = true;
         m_fEquipTime1.x = 0.f;
         m_isEquiping = true;
-        m_pGameInstance->Start_ShadowIntensityTransition(1.5f, 1.f);
+        m_pGameInstance->Start_ShadowTransition(1.5f, 1.f);
         m_pGameInstance->Set_LightEnable(TEXT("Lantern"), ENUM_CLASS(m_eCurrentLevel), true);
     }
     else {

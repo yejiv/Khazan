@@ -6,7 +6,7 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CVIBuffer_Mesh_Instance final : public CVIBuffer_Instance
 {
 public:
-	enum CS_PASS { MOVE, GRAVITY, UPDATE_SPEED, RESET, RESET_SPEED, TURBULENCE, END };
+	enum CS_PASS { MOVE, GRAVITY, UPDATE_SPEED, RESET, RESET_SPEED, TURBULENCE, RESET_DEAD_FLAG, END };
 	enum class SPEED_VALUE { SPREAD_SPEED, ROTATION_SPEED, UPWARD_SPEED, SCALE_SPEED, SPEED_END };
 
 	typedef struct tagPointInstanceDesc : public INSTANCE_DESC
@@ -69,6 +69,7 @@ private:
 	ID3D11Buffer*				m_pStructuredBuffer = { nullptr };
 	ID3D11Buffer*				m_pSpeedBuffer = { nullptr };
 	ID3D11Buffer*				m_pStagingBuffer = { nullptr };
+	ID3D11Buffer*               m_pDebugInstanceBuffer = { nullptr };
 	//Debug
 	//ID3D11Buffer*				m_pDebugInstanceBuffer = { nullptr };
 	MESH_INSTANCE_PARAMS*		m_pParticleParams;

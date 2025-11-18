@@ -10,6 +10,7 @@ CEffect_Mesh_Instance::CEffect_Mesh_Instance(ID3D11Device* pDevice, ID3D11Device
 CEffect_Mesh_Instance::CEffect_Mesh_Instance(const CEffect_Mesh_Instance& Prototype)
     : CEffect_Element(Prototype)
     , m_sData{ Prototype.m_sData }
+    , m_bIsNormal {Prototype.m_bIsNormal}
 {
     m_pVIBufferCom = dynamic_cast<CVIBuffer_Mesh_Instance*>(Prototype.m_pVIBufferCom->Clone(nullptr));
 }
@@ -22,6 +23,7 @@ HRESULT CEffect_Mesh_Instance::Initialize_Prototype(void* pArg)
         return E_FAIL;
 
     m_sData = *static_cast<PARTICLE_DESC*>(pArg);
+    m_bIsNormal = (m_sData.sDissolveData.bIsDissolve == true && m_sData.sDissolveData.iDissolveTextureIdx > 4) ? 1 : 0;
 
     const char* NoiseFormat = "../Bin/Resources/Effect/Noise/Noise%d.png";
 
@@ -57,7 +59,7 @@ void CEffect_Mesh_Instance::Update(_float fTimeDelta)
     {
         it->fCurTime += fTimeDelta;
 
-        if(it->fCurTime > it->fDurTime && it->EventType != 0)
+        if(it->fCurTime > it->fDurTime && it->EventType != 1)
         {
             if (m_pVIBufferCom->isLoop() && m_TimeTracks.size() == 1)
             {
@@ -65,7 +67,7 @@ void CEffect_Mesh_Instance::Update(_float fTimeDelta)
                 continue;
             }
 
-            dynamic_cast<CVIBuffer_Mesh_Instance*>(m_pVIBufferCom)->Remove_Speed(CVIBuffer_Mesh_Instance::SPEED_VALUE(it->EventType - 1));
+            dynamic_cast<CVIBuffer_Mesh_Instance*>(m_pVIBufferCom)->Remove_Speed(CVIBuffer_Mesh_Instance::SPEED_VALUE(it->EventType));
             it = m_TimeTracks.erase(it);
         }
         else
@@ -82,14 +84,16 @@ void CEffect_Mesh_Instance::Update(_float fTimeDelta)
         m_pVIBufferCom->UpdateTurbulence(fTimeDelta, m_fAccTime);
 
     __super::Update(fTimeDelta);
-
-    //if (m_TimeTracks.size() == 0)
-    //    m_pVIBufferCom->Remove_Speed(); 
+     
 }
 
 void CEffect_Mesh_Instance::Late_Update(_float fTimeDelta)
 {
-    __super::Late_Update(fTimeDelta);
+    //__super::Late_Update(fTimeDelta);
+    if (m_bIsNormal)
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
+    else
+        __super::Late_Update(fTimeDelta);
 }
 
 HRESULT CEffect_Mesh_Instance::Render()
@@ -98,7 +102,10 @@ HRESULT CEffect_Mesh_Instance::Render()
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
-    m_pShaderCom->Begin((_uint)m_sData.bIsFresnel);
+    if (m_bIsNormal)
+        m_pShaderCom->Begin(2);
+    else
+        m_pShaderCom->Begin((_uint)m_sData.bIsFresnel);
 
     m_pVIBufferCom->Bind_Resources();
 
@@ -125,7 +132,7 @@ void CEffect_Mesh_Instance::SetSpreadData(void* pArg)
     m_pVIBufferCom->Setting_Speed(CVIBuffer_Mesh_Instance::SPEED_VALUE::SPREAD_SPEED, data.fSpreadSpeed);
     m_pVIBufferCom->Setting_Pivot(data.fPivot);
     m_sData.bGravity = data.bGravity;
-    SetData(ENUM_CLASS(data.eEventType), data.fDuration); 
+    SetData(ENUM_CLASS(CVIBuffer_Mesh_Instance::SPEED_VALUE::SPREAD_SPEED), data.fDuration);
 }
 
 void CEffect_Mesh_Instance::SetRotateData(void* pArg)
@@ -133,14 +140,14 @@ void CEffect_Mesh_Instance::SetRotateData(void* pArg)
     CEffect_Prefab::EFFECT_EVENT data = *static_cast<CEffect_Prefab::EFFECT_EVENT*>(pArg);
     m_pVIBufferCom->Setting_Speed(CVIBuffer_Mesh_Instance::SPEED_VALUE::ROTATION_SPEED, data.fRotationSpeed);
     m_pVIBufferCom->Setting_Pivot(data.fPivot);
-    SetData(ENUM_CLASS(data.eEventType),data.fDuration);
+    SetData(ENUM_CLASS(CVIBuffer_Mesh_Instance::SPEED_VALUE::ROTATION_SPEED),data.fDuration);
 }
 
 void CEffect_Mesh_Instance::SetTwinkleData(void* pArg)
 {
     CEffect_Prefab::EFFECT_EVENT data = *static_cast<CEffect_Prefab::EFFECT_EVENT*>(pArg);
     m_pVIBufferCom->Setting_Speed(CVIBuffer_Mesh_Instance::SPEED_VALUE::SCALE_SPEED, data.fScaleSpeed);
-    SetData(ENUM_CLASS(data.eEventType),data.fDuration);
+    SetData(ENUM_CLASS(CVIBuffer_Mesh_Instance::SPEED_VALUE::SCALE_SPEED),data.fDuration);
 }
 
 void CEffect_Mesh_Instance::SetUpwardData(void* pArg)
@@ -148,7 +155,7 @@ void CEffect_Mesh_Instance::SetUpwardData(void* pArg)
     CEffect_Prefab::EFFECT_EVENT data = *static_cast<CEffect_Prefab::EFFECT_EVENT*>(pArg);
     m_pVIBufferCom->Setting_Speed(CVIBuffer_Mesh_Instance::SPEED_VALUE::UPWARD_SPEED, data.fUpwardSpeed);
     m_sData.bGravity = data.bGravity;
-    SetData(ENUM_CLASS(data.eEventType),data.fDuration);
+    SetData(ENUM_CLASS(CVIBuffer_Mesh_Instance::SPEED_VALUE::UPWARD_SPEED),data.fDuration);
 }
 
 void CEffect_Mesh_Instance::SetScrollData(void* pArg)
@@ -175,6 +182,9 @@ HRESULT CEffect_Mesh_Instance::Ready_Component()
         TEXT("Com_TextureDissolve"), reinterpret_cast<CComponent**>(&m_pDissolveTextureCom), nullptr)))
         return E_FAIL;
 
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MeshEffect_Normal"),
+        TEXT("Com_TextureNormal"), reinterpret_cast<CComponent**>(&m_pNormalTextureCom), nullptr)))
+        return E_FAIL;
     return S_OK;
 }
 
@@ -225,9 +235,17 @@ HRESULT CEffect_Mesh_Instance::Bind_ShaderResources()
     
     if (FAILED(m_pMaskTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_MaskTexture", m_sData.iMaskTextureIdx)))
         return E_FAIL;
-
-    if (FAILED(m_pDissolveTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DissolveTexture", m_sData.sDissolveData.iDissolveTextureIdx)))
-        return E_FAIL;
+     
+    if (!m_bIsNormal)
+    {
+        if (FAILED(m_pDissolveTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DissolveTexture", m_sData.sDissolveData.iDissolveTextureIdx)))
+            return E_FAIL;
+    }
+    else
+    {
+        if (FAILED(m_pNormalTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_NormalTexture", m_sData.sDissolveData.iDissolveTextureIdx - 5)))
+            return E_FAIL;
+    }
 
     return S_OK;
 }
@@ -265,4 +283,5 @@ void CEffect_Mesh_Instance::Free()
     Safe_Release(m_pTextureCom);
     Safe_Release(m_pMaskTextureCom);
     Safe_Release(m_pVIBufferCom);
+    Safe_Release(m_pNormalTextureCom);
 }

@@ -25,9 +25,13 @@ public:
 private:
     _int                                m_iIndex = {};
     _int                                m_iSkillIndex = { -1};
-    class CUI_Atlas_Icon*               m_pIcon = { nullptr };
+    _uint                               m_iSkill = { 0 };
 
-    const _float*                             m_pGauge = { nullptr };
+    class CUI_Atlas_Icon*               m_pIcon = { nullptr };
+    class CUI_QuickSlot_Skill_Fx*       m_pFx = { nullptr };
+
+    const _float*                       m_pGauge = { nullptr };
+    _bool                               m_isInput = { false };
 private:
     HRESULT     						Ready_Children();
     void                                Skill_Equip(const EVENT_SKILL_SLOT& e);

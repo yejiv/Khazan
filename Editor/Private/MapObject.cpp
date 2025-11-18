@@ -3,12 +3,12 @@
 #include "GameInstance.h"
 
 CMapObject::CMapObject(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    : CGameObject { pDevice, pContext }
+    : CContainerObject { pDevice, pContext }
 {
 }
 
 CMapObject::CMapObject(const CMapObject& Prototype)
-    : CGameObject { Prototype }
+    : CContainerObject { Prototype }
 {
 }
 
@@ -41,14 +41,17 @@ HRESULT CMapObject::Initialize_Clone(void* pArg)
 
 void CMapObject::Priority_Update(_float fTimeDelta)
 {
+    __super::Priority_Update(fTimeDelta);
 }
 
 void CMapObject::Update(_float fTimeDelta)
 {
+    __super::Update(fTimeDelta);
 }
 
 void CMapObject::Late_Update(_float fTimeDelta)
 {
+    __super::Late_Update(fTimeDelta);
 }
 
 HRESULT CMapObject::Render()

@@ -11,6 +11,7 @@ public:
 	typedef struct BossMonUpdateTag
 	{
 		_bool isOpen;
+        _wstring wstrName;
 		const _float* pHpValue;
 		const _float* pHpMaxValue;
 		const _float* pStaminaCulValue;
@@ -39,6 +40,7 @@ private:
 
 	class CBossHp_Gauge*		m_pHPGauge = { nullptr };
 	class CBossHp_Gauge*		m_pStaminaGauge = { nullptr };
+    class CUI_TextBox*          m_pName = {nullptr};
 
 private:
 	virtual	HRESULT				Ready_Prototype();

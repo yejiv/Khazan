@@ -24,7 +24,7 @@ HRESULT CUI_Slot_Smoke::Initialize_Clone(void* pArg)
 
     if (FAILED(Ready_Component()))
         return E_FAIL;
-    m_vColor = { 1.f,1.f,1.f,0.4f };
+    m_vColor = { 1.f,1.f,1.f,0.45f };
     return S_OK;
 }
 void CUI_Slot_Smoke::Priority_Update(_float fTimeDelta)
@@ -39,6 +39,9 @@ void CUI_Slot_Smoke::Update(_float fTimeDelta)
 void CUI_Slot_Smoke::Late_Update(_float fTimeDelta)
 {
     m_fAccTime += fTimeDelta;
+    if (m_fAccTime > 1000.f)
+        m_fAccTime -= 1000.f;
+
     if (m_isVisible)
         CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
 }

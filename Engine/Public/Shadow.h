@@ -11,23 +11,17 @@ private:
 	virtual ~CShadow() = default;
 
 public:
-	HRESULT Initialize();
-	void Update(_float fTimeDelta);
+	HRESULT             Initialize();
+	void                Update(_float fTimeDelta);
 
 public:
-	HRESULT				Bind_ShadowDSV(_uint iIndex);
-	HRESULT				Bind_Shadow_ShaderResources(class CShader* pShader);
-	void				Clear_DSVs();
-	void				Start_ShadowIntensityTransition(_float fDuration, _float fTargetIntensity);
+    const _float4x4*    Get_ShadowLightMatrix(D3DTS eTransformState) const;
 
 public:
-	void				Set_CurrentCascade(_uint iIndex) { m_iCurrentCascade = iIndex; }
-	_uint				Get_NumCascades() { return m_Cascade.iNumCascades; }
-	const _float4x4*	Get_CurrentLightViewMatrix() const;
-	const _float4x4*	Get_CurrentLightProjMatrix() const;
-
-	CASCADE_CONFIG		Get_CascadeConfig() { return m_Config; }
-	void				Set_CascadeConfig(CASCADE_CONFIG Config);
+    HRESULT             Bind_Shadow_ShaderResources(class CShader* pShader);
+    void                Bind_ShadowDSV();
+    void                Start_ShadowTransition(_float fDuration, _float fTargetIntensity);
+    void                Clear_DSV();
 
 #ifdef _DEBUG
 public:
@@ -39,28 +33,22 @@ private:
 	ID3D11Device*						m_pDevice = { nullptr };
 	ID3D11DeviceContext*				m_pContext = { nullptr };
 	class CGameInstance*				m_pGameInstance = { nullptr };
+    ID3D11DepthStencilView*             m_pShadowDSV = { nullptr };
+    ID3D11ShaderResourceView*           m_pShadowSRV = { nullptr };
 
-	CASCADE_DATA						m_Cascade = {};		// Cascade 필수 구성 요소
-	CASCADE_CONFIG						m_Config = {};		// Cascade 수치 조절용 설정 정보
-
-	_uint								m_iCurrentCascade = {};
-	_float								m_fCameraNear{}, m_fCameraFar{};
-    _float4                             m_vFrustumWorldPoints[8] = {};
-    array<_float4, 8>                   m_FustumCorners = {};
+    _float4x4                           m_WorldMatrix = {};
+    _float4x4                           m_LightMatrices[ENUM_CLASS(D3DTS::END)] = {};
+    _float4                             m_vFrustumCorners[8] = {};
+    _float                              m_fCameraNear{}, m_fCameraFar{};
+    _float                              m_fSplit = {};
+    _float3                             m_vLightDir = {};
+    _float                              m_fBias = {};
+    _float                              m_fIntensity = {};
 
 	_bool								m_isTransition = {};
 	_float								m_fTransTimeAcc = {};
 	_float								m_fDuration = {};
 	_float								m_fTargetIntensity = {};
-
-private:
-	vector<ID3D11DepthStencilView*>		m_ShadowDSVs;
-	ID3D11ShaderResourceView*			m_pShadowSRVArray = { nullptr };
-
-#ifdef _DEBUG
-private:
-	vector<_float4x4>					m_WorldMatrices = {};
-#endif
 
 private:
 	HRESULT				Ready_ShaderResources();

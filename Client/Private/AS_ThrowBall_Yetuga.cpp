@@ -28,6 +28,7 @@ void CAS_ThrowBall_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _flo
     {
         CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
         pBB->Set_Value<_bool>("Yetuga", "isThrowBallFinished", true);
+        pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE),pOwner);
     }
 }
 

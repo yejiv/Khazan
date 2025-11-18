@@ -55,6 +55,7 @@ void CAS_JumpGrab_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
     if (pModel->Play_Animation(fTimeDelta))
     {
         pBB->Set_Value<_bool>(pYetuga->Get_Name(), "isJumpGrabFinished", true);
+        pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
     }
 
 }

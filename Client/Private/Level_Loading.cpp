@@ -106,6 +106,7 @@ void CLevel_Loading::Update(_float fTimeDelta)
 			pNewLevel = CLevel_Crevice::Create(m_pDevice, m_pContext);
 			break;
 		case LEVEL::EMBARS:
+            m_pGameInstance->CreateOctree({ 0.f, -30.f, 20.f }, 300.f, 3);
 			pNewLevel = CLevel_Embars::Create(m_pDevice, m_pContext);
 			break;
 		case LEVEL::VIPER:
@@ -463,6 +464,7 @@ HRESULT CLevel_Loading::Ready_ObjectLayer()
     m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
     m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::CAMERA), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
     m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MAP_STATIC_TRIGGER), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
+    m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MAP_MOVE_PLATFORM), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
 
 
     m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
@@ -498,11 +500,15 @@ HRESULT CLevel_Loading::Ready_ObjectLayer()
     m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MAP_STATIC_TRIGGER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
     m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MAP_STATIC_TRIGGER), ENUM_CLASS(JOLT_BP_LAYER::TRIGGER));
 
+    //MAP_MOVE_PLATFORM
+    m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MAP_MOVE_PLATFORM), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
+
 
 	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MONSTER));
     m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MAP_STATIC));
 	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT));
     m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MAP_STATIC_TRIGGER));
+    m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MAP_MOVE_PLATFORM));
 
     m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK), ENUM_CLASS(COLLISION_LAYER::MONSTER));
 

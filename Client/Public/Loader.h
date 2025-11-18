@@ -75,6 +75,14 @@ private:
 	HRESULT Loading_For_Crevice_GameObject();
 #pragma endregion
 
+#pragma region 엠바스
+    HRESULT Loading_For_Embars_Level();
+    HRESULT Loading_For_Embars_Texture();
+    HRESULT Loading_For_Embars_Model();
+    HRESULT Loading_For_Embars_Shader();
+    HRESULT Loading_For_Embars_GameObject();
+#pragma endregion
+
 #pragma region 바이퍼
 	HRESULT Loading_For_Viper_Level();
 	HRESULT Loading_For_Viper_Texture();
