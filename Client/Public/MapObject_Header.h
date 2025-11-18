@@ -23,6 +23,14 @@
 #include "BigChest.h"					// 상자
 #include "TombStone.h"					// 경계의 틈 툼스톤
 
+#include "ElevatorS.h"                  // 엘리베이터
+#include "Elevator_Gear.h"              // 엘리베이터 옆 기어
+#include "Slate_Switch.h"               // 엘리베이터 발판 스위치
+
+#include "Lever.h"                      // 레버 옆 기어 돌리는 레버
+#include "Lever_Gear.h"                 // 레버 옆 기어, 다 돌면 문쪽 기어 돌림
+#include "Door_Gear.h"                  // 레버 옆 기어, 다 돌면 문쪽 기어 돌림
+
 // Trigger
 #include "Trigger.h"
 #include "HeinMach_Trigger.h"
@@ -39,7 +47,7 @@
 
 #define CREVICE_SUBLV 2						// 경계의 틈 
 
-#define EMBARS_SUBLV 0
+#define EMBARS_SUBLV 2
 
 #define VIPER_SUBLV 1
 

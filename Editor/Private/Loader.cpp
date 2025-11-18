@@ -226,6 +226,35 @@ HRESULT CLoader::Loading_For_Map_Level()
 	/* Prototype_Component_Model_TombStone */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_TombStone"),
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_BigTombStone_Destruct_001/WIP_BGQ_BigTombStone_Destruct_001.dat")), E_FAIL);
+
+#pragma region 엘리베이터 ( 스몰 사이즈 )
+    /* Prototype_Component_Model_SmallElevator */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_SmallElevator"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_TDl_Elevator_Move_001_a/WIP_TDl_Elevator_Move_001_a.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_Elevator_Gear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_Elevator_Gear"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_TDl_Elevator_Turn_001/WIP_TDl_Elevator_Turn_001.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_Slate_Switch */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_Slate_Switch"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Slate_Switch_001/WIP_BGQ_Slate_Switch_001.dat")), E_FAIL);
+#pragma endregion
+
+#pragma region 레버, 기어
+    /* Prototype_Component_Model_Lever */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_Lever"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Gear_Switch_001/WIP_BGQ_Gear_Switch_001.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_Lever_Gear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_Lever_Gear"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Machine_Loop_001/WIP_BGQ_Machine_Loop_001.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_Door_Gear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_Door_Gear"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Gear_Loop_001/WIP_BGQ_Gear_Loop_001.dat")), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 트리거 모델 원형 ( 야매? )
@@ -310,9 +339,38 @@ HRESULT CLoader::Loading_For_Map_Level()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_BigChest"),
 		CBigChest::Create(m_pDevice, m_pContext)), E_FAIL);
 
-	/* Prototype_GameObject_Prop_TombStone */
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_TombStone"),
-		CTombStone::Create(m_pDevice, m_pContext)), E_FAIL);
+    /* Prototype_GameObject_Prop_TombStone */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_TombStone"),
+        CTombStone::Create(m_pDevice, m_pContext)), E_FAIL);
+
+#pragma region 엘리베이터 ( 스몰 사이즈 )
+    /* Prototype_GameObject_Prop_SmallElevator */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_SmallElevator"),
+        CElevatorS::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Elevator_Gear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Elevator_Gear"),
+        CElevator_Gear::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Slate_Switch */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Slate_Switch"),
+        CSlate_Switch::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 레버, 기어
+    /* Prototype_GameObject_Prop_Lever */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Lever"),
+        CLever::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Lever_Gear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Lever_Gear"),
+        CLever_Gear::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Door_Gear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Door_Gear"),
+        CDoor_Gear::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 게임오브젝트 원형 로딩 ( 트리거 및 몬스터 )
@@ -325,7 +383,7 @@ HRESULT CLoader::Loading_For_Map_Level()
 #pragma endregion
 
 #pragma region 게임오브젝트 원형 로딩 ( 데칼 )
-    /* Prototype_GameObject_Prop_Trigger */
+    /* Prototype_GameObject_Decal */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Decal"),
         CDecal::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
@@ -382,7 +440,7 @@ HRESULT CLoader::Loading_For_Effect_Level()
 
 	// Prototype_Component_Texture_MeshEffect(Diffuse)
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_Slash"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/SowardTrailTexture/Slash_%d.png"), 25))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/SowardTrailTexture/Slash_%d.png"), 27))))
 		return E_FAIL;
 
 	// Prototype_Component_Texture_MeshEffect(Masking)
@@ -392,8 +450,12 @@ HRESULT CLoader::Loading_For_Effect_Level()
 
 	// Prototype_Component_Texture_MeshEffect(Dissolve)
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_MeshEffect_Dissolve"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/Dissolve/Dissolve%d.png"), 3))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/Dissolve/Dissolve%d.png"), 5))))
 		return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_MeshEffect_Normal"),
+        CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/Normal/Normal%d.png"), 2))))
+        return E_FAIL;
 
 	// Prototype_Component_Texture_Terrain_Texture
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_Terrain_Effect"),
@@ -458,7 +520,7 @@ HRESULT CLoader::Loading_For_UI_Level()
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_Hud_Player_HPGauge_BG"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Hud/State/T_Hud_Hp_Bg_0%d.png"), 8))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Hud/State/T_Hud_Hp_Bg_0%d.png"), 9))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_Hud_ComBatSpirit"),

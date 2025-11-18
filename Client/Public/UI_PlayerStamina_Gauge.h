@@ -29,6 +29,8 @@ private:
 	CTexture*						m_pTextureCom = { nullptr };
 	CVIBuffer_Rect*					m_pVIBufferCom = { nullptr };
 
+    _float                          m_fDefaultValue = {};
+
     const _float*                   m_pMaxStamina = { nullptr };
     const _float*                   m_pCulStamina = { nullptr };
 private:

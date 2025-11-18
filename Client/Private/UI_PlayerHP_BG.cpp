@@ -2,6 +2,8 @@
 #include "GameInstance.h"
 #include "ClientInstance.h"
 
+#include "UI_Default_Tex.h"
+
 CUI_PlayerHP_BG::CUI_PlayerHP_BG(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
 {
@@ -35,6 +37,13 @@ void CUI_PlayerHP_BG::Priority_Update(_float fTimeDelta)
 
 void CUI_PlayerHP_BG::Update(_float fTimeDelta)
 {
+    _float fAddValue = *m_pMaxValue - m_fDefaultValue;
+    _float fSize = Clamp(fAddValue / m_fDefaultValue);
+
+    m_pTransformCom->Scale(_float3{ m_vLocalSize.x * (1.f + fSize), m_vLocalSize.y, 1.f });
+
+    m_pBG_L->Set_PosX(-m_vLocalSize.x * (1.f + fSize) * 0.5f - 27.f, this);
+    m_pBG_R->Set_PosX(m_vLocalSize.x * (1.f + fSize) * 0.5f + 27.f, this);
 	__super::Update(fTimeDelta);
 }
 
@@ -89,6 +98,32 @@ HRESULT CUI_PlayerHP_BG::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelI
 	if (FAILED(__super::Load_UI(pInData, iPrototypeLevelID, pArg)))
 		return E_FAIL;
 	
+    if (m_szName == "HUD_HP_BG_TOP")
+    {
+        m_fDefaultValue = CClientInstance::GetInstance()->Get_PlayerData().fMaxHp;
+        m_pMaxValue = &CClientInstance::GetInstance()->Get_PlayerData().fMaxHp;
+    }
+    else if (m_szName == "HUD_Stamina_BG_Bottom")
+    {
+        m_fDefaultValue = CClientInstance::GetInstance()->Get_PlayerData().fMaxStamina;
+        m_pMaxValue = &CClientInstance::GetInstance()->Get_PlayerData().fMaxStamina;
+    }
+
+    for (auto pChild : m_Children)
+    {
+        string strName = pChild->Get_Name();
+
+        if (strName == "HUD_HP_TOP_L" || strName == "HUD_HP_BOTTOM_L")
+        {
+            m_pBG_L = static_cast<CUI_Default_Tex*>(pChild);
+            Safe_AddRef(m_pBG_L);
+        }
+        else if (strName == "HUD_HP_TOP_R" || strName == "HUD_HP_BOTTOM_R")
+        {
+            m_pBG_R = static_cast<CUI_Default_Tex*>(pChild);
+            Safe_AddRef(m_pBG_R);
+        }
+    }
 	return S_OK;
 }
 
@@ -135,4 +170,6 @@ void CUI_PlayerHP_BG::Free()
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pVIBufferCom);
 
+    Safe_Release(m_pBG_L);
+    Safe_Release(m_pBG_R);
 }

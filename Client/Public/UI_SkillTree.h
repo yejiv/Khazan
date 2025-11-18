@@ -33,7 +33,9 @@ public:
 	virtual	HRESULT						Update_Switch(void* pArg);
 private:
 	class CUI_BackGround*				m_pBackGround = { nullptr };
-	vector<class CSkill_Tap*>			m_SkillTap;
+	class CCursor_Circle_Fx*            m_pCircle_Fx = {nullptr };
+    class CSkill_BG_Smoke*              m_pBG_Smoke = { nullptr };
+    vector<class CSkill_Tap*>			m_SkillTap;
 	
 	_float								m_fAccTime = {};
 	UIANIMSTATE							m_eAnimState = { UIANIMSTATE::END };

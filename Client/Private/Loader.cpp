@@ -152,6 +152,9 @@ HRESULT CLoader::Loading()
 	case LEVEL::CREVICE:
 		break;
 	case LEVEL::EMBARS:
+        m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+            return Loading_For_Embars_Level();
+            }));
 		break;
 	case LEVEL::VIPER:
 		m_futures.push_back(m_pGameInstance->Add_Task([this]() {
@@ -481,6 +484,21 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
 	/* Prototype_Component_Model_BigChest */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_BigChest"),
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_BigChest_Open_003/WIP_COM_BigChest_Open_003.dat")), E_FAIL);
+
+#pragma region 엘리베이터 ( 스몰 사이즈 )
+    /* Prototype_Component_Model_SmallElevator */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_SmallElevator"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_TDl_Elevator_Move_001_a/WIP_TDl_Elevator_Move_001_a.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_Elevator_Gear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Elevator_Gear"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_TDl_Elevator_Turn_001/WIP_TDl_Elevator_Turn_001.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_Slate_Switch */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Slate_Switch"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Slate_Switch_001/WIP_BGQ_Slate_Switch_001.dat")), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region �� ���� : Ʈ����
@@ -543,7 +561,6 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Yetuga_Breath"),
         CProjectile_Breath_Yetuga::Create(m_pDevice, m_pContext))))
         return E_FAIL;
-
 
 #pragma endregion
 
@@ -621,6 +638,21 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
 	/* Prototype_GameObject_Prop_BigChest */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_BigChest"),
 		CBigChest::Create(m_pDevice, m_pContext)), E_FAIL);
+
+#pragma region 엘리베이터 ( 스몰 사이즈 )
+    /* Prototype_GameObject_Prop_SmallElevator */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_SmallElevator"),
+        CElevatorS::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Elevator_Gear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Elevator_Gear"),
+        CElevator_Gear::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Slate_Switch */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Slate_Switch"),
+        CSlate_Switch::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region ���� ������Ʈ ���� : Ʈ����
@@ -733,7 +765,7 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Breath"))))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Focus"),
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Focus"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_Focus"))))
         return E_FAIL;
 
@@ -741,6 +773,14 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Snow"))))
         return E_FAIL;
 
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Ice"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_Ice"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Ice_Disappear"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_Ice_Disappear"))))
+        return E_FAIL;
+    
 #pragma endregion
 
 #pragma region Shader
@@ -885,6 +925,260 @@ HRESULT CLoader::Loading_For_Crevice_GameObject()
 	return S_OK;
 }
 
+HRESULT CLoader::Loading_For_Embars_Level()
+{
+    m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+        return Loading_For_Embars_Texture();
+        }));
+    m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+        return Loading_For_Embars_Model();
+        }));
+    m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+        return Loading_For_Embars_Shader();
+        }));
+    m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+        return Loading_For_Embars_GameObject();
+        }));
+    m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+        CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
+        }));
+    m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+        CHECK_FAILED(Loading_Prototype_MapObject_Inst_From_DAT(TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
+        }));
+
+    return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Embars_Texture()
+{
+    return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Embars_Model()
+{
+#pragma region KHAZAN
+    /* Prototype_Component_Model_Khazan_Lantern*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Lantern"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/APC/Lantern/Lantern.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Spear_Khazan_Sample*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Spear_Khazan_Sample"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Spear/Spear.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Spear*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Spear"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Spear/Khazan_Spear.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Torso1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Prisoner_Torso1/Prisoner_Torso1.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_Khazan_Prisoner_Torso2*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso2"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Prisoner_Torso2/Prisoner_Torso2.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_Khazan_Prisoner_Torso3*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso3"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Prisoner_Torso3/Prisoner_Torso3.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Shoes1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Prisoner_Shoes1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Prisoner_Shoes1/Prisoner_Shoes1.dat"))))
+        return E_FAIL;
+    ///* Prototype_Component_Model_Khazan_Prisoner_Shoes2*/
+    //if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Prisoner_Shoes2"),
+    //	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Prisoner_Shoes2/Prisoner_Shoes2.dat"))))
+    //	return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Leg1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Prisoner_Leg1/Prisoner_Leg1.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_Khazan_Prisoner_Leg2*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg2"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Prisoner_Leg2/Prisoner_Leg2.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_Khazan_Prisoner_Leg3*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg3"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Prisoner_Leg3/Prisoner_Leg3.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Hair1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Prisoner_Hair1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Prisoner_Hair1/Prisoner_Hair1.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Face1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Prisoner_Face1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Face/Prisoner_Face1/Prisoner_Face1.dat"))))
+        return E_FAIL;
+
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Arm1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Prisoner_Arm1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Prisoner_Arm1/Prisoner_Arm1.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Arm2*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Prisoner_Arm2"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Prisoner_Arm2/Prisoner_Arm2.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_DanJin_Hair*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_DanJin_Hair"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Danjin_Hair/Danjin_Hair/Danjin_Hair.dat"))))
+        return E_FAIL;
+#pragma endregion
+
+#pragma region 상호작용 오브젝
+    /* Prototype_Component_Model_BigChest */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_BigChest"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_BigChest_Open_003/WIP_COM_BigChest_Open_003.dat")), E_FAIL);
+
+#pragma region 엘리베이터 ( 스몰 사이즈 )
+    /* Prototype_Component_Model_SmallElevator */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_SmallElevator"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_TDl_Elevator_Move_001_a/WIP_TDl_Elevator_Move_001_a.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_Elevator_Gear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Elevator_Gear"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_TDl_Elevator_Turn_001/WIP_TDl_Elevator_Turn_001.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_Slate_Switch */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Slate_Switch"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Slate_Switch_001/WIP_BGQ_Slate_Switch_001.dat")), E_FAIL);
+#pragma endregion
+
+#pragma region 레버, 기어
+    /* Prototype_Component_Model_Lever */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Lever"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Gear_Switch_001/WIP_BGQ_Gear_Switch_001.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_Lever_Gear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Lever_Gear"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Machine_Loop_001/WIP_BGQ_Machine_Loop_001.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_Door_Gear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Door_Gear"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Gear_Loop_001/WIP_BGQ_Gear_Loop_001.dat")), E_FAIL);
+#pragma endregion
+
+#pragma endregion
+
+#pragma region 트리거
+    /* Prototype_Component_Model_Trigger */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Trigger"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Base/Cube/Cube.dat")), E_FAIL);
+#pragma endregion
+
+    return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Embars_Shader()
+{
+    return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Embars_GameObject()
+{
+    /* Prototype_GameObject_Camera_Compre */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Camera_Compre"),
+        CCamera_Compre::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+#pragma region 맵 오브젝트 원형
+    /* Prototype_GameObject_Prop_Object */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Object"),
+        CProp_Object::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Static */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Static"),
+        CProp_Static::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 게임오브젝트 원형 로딩 ( 상호 작용 객체 )
+    /* Prototype_GameObject_Prop_BladeNexus */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_BladeNexus"),
+        CBladeNexus::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_BigChest */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_BigChest"),
+        CBigChest::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_TombStone */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_TombStone"),
+        CTombStone::Create(m_pDevice, m_pContext)), E_FAIL);
+
+#pragma region 엘리베이터 ( 스몰 사이즈 )
+    /* Prototype_GameObject_Prop_SmallElevator */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_SmallElevator"),
+        CElevatorS::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Elevator_Gear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Elevator_Gear"),
+        CElevator_Gear::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Slate_Switch */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Slate_Switch"),
+        CSlate_Switch::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 레버, 기어
+    /* Prototype_GameObject_Prop_Lever */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Lever"),
+        CLever::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Lever_Gear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Lever_Gear"),
+        CLever_Gear::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Door_Gear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Door_Gear"),
+        CDoor_Gear::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma endregion
+
+#pragma region 게임오브젝트 원형 로딩 ( 트리거 및 몬스터 )
+    /* Prototype_GameObject_Prop_Trigger */
+    // CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Trigger"),
+    //     CTrigger::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 게임오브젝트 원형 로딩 ( 데칼 )
+    /* Prototype_GameObject_Decal */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Decal"),
+        CDecal::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+
+    /* Prototype_GameObject_Khazan_Spear */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Khazan_Spear"),
+        CKhazan_Spear::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    /* Prototype_GameObject_Body_Khazan_Spear */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Body_Khazan_Spear"),
+        CBody_Khazan_Spear::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    /* Prototype_GameObject_Spear_Khazan_Spear */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Spear_Khazan_Spear"),
+        CSpear_Khazan_Spear::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    /* Prototype_GameObject_Lantern_Khazan_Spear */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Lantern_Khazan_Spear"),
+        CLantern_Khazan_Spear::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    return S_OK;
+}
+
 HRESULT CLoader::Loading_For_Viper_Level()
 {
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
@@ -949,10 +1243,6 @@ HRESULT CLoader::Loading_For_Viper_Model()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Shoes1"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Prisoner_Shoes1/Prisoner_Shoes1.dat"))))
 		return E_FAIL;
-	///* Prototype_Component_Model_Khazan_Prisoner_Shoes2*/
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Shoes2"),
-	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Prisoner_Shoes2/Prisoner_Shoes2.dat"))))
-	//	return E_FAIL;
 
 	/* Prototype_Component_Model_Khazan_Prisoner_Leg1*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg1"),
@@ -989,7 +1279,7 @@ HRESULT CLoader::Loading_For_Viper_Model()
 		return E_FAIL;
 #pragma endregion
 
-#pragma region �� ���� : ��ȣ �ۿ� �� ������Ʈ
+#pragma region 상호작용 오브젝
 	/* Prototype_Component_Model_BladeNexus */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_BladeNexus"),
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_DamagedTS/WIP_COM_DamagedTS.dat")), E_FAIL);
@@ -999,7 +1289,7 @@ HRESULT CLoader::Loading_For_Viper_Model()
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_BigChest_Open_003/WIP_COM_BigChest_Open_003.dat")), E_FAIL);
 #pragma endregion
 
-#pragma region �� ���� : Ʈ����
+#pragma region 트리거
 	/* Prototype_Component_Model_Trigger */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Trigger"),
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Base/Cube/Cube.dat")), E_FAIL);

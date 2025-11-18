@@ -18,25 +18,25 @@ CVIBuffer_Mesh_Instance::CVIBuffer_Mesh_Instance(const CVIBuffer_Mesh_Instance& 
 
 void CVIBuffer_Mesh_Instance::Reset()
 {
-	COMPUTE_PASS_DESC PassDesc{};
-	PassDesc.SRVs.push_back(m_pSRV);
-	PassDesc.UAVs.push_back(m_pUAV);
-	PassDesc.UAVs.push_back(m_pUAVSpeed);
-	PassDesc.ConstantBuffers.push_back(m_pCB);
-	_uint iNumThreadPerGroup = 256;
-	_uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
-	PassDesc.x = iNumGroups;
-	PassDesc.y = 1;
-	PassDesc.z = 1;
+    COMPUTE_PASS_DESC PassDesc{};
+    PassDesc.SRVs.push_back(m_pSRV);
+    PassDesc.UAVs.push_back(m_pUAV);
+    PassDesc.UAVs.push_back(m_pUAVSpeed);
+    PassDesc.ConstantBuffers.push_back(m_pCB);
+    _uint iNumThreadPerGroup = 256;
+    _uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
+    PassDesc.x = iNumGroups;
+    PassDesc.y = 1;
+    PassDesc.z = 1;
 
-	CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
-	JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET)];
-	JobDesc.PassDesc = PassDesc;
+    CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
+    JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET)];
+    JobDesc.PassDesc = PassDesc;
+
     m_bLoop = m_sData.bIsLoop;
+    m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
 
-	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc);
-
-	m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
+    m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
 }
 
 HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
@@ -88,7 +88,9 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 	for (_uint i = 0; i < m_iNumVertices; ++i)
 	{
 		memcpy(&pVertices[i].vPosition, &tMeshInfo.vecVertices[i].position, sizeof(_float3));
-		memcpy(&pVertices[i].vNormal, &tMeshInfo.vecVertices[i].normal, sizeof(_float3));
+		memcpy(&pVertices[i].vNormal, &tMeshInfo.vecVertices[i].normal, sizeof(_float3)); 
+		memcpy(&pVertices[i].vTangent, &tMeshInfo.vecVertices[i].tangent, sizeof(_float3)); 
+		memcpy(&pVertices[i].vBinormal, &tMeshInfo.vecVertices[i].binormal, sizeof(_float3)); 
 		memcpy(&pVertices[i].vTexcoord, &tMeshInfo.vecVertices[i].texcoord, sizeof(_float2));
 
 		m_pVertexPositions[i] = pVertices[i].vPosition;
@@ -359,25 +361,38 @@ void CVIBuffer_Mesh_Instance::Remove_Speed(SPEED_VALUE type)
 	JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET_SPEED)];
 	JobDesc.PassDesc = PassDesc;
 
-	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc);
+	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
+    m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
 }
 
 void CVIBuffer_Mesh_Instance::Remove_Speed()
 {
-	COMPUTE_PASS_DESC PassDesc{};
-	PassDesc.UAVs.push_back(m_pUAV);
-	PassDesc.UAVs.push_back(m_pUAVSpeed);
-	_uint iNumThreadPerGroup = 256;
-	_uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
-	PassDesc.x = iNumGroups;
-	PassDesc.y = 1;
-	PassDesc.z = 1;
+    D3D11_MAPPED_SUBRESOURCE SubResource;
+    if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
+    {
+        POINT_INSTANCE_CB* pInstanceSpeedCB = reinterpret_cast<POINT_INSTANCE_CB*>(SubResource.pData);
+        pInstanceSpeedCB->iSpeedType = 4;
+        pInstanceSpeedCB->iNumInstances = m_iNumInstance;
+        m_pContext->Unmap(m_pCB, 0);
+    }
 
-	CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
-	JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET)];
-	JobDesc.PassDesc = PassDesc;
+    COMPUTE_PASS_DESC PassDesc{};
+    PassDesc.SRVs.push_back(m_pSRV);
+    PassDesc.UAVs.push_back(m_pUAV);
+    PassDesc.UAVs.push_back(m_pUAVSpeed);
+    PassDesc.ConstantBuffers.push_back(m_pCB);
+    _uint iNumThreadPerGroup = 256;
+    _uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
+    PassDesc.x = iNumGroups;
+    PassDesc.y = 1;
+    PassDesc.z = 1;
 
-	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc);
+    CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
+    JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET_SPEED)];
+    JobDesc.PassDesc = PassDesc;
+
+    m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
+    m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
 }
 
 void CVIBuffer_Mesh_Instance::Setting_Pivot(_float3 pivot)
@@ -388,17 +403,17 @@ HRESULT CVIBuffer_Mesh_Instance::Bind_Resources()
 {
 	__super::Bind_Resources();
 
-	//m_pContext->CopyResource(m_pDebugInstanceBuffer, m_pVBInstance);
-	//
-	//D3D11_MAPPED_SUBRESOURCE mappedResource;
-	//HRESULT hr = m_pContext->Map(m_pDebugInstanceBuffer, 0, D3D11_MAP_READ, 0, &mappedResource);
-	//
-	//if (SUCCEEDED(hr))
-	//{
-	//	IB_MESHINSTANCE_EFFECT* pParticles = (IB_MESHINSTANCE_EFFECT*)mappedResource.pData;
-	//
-	//	m_pContext->Unmap(m_pDebugInstanceBuffer, 0);
-	//}
+	m_pContext->CopyResource(m_pDebugInstanceBuffer, m_pVBInstance);
+	
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	HRESULT hr = m_pContext->Map(m_pDebugInstanceBuffer, 0, D3D11_MAP_READ, 0, &mappedResource);
+	
+	if (SUCCEEDED(hr))
+	{
+		IB_MESHINSTANCE_EFFECT* pParticles = (IB_MESHINSTANCE_EFFECT*)mappedResource.pData;
+	
+		m_pContext->Unmap(m_pDebugInstanceBuffer, 0);
+	}
 
 	return S_OK;;
 }
@@ -487,18 +502,18 @@ HRESULT CVIBuffer_Mesh_Instance::Ready_UAV()
 		return E_FAIL;
 
 	// [Debug]
-	//D3D11_BUFFER_DESC DebugBufferDesc{};
-	//m_pVBInstance->GetDesc(&DebugBufferDesc);
-	//
-	//DebugBufferDesc.Usage = D3D11_USAGE_STAGING;     // 용도를 스테이징으로 변경
-	//DebugBufferDesc.BindFlags = 0;                   // GPU가 바인딩하지 않음
-	//DebugBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ; // CPU가 읽을 수 있게 설정
-	//DebugBufferDesc.MiscFlags = 0;
-	//
-	//D3D11_SUBRESOURCE_DATA DebugInitData{};
-	//DebugInitData.pSysMem = m_pInstanceVertices;
-	//if (FAILED(m_pDevice->CreateBuffer(&DebugBufferDesc, &DebugInitData, &m_pDebugInstanceBuffer)))
-	//	return E_FAIL;
+	D3D11_BUFFER_DESC DebugBufferDesc{};
+	m_pVBInstance->GetDesc(&DebugBufferDesc);
+	
+	DebugBufferDesc.Usage = D3D11_USAGE_STAGING;     // 용도를 스테이징으로 변경
+	DebugBufferDesc.BindFlags = 0;                   // GPU가 바인딩하지 않음
+	DebugBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ; // CPU가 읽을 수 있게 설정
+	DebugBufferDesc.MiscFlags = 0;
+	
+	D3D11_SUBRESOURCE_DATA DebugInitData{};
+	DebugInitData.pSysMem = m_pInstanceVertices;
+	if (FAILED(m_pDevice->CreateBuffer(&DebugBufferDesc, &DebugInitData, &m_pDebugInstanceBuffer)))
+		return E_FAIL;
 	
 	return S_OK;
 }
@@ -545,23 +560,44 @@ HRESULT CVIBuffer_Mesh_Instance::Ready_ComputeShader()
 	if (nullptr == m_ComputeShaders[ENUM_CLASS(CS_PASS::TURBULENCE)])
 		return E_FAIL;
 
+    m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET_DEAD_FLAG)] = CComputeShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Model_Instance_Compute.hlsl"), "CS_RESET_DEAD_FLAG");
+    if (nullptr == m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET_DEAD_FLAG)])
+        return E_FAIL;
+
 	return S_OK;
 }
 _bool CVIBuffer_Mesh_Instance::IsFinish()
 { 
-	m_pContext->CopyResource(m_pStagingBuffer, m_pSpeedBuffer);
+    _bool flag = false;
 
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	if (SUCCEEDED(m_pContext->Map(m_pStagingBuffer, 0, D3D11_MAP_READ, 0, &mappedResource)))
-	{
-		POINT_INSTANCE_SPEED_PARAMS aliveCount = *reinterpret_cast<POINT_INSTANCE_SPEED_PARAMS*>(mappedResource.pData);
-		m_pContext->Unmap(m_pStagingBuffer, 0);
+    m_pContext->CopyResource(m_pStagingBuffer, m_pSpeedBuffer);
 
-		if (aliveCount.bDead)
-			return true;
-	}
+    D3D11_MAPPED_SUBRESOURCE mappedResource;
+    if (SUCCEEDED(m_pContext->Map(m_pStagingBuffer, 0, D3D11_MAP_READ, 0, &mappedResource)))
+    {
+        POINT_INSTANCE_SPEED_PARAMS aliveCount = *reinterpret_cast<POINT_INSTANCE_SPEED_PARAMS*>(mappedResource.pData);
+        m_pContext->Unmap(m_pStagingBuffer, 0);
 
-	return false;
+        if (aliveCount.bDead)
+            flag = true;
+    }
+
+    COMPUTE_PASS_DESC PassDesc{};
+    PassDesc.UAVs.push_back(m_pUAV);
+    PassDesc.UAVs.push_back(m_pUAVSpeed);
+    _uint iNumThreadPerGroup = 256;
+    _uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
+    PassDesc.x = iNumGroups;
+    PassDesc.y = 1;
+    PassDesc.z = 1;
+
+    CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
+    JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET_DEAD_FLAG)];
+    JobDesc.PassDesc = PassDesc;
+
+    m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
+
+    return flag;
 }
 CVIBuffer_Mesh_Instance* CVIBuffer_Mesh_Instance::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, INSTANCE_DESC* pArg)
 {
