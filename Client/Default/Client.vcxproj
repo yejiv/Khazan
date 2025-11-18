@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -173,6 +173,7 @@
     <ClInclude Include="..\Public\AS_Attack_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_Boomarang_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_ChainSmash_Imp_Melee.h" />
+    <ClInclude Include="..\Public\AS_CutScene_Yetuga.h" />
     <ClInclude Include="..\Public\AS_DashAttack_Imp_Melee.h" />
     <ClInclude Include="..\Public\AS_Dead_Imp_Melee.h" />
     <ClInclude Include="..\Public\AS_Dead_Imp_Range.h" />
@@ -210,11 +211,16 @@
     <ClInclude Include="..\public\BladeNexus_List.h" />
     <ClInclude Include="..\public\BladeNexus_Map_BG.h" />
     <ClInclude Include="..\Public\Body_Imp_Melee.h" />
+    <ClInclude Include="..\Public\Door_Gear.h" />
+    <ClInclude Include="..\Public\ElevatorS.h" />
+    <ClInclude Include="..\Public\Elevator_Gear.h" />
     <ClInclude Include="..\public\Cursor_Circle_Fx.h" />
     <ClInclude Include="..\Public\FSM_Imp_Melee.h" />
     <ClInclude Include="..\Public\Imp_Melee.h" />
     <ClInclude Include="..\Public\Imp_Sword.h" />
     <ClInclude Include="..\public\ItemInfo_RandomEffect.h" />
+    <ClInclude Include="..\Public\Lever.h" />
+    <ClInclude Include="..\Public\Lever_Gear.h" />
     <ClInclude Include="..\Public\LoadingObj_BN.h" />
     <ClInclude Include="..\public\Inven_State_Panel.h" />
     <ClInclude Include="..\public\Lantern_Khazan_Spear.h" />
@@ -222,6 +228,7 @@
     <ClInclude Include="..\public\Khazan_Spaer_Anim_Damaged.h" />
     <ClInclude Include="..\public\Skill_BG_Smoke.h" />
     <ClInclude Include="..\public\Skill_Slot_Flag.h" />
+    <ClInclude Include="..\Public\Slate_Switch.h" />
     <ClInclude Include="..\public\UI_BladeNexus_Map.h" />
     <ClInclude Include="..\public\BladeNexus_Map_List.h" />
     <ClInclude Include="..\Public\Body_Gomdol.h" />
@@ -428,6 +435,7 @@
     <ClCompile Include="..\Private\AS_Attack_Imp_Range.cpp" />
     <ClCompile Include="..\Private\AS_Boomarang_Imp_Range.cpp" />
     <ClCompile Include="..\Private\AS_ChainSmash_Imp_Melee.cpp" />
+    <ClCompile Include="..\Private\AS_CutScene_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_DashAttack_Imp_Melee.cpp" />
     <ClCompile Include="..\Private\AS_Dead_Imp_Melee.cpp" />
     <ClCompile Include="..\Private\AS_Dead_Imp_Range.cpp" />
@@ -466,11 +474,16 @@
     <ClCompile Include="..\private\BladeNexus_List.cpp" />
     <ClCompile Include="..\private\BladeNexus_Map_BG.cpp" />
     <ClCompile Include="..\Private\Body_Imp_Melee.cpp" />
+    <ClCompile Include="..\Private\Door_Gear.cpp" />
+    <ClCompile Include="..\Private\ElevatorS.cpp" />
+    <ClCompile Include="..\Private\Elevator_Gear.cpp" />
     <ClCompile Include="..\private\Cursor_Circle_Fx.cpp" />
     <ClCompile Include="..\Private\FSM_Imp_Melee.cpp" />
     <ClCompile Include="..\Private\Imp_Melee.cpp" />
     <ClCompile Include="..\Private\Imp_Sword.cpp" />
     <ClCompile Include="..\private\ItemInfo_RandomEffect.cpp" />
+    <ClCompile Include="..\Private\Lever.cpp" />
+    <ClCompile Include="..\Private\Lever_Gear.cpp" />
     <ClCompile Include="..\Private\LoadingObj_BN.cpp" />
     <ClCompile Include="..\private\Inven_State_Panel.cpp" />
     <ClCompile Include="..\private\Lantern_Khazan_Spear.cpp" />
@@ -478,6 +491,7 @@
     <ClCompile Include="..\private\Khazan_Spaer_Anim_Damaged.cpp" />
     <ClCompile Include="..\private\Skill_BG_Smoke.cpp" />
     <ClCompile Include="..\private\Skill_Slot_Flag.cpp" />
+    <ClCompile Include="..\Private\Slate_Switch.cpp" />
     <ClCompile Include="..\private\UI_BladeNexus_Map.cpp" />
     <ClCompile Include="..\private\BladeNexus_Map_List.cpp" />
     <ClCompile Include="..\Private\Body_Gomdol.cpp" />

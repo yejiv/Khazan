@@ -111,6 +111,9 @@ private:
     vector<class CGameObject*> m_CollMonsters;
     class CGameObject* m_pLockMonster = { nullptr };
     _float4* m_pLockOnPos = {};
+    _uint m_iLockOrder = {};
+    _float m_fSmoothingVelocityYaw = {};
+    _float m_fSmoothingVelocityPitch = {};
     class CTarget_LockOn* m_pLockOnUI = { nullptr };
 
     // LockOn 보정

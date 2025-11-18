@@ -267,7 +267,7 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             m_pGameInstance->Start_FogTransition(5.f, Desc);
 
             // 그림자 보간 추가
-            m_pGameInstance->Start_ShadowIntensityTransition(5.f, 1.f);
+            m_pGameInstance->Start_ShadowTransition(5.f, 1.f);
 
             Start_SkyTransition(m_Sky_Desc, m_Cloud_Desc, 5.f);
 
@@ -313,7 +313,7 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             m_pGameInstance->Start_FogTransition(15.f, Desc);
 
             // 그림자 보간 추가
-            m_pGameInstance->Start_ShadowIntensityTransition(15.f, 0.6f);
+            m_pGameInstance->Start_ShadowTransition(15.f, 0.6f);
 
 #pragma region 동굴 나갈때 플레이어 isInCave = false;
 
@@ -341,7 +341,7 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             m_pGameInstance->Start_FogTransition(5.f, Desc);
 
             // 그림자 보간 추가
-            m_pGameInstance->Start_ShadowIntensityTransition(5.f, 0.6f);
+            m_pGameInstance->Start_ShadowTransition(5.f, 0.6f);
 
 #pragma region 동굴 나갈때 ( 역방향 ) 플레이어 isInCave = false;
 
@@ -379,7 +379,7 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             m_pGameInstance->Start_FogTransition(2.f, Desc);
 
             // 그림자 보간 추가
-            m_pGameInstance->Start_ShadowIntensityTransition(7.f, 1.f);
+            m_pGameInstance->Start_ShadowTransition(7.f, 1.f);
 
 #pragma region 동굴 들어갈때 ( 역방향 ) 플레이어 isInCave = true;
 

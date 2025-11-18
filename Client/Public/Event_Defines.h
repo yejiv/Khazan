@@ -13,6 +13,8 @@ namespace Client {
         ANNOUNCE_RESULT,
         ANNOUNCE_OVER,
         SKILL_QUICKSLOT,
+        GATE_GEAR0,
+        GATE_GEAR1,
         SKILL_RESET,
 		END };
 
@@ -79,7 +81,26 @@ namespace Client {
 
     struct EventCave
     {
-        bool isInCave = { false };
+        bool isInCave{ false };
+    };
+
+    struct EventLever
+    {
+        enum LEVER_STATE { ACTIVE, DEACTIVE, NONE };
+        XMFLOAT4 vPosition{};
+        XMFLOAT4 vPlayerPosition{};
+        LEVER_STATE eState{ LEVER_STATE::NONE };
+    };
+
+    struct EventGateGear
+    {
+        bool isActiveLever{ false };
+        bool isActiveGear1{ false };
+        bool isActiveGear2{ false };
+
+        bool isFirstStep() { return true == isActiveLever; }
+        bool isSecondStep() { return (true == isActiveLever && true == isActiveGear1); }
+        bool isFinal() { return true == isActiveGear2; }
     };
 
     //상호작용 오브젝트 어떤 종류인지 받아오는 이벤트 구조체(오브젝트->플레이어)
@@ -93,6 +114,7 @@ namespace Client {
 		EventChest ChestEvent{};
 		EventTombStone TSEvent{};
         EventCave CaveEvent{};
+        EventLever LeverEvent{};
 
 		void End_Event() { isEvent = false; }
 

@@ -2,7 +2,6 @@
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 matrix g_LightViewMatrix, g_LightProjMatrix;
-float g_Splits[4];
 
 Texture2D g_DiffuseTexture, g_NormalTexture, g_SpecularTexture;
 
@@ -396,11 +395,13 @@ PS_OUT PS_BLADENEXUS(PS_IN In)
     return Out;
 }
 
-PS_OUT PS_TOMBSTONE(PS_IN In)
+PS_OUT PS_MAP_ANIM(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
-    
-    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+    vector vMtrlDiffuse = float4(0.f, 0.f, 0.f, 0.f);
+    if (true == g_isDiffuse)
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
 
     if (vMtrlDiffuse.a < 0.3f)
         discard;
@@ -567,8 +568,8 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_BLADENEXUS();
     }
 
-    // 툼스톤 패스        ( 9번 )
-    pass TombStonePass
+    // 맵 애님 패스        ( 9번 )
+    pass MapAnimPass
     {
 
         SetRasterizerState(RS_Default);
@@ -577,7 +578,7 @@ technique11 DefaultTechnique
 
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_TOMBSTONE();
+        PixelShader = compile ps_5_0 PS_MAP_ANIM();
     }
 
     // 렌턴 패스        ( 10번 )

@@ -39,7 +39,7 @@ void CLevel_Title::Update(_float fTimeDelta)
 	{
 		if (!m_isOpenLevel) {
 
-			if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::TEST))))
+			if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EMBARS))))
 				return;
 
 			m_isOpenLevel = true;
