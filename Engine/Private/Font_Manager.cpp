@@ -80,6 +80,14 @@ HRESULT CFont_Manager::Draw_TextBox(const _wstring& strFontTag, const _wstring& 
     return m_pRenderer->DrawTextBox(pFont, strText, fX, fY, fMaxWidth, fOffsetHeight, vColor, eAlign);;
 }
 
+HRESULT CFont_Manager::DrawTextWorld(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, const _float4& vColor, TEXT_ALIGN eAlign, _matrix WorldMat)
+{
+    CFont_Face* pFont = Find_Font(strFontTag);
+    if (!pFont)
+        return E_FAIL;
+
+    return m_pRenderer->DrawTextWorld(pFont, strText, fX, fY, vColor, eAlign, WorldMat);
+}
 
 CFont_Manager* CFont_Manager::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {

@@ -148,6 +148,7 @@ private:
 	const _float				m_fChargingStrongIntervalTime = { 0.25f };
 
 
+    class CUI_Talk* m_pTalkUI = { nullptr };
 private:
 	void			Update_State(_float fTimeDelta);
     void            InjuredMove_Input(_float fTimeDelta);

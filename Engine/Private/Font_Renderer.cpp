@@ -1,8 +1,11 @@
 #include "Font_Renderer.h"
 #include "Font_Face.h"
+#include "GameInstance.h"
+
 CFont_Renderer::CFont_Renderer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: m_pDevice{ pDevice }, m_pContext{ pContext }
+	: m_pDevice{ pDevice }, m_pContext{ pContext }, m_pGameInstance{ CGameInstance::GetInstance() }
 {
+    Safe_AddRef(m_pGameInstance);
 	Safe_AddRef(pDevice);
 	Safe_AddRef(pContext);
 }
@@ -270,6 +273,105 @@ HRESULT CFont_Renderer::DrawTextBox(CFont_Face* pFont, const _wstring& strText, 
     return S_OK;
 }
 
+HRESULT CFont_Renderer::DrawTextWorld(CFont_Face* pFont, const _wstring& strText, _float fX, _float fY, const _float4& vColor, TEXT_ALIGN eAlign, _matrix WorldMat)
+{
+    if (!pFont || strText.empty())
+        return E_FAIL;
+
+    _float2 vSize = pFont->ComputeTextSize(strText);
+    _float2 fOffset = Offset_Align(eAlign, vSize);
+
+    _int iMaxBearingY = {};
+    _int iMaxBottom = {};
+
+    pFont->ComputeMaxBearingY(strText, iMaxBearingY, iMaxBottom);
+
+    _float cursorX = fX + fOffset.x;
+    _float cursorY = fY + fOffset.y + iMaxBearingY;
+    _float worldScale = 0.005f;
+
+    vector<FONTVERTEX> verts;
+    vector<_uint> indices;
+    verts.reserve(strText.size() * 4);
+    indices.reserve(strText.size() * 6);
+
+    _uint baseIndex = 0;
+
+    for (_tchar ch : strText)
+    {
+        const GLYPH_INFO* g = pFont->GetGlyph(ch);
+        if (!g) continue;
+
+        _float x = (cursorX + g->iBearingX) * worldScale;
+        _float w = g->iWidth * worldScale;
+        _float h = g->iHeight * worldScale;
+
+        _float top = (cursorY - g->iBearingY) * worldScale;
+        _float bottom = top + g->iHeight * worldScale;
+
+        verts.push_back({ {x,      top,    0}, {g->u0, g->v1} });
+        verts.push_back({ {x,      bottom, 0}, {g->u0, g->v0} });
+        verts.push_back({ {x + w,  bottom, 0}, {g->u1, g->v0} });
+        verts.push_back({ {x + w,  top,    0}, {g->u1, g->v1} });
+
+        indices.push_back(baseIndex + 0);
+        indices.push_back(baseIndex + 1);
+        indices.push_back(baseIndex + 2);
+        indices.push_back(baseIndex + 0);
+        indices.push_back(baseIndex + 2);
+        indices.push_back(baseIndex + 3);
+
+        baseIndex += 4;
+
+        cursorX += g->iAdvance; 
+    }
+
+
+    // VB Map/Unmap
+    D3D11_MAPPED_SUBRESOURCE mappedVB{};
+    m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedVB);
+    memcpy(mappedVB.pData, verts.data(), verts.size() * sizeof(FONTVERTEX));
+    m_pContext->Unmap(m_pVB, 0);
+
+    // IB Map/Unmap
+    D3D11_MAPPED_SUBRESOURCE mappedIB{};
+    m_pContext->Map(m_pIB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedIB);
+    memcpy(mappedIB.pData, indices.data(), indices.size() * sizeof(_uint));
+    m_pContext->Unmap(m_pIB, 0);
+
+    // IA 세팅
+    _uint stride = sizeof(FONTVERTEX);
+    _uint offset = 0;
+    m_pContext->IASetVertexBuffers(0, 1, &m_pVB, &stride, &offset);
+    m_pContext->IASetIndexBuffer(m_pIB, DXGI_FORMAT_R32_UINT, 0);
+    m_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    // 상수버퍼 (색상 + 투영)
+    struct CBData { _float4x4 mtx; _float4 color; _float4 rect; } cb;
+    _matrix matWorld = WorldMat;
+    _matrix matView = m_pGameInstance->Get_Transform_Matrix(D3DTS::VIEW);
+    _matrix matProj = m_pGameInstance->Get_Transform_Matrix(D3DTS::PROJ);
+    _matrix matWVP = matWorld * matView * matProj;
+    XMStoreFloat4x4(&cb.mtx, XMMatrixTranspose(matWVP));
+    
+
+    cb.color = vColor;
+    cb.rect = { 0.f,0.f,0.f,0.f };
+    m_pContext->UpdateSubresource(m_pCB, 0, nullptr, &cb, 0, 0);
+    m_pContext->VSSetConstantBuffers(0, 1, &m_pCB);
+    m_pContext->PSSetConstantBuffers(0, 1, &m_pCB);
+
+    // 텍스처, 샘플러
+    ID3D11ShaderResourceView* srv = pFont->GetSRV();
+    m_pContext->PSSetShaderResources(0, 1, &srv);
+    m_pContext->PSSetSamplers(0, 1, &m_pSampler);
+
+    // Draw
+    m_pContext->DrawIndexed((_uint)indices.size(), 0, 0);
+
+    return S_OK;
+}
+
 _float2 CFont_Renderer::Offset_Align(TEXT_ALIGN eAlign, _float2 vSize)
 {
     _float2 vAlign = {};
@@ -331,5 +433,5 @@ void CFont_Renderer::Free()
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
-
+    Safe_Release(m_pGameInstance);
 }

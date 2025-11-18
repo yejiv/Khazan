@@ -832,6 +832,12 @@
     <Filter Include="02.GameObject\UI\Skill_Tree\FX">
       <UniqueIdentifier>{df9920c8-541d-4bd2-8c7a-c7fcfdf95c37}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Talk">
+      <UniqueIdentifier>{2f63276d-22fa-407c-b7a8-63abde0fb720}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Talk\Text">
+      <UniqueIdentifier>{55df7305-3d2c-44dd-b7b6-c1662eb8b06f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1613,6 +1619,12 @@
     <ClInclude Include="..\public\UI_Slot_Selete_Fx.h">
       <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\UI_Talk.h">
+      <Filter>02.GameObject\UI\Talk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_WorldTextBox.h">
+      <Filter>02.GameObject\UI\Talk\Text</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2373,6 +2385,12 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_Slot_Selete_Fx.cpp">
       <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Talk.cpp">
+      <Filter>02.GameObject\UI\Talk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_WorldTextBox.cpp">
+      <Filter>02.GameObject\UI\Talk\Text</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -355,8 +355,6 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
         CDecal::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
-#pragma endregion
-
 	return S_OK;
 }
 
@@ -515,6 +513,12 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Slot_Selete_Fx"),
         CUI_Slot_Selete_Fx::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk"),
+        CUI_Talk::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_WorldText"),
+        CUI_WorldTextBox::Create(m_pDevice, m_pContext)), E_FAIL);
 
 
 	CUIObject::UIOBJECT_DESC AnnounceDesc = {};

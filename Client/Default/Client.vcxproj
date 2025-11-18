@@ -403,6 +403,7 @@
     <ClInclude Include="..\public\UI_State_List.h" />
     <ClInclude Include="..\public\UI_State_MainPanel.h" />
     <ClInclude Include="..\public\UI_State_Panel.h" />
+    <ClInclude Include="..\public\UI_Talk.h" />
     <ClInclude Include="..\public\UI_Text.h" />
     <ClInclude Include="..\public\UI_TextBox.h" />
     <ClInclude Include="..\public\UI_Texture.h" />
@@ -416,6 +417,7 @@
     <ClInclude Include="..\public\UI_BackGround.h" />
     <ClInclude Include="..\public\UI_Atlas_Icon.h" />
     <ClInclude Include="..\public\UI_Tutorial.h" />
+    <ClInclude Include="..\public\UI_WorldTextBox.h" />
     <ClInclude Include="..\Public\Viper_Trigger.h" />
     <ClInclude Include="..\Public\Yetuga.h" />
     <ClInclude Include="Client.h" />
@@ -659,6 +661,7 @@
     <ClCompile Include="..\private\UI_State_List.cpp" />
     <ClCompile Include="..\private\UI_State_MainPanel.cpp" />
     <ClCompile Include="..\private\UI_State_Panel.cpp" />
+    <ClCompile Include="..\private\UI_Talk.cpp" />
     <ClCompile Include="..\private\UI_Text.cpp" />
     <ClCompile Include="..\private\UI_TextBox.cpp" />
     <ClCompile Include="..\private\UI_Texture.cpp" />
@@ -672,6 +675,7 @@
     <ClCompile Include="..\private\UI_BackGround.cpp" />
     <ClCompile Include="..\private\UI_Atlas_Icon.cpp" />
     <ClCompile Include="..\private\UI_Tutorial.cpp" />
+    <ClCompile Include="..\private\UI_WorldTextBox.cpp" />
     <ClCompile Include="..\Private\Viper_Trigger.cpp" />
     <ClCompile Include="..\Private\Yetuga.cpp" />
     <ClCompile Include="Client.cpp" />
