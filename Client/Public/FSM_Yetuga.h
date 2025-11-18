@@ -22,6 +22,7 @@ enum class YETUGA_STATE
 	DODGE,
 	DEAD,
 	SLEEP,
+    CUTSCENE,
 	END,
 };
 

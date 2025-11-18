@@ -42,8 +42,8 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
 
     if (FAILED(Ready_Components()))
         return E_FAIL;
-
-    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(513.f, -11.f, 225.f,1.f));
+   
+    //m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(513.f, -11.f, 225.f,1.f));
 
     if (FAILED(Ready_PartObjects()))
         return E_FAIL;
@@ -91,7 +91,7 @@ void CYetuga::Priority_Update(_float fTimeDelta)
 void CYetuga::Update(_float fTimeDelta)
 {
     m_pController->Update(this, fTimeDelta);
-
+    
     if (m_isLookAt)
     {
         CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
@@ -101,6 +101,11 @@ void CYetuga::Update(_float fTimeDelta)
         Look_Target_Lerp(fTimeDelta,fRatio,m_fTurnSpeed);
     }
         
+
+    if (m_isLanding)
+    {
+        Update_Landing(fTimeDelta);
+    }
 
     //if (m_pGameInstance->Key_Down(DIK_Z))
     //{
@@ -203,6 +208,58 @@ void CYetuga::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 {
 
 }
+
+void CYetuga::Update_Landing(_float fTimeDelta)
+{
+    if (!m_isLanding)
+        return;
+
+    CTransform* pTransform = m_pTransformCom;
+
+
+    _vector vPos = pTransform->Get_State(STATE::POSITION);
+    _float3 vCurr;
+    XMStoreFloat3(&vCurr, vPos);
+
+    // 목표점까지의 방향 (XZ만 이동)
+    _float3 vTargetXZ = _float3(m_vLandingTargetPos.x, vCurr.y, m_vLandingTargetPos.z);
+    _vector vGoal = XMLoadFloat3(&vTargetXZ);
+    _vector vCurrPos = XMLoadFloat3(&vCurr);
+
+    _vector vDirXZ = XMVector3Normalize(vGoal - vCurrPos);
+
+
+    vCurr.x += XMVectorGetX(vDirXZ) * (m_fLandingHorizontalSpeed * fTimeDelta);
+    vCurr.z += XMVectorGetZ(vDirXZ) * (m_fLandingHorizontalSpeed * fTimeDelta);
+
+   
+    float distXZ = XMVectorGetX(XMVector3Length(vGoal - XMVectorSet(vCurr.x, vCurr.y, vCurr.z, 1.f)));
+    if (distXZ < 4.f)
+        m_fLandingHorizontalSpeed = max(1.0f, m_fLandingHorizontalSpeed - 20.f * fTimeDelta);
+
+
+    m_fLandingVerticalSpeed += m_fGravity * fTimeDelta;
+    vCurr.y += m_fLandingVerticalSpeed * fTimeDelta;
+
+
+    if (vCurr.y <= m_vLandingTargetPos.y)
+    {
+        vCurr.y = m_vLandingTargetPos.y;
+        m_isLanding = false;
+
+        m_fLandingVerticalSpeed = 0.f;
+        m_fLandingHorizontalSpeed = 0.f;
+
+    }
+
+
+    _vector vNewPos = XMVectorSet(vCurr.x, vCurr.y, vCurr.z, 1.f);
+    pTransform->Set_State(STATE::POSITION, vNewPos);
+    m_pCharVirCom->Set_Position(vNewPos);
+}
+
+
+
 
 void CYetuga::Pick_Stone()
 {
@@ -414,7 +471,6 @@ void CYetuga::Smash()
     CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
     CBlackBoard* BB = m_pController->Get_BlackBoard();
     CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
-    _vector vTargetLoc = pTargetTransform->Get_State(STATE::POSITION);
     _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
     _vector vPosition = m_pTransformCom->Get_State(STATE::POSITION);
     _float fAnimRatio = pModel->MakeRatio();
@@ -636,7 +692,7 @@ HRESULT CYetuga::Ready_Projectiles()
        BreathDesc.fLifeTime = 10.f;
        RockDesc.fRotationPerSec = 180.f;
 
-       m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Yetuga_Rock"),
+       m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Yetuga_Breath"),
            ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Breath"), &BreathDesc ,5);
 
     return S_OK;
@@ -1013,7 +1069,7 @@ HRESULT CYetuga::Ready_AnimEvent()
 
         });
 
-
+    //SlowStart
 
 
 #pragma endregion
@@ -1271,6 +1327,84 @@ HRESULT CYetuga::Ready_AnimEvent()
         CClientInstance::GetInstance()->Yetuga_Holding_End();
         CClientInstance::GetInstance()->ActiveCamera_Shaking(1.8f, 0.8f);
         });
+#pragma endregion
+
+
+#pragma region CUTSCENE
+    
+    pModel->Register_Event("FallDown_Start", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+
+        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(537.354f, 18.684f, 221.961f, 1.f));
+        m_pCharVirCom->Set_Position(XMVectorSet(516.947f, 18.684f, 226.435f, 1.f));
+
+        });
+
+
+    pModel->Register_Event("FallDown_Start", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+
+        m_isLanding = true;
+        XMStoreFloat3(&m_vLandingStartPos, m_pTransformCom->Get_State(STATE::POSITION));
+
+ 
+        m_vLandingTargetPos = _float3(516.947f, -11.952f, 226.435f);
+
+        m_fLandingHorizontalSpeed = 7.0f;
+        m_fLandingVerticalSpeed = 0.f;
+
+        m_fGravity = -700.f; 
+
+        });
+
+    pModel->Register_Event("FallDown_Start", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+
+        m_isLookAt = false;
+
+        });
+
+
+    // 이펙트 넣어 주세요
+    pModel->Register_Event("FallDown_End", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+
+        m_isLookAt = false;
+
+        });
+
+
+    pModel->Register_Event("FallDown_End", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+
+        m_isLookAt = false;
+
+        });
+     
+     
+    pModel->Register_Event("GameStart", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
+        {
+
+        m_isLookAt = true;
+
+        });
+
+
+    pModel->Register_Event("GameStart", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() 
+        {
+
+        m_isLookAt = false;
+        m_pController->Set_ControllerActivate(true);
+
+        });
+
+    
+
+    /*pModel->Register_Event("GoStraight", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+
+        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+        _float fAnimRation = pModel->MakeRatio();
+        m_pTransformCom->Go_Straight(fAnimRation);
+
+        });*/
+
+
+
 #pragma endregion
 
 

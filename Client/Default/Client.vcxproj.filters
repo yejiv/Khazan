@@ -802,6 +802,9 @@
     <Filter Include="02.GameObject\UI\Slot\Slot_Fx">
       <UniqueIdentifier>{0e5560b8-bb4b-4969-9da5-b14d5c01d347}</UniqueIdentifier>
     </Filter>
+    <Filter Include="92.AI\State\Yetuga\18.CutScene">
+      <UniqueIdentifier>{9f89172c-f4f4-4c12-9b2e-9cfdacc0a885}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1547,6 +1550,9 @@
     <ClInclude Include="..\public\UI_Slot_Smoke.h">
       <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\AS_CutScene_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\18.CutScene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2271,6 +2277,9 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_Slot_Smoke.cpp">
       <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_CutScene_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\18.CutScene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
