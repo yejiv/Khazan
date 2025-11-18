@@ -12,6 +12,7 @@
 #include "Font_Manager.h"
 #include "Target_Manager.h"
 #include "Picking.h"
+#include "CSM.h"
 #include "Shadow.h"
 #include "Frustum.h"
 #include "Imgui_Manager.h"
@@ -151,9 +152,13 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pComputeShader_Manager)
 		return E_FAIL;
 
-	m_pShadow = CShadow::Create(*ppDevice, *ppContext);
-	if (nullptr == m_pShadow)
+	m_pCSM = CCSM::Create(*ppDevice, *ppContext);
+	if (nullptr == m_pCSM)
 		return E_FAIL;
+
+    m_pShadow = CShadow::Create(*ppDevice, *ppContext);
+    if (nullptr == m_pShadow)
+        return E_FAIL;
 
 	m_pTarget_Manager = CTarget_Manager::Create(*ppDevice, *ppContext);
 	if (nullptr == m_pTarget_Manager)
@@ -267,7 +272,8 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 	//	m_pDecal_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
 	// Renderer Resources
-	m_pShadow->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
+	m_pCSM->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
+    m_pShadow->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 	m_pFog->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 	m_pVignette->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 	m_pDistortion->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
@@ -822,73 +828,8 @@ _bool CGameInstance::isPicked(_float3* pOutPosition, _float3* pOutNormal)
 
 #pragma endregion
 
-#pragma region SHADOW
-
-_uint CGameInstance::Get_NumCascades()
-{
-	return m_pShadow->Get_NumCascades();
-}
-
-void CGameInstance::Set_CurrentCascade(_uint iIndex)
-{
-	m_pShadow->Set_CurrentCascade(iIndex);
-}
-
-const _float4x4* CGameInstance::Get_CurrentShadowLightViewMatrix() const
-{
-	return m_pShadow->Get_CurrentLightViewMatrix();
-}
-
-const _float4x4* CGameInstance::Get_CurrentShadowLightProjMatrix() const
-{
-	return m_pShadow->Get_CurrentLightProjMatrix();
-}
-
-HRESULT CGameInstance::Bind_ShadowDSV(_uint iIndex)
-{
-	return m_pShadow->Bind_ShadowDSV(iIndex);
-}
-
-HRESULT CGameInstance::Bind_Shadow_ShaderResources(CShader* pShader)
-{
-	return m_pShadow->Bind_Shadow_ShaderResources(pShader);
-}
-
-void CGameInstance::Clear_ShadowDSVs()
-{
-	m_pShadow->Clear_DSVs();
-}
-
-void CGameInstance::Start_ShadowIntensityTransition(_float fDuration, _float fTargetIntensity)
-{
-	m_pShadow->Start_ShadowIntensityTransition(fDuration, fTargetIntensity);
-}
-
-#ifdef _DEBUG
-HRESULT CGameInstance::Ready_CSM_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY)
-{
-	return m_pShadow->Ready_Debug(fX, fY, fSizeX, fSizeY);
-}
-
-HRESULT CGameInstance::Render_CSM_Debug(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
-{
-	return m_pShadow->Render(pShader, pVIBuffer);
-}
-
-CASCADE_CONFIG CGameInstance::Get_CascadeConfig()
-{
-	return m_pShadow->Get_CascadeConfig();
-}
-
-void CGameInstance::Set_CascadeConfig(CASCADE_CONFIG Config)
-{
-	m_pShadow->Set_CascadeConfig(Config);
-}
-#endif
-
-#pragma endregion
-
 #pragma region FRUSTUM
+
 void CGameInstance::Transform_Frustum_ToLocalSpace(_fmatrix WorldMatrix)
 {
 	m_pFrustum->Transform_ToLocalSpace(WorldMatrix);
@@ -1205,6 +1146,113 @@ void CGameInstance::Execute_Job(COMPUTEJOB eJobTag)
 {
 	m_pComputeShader_Manager->Execute_Job(eJobTag);
 }
+#pragma endregion
+
+#pragma region CSM
+
+_uint CGameInstance::Get_NumCascades()
+{
+    return m_pCSM->Get_NumCascades();
+}
+
+void CGameInstance::Set_CurrentCascade(_uint iIndex)
+{
+    m_pCSM->Set_CurrentCascade(iIndex);
+}
+
+const _float4x4* CGameInstance::Get_CurrentCascadeLightViewMatrix() const
+{
+    return m_pCSM->Get_CurrentLightViewMatrix();
+}
+
+const _float4x4* CGameInstance::Get_CurrentCascadeLightProjMatrix() const
+{
+    return m_pCSM->Get_CurrentLightProjMatrix();
+}
+
+HRESULT CGameInstance::Bind_CascadeDSV(_uint iIndex)
+{
+    return m_pCSM->Bind_CascadeDSV(iIndex);
+}
+
+HRESULT CGameInstance::Bind_Cascade_ShaderResources(CShader* pShader)
+{
+    return m_pCSM->Bind_Cascade_ShaderResources(pShader);
+}
+
+void CGameInstance::Clear_CascadeDSVs()
+{
+    m_pCSM->Clear_DSVs();
+}
+
+void CGameInstance::Start_CascadeShadowTransition(_float fDuration, _float fTargetIntensity)
+{
+    m_pCSM->Start_CascadeShadowTransition(fDuration, fTargetIntensity);
+}
+
+CASCADE_CONFIG CGameInstance::Get_CascadeConfig()
+{
+    return m_pCSM->Get_CascadeConfig();
+}
+
+void CGameInstance::Set_CascadeConfig(CASCADE_CONFIG Config)
+{
+    m_pCSM->Set_CascadeConfig(Config);
+}
+
+#ifdef _DEBUG
+HRESULT CGameInstance::Ready_CSM_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY)
+{
+    return m_pCSM->Ready_Debug(fX, fY, fSizeX, fSizeY);
+}
+
+HRESULT CGameInstance::Render_CSM_Debug(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
+{
+    return m_pCSM->Render(pShader, pVIBuffer);
+}
+#endif
+
+#pragma endregion
+
+#pragma region SHADOW
+
+const _float4x4* CGameInstance::Get_ShadowLightMatrix(D3DTS eTransformState) const
+{
+    return m_pShadow->Get_ShadowLightMatrix(eTransformState);
+}
+
+HRESULT CGameInstance::Bind_Shadow_ShaderResources(CShader* pShader)
+{
+    return m_pShadow->Bind_Shadow_ShaderResources(pShader);
+}
+
+void CGameInstance::Bind_ShadowDSV()
+{
+    m_pShadow->Bind_ShadowDSV();
+}
+
+void CGameInstance::Start_ShadowTransition(_float fDuration, _float fTargetIntensity)
+{
+    m_pShadow->Start_ShadowTransition(fDuration, fTargetIntensity);
+}
+
+void CGameInstance::Clear_ShadowDSV()
+{
+    m_pShadow->Clear_DSV();
+}
+
+#ifdef _DEBUG
+HRESULT CGameInstance::Ready_Shadow_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY)
+{
+    return m_pShadow->Ready_Debug(fX, fY, fSizeX, fSizeY);
+}
+
+HRESULT CGameInstance::Render_Shadow_Debug(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
+{
+    return m_pShadow->Render(pShader, pVIBuffer);
+}
+#endif
+
 #pragma endregion
 
 #pragma region SSAO
@@ -1567,8 +1615,9 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pVignette);
 	Safe_Release(m_pFog);
 	Safe_Release(m_pGaussianBlur);
-	Safe_Release(m_pSSAO);
-	Safe_Release(m_pShadow);
+    Safe_Release(m_pSSAO);
+    Safe_Release(m_pShadow);
+	Safe_Release(m_pCSM);
 
 	Safe_Release(m_pComputeShader_Manager);
 	Safe_Release(m_pPool_Manager);

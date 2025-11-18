@@ -30,6 +30,10 @@ matrix g_LightViewMatrices[4], g_LightProjMatrices[4];
 float2 g_vShadowMapSize;
 float g_fBias;
 float g_fShadowIntensity;
+// ===== Revised Cascade Shadow =====
+matrix g_LightViewMatrix, g_LightProjMatrix;
+Texture2D g_ShadowTexture;
+float g_fSplitFar;
 
 // ===== PCF =====
 Texture2DArray<float> g_TextureArray;
@@ -322,7 +326,6 @@ PS_OUT_BACKBUFFER PS_POSTSCENE(PS_IN In)
     vector vShade = g_ShadeTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    //  Out.vColor = vDiffuse * vShade;
     Out.vColor = vDiffuse * vShade + vSpecular;
     
     if (!g_isEnableShadow)
@@ -343,21 +346,16 @@ PS_OUT_BACKBUFFER PS_POSTSCENE(PS_IN In)
     
     float fCameraViewDepth = vWorldPos.z;
 
+    if (fCameraViewDepth > g_fSplitFar)
+    {
+        Out.vColor = lerp(Out.vColor * g_fIntensity, Out.vColor, 1.f);
+        return Out;
+    }
+    
     vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
     
-    uint iCascadeIndex = 0;
-    
-    if (fCameraViewDepth < g_Splits[0])
-        iCascadeIndex = 0;
-    else if (fCameraViewDepth < g_Splits[1])
-        iCascadeIndex = 1;
-    else if (fCameraViewDepth < g_Splits[2])
-        iCascadeIndex = 2;
-    else
-        iCascadeIndex = 3;
-    
-    vector vPosition = mul(vWorldPos, g_LightViewMatrices[iCascadeIndex]);
-    vPosition = mul(vPosition, g_LightProjMatrices[iCascadeIndex]);
+    vector vPosition = mul(vWorldPos, g_LightViewMatrix);
+    vPosition = mul(vPosition, g_LightProjMatrix);
     
     float2 vTexcoord;
     vTexcoord.x = (vPosition.x / vPosition.w) * 0.5f + 0.5f;
@@ -370,18 +368,22 @@ PS_OUT_BACKBUFFER PS_POSTSCENE(PS_IN In)
 
     for (int i = -1; i <= 1; ++i)
     {
-        for (int j = -1; j <= i; ++j)
+        for (int j = -1; j <= 1; ++j)
         {
             vOffset.x = j * 1.f / g_vShadowMapSize.x;
             vOffset.y = i * 1.f / g_vShadowMapSize.y;
-            float3 vSampleCoord = saturate(float3(vTexcoord + vOffset, iCascadeIndex));
-            fShadowSum += g_TextureArray.SampleCmpLevelZero(ComparisonSampler, vSampleCoord, fLightDepth - g_fBias);
+            float2 vSampleUV = vTexcoord + vOffset;
+            
+            if (0.f > vSampleUV.x || 1.f < vSampleUV.x || 0.f > vSampleUV.y || 1.f < vSampleUV.y)
+                fShadowSum += 1.f;
+            else
+                fShadowSum += g_ShadowTexture.SampleCmpLevelZero(ComparisonSampler, vSampleUV, fLightDepth - g_fBias);
         }
     }
     
     fShadowSum /= 9.f;
     
-    Out.vColor = lerp(Out.vColor * g_fShadowIntensity, Out.vColor, fShadowSum);
+    Out.vColor = lerp(Out.vColor * g_fIntensity, Out.vColor, fShadowSum);
     
     return Out;
 }
@@ -902,7 +904,7 @@ PS_OUT_BACKBUFFER PS_STATIC_VELOCITY(PS_IN In)
 
 technique11 DefaultTechnique
 {
-    pass Debug // 1
+    pass Debug // 0
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -913,7 +915,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_DEBUG();
     }
 
-    pass Directional // 2
+    pass Directional // 1
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);

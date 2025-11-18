@@ -68,7 +68,9 @@ HRESULT CRenderer::Initialize()
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Velocity"), 1050.0f, 750.0f, 300.f, 300.f)))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Ready_CSM_Debug(m_fViewportWidth - 150.0f, 150.0f, 300.f, 300.f)))
+    //  if (FAILED(m_pGameInstance->Ready_CSM_Debug(m_fViewportWidth - 150.0f, 150.0f, 300.f, 300.f)))
+    //      return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_Shadow_Debug(m_fViewportWidth - 150.0f, 150.0f, 300.f, 300.f)))
         return E_FAIL;
 #endif
 
@@ -199,18 +201,13 @@ HRESULT CRenderer::Render_Shadow()
 
     m_pGameInstance->Backup_RT();
 
-    m_pGameInstance->Clear_ShadowDSVs();
+    m_pGameInstance->Clear_ShadowDSV();
+    m_pGameInstance->Bind_ShadowDSV();
 
     for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::SHADOW)])
     {
-        for (_uint i = 0; i < m_pGameInstance->Get_NumCascades(); ++i)
-        {
-            m_pGameInstance->Set_CurrentCascade(i);
-            m_pGameInstance->Bind_ShadowDSV(i);
-
-            if (nullptr != pRenderObject)
-                pRenderObject->Render_Shadow();
-        }
+        if (nullptr != pRenderObject)
+            pRenderObject->Render_Shadow();
 
         Safe_Release(pRenderObject);
     }
@@ -504,7 +501,7 @@ HRESULT CRenderer::Render_PostScene()
 
     if (false == isEnableShadow())
     {
-        m_pGameInstance->Clear_ShadowDSVs();
+        m_pGameInstance->Clear_ShadowDSV();
 
         m_pShader->Begin(3);
 
@@ -1186,7 +1183,9 @@ HRESULT CRenderer::Render_Debug()
 
     m_pGameInstance->Render_RT_Debug(m_pShader, m_pVIBuffer);
 
-    m_pGameInstance->Render_CSM_Debug(m_pShader, m_pVIBuffer);
+    m_pGameInstance->Render_Shadow_Debug(m_pShader, m_pVIBuffer);
+
+    //  m_pGameInstance->Render_CSM_Debug(m_pShader, m_pVIBuffer);
 
     return S_OK;
 }
