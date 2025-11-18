@@ -826,6 +826,9 @@
     <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\05.Gear\01.Door_Gear">
       <UniqueIdentifier>{fb3a2e3b-051a-4378-b0aa-a74b8a21d215}</UniqueIdentifier>
     </Filter>
+    <Filter Include="92.AI\State\Yetuga\18.CutScene">
+      <UniqueIdentifier>{9f89172c-f4f4-4c12-9b2e-9cfdacc0a885}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1592,6 +1595,9 @@
     <ClInclude Include="..\Public\Lever_Gear.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\05.Gear\00.Lever_Gear</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\AS_CutScene_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\18.CutScene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2337,6 +2343,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Lever_Gear.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\05.Gear\00.Lever_Gear</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_CutScene_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\18.CutScene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

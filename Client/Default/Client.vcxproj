@@ -173,6 +173,7 @@
     <ClInclude Include="..\Public\AS_Attack_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_Boomarang_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_ChainSmash_Imp_Melee.h" />
+    <ClInclude Include="..\Public\AS_CutScene_Yetuga.h" />
     <ClInclude Include="..\Public\AS_DashAttack_Imp_Melee.h" />
     <ClInclude Include="..\Public\AS_Dead_Imp_Melee.h" />
     <ClInclude Include="..\Public\AS_Dead_Imp_Range.h" />
@@ -430,6 +431,7 @@
     <ClCompile Include="..\Private\AS_Attack_Imp_Range.cpp" />
     <ClCompile Include="..\Private\AS_Boomarang_Imp_Range.cpp" />
     <ClCompile Include="..\Private\AS_ChainSmash_Imp_Melee.cpp" />
+    <ClCompile Include="..\Private\AS_CutScene_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_DashAttack_Imp_Melee.cpp" />
     <ClCompile Include="..\Private\AS_Dead_Imp_Melee.cpp" />
     <ClCompile Include="..\Private\AS_Dead_Imp_Range.cpp" />

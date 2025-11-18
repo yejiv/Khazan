@@ -76,7 +76,7 @@ HRESULT CLevel_Shader::Initialize()
 		}
 
 		if (ImGui::Checkbox("Shadow", &m_isRenderShadow))
-			m_pGameInstance->Set_EnableShadow(m_isRenderShadow);;
+			m_pGameInstance->Set_EnableShadow(m_isRenderShadow);
 
 		if (m_isRenderShadow)
 		{

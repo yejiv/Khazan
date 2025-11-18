@@ -28,6 +28,8 @@ public:
 	virtual void					Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
 	virtual void					Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
 
+    void                            Update_Landing(_float fTimeDelta);
+
 
 private:
 	HRESULT							Ready_Components();
@@ -76,8 +78,20 @@ private:
 	_bool							m_isSmash = { false };
 	_float3							m_vHoldRockOffset = {};
 	_bool							m_isGrab = { false };
-
     _uint                           m_iFX_ID_Dampsey;
+
+
+private:
+    _bool   m_isLanding = false;
+
+    _float3 m_vLandingStartPos;      
+    _float3 m_vLandingTargetPos;   
+
+    _float  m_fLandingHorizontalSpeed = 0.f;   
+    _float  m_fLandingVerticalSpeed = 0.f;    
+    _float  m_fGravity = -10.f;
+
+
 
 public:
 	static CYetuga*					Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
