@@ -4,6 +4,7 @@
 
 #include "Elevator_Gear.h"
 #include "Slate_Switch.h"
+#include "Body.h"
 
 CElevatorS::CElevatorS(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp_Interactive { pDevice, pContext }
@@ -32,6 +33,8 @@ HRESULT CElevatorS::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_Components(pArg), E_FAIL);
 
     CHECK_FAILED(Ready_PartObjects(pArg), E_FAIL);
+
+    CHECK_FAILED(Ready_Collision(pArg), E_FAIL);
 
     m_pModelCom->Set_Animation(0);
 
@@ -71,15 +74,17 @@ void CElevatorS::Update(_float fTimeDelta)
     {
         if (ELEVATOR_STATE::IDLE_UP == m_eState)
         {
-            Lerp_ElevatorMove(fTimeDelta, m_vUpPos, m_vDownPos, 5.f);
+            Lerp_ElevatorMove(fTimeDelta, m_vUpPos, m_vDownPos, 15.f);
         }
         if (ELEVATOR_STATE::IDLE_DOWN == m_eState)
         {
-            Lerp_ElevatorMove(fTimeDelta, m_vDownPos, m_vUpPos, 5.f);
+            Lerp_ElevatorMove(fTimeDelta, m_vDownPos, m_vUpPos, 15.f);
         }
     }
 
     __super::Update(fTimeDelta);
+    m_pBodyCom->Sync_Update(m_pTransformCom);
+    m_pBodyCom->Update(fTimeDelta, m_pTransformCom);
 }
 
 void CElevatorS::Late_Update(_float fTimeDelta)
@@ -199,6 +204,35 @@ HRESULT CElevatorS::Ready_PartObjects(void* pArg)
         TEXT("Prototype_GameObject_Prop_Elevator_Gear"), &GearDesc), E_FAIL);
 
     return S_OK;
+}
+
+HRESULT CElevatorS::Ready_Collision(void* pArg)
+{
+    CBody::BODY_BOXSHAPE_DESC BodyDesc{};
+    BodyDesc.vExtent = _float3(10.f, 1.f, 10.f);
+    BodyDesc.bIsTrigger = false;
+    BodyDesc.bStartActive = true;
+    BodyDesc.eMotion = EMotionType::Kinematic;
+    BodyDesc.eQuality = EMotionQuality::LinearCast;
+    BodyDesc.eShapeType = SHAPE::BOX;
+    BodyDesc.fFriction = 0.8f;
+    BodyDesc.fMass = 1.0f;
+    BodyDesc.fRestitution = 0.0f;
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_MOVE_PLATFORM);
+
+    XMStoreFloat3(&BodyDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION) + XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK)) * 1.f);
+    BodyDesc.vPos.y += BodyDesc.vExtent.y;
+
+    XMStoreFloat4(&BodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
+
+    BodyDesc.vShapeOffset = _float3(0.f, -0.95f, 0.f);
+    m_tCollisionDesc.pGameObject = this;
+    //pCollDesc.pInfo = ?? // 작성하기
+    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+        TEXT("Com_Body"), reinterpret_cast<CComponent**>(&m_pBodyCom), &BodyDesc)))
+        return E_FAIL;
 }
 
 CElevatorS* CElevatorS::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

@@ -184,7 +184,7 @@ void CCamera_Compre::Update(_float fTimeDelta)
         if (!m_isPostFrameHold && !m_isPostForceFrameRight)
         {
             m_pBody->Update(fTimeDelta, m_pTransformCom);
-            m_pBody->Sync_Update(m_pTransformCom);
+            //m_pBody->Sync_Update(m_pTransformCom);
         }
         
     }
@@ -1027,7 +1027,7 @@ void CCamera_Compre::Update_Yetuga_Holding(_float fTimeDelta)
     // 2) 타겟(플레이어) 위치 (연출용 높이 조절 가능)
     _vector vTargetPos = XMVectorSet(
         m_pObjMatrix->_41,
-        m_pObjMatrix->_42 + 1.5f, // 필요하면 1.8, 2.0 등 튜닝
+        m_pObjMatrix->_42 + 1.5f,
         m_pObjMatrix->_43,
         1.f
     );
