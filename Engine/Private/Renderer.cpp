@@ -11,7 +11,6 @@ CRenderer::CRenderer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     Safe_AddRef(m_pGameInstance);
     Safe_AddRef(m_pDevice);
     Safe_AddRef(m_pContext);
-
 }
 
 HRESULT CRenderer::Initialize()
@@ -23,6 +22,9 @@ HRESULT CRenderer::Initialize()
 
     m_fViewportWidth = ViewportDesc.Width;
     m_fViewportHeight = ViewportDesc.Height;
+
+    m_fQuartViewportWidth = m_fViewportWidth * 0.25f;
+    m_fQuartViewportHeight = m_fViewportHeight * 0.25f;
 
     if (FAILED(Ready_RenderTargets()))
         return E_FAIL;
@@ -68,8 +70,13 @@ HRESULT CRenderer::Initialize()
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Velocity"), 1050.0f, 750.0f, 300.f, 300.f)))
         return E_FAIL;
 
-    //  if (FAILED(m_pGameInstance->Ready_CSM_Debug(m_fViewportWidth - 150.0f, 150.0f, 300.f, 300.f)))
-    //      return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Brightness"), 1350.0f, 150.0f, 300.f, 300.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_BlurX"), 1350.0f, 450.0f, 300.f, 300.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Bloom"), 1350.0f, 750.0f, 300.f, 300.f)))
+        return E_FAIL;
+
     if (FAILED(m_pGameInstance->Ready_Shadow_Debug(m_fViewportWidth - 150.0f, 150.0f, 300.f, 300.f)))
         return E_FAIL;
 #endif
@@ -132,6 +139,9 @@ HRESULT CRenderer::Draw()
     if (FAILED(Render_Fog()))
         return E_FAIL;
     
+    if (FAILED(Render_Brightness()))
+        return E_FAIL;
+
     if (FAILED(Render_Bloom()))
         return E_FAIL;
     
@@ -605,12 +615,12 @@ HRESULT CRenderer::Render_Fog()
     return S_OK;
 }
 
-HRESULT CRenderer::Render_Bloom()
+HRESULT CRenderer::Render_Brightness()
 {
-    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_BlurX"))))
+    if (FAILED(SetUp_Viewport(m_fQuartViewportWidth, m_fQuartViewportHeight)))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_GaussianBlur_ShaderResources(m_pShader)))
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Brightness"))))
         return E_FAIL;
 
     if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
@@ -626,7 +636,42 @@ HRESULT CRenderer::Render_Bloom()
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_PostScene"), m_pShader, "g_PostSceneTexture")))
         return E_FAIL;
 
-    if (FAILED(m_pShader->Bind_RawValue("g_fViewportWidth", &m_fViewportWidth, sizeof(_float))))
+    m_pShader->Begin(15);
+
+    m_pVIBuffer->Bind_Resources();
+    m_pVIBuffer->Render();
+
+    if (FAILED(m_pGameInstance->End_MRT()))
+        return E_FAIL;
+
+    if (FAILED(SetUp_Viewport(m_fViewportWidth, m_fViewportHeight)))
+        return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CRenderer::Render_Bloom()
+{
+    if (FAILED(SetUp_Viewport(m_fQuartViewportWidth, m_fQuartViewportHeight)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_BlurX"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_GaussianBlur_ShaderResources(m_pShader)))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Brightness"), m_pShader, "g_BrightTexture")))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_RawValue("g_fViewportWidth", &m_fQuartViewportWidth, sizeof(_float))))
         return E_FAIL;
 
     m_pShader->Begin(4);
@@ -653,7 +698,7 @@ HRESULT CRenderer::Render_Bloom()
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_BlurX"), m_pShader, "g_BlurXTexture")))
         return E_FAIL;
 
-    if (FAILED(m_pShader->Bind_RawValue("g_fViewportHeight", &m_fViewportHeight, sizeof(_float))))
+    if (FAILED(m_pShader->Bind_RawValue("g_fViewportHeight", &m_fQuartViewportHeight, sizeof(_float))))
         return E_FAIL;
 
     m_pShader->Begin(5);
@@ -662,6 +707,9 @@ HRESULT CRenderer::Render_Bloom()
     m_pVIBuffer->Render();
 
     if (FAILED(m_pGameInstance->End_MRT()))
+        return E_FAIL;
+
+    if (FAILED(SetUp_Viewport(m_fViewportWidth, m_fViewportHeight)))
         return E_FAIL;
 
     return S_OK;
@@ -778,11 +826,7 @@ HRESULT CRenderer::Render_MotionBlur()
     
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Depth"), m_pShader, "g_DepthTexture")))
         return E_FAIL;
-    
-    // 정적 오브젝트만 스크린 모션 블러 적용
-    //  if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_StaticDepth"), m_pShader, "g_DepthTexture")))
-    //      return E_FAIL;
-    
+
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_RadialBlur"), m_pShader, "g_CombinedTexture")))
         return E_FAIL;
     
@@ -811,9 +855,6 @@ HRESULT CRenderer::Render_LUT()
         return E_FAIL;
     if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
         return E_FAIL;
-
-    //  if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_RadialBlur"), m_pShader, "g_CombinedTexture")))
-    //      return E_FAIL;
 
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_MotionBlur"), m_pShader, "g_CombinedTexture")))
         return E_FAIL;
@@ -882,7 +923,7 @@ HRESULT CRenderer::Render_UI()
 HRESULT CRenderer::Ready_RenderTargets()
 {
     /* RT_Diffuse */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_Diffuse"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(1.f, 1.f, 1.f, 0.f))))
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_Diffuse"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(1.f, 1.f, 1.f, 0.f))))
         return E_FAIL;
 
     /* RT_Normal */
@@ -922,11 +963,15 @@ HRESULT CRenderer::Ready_RenderTargets()
         return E_FAIL;
 
     /* RT_BlurX */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_BlurX"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_BlurX"), m_fQuartViewportWidth, m_fQuartViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
     /* RT_Bloom == RT_BlurY */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_Bloom"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_Bloom"), m_fQuartViewportWidth, m_fQuartViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
+        return E_FAIL;
+
+    /* RT_Brightness */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_Brightness"), m_fQuartViewportWidth, m_fQuartViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
     /* RT_Fog */
@@ -1000,6 +1045,9 @@ HRESULT CRenderer::Ready_MRTs()
         return E_FAIL;
 
     /* MRT_Bloom */
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Brightness"), TEXT("RT_Brightness"))))
+        return E_FAIL;
+
     if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_BlurX"), TEXT("RT_BlurX"))))
         return E_FAIL;
 
@@ -1184,8 +1232,6 @@ HRESULT CRenderer::Render_Debug()
     m_pGameInstance->Render_RT_Debug(m_pShader, m_pVIBuffer);
 
     m_pGameInstance->Render_Shadow_Debug(m_pShader, m_pVIBuffer);
-
-    //  m_pGameInstance->Render_CSM_Debug(m_pShader, m_pVIBuffer);
 
     return S_OK;
 }

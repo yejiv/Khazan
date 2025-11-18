@@ -84,6 +84,7 @@ private:
 
 	_float4x4					m_WorldMatrix{}, m_ViewMatrix{}, m_ProjMatrix{};
 	_float						m_fViewportWidth{}, m_fViewportHeight{};
+    _float						m_fQuartViewportWidth{}, m_fQuartViewportHeight{};
 
 	// Toon Shade
 	_float						m_fToonShadeLevel = { 3.f };
@@ -125,6 +126,7 @@ private:
 	HRESULT Render_NonLight();
 	HRESULT Render_Blend();
 	HRESULT Render_Fog();
+    HRESULT Render_Brightness();
 	HRESULT Render_Bloom();
 	HRESULT Render_Combined();
     HRESULT Render_RadialBlur();

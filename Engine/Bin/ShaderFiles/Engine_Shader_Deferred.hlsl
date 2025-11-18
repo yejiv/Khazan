@@ -19,7 +19,7 @@ vector g_vMtrlAmbient = { 1.f, 1.f, 1.f, 1.f }, g_vMtrlSpecular = { 1.f, 1.f, 1.
 
 // ===== Textures =====
 Texture2D g_DiffuseTexture, g_NormalTexture, g_DepthTexture, g_ShadeTexture, g_SpecularTexture, g_EmissiveTexture;
-Texture2D g_LightDepthTexture, g_PostSceneTexture, g_BlurXTexture, g_BloomTexture, g_FogTexture, g_OutlineTexture;
+Texture2D g_LightDepthTexture, g_PostSceneTexture, g_BrightTexture, g_BlurXTexture, g_BloomTexture, g_FogTexture, g_OutlineTexture;
 Texture2D g_NoiseTexture, g_SSAOTexture, g_CombinedTexture, g_LUTTexture, g_VelocityTexture;
 
 // ===== Cascade Shadow =====
@@ -393,6 +393,24 @@ struct PS_OUT_BLUR_X
     vector vBlurX : SV_TARGET0;
 };
 
+PS_OUT_BLUR_X PS_BRIGHTNESS(PS_IN In)
+{
+    PS_OUT_BLUR_X Out;
+
+    float4 vEmissive = g_EmissiveTexture.SampleLevel(ClampSampler, In.vTexcoord, 0.f);
+    float3 vEmissiveColor = vEmissive.rgb * vEmissive.a;
+
+    float3 vPostSceneColor = g_PostSceneTexture.SampleLevel(ClampSampler, In.vTexcoord, 0.f).rgb;
+
+    float3 vBrightColor = max(vPostSceneColor - 1.f, 0.f);
+        
+    float3 vCombinedColor = vEmissiveColor + vBrightColor;
+
+    Out.vBlurX = float4(vCombinedColor, 1.f);
+    
+    return Out;
+}
+
 PS_OUT_BLUR_X PS_BLUR_X(PS_IN In)
 {
     PS_OUT_BLUR_X Out;
@@ -404,22 +422,10 @@ PS_OUT_BLUR_X PS_BLUR_X(PS_IN In)
     {
         vTexcoord.x = In.vTexcoord.x + i / g_fViewportWidth;
         vTexcoord.y = In.vTexcoord.y;
+
+        float4 vBrightColor = g_BrightTexture.Sample(ClampSampler, vTexcoord);
         
-        // Í∏∞Ï°¥ ?òÌîåÎß?
-        float4 vEmissive = g_EmissiveTexture.SampleLevel(ClampSampler, vTexcoord, 0.f);
-        float3 vEmissiveColor = vEmissive.rgb * vEmissive.a;
-        
-        // ?¨Ïä§?∏Ïî¨ ?òÌîåÎß?
-        float3 vPostSceneColor = g_PostSceneTexture.SampleLevel(ClampSampler, vTexcoord, 0.f).rgb;
-        
-        // ?ÑÍ≥ÑÏπ??òÎäî ?ÅÏó≠Îß?Ï∂îÏ∂ú
-        float3 vBrightColor = max(vPostSceneColor - 1.f, 0.f); // ??Ïª¨Îü¨ - ?ÑÍ≥ÑÏπ?
-        
-        // ?¥Î??úÎ∏å + Î∞ùÏ? ?ÅÏó≠
-        float3 vCombinedColor = vEmissiveColor + vBrightColor;
-        
-        // ?©Ïπú Ïª¨Îü¨??Í∞ÄÏ§ëÏπò Í≥?
-        vColor += g_Weights[i + g_iWeightRadius] * vCombinedColor;
+        vColor += g_Weights[i + g_iWeightRadius] * vBrightColor;
     }
 
     Out.vBlurX = float4(vColor / g_fNormalization, 1.f);
@@ -439,9 +445,9 @@ PS_OUT_BACKBUFFER PS_BLUR_Y(PS_IN In)
         vTexcoord.x = In.vTexcoord.x;
         vTexcoord.y = In.vTexcoord.y + i / g_fViewportHeight;
         
-        float4 vEmissive = g_BlurXTexture.SampleLevel(ClampSampler, vTexcoord, 0.f);
+        float4 vBrightColor = g_BlurXTexture.SampleLevel(ClampSampler, vTexcoord, 0.f);
         
-        vColor += g_Weights[i + g_iWeightRadius] * vEmissive.rgb * vEmissive.a;
+        vColor += g_Weights[i + g_iWeightRadius] * vBrightColor.rgb * vBrightColor.a;
     }
 
     Out.vColor = float4(vColor / g_fNormalization, 1.f);
@@ -1067,5 +1073,16 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_STATIC_VELOCITY();
+    }
+
+    pass Brightness // 15
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_BRIGHTNESS();
     }
 }

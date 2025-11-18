@@ -260,12 +260,7 @@ PS_OUT PS_MAIN_DEBUG(PS_IN In)
     //  Out.vSpecular = vMtrlSpecular;
     
     if (true == g_isEnableEmissive)
-        Out.vEmissive.rgb = Out.vDiffuse.rgb * g_fEmissiveIntensity; // 諛앷린 媛뺣룄
-    
-    if (true == g_isEnableBloom)
-        Out.vEmissive.a = 1.f;
-    else
-        Out.vEmissive.a = 0.f;
+        Out.vDiffuse.rgb *= g_fEmissiveIntensity;
     
     return Out;
 }

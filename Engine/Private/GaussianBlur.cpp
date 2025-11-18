@@ -13,18 +13,24 @@ CGaussianBlur::CGaussianBlur(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 
 HRESULT CGaussianBlur::Initialize()
 {
+    // Default
     //  m_Config.fSigma = 2.5f;
     //  m_Config.iRadius = 6;
     //  m_Config.fNormalization = 7.5f;
 
+    // Before DownSampling
+    //  m_Config.fSigma = 10.f;
+    //  m_Config.iRadius = 12;
+    //  m_Config.fNormalization = 15.f;
+
     // 가중치 밀집도
-    m_Config.fSigma = 10.f;
+    m_Config.fSigma = 2.5f;
 
     // 중앙 픽셀 기준 범위
-    m_Config.iRadius = 12;
+    m_Config.iRadius = 4;
 
     // 정규화 해주기 위한 수치
-    m_Config.fNormalization = 15.f;
+    m_Config.fNormalization = 4.5f;
 
     if (FAILED(Ready_Weight()))
         return E_FAIL;
