@@ -1,3 +1,4 @@
+
 #include "Body_Khazan_Spear.h"
 #include "Khazan_Spear.h"
 #include "GameInstance.h"
@@ -172,10 +173,10 @@ HRESULT CBody_Khazan_Spear::Render_Shadow()
     if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix)))
         return E_FAIL;
 
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_LightViewMatrix", m_pGameInstance->Get_CurrentShadowLightViewMatrix())))
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_LightViewMatrix", m_pGameInstance->Get_ShadowLightMatrix(D3DTS::VIEW))))
         return E_FAIL;
 
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_LightProjMatrix", m_pGameInstance->Get_CurrentShadowLightProjMatrix())))
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_LightProjMatrix", m_pGameInstance->Get_ShadowLightMatrix(D3DTS::PROJ))))
         return E_FAIL;
 
     _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();

@@ -4,6 +4,9 @@
 
 NS_BEGIN(Client)
 
+enum LOCKONDIR { LOCKON_LEFT, LOCKON_RIGHT, END };
+
+
 class CAS_LockOn_Yetuga final : public CAI_State
 {
 private:
@@ -16,9 +19,11 @@ public:
 	virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
 private:
-	DIRECTION_INFO				m_eDirInfo = { DIRECTION_INFO::END };
 	_float						m_fDotThreshold = {};
 	_float						m_fMoveSpeed = {};
+
+    LOCKONDIR                   m_eLockOnDir = { LOCKONDIR::END };
+
 
 public:
 	static CAS_LockOn_Yetuga*	Create();

@@ -2,7 +2,6 @@
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 matrix g_LightViewMatrix, g_LightProjMatrix;
-float g_Splits[4];
 
 Texture2D g_DiffuseTexture, g_NormalTexture, g_SpecularTexture;
 

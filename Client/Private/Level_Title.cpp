@@ -39,7 +39,7 @@ void CLevel_Title::Update(_float fTimeDelta)
 	{
 		if (!m_isOpenLevel) {
 
-			if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::TEST))))
+			if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EMBARS))))
 				return;
 
 			m_isOpenLevel = true;
@@ -109,24 +109,6 @@ HRESULT CLevel_Title::Ready_Layer_UI()
     if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
         TEXT("../Bin/Resources/UI/UIData/Tutorial.json"))))
         return E_FAIL;
-
-
-    //if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
-    //    TEXT("../Bin/Resources/UI/UIData/Skill_Info.json"))))
-    //    return E_FAIL;
-
-    //if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
-    //    TEXT("../Bin/Resources/UI/UIData/SkillQuickSlot.json"))))
-    //    return E_FAIL;
-
-
-    //if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
-    //    TEXT("../Bin/Resources/UI/UIData/Skill_Info.json"))))
-    //    return E_FAIL;
-
-    //if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
-    //    TEXT("../Bin/Resources/UI/UIData/SkillQuickSlot.json"))))
-    //    return E_FAIL;
 
 	return S_OK;
 }

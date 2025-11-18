@@ -346,7 +346,7 @@ void CVIBuffer_Point_Instance::Remove_Speed(SPEED_VALUE type)
 	JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET_SPEED)];
 	JobDesc.PassDesc = PassDesc;
 
-	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc);
+	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
     m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
 }
 
@@ -376,7 +376,7 @@ void CVIBuffer_Point_Instance::Remove_Speed()
     JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET_SPEED)];
     JobDesc.PassDesc = PassDesc;
 
-    m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc);
+    m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
     m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
 }
 

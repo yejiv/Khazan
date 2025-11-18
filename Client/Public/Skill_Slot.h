@@ -29,7 +29,8 @@ private:
     
     class CUI_Atlas_Icon*               m_pPointBG = { nullptr };
     class CUI_TextBox*                  m_pSkillPointText = { nullptr };
-
+    class CUI_Slot_Over_Fx*             m_pSlot_Over = { nullptr };
+    class CUI_Slot_Selete_Fx*           m_pSlot_Selete = { nullptr };
 	_int								m_iSkillIndex = { -1 };
 	_int								m_iSkillPoint = { };
 
@@ -48,6 +49,7 @@ private:
     void                                On_PreSkill(const EVENT_SKILL_ON& e);
     void                                Render_SkillInfo();
 
+    void                                Reset_Slot();
 public:
 	static CSkill_Slot*					Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
 	virtual CGameObject*				Clone(void* pArg) override;

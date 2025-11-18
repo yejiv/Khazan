@@ -49,14 +49,13 @@ void CMonster::CheckMinDistanceWithPlayer(_float fMinDist, _float fAnimRatio)
 
 void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject* pGameObject)
 {
-    if (m_pController->Get_BlackBoard()->Get_Value<_bool>(m_strName, "isHit"))
-        return;
+   /* if (m_pController->Get_BlackBoard()->Get_Value<_bool>(m_strName, "isHit"))
+        return;*/
 
     m_fCurrentHP -= fDamage;
 
     if (m_fCurrentHP <= 0.f)
     {
-        //m_isDead = true;
         m_pController->AI_Terminate_All();
     }
     

@@ -5,6 +5,7 @@
 #include "UI_Default_Tex.h"
 #include "BossHp_Gauge.h"
 #include "UI_Announce_MapName.h"
+#include "UI_TextBox.h"
 CBossHp::CBossHp(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
 {
@@ -85,6 +86,12 @@ HRESULT CBossHp::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void*
 			Safe_AddRef(m_pStaminaGauge);
 			m_pStaminaGauge->Set_ShaderPass(7);
 		}
+        if (strName == "Boss_Name")
+        {
+            m_pName = static_cast<CUI_TextBox*>(child);
+            Safe_AddRef(m_pName);
+
+        }
 	}
 	return S_OK;
 }
@@ -102,6 +109,7 @@ HRESULT CBossHp::Update_Switch(void* pArg)
 	m_IsUpdate = true;
 	m_pHPGauge->Setting_Progress(pDesc->pHpValue, pDesc->pHpMaxValue);
 	m_pStaminaGauge->Setting_Progress(pDesc->pStaminaCulValue, pDesc->pStaminaMaxValue);
+    m_pName->Set_Text(pDesc->wstrName);
 	return S_OK;
 }
 
@@ -173,4 +181,5 @@ void CBossHp::Free()
 
 	Safe_Release(m_pHPGauge);
 	Safe_Release(m_pStaminaGauge);
+    Safe_Release(m_pName);
 }

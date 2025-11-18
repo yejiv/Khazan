@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -173,6 +173,7 @@
     <ClInclude Include="..\Public\AS_Attack_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_Boomarang_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_ChainSmash_Imp_Melee.h" />
+    <ClInclude Include="..\Public\AS_CutScene_Yetuga.h" />
     <ClInclude Include="..\Public\AS_DashAttack_Imp_Melee.h" />
     <ClInclude Include="..\Public\AS_Dead_Imp_Melee.h" />
     <ClInclude Include="..\Public\AS_Dead_Imp_Range.h" />
@@ -213,6 +214,7 @@
     <ClInclude Include="..\Public\Door_Gear.h" />
     <ClInclude Include="..\Public\ElevatorS.h" />
     <ClInclude Include="..\Public\Elevator_Gear.h" />
+    <ClInclude Include="..\public\Cursor_Circle_Fx.h" />
     <ClInclude Include="..\Public\FSM_Imp_Melee.h" />
     <ClInclude Include="..\Public\Imp_Melee.h" />
     <ClInclude Include="..\Public\Imp_Sword.h" />
@@ -224,6 +226,7 @@
     <ClInclude Include="..\public\Lantern_Khazan_Spear.h" />
     <ClInclude Include="..\Public\Projectile_Boomarang.h" />
     <ClInclude Include="..\public\Khazan_Spaer_Anim_Damaged.h" />
+    <ClInclude Include="..\public\Skill_BG_Smoke.h" />
     <ClInclude Include="..\public\Skill_Slot_Flag.h" />
     <ClInclude Include="..\Public\Slate_Switch.h" />
     <ClInclude Include="..\public\UI_BladeNexus_Map.h" />
@@ -389,9 +392,12 @@
     <ClInclude Include="..\public\UI_QuickSlot_Item.h" />
     <ClInclude Include="..\public\UI_QuickSlot_Item_Panel.h" />
     <ClInclude Include="..\public\UI_QuickSlot_Skill.h" />
+    <ClInclude Include="..\public\UI_QuickSlot_Skill_Fx.h" />
     <ClInclude Include="..\public\UI_QuickSlot_Skill_Panel.h" />
     <ClInclude Include="..\public\UI_SkillTree.h" />
+    <ClInclude Include="..\public\UI_Slot_Over_Fx.h" />
     <ClInclude Include="..\public\UI_Slot_Smoke.h" />
+    <ClInclude Include="..\public\UI_Slot_Selete_Fx.h" />
     <ClInclude Include="..\public\UI_State.h" />
     <ClInclude Include="..\public\UI_State_Button.h" />
     <ClInclude Include="..\public\UI_State_List.h" />
@@ -429,6 +435,7 @@
     <ClCompile Include="..\Private\AS_Attack_Imp_Range.cpp" />
     <ClCompile Include="..\Private\AS_Boomarang_Imp_Range.cpp" />
     <ClCompile Include="..\Private\AS_ChainSmash_Imp_Melee.cpp" />
+    <ClCompile Include="..\Private\AS_CutScene_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_DashAttack_Imp_Melee.cpp" />
     <ClCompile Include="..\Private\AS_Dead_Imp_Melee.cpp" />
     <ClCompile Include="..\Private\AS_Dead_Imp_Range.cpp" />
@@ -470,6 +477,7 @@
     <ClCompile Include="..\Private\Door_Gear.cpp" />
     <ClCompile Include="..\Private\ElevatorS.cpp" />
     <ClCompile Include="..\Private\Elevator_Gear.cpp" />
+    <ClCompile Include="..\private\Cursor_Circle_Fx.cpp" />
     <ClCompile Include="..\Private\FSM_Imp_Melee.cpp" />
     <ClCompile Include="..\Private\Imp_Melee.cpp" />
     <ClCompile Include="..\Private\Imp_Sword.cpp" />
@@ -481,6 +489,7 @@
     <ClCompile Include="..\private\Lantern_Khazan_Spear.cpp" />
     <ClCompile Include="..\Private\Projectile_Boomarang.cpp" />
     <ClCompile Include="..\private\Khazan_Spaer_Anim_Damaged.cpp" />
+    <ClCompile Include="..\private\Skill_BG_Smoke.cpp" />
     <ClCompile Include="..\private\Skill_Slot_Flag.cpp" />
     <ClCompile Include="..\Private\Slate_Switch.cpp" />
     <ClCompile Include="..\private\UI_BladeNexus_Map.cpp" />
@@ -639,9 +648,12 @@
     <ClCompile Include="..\private\UI_QuickSlot_Item.cpp" />
     <ClCompile Include="..\private\UI_QuickSlot_Item_Panel.cpp" />
     <ClCompile Include="..\private\UI_QuickSlot_Skill.cpp" />
+    <ClCompile Include="..\private\UI_QuickSlot_Skill_Fx.cpp" />
     <ClCompile Include="..\private\UI_QuickSlot_Skill_Panel.cpp" />
     <ClCompile Include="..\private\UI_SkillTree.cpp" />
+    <ClCompile Include="..\private\UI_Slot_Over_Fx.cpp" />
     <ClCompile Include="..\private\UI_Slot_Smoke.cpp" />
+    <ClCompile Include="..\private\UI_Slot_Selete_Fx.cpp" />
     <ClCompile Include="..\private\UI_State.cpp" />
     <ClCompile Include="..\private\UI_State_Button.cpp" />
     <ClCompile Include="..\private\UI_State_List.cpp" />

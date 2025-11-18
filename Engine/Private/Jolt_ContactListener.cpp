@@ -27,7 +27,6 @@ ValidateResult CJolt_ContactListener::OnContactValidate(const Body& inBody1, con
 
 void CJolt_ContactListener::OnContactAdded(const Body& inBody1, const Body& inBody2, const ContactManifold& inManifold, ContactSettings& ioSettings)
 {
-	
 	COLLISION_DESC* pBody1Desc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inBody1.GetUserData()));
 	COLLISION_DESC* pBody2Desc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inBody2.GetUserData()));
 

@@ -4,7 +4,7 @@
 #include "Body_Imp_Melee.h"
 #include "BlackBoard.h"
 #include "AI_Controller.h"
-#include "FSM_Imp_Range.h"
+#include "FSM_Imp_Melee.h"
 
 
 CAS_ChainSmash_Imp_Melee::CAS_ChainSmash_Imp_Melee()
@@ -27,7 +27,7 @@ void CAS_ChainSmash_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwner, 
     if (pModel->Play_Animation(fTimeDelta))
     {
         pImp->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pImp->Get_Name(), "isChainSmashFinished", true);
-        pFSM->Change_State(ENUM_CLASS(IMPRANGE_STATE::IDLE), pOwner);
+        pFSM->Change_State(ENUM_CLASS(IMPMELEE_STATE::IDLE), pOwner);
     }
 }
 

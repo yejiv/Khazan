@@ -3,6 +3,10 @@
 #include "Client_Defines.h"
 #include "Prop_Interactive.h"
 
+NS_BEGIN(Engine)
+class CBody;
+NS_END
+
 NS_BEGIN(Client)
 
 class CElevatorS final : public CProp_Interactive
@@ -43,6 +47,9 @@ public:
     void Set_Elevator_UpPos(_float4 vUpPos) { m_vUpPos = vUpPos; }
     void Set_Elevator_DownPos(_float4 vDownPos) { m_vDownPos = vDownPos; }
 
+private:
+    CBody* m_pBodyCom = { nullptr };
+
     ELEVATOR_STATE m_eState = { ELEVATOR_STATE::IDLE_UP };
     _bool m_isActive = { false };
 
@@ -57,6 +64,7 @@ private:
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
     HRESULT Ready_PartObjects(void* pArg);
+    HRESULT Ready_Collision(void* pArg);
 
 public:
     static CElevatorS* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

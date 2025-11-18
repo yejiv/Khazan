@@ -3,8 +3,9 @@
 SamplerComparisonState ComparisonSampler
 {
     filter = comparison_min_mag_linear_mip_point;
-    AddressU = clamp;
-    AddressV = clamp;
+    AddressU = border;
+    AddressV = border;
+    BorderColor = float4(1.f, 1.f, 1.f, 1.f);
     ComparisonFunc = less;
 };
 

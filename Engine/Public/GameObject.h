@@ -30,6 +30,7 @@ public:
 	virtual HRESULT Deferred_Render(ID3D11DeviceContext* pDeferredContext);
 	virtual HRESULT Render_Shadow() { return S_OK; }
 	virtual HRESULT Render_Outline() { return S_OK; }
+    virtual HRESULT Render_Motion() { return S_OK; }
 
 public:
 	void Set_IsPool(_bool isPool) { m_isPool = isPool; }

@@ -20,7 +20,7 @@ vector g_vMtrlAmbient = { 1.f, 1.f, 1.f, 1.f }, g_vMtrlSpecular = { 1.f, 1.f, 1.
 // ===== Textures =====
 Texture2D g_DiffuseTexture, g_NormalTexture, g_DepthTexture, g_ShadeTexture, g_SpecularTexture, g_EmissiveTexture;
 Texture2D g_LightDepthTexture, g_PostSceneTexture, g_BlurXTexture, g_BloomTexture, g_FogTexture, g_OutlineTexture;
-Texture2D g_NoiseTexture, g_SSAOTexture, g_CombinedTexture, g_LUTTexture;
+Texture2D g_NoiseTexture, g_SSAOTexture, g_CombinedTexture, g_LUTTexture, g_VelocityTexture;
 
 // ===== Cascade Shadow =====
 int g_iTextureArrayIndex;
@@ -30,6 +30,10 @@ matrix g_LightViewMatrices[4], g_LightProjMatrices[4];
 float2 g_vShadowMapSize;
 float g_fBias;
 float g_fShadowIntensity;
+// ===== Revised Cascade Shadow =====
+matrix g_LightViewMatrix, g_LightProjMatrix;
+Texture2D g_ShadowTexture;
+float g_fSplitFar;
 
 // ===== PCF =====
 Texture2DArray<float> g_TextureArray;
@@ -306,7 +310,7 @@ PS_OUT_LIGHT PS_POINT(PS_IN In)
     //  float fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), 50.f);
     //  
     //  Out.vSpecular = (g_vLightSpecular * g_vMtrlSpecular) * fSpecular * fAtt;
-    
+     
     return Out;
 }
 
@@ -322,7 +326,6 @@ PS_OUT_BACKBUFFER PS_POSTSCENE(PS_IN In)
     vector vShade = g_ShadeTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    //  Out.vColor = vDiffuse * vShade;
     Out.vColor = vDiffuse * vShade + vSpecular;
     
     if (!g_isEnableShadow)
@@ -343,21 +346,16 @@ PS_OUT_BACKBUFFER PS_POSTSCENE(PS_IN In)
     
     float fCameraViewDepth = vWorldPos.z;
 
+    if (fCameraViewDepth > g_fSplitFar)
+    {
+        Out.vColor = lerp(Out.vColor * g_fIntensity, Out.vColor, 1.f);
+        return Out;
+    }
+    
     vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
     
-    uint iCascadeIndex = 0;
-    
-    if (fCameraViewDepth < g_Splits[0])
-        iCascadeIndex = 0;
-    else if (fCameraViewDepth < g_Splits[1])
-        iCascadeIndex = 1;
-    else if (fCameraViewDepth < g_Splits[2])
-        iCascadeIndex = 2;
-    else
-        iCascadeIndex = 3;
-    
-    vector vPosition = mul(vWorldPos, g_LightViewMatrices[iCascadeIndex]);
-    vPosition = mul(vPosition, g_LightProjMatrices[iCascadeIndex]);
+    vector vPosition = mul(vWorldPos, g_LightViewMatrix);
+    vPosition = mul(vPosition, g_LightProjMatrix);
     
     float2 vTexcoord;
     vTexcoord.x = (vPosition.x / vPosition.w) * 0.5f + 0.5f;
@@ -370,18 +368,22 @@ PS_OUT_BACKBUFFER PS_POSTSCENE(PS_IN In)
 
     for (int i = -1; i <= 1; ++i)
     {
-        for (int j = -1; j <= i; ++j)
+        for (int j = -1; j <= 1; ++j)
         {
             vOffset.x = j * 1.f / g_vShadowMapSize.x;
             vOffset.y = i * 1.f / g_vShadowMapSize.y;
-            float3 vSampleCoord = saturate(float3(vTexcoord + vOffset, iCascadeIndex));
-            fShadowSum += g_TextureArray.SampleCmpLevelZero(ComparisonSampler, vSampleCoord, fLightDepth - g_fBias);
+            float2 vSampleUV = vTexcoord + vOffset;
+            
+            if (0.f > vSampleUV.x || 1.f < vSampleUV.x || 0.f > vSampleUV.y || 1.f < vSampleUV.y)
+                fShadowSum += 1.f;
+            else
+                fShadowSum += g_ShadowTexture.SampleCmpLevelZero(ComparisonSampler, vSampleUV, fLightDepth - g_fBias);
         }
     }
     
     fShadowSum /= 9.f;
     
-    Out.vColor = lerp(Out.vColor * g_fShadowIntensity, Out.vColor, fShadowSum);
+    Out.vColor = lerp(Out.vColor * g_fIntensity, Out.vColor, fShadowSum);
     
     return Out;
 }
@@ -817,37 +819,17 @@ PS_OUT_BACKBUFFER PS_MOTION_BLUR(PS_IN In)
     float3 vSceneColor = g_CombinedTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
     float3 vFinalColor = float3(0.f, 0.f, 0.f);
     
-    if (g_isEnableMotionBlur)
-    {
-        vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
-        float fCurDepth = vDepthDesc.x;
-    
-        // Depth -> World Position
-        float4 vWorldPos;
+    // 벨로시티 맵 샘플링
+    float4 vVelocityDesc = g_VelocityTexture.Sample(DefaultSampler, In.vTexcoord);
+    float2 vMotionVector = vVelocityDesc.rg;
+    float fCurDepth = g_VelocityTexture.Sample(DefaultSampler, In.vTexcoord).b;
 
-        vWorldPos.x = In.vTexcoord.x * 2.f - 1.f;
-        vWorldPos.y = In.vTexcoord.y * -2.f + 1.f;
-        vWorldPos.z = vDepthDesc.x;
-        vWorldPos.w = 1.f;
-
-        vWorldPos = vWorldPos * vDepthDesc.y;
-        vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
-        vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+    // 모션 벡터 길이 계산 및 임계값 설정 (현재 Dynamic 기록 안 되는 문제로 임시 예외 처리)
+    float fMotionLength = length(vMotionVector);
+    float fThreshold = 0.0001f;
     
-        // 월드 포지션 -> 이전 뷰 투영 행렬 스페이스로 변환
-        float4 vPrevPos = mul(vWorldPos, g_PrevViewMatrix);
-        vPrevPos = mul(vPrevPos, g_PrevProjMatrix);
-        vPrevPos /= vPrevPos.w;
-    
-        // Prev UV = Texcoord 범위로 변환 (-1 ~ 1 -> 0 ~ 1)
-        float2 vPrevUV;
-        vPrevUV.x = vPrevPos.x * 0.5f + 0.5f;
-        vPrevUV.y = vPrevPos.y * -0.5f + 0.5f;
-    
-        // 현재 프레임의 UV 좌표와의 차이 계산
-        float2 vCurUV = In.vTexcoord;
-        float2 vMotionVector = vCurUV - vPrevUV;
-    
+    if (g_isEnableMotionBlur && (fMotionLength > fThreshold))
+    {    
         float fSampleCount = 0.f;
     
         [loop]
@@ -855,18 +837,18 @@ PS_OUT_BACKBUFFER PS_MOTION_BLUR(PS_IN In)
         {
             // Ratio, Sample UV, Depth 비교 -> 경계선 처리, 색 누적, 샘플 개수 누적
             float fRatio = (float) i / (float) (g_iNumSamples - 1);
-            float2 vSampleUV = vCurUV - vMotionVector * fRatio;
+            float2 vSampleUV = In.vTexcoord - vMotionVector * fRatio;
         
             float fSampleDepth = g_DepthTexture.Sample(PointSampler, vSampleUV).x;
         
-            if (abs(fSampleDepth - fCurDepth) > g_fBias)
-                break;
+            //  if (abs(fSampleDepth - fCurDepth) > g_fBias)
+            //      break;
         
             vFinalColor += g_CombinedTexture.Sample(ClampSampler, vSampleUV).rgb;
             fSampleCount += 1.f;
         }
-        
-        vFinalColor = vFinalColor / max(fSampleCount, 1e-6);
+
+        vFinalColor = lerp(vSceneColor, vFinalColor / max(fSampleCount, 1e-6), g_fStrength);
     }
     else
         vFinalColor = vSceneColor;
@@ -876,9 +858,53 @@ PS_OUT_BACKBUFFER PS_MOTION_BLUR(PS_IN In)
     return Out;
 }
 
+PS_OUT_BACKBUFFER PS_STATIC_VELOCITY(PS_IN In)
+{
+    PS_OUT_BACKBUFFER Out;
+
+    vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
+    float fCurDepth = vDepthDesc.x;
+    
+    if (fCurDepth >= 1.f)
+    {
+        Out.vColor = float4(0.f, 0.f, 0.f, 1.f);
+        return Out;
+    }
+    
+    // Depth -> World Position
+    float4 vWorldPos;
+
+    vWorldPos.x = In.vTexcoord.x * 2.f - 1.f;
+    vWorldPos.y = In.vTexcoord.y * -2.f + 1.f;
+    vWorldPos.z = vDepthDesc.x;
+    vWorldPos.w = 1.f;
+
+    vWorldPos = vWorldPos * vDepthDesc.y;
+    vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
+    vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+    
+    // 월드 포지션 -> 이전 뷰 투영 행렬 스페이스로 변환
+    float4 vPrevPos = mul(vWorldPos, g_PrevViewMatrix);
+    vPrevPos = mul(vPrevPos, g_PrevProjMatrix);
+    vPrevPos /= vPrevPos.w;
+    
+    // Prev UV = Texcoord 범위로 변환 (-1 ~ 1 -> 0 ~ 1)
+    float2 vPrevUV;
+    vPrevUV.x = vPrevPos.x * 0.5f + 0.5f;
+    vPrevUV.y = vPrevPos.y * -0.5f + 0.5f;
+    
+    // 현재 프레임의 UV 좌표와의 차이 계산
+    float2 vCurUV = In.vTexcoord;
+    float2 vMotionVector = vCurUV - vPrevUV;
+    
+    Out.vColor = float4(vMotionVector.x, vMotionVector.y, fCurDepth, 1.f);
+
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
-    pass Debug // 1
+    pass Debug // 0
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -889,7 +915,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_DEBUG();
     }
 
-    pass Directional // 2
+    pass Directional // 1
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -1030,5 +1056,16 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MOTION_BLUR();
+    }
+
+    pass StaticVelocity // 14
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_STATIC_VELOCITY();
     }
 }

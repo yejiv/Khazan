@@ -76,7 +76,7 @@ HRESULT CLevel_Shader::Initialize()
 		}
 
 		if (ImGui::Checkbox("Shadow", &m_isRenderShadow))
-			m_pGameInstance->Set_EnableShadow(m_isRenderShadow);;
+			m_pGameInstance->Set_EnableShadow(m_isRenderShadow);
 
 		if (m_isRenderShadow)
 		{
@@ -419,6 +419,10 @@ HRESULT CLevel_Shader::Initialize()
                     m_MotionBlurDesc.iNumSamples = iNumSamples;
                     m_pGameInstance->Set_MotionBlurDesc(m_MotionBlurDesc);
                 }
+
+                // 블러 강도
+                if (ImGui::SliderFloat("Motion Blur Strength", &m_MotionBlurDesc.fStrength, 0.f, 1.f, "%.1f"))
+                    m_pGameInstance->Set_MotionBlurDesc(m_MotionBlurDesc);
 
                 ImGui::Separator();
             }

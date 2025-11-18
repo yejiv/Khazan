@@ -77,7 +77,6 @@ HRESULT CAI_Controller::Initialize(CGameObject* pOwner, string FileName)
 
 void CAI_Controller::Update(class CGameObject* pOwner, _float fTimeDelta)
 {
-
 }
 
 HRESULT CAI_Controller::Load_Perception(CGameObject* pOwner, const string& FilePath)

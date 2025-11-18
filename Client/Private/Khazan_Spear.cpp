@@ -135,7 +135,11 @@ void CKhazan_Spear::Priority_Update(_float fTimeDelta)
     __super::Priority_Update(fTimeDelta);
 
     if (m_pGameInstance->Key_Down(DIK_P))
+    {
         m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(516.f, -11.f, 264.f, 1.f));
+        m_pCharVirCom->Set_Position(XMVectorSet(516.f, -11.f, 264.f, 1.f));
+    }
+        //m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(516.f, -11.f, 264.f, 1.f));
 
 
 }
@@ -197,13 +201,18 @@ void CKhazan_Spear::Update(_float fTimeDelta)
     {
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Com_Lantern_Off"));
     }
+    if (m_pCharVirCom->Get_isGround())
+    {
+        int a = 0;
+    }
+    else
+    {
+        int a = 0;
+    }
 }
 
 void CKhazan_Spear::Late_Update(_float fTimeDelta)
 {
-
-
-
 
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
@@ -2046,12 +2055,12 @@ HRESULT CKhazan_Spear::Ready_Collision()
     tCharVirDesc.eShapeType = SHAPE::CAPSULE;
     tCharVirDesc.vPos = vPos;
     tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 0.7f, 0.f);
+    tCharVirDesc.vShapeOffset = _float3(0.f, 0.75f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
     tCharVirDesc.fRadius = 0.3f;
     tCharVirDesc.fHeight = 1.f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
-    tCharVirDesc.fMass = 3.f;
+    tCharVirDesc.fMass = 60.f;
     tCharVirDesc.fMaxStrength = 0.f;
     tCharVirDesc.fPredictiveContactDistance = 0.3f;
     tCharVirDesc.iMaxConstraintIterations = 20;
@@ -2059,10 +2068,10 @@ HRESULT CKhazan_Spear::Ready_Collision()
     tCharVirDesc.fPenetrationRecoverySpeed = 1.7f;
     m_tCollisionDesc.pGameObject = this;
     m_tCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
+    m_tCollisionDesc.strName = TEXT("Khazan_Body");
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
-
     tCharVirDesc.vStickToFloorStepDown = _float3(0.f, -0.5f, 0);
-    tCharVirDesc.vWalkStairsStepUp = _float3(0.f, 3.f, 0.f);
+    tCharVirDesc.vWalkStairsStepUp = _float3(0.f, 0.5f, 0.f);
     tCharVirDesc.fWalkStairsMinStepForward = 0.06f;
     tCharVirDesc.fWalkStairsStepForwardTest = 0.15f;
 

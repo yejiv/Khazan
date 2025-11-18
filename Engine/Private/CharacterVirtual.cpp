@@ -51,6 +51,7 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 	SettingDesc.mSupportingVolume = pDesc->fSupportingVolume;
 	SettingDesc.mMaxSlopeAngle = DegreesToRadians(pDesc->fMaxSlopeAngle);
 	SettingDesc.mMaxStrength = pDesc->fMaxStrength;
+    SettingDesc.mMass = pDesc->fMass;
 	switch (pDesc->eShapeType)
 	{
 	case SHAPE::BOX:
@@ -125,11 +126,47 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vecto
     if (!pTransform || !m_pCharVir)
         return;
 
-    // dt 유효성 체크
     if (!std::isfinite(fTimeDelta) || fTimeDelta <= 0.f)
         return;
 
-    // ===== 중력 세팅 =====
+    _vector tRotVec = pTransform->Get_Rotation_Quat();
+    JPH::Quat tRot = LoadQuat(tRotVec);
+    m_pCharVir->SetRotation(tRot);
+
+    const RVec3 curCharPos = m_pCharVir->GetPosition();
+    JPH::Vec3   curCharPosF(
+        (float)curCharPos.GetX(),
+        (float)curCharPos.GetY(),
+        (float)curCharPos.GetZ()
+    );
+
+    _vector tPosVec = pTransform->Get_State(STATE::POSITION);
+    JPH::Vec3 tPos = LoadVec3(tPosVec);
+
+    JPH::Vec3 rootDelta = tPos - curCharPosF;
+
+    rootDelta.SetY(0.0f);
+
+    if (fTimeDelta > 0.f && rootDelta.LengthSq() > 0.0f)
+    {
+        JPH::Vec3 rootVel = rootDelta / fTimeDelta;
+
+        float vy = m_vVelocity.GetY();
+
+        // 벽 쪽으로 너무 파고드는 경우를 줄이고 싶으면 여기서
+        rootVel = m_pCharVir->CancelVelocityTowardsSteepSlopes(rootVel);
+
+        m_vVelocity = rootVel;
+        m_vVelocity.SetY(vy);
+    }
+
+    pTransform->Set_State(
+        STATE::POSITION,
+        XMVectorSet(curCharPosF.GetX(), curCharPosF.GetY(), curCharPosF.GetZ(), 1.f)
+    );
+    // 회전은 애니메이션이 먹인 걸 그대로 쓰고 싶으면 여기선 안 건드리고,
+    // 나중에 필요하면 CharVir 회전을 Transform에서 읽어와서 Set_Rotation 해도 됨.
+
     {
         float gx = XMVectorGetX(vGravity);
         float gy = XMVectorGetY(vGravity);
@@ -138,13 +175,11 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vecto
         if (std::isfinite(gx) && std::isfinite(gy) && std::isfinite(gz))
             m_vGravity = JPH::Vec3(gx, gy, gz);
         else
-            m_vGravity = JPH::Vec3(0.f, g_fGravity, 0.f); // fallback
+            m_vGravity = JPH::Vec3(0.f, g_fGravity, 0.f);
     }
 
-    // ===== 한 번만 고정 스텝 처리 =====
     StepFixed(fTimeDelta);
 
-    // ===== 물리 결과를 Transform에 바로 반영 =====
     const RVec3 pos = m_pCharVir->GetPosition();
     const JPH::Quat rot = m_pCharVir->GetRotation();
 
@@ -158,45 +193,6 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vecto
     );
 }
 
-void CCharacterVirtual::Sync_Update(_matrix WorldMatirx)
-{
-    _vector vScale, vRotation, vTranslation;
-
-    XMMatrixDecompose(&vScale, &vRotation, &vTranslation, WorldMatirx);
-
-    Set_PosRot(vTranslation, vRotation);
-}
-
-void CCharacterVirtual::Update(_float fTimeDelta, _vector& outQuatRotation, _vector& outPosition, _vector vGravity)
-{
-    if (!m_pCharVir)
-        return;
-
-    if (!std::isfinite(fTimeDelta) || fTimeDelta <= 0.f)
-        return;
-
-    // ===== 중력 세팅 =====
-    {
-        float gx = XMVectorGetX(vGravity);
-        float gy = XMVectorGetY(vGravity);
-        float gz = XMVectorGetZ(vGravity);
-
-        if (std::isfinite(gx) && std::isfinite(gy) && std::isfinite(gz))
-            m_vGravity = JPH::Vec3(gx, gy, gz);
-        else
-            m_vGravity = JPH::Vec3(0.f, -980.f, 0.f);
-    }
-
-    // ===== 한 번만 고정 스텝 처리 =====
-    StepFixed(fTimeDelta);
-
-    // ===== 결과를 바로 out 파라미터로 반환 =====
-    const RVec3 pos = m_pCharVir->GetPosition();
-    const JPH::Quat rot = m_pCharVir->GetRotation();
-
-    outPosition = XMVectorSet((float)pos.GetX(), (float)pos.GetY(), (float)pos.GetZ(), 1.f);
-    outQuatRotation = XMVectorSet(rot.GetX(), rot.GetY(), rot.GetZ(), rot.GetW());
-}
 
 void CCharacterVirtual::Set_PosRot(_vector vPos, _vector vRot)
 {
@@ -211,44 +207,34 @@ void CCharacterVirtual::StepFixed(_float fTimeDelta)
     if (!m_pCharVir)
         return;
 
-    // 현재 접지 상태
-    const auto ground_state = m_pCharVir->GetGroundState();
-    const bool onGround = (ground_state == JPH::CharacterVirtual::EGroundState::OnGround);
-
-    // ===== 1) 중력 적용 =====
-    if (!onGround)
+    if (!m_pCharVir->IsSupported())
     {
-        // v = v + g * dt
-        m_vVelocity += m_vGravity * fTimeDelta * m_pCharVir->GetMass();
+        m_vVelocity += m_vGravity * fTimeDelta;
 
-        // 낙하 속도 제한 (원하면 값 조절)
         const _float maxFallSpeed = -50.0f;
         if (m_vVelocity.GetY() < maxFallSpeed)
             m_vVelocity.SetY(maxFallSpeed);
     }
     else
     {
-        // 땅에 붙어있는데 아직 아래로 남아 있으면 0으로 정리
         if (m_vVelocity.GetY() < 0.0f)
             m_vVelocity.SetY(0.0f);
     }
 
-    // ===== 2) 감쇠(마찰) =====
-    // 땅에 있으면 m_fLoss, 공중이면 m_fAirLoss 사용
-    const _float loss = onGround ? m_fLoss : m_fAirLoss;
+
+    const _float loss = m_pCharVir->IsSupported() ? m_fLoss : m_fAirLoss;
     if (loss > 0.0f)
     {
-        const _float k = expf(-loss * fTimeDelta); // 지수 감쇠
+        const _float k = expf(-loss * fTimeDelta);
         m_vVelocity.SetX(m_vVelocity.GetX() * k);
         m_vVelocity.SetY(m_vVelocity.GetY() * k);
         m_vVelocity.SetZ(m_vVelocity.GetZ() * k);
     }
 
-    // NaN / inf 보호
+
     if (!IsFiniteVec3(m_vVelocity))
         m_vVelocity = JPH::Vec3::sZero();
 
-    // ===== 3) Jolt에 속도 적용 + ExtendedUpdate 호출 =====
     m_pCharVir->SetLinearVelocity(m_vVelocity);
 
     m_pGameInstance->CharVir_ExtendedUpdate(
@@ -261,7 +247,6 @@ void CCharacterVirtual::StepFixed(_float fTimeDelta)
         m_tEXUpdateSetting
     );
 
-    // Jolt가 충돌로 속도 조절했을 수 있으니, 다시 캐싱해도 됨
     m_vVelocity = m_pCharVir->GetLinearVelocity();
 }
 
@@ -284,6 +269,8 @@ void CCharacterVirtual::Set_Gravity(_float fGravity)
 {
 	m_pBodyInterface->SetGravityFactor(m_pCharVir->GetInnerBodyID(), fGravity);
 }
+
+
 
 void CCharacterVirtual::Set_VelocityPower(_vector vDir, _float fPower, _float fLoss)
 {
@@ -311,7 +298,10 @@ void CCharacterVirtual::Collision_Active(_bool isActive)
 
 _bool CCharacterVirtual::Get_isGround()
 {
-	return m_pCharVir->GetGroundState() == JPH::CharacterVirtual::EGroundState::OnGround;
+    if (m_pCharVir->IsSupported())
+        return true;
+
+	return false;
 }
 
 void CCharacterVirtual::Fake_Release()
@@ -352,10 +342,6 @@ CComponent* CCharacterVirtual::Clone(void* pArg)
 void CCharacterVirtual::Free()
 {
 	__super::Free();
-    if (m_pBodyInterface->IsAdded(m_BodyId))
-    {
-        m_pBodyInterface->RemoveBody(m_BodyId);
-    }
 
 	Safe_Delete(m_pBodyFilter);
 	Safe_Delete(m_pShapeFilter);
