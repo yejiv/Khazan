@@ -885,6 +885,9 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
     m_Prototypes_Inter.push_back("Trigger");
     m_Prototypes_Inter.push_back("Monster");
     m_Prototypes_Inter.push_back("SmallElevator");
+    m_Prototypes_Inter.push_back("Lever");
+    m_Prototypes_Inter.push_back("Lever_Gear");
+    m_Prototypes_Inter.push_back("Door_Gear");
 
 #ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
@@ -1041,6 +1044,51 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 
                     CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                         ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_SmallElevator"), TIME_CHANNEL::WORLD, &SmallElevatorDesc), );
+                }
+                else if ("Lever" == m_Prototypes_Inter[m_iIndex_PrtInter])
+                {
+                    CLever::LEVER_DESC LeverDesc = {};
+
+                    LeverDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    LeverDesc.eLevel = LEVEL::MAP;
+                    memcpy(LeverDesc.szModelName, strModelTag.c_str(), sizeof(LeverDesc.szModelName));		// 프로토타입 태그명
+
+                    XMStoreFloat4x4(&LeverDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    LeverDesc.eInteractiveType = INTERACTIVE_TYPE::LEVER;										// 상호 작용 오브젝트 타입
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Lever"), TIME_CHANNEL::WORLD, &LeverDesc), );
+                }
+                else if ("Lever_Gear" == m_Prototypes_Inter[m_iIndex_PrtInter])
+                {
+                    CLever_Gear::LEVER_GEAR_DESC LeverGearDesc = {};
+
+                    LeverGearDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    LeverGearDesc.eLevel = LEVEL::MAP;
+                    memcpy(LeverGearDesc.szModelName, strModelTag.c_str(), sizeof(LeverGearDesc.szModelName));		// 프로토타입 태그명
+
+                    XMStoreFloat4x4(&LeverGearDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    LeverGearDesc.eInteractiveType = INTERACTIVE_TYPE::GEAR1;										// 상호 작용 오브젝트 타입
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Lever_Gear"), TIME_CHANNEL::WORLD, &LeverGearDesc), );
+                }
+                else if ("Door_Gear" == m_Prototypes_Inter[m_iIndex_PrtInter])
+                {
+                    CDoor_Gear::DOOR_GEAR_DESC DoorGearDesc = {};
+
+                    DoorGearDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    DoorGearDesc.eLevel = LEVEL::MAP;
+                    memcpy(DoorGearDesc.szModelName, strModelTag.c_str(), sizeof(DoorGearDesc.szModelName));		// 프로토타입 태그명
+
+                    XMStoreFloat4x4(&DoorGearDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    DoorGearDesc.eInteractiveType = INTERACTIVE_TYPE::GEAR2;										// 상호 작용 오브젝트 타입
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Door_Gear"), TIME_CHANNEL::WORLD, &DoorGearDesc), );
                 }
 #pragma endregion
 
@@ -1395,6 +1443,20 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
 
                     pElevator->Set_Elevator_DownPos(vSetPos);
                 } SEPARATOR;
+            }
+            if (INTERACTIVE_TYPE::LEVER == m_pFixPropObj->Get_InteractiveType() ||
+                INTERACTIVE_TYPE::GEAR1 == m_pFixPropObj->Get_InteractiveType() ||
+                INTERACTIVE_TYPE::GEAR2 == m_pFixPropObj->Get_InteractiveType())
+            {
+                CProp_Interactive* pLeorGe = static_cast<CProp_Interactive*>(m_pFixPropObj);
+
+                ImGui::Text("== LEVER OR GEAR INFORMATION ==");
+                ImGui::Text("BEFORE EVENT ID : %d", m_iInteractEventID);
+                SEPARATOR;
+                ImGui::Text("FIX EVENT ID : "); SAMELINE;
+                ImGui::InputInt("##fix_event_id", &m_iFixEventID);
+
+                pLeorGe->Set_EventID(m_iFixEventID);
             }
 
 #pragma endregion
@@ -1912,6 +1974,15 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 
                             m_vElevatorUpPos = pElevator->Get_Elevator_UpPos();
                             m_vElevatorDownPos = pElevator->Get_Elevator_DownPos();
+                        }
+
+                        if (INTERACTIVE_TYPE::LEVER == m_pFixPropObj->Get_InteractiveType() ||
+                            INTERACTIVE_TYPE::GEAR1 == m_pFixPropObj->Get_InteractiveType() ||
+                            INTERACTIVE_TYPE::GEAR2 == m_pFixPropObj->Get_InteractiveType())
+                        {
+                            CProp_Interactive* pLever = static_cast<CProp_Interactive*>(m_pFixPropObj);
+
+                            m_iFixEventID = m_iInteractEventID = pLever->Get_EventID();
                         }
 
 						m_isFixInteractObjectWindow = true;
@@ -4132,6 +4203,14 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 
                 WriteFile(hObjectFile, &ElevatorPos, sizeof(CElevatorS::ELEVATOR_POS), &dwByte, nullptr);
             }
+            if (INTERACTIVE_TYPE::LEVER == eType ||
+                INTERACTIVE_TYPE::GEAR1 == eType ||
+                INTERACTIVE_TYPE::GEAR2 == eType)
+            {
+                _int iEventID = static_cast<CProp_Interactive*>(pProp)->Get_EventID();
+
+                WriteFile(hObjectFile, &iEventID, sizeof(_int), &dwByte, nullptr);
+            }
 		}
 	}
 
@@ -4725,11 +4804,65 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 
                 ElevatorDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
 
-                // 상자 타입인 경우 아이템 박스 구조체도 슥슥 쇽쇽
+                // 엘리베이터인 경우 위 위치, 아래 위치 가져오기
                 CHECK_FALSE(ReadFile(hObjectFile, &ElevatorDesc.ElevatorPos, sizeof(CElevatorS::ELEVATOR_POS), &dwByte, nullptr), false);
 
                 CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                     ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_SmallElevator"), TIME_CHANNEL::WORLD, &ElevatorDesc), false);
+            }
+            else if (INTERACTIVE_TYPE::LEVER == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CLever::LEVER_DESC LeverDesc = {};
+
+                LeverDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                LeverDesc.eLevel = LEVEL::MAP;
+                memcpy(LeverDesc.szModelName, TEXT("Prototype_Component_Model_Lever"), sizeof(LeverDesc.szModelName));		// 프로토타입 태그명
+
+                LeverDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+                LeverDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+                // 레버나 기어인 경우 이벤트 아이디 가져오기
+                CHECK_FALSE(ReadFile(hObjectFile, &LeverDesc.iEventID, sizeof(_int), &dwByte, nullptr), false);
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Lever"), TIME_CHANNEL::WORLD, &LeverDesc), false);
+            }
+            else if (INTERACTIVE_TYPE::GEAR1 == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CLever_Gear::LEVER_GEAR_DESC LeverGearDesc = {};
+
+                LeverGearDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                LeverGearDesc.eLevel = LEVEL::MAP;
+                memcpy(LeverGearDesc.szModelName, TEXT("Prototype_Component_Model_Lever_Gear"), sizeof(LeverGearDesc.szModelName));		// 프로토타입 태그명
+
+                LeverGearDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+                LeverGearDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+                // 레버나 기어인 경우 이벤트 아이디 가져오기
+                CHECK_FALSE(ReadFile(hObjectFile, &LeverGearDesc.iEventID, sizeof(_int), &dwByte, nullptr), false);
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Lever_Gear"), TIME_CHANNEL::WORLD, &LeverGearDesc), false);
+            }
+            else if (INTERACTIVE_TYPE::GEAR2 == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CDoor_Gear::DOOR_GEAR_DESC DoorGearDesc = {};
+
+                DoorGearDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                DoorGearDesc.eLevel = LEVEL::MAP;
+                memcpy(DoorGearDesc.szModelName, TEXT("Prototype_Component_Model_Door_Gear"), sizeof(DoorGearDesc.szModelName));		// 프로토타입 태그명
+
+                DoorGearDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+                DoorGearDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+                // 레버나 기어인 경우 이벤트 아이디 가져오기
+                CHECK_FALSE(ReadFile(hObjectFile, &DoorGearDesc.iEventID, sizeof(_int), &dwByte, nullptr), false);
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Door_Gear"), TIME_CHANNEL::WORLD, &DoorGearDesc), false);
             }
 
 			CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));

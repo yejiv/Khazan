@@ -31,20 +31,31 @@ HRESULT CAI_Controller_Yetuga::Initialize(CCreature* pOwner)
 
 void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 {
-
-	m_pPerception->Update(pOwner,m_pBB,fTimeDelta);
-	_float fPrevTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
-
-    if (m_pBB->Get_Value<_bool>("Yetuga", "isDetected"))
+     
+    if (m_pGameInstance->Key_Down(DIK_T))
     {
-        m_pBB->Set_Value(m_strMonstertag, "CurrentTime", fPrevTime + fTimeDelta);
+        m_pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::CUTSCENE), pOwner);
     }
-	else
-		m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
+    
+
+    //if (m_isActiveController)
+    //{
+        m_pPerception->Update(pOwner, m_pBB, fTimeDelta);
+        _float fPrevTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
+
+        if (m_pBB->Get_Value<_bool>(m_strMonstertag, "isDetected"))
+        {
+            m_pBB->Set_Value(m_strMonstertag, "CurrentTime", fPrevTime + fTimeDelta);
+        }
+        else
+            m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
 
 
-    m_pBT->Update();
 
+        m_pBT->Update();
+    //}
+
+	
     m_pFSM->Update(pOwner, fTimeDelta * 1.2f);
 
 }
@@ -198,7 +209,7 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 
 #pragma endregion
 
-	/*if ("IceBreath" == name)
+	else if ("IceBreath" == name)
 	{
 		return [pYetuga](CBlackBoard* BB)->_bool
 			{
@@ -222,7 +233,7 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 				}
 				return false;
 			};
-	}*/
+	}
 
 
 	else if ("Armageddon" == name)
@@ -646,30 +657,30 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 
 #pragma endregion
 
-	//else if ("IceBreath" == name)
-	//{
-	//	return [pYetuga](CBlackBoard* BB)-> BTNODESTATE
-	//		{
+	else if ("IceBreath" == name)
+	{
+		return [pYetuga](CBlackBoard* BB)-> BTNODESTATE
+			{
 
-	//			if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isIceBreathFinished"))
-	//			{
- //                   BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", true);
+				if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isIceBreathFinished"))
+				{
+                    BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", true);
 
-	//				return BTNODESTATE::SUCCESS;
-	//			}
+					return BTNODESTATE::SUCCESS;
+				}
 
-	//			BB->Set_Value(pYetuga->Get_Name(), "isIceBreath", true);
-	//			BB->Set_Value(pYetuga->Get_Name(), "isIceBreathFinished", false);
-	//			BB->Set_Value(pYetuga->Get_Name(), "isSuperArmor", true);
- //               BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", true);
+				BB->Set_Value(pYetuga->Get_Name(), "isIceBreath", true);
+				BB->Set_Value(pYetuga->Get_Name(), "isIceBreathFinished", false);
+				BB->Set_Value(pYetuga->Get_Name(), "isSuperArmor", true);
+                BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", true);
 
 
-	//			pYetuga->Get_Controller()->Get_State_Machine()->
-	//				Change_State(ENUM_CLASS(YETUGA_STATE::ICEBREATH), pYetuga);
-	//			return BTNODESTATE::RUNNING;
+				pYetuga->Get_Controller()->Get_State_Machine()->
+					Change_State(ENUM_CLASS(YETUGA_STATE::ICEBREATH), pYetuga);
+				return BTNODESTATE::RUNNING;
 
-	//		};
-	//}
+			};
+	}
 
 
 	else if ("Armageddon" == name)
@@ -1097,7 +1108,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 
 #pragma region ATTACK SELECTOR
 
-	/*else if ("IceBreath" == name)
+	else if ("IceBreath" == name)
 	{
 		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
 			{
@@ -1115,7 +1126,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
                     BB->Set_Value<_uint>(pYetuga->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
 				}
 			};
-	}*/
+	}
 
 
 	else if ("Armageddon" == name)

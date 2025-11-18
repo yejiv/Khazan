@@ -195,12 +195,72 @@ PS_OUT PS_SLOT_SKILL_FX(PS_IN In)
 {
     PS_OUT Out;
 
-
     Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
     Out.vColor.a = Out.vColor.r * g_vColor.a * g_fAlpha; // 텍스처의 밝기를 알파로
 
     return Out;
 }
+
+PS_OUT PS_CURSOR_FX(PS_IN In)
+{
+    PS_OUT Out;
+
+    
+    Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+    
+    if (Out.vColor.a <= 0.2f)
+        discard;
+    
+    Out.vColor.rgb = g_vColor.rgb;
+    Out.vColor.a = Out.vColor.a * g_vColor.a * g_fAlpha; // 텍스처의 밝기를 알파로
+    
+    return Out;
+}
+
+
+PS_OUT PS_SKILL_BG_SMOKE(PS_IN In)
+{
+    PS_OUT Out;
+
+    float2 uv = In.vTexcoord;
+    float speed = 0.03f;
+
+    uv.x = frac(uv.x - g_fValue * speed);
+    uv.y += sin(uv.x * 3.0 + g_fValue * 1.5f) * 0.01f;
+
+    Out.vColor = g_Texture.Sample(DefaultSampler, uv);
+
+    Out.vColor.a = Out.vColor.a * g_vColor.a * g_fAlpha; // 텍스처의 밝기를 알파로
+    
+    return Out;
+}
+
+
+PS_OUT PS_SKILL_SELETE(PS_IN In)
+{
+    PS_OUT Out;
+
+    float2 uv = In.vTexcoord;
+
+    uv.y = frac(uv.y + g_fValue * 0.25f);
+    uv.x += sin(uv.y * 8.0 + g_fValue * 2.0) * 0.02;
+    float alpha = g_Texture.Sample(DefaultSampler, uv).r;
+
+    float2 center = float2(0.5f, 0.5f);
+    float dist = distance(In.vTexcoord, center);
+    float radius = 0.45f;
+    float soft = 0.05f;
+    float circleMask = smoothstep(radius, radius - soft, dist);
+    float edgeFade = smoothstep(0.0f, radius, radius - dist);
+
+    alpha *= circleMask;
+    alpha *= edgeFade;
+
+    Out.vColor.rgb = g_vColor.rgb;
+    Out.vColor.a = alpha * g_vColor.a * g_fAlpha;
+    return Out;
+}
+
 
 technique11 DefaultTechnique
 {
@@ -279,6 +339,37 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_SLOT_SKILL_FX();
+    }
+
+    pass PS_CURSOR_FX //7
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_CURSOR_FX();
+    }
+    pass PS_SKILL_BG_SMOKE //8
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_SKILL_BG_SMOKE();
+    }
+    pass PS_SKILL_SELETE //9
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_SKILL_SELETE();
     }
 
 

@@ -167,7 +167,7 @@ HRESULT CSkill_QuickSlot_List::Render()
 
     if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_Texture", m_iTexPass)))
         return E_FAIL;
-
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof(_float4)), E_FAIL);
     CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
 
     m_pShaderCom->Begin(m_iShaderPass);

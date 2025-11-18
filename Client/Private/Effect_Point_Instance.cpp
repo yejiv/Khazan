@@ -55,14 +55,14 @@ void CEffect_Point_Instance::Update(_float fTimeDelta)
     {
         it->fCurTime += fTimeDelta;
 
-        if(it->fCurTime > it->fDurTime && it->EventType != 0)
+        if(it->fCurTime > it->fDurTime && it->EventType != 1)
         {
             if (m_pVIBufferCom->isLoop() && m_TimeTracks.size() == 1)
             {
                 ++it;
                 continue;
             }
-            dynamic_cast<CVIBuffer_Point_Instance*>(m_pVIBufferCom)->Remove_Speed(CVIBuffer_Point_Instance::SPEED_VALUE(it->EventType - 1));
+            dynamic_cast<CVIBuffer_Point_Instance*>(m_pVIBufferCom)->Remove_Speed(CVIBuffer_Point_Instance::SPEED_VALUE(it->EventType));
             it = m_TimeTracks.erase(it);
         }
         else
@@ -131,7 +131,7 @@ void CEffect_Point_Instance::SetSpreadData(void* pArg)
     m_pVIBufferCom->Setting_Speed(CVIBuffer_Point_Instance::SPEED_VALUE::SPREAD_SPEED, data.fSpreadSpeed);
     m_pVIBufferCom->Setting_Pivot(data.fPivot);
     m_sData.bGravity = data.bGravity;
-    SetData(ENUM_CLASS(data.eEventType), data.fDuration); 
+    SetData(ENUM_CLASS(CVIBuffer_Point_Instance::SPEED_VALUE::SPREAD_SPEED), data.fDuration);
 }
 
 void CEffect_Point_Instance::SetRotateData(void* pArg)
@@ -139,14 +139,14 @@ void CEffect_Point_Instance::SetRotateData(void* pArg)
     CEffect_Prefab::EFFECT_EVENT data = *static_cast<CEffect_Prefab::EFFECT_EVENT*>(pArg);
     m_pVIBufferCom->Setting_Speed(CVIBuffer_Point_Instance::SPEED_VALUE::ROTATION_SPEED, data.fRotationSpeed);
     m_pVIBufferCom->Setting_Pivot(data.fPivot);
-    SetData(ENUM_CLASS(data.eEventType),data.fDuration);
+    SetData(ENUM_CLASS(CVIBuffer_Point_Instance::SPEED_VALUE::ROTATION_SPEED),data.fDuration);
 }
 
 void CEffect_Point_Instance::SetTwinkleData(void* pArg)
 {
     CEffect_Prefab::EFFECT_EVENT data = *static_cast<CEffect_Prefab::EFFECT_EVENT*>(pArg);
     m_pVIBufferCom->Setting_Speed(CVIBuffer_Point_Instance::SPEED_VALUE::SCALE_SPEED, data.fScaleSpeed);
-    SetData(ENUM_CLASS(data.eEventType),data.fDuration);
+    SetData(ENUM_CLASS(CVIBuffer_Point_Instance::SPEED_VALUE::SCALE_SPEED),data.fDuration);
 }
 
 void CEffect_Point_Instance::SetUpwardData(void* pArg)
@@ -154,7 +154,7 @@ void CEffect_Point_Instance::SetUpwardData(void* pArg)
     CEffect_Prefab::EFFECT_EVENT data = *static_cast<CEffect_Prefab::EFFECT_EVENT*>(pArg);
     m_pVIBufferCom->Setting_Speed(CVIBuffer_Point_Instance::SPEED_VALUE::UPWARD_SPEED, data.fUpwardSpeed);
     m_sData.bGravity = data.bGravity;
-    SetData(ENUM_CLASS(data.eEventType),data.fDuration);
+    SetData(ENUM_CLASS(CVIBuffer_Point_Instance::SPEED_VALUE::UPWARD_SPEED),data.fDuration);
 }
 
 void CEffect_Point_Instance::SetScrollData(void* pArg)

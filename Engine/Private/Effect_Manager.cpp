@@ -118,6 +118,13 @@ void CEffect_Manager::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPro
 	(*Layer)[ID]->SetClose();
 }
 
+void CEffect_Manager::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag)
+{ 
+    auto Layer = Find_RunningEffect_Layer(strPrototypeTag);
+    for (auto effect : *Layer) 
+        effect->SetClose(); 
+}
+
 void CEffect_Manager::Priority_Update(_float fEffectTimeDelta)
 {
 	for (size_t i = 0; i < m_iNumLevels; i++)

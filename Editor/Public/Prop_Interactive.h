@@ -16,6 +16,8 @@ public:
 	{
 		_tchar szInteractiveTag[MAX_PATH] = {};
 
+        _int iEventID{ 0 };
+
 	}PROP_INTERACTIVE_DESC;
 
 protected:
@@ -31,10 +33,16 @@ public:
 	virtual void Late_Update(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+public:
+    _int Get_EventID() { return m_iEventID; }
+    void Set_EventID(_int iEventID) { m_iEventID = iEventID; }
+
 protected:
 	CModel* m_pModelCom = { nullptr };
 
 	_tchar m_szInteractiveTag[MAX_PATH] = {};
+
+    _int m_iEventID = {};
 
 protected:
 	virtual HRESULT Ready_Components(void* pArg) { return S_OK; }

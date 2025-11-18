@@ -63,6 +63,7 @@ private:
 	CTexture*						m_pTextureCom = { nullptr };
 	CTexture*						m_pMaskTextureCom = { nullptr };
 	CTexture*						m_pDissolveTextureCom = { nullptr };
+	CTexture*						m_pNormalTextureCom = { nullptr };
 	CVIBuffer_Mesh_Instance*		m_pVIBufferCom = { nullptr };
 
 private :
@@ -71,7 +72,7 @@ private :
 	/*Editing data*/
 	_bool							m_bIsMaskScrolling;
 	_float							m_fAccTime;
-
+    _bool                           m_bIsNormal; 
 
 public:
 	static CEffect_Mesh_Instance*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, void* pArg);

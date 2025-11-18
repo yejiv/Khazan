@@ -39,6 +39,9 @@ void CUI_Slot_Smoke::Update(_float fTimeDelta)
 void CUI_Slot_Smoke::Late_Update(_float fTimeDelta)
 {
     m_fAccTime += fTimeDelta;
+    if (m_fAccTime > 1000.f)
+        m_fAccTime -= 1000.f;
+
     if (m_isVisible)
         CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
 }
