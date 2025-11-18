@@ -30,6 +30,8 @@ private:
 	CTexture*					m_pTextureCom = { nullptr };
 	CVIBuffer_Rect*				m_pVIBufferCom = { nullptr };
 
+    _float                     m_fDefaultValue = {};
+
 	_float						m_fDeleyTime = {};
 	_float						m_fAccTime = {};
 	_bool						m_isDelay = {};

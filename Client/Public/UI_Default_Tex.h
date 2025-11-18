@@ -19,6 +19,7 @@ private:
 public:
 	HRESULT					Set_Texture(const _wstring& strPrototypeTag, _int iTexPass = 0);
     void                    Tex_Scaling(_float fSizeX, _float fSizeY);
+    void                    Set_PosX(_float fPosX, CUIObject* pParent);
 public:
 	virtual HRESULT			Initialize_Prototype();
 	virtual HRESULT			Initialize_Clone(void* pArg) override;

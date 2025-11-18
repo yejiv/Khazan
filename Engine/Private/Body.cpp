@@ -55,23 +55,22 @@ HRESULT CBody::Initialize_Clone(void* pArg)
     }
 
     BCS.mGravityFactor = 0;
+    if (pDesc->eMotion == EMotionType::Static)
+    {
+        BCS.mEnhancedInternalEdgeRemoval = true;
+    }
+    
     if (pDesc->eShapeType != SHAPE::MESH)
     {
         m_pBody = m_pGameInstance->CreateAndAdd_Body(BCS, &m_pBodyInterface);
         m_pBody->SetCollideKinematicVsNonDynamic(pDesc->isCollideKinematicVsNonDynamic);
+        //BCS.
         m_BodyID = m_pBody->GetID();
     }
 
     
-    //// 머티리얼 반영
-    //{
-    //    BodyLockWrite lock(m_pPhysics->GetBodyLockInterface(), m_BodyID);
-    //    if (lock.Succeeded())
-    //    {
-    //        Body& b = lock.GetBody();
-    //        Apply_Material(b, m_tMat);
-    //    }
-    //}
+    // 머티리얼 반영
+    
 
     return S_OK;
 }

@@ -29,6 +29,7 @@ HRESULT CUI_PlayerStamina_Gauge::Initialize_Clone(void* pArg)
     m_pCulStamina = &CClientInstance::GetInstance()->Get_PlayerData().fCulStamina;
     m_pMaxStamina = &CClientInstance::GetInstance()->Get_PlayerData().fMaxStamina;
 
+    m_fDefaultValue = *m_pMaxStamina;
 	return S_OK;
 }
 
@@ -47,6 +48,11 @@ void CUI_PlayerStamina_Gauge::Update(_float fTimeDelta)
 		m_fCurrentValue = m_fMaxValue;
 
 	Progress_Update();
+    _float fAddValue = *m_pMaxStamina - m_fDefaultValue;
+    _float fSize = Clamp(fAddValue / m_fDefaultValue);
+
+    m_pTransformCom->Scale(_float3{ m_vLocalSize.x * (1.f + fSize), m_vLocalSize.y, 1.f });
+
 }
 
 void CUI_PlayerStamina_Gauge::Late_Update(_float fTimeDelta)

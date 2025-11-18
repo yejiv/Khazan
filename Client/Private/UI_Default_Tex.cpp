@@ -27,6 +27,13 @@ void CUI_Default_Tex::Tex_Scaling(_float fSizeX, _float fSizeY)
     m_pTransformCom->Scale(_float3{ m_vLocalSize.x * fSizeX, m_vLocalSize.y * fSizeY, 1.f });
 }
 
+void CUI_Default_Tex::Set_PosX(_float fPosX, CUIObject* pParent)
+{
+    m_vLocalPos.x = fPosX;
+
+    Update_Transform(pParent, m_vLocalPos);
+}
+
 HRESULT CUI_Default_Tex::Initialize_Prototype()
 {
 	return S_OK;

@@ -37,14 +37,14 @@ void CEffect_Mesh_Instance::Update(_float fTimeDelta)
     {
         it->fCurTime += fTimeDelta;
 
-        if(it->fCurTime > it->fDurTime && it->EventType != 0)
+        if(it->fCurTime > it->fDurTime && it->EventType != 1)
         {
-            if (m_sData.bIsLoop && m_TimeTracks.size() == 1)
+            if (m_pVIBufferCom->isLoop() && m_TimeTracks.size() == 1)
             {
                 ++it;
                 continue;
             }
-            dynamic_cast<CVIBuffer_Mesh_Instance*>(m_pVIBufferCom)->Remove_Speed(CVIBuffer_Mesh_Instance::SPEED_VALUE(it->EventType - 1));
+            dynamic_cast<CVIBuffer_Mesh_Instance*>(m_pVIBufferCom)->Remove_Speed(CVIBuffer_Mesh_Instance::SPEED_VALUE(it->EventType));
             it = m_TimeTracks.erase(it);
         }
         else
@@ -68,7 +68,12 @@ void CEffect_Mesh_Instance::Update(_float fTimeDelta)
 
 void CEffect_Mesh_Instance::Late_Update(_float fTimeDelta)
 {
-    __super::Late_Update(fTimeDelta);
+    //__super::Late_Update(fTimeDelta);
+    if (m_bIsNormal)
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
+    else
+        __super::Late_Update(fTimeDelta);
+
 }
 
 HRESULT CEffect_Mesh_Instance::Render()
@@ -77,7 +82,10 @@ HRESULT CEffect_Mesh_Instance::Render()
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
-    m_pShaderCom->Begin((_uint)m_sData.bIsFresnel);
+    if (m_bIsNormal)
+        m_pShaderCom->Begin(2);
+    else
+        m_pShaderCom->Begin((_uint)m_sData.bIsFresnel);
 
     m_pVIBufferCom->Bind_Resources();
 
@@ -124,7 +132,7 @@ void CEffect_Mesh_Instance::Edit_Element()
 
     ImGui::ColorEdit4("MyColorWithAlpha",(float*)&m_sEditingData.vColor);
 
-    const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19",  "test20",  "shock", "smoke", "cloud" , "blood"  };
+    const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19",  "test20",  "shock", "smoke", "cloud" , "blood", "Ice1", "Ice2" };
     ImGui::Combo("Mesh Textures", reinterpret_cast<int*>(&m_sEditingData.iTextureIdx), textures, IM_ARRAYSIZE(textures));
 
     const char* Meshes[] = { "Helix0", "Helix1", "Helix2", "Helix3",  "Helix4",  "Helix5",  "Helix6",  "Helix7",  "Helix8",  "Helix9",  "Helix10",  "Helix11",  "Helix12",  "Helix13",  "Helix14",  "Helix15",  "Helix16",  "Helix17",  "Helix18",  "Helix19",  "Helix20",
@@ -139,7 +147,7 @@ void CEffect_Mesh_Instance::Edit_Element()
                                     "IN_Spiral_02", "Swirl_Spine_X", "SwirlHelix",
                                     "FastAtk_1", "FastAtk_2L", "FastAtk_2R", "FastAtk_3L", "FastAtk_3R", "Grapple_Atk_2", "CounterATK", "DodgeATK", "FastATK1","FastATK2_L", "FastATK2_R",  "FastATK3_L" ,  "FastATK3_R", "FastATK4",
                                     "StrongAtk0", "StrongAtk1", "FastAtk03_Slash", "GrappleAtk02_Slash", "StrongAtk03_Slash"
-                                    , "Cylinder_003", "Cylinder_003_02", "Cylinder_003_Noise" , "Spine", "Circle_002" ,"Sphere","CircleTwist", "CircleTwist2", "Plane", "circle001", "circle002" };
+                                    , "Cylinder_003", "Cylinder_003_02", "Cylinder_003_Noise" , "Spine", "Circle_002" ,"Sphere","CircleTwist", "CircleTwist2", "Plane" , "circle001", "circle002", "Ice" };
 
     ImGui::Combo("Mesh Shape", reinterpret_cast<int*>(&m_sEditingData.iMeshTypeIdx), Meshes, IM_ARRAYSIZE(Meshes));
 
@@ -161,7 +169,7 @@ void CEffect_Mesh_Instance::Edit_Element()
     if (bIsDissolve)
     {
         ImGui::Indent();
-        const char* DissolveTex[] = { "DissolveTexture0", "DissolveTexture1", "DissolveTexture2" };
+        const char* DissolveTex[] = { "DissolveTexture0", "DissolveTexture1", "DissolveTexture2", "DissolveTexture3","DissolveTexture4", "Normal0", "Normal1" };
         ImGui::Combo("Dissolve Texture", reinterpret_cast<int*>(&m_sEditingData.sDissolveData.iDissolveTextureIdx), DissolveTex, IM_ARRAYSIZE(DissolveTex));
         ImGui::InputFloat("Dissolve Edge Width : ", reinterpret_cast<_float*>(&m_sEditingData.sDissolveData.fDissolveEdgeWidth));
         ImGui::ColorEdit4("Edge Color", (float*)&m_sEditingData.sDissolveData.fDissolveEdgeColor);
@@ -214,7 +222,7 @@ void CEffect_Mesh_Instance::SetSpreadData(void* pArg)
     m_pVIBufferCom->Setting_Speed(CVIBuffer_Mesh_Instance::SPEED_VALUE::SPREAD_SPEED, data.fSpreadSpeed);
     m_pVIBufferCom->Setting_Pivot(data.fPivot);
     m_sData.bGravity = data.bGravity;
-    SetData(ENUM_CLASS(data.eEventType), data.fDuration); 
+    SetData(ENUM_CLASS(CVIBuffer_Mesh_Instance::SPEED_VALUE::SPREAD_SPEED), data.fDuration);
 }
 
 void CEffect_Mesh_Instance::SetRotateData(void* pArg)
@@ -222,14 +230,14 @@ void CEffect_Mesh_Instance::SetRotateData(void* pArg)
     CEffect_Prefab::EFFECT_EVENT data = *static_cast<CEffect_Prefab::EFFECT_EVENT*>(pArg);
     m_pVIBufferCom->Setting_Speed(CVIBuffer_Mesh_Instance::SPEED_VALUE::ROTATION_SPEED, data.fRotationSpeed);
     m_pVIBufferCom->Setting_Pivot(data.fPivot);
-    SetData(ENUM_CLASS(data.eEventType),data.fDuration);
+    SetData(ENUM_CLASS(CVIBuffer_Mesh_Instance::SPEED_VALUE::ROTATION_SPEED),data.fDuration);
 }
 
 void CEffect_Mesh_Instance::SetTwinkleData(void* pArg)
 {
     CEffect_Prefab::EFFECT_EVENT data = *static_cast<CEffect_Prefab::EFFECT_EVENT*>(pArg);
     m_pVIBufferCom->Setting_Speed(CVIBuffer_Mesh_Instance::SPEED_VALUE::SCALE_SPEED, data.fScaleSpeed);
-    SetData(ENUM_CLASS(data.eEventType),data.fDuration);
+    SetData(ENUM_CLASS(CVIBuffer_Mesh_Instance::SPEED_VALUE::SCALE_SPEED),data.fDuration);
 }
 
 void CEffect_Mesh_Instance::SetUpwardData(void* pArg)
@@ -237,7 +245,7 @@ void CEffect_Mesh_Instance::SetUpwardData(void* pArg)
     CEffect_Prefab::EFFECT_EVENT data = *static_cast<CEffect_Prefab::EFFECT_EVENT*>(pArg);
     m_pVIBufferCom->Setting_Speed(CVIBuffer_Mesh_Instance::SPEED_VALUE::UPWARD_SPEED, data.fUpwardSpeed);
     m_sData.bGravity = data.bGravity;
-    SetData(ENUM_CLASS(data.eEventType),data.fDuration);
+    SetData(ENUM_CLASS(CVIBuffer_Mesh_Instance::SPEED_VALUE::UPWARD_SPEED),data.fDuration);
 }
 
 void CEffect_Mesh_Instance::SetScrollData(void* pArg)
@@ -262,6 +270,10 @@ HRESULT CEffect_Mesh_Instance::Ready_Component()
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_MeshEffect_Dissolve"),
         TEXT("Com_TextureDissolve"), reinterpret_cast<CComponent**>(&m_pDissolveTextureCom), nullptr)))
+        return E_FAIL;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_MeshEffect_Normal"),
+        TEXT("Com_TextureNormal"), reinterpret_cast<CComponent**>(&m_pNormalTextureCom), nullptr)))
         return E_FAIL;
 
     return S_OK;
@@ -296,7 +308,11 @@ HRESULT CEffect_Mesh_Instance::Bind_ShaderResources()
         return E_FAIL;
 
     _bool IsDissolve = m_sData.sDissolveData.bIsDissolve;
+
     if (FAILED(m_pShaderCom->Bind_Bool("g_IsDissolve", &IsDissolve)))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_Bool("g_IsNormal", &m_bIsNormal)))
         return E_FAIL;
 
     if (FAILED(m_pShaderCom->Bind_RawValue("g_EdgeWidth", &m_sEditingData.sDissolveData.fDissolveEdgeWidth, sizeof(_float))))
@@ -314,8 +330,18 @@ HRESULT CEffect_Mesh_Instance::Bind_ShaderResources()
     if (FAILED(m_pMaskTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_MaskTexture", m_sData.iMaskTextureIdx)))
         return E_FAIL;
 
-    if (FAILED(m_pDissolveTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DissolveTexture", m_sData.sDissolveData.iDissolveTextureIdx)))
-        return E_FAIL;
+    if (!m_bIsNormal)
+    {
+        if (FAILED(m_pDissolveTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DissolveTexture", m_sData.sDissolveData.iDissolveTextureIdx)))
+            return E_FAIL;
+    }
+    else
+    { 
+        if (FAILED(m_pNormalTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_NormalTexture", m_sData.sDissolveData.iDissolveTextureIdx - 5)))
+            return E_FAIL;
+    }
+
+
 
     return S_OK;
 }
@@ -334,6 +360,8 @@ void CEffect_Mesh_Instance::Apply(void* pArg)
     char finalNoisePathBuffer[MAX_PATH] = {};
     sprintf_s(finalNoisePathBuffer, MAX_PATH, NoiseFormat, m_sData.iTurbulenceTextureIdx);
     strcpy_s(m_sData.pNoiseFilePath, MAX_PATH, finalNoisePathBuffer);
+
+    m_bIsNormal = (m_sData.sDissolveData.bIsDissolve == true && m_sData.sDissolveData.iDissolveTextureIdx > 4) ? 1 : 0;
 
     Safe_Release(m_pVIBufferCom);
     m_pVIBufferCom = CVIBuffer_Mesh_Instance::Create(m_pDevice, m_pContext, &m_sData);
@@ -382,6 +410,7 @@ void CEffect_Mesh_Instance::Free()
     Safe_Release(m_pMaskTextureCom);
     Safe_Release(m_pDissolveTextureCom);
     Safe_Release(m_pVIBufferCom);
+    Safe_Release(m_pNormalTextureCom);
 }
 
 

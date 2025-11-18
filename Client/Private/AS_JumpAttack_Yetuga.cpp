@@ -46,6 +46,8 @@ void CAS_JumpAttack_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _fl
     if (pModel->Play_Animation(fTimeDelta))
     {
         pBB->Set_Value<_bool>(pYetuga->Get_Name(), "isJumpAttackFinished", true);
+        pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pOwner);
+
     }
 }
 

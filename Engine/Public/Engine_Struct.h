@@ -523,9 +523,11 @@ namespace Engine
 	/* Mesh Instancing::Vertex Buffer - [Effect] */
 	typedef struct tagVertexMeshInstanceParticle
 	{
-		XMFLOAT3		vPosition;
-		XMFLOAT3		vNormal;
-		XMFLOAT2		vTexcoord;
+        XMFLOAT3		vPosition;
+        XMFLOAT3		vNormal;
+        XMFLOAT3		vTangent;
+        XMFLOAT3		vBinormal;
+        XMFLOAT2		vTexcoord;
 	}VB_MESHINSTANCE_EFFECT;
 
 	typedef struct tagVertexPointParticle
@@ -547,11 +549,13 @@ namespace Engine
 
 	typedef struct tagVertexParticle
 	{
-		static const unsigned int	iNumElements = { 9 };
+		static const unsigned int	iNumElements = { 11 };
 		static constexpr D3D11_INPUT_ELEMENT_DESC	Elements[iNumElements] = {
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "BINORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 48, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 
 			{ "WORLD", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 			{ "WORLD", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
@@ -706,6 +710,7 @@ namespace Engine
 	{
 		class CGameObject* pGameObject = nullptr;
 		unsigned int iObjectLayer;
+        wstring strName;
 		void* pInfo = nullptr;	
 	}COLLISION_DESC;
 

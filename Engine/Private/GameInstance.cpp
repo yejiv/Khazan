@@ -286,6 +286,7 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 
 	m_pComputeShader_Manager->Execute_Job(COMPUTEJOB::UPDATE);
 
+
 #ifdef _DEBUG
 
 #endif
@@ -360,6 +361,13 @@ _float CGameInstance::Rand_Normal()
 _float CGameInstance::Rand(_float fMin, _float fMax)
 {
 	return fMin + Rand_Normal() * (fMax - fMin);
+}
+
+_int CGameInstance::Rand(_int iMin, _int iMax)
+{
+    static std::mt19937 engine{ std::random_device{}() };
+    std::uniform_int_distribution<_int> dist(iMin, iMax);
+    return dist(engine);
 }
 
 _uint CGameInstance::Get_StaticLevel()
@@ -1426,6 +1434,11 @@ void CGameInstance::Update_Effect_World(_uint iLayerLevelIndex, const _wstring& 
 void CGameInstance::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID)
 {
 	m_pEffect_Manager->Stop_Effect(iLayerLevelIndex, strPrototypeTag, ID);
+}
+
+void CGameInstance::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag)
+{
+    m_pEffect_Manager->Stop_Effect(iLayerLevelIndex, strPrototypeTag);
 }
 
 #pragma endregion
