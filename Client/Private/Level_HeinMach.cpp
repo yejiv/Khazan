@@ -198,8 +198,8 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
 	}
 
 
-	//if (m_pGameInstance->Key_Down(DIK_RETURN))
-	//	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::VIPER))));
+	if (m_pGameInstance->Key_Down(DIK_RETURN))
+		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EMBARS))));
 
     if (!m_isStart)
     {

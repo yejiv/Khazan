@@ -203,7 +203,7 @@ void CKhazan_Spear::Update(_float fTimeDelta)
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Com_Lantern_Off"));
     }
 
-    if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::HEINMACH))
+    if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::HEINMACH) && m_EventInteract.isInCave() == false)
     {
         m_EffectTimeDelta += fTimeDelta;
         if (m_EffectTimeDelta > 1.2f)

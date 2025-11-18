@@ -78,6 +78,7 @@ void CLevel_Loading::Update(_float fTimeDelta)
 		static_cast<CUI_Loading*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Loading")))->Off_Panel();
 		if (m_pClientInstance->Get_CurrLevel() != m_eNextLevelID)
 		{
+            Ready_CleanImgUI();
 			m_pClientInstance->Clear_CameraManager(ENUM_CLASS(m_pClientInstance->Get_CurrLevel()));
 #ifdef _DEBUG
 			m_pClientInstance->CameraTool_Clear();
@@ -527,6 +528,14 @@ HRESULT CLevel_Loading::Ready_ObjectLayer()
     m_pGameInstance->Set_PhysicsSystem();
 
     return S_OK;
+}
+
+HRESULT CLevel_Loading::Ready_CleanImgUI()
+{
+#ifdef _DEBUG
+        m_pGameInstance->CleanMenu(TEXT("Client"));
+#endif
+        return S_OK;
 }
 
 CLevel_Loading* CLevel_Loading::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eNextLevelID)
