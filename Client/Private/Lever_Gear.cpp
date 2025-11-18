@@ -37,6 +37,22 @@ HRESULT CLever_Gear::Initialize_Clone(void* pArg)
     m_pModelCom->Set_Animation(ANIM_STATE::IDLE1);
     m_pModelCom->Set_AnimationLoop(true);
 
+    switch (m_iEventID)
+    {
+    case 0:
+        m_eEventType = EVENT_TYPE::GATE_GEAR0;
+        break;
+    case 1:
+        m_eEventType = EVENT_TYPE::GATE_GEAR1;
+        break;
+    default:
+        m_eEventType = EVENT_TYPE::END;
+        break;
+    }
+
+    if (EVENT_TYPE::END != m_eEventType)
+        m_pGameInstance->Subscribe_Event<EventGateGear>(ENUM_CLASS(m_eEventType), [&](const EventGateGear& e) { m_EventGate = e; });
+
     return S_OK;
 }
 
@@ -46,10 +62,10 @@ void CLever_Gear::Priority_Update(_float fTimeDelta)
 
 void CLever_Gear::Update(_float fTimeDelta)
 {
-    if (true == m_pModelCom->Play_Animation(fTimeDelta))
-    {
+    Animation_Update(fTimeDelta);
 
-    }
+    if (true == m_pModelCom->Play_Animation(fTimeDelta))
+        Animation_Change(fTimeDelta);
 }
 
 void CLever_Gear::Late_Update(_float fTimeDelta)
@@ -95,13 +111,60 @@ HRESULT CLever_Gear::Ready_Components(void* pArg)
     return S_OK;
 }
 
+void CLever_Gear::Animation_Update(_float fTimeDelta)
+{
+    if (m_EventGate.isFirstStep())          // 레버 작동 완료 시
+    {
+        if (ANIM_STATE::IDLE1 == m_eAnimState)
+        {
+            m_eAnimState = ANIM_STATE::ACTIVATION1;
+            m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+            m_pModelCom->Set_AnimationLoop(false);
+        }
+        //if (ANIM_STATE::IDLE2 == m_eAnimState)
+        //{
+        //    m_eAnimState = ANIM_STATE::ACTIVATION2;
+        //    m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+        //    m_pModelCom->Set_AnimationLoop(false);
+        //}
+    }
+}
+
+void CLever_Gear::Animation_Change(_float fTimeDelta)
+{
+    if (ANIM_STATE::ACTIVATION1 == m_eAnimState)
+    {
+        // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
+        m_eAnimState = ANIM_STATE::IDLE2;
+        m_pModelCom->Set_Animation(m_eAnimState);
+        m_pModelCom->Set_AnimationLoop(true);
+
+        m_EventGate.isActiveGear1 = true;
+
+        // OPENING 중에는 UI, Player 용 Active 변수는 false, 상자 앞 위치랑 상자 위치 던지기
+        m_pGameInstance->Emit_Event<EventGateGear>(ENUM_CLASS(m_eEventType), m_EventGate);
+    }
+    // if (ANIM_STATE::ACTIVATION2 == m_eAnimState)
+    // {
+    //     // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
+    //     m_eAnimState = ANIM_STATE::IDLE1;
+    //     m_pModelCom->Set_Animation(m_eAnimState);
+    //     m_pModelCom->Set_AnimationLoop(true);
+    // 
+    //     m_EventGate.isActiveGear1 = true;
+    // 
+    //     // OPENING 중에는 UI, Player 용 Active 변수는 false, 상자 앞 위치랑 상자 위치 던지기
+    //     m_pGameInstance->Emit_Event<EventGateGear>(ENUM_CLASS(m_eEventType), m_EventGate);
+    // }
+}
+
 CLever_Gear* CLever_Gear::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     CLever_Gear* pInstance = new CLever_Gear(pDevice, pContext);
 
     if (FAILED(pInstance->Initialize_Prototype()))
     {
-        MSG_BOX(TEXT("Failed to Created : CProp_Object"));
+        MSG_BOX(TEXT("Failed to Created : CLever_Gear"));
         Safe_Release(pInstance);
     }
 
@@ -114,7 +177,7 @@ CGameObject* CLever_Gear::Clone(void* pArg)
 
     if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
-        MSG_BOX(TEXT("Failed to Cloned : CProp_Object"));
+        MSG_BOX(TEXT("Failed to Cloned : CLever_Gear"));
         Safe_Release(pInstance);
     }
 

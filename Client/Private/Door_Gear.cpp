@@ -37,6 +37,22 @@ HRESULT CDoor_Gear::Initialize_Clone(void* pArg)
     m_pModelCom->Set_Animation(ANIM_STATE::IDLE1);
     m_pModelCom->Set_AnimationLoop(true);
 
+    switch (m_iEventID)
+    {
+    case 0:
+        m_eEventType = EVENT_TYPE::GATE_GEAR0;
+        break;
+    case 1:
+        m_eEventType = EVENT_TYPE::GATE_GEAR1;
+        break;
+    default:
+        m_eEventType = EVENT_TYPE::END;
+        break;
+    }
+
+    if (EVENT_TYPE::END != m_eEventType)
+        m_pGameInstance->Subscribe_Event<EventGateGear>(ENUM_CLASS(m_eEventType), [&](const EventGateGear& e) { m_EventGate = e; });
+
     return S_OK;
 }
 
@@ -46,10 +62,10 @@ void CDoor_Gear::Priority_Update(_float fTimeDelta)
 
 void CDoor_Gear::Update(_float fTimeDelta)
 {
-    if (true == m_pModelCom->Play_Animation(fTimeDelta))
-    {
+    Animation_Update(fTimeDelta);
 
-    }
+    if (true == m_pModelCom->Play_Animation(fTimeDelta))
+        Animation_Change(fTimeDelta);
 }
 
 void CDoor_Gear::Late_Update(_float fTimeDelta)
@@ -93,6 +109,41 @@ HRESULT CDoor_Gear::Ready_Components(void* pArg)
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr), E_FAIL);
 
     return S_OK;
+}
+
+void CDoor_Gear::Animation_Update(_float fTimeDelta)
+{
+    if (m_EventGate.isSecondStep())          // 레버 작동 완료 시
+    {
+        if (ANIM_STATE::IDLE1 == m_eAnimState)
+        {
+            m_eAnimState = ANIM_STATE::ACTIVATION;
+            m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+            m_pModelCom->Set_AnimationLoop(false);
+        }
+        //if (ANIM_STATE::IDLE2 == m_eAnimState)
+        //{
+        //    m_eAnimState = ANIM_STATE::ACTIVATION2;
+        //    m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+        //    m_pModelCom->Set_AnimationLoop(false);
+        //}
+    }
+}
+
+void CDoor_Gear::Animation_Change(_float fTimeDelta)
+{
+    if (ANIM_STATE::ACTIVATION == m_eAnimState)
+    {
+        // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
+        m_eAnimState = ANIM_STATE::IDLE2;
+        m_pModelCom->Set_Animation(m_eAnimState);
+        m_pModelCom->Set_AnimationLoop(true);
+
+        m_EventGate.isActiveGear2 = true;
+
+        // OPENING 중에는 UI, Player 용 Active 변수는 false, 상자 앞 위치랑 상자 위치 던지기
+        m_pGameInstance->Emit_Event<EventGateGear>(ENUM_CLASS(m_eEventType), m_EventGate);
+    }
 }
 
 CDoor_Gear* CDoor_Gear::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

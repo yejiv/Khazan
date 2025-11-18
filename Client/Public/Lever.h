@@ -7,6 +7,8 @@ NS_BEGIN(Client)
 
 class CLever final : public CProp_Interactive
 {
+    // 0, 1 : 시작 지점 레버, 기어, 문 연동 이벤트
+
 private:
     enum ANIM_STATE
     {
@@ -37,10 +39,37 @@ public:
     virtual void Late_Update(_float fTimeDelta) override;
     virtual HRESULT Render() override;
 
+private:
+    CBody* m_pStaticCom = { nullptr };
+    CBody* m_pTriggerCom = { nullptr };
+
+    class CInteraction_Guide* m_pGuide = { nullptr };
+
+private:
     ANIM_STATE m_eAnimState = { ANIM_STATE::IDLE1 };
+
+    EventObject m_Event = {};
+
+    _float3 m_vCharacterPosition = {};
+
+    _float m_fColTimeAcc = { 0.f };
+
+    EventGateGear m_EventGate = {};
 
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
+    HRESULT Ready_Collision(void* pArg);
+    HRESULT Ready_Interaction_Guide(void* pArg);
+
+    void Input_Interact_Event(_float fTimeDelta);
+    void Animation_Update(_float fTimeDelta);
+    void Animation_Change(_float fTimeDelta);
+
+    virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
+    virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
+    virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
+
+    void Emit_LeverEvent();
 
 public:
     static CLever* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

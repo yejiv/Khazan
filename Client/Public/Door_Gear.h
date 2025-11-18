@@ -38,8 +38,13 @@ public:
 
     ANIM_STATE m_eAnimState = { ANIM_STATE::IDLE1 };
 
+    EventGateGear m_EventGate = {};
+
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
+
+    void Animation_Update(_float fTimeDelta);
+    void Animation_Change(_float fTimeDelta);
 
 public:
     static CDoor_Gear* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

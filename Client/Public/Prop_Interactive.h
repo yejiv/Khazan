@@ -40,6 +40,8 @@ protected:
 
 	_tchar m_szInteractiveTag[MAX_PATH] = {};
 
+    EVENT_TYPE m_eEventType = {};
+
     _int m_iEventID = {};
 
 	_bool m_isCollision = { false };
