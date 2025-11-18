@@ -472,6 +472,7 @@ call Copy.bat</Command>
   <ItemGroup>
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hlsli" />
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Function.hlsli" />
+    <None Include="..\Bin\ShaderFiles\Engine_Shader_Global_Constant.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Cell.hlsl" />

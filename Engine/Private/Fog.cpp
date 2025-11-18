@@ -83,7 +83,7 @@ HRESULT CFog::Bind_Fog_ShaderResources(CShader* pShader)
     if (FAILED(pShader->Bind_RawValue("g_fTimeDelta", &m_fNoiseTimeAcc, sizeof(_float))))
         return E_FAIL;
 
-    if (FAILED(pShader->Bind_Bool("g_isEnableNoise", &m_Config.Noise.isEnable)))
+    if (FAILED(pShader->Bind_Bool("g_isEnableFogNoise", &m_Config.Noise.isEnable)))
         return E_FAIL;
 
     if (FAILED(pShader->Bind_RawValue("g_vNoiseSpeed", &m_Config.Noise.vSpeed, sizeof(_float2))))
@@ -98,16 +98,13 @@ HRESULT CFog::Bind_Fog_ShaderResources(CShader* pShader)
     if (FAILED(pShader->Bind_RawValue("g_fNoiseContrast", &m_Config.Noise.fContrast, sizeof(_float))))
         return E_FAIL;
 
-    if (FAILED(pShader->Bind_RawValue("g_fFogBaseHeight", &m_Config.fBaseHeight, sizeof(_float))))
-        return E_FAIL;
-
     if (FAILED(pShader->Bind_Bool("g_isUseHeightFog", &m_Config.isUseHeight)))
         return E_FAIL;
 
-    if (FAILED(pShader->Bind_RawValue("g_fFogHeightDensity", &m_Config.fHeightDensity, sizeof(_float))))
+    if (FAILED(pShader->Bind_RawValue("g_fFogBaseHeight", &m_Config.fBaseHeight, sizeof(_float))))
         return E_FAIL;
 
-    if (FAILED(pShader->Bind_Bool("g_isWorldFog", &m_isWorldFog)))
+    if (FAILED(pShader->Bind_RawValue("g_fFogHeightDensity", &m_Config.fHeightDensity, sizeof(_float))))
         return E_FAIL;
 
 	return S_OK;

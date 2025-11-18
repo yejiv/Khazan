@@ -43,7 +43,7 @@ HRESULT CGaussianBlur::Bind_GaussianBlur_ShaderResources(class CShader* pShader)
     if (FAILED(pShader->Bind_SRV("g_Weights", m_pWeightSRV)))
         return E_FAIL;
 
-    if (FAILED(pShader->Bind_RawValue("g_fNormalization", &m_Config.fNormalization, sizeof(_float))))
+    if (FAILED(pShader->Bind_RawValue("g_fBlurNormalization", &m_Config.fNormalization, sizeof(_float))))
         return E_FAIL;
 
     if (FAILED(pShader->Bind_RawValue("g_iWeightRadius", &m_Config.iRadius, sizeof(_int))))

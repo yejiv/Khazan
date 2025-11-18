@@ -1306,10 +1306,6 @@ void CGameInstance::Set_FogNoiseTextureIndex(_uint iTextureIndex)
 {
 	m_pFog->Set_FogNoiseTextureIndex(iTextureIndex);
 }
-void CGameInstance::Set_FogNoiseWorldSpace(_bool isEnable)
-{
-	m_pFog->Set_FogNoiseWorldSpace(isEnable);
-}
 void CGameInstance::Start_FogTransition(_float fDuration, const FOG_TRANSITION_DESC& Desc)
 {
 	m_pFog->Start_FogTransition(fDuration, Desc);

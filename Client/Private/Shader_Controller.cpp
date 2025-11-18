@@ -313,25 +313,25 @@ void CShader_Controller::Ready_Shader()
 						ImGui::NewLine();
 					}
 
-					_bool isChangedSpace{};
-
-					isChangedSpace |= ImGui::Checkbox("Fog World Space", &m_isWorldSpaceFog);
-
-					if (isChangedSpace)
-					{
-						m_pGameInstance->Set_FogNoiseWorldSpace(m_isWorldSpaceFog);
-
-						if (m_isWorldSpaceFog)
-						{
-							m_FogConfig.Noise.vSpeed = { 0.05f, 0.f };
-							m_FogConfig.Noise.vScale = { 0.05f, 0.05f };
-						}
-						else
-						{
-							m_FogConfig.Noise.vSpeed = { 0.01f, 0.f };
-							m_FogConfig.Noise.vScale = { 1.f, 1.f };
-						}
-					}
+					//  _bool isChangedSpace{};
+                    //  
+					//  isChangedSpace |= ImGui::Checkbox("Fog World Space", &m_isWorldSpaceFog);
+                    //  
+					//  if (isChangedSpace)
+					//  {
+					//  	m_pGameInstance->Set_FogNoiseWorldSpace(m_isWorldSpaceFog);
+                    //  
+					//  	if (m_isWorldSpaceFog)
+					//  	{
+					//  		m_FogConfig.Noise.vSpeed = { 0.05f, 0.f };
+					//  		m_FogConfig.Noise.vScale = { 0.05f, 0.05f };
+					//  	}
+					//  	else
+					//  	{
+					//  		m_FogConfig.Noise.vSpeed = { 0.01f, 0.f };
+					//  		m_FogConfig.Noise.vScale = { 1.f, 1.f };
+					//  	}
+					//  }
 
 					//	m_pGameInstance->Set_FogConfig(m_FogConfig);
 

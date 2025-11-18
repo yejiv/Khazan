@@ -65,19 +65,19 @@ HRESULT CDistortion::Bind_Distortion_ShaderResources(class CShader* pShader)
     if (FAILED(m_pTextureCom->Bind_Shader_Resource(pShader, "g_NoiseTexture", m_Desc.iNoiseIndex)))
         return E_FAIL;
 
-    if (FAILED(pShader->Bind_RawValue("g_fPower", &m_Desc.fPower, sizeof(_float))))
+    if (FAILED(pShader->Bind_RawValue("g_fDistortionPower", &m_Desc.fPower, sizeof(_float))))
         return E_FAIL;
 
-    if (FAILED(pShader->Bind_RawValue("g_fSpeed", &m_Desc.fSpeed, sizeof(_float))))
+    if (FAILED(pShader->Bind_RawValue("g_fDistortionSpeed", &m_Desc.fSpeed, sizeof(_float))))
         return E_FAIL;
 
-    if (FAILED(pShader->Bind_RawValue("g_fTime", &m_fTimeAcc, sizeof(_float))))
+    if (FAILED(pShader->Bind_RawValue("g_fTimeDelta", &m_fTimeAcc, sizeof(_float))))
         return E_FAIL;
 
-    if (FAILED(pShader->Bind_RawValue("g_fRange", &m_Desc.fRange, sizeof(_float))))
+    if (FAILED(pShader->Bind_RawValue("g_fDistortionRange", &m_Desc.fRange, sizeof(_float))))
         return E_FAIL;
 
-    if (FAILED(pShader->Bind_RawValue("g_vCenter", &m_Desc.vCenter, sizeof(_float3))))
+    if (FAILED(pShader->Bind_RawValue("g_vWorldCenterPos", &m_Desc.vCenter, sizeof(_float3))))
         return E_FAIL;
 
     if (FAILED(pShader->Bind_Bool("g_isEnableDistortion", &m_isEnable)))

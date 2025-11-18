@@ -139,6 +139,7 @@ private:
 	HRESULT Ready_RenderTargets();
 	HRESULT Ready_MRTs();
 	HRESULT Ready_Components();
+    HRESULT Ready_Matrices();
 	HRESULT SetUp_Viewport(_float fWidth, _float fHeight);
 
 	void InitCLSlots(uint32_t N);
