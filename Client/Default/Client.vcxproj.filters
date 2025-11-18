@@ -829,6 +829,9 @@
     <Filter Include="92.AI\State\Yetuga\18.CutScene">
       <UniqueIdentifier>{9f89172c-f4f4-4c12-9b2e-9cfdacc0a885}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Skill_Tree\FX">
+      <UniqueIdentifier>{df9920c8-541d-4bd2-8c7a-c7fcfdf95c37}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1598,6 +1601,18 @@
     <ClInclude Include="..\Public\AS_CutScene_Yetuga.h">
       <Filter>92.AI\State\Yetuga\18.CutScene</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Cursor_Circle_Fx.h">
+      <Filter>02.GameObject\UI\Skill_Tree\FX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_BG_Smoke.h">
+      <Filter>02.GameObject\UI\Skill_Tree\FX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Slot_Over_Fx.h">
+      <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Slot_Selete_Fx.h">
+      <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2346,6 +2361,18 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_CutScene_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\18.CutScene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Cursor_Circle_Fx.cpp">
+      <Filter>02.GameObject\UI\Skill_Tree\FX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_BG_Smoke.cpp">
+      <Filter>02.GameObject\UI\Skill_Tree\FX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Slot_Over_Fx.cpp">
+      <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Slot_Selete_Fx.cpp">
+      <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

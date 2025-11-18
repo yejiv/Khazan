@@ -15,6 +15,7 @@ namespace Client {
         SKILL_QUICKSLOT,
         GATE_GEAR0,
         GATE_GEAR1,
+        SKILL_RESET,
 		END };
 
 	// Structs
@@ -167,4 +168,5 @@ namespace Client {
         _int    iSkillIndex;
         _bool   isEquip;
     };
+    struct EVENT_SKILL_RESET { };
 }

@@ -38,9 +38,11 @@
 #include "Item_Slot.h"
 #include "Skill_Slot.h"
 #include "Skill_QuickSlot.h"
+#include "UI_Slot_Over_Fx.h"
 
 #include "UI_Slot_Smoke.h"
 #include "UI_QuickSlot_Skill_Fx.h"
+#include "UI_Slot_Selete_Fx.h"
 //HUD  관련
 #include "BossHp.h"
 #include "Amount.h"

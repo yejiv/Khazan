@@ -65,11 +65,6 @@ void CMainApp::Update(_float fTimeDelta)
 	{
 		//m_pClientInstance->ActiveCamera_Shaking(1.5f, 1.f);
 
-        _int a = m_pGameInstance->Rand_Normal(1, 10);
-
-
-        int b = 1;
-
 		//m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.3f, 0.003f, 3.f);
 		//m_pGameInstance->Fix_HitStop(TIME_CHANNEL::ENEMY);
 		//FOVModifier tMod{};
@@ -514,6 +509,13 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
     
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_QuickSlot_Skill_fx"),
         CUI_QuickSlot_Skill_Fx::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Slot_Over_Fx"),
+        CUI_Slot_Over_Fx::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Slot_Selete_Fx"),
+        CUI_Slot_Selete_Fx::Create(m_pDevice, m_pContext)), E_FAIL);
+
 
 	CUIObject::UIOBJECT_DESC AnnounceDesc = {};
 	AnnounceDesc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
