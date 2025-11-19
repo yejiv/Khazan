@@ -72,6 +72,9 @@ HRESULT CDecal_Manager::Render()
     // 활성화된 데칼 개수만큼 순회, 해당 데칼의 월드, 뷰, 투영 바인딩
     for (auto& pDecal : m_Decals)
     {
+        if (pDecal->isCameraInDecalBox())
+            continue;
+
         if (FAILED(pDecal->Bind_ShaderResources(m_pShader, m_pTexture, m_pVIBuffer)))
             return E_FAIL;
     }

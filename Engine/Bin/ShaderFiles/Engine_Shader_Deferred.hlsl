@@ -102,6 +102,23 @@ PS_OUT_LIGHT PS_DIRECTIONAL(PS_IN In)
     else
         Out.vShade = g_vLightDiffuse * (fLightIntensity + fAmbient);
     
+    // Rim Light
+    // 바라보는 방향 벡터 구하기 월드 포지션 -> 카메라, 노말라이즈
+    // 노말과 위 방향 벡터랑 내적한 값을 0 ~ 1로 클램프, 1에서 빼줌 (반전)
+    // -> 가장자리일수록 직각이라 내적 값이 0이 나오는데 0에 가까울수록 림 라이트는 밝아야 함
+    // 위에서 구한 값을 림 파워(전역 변수)로 제곱하여 두께 및 강도 조절 클수록 테두리가 얇아지고 작을수록 두꺼워짐
+    // 빛을 등지고 있을 때만 림라이트가 나오게 하려면 빛의 방향과 바라보는 방향 벡터를 내적
+    // 위에서 음수를 0으로 클램프 해주고 빛이랑 바라보는 방향 벡터가 1에 가까울수록 빛을 등지고 있는 것
+    // 이걸 림에 곱하면 등지고 있을 때만 나옴
+    // 툰 셰이딩 스타일 림라이트를 하려면 step 함수를 써서 일정 수치 넘어가면 1, 아니면 0
+    // 최종 림 결과를 스페큘러에 더해줌
+    // 빛의 디퓨즈 사용하거나, 직접 지정한 림 컬러를 사용해서 림과 림 강도를 곱해줌
+    // 최종 림라이트의 강도 조절 가능
+    
+    // 방향 벡터
+    vector vLook = normalize(vWorldPos - g_vCamPosition);
+    
+    
     // Specular
     vector vSpecularDesc = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
     float fSpecularValue = vSpecularDesc.g;
@@ -110,8 +127,7 @@ PS_OUT_LIGHT PS_DIRECTIONAL(PS_IN In)
     float fShininess = lerp(g_vSpecularPower.x, g_vSpecularPower.y, fSpecularValue);
     
     vector vReflect = reflect(normalize(g_vLightDir), vNormal);
-    vector vLook = vWorldPos - g_vCamPosition;
-    float fSpecularBase = max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f);
+    float fSpecularBase = max(dot(normalize(vReflect) * -1.f, vLook), 0.f);
     float fSpecular = pow(fSpecularBase, fShininess);
     
     Out.vSpecular = g_vLightSpecular * fSpecular * fSpecularValue + g_vLightSpecular * fSpecular * fSpecularIntensity * 2.f;

@@ -60,6 +60,9 @@ PS_OUT PS_MAIN(PS_IN In)
     // 위에서 구한 텍스쿠드로 깊이 값 읽어오기
     float4 vDepthDesc = g_DepthTexture.Sample(DefaultSampler, vTexcoord);
     
+    if (vDepthDesc.x >= 1.f)
+        discard;
+    
     // 깊이로 월드 포지션 복원
     float4 vWorldPos;
 
@@ -76,6 +79,9 @@ PS_OUT PS_MAIN(PS_IN In)
     // 디퓨즈 텍스처를 샘플링
     float4 vDiffuseDesc = g_DiffuseTexture.Sample(ClampSampler, vTexcoord);
 
+    if (1.f == vDiffuseDesc.r && 1.f == vDiffuseDesc.g && 1.f == vDiffuseDesc.b && 0.f == vDiffuseDesc.a)
+        discard;
+    
     float4 vFinalColor = vDiffuseDesc;
     float fFinalAlpha = 0.f;
     
@@ -150,6 +156,9 @@ PS_OUT PS_MAP_DECAL(PS_IN In)
     // 위에서 구한 텍스쿠드로 깊이 값 읽어오기
     float4 vDepthDesc = g_DepthTexture.Sample(DefaultSampler, vTexcoord);
     
+    //  if (1.f <= vDepthDesc.x)
+    //      discard;
+    
     // 깊이로 월드 포지션 복원
     float4 vWorldPos;
 
@@ -166,6 +175,9 @@ PS_OUT PS_MAP_DECAL(PS_IN In)
     // 디퓨즈 텍스처를 샘플링
     float4 vDiffuseDesc = g_DiffuseTexture.Sample(ClampSampler, vTexcoord);
 
+    if (1.f == vDiffuseDesc.r && 1.f == vDiffuseDesc.g && 1.f == vDiffuseDesc.b && 0.f == vDiffuseDesc.a)
+        discard;
+    
     float4 vFinalColor = vDiffuseDesc;
     float fFinalAlpha = 0.f;
     

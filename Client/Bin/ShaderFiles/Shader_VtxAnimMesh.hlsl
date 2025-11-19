@@ -32,6 +32,8 @@ float3 g_vOutlineColor = { 1.f, 0.f, 1.f };
 // Test
 bool g_isEnableEdge;
 
+float g_fEdgeIntensity, g_fShadeIntensity;
+
 struct VS_IN
 {
     float3 vPosition : POSITION;
@@ -203,13 +205,10 @@ PS_OUT PS_MAIN(PS_IN In)
     if (g_isEnableEdge)
     {
         float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
-        //  Out.vDiffuse.r *= vMetalnessDesc.r;
-        //  Out.vDiffuse.g *= vMetalnessDesc.g;
-        //  Out.vDiffuse.b *= 1.f - vMetalnessDesc.b;
-        //  Out.vDiffuse *= vMetalnessDesc;
-        //  if(vMetalnessDesc.b == 0.f)
-        //      Out.vDiffuse = float4(0.f, 0.f, 1.f, 1.f);
-        Out.vDiffuse *= vMetalnessDesc.r;
+        float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
+        float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
+        Out.vDiffuse *= fEdgeMask;
+        Out.vDiffuse *= fShadeMask;
     }
 
     return Out;
@@ -237,14 +236,18 @@ PS_OUT PS_MAIN_NONPICK(PS_IN In)
     //  Out.vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     
     // Test
-    //  float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
+    float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
     //  Out.vDiffuse.r *= vMetalnessDesc.r;
     //  Out.vDiffuse.g *= vMetalnessDesc.g;
     //  Out.vDiffuse.b *= 1.f - vMetalnessDesc.b;
     //  Out.vDiffuse *= vMetalnessDesc;
     //  if(vMetalnessDesc.b == 0.f)
     //      Out.vDiffuse = float4(0.f, 0.f, 1.f, 1.f);
-    //  Out.vDiffuse *= vMetalnessDesc.r;
+    //  Out.vDiffuse = vMetalnessDesc;
+    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
+    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
+    Out.vDiffuse *= fEdgeMask;
+    Out.vDiffuse *= fShadeMask;
     
     return Out;
 }

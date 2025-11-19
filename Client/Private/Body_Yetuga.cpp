@@ -162,6 +162,14 @@ HRESULT CBody_Yetuga::Render()
     if (FAILED(m_pShaderCom->Bind_Bool("g_isEnableEdge", &m_isEnableEdge)))
         return E_FAIL;
 
+    _float fEdgeIntensity = 0.3f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    _float fShadeIntensity = 0.2f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &fShadeIntensity, sizeof(_float))))
+        return E_FAIL;
+
     for (size_t i = 0; i < iNumMeshes; i++)
     {
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
