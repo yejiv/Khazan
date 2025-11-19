@@ -229,14 +229,14 @@ void CKhazan_Spear::Update(_float fTimeDelta)
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Com_Lantern_On"));
     }
     if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_3))
-    {
+    {       
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Com_Lantern_Off"));
     }
 
     if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::HEINMACH) && m_EventInteract.isInCave() == false)
     {
         m_EffectTimeDelta += fTimeDelta;
-        if (m_EffectTimeDelta > 1.2f)
+        if (m_EffectTimeDelta > 2.f)
         {
             m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Snow_Once"), m_pTransformCom->Get_State(STATE::POSITION));
             m_EffectTimeDelta = 0.f;

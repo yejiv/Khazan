@@ -73,6 +73,7 @@ private:
 	//Debug
 	//ID3D11Buffer*				m_pDebugInstanceBuffer = { nullptr };
 	MESH_INSTANCE_PARAMS*		m_pParticleParams;
+    ID3D11SamplerState*         m_pLinearWrapSampler;
 
 private:
 	_float3*					m_pVertexPositions = { nullptr };

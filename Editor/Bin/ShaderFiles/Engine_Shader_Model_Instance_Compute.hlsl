@@ -24,6 +24,8 @@ struct VTXINSTANCE_DYNAMIC_DATA
     float4 fSpeed;
     float fGravity;
     float bDead; //CPU에서 읽을 값
+    float2 padding;
+
 };
 
 cbuffer CB_PARTICLE : register(b0)
@@ -49,13 +51,7 @@ StructuredBuffer<PARTICLE_PARAMS> g_InputData : register(t0);
 Texture2D g_NoiseTexture : register(t1);
 RWStructuredBuffer<VTXINSTANCE_PARTICLE> g_OutputData : register(u0);
 RWStructuredBuffer<VTXINSTANCE_DYNAMIC_DATA> g_SpeedData : register(u1);
-
-SamplerState g_LinearWrapSampler
-{
-    Filter = MIN_MAG_MIP_LINEAR;
-    AddressU = WRAP;
-    AddressV = WRAP;
-};
+SamplerState g_LinearWrapSampler : register(s0);
 
 void RotateParticle(inout VTXINSTANCE_PARTICLE Particle, uint iIndex)
 {
@@ -178,19 +174,32 @@ void CS_RESET_SPEED(uint3 DTid : SV_DispatchThreadID)
     VTXINSTANCE_PARTICLE Particle = g_OutputData[iIndex];
     VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
     
-    if (g_iSpeedType == 0 || g_iSpeedType == 4) //SPREAD_SPEED
+    //if (g_iSpeedType == 0 || g_iSpeedType == 4) //SPREAD_SPEED
+    //    SpeedData.fSpeed.x = 0.f;
+    //if (g_iSpeedType == 1 || g_iSpeedType == 4) //ROTATION_SPEED
+    //    SpeedData.fSpeed.y = 0.f;
+    //if (g_iSpeedType == 2 || g_iSpeedType == 4)  //UPWARD_SPEED 
+    //    SpeedData.fSpeed.z = 0.f;  
+    //if (g_iSpeedType == 3 || g_iSpeedType == 4) //SCALE_SPEED
+    //{
+    //    SpeedData.fSpeed.w = 0.f;
+    //    Particle.vRight = g_InputData[iIndex].vRight;
+    //    Particle.vUp = g_InputData[iIndex].vUp;
+    //    Particle.vLook = g_InputData[iIndex].vLook;
+    //}
+    if (g_iSpeedType == 0 || g_iSpeedType == 4)
         SpeedData.fSpeed.x = 0.f;
-    if (g_iSpeedType == 1 || g_iSpeedType == 4) //ROTATION_SPEED
+    if (g_iSpeedType == 1 || g_iSpeedType == 4)
         SpeedData.fSpeed.y = 0.f;
-    if (g_iSpeedType == 2 || g_iSpeedType == 4)  //UPWARD_SPEED 
-        SpeedData.fSpeed.z = 0.f;  
-    if (g_iSpeedType == 3 || g_iSpeedType == 4) //SCALE_SPEED
+    if (g_iSpeedType == 2 || g_iSpeedType == 4)
     {
-        SpeedData.fSpeed.w = 0.f;
-        Particle.vRight = g_InputData[iIndex].vRight;
-        Particle.vUp = g_InputData[iIndex].vUp;
-        Particle.vLook = g_InputData[iIndex].vLook;
+        SpeedData.fSpeed.z = 0.f;
+        Particle.vRight = float4(g_InputData[iIndex].fSize, 0.f, 0.f, 0.f);
+        Particle.vUp = float4(0.f, g_InputData[iIndex].fSize, 0.f, 0.f);
+        Particle.vLook = float4(0.f, 0.f, g_InputData[iIndex].fSize, 0.f);
     }
+    if (g_iSpeedType == 3 || g_iSpeedType == 4)
+        SpeedData.fSpeed.w = 0.f;
 
     g_OutputData[iIndex] = Particle;
     g_SpeedData[iIndex] = SpeedData;

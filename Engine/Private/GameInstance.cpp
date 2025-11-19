@@ -233,6 +233,8 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 {
 	//m_pPicking->Update();
+    if (tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)] > 1.f)
+        return; 
 
 	m_pTimer_Manager->Update_HitStop(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
@@ -442,6 +444,16 @@ HRESULT CGameInstance::Open_Level(_uint iLevelID, CLevel* pNewLevel)
 _uint CGameInstance::Get_CurrentLevelID()
 {
 	return m_pLevel_Manager->Get_CurrentLevelID();
+}
+
+_uint CGameInstance::Get_NextLevelID()
+{
+    return m_pLevel_Manager->Get_NextLevelID();
+}
+
+void CGameInstance::Set_NextLevelID(_uint iLevelID)
+{
+    m_pLevel_Manager->Set_NextLevelID(iLevelID);
 }
 
 #pragma endregion

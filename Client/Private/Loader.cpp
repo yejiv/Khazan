@@ -817,7 +817,18 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Ice_Disappear"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_Ice_Disappear"))))
         return E_FAIL;
-    
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("GhostKnight"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/GhostKnight"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("GhostKnight_static"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/GhostKnight_static"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("GhostKnight_static_connect"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/GhostKnight_static_connect"))))
+        return E_FAIL;
 #pragma endregion
 
 #pragma region Shader

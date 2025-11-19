@@ -72,6 +72,7 @@ void CEffect_Element::SetData(_uint eventType,_float fDurTime)
     TRACK_DATA data;
     data.EventType = eventType;
     data.fDurTime = fDurTime;
+    data.fCurTime = 0;
     m_bRunning = true;
     m_TimeTracks.push_back(data);
 }
