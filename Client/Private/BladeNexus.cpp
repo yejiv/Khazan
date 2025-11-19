@@ -45,6 +45,7 @@ HRESULT CBladeNexus::Initialize_Clone(void* pArg)
             m_Event = e;
         });
 
+    m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_NextLevelID(), TEXT("GhostKnight_static"), m_pTransformCom->Get_State(STATE::POSITION));
     return S_OK;
 }
 
@@ -419,6 +420,7 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
         m_Event.None();
 
         CClientInstance::GetInstance()->Unlock_BladeNexus(static_cast<_uint>(m_iBladeNexus_ID));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_NextLevelID(), TEXT("GhostKnight_static_connect"), m_pTransformCom->Get_State(STATE::POSITION));
     }
     // 귀검 상호 작용 종료 후 ( 첫 해금 O )
     if (ANIM_STATE::BEFORE_END == m_eAnimState)

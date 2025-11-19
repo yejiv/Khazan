@@ -45,7 +45,7 @@ void CEffect_Manager::Add_Effect_ToPool(_uint iLayerLevelIndex, const _wstring& 
 	{
 		effect = dynamic_cast<CPrefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iLayerLevelIndex, strPrototypeTag));
 
-		if (Pool == nullptr)
+		if (effect == nullptr)
 		{
 			MSG_BOX(TEXT("EFFECT :: ?留곹븯?ㅺ퀬 Clone?섎젮?붾뜲 ?꾨줈?좏????놁쓬! ?꾨줈?????留뚮뱶?몄슂"));
 			return;

@@ -50,13 +50,6 @@ RWStructuredBuffer<VTXINSTANCE_PARTICLE> g_OutputData : register(u0);
 RWStructuredBuffer<VTXINSTANCE_DYNAMIC_DATA> g_SpeedData : register(u1);
 SamplerState g_LinearWrapSampler : register(s0);
 
-//SamplerState g_LinearWrapSampler
-//{
-//    Filter = MIN_MAG_MIP_LINEAR;
-//    AddressU = WRAP;
-//    AddressV = WRAP;
-//};
-//
 void RotateParticle(inout VTXINSTANCE_PARTICLE Particle, uint iIndex)
 {
     float fAngle = g_SpeedData[iIndex].fSpeed.y * g_fTimeDelta;

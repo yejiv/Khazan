@@ -55,6 +55,8 @@ public:
 public:
 	HRESULT Open_Level(_uint iLevelID, class CLevel* pNewLevel);
 	_uint Get_CurrentLevelID();
+	_uint Get_NextLevelID();
+	void  Set_NextLevelID(_uint iLevelID);
 #pragma endregion
 
 #pragma region PROTOTYPE_MANAGER

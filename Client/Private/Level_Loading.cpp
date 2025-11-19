@@ -34,6 +34,7 @@ void CLevel_Loading::Complete()
 HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
 {
 	m_eNextLevelID = eNextLevelID;
+    m_pGameInstance->Set_NextLevelID(ENUM_CLASS(eNextLevelID));
     m_pGameInstance->DeleteOctree();
 	m_pGameInstance->Destroy_Jolt();
 	m_pGameInstance->Initialize_Jolt(ENUM_CLASS(COLLISION_LAYER::END));
