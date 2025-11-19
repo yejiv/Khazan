@@ -208,6 +208,7 @@ private:
     _float              m_EffectTimeDelta;
 
 
+    class CUI_Talk_Daphrona* m_pTalkUI = { nullptr };
 private:
     void			Update_Stats(_float fTimeDelta);
     void			Update_State(_float fTimeDelta);

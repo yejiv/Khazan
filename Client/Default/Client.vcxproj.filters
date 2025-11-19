@@ -841,6 +841,15 @@
     <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation\Fall">
       <UniqueIdentifier>{8c26f2fc-b26b-47a9-beae-dd1fd6b9e102}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Talk">
+      <UniqueIdentifier>{2f63276d-22fa-407c-b7a8-63abde0fb720}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Talk\Daphrona">
+      <UniqueIdentifier>{f7af44ec-3d3f-4580-b8d2-e45cdc4baec5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Talk\ETC">
+      <UniqueIdentifier>{55df7305-3d2c-44dd-b7b6-c1662eb8b06f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1631,6 +1640,21 @@
     <ClInclude Include="..\public\Khazan_Spear_Anim_Fall.h">
       <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Fall</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\UI_WorldTextBox.h">
+      <Filter>02.GameObject\UI\Talk\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Talk_Daphrona.h">
+      <Filter>02.GameObject\UI\Talk\Daphrona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_WorldTex.h">
+      <Filter>02.GameObject\UI\Talk\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_WorldList.h">
+      <Filter>02.GameObject\UI\Talk\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_WorldFX.h">
+      <Filter>02.GameObject\UI\Talk\ETC</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2400,6 +2424,21 @@
     </ClCompile>
     <ClCompile Include="..\private\Khazan_Spear_Anim_Fall.cpp">
       <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Fall</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_WorldTextBox.cpp">
+      <Filter>02.GameObject\UI\Talk\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Talk_Daphrona.cpp">
+      <Filter>02.GameObject\UI\Talk\Daphrona</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_WorldTex.cpp">
+      <Filter>02.GameObject\UI\Talk\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_WorldList.cpp">
+      <Filter>02.GameObject\UI\Talk\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_WorldFX.cpp">
+      <Filter>02.GameObject\UI\Talk\ETC</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -15,10 +15,11 @@ CAmount::CAmount(const CAmount& Prototype)
 }
 
 void CAmount::Add_Value(AMOUNT_TYPE eType, _int IValue)
-{
-	m_pAmount[ENUM_CLASS(eType)]->Add_Value(IValue);
-	m_isAddValue = true;
-	On_Panel();
+{  
+    m_pAmount[ENUM_CLASS(eType)]->Add_Value(IValue);
+    m_isAddValue = true;
+    On_Panel();
+
 }
 
 void CAmount::On_Panel()

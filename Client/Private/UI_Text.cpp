@@ -12,6 +12,11 @@ CUI_Text::CUI_Text(const CUI_Text& Prototype)
 {
 }
 
+void CUI_Text::Set_TextTag(_wstring wstrTextTag)
+{
+    m_wstrTexttag = wstrTextTag;
+}
+
 void CUI_Text::Set_Text(_wstring wstrText)
 {
 	m_wstrText = wstrText;

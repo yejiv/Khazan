@@ -717,6 +717,11 @@ HRESULT CGameInstance::Draw_TextBox(const _wstring& strFontTag, const _wstring& 
 	return m_pFont_Manager->Draw_TextBox(strFontTag, strText, fX, fY, fMaxWidth, fOffsetHeight, vColor, eAlign);
 }
 
+HRESULT CGameInstance::DrawTextWorld(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, const _float4& vColor, TEXT_ALIGN eAlign, _matrix WorldMat)
+{
+    return m_pFont_Manager->DrawTextWorld(strFontTag, strText, fX, fY, vColor, eAlign, WorldMat);
+}
+
 HRESULT CGameInstance::Font_Load_Data(const _char* pFontFilePath)
 {
 	return m_pFont_Manager->Font_Load_Data(pFontFilePath);

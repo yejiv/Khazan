@@ -17,10 +17,11 @@ HRESULT CPlayer_Manager::Initialize()
     m_Data.fDamage = 10;
     m_Data.fGuard = 0;
 
-    m_Data.iLevel = { 1 };
-    m_Data.iGold = { 1000 };
-    m_Data.iLachryma = { 500 };
-    m_Data.iStone = { 0 };
+	m_Data.iLevel = 1;
+	m_Data.iGold = 1000;
+	m_Data.iLachryma = 500;
+    m_Data.iStone = 0;
+    m_Data.iLevelStone = 0;
 
     m_Data.iSkillLevel = { 10 };
     m_Data.iSkilPoint = { 10 };
