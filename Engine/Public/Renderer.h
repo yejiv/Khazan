@@ -141,6 +141,7 @@ private:
 	HRESULT Ready_Components();
     HRESULT Ready_Matrices();
 	HRESULT SetUp_Viewport(_float fWidth, _float fHeight);
+    HRESULT Bind_Pipeline_ShaderResources();
 
 	void InitCLSlots(uint32_t N);
 	void StoreRecordedCL(uint32_t idx, ID3D11CommandList* pCL);

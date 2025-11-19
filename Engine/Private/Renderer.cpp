@@ -97,6 +97,12 @@ HRESULT CRenderer::Add_RenderGroup(RENDERGROUP eRenderGroup, CGameObject* pRende
 
 HRESULT CRenderer::Draw()
 {
+    if (FAILED(Bind_Pipeline_ShaderResources()))
+    {
+        MSG_BOX(TEXT("Failed To Bind Pipeline Shader Resources"));
+        return E_FAIL;
+    }
+
     if (FAILED(Render_Priority()))
     {
         MSG_BOX(TEXT("Failed To Render Priority"));
@@ -364,8 +370,10 @@ HRESULT CRenderer::Render_Decal()
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Decal"), false)))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Render_Decals()))
-        return E_FAIL;
+    m_pGameInstance->Render_Decals();
+
+    //  if (FAILED(m_pGameInstance->Render_Decals()))
+    //      return E_FAIL;
 
     if (FAILED(m_pGameInstance->End_MRT()))
         return E_FAIL;
@@ -442,18 +450,6 @@ HRESULT CRenderer::Render_SSAO()
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_SSAO"))))
         return E_FAIL;
 
-    if (FAILED(m_pShader->Bind_Matrix("g_CamViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
-        return E_FAIL;
-
-    if (FAILED(m_pShader->Bind_Matrix("g_CamProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
-        return E_FAIL;
-
-    if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::VIEW))))
-        return E_FAIL;
-
-    if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::PROJ))))
-        return E_FAIL;
-
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Normal"), m_pShader, "g_NormalTexture")))
         return E_FAIL;
 
@@ -481,15 +477,6 @@ HRESULT CRenderer::Render_SSAO()
 HRESULT CRenderer::Render_Lights()
 {
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_LightAcc"))))
-        return E_FAIL;
-
-    if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::VIEW))))
-        return E_FAIL;
-
-    if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::PROJ))))
-        return E_FAIL;
-
-    if (FAILED(m_pShader->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Normal"), m_pShader, "g_NormalTexture")))
@@ -528,12 +515,6 @@ HRESULT CRenderer::Render_Lights()
 HRESULT CRenderer::Render_PostScene()
 {
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_PostScene"), false)))
-        return E_FAIL;
-
-    if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::VIEW))))
-        return E_FAIL;
-
-    if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::PROJ))))
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Diffuse"), m_pShader, "g_DiffuseTexture")))
@@ -627,9 +608,6 @@ HRESULT CRenderer::Render_Blend()
 HRESULT CRenderer::Render_Fog()
 {
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Fog"))))
-        return E_FAIL;
-
-    if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::PROJ))))
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Bind_Fog_ShaderResources(m_pShader)))
@@ -857,12 +835,6 @@ HRESULT CRenderer::Render_LUT()
 
 HRESULT CRenderer::Render_Distortion()
 {
-    if (FAILED(m_pShader->Bind_Matrix("g_CamViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
-        return E_FAIL;
-
-    if (FAILED(m_pShader->Bind_Matrix("g_CamProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
-        return E_FAIL;
-
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_LookUpTable"), m_pShader, "g_CombinedTexture")))
         return E_FAIL;
 
@@ -1110,6 +1082,26 @@ HRESULT CRenderer::SetUp_Viewport(_float fWidth, _float fHeight)
     ViewPortDesc.MaxDepth = 1.f;
 
     m_pContext->RSSetViewports(1, &ViewPortDesc);
+
+    return S_OK;
+}
+
+HRESULT CRenderer::Bind_Pipeline_ShaderResources()
+{
+    if (FAILED(m_pShader->Bind_Matrix("g_CamViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_Matrix("g_CamProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::VIEW))))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::PROJ))))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
+        return E_FAIL;
 
     return S_OK;
 }

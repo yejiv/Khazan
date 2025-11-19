@@ -5,6 +5,8 @@
 #include "Khazan_Spear.h"
 #include "ContainerObject.h"
 #include "Creature.h"
+#include "Yetuga.h"
+#include "Body_Yetuga.h"
 
 CShader_Controller::CShader_Controller()
 	: m_pGameInstance{ CGameInstance::GetInstance() }
@@ -90,8 +92,16 @@ void CShader_Controller::Ready_Shader()
 		{
 			ImGui::Begin("Shader Settings");
 
+            if (ImGui::Checkbox("Edge", &m_isEnableEdge))
+            {
+                CYetuga* pYetuga = dynamic_cast<CYetuga*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel),
+                    TEXT("Layer_MapObject"), 12));
+                CBody_Yetuga* pBody = dynamic_cast<CBody_Yetuga*>(pYetuga->Find_PartObject(TEXT("Part_Body")));
+                pBody->Set_EnableEdge(m_isEnableEdge);
+            }
+
 			if (ImGui::Checkbox("Shadow", &m_isRenderShadow))
-				m_pGameInstance->Set_EnableShadow(m_isRenderShadow);;
+				m_pGameInstance->Set_EnableShadow(m_isRenderShadow);
 
 			//  if (m_isRenderShadow)
 			//  {
