@@ -60,11 +60,11 @@ public:
     {
         M_DIE         = 1 << 0, 
 
-        M_HOLD        = 1 << 1,
+        M_FALL        = 1 << 1,
         M_GROGGY      = 1 << 2, 
         M_DAMAGED     = 1 << 3,  
         M_GUARD       = 1<< 4,
-        ORDER2 = M_HOLD | M_GROGGY | M_DAMAGED | M_GUARD,
+        ORDER2 = M_FALL | M_GROGGY | M_DAMAGED | M_GUARD,
 
         M_SKILL       = 1 << 5,
 
@@ -80,7 +80,7 @@ public:
         M_INTERACT      = 1 << 10,
         M_WEAPON_CHANGE = 1<< 11,
         M_IDLE          = 1 <<12, 
-        M_END            = 1<<14,
+        M_END            = 1<<13,
     };
 
     enum ATTACK : _uint

@@ -838,6 +838,9 @@
     <Filter Include="02.GameObject\MapObject\00.Prop\05.Destructible\Chunk">
       <UniqueIdentifier>{da16f588-eca3-4499-bc7b-f902f467656e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation\Fall">
+      <UniqueIdentifier>{8c26f2fc-b26b-47a9-beae-dd1fd6b9e102}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1625,6 +1628,9 @@
     <ClInclude Include="..\Public\Prop_Chunk.h">
       <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\Chunk</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Khazan_Spear_Anim_Fall.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Fall</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2391,6 +2397,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Prop_Chunk.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\Chunk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_Spear_Anim_Fall.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Fall</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -26,7 +26,7 @@ public:
 		BACK_DODGE = 1 << 4,
 		ROTATION = 1 << 5,
 		CHARGING_STRONG_ATTACK = 1 << 6,
-		AGAIN_REQUEST = 1 << 7, //스페이스바 유연하게 사용하도록 스프린트 제어
+		SPRINT_AGAIN_REQUEST = 1 << 7, //스페이스바 유연하게 사용하도록 스프린트 제어
 		LOCKON = 1 << 8,  // 락 온
         READY_ASSAULT = 1<< 9, // 강습 스킬 준비 
         INJURED  = 1 << 10,  //하인마흐에서 걸을 때 
@@ -37,6 +37,34 @@ public:
         JUST_GUARD = 1 << 13,
         GUARD_ROTATION = 1 << 14,
         GUARD_ROTATION_REQUEST = 1 << 15,
+
+        /*  낙하 */
+        FALLING = 1 << 16,
+        PRE_LAND = 1 << 17, //착지 직전 
+        FALLING_ATTACK = 1 << 18,
+
+        /* 스태미나 */
+        STAMINA_RECOVERY = 1 << 19 ,
+
+        /* 브루탈 */
+        BRUTAL_BEGIN = 1 << 20, //브루탈 탐지 범위 내에 옴
+        BRUTAL_READY = 1 << 21, //브루탈공격 가능 범위 내에 옴
+        BRUTAL_SUCCESS = 1 << 22,  //브루탈공격 함. 
+
+
+        /* 회전 */
+        //TURN180 = 1 << 20,
+        //TURN180_REQUESTED = 1 << 21, 
+        //TURN180_COMPLETE = 1 << 22,
+        //MOVE_AFTER_TURN = 1 << 23,
+        //JUST_COMPLETED_TURN180 = 1 << 24,
+
+
+        STATUS_CLEARS = RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_STRONG_ATTACK | SPRINT_AGAIN_REQUEST | READY_ASSAULT
+        | GUARD | GUARD_SUCCESS | JUST_GUARD | GUARD_ROTATION_REQUEST
+        | FALLING | FALLING_ATTACK | PRE_LAND
+
+        /*| TURN180| TURN180_REQUESTED | TURN180_COMPLETE| MOVE_AFTER_TURN*/,
 
 	};
 	enum PLAYER_CAMERA_DIR {
@@ -78,12 +106,18 @@ private:
     class CKhazan_Spear_Anim_Guard*         m_pAnimGuard = { nullptr };
     class CKhazan_Spear_Anim_Interaction*	m_pAnimInteraction = { nullptr };
     class CKhazan_Spaer_Anim_Damaged*       m_pAnimDamaged = { nullptr };
+    class CKhazan_Spear_Anim_Fall*          m_pAnimFall = { nullptr };
 
 	class CCamera_Compre*				    m_pCamera = { nullptr };
     class CClientInstance*                  m_pClientInstance = { nullptr };
-
+    //class CTarget_BrutalAttack*             m_pBrutalAttack = { nullptr };
+    //class CBody*                            m_pBodyCom = { nullptr };
 	//kHAZAN_ANIM_INFO			m_eCurAnimInfo = {}; //후보지에서 선택된 애님인포 
 	//vector<kHAZAN_ANIM_INFO>	m_AnimCandidates; // 매 프레임 후보 리스트 적립
+
+    _float                      m_fTimeAcc = { 0.f }; // fps용
+    _uint                       m_iFpsCount = { 0 }; // fps용
+    _uint                       m_iFps = { 0 };// fps용
 
 	/* state */
     PLAYER_DATA*                m_pPlayerData;
@@ -133,19 +167,41 @@ private:
     _float4                     m_vGuardRotationTarget = {}; // 가드 시 충돌지점으로 회전
     _float2                     m_fGuardRotationTime = { 0.f, 0.15f };
 
+    /* Fall  */
 
-	/* const */
+    /* recovery */
+    _float2                     m_fIntervalStaminaRecovery = { 0.f, 0.25f };
+    _float2                     m_fWaitStaminaRecovery = { 0.f, 1.f };
+
+    /* 180 turn */
+    //_float2                     m_f180TurnTime = { 0.f, 0.f };      // x: 경과시간, y: 회전 소요시간
+    //_vector                     m_v180TurnStartRot = {};            // 시작 회전
+    //_vector                     m_v180TurnEndRot = {};              // 목표 회전
+    //_uint                       m_iPrev180TurnSubState = {};
+    //_float                      m_fTurn180CooldownTime = {};
+
+    /* Monster Search */
+    //vector< CGameObject*>       m_CollMonsters;
+    //_float2                     m_fOptimizationSearchTime = { 0.f,0.3f };
+    //CGameObject*                m_pBrutalmonster = { nullptr };
+
+	/* ====== const ======*/
 	const	_float				m_fMinSprintTime = { 0.15f };
-	//const	_float				m_fMinDodgeTime = { 0.2f };
 
 	/* Move Speed */
      _float				m_fInjuredSpeed = { 1.15f };
      _float				m_fWalkSpeed = { 2.6f };
-	 _float				m_fRunSpeed = { 5.5f };
-	 _float				m_fSprintSpeed = {11.5f };
+	 _float				m_fRunSpeed = { 9.f };
+	 _float				m_fSprintSpeed = {15.4f };
 
 	/*  Attack */
 	const _float				m_fChargingStrongIntervalTime = { 0.25f };
+    const _float                m_fBrutalAttackSearchMaxDistance = { 2.f };
+    const _float                m_fBrutalAttackMaxDistance = { 1.f };
+
+    /* Fall */
+    const _float                m_fRayLength = { 8.f };
+    const _float2                m_fRayZOffset = { 0.f, 0.5f };
 
 /* SnowEffect SpawnTime*/
 private:
@@ -153,27 +209,44 @@ private:
 
 
 private:
-	void			Update_State(_float fTimeDelta);
+    void			Update_Stats(_float fTimeDelta);
+    void			Update_State(_float fTimeDelta);
+    void            Update_LockOn();   //카메라 락온과 동기화
+
+    /* Input */
     void            InjuredMove_Input(_float fTimeDelta);
+    _bool           Fall_Input(_float fTimeDelta);
 	void			Move_Input(_float fTimeDelta);
     _bool			Skill_Input(_float fTimeDelta);
     _bool			Attack_Input(_float fTimeDelta);
 	_bool			Guard_Input(_float fTimeDelta);
     _bool           Interaction_Input(_float fTimeDelta);
+
+    /* Animation  */
 	void			Change_MoveIdle(_float fTimeDelta);
 	void			ExecuteAnimationExit();
+
+    /* Rotation, Direction */
 	void			Apply_PlayerMovement(_float fTimeDelta);
 	void			Check_KeyInput_Direction(_float fTimeDelta);
     DIRECTION_INFO  Calculate_LockOnDirection(_float fTimeDelta);
-    void            Update_PlayerDate();
     void            LockOn_Rotation(_float fTimeDelta);
     void            Setting_Guard_Rotation( );
     void            Guard_Rotation(_float fTimeDelta);
-    void            Update_LockOn( );   //카메라 락온과 동기화
-    void            Update_Die(_float fTimeDelta);
-    void            Clear_Injured();
+    void            Get_HitReaction(_float3 vContactPoint);
+    //void            Check_Turn180(_float fTimeDelta);   // 180도 회전 체크
+    //void            Start_Turn180Rotation();                             // 180도 회전 시작
+    //void            Update_Turn180Rotation(_float fTimeDelta);           // 180도 회전 업데이트
+    //void            Complete_Turn180();                                  // 180도 회전 완료 처리
 
-    void            Get_HitReaction( _float3 vContactPoint);
+    /* state update */
+    void            Update_Die(_float fTimeDelta);
+
+    /* others,, */
+    void            Check_IsInAir(_float fTimeDelta);
+    void            Clear_Injured();
+    //void            Search_BrutalTarget(_float fTimeDelta);
+    //_bool           Check_BrutalAttack(_float fTimeDelta);
 
 private:
 	HRESULT			Ready_Components();
@@ -193,6 +266,7 @@ private:
 	inline void		Add_Status(_uint i) { m_iStatus |= i; }
 	inline void		Remove_Status(_uint i) { m_iStatus &= ~i; }
 	inline _bool	Has_Status(_uint i) { return (m_iStatus & i) != 0; }
+    inline _bool    Has_AllStatus(_uint i) { return (m_iStatus & i) == i; }
     inline void     Toggle_Status(_uint i) { m_iStatus ^= i; }
 	//inline void		Clear_Status( ) { m_iStatus = 0; }
 
@@ -201,7 +275,7 @@ private:
 	inline void		Remove_State(_uint i) { m_iCurMainState &= ~i; }
 	inline _bool	Has_State(_uint i) { return (m_iCurMainState & i) != 0; }
 	inline _bool	Has_AllStates(_uint i) { return (m_iCurMainState & i) == i; }
-	inline _bool	Has_States();	//하나의 상태라도 있는지 없는지
+    inline _bool	Has_States() { return m_iCurMainState != 0; }	//하나의 상태라도 있는지 없는지
 	inline void		Clear_State() { m_iCurMainState = 0; }
 
 	inline void		Add_SubState(_uint i) { m_iCurSubState |= i; }
@@ -209,7 +283,7 @@ private:
 	inline void		Remove_SubState(_uint i) { m_iCurSubState &= ~i; }
 	inline _bool	Has_SubState(_uint i) { return (m_iCurSubState & i) != 0; }
 	inline _bool	Has_AllSubStates(_uint i) { return (m_iCurSubState & i) == i; }
-	inline _bool	Has_SubStates();	//하나의 상태라도 있는지 없는지
+	inline _bool	Has_SubStates() { return m_iCurSubState != 0; }//하나의 상태라도 있는지 없는지
 	inline void		Clear_SubState() { m_iCurSubState = 0; }
 
 	inline void		Add_CycleState(_uint i) { m_iCycle |= i; }
@@ -255,11 +329,11 @@ private:
 
     std::string GetHitReactionString();
 
-	const char*		GetStateName(_uint state);
-	const char*		GetSubStateName(_uint subState);
-	const char*		GetCycleName(_uint cycle);
-	const char*		GetStatusName(_uint status);
-	std::string		GetDirectionString();
+	//const char*		GetStateName(_uint state);
+	//const char*		GetSubStateName(_uint subState);
+	//const char*		GetCycleName(_uint cycle);
+	//const char*		GetStatusName(_uint status);
+	//std::string		GetDirectionString();
 #endif // _DEBUG
 
 

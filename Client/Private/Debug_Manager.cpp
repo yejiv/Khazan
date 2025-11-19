@@ -115,6 +115,7 @@ void CDebug_Manager::Ready_JoltDebug()
 		Labels.push_back("MAP_INTERACT");
 		Labels.push_back("PLAYER");
         Labels.push_back("PLAYERATTACK");
+        Labels.push_back("PLAYERSEARCH");
 		Labels.push_back("MONSTER");
 		Labels.push_back("MONSTERATTACK");
 		Labels.push_back("ITEM");
