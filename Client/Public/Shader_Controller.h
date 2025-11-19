@@ -41,6 +41,7 @@ private:
 	_bool					m_isEnableOutline = {};
     _bool                   m_isEnableLUT = { true };
     _bool                   m_isEnableMotionBlur = {};
+    _bool                   m_isEnableEdge = { true };
 
 	// SSAO
 	SSAO_CONFIG				m_SSAOConfig = {};

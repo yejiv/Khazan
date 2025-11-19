@@ -156,28 +156,19 @@ HRESULT CLevel_Shader::Initialize()
 						TEXT("Layer_Player"), 0))->Set_EmissiveIntensity(m_fEmissiveIntensity);
 				}
 
-				ImGui::Separator();
-			}
+                // 가우시안 블러 범위(반경)
+                if (ImGui::InputInt("Gaussian Blur Radius", &m_GaussianBlurConfig.iRadius, 2, 4))
+                    m_pGameInstance->Set_GaussianBlurConfig(m_GaussianBlurConfig);
 
-			if (ImGui::Checkbox("Bloom", &m_isEnableBloom))
-				dynamic_cast<CPlayer_Shader*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
-					TEXT("Layer_Player"), 0))->Set_EnableBloom(m_isEnableBloom);
+                // 가우시안 블러 가중치 밀집도
+                if (ImGui::SliderFloat("Gaussian Blur Concentration", &m_GaussianBlurConfig.fSigma, 1.f, 10.f))
+                    m_pGameInstance->Set_GaussianBlurConfig(m_GaussianBlurConfig);
 
-			if (m_isEnableBloom)
-			{
-				// 가우시안 블러 범위(반경)
-				if (ImGui::InputInt("Blur Radius", &m_GaussianBlurConfig.iRadius, 2, 4))
-					m_pGameInstance->Set_GaussianBlurConfig(m_GaussianBlurConfig);
+                // 가우시안 블러 가중치 합 정규화 수치
+                if (ImGui::SliderFloat("Gaussian Blur Normalization", &m_GaussianBlurConfig.fNormalization, 0.f, 15.f))
+                    m_pGameInstance->Set_GaussianBlurConfig(m_GaussianBlurConfig);
 
-				// 가우시안 블러 가중치 밀집도
-				if (ImGui::SliderFloat("Concentration", &m_GaussianBlurConfig.fSigma, 1.f, 10.f))
-					m_pGameInstance->Set_GaussianBlurConfig(m_GaussianBlurConfig);
-
-				// 가우시안 블러 가중치 합 정규화 수치
-				if (ImGui::SliderFloat("Normalization", &m_GaussianBlurConfig.fNormalization, 0.f, 15.f))
-					m_pGameInstance->Set_GaussianBlurConfig(m_GaussianBlurConfig);
-
-				ImGui::Separator();
+                ImGui::Separator();
 			}
 
 			if (ImGui::Checkbox("Fog", &m_isEnableFog))
@@ -291,25 +282,25 @@ HRESULT CLevel_Shader::Initialize()
 					ImGui::NewLine();
 				}
 
-				_bool isChangedSpace{};
-
-				isChangedSpace |= ImGui::Checkbox("Fog World Space", &m_isWorldSpaceFog);
-
-				if (isChangedSpace)
-				{
-					m_pGameInstance->Set_FogNoiseWorldSpace(m_isWorldSpaceFog);
-
-					if (m_isWorldSpaceFog)
-					{
-						m_FogConfig.Noise.vSpeed = { 0.05f, 0.f };
-						m_FogConfig.Noise.vScale = { 0.05f, 0.05f };
-					}
-					else
-					{
-						m_FogConfig.Noise.vSpeed = { 0.01f, 0.f };
-						m_FogConfig.Noise.vScale = { 1.f, 1.f };
-					}
-				}
+				//  _bool isChangedSpace{};
+                //  
+				//  isChangedSpace |= ImGui::Checkbox("Fog World Space", &m_isWorldSpaceFog);
+                //  
+				//  if (isChangedSpace)
+				//  {
+				//  	m_pGameInstance->Set_FogNoiseWorldSpace(m_isWorldSpaceFog);
+                //  
+				//  	if (m_isWorldSpaceFog)
+				//  	{
+				//  		m_FogConfig.Noise.vSpeed = { 0.05f, 0.f };
+				//  		m_FogConfig.Noise.vScale = { 0.05f, 0.05f };
+				//  	}
+				//  	else
+				//  	{
+				//  		m_FogConfig.Noise.vSpeed = { 0.01f, 0.f };
+				//  		m_FogConfig.Noise.vScale = { 1.f, 1.f };
+				//  	}
+				//  }
 
 				m_pGameInstance->Set_FogConfig(m_FogConfig);
 

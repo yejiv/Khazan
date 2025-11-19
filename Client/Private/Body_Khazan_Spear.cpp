@@ -143,6 +143,14 @@ HRESULT CBody_Khazan_Spear::Render()
 
     _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
 
+    _float fEdgeIntensity = 0.3f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    _float fShadeIntensity = 0.2f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &fShadeIntensity, sizeof(_float))))
+        return E_FAIL;
+
     for (size_t i = 0; i < iNumMeshes; i++)
     {
         //m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
@@ -239,6 +247,7 @@ void CBody_Khazan_Spear::Render_Part(CModel* pModel)
         pModel->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
         pModel->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
         pModel->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR, 0);
+        pModel->Bind_Materials(m_pShaderCom, "g_MetalnessTexture", i, aiTextureType_METALNESS, 0);
 
         // 마스터의 본을 자동으로 사용
         if (FAILED(pModel->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
