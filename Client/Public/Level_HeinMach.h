@@ -56,6 +56,8 @@ private:
     // 데칼 불러오기
     HRESULT Ready_Map_Decal(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
 
+    HRESULT Ready_Layer_MapObject_DEST(const _wstring& strLayerTag, const _tchar* pDataFilename, LEVEL eCurrentLevel);
+
     // UI 랜더
     HRESULT Ready_Layer_UI();
 

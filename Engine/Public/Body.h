@@ -35,6 +35,7 @@ public:
 		_float          fMass = 1.0f; // 필요 시 사용
 		EMotionQuality  eQuality = EMotionQuality::Discrete;
 		_float		fAngularDamping = 0.05f;
+        _float      fLinearDamping = 0.05f;
 
 		_float		fGravity = 1.f;
 
@@ -69,6 +70,7 @@ public:
 	typedef struct tagConvexShape : BODY_DESC
 	{
 		class CModel* pModel = { nullptr };
+        class CTransform* pTransform = { nullptr };
 	}BODY_CONVEXSHAPE_DESC;
 private:
 	CBody(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -92,6 +94,9 @@ public:
 	void	OnGravity(_bool isGravity) { m_pBodyInterface->SetGravityFactor(m_BodyID, isGravity); }
 
 public:
+    void    Set_Gravity(_float fGravity) { m_pBodyInterface->SetGravityFactor(m_BodyID, fGravity); }
+
+public:
 	void	Add_Force(_float fMass);
 	void	Add_Torque(_float fMass);
 	void	Add_Impulse(_float fMass);
@@ -106,6 +111,9 @@ public:
 	BodyID           Get_BodyID() const { return m_BodyID; }
 	EMotionType      Get_Motion() const { return m_eMotion; }
 
+    _vector         Get_Pos();
+    _vector         Get_Rot();
+
 
 private:
 	Body* m_pBody = { nullptr };
@@ -118,6 +126,8 @@ private:
 
 private:
 	const JPH::Array<Vec3> ConvertToArrayVec3(CModel* pModel);
+	const JPH::Array<Vec3> ConvertToArrayVec3(CModel* pModel, _uint iMeshIndex, const Vec3& vScale);
+    JPH::Array<Vec3> ConvertToHullPoints(CModel* pModel, _uint iMeshIndex, const Vec3& vScale, Vec3& outCenter);
 	const JPH::Array<Float3> ConvertToArrayFloat3(CModel* pModel, _uint iIndex);
 	const JPH::Array<IndexedTriangle> ConvertToArrayTri(CModel* pModel, _uint iIndex);
 	void Make_MeshShape(BODY_MESHSHAPE_DESC* pDesc);

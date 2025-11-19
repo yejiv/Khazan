@@ -126,6 +126,7 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
 
     m_strName = "Khazan";
 
+    m_EffectTimeDelta = 0.f;
     return S_OK;
 
 }
@@ -201,14 +202,17 @@ void CKhazan_Spear::Update(_float fTimeDelta)
     {
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Com_Lantern_Off"));
     }
-    if (m_pCharVirCom->Get_isGround())
+
+    if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::HEINMACH) && m_EventInteract.isInCave() == false)
     {
-        int a = 0;
+        m_EffectTimeDelta += fTimeDelta;
+        if (m_EffectTimeDelta > 1.2f)
+        {
+            m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Snow_Once"), m_pTransformCom->Get_State(STATE::POSITION));
+            m_EffectTimeDelta = 0.f;
+        }
     }
-    else
-    {
-        int a = 0;
-    }
+    
 }
 
 void CKhazan_Spear::Late_Update(_float fTimeDelta)

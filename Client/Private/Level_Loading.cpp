@@ -78,6 +78,7 @@ void CLevel_Loading::Update(_float fTimeDelta)
 		static_cast<CUI_Loading*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Loading")))->Off_Panel();
 		if (m_pClientInstance->Get_CurrLevel() != m_eNextLevelID)
 		{
+            Ready_CleanImgUI();
 			m_pClientInstance->Clear_CameraManager(ENUM_CLASS(m_pClientInstance->Get_CurrLevel()));
 #ifdef _DEBUG
 			m_pClientInstance->CameraTool_Clear();
@@ -465,6 +466,8 @@ HRESULT CLevel_Loading::Ready_ObjectLayer()
     m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::CAMERA), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
     m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MAP_STATIC_TRIGGER), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
     m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MAP_MOVE_PLATFORM), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
+    m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MAP_DEST), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
+    m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MAP_CHUNK), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
 
 
     m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
@@ -503,23 +506,34 @@ HRESULT CLevel_Loading::Ready_ObjectLayer()
     //MAP_MOVE_PLATFORM
     m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MAP_MOVE_PLATFORM), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
 
+    //MAP_DEST
+    m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MAP_DEST), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
+
+    //MAP_CHUNK
+    m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MAP_CHUNK), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
+
 
 	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MONSTER));
     m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MAP_STATIC));
 	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT));
     m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MAP_STATIC_TRIGGER));
     m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MAP_MOVE_PLATFORM));
+    m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MAP_CHUNK));
 
     m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK), ENUM_CLASS(COLLISION_LAYER::MONSTER));
+    m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK), ENUM_CLASS(COLLISION_LAYER::MAP_DEST));
 
     m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK), ENUM_CLASS(COLLISION_LAYER::PLAYER));
     m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK), ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK));
 	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK), ENUM_CLASS(COLLISION_LAYER::MAP_STATIC));
+    m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK), ENUM_CLASS(COLLISION_LAYER::MAP_DEST));
     
 	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(COLLISION_LAYER::MAP_STATIC));
     m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(COLLISION_LAYER::MAP_STATIC_TRIGGER));
 
 	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::CAMERA), ENUM_CLASS(COLLISION_LAYER::MONSTER));
+
+    m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::MAP_STATIC), ENUM_CLASS(COLLISION_LAYER::MAP_CHUNK));
 
 
     // 레이캐스트 용
@@ -527,6 +541,14 @@ HRESULT CLevel_Loading::Ready_ObjectLayer()
     m_pGameInstance->Set_PhysicsSystem();
 
     return S_OK;
+}
+
+HRESULT CLevel_Loading::Ready_CleanImgUI()
+{
+#ifdef _DEBUG
+        m_pGameInstance->CleanMenu(TEXT("Client"));
+#endif
+        return S_OK;
 }
 
 CLevel_Loading* CLevel_Loading::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eNextLevelID)

@@ -94,7 +94,7 @@ void CS_MOVE(uint3 DTid : SV_DispatchThreadID)
     VTXINSTANCE_PARTICLE Particle = g_OutputData[iIndex];
     VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
 	
-    if (Particle.bDead)
+    if (Particle.bDead > 0.f)
         return;
     
     Particle.vPrevPosition = Particle.vTranslation.xyz;
