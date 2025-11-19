@@ -218,7 +218,6 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pEffect_Manager)
 		return E_FAIL;
 
-
 	m_iStaticLevel = EngineDesc.iStaticLevel;
 
 #ifdef _DEBUG
@@ -1581,17 +1580,6 @@ bool CGameInstance::AddStaticObject(CGameObject* pGameObject, const _float3& vPo
 
 
 #pragma endregion
-
-//
-//void CGameInstance::Transform_Picking_ToLocalSpace(CTransform* pTransformCom)
-//{
-//	m_pPicking->Transform_ToLocalSpace(pTransformCom);
-//}
-//
-//_bool CGameInstance::isPicked_InLocalSpace(const _float3& vPointA, const _float3& vPointB, const _float3& vPointC, _float3* pOut)
-//{
-//	return m_pPicking->isPicked_InLocalSpace(vPointA, vPointB, vPointC, pOut);
-//}
 
 void CGameInstance::Release_Engine()
 {

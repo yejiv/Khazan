@@ -421,6 +421,7 @@ public:
     void                        Update_MotionBlur_PrevMatrices();
 #pragma endregion
 
+
 private:
 	class CGraphic_Device*		    m_pGraphic_Device = { nullptr };
 	class CLevel_Manager*		    m_pLevel_Manager = { nullptr };
