@@ -403,7 +403,10 @@
     <ClInclude Include="..\public\UI_State_List.h" />
     <ClInclude Include="..\public\UI_State_MainPanel.h" />
     <ClInclude Include="..\public\UI_State_Panel.h" />
-    <ClInclude Include="..\public\UI_Talk.h" />
+    <ClInclude Include="..\public\UI_WorldFX.h" />
+    <ClInclude Include="..\public\UI_WorldList.h" />
+    <ClInclude Include="..\public\UI_WorldTex.h" />
+    <ClInclude Include="..\public\UI_Talk_Daphrona.h" />
     <ClInclude Include="..\public\UI_Text.h" />
     <ClInclude Include="..\public\UI_TextBox.h" />
     <ClInclude Include="..\public\UI_Texture.h" />
@@ -661,7 +664,10 @@
     <ClCompile Include="..\private\UI_State_List.cpp" />
     <ClCompile Include="..\private\UI_State_MainPanel.cpp" />
     <ClCompile Include="..\private\UI_State_Panel.cpp" />
-    <ClCompile Include="..\private\UI_Talk.cpp" />
+    <ClCompile Include="..\private\UI_WorldFX.cpp" />
+    <ClCompile Include="..\private\UI_WorldList.cpp" />
+    <ClCompile Include="..\private\UI_WorldTex.cpp" />
+    <ClCompile Include="..\private\UI_Talk_Daphrona.cpp" />
     <ClCompile Include="..\private\UI_Text.cpp" />
     <ClCompile Include="..\private\UI_TextBox.cpp" />
     <ClCompile Include="..\private\UI_Texture.cpp" />

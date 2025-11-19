@@ -31,6 +31,16 @@ void CUI_WorldTextBox::Update_UITransform(_matrix vParentMat)
     XMStoreFloat4x4(&m_CombinedWorldMatrix, finalWorld);
 }
 
+void CUI_WorldTextBox::Set_LocalPos(_vector vPos)
+{
+    m_pTransformCom->Set_State(STATE::POSITION, vPos);
+}
+
+void CUI_WorldTextBox::Set_LocalSize(_float3 vSize)
+{
+    m_pTransformCom->Scale(vSize);
+}
+
 HRESULT CUI_WorldTextBox::Initialize_Prototype()
 {
     return S_OK;
@@ -55,9 +65,6 @@ void CUI_WorldTextBox::Update(_float fTimeDelta)
 
 void CUI_WorldTextBox::Late_Update(_float fTimeDelta)
 {
-    m_pTransformCom->Set_State(STATE::POSITION, { -0.4f, 0.2f, -0.01f, 1.f });
-    m_pTransformCom->Scale({ 1.f, 1.f, 1.f });
-
     if (m_isVisible)
         if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::UI, this)))
             return;
@@ -77,7 +84,7 @@ HRESULT CUI_WorldTextBox::Render()
     CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
     m_pShaderCom->Begin(3);
 
-    m_pGameInstance->DrawTextWorld(TEXT("Blade_Medium_20"), TEXT("다프로네"), m_vWorldPos.x + m_iPivotX, m_vWorldPos.y + m_iPivotY, {0.6f,0.6f,0.f,1.f}, TEXT_ALIGN::LEFT_CENTER,XMLoadFloat4x4(&m_CombinedWorldMatrix));
+    m_pGameInstance->DrawTextWorld(m_wstrTexttag, m_wstrText, m_vWorldPos.x + m_iPivotX, m_vWorldPos.y + m_iPivotY, m_vColor, TEXT_ALIGN::LEFT_CENTER,XMLoadFloat4x4(&m_CombinedWorldMatrix));
 
     return S_OK;
 }

@@ -217,6 +217,9 @@ void CAmount_Panel::AddValue_Check(_float fTimeDelta)
 			m_pAddValueText->Setting_Pivot(70, iPivotY);
 
 			_wstring strAddCount = TEXT("+");
+            if (m_iAddValue < 0)
+                strAddCount = {};
+
 			strAddCount += IntToWstring(m_iAddValue);
 			m_pAddValueText->Set_Text(strAddCount);
 		}
@@ -239,6 +242,25 @@ void CAmount_Panel::AddValue_Check(_float fTimeDelta)
 			strAddCount += IntToWstring(m_iAddValue);
 			m_pAddValueText->Set_Text(strAddCount);
 		}
+        else if (m_iAddValue < 0)
+        {
+            m_iAccValue += 1;
+
+            if (m_iAddValue > m_iAccValue)
+            {
+                *m_iCulValue += m_iAddValue;
+                m_iAddValue += m_iAddValue;
+            }
+            else
+            {
+                *m_iCulValue -= m_iAccValue;
+                m_iAddValue += m_iAccValue;
+            }
+
+            _wstring strAddCount = {};
+            strAddCount += IntToWstring(m_iAddValue);
+            m_pAddValueText->Set_Text(strAddCount);
+        }
 		else
 		{
 			m_isAddValue = false;

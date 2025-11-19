@@ -23,7 +23,7 @@
 
 #pragma region 이벤트 - 인벤토리
 #include "UI_Inven.h"
-#include "UI_Talk.h"
+#include "UI_Talk_Daphrona.h"
 #pragma endregion
 
 using WEA = CKhazan_Spear_ASMachine::WEAPON;
@@ -134,7 +134,7 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
     Desc.vLocalPos = { 0.f, 0.f };
     Desc.vLocalSize = { 1.7f, 1.7f };
     Desc.szName = "TalkUI";
-    m_pTalkUI = static_cast<CUI_Talk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk"), &Desc));
+    m_pTalkUI = static_cast<CUI_Talk_Daphrona*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Daphrona"), &Desc));
 
     if (m_pTalkUI == nullptr)
         return E_FAIL;
@@ -145,6 +145,12 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
 
 void CKhazan_Spear::Priority_Update(_float fTimeDelta)
 {
+    if (m_pGameInstance->Key_Down(DIK_8))
+    {
+        m_pTalkUI->On_Panel();
+    }
+
+    m_pTalkUI->Priority_Update(fTimeDelta);
     __super::Priority_Update(fTimeDelta);
 
     if (m_pGameInstance->Key_Down(DIK_P))

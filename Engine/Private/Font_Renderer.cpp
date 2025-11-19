@@ -287,7 +287,7 @@ HRESULT CFont_Renderer::DrawTextWorld(CFont_Face* pFont, const _wstring& strText
     pFont->ComputeMaxBearingY(strText, iMaxBearingY, iMaxBottom);
 
     _float cursorX = fX + fOffset.x;
-    _float cursorY = fY + fOffset.y + iMaxBearingY;
+    _float cursorY = fY + fOffset.y;
     _float worldScale = 0.005f;
 
     vector<FONTVERTEX> verts;
@@ -301,14 +301,18 @@ HRESULT CFont_Renderer::DrawTextWorld(CFont_Face* pFont, const _wstring& strText
     {
         const GLYPH_INFO* g = pFont->GetGlyph(ch);
         if (!g) continue;
-
+ 
         _float x = (cursorX + g->iBearingX) * worldScale;
         _float w = g->iWidth * worldScale;
-        _float h = g->iHeight * worldScale;
 
-        _float top = (cursorY - g->iBearingY) * worldScale;
+        _float top = (cursorY - (g->iHeight * 0.5f)) * worldScale;
         _float bottom = top + g->iHeight * worldScale;
 
+        if (ch == L'.' || ch == L',')
+        {
+            top = (cursorY - (g->iHeight * 1.5f)) * worldScale;
+            bottom = top + g->iHeight * worldScale;
+        }
         verts.push_back({ {x,      top,    0}, {g->u0, g->v1} });
         verts.push_back({ {x,      bottom, 0}, {g->u0, g->v0} });
         verts.push_back({ {x + w,  bottom, 0}, {g->u1, g->v0} });

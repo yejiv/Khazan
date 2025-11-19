@@ -55,6 +55,9 @@
 #include "Target_LockOn.h"
 #include "Target_BrutalAttack.h"
 
-#include "UI_Talk.h"
+#include "UI_WorldTex.h"
 #include "UI_WorldTextBox.h"
+#include "UI_WorldList.h"
+#include "UI_WorldFX.h"
+#include "UI_Talk_Daphrona.h"
 

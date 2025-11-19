@@ -1,7 +1,7 @@
 #include "Engine_Shader_Defines.hlsli"
 
 float4x4 g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
-float4 g_vColor, g_fProgressValue;
+float4 g_vColor, g_fProgressValue, g_vUV;
 float g_fAlpha;
 float g_fValue;
 float g_fDissovle;
@@ -373,6 +373,62 @@ PS_OUT PS_WORLD_DEFAULT(PS_IN In)
 
 }
 
+PS_OUT PS_WORLD_UV_TEX(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    float2 vMinUV = { g_vUV.x, g_vUV.y };
+    float2 vMaxUV = { g_vUV.z, g_vUV.w };
+    
+    In.vTexcoord = vMinUV + (vMaxUV - vMinUV) * In.vTexcoord;
+     
+    Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+    Out.vColor.a = Out.vColor.a * g_vColor.a * g_fAlpha;
+    
+    return Out;
+
+}
+
+PS_OUT PS_WORLD_UV_TEX_COLOR(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    float2 vMinUV = { g_vUV.x, g_vUV.y };
+    float2 vMaxUV = { g_vUV.z, g_vUV.w };
+    
+    In.vTexcoord = vMinUV + (vMaxUV - vMinUV) * In.vTexcoord;
+     
+    Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+    Out.vColor.rgb = Out.vColor.r * g_vColor.rgb;
+    Out.vColor.a = Out.vColor.a * g_vColor.a * g_fAlpha;
+    
+    return Out;
+
+}
+
+PS_OUT PS_WORLD_UV_TEX_ALPHA(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    float2 vMinUV = { g_vUV.x, g_vUV.y };
+    float2 vMaxUV = { g_vUV.z, g_vUV.w };
+    
+    In.vTexcoord = vMinUV + (vMaxUV - vMinUV) * In.vTexcoord;
+     
+    float2 uv = In.vTexcoord;
+
+    uv.x = uv.x - g_fValue;
+    if (uv.x < 0 || uv.x > 1)
+        discard;
+    
+    Out.vColor = g_Texture.Sample(DefaultSampler, uv);
+    Out.vColor.rgb = Out.vColor.r * g_vColor.rgb;
+    Out.vColor.a = Out.vColor.r * g_vColor.a * g_fAlpha;
+        
+    return Out;
+
+}
+
 technique11 DefaultTechnique
 {
     pass DefaultPass
@@ -568,6 +624,38 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_WORLD_DEFAULT();
+    }
+    pass PS_WORLD_UV_TEX //18
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_WORLD_UV_TEX();
+    }
+
+    pass PS_WORLD_UV_TEX_COLOR //19
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_WORLD_UV_TEX_COLOR();
+    }
+
+    pass PS_WORLD_UV_TEX_ALPHA //20
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_WORLD_UV_TEX_ALPHA();
     }
 
 }

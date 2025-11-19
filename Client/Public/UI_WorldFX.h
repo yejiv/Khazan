@@ -9,16 +9,18 @@ class CVIBuffer_Rect;
 NS_END
 
 NS_BEGIN(Client)
-class CUI_Talk final : public CUI_Panel
+class CUI_WorldFX final : public CUI_Panel
 {
 private:
-    CUI_Talk(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    CUI_Talk(const CUI_Talk& Prototype);
-    virtual ~CUI_Talk() = default;
-
+    CUI_WorldFX(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+    CUI_WorldFX(const CUI_WorldFX& Prototype);
+    virtual ~CUI_WorldFX() = default;
 public:
-    void                    Update_UITransform(_vector vPos);
+    void                    Update_UITransform(_matrix vParentMat);
 
+    void                    Set_LocalPos(_vector vPos);
+    void                    Set_LocalSize(_float3 vSize);
+    void                    Start_Anim();
 public:
     virtual HRESULT			Initialize_Prototype() override;
     virtual HRESULT			Initialize_Clone(void* pArg) override;
@@ -31,13 +33,14 @@ private:
     CShader*                m_pShaderCom = { nullptr };
     CTexture*               m_pTextureCom = { nullptr };
     CVIBuffer_Rect*         m_pVIBufferCom = { nullptr };
+    _float4x4				m_CombinedWorldMatrix = {};
 
-    class CUI_WorldTextBox* m_pText = { nullptr };
+    _float                  m_fAccTime = {};
 private:
     HRESULT					Ready_Component();
-    HRESULT                 Ready_Children();
+
 public:
-    static CUI_Talk* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+    static CUI_WorldFX* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual CGameObject* Clone(void* pArg) override;
     virtual void			Free() override;
 };
