@@ -1,5 +1,5 @@
 #include "Engine_Shader_Defines.hlsli"
-#include "Engine_Shader_Global_Constant.hlsli"
+#include "Engine_Shader_Deferred_Function.hlsli"
 
 struct VS_IN
 {
@@ -71,18 +71,8 @@ PS_OUT_LIGHT PS_DIRECTIONAL(PS_IN In)
     vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vNormal = normalize(vector(vNormalDesc.xyz * 2.f - 1.f, 0.f));
     vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
-
-    vector vWorldPos;
-
-    vWorldPos.x = In.vTexcoord.x * 2.f - 1.f;
-    vWorldPos.y = In.vTexcoord.y * -2.f + 1.f;
-    vWorldPos.z = vDepthDesc.x;
-    vWorldPos.w = 1.f;
-
-    vWorldPos = vWorldPos * vDepthDesc.y;
-    vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
     
-    vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+    float4 vWorldPos = Compute_WorldPosition_FromDepth(In.vTexcoord, vDepthDesc.x, vDepthDesc.y);
     
     float fShade = max(dot(vNormal * -1.f, normalize(g_vLightDir)), 0.f);
 
@@ -125,8 +115,6 @@ PS_OUT_LIGHT PS_DIRECTIONAL(PS_IN In)
     float fSpecular = pow(fSpecularBase, fShininess);
     
     Out.vSpecular = g_vLightSpecular * fSpecular * fSpecularValue + g_vLightSpecular * fSpecular * fSpecularIntensity * 2.f;
-    //  Out.vSpecular = float4(fSpecularValue, 0.f, fShininess, 1.f);
-    //  Out.vSpecular = float4(fSpecularValue, fSpecularValue, fSpecularValue, 1.f);
     
     return Out;
 }
@@ -139,18 +127,8 @@ PS_OUT_LIGHT PS_POINT(PS_IN In)
     vector vNormal = normalize(vector(vNormalDesc.xyz * 2.f - 1.f, 0.f));
     
     vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-    vector vWorldPos;
 
-    vWorldPos.x = In.vTexcoord.x * 2.f - 1.f;
-    vWorldPos.y = In.vTexcoord.y * -2.f + 1.f;
-    vWorldPos.z = vDepthDesc.x;
-    vWorldPos.w = 1.f;
-
-    vWorldPos = vWorldPos * vDepthDesc.y;
-    vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
-    
-    vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+    float4 vWorldPos = Compute_WorldPosition_FromDepth(In.vTexcoord, vDepthDesc.x, vDepthDesc.y);
     
     vector vLightDir = vWorldPos - g_vLightPos;
     float fDistance = length(vLightDir);
@@ -196,15 +174,7 @@ PS_OUT_LIGHT PS_POINT(PS_IN In)
     float fSpecular = pow(fSpecularBase, fShininess);
     
     Out.vSpecular = g_vLightSpecular * fSpecular * fSpecularValue * fAtt + g_vLightSpecular * fSpecular * fSpecularIntensity * 2.f * fAtt;
-    
-    //  vector vSpecularDesc = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
-    //  
-    //  vector vReflect = reflect(normalize(vLightDir), vNormal);
-    //  vector vLook = vWorldPos - g_vCamPosition;
-    //  float fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), 50.f);
-    //  
-    //  Out.vSpecular = (g_vLightSpecular * g_vMtrlSpecular) * fSpecular * fAtt;
-     
+
     return Out;
 }
 
@@ -228,17 +198,9 @@ PS_OUT_BACKBUFFER PS_POSTSCENE(PS_IN In)
     // Pixel Depth
     vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
     
-    vector vWorldPos;
-
-    vWorldPos.x = In.vTexcoord.x * 2.f - 1.f;
-    vWorldPos.y = In.vTexcoord.y * -2.f + 1.f;
-    vWorldPos.z = vDepthDesc.x;
-    vWorldPos.w = 1.f;
+    float4 vViewPos = Compute_ViewPosition_FromDepth(In.vTexcoord, vDepthDesc.x, vDepthDesc.y);
     
-    vWorldPos = vWorldPos * vDepthDesc.y;
-    vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
-    
-    float fCameraViewDepth = vWorldPos.z;
+    float fCameraViewDepth = vViewPos.z;
 
     if (fCameraViewDepth > g_fSplitFar)
     {
@@ -246,16 +208,14 @@ PS_OUT_BACKBUFFER PS_POSTSCENE(PS_IN In)
         return Out;
     }
     
-    vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+    float4 vWorldPos = Transform_ViewToWorld(vViewPos);
     
-    vector vPosition = mul(vWorldPos, g_LightViewMatrix);
-    vPosition = mul(vPosition, g_LightProjMatrix);
+    float4 vLightProjPos = Transform_WorldToProj(vWorldPos, g_LightViewMatrix, g_LightProjMatrix);
+    vLightProjPos /= vLightProjPos.w;
     
-    float2 vTexcoord;
-    vTexcoord.x = (vPosition.x / vPosition.w) * 0.5f + 0.5f;
-    vTexcoord.y = (vPosition.y / vPosition.w) * -0.5f + 0.5f;
+    float2 vTexcoord = Compute_Texcoord_FromProjPos(vLightProjPos.xy);
 
-    float fLightDepth = vPosition.z / vPosition.w;
+    float fLightDepth = vLightProjPos.z;
     
     float fShadowSum = 0.f;
     float2 vOffset;
@@ -380,17 +340,8 @@ PS_OUT_SSAO PS_SSAO(PS_IN In)
     
     // Depth
     vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-    vector vNDCPos;
-    
-    vNDCPos.x = In.vTexcoord.x * 2.f - 1.f;
-    vNDCPos.y = In.vTexcoord.y * -2.f + 1.f;
-    vNDCPos.z = vDepthDesc.x;
-    vNDCPos.w = 1.f;
 
-    // Projection -> View
-    vNDCPos = vNDCPos * vDepthDesc.y; // View.Z
-    float4 vViewPos = mul(vNDCPos, g_ProjMatrixInv);
+    float4 vViewPos = Compute_ViewPosition_FromDepth(In.vTexcoord, vDepthDesc.x, vDepthDesc.y);
     
     // Occlusion
     float fOcclusion = 0.f;
@@ -407,9 +358,8 @@ PS_OUT_SSAO PS_SSAO(PS_IN In)
         // Sample Position -> UV
         float4 vProjSamplePos = mul(float4(vSamplePos, 1.f), g_CamProjMatrix);
         vProjSamplePos /= vProjSamplePos.w;
-        float2 vSampleTexcoord;
-        vSampleTexcoord.x = vProjSamplePos.x * 0.5f + 0.5f;
-        vSampleTexcoord.y = vProjSamplePos.y * -0.5f + 0.5f;
+
+        float2 vSampleTexcoord = Compute_Texcoord_FromProjPos(vProjSamplePos.xy);
         
         float fSampleDepth = g_DepthTexture.Sample(PointSampler, vSampleTexcoord).y;
 
@@ -480,22 +430,12 @@ PS_OUT_BACKBUFFER PS_FOG(PS_IN In)
     
     vector vPostSceneDesc = g_PostSceneTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-    vector vWorldPos;
 
-    vWorldPos.x = In.vTexcoord.x * 2.f - 1.f;
-    vWorldPos.y = In.vTexcoord.y * -2.f + 1.f;
-    vWorldPos.z = vDepthDesc.x;
-    vWorldPos.w = 1.f;
+    float4 vViewPos = Compute_ViewPosition_FromDepth(In.vTexcoord, vDepthDesc.x, vDepthDesc.y);
+    float fViewZ = vViewPos.z;
     
-    // View Space
-    vWorldPos = vWorldPos * vDepthDesc.y;   // View Z
-    vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
-    float fViewZ = vWorldPos.z;
+    float4 vWorldPos = Transform_ViewToWorld(vViewPos);
     
-    // World Space
-    vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
-
     // Linear
     float fLinear = saturate((fViewZ - g_fFogNear) / (g_fFogFar - g_fFogNear));
     
@@ -565,16 +505,10 @@ PS_OUT_BACKBUFFER PS_DISTORTION(PS_IN In)
         
         float2 vNoise = g_NoiseTexture.Sample(DefaultSampler, vNoiseUV).rg * 2.f - 1.f;
 
-        float4 vCenterPos;
-        
-        vCenterPos = mul(float4(g_vWorldCenterPos, 1.f), g_CamViewMatrix);
-        vCenterPos = mul(vCenterPos, g_CamProjMatrix);
-        vCenterPos /= vCenterPos.w; // -1 ~ 1
-        
-        float2 vCenterUV;
-        vCenterUV.x = vCenterPos.x * 0.5f + 0.5f;
-        vCenterUV.y = vCenterPos.y * -0.5f + 0.5f;
+        float4 vCenterPos = Transform_WorldToProj(float4(g_vWorldCenterPos, 1.f), g_CamViewMatrix, g_CamProjMatrix);
 
+        float2 vCenterUV = Compute_Texcoord_FromProjPos(vCenterPos.xy);
+        
         float2 vDir = In.vTexcoord - vCenterUV;
 
         vDir.x *= g_fAspect;
@@ -750,28 +684,14 @@ PS_OUT_BACKBUFFER PS_STATIC_VELOCITY(PS_IN In)
         Out.vColor = float4(0.f, 0.f, 0.f, 1.f);
         return Out;
     }
-    
-    // Depth -> World Position
-    float4 vWorldPos;
 
-    vWorldPos.x = In.vTexcoord.x * 2.f - 1.f;
-    vWorldPos.y = In.vTexcoord.y * -2.f + 1.f;
-    vWorldPos.z = vDepthDesc.x;
-    vWorldPos.w = 1.f;
-
-    vWorldPos = vWorldPos * vDepthDesc.y;
-    vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
-    vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+    float4 vWorldPos = Compute_WorldPosition_FromDepth(In.vTexcoord, vDepthDesc.x, vDepthDesc.y);
     
     // 월드 포지션 -> 이전 뷰 투영 행렬 스페이스로 변환
-    float4 vPrevPos = mul(vWorldPos, g_PrevViewMatrix);
-    vPrevPos = mul(vPrevPos, g_PrevProjMatrix);
-    vPrevPos /= vPrevPos.w;
+    float4 vPrevPos = Transform_WorldToProj(vWorldPos, g_PrevViewMatrix, g_PrevProjMatrix);
     
     // Prev UV = Texcoord 범위로 변환 (-1 ~ 1 -> 0 ~ 1)
-    float2 vPrevUV;
-    vPrevUV.x = vPrevPos.x * 0.5f + 0.5f;
-    vPrevUV.y = vPrevPos.y * -0.5f + 0.5f;
+    float2 vPrevUV = Compute_Texcoord_FromProjPos(vPrevPos.xy);
     
     // 현재 프레임의 UV 좌표와의 차이 계산
     float2 vCurUV = In.vTexcoord;
