@@ -49,7 +49,7 @@
 
 #define CREVICE_SUBLV 2						// 경계의 틈 
 
-#define EMBARS_SUBLV 2
+#define EMBARS_SUBLV 7                      // 엠바스 서브 레벨
 
 #define VIPER_SUBLV 1
 
