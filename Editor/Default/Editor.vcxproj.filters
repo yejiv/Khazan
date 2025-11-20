@@ -256,6 +256,18 @@
     <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\05.Gear\01.Door_Gear">
       <UniqueIdentifier>{a22ba3a5-385e-426b-8bf4-0ce42b0ef93a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Shader\Player\Test">
+      <UniqueIdentifier>{4efb7951-3bc5-4cb1-a5cd-517cac6afce2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Shader\Player\Creature">
+      <UniqueIdentifier>{34c515b2-0cc9-42c6-838d-808c38bbdaf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Shader\Player\Creature\Khazan_Spear">
+      <UniqueIdentifier>{2ef60926-428b-4645-941b-312e78aad06b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Shader\Player\Creature\Khazan_Spear\Body">
+      <UniqueIdentifier>{0685344d-6782-4a3b-8afd-9bba86c38ff7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -411,9 +423,6 @@
     <ClInclude Include="..\public\Player_Shader.h">
       <Filter>02.GameObject\Shader\Player</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Player_Shader.h">
-      <Filter>02.GameObject\Shader\Player</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Map_TestPlayer.h">
       <Filter>02.GameObject\MapObject\Test</Filter>
     </ClInclude>
@@ -488,6 +497,15 @@
     </ClInclude>
     <ClInclude Include="..\Public\Lever_Gear.h">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\05.Gear\00.Lever_Gear</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\E_Khazan_Spear.h">
+      <Filter>02.GameObject\Shader\Player\Creature\Khazan_Spear</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\E_Body_Khazan_Spear.h">
+      <Filter>02.GameObject\Shader\Player\Creature\Khazan_Spear\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Player_Shader.h">
+      <Filter>02.GameObject\Shader\Player\Test</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -645,9 +663,6 @@
     <ClCompile Include="..\Private\Camera_Compre.cpp">
       <Filter>02.GameObject\Camera\Compre</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Player_Shader.cpp">
-      <Filter>02.GameObject\Shader\Player</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Map_TestPlayer.cpp">
       <Filter>02.GameObject\MapObject\Test</Filter>
     </ClCompile>
@@ -716,6 +731,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\Lever_Gear.cpp">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\05.Gear\00.Lever_Gear</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\E_Khazan_Spear.cpp">
+      <Filter>02.GameObject\Shader\Player\Creature\Khazan_Spear</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\E_Body_Khazan_Spear.cpp">
+      <Filter>02.GameObject\Shader\Player\Creature\Khazan_Spear\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Player_Shader.cpp">
+      <Filter>02.GameObject\Shader\Player\Test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

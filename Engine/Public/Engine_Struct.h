@@ -291,6 +291,27 @@ namespace Engine
         float           fIntensity;
     }RIM_LIGHT_DESC;
 
+    typedef struct tagMotionTrailDesc
+    {
+        XMFLOAT2            vLifeTime;
+        //  XMFLOAT4            vColor;
+        vector<XMFLOAT4X4>  Bones;
+    }MOTIONTRAIL_DESC;
+
+    typedef struct tagMotionTrailConfig
+    {
+        float               fRimPower;
+        float               fRimIntensity;
+        float               fEmissiveIntensity;
+        float               fStartAlpha;
+        bool                isIndividualColor;
+        bool                isColorGradient;
+        //  float               fColorUpdateSpeed;
+        XMFLOAT4            vStartColor;
+        XMFLOAT4            vEndColor;
+        float               fInterval;
+    }MOTIONTRAIL_CONFIG;
+
 	struct HitStopState
 	{
 		bool isActive = false;

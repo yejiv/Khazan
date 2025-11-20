@@ -130,7 +130,8 @@ private:
 	HRESULT Render_SSAO();
 	HRESULT Render_Lights();
 	HRESULT Render_PostScene();
-	HRESULT Render_NonLight();
+	HRESULT Render_NonLight(); 
+    HRESULT Render_MotionTrail();
 	HRESULT Render_Blend();
 	HRESULT Render_Fog();
     HRESULT Render_Brightness();
