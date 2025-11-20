@@ -34,7 +34,8 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
      
     if (m_pGameInstance->Key_Down(DIK_T))
     {
-        m_pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::CUTSCENE), pOwner);
+        CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
+        pYetuga->Consume_Stamina(10.f);
     }
     
 
@@ -1465,7 +1466,7 @@ PERCEPTIONCALLBACK CAI_Controller_Yetuga::GetCallBackPerception(CGameObject* pOw
 			}
 		};
 	};
-
+    
 	return nullptr;
 }
 

@@ -114,6 +114,8 @@ HRESULT CGomdol::Ready_Components()
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
         return E_FAIL;
+
+    return S_OK;
 }
 
 HRESULT CGomdol::Ready_PartObjects()

@@ -49,6 +49,10 @@
 #include "Body_Imp_Melee.h"
 #include "Imp_Sword.h"
 
+
+#include "Viper.h"
+#include "Body_Viper.h"
+
 #pragma endregion
 
 #pragma region UI
@@ -1259,6 +1263,13 @@ HRESULT CLoader::Loading_For_Viper_Texture()
 HRESULT CLoader::Loading_For_Viper_Model()
 {
 #pragma region KHAZAN
+
+    /* Prototype_Component_Model_Khazan_Lantern*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Lantern"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/APC/Lantern/Lantern.dat"))))
+        return E_FAIL;
+
+
 	/* Prototype_Component_Model_Khazan_Sample*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Sample"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Khazan_Sample.dat"))))
@@ -1325,6 +1336,14 @@ HRESULT CLoader::Loading_For_Viper_Model()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Arm2"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Prisoner_Arm2/Prisoner_Arm2.dat"))))
 		return E_FAIL;
+
+
+    /* Prototype_Component_Model_Khazan_DanJin_Hair*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_DanJin_Hair"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Danjin_Hair/Danjin_Hair/Danjin_Hair.dat"))))
+        return E_FAIL;
+
+
 #pragma endregion
 
 #pragma region 상호작용 오브젝
@@ -1342,6 +1361,16 @@ HRESULT CLoader::Loading_For_Viper_Model()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Trigger"),
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Base/Cube/Cube.dat")), E_FAIL);
 #pragma endregion
+
+
+#pragma region VIPER
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Viper_Phase1"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/Viper_Phase1/Viper_Phase1.dat")), E_FAIL);
+
+#pragma endregion
+
+
 
 	return S_OK;
 }
@@ -1401,6 +1430,21 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Lantern_Khazan_Spear"),
         CLantern_Khazan_Spear::Create(m_pDevice, m_pContext))))
         return E_FAIL;
+
+
+#pragma region VIPER
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Viper"),
+        CViper::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Body_Viper"),
+        CBody_Viper::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+
+#pragma endregion
+
 	return S_OK;
 }
 
