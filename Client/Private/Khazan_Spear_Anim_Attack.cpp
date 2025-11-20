@@ -11,6 +11,8 @@ CKhazan_Spear_Anim_Attack::CKhazan_Spear_Anim_Attack()
 
 HRESULT CKhazan_Spear_Anim_Attack::Initialize_Prototype()
 {
+    m_pPlayerData = m_pClientInstance->Get_pInitailizePlayerData();
+
     return S_OK;
 }
 
@@ -23,6 +25,28 @@ void CKhazan_Spear_Anim_Attack::Enter()
 
 void CKhazan_Spear_Anim_Attack::Continue(_float fTimeDelta)
 {
+    if (m_isAutoComboBrutal)
+    {
+        _uint curAnimIndex = m_pModel->Get_CurAnimIndex();
+        _uint Brutal1_AnimIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_GrappleAtk01");
+        _uint Brutal2_AnimIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_GrappleAtk02");
+
+        /* 다음 공격으로 전환  */
+        if(Brutal1_AnimIndex  == curAnimIndex  && *m_pModel->Get_CurTrackPosition() >= m_pModel->Get_CurDuration() * 0.49f)
+        {
+            m_iSelectedAnimationIndex = Brutal2_AnimIndex;
+            m_pModel->Set_Animation(m_iSelectedAnimationIndex);
+        }
+        // Brutal2 종료
+        else if (curAnimIndex == Brutal2_AnimIndex && m_pModel->Check_MinAnimationTime())
+        {
+            m_isAttacking = false;
+            m_isAutoComboBrutal = false;
+        }
+        return;
+    }
+
+
     if (m_isReserve)
     {
         /* 기다리는 중 다른 공격이 나오면 예약 취소 */
@@ -129,14 +153,15 @@ void CKhazan_Spear_Anim_Attack::Continue(_float fTimeDelta)
         {
             m_iSelectedAnimationIndex = chargeAtkAnimIndex;
             m_pModel->Set_Animation(m_iSelectedAnimationIndex);
-            cout << "Charge -> ChargeAtk transition" << endl;
+            m_pPlayerData->fCulStamina -= m_pPlayerData->fUsedStamina * 2.5f;
+            m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage + 50.f;
+
         }
         // ChargeAtk 종료
         else if (curAnimIndex == chargeAtkAnimIndex && m_pModel->Check_MinAnimationTime())
         {
             m_isAttacking = false;
             m_isStrongCharge = false;
-            cout << "ChargeAtk finished" << endl;
         }
         return;
     }
@@ -181,6 +206,7 @@ void CKhazan_Spear_Anim_Attack::Exit()
 
 _bool CKhazan_Spear_Anim_Attack::Try_FallAttack()
 {
+    /*  따로 처리 fall 클래스에서 */
     //if (!m_isAttacking)
     //    return false;
     //m_isAttacking = true;
@@ -233,20 +259,34 @@ _bool CKhazan_Spear_Anim_Attack::Try_FastAttack()
         m_iCurrentCombo = 1;
         m_isCanNextCombo = false;
         m_isFastCombo = true;
+
+        m_pPlayerData->fCulStamina -= m_pPlayerData->fUsedStamina;
+        m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage;
     }
     else if (m_iCurrentCombo == 1) {
         m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_FastAtk02");
         m_pModel->Set_Animation(m_iSelectedAnimationIndex);
         m_iCurrentCombo = 2;
         m_isCanNextCombo = false;
+
+        m_pPlayerData->fCulStamina -= m_pPlayerData->fUsedStamina;
+        m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage + 10.f;
     }
     else if (m_iCurrentCombo == 2) {
-        if (m_pClientInstance->Check_SpearSkill(SPEARSKILL::MOONLIGHT_SLASH))  m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_LightningSpear_Advanced");
-        else  m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_FastAtk03_02");
+        if (m_pClientInstance->Check_SpearSkill(SPEARSKILL::MOONLIGHT_SLASH)) {
+            m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_LightningSpear_Advanced");
+            m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage + 25.f;
+        }
+        else {
+            m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_FastAtk03_02");
+            m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage + 15.f;
+        }
 
         m_pModel->Set_Animation(m_iSelectedAnimationIndex);
         m_iCurrentCombo = 3;
         m_isFastCombo = false;
+
+        m_pPlayerData->fCulStamina -= m_pPlayerData->fUsedStamina  * 2.f;
     }
     return true;
 
@@ -257,8 +297,15 @@ _bool CKhazan_Spear_Anim_Attack::Try_GrappleAttack()
     if (m_isAttacking)
         return false;
     m_isAttacking = true;
+    m_isAutoComboBrutal = true;
 
-    return _bool();
+    m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_GrappleAtk01");
+    m_pModel->Set_Animation(m_iSelectedAnimationIndex);
+
+    m_pPlayerData->fCulStamina -= m_pPlayerData->fUsedStamina;
+    m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage + 125.f;
+
+    return true;
 }
 
 _bool CKhazan_Spear_Anim_Attack::Try_SkillAttack(_uint iSkill)
@@ -296,6 +343,11 @@ _bool CKhazan_Spear_Anim_Attack::Try_SkillAttack(_uint iSkill)
     m_iCurSkillIndex = iSkill;
     m_pClientInstance->Set_UsedSkill(iSkill,true);
     m_pModel->Set_Animation(m_iSelectedAnimationIndex);
+    
+    m_pPlayerData->fCulStamina -= m_pPlayerData->fUsedStamina * 2.4f;
+    m_pPlayerData->fCulDoggedness -= 1.f;
+    m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage + 35.f;
+
     return true;
 }
 
@@ -307,6 +359,9 @@ _bool CKhazan_Spear_Anim_Attack::Try_CounterAttack()
 
     m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_CounterAction");
     m_pModel->Set_Animation(m_iSelectedAnimationIndex);
+
+    m_pPlayerData->fCulStamina -= m_pPlayerData->fUsedStamina;
+    m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage + 10.f;
 
     return true;
 }
@@ -324,6 +379,8 @@ _bool CKhazan_Spear_Anim_Attack::Try_DodgeAttack(_uint iDir)
     else if (iDir & ENUM_CLASS(DIRECTION::R)) m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_DodgeAtk_R");
 
     m_pModel->Set_Animation(m_iSelectedAnimationIndex);
+    m_pPlayerData->fCulStamina -= m_pPlayerData->fUsedStamina;
+    m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage + 20.f;
 
     return true;
 }
@@ -336,6 +393,8 @@ _bool CKhazan_Spear_Anim_Attack::Try_SprintFastAttack()
     m_iReserveSkillIndex = 0;
     m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_SprintAtk_Fast");
     m_pModel->Set_Animation(m_iSelectedAnimationIndex);
+    m_pPlayerData->fCulStamina -= m_pPlayerData->fUsedStamina;
+    m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage + 12.f;
 
     return true;
 }
@@ -349,6 +408,8 @@ _bool CKhazan_Spear_Anim_Attack::Try_SprintStrongAttack()
 
     m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_SprintAtk_Strong");
     m_pModel->Set_Animation(m_iSelectedAnimationIndex);
+    m_pPlayerData->fCulStamina -= m_pPlayerData->fUsedStamina;
+    m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage + 18.f;
 
 
     return true;
@@ -379,10 +440,6 @@ _bool CKhazan_Spear_Anim_Attack::Try_StrongAttack()
         return false;
     }
 
-
-  
-
-
     m_isAttacking = true;
     m_isStrongCombo = true;
     m_isCanNextCombo = false;
@@ -395,6 +452,8 @@ _bool CKhazan_Spear_Anim_Attack::Try_StrongAttack()
         cout << "m_iCurrentCombo = 0" << endl;
         m_iSelectedAnimationIndex = iAnimIndex;
         m_pModel->Set_Animation(m_iSelectedAnimationIndex);
+        m_pPlayerData->fCulStamina -= m_pPlayerData->fUsedStamina;
+        m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage + 15.f;
         m_iCurrentCombo = 1;
     }
     else if (m_iCurrentCombo == 1)
@@ -402,6 +461,8 @@ _bool CKhazan_Spear_Anim_Attack::Try_StrongAttack()
         cout << "m_iCurrentCombo =1" << endl;
         m_iSelectedAnimationIndex = iAnimIndex;
         m_pModel->Set_Animation(m_iSelectedAnimationIndex);
+        m_pPlayerData->fCulStamina -= m_pPlayerData->fUsedStamina;
+        m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage + 15.f;
         m_iCurrentCombo = 2;
     }
     else if (m_iCurrentCombo == 2)
@@ -409,6 +470,8 @@ _bool CKhazan_Spear_Anim_Attack::Try_StrongAttack()
         cout << "m_iCurrentCombo = 2" << endl;
         m_iSelectedAnimationIndex = iAnimIndex;
         m_pModel->Set_Animation(m_iSelectedAnimationIndex);
+        m_pPlayerData->fCulStamina -= m_pPlayerData->fUsedStamina * 1.5f;
+        m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage + 30.f;
         m_iCurrentCombo = 3; // 마지막 콤보
     }
 
@@ -421,14 +484,12 @@ _bool CKhazan_Spear_Anim_Attack::Try_ChageStrongAttack()
     // 이미 차징 공격 중이면 중복 실행 방지
     if (m_isStrongCharge)
     {
-        cout << "Already charging" << endl;
         return false;
     }
 
     // 다른 공격 중이면 실행 불가
     if (m_isAttacking && !m_isCanNextCombo)
     {
-        cout << "Cannot charge - attacking" << endl;
         return false;
     }
 
@@ -443,26 +504,8 @@ _bool CKhazan_Spear_Anim_Attack::Try_ChageStrongAttack()
     m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk_Charge");
     m_pModel->Set_Animation(m_iSelectedAnimationIndex);
 
-    cout << "Charge attack started" << endl;
     return true;
 }
-
-//_bool CKhazan_Spear_Anim_Attack::Try_ChageStrongAttack()
-//{
-//    if (m_isStrongCharge)
-//    {
-//        return false;
-//    }
-//
-//    m_isAttacking = true;
-//    m_isStrongCharge = true;
-//    m_iReserveSkillIndex = 0;
-//
-//    m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_StrongAtk_Charge");
-//    m_pModel->Set_Animation(m_iSelectedAnimationIndex);
-//
-//    return true;
-//}
 
 void CKhazan_Spear_Anim_Attack::Reserve_SkillAttack(_uint iSkill)
 {
@@ -479,6 +522,7 @@ void CKhazan_Spear_Anim_Attack::Clear_Skill()
         m_pClientInstance->Set_UsedSkill(m_iCurSkillIndex, false);
     m_iCurSkillIndex = 0;
     m_iReserveSkillIndex = 0;
+    m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage;
 }
 
 void CKhazan_Spear_Anim_Attack::Clear_Attack()
@@ -491,6 +535,7 @@ void CKhazan_Spear_Anim_Attack::Clear_Attack()
 
     m_fComboTime = 0.f;
     m_iCurrentCombo = 0;
+    m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage;
 }
 
 void CKhazan_Spear_Anim_Attack::Clear_All()
@@ -510,13 +555,22 @@ void CKhazan_Spear_Anim_Attack::Clear_All()
     m_iReserveSkillIndex = 0;
     m_iCurrentCombo = 0;
     m_fComboTime = 0.f;
+    m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage;
 }
 
 
 
 CKhazan_Spear_Anim_Attack* CKhazan_Spear_Anim_Attack::Create()
 {
-    return new CKhazan_Spear_Anim_Attack;
+    CKhazan_Spear_Anim_Attack* pInstance = new CKhazan_Spear_Anim_Attack();
+
+    if (FAILED(pInstance->Initialize_Prototype()))
+    {
+        MSG_BOX(TEXT("Failed to Created : CKhazan_Spear_Anim_Attack"));
+        Safe_Release(pInstance);
+    }
+
+    return pInstance;
 }
 
 void CKhazan_Spear_Anim_Attack::Free()

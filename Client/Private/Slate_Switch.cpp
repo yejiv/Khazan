@@ -69,11 +69,11 @@ void CSlate_Switch::Late_Update(_float fTimeDelta)
 
 HRESULT CSlate_Switch::Render()
 {
-    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CSlate_Switch : Bind_ShaderResources ÇÔ¼ö E_FAIL"), E_FAIL);
+    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CSlate_Switch : Bind_ShaderResources í•¨ìˆ˜ E_FAIL"), E_FAIL);
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-    // 0 Ä®¼ÕÀâÀÌ | 1 ¼Õ Àß¸² º¸È£´ë | 2 ¹¹ Á¸³ª ÀÛÀº ´« | 3 ¹Ø¿¡ ÀÛÀº ³¯Ä«·Î¿î | 4 ¹Ø¿¡ Å« ³¯Ä«·Î¿î | 5 ´«
+    // 0 ì¹¼ì†ì¡ì´ | 1 ì† ì˜ë¦¼ ë³´í˜¸ëŒ€ | 2 ë­ ì¡´ë‚˜ ì‘ì€ ëˆˆ | 3 ë°‘ì— ì‘ì€ ë‚ ì¹´ë¡œìš´ | 4 ë°‘ì— í° ë‚ ì¹´ë¡œìš´ | 5 ëˆˆ
     for (_uint i = 0; i < iNumMeshes; ++i)
     {
         Bind_Materials(i);
@@ -96,7 +96,7 @@ HRESULT CSlate_Switch::Ready_Components(void* pArg)
     LEVEL eLevel = pDesc->eLevel;
     CHECK_EQUAL_MSG(LEVEL::END, eLevel, TEXT("level==end"), E_FAIL);
 
-    // °³º° ½¦ÀÌ´õ »ı¼ºÇÒÁö °í¹Î
+    // ê°œë³„ ì‰ì´ë” ìƒì„±í• ì§€ ê³ ë¯¼
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr), E_FAIL);
 
@@ -108,13 +108,13 @@ HRESULT CSlate_Switch::Ready_Components(void* pArg)
 
 HRESULT CSlate_Switch::Bind_ShaderResources()
 {
-    // ¿ùµå Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // ì›”ë“œ í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix), E_FAIL);
 
-    // ºä Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // ë·° í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW)), E_FAIL);
 
-    // Åõ¿µ Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
+    // íˆ¬ì˜ í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ)), E_FAIL);
 
     return S_OK;

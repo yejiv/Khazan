@@ -55,6 +55,8 @@ public:
 public:
 	HRESULT Open_Level(_uint iLevelID, class CLevel* pNewLevel);
 	_uint Get_CurrentLevelID();
+	_uint Get_NextLevelID();
+	void  Set_NextLevelID(_uint iLevelID);
 #pragma endregion
 
 #pragma region PROTOTYPE_MANAGER
@@ -89,6 +91,7 @@ public:
 	void Set_EnableFog(_bool isEnable);
 	void Set_EnableToonShade(_bool isEnable);
 	void Set_EnableOutline(_bool isEnable);
+    void Set_EnableRimLight(_bool isEnable);
 #endif
 
 public:
@@ -96,6 +99,8 @@ public:
 	OUTLINE_CONFIG Get_OutlineConfig();
 	void Set_OutlineConfig(OUTLINE_CONFIG Config);
     void Set_SpecularPower(_float2 vPower);
+    RIM_LIGHT_DESC Get_RimLightDesc();
+    void Set_RimLightDesc(RIM_LIGHT_DESC Desc);
 #pragma endregion
 
 #pragma region TIMER_MANAGER
@@ -352,7 +357,6 @@ public:
 	_uint						Get_NumFogNoiseTextures();
 	ID3D11ShaderResourceView*	Get_FogNoiseTexture(_uint iTextureIndex);
 	void						Set_FogNoiseTextureIndex(_uint iTextureIndex);
-	void						Set_FogNoiseWorldSpace(_bool isEnable);
 	void						Start_FogTransition(_float fDuration, const FOG_TRANSITION_DESC& Desc);
 #pragma endregion
 
@@ -422,6 +426,7 @@ public:
     void                        Set_EnableMotionBlur(_bool isEnable);
     void                        Update_MotionBlur_PrevMatrices();
 #pragma endregion
+
 
 private:
 	class CGraphic_Device*		    m_pGraphic_Device = { nullptr };

@@ -45,6 +45,9 @@ public:
 	virtual void			Collision_Enter(COLLISION_DESC* pDesc, _uint	iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
 	virtual void			Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
 	virtual void			Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
+    
+    // Shader
+    void                    Set_EnableEdge(_bool isEnable) { m_isEnableEdge = isEnable; }
 
 
 private:
@@ -83,6 +86,9 @@ private:
 	_bool					m_isOnAttackCollision = { false };
 	_bool					m_isOnAttackCollision_Back = { false };
     
+    // Shader
+    _bool                   m_isEnableEdge = { true };
+
 public:
 	static CBody_Yetuga*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject*	Clone(void* pArg) override;

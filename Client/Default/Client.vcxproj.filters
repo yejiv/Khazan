@@ -73,9 +73,6 @@
     <Filter Include="02.GameObject\MapObject\99.Header">
       <UniqueIdentifier>{c4885ae7-b4f3-4736-82ce-cf10cdbfc9a2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\MapObject\00.Prop\99.Test">
-      <UniqueIdentifier>{6cebfa6b-a112-4eee-bb93-809f30e16c2c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="95.SuperClass">
       <UniqueIdentifier>{fe0eb4af-82a7-4074-b5d7-a589badbe846}</UniqueIdentifier>
     </Filter>
@@ -832,6 +829,18 @@
     <Filter Include="02.GameObject\UI\Skill_Tree\FX">
       <UniqueIdentifier>{df9920c8-541d-4bd2-8c7a-c7fcfdf95c37}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\05.Destructible">
+      <UniqueIdentifier>{f3f443cd-2d45-48d4-bc2b-d1c470ceffe0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\test">
+      <UniqueIdentifier>{6cebfa6b-a112-4eee-bb93-809f30e16c2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\05.Destructible\Chunk">
+      <UniqueIdentifier>{da16f588-eca3-4499-bc7b-f902f467656e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation\Fall">
+      <UniqueIdentifier>{8c26f2fc-b26b-47a9-beae-dd1fd6b9e102}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObject\UI\Talk">
       <UniqueIdentifier>{2f63276d-22fa-407c-b7a8-63abde0fb720}</UniqueIdentifier>
     </Filter>
@@ -922,7 +931,7 @@
       <Filter>02.GameObject\MapObject\99.Header</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Prop_Test.h">
-      <Filter>02.GameObject\MapObject\00.Prop\99.Test</Filter>
+      <Filter>02.GameObject\MapObject\00.Prop\test</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ClientInstance.h">
       <Filter>94.ClientInstance</Filter>
@@ -1622,6 +1631,15 @@
     <ClInclude Include="..\public\UI_Slot_Selete_Fx.h">
       <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Prop_Destructible.h">
+      <Filter>02.GameObject\MapObject\00.Prop\05.Destructible</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Chunk.h">
+      <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\Chunk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_Spear_Anim_Fall.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Fall</Filter>
+    </ClInclude>
     <ClInclude Include="..\public\UI_WorldTextBox.h">
       <Filter>02.GameObject\UI\Talk\ETC</Filter>
     </ClInclude>
@@ -1713,7 +1731,7 @@
       <Filter>02.GameObject\MapObject</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Prop_Test.cpp">
-      <Filter>02.GameObject\MapObject\00.Prop\99.Test</Filter>
+      <Filter>02.GameObject\MapObject\00.Prop\test</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\ClientInstance.cpp">
       <Filter>94.ClientInstance</Filter>
@@ -2397,6 +2415,15 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_Slot_Selete_Fx.cpp">
       <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Destructible.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\05.Destructible</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Chunk.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\Chunk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_Spear_Anim_Fall.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Fall</Filter>
     </ClCompile>
     <ClCompile Include="..\private\UI_WorldTextBox.cpp">
       <Filter>02.GameObject\UI\Talk\ETC</Filter>

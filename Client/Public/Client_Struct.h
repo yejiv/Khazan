@@ -154,7 +154,8 @@ namespace Client
         _int    iMaxDoggednessCount = {};       //최대 투지 개수
         _float  fCulDoggedness = {};            //현재 투지
 
-        _float  fDamage = {};                   //공격력
+        _float  fDamage = {};                   //기본 공격력
+        _float  fBonusDamage = {};              //기본 공격력 + 공격타입에 따른 +a
         _float  fGuard = {};                    //방어력
 
 		_uint	iLevel = {};                    //레벨
@@ -174,7 +175,10 @@ namespace Client
         _uint   iCompetency = {};               //스탯4
         _uint   iWill = {};                     //스탯5
 
-        _float  fWeight = {};                   //무게
+        _float  fWeight = {};
+
+        const _float fUsedStamina = { 80.f };
+        const _float fLachrymaItemRegen = { 660.0f };
         
 	}PLAYER_DATA;
 

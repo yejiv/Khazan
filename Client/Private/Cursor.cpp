@@ -104,8 +104,8 @@ void CCursor::Update(_float fTimeDelta)
 			m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pFX);
 		}
 	}
-	if(!m_IsDefalutMouse)
-		ShowCursor(FALSE);
+	//if(!m_IsDefalutMouse)
+	//	ShowCursor(FALSE);
 
 	m_pScreenTrail->Update(fTimeDelta);
 }
@@ -182,13 +182,13 @@ void CCursor::Play_Mode()
 	RECT clientRect;
 	POINT centerPoint;
 
-	GetClientRect(g_hWnd, &clientRect);
-	centerPoint.x = (clientRect.right - clientRect.left) / 2;
-	centerPoint.y = (clientRect.bottom - clientRect.top) / 2;
+	//GetClientRect(g_hWnd, &clientRect);
+	//centerPoint.x = (clientRect.right - clientRect.left) / 2;
+	//centerPoint.y = (clientRect.bottom - clientRect.top) / 2;
 
-	ClientToScreen(g_hWnd, &centerPoint);
+	//ClientToScreen(g_hWnd, &centerPoint);
 
-	SetCursorPos(centerPoint.x, centerPoint.y);
+	//SetCursorPos(centerPoint.x, centerPoint.y);
 }
 
 void CCursor::UI_Mode()

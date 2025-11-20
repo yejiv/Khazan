@@ -75,25 +75,25 @@ HRESULT CRadialBlur::Bind_RadialBlur_ShaderResources(CShader* pShader)
     if (FAILED(pShader->Bind_Bool("g_isEnableRadialBlur", &m_isEnable)))
         return E_FAIL;
 
-    if (FAILED(pShader->Bind_RawValue("g_vCenterUV", &m_Desc.vCenterUV, sizeof(_float2))))
+    if (FAILED(pShader->Bind_RawValue("g_vRadialBlurCenterUV", &m_Desc.vCenterUV, sizeof(_float2))))
         return E_FAIL;
 
-    if (FAILED(pShader->Bind_RawValue("g_fSampleRadius", &m_Desc.fSampleRadius, sizeof(_float))))
+    if (FAILED(pShader->Bind_RawValue("g_fRadialBlurRadius", &m_Desc.fSampleRadius, sizeof(_float))))
         return E_FAIL;
 
-    if (FAILED(pShader->Bind_RawValue("g_vMaskRadius", &m_Desc.vMaskRadius, sizeof(_float2))))
+    if (FAILED(pShader->Bind_RawValue("g_vRadialBlurMaskRadius", &m_Desc.vMaskRadius, sizeof(_float2))))
         return E_FAIL;
 
-    if (FAILED(pShader->Bind_RawValue("g_fExponent", &m_Desc.fExponent, sizeof(_float))))
+    if (FAILED(pShader->Bind_RawValue("g_fRadialBlurExp", &m_Desc.fExponent, sizeof(_float))))
         return E_FAIL;
 
-    if (FAILED(pShader->Bind_RawValue("g_iNumSamples", &m_Desc.iNumSamples, sizeof(_uint))))
+    if (FAILED(pShader->Bind_RawValue("g_iNumRadialBlurSamples", &m_Desc.iNumSamples, sizeof(_uint))))
         return E_FAIL;
 
-    if (FAILED(pShader->Bind_RawValue("g_fAttenuation", &m_Desc.fAttenuation, sizeof(_float))))
+    if (FAILED(pShader->Bind_RawValue("g_fRadialBlurAtt", &m_Desc.fAttenuation, sizeof(_float))))
         return E_FAIL;
 
-    if (FAILED(pShader->Bind_RawValue("g_fStrength", &m_Desc.fStrength, sizeof(_float))))
+    if (FAILED(pShader->Bind_RawValue("g_fRadialBlurStrength", &m_Desc.fStrength, sizeof(_float))))
         return E_FAIL;
 
     return S_OK;

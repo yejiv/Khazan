@@ -200,6 +200,7 @@ HRESULT CImp_Melee::Ready_PartObjects()
         return E_FAIL;
 
     m_pWeapon = dynamic_cast<CImp_Sword*>(pWeapon);
+    Safe_AddRef(m_pWeapon);
     if (nullptr == pWeapon)
         return E_FAIL;
 

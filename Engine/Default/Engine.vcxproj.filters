@@ -1246,6 +1246,12 @@
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Function.hlsli">
       <Filter>95.ShaderFiles</Filter>
     </None>
+    <None Include="..\Bin\ShaderFiles\Engine_Shader_Deferred_Function.hlsli">
+      <Filter>95.ShaderFiles</Filter>
+    </None>
+    <None Include="..\Bin\ShaderFiles\Engine_Shader_Deferred_Global_Constant.hlsli">
+      <Filter>95.ShaderFiles</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Cell.hlsl">

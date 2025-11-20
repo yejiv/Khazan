@@ -651,7 +651,6 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_Effect()
         CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Normal/Normal%d.png"), 2))))
         return E_FAIL; 
 
-
 	return S_OK;
 }
 

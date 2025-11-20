@@ -22,6 +22,7 @@ struct VTXINSTANCE_DYNAMIC_DATA
     float4 fSpeed;
     float fGravity;
     float bDead;    //CPU에서 읽을 값.
+    float2 padding;
 };
 
 cbuffer CB_PARTICLE : register(b0)
@@ -47,14 +48,7 @@ StructuredBuffer<PARTICLE_PARAMS> g_InputData : register(t0);
 Texture2D g_NoiseTexture : register(t1);
 RWStructuredBuffer<VTXINSTANCE_PARTICLE> g_OutputData : register(u0);
 RWStructuredBuffer<VTXINSTANCE_DYNAMIC_DATA> g_SpeedData : register(u1);
-
-
-SamplerState g_LinearWrapSampler
-{
-    Filter = MIN_MAG_MIP_LINEAR;
-    AddressU = WRAP;
-    AddressV = WRAP;
-};
+SamplerState g_LinearWrapSampler : register(s0);
 
 void RotateParticle(inout VTXINSTANCE_PARTICLE Particle, uint iIndex)
 {
@@ -94,7 +88,7 @@ void CS_MOVE(uint3 DTid : SV_DispatchThreadID)
     VTXINSTANCE_PARTICLE Particle = g_OutputData[iIndex];
     VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
 	
-    if (Particle.bDead)
+    if (Particle.bDead > 0.f)
         return;
     
     Particle.vPrevPosition = Particle.vTranslation.xyz;
