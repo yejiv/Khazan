@@ -232,8 +232,8 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     
     vector vMask = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
     
-    if (vMask.a <= 0.f)
-        discard;
+                //if (vMask.a <= 0.f)
+                //    discard;
     
     vector vSourColor = float4(g_vSourceColor.xyz, 1.f);
     vector vFinalColor = vSourColor * vMask;
@@ -254,6 +254,8 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     else
         vFinalColor = Dissolve(vFinalColor, (In.vLifeTime.x / In.vLifeTime.y), In.vTexcoord);
     
+    if (vFinalColor.a <= 0)
+        discard;
 
     
     Out.vBackBufferColor = vFinalColor * (g_vSourceColor.a + 1);

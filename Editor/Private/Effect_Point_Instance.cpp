@@ -240,6 +240,11 @@ void CEffect_Point_Instance::SetScrollData(void* pArg)
     m_fScrollSpeed.y = *(static_cast<_float*>(pArg) + 1);
 }
 
+void CEffect_Point_Instance::SetStop()
+{
+    m_pVIBufferCom->Setting_Loop(false);
+}
+
 HRESULT CEffect_Point_Instance::Ready_Component()
 {
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxInstance_PointParticle"),
