@@ -27,8 +27,11 @@ HRESULT CProp_Chunk::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components(pArg)))
         return E_FAIL;
 
-    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(2.f, 0.5f, 2.f, 1.f));
-    m_pTransformCom->Scale(_float3(0.0001f, 0.0001f, 0.0001f));
+    PROP_CHUNK_DESC* pDesc = static_cast<PROP_CHUNK_DESC*>(pArg);
+    CHECK_NULLPTR(pDesc, E_FAIL);
+
+    m_pTransformCom->Set_WorldMatrix(XMLoadFloat4x4(&pDesc->WorldMatrix));
+    m_pTransformCom->Scale(pDesc->vScale);
 
     if (FAILED(Ready_Collision(pArg)))
         return E_FAIL;
@@ -92,7 +95,7 @@ HRESULT CProp_Chunk::Render()
 
         if (true == isSnow()) CHECK_FAILED(Bind_ShaderResources_ForSnowMap(i), E_FAIL);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(3), E_FAIL);
+        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(4), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }

@@ -850,6 +850,15 @@
     <Filter Include="02.GameObject\UI\Talk\ETC">
       <UniqueIdentifier>{55df7305-3d2c-44dd-b7b6-c1662eb8b06f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\05.Destructible\00.Fence">
+      <UniqueIdentifier>{60d71390-c36e-4a2e-b7a9-3af2cfc5e95f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\05.Destructible\01.Pot">
+      <UniqueIdentifier>{9e38f38a-b213-4ca5-afd6-442488ef9386}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\05.Destructible\02.Barrel">
+      <UniqueIdentifier>{ed27f2e0-6605-4c35-9751-1766c8f13952}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1655,6 +1664,15 @@
     <ClInclude Include="..\public\UI_WorldFX.h">
       <Filter>02.GameObject\UI\Talk\ETC</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Fence.h">
+      <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\00.Fence</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Pot.h">
+      <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\01.Pot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Barrel.h">
+      <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\02.Barrel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2439,6 +2457,15 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_WorldFX.cpp">
       <Filter>02.GameObject\UI\Talk\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Fence.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\00.Fence</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Pot.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\01.Pot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Barrel.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\02.Barrel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

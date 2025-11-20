@@ -207,6 +207,7 @@
     <ClInclude Include="..\Public\AS_Turn_Yetuga.h" />
     <ClInclude Include="..\public\Atlas_RenderGroup.h" />
     <ClInclude Include="..\Public\AttackState_Yetuga.h" />
+    <ClInclude Include="..\Public\Barrel.h" />
     <ClInclude Include="..\Public\BigChest.h" />
     <ClInclude Include="..\public\BladeNexus_List.h" />
     <ClInclude Include="..\public\BladeNexus_Map_BG.h" />
@@ -215,6 +216,7 @@
     <ClInclude Include="..\Public\ElevatorS.h" />
     <ClInclude Include="..\Public\Elevator_Gear.h" />
     <ClInclude Include="..\public\Cursor_Circle_Fx.h" />
+    <ClInclude Include="..\Public\Fence.h" />
     <ClInclude Include="..\Public\FSM_Imp_Melee.h" />
     <ClInclude Include="..\Public\Imp_Melee.h" />
     <ClInclude Include="..\Public\Imp_Sword.h" />
@@ -225,6 +227,7 @@
     <ClInclude Include="..\Public\LoadingObj_BN.h" />
     <ClInclude Include="..\public\Inven_State_Panel.h" />
     <ClInclude Include="..\public\Lantern_Khazan_Spear.h" />
+    <ClInclude Include="..\Public\Pot.h" />
     <ClInclude Include="..\Public\Projectile_Boomarang.h" />
     <ClInclude Include="..\public\Khazan_Spaer_Anim_Damaged.h" />
     <ClInclude Include="..\Public\Prop_Chunk.h" />
@@ -477,6 +480,7 @@
     <ClCompile Include="..\private\AS_Turn_Yetuga.cpp" />
     <ClCompile Include="..\private\Atlas_RenderGroup.cpp" />
     <ClCompile Include="..\Private\AttackState_Yetuga.cpp" />
+    <ClCompile Include="..\Private\Barrel.cpp" />
     <ClCompile Include="..\Private\BigChest.cpp" />
     <ClCompile Include="..\Private\BladeNexus.cpp" />
     <ClCompile Include="..\private\BladeNexus_List.cpp" />
@@ -486,6 +490,7 @@
     <ClCompile Include="..\Private\ElevatorS.cpp" />
     <ClCompile Include="..\Private\Elevator_Gear.cpp" />
     <ClCompile Include="..\private\Cursor_Circle_Fx.cpp" />
+    <ClCompile Include="..\Private\Fence.cpp" />
     <ClCompile Include="..\Private\FSM_Imp_Melee.cpp" />
     <ClCompile Include="..\Private\Imp_Melee.cpp" />
     <ClCompile Include="..\Private\Imp_Sword.cpp" />
@@ -496,6 +501,7 @@
     <ClCompile Include="..\Private\LoadingObj_BN.cpp" />
     <ClCompile Include="..\private\Inven_State_Panel.cpp" />
     <ClCompile Include="..\private\Lantern_Khazan_Spear.cpp" />
+    <ClCompile Include="..\Private\Pot.cpp" />
     <ClCompile Include="..\Private\Projectile_Boomarang.cpp" />
     <ClCompile Include="..\private\Khazan_Spaer_Anim_Damaged.cpp" />
     <ClCompile Include="..\Private\Prop_Chunk.cpp" />
