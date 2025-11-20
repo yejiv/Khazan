@@ -20,7 +20,6 @@ public:
 	_uint						Get_NumFogNoiseTextures();
 	ID3D11ShaderResourceView*	Get_FogNoiseTexture(_uint iTextureIndex);
 	void						Set_FogNoiseTextureIndex(_uint iTextureIndex) { m_iTextureIndex = iTextureIndex; }
-	void						Set_FogNoiseWorldSpace(_bool isEnable) { m_isWorldFog = isEnable; }
 
 	void						Start_FogTransition(_float fDuration, const FOG_TRANSITION_DESC& Desc);
 
@@ -34,7 +33,6 @@ private:
 	class CTexture*				m_pTextureCom = { nullptr };
 	_uint						m_iTextureIndex = {};
 	_float						m_fNoiseTimeAcc = {};
-	_bool						m_isWorldFog = {};
 
 	// Transition
 	_bool						m_isTransition = {};

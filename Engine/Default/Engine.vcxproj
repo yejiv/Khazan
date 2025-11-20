@@ -470,6 +470,8 @@ call Copy.bat</Command>
     <ClInclude Include="EnginePch.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Bin\ShaderFiles\Engine_Shader_Deferred_Function.hlsli" />
+    <None Include="..\Bin\ShaderFiles\Engine_Shader_Deferred_Global_Constant.hlsli" />
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hlsli" />
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Function.hlsli" />
   </ItemGroup>

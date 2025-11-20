@@ -78,6 +78,7 @@ void CTutorial_Tex::Update(_float fTimeDelta)
 
 void CTutorial_Tex::Late_Update(_float fTimeDelta)
 {
+#ifndef _DEBUG
 	if (m_isMovie)
 	{
 		++m_iTexPass;
@@ -87,6 +88,7 @@ void CTutorial_Tex::Late_Update(_float fTimeDelta)
 	}
 
 	CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
+#endif
 }
 
 HRESULT CTutorial_Tex::Render()
@@ -120,7 +122,7 @@ HRESULT CTutorial_Tex::Ready_Component()
 
 	CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_GuidePage"),
 		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr), E_FAIL);
-
+#ifndef _DEBUG
 	m_pMovieCom.resize(MOVIE_TYPE::END);
 
 	m_pMovieCom[MOVIE_TYPE::BRUTALATTACK] = CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/TutorialGuide/BrutalAttack/BrutalAttack_%d.dds"), 162);
@@ -128,7 +130,7 @@ HRESULT CTutorial_Tex::Ready_Component()
 	m_pMovieCom[MOVIE_TYPE::DODGE_2] = CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/TutorialGuide/Dodge_02/Dodge_02_%d.dds"), 90);
 	m_pMovieCom[MOVIE_TYPE::GUARD_1] = CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/TutorialGuide/Guard_01/Guard_01_%d.dds"), 372);
 	m_pMovieCom[MOVIE_TYPE::GUARD_2] = CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/TutorialGuide/Guard_02/Guard_02_%d.dds"), 138);
-
+#endif
 //CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_Component_Movie_CountAttack"),
 //	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/TutorialGuide/CountAttack/CountAttack_%d.dds"), 152)), E_FAIL);
 

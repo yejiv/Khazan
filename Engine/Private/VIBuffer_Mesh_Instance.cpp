@@ -13,6 +13,10 @@ CVIBuffer_Mesh_Instance::CVIBuffer_Mesh_Instance(const CVIBuffer_Mesh_Instance& 
 	, m_pParticleParams{ Prototype.m_pParticleParams }
 	, m_sData {Prototype.m_sData}
 {
+    for (_uint i = 0; i < CS_PASS::END; ++i)
+        m_ComputeShaders[i] = Prototype.m_ComputeShaders[i];
+    m_pLinearWrapSampler = Prototype.m_pLinearWrapSampler;
+
 	//Safe_AddRef(m_pSRVNoise);	//이거 해줘야되는지 확인좀
 }
 
@@ -20,9 +24,11 @@ void CVIBuffer_Mesh_Instance::Reset()
 {
     COMPUTE_PASS_DESC PassDesc{};
     PassDesc.SRVs.push_back(m_pSRV);
+    PassDesc.SRVs.push_back(m_pSRVNoise);
     PassDesc.UAVs.push_back(m_pUAV);
     PassDesc.UAVs.push_back(m_pUAVSpeed);
     PassDesc.ConstantBuffers.push_back(m_pCB);
+    m_pContext->CSSetSamplers(0, 1, &m_pLinearWrapSampler);
     _uint iNumThreadPerGroup = 256;
     _uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
     PassDesc.x = iNumGroups;
@@ -190,7 +196,10 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 		m_pParticleParams[i].vUp = pInstanceVertices[i].vUp;
 		m_pParticleParams[i].vLook= pInstanceVertices[i].vLook;
 		m_pParticleParams[i].fSize = fScale;
-	}
+	} 
+
+    if (FAILED(Ready_ComputeShader()))
+        return E_FAIL;
 
 	return S_OK;
 }
@@ -207,9 +216,6 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Clone(void* pArg)
 		return E_FAIL;
 
 	if (FAILED(Ready_CB()))
-		return E_FAIL;
-
-	if (FAILED(Ready_ComputeShader()))
 		return E_FAIL;
 
 	return S_OK;
@@ -231,9 +237,11 @@ _bool CVIBuffer_Mesh_Instance::Update(_float fTimeDelta)
 
 	COMPUTE_PASS_DESC PassDesc{};
 	PassDesc.SRVs.push_back(m_pSRV);
+    PassDesc.SRVs.push_back(m_pSRVNoise);
 	PassDesc.UAVs.push_back(m_pUAV);
 	PassDesc.UAVs.push_back(m_pUAVSpeed);
 	PassDesc.ConstantBuffers.push_back(m_pCB);
+    m_pContext->CSSetSamplers(0, 1, &m_pLinearWrapSampler);
 	_uint iNumThreadPerGroup = 256;
 	_uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
 	PassDesc.x = iNumGroups;
@@ -254,9 +262,12 @@ _bool CVIBuffer_Mesh_Instance::Update(_float fTimeDelta)
 void CVIBuffer_Mesh_Instance::UpdateGravity(_float fTimeDelta)
 {
 	COMPUTE_PASS_DESC PassDesc{};
+    PassDesc.SRVs.push_back(m_pSRV);
+    PassDesc.SRVs.push_back(m_pSRVNoise);
 	PassDesc.UAVs.push_back(m_pUAV);
 	PassDesc.UAVs.push_back(m_pUAVSpeed);
 	PassDesc.ConstantBuffers.push_back(m_pCB);
+    m_pContext->CSSetSamplers(0, 1, &m_pLinearWrapSampler);
 	_uint iNumThreadPerGroup = 256;
 	_uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
 	PassDesc.x = iNumGroups;
@@ -292,6 +303,7 @@ void CVIBuffer_Mesh_Instance::UpdateTurbulence(_float fTimeDelta, _float fAccTim
 	PassDesc.SRVs.push_back(m_pSRVNoise);
 	PassDesc.UAVs.push_back(m_pUAV);
 	PassDesc.ConstantBuffers.push_back(m_pCB);
+    m_pContext->CSSetSamplers(0, 1, &m_pLinearWrapSampler);
 	_uint iNumThreadPerGroup = 256;
 	_uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
 	PassDesc.x = iNumGroups;
@@ -319,9 +331,12 @@ void CVIBuffer_Mesh_Instance::Setting_Speed(SPEED_VALUE type, _float2 range)
 	}
 
 	COMPUTE_PASS_DESC PassDesc{};
+    PassDesc.SRVs.push_back(m_pSRV);
+    PassDesc.SRVs.push_back(m_pSRVNoise);
 	PassDesc.UAVs.push_back(m_pUAV);
 	PassDesc.UAVs.push_back(m_pUAVSpeed);
 	PassDesc.ConstantBuffers.push_back(m_pCB);
+    m_pContext->CSSetSamplers(0, 1, &m_pLinearWrapSampler);
 	_uint iNumThreadPerGroup = 256;
 	_uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
 	PassDesc.x = iNumGroups;
@@ -348,9 +363,11 @@ void CVIBuffer_Mesh_Instance::Remove_Speed(SPEED_VALUE type)
 
 	COMPUTE_PASS_DESC PassDesc{};
 	PassDesc.SRVs.push_back(m_pSRV);
+    PassDesc.SRVs.push_back(m_pSRVNoise);
 	PassDesc.UAVs.push_back(m_pUAV);
 	PassDesc.UAVs.push_back(m_pUAVSpeed);
 	PassDesc.ConstantBuffers.push_back(m_pCB);
+    m_pContext->CSSetSamplers(0, 1, &m_pLinearWrapSampler);
 	_uint iNumThreadPerGroup = 256;
 	_uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
 	PassDesc.x = iNumGroups;
@@ -378,9 +395,11 @@ void CVIBuffer_Mesh_Instance::Remove_Speed()
 
     COMPUTE_PASS_DESC PassDesc{};
     PassDesc.SRVs.push_back(m_pSRV);
+    PassDesc.SRVs.push_back(m_pSRVNoise);
     PassDesc.UAVs.push_back(m_pUAV);
     PassDesc.UAVs.push_back(m_pUAVSpeed);
     PassDesc.ConstantBuffers.push_back(m_pCB);
+    m_pContext->CSSetSamplers(0, 1, &m_pLinearWrapSampler);
     _uint iNumThreadPerGroup = 256;
     _uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
     PassDesc.x = iNumGroups;
@@ -564,6 +583,17 @@ HRESULT CVIBuffer_Mesh_Instance::Ready_ComputeShader()
     if (nullptr == m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET_DEAD_FLAG)])
         return E_FAIL;
 
+    D3D11_SAMPLER_DESC samplerDesc = {};
+    samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR; // Filter
+    samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;    // AddressU
+    samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;    // AddressV
+    samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+    samplerDesc.MinLOD = 0;
+    samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+    m_pDevice->CreateSamplerState(&samplerDesc, &m_pLinearWrapSampler);
+
 	return S_OK;
 }
 _bool CVIBuffer_Mesh_Instance::IsFinish()
@@ -583,8 +613,11 @@ _bool CVIBuffer_Mesh_Instance::IsFinish()
     }
 
     COMPUTE_PASS_DESC PassDesc{};
+    PassDesc.SRVs.push_back(m_pSRV);
+    PassDesc.SRVs.push_back(m_pSRVNoise);
     PassDesc.UAVs.push_back(m_pUAV);
     PassDesc.UAVs.push_back(m_pUAVSpeed);
+    m_pContext->CSSetSamplers(0, 1, &m_pLinearWrapSampler);
     _uint iNumThreadPerGroup = 256;
     _uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
     PassDesc.x = iNumGroups;
@@ -637,13 +670,14 @@ void CVIBuffer_Mesh_Instance::Free()
 	Safe_Release(m_pUAV);
 	Safe_Release(m_pUAVSpeed);
 
-	for (_uint i = 0; i < CS_PASS::END; ++i)
-		Safe_Release(m_ComputeShaders[i]);
-
 	if (false == m_isCloned)
 	{
 		Safe_Delete_Array(m_pParticleParams);
 		//Safe_Release(m_pSRVNoise);
+        for (_uint i = 0; i < CS_PASS::END; ++i)
+            Safe_Release(m_ComputeShaders[i]);
+        Safe_Release(m_pLinearWrapSampler);
+
 	}
 }
 

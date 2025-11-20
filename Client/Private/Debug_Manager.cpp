@@ -124,6 +124,8 @@ void CDebug_Manager::Ready_JoltDebug()
 		Labels.push_back("CAMERA");
         Labels.push_back("MAP_STATIC_TRIGGER");
         Labels.push_back("MAP_MOVE_FLATFORM");
+        Labels.push_back("MAP_DEST");
+        Labels.push_back("MAP_CHUNK");
 
 		for (size_t i = 0; i < Labels.size(); i++)
 		{

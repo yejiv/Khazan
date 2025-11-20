@@ -203,7 +203,12 @@ private:
     const _float                m_fRayLength = { 8.f };
     const _float2                m_fRayZOffset = { 0.f, 0.5f };
 
+/* SnowEffect SpawnTime*/
+private:
+    _float              m_EffectTimeDelta;
 
+
+    class CUI_Talk_Daphrona* m_pTalkUI = { nullptr };
 private:
     void			Update_Stats(_float fTimeDelta);
     void			Update_State(_float fTimeDelta);

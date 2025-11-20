@@ -163,6 +163,7 @@ namespace Client
 		_uint	iLachryma = {};                 //라크리마
 		_uint	iGold = {};                     //골드
         _uint	iStone = {};                    //스톤
+        _uint	iLevelStone = {};               //스톤 레벨
 
 		_uint	iSkillLevel = {};               //스킬 레벨
 		_float	fSkillLevel_EXP = {};           //스킬 레벨 경험치

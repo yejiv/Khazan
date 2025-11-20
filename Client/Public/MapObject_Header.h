@@ -37,6 +37,8 @@
 
 // Test
 #include "Prop_Test.h"
+#include "Prop_Destructible.h"
+#include "Prop_Chunk.h"
 
 // 맵의 서브레벨 개수 및 귀검 있는 SUB LV
 #define HEINMACH_SUBLV 12
@@ -47,7 +49,7 @@
 
 #define CREVICE_SUBLV 2						// 경계의 틈 
 
-#define EMBARS_SUBLV 2
+#define EMBARS_SUBLV 7                      // 엠바스 서브 레벨
 
 #define VIPER_SUBLV 1
 

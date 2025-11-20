@@ -3,6 +3,8 @@
 #include "Transform.h"
 #include "Model.h"
 
+
+
 CBody::CBody(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CRigidBody{ pDevice, pContext }
 {
@@ -50,11 +52,13 @@ HRESULT CBody::Initialize_Clone(void* pArg)
     {
         // 예시) 질량만 오버라이드
         BCS.mAngularDamping = pDesc->fAngularDamping;
-        BCS.mOverrideMassProperties = EOverrideMassProperties::CalculateMassAndInertia;
+        BCS.mLinearDamping = pDesc->fLinearDamping;
+        BCS.mOverrideMassProperties = EOverrideMassProperties::CalculateInertia;
         BCS.mMassPropertiesOverride.mMass = pDesc->fMass;
+        BCS.mAllowSleeping = true;
     }
 
-    BCS.mGravityFactor = 0;
+    BCS.mGravityFactor = pDesc->fGravity;
     if (pDesc->eMotion == EMotionType::Static)
     {
         BCS.mEnhancedInternalEdgeRemoval = true;
@@ -68,7 +72,7 @@ HRESULT CBody::Initialize_Clone(void* pArg)
         m_BodyID = m_pBody->GetID();
     }
 
-    
+
     // 머티리얼 반영
     
 
@@ -80,8 +84,8 @@ void CBody::Update(_float fTimeDelta, class CTransform* pTransform)
     if (!m_pBodyInterface->IsAdded(m_BodyID))
         return;
 
-    if(!m_pBodyInterface->IsActive(m_BodyID))
-        m_pBodyInterface->ActivateBody(m_BodyID);
+    if (!m_pBodyInterface->IsActive(m_BodyID))
+        return;
 
     if (m_pBody->GetMotionType() == EMotionType::Kinematic)
     {
@@ -106,6 +110,9 @@ void CBody::Update(_float fTimeDelta, class CTransform* pTransform)
 void CBody::Sync_Update(CTransform* pTransform)
 {
     if (!m_pBodyInterface->IsAdded(m_BodyID))
+        return;
+
+    if (!m_pBodyInterface->IsActive(m_BodyID))
         return;
 
     if (m_pBody->GetMotionType() == EMotionType::Kinematic)
@@ -158,6 +165,20 @@ void CBody::Sync_Update(_matrix WorldMatirx)
 void CBody::Set_PosRot(_vector vPos, _vector vRot)
 {
     m_pBodyInterface->SetPositionAndRotation(m_BodyID, LoadVec3(vPos), LoadQuat(vRot), EActivation::Activate);
+}
+
+_vector CBody::Get_Pos()
+{
+    Vec3 vPostion = m_pBodyInterface->GetPosition(m_BodyID);
+
+    return XMVectorSet(vPostion.GetX(), vPostion.GetY(), vPostion.GetZ(), 1.f);
+}
+
+_vector CBody::Get_Rot()
+{
+    Quat vRotation = m_pBodyInterface->GetRotation(m_BodyID);
+
+    return XMVectorSet(vRotation.GetX(), vRotation.GetY(), vRotation.GetZ(), vRotation.GetW());
 }
 
 void CBody::Add_Force(_float fMass)
@@ -235,11 +256,51 @@ void CBody::Build_Shape(BODY_DESC* pDesc, RefConst<Shape>& pShape)
     }
     case SHAPE::CONVEX:
     {
-        BODY_CONVEXSHAPE_DESC* pConvexHullDesc = static_cast<BODY_CONVEXSHAPE_DESC*>(pDesc);
+        /*BODY_CONVEXSHAPE_DESC* pConvexHullDesc = static_cast<BODY_CONVEXSHAPE_DESC*>(pDesc);
         if (pConvexHullDesc->pModel == nullptr)
             return;
         Ref<ConvexHullShapeSettings> ConvexHullSetting = new ConvexHullShapeSettings(ConvertToArrayVec3(pConvexHullDesc->pModel));
-        pShape = ConvexHullSetting->Create().Get();
+        pShape = ConvexHullSetting->Create().Get();*/
+        BODY_CONVEXSHAPE_DESC* pConvexDesc = static_cast<BODY_CONVEXSHAPE_DESC*>(pDesc);
+        if (pConvexDesc->pModel == nullptr)
+            return;
+
+        // 1) ConvexHull 포인트 + 중심 계산
+        Vec3 center;
+        // 1) 정점 배열 준비
+        Vec3 vScale = Vec3(pConvexDesc->pTransform->Get_Scaled().x, pConvexDesc->pTransform->Get_Scaled().y, pConvexDesc->pTransform->Get_Scaled().z); // Transform의 스케일
+        Array<Vec3> points = ConvertToHullPoints(
+            pConvexDesc->pModel,
+            0,          // 메쉬 인덱스 있으면 사용, 없으면 0
+            vScale,              // 0.0001f 스케일
+            center
+        );
+
+        if (points.size() < 4)
+        {
+            // ConvexHull 못 만드는 최소 정점 수 미만
+            return;
+        }
+
+        // 2) Hull 생성
+        Ref<ConvexHullShapeSettings> convexSettings = new ConvexHullShapeSettings(points);
+        ShapeSettings::ShapeResult result = convexSettings->Create();
+        if (result.HasError())
+            return;
+
+        RefConst<Shape> hullShape = result.Get();
+
+        // 3) 원래 shape offset + center 합치기
+        Vec3 shapeOffset =
+            LoadVec3(pConvexDesc->vShapeOffset) + center;
+
+        Quat shapeRot = LoadQuat(pConvexDesc->vShapeRotation);
+
+        pShape = new RotatedTranslatedShape(
+            shapeOffset,
+            shapeRot,
+            hullShape
+        );
         break;
     }
     default:
@@ -257,6 +318,69 @@ const JPH::Array<Vec3> CBody::ConvertToArrayVec3(CModel* pModel)
         Vertices.push_back(LoadVec3(ModelVertices[i]));
 
     return Vertices;
+}
+
+const JPH::Array<Vec3> CBody::ConvertToArrayVec3(CModel* pModel, _uint iMeshIndex, const Vec3& vScale)
+{
+    JPH::Array<Vec3> Vertices;
+
+    vector<_float3> ModelVertices = pModel->Get_VerticesPos(iMeshIndex);
+
+    Vertices.reserve(ModelVertices.size());
+
+    for (size_t i = 0; i < ModelVertices.size(); ++i)
+    {
+        _float3 v = ModelVertices[i];
+
+        // Transform 스케일 적용 (ConvexHull은 ScaledShape 써도 되지만
+        // 여기서 그냥 정점에 직접 반영하는 방식)
+        v.x *= vScale.GetX();
+        v.y *= vScale.GetY();
+        v.z *= vScale.GetZ();
+
+        Vertices.push_back(LoadVec3(v));
+    }
+
+    return Vertices;
+}
+
+JPH::Array<Vec3> CBody::ConvertToHullPoints(
+    CModel* pModel,
+    _uint iMeshIndex,
+    const Vec3& vScale,
+    Vec3& outCenter)
+{
+    JPH::Array<Vec3> points;
+
+    vector<_float3> modelVerts = pModel->Get_VerticesPos(iMeshIndex);
+    if (modelVerts.empty())
+    {
+        outCenter = Vec3::sZero();
+        return points;
+    }
+
+    points.reserve(modelVerts.size());
+
+    // 1) 스케일 적용하면서 center 누적
+    outCenter = Vec3::sZero();
+    for (auto& v : modelVerts)
+    {
+        Vec3 p(v.x * vScale.GetX(),
+            v.y * vScale.GetY(),
+            v.z * vScale.GetZ());
+
+        outCenter += p;
+        points.push_back(p);
+    }
+
+    outCenter /= (float)points.size();
+
+    // 2) 모든 점을 center 기준으로 이동
+    for (auto& p : points)
+        p -= outCenter;
+
+
+    return points;
 }
 
 const JPH::Array<Float3> CBody::ConvertToArrayFloat3(CModel* pModel, _uint iIndex)
