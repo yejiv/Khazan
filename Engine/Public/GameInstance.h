@@ -55,6 +55,8 @@ public:
 public:
 	HRESULT Open_Level(_uint iLevelID, class CLevel* pNewLevel);
 	_uint Get_CurrentLevelID();
+	_uint Get_NextLevelID();
+	void  Set_NextLevelID(_uint iLevelID);
 #pragma endregion
 
 #pragma region PROTOTYPE_MANAGER
@@ -139,7 +141,9 @@ public:
 	HRESULT	Font_Load(const _wstring& strFontTag, const _char* pFontFilePath, _uint iHeight, _uint iWidth = 0 );
 	HRESULT	Draw_Text(const _wstring& strFontTag, const _wstring& strText, _float fX = 0.f, _float fY = 0.f, const _float4& vColor = {1.f, 1.f, 1.f, 1.f}, TEXT_ALIGN eAlign = TEXT_ALIGN::LEFT_TOP);
 	HRESULT	Draw_TextBox(const _wstring& strFontTag, const _wstring& strText, _float fX = 0.f, _float fY = 0.f, _float fMaxWidth = 1000.f, _float fOffsetHeight = 0.f, const _float4& vColor = { 1.f, 1.f, 1.f, 1.f }, TEXT_ALIGN eAlign = TEXT_ALIGN::LEFT_TOP);
-	HRESULT	Font_Load_Data(const _char* pFontFilePath);
+    HRESULT	DrawTextWorld(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, const _float4& vColor, TEXT_ALIGN eAlign, _matrix WorldMat);
+
+    HRESULT	Font_Load_Data(const _char* pFontFilePath);
 #pragma endregion
 
 
@@ -422,6 +426,7 @@ public:
     void                        Set_EnableMotionBlur(_bool isEnable);
     void                        Update_MotionBlur_PrevMatrices();
 #pragma endregion
+
 
 private:
 	class CGraphic_Device*		    m_pGraphic_Device = { nullptr };

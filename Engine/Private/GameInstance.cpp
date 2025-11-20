@@ -218,7 +218,6 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pEffect_Manager)
 		return E_FAIL;
 
-
 	m_iStaticLevel = EngineDesc.iStaticLevel;
 
 #ifdef _DEBUG
@@ -234,6 +233,8 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 {
 	//m_pPicking->Update();
+    if (tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)] > 1.f)
+        return; 
 
 	m_pTimer_Manager->Update_HitStop(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
@@ -443,6 +444,16 @@ HRESULT CGameInstance::Open_Level(_uint iLevelID, CLevel* pNewLevel)
 _uint CGameInstance::Get_CurrentLevelID()
 {
 	return m_pLevel_Manager->Get_CurrentLevelID();
+}
+
+_uint CGameInstance::Get_NextLevelID()
+{
+    return m_pLevel_Manager->Get_NextLevelID();
+}
+
+void CGameInstance::Set_NextLevelID(_uint iLevelID)
+{
+    m_pLevel_Manager->Set_NextLevelID(iLevelID);
 }
 
 #pragma endregion
@@ -731,6 +742,11 @@ HRESULT CGameInstance::Draw_Text(const _wstring& strFontTag, const _wstring& str
 HRESULT CGameInstance::Draw_TextBox(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, _float fMaxWidth, _float fOffsetHeight, const _float4& vColor, TEXT_ALIGN eAlign)
 {
 	return m_pFont_Manager->Draw_TextBox(strFontTag, strText, fX, fY, fMaxWidth, fOffsetHeight, vColor, eAlign);
+}
+
+HRESULT CGameInstance::DrawTextWorld(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, const _float4& vColor, TEXT_ALIGN eAlign, _matrix WorldMat)
+{
+    return m_pFont_Manager->DrawTextWorld(strFontTag, strText, fX, fY, vColor, eAlign, WorldMat);
 }
 
 HRESULT CGameInstance::Font_Load_Data(const _char* pFontFilePath)
@@ -1592,17 +1608,6 @@ bool CGameInstance::AddStaticObject(CGameObject* pGameObject, const _float3& vPo
 
 
 #pragma endregion
-
-//
-//void CGameInstance::Transform_Picking_ToLocalSpace(CTransform* pTransformCom)
-//{
-//	m_pPicking->Transform_ToLocalSpace(pTransformCom);
-//}
-//
-//_bool CGameInstance::isPicked_InLocalSpace(const _float3& vPointA, const _float3& vPointB, const _float3& vPointC, _float3* pOut)
-//{
-//	return m_pPicking->isPicked_InLocalSpace(vPointA, vPointB, vPointC, pOut);
-//}
 
 void CGameInstance::Release_Engine()
 {

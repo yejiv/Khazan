@@ -20,6 +20,7 @@ void CSkill_Info_Tex::Setting_Tex(_int iSkillIndex)
     m_isMovie = true;
     m_iTexPass = 0;
     m_pIcon->Update_Visible(false);
+#ifndef _DEBUG
     if (iSkillIndex == 110)
         m_eMovieType = MOVIE_TYPE::Assault;
     else if (iSkillIndex == 104)
@@ -65,6 +66,7 @@ void CSkill_Info_Tex::Setting_Tex(_int iSkillIndex)
     else if (iSkillIndex == 212)
         m_eMovieType = MOVIE_TYPE::WarCry;
     else
+#endif
     {
         m_pIcon->Update_Visible(true);
         m_isMovie = false;
@@ -163,7 +165,7 @@ HRESULT CSkill_Info_Tex::Ready_Component()
     AtlasDesc.vColor = { 0.9f,0.9f,0.9f,0.8f };
     m_pIcon = static_cast<CUI_Atlas_Icon*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Atlas_Icon"), &AtlasDesc));
 
-
+#ifndef _DEBUG
     m_pMovieCom.resize(MOVIE_TYPE::END);
     m_pMovieCom[MOVIE_TYPE::Assault] = CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Movie/Skill/Spear/MV_Spear_Assault/MV_Spear_Assault_%d.dds"), 133);
     m_pMovieCom[MOVIE_TYPE::FullMoon] = CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Movie/Skill/Spear/MV_Spear_FullMoon/MV_Spear_FullMoon_%d.dds"), 159);
@@ -188,7 +190,7 @@ HRESULT CSkill_Info_Tex::Ready_Component()
     m_pMovieCom[MOVIE_TYPE::Momentum] = CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Movie/Skill/GS/MV_Kazan_GSword_Momentum/MV_Kazan_GSword_Momentum_%d.dds"), 195);
     m_pMovieCom[MOVIE_TYPE::Phantom] = CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Movie/Skill/GS/MV_Kazan_GSword_Phantom/MV_Kazan_GSword_Phantom_%d.dds"), 343);
     m_pMovieCom[MOVIE_TYPE::WarCry] = CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Movie/Skill/GS/MV_Kazan_GSword_WarCry/MV_Kazan_GSword_WarCry_%d.dds"), 101);
-
+#endif
 
 	return S_OK;
 }

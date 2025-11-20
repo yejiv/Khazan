@@ -355,8 +355,6 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
         CDecal::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
-#pragma endregion
-
 	return S_OK;
 }
 
@@ -516,6 +514,21 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Slot_Selete_Fx"),
         CUI_Slot_Selete_Fx::Create(m_pDevice, m_pContext)), E_FAIL);
 
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_WorldTex"),
+        CUI_WorldTex::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_WorldText"),
+        CUI_WorldTextBox::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_WorldList"),
+        CUI_WorldList::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_WorldFX"),
+        CUI_WorldFX::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Daphrona"),
+        CUI_Talk_Daphrona::Create(m_pDevice, m_pContext)), E_FAIL);
+
 
 	CUIObject::UIOBJECT_DESC AnnounceDesc = {};
 	AnnounceDesc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
@@ -637,6 +650,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_Effect()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MeshEffect_Normal"),
         CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Normal/Normal%d.png"), 2))))
         return E_FAIL; 
+
 	return S_OK;
 }
 

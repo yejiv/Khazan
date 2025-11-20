@@ -61,9 +61,11 @@ public:
     virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
 
 public:
-	CModel* Get_Model() { return m_pModelCom; }
+    void                Search_BrutalTarget(_float fTimeDelta);
+    _bool               Check_BrutalAttack(_float fTimeDelta);
 
 public:
+    CModel* Get_Model() { return m_pModelCom; }
     OUTLINE_CONFIG Get_OutlineConfig() { return m_OutlineConfig; }
     void Set_OutlineConfig(OUTLINE_CONFIG Config)
     {
@@ -91,6 +93,7 @@ private:
 
     CBody*              m_pBodyCom_SpearTip1 = { nullptr };
     CBody*              m_pBodyCom_SpearPole = { nullptr };
+    CBody*              m_pBodyCom_Search = { nullptr };
 
     _float4x4*          m_pSpearFX_Matrix = { nullptr };
     _matrix				m_SpearOffset_Matrix = {};
@@ -130,6 +133,7 @@ private:
     _bool               m_isSpearPoleActive = { true };
 
     /* 가드 */
+    _bool               m_isJustGuardOnce = { false };
     _float2             m_fJustGuardTime = { 0.f, 0.83f };
    // _bool               m_isGuardRotating = { false };
    // _float              m_fGuardRotationTime = { 0.f };
@@ -138,6 +142,16 @@ private:
   //  _float              m_fStartAngle = { 0.f };
    // _float              m_fTargetAngle = { 0.f };
     _float4*            m_pGuardRotationTarget = {nullptr};
+
+    /* Monster Search, Brutal */
+    _bool                       m_isBackBrutal = { false };
+    _bool                       m_isGroggyBrutal = { false };
+    vector< CGameObject*>       m_CollMonsters;
+    _float2                     m_fOptimizationSearchTime = { 0.f,0.3f };
+    CGameObject*                m_pBrutalmonster = { nullptr };
+    const _float                m_fBrutalAttackSearchMaxDistance = { 2.f };
+    const _float                m_fBrutalAttackMaxDistance = { 1.f };
+    class CTarget_BrutalAttack* m_pBrutalAttack = { nullptr };
 
     /* 기타 */
     _bool*              m_isEquipSpear = { nullptr };
@@ -148,6 +162,9 @@ private:
 
     // Shader
     _bool               m_isEnableEdge = { true };
+
+
+    COLLISION_DESC      m_tSearchCollisionDesc = {};
 
 private:
     void				Update_Collider(_float fTimeDelta);                     
@@ -183,7 +200,11 @@ private:
     inline _bool	Has_State(_uint i) { return (*m_pParentState & i) != 0; }
     inline void		Clear_State() { *m_pParentState = 0; }
 
-
+    inline void		Add_Status(_uint i) { *m_pParentStatus |= i; }
+    inline void		Toggle_Status(_uint i) { *m_pParentStatus ^= i; }
+    inline void		Remove_Status(_uint i) { *m_pParentStatus &= ~i; }
+    inline _bool	Has_Status(_uint i) { return (*m_pParentStatus & i) != 0; }
+  
 public:
     static CBody_Khazan_Spear* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual CGameObject* Clone(void* pArg) override;

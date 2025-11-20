@@ -39,37 +39,40 @@ public:
 	void Exit() override;
 
 public:
-	_bool	Try_ChangeAnimation(SPEAR_MOVE moveInfo);
+
+    /* Injured*/
     _bool   Try_InjuredAnimaition(SPEAR_MOVE moveInfo);
+
+    /* Moving*/
+	_bool	Try_ChangeAnimation(SPEAR_MOVE moveInfo);
 	void	Reserve_Animation(SPEAR_MOVE moveInfo);
 	_bool	IsEndMoveAnimantionFinished() const { return m_isEndAnimationFinished; }
-	_bool	IsMoving() const { return m_isMoving; }
-	_bool	IsDodgeing() const { return m_isDodging; }
-	void Clear_Reserve() {
-		m_isReserve = false;
-		m_eReserveInfo = {};
-	}
+
+    /* turn */
+    _bool   Try_Turn180Animation(SPEAR_MOVE moveInfo);
+
+    /* Getter*/
+    _bool	IsMoving() const { return m_isMoving; }
+    _bool	IsDodgeing() const { return m_isDodging; }
+    _bool   IsTurning180() const { return m_isTurning180; }
+
+    /* Clear */
+    void    Clear_Reserve() { m_isReserve = false; m_eReserveInfo = {}; }
+    void    Clear_Turn180() { m_isTurning180 = false; }
 
 private:
+    SPEAR_MOVE	m_eReserveInfo = {};
 	FOOT_INFO	m_FootInfo[GetBitPosition(MOV::MOVE_END)]; // walk, run ,  Injured
 	FOOT		m_curFoot;
 	_uint		m_iSubState = {};
 	_uint		m_iFootPosition[2] = { 0,0 }; // l,r 몇 번째 프레임
-	//const _float	m_fMinTrackPostion = { 20.f };
     _uint       m_iPrevSelectedAnimationIndex = {};
-
-	//_bool		m_isRun_Turn = { false };
-	//_bool		m_isEquipSpear = { false }; /* 180도 회전시 사용  */
 
 	_bool		m_isEndAnimationFinished = { false };
 	_bool		m_isMoving = { false };
 	_bool		m_isDodging = { false };
-
-	_bool		m_isStopRunAnim = { false };
-	_bool		m_isStopWalkAnim = { false };
-
 	_bool		m_isReserve = { false };
-	SPEAR_MOVE	m_eReserveInfo = {};
+    _bool       m_isTurning180 = { false };
 
     static const string s_strSprinStartAnims[];
     static const string s_strDodgeAnims[];

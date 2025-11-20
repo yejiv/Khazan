@@ -42,6 +42,26 @@ _float2 CFont_Face::ComputeTextSize(const _wstring& strText)
     return { fTotalWidth, fTotalHeight };
 }
 
+void CFont_Face::ComputeMaxBearingY(const _wstring& strText, _int& OutMaxBearingY, _int& OutMaxBottom)
+{
+    _int maxBearingY = 0;
+    _int maxBottom = 0;
+
+    for (_tchar ch : strText)
+    {
+        const GLYPH_INFO* g = GetGlyph(ch);
+        if (!g) continue;
+
+        maxBearingY = max(maxBearingY, g->iBearingY);
+
+        _int bottom = g->iHeight - g->iBearingY;
+        maxBottom = max(maxBottom, bottom);
+    }
+
+    OutMaxBearingY = maxBearingY;
+    OutMaxBottom = maxBottom;
+}
+
 const GLYPH_INFO* CFont_Face::GetGlyph(_tchar ch)
 {
     m_iFrameCounter++;
