@@ -62,6 +62,9 @@ public:
     _bool Compare_Name(string strName) { return strName == m_strName; }
 	string Get_Name() { return m_strName; }
 
+    void Set_LevelIndex(_uint iLevelIndex) { m_iLevelIndex = iLevelIndex; }
+    _uint Get_LevelIndex() { return m_iLevelIndex; }
+
     _vector     Get_Position();
     _vector     Get_Look();
     _vector     Get_Right();
@@ -88,6 +91,7 @@ protected:
 	_wstring					m_strTag;
 	string						m_strName;
 	_uint						m_iLayer = {};
+    _uint                       m_iLevelIndex = {};
 
 	_bool						m_isDead = { false };
 	_bool						m_isActive = { true };
