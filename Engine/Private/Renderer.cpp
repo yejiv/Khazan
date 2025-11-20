@@ -599,6 +599,19 @@ HRESULT CRenderer::Render_NonLight()
     return S_OK;
 }
 
+HRESULT CRenderer::Render_MotionTrail()
+{
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
+        return E_FAIL;
+    
+    // Render MotionTrails
+
+    if (FAILED(m_pGameInstance->End_MRT()))
+        return E_FAIL;
+
+    return S_OK;
+}
+
 HRESULT CRenderer::Render_Blend()
 {
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))

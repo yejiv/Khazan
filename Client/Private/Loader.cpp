@@ -942,7 +942,7 @@ HRESULT CLoader::Loading_For_Crevice_GameObject()
 #pragma endregion
 
 
-#pragma region Khazna
+#pragma region Khazan
 	/* Prototype_GameObject_Khazan_Spear */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Khazan_Spear"),
 		CKhazan_Spear::Create(m_pDevice, m_pContext))))
