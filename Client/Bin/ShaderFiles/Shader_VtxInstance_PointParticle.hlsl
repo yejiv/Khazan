@@ -172,7 +172,8 @@ struct PS_OUT
 float Mask_Scrolling(float2 vLifetime, float2 vTexcoord)
 {
     float safeProgress = saturate(vLifetime.x * g_MaskScrollSpeed / vLifetime.y) * 2; // 0 ~ 2   그니까 0 이면 -2. 1이면 0이 되어야함
-    float maskOffset = (safeProgress * 2.0f) - 2.0f; // -1 ~ 1 이거 끝까지 돌리기로수 ㅓㅇ
+    //float maskOffset = (safeProgress * 2.0f) - 2.0f; // -2 ~ 2 이거 끝까지 돌리기로수 ㅓㅇ
+    float maskOffset = safeProgress - 1.0f;
     float2 maskUV; //-2 -1
     
     if (g_MaskScrollYDir)
@@ -257,8 +258,8 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     if (vFinalColor.a <= 0)
         discard;
 
-    
-    Out.vBackBufferColor = vFinalColor * (g_vSourceColor.a + 1);
+    vFinalColor.xyz *= (g_vSourceColor.a + 1);
+    Out.vBackBufferColor = vFinalColor;
     
     return Out;
 }

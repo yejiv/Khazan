@@ -29,7 +29,7 @@ unsigned int g_iMapObjectID;
 
 struct VS_IN
 {
-    float3 vPosition : POSITION;
+    float3 vPosition : POSITION; 
     float3 vNormal : NORMAL;
     float3 vTangent : TANGENT;
     float3 vBinormal : BINORMAL;
