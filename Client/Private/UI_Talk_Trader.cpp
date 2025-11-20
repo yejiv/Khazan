@@ -1,4 +1,4 @@
-#include "UI_Talk_Daphrona.h"
+#include "UI_Talk_Trader.h"
 #include "GameInstance.h"
 #include "ClientInstance.h"
 
@@ -6,36 +6,37 @@
 #include "UI_WorldTex.h"
 #include "UI_WorldList.h"
 
+#include "UI_Inven.h"
 
-CUI_Talk_Daphrona::CUI_Talk_Daphrona(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CUI_Talk_Trader::CUI_Talk_Trader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Panel{ pDevice, pContext }
 {
 }
 
-CUI_Talk_Daphrona::CUI_Talk_Daphrona(const CUI_Talk_Daphrona& Prototype)
+CUI_Talk_Trader::CUI_Talk_Trader(const CUI_Talk_Trader& Prototype)
     : CUI_Panel(Prototype)
 {
 }
 
-void CUI_Talk_Daphrona::On_Panel()
+void CUI_Talk_Trader::On_Panel()
 {
     m_IsUpdate = true;
     m_iSelete = 0;
     Update_Selete();
     m_eType = TALK_TYPE::START;
-    m_pGameInstance->Change_InputType(INPUT_TYPE::UI);
+    m_pGameInstance->Change_InputType(INPUT_TYPE::WORLD_UI);
     Setting_Talk();
 
     m_eAnimState = UIANIMSTATE::ON;
     m_fAccTime = 0.f;
 }
 
-void CUI_Talk_Daphrona::Off_Panel()
+void CUI_Talk_Trader::Off_Panel()
 {
     m_eAnimState = UIANIMSTATE::OFF;
 }
 
-void CUI_Talk_Daphrona::Update_UITransform(_vector vPos)
+void CUI_Talk_Trader::Update_UITransform(_vector vPos)
 {
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetZ(XMVectorSetX(XMVectorSetY(vPos, XMVectorGetY(vPos) + m_vLocalSize.y * 0.87f), XMVectorGetX(vPos) - 0.5f), XMVectorGetZ(vPos) - 0.8f));
     m_pTransformCom->Scale({ 1.15f, 1.f, 1.f });
@@ -72,38 +73,33 @@ void CUI_Talk_Daphrona::Update_UITransform(_vector vPos)
     for (auto pGuide : m_Key_Guide)
         pGuide->Update_UITransform(m_pTransformCom->Get_WorldMatrix());
 
-    //m_pList[0]->Set_LocalPos({ -0.1f,0.06f,-0.01f,1.f });
-    //m_pList[1]->Set_LocalPos({ -0.1f,-0.05f,-0.01f,1.f });
-    //m_pList[2]->Set_LocalPos({ -0.1f,-0.16f,-0.01f,1.f });
-
     m_pList[0]->Set_LocalPos({ -0.f,-0.08f,-0.01f,1.f });
     m_pList[1]->Set_LocalPos({ -0.f,-0.19f,-0.01f,1.f });
     m_pList[2]->Set_LocalPos({ -0.f,-0.3f,-0.01f,1.f });
-
 
     m_pList[0]->Set_LocalSize({ 0.8f, 0.1f,1.f });
     m_pList[1]->Set_LocalSize({ 0.8f, 0.1f,1.f });
     m_pList[2]->Set_LocalSize({ 0.8f, 0.1f,1.f });
 
     m_pNameBG->Update_UITransform(m_pTransformCom->Get_WorldMatrix());
-    m_BG_Line[0]->Set_LocalPos({0.f,0.49f,-0.001f,1.f});
-    m_BG_Line[0]->Set_LocalSize({1.14f,0.01f,1.f});
-    m_BG_Line[0]->Set_Color({ 1.f, 0.847f, 0.459f, 0.8f });
+    m_BG_Line[0]->Set_LocalPos({ 0.f,0.49f,-0.001f,1.f });
+    m_BG_Line[0]->Set_LocalSize({ 1.14f,0.01f,1.f });
+    m_BG_Line[0]->Set_Color({ 0.655f, 0.875f, 1.f, 0.8f });
     m_BG_Line[0]->Set_ShaderPass(19);
 
     m_BG_Line[1]->Set_LocalPos({ 0.f,-0.49f,-0.001f,1.f });
     m_BG_Line[1]->Set_LocalSize({ 1.14f,0.01f,1.f });
-    m_BG_Line[1]->Set_Color({ 1.f, 0.847f, 0.459f, 0.8f });
+    m_BG_Line[1]->Set_Color({ 0.655f, 0.875f, 1.f, 0.8f });
     m_BG_Line[1]->Set_ShaderPass(19);
 
     m_BG_Line[2]->Set_LocalPos({ 0.563f,0.f,-0.001f,1.f });
     m_BG_Line[2]->Set_LocalSize({ 0.01f, 0.995f,1.f });
-    m_BG_Line[2]->Set_Color({ 1.f, 0.847f, 0.459f, 0.8f });
+    m_BG_Line[2]->Set_Color({ 0.655f, 0.875f, 1.f, 0.8f });
     m_BG_Line[2]->Set_ShaderPass(19);
 
     m_BG_Line[3]->Set_LocalPos({ -0.563f,0.f,-0.001f,1.f });
     m_BG_Line[3]->Set_LocalSize({ 0.01f, 0.995f,1.f });
-    m_BG_Line[3]->Set_Color({ 1.f, 0.847f, 0.459f, 0.8f });
+    m_BG_Line[3]->Set_Color({ 0.655f, 0.875f, 1.f, 0.8f });
     m_BG_Line[3]->Set_ShaderPass(19);
 
     m_BG_Line[4]->Set_LocalPos({ 0.f,0.f,-0.001f,1.f });
@@ -124,16 +120,16 @@ void CUI_Talk_Daphrona::Update_UITransform(_vector vPos)
 
     m_pNameBG->Set_LocalPos({ -0.34f,0.4f,-0.002f,1.f });
     m_pNameBG->Set_LocalSize({ 0.45f, 0.075f,1.f });
-    m_pNameBG->Set_Color({ 1.f, 0.847f, 0.459f, 0.8f });
+    m_pNameBG->Set_Color({ 0.655f, 0.875f, 1.f, 0.8f });
     m_pNameBG->Set_ShaderPass(19);
 }
 
-HRESULT CUI_Talk_Daphrona::Initialize_Prototype()
+HRESULT CUI_Talk_Trader::Initialize_Prototype()
 {
     return S_OK;
 }
 
-HRESULT CUI_Talk_Daphrona::Initialize_Clone(void* pArg)
+HRESULT CUI_Talk_Trader::Initialize_Clone(void* pArg)
 {
     m_vColor = { 1.f,1.f, 1.f, 0.9f };
     if (FAILED(__super::Initialize_Clone(pArg)))
@@ -142,108 +138,53 @@ HRESULT CUI_Talk_Daphrona::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_Component(), E_FAIL);
     CHECK_FAILED(Ready_Children(), E_FAIL);
     
-    m_pStone = &CClientInstance::GetInstance()->Get_ptrPlayerData().iStone;
-    m_pLevelStone = &CClientInstance::GetInstance()->Get_ptrPlayerData().iLevelStone;
+    CClientInstance::GetInstance()->Add_RootUI(AnsiToWString(m_szName), this);
     return S_OK;
 }
-void CUI_Talk_Daphrona::Priority_Update(_float fTimeDelta)
+void CUI_Talk_Trader::Priority_Update(_float fTimeDelta)
 {
     if (!m_IsUpdate)
         return;
 
 }
 
-void CUI_Talk_Daphrona::Update(_float fTimeDelta)
+void CUI_Talk_Trader::Update(_float fTimeDelta)
 {
     if (!m_IsUpdate)
         return;
-   
+
     UI_Animation(fTimeDelta);
-    if (m_eType == TALK_TYPE::START || m_eType == TALK_TYPE::TALK_SELETE || (m_eType == TALK_TYPE::UP && m_isUp))
+    if (m_eType == TALK_TYPE::START)
         List_Selete();
 
-    if (m_pGameInstance->Key_Down(DIK_F, INPUT_TYPE::UI))
+    if (m_pGameInstance->Key_Down(DIK_F, INPUT_TYPE::WORLD_UI))
     {
         if (m_iSelete == 0 && m_eType == TALK_TYPE::START)
         {
-            m_eType = TALK_TYPE::TALK_SELETE;
-
-            m_iSelete = 0;
-            Update_Selete();
-        }
-        else if (m_eType == TALK_TYPE::TALK_SELETE)
-        {
-            if (m_iSelete == 0 || m_iSelete == 1)
-            {
-
-                m_iMaxTalk = 2;
-                m_iTalkIndex = 0;
-                m_eType = TALK_TYPE::TALK;
-            }
-            else if (m_iSelete == 2)
-            {
-                m_eType = TALK_TYPE::START;
-                m_iSelete = 0;
-                Update_Selete();
-            }
-        }
-        else if(m_eType == TALK_TYPE::TALK)
-        {
-            ++m_iTalkIndex;
-            if (m_iTalkIndex >= m_iMaxTalk)
-            {
-                m_eType = TALK_TYPE::START;
-                m_iSelete = 0;
-                Update_Selete();
-            }
+            Off_Panel();
+            m_isUIOpen = false;
         }
         else if (m_iSelete == 1 && m_eType == TALK_TYPE::START)
         {
-            m_iTalkIndex = 0;
-            m_eType = TALK_TYPE::UP;
-            m_iSelete = 0;
-            Update_Selete();
-        }
-        else if (m_eType == TALK_TYPE::UP)
-        {
-            if (m_isUp)
-            {
-                m_iMaxTalk = 1;
-                _int iStone = *m_pStone;
-                iStone -= (*m_pLevelStone + 2);
-
-                if (m_iSelete == 2)
-                    m_eType = TALK_TYPE::START;
-                else if (m_iTalkIndex < m_iMaxTalk)
-                    ++m_iTalkIndex;
-                else if (m_iSelete == 0 &&  0 <= iStone)
-                {
-                    *m_pStone -= *m_pLevelStone + 2;
-                    *m_pLevelStone += 1;
-                    CClientInstance::GetInstance()->Get_ptrPlayerData().fDamage += 10.f;
-                    m_pList[0]->ON_FX();
-                }
-                else if (m_iSelete == 1 && 0 <= iStone)
-                {
-                    *m_pStone -= *m_pLevelStone + 2;
-                    *m_pLevelStone += 1;
-                    CClientInstance::GetInstance()->Get_ptrPlayerData().fMaxHp += 100.f;
-                    m_pList[1]->ON_FX();
-                }
-            }
-            else
-                m_eType = TALK_TYPE::START;
-
+            CUI_Inven::INVEN_ONOFF_DESC Desc = {};
+            Desc.isOpen = true;
+            Desc.eState = CUI_Inven::INVEN_STATE::SALE;
+            Desc.szName = m_szName;
+            m_isUIOpen = true;
+            CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Inven"), &Desc);
+            Off_Panel();
         }
         else if (m_iSelete == 2 && m_eType == TALK_TYPE::START)
+        {
             Off_Panel();
-
+            m_isUIOpen = false;
+        }
         Setting_Talk();
     }
 
 }
 
-void CUI_Talk_Daphrona::Late_Update(_float fTimeDelta)
+void CUI_Talk_Trader::Late_Update(_float fTimeDelta)
 {
     if (!m_IsUpdate)
         return;
@@ -266,7 +207,7 @@ void CUI_Talk_Daphrona::Late_Update(_float fTimeDelta)
         pGuide->Late_Update(fTimeDelta);
 }
 
-HRESULT CUI_Talk_Daphrona::Render()
+HRESULT CUI_Talk_Trader::Render()
 {
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
         return E_FAIL;
@@ -288,7 +229,14 @@ HRESULT CUI_Talk_Daphrona::Render()
     return S_OK;
 }
 
-HRESULT CUI_Talk_Daphrona::Ready_Component()
+HRESULT CUI_Talk_Trader::Update_Switch(void* pArg)
+{
+    On_Panel();
+
+    return S_OK;
+}
+
+HRESULT CUI_Talk_Trader::Ready_Component()
 {
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxPosTex_UI"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
@@ -305,7 +253,7 @@ HRESULT CUI_Talk_Daphrona::Ready_Component()
     return S_OK;
 }
 
-HRESULT CUI_Talk_Daphrona::Ready_Children()
+HRESULT CUI_Talk_Trader::Ready_Children()
 {
     CUIObject::UIOBJECT_DESC Desc = {};
     Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
@@ -333,9 +281,9 @@ HRESULT CUI_Talk_Daphrona::Ready_Children()
         CUI_WorldTex* pBG_Line = static_cast<CUI_WorldTex*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_WorldTex"), &Desc));
         CHECK_NULLPTR(pBG_Line, E_FAIL);
 
-        if(i <= 1)
+        if (i <= 1)
             pBG_Line->Setting_Texture(1, CClientInstance::GetInstance()->Get_AtlasUV("T_BGDeco_ItemInfo_01.png", 1));
-        else if( i < 4)
+        else if (i < 4)
             pBG_Line->Setting_Texture(1, CClientInstance::GetInstance()->Get_AtlasUV("T_BGDeco_ItemInfo_03.png", 1));
         else
             pBG_Line->Setting_Texture(1, CClientInstance::GetInstance()->Get_AtlasUV("T_Img_Line_ItemInfo.png", 1));
@@ -355,7 +303,7 @@ HRESULT CUI_Talk_Daphrona::Ready_Children()
         m_pList.push_back(pBG_Line);
         Add_Child(pBG_Line);
     }
-    
+
     Update_Selete();
     m_IsUpdate = false;
 
@@ -372,7 +320,7 @@ HRESULT CUI_Talk_Daphrona::Ready_Children()
     m_Key_Guide[1]->Setting_Texture(3, CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_KB_F.png", 3));
     m_Key_Guide[2]->Setting_Texture(4, CClientInstance::GetInstance()->Get_AtlasUV("Loading_3.png", 4));
 
-    m_pName->Set_Text(TEXT("다프로나"));
+    m_pName->Set_Text(TEXT("두이무크"));
     m_pName->Set_TextTag(TEXT("Blade_Medium_20"));
     m_pText1->Set_TextTag(TEXT("Blade_Medium_20"));
     m_pText2->Set_TextTag(TEXT("Blade_Medium_20"));
@@ -381,18 +329,18 @@ HRESULT CUI_Talk_Daphrona::Ready_Children()
     return S_OK;
 }
 
-void CUI_Talk_Daphrona::Update_Selete()
+void CUI_Talk_Trader::Update_Selete()
 {
     for (_int i = 0; i < 3; ++i)
-    {        
-        if(m_iSelete == i)
+    {
+        if (m_iSelete == i)
             m_pList[i]->Set_Selete(true);
         else
             m_pList[i]->Set_Selete(false);
     }
 }
 
-void CUI_Talk_Daphrona::Setting_Talk()
+void CUI_Talk_Trader::Setting_Talk()
 {
     if (m_eType == TALK_TYPE::START)
     {
@@ -400,130 +348,27 @@ void CUI_Talk_Daphrona::Setting_Talk()
         m_pList[0]->Update_Visible(true);
         m_pList[1]->Update_Visible(true);
         m_pList[2]->Update_Visible(true);
-        
+
         m_pText1->Update_Visible(true);
         m_pText2->Update_Visible(true);
-        m_pText3->Update_Visible(true);
-        
-        m_pList[0]->Setting_Icon(2, CClientInstance::GetInstance()->Get_AtlasUV("T_Ico_Dialog_Conversation.png", 2));
-        m_pList[1]->Setting_Icon(2, CClientInstance::GetInstance()->Get_AtlasUV("T_Ico_Dialog_StoneLevelUp.png", 2));
+        m_pText3->Update_Visible(false);
+
+        m_pList[0]->Setting_Icon(2, CClientInstance::GetInstance()->Get_AtlasUV("T_Ico_Dialog_LevelUp.png", 2));
+        m_pList[1]->Setting_Icon(2, CClientInstance::GetInstance()->Get_AtlasUV("T_Ico_Dialog_LevelUp.png", 2));
         m_pList[2]->Setting_Icon(2, CClientInstance::GetInstance()->Get_AtlasUV("T_Ico_Dialog_Exit.png", 2));
 
-        m_pList[0]->Set_Text(TEXT("대화하기"));
-        m_pList[1]->Set_Text(TEXT("귀석 해방"));
+        m_pList[0]->Set_Text(TEXT("구매"));
+        m_pList[1]->Set_Text(TEXT("판매"));
         m_pList[2]->Set_Text(TEXT("대화를 마친다."));
 
-        m_pText1->Set_Text(TEXT("명계로 향하는 영혼이 사라지고 있습니다."));
-        m_pText2->Set_Text(TEXT("엠바스의 일은 그저 일부일 뿐이죠."));
-        m_pText3->Set_Text(TEXT("더 큰 피해를 막으려면 원인을 찾아 없애야 합니다."));
-    }
-    else if (m_eType == TALK_TYPE::TALK_SELETE)
-    {
-        m_pList[0]->Setting_Icon(2, CClientInstance::GetInstance()->Get_AtlasUV("T_Ico_Dialog_Conversation.png", 2));
-        m_pList[1]->Setting_Icon(2, CClientInstance::GetInstance()->Get_AtlasUV("T_Ico_Dialog_Conversation.png", 2));
-        m_pList[2]->Setting_Icon(2, CClientInstance::GetInstance()->Get_AtlasUV("T_Ico_Dialog_Exit.png", 2));
-
-        m_pList[0]->Set_Text(TEXT("귀석에 대하여"));
-        m_pList[1]->Set_Text(TEXT("순환의 라크리마에 대하여"));
-        m_pList[2]->Set_Text(TEXT("이전 대화로 돌아간다."));
-    }
-    else if (m_eType == TALK_TYPE::TALK)
-    {
-        m_BG_Line[4]->Update_Visible(false);
-        m_pList[0]->Update_Visible(false);
-        m_pList[1]->Update_Visible(false);
-        m_pList[2]->Update_Visible(false);
-
-        if (m_iSelete == 0)
-        {
-            switch (m_iTalkIndex)
-            {
-            case 0:
-                m_pText1->Set_Text(TEXT("여정 중에 붉은 돌을 본 적 있나요?"));
-                m_pText2->Set_Text(TEXT("그건 귀석이라고 하죠, 귀석에는 명계의 귀신이 깃들어 있답니다."));
-                m_pText3->Update_Visible(false);
-                break;
-            case 1:
-                m_pText1->Set_Text(TEXT("생자여, 귀석을 발견한다면 깨트려서 귀신들을 해방시켜 주세요."));
-                m_pText2->Set_Text(TEXT("귀신들을 풀어준 만큼, 그들의 능력을 나누어 드리겠습니다."));
-                m_pText3->Update_Visible(false);
-                break;
-            }
-        }
-        else
-        {
-            switch (m_iTalkIndex)
-            {
-            case 0:
-                m_pText1->Set_Text(TEXT("생자여, 이제 당신은 조력의 영혼을 불러낼 수 있습니다."));
-                m_pText2->Set_Text(TEXT("이것도 엠바스의 이변을 막은 덕분이죠."));
-                m_pText3->Update_Visible(false);
-                break;
-            case 1:
-                m_pText1->Set_Text(TEXT("제게 순환의 라크리마를 가져오세요."));
-                m_pText2->Set_Text(TEXT("조력의 영혼을 더 강하게 만들어 드리겠습니다."));
-                break;
-            }
-        }
-
-
-    }
-    else if (m_eType == TALK_TYPE::UP)
-    {
-        m_BG_Line[4]->Update_Visible(false);
-        m_pList[0]->Update_Visible(false);
-        m_pList[1]->Update_Visible(false);
-        m_pList[2]->Update_Visible(false);
-
-        _int iStone = *m_pStone;
-        iStone -= (*m_pLevelStone + 2);
-
-        m_isUp = 0 <= iStone;
-
-        if (m_isUp)
-        {
-            m_pList[0]->Setting_Icon(2, CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_Bullet_01_WeaponPower.png", 2));
-            m_pList[1]->Setting_Icon(2, CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_Bullet_09_HP.png", 2));
-            m_pList[2]->Setting_Icon(2, CClientInstance::GetInstance()->Get_AtlasUV("T_Ico_Dialog_Exit.png", 2));
-
-            switch (m_iTalkIndex)   
-            {
-            case 0:
-                m_pText1->Set_Text(TEXT("생자여, 귀석을 해방할 힘을 충분히 가지고 있군요."));
-                m_pText2->Set_Text(TEXT("보유한 귀석: ") + to_wstring(*m_pStone));
-                m_pText3->Set_Text(TEXT("필요한 귀석: ") + to_wstring(*m_pLevelStone + 2));
-                break;
-            case 1:
-                m_BG_Line[4]->Update_Visible(true);
-                m_pText1->Set_Text(TEXT("생자여, 귀석의 힘으로 어떤 능력을 얻고 싶나요?"));
-                m_pText2->Set_Text(TEXT("보유한 귀석: ") + to_wstring(*m_pStone));
-                m_pText3->Set_Text(TEXT("필요한 귀석: ") + to_wstring(*m_pLevelStone + 2));
-
-
-                m_pList[0]->Set_Text(TEXT("공격력 증가 +10"));
-                m_pList[1]->Set_Text(TEXT("생명력 증가 +100"));
-                m_pList[2]->Set_Text(TEXT("이전 대화로 돌아간다."));
-
-                m_pList[0]->Update_Visible(true);
-                m_pList[1]->Update_Visible(true);
-                m_pList[2]->Update_Visible(true);
-                break;
-            }
-        }
-        else
-        {
-            m_pText1->Set_Text(TEXT("지금은 귀석의 힘을 해방하기엔 부족하군요."));
-            m_pText2->Set_Text(TEXT("더 많은 귀석을 찾아야 해요."));
-            m_pText3->Update_Visible(false);
-        }
-
-
+        m_pText1->Set_Text(TEXT("카잔님, 부탁드립니다."));
+        m_pText2->Set_Text(TEXT("프라우를 구해주세요"));
     }
 }
 
-void CUI_Talk_Daphrona::List_Selete()
+void CUI_Talk_Trader::List_Selete()
 {
-    if (m_pGameInstance->Key_Down(DIK_S, INPUT_TYPE::UI))
+    if (m_pGameInstance->Key_Down(DIK_S, INPUT_TYPE::WORLD_UI))
     {
         ++m_iSelete;
 
@@ -532,7 +377,7 @@ void CUI_Talk_Daphrona::List_Selete()
 
         Update_Selete();
     }
-    else if (m_pGameInstance->Key_Down(DIK_W, INPUT_TYPE::UI))
+    else if (m_pGameInstance->Key_Down(DIK_W, INPUT_TYPE::WORLD_UI))
     {
         --m_iSelete;
 
@@ -543,7 +388,7 @@ void CUI_Talk_Daphrona::List_Selete()
     }
 }
 
-void CUI_Talk_Daphrona::UI_Animation(_float fTimeDelta)
+void CUI_Talk_Trader::UI_Animation(_float fTimeDelta)
 {
     if (m_eAnimState == UIANIMSTATE::ON)
     {
@@ -565,36 +410,41 @@ void CUI_Talk_Daphrona::UI_Animation(_float fTimeDelta)
         {
             m_fAccTime = 0.f;
             m_eAnimState = UIANIMSTATE::END;
-            m_IsUpdate = false;
-            m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
+            m_IsUpdate = false; 
+
+            if(m_isUIOpen)
+                m_pGameInstance->Change_InputType(INPUT_TYPE::UI);
+            else
+                m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
         }
     }
 }
 
-CUI_Talk_Daphrona* CUI_Talk_Daphrona::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CUI_Talk_Trader* CUI_Talk_Trader::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-    CUI_Talk_Daphrona* pInstance = new CUI_Talk_Daphrona(pDevice, pContext);
+    CUI_Talk_Trader* pInstance = new CUI_Talk_Trader(pDevice, pContext);
     if (FAILED(pInstance->Initialize_Prototype()))
     {
-        MSG_BOX(TEXT("Failed Created : CUI_Talk_Daphrona"));
+        MSG_BOX(TEXT("Failed Created : CUI_Talk_Trader"));
         Safe_Release(pInstance);
     }
     return pInstance;
 }
 
-CGameObject* CUI_Talk_Daphrona::Clone(void* pArg)
+CGameObject* CUI_Talk_Trader::Clone(void* pArg)
 {
-    CUI_Talk_Daphrona* pInstance = new CUI_Talk_Daphrona(*this);
+    CUI_Talk_Trader* pInstance = new CUI_Talk_Trader(*this);
     if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
-        MSG_BOX(TEXT("Failed Cloned : CUI_Talk_Daphrona"));
+        MSG_BOX(TEXT("Failed Cloned : CUI_Talk_Trader"));
         Safe_Release(pInstance);
     }
     return pInstance;
 }
 
-void CUI_Talk_Daphrona::Free()
+void CUI_Talk_Trader::Free()
 {
+    CClientInstance::GetInstance()->Release_RootUI(AnsiToWString(m_szName));
     __super::Free();
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pTextureCom);

@@ -27,6 +27,9 @@
 #include <Monster.h>
 #include <Target_BrutalAttack.h>
 #include "UI_Talk_Daphrona.h"
+#include "UI_Talk_Dangin.h"
+#include "UI_Talk_Trader.h"
+
 #pragma endregion
 
 using WEA = CKhazan_Spear_ASMachine::WEAPON;
@@ -132,9 +135,14 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
     Desc.vLocalSize = { 1.7f, 1.7f };
     Desc.szName = "TalkUI";
     m_pTalkUI = static_cast<CUI_Talk_Daphrona*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Daphrona"), &Desc));
+    CHECK_NULLPTR(m_pTalkUI, E_FAIL);
+    Desc.szName = "Dangin_TalkUI";
+    m_pDanginTalkUI = static_cast<CUI_Talk_Dangin*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Dangin"), &Desc));
+    CHECK_NULLPTR(m_pDanginTalkUI, E_FAIL);
+    Desc.szName = "Trader_TalkUI";
+    m_pTraderTalkUI = static_cast<CUI_Talk_Trader*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Trader"), &Desc));
+    CHECK_NULLPTR(m_pTraderTalkUI, E_FAIL);
 
-    if (m_pTalkUI == nullptr)
-        return E_FAIL;
 #pragma endregion
     return S_OK;
 
@@ -143,9 +151,13 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
 void CKhazan_Spear::Priority_Update(_float fTimeDelta)
 {
     if (m_pGameInstance->Key_Down(DIK_8))
-    {
         m_pTalkUI->On_Panel();
-    }
+    
+    if (m_pGameInstance->Key_Down(DIK_J))
+        m_pDanginTalkUI->On_Panel();
+
+    if (m_pGameInstance->Key_Down(DIK_K))
+        m_pTraderTalkUI->On_Panel();
 
     m_pTalkUI->Priority_Update(fTimeDelta);
     __super::Priority_Update(fTimeDelta);
@@ -163,6 +175,8 @@ void CKhazan_Spear::Priority_Update(_float fTimeDelta)
 void CKhazan_Spear::Update(_float fTimeDelta)
 {
     m_pTalkUI->Update(fTimeDelta);
+    m_pDanginTalkUI->Update(fTimeDelta);
+    m_pTraderTalkUI->Update(fTimeDelta);
     if (m_isEnableControl)
     {
         m_fTimeAcc += fTimeDelta;
@@ -248,7 +262,13 @@ void CKhazan_Spear::Update(_float fTimeDelta)
 void CKhazan_Spear::Late_Update(_float fTimeDelta)
 {
     m_pTalkUI->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
+    m_pDanginTalkUI->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
+    m_pTraderTalkUI->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
+
     m_pTalkUI->Late_Update(fTimeDelta);
+    m_pDanginTalkUI->Late_Update(fTimeDelta);
+    m_pTraderTalkUI->Late_Update(fTimeDelta);
+
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 

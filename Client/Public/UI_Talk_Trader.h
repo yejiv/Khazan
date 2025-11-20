@@ -9,15 +9,15 @@ class CVIBuffer_Rect;
 NS_END
 
 NS_BEGIN(Client)
-class CUI_Talk_Daphrona final : public CUI_Panel
+class CUI_Talk_Trader final : public CUI_Panel
 {
 private:
-    enum class UIANIMSTATE { ON, OFF, END};
-    enum class TALK_TYPE { START, TALK_SELETE, TALK, UP, END};
+    enum class UIANIMSTATE { ON, OFF, END };
+    enum class TALK_TYPE { START, END };
 private:
-    CUI_Talk_Daphrona(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    CUI_Talk_Daphrona(const CUI_Talk_Daphrona& Prototype);
-    virtual ~CUI_Talk_Daphrona() = default;
+    CUI_Talk_Trader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+    CUI_Talk_Trader(const CUI_Talk_Trader& Prototype);
+    virtual ~CUI_Talk_Trader() = default;
 
 public:
     void                            On_Panel();
@@ -32,13 +32,13 @@ public:
     virtual void			        Update(_float fTimeDelta) override;
     virtual void			        Late_Update(_float fTimeDelta) override;
     virtual HRESULT			        Render() override;
-
+    virtual	HRESULT				    Update_Switch(void* pArg);
 private:
     CShader*                        m_pShaderCom = { nullptr };
     CTexture*                       m_pTextureCom = { nullptr };
     CVIBuffer_Rect*                 m_pVIBufferCom = { nullptr };
 
-    class CUI_WorldTextBox*         m_pName = {nullptr};
+    class CUI_WorldTextBox*         m_pName = { nullptr };
     class CUI_WorldTextBox*         m_pText1 = { nullptr };
     class CUI_WorldTextBox*         m_pText2 = { nullptr };
     class CUI_WorldTextBox*         m_pText3 = { nullptr };
@@ -56,11 +56,9 @@ private:
 
     _bool                           m_isUp = {};
 
-    _uint*                          m_pStone = { nullptr };
-    _uint*                          m_pLevelStone = { nullptr };
-
     _float							m_fAccTime = {};
     UIANIMSTATE						m_eAnimState = { UIANIMSTATE::END };
+    _bool                           m_isUIOpen = {};
 private:
     HRESULT					        Ready_Component();
     HRESULT                         Ready_Children();
@@ -71,7 +69,7 @@ private:
     void                            List_Selete();
     void						    UI_Animation(_float fTimeDelta);
 public:
-    static CUI_Talk_Daphrona*       Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+    static CUI_Talk_Trader*         Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual CGameObject*            Clone(void* pArg) override;
     virtual void			        Free() override;
 };

@@ -1337,7 +1337,6 @@ HRESULT CLevel_HeinMach::Ready_Layer_UI()
         TEXT("../Bin/Resources/UI/UIData/BladeNexus_Map.json"))))
         return E_FAIL;
 
-
     if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
         TEXT("../Bin/Resources/UI/UIData/Skill.json"))))
         return E_FAIL;
@@ -1350,6 +1349,13 @@ HRESULT CLevel_HeinMach::Ready_Layer_UI()
         TEXT("../Bin/Resources/UI/UIData/SkillQuickSlot.json"))))
         return E_FAIL;
 
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/Lachryma_Info.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/Gold_Info.json"))))
+        return E_FAIL;
 	return S_OK;
 }
 

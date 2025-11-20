@@ -859,6 +859,15 @@
     <Filter Include="02.GameObject\MapObject\00.Prop\05.Destructible\02.Barrel">
       <UniqueIdentifier>{ed27f2e0-6605-4c35-9751-1766c8f13952}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Talk\Dangin">
+      <UniqueIdentifier>{8981053b-8450-4443-b8ae-af849f832612}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Talk\Trader">
+      <UniqueIdentifier>{11b611cc-a2be-484f-b236-39b77badd04c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Amount_Info">
+      <UniqueIdentifier>{e971ff75-65a5-470d-8e04-1da488b58d20}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1673,6 +1682,15 @@
     <ClInclude Include="..\Public\Barrel.h">
       <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\02.Barrel</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\UI_Talk_Dangin.h">
+      <Filter>02.GameObject\UI\Talk\Dangin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Talk_Trader.h">
+      <Filter>02.GameObject\UI\Talk\Trader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Amount_Info.h">
+      <Filter>02.GameObject\UI\Amount_Info</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2466,6 +2484,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\Barrel.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\02.Barrel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Talk_Dangin.cpp">
+      <Filter>02.GameObject\UI\Talk\Dangin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Talk_Trader.cpp">
+      <Filter>02.GameObject\UI\Talk\Trader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Amount_Info.cpp">
+      <Filter>02.GameObject\UI\Amount_Info</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -361,6 +361,9 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 {
 	//텍스처
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_UI_BackGround"),
+        CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/BG/T_Texture_Bg_UI.png"), 1)), E_FAIL);
+
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Hud_HPGauge"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Hud/State/T_Hud_Gauge_HP_0%d.png"), 7)), E_FAIL);
 
@@ -529,6 +532,14 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Daphrona"),
         CUI_Talk_Daphrona::Create(m_pDevice, m_pContext)), E_FAIL);
 
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Dangin"),
+        CUI_Talk_Dangin::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Trader"),
+        CUI_Talk_Trader::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Amount_Info"),
+        CAmount_Info::Create(m_pDevice, m_pContext)), E_FAIL);
 
 	CUIObject::UIOBJECT_DESC AnnounceDesc = {};
 	AnnounceDesc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };

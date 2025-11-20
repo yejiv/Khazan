@@ -91,8 +91,22 @@ HRESULT CUI_Manager::Add_RootUI(const _wstring& szRootUIName, CUIObject* pUIObje
 	}
 
 	m_pRootUI.emplace(szRootUIName, pUIObject);
+    Safe_AddRef(pUIObject);
 
 	return S_OK;
+}
+
+HRESULT CUI_Manager::Release_RootUI(const _wstring& szRootUIName)
+{
+    CUIObject* pRootUI = Find_RootUI(szRootUIName);
+
+    if (pRootUI == nullptr)
+        return S_OK;
+    
+    Safe_Release(pRootUI);
+    m_pRootUI.erase(szRootUIName);
+
+    return S_OK;
 }
 
 CUIObject* CUI_Manager::Get_RootUI(const _wstring& szRootUIName)

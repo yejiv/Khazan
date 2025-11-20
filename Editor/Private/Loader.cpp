@@ -511,6 +511,10 @@ HRESULT CLoader::Loading_For_UI_Level()
 		CTexture_Atlas::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Atlas/Atlas_%d.json"), 5))))
 		return E_FAIL;
 
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_Texture_UI_BackGround"),
+        CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/BG/T_Texture_Bg_UI.png"), 1))))
+        return E_FAIL;
+
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_Hud_HPGauge"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Hud/State/T_Hud_Gauge_HP_0%d.png"), 7))))
 		return E_FAIL;

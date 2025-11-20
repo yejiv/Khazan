@@ -17,6 +17,7 @@
 #include "UI_TextBox.h"
 
 #include "UI_HUD.h"
+#include "Amount.h"
 
 CUI_Inven::CUI_Inven(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI_Panel{ pDevice, pContext }
@@ -35,11 +36,20 @@ void CUI_Inven::On_Panel()
 	m_eAnimState = UIANIMSTATE::ON;
 	m_fAccTime = 0.f;
 	m_IsUpdate = true;
-
+    __super::Update_Alpha(m_fAccTime);
 }
 
 void CUI_Inven::Off_Panel()
 {
+    if (m_eState == INVEN_STATE::SALE)
+    { 
+        for (auto iGroupIndex : m_UpdateGroup[m_iTapGroupIndex])
+        {
+            for (auto Item : m_pItems[iGroupIndex])
+                Item->Set_Sale(false);
+        }
+        static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Off_Panel();
+    }
 	if (m_strReturnName == "")
 	{
 		m_eAnimState = UIANIMSTATE::OFF;
@@ -116,7 +126,7 @@ void CUI_Inven::Priority_Update(_float fTimeDelta)
 	m_pBackGround->Priority_Update(fTimeDelta);
 	m_pUIText->Priority_Update(fTimeDelta);
 
-	if (!m_bIsEquip)
+    if (m_eState == INVEN_STATE::DEFAULT || m_eState == INVEN_STATE::SALE)
 	{
 		for (auto TapIndex : m_UpdateGroup[m_iTapGroupIndex])
 		{
@@ -140,13 +150,14 @@ void CUI_Inven::Priority_Update(_float fTimeDelta)
 			Selete_Slot();
 		}
 	}
-	else
+    else if (m_eState == INVEN_STATE::EQUIP)
 	{
 		m_pEquip_Panel->Priority_Update(fTimeDelta);
 		for (auto Slot : m_pEquipSlot)
 			Slot->Priority_Update(fTimeDelta);
 	}
-    m_pState_Panel->Priority_Update(fTimeDelta);
+    if (m_eState != INVEN_STATE::SALE)
+        m_pState_Panel->Priority_Update(fTimeDelta);
 }
 
 void CUI_Inven::Update(_float fTimeDelta)
@@ -159,7 +170,7 @@ void CUI_Inven::Update(_float fTimeDelta)
 	m_pBackGround->Update(fTimeDelta);
 	m_pUIText->Update(fTimeDelta);
 
-	if (!m_bIsEquip)
+    if (m_eState == INVEN_STATE::DEFAULT || m_eState == INVEN_STATE::SALE)
 	{
 		for (auto TapIndex : m_UpdateGroup[m_iTapGroupIndex])
 		{
@@ -172,14 +183,14 @@ void CUI_Inven::Update(_float fTimeDelta)
 		for (auto Item : m_pItems[m_iSeleteTap])
 			Item->Update(fTimeDelta);
 	}
-	else
+    else if (m_eState == INVEN_STATE::EQUIP)
 	{
 		m_pEquip_Panel->Update(fTimeDelta);
 		for (auto Slot : m_pEquipSlot)
 			Slot->Update(fTimeDelta);
 	}
-    m_pState_Panel->Update(fTimeDelta);
-
+    if (m_eState != INVEN_STATE::SALE)
+        m_pState_Panel->Update(fTimeDelta);
 }
 
 void CUI_Inven::Late_Update(_float fTimeDelta)
@@ -190,7 +201,7 @@ void CUI_Inven::Late_Update(_float fTimeDelta)
 	m_pBackGround->Late_Update(fTimeDelta);
 	m_pUIText->Late_Update(fTimeDelta);
 
-	if (!m_bIsEquip)
+	if (m_eState == INVEN_STATE::DEFAULT || m_eState == INVEN_STATE::SALE)
 	{
 		for (auto TapIndex : m_UpdateGroup[m_iTapGroupIndex])
 		{
@@ -205,20 +216,27 @@ void CUI_Inven::Late_Update(_float fTimeDelta)
 		m_pQIcon->Late_Update(fTimeDelta);
 		m_pEIcon->Late_Update(fTimeDelta);
 	}
-	else
+	else if (m_eState == INVEN_STATE::EQUIP)
 	{
 		m_pEquip_Panel->Late_Update(fTimeDelta);
 		for (auto Slot : m_pEquipSlot)
 			Slot->Late_Update(fTimeDelta);
 	}
 
-	for (auto Icon : m_pGuideIcon)
-		Icon->Late_Update(fTimeDelta);
-
-	for (auto Text : m_pGuideText)
-		Text->Late_Update(fTimeDelta);
-
-    m_pState_Panel->Late_Update(fTimeDelta);
+    if (m_eState == INVEN_STATE::EQUIP || m_iTapGroupIndex == ENUM_CLASS(TapGroup::OTHER))
+    {
+        m_pGuideIconESC_Center->Late_Update(fTimeDelta);
+        m_pGuideTextESC_Center->Late_Update(fTimeDelta);
+    }
+    else
+    {
+        m_pGuideIconESC->Late_Update(fTimeDelta);
+        m_pGuideTextESC->Late_Update(fTimeDelta);
+        m_pGuideIconF->Late_Update(fTimeDelta);
+        m_pGuideTextF->Late_Update(fTimeDelta);
+    }
+    if (m_eState != INVEN_STATE::SALE)
+        m_pState_Panel->Late_Update(fTimeDelta);
 
 }
 
@@ -238,44 +256,57 @@ HRESULT CUI_Inven::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, voi
 			m_pInvenTap.push_back(static_cast<CInven_Tap*>(pChild));
 			Safe_AddRef(pChild);
 		}
-
-		if ("Inven_Name" == pChild->Get_Name())
+        else if ("Inven_Name" == pChild->Get_Name())
 		{
 			m_pUIText = static_cast<CUI_TextBox*>(pChild);
 			Safe_AddRef(m_pUIText);
 		}
-
-		if ("EQUIP" == pChild->Get_Name())
+        else if ("EQUIP" == pChild->Get_Name())
 		{
 			m_pEquip_Panel = static_cast<CEquip_Panel*>(pChild);
 			Safe_AddRef(m_pEquip_Panel);
 		}
-
-		if ("Guade_Key_ESC_Text" == pChild->Get_Name())
+        else if ("Guade_Key_ESC_Text" == pChild->Get_Name())
+        {
+            m_pGuideTextESC_Center = static_cast<CUI_TextBox*>(pChild);
+            Safe_AddRef(pChild);
+        }
+        else if ("Guade_Key_ESC" == pChild->Get_Name())
+        {
+            m_pGuideIconESC_Center = static_cast<CUI_Atlas_Icon*>(pChild);
+            Safe_AddRef(pChild);
+        }
+        else if ("Guade_Icon_Esc_Text" == pChild->Get_Name())
 		{
-			m_pGuideText.push_back(static_cast<CUI_TextBox*>(pChild));
+            m_pGuideTextESC = static_cast<CUI_TextBox*>(pChild);
 			Safe_AddRef(pChild);
 		}
-
-		if ("Guade_Key_ESC" == pChild->Get_Name())
+        else if ("Guade_Icon_ESC" == pChild->Get_Name())
 		{
-			m_pGuideIcon.push_back(static_cast<CUI_Atlas_Icon*>(pChild));
+            m_pGuideIconESC = static_cast<CUI_Atlas_Icon*>(pChild);
 			Safe_AddRef(pChild);
 		}
-
-		if ("Guade_Key_Q" == pChild->Get_Name())
+        else if ("Guade_Icon_F_Text" == pChild->Get_Name())
+        {
+            m_pGuideTextF = static_cast<CUI_TextBox*>(pChild);
+            Safe_AddRef(pChild);
+        }
+        else if ("Guade_Icon_F" == pChild->Get_Name())
+        {
+            m_pGuideIconF = static_cast<CUI_Atlas_Icon*>(pChild);
+            Safe_AddRef(pChild);
+        }
+        else if ("Guade_Key_Q" == pChild->Get_Name())
 		{
 			m_pQIcon = static_cast<CUI_Atlas_Icon*>(pChild);
 			Safe_AddRef(pChild);
 		}
-
-		if ("Guade_Key_E" == pChild->Get_Name())
+        else if ("Guade_Key_E" == pChild->Get_Name())
 		{
 			m_pEIcon = static_cast<CUI_Atlas_Icon*>(pChild);
 			Safe_AddRef(pChild);
 		}
-
-        if ("State" == pChild->Get_Name())
+        else if ("State" == pChild->Get_Name())
         {
             m_pState_Panel = static_cast<CInven_State_Panel*>(pChild);
             Safe_AddRef(pChild);
@@ -497,27 +528,61 @@ void CUI_Inven::Bubble_EventCall(BUBBLEEVENT* pArg)
 		{
 			m_iTapGroupIndex = ENUM_CLASS(TapGroup::WEAPON);
 			pDesc->iItemType == 2 ? Change_Tap(1) : Change_Tap(0);
-			m_bIsEquip = false;
+            m_eState = INVEN_STATE::DEFAULT;
 		}
 		else if (eType >= EQUIPSLOT_TYPE::HEAD && eType <= EQUIPSLOT_TYPE::SHOES)
 		{
 			m_iTapGroupIndex = ENUM_CLASS(TapGroup::ARMOR);
 			Change_Tap(ENUM_CLASS(eType) - ENUM_CLASS(EQUIPSLOT_TYPE::HEAD));
-			m_bIsEquip = false;
+            m_eState = INVEN_STATE::DEFAULT;
 		}
 		else if (eType == EQUIPSLOT_TYPE::NECK || eType == EQUIPSLOT_TYPE::RING)
 		{
 			m_iTapGroupIndex = ENUM_CLASS(TapGroup::ACC);
 			Change_Tap(ENUM_CLASS(eType) - ENUM_CLASS(EQUIPSLOT_TYPE::NECK));
-			m_bIsEquip = false;
+            m_eState = INVEN_STATE::DEFAULT;
 		}
 		else
 		{
 			m_iTapGroupIndex = ENUM_CLASS(TapGroup::QUICK);
 			Change_Tap(pDesc->iIndex - ENUM_CLASS(EQUIPSLOT_TYPE::QUICK_1));
-			m_bIsEquip = false;
+            m_eState = INVEN_STATE::DEFAULT;
 		}
 	}
+    else if (pDesc->eBubbleType == EVENT_TYPE::ITEM_RELEASE)
+    {
+        for (_int i = 0; i < 28; ++i)
+        {
+            if (pDesc->iIndex > i)
+                continue;
+            
+            if (i == 27)
+                m_pItems[m_iSeleteTap][i] = pDesc->pItem;
+            else
+                m_pItems[m_iSeleteTap][i] = m_pItems[m_iSeleteTap][i+1];
+
+            m_pItems[m_iSeleteTap][i]->Update_Pos(i, { 320.f , 590.f }, 110.f, 4, 7);
+
+        }
+
+        if (m_pItems[m_iSeleteTap][pDesc->iIndex]->Get_ItemIndex() >= 0)
+        {
+            m_iSeleteSlotIndex = pDesc->iIndex;
+            Selete_Slot();
+        }
+        else if(pDesc->iIndex - 1 >= 0)
+        {
+            m_iSeleteSlotIndex = pDesc->iIndex - 1;
+            Selete_Slot();
+        }
+        else
+        {
+            m_iSeleteSlotIndex = 0;
+            Selete_Slot();
+        }
+
+
+    }
 }
 
 HRESULT CUI_Inven::Update_Switch(void* pArg)
@@ -530,18 +595,33 @@ HRESULT CUI_Inven::Update_Switch(void* pArg)
 	{
 		On_Panel();
 
-		m_bIsEquip = pDesc->isEquip;
-		
-		if (!m_bIsEquip)
+        m_eState = pDesc->eState;
+        m_pBackGround->Setting_BG(CUI_BackGround::UIBGTYPE::ITEM);
+		if (m_eState == INVEN_STATE::DEFAULT)
 		{
 			m_iTapGroupIndex = ENUM_CLASS(TapGroup::OTHER);
 			m_pUIText->Set_Text(TEXT("소지품"));
 			Change_Tap(0);
 		}
-		else
+		else if (m_eState == INVEN_STATE::EQUIP)
 		{
 			m_pUIText->Set_Text(TEXT("장비"));
+            m_pGuideTextF->Set_Text(TEXT("장착"));
 		}
+        else if (m_eState == INVEN_STATE::SALE)
+        {
+            m_pGuideTextF->Set_Text(TEXT("판매"));
+            m_pBackGround->Setting_BG(CUI_BackGround::UIBGTYPE::BLADENEXUS);
+            m_iTapGroupIndex = ENUM_CLASS(TapGroup::SALE);
+            m_pUIText->Set_Text(TEXT("판매"));
+            Change_Tap(0);
+            static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->On_Panel();
+            for (auto iGroupIndex : m_UpdateGroup[m_iTapGroupIndex])
+            {
+                for (auto Item : m_pItems[iGroupIndex])
+                    Item->Set_Sale(true);
+            }
+        }
 		m_strReturnName = pDesc->szName;
 	}
 
@@ -732,6 +812,16 @@ void CUI_Inven::Ready_Grouping()
 	m_UpdateGroup[ENUM_CLASS(TapGroup::QUICK)].push_back(ENUM_CLASS(ITEMTYPE::QUICK_5));
 	m_UpdateGroup[ENUM_CLASS(TapGroup::QUICK)].push_back(ENUM_CLASS(ITEMTYPE::QUICK_6));
 
+    m_UpdateGroup[ENUM_CLASS(TapGroup::SALE)].push_back(ENUM_CLASS(ITEMTYPE::SPEAR));
+    m_UpdateGroup[ENUM_CLASS(TapGroup::SALE)].push_back(ENUM_CLASS(ITEMTYPE::GREATE));
+    m_UpdateGroup[ENUM_CLASS(TapGroup::SALE)].push_back(ENUM_CLASS(ITEMTYPE::HEAD));
+    m_UpdateGroup[ENUM_CLASS(TapGroup::SALE)].push_back(ENUM_CLASS(ITEMTYPE::TOP));
+    m_UpdateGroup[ENUM_CLASS(TapGroup::SALE)].push_back(ENUM_CLASS(ITEMTYPE::GLOVES));
+    m_UpdateGroup[ENUM_CLASS(TapGroup::SALE)].push_back(ENUM_CLASS(ITEMTYPE::BOTTOM));
+    m_UpdateGroup[ENUM_CLASS(TapGroup::SALE)].push_back(ENUM_CLASS(ITEMTYPE::SHOES));
+    m_UpdateGroup[ENUM_CLASS(TapGroup::SALE)].push_back(ENUM_CLASS(ITEMTYPE::NECK));
+    m_UpdateGroup[ENUM_CLASS(TapGroup::SALE)].push_back(ENUM_CLASS(ITEMTYPE::RING));
+    m_UpdateGroup[ENUM_CLASS(TapGroup::SALE)].push_back(ENUM_CLASS(ITEMTYPE::ATIVE));
 }
 
 void CUI_Inven::UI_Animation(_float fTimeDelta)
@@ -739,18 +829,17 @@ void CUI_Inven::UI_Animation(_float fTimeDelta)
 	if (m_eAnimState == UIANIMSTATE::ON)
 	{
 		m_fAccTime += fTimeDelta * 3.f;
-		__super::Update_Alpha(m_fAccTime);
 
 		if (m_fAccTime >= 1.f)
 		{
 			m_fAccTime = 1.f;
 			m_eAnimState = UIANIMSTATE::END;
 		}
+		__super::Update_Alpha(m_fAccTime);
 	}
 	else if (m_eAnimState == UIANIMSTATE::OFF)
 	{
 		m_fAccTime -= fTimeDelta * 3.f;
-		__super::Update_Alpha(m_fAccTime);
 
 		if (m_fAccTime <= 0.f)
 		{
@@ -758,6 +847,7 @@ void CUI_Inven::UI_Animation(_float fTimeDelta)
 			m_eAnimState = UIANIMSTATE::END;
 			m_IsUpdate = false;
 		}
+		__super::Update_Alpha(m_fAccTime);
 	}
 }
 
@@ -853,10 +943,10 @@ void CUI_Inven::Inven_Key_Input()
 	_bool isTapChage = { false };
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE, INPUT_TYPE::UI))
 	{
-		if (ENUM_CLASS(TapGroup::OTHER) == m_iTapGroupIndex || m_bIsEquip)
-			Off_Panel();
-		else
-			m_bIsEquip = true;
+        if (ENUM_CLASS(TapGroup::OTHER) == m_iTapGroupIndex || m_eState == INVEN_STATE::EQUIP || m_eState == INVEN_STATE::SALE)
+            Off_Panel();
+        else
+            m_eState = INVEN_STATE::EQUIP;
 	}
 	else if (m_pGameInstance->Key_Down(DIK_E, INPUT_TYPE::UI))
 	{
@@ -984,13 +1074,10 @@ void CUI_Inven::Free()
 	Safe_Release(m_pQIcon);
 	Safe_Release(m_pEIcon);
 
-	for (auto Icon : m_pGuideIcon)
-		Safe_Release(Icon);
-	m_pGuideIcon.clear();
-
-	for (auto Text : m_pGuideText)
-		Safe_Release(Text);
-	m_pGuideText.clear();
+    Safe_Release(m_pGuideIconESC);
+    Safe_Release(m_pGuideTextESC);
+    Safe_Release(m_pGuideIconF);
+    Safe_Release(m_pGuideTextF);
 
 	Safe_Release(m_pEquip_Panel);
 	Safe_Release(m_pUIText);
