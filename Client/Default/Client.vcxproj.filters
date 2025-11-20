@@ -868,6 +868,39 @@
     <Filter Include="02.GameObject\UI\Amount_Info">
       <UniqueIdentifier>{e971ff75-65a5-470d-8e04-1da488b58d20}</UniqueIdentifier>
     </Filter>
+    <Filter Include="92.AI\Controller\Viper">
+      <UniqueIdentifier>{1906c35b-a577-4287-9dd6-bb9bd83a25dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\StateMachine\Viper">
+      <UniqueIdentifier>{db4c8cc7-f0f3-4f01-94bd-22fa55346ad3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper">
+      <UniqueIdentifier>{2d02213e-d5bf-4f39-b143-aeae92b5fe90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Viper">
+      <UniqueIdentifier>{2bb74306-f76e-49de-a0b7-66b20f90e692}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Viper\Body">
+      <UniqueIdentifier>{19576cf9-0a98-450b-b75c-1d35e0544ea0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\00.Idle">
+      <UniqueIdentifier>{b74d1d1a-619f-4cc7-bbcd-412004cbe8cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\01.Walk">
+      <UniqueIdentifier>{07c9ae3d-8478-4902-b800-d05b2aa800d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\02.RUN">
+      <UniqueIdentifier>{6f992bce-94df-4889-8419-e9f054150a12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\05.LockOn">
+      <UniqueIdentifier>{3dbd6f2b-e898-4a0c-8f20-195892dd7aab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\04.Slow2Hit">
+      <UniqueIdentifier>{fc7051b0-2885-437c-a3ae-f998f6e67801}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\03.Quick2Hit">
+      <UniqueIdentifier>{2ca3a299-6a24-4f79-9d10-0e26b20274ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1392,9 +1425,6 @@
     <ClInclude Include="..\public\Skill_Slot.h">
       <Filter>02.GameObject\UI\Slot</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\AS_LockOn_Yetuga.h">
-      <Filter>92.AI\State\Yetuga\17.LOCKON</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Head_Yetuga.h">
       <Filter>02.GameObject\Creature\Monster\Yetuga\Head</Filter>
     </ClInclude>
@@ -1690,6 +1720,39 @@
     </ClInclude>
     <ClInclude Include="..\public\Amount_Info.h">
       <Filter>02.GameObject\UI\Amount_Info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AI_Controller_Viper.h">
+      <Filter>92.AI\Controller\Viper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FSM_Viper.h">
+      <Filter>92.AI\StateMachine\Viper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Idle_Viper.h">
+      <Filter>92.AI\State\Viper\00.Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Viper.h">
+      <Filter>02.GameObject\Creature\Monster\Viper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Body_Viper.h">
+      <Filter>02.GameObject\Creature\Monster\Viper\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Quick2Hit_Viper.h">
+      <Filter>92.AI\State\Viper\03.Quick2Hit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Slow2Hit_VIper.h">
+      <Filter>92.AI\State\Viper\04.Slow2Hit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_LockOn_Viper.h">
+      <Filter>92.AI\State\Viper\05.LockOn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_LockOn_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\17.LOCKON</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Run_Viper.h">
+      <Filter>92.AI\State\Viper\02.RUN</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Walk_Viper.h">
+      <Filter>92.AI\State\Viper\01.Walk</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2201,9 +2264,6 @@
     <ClCompile Include="..\private\Skill_Slot.cpp">
       <Filter>02.GameObject\UI\Slot</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\AS_LockOn_Yetuga.cpp">
-      <Filter>92.AI\State\Yetuga\17.LOCKON</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Head_Yetuga.cpp">
       <Filter>02.GameObject\Creature\Monster\Yetuga\Head</Filter>
     </ClCompile>
@@ -2493,6 +2553,39 @@
     </ClCompile>
     <ClCompile Include="..\private\Amount_Info.cpp">
       <Filter>02.GameObject\UI\Amount_Info</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AI_Controller_Viper.cpp">
+      <Filter>92.AI\Controller\Viper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FSM_Viper.cpp">
+      <Filter>92.AI\StateMachine\Viper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Idle_Viper.cpp">
+      <Filter>92.AI\State\Viper\00.Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Viper.cpp">
+      <Filter>02.GameObject\Creature\Monster\Viper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Body_Viper.cpp">
+      <Filter>02.GameObject\Creature\Monster\Viper\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Quick2Hit_Viper.cpp">
+      <Filter>92.AI\State\Viper\03.Quick2Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Slow2Hit_VIper.cpp">
+      <Filter>92.AI\State\Viper\04.Slow2Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_LockOn_Viper.cpp">
+      <Filter>92.AI\State\Viper\05.LockOn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_LockOn_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\17.LOCKON</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Run_Viper.cpp">
+      <Filter>92.AI\State\Viper\02.RUN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Walk_Viper.cpp">
+      <Filter>92.AI\State\Viper\01.Walk</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

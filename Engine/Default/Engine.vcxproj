@@ -275,6 +275,8 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\Transform.cpp" />
     <ClCompile Include="..\private\UIObject.cpp" />
     <ClCompile Include="..\private\UIParent.cpp" />
+    <ClCompile Include="..\Private\UtilityAction_Node.cpp" />
+    <ClCompile Include="..\Private\UtilitySelector_Node.cpp" />
     <ClCompile Include="..\private\VIBuffer.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Cell.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Cube.cpp" />
@@ -452,6 +454,9 @@ call Copy.bat</Command>
     <ClInclude Include="..\public\Transform.h" />
     <ClInclude Include="..\public\UIObject.h" />
     <ClInclude Include="..\public\UIParent.h" />
+    <ClInclude Include="..\Public\UtilityAction_Node.h" />
+    <ClInclude Include="..\Public\UtilityScore.h" />
+    <ClInclude Include="..\Public\UtilitySelector_Node.h" />
     <ClInclude Include="..\public\VIBuffer.h" />
     <ClInclude Include="..\Public\VIBuffer_Cell.h" />
     <ClInclude Include="..\Public\VIBuffer_Cube.h" />

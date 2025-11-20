@@ -1554,7 +1554,7 @@ void CEditor_Model::MergeModelData(
     // 4. Animation Set 재구성
     // .dat의 Animation Set을 현재 모델의 애니메이션 인덱스에 맞게 변환
     m_Model_Data.vecAnimationSets.clear();
-
+    
     for (const auto& datAnimSet : datFileData.vecAnimationSets)
     {
         Engine::ANIMATION_SET_DATA newAnimSet;

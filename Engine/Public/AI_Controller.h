@@ -45,6 +45,7 @@ public:
 	virtual ACTION				GetCallbackAction(CGameObject* pOwner, const string& name);
 	virtual TERMINATE			GetCallbackTeminate(CGameObject* pOwner, const string& name);
 	virtual INTERRUPTCONDITION	GetCallbackInterruptCondition(CGameObject* pOwner, const string& name);
+    virtual SCORE               GetCallbackScore(CGameObject* pOwner, const string& name);
 
 
 protected:

@@ -7,6 +7,11 @@
 #include "MapObject_Header.h"
 #pragma endregion
 
+#pragma region MONSTER
+#include "Viper.h"
+#pragma endregion
+
+
 #include "Player.h"
 #include "Camera_Compre.h"
 
@@ -27,6 +32,9 @@ HRESULT CLevel_Viper::Initialize()
 		CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera")), E_FAIL);
 
 		CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+
+        if (FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Viper"))))
+            return E_FAIL;
 
 		return S_OK;
 		});
@@ -68,6 +76,8 @@ HRESULT CLevel_Viper::Initialize()
 		CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
 		return S_OK;
 		});
+
+
 
 	CClientInstance::GetInstance()->Fade_Out();
 
@@ -889,6 +899,95 @@ HRESULT CLevel_Viper::Ready_Trigger(const _wstring& strLayerTag, const _tchar* p
 	}
 
 	return S_OK;
+}
+
+HRESULT CLevel_Viper::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, const _tchar* pDataFileName, _uint iSubLV, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
+{
+    _wstring strJsonFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+
+    switch (eMap)
+    {
+    case Client::KHAZAN_MAP::HEINMACH:
+        break;
+    case Client::KHAZAN_MAP::CREVICE:
+        break;
+    case Client::KHAZAN_MAP::EMBARS:
+        break;
+    case Client::KHAZAN_MAP::VIPER:
+        strJsonFilePath += TEXT("Viper/");
+        break;
+    }
+
+
+    strJsonFilePath += pDataFileName;
+    _tchar szJsonFilePath[MAX_PATH] = {};
+
+    wsprintf(szJsonFilePath, TEXT("%s_LV%d_spawn.json"), strJsonFilePath.c_str(), iSubLV);
+
+    strJsonFilePath = szJsonFilePath;
+
+    ifstream ifs(strJsonFilePath);
+    if (!ifs.is_open())
+    {
+        // 해당 서브 레벨에 몬스터 정보가 존재하지 않음 ( 몬스터 키값, 월드 행렬 등등 )
+        return S_OK;
+    }
+
+    JSON j = {};
+    ifs >> j;
+    ifs.close();
+
+    JSON_MAP_MONSTER_SPAWN_DATA MonsterData = j.get<JSON_MAP_MONSTER_SPAWN_DATA>();
+
+    _uint iNumMonster = MonsterData.iNumMonster;
+
+    for (_uint i = 0; i < iNumMonster; ++i)
+    {
+        _float4x4 WorldMatrix = {};
+        memcpy(&WorldMatrix, &MonsterData.WorldMatrix[i], sizeof(_float4x4));
+
+        if ("Viper_Phase1" == MonsterData.MonsterKey[i])
+        {
+            CMonster::MONSTER_DESC MonsterDesc{};
+            MonsterDesc.fAttack = 10.f;
+            MonsterDesc.fMaxHP = 100.f;
+            MonsterDesc.fMaxStamina = 100.f;
+            MonsterDesc.fMoveSpeed = 10.f;
+            MonsterDesc.fSpeedPerSec = 3.f;
+            MonsterDesc.fRotationPerSec = 180.f;
+
+            MonsterDesc.WorldMatrix = WorldMatrix;
+            MonsterDesc.strName = MonsterData.MonsterKey[i];
+
+            if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
+                ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Viper"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+                return E_FAIL;
+        }
+    }
+
+
+
+
+    return S_OK;
+}
+
+HRESULT CLevel_Viper::Ready_Layer_Monster_Viper(const _wstring& strLayerTag)
+{
+    CMonster::MONSTER_DESC MonsterDesc{};
+    MonsterDesc.fAttack = 10.f;
+    MonsterDesc.fMaxHP = 100.f;
+    MonsterDesc.fMaxStamina = 100.f;
+    MonsterDesc.fMoveSpeed = 10.f;
+    MonsterDesc.fSpeedPerSec = 3.f;
+    MonsterDesc.fRotationPerSec = 180.f;
+    XMStoreFloat4x4(&MonsterDesc.WorldMatrix,XMMatrixIdentity());
+    MonsterDesc.strName = "Viper";
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
+        ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Viper"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+        return E_FAIL;
+
+
+    return S_OK;
 }
 
 

@@ -14,7 +14,7 @@ public:
     virtual void                Terminate(BTNODESTATE eState, class CBlackBoard* BB = nullptr) {};
     virtual void                Abort(class CBlackBoard* BB) { Terminate(BTNODESTATE::FAILURE, BB); }
 
-    void                        Add_Child(CBTNode* pChild);
+    virtual void                Add_Child(CBTNode* pChild);
     vector<CBTNode*>            Get_Children() const { return m_Children; }
 
 
