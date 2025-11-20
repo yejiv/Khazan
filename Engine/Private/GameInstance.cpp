@@ -551,6 +551,11 @@ void CGameInstance::Set_EnableOutline(_bool isEnable)
 	m_pRenderer->Set_EnableOutline(isEnable);
 }
 
+void CGameInstance::Set_EnableRimLight(_bool isEnable)
+{
+    m_pRenderer->Set_EnableRimLight(isEnable);
+}
+
 void CGameInstance::Set_EnableFog(_bool isEnable)
 {
 	m_pRenderer->Set_EnableFog(isEnable);
@@ -575,6 +580,16 @@ void CGameInstance::Set_OutlineConfig(OUTLINE_CONFIG Config)
 void CGameInstance::Set_SpecularPower(_float2 vPower)
 {
     m_pRenderer->Set_SpecularPower(vPower);
+}
+
+RIM_LIGHT_DESC CGameInstance::Get_RimLightDesc()
+{
+    return m_pRenderer->Get_RimLightDesc();
+}
+
+void CGameInstance::Set_RimLightDesc(RIM_LIGHT_DESC Desc)
+{
+    m_pRenderer->Set_RimLightDesc(Desc);
 }
 
 #pragma endregion

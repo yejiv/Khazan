@@ -27,6 +27,7 @@ vector g_vLightSpecular;
 float g_fToonShadeLevel;
 float g_fLightRange;
 float2 g_vSpecularPower;
+float g_fRimPower, g_fRimToonThreshold, g_fRimIntensity;
 
 // ===== Material =====
 vector g_vMtrlAmbient = { 1.f, 1.f, 1.f, 1.f }, g_vMtrlSpecular = { 1.f, 1.f, 1.f, 1.f };
@@ -100,3 +101,5 @@ bool g_isEnableRadialBlur;
 bool g_isEnableMotionBlur;
 bool g_isEnableLUT;
 bool g_isEnableDistortion;
+bool g_isEnableRimLight;
+bool g_isToonLight;

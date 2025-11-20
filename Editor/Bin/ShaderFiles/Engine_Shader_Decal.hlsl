@@ -156,8 +156,8 @@ PS_OUT PS_MAP_DECAL(PS_IN In)
     // 위에서 구한 텍스쿠드로 깊이 값 읽어오기
     float4 vDepthDesc = g_DepthTexture.Sample(DefaultSampler, vTexcoord);
     
-    //  if (1.f <= vDepthDesc.x)
-    //      discard;
+    if (1.f <= vDepthDesc.x)
+        discard;
     
     // 깊이로 월드 포지션 복원
     float4 vWorldPos;

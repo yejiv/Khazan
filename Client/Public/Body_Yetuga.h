@@ -46,7 +46,7 @@ public:
 	virtual void			Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
 	virtual void			Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
     
-    // Test
+    // Shader
     void                    Set_EnableEdge(_bool isEnable) { m_isEnableEdge = isEnable; }
 
 
@@ -86,7 +86,7 @@ private:
 	_bool					m_isOnAttackCollision = { false };
 	_bool					m_isOnAttackCollision_Back = { false };
     
-    // Test
+    // Shader
     _bool                   m_isEnableEdge = { true };
 
 public:

@@ -143,6 +143,9 @@ HRESULT CBody_Khazan_Spear::Render()
 
     _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
 
+    if (FAILED(m_pShaderCom->Bind_Bool("g_isEnableEdge", &m_isEnableEdge)))
+        return E_FAIL;
+
     _float fEdgeIntensity = 0.3f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float))))
         return E_FAIL;

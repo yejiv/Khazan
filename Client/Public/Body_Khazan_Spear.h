@@ -70,6 +70,8 @@ public:
         m_OutlineConfig.vColor = Config.vColor;
         m_OutlineConfig.fSize = Config.fSize;
     }
+    // Shader
+    void        Set_EnableEdge(_bool isEnable) { m_isEnableEdge = isEnable; }
 
     _bool       Is_SpearFullExtension() const { return m_isSpearFullExtension; }
 
@@ -143,6 +145,9 @@ private:
 
     _bool               m_isCollision;
     _float4             m_fCollisionPos;
+
+    // Shader
+    _bool               m_isEnableEdge = { true };
 
 private:
     void				Update_Collider(_float fTimeDelta);                     
