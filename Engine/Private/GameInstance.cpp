@@ -218,7 +218,6 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pEffect_Manager)
 		return E_FAIL;
 
-
 	m_iStaticLevel = EngineDesc.iStaticLevel;
 
 #ifdef _DEBUG
@@ -234,6 +233,8 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 {
 	//m_pPicking->Update();
+    if (tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)] > 1.f)
+        return; 
 
 	m_pTimer_Manager->Update_HitStop(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
@@ -445,6 +446,16 @@ _uint CGameInstance::Get_CurrentLevelID()
 	return m_pLevel_Manager->Get_CurrentLevelID();
 }
 
+_uint CGameInstance::Get_NextLevelID()
+{
+    return m_pLevel_Manager->Get_NextLevelID();
+}
+
+void CGameInstance::Set_NextLevelID(_uint iLevelID)
+{
+    m_pLevel_Manager->Set_NextLevelID(iLevelID);
+}
+
 #pragma endregion
 
 #pragma region PROTOTYPE_MANAGER
@@ -551,6 +562,11 @@ void CGameInstance::Set_EnableOutline(_bool isEnable)
 	m_pRenderer->Set_EnableOutline(isEnable);
 }
 
+void CGameInstance::Set_EnableRimLight(_bool isEnable)
+{
+    m_pRenderer->Set_EnableRimLight(isEnable);
+}
+
 void CGameInstance::Set_EnableFog(_bool isEnable)
 {
 	m_pRenderer->Set_EnableFog(isEnable);
@@ -575,6 +591,16 @@ void CGameInstance::Set_OutlineConfig(OUTLINE_CONFIG Config)
 void CGameInstance::Set_SpecularPower(_float2 vPower)
 {
     m_pRenderer->Set_SpecularPower(vPower);
+}
+
+RIM_LIGHT_DESC CGameInstance::Get_RimLightDesc()
+{
+    return m_pRenderer->Get_RimLightDesc();
+}
+
+void CGameInstance::Set_RimLightDesc(RIM_LIGHT_DESC Desc)
+{
+    m_pRenderer->Set_RimLightDesc(Desc);
 }
 
 #pragma endregion
@@ -716,6 +742,11 @@ HRESULT CGameInstance::Draw_Text(const _wstring& strFontTag, const _wstring& str
 HRESULT CGameInstance::Draw_TextBox(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, _float fMaxWidth, _float fOffsetHeight, const _float4& vColor, TEXT_ALIGN eAlign)
 {
 	return m_pFont_Manager->Draw_TextBox(strFontTag, strText, fX, fY, fMaxWidth, fOffsetHeight, vColor, eAlign);
+}
+
+HRESULT CGameInstance::DrawTextWorld(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, const _float4& vColor, TEXT_ALIGN eAlign, _matrix WorldMat)
+{
+    return m_pFont_Manager->DrawTextWorld(strFontTag, strText, fX, fY, vColor, eAlign, WorldMat);
 }
 
 HRESULT CGameInstance::Font_Load_Data(const _char* pFontFilePath)
@@ -1306,10 +1337,6 @@ void CGameInstance::Set_FogNoiseTextureIndex(_uint iTextureIndex)
 {
 	m_pFog->Set_FogNoiseTextureIndex(iTextureIndex);
 }
-void CGameInstance::Set_FogNoiseWorldSpace(_bool isEnable)
-{
-	m_pFog->Set_FogNoiseWorldSpace(isEnable);
-}
 void CGameInstance::Start_FogTransition(_float fDuration, const FOG_TRANSITION_DESC& Desc)
 {
 	m_pFog->Start_FogTransition(fDuration, Desc);
@@ -1581,17 +1608,6 @@ bool CGameInstance::AddStaticObject(CGameObject* pGameObject, const _float3& vPo
 
 
 #pragma endregion
-
-//
-//void CGameInstance::Transform_Picking_ToLocalSpace(CTransform* pTransformCom)
-//{
-//	m_pPicking->Transform_ToLocalSpace(pTransformCom);
-//}
-//
-//_bool CGameInstance::isPicked_InLocalSpace(const _float3& vPointA, const _float3& vPointB, const _float3& vPointC, _float3* pOut)
-//{
-//	return m_pPicking->isPicked_InLocalSpace(vPointA, vPointB, vPointC, pOut);
-//}
 
 void CGameInstance::Release_Engine()
 {

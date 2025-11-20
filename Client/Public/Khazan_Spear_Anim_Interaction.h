@@ -26,12 +26,17 @@ public:
     _bool            Try_DamagedTS_Before(_bool isWeapon);
     _bool            Try_DamagedTS_After(_bool isWeapon);
     _bool            Try_BoxOpen(_bool isUsedSet);
+    _bool            Try_Lachryma();
 
 public:
     _bool           Is_Interaction() const { return m_isInteraction; }
     
 
 private:
+    class CClientInstance*  m_pClientInstance = { nullptr };
+    PLAYER_DATA*            m_pPlayerData = { nullptr };
+
+
     _bool           m_isInteraction = { false };
     //_bool           m_isReserve = { false };
 

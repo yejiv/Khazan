@@ -35,7 +35,8 @@ HRESULT CProjectile_Imp_MagicBall::Initialize_Clone(void* pArg)
 
 
     m_fEffect = dynamic_cast<CEffect_Prefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("MagicBall")));
-    m_fEffect->ResetChildren();
+    if (m_fEffect)
+        m_fEffect->ResetChildren();
 
     return S_OK;
 }

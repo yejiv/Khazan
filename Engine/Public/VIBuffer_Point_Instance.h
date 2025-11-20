@@ -70,6 +70,7 @@ private :
 
 	ID3D11Buffer*						m_pDebugStagingBuffer = { nullptr }; //debug
 
+    ID3D11SamplerState*                 m_pLinearWrapSampler;
 private:
 	_float3								m_vPivot = {}; 
 	POINT_INSTANCE_DESC					m_sData;

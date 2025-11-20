@@ -205,7 +205,7 @@ CONDITION CAI_Controller_Imp_Melee::GetCallbackCondition(CGameObject* pOwner, co
 
                 _bool isSleep = BB->Get_Value<_bool>(pImp->Get_Name(), "isSleep");
 
-                cout << "isSleep " << isSleep << endl;
+                //cout << "isSleep " << isSleep << endl;
 
                 _float fDist = BB->Get_Value<_float>(pImp->Get_Name(), "TargetDist");
                 _float fAttackRanage = BB->Get_Value<_float>(pImp->Get_Name(), "AttackRange");

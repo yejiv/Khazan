@@ -22,6 +22,9 @@ public:
 public:
 	HRESULT					Bind_ShaderResources(class CShader* pShader, class CTexture** pTexture, class CVIBuffer_Cube* pVIBuffer);
 
+    // Test
+    _bool                   isCameraInDecalBox();
+
 public:
 	_float					Get_Opacity() { return m_fOpacity; }
 	

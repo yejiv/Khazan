@@ -39,13 +39,13 @@ HRESULT CLevel_HeinMach::Initialize()
         //return S_OK;
         //}));
 
+    CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
+
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 
         CHECK_FAILED(Ready_Layer_UI(), E_FAIL);
 
         CHECK_FAILED(Ready_Layer_Decal(), E_FAIL);
-
-        CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
 
         CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
@@ -75,6 +75,8 @@ HRESULT CLevel_HeinMach::Initialize()
     CHECK_FAILED(Ready_Layer_Cloud(TEXT("Layer_Sky"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
     CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+
+    CHECK_FAILED(Ready_Layer_MapObject_DEST(TEXT("Layer_DEST"), TEXT(""), LEVEL::HEINMACH), E_FAIL);
 
     CClientInstance::GetInstance()->Fade_Out();
 
@@ -198,8 +200,8 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
 	}
 
 
-	//if (m_pGameInstance->Key_Down(DIK_RETURN))
-	//	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::VIPER))));
+	if (m_pGameInstance->Key_Down(DIK_RETURN))
+		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EMBARS))));
 
     if (!m_isStart)
     {
@@ -344,7 +346,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster(const _wstring& strLayerTag)
    /* if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Melee"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
         return E_FAIL;*/
-
+     
     return S_OK;
 }
 
@@ -372,9 +374,15 @@ HRESULT CLevel_HeinMach::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Open"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Breath"), 100);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Focus"), 1); 
-    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Snow"), 5); 
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Snow"), 4); 
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Snow_Once"), 20);
     m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Snow"), XMVectorSet(240.f, 6.f, 150.f, 1.f));
-    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Snow"), XMVectorSet(339.f, 8.f, 180.f, 1.f));
+    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Snow"), XMVectorSet(343.f, 8.f, 172.f, 1.f));
+    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Snow"), XMVectorSet(167.f,43.f, 209.f, 1.f));
+    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Snow"), XMVectorSet(117.f,71.5f, 260.12f, 1.f));
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("GhostKnight"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("GhostKnight_static"), 4);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("GhostKnight_static_connect"), 4);
 
     return S_OK;
 }
@@ -1203,6 +1211,24 @@ HRESULT CLevel_HeinMach::Ready_Map_Decal(const _wstring& strLayerTag, const _tch
 
     CloseHandle(hFile);
 
+    return S_OK;
+}
+
+HRESULT CLevel_HeinMach::Ready_Layer_MapObject_DEST(const _wstring& strLayerTag, const _tchar* pDataFilename, LEVEL eCurrentLevel)
+{
+    CProp_Object::PROP_OBJECT_DESC ObjectDesc = {};
+
+    ObjectDesc.eLevel = eCurrentLevel;
+
+    memcpy(ObjectDesc.szModelName, TEXT("Prototype_GameObject_Prop_Dest"), sizeof(ObjectDesc.szModelName));
+
+    MAPOBJECT_PROPERTIES PropProperties = {};
+
+    ObjectDesc.Properties = PropProperties;
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Dest"), TIME_CHANNEL::WORLD, &ObjectDesc)))
+        return E_FAIL;
     return S_OK;
 }
 

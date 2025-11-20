@@ -245,7 +245,8 @@ PS_OUT PS_MAP(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐�
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     Out.vWorld = In.vWorldPos;
-    Out.vSpecular = vMtrlSpecular;
+    Out.vSpecular.rgb = vMtrlSpecular.rgb;
+    Out.vSpecular.a = 0.f;
     //  Out.vEmissive = vMtrlEmissive;
     
     return Out;
@@ -293,7 +294,8 @@ PS_OUT PS_MAP_ICE(PS_IN In)                       // 맵 오브젝트용 픽셀 
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     Out.vWorld = In.vWorldPos;
-    Out.vSpecular = vMtrlSpecular;
+    Out.vSpecular.rgb = vMtrlSpecular.rgb;
+    Out.vSpecular.a = 0.f;
     // Out.vEmissive = Out.vDiffuse * 0.1f;
 
     return Out;
@@ -344,7 +346,8 @@ PS_OUT PS_SNOWMAP(PS_IN In)                       // 맵 오브젝트용 픽셀 
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     Out.vWorld = In.vWorldPos;
-    Out.vSpecular = vMtrlSpecular;
+    Out.vSpecular.rgb = vMtrlSpecular.rgb;
+    Out.vSpecular.a = 0.f;
     // Out.vEmissive = vMtrlEmissive;
     
     return Out;
@@ -400,7 +403,8 @@ PS_OUT PS_SNOWMAP_ICE(PS_IN In)                       // 맵 오브젝트용 픽
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     Out.vWorld = In.vWorldPos;
-    Out.vSpecular = vMtrlSpecular;
+    Out.vSpecular.rgb = vMtrlSpecular.rgb;
+    Out.vSpecular.a = 0.f;
     // Out.vEmissive = Out.vDiffuse * 0.1f;
 
     return Out;

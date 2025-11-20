@@ -343,7 +343,7 @@ _uint CKhazan_Spear_ASMachine::Parse_Category(const wstring& str)
 	else if (lower == L"attack") return CATEGORY::M_ATTACK;
 	else if (lower == L"interact") return CATEGORY::M_INTERACT;
 	else if (lower == L"damaged") return CATEGORY::M_DAMAGED;
-	else if (lower == L"hold") return CATEGORY::M_HOLD;
+	else if (lower == L"hold") return CATEGORY::M_FALL;
 	else if (lower == L"die") return CATEGORY::M_DIE;
 	else if (lower == L"lockon") return CATEGORY::M_LOCKON;
 	else if (lower == L"guard") return CATEGORY::M_GUARD;

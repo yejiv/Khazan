@@ -139,6 +139,22 @@ HRESULT CDecal::Bind_ShaderResources(CShader* pShader, class CTexture** pTexture
 	return S_OK;
 }
 
+_bool CDecal::isCameraInDecalBox()
+{
+    // 데칼 로컬로 카메라 포지션 변환
+    _float4 vCamPos = *m_pGameInstance->Get_CamPosition();
+
+    _float4 vLocalCamPos = {};
+    XMStoreFloat4(&vLocalCamPos, XMVector3TransformCoord(XMLoadFloat4(&vCamPos), m_pTransformCom->Get_WorldMatrix_Inverse()));
+
+    if (vLocalCamPos.x <= m_Desc.vScale.x * 0.5f && vLocalCamPos.x >= m_Desc.vScale.x * -0.5f &&
+        vLocalCamPos.y <= m_Desc.vScale.y * 0.5f && vLocalCamPos.y >= m_Desc.vScale.y * -0.5f &&
+        vLocalCamPos.z <= m_Desc.vScale.z * 0.5f && vLocalCamPos.z >= m_Desc.vScale.z * -0.5f)
+        return true;
+
+    return false;
+}
+
 void CDecal::Set_Desc(DECAL_DESC Desc)
 {
 	m_Desc = Desc;

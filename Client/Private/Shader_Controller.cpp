@@ -5,6 +5,8 @@
 #include "Khazan_Spear.h"
 #include "ContainerObject.h"
 #include "Creature.h"
+#include "Yetuga.h"
+#include "Body_Yetuga.h"
 
 CShader_Controller::CShader_Controller()
 	: m_pGameInstance{ CGameInstance::GetInstance() }
@@ -25,6 +27,7 @@ HRESULT CShader_Controller::Initialize()
 	//  m_iNumCascades = m_pGameInstance->Get_NumCascades();
     m_InitFogConfig = m_FogConfig;
     m_MotionBlurDesc = m_pGameInstance->Get_MotionBlurDesc();
+    m_RimLightDesc = m_pGameInstance->Get_RimLightDesc();
 
 	Ready_Level();
 	Ready_Shader();
@@ -91,7 +94,7 @@ void CShader_Controller::Ready_Shader()
 			ImGui::Begin("Shader Settings");
 
 			if (ImGui::Checkbox("Shadow", &m_isRenderShadow))
-				m_pGameInstance->Set_EnableShadow(m_isRenderShadow);;
+				m_pGameInstance->Set_EnableShadow(m_isRenderShadow);
 
 			//  if (m_isRenderShadow)
 			//  {
@@ -313,27 +316,59 @@ void CShader_Controller::Ready_Shader()
 						ImGui::NewLine();
 					}
 
-					_bool isChangedSpace{};
-
-					isChangedSpace |= ImGui::Checkbox("Fog World Space", &m_isWorldSpaceFog);
-
-					if (isChangedSpace)
-					{
-						m_pGameInstance->Set_FogNoiseWorldSpace(m_isWorldSpaceFog);
-
-						if (m_isWorldSpaceFog)
-						{
-							m_FogConfig.Noise.vSpeed = { 0.05f, 0.f };
-							m_FogConfig.Noise.vScale = { 0.05f, 0.05f };
-						}
-						else
-						{
-							m_FogConfig.Noise.vSpeed = { 0.01f, 0.f };
-							m_FogConfig.Noise.vScale = { 1.f, 1.f };
-						}
-					}
+					//  _bool isChangedSpace{};
+                    //  
+					//  isChangedSpace |= ImGui::Checkbox("Fog World Space", &m_isWorldSpaceFog);
+                    //  
+					//  if (isChangedSpace)
+					//  {
+					//  	m_pGameInstance->Set_FogNoiseWorldSpace(m_isWorldSpaceFog);
+                    //  
+					//  	if (m_isWorldSpaceFog)
+					//  	{
+					//  		m_FogConfig.Noise.vSpeed = { 0.05f, 0.f };
+					//  		m_FogConfig.Noise.vScale = { 0.05f, 0.05f };
+					//  	}
+					//  	else
+					//  	{
+					//  		m_FogConfig.Noise.vSpeed = { 0.01f, 0.f };
+					//  		m_FogConfig.Noise.vScale = { 1.f, 1.f };
+					//  	}
+					//  }
 
 					//	m_pGameInstance->Set_FogConfig(m_FogConfig);
+
+                    if (ImGui::Checkbox("Edge", &m_isEnableEdge))
+                    {
+                        CYetuga* pYetuga = dynamic_cast<CYetuga*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel),
+                            TEXT("Layer_MapObject"), 12));
+                        CBody_Yetuga* pYetugaBody = dynamic_cast<CBody_Yetuga*>(pYetuga->Find_PartObject(TEXT("Part_Body")));
+                        pYetugaBody->Set_EnableEdge(m_isEnableEdge);
+
+                        CKhazan_Spear* pKhazan = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel),
+                            TEXT("Layer_Creature_Player"), 0));
+                        CBody_Khazan_Spear* pKhazanBody = dynamic_cast<CBody_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
+                        pKhazanBody->Set_EnableEdge(m_isEnableEdge);
+                    }
+
+                    if (ImGui::Checkbox("Rim Light", &m_isEnableRimLight))
+                        m_pGameInstance->Set_EnableRimLight(m_isEnableRimLight);
+
+                    if (m_isEnableRimLight)
+                    {
+                        if (ImGui::SliderFloat("RimLight Power", &m_RimLightDesc.fPower, 0.f, 10.f, "%.3f"))
+                            m_pGameInstance->Set_RimLightDesc(m_RimLightDesc);
+
+                        if (ImGui::Checkbox("Toon Light", &m_RimLightDesc.isToonLight))
+                            m_pGameInstance->Set_RimLightDesc(m_RimLightDesc);
+
+                        if (m_RimLightDesc.isToonLight)
+                            if (ImGui::SliderFloat("RimLight Toon Threshold", &m_RimLightDesc.fToonThreshold, 0.f, 1.f, "%.3f"))
+                                m_pGameInstance->Set_RimLightDesc(m_RimLightDesc);
+
+                        if (ImGui::SliderFloat("RimLight Intensity", &m_RimLightDesc.fIntensity, 0.f, 1.f, "%.4f"))
+                            m_pGameInstance->Set_RimLightDesc(m_RimLightDesc);
+                    }
 
 					ImGui::Separator();
 				}

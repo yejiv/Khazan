@@ -26,6 +26,7 @@ protected:
 	virtual ~CUI_Text() = default;
 
 public:
+    void						Set_TextTag(_wstring wstrTextTag);
 	void						Set_Text(_wstring wstrText);
 	virtual void				Setting_Text(const TEXTBOX_DESC& pDesc);
 	void						Setting_Pivot(_int iPivotX, _int iPivotY);
