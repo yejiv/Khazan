@@ -59,7 +59,7 @@ HRESULT CAmount_Info::Render()
     if (FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix")))
         return E_FAIL;
 
-    if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_Texture", m_iTexPass)))
+    if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_Texture", 0)))
         return E_FAIL;
 
     CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
@@ -85,30 +85,13 @@ HRESULT CAmount_Info::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, 
         {
             Child->Set_Color({ 1.f, 1.f, 1.f, 0.8f });
         }
-        else if (strName == "Cul_Icon")
+        else if (strName == "Cul_Icon" || strName == "Get_Icon")
         {
-            m_pCulIcon = static_cast<CUI_Atlas_Icon*>(Child);
-            Safe_AddRef(m_pCulIcon);
-        }
-        else if (strName == "Get_Icon")
-        {
-            m_pGetIcon = static_cast<CUI_Atlas_Icon*>(Child);
-            Safe_AddRef(m_pGetIcon);
-        }
-        else if (strName == "Name")
-        {
-            m_pName = static_cast<CUI_TextBox*>(Child);
-            Safe_AddRef(m_pName);
-        }
-        else if (strName == "Cul_Value_Name")
-        {
-            m_pCulValue_Name = static_cast<CUI_TextBox*>(Child);
-            Safe_AddRef(m_pCulValue_Name);
-        }
-        else if (strName == "Get_Value_Name")
-        {
-            m_pGetValue_Name = static_cast<CUI_TextBox*>(Child);
-            Safe_AddRef(m_pGetValue_Name);
+            if (m_szName == "Gold_Info")
+               static_cast<CUI_Atlas_Icon*>(Child)->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_Item_Material_GraveStuff_UI.png",2), 2);
+            else
+                static_cast<CUI_Atlas_Icon*>(Child)->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_Item_Potion_HP_1.png", 2), 2);
+
         }
         else if (strName == "Cul_Value")
         {
@@ -122,6 +105,12 @@ HRESULT CAmount_Info::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, 
         }
       
     }
+
+    if (m_szName == "Gold_Info")
+        m_pValue = &CClientInstance::GetInstance()->Get_PlayerData().iGold;
+    else
+        m_pValue = &CClientInstance::GetInstance()->Get_PlayerData().iLachryma;
+
     return S_OK;
 }
 
@@ -133,8 +122,8 @@ HRESULT CAmount_Info::Update_Switch(void* pArg)
     m_vLocalPos = pDesc->iOffsetPos;
     Update_Transform(nullptr, m_vLocalPos);
 
-    m_pGetValue->Set_Text(to_wstring(pDesc->iGetValue));
-
+    m_pGetValue->Set_Text(IntToWstring(pDesc->iGetValue));
+    m_pCulValue->Set_Text(IntToWstring(*m_pValue));
     return S_OK;
 }
 
@@ -148,11 +137,32 @@ HRESULT CAmount_Info::Ready_Componet()
         TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), nullptr)))
         return E_FAIL;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_ItemInfo_BG"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_UI_BackGround"),
         TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr)))
         return E_FAIL;
 
     return S_OK;
+}
+
+_wstring CAmount_Info::IntToWstring(_int iValue)
+{
+    _wstring wstrValue = {};
+    if (iValue > 999)
+    {
+        _int iTemp = iValue * 0.001;
+        wstrValue = to_wstring(iTemp);
+        wstrValue += TEXT(",");
+        iTemp = iValue - (1000 * iTemp);
+        if (iTemp <= 0)
+            wstrValue += TEXT("000");
+        else
+            wstrValue += to_wstring(iTemp);
+    }
+    else
+    {
+        wstrValue = to_wstring(iValue);
+    }
+    return wstrValue;
 }
 
 CAmount_Info* CAmount_Info::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -181,13 +191,6 @@ void CAmount_Info::Free()
 {
     __super::Free();
 
-    Safe_Release(m_pCulIcon);
-    Safe_Release(m_pGetIcon);
-
-    Safe_Release(m_pName);
-
-    Safe_Release(m_pCulValue_Name);
-    Safe_Release(m_pGetValue_Name);
     Safe_Release(m_pCulValue);
     Safe_Release(m_pGetValue);
 

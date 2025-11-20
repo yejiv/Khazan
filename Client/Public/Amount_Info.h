@@ -35,19 +35,13 @@ private:
     CTexture*                   m_pTextureCom = { nullptr };
     CVIBuffer_Rect*             m_pVIBufferCom = { nullptr };
 
-    class CUI_Atlas_Icon*       m_pCulIcon = { nullptr };
-    class CUI_Atlas_Icon*       m_pGetIcon = { nullptr };
-
-    class CUI_TextBox*          m_pName = { nullptr };
-
-    class CUI_TextBox*          m_pCulValue_Name = { nullptr };
-    class CUI_TextBox*          m_pGetValue_Name = { nullptr };
     class CUI_TextBox*          m_pCulValue = { nullptr };
     class CUI_TextBox*          m_pGetValue = { nullptr };
 
+    const _uint*                m_pValue = { nullptr };
 private:
     HRESULT						Ready_Componet();
-
+    _wstring				    IntToWstring(_int iValue);
 public:
     static CAmount_Info*        Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual CGameObject*        Clone(void* pArg) override;

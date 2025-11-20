@@ -24,6 +24,8 @@
 #include "UI_Announce_Result.h"
 #include "UI_Announce_Over.h"
 
+#include "Amount_Info.h"
+
 //서브 UI
 #include "MainMenu_Deco.h"
 #include "UI_Announce_MapName.h"

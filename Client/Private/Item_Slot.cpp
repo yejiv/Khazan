@@ -12,6 +12,7 @@
 #include "UI_Slot_Smoke.h"
 #include "Amount.h"
 
+#include "Amount_Info.h"
 CItem_Slot::CItem_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Slot{ pDevice, pContext }
 {
@@ -549,6 +550,28 @@ void CItem_Slot::Render_ItemInfo()
         Desc.iEffect_Type = m_iRandomEffect_Type;
         Desc.iEffect_Value = m_iRandomEffect_Value;
         CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("ItemInfo_Weapon"), &Desc);
+    }
+
+    if (m_isSale)
+    {
+        CAmount_Info::AMOUNTINFO_DESC Desc = {};
+        if (pData->iGold > 0)
+        {
+            Desc.iGetValue = pData->iGold;
+            if (pData->iType <= 3)
+                Desc.iOffsetPos = { 780.f, 890.f };
+            else
+                Desc.iOffsetPos = { 1210.f, 910.f };
+
+            CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Gold_Info"), &Desc);
+        }
+
+        if (pData->iLachryma > 0)
+        {
+            Desc.iGetValue = pData->iLachryma;
+            Desc.iOffsetPos = { 1210.f, 765.f };
+            CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Lachryma_Info"), &Desc);
+        }
     }
 }
 
