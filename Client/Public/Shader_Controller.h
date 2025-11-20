@@ -40,7 +40,9 @@ private:
 	_bool					m_isEnableToonShade = { true };
 	_bool					m_isEnableOutline = {};
     _bool                   m_isEnableLUT = { true };
-    _bool                   m_isEnableMotionBlur = {};
+    _bool                   m_isEnableMotionBlur = { true };
+    _bool                   m_isEnableEdge = { true };
+    _bool                   m_isEnableRimLight = { true };
 
 	// SSAO
 	SSAO_CONFIG				m_SSAOConfig = {};
@@ -64,6 +66,9 @@ private:
 
     // Motion Blur
     MOTION_BLUR_DESC        m_MotionBlurDesc = {};
+
+    // Rim Light
+    RIM_LIGHT_DESC          m_RimLightDesc = {};
 
 	LEVEL                   m_eCurrentLevel = { LEVEL::TITLE };
 	_bool                   m_isSelectLevel[ENUM_CLASS(LEVEL::END)];

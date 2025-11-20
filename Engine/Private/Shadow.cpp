@@ -142,10 +142,10 @@ HRESULT CShadow::Bind_Shadow_ShaderResources(CShader* pShader)
 	if (FAILED(pShader->Bind_SRV("g_ShadowTexture", m_pShadowSRV)))
 		return E_FAIL;
 
-	if (FAILED(pShader->Bind_RawValue("g_fBias", &m_fBias, sizeof(_float))))
+	if (FAILED(pShader->Bind_RawValue("g_fShadowBias", &m_fBias, sizeof(_float))))
 		return E_FAIL;
 
-	if (FAILED(pShader->Bind_RawValue("g_fIntensity", &m_fIntensity, sizeof(_float))))
+	if (FAILED(pShader->Bind_RawValue("g_fShadowIntensity", &m_fIntensity, sizeof(_float))))
 		return E_FAIL;
 
     if (FAILED(pShader->Bind_RawValue("g_fSplitFar", &m_fSplit, sizeof(_float))))

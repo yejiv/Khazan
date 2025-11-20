@@ -1,111 +1,5 @@
 #include "Engine_Shader_Defines.hlsli"
-
-// ===== Matrix =====
-matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
-matrix g_ViewMatrixInv, g_ProjMatrixInv;
-Texture2D g_Texture;
-vector g_vCamPosition;
-
-// ===== Light =====
-vector g_vLightDir, g_vLightPos;
-float g_fRange;
-vector g_vLightDiffuse;
-vector g_vLightAmbient;
-vector g_vLightSpecular;
-float g_fToonShadeLevel = { 3.f };
-
-// ===== Material =====
-vector g_vMtrlAmbient = { 1.f, 1.f, 1.f, 1.f }, g_vMtrlSpecular = { 1.f, 1.f, 1.f, 1.f };
-
-// ===== Textures =====
-Texture2D g_DiffuseTexture, g_NormalTexture, g_DepthTexture, g_ShadeTexture, g_SpecularTexture, g_EmissiveTexture;
-Texture2D g_LightDepthTexture, g_PostSceneTexture, g_BlurXTexture, g_BloomTexture, g_FogTexture, g_OutlineTexture;
-Texture2D g_NoiseTexture, g_SSAOTexture, g_CombinedTexture, g_LUTTexture, g_VelocityTexture;
-
-// ===== Cascade Shadow =====
-int g_iTextureArrayIndex;
-uint g_iNumCascades;
-float g_Splits[4];
-matrix g_LightViewMatrices[4], g_LightProjMatrices[4];
-float2 g_vShadowMapSize;
-float g_fBias;
-float g_fShadowIntensity;
-// ===== Revised Cascade Shadow =====
-matrix g_LightViewMatrix, g_LightProjMatrix;
-Texture2D g_ShadowTexture;
-float g_fSplitFar;
-
-// ===== PCF =====
-Texture2DArray<float> g_TextureArray;
-
-// ===== SSAO =====
-float2 g_vScreenSize;
-StructuredBuffer<float3> g_Kernels;
-uint g_iNumKernels;
-float g_fRadius = { 1.f };
-float g_fIntensity = { 1.f }, g_fContrast = { 1.f };
-matrix g_CameraViewMatrix, g_CameraProjMatrix;
-
-// ===== Gaussian Blur =====
-float g_fViewportWidth, g_fViewportHeight;
-StructuredBuffer<float> g_Weights;
-float g_fNormalization;
-int g_iWeightRadius;
-
-// ===== Fog =====
-uint g_iFogMode;
-float g_fFogNear, g_fFogFar;
-float g_fFogDensity;
-float g_fFogBias;
-float4 g_vFogColor = { 1.f, 1.f, 1.f, 1.f };
-float g_fTimeDelta;
-bool g_isEnableNoise, g_isWorldFog;
-float2 g_vNoiseSpeed, g_vNoiseScale;
-float g_fNoiseStrength, g_fNoiseContrast;
-bool g_isUseHeightFog;
-float g_fFogBaseHeight, g_fFogHeightDensity;
-
-// ===== Outline =====
-float g_fOutlineAlpha = { 1.f };
-float g_fOutlineBias = { 0.01f };
-bool g_isEnableOutline;
-float g_fCameraFar = { 1000.f };
-
-// ===== Vignette =====
-float g_fVignettePower = { 1.f };
-float g_fVignetteIntensity = { 1.f };
-float3 g_vVignetteColor = { 0.f, 0.f, 0.f };
-bool g_isEnableVignette;
-
-// ===== Distortion =====
-bool g_isEnableDistortion;
-float g_fPower, g_fSpeed, g_fTime, g_fAspect;
-float3 g_vCenter;
-
-// ===== Render Flags =====
-bool g_isEnableToonShade = { true };
-bool g_isEnableShadow = { true };
-bool g_isEnableSSAO = { true };
-bool g_isEnableFog = { true };
-bool g_isEnableLUT;
-bool g_isEnableRadialBlur;
-bool g_isEnableMotionBlur;
-
-// ===== Specular =====
-float2 g_vSpecularPower;
-
-// ===== LUT =====
-float g_fLUTIntensity;
-uint g_iLUTSliceSize;
-float2 g_vLUTTextureSize;
-
-// ===== Radial Blur =====
-float2 g_vCenterUV, g_vMaskRadius;
-float g_fSampleRadius, g_fAttenuation, g_fExponent, g_fStrength;
-uint g_iNumSamples;
-
-// ===== Motion Blur =====
-matrix g_PrevViewMatrix, g_PrevProjMatrix;
+#include "Engine_Shader_Deferred_Function.hlsli"
 
 struct VS_IN
 {
@@ -177,18 +71,8 @@ PS_OUT_LIGHT PS_DIRECTIONAL(PS_IN In)
     vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vNormal = normalize(vector(vNormalDesc.xyz * 2.f - 1.f, 0.f));
     vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
-
-    vector vWorldPos;
-
-    vWorldPos.x = In.vTexcoord.x * 2.f - 1.f;
-    vWorldPos.y = In.vTexcoord.y * -2.f + 1.f;
-    vWorldPos.z = vDepthDesc.x;
-    vWorldPos.w = 1.f;
-
-    vWorldPos = vWorldPos * vDepthDesc.y;
-    vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
     
-    vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+    float4 vWorldPos = Compute_WorldPosition_FromDepth(In.vTexcoord, vDepthDesc.x, vDepthDesc.y);
     
     float fShade = max(dot(vNormal * -1.f, normalize(g_vLightDir)), 0.f);
 
@@ -225,14 +109,30 @@ PS_OUT_LIGHT PS_DIRECTIONAL(PS_IN In)
     
     float fShininess = lerp(g_vSpecularPower.x, g_vSpecularPower.y, fSpecularValue);
     
+    vector vLook = normalize(vWorldPos - g_vCamPosition);
     vector vReflect = reflect(normalize(g_vLightDir), vNormal);
-    vector vLook = vWorldPos - g_vCamPosition;
-    float fSpecularBase = max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f);
+    float fSpecularBase = max(dot(normalize(vReflect) * -1.f, vLook), 0.f);
     float fSpecular = pow(fSpecularBase, fShininess);
     
     Out.vSpecular = g_vLightSpecular * fSpecular * fSpecularValue + g_vLightSpecular * fSpecular * fSpecularIntensity * 2.f;
-    //  Out.vSpecular = float4(fSpecularValue, 0.f, fShininess, 1.f);
-    //  Out.vSpecular = float4(fSpecularValue, fSpecularValue, fSpecularValue, 1.f);
+    
+    if (0.f == vSpecularDesc.a)
+        return Out;
+    
+    // Rim Light
+    float fRim = 1.f - saturate(dot(vNormal, vLook * -1.f));
+    fRim = pow(fRim, g_fRimPower);
+    
+    // ºûÀ» µîÁö°í ÀÖÀ» ¶§
+    float fRimFactor = max(dot(g_vLightDir, vLook * -1.f), 0.f);
+    fRim *= fRimFactor;
+    
+    // Rim Toon
+    if (g_isToonLight)
+        fRim = step(g_fRimToonThreshold, fRim);
+    
+    if (g_isEnableRimLight)
+        Out.vSpecular += g_vLightDiffuse * fRim * g_fRimIntensity;
     
     return Out;
 }
@@ -245,23 +145,13 @@ PS_OUT_LIGHT PS_POINT(PS_IN In)
     vector vNormal = normalize(vector(vNormalDesc.xyz * 2.f - 1.f, 0.f));
     
     vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-    vector vWorldPos;
 
-    vWorldPos.x = In.vTexcoord.x * 2.f - 1.f;
-    vWorldPos.y = In.vTexcoord.y * -2.f + 1.f;
-    vWorldPos.z = vDepthDesc.x;
-    vWorldPos.w = 1.f;
-
-    vWorldPos = vWorldPos * vDepthDesc.y;
-    vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
-    
-    vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+    float4 vWorldPos = Compute_WorldPosition_FromDepth(In.vTexcoord, vDepthDesc.x, vDepthDesc.y);
     
     vector vLightDir = vWorldPos - g_vLightPos;
     float fDistance = length(vLightDir);
     
-    float fAtt = saturate((g_fRange - fDistance) / g_fRange);
+    float fAtt = saturate((g_fLightRange - fDistance) / g_fLightRange);
     
     float fShade = max(dot(vNormal * -1.f, normalize(g_vLightDir)), 0.f);
 
@@ -289,6 +179,7 @@ PS_OUT_LIGHT PS_POINT(PS_IN In)
     else
         Out.vShade = g_vLightDiffuse * (fLightIntensity + fAmbient) * fAtt;
 
+    
     // Specular
     vector vSpecularDesc = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
     float fSpecularValue = vSpecularDesc.g;
@@ -296,21 +187,31 @@ PS_OUT_LIGHT PS_POINT(PS_IN In)
     
     float fShininess = lerp(g_vSpecularPower.x, g_vSpecularPower.y, fSpecularValue);
     
-    vector vReflect = reflect(normalize(g_vLightDir), vNormal);
-    vector vLook = vWorldPos - g_vCamPosition;
-    float fSpecularBase = max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f);
+    vector vLook = normalize(vWorldPos - g_vCamPosition);
+    vector vReflect = reflect(normalize(vLightDir), vNormal);
+    float fSpecularBase = max(dot(normalize(vReflect) * -1.f, vLook), 0.f);
     float fSpecular = pow(fSpecularBase, fShininess);
     
-    Out.vSpecular = g_vLightSpecular * fSpecular * fSpecularValue * fAtt + g_vLightSpecular * fSpecular * fSpecularIntensity * 2.f * fAtt;
+    Out.vSpecular = g_vLightSpecular * fSpecular * fSpecularValue + g_vLightSpecular * fSpecular * fSpecularIntensity * 2.f * fAtt;
     
-    //  vector vSpecularDesc = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
-    //  
-    //  vector vReflect = reflect(normalize(vLightDir), vNormal);
-    //  vector vLook = vWorldPos - g_vCamPosition;
-    //  float fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), 50.f);
-    //  
-    //  Out.vSpecular = (g_vLightSpecular * g_vMtrlSpecular) * fSpecular * fAtt;
-     
+    if (0.f == vSpecularDesc.a)
+        return Out;
+    
+    // Rim Light
+    float fRim = 1.f - saturate(dot(vNormal, vLook * -1.f));
+    fRim = pow(fRim, g_fRimPower);
+    
+    // ºûÀ» µîÁö°í ÀÖÀ» ¶§
+    float fRimFactor = max(dot(vLightDir, vLook * -1.f), 0.f);
+    fRim *= fRimFactor;
+    
+    // Rim Toon
+    if (g_isToonLight)
+        fRim = step(g_fRimToonThreshold, fRim);
+    
+    if (g_isEnableRimLight)
+        Out.vSpecular += g_vLightDiffuse * fRim * g_fRimIntensity * fAtt;
+
     return Out;
 }
 
@@ -334,34 +235,24 @@ PS_OUT_BACKBUFFER PS_POSTSCENE(PS_IN In)
     // Pixel Depth
     vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
     
-    vector vWorldPos;
-
-    vWorldPos.x = In.vTexcoord.x * 2.f - 1.f;
-    vWorldPos.y = In.vTexcoord.y * -2.f + 1.f;
-    vWorldPos.z = vDepthDesc.x;
-    vWorldPos.w = 1.f;
+    float4 vViewPos = Compute_ViewPosition_FromDepth(In.vTexcoord, vDepthDesc.x, vDepthDesc.y);
     
-    vWorldPos = vWorldPos * vDepthDesc.y;
-    vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
-    
-    float fCameraViewDepth = vWorldPos.z;
+    float fCameraViewDepth = vViewPos.z;
 
     if (fCameraViewDepth > g_fSplitFar)
     {
-        Out.vColor = lerp(Out.vColor * g_fIntensity, Out.vColor, 1.f);
+        Out.vColor = lerp(Out.vColor * g_fShadowIntensity, Out.vColor, 1.f);
         return Out;
     }
     
-    vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+    float4 vWorldPos = Transform_ViewToWorld(vViewPos);
     
-    vector vPosition = mul(vWorldPos, g_LightViewMatrix);
-    vPosition = mul(vPosition, g_LightProjMatrix);
+    float4 vLightProjPos = Transform_WorldToProj(vWorldPos, g_LightViewMatrix, g_LightProjMatrix);
+    vLightProjPos /= vLightProjPos.w;
     
-    float2 vTexcoord;
-    vTexcoord.x = (vPosition.x / vPosition.w) * 0.5f + 0.5f;
-    vTexcoord.y = (vPosition.y / vPosition.w) * -0.5f + 0.5f;
+    float2 vTexcoord = Compute_Texcoord_FromProjPos(vLightProjPos.xy);
 
-    float fLightDepth = vPosition.z / vPosition.w;
+    float fLightDepth = vLightProjPos.z;
     
     float fShadowSum = 0.f;
     float2 vOffset;
@@ -377,13 +268,13 @@ PS_OUT_BACKBUFFER PS_POSTSCENE(PS_IN In)
             if (0.f > vSampleUV.x || 1.f < vSampleUV.x || 0.f > vSampleUV.y || 1.f < vSampleUV.y)
                 fShadowSum += 1.f;
             else
-                fShadowSum += g_ShadowTexture.SampleCmpLevelZero(ComparisonSampler, vSampleUV, fLightDepth - g_fBias);
+                fShadowSum += g_ShadowTexture.SampleCmpLevelZero(ComparisonSampler, vSampleUV, fLightDepth - g_fShadowBias);
         }
     }
     
     fShadowSum /= 9.f;
     
-    Out.vColor = lerp(Out.vColor * g_fIntensity, Out.vColor, fShadowSum);
+    Out.vColor = lerp(Out.vColor * g_fShadowIntensity, Out.vColor, fShadowSum);
     
     return Out;
 }
@@ -392,6 +283,24 @@ struct PS_OUT_BLUR_X
 {
     vector vBlurX : SV_TARGET0;
 };
+
+PS_OUT_BLUR_X PS_BRIGHTNESS(PS_IN In)
+{
+    PS_OUT_BLUR_X Out;
+
+    float4 vEmissive = g_EmissiveTexture.SampleLevel(ClampSampler, In.vTexcoord, 0.f);
+    float3 vEmissiveColor = vEmissive.rgb * vEmissive.a;
+
+    float3 vPostSceneColor = g_PostSceneTexture.SampleLevel(ClampSampler, In.vTexcoord, 0.f).rgb;
+
+    float3 vBrightColor = max(vPostSceneColor - 1.f, 0.f);
+        
+    float3 vCombinedColor = vEmissiveColor + vBrightColor;
+
+    Out.vBlurX = float4(vCombinedColor, 1.f);
+    
+    return Out;
+}
 
 PS_OUT_BLUR_X PS_BLUR_X(PS_IN In)
 {
@@ -404,25 +313,13 @@ PS_OUT_BLUR_X PS_BLUR_X(PS_IN In)
     {
         vTexcoord.x = In.vTexcoord.x + i / g_fViewportWidth;
         vTexcoord.y = In.vTexcoord.y;
+
+        float4 vBrightColor = g_BrightTexture.Sample(ClampSampler, vTexcoord);
         
-        // ê¸°ì¡´ ?˜í”Œë§?
-        float4 vEmissive = g_EmissiveTexture.SampleLevel(ClampSampler, vTexcoord, 0.f);
-        float3 vEmissiveColor = vEmissive.rgb * vEmissive.a;
-        
-        // ?¬ìŠ¤?¸ì”¬ ?˜í”Œë§?
-        float3 vPostSceneColor = g_PostSceneTexture.SampleLevel(ClampSampler, vTexcoord, 0.f).rgb;
-        
-        // ?„ê³„ì¹??˜ëŠ” ?ì—­ë§?ì¶”ì¶œ
-        float3 vBrightColor = max(vPostSceneColor - 1.f, 0.f); // ??ì»¬ëŸ¬ - ?„ê³„ì¹?
-        
-        // ?´ë??œë¸Œ + ë°ì? ?ì—­
-        float3 vCombinedColor = vEmissiveColor + vBrightColor;
-        
-        // ?©ì¹œ ì»¬ëŸ¬??ê°€ì¤‘ì¹˜ ê³?
-        vColor += g_Weights[i + g_iWeightRadius] * vCombinedColor;
+        vColor += g_Weights[i + g_iWeightRadius] * vBrightColor;
     }
 
-    Out.vBlurX = float4(vColor / g_fNormalization, 1.f);
+    Out.vBlurX = float4(vColor / g_fBlurNormalization, 1.f);
     
     return Out;
 }
@@ -439,12 +336,12 @@ PS_OUT_BACKBUFFER PS_BLUR_Y(PS_IN In)
         vTexcoord.x = In.vTexcoord.x;
         vTexcoord.y = In.vTexcoord.y + i / g_fViewportHeight;
         
-        float4 vEmissive = g_BlurXTexture.SampleLevel(ClampSampler, vTexcoord, 0.f);
+        float4 vBrightColor = g_BlurXTexture.SampleLevel(ClampSampler, vTexcoord, 0.f);
         
-        vColor += g_Weights[i + g_iWeightRadius] * vEmissive.rgb * vEmissive.a;
+        vColor += g_Weights[i + g_iWeightRadius] * vBrightColor.rgb * vBrightColor.a;
     }
 
-    Out.vColor = float4(vColor / g_fNormalization, 1.f);
+    Out.vColor = float4(vColor / g_fBlurNormalization, 1.f);
     
     return Out;
 }
@@ -470,7 +367,7 @@ PS_OUT_SSAO PS_SSAO(PS_IN In)
         discard;
     
     float3 vNormal = normalize(vNormalDesc.xyz * 2.f - 1.f);
-    float3x3 ViewMatrix = float3x3(g_CameraViewMatrix._11_12_13, g_CameraViewMatrix._21_22_23, g_CameraViewMatrix._31_32_33);
+    float3x3 ViewMatrix = float3x3(g_CamViewMatrix._11_12_13, g_CamViewMatrix._21_22_23, g_CamViewMatrix._31_32_33);
     vNormal = normalize(mul(vNormal.xyz, ViewMatrix));
     
     // TBN
@@ -480,17 +377,8 @@ PS_OUT_SSAO PS_SSAO(PS_IN In)
     
     // Depth
     vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-    vector vNDCPos;
-    
-    vNDCPos.x = In.vTexcoord.x * 2.f - 1.f;
-    vNDCPos.y = In.vTexcoord.y * -2.f + 1.f;
-    vNDCPos.z = vDepthDesc.x;
-    vNDCPos.w = 1.f;
 
-    // Projection -> View
-    vNDCPos = vNDCPos * vDepthDesc.y; // View.Z
-    float4 vViewPos = mul(vNDCPos, g_ProjMatrixInv); // ?„ìž¬ ?½ì???View Space ?„ì¹˜
+    float4 vViewPos = Compute_ViewPosition_FromDepth(In.vTexcoord, vDepthDesc.x, vDepthDesc.y);
     
     // Occlusion
     float fOcclusion = 0.f;
@@ -502,35 +390,24 @@ PS_OUT_SSAO PS_SSAO(PS_IN In)
         float3 vSampleDir = mul(g_Kernels[i], TBNMatrix);
         
         // View Sample Position
-        float3 vSamplePos = vViewPos.xyz + vSampleDir * g_fRadius; // ì£¼ë? SampleDir ë°©í–¥?¼ë¡œ Radius ë°˜ê²½ë§Œí¼ ?¨ì–´ì§??˜í”Œ ?„ì¹˜
+        float3 vSamplePos = vViewPos.xyz + vSampleDir * g_fSSAORadius;
         
         // Sample Position -> UV
-        // ?˜í”Œ ?¬ì????¬ì˜ ë³€??-> ?¬ì˜ ?‰ë ¬ ê³±í•´ì£¼ê³  w?˜ëˆ„ê¸???-1 ~ 1 => 0 ~ 1 ë²”ìœ„ë¡?ë³€??* 0.5 + 0.5
-        float4 vProjSamplePos = mul(float4(vSamplePos, 1.f), g_CameraProjMatrix);
+        float4 vProjSamplePos = mul(float4(vSamplePos, 1.f), g_CamProjMatrix);
         vProjSamplePos /= vProjSamplePos.w;
-        float2 vSampleTexcoord;
-        vSampleTexcoord.x = vProjSamplePos.x * 0.5f + 0.5f;
-        vSampleTexcoord.y = vProjSamplePos.y * -0.5f + 0.5f;
+
+        float2 vSampleTexcoord = Compute_Texcoord_FromProjPos(vProjSamplePos.xy);
         
-        // ?˜í”Œ ê¹Šì´ ë¹„êµ
-        float fSampleDepth = g_DepthTexture.Sample(PointSampler, vSampleTexcoord).y; // ?˜í”Œ ?½ì?(ì£¼ë? ?½ì?)??ê¹Šì´
-        
-        // ?˜í”Œ ê¹Šì´ê°€ ?„ìž¬ ?½ì???ê¹Šì´ë³´ë‹¤ ???¬ë©´ ì°¨íê°€ ?†ìŒ, ?˜í”Œ ê¹Šì´ê°€ ?„ìž¬ ?½ì???ê¹Šì´ë³´ë‹¤ ???‘ìœ¼ë©?ê·?ë°©í–¥???¤ë¥¸ ?¤ë¸Œ?íŠ¸ê°€ ?ˆì–´???œì•¼ê°€ ë§‰ížŒ ê²?
-        
-        // Smoothstep -> ê°‘ìžê¸?0 ~ 1 ???˜ê²Œ ê²½ê³„ë¥?ë¶€?œëŸ½ê²?ë§Œë“¤?´ì¤Œ
-        // ë°˜ê²½ / ê¹Šì´ ì°¨ì´ -> ë©€?˜ë¡ ê°’ì´ ?‘ì•„ì§?
-        // => ê¹Šì´ ì°¨ì´ê°€ ?¬ë©´ ì°¨í???í–¥ ?ê²Œ, ê°€ê¹Œìš°ë©??í–¥ ?¬ê²Œ ?´ì„œ ë¶€?œëŸ½ê²?ë§Œë“¤?´ì¤Œ
-        float fRangeLerp = smoothstep(0.f, 1.f, g_fRadius / abs(vViewPos.z - fSampleDepth));
-        
-        // ì°¨í???„ì 
+        float fSampleDepth = g_DepthTexture.Sample(PointSampler, vSampleTexcoord).y;
+
+        float fRangeLerp = smoothstep(0.f, 1.f, g_fSSAORadius / abs(vViewPos.z - fSampleDepth));
+
         fOcclusion += (vSamplePos.z >= fSampleDepth ? 1.f : 0.f) * fRangeLerp;
     }
 
-    // ?•ê·œ??ë°?ë³´ì • -> ë§‰íž˜ ë¹„ìœ¨ -> ë¹›ì´ ?¿ëŠ” ?•ë„ë¡?ë°˜ì „
-    // Occlusion = ë§‰ížŒ ë°©í–¥????
     fOcclusion = 1.f - (fOcclusion / (float)g_iNumKernels);
     
-    float fAO = pow(saturate(fOcclusion * g_fIntensity), g_fContrast);
+    float fAO = pow(saturate(fOcclusion * g_fSSAOIntensity), g_fSSAOContrast);
     
     Out.vSSAO = float4(fAO, fAO, fAO, 1.f);
     
@@ -562,7 +439,7 @@ PS_OUT_BACKBUFFER PS_COMBINED(PS_IN In)
         vector vOutlineDesc = g_OutlineTexture.Sample(DefaultSampler, In.vTexcoord);
         vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
 
-        // 0~1 ë¹„êµ
+        // 0 ~ 1
         bool isOutline = (vDepthDesc.x >= 1.f - g_fOutlineBias && vOutlineDesc.w <= 1.f);
 
         if (isOutline)
@@ -575,7 +452,6 @@ PS_OUT_BACKBUFFER PS_COMBINED(PS_IN In)
         float fDistance = length(In.vTexcoord - 0.5f);
         float fVignetteFactor = 1.f - pow(fDistance, g_fVignettePower) * g_fVignetteIntensity;
 
-        //  vFinalColor.rgb = vFinalColor.rgb * fVignetteFactor * g_vVignetteColor + vFinalColor.rgb * fVignetteFactor;
         vFinalColor.rgb = lerp(g_vVignetteColor, vFinalColor.rgb, fVignetteFactor);
         vFinalColor.a = vPostSceneDesc.a;
     }
@@ -591,22 +467,12 @@ PS_OUT_BACKBUFFER PS_FOG(PS_IN In)
     
     vector vPostSceneDesc = g_PostSceneTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-    vector vWorldPos;
 
-    vWorldPos.x = In.vTexcoord.x * 2.f - 1.f;
-    vWorldPos.y = In.vTexcoord.y * -2.f + 1.f;
-    vWorldPos.z = vDepthDesc.x;
-    vWorldPos.w = 1.f;
+    float4 vViewPos = Compute_ViewPosition_FromDepth(In.vTexcoord, vDepthDesc.x, vDepthDesc.y);
+    float fViewZ = vViewPos.z;
     
-    // View Space
-    vWorldPos = vWorldPos * vDepthDesc.y;   // View Z
-    vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
-    float fViewZ = vWorldPos.z;
+    float4 vWorldPos = Transform_ViewToWorld(vViewPos);
     
-    // World Space
-    vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
-
     // Linear
     float fLinear = saturate((fViewZ - g_fFogNear) / (g_fFogFar - g_fFogNear));
     
@@ -628,22 +494,13 @@ PS_OUT_BACKBUFFER PS_FOG(PS_IN In)
     else if (2 == g_iFogMode)
         fFogFactor = fExpSquare;
 
-    if (true == g_isEnableNoise)
+    if (true == g_isEnableFogNoise)
     {
         float2 vNoiseTexcoord;
         
-        if (true == g_isWorldFog)
-        {
-            vNoiseTexcoord = vWorldPos.xz * g_vNoiseScale;
-            vNoiseTexcoord.x += g_fTimeDelta * g_vNoiseSpeed.x;
-            vNoiseTexcoord.y += g_fTimeDelta * g_vNoiseSpeed.y;
-        }
-        else
-        {
-            vNoiseTexcoord = In.vTexcoord * g_vNoiseScale;
-            vNoiseTexcoord.x += g_fTimeDelta * g_vNoiseSpeed.x;
-            vNoiseTexcoord.y += g_fTimeDelta * g_vNoiseSpeed.y;
-        }
+        vNoiseTexcoord = In.vTexcoord * g_vNoiseScale;
+        vNoiseTexcoord.x += g_fTimeDelta * g_vNoiseSpeed.x;
+        vNoiseTexcoord.y += g_fTimeDelta * g_vNoiseSpeed.y;
         
         float fNoise = g_NoiseTexture.Sample(DefaultSampler, vNoiseTexcoord).r;
         fNoise = pow(fNoise, g_fNoiseContrast);
@@ -681,29 +538,23 @@ PS_OUT_BACKBUFFER PS_DISTORTION(PS_IN In)
     if (g_isEnableDistortion)
     {
         float2 vNoiseUV = In.vTexcoord;
-        vNoiseUV += g_fTime * g_fSpeed;
+        vNoiseUV += g_fTimeDelta * g_fDistortionSpeed;
         
         float2 vNoise = g_NoiseTexture.Sample(DefaultSampler, vNoiseUV).rg * 2.f - 1.f;
 
-        float4 vCenterPos;
-        
-        vCenterPos = mul(float4(g_vCenter, 1.f), g_CameraViewMatrix);
-        vCenterPos = mul(vCenterPos, g_CameraProjMatrix);
-        vCenterPos /= vCenterPos.w; // -1 ~ 1
-        
-        float2 vCenterUV;
-        vCenterUV.x = vCenterPos.x * 0.5f + 0.5f;
-        vCenterUV.y = vCenterPos.y * -0.5f + 0.5f;
+        float4 vCenterPos = Transform_WorldToProj(float4(g_vWorldCenterPos, 1.f), g_CamViewMatrix, g_CamProjMatrix);
 
+        float2 vCenterUV = Compute_Texcoord_FromProjPos(vCenterPos.xy);
+        
         float2 vDir = In.vTexcoord - vCenterUV;
 
         vDir.x *= g_fAspect;
         
-        float fDistance = length(vDir) / g_fRange;
+        float fDistance = length(vDir) / g_fDistortionRange;
 
         float fMask = pow(saturate(1.f - fDistance), 2.f);
         
-        float2 vDistortionUV = In.vTexcoord + vNoise * g_fPower * fMask;
+        float2 vDistortionUV = In.vTexcoord + vNoise * g_fDistortionPower * fMask;
         vFinalColor = g_CombinedTexture.Sample(DefaultSampler, vDistortionUV);
     }
     else
@@ -779,28 +630,28 @@ PS_OUT_BACKBUFFER PS_RADIAL_BLUR(PS_IN In)
 
     if (true == g_isEnableRadialBlur)
     {
-        float2 vDir = normalize(g_vCenterUV - In.vTexcoord);
+        float2 vDir = normalize(g_vRadialBlurCenterUV - In.vTexcoord);
     
         // Mask
-        float fDist = length(In.vTexcoord - g_vCenterUV);
-        float fMask = smoothstep(g_vMaskRadius.x, g_vMaskRadius.y, fDist);
+        float fDist = length(In.vTexcoord - g_vRadialBlurCenterUV);
+        float fMask = smoothstep(g_vRadialBlurMaskRadius.x, g_vRadialBlurMaskRadius.y, fDist);
     
         // °î¼± °­È­
-        fMask = pow(fMask, g_fExponent);
+        fMask = pow(fMask, g_fRadialBlurExp);
     
         float3 vColor = float3(0.f, 0.f, 0.f);
         float fWeightAcc = 0.f;
     
-        for (uint i = 0; i < g_iNumSamples; ++i)
+        for (uint i = 0; i < g_iNumRadialBlurSamples; ++i)
         {
-            float fRatio = (float) (i + 1) / (float) g_iNumSamples;
-            float2 vSampleUV = In.vTexcoord + vDir * fRatio * g_fSampleRadius;
-            float fWeight = pow(fRatio, g_fAttenuation);
+            float fRatio = (float) (i + 1) / (float) g_iNumRadialBlurSamples;
+            float2 vSampleUV = In.vTexcoord + vDir * fRatio * g_fRadialBlurRadius;
+            float fWeight = pow(fRatio, g_fRadialBlurAtt);
             vColor += g_CombinedTexture.Sample(ClampSampler, vSampleUV) * fWeight;
             fWeightAcc += fWeight;
         }
 
-        vFinalColor = lerp(vSceneColor, vColor / max(fWeightAcc, 1e-6), fMask * g_fStrength); // 10^-6
+        vFinalColor = lerp(vSceneColor, vColor / max(fWeightAcc, 1e-6), fMask * g_fRadialBlurStrength); // 10^-6
     }
     else
     {
@@ -833,22 +684,22 @@ PS_OUT_BACKBUFFER PS_MOTION_BLUR(PS_IN In)
         float fSampleCount = 0.f;
     
         [loop]
-        for (uint i = 0; i < g_iNumSamples; ++i)
+        for (uint i = 0; i < g_iNumMotionBlurSamples; ++i)
         {
             // Ratio, Sample UV, Depth ºñ±³ -> °æ°è¼± Ã³¸®, »ö ´©Àû, »ùÇÃ °³¼ö ´©Àû
-            float fRatio = (float) i / (float) (g_iNumSamples - 1);
+            float fRatio = (float) i / (float) (g_iNumMotionBlurSamples - 1);
             float2 vSampleUV = In.vTexcoord - vMotionVector * fRatio;
         
             float fSampleDepth = g_DepthTexture.Sample(PointSampler, vSampleUV).x;
         
-            //  if (abs(fSampleDepth - fCurDepth) > g_fBias)
+            //  if (abs(fSampleDepth - fCurDepth) > g_fMotionBlurBias)
             //      break;
         
             vFinalColor += g_CombinedTexture.Sample(ClampSampler, vSampleUV).rgb;
             fSampleCount += 1.f;
         }
 
-        vFinalColor = lerp(vSceneColor, vFinalColor / max(fSampleCount, 1e-6), g_fStrength);
+        vFinalColor = lerp(vSceneColor, vFinalColor / max(fSampleCount, 1e-6), g_fMotionBlurStrength);
     }
     else
         vFinalColor = vSceneColor;
@@ -870,28 +721,14 @@ PS_OUT_BACKBUFFER PS_STATIC_VELOCITY(PS_IN In)
         Out.vColor = float4(0.f, 0.f, 0.f, 1.f);
         return Out;
     }
-    
-    // Depth -> World Position
-    float4 vWorldPos;
 
-    vWorldPos.x = In.vTexcoord.x * 2.f - 1.f;
-    vWorldPos.y = In.vTexcoord.y * -2.f + 1.f;
-    vWorldPos.z = vDepthDesc.x;
-    vWorldPos.w = 1.f;
-
-    vWorldPos = vWorldPos * vDepthDesc.y;
-    vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
-    vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+    float4 vWorldPos = Compute_WorldPosition_FromDepth(In.vTexcoord, vDepthDesc.x, vDepthDesc.y);
     
     // ¿ùµå Æ÷Áö¼Ç -> ÀÌÀü ºä Åõ¿µ Çà·Ä ½ºÆäÀÌ½º·Î º¯È¯
-    float4 vPrevPos = mul(vWorldPos, g_PrevViewMatrix);
-    vPrevPos = mul(vPrevPos, g_PrevProjMatrix);
-    vPrevPos /= vPrevPos.w;
+    float4 vPrevPos = Transform_WorldToProj(vWorldPos, g_PrevViewMatrix, g_PrevProjMatrix);
     
     // Prev UV = Texcoord ¹üÀ§·Î º¯È¯ (-1 ~ 1 -> 0 ~ 1)
-    float2 vPrevUV;
-    vPrevUV.x = vPrevPos.x * 0.5f + 0.5f;
-    vPrevUV.y = vPrevPos.y * -0.5f + 0.5f;
+    float2 vPrevUV = Compute_Texcoord_FromProjPos(vPrevPos.xy);
     
     // ÇöÀç ÇÁ·¹ÀÓÀÇ UV ÁÂÇ¥¿ÍÀÇ Â÷ÀÌ °è»ê
     float2 vCurUV = In.vTexcoord;
@@ -1067,5 +904,16 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_STATIC_VELOCITY();
+    }
+
+    pass Brightness // 15
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_BRIGHTNESS();
     }
 }

@@ -6,7 +6,7 @@
 #include "MeshTrail.h"
 #include "Spear_Khazan_Spear.h"
 #include "Damage_Text.h"
-
+#include "Target_BrutalAttack.h"
 
 
 CBody_Khazan_Spear::CBody_Khazan_Spear(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -143,6 +143,17 @@ HRESULT CBody_Khazan_Spear::Render()
 
     _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
 
+    if (FAILED(m_pShaderCom->Bind_Bool("g_isEnableEdge", &m_isEnableEdge)))
+        return E_FAIL;
+
+    _float fEdgeIntensity = 0.3f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    _float fShadeIntensity = 0.2f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &fShadeIntensity, sizeof(_float))))
+        return E_FAIL;
+
     for (size_t i = 0; i < iNumMeshes; i++)
     {
         //m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
@@ -239,6 +250,7 @@ void CBody_Khazan_Spear::Render_Part(CModel* pModel)
         pModel->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
         pModel->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
         pModel->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR, 0);
+        pModel->Bind_Materials(m_pShaderCom, "g_MetalnessTexture", i, aiTextureType_METALNESS, 0);
 
         // 마스터의 본을 자동으로 사용
         if (FAILED(pModel->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
@@ -293,9 +305,11 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
         if (m_isSpearTipActive)
         {
             CCreature* pMonster = static_cast<CCreature*>(pDesc->pGameObject);
-            if (pMonster == nullptr)
+            if (pMonster == nullptr  || pMonster->Get_CurrentHP() < 0.f)
                 return;
-            pMonster->Take_Damage(m_pPlayerData->fDamage , static_cast<HITREACTION>(*m_pHitReaction), this);
+
+            pMonster->Take_Damage(m_pPlayerData->fBonusDamage, static_cast<HITREACTION>(*m_pHitReaction), this);
+            //pMonster->Take_Damage(m_pPlayerData->fDamage , static_cast<HITREACTION>(*m_pHitReaction), nullptr);
             pMonster->KnockBack(
                 XMVector4Normalize(static_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")))->Get_State(STATE::POSITION) 
                 - m_pParentTransform->Get_State(STATE::POSITION))
@@ -304,6 +318,13 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
             CTransform* MonsterTransform = dynamic_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")));  
             XMStoreFloat4(&m_fCollisionPos, MonsterTransform->Get_State(STATE::POSITION));
         }
+
+        /*  탐지 */
+        CGameObject* pObj = pDesc->pGameObject;
+        if (!pObj|| pObj->Get_IsDead()) return;
+        if (pObj && (find(m_CollMonsters.begin(), m_CollMonsters.end(), pObj) == m_CollMonsters.end()))
+            m_CollMonsters.push_back(pObj);
+
     }
 
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK))
@@ -314,8 +335,9 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
             *m_pParentStatus |= CKhazan_Spear::GUARD;
 
             /* 저스트 가드 타이밍 */
-            if (m_fJustGuardTime.x <= m_fJustGuardTime.y) {
+            if (!m_isJustGuardOnce && m_fJustGuardTime.x <= m_fJustGuardTime.y) {
                 *m_pParentStatus |= CKhazan_Spear::JUST_GUARD;
+                m_isJustGuardOnce = true;
             }
 
             /* 가드후 충돌되면 충돌된 지점 봐라보게*/
@@ -333,7 +355,140 @@ void CBody_Khazan_Spear::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjec
 
 void CBody_Khazan_Spear::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 {
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER)) {
+        CGameObject* pObj = pDesc->pGameObject;
 
+        if (!pObj) return;
+
+        auto it = remove(m_CollMonsters.begin(), m_CollMonsters.end(), pObj);
+        if (it != m_CollMonsters.end()) m_CollMonsters.erase(it, m_CollMonsters.end());
+
+        if (m_CollMonsters.empty())
+        {
+            if (Has_Status(CKhazan_Spear::BRUTAL_BEGIN))
+            {
+                if (m_pBrutalAttack && !m_pBrutalAttack->Get_IsDead()) {
+                    m_pBrutalAttack->Off_BrutalAttack();
+                   // Safe_Release(m_pBrutalAttack);
+                }
+
+               // if (m_pBrutalmonster)
+                    //Safe_Release(m_pBrutalmonster);
+                Remove_Status(CKhazan_Spear::BRUTAL_BEGIN | CKhazan_Spear::BRUTAL_READY | CKhazan_Spear::BRUTAL_SUCCESS);
+            }
+        }
+    }
+}
+
+void CBody_Khazan_Spear::Search_BrutalTarget(_float fTimeDelta)
+{
+    /* 브루탈 개체는 하나만 */
+    if (Has_Status(CKhazan_Spear::BRUTAL_BEGIN))
+        return;
+
+    m_fOptimizationSearchTime.x += fTimeDelta;
+
+    if (m_fOptimizationSearchTime.x < m_fOptimizationSearchTime.y)
+        return;
+
+    m_fOptimizationSearchTime.x = 0.f;
+
+    _vector vPlayerPos = XMVectorSet(m_pParentMatrix->_41, m_pParentMatrix->_42, m_pParentMatrix->_43, 1.f);
+
+    for (CGameObject* monster : m_CollMonsters)
+    {
+        if (!monster || monster->Get_IsDead())
+            return;
+
+        _vector vMonsterPos = monster->Get_Position();
+
+        _vector  vDiff = vPlayerPos - vMonsterPos;
+        _float  fDistSq = XMVectorGetX(XMVector3LengthSq(vDiff));
+
+        /* 일정 범위에 다가가면  */
+        if (fDistSq < 5.f * 5.f)
+        {
+
+            /* 후방 */
+            _float fDot = XMVectorGetX(XMVector3Dot(XMVector3Normalize(monster->Get_Look()), XMVector3Normalize(vDiff)));
+            if (fDot < 0.f)
+            {
+
+                m_pBrutalAttack = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
+                m_pBrutalAttack->Setting_BrutalAttack(reinterpret_cast<const _float4*>(&monster->Get_Transform()->Get_WorldMatrixPtr()->_41), 0.f, { 0.f, 8.f });
+                m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pBrutalAttack);
+
+                m_pBrutalmonster = monster;
+                m_isBackBrutal = true;
+                m_isGroggyBrutal = false;
+
+                Add_Status(CKhazan_Spear::BRUTAL_BEGIN);
+
+                return;
+            }
+
+            /* 몬스터 그로기 상태*/
+            CCreature* pCreatureMoster = static_cast<CCreature*>(monster);
+            if (pCreatureMoster->Get_CurrentStamina() < 5.f)
+            {
+                m_pBrutalAttack = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
+                m_pBrutalAttack->Setting_BrutalAttack(reinterpret_cast<const _float4*>(&monster->Get_Transform()->Get_WorldMatrixPtr()->_41), 5.f, { 0.f,8.f });
+                m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pBrutalAttack);
+                m_pBrutalmonster = monster;
+
+                m_isBackBrutal = false;
+                m_isGroggyBrutal = true;
+
+                Add_Status(CKhazan_Spear::BRUTAL_BEGIN);
+
+                return;
+            }
+
+        }
+    }
+}
+
+_bool CBody_Khazan_Spear::Check_BrutalAttack(_float fTimeDelta)
+{
+    /* 범위 내에 브루탈 가능 개체가 없으면  */
+    if (!Has_Status(CKhazan_Spear::BRUTAL_BEGIN))
+        return false;
+
+    /* 브루탈 어택 성공 후 아이콘 지우기 */
+    if (Has_Status(CKhazan_Spear::BRUTAL_SUCCESS))
+    {
+        Remove_Status(CKhazan_Spear::BRUTAL_BEGIN | CKhazan_Spear::BRUTAL_READY | CKhazan_Spear::BRUTAL_SUCCESS);
+        m_pBrutalAttack->Off_BrutalAttack();
+        return false;
+    }
+
+    /* 몬스터가 죽으면  */
+    if (!m_pBrutalmonster || m_pBrutalmonster->Get_IsDead()) {
+        Remove_Status(CKhazan_Spear::BRUTAL_BEGIN | CKhazan_Spear::BRUTAL_READY | CKhazan_Spear::BRUTAL_SUCCESS);
+        m_pBrutalAttack->Off_BrutalAttack();
+        return false;
+    }
+
+    /* 브루탈 가능 시간이 다 되면 */
+    if (m_pBrutalAttack->Get_IsDead()) {
+        Remove_Status(CKhazan_Spear::BRUTAL_BEGIN | CKhazan_Spear::BRUTAL_READY | CKhazan_Spear::BRUTAL_SUCCESS);
+        return false;
+    }
+
+    /* 브루탈 가능 범위인지 아닌지 체크 */
+    _float  fDistSq = XMVectorGetX(XMVector3LengthSq(XMVectorSet(m_pParentMatrix->_41, m_pParentMatrix->_42, m_pParentMatrix->_43, 1.f) - m_pBrutalmonster->Get_Position()));
+    if (fDistSq < 4.f * 4.f) {
+        if (!Has_Status(CKhazan_Spear::BRUTAL_READY)) {
+            Add_Status(CKhazan_Spear::BRUTAL_READY);
+            return true;
+        }
+    }
+    else if (fDistSq > 4.f * 4.f + 1.f)
+        if (Has_Status(CKhazan_Spear::BRUTAL_READY))
+            Remove_Status(CKhazan_Spear::BRUTAL_READY);
+
+
+    return false;
 }
 
 void CBody_Khazan_Spear::Update_Collider(_float fTimeDelta)
@@ -353,6 +508,11 @@ void CBody_Khazan_Spear::Update_Collider(_float fTimeDelta)
     m_pBodyCom_SpearPole->Update(fTimeDelta, matWorld_SpearPole, vOutQuat2, vOutPos2);
     XMStoreFloat4x4(&m_pSpearPole_MatrixW, matWorld_SpearPole);
     XMStoreFloat3(reinterpret_cast<_float3*>(&m_pSpearPole_MatrixW._41), vOutPos2);
+
+
+    m_pBodyCom_Search->Sync_Update(matParent);
+
+
 }
 
 void CBody_Khazan_Spear::Check_Guarding(_float fTimeDelta)
@@ -364,11 +524,11 @@ void CBody_Khazan_Spear::Check_Guarding(_float fTimeDelta)
 
         m_isSpearPoleActive = true;
         m_fJustGuardTime.x = 0.f;
+        m_isJustGuardOnce = false;
     }
     if (*m_pIsGuarding == false && m_isSpearPoleActive) {
 
         m_isSpearPoleActive = false;
-        m_fJustGuardTime.x = 0.f;
     }
 
 
@@ -489,6 +649,7 @@ void CBody_Khazan_Spear::Start_GuardRotation(_float3 vContactPoint)
 
 }
 
+
 HRESULT CBody_Khazan_Spear::Ready_Components()
 {
     LEVEL eCurrentLevel = CClientInstance::GetInstance()->Get_CurrLevel();
@@ -569,15 +730,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
         _matrix W_withOffset = XMMatrixTranslation(-1.f, 0.f, 1.f) * W;
         _vector V_FinalPosition = W_withOffset.r[3];
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Stamp"), V_FinalPosition); }
-
-        //EffectID_SpearWind = m_pGameInstance->Spawn_Effect(
-        //    ENUM_CLASS(LEVEL::HEINMACH),
-        //    TEXT("Blust5"),
-        //    XMQuaternionIdentity(),  
-        //    V_FinalPosition  
-        //);
-    
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Stamp"), V_FinalPosition); }   
     );
 
     /*보름달 트레일*/
@@ -674,10 +827,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 
    // m_pModelCom->Register_Event("LanternOn", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {*m_isEquipLantern = true; });
    // m_pModelCom->Register_Event("LanternOff", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { *m_isEquipLantern = false;  });
-
-
-
-
+     
     return S_OK;
 }
 
@@ -685,7 +835,7 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
 {
     CBody::BODY_BOXSHAPE_DESC TipBoxDesc{};
     {
-        TipBoxDesc.vExtent = _float3(0.9f, 0.6f, 0.6f);
+        TipBoxDesc.vExtent = _float3(1.2f, 0.7f, 0.7f);
         TipBoxDesc.eMotion = EMotionType::Kinematic;
         TipBoxDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
         TipBoxDesc.eShapeType = SHAPE::BOX;
@@ -696,12 +846,12 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
         XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_pSpearTip1_MatrixW));
         TipBoxDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
         TipBoxDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
-        TipBoxDesc.vShapeOffset = _float3(-0.45f, 0.f, 0.f);
+        TipBoxDesc.vShapeOffset = _float3(-0.6f, 0.f, 0.f);
         m_tCollisionDesc.pGameObject = this;
         TipBoxDesc.pCollisionDesc = &m_tCollisionDesc;
 
         DAMAGEINFO DamageInfo = {};
-        DamageInfo.fDamage = 10.f;
+        DamageInfo.fDamage = 50.f;
         DamageInfo.eHitreaction = HITREACTION::KNOCKBACK_NORMAL;
         TipBoxDesc.pCollisionDesc->pInfo = &DamageInfo;
 
@@ -733,6 +883,32 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
             return E_FAIL; 
     }
 
+    CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
+    BodyDesc.fRadius = 12.f;
+    BodyDesc.bIsTrigger = true;
+    BodyDesc.bStartActive = true;
+    BodyDesc.eMotion = EMotionType::Kinematic;
+    BodyDesc.eQuality = EMotionQuality::Discrete;
+    BodyDesc.eShapeType = SHAPE::SPHERE;
+    //BodyDesc.fFriction = 0.f;
+    //BodyDesc.fMass = 0.0f;
+    //BodyDesc.fRestitution = 0.0f;
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_SEARCH);
+    // BodyDesc.fGravity = 0.f;
+
+    XMStoreFloat3(&BodyDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
+    XMStoreFloat4(&BodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
+    BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+    m_tSearchCollisionDesc.pGameObject = this;
+    m_tSearchCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_SEARCH);
+    m_tSearchCollisionDesc.strName = TEXT("Player_Search");
+    //pCollDesc.pInfo = ?? // 작성하기
+    BodyDesc.pCollisionDesc = &m_tSearchCollisionDesc;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+        TEXT("Com_Body3"), reinterpret_cast<CComponent**>(&m_pBodyCom_Search), &BodyDesc)))
+        return E_FAIL;
+
     //m_pBodyCom_SpearTip1->Collision_Active(false);
     //m_pBodyCom_SpearPole->Collision_Active(false);
     
@@ -760,153 +936,6 @@ void CBody_Khazan_Spear::FX_Trail()
     _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
     m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
 }
-
-//
-//void CBody_Khazan_Spear::FX_FastAtk01_Trail()
-//{
-//    _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-//    _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
-//    m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
-//
-//    //테스트용............
-//    _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-//
-//    _vector S, Q, T;
-//
-//    if (!XMMatrixDecompose(&S, &Q, &T, W))
-//    {
-//
-//        XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
-//
-//
-//        _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
-//        _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
-//        _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
-//
-//
-//        _matrix RotationMatrix(
-//            r0,
-//            r1,
-//            r2,
-//            XMVectorSet(0.f, 0.f, 0.f, 1.f)
-//        );
-//
-//        Q = XMQuaternionRotationMatrix(RotationMatrix);
-//    }
-//    m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), EffectID_SpearWind, Q, W.r[3]);
-//}
-//
-//void CBody_Khazan_Spear::FX_FastAtk02_Trail()
-//{
-//    _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-//    _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
-//    m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
-//
-//    //테스트용............
-//    _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-//
-//    _vector S, Q, T;
-//
-//    if (!XMMatrixDecompose(&S, &Q, &T, W))
-//    {
-//
-//        XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
-//
-//
-//        _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
-//        _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
-//        _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
-//
-//
-//        _matrix RotationMatrix(
-//            r0,
-//            r1,
-//            r2,
-//            XMVectorSet(0.f, 0.f, 0.f, 1.f)
-//        );
-//
-//        Q = XMQuaternionRotationMatrix(RotationMatrix);
-//    }
-//    m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), EffectID_SpearWind, Q, W.r[3]);
-//}
-//
-//void CBody_Khazan_Spear::FX_FastAtk03_Trail()
-//{
-//    _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-//    _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
-//    m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
-//
-//    //테스트용............
-//    _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-//
-//    _vector S, Q, T;
-//
-//    if (!XMMatrixDecompose(&S, &Q, &T, W))
-//    {
-//
-//        XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
-//
-//
-//        _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
-//        _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
-//        _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
-//
-//
-//        _matrix RotationMatrix(
-//            r0,
-//            r1,
-//            r2,
-//            XMVectorSet(0.f, 0.f, 0.f, 1.f)
-//        );
-//
-//        Q = XMQuaternionRotationMatrix(RotationMatrix);
-//    }
-//   m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), EffectID_SpearWind, Q, W.r[3]);
-//}
-//
-//void CBody_Khazan_Spear::FX_FastAtk_SpawnWind()
-//{
-//    _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-//
-//    _vector S, Q, T;
-//
-//    if (!XMMatrixDecompose(&S, &Q, &T, W))
-//    {
-//
-//        XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
-//
-//
-//        _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
-//        _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
-//        _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
-//
-//
-//        _matrix RotationMatrix(
-//            r0,
-//            r1,
-//            r2,
-//            XMVectorSet(0.f, 0.f, 0.f, 1.f)
-//        );
-//
-//        Q = XMQuaternionRotationMatrix(RotationMatrix);
-//    }
-//    EffectID_SpearWind = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), Q, W.r[3]); 
-//
-//    // Distortion
-//    DISTORTION_DESC Desc{};
-//    _vector vCenterPos = m_pParentTransform->Get_WorldMatrix().r[3];
-//    _float fPosY = XMVectorGetY(vCenterPos);
-//    _float fOffset = 2.f;
-//    vCenterPos = XMVectorSetY(vCenterPos, fPosY + fOffset);
-//    XMStoreFloat3(&Desc.vCenter, vCenterPos);
-//    Desc.fRange = 1.f;
-//    Desc.fPower = 0.01f;
-//    Desc.fDuration = 0.5f;
-//    Desc.vFadeTime = _float2(0.3f, 0.1f);
-//    Desc.fSpeed = 1.f;
-//    Desc.iNoiseIndex = 4;
-//    m_pGameInstance->Start_Distortion(Desc);
-//}
 
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust1(_fvector pos)
 {
@@ -1179,6 +1208,15 @@ CGameObject* CBody_Khazan_Spear::Clone(void* pArg)
 void CBody_Khazan_Spear::Free()
 {
     __super::Free();
+
+    Safe_Release(m_pBodyCom_Search);
+    Safe_Release(m_pBodyCom_SpearPole);
+    Safe_Release(m_pBodyCom_SpearTip1);
+
+    if (m_pBrutalAttack)
+        Safe_Release(m_pBrutalAttack);
+    if (m_pBrutalmonster)
+        Safe_Release(m_pBrutalmonster);
 
     Safe_Release(m_pSpear);
     Safe_Release(m_pClientInstance);

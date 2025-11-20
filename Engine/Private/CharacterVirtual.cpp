@@ -209,7 +209,7 @@ void CCharacterVirtual::StepFixed(_float fTimeDelta)
 
     if (!m_pCharVir->IsSupported())
     {
-        m_vVelocity += m_vGravity * fTimeDelta;
+        m_vVelocity += m_vGravity * fTimeDelta * 1.3f;
 
         const _float maxFallSpeed = -50.0f;
         if (m_vVelocity.GetY() < maxFallSpeed)

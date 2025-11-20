@@ -53,8 +53,6 @@ void CEffect_Prefab::Priority_Update(_float fTimeDelta)
         EFFECT_EVENT track = m_eEventTracks[i];
         if (!m_bEventTriggered[i] && m_fCurTime >= track.fStartTime)
         {
-            if (track.fStartTime == 1.f)
-                int a = 0;
             switch (track.eEventType)
             {
             case EffectEventType::ACTIVATE:

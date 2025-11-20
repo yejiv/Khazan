@@ -73,7 +73,8 @@ void CProp_Object::Late_Update(_float fTimeDelta)
     */
     if (false == m_isCheckRender)
     {
-        m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
+        if (m_pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(STATE::POSITION), 50.f))
+            m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
     }
     else
     {
@@ -109,7 +110,8 @@ void CProp_Object::Late_Update(_float fTimeDelta)
 
         if (true == isRenderProperties || true == isRender)
         {
-            m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
+            if (m_pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(STATE::POSITION), 50.f))
+                m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
         }
     }
 }

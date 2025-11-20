@@ -43,6 +43,7 @@
 #include "UI_Slot_Smoke.h"
 #include "UI_QuickSlot_Skill_Fx.h"
 #include "UI_Slot_Selete_Fx.h"
+
 //HUD  관련
 #include "BossHp.h"
 #include "Amount.h"
@@ -54,4 +55,9 @@
 #include "Target_LockOn.h"
 #include "Target_BrutalAttack.h"
 
+#include "UI_WorldTex.h"
+#include "UI_WorldTextBox.h"
+#include "UI_WorldList.h"
+#include "UI_WorldFX.h"
+#include "UI_Talk_Daphrona.h"
 

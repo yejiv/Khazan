@@ -1380,7 +1380,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
 			{
 
-                cout << "MOVE TERMINATE " << endl;
+              //  cout << "MOVE TERMINATE " << endl;
 
 				if (nullptr == BB)
 					return;

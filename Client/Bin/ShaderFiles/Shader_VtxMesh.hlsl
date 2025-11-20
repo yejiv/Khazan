@@ -221,7 +221,9 @@ PS_OUT PS_MAP(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐�
         
     /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
     vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
-    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+
+    float2 xy = vNormalDesc.xy * 2.f - 1.f;
+    float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
     
     float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
     vNormal = mul(vNormal, WorldMatrix);
@@ -243,7 +245,8 @@ PS_OUT PS_MAP(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐�
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     Out.vWorld = In.vWorldPos;
-    Out.vSpecular = vMtrlSpecular;
+    Out.vSpecular.rgb = vMtrlSpecular.rgb;
+    Out.vSpecular.a = 0.f;
     //  Out.vEmissive = vMtrlEmissive;
     
     return Out;
@@ -256,7 +259,9 @@ PS_OUT PS_MAP_ICE(PS_IN In)                       // 맵 오브젝트용 픽셀 
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
     
     vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
-    float3 vNormal = normalize(vNormalDesc.xyz * 2.f - 1.f);
+
+    float2 xy = vNormalDesc.xy * 2.f - 1.f;
+    float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
     
     float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
     vNormal = mul(vNormal, WorldMatrix);
@@ -289,7 +294,8 @@ PS_OUT PS_MAP_ICE(PS_IN In)                       // 맵 오브젝트용 픽셀 
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     Out.vWorld = In.vWorldPos;
-    Out.vSpecular = vMtrlSpecular;
+    Out.vSpecular.rgb = vMtrlSpecular.rgb;
+    Out.vSpecular.a = 0.f;
     // Out.vEmissive = Out.vDiffuse * 0.1f;
 
     return Out;
@@ -306,7 +312,9 @@ PS_OUT PS_SNOWMAP(PS_IN In)                       // 맵 오브젝트용 픽셀 
         
     /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
     vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
-    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+
+    float2 xy = vNormalDesc.xy * 2.f - 1.f;
+    float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
     
     float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
     vNormal = mul(vNormal, WorldMatrix);
@@ -338,7 +346,8 @@ PS_OUT PS_SNOWMAP(PS_IN In)                       // 맵 오브젝트용 픽셀 
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     Out.vWorld = In.vWorldPos;
-    Out.vSpecular = vMtrlSpecular;
+    Out.vSpecular.rgb = vMtrlSpecular.rgb;
+    Out.vSpecular.a = 0.f;
     // Out.vEmissive = vMtrlEmissive;
     
     return Out;
@@ -351,7 +360,9 @@ PS_OUT PS_SNOWMAP_ICE(PS_IN In)                       // 맵 오브젝트용 픽
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
     
     vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
-    float3 vNormal = normalize(vNormalDesc.xyz * 2.f - 1.f);
+
+    float2 xy = vNormalDesc.xy * 2.f - 1.f;
+    float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
 
     float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
     vNormal = mul(vNormal, WorldMatrix);
@@ -392,7 +403,8 @@ PS_OUT PS_SNOWMAP_ICE(PS_IN In)                       // 맵 오브젝트용 픽
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     Out.vWorld = In.vWorldPos;
-    Out.vSpecular = vMtrlSpecular;
+    Out.vSpecular.rgb = vMtrlSpecular.rgb;
+    Out.vSpecular.a = 0.f;
     // Out.vEmissive = Out.vDiffuse * 0.1f;
 
     return Out;
