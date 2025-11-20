@@ -497,12 +497,27 @@ HRESULT CRenderer::Render_Lights()
     if (FAILED(m_pShader->Bind_RawValue("g_vSpecularPower", &m_vSpecularPower, sizeof(_float2))))
         return E_FAIL;
 
+    if (FAILED(m_pShader->Bind_RawValue("g_fRimPower", &m_RimLightDesc.fPower, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_Bool("g_isToonLight", &m_RimLightDesc.isToonLight)))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_RawValue("g_fRimToonThreshold", &m_RimLightDesc.fToonThreshold, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_RawValue("g_fRimIntensity", &m_RimLightDesc.fIntensity, sizeof(_float))))
+        return E_FAIL;
+
 	_bool isSSAO = isEnableSSAO();
 	if (FAILED(m_pShader->Bind_Bool("g_isEnableSSAO", &isSSAO)))
 		return E_FAIL;
 	_bool isToonShade = isEnableToonShade();
 	if (FAILED(m_pShader->Bind_Bool("g_isEnableToonShade", &isToonShade)))
 		return E_FAIL;
+    _bool isRimLight = isEnableRimLight();
+    if (FAILED(m_pShader->Bind_Bool("g_isEnableRimLight", &isRimLight)))
+        return E_FAIL;
 
     m_pGameInstance->Render_Lights(m_pShader, m_pVIBuffer, m_pGameInstance->Get_CurrentLevelID());
 
@@ -1257,6 +1272,15 @@ _bool CRenderer::isEnableToonShade()
 {
 #ifdef _DEBUG
     return m_isEnableToonShade;
+#else
+    return true;
+#endif
+}
+
+_bool CRenderer::isEnableRimLight()
+{
+#ifdef _DEBUG
+    return m_isEnableRimLight;
 #else
     return true;
 #endif

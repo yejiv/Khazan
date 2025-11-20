@@ -58,6 +58,7 @@ public:
 	void Set_EnableFog(_bool isEnable) { m_isEnableFog = isEnable; }
 	void Set_EnableToonShade(_bool isEnable) { m_isEnableToonShade = isEnable; }
 	void Set_EnableOutline(_bool isEnable) { m_isEnableOutline = isEnable; }
+    void Set_EnableRimLight(_bool isEnable) { m_isEnableRimLight = isEnable; }
 #endif
 
 public:
@@ -69,6 +70,8 @@ public:
 		m_OutlineConfig.fBias = Config.fBias;
 	}
     void Set_SpecularPower(_float2 vPower) { m_vSpecularPower = vPower; }
+    RIM_LIGHT_DESC Get_RimLightDesc() { return m_RimLightDesc; }
+    void Set_RimLightDesc(RIM_LIGHT_DESC Desc) { m_RimLightDesc = Desc; }
 
 private:
 	ID3D11Device*				m_pDevice = { nullptr };
@@ -98,6 +101,9 @@ private:
     // Specular
     _float2                     m_vSpecularPower = { 32.f, 64.f };
 
+    // Rim Light
+    RIM_LIGHT_DESC              m_RimLightDesc = { 5.f, false, 1.f, 0.3f };
+
 #ifdef _DEBUG
 private:
 	list<class CComponent*>		m_DebugComponent;
@@ -109,6 +115,7 @@ private:
 	_bool						m_isEnableOutline = {};
 	_bool						m_isEnableVignette = {};
 	_bool						m_isEnableDistortion = {};
+    _bool                       m_isEnableRimLight = { true };
 #endif
 
 private:
@@ -158,6 +165,7 @@ private:
 	_bool isEnableSSAO();
 	_bool isEnableFog();
 	_bool isEnableToonShade();
+    _bool isEnableRimLight();
 
 #ifdef _DEBUG
 private:

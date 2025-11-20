@@ -192,19 +192,19 @@ PS_OUT PS_MAIN(PS_IN In)
     if (vMtrlDiffuse.a < 0.3f)
         discard;
 
-    //  float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
-    
     Out.vDiffuse = vMtrlDiffuse;
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = In.vWorldPos;
-    Out.vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    Out.vSpecular.rgb = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
+    Out.vSpecular.a = 1.f;
     //  Out.vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     
     // Test
     if (g_isEnableEdge)
     {
         float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
+        
         float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
         float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
         Out.vDiffuse *= fEdgeMask;
@@ -232,22 +232,20 @@ PS_OUT PS_MAIN_NONPICK(PS_IN In)
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = vector(0.f, 0.f, 0.f, 0.f);
-    Out.vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    Out.vSpecular.rgb = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
+    Out.vSpecular.a = 1.f;
     //  Out.vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     
-    // Test
     float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
-    //  Out.vDiffuse.r *= vMetalnessDesc.r;
-    //  Out.vDiffuse.g *= vMetalnessDesc.g;
-    //  Out.vDiffuse.b *= 1.f - vMetalnessDesc.b;
-    //  Out.vDiffuse *= vMetalnessDesc;
-    //  if(vMetalnessDesc.b == 0.f)
-    //      Out.vDiffuse = float4(0.f, 0.f, 1.f, 1.f);
-    //  Out.vDiffuse = vMetalnessDesc;
-    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
-    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
-    Out.vDiffuse *= fEdgeMask;
-    Out.vDiffuse *= fShadeMask;
+
+    // Test
+    if (g_isEnableEdge)
+    {
+        float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
+        float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
+        Out.vDiffuse *= fEdgeMask;
+        Out.vDiffuse *= fShadeMask;
+    }
     
     return Out;
 }
@@ -288,7 +286,8 @@ PS_OUT PS_MAIN_DEBUG(PS_IN In)
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = In.vWorldPos;
-    //  Out.vSpecular = vMtrlSpecular;
+    Out.vSpecular.rgb = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
+    Out.vSpecular.a = 1.f;
     
     if (true == g_isEnableEmissive)
         Out.vDiffuse.rgb *= g_fEmissiveIntensity;

@@ -158,7 +158,6 @@ HRESULT CBody_Yetuga::Render()
 
     _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-    // Test
     if (FAILED(m_pShaderCom->Bind_Bool("g_isEnableEdge", &m_isEnableEdge)))
         return E_FAIL;
 

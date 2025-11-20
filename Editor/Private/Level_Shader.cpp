@@ -27,8 +27,8 @@ HRESULT CLevel_Shader::Initialize()
 		ENUM_CLASS(LEVEL::SHADER), TEXT("Pool_Decal"), nullptr, 10)))
 		return E_FAIL;
 
-	//	if (FAILED(Ready_Lights()))
-	//		return E_FAIL;
+	if (FAILED(Ready_Lights()))
+		return E_FAIL;
 
 #pragma region 테스트용 ( 박준영이 남기고 간거 )
 	CHECK_FAILED(Ready_Lights(TEXT("Test"), LEVEL::SHADER), E_FAIL);
@@ -60,6 +60,7 @@ HRESULT CLevel_Shader::Initialize()
 	m_DistortionDesc = m_pGameInstance->Get_DistortionDesc();
     m_RadialBlurDesc = m_pGameInstance->Get_RadialBlurDesc();
     m_MotionBlurDesc = m_pGameInstance->Get_MotionBlurDesc();
+    m_RimLightDesc = m_pGameInstance->Get_RimLightDesc();
 
 	m_iNumCascades = m_pGameInstance->Get_NumCascades();
 
@@ -417,6 +418,25 @@ HRESULT CLevel_Shader::Initialize()
 
                 ImGui::Separator();
             }
+
+            if (ImGui::Checkbox("Rim Light", &m_isEnableRimLight))
+                m_pGameInstance->Set_EnableRimLight(m_isEnableRimLight);
+
+            if (m_isEnableRimLight)
+            {
+                if (ImGui::SliderFloat("RimLight Power", &m_RimLightDesc.fPower, 0.f, 10.f, "%.2f"))
+                    m_pGameInstance->Set_RimLightDesc(m_RimLightDesc);
+                
+                if (ImGui::Checkbox("Toon Light", &m_RimLightDesc.isToonLight))
+                    m_pGameInstance->Set_RimLightDesc(m_RimLightDesc);
+
+                if (m_RimLightDesc.isToonLight)
+                    if (ImGui::SliderFloat("RimLight Toon Threshold", &m_RimLightDesc.fToonThreshold, 0.f, 1.f, "%.2f"))
+                        m_pGameInstance->Set_RimLightDesc(m_RimLightDesc);
+
+                if (ImGui::SliderFloat("RimLight Intensity", &m_RimLightDesc.fIntensity, 0.f, 1.f, "%.2f"))
+                    m_pGameInstance->Set_RimLightDesc(m_RimLightDesc);
+            }
 		}
 
 		if (ImGui::CollapsingHeader("Cartoon Rendering"), ImGuiTreeNodeFlags_DefaultOpen)
@@ -569,14 +589,25 @@ HRESULT CLevel_Shader::Render()
 HRESULT CLevel_Shader::Ready_Lights()
 {
 	// Directional
-	LIGHT_DESC LightDesc = {};
-	LightDesc.eType = LIGHT_DESC::DIRECTIONAL;
-	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
-	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
-	LightDesc.vSpecular = LightDesc.vDiffuse;
-	if (FAILED(m_pGameInstance->Add_Light(TEXT("Directional_Shader"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
-		return E_FAIL;
+	//  LIGHT_DESC LightDesc = {};
+	//  LightDesc.eType = LIGHT_DESC::DIRECTIONAL;
+	//  LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
+	//  LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+	//  LightDesc.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
+	//  LightDesc.vSpecular = LightDesc.vDiffuse;
+	//  if (FAILED(m_pGameInstance->Add_Light(TEXT("Directional_Shader"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
+	//  	return E_FAIL;
+
+    // Directional
+    LIGHT_DESC LightDesc = {};
+    LightDesc.eType = LIGHT_DESC::POINT;
+    LightDesc.vPosition = _float4(0.f, 85.f, -10.f, 1.f);
+    LightDesc.vDiffuse = _float4(1.f, 0.f, 0.f, 1.f);
+    LightDesc.vAmbient = _float4(0.6f, 0.f, 0.f, 1.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.fRange = 10.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Point_Shader"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
+        return E_FAIL;
 
 	return S_OK;
 }

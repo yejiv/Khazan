@@ -143,6 +143,9 @@ HRESULT CBody_Khazan_Spear::Render()
 
     _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
 
+    if (FAILED(m_pShaderCom->Bind_Bool("g_isEnableEdge", &m_isEnableEdge)))
+        return E_FAIL;
+
     _float fEdgeIntensity = 0.3f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float))))
         return E_FAIL;
@@ -896,9 +899,11 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
     XMStoreFloat3(&BodyDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
     XMStoreFloat4(&BodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
     BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
+    m_tSearchCollisionDesc.pGameObject = this;
+    m_tSearchCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_SEARCH);
+    m_tSearchCollisionDesc.strName = TEXT("Player_Search");
     //pCollDesc.pInfo = ?? // 작성하기
-    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    BodyDesc.pCollisionDesc = &m_tSearchCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body3"), reinterpret_cast<CComponent**>(&m_pBodyCom_Search), &BodyDesc)))
