@@ -261,7 +261,7 @@ CComponent* CModel_Instance::Clone(void* pArg)
 
     if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
-        MSG_BOX(TEXT("Failed to Created : CModel_Instance"));
+        MSG_BOX(TEXT("Failed to Cloned : CModel_Instance"));
         Safe_Release(pInstance);
     }
 

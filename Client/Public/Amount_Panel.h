@@ -39,6 +39,8 @@ private:
 	_int								m_iAccValue = {};
 	_bool								m_isAddValue = {};
 	_float								m_fAccTime = {};
+
+    _bool                               m_isAdd = {};
 private:
 	HRESULT								Ready_Component();
 	_wstring							IntToWstring(_int iValue);

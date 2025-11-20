@@ -76,6 +76,8 @@ HRESULT CLevel_HeinMach::Initialize()
 
     CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
+    CHECK_FAILED(Ready_Layer_MapObject_DEST(TEXT("Layer_DEST"), TEXT(""), LEVEL::HEINMACH), E_FAIL);
+
     CClientInstance::GetInstance()->Fade_Out();
 
     if (!Wait_All_Futures())
@@ -198,8 +200,8 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
 	}
 
 
-	//if (m_pGameInstance->Key_Down(DIK_RETURN))
-	//	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::VIPER))));
+	if (m_pGameInstance->Key_Down(DIK_RETURN))
+		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EMBARS))));
 
     if (!m_isStart)
     {
@@ -1209,6 +1211,24 @@ HRESULT CLevel_HeinMach::Ready_Map_Decal(const _wstring& strLayerTag, const _tch
 
     CloseHandle(hFile);
 
+    return S_OK;
+}
+
+HRESULT CLevel_HeinMach::Ready_Layer_MapObject_DEST(const _wstring& strLayerTag, const _tchar* pDataFilename, LEVEL eCurrentLevel)
+{
+    CProp_Object::PROP_OBJECT_DESC ObjectDesc = {};
+
+    ObjectDesc.eLevel = eCurrentLevel;
+
+    memcpy(ObjectDesc.szModelName, TEXT("Prototype_GameObject_Prop_Dest"), sizeof(ObjectDesc.szModelName));
+
+    MAPOBJECT_PROPERTIES PropProperties = {};
+
+    ObjectDesc.Properties = PropProperties;
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Dest"), TIME_CHANNEL::WORLD, &ObjectDesc)))
+        return E_FAIL;
     return S_OK;
 }
 

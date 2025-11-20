@@ -38,7 +38,7 @@ public:
 
 	void Set_IsDead(_bool isDead) { m_isDead = isDead; }
 
-    _bool Get_IsDead() { return m_isDead; }
+     _bool Get_IsDead() { return m_isDead; }
 
 	void Set_IsActive(_bool isActive) { m_isActive = isActive; }
 	_bool Get_IsActive() { return m_isActive; }
@@ -61,6 +61,12 @@ public:
 	void Set_Name(string strTag) { m_strName = strTag; }
     _bool Compare_Name(string strName) { return strName == m_strName; }
 	string Get_Name() { return m_strName; }
+
+    _vector     Get_Position();
+    _vector     Get_Look();
+    _vector     Get_Right();
+    _vector     Get_Up();
+    class CTransform*      Get_Transform();
 
 public:
 	virtual void Reset() {};

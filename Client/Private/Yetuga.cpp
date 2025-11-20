@@ -586,17 +586,17 @@ void CYetuga::Abort_Node(_bool isToggle)
 
 void CYetuga::Start_DefaultRadialBlur()
 {
-    //RADIAL_BLUR_DESC Desc{};
-    //Desc.vCenterUV = _float2(0.5f, 0.5f);
-    //Desc.fSampleRadius = 0.05f;
-    //Desc.vMaskRadius = _float2(0.f, 0.7f);
-    //Desc.fExponent = 1.f;
-    //Desc.iNumSamples = 16;
-    //Desc.fAttenuation = 0.1f;
-    //Desc.fStrength = 0.5f;       // == Target Strength(0 ~ 1) -> 이 강도를 최대값으로 사용하여 보간 적용됨
-    //Desc.fDuration = 3.f;
-    //Desc.vFadeTime = _float2(0.3f, 1.f);
-    //m_pGameInstance->Start_RadialBlur(Desc);
+    RADIAL_BLUR_DESC Desc{};
+    Desc.vCenterUV = _float2(0.5f, 0.5f);
+    Desc.fSampleRadius = 0.05f;
+    Desc.vMaskRadius = _float2(0.f, 0.7f);
+    Desc.fExponent = 1.f;
+    Desc.iNumSamples = 16;
+    Desc.fAttenuation = 0.1f;
+    Desc.fStrength = 0.5f;       // == Target Strength(0 ~ 1) -> 이 강도를 최대값으로 사용하여 보간 적용됨
+    Desc.fDuration = 3.f;
+    Desc.vFadeTime = _float2(0.3f, 1.f);
+    m_pGameInstance->Start_RadialBlur(Desc);
 }
 
 HRESULT CYetuga::Ready_Components()

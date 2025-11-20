@@ -115,6 +115,7 @@ void CDebug_Manager::Ready_JoltDebug()
 		Labels.push_back("MAP_INTERACT");
 		Labels.push_back("PLAYER");
         Labels.push_back("PLAYERATTACK");
+        Labels.push_back("PLAYERSEARCH");
 		Labels.push_back("MONSTER");
 		Labels.push_back("MONSTERATTACK");
 		Labels.push_back("ITEM");
@@ -123,6 +124,8 @@ void CDebug_Manager::Ready_JoltDebug()
 		Labels.push_back("CAMERA");
         Labels.push_back("MAP_STATIC_TRIGGER");
         Labels.push_back("MAP_MOVE_FLATFORM");
+        Labels.push_back("MAP_DEST");
+        Labels.push_back("MAP_CHUNK");
 
 		for (size_t i = 0; i < Labels.size(); i++)
 		{

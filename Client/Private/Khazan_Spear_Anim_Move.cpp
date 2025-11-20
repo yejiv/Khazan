@@ -42,7 +42,7 @@ HRESULT CKhazan_Spear_Anim_Move::Initialize_Prototype()
         {16.f, 36.f, 56.f, 76.f, 96.f, 116.f},
          120.f };
 
-    //m_FootInfo[GetBitPosition(MOV::MOVE_SPRINT)] = {
+    //m_FootInfo[GetBitPosition(MOV::MOVE_SPRINT)] = {  
     // { 6.f, 19.f, 34.f, 48.f, 62.f, 76.f, 90.f, 104.f},
     // {0.f, 12.f, 26.f, 40.f, 54.f, 68.f,82.f, 96.f, 110.f},
     //  112.f };
@@ -62,6 +62,17 @@ void CKhazan_Spear_Anim_Move::Enter()
 
 void CKhazan_Spear_Anim_Move::Continue(_float fTimeDelta)
 {
+    /* 180 turn 처리 */
+    if (m_isTurning180)
+    {
+        if (m_pModel->Check_MinAnimationTime())
+        {
+            m_isTurning180 = false;
+            m_isMoving = false;
+            return;
+        }
+    }
+
     /* sprint start -> loop 못가는 상황 배제 */
     if (Has_State(MOV::MOVE_SPRINT)) {
         _uint iIndex = m_pModel->Get_CurAnimIndex();
@@ -78,18 +89,6 @@ void CKhazan_Spear_Anim_Move::Continue(_float fTimeDelta)
         }
 
     }
-
-
-    //if (Has_State(MOV::MOVE_DODGE))
-    //{
-    //    if (m_pModel->Check_MinAnimationTime())
-    //    {
-    //        m_isEndAnimationFinished = true;
-    //        m_isMoving = false;
-    //        m_isDodging = false;
-    //        return;
-    //    }
-    //}
 
     if (Has_State(MOV::MOVE_DODGE))
     {
@@ -156,221 +155,30 @@ void CKhazan_Spear_Anim_Move::Continue(_float fTimeDelta)
 
 void CKhazan_Spear_Anim_Move::Exit()
 {
+    m_isMoving = false;
+    m_isReserve = false;
+    m_isTurning180 = false;
     //cout << "EXIT " << endl;
-   // m_isMoving = m_isReserve = false;
 }
 
-//_bool CKhazan_Spear_Anim_Move::Try_ChangeAnimation(SPEAR_MOVE moveInfo)
-//{
-//    _uint currentAnimIndex = m_pModel->Get_CurAnimIndex();
-//
-//    // Sprint Stop 애니메이션 체크
-//    if (currentAnimIndex == m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Sprint_Stop_F") ||
-//        currentAnimIndex == m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_LockOn_Sprint_Stop_F"))
-//    {
-//        if (!m_pModel->Check_MinAnimationTime())
-//        {
-//            cout << "Sprint Stop in progress, cannot change" << endl;
-//            return false;
-//        }
-//    }
-//
-//    // Dodge 애니메이션 체크 - 진행 중이면 변경 불가
-//    static const string dodgeAnims[] = {
-//        "CA_P_Kazan_Spear_Com_Dodge_F", "CA_P_Kazan_Spear_Com_Dodge_B",
-//        "CA_P_Kazan_Spear_Com_Dodge_L", "CA_P_Kazan_Spear_Com_Dodge_R",
-//        "CA_P_Kazan_Spear_Com_Dodge_FL", "CA_P_Kazan_Spear_Com_Dodge_FR",
-//        "CA_P_Kazan_Spear_Com_Dodge_BL", "CA_P_Kazan_Spear_Com_Dodge_BR"
-//    };
-//
-//    for (const auto& animName : dodgeAnims)
-//    {
-//        if (currentAnimIndex == m_pModel->Get_AnimIndexByName(animName))
-//        {
-//            if (!m_pModel->Check_MinAnimationTime())
-//            {
-//                cout << "Dodge in progress, cannot change to: " << moveInfo.iSubState << endl;
-//                return false;
-//            }
-//        }
-//    }
-//
-//    _uint iSelectedAnimationIndex{};
-//    m_isDodging = false;
-//
-//    // 이전 상태 저장
-//    _uint prevState = m_iState;
-//
-//    Clear_State();
-//    Add_State(moveInfo.iSubState);
-//    m_isEndAnimationFinished = false;
-//    _bool isLockOn = moveInfo.isLockOn;
-//
-//    auto GetAnimIndexByState = [&](const std::string& bare, const std::string& spear)
-//        {
-//            return m_pModel->Get_AnimIndexByName(moveInfo.isEquipWeapon ? bare.c_str() : spear.c_str());
-//        };
-//
-//    if (Has_State(MOV::MOVE_WALK))
-//    {
-//        if (isLockOn)
-//        {
-//            iSelectedAnimationIndex = GetLockOnWalkAnimation(moveInfo.eDir);
-//        }
-//        else if (moveInfo.iCycle & CYC::CYCLE_END)
-//        {
-//            if (m_curFoot == FOOT_R)
-//                iSelectedAnimationIndex = GetAnimIndexByState("CA_P_Kazan_BareHands_Walk_Stop_F_RF", "CA_P_Kazan_Spear_Walk_Stop_F_RF");
-//            else
-//                iSelectedAnimationIndex = GetAnimIndexByState("CA_P_Kazan_BareHands_Walk_Stop_F_LF", "CA_P_Kazan_Spear_Walk_Stop_F_LF");
-//
-//            m_isEndAnimationFinished = true;
-//            m_isMoving = false;
-//        }
-//        else
-//            iSelectedAnimationIndex = GetAnimIndexByState("CA_P_Kazan_BareHands_Walk_F", "CA_P_Kazan_Spear_Walk_F");
-//    }
-//
-//    if (Has_State(MOV::MOVE_RUN))
-//    {
-//        if (isLockOn)
-//        {
-//            iSelectedAnimationIndex = GetLockOnRunAnimation(moveInfo.eDir);
-//        }
-//        else if (moveInfo.iCycle & CYC::CYCLE_END)
-//        {
-//            if (m_curFoot == FOOT_R)
-//                iSelectedAnimationIndex = GetAnimIndexByState("CA_P_Kazan_BareHands_Run_Stop_F_RF", "CA_P_Kazan_Spear_Run_Stop_F_RF");
-//            else
-//                iSelectedAnimationIndex = GetAnimIndexByState("CA_P_Kazan_BareHands_Run_Stop_F_LF", "CA_P_Kazan_Spear_Run_Stop_F_LF");
-//
-//            m_isEndAnimationFinished = true;
-//            m_isMoving = false;
-//        }
-//        else
-//        {
-//            iSelectedAnimationIndex = GetAnimIndexByState("CA_P_Kazan_BareHands_Run_F", "CA_P_Kazan_Spear_Run_F");
-//        }
-//    }
-//
-//    if (Has_State(MOV::MOVE_SPRINT))
-//    {
-//        if (moveInfo.iCycle & CYC::CYCLE_START)
-//        {
-//            if (moveInfo.eDir.AllCheck_Flag(DIR::B | DIR::L))
-//                iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Sprint_BL_Start");
-//            else if (moveInfo.eDir.AllCheck_Flag(DIR::B | DIR::R))
-//                iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Sprint_BR_Start");
-//            else if (moveInfo.eDir.AllCheck_Flag(DIR::B))
-//                iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Sprint_B_Start");
-//            else if (moveInfo.eDir.AllCheck_Flag(DIR::F | DIR::L))
-//                iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Sprint_FL_Start");
-//            else if (moveInfo.eDir.AllCheck_Flag(DIR::F | DIR::R))
-//                iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Sprint_FR_Start");
-//            else if (moveInfo.eDir.AllCheck_Flag(DIR::F))
-//                iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Sprint_F_Start");
-//            else if (moveInfo.eDir.AllCheck_Flag(DIR::L))
-//                iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Sprint_L_Start");
-//            else if (moveInfo.eDir.AllCheck_Flag(DIR::R))
-//                iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Sprint_R_Start");
-//        }
-//        else if (moveInfo.iCycle & CYC::CYCLE_END)
-//        {
-//            if (isLockOn)
-//                iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_LockOn_Sprint_Stop_F");
-//            else
-//                iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Sprint_Stop_F");
-//
-//            m_isEndAnimationFinished = true;
-//            m_isMoving = false;
-//        }
-//        else
-//        {
-//            iSelectedAnimationIndex = GetAnimIndexByState("CA_P_Kazan_Spear_Sprint_F", "CA_P_Kazan_Spear_Sprint_F");
-//        }
-//    }
-//
-//    if (Has_State(MOV::MOVE_DODGE))
-//    {
-//        if (moveInfo.eDir.AllCheck_Flag(DIR::B | DIR::L))
-//            iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Dodge_BR");
-//        else if (moveInfo.eDir.AllCheck_Flag(DIR::B | DIR::R))
-//            iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Dodge_BL");
-//        else if (moveInfo.eDir.AllCheck_Flag(DIR::B))
-//            iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Dodge_B");
-//        else if (moveInfo.eDir.AllCheck_Flag(DIR::F | DIR::L))
-//            iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Dodge_FR");
-//        else if (moveInfo.eDir.AllCheck_Flag(DIR::F | DIR::R))
-//            iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Dodge_FL");
-//        else if (moveInfo.eDir.AllCheck_Flag(DIR::F))
-//            iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Dodge_F");
-//        else if (moveInfo.eDir.AllCheck_Flag(DIR::L))
-//            iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Dodge_L");
-//        else if (moveInfo.eDir.AllCheck_Flag(DIR::R))
-//            iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Dodge_R");
-//
-//        m_isDodging = true;
-//        m_isEndAnimationFinished = false;  // Dodge는 진행 중
-//       // cout << "Dodge animation set: " << iSelectedAnimationIndex << endl;
-//    }
-//
-//    _bool isCheckMin = m_pModel->Check_MinAnimationTime();
-//
-//    // 같은 애니메이션이고 최소 시간이 안지났으면 변경 안함
-//    if (m_iPrevSelectedAnimationIndex == iSelectedAnimationIndex && !isCheckMin)
-//    {
-//        //cout << "Same animation, not changed" << endl;
-//        return false;
-//    }
-//
-//    if (isCheckMin || Has_State(MOV::MOVE_DODGE))  // Dodge는 즉시 실행
-//    {
-//        m_isMoving = true;
-//        m_iPrevSelectedAnimationIndex = m_iSelectedAnimationIndex;
-//        m_iSelectedAnimationIndex = iSelectedAnimationIndex;
-//        m_pModel->Set_Animation(m_iSelectedAnimationIndex);
-//
-//       // cout << "Animation changed to: " << iSelectedAnimationIndex << endl;
-//        return true;
-//    }
-//    else
-//    {
-//        Reserve_Animation(moveInfo);
-//        return false;
-//    }
-//}
 
 _bool CKhazan_Spear_Anim_Move::Try_ChangeAnimation(SPEAR_MOVE moveInfo)
 {
+    // 180도 회전 중에는 애니메이션 변경 차단
+    if (m_isTurning180)
+    {
+        cout << "Cannot change animation - 180 Turn in progress" << endl;
+        return false;
+    }
+
     _uint currentAnimIndex = m_pModel->Get_CurAnimIndex();
     if (currentAnimIndex == m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Sprint_Stop_F") ||
         currentAnimIndex == m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_LockOn_Sprint_Stop_F"))
     {
-        //_float progress = *m_pModel->Get_CurTrackPosition() / m_pModel->Get_CurDuration();
-
-        //// Stop 애니메이션이 60% 이상 진행되기 전에는 변경 차단
-        //if (progress < 0.6f)
-        //{
-        //    return false;
-        //}
 
         if (!m_pModel->Check_MinAnimationTime())
             return false;
     }
-
-    //for (const auto& animName : s_strDodgeAnims)
-    //{
-    //    if (currentAnimIndex == m_pModel->Get_AnimIndexByName(animName))
-    //    {
-    //        if (!m_pModel->Check_MinAnimationTime())
-    //        {
-    //            //cout << "Dodge in progress, cannot change to: " << moveInfo.iSubState << endl;
-    //            return false;
-    //        }
-    //    }
-    //}
-
-
 
     _uint iSelectedAnimationIndex{};
     m_isDodging = false;
@@ -559,6 +367,50 @@ void CKhazan_Spear_Anim_Move::Reserve_Animation(SPEAR_MOVE moveInfo)
     m_isReserve = true;
     m_eReserveInfo = moveInfo;
 }
+
+_bool CKhazan_Spear_Anim_Move::Try_Turn180Animation(SPEAR_MOVE moveInfo)
+{
+    //if (m_isTurning180)
+    //    return false;
+
+    //if (!m_pModel->Check_MinAnimationTime())
+    //    return false;
+
+    if (!moveInfo.eDir.Check_Flag(DIR::B))
+        return false;
+
+    auto GetAnimIndexByState = [&](const std::string& left, const std::string& right)
+        {
+            return m_pModel->Get_AnimIndexByName(m_curFoot == FOOT_R ? left.c_str() : right.c_str());
+        };
+
+;
+    m_isDodging = false;
+    m_isEndAnimationFinished = false;
+    m_isMoving = true;
+    m_isTurning180 = true;
+    Clear_State();
+    Add_State(moveInfo.iSubState);
+
+
+    if (Has_State(MOV::MOVE_SPRINT))
+        m_iSelectedAnimationIndex = GetAnimIndexByState("CA_P_Kazan_Spear_Sprint_MovingTurn_L_180", "CA_P_Kazan_Spear_Sprint_MovingTurn_R_180");
+
+    else if (Has_State(MOV::MOVE_RUN))
+        m_iSelectedAnimationIndex = GetAnimIndexByState("CA_P_Kazan_BareHands_Run_MovingTurn_L_180", "CA_P_Kazan_BareHands_Run_MovingTurn_R_180");
+
+    else/* if (Has_State(MOV::MOVE_WALK))*/
+        m_iSelectedAnimationIndex = GetAnimIndexByState("CA_P_Kazan_BareHands_Walk_StandTurn_L_180", "CA_P_Kazan_BareHands_Walk_StandTurn_R_180");
+
+    //else
+    //    m_iSelectedAnimationIndex = GetAnimIndexByState("CA_P_Kazan_BareHands_Run_StandTurn_L_180", "CA_P_Kazan_BareHands_Run_StandTurn_R_180");
+
+    m_pModel->Set_Animation(m_iSelectedAnimationIndex);
+
+    return true;
+}
+
+
 
 _uint CKhazan_Spear_Anim_Move::GetLockOnWalkAnimation(DIRECTION_INFO eDir)
 {

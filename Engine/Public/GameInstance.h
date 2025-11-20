@@ -91,6 +91,7 @@ public:
 	void Set_EnableFog(_bool isEnable);
 	void Set_EnableToonShade(_bool isEnable);
 	void Set_EnableOutline(_bool isEnable);
+    void Set_EnableRimLight(_bool isEnable);
 #endif
 
 public:
@@ -98,6 +99,8 @@ public:
 	OUTLINE_CONFIG Get_OutlineConfig();
 	void Set_OutlineConfig(OUTLINE_CONFIG Config);
     void Set_SpecularPower(_float2 vPower);
+    RIM_LIGHT_DESC Get_RimLightDesc();
+    void Set_RimLightDesc(RIM_LIGHT_DESC Desc);
 #pragma endregion
 
 #pragma region TIMER_MANAGER
@@ -138,7 +141,9 @@ public:
 	HRESULT	Font_Load(const _wstring& strFontTag, const _char* pFontFilePath, _uint iHeight, _uint iWidth = 0 );
 	HRESULT	Draw_Text(const _wstring& strFontTag, const _wstring& strText, _float fX = 0.f, _float fY = 0.f, const _float4& vColor = {1.f, 1.f, 1.f, 1.f}, TEXT_ALIGN eAlign = TEXT_ALIGN::LEFT_TOP);
 	HRESULT	Draw_TextBox(const _wstring& strFontTag, const _wstring& strText, _float fX = 0.f, _float fY = 0.f, _float fMaxWidth = 1000.f, _float fOffsetHeight = 0.f, const _float4& vColor = { 1.f, 1.f, 1.f, 1.f }, TEXT_ALIGN eAlign = TEXT_ALIGN::LEFT_TOP);
-	HRESULT	Font_Load_Data(const _char* pFontFilePath);
+    HRESULT	DrawTextWorld(const _wstring& strFontTag, const _wstring& strText, _float fX, _float fY, const _float4& vColor, TEXT_ALIGN eAlign, _matrix WorldMat);
+
+    HRESULT	Font_Load_Data(const _char* pFontFilePath);
 #pragma endregion
 
 
@@ -352,7 +357,6 @@ public:
 	_uint						Get_NumFogNoiseTextures();
 	ID3D11ShaderResourceView*	Get_FogNoiseTexture(_uint iTextureIndex);
 	void						Set_FogNoiseTextureIndex(_uint iTextureIndex);
-	void						Set_FogNoiseWorldSpace(_bool isEnable);
 	void						Start_FogTransition(_float fDuration, const FOG_TRANSITION_DESC& Desc);
 #pragma endregion
 
@@ -422,6 +426,7 @@ public:
     void                        Set_EnableMotionBlur(_bool isEnable);
     void                        Update_MotionBlur_PrevMatrices();
 #pragma endregion
+
 
 private:
 	class CGraphic_Device*		    m_pGraphic_Device = { nullptr };

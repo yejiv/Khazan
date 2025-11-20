@@ -27,8 +27,8 @@ HRESULT CLevel_Shader::Initialize()
 		ENUM_CLASS(LEVEL::SHADER), TEXT("Pool_Decal"), nullptr, 10)))
 		return E_FAIL;
 
-	//	if (FAILED(Ready_Lights()))
-	//		return E_FAIL;
+	if (FAILED(Ready_Lights()))
+		return E_FAIL;
 
 #pragma region 테스트용 ( 박준영이 남기고 간거 )
 	CHECK_FAILED(Ready_Lights(TEXT("Test"), LEVEL::SHADER), E_FAIL);
@@ -60,6 +60,7 @@ HRESULT CLevel_Shader::Initialize()
 	m_DistortionDesc = m_pGameInstance->Get_DistortionDesc();
     m_RadialBlurDesc = m_pGameInstance->Get_RadialBlurDesc();
     m_MotionBlurDesc = m_pGameInstance->Get_MotionBlurDesc();
+    m_RimLightDesc = m_pGameInstance->Get_RimLightDesc();
 
 	m_iNumCascades = m_pGameInstance->Get_NumCascades();
 
@@ -156,28 +157,19 @@ HRESULT CLevel_Shader::Initialize()
 						TEXT("Layer_Player"), 0))->Set_EmissiveIntensity(m_fEmissiveIntensity);
 				}
 
-				ImGui::Separator();
-			}
+                // 가우시안 블러 범위(반경)
+                if (ImGui::InputInt("Gaussian Blur Radius", &m_GaussianBlurConfig.iRadius, 2, 4))
+                    m_pGameInstance->Set_GaussianBlurConfig(m_GaussianBlurConfig);
 
-			if (ImGui::Checkbox("Bloom", &m_isEnableBloom))
-				dynamic_cast<CPlayer_Shader*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
-					TEXT("Layer_Player"), 0))->Set_EnableBloom(m_isEnableBloom);
+                // 가우시안 블러 가중치 밀집도
+                if (ImGui::SliderFloat("Gaussian Blur Concentration", &m_GaussianBlurConfig.fSigma, 1.f, 10.f))
+                    m_pGameInstance->Set_GaussianBlurConfig(m_GaussianBlurConfig);
 
-			if (m_isEnableBloom)
-			{
-				// 가우시안 블러 범위(반경)
-				if (ImGui::InputInt("Blur Radius", &m_GaussianBlurConfig.iRadius, 2, 4))
-					m_pGameInstance->Set_GaussianBlurConfig(m_GaussianBlurConfig);
+                // 가우시안 블러 가중치 합 정규화 수치
+                if (ImGui::SliderFloat("Gaussian Blur Normalization", &m_GaussianBlurConfig.fNormalization, 0.f, 15.f))
+                    m_pGameInstance->Set_GaussianBlurConfig(m_GaussianBlurConfig);
 
-				// 가우시안 블러 가중치 밀집도
-				if (ImGui::SliderFloat("Concentration", &m_GaussianBlurConfig.fSigma, 1.f, 10.f))
-					m_pGameInstance->Set_GaussianBlurConfig(m_GaussianBlurConfig);
-
-				// 가우시안 블러 가중치 합 정규화 수치
-				if (ImGui::SliderFloat("Normalization", &m_GaussianBlurConfig.fNormalization, 0.f, 15.f))
-					m_pGameInstance->Set_GaussianBlurConfig(m_GaussianBlurConfig);
-
-				ImGui::Separator();
+                ImGui::Separator();
 			}
 
 			if (ImGui::Checkbox("Fog", &m_isEnableFog))
@@ -291,25 +283,25 @@ HRESULT CLevel_Shader::Initialize()
 					ImGui::NewLine();
 				}
 
-				_bool isChangedSpace{};
-
-				isChangedSpace |= ImGui::Checkbox("Fog World Space", &m_isWorldSpaceFog);
-
-				if (isChangedSpace)
-				{
-					m_pGameInstance->Set_FogNoiseWorldSpace(m_isWorldSpaceFog);
-
-					if (m_isWorldSpaceFog)
-					{
-						m_FogConfig.Noise.vSpeed = { 0.05f, 0.f };
-						m_FogConfig.Noise.vScale = { 0.05f, 0.05f };
-					}
-					else
-					{
-						m_FogConfig.Noise.vSpeed = { 0.01f, 0.f };
-						m_FogConfig.Noise.vScale = { 1.f, 1.f };
-					}
-				}
+				//  _bool isChangedSpace{};
+                //  
+				//  isChangedSpace |= ImGui::Checkbox("Fog World Space", &m_isWorldSpaceFog);
+                //  
+				//  if (isChangedSpace)
+				//  {
+				//  	m_pGameInstance->Set_FogNoiseWorldSpace(m_isWorldSpaceFog);
+                //  
+				//  	if (m_isWorldSpaceFog)
+				//  	{
+				//  		m_FogConfig.Noise.vSpeed = { 0.05f, 0.f };
+				//  		m_FogConfig.Noise.vScale = { 0.05f, 0.05f };
+				//  	}
+				//  	else
+				//  	{
+				//  		m_FogConfig.Noise.vSpeed = { 0.01f, 0.f };
+				//  		m_FogConfig.Noise.vScale = { 1.f, 1.f };
+				//  	}
+				//  }
 
 				m_pGameInstance->Set_FogConfig(m_FogConfig);
 
@@ -425,6 +417,25 @@ HRESULT CLevel_Shader::Initialize()
                     m_pGameInstance->Set_MotionBlurDesc(m_MotionBlurDesc);
 
                 ImGui::Separator();
+            }
+
+            if (ImGui::Checkbox("Rim Light", &m_isEnableRimLight))
+                m_pGameInstance->Set_EnableRimLight(m_isEnableRimLight);
+
+            if (m_isEnableRimLight)
+            {
+                if (ImGui::SliderFloat("RimLight Power", &m_RimLightDesc.fPower, 0.f, 10.f, "%.2f"))
+                    m_pGameInstance->Set_RimLightDesc(m_RimLightDesc);
+                
+                if (ImGui::Checkbox("Toon Light", &m_RimLightDesc.isToonLight))
+                    m_pGameInstance->Set_RimLightDesc(m_RimLightDesc);
+
+                if (m_RimLightDesc.isToonLight)
+                    if (ImGui::SliderFloat("RimLight Toon Threshold", &m_RimLightDesc.fToonThreshold, 0.f, 1.f, "%.2f"))
+                        m_pGameInstance->Set_RimLightDesc(m_RimLightDesc);
+
+                if (ImGui::SliderFloat("RimLight Intensity", &m_RimLightDesc.fIntensity, 0.f, 1.f, "%.2f"))
+                    m_pGameInstance->Set_RimLightDesc(m_RimLightDesc);
             }
 		}
 
@@ -578,14 +589,25 @@ HRESULT CLevel_Shader::Render()
 HRESULT CLevel_Shader::Ready_Lights()
 {
 	// Directional
-	LIGHT_DESC LightDesc = {};
-	LightDesc.eType = LIGHT_DESC::DIRECTIONAL;
-	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
-	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
-	LightDesc.vSpecular = LightDesc.vDiffuse;
-	if (FAILED(m_pGameInstance->Add_Light(TEXT("Directional_Shader"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
-		return E_FAIL;
+	//  LIGHT_DESC LightDesc = {};
+	//  LightDesc.eType = LIGHT_DESC::DIRECTIONAL;
+	//  LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
+	//  LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+	//  LightDesc.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
+	//  LightDesc.vSpecular = LightDesc.vDiffuse;
+	//  if (FAILED(m_pGameInstance->Add_Light(TEXT("Directional_Shader"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
+	//  	return E_FAIL;
+
+    // Directional
+    LIGHT_DESC LightDesc = {};
+    LightDesc.eType = LIGHT_DESC::POINT;
+    LightDesc.vPosition = _float4(0.f, 85.f, -10.f, 1.f);
+    LightDesc.vDiffuse = _float4(1.f, 0.f, 0.f, 1.f);
+    LightDesc.vAmbient = _float4(0.6f, 0.f, 0.f, 1.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.fRange = 10.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Point_Shader"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
+        return E_FAIL;
 
 	return S_OK;
 }

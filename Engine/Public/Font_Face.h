@@ -11,6 +11,8 @@ private:
 public:
 	HRESULT						Initialize(FT_Library FTLib, const _char* pFontFilePath, _uint iWidth, _uint iHeight);
 	_float2						ComputeTextSize(const _wstring& strText);
+    void                        ComputeMaxBearingY(const _wstring& strText, _int& OutMaxBearingY, _int& OutMaxBottom);
+
 	const GLYPH_INFO*			GetGlyph(_tchar ch);
 	ID3D11ShaderResourceView*	GetSRV() const { return m_pSRV; }
 

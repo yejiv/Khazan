@@ -39,7 +39,7 @@ void CLevel_Title::Update(_float fTimeDelta)
 	{
 		if (!m_isOpenLevel) {
 
-			if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EMBARS))))
+			if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::VIPER))))
 				return;
 
 			m_isOpenLevel = true;
@@ -82,6 +82,7 @@ HRESULT CLevel_Title::Ready_Layer_UI()
 {
     CUIObject::UIOBJECT_DESC Desc = {};
 
+#ifndef _DEBUG
 	Desc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
 	Desc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
 	Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
@@ -91,6 +92,7 @@ HRESULT CLevel_Title::Ready_Layer_UI()
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::TITLE), TEXT("Layer_UI"),
 		ENUM_CLASS(LEVEL::TITLE), TEXT("Prototype_GameObject_Logo_BG"), TIME_CHANNEL::WORLD, &Desc)))
 		return E_FAIL;
+#endif
 
 	Desc.vLocalSize = { 48.f, 48.f };
 	Desc.vLocalPos = { 0.f, 0.f };
