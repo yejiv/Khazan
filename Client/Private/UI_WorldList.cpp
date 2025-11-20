@@ -265,13 +265,13 @@ void CUI_WorldList::Free()
     Safe_Release(m_pTextureCom);
     Safe_Release(m_pVIBufferCom);
 
+    Safe_Release(m_pName);
     Safe_Release(m_pIcon);
     Safe_Release(m_pSelete);
-
-    Safe_Release(m_pName);
+    Safe_Release(m_pSeleteIcon);
     Safe_Release(m_pFX);
+
     for (auto pBg : m_BG)
         Safe_Release(pBg);
-
     m_BG.clear();
 }

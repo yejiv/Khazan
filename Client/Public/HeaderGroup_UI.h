@@ -60,4 +60,5 @@
 #include "UI_WorldList.h"
 #include "UI_WorldFX.h"
 #include "UI_Talk_Daphrona.h"
-
+#include "UI_Talk_Dangin.h"
+#include "UI_Talk_Trader.h"

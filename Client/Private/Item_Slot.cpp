@@ -10,6 +10,7 @@
 #include "ItemInfo_Weapon.h"
 
 #include "UI_Slot_Smoke.h"
+#include "Amount.h"
 
 CItem_Slot::CItem_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Slot{ pDevice, pContext }
@@ -61,6 +62,7 @@ _bool CItem_Slot::Add_Item(_int iItemIndex)
 
 void CItem_Slot::Update_Pos(_int iIndex, _float2 vPos, _float fOffSet, _int iMaxIndexX, _int iMaxIndexY)
 {
+    m_iIndex = iIndex;
     _int iCol = iIndex % iMaxIndexX;
     _int iRow = iIndex / iMaxIndexX;
 
@@ -134,7 +136,6 @@ HRESULT CItem_Slot::Initialize_Prototype(_uint iLevel)
 HRESULT CItem_Slot::Initialize_Clone(void* pArg)
 {
     ITEMSLOT_DESC* pDesc = static_cast<ITEMSLOT_DESC*>(pArg);
-    m_iIndex = pDesc->iIndex;
     m_iItemType = pDesc->iItemType;
     m_iTexPass = 1;
     m_iShaderPass = 0;
@@ -179,15 +180,35 @@ void CItem_Slot::Late_Update(_float fTimeDelta)
         Selete_Item();
         ++m_iEquipCount;
         m_fEquipTime = 0.5f;
-        if (m_iEquipCount >= 2)
+        
+        
+        if (!m_isSale)
         {
-            Equip_Item();
-            m_iEquipCount = 0;
+            if (m_iEquipCount >= 2)
+            {
+                Equip_Item();
+                m_iEquipCount = 0;
+            }
+        }
+        else if(!m_bIsEquip)
+        {
+            Sale_Item();
         }
     }
-    if (m_bIsSelete && m_pGameInstance->Key_Down(DIK_F, INPUT_TYPE::UI))
-        Equip_Item();
-
+    if (m_iItemIndex > -1 && m_bIsSelete && m_pGameInstance->Key_Down(DIK_F, INPUT_TYPE::UI))
+    {
+        if(!m_isSale)
+            Equip_Item();
+        else if (!m_bIsEquip)
+        {
+            const ITEM_DATA* pData = CClientInstance::GetInstance()->Get_Data<ITEM_DATA>(m_iItemIndex);
+            if (pData->iLachryma == -1 && pData->iGold == -1)
+            {
+            }
+            else
+                Sale_Item();
+        }
+    }
     if (m_iState == ENUM_CLASS(UISTATE::ENABLE))
     {
         if (ButtonOver(g_hWnd) && m_pGameInstance->Get_InputType() == INPUT_TYPE::UI)
@@ -212,7 +233,7 @@ void CItem_Slot::Late_Update(_float fTimeDelta)
 
         const ITEM_DATA* pData = CClientInstance::GetInstance()->Get_Data<ITEM_DATA>(m_iItemIndex);
 
-        if (m_iItemIndex > 0 && pData->iType > 3)
+        if (m_iItemIndex > 0 && pData->iType > 3 && !m_isSale)
         {
             CItemInfo_Weapon::WEAPONINFO_DESC Desc = {};
             Desc.iItemIndex = m_iItemIndex;
@@ -391,7 +412,7 @@ HRESULT CItem_Slot::Ready_Children()
 
     if (m_pSmoke_Fx == nullptr)
         return E_FAIL;
-
+    
     m_Children.push_back(m_pSmoke_Fx);
     Safe_AddRef(m_pSmoke_Fx);
 
@@ -472,12 +493,33 @@ void CItem_Slot::Equip_Item()
     __super::Bubble_EventCall(&Desc);
 }
 
+void CItem_Slot::Sale_Item()
+{
+    const ITEM_DATA* pData = CClientInstance::GetInstance()->Get_Data<ITEM_DATA>(m_iItemIndex);
+    if(pData->iGold > 0)
+        static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, pData->iGold * m_iItemCount, false);
+    if (pData->iLachryma > 0)
+        static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::LACHRYMA, pData->iLachryma * m_iItemCount, false);
+    Release_Item();
+
+}
+
 void CItem_Slot::Release_Item()
 {
     m_iItemIndex = -1;
     m_iItemMaxCount = 0;
     m_iItemCount = 0;
+    m_bIsSelete = false;
+    m_bIsEquip = false;
+
     Update_State();
+
+    CUI_Inven::INVENBUBBLE_DESC Desc = {};
+    Desc.eBubbleType = CUI_Inven::EVENT_TYPE::ITEM_RELEASE;
+    Desc.iIndex = m_iIndex;
+    Desc.pItem = this;
+   
+    __super::Bubble_EventCall(&Desc);
 }
 
 void CItem_Slot::Render_ItemInfo()

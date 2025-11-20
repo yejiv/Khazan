@@ -14,19 +14,18 @@ CAmount::CAmount(const CAmount& Prototype)
 {
 }
 
-void CAmount::Add_Value(AMOUNT_TYPE eType, _int IValue)
-{  
+void CAmount::Add_Value(AMOUNT_TYPE eType, _int IValue, _bool isRandeOff)
+{
     m_pAmount[ENUM_CLASS(eType)]->Add_Value(IValue);
-    m_isAddValue = true;
+    m_isAddAmount[ENUM_CLASS(eType)] = true;
     On_Panel();
-
+    m_isAddValue = isRandeOff;
 }
 
 void CAmount::On_Panel()
 {
 	if (m_IsUpdate)
 		return;
-
 	m_eAnimState = UIANIMSTATE::ON;
 	m_fAccTime = 0.5f;
 	m_IsUpdate = true;
@@ -36,7 +35,7 @@ void CAmount::Off_Panel()
 {
 	if (!m_IsUpdate)
 		return;
-
+    m_isAddValue = false;
 	m_eAnimState = UIANIMSTATE::OFF;
 	m_fAccTime = 1.f;
 	
@@ -59,6 +58,12 @@ HRESULT CAmount::Initialize_Clone(void* pArg)
     m_iGold = &CClientInstance::GetInstance()->Get_ptrPlayerData().iGold;
     m_iLachryma = &CClientInstance::GetInstance()->Get_ptrPlayerData().iLachryma;
     m_iStone = &CClientInstance::GetInstance()->Get_ptrPlayerData().iStone;
+
+    m_isAddAmount.resize(3);
+
+    for (auto Amount : m_isAddAmount)
+        Amount = false;
+
 	return S_OK;
 }
 
@@ -124,7 +129,17 @@ HRESULT CAmount::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void*
 
 void CAmount::Bubble_EventCall(BUBBLEEVENT* pArg)
 {
-	Off_Panel();
+    BUBBLE_DESC* pDesc = static_cast<BUBBLE_DESC*>(pArg);
+
+    m_isAddAmount[ENUM_CLASS(pDesc->eAmountType)] = false;
+    _bool isOff = true;
+    
+    for (auto isAdd : m_isAddAmount)
+        if (isAdd)
+            isOff = false;
+    
+    if(m_isAddValue && isOff)
+        Off_Panel();
 }
 
 HRESULT CAmount::Update_Switch(void* pArg)
