@@ -2842,7 +2842,7 @@ HRESULT CLevel_Map::Ready_MultiFix_Window()
 {
 #ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
-		if (m_isMultiFixWindow)
+		if (m_isMultiFixWindow && nullptr != m_pParentFixObject)
 		{
 			ImGui::Begin("MULTI FIX WINDOW", &m_isMultiFixWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
