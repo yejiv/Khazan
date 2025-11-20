@@ -75,6 +75,31 @@ HRESULT CGameObject::Deferred_Render(ID3D11DeviceContext* pDeferredContext)
 	return S_OK;
 }
 
+_vector CGameObject::Get_Position()
+{
+    return m_pTransformCom->Get_State(STATE::POSITION);
+}
+
+_vector CGameObject::Get_Look()
+{
+    return m_pTransformCom->Get_State(STATE::LOOK);
+}
+
+_vector CGameObject::Get_Right()
+{
+    return m_pTransformCom->Get_State(STATE::RIGHT);
+}
+
+_vector CGameObject::Get_Up()
+{
+    return m_pTransformCom->Get_State(STATE::UP);
+}
+
+CTransform* CGameObject::Get_Transform()
+{
+    return m_pTransformCom;
+}
+
 HRESULT CGameObject::Add_Component(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, const _wstring& strComponentTag, CComponent** ppOut, void* pArg)
 {
 	if (nullptr != Get_Component(strComponentTag))

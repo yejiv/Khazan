@@ -1252,9 +1252,9 @@ CGameObject* CCamera_Compre::Clone(void* pArg)
 
 void CCamera_Compre::Free()
 {
+    Safe_Release(m_pLockOnUI);
     __super::Free();
 
-    Safe_Release(m_pLockOnUI);
     Safe_Release(m_pBody);
 
     m_pObjMatrix = nullptr;

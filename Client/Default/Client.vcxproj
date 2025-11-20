@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -221,6 +221,7 @@
     <ClInclude Include="..\public\ItemInfo_RandomEffect.h" />
     <ClInclude Include="..\Public\Lever.h" />
     <ClInclude Include="..\Public\Lever_Gear.h" />
+    <ClInclude Include="..\public\Khazan_Spear_Anim_Fall.h" />
     <ClInclude Include="..\Public\LoadingObj_BN.h" />
     <ClInclude Include="..\public\Inven_State_Panel.h" />
     <ClInclude Include="..\public\Lantern_Khazan_Spear.h" />
@@ -405,6 +406,10 @@
     <ClInclude Include="..\public\UI_State_List.h" />
     <ClInclude Include="..\public\UI_State_MainPanel.h" />
     <ClInclude Include="..\public\UI_State_Panel.h" />
+    <ClInclude Include="..\public\UI_WorldFX.h" />
+    <ClInclude Include="..\public\UI_WorldList.h" />
+    <ClInclude Include="..\public\UI_WorldTex.h" />
+    <ClInclude Include="..\public\UI_Talk_Daphrona.h" />
     <ClInclude Include="..\public\UI_Text.h" />
     <ClInclude Include="..\public\UI_TextBox.h" />
     <ClInclude Include="..\public\UI_Texture.h" />
@@ -418,6 +423,7 @@
     <ClInclude Include="..\public\UI_BackGround.h" />
     <ClInclude Include="..\public\UI_Atlas_Icon.h" />
     <ClInclude Include="..\public\UI_Tutorial.h" />
+    <ClInclude Include="..\public\UI_WorldTextBox.h" />
     <ClInclude Include="..\Public\Viper_Trigger.h" />
     <ClInclude Include="..\Public\Yetuga.h" />
     <ClInclude Include="Client.h" />
@@ -486,6 +492,7 @@
     <ClCompile Include="..\private\ItemInfo_RandomEffect.cpp" />
     <ClCompile Include="..\Private\Lever.cpp" />
     <ClCompile Include="..\Private\Lever_Gear.cpp" />
+    <ClCompile Include="..\private\Khazan_Spear_Anim_Fall.cpp" />
     <ClCompile Include="..\Private\LoadingObj_BN.cpp" />
     <ClCompile Include="..\private\Inven_State_Panel.cpp" />
     <ClCompile Include="..\private\Lantern_Khazan_Spear.cpp" />
@@ -663,6 +670,10 @@
     <ClCompile Include="..\private\UI_State_List.cpp" />
     <ClCompile Include="..\private\UI_State_MainPanel.cpp" />
     <ClCompile Include="..\private\UI_State_Panel.cpp" />
+    <ClCompile Include="..\private\UI_WorldFX.cpp" />
+    <ClCompile Include="..\private\UI_WorldList.cpp" />
+    <ClCompile Include="..\private\UI_WorldTex.cpp" />
+    <ClCompile Include="..\private\UI_Talk_Daphrona.cpp" />
     <ClCompile Include="..\private\UI_Text.cpp" />
     <ClCompile Include="..\private\UI_TextBox.cpp" />
     <ClCompile Include="..\private\UI_Texture.cpp" />
@@ -676,6 +687,7 @@
     <ClCompile Include="..\private\UI_BackGround.cpp" />
     <ClCompile Include="..\private\UI_Atlas_Icon.cpp" />
     <ClCompile Include="..\private\UI_Tutorial.cpp" />
+    <ClCompile Include="..\private\UI_WorldTextBox.cpp" />
     <ClCompile Include="..\Private\Viper_Trigger.cpp" />
     <ClCompile Include="..\Private\Yetuga.cpp" />
     <ClCompile Include="Client.cpp" />

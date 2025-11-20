@@ -112,11 +112,11 @@ void CUI_BladeNexus_Map::Priority_Update(_float fTimeDelta)
 
 void CUI_BladeNexus_Map::Update(_float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_8))
-        On_Panel(ONTYPE::HEINMACH);
+    //if (m_pGameInstance->Key_Down(DIK_8))
+    //    On_Panel(ONTYPE::HEINMACH);
 
-    if (m_pGameInstance->Key_Down(DIK_7))
-        On_Panel(ONTYPE::EMBARS);
+    //if (m_pGameInstance->Key_Down(DIK_7))
+    //    On_Panel(ONTYPE::EMBARS);
 
     if (!m_IsUpdate)
         return;

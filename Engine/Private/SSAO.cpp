@@ -38,13 +38,13 @@ HRESULT CSSAO::Bind_SSAO_ShaderResources(CShader* pShader)
     if (FAILED(pShader->Bind_RawValue("g_iNumKernels", &m_Config.iNumKernels, sizeof(_uint))))
         return E_FAIL;
 
-    if (FAILED(pShader->Bind_RawValue("g_fRadius", &m_Config.fRadius, sizeof(_float))))
+    if (FAILED(pShader->Bind_RawValue("g_fSSAORadius", &m_Config.fRadius, sizeof(_float))))
         return E_FAIL;
 
-    if (FAILED(pShader->Bind_RawValue("g_fIntensity", &m_Config.fIntensity, sizeof(_float))))
+    if (FAILED(pShader->Bind_RawValue("g_fSSAOIntensity", &m_Config.fIntensity, sizeof(_float))))
         return E_FAIL;
 
-    if (FAILED(pShader->Bind_RawValue("g_fContrast", &m_Config.fConstrast, sizeof(_float))))
+    if (FAILED(pShader->Bind_RawValue("g_fSSAOContrast", &m_Config.fConstrast, sizeof(_float))))
         return E_FAIL;
 
     return S_OK;

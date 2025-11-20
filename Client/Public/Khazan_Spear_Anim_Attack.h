@@ -57,6 +57,8 @@ public:
 
 private:
 	class CClientInstance* m_pClientInstance = { nullptr };
+    PLAYER_DATA* m_pPlayerData = { nullptr };
+
 
     _bool           m_isSkilling = { false };
 	_bool			m_isAttacking = { false };
@@ -72,6 +74,8 @@ private:
 	_bool			m_isStrongCharge = { false };
 	const _float	m_fFastAttackComboPossibleMaxFrame = { 30.f };
 	const _float	m_fStrongAttackComboPossibleMaxFrame = { 30.f };
+
+    _bool           m_isAutoComboBrutal = { false };
 
 	/* SKill */
     _uint           m_iCurSkillIndex = { };

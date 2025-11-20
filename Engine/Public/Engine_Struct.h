@@ -283,6 +283,14 @@ namespace Engine
         float           fStrength;
     }MOTION_BLUR_DESC;
 
+    typedef struct tagRimLightDesc
+    {
+        float           fPower;
+        bool            isToonLight;
+        float           fToonThreshold;
+        float           fIntensity;
+    }RIM_LIGHT_DESC;
+
 	struct HitStopState
 	{
 		bool isActive = false;

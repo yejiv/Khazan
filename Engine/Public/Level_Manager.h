@@ -25,11 +25,14 @@ public:
 
 public:
 	_uint Get_CurrentLevelID() { return m_iCurrentLevelID; }
+	_uint Get_NextLevelID() { return m_iNextLevelID; }
+	void  Set_NextLevelID(_uint NextLevelID) { m_iNextLevelID = NextLevelID; }
 
 private:
 	class CLevel*				m_pCurrentLevel = { nullptr };
 	class CGameInstance*		m_pGameInstance = { nullptr };
 	_uint						m_iCurrentLevelID = { };
+	_uint						m_iNextLevelID = { };
 
 private:
 	HRESULT Clear_Resources();

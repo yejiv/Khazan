@@ -29,6 +29,9 @@ HRESULT CLevel_Map::Initialize()
 	m_pGameInstance->Set_EnableFog(false);
 	m_pGameInstance->Set_EnableOutline(false);
 	m_pGameInstance->Set_EnableToonShade(false);
+    m_pGameInstance->Set_EnableMotionBlur(false);
+    m_pGameInstance->Set_EnableRadialBlur(false);
+    m_pGameInstance->Set_EnableLUT(false);
 #endif
 	return S_OK;
 }
@@ -498,12 +501,30 @@ HRESULT CLevel_Map::Ready_Main_Window()
 					if (ImGui::Button("OUTLINE OFF"))
 						m_pGameInstance->Set_EnableOutline(false);
 					SEPARATOR;
-					if (ImGui::Button("TOONSHADE ON"))
-						m_pGameInstance->Set_EnableToonShade(true);
-					SAMELINE;
-					if (ImGui::Button("TOONSHADE OFF"))
-						m_pGameInstance->Set_EnableToonShade(false);
-					SEPARATOR;
+                    if (ImGui::Button("TOONSHADE ON"))
+                        m_pGameInstance->Set_EnableToonShade(true);
+                    SAMELINE;
+                    if (ImGui::Button("TOONSHADE OFF"))
+                        m_pGameInstance->Set_EnableToonShade(false);
+                    SEPARATOR;
+                    if (ImGui::Button("MOTIONBLUR ON"))
+                        m_pGameInstance->Set_EnableMotionBlur(true);
+                    SAMELINE;
+                    if (ImGui::Button("MOTIONBLUR OFF"))
+                        m_pGameInstance->Set_EnableMotionBlur(false);
+                    SEPARATOR;
+                    if (ImGui::Button("RADIALBLUR ON"))
+                        m_pGameInstance->Set_EnableRadialBlur(true);
+                    SAMELINE;
+                    if (ImGui::Button("RADIALBLUR OFF"))
+                        m_pGameInstance->Set_EnableRadialBlur(false);
+                    SEPARATOR;
+                    if (ImGui::Button("LUT ON"))
+                        m_pGameInstance->Set_EnableLUT(true);
+                    SAMELINE;
+                    if (ImGui::Button("LUT OFF"))
+                        m_pGameInstance->Set_EnableLUT(false);
+                    SEPARATOR;
 				}
 
 				ImGui::Text("SPHERE");
