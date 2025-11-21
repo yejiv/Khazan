@@ -1,7 +1,6 @@
 #pragma once
 #include "UI_Panel.h"
 #include "Client_Defines.h"
-#include "UI_BladeNexus.h"
 
 NS_BEGIN(Engine)
 class CShader;

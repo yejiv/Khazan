@@ -84,16 +84,23 @@ void CStore_List::Update(_float fTimeDelta)
     if (m_bIsSelete)
     {
         Render_ItemInfo();
-        if (m_pGameInstance->Key_Down(DIK_F, INPUT_TYPE::UI) && *m_pPlayerGold >= m_iAdd_Gold)
+        if (m_pGameInstance->Key_Down(DIK_F, INPUT_TYPE::UI))
         {
-            CPopup_Item::POPUP_ITEM_DESC Desc;
-            Desc.isSale = false;
-            Desc.iItemIndex = m_iItemIndex;
-            Desc.Event = [this]() {
-                static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(m_iItemIndex);
-                static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, -m_iAdd_Gold);
-                };
-            CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Popup_Item"), &Desc);
+            if (*m_pPlayerGold >= m_iAdd_Gold)
+            {
+                CPopup_Item::POPUP_ITEM_DESC Desc;
+                Desc.isSale = false;
+                Desc.iItemIndex = m_iItemIndex;
+                Desc.Event = [this]() {
+                    static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(m_iItemIndex);
+                    static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, -m_iAdd_Gold);
+                    };
+                CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Popup_Item"), &Desc);
+            }
+            else
+            {
+                m_pGameInstance->Emit_Event< EVENT_ANNOUNCE_WARNING>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_WARNING), { TEXT("골드가 부족합니다.") });
+            }
         }
     }
     if (*m_pPlayerGold >= m_iAdd_Gold)

@@ -24,11 +24,14 @@
 
 #include "UI_Announce_Result.h"
 #include "UI_Announce_Over.h"
+#include "UI_Announce_Warning.h"
 
 #include "Amount_Info.h"
 
 #include "Popup_Reset.h"
 #include "Popup_Item.h"
+
+#include "Collection_Info.h"
 
 //서브 UI
 #include "MainMenu_Deco.h"

@@ -515,6 +515,10 @@ HRESULT CLoader::Loading_For_UI_Level()
         CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/BG/T_Texture_Bg_UI.png"), 1))))
         return E_FAIL;
 
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_UI_FX_Mask"),
+        CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Mask/T_Fx_%d.png"), 14))))
+        return E_FAIL;
+
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_Hud_HPGauge"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Hud/State/T_Hud_Gauge_HP_0%d.png"), 7))))
 		return E_FAIL;
@@ -582,6 +586,11 @@ HRESULT CLoader::Loading_For_UI_Level()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_UI_Flag"),
         CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Flag/T_SkillTreeBg_0%d.png"), 2))))
         return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_UI_Collect_Line"),
+        CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Common/T_Img_MemoryCollect_Line.png"), 1))))
+        return E_FAIL;
+
 	lstrcpy(m_szLoadingText, TEXT("게임오브젝트원형를 로딩중입니다."));
 
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_GameObject_Camera_UI"),

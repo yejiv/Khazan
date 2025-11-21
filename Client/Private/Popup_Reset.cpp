@@ -5,7 +5,6 @@
 #include "UI_TextBox.h"
 #include "UI_Default_Tex.h"
 #include "UI_BackGround.h"
-#include "Store_Slot.h"
 
 CPopup_Reset::CPopup_Reset(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Panel{ pDevice, pContext }

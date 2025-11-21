@@ -63,7 +63,6 @@ void CPopup_Item::Update(_float fTimeDelta)
     else if (m_pGameInstance->Key_Down(DIK_ESCAPE, INPUT_TYPE::POPUP))
     {
         m_IsUpdate = false;
-        m_pGameInstance->Change_InputType(INPUT_TYPE::UI);
         m_isChangeInputType = true;
     }
 }

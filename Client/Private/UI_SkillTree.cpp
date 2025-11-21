@@ -273,11 +273,19 @@ void CUI_SkillTree::InputKey()
 	_bool isInput = false;
     if (m_pGameInstance->Key_Down(DIK_LCONTROL, INPUT_TYPE::UI))
     {
-        CPopup_Reset::POPUP_RESET_DESC Desc;
-        Desc.Event = [this]() {
-            m_pGameInstance->Emit_Event<EVENT_SKILL_RESET>(ENUM_CLASS(EVENT_TYPE::SKILL_RESET), {});
-             };
-        CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Popup_Reset"), &Desc);
+        _int iLevel = CClientInstance::GetInstance()->Get_PlayerData().iSkillLevel;
+        _int iCulPoint = CClientInstance::GetInstance()->Get_PlayerData().iSkilPoint;
+
+        if ((iLevel - iCulPoint) > 0)
+        {
+            CPopup_Reset::POPUP_RESET_DESC Desc;
+            Desc.Event = [this]() {
+                m_pGameInstance->Emit_Event<EVENT_SKILL_RESET>(ENUM_CLASS(EVENT_TYPE::SKILL_RESET), {});
+                };
+            CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Popup_Reset"), &Desc);
+        }
+        else
+            m_pGameInstance->Emit_Event< EVENT_ANNOUNCE_WARNING>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_WARNING), { TEXT("획득한 스킬이 없습니다.") });
     }
     else if (m_pGameInstance->Key_Down(DIK_E, INPUT_TYPE::UI))
 	{

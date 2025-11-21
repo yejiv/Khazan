@@ -14,6 +14,8 @@
 
 #include "Amount_Info.h"
 #include "Popup_Item.h"
+#include "Collection_Info.h"
+
 CItem_Slot::CItem_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Slot{ pDevice, pContext }
 {
@@ -206,6 +208,7 @@ void CItem_Slot::Late_Update(_float fTimeDelta)
             const ITEM_DATA* pData = CClientInstance::GetInstance()->Get_Data<ITEM_DATA>(m_iItemIndex);
             if (pData->iLachryma == -1 && pData->iGold == -1)
             {
+                m_pGameInstance->Emit_Event< EVENT_ANNOUNCE_WARNING>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_WARNING), { TEXT("판매 불가 아이템입니다.") });
             }
             else
             {
@@ -216,6 +219,10 @@ void CItem_Slot::Late_Update(_float fTimeDelta)
                 CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Popup_Item"), &Desc);
 
             }
+        }
+        else
+        {
+            m_pGameInstance->Emit_Event< EVENT_ANNOUNCE_WARNING>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_WARNING), { TEXT("장착중인 아이템은 판매가 불가합니다.") });
         }
     }
     if (m_iState == ENUM_CLASS(UISTATE::ENABLE))
@@ -475,6 +482,13 @@ void CItem_Slot::Selete_Item()
 
 void CItem_Slot::Equip_Item()
 {
+    if (m_iItemType == ENUM_CLASS(CUI_Inven::ITEMTYPE::COLLECTION))
+    {
+        CCollection_Info::COLLECTIONINFO_DESC Desc;
+        Desc.iItemIndex = m_iItemIndex;
+        CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Collection_Info"), &Desc);
+    }
+
     if (m_iItemType > ENUM_CLASS(CUI_Inven::ITEMTYPE::ATIVE))
         return;
     

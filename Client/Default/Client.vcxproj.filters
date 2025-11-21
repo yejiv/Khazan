@@ -877,6 +877,12 @@
     <Filter Include="02.GameObject\UI\Popup\Item">
       <UniqueIdentifier>{fd74c474-c63e-449c-8d4d-0712b7c42bc2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Collection_Info">
+      <UniqueIdentifier>{ed616a4c-fafb-42ae-92dd-2715e1e7494f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Announce\Warning">
+      <UniqueIdentifier>{f75dcbe4-c28c-4c25-92e5-044f03cf3b4d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1706,6 +1712,12 @@
     <ClInclude Include="..\public\Popup_Item.h">
       <Filter>02.GameObject\UI\Popup\Item</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Collection_Info.h">
+      <Filter>02.GameObject\UI\Collection_Info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Announce_Warning.h">
+      <Filter>02.GameObject\UI\Announce\Warning</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2514,6 +2526,12 @@
     </ClCompile>
     <ClCompile Include="..\private\Popup_Item.cpp">
       <Filter>02.GameObject\UI\Popup\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Collection_Info.cpp">
+      <Filter>02.GameObject\UI\Collection_Info</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Announce_Warning.cpp">
+      <Filter>02.GameObject\UI\Announce\Warning</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

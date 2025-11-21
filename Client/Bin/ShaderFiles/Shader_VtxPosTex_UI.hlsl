@@ -429,6 +429,28 @@ PS_OUT PS_WORLD_UV_TEX_ALPHA(PS_IN In)
 
 }
 
+PS_OUT PS_TEX_BLUER_PASS(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+         
+    Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
+    Out.vColor.a = Out.vColor.r * g_vColor.a * g_fAlpha;
+    Out.vColor.rgb = Out.vColor.r * g_vColor.rgb;
+    
+    return Out;
+}
+
+PS_OUT PS_TEX_WARNING_PASS(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+         
+    Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
+    Out.vColor.rgb = Out.vColor.r * g_vColor.rgb;
+    Out.vColor.a = Out.vColor.a * g_vColor.a * g_fAlpha;
+    
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     pass DefaultPass
@@ -656,6 +678,27 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_WORLD_UV_TEX_ALPHA();
+    }
+    pass PS_TEX_BLUER_PASS //21
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_TEX_BLUER_PASS();
+    }
+
+    pass PS_TEX_WARNING_PASS //22
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_TEX_WARNING_PASS();
     }
 
 }

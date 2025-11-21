@@ -212,6 +212,7 @@
     <ClInclude Include="..\public\BladeNexus_List.h" />
     <ClInclude Include="..\public\BladeNexus_Map_BG.h" />
     <ClInclude Include="..\Public\Body_Imp_Melee.h" />
+    <ClInclude Include="..\public\Collection_Info.h" />
     <ClInclude Include="..\Public\Door_Gear.h" />
     <ClInclude Include="..\Public\ElevatorS.h" />
     <ClInclude Include="..\Public\Elevator_Gear.h" />
@@ -237,6 +238,7 @@
     <ClInclude Include="..\Public\Slate_Switch.h" />
     <ClInclude Include="..\public\Store_List.h" />
     <ClInclude Include="..\public\Store_Slot.h" />
+    <ClInclude Include="..\public\UI_Announce_Warning.h" />
     <ClInclude Include="..\public\UI_BladeNexus_Map.h" />
     <ClInclude Include="..\public\BladeNexus_Map_List.h" />
     <ClInclude Include="..\Public\Body_Gomdol.h" />
@@ -491,6 +493,7 @@
     <ClCompile Include="..\private\BladeNexus_List.cpp" />
     <ClCompile Include="..\private\BladeNexus_Map_BG.cpp" />
     <ClCompile Include="..\Private\Body_Imp_Melee.cpp" />
+    <ClCompile Include="..\private\Collection_Info.cpp" />
     <ClCompile Include="..\Private\Door_Gear.cpp" />
     <ClCompile Include="..\Private\ElevatorS.cpp" />
     <ClCompile Include="..\Private\Elevator_Gear.cpp" />
@@ -516,6 +519,7 @@
     <ClCompile Include="..\Private\Slate_Switch.cpp" />
     <ClCompile Include="..\private\Store_List.cpp" />
     <ClCompile Include="..\private\Store_Slot.cpp" />
+    <ClCompile Include="..\private\UI_Announce_Warning.cpp" />
     <ClCompile Include="..\private\UI_BladeNexus_Map.cpp" />
     <ClCompile Include="..\private\BladeNexus_Map_List.cpp" />
     <ClCompile Include="..\Private\Body_Gomdol.cpp" />
