@@ -859,6 +859,15 @@
     <Filter Include="02.GameObject\UI\Amount_Info">
       <UniqueIdentifier>{e971ff75-65a5-470d-8e04-1da488b58d20}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Store">
+      <UniqueIdentifier>{74fac50a-1664-46c6-aa70-699efe565b76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Store\List">
+      <UniqueIdentifier>{92ee1466-b29f-4f14-8a87-9992eafae248}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Store\List\Slot">
+      <UniqueIdentifier>{88897891-3537-4e68-9080-16031cab3f42}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1673,6 +1682,15 @@
     <ClInclude Include="..\public\Amount_Info.h">
       <Filter>02.GameObject\UI\Amount_Info</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\UI_Store.h">
+      <Filter>02.GameObject\UI\Store</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Store_List.h">
+      <Filter>02.GameObject\UI\Store\List</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Store_Slot.h">
+      <Filter>02.GameObject\UI\Store\List\Slot</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2466,6 +2484,15 @@
     </ClCompile>
     <ClCompile Include="..\private\Amount_Info.cpp">
       <Filter>02.GameObject\UI\Amount_Info</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Store.cpp">
+      <Filter>02.GameObject\UI\Store</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Store_List.cpp">
+      <Filter>02.GameObject\UI\Store\List</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Store_Slot.cpp">
+      <Filter>02.GameObject\UI\Store\List\Slot</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

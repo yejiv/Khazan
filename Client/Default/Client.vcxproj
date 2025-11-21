@@ -233,6 +233,8 @@
     <ClInclude Include="..\public\Skill_BG_Smoke.h" />
     <ClInclude Include="..\public\Skill_Slot_Flag.h" />
     <ClInclude Include="..\Public\Slate_Switch.h" />
+    <ClInclude Include="..\public\Store_List.h" />
+    <ClInclude Include="..\public\Store_Slot.h" />
     <ClInclude Include="..\public\UI_BladeNexus_Map.h" />
     <ClInclude Include="..\public\BladeNexus_Map_List.h" />
     <ClInclude Include="..\Public\Body_Gomdol.h" />
@@ -407,6 +409,7 @@
     <ClInclude Include="..\public\UI_State_List.h" />
     <ClInclude Include="..\public\UI_State_MainPanel.h" />
     <ClInclude Include="..\public\UI_State_Panel.h" />
+    <ClInclude Include="..\public\UI_Store.h" />
     <ClInclude Include="..\public\UI_Talk_Dangin.h" />
     <ClInclude Include="..\public\UI_Talk_Trader.h" />
     <ClInclude Include="..\public\UI_WorldFX.h" />
@@ -507,6 +510,8 @@
     <ClCompile Include="..\private\Skill_BG_Smoke.cpp" />
     <ClCompile Include="..\private\Skill_Slot_Flag.cpp" />
     <ClCompile Include="..\Private\Slate_Switch.cpp" />
+    <ClCompile Include="..\private\Store_List.cpp" />
+    <ClCompile Include="..\private\Store_Slot.cpp" />
     <ClCompile Include="..\private\UI_BladeNexus_Map.cpp" />
     <ClCompile Include="..\private\BladeNexus_Map_List.cpp" />
     <ClCompile Include="..\Private\Body_Gomdol.cpp" />
@@ -674,6 +679,7 @@
     <ClCompile Include="..\private\UI_State_List.cpp" />
     <ClCompile Include="..\private\UI_State_MainPanel.cpp" />
     <ClCompile Include="..\private\UI_State_Panel.cpp" />
+    <ClCompile Include="..\private\UI_Store.cpp" />
     <ClCompile Include="..\private\UI_Talk_Dangin.cpp" />
     <ClCompile Include="..\private\UI_Talk_Trader.cpp" />
     <ClCompile Include="..\private\UI_WorldFX.cpp" />

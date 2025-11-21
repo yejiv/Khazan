@@ -7,6 +7,7 @@
 #include "UI_WorldList.h"
 
 #include "UI_Inven.h"
+#include "UI_Store.h"
 
 CUI_Talk_Dangin::CUI_Talk_Dangin(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Panel{ pDevice, pContext }
@@ -140,6 +141,8 @@ HRESULT CUI_Talk_Dangin::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_Children(), E_FAIL);
 
     CClientInstance::GetInstance()->Add_RootUI(AnsiToWString(m_szName), this);
+
+    Ready_Item();
     return S_OK;
 }
 void CUI_Talk_Dangin::Priority_Update(_float fTimeDelta)
@@ -194,8 +197,13 @@ void CUI_Talk_Dangin::Update(_float fTimeDelta)
         }
         else if (m_iSelete == 1 && m_eType == TALK_TYPE::START)
         {
+            CUI_Store::STOER_DESC Desc;
+            Desc.isOpen = true;
+            Desc.szName = m_szName;
+            Desc.ItemIndex = m_ItemIndex;
+            m_isUIOpen = true;
+            CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Store"), &Desc);
             Off_Panel();
-            m_isUIOpen = false;
         }
         else if (m_iSelete == 2 && m_eType == TALK_TYPE::START)
         {
@@ -360,6 +368,15 @@ HRESULT CUI_Talk_Dangin::Ready_Children()
     m_pText3->Set_TextTag(TEXT("Blade_Medium_20"));
 
     return S_OK;
+}
+
+void CUI_Talk_Dangin::Ready_Item()
+{
+    m_ItemIndex.push_back(1101);
+    m_ItemIndex.push_back(1102);
+    m_ItemIndex.push_back(3001);
+    m_ItemIndex.push_back(3006);
+    m_ItemIndex.push_back(3002);
 }
 
 void CUI_Talk_Dangin::Update_Selete()

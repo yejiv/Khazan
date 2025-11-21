@@ -20,6 +20,7 @@
 #include "UI_Loading.h"
 #include "UI_Tutorial.h"
 #include "UI_SkillTree.h"
+#include "UI_Store.h"
 
 #include "UI_Announce_Result.h"
 #include "UI_Announce_Over.h"

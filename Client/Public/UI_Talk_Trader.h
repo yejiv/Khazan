@@ -59,9 +59,12 @@ private:
     _float							m_fAccTime = {};
     UIANIMSTATE						m_eAnimState = { UIANIMSTATE::END };
     _bool                           m_isUIOpen = {};
+
+    vector<_int>                    m_ItemIndex;
 private:
     HRESULT					        Ready_Component();
     HRESULT                         Ready_Children();
+    void                            Ready_Item();
 
     void                            Update_Selete();
     void                            Setting_Talk();
