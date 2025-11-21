@@ -41,6 +41,7 @@
 #include "Fence.h"
 #include "Pot.h"
 #include "Barrel.h"
+#include "Obelisk.h"
 
 // Test
 #include "Prop_Test.h"

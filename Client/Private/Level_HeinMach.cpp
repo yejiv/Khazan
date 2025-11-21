@@ -1267,6 +1267,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_DEST(const _wstring& strLayerTag,
     if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Barrel"), TIME_CHANNEL::WORLD, &BarrelDesc)))
         return E_FAIL;
+
     return S_OK;
 }
 

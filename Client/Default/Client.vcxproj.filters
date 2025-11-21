@@ -859,6 +859,21 @@
     <Filter Include="02.GameObject\MapObject\00.Prop\05.Destructible\02.Barrel">
       <UniqueIdentifier>{ed27f2e0-6605-4c35-9751-1766c8f13952}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\05.Destructible\03.Obelisk">
+      <UniqueIdentifier>{a76472b6-094c-4637-8e48-f1a4b47f53f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\Viper">
+      <UniqueIdentifier>{def6f9d1-130e-4704-a8e9-f5510a4d2b91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\Viper\SecondPhase">
+      <UniqueIdentifier>{ec2cad1b-4fe0-4ae6-b08e-51144b1086f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\Sequence">
+      <UniqueIdentifier>{c3f87c67-3414-4bd3-8813-6a1208d4a786}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\Sequence\Data">
+      <UniqueIdentifier>{5d6e7d11-f747-47ff-92d3-10d825f8e6c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1673,6 +1688,15 @@
     <ClInclude Include="..\Public\Barrel.h">
       <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\02.Barrel</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Obelisk.h">
+      <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\03.Obelisk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sequence_Viper_SecondPhase.h">
+      <Filter>04.Sequence\Viper\SecondPhase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sequence_Data_Manager.h">
+      <Filter>94.ClientInstance\Sequence\Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2466,6 +2490,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\Barrel.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\02.Barrel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Obelisk.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\03.Obelisk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_Viper_SecondPhase.cpp">
+      <Filter>04.Sequence\Viper\SecondPhase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_Data_Manager.cpp">
+      <Filter>94.ClientInstance\Sequence\Data</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

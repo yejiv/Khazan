@@ -37,7 +37,14 @@ public:
     virtual void			Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
 
 public:
-    void Destory(_float3 vVelocity, _float3 vHitPos);
+    void Destory(_float3 vVelocity, _float3 vHitPos, _bool isHit = true, _float fLifeTime = 3.f, _float fImpulse = 10.f, _float fTorque = 0.f);
+    void Explode(_float3 vExplosionPos, _float fImpulse, _float fTorque, _float fLifeTime = 10.f);
+    void VortexExplode(const _float3& vCenter, _float fRadialImpulse, _float fTangentialImpulse, _float fUpImpulse, _float fBaseTorque, _float fLifeTime = 10.f);
+    void ExplodeOnce(_float3 vExplosionPos, _float fImpulse, _float fTorque);
+
+public:
+    void StartVortex(const _float3& vCenter);
+    void StopVortex();
 
 private:
     class CModel* m_pModelCom = { nullptr };
@@ -49,6 +56,18 @@ private:
 
     _float3 m_vVelocity = {};
     _float3 m_vHitPos = {};
+    _float3 m_vCenterPos = {};
+    _float m_fImpulse = {};
+    _float m_fRadialImpulse = {};
+    _float m_fTangentialImpulse = {};
+    _float m_fUpImpulse = {};
+    _float m_fTorque = {};
+
+    _float3 m_vExplosionPos = {};
+    _bool m_isHit = { false };
+    _bool m_isExplode = { false };
+    _bool m_isVortexExplode = { false };
+    _bool m_isVortex = { false };
 private:
     HRESULT Ready_Components(void* pArg);
     HRESULT Ready_Collision(void* pArg);

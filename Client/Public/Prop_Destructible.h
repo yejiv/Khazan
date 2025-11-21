@@ -14,7 +14,7 @@ class CProp_Destructible : public CProp
 public:
     typedef struct tagPropDestructibleDesc : public CProp::PROP_DESC
     {
-
+        _uint iIndex;
     }PROP_DEST_DESC;
 protected:
     CProp_Destructible(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -38,6 +38,7 @@ protected:
     class CBody* m_pBodyCom = { nullptr };
 
     _bool m_isDestruct = { false };
+    _uint m_iIndex = {};
 
     vector<class CProp_Chunk*> m_Chunks;
 
