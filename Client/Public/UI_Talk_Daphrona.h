@@ -61,6 +61,9 @@ private:
 
     _float							m_fAccTime = {};
     UIANIMSTATE						m_eAnimState = { UIANIMSTATE::END };
+
+    _float                          m_fSpeedWeight = {};
+    _bool                           m_isWeightUp = {};
 private:
     HRESULT					        Ready_Component();
     HRESULT                         Ready_Children();
