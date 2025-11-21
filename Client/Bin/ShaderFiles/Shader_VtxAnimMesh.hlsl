@@ -59,15 +59,10 @@ struct VS_OUT
     float4 vProjPos : TEXCOORD2;
 };
 
-/* ?젙?젏?뎽?씠?뜑 : ?젙?젏 ?쐞移섏쓽 ?뒪?럹?씠?뒪 蹂??솚(濡쒖뺄 -> ?썡?뱶 -> 酉? -> ?닾?쁺). */ 
-/*          : ?젙?젏?쓽 援ъ꽦?쓣 蹂?寃?.(in:3媛?, out:2媛? or 5媛?) */
-/*          : ?젙?젏 ?떒?쐞(?젙?젏 ?븯?굹?떦 VS_MAIN?븳踰덊샇異?) */ 
 VS_OUT VS_MAIN(VS_IN In)
 {
     VS_OUT Out = (VS_OUT) 0;
-    
-    /* ?젙?젏?쓽 濡쒖뺄?쐞移? * ?썡?뱶 * 酉? * ?닾?쁺 */ 
-    
+
     float fWeightW = 1.f - (In.vBlendWeight.x + In.vBlendWeight.y + In.vBlendWeight.z);
     
     matrix BoneMatrix =

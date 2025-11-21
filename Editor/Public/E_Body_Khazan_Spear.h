@@ -5,6 +5,7 @@
 NS_BEGIN(Engine)
 class CShader;
 class CModel;
+class CMotionTrail;
 NS_END
 
 NS_BEGIN(Editor)
@@ -38,8 +39,10 @@ public:
 	virtual void        Late_Update(_float fTimeDelta);
 	virtual HRESULT     Render();
 	virtual HRESULT     Render_Shadow() override;
+    virtual HRESULT     Render_MotionTrail() override;
 	void			    Render_Part(CModel* pModel);
 	void			    Render_Part_Shadow(CModel* pModel);
+    void                Render_Part_MotionTrail(CModel* pModel, class CShader* pShader);
 
 public:
 	CModel*             Get_Model() { return m_pModelCom; }
@@ -53,6 +56,7 @@ private:
 	class CTransform*   m_pParentTransform = { nullptr };   
 
     CShader*            m_pShaderCom = { nullptr };
+
     CModel*             m_pModelCom = { nullptr };
     CModel*             m_pModelCom_Arm = { nullptr };
     CModel*             m_pModelCom_Face = { nullptr };
@@ -73,6 +77,9 @@ private:
     // Shader
     _bool               m_isEnableEdge = { true };
     _float              m_fAlpha = { 1.f };
+
+    // Motion Trail Test
+    CMotionTrail*       m_pMotionTrailCom = { nullptr };
 
 private:
     HRESULT				Ready_Components();

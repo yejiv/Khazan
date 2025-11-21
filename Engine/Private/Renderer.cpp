@@ -171,6 +171,12 @@ HRESULT CRenderer::Draw()
         return E_FAIL;
     }
 
+    if (FAILED(Render_MotionTrail()))
+    {
+        MSG_BOX(TEXT("Failed To Render MotionTrail"));
+        return E_FAIL;
+    }
+
     if (FAILED(Render_Blend()))
     {
         MSG_BOX(TEXT("Failed To Render Blend"));
@@ -408,15 +414,15 @@ HRESULT CRenderer::Render_DynamicVelocity()
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Velocity"), false)))
         return E_FAIL;
 
-    for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::MOTION)])
+    for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::MOTIONVECTOR)])
     {
         if (nullptr != pRenderObject)
-            pRenderObject->Render_Motion();
+            pRenderObject->Render_MotionVector();
 
         Safe_Release(pRenderObject);
     }
 
-    m_RenderObjects[ENUM_CLASS(RENDERGROUP::MOTION)].clear();
+    m_RenderObjects[ENUM_CLASS(RENDERGROUP::MOTIONVECTOR)].clear();
 
     if (FAILED(m_pGameInstance->End_MRT()))
         return E_FAIL;
@@ -604,7 +610,15 @@ HRESULT CRenderer::Render_MotionTrail()
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
         return E_FAIL;
     
-    // Render MotionTrails
+    for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::MOTIONTRAIL)])
+    {
+        if (nullptr != pRenderObject)
+            pRenderObject->Render_MotionTrail();
+
+        Safe_Release(pRenderObject);
+    }
+
+    m_RenderObjects[ENUM_CLASS(RENDERGROUP::MOTIONTRAIL)].clear();
 
     if (FAILED(m_pGameInstance->End_MRT()))
         return E_FAIL;
