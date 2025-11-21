@@ -199,6 +199,14 @@ HRESULT CLevel_Title::Ready_Layer_UI()
     if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
         TEXT("../Bin/Resources/UI/UIData/Store.json"))))
         return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/Popup_Reset.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/Popup_Item.json"))))
+        return E_FAIL;
 	return S_OK;
 }
 

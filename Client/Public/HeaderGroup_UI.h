@@ -27,6 +27,9 @@
 
 #include "Amount_Info.h"
 
+#include "Popup_Reset.h"
+#include "Popup_Item.h"
+
 //서브 UI
 #include "MainMenu_Deco.h"
 #include "UI_Announce_MapName.h"
@@ -46,6 +49,8 @@
 #include "UI_Slot_Smoke.h"
 #include "UI_QuickSlot_Skill_Fx.h"
 #include "UI_Slot_Selete_Fx.h"
+
+#include "Store_Slot.h"
 
 //HUD  관련
 #include "BossHp.h"

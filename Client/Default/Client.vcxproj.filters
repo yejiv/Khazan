@@ -868,6 +868,15 @@
     <Filter Include="02.GameObject\UI\Store\List\Slot">
       <UniqueIdentifier>{88897891-3537-4e68-9080-16031cab3f42}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Popup">
+      <UniqueIdentifier>{ac5e1b6e-bf22-4547-a509-fb185e37fe96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Popup\Reset">
+      <UniqueIdentifier>{dd35300e-cb53-49a7-b179-1de4b1503725}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Popup\Item">
+      <UniqueIdentifier>{fd74c474-c63e-449c-8d4d-0712b7c42bc2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1691,6 +1700,12 @@
     <ClInclude Include="..\public\Store_Slot.h">
       <Filter>02.GameObject\UI\Store\List\Slot</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Popup_Reset.h">
+      <Filter>02.GameObject\UI\Popup\Reset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Popup_Item.h">
+      <Filter>02.GameObject\UI\Popup\Item</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2493,6 +2508,12 @@
     </ClCompile>
     <ClCompile Include="..\private\Store_Slot.cpp">
       <Filter>02.GameObject\UI\Store\List\Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Popup_Reset.cpp">
+      <Filter>02.GameObject\UI\Popup\Reset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Popup_Item.cpp">
+      <Filter>02.GameObject\UI\Popup\Item</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

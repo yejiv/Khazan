@@ -226,6 +226,8 @@
     <ClInclude Include="..\Public\LoadingObj_BN.h" />
     <ClInclude Include="..\public\Inven_State_Panel.h" />
     <ClInclude Include="..\public\Lantern_Khazan_Spear.h" />
+    <ClInclude Include="..\public\Popup_Item.h" />
+    <ClInclude Include="..\public\Popup_Reset.h" />
     <ClInclude Include="..\Public\Projectile_Boomarang.h" />
     <ClInclude Include="..\public\Khazan_Spaer_Anim_Damaged.h" />
     <ClInclude Include="..\Public\Prop_Chunk.h" />
@@ -503,6 +505,8 @@
     <ClCompile Include="..\Private\LoadingObj_BN.cpp" />
     <ClCompile Include="..\private\Inven_State_Panel.cpp" />
     <ClCompile Include="..\private\Lantern_Khazan_Spear.cpp" />
+    <ClCompile Include="..\private\Popup_Item.cpp" />
+    <ClCompile Include="..\private\Popup_Reset.cpp" />
     <ClCompile Include="..\Private\Projectile_Boomarang.cpp" />
     <ClCompile Include="..\private\Khazan_Spaer_Anim_Damaged.cpp" />
     <ClCompile Include="..\Private\Prop_Chunk.cpp" />

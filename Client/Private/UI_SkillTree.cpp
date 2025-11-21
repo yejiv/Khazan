@@ -14,6 +14,7 @@
 #include "Skill_Gauge.h"
 #include "Skill_Slot_Panel.h"
 #include "Skill_Slot_Flag.h"
+#include "Popup_Reset.h"
 
 #include "Cursor_Circle_Fx.h"
 #include "Skill_BG_Smoke.h"
@@ -270,8 +271,14 @@ void CUI_SkillTree::InputKey()
 		Off_Panel();
 
 	_bool isInput = false;
-	if(m_pGameInstance->Key_Down(DIK_LCONTROL, INPUT_TYPE::UI))
-        m_pGameInstance->Emit_Event<EVENT_SKILL_RESET>(ENUM_CLASS(EVENT_TYPE::SKILL_RESET), {});
+    if (m_pGameInstance->Key_Down(DIK_LCONTROL, INPUT_TYPE::UI))
+    {
+        CPopup_Reset::POPUP_RESET_DESC Desc;
+        Desc.Event = [this]() {
+            m_pGameInstance->Emit_Event<EVENT_SKILL_RESET>(ENUM_CLASS(EVENT_TYPE::SKILL_RESET), {});
+             };
+        CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Popup_Reset"), &Desc);
+    }
     else if (m_pGameInstance->Key_Down(DIK_E, INPUT_TYPE::UI))
 	{
 		isInput = true;

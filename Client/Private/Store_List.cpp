@@ -11,6 +11,7 @@
 
 #include "UI_Inven.h"
 #include "Amount.h"
+#include "Popup_Item.h"
 CStore_List::CStore_List(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Tap{ pDevice, pContext }
 {
@@ -85,8 +86,14 @@ void CStore_List::Update(_float fTimeDelta)
         Render_ItemInfo();
         if (m_pGameInstance->Key_Down(DIK_F, INPUT_TYPE::UI) && *m_pPlayerGold >= m_iAdd_Gold)
         {
-            static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(m_iItemIndex);
-            static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, -m_iAdd_Gold);
+            CPopup_Item::POPUP_ITEM_DESC Desc;
+            Desc.isSale = false;
+            Desc.iItemIndex = m_iItemIndex;
+            Desc.Event = [this]() {
+                static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(m_iItemIndex);
+                static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, -m_iAdd_Gold);
+                };
+            CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Popup_Item"), &Desc);
         }
     }
     if (*m_pPlayerGold >= m_iAdd_Gold)

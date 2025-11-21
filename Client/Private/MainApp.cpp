@@ -361,6 +361,9 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 {
 	//텍스처
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_GuideTex"),
+        CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/TutorialGuide/GuideTex_%d.dds"), 3)), E_FAIL);
+
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_UI_BackGround"),
         CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/BG/T_Texture_Bg_UI.png"), 1)), E_FAIL);
 
@@ -543,6 +546,15 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Store"),
         CUI_Store::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Store_Slot"),
+        CStore_Slot::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Popup_Reset"),
+        CPopup_Reset::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Popup_Item"),
+        CPopup_Item::Create(m_pDevice, m_pContext)), E_FAIL);
 
 	CUIObject::UIOBJECT_DESC AnnounceDesc = {};
 	AnnounceDesc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };

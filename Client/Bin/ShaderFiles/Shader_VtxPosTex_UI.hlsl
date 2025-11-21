@@ -335,7 +335,7 @@ PS_OUT PS_TUTORIAL(PS_IN In)
     Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
     Out.vColor.a = Out.vColor.a * g_vColor.a * g_fAlpha;
     
-    if(In.vTexcoord.y > 0.84)
+    if(In.vTexcoord.y > g_fValue)
         Out.vColor.rgb *= 1.5f;
     return Out;
 }

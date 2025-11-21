@@ -300,9 +300,6 @@ HRESULT CUI_Store::Ready_Prototype()
     CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Store_List"),
         CStore_List::Create(m_pDevice, m_pContext)), E_FAIL);
 
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_GameObject_UI_Store_Slot"),
-        CStore_Slot::Create(m_pDevice, m_pContext)), E_FAIL);
-
     return S_OK;
 }
 
