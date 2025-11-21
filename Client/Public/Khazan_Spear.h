@@ -312,6 +312,7 @@ private:
 	void						Chest_Event(_float fTimeDelta);
     void						TombStone_Event(_float fTimeDelta);
     void						Lever_Event(_float fTimeDelta);
+    void						Statue_Event(_float fTimeDelta);
 
 private:
     void                        Lerp_Position_ByInteractEvent(_float4 vTargetPos, _float4 vStartPos, _float fDuration, _float fTimeDelta, _bool& isDone);

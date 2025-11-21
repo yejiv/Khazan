@@ -2694,6 +2694,16 @@ void CKhazan_Spear::Event_Interact_Object(_float fTimeDelta)
 
             break;
         }
+        case INTERACTIVE_TYPE::STATUE:
+        {
+            isDone = false;
+
+            if (m_pBody->Get_Model()->IsFinished()) {
+                isDone = true;
+            }
+
+            break;
+        }
         default:
             break;
         }
@@ -2704,7 +2714,9 @@ void CKhazan_Spear::Event_Interact_Object(_float fTimeDelta)
             m_isInteractEventSetting = false;
 
             // 상호작용 활성화시 맵 오브젝트한테 EVENT_STATE를 ON 으로 던져준다
-            m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { EventObject::OnEvent() });
+            _float4 vPosition = {};
+            XMStoreFloat4(&vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+            m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { EventObject::OnEvent_Player(vPosition) });
             // 내 상태를 STATE::NONE 으로 변경해준다.
             m_EventInteract.eState = EventInteractType::EVENT_STATE::NONE;
         }
@@ -2744,6 +2756,11 @@ void CKhazan_Spear::Event_Interact_Object(_float fTimeDelta)
         if (INTERACTIVE_TYPE::LEVER == m_EventInteract.eInteractType)
         {
             Lever_Event(fTimeDelta);
+        }
+        // 조각상 기믹일때
+        if (INTERACTIVE_TYPE::STATUE == m_EventInteract.eInteractType)
+        {
+            Statue_Event(fTimeDelta);
         }
     }
 }
@@ -2908,6 +2925,20 @@ void CKhazan_Spear::Lever_Event(_float fTimeDelta)
         LeverEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
         m_pTransformCom->LookAt(XMLoadFloat4(&LeverEvent.vPosition));
     }
+
+    m_EventInteract.End_Event();
+}
+void CKhazan_Spear::Statue_Event(_float fTimeDelta)
+{
+    EventStatue StatueEvent = m_EventInteract.StatueEvent;
+
+    // 플레이어가 석상을 돌리는 애니메이션 실행
+
+    StatueEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+    m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&StatueEvent.vPlayerPosition));
+    StatueEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    m_pTransformCom->LookAt(XMLoadFloat4(&StatueEvent.vPosition));
 
     m_EventInteract.End_Event();
 }

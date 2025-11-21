@@ -909,6 +909,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
     m_Prototypes_Inter.push_back("Lever");
     m_Prototypes_Inter.push_back("Lever_Gear");
     m_Prototypes_Inter.push_back("Door_Gear");
+    m_Prototypes_Inter.push_back("Statue");
 
 #ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
@@ -1111,6 +1112,21 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
                     CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                         ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Door_Gear"), TIME_CHANNEL::WORLD, &DoorGearDesc), );
                 }
+                else if ("Statue" == m_Prototypes_Inter[m_iIndex_PrtInter])
+                {
+                    CStatue::STATUE_DESC StatueDesc = {};
+
+                    StatueDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    StatueDesc.eLevel = LEVEL::MAP;
+                    memcpy(StatueDesc.szModelName, strModelTag.c_str(), sizeof(StatueDesc.szModelName));		// 프로토타입 태그명
+
+                    XMStoreFloat4x4(&StatueDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    StatueDesc.eInteractiveType = INTERACTIVE_TYPE::STATUE;										// 상호 작용 오브젝트 타입
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Statue"), TIME_CHANNEL::WORLD, &StatueDesc), );
+                        }
 #pragma endregion
 
 				CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));
@@ -1478,6 +1494,23 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
                 ImGui::InputInt("##fix_event_id", &m_iFixEventID);
 
                 pLeorGe->Set_EventID(m_iFixEventID);
+            }
+            if (INTERACTIVE_TYPE::STATUE == m_pFixPropObj->Get_InteractiveType())
+            {
+                CStatue* pStatue = static_cast<CStatue*>(m_pFixPropObj);
+
+                ImGui::Text("== STATUE INFORMATION ==");
+                ImGui::Text("BEFORE EVENT ID : %d", m_iInteractEventID);
+                ImGui::Text("BEFORE UNLOCK ROTATION : %d", m_iUnLockRotation);
+                SEPARATOR;
+                ImGui::Text("FIX EVENT ID : "); SAMELINE;
+                ImGui::InputInt("##fix_event_id", &m_iFixEventID);
+                ImGui::Text("FIX UNLOCK ROTATION : "); SAMELINE;
+                ImGui::InputInt("##fix_rotation_statue", &m_iFixUnLockRotation);
+
+                pStatue->Set_EventID(m_iFixEventID);
+                pStatue->Set_StatueUnLockRotation(m_iFixUnLockRotation);
+                SEPARATOR;
             }
 
 #pragma endregion
@@ -2004,6 +2037,14 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
                             CProp_Interactive* pLever = static_cast<CProp_Interactive*>(m_pFixPropObj);
 
                             m_iFixEventID = m_iInteractEventID = pLever->Get_EventID();
+                        }
+
+                        if (INTERACTIVE_TYPE::STATUE == m_pFixPropObj->Get_InteractiveType())
+                        {
+                            CStatue* pStatue = static_cast<CStatue*>(m_pFixPropObj);
+
+                            m_iFixEventID = m_iInteractEventID = pStatue->Get_EventID();
+                            m_iFixUnLockRotation = m_iUnLockRotation = pStatue->Get_StatueUnLockRotation();
                         }
 
 						m_isFixInteractObjectWindow = true;
@@ -4232,6 +4273,17 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 
                 WriteFile(hObjectFile, &iEventID, sizeof(_int), &dwByte, nullptr);
             }
+            if (INTERACTIVE_TYPE::STATUE == eType)
+            {
+                _int iEventID = static_cast<CProp_Interactive*>(pProp)->Get_EventID();
+
+                WriteFile(hObjectFile, &iEventID, sizeof(_int), &dwByte, nullptr);
+
+                CStatue::STATUE_ROTATION StatueRotation = {};
+                StatueRotation.iUnLockRotation = static_cast<CStatue*>(pProp)->Get_StatueUnLockRotation();
+
+                WriteFile(hObjectFile, &StatueRotation, sizeof(CStatue::STATUE_ROTATION), &dwByte, nullptr);
+            }
 		}
 	}
 
@@ -4884,6 +4936,26 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 
                 CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                     ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Door_Gear"), TIME_CHANNEL::WORLD, &DoorGearDesc), false);
+            }
+            else if (INTERACTIVE_TYPE::STATUE == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CStatue::STATUE_DESC StatueDesc = {};
+
+                StatueDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                StatueDesc.eLevel = LEVEL::MAP;
+                memcpy(StatueDesc.szModelName, TEXT("Prototype_Component_Model_Statue"), sizeof(StatueDesc.szModelName));		// 프로토타입 태그명
+
+                StatueDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+                StatueDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+                // 레버나 기어인 경우 이벤트 아이디 가져오기
+                CHECK_FALSE(ReadFile(hObjectFile, &StatueDesc.iEventID, sizeof(_int), &dwByte, nullptr), false);
+
+                CHECK_FALSE(ReadFile(hObjectFile, &StatueDesc.StatueRotation, sizeof(CStatue::STATUE_ROTATION), &dwByte, nullptr), false);
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Statue"), TIME_CHANNEL::WORLD, &StatueDesc), false);
             }
 
 			CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));
