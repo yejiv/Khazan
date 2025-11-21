@@ -119,8 +119,8 @@ struct PS_IN
 
 struct PS_OUT
 {
-    float4 vColor : SV_TARGET0;
-    float4 vEmissiveColor : SV_TARGET1; 
+    float4 vAccumColor : SV_TARGET0;
+    float4 vAccumAlpha : SV_TARGET1;
 };
 
 struct PS_NORMAL_IN
@@ -214,14 +214,16 @@ PS_OUT PS_MAIN(PS_IN In)
     if (vFinalColor.a <= 0.f)
         discard;
 
+    //Out.vColor = vFinalColor * (g_vSourceColor.a + 1);
+    vFinalColor.xyz *= (g_vSourceColor.a + 1);
     
-    //vFinalColor.a *= 0.2f;
-    
-    // 0 ~ 1 -> 1 ~  3
-    // (g_vSourceColor.a * 2  + 1);
-    Out.vColor = vFinalColor * (g_vSourceColor.a + 1);
-    //Out.vEmissiveColor = vFinalColor * 3.f;
-    //Out.vEmissiveColor.a = 1;
+    //float weight = vFinalColor.a * max(1e-5, (1 - In.vPosition.z));
+    float z = In.vPosition.z / In.vPosition.w; // 0.1 depth
+    //float weight = max(1e-5, (1 - z));
+    float weight = exp(-z * 0.6f);
+
+    Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a * weight, 0.f);
+    Out.vAccumAlpha = vFinalColor.a * weight;
     
     return Out;
 }
@@ -253,8 +255,17 @@ PS_OUT PS_PRESNEL(PS_IN In)
         discard;
 
     //Out.vColor = vFinalColor;
-    Out.vColor = vFinalColor * (g_vSourceColor.a + 1);
+    //Out.vColor = vFinalColor * (g_vSourceColor.a + 1);
 
+    vFinalColor.xyz *= (g_vSourceColor.a + 1);
+    
+    float z = In.vPosition.z / In.vPosition.w;
+    //float weight = max(1e-5, (1 - z));
+    float weight = exp(-z * 0.6f);
+
+    Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a * weight, 0.f);
+    Out.vAccumAlpha.r = vFinalColor.a * weight;
+    
     return Out;
 }
 
@@ -287,8 +298,8 @@ technique11 DefaultTechnique
     pass DefaultPass
     {
         SetRasterizerState(RS_Cull_None);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_DepthTestOnly, 0);
+        SetBlendState(BS_Blend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
@@ -298,8 +309,8 @@ technique11 DefaultTechnique
     pass FresnelPass
     {
         SetRasterizerState(RS_Cull_None);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_DepthTestOnly, 0);
+        SetBlendState(BS_Blend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;

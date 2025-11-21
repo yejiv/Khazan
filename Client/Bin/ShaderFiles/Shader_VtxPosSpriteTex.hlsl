@@ -101,8 +101,8 @@ struct PS_IN
 
 struct PS_OUT
 {
-    float4 vColor : SV_TARGET0;
-    
+    float4 vAccumColor : SV_TARGET0;
+    float4 vAccumAlpha : SV_TARGET1;
 };
 
 PS_OUT PS_MAIN_BLEND(PS_IN In)
@@ -117,8 +117,18 @@ PS_OUT PS_MAIN_BLEND(PS_IN In)
 
     float vDestAlpha = max(max(vMask.r, vMask.g), vMask.b);
     
-    Out.vColor = vFinalColor * (g_vSourceColor.a + 1);
-       
+    if (vFinalColor.a <= 0)
+        discard;
+
+    vFinalColor.xyz *= (g_vSourceColor.a + 1);
+    
+    float z = In.vPosition.z / In.vPosition.w;
+    //float weight = max(1e-5, (1 - z));
+    float weight = exp(-z * 0.6f);
+
+    Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a * weight, 0.f);
+    Out.vAccumAlpha.r = vFinalColor.a * weight;
+    
     return Out;
 }
 
@@ -127,8 +137,8 @@ technique11 DefaultTechnique
     pass DefaultPass
     {
         SetRasterizerState(RS_Cull_None);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_DepthTestOnly, 0);
+        SetBlendState(BS_Blend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = compile gs_5_0 GS_MAIN();
         PixelShader = compile ps_5_0 PS_MAIN_BLEND();

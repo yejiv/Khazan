@@ -112,6 +112,12 @@ struct PS_OUT
 
 };
 
+struct PS_WEIGHTBLEND_OUT
+{
+    float4 vAccumColor : SV_TARGET0;
+    float4 vAccumAlpha : SV_TARGET1;
+};
+
 /* 만든 픽셀 각각에 대해서 픽셀 쉐이더를 수행한다. */
 /* 픽셀의 색을 결정한다. */
 
@@ -126,11 +132,11 @@ PS_OUT PS_MAIN(PS_IN In)
     return Out;
 }
 
-PS_OUT PS_MAIN_BLEND(PS_IN In)
+PS_WEIGHTBLEND_OUT PS_MAIN_BLEND(PS_IN In)
 {
-    PS_OUT Out = (PS_OUT) 0;
+    PS_WEIGHTBLEND_OUT Out = (PS_WEIGHTBLEND_OUT) 0;
 
-    Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+    vector vFinalColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
 
     float2 vTexcoord;
 
@@ -140,26 +146,34 @@ PS_OUT PS_MAIN_BLEND(PS_IN In)
 
 
 
-    Out.vColor.a = Out.vColor.a * saturate(vDepthDesc.y - In.vProjPos.w);
+    vFinalColor.a = vFinalColor.a * saturate(vDepthDesc.y - In.vProjPos.w);
+    
+    float z = In.vPosition.z / In.vPosition.w;
+    //float weight = max(1e-5, (1 - z));
+    float weight = exp(-z * 0.7f);
+
+    Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a * weight, 0.f);
+    Out.vAccumAlpha.r = vFinalColor.a * weight;
 
     return Out;
 }
 
 
-PS_OUT PS_TRAIL(PS_IN In)
+PS_WEIGHTBLEND_OUT PS_TRAIL(PS_IN In)
 {
-    PS_OUT Out = (PS_OUT) 0;
+    PS_WEIGHTBLEND_OUT Out = (PS_WEIGHTBLEND_OUT) 0;
 
     //Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
     
     vector vEffectTexture = g_Texture.Sample(DefaultSampler, In.vTexcoord);
     //vector vFinalColor = float4(vEffectTexture.rgb, vEffectTexture.r);
     vector vFinalColor = float4(1.f, 1.f, 1.f, vEffectTexture.r);
-    Out.vColor = vFinalColor;
+        //Out.vColor = vFinalColor;
 
     //alpha fading
-    Out.vColor.a *= In.vTexcoord.x;
-
+        //Out.vColor.a *= In.vTexcoord.x;
+    vFinalColor *= In.vTexcoord.x;
+    
     //소프트 파티클 효과
 
     //float2 vTexcoord;
@@ -168,8 +182,10 @@ PS_OUT PS_TRAIL(PS_IN In)
     //vTexcoord.y = (In.vProjPos.y / In.vProjPos.w) * -0.5f + 0.5f;
     //vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, vTexcoord);
     //
-    //Out.vColor.a = Out.vColor.a * saturate(vDepthDesc.y - In.vProjPos.w);
-
+    //Out.vColor.a = Out.vColor.a * saturate(vDepthDesc.y - In.vProjP 
+    Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a, 0.f);
+    Out.vAccumAlpha.r = vFinalColor.a;
+    
     return Out;
 }
 
@@ -203,8 +219,8 @@ technique11 DefaultTechnique
     pass TrailPass
     {
         SetRasterizerState(RS_Cull_None);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_DepthTestOnly, 0);
+        SetBlendState(BS_Blend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_TRAIL();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_TRAIL();
@@ -213,8 +229,8 @@ technique11 DefaultTechnique
     pass ScreenTrailPass
     {
         SetRasterizerState(RS_Cull_None);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_DepthTestOnly, 0);
+        SetBlendState(BS_Blend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_SCREEN_TRAIL();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_TRAIL();
@@ -226,6 +242,5 @@ technique11 DefaultTechnique
     //{
     //    VertexShader = compile vs_5_0 VS_MAIN1();
 
-    //}
-
+    //} 
 }

@@ -7,6 +7,7 @@
 #include "Spear_Khazan_Spear.h"
 #include "Damage_Text.h"
 #include "Target_BrutalAttack.h"
+#include "Yetuga.h"
 
 
 CBody_Khazan_Spear::CBody_Khazan_Spear(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -301,12 +302,17 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
     {
+        if (m_CollMonsters.size() >= 2)
+            int a = 10;
+
         /* 공격 콜라이더 */
         if (m_isSpearTipActive)
         {
             CCreature* pMonster = static_cast<CCreature*>(pDesc->pGameObject);
             if (pMonster == nullptr  || pMonster->Get_CurrentHP() < 0.f)
                 return;
+
+           
 
             pMonster->Take_Damage(m_pPlayerData->fBonusDamage, static_cast<HITREACTION>(*m_pHitReaction), this);
             //pMonster->Take_Damage(m_pPlayerData->fDamage , static_cast<HITREACTION>(*m_pHitReaction), nullptr);
@@ -318,6 +324,11 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
             CTransform* MonsterTransform = dynamic_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")));  
             XMStoreFloat4(&m_fCollisionPos, MonsterTransform->Get_State(STATE::POSITION));
         }
+
+        CMonster* pMMonste = static_cast<CMonster*>(pDesc->pGameObject);
+        if (pMMonste->Get_Name() != "Yetuga")
+            int a = 10;
+
 
         /*  탐지 */
         CGameObject* pObj = pDesc->pGameObject;
@@ -360,8 +371,26 @@ void CBody_Khazan_Spear::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjec
 
         if (!pObj) return;
 
+        if (m_CollMonsters.size() >= 2)
+             int a = 10;
+
+        _bool aa = false;
+        _bool bb = false;
+
+        if (m_CollMonsters.size() >= 2)
+        {
+            aa = bb = true;
+      }
+
         auto it = remove(m_CollMonsters.begin(), m_CollMonsters.end(), pObj);
         if (it != m_CollMonsters.end()) m_CollMonsters.erase(it, m_CollMonsters.end());
+
+        if (m_CollMonsters.size() < 2)
+        {
+             aa = false;
+        }
+        if( !aa && bb)
+             int a = 10 ;
 
         if (m_CollMonsters.empty())
         {
@@ -397,7 +426,7 @@ void CBody_Khazan_Spear::Search_BrutalTarget(_float fTimeDelta)
 
     for (CGameObject* monster : m_CollMonsters)
     {
-        if (!monster || monster->Get_IsDead())
+        if (!monster || _CrtIsValidHeapPointer(monster) || monster->Get_IsDead())
             return;
 
         _vector vMonsterPos = monster->Get_Position();
@@ -884,7 +913,7 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
     }
 
     CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
-    BodyDesc.fRadius = 12.f;
+    BodyDesc.fRadius = 3.f;
     BodyDesc.bIsTrigger = true;
     BodyDesc.bStartActive = true;
     BodyDesc.eMotion = EMotionType::Kinematic;

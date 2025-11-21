@@ -165,8 +165,8 @@ struct PS_DEFAULT_IN
 
 struct PS_OUT
 {
-    float4 vBackBufferColor : SV_TARGET0;
-    float4 vEmissiveColor : SV_TARGET1;
+    float4 vAccumColor : SV_TARGET0;
+    float4 vAccumAlpha : SV_TARGET1;
 };
 
 float Mask_Scrolling(float2 vLifetime, float2 vTexcoord)
@@ -225,16 +225,7 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     if (In.bDead)
         discard;
     
-    //float3 diff = In.vPosition.xyz - In.vPrevPosition.xyz;
-    //float distSq = dot(diff, diff);
-    //
-    //if (distSq < 0.0f) 
-    //    discard;
-    
     vector vMask = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-                //if (vMask.a <= 0.f)
-                //    discard;
     
     vector vSourColor = float4(g_vSourceColor.xyz, 1.f);
     vector vFinalColor = vSourColor * vMask;
@@ -259,9 +250,15 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     if (vFinalColor.a <= 0)
         discard;
 
-    vFinalColor.xyz *= (g_vSourceColor.a + 1);
-    Out.vBackBufferColor = vFinalColor;
+    vFinalColor.xyz *= (g_vSourceColor.a + 1.5);
+     
+    float z = In.vPosition.z / In.vPosition.w; // 0..1 depth
+    //float weight = max(1e-5, (1 - z)); //깊이가 0이면(가까우면) ->  vFinalColor.a (그대로), 아주 멀면 0
+    float weight = exp(-z * 0.6f); //깊이가 0이면(가까우면) ->  vFinalColor.a (그대로), 아주 멀면 0
     
+    Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a * weight, 0.f);
+    Out.vAccumAlpha.r = vFinalColor.a * weight; //최대 1, 최소 0 (아주 멀면 0, 아주 가까우면 기존 알파값대로!)
+      
     return Out;
 }
 
@@ -270,8 +267,8 @@ technique11 DefaultTechnique
     pass DefaultPass // 0
     {
         SetRasterizerState(RS_Cull_None);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_DepthTestOnly, 0);
+        SetBlendState(BS_Blend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = compile gs_5_0 GS_MAIN();

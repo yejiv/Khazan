@@ -39,6 +39,12 @@ struct PS_OUT_BACKBUFFER
     float4 vColor : SV_TARGET0;
 };
 
+struct PS_OUT_WEIGHTBLEND   //MRT_PostScene의 Diffsue에 원래 Blend에서 그려줘야했던 내용들 합성해서 그려줌.
+{
+    float4 vBackBufferColor : SV_TARGET0;
+    float4 vEmissiveColor : SV_TARGET1;
+};
+
 PS_OUT_BACKBUFFER PS_DEBUG(PS_IN In)
 {
     PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
@@ -739,6 +745,26 @@ PS_OUT_BACKBUFFER PS_STATIC_VELOCITY(PS_IN In)
     return Out;
 }
 
+PS_OUT_WEIGHTBLEND PS_WEIGHT_BLEND(PS_IN In)
+{
+    PS_OUT_WEIGHTBLEND Out;
+    
+    //vector vColorAccDesc = g_AccumColorTexture.Sample(DefaultSampler, In.vTexcoord);    //둘 다 최대값 1. 근데 emmissive떄문에 넘을 수 있음.
+    //float vAlphaAccDesc = g_AccumAlphaTexture.Sample(DefaultSampler, In.vTexcoord).r;   //최대값 1. 0~1사이. 1이면 알파값 없는거고 그 이하이면 투명
+    //                                                                                    // -> 아님!!! 누적값이라 0~1사이가 절대 아님
+    //Out.vBackBufferColor = vColorAccDesc / (vAlphaAccDesc + 1e-5);
+    //Out.vBackBufferColor.a = saturate(vAlphaAccDesc); //클램핑
+    
+    vector vColorAccDesc = g_AccumColorTexture.Sample(DefaultSampler, In.vTexcoord);
+    float vAlphaAccDesc = g_AccumAlphaTexture.Sample(DefaultSampler, In.vTexcoord).r;
+    Out.vBackBufferColor = vColorAccDesc / (vAlphaAccDesc + 1e-5);
+    Out.vBackBufferColor.a = saturate(vAlphaAccDesc); //클램핑 
+    
+    //Out.vBackBufferColor = float4(1.f, 1.f, 0.f, 1.f);
+    //아무것도 안 그려진 픽셀에 대해선? 덮어지나? -> clear color가 0이라서 더해주면 아무 의미 없어서 덮어지지 않음.
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     pass Debug // 0
@@ -915,5 +941,16 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_BRIGHTNESS();
+    }
+
+    pass WeightBlend // 16
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_WEIGHT_BLEND();
     }
 }
