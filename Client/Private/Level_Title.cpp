@@ -56,17 +56,6 @@ void CLevel_Title::Update(_float fTimeDelta)
 		}
 	}
 
-    if (m_pGameInstance->Key_Down(DIK_F9, INPUT_TYPE::UI))
-    {
-        if (!m_isOpenLevel) {
-
-            if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::VIPER))))
-                return;
-
-            m_isOpenLevel = true;
-        }
-    }
-
 
 	return;
 }
