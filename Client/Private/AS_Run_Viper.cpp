@@ -12,11 +12,6 @@ CAS_Run_Viper::CAS_Run_Viper()
 
 void CAS_Run_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
-  /*  CViper* pViper = static_cast<CViper*>(pOwner);
-    CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
-
-    pModel->Set_Animation(1);
-    m_fSpeed = pViper->Get_Controller()->Get_BlackBoard()->Get_Value<_float>(pViper->Get_Name(), "RunSpeed");*/
 
     CViper* pViper = static_cast<CViper*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
@@ -29,18 +24,6 @@ void CAS_Run_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
 void CAS_Run_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
-  /*  CViper* pViper = static_cast<CViper*>(pOwner);
-    CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
-    CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
-    CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
-    CGameObject* pTarget = pBB->Get_Value<CGameObject*>(pViper->Get_Name(), "Target");
-    _float fLimit = pBB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
-    pViper->Get_Controller()->AI_MoveTo(pViper, pTarget, m_fSpeed, fLimit - 0.5f, fTimeDelta);
-
-    pModel->Play_Animation(fTimeDelta);*/
-
-
-
     CViper* pViper = static_cast<CViper*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
     CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
@@ -52,11 +35,6 @@ void CAS_Run_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTim
     pViper->Get_Controller()->AI_MoveTo(pOwner, pTarget, fMoveRange, m_fSpeed, fTimeDelta);
 
     pModel->Play_Animation(fTimeDelta);
-
-
-
-
-
 }
 
 void CAS_Run_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)

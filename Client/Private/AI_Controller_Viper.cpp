@@ -173,6 +173,38 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
 
 #pragma region NONCOMBAT
 
+    else if ("P1_Run" == name)
+    {
+        return [pViper](CBlackBoard* BB) ->_bool
+            {
+              // 뛰는 거리, 되면 무조건 뛰어온다.
+              // Walk Animation에서 발자국수가 4번 이상이 되면 들어오도록 해야함
+              // 여기서 체크하면 Walk는 셀렉터에 의해서 안들어가는 형태 
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fRunRange = BB->Get_Value<_float>(pViper->Get_Name(), "RunRange");
+                _uint iStepCnt = BB->Get_Value<_uint>(pViper->Get_Name(), "WalkStepCount");
+
+                if (fDist <= fRunRange || iStepCnt >= 4)
+                    return true;
+
+                return false;
+            };
+    }
+
+    else if ("P1_Walk" == name)
+    {
+        return [pViper](CBlackBoard* BB) ->_bool
+            {
+                // 뛰는거리에서 걷는 거리 사이에 있으면 Walk 대신 발자국수가 4번 이상 올라가면 Run으로 State가 바껴야함
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fChaseRange = BB->Get_Value<_float>(pViper->Get_Name(), "ChaseRange");
+
+                if (fDist < fChaseRange)
+                    return true;
+                
+                return false;
+            };
+    }
 
 #pragma endregion
 
@@ -306,11 +338,20 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
     {
         return [pViper](CBlackBoard* BB) ->BTNODESTATE
             {
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fWalkRange = BB->Get_Value<_float>(pViper->Get_Name(), "WalkRange");
+                _uint iStepCnt =  BB->Get_Value<_uint>(pViper->Get_Name(), "WalkStepCount");
+
+                if (iStepCnt >= 4)
+                    return BTNODESTATE::SUCCESS;
+
+                if (fDist <= fWalkRange)
+                    return BTNODESTATE::SUCCESS;
 
                 pViper->Get_Controller()->Get_State_Machine()->Change_State(
                     ENUM_CLASS(VIPER_STATE_P1::WALK), pViper);
+                return BTNODESTATE::RUNNING;
 
-                return BTNODESTATE::SUCCESS;
             };
     }
 
@@ -319,10 +360,20 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
         return [pViper](CBlackBoard* BB) ->BTNODESTATE
             {
 
+
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
+
+                if (fDist < fAttackRange)
+                    return BTNODESTATE::SUCCESS;
+               
                 pViper->Get_Controller()->Get_State_Machine()->Change_State(
                     ENUM_CLASS(VIPER_STATE_P1::RUN), pViper);
 
-                return BTNODESTATE::SUCCESS;
+                BB->Set_Value<_uint>(pViper->Get_Name(), "WalkStepCount", 0);
+                return BTNODESTATE::RUNNING;
+
+
             };
     }
 
@@ -630,39 +681,7 @@ SCORE CAI_Controller_Viper::GetCallbackScore(CGameObject* pOwner, const string& 
             };
     }
 
-    else if ("P1_Run" == name)
-    {
-        return [pViper](CBlackBoard* BB) ->_float
-            {
-                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
-                _float fRunRange = BB->Get_Value<_float>(pViper->Get_Name(), "RunRange");
-                _float fWalkRange = BB->Get_Value<_float>(pViper->Get_Name(), "WalkRange");
-                _uint iWalkStep = BB->Get_Value<_uint>(pViper->Get_Name(), "WalkStepCount");
-
-                _float fDistanceScore = UtilityScore::DistanceScore(fDist, fRunRange, fWalkRange);
-                _float fStepBoost = UtilityScore::Utility_Remap(static_cast<_float>(iWalkStep), 0.f, 4.f);
-                _float fRunScore = UtilityScore::WeightSum(fDistanceScore, 0.7f, fStepBoost, 0.3f);
-
-                return fRunScore;
-            };
-    }
-
-    else if ("P1_Walk" == name)
-    {
-        return [pViper](CBlackBoard* BB) ->_float
-            {
-                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
-                _float fWalkRange = BB->Get_Value<_float>(pViper->Get_Name(), "WalkRange");
-                _float fRunRange = BB->Get_Value<_float>(pViper->Get_Name(), "RunRange");
-                _uint iWalkStep = BB->Get_Value<_uint>(pViper->Get_Name(), "WalkStepCount");
-
-                _float fWalkScore = UtilityScore::Utility_Remap(fDist, fRunRange, fWalkRange, false);
-                _float fStepPenalty = UtilityScore::Utility_Remap(static_cast<_float>(iWalkStep), 0.f, 4.f, true);
-                return UtilityScore::AndMul(fWalkScore,fStepPenalty);
-            };
-    }
-
-
+  
     return nullptr;
 }
 
