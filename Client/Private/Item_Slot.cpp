@@ -10,6 +10,11 @@
 #include "ItemInfo_Weapon.h"
 
 #include "UI_Slot_Smoke.h"
+#include "Amount.h"
+
+#include "Amount_Info.h"
+#include "Popup_Item.h"
+#include "Collection_Info.h"
 
 CItem_Slot::CItem_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Slot{ pDevice, pContext }
@@ -61,6 +66,7 @@ _bool CItem_Slot::Add_Item(_int iItemIndex)
 
 void CItem_Slot::Update_Pos(_int iIndex, _float2 vPos, _float fOffSet, _int iMaxIndexX, _int iMaxIndexY)
 {
+    m_iIndex = iIndex;
     _int iCol = iIndex % iMaxIndexX;
     _int iRow = iIndex / iMaxIndexX;
 
@@ -134,7 +140,6 @@ HRESULT CItem_Slot::Initialize_Prototype(_uint iLevel)
 HRESULT CItem_Slot::Initialize_Clone(void* pArg)
 {
     ITEMSLOT_DESC* pDesc = static_cast<ITEMSLOT_DESC*>(pArg);
-    m_iIndex = pDesc->iIndex;
     m_iItemType = pDesc->iItemType;
     m_iTexPass = 1;
     m_iShaderPass = 0;
@@ -179,15 +184,47 @@ void CItem_Slot::Late_Update(_float fTimeDelta)
         Selete_Item();
         ++m_iEquipCount;
         m_fEquipTime = 0.5f;
-        if (m_iEquipCount >= 2)
+        
+        
+        if (!m_isSale)
         {
-            Equip_Item();
-            m_iEquipCount = 0;
+            if (m_iEquipCount >= 2)
+            {
+                Equip_Item();
+                m_iEquipCount = 0;
+            }
+        }
+        else if(!m_bIsEquip)
+        {
+            Sale_Item();
         }
     }
-    if (m_bIsSelete && m_pGameInstance->Key_Down(DIK_F, INPUT_TYPE::UI))
-        Equip_Item();
+    if (m_iItemIndex > -1 && m_bIsSelete && m_pGameInstance->Key_Down(DIK_F, INPUT_TYPE::UI))
+    {
+        if(!m_isSale)
+            Equip_Item();
+        else if (!m_bIsEquip)
+        {
+            const ITEM_DATA* pData = CClientInstance::GetInstance()->Get_Data<ITEM_DATA>(m_iItemIndex);
+            if (pData->iLachryma == -1 && pData->iGold == -1)
+            {
+                m_pGameInstance->Emit_Event< EVENT_ANNOUNCE_WARNING>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_WARNING), { TEXT("판매 불가 아이템입니다.") });
+            }
+            else
+            {
+                CPopup_Item::POPUP_ITEM_DESC Desc;
+                Desc.isSale = true;
+                Desc.iItemIndex = m_iItemIndex;
+                Desc.Event = [this]() { Sale_Item(); };
+                CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Popup_Item"), &Desc);
 
+            }
+        }
+        else
+        {
+            m_pGameInstance->Emit_Event< EVENT_ANNOUNCE_WARNING>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_WARNING), { TEXT("장착중인 아이템은 판매가 불가합니다.") });
+        }
+    }
     if (m_iState == ENUM_CLASS(UISTATE::ENABLE))
     {
         if (ButtonOver(g_hWnd) && m_pGameInstance->Get_InputType() == INPUT_TYPE::UI)
@@ -212,7 +249,7 @@ void CItem_Slot::Late_Update(_float fTimeDelta)
 
         const ITEM_DATA* pData = CClientInstance::GetInstance()->Get_Data<ITEM_DATA>(m_iItemIndex);
 
-        if (m_iItemIndex > 0 && pData->iType > 3)
+        if (m_iItemIndex > 0 && pData->iType > 3 && !m_isSale)
         {
             CItemInfo_Weapon::WEAPONINFO_DESC Desc = {};
             Desc.iItemIndex = m_iItemIndex;
@@ -246,7 +283,7 @@ HRESULT CItem_Slot::Ready_Children()
 {
     CUI_Atlas_Icon::UIATLASICON_DESC AtlasDesc;
 
-    AtlasDesc.fDepth = m_fDepth - 1;
+    AtlasDesc.fDepth = m_fDepth - 0.2f;
     AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
     AtlasDesc.szName = "Item_Over";
     AtlasDesc.vLocalPos = _float2{ 0.f, 0.f };
@@ -266,7 +303,7 @@ HRESULT CItem_Slot::Ready_Children()
     //장착
     if (m_iItemType <= ENUM_CLASS(CUI_Inven::ITEMTYPE::ATIVE))
     {
-        AtlasDesc.fDepth = m_fDepth - 0.5;
+        AtlasDesc.fDepth = m_fDepth - 0.1f;
         AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
         AtlasDesc.szName = "Item_Equip";
         AtlasDesc.vLocalPos = _float2{ -30.f, -30.f };
@@ -293,7 +330,7 @@ HRESULT CItem_Slot::Ready_Children()
         Safe_AddRef(m_pEquipIcon);
     }
     //셀렉트
-    AtlasDesc.fDepth = m_fDepth - 2;
+    AtlasDesc.fDepth = m_fDepth - 0.3f;
     AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
     AtlasDesc.szName = "Item_Selet";
     AtlasDesc.vLocalPos = _float2{ 0.f, 0.f };
@@ -311,7 +348,7 @@ HRESULT CItem_Slot::Ready_Children()
     m_Children.push_back(m_pSeleteFx);
     Safe_AddRef(m_pSeleteFx);
 
-    AtlasDesc.fDepth = m_fDepth - 1;
+    AtlasDesc.fDepth = m_fDepth -0.2f;
     AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
     AtlasDesc.szName = "Item_Icon";
     AtlasDesc.vLocalPos = _float2{ 0.f, 0.f };
@@ -332,7 +369,7 @@ HRESULT CItem_Slot::Ready_Children()
     if (m_iItemType == ENUM_CLASS(CUI_Inven::ITEMTYPE::ATIVE) || m_iItemType == ENUM_CLASS(CUI_Inven::ITEMTYPE::MATERIAL))
     {
         CUIObject::UIOBJECT_DESC TextDesc = {};
-        TextDesc.fDepth = m_fDepth - 1.f;
+        TextDesc.fDepth = m_fDepth - 0.2f;
         TextDesc.iUIType = ENUM_CLASS(UITYPE::TEXT);
         TextDesc.szName = "Item_Count";
         TextDesc.vLocalPos = _float2{ 0.f, 0.f };
@@ -360,7 +397,7 @@ HRESULT CItem_Slot::Ready_Children()
 
     if (m_iItemType >= ENUM_CLASS(CUI_Inven::ITEMTYPE::SPEAR) && m_iItemType <= ENUM_CLASS(CUI_Inven::ITEMTYPE::RING))
     {
-        AtlasDesc.fDepth = m_fDepth - 0.5;
+        AtlasDesc.fDepth = m_fDepth - 0.1f;
         AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
         AtlasDesc.szName = "Item_Up";
         AtlasDesc.vLocalPos = _float2{ 32.f, 35.f };
@@ -391,7 +428,7 @@ HRESULT CItem_Slot::Ready_Children()
 
     if (m_pSmoke_Fx == nullptr)
         return E_FAIL;
-
+    
     m_Children.push_back(m_pSmoke_Fx);
     Safe_AddRef(m_pSmoke_Fx);
 
@@ -445,6 +482,13 @@ void CItem_Slot::Selete_Item()
 
 void CItem_Slot::Equip_Item()
 {
+    if (m_iItemType == ENUM_CLASS(CUI_Inven::ITEMTYPE::COLLECTION))
+    {
+        CCollection_Info::COLLECTIONINFO_DESC Desc;
+        Desc.iItemIndex = m_iItemIndex;
+        CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Collection_Info"), &Desc);
+    }
+
     if (m_iItemType > ENUM_CLASS(CUI_Inven::ITEMTYPE::ATIVE))
         return;
     
@@ -472,12 +516,33 @@ void CItem_Slot::Equip_Item()
     __super::Bubble_EventCall(&Desc);
 }
 
+void CItem_Slot::Sale_Item()
+{
+    const ITEM_DATA* pData = CClientInstance::GetInstance()->Get_Data<ITEM_DATA>(m_iItemIndex);
+    if(pData->iGold > 0)
+        static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, pData->iGold * m_iItemCount, false);
+    if (pData->iLachryma > 0)
+        static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::LACHRYMA, pData->iLachryma * m_iItemCount, false);
+    Release_Item();
+
+}
+
 void CItem_Slot::Release_Item()
 {
     m_iItemIndex = -1;
     m_iItemMaxCount = 0;
     m_iItemCount = 0;
+    m_bIsSelete = false;
+    m_bIsEquip = false;
+
     Update_State();
+
+    CUI_Inven::INVENBUBBLE_DESC Desc = {};
+    Desc.eBubbleType = CUI_Inven::EVENT_TYPE::ITEM_RELEASE;
+    Desc.iIndex = m_iIndex;
+    Desc.pItem = this;
+   
+    __super::Bubble_EventCall(&Desc);
 }
 
 void CItem_Slot::Render_ItemInfo()
@@ -507,6 +572,28 @@ void CItem_Slot::Render_ItemInfo()
         Desc.iEffect_Type = m_iRandomEffect_Type;
         Desc.iEffect_Value = m_iRandomEffect_Value;
         CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("ItemInfo_Weapon"), &Desc);
+    }
+
+    if (m_isSale)
+    {
+        CAmount_Info::AMOUNTINFO_DESC Desc = {};
+        if (pData->iGold > 0)
+        {
+            Desc.iGetValue = pData->iGold;
+            if (pData->iType <= 3)
+                Desc.iOffsetPos = { 780.f, 890.f };
+            else
+                Desc.iOffsetPos = { 1210.f, 910.f };
+
+            CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Gold_Info"), &Desc);
+        }
+
+        if (pData->iLachryma > 0)
+        {
+            Desc.iGetValue = pData->iLachryma;
+            Desc.iOffsetPos = { 1210.f, 765.f };
+            CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Lachryma_Info"), &Desc);
+        }
     }
 }
 

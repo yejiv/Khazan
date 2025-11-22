@@ -3,7 +3,9 @@
 #include "Transform.h"
 #include "Model.h"
 
-
+static inline bool IsFiniteVec3(const JPH::Vec3& v) {
+    return std::isfinite(v.GetX()) && std::isfinite(v.GetY()) && std::isfinite(v.GetZ());
+}
 
 CBody::CBody(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CRigidBody{ pDevice, pContext }
@@ -87,6 +89,7 @@ void CBody::Update(_float fTimeDelta, class CTransform* pTransform)
     if (!m_pBodyInterface->IsActive(m_BodyID))
         return;
 
+
     if (m_pBody->GetMotionType() == EMotionType::Kinematic)
     {
         _vector vScale{}, vRotation{}, vTranslation{};
@@ -126,6 +129,7 @@ void CBody::Update(_float fTimeDelta, _matrix WorldMatirx, _vector& outQuatRotat
 
     if (!m_pBodyInterface->IsActive(m_BodyID))
         m_pBodyInterface->ActivateBody(m_BodyID);
+
 
     if (m_pBody->GetMotionType() == EMotionType::Kinematic)
     {
@@ -199,6 +203,108 @@ void CBody::Add_Impulse(_float fMass)
     m_pBodyInterface->AddImpulse(m_BodyID, m_pBody->GetLinearVelocity() * fMass);
 }
 
+void CBody::Add_ImpulseDir(_float3 vImpulse)
+{
+    if (m_BodyID.IsInvalid()) return;
+    m_pBodyInterface->AddImpulse(m_BodyID, LoadVec3(vImpulse));
+}
+
+void CBody::Add_AngularImpulseDir(_float3 vAngularImpulse)
+{
+    if (m_BodyID.IsInvalid()) return;
+    m_pBodyInterface->AddImpulse(m_BodyID, LoadVec3(vAngularImpulse));
+}
+
+void CBody::ApplyExplosion(
+    const _float3& vExplosionPos,
+    _float fBaseImpulse,
+    _float fBaseTorque)
+{
+    if (m_BodyID.IsInvalid())
+        return;
+
+    // 1) 현재 파편 위치
+    Vec3 chunkPos = m_pBodyInterface->GetPosition(m_BodyID);
+
+    // 2) 폭심지: 파편 높이에 맞춰서 수평 기준만 사용
+    Vec3 explosionPos = LoadVec3(vExplosionPos);
+    explosionPos.SetY(chunkPos.GetY());
+
+    // 3) 기본 방향 (수평 XZ)
+    Vec3 toChunk = chunkPos - explosionPos;
+    toChunk.SetY(0.0f);
+
+    float distSq = toChunk.LengthSq();
+    if (distSq < 1e-6f)
+    {
+        // 완전 겹치면 대충 +X 방향
+        toChunk = Vec3(1, 0, 0);
+        distSq = 1.0f;
+    }
+    float dist = sqrt(distSq);
+    Vec3 mainDir = toChunk / dist; // 정규화 (기본 폭발 방향)
+
+    // ============================
+    // 4) Y축 기준으로 랜덤 회전 (yaw)
+    //    → 같은 "옆 방향"이지만 각 파편마다 각도만 조금씩 다르게
+    // ============================
+    const float maxAngleDeg = 35.0f; // 최대 편차 각도 (원하면 20~45 사이에서 조절)
+    float angleDeg = m_pGameInstance->Rand(-maxAngleDeg, maxAngleDeg);
+    float angleRad = angleDeg * (XM_PI / 180.0f);
+
+    float c = cosf(angleRad);
+    float s = sinf(angleRad);
+
+    float x = mainDir.GetX();
+    float z = mainDir.GetZ();
+
+    // Y축 회전 (yaw 회전)
+    Vec3 dir(
+        x * c - z * s,   // X'
+        0.0f,            // 수평만 유지
+        x * s + z * c    // Z'
+    );
+    dir = dir.Normalized();
+
+    // ============================
+    // 5) 힘 크기 랜덤 + (원하면) 살짝 거리 감쇠
+    // ============================
+    float randStrength = m_pGameInstance->Rand(0.6f, 1.4f);   // 파편마다 속도 차이
+    float distanceFalloff = 1.0f;                             // 일단 감쇠 제거해서 확실히 보이게
+    // 원하면:
+    // distanceFalloff = 1.0f / max(dist * 0.5f, 1.0f);
+
+    Vec3 impulse = dir * fBaseImpulse * randStrength * distanceFalloff;
+
+    // ★ 위로(Lift) 없음 → "옆으로 펑"이 기본
+    // 살짝 위로 띄우고 싶으면 이 정도만:
+    // impulse += Vec3(0, 1, 0) * (fBaseImpulse * 0.05f);
+
+    // ============================
+    // 6) 랜덤 회전 (토크)
+    // ============================
+    Vec3 randomAxis(
+        m_pGameInstance->Rand(-1.f, 1.f),
+        m_pGameInstance->Rand(-1.f, 1.f),
+        m_pGameInstance->Rand(-1.f, 1.f)
+    );
+    if (randomAxis.LengthSq() < 1e-4f)
+        randomAxis = Vec3(0, 1, 0);
+    randomAxis = randomAxis.Normalized();
+
+    Vec3 spinAxis = randomAxis.Cross(dir);
+    if (spinAxis.LengthSq() < 1e-4f)
+        spinAxis = randomAxis;
+    spinAxis = spinAxis.Normalized();
+
+    float torqueStrength = fBaseTorque * m_pGameInstance->Rand(0.5f, 1.5f);
+    Vec3 angularImpulse = spinAxis * torqueStrength;
+
+    // 7) 적용
+    m_pBodyInterface->AddImpulse(m_BodyID, impulse);
+    m_pBodyInterface->AddAngularImpulse(m_BodyID, angularImpulse);
+}
+
 void CBody::Set_Velocity(const _float3& vVelocity)
 {
     m_pBody->SetLinearVelocity(LoadVec3(vVelocity));
@@ -265,41 +371,64 @@ void CBody::Build_Shape(BODY_DESC* pDesc, RefConst<Shape>& pShape)
         if (pConvexDesc->pModel == nullptr)
             return;
 
-        // 1) ConvexHull 포인트 + 중심 계산
+        // 1) 모델 스페이스에서만 스케일 (보통 1,1,1)
+        Vec3 vScaleModel = Vec3::sReplicate(1.0f);
+
         Vec3 center;
-        // 1) 정점 배열 준비
-        Vec3 vScale = Vec3(pConvexDesc->pTransform->Get_Scaled().x, pConvexDesc->pTransform->Get_Scaled().y, pConvexDesc->pTransform->Get_Scaled().z); // Transform의 스케일
+        float normalizeScale = 1.0f;
+
         Array<Vec3> points = ConvertToHullPoints(
             pConvexDesc->pModel,
-            0,          // 메쉬 인덱스 있으면 사용, 없으면 0
-            vScale,              // 0.0001f 스케일
-            center
+            0,
+            vScaleModel,
+            center,
+            normalizeScale
         );
 
         if (points.size() < 4)
+            return;
+
+        // 2) Hull 생성 (항상 "적당한 크기" 범위 내)
+        Ref<ConvexHullShapeSettings> convexSettings = new ConvexHullShapeSettings(points);
+
+        // (옵션) 허용 오차 살짝 풀기
+         convexSettings->mHullTolerance = 0.5f;
+
+        ShapeSettings::ShapeResult result = convexSettings->Create();
+        if (result.HasError())
         {
-            // ConvexHull 못 만드는 최소 정점 수 미만
+            // 디버그 로그
+            // OutputDebugStringA("Convex hull failed even after normalize...\n");
             return;
         }
 
-        // 2) Hull 생성
-        Ref<ConvexHullShapeSettings> convexSettings = new ConvexHullShapeSettings(points);
-        ShapeSettings::ShapeResult result = convexSettings->Create();
-        if (result.HasError())
-            return;
-
         RefConst<Shape> hullShape = result.Get();
 
-        // 3) 원래 shape offset + center 합치기
+        // 3) Transform 스케일 + 정규화 보정까지 합친 실제 스케일
+        Vec3 vScaleWorld(
+            pConvexDesc->pTransform->Get_Scaled().x,
+            pConvexDesc->pTransform->Get_Scaled().y,
+            pConvexDesc->pTransform->Get_Scaled().z
+        );
+
+        // normalizeScale 로 줄여서 만들었으니까, 실제로는 역수로 다시 키워야 함
+        Vec3 finalScale = vScaleWorld / normalizeScale; // (1 / normalizeScale) * worldScale
+
+        RefConst<Shape> scaledHull = hullShape;
+        if (finalScale != Vec3::sReplicate(1.0f))
+            scaledHull = new ScaledShape(hullShape, finalScale);
+
+        // 4) center 도 정규화 전에 기준이었으니까 다시 되돌려야 함
         Vec3 shapeOffset =
-            LoadVec3(pConvexDesc->vShapeOffset) + center;
+            LoadVec3(pConvexDesc->vShapeOffset)
+            + center * vScaleWorld; // center는 원래 모델 스페이스 기준이라 worldScale만 곱하면 됨
 
         Quat shapeRot = LoadQuat(pConvexDesc->vShapeRotation);
 
         pShape = new RotatedTranslatedShape(
             shapeOffset,
             shapeRot,
-            hullShape
+            scaledHull
         );
         break;
     }
@@ -347,8 +476,9 @@ const JPH::Array<Vec3> CBody::ConvertToArrayVec3(CModel* pModel, _uint iMeshInde
 JPH::Array<Vec3> CBody::ConvertToHullPoints(
     CModel* pModel,
     _uint iMeshIndex,
-    const Vec3& vScale,
-    Vec3& outCenter)
+    const Vec3& vScaleModel, // 이제 Transform 스케일 말고 "모델 고정 스케일"만
+    Vec3& outCenter,
+    _float& outNormalizeScale) // 정규화 스케일도 같이 반환
 {
     JPH::Array<Vec3> points;
 
@@ -356,31 +486,83 @@ JPH::Array<Vec3> CBody::ConvertToHullPoints(
     if (modelVerts.empty())
     {
         outCenter = Vec3::sZero();
+        outNormalizeScale = 1.0f;
         return points;
     }
 
     points.reserve(modelVerts.size());
 
-    // 1) 스케일 적용하면서 center 누적
+    // 1) 스케일 적용 + AABB 계산
+    Vec3 minV = Vec3(FLT_MAX, FLT_MAX, FLT_MAX);
+    Vec3 maxV = Vec3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+
     outCenter = Vec3::sZero();
     for (auto& v : modelVerts)
     {
-        Vec3 p(v.x * vScale.GetX(),
-            v.y * vScale.GetY(),
-            v.z * vScale.GetZ());
+        Vec3 p(
+            v.x * vScaleModel.GetX(),
+            v.y * vScaleModel.GetY(),
+            v.z * vScaleModel.GetZ()
+        );
+
+        if (!IsFiniteVec3(p))
+            continue;
 
         outCenter += p;
+
+        minV = Vec3::sMin(minV, p);
+        maxV = Vec3::sMax(maxV, p);
+
         points.push_back(p);
+    }
+
+    if (points.empty())
+    {
+        outCenter = Vec3::sZero();
+        outNormalizeScale = 1.0f;
+        return points;
     }
 
     outCenter /= (float)points.size();
 
-    // 2) 모든 점을 center 기준으로 이동
+    // 2) 크기 측정
+    Vec3 extents = maxV - minV;
+    float maxExtent = max(extents.GetX(), max(extents.GetY(), extents.GetZ()));
+
+    // 3) 정규화 스케일 계산 (Hull이 너무 큰 공간에서 안 돌아가게)
+    //   - 예: targetSize = 10.0f (대략 10m 정도 공간에 들어오게)
+    const float targetSize = 10.0f;
+    outNormalizeScale = 1.0f;
+    if (maxExtent > targetSize)
+        outNormalizeScale = targetSize / maxExtent; // ex) 1000 -> 0.01 로 줄임
+
+    // 4) center 기준/정규화/중복점 제거
+    const float weldEps = 0.0001f;
+    JPH::Array<Vec3> cleaned;
+    cleaned.reserve(points.size());
+
     for (auto& p : points)
+    {
+        // 중심 기준 이동
         p -= outCenter;
+        // 정규화 스케일 적용
+        p *= outNormalizeScale;
 
+        bool duplicate = false;
+        for (auto& c : cleaned)
+        {
+            if ((p - c).LengthSq() < weldEps * weldEps)
+            {
+                duplicate = true;
+                break;
+            }
+        }
 
-    return points;
+        if (!duplicate)
+            cleaned.push_back(p);
+    }
+
+    return cleaned;
 }
 
 const JPH::Array<Float3> CBody::ConvertToArrayFloat3(CModel* pModel, _uint iIndex)

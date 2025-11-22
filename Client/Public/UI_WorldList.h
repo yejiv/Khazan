@@ -45,12 +45,14 @@ private:
     class CUI_WorldTex*             m_pIcon = { nullptr };
     class CUI_WorldTex*             m_pSelete = { nullptr };
     class CUI_WorldTex*             m_pSeleteIcon = { nullptr };
-    vector<class CUI_WorldTex*>     m_BG;
-
     class CUI_WorldFX*              m_pFX = { nullptr };
+
+    vector<class CUI_WorldTex*>     m_BG;
 
     _float                          m_fAccTime = {};
     _bool                           m_isUpTime = { false };
+    
+    _float                          m_fOffsetZ = {};
 private:
     HRESULT					        Ready_Component();
     HRESULT                         Ready_Children();

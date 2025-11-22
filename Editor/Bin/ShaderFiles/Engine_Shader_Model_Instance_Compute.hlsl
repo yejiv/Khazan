@@ -121,6 +121,10 @@ void CS_MOVE(uint3 DTid : SV_DispatchThreadID)
     if (Particle.vLifeTime.x >= Particle.vLifeTime.y
 		|| (SpeedData.fSpeed.x < 0 && length(vMoveDir).x < 0.1f))
     {
+        
+        Particle.vRight = g_InputData[iIndex].vRight;
+        Particle.vUp = g_InputData[iIndex].vUp;
+        Particle.vLook = g_InputData[iIndex].vLook;
         Particle.vLifeTime.x = 0.f;
         if (g_bIsLoop == 0)
         {
@@ -173,20 +177,7 @@ void CS_RESET_SPEED(uint3 DTid : SV_DispatchThreadID)
     
     VTXINSTANCE_PARTICLE Particle = g_OutputData[iIndex];
     VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
-    
-    //if (g_iSpeedType == 0 || g_iSpeedType == 4) //SPREAD_SPEED
-    //    SpeedData.fSpeed.x = 0.f;
-    //if (g_iSpeedType == 1 || g_iSpeedType == 4) //ROTATION_SPEED
-    //    SpeedData.fSpeed.y = 0.f;
-    //if (g_iSpeedType == 2 || g_iSpeedType == 4)  //UPWARD_SPEED 
-    //    SpeedData.fSpeed.z = 0.f;  
-    //if (g_iSpeedType == 3 || g_iSpeedType == 4) //SCALE_SPEED
-    //{
-    //    SpeedData.fSpeed.w = 0.f;
-    //    Particle.vRight = g_InputData[iIndex].vRight;
-    //    Particle.vUp = g_InputData[iIndex].vUp;
-    //    Particle.vLook = g_InputData[iIndex].vLook;
-    //}
+
     if (g_iSpeedType == 0 || g_iSpeedType == 4)
         SpeedData.fSpeed.x = 0.f;
     if (g_iSpeedType == 1 || g_iSpeedType == 4)
@@ -194,9 +185,9 @@ void CS_RESET_SPEED(uint3 DTid : SV_DispatchThreadID)
     if (g_iSpeedType == 2 || g_iSpeedType == 4)
     {
         SpeedData.fSpeed.z = 0.f;
-        Particle.vRight = float4(g_InputData[iIndex].fSize, 0.f, 0.f, 0.f);
-        Particle.vUp = float4(0.f, g_InputData[iIndex].fSize, 0.f, 0.f);
-        Particle.vLook = float4(0.f, 0.f, g_InputData[iIndex].fSize, 0.f);
+        Particle.vRight = g_InputData[iIndex].vRight;
+        Particle.vUp = g_InputData[iIndex].vUp;
+        Particle.vLook = g_InputData[iIndex].vLook;
     }
     if (g_iSpeedType == 3 || g_iSpeedType == 4)
         SpeedData.fSpeed.w = 0.f;

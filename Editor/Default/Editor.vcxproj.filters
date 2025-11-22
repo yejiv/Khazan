@@ -268,6 +268,15 @@
     <Filter Include="02.GameObject\Shader\Player\Creature\Khazan_Spear\Body">
       <UniqueIdentifier>{0685344d-6782-4a3b-8afd-9bba86c38ff7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\06.Statue">
+      <UniqueIdentifier>{24ddf31b-a69e-4658-9050-c8655c0eaa43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\06.Statue\Deco">
+      <UniqueIdentifier>{ee5b2c06-bc4a-4af8-8c08-4ff6e824f984}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\06.Statue\Plate">
+      <UniqueIdentifier>{86ea869c-0278-4d60-81d0-5ef6705a01e9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -507,6 +516,15 @@
     <ClInclude Include="..\public\Player_Shader.h">
       <Filter>02.GameObject\Shader\Player\Test</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Statue_Deco.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\06.Statue\Deco</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Statue_Plate.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\06.Statue\Plate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Statue.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\06.Statue</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -740,6 +758,15 @@
     </ClCompile>
     <ClCompile Include="..\private\Player_Shader.cpp">
       <Filter>02.GameObject\Shader\Player\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Statue_Deco.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\06.Statue\Deco</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Statue_Plate.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\06.Statue\Plate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Statue.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\06.Statue</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

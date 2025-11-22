@@ -100,12 +100,6 @@ CharacterVirtual* CJolt_Manager::CreateCharacterVirtual(const CharacterVirtualSe
     return pCharVir;
 }
 
-CBoneChainPhysic* CJolt_Manager::CreateBoneChain(CModel* pModel, CBoneChainPhysic::BCP_BuildDesc tBuild, CBoneChainPhysic::BCP_RuntimeParams tParams, _uint iRootObjectLayer, _uint iBoneChainObjectLayer, class CTransform** pOwnerTransform)
-{
-    return CBoneChainPhysic::Create(m_pPhysics, &m_pPhysics->GetBodyInterface(), pModel, tBuild, tParams, iRootObjectLayer, iBoneChainObjectLayer, pOwnerTransform);
-}
-
-
 HRESULT CJolt_Manager::Set_PhysicsSystem()
 {
     // PhysicsSystem 초기화

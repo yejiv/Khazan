@@ -265,7 +265,11 @@ void CAmount_Panel::AddValue_Check(_float fTimeDelta)
 		{
 			m_isAddValue = false;
 			m_pAddValueText->Update_Visible(false);
-			__super::Bubble_EventCall(nullptr);
+
+            CAmount::BUBBLE_DESC Desc = {};
+            Desc.eAmountType = m_eType;
+
+			__super::Bubble_EventCall(&Desc);
 		}
 	}
 	else

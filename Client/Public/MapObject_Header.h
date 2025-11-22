@@ -31,14 +31,25 @@
 #include "Lever_Gear.h"                 // 레버 옆 기어, 다 돌면 문쪽 기어 돌림
 #include "Door_Gear.h"                  // 레버 옆 기어, 다 돌면 문쪽 기어 돌림
 
+#include "Statue.h"                     // 조각상 퍼즐 ( 렌더 X ) ( 회전 애니메이션만 )
+#include "Statue_Plate.h"               // 조각상 퍼즐 발판
+#include "Statue_Deco.h"                // 조각상 퍼즐 석상
+
 // Trigger
 #include "Trigger.h"
 #include "HeinMach_Trigger.h"
 
-// Test
-#include "Prop_Test.h"
+// Destructible
 #include "Prop_Destructible.h"
 #include "Prop_Chunk.h"
+#include "Fence.h"
+#include "Pot.h"
+#include "Barrel.h"
+#include "Obelisk.h"
+
+// Test
+#include "Prop_Test.h"
+
 
 // 맵의 서브레벨 개수 및 귀검 있는 SUB LV
 #define HEINMACH_SUBLV 12

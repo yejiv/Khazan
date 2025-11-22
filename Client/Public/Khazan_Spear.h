@@ -209,6 +209,8 @@ private:
 
 
     class CUI_Talk_Daphrona* m_pTalkUI = { nullptr };
+    class CUI_Talk_Dangin* m_pDanginTalkUI = { nullptr };
+    class CUI_Talk_Trader* m_pTraderTalkUI = { nullptr };
 private:
     void			Update_Stats(_float fTimeDelta);
     void			Update_State(_float fTimeDelta);
@@ -312,6 +314,7 @@ private:
 	void						Chest_Event(_float fTimeDelta);
     void						TombStone_Event(_float fTimeDelta);
     void						Lever_Event(_float fTimeDelta);
+    void						Statue_Event(_float fTimeDelta);
 
 private:
     void                        Lerp_Position_ByInteractEvent(_float4 vTargetPos, _float4 vStartPos, _float fDuration, _float fTimeDelta, _bool& isDone);

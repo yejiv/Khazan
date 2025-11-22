@@ -71,22 +71,36 @@ void CThreadPool::PushJob(function<void()> job)
 void CThreadPool::Worker_Thread(uint32_t worker_idx)
 {
     t_worker_idx = worker_idx;
+
     HRESULT hrCo = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
-    auto coGuard = std::unique_ptr<void, void(*)(void*)>{ (void*)1, [](void*) { CoUninitialize(); } };
+    (void)hrCo; // hrCo 안 쓰면 경고 방지
 
-    for (;;) {
-        std::unique_lock<std::mutex> lock(m_Mutex);
-        m_CV.wait(lock, [this] { return m_isStopAll || !m_Tasks.empty(); });
+    for (;;)
+    {
+        std::function<void()> task;
 
-        if (m_isStopAll && m_Tasks.empty())
-            break; // return 말고 break
+        {
+            std::unique_lock<std::mutex> lock(m_Mutex);
 
-        auto task = std::move(m_Tasks.front());
-        m_Tasks.pop();
-        lock.unlock();
+            // 큐에 일이 생기거나, 종료 신호가 올 때까지 "잠들어" 있음
+            m_CV.wait(lock, [this] {
+                return m_isStopAll || !m_Tasks.empty();
+                });
 
+            // 종료 신호 + 큐 비어있으면 루프 탈출
+            if (m_isStopAll && m_Tasks.empty())
+                break;
+
+            // 여기 왔다는 건 반드시 task가 하나 이상 있다는 의미
+            task = std::move(m_Tasks.front());
+            m_Tasks.pop();
+        } // 락 해제 (task 실행은 락 밖에서)
+
+        // 실제 작업 실행
         task();
     }
+
+    CoUninitialize();
 }
 
 CThreadPool* CThreadPool::Create(_uint thread_count)

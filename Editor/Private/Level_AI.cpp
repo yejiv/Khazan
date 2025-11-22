@@ -597,15 +597,15 @@ void CLevel_AI::Show_BT_Editor(AI_BTDATA& TreeData)
 
 		// 서브 타입
 
-		const char* SubTypes[] = { "Selector", "Sequence", "InterruptibleSelector" ,"Repeater", "Inverter", "CoolDown","Condition","Action","Wait"};
+		const char* SubTypes[] = { "Selector", "Sequence", "InterruptibleSelector", "UtilitySelector" ,"Repeater", "Inverter", "CoolDown","UtilityAction" ,"Condition","Action","Wait"};
 		_uint iCurrentSub = 0;
-		for (_uint i = 0; i < 9; i++)
+		for (_uint i = 0; i < 11; i++)
 			if (g_SelectedNode->strSubtype == SubTypes[i])
 				iCurrentSub = i;
 
 		if (ImGui::BeginCombo("SubType", SubTypes[iCurrentSub]))
 		{
-			for (_uint i = 0; i < 9; i++)
+			for (_uint i = 0; i < 11; i++)
 			{
 				_bool isSelected = (iCurrentSub == i);
 				if (ImGui::Selectable(SubTypes[i], isSelected))
@@ -622,7 +622,7 @@ void CLevel_AI::Show_BT_Editor(AI_BTDATA& TreeData)
 			{
 				static char cb[128];
 				strcpy_s(cb, g_SelectedNode->strCallbackFunction.c_str());
-				if (ImGui::InputText("Interrput Callback", cb, IM_ARRAYSIZE(cb)))
+				if (ImGui::InputText("Interrupt Callback", cb, IM_ARRAYSIZE(cb)))
 					g_SelectedNode->strCallbackFunction = cb;
 			}
 		}

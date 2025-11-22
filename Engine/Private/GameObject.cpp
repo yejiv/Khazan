@@ -39,6 +39,13 @@ HRESULT CGameObject::Initialize_Clone(void* pArg)
 {
 	m_isPrototype = false;
 
+    if (pArg != nullptr)
+    {
+        GAMEOBJECT_DESC* pDesc = static_cast<GAMEOBJECT_DESC*>(pArg);
+        m_iLevelIndex = pDesc->iLevelIndex;
+    }
+    
+
 	m_pTransformCom = CTransform::Create(m_pDevice, m_pContext);
 	if (nullptr == m_pTransformCom)
 		return E_FAIL;

@@ -45,6 +45,7 @@ public:
 	virtual void				SetTwinkleData(void* pArg);
 	virtual void				SetUpwardData(void* pArg);
 	virtual void				SetScrollData(void* pArg);
+    virtual void			    SetStop();
 	virtual void				SetLoopOff();
 	virtual void				Reset();
 	void						SetData(_uint eventType, _float fDurTime);
