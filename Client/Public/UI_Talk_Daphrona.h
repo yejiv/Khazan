@@ -12,6 +12,7 @@ NS_BEGIN(Client)
 class CUI_Talk_Daphrona final : public CUI_Panel
 {
 private:
+    enum class UIANIMSTATE { ON, OFF, END};
     enum class TALK_TYPE { START, TALK_SELETE, TALK, UP, END};
 private:
     CUI_Talk_Daphrona(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -57,6 +58,12 @@ private:
 
     _uint*                          m_pStone = { nullptr };
     _uint*                          m_pLevelStone = { nullptr };
+
+    _float							m_fAccTime = {};
+    UIANIMSTATE						m_eAnimState = { UIANIMSTATE::END };
+
+    _float                          m_fSpeedWeight = {};
+
 private:
     HRESULT					        Ready_Component();
     HRESULT                         Ready_Children();
@@ -65,6 +72,7 @@ private:
     void                            Setting_Talk();
 
     void                            List_Selete();
+    void						    UI_Animation(_float fTimeDelta);
 public:
     static CUI_Talk_Daphrona*       Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual CGameObject*            Clone(void* pArg) override;

@@ -8,26 +8,26 @@
 #include "GameInstance.h"
 
 CModel::CModel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: CComponent{ pDevice ,pContext }
+    : CComponent{ pDevice ,pContext }
 {
 }
 
 CModel::CModel(const CModel& Prototype)
-	: CComponent{ Prototype }
-    , m_iNumMeshes { Prototype.m_iNumMeshes }
-    , m_Meshes { Prototype.m_Meshes }
-    , m_iNumMaterials { Prototype.m_iNumMaterials }
-    , m_Materials { Prototype.m_Materials }
+    : CComponent{ Prototype }
+    , m_iNumMeshes{ Prototype.m_iNumMeshes }
+    , m_Meshes{ Prototype.m_Meshes }
+    , m_iNumMaterials{ Prototype.m_iNumMaterials }
+    , m_Materials{ Prototype.m_Materials }
     , m_iNumAnimations{ Prototype.m_iNumAnimations }
-    , m_eModelType { Prototype.m_eModelType} 
+    , m_eModelType{ Prototype.m_eModelType }
     , m_PreTransformMatrix{ Prototype.m_PreTransformMatrix }
     , m_strModelName{ Prototype.m_strModelName }
     , m_strModelFilePath{ Prototype.m_strModelFilePath }
     , m_RootMotionInfo{ Prototype.m_RootMotionInfo }
-    , m_AnimationsSetup{Prototype.m_AnimationsSetup }
-    , m_AnimationSets {Prototype.m_AnimationSets }
-	, m_iRootBoneIndex{ Prototype.m_iRootBoneIndex }
-	//, m_AnimationSetInfo{ Prototype.m_AnimationSetInfo }
+    , m_AnimationsSetup{ Prototype.m_AnimationsSetup }
+    , m_AnimationSets{ Prototype.m_AnimationSets }
+    , m_iRootBoneIndex{ Prototype.m_iRootBoneIndex }
+    //, m_AnimationSetInfo{ Prototype.m_AnimationSetInfo }
 {
     for (auto& pPrototypeAnimation : Prototype.m_Animations) {
         CAnimation* pAnimation = pPrototypeAnimation->Clone();
@@ -66,7 +66,7 @@ HRESULT CModel::Initialize_Prototype(const _char* pModelFilePath)
     data.LoadBinary(ifs);
 
     ifs.close();
-    
+
 #ifdef _DEBUG
     OutputDebugStringA(("모델 이름 : " + data.strModelName + "\n").c_str());
 #endif // _DEBUG
@@ -135,12 +135,12 @@ HRESULT CModel::Initialize_Prototype(const _char* pModelFilePath)
             m_iRootBoneIndex = static_cast<_uint>(distance(m_Bones.begin(), it));
     }
 
-	return S_OK;
+    return S_OK;
 }
 
 HRESULT CModel::Initialize_Clone(void* pArg)
-{ 
-	return S_OK;
+{
+    return S_OK;
 }
 
 _float CModel::MakeRatio()
@@ -156,10 +156,10 @@ _uint CModel::Get_BoneIndex(const _char* pBoneName)
         return false;
         });
 
-	if (iter == m_Bones.end())
-		return 0;
+    if (iter == m_Bones.end())
+        return 0;
 
-	return static_cast<_uint>(distance(m_Bones.begin(), iter));
+    return static_cast<_uint>(distance(m_Bones.begin(), iter));
 }
 
 _float4x4* CModel::Get_BoneMatrix(const _char* pBoneName)
@@ -318,7 +318,7 @@ HRESULT CModel::Bind_BoneMatrices(CShader* pShader, const _char* pConstantName, 
     if (iMeshIndex >= m_iNumMeshes)
         return E_FAIL;
 
-        // 파츠는 마스터의 본을 사용
+    // 파츠는 마스터의 본을 사용
     if (m_isSharedSkeleton && m_pMasterSkeleton != nullptr)
     {
         // 마스터 본으로 바인딩 (Mesh 내부에서 본 이름으로 매칭)
@@ -347,14 +347,14 @@ _bool CModel::Play_Animation(_float fTimeDelta)
 
     /* 애니메이션 변경 */
     if (Has_State(CHANGE_ANIMATION))
-	{
+    {
         /* 애니메이션 블랜딩할 이전 애니메이션 뼈 넘겨주기 */
-		m_Animations[m_iCurrentAnimIndex]->OnAnimationBlend(move(m_Animations[m_iPrevAnimIndex]->Get_ChannelMatrices()));
-		Remove_State(CHANGE_ANIMATION);
+        m_Animations[m_iCurrentAnimIndex]->OnAnimationBlend(move(m_Animations[m_iPrevAnimIndex]->Get_ChannelMatrices()));
+        Remove_State(CHANGE_ANIMATION);
         Add_State(FIRST_FRAME_ANIMATION);
-	}
+    }
 
-	m_fPrevTrackPosition = m_fCurrentTrackPosition;
+    m_fPrevTrackPosition = m_fCurrentTrackPosition;
 
     // 애니메이션 업데이트
     m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrices(m_Bones, Has_State(USED_ANIM_LOOP), Has_State(ANIM_LOOP), &m_isFinished, fTimeDelta);
@@ -390,20 +390,20 @@ _bool CModel::Play_Animation(_float fTimeDelta)
         /*  =========== 뼈들 컴바인드 =========== */
         m_Bones[i]->Update_CombinedTransformationMatrix(m_PreTransformMatrix, m_Bones);
 
-		/* 루트 모션 처리 */ 
-		if (i == m_iRootBoneIndex && Has_State(ROOTMOTION_POSITION))
-		{
+        /* 루트 모션 처리 */
+        if (i == m_iRootBoneIndex && Has_State(ROOTMOTION_POSITION))
+        {
             /* 첫 프레임은  정보 저장 */
             if (Has_State(FIRST_FRAME_ANIMATION))
             {
                 _matrix currentCombinedRoot = m_Bones[m_iRootBoneIndex]->Get_CombinedTransformationMatrix();
 
-				// 애니메이션 절대 좌표 사용시 (위치가 프레임 단위로 엄청 크게 변하는 애니메이션일 때 (ex 앞으로 나가는 콤보공격 애니메이션 2번째부터 이용하는 ))
+                // 애니메이션 절대 좌표 사용시 (위치가 프레임 단위로 엄청 크게 변하는 애니메이션일 때 (ex 앞으로 나가는 콤보공격 애니메이션 2번째부터 이용하는 ))
                 if (Has_State(ABSOLUTE_ROOT_POS))
                     m_RootMotionInfo.vFirstFrameOffset = currentCombinedRoot.r[3];
                 else
                     m_RootMotionInfo.vFirstFrameOffset = XMVectorZero();
-               
+
                 /* 이전-현재 차이 값 변수 초기화 */
                 m_RootMotionInfo.matDeltaRootMotion = XMMatrixIdentity();
 
@@ -418,15 +418,20 @@ _bool CModel::Play_Animation(_float fTimeDelta)
             else if (Has_State(ROOTMOTION))
             {
                 /* 루트모션 진행 */
-				Update_RootMotion(fTimeDelta);
+                Update_RootMotion(fTimeDelta);
             }
-		}
+        }
 
     }
 
 
     /* 이벤트 체크 */
     Check_Event(fTimeDelta);
+
+    // 모든 본의 Combined Matrix가 계산 완료된 상태
+    if (m_isMaterSkeleton)
+        Cache_CurrentBoneMatrices();  // 본 정보 저장
+
 
     /* Owner에 Transform 적용 */
     if (m_pOwnerTransform && Has_State(ROOTMOTION))
@@ -436,9 +441,9 @@ _bool CModel::Play_Animation(_float fTimeDelta)
     if (m_isFinished)
     {
 
-        if (Has_State(ANIM_LOOP)) 
+        if (Has_State(ANIM_LOOP))
             Reset_EventTrigger();
-        
+
         /* 대기중인 애니메이션이 있으면 실행 - Set_Animation(예약 인덱스)*/
         if (Has_State(WAITFORCOMPLETE))
         {
@@ -468,32 +473,32 @@ _bool CModel::Play_Animation(_float fTimeDelta)
 
     }
 
-//#ifdef _DEBUG
-//    static int frameCount = 0;
-//    if (++frameCount % 60 == 0) // 60프레임마다
-//    {
-//        OutputDebugStringA("=== Bone Matrix Debug ===\n");
-//
-//        // 루트 본 Combined 행렬 확인
-//        _matrix rootCombined = m_Bones[0]->Get_CombinedTransformationMatrix();
-//        _vector scale, rot, pos;
-//        if (XMMatrixDecompose(&scale, &rot, &pos, rootCombined))
-//        {
-//            _float3 scaleF;
-//            XMStoreFloat3(&scaleF, scale);
-//            char buffer[256];
-//            sprintf_s(buffer, "Root Combined Scale: (%.6f, %.6f, %.6f)\n",
-//                scaleF.x, scaleF.y, scaleF.z);
-//            OutputDebugStringA(buffer);
-//        }
-//    }
-//#endif
+    //#ifdef _DEBUG
+    //    static int frameCount = 0;
+    //    if (++frameCount % 60 == 0) // 60프레임마다
+    //    {
+    //        OutputDebugStringA("=== Bone Matrix Debug ===\n");
+    //
+    //        // 루트 본 Combined 행렬 확인
+    //        _matrix rootCombined = m_Bones[0]->Get_CombinedTransformationMatrix();
+    //        _vector scale, rot, pos;
+    //        if (XMMatrixDecompose(&scale, &rot, &pos, rootCombined))
+    //        {
+    //            _float3 scaleF;
+    //            XMStoreFloat3(&scaleF, scale);
+    //            char buffer[256];
+    //            sprintf_s(buffer, "Root Combined Scale: (%.6f, %.6f, %.6f)\n",
+    //                scaleF.x, scaleF.y, scaleF.z);
+    //            OutputDebugStringA(buffer);
+    //        }
+    //    }
+    //#endif
 
     return m_isFinished;
 }
 
 void CModel::Set_Animation(_uint iIndex)
-{    
+{
     //if (m_fCurrentTrackPosition < 4.f) 
     //{
     //    /* 같은 애니메이션이 들어오면 pass*/
@@ -508,40 +513,40 @@ void CModel::Set_Animation(_uint iIndex)
 
     if (m_iCurrentAnimIndex == iIndex && m_AnimationsSetup[m_iCurrentAnimIndex].isLoop)
         return;
-        
+
     if (iIndex >= m_iNumAnimations || m_iNumAnimations <= 0)
         return;
 
-	if (Has_State(WAITFORCOMPLETE))
-	{
-		m_iReserveAnimIndex = iIndex;
+    if (Has_State(WAITFORCOMPLETE))
+    {
+        m_iReserveAnimIndex = iIndex;
 
-		OnWaitForComplete([this]() {
-			Set_Animation(m_iReserveAnimIndex);
-			});
+        OnWaitForComplete([this]() {
+            Set_Animation(m_iReserveAnimIndex);
+            });
 
-		return;
-	}
+        return;
+    }
 
-	m_iPrevAnimIndex = m_iCurrentAnimIndex;
-	m_iCurrentAnimIndex = iIndex;
+    m_iPrevAnimIndex = m_iCurrentAnimIndex;
+    m_iCurrentAnimIndex = iIndex;
 
-	if (!Has_State(ANIMSET_PLAYING))
-		Clear_State();
+    if (!Has_State(ANIMSET_PLAYING))
+        Clear_State();
 
-	Add_State(CHANGE_ANIMATION);
+    Add_State(CHANGE_ANIMATION);
 
-	/*  루트 모션 옵션 설정 */
+    /*  루트 모션 옵션 설정 */
     Check_RootMotion();
 
-	/* 완료 대기 여부 체크*/
-	Check_WaitForComplete();
+    /* 완료 대기 여부 체크*/
+    Check_WaitForComplete();
 
-	/* 이벤트 설정 */
-	Setup_Events();
+    /* 이벤트 설정 */
+    Setup_Events();
 
 
-    if(m_strModelName == L"Khazan_Spear")
+    if (m_strModelName == L"Khazan_Spear")
         cout << m_iCurrentAnimIndex << " : " << Get_CurAnimName() << endl;
 }
 
@@ -567,7 +572,7 @@ void CModel::Set_AnimationSet(const string& strKey)
     }
     else
     {
-        Remove_State(ANIMSET_PLAYING | ANIMSET_NEXT );
+        Remove_State(ANIMSET_PLAYING | ANIMSET_NEXT);
 #ifdef _DEBUG
         OutputDebugStringA(("[CModel::Set_AnimationSet() Error] Invalid Animation Set Key: " + strKey + "\n").c_str());
 #endif // _DEBUG
@@ -580,7 +585,7 @@ void CModel::Set_AnimationLoop(_bool isLoop)
 {
     Add_State(USED_ANIM_LOOP);
 
-    if(isLoop)
+    if (isLoop)
         Add_State(ANIM_LOOP);
 }
 
@@ -605,11 +610,11 @@ void CModel::AnimationSetIndexIncrease()
 
 void CModel::Update_BoneCombinedMatrices()
 {
-	//if (m_isSharedSkeleton)
-	//	return;
+    //if (m_isSharedSkeleton)
+    //	return;
 
-	for (auto bone : m_Bones)
-		bone->Update_CombinedTransformationMatrix(m_PreTransformMatrix, m_Bones);
+    for (auto bone : m_Bones)
+        bone->Update_CombinedTransformationMatrix(m_PreTransformMatrix, m_Bones);
 
 }
 
@@ -698,7 +703,7 @@ void CModel::Render_AllAttachedParts()
     {
         for (_uint i = 0; i < pPart->Get_NumMeshes(); ++i)
         {
-            pPart->Render(i); 
+            pPart->Render(i);
         }
     }
 }
@@ -983,14 +988,14 @@ void CModel::Debug_RanderState()
     // 루트 모션 정보
     //if (Has_State(ROOTMOTION))
     //{
-        ImGui::SeparatorText("Root Motion Info");
-        ImGui::Text("Root Bone Index: %d", m_iRootBoneIndex);
-/*        ImGui::Text("Blend Time: %.2f / %.2f",m_fCurrentRootMotionBlendTime, m_fRootMotionBlendTime);
+    ImGui::SeparatorText("Root Motion Info");
+    ImGui::Text("Root Bone Index: %d", m_iRootBoneIndex);
+    /*        ImGui::Text("Blend Time: %.2f / %.2f",m_fCurrentRootMotionBlendTime, m_fRootMotionBlendTime);
 
-        _float4 scale;
-        XMStoreFloat4(&scale, m_vRootMotionScale);
-        ImGui::Text("Scale: (%.1f, %.1f, %.1f)", scale.x, scale.y, scale.z); */
-    //}
+            _float4 scale;
+            XMStoreFloat4(&scale, m_vRootMotionScale);
+            ImGui::Text("Scale: (%.1f, %.1f, %.1f)", scale.x, scale.y, scale.z); */
+            //}
 
     ImGui::Spacing();
 
@@ -1015,13 +1020,13 @@ void CModel::Debug_RanderState()
 #endif
 
 HRESULT CModel::Render(_uint iMeshIndex)
-{    
+{
     if (FAILED(m_Meshes[iMeshIndex]->Bind_Resources()))
         return E_FAIL;
 
     if (FAILED(m_Meshes[iMeshIndex]->Render()))
         return E_FAIL;
-  
+
     return S_OK;
 }
 
@@ -1038,18 +1043,18 @@ HRESULT CModel::Deferred_Render(_uint iMeshIndex, ID3D11DeviceContext* pDeferred
 
 void CModel::Check_RootMotion()
 {
-	if (m_AnimationsSetup[m_iCurrentAnimIndex].isRootMotion) {
-		Add_State(ROOTMOTION);
-		m_AnimationsSetup[m_iCurrentAnimIndex].isApplyRootPosition ? Add_State(ROOTMOTION_POSITION) : Remove_State(ROOTMOTION_POSITION);
+    if (m_AnimationsSetup[m_iCurrentAnimIndex].isRootMotion) {
+        Add_State(ROOTMOTION);
+        m_AnimationsSetup[m_iCurrentAnimIndex].isApplyRootPosition ? Add_State(ROOTMOTION_POSITION) : Remove_State(ROOTMOTION_POSITION);
         m_AnimationsSetup[m_iCurrentAnimIndex].isIgnoreRootPos ? Add_State(IGNORE_ROOT_POS) : Remove_State(IGNORE_ROOT_POS);
         m_AnimationsSetup[m_iCurrentAnimIndex].isIgnoreRootRot ? Add_State(IGNORE_ROOT_ROT) : Remove_State(IGNORE_ROOT_ROT);
         m_AnimationsSetup[m_iCurrentAnimIndex].isIgnoreRootPosFirstFrame ? Add_State(IGNORE_ROOT_POS_FIRSTFRAME) : Remove_State(IGNORE_ROOT_POS_FIRSTFRAME);
         m_AnimationsSetup[m_iCurrentAnimIndex].isAbsoluteRootPosition ? Add_State(ABSOLUTE_ROOT_POS) : Remove_State(ABSOLUTE_ROOT_POS);
         m_AnimationsSetup[m_iCurrentAnimIndex].isRootMotion ? Add_State(ROOTMOTION) : Remove_State(ROOTMOTION);
 
-		FLOAT3_DATA scale = m_AnimationsSetup[m_iCurrentAnimIndex].RootMitionScale;
+        FLOAT3_DATA scale = m_AnimationsSetup[m_iCurrentAnimIndex].RootMitionScale;
         m_RootMotionInfo.vScale = XMVectorSet(scale.x, scale.y, scale.z, 1.f);
-	}
+    }
     else {
         // 루트 모션을 사용하지 않는 경우 상태 제거
         Remove_State(ROOTMOTION_ALL);
@@ -1062,7 +1067,7 @@ void CModel::Update_RootMotion(_float fTimeDelta)
 
     if (Has_State(ROOTMOTION_POSITION))
     {
-        /* 현재 루트본에서 첫 프레임 오프셋 빼기 */ 
+        /* 현재 루트본에서 첫 프레임 오프셋 빼기 */
         _vector vCurPos = XMVectorSubtract(CurrentCombinedRootMatrix.r[3], m_RootMotionInfo.vFirstFrameOffset);
 
         /* 델타 구하기 */
@@ -1080,14 +1085,14 @@ void CModel::Update_RootMotion(_float fTimeDelta)
 
         XMStoreFloat3(&m_vDelta, vDelta);
 
-	}
+    }
 
     /* 리셋 */
-	if (Has_State(ROOTMOTION_POSITION | IGNORE_ROOT_POS))
-	{
-		CurrentCombinedRootMatrix.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
-		m_Bones[m_iRootBoneIndex]->Set_CombinedTransformationMatrix(CurrentCombinedRootMatrix);
-	}
+    if (Has_State(ROOTMOTION_POSITION | IGNORE_ROOT_POS))
+    {
+        CurrentCombinedRootMatrix.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+        m_Bones[m_iRootBoneIndex]->Set_CombinedTransformationMatrix(CurrentCombinedRootMatrix);
+    }
 }
 
 void CModel::Apply_RootMotion_To_Transform()
@@ -1156,18 +1161,18 @@ void CModel::Setup_Events()
     for (size_t i = 0; i < m_AnimationsSetup[m_iCurrentAnimIndex].vecEventFrames.size(); i++)
     {
         ANIM_EVENT event;
-        
+
         event.strEventKey = m_AnimationsSetup[m_iCurrentAnimIndex].vecEventKeys[i];
         event.vFrameRange = _float2(m_AnimationsSetup[m_iCurrentAnimIndex].vecEventFrames[i].x, m_AnimationsSetup[m_iCurrentAnimIndex].vecEventFrames[i].y);
         for (size_t i = 0; i < 4; i++)
             event.isTriggered[i] = false;
-        
 
 
-		m_AnimationsSetup[m_iCurrentAnimIndex].vecEventTriggers[i] & 0x1 ? event.isTriggerOnce = true : event.isTriggerOnce = false;
-		m_AnimationsSetup[m_iCurrentAnimIndex].vecEventTriggers[i] & 0x2 ? event.isTriggerOnEnter = true : event.isTriggerOnEnter = false;
-		m_AnimationsSetup[m_iCurrentAnimIndex].vecEventTriggers[i] & 0x4 ? event.isTriggerOnExit = true : event.isTriggerOnExit = false;
-		m_AnimationsSetup[m_iCurrentAnimIndex].vecEventTriggers[i] & 0x8 ? event.isTriggerContinuous = true : event.isTriggerContinuous = false;
+
+        m_AnimationsSetup[m_iCurrentAnimIndex].vecEventTriggers[i] & 0x1 ? event.isTriggerOnce = true : event.isTriggerOnce = false;
+        m_AnimationsSetup[m_iCurrentAnimIndex].vecEventTriggers[i] & 0x2 ? event.isTriggerOnEnter = true : event.isTriggerOnEnter = false;
+        m_AnimationsSetup[m_iCurrentAnimIndex].vecEventTriggers[i] & 0x4 ? event.isTriggerOnExit = true : event.isTriggerOnExit = false;
+        m_AnimationsSetup[m_iCurrentAnimIndex].vecEventTriggers[i] & 0x8 ? event.isTriggerContinuous = true : event.isTriggerContinuous = false;
 
         m_CurrentEvents.push_back(event);
         m_PrevFrameInRange.push_back(false);
@@ -1228,7 +1233,7 @@ void CModel::Check_Event(_float fTimeDelta)
             //범위 내에 계속 발동
             else if (isInRange && event.isTriggerContinuous)
             {
-                if(!event.isTriggered[ANIM_EVENT::TRIGGER_INDEX::CONTINUE])
+                if (!event.isTriggered[ANIM_EVENT::TRIGGER_INDEX::CONTINUE])
                     Trigger_Event(event.strEventKey, ANIM_EVENT_TRIGGERTYPE::CONTINUE);
             }
             // 탈출했으면 반복 애니메이션중에서 첫번째 루프에서 범위내 계속 발동 끄기.
@@ -1251,19 +1256,19 @@ void CModel::Trigger_Event(string strEventKey, ANIM_EVENT_TRIGGERTYPE eTriggerTy
 
     if (it != m_EventCallbacks.end())
         it->second();
-//#ifdef _DEBUG
-//    else
-//    {
-//        OutputDebugStringA(("[CModel::Trigger_Event] No callback registered for: " + strEventKey + "\n").c_str());
-//    }
-//#endif
+    //#ifdef _DEBUG
+    //    else
+    //    {
+    //        OutputDebugStringA(("[CModel::Trigger_Event] No callback registered for: " + strEventKey + "\n").c_str());
+    //    }
+    //#endif
 
 }
 
 void CModel::Reset_EventTrigger()
 {
     for (auto event : m_CurrentEvents)
-        if(!event.isTriggerOnce)
+        if (!event.isTriggerOnce)
             fill(begin(event.isTriggered), end(event.isTriggered), false);
 
     fill(m_PrevFrameInRange.begin(), m_PrevFrameInRange.end(), false);
@@ -1275,24 +1280,35 @@ string CModel::MakeCallbackKey(const string& strEventKey, ANIM_EVENT_TRIGGERTYPE
     return strEventKey + "_" + to_string(ENUM_CLASS(eTriggerType));
 }
 
+void CModel::Cache_CurrentBoneMatrices()
+{
+    if (m_CachedBoneMatrices.size() != m_Bones.size())
+        m_CachedBoneMatrices.resize(m_Bones.size());
+
+    for (size_t i = 0; i < m_Bones.size(); ++i)
+    {
+        m_CachedBoneMatrices[i] = *m_Bones[i]->Get_CombinedTransformationMatrixPtr();
+    }
+}
+
 HRESULT CModel::Ready_Meshes(MODEL_DATA& data)
 {
 
-	for (size_t i = 0; i < m_iNumMeshes; i++)
-	{
-		CMesh* pMesh = CMesh::Create(m_pDevice, m_pContext, m_eModelType, XMLoadFloat4x4(&m_PreTransformMatrix), data.vecMeshes[i]);
-		if (pMesh == nullptr)
-		{
-			MSG_BOX(TEXT("비상 CMesh::Create() 실패!!!!!!"));
-			return E_FAIL;
-		}
-		m_Meshes.emplace_back(pMesh);
+    for (size_t i = 0; i < m_iNumMeshes; i++)
+    {
+        CMesh* pMesh = CMesh::Create(m_pDevice, m_pContext, m_eModelType, XMLoadFloat4x4(&m_PreTransformMatrix), data.vecMeshes[i]);
+        if (pMesh == nullptr)
+        {
+            MSG_BOX(TEXT("비상 CMesh::Create() 실패!!!!!!"));
+            return E_FAIL;
+        }
+        m_Meshes.emplace_back(pMesh);
 
         /* 파츠가 사용할 본 인덱스 넘겨주기 */
       //  pMesh->Build_BoneNameList(m_Bones);
-	}
+    }
 
-	return S_OK;
+    return S_OK;
 }
 
 HRESULT CModel::Ready_Materials(MODEL_DATA& data)
@@ -1394,7 +1410,7 @@ CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, con
 {
     CModel* pInstance = new CModel(pDevice, pContext);
 
-    if (FAILED(pInstance->Initialize_Prototype( pModelFilePath)))
+    if (FAILED(pInstance->Initialize_Prototype(pModelFilePath)))
     {
         MSG_BOX(TEXT("Failed to Created : CModel"));
         Safe_Release(pInstance);
@@ -1418,7 +1434,7 @@ CComponent* CModel::Clone(void* pArg)
 
 void CModel::Free()
 {
-	__super::Free();
+    __super::Free();
 
     /*if(m_pOwnerTransform)
         Safe_Release(m_pOwnerTransform);*/
@@ -1442,6 +1458,6 @@ void CModel::Free()
 
 
 
-   // m_Importer.FreeScene();
+    // m_Importer.FreeScene();
 
 }

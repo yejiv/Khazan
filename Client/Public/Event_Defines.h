@@ -12,6 +12,7 @@ namespace Client {
         PreSKILL_On,
         ANNOUNCE_RESULT,
         ANNOUNCE_OVER,
+        ANNOUNCE_WARNING,
         SKILL_QUICKSLOT,
         GATE_GEAR0,
         GATE_GEAR1,
@@ -180,6 +181,10 @@ namespace Client {
     };
 
     struct EVENT_ANNOUNCE_RESULT { };
+
+    struct EVENT_ANNOUNCE_WARNING {
+        _wstring strText;
+    };
 
     struct EVENT_SKILL_SLOT    {
         _int    iIndex;

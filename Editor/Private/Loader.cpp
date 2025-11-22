@@ -34,6 +34,8 @@
 #include "Camera_Shader.h"
 #include "Terrain_Shader.h"
 #include "Player_Shader.h"
+#include "E_Khazan_Spear.h"
+#include "E_Body_Khazan_Spear.h"
 #pragma endregion
 
 #pragma region Camera
@@ -458,7 +460,7 @@ HRESULT CLoader::Loading_For_Effect_Level()
 
 	// Prototype_Component_Texture_TestParticle
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_Particle_Prototype"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/particle/particle%d.png"), 8))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/particle/particle%d.png"), 9))))
 		return E_FAIL;
 	
 	// Prototype_Component_Texture_TestSpriteImage
@@ -525,6 +527,7 @@ HRESULT CLoader::Loading_For_Effect_Level()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_ScreenTrail"),
 		CScreenTrail::Create(m_pDevice, m_pContext)), E_FAIL);
 
+
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 
 	m_isFinished = true;
@@ -538,6 +541,14 @@ HRESULT CLoader::Loading_For_UI_Level()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_Atlas"),
 		CTexture_Atlas::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Atlas/Atlas_%d.json"), 5))))
 		return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_Texture_UI_BackGround"),
+        CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/BG/T_Texture_Bg_UI.png"), 1))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_UI_FX_Mask"),
+        CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Mask/T_Fx_%d.png"), 14))))
+        return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_Hud_HPGauge"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Hud/State/T_Hud_Gauge_HP_0%d.png"), 7))))
@@ -606,6 +617,11 @@ HRESULT CLoader::Loading_For_UI_Level()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_UI_Flag"),
         CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Flag/T_SkillTreeBg_0%d.png"), 2))))
         return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_Component_UI_Collect_Line"),
+        CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/UI/Common/T_Img_MemoryCollect_Line.png"), 1))))
+        return E_FAIL;
+
 	lstrcpy(m_szLoadingText, TEXT("게임오브젝트원형를 로딩중입니다."));
 
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::UI), TEXT("Prototype_GameObject_Camera_UI"),
@@ -699,6 +715,94 @@ HRESULT CLoader::Loading_For_Shader_Level()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Editor_Animation_TestModel"),
 		CJOH_EditorModelTest::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+
+#pragma region Khazan
+    /* Prototype_GameObject_Khazan_Spear */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Khazan_Spear"),
+        CE_Khazan_Spear::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    /* Prototype_GameObject_Body_Khazan_Spear */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Body_Khazan_Spear"),
+        CE_Body_Khazan_Spear::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+    /* Prototype_Component_Model_Khazan_Lantern*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Model_Khazan_Lantern"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Khazan/Khazan_Parts/APC/Lantern/Lantern.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Spear_Khazan_Sample*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Model_Spear_Khazan_Sample"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Khazan/Khazan_Sample/Spear/Spear.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Spear*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Model_Khazan_Spear"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Khazan/Khazan_Spear/Khazan_Spear.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Torso1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso1"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Khazan/Khazan_Parts/Torso/Prisoner_Torso1/Prisoner_Torso1.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_Khazan_Prisoner_Torso2*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso2"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Khazan/Khazan_Parts/Torso/Prisoner_Torso2/Prisoner_Torso2.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_Khazan_Prisoner_Torso3*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso3"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Khazan/Khazan_Parts/Torso/Prisoner_Torso3/Prisoner_Torso3.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Shoes1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Shoes1"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Khazan/Khazan_Parts/Shoes/Prisoner_Shoes1/Prisoner_Shoes1.dat"))))
+        return E_FAIL;
+    ///* Prototype_Component_Model_Khazan_Prisoner_Shoes2*/
+    //if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Shoes2"),
+    //	CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Khazan/Khazan_Parts/Shoes/Prisoner_Shoes2/Prisoner_Shoes2.dat"))))
+    //	return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Leg1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg1"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Khazan/Khazan_Parts/Leg/Prisoner_Leg1/Prisoner_Leg1.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_Khazan_Prisoner_Leg2*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg2"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Khazan/Khazan_Parts/Leg/Prisoner_Leg2/Prisoner_Leg2.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_Khazan_Prisoner_Leg3*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg3"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Khazan/Khazan_Parts/Leg/Prisoner_Leg3/Prisoner_Leg3.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Hair1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Hair1"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Khazan/Khazan_Parts/Hair/Prisoner_Hair1/Prisoner_Hair1.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Face1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Face1"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Khazan/Khazan_Parts/Face/Prisoner_Face1/Prisoner_Face1.dat"))))
+        return E_FAIL;
+
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Arm1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Arm1"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Khazan/Khazan_Parts/Arm/Prisoner_Arm1/Prisoner_Arm1.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Arm2*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Arm2"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Khazan/Khazan_Parts/Arm/Prisoner_Arm2/Prisoner_Arm2.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_DanJin_Hair*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Model_Khazan_DanJin_Hair"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Khazan/Khazan_Parts/Hair/Danjin_Hair/Danjin_Hair/Danjin_Hair.dat"))))
+        return E_FAIL;
+#pragma endregion
+
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 

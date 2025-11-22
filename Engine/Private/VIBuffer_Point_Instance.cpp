@@ -209,7 +209,7 @@ _bool CVIBuffer_Point_Instance::Update(_float fTimeDelta)
 		pPointInstanceCB->fTimeDelta = fTimeDelta;
 		pPointInstanceCB->iNumInstances = m_iNumInstance;
 		pPointInstanceCB->bIsLoop = m_bLoop;
-		pPointInstanceCB->vSpawnRange = m_sData.vRange;
+		pPointInstanceCB->vSpawnRange = m_sData.vRange; 
 		m_pContext->Unmap(m_pCB, 0);
 	}
 	

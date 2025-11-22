@@ -85,7 +85,7 @@ void CUIParent::Add_Child(CUIObject* pChild)
         return;
 
     m_Children.push_back(pChild);
-    
+    Safe_AddRef(pChild);
 }
 
 void CUIParent::Remove_Child(CUIObject* pChild)

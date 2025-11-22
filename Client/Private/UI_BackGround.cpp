@@ -76,10 +76,6 @@ void CUI_BackGround::Bubble_EventCall()
 
 HRESULT CUI_BackGround::Ready_Prototype()
 {
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_UI_BackGround"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/BG/T_Texture_Bg_UI.png"), 1))))
-		return E_FAIL;
-
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_UI_BackGround_Mask"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Mask/BG_Mask_0%d.png"), 2))))
 		return E_FAIL;

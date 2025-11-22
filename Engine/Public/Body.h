@@ -88,7 +88,7 @@ public:
 
 	virtual void Update(_float fTimeDelta, _matrix WorldMatirx, _vector& outQuatRotation, _vector& outPosition);
 	virtual void Sync_Update(_matrix WorldMatirx);
-
+    
 public:
 	void	Activate(_bool isActivate) { true == isActivate ? m_pBodyInterface->ActivateBody(m_BodyID) : m_pBodyInterface->DeactivateBody(m_BodyID); }
 	void	OnGravity(_bool isGravity) { m_pBodyInterface->SetGravityFactor(m_BodyID, isGravity); }
@@ -100,6 +100,12 @@ public:
 	void	Add_Force(_float fMass);
 	void	Add_Torque(_float fMass);
 	void	Add_Impulse(_float fMass);
+
+    void Add_ImpulseDir(_float3 vImpulse);
+
+    void Add_AngularImpulseDir(_float3 vAngularImpulse);
+
+    void ApplyExplosion(const _float3& vExplosionPos, _float fBaseImpulse, _float fBaseTorque);
 
 public:
 	void	Set_Velocity(const _float3& vVelocity);
@@ -127,7 +133,7 @@ private:
 private:
 	const JPH::Array<Vec3> ConvertToArrayVec3(CModel* pModel);
 	const JPH::Array<Vec3> ConvertToArrayVec3(CModel* pModel, _uint iMeshIndex, const Vec3& vScale);
-    JPH::Array<Vec3> ConvertToHullPoints(CModel* pModel, _uint iMeshIndex, const Vec3& vScale, Vec3& outCenter);
+    JPH::Array<Vec3> ConvertToHullPoints(CModel* pModel, _uint iMeshIndex, const Vec3& vScale, Vec3& outCenter, _float& outNormalizeScale);
 	const JPH::Array<Float3> ConvertToArrayFloat3(CModel* pModel, _uint iIndex);
 	const JPH::Array<IndexedTriangle> ConvertToArrayTri(CModel* pModel, _uint iIndex);
 	void Make_MeshShape(BODY_MESHSHAPE_DESC* pDesc);

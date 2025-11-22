@@ -184,7 +184,7 @@ HRESULT CItemInfo_Other::Update_Switch(void* pArg)
 	Item_GradeCheck(pData);
 
 	m_pItemIcon->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV(WStringToAnsi(pData->strIconName), pData->iTexPass), pData->iTexPass);
-	if (pData->iEffect_ID > 0)
+	if (pData->iEffect_ID > 0 && pData->iEffect_ID <= 20)
 	{
 		const OTHERITEM_DATA* pEffectData = CClientInstance::GetInstance()->Get_Data<OTHERITEM_DATA>(pData->iEffect_ID);
 		m_pSubInfoText->Set_Text(pEffectData->strText);

@@ -5,6 +5,8 @@
 #include "Prop_Object.h"
 #include "JOH_EditorModelTest.h"
 #include "Player_Shader.h"
+#include "E_Body_Khazan_Spear.h"
+#include "E_Khazan_Spear.h"
 
 CLevel_Shader::CLevel_Shader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
@@ -27,8 +29,8 @@ HRESULT CLevel_Shader::Initialize()
 		ENUM_CLASS(LEVEL::SHADER), TEXT("Pool_Decal"), nullptr, 10)))
 		return E_FAIL;
 
-	if (FAILED(Ready_Lights()))
-		return E_FAIL;
+	//  if (FAILED(Ready_Lights()))
+	//  	return E_FAIL;
 
 #pragma region 테스트용 ( 박준영이 남기고 간거 )
 	CHECK_FAILED(Ready_Lights(TEXT("Test"), LEVEL::SHADER), E_FAIL);
@@ -43,13 +45,13 @@ HRESULT CLevel_Shader::Initialize()
 	m_SSAOConfig = m_pGameInstance->Get_SSAOConfig();
 	m_GaussianBlurConfig = m_pGameInstance->Get_GaussianBlurConfig();
 	m_FogConfig = m_pGameInstance->Get_FogConfig();
-	OUTLINE_CONFIG PlayerOutlineConfig = dynamic_cast<CPlayer_Shader*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
-		TEXT("Layer_Player"), 0))->Get_OutlineConfig();
-	m_OutlineConfig.vColor = PlayerOutlineConfig.vColor;
-	m_OutlineConfig.fSize = PlayerOutlineConfig.fSize;
-	OUTLINE_CONFIG RendererOutlineConfig = m_pGameInstance->Get_OutlineConfig();
-	m_OutlineConfig.fAlpha = RendererOutlineConfig.fAlpha;
-	m_OutlineConfig.fBias = RendererOutlineConfig.fBias;
+	//  OUTLINE_CONFIG PlayerOutlineConfig = dynamic_cast<CPlayer_Shader*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
+	//  	TEXT("Layer_Player"), 0))->Get_OutlineConfig();
+	//  m_OutlineConfig.vColor = PlayerOutlineConfig.vColor;
+	//  m_OutlineConfig.fSize = PlayerOutlineConfig.fSize;
+	//  OUTLINE_CONFIG RendererOutlineConfig = m_pGameInstance->Get_OutlineConfig();
+	//  m_OutlineConfig.fAlpha = RendererOutlineConfig.fAlpha;
+	//  m_OutlineConfig.fBias = RendererOutlineConfig.fBias;
 	m_VignetteConfig = m_pGameInstance->Get_VignetteConfig();
 	
 	m_DecalDesc.fLifeTime = 5.f;
@@ -63,6 +65,10 @@ HRESULT CLevel_Shader::Initialize()
     m_RimLightDesc = m_pGameInstance->Get_RimLightDesc();
 
 	m_iNumCascades = m_pGameInstance->Get_NumCascades();
+
+    // Fog, Shadow Off
+    m_pGameInstance->Set_EnableFog(m_isEnableFog);
+    m_pGameInstance->Set_EnableShadow(m_isRenderShadow);
 
 	m_pGameInstance->AddWidget(TEXT("Shader"), [&]()
 	{
@@ -419,7 +425,7 @@ HRESULT CLevel_Shader::Initialize()
                 ImGui::Separator();
             }
 
-            if (ImGui::Checkbox("Rim Light", &m_isEnableRimLight))
+            if (ImGui::Checkbox("Deferred Rim Light", &m_isEnableRimLight))
                 m_pGameInstance->Set_EnableRimLight(m_isEnableRimLight);
 
             if (m_isEnableRimLight)
@@ -437,6 +443,22 @@ HRESULT CLevel_Shader::Initialize()
                 if (ImGui::SliderFloat("RimLight Intensity", &m_RimLightDesc.fIntensity, 0.f, 1.f, "%.2f"))
                     m_pGameInstance->Set_RimLightDesc(m_RimLightDesc);
             }
+
+            if (ImGui::SliderFloat("Ghost Alpha", &m_fGhostAlpha, 0.f, 1.f, "%.2f"))
+            {
+                CE_Khazan_Spear* pKhazan = dynamic_cast<CE_Khazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
+                    TEXT("Layer_Player"), 0));
+                CE_Body_Khazan_Spear* pKhazanBody = dynamic_cast<CE_Body_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
+                pKhazanBody->Set_Alpha(m_fGhostAlpha);
+            }
+
+            if (ImGui::Checkbox("Edge", &m_isEnableEdge))
+            {
+                CE_Khazan_Spear* pKhazan = dynamic_cast<CE_Khazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
+                    TEXT("Layer_Player"), 0));
+                CE_Body_Khazan_Spear* pKhazanBody = dynamic_cast<CE_Body_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
+                pKhazanBody->Set_EnableEdge(m_isEnableEdge);
+            }
 		}
 
 		if (ImGui::CollapsingHeader("Cartoon Rendering"), ImGuiTreeNodeFlags_DefaultOpen)
@@ -450,25 +472,25 @@ HRESULT CLevel_Shader::Initialize()
 					m_pGameInstance->Set_ToonShadeLevel(m_fToonShadeLevel);
 			}
 
-			if (ImGui::Checkbox("Outline", &m_isEnableOutline))
-				m_pGameInstance->Set_EnableOutline(m_isEnableOutline);
-
-			if (m_isEnableOutline)
-			{
-				if (ImGui::SliderFloat("Outline Size", &m_OutlineConfig.fSize, 0.001f, 0.01f, "%.3f"))
-					dynamic_cast<CPlayer_Shader*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
-						TEXT("Layer_Player"), 0))->Set_OutlineConfig(m_OutlineConfig);
-
-				if (ImGui::ColorEdit3("Outline Color", reinterpret_cast<_float*>(&m_OutlineConfig.vColor)))
-					dynamic_cast<CPlayer_Shader*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
-						TEXT("Layer_Player"), 0))->Set_OutlineConfig(m_OutlineConfig);
-
-				if (ImGui::SliderFloat("Outline Alpha", &m_OutlineConfig.fAlpha, 0.f, 1.f, "%.2f"))
-					m_pGameInstance->Set_OutlineConfig(m_OutlineConfig);
-
-				if (ImGui::SliderFloat("Outline Bias", &m_OutlineConfig.fBias, 0.001f, 0.1f, "%.3f"))
-					m_pGameInstance->Set_OutlineConfig(m_OutlineConfig);
-			}
+			//  if (ImGui::Checkbox("Outline", &m_isEnableOutline))
+			//  	m_pGameInstance->Set_EnableOutline(m_isEnableOutline);
+            //  
+			//  if (m_isEnableOutline)
+			//  {
+			//  	if (ImGui::SliderFloat("Outline Size", &m_OutlineConfig.fSize, 0.001f, 0.01f, "%.3f"))
+			//  		dynamic_cast<CPlayer_Shader*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
+			//  			TEXT("Layer_Player"), 0))->Set_OutlineConfig(m_OutlineConfig);
+            //  
+			//  	if (ImGui::ColorEdit3("Outline Color", reinterpret_cast<_float*>(&m_OutlineConfig.vColor)))
+			//  		dynamic_cast<CPlayer_Shader*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
+			//  			TEXT("Layer_Player"), 0))->Set_OutlineConfig(m_OutlineConfig);
+            //  
+			//  	if (ImGui::SliderFloat("Outline Alpha", &m_OutlineConfig.fAlpha, 0.f, 1.f, "%.2f"))
+			//  		m_pGameInstance->Set_OutlineConfig(m_OutlineConfig);
+            //  
+			//  	if (ImGui::SliderFloat("Outline Bias", &m_OutlineConfig.fBias, 0.001f, 0.1f, "%.3f"))
+			//  		m_pGameInstance->Set_OutlineConfig(m_OutlineConfig);
+			//  }
 
 			ImGui::Separator();
 		}
@@ -616,8 +638,8 @@ HRESULT CLevel_Shader::Ready_Layer_Camera()
 {
 	CCamera_Shader::CAMERA_EFFECT_DESC Desc{};
 
-	Desc.vEye = _float4(0.f, 20.f, -20.f, 1.f);
-	Desc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
+	Desc.vEye = _float4(0.f, 5.f, -30.f, 1.f);
+	Desc.vAt = _float4(0.f, 0.f, 20.f, 1.f);
 	Desc.fFovy = XMConvertToRadians(60.0f);
 	Desc.fNear = 0.1f;
 	Desc.fFar = 1000.f;
@@ -653,9 +675,13 @@ HRESULT CLevel_Shader::Ready_Layer_BackGround()
 
 HRESULT CLevel_Shader::Ready_Layer_Player()
 {
-	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_Player"),
-		ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Player_Shader"))))
-		return E_FAIL;
+	//  if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_Player"),
+	//  	ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Player_Shader"))))
+	//  	return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::SHADER), TEXT("Layer_Player"),
+        ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Khazan_Spear"))))
+        return E_FAIL;
 
 	return S_OK;
 }

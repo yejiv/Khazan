@@ -29,10 +29,13 @@ bool g_isEnableEmissive, g_isEnableBloom;
 float g_fOutlineSize = 0.001f;
 float3 g_vOutlineColor = { 1.f, 0.f, 1.f };
 
-// Test
+// Edge
 bool g_isEnableEdge;
-
 float g_fEdgeIntensity, g_fShadeIntensity;
+float4 g_vCamPosition;
+
+// Test
+float g_fAlpha;
 
 struct VS_IN
 {
@@ -56,15 +59,10 @@ struct VS_OUT
     float4 vProjPos : TEXCOORD2;
 };
 
-/* ?젙?젏?뎽?씠?뜑 : ?젙?젏 ?쐞移섏쓽 ?뒪?럹?씠?뒪 蹂??솚(濡쒖뺄 -> ?썡?뱶 -> 酉? -> ?닾?쁺). */ 
-/*          : ?젙?젏?쓽 援ъ꽦?쓣 蹂?寃?.(in:3媛?, out:2媛? or 5媛?) */
-/*          : ?젙?젏 ?떒?쐞(?젙?젏 ?븯?굹?떦 VS_MAIN?븳踰덊샇異?) */ 
 VS_OUT VS_MAIN(VS_IN In)
 {
     VS_OUT Out = (VS_OUT) 0;
-    
-    /* ?젙?젏?쓽 濡쒖뺄?쐞移? * ?썡?뱶 * 酉? * ?닾?쁺 */ 
-    
+
     float fWeightW = 1.f - (In.vBlendWeight.x + In.vBlendWeight.y + In.vBlendWeight.z);
     
     matrix BoneMatrix =
@@ -278,13 +276,21 @@ PS_OUT PS_MAIN_DEBUG(PS_IN In)
     PS_OUT Out = (PS_OUT) 0;
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-
+    
     if (vMtrlDiffuse.a < 0.3f)
         discard;
+    
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
 
-    Out.vDiffuse = vMtrlDiffuse;
-    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+    //  Out.vDiffuse = vMtrlDiffuse;
+    // Alpha Rim Light Test
+    //  Out.vDiffuse.a = 0.f;
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vWorld = In.vWorldPos;
     Out.vSpecular.rgb = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
     Out.vSpecular.a = 1.f;
@@ -337,8 +343,32 @@ PS_OUT_EMISSIVE PS_MAIN_DEBUG_EMISSIVE(PS_IN In)
     
     // =============== Blend ===============
     
+    // Alpha Rim Light Test
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    // Rim Light
+    vector vLook = normalize(g_vCamPosition - In.vWorldPos);
+    
+    float fRim = 1.f - saturate(dot(float4(vNormal, 0.f), vLook));
+    fRim = pow(fRim, 2);
+    
+    // 빛을 등지고 있을 때
+    //  float fRimFactor = max(dot(g_vLightDir, vLook), 0.f);
+    //  fRim *= fRimFactor;
+    
+    // Rim Toon
+    //  if (g_isToonLight)
+    //      fRim = step(g_fRimToonThreshold, fRim);
+    
+    // Rim Color * Rim * Rim Light Intensity * Emissive Intensity
+    Out.vPostScene = float4(0.f, 0.f, 1.f, g_fAlpha) * fRim * 1.f * 2.f;
+    
     // PostScene留? 湲곕줉
-    Out.vPostScene = float4(vMtrlDiffuse.rgb, 0.2f);
+    //  Out.vPostScene = float4(vMtrlDiffuse.rgb, 0.2f);
     //  // (?깮?왂 媛??뒫 -> ?쐞?뿉?꽌 0 珥덇린?솕)
     //  Out.vEmissive = 0.f; 
     

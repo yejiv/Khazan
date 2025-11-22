@@ -72,7 +72,6 @@ HRESULT CItemInfo_RandomEffect::Initialize_Clone(void* pArg)
 
 void CItemInfo_RandomEffect::Priority_Update(_float fTimeDelta)
 {
-    m_IsUpdate = false;
 }
 
 void CItemInfo_RandomEffect::Update(_float fTimeDelta)
@@ -81,7 +80,8 @@ void CItemInfo_RandomEffect::Update(_float fTimeDelta)
 
 void CItemInfo_RandomEffect::Late_Update(_float fTimeDelta)
 {
-    __super::Late_Update(fTimeDelta);
+    if(m_isVisible)
+        __super::Late_Update(fTimeDelta);
 
 }
 
