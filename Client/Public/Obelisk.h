@@ -4,7 +4,7 @@
 
 NS_BEGIN(Client)
 
-class CPot final : public CProp_Destructible
+class CObelisk final : public CProp_Destructible
 {
 public:
     typedef struct tagPropFenceDesc : public CProp_Destructible::PROP_DEST_DESC
@@ -12,9 +12,9 @@ public:
 
     }PROP_FENCE_DESC;
 private:
-    CPot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    CPot(const CPot& Prototype);
-    virtual ~CPot() = default;
+    CObelisk(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+    CObelisk(const CObelisk& Prototype);
+    virtual ~CObelisk() = default;
 
 public:
     virtual HRESULT Initialize_Prototype() override;
@@ -24,6 +24,8 @@ public:
     virtual void    Late_Update(_float fTimeDelta) override;
     virtual HRESULT Render() override;
 
+public:
+    void Destory();
 
 public:
     virtual void			Collision_Enter(COLLISION_DESC* pDesc, _uint	iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
@@ -31,17 +33,20 @@ public:
     virtual void			Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
 
 private:
-    class CBody* m_pBodyCom = { nullptr };
-
     _bool m_isDestruct = { false };
+    queue<_uint> m_DestoryQueue;
 
+    _bool m_isDestroy = { false };
+    _float m_fDestoryTime = {};
+
+    _bool m_isExplosion = { false };
+    _bool m_isVortex = { false };
 private:
     HRESULT Ready_Components(void* pArg);
-    HRESULT Ready_Collision(void* pArg);
     HRESULT Ready_Chunk(void* pArg);
 
 public:
-    static CPot* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+    static CObelisk* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual CGameObject* Clone(void* pArg) override;
     virtual void                Free() override;
 };

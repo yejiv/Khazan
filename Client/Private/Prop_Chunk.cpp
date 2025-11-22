@@ -30,7 +30,8 @@ HRESULT CProp_Chunk::Initialize_Clone(void* pArg)
     PROP_CHUNK_DESC* pDesc = static_cast<PROP_CHUNK_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
-    m_pTransformCom->Set_WorldMatrix(XMLoadFloat4x4(&pDesc->WorldMatrix));
+    //m_pTransformCom->Set_WorldMatrix(XMLoadFloat4x4(&pDesc->WorldMatrix));
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(pDesc->WorldMatrix._41, pDesc->WorldMatrix._42, pDesc->WorldMatrix._43, 1.f));
     m_pTransformCom->Scale(pDesc->vScale);
 
     if (FAILED(Ready_Collision(pArg)))
@@ -44,10 +45,7 @@ HRESULT CProp_Chunk::Initialize_Clone(void* pArg)
 
 void CProp_Chunk::Priority_Update(_float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD8))
-    {
-        m_pBodyCom->Set_PosRot(XMVectorSet(2.f, 1.f, 2.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
-    }
+
 }
 
 void CProp_Chunk::Update(_float fTimeDelta)
@@ -56,11 +54,27 @@ void CProp_Chunk::Update(_float fTimeDelta)
     if (m_isDestroyStart && !m_isDestruct)
     {
         m_pBodyCom->Set_Gravity(1.f);
-        m_pBodyCom->Set_Velocity(m_vVelocity);
-        _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
-        _vector vDiff = XMVectorSubtract(vPos, XMVectorSetW(XMLoadFloat3(&m_vHitPos), 1.f));
-        _float fDist = XMVectorGetX(XMVector3Length(vDiff));
-        m_pBodyCom->Add_Impulse(10.f + fDist);
+        
+        
+        if (m_isHit)
+        {
+            m_pBodyCom->Set_Velocity(m_vVelocity);
+            _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
+            _vector vDiff = XMVectorSubtract(vPos, XMVectorSetW(XMLoadFloat3(&m_vHitPos), 1.f));
+            _float fDist = XMVectorGetX(XMVector3Length(vDiff));
+            m_pBodyCom->Add_Impulse(m_fImpulse + fDist);
+            m_pBodyCom->Add_Torque(m_fTorque);
+        }
+
+        if (m_isExplode)
+        {
+            m_pBodyCom->ApplyExplosion(
+                m_vExplosionPos,
+                m_fImpulse,   // 선형 기본 세기
+                m_fTorque     // 회전 기본 세기
+            );
+        }
+            
         m_isDestruct = true;
     }
 
@@ -119,12 +133,25 @@ void CProp_Chunk::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 
 }
 
-void CProp_Chunk::Destory(_float3 vVelocity, _float3 vHitPos)
+void CProp_Chunk::Destory(_float3 vVelocity, _float3 vHitPos, _bool isHit, _float fLifeTime, _float fImpulse, _float fTorque)
 {
     m_isDestroyStart = true;
     m_vVelocity = vVelocity;
     m_vHitPos = vHitPos;
-    m_fLifeTime = 3.f;
+    m_fLifeTime = fLifeTime;
+    m_isHit = isHit;
+    m_fImpulse = fImpulse;
+    m_fTorque = fTorque;
+}
+
+void CProp_Chunk::Explode(_float3 vExplosionPos, _float fImpulse, _float fTorque, _float fLifeTime)
+{
+    m_isDestroyStart = true;
+    m_isExplode = true;
+    m_vExplosionPos = vExplosionPos;
+    m_fImpulse = fImpulse;
+    m_fTorque = fTorque;
+    m_fLifeTime = fLifeTime;
 }
 
 HRESULT CProp_Chunk::Ready_Components(void* pArg)
@@ -155,7 +182,7 @@ HRESULT CProp_Chunk::Ready_Collision(void* pArg)
     BodyDesc.eQuality = EMotionQuality::Discrete;
     BodyDesc.eShapeType = SHAPE::CONVEX;
     BodyDesc.fFriction = 0.4f;
-    BodyDesc.fMass = 3.0f;
+    BodyDesc.fMass = 30.0f;
     BodyDesc.fRestitution = 0.01f;
     BodyDesc.fAngularDamping = 0.2f;
     BodyDesc.fLinearDamping = 0.1f;

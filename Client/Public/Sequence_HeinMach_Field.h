@@ -4,6 +4,7 @@
 
 NS_BEGIN(Engine)
 class CGameInstance;
+class ISeqInstance;
 NS_END
 
 NS_BEGIN(Client)

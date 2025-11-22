@@ -9,6 +9,7 @@
 #include "PlayerData_Manager.h"
 #include "Player_Manager.h"
 #include "Interact_Manager.h"
+#include "Sequence_Data_Manager.h"
 
 #ifdef _DEBUG
 #include "Debug_Manager.h"
@@ -51,6 +52,10 @@ HRESULT CClientInstance::Initialize(ID3D11Device** ppDevice, ID3D11DeviceContext
 
     m_pInteract_Manager = CInteract_Manager::Create();
     if (nullptr == m_pInteract_Manager)
+        return E_FAIL;
+
+    m_pSeq_Data_Manager = CSequence_Data_Manager::Create();
+    if (nullptr == m_pSeq_Data_Manager)
         return E_FAIL;
 
 #ifdef _DEBUG
@@ -363,6 +368,26 @@ void CClientInstance::Unlock_BladeNexus(_uint iID)
 }
 #pragma endregion
 
+#pragma region SEQ_DATA_MANAGER
+HRESULT CClientInstance::Push_Sequence(_wstring strName, class ISeqInstance* pSequence)
+{
+    return m_pSeq_Data_Manager->Push_Sequence(strName, pSequence);
+}
+class ISeqInstance* CClientInstance::Find_Sequence(_wstring strName)
+{
+    return m_pSeq_Data_Manager->Find_Sequence(strName);
+}
+HRESULT CClientInstance::Remove_Sequence(_wstring strName)
+{
+    return m_pSeq_Data_Manager->Remove_Sequence(strName);
+}
+void CClientInstance::Seq_Clear()
+{
+    m_pSeq_Data_Manager->Clear();
+}
+
+#pragma endregion
+
 
 #ifdef _DEBUG
 #pragma region CAMERA_MANAGER
@@ -384,6 +409,8 @@ void CClientInstance::Release_Client()
 	Safe_Release(m_pPlayerData_Manager);
 	Safe_Release(m_pPlayer_Manager);
     Safe_Release(m_pInteract_Manager);
+    Safe_Release(m_pSeq_Data_Manager);
+
 #ifdef _DEBUG	
 	Safe_Release(m_pDebug_Manager);
 	Safe_Release(m_pCamera_Controller);

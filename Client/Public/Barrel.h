@@ -35,7 +35,6 @@ private:
 
     _bool m_isDestruct = { false };
 
-    vector<class CProp_Chunk*> m_Chunks;
 private:
     HRESULT Ready_Components(void* pArg);
     HRESULT Ready_Collision(void* pArg);

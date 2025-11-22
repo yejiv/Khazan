@@ -22,6 +22,8 @@ HRESULT CProp_Destructible::Initialize_Prototype()
 
 HRESULT CProp_Destructible::Initialize_Clone(void* pArg)
 {
+    PROP_DEST_DESC* pDesc = static_cast<PROP_DEST_DESC*>(pArg);
+    m_iIndex = pDesc->iIndex;
 
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
@@ -139,9 +141,5 @@ void CProp_Destructible::Free()
 
     for (auto Chunk : m_Chunks)
         Safe_Release(Chunk);
-
-    m_pBodyCom->Collision_Active(false);
-    Safe_Release(m_pBodyCom);
-
 
 }

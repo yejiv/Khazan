@@ -14,6 +14,7 @@
 
 #include "Player.h"
 #include "Camera_Compre.h"
+#include "Sequence_Viper_SecondPhase.h"
 
 CLevel_Viper::CLevel_Viper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
@@ -24,10 +25,13 @@ CLevel_Viper::CLevel_Viper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 HRESULT CLevel_Viper::Initialize()
 {
+
+    CHECK_FAILED(Ready_Sequence(), E_FAIL);
+
 	// 플레이어, 카메라, 트리거
 	m_pGameInstance->Add_FireTask([this]() {
 
-		CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
+		//CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
 
 		CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera")), E_FAIL);
 
@@ -207,7 +211,7 @@ HRESULT CLevel_Viper::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 	m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag, pCamera_Free);
 
-	CCamera_Compre::CAMERA_COMPRE_DESC	CameraSpringDesc{};
+	/*CCamera_Compre::CAMERA_COMPRE_DESC	CameraSpringDesc{};
 
 	CameraFreeDesc.vEye = _float4(0.39f, 3.97f, -1.79f, 1.f);
 	CameraFreeDesc.vAt = _float4(-0.26f, -0.1f, 0.96f, 1.f);
@@ -226,7 +230,7 @@ HRESULT CLevel_Viper::Ready_Layer_Camera(const _wstring& strLayerTag)
 	pCamera_Spring->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
 	m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::VIPER), pCamera_Spring);
 
-	m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag, pCamera_Spring);
+	m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag, pCamera_Spring);*/
 
 	m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::VIPER), ENUM_CLASS(CAMERATYPE::FREE));
 
@@ -503,6 +507,8 @@ HRESULT CLevel_Viper::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag, c
 	_uint iObjectCnt = {};
 	CHECK_FALSE(ReadFile(hFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr), E_FAIL);
 
+    _uint iDestIndex = { 0 };
+
 	// 오브젝트 총 개수만큼 순회
 	for (_uint i = 0; i < iObjectCnt; ++i)
 	{
@@ -532,6 +538,41 @@ HRESULT CLevel_Viper::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag, c
 		CHECK_FALSE(ReadFile(hFile, &PropProperties, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr), false);
 
 		ObjectDesc.Properties = PropProperties;
+
+        CSequence_Viper_SecondPhase* pSeq = dynamic_cast<CSequence_Viper_SecondPhase*>(m_pClientInstance->Find_Sequence(TEXT("Viper_SecondPhase")));
+
+        if (wcscmp(ObjectDesc.szModelName, L"Prototype_Component_Model_WP_TDL_Bridge_Collision_004") == 0)
+        {
+            m_pGameInstance->Add_FireTask([this, CurLevel = eCurrentLevel, WMat = WorldMatrix, strLayerTag = strLayerTag, iDestIndex = iDestIndex, pSeq = pSeq]() {
+
+                CProp_Destructible::PROP_DEST_DESC ObeliskDesc = {};
+
+                ObeliskDesc.eLevel = CurLevel;
+
+                MAPOBJECT_PROPERTIES PropProperties4 = {};
+
+                ObeliskDesc.Properties = PropProperties4;
+                //XMStoreFloat4x4(&WorldMatrix, XMMatrixIdentity());
+                //WorldMatrix._43 = 10.f;
+                ObeliskDesc.WorldMatrix = WMat;
+                ObeliskDesc.WorldMatrix._42 -= 400.f;
+                ObeliskDesc.iIndex = iDestIndex;
+                CObelisk* pObelisk = dynamic_cast<CObelisk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Prop_Obelisk"), &ObeliskDesc));
+                pSeq->Push_Obelisk(pObelisk);
+                m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag, pObelisk);
+
+                if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
+                    ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Prop_Obelisk"), TIME_CHANNEL::WORLD, &ObeliskDesc)))
+                    return E_FAIL;
+
+
+
+                });
+
+            iDestIndex++;
+
+            continue;
+        }
 
 		if (iSubLV == 0)
 		{
@@ -985,6 +1026,12 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_Viper(const _wstring& strLayerTag)
     if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
         ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Viper"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
         return E_FAIL;
+}
+
+HRESULT CLevel_Viper::Ready_Sequence()
+{
+    CSequence_Viper_SecondPhase* pSequence = CSequence_Viper_SecondPhase::Create();
+    m_pClientInstance->Push_Sequence(TEXT("Viper_SecondPhase"), pSequence);
 
 
     return S_OK;
