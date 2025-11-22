@@ -1023,6 +1023,7 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_Viper(const _wstring& strLayerTag)
     MonsterDesc.fRotationPerSec = 180.f;
     XMStoreFloat4x4(&MonsterDesc.WorldMatrix,XMMatrixIdentity());
     MonsterDesc.strName = "Viper";
+    MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
     if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
         ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Viper"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
         return E_FAIL;

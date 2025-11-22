@@ -684,6 +684,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
 
             MonsterDesc.WorldMatrix = WorldMatrix;
             MonsterDesc.strName = MonsterData.MonsterKey[i];
+            MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::HEINMACH);
 
             if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
                 ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Yetuga"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
@@ -701,6 +702,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
 
             MonsterDesc.WorldMatrix = WorldMatrix;
             MonsterDesc.strName = MonsterData.MonsterKey[i];
+            MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::HEINMACH);
 
             if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
                 ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
@@ -718,6 +720,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
 
             MonsterDesc.WorldMatrix = WorldMatrix;
             MonsterDesc.strName = MonsterData.MonsterKey[i];
+            MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::HEINMACH);
 
             if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
                 ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Melee"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
