@@ -44,6 +44,7 @@ struct VS_OUT
     float4 vWorldPos : TEXCOORD1;
     float2 vLifeTime : TEXCOORD2;
     float bDead : TEXCOORD3;
+    float4 vProjPos : TEXCOORD4;
 };
 
 struct VS_NORMAL_OUT
@@ -71,6 +72,7 @@ VS_OUT VS_MAIN(VS_IN In)
     float4 vNormal = normalize(mul(float4(In.vNormal, 0.f), In.TransformMatrix));
     
     Out.vPosition = mul(vPosition, matWVP);
+    Out.vProjPos = Out.vPosition;
     Out.vNormal = normalize(mul(vNormal, g_WorldMatrix));
     Out.vTexcoord = In.vTexcoord;
     Out.vWorldPos = mul(vPosition, g_WorldMatrix);
@@ -115,6 +117,7 @@ struct PS_IN
     float4 vWorldPos : TEXCOORD1;
     float2 vLifeTime : TEXCOORD2;
     float bDead : TEXCOORD3;
+    float4 vProjPos : TEXCOORD4;
 };
 
 struct PS_OUT
@@ -218,10 +221,8 @@ PS_OUT PS_MAIN(PS_IN In)
     vFinalColor.xyz *= (g_vSourceColor.a + 1);
     
     //float weight = vFinalColor.a * max(1e-5, (1 - In.vPosition.z));
-    float z = In.vPosition.z / In.vPosition.w; // 0.1 depth
-    //float weight = max(1e-5, (1 - z));
-    float weight = exp(-z * 0.6f);
-
+    float z = In.vProjPos.z / In.vProjPos.w; // 0.1 depth
+    float weight = max(1e-5, exp(-z * 0.8f));
     Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a * weight, 0.f);
     Out.vAccumAlpha = vFinalColor.a * weight;
     
@@ -261,8 +262,7 @@ PS_OUT PS_PRESNEL(PS_IN In)
     
     float z = In.vPosition.z / In.vPosition.w;
     //float weight = max(1e-5, (1 - z));
-    float weight = exp(-z * 0.6f);
-
+    float weight = max(1e-5, exp(-z * 0.8f));
     Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a * weight, 0.f);
     Out.vAccumAlpha.r = vFinalColor.a * weight;
     

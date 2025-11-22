@@ -142,15 +142,12 @@ PS_WEIGHTBLEND_OUT PS_MAIN_BLEND(PS_IN In)
 
     vTexcoord.x = (In.vProjPos.x / In.vProjPos.w) * 0.5f + 0.5f;
     vTexcoord.y = (In.vProjPos.y / In.vProjPos.w) * -0.5f + 0.5f;
-    vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, vTexcoord);
-
-
+    vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, vTexcoord); 
 
     vFinalColor.a = vFinalColor.a * saturate(vDepthDesc.y - In.vProjPos.w);
     
-    float z = In.vPosition.z / In.vPosition.w;
-    //float weight = max(1e-5, (1 - z));
-    float weight = exp(-z * 0.7f);
+    float z = In.vProjPos.z / In.vProjPos.w;
+    float weight = max(1e-5, exp(-z * 0.8f)); 
 
     Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a * weight, 0.f);
     Out.vAccumAlpha.r = vFinalColor.a * weight;
@@ -168,21 +165,8 @@ PS_WEIGHTBLEND_OUT PS_TRAIL(PS_IN In)
     vector vEffectTexture = g_Texture.Sample(DefaultSampler, In.vTexcoord);
     //vector vFinalColor = float4(vEffectTexture.rgb, vEffectTexture.r);
     vector vFinalColor = float4(1.f, 1.f, 1.f, vEffectTexture.r);
-        //Out.vColor = vFinalColor;
-
-    //alpha fading
-        //Out.vColor.a *= In.vTexcoord.x;
-    vFinalColor *= In.vTexcoord.x;
-    
-    //소프트 파티클 효과
-
-    //float2 vTexcoord;
-    //
-    //vTexcoord.x = (In.vProjPos.x / In.vProjPos.w) * 0.5f + 0.5f;
-    //vTexcoord.y = (In.vProjPos.y / In.vProjPos.w) * -0.5f + 0.5f;
-    //vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, vTexcoord);
-    //
-    //Out.vColor.a = Out.vColor.a * saturate(vDepthDesc.y - In.vProjP 
+     vFinalColor *= In.vTexcoord.x;
+     
     Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a, 0.f);
     Out.vAccumAlpha.r = vFinalColor.a;
     

@@ -45,6 +45,7 @@ struct GS_OUT
 {
     float4 vPosition : SV_POSITION;
     float2 vTexcoord : TEXCOORD0; 
+    float4 vProjPos : TEXCOORD1;
 };
 
 [maxvertexcount(6)]
@@ -97,6 +98,7 @@ struct PS_IN
 {
     float4 vPosition : SV_POSITION;
     float2 vTexcoord : TEXCOORD0;
+    float4 vProjPos : TEXCOORD1;
 };
 
 struct PS_OUT
@@ -122,10 +124,8 @@ PS_OUT PS_MAIN_BLEND(PS_IN In)
 
     vFinalColor.xyz *= (g_vSourceColor.a + 1);
     
-    float z = In.vPosition.z / In.vPosition.w;
-    //float weight = max(1e-5, (1 - z));
-    float weight = exp(-z * 0.6f);
-
+    float z = In.vProjPos.z / In.vProjPos.w;
+    float weight = max(1e-5, exp(-z * 0.8f));
     Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a * weight, 0.f);
     Out.vAccumAlpha.r = vFinalColor.a * weight;
     
