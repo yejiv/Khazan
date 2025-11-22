@@ -39,9 +39,9 @@ void CUI_Talk_Daphrona::Update_UITransform(_vector vPos)
 {
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetZ(XMVectorSetX(XMVectorSetY(vPos, XMVectorGetY(vPos) + m_vLocalSize.y * 0.87f), XMVectorGetX(vPos) - 0.5f), XMVectorGetZ(vPos) - 0.8f));
     
-    _float fDecreaseAlpha = 1.0f - (Clamp(m_fSpeedWeight) * 2.0f - 1.0f);
-    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetY(m_pTransformCom->Get_State(STATE::POSITION), XMVectorGetY(m_pTransformCom->Get_State(STATE::POSITION)) + m_fSpeedWeight * 0.02f));
-    
+    _float offsetY = sin(m_fSpeedWeight * 2.f) * 1.f * 0.5f
+        + sin(m_fSpeedWeight * 2.f * 0.5f) * 1.f * 0.5f;
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetY(m_pTransformCom->Get_State(STATE::POSITION), XMVectorGetY(m_pTransformCom->Get_State(STATE::POSITION)) + offsetY * 0.02f));
     
     m_pTransformCom->Scale({ 1.15f, 1.f, 1.f });
     m_pTransformCom->Rotation(XMConvertToRadians(20.f), XMConvertToRadians(140.f), XMConvertToRadians(0.f));
@@ -121,7 +121,7 @@ void CUI_Talk_Daphrona::Update_UITransform(_vector vPos)
 
 
     m_Key_Guide[1]->Set_LocalPos({ -0.f,-0.42f,-0.001f,1.f });
-    m_Key_Guide[1]->Set_LocalSize({ 0.05f, 0.05f,1.f });
+    m_Key_Guide[1]->Set_LocalSize({ 0.075f, 0.075f,1.f });
 
 
     m_Key_Guide[2]->Set_LocalPos({ 0.07f,-0.42f,-0.001f,1.f });
@@ -163,12 +163,8 @@ void CUI_Talk_Daphrona::Update(_float fTimeDelta)
     if (!m_IsUpdate)
         return;
    
-    if (m_isWeightUp)
-        m_fSpeedWeight += fTimeDelta;
-    else
-        m_fSpeedWeight -= fTimeDelta ;
-
-    m_fSpeedWeight >= 1.5f ? m_isWeightUp = false : m_fSpeedWeight <= 0.f ? m_isWeightUp = true : m_isWeightUp;
+  
+    m_fSpeedWeight += fTimeDelta;
 
     UI_Animation(fTimeDelta);
     if (m_eType == TALK_TYPE::START || m_eType == TALK_TYPE::TALK_SELETE || (m_eType == TALK_TYPE::UP && m_isUp))

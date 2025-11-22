@@ -61,6 +61,8 @@ private:
     _bool                           m_isUIOpen = {};
 
     vector<_int>                    m_ItemIndex;
+
+    _float                          m_fSpeedWeight = {};
 private:
     HRESULT					        Ready_Component();
     HRESULT                         Ready_Children();

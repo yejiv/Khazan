@@ -51,6 +51,8 @@ private:
 
     _float                          m_fAccTime = {};
     _bool                           m_isUpTime = { false };
+    
+    _float                          m_fOffsetZ = {};
 private:
     HRESULT					        Ready_Component();
     HRESULT                         Ready_Children();
