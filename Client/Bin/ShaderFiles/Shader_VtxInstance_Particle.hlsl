@@ -222,9 +222,10 @@ PS_OUT PS_MAIN(PS_IN In)
     
     //float weight = vFinalColor.a * max(1e-5, (1 - In.vPosition.z));
     float z = In.vProjPos.z / In.vProjPos.w; // 0.1 depth
-    float weight = max(1e-5, exp(-z * 0.8f));
-    Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a * weight, 0.f);
-    Out.vAccumAlpha = vFinalColor.a * weight;
+    //float weight = max(1e-5, exp(-z * 0.75f));
+    float weight = max(1e-5, exp(-z * 0.75f));
+    Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a, vFinalColor.a) * weight;
+    Out.vAccumAlpha.r = vFinalColor.a;
     
     return Out;
 }
@@ -260,11 +261,11 @@ PS_OUT PS_PRESNEL(PS_IN In)
 
     vFinalColor.xyz *= (g_vSourceColor.a + 1);
     
-    float z = In.vPosition.z / In.vPosition.w;
+    float z = In.vProjPos.z / In.vProjPos.w;
     //float weight = max(1e-5, (1 - z));
-    float weight = max(1e-5, exp(-z * 0.8f));
-    Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a * weight, 0.f);
-    Out.vAccumAlpha.r = vFinalColor.a * weight;
+    float weight = max(1e-5, exp(-z * 0.75f));
+    Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a, vFinalColor.a) * weight;
+    Out.vAccumAlpha.r = vFinalColor.a;
     
     return Out;
 }
@@ -299,7 +300,7 @@ technique11 DefaultTechnique
     {
         SetRasterizerState(RS_Cull_None);
         SetDepthStencilState(DSS_DepthTestOnly, 0);
-        SetBlendState(BS_Blend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_WeightBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
@@ -310,7 +311,7 @@ technique11 DefaultTechnique
     {
         SetRasterizerState(RS_Cull_None);
         SetDepthStencilState(DSS_DepthTestOnly, 0);
-        SetBlendState(BS_Blend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_WeightBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;

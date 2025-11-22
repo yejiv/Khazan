@@ -1049,7 +1049,7 @@ HRESULT CRenderer::Ready_RenderTargets()
         return E_FAIL;
 
     /* RT_AccumAlpha */ 
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_AccumAlpha"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_AccumAlpha"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(1.0f, 1.0f, 1.0f, 1.0f))))
         return E_FAIL;
     
     return S_OK;

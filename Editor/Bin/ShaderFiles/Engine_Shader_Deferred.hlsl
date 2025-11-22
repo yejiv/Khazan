@@ -747,22 +747,20 @@ PS_OUT_BACKBUFFER PS_STATIC_VELOCITY(PS_IN In)
 
 PS_OUT_WEIGHTBLEND PS_WEIGHT_BLEND(PS_IN In)
 {
-    PS_OUT_WEIGHTBLEND Out;
-    
-    //vector vColorAccDesc = g_AccumColorTexture.Sample(DefaultSampler, In.vTexcoord);    //둘 다 최대값 1. 근데 emmissive떄문에 넘을 수 있음.
-    //float vAlphaAccDesc = g_AccumAlphaTexture.Sample(DefaultSampler, In.vTexcoord).r;   //최대값 1. 0~1사이. 1이면 알파값 없는거고 그 이하이면 투명
-    //                                                                                    // -> 아님!!! 누적값이라 0~1사이가 절대 아님
-    //Out.vBackBufferColor = vColorAccDesc / (vAlphaAccDesc + 1e-5);
-    //Out.vBackBufferColor.a = saturate(vAlphaAccDesc); //클램핑
-    
-    vector vColorAccDesc = g_AccumColorTexture.Sample(DefaultSampler, In.vTexcoord);
-    float vAlphaAccDesc = g_AccumAlphaTexture.Sample(DefaultSampler, In.vTexcoord).r;
-    Out.vBackBufferColor = vColorAccDesc / (vAlphaAccDesc + 1e-5);
-    Out.vBackBufferColor.a = saturate(vAlphaAccDesc); //클램핑 
-    
-    //Out.vBackBufferColor = float4(1.f, 1.f, 0.f, 1.f);
-    //아무것도 안 그려진 픽셀에 대해선? 덮어지나? -> clear color가 0이라서 더해주면 아무 의미 없어서 덮어지지 않음.
-    return Out;
+   PS_OUT_WEIGHTBLEND Out;
+   
+   //float4 vColorAccDesc = g_AccumColorTexture.Sample(DefaultSampler, In.vTexcoord);
+   //float vAlphaAccDesc = g_AccumAlphaTexture.Sample(DefaultSampler, In.vTexcoord).r;
+   //Out.vBackBufferColor = vColorAccDesc / (vAlphaAccDesc + 1e-5);
+   //Out.vBackBufferColor.a = saturate(vAlphaAccDesc); //클램핑 
+   
+   
+   float4 vColorAccDesc = g_AccumColorTexture.Sample(DefaultSampler, In.vTexcoord);
+   float vAlphaAccDesc = g_AccumAlphaTexture.Sample(DefaultSampler, In.vTexcoord).r;
+   Out.vBackBufferColor = vColorAccDesc / (vColorAccDesc.a + 1e-5);
+   Out.vBackBufferColor.a = 1.f - saturate(vAlphaAccDesc); 
+   
+   return Out;
 }
 
 technique11 DefaultTechnique

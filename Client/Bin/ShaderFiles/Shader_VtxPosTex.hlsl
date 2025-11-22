@@ -146,10 +146,10 @@ PS_WEIGHTBLEND_OUT PS_MAIN_BLEND(PS_IN In)
     vFinalColor.a = vFinalColor.a * saturate(vDepthDesc.y - In.vProjPos.w);
     
     float z = In.vProjPos.z / In.vProjPos.w;
-    float weight = max(1e-5, exp(-z * 0.8f)); 
+    float weight = max(1e-5, exp(-z * 0.57f)); 
 
-    Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a * weight, 0.f);
-    Out.vAccumAlpha.r = vFinalColor.a * weight;
+    Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a, vFinalColor.a) * weight;
+    Out.vAccumAlpha.r = vFinalColor.a;
 
     return Out;
 }
@@ -166,8 +166,9 @@ PS_WEIGHTBLEND_OUT PS_TRAIL(PS_IN In)
     vector vFinalColor = float4(1.f, 1.f, 1.f, vEffectTexture.r);
      vFinalColor *= In.vTexcoord.x;
      
-    Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a, 0.f);
+    Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a, vFinalColor.a);
     Out.vAccumAlpha.r = vFinalColor.a;
+    
     
     return Out;
 }
@@ -218,7 +219,7 @@ technique11 DefaultTechnique
     {
         SetRasterizerState(RS_Cull_None);
         SetDepthStencilState(DSS_DepthTestOnly, 0);
-        SetBlendState(BS_Blend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_WeightBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_TRAIL();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_TRAIL();
@@ -228,7 +229,7 @@ technique11 DefaultTechnique
     {
         SetRasterizerState(RS_Cull_None);
         SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_WeightBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_SCREEN_TRAIL();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_SCREEN_TRAIL();

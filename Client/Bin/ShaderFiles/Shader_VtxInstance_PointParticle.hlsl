@@ -264,9 +264,12 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     
     /* Blend Weight */
     float z = In.vProjPos.z / In.vProjPos.w; // 0..1 depth
-    float weight = max(1e-5, exp(-z * 0.8f));
-    Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a * weight, 0.f);
-    Out.vAccumAlpha.r = vFinalColor.a * weight; //최대 1, 최소 0 (아주 멀면 0, 아주 가까우면 기존 알파값대로!)
+    float weight = max(1e-5, exp(-z * 0.75f));
+    Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a, vFinalColor.a) * weight;
+    Out.vAccumAlpha.r = vFinalColor.a;
+    
+        //Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a * weight, 0.f);
+
       
     return Out;
 }
@@ -277,7 +280,7 @@ technique11 DefaultTechnique
     {
         SetRasterizerState(RS_Cull_None);
         SetDepthStencilState(DSS_DepthTestOnly, 0);
-        SetBlendState(BS_Blend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_WeightBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = compile gs_5_0 GS_MAIN();
