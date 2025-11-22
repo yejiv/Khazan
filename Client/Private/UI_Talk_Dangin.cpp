@@ -40,7 +40,12 @@ void CUI_Talk_Dangin::Off_Panel()
 void CUI_Talk_Dangin::Update_UITransform(_vector vPos)
 {
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetZ(XMVectorSetX(XMVectorSetY(vPos, XMVectorGetY(vPos) + m_vLocalSize.y * 0.87f), XMVectorGetX(vPos) - 0.5f), XMVectorGetZ(vPos) - 0.8f));
-    m_pTransformCom->Scale({ 1.15f, 1.f, 1.f });
+
+    _float offsetY = sin(m_fSpeedWeight * 2.f) * 1.f * 0.5f
+        + sin(m_fSpeedWeight * 2.f * 0.5f) * 1.f * 0.5f;
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetY(m_pTransformCom->Get_State(STATE::POSITION), XMVectorGetY(m_pTransformCom->Get_State(STATE::POSITION)) + offsetY * 0.02f));
+
+    m_pTransformCom->Scale({ 1.15f, 1.f, 1.f });    
     m_pTransformCom->Rotation(XMConvertToRadians(20.f), XMConvertToRadians(140.f), XMConvertToRadians(0.f));
     m_vColor = { 1.f,1.f, 1.f, 0.8f };
 
@@ -156,6 +161,8 @@ void CUI_Talk_Dangin::Update(_float fTimeDelta)
 {
     if (!m_IsUpdate)
         return;
+
+    m_fSpeedWeight += fTimeDelta;
 
     UI_Animation(fTimeDelta);
     if (m_eType == TALK_TYPE::START || m_eType == TALK_TYPE::TALK_SELETE )
