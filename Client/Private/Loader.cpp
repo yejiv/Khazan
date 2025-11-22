@@ -22,6 +22,11 @@
 #include "Body_Khazan_Spear.h"
 #include "Spear_Khazan_Spear.h"
 #include "Lantern_Khazan_Spear.h"
+#include "Khazan_GSword.h"
+#include "Body_Khazan_GS.h"
+#include "GSword_Khazan_GS.h"
+#include "Lantern_Khazan_GS.h"
+
 #pragma endregion
 
 #pragma region MAP OBJECT
@@ -368,6 +373,16 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Spear/Khazan_Spear.dat"))))
 		return E_FAIL;
 
+    /* Prototype_Component_Model_Khazan_GSword*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_GSword"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_GSword/Khazan_GSword.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_GSword_Meteor*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_GSword_Meteor"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/APC/GSword_Meteor/GSword_Meteor.dat"))))
+        return E_FAIL;
+
 	/* Prototype_Component_Model_Khazan_Prisoner_Torso1*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso1"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Prisoner_Torso1/Prisoner_Torso1.dat"))))
@@ -686,7 +701,7 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Static"),
 		CProp_Static::Create(m_pDevice, m_pContext)), E_FAIL);
 
-#pragma region ���� ������Ʈ ���� : ��ȣ �ۿ� �� ������Ʈ
+#pragma region _Prop_BladeNexus, _Prop_BigChest
 	/* Prototype_GameObject_Prop_BladeNexus */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_BladeNexus"),
 		CBladeNexus::Create(m_pDevice, m_pContext)), E_FAIL);
@@ -732,12 +747,13 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
 
 #pragma endregion
 
-#pragma region ���� ������Ʈ ���� : Ʈ����
+#pragma region _Prop_Trigger
 	/* Prototype_GameObject_Prop_Trigger */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_HeinMach_Trigger"),
 		CHeinMach_Trigger::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
+#pragma region Khazan
 	/* Prototype_GameObject_Khazan_Spear */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"),
 		CKhazan_Spear::Create(m_pDevice, m_pContext))))
@@ -757,6 +773,30 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Lantern_Khazan_Spear"),
         CLantern_Khazan_Spear::Create(m_pDevice, m_pContext))))
         return E_FAIL;
+
+    /* Prototype_GameObject_Khazan_GSword */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_GSword"),
+        CKhazan_GSword::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    /* Prototype_GameObject_Body_Khazan_GS */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Body_Khazan_GS"),
+        CBody_Khazan_GS::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    /* Prototype_GameObject_GSword_Khazan_GS */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_GSword_Khazan_GS"),
+        CGSword_Khazan_GS::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    /* Prototype_GameObject_Lantern_Khazan_GS */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Lantern_Khazan_GS"),
+        CLantern_Khazan_GS::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+#pragma endregion
+
+
 #pragma region Effect 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Spear"))))
