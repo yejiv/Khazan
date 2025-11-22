@@ -231,6 +231,10 @@
     <ClInclude Include="..\Public\FSM_Viper.h" />
     <ClInclude Include="..\Public\Imp_Melee.h" />
     <ClInclude Include="..\Public\Imp_Sword.h" />
+    <ClInclude Include="..\Public\IronGate.h" />
+    <ClInclude Include="..\Public\IronGate_Lock.h" />
+    <ClInclude Include="..\Public\IronGate_Part_L.h" />
+    <ClInclude Include="..\Public\IronGate_Part_R.h" />
     <ClInclude Include="..\public\ItemInfo_RandomEffect.h" />
     <ClInclude Include="..\Public\Lever.h" />
     <ClInclude Include="..\Public\Lever_Gear.h" />
@@ -532,6 +536,10 @@
     <ClCompile Include="..\Private\FSM_Viper.cpp" />
     <ClCompile Include="..\Private\Imp_Melee.cpp" />
     <ClCompile Include="..\Private\Imp_Sword.cpp" />
+    <ClCompile Include="..\Private\IronGate.cpp" />
+    <ClCompile Include="..\Private\IronGate_Lock.cpp" />
+    <ClCompile Include="..\Private\IronGate_Part_L.cpp" />
+    <ClCompile Include="..\Private\IronGate_Part_R.cpp" />
     <ClCompile Include="..\private\ItemInfo_RandomEffect.cpp" />
     <ClCompile Include="..\Private\Lever.cpp" />
     <ClCompile Include="..\Private\Lever_Gear.cpp" />

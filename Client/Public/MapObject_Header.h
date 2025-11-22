@@ -37,6 +37,11 @@
 
 #include "VerticalGate.h"               // 수직 차단봉
 
+#include "IronGate.h"                   // 철문 ( 렌더 X )
+#include "IronGate_Lock.h"              // 철문 잠금장치
+#include "IronGate_Part_L.h"            // 철문 왼쪽
+#include "IronGate_Part_R.h"            // 철문 오른쪽
+
 // Trigger
 #include "Trigger.h"
 #include "HeinMach_Trigger.h"

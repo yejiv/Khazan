@@ -28,7 +28,9 @@ HRESULT CVerticalGate::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Components(pArg), E_FAIL);
 
+    m_eAnimState = ANIM_STATE::IDLE1;
     m_pModelCom->Set_Animation(ENUM_CLASS((ANIM_STATE::IDLE1)));
+    m_pModelCom->Set_AnimationBlend(false);
 
     _int* pEventID = static_cast<_int*>(pDesc->pOtherDesc);
     CHECK_NULLPTR(pEventID, E_FAIL);

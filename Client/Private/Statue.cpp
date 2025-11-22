@@ -53,6 +53,7 @@ HRESULT CStatue::Initialize_Clone(void* pArg)
     m_eAnimState = ANIM_STATE::IDLE_0;
     m_pModelCom->Set_Animation(ENUM_CLASS((ANIM_STATE::IDLE_0)));
     m_pModelCom->Set_AnimationLoop(false);
+    m_pModelCom->Set_AnimationBlend(false);
 
     m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
         {

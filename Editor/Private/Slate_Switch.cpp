@@ -26,6 +26,8 @@ HRESULT CSlate_Switch::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Components(pArg), E_FAIL);
 
+    m_pModelCom->Set_AnimationBlend(false);
+
     m_pActive = pDesc->pActive;
 
     return S_OK;

@@ -122,6 +122,7 @@ namespace Client {
         XMFLOAT4 vPlayerPosition{};
     };
 
+    // 상호작용 오브젝트끼리의 이벤트 ( 조각상 -> 차단봉 )
     struct EventVerticalGate
     {
         bool isActiveStatue[4] = { false, false, false, false };
@@ -164,6 +165,12 @@ namespace Client {
         }
     };
 
+    struct EventIronGate
+    {
+        XMFLOAT4 vPosition{};
+        XMFLOAT4 vPlayerPosition{};
+    };
+
     //상호작용 오브젝트 어떤 종류인지 받아오는 이벤트 구조체(오브젝트->플레이어)
 	struct EventInteractType {
 		enum EVENT_STATE { BEGIN, END, NONE };
@@ -177,6 +184,7 @@ namespace Client {
         EventCave CaveEvent{};
         EventLever LeverEvent{};
         EventStatue StatueEvent{};
+        EventIronGate IronGateEvent{};
 
 		void End_Event() { isEvent = false; }
 

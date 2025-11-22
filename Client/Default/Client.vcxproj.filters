@@ -952,6 +952,21 @@
     <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\07.VerticalGate">
       <UniqueIdentifier>{332ccf8a-865c-4dc1-ae21-3888533b7df9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate">
+      <UniqueIdentifier>{1aba781d-bdf0-4cb0-ab8a-c53d9f14979b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Lock">
+      <UniqueIdentifier>{d4db06ae-e166-47ce-872c-637d0e5b1998}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Part">
+      <UniqueIdentifier>{b4064d7c-0ca5-4667-9b89-2f6c9a95ba0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Part\Right">
+      <UniqueIdentifier>{82f34124-48d3-4443-84a4-ca67d85cabf1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Part\Left">
+      <UniqueIdentifier>{02b95e17-b904-41fc-9b1b-f602db9a5933}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1847,6 +1862,18 @@
     <ClInclude Include="..\Public\VerticalGate.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\07.VerticalGate</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\IronGate.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\IronGate_Lock.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Lock</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\IronGate_Part_L.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Part\Left</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\IronGate_Part_R.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Part\Right</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2721,6 +2748,18 @@
     </ClCompile>
     <ClCompile Include="..\Private\VerticalGate.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\07.VerticalGate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\IronGate.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\IronGate_Lock.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Lock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\IronGate_Part_L.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Part\Left</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\IronGate_Part_R.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Part\Right</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -35,7 +35,9 @@ HRESULT CStatue::Initialize_Clone(void* pArg)
 
     m_iUnLockRotation = pDesc->StatueRotation.iUnLockRotation;
 
-    m_pModelCom->Set_Animation(ENUM_CLASS((ANIM_STATE::IDLE_0)));
+    m_eAnimState = ANIM_STATE::IDLE_0;
+    m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+    m_pModelCom->Set_AnimationBlend(false);
 
     return S_OK;
 }
