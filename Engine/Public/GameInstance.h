@@ -5,7 +5,6 @@
 #include "ComputeShader_Manager.h"
 #include "ThreadPool.h"
 #include "Event_Manager.h"
-#include "BoneChainPhysic.h"
 
 
 NS_BEGIN(Engine)
@@ -28,7 +27,6 @@ public:
 	void Render_End(HWND hWnd = 0);
 public:
 	_float Rand_Normal();
-    _int Rand_Normal(_int iMin, _int iMax);
 	_float Rand(_float fMin, _float fMax);
     _int Rand(_int iMin, _int iMax);
 
@@ -212,8 +210,7 @@ public:
 	void Set_ObjectVsBPFilter(_uint iObjectLayer, _uint iBPLayer);
 	void Set_ObjectLayerFilter(_uint iObjectLayer, _bool isOn = true);
 	Body* CreateAndAdd_Body(const BodyCreationSettings& BodySetting, BodyInterface** pBodyInterface);
-	CharacterVirtual* CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData, BodyInterface** pBodyInterface);
-	CBoneChainPhysic* CreateBoneChain(class CModel* pModel, CBoneChainPhysic::BCP_BuildDesc tBuild, CBoneChainPhysic::BCP_RuntimeParams tParams, _uint iRootObjectLayer, _uint iBoneChainObjectLayer, class CTransform** pOwnerTransform);
+	CharacterVirtual* CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData, BodyInterface** pBodyInterface);	
 
 	void CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter);
 	void CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter, CharacterVirtual::ExtendedUpdateSettings tSetting);

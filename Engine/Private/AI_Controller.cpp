@@ -238,10 +238,14 @@ CBTNode* CAI_Controller::CreateBTNode(CGameObject* pOwner, const AIBTNODE_DATA& 
         if (NodeData.strSubtype == "Wait")
             return CWait_Node::Create(m_strMonstertag, "CurrentTime", NodeData.fWaitTime);
         else if (NodeData.strSubtype == "Condition")
-            return CCondition_Node::Create(GetCallbackCondition(pOwner,NodeData.strCallbackFunction));
+            return CCondition_Node::Create(GetCallbackCondition(pOwner, NodeData.strCallbackFunction));
         else if (NodeData.strSubtype == "Action")
-            return CAction_Node::Create(GetCallbackAction(pOwner,NodeData.strCallbackFunction)
-                , GetCallbackTeminate(pOwner,NodeData.strCallbackFunction));
+            return CAction_Node::Create(GetCallbackAction(pOwner, NodeData.strCallbackFunction)
+                , GetCallbackTeminate(pOwner, NodeData.strCallbackFunction));
+        else if (NodeData.strSubtype == "UtilityAction")
+            return CUtilityAction_Node::Create(GetCallbackScore(pOwner,NodeData.strCallbackFunction),
+                GetCallbackAction(pOwner,NodeData.strCallbackFunction),
+                GetCallbackTeminate(pOwner, NodeData.strCallbackFunction));
     }
 
     else if (NodeData.strNodeType == "Decorator")
@@ -271,7 +275,10 @@ CBTNode* CAI_Controller::CreateBTNode(CGameObject* pOwner, const AIBTNODE_DATA& 
             pComposite = CSequence_Node::Create();
 
         else if (NodeData.strSubtype == "InterruptibleSelector")
-            pComposite = CInterruptibleSelector_Node::Create(GetCallbackInterruptCondition(pOwner,NodeData.strCallbackFunction));
+            pComposite = CInterruptibleSelector_Node::Create(GetCallbackInterruptCondition(pOwner, NodeData.strCallbackFunction));
+
+        else if (NodeData.strSubtype == "UtilitySelector")
+            pComposite = CUtilitySelector_Node::Create();
 
         for (auto& pChild : NodeData.Children)
             pComposite->Add_Child(CreateBTNode(pOwner,*pChild));
@@ -326,6 +333,11 @@ TERMINATE CAI_Controller::GetCallbackTeminate(CGameObject* pOwner, const string&
 INTERRUPTCONDITION CAI_Controller::GetCallbackInterruptCondition(CGameObject* pOwner, const string& name)
 {
     return INTERRUPTCONDITION();
+}
+
+SCORE CAI_Controller::GetCallbackScore(CGameObject* pOwner, const string& name)
+{
+    return SCORE();
 }
 
 

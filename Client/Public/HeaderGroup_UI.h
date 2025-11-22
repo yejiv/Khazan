@@ -20,9 +20,18 @@
 #include "UI_Loading.h"
 #include "UI_Tutorial.h"
 #include "UI_SkillTree.h"
+#include "UI_Store.h"
 
 #include "UI_Announce_Result.h"
 #include "UI_Announce_Over.h"
+#include "UI_Announce_Warning.h"
+
+#include "Amount_Info.h"
+
+#include "Popup_Reset.h"
+#include "Popup_Item.h"
+
+#include "Collection_Info.h"
 
 //서브 UI
 #include "MainMenu_Deco.h"
@@ -44,6 +53,8 @@
 #include "UI_QuickSlot_Skill_Fx.h"
 #include "UI_Slot_Selete_Fx.h"
 
+#include "Store_Slot.h"
+
 //HUD  관련
 #include "BossHp.h"
 #include "Amount.h"
@@ -60,4 +71,5 @@
 #include "UI_WorldList.h"
 #include "UI_WorldFX.h"
 #include "UI_Talk_Daphrona.h"
-
+#include "UI_Talk_Dangin.h"
+#include "UI_Talk_Trader.h"

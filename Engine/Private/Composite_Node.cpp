@@ -7,8 +7,11 @@ CComposite_Node::CComposite_Node()
 
 void CComposite_Node::Add_Child(CBTNode* pChild)
 {
-	if (pChild != nullptr)
-		m_Children.push_back(pChild);
+    if (pChild != nullptr)
+    {
+        Safe_AddRef(pChild);
+        m_Children.push_back(pChild);
+    }
 		
 }
 

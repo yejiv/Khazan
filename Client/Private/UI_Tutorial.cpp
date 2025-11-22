@@ -112,6 +112,8 @@ HRESULT CUI_Tutorial::Initialize_Clone(void* pArg)
 	CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 
 	CHECK_FAILED(Ready_Component(), E_FAIL);
+
+    m_fValue = 0.84;
 	return S_OK;
 }
 
@@ -154,8 +156,9 @@ HRESULT CUI_Tutorial::Render()
 	CHECK_FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix"), E_FAIL);
 	CHECK_FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_Texture", m_iTexPass), E_FAIL);
 
-	CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
-	CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof(_float4)), E_FAIL);
+	CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fValue", &m_fValue, sizeof(_float)), E_FAIL);
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof(_float4)), E_FAIL);
 
 	m_pShaderCom->Begin(m_iShaderPass);
 	m_pVIBufferCom->Bind_Resources();
@@ -266,10 +269,7 @@ HRESULT CUI_Tutorial::Ready_Prototype()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_Component_UI_GuidePage"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/TutorialGuide/GuidePage_%d.dds"), 6)), E_FAIL);
 
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_Component_UI_GuideTex"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/TutorialGuide/GuideTex_%d.dds"), 3)), E_FAIL);
-
-	//CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_Component_Movie_CountAttack"),
+    //CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_Component_Movie_CountAttack"),
 	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/TutorialGuide/CountAttack/CountAttack_%d.dds"), 152)), E_FAIL);
 
 	return S_OK;

@@ -57,8 +57,6 @@ HRESULT CImp_Range::Initialize_Clone(void* pArg)
           m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
 
       m_MagicBalls.resize(3, nullptr);
-      
-      m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
      
       return S_OK;
 }

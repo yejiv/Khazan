@@ -8,13 +8,18 @@ class CAmount final : public CUI_Panel
 public:
 	enum class UIANIMSTATE { ON, OFF, END };
 	enum class AMOUNT_TYPE {GOLD, LACHRYMA, STONE, END};
+
+    typedef struct AmountBubbleTag : public CUIObject::BUBBLEEVENT
+    {
+        AMOUNT_TYPE eAmountType;
+    }BUBBLE_DESC;
 private:
 	CAmount(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CAmount(const CAmount& Prototype);
 	virtual ~CAmount() = default;
 
 public:
-	void								Add_Value(AMOUNT_TYPE eType, _int IValue);
+	void								Add_Value(AMOUNT_TYPE eType, _int IValue, _bool isRandeOff = true);
 	void								On_Panel();
 	void								Off_Panel();
 
@@ -40,6 +45,9 @@ private:
 	_uint*								m_iLachryma = {};
 	_uint*								m_iStone = {};
 
+    vector<_bool>                       m_isAddAmount = {};
+
+                           
 private:
 	HRESULT								Ready_Prototype();
 	void								UI_Animation(_float fTimeDelta);

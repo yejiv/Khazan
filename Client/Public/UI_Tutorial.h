@@ -61,6 +61,8 @@ private:
 	GUIDE_TYPE							m_eGuideType = { GUIDE_TYPE::END };
 
 	INPUT_TYPE							m_ePreInputType = {};
+
+    _float                              m_fValue = {};
 private:
 	HRESULT								Ready_Prototype();
 	HRESULT								Ready_Component();

@@ -164,6 +164,7 @@
     <ClInclude Include="..\Public\AIController_Edit.h" />
     <ClInclude Include="..\public\AnimationTool.h" />
     <ClInclude Include="..\Public\BigChest.h" />
+    <ClInclude Include="..\Public\E_Body_Khazan_Spear.h" />
     <ClInclude Include="..\Public\Camera_Compre.h" />
     <ClInclude Include="..\Public\Camera_Effect.h" />
     <ClInclude Include="..\Public\Camera_Map.h" />
@@ -195,6 +196,7 @@
     <ClInclude Include="..\Public\ElevatorS.h" />
     <ClInclude Include="..\Public\Elevator_Gear.h" />
     <ClInclude Include="..\public\JOH_EditorModelTest.h" />
+    <ClInclude Include="..\Public\E_Khazan_Spear.h" />
     <ClInclude Include="..\Public\Level_AI.h" />
     <ClInclude Include="..\Public\Level_Animation.h" />
     <ClInclude Include="..\Public\Level_Camera.h" />
@@ -215,6 +217,9 @@
     <ClInclude Include="..\Public\Map_Spawn.h" />
     <ClInclude Include="..\Public\Map_Terrain.h" />
     <ClInclude Include="..\Public\Slate_Switch.h" />
+    <ClInclude Include="..\Public\Statue.h" />
+    <ClInclude Include="..\Public\Statue_Deco.h" />
+    <ClInclude Include="..\Public\Statue_Plate.h" />
     <ClInclude Include="..\Public\Trigger.h" />
     <ClInclude Include="..\Public\Map_TestPlayer.h" />
     <ClInclude Include="..\Public\MeshTrail.h" />
@@ -242,6 +247,7 @@
     <ClCompile Include="..\Private\AIController_Edit.cpp" />
     <ClCompile Include="..\private\AnimationTool.cpp" />
     <ClCompile Include="..\Private\BigChest.cpp" />
+    <ClCompile Include="..\Private\E_Body_Khazan_Spear.cpp" />
     <ClCompile Include="..\Private\Camera_Compre.cpp" />
     <ClCompile Include="..\Private\Camera_Effect.cpp" />
     <ClCompile Include="..\Private\Camera_Map.cpp" />
@@ -272,6 +278,7 @@
     <ClCompile Include="..\Private\Elevator_Gear.cpp" />
     <ClCompile Include="..\private\JOH_EditorModelTest.cpp" />
     <ClCompile Include="..\Private\Camera_Shader.cpp" />
+    <ClCompile Include="..\Private\E_Khazan_Spear.cpp" />
     <ClCompile Include="..\Private\Level_AI.cpp" />
     <ClCompile Include="..\Private\Level_Animation.cpp" />
     <ClCompile Include="..\Private\Level_Camera.cpp" />
@@ -291,6 +298,9 @@
     <ClCompile Include="..\Private\Map_Spawn.cpp" />
     <ClCompile Include="..\Private\Map_Terrain.cpp" />
     <ClCompile Include="..\Private\Slate_Switch.cpp" />
+    <ClCompile Include="..\Private\Statue.cpp" />
+    <ClCompile Include="..\Private\Statue_Deco.cpp" />
+    <ClCompile Include="..\Private\Statue_Plate.cpp" />
     <ClCompile Include="..\Private\Trigger.cpp" />
     <ClCompile Include="..\Private\Map_TestPlayer.cpp" />
     <ClCompile Include="..\Private\MeshTrail.cpp" />

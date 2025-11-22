@@ -78,7 +78,7 @@ void CUI_MainMenu::Priority_Update(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
 		On_Panel();
-	else if (m_pGameInstance->Key_Down(DIK_ESCAPE, INPUT_TYPE::UI))
+    else if (m_IsUpdate && m_pGameInstance->Key_Down(DIK_ESCAPE, INPUT_TYPE::UI))
 		Off_Panel();
 	if (!m_IsUpdate)
 		return;
@@ -374,7 +374,7 @@ void CUI_MainMenu::Next_Event()
 	{
 		CUI_Inven::INVEN_ONOFF_DESC Desc = {};
 		Desc.isOpen = true;
-		Desc.isEquip = true;
+        Desc.eState = CUI_Inven::INVEN_STATE::EQUIP;
 		Desc.szName = m_szName;
 		CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Inven"), &Desc);
 	}
@@ -382,8 +382,8 @@ void CUI_MainMenu::Next_Event()
 	{
 		CUI_Inven::INVEN_ONOFF_DESC Desc = {};
 		Desc.isOpen = true;
-		Desc.isEquip = false;
-		Desc.szName = m_szName;
+        Desc.eState = CUI_Inven::INVEN_STATE::DEFAULT;
+        Desc.szName = m_szName;
 		CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Inven"), &Desc);
 	}
 	else if (m_eNextEvent == MENULIST::SKILL)

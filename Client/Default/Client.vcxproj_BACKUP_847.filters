@@ -1,0 +1,2596 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="98.Default">
+      <UniqueIdentifier>{6d5ec687-677b-4977-bb88-b7f9efcaa511}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00.MainApp">
+      <UniqueIdentifier>{c63a6ee7-b489-4d81-aba4-7ddf5b8337ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels">
+      <UniqueIdentifier>{ccf6878b-78ca-4842-ae64-0a877924ff47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Loading">
+      <UniqueIdentifier>{7a99902d-21e3-45e9-8b26-4bd13c2c8d7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Loading\Loader">
+      <UniqueIdentifier>{2791bcc1-bc3d-498f-8eca-63a1bae0259d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject">
+      <UniqueIdentifier>{85081ef4-12c5-4457-a79f-32e32125ccd1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Camera">
+      <UniqueIdentifier>{f9843780-ed78-4a57-a371-0bf344a9f3f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Camera\Free">
+      <UniqueIdentifier>{24b806b6-a66f-4fda-8f86-c26c22fec57b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97.ShaderFiles">
+      <UniqueIdentifier>{31da86f9-f942-4f62-8651-987f45a63472}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96.pch">
+      <UniqueIdentifier>{8449da29-2176-4b0c-9e4e-be50fb0732b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Title">
+      <UniqueIdentifier>{3b48192d-e33f-4d1d-b0c2-1a87fd3b50f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Player">
+      <UniqueIdentifier>{2fafdf7c-7e26-40c0-9c7e-200ecb984707}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Player\Body">
+      <UniqueIdentifier>{a0a922f9-093f-4157-9af1-6e30e243bd72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Terrain">
+      <UniqueIdentifier>{7082a03d-8466-4726-b256-cb8c528d4e44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\JOH Test">
+      <UniqueIdentifier>{79049abe-c286-42e6-98b0-a98c711d0409}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Pool">
+      <UniqueIdentifier>{bee2ead6-daf6-4408-8038-aab3a62c7fa2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Pool\Dummy">
+      <UniqueIdentifier>{6e103e38-a2d6-4217-aff0-d6c4a31102c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject">
+      <UniqueIdentifier>{d0a49871-c562-494c-8f06-0484c2365f54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop">
+      <UniqueIdentifier>{1cfff3ac-6659-4304-a933-0dd29de33235}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\00.Object">
+      <UniqueIdentifier>{02e66005-10a9-4448-8c68-8a59d69853cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\01.Static">
+      <UniqueIdentifier>{96a780a7-4c8c-4cc3-8a38-7fc9717dbf8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\02.Animated">
+      <UniqueIdentifier>{0720e62d-6697-4e09-b15e-98b542f160b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive">
+      <UniqueIdentifier>{434e87f8-9706-4262-98ef-82dc5c515e49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\99.Header">
+      <UniqueIdentifier>{c4885ae7-b4f3-4736-82ce-cf10cdbfc9a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95.SuperClass">
+      <UniqueIdentifier>{fe0eb4af-82a7-4074-b5d7-a589badbe846}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95.SuperClass\UI">
+      <UniqueIdentifier>{9ef03780-85dc-46e5-ad98-28a16e1cec36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\JOH Test\Test Anim Model">
+      <UniqueIdentifier>{2a2f2620-f90d-4ad0-80a5-ce65409e5eab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Camera\Comprehension">
+      <UniqueIdentifier>{a4512566-30cc-4793-8f82-d5663d8f2874}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\04.Dynamic">
+      <UniqueIdentifier>{793f3e60-e849-4e56-833a-595a71a59c84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI">
+      <UniqueIdentifier>{345178cf-31b2-40a0-894a-34250de6668a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\ETC">
+      <UniqueIdentifier>{ca1e6c2f-7f6b-4669-bc5c-ffcfcfc1fc3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="93.HeaderGroup">
+      <UniqueIdentifier>{fcdfc65f-4a69-427a-9d02-54723db0f34f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95.SuperClass\UI\UIContainer">
+      <UniqueIdentifier>{2405cff0-ccf1-409b-a380-1bc3b55effc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95.SuperClass\UI\UIContainer\UI_Tap">
+      <UniqueIdentifier>{1a54812a-265a-40aa-8e80-d8707a500be0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95.SuperClass\UI\UIContainer\UI_Panel">
+      <UniqueIdentifier>{1d758443-e437-494e-ade1-487dd1e7798e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95.SuperClass\UI\UIContainer\UI_Slot">
+      <UniqueIdentifier>{3f56c3a2-85b2-47b9-951b-918a85603473}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95.SuperClass\UI\UIPart">
+      <UniqueIdentifier>{a1435adb-25e1-4b95-b241-093fd59116f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95.SuperClass\UI\UIPart\UI_Button">
+      <UniqueIdentifier>{747be9c8-35a2-4a28-b498-bf30104a31ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95.SuperClass\UI\UIPart\UI_ProgressBar">
+      <UniqueIdentifier>{2257c2ff-0761-462b-8a92-2012c0dc41ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95.SuperClass\UI\UIPart\UI_ScrollBar">
+      <UniqueIdentifier>{f77a1634-954f-45de-83ee-a3207dcd9896}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95.SuperClass\UI\UIPart\UI_Frame">
+      <UniqueIdentifier>{335cbc17-dd70-4f17-88c7-3d2cba540719}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95.SuperClass\UI\UIPart\UI_Text">
+      <UniqueIdentifier>{6ae1e038-5a08-455c-a1af-92947ca14ebb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD">
+      <UniqueIdentifier>{2647a99d-0662-4e39-b1e4-9bb67db823bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State">
+      <UniqueIdentifier>{5941d4dd-09f9-494b-84aa-1e95999927f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\ComBatSpirit">
+      <UniqueIdentifier>{293d8c35-6a6e-49e9-b3bf-814584c67530}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\ComBatSpirit\Slot">
+      <UniqueIdentifier>{2a653d30-5675-43b9-b60a-49ce05f9b1e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\ComBatSpirit\Slot\Gauge">
+      <UniqueIdentifier>{18135a4a-5158-4947-b55f-df5dad10e7f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\HP">
+      <UniqueIdentifier>{864ff948-e5b0-499b-b455-ff56e7430a37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\HP\Gauge">
+      <UniqueIdentifier>{ddd5736b-1744-4d5e-a5f5-b981984e6736}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\HP\BG">
+      <UniqueIdentifier>{8b9aa6a8-6a2a-4a7d-91d8-ed2951bfeb22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature">
+      <UniqueIdentifier>{ced99d93-e9ce-4e31-936f-2345f9915fae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\NPC">
+      <UniqueIdentifier>{dc33e1ba-0277-4f48-8e7e-80476f636755}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI">
+      <UniqueIdentifier>{525f2b25-a5a9-4878-be49-2473421350b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\Controller">
+      <UniqueIdentifier>{bc606f12-55a8-4f0a-acea-b53d7acff4a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State">
+      <UniqueIdentifier>{15dfcdd3-aacc-4ca4-86d4-23c2d02fa4d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\StateMachine">
+      <UniqueIdentifier>{06e1e624-0c6b-4d9a-87e0-efd2b7a01474}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\BehaviorTree">
+      <UniqueIdentifier>{fbb33a30-a10b-4aaf-b67c-175b6b223f29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga">
+      <UniqueIdentifier>{ddb519c7-0195-4f46-a087-c6565a3ee48d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\00.Idle">
+      <UniqueIdentifier>{7793d821-0d4c-4cb7-a8ec-2e1b75f6dd0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\01.Move">
+      <UniqueIdentifier>{18b13cd6-b131-4437-b081-0aa90cea4da2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\02.Attack">
+      <UniqueIdentifier>{c25254d0-a6e9-4367-aa81-2a0d6ea83f5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\StateMachine\Yetuga">
+      <UniqueIdentifier>{3b2940b3-2471-487e-9fde-8fbadf285963}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\Controller\Yetuga">
+      <UniqueIdentifier>{d0264db1-b95b-485b-ac28-e78edee9ec14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster">
+      <UniqueIdentifier>{f663abf4-dee0-497f-bd4b-b6469c804f8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Yetuga">
+      <UniqueIdentifier>{985c2727-eace-4eab-933f-dd5fc5515f2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\QuickSlot_Skill">
+      <UniqueIdentifier>{80f25ebd-14c3-4a66-a01f-9b08770b9269}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\QuickSlot_Item">
+      <UniqueIdentifier>{447348cf-58ce-457c-b766-0d237236e034}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\QuickSlot_Skill\Slot">
+      <UniqueIdentifier>{2f5efab5-4aa4-49dc-8e3e-fe075f4915f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\QuickSlot_Item\Slot">
+      <UniqueIdentifier>{0c740405-db99-4238-9752-df7c18f522ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\MainMenu">
+      <UniqueIdentifier>{244221f0-40f7-4b8c-9cd4-d9881e4cd49f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Inven">
+      <UniqueIdentifier>{bf77453f-04e7-4354-93fa-9c62f443d060}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Cursor">
+      <UniqueIdentifier>{8fcc381a-8b4e-49ee-b6e8-50919dc023a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Cursor\FX">
+      <UniqueIdentifier>{40848bba-e989-47c1-8226-95cd85b5bd2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\MainMenu\ETC">
+      <UniqueIdentifier>{ff3990d0-e5a1-41bc-8e47-c4b097076606}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Inven\Equip">
+      <UniqueIdentifier>{35a3ca28-cb04-404e-a3ec-f837e14cae2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan">
+      <UniqueIdentifier>{a05f121c-5397-47c6-a09e-f8137dd5be8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Sample">
+      <UniqueIdentifier>{282dcbca-ec05-4932-a0e5-97928c2b47e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Sample\Base">
+      <UniqueIdentifier>{f302f73b-d0e7-4c80-b351-ad7fc0f76ba9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Sample\Body">
+      <UniqueIdentifier>{43218a9c-3f2e-4f4f-9612-c9b3c2fce308}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\03.RightHand_5Hit">
+      <UniqueIdentifier>{30ee55aa-a59a-49d5-9919-ac567853cd6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\00.BladeNexus">
+      <UniqueIdentifier>{db2499ad-79c0-4c82-ad8f-32198cfc8f33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\04.LieDown">
+      <UniqueIdentifier>{3119b102-ecca-4b2c-a42e-08dbcfd5a313}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\01.BigChest">
+      <UniqueIdentifier>{892b8f58-f94a-4d3e-aec9-9b9abb09770d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI">
+      <UniqueIdentifier>{dd547fdf-504a-40c8-844b-a85ee87b3c2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Interaction_Guide">
+      <UniqueIdentifier>{c00e5e09-9592-4d20-94eb-70e9d79117fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Damage_UI">
+      <UniqueIdentifier>{6da1545d-0879-4c90-9ac6-1aeabdd954dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Yetuga\Body">
+      <UniqueIdentifier>{8fef0fd1-b2ca-4175-81dc-514453bf821a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\05.Turn">
+      <UniqueIdentifier>{5f90142a-cff5-4bcd-ba6a-8a35b7d51aa8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\06.ThrowBall">
+      <UniqueIdentifier>{6edc0ab8-6d05-4567-a2fb-ae3dfef8cb0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Mon_HP">
+      <UniqueIdentifier>{7b62ab3c-7ad2-42f3-84f4-f09e6a42b48c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Mon_HP\Gague">
+      <UniqueIdentifier>{ca70c219-d32f-4a44-9b4f-9729323d8de6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Interaction_Guide\Progress">
+      <UniqueIdentifier>{f2fe28d3-014b-46ca-95a9-e959048bffa8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Interaction_Guide\Icon">
+      <UniqueIdentifier>{c743f82e-11bd-4d92-96d1-d2043454dd66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\BladeNexus">
+      <UniqueIdentifier>{957a9fc1-9418-4508-a055-2f384d85d438}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\BladeNexus\List">
+      <UniqueIdentifier>{e0aaf90f-e252-4b71-8779-718f15f69bd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Inven\List">
+      <UniqueIdentifier>{a35136d7-7ad3-4580-b681-c029de6c4006}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear">
+      <UniqueIdentifier>{0c70caf0-2026-4253-ae91-ea448f86f5b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Base">
+      <UniqueIdentifier>{16f5b752-4b1d-4dbe-abd3-17ff982bf630}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Body">
+      <UniqueIdentifier>{997d3adc-61d3-438d-be89-7eed0978d401}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Weapon">
+      <UniqueIdentifier>{2c9350a0-3eb6-42b7-8f6c-362a2268d53a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Sample\Weapon">
+      <UniqueIdentifier>{3beaf210-4418-4b5f-8dba-cf71731a9a86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\HeinMach">
+      <UniqueIdentifier>{4230c53b-dd46-4d38-8626-e6d9f39edccc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Crevice">
+      <UniqueIdentifier>{c5e80620-0a56-4112-8d9c-340aac0ef0b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Embars">
+      <UniqueIdentifier>{66178168-e7e6-49c4-bc25-67a3c0d66b42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Viper">
+      <UniqueIdentifier>{663bf125-288a-4167-aca7-71e9e34d56d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance">
+      <UniqueIdentifier>{7a63893c-daa7-4abb-bec1-4e58e468f354}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\UI_Manager">
+      <UniqueIdentifier>{1a84dd5b-c59f-474d-8847-7c1b26d43f75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\UI_Manager\Layer">
+      <UniqueIdentifier>{18f4177d-5a3a-4e0a-b041-3f5e4008009c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\UI_Manager\Atlas_RenderGroup">
+      <UniqueIdentifier>{57ad347e-b1e7-4c06-9ec6-ab0fe2033e5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\DB">
+      <UniqueIdentifier>{dffd0957-694b-48a5-a2e0-c30d199869c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\Debug">
+      <UniqueIdentifier>{40550248-8478-40d1-913b-0394bb2ab80f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\Camera">
+      <UniqueIdentifier>{33df5b8e-6309-4a8a-8ced-629013b2df9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\Camera\Manager">
+      <UniqueIdentifier>{cf0c660e-bce3-46f8-8912-49aa0bb51fa0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\State">
+      <UniqueIdentifier>{aaba0e0d-e85e-4ef7-a1db-6efac646ae7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\State\ETC">
+      <UniqueIdentifier>{fc22b869-8155-4de2-b6ce-bcd319a3e06c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Projectile">
+      <UniqueIdentifier>{016b08f1-9acb-46f9-accb-93ce5a6ece77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Projectile\Yetuga">
+      <UniqueIdentifier>{0141891e-b7df-4dcc-8da3-729637bf512b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\Camera\Controller">
+      <UniqueIdentifier>{ddd3541e-7243-4f90-a57b-80b45d25d080}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\Shader">
+      <UniqueIdentifier>{0c39bca6-3a43-4515-b0e0-d2a86ae695d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\Shader\Shader_Controller">
+      <UniqueIdentifier>{38ef54a1-e721-4966-9df1-08a358535e44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Anim State Machine">
+      <UniqueIdentifier>{e29ff819-bdd5-4357-9735-20156e615c46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Anim State Manager">
+      <UniqueIdentifier>{6830d138-8660-4890-8174-2b8f66fe9d52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation">
+      <UniqueIdentifier>{d5183513-550f-45be-b176-06a147ec5e89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation\Base">
+      <UniqueIdentifier>{3255658b-fe86-4011-9aa1-12a1992708a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation\Move">
+      <UniqueIdentifier>{3aaed89d-1eae-44e4-9d94-ec850266349d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Announce">
+      <UniqueIdentifier>{84a25179-8e31-451d-99ed-b011ba78bff2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\07.Smash">
+      <UniqueIdentifier>{0e31b1a0-0e3b-4f09-b2e2-b8ad28b1d1b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\08.JumpAttack">
+      <UniqueIdentifier>{5f1e106b-d61e-44e1-84f1-b58b2c869d46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\09. Grab">
+      <UniqueIdentifier>{de1349a8-5345-476c-8d18-f3c58e01631e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\10. Rush">
+      <UniqueIdentifier>{67393b4c-c99a-4929-a6c4-02a1ff5b22df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\11. Amageddon">
+      <UniqueIdentifier>{6bf50b95-38c3-4fe2-a1d9-b502e4ab0fb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\12. IceBreath">
+      <UniqueIdentifier>{5893559b-ea54-4504-af39-8097d6190c68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\ItemInfo_Hud">
+      <UniqueIdentifier>{aa7f4f90-2fa1-4e4f-96e7-84abdaa01ebe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Item_Info">
+      <UniqueIdentifier>{024225c5-68e5-4264-a33b-e80d1d7d6713}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Item_Info\Other">
+      <UniqueIdentifier>{55ec1b2b-4e07-470c-8997-2fb17c1de068}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Item_Info\Weapon">
+      <UniqueIdentifier>{bbb08c0b-09f3-495a-bb01-cb8450fd780b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\13. Hit">
+      <UniqueIdentifier>{da1ea781-147f-4124-9510-f2c5c6d3c222}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\14.Dodge">
+      <UniqueIdentifier>{20baa023-33d1-42a9-b275-4cf58a713d04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\15.Groggy">
+      <UniqueIdentifier>{f42c73b1-3285-400d-8f2c-76d830865620}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\16.Dead">
+      <UniqueIdentifier>{4cf7082c-0498-48f9-9990-97868ab4536a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\BossHp">
+      <UniqueIdentifier>{7c5ed5fb-b737-4aa3-8396-8834d3527d94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\BossHp\BossGauge">
+      <UniqueIdentifier>{d5fe018e-b0e6-4ae5-8f26-fc4b8ca7c66d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Amount">
+      <UniqueIdentifier>{b4b7171c-3aa1-4e4a-b2f8-9835253039b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Amount\Panel">
+      <UniqueIdentifier>{c0acf912-d9e7-4f81-9e6c-cba8d2a873e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Target_LockOn">
+      <UniqueIdentifier>{af128dcc-b74e-427e-b5ba-c05a5d91ed80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Target_BrutalAttack">
+      <UniqueIdentifier>{8f9708aa-1535-425e-8cde-157f13bdfdd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="99.Defines">
+      <UniqueIdentifier>{7aa2cf62-6ed3-40ac-8805-9ee09729bdbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Target_BrutalAttack\Progress">
+      <UniqueIdentifier>{f3547287-83aa-477a-9822-39efc490417d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\WorldUI\Target_BrutalAttack\Point">
+      <UniqueIdentifier>{42406861-76be-42a0-b004-ecd70e443e2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Projectile\Yetuga\Stone">
+      <UniqueIdentifier>{6f5a5b15-108f-401d-b9a7-cc78e45f10b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Projectile\Yetuga\Rock">
+      <UniqueIdentifier>{c7680d2c-0e09-4b3c-a64b-19e30e04e3b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Projectile\Yetuga\Breath">
+      <UniqueIdentifier>{26b56be5-a831-4719-98da-994557176210}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect">
+      <UniqueIdentifier>{64d20bad-a374-4b87-a92d-1f1919696796}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Trail">
+      <UniqueIdentifier>{19fb49db-0b4b-422f-862a-dbd3debb2d95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Trail\LineTrail">
+      <UniqueIdentifier>{110305d5-caf6-4992-803c-e5689d92a699}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Trail\MeshTrail">
+      <UniqueIdentifier>{03db8ed4-9a43-41f0-91b3-5fb9b3fd0f49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Trail\LineTrail\ScreenTrail">
+      <UniqueIdentifier>{17d235e9-f3e3-4cb1-88ff-c32efdd95b95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab">
+      <UniqueIdentifier>{ce2d27b8-643c-42a4-8ad9-20d7baef3228}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element">
+      <UniqueIdentifier>{a3fc7da7-a797-48d4-9722-a71b177fbd12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Mesh_Instance">
+      <UniqueIdentifier>{e55a6b80-f98f-49dd-9644-6f3118beaf97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Point_Instance">
+      <UniqueIdentifier>{cd6ac5cb-7816-4820-bff2-b6ecb67da7a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite">
+      <UniqueIdentifier>{be3d7783-09b2-4210-8f95-7574cdc85092}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation\Attack">
+      <UniqueIdentifier>{a91ac477-d2f9-4e27-afb2-0bd27f255aee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\02.TombStone">
+      <UniqueIdentifier>{02e4226f-6770-4c00-8ecb-92687cc483a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Logo">
+      <UniqueIdentifier>{26278f3a-a228-41e2-a180-ca8ee47150b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence">
+      <UniqueIdentifier>{d9f9bdc1-e281-4d8e-86c4-ea9548bc5e2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\Dummy">
+      <UniqueIdentifier>{f2d6df02-dd3b-4aad-99f3-888f46dc3174}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\HeinMach">
+      <UniqueIdentifier>{84d2fd3a-284c-4751-8935-661615722e0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\HeinMach\Fieldscene">
+      <UniqueIdentifier>{a8bfaaf5-8d1a-4cb1-a10b-3fc60e4ab142}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Sky">
+      <UniqueIdentifier>{2c7d8743-ca8b-41d9-99db-38edaf99c5af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Logo\Logo_BG">
+      <UniqueIdentifier>{029c92cd-a943-4ac8-aa1b-b9197650327d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Logo\UI_Logo">
+      <UniqueIdentifier>{bcde2f71-bff1-4a6e-b9cc-cf14c1396166}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Logo\UI_Logo\List">
+      <UniqueIdentifier>{7bbd2447-b83b-4559-95aa-a9649dbf8014}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\UI_Manager\Fade">
+      <UniqueIdentifier>{b60d75a1-371a-458f-b0af-b6cc6e55d7a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Loding">
+      <UniqueIdentifier>{06f1141d-ce71-46a9-a4e8-97eb5fcb7624}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Loding\Panel">
+      <UniqueIdentifier>{fc470073-a7db-486d-bf55-71597800c6c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\PlayerData">
+      <UniqueIdentifier>{1d2ef6bc-c0f6-4e05-9f58-fa1e39927a2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\01.Trigger">
+      <UniqueIdentifier>{85be79be-152c-455e-82e0-22bb28b4a594}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\01.Trigger\00.HeinMach">
+      <UniqueIdentifier>{d03cdb53-da37-40f7-9cd9-085680b541b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Announce\MapName">
+      <UniqueIdentifier>{20ca7029-3cf7-47f3-8401-0166ea7f2ed3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Announce\Talk">
+      <UniqueIdentifier>{3efae2c3-a7c5-4b0b-987d-9e6961e76f4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Tutorial">
+      <UniqueIdentifier>{dfb2ae56-5728-45db-bb5f-b653d68102b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\ETC\Tex">
+      <UniqueIdentifier>{c2fd7a63-012f-4159-9077-9a7eddafc562}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Tutorial\Panel">
+      <UniqueIdentifier>{3f597541-c0fc-4b1c-829e-a5dfd555d200}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\ETC\Atlas">
+      <UniqueIdentifier>{e9ed288b-25cf-4684-942b-1ef7fa6c992c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Tutorial\Tutorial_Tex">
+      <UniqueIdentifier>{a6a00170-ad51-4fd0-a0ad-c6ced3f2edf5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\01.Trigger\00.HeinMach\HeinMach_Trigger">
+      <UniqueIdentifier>{97d366cf-cb22-4463-91cb-dcea2dc51180}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\HeinMach\Yetuga">
+      <UniqueIdentifier>{15be54d5-6e2d-41e7-badb-0c095f0d0039}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Slot">
+      <UniqueIdentifier>{5a375172-cf57-4494-aa11-36f0c266d20c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\17.LOCKON">
+      <UniqueIdentifier>{e1c803a4-854a-4dac-98e8-e7652245f768}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Yetuga\Head">
+      <UniqueIdentifier>{6139718a-8b42-4ba4-afef-9aeecb79be21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Skill_Tree">
+      <UniqueIdentifier>{4f900bb9-b16f-450d-b2be-d8cd873bd89b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Skill_Tree\Tap">
+      <UniqueIdentifier>{7d2555f7-253b-45d9-8ce0-0af52c6eee77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Skill_Tree\Table">
+      <UniqueIdentifier>{78284e8b-a8e0-4d29-8c7a-b256a7abf27a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Skill_Tree\SkillPanel">
+      <UniqueIdentifier>{e491b225-6a76-4ad3-bcf1-f9b105bf6a11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Skill_Tree\SkillPanel\Gauge">
+      <UniqueIdentifier>{f1c35b12-9d73-42ef-94d0-e5df51b6fd26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel">
+      <UniqueIdentifier>{d867245e-67c6-4dd3-9887-177b55c11097}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Test">
+      <UniqueIdentifier>{59b05a38-249f-445f-bb87-bf72ea8b8d0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\01.Trigger\01.Embars">
+      <UniqueIdentifier>{28ff4c9d-284a-4e4a-9bf2-52e3b66dfc59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\01.Trigger\02.Viper">
+      <UniqueIdentifier>{e21af4ec-6dfc-46f4-ab35-c0db1f9d6d85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\01.Trigger\02.Viper\Viper_Trigger">
+      <UniqueIdentifier>{485e7ed5-dcf7-48e1-bc79-e69aea67fc4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\Player_Manger">
+      <UniqueIdentifier>{b86e2937-1cab-43ad-aecc-1f09c038ebef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Gomdolzzing">
+      <UniqueIdentifier>{6cf68861-f9b1-42bc-8280-afe5e503de49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Gomdolzzing\Head">
+      <UniqueIdentifier>{af3b0474-79c0-451f-8366-b1ef7dadd8b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Gomdolzzing\Body">
+      <UniqueIdentifier>{8ab5f034-585d-4334-8a1d-f90ce485b5cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\Controller\Gomdol">
+      <UniqueIdentifier>{39358531-9bfc-47e0-a248-399e020da107}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\StateMachine\Gomdol">
+      <UniqueIdentifier>{b882875a-78a0-44e7-b283-a4bdab140662}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Gomdol">
+      <UniqueIdentifier>{499b6d86-4a6d-4ac7-8300-5613db052062}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Gomdol\Sleep">
+      <UniqueIdentifier>{5ccdd26b-35ce-4bb4-94e6-10557f7f1c91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Gomdol\Idle">
+      <UniqueIdentifier>{2049157e-3394-4d58-bf33-4c2c44377e14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Gomdol\Move">
+      <UniqueIdentifier>{227cf7ca-5f94-48b4-a45e-1d1a6636a4c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Gomdol\FrontAttack">
+      <UniqueIdentifier>{63fd2152-db9f-4552-8463-bae7b126c9dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation\Guard">
+      <UniqueIdentifier>{0fc723ef-4978-4d9e-b7d0-1ad4574510a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Skill_Info">
+      <UniqueIdentifier>{5a56cc7f-5756-44c7-8ce9-18e933763897}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Skill_Info\Panel">
+      <UniqueIdentifier>{333715df-81d1-4cbf-bc0b-06cc54ca0c88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Skill_Info\Info_Tex">
+      <UniqueIdentifier>{0d3cc4f0-3af7-4a50-ad5d-57210adb9347}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\HeinMach\Start">
+      <UniqueIdentifier>{83ab3725-44d3-4e7d-9e2b-f400c36ca0ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Skill_QuickSlot">
+      <UniqueIdentifier>{d6d0a9b7-7b22-4433-998b-1c8f12494332}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Skill_QuickSlot\List">
+      <UniqueIdentifier>{559041ba-24b8-4d52-8bad-394da64a40b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\HeinMach\Start_Chat">
+      <UniqueIdentifier>{f9a9efff-bd5a-4199-8d0e-ae1adf5e0c43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Announce\Result">
+      <UniqueIdentifier>{e36625db-9712-4143-9d23-dbf55a7dbdf4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Announce\Result\Symbol">
+      <UniqueIdentifier>{51192cfa-a1b9-406e-841d-cb6dfe031f0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Announce\Over">
+      <UniqueIdentifier>{ca322ead-5a4f-4014-b9d0-6ad88900be06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Imp_Range">
+      <UniqueIdentifier>{a84c5084-3491-465b-8433-5dd4482d1a56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Imp_Range\Body">
+      <UniqueIdentifier>{cb10d419-c31f-4ee4-97b3-bec607520b92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Imp_Range\Weapon">
+      <UniqueIdentifier>{eea85058-c071-46c7-88ce-3d9400ec4488}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\Controller\Imp_Range">
+      <UniqueIdentifier>{316af7bb-9246-4c9b-a252-a196374bc624}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\StateMachine\Imp_Range">
+      <UniqueIdentifier>{99e26c81-4b41-4165-8dd3-869490ca86f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Range">
+      <UniqueIdentifier>{87a82b83-b142-4023-990e-492683425591}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Range\Sleep">
+      <UniqueIdentifier>{e6f47d90-2b14-42d7-a039-55d76ffc72c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Range\Move">
+      <UniqueIdentifier>{6c5246a8-55a8-484f-998f-caa8b3917ec2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Range\Attack">
+      <UniqueIdentifier>{437d231e-344f-4f02-bdba-d49caa7890da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Range\Idle">
+      <UniqueIdentifier>{df70fe0b-2636-48a6-a6ef-4cf72232a82b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\Interact">
+      <UniqueIdentifier>{e19c8df3-6999-4b78-a14e-67c32016e767}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation\Interaction">
+      <UniqueIdentifier>{270828a5-297c-4341-8389-9141bb8804f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\BladeNexus_Map">
+      <UniqueIdentifier>{89b4fdfb-7249-4340-87ba-189bcf79f452}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\BladeNexus_Map\List">
+      <UniqueIdentifier>{64d9b043-5b96-4785-9c51-8130bbcad22b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\BladeNexus_Map\BG">
+      <UniqueIdentifier>{146cf3fc-807b-4ef5-82d1-56d6a87872c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Projectile\Imp_Range">
+      <UniqueIdentifier>{7eb4d9c5-fc1f-45b9-bb06-e9804903beb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\Controller\Imp_Melee">
+      <UniqueIdentifier>{dc0e1369-c3bb-401a-aed5-cdd2dbfcd5df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee">
+      <UniqueIdentifier>{3a42513d-9c49-4444-8c71-512b9902fbcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\StateMachine\Imp_Melee">
+      <UniqueIdentifier>{e59f7e2f-39fe-4420-91ef-de34dfa957db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Imp_Melee">
+      <UniqueIdentifier>{61d05502-fd8c-49b7-8c63-d5e7e3f841e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Imp_Melee\Body">
+      <UniqueIdentifier>{eee25bb8-385c-4040-adbc-2d574f096e4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Imp_Melee\Weapon">
+      <UniqueIdentifier>{ea415365-d3fc-4073-b06a-e38eb521563b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Projectile\Imp_Range\Magic">
+      <UniqueIdentifier>{b467a4ad-f3af-490a-a2a1-49c7db665fda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Projectile\Imp_Range\Boomarang">
+      <UniqueIdentifier>{753de682-fb54-42cc-846b-07da7e2630d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Range\Boomarang">
+      <UniqueIdentifier>{0e1aa9f6-4486-49bd-b374-4c47c917f124}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Range\Hit">
+      <UniqueIdentifier>{cf94db5d-cfb9-4a9c-a2d0-4a490ad1272d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Range\Dead">
+      <UniqueIdentifier>{446b686b-ea06-4dad-bf3c-79b3b8e1f86b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation\Damaged">
+      <UniqueIdentifier>{f031d52a-394e-4c44-99fe-4dc085c5093b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee\Sleep">
+      <UniqueIdentifier>{3b049ab2-97c0-4662-ba41-5767cda13864}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee\Idle">
+      <UniqueIdentifier>{3bcf256f-ee59-421e-b46c-785afb1e05a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee\Move">
+      <UniqueIdentifier>{ab152243-355f-46f6-8da5-4877ddaee2ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee\ChainSmash">
+      <UniqueIdentifier>{92b46441-c154-4102-9875-4662aa7961e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee\NonStopAttack">
+      <UniqueIdentifier>{a8a4e709-0031-4d42-b9e7-16bc521b7338}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee\DashAttack">
+      <UniqueIdentifier>{6c0a2971-c94a-45de-85c0-21595cb0bbb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee\Hit">
+      <UniqueIdentifier>{963405f7-4c54-47c1-97d4-82f064ae75a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Melee\Dead">
+      <UniqueIdentifier>{689219ac-a03d-4d2d-8f56-d3da6e31c225}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Imp_Range\LockOn">
+      <UniqueIdentifier>{02cbf283-7191-4046-b891-4dd86bd388f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\02.Loading">
+      <UniqueIdentifier>{0310ffcc-4a4a-4001-bbb6-3961da1d6259}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Inven\Panel">
+      <UniqueIdentifier>{84664222-4927-4b26-8399-6d8fbab8c84b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel\Flag">
+      <UniqueIdentifier>{d4ea7c73-7f04-4bc3-9f75-829e01b0378e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Lantern">
+      <UniqueIdentifier>{f87b61a1-ec55-4177-bc32-818e25784895}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Item_Info\Weapon\Random_Effect">
+      <UniqueIdentifier>{95ba0e07-689e-45e6-bafb-3a4d2de26ee4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Slot\Slot_Fx">
+      <UniqueIdentifier>{0e5560b8-bb4b-4969-9da5-b14d5c01d347}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\HUD\State\QuickSlot_Skill\Slot\fx">
+      <UniqueIdentifier>{126e6813-c496-4dc1-ac4f-165d9e16f2cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\03.ElevatorS">
+      <UniqueIdentifier>{f165669e-af42-4f9d-8382-7c2999e0e467}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\03.ElevatorS\00.Gear">
+      <UniqueIdentifier>{a1bf8e89-de57-4bdc-9c41-bf3b35c8af9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\03.ElevatorS\01.Slate">
+      <UniqueIdentifier>{8db4d906-6b1f-4700-b312-b75ebf8f9c50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\04.Lever">
+      <UniqueIdentifier>{42eba039-5773-471b-8351-24b09644f74b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\05.Gear">
+      <UniqueIdentifier>{f8a29cdf-efdd-4153-9d79-35b74446d4d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\05.Gear\00.Lever_Gear">
+      <UniqueIdentifier>{db9bff52-1a2f-4ef7-bb0d-99bb452e36b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\05.Gear\01.Door_Gear">
+      <UniqueIdentifier>{fb3a2e3b-051a-4378-b0aa-a74b8a21d215}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Yetuga\18.CutScene">
+      <UniqueIdentifier>{9f89172c-f4f4-4c12-9b2e-9cfdacc0a885}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Skill_Tree\FX">
+      <UniqueIdentifier>{df9920c8-541d-4bd2-8c7a-c7fcfdf95c37}</UniqueIdentifier>
+    </Filter>
+<<<<<<< Updated upstream
+    <Filter Include="02.GameObject\MapObject\00.Prop\05.Destructible">
+      <UniqueIdentifier>{f3f443cd-2d45-48d4-bc2b-d1c470ceffe0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\test">
+      <UniqueIdentifier>{6cebfa6b-a112-4eee-bb93-809f30e16c2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\05.Destructible\Chunk">
+      <UniqueIdentifier>{da16f588-eca3-4499-bc7b-f902f467656e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation\Fall">
+      <UniqueIdentifier>{8c26f2fc-b26b-47a9-beae-dd1fd6b9e102}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Talk">
+      <UniqueIdentifier>{2f63276d-22fa-407c-b7a8-63abde0fb720}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Talk\Daphrona">
+      <UniqueIdentifier>{f7af44ec-3d3f-4580-b8d2-e45cdc4baec5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Talk\ETC">
+      <UniqueIdentifier>{55df7305-3d2c-44dd-b7b6-c1662eb8b06f}</UniqueIdentifier>
+=======
+    <Filter Include="92.AI\Controller\Viper">
+      <UniqueIdentifier>{1906c35b-a577-4287-9dd6-bb9bd83a25dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\StateMachine\Viper">
+      <UniqueIdentifier>{db4c8cc7-f0f3-4f01-94bd-22fa55346ad3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper">
+      <UniqueIdentifier>{2d02213e-d5bf-4f39-b143-aeae92b5fe90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Viper">
+      <UniqueIdentifier>{2bb74306-f76e-49de-a0b7-66b20f90e692}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Viper\Body">
+      <UniqueIdentifier>{19576cf9-0a98-450b-b75c-1d35e0544ea0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\00.Idle">
+      <UniqueIdentifier>{b74d1d1a-619f-4cc7-bbcd-412004cbe8cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\01.Walk">
+      <UniqueIdentifier>{07c9ae3d-8478-4902-b800-d05b2aa800d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\02.RUN">
+      <UniqueIdentifier>{6f992bce-94df-4889-8419-e9f054150a12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\05.LockOn">
+      <UniqueIdentifier>{3dbd6f2b-e898-4a0c-8f20-195892dd7aab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\04.Slow2Hit">
+      <UniqueIdentifier>{fc7051b0-2885-437c-a3ae-f998f6e67801}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\03.Quick2Hit">
+      <UniqueIdentifier>{2ca3a299-6a24-4f79-9d10-0e26b20274ff}</UniqueIdentifier>
+>>>>>>> Stashed changes
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Client.h">
+      <Filter>98.Default</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>98.Default</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>98.Default</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>98.Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Client_Defines.h">
+      <Filter>99.Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MainApp.h">
+      <Filter>00.MainApp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Loading.h">
+      <Filter>01.Levels\Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Title.h">
+      <Filter>01.Levels\Title</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Loader.h">
+      <Filter>01.Levels\Loading\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Camera_Free.h">
+      <Filter>02.GameObject\Camera\Free</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Body_Player.h">
+      <Filter>02.GameObject\Player\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_HeinMach.h">
+      <Filter>01.Levels\HeinMach</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Terrain.h">
+      <Filter>02.GameObject\Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Monster.h">
+      <Filter>02.GameObject\Creature\Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\JOH_Test1.h">
+      <Filter>02.GameObject\JOH Test\Test Anim Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Dummy.h">
+      <Filter>02.GameObject\Pool\Dummy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Event_Defines.h">
+      <Filter>99.Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientPch.h">
+      <Filter>96.pch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Player.h">
+      <Filter>02.GameObject\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop.h">
+      <Filter>02.GameObject\MapObject\00.Prop</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Object.h">
+      <Filter>02.GameObject\MapObject\00.Prop\00.Object</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Animated.h">
+      <Filter>02.GameObject\MapObject\00.Prop\02.Animated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Interactive.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Static.h">
+      <Filter>02.GameObject\MapObject\00.Prop\01.Static</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MapObject.h">
+      <Filter>02.GameObject\MapObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MapObject_Header.h">
+      <Filter>02.GameObject\MapObject\99.Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Test.h">
+      <Filter>02.GameObject\MapObject\00.Prop\test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ClientInstance.h">
+      <Filter>94.ClientInstance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Manager.h">
+      <Filter>94.ClientInstance\UI_Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Layer.h">
+      <Filter>94.ClientInstance\UI_Manager\Layer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Atlas_RenderGroup.h">
+      <Filter>94.ClientInstance\UI_Manager\Atlas_RenderGroup</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Button.h">
+      <Filter>95.SuperClass\UI\UIPart\UI_Button</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Panel.h">
+      <Filter>95.SuperClass\UI\UIContainer\UI_Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_ProgressBar.h">
+      <Filter>95.SuperClass\UI\UIPart\UI_ProgressBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Tap.h">
+      <Filter>95.SuperClass\UI\UIContainer\UI_Tap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_ScrollBar.h">
+      <Filter>95.SuperClass\UI\UIPart\UI_ScrollBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Slot.h">
+      <Filter>95.SuperClass\UI\UIContainer\UI_Slot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Texture.h">
+      <Filter>95.SuperClass\UI\UIPart\UI_Frame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\HeaderGroup_UI.h">
+      <Filter>93.HeaderGroup</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Text.h">
+      <Filter>95.SuperClass\UI\UIPart\UI_Text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Compre.h">
+      <Filter>02.GameObject\Camera\Comprehension</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Dynamic.h">
+      <Filter>02.GameObject\MapObject\00.Prop\04.Dynamic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_PlayerHP_Gauge.h">
+      <Filter>02.GameObject\UI\HUD\State\HP\Gauge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_PlayerHP_Penal.h">
+      <Filter>02.GameObject\UI\HUD\State</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_PlayerHP_BG.h">
+      <Filter>02.GameObject\UI\HUD\State\HP\BG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_CombatSpirit_Penal.h">
+      <Filter>02.GameObject\UI\HUD\State\ComBatSpirit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_ComBatSpirit_Slot.h">
+      <Filter>02.GameObject\UI\HUD\State\ComBatSpirit\Slot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_ComBatSpirit_Gauge.h">
+      <Filter>02.GameObject\UI\HUD\State\ComBatSpirit\Slot\Gauge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_HUD.h">
+      <Filter>02.GameObject\UI\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_PlayerStamina_Gauge.h">
+      <Filter>02.GameObject\UI\HUD\State\HP\Gauge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Gague_Tip.h">
+      <Filter>02.GameObject\UI\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Yetuga.h">
+      <Filter>02.GameObject\Creature\Monster\Yetuga</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Creature.h">
+      <Filter>02.GameObject\Creature</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BT_Yetuga.h">
+      <Filter>92.AI\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\IdleState_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\00.Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FSM_Yetuga.h">
+      <Filter>92.AI\StateMachine\Yetuga</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AI_Controller_Yetuga.h">
+      <Filter>92.AI\Controller\Yetuga</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MoveState_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\01.Move</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AttackState_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\02.Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_QuickSlot_Skill_Panel.h">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Skill</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_QuickSlot_Item_Panel.h">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Item</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_QuickSlot_Skill.h">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Skill\Slot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_QuickSlot_Item.h">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Item\Slot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Inven.h">
+      <Filter>02.GameObject\UI\Inven</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\DB_Manager.h">
+      <Filter>94.ClientInstance\DB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Client_Struct.h">
+      <Filter>99.Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Item_Slot.h">
+      <Filter>02.GameObject\UI\Slot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Cursor.h">
+      <Filter>02.GameObject\UI\Cursor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Cursor_FX.h">
+      <Filter>02.GameObject\UI\Cursor\FX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_TextBox.h">
+      <Filter>02.GameObject\UI\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_MainMenu.h">
+      <Filter>02.GameObject\UI\MainMenu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\MainMenu_List.h">
+      <Filter>02.GameObject\UI\MainMenu\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Equip_Panel.h">
+      <Filter>02.GameObject\UI\Inven\Equip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Equip_Slot.h">
+      <Filter>02.GameObject\UI\Inven\Equip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_Sample.h">
+      <Filter>02.GameObject\Creature\Khazan\Sample\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Spear_Khazan_Sample.h">
+      <Filter>02.GameObject\Creature\Khazan\Sample\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_RightHand_5Hit_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\03.RightHand_5Hit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BladeNexus.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\00.BladeNexus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_LieDown_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\04.LieDown</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BigChest.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\01.BigChest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Inven_Tap.h">
+      <Filter>02.GameObject\UI\Inven\List</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Damage_Text.h">
+      <Filter>02.GameObject\UI\WorldUI\Damage_UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Debug_Manager.h">
+      <Filter>94.ClientInstance\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Body_Yetuga.h">
+      <Filter>02.GameObject\Creature\Monster\Yetuga\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Turn_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\05.Turn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_ThrowBall_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\06.ThrowBall</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Mon_HP.h">
+      <Filter>02.GameObject\UI\WorldUI\Mon_HP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Mon_Gague.h">
+      <Filter>02.GameObject\UI\WorldUI\Mon_HP\Gague</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Interaction_Guide.h">
+      <Filter>02.GameObject\UI\WorldUI\Interaction_Guide</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Guide_Gauge.h">
+      <Filter>02.GameObject\UI\WorldUI\Interaction_Guide\Progress</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Interaction_Icon.h">
+      <Filter>02.GameObject\UI\WorldUI\Interaction_Guide\Icon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_BladeNexus.h">
+      <Filter>02.GameObject\UI\BladeNexus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BladeNexus_List.h">
+      <Filter>02.GameObject\UI\BladeNexus\List</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MainMenu_Deco.h">
+      <Filter>02.GameObject\UI\MainMenu\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Khazan_Spear.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Body_Khazan_Spear.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Spear_Khazan_Spear.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sequence_Dummy.h">
+      <Filter>04.Sequence\Dummy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Client_Sequence.h">
+      <Filter>99.Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Manager.h">
+      <Filter>94.ClientInstance\Camera\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Crevice.h">
+      <Filter>01.Levels\Crevice</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Embars.h">
+      <Filter>01.Levels\Embars</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Viper.h">
+      <Filter>01.Levels\Viper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_State_Panel.h">
+      <Filter>02.GameObject\UI\State\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_State_Button.h">
+      <Filter>02.GameObject\UI\State\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_State_List.h">
+      <Filter>02.GameObject\UI\State\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_State.h">
+      <Filter>02.GameObject\UI\State</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Projectile.h">
+      <Filter>02.GameObject\Projectile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Controller.h">
+      <Filter>94.ClientInstance\Camera\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_State_MainPanel.h">
+      <Filter>02.GameObject\UI\State\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Shader_Controller.h">
+      <Filter>94.ClientInstance\Shader\Shader_Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_Spear_ASMachine.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Anim State Machine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_Spear_ASManager.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Anim State Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Hit_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\13. Hit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_IceBreath_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\12. IceBreath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Amageddon_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\11. Amageddon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Smash_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\07.Smash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_JumpAttack_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\08.JumpAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Dodge_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\14.Dodge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Rush_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\10. Rush</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_JumpGrab_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\09. Grab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\ItemInfo_Hud.h">
+      <Filter>02.GameObject\UI\HUD\ItemInfo_Hud</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\ItemInfo_Other.h">
+      <Filter>02.GameObject\UI\Item_Info\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\ItemInfo_Weapon.h">
+      <Filter>02.GameObject\UI\Item_Info\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BossHp.h">
+      <Filter>02.GameObject\UI\BossHp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BossHp_Gauge.h">
+      <Filter>02.GameObject\UI\BossHp\BossGauge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Amount.h">
+      <Filter>02.GameObject\UI\Amount</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Amount_Panel.h">
+      <Filter>02.GameObject\UI\Amount\Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Target_LockOn.h">
+      <Filter>02.GameObject\UI\WorldUI\Target_LockOn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Target_BrutalAttack.h">
+      <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BrutalAttack_Progress.h">
+      <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack\Progress</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BrutalAttack_Point.h">
+      <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack\Point</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Projectile_Yetuga.h">
+      <Filter>02.GameObject\Projectile\Yetuga\Stone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Projectile_Rock_Yetuga.h">
+      <Filter>02.GameObject\Projectile\Yetuga\Rock</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\LineTrail.h">
+      <Filter>02.GameObject\Effect\Trail\LineTrail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ScreenTrail.h">
+      <Filter>02.GameObject\Effect\Trail\LineTrail\ScreenTrail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MeshTrail.h">
+      <Filter>02.GameObject\Effect\Trail\MeshTrail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Prefab.h">
+      <Filter>02.GameObject\Effect\Effect_Prefab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Sprite.h">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Point_Instance.h">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Point_Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Mesh_Instance.h">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Mesh_Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Body_Khazan_Sample.h">
+      <Filter>02.GameObject\Creature\Khazan\Sample\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_Spear_Animation.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_Spear_Anim_Move.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Move</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TombStone.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\02.TombStone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Logo_BG.h">
+      <Filter>02.GameObject\UI\Logo\Logo_BG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Logo.h">
+      <Filter>02.GameObject\UI\Logo\UI_Logo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Logo_List.h">
+      <Filter>02.GameObject\UI\Logo\UI_Logo\List</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Fade.h">
+      <Filter>94.ClientInstance\UI_Manager\Fade</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Projectile_Breath_Yetuga.h">
+      <Filter>02.GameObject\Projectile\Yetuga\Breath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Dead_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\16.Dead</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sequence_HeinMach_Field.h">
+      <Filter>04.Sequence\HeinMach\Fieldscene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SkySphere.h">
+      <Filter>02.GameObject\Sky</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CloudSphere.h">
+      <Filter>02.GameObject\Sky</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sky.h">
+      <Filter>02.GameObject\Sky</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Loading.h">
+      <Filter>02.GameObject\UI\Loding</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Loading_Panel.h">
+      <Filter>02.GameObject\UI\Loding\Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Groggy_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\15.Groggy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_Spear_Anim_Attack.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\PlayerData_Manager.h">
+      <Filter>94.ClientInstance\PlayerData</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Trigger.h">
+      <Filter>02.GameObject\MapObject\01.Trigger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Announce_Talk.h">
+      <Filter>02.GameObject\UI\Announce\Talk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Announce_MapName.h">
+      <Filter>02.GameObject\UI\Announce\MapName</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Tutorial.h">
+      <Filter>02.GameObject\UI\Tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_BackGround.h">
+      <Filter>02.GameObject\UI\ETC\Tex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Default_Tex.h">
+      <Filter>02.GameObject\UI\ETC\Tex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Tutorial_Panel.h">
+      <Filter>02.GameObject\UI\Tutorial\Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Guide_Icon.h">
+      <Filter>02.GameObject\UI\ETC\Atlas</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Default_Button.h">
+      <Filter>02.GameObject\UI\ETC\Atlas</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Atlas_Icon.h">
+      <Filter>02.GameObject\UI\ETC\Atlas</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Tutorial_Tex.h">
+      <Filter>02.GameObject\UI\Tutorial\Tutorial_Tex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\HeinMach_Trigger.h">
+      <Filter>02.GameObject\MapObject\01.Trigger\00.HeinMach\HeinMach_Trigger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sequence_HeinMach_Yetuga.h">
+      <Filter>04.Sequence\HeinMach\Yetuga</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_Slot.h">
+      <Filter>02.GameObject\UI\Slot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Head_Yetuga.h">
+      <Filter>02.GameObject\Creature\Monster\Yetuga\Head</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_Tap.h">
+      <Filter>02.GameObject\UI\Skill_Tree\Tap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_Table.h">
+      <Filter>02.GameObject\UI\Skill_Tree\Table</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_Panel.h">
+      <Filter>02.GameObject\UI\Skill_Tree\SkillPanel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_Gauge.h">
+      <Filter>02.GameObject\UI\Skill_Tree\SkillPanel\Gauge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_Slot_Panel.h">
+      <Filter>02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Test.h">
+      <Filter>01.Levels\Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Viper_Trigger.h">
+      <Filter>02.GameObject\MapObject\01.Trigger\02.Viper\Viper_Trigger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_SkillTree.h">
+      <Filter>02.GameObject\UI\Skill_Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Player_Manager.h">
+      <Filter>94.ClientInstance\Player_Manger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Gomdol.h">
+      <Filter>02.GameObject\Creature\Monster\Gomdolzzing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Body_Gomdol.h">
+      <Filter>02.GameObject\Creature\Monster\Gomdolzzing\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AI_Controller_Gomdol.h">
+      <Filter>92.AI\Controller\Gomdol</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FSM_Gomdol.h">
+      <Filter>92.AI\StateMachine\Gomdol</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Sleep_Gomdol.h">
+      <Filter>92.AI\State\Gomdol\Sleep</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Idle_Gomdol.h">
+      <Filter>92.AI\State\Gomdol\Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Move_Gomdol.h">
+      <Filter>92.AI\State\Gomdol\Move</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_FrontAttack_Gomdol.h">
+      <Filter>92.AI\State\Gomdol\FrontAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Khazan_Spear_Anim_Guard.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Guard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Khazan_Spear_Anim_Guard.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Guard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Khazan_Spear_Anim_Guard.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Guard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_Info.h">
+      <Filter>02.GameObject\UI\Skill_Info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_Info_Panel.h">
+      <Filter>02.GameObject\UI\Skill_Info\Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_Condition_Panel.h">
+      <Filter>02.GameObject\UI\Skill_Info\Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_Info_Tex.h">
+      <Filter>02.GameObject\UI\Skill_Info\Info_Tex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sequence_HeinMach_Start.h">
+      <Filter>04.Sequence\HeinMach\Start</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_QuickSlot.h">
+      <Filter>02.GameObject\UI\Skill_QuickSlot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_QuickSlot_List.h">
+      <Filter>02.GameObject\UI\Skill_QuickSlot\List</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sequence_HeinMach_Start_Chat.h">
+      <Filter>04.Sequence\HeinMach\Start_Chat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Announce_Result.h">
+      <Filter>02.GameObject\UI\Announce\Result</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Announce_Symbol.h">
+      <Filter>02.GameObject\UI\Announce\Result\Symbol</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Announce_Over.h">
+      <Filter>02.GameObject\UI\Announce\Over</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Body_Imp_Range.h">
+      <Filter>02.GameObject\Creature\Monster\Imp_Range\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AI_Controller_Imp_Range.h">
+      <Filter>92.AI\Controller\Imp_Range</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FSM_Imp_Range.h">
+      <Filter>92.AI\StateMachine\Imp_Range</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Sleep_Imp_Range.h">
+      <Filter>92.AI\State\Imp_Range\Sleep</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Idle_Imp_Range.h">
+      <Filter>92.AI\State\Imp_Range\Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Attack_Imp_Range.h">
+      <Filter>92.AI\State\Imp_Range\Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Move_Imp_Range.h">
+      <Filter>92.AI\State\Imp_Range\Move</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Imp_Range.h" />
+    <ClInclude Include="..\Public\Interact_Manager.h">
+      <Filter>94.ClientInstance\Interact</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_Spear_Anim_Interaction.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Interaction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_BladeNexus_Map.h">
+      <Filter>02.GameObject\UI\BladeNexus_Map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BladeNexus_Map_List.h">
+      <Filter>02.GameObject\UI\BladeNexus_Map\List</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BladeNexus_Map_BG.h">
+      <Filter>02.GameObject\UI\BladeNexus_Map\BG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Imp_Range.h">
+      <Filter>02.GameObject\Creature\Monster\Imp_Range</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Imp_Wand.h">
+      <Filter>02.GameObject\Creature\Monster\Imp_Range\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Projectile_Imp_MagicBall.h" />
+    <ClInclude Include="..\Public\AI_Controller_Imp_Melee.h">
+      <Filter>92.AI\Controller\Imp_Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FSM_Imp_Melee.h">
+      <Filter>92.AI\StateMachine\Imp_Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Imp_Melee.h">
+      <Filter>02.GameObject\Creature\Monster\Imp_Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Body_Imp_Melee.h">
+      <Filter>02.GameObject\Creature\Monster\Imp_Melee\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Imp_Sword.h">
+      <Filter>02.GameObject\Creature\Monster\Imp_Melee\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Projectile_Imp_MagicBall.h">
+      <Filter>02.GameObject\Projectile\Imp_Range\Magic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Boomarang_Imp_Range.h">
+      <Filter>92.AI\State\Imp_Range\Boomarang</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Projectile_Boomarang.h">
+      <Filter>02.GameObject\Projectile\Imp_Range\Boomarang</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Hit_Imp_Range.h">
+      <Filter>92.AI\State\Imp_Range\Hit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Dead_Imp_Range.h">
+      <Filter>92.AI\State\Imp_Range\Dead</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_Spaer_Anim_Damaged.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Damaged</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Sleep_Imp_Melee.h">
+      <Filter>92.AI\State\Imp_Melee\Sleep</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Move_Imp_Melee.h">
+      <Filter>92.AI\State\Imp_Melee\Move</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Idle_Imp_Melee.h">
+      <Filter>92.AI\State\Imp_Melee\Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_ChainSmash_Imp_Melee.h">
+      <Filter>92.AI\State\Imp_Melee\ChainSmash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_NonStopAttack_Imp_Melee.h">
+      <Filter>92.AI\State\Imp_Melee\NonStopAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_DashAttack_Imp_Melee.h">
+      <Filter>92.AI\State\Imp_Melee\DashAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Dead_Imp_Melee.h">
+      <Filter>92.AI\State\Imp_Melee\Dead</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Hit_Imp_Melee.h">
+      <Filter>92.AI\State\Imp_Melee\Hit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_LockOn_ImpRange.h">
+      <Filter>92.AI\State\Imp_Range\LockOn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\LoadingObj_BN.h">
+      <Filter>02.GameObject\MapObject\02.Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Inven_State_Panel.h">
+      <Filter>02.GameObject\UI\Inven\Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_Slot_Flag.h">
+      <Filter>02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel\Flag</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Lantern_Khazan_Spear.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Lantern</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\ItemInfo_RandomEffect.h">
+      <Filter>02.GameObject\UI\Item_Info\Weapon\Random_Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Slot_Smoke.h">
+      <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_QuickSlot_Skill_Fx.h">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Skill\Slot\fx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Elevator_Gear.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\03.ElevatorS\00.Gear</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ElevatorS.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\03.ElevatorS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Slate_Switch.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\03.ElevatorS\01.Slate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Lever.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\04.Lever</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Door_Gear.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\05.Gear\01.Door_Gear</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Lever_Gear.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\05.Gear\00.Lever_Gear</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_CutScene_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\18.CutScene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Cursor_Circle_Fx.h">
+      <Filter>02.GameObject\UI\Skill_Tree\FX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Skill_BG_Smoke.h">
+      <Filter>02.GameObject\UI\Skill_Tree\FX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Slot_Over_Fx.h">
+      <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Slot_Selete_Fx.h">
+      <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
+    </ClInclude>
+<<<<<<< Updated upstream
+    <ClInclude Include="..\Public\Prop_Destructible.h">
+      <Filter>02.GameObject\MapObject\00.Prop\05.Destructible</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Chunk.h">
+      <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\Chunk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_Spear_Anim_Fall.h">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Fall</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_WorldTextBox.h">
+      <Filter>02.GameObject\UI\Talk\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Talk_Daphrona.h">
+      <Filter>02.GameObject\UI\Talk\Daphrona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_WorldTex.h">
+      <Filter>02.GameObject\UI\Talk\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_WorldList.h">
+      <Filter>02.GameObject\UI\Talk\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_WorldFX.h">
+      <Filter>02.GameObject\UI\Talk\ETC</Filter>
+=======
+    <ClInclude Include="..\Public\AI_Controller_Viper.h">
+      <Filter>92.AI\Controller\Viper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FSM_Viper.h">
+      <Filter>92.AI\StateMachine\Viper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Idle_Viper.h">
+      <Filter>92.AI\State\Viper\00.Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Viper.h">
+      <Filter>02.GameObject\Creature\Monster\Viper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Body_Viper.h">
+      <Filter>02.GameObject\Creature\Monster\Viper\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Quick2Hit_Viper.h">
+      <Filter>92.AI\State\Viper\03.Quick2Hit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Slow2Hit_VIper.h">
+      <Filter>92.AI\State\Viper\04.Slow2Hit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_LockOn_Viper.h">
+      <Filter>92.AI\State\Viper\05.LockOn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_LockOn_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\17.LOCKON</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Run_Viper.h">
+      <Filter>92.AI\State\Viper\02.RUN</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Walk_Viper.h">
+      <Filter>92.AI\State\Viper\01.Walk</Filter>
+>>>>>>> Stashed changes
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Client.ico">
+      <Filter>98.Default</Filter>
+    </Image>
+    <Image Include="small.ico">
+      <Filter>98.Default</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Client.rc">
+      <Filter>98.Default</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Client.cpp">
+      <Filter>98.Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MainApp.cpp">
+      <Filter>00.MainApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Loading.cpp">
+      <Filter>01.Levels\Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Title.cpp">
+      <Filter>01.Levels\Title</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Loader.cpp">
+      <Filter>01.Levels\Loading\Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Camera_Free.cpp">
+      <Filter>02.GameObject\Camera\Free</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Player.cpp">
+      <Filter>02.GameObject\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Body_Player.cpp">
+      <Filter>02.GameObject\Player\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_HeinMach.cpp">
+      <Filter>01.Levels\HeinMach</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Terrain.cpp">
+      <Filter>02.GameObject\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Monster.cpp">
+      <Filter>02.GameObject\Creature\Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\JOH_Test1.cpp">
+      <Filter>02.GameObject\JOH Test\Test Anim Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Dummy.cpp">
+      <Filter>02.GameObject\Pool\Dummy</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientPch.cpp">
+      <Filter>96.pch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Object.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\00.Object</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Animated.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\02.Animated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Interactive.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Static.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\01.Static</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MapObject.cpp">
+      <Filter>02.GameObject\MapObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Test.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ClientInstance.cpp">
+      <Filter>94.ClientInstance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Manager.cpp">
+      <Filter>94.ClientInstance\UI_Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Layer.cpp">
+      <Filter>94.ClientInstance\UI_Manager\Layer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Atlas_RenderGroup.cpp">
+      <Filter>94.ClientInstance\UI_Manager\Atlas_RenderGroup</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Button.cpp">
+      <Filter>95.SuperClass\UI\UIPart\UI_Button</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Panel.cpp">
+      <Filter>95.SuperClass\UI\UIContainer\UI_Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_ProgressBar.cpp">
+      <Filter>95.SuperClass\UI\UIPart\UI_ProgressBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Tap.cpp">
+      <Filter>95.SuperClass\UI\UIContainer\UI_Tap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_ScrollBar.cpp">
+      <Filter>95.SuperClass\UI\UIPart\UI_ScrollBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Slot.cpp">
+      <Filter>95.SuperClass\UI\UIContainer\UI_Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Texture.cpp">
+      <Filter>95.SuperClass\UI\UIPart\UI_Frame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Text.cpp">
+      <Filter>95.SuperClass\UI\UIPart\UI_Text</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Compre.cpp">
+      <Filter>02.GameObject\Camera\Comprehension</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Dynamic.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\04.Dynamic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_PlayerHP_Gauge.cpp">
+      <Filter>02.GameObject\UI\HUD\State\HP\Gauge</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_PlayerHP_Penal.cpp">
+      <Filter>02.GameObject\UI\HUD\State</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_PlayerHP_BG.cpp">
+      <Filter>02.GameObject\UI\HUD\State\HP\BG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_CombatSpirit_Penal.cpp">
+      <Filter>02.GameObject\UI\HUD\State\ComBatSpirit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_ComBatSpirit_Slot.cpp">
+      <Filter>02.GameObject\UI\HUD\State\ComBatSpirit\Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_ComBatSpirit_Gauge.cpp">
+      <Filter>02.GameObject\UI\HUD\State\ComBatSpirit\Slot\Gauge</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_HUD.cpp">
+      <Filter>02.GameObject\UI\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_PlayerStamina_Gauge.cpp">
+      <Filter>02.GameObject\UI\HUD\State\HP\Gauge</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Gague_Tip.cpp">
+      <Filter>02.GameObject\UI\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Yetuga.cpp">
+      <Filter>02.GameObject\Creature\Monster\Yetuga</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Creature.cpp">
+      <Filter>02.GameObject\Creature</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BT_Yetuga.cpp">
+      <Filter>92.AI\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\IdleState_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\00.Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FSM_Yetuga.cpp">
+      <Filter>92.AI\StateMachine\Yetuga</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AI_Controller_Yetuga.cpp">
+      <Filter>92.AI\Controller\Yetuga</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MoveState_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\01.Move</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AttackState_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\02.Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_QuickSlot_Skill_Panel.cpp">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Skill</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_QuickSlot_Item_Panel.cpp">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Item</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_QuickSlot_Skill.cpp">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Skill\Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_QuickSlot_Item.cpp">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Item\Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Inven.cpp">
+      <Filter>02.GameObject\UI\Inven</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\DB_Manager.cpp">
+      <Filter>94.ClientInstance\DB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Item_Slot.cpp">
+      <Filter>02.GameObject\UI\Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Cursor.cpp">
+      <Filter>02.GameObject\UI\Cursor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Cursor_FX.cpp">
+      <Filter>02.GameObject\UI\Cursor\FX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_TextBox.cpp">
+      <Filter>02.GameObject\UI\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_MainMenu.cpp">
+      <Filter>02.GameObject\UI\MainMenu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\MainMenu_List.cpp">
+      <Filter>02.GameObject\UI\MainMenu\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\MainMenu_Deco.cpp">
+      <Filter>02.GameObject\UI\MainMenu\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Equip_Panel.cpp">
+      <Filter>02.GameObject\UI\Inven\Equip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Equip_Slot.cpp">
+      <Filter>02.GameObject\UI\Inven\Equip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_Sample.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Sample\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Body_Khazan_Sample.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Sample\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Spear_Khazan_Sample.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Sample\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_RightHand_5Hit_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\03.RightHand_5Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BladeNexus.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\00.BladeNexus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_LieDown_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\04.LieDown</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BigChest.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\01.BigChest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Inven_Tap.cpp">
+      <Filter>02.GameObject\UI\Inven\List</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Damage_Text.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Damage_UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Debug_Manager.cpp">
+      <Filter>94.ClientInstance\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Body_Yetuga.cpp">
+      <Filter>02.GameObject\Creature\Monster\Yetuga\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Turn_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\05.Turn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_ThrowBall_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\06.ThrowBall</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Mon_HP.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Mon_HP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Mon_Gague.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Mon_HP\Gague</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Interaction_Guide.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Interaction_Guide</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Guide_Gauge.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Interaction_Guide\Progress</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Interaction_Icon.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Interaction_Guide\Icon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_BladeNexus.cpp">
+      <Filter>02.GameObject\UI\BladeNexus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BladeNexus_List.cpp">
+      <Filter>02.GameObject\UI\BladeNexus\List</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Khazan_Spear.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Body_Khazan_Spear.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Spear_Khazan_Spear.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_Dummy.cpp">
+      <Filter>04.Sequence\Dummy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Manager.cpp">
+      <Filter>94.ClientInstance\Camera\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Crevice.cpp">
+      <Filter>01.Levels\Crevice</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Embars.cpp">
+      <Filter>01.Levels\Embars</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Viper.cpp">
+      <Filter>01.Levels\Viper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_State_Panel.cpp">
+      <Filter>02.GameObject\UI\State\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_State_Button.cpp">
+      <Filter>02.GameObject\UI\State\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_State_List.cpp">
+      <Filter>02.GameObject\UI\State\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_State.cpp">
+      <Filter>02.GameObject\UI\State</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile.cpp">
+      <Filter>02.GameObject\Projectile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Controller.cpp">
+      <Filter>94.ClientInstance\Camera\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_State_MainPanel.cpp">
+      <Filter>02.GameObject\UI\State\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Shader_Controller.cpp">
+      <Filter>94.ClientInstance\Shader\Shader_Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_Spear_ASMachine.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Anim State Machine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_Spear_ASManager.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Anim State Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Hit_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\13. Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_IceBreath_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\12. IceBreath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Amageddon_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\11. Amageddon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Smash_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\07.Smash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_JumpAttack_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\08.JumpAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Dodge_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\14.Dodge</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Rush_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\10. Rush</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_JumpGrab_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\09. Grab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ItemInfo_Hud.cpp">
+      <Filter>02.GameObject\UI\HUD\ItemInfo_Hud</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ItemInfo_Other.cpp">
+      <Filter>02.GameObject\UI\Item_Info\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ItemInfo_Weapon.cpp">
+      <Filter>02.GameObject\UI\Item_Info\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BossHp.cpp">
+      <Filter>02.GameObject\UI\BossHp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BossHp_Gauge.cpp">
+      <Filter>02.GameObject\UI\BossHp\BossGauge</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Amount.cpp">
+      <Filter>02.GameObject\UI\Amount</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Amount_Panel.cpp">
+      <Filter>02.GameObject\UI\Amount\Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Target_LockOn.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Target_LockOn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Target_BrutalAttack.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BrutalAttack_Progress.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack\Progress</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BrutalAttack_Point.cpp">
+      <Filter>02.GameObject\UI\WorldUI\Target_BrutalAttack\Point</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile_Yetuga.cpp">
+      <Filter>02.GameObject\Projectile\Yetuga\Stone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile_Rock_Yetuga.cpp">
+      <Filter>02.GameObject\Projectile\Yetuga\Rock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\LineTrail.cpp">
+      <Filter>02.GameObject\Effect\Trail\LineTrail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MeshTrail.cpp">
+      <Filter>02.GameObject\Effect\Trail\MeshTrail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ScreenTrail.cpp">
+      <Filter>02.GameObject\Effect\Trail\LineTrail\ScreenTrail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Prefab.cpp">
+      <Filter>02.GameObject\Effect\Effect_Prefab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Mesh_Instance.cpp">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Mesh_Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Point_Instance.cpp">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Point_Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Sprite.cpp">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_Spear_Animation.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_Spear_Anim_Move.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Move</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TombStone.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\02.TombStone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Logo_BG.cpp">
+      <Filter>02.GameObject\UI\Logo\Logo_BG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Logo.cpp">
+      <Filter>02.GameObject\UI\Logo\UI_Logo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Logo_List.cpp">
+      <Filter>02.GameObject\UI\Logo\UI_Logo\List</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Fade.cpp">
+      <Filter>94.ClientInstance\UI_Manager\Fade</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile_Breath_Yetuga.cpp">
+      <Filter>02.GameObject\Projectile\Yetuga\Breath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Dead_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\16.Dead</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_HeinMach_Field.cpp">
+      <Filter>04.Sequence\HeinMach\Fieldscene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CloudSphere.cpp">
+      <Filter>02.GameObject\Sky</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sky.cpp">
+      <Filter>02.GameObject\Sky</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SkySphere.cpp">
+      <Filter>02.GameObject\Sky</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Loading.cpp">
+      <Filter>02.GameObject\UI\Loding</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Loading_Panel.cpp">
+      <Filter>02.GameObject\UI\Loding\Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Groggy_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\15.Groggy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_Spear_Anim_Attack.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\PlayerData_Manager.cpp">
+      <Filter>94.ClientInstance\PlayerData</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Trigger.cpp">
+      <Filter>02.GameObject\MapObject\01.Trigger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Announce_Talk.cpp">
+      <Filter>02.GameObject\UI\Announce\Talk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Announce_MapName.cpp">
+      <Filter>02.GameObject\UI\Announce\MapName</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Tutorial.cpp">
+      <Filter>02.GameObject\UI\Tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_BackGround.cpp">
+      <Filter>02.GameObject\UI\ETC\Tex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Default_Tex.cpp">
+      <Filter>02.GameObject\UI\ETC\Tex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Tutorial_Panel.cpp">
+      <Filter>02.GameObject\UI\Tutorial\Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Guide_Icon.cpp">
+      <Filter>02.GameObject\UI\ETC\Atlas</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Default_Button.cpp">
+      <Filter>02.GameObject\UI\ETC\Atlas</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Atlas_Icon.cpp">
+      <Filter>02.GameObject\UI\ETC\Atlas</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Tutorial_Tex.cpp">
+      <Filter>02.GameObject\UI\Tutorial\Tutorial_Tex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\HeinMach_Trigger.cpp">
+      <Filter>02.GameObject\MapObject\01.Trigger\00.HeinMach\HeinMach_Trigger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_HeinMach_Yetuga.cpp">
+      <Filter>04.Sequence\HeinMach\Yetuga</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_Slot.cpp">
+      <Filter>02.GameObject\UI\Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Head_Yetuga.cpp">
+      <Filter>02.GameObject\Creature\Monster\Yetuga\Head</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_SkillTree.cpp">
+      <Filter>02.GameObject\UI\Skill_Tree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_Tap.cpp">
+      <Filter>02.GameObject\UI\Skill_Tree\Tap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_Table.cpp">
+      <Filter>02.GameObject\UI\Skill_Tree\Table</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_Panel.cpp">
+      <Filter>02.GameObject\UI\Skill_Tree\SkillPanel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_Gauge.cpp">
+      <Filter>02.GameObject\UI\Skill_Tree\SkillPanel\Gauge</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_Slot_Panel.cpp">
+      <Filter>02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Test.cpp">
+      <Filter>01.Levels\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Viper_Trigger.cpp">
+      <Filter>02.GameObject\MapObject\01.Trigger\02.Viper\Viper_Trigger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Player_Manager.cpp">
+      <Filter>94.ClientInstance\Player_Manger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Gomdol.cpp">
+      <Filter>02.GameObject\Creature\Monster\Gomdolzzing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Body_Gomdol.cpp">
+      <Filter>02.GameObject\Creature\Monster\Gomdolzzing\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AI_Controller_Gomdol.cpp">
+      <Filter>92.AI\Controller\Gomdol</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FSM_Gomdol.cpp">
+      <Filter>92.AI\StateMachine\Gomdol</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Sleep_Gomdol.cpp">
+      <Filter>92.AI\State\Gomdol\Sleep</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Idle_Gomdol.cpp">
+      <Filter>92.AI\State\Gomdol\Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Move_Gomdol.cpp">
+      <Filter>92.AI\State\Gomdol\Move</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_FrontAttack_Gomdol.cpp">
+      <Filter>92.AI\State\Gomdol\FrontAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Khazan_Spear_Anim_Guard.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Guard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_Info.cpp">
+      <Filter>02.GameObject\UI\Skill_Info</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_Info_Panel.cpp">
+      <Filter>02.GameObject\UI\Skill_Info\Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_Condition_Panel.cpp">
+      <Filter>02.GameObject\UI\Skill_Info\Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_Info_Tex.cpp">
+      <Filter>02.GameObject\UI\Skill_Info\Info_Tex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_HeinMach_Start.cpp">
+      <Filter>04.Sequence\HeinMach\Start</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_QuickSlot.cpp">
+      <Filter>02.GameObject\UI\Skill_QuickSlot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_QuickSlot_List.cpp">
+      <Filter>02.GameObject\UI\Skill_QuickSlot\List</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_HeinMach_Start_Chat.cpp">
+      <Filter>04.Sequence\HeinMach\Start_Chat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Announce_Result.cpp">
+      <Filter>02.GameObject\UI\Announce\Result</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Announce_Symbol.cpp">
+      <Filter>02.GameObject\UI\Announce\Result\Symbol</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Announce_Over.cpp">
+      <Filter>02.GameObject\UI\Announce\Over</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Body_Imp_Range.cpp">
+      <Filter>02.GameObject\Creature\Monster\Imp_Range\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AI_Controller_Imp_Range.cpp">
+      <Filter>92.AI\Controller\Imp_Range</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FSM_Imp_Range.cpp">
+      <Filter>92.AI\StateMachine\Imp_Range</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Sleep_Imp_Range.cpp">
+      <Filter>92.AI\State\Imp_Range\Sleep</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Idle_Imp_Range.cpp">
+      <Filter>92.AI\State\Imp_Range\Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Attack_Imp_Range.cpp">
+      <Filter>92.AI\State\Imp_Range\Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Move_Imp_Range.cpp">
+      <Filter>92.AI\State\Imp_Range\Move</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Imp_Range.cpp" />
+    <ClCompile Include="..\Private\Interact_Manager.cpp">
+      <Filter>94.ClientInstance\Interact</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_Spear_Anim_Interaction.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Interaction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_BladeNexus_Map.cpp">
+      <Filter>02.GameObject\UI\BladeNexus_Map</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BladeNexus_Map_List.cpp">
+      <Filter>02.GameObject\UI\BladeNexus_Map\List</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BladeNexus_Map_BG.cpp">
+      <Filter>02.GameObject\UI\BladeNexus_Map\BG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Imp_Range.cpp">
+      <Filter>02.GameObject\Creature\Monster\Imp_Range</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Imp_Wand.cpp">
+      <Filter>02.GameObject\Creature\Monster\Imp_Range\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile_Imp_MagicBall.cpp" />
+    <ClCompile Include="..\Private\AI_Controller_Imp_Melee.cpp">
+      <Filter>92.AI\Controller\Imp_Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FSM_Imp_Melee.cpp">
+      <Filter>92.AI\StateMachine\Imp_Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Imp_Melee.cpp">
+      <Filter>02.GameObject\Creature\Monster\Imp_Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Body_Imp_Melee.cpp">
+      <Filter>02.GameObject\Creature\Monster\Imp_Melee\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Imp_Sword.cpp">
+      <Filter>02.GameObject\Creature\Monster\Imp_Melee\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile_Imp_MagicBall.cpp">
+      <Filter>02.GameObject\Projectile\Imp_Range\Magic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Boomarang_Imp_Range.cpp">
+      <Filter>92.AI\State\Imp_Range\Boomarang</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile_Boomarang.cpp">
+      <Filter>02.GameObject\Projectile\Imp_Range\Boomarang</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Hit_Imp_Range.cpp">
+      <Filter>92.AI\State\Imp_Range\Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Dead_Imp_Range.cpp">
+      <Filter>92.AI\State\Imp_Range\Dead</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_Spaer_Anim_Damaged.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Damaged</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Sleep_Imp_Melee.cpp">
+      <Filter>92.AI\State\Imp_Melee\Sleep</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Move_Imp_Melee.cpp">
+      <Filter>92.AI\State\Imp_Melee\Move</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Idle_Imp_Melee.cpp">
+      <Filter>92.AI\State\Imp_Melee\Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_ChainSmash_Imp_Melee.cpp">
+      <Filter>92.AI\State\Imp_Melee\ChainSmash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_NonStopAttack_Imp_Melee.cpp">
+      <Filter>92.AI\State\Imp_Melee\NonStopAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_DashAttack_Imp_Melee.cpp">
+      <Filter>92.AI\State\Imp_Melee\DashAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Dead_Imp_Melee.cpp">
+      <Filter>92.AI\State\Imp_Melee\Dead</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Hit_Imp_Melee.cpp">
+      <Filter>92.AI\State\Imp_Melee\Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_LockOn_ImpRange.cpp">
+      <Filter>92.AI\State\Imp_Range\LockOn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\LoadingObj_BN.cpp">
+      <Filter>02.GameObject\MapObject\02.Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Inven_State_Panel.cpp">
+      <Filter>02.GameObject\UI\Inven\Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_Slot_Flag.cpp">
+      <Filter>02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel\Flag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Lantern_Khazan_Spear.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Lantern</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ItemInfo_RandomEffect.cpp">
+      <Filter>02.GameObject\UI\Item_Info\Weapon\Random_Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Slot_Smoke.cpp">
+      <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_QuickSlot_Skill_Fx.cpp">
+      <Filter>02.GameObject\UI\HUD\State\QuickSlot_Skill\Slot\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Elevator_Gear.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\03.ElevatorS\00.Gear</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ElevatorS.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\03.ElevatorS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Slate_Switch.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\03.ElevatorS\01.Slate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Lever.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\04.Lever</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Door_Gear.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\05.Gear\01.Door_Gear</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Lever_Gear.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\05.Gear\00.Lever_Gear</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_CutScene_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\18.CutScene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Cursor_Circle_Fx.cpp">
+      <Filter>02.GameObject\UI\Skill_Tree\FX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Skill_BG_Smoke.cpp">
+      <Filter>02.GameObject\UI\Skill_Tree\FX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Slot_Over_Fx.cpp">
+      <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Slot_Selete_Fx.cpp">
+      <Filter>02.GameObject\UI\Slot\Slot_Fx</Filter>
+    </ClCompile>
+<<<<<<< Updated upstream
+    <ClCompile Include="..\Private\Prop_Destructible.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\05.Destructible</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Chunk.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\Chunk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_Spear_Anim_Fall.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Fall</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_WorldTextBox.cpp">
+      <Filter>02.GameObject\UI\Talk\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Talk_Daphrona.cpp">
+      <Filter>02.GameObject\UI\Talk\Daphrona</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_WorldTex.cpp">
+      <Filter>02.GameObject\UI\Talk\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_WorldList.cpp">
+      <Filter>02.GameObject\UI\Talk\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_WorldFX.cpp">
+      <Filter>02.GameObject\UI\Talk\ETC</Filter>
+=======
+    <ClCompile Include="..\Private\AI_Controller_Viper.cpp">
+      <Filter>92.AI\Controller\Viper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FSM_Viper.cpp">
+      <Filter>92.AI\StateMachine\Viper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Idle_Viper.cpp">
+      <Filter>92.AI\State\Viper\00.Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Viper.cpp">
+      <Filter>02.GameObject\Creature\Monster\Viper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Body_Viper.cpp">
+      <Filter>02.GameObject\Creature\Monster\Viper\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Quick2Hit_Viper.cpp">
+      <Filter>92.AI\State\Viper\03.Quick2Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Slow2Hit_VIper.cpp">
+      <Filter>92.AI\State\Viper\04.Slow2Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_LockOn_Viper.cpp">
+      <Filter>92.AI\State\Viper\05.LockOn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_LockOn_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\17.LOCKON</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Run_Viper.cpp">
+      <Filter>92.AI\State\Viper\02.RUN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Walk_Viper.cpp">
+      <Filter>92.AI\State\Viper\01.Walk</Filter>
+>>>>>>> Stashed changes
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxMesh.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxAnimMesh.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxCube.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxInstance_PointParticle.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_MeshInstance.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_ModelMeshInstance.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxInstance_Particle.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxInstance_Point_UI.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_UI.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosSpriteTex.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_UIMask.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_Cursor.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_Font.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxSphere.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_UI_Effect.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+  </ItemGroup>
+</Project>
