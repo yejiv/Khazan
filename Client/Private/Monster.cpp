@@ -175,7 +175,7 @@ HRESULT CMonster::Initialize_Clone(void* pArg)
     // 이름
     m_strName = pDesc->strName;
     //// 타겟
-    m_pTarget = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER),TEXT("Layer_Creature_Player"),0);
+    m_pTarget = m_pGameInstance->Find_GameObject(m_iLevelIndex, TEXT("Layer_Creature_Player"), 0);
     if (nullptr == m_pTarget)
         return E_FAIL;
 

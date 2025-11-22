@@ -27,6 +27,9 @@
 #include <Monster.h>
 #include <Target_BrutalAttack.h>
 #include "UI_Talk_Daphrona.h"
+#include "UI_Talk_Dangin.h"
+#include "UI_Talk_Trader.h"
+
 #pragma endregion
 
 using WEA = CKhazan_Spear_ASMachine::WEAPON;
@@ -125,7 +128,7 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
 
     m_EffectTimeDelta = 0.f;
 #pragma region 3D UI 테스트
-    //CUIObject::UIOBJECT_DESC Desc;
+    CUIObject::UIOBJECT_DESC Desc;
 
     //Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
     //Desc.vLocalPos = { 0.f, 0.f };
@@ -136,7 +139,18 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
   /*  if (m_pTalkUI == nullptr)
         return E_FAIL;*/
 
-
+    Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
+    Desc.vLocalPos = { 0.f, 0.f };
+    Desc.vLocalSize = { 1.7f, 1.7f };
+    Desc.szName = "TalkUI";
+    m_pTalkUI = static_cast<CUI_Talk_Daphrona*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Daphrona"), &Desc));
+    CHECK_NULLPTR(m_pTalkUI, E_FAIL);
+    Desc.szName = "Dangin_TalkUI";
+    m_pDanginTalkUI = static_cast<CUI_Talk_Dangin*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Dangin"), &Desc));
+    CHECK_NULLPTR(m_pDanginTalkUI, E_FAIL);
+    Desc.szName = "Trader_TalkUI";
+    m_pTraderTalkUI = static_cast<CUI_Talk_Trader*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Trader"), &Desc));
+    CHECK_NULLPTR(m_pTraderTalkUI, E_FAIL);
 
 #pragma endregion
     return S_OK;
@@ -146,9 +160,13 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
 void CKhazan_Spear::Priority_Update(_float fTimeDelta)
 {
     if (m_pGameInstance->Key_Down(DIK_8))
-    {
         m_pTalkUI->On_Panel();
-    }
+    
+    if (m_pGameInstance->Key_Down(DIK_J))
+        m_pDanginTalkUI->On_Panel();
+
+    if (m_pGameInstance->Key_Down(DIK_K))
+        m_pTraderTalkUI->On_Panel();
 
     //m_pTalkUI->Priority_Update(fTimeDelta);
     __super::Priority_Update(fTimeDelta);
@@ -170,7 +188,10 @@ void CKhazan_Spear::Priority_Update(_float fTimeDelta)
 
 void CKhazan_Spear::Update(_float fTimeDelta)
 {
-    //m_pTalkUI->Update(fTimeDelta);
+    m_pTalkUI->Update(fTimeDelta);
+    m_pDanginTalkUI->Update(fTimeDelta);
+    m_pTraderTalkUI->Update(fTimeDelta);
+
     if (m_isEnableControl)
     {
         m_fTimeAcc += fTimeDelta;
@@ -255,8 +276,13 @@ void CKhazan_Spear::Update(_float fTimeDelta)
 
 void CKhazan_Spear::Late_Update(_float fTimeDelta)
 {
-   /* m_pTalkUI->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
-    m_pTalkUI->Late_Update(fTimeDelta);*/
+    m_pTalkUI->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
+    m_pDanginTalkUI->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
+    m_pTraderTalkUI->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
+
+    m_pTalkUI->Late_Update(fTimeDelta);
+    m_pDanginTalkUI->Late_Update(fTimeDelta);
+    m_pTraderTalkUI->Late_Update(fTimeDelta);
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 
@@ -2702,6 +2728,16 @@ void CKhazan_Spear::Event_Interact_Object(_float fTimeDelta)
 
             break;
         }
+        case INTERACTIVE_TYPE::STATUE:
+        {
+            isDone = false;
+
+            if (m_pBody->Get_Model()->IsFinished()) {
+                isDone = true;
+            }
+
+            break;
+        }
         default:
             break;
         }
@@ -2712,7 +2748,9 @@ void CKhazan_Spear::Event_Interact_Object(_float fTimeDelta)
             m_isInteractEventSetting = false;
 
             // 상호작용 활성화시 맵 오브젝트한테 EVENT_STATE를 ON 으로 던져준다
-            m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { EventObject::OnEvent() });
+            _float4 vPosition = {};
+            XMStoreFloat4(&vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+            m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { EventObject::OnEvent_Player(vPosition) });
             // 내 상태를 STATE::NONE 으로 변경해준다.
             m_EventInteract.eState = EventInteractType::EVENT_STATE::NONE;
         }
@@ -2752,6 +2790,11 @@ void CKhazan_Spear::Event_Interact_Object(_float fTimeDelta)
         if (INTERACTIVE_TYPE::LEVER == m_EventInteract.eInteractType)
         {
             Lever_Event(fTimeDelta);
+        }
+        // 조각상 기믹일때
+        if (INTERACTIVE_TYPE::STATUE == m_EventInteract.eInteractType)
+        {
+            Statue_Event(fTimeDelta);
         }
     }
 }
@@ -2916,6 +2959,20 @@ void CKhazan_Spear::Lever_Event(_float fTimeDelta)
         LeverEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
         m_pTransformCom->LookAt(XMLoadFloat4(&LeverEvent.vPosition));
     }
+
+    m_EventInteract.End_Event();
+}
+void CKhazan_Spear::Statue_Event(_float fTimeDelta)
+{
+    EventStatue StatueEvent = m_EventInteract.StatueEvent;
+
+    // 플레이어가 석상을 돌리는 애니메이션 실행
+
+    StatueEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+    m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&StatueEvent.vPlayerPosition));
+    StatueEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    m_pTransformCom->LookAt(XMLoadFloat4(&StatueEvent.vPosition));
 
     m_EventInteract.End_Event();
 }

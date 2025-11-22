@@ -32,6 +32,10 @@
 #include "Lever_Gear.h"                 // 레버 옆 기어, 다 돌면 문쪽 기어 돌림
 #include "Door_Gear.h"                  // 레버 옆 기어, 다 돌면 문쪽 기어 돌림
 
+#include "Statue.h"                     // 조각상 퍼즐 ( 렌더 X ) ( 회전 애니메이션만 )
+#include "Statue_Plate.h"               // 조각상 퍼즐 발판
+#include "Statue_Deco.h"                // 조각상 퍼즐 석상
+
 // Properties Test
 #include "Prop_Test.h"
 

@@ -77,14 +77,14 @@ void CPlayer_Shader::Update(_float fTimeDelta)
 
 void CPlayer_Shader::Late_Update(_float fTimeDelta)
 {
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::BLEND, this)))
         return;
 
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
         return;
 
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::OUTLINE, this)))
-        return;
+    //  if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::OUTLINE, this)))
+    //      return;
 
 #ifdef _DEBUG
 
@@ -103,7 +103,7 @@ HRESULT CPlayer_Shader::Render()
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
         
         // Normal, Specular 텍스처가 없는 것 같음
-        //  m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
         //  m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR, 0);
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
@@ -117,7 +117,7 @@ HRESULT CPlayer_Shader::Render()
         if (FAILED(m_pShaderCom->Bind_Bool("g_isEnableBloom", &m_isEnableBloom)))
             return E_FAIL;
 
-        m_pShaderCom->Begin(4);
+        m_pShaderCom->Begin(6);
 
         m_pModelCom->Render(i);
     }

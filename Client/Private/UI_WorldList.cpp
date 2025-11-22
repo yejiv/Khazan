@@ -72,7 +72,8 @@ void CUI_WorldList::Update_UITransform(_matrix vParentMat)
 
 void CUI_WorldList::Set_LocalPos(_vector vPos)
 {
-    m_pTransformCom->Set_State(STATE::POSITION, vPos);
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetZ(vPos,XMVectorGetZ(vPos) + m_fOffsetZ));
+
 }
 
 void CUI_WorldList::Set_LocalSize(_float3 vSize)
@@ -94,6 +95,11 @@ void CUI_WorldList::Set_Selete(_bool isSelete)
 {
     m_pSelete->Update_Visible(isSelete);
     m_pSeleteIcon->Update_Visible(isSelete);
+    if (isSelete)
+        m_fOffsetZ = -0.05f;
+    else
+        m_fOffsetZ = 0.f;
+
 }
 
 void CUI_WorldList::ON_FX()
@@ -265,13 +271,13 @@ void CUI_WorldList::Free()
     Safe_Release(m_pTextureCom);
     Safe_Release(m_pVIBufferCom);
 
+    Safe_Release(m_pName);
     Safe_Release(m_pIcon);
     Safe_Release(m_pSelete);
-
-    Safe_Release(m_pName);
+    Safe_Release(m_pSeleteIcon);
     Safe_Release(m_pFX);
+
     for (auto pBg : m_BG)
         Safe_Release(pBg);
-
     m_BG.clear();
 }

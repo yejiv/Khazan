@@ -364,12 +364,6 @@
     <Filter Include="01.Utility\03.Component\VIBuffer\Trail\VIBuffer_LineTrail">
       <UniqueIdentifier>{2c9058cd-319d-42b5-af77-42d5cda9ba53}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\20.BoneChainPhysic">
-      <UniqueIdentifier>{425e255b-b518-42ec-8ca9-f0cf2d6f4b40}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\21.XPBD">
-      <UniqueIdentifier>{b061e657-0aa8-4362-9fea-a69bae13943e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\02.GameObject\Effect">
       <UniqueIdentifier>{1c4d3cfa-4c45-41e2-8a49-440ce42f8dbf}</UniqueIdentifier>
     </Filter>
@@ -424,6 +418,9 @@
     <Filter Include="01.Utility\95.AI\BehaviorTree\Node\Utility_Action\Helper">
       <UniqueIdentifier>{f1b77215-c1e8-4ae3-9a19-0af5af12e548}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Component\MotionTrail">
+      <UniqueIdentifier>{ef19cba2-621d-4127-ac0e-ba0298b07f9c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -467,9 +464,6 @@
     </ClCompile>
     <ClCompile Include="..\private\Transform.cpp">
       <Filter>01.Utility\03.Component\Transform</Filter>
-    </ClCompile>
-    <ClCompile Include="..\private\VIBuffer.cpp">
-      <Filter>01.Utility\03.Component\VIBuffer</Filter>
     </ClCompile>
     <ClCompile Include="..\private\VIBuffer_Rect.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Rect</Filter>
@@ -765,15 +759,6 @@
     <ClCompile Include="..\private\Decal_Manager.cpp">
       <Filter>01.Utility\18.Decal\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\BoneChainPhysic.cpp">
-      <Filter>01.Utility\20.BoneChainPhysic</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Public\BoneTreePBD.cpp">
-      <Filter>01.Utility\20.BoneChainPhysic</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\XPBD.cpp">
-      <Filter>01.Utility\21.XPBD</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Effect_Element.cpp">
       <Filter>01.Utility\02.GameObject\Effect\Prefab\Effect_Element</Filter>
     </ClCompile>
@@ -818,6 +803,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\UtilitySelector_Node.cpp">
       <Filter>01.Utility\95.AI\BehaviorTree\Node\Composite\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\MotionTrail.cpp">
+      <Filter>01.Utility\03.Component\MotionTrail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\VIBuffer.cpp">
+      <Filter>01.Utility\03.Component\VIBuffer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1205,15 +1196,6 @@
     <ClInclude Include="..\public\Decal_Manager.h">
       <Filter>01.Utility\18.Decal\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\BoneChainPhysic.h">
-      <Filter>01.Utility\20.BoneChainPhysic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\BoneTreePBD.h">
-      <Filter>01.Utility\20.BoneChainPhysic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\XPBD.h">
-      <Filter>01.Utility\21.XPBD</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Effect_Element.h">
       <Filter>01.Utility\02.GameObject\Effect\Prefab\Effect_Element</Filter>
     </ClInclude>
@@ -1262,6 +1244,9 @@
     <ClInclude Include="..\Public\UtilityScore.h">
       <Filter>01.Utility\95.AI\BehaviorTree\Node\Utility_Action\Helper</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\MotionTrail.h">
+      <Filter>01.Utility\03.Component\MotionTrail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hlsli">
@@ -1291,6 +1276,9 @@
       <Filter>95.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Decal.hlsl">
+      <Filter>95.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_MotionTrail.hlsl">
       <Filter>95.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

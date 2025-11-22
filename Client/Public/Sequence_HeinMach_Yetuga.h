@@ -6,6 +6,7 @@ NS_BEGIN(Engine)
 class CGameInstance;
 class CTransform;
 class CCharacterVirtual;
+class ISeqInstance;
 NS_END
 
 NS_BEGIN(Client)

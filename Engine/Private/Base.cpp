@@ -28,7 +28,7 @@ unsigned int CBase::Release()
 		return m_iRefCnt--;
 	}
 }
-
+ 
 void CBase::Free()
 {
 }

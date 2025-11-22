@@ -43,6 +43,7 @@ public:
     void Set_Elevator_UpPos(_float4 vUpPos) { m_vUpPos = vUpPos; }
     void Set_Elevator_DownPos(_float4 vDownPos) { m_vDownPos = vDownPos; }
 
+private:
     ELEVATOR_STATE m_eState = { ELEVATOR_STATE::IDLE_UP };
     _bool m_isActive = { false };
 

@@ -23,6 +23,7 @@ public:
     _int                                Get_Random_Type() { return m_iRandomEffect_Type; }
     _int                                Get_Random_Value() { return m_iRandomEffect_Value; }
 
+    void                                Set_Sale(_bool isSale) { m_isSale = isSale; }
 	_bool								Add_Item(_int iItemIndex);
 	void								Update_Pos(_int iIndex, _float2 vPos, _float fOffSet, _int iMaxIndexX, _int iMaxIndexY);
 	_bool								On_Selete();
@@ -57,6 +58,7 @@ private:
     _float                              m_fEquipTime = {};
     
     _bool                               m_isUpIcon = { true };
+    _bool                               m_isSale = { true };
 
     _float                              m_fMainValue = { };
 
@@ -70,6 +72,7 @@ private:
 
 	void								Selete_Item();
 	void								Equip_Item();
+    void                                Sale_Item();
 	void								Release_Item();
 
 	void								Render_ItemInfo();
