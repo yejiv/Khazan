@@ -257,7 +257,7 @@ PS_OUT PS_SKILL_SELETE(PS_IN In)
     alpha *= edgeFade;
 
     Out.vColor.rgb = g_vColor.rgb;
-    Out.vColor.a = alpha * g_vColor.a * g_fAlpha;
+    Out.vColor.a = alpha * 1.7f * g_vColor.a * g_fAlpha;
     return Out;
 }
 

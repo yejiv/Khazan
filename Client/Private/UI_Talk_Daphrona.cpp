@@ -25,48 +25,45 @@ void CUI_Talk_Daphrona::On_Panel()
     m_eType = TALK_TYPE::START;
     m_pGameInstance->Change_InputType(INPUT_TYPE::UI);
     Setting_Talk();
+
+    m_eAnimState = UIANIMSTATE::ON;
+    m_fAccTime = 0.f;
 }
 
 void CUI_Talk_Daphrona::Off_Panel()
 {
-    m_IsUpdate = false;
-    m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
+    m_eAnimState = UIANIMSTATE::OFF;
 }
 
 void CUI_Talk_Daphrona::Update_UITransform(_vector vPos)
 {
-
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetZ(XMVectorSetX(XMVectorSetY(vPos, XMVectorGetY(vPos) + m_vLocalSize.y * 0.87f), XMVectorGetX(vPos) - 0.5f), XMVectorGetZ(vPos) - 0.8f));
+    
+    _float offsetY = sin(m_fSpeedWeight * 2.f) * 1.f * 0.5f
+        + sin(m_fSpeedWeight * 2.f * 0.5f) * 1.f * 0.5f;
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetY(m_pTransformCom->Get_State(STATE::POSITION), XMVectorGetY(m_pTransformCom->Get_State(STATE::POSITION)) + offsetY * 0.02f));
+    
     m_pTransformCom->Scale({ 1.15f, 1.f, 1.f });
     m_pTransformCom->Rotation(XMConvertToRadians(20.f), XMConvertToRadians(140.f), XMConvertToRadians(0.f));
-
     m_vColor = { 1.f,1.f, 1.f, 0.8f };
 
     m_pName->Update_UITransform(m_pTransformCom->Get_WorldMatrix());
-    m_pName->Set_TextTag(TEXT("Blade_Medium_20"));
-    m_pName->Set_Text(TEXT("다프로나"));
     m_pName->Set_LocalPos({ -0.53f, 0.425f, -0.01f, 1.f });
     m_pName->Set_LocalSize({ 0.5f, 0.5f, 1.f });
     m_pName->Set_Color({ 1.f, 1.f, 1.f,1.f });
 
 
     m_pText1->Update_UITransform(m_pTransformCom->Get_WorldMatrix());
-    m_pText1->Set_TextTag(TEXT("Blade_Medium_20"));
-
     m_pText1->Set_LocalPos({ -0.51f, 0.33f, -0.01f, 1.f });
     m_pText1->Set_LocalSize({ 0.4f, 0.4f, 1.f });
     m_pText1->Set_Color({ 1.f,1.f,1.f,1.f });
 
     m_pText2->Update_UITransform(m_pTransformCom->Get_WorldMatrix());
-    m_pText2->Set_TextTag(TEXT("Blade_Medium_20"));
-
     m_pText2->Set_LocalPos({ -0.51f, 0.27f, -0.01f, 1.f });
     m_pText2->Set_LocalSize({ 0.4f, 0.4f, 1.f });
     m_pText2->Set_Color({ 1.f,1.f,1.f,1.f });
 
     m_pText3->Update_UITransform(m_pTransformCom->Get_WorldMatrix());
-    m_pText3->Set_TextTag(TEXT("Blade_Medium_20"));
-           
     m_pText3->Set_LocalPos({ -0.51f, 0.21f, -0.01f, 1.f });
     m_pText3->Set_LocalSize({ 0.4f, 0.4f, 1.f });
     m_pText3->Set_Color({ 1.f,1.f,1.f,1.f });
@@ -96,22 +93,22 @@ void CUI_Talk_Daphrona::Update_UITransform(_vector vPos)
     m_pNameBG->Update_UITransform(m_pTransformCom->Get_WorldMatrix());
     m_BG_Line[0]->Set_LocalPos({0.f,0.49f,-0.001f,1.f});
     m_BG_Line[0]->Set_LocalSize({1.14f,0.01f,1.f});
-    m_BG_Line[0]->Set_Color({ 0.831f, 0.749f, 0.415f, 0.5f });
+    m_BG_Line[0]->Set_Color({ 1.f, 0.847f, 0.459f, 0.8f });
     m_BG_Line[0]->Set_ShaderPass(19);
 
     m_BG_Line[1]->Set_LocalPos({ 0.f,-0.49f,-0.001f,1.f });
     m_BG_Line[1]->Set_LocalSize({ 1.14f,0.01f,1.f });
-    m_BG_Line[1]->Set_Color({ 0.831f, 0.749f, 0.415f, 0.5f });
+    m_BG_Line[1]->Set_Color({ 1.f, 0.847f, 0.459f, 0.8f });
     m_BG_Line[1]->Set_ShaderPass(19);
 
     m_BG_Line[2]->Set_LocalPos({ 0.563f,0.f,-0.001f,1.f });
     m_BG_Line[2]->Set_LocalSize({ 0.01f, 0.995f,1.f });
-    m_BG_Line[2]->Set_Color({ 0.831f, 0.749f, 0.415f, 0.5f });
+    m_BG_Line[2]->Set_Color({ 1.f, 0.847f, 0.459f, 0.8f });
     m_BG_Line[2]->Set_ShaderPass(19);
 
     m_BG_Line[3]->Set_LocalPos({ -0.563f,0.f,-0.001f,1.f });
     m_BG_Line[3]->Set_LocalSize({ 0.01f, 0.995f,1.f });
-    m_BG_Line[3]->Set_Color({ 0.831f, 0.749f, 0.415f, 0.5f });
+    m_BG_Line[3]->Set_Color({ 1.f, 0.847f, 0.459f, 0.8f });
     m_BG_Line[3]->Set_ShaderPass(19);
 
     m_BG_Line[4]->Set_LocalPos({ 0.f,0.f,-0.001f,1.f });
@@ -124,7 +121,7 @@ void CUI_Talk_Daphrona::Update_UITransform(_vector vPos)
 
 
     m_Key_Guide[1]->Set_LocalPos({ -0.f,-0.42f,-0.001f,1.f });
-    m_Key_Guide[1]->Set_LocalSize({ 0.05f, 0.05f,1.f });
+    m_Key_Guide[1]->Set_LocalSize({ 0.075f, 0.075f,1.f });
 
 
     m_Key_Guide[2]->Set_LocalPos({ 0.07f,-0.42f,-0.001f,1.f });
@@ -132,7 +129,7 @@ void CUI_Talk_Daphrona::Update_UITransform(_vector vPos)
 
     m_pNameBG->Set_LocalPos({ -0.34f,0.4f,-0.002f,1.f });
     m_pNameBG->Set_LocalSize({ 0.45f, 0.075f,1.f });
-    m_pNameBG->Set_Color({ 0.7686, 0.6882, 0.2431, 0.8f });
+    m_pNameBG->Set_Color({ 1.f, 0.847f, 0.459f, 0.8f });
     m_pNameBG->Set_ShaderPass(19);
 }
 
@@ -166,6 +163,10 @@ void CUI_Talk_Daphrona::Update(_float fTimeDelta)
     if (!m_IsUpdate)
         return;
    
+  
+    m_fSpeedWeight += fTimeDelta;
+
+    UI_Animation(fTimeDelta);
     if (m_eType == TALK_TYPE::START || m_eType == TALK_TYPE::TALK_SELETE || (m_eType == TALK_TYPE::UP && m_isUp))
         List_Selete();
 
@@ -321,15 +322,19 @@ HRESULT CUI_Talk_Daphrona::Ready_Children()
     Desc.szName = "TalkUI";
     m_pText1 = static_cast<CUI_WorldTextBox*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_WorldText"), &Desc));
     CHECK_NULLPTR(m_pText1, E_FAIL);
+    Add_Child(m_pText1);
 
     m_pText2 = static_cast<CUI_WorldTextBox*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_WorldText"), &Desc));
     CHECK_NULLPTR(m_pText2, E_FAIL);
+    Add_Child(m_pText2);
 
     m_pText3 = static_cast<CUI_WorldTextBox*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_WorldText"), &Desc));
     CHECK_NULLPTR(m_pText3, E_FAIL);
+    Add_Child(m_pText3);
 
     m_pName = static_cast<CUI_WorldTextBox*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_WorldText"), &Desc));
     CHECK_NULLPTR(m_pName, E_FAIL);
+    Add_Child(m_pName);
 
     for (_int i = 0; i < 5; ++i)
     {
@@ -343,18 +348,20 @@ HRESULT CUI_Talk_Daphrona::Ready_Children()
         else
             pBG_Line->Setting_Texture(1, CClientInstance::GetInstance()->Get_AtlasUV("T_Img_Line_ItemInfo.png", 1));
         m_BG_Line.push_back(pBG_Line);
+        Add_Child(pBG_Line);
     }
 
     m_pNameBG = static_cast<CUI_WorldTex*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_WorldTex"), &Desc));
     CHECK_NULLPTR(m_pNameBG, E_FAIL);
     m_pNameBG->Setting_Texture(6, TEXT("Prototype_Component_UI_Common_MenuList"));
-
+    Add_Child(m_pNameBG);
 
     for (_int i = 0; i < 3; ++i)
     {
         CUI_WorldList* pBG_Line = static_cast<CUI_WorldList*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_WorldList"), &Desc));
         CHECK_NULLPTR(pBG_Line, E_FAIL);
         m_pList.push_back(pBG_Line);
+        Add_Child(pBG_Line);
     }
     
     Update_Selete();
@@ -366,11 +373,18 @@ HRESULT CUI_Talk_Daphrona::Ready_Children()
         CHECK_NULLPTR(pGuide, E_FAIL);
 
         m_Key_Guide.push_back(pGuide);
+        Add_Child(pGuide);
     }
 
     m_Key_Guide[0]->Setting_Texture(4, CClientInstance::GetInstance()->Get_AtlasUV("Loading_4.png", 4));
     m_Key_Guide[1]->Setting_Texture(3, CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_KB_F.png", 3));
     m_Key_Guide[2]->Setting_Texture(4, CClientInstance::GetInstance()->Get_AtlasUV("Loading_3.png", 4));
+
+    m_pName->Set_Text(TEXT("다프로나"));
+    m_pName->Set_TextTag(TEXT("Blade_Medium_20"));
+    m_pText1->Set_TextTag(TEXT("Blade_Medium_20"));
+    m_pText2->Set_TextTag(TEXT("Blade_Medium_20"));
+    m_pText3->Set_TextTag(TEXT("Blade_Medium_20"));
 
     return S_OK;
 }
@@ -537,6 +551,34 @@ void CUI_Talk_Daphrona::List_Selete()
     }
 }
 
+void CUI_Talk_Daphrona::UI_Animation(_float fTimeDelta)
+{
+    if (m_eAnimState == UIANIMSTATE::ON)
+    {
+        m_fAccTime += fTimeDelta * 3.f;
+        __super::Update_Alpha(m_fAccTime);
+
+        if (m_fAccTime >= 1.f)
+        {
+            m_fAccTime = 1.f;
+            m_eAnimState = UIANIMSTATE::END;
+        }
+    }
+    else if (m_eAnimState == UIANIMSTATE::OFF)
+    {
+        m_fAccTime -= fTimeDelta * 3.f;
+        __super::Update_Alpha(m_fAccTime);
+
+        if (m_fAccTime <= 0.f)
+        {
+            m_fAccTime = 0.f;
+            m_eAnimState = UIANIMSTATE::END;
+            m_IsUpdate = false;
+            m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
+        }
+    }
+}
+
 CUI_Talk_Daphrona* CUI_Talk_Daphrona::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     CUI_Talk_Daphrona* pInstance = new CUI_Talk_Daphrona(pDevice, pContext);
@@ -566,13 +608,22 @@ void CUI_Talk_Daphrona::Free()
     Safe_Release(m_pTextureCom);
     Safe_Release(m_pVIBufferCom);
 
+    Safe_Release(m_pName);
     Safe_Release(m_pText1);
     Safe_Release(m_pText2);
     Safe_Release(m_pText3);
-    Safe_Release(m_pName);
-    Safe_Release(m_pNameBG);
+
     for (auto pLine : m_BG_Line)
         Safe_Release(pLine);
-
     m_BG_Line.clear();
+
+    for (auto pGuide : m_Key_Guide)
+        Safe_Release(pGuide);
+    m_Key_Guide.clear();
+
+    for (auto pList : m_pList)
+        Safe_Release(pList);
+    m_pList.clear();
+
+    Safe_Release(m_pNameBG);
 }

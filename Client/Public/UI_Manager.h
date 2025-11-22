@@ -3,7 +3,7 @@
 #include "Client_Defines.h"
 
 NS_BEGIN(Engine)
-class UIObject;
+class CUIObject;
 NS_END
 
 NS_BEGIN(Client)
@@ -29,6 +29,7 @@ public:
 	CUIObject*					Get_RootUI(const _wstring& szRootUIName);
 	HRESULT						UI_UpdateSwitch(const _wstring& szRootUIName, void* pArg);
 	HRESULT						Add_RootUI(const _wstring& szRootUIName, CUIObject* pUIObject);
+    HRESULT						Release_RootUI(const _wstring& szRootUIName);
 
 	//Event 관련
 	HRESULT						Add_Event(const _wstring& strLayerTag, const _wstring& strEventTag, std::function<void()> Event);

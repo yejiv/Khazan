@@ -204,7 +204,11 @@ HRESULT CFont_Renderer::DrawTextBox(CFont_Face* pFont, const _wstring& strText, 
         }
 
         _float xpos = cursorX + g->iBearingX;
-        _float ypos = cursorY - (g->iHeight - g->iBearingY);
+        _float ypos = cursorY - (g->iHeight * 0.4f ) ;
+
+        if (ch == L'.' || ch == L',')
+            ypos = cursorY + (g->iHeight * 1.f);
+
         _float w = (_float)g->iWidth;
         _float h = (_float)g->iHeight;
 
@@ -309,10 +313,8 @@ HRESULT CFont_Renderer::DrawTextWorld(CFont_Face* pFont, const _wstring& strText
         _float bottom = top + g->iHeight * worldScale;
 
         if (ch == L'.' || ch == L',')
-        {
             top = (cursorY - (g->iHeight * 1.5f)) * worldScale;
-            bottom = top + g->iHeight * worldScale;
-        }
+
         verts.push_back({ {x,      top,    0}, {g->u0, g->v1} });
         verts.push_back({ {x,      bottom, 0}, {g->u0, g->v0} });
         verts.push_back({ {x + w,  bottom, 0}, {g->u1, g->v0} });

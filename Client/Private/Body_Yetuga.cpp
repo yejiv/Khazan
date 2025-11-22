@@ -25,8 +25,7 @@ _float3 CBody_Yetuga::Get_BonePoint(const _char* BoneName)
 
 _float4* CBody_Yetuga::Get_BonePointEX(const _char* BoneName)
 {
-    _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix(BoneName);
-    _matrix ConvertMatrix = XMLoadFloat4x4(&BoneMatrix);
+    _matrix ConvertMatrix = XMLoadFloat4x4(m_pLockOnBoneMatrix);
     _matrix WorldMatrix = m_pOwnerTransform->Get_WorldMatrix();
 
     _matrix MulMatrix = ConvertMatrix * WorldMatrix;
@@ -97,6 +96,8 @@ HRESULT CBody_Yetuga::Initialize_Clone(void* pArg)
     m_pLH_BodyCom->Collision_Active(false);
     m_pRH_BodyCom->Collision_Active(false);
     m_pBack_BodyCom->Collision_Active(false);
+
+    m_pLockOnBoneMatrix = m_pModelCom->Get_BoneMatrix("FX_Body_ExpGained");
 
     return S_OK;
 }

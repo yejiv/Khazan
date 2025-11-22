@@ -44,9 +44,6 @@ void CLevel_Title::Update(_float fTimeDelta)
 
 			m_isOpenLevel = true;
 		}
-			
-
-			
 	}
 	if (m_eNextLevel != LEVEL::END)
 	{
@@ -58,6 +55,7 @@ void CLevel_Title::Update(_float fTimeDelta)
 			m_isOpenLevel = true;
 		}
 	}
+
 
 	return;
 }
@@ -110,6 +108,107 @@ HRESULT CLevel_Title::Ready_Layer_UI()
 
     if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
         TEXT("../Bin/Resources/UI/UIData/Tutorial.json"))))
+        return E_FAIL;
+
+
+    Desc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
+    Desc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
+    Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+    Desc.szName = "Announce";
+    Desc.fDepth = 2;
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
+        ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Announce_Result"), TIME_CHANNEL::WORLD, &Desc)))
+        return E_FAIL;
+
+    Desc.vLocalSize = { 1042.f, 168.f };
+    Desc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
+    Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+    Desc.szName = "Announce";
+    Desc.fDepth = 2;
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
+        ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Announce_Over"), TIME_CHANNEL::WORLD, &Desc)))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/HUD.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/Inven.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/MainMenu.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/BladeNexus.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/State.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/ItemInfo_Other.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/ItemInfo_Weapon.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/ItemInfo_Equip.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/BossHp.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/HUD_Amount.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/BladeNexus_Map.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/Skill.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/Skill_Info.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/SkillQuickSlot.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/Lachryma_Info.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/Gold_Info.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/Store.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/Popup_Reset.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/Popup_Item.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/Collection_Info.json"))))
         return E_FAIL;
 
 	return S_OK;

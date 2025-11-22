@@ -9,8 +9,7 @@ _float4x4* CBody_Imp_Melee::Get_BoneMatrix_Ptr(const _char* pBoneName)
 
 _float4* CBody_Imp_Melee::Get_BonePointEX(const _char* pBoneName)
 {
-    _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix(pBoneName);
-    _matrix ConvertMatrix = XMLoadFloat4x4(&BoneMatrix);
+    _matrix ConvertMatrix = XMLoadFloat4x4(m_pLockOnBoneMatrix);
     _matrix WorldMatrix = m_pOwnerTransform->Get_WorldMatrix();
 
     _matrix MulMatrix = ConvertMatrix * WorldMatrix;
@@ -71,6 +70,8 @@ HRESULT CBody_Imp_Melee::Initialize_Clone(void* pArg)
 
     if (FAILED(Ready_Components()))
         return E_FAIL;
+
+    m_pLockOnBoneMatrix = m_pModelCom->Get_BoneMatrix("FX_Body_ExpGained");
 
     return S_OK;
 }

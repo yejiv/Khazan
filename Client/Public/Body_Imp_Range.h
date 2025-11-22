@@ -59,6 +59,7 @@ private:
     CTransform*             m_pOwnerTransform = { nullptr };
 
     _bool					m_isOnAttackCollision = { false };
+    _float4x4*              m_pLockOnBoneMatrix = { nullptr };
 
 private:
     _float4					m_vLockOnPoint = {};
