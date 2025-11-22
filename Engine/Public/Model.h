@@ -54,6 +54,14 @@ private:
         _uint			iSelectedAnimIndex = { 0 }; // 키값에 해당하는 어떤 애니메이션인지
     }ANIMATIONSET_INFO;
 
+    struct FRAME_SNAPSHOT
+    {
+        vector<_float4x4> BoneCombinedMatrices;    // Combined 행렬들
+        _float fTrackPosition;                     // 애니메이션 위치
+        _uint iAnimIndex;                          // 애니메이션 인덱스
+    };
+
+
 private:
     CModel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     CModel(const CModel& Prototype);
@@ -135,11 +143,14 @@ public:
     void			Update_PartLocalBones();
 
 
-public:
+public: 
     /* 모든 뼈 정보 */
     const vector<_float4x4>& Get_CachedBoneMatrices() const { return m_CachedBoneMatrices; }
 
-
+    /* After Image */
+    void Capture_CurrentFrame();
+    _bool Restore_Frame(_uint iFrameBack);  // 몇 프레임 전으로 복원
+    void Clear_FrameHistory() { m_FrameHistory.clear(); }
 
 
     /* 임시 */
@@ -168,8 +179,8 @@ private:
     vector<class CMeshMaterial*>		m_Materials;
     _uint								m_iNumMaterials = {};
 
-    /* 뼈 */
-    vector<class CBone*>				m_Bones;
+	/* 뼈 */
+	vector<class CBone*>				m_Bones;
     vector<_float4x4>                   m_CachedBoneMatrices;  // 캐싱용(애니메이션이 끝난 모든 뼈정보를 저장)
 
     /* 애니메이션 */
@@ -208,13 +219,18 @@ private:
     _bool								m_isSharedSkeleton = { false };
 
 
-    /* const val */
-    const _float					m_fBaseRootMotionBlendTime = { 0.15f };   /* 만약 블랜딩 시간이 안써져있으면 사용할 기본 블랜딩 시간 */
-    _float3							m_vDelta = {};
+	/* const val */
+	const _float					    m_fBaseRootMotionBlendTime = { 0.15f };   /* 만약 블랜딩 시간이 안써져있으면 사용할 기본 블랜딩 시간 */
+	_float3							    m_vDelta = {};
 
 
     /* 최적화용 */
-    vector<_int>      m_PartToMasterIndex;     // [partBone] = masterBoneIndex or -1
+    vector<_int>                        m_PartToMasterIndex;     // [partBone] = masterBoneIndex or -1
+
+    /* after image  */
+    deque<FRAME_SNAPSHOT>               m_FrameHistory;  // 최근 N프레임 저장
+    _uint                               m_iMaxHistoryFrames = { 10 };     // 최대 저장 프레임 수
+
 private:
     /* 루트 모션 */
     void			Check_RootMotion();
