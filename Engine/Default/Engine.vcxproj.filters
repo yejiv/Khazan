@@ -804,9 +804,6 @@
     <ClCompile Include="..\Private\UtilitySelector_Node.cpp">
       <Filter>01.Utility\95.AI\BehaviorTree\Node\Composite\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\MotionTrail.cpp">
-      <Filter>01.Utility\03.Component\MotionTrail</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\VIBuffer.cpp">
       <Filter>01.Utility\03.Component\VIBuffer</Filter>
     </ClCompile>
@@ -1243,9 +1240,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\UtilityScore.h">
       <Filter>01.Utility\95.AI\BehaviorTree\Node\Utility_Action\Helper</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\MotionTrail.h">
-      <Filter>01.Utility\03.Component\MotionTrail</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

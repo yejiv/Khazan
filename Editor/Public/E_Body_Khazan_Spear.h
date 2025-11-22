@@ -42,7 +42,7 @@ public:
     virtual HRESULT     Render_MotionTrail() override;
 	void			    Render_Part(CModel* pModel);
 	void			    Render_Part_Shadow(CModel* pModel);
-    void                Render_Part_MotionTrail(CModel* pModel, class CShader* pShader);
+    void                Render_Part_MotionTrail(CModel* pModel);
 
 public:
 	CModel*             Get_Model() { return m_pModelCom; }
@@ -77,6 +77,15 @@ private:
     // Shader
     _bool               m_isEnableEdge = { true };
     _float              m_fAlpha = { 1.f };
+
+    _float              m_fRimPower = {};
+    _float              m_fRimIntensity = {};
+    _float              m_fEmissiveIntensity = {};
+    _bool               m_isEnableMotionTrail = {};
+    _float              m_fColorRatio = {};
+    _float              m_fColorUpdateSpeed = {};
+    _bool               m_isIndividualColor = {};
+    _float              m_fTimeAcc = {};
 
     // Motion Trail Test
     CMotionTrail*       m_pMotionTrailCom = { nullptr };

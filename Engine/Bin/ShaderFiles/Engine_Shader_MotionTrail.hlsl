@@ -7,7 +7,7 @@ matrix g_BoneMatrices[512];
 Texture2D g_NormalTexture;
 
 float2 g_vLifeTime;
-float4 g_vStartColor, g_vTargetColor;
+float3 g_vStartColor, g_vTargetColor;
 float g_fRimPower, g_fRimLightIntensity, g_fEmissiveIntensity;
 float4 g_vCamPosition;
 

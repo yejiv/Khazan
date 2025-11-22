@@ -54,6 +54,17 @@ private:
         _uint			iSelectedAnimIndex = { 0 }; // 키값에 해당하는 어떤 애니메이션인지
     }ANIMATIONSET_INFO;
 
+    typedef struct tagFrameSnapshot
+    {
+        vector<_float4x4>   BoneCombinedMatrices;   // Combined 행렬들
+        _float4x4           OwnerWorldMatrix;       // 월드 행렬들
+        _float              fTrackPosition;         // 애니메이션 위치
+        _uint               iAnimIndex;             // 애니메이션 인덱스
+        _float2             vLifeTime;
+        _float3             vStartColor;
+        _float3             vTargetColor;
+    }FRAME_SNAPSHOT;
+
 private:
     CModel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     CModel(const CModel& Prototype);
@@ -139,8 +150,22 @@ public:
     /* 모든 뼈 정보 */
     const vector<_float4x4>& Get_CachedBoneMatrices() const { return m_CachedBoneMatrices; }
 
+    /* After Image */
+    void Capture_CurrentFrame();
+    _bool Restore_Frame(_uint iFrameBack);  // 몇 프레임 전으로 복원
+    void Clear_FrameHistory() { m_FrameHistory.clear(); }
+    HRESULT Bind_PrevFrameWorldMatrix(class CShader* pShader, const _char* pConstantName, _uint iFrameBack);
+    HRESULT Bind_Snapshot_ShaderResources(class CShader* pShader, _uint iFrameBack);
+    void Set_SnapshotInterval(_float fInterval) { m_fInterval = fInterval; }
+    void Set_LifeTime(_float fMaxLifeTime) { m_fMaxLifeTime = fMaxLifeTime; }
+    void Set_StartColor(const _float3& vColor) { m_vStartColor = vColor; }
+    void Set_TargetColor(const _float3& vColor) { m_vTargetColor = vColor; }
+    void Set_EnableAfterImage(_bool isEnable) { m_isEnableAfterImage = isEnable; }
 
-
+    /* 모든 뼈 정보 저장 */
+    void            Cache_CurrentBoneMatrices();
+    /* 모든 뼈 정보 복원 */
+    void            Restore_CurrentBoneMatrices();
 
     /* 임시 */
     void            WarmupAnimations();
@@ -215,6 +240,17 @@ private:
 
     /* 최적화용 */
     vector<_int>      m_PartToMasterIndex;     // [partBone] = masterBoneIndex or -1
+
+    /* after image  */
+    deque<FRAME_SNAPSHOT>               m_FrameHistory = {};  // 최근 N프레임 저장
+    _uint                               m_iMaxHistoryFrames = { 10 };     // 최대 저장 프레임 수
+    _float                              m_fInterval = {};
+    _float                              m_fSnashotTimeAcc = {};
+    _float                              m_fMaxLifeTime = {};
+    _float3                             m_vStartColor = {};
+    _float3                             m_vTargetColor = {};
+    _bool                               m_isEnableAfterImage = {};
+
 private:
     /* 루트 모션 */
     void			Check_RootMotion();
@@ -231,9 +267,6 @@ private:
     void			Trigger_Event(string strEventKey, ANIM_EVENT_TRIGGERTYPE eTriggerType);
     void			Reset_EventTrigger();
     string			MakeCallbackKey(const string& strEventKey, ANIM_EVENT_TRIGGERTYPE eTriggerType);
-
-    /* 모든 뼈 정보 저장 */
-    void            Cache_CurrentBoneMatrices();
 
 private:
     HRESULT Ready_Meshes(MODEL_DATA& data);
