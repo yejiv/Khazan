@@ -916,6 +916,15 @@
     <Filter Include="94.ClientInstance\Sequence\Data">
       <UniqueIdentifier>{5d6e7d11-f747-47ff-92d3-10d825f8e6c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\06.Statue">
+      <UniqueIdentifier>{26f47c47-e35a-431d-9e0d-910ad89fd29f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\06.Statue\Plate">
+      <UniqueIdentifier>{0b035fc6-b8e8-4896-a71c-f1be4650760d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\06.Statue\Deco">
+      <UniqueIdentifier>{f51ceb8e-518a-4b6c-aa25-c5a6459d6268}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1778,6 +1787,15 @@
     <ClInclude Include="..\Public\Sequence_Data_Manager.h">
       <Filter>94.ClientInstance\Sequence\Data</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Statue.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\06.Statue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Statue_Plate.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\06.Statue\Plate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Statue_Deco.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\06.Statue\Deco</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2619,6 +2637,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\Sequence_Data_Manager.cpp">
       <Filter>94.ClientInstance\Sequence\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Statue.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\06.Statue</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Statue_Plate.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\06.Statue\Plate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Statue_Deco.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\06.Statue\Deco</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

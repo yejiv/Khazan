@@ -217,6 +217,9 @@
     <ClInclude Include="..\Public\Map_Spawn.h" />
     <ClInclude Include="..\Public\Map_Terrain.h" />
     <ClInclude Include="..\Public\Slate_Switch.h" />
+    <ClInclude Include="..\Public\Statue.h" />
+    <ClInclude Include="..\Public\Statue_Deco.h" />
+    <ClInclude Include="..\Public\Statue_Plate.h" />
     <ClInclude Include="..\Public\Trigger.h" />
     <ClInclude Include="..\Public\Map_TestPlayer.h" />
     <ClInclude Include="..\Public\MeshTrail.h" />
@@ -295,6 +298,9 @@
     <ClCompile Include="..\Private\Map_Spawn.cpp" />
     <ClCompile Include="..\Private\Map_Terrain.cpp" />
     <ClCompile Include="..\Private\Slate_Switch.cpp" />
+    <ClCompile Include="..\Private\Statue.cpp" />
+    <ClCompile Include="..\Private\Statue_Deco.cpp" />
+    <ClCompile Include="..\Private\Statue_Plate.cpp" />
     <ClCompile Include="..\Private\Trigger.cpp" />
     <ClCompile Include="..\Private\Map_TestPlayer.cpp" />
     <ClCompile Include="..\Private\MeshTrail.cpp" />

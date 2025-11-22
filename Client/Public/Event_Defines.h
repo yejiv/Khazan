@@ -27,20 +27,31 @@ namespace Client {
 		enum class EVENT_STATE { NONE, ON, OFF };	
 		EVENT_STATE eState{ EVENT_STATE::NONE };
 
+        XMFLOAT4 vPosition{};
+
 		void On() { eState = EVENT_STATE::ON; }
 		void Off() { eState = EVENT_STATE::OFF; }
 		void None() { eState = EVENT_STATE::NONE; }
+        void SetPosition(XMFLOAT4 vPos) { vPosition = vPos; }
 
 		_bool isOn() const { return eState == EVENT_STATE::ON; }
 		_bool isOff() const { return eState == EVENT_STATE::OFF; }
 
 
-		static EventObject OnEvent()
-		{
-			EventObject e = {};
-			e.On();
-			return e;
-		}
+        static EventObject OnEvent()
+        {
+            EventObject e = {};
+            e.On();
+            return e;
+        }
+
+        static EventObject OnEvent_Player(XMFLOAT4 vPosition)
+        {
+            EventObject e = {};
+            e.SetPosition(vPosition);
+            e.On();
+            return e;
+        }
 
 		static EventObject OffEvent()
 		{
@@ -49,12 +60,12 @@ namespace Client {
 			return e;
 		}
 
-		static EventObject NoneEvent()
-		{
-			EventObject e = {};
-			e.None();
-			return e;
-		}
+        static EventObject NoneEvent()
+        {
+            EventObject e = {};
+            e.None();
+            return e;
+        }
 	};
 
 
@@ -103,6 +114,12 @@ namespace Client {
         bool isFinal() { return true == isActiveGear2; }
     };
 
+    struct EventStatue {
+        XMFLOAT4 vPosition{};
+        XMFLOAT4 vPlayerPosition{};
+    };
+
+
     //상호작용 오브젝트 어떤 종류인지 받아오는 이벤트 구조체(오브젝트->플레이어)
 	struct EventInteractType {
 		enum EVENT_STATE { BEGIN, END, NONE };
@@ -115,6 +132,7 @@ namespace Client {
 		EventTombStone TSEvent{};
         EventCave CaveEvent{};
         EventLever LeverEvent{};
+        EventStatue StatueEvent{};
 
 		void End_Event() { isEvent = false; }
 
