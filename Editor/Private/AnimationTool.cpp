@@ -1631,42 +1631,43 @@ void CAnimationTool::Update_DataModel(const string& strPath)
         ifs.close();
     }
 
-    // 2. Animation JSON 로드 (파일이 있으면)
-    if (filesystem::exists(strAnimJsonPath))
-    {
-        ifstream ifs(strAnimJsonPath);
-        if (!ifs.is_open())
-        {
-            MSG_BOX(TEXT("Animation JSON 파일 열기 실패"));
-            return;
-        }
+    /* 빠르게 텍스쳐만 바꾸기 위해서  */
+    //// 2. Animation JSON 로드 (파일이 있으면)
+    //if (filesystem::exists(strAnimJsonPath))
+    //{
+    //    ifstream ifs(strAnimJsonPath);
+    //    if (!ifs.is_open())
+    //    {
+    //        MSG_BOX(TEXT("Animation JSON 파일 열기 실패"));
+    //        return;
+    //    }
 
-        JSON j;
-        ifs >> j;
-        ifs.close();
+    //    JSON j;
+    //    ifs >> j;
+    //    ifs.close();
 
-        // 애니메이션 교체
-        tempModelData.vecAnimation = j.get<vector<ANIMATION_DATA>>();
-        tempModelData.iNumAnimations = static_cast<_uint>(tempModelData.vecAnimation.size());
-    }
+    //    // 애니메이션 교체
+    //    tempModelData.vecAnimation = j.get<vector<ANIMATION_DATA>>();
+    //    tempModelData.iNumAnimations = static_cast<_uint>(tempModelData.vecAnimation.size());
+    //}
 
-    // 3. Summary Animation JSON 로드 (파일이 있으면)
-    if (filesystem::exists(strAnimSummaryJsonPath))
-    {
-        ifstream ifs(strAnimSummaryJsonPath);
-        if (!ifs.is_open())
-        {
-            MSG_BOX(TEXT("Summary Animation JSON 파일 열기 실패"));
-            return;
-        }
+    //// 3. Summary Animation JSON 로드 (파일이 있으면)
+    //if (filesystem::exists(strAnimSummaryJsonPath))
+    //{
+    //    ifstream ifs(strAnimSummaryJsonPath);
+    //    if (!ifs.is_open())
+    //    {
+    //        MSG_BOX(TEXT("Summary Animation JSON 파일 열기 실패"));
+    //        return;
+    //    }
 
-        JSON j;
-        ifs >> j;
-        ifs.close();
+    //    JSON j;
+    //    ifs >> j;
+    //    ifs.close();
 
-        // 애니메이션 세트 교체
-        tempModelData.vecAnimationSets = j.get<ANIMATION_SUMMARIES_DATA>().vecAnimationSets;
-    }
+    //    // 애니메이션 세트 교체
+    //    tempModelData.vecAnimationSets = j.get<ANIMATION_SUMMARIES_DATA>().vecAnimationSets;
+    //}
 
 
     // 4. Material JSON 로드 (파일이 있으면)
@@ -1689,16 +1690,16 @@ void CAnimationTool::Update_DataModel(const string& strPath)
     }
 
     // 4. 업데이트된 데이터를 .dat에 다시 저장
+
+    ofstream ofs(strDatPath, ios::binary);
+    if (!ofs.is_open())
     {
-        ofstream ofs(strDatPath, ios::binary);
-        if (!ofs.is_open())
-        {
-            MSG_BOX(TEXT(".dat 파일 쓰기 실패"));
-            return;
-        }
-        tempModelData.SaveBinary(ofs);
-        ofs.close();
+        MSG_BOX(TEXT(".dat 파일 쓰기 실패"));
+        return;
     }
+    tempModelData.SaveBinary(ofs);
+    ofs.close();
+
 
     // 성공 메시지
     _tchar szMessage[MAX_PATH] = {};
