@@ -44,9 +44,6 @@ void CLevel_Title::Update(_float fTimeDelta)
 
 			m_isOpenLevel = true;
 		}
-			
-
-			
 	}
 	if (m_eNextLevel != LEVEL::END)
 	{
@@ -58,6 +55,7 @@ void CLevel_Title::Update(_float fTimeDelta)
 			m_isOpenLevel = true;
 		}
 	}
+
 
 	return;
 }
@@ -111,6 +109,7 @@ HRESULT CLevel_Title::Ready_Layer_UI()
     if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
         TEXT("../Bin/Resources/UI/UIData/Tutorial.json"))))
         return E_FAIL;
+
 
     Desc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
     Desc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };

@@ -39,6 +39,10 @@ HRESULT CLevel_HeinMach::Initialize()
         //return S_OK;
         //}));
 
+    m_pGameInstance->Add_FireTask([&]() {
+        CHECK_FAILED(Ready_Layer_MapObject_DEST(TEXT("Layer_DEST"), TEXT(""), LEVEL::HEINMACH), E_FAIL);
+        });
+
     CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
 
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
@@ -76,7 +80,8 @@ HRESULT CLevel_HeinMach::Initialize()
 
     CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
-    CHECK_FAILED(Ready_Layer_MapObject_DEST(TEXT("Layer_DEST"), TEXT(""), LEVEL::HEINMACH), E_FAIL);
+    
+    
 
     CClientInstance::GetInstance()->Fade_Out();
 
@@ -679,6 +684,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
 
             MonsterDesc.WorldMatrix = WorldMatrix;
             MonsterDesc.strName = MonsterData.MonsterKey[i];
+            MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::HEINMACH);
 
             if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
                 ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Yetuga"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
@@ -696,6 +702,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
 
             MonsterDesc.WorldMatrix = WorldMatrix;
             MonsterDesc.strName = MonsterData.MonsterKey[i];
+            MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::HEINMACH);
 
             if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
                 ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
@@ -713,6 +720,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
 
             MonsterDesc.WorldMatrix = WorldMatrix;
             MonsterDesc.strName = MonsterData.MonsterKey[i];
+            MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::HEINMACH);
 
             if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
                 ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Melee"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
@@ -1216,19 +1224,53 @@ HRESULT CLevel_HeinMach::Ready_Map_Decal(const _wstring& strLayerTag, const _tch
 
 HRESULT CLevel_HeinMach::Ready_Layer_MapObject_DEST(const _wstring& strLayerTag, const _tchar* pDataFilename, LEVEL eCurrentLevel)
 {
-    CProp_Object::PROP_OBJECT_DESC ObjectDesc = {};
+    CProp_Object::PROP_OBJECT_DESC FenceDesc = {};
 
-    ObjectDesc.eLevel = eCurrentLevel;
+    FenceDesc.eLevel = eCurrentLevel;
 
-    memcpy(ObjectDesc.szModelName, TEXT("Prototype_GameObject_Prop_Dest"), sizeof(ObjectDesc.szModelName));
+    MAPOBJECT_PROPERTIES PropProperties1 = {};
 
-    MAPOBJECT_PROPERTIES PropProperties = {};
-
-    ObjectDesc.Properties = PropProperties;
+    FenceDesc.Properties = PropProperties1;
+    _float4x4 WorldMatrix{};
+    XMStoreFloat4x4(&WorldMatrix, XMMatrixIdentity());
+    WorldMatrix._41 = 4.f;
+    WorldMatrix._43 = 4.f;
+    FenceDesc.WorldMatrix = WorldMatrix;
 
     if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Dest"), TIME_CHANNEL::WORLD, &ObjectDesc)))
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Fence"), TIME_CHANNEL::WORLD, &FenceDesc)))
         return E_FAIL;
+
+    CProp_Object::PROP_OBJECT_DESC PotDesc = {};
+
+    PotDesc.eLevel = eCurrentLevel;
+
+    MAPOBJECT_PROPERTIES PropProperties2 = {};
+
+    PotDesc.Properties = PropProperties2;
+    XMStoreFloat4x4(&WorldMatrix, XMMatrixIdentity());
+    WorldMatrix._43 = 4.f;
+    PotDesc.WorldMatrix = WorldMatrix;
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Pot"), TIME_CHANNEL::WORLD, &PotDesc)))
+        return E_FAIL;
+
+    CProp_Object::PROP_OBJECT_DESC BarrelDesc = {};
+
+    BarrelDesc.eLevel = eCurrentLevel;
+
+    MAPOBJECT_PROPERTIES PropProperties3 = {};
+
+    BarrelDesc.Properties = PropProperties3;
+    XMStoreFloat4x4(&WorldMatrix, XMMatrixIdentity());
+    WorldMatrix._43 = 10.f;
+    BarrelDesc.WorldMatrix = WorldMatrix;
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Barrel"), TIME_CHANNEL::WORLD, &BarrelDesc)))
+        return E_FAIL;
+
     return S_OK;
 }
 

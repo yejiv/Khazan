@@ -12,6 +12,7 @@ using SPEARSKILL = CPlayerData_Manager::SPEARSKILL;
 NS_BEGIN(Engine)
 class CUIObject;
 class CCamera;
+class ISeqInstance;
 NS_END
 
 NS_BEGIN(Client)
@@ -145,6 +146,14 @@ public:
     void Unlock_BladeNexus(_uint iID);
 #pragma endregion
 
+#pragma region SEQ_DATA_MANAGER
+public:
+    HRESULT Push_Sequence(_wstring strName, class ISeqInstance* pSequence);
+    class ISeqInstance* Find_Sequence(_wstring strName);
+    HRESULT Remove_Sequence(_wstring strName);
+    void Seq_Clear();
+#pragma endregion
+
 #ifdef _DEBUG
 #pragma region CAMERA_CONTROLLER
 	void CameraTool_Clear();
@@ -165,7 +174,8 @@ private:
 	class CCamera_Manager*	m_pCamera_Manager = { nullptr };
 	CPlayerData_Manager* m_pPlayerData_Manager = { nullptr };
     class CInteract_Manager* m_pInteract_Manager = { nullptr };
-	
+    class CSequence_Data_Manager* m_pSeq_Data_Manager = { nullptr };
+
      _bool                  m_isPlayerInput = { true };
 #ifdef _DEBUG
 	class CDebug_Manager* m_pDebug_Manager = { nullptr };

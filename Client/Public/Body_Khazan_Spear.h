@@ -77,6 +77,8 @@ public:
 
     _bool       Is_SpearFullExtension() const { return m_isSpearFullExtension; }
 
+    _bool       Get_IsAttackCollisionActive() { return m_isSpearTipActive; }
+
 private:
     class CClientInstance* m_pClientInstance = { nullptr };
 	class CTransform*   m_pParentTransform = { nullptr };   

@@ -850,6 +850,15 @@
     <Filter Include="02.GameObject\UI\Talk\ETC">
       <UniqueIdentifier>{55df7305-3d2c-44dd-b7b6-c1662eb8b06f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\05.Destructible\00.Fence">
+      <UniqueIdentifier>{60d71390-c36e-4a2e-b7a9-3af2cfc5e95f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\05.Destructible\01.Pot">
+      <UniqueIdentifier>{9e38f38a-b213-4ca5-afd6-442488ef9386}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\05.Destructible\02.Barrel">
+      <UniqueIdentifier>{ed27f2e0-6605-4c35-9751-1766c8f13952}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObject\UI\Talk\Dangin">
       <UniqueIdentifier>{8981053b-8450-4443-b8ae-af849f832612}</UniqueIdentifier>
     </Filter>
@@ -858,6 +867,63 @@
     </Filter>
     <Filter Include="02.GameObject\UI\Amount_Info">
       <UniqueIdentifier>{e971ff75-65a5-470d-8e04-1da488b58d20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\Controller\Viper">
+      <UniqueIdentifier>{1906c35b-a577-4287-9dd6-bb9bd83a25dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\StateMachine\Viper">
+      <UniqueIdentifier>{db4c8cc7-f0f3-4f01-94bd-22fa55346ad3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper">
+      <UniqueIdentifier>{2d02213e-d5bf-4f39-b143-aeae92b5fe90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Viper">
+      <UniqueIdentifier>{2bb74306-f76e-49de-a0b7-66b20f90e692}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Viper\Body">
+      <UniqueIdentifier>{19576cf9-0a98-450b-b75c-1d35e0544ea0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\00.Idle">
+      <UniqueIdentifier>{b74d1d1a-619f-4cc7-bbcd-412004cbe8cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\01.Walk">
+      <UniqueIdentifier>{07c9ae3d-8478-4902-b800-d05b2aa800d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\02.RUN">
+      <UniqueIdentifier>{6f992bce-94df-4889-8419-e9f054150a12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\05.LockOn">
+      <UniqueIdentifier>{3dbd6f2b-e898-4a0c-8f20-195892dd7aab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\04.Slow2Hit">
+      <UniqueIdentifier>{fc7051b0-2885-437c-a3ae-f998f6e67801}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\03.Quick2Hit">
+      <UniqueIdentifier>{2ca3a299-6a24-4f79-9d10-0e26b20274ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\05.Destructible\03.Obelisk">
+      <UniqueIdentifier>{a76472b6-094c-4637-8e48-f1a4b47f53f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\Viper">
+      <UniqueIdentifier>{def6f9d1-130e-4704-a8e9-f5510a4d2b91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\Viper\SecondPhase">
+      <UniqueIdentifier>{ec2cad1b-4fe0-4ae6-b08e-51144b1086f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\Sequence">
+      <UniqueIdentifier>{c3f87c67-3414-4bd3-8813-6a1208d4a786}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\Sequence\Data">
+      <UniqueIdentifier>{5d6e7d11-f747-47ff-92d3-10d825f8e6c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\06.Statue">
+      <UniqueIdentifier>{26f47c47-e35a-431d-9e0d-910ad89fd29f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\06.Statue\Plate">
+      <UniqueIdentifier>{0b035fc6-b8e8-4896-a71c-f1be4650760d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\06.Statue\Deco">
+      <UniqueIdentifier>{f51ceb8e-518a-4b6c-aa25-c5a6459d6268}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObject\UI\Store">
       <UniqueIdentifier>{74fac50a-1664-46c6-aa70-699efe565b76}</UniqueIdentifier>
@@ -1407,9 +1473,6 @@
     <ClInclude Include="..\public\Skill_Slot.h">
       <Filter>02.GameObject\UI\Slot</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\AS_LockOn_Yetuga.h">
-      <Filter>92.AI\State\Yetuga\17.LOCKON</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Head_Yetuga.h">
       <Filter>02.GameObject\Creature\Monster\Yetuga\Head</Filter>
     </ClInclude>
@@ -1688,6 +1751,15 @@
     <ClInclude Include="..\public\UI_WorldFX.h">
       <Filter>02.GameObject\UI\Talk\ETC</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Fence.h">
+      <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\00.Fence</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Pot.h">
+      <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\01.Pot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Barrel.h">
+      <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\02.Barrel</Filter>
+    </ClInclude>
     <ClInclude Include="..\public\UI_Talk_Dangin.h">
       <Filter>02.GameObject\UI\Talk\Dangin</Filter>
     </ClInclude>
@@ -1696,6 +1768,54 @@
     </ClInclude>
     <ClInclude Include="..\public\Amount_Info.h">
       <Filter>02.GameObject\UI\Amount_Info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AI_Controller_Viper.h">
+      <Filter>92.AI\Controller\Viper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FSM_Viper.h">
+      <Filter>92.AI\StateMachine\Viper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Idle_Viper.h">
+      <Filter>92.AI\State\Viper\00.Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Body_Viper.h">
+      <Filter>02.GameObject\Creature\Monster\Viper\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Quick2Hit_Viper.h">
+      <Filter>92.AI\State\Viper\03.Quick2Hit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Slow2Hit_VIper.h">
+      <Filter>92.AI\State\Viper\04.Slow2Hit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_LockOn_Viper.h">
+      <Filter>92.AI\State\Viper\05.LockOn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_LockOn_Yetuga.h">
+      <Filter>92.AI\State\Yetuga\17.LOCKON</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Run_Viper.h">
+      <Filter>92.AI\State\Viper\02.RUN</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Walk_Viper.h">
+      <Filter>92.AI\State\Viper\01.Walk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Obelisk.h">
+      <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\03.Obelisk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sequence_Viper_SecondPhase.h">
+      <Filter>04.Sequence\Viper\SecondPhase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sequence_Data_Manager.h">
+      <Filter>94.ClientInstance\Sequence\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Statue.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\06.Statue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Statue_Plate.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\06.Statue\Plate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Statue_Deco.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\06.Statue\Deco</Filter>
     </ClInclude>
     <ClInclude Include="..\public\UI_Store.h">
       <Filter>02.GameObject\UI\Store</Filter>
@@ -1717,6 +1837,9 @@
     </ClInclude>
     <ClInclude Include="..\public\UI_Announce_Warning.h">
       <Filter>02.GameObject\UI\Announce\Warning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Viper.h">
+      <Filter>02.GameObject\Creature\Monster\Viper</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2228,9 +2351,6 @@
     <ClCompile Include="..\private\Skill_Slot.cpp">
       <Filter>02.GameObject\UI\Slot</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\AS_LockOn_Yetuga.cpp">
-      <Filter>92.AI\State\Yetuga\17.LOCKON</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Head_Yetuga.cpp">
       <Filter>02.GameObject\Creature\Monster\Yetuga\Head</Filter>
     </ClCompile>
@@ -2503,6 +2623,15 @@
     <ClCompile Include="..\private\UI_WorldFX.cpp">
       <Filter>02.GameObject\UI\Talk\ETC</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Fence.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\00.Fence</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Pot.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\01.Pot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Barrel.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\02.Barrel</Filter>
+    </ClCompile>
     <ClCompile Include="..\private\UI_Talk_Dangin.cpp">
       <Filter>02.GameObject\UI\Talk\Dangin</Filter>
     </ClCompile>
@@ -2511,6 +2640,57 @@
     </ClCompile>
     <ClCompile Include="..\private\Amount_Info.cpp">
       <Filter>02.GameObject\UI\Amount_Info</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AI_Controller_Viper.cpp">
+      <Filter>92.AI\Controller\Viper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FSM_Viper.cpp">
+      <Filter>92.AI\StateMachine\Viper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Idle_Viper.cpp">
+      <Filter>92.AI\State\Viper\00.Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Viper.cpp">
+      <Filter>02.GameObject\Creature\Monster\Viper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Body_Viper.cpp">
+      <Filter>02.GameObject\Creature\Monster\Viper\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Quick2Hit_Viper.cpp">
+      <Filter>92.AI\State\Viper\03.Quick2Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Slow2Hit_VIper.cpp">
+      <Filter>92.AI\State\Viper\04.Slow2Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_LockOn_Viper.cpp">
+      <Filter>92.AI\State\Viper\05.LockOn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_LockOn_Yetuga.cpp">
+      <Filter>92.AI\State\Yetuga\17.LOCKON</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Run_Viper.cpp">
+      <Filter>92.AI\State\Viper\02.RUN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Walk_Viper.cpp">
+      <Filter>92.AI\State\Viper\01.Walk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Obelisk.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\03.Obelisk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_Viper_SecondPhase.cpp">
+      <Filter>04.Sequence\Viper\SecondPhase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_Data_Manager.cpp">
+      <Filter>94.ClientInstance\Sequence\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Statue.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\06.Statue</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Statue_Plate.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\06.Statue\Plate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Statue_Deco.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\06.Statue\Deco</Filter>
     </ClCompile>
     <ClCompile Include="..\private\UI_Store.cpp">
       <Filter>02.GameObject\UI\Store</Filter>

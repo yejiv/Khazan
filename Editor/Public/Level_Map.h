@@ -121,6 +121,9 @@ private:
     _int m_iInteractEventID = {};
     _int m_iFixEventID = {};
 
+    _int m_iUnLockRotation = {};
+    _int m_iFixUnLockRotation = {};
+
 #pragma endregion
 
 #pragma region Object 수정 변수
