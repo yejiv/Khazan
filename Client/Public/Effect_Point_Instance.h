@@ -51,6 +51,7 @@ public:
 	virtual void					SetTwinkleData(void* pArg) override;
 	virtual void					SetUpwardData(void* pArg) override;
 	virtual void					SetScrollData(void* pArg) override;
+    virtual void					SetStop() override;
 
 private:
 	HRESULT							Ready_Component() override;

@@ -39,18 +39,19 @@ private:
 	_uint					m_iNumCascades = {};
 
 	// Render Flag
-	_bool					m_isRenderShadow = { true };
+	_bool					m_isRenderShadow = { false };
 	_bool					m_isRenderSSAO = { true };
 	_bool					m_isEnableEmissive = {};
 	_bool					m_isEnableBloom = {};
-	_bool					m_isEnableFog = { true };
+	_bool					m_isEnableFog = { false };
 	_bool					m_isEnableToonShade = {};
 	_bool					m_isEnableOutline = {};
 	_bool					m_isEnableVignette = {};
     _bool                   m_isEnableLUT = {};
     _bool                   m_isEnableRadialBlur = {};
     _bool                   m_isEnableMotionBlur = {};
-    _bool                   m_isEnableRimLight = {};
+    _bool                   m_isEnableEdge = { true };
+    _bool                   m_isEnableRimLight = { true };
 
 	// SSAO
 	SSAO_CONFIG				m_SSAOConfig = {};
@@ -90,6 +91,9 @@ private:
 
     // Rim Light
     RIM_LIGHT_DESC          m_RimLightDesc = {};
+
+    // Motion Trail
+    _float                  m_fGhostAlpha = { 1.f };
 
 private:
 	// 파라미터 ( 1. 등록할 레이어 태그 | 2. 데이터 파일 이름 | 3. 현재 로드할 레벨 | 4. 맵 타입 ( 안넣으면 폴더 내부 X ) )

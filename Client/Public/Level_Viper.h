@@ -44,6 +44,9 @@ private:
 	HRESULT Ready_Trigger(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
     HRESULT Ready_Sequence();
 
+    HRESULT Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, const _tchar* pDataFileName, _uint iSubLV, LEVEL eCurrentLevel, KHAZAN_MAP eMap);
+    HRESULT Ready_Layer_Monster_Viper(const _wstring& strLayerTag);
+
 public:
 	static CLevel_Viper* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;

@@ -147,6 +147,11 @@ HRESULT CClientInstance::Add_UIRender(UI_RENDER_TYPE eRender, CUIObject* pUIObje
 	return m_pUI_Manager->Add_UIRender(eRender, pUIObject);
 }
 
+HRESULT CClientInstance::Release_RootUI(const _wstring& szRootUIName)
+{
+    return m_pUI_Manager->Release_RootUI(szRootUIName);
+}
+
 HRESULT CClientInstance::UI_UpdateSwitch(const _wstring& szRootUIName, void* pArg)
 {
 	return m_pUI_Manager->UI_UpdateSwitch(szRootUIName, pArg);

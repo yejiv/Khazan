@@ -48,6 +48,7 @@ public:
 	virtual void			SetTwinkleData(void* pArg);
 	virtual void			SetUpwardData(void* pArg);
 	virtual void			SetScrollData(void* pArg);
+	virtual void			SetStop();
 	void					SetData(_uint eventType, _float fDurTime);
 	_bool					IsActive() { return m_bRunning; }
 	void					SetParentsMatrix(const _float4x4* pMatrix) { m_pParentMatrix = pMatrix; }

@@ -73,6 +73,9 @@ void CEffect_Prefab::Priority_Update(_float fTimeDelta)
             case EffectEventType::SCROLL_SPEAD:
                 m_Children[track.iElementIdx]->SetUpwardData(&track.fScrollSpeed);
                 break;
+            case EffectEventType::DISSOLVE:
+                m_Children[track.iElementIdx]->SetStop();
+                break;
             }
             m_bEventTriggered[i] = true;
         }

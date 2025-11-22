@@ -56,6 +56,8 @@ private:
 	HRESULT						Ready_CB();
 	HRESULT						Ready_ComputeShader();
 
+    HRESULT                     Start_ComputeShader(CS_PASS pass);
+
 private:
 	_bool						IsFinish();
 

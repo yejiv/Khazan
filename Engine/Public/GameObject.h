@@ -9,7 +9,7 @@ class ENGINE_DLL CGameObject abstract : public CBase
 public:
 	typedef struct tagGameObject : public CTransform::TRANSFORM_DESC
 	{
-
+        _uint iLevelIndex = {};
 	}GAMEOBJECT_DESC;
 
 protected:
@@ -30,7 +30,8 @@ public:
 	virtual HRESULT Deferred_Render(ID3D11DeviceContext* pDeferredContext);
 	virtual HRESULT Render_Shadow() { return S_OK; }
 	virtual HRESULT Render_Outline() { return S_OK; }
-    virtual HRESULT Render_Motion() { return S_OK; }
+    virtual HRESULT Render_MotionVector() { return S_OK; }
+    virtual HRESULT Render_MotionTrail() { return S_OK; }
 
 public:
 	void Set_IsPool(_bool isPool) { m_isPool = isPool; }

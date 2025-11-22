@@ -235,14 +235,22 @@ HRESULT CItemInfo_Weapon::Update_Switch(void* pArg)
 	pDesc->isEquip ? m_pEquip_Text->Update_Visible(true) : m_pEquip_Text->Update_Visible(false);
 
     const ITEM_DATA* pData = CClientInstance::GetInstance()->Get_Data<ITEM_DATA>(pDesc->iItemIndex);
-    
-    if(pData->iType == 4)
-        m_pEffect_Info->Set_LocalPos({0.f,-10.f}, this);
-    else
-        m_pEffect_Info->Set_LocalPos({ 0.f,-80.f }, this);
 
-    m_pEffect_Info->Set_Text(pDesc->iEffect_Type, pDesc->iEffect_Value);
-	if (m_iItemIndex == pDesc->iItemIndex)
+    if (pDesc->iEffect_Type != 0)
+    {
+        if (pData->iType == 4)
+            m_pEffect_Info->Set_LocalPos({ 0.f,-10.f }, this);
+        else
+            m_pEffect_Info->Set_LocalPos({ 0.f,-80.f }, this);
+
+        m_pEffect_Info->Set_Text(pDesc->iEffect_Type, pDesc->iEffect_Value);
+        m_pEffect_Info->Update_Visible(true);
+    }
+    else
+    {
+        m_pEffect_Info->Update_Visible(false);
+    }
+    if (m_iItemIndex == pDesc->iItemIndex)
 		return S_OK;
 
 	const EQUIPITEM_DATA* pEffectData = CClientInstance::GetInstance()->Get_Data<EQUIPITEM_DATA>(pData->iEffect_ID);

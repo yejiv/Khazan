@@ -22,26 +22,8 @@ CVIBuffer_Mesh_Instance::CVIBuffer_Mesh_Instance(const CVIBuffer_Mesh_Instance& 
 
 void CVIBuffer_Mesh_Instance::Reset()
 {
-    COMPUTE_PASS_DESC PassDesc{};
-    PassDesc.SRVs.push_back(m_pSRV);
-    PassDesc.SRVs.push_back(m_pSRVNoise);
-    PassDesc.UAVs.push_back(m_pUAV);
-    PassDesc.UAVs.push_back(m_pUAVSpeed);
-    PassDesc.ConstantBuffers.push_back(m_pCB);
-    m_pContext->CSSetSamplers(0, 1, &m_pLinearWrapSampler);
-    _uint iNumThreadPerGroup = 256;
-    _uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
-    PassDesc.x = iNumGroups;
-    PassDesc.y = 1;
-    PassDesc.z = 1;
-
-    CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
-    JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET)];
-    JobDesc.PassDesc = PassDesc;
-
     m_bLoop = m_sData.bIsLoop;
-    m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
-
+    Start_ComputeShader(CS_PASS::RESET);
     m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
 }
 
@@ -164,17 +146,7 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 		XMStoreFloat4(&pInstanceVertices[i].vRight, XMVector3Rotate(XMVectorSet(fScale, 0.f, 0.f, 0.f), rotation));
 		XMStoreFloat4(&pInstanceVertices[i].vUp, XMVector3Rotate(XMVectorSet(0.f, fScale, 0.f, 0.f), rotation));
 		XMStoreFloat4(&pInstanceVertices[i].vLook, XMVector3Rotate(XMVectorSet(0.f, 0.f, fScale * pMeshDesc->fSizeRatio, 0.f), rotation));
-
-		//_matrix		RotationMatrix = XMMatrixRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(m_pGameInstance->Rand(0, 360)));
-
-		//XMStoreFloat4(&pInstanceVertices[i].vRight, XMVector4Transform(XMVectorSet(fScale, 0.f, 0.f, 0.f), RotationMatrix));
-		//XMStoreFloat4(&pInstanceVertices[i].vUp, XMVector4Transform(XMVectorSet(0.f, fScale, 0.f, 0.f), RotationMatrix));
-		//XMStoreFloat4(&pInstanceVertices[i].vLook, XMVector4Transform(XMVectorSet(0.f, 0.f, fScale * pMeshDesc->fSizeRatio, 0.f), RotationMatrix));
-
-		//XMStoreFloat4(&pInstanceVertices[i].vRight, XMVectorSet(1.f, 0.f, 0.f, 0.f) * fScale);
-		//XMStoreFloat4(&pInstanceVertices[i].vUp, XMVectorSet(0.f, 1.f, 0.f, 0.f) * fScale);
-		//XMStoreFloat4(&pInstanceVertices[i].vLook, XMVectorSet(0.f, 0.f, 1.f, 0.f) * fScale);
-
+         
 		if (m_sData.IsCircle)
 		{
 			_vector Dir = XMVectorSet(m_pGameInstance->Rand(-1.f, 1.f), 0.f, m_pGameInstance->Rand(-1.f, 1.f), 0.f);
@@ -233,27 +205,9 @@ _bool CVIBuffer_Mesh_Instance::Update(_float fTimeDelta)
 		pPointInstanceCB->bIsLoop = m_bLoop;
 		pPointInstanceCB->vSpawnRange = m_sData.vRange;
 		m_pContext->Unmap(m_pCB, 0);
-	}
-
-	COMPUTE_PASS_DESC PassDesc{};
-	PassDesc.SRVs.push_back(m_pSRV);
-    PassDesc.SRVs.push_back(m_pSRVNoise);
-	PassDesc.UAVs.push_back(m_pUAV);
-	PassDesc.UAVs.push_back(m_pUAVSpeed);
-	PassDesc.ConstantBuffers.push_back(m_pCB);
-    m_pContext->CSSetSamplers(0, 1, &m_pLinearWrapSampler);
-	_uint iNumThreadPerGroup = 256;
-	_uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
-	PassDesc.x = iNumGroups;
-	PassDesc.y = 1;
-	PassDesc.z = 1;
-
-	CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
-	JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::MOVE)];
-	JobDesc.PassDesc = PassDesc;
-
-	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
-
+	} 
+	
+    Start_ComputeShader(CS_PASS::MOVE); 
 	m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
 
 	return m_bLoop ? false : IsFinish();
@@ -261,25 +215,7 @@ _bool CVIBuffer_Mesh_Instance::Update(_float fTimeDelta)
 
 void CVIBuffer_Mesh_Instance::UpdateGravity(_float fTimeDelta)
 {
-	COMPUTE_PASS_DESC PassDesc{};
-    PassDesc.SRVs.push_back(m_pSRV);
-    PassDesc.SRVs.push_back(m_pSRVNoise);
-	PassDesc.UAVs.push_back(m_pUAV);
-	PassDesc.UAVs.push_back(m_pUAVSpeed);
-	PassDesc.ConstantBuffers.push_back(m_pCB);
-    m_pContext->CSSetSamplers(0, 1, &m_pLinearWrapSampler);
-	_uint iNumThreadPerGroup = 256;
-	_uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
-	PassDesc.x = iNumGroups;
-	PassDesc.y = 1;
-	PassDesc.z = 1;
-
-	CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
-	JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::GRAVITY)];
-	JobDesc.PassDesc = PassDesc;
-
-	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
-
+    Start_ComputeShader(CS_PASS::GRAVITY);
 	m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
 }
 
@@ -298,24 +234,7 @@ void CVIBuffer_Mesh_Instance::UpdateTurbulence(_float fTimeDelta, _float fAccTim
 		m_pContext->Unmap(m_pCB, 0);
 	}
 
-	COMPUTE_PASS_DESC PassDesc{};
-	PassDesc.SRVs.push_back(m_pSRV);
-	PassDesc.SRVs.push_back(m_pSRVNoise);
-	PassDesc.UAVs.push_back(m_pUAV);
-	PassDesc.ConstantBuffers.push_back(m_pCB);
-    m_pContext->CSSetSamplers(0, 1, &m_pLinearWrapSampler);
-	_uint iNumThreadPerGroup = 256;
-	_uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
-	PassDesc.x = iNumGroups;
-	PassDesc.y = 1;
-	PassDesc.z = 1;
-
-	CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
-	JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::TURBULENCE)];
-	JobDesc.PassDesc = PassDesc;
-
-	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
-
+    Start_ComputeShader(CS_PASS::TURBULENCE); 
 	m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
 }
 
@@ -328,26 +247,8 @@ void CVIBuffer_Mesh_Instance::Setting_Speed(SPEED_VALUE type, _float2 range)
 		pInstanceSpeedCB->iSpeedType = static_cast<_uint>(type);
 		pInstanceSpeedCB->fSpeedRange = range;
 		m_pContext->Unmap(m_pCB, 0);
-	}
-
-	COMPUTE_PASS_DESC PassDesc{};
-    PassDesc.SRVs.push_back(m_pSRV);
-    PassDesc.SRVs.push_back(m_pSRVNoise);
-	PassDesc.UAVs.push_back(m_pUAV);
-	PassDesc.UAVs.push_back(m_pUAVSpeed);
-	PassDesc.ConstantBuffers.push_back(m_pCB);
-    m_pContext->CSSetSamplers(0, 1, &m_pLinearWrapSampler);
-	_uint iNumThreadPerGroup = 256;
-	_uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
-	PassDesc.x = iNumGroups;
-	PassDesc.y = 1;
-	PassDesc.z = 1;
-
-	CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
-	JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::UPDATE_SPEED)];
-	JobDesc.PassDesc = PassDesc;
-
-	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
+	} 
+    Start_ComputeShader(CS_PASS::UPDATE_SPEED); 
 }
 
 void CVIBuffer_Mesh_Instance::Remove_Speed(SPEED_VALUE type)
@@ -361,24 +262,7 @@ void CVIBuffer_Mesh_Instance::Remove_Speed(SPEED_VALUE type)
 		m_pContext->Unmap(m_pCB, 0);
 	}
 
-	COMPUTE_PASS_DESC PassDesc{};
-	PassDesc.SRVs.push_back(m_pSRV);
-    PassDesc.SRVs.push_back(m_pSRVNoise);
-	PassDesc.UAVs.push_back(m_pUAV);
-	PassDesc.UAVs.push_back(m_pUAVSpeed);
-	PassDesc.ConstantBuffers.push_back(m_pCB);
-    m_pContext->CSSetSamplers(0, 1, &m_pLinearWrapSampler);
-	_uint iNumThreadPerGroup = 256;
-	_uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
-	PassDesc.x = iNumGroups;
-	PassDesc.y = 1;
-	PassDesc.z = 1;
-
-	CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
-	JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET_SPEED)];
-	JobDesc.PassDesc = PassDesc;
-
-	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
+    Start_ComputeShader(CS_PASS::RESET_SPEED);
     m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
 }
 
@@ -393,24 +277,7 @@ void CVIBuffer_Mesh_Instance::Remove_Speed()
         m_pContext->Unmap(m_pCB, 0);
     }
 
-    COMPUTE_PASS_DESC PassDesc{};
-    PassDesc.SRVs.push_back(m_pSRV);
-    PassDesc.SRVs.push_back(m_pSRVNoise);
-    PassDesc.UAVs.push_back(m_pUAV);
-    PassDesc.UAVs.push_back(m_pUAVSpeed);
-    PassDesc.ConstantBuffers.push_back(m_pCB);
-    m_pContext->CSSetSamplers(0, 1, &m_pLinearWrapSampler);
-    _uint iNumThreadPerGroup = 256;
-    _uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
-    PassDesc.x = iNumGroups;
-    PassDesc.y = 1;
-    PassDesc.z = 1;
-
-    CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
-    JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET_SPEED)];
-    JobDesc.PassDesc = PassDesc;
-
-    m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
+    Start_ComputeShader(CS_PASS::RESET_SPEED);
     m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
 }
 
@@ -595,6 +462,29 @@ HRESULT CVIBuffer_Mesh_Instance::Ready_ComputeShader()
     m_pDevice->CreateSamplerState(&samplerDesc, &m_pLinearWrapSampler);
 
 	return S_OK;
+}
+HRESULT CVIBuffer_Mesh_Instance::Start_ComputeShader(CS_PASS pass)
+{
+    COMPUTE_PASS_DESC PassDesc{};
+    PassDesc.SRVs.push_back(m_pSRV);
+    PassDesc.SRVs.push_back(m_pSRVNoise);
+    PassDesc.UAVs.push_back(m_pUAV);
+    PassDesc.UAVs.push_back(m_pUAVSpeed);
+    PassDesc.ConstantBuffers.push_back(m_pCB);
+    m_pContext->CSSetSamplers(0, 1, &m_pLinearWrapSampler);
+    _uint iNumThreadPerGroup = 256;
+    _uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
+    PassDesc.x = iNumGroups;
+    PassDesc.y = 1;
+    PassDesc.z = 1;
+
+    CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
+    JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(pass)];
+    JobDesc.PassDesc = PassDesc;
+
+    m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true); 
+
+    return S_OK;
 }
 _bool CVIBuffer_Mesh_Instance::IsFinish()
 { 

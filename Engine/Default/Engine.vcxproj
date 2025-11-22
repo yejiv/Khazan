@@ -185,6 +185,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\BlackBoard.cpp" />
     <ClCompile Include="..\private\CSM.cpp" />
     <ClCompile Include="..\private\MotionBlur.cpp" />
+    <ClCompile Include="..\private\MotionTrail.cpp" />
     <ClCompile Include="..\private\RadialBlur.cpp" />
     <ClCompile Include="..\private\GaussianBlur.cpp" />
     <ClCompile Include="..\Private\Body.cpp" />
@@ -274,6 +275,8 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\Transform.cpp" />
     <ClCompile Include="..\private\UIObject.cpp" />
     <ClCompile Include="..\private\UIParent.cpp" />
+    <ClCompile Include="..\Private\UtilityAction_Node.cpp" />
+    <ClCompile Include="..\Private\UtilitySelector_Node.cpp" />
     <ClCompile Include="..\private\VIBuffer.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Cell.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Cube.cpp" />
@@ -352,6 +355,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Effect_Manager.h" />
     <ClInclude Include="..\public\LUT.h" />
     <ClInclude Include="..\public\MotionBlur.h" />
+    <ClInclude Include="..\public\MotionTrail.h" />
     <ClInclude Include="..\Public\Prefab.h" />
     <ClInclude Include="..\public\Fog.h" />
     <ClInclude Include="..\public\Engine_Sequence.h" />
@@ -447,6 +451,9 @@ call Copy.bat</Command>
     <ClInclude Include="..\public\Transform.h" />
     <ClInclude Include="..\public\UIObject.h" />
     <ClInclude Include="..\public\UIParent.h" />
+    <ClInclude Include="..\Public\UtilityAction_Node.h" />
+    <ClInclude Include="..\Public\UtilityScore.h" />
+    <ClInclude Include="..\Public\UtilitySelector_Node.h" />
     <ClInclude Include="..\public\VIBuffer.h" />
     <ClInclude Include="..\Public\VIBuffer_Cell.h" />
     <ClInclude Include="..\Public\VIBuffer_Cube.h" />
@@ -473,6 +480,7 @@ call Copy.bat</Command>
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Cell.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Decal.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Model_Instance_Compute.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_MotionTrail.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Point_Instance_Compute.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Deferred.hlsl" />
   </ItemGroup>

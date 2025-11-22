@@ -7,7 +7,9 @@ class CUI_Inven final : public CUI_Panel
 {
 public:
 	enum class UIANIMSTATE { ON, OFF, END };
-	enum class TapGroup {WEAPON, ARMOR, ACC, OTHER, QUICK, END};
+    enum class INVEN_STATE {DEFAULT, EQUIP, SALE, END};
+
+	enum class TapGroup {WEAPON, ARMOR, ACC, OTHER, QUICK, SALE, END};
 	enum class ITEMTYPE { SPEAR, GREATE, HEAD, TOP, GLOVES, BOTTOM, SHOES, NECK, RING, ATIVE, COLLECTION, MATERIAL, QUICK_1, QUICK_2, QUICK_3, QUICK_4, QUICK_5, QUICK_6, END};
 	enum class EVENT_TYPE { TAP, ITEM_SELETE, ITEM_EQUIP, ITEM_UNEQUIP, SLOT_EQUIP, ITEM_RELEASE, END};
 	
@@ -27,7 +29,7 @@ public:
 	{
 		string szName;
 		_bool isOpen;
-		_bool isEquip;
+        INVEN_STATE eState;
 	}INVEN_ONOFF_DESC;
 
 private:
@@ -60,8 +62,13 @@ private:
 	class CUI_Atlas_Icon*				m_pEIcon = { nullptr };
     class CInven_State_Panel*           m_pState_Panel = {nullptr };
 
-	vector<class CUI_Atlas_Icon*>		m_pGuideIcon;
-	vector<class CUI_TextBox*>			m_pGuideText;
+    class CUI_Atlas_Icon*               m_pGuideIconESC_Center;
+    class CUI_TextBox*                  m_pGuideTextESC_Center;
+	class CUI_Atlas_Icon*       		m_pGuideIconESC;
+	class CUI_TextBox*	        		m_pGuideTextESC;
+    class CUI_Atlas_Icon*               m_pGuideIconF;
+    class CUI_TextBox*                  m_pGuideTextF;
+
 
 	UIANIMSTATE							m_eAnimState = { UIANIMSTATE::END };
 	
@@ -79,7 +86,7 @@ private:
 	_int								m_iSeleteSlotIndex = {};
 
 	string								m_strReturnName = {};
-	_bool								m_bIsEquip = {};
+    INVEN_STATE                         m_eState = { INVEN_STATE::END };
 private:
 	virtual	HRESULT						Ready_Prototype();
 	HRESULT								Ready_Object();
