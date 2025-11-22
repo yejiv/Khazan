@@ -1779,9 +1779,6 @@
     <ClInclude Include="..\Public\AS_Idle_Viper.h">
       <Filter>92.AI\State\Viper\00.Idle</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Viper.h">
-      <Filter>02.GameObject\Creature\Monster\Viper</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Body_Viper.h">
       <Filter>02.GameObject\Creature\Monster\Viper\Body</Filter>
     </ClInclude>
@@ -1841,6 +1838,9 @@
     </ClInclude>
     <ClInclude Include="..\public\UI_Announce_Warning.h">
       <Filter>02.GameObject\UI\Announce\Warning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Viper.h">
+      <Filter>02.GameObject\Creature\Monster\Viper</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

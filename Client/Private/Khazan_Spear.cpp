@@ -130,6 +130,15 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
 #pragma region 3D UI 테스트
     CUIObject::UIOBJECT_DESC Desc;
 
+    //Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
+    //Desc.vLocalPos = { 0.f, 0.f };
+    //Desc.vLocalSize = { 1.7f, 1.7f };
+    //Desc.szName = "TalkUI";
+    //m_pTalkUI = static_cast<CUI_Talk_Daphrona*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Daphrona"), &Desc));
+
+  /*  if (m_pTalkUI == nullptr)
+        return E_FAIL;*/
+
     Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
     Desc.vLocalPos = { 0.f, 0.f };
     Desc.vLocalSize = { 1.7f, 1.7f };
@@ -159,7 +168,7 @@ void CKhazan_Spear::Priority_Update(_float fTimeDelta)
     if (m_pGameInstance->Key_Down(DIK_K))
         m_pTraderTalkUI->On_Panel();
 
-    m_pTalkUI->Priority_Update(fTimeDelta);
+    //m_pTalkUI->Priority_Update(fTimeDelta);
     __super::Priority_Update(fTimeDelta);
 
     if (m_pGameInstance->Key_Down(DIK_P))
@@ -182,6 +191,7 @@ void CKhazan_Spear::Update(_float fTimeDelta)
     m_pTalkUI->Update(fTimeDelta);
     m_pDanginTalkUI->Update(fTimeDelta);
     m_pTraderTalkUI->Update(fTimeDelta);
+
     if (m_isEnableControl)
     {
         m_fTimeAcc += fTimeDelta;
@@ -273,7 +283,6 @@ void CKhazan_Spear::Late_Update(_float fTimeDelta)
     m_pTalkUI->Late_Update(fTimeDelta);
     m_pDanginTalkUI->Late_Update(fTimeDelta);
     m_pTraderTalkUI->Late_Update(fTimeDelta);
-
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 

@@ -39,6 +39,7 @@ HRESULT CViper::Initialize_Clone(void* pArg)
 
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(-32.365f, -29.5f, 198.409f, 1.f));
     m_pCharVirCom->Set_Position(XMVectorSet(-32.365f, -29.5f, 198.409f, 1.f));
+
     if (FAILED(Ready_PartObjects()))
         return E_FAIL;
 
@@ -259,11 +260,11 @@ HRESULT CViper::Ready_AnimEvent()
     CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
     if (nullptr == pModel)
         return E_FAIL;
-
-    pModel->Register_Event("FootStepEvent", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+    pModel->Register_Event("WalkStepEvent", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             _uint iStepCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName,"WalkStepCount");
-            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName,"WalkStepCount", iStepCnt + 2);
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName,"WalkStepCount", iStepCnt + 1);
+            cout << "Step1111111111111111111111111111111111111111" << endl;
         });
 
   

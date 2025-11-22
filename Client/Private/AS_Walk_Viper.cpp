@@ -26,8 +26,10 @@ void CAS_Walk_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTi
     CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
     CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
     CGameObject* pTarget = pBB->Get_Value<CGameObject*>(pViper->Get_Name(), "Target");
-    _float fLimit = pBB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
-    pViper->Get_Controller()->AI_MoveTo(pViper,pTarget,m_fSpeed,fLimit - 0.5f,fTimeDelta);
+    _float fTargetDist = pBB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+    _float fMoveRange = pBB->Get_Value<_float>(pViper->Get_Name(), "AttackRange") - 0.5f;
+
+    pViper->Get_Controller()->AI_MoveTo(pOwner, pTarget, fMoveRange, m_fSpeed, fTimeDelta);
 
     pModel->Play_Animation(fTimeDelta);
 
