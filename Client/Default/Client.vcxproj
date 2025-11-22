@@ -453,6 +453,7 @@
     <ClInclude Include="..\public\UI_Tutorial.h" />
     <ClInclude Include="..\public\UI_WorldTextBox.h" />
     <ClInclude Include="..\Public\Viper.h" />
+    <ClInclude Include="..\Public\VerticalGate.h" />
     <ClInclude Include="..\Public\Viper_Trigger.h" />
     <ClInclude Include="..\Public\Yetuga.h" />
     <ClInclude Include="Client.h" />
@@ -746,6 +747,7 @@
     <ClCompile Include="..\private\UI_Tutorial.cpp" />
     <ClCompile Include="..\private\UI_WorldTextBox.cpp" />
     <ClCompile Include="..\Private\Viper.cpp" />
+    <ClCompile Include="..\Private\VerticalGate.cpp" />
     <ClCompile Include="..\Private\Viper_Trigger.cpp" />
     <ClCompile Include="..\Private\Yetuga.cpp" />
     <ClCompile Include="Client.cpp" />

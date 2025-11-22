@@ -35,6 +35,8 @@
 #include "Statue_Plate.h"               // 조각상 퍼즐 발판
 #include "Statue_Deco.h"                // 조각상 퍼즐 석상
 
+#include "VerticalGate.h"               // 수직 차단봉
+
 // Trigger
 #include "Trigger.h"
 #include "HeinMach_Trigger.h"

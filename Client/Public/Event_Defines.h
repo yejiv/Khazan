@@ -17,6 +17,8 @@ namespace Client {
         GATE_GEAR0,
         GATE_GEAR1,
         SKILL_RESET,
+        STATUE_PUZZLE0,
+        STATUE_PUZZLE1,
 		END };
 
 	// Structs
@@ -120,6 +122,47 @@ namespace Client {
         XMFLOAT4 vPlayerPosition{};
     };
 
+    struct EventVerticalGate
+    {
+        bool isActiveStatue[4] = { false, false, false, false };
+
+        void SetActiveStatue(unsigned int iStatueIndex)
+        {
+            isActiveStatue[iStatueIndex] = true;
+        }
+
+        void SetDeActiveStatue(unsigned int iStatueIndex)
+        {
+            isActiveStatue[iStatueIndex] = false;
+        }
+
+        bool isSection0()       // 4개 조각상
+        {
+            for (_uint i = 0; i < 4; ++i)
+            {
+                if (false == isActiveStatue[i]) return false;
+            }
+
+            return true;
+        }
+        bool isSection1()       // 3개 조각상
+        {
+            for (_uint i = 0; i < 3; ++i)
+            {
+                if (false == isActiveStatue[i]) return false;
+            }
+
+            return true;
+        }
+
+        bool isUnLockGate(unsigned int iGateEventID)
+        {
+            if (0 == iGateEventID)
+                return isSection0();
+            if (1 == iGateEventID)
+                return isSection1();
+        }
+    };
 
     //상호작용 오브젝트 어떤 종류인지 받아오는 이벤트 구조체(오브젝트->플레이어)
 	struct EventInteractType {

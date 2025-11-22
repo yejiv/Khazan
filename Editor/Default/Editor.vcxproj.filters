@@ -277,6 +277,9 @@
     <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\06.Statue\Plate">
       <UniqueIdentifier>{86ea869c-0278-4d60-81d0-5ef6705a01e9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\07.VerticalGate">
+      <UniqueIdentifier>{862ee731-fa08-4f38-9dd8-5db82902b110}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -525,6 +528,9 @@
     <ClInclude Include="..\Public\Statue.h">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\06.Statue</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\VerticalGate.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\07.VerticalGate</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -767,6 +773,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Statue.cpp">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\06.Statue</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VerticalGate.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\07.VerticalGate</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

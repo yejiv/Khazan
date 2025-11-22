@@ -26,7 +26,7 @@ HRESULT CElevatorS::Initialize_Prototype()
 HRESULT CElevatorS::Initialize_Clone(void* pArg)
 {
     SMALL_ELEVATOR_DESC* pDesc = static_cast<SMALL_ELEVATOR_DESC*>(pArg);
-    CHECK_NULLPTR(pArg, E_FAIL);
+    CHECK_NULLPTR(pDesc, E_FAIL);
 
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 

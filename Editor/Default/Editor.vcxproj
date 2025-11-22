@@ -237,6 +237,7 @@
     <ClInclude Include="..\public\Terrain_Shader.h" />
     <ClInclude Include="..\Public\BladeNexus.h" />
     <ClInclude Include="..\Public\TombStone.h" />
+    <ClInclude Include="..\Public\VerticalGate.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="EditorPch.h" />
     <ClInclude Include="framework.h" />
@@ -318,6 +319,7 @@
     <ClCompile Include="..\private\Terrain_Shader.cpp" />
     <ClCompile Include="..\Private\BladeNexus.cpp" />
     <ClCompile Include="..\Private\TombStone.cpp" />
+    <ClCompile Include="..\Private\VerticalGate.cpp" />
     <ClCompile Include="Editor.cpp" />
     <ClCompile Include="EditorPch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

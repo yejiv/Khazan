@@ -1173,6 +1173,12 @@ HRESULT CLoader::Loading_For_Embars_Model()
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Symbol/WP_CTR_Statue_Stone_002/WP_CTR_Statue_Stone_002.dat")), E_FAIL);
 #pragma endregion
 
+#pragma region 수직 차단봉
+    /* Prototype_Component_Model_VerticalGate */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_VerticalGate"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_TDL_Gate_Open_004/WIP_TDL_Gate_Open_004.dat")), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 트리거
@@ -1259,6 +1265,12 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
     /* Prototype_GameObject_Prop_Statue_Deco */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Statue_Deco"),
         CStatue_Deco::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 수직 차단봉
+    /* Prototype_GameObject_Prop_VerticalGate */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_VerticalGate"),
+        CVerticalGate::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 #pragma endregion
