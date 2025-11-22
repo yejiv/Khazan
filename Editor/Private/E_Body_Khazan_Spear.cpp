@@ -62,6 +62,14 @@ void CE_Body_Khazan_Spear::Update(_float fTimeDelta)
     m_isFinishedAnimation = m_pModelCom->Play_Animation(fTimeDelta);
 
     Update_CombinedMatrix();
+
+    if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
+    {
+        vector<vector<_float4x4>> PartsBoneMatrices;
+        PartsBoneMatrices.push_back(m_pModelCom->Get_CachedBoneMatrices());
+
+        m_pMotionTrailCom->Update(PartsBoneMatrices, m_CombinedWorldMatrix, fTimeDelta);
+    }
 }
 
 void CE_Body_Khazan_Spear::Late_Update(_float fTimeDelta)
@@ -71,6 +79,13 @@ void CE_Body_Khazan_Spear::Late_Update(_float fTimeDelta)
 
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
         return;
+
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::MOTIONTRAIL, this)))
+        return;
+
+    //  if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
+    //      if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::MOTIONTRAIL, this)))
+    //          return;
 }
 
 HRESULT CE_Body_Khazan_Spear::Render()
@@ -142,6 +157,31 @@ HRESULT CE_Body_Khazan_Spear::Render_Shadow()
     return S_OK;
 }
 
+HRESULT CE_Body_Khazan_Spear::Render_MotionTrail()
+{
+    CShader* pMTShader = m_pMotionTrailCom->Get_Shader();
+
+    if (FAILED(pMTShader->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix)))
+        return E_FAIL;
+
+    _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+    for (size_t i = 0; i < iNumMeshes; i++)
+    {
+        if (FAILED(m_pModelCom->Bind_BoneMatrices(pMTShader, "g_BoneMatrices", i)))
+            return E_FAIL;
+    }
+
+    Render_Part_MotionTrail(m_pModelCom_Arm, pMTShader);
+    Render_Part_MotionTrail(m_pModelCom_Face, pMTShader);
+    Render_Part_MotionTrail(m_pModelCom_Hair, pMTShader);
+    Render_Part_MotionTrail(m_pModelCom_Leg, pMTShader);
+    Render_Part_MotionTrail(m_pModelCom_Shoes, pMTShader);
+    Render_Part_MotionTrail(m_pModelCom_Torso, pMTShader);
+
+    return S_OK;
+}
+
 void CE_Body_Khazan_Spear::Render_Part(CModel* pModel)
 {
     if (nullptr == pModel)
@@ -185,6 +225,28 @@ void CE_Body_Khazan_Spear::Render_Part_Shadow(CModel* pModel)
     }
 }
 
+void CE_Body_Khazan_Spear::Render_Part_MotionTrail(CModel* pModel, CShader* pShader)
+{
+    if (nullptr == pModel)
+        return;
+
+    pModel->Update_PartLocalBones();
+
+    _uint iNumMeshes = pModel->Get_NumMeshes();
+
+    for (size_t i = 0; i < iNumMeshes; i++)
+    {
+        pModel->Bind_Materials(pShader, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
+
+        // 마스터의 본을 자동으로 사용
+        if (FAILED(pModel->Bind_BoneMatrices(pShader, "g_BoneMatrices", i)))
+            continue;
+
+        m_pMotionTrailCom->Render();
+        pModel->Render(i);
+    }
+}
+
 HRESULT CE_Body_Khazan_Spear::Ready_Components()
 {
    // LEVEL eCurrentLevel = CClientInstance::GetInstance()->Get_CurrLevel();
@@ -223,6 +285,21 @@ HRESULT CE_Body_Khazan_Spear::Ready_Components()
     m_pModelCom->Attach_Part(m_pModelCom_Leg);
     m_pModelCom->Attach_Part(m_pModelCom_Shoes);
     m_pModelCom->Attach_Part(m_pModelCom_Torso);
+
+    CMotionTrail::MOTIONTRAIL_DESC MTDesc{};
+    MTDesc.vLifeTime = { 0.f, 5.f };
+    MTDesc.vStartColor = { 1.f, 0.f, 0.f, 1.f };
+    MTDesc.vTargetColor = { 0.f, 0.f, 1.f, 0.f };
+    MTDesc.fRimPower = 2.f;
+    MTDesc.fRimIntensity = 1.f;
+    MTDesc.fEmissiveIntensity = 2.f;
+    // ========== Update 작성 이후 수정 ==========
+    MTDesc.isIndividualColor = false;
+    MTDesc.fColorUpdateSpeed = 0.f;
+    MTDesc.fInterval = 2.f;
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_MotionTrail"),
+        TEXT("Com_MotionTrail"), reinterpret_cast<CComponent**>(&m_pMotionTrailCom), &MTDesc)))
+        return E_FAIL;
 
     return S_OK;
 }

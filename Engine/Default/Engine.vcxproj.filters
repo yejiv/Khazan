@@ -418,6 +418,9 @@
     <Filter Include="01.Utility\95.AI\BehaviorTree\Node\Utility_Action\Helper">
       <UniqueIdentifier>{f1b77215-c1e8-4ae3-9a19-0af5af12e548}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Component\MotionTrail">
+      <UniqueIdentifier>{ef19cba2-621d-4127-ac0e-ba0298b07f9c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -461,9 +464,6 @@
     </ClCompile>
     <ClCompile Include="..\private\Transform.cpp">
       <Filter>01.Utility\03.Component\Transform</Filter>
-    </ClCompile>
-    <ClCompile Include="..\private\VIBuffer.cpp">
-      <Filter>01.Utility\03.Component\VIBuffer</Filter>
     </ClCompile>
     <ClCompile Include="..\private\VIBuffer_Rect.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Rect</Filter>
@@ -803,6 +803,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\UtilitySelector_Node.cpp">
       <Filter>01.Utility\95.AI\BehaviorTree\Node\Composite\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\MotionTrail.cpp">
+      <Filter>01.Utility\03.Component\MotionTrail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\VIBuffer.cpp">
+      <Filter>01.Utility\03.Component\VIBuffer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1238,6 +1244,9 @@
     <ClInclude Include="..\Public\UtilityScore.h">
       <Filter>01.Utility\95.AI\BehaviorTree\Node\Utility_Action\Helper</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\MotionTrail.h">
+      <Filter>01.Utility\03.Component\MotionTrail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hlsli">
@@ -1267,6 +1276,9 @@
       <Filter>95.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Decal.hlsl">
+      <Filter>95.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_MotionTrail.hlsl">
       <Filter>95.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

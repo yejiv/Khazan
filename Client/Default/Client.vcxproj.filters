@@ -868,7 +868,6 @@
     <Filter Include="02.GameObject\UI\Amount_Info">
       <UniqueIdentifier>{e971ff75-65a5-470d-8e04-1da488b58d20}</UniqueIdentifier>
     </Filter>
-    </Filter>
     <Filter Include="92.AI\Controller\Viper">
       <UniqueIdentifier>{1906c35b-a577-4287-9dd6-bb9bd83a25dd}</UniqueIdentifier>
     </Filter>

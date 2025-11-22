@@ -44,6 +44,8 @@ HRESULT CE_Khazan_Spear::Initialize_Clone(void* pArg)
     m_pTransformCom->Rotation(XMConvertToRadians(0.f), XMConvertToRadians(180.f), XMConvertToRadians(0.f));
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 0.f, -20.f, 1.f));
 
+
+
     return S_OK;
 }
 
@@ -54,6 +56,23 @@ void CE_Khazan_Spear::Priority_Update(_float fTimeDelta)
 
 void CE_Khazan_Spear::Update(_float fTimeDelta)
 {
+    if (m_pGameInstance->Key_Pressing(DIK_UP, fTimeDelta))
+    {
+        m_pTransformCom->Go_Straight(fTimeDelta);
+    }
+    if (m_pGameInstance->Key_Pressing(DIK_DOWN, fTimeDelta))
+    {
+        m_pTransformCom->Go_Backward(fTimeDelta);
+    }
+    if (m_pGameInstance->Key_Pressing(DIK_LEFT, fTimeDelta))
+    {
+        m_pTransformCom->Go_Left(fTimeDelta);
+    }
+    if (m_pGameInstance->Key_Pressing(DIK_RIGHT, fTimeDelta))
+    {
+        m_pTransformCom->Go_Right(fTimeDelta);
+    }
+
     __super::Update(fTimeDelta);
 }
 
