@@ -85,7 +85,7 @@ private:
 
 	_bool					m_isOnAttackCollision = { false };
 	_bool					m_isOnAttackCollision_Back = { false };
-    
+    _float4x4*              m_pLockOnBoneMatrix = { nullptr };
     // Shader
     _bool                   m_isEnableEdge = { true };
 

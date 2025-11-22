@@ -125,48 +125,64 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vecto
 {
     if (!pTransform || !m_pCharVir)
         return;
-
     if (!std::isfinite(fTimeDelta) || fTimeDelta <= 0.f)
         return;
 
+    // 1) 회전 동기화
     _vector tRotVec = pTransform->Get_Rotation_Quat();
     JPH::Quat tRot = LoadQuat(tRotVec);
     m_pCharVir->SetRotation(tRot);
 
-    const RVec3 curCharPos = m_pCharVir->GetPosition();
-    JPH::Vec3   curCharPosF(
-        (float)curCharPos.GetX(),
-        (float)curCharPos.GetY(),
-        (float)curCharPos.GetZ()
-    );
+    // 2) 현재 지면 상태 체크
+    const auto ground_state = m_pCharVir->GetGroundState();
+    const bool onGround =
+        (ground_state == JPH::CharacterVirtual::EGroundState::OnGround) ||
+        (ground_state == JPH::CharacterVirtual::EGroundState::OnSteepGround);
 
-    _vector tPosVec = pTransform->Get_State(STATE::POSITION);
-    JPH::Vec3 tPos = LoadVec3(tPosVec);
-
-    JPH::Vec3 rootDelta = tPos - curCharPosF;
-
-    rootDelta.SetY(0.0f);
-
-    if (fTimeDelta > 0.f && rootDelta.LengthSq() > 0.0f)
+    // 3) 애니 루트 델타 → 속도 반영 (지면일 때만)
+    if (onGround)
     {
-        JPH::Vec3 rootVel = rootDelta / fTimeDelta;
+        const RVec3 curCharPos = m_pCharVir->GetPosition();
+        JPH::Vec3   curCharPosF(
+            (float)curCharPos.GetX(),
+            (float)curCharPos.GetY(),
+            (float)curCharPos.GetZ()
+        );
 
-        float vy = m_vVelocity.GetY();
+        _vector tPosVec = pTransform->Get_State(STATE::POSITION);
+        JPH::Vec3 tPos = LoadVec3(tPosVec);
 
-        // 벽 쪽으로 너무 파고드는 경우를 줄이고 싶으면 여기서
-        rootVel = m_pCharVir->CancelVelocityTowardsSteepSlopes(rootVel);
+        JPH::Vec3 rootDelta = tPos - curCharPosF;
+        rootDelta.SetY(0.0f);
 
-        m_vVelocity = rootVel;
-        m_vVelocity.SetY(vy);
+        if (fTimeDelta > 0.f && rootDelta.LengthSq() > 0.0f)
+        {
+            JPH::Vec3 rootVel = rootDelta / fTimeDelta;
+
+            float vy = m_vVelocity.GetY();
+            rootVel = m_pCharVir->CancelVelocityTowardsSteepSlopes(rootVel);
+
+            m_vVelocity = rootVel;
+            m_vVelocity.SetY(vy);
+        }
     }
 
-    pTransform->Set_State(
-        STATE::POSITION,
-        XMVectorSet(curCharPosF.GetX(), curCharPosF.GetY(), curCharPosF.GetZ(), 1.f)
-    );
-    // 회전은 애니메이션이 먹인 걸 그대로 쓰고 싶으면 여기선 안 건드리고,
-    // 나중에 필요하면 CharVir 회전을 Transform에서 읽어와서 Set_Rotation 해도 됨.
+    // 4) Transform 위치를 캐릭터에 맞추기 (이건 그대로)
+    {
+        const RVec3 curCharPos = m_pCharVir->GetPosition();
+        JPH::Vec3   curCharPosF(
+            (float)curCharPos.GetX(),
+            (float)curCharPos.GetY(),
+            (float)curCharPos.GetZ()
+        );
 
+        pTransform->Set_State(
+            STATE::POSITION,
+            XMVectorSet(curCharPosF.GetX(), curCharPosF.GetY(), curCharPosF.GetZ(), 1.f)
+        );
+    }
+
+    // 5) 중력 세팅
     {
         float gx = XMVectorGetX(vGravity);
         float gy = XMVectorGetY(vGravity);
@@ -178,8 +194,10 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vecto
             m_vGravity = JPH::Vec3(0.f, g_fGravity, 0.f);
     }
 
+    // 6) 스텝 업데이트
     StepFixed(fTimeDelta);
 
+    // 7) 최종 위치/회전 다시 Transform에 반영
     const RVec3 pos = m_pCharVir->GetPosition();
     const JPH::Quat rot = m_pCharVir->GetRotation();
 
@@ -187,7 +205,6 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vecto
         STATE::POSITION,
         XMVectorSet((float)pos.GetX(), (float)pos.GetY(), (float)pos.GetZ(), 1.f)
     );
-
     pTransform->Set_Quaternion(
         XMVectorSet(rot.GetX(), rot.GetY(), rot.GetZ(), rot.GetW())
     );

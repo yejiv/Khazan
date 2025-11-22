@@ -39,12 +39,6 @@ public:
 public:
     void Destory(_float3 vVelocity, _float3 vHitPos, _bool isHit = true, _float fLifeTime = 3.f, _float fImpulse = 10.f, _float fTorque = 0.f);
     void Explode(_float3 vExplosionPos, _float fImpulse, _float fTorque, _float fLifeTime = 10.f);
-    void VortexExplode(const _float3& vCenter, _float fRadialImpulse, _float fTangentialImpulse, _float fUpImpulse, _float fBaseTorque, _float fLifeTime = 10.f);
-    void ExplodeOnce(_float3 vExplosionPos, _float fImpulse, _float fTorque);
-
-public:
-    void StartVortex(const _float3& vCenter);
-    void StopVortex();
 
 private:
     class CModel* m_pModelCom = { nullptr };

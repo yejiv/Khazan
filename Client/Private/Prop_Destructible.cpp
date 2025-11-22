@@ -142,8 +142,4 @@ void CProp_Destructible::Free()
     for (auto Chunk : m_Chunks)
         Safe_Release(Chunk);
 
-    m_pBodyCom->Collision_Active(false);
-    Safe_Release(m_pBodyCom);
-
-
 }
