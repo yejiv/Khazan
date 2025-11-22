@@ -220,6 +220,8 @@
     <ClInclude Include="..\public\BladeNexus_List.h" />
     <ClInclude Include="..\public\BladeNexus_Map_BG.h" />
     <ClInclude Include="..\Public\Body_Imp_Melee.h" />
+    <ClInclude Include="..\Public\Body_Khazan_GS.h" />
+    <ClInclude Include="..\Public\Body_Viper.h" />
     <ClInclude Include="..\Public\Door_Gear.h" />
     <ClInclude Include="..\Public\ElevatorS.h" />
     <ClInclude Include="..\Public\Elevator_Gear.h" />
@@ -469,8 +471,15 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="..\Public\FSM_Viper.h" />
+    <ClInclude Include="..\Public\GSword_Khazan_GS.h" />
+    <ClInclude Include="..\Public\Collection_Info.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Private\Body_Viper.cpp" />
+    <ClCompile Include="..\Private\FSM_Viper.cpp" />
+    <ClCompile Include="..\Private\GSword_Khazan_GS.cpp" />
+    <ClCompile Include="..\Private\Collection_Info.cpp" />
     <ClCompile Include="..\Private\AI_Controller_Gomdol.cpp" />
     <ClCompile Include="..\Private\AI_Controller_Imp_Melee.cpp" />
     <ClCompile Include="..\Private\AI_Controller_Imp_Range.cpp" />
@@ -529,6 +538,7 @@
     <ClCompile Include="..\private\BladeNexus_List.cpp" />
     <ClCompile Include="..\private\BladeNexus_Map_BG.cpp" />
     <ClCompile Include="..\Private\Body_Imp_Melee.cpp" />
+    <ClCompile Include="..\Private\Body_Khazan_GS.cpp" />
     <ClCompile Include="..\Private\Door_Gear.cpp" />
     <ClCompile Include="..\Private\ElevatorS.cpp" />
     <ClCompile Include="..\Private\Elevator_Gear.cpp" />
