@@ -87,7 +87,7 @@ void CVIBuffer_LineTrail::Update(deque<_float4>& vertices, const _float4* CamPos
 	{
 		VTXPOSTEX* pVertices = reinterpret_cast<VTXPOSTEX*>(SubResource.pData);
 		_uint dataIdx{};
-		for (_uint i = 0; i < NumDrawVertices - 2; i += 2)
+		for (_int i = 0; i < NumDrawVertices - 2; i += 2)
 		{
 			//위아래 정점 빌보딩해서 직접 만들기
 			_vector vDir = XMLoadFloat4(&vertices[dataIdx]) - XMLoadFloat4(&vertices[dataIdx + 1]);
@@ -129,7 +129,7 @@ void CVIBuffer_LineTrail::Update(deque<_float4>& vertices)
 	{
 		VTXPOSTEX* pVertices = reinterpret_cast<VTXPOSTEX*>(SubResource.pData);
 		_uint dataIdx{};
-		for (_uint i = 0; i < NumDrawVertices - 2; i += 2)
+		for (_int i = 0; i < NumDrawVertices - 2; i += 2)
 		{
 			//위아래 정점 빌보딩해서 직접 만들기
 			_vector vDir = XMLoadFloat4(&vertices[dataIdx]) - XMLoadFloat4(&vertices[dataIdx + 1]);

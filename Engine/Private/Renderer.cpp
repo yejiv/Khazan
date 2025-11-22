@@ -183,6 +183,12 @@ HRESULT CRenderer::Draw()
         return E_FAIL;
     }
 
+    if (FAILED(Render_WeightBlend()))
+    {
+        MSG_BOX(TEXT("Failed To Render WeightBlend"));
+        return E_FAIL;
+    }
+
     if (FAILED(Render_Blend()))
     {
         MSG_BOX(TEXT("Failed To Render Blend"));
@@ -632,14 +638,12 @@ HRESULT CRenderer::Render_MotionTrail()
     return S_OK;
 }
 
-HRESULT CRenderer::Render_Blend()
+HRESULT CRenderer::Render_WeightBlend()
 {
-    // [1] Blend 객체 기록
-
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_WeightBlend"))))
         return E_FAIL;
 
-    for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::BLEND)])
+    for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::WEIGHT_BLEND)])
     {
         if (nullptr != pRenderObject)
             pRenderObject->Render();
@@ -647,7 +651,7 @@ HRESULT CRenderer::Render_Blend()
         Safe_Release(pRenderObject);
     }
 
-    m_RenderObjects[ENUM_CLASS(RENDERGROUP::BLEND)].clear();
+    m_RenderObjects[ENUM_CLASS(RENDERGROUP::WEIGHT_BLEND)].clear();
 
     if (FAILED(m_pGameInstance->End_MRT()))
         return E_FAIL;
@@ -662,11 +666,32 @@ HRESULT CRenderer::Render_Blend()
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_AccumAlpha"), m_pShader, "g_AccumAlphaTexture")))
-        return E_FAIL; 
+        return E_FAIL;
 
     m_pShader->Begin(16);
     m_pVIBuffer->Bind_Resources();
     m_pVIBuffer->Render();
+
+    if (FAILED(m_pGameInstance->End_MRT()))
+        return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CRenderer::Render_Blend()
+{
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
+        return E_FAIL;
+
+    for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::BLEND)])
+    {
+        if (nullptr != pRenderObject)
+            pRenderObject->Render();
+
+        Safe_Release(pRenderObject);
+    }
+
+    m_RenderObjects[ENUM_CLASS(RENDERGROUP::BLEND)].clear();
 
     if (FAILED(m_pGameInstance->End_MRT()))
         return E_FAIL;

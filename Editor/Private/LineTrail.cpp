@@ -93,7 +93,7 @@ void CLineTrail::Late_Update(_float fTimeDelta)
     m_pVIBufferCom->Update(m_TrailPoints, m_pGameInstance->Get_CamPosition());
 
     if (m_ControlPoints.size() > 1)
-        m_pGameInstance->Add_RenderGroup(RENDERGROUP::BLEND, this);
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::WEIGHT_BLEND, this);
 }
 
 HRESULT CLineTrail::Render()

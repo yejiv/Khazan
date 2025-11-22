@@ -108,8 +108,7 @@ struct PS_IN
 
 struct PS_OUT
 {
-    float4 vColor : SV_TARGET0;
-
+    float4 vColor : SV_TARGET0; 
 };
 
 struct PS_WEIGHTBLEND_OUT
@@ -173,6 +172,21 @@ PS_WEIGHTBLEND_OUT PS_TRAIL(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_SCREEN_TRAIL(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    //Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+    
+    vector vEffectTexture = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+    //vector vFinalColor = float4(vEffectTexture.rgb, vEffectTexture.r);
+    vector vFinalColor = float4(1.f, 1.f, 1.f, vEffectTexture.r);
+    vFinalColor *= In.vTexcoord.x; 
+    Out.vColor = vFinalColor;  
+    
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     /* 특정 패스를 이용해서 점정을 그려냈다. */
@@ -213,11 +227,11 @@ technique11 DefaultTechnique
     pass ScreenTrailPass
     {
         SetRasterizerState(RS_Cull_None);
-        SetDepthStencilState(DSS_DepthTestOnly, 0);
-        SetBlendState(BS_Blend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_SCREEN_TRAIL();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_TRAIL();
+        PixelShader = compile ps_5_0 PS_SCREEN_TRAIL();
     }
 
     ///* 정점의 정보에 따라 쉐이더 파일을 작성한다. */

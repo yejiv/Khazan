@@ -103,14 +103,10 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
     Check_Guarding(fTimeDelta);
     //Update_GuardRotation(fTimeDelta);
 
-    //TEST
-    //if (m_pGameInstance->Key_Down(DIK_I))
-        //m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Fire"), 포지션 );
-        //m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("BloodHit"), m_pParentTransform->Get_WorldMatrix().r[3] );
     if (m_isCollision)
     {
         m_isCollision = false;
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("BloodHit"), XMLoadFloat4(&m_fCollisionPos));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("BloodHit"), XMLoadFloat4(&m_fCollisionPos));
     }
 }
 
@@ -333,6 +329,7 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
         /*  탐지 */
         CGameObject* pObj = pDesc->pGameObject;
         if (!pObj|| pObj->Get_IsDead()) return;
+        lock_guard<mutex> lock(m_CollMonsterMutex);
         if (pObj && (find(m_CollMonsters.begin(), m_CollMonsters.end(), pObj) == m_CollMonsters.end()))
             m_CollMonsters.push_back(pObj);
 
@@ -381,7 +378,7 @@ void CBody_Khazan_Spear::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjec
         {
             aa = bb = true;
       }
-
+        lock_guard<mutex> lock(m_CollMonsterMutex);
         auto it = remove(m_CollMonsters.begin(), m_CollMonsters.end(), pObj);
         if (it != m_CollMonsters.end()) m_CollMonsters.erase(it, m_CollMonsters.end());
 
@@ -424,6 +421,7 @@ void CBody_Khazan_Spear::Search_BrutalTarget(_float fTimeDelta)
 
     _vector vPlayerPos = XMVectorSet(m_pParentMatrix->_41, m_pParentMatrix->_42, m_pParentMatrix->_43, 1.f);
 
+    lock_guard<mutex> lock(m_CollMonsterMutex);
     for (CGameObject* monster : m_CollMonsters)
     {
         if (!monster || _CrtIsValidHeapPointer(monster) || monster->Get_IsDead())
@@ -748,18 +746,11 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
     m_pModelCom->Register_Event("StrongAtk03_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
     m_pModelCom->Register_Event("StrongAtk_Charge_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
     m_pModelCom->Register_Event("StrongAtk_Charge_Blust", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_StrongAtk_Charge_Blust1(m_pParentTransform->Get_WorldMatrix().r[3]); });
-    m_pModelCom->Register_Event("StrongAtk_Charge_Stamp", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
-        //_matrix mBone = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-        //_matrix mOffset = XMMatrixTranslation(0.f, -8.f, 0.f);
-        //_matrix mResult = mOffset * mBone; 
-        //_matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW); 
-        //W = XMMatrixTranslation(0.f, 3.f, 0.f) * W;  
-        //m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Stamp"), W.r[3]); }
-
+    m_pModelCom->Register_Event("StrongAtk_Charge_Stamp", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {   
         _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
         _matrix W_withOffset = XMMatrixTranslation(-1.f, 0.f, 1.f) * W;
         _vector V_FinalPosition = W_withOffset.r[3];
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Stamp"), V_FinalPosition); }   
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Stamp"), V_FinalPosition); }
     );
 
     /*보름달 트레일*/
@@ -794,7 +785,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
             );
             Q = XMQuaternionRotationMatrix(RotationMatrix);
         }
-        EffectID_SpiralSpear = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpiralSpear_SpearFX"), W.r[3]);
+        EffectID_SpiralSpear = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiralSpear_SpearFX"), W.r[3]);
         FX_StrongAtk_Charge_Blust1(m_pParentTransform->Get_WorldMatrix().r[3]);
         });
 
@@ -968,7 +959,7 @@ void CBody_Khazan_Spear::FX_Trail()
 
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust1(_fvector pos)
 {
-    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust"), pos);
+    m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust"), pos);
 
     // Distortion
     DISTORTION_DESC Desc{};
@@ -997,12 +988,12 @@ void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust1(_fvector pos)
 
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust2(_fvector pos)
 {
-    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust2"), pos);
+    m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust2"), pos);
 }
 
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust3(_fvector pos)
 {
-    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust3"), pos);
+    m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust3"), pos);
 
     // Distortion
     DISTORTION_DESC Desc{};
@@ -1022,17 +1013,17 @@ void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust3(_fvector pos)
 
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust4(_fvector pos)
 {
-    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust4"), pos);
+    m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust4"), pos);
 }
 
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust5(_fvector pos)
 {
-    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust5"), pos); 
+    m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust5"), pos);
 }
 
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust6(_fvector pos)
 {
-    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust6"), pos);
+    m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust6"), pos);
 
     // Distortion
     DISTORTION_DESC Desc{};
@@ -1061,7 +1052,7 @@ void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust6(_fvector pos)
 
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_BlustSmall(_fvector pos)
 {
-    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("BlustSmall"), pos);
+    m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("BlustSmall"), pos);
 }
 
 void CBody_Khazan_Spear::Spear_Spike()
@@ -1098,7 +1089,7 @@ void CBody_Khazan_Spear::Spear_Spike()
     _vector V_FinalPosition = T + V_WorldOffset;
 
 
-    EffectID_SpearWind = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust5"), Q, V_FinalPosition);
+    EffectID_SpearWind = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust5"), Q, V_FinalPosition);
 }
 
 void CBody_Khazan_Spear::UpdateSpearWind()
@@ -1170,7 +1161,7 @@ void CBody_Khazan_Spear::SpawnSpearWind()
 
         Q = XMQuaternionRotationMatrix(RotationMatrix);
     }
-    EffectID_SpearWind = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), Q, W.r[3]);
+    EffectID_SpearWind = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpearWind"), Q, W.r[3]);
 
     // Distortion
     DISTORTION_DESC Desc{};
