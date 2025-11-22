@@ -43,8 +43,12 @@ void CUI_Logo_List::Set_Selete(_bool isSelete)
 
 	m_bIsSelete = isSelete;
 
-	if (m_bIsSelete)
-		m_fAccTime = 0.7f;
+    if (m_bIsSelete)
+    {
+        m_fAccTime = 0.7f;
+        m_pGameInstance->StopByKey(TEXT("UI_Title_Seq_Menu_Open_Move.wav"));
+        m_pGameInstance->PlaySoundOnce(TEXT("UI_Title_Seq_Menu_Open_Move.wav"));
+    }
 }
 
 HRESULT CUI_Logo_List::Initialize_Prototype(_uint iLevel)

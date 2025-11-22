@@ -27,7 +27,7 @@ void CSequence_HeinMach_Start_Chat::Update(_float fTimeDelta)
 
         m_fTime = 0.f;
     }
-    else if (m_isTalk3 && !m_isTalk4 && m_fTime >= 3.f)
+   /* else if (m_isTalk3 && !m_isTalk4 && m_fTime >= 3.f)
     {
         Event_Announce_Talk(4);
         m_isTalk4 = true;
@@ -72,7 +72,7 @@ void CSequence_HeinMach_Start_Chat::Update(_float fTimeDelta)
     else if (m_isTalk9 && m_fTime >= 3.f)
     {
         m_isEnd = true;
-    }
+    }*/
 
 }
 

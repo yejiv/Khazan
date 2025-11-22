@@ -31,6 +31,9 @@ void CUI_Store::On_Panel()
 
     m_iSeleteIndex = 0;
     Update_Selete();
+
+    m_pGameInstance->PlaySoundOnce(TEXT("UI_shopbuy_open (SFX).wav"));
+
 }
 
 void CUI_Store::Off_Panel()
@@ -47,6 +50,9 @@ void CUI_Store::Off_Panel()
         CClientInstance::GetInstance()->UI_UpdateSwitch(AnsiToWString(m_strReturnName));
         m_strReturnName = "";
     }
+
+    m_pGameInstance->PlaySoundOnce(TEXT("UI_shopbuy_close (SFX).wav"));
+
 
 }
 

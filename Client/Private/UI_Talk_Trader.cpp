@@ -169,6 +169,8 @@ void CUI_Talk_Trader::Update(_float fTimeDelta)
 
     if (m_pGameInstance->Key_Down(DIK_F, INPUT_TYPE::WORLD_UI))
     {
+        m_pGameInstance->PlaySoundOnce(TEXT("UI_common_click2(SFX).wav"));
+
         if (m_iSelete == 0 && m_eType == TALK_TYPE::START)
         {
             CUI_Store::STOER_DESC Desc;
@@ -187,13 +189,17 @@ void CUI_Talk_Trader::Update(_float fTimeDelta)
             Desc.szName = m_szName;
             m_isUIOpen = true;
             CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Inven"), &Desc);
+            m_pGameInstance->PlaySoundOnce(TEXT("UI_skill_close (SFX).wav"));
             Off_Panel();
         }
         else if (m_iSelete == 2 && m_eType == TALK_TYPE::START)
         {
             Off_Panel();
             m_isUIOpen = false;
+            m_pGameInstance->PlaySoundOnce(TEXT("UI_skill_close (SFX).wav"));
+            m_pGameInstance->StopByChannel(&m_pChannel);
         }
+
         Setting_Talk();
     }
 
@@ -368,8 +374,12 @@ void CUI_Talk_Trader::Update_Selete()
 
 void CUI_Talk_Trader::Setting_Talk()
 {
+    if (m_eAnimState == UIANIMSTATE::OFF)
+        return;
+
     if (m_eType == TALK_TYPE::START)
     {
+        m_pGameInstance->PlaySoundOnce(TEXT("dialogue_sub_1060001_dui (Korean(KR)).wav"),1.f, &m_pChannel);
         m_BG_Line[4]->Update_Visible(true);
         m_pList[0]->Update_Visible(true);
         m_pList[1]->Update_Visible(true);
@@ -387,8 +397,8 @@ void CUI_Talk_Trader::Setting_Talk()
         m_pList[1]->Set_Text(TEXT("판매"));
         m_pList[2]->Set_Text(TEXT("대화를 마친다."));
 
-        m_pText1->Set_Text(TEXT("카잔님, 부탁드립니다."));
-        m_pText2->Set_Text(TEXT("프라우를 구해주세요"));
+        m_pText1->Set_Text(TEXT("잘오셨어요."));
+        m_pText2->Set_Text(TEXT("마침 좋은 물건들이 들어왔습니다."));
     }
 }
 

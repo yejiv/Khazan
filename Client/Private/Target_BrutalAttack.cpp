@@ -18,6 +18,8 @@ CTarget_BrutalAttack::CTarget_BrutalAttack(const CTarget_BrutalAttack& Prototype
 
 void CTarget_BrutalAttack::Setting_BrutalAttack(const _float4* pTargetPos, _float fDelayTime, _float2 vOffset)
 {
+    m_pGameInstance->PlaySoundOnce(TEXT("UI_Grapple_Atk02_Sccu (SFX).wav"));
+
 	m_pTargetPos = pTargetPos;
 	m_vLocalPos = { vOffset.x, -vOffset.y };
 	m_fTime = fDelayTime;

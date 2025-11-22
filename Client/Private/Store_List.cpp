@@ -35,7 +35,12 @@ void CStore_List::Set_Selete(_bool isSelete)
     m_bIsSelete = isSelete;
 
     m_pHover->Update_Visible(m_bIsSelete);
-        
+
+    if (m_bIsSelete)
+    {
+        _wstring wstrSound = TEXT("UI_common_mouse_over_0") + to_wstring(m_pGameInstance->Rand(1, 4)) + TEXT(" (SFX).wav");
+        m_pGameInstance->PlaySoundOnce(wstrSound.c_str());
+    }
 }
 
 void CStore_List::Setting_List(_int iItemIndex)
@@ -94,6 +99,7 @@ void CStore_List::Update(_float fTimeDelta)
                 Desc.Event = [this]() {
                     static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(m_iItemIndex);
                     static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, -m_iAdd_Gold);
+                    m_pGameInstance->PlaySoundOnce(TEXT("UI_Gold_Drop (SFX).wav"));
                     };
                 CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Popup_Item"), &Desc);
             }

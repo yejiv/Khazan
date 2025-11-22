@@ -286,12 +286,33 @@ void CUI_QuickSlot_Item::Input_KeyState()
             m_vFxColor.w = 1.f;
         else
         {
-            --*m_iItemCount;
-            if (*m_iItemCount <= 0)
+            if (iInputIndex == 0)
             {
-                Update_State();
-                m_bIsItemZero = true;
+                m_pGameInstance->StopByKey(TEXT("UI_item_consume_assassinportion_01 (SFX).wav"));
+                m_pGameInstance->PlaySoundOnce(TEXT("UI_item_consume_assassinportion_01 (SFX).wav"));
             }
+            else if(m_iItemIndex >= 1001 && m_iItemIndex <= 1004)
+            {
+                --*m_iItemCount;
+                if (*m_iItemCount <= 0)
+                {
+                    Update_State();
+                    m_bIsItemZero = true;
+                }
+                if (m_iItemIndex == 1001 || m_iItemIndex == 1002)
+                {
+                    m_pGameInstance->StopByKey(TEXT("UI_item_tearsummons_01 (SFX).wav"));
+                    m_pGameInstance->PlaySoundOnce(TEXT("UI_item_tearsummons_01 (SFX).wav"));
+                }
+                else
+                {
+                    m_pGameInstance->StopByKey(TEXT("UI_item_use_01 (SFX).wav"));
+                    m_pGameInstance->PlaySoundOnce(TEXT("UI_item_use_01 (SFX).wav"));
+                }
+
+            }
+
+            
         }
     }
 }

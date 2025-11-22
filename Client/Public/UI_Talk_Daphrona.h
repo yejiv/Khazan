@@ -64,6 +64,7 @@ private:
 
     _float                          m_fSpeedWeight = {};
 
+    FMOD_CHANNEL*                   m_pChannel = { nullptr };
 private:
     HRESULT					        Ready_Component();
     HRESULT                         Ready_Children();
