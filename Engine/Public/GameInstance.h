@@ -27,7 +27,6 @@ public:
 	void Render_End(HWND hWnd = 0);
 public:
 	_float Rand_Normal();
-    _int Rand_Normal(_int iMin, _int iMax);
 	_float Rand(_float fMin, _float fMax);
     _int Rand(_int iMin, _int iMax);
 
