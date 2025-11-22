@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -221,6 +221,7 @@
     <ClInclude Include="..\public\BladeNexus_Map_BG.h" />
     <ClInclude Include="..\Public\Body_Imp_Melee.h" />
     <ClInclude Include="..\Public\Body_Viper.h" />
+    <ClInclude Include="..\public\Collection_Info.h" />
     <ClInclude Include="..\Public\Door_Gear.h" />
     <ClInclude Include="..\Public\ElevatorS.h" />
     <ClInclude Include="..\Public\Elevator_Gear.h" />
@@ -239,6 +240,8 @@
     <ClInclude Include="..\public\Lantern_Khazan_Spear.h" />
     <ClInclude Include="..\Public\Obelisk.h" />
     <ClInclude Include="..\Public\Pot.h" />
+    <ClInclude Include="..\public\Popup_Item.h" />
+    <ClInclude Include="..\public\Popup_Reset.h" />
     <ClInclude Include="..\Public\Projectile_Boomarang.h" />
     <ClInclude Include="..\public\Khazan_Spaer_Anim_Damaged.h" />
     <ClInclude Include="..\Public\Prop_Chunk.h" />
@@ -251,6 +254,9 @@
     <ClInclude Include="..\Public\Statue.h" />
     <ClInclude Include="..\Public\Statue_Deco.h" />
     <ClInclude Include="..\Public\Statue_Plate.h" />
+    <ClInclude Include="..\public\Store_List.h" />
+    <ClInclude Include="..\public\Store_Slot.h" />
+    <ClInclude Include="..\public\UI_Announce_Warning.h" />
     <ClInclude Include="..\public\UI_BladeNexus_Map.h" />
     <ClInclude Include="..\public\BladeNexus_Map_List.h" />
     <ClInclude Include="..\Public\Body_Gomdol.h" />
@@ -425,6 +431,7 @@
     <ClInclude Include="..\public\UI_State_List.h" />
     <ClInclude Include="..\public\UI_State_MainPanel.h" />
     <ClInclude Include="..\public\UI_State_Panel.h" />
+    <ClInclude Include="..\public\UI_Store.h" />
     <ClInclude Include="..\public\UI_Talk_Dangin.h" />
     <ClInclude Include="..\public\UI_Talk_Trader.h" />
     <ClInclude Include="..\public\UI_WorldFX.h" />
@@ -514,6 +521,7 @@
     <ClCompile Include="..\private\BladeNexus_Map_BG.cpp" />
     <ClCompile Include="..\Private\Body_Imp_Melee.cpp" />
     <ClCompile Include="..\Private\Body_Viper.cpp" />
+    <ClCompile Include="..\private\Collection_Info.cpp" />
     <ClCompile Include="..\Private\Door_Gear.cpp" />
     <ClCompile Include="..\Private\ElevatorS.cpp" />
     <ClCompile Include="..\Private\Elevator_Gear.cpp" />
@@ -532,6 +540,8 @@
     <ClCompile Include="..\private\Lantern_Khazan_Spear.cpp" />
     <ClCompile Include="..\Private\Obelisk.cpp" />
     <ClCompile Include="..\Private\Pot.cpp" />
+    <ClCompile Include="..\private\Popup_Item.cpp" />
+    <ClCompile Include="..\private\Popup_Reset.cpp" />
     <ClCompile Include="..\Private\Projectile_Boomarang.cpp" />
     <ClCompile Include="..\private\Khazan_Spaer_Anim_Damaged.cpp" />
     <ClCompile Include="..\Private\Prop_Chunk.cpp" />
@@ -544,6 +554,9 @@
     <ClCompile Include="..\Private\Statue.cpp" />
     <ClCompile Include="..\Private\Statue_Deco.cpp" />
     <ClCompile Include="..\Private\Statue_Plate.cpp" />
+    <ClCompile Include="..\private\Store_List.cpp" />
+    <ClCompile Include="..\private\Store_Slot.cpp" />
+    <ClCompile Include="..\private\UI_Announce_Warning.cpp" />
     <ClCompile Include="..\private\UI_BladeNexus_Map.cpp" />
     <ClCompile Include="..\private\BladeNexus_Map_List.cpp" />
     <ClCompile Include="..\Private\Body_Gomdol.cpp" />
@@ -711,6 +724,7 @@
     <ClCompile Include="..\private\UI_State_List.cpp" />
     <ClCompile Include="..\private\UI_State_MainPanel.cpp" />
     <ClCompile Include="..\private\UI_State_Panel.cpp" />
+    <ClCompile Include="..\private\UI_Store.cpp" />
     <ClCompile Include="..\private\UI_Talk_Dangin.cpp" />
     <ClCompile Include="..\private\UI_Talk_Trader.cpp" />
     <ClCompile Include="..\private\UI_WorldFX.cpp" />

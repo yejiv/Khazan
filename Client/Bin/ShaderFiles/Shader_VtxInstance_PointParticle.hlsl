@@ -250,6 +250,7 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     
     float fDecreaseAlpha = 1.0f - abs((In.vLifeTime.x / In.vLifeTime.y) * 2.0f - 1.0f); 
 
+    
     if (g_IsDisolve == false) 
         vFinalColor.a *= fDecreaseAlpha;
     else

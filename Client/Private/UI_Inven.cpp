@@ -98,16 +98,16 @@ HRESULT CUI_Inven::Initialize_Clone(void* pArg)
 
 void CUI_Inven::Priority_Update(_float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_M))
+    if (m_pGameInstance->Key_Down(DIK_M, INPUT_TYPE::UI))
     {
-       Add_Item(1001);
-       Add_Item(1002);
-       Add_Item(1003);
-       Add_Item(1004);
+       Add_Item(2001);
+       Add_Item(2002);
+       Add_Item(2003);
+       Add_Item(2004);
        Add_Item(1101);
        
        Add_Item(4001);
-       Add_Item(4011);
+       Add_Item(3001);
 
        Add_Item(5001);
        Add_Item(5002);
@@ -602,11 +602,21 @@ HRESULT CUI_Inven::Update_Switch(void* pArg)
 			m_iTapGroupIndex = ENUM_CLASS(TapGroup::OTHER);
 			m_pUIText->Set_Text(TEXT("소지품"));
 			Change_Tap(0);
+            for (auto iGroupIndex : m_UpdateGroup[m_iTapGroupIndex])
+            {
+                for (auto Item : m_pItems[iGroupIndex])
+                    Item->Set_Sale(false);
+            }
 		}
 		else if (m_eState == INVEN_STATE::EQUIP)
 		{
 			m_pUIText->Set_Text(TEXT("장비"));
             m_pGuideTextF->Set_Text(TEXT("장착"));
+            for (auto iGroupIndex : m_UpdateGroup[m_iTapGroupIndex])
+            {
+                for (auto Item : m_pItems[iGroupIndex])
+                    Item->Set_Sale(false);
+            }
 		}
         else if (m_eState == INVEN_STATE::SALE)
         {

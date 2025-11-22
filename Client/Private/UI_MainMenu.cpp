@@ -78,7 +78,7 @@ void CUI_MainMenu::Priority_Update(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
 		On_Panel();
-	else if (m_pGameInstance->Key_Down(DIK_ESCAPE, INPUT_TYPE::UI))
+    else if (m_IsUpdate && m_pGameInstance->Key_Down(DIK_ESCAPE, INPUT_TYPE::UI))
 		Off_Panel();
 	if (!m_IsUpdate)
 		return;

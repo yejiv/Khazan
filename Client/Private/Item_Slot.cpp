@@ -13,6 +13,9 @@
 #include "Amount.h"
 
 #include "Amount_Info.h"
+#include "Popup_Item.h"
+#include "Collection_Info.h"
+
 CItem_Slot::CItem_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Slot{ pDevice, pContext }
 {
@@ -205,9 +208,21 @@ void CItem_Slot::Late_Update(_float fTimeDelta)
             const ITEM_DATA* pData = CClientInstance::GetInstance()->Get_Data<ITEM_DATA>(m_iItemIndex);
             if (pData->iLachryma == -1 && pData->iGold == -1)
             {
+                m_pGameInstance->Emit_Event< EVENT_ANNOUNCE_WARNING>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_WARNING), { TEXT("판매 불가 아이템입니다.") });
             }
             else
-                Sale_Item();
+            {
+                CPopup_Item::POPUP_ITEM_DESC Desc;
+                Desc.isSale = true;
+                Desc.iItemIndex = m_iItemIndex;
+                Desc.Event = [this]() { Sale_Item(); };
+                CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Popup_Item"), &Desc);
+
+            }
+        }
+        else
+        {
+            m_pGameInstance->Emit_Event< EVENT_ANNOUNCE_WARNING>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_WARNING), { TEXT("장착중인 아이템은 판매가 불가합니다.") });
         }
     }
     if (m_iState == ENUM_CLASS(UISTATE::ENABLE))
@@ -268,7 +283,7 @@ HRESULT CItem_Slot::Ready_Children()
 {
     CUI_Atlas_Icon::UIATLASICON_DESC AtlasDesc;
 
-    AtlasDesc.fDepth = m_fDepth - 1;
+    AtlasDesc.fDepth = m_fDepth - 0.2f;
     AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
     AtlasDesc.szName = "Item_Over";
     AtlasDesc.vLocalPos = _float2{ 0.f, 0.f };
@@ -288,7 +303,7 @@ HRESULT CItem_Slot::Ready_Children()
     //장착
     if (m_iItemType <= ENUM_CLASS(CUI_Inven::ITEMTYPE::ATIVE))
     {
-        AtlasDesc.fDepth = m_fDepth - 0.5;
+        AtlasDesc.fDepth = m_fDepth - 0.1f;
         AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
         AtlasDesc.szName = "Item_Equip";
         AtlasDesc.vLocalPos = _float2{ -30.f, -30.f };
@@ -315,7 +330,7 @@ HRESULT CItem_Slot::Ready_Children()
         Safe_AddRef(m_pEquipIcon);
     }
     //셀렉트
-    AtlasDesc.fDepth = m_fDepth - 2;
+    AtlasDesc.fDepth = m_fDepth - 0.3f;
     AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
     AtlasDesc.szName = "Item_Selet";
     AtlasDesc.vLocalPos = _float2{ 0.f, 0.f };
@@ -333,7 +348,7 @@ HRESULT CItem_Slot::Ready_Children()
     m_Children.push_back(m_pSeleteFx);
     Safe_AddRef(m_pSeleteFx);
 
-    AtlasDesc.fDepth = m_fDepth - 1;
+    AtlasDesc.fDepth = m_fDepth -0.2f;
     AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
     AtlasDesc.szName = "Item_Icon";
     AtlasDesc.vLocalPos = _float2{ 0.f, 0.f };
@@ -354,7 +369,7 @@ HRESULT CItem_Slot::Ready_Children()
     if (m_iItemType == ENUM_CLASS(CUI_Inven::ITEMTYPE::ATIVE) || m_iItemType == ENUM_CLASS(CUI_Inven::ITEMTYPE::MATERIAL))
     {
         CUIObject::UIOBJECT_DESC TextDesc = {};
-        TextDesc.fDepth = m_fDepth - 1.f;
+        TextDesc.fDepth = m_fDepth - 0.2f;
         TextDesc.iUIType = ENUM_CLASS(UITYPE::TEXT);
         TextDesc.szName = "Item_Count";
         TextDesc.vLocalPos = _float2{ 0.f, 0.f };
@@ -382,7 +397,7 @@ HRESULT CItem_Slot::Ready_Children()
 
     if (m_iItemType >= ENUM_CLASS(CUI_Inven::ITEMTYPE::SPEAR) && m_iItemType <= ENUM_CLASS(CUI_Inven::ITEMTYPE::RING))
     {
-        AtlasDesc.fDepth = m_fDepth - 0.5;
+        AtlasDesc.fDepth = m_fDepth - 0.1f;
         AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
         AtlasDesc.szName = "Item_Up";
         AtlasDesc.vLocalPos = _float2{ 32.f, 35.f };
@@ -467,6 +482,13 @@ void CItem_Slot::Selete_Item()
 
 void CItem_Slot::Equip_Item()
 {
+    if (m_iItemType == ENUM_CLASS(CUI_Inven::ITEMTYPE::COLLECTION))
+    {
+        CCollection_Info::COLLECTIONINFO_DESC Desc;
+        Desc.iItemIndex = m_iItemIndex;
+        CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Collection_Info"), &Desc);
+    }
+
     if (m_iItemType > ENUM_CLASS(CUI_Inven::ITEMTYPE::ATIVE))
         return;
     

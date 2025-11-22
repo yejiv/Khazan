@@ -868,6 +868,7 @@
     <Filter Include="02.GameObject\UI\Amount_Info">
       <UniqueIdentifier>{e971ff75-65a5-470d-8e04-1da488b58d20}</UniqueIdentifier>
     </Filter>
+    </Filter>
     <Filter Include="92.AI\Controller\Viper">
       <UniqueIdentifier>{1906c35b-a577-4287-9dd6-bb9bd83a25dd}</UniqueIdentifier>
     </Filter>
@@ -924,6 +925,30 @@
     </Filter>
     <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\06.Statue\Deco">
       <UniqueIdentifier>{f51ceb8e-518a-4b6c-aa25-c5a6459d6268}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Store">
+      <UniqueIdentifier>{74fac50a-1664-46c6-aa70-699efe565b76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Store\List">
+      <UniqueIdentifier>{92ee1466-b29f-4f14-8a87-9992eafae248}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Store\List\Slot">
+      <UniqueIdentifier>{88897891-3537-4e68-9080-16031cab3f42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Popup">
+      <UniqueIdentifier>{ac5e1b6e-bf22-4547-a509-fb185e37fe96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Popup\Reset">
+      <UniqueIdentifier>{dd35300e-cb53-49a7-b179-1de4b1503725}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Popup\Item">
+      <UniqueIdentifier>{fd74c474-c63e-449c-8d4d-0712b7c42bc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Collection_Info">
+      <UniqueIdentifier>{ed616a4c-fafb-42ae-92dd-2715e1e7494f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Announce\Warning">
+      <UniqueIdentifier>{f75dcbe4-c28c-4c25-92e5-044f03cf3b4d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1796,6 +1821,27 @@
     <ClInclude Include="..\Public\Statue_Deco.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\06.Statue\Deco</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\UI_Store.h">
+      <Filter>02.GameObject\UI\Store</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Store_List.h">
+      <Filter>02.GameObject\UI\Store\List</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Store_Slot.h">
+      <Filter>02.GameObject\UI\Store\List\Slot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Popup_Reset.h">
+      <Filter>02.GameObject\UI\Popup\Reset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Popup_Item.h">
+      <Filter>02.GameObject\UI\Popup\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Collection_Info.h">
+      <Filter>02.GameObject\UI\Collection_Info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Announce_Warning.h">
+      <Filter>02.GameObject\UI\Announce\Warning</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2646,6 +2692,27 @@
     </ClCompile>
     <ClCompile Include="..\Private\Statue_Deco.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\06.Statue\Deco</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Store.cpp">
+      <Filter>02.GameObject\UI\Store</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Store_List.cpp">
+      <Filter>02.GameObject\UI\Store\List</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Store_Slot.cpp">
+      <Filter>02.GameObject\UI\Store\List\Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Popup_Reset.cpp">
+      <Filter>02.GameObject\UI\Popup\Reset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Popup_Item.cpp">
+      <Filter>02.GameObject\UI\Popup\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Collection_Info.cpp">
+      <Filter>02.GameObject\UI\Collection_Info</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Announce_Warning.cpp">
+      <Filter>02.GameObject\UI\Announce\Warning</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
