@@ -94,7 +94,7 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
     if (m_isCollision)
     {
         m_isCollision = false;
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("BloodHit"), XMLoadFloat4(&m_fCollisionPos));
+        //m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("BloodHit"), XMLoadFloat4(&m_fCollisionPos));
     }
 }
 

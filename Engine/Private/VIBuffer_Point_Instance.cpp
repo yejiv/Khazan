@@ -9,14 +9,14 @@ CVIBuffer_Point_Instance::CVIBuffer_Point_Instance(ID3D11Device* pDevice, ID3D11
 
 CVIBuffer_Point_Instance::CVIBuffer_Point_Instance(const CVIBuffer_Point_Instance& Prototype)
 	: CVIBuffer_Instance { Prototype }
-	, m_pParticleParams{ Prototype.m_pParticleParams}
-	, m_sData {Prototype.m_sData}
+    , m_pSRVNoise{ Prototype.m_pSRVNoise } //나중에 필요하면 상수버퍼로 넘기기
+    , m_pParticleParams{ Prototype.m_pParticleParams }
+    , m_sData{ Prototype.m_sData }
+    , m_pLinearWrapSampler{ Prototype.m_pLinearWrapSampler }
 
 {
     for (_uint i = 0; i < CS_PASS::END; ++i) 
-        m_ComputeShaders[i] = Prototype.m_ComputeShaders[i]; 
-    m_pLinearWrapSampler = Prototype.m_pLinearWrapSampler;
-	//Safe_AddRef(m_pSRVNoise); //이거 해줘야되는지 확인좀
+        m_ComputeShaders[i] = Prototype.m_ComputeShaders[i];  
 }
 
 void CVIBuffer_Point_Instance::Reset()
@@ -137,6 +137,23 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDes
      
     if (FAILED(Ready_ComputeShader()))
         return E_FAIL;
+
+    HRESULT     hr = {};
+    _tchar		tpath[MAX_PATH] = {};
+    MultiByteToWideChar(CP_UTF8, 0, m_sData.pNoiseFilePath, -1, tpath, 100);
+    filesystem::path path(tpath);
+    string FileExt = path.extension().string();
+
+    if (FileExt == ".dds")
+        hr = CreateDDSTextureFromFile(m_pDevice, tpath, nullptr, &m_pSRVNoise);
+    else //png
+        hr = CreateWICTextureFromFile(m_pDevice, tpath, nullptr, &m_pSRVNoise);
+
+    if (FAILED(hr))
+    {
+        MSG_BOX(TEXT("Noise Texture :: Create Error!"));
+        return E_FAIL;
+    }
 	 
 	return S_OK;
 }
@@ -425,25 +442,7 @@ HRESULT CVIBuffer_Point_Instance::Ready_SRV(void* pSysmem)
 	SRVDesc.Buffer.NumElements = m_iNumInstance;
 
 	if (FAILED(m_pDevice->CreateShaderResourceView(pBuffer, &SRVDesc, &m_pSRV)))
-		return E_FAIL;
-
- 	HRESULT     hr = {};
-	_tchar		tpath[MAX_PATH] = {};
-	MultiByteToWideChar(CP_UTF8, 0, m_sData.pNoiseFilePath, -1, tpath, 100);
-	filesystem::path path(tpath);
-	string FileExt = path.extension().string();
-
-	if (FileExt == ".dds")
-		hr = CreateDDSTextureFromFile(m_pDevice, tpath, nullptr, &m_pSRVNoise);
-	else //png
-		hr = CreateWICTextureFromFile(m_pDevice, tpath, nullptr, &m_pSRVNoise);
-
-	if (FAILED(hr))
-	{
-		MSG_BOX(TEXT("Noise Texture :: Create Error!"));
-		return E_FAIL;
-	}
-
+		return E_FAIL; 
 	//  //Debug
 	//  //여기서 Instance Buffer를 깔 수 있는 Staging Buffer를 만들어야됨
 	//  //m_pVBInstance 이 내용을 system으로 넣어주는 Staing버퍼 만들기
@@ -626,23 +625,24 @@ CComponent* CVIBuffer_Point_Instance::Clone(void* pArg)
 void CVIBuffer_Point_Instance::Free()
 {
 	__super::Free();
+    Safe_Release(m_pSRV);
+    Safe_Release(m_pUAV);
+    Safe_Release(m_pUAVSpeed);
 
 	Safe_Release(m_pCB);
 	Safe_Release(m_pStructuredBuffer);
 	Safe_Release(m_pSpeedBuffer);
 	Safe_Release(m_pStagingBuffer);
-	Safe_Release(m_pSRV);
-	Safe_Release(m_pSRVNoise);
-	Safe_Release(m_pUAV);
-	Safe_Release(m_pUAVSpeed);
+	
 	//Safe_Release(m_pDebugStagingBuffer); 
 
 	if (false == m_isCloned)
 	{
-		//Safe_Release(m_pSRVNoise);
+        Safe_Release(m_pLinearWrapSampler);
+        Safe_Release(m_pSRVNoise);
+        Safe_Delete_Array(m_pParticleParams);
+
         for (_uint i = 0; i < CS_PASS::END; ++i)
             Safe_Release(m_ComputeShaders[i]);
-        Safe_Release(m_pLinearWrapSampler);
-        Safe_Delete_Array(m_pParticleParams);
 	}
 }

@@ -350,6 +350,7 @@ HRESULT CEffect_Mesh_Instance::Bind_ShaderResources()
 void CEffect_Mesh_Instance::Apply(void* pArg)
 {
     m_sData = *static_cast<PARTICLE_DESC*>(pArg);
+    m_sData.iTurbulenceTextureIdx = 0;
     const char* format = "../../Client/Bin/Data/Effect/MeshTrail/Mesh%d.dat";
 
     char finalPathBuffer[MAX_PATH] = {};

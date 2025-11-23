@@ -9,15 +9,13 @@ CVIBuffer_Mesh_Instance::CVIBuffer_Mesh_Instance(ID3D11Device* pDevice, ID3D11De
 
 CVIBuffer_Mesh_Instance::CVIBuffer_Mesh_Instance(const CVIBuffer_Mesh_Instance& Prototype)
 	: CVIBuffer_Instance { Prototype }
-	//, m_pSRVNoise{ Prototype.m_pSRVNoise } //나중에 필요하면 상수버퍼로 넘기기
+	, m_pSRVNoise{ Prototype.m_pSRVNoise } //나중에 필요하면 상수버퍼로 넘기기
 	, m_pParticleParams{ Prototype.m_pParticleParams }
 	, m_sData {Prototype.m_sData}
+	, m_pLinearWrapSampler{Prototype.m_pLinearWrapSampler } 
 {
     for (_uint i = 0; i < CS_PASS::END; ++i)
-        m_ComputeShaders[i] = Prototype.m_ComputeShaders[i];
-    m_pLinearWrapSampler = Prototype.m_pLinearWrapSampler;
-
-	//Safe_AddRef(m_pSRVNoise);	//이거 해줘야되는지 확인좀
+        m_ComputeShaders[i] = Prototype.m_ComputeShaders[i];  
 }
 
 void CVIBuffer_Mesh_Instance::Reset()
@@ -71,8 +69,6 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 	VBDesc.StructureByteStride = m_iVertexStride;
 
 	VB_MESHINSTANCE_EFFECT* pVertices = new VB_MESHINSTANCE_EFFECT[m_iNumVertices];
-	m_pVertexPositions = new _float3[m_iNumVertices];
-	ZeroMemory(m_pVertexPositions, sizeof(_float3) * m_iNumVertices);
 	for (_uint i = 0; i < m_iNumVertices; ++i)
 	{
 		memcpy(&pVertices[i].vPosition, &tMeshInfo.vecVertices[i].position, sizeof(_float3));
@@ -80,8 +76,6 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 		memcpy(&pVertices[i].vTangent, &tMeshInfo.vecVertices[i].tangent, sizeof(_float3)); 
 		memcpy(&pVertices[i].vBinormal, &tMeshInfo.vecVertices[i].binormal, sizeof(_float3)); 
 		memcpy(&pVertices[i].vTexcoord, &tMeshInfo.vecVertices[i].texcoord, sizeof(_float2));
-
-		m_pVertexPositions[i] = pVertices[i].vPosition;
 	}
 
 	D3D11_SUBRESOURCE_DATA	VBInitialData{};
@@ -172,6 +166,24 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
 
     if (FAILED(Ready_ComputeShader()))
         return E_FAIL;
+
+    HRESULT     hr = {};
+    _tchar		tpath[MAX_PATH] = {};
+    MultiByteToWideChar(CP_UTF8, 0, m_sData.pNoiseFilePath, -1, tpath, 100);
+    filesystem::path path(tpath);
+    string FileExt = path.extension().string();
+
+    if (FileExt == ".dds")
+        hr = CreateDDSTextureFromFile(m_pDevice, tpath, nullptr, &m_pSRVNoise);
+    else //png
+        hr = CreateWICTextureFromFile(m_pDevice, tpath, nullptr, &m_pSRVNoise);
+
+    if (FAILED(hr))
+    {
+        MSG_BOX(TEXT("Noise Texture :: Create Error!"));
+        return E_FAIL;
+    }
+
 
 	return S_OK;
 }
@@ -331,23 +343,7 @@ HRESULT CVIBuffer_Mesh_Instance::Ready_SRV(void* pSysmem)
 	if (FAILED(m_pDevice->CreateShaderResourceView(pBuffer, &SRVDesc, &m_pSRV)))
 		return E_FAIL;
 
-	HRESULT     hr = {};
-	_tchar		tpath[MAX_PATH] = {};
-	MultiByteToWideChar(CP_UTF8, 0, m_sData.pNoiseFilePath, -1, tpath, 100);
-	filesystem::path path(tpath);
-	string FileExt = path.extension().string();
-
-	if (FileExt == ".dds")
-		hr = CreateDDSTextureFromFile(m_pDevice, tpath, nullptr, &m_pSRVNoise);
-	else //png
-		hr = CreateWICTextureFromFile(m_pDevice, tpath, nullptr, &m_pSRVNoise);
-
-	if (FAILED(hr))
-	{
-		MSG_BOX(TEXT("Noise Texture :: Create Error!"));
-		return E_FAIL;
-	}
-
+	
 	return S_OK;
 }
 HRESULT CVIBuffer_Mesh_Instance::Ready_UAV()
@@ -551,26 +547,23 @@ void CVIBuffer_Mesh_Instance::Free()
 {
 	__super::Free();
 
+    Safe_Release(m_pSRV);
+    Safe_Release(m_pUAV);
+    Safe_Release(m_pUAVSpeed);
+
 	Safe_Release(m_pCB);
 	Safe_Release(m_pStructuredBuffer);
 	Safe_Release(m_pSpeedBuffer);
 	Safe_Release(m_pStagingBuffer);
-	Safe_Release(m_pSRV);
-	Safe_Release(m_pSRVNoise);
-	Safe_Release(m_pUAV);
-	Safe_Release(m_pUAVSpeed);
-
-    
 
 	if (false == m_isCloned)
 	{
-        Safe_Delete_Array(m_pVertexPositions);
-		Safe_Delete_Array(m_pParticleParams);
-		//Safe_Release(m_pSRVNoise);
-        for (_uint i = 0; i < CS_PASS::END; ++i)
-            Safe_Release(m_ComputeShaders[i]);
-        Safe_Release(m_pLinearWrapSampler);
         Safe_Delete_Array(m_pParticleParams);
+        Safe_Release(m_pLinearWrapSampler);
+        Safe_Release(m_pSRVNoise);
+
+        for (_uint i = 0; i < CS_PASS::END; ++i)
+            Safe_Release(m_ComputeShaders[i]); 
 	}
 }
 

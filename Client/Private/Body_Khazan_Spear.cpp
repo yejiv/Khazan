@@ -842,12 +842,12 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 
             Q = XMQuaternionRotationMatrix(RotationMatrix);
         }
-        m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpiralSpear_SpearFX"), EffectID_SpiralSpear, Q, W.r[3]);
+        m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiralSpear_SpearFX"), EffectID_SpiralSpear, Q, W.r[3]);
 
         });
 
     m_pModelCom->Register_Event("SpiralSpear_Spike_Tmp_Stop", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Stop_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpiralSpear_SpearFX"), EffectID_SpiralSpear); 
+        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiralSpear_SpearFX"), EffectID_SpiralSpear);
         });
 
     m_pModelCom->Register_Event("SpiralSpear_Spike1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -1146,7 +1146,7 @@ void CBody_Khazan_Spear::UpdateSpearWind()
 
         Q = XMQuaternionRotationMatrix(RotationMatrix);
     }
-    m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::HEINMACH), TEXT("SpearWind"), EffectID_SpearWind, Q, W.r[3]);
+    m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpearWind"), EffectID_SpearWind, Q, W.r[3]);
 
     DISTORTION_DESC Desc{};
     _vector vCenterPos = m_pParentTransform->Get_WorldMatrix().r[3];
