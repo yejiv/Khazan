@@ -637,7 +637,8 @@ CGameObject* CUI_Talk_Dangin::Clone(void* pArg)
 
 void CUI_Talk_Dangin::Free()
 {
-    CClientInstance::GetInstance()->Release_RootUI(AnsiToWString(m_szName));
+    if(m_szName != "")
+        CClientInstance::GetInstance()->Release_RootUI(AnsiToWString(m_szName));
 
     __super::Free();
     

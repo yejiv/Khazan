@@ -1112,6 +1112,8 @@ void CUI_Inven::Free()
 	Safe_Release(m_pQIcon);
 	Safe_Release(m_pEIcon);
 
+    Safe_Release(m_pGuideIconESC_Center);
+    Safe_Release(m_pGuideTextESC_Center);
     Safe_Release(m_pGuideIconESC);
     Safe_Release(m_pGuideTextESC);
     Safe_Release(m_pGuideIconF);

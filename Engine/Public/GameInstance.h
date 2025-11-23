@@ -222,6 +222,8 @@ public:
 	uint64 Find_BodyDesc(BodyID id);
 	void Remove_BodyDesc(BodyID id);
 
+    void Destroy_Body(BodyID id);
+
 	void Set_Gravity(_vector vGravity);
 	void Reset_Gravity();
 

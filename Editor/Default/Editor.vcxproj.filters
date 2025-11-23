@@ -277,6 +277,24 @@
     <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\06.Statue\Plate">
       <UniqueIdentifier>{86ea869c-0278-4d60-81d0-5ef6705a01e9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\07.VerticalGate">
+      <UniqueIdentifier>{862ee731-fa08-4f38-9dd8-5db82902b110}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\08.IronGate">
+      <UniqueIdentifier>{dfa30688-1ea4-497c-92d4-7c217323b2ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Part">
+      <UniqueIdentifier>{e0a0764a-2b50-4178-9386-fa4de11355f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Lock">
+      <UniqueIdentifier>{e108a4dd-d4ee-4ec1-aaf0-a2ecd0c3f35e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Part\Left">
+      <UniqueIdentifier>{71f0f0f3-040e-4a9a-9007-abbfc186a96b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Part\Right">
+      <UniqueIdentifier>{cb5b7fd7-347c-4067-bc39-e81fe81cd005}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -525,6 +543,21 @@
     <ClInclude Include="..\Public\Statue.h">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\06.Statue</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\VerticalGate.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\07.VerticalGate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\IronGate.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\08.IronGate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\IronGate_Lock.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Lock</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\IronGate_Part_L.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Part\Left</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\IronGate_Part_R.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Part\Right</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -767,6 +800,21 @@
     </ClCompile>
     <ClCompile Include="..\Private\Statue.cpp">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\06.Statue</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VerticalGate.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\07.VerticalGate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\IronGate.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\08.IronGate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\IronGate_Lock.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Lock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\IronGate_Part_L.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Part\Left</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\IronGate_Part_R.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Part\Right</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

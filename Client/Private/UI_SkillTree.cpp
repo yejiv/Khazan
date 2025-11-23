@@ -343,6 +343,7 @@ void CUI_SkillTree::Free()
 
 	Safe_Release(m_pBackGround);
     Safe_Release(m_pCircle_Fx);
+    Safe_Release(m_pBG_Smoke);
 
 	for (auto pTap : m_SkillTap)
 		Safe_Release(pTap);

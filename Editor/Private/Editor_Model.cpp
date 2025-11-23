@@ -820,6 +820,8 @@ void CEditor_Model::LoadNewModel(string& strPath)
         return;
     }
 
+    MODEL_DATA newModelData = m_Model_Data;
+
     std::ifstream ifs(strPath, std::ios::binary);
     if (!ifs.is_open())
     {
@@ -842,6 +844,44 @@ void CEditor_Model::LoadNewModel(string& strPath)
     // .dat 파일의 데이터를 현재 모델에 병합
     MergeModelData(datFileData, backupAnimations, backupAnimSets, newBones);
 }
+
+//void CEditor_Model::LoadNewModel(string& strPath)
+//{
+//    _char exePath[MAX_PATH];
+//    GetModuleFileNameA(NULL, exePath, MAX_PATH);
+//    filesystem::path exeDir = filesystem::path(exePath).parent_path();
+//    filesystem::path editorDefaultDir = exeDir.parent_path().parent_path() / "Default";
+//    filesystem::path clientDefaultDir = editorDefaultDir.parent_path().parent_path() / "Client" / "Default";
+//    SetCurrentDirectoryA(clientDefaultDir.string().c_str());
+//    OutputDebugStringA(("[Current Working Directory] " + clientDefaultDir.string() + "\n").c_str());
+//
+//    if (!filesystem::exists(strPath))
+//    {
+//        MSG_BOX(TEXT(".dat 파일이 존재하지 않습니다."));
+//        return;
+//    }
+//
+//    //  현재 모델(새 모델)의 데이터 백업
+//    MODEL_DATA newModelData = m_Model_Data; // 새 애니메이션이 포함된 모델
+//
+//    //  .dat 파일(기존 모델) 로드
+//    std::ifstream ifs(strPath, std::ios::binary);
+//    if (!ifs.is_open())
+//    {
+//        MSG_BOX(TEXT("binary 파일 열기 실패"));
+//        return;
+//    }
+//
+//    MODEL_DATA oldModelData = {}; // 기존 설정이 저장된 .dat
+//    oldModelData.LoadBinary(ifs);
+//    ifs.close();
+//
+//    MergeModelData(oldModelData, newModelData.vecAnimation, newModelData.vecAnimationSets, newModelData.vecBones);
+//
+//    OutputDebugStringA("=== Model Merge Complete ===\n");
+//    OutputDebugStringA(("Total Animations: " + to_string(m_Model_Data.iNumAnimations) + "\n").c_str());
+//    OutputDebugStringA(("Total Animation Sets: " + to_string(m_Model_Data.vecAnimationSets.size()) + "\n").c_str());
+//}
 
 void CEditor_Model::Update_DAT_From_JSON(string& strPath)
 {
@@ -906,23 +946,23 @@ void CEditor_Model::Update_DAT_From_JSON(string& strPath)
     }
 
     // 2. Animation JSON 로드 (파일이 있으면)
-    if (filesystem::exists(strAnimJsonPath))
-    {
-        ifstream ifs(strAnimJsonPath);
-        if (!ifs.is_open())
-        {
-            MSG_BOX(TEXT("Animation JSON 파일 열기 실패"));
-            return;
-        }
+    //if (filesystem::exists(strAnimJsonPath))
+    //{
+    //    ifstream ifs(strAnimJsonPath);
+    //    if (!ifs.is_open())
+    //    {
+    //        MSG_BOX(TEXT("Animation JSON 파일 열기 실패"));
+    //        return;
+    //    }
 
-        JSON j;
-        ifs >> j;
-        ifs.close();
+    //    JSON j;
+    //    ifs >> j;
+    //    ifs.close();
 
-        // 애니메이션 교체
-        m_Model_Data.vecAnimation = j.get<vector<ANIMATION_DATA>>();
-        m_Model_Data.iNumAnimations = static_cast<_uint>(m_Model_Data.vecAnimation.size());
-    }
+    //    // 애니메이션 교체
+    //    m_Model_Data.vecAnimation = j.get<vector<ANIMATION_DATA>>();
+    //    m_Model_Data.iNumAnimations = static_cast<_uint>(m_Model_Data.vecAnimation.size());
+    //}
 
     // 3. Material JSON 로드 (파일이 있으면)
     if (filesystem::exists(strMaterialJsonPath))
@@ -1592,6 +1632,111 @@ void CEditor_Model::MergeModelData(
     m_Model_Data.iModelType = datFileData.iModelType;
     m_Model_Data.vPreTransformMatrix = datFileData.vPreTransformMatrix;
 }
+
+//void CEditor_Model::MergeModelData(
+//    const MODEL_DATA& oldModelData,      // 기존 .dat 파일 데이터
+//    const vector<ANIMATION_DATA>& newAnimations,  // 새 모델의 애니메이션
+//    const vector<ANIMATION_SET_DATA>& newAnimSets, // 새 모델의 애니메이션 세트
+//    const vector<BONE_DATA>& newBones)   // 새 모델의 본
+//{
+//    OutputDebugStringA("=== Starting Model Merge ===\n");
+//
+//    // ========== 1. Mesh, Material은 기존 .dat 파일 것 사용 ==========
+//    m_Model_Data.vecMeshes = oldModelData.vecMeshes;
+//    m_Model_Data.vecMaterials = oldModelData.vecMaterials;
+//    m_Model_Data.iNumMeshes = oldModelData.iNumMeshes;
+//    m_Model_Data.iNumMaterials = oldModelData.iNumMaterials;
+//
+//    OutputDebugStringA(("Meshes: " + to_string(m_Model_Data.iNumMeshes) + "\n").c_str());
+//    OutputDebugStringA(("Materials: " + to_string(m_Model_Data.iNumMaterials) + "\n").c_str());
+//
+//    // ========== 2. Bone은 새 모델 것 유지 ==========
+//    m_Model_Data.vecBones = newBones;
+//    OutputDebugStringA(("Bones: " + to_string(newBones.size()) + "\n").c_str());
+//
+//    // ========== 3. 애니메이션 이름 기반 매핑 생성 ==========
+//    std::unordered_map<std::string, ANIMATION_SETUP_DATA> oldAnimSetupMap;
+//    for (const auto& oldAnim : oldModelData.vecAnimation)
+//    {
+//        oldAnimSetupMap[oldAnim.strName] = oldAnim.animSetup;
+//        OutputDebugStringA(("Old Anim: " + oldAnim.strName + "\n").c_str());
+//    }
+//
+//    // ========== 4. 새 애니메이션에 기존 설정 적용 ==========
+//    m_Model_Data.vecAnimation.clear();
+//
+//    for (const auto& newAnim : newAnimations)
+//    {
+//        ANIMATION_DATA mergedAnim = newAnim;
+//
+//        auto it = oldAnimSetupMap.find(newAnim.strName);
+//        if (it != oldAnimSetupMap.end())
+//        {
+//            // 같은 이름의 애니메이션이면 기존 setup 적용
+//            mergedAnim.animSetup = it->second;
+//            OutputDebugStringA(("Merged: " + newAnim.strName + " (with old setup)\n").c_str());
+//        }
+//        else
+//        {
+//            // 새로 추가된 애니메이션은 기본 setup 유지
+//            OutputDebugStringA(("New: " + newAnim.strName + " (default setup)\n").c_str());
+//        }
+//
+//        m_Model_Data.vecAnimation.push_back(mergedAnim);
+//    }
+//
+//    // ========== 5. Animation Set 재구성 ==========
+//    std::unordered_map<std::string, size_t> newAnimNameToIndex;
+//    for (size_t i = 0; i < m_Model_Data.vecAnimation.size(); ++i)
+//    {
+//        newAnimNameToIndex[m_Model_Data.vecAnimation[i].strName] = i;
+//    }
+//
+//    m_Model_Data.vecAnimationSets.clear();
+//
+//    for (const auto& oldAnimSet : oldModelData.vecAnimationSets)
+//    {
+//        Engine::ANIMATION_SET_DATA newAnimSet;
+//        newAnimSet.strAnimSetName = oldAnimSet.strAnimSetName;
+//
+//        // 기존 세트의 애니메이션들을 새 인덱스로 변환
+//        for (int oldIndex : oldAnimSet.vecAnimIndices)
+//        {
+//            if (oldIndex >= 0 && oldIndex < (int)oldModelData.vecAnimation.size())
+//            {
+//                const std::string& animName = oldModelData.vecAnimation[oldIndex].strName;
+//
+//                auto it = newAnimNameToIndex.find(animName);
+//                if (it != newAnimNameToIndex.end())
+//                {
+//                    newAnimSet.vecAnimIndices.push_back(static_cast<int>(it->second));
+//                }
+//                else
+//                {
+//                    OutputDebugStringA(("Warning: Animation '" + animName + "' not found in new model\n").c_str());
+//                }
+//            }
+//        }
+//
+//        if (!newAnimSet.vecAnimIndices.empty())
+//        {
+//            m_Model_Data.vecAnimationSets.push_back(newAnimSet);
+//            OutputDebugStringA(("AnimSet: " + newAnimSet.strAnimSetName +
+//                " (" + to_string(newAnimSet.vecAnimIndices.size()) + " anims)\n").c_str());
+//        }
+//    }
+//
+//    // ========== 6. 카운트 업데이트 ==========
+//    m_Model_Data.iNumAnimations = static_cast<unsigned int>(m_Model_Data.vecAnimation.size());
+//
+//    // ========== 7. 메타데이터는 기존 것 유지 ==========
+//    m_Model_Data.strModelFilePath = oldModelData.strModelFilePath;
+//    m_Model_Data.strModelName = oldModelData.strModelName;
+//    m_Model_Data.iModelType = oldModelData.iModelType;
+//    m_Model_Data.vPreTransformMatrix = oldModelData.vPreTransformMatrix;
+//
+//    OutputDebugStringA("=== Merge Complete ===\n");
+//}
 
 string CEditor_Model::PostProcessJSON(const string& jsonStr)
 {

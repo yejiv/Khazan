@@ -69,6 +69,8 @@ public:
     uint64 Find_BodyDesc(BodyID id);
     void Remove_BodyDesc(BodyID id);
 
+    void Destroy_Body(BodyID id);
+
 public:
     _bool RayCast(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition, _float3* outNormal = nullptr);
 

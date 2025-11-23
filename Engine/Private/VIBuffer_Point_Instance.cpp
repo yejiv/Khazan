@@ -427,7 +427,6 @@ HRESULT CVIBuffer_Point_Instance::Ready_SRV(void* pSysmem)
 	if (FAILED(m_pDevice->CreateShaderResourceView(pBuffer, &SRVDesc, &m_pSRV)))
 		return E_FAIL;
 
-	_char fullpath[MAX_PATH];
  	HRESULT     hr = {};
 	_tchar		tpath[MAX_PATH] = {};
 	MultiByteToWideChar(CP_UTF8, 0, m_sData.pNoiseFilePath, -1, tpath, 100);

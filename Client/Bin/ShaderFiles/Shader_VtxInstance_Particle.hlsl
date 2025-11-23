@@ -44,6 +44,7 @@ struct VS_OUT
     float4 vWorldPos : TEXCOORD1;
     float2 vLifeTime : TEXCOORD2;
     float bDead : TEXCOORD3;
+    float4 vProjPos : TEXCOORD4;
 };
 
 struct VS_NORMAL_OUT
@@ -71,6 +72,7 @@ VS_OUT VS_MAIN(VS_IN In)
     float4 vNormal = normalize(mul(float4(In.vNormal, 0.f), In.TransformMatrix));
     
     Out.vPosition = mul(vPosition, matWVP);
+    Out.vProjPos = Out.vPosition;
     Out.vNormal = normalize(mul(vNormal, g_WorldMatrix));
     Out.vTexcoord = In.vTexcoord;
     Out.vWorldPos = mul(vPosition, g_WorldMatrix);
@@ -115,12 +117,13 @@ struct PS_IN
     float4 vWorldPos : TEXCOORD1;
     float2 vLifeTime : TEXCOORD2;
     float bDead : TEXCOORD3;
+    float4 vProjPos : TEXCOORD4;
 };
 
 struct PS_OUT
 {
-    float4 vColor : SV_TARGET0;
-    float4 vEmissiveColor : SV_TARGET1; 
+    float4 vAccumColor : SV_TARGET0;
+    float4 vAccumAlpha : SV_TARGET1;
 };
 
 struct PS_NORMAL_IN
@@ -214,14 +217,15 @@ PS_OUT PS_MAIN(PS_IN In)
     if (vFinalColor.a <= 0.f)
         discard;
 
+    //Out.vColor = vFinalColor * (g_vSourceColor.a + 1);
+    vFinalColor.xyz *= (g_vSourceColor.a + 1);
     
-    //vFinalColor.a *= 0.2f;
-    
-    // 0 ~ 1 -> 1 ~  3
-    // (g_vSourceColor.a * 2  + 1);
-    Out.vColor = vFinalColor * (g_vSourceColor.a + 1);
-    //Out.vEmissiveColor = vFinalColor * 3.f;
-    //Out.vEmissiveColor.a = 1;
+    //float weight = vFinalColor.a * max(1e-5, (1 - In.vPosition.z));
+    float z = In.vProjPos.z / In.vProjPos.w; // 0.1 depth
+    //float weight = max(1e-5, exp(-z * 0.75f));
+    float weight = max(1e-5, exp(-z * 0.75f));
+    Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a, vFinalColor.a) * weight;
+    Out.vAccumAlpha.r = vFinalColor.a;
     
     return Out;
 }
@@ -253,8 +257,16 @@ PS_OUT PS_PRESNEL(PS_IN In)
         discard;
 
     //Out.vColor = vFinalColor;
-    Out.vColor = vFinalColor * (g_vSourceColor.a + 1);
+    //Out.vColor = vFinalColor * (g_vSourceColor.a + 1);
 
+    vFinalColor.xyz *= (g_vSourceColor.a + 1);
+    
+    float z = In.vProjPos.z / In.vProjPos.w;
+    //float weight = max(1e-5, (1 - z));
+    float weight = max(1e-5, exp(-z * 0.75f));
+    Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a, vFinalColor.a) * weight;
+    Out.vAccumAlpha.r = vFinalColor.a;
+    
     return Out;
 }
 
@@ -287,8 +299,8 @@ technique11 DefaultTechnique
     pass DefaultPass
     {
         SetRasterizerState(RS_Cull_None);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_DepthTestOnly, 0);
+        SetBlendState(BS_WeightBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
@@ -298,8 +310,8 @@ technique11 DefaultTechnique
     pass FresnelPass
     {
         SetRasterizerState(RS_Cull_None);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_DepthTestOnly, 0);
+        SetBlendState(BS_WeightBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;

@@ -47,21 +47,21 @@ HRESULT CRenderer::Initialize()
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Specular"), 150.0f, 750.0f, 300.f, 300.f)))
         return E_FAIL;
-
+    
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Shade"), 450.0f, 150.0f, 300.f, 300.f)))
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_SSAO"), 450.0f, 450.0f, 300.f, 300.f)))
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_SpecularLight"), 450.0f, 750.0f, 300.f, 300.f)))
         return E_FAIL;
-
+    
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_PostScene"), 750.0f, 150.0f, 300.f, 300.f)))
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Outline"), 750.0f, 450.0f, 300.f, 300.f)))
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Emissive"), 750.0f, 750.0f, 300.f, 300.f)))
         return E_FAIL;
-
+    
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Fog"), 1050.0f, 150.0f, 300.f, 300.f)))
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Combined"), 1050.0f, 450.0f, 300.f, 300.f)))
@@ -69,15 +69,21 @@ HRESULT CRenderer::Initialize()
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Velocity"), 1050.0f, 750.0f, 300.f, 300.f)))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Brightness"), 1350.0f, 150.0f, 300.f, 300.f)))
-        return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_BlurX"), 1350.0f, 450.0f, 300.f, 300.f)))
-        return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Bloom"), 1350.0f, 750.0f, 300.f, 300.f)))
-        return E_FAIL;
+    //if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Brightness"), 1350.0f, 150.0f, 300.f, 300.f)))
+    //    return E_FAIL;
+    //if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_BlurX"), 1350.0f, 450.0f, 300.f, 300.f)))
+    //    return E_FAIL;
+    //if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Bloom"), 1350.0f, 750.0f, 300.f, 300.f)))
+    //    return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Ready_Shadow_Debug(m_fViewportWidth - 150.0f, 150.0f, 300.f, 300.f)))
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_AccumColor"), 1350.0f, 150.0f, 300.f, 300.f)))
         return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_AccumAlpha"), 1350.0f, 450.0f, 300.f, 300.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Depth"), 1350.0f, 750.0f, 300.f, 300.f)))
+        return E_FAIL;
+    //if (FAILED(m_pGameInstance->Ready_Shadow_Debug(m_fViewportWidth - 150.0f, 150.0f, 300.f, 300.f)))
+    //    return E_FAIL;
 #endif
 
     return S_OK;
@@ -174,6 +180,12 @@ HRESULT CRenderer::Draw()
     if (FAILED(Render_MotionTrail()))
     {
         MSG_BOX(TEXT("Failed To Render MotionTrail"));
+        return E_FAIL;
+    }
+
+    if (FAILED(Render_WeightBlend()))
+    {
+        MSG_BOX(TEXT("Failed To Render WeightBlend"));
         return E_FAIL;
     }
 
@@ -626,6 +638,46 @@ HRESULT CRenderer::Render_MotionTrail()
     return S_OK;
 }
 
+HRESULT CRenderer::Render_WeightBlend()
+{
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_WeightBlend"))))
+        return E_FAIL;
+
+    for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::WEIGHT_BLEND)])
+    {
+        if (nullptr != pRenderObject)
+            pRenderObject->Render();
+
+        Safe_Release(pRenderObject);
+    }
+
+    m_RenderObjects[ENUM_CLASS(RENDERGROUP::WEIGHT_BLEND)].clear();
+
+    if (FAILED(m_pGameInstance->End_MRT()))
+        return E_FAIL;
+
+
+    // [2] AccColor, AccAlpha Resolve
+
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_AccumColor"), m_pShader, "g_AccumColorTexture")))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_AccumAlpha"), m_pShader, "g_AccumAlphaTexture")))
+        return E_FAIL;
+
+    m_pShader->Begin(16);
+    m_pVIBuffer->Bind_Resources();
+    m_pVIBuffer->Render();
+
+    if (FAILED(m_pGameInstance->End_MRT()))
+        return E_FAIL;
+
+    return S_OK;
+}
+
 HRESULT CRenderer::Render_Blend()
 {
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
@@ -992,6 +1044,14 @@ HRESULT CRenderer::Ready_RenderTargets()
     if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_Velocity"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
+    /* RT_AccumColor */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_AccumColor"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
+        return E_FAIL;
+
+    /* RT_AccumAlpha */ 
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_AccumAlpha"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(1.0f, 1.0f, 1.0f, 1.0f))))
+        return E_FAIL;
+    
     return S_OK;
 }
 
@@ -1078,6 +1138,13 @@ HRESULT CRenderer::Ready_MRTs()
 
     /* MRT_Velocity */
     if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Velocity"), TEXT("RT_Velocity"))))
+        return E_FAIL;
+
+    /* MRT_WeightBlend */
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_WeightBlend"), TEXT("RT_AccumColor"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_WeightBlend"), TEXT("RT_AccumAlpha"))))
         return E_FAIL;
 
     return S_OK;

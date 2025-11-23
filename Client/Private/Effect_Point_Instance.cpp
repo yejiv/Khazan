@@ -269,6 +269,9 @@ HRESULT CEffect_Point_Instance::Bind_ShaderResources()
     if (FAILED(m_pDissolveTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DisolveTexture", m_sData.sDissolveData.iDissolveTextureIdx)))
         return E_FAIL;
 
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Depth"), m_pShaderCom, "g_DepthTexture")))
+        return E_FAIL;
+
     return S_OK;
 }
 

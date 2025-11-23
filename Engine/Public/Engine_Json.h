@@ -436,7 +436,7 @@ namespace Engine
         unsigned int            iTransitionType = { 0 };                    // 전환 조건 (0:Auto, 1:Flag, 2:Input, 3:Manual)
         bool                    isWaitForComplete = { false };               // 완료 대기 여부 true: 전환할 때 애니메이션이 다 끝나고 전환하겠다. / false : 바로 전환하겠다.
         float                   fBlendOutTime = { 0.15f };                  // 블렌드 아웃 시간 (애니메이션 최소보장 시간으로 바꿔 사용하겠음)
-        float                   fBlendInTime = { 0.15f };                   // 블렌드 인 시간
+        float                   fBlendInTime = { 0.15f };                   // 블렌드 인 시간 (애니메이션중 가장 빠르게 변할 수 있는 시간 (ex. 닷지애니메이션 연계))
 
         /* 루트 모션 */
         bool                    isRootMotion = { true };                   // 루트 모션 사용 여부

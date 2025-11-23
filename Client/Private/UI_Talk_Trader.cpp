@@ -480,7 +480,9 @@ CGameObject* CUI_Talk_Trader::Clone(void* pArg)
 
 void CUI_Talk_Trader::Free()
 {
-    CClientInstance::GetInstance()->Release_RootUI(AnsiToWString(m_szName));
+    if (m_szName != "")
+        CClientInstance::GetInstance()->Release_RootUI(AnsiToWString(m_szName));
+
     __super::Free();
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pTextureCom);

@@ -45,6 +45,7 @@ struct GS_OUT
 {
     float4 vPosition : SV_POSITION;
     float2 vTexcoord : TEXCOORD0; 
+    float4 vProjPos : TEXCOORD1;
 };
 
 [maxvertexcount(6)]
@@ -66,19 +67,23 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
     matrix matrVP = mul(g_ViewMatrix, g_ProjMatrix);
     
     Out[0].vPosition = mul(In[0].vPosition + vRight + vUp, matrVP);
+    Out[0].vProjPos = Out[0].vPosition;
     Out[0].vTexcoord = float2(0.f, 0.f);
     Out[0].vTexcoord = float2(startU, startV) + (Out[0].vTexcoord * float2(Width, Height));
     
     
     Out[1].vPosition = mul(In[0].vPosition - vRight + vUp, matrVP);
+    Out[1].vProjPos = Out[1].vPosition;
     Out[1].vTexcoord = float2(1.f, 0.f);
     Out[1].vTexcoord = float2(startU, startV) + (Out[1].vTexcoord * float2(Width, Height)); 
     
     Out[2].vPosition = mul(In[0].vPosition - vRight - vUp, matrVP);
+    Out[2].vProjPos = Out[2].vPosition;
     Out[2].vTexcoord = float2(1.f, 1.f);
     Out[2].vTexcoord = float2(startU, startV) + (Out[2].vTexcoord * float2(Width, Height)); 
     
     Out[3].vPosition = mul(In[0].vPosition + vRight - vUp, matrVP);
+    Out[3].vProjPos = Out[3].vPosition;
     Out[3].vTexcoord = float2(0.f, 1.f);
     Out[3].vTexcoord = float2(startU, startV) + (Out[3].vTexcoord * float2(Width, Height)); 
     
@@ -97,12 +102,13 @@ struct PS_IN
 {
     float4 vPosition : SV_POSITION;
     float2 vTexcoord : TEXCOORD0;
+    float4 vProjPos : TEXCOORD1;
 };
 
 struct PS_OUT
 {
-    float4 vColor : SV_TARGET0;
-    
+    float4 vAccumColor : SV_TARGET0;
+    float4 vAccumAlpha : SV_TARGET1;
 };
 
 PS_OUT PS_MAIN_BLEND(PS_IN In)
@@ -117,8 +123,16 @@ PS_OUT PS_MAIN_BLEND(PS_IN In)
 
     float vDestAlpha = max(max(vMask.r, vMask.g), vMask.b);
     
-    Out.vColor = vFinalColor * (g_vSourceColor.a + 1);
-       
+    if (vFinalColor.a <= 0)
+        discard;
+
+    vFinalColor.xyz *= (g_vSourceColor.a + 1);
+    
+    float z = In.vProjPos.z / In.vProjPos.w;
+    float weight = max(1e-5, exp(-z * 0.75f));
+    Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a, vFinalColor.a) * weight;
+    Out.vAccumAlpha.r = vFinalColor.a;
+    
     return Out;
 }
 
@@ -127,8 +141,8 @@ technique11 DefaultTechnique
     pass DefaultPass
     {
         SetRasterizerState(RS_Cull_None);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_DepthTestOnly, 0);
+        SetBlendState(BS_WeightBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = compile gs_5_0 GS_MAIN();
         PixelShader = compile ps_5_0 PS_MAIN_BLEND();

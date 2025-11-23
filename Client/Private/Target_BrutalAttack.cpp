@@ -201,8 +201,7 @@ HRESULT CTarget_BrutalAttack::Ready_GameObject()
 
 	m_pProgress = static_cast<CBrutalAttack_Progress*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_BrutalAttack_Progress"), &Desc));
 	
-	Add_Child(m_pProgress);
-	Safe_AddRef(m_pProgress);
+    Add_Child(m_pProgress);
 
 	CUIObject::UIOBJECT_DESC PointDesc = {};
 	PointDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
@@ -215,7 +214,6 @@ HRESULT CTarget_BrutalAttack::Ready_GameObject()
 	m_pPoint->Set_ShaderPass(3);
 
 	Add_Child(m_pPoint);
-	Safe_AddRef(m_pPoint);
 
 	PointDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
 	PointDesc.szName = "PointBG";
@@ -227,7 +225,6 @@ HRESULT CTarget_BrutalAttack::Ready_GameObject()
 	m_pPointBg->Set_ShaderPass(4);
 	m_pPointBg->Set_Color({ 1.f, 0.f, 0.f, 0.5f });
 	Add_Child(m_pPointBg);
-	Safe_AddRef(m_pPointBg);
 
 	PointDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
 	PointDesc.szName = "PointFront";
@@ -239,7 +236,6 @@ HRESULT CTarget_BrutalAttack::Ready_GameObject()
 	m_pPointfront->Set_ShaderPass(4);
 	m_pPointfront->Set_Color({ 1.f, 1.f, 1.f, 1.f });
 	Add_Child(m_pPointfront);
-	Safe_AddRef(m_pPointfront);
 	return S_OK;
 }
 
@@ -274,7 +270,6 @@ void CTarget_BrutalAttack::Free()
 	Safe_Release(m_pVIBufferCom);
 
 	Safe_Release(m_pProgress);
-
 	Safe_Release(m_pPointBg);
 	Safe_Release(m_pPoint);
 	Safe_Release(m_pPointfront);

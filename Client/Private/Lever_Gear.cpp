@@ -36,6 +36,7 @@ HRESULT CLever_Gear::Initialize_Clone(void* pArg)
     m_eAnimState = ANIM_STATE::IDLE1;
     m_pModelCom->Set_Animation(ANIM_STATE::IDLE1);
     m_pModelCom->Set_AnimationLoop(true);
+    m_pModelCom->Set_AnimationBlend(false);
 
     switch (m_iEventID)
     {
