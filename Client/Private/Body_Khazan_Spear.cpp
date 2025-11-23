@@ -82,6 +82,7 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
     m_pModelCom->WarmupAnimations();
 
     m_pParentTransform->Set_State(STATE::POSITION, XMVectorSet(0.f, 0.f, 0.f, 0.f));
+
     return S_OK;
 }
 
@@ -108,6 +109,16 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
         m_isCollision = false;
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("BloodHit"), XMLoadFloat4(&m_fCollisionPos));
     }
+
+    m_pMotionTrailCom->Update(fTimeDelta);
+
+    // TEST
+    if (CKhazan_Spear::CHARGING_SPRINT & *m_pParentStatus)
+        m_pMotionTrailCom->Start_MotionTrail(0.5f);
+    if (CKhazan_Spear::BACK_DODGE & *m_pParentStatus)
+        m_pMotionTrailCom->Start_MotionTrail(0.5f);
+    if (CKhazan_Spear::CHARGING_STRONG_ATTACK & *m_pParentStatus)
+        m_pMotionTrailCom->Start_MotionTrail(2.5f);
 }
 
 void CBody_Khazan_Spear::Late_Update(_float fTimeDelta)
@@ -137,34 +148,6 @@ HRESULT CBody_Khazan_Spear::Render()
 {
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
-
-
-    /* test after image */
-
-    for (size_t i = 0; i < 10; i++)
-    {
-        if (m_pModelCom->Restore_Frame(i))
-        {
-            // 본 행렬 바인딩 (복원된 상태로)
-            _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
-            for (_uint j = 0; j < iNumMeshes; j++)
-            {
-                if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", j)))
-                    continue;
-            }
-
-            // 파츠 렌더링
-            Render_Part(m_pModelCom_Arm);
-            Render_Part(m_pModelCom_Face);
-            Render_Part(m_pModelCom_Hair);
-            Render_Part(m_pModelCom_Leg);
-            Render_Part(m_pModelCom_Shoes);
-            Render_Part(m_pModelCom_Torso);
-        }
-    }
-
-
-
 
     _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -546,6 +529,31 @@ _bool CBody_Khazan_Spear::Check_BrutalAttack(_float fTimeDelta)
     return false;
 }
 
+const MOTIONTRAIL_CONFIG& CBody_Khazan_Spear::Get_MotionTrailConfig()
+{
+    return m_pMotionTrailCom->Get_Config();
+}
+
+void CBody_Khazan_Spear::Set_MotionTrailConfig(const MOTIONTRAIL_CONFIG& Config)
+{
+    m_pMotionTrailCom->Set_Config(Config);
+}
+
+void CBody_Khazan_Spear::Set_EnableMotionTrail(_bool isEnable)
+{
+    m_pMotionTrailCom->Set_Enable(isEnable);
+}
+
+_bool CBody_Khazan_Spear::isEnableMotionTrail()
+{
+    return m_pMotionTrailCom->isEnable();
+}
+
+void CBody_Khazan_Spear::Start_MotionTrail(_float fDuration)
+{
+    m_pMotionTrailCom->Start_MotionTrail(fDuration);
+}
+
 void CBody_Khazan_Spear::Update_Collider(_float fTimeDelta)
 {
     _matrix matParent = XMLoadFloat4x4(m_pParentMatrix);
@@ -739,8 +747,6 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
         TEXT("Com_Mode7"), reinterpret_cast<CComponent**>(&m_pModelCom_Torso), nullptr)))
         return E_FAIL;
 
-
-
     m_pModelCom->Attach_Part(m_pModelCom_Arm);
     m_pModelCom->Attach_Part(m_pModelCom_Face);
     m_pModelCom->Attach_Part(m_pModelCom_Hair);
@@ -748,13 +754,34 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
     m_pModelCom->Attach_Part(m_pModelCom_Shoes);
     m_pModelCom->Attach_Part(m_pModelCom_Torso);
 
-
     CMeshTrail::TRAIL_DESC MeshDsc;
     MeshDsc.iTextureIdx = 9;
     MeshDsc.fLifeTime = .25f;
     MeshDsc.iDivisionCount = 10.f;
-
     m_pTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDsc));
+
+    CMotionTrail::MOTIONTRAIL_DESC MTDesc{};
+    MTDesc.pOwnerMasterModel = m_pModelCom;
+    MTDesc.HasPartModels = true;
+    MTDesc.OwnerPartModels.push_back(m_pModelCom_Arm);
+    MTDesc.OwnerPartModels.push_back(m_pModelCom_Face);
+    MTDesc.OwnerPartModels.push_back(m_pModelCom_Hair);
+    MTDesc.OwnerPartModels.push_back(m_pModelCom_Leg);
+    MTDesc.OwnerPartModels.push_back(m_pModelCom_Shoes);
+    MTDesc.OwnerPartModels.push_back(m_pModelCom_Torso);
+    MTDesc.Config.vLifeTime = { 0.f, 0.3f };
+    MTDesc.Config.vStartColor = { 1.f, 1.f, 1.f };
+    MTDesc.Config.vTargetColor = { 1.f, 1.f, 1.f };
+    MTDesc.Config.fRimPower = 2.f;
+    MTDesc.Config.fRimIntensity = 1.f;
+    MTDesc.Config.fEmissiveIntensity = 2.f;
+    MTDesc.Config.isIndividualColor = true;
+    MTDesc.Config.fColorUpdateSpeed = 1000.f;
+    MTDesc.Config.fInterval = 0.05f;
+    MTDesc.Config.iMaxFrames = 10.f;
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_MotionTrail"),
+        TEXT("Com_MotionTrail"), reinterpret_cast<CComponent**>(&m_pMotionTrailCom), &MTDesc)))
+        return E_FAIL;
 
     return S_OK;
 }
@@ -1256,6 +1283,8 @@ CGameObject* CBody_Khazan_Spear::Clone(void* pArg)
 void CBody_Khazan_Spear::Free()
 {
     __super::Free();
+
+    Safe_Release(m_pMotionTrailCom);
 
     Safe_Release(m_pBodyCom_Search);
     Safe_Release(m_pBodyCom_SpearPole);

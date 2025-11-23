@@ -842,19 +842,24 @@ void CModel::Update_PartLocalBones()
 
 void CModel::Capture_CurrentFrameMatrices(vector<_float4x4>& OutBoneMatrices, _float4x4* pOutWorldMatrix)
 {
-    if (!m_isMaterSkeleton)  // 마스터만 캡처
-        return;
-
-    OutBoneMatrices.clear();
-    OutBoneMatrices.reserve(m_Bones.size());
-
-    for (auto pBone : m_Bones)
+    if (m_isMaterSkeleton || m_pTransformMatrix)  // 마스터만 캡처
     {
-        OutBoneMatrices.push_back(*pBone->Get_CombinedTransformationMatrixPtr());
-    }
+        OutBoneMatrices.clear();
+        OutBoneMatrices.reserve(m_Bones.size());
 
-    if (nullptr != pOutWorldMatrix)
-        *pOutWorldMatrix = *m_pOwnerTransform->Get_WorldMatrixPtr();
+        for (auto pBone : m_Bones)
+        {
+            OutBoneMatrices.push_back(*pBone->Get_CombinedTransformationMatrixPtr());
+        }
+
+        if (nullptr != pOutWorldMatrix)
+        {
+            if (nullptr != m_pOwnerTransform)
+                *pOutWorldMatrix = *m_pOwnerTransform->Get_WorldMatrixPtr();
+            else
+                *pOutWorldMatrix = *m_pTransformMatrix;
+        }
+    }
 }
 
 _bool CModel::Restore_Frame(const vector<_float4x4>& SnapshotBoneMatrices)

@@ -256,7 +256,6 @@ HRESULT CE_Body_Khazan_Spear::Ready_Components()
     m_pModelCom->Attach_Part(m_pModelCom_Torso);
 
     CMotionTrail::MOTIONTRAIL_DESC MTDesc{};
-    
     MTDesc.pOwnerMasterModel = m_pModelCom;
     MTDesc.HasPartModels = true;
     MTDesc.OwnerPartModels.push_back(m_pModelCom_Arm);

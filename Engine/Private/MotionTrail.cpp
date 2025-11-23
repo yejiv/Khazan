@@ -172,14 +172,30 @@ HRESULT CMotionTrail::Render()
             // 본 행렬 바인딩 (복원된 상태로)
             _uint iNumMeshes = m_pOwnerMasterModel->Get_NumMeshes();
 
-            for (_uint j = 0; j < iNumMeshes; ++j)
+            if (true == m_HasPartModels)
             {
-                if (FAILED(m_pOwnerMasterModel->Bind_BoneMatrices(m_pShader, "g_BoneMatrices", j)))
-                    continue;
-            }
+                for (_uint j = 0; j < iNumMeshes; ++j)
+                {
+                    if (FAILED(m_pOwnerMasterModel->Bind_BoneMatrices(m_pShader, "g_BoneMatrices", j)))
+                        continue;
+                }
 
-            for (auto& pModel : m_OwnerPartModels)
-                Render_PartModel(pModel);
+                for (auto& pModel : m_OwnerPartModels)
+                    Render_PartModel(pModel);
+            }
+            else
+            {
+                for (_uint j = 0; j < iNumMeshes; ++j)
+                {
+                    m_pOwnerMasterModel->Bind_Materials(m_pShader, "g_NormalTexture", j, aiTextureType_NORMALS, 0);
+
+                    if (FAILED(m_pOwnerMasterModel->Bind_BoneMatrices(m_pShader, "g_BoneMatrices", j)))
+                        continue;
+
+                    m_pShader->Begin(0);
+                    m_pOwnerMasterModel->Render(j);
+                }
+            }
         }
     }
 

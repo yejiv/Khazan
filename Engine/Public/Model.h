@@ -99,6 +99,7 @@ public:
     _float4x4* Get_OwnerWorldMatrix() const {
         return m_pOwnerTransformMatrix;
     }
+    void                Set_Transform(const _float4x4* pMat) { m_pTransformMatrix = pMat; }
 
     _vector Get_BoneWorldRotationQuat(_int iBone) const;
 
@@ -166,6 +167,7 @@ private:
     _wstring							m_strModelFilePath{};
     MODELTYPE							m_eModelType = {};
     _float4x4							m_PreTransformMatrix = {};
+    const _float4x4*					m_pTransformMatrix = {};    //나의 트랜스폼
     _uint								m_iRootBoneIndex = { 0 };
 
     /* 매쉬 */
