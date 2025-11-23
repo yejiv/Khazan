@@ -264,4 +264,5 @@ void CProjectile_Boomarang::Free()
 
     Safe_Release(m_pTarget);
     Safe_Release(m_fEffect);
+    Safe_Release(m_pBody);
 }

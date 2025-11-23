@@ -68,7 +68,7 @@ private :
 	ID3D11Buffer*						m_pStagingBuffer = { nullptr };		//CB -> Cpu Read용
 	POINT_INSTANCE_PARAMS*				m_pParticleParams;
 
-	ID3D11Buffer*						m_pDebugStagingBuffer = { nullptr }; //debug
+	//ID3D11Buffer*						m_pDebugStagingBuffer = { nullptr }; //debug
 
     ID3D11SamplerState*                 m_pLinearWrapSampler;
 private:

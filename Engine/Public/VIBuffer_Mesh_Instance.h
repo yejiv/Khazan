@@ -71,14 +71,14 @@ private:
 	ID3D11Buffer*				m_pStructuredBuffer = { nullptr };
 	ID3D11Buffer*				m_pSpeedBuffer = { nullptr };
 	ID3D11Buffer*				m_pStagingBuffer = { nullptr };
-	ID3D11Buffer*               m_pDebugInstanceBuffer = { nullptr };
+	//ID3D11Buffer*               m_pDebugInstanceBuffer = { nullptr };
 	//Debug
 	//ID3D11Buffer*				m_pDebugInstanceBuffer = { nullptr };
 	MESH_INSTANCE_PARAMS*		m_pParticleParams;
     ID3D11SamplerState*         m_pLinearWrapSampler;
 
 private:
-	_float3*					m_pVertexPositions = { nullptr };
+	//_float3*					m_pVertexPositions = { nullptr };
 	POINT_MESH_DESC				m_sData;
     _bool                       m_bLoop;
 
