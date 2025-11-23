@@ -1036,6 +1036,9 @@
     <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Bottom\Support">
       <UniqueIdentifier>{126aa4e2-07d9-455f-a2f8-4ea073d3d567}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\10.GearGate">
+      <UniqueIdentifier>{0b2d171c-7a2b-4cc9-9976-4831e2bb9379}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1994,6 +1997,9 @@
     <ClInclude Include="..\Public\Ladder_Top.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Top</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\GearGate.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\10.GearGate</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -2931,6 +2937,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Ladder_Top.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Top</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GearGate.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\10.GearGate</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

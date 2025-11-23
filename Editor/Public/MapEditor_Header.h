@@ -30,7 +30,6 @@
 
 #include "Lever.h"                      // 레버 옆 기어 돌리는 레버
 #include "Lever_Gear.h"                 // 레버 옆 기어, 다 돌면 문쪽 기어 돌림
-#include "Door_Gear.h"                  // 레버 옆 기어, 다 돌면 문쪽 기어 돌림
 
 #include "Statue.h"                     // 조각상 퍼즐 ( 렌더 X ) ( 회전 애니메이션만 )
 #include "Statue_Plate.h"               // 조각상 퍼즐 발판
@@ -48,6 +47,9 @@
 #include "Ladder_Middle.h"              // 사다리 중간 다리들 ( 1개씩 )
 #include "Ladder_Bottom.h"              // 사다리 아래쪽 ( 뼈 O )
 #include "Ladder_Support.h"             // 사다리 아래쪽 발판
+
+#include "GearGate.h"                   // 문쪽 기어 작동 완료하면 열리는 문
+#include "Door_Gear.h"                  // 문쪽 기어, 레버랑 기어 완료되면 해당 기어 가동
 
 // Properties Test
 #include "Prop_Test.h"

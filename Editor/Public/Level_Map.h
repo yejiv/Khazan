@@ -130,6 +130,12 @@ private:
     _float m_fLadderMiddleHeight = {};
     _float m_fLadderMiddleHeightOffset = {};
 
+    _int m_iLeftGearEventID = {};
+    _int m_iFixLeftGearEventID = {};
+
+    _int m_iRightGearEventID = {};
+    _int m_iFixRightGearEventID = {};
+
 #pragma endregion
 
 #pragma region Object 수정 변수

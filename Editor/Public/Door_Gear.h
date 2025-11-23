@@ -1,11 +1,16 @@
 #pragma once
 
 #include "Editor_Defines.h"
-#include "Prop_Interactive.h"
+#include "PartObject.h"
+
+NS_BEGIN(Engine)
+class CModel;
+class CShader;
+NS_END
 
 NS_BEGIN(Editor)
 
-class CDoor_Gear final : public CProp_Interactive
+class CDoor_Gear final : public CPartObject
 {
 private:
     enum ANIM_STATE
@@ -17,9 +22,14 @@ private:
     };
 
 public:
-    typedef struct tagDoorGearDesc : public CProp_Interactive::PROP_INTERACTIVE_DESC
+    typedef struct tagDoorGearDesc : public CPartObject::PARTOBJECT_DESC
     {
+        LEVEL eLevel{ LEVEL::END };
 
+        _float4x4* pSocketMatrix{ nullptr };
+
+        _bool* pUnLock{ nullptr };
+        _int iEventID{};
 
     }DOOR_GEAR_DESC;
 
@@ -36,10 +46,26 @@ public:
     virtual void Late_Update(_float fTimeDelta) override;
     virtual HRESULT Render() override;
 
-    ANIM_STATE m_eAnimState = { ANIM_STATE::IDLE1 };
+    _int Get_EventID() { return m_iEventID; }
+    void Set_EventID(_int iEventID) { m_iEventID = iEventID; }
 
 private:
-    virtual HRESULT Ready_Components(void* pArg) override;
+    CModel* m_pModelCom = { nullptr };
+    CShader* m_pShaderCom = { nullptr };
+
+    ANIM_STATE m_eAnimState = { ANIM_STATE::IDLE1 };
+
+    _float4x4* m_pSocketMatrix = { nullptr };
+
+    _bool* m_pUnLock = { nullptr };
+
+    _int m_iEventID = {};
+
+private:
+    HRESULT Ready_Components(void* pArg);
+
+    HRESULT Bind_ShaderResources();
+    HRESULT Bind_Materials(_uint iMeshIndex);
 
 public:
     static CDoor_Gear* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
