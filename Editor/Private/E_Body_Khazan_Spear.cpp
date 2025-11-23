@@ -1,8 +1,6 @@
-
 #include "E_Body_Khazan_Spear.h"
 #include "E_Khazan_Spear.h"
 #include "GameInstance.h"
-
 
 CE_Body_Khazan_Spear::CE_Body_Khazan_Spear(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CPartObject{ pDevice, pContext }
@@ -10,10 +8,8 @@ CE_Body_Khazan_Spear::CE_Body_Khazan_Spear(ID3D11Device* pDevice, ID3D11DeviceCo
 }
 
 CE_Body_Khazan_Spear::CE_Body_Khazan_Spear(const CE_Body_Khazan_Spear& Prototype)
-    : CPartObject{ Prototype }
-    
+    : CPartObject(Prototype)
 {
-
 }
 
 _float4x4* CE_Body_Khazan_Spear::Get_BoneMatrix(const _char* pBoneName)
@@ -68,49 +64,13 @@ void CE_Body_Khazan_Spear::Update(_float fTimeDelta)
 
     Update_CombinedMatrix();
 
-    // Test
-    m_pModelCom->Set_SnapshotInterval(0.25f);
-    m_pModelCom->Set_LifeTime(1.f);
-    m_fColorUpdateSpeed = 100.f;
-
-    if (m_pGameInstance->Key_Down(DIK_EQUALS))
-        m_isIndividualColor = !m_isIndividualColor;
-
-    if (true == m_isIndividualColor)
-    {
-        _vector vStartColor = XMVectorSet(1.f, 0.f, 0.f, 1.f);
-        _vector vTargetColor = XMVectorSet(1.f, 1.f, 0.f, 0.f);
-
-        //  m_fColorRatio += fTimeDelta * m_fColorUpdateSpeed;
-        //  
-        //  if (m_fColorRatio >= 1.f)
-        //      m_fColorRatio = 0.f;
-
-        m_fTimeAcc += fTimeDelta;
-        _float fRadian = XMConvertToRadians(m_fTimeAcc * m_fColorUpdateSpeed);
-        _float fRatio = cosf(fRadian) * 0.5f + 0.5f;
-
-        _vector vFinalColor = XMVectorLerp(vStartColor, vTargetColor, fRatio);
-        _float3 vResultColor{};
-        XMStoreFloat3(&vResultColor, vFinalColor);
-
-        m_pModelCom->Set_StartColor(vResultColor);
-        m_pModelCom->Set_TargetColor(vResultColor);
-    }
-    else
-    {
-        m_pModelCom->Set_StartColor(_float3(1.f, 0.f, 1.f));
-        m_pModelCom->Set_TargetColor(_float3(0.f, 0.f, 1.f));
-    }
-
-    m_fRimPower = 2.f;
-    m_fRimIntensity = 1.f;
-    m_fEmissiveIntensity = 2.f;
     if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
     {
         m_isEnableMotionTrail = !m_isEnableMotionTrail;
-        m_pModelCom->Set_EnableAfterImage(m_isEnableMotionTrail);
+        m_pMotionTrailCom->Set_Enable(m_isEnableMotionTrail);
     }
+    
+    m_pMotionTrailCom->Update(fTimeDelta);
 }
 
 void CE_Body_Khazan_Spear::Late_Update(_float fTimeDelta)
@@ -119,9 +79,6 @@ void CE_Body_Khazan_Spear::Late_Update(_float fTimeDelta)
         return;
 
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
-        return;
-
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::MOTIONTRAIL, this)))
         return;
 }
 
@@ -191,59 +148,6 @@ HRESULT CE_Body_Khazan_Spear::Render_Shadow()
     return S_OK;
 }
 
-HRESULT CE_Body_Khazan_Spear::Render_MotionTrail()
-{
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
-        return E_FAIL;
-
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
-        return E_FAIL;
-
-    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimPower", &m_fRimPower, sizeof(_float))))
-        return E_FAIL;
-
-    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimLightIntensity", &m_fRimIntensity, sizeof(_float))))
-        return E_FAIL;
-
-    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &m_fEmissiveIntensity, sizeof(_float))))
-        return E_FAIL;
-
-    // 백업
-    m_pModelCom->Cache_CurrentBoneMatrices();
-
-    for (size_t i = 0; i < 10; i++)
-    {
-        if (m_pModelCom->Restore_Frame(i))
-        {
-            m_pModelCom->Bind_PrevFrameWorldMatrix(m_pShaderCom, "g_WorldMatrix", i);
-
-            // LifeTime StartColor Bind
-            m_pModelCom->Bind_Snapshot_ShaderResources(m_pShaderCom, i);
-
-            // 본 행렬 바인딩 (복원된 상태로)
-            _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
-            for (_uint j = 0; j < iNumMeshes; j++)
-            {
-                if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", j)))
-                    continue;
-            }
-
-            // 파츠 렌더링
-            Render_Part_MotionTrail(m_pModelCom_Arm);
-            Render_Part_MotionTrail(m_pModelCom_Face);
-            Render_Part_MotionTrail(m_pModelCom_Hair);
-            Render_Part_MotionTrail(m_pModelCom_Leg);
-            Render_Part_MotionTrail(m_pModelCom_Shoes);
-            Render_Part_MotionTrail(m_pModelCom_Torso);
-        }
-    }
-
-    // 복원
-    m_pModelCom->Restore_CurrentBoneMatrices();
-
-    return S_OK;
-}
-
 void CE_Body_Khazan_Spear::Render_Part(CModel* pModel)
 {
     if (nullptr == pModel)
@@ -287,26 +191,29 @@ void CE_Body_Khazan_Spear::Render_Part_Shadow(CModel* pModel)
     }
 }
 
-void CE_Body_Khazan_Spear::Render_Part_MotionTrail(CModel* pModel)
+const MOTIONTRAIL_CONFIG& CE_Body_Khazan_Spear::Get_MotionTrailConfig()
 {
-    if (nullptr == pModel)
-        return;
+    return m_pMotionTrailCom->Get_Config();
+}
 
-    pModel->Update_PartLocalBones();
+void CE_Body_Khazan_Spear::Set_MotionTrailConfig(const MOTIONTRAIL_CONFIG& Config)
+{
+    m_pMotionTrailCom->Set_Config(Config);
+}
 
-    _uint iNumMeshes = pModel->Get_NumMeshes();
+void CE_Body_Khazan_Spear::Set_EnableMotionTrail(_bool isEnable)
+{
+    m_pMotionTrailCom->Set_Enable(isEnable);
+}
 
-    for (size_t i = 0; i < iNumMeshes; i++)
-    {
-        pModel->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
+_bool CE_Body_Khazan_Spear::isEnableMotionTrail()
+{
+    return m_pMotionTrailCom->isEnable();
+}
 
-        // 마스터의 본을 자동으로 사용
-        if (FAILED(pModel->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
-            continue;
-
-        m_pShaderCom->Begin(6);
-        pModel->Render(i);
-    }
+void CE_Body_Khazan_Spear::Start_MotionTrail(_float fDuration)
+{
+    m_pMotionTrailCom->Start_MotionTrail(fDuration);
 }
 
 HRESULT CE_Body_Khazan_Spear::Ready_Components()
@@ -348,20 +255,29 @@ HRESULT CE_Body_Khazan_Spear::Ready_Components()
     m_pModelCom->Attach_Part(m_pModelCom_Shoes);
     m_pModelCom->Attach_Part(m_pModelCom_Torso);
 
-    //  CMotionTrail::MOTIONTRAIL_DESC MTDesc{};
-    //  MTDesc.vLifeTime = { 0.f, 5.f };
-    //  MTDesc.vStartColor = { 1.f, 0.f, 0.f, 1.f };
-    //  MTDesc.vTargetColor = { 0.f, 0.f, 1.f, 0.f };
-    //  MTDesc.fRimPower = 2.f;
-    //  MTDesc.fRimIntensity = 1.f;
-    //  MTDesc.fEmissiveIntensity = 2.f;
-    //  // ========== Update 작성 이후 수정 ==========
-    //  MTDesc.isIndividualColor = false;
-    //  MTDesc.fColorUpdateSpeed = 0.f;
-    //  MTDesc.fInterval = 2.f;
-    //  if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_MotionTrail"),
-    //      TEXT("Com_MotionTrail"), reinterpret_cast<CComponent**>(&m_pMotionTrailCom), &MTDesc)))
-    //      return E_FAIL;
+    CMotionTrail::MOTIONTRAIL_DESC MTDesc{};
+    
+    MTDesc.pOwnerMasterModel = m_pModelCom;
+    MTDesc.HasPartModels = true;
+    MTDesc.OwnerPartModels.push_back(m_pModelCom_Arm);
+    MTDesc.OwnerPartModels.push_back(m_pModelCom_Face);
+    MTDesc.OwnerPartModels.push_back(m_pModelCom_Hair);
+    MTDesc.OwnerPartModels.push_back(m_pModelCom_Leg);
+    MTDesc.OwnerPartModels.push_back(m_pModelCom_Shoes);
+    MTDesc.OwnerPartModels.push_back(m_pModelCom_Torso);
+    MTDesc.Config.vLifeTime = { 0.f, 1.f };
+    MTDesc.Config.vStartColor = { 1.f, 0.f, 1.f };
+    MTDesc.Config.vTargetColor = { 0.f, 0.f, 1.f };
+    MTDesc.Config.fRimPower = 2.f;
+    MTDesc.Config.fRimIntensity = 1.f;
+    MTDesc.Config.fEmissiveIntensity = 2.f;
+    MTDesc.Config.isIndividualColor = true;
+    MTDesc.Config.fColorUpdateSpeed = 1000.f;
+    MTDesc.Config.fInterval = 0.2f;
+    MTDesc.Config.iMaxFrames = 10.f;
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_MotionTrail"),
+        TEXT("Com_MotionTrail"), reinterpret_cast<CComponent**>(&m_pMotionTrailCom), &MTDesc)))
+        return E_FAIL;
 
     return S_OK;
 }

@@ -798,6 +798,9 @@
     <ClCompile Include="..\private\VIBuffer.cpp">
       <Filter>01.Utility\03.Component\VIBuffer</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\MotionTrail.cpp">
+      <Filter>01.Utility\03.Component\MotionTrail</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">

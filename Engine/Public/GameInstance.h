@@ -80,10 +80,10 @@ public:
 #pragma region RENDERER
 public:
 	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pRenderObject);
+    HRESULT Add_RenderComponent(class CComponent* pComponent);
 
 #ifdef _DEBUG
 public:
-	HRESULT Add_DebugComponent(class CComponent* pComponent);
 	void Set_EnableShadow(_bool isEnable);
 	void Set_EnableSSAO(_bool isEnable);
 	void Set_EnableFog(_bool isEnable);

@@ -185,6 +185,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\BlackBoard.cpp" />
     <ClCompile Include="..\private\CSM.cpp" />
     <ClCompile Include="..\private\MotionBlur.cpp" />
+    <ClCompile Include="..\private\MotionTrail.cpp" />
     <ClCompile Include="..\private\RadialBlur.cpp" />
     <ClCompile Include="..\private\GaussianBlur.cpp" />
     <ClCompile Include="..\Private\Body.cpp" />
@@ -402,6 +403,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Imgui_Header.h" />
     <ClInclude Include="..\public\LUT.h" />
     <ClInclude Include="..\public\MotionBlur.h" />
+    <ClInclude Include="..\public\MotionTrail.h" />
     <ClInclude Include="..\Public\Prefab.h" />
     <ClInclude Include="..\public\Fog.h" />
     <ClInclude Include="..\public\Engine_Sequence.h" />
