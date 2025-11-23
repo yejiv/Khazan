@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="98.Default">
@@ -840,6 +840,60 @@
     </Filter>
     <Filter Include="02.GameObject\Creature\Khazan\Spear\Animation\Fall">
       <UniqueIdentifier>{8c26f2fc-b26b-47a9-beae-dd1fd6b9e102}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\GSword">
+      <UniqueIdentifier>{ca851b84-b222-4c70-b6fe-3c5ad10659e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\GSword\Base">
+      <UniqueIdentifier>{11c5c832-4c81-4d14-9efc-d109a3ac22bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\GSword\Body">
+      <UniqueIdentifier>{11fa110f-076d-44eb-9f76-69f2ab7bc453}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\GSword\Weapon">
+      <UniqueIdentifier>{0161c460-65c9-4546-81bf-e3f95a781fdd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\GSword\Lantern">
+      <UniqueIdentifier>{22c3e076-d2b9-4b6b-ae95-a55f4a102e76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\GSword\Controller">
+      <UniqueIdentifier>{9a63813a-2958-4527-94a1-4bcd397fdc16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\GSword\Controller\State Machine">
+      <UniqueIdentifier>{fd46f07a-f36e-485c-85b9-b38d9bf30b9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\GSword\Controller\Input">
+      <UniqueIdentifier>{a29d4277-1cd8-423f-b919-79a483e576f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\GSword\Controller\Animation">
+      <UniqueIdentifier>{9ad492b9-28ea-460b-b73b-e80427bb54f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\GSword\Controller\Move Controller">
+      <UniqueIdentifier>{275131e1-5e4e-4241-9beb-71124ef6b046}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\GSword\Controller\Animation\Move">
+      <UniqueIdentifier>{b55df505-a505-4e7e-9309-d93e6c577c24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\GSword\Controller\Animation\Attack">
+      <UniqueIdentifier>{6e7979ab-42e6-4be5-a734-77059a8dc621}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\GSword\Controller\Animation\Damaged">
+      <UniqueIdentifier>{c16a572a-d405-4272-bd6f-62b42408aa53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\GSword\Controller\Animation\Fall">
+      <UniqueIdentifier>{ac044343-e77c-4f6a-a3ee-a76d8ad4ee94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\GSword\Controller\Animation\Guard">
+      <UniqueIdentifier>{dde130f1-03e1-42e4-812d-e50fd9fba072}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\GSword\Controller\Animation\Interaction">
+      <UniqueIdentifier>{9449b870-b82f-4aca-9778-a0a3d6a35759}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\GSword\Controller\Animation\Base">
+      <UniqueIdentifier>{0e8bb0c4-7e9f-4515-afd4-066278712265}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\GSword\Controller\Animation\00. Controller">
+      <UniqueIdentifier>{8c4a5293-99a9-4548-b989-da210ec527bb}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObject\UI\Talk">
       <UniqueIdentifier>{2f63276d-22fa-407c-b7a8-63abde0fb720}</UniqueIdentifier>
@@ -1754,6 +1808,24 @@
     <ClInclude Include="..\public\Khazan_Spear_Anim_Fall.h">
       <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Fall</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Khazan_GSword.h">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_GS_InputHandler.h">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_GS_StateMachine.h">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\State Machine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_GS_AnimationController.h">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\Animation\00. Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_GS_Animation.h">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\Animation\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_GS_Anim_Move.h">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\Animation\Move</Filter>
+    </ClInclude>
     <ClInclude Include="..\public\UI_WorldTextBox.h">
       <Filter>02.GameObject\UI\Talk\ETC</Filter>
     </ClInclude>
@@ -1790,14 +1862,8 @@
     <ClInclude Include="..\Public\AI_Controller_Viper.h">
       <Filter>92.AI\Controller\Viper</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\FSM_Viper.h">
-      <Filter>92.AI\StateMachine\Viper</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\AS_Idle_Viper.h">
       <Filter>92.AI\State\Viper\00.Idle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Body_Viper.h">
-      <Filter>02.GameObject\Creature\Monster\Viper\Body</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_Quick2Hit_Viper.h">
       <Filter>92.AI\State\Viper\03.Quick2Hit</Filter>
@@ -1850,14 +1916,39 @@
     <ClInclude Include="..\public\Popup_Item.h">
       <Filter>02.GameObject\UI\Popup\Item</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Collection_Info.h">
-      <Filter>02.GameObject\UI\Collection_Info</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\UI_Announce_Warning.h">
       <Filter>02.GameObject\UI\Announce\Warning</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Viper.h">
       <Filter>02.GameObject\Creature\Monster\Viper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Lantern_Khazan_GS.h">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Lantern</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Khazan_GS_Anim_Guard.h">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\Animation\Guard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Khazan_GS_Anim_Fall.h">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\Animation\Fall</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Khazan_GS_Anim_Damaged.h">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\Animation\Damaged</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Khazan_GS_Anim_Interaction.h">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\Animation\Interaction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_GS_Anim_Attack.h">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\Animation\Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Body_Khazan_GS.h">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="CBody_Viper.h" />
+    <ClInclude Include="CFSM_Viper.h" />
+    <ClInclude Include="CGSword_Khazan_GS.h" />
+    <ClInclude Include="CCollection_Info.h" />
+    <ClInclude Include="..\Public\Body_Viper.h">
+      <Filter>02.GameObject\Creature\Monster\Viper\Body</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VerticalGate.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\07.VerticalGate</Filter>
@@ -2641,6 +2732,24 @@
     <ClCompile Include="..\private\Khazan_Spear_Anim_Fall.cpp">
       <Filter>02.GameObject\Creature\Khazan\Spear\Animation\Fall</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Khazan_GSword.cpp">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_GS_InputHandler.cpp">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_GS_StateMachine.cpp">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\State Machine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_GS_AnimationController.cpp">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\Animation\00. Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_GS_Animation.cpp">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\Animation\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_GS_Anim_Move.cpp">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\Animation\Move</Filter>
+    </ClCompile>
     <ClCompile Include="..\private\UI_WorldTextBox.cpp">
       <Filter>02.GameObject\UI\Talk\ETC</Filter>
     </ClCompile>
@@ -2677,17 +2786,11 @@
     <ClCompile Include="..\Private\AI_Controller_Viper.cpp">
       <Filter>92.AI\Controller\Viper</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\FSM_Viper.cpp">
-      <Filter>92.AI\StateMachine\Viper</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\AS_Idle_Viper.cpp">
       <Filter>92.AI\State\Viper\00.Idle</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Viper.cpp">
       <Filter>02.GameObject\Creature\Monster\Viper</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Body_Viper.cpp">
-      <Filter>02.GameObject\Creature\Monster\Viper\Body</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_Quick2Hit_Viper.cpp">
       <Filter>92.AI\State\Viper\03.Quick2Hit</Filter>
@@ -2740,11 +2843,36 @@
     <ClCompile Include="..\private\Popup_Item.cpp">
       <Filter>02.GameObject\UI\Popup\Item</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Collection_Info.cpp">
-      <Filter>02.GameObject\UI\Collection_Info</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\UI_Announce_Warning.cpp">
       <Filter>02.GameObject\UI\Announce\Warning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Lantern_Khazan_GS.cpp">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Lantern</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Khazan_GS_Anim_Guard.cpp">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\Animation\Guard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Khazan_GS_Anim_Fall.cpp">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\Animation\Fall</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Khazan_GS_Anim_Damaged.cpp">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\Animation\Damaged</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Khazan_GS_Anim_Interaction.cpp">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\Animation\Interaction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_GS_Anim_Attack.cpp">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\Animation\Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Body_Khazan_GS.cpp">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="CBody_Viper.cpp" />
+    <ClCompile Include="CFSM_Viper.cpp" />
+    <ClCompile Include="CGSword_Khazan_GS.cpp" />
+    <ClCompile Include="CCollection_Info.cpp" />
+    <ClCompile Include="..\Private\Body_Viper.cpp">
+      <Filter>02.GameObject\Creature\Monster\Viper\Body</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VerticalGate.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\07.VerticalGate</Filter>

@@ -111,12 +111,8 @@ namespace Engine
 #include "Engine_Json.h"
 #include "Engine_ConstantBuffer.h"
 #include "Engine_Sequence.h"
-
-#define IMGUI_DEFINE_MATH_OPERATORS
-#include "imgui.h"
-#include "imgui_impl_win32.h"
-#include "imgui_impl_dx11.h"
-#include "ImGuizmo.h"
+#include "Imgui_Header.h"
+#include "Debug_Header.h"
 
 using namespace Engine;
 

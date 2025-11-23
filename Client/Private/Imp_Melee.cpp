@@ -6,6 +6,7 @@
 #include "Mon_HP.h"
 #include "ClientInstance.h"
 #include "Amount.h"
+#include "Model.h"
 
 CImp_Melee::CImp_Melee(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice,pContext }
@@ -45,27 +46,27 @@ HRESULT CImp_Melee::Initialize_Clone(void* pArg)
     if (nullptr == m_pController)
         return E_FAIL;
 
-    if (nullptr != m_pController)
-        m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
+    //if (nullptr != m_pController)
+    //    m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
 
     return S_OK;
 }
 
 void CImp_Melee::Priority_Update(_float fTimeDelta)
 {
-    CContainerObject::Priority_Update(fTimeDelta);
+   /* CContainerObject::Priority_Update(fTimeDelta);
 
     if (m_fCurrentHP <= 0.f && !m_isDeadFlag)
     {
         CClientInstance::GetInstance()->Add_SkillExp(10.f);
         static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 100);
         m_isDeadFlag = true;
-    }
+    }*/
 }
 
 void CImp_Melee::Update(_float fTimeDelta)
 {
-    m_pController->Update(this, fTimeDelta);
+   /* m_pController->Update(this, fTimeDelta);
 
 
     if (m_isLookAt)
@@ -80,12 +81,12 @@ void CImp_Melee::Update(_float fTimeDelta)
 
     __super::Update(fTimeDelta);
 
-    m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
+    m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");*/
 }
 
 void CImp_Melee::Late_Update(_float fTimeDelta)
 {
-    if (!m_isDetected)
+    /*if (!m_isDetected)
     {
 
         CBlackBoard* pBB = m_pController->Get_BlackBoard();
@@ -106,7 +107,7 @@ void CImp_Melee::Late_Update(_float fTimeDelta)
     }
 
 
-    CContainerObject::Late_Update(fTimeDelta);
+    CContainerObject::Late_Update(fTimeDelta);*/
 }
 
 HRESULT CImp_Melee::Render()

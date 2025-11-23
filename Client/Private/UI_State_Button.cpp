@@ -44,6 +44,7 @@ void CUI_State_Button::Update(_float fTimeDelta)
         CUI_State_List::STATE_LIST_BUBBLE Desc = {};
         Desc.eType = m_eType;
         Bubble_EventCall(&Desc);
+        m_pGameInstance->PlaySoundOnce(TEXT("UI_item_select (SFX).wav"));
     }
 }
 

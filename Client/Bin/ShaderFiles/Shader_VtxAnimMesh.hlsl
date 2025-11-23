@@ -35,7 +35,9 @@ float g_fEdgeIntensity, g_fShadeIntensity;
 float4 g_vCamPosition;
 
 // Test
-float g_fAlpha;
+float2 g_vLifeTime;
+float3 g_vStartColor, g_vTargetColor;
+float g_fRimPower, g_fRimLightIntensity;
 
 struct VS_IN
 {
@@ -317,31 +319,6 @@ PS_OUT_EMISSIVE PS_MAIN_DEBUG_EMISSIVE(PS_IN In)
 
     if (vMtrlDiffuse.a < 0.3f)
         discard;
-
-    //  Out.vPostScene = vMtrlDiffuse;
-    
-    // =============== NonLight ===============
-    
-    // PostScene留? 湲곕줉
-    //  Out.vPostScene = vMtrlDiffuse;
-    //  // (?깮?왂 媛??뒫 -> ?쐞?뿉?꽌 0 珥덇린?솕)
-    //  Out.vEmissive = 0.f; 
-    
-    // Emissive留? 湲곕줉
-    // (?깮?왂 媛??뒫 -> ?쐞?뿉?꽌 0 珥덇린?솕)
-    //  Out.vPostScene = 0.f;
-    //  Out.vPostScene.rgb = vMtrlDiffuse * 3.f; // Intensity
-    //  Out.vPostScene.a = 1.f;
-    
-    //  Out.vEmissive.rgb = vMtrlDiffuse * 3.f; // Intensity
-    //  Out.vEmissive.a = 1.f;
-    
-    // ?몮 ?떎 湲곕줉?븯湲?
-    //  Out.vPostScene = vMtrlDiffuse;
-    //  Out.vEmissive.rgb = vMtrlDiffuse * 3.f; // Intensity
-    //  Out.vEmissive.a = 1.f;
-    
-    // =============== Blend ===============
     
     // Alpha Rim Light Test
     vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
@@ -354,39 +331,19 @@ PS_OUT_EMISSIVE PS_MAIN_DEBUG_EMISSIVE(PS_IN In)
     vector vLook = normalize(g_vCamPosition - In.vWorldPos);
     
     float fRim = 1.f - saturate(dot(float4(vNormal, 0.f), vLook));
-    fRim = pow(fRim, 2);
+    fRim = pow(fRim, g_fRimPower);
+
+    float fLifeRatio = g_vLifeTime.x / g_vLifeTime.y;
     
-    // 빛을 등지고 있을 때
-    //  float fRimFactor = max(dot(g_vLightDir, vLook), 0.f);
-    //  fRim *= fRimFactor;
-    
-    // Rim Toon
-    //  if (g_isToonLight)
-    //      fRim = step(g_fRimToonThreshold, fRim);
+    float3 vFinalColor = lerp(g_vStartColor, g_vTargetColor, fLifeRatio);
+    float fFinalAlpha = 1.f - fLifeRatio;
     
     // Rim Color * Rim * Rim Light Intensity * Emissive Intensity
-    Out.vPostScene = float4(0.f, 0.f, 1.f, g_fAlpha) * fRim * 1.f * 2.f;
-    
-    // PostScene留? 湲곕줉
-    //  Out.vPostScene = float4(vMtrlDiffuse.rgb, 0.2f);
-    //  // (?깮?왂 媛??뒫 -> ?쐞?뿉?꽌 0 珥덇린?솕)
-    //  Out.vEmissive = 0.f; 
-    
-    //  Emissive留? 湲곕줉
-    //  (?깮?왂 媛??뒫 -> ?쐞?뿉?꽌 0 珥덇린?솕)
-    //  Out.vPostScene = 0.f;
-    //  Out.vEmissive.rgb = vMtrlDiffuse * 3.f; // Intensity
-    //  Out.vEmissive.a = 1.f;
-    
-    //  ?몮 ?떎 湲곕줉?븯湲?
-    //  Out.vPostScene = float4(vMtrlDiffuse.rgb, 0.2f);
-    //  Out.vEmissive.rgb = vMtrlDiffuse * 3.f; // Intensity
-    //  Out.vEmissive.a = 1.f;
+    Out.vPostScene = float4(vFinalColor, fFinalAlpha) * fRim * g_fRimLightIntensity * g_fEmissiveIntensity;
     
     return Out;
 }
 
-/* ?븷?븘踰꾩???쓽 ?떖?뵆而щ윭 酉? */
 PS_OUT PS_SIMPLE_COLOR_VIEW(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;

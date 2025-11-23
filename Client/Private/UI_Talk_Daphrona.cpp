@@ -172,6 +172,8 @@ void CUI_Talk_Daphrona::Update(_float fTimeDelta)
 
     if (m_pGameInstance->Key_Down(DIK_F, INPUT_TYPE::UI))
     {
+        m_pGameInstance->PlaySoundOnce(TEXT("UI_common_click2(SFX).wav"));
+
         if (m_iSelete == 0 && m_eType == TALK_TYPE::START)
         {
             m_eType = TALK_TYPE::TALK_SELETE;
@@ -244,8 +246,11 @@ void CUI_Talk_Daphrona::Update(_float fTimeDelta)
 
         }
         else if (m_iSelete == 2 && m_eType == TALK_TYPE::START)
+        {
             Off_Panel();
-
+            m_pGameInstance->PlaySoundOnce(TEXT("UI_skill_close (SFX).wav"));
+            m_pGameInstance->StopByChannel(&m_pChannel);
+        }
         Setting_Talk();
     }
 
@@ -402,6 +407,9 @@ void CUI_Talk_Daphrona::Update_Selete()
 
 void CUI_Talk_Daphrona::Setting_Talk()
 {
+    if (m_eAnimState == UIANIMSTATE::OFF)
+        return;
+
     if (m_eType == TALK_TYPE::START)
     {
         m_BG_Line[4]->Update_Visible(true);
@@ -420,6 +428,8 @@ void CUI_Talk_Daphrona::Setting_Talk()
         m_pList[0]->Set_Text(TEXT("대화하기"));
         m_pList[1]->Set_Text(TEXT("귀석 해방"));
         m_pList[2]->Set_Text(TEXT("대화를 마친다."));
+
+        m_pGameInstance->PlaySoundOnce(TEXT("dialogue_sub_1070301_dp (Korean(KR)).wav"), 1.f, &m_pChannel);
 
         m_pText1->Set_Text(TEXT("명계로 향하는 영혼이 사라지고 있습니다."));
         m_pText2->Set_Text(TEXT("엠바스의 일은 그저 일부일 뿐이죠."));
@@ -447,11 +457,13 @@ void CUI_Talk_Daphrona::Setting_Talk()
             switch (m_iTalkIndex)
             {
             case 0:
+                m_pGameInstance->PlaySoundOnce(TEXT("dialogue_sub_1070031_dp (Korean(KR)).wav"), 1.f, &m_pChannel);
                 m_pText1->Set_Text(TEXT("여정 중에 붉은 돌을 본 적 있나요?"));
                 m_pText2->Set_Text(TEXT("그건 귀석이라고 하죠, 귀석에는 명계의 귀신이 깃들어 있답니다."));
                 m_pText3->Update_Visible(false);
                 break;
             case 1:
+                m_pGameInstance->PlaySoundOnce(TEXT("dialogue_sub_1070033_dp (Korean(KR)).wav"), 1.f, &m_pChannel);
                 m_pText1->Set_Text(TEXT("생자여, 귀석을 발견한다면 깨트려서 귀신들을 해방시켜 주세요."));
                 m_pText2->Set_Text(TEXT("귀신들을 풀어준 만큼, 그들의 능력을 나누어 드리겠습니다."));
                 m_pText3->Update_Visible(false);
@@ -463,11 +475,13 @@ void CUI_Talk_Daphrona::Setting_Talk()
             switch (m_iTalkIndex)
             {
             case 0:
+                m_pGameInstance->PlaySoundOnce(TEXT("dialogue_sub_1070021_dp (Korean(KR)).wav"), 1.f, &m_pChannel);
                 m_pText1->Set_Text(TEXT("생자여, 이제 당신은 조력의 영혼을 불러낼 수 있습니다."));
                 m_pText2->Set_Text(TEXT("이것도 엠바스의 이변을 막은 덕분이죠."));
                 m_pText3->Update_Visible(false);
                 break;
             case 1:
+                m_pGameInstance->PlaySoundOnce(TEXT("dialogue_sub_1070023_dp (Korean(KR)).wav"), 1.f, &m_pChannel);
                 m_pText1->Set_Text(TEXT("제게 순환의 라크리마를 가져오세요."));
                 m_pText2->Set_Text(TEXT("조력의 영혼을 더 강하게 만들어 드리겠습니다."));
                 break;
@@ -497,11 +511,13 @@ void CUI_Talk_Daphrona::Setting_Talk()
             switch (m_iTalkIndex)   
             {
             case 0:
+                m_pGameInstance->PlaySoundOnce(TEXT("dialogue_sub_3030101_dp (Korean(KR)).wav"), 1.f, &m_pChannel);
                 m_pText1->Set_Text(TEXT("생자여, 귀석을 해방할 힘을 충분히 가지고 있군요."));
                 m_pText2->Set_Text(TEXT("보유한 귀석: ") + to_wstring(*m_pStone));
                 m_pText3->Set_Text(TEXT("필요한 귀석: ") + to_wstring(*m_pLevelStone + 2));
                 break;
             case 1:
+                m_pGameInstance->PlaySoundOnce(TEXT("dialogue_sub_3030104_dp (Korean(KR)).wav"), 1.f, &m_pChannel);
                 m_BG_Line[4]->Update_Visible(true);
                 m_pText1->Set_Text(TEXT("생자여, 귀석의 힘으로 어떤 능력을 얻고 싶나요?"));
                 m_pText2->Set_Text(TEXT("보유한 귀석: ") + to_wstring(*m_pStone));
@@ -520,6 +536,7 @@ void CUI_Talk_Daphrona::Setting_Talk()
         }
         else
         {
+            m_pGameInstance->PlaySoundOnce(TEXT("dialogue_sub_3030103_dp (Korean(KR)).wav"), 1.f, &m_pChannel);
             m_pText1->Set_Text(TEXT("지금은 귀석의 힘을 해방하기엔 부족하군요."));
             m_pText2->Set_Text(TEXT("더 많은 귀석을 찾아야 해요."));
             m_pText3->Update_Visible(false);

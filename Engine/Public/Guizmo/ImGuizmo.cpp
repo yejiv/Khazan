@@ -1,3 +1,5 @@
+#define DISABLE_CRTDBG_NEW
+#include "../../Default/EnginePch.h"
 // https://github.com/CedricGuillemet/ImGuizmo
 // v1.91.3 WIP
 //

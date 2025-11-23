@@ -80,6 +80,12 @@ void CUI_BladeNexus_Map_List::Set_Selete(_bool isSelete)
         return;
 
     m_bIsSelete = isSelete;
+
+    if (m_bIsSelete)
+    {
+        _wstring wstrSound = TEXT("UI_common_mouse_over_0") + to_wstring(m_pGameInstance->Rand(1, 4)) + TEXT(" (SFX).wav");
+        m_pGameInstance->PlaySoundOnce(wstrSound.c_str());
+    }
 }
 
 HRESULT CUI_BladeNexus_Map_List::Initialize_Prototype(_uint iLevel)

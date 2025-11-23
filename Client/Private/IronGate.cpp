@@ -200,6 +200,7 @@ HRESULT CIronGate::Ready_Collision(void* pArg)
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Trigger"), reinterpret_cast<CComponent**>(&m_pTriggerCom), &TriggerDesc)))
         return E_FAIL;
+    return S_OK;
 #pragma endregion
 }
 

@@ -33,6 +33,8 @@ private:
 	class CClientInstance* m_pClientInstance = { nullptr };
 
 	LOADING_STATE		m_eLoadingState = { LOADING_STATE::END };
+
+    _bool               m_isPlayerSound = { false };
 private:
 	HRESULT Ready_GameObjects();
 

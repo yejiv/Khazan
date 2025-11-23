@@ -200,6 +200,8 @@ void CUI_Announce_Result::Start_Anim(const EVENT_ANNOUNCE_RESULT& e)
     m_pSymbol->Set_Dissovle(false);
 
     m_pSymbol->Set_SubTexScalling(false);
+
+    m_pGameInstance->PlaySoundOnce(TEXT("UI_mission_complete (SFX).wav"));
 }
 
 CUI_Announce_Result* CUI_Announce_Result::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)

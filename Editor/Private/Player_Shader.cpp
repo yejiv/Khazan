@@ -62,17 +62,17 @@ void CPlayer_Shader::Update(_float fTimeDelta)
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
         int a = 10;
 
-    if (m_pGameInstance->Key_Down(DIK_MINUS))
-    {
-        m_pModelCom->Set_AnimationLoop(true);
-        m_pModelCom->Set_Animation(--m_iCurrentAnimIndex);
-    }
-    if (m_pGameInstance->Key_Down(DIK_EQUALS))
-    {
-        //  m_iCurrentAnimIndex = 2;
-        m_pModelCom->Set_AnimationLoop(true);
-        m_pModelCom->Set_Animation(++m_iCurrentAnimIndex);
-    }
+    //  if (m_pGameInstance->Key_Down(DIK_MINUS))
+    //  {
+    //      m_pModelCom->Set_AnimationLoop(true);
+    //      m_pModelCom->Set_Animation(--m_iCurrentAnimIndex);
+    //  }
+    //  if (m_pGameInstance->Key_Down(DIK_EQUALS))
+    //  {
+    //      //  m_iCurrentAnimIndex = 2;
+    //      m_pModelCom->Set_AnimationLoop(true);
+    //      m_pModelCom->Set_Animation(++m_iCurrentAnimIndex);
+    //  }
 }
 
 void CPlayer_Shader::Late_Update(_float fTimeDelta)

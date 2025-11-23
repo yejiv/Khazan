@@ -1,4 +1,5 @@
-// dear imgui: Renderer Backend for DirectX11
+#define DISABLE_CRTDBG_NEW
+#include "../../Default/EnginePch.h"
 // This needs to be used along with a Platform Backend (e.g. Win32)
 
 // Implemented features:

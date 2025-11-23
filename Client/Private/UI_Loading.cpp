@@ -142,6 +142,8 @@ void CUI_Loading::Input_Update()
 	_bool IsInputKey = false;
 	if (m_pGameInstance->Key_Down(DIK_E, INPUT_TYPE::UI))
 	{
+        m_pGameInstance->StopByKey(TEXT("UI_Iteminfo_Close (SFX).wav"));
+        m_pGameInstance->PlaySoundOnce(TEXT("UI_Iteminfo_Close (SFX).wav"));
 		IsInputKey = true;
 		++m_iSelete;
 		if (m_iSelete > 3)
@@ -154,6 +156,8 @@ void CUI_Loading::Input_Update()
 	}
 	else if (m_pGameInstance->Key_Down(DIK_Q, INPUT_TYPE::UI))
 	{
+        m_pGameInstance->StopByKey(TEXT("UI_Iteminfo_Close (SFX).wav"));
+        m_pGameInstance->PlaySoundOnce(TEXT("UI_Iteminfo_Close (SFX).wav"));
 		IsInputKey = true;
 		--m_iSelete;
 		if (m_iSelete < 0)

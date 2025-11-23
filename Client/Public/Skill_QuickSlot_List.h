@@ -44,6 +44,7 @@ private:
     class CUI_TextBox*                  m_pSkillName = { nullptr };
     class CUI_Default_Tex*              m_pHover = { nullptr };
 
+    _bool                               m_isOver = { false };
 private:
 	HRESULT								Ready_Componet();
 public:

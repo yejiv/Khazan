@@ -37,7 +37,6 @@ private:
 	CVIBuffer_Rect*					m_pVIBufferCom = { nullptr };
 
 	_float							m_fAccTime = {};
-	_float							m_fDeleyTime = {};
 
 	_bool							m_isOneLine = {};
 
@@ -47,6 +46,10 @@ private:
 
 	_float4							m_vNameColor = {};
 	UIAnimeStae						m_eState = { UIAnimeStae::END};
+
+    _wstring                        m_wstrSoundName = {};
+    _int                            m_iNextIndex = {};
+
 private:
 	void							NameColor();
 	HRESULT							Ready_Prototype();
