@@ -1,3 +1,5 @@
+#define DISABLE_CRTDBG_NEW
+#include "../../Default/EnginePch.h"
 // dear imgui, v1.91.0
 // (demo code)
 

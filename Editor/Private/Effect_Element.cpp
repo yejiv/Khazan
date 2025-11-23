@@ -40,7 +40,7 @@ void CEffect_Element::Update(_float fTimeDelta)
 
 void CEffect_Element::Late_Update(_float fTimeDelta)
 {
-    m_pGameInstance->Add_RenderGroup(RENDERGROUP::BLEND, this);
+    m_pGameInstance->Add_RenderGroup(RENDERGROUP::WEIGHT_BLEND, this);
 }
 
 HRESULT CEffect_Element::Render()

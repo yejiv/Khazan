@@ -31,6 +31,8 @@ HRESULT CElevator_Gear::Initialize_Clone(void* pArg)
     m_fOffsetRotation = pDesc->fOffsetRotation;
     m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), m_fOffsetRotation);
 
+    m_pModelCom->Set_AnimationBlend(false);
+
     return S_OK;
 }
 

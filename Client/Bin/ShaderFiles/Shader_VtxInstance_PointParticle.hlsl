@@ -22,6 +22,7 @@ float4 g_EdgeColor;
 texture2D g_DiffuseTexture;
 texture2D g_MaskTexture;
 texture2D g_DisolveTexture;
+texture2D g_DepthTexture;
 
 struct VS_IN
 {
@@ -79,6 +80,7 @@ struct GS_OUT
     float2 vLifeTime : TEXCOORD1;
     float bDead : TEXCOORD2;
     float4 vPrevPosition : TEXCOORD3;
+    float4 vProjPos : TEXCOORD4;
 };
 
 [maxvertexcount(6)]
@@ -116,6 +118,7 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
     matrix matrVP = mul(g_ViewMatrix, g_ProjMatrix);
     
     Out[0].vPosition = mul(In[0].vPosition + vRight + vUp, matrVP);
+    Out[0].vProjPos = Out[0].vPosition;;
     Out[0].vTexcoord = float2(0.f, 0.f);
     Out[0].vTexcoord = float2(startU, startV) + (Out[0].vTexcoord * float2(Width, Height));
     Out[0].vLifeTime = In[0].vLifeTime;
@@ -123,6 +126,7 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
     Out[0].vPrevPosition = In[0].vPrevPosition;
     
     Out[1].vPosition = mul(In[0].vPosition - vRight + vUp, matrVP);
+    Out[1].vProjPos = Out[1].vPosition;
     Out[1].vTexcoord = float2(1.f, 0.f);
     Out[1].vTexcoord = float2(startU, startV) + (Out[1].vTexcoord * float2(Width, Height));
     Out[1].vLifeTime = In[0].vLifeTime;
@@ -130,6 +134,7 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
     Out[1].vPrevPosition = In[0].vPrevPosition;
     
     Out[2].vPosition = mul(In[0].vPosition - vRight - vUp, matrVP);
+    Out[2].vProjPos = Out[2].vPosition;
     Out[2].vTexcoord = float2(1.f, 1.f);
     Out[2].vTexcoord = float2(startU, startV) + (Out[2].vTexcoord * float2(Width, Height));
     Out[2].vLifeTime = In[0].vLifeTime;
@@ -137,6 +142,7 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
     Out[2].vPrevPosition = In[0].vPrevPosition;
     
     Out[3].vPosition = mul(In[0].vPosition + vRight - vUp, matrVP);
+    Out[3].vProjPos = Out[3].vPosition;
     Out[3].vTexcoord = float2(0.f, 1.f);
     Out[3].vTexcoord = float2(startU, startV) + (Out[3].vTexcoord * float2(Width, Height));
     Out[3].vLifeTime = In[0].vLifeTime;
@@ -161,12 +167,13 @@ struct PS_DEFAULT_IN
     float2 vLifeTime : TEXCOORD1;
     float bDead : TEXCOORD2;
     float4 vPrevPosition : TEXCOORD3;
+    float4 vProjPos : TEXCOORD4;
 };
 
 struct PS_OUT
 {
-    float4 vBackBufferColor : SV_TARGET0;
-    float4 vEmissiveColor : SV_TARGET1;
+    float4 vAccumColor : SV_TARGET0;
+    float4 vAccumAlpha : SV_TARGET1;
 };
 
 float Mask_Scrolling(float2 vLifetime, float2 vTexcoord)
@@ -225,16 +232,7 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     if (In.bDead)
         discard;
     
-    //float3 diff = In.vPosition.xyz - In.vPrevPosition.xyz;
-    //float distSq = dot(diff, diff);
-    //
-    //if (distSq < 0.0f) 
-    //    discard;
-    
     vector vMask = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-                //if (vMask.a <= 0.f)
-                //    discard;
     
     vector vSourColor = float4(g_vSourceColor.xyz, 1.f);
     vector vFinalColor = vSourColor * vMask;
@@ -244,10 +242,6 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     if (g_MaskScrollSpeed)
         vFinalColor.a = vFinalColor.a * Mask_Scrolling(In.vLifeTime, In.vTexcoord);
      
-    //float fDecreaseAlpha = In.vLifeTime.x / In.vLifeTime.y;
-    //fDecreaseAlpha = saturate(fDecreaseAlpha);
-    //float fDecreaseAlpha = GetAlphaFadeInOut(In.vLifeTime.x / In.vLifeTime.y);
-    
     float fDecreaseAlpha = 1.0f - abs((In.vLifeTime.x / In.vLifeTime.y) * 2.0f - 1.0f); 
 
     
@@ -259,9 +253,24 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     if (vFinalColor.a <= 0)
         discard;
 
-    vFinalColor.xyz *= (g_vSourceColor.a + 1);
-    Out.vBackBufferColor = vFinalColor;
+    vFinalColor.xyz *= (g_vSourceColor.a + 1.5);
     
+    /* Soft Effect */
+    //float2 vTexcoord;
+    //vTexcoord.x = (In.vProjPos.x / In.vProjPos.w) * 0.5f + 0.5f;
+    //vTexcoord.y = (In.vProjPos.y / In.vProjPos.w) * -0.5f + 0.5f;
+    //vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, vTexcoord);
+    //vFinalColor.a = vFinalColor.a * saturate(vDepthDesc.y - In.vProjPos.w);
+    
+    /* Blend Weight */
+    float z = In.vProjPos.z / In.vProjPos.w; // 0..1 depth
+    float weight = max(1e-5, exp(-z * 0.75f));
+    Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a, vFinalColor.a) * weight;
+    Out.vAccumAlpha.r = vFinalColor.a;
+    
+        //Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a * weight, 0.f);
+
+      
     return Out;
 }
 
@@ -270,8 +279,8 @@ technique11 DefaultTechnique
     pass DefaultPass // 0
     {
         SetRasterizerState(RS_Cull_None);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_DepthTestOnly, 0);
+        SetBlendState(BS_WeightBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = compile gs_5_0 GS_MAIN();

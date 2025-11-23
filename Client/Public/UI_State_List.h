@@ -61,6 +61,8 @@ private:
 
 	CUI_State::UI_TYPE					m_eUI_Type = { CUI_State::UI_TYPE::END };
 
+    _bool                               m_isOver = {};
+
 private:
 	HRESULT								Ready_Component();
 

@@ -84,11 +84,6 @@ void CCursor::Update(_float fTimeDelta)
 	else 
 		Play_Mode();
 
-	if (m_pGameInstance->Key_Down(DIK_L, INPUT_TYPE::UI))
-		m_IsUpdate ? m_IsUpdate = false : m_IsUpdate = true;
-	else	if (m_pGameInstance->Key_Down(DIK_L))
-		m_IsUpdate ? m_IsUpdate = false : m_IsUpdate = true;
-
 	if (!m_IsUpdate)
 		return;
 	m_IsPressing = false;

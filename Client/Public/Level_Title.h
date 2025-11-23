@@ -26,6 +26,7 @@ private:
 
 
 	_bool	m_isOpenLevel = { false };
+    _bool   m_isPlayerSound = { false };
 public:
 	static CLevel_Title* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;

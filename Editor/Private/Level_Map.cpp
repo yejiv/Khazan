@@ -910,6 +910,8 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
     m_Prototypes_Inter.push_back("Lever_Gear");
     m_Prototypes_Inter.push_back("Door_Gear");
     m_Prototypes_Inter.push_back("Statue");
+    m_Prototypes_Inter.push_back("VerticalGate");
+    m_Prototypes_Inter.push_back("IronGate");
 
 #ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
@@ -1126,7 +1128,37 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 
                     CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                         ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Statue"), TIME_CHANNEL::WORLD, &StatueDesc), );
-                        }
+                }
+                else if ("VerticalGate" == m_Prototypes_Inter[m_iIndex_PrtInter])
+                {
+                    CVerticalGate::VERTICAL_GATE_DESC VerticalGateDesc = {};
+
+                    VerticalGateDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    VerticalGateDesc.eLevel = LEVEL::MAP;
+                    memcpy(VerticalGateDesc.szModelName, strModelTag.c_str(), sizeof(VerticalGateDesc.szModelName));		// 프로토타입 태그명
+
+                    XMStoreFloat4x4(&VerticalGateDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    VerticalGateDesc.eInteractiveType = INTERACTIVE_TYPE::VERTICALGATE;										// 상호 작용 오브젝트 타입
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_VerticalGate"), TIME_CHANNEL::WORLD, &VerticalGateDesc), );
+                }
+                else if ("IronGate" == m_Prototypes_Inter[m_iIndex_PrtInter])
+                {
+                    CIronGate::IRONGATE_DESC IronGateDesc = {};
+
+                    IronGateDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    IronGateDesc.eLevel = LEVEL::MAP;
+                    memcpy(IronGateDesc.szModelName, strModelTag.c_str(), sizeof(IronGateDesc.szModelName));		// 프로토타입 태그명
+
+                    XMStoreFloat4x4(&IronGateDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    IronGateDesc.eInteractiveType = INTERACTIVE_TYPE::IRONGATE;										// 상호 작용 오브젝트 타입
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_IronGate"), TIME_CHANNEL::WORLD, &IronGateDesc), );
+                }
 #pragma endregion
 
 				CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));
@@ -1510,6 +1542,26 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
 
                 pStatue->Set_EventID(m_iFixEventID);
                 pStatue->Set_StatueUnLockRotation(m_iFixUnLockRotation);
+                SEPARATOR;
+            }
+            if (INTERACTIVE_TYPE::VERTICALGATE == m_pFixPropObj->Get_InteractiveType())
+            {
+                CVerticalGate* pVerticalGate = static_cast<CVerticalGate*>(m_pFixPropObj);
+
+                ImGui::Text("== STATUE INFORMATION ==");
+                ImGui::Text("BEFORE EVENT ID : %d", m_iInteractEventID);
+                SEPARATOR;
+                ImGui::Text("FIX EVENT ID : "); SAMELINE;
+                ImGui::InputInt("##fix_event_id", &m_iFixEventID);
+
+                pVerticalGate->Set_EventID(m_iFixEventID);
+                SEPARATOR;
+            }
+            if (INTERACTIVE_TYPE::IRONGATE == m_pFixPropObj->Get_InteractiveType())
+            {
+                CIronGate* pIronGate = static_cast<CIronGate*>(m_pFixPropObj);
+
+                ImGui::Text("== IRONGATE ==");
                 SEPARATOR;
             }
 
@@ -2045,6 +2097,18 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 
                             m_iFixEventID = m_iInteractEventID = pStatue->Get_EventID();
                             m_iFixUnLockRotation = m_iUnLockRotation = pStatue->Get_StatueUnLockRotation();
+                        }
+
+                        if (INTERACTIVE_TYPE::VERTICALGATE == m_pFixPropObj->Get_InteractiveType())
+                        {
+                            CVerticalGate* pStatue = static_cast<CVerticalGate*>(m_pFixPropObj);
+
+                            m_iFixEventID = m_iInteractEventID = pStatue->Get_EventID();
+                        }
+
+                        if (INTERACTIVE_TYPE::IRONGATE == m_pFixPropObj->Get_InteractiveType())
+                        {
+                            CIronGate* pStatue = static_cast<CIronGate*>(m_pFixPropObj);
                         }
 
 						m_isFixInteractObjectWindow = true;
@@ -4284,6 +4348,16 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 
                 WriteFile(hObjectFile, &StatueRotation, sizeof(CStatue::STATUE_ROTATION), &dwByte, nullptr);
             }
+            if (INTERACTIVE_TYPE::VERTICALGATE == eType)
+            {
+                _int iEventID = static_cast<CProp_Interactive*>(pProp)->Get_EventID();
+
+                WriteFile(hObjectFile, &iEventID, sizeof(_int), &dwByte, nullptr);
+            }
+            if (INTERACTIVE_TYPE::IRONGATE == eType)
+            {
+                // 철문 일단 공백
+            }
 		}
 	}
 
@@ -4956,6 +5030,39 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 
                 CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                     ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Statue"), TIME_CHANNEL::WORLD, &StatueDesc), false);
+            }
+            else if (INTERACTIVE_TYPE::VERTICALGATE == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CVerticalGate::VERTICAL_GATE_DESC VerticalGateDesc = {};
+
+                VerticalGateDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                VerticalGateDesc.eLevel = LEVEL::MAP;
+                memcpy(VerticalGateDesc.szModelName, TEXT("Prototype_Component_Model_VerticalGate"), sizeof(VerticalGateDesc.szModelName));		// 프로토타입 태그명
+
+                VerticalGateDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+                VerticalGateDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+                // 레버나 기어인 경우 이벤트 아이디 가져오기
+                CHECK_FALSE(ReadFile(hObjectFile, &VerticalGateDesc.iEventID, sizeof(_int), &dwByte, nullptr), false);
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_VerticalGate"), TIME_CHANNEL::WORLD, &VerticalGateDesc), false);
+            }
+            else if (INTERACTIVE_TYPE::IRONGATE == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CIronGate::IRONGATE_DESC IronGateDesc = {};
+
+                IronGateDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                IronGateDesc.eLevel = LEVEL::MAP;
+                memcpy(IronGateDesc.szModelName, TEXT("Prototype_Component_Model_IronGate"), sizeof(IronGateDesc.szModelName));		// 프로토타입 태그명
+
+                IronGateDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+                IronGateDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_IronGate"), TIME_CHANNEL::WORLD, &IronGateDesc), false);
             }
 
 			CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));

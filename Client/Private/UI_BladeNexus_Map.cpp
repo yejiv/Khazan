@@ -30,6 +30,7 @@ void CUI_BladeNexus_Map::On_Panel(ONTYPE eType)
         return;
    
     m_eOnType = eType;
+    m_pGameInstance->PlaySoundOnce(TEXT("UI_item_select (SFX).wav"));
 
     if (m_eOnType == ONTYPE::HEINMACH)
     {
@@ -75,7 +76,7 @@ void CUI_BladeNexus_Map::Off_Panel()
 {
     if (!m_IsUpdate)
         return;
-
+    m_pGameInstance->PlaySoundOnce(TEXT("UI_item_select (SFX).wav"));
     CUI_BladeNexus::BLADENEXUS_ON_DESC Desc;
 
     Desc.eType = CUI_BladeNexus::ONTYPE::END;
@@ -112,12 +113,6 @@ void CUI_BladeNexus_Map::Priority_Update(_float fTimeDelta)
 
 void CUI_BladeNexus_Map::Update(_float fTimeDelta)
 {
-    //if (m_pGameInstance->Key_Down(DIK_8))
-    //    On_Panel(ONTYPE::HEINMACH);
-
-    //if (m_pGameInstance->Key_Down(DIK_7))
-    //    On_Panel(ONTYPE::EMBARS);
-
     if (!m_IsUpdate)
         return;
 
@@ -327,7 +322,7 @@ void CUI_BladeNexus_Map::Bubble_EventCall(BUBBLEEVENT* pArg)
         m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
 
       
- 
+        m_pGameInstance->PlaySoundOnce(TEXT("UI_travel_open (SFX).wav"));
 
         _int iNexusIndex = { -1};
         if (m_eOnType == ONTYPE::HEINMACH)

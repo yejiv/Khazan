@@ -60,6 +60,13 @@ void CUI_Inven::Off_Panel()
 		m_IsUpdate = false;
 		CClientInstance::GetInstance()->UI_UpdateSwitch(AnsiToWString(m_strReturnName));
 		m_strReturnName = "";
+        m_pGameInstance->StopByKey(TEXT("UI_mainmenu_open_renew (SFX).wav"));
+        
+        if(m_eState == INVEN_STATE::DEFAULT)
+            m_pGameInstance->PlaySoundOnce(TEXT("UI_inven_close_v2 (SFX).wav"));
+        else if(m_eState == INVEN_STATE::EQUIP)
+            m_pGameInstance->PlaySoundOnce(TEXT("UI_mainmenu_close_renew (SFX).wav"));
+   
 	}
 
 }
@@ -73,6 +80,8 @@ _bool CUI_Inven::Add_Item(_uint iItemIndex)
 		if (Item->Add_Item(iItemIndex))
 		{
 			static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Add_Item(iItemIndex);
+            m_pGameInstance->StopByKey(TEXT("UI_itemdcps_01 (SFX).wav"));
+            m_pGameInstance->PlaySoundOnce(TEXT("UI_itemdcps_01 (SFX).wav"));
 			return true;
 		}
 	}
@@ -523,6 +532,8 @@ void CUI_Inven::Bubble_EventCall(BUBBLEEVENT* pArg)
     }
 	else if (pDesc->eBubbleType == EVENT_TYPE::SLOT_EQUIP)
 	{
+        m_pGameInstance->PlaySoundOnce(TEXT("UI_skill_close (SFX).wav"));
+
 		EQUIPSLOT_TYPE eType = static_cast<EQUIPSLOT_TYPE>(pDesc->iIndex);
 		if (eType == EQUIPSLOT_TYPE::WEAPON)
 		{
@@ -599,6 +610,9 @@ HRESULT CUI_Inven::Update_Switch(void* pArg)
         m_pBackGround->Setting_BG(CUI_BackGround::UIBGTYPE::ITEM);
 		if (m_eState == INVEN_STATE::DEFAULT)
 		{
+            m_pGameInstance->StopByKey(TEXT("UI_mainmenu_open_renew (SFX).wav"));
+            m_pGameInstance->PlaySoundOnce(TEXT("UI_inven_open_v2 (SFX).wav"));
+
 			m_iTapGroupIndex = ENUM_CLASS(TapGroup::OTHER);
 			m_pUIText->Set_Text(TEXT("소지품"));
 			Change_Tap(0);
@@ -610,6 +624,8 @@ HRESULT CUI_Inven::Update_Switch(void* pArg)
 		}
 		else if (m_eState == INVEN_STATE::EQUIP)
 		{
+            m_pGameInstance->StopByKey(TEXT("UI_mainmenu_open_renew (SFX).wav"));
+            m_pGameInstance->PlaySoundOnce(TEXT("UI_mainmenu_open_renew (SFX).wav"));
 			m_pUIText->Set_Text(TEXT("장비"));
             m_pGuideTextF->Set_Text(TEXT("장착"));
             for (auto iGroupIndex : m_UpdateGroup[m_iTapGroupIndex])
@@ -956,11 +972,19 @@ void CUI_Inven::Inven_Key_Input()
         if (ENUM_CLASS(TapGroup::OTHER) == m_iTapGroupIndex || m_eState == INVEN_STATE::EQUIP || m_eState == INVEN_STATE::SALE)
             Off_Panel();
         else
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("UI_common_click2 (SFX).wav"));
+
             m_eState = INVEN_STATE::EQUIP;
+        }
 	}
 	else if (m_pGameInstance->Key_Down(DIK_E, INPUT_TYPE::UI))
 	{
-		isTapChage = true;
+        _int iRand = m_pGameInstance->Rand(1, 5);
+        _wstring wstrSound = TEXT("UI_category_select_0") + std::to_wstring(iRand) + TEXT(" (SFX).wav");
+        m_pGameInstance->PlaySoundOnce(wstrSound.c_str());
+
+        isTapChage = true;
 		_int iMaxIndex = m_UpdateGroup[m_iTapGroupIndex].size();
 		for (_int i = 0; i < iMaxIndex; ++i)
 		{
@@ -984,6 +1008,10 @@ void CUI_Inven::Inven_Key_Input()
 	}
 	else if (m_pGameInstance->Key_Down(DIK_Q, INPUT_TYPE::UI))
 	{
+        _int iRand = m_pGameInstance->Rand(1, 5);
+        _wstring wstrSound = TEXT("UI_category_select_0") + std::to_wstring(iRand) + TEXT(" (SFX).wav");
+        m_pGameInstance->PlaySoundOnce(wstrSound.c_str());
+
 		isTapChage = true;
 		_int iMaxIndex = m_UpdateGroup[m_iTapGroupIndex].size();
 		for (_int i = 0; i < iMaxIndex; ++i)
@@ -1084,6 +1112,8 @@ void CUI_Inven::Free()
 	Safe_Release(m_pQIcon);
 	Safe_Release(m_pEIcon);
 
+    Safe_Release(m_pGuideIconESC_Center);
+    Safe_Release(m_pGuideTextESC_Center);
     Safe_Release(m_pGuideIconESC);
     Safe_Release(m_pGuideTextESC);
     Safe_Release(m_pGuideIconF);

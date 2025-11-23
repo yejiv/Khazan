@@ -12,6 +12,7 @@ void CDecorator_Node::Terminate(BTNODESTATE eState, CBlackBoard* BB)
 void CDecorator_Node::Set_Child(CBTNode* pChild)
 {
 	m_pChild = pChild;
+    //Safe_AddRef(m_pChild);
 }
 
 void CDecorator_Node::Free()

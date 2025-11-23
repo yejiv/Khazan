@@ -28,6 +28,7 @@ HRESULT CDoor_Gear::Initialize_Clone(void* pArg)
     m_eAnimState = ANIM_STATE::IDLE1;
     m_pModelCom->Set_Animation(ANIM_STATE::IDLE1);
     m_pModelCom->Set_AnimationLoop(true);
+    m_pModelCom->Set_AnimationBlend(false);
 
     return S_OK;
 }

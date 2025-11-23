@@ -1,6 +1,10 @@
 #pragma once
 #include "Monster.h"
 
+NS_BEGIN(Engine)
+class CModel;
+NS_END
+
 NS_BEGIN(Client)
 
 class CImp_Melee final : public CMonster
