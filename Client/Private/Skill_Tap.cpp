@@ -26,6 +26,18 @@ HRESULT CSkill_Tap::Setting_Panel(_int iTapIndex)
 	return S_OK;
 }
 
+void CSkill_Tap::Set_Selete(_bool isSelete)
+{
+    m_bIsSelete = isSelete;
+
+    if (m_bIsSelete)
+    {
+        _int iRand = m_pGameInstance->Rand(1, 5);
+        _wstring wstrSound = TEXT("UI_category_select_0") + std::to_wstring(iRand) + TEXT(" (SFX).wav");
+        m_pGameInstance->PlaySoundOnce(wstrSound.c_str());
+    }
+}
+
 HRESULT CSkill_Tap::Initialize_Prototype(_int iLevel)
 {
 	m_iLevel = iLevel;
@@ -60,10 +72,22 @@ void CSkill_Tap::Update(_float fTimeDelta)
 			Bubble_EventCall(&Desc);
 		}
 		
-		if (ButtonOver(g_hWnd))
-			m_Children[1]->Set_Color({ 1.f, 1.f, 1.f, 1.f });
-		else
-			m_Children[1]->Set_Color({ 1.f, 1.f, 1.f, 0.5f });
+        
+        if (ButtonOver(g_hWnd))
+        {
+            if (!m_isOver)
+            {
+                m_isOver = true;
+                m_Children[1]->Set_Color({ 1.f, 1.f, 1.f, 1.f });
+                m_pGameInstance->StopByKey(TEXT("UI_common_mouse_over_01 (SFX).wav"));
+                m_pGameInstance->PlaySoundOnce(TEXT("UI_common_mouse_over_01 (SFX).wav"));
+            }
+        }
+        else
+        {
+            m_isOver = false;
+            m_Children[1]->Set_Color({ 1.f, 1.f, 1.f, 0.5f });
+        }
 	}
 	else
 	{

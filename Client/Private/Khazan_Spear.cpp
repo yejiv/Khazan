@@ -226,7 +226,7 @@ void CKhazan_Spear::Update(_float fTimeDelta)
     }
 
 #pragma region 상호 작용 맵 오브젝트 이벤트
-    Event_Interact_Object(fTimeDelta);
+    Update_Interact_Event(fTimeDelta);
 #pragma endregion
 
     if (m_pCharVirCom->Get_isGround())
@@ -2657,7 +2657,7 @@ void CKhazan_Spear::Subscribe_Events()
 #pragma endregion
 }
 
-void CKhazan_Spear::Event_Interact_Object(_float fTimeDelta)
+void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
 {
     // 상호 작용 오브젝트 쪽에서 BEGIN STATE 내보내면 플레이어에서 행동 후, 행동 완료 시 이벤트 발생으로 상호 작용 오브젝트 동작
     if (EventInteractType::EVENT_STATE::BEGIN == m_EventInteract.eState)
@@ -2738,6 +2738,16 @@ void CKhazan_Spear::Event_Interact_Object(_float fTimeDelta)
 
             break;
         }
+        case INTERACTIVE_TYPE::IRONGATE:
+        {
+            isDone = false;
+
+            if (m_pBody->Get_Model()->IsFinished()) {
+                isDone = true;
+            }
+
+            break;
+        }
         default:
             break;
         }
@@ -2795,6 +2805,11 @@ void CKhazan_Spear::Event_Interact_Object(_float fTimeDelta)
         if (INTERACTIVE_TYPE::STATUE == m_EventInteract.eInteractType)
         {
             Statue_Event(fTimeDelta);
+        }
+        // 엠바스 위쪽 잠겨있는 철문을 열때
+        if (INTERACTIVE_TYPE::IRONGATE == m_EventInteract.eInteractType)
+        {
+            IronGate_Event(fTimeDelta);
         }
     }
 }
@@ -2973,6 +2988,20 @@ void CKhazan_Spear::Statue_Event(_float fTimeDelta)
     m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&StatueEvent.vPlayerPosition));
     StatueEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
     m_pTransformCom->LookAt(XMLoadFloat4(&StatueEvent.vPosition));
+
+    m_EventInteract.End_Event();
+}
+void CKhazan_Spear::IronGate_Event(_float fTimeDelta)
+{
+    EventIronGate IronGateEvent = m_EventInteract.IronGateEvent;
+
+    // 플레이어가 잠금해제하고 문을 여는 애니메이션 실행
+
+    IronGateEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+    m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&IronGateEvent.vPlayerPosition));
+    IronGateEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    m_pTransformCom->LookAt(XMLoadFloat4(&IronGateEvent.vPosition));
 
     m_EventInteract.End_Event();
 }
@@ -3395,7 +3424,7 @@ void CKhazan_Spear::Debug_Widget_Movement()
             XMVectorSet(teleportPos[0], teleportPos[1], teleportPos[2], 1.f));
     }
 
-    static _float teleportPos2[3] = { 114.64, 5.2f, 99.f };
+    static _float teleportPos2[3] = { 114.64f, 5.2f, 99.f };
     ImGui::DragFloat3("Teleport Position HeinMach Low Cliff", teleportPos2, 0.1f);
 
     if (ImGui::Button("Teleport", ImVec2(-1, 0)))

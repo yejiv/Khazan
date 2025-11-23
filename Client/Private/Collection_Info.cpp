@@ -53,6 +53,7 @@ void CCollection_Info::Update(_float fTimeDelta)
     {
         m_IsUpdate = false;
         m_isChangeInputType = true;
+        m_pGameInstance->PlaySoundOnce(TEXT("UI_inherit_open (SFX).wav"));
     }
 }
 
@@ -108,6 +109,8 @@ HRESULT CCollection_Info::Update_Switch(void* pArg)
     m_IsUpdate = true;
     m_pGameInstance->Change_InputType(INPUT_TYPE::POPUP);
     m_isOnStart = true;
+
+    m_pGameInstance->PlaySoundOnce(TEXT("UI_inherit_close (SFX).wav"));
     return S_OK;
 }
 

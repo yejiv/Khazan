@@ -112,3 +112,26 @@ BlendState BS_AlphaBlend
     DestBlend = INV_SRC_ALPHA;
     BlendOp = Add;
 };
+
+
+BlendState BS_WeightBlend
+{
+    BlendEnable[0] = true;
+    BlendEnable[1] = true;
+
+    SrcBlend[0] = ONE;
+    DestBlend[0] = ONE;
+    BlendOp[0] = Add;
+    SrcBlendAlpha[0] = ONE;
+    DestBlendAlpha[0] = ONE;
+    BlendOpAlpha[0] = ADD;
+    RenderTargetWriteMask[0] = 0x0F;
+
+    SrcBlend[1] = zero;
+    DestBlend[1] = INV_SRC_COLOR;
+    BlendOp[1] = Add;
+    SrcBlendAlpha[1] = zero;
+    DestBlendAlpha[1] = INV_SRC_ALPHA;
+    BlendOpAlpha[1] = Add;
+    RenderTargetWriteMask[1] = 0x0F; // 전체 기록
+};

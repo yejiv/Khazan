@@ -30,11 +30,17 @@ HRESULT CLevel_Title::Initialize()
 
 	m_pGameInstance->Change_InputType(INPUT_TYPE::UI);
 	CClientInstance::GetInstance()->Fade_In();
+
 	return S_OK;
 }
 
 void CLevel_Title::Update(_float fTimeDelta)
 {
+    if (!m_isPlayerSound)
+    {
+        m_isPlayerSound = true;
+        m_pGameInstance->PlaySoundLoop(TEXT("bgm_Title.wav"), 0.5f);
+    }
 	if (m_pGameInstance->Key_Down(DIK_F8, INPUT_TYPE::UI))
 	{
 		if (!m_isOpenLevel) {
@@ -233,6 +239,6 @@ void CLevel_Title::Free()
 {
 	__super::Free();
 
-
+    m_pGameInstance->StopAll();
 
 }

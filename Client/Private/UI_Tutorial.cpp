@@ -25,6 +25,8 @@ void CUI_Tutorial::NextPage()
 {
 	if (m_iSeletePage >= m_iMaxPage)
 		return;
+    m_pGameInstance->PlaySoundOnce(TEXT("UI_Iteminfo_Open (SFX).wav"));
+
 	++m_iSeletePage;
 	if (m_iSeletePage >= m_iMaxPage)
 	{
@@ -48,6 +50,8 @@ void CUI_Tutorial::ReturnPage()
 {
 	if (m_iSeletePage <= 0)
 		return;
+
+    m_pGameInstance->PlaySoundOnce(TEXT("UI_Iteminfo_Close (SFX).wav"));
 	--m_iSeletePage;
 	if (m_iSeletePage <= 0)
 	{
@@ -69,6 +73,8 @@ void CUI_Tutorial::On_Panel(GUIDE_TYPE eType)
 {
 	if (m_IsUpdate)
 		return;
+    m_pGameInstance->PlaySoundOnce(TEXT("UI_shopbuy_open (SFX).wav"));
+
 	m_iSeletePage = 0;
 
 	m_eAnimState = UIANIMSTATE::ON;
@@ -121,9 +127,12 @@ void CUI_Tutorial::Priority_Update(_float fTimeDelta)
 {
 	if (!m_IsUpdate)
 		return;
-	if (m_pGameInstance->Key_Down(DIK_ESCAPE, INPUT_TYPE::POPUP))
-		Off_Panel();
-
+    if (m_pGameInstance->Key_Down(DIK_ESCAPE, INPUT_TYPE::POPUP))
+    {
+        m_pGameInstance->StopByKey(TEXT("UI_shopbuy_close (SFX).wav"));
+        m_pGameInstance->PlaySoundOnce(TEXT("UI_shopbuy_close (SFX).wav"));
+        Off_Panel();
+    }
 	UI_Animation(fTimeDelta);
 	__super::Priority_Update(fTimeDelta);
 }

@@ -35,6 +35,7 @@
 #include "LUT.h"
 #include "RadialBlur.h"
 #include "MotionBlur.h"
+#include "Sound_Manager.h"
 
 
 IMPLEMENT_SINGLETON(CGameInstance)
@@ -178,6 +179,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pEffect_Manager)
 		return E_FAIL;
 
+    m_pSound_Manager = CSound_Manager::Create();
+    if (nullptr == m_pSound_Manager)
+        return E_FAIL;
+
 	m_iStaticLevel = EngineDesc.iStaticLevel;
 
 #ifdef _DEBUG
@@ -224,6 +229,9 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 
 	m_pDecal_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
+    if (m_pJolt_Manager)
+        m_pJolt_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
+
 	m_pObject_Manager->Late_Update(tTimeDelta);
 	m_pEffect_Manager->Late_Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::EFFECT)]);
 
@@ -242,8 +250,7 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 
 	m_pLevel_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
-	if (m_pJolt_Manager)
-		m_pJolt_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
+
 
 	m_pComputeShader_Manager->Execute_Job(COMPUTEJOB::UPDATE);
 
@@ -1539,6 +1546,51 @@ void CGameInstance::Update_MotionBlur_PrevMatrices()
     m_pMotionBlur->Update_PrevMatrices();
 }
 
+void CGameInstance::Set_Gloval_Volume(_float fVolume)
+{
+    m_pSound_Manager->Set_Gloval_Volume(fVolume);
+}
+
+void CGameInstance::ADD_Gloval_Volume(_float fVolume)
+{
+    m_pSound_Manager->ADD_Gloval_Volume(fVolume);
+}
+
+void CGameInstance::PlaySoundOnce(const TCHAR* pSoundKey, float fVolume, FMOD_CHANNEL** ppOutChannel)
+{
+    m_pSound_Manager->PlaySoundOnce(pSoundKey, fVolume, ppOutChannel);
+}
+
+void CGameInstance::PlaySoundLoop(const TCHAR* pSoundKey, float fVolume, FMOD_CHANNEL** ppOutChannel)
+{
+    m_pSound_Manager->PlaySoundLoop(pSoundKey, fVolume, ppOutChannel);
+}
+
+void CGameInstance::StopAll()
+{
+    m_pSound_Manager->StopAll();
+}
+
+void CGameInstance::StopByKey(const TCHAR* pSoundKey)
+{
+    m_pSound_Manager->StopByKey(pSoundKey);
+}
+
+void CGameInstance::StopByChannel(FMOD_CHANNEL** ppOutChannel)
+{
+    m_pSound_Manager->StopByChannel(ppOutChannel);
+}
+
+bool CGameInstance::IsPlayingByKey(const TCHAR* pSoundKey)
+{
+    return m_pSound_Manager->IsPlayingByKey(pSoundKey);;
+}
+
+void CGameInstance::SetVolumeByKey(const TCHAR* pSoundKey, float fVolume)
+{
+    m_pSound_Manager->SetVolumeByKey(pSoundKey, fVolume);
+}
+
 #pragma endregion
 
 #pragma region OCTREE
@@ -1576,6 +1628,7 @@ void CGameInstance::Release_Engine()
 #ifdef _DEBUG
 	Safe_Release(m_pImgui_Manager);
 #endif
+    Safe_Release(m_pSound_Manager);
 	Safe_Release(m_pDecal_Manager);
 	Safe_Release(m_pSequence_Manager);
 	Safe_Release(m_pThreadPool);

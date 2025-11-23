@@ -16,6 +16,7 @@ Texture2D g_PostSceneTexture, g_CombinedTexture;
 Texture2D g_BrightTexture, g_BlurXTexture, g_BloomTexture;
 Texture2D g_FogTexture, g_OutlineTexture, g_NoiseTexture, g_SSAOTexture, g_LUTTexture, g_VelocityTexture;
 Texture2D g_Texture;
+Texture2D g_AccumColorTexture, g_AccumAlphaTexture;
 Texture2DArray<float> g_TextureArray;
 int g_iTextureArrayIndex;
 

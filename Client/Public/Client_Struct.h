@@ -105,10 +105,11 @@ namespace Client
 
 	typedef struct tag_Announce_Talk
 	{
-		_float fTime{};
 		wstring wstrName{};
 		wstring wstrText_1{};
 		wstring wstrText_2{};
+        wstring wstrSoundName{};
+        _int iNextIndex{};
 	}ANNOUNCE_TALK_DB;
 
 	typedef struct tag_Skill_DB

@@ -18,7 +18,7 @@ private:
 
 public:
 	HRESULT								Setting_Panel(_int iTapIndex);
-	void								Set_Selete(_bool isSelete) { m_bIsSelete = isSelete; }
+    void								Set_Selete(_bool isSelete);
 public:
 	virtual HRESULT						Initialize_Prototype(_int iLevel);
 	virtual HRESULT						Initialize_Clone(void* pArg) override;
@@ -35,6 +35,8 @@ private:
 
 	_int								m_iTapIndex = { -1 };
 	vector<class CSkill_Slot_Panel*>	m_pPanel;
+
+    _bool                               m_isOver = { false };
 private:
 	HRESULT								Ready_Children();
 public:

@@ -56,11 +56,22 @@ void CUI_Default_Button::Update(_float fTimeDelta)
 	if (!m_isVisible)
 		return;
 
-	if (ButtonOver(g_hWnd))
-		m_vColor.w = 1.f;
-	else
-		m_vColor.w = 0.6f;
-
+    if (ButtonOver(g_hWnd))
+    {
+        if (!m_isOver)
+        {
+            m_isOver = true;
+            _int iRand = m_pGameInstance->Rand(1, 4);
+            _wstring wstrSound = TEXT("UI_common_mouse_over_0") + std::to_wstring(iRand) + TEXT(" (SFX).wav");
+            m_pGameInstance->PlaySoundOnce(wstrSound.c_str());
+        }
+        m_vColor.w = 1.f;
+    }
+    else
+    {
+        m_vColor.w = 0.6f;
+        m_isOver = false;
+    }
 	if (ButtonClick(g_hWnd, false, true))
 		ButtonEvent(m_eState);
 }

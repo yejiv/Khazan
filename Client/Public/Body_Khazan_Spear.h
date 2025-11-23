@@ -141,7 +141,7 @@ private:
    // _float              m_fGuardRotationTime = { 0.f };
    // _float              m_fGuardRotationDuration = { 0.15f }; // 0.15초 동안 회전
    // _vector             m_vTargetRotationDir = {};
-  //  _float              m_fStartAngle = { 0.f };
+  //  _float              m_fStartAngle = { sd0.f };
    // _float              m_fTargetAngle = { 0.f };
     _float4*            m_pGuardRotationTarget = {nullptr};
 
@@ -167,6 +167,8 @@ private:
 
 
     COLLISION_DESC      m_tSearchCollisionDesc = {};
+
+    mutex m_CollMonsterMutex;
 
 private:
     void				Update_Collider(_float fTimeDelta);                     

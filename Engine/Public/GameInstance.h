@@ -426,6 +426,19 @@ public:
     void                        Update_MotionBlur_PrevMatrices();
 #pragma endregion
 
+#pragma region SOUND_MANAGER
+    void                        Set_Gloval_Volume(_float fVolume);
+    void                        ADD_Gloval_Volume(_float fVolume);
+
+    void                        PlaySoundOnce(const TCHAR* pSoundKey, float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);
+    void                        PlaySoundLoop(const TCHAR* pSoundKey, float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);
+    void                        StopAll();
+
+    void                        StopByKey(const TCHAR* pSoundKey);
+    void                        StopByChannel(FMOD_CHANNEL** ppOutChannel);
+    bool                        IsPlayingByKey(const TCHAR* pSoundKey);
+    void                        SetVolumeByKey(const TCHAR* pSoundKey, float fVolume);
+#pragma endregion
 
 private:
 	class CGraphic_Device*		    m_pGraphic_Device = { nullptr };
@@ -451,7 +464,7 @@ private:
 	class CSequence_Manager*	    m_pSequence_Manager = { nullptr };
 	class CDecal_Manager*		    m_pDecal_Manager = { nullptr };
 	class CEffect_Manager*		    m_pEffect_Manager = { nullptr };
-	
+	class CSound_Manager*           m_pSound_Manager = { nullptr };
 	// 임시(이후 렌더링 리소스 클래스 안으로 이전할 예정)
 	class CCSM*				        m_pCSM = { nullptr };
     class CShadow*                  m_pShadow = { nullptr };

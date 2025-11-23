@@ -46,9 +46,13 @@ void CBladeNexus_List::Set_Selete(_bool isSelete)
 
 	m_bIsSelete = isSelete;
 
-	if (m_bIsSelete)
-		m_fAccTime = 0.35f;
-	m_pDeco->Update_AccTime(0.f);
+    if (m_bIsSelete)
+    {
+        m_fAccTime = 0.35f;
+        m_pGameInstance->StopByKey(TEXT("UI_Title_Seq_Menu_Open_Move.wav"));
+        m_pGameInstance->PlaySoundOnce(TEXT("UI_Title_Seq_Menu_Open_Move.wav"));
+    }
+    m_pDeco->Update_AccTime(0.f);
 }
 
 HRESULT CBladeNexus_List::Initialize_Prototype(_uint iLevel)

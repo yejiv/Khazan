@@ -195,6 +195,10 @@
     <ClInclude Include="..\Public\Effect_Terrain.h" />
     <ClInclude Include="..\Public\ElevatorS.h" />
     <ClInclude Include="..\Public\Elevator_Gear.h" />
+    <ClInclude Include="..\Public\IronGate.h" />
+    <ClInclude Include="..\Public\IronGate_Lock.h" />
+    <ClInclude Include="..\Public\IronGate_Part_L.h" />
+    <ClInclude Include="..\Public\IronGate_Part_R.h" />
     <ClInclude Include="..\public\JOH_EditorModelTest.h" />
     <ClInclude Include="..\Public\E_Khazan_Spear.h" />
     <ClInclude Include="..\Public\Level_AI.h" />
@@ -237,6 +241,7 @@
     <ClInclude Include="..\public\Terrain_Shader.h" />
     <ClInclude Include="..\Public\BladeNexus.h" />
     <ClInclude Include="..\Public\TombStone.h" />
+    <ClInclude Include="..\Public\VerticalGate.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="EditorPch.h" />
     <ClInclude Include="framework.h" />
@@ -276,6 +281,10 @@
     <ClCompile Include="..\Private\Effect_Terrain.cpp" />
     <ClCompile Include="..\Private\ElevatorS.cpp" />
     <ClCompile Include="..\Private\Elevator_Gear.cpp" />
+    <ClCompile Include="..\Private\IronGate.cpp" />
+    <ClCompile Include="..\Private\IronGate_Lock.cpp" />
+    <ClCompile Include="..\Private\IronGate_Part_L.cpp" />
+    <ClCompile Include="..\Private\IronGate_Part_R.cpp" />
     <ClCompile Include="..\private\JOH_EditorModelTest.cpp" />
     <ClCompile Include="..\Private\Camera_Shader.cpp" />
     <ClCompile Include="..\Private\E_Khazan_Spear.cpp" />
@@ -318,6 +327,7 @@
     <ClCompile Include="..\private\Terrain_Shader.cpp" />
     <ClCompile Include="..\Private\BladeNexus.cpp" />
     <ClCompile Include="..\Private\TombStone.cpp" />
+    <ClCompile Include="..\Private\VerticalGate.cpp" />
     <ClCompile Include="Editor.cpp" />
     <ClCompile Include="EditorPch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

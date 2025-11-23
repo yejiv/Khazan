@@ -41,6 +41,7 @@ HRESULT CLevel_HeinMach::Initialize()
 
     m_pGameInstance->Add_FireTask([&]() {
         CHECK_FAILED(Ready_Layer_MapObject_DEST(TEXT("Layer_DEST"), TEXT(""), LEVEL::HEINMACH), E_FAIL);
+        return S_OK;
         });
 
     CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
@@ -80,8 +81,7 @@ HRESULT CLevel_HeinMach::Initialize()
 
     CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
-    
-    
+    CHECK_FAILED(Ready_Layer_MapObject_DEST(TEXT("Layer_DEST"), TEXT(""), LEVEL::HEINMACH), E_FAIL);
 
     CClientInstance::GetInstance()->Fade_Out();
 
@@ -185,11 +185,6 @@ HRESULT CLevel_HeinMach::Initialize()
 
 void CLevel_HeinMach::Update(_float fTimeDelta)
 {
-    //if (m_pGameInstance->Key_Down(DIK_9))
-    //    static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
-    //if (m_pGameInstance->Key_Down(DIK_8))
-    //    static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
-
 	if (m_pGameInstance->Key_Down(DIK_Q))
 	{
 		m_pGameInstance->isPickRenderTargetPixel(TEXT("Target_Normal"));
@@ -205,10 +200,11 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
 	}
 
 
-	if (m_pGameInstance->Key_Down(DIK_RETURN))
-		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EMBARS))));
+    if (m_pGameInstance->Key_Down(DIK_RETURN))
+        if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EMBARS))))
+            return;
 
-   /* if (!m_isStart)
+   if (!m_isStart)
     {
         m_isStart = true;
         CSequence_HeinMach_Start* pSequence = CSequence_HeinMach_Start::Create();
@@ -219,7 +215,7 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
         tPlayDesc.fStartTime = 0.f;
 
         m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
-    }*/
+    }
 
 
 	return;
@@ -314,7 +310,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
 HRESULT CLevel_HeinMach::Ready_Layer_Player(const _wstring& strLayerTag)
 {
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-		ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
+		ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
 		return E_FAIL;
 
 	return S_OK;
@@ -381,10 +377,10 @@ HRESULT CLevel_HeinMach::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Focus"), 1); 
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Snow"), 4); 
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Snow_Once"), 20);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Snow_Cam"), 1);
     m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Snow"), XMVectorSet(240.f, 6.f, 150.f, 1.f));
     m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Snow"), XMVectorSet(343.f, 8.f, 172.f, 1.f));
-    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Snow"), XMVectorSet(167.f,43.f, 209.f, 1.f));
-    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Snow"), XMVectorSet(117.f,71.5f, 260.12f, 1.f));
+    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Snow_Cam"), XMVectorSet(167.f,43.f, 209.f, 1.f)); 
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("GhostKnight"), 1);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("GhostKnight_static"), 4);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("GhostKnight_static_connect"), 4);
