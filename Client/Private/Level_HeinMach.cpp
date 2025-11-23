@@ -63,7 +63,7 @@ HRESULT CLevel_HeinMach::Initialize()
 
     CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
 
-    CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera")), E_FAIL);
+    CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera")), E_FAIL); 
 
     for (_uint i = 0; i < HEINMACH_SUBLV; ++i)
     {
@@ -79,9 +79,7 @@ HRESULT CLevel_HeinMach::Initialize()
 
     CHECK_FAILED(Ready_Layer_Cloud(TEXT("Layer_Sky"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
-    CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-
-    CHECK_FAILED(Ready_Layer_MapObject_DEST(TEXT("Layer_DEST"), TEXT(""), LEVEL::HEINMACH), E_FAIL);
+    //CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
     CClientInstance::GetInstance()->Fade_Out();
 
@@ -670,7 +668,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
 
         if ("Yetuga" == MonsterData.MonsterKey[i])
         {
-          /*  CMonster::MONSTER_DESC MonsterDesc{};
+            CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 10.f;
             MonsterDesc.fMaxHP = 100.f;
             MonsterDesc.fMaxStamina = 100.f;
@@ -684,11 +682,11 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
 
             if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
                 ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Yetuga"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
-                return E_FAIL;*/
+                return E_FAIL;
         }
         else if ("ImpRange" == MonsterData.MonsterKey[i])
         {
-          /*  CMonster::MONSTER_DESC MonsterDesc{};
+            CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 10.f;
             MonsterDesc.fMaxHP = 100.f;
             MonsterDesc.fMaxStamina = 100.f;
@@ -702,7 +700,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
 
             if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
                 ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
-                return E_FAIL;*/
+                return E_FAIL;
         }
         else if ("ImpMelee" == MonsterData.MonsterKey[i])
         {
