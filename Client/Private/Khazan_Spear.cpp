@@ -128,7 +128,7 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
 
     m_EffectTimeDelta = 0.f;
 #pragma region 3D UI 테스트
-    CUIObject::UIOBJECT_DESC Desc;
+    //CUIObject::UIOBJECT_DESC Desc;
 
     //Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
     //Desc.vLocalPos = { 0.f, 0.f };
@@ -139,7 +139,7 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
   /*  if (m_pTalkUI == nullptr)
         return E_FAIL;*/
 
-    Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
+   /* Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
     Desc.vLocalPos = { 0.f, 0.f };
     Desc.vLocalSize = { 1.7f, 1.7f };
     Desc.szName = "TalkUI";
@@ -150,7 +150,7 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
     CHECK_NULLPTR(m_pDanginTalkUI, E_FAIL);
     Desc.szName = "Trader_TalkUI";
     m_pTraderTalkUI = static_cast<CUI_Talk_Trader*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Trader"), &Desc));
-    CHECK_NULLPTR(m_pTraderTalkUI, E_FAIL);
+    CHECK_NULLPTR(m_pTraderTalkUI, E_FAIL);*/
 
 #pragma endregion
     return S_OK;
@@ -158,7 +158,7 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
 }
 
 void CKhazan_Spear::Priority_Update(_float fTimeDelta)
-{
+{/*
     if (m_pGameInstance->Key_Down(DIK_8))
         m_pTalkUI->On_Panel();
     
@@ -166,7 +166,7 @@ void CKhazan_Spear::Priority_Update(_float fTimeDelta)
         m_pDanginTalkUI->On_Panel();
 
     if (m_pGameInstance->Key_Down(DIK_K))
-        m_pTraderTalkUI->On_Panel();
+        m_pTraderTalkUI->On_Panel();*/
 
     //m_pTalkUI->Priority_Update(fTimeDelta);
     __super::Priority_Update(fTimeDelta);
@@ -188,9 +188,9 @@ void CKhazan_Spear::Priority_Update(_float fTimeDelta)
 
 void CKhazan_Spear::Update(_float fTimeDelta)
 {
-    m_pTalkUI->Update(fTimeDelta);
+   /* m_pTalkUI->Update(fTimeDelta);
     m_pDanginTalkUI->Update(fTimeDelta);
-    m_pTraderTalkUI->Update(fTimeDelta);
+    m_pTraderTalkUI->Update(fTimeDelta);*/
 
     if (m_isEnableControl)
     {
@@ -276,13 +276,13 @@ void CKhazan_Spear::Update(_float fTimeDelta)
 
 void CKhazan_Spear::Late_Update(_float fTimeDelta)
 {
-    m_pTalkUI->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
+   /* m_pTalkUI->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
     m_pDanginTalkUI->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
-    m_pTraderTalkUI->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
+    m_pTraderTalkUI->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));*/
 
-    m_pTalkUI->Late_Update(fTimeDelta);
+   /* m_pTalkUI->Late_Update(fTimeDelta);
     m_pDanginTalkUI->Late_Update(fTimeDelta);
-    m_pTraderTalkUI->Late_Update(fTimeDelta);
+    m_pTraderTalkUI->Late_Update(fTimeDelta);*/
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 
@@ -3577,7 +3577,6 @@ void CKhazan_Spear::Free()
     Safe_Release(m_pAnimInteraction);
     Safe_Release(m_pAnimDamaged);
     Safe_Release(m_pAnimFall);
-    // Safe_Release(m_pCharVirCom);
 
      //Safe_Release(m_pASMachine);
     // Safe_Release(m_pASManager);

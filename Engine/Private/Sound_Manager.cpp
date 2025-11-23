@@ -20,7 +20,7 @@ void CSound_Manager::PlaySoundOnce(const TCHAR* pSoundKey, float fVolume, FMOD_C
 {
     FMOD_SOUND* pSound = nullptr;
     if (!FindSound(pSoundKey, &pSound)) return;
-
+    
     FMOD_CHANNEL* pCh = nullptr;
     FMOD_System_PlaySound(m_pSystem, pSound, nullptr, FALSE, &pCh);
     if (pCh)

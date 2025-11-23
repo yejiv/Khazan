@@ -965,6 +965,11 @@ void CGameInstance::Remove_BodyDesc(BodyID id)
 	m_pJolt_Manager->Remove_BodyDesc(id);
 }
 
+void CGameInstance::Destroy_Body(BodyID id)
+{
+    m_pJolt_Manager->Destroy_Body(id);
+}
+
 void CGameInstance::Set_Gravity(_vector vGravity)
 {
 	m_pJolt_Manager->Set_Gravity(vGravity);
@@ -1598,8 +1603,7 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pInput_Manager);
 	Safe_Release(m_pResource_Manager);
-	Safe_Release(m_pBlackBoard);
-	Safe_Release(m_pJolt_Manager);
+	Safe_Release(m_pBlackBoard);	
 
 	Safe_Release(m_pPicking);
 	Safe_Release(m_pTimer_Manager);
@@ -1609,6 +1613,7 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pLevel_Manager);
 	Safe_Release(m_pGraphic_Device);
 	Safe_Release(m_pEffect_Manager);
+    Safe_Release(m_pJolt_Manager);
 }
 
 void CGameInstance::Free()

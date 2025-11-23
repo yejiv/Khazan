@@ -228,5 +228,6 @@ CGameObject* CPot::Clone(void* pArg)
 void CPot::Free()
 {
     __super::Free();
+    Safe_Release(m_pBodyCom);
 
 }
