@@ -43,6 +43,12 @@
 #include "IronGate_Part_L.h"            // 철문 왼쪽
 #include "IronGate_Part_R.h"            // 철문 오른쪽
 
+#include "Ladder.h"                     // 사다리 ( 렌더 X ) ( 뼈 없슴 )
+#include "Ladder_Top.h"                 // 사다리 위쪽 ( 뼈 O )
+#include "Ladder_Middle.h"              // 사다리 중간 다리들 ( 1개씩 )
+#include "Ladder_Bottom.h"              // 사다리 아래쪽 ( 뼈 O )
+#include "Ladder_Support.h"             // 사다리 아래쪽 발판
+
 // Properties Test
 #include "Prop_Test.h"
 

@@ -246,6 +246,11 @@
     <ClInclude Include="..\public\Khazan_GS_Anim_Move.h" />
     <ClInclude Include="..\public\Khazan_GS_InputHandler.h" />
     <ClInclude Include="..\public\Khazan_GS_StateMachine.h" />
+    <ClInclude Include="..\Public\Ladder.h" />
+    <ClInclude Include="..\Public\Ladder_Bottom.h" />
+    <ClInclude Include="..\Public\Ladder_Middle.h" />
+    <ClInclude Include="..\Public\Ladder_Support.h" />
+    <ClInclude Include="..\Public\Ladder_Top.h" />
     <ClInclude Include="..\Public\Lantern_Khazan_GS.h" />
     <ClInclude Include="..\Public\Lever.h" />
     <ClInclude Include="..\Public\Lever_Gear.h" />
@@ -568,6 +573,11 @@
     <ClCompile Include="..\private\Khazan_GS_Anim_Move.cpp" />
     <ClCompile Include="..\private\Khazan_GS_InputHandler.cpp" />
     <ClCompile Include="..\private\Khazan_GS_StateMachine.cpp" />
+    <ClCompile Include="..\Private\Ladder.cpp" />
+    <ClCompile Include="..\Private\Ladder_Bottom.cpp" />
+    <ClCompile Include="..\Private\Ladder_Middle.cpp" />
+    <ClCompile Include="..\Private\Ladder_Support.cpp" />
+    <ClCompile Include="..\Private\Ladder_Top.cpp" />
     <ClCompile Include="..\Private\Lantern_Khazan_GS.cpp" />
     <ClCompile Include="..\Private\Lever.cpp" />
     <ClCompile Include="..\Private\Lever_Gear.cpp" />

@@ -201,6 +201,11 @@
     <ClInclude Include="..\Public\IronGate_Part_R.h" />
     <ClInclude Include="..\public\JOH_EditorModelTest.h" />
     <ClInclude Include="..\Public\E_Khazan_Spear.h" />
+    <ClInclude Include="..\Public\Ladder.h" />
+    <ClInclude Include="..\Public\Ladder_Bottom.h" />
+    <ClInclude Include="..\Public\Ladder_Middle.h" />
+    <ClInclude Include="..\Public\Ladder_Support.h" />
+    <ClInclude Include="..\Public\Ladder_Top.h" />
     <ClInclude Include="..\Public\Level_AI.h" />
     <ClInclude Include="..\Public\Level_Animation.h" />
     <ClInclude Include="..\Public\Level_Camera.h" />
@@ -288,6 +293,11 @@
     <ClCompile Include="..\private\JOH_EditorModelTest.cpp" />
     <ClCompile Include="..\Private\Camera_Shader.cpp" />
     <ClCompile Include="..\Private\E_Khazan_Spear.cpp" />
+    <ClCompile Include="..\Private\Ladder.cpp" />
+    <ClCompile Include="..\Private\Ladder_Bottom.cpp" />
+    <ClCompile Include="..\Private\Ladder_Middle.cpp" />
+    <ClCompile Include="..\Private\Ladder_Support.cpp" />
+    <ClCompile Include="..\Private\Ladder_Top.cpp" />
     <ClCompile Include="..\Private\Level_AI.cpp" />
     <ClCompile Include="..\Private\Level_Animation.cpp" />
     <ClCompile Include="..\Private\Level_Camera.cpp" />

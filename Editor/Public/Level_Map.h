@@ -124,6 +124,12 @@ private:
     _int m_iUnLockRotation = {};
     _int m_iFixUnLockRotation = {};
 
+    _float m_fLadderTopHeight = {};
+    _float m_fLadderTopHeightOffset = {};
+
+    _float m_fLadderMiddleHeight = {};
+    _float m_fLadderMiddleHeightOffset = {};
+
 #pragma endregion
 
 #pragma region Object 수정 변수

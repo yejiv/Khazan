@@ -912,6 +912,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
     m_Prototypes_Inter.push_back("Statue");
     m_Prototypes_Inter.push_back("VerticalGate");
     m_Prototypes_Inter.push_back("IronGate");
+    m_Prototypes_Inter.push_back("Ladder");
 
 #ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
@@ -1158,6 +1159,25 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 
                     CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                         ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_IronGate"), TIME_CHANNEL::WORLD, &IronGateDesc), );
+                }
+                else if ("Ladder" == m_Prototypes_Inter[m_iIndex_PrtInter])
+                {
+                    CLadder::LADDER_DESC LadderDesc = {};
+
+                    LadderDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    LadderDesc.eLevel = LEVEL::MAP;
+                    memcpy(LadderDesc.szModelName, strModelTag.c_str(), sizeof(LadderDesc.szModelName));		// 프로토타입 태그명
+
+                    LadderDesc.fOffSetHeight = 3.2f;
+
+                    LadderDesc.iSegmentCount = 1;
+
+                    XMStoreFloat4x4(&LadderDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    LadderDesc.eInteractiveType = INTERACTIVE_TYPE::LADDER;										// 상호 작용 오브젝트 타입
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Ladder"), TIME_CHANNEL::WORLD, &LadderDesc), );
                 }
 #pragma endregion
 
@@ -1562,6 +1582,23 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
                 CIronGate* pIronGate = static_cast<CIronGate*>(m_pFixPropObj);
 
                 ImGui::Text("== IRONGATE ==");
+                SEPARATOR;
+            }
+            if (INTERACTIVE_TYPE::LADDER == m_pFixPropObj->Get_InteractiveType())
+            {
+                CLadder* pLadder = static_cast<CLadder*>(m_pFixPropObj);
+
+                ImGui::Text("== LADDER INFORMATION ==");
+                ImGui::Text("TOP LADDER : "); SAMELINE;
+                ImGui::InputFloat("##fix_top_ladder_height", &m_fLadderTopHeight, 0.4f, 0.8f);
+                //ImGui::SliderFloat("##fix_top_ladder_height", &m_fLadderTopHeight, m_fLadderTopHeightOffset - 30.f, m_fLadderTopHeightOffset + 30.f);
+                ImGui::Text("MIDDLE LADDER : "); SAMELINE;
+                ImGui::InputFloat("##fix_mid_ladder_height", &m_fLadderMiddleHeight, 0.4f, 0.8f);
+                //ImGui::SliderFloat("##fix_mid_ladder_height", &m_fLadderMiddleHeight, m_fLadderMiddleHeightOffset - 30.f, m_fLadderMiddleHeightOffset + 30.f);
+
+                pLadder->Set_TopPosition_Y(m_fLadderTopHeight);
+                pLadder->Set_MiddlePosition_Y(m_fLadderMiddleHeight);
+
                 SEPARATOR;
             }
 
@@ -2109,6 +2146,15 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
                         if (INTERACTIVE_TYPE::IRONGATE == m_pFixPropObj->Get_InteractiveType())
                         {
                             CIronGate* pStatue = static_cast<CIronGate*>(m_pFixPropObj);
+                        }
+
+                        if (INTERACTIVE_TYPE::LADDER == m_pFixPropObj->Get_InteractiveType())
+                        {
+                            CLadder* pLadder = static_cast<CLadder*>(m_pFixPropObj);
+
+                            m_fLadderTopHeightOffset = m_fLadderTopHeight = pLadder->Get_TopPosition_Y();
+
+                            m_fLadderMiddleHeightOffset = m_fLadderMiddleHeight = pLadder->Get_MiddlePosition_Y();
                         }
 
 						m_isFixInteractObjectWindow = true;
@@ -4358,6 +4404,20 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
             {
                 // 철문 일단 공백
             }
+            if (INTERACTIVE_TYPE::LADDER == eType)
+            {
+                CLadder* pLadder = static_cast<CLadder*>(pProp);
+
+                _float fLocalTopHeight = pLadder->Get_TopPosition_Y();
+
+                WriteFile(hObjectFile, &fLocalTopHeight, sizeof(_float), &dwByte, nullptr);
+
+                fLocalTopHeight -= 2.8f;
+
+                _int iSegmentCount = static_cast<_int>(fLocalTopHeight / 0.4f);
+
+                WriteFile(hObjectFile, &iSegmentCount, sizeof(_int), &dwByte, nullptr);
+            }
 		}
 	}
 
@@ -5063,6 +5123,24 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 
                 CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                     ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_IronGate"), TIME_CHANNEL::WORLD, &IronGateDesc), false);
+            }
+            else if (INTERACTIVE_TYPE::LADDER == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CLadder::LADDER_DESC LadderDesc = {};
+
+                LadderDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                LadderDesc.eLevel = LEVEL::MAP;
+
+                LadderDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+                LadderDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+                CHECK_FALSE(ReadFile(hObjectFile, &LadderDesc.fOffSetHeight, sizeof(_float), &dwByte, nullptr), false);
+
+                CHECK_FALSE(ReadFile(hObjectFile, &LadderDesc.iSegmentCount, sizeof(_int), &dwByte, nullptr), false);
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Ladder"), TIME_CHANNEL::WORLD, &LadderDesc), false);
             }
 
 			CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));
