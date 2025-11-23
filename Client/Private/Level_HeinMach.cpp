@@ -41,13 +41,14 @@ HRESULT CLevel_HeinMach::Initialize()
 
     m_pGameInstance->Add_FireTask([&]() {
         CHECK_FAILED(Ready_Layer_MapObject_DEST(TEXT("Layer_DEST"), TEXT(""), LEVEL::HEINMACH), E_FAIL);
+        return S_OK;
         });
 
     CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
 
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 
-        CHECK_FAILED(Ready_Layer_UI(), E_FAIL);
+        //CHECK_FAILED(Ready_Layer_UI(), E_FAIL);
 
         CHECK_FAILED(Ready_Layer_Decal(), E_FAIL);
 
@@ -80,8 +81,7 @@ HRESULT CLevel_HeinMach::Initialize()
 
     CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
-    
-    
+    CHECK_FAILED(Ready_Layer_MapObject_DEST(TEXT("Layer_DEST"), TEXT(""), LEVEL::HEINMACH), E_FAIL);
 
     CClientInstance::GetInstance()->Fade_Out();
 
@@ -185,11 +185,6 @@ HRESULT CLevel_HeinMach::Initialize()
 
 void CLevel_HeinMach::Update(_float fTimeDelta)
 {
-    //if (m_pGameInstance->Key_Down(DIK_9))
-    //    static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
-    //if (m_pGameInstance->Key_Down(DIK_8))
-    //    static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
-
 	if (m_pGameInstance->Key_Down(DIK_Q))
 	{
 		m_pGameInstance->isPickRenderTargetPixel(TEXT("Target_Normal"));
@@ -205,10 +200,11 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
 	}
 
 
-	if (m_pGameInstance->Key_Down(DIK_RETURN))
-		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EMBARS))));
+    if (m_pGameInstance->Key_Down(DIK_RETURN))
+        if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EMBARS))))
+            return;
 
-    if (!m_isStart)
+   if (!m_isStart)
     {
         m_isStart = true;
         CSequence_HeinMach_Start* pSequence = CSequence_HeinMach_Start::Create();
@@ -314,7 +310,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
 HRESULT CLevel_HeinMach::Ready_Layer_Player(const _wstring& strLayerTag)
 {
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-		ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
+		ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
 		return E_FAIL;
 
 	return S_OK;
@@ -674,7 +670,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
 
         if ("Yetuga" == MonsterData.MonsterKey[i])
         {
-            CMonster::MONSTER_DESC MonsterDesc{};
+          /*  CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 10.f;
             MonsterDesc.fMaxHP = 100.f;
             MonsterDesc.fMaxStamina = 100.f;
@@ -688,11 +684,11 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
 
             if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
                 ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Yetuga"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
-                return E_FAIL;
+                return E_FAIL;*/
         }
         else if ("ImpRange" == MonsterData.MonsterKey[i])
         {
-            CMonster::MONSTER_DESC MonsterDesc{};
+          /*  CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 10.f;
             MonsterDesc.fMaxHP = 100.f;
             MonsterDesc.fMaxStamina = 100.f;
@@ -706,7 +702,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
 
             if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
                 ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
-                return E_FAIL;
+                return E_FAIL;*/
         }
         else if ("ImpMelee" == MonsterData.MonsterKey[i])
         {

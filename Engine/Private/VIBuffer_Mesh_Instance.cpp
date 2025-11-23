@@ -559,8 +559,11 @@ void CVIBuffer_Mesh_Instance::Free()
 	Safe_Release(m_pUAV);
 	Safe_Release(m_pUAVSpeed);
 
+    
+
 	if (false == m_isCloned)
 	{
+        Safe_Delete_Array(m_pVertexPositions);
 		Safe_Delete_Array(m_pParticleParams);
 		//Safe_Release(m_pSRVNoise);
         for (_uint i = 0; i < CS_PASS::END; ++i)

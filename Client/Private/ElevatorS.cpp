@@ -26,7 +26,7 @@ HRESULT CElevatorS::Initialize_Prototype()
 HRESULT CElevatorS::Initialize_Clone(void* pArg)
 {
     SMALL_ELEVATOR_DESC* pDesc = static_cast<SMALL_ELEVATOR_DESC*>(pArg);
-    CHECK_NULLPTR(pArg, E_FAIL);
+    CHECK_NULLPTR(pDesc, E_FAIL);
 
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 
@@ -233,6 +233,8 @@ HRESULT CElevatorS::Ready_Collision(void* pArg)
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body"), reinterpret_cast<CComponent**>(&m_pBodyCom), &BodyDesc)))
         return E_FAIL;
+
+    return S_OK;
 }
 
 CElevatorS* CElevatorS::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

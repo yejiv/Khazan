@@ -96,7 +96,11 @@ void CUI_WorldList::Set_Selete(_bool isSelete)
     m_pSelete->Update_Visible(isSelete);
     m_pSeleteIcon->Update_Visible(isSelete);
     if (isSelete)
+    {
+        _wstring wstrSound = TEXT("UI_common_mouse_over_0") + to_wstring(m_pGameInstance->Rand(1, 4)) + TEXT(" (SFX).wav");
+        m_pGameInstance->PlaySoundOnce(wstrSound.c_str());
         m_fOffsetZ = -0.05f;
+    }
     else
         m_fOffsetZ = 0.f;
 

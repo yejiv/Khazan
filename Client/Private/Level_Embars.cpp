@@ -550,6 +550,9 @@ HRESULT CLevel_Embars::Ready_Layer_MapObject_Interactive(const _wstring& strLaye
     }
     CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("데이터 파일이 없거나 박준영 문제"), E_FAIL);
 
+    _uint iStatueIndex0 = {};
+    _uint iStatueIndex1 = {};
+
     // 1. 오브젝트의 총 개수
     _uint iObjectCnt = {};
     CHECK_FALSE(ReadFile(hFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr), E_FAIL);
@@ -642,8 +645,31 @@ HRESULT CLevel_Embars::Ready_Layer_MapObject_Interactive(const _wstring& strLaye
             
             CHECK_FALSE(ReadFile(hFile, &StatueDesc.StatueRotation, sizeof(CStatue::STATUE_ROTATION), &dwByte, nullptr), E_FAIL);
 
+            switch (StatueDesc.iEventID)
+            {
+            case 0:
+                StatueDesc.iStatueIndex = iStatueIndex0++;
+                break;
+            case 1:
+                StatueDesc.iStatueIndex = iStatueIndex1++;
+                break;
+            }
+
             ObjectDesc.pOtherDesc = &StatueDesc;
             CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Statue"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
+            break;
+        }
+        case INTERACTIVE_TYPE::VERTICALGATE:
+        {
+            _int iEventID = {};
+            CHECK_FALSE(ReadFile(hFile, &iEventID, sizeof(_int), &dwByte, nullptr), E_FAIL);
+            ObjectDesc.pOtherDesc = &iEventID;
+            CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_VerticalGate"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
+            break;
+        }
+        case INTERACTIVE_TYPE::IRONGATE:
+        {
+            CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_IronGate"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
             break;
         }
         default:

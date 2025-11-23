@@ -657,8 +657,8 @@ void CBody::Make_MeshShape(BODY_MESHSHAPE_DESC* pDesc)
         bodySetting.mUserData = static_cast<uint64>(reinterpret_cast<uintptr_t>(pDesc->pCollisionDesc));
 
         Body* body = m_pGameInstance->CreateAndAdd_Body(bodySetting, &m_pBodyInterface);
-        // 여러 메쉬라면 BodyID를 vector에 보관하세요. 지금처럼 m_pBody에 덮어쓰면 마지막 것만 남습니다.
-        //m_BodyIDs.push_back(body->GetID());
+        if (body)
+            m_MeshBodyIDs.push_back(body->GetID());
     }
 }
 
@@ -691,6 +691,22 @@ CComponent* CBody::Clone(void* pArg)
 
 void CBody::Free()
 {
+    if (!m_BodyID.IsInvalid() && m_pBodyInterface)
+    {
+        if (!m_BodyID.IsInvalid())
+        {
+            m_pGameInstance->Destroy_Body(m_BodyID);
+            m_BodyID = BodyID();
+            m_pBody = nullptr;
+        }
+
+        for (BodyID id : m_MeshBodyIDs)
+        {
+            if (!id.IsInvalid())
+                m_pGameInstance->Destroy_Body(id);
+        }
+        m_MeshBodyIDs.clear();
+    }
     __super::Free();
 
 }

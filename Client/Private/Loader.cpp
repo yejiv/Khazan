@@ -22,6 +22,11 @@
 #include "Body_Khazan_Spear.h"
 #include "Spear_Khazan_Spear.h"
 #include "Lantern_Khazan_Spear.h"
+#include "Khazan_GSword.h"
+#include "Body_Khazan_GS.h"
+#include "GSword_Khazan_GS.h"
+#include "Lantern_Khazan_GS.h"
+
 #pragma endregion
 
 #pragma region MAP OBJECT
@@ -449,6 +454,16 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Spear/Khazan_Spear.dat"))))
 		return E_FAIL;
 
+    /* Prototype_Component_Model_Khazan_GSword*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_GSword"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_GSword/Khazan_GSword.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_GSword_Meteor*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_GSword_Meteor"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/APC/GSword_Meteor/GSword_Meteor.dat"))))
+        return E_FAIL;
+
 	/* Prototype_Component_Model_Khazan_Prisoner_Torso1*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso1"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Prisoner_Torso1/Prisoner_Torso1.dat"))))
@@ -767,7 +782,7 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Static"),
 		CProp_Static::Create(m_pDevice, m_pContext)), E_FAIL);
 
-#pragma region ���� ������Ʈ ���� : ��ȣ �ۿ� �� ������Ʈ
+#pragma region _Prop_BladeNexus, _Prop_BigChest
 	/* Prototype_GameObject_Prop_BladeNexus */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_BladeNexus"),
 		CBladeNexus::Create(m_pDevice, m_pContext)), E_FAIL);
@@ -813,12 +828,13 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
 
 #pragma endregion
 
-#pragma region ���� ������Ʈ ���� : Ʈ����
+#pragma region _Prop_Trigger
 	/* Prototype_GameObject_Prop_Trigger */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_HeinMach_Trigger"),
 		CHeinMach_Trigger::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
+#pragma region Khazan
 	/* Prototype_GameObject_Khazan_Spear */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"),
 		CKhazan_Spear::Create(m_pDevice, m_pContext))))
@@ -838,6 +854,30 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Lantern_Khazan_Spear"),
         CLantern_Khazan_Spear::Create(m_pDevice, m_pContext))))
         return E_FAIL;
+
+    /* Prototype_GameObject_Khazan_GSword */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_GSword"),
+        CKhazan_GSword::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    /* Prototype_GameObject_Body_Khazan_GS */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Body_Khazan_GS"),
+        CBody_Khazan_GS::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    /* Prototype_GameObject_GSword_Khazan_GS */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_GSword_Khazan_GS"),
+        CGSword_Khazan_GS::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    /* Prototype_GameObject_Lantern_Khazan_GS */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Lantern_Khazan_GS"),
+        CLantern_Khazan_GS::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+#pragma endregion
+
+
 #pragma region Effect 
     Loading_For_Effect_Static(ENUM_CLASS(LEVEL::HEINMACH));
    
@@ -899,21 +939,27 @@ HRESULT CLoader::Loading_For_Crevice_Level()
 {
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		return Loading_For_Crevice_Texture();
+        return S_OK;
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		return Loading_For_Crevice_Model();
+        return S_OK;
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		return Loading_For_Crevice_Shader();
+        return S_OK;
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		return Loading_For_Crevice_GameObject();
+        return S_OK;
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("Crevice"), LEVEL::CREVICE, KHAZAN_MAP::CREVICE), E_FAIL);
+        return S_OK;
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		CHECK_FAILED(Loading_Prototype_MapObject_Inst_From_DAT(TEXT("Crevice"), LEVEL::CREVICE, KHAZAN_MAP::CREVICE), E_FAIL);
+        return S_OK;
 		}));
 
 	return S_OK;
@@ -1184,6 +1230,26 @@ HRESULT CLoader::Loading_For_Embars_Model()
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Symbol/WP_CTR_Statue_Stone_002/WP_CTR_Statue_Stone_002.dat")), E_FAIL);
 #pragma endregion
 
+#pragma region 수직 차단봉
+    /* Prototype_Component_Model_VerticalGate */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_VerticalGate"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_TDL_Gate_Open_004/WIP_TDL_Gate_Open_004.dat")), E_FAIL);
+#pragma endregion
+
+#pragma region 잠긴 철문
+    /* Prototype_Component_Model_IronGate */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_IronGate"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_Base_MiddleDoor_Open_001_b/WIP_Base_MiddleDoor_Open_001_b.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_IronGate_Lock */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_IronGate_Lock"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_Base_MiddleDoor_Lock_001/WIP_Base_MiddleDoor_Lock_001.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_IronGate_Part */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_IronGate_Part"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Building_B/WP_BTP_Door_Metal_004/WP_BTP_Door_Metal_004.dat")), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 트리거
@@ -1270,6 +1336,30 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
     /* Prototype_GameObject_Prop_Statue_Deco */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Statue_Deco"),
         CStatue_Deco::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 수직 차단봉
+    /* Prototype_GameObject_Prop_VerticalGate */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_VerticalGate"),
+        CVerticalGate::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 잠긴 철문
+    /* Prototype_GameObject_Prop_IronGate */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_IronGate"),
+        CIronGate::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_IronGate_Lock */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_IronGate_Lock"),
+        CIronGate_Lock::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_IronGate_Part_L */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_IronGate_Part_L"),
+        CIronGate_Part_L::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_IronGate_Part_R */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_IronGate_Part_R"),
+        CIronGate_Part_R::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 #pragma endregion

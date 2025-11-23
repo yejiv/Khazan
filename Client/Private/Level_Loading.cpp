@@ -50,11 +50,18 @@ HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
 	CClientInstance::GetInstance()->Fade_In();
 	m_pGameInstance->Change_InputType(INPUT_TYPE::UI);
 	static_cast<CUI_Loading*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Loading")))->On_Panel();
+
 	return S_OK;
 }
 
 void CLevel_Loading::Update(_float fTimeDelta)
 {
+    if (!m_isPlayerSound)
+    {
+        m_isPlayerSound = true;
+        m_pGameInstance->PlaySoundLoop(TEXT("bgm_Loading.wav"), 0.5f);
+    }
+
 	m_pLoader->Update();
 
 	if (true == m_pLoader->isFinished() && m_eLoadingState == LOADING_STATE::END)
@@ -69,6 +76,8 @@ void CLevel_Loading::Update(_float fTimeDelta)
 	}
 	else if(m_eLoadingState == LOADING_STATE::INPUT && m_pGameInstance->Key_Down(DIK_F, INPUT_TYPE::UI))
 	{
+        m_pGameInstance->StopByKey(TEXT("UI_Title_Seq_Logo_Action.wav"));
+        m_pGameInstance->PlaySoundOnce(TEXT("UI_Title_Seq_Logo_Action.wav"));
 		CClientInstance::GetInstance()->Fade_Out([this]() {this->Complete(); });
 	}
 	else if (m_eLoadingState == LOADING_STATE::NEXTLEVEL)
@@ -580,4 +589,6 @@ void CLevel_Loading::Free()
 	__super::Free();
 	Safe_Release(m_pLoader);
 	Safe_Release(m_pClientInstance);
+
+    m_pGameInstance->StopAll();
 }

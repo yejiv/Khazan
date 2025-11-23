@@ -36,6 +36,8 @@ public:
 	virtual void				Late_Update(_float fTimeDelta) override;
 	virtual HRESULT				Render() override;
 
+private:
+    _bool                       m_isOver = {};
 
 public:
 	static CUI_Default_Button*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

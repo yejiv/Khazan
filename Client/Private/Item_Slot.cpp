@@ -83,6 +83,7 @@ _bool CItem_Slot::On_Selete()
         return false;
 
     m_bIsSelete = true;
+
     return true;
 }
 
@@ -185,6 +186,8 @@ void CItem_Slot::Late_Update(_float fTimeDelta)
         ++m_iEquipCount;
         m_fEquipTime = 0.5f;
         
+        if(m_iEquipCount == 1)
+            m_pGameInstance->PlaySoundOnce(TEXT("UI_common_click2 (SFX).wav"));
         
         if (!m_isSale)
         {
@@ -229,9 +232,20 @@ void CItem_Slot::Late_Update(_float fTimeDelta)
     {
         if (ButtonOver(g_hWnd) && m_pGameInstance->Get_InputType() == INPUT_TYPE::UI)
         {
+            if (!m_isOver)
+            {
+                m_isOver = true;
+                _int iRand = m_pGameInstance->Rand(1, 4);
+                _wstring wstrSound = TEXT("UI_common_mouse_over_0") + std::to_wstring(iRand) + TEXT(" (SFX).wav");
+                m_pGameInstance->PlaySoundOnce(wstrSound.c_str());
+            }
+
             m_pOverFx->Late_Update(fTimeDelta);
             Render_ItemInfo();
         }
+        else
+            m_isOver = false;
+
         if (m_bIsSelete)
         {
             m_pSeleteFx->Late_Update(fTimeDelta);
@@ -496,6 +510,10 @@ void CItem_Slot::Equip_Item()
     
     if (!m_bIsEquip)
     {
+        _int iRand = m_pGameInstance->Rand(1, 2);
+        _wstring wstrSound = TEXT("UI_inventory_dualaxe_equip_0") + std::to_wstring(iRand) + TEXT(" (SFX).wav");
+        m_pGameInstance->PlaySoundOnce(wstrSound.c_str());
+
         Desc.eBubbleType = CUI_Inven::EVENT_TYPE::ITEM_EQUIP;
         Desc.iTypeIndex = m_iItemType;
         Desc.iIndex = m_iIndex;
@@ -505,6 +523,10 @@ void CItem_Slot::Equip_Item()
     }
     else
     {
+        _int iRand = m_pGameInstance->Rand(3, 4);
+        _wstring wstrSound = TEXT("UI_inventory_dualaxe_equip_0") + std::to_wstring(iRand) + TEXT(" (SFX).wav");
+        m_pGameInstance->PlaySoundOnce(wstrSound.c_str());
+
         m_bIsEquip = false;
         Desc.eBubbleType = CUI_Inven::EVENT_TYPE::ITEM_UNEQUIP;
         Desc.iTypeIndex = m_iItemType;
@@ -525,6 +547,7 @@ void CItem_Slot::Sale_Item()
         static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::LACHRYMA, pData->iLachryma * m_iItemCount, false);
     Release_Item();
 
+    m_pGameInstance->PlaySoundOnce(TEXT("UI_sell_01 (SFX).wav"));
 }
 
 void CItem_Slot::Release_Item()

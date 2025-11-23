@@ -32,12 +32,12 @@ void CAS_LockOn_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     if (fDot < -0.3f)
     {
-        pModel->Set_Animation(99); //¿ÞÂÊ
+        pModel->Set_Animation(99); //ì™¼ìª½
         m_eLockOnDir = LOCKONDIR::LOCKON_LEFT;
     }
     else if (fDot > 0.3f)
     {
-        pModel->Set_Animation(100); // ¿À¸¥ÂÊ
+        pModel->Set_Animation(100); // ì˜¤ë¥¸ìª½
         m_eLockOnDir = LOCKONDIR::LOCKON_RIGHT;
     }
 
