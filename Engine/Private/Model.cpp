@@ -349,7 +349,8 @@ _bool CModel::Play_Animation(_float fTimeDelta)
     if (Has_State(CHANGE_ANIMATION))
     {
         /* 애니메이션 블랜딩할 이전 애니메이션 뼈 넘겨주기 */
-        m_Animations[m_iCurrentAnimIndex]->OnAnimationBlend(move(m_Animations[m_iPrevAnimIndex]->Get_ChannelMatrices()));
+        if (true == m_isBlendEnable)
+            m_Animations[m_iCurrentAnimIndex]->OnAnimationBlend(move(m_Animations[m_iPrevAnimIndex]->Get_ChannelMatrices()));
         Remove_State(CHANGE_ANIMATION);
         Add_State(FIRST_FRAME_ANIMATION);
     }

@@ -1,90 +1,115 @@
-#include "Slate_Switch.h"
+#include "IronGate_Lock.h"
 
 #include "GameInstance.h"
 
-CSlate_Switch::CSlate_Switch(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CIronGate_Lock::CIronGate_Lock(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CPartObject { pDevice, pContext }
 {
 }
 
-CSlate_Switch::CSlate_Switch(const CPartObject& Prototype)
+CIronGate_Lock::CIronGate_Lock(const CPartObject& Prototype)
     : CPartObject { Prototype }
 {
 }
 
-HRESULT CSlate_Switch::Initialize_Prototype()
+HRESULT CIronGate_Lock::Initialize_Prototype()
 {
     return S_OK;
 }
 
-HRESULT CSlate_Switch::Initialize_Clone(void* pArg)
+HRESULT CIronGate_Lock::Initialize_Clone(void* pArg)
 {
-    SLATE_SWITCH_DESC* pDesc = static_cast<SLATE_SWITCH_DESC*>(pArg);
+    IRONGATE_LOCK_DESC* pDesc = static_cast<IRONGATE_LOCK_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 
     CHECK_FAILED(Ready_Components(pArg), E_FAIL);
 
-    m_pActive = pDesc->pActive;
+    CHECK_NULLPTR(pDesc->pSocketMatrix, E_FAIL);
 
-    m_eAnimState = ANIM_STATE::IDLE;
+    m_pSocketMatrix = pDesc->pSocketMatrix;
+
+    m_pUnLock = pDesc->pUnLock;
+    m_pState = pDesc->pState;
+
+    m_pTransformCom->Rotation(XMConvertToRadians(270.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f));
+
+    m_eAnimState = ANIM_STATE::IDLE1;
     m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+    m_pModelCom->Set_AnimationLoop(true);
     m_pModelCom->Set_AnimationBlend(false);
 
     return S_OK;
 }
 
-void CSlate_Switch::Priority_Update(_float fTimeDelta)
+void CIronGate_Lock::Priority_Update(_float fTimeDelta)
 {
 }
 
-void CSlate_Switch::Update(_float fTimeDelta)
+void CIronGate_Lock::Update(_float fTimeDelta)
 {
-    if (true == *m_pActive)
+    // 1) 애니메이션 상태 전환
+    if (*m_pUnLock)
     {
-        if (ANIM_STATE::DIE != m_eAnimState)
+        if (m_eAnimState == ANIM_STATE::IDLE1)
         {
-            m_eAnimState = ANIM_STATE::DIE;
-            m_pModelCom->Set_Animation(ENUM_CLASS(ANIM_STATE::DIE));
-        }
-    }
-    else
-    {
-        if (ANIM_STATE::SPAWN != m_eAnimState)
-        {
-            m_eAnimState = ANIM_STATE::SPAWN;
-            m_pModelCom->Set_Animation(ENUM_CLASS(ANIM_STATE::SPAWN));
+            m_eAnimState = ANIM_STATE::ACTIVATION;
+            m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+            m_pModelCom->Set_AnimationLoop(false);
         }
     }
 
-    if (true == m_pModelCom->Play_Animation(fTimeDelta))
-    {
+    // 2) 먼저 애니메이션을 갱신한다
+    m_pModelCom->Play_Animation(fTimeDelta);
 
+    // 3) 갱신된 소켓행렬을 가져온다
+    _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
+
+    // 4) 위치 분리 (회전 중심 보정)
+    _vector vPos = BoneMatrix.r[3];
+    BoneMatrix.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+
+    // 5) Idle 상태일 때만 보정
+    if (*m_pState)
+    {
+        BoneMatrix *= XMMatrixRotationY(XMConvertToRadians(180.f));
     }
 
-    Update_CombinedMatrix();
+    // 6) 위치 복구
+    BoneMatrix.r[3] = vPos;
+
+    // 7) 정규화
+    for (uint32_t i = 0; i < 3; ++i)
+        BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
+
+    // 8) 최종 월드 매트릭스
+    XMStoreFloat4x4(
+        &m_CombinedWorldMatrix,
+        m_pTransformCom->Get_WorldMatrix() *
+        BoneMatrix *
+        XMLoadFloat4x4(m_pParentMatrix)
+    );
 }
 
-void CSlate_Switch::Late_Update(_float fTimeDelta)
+void CIronGate_Lock::Late_Update(_float fTimeDelta)
 {
-    m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this);
+    m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
 }
 
-HRESULT CSlate_Switch::Render()
+HRESULT CIronGate_Lock::Render()
 {
-    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CSlate_Switch : Bind_ShaderResources 함수 E_FAIL"), E_FAIL);
+    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CIronGate_Lock : Bind_ShaderResources 함수 E_FAIL"), E_FAIL);
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-    // 0 칼손잡이 | 1 손 잘림 보호대 | 2 뭐 존나 작은 눈 | 3 밑에 작은 날카로운 | 4 밑에 큰 날카로운 | 5 눈
     for (_uint i = 0; i < iNumMeshes; ++i)
     {
         Bind_Materials(i);
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
+        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(0), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
@@ -92,25 +117,24 @@ HRESULT CSlate_Switch::Render()
     return S_OK;
 }
 
-HRESULT CSlate_Switch::Ready_Components(void* pArg)
+HRESULT CIronGate_Lock::Ready_Components(void* pArg)
 {
-    SLATE_SWITCH_DESC* pDesc = static_cast<SLATE_SWITCH_DESC*>(pArg);
+    IRONGATE_LOCK_DESC* pDesc = static_cast<IRONGATE_LOCK_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
     LEVEL eLevel = pDesc->eLevel;
     CHECK_EQUAL_MSG(LEVEL::END, eLevel, TEXT("level==end"), E_FAIL);
 
-    // 개별 쉐이더 생성할지 고민
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr), E_FAIL);
 
-    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), TEXT("Prototype_Component_Model_Slate_Switch"),
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), TEXT("Prototype_Component_Model_IronGate_Lock"),
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr), E_FAIL);
 
     return S_OK;
 }
 
-HRESULT CSlate_Switch::Bind_ShaderResources()
+HRESULT CIronGate_Lock::Bind_ShaderResources()
 {
     // 월드 행렬 쉐이더에 바인딩
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix), E_FAIL);
@@ -124,7 +148,7 @@ HRESULT CSlate_Switch::Bind_ShaderResources()
     return S_OK;
 }
 
-HRESULT CSlate_Switch::Bind_Materials(_uint iMeshIndex)
+HRESULT CIronGate_Lock::Bind_Materials(_uint iMeshIndex)
 {
     _bool isDiffuse = { false };
     _bool isNormal = { false };
@@ -140,6 +164,9 @@ HRESULT CSlate_Switch::Bind_Materials(_uint iMeshIndex)
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
         isSpecular = true;
 
+    isEmissive = false;
+    isSpecular = false;
+
     m_pShaderCom->Bind_RawValue("g_isDiffuse", &isDiffuse, sizeof(_bool));
     m_pShaderCom->Bind_RawValue("g_isNormal", &isNormal, sizeof(_bool));
     m_pShaderCom->Bind_RawValue("g_isEmissive", &isEmissive, sizeof(_bool));
@@ -148,33 +175,33 @@ HRESULT CSlate_Switch::Bind_Materials(_uint iMeshIndex)
     return S_OK;
 }
 
-CSlate_Switch* CSlate_Switch::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CIronGate_Lock* CIronGate_Lock::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-    CSlate_Switch* pInstance = new CSlate_Switch(pDevice, pContext);
+    CIronGate_Lock* pInstance = new CIronGate_Lock(pDevice, pContext);
 
     if (FAILED(pInstance->Initialize_Prototype()))
     {
-        MSG_BOX(TEXT("Failed To Created : CSlate_Switch"));
+        MSG_BOX(TEXT("Failed To Created : CIronGate_Lock"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-CGameObject* CSlate_Switch::Clone(void* pArg)
+CGameObject* CIronGate_Lock::Clone(void* pArg)
 {
-    CSlate_Switch* pInstance = new CSlate_Switch(*this);
+    CIronGate_Lock* pInstance = new CIronGate_Lock(*this);
 
     if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
-        MSG_BOX(TEXT("Failed To Cloned : CSlate_Switch"));
+        MSG_BOX(TEXT("Failed To Cloned : CIronGate_Lock"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-void CSlate_Switch::Free()
+void CIronGate_Lock::Free()
 {
     __super::Free();
 

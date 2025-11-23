@@ -28,6 +28,7 @@ HRESULT CTombStone::Initialize_Clone(void* pArg)
     m_eAnimState = ANIM_STATE::BEFORE_IDLE;
     m_pModelCom->Set_Animation(ANIM_STATE::BEFORE_IDLE);
     m_pModelCom->Set_AnimationLoop(true);
+    m_pModelCom->Set_AnimationBlend(false);
 
     return S_OK;
 }
