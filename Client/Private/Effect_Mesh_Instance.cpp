@@ -285,4 +285,5 @@ void CEffect_Mesh_Instance::Free()
     Safe_Release(m_pDissolveTextureCom);
     Safe_Release(m_pVIBufferCom);
     Safe_Release(m_pNormalTextureCom);
+    Safe_Release(m_pDissolveTextureCom);
 }

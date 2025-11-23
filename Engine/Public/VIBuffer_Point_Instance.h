@@ -56,21 +56,19 @@ private :
 	_bool						IsFinish();
 
 private :
-	class CComputeShader*				m_ComputeShaders[ENUM_CLASS(CS_PASS::END)] = {};//공유 가능? -> 확인
-	ID3D11ShaderResourceView*			m_pSRV = { nullptr };		//공유 가능? -> 확인
-	ID3D11ShaderResourceView*			m_pSRVNoise = { nullptr };	//공유 가능
+	class CComputeShader*				m_ComputeShaders[ENUM_CLASS(CS_PASS::END)] = {};
+	ID3D11ShaderResourceView*			m_pSRV = { nullptr };		
+	ID3D11ShaderResourceView*			m_pSRVNoise = { nullptr };
 	ID3D11UnorderedAccessView*			m_pUAV = { nullptr };
 	ID3D11UnorderedAccessView*			m_pUAVSpeed = { nullptr };	
-	//아래 버퍼들은 많아도 상관 없음!
-	ID3D11Buffer*						m_pCB = { nullptr };
-	ID3D11Buffer*						m_pStructuredBuffer = { nullptr };	//uav -> copy용
-	ID3D11Buffer*						m_pSpeedBuffer = { nullptr };		//uavspeed -> Cpu write용
-	ID3D11Buffer*						m_pStagingBuffer = { nullptr };		//CB -> Cpu Read용
+
+    ID3D11Buffer*						m_pCB = { nullptr };
+	ID3D11Buffer*						m_pStructuredBuffer = { nullptr };	
+	ID3D11Buffer*						m_pSpeedBuffer = { nullptr };
+	ID3D11Buffer*						m_pStagingBuffer = { nullptr };	
+    ID3D11SamplerState*                 m_pLinearWrapSampler;
 	POINT_INSTANCE_PARAMS*				m_pParticleParams;
 
-	//ID3D11Buffer*						m_pDebugStagingBuffer = { nullptr }; //debug
-
-    ID3D11SamplerState*                 m_pLinearWrapSampler;
 private:
 	_float3								m_vPivot = {}; 
 	POINT_INSTANCE_DESC					m_sData;

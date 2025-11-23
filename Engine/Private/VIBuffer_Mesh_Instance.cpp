@@ -8,14 +8,14 @@ CVIBuffer_Mesh_Instance::CVIBuffer_Mesh_Instance(ID3D11Device* pDevice, ID3D11De
 }
 
 CVIBuffer_Mesh_Instance::CVIBuffer_Mesh_Instance(const CVIBuffer_Mesh_Instance& Prototype)
-    : CVIBuffer_Instance{ Prototype }
-    , m_pSRVNoise{ Prototype.m_pSRVNoise } //나중에 필요하면 상수버퍼로 넘기기
-    , m_pParticleParams{ Prototype.m_pParticleParams }
-    , m_sData{ Prototype.m_sData }
-    , m_pLinearWrapSampler{ Prototype.m_pLinearWrapSampler }
+	: CVIBuffer_Instance { Prototype }
+	, m_pSRVNoise{ Prototype.m_pSRVNoise } //나중에 필요하면 상수버퍼로 넘기기
+	, m_pParticleParams{ Prototype.m_pParticleParams }
+	, m_sData {Prototype.m_sData}
+	, m_pLinearWrapSampler{Prototype.m_pLinearWrapSampler } 
 {
     for (_uint i = 0; i < CS_PASS::END; ++i)
-        m_ComputeShaders[i] = Prototype.m_ComputeShaders[i];
+        m_ComputeShaders[i] = Prototype.m_ComputeShaders[i];  
 }
 
 void CVIBuffer_Mesh_Instance::Reset()
@@ -68,18 +68,17 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
     VBDesc.MiscFlags = 0;
     VBDesc.StructureByteStride = m_iVertexStride;
 
-    VB_MESHINSTANCE_EFFECT* pVertices = new VB_MESHINSTANCE_EFFECT[m_iNumVertices];
-    for (_uint i = 0; i < m_iNumVertices; ++i)
-    {
-        memcpy(&pVertices[i].vPosition, &tMeshInfo.vecVertices[i].position, sizeof(_float3));
-        memcpy(&pVertices[i].vNormal, &tMeshInfo.vecVertices[i].normal, sizeof(_float3));
-        memcpy(&pVertices[i].vTangent, &tMeshInfo.vecVertices[i].tangent, sizeof(_float3));
-        memcpy(&pVertices[i].vBinormal, &tMeshInfo.vecVertices[i].binormal, sizeof(_float3));
-        memcpy(&pVertices[i].vTexcoord, &tMeshInfo.vecVertices[i].texcoord, sizeof(_float2));
-    }
-
     D3D11_SUBRESOURCE_DATA	VBInitialData{};
-    VBInitialData.pSysMem = pVertices;
+
+	VB_MESHINSTANCE_EFFECT* pVertices = new VB_MESHINSTANCE_EFFECT[m_iNumVertices];
+	for (_uint i = 0; i < m_iNumVertices; ++i)
+	{
+		memcpy(&pVertices[i].vPosition, &tMeshInfo.vecVertices[i].position, sizeof(_float3));
+		memcpy(&pVertices[i].vNormal, &tMeshInfo.vecVertices[i].normal, sizeof(_float3)); 
+		memcpy(&pVertices[i].vTangent, &tMeshInfo.vecVertices[i].tangent, sizeof(_float3)); 
+		memcpy(&pVertices[i].vBinormal, &tMeshInfo.vecVertices[i].binormal, sizeof(_float3)); 
+		memcpy(&pVertices[i].vTexcoord, &tMeshInfo.vecVertices[i].texcoord, sizeof(_float2));
+	}
 
     if (FAILED(m_pDevice->CreateBuffer(&VBDesc, &VBInitialData, &m_pVB)))
         return E_FAIL;
@@ -184,8 +183,7 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
         return E_FAIL;
     }
 
-
-    return S_OK;
+	return S_OK;
 }
 
 HRESULT CVIBuffer_Mesh_Instance::Initialize_Clone(void* pArg)
@@ -302,17 +300,17 @@ HRESULT CVIBuffer_Mesh_Instance::Bind_Resources()
     __super::Bind_Resources();
 
     // [Debug]
-    //m_pContext->CopyResource(m_pDebugInstanceBuffer, m_pVBInstance);
-    //
-    //D3D11_MAPPED_SUBRESOURCE mappedResource;
-    //HRESULT hr = m_pContext->Map(m_pDebugInstanceBuffer, 0, D3D11_MAP_READ, 0, &mappedResource);
-    //
-    //if (SUCCEEDED(hr))
-    //{
-    //	IB_MESHINSTANCE_EFFECT* pParticles = (IB_MESHINSTANCE_EFFECT*)mappedResource.pData;
-    //
-    //	m_pContext->Unmap(m_pDebugInstanceBuffer, 0);
-    //}
+	//m_pContext->CopyResource(m_pDebugInstanceBuffer, m_pVBInstance);
+	//
+	//D3D11_MAPPED_SUBRESOURCE mappedResource;
+	//HRESULT hr = m_pContext->Map(m_pDebugInstanceBuffer, 0, D3D11_MAP_READ, 0, &mappedResource);
+	//
+	//if (SUCCEEDED(hr))
+	//{
+	//	IB_MESHINSTANCE_EFFECT* pParticles = (IB_MESHINSTANCE_EFFECT*)mappedResource.pData;
+	//
+	//	m_pContext->Unmap(m_pDebugInstanceBuffer, 0);
+	//}
 
     return S_OK;;
 }
@@ -342,9 +340,8 @@ HRESULT CVIBuffer_Mesh_Instance::Ready_SRV(void* pSysmem)
 
     if (FAILED(m_pDevice->CreateShaderResourceView(pBuffer, &SRVDesc, &m_pSRV)))
         return E_FAIL;
-
-
-    return S_OK;
+	
+	return S_OK;
 }
 HRESULT CVIBuffer_Mesh_Instance::Ready_UAV()
 {
@@ -382,22 +379,21 @@ HRESULT CVIBuffer_Mesh_Instance::Ready_UAV()
     StructuredBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
     if (FAILED(m_pDevice->CreateBuffer(&StructuredBufferDesc, nullptr, &m_pStagingBuffer)))
         return E_FAIL;
-
-    // [Debug]
-    //D3D11_BUFFER_DESC DebugBufferDesc{};
-    //m_pVBInstance->GetDesc(&DebugBufferDesc);
-    //
-    //DebugBufferDesc.Usage = D3D11_USAGE_STAGING;     // 용도를 스테이징으로 변경
-    //DebugBufferDesc.BindFlags = 0;                   // GPU가 바인딩하지 않음
-    //DebugBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ; // CPU가 읽을 수 있게 설정
-    //DebugBufferDesc.MiscFlags = 0;
-    //
-    //D3D11_SUBRESOURCE_DATA DebugInitData{};
-    //DebugInitData.pSysMem = m_pInstanceVertices;
-    //if (FAILED(m_pDevice->CreateBuffer(&DebugBufferDesc, &DebugInitData, &m_pDebugInstanceBuffer)))
-    //	return E_FAIL;
-
-    return S_OK;
+	// [Debug]
+	//D3D11_BUFFER_DESC DebugBufferDesc{};
+	//m_pVBInstance->GetDesc(&DebugBufferDesc);
+	//
+	//DebugBufferDesc.Usage = D3D11_USAGE_STAGING;     // 용도를 스테이징으로 변경
+	//DebugBufferDesc.BindFlags = 0;                   // GPU가 바인딩하지 않음
+	//DebugBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ; // CPU가 읽을 수 있게 설정
+	//DebugBufferDesc.MiscFlags = 0;
+	//
+	//D3D11_SUBRESOURCE_DATA DebugInitData{};
+	//DebugInitData.pSysMem = m_pInstanceVertices;
+	//if (FAILED(m_pDevice->CreateBuffer(&DebugBufferDesc, &DebugInitData, &m_pDebugInstanceBuffer)))
+	//	return E_FAIL;
+	
+	return S_OK;
 }
 HRESULT CVIBuffer_Mesh_Instance::Ready_CB()
 {
@@ -551,18 +547,18 @@ void CVIBuffer_Mesh_Instance::Free()
     Safe_Release(m_pUAV);
     Safe_Release(m_pUAVSpeed);
 
-    Safe_Release(m_pCB);
-    Safe_Release(m_pStructuredBuffer);
-    Safe_Release(m_pSpeedBuffer);
-    Safe_Release(m_pStagingBuffer);
+	Safe_Release(m_pCB);
+	Safe_Release(m_pStructuredBuffer);
+	Safe_Release(m_pSpeedBuffer);
+	Safe_Release(m_pStagingBuffer);
 
-    if (false == m_isCloned)
-    {
+	if (false == m_isCloned)
+	{
         Safe_Delete_Array(m_pParticleParams);
         Safe_Release(m_pLinearWrapSampler);
         Safe_Release(m_pSRVNoise);
 
         for (_uint i = 0; i < CS_PASS::END; ++i)
-            Safe_Release(m_ComputeShaders[i]);
-    }
+            Safe_Release(m_ComputeShaders[i]); 
+	}
 }

@@ -239,8 +239,8 @@ void CLevel_Effect::Create_Element()
 		}
 		if (ImGui::BeginTabItem("Sprite Effect"))
 		{
-			const char* textures[] = { "test0","test1", "test2", "test3", "Snow", "Fire"};
-			ImGui::Combo("Textures", reinterpret_cast<int*>(&m_iTextureIdx), textures, IM_ARRAYSIZE(textures));
+            const char* textures[] = { "test0", "test1", "test2",  "test3",  "flare", "Fire_Sprite", "Fire_Sprite2",  "flare", "blood" };
+            ImGui::Combo("Textures", reinterpret_cast<int*>(&m_iTextureIdx), textures, IM_ARRAYSIZE(textures));
 
 			ImGui::InputFloat("Sprite Speed : ", reinterpret_cast<_float*>(&m_fSpriteSpeed));
 			ImGui::InputInt("Col : ", reinterpret_cast<int*>(&m_iCol));
@@ -411,7 +411,7 @@ void CLevel_Effect::GetMaksingScrollData()
 	if (m_bIsMaskScrolling)
 	{
 		ImGui::Indent();
-		const char* MaskTexture[] = { "width0", "width1", "width2",  "width3",  "width4",  "width5",  "length0" ,  "length1",  "length2" ,  "length3",  "length4" ,  "length5" };
+		const char* MaskTexture[] = { "width0", "width1", "width2",  "width3",  "width4",  "width5",  "width6", "width7", "length0" ,  "length1",  "length2" ,  "length3",  "length4" ,  "length5",  "length6" };
 		ImGui::Combo("Mask Textures", reinterpret_cast<int*>(&m_iMaskTextureIdx), MaskTexture, IM_ARRAYSIZE(MaskTexture));
 		ImGui::InputFloat("Mask Scroll Speed: ", &m_bMaskScrollSpeed);
 		ImGui::Checkbox("Is Vecrtical", &m_bIsScrollVertical);
