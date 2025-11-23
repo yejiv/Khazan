@@ -428,10 +428,11 @@ _bool CModel::Play_Animation(_float fTimeDelta)
     /* 이벤트 체크 */
     Check_Event(fTimeDelta);
 
-    // 모든 본의 Combined Matrix가 계산 완료된 상태
+    // 현재 프레임 캡처 (마스터만 )
     if (m_isMaterSkeleton)
-        Cache_CurrentBoneMatrices();  // 본 정보 저장
-
+        Capture_CurrentFrame();
+        //Cache_CurrentBoneMatrices();  // 본 정보 저장
+    
 
     /* Owner에 Transform 적용 */
     if (m_pOwnerTransform && Has_State(ROOTMOTION))
@@ -843,6 +844,51 @@ void CModel::Update_PartLocalBones()
         }
     }
 
+}
+
+void CModel::Capture_CurrentFrame()
+{
+    if (!m_isMaterSkeleton)  // 마스터만 캡처
+        return;
+
+    FRAME_SNAPSHOT snapshot;
+    snapshot.BoneCombinedMatrices.reserve(m_Bones.size());
+
+    for (auto pBone : m_Bones)
+    {
+        snapshot.BoneCombinedMatrices.push_back(
+            *pBone->Get_CombinedTransformationMatrixPtr()
+        );
+    }
+
+    snapshot.fTrackPosition = m_fCurrentTrackPosition;
+    snapshot.iAnimIndex = m_iCurrentAnimIndex;
+
+    m_FrameHistory.push_back(snapshot);
+
+    // 최대 개수 초과시 오래된 것 제거
+    if (m_FrameHistory.size() > m_iMaxHistoryFrames)
+        m_FrameHistory.pop_front();
+}
+
+_bool CModel::Restore_Frame(_uint iFrameBack)
+{
+    if (iFrameBack >= m_FrameHistory.size())
+        return false;
+
+    // 뒤에서부터 접근 (최신이 뒤에 있음)
+    const FRAME_SNAPSHOT& snapshot =
+        m_FrameHistory[m_FrameHistory.size() - 1 - iFrameBack];
+
+    // Combined 행렬 복원
+    for (size_t i = 0; i < m_Bones.size() && i < snapshot.BoneCombinedMatrices.size(); ++i)
+    {
+        m_Bones[i]->Set_CombinedTransformationMatrix(
+            XMLoadFloat4x4(&snapshot.BoneCombinedMatrices[i])
+        );
+    }
+
+    return true;
 }
 
 void CModel::WarmupAnimations()

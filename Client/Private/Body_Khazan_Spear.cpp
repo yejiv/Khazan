@@ -141,6 +141,34 @@ HRESULT CBody_Khazan_Spear::Render()
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
+
+    /* test after image */
+
+    for (size_t i = 0; i < 10; i++)
+    {
+        if (m_pModelCom->Restore_Frame(i))
+        {
+            // 본 행렬 바인딩 (복원된 상태로)
+            _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
+            for (_uint j = 0; j < iNumMeshes; j++)
+            {
+                if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", j)))
+                    continue;
+            }
+
+            // 파츠 렌더링
+            Render_Part(m_pModelCom_Arm);
+            Render_Part(m_pModelCom_Face);
+            Render_Part(m_pModelCom_Hair);
+            Render_Part(m_pModelCom_Leg);
+            Render_Part(m_pModelCom_Shoes);
+            Render_Part(m_pModelCom_Torso);
+        }
+    }
+
+
+
+
     _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
 
     if (FAILED(m_pShaderCom->Bind_Bool("g_isEnableEdge", &m_isEnableEdge)))

@@ -3395,7 +3395,7 @@ void CKhazan_Spear::Debug_Widget_Movement()
             XMVectorSet(teleportPos[0], teleportPos[1], teleportPos[2], 1.f));
     }
 
-    static _float teleportPos2[3] = { 114.64, 5.2f, 99.f };
+    static _float teleportPos2[3] = { 114.64f, 5.2f, 99.f };
     ImGui::DragFloat3("Teleport Position HeinMach Low Cliff", teleportPos2, 0.1f);
 
     if (ImGui::Button("Teleport", ImVec2(-1, 0)))
