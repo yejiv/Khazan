@@ -1087,6 +1087,9 @@
     <Filter Include="92.AI\State\Dragonian_Melee\Brutal">
       <UniqueIdentifier>{2eb34cdf-af20-4202-bf36-78237cd4ea32}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\10.GearGate">
+      <UniqueIdentifier>{0b2d171c-7a2b-4cc9-9976-4831e2bb9379}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2090,6 +2093,9 @@
     <ClInclude Include="..\public\Dragonian_Sword.h">
       <Filter>02.GameObject\Creature\Monster\Dragonian_Melee\Weapon</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\GearGate.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\10.GearGate</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -3072,6 +3078,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Dragonian_Sword.cpp">
       <Filter>02.GameObject\Creature\Monster\Dragonian_Melee\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GearGate.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\10.GearGate</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

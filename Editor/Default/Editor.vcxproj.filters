@@ -253,9 +253,6 @@
     <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\05.Gear\00.Lever_Gear">
       <UniqueIdentifier>{76d246d6-54b7-4963-a3a7-c29f74861b04}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\05.Gear\01.Door_Gear">
-      <UniqueIdentifier>{a22ba3a5-385e-426b-8bf4-0ce42b0ef93a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\Shader\Player\Test">
       <UniqueIdentifier>{4efb7951-3bc5-4cb1-a5cd-517cac6afce2}</UniqueIdentifier>
     </Filter>
@@ -309,6 +306,12 @@
     </Filter>
     <Filter Include="02.GameObject\Shader\Player\Khazan\Khazan_Spear\Body">
       <UniqueIdentifier>{0685344d-6782-4a3b-8afd-9bba86c38ff7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\10.GearGate">
+      <UniqueIdentifier>{2626eb1b-b972-4950-80e4-b3a23eefe83c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\10.GearGate\Door_Gear">
+      <UniqueIdentifier>{a22ba3a5-385e-426b-8bf4-0ce42b0ef93a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -535,7 +538,7 @@
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\04.Lever</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Door_Gear.h">
-      <Filter>02.GameObject\MapObject\Prop\03.Interactive\05.Gear\01.Door_Gear</Filter>
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\10.GearGate\Door_Gear</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Lever_Gear.h">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\05.Gear\00.Lever_Gear</Filter>
@@ -587,6 +590,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Ladder.h">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GearGate.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\10.GearGate</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -808,7 +814,7 @@
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\04.Lever</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Door_Gear.cpp">
-      <Filter>02.GameObject\MapObject\Prop\03.Interactive\05.Gear\01.Door_Gear</Filter>
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\10.GearGate\Door_Gear</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Lever_Gear.cpp">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\05.Gear\00.Lever_Gear</Filter>
@@ -860,6 +866,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Ladder.cpp">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GearGate.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\10.GearGate</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

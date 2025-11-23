@@ -369,9 +369,11 @@ PS_OUT PS_BLADENEXUS(PS_IN In)
     if (true == g_isNormal)
     {
         vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
-        vMtrlNormal = float4(normalize(vMtrlNormal.xyz) * 2.f - 1.f, 0.f);
     }
+    float3 vNormal = normalize(vMtrlNormal.xyz * 2.f - 1.f);
     
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = normalize(mul(vNormal, WorldMatrix));
     
     vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
     if (true == g_isEmissive)
@@ -398,7 +400,7 @@ PS_OUT PS_BLADENEXUS(PS_IN In)
     }
     
     Out.vDiffuse = vMtrlDiffuse;
-    Out.vNormal = vector(vMtrlNormal);
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = In.vWorldPos;
     //Out.vSpecular = vMtrlSpecular;
@@ -410,10 +412,8 @@ PS_OUT PS_BLADENEXUS(PS_IN In)
 PS_OUT PS_MAP_ANIM(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
-        
-    vector vMtrlDiffuse = float4(0.f, 0.f, 0.f, 0.f);
-    if (true == g_isDiffuse)
-        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
 
     if (vMtrlDiffuse.a < 0.3f)
         discard;
@@ -422,9 +422,11 @@ PS_OUT PS_MAP_ANIM(PS_IN In)
     if (true == g_isNormal)
     {
         vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
-        vMtrlNormal = float4(normalize(vMtrlNormal.xyz) * 2.f - 1.f, 0.f);
     }
+    float3 vNormal = normalize(vMtrlNormal.xyz * 2.f - 1.f);
     
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = normalize(mul(vNormal, WorldMatrix));
     
     vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
     if (true == g_isEmissive)
@@ -437,9 +439,21 @@ PS_OUT PS_MAP_ANIM(PS_IN In)
     {
         vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
     }
-
+    
+    vector vMtrlMetalic = float4(0.f, 0.f, 0.f, 0.f);
+    if (true == g_isMetalic)
+    {
+        vMtrlMetalic = g_MetalicTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlRoughness = float4(0.f, 0.f, 0.f, 0.f);
+    if (true == g_isRoughness)
+    {
+        vMtrlRoughness = g_RoughnessTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
     Out.vDiffuse = vMtrlDiffuse;
-    Out.vNormal = vector(vMtrlNormal);
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = In.vWorldPos;
     //Out.vSpecular = vMtrlSpecular;

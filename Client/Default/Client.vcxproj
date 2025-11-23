@@ -243,6 +243,7 @@
     <ClInclude Include="..\public\Cursor_Circle_Fx.h" />
     <ClInclude Include="..\Public\Fence.h" />
     <ClInclude Include="..\Public\FSM_Imp_Melee.h" />
+    <ClInclude Include="..\Public\GearGate.h" />
     <ClInclude Include="..\Public\Imp_Melee.h" />
     <ClInclude Include="..\Public\Imp_Sword.h" />
     <ClInclude Include="..\Public\IronGate.h" />
@@ -518,6 +519,7 @@
     <ClCompile Include="..\private\Dragonian_Melee.cpp" />
     <ClCompile Include="..\private\Dragonian_Rampage.cpp" />
     <ClCompile Include="..\Private\FSM_Viper.cpp" />
+    <ClCompile Include="..\Private\GearGate.cpp" />
     <ClCompile Include="..\Private\GSword_Khazan_GS.cpp" />
     <ClCompile Include="..\Private\Collection_Info.cpp" />
     <ClCompile Include="..\Private\AI_Controller_Gomdol.cpp" />
