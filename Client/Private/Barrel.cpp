@@ -228,5 +228,5 @@ CGameObject* CBarrel::Clone(void* pArg)
 void CBarrel::Free()
 {
     __super::Free();
-
+    Safe_Release(m_pBodyCom);
 }

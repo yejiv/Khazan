@@ -387,4 +387,8 @@ void CUI_Store::Free()
     __super::Free();
 
     Safe_Release(m_pBackGround);
+
+    for (auto Store : m_StoreList)
+        Safe_Release(Store);
+    m_StoreList.clear();
 }

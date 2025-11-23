@@ -214,9 +214,9 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vecto
 void CCharacterVirtual::Set_PosRot(_vector vPos, _vector vRot)
 {
 	m_pCharVir->SetPosition(LoadVec3(vPos));
-
-    //_vector vRotation = XMVector3Normalize(vRot);
 	m_pCharVir->SetRotation(LoadQuat(vRot));
+    m_vVelocity = { 0.f, 0.f, 0.f };
+    m_pCharVir->SetLinearVelocity({ 0.f, 0.f, 0.f });
 }
 
 void CCharacterVirtual::StepFixed(_float fTimeDelta)
@@ -359,6 +359,16 @@ CComponent* CCharacterVirtual::Clone(void* pArg)
 void CCharacterVirtual::Free()
 {
 	__super::Free();
+
+    if (m_pCharVir)
+    {
+        m_pGameInstance->Remove_CharacterVirtual(m_pCharVir->GetID()); // 네가 쓰는 방식에 맞게
+
+
+        m_pCharVir = nullptr;
+        m_BodyId = BodyID();
+    }
+
 
 	Safe_Delete(m_pBodyFilter);
 	Safe_Delete(m_pShapeFilter);

@@ -183,12 +183,21 @@ CharacterVirtual* CJolt_Manager::Find_CharacterVirtual(CharacterID id)
 
 void CJolt_Manager::Remove_CharacterVirtual(CharacterID id)
 {
-	auto iter = m_CharacterVirtuals.find(id);
-	if (iter != m_CharacterVirtuals.end())
-	{
-		m_pCharVsCharCollision->Remove(iter->second);
-		m_CharacterVirtuals.erase(iter);
-	}
+    auto iter = m_CharacterVirtuals.find(id);
+    if (iter != m_CharacterVirtuals.end())
+    {
+        CharacterVirtual* pChar = iter->second;
+
+        if (m_pCharVsCharCollision)
+            m_pCharVsCharCollision->Remove(pChar);
+
+        // BodyDesc도 관리 중이면 같이 제거
+        BodyID innerId = pChar->GetInnerBodyID();
+        Remove_BodyDesc(innerId);
+
+        Safe_Delete(pChar);            
+        m_CharacterVirtuals.erase(iter);
+    }
 }
 
 void CJolt_Manager::Push_BodyDesc(BodyID id, uint64 BodyDesc)
@@ -211,6 +220,21 @@ void CJolt_Manager::Remove_BodyDesc(BodyID id)
     {
         m_BodyDescs.erase(iter);
     }
+}
+
+void CJolt_Manager::Destroy_Body(BodyID id)
+{
+    if (!m_pPhysics || id.IsInvalid())
+        return;
+
+    BodyInterface& bi = m_pPhysics->GetBodyInterface();
+
+    if (bi.IsAdded(id))
+        bi.RemoveBody(id);
+
+    bi.DestroyBody(id);
+
+    Remove_BodyDesc(id);
 }
 
 _bool CJolt_Manager::RayCast(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition, _float3* outNormal)
@@ -354,12 +378,33 @@ CJolt_Manager* CJolt_Manager::Create(ID3D11Device* pDevice, ID3D11DeviceContext*
 void CJolt_Manager::Free()
 {
     __super::Free();
+    for (auto& pair : m_CharacterVirtuals)
+    {
+        CharacterVirtual* pChar = pair.second;
+        if (m_pCharVsCharCollision)
+            m_pCharVsCharCollision->Remove(pChar);
+
+        Safe_Delete(pChar);
+    }
+    m_CharacterVirtuals.clear();
+    BodyInterface& bi = m_pPhysics->GetBodyInterface();
+
+    // 등록된 BodyDesc 기준으로 모두 제거
+    /*for (auto& pair : m_BodyDescs)
+    {
+        BodyID id = pair.first;
+        if (!id.IsInvalid())
+        {
+            if (bi.IsAdded(id))
+                bi.RemoveBody(id);
+
+            bi.DestroyBody(id);
+        }
+    }*/
+    m_BodyDescs.clear();
+
 #ifdef _DEBUG
     Safe_Delete(m_pDebugRenderer);
-#endif
-    m_CharacterVirtuals.clear();
-    m_BodyDescs.clear();
-#ifdef _DEBUG
     Safe_Delete(m_DrawFilter);
 #endif
     Safe_Delete(m_pGroupFilterTable);
