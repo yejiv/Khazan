@@ -43,6 +43,8 @@ private:
    
     _int                                m_iPreSkillIndex = { -1 };
     _bool                               m_isPreSkillOn = {};
+
+    _bool                               m_isOver = { false };
 private:
 	HRESULT								Ready_Child(const SKILL_DB* pData);
 	void								Setting_Skill();

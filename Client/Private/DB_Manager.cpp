@@ -268,11 +268,11 @@ HRESULT CDB_Manager::Load_Announce_TalkDB(const _tchar* pFilePath)
 		ANNOUNCE_TALK_DB data{};
 
 		_int ID = Read_UInt(ss);
-		data.fTime = Read_float(ss);
 		data.wstrName = Read_WString(ss);
 		data.wstrText_1 = Read_WString(ss);
 		data.wstrText_2 = Read_WString(ss);
-
+        data.wstrSoundName = Read_WString(ss);
+        data.iNextIndex = Read_UInt(ss);
 		m_Announce_Talk_Data.emplace(ID, data);
 	}
 

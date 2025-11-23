@@ -59,11 +59,13 @@ void CPopup_Item::Update(_float fTimeDelta)
         m_Event();
         m_IsUpdate = false;
         m_isChangeInputType = true;
+        m_pGameInstance->PlaySoundOnce(TEXT("UI_difficulty_option_normal_02 (SFX).wav"));
     }
     else if (m_pGameInstance->Key_Down(DIK_ESCAPE, INPUT_TYPE::POPUP))
     {
         m_IsUpdate = false;
         m_isChangeInputType = true;
+        m_pGameInstance->PlaySoundOnce(TEXT("UI_difficulty_option_normal_02 (SFX).wav"));
     }
 }
 
@@ -149,6 +151,8 @@ HRESULT CPopup_Item::Update_Switch(void* pArg)
         m_pPanelName->Set_Text(TEXT("아이템 구매"));
         m_pPanelInfo->Set_Text(TEXT("아이템을 구매 하시겠습니까?"));
     }
+
+    m_pGameInstance->PlaySoundOnce(TEXT("UI_difficulty_open (SFX).wav"));
 
     const ITEM_DATA* pData = CClientInstance::GetInstance()->Get_Data<ITEM_DATA>(pDesc->iItemIndex);
 

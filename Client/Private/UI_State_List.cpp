@@ -101,13 +101,23 @@ void CUI_State_List::Update(_float fTimeDelta)
     if (m_iIndex > -1 && m_eUI_Type == CUI_State::UI_TYPE::UPAGERD)
     {
         if (ButtonOver(g_hWnd))
-        {            
+        {
             CUI_State::BubbleDesc Desc = {};
             Desc.eListType = static_cast<CUI_State::STATE_LIST>(m_iIndex);
             Desc.isClick = false;
             Desc.isList = true;
             m_UIBubbleCallBack(&Desc);
+
+            if (m_isOver == false)
+            {
+                m_isOver = true;
+                _int iRand = m_pGameInstance->Rand(1, 4);
+                _wstring wstrSound = TEXT("UI_common_mouse_over_0") + std::to_wstring(iRand) + TEXT(" (SFX).wav");
+                m_pGameInstance->PlaySoundOnce(wstrSound.c_str());
+            }
         }
+        else
+            m_isOver = false;
 
         if (*m_pPoint > 0)
             m_pButton[0]->Update(fTimeDelta);
@@ -315,7 +325,18 @@ void CUI_State_List::List_RenderUpdate(_float fTimeDelta)
         m_pStateIcon->Late_Update(fTimeDelta);
 
         if (ButtonOver(g_hWnd))
+        {
+            if (!m_isOver)
+            {
+                m_isOver = true;
+                _int iRand = m_pGameInstance->Rand(1, 4);
+                _wstring wstrSound = TEXT("UI_common_mouse_over_0") + std::to_wstring(iRand) + TEXT(" (SFX).wav");
+                m_pGameInstance->PlaySoundOnce(wstrSound.c_str());
+            }
             m_pHover->Late_Update(fTimeDelta);
+        }
+        else
+            m_isOver = false;
 
         for (auto pTex : m_pTexture)
             pTex->Late_Update(fTimeDelta);
@@ -339,7 +360,19 @@ void CUI_State_List::Button_RenderUpdate(_float fTimeDelta)
         pTex->Late_Update(fTimeDelta);
 
     if (*m_pUpValue > 0 && ButtonOver(g_hWnd))
+    {
+        if (!m_isOver)
+        {
+            m_isOver = true;
+            _int iRand = m_pGameInstance->Rand(1, 4);
+            _wstring wstrSound = TEXT("UI_common_mouse_over_0") + std::to_wstring(iRand) + TEXT(" (SFX).wav");
+        }
         m_pHover->Late_Update(fTimeDelta);
+
+    }
+    else
+        m_isOver = false;
+
 }
 
 CUI_State_List* CUI_State_List::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)

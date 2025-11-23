@@ -41,6 +41,7 @@ private:
     _int                                m_iIndex = { -1 };
 
     _bool                               m_bIsOn = { false };
+    _bool                               m_isOver = {};
 private: 
     HRESULT								Ready_Componet();
 public:

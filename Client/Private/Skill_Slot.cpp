@@ -190,15 +190,28 @@ void CSkill_Slot::Update(_float fTimeDelta)
 
     if (IsPick(g_hWnd) && m_pGameInstance->Get_InputType() == INPUT_TYPE::UI)
     {
+        if (!m_isOver)
+        {
+            m_isOver = true;
+            _int iRand = m_pGameInstance->Rand(1, 4);
+            _wstring wstrSound = TEXT("UI_common_mouse_over_0") + std::to_wstring(iRand) + TEXT(" (SFX).wav");
+            m_pGameInstance->PlaySoundOnce(wstrSound.c_str());
+        }
         m_pSlot_Over->Anim_On();
         if(m_pGameInstance->Get_InputType() == INPUT_TYPE::UI)
             Render_SkillInfo();
+
         if (CClientInstance::GetInstance()->Get_PlayerData().iSkilPoint > 0 && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB, INPUT_TYPE::UI))
         {
+            m_pGameInstance->StopByKey(TEXT("UI_common_click2 (SFX).wav"));
+            m_pGameInstance->PlaySoundOnce(TEXT("UI_common_click2 (SFX).wav"));
+
             if (m_iPreSkillIndex == 0 || m_isPreSkillOn)
             {
                 if (m_iSkillPoint + 1 <= m_pSkilData->iMaxPoint)
                 {
+                    m_pGameInstance->StopByKey(TEXT("UI_common_click2 (SFX).wav"));
+                    m_pGameInstance->PlaySoundOnce(TEXT("UI_common_click2 (SFX).wav"));
                     ++m_iSkillPoint;
                     CClientInstance::GetInstance()->Add_SkillPoint(-1);
                     if (m_iSkillPoint == 1)
@@ -221,8 +234,12 @@ void CSkill_Slot::Update(_float fTimeDelta)
         }
         else if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB, INPUT_TYPE::UI))
         {
+
+
             if (m_iSkillPoint - 1 >= 0)
             {
+                m_pGameInstance->StopByKey(TEXT("UI_skilllevel_countup_01_01 (SFX).wav"));
+                m_pGameInstance->PlaySoundOnce(TEXT("UI_skilllevel_countup_01_01 (SFX).wav"));
                 --m_iSkillPoint;
                 CClientInstance::GetInstance()->Add_SkillPoint(1);
                 if (m_iSkillPoint == 0)
@@ -240,6 +257,10 @@ void CSkill_Slot::Update(_float fTimeDelta)
             }
         }
 
+    }
+    else
+    {
+        m_isOver = false;
     }
 
     if (m_iSkillPoint <= 0)

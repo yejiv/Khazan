@@ -184,11 +184,6 @@ HRESULT CLevel_HeinMach::Initialize()
 
 void CLevel_HeinMach::Update(_float fTimeDelta)
 {
-    //if (m_pGameInstance->Key_Down(DIK_9))
-    //    static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
-    //if (m_pGameInstance->Key_Down(DIK_8))
-    //    static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
-
 	if (m_pGameInstance->Key_Down(DIK_Q))
 	{
 		m_pGameInstance->isPickRenderTargetPixel(TEXT("Target_Normal"));

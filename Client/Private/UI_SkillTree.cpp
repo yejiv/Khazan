@@ -47,6 +47,8 @@ void CUI_SkillTree::On_Panel()
 			m_SkillTap[i]->Set_Selete(false);
 	}
 
+    m_pGameInstance->PlaySoundOnce(TEXT("UI_skill_open (SFX).wav"));
+
 	m_pGameInstance->Emit_Event<EVENT_SKILL_OPEN>(ENUM_CLASS(EVENT_TYPE::SKILL_EVENT), EVENT_SKILL_OPEN{ });
 }
 
@@ -59,8 +61,9 @@ void CUI_SkillTree::Off_Panel()
 
     CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("MainMeun"));
 
-	//m_eAnimState = UIANIMSTATE::OFF;
-	//m_fAccTime = 1.f;
+    m_pGameInstance->StopByKey(TEXT("UI_mainmenu_open_renew (SFX).wav"));
+    m_pGameInstance->PlaySoundOnce(TEXT("UI_skill_close (SFX).wav"));
+
 }
 
 HRESULT CUI_SkillTree::Initialize_Prototype(_uint iLevel)
@@ -87,9 +90,6 @@ void CUI_SkillTree::Priority_Update(_float fTimeDelta)
 
 void CUI_SkillTree::Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_P, INPUT_TYPE::UI))
-		CClientInstance::GetInstance()->Add_SkillExp(40.f);
-
 	if (!m_IsUpdate)
 		return;
 	InputKey();
@@ -281,6 +281,7 @@ void CUI_SkillTree::InputKey()
             CPopup_Reset::POPUP_RESET_DESC Desc;
             Desc.Event = [this]() {
                 m_pGameInstance->Emit_Event<EVENT_SKILL_RESET>(ENUM_CLASS(EVENT_TYPE::SKILL_RESET), {});
+                m_pGameInstance->PlaySoundOnce(TEXT("UI_skill_reset (SFX).wav"));
                 };
             CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Popup_Reset"), &Desc);
         }

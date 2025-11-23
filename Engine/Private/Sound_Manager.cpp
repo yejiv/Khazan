@@ -4,9 +4,9 @@ CSound_Manager::CSound_Manager() {}
 
 HRESULT CSound_Manager::Initialize()
 {
+    m_fGloval_Volume = 0.7f;
     FMOD_System_Create(&m_pSystem, FMOD_VERSION);
     FMOD_System_Init(m_pSystem, m_iMaxChannels, FMOD_INIT_NORMAL, nullptr);
-
     LoadSoundFile();
     return S_OK;
 }
@@ -20,14 +20,30 @@ void CSound_Manager::PlaySoundOnce(const TCHAR* pSoundKey, float fVolume, FMOD_C
 {
     FMOD_SOUND* pSound = nullptr;
     if (!FindSound(pSoundKey, &pSound)) return;
-    
-    FMOD_CHANNEL* pCh = nullptr;
-    FMOD_System_PlaySound(m_pSystem, pSound, nullptr, FALSE, &pCh);
-    if (pCh)
+
+    if (ppOutChannel == nullptr)
     {
-        FMOD_Channel_SetMode(pCh, FMOD_DEFAULT);
-        FMOD_Channel_SetVolume(pCh, fVolume);
-        if (ppOutChannel) *ppOutChannel = pCh;
+        FMOD_CHANNEL* pCh = nullptr;
+        FMOD_System_PlaySound(m_pSystem, pSound, nullptr, FALSE, &pCh);
+        if (pCh)
+        {
+            FMOD_Channel_SetMode(pCh, FMOD_DEFAULT);
+            FMOD_Channel_SetVolume(pCh, fVolume * m_fGloval_Volume);
+            if (ppOutChannel) *ppOutChannel = pCh;
+        }
+    }
+    else
+    {
+        FMOD_BOOL bPlay = false;
+        FMOD_Channel_IsPlaying(*ppOutChannel, &bPlay);
+
+        if (bPlay)
+            FMOD_Channel_Stop(*ppOutChannel);
+
+        FMOD_System_PlaySound(m_pSystem, pSound, nullptr, FALSE, ppOutChannel);
+        FMOD_Channel_SetMode(*ppOutChannel, FMOD_DEFAULT);
+        FMOD_Channel_SetVolume(*ppOutChannel, fVolume * m_fGloval_Volume);
+
     }
     FMOD_System_Update(m_pSystem);
 }
@@ -42,10 +58,11 @@ void CSound_Manager::PlaySoundLoop(const TCHAR* pSoundKey, float fVolume, FMOD_C
     if (pCh)
     {
         FMOD_Channel_SetMode(pCh, FMOD_LOOP_NORMAL);
-        FMOD_Channel_SetVolume(pCh, fVolume);
+        FMOD_Channel_SetVolume(pCh, fVolume * m_fGloval_Volume);
         if (ppOutChannel) *ppOutChannel = pCh;
     }
     FMOD_System_Update(m_pSystem);
+
 }
 
 void CSound_Manager::StopByKey(const TCHAR* pSoundKey)
@@ -62,6 +79,12 @@ void CSound_Manager::StopByKey(const TCHAR* pSoundKey)
             }
         });
     FMOD_System_Update(m_pSystem);
+}
+
+void CSound_Manager::StopByChannel(FMOD_CHANNEL** ppOutChannel)
+{
+    if (ppOutChannel != nullptr)
+        FMOD_Channel_Stop(*ppOutChannel);
 }
 
 bool CSound_Manager::IsPlayingByKey(const TCHAR* pSoundKey)
@@ -94,7 +117,7 @@ void CSound_Manager::SetVolumeByKey(const TCHAR* pSoundKey, float fVolume)
             FMOD_SOUND* cur = nullptr;
             if (FMOD_Channel_GetCurrentSound(ch, &cur) == FMOD_OK && cur == pTarget)
             {
-                FMOD_Channel_SetVolume(ch, fVolume);
+                FMOD_Channel_SetVolume(ch, fVolume * m_fGloval_Volume);
             }
         });
     FMOD_System_Update(m_pSystem);
