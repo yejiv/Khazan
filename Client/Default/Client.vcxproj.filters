@@ -1021,6 +1021,21 @@
     <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Part\Left">
       <UniqueIdentifier>{02b95e17-b904-41fc-9b1b-f602db9a5933}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder">
+      <UniqueIdentifier>{55244ac6-e756-4460-aa91-2895dd0c5437}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Middle">
+      <UniqueIdentifier>{e3ae5dae-1975-416c-9615-3fcf87b10845}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Top">
+      <UniqueIdentifier>{c41e00f3-e9d1-48c6-b5a3-b44eb2cfc05a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Bottom">
+      <UniqueIdentifier>{b0339617-5aa1-4724-9322-bb931d49d2fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Bottom\Support">
+      <UniqueIdentifier>{126aa4e2-07d9-455f-a2f8-4ea073d3d567}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1943,10 +1958,6 @@
     <ClInclude Include="..\Public\Body_Khazan_GS.h">
       <Filter>02.GameObject\Creature\Khazan\GSword\Body</Filter>
     </ClInclude>
-    <ClInclude Include="CBody_Viper.h" />
-    <ClInclude Include="CFSM_Viper.h" />
-    <ClInclude Include="CGSword_Khazan_GS.h" />
-    <ClInclude Include="CCollection_Info.h" />
     <ClInclude Include="..\Public\Body_Viper.h">
       <Filter>02.GameObject\Creature\Monster\Viper\Body</Filter>
     </ClInclude>
@@ -1964,6 +1975,24 @@
     </ClInclude>
     <ClInclude Include="..\Public\IronGate_Part_R.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Part\Right</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FSM_Viper.h" />
+    <ClInclude Include="..\Public\GSword_Khazan_GS.h" />
+    <ClInclude Include="..\Public\Collection_Info.h" />
+    <ClInclude Include="..\Public\Ladder.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Ladder_Middle.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Middle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Ladder_Bottom.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Bottom</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Ladder_Support.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Bottom\Support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Ladder_Top.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Top</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2867,10 +2896,6 @@
     <ClCompile Include="..\Private\Body_Khazan_GS.cpp">
       <Filter>02.GameObject\Creature\Khazan\GSword\Body</Filter>
     </ClCompile>
-    <ClCompile Include="CBody_Viper.cpp" />
-    <ClCompile Include="CFSM_Viper.cpp" />
-    <ClCompile Include="CGSword_Khazan_GS.cpp" />
-    <ClCompile Include="CCollection_Info.cpp" />
     <ClCompile Include="..\Private\Body_Viper.cpp">
       <Filter>02.GameObject\Creature\Monster\Viper\Body</Filter>
     </ClCompile>
@@ -2888,6 +2913,24 @@
     </ClCompile>
     <ClCompile Include="..\Private\IronGate_Part_R.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Part\Right</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FSM_Viper.cpp" />
+    <ClCompile Include="..\Private\GSword_Khazan_GS.cpp" />
+    <ClCompile Include="..\Private\Collection_Info.cpp" />
+    <ClCompile Include="..\Private\Ladder.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder_Middle.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Middle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder_Bottom.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Bottom</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder_Support.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Bottom\Support</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder_Top.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Top</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -672,6 +672,15 @@ HRESULT CLevel_Embars::Ready_Layer_MapObject_Interactive(const _wstring& strLaye
             CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_IronGate"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
             break;
         }
+        case INTERACTIVE_TYPE::LADDER:
+        {
+            CLadder::LADDER_OFFSET LadderOffSet = {};
+            CHECK_FALSE(ReadFile(hFile, &LadderOffSet.fOffSetHeight, sizeof(_float), &dwByte, nullptr), E_FAIL);
+            CHECK_FALSE(ReadFile(hFile, &LadderOffSet.iSegmentCount, sizeof(_int), &dwByte, nullptr), E_FAIL);
+            ObjectDesc.pOtherDesc = &LadderOffSet;
+            CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Ladder"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
+            break;
+        }
         default:
             MSG_BOX(TEXT("잉 있으면 안되는디"));
             break;

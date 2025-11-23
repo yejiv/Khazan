@@ -295,6 +295,21 @@
     <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Part\Right">
       <UniqueIdentifier>{cb5b7fd7-347c-4067-bc39-e81fe81cd005}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\09.Ladder">
+      <UniqueIdentifier>{4a32cba8-964a-45e4-868a-643d9e2396e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Top">
+      <UniqueIdentifier>{ee07b1c5-11dc-4f10-9a0f-53dd35274911}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Bottom">
+      <UniqueIdentifier>{6e226c8a-4e0d-4441-b379-fd6b9221faa6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Bottom\Support">
+      <UniqueIdentifier>{eac75b3a-236b-4b53-bd46-03c3155a5b20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Middle">
+      <UniqueIdentifier>{9ad2d95f-b384-4dbd-b7f9-5408fcc9ab6d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -558,6 +573,21 @@
     <ClInclude Include="..\Public\IronGate_Part_R.h">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Part\Right</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Ladder_Top.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Top</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Ladder_Bottom.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Bottom</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Ladder_Support.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Bottom\Support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Ladder_Middle.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Middle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Ladder.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -815,6 +845,21 @@
     </ClCompile>
     <ClCompile Include="..\Private\IronGate_Part_R.cpp">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Part\Right</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder_Top.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Top</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder_Bottom.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Bottom</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder_Support.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Bottom\Support</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder_Middle.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Middle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
