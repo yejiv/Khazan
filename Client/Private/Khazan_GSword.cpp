@@ -125,17 +125,12 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
 
     m_EffectTimeDelta = 0.f;
 
-
-#pragma region 3D UI 테스트
-
-#pragma endregion
     return S_OK;
 
 }
 
 void CKhazan_GSword::Priority_Update(_float fTimeDelta)
 {
-
     __super::Priority_Update(fTimeDelta);
 
     if (m_pGameInstance->Key_Down(DIK_P))

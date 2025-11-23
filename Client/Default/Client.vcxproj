@@ -163,6 +163,7 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\public\AI_Controller_Dragonian_Melee.h" />
     <ClInclude Include="..\Public\AI_Controller_Gomdol.h" />
     <ClInclude Include="..\Public\AI_Controller_Imp_Melee.h" />
     <ClInclude Include="..\Public\AI_Controller_Imp_Range.h" />
@@ -181,6 +182,14 @@
     <ClInclude Include="..\Public\AS_Dead_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_Dead_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Dodge_Yetuga.h" />
+    <ClInclude Include="..\public\AS_Dr_Melee_Attack.h" />
+    <ClInclude Include="..\public\AS_Dr_Melee_Brutal.h" />
+    <ClInclude Include="..\public\AS_Dr_Melee_Damage.h" />
+    <ClInclude Include="..\public\AS_Dr_Melee_Dead.h" />
+    <ClInclude Include="..\public\AS_Dr_Melee_Groggy.h" />
+    <ClInclude Include="..\public\AS_Dr_Melee_LockOn.h" />
+    <ClInclude Include="..\public\AS_Dr_Melee_Sleep.h" />
+    <ClInclude Include="..\public\AS_Dr_Melee_Walk.h" />
     <ClInclude Include="..\Public\AS_FrontAttack_Gomdol.h" />
     <ClInclude Include="..\Public\AS_Groggy_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Hit_Imp_Melee.h" />
@@ -219,10 +228,16 @@
     <ClInclude Include="..\Public\BigChest.h" />
     <ClInclude Include="..\public\BladeNexus_List.h" />
     <ClInclude Include="..\public\BladeNexus_Map_BG.h" />
+    <ClInclude Include="..\public\Body_Dragonian_Melee.h" />
+    <ClInclude Include="..\public\Body_Dragonian_Rampage.h" />
     <ClInclude Include="..\Public\Body_Imp_Melee.h" />
     <ClInclude Include="..\Public\Body_Khazan_GS.h" />
     <ClInclude Include="..\Public\Body_Viper.h" />
+    <ClInclude Include="..\public\Dragonian_Sword.h" />
+    <ClInclude Include="..\public\FSM_Default.h" />
     <ClInclude Include="..\Public\Door_Gear.h" />
+    <ClInclude Include="..\public\Dragonian_Melee.h" />
+    <ClInclude Include="..\public\Dragonian_Rampage.h" />
     <ClInclude Include="..\Public\ElevatorS.h" />
     <ClInclude Include="..\Public\Elevator_Gear.h" />
     <ClInclude Include="..\public\Cursor_Circle_Fx.h" />
@@ -486,7 +501,22 @@
     <ClInclude Include="..\Public\Collection_Info.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\private\AI_Controller_Dragonian_Melee.cpp" />
+    <ClCompile Include="..\private\AS_Dr_Melee_Attack.cpp" />
+    <ClCompile Include="..\private\AS_Dr_Melee_Brutal.cpp" />
+    <ClCompile Include="..\private\AS_Dr_Melee_Damage.cpp" />
+    <ClCompile Include="..\private\AS_Dr_Melee_Dead.cpp" />
+    <ClCompile Include="..\private\AS_Dr_Melee_Groggy.cpp" />
+    <ClCompile Include="..\private\AS_Dr_Melee_LockOn.cpp" />
+    <ClCompile Include="..\private\AS_Dr_Melee_Sleep.cpp" />
+    <ClCompile Include="..\private\AS_Dr_Melee_Walk.cpp" />
+    <ClCompile Include="..\private\Body_Dragonian_Melee.cpp" />
+    <ClCompile Include="..\private\Body_Dragonian_Rampage.cpp" />
     <ClCompile Include="..\Private\Body_Viper.cpp" />
+    <ClCompile Include="..\private\Dragonian_Sword.cpp" />
+    <ClCompile Include="..\private\FSM_Default.cpp" />
+    <ClCompile Include="..\private\Dragonian_Melee.cpp" />
+    <ClCompile Include="..\private\Dragonian_Rampage.cpp" />
     <ClCompile Include="..\Private\FSM_Viper.cpp" />
     <ClCompile Include="..\Private\GSword_Khazan_GS.cpp" />
     <ClCompile Include="..\Private\Collection_Info.cpp" />

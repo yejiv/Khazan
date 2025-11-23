@@ -198,7 +198,6 @@ private:
 private:
     _float                      m_EffectTimeDelta;
 
-
 private:
     void			Update_Stats(_float fTimeDelta);
     void			Update_State(_float fTimeDelta);

@@ -60,10 +60,18 @@
 
 #pragma endregion
 
+#pragma region MONSTER_KBS
+#include "Dragonian_Melee.h"
+
+#include "Dragonian_Rampage.h"
+#include "Body_Dragonian_Rampage.h"
+#pragma endregion
+
 #pragma region UI
 #include "Logo_BG.h"
 #include "UI_Logo.h"
 #pragma endregion
+
 #include "Effect_Prefab.h"
 //static mutex g_GpuGate;
 
@@ -181,13 +189,7 @@ HRESULT CLoader::Loading()
 
 HRESULT CLoader::Loading_For_Title_Level()
 {
-	lstrcpy(m_szLoadingText, TEXT("�ؽ��ĸ� �ε����Դϴ�."));
-
-	lstrcpy(m_szLoadingText, TEXT("���� �ε����Դϴ�."));
-
-	lstrcpy(m_szLoadingText, TEXT("���̴��� �ε����Դϴ�."));
-
-	lstrcpy(m_szLoadingText, TEXT("���ӿ�����Ʈ�� �ε����Դϴ�."));
+	lstrcpy(m_szLoadingText, TEXT("UI 객체 생성 중"));
 
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TITLE), TEXT("Prototype_GameObject_Logo_BG"),
 		CLogo_BG::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::TITLE))), E_FAIL);
@@ -195,7 +197,7 @@ HRESULT CLoader::Loading_For_Title_Level()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TITLE), TEXT("Prototype_GameObject_UI_Logo"),
 		CUI_Logo::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::TITLE))), E_FAIL);
 
-	lstrcpy(m_szLoadingText, TEXT("�ε��� �Ϸ�Ǿ����ϴ�."));
+	lstrcpy(m_szLoadingText, TEXT("탁예지: 다나가!!"));
 	
 	m_isFinished = true;
 
@@ -583,7 +585,7 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
 
 #pragma endregion
 
-#pragma region �� ���� : ��ȣ �ۿ� �� ������Ʈ
+#pragma region �� ���� : ��ȣ �ۿ� �� ������Ʈ 
 	/* Prototype_Component_Model_BigChest */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_BigChest"),
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_BigChest_Open_003/WIP_COM_BigChest_Open_003.dat")), E_FAIL);
@@ -1756,6 +1758,12 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Body_Viper"),
         CBody_Viper::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+#pragma endregion
+#pragma region Dragonian_Melee
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Dragonian_Melee"),
+        CDragonian_Melee::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::VIPER)))))
         return E_FAIL;
 
 #pragma endregion

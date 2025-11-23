@@ -49,15 +49,16 @@ void CLevel_Title::Update(_float fTimeDelta)
 				return;
 
 			m_isOpenLevel = true;
+
 		}
 	}
 	if (m_eNextLevel != LEVEL::END)
 	{
+        m_pGameInstance->StopAll();
 		if (!m_isOpenLevel) {
             m_pGameInstance->StopAll();
 			if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, m_eNextLevel))))
 				return;
-
 			m_isOpenLevel = true;
 		}
 	}
@@ -239,7 +240,4 @@ void CLevel_Title::Free()
 {
 
 	__super::Free();
-
-    
-
 }
