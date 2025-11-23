@@ -419,7 +419,6 @@ PS_OUT_BACKBUFFER PS_COMBINED(PS_IN In)
     PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
     
     vector vPostSceneDesc = g_PostSceneTexture.Sample(DefaultSampler, In.vTexcoord);
-    vector vEmissiveDesc = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vBloomDesc = g_BloomTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vFogDesc = g_FogTexture.Sample(DefaultSampler, In.vTexcoord);
 

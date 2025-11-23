@@ -429,11 +429,26 @@ _bool CModel::Play_Animation(_float fTimeDelta)
     /* 이벤트 체크 */
     Check_Event(fTimeDelta);
 
-    // 현재 프레임 캡처 (마스터만 )
-    if (m_isMaterSkeleton)
+    // 모든 본의 Combined Matrix가 계산 완료된 상태
+
+    // 캡처 인터벌
+    m_fSnashotTimeAcc += fTimeDelta;
+
+    if (m_isMaterSkeleton && m_fSnashotTimeAcc >= m_fInterval && m_isEnableAfterImage)
+    {
         Capture_CurrentFrame();
-        //Cache_CurrentBoneMatrices();  // 본 정보 저장
-    
+        //  Cache_CurrentBoneMatrices();  // 본 정보 저장
+        m_fSnashotTimeAcc = 0.f;
+    }
+
+    // Age 누적
+    for (auto& Snapshot : m_FrameHistory)
+    {
+        if (Snapshot.vLifeTime.x >= Snapshot.vLifeTime.y)
+            m_FrameHistory.pop_front();
+
+        Snapshot.vLifeTime.x += fTimeDelta;
+    }
 
     /* Owner에 Transform 적용 */
     if (m_pOwnerTransform && Has_State(ROOTMOTION))
@@ -849,7 +864,7 @@ void CModel::Update_PartLocalBones()
 
 void CModel::Capture_CurrentFrame()
 {
-    if (!m_isMaterSkeleton)  // 마스터만 캡처
+    if (!m_isMaterSkeleton || m_FrameHistory.size() > m_iMaxHistoryFrames)  // 마스터만 캡처
         return;
 
     FRAME_SNAPSHOT snapshot;
@@ -862,14 +877,22 @@ void CModel::Capture_CurrentFrame()
         );
     }
 
+    snapshot.OwnerWorldMatrix = *m_pOwnerTransform->Get_WorldMatrixPtr();
     snapshot.fTrackPosition = m_fCurrentTrackPosition;
     snapshot.iAnimIndex = m_iCurrentAnimIndex;
+    snapshot.vLifeTime = _float2(0.f, m_fMaxLifeTime);
+    snapshot.vStartColor = m_vStartColor;
+    snapshot.vTargetColor = m_vTargetColor;
 
     m_FrameHistory.push_back(snapshot);
 
     // 최대 개수 초과시 오래된 것 제거
-    if (m_FrameHistory.size() > m_iMaxHistoryFrames)
-        m_FrameHistory.pop_front();
+    //  if (m_FrameHistory.size() > m_iMaxHistoryFrames)
+    //      m_FrameHistory.pop_front();
+
+    // 생명 주기 끝난 것 제거
+    //  if (m_FrameHistory.front().vLifeTime.x >= m_FrameHistory.front().vLifeTime.y)
+    //      m_FrameHistory.pop_front();
 }
 
 _bool CModel::Restore_Frame(_uint iFrameBack)
@@ -890,6 +913,34 @@ _bool CModel::Restore_Frame(_uint iFrameBack)
     }
 
     return true;
+}
+
+HRESULT CModel::Bind_PrevFrameWorldMatrix(class CShader* pShader, const _char* pConstantName, _uint iFrameBack)
+{
+    if (m_FrameHistory.empty() || iFrameBack >= m_FrameHistory.size())
+        return E_FAIL;
+
+    return pShader->Bind_Matrix(pConstantName, &m_FrameHistory[m_FrameHistory.size() - 1 - iFrameBack].OwnerWorldMatrix);
+}
+
+HRESULT CModel::Bind_Snapshot_ShaderResources(CShader* pShader, _uint iFrameBack)
+{
+    if (m_FrameHistory.empty() || iFrameBack >= m_FrameHistory.size())
+        return E_FAIL;
+
+    if (FAILED(pShader->Bind_RawValue("g_vLifeTime", 
+        &m_FrameHistory[m_FrameHistory.size() - 1 - iFrameBack].vLifeTime, sizeof(_float2))))
+        return E_FAIL;
+
+    if (FAILED(pShader->Bind_RawValue("g_vStartColor", 
+        &m_FrameHistory[m_FrameHistory.size() - 1 - iFrameBack].vStartColor, sizeof(_float3))))
+        return E_FAIL;
+
+    if (FAILED(pShader->Bind_RawValue("g_vTargetColor",
+        &m_FrameHistory[m_FrameHistory.size() - 1 - iFrameBack].vTargetColor, sizeof(_float3))))
+        return E_FAIL;
+
+    return S_OK;
 }
 
 void CModel::WarmupAnimations()
@@ -1240,6 +1291,17 @@ void CModel::Cache_CurrentBoneMatrices()
     for (size_t i = 0; i < m_Bones.size(); ++i)
     {
         m_CachedBoneMatrices[i] = *m_Bones[i]->Get_CombinedTransformationMatrixPtr();
+    }
+}
+
+void CModel::Restore_CurrentBoneMatrices()
+{
+    if (m_CachedBoneMatrices.empty())
+        return;
+
+    for (size_t i = 0; i < m_Bones.size(); ++i)
+    {
+        m_Bones[i]->Set_CombinedTransformationMatrix(XMLoadFloat4x4(&m_CachedBoneMatrices[i]));
     }
 }
 
