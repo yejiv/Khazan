@@ -41,6 +41,7 @@ HRESULT CLevel_HeinMach::Initialize()
 
     m_pGameInstance->Add_FireTask([&]() {
         CHECK_FAILED(Ready_Layer_MapObject_DEST(TEXT("Layer_DEST"), TEXT(""), LEVEL::HEINMACH), E_FAIL);
+        return S_OK;
         });
 
     CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
@@ -199,10 +200,11 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
 	}
 
 
-	if (m_pGameInstance->Key_Down(DIK_RETURN))
-		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EMBARS))));
+    if (m_pGameInstance->Key_Down(DIK_RETURN))
+        if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EMBARS))))
+            return;
 
-   /* if (!m_isStart)
+   if (!m_isStart)
     {
         m_isStart = true;
         CSequence_HeinMach_Start* pSequence = CSequence_HeinMach_Start::Create();
@@ -213,7 +215,7 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
         tPlayDesc.fStartTime = 0.f;
 
         m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
-    }*/
+    }
 
 
 	return;

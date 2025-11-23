@@ -939,21 +939,27 @@ HRESULT CLoader::Loading_For_Crevice_Level()
 {
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		return Loading_For_Crevice_Texture();
+        return S_OK;
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		return Loading_For_Crevice_Model();
+        return S_OK;
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		return Loading_For_Crevice_Shader();
+        return S_OK;
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		return Loading_For_Crevice_GameObject();
+        return S_OK;
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("Crevice"), LEVEL::CREVICE, KHAZAN_MAP::CREVICE), E_FAIL);
+        return S_OK;
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		CHECK_FAILED(Loading_Prototype_MapObject_Inst_From_DAT(TEXT("Crevice"), LEVEL::CREVICE, KHAZAN_MAP::CREVICE), E_FAIL);
+        return S_OK;
 		}));
 
 	return S_OK;
