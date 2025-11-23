@@ -46,6 +46,8 @@ HRESULT CElevatorS::Initialize_Clone(void* pArg)
     else
         m_eState = ELEVATOR_STATE::IDLE_UP;
 
+    m_pModelCom->Set_AnimationBlend(false);
+
     return S_OK;
 }
 

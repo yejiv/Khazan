@@ -226,5 +226,5 @@ CGameObject* CFence::Clone(void* pArg)
 void CFence::Free()
 {
     __super::Free();
-
+    Safe_Release(m_pBodyCom);
 }

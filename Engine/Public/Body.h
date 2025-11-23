@@ -124,6 +124,7 @@ public:
 private:
 	Body* m_pBody = { nullptr };
 	BodyID			m_BodyID;
+    vector<BodyID> m_MeshBodyIDs;
 	BodyInterface* m_pBodyInterface = { nullptr };
 
 	// 보조 저장

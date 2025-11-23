@@ -60,12 +60,15 @@ private:
 	HRESULT Loading_For_Test_Shader();
 	HRESULT Loading_For_Test_GameObject();
 
+    HRESULT Loading_For_Effect_Static(_uint level);
 
+#pragma region 하인마흐 
 	HRESULT Loading_For_HeinMach_Level();
 	HRESULT Loading_For_HeinMach_Texture();
 	HRESULT Loading_For_HeinMach_Model();
 	HRESULT Loading_For_HeinMach_Shader();
 	HRESULT Loading_For_HeinMach_GameObject();
+#pragma endregion
 
 #pragma region 경계의 틈
 	HRESULT Loading_For_Crevice_Level();

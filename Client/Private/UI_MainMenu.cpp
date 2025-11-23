@@ -29,7 +29,7 @@ void CUI_MainMenu::On_Panel()
 	m_iSeleteIndex = 0;
 	for (_int i = 0; i < ENUM_CLASS(MENULIST::END); ++i)
 		i == m_iSeleteIndex ? m_pList[i]->Set_Selete(true) : m_pList[i]->Set_Selete(false);
-
+    m_pGameInstance->PlaySoundOnce(TEXT("UI_mainmenu_open_renew (SFX).wav"));
 	m_eAnimState = UIANIMSTATE::ON;
 	m_fAccTime = 0.5f;
 	m_IsUpdate = true;
@@ -52,6 +52,8 @@ void CUI_MainMenu::Off_Panel()
 		m_eAnimState = UIANIMSTATE::OFF;
 		m_fAccTime = 1.f;
 		m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
+        m_pGameInstance->StopByKey(TEXT("UI_mainmenu_open_renew (SFX).wav"));
+        m_pGameInstance->PlaySoundOnce(TEXT("UI_mainmenu_close_renew (SFX).wav"));
 	}
 	else
 	{
@@ -75,7 +77,7 @@ HRESULT CUI_MainMenu::Initialize_Clone(void* pArg)
 }
 
 void CUI_MainMenu::Priority_Update(_float fTimeDelta)
-{
+{ 
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
 		On_Panel();
     else if (m_IsUpdate && m_pGameInstance->Key_Down(DIK_ESCAPE, INPUT_TYPE::UI))

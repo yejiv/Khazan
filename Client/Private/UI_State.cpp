@@ -31,6 +31,17 @@ void CUI_State::On_Panel(UI_TYPE eType)
 	m_eType = eType;
 	m_eType == UI_TYPE::DEFAULT ? m_pTitle->Set_Text(TEXT("상태")) : m_pTitle->Set_Text(TEXT("능력 강화"));
 
+    if (m_eType == UI_TYPE::DEFAULT)
+    {
+        m_pGameInstance->StopByKey(TEXT("UI_mainmenu_open_renew (SFX).wav"));
+        m_pGameInstance->PlaySoundOnce(TEXT("UI_mainmenu_open_renew (SFX).wav"));
+    }
+    else
+    {
+        m_pGameInstance->StopByKey(TEXT("UI_mainmenu_open_renew (SFX).wav"));
+        m_pGameInstance->PlaySoundOnce(TEXT("UI_levelup_open (SFX).wav"));
+
+    }
 	m_pPanel[ENUM_CLASS(STATE_PANEL::LACHRYMA)]->Setting_Type(m_eType, this);
 	m_pPanel[ENUM_CLASS(STATE_PANEL::LEVEL)]->Setting_Type(m_eType, this);
     Update_Data();
@@ -63,14 +74,22 @@ void CUI_State::Off_Panel()
 
 	m_IsUpdate = false;
 
-	if(m_eType == UI_TYPE::DEFAULT)
-		CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("MainMeun"));
-	else if (m_eType == UI_TYPE::UPAGERD)
+    if (m_eType == UI_TYPE::DEFAULT)
+    {
+        CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("MainMeun"));
+
+        m_pGameInstance->StopByKey(TEXT("UI_mainmenu_open_renew (SFX).wav"));
+        m_pGameInstance->PlaySoundOnce(TEXT("UI_mainmenu_close_renew (SFX).wav"));
+    }
+    else if (m_eType == UI_TYPE::UPAGERD)
 	{
 		CUI_BladeNexus::BLADENEXUS_ON_DESC Desc;
 
 		Desc.eType = CUI_BladeNexus::ONTYPE::END;
 		CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BladeNexus"), &Desc);
+
+        m_pGameInstance->StopByKey(TEXT("UI_mainmenu_open_renew (SFX).wav"));
+        m_pGameInstance->PlaySoundOnce(TEXT("ui_levelup_close (SFX).wav"));
 	}
 }
 
@@ -617,6 +636,8 @@ void CUI_State::List_Bubble_Event(UI_STATE_BUBLLE* pDesc)
 
 void CUI_State::Button_Bubble_Event(UI_STATE_BUBLLE* pDesc)
 {
+    m_pGameInstance->PlaySoundOnce(TEXT("UI_apcgrowth_select_01 (SFX).wav"));
+
 	m_Player_Data.iLevel += m_UpPlayer_Data.iLevel;
 	m_UpPlayer_Data.iLevel = 0;
 

@@ -49,6 +49,7 @@ void CPopup_Reset::Update(_float fTimeDelta)
     }
     else if (m_pGameInstance->Key_Down(DIK_ESCAPE, INPUT_TYPE::POPUP))
     {
+        m_pGameInstance->PlaySoundOnce(TEXT("UI_skill_active_pop_up_off (SFX).wav"));
         m_IsUpdate = false;
         m_pGameInstance->Change_InputType(INPUT_TYPE::UI);
         m_Event = nullptr;
@@ -111,7 +112,7 @@ HRESULT CPopup_Reset::Update_Switch(void* pArg)
     _int iCulPoint = CClientInstance::GetInstance()->Get_PlayerData().iSkilPoint;
 
     _wstring wstrText = TEXT("돌려 받는 스킬 포인트 : ") + to_wstring(iLevel - iCulPoint);
-
+    m_pGameInstance->PlaySoundOnce(TEXT("UI_skill_active_pop_up_on (SFX).wav"));
     m_pSkillPoint->Set_Text(wstrText);
     m_Event = pDesc->Event;
     m_IsUpdate = true;

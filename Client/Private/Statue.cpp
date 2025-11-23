@@ -48,15 +48,39 @@ HRESULT CStatue::Initialize_Clone(void* pArg)
 
     m_iUnLockRotation = pStatueDesc->StatueRotation.iUnLockRotation;
     m_iEventID = pStatueDesc->iEventID;
+    m_iStatueIndex = pStatueDesc->iStatueIndex;
 
     m_eAnimState = ANIM_STATE::IDLE_0;
     m_pModelCom->Set_Animation(ENUM_CLASS((ANIM_STATE::IDLE_0)));
     m_pModelCom->Set_AnimationLoop(false);
+    m_pModelCom->Set_AnimationBlend(false);
 
     m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
         {
             m_Event = e;
         });
+
+    switch (m_iEventID)
+    {
+    case 0:
+        m_eEventType = EVENT_TYPE::STATUE_PUZZLE0;
+        break;
+    case 1:
+        m_eEventType = EVENT_TYPE::STATUE_PUZZLE1;
+        break;
+    default:
+        m_eEventType = EVENT_TYPE::END;
+        break;
+    }
+
+    if (EVENT_TYPE::END != m_eEventType)
+        m_pGameInstance->Subscribe_Event<EventVerticalGate>(ENUM_CLASS(m_eEventType), [&](const EventVerticalGate& e) { m_EventVTGate = e; });
+
+    if (m_iUnLockRotation == m_iRotation)
+    {
+        m_EventVTGate.SetActiveStatue(m_iStatueIndex);
+        m_pGameInstance->Emit_Event<EventVerticalGate>(ENUM_CLASS(m_eEventType), m_EventVTGate);
+    }
 
     return S_OK;
 }
@@ -410,6 +434,17 @@ void CStatue::Animation_Change(_float fTimeDelta)
     }
 
     m_fColTimeAcc += fTimeDelta;
+
+    if (m_iUnLockRotation == m_iRotation)
+    {
+        m_EventVTGate.SetActiveStatue(m_iStatueIndex);
+        m_pGameInstance->Emit_Event<EventVerticalGate>(ENUM_CLASS(m_eEventType), m_EventVTGate);
+    }
+    else
+    {
+        m_EventVTGate.SetDeActiveStatue(m_iStatueIndex);
+        m_pGameInstance->Emit_Event<EventVerticalGate>(ENUM_CLASS(m_eEventType), m_EventVTGate);
+    }
 
     if (true == m_isCollision)
         m_pGuide->Update_Visible(true);

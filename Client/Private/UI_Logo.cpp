@@ -209,6 +209,7 @@ void CUI_Logo::Bubble_EventCall(BUBBLEEVENT* pArg)
 
 		if (m_eNextEvent == LISTTYPE::NEWGAME)
 		{
+            m_pGameInstance->PlaySoundOnce(TEXT("UI_Title_Seq_Any_Button.wav"));
 			CClientInstance::GetInstance()->Fade_Out([this]() {this->Event_NewGame(); });
 			m_isClick = true;
 		}
@@ -267,6 +268,7 @@ void CUI_Logo::Update_StartState(_float fTimeDelta)
 		m_isUpDelta ? m_fAccTime += fTimeDelta * 0.25f : m_fAccTime -= fTimeDelta * 0.25f;
 		if (m_pGameInstance->Key_Down(DIK_F, INPUT_TYPE::UI))
 		{
+            m_pGameInstance->PlaySoundOnce(TEXT("UI_Title_Seq_Logo_Action.wav"));
 			m_eState = UISTATE::START_END;
 			m_fAccTime = 0.9f;
 			m_isUpDelta = true;
@@ -306,22 +308,20 @@ void CUI_Logo::Update_MenuState(_float fTimeDelta)
 	if (m_eState == UISTATE::MENU)
 	{
 		_bool isKeyInput = false;
-		if (m_pGameInstance->Key_Down(DIK_W, INPUT_TYPE::UI))
-		{
-			m_iSeleteIndex -= 1;
-			isKeyInput = true;
-
-			if (m_iSeleteIndex < 0)
-				m_iSeleteIndex = ENUM_CLASS(LISTTYPE::END) - 1;
-		}
-		else if (m_pGameInstance->Key_Down(DIK_S, INPUT_TYPE::UI))
-		{
-			m_iSeleteIndex += 1;
-			isKeyInput = true;
-
-			if (m_iSeleteIndex >= ENUM_CLASS(LISTTYPE::END))
-				m_iSeleteIndex = 0;
-		}
+		//if (m_pGameInstance->Key_Down(DIK_W, INPUT_TYPE::UI))
+		//{
+		//	m_iSeleteIndex -= 1;
+		//	isKeyInput = true;
+		//	if (m_iSeleteIndex < 0)
+		//		m_iSeleteIndex = ENUM_CLASS(LISTTYPE::END) - 1;
+		//}
+		//else if (m_pGameInstance->Key_Down(DIK_S, INPUT_TYPE::UI))
+		//{
+		//	m_iSeleteIndex += 1;
+		//	isKeyInput = true;
+		//	if (m_iSeleteIndex >= ENUM_CLASS(LISTTYPE::END))
+		//		m_iSeleteIndex = 0;
+		//}
 
 		if (isKeyInput)
 			for (_int i = 0; i < ENUM_CLASS(LISTTYPE::END); ++i)
