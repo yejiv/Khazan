@@ -45,19 +45,21 @@ void CLevel_Title::Update(_float fTimeDelta)
 	{
 		if (!m_isOpenLevel) {
 
+            m_pGameInstance->StopAll();
 			if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::VIPER))))
 				return;
 
 			m_isOpenLevel = true;
+
 		}
 	}
 	if (m_eNextLevel != LEVEL::END)
 	{
+        m_pGameInstance->StopAll();
 		if (!m_isOpenLevel) {
 
 			if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, m_eNextLevel))))
 				return;
-
 			m_isOpenLevel = true;
 		}
 	}
@@ -238,7 +240,4 @@ CLevel_Title* CLevel_Title::Create(ID3D11Device* pDevice, ID3D11DeviceContext* p
 void CLevel_Title::Free()
 {
 	__super::Free();
-
-    m_pGameInstance->StopAll();
-
 }

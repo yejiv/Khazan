@@ -126,30 +126,12 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
     m_EffectTimeDelta = 0.f;
 
 
-#pragma region 3D UI 테스트
-    CUIObject::UIOBJECT_DESC Desc;
-
-    Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
-    Desc.vLocalPos = { 0.f, 0.f };
-    Desc.vLocalSize = { 1.7f, 1.7f };
-    Desc.szName = "TalkUI";
-    m_pTalkUI = static_cast<CUI_Talk_Daphrona*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Daphrona"), &Desc));
-
-    if (m_pTalkUI == nullptr)
-        return E_FAIL;
-#pragma endregion
     return S_OK;
 
 }
 
 void CKhazan_GSword::Priority_Update(_float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_8))
-    {
-        m_pTalkUI->On_Panel();
-    }
-
-    m_pTalkUI->Priority_Update(fTimeDelta);
     __super::Priority_Update(fTimeDelta);
 
     if (m_pGameInstance->Key_Down(DIK_P))
@@ -163,7 +145,6 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
 
 void CKhazan_GSword::Update(_float fTimeDelta)
 {
-    m_pTalkUI->Update(fTimeDelta);
     if (m_isEnableControl)
     {
         m_fTimeAcc += fTimeDelta;
@@ -237,8 +218,6 @@ void CKhazan_GSword::Update(_float fTimeDelta)
 
 void CKhazan_GSword::Late_Update(_float fTimeDelta)
 {
-    m_pTalkUI->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
-    m_pTalkUI->Late_Update(fTimeDelta);
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 
