@@ -502,12 +502,12 @@ HRESULT CGameInstance::Add_RenderGroup(RENDERGROUP eRenderGroup, CGameObject* pR
 	return m_pRenderer->Add_RenderGroup(eRenderGroup, pRenderObject);
 }
 
-#ifdef _DEBUG
-
-HRESULT CGameInstance::Add_DebugComponent(CComponent* pComponent)
+HRESULT CGameInstance::Add_RenderComponent(CComponent* pComponent)
 {
-	return m_pRenderer->Add_DebugComponent(pComponent);
+    return m_pRenderer->Add_RenderComponent(pComponent);
 }
+
+#ifdef _DEBUG
 
 void CGameInstance::Set_EnableShadow(_bool isEnable)
 {

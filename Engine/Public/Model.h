@@ -54,17 +54,6 @@ private:
         _uint			iSelectedAnimIndex = { 0 }; // 키값에 해당하는 어떤 애니메이션인지
     }ANIMATIONSET_INFO;
 
-    typedef struct tagFrameSnapshot
-    {
-        vector<_float4x4>   BoneCombinedMatrices;   // Combined 행렬들
-        _float4x4           OwnerWorldMatrix;       // 월드 행렬들
-        _float              fTrackPosition;         // 애니메이션 위치
-        _uint               iAnimIndex;             // 애니메이션 인덱스
-        _float2             vLifeTime;
-        _float3             vStartColor;
-        _float3             vTargetColor;
-    }FRAME_SNAPSHOT;
-
 private:
     CModel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     CModel(const CModel& Prototype);
@@ -110,6 +99,7 @@ public:
     _float4x4* Get_OwnerWorldMatrix() const {
         return m_pOwnerTransformMatrix;
     }
+    void                Set_Transform(const _float4x4* pMat) { m_pTransformMatrix = pMat; }
 
     _vector Get_BoneWorldRotationQuat(_int iBone) const;
 
@@ -152,16 +142,8 @@ public:
     const vector<_float4x4>& Get_CachedBoneMatrices() const { return m_CachedBoneMatrices; }
 
     /* After Image */
-    void Capture_CurrentFrame();
-    _bool Restore_Frame(_uint iFrameBack);  // 몇 프레임 전으로 복원
-    void Clear_FrameHistory() { m_FrameHistory.clear(); }
-    HRESULT Bind_PrevFrameWorldMatrix(class CShader* pShader, const _char* pConstantName, _uint iFrameBack);
-    HRESULT Bind_Snapshot_ShaderResources(class CShader* pShader, _uint iFrameBack);
-    void Set_SnapshotInterval(_float fInterval) { m_fInterval = fInterval; }
-    void Set_LifeTime(_float fMaxLifeTime) { m_fMaxLifeTime = fMaxLifeTime; }
-    void Set_StartColor(const _float3& vColor) { m_vStartColor = vColor; }
-    void Set_TargetColor(const _float3& vColor) { m_vTargetColor = vColor; }
-    void Set_EnableAfterImage(_bool isEnable) { m_isEnableAfterImage = isEnable; }
+    void Capture_CurrentFrameMatrices(vector<_float4x4>& OutBoneMatrices, _float4x4* pOutWorldMatrix);
+    _bool Restore_Frame(const vector<_float4x4>& SnapshotBoneMatrices);  // 몇 프레임 전으로 복원
 
     /* 모든 뼈 정보 저장 */
     void            Cache_CurrentBoneMatrices();
@@ -185,6 +167,7 @@ private:
     _wstring							m_strModelFilePath{};
     MODELTYPE							m_eModelType = {};
     _float4x4							m_PreTransformMatrix = {};
+    const _float4x4*					m_pTransformMatrix = {};    //나의 트랜스폼
     _uint								m_iRootBoneIndex = { 0 };
 
     /* 매쉬 */
@@ -235,24 +218,12 @@ private:
     _bool								m_isMaterSkeleton = { false };
     _bool								m_isSharedSkeleton = { false };
 
-
 	/* const val */
 	const _float					    m_fBaseRootMotionBlendTime = { 0.15f };   /* 만약 블랜딩 시간이 안써져있으면 사용할 기본 블랜딩 시간 */
 	_float3							    m_vDelta = {};
 
-
     /* 최적화용 */
     vector<_int>      m_PartToMasterIndex;     // [partBone] = masterBoneIndex or -1
-
-    /* after image  */
-    deque<FRAME_SNAPSHOT>               m_FrameHistory = {};  // 최근 N프레임 저장
-    _uint                               m_iMaxHistoryFrames = { 10 };     // 최대 저장 프레임 수
-    _float                              m_fInterval = {};
-    _float                              m_fSnashotTimeAcc = {};
-    _float                              m_fMaxLifeTime = {};
-    _float3                             m_vStartColor = {};
-    _float3                             m_vTargetColor = {};
-    _bool                               m_isEnableAfterImage = {};
 
 private:
     /* 루트 모션 */

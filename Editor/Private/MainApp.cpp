@@ -181,9 +181,9 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 		return E_FAIL;
 
     /* Prototype_Component_MotionTrail */
-    //  if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_MotionTrail"),
-    //      CMotionTrail::Create(m_pDevice, m_pContext))))
-    //      return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_MotionTrail"),
+        CMotionTrail::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
 
 	return S_OK;
 }
