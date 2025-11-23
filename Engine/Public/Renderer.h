@@ -132,6 +132,7 @@ private:
 	HRESULT Render_PostScene();
 	HRESULT Render_NonLight(); 
     HRESULT Render_MotionTrail();
+	HRESULT Render_WeightBlend();
 	HRESULT Render_Blend();
 	HRESULT Render_Fog();
     HRESULT Render_Brightness();

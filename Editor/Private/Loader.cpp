@@ -572,6 +572,21 @@ HRESULT CLoader::Loading_For_Effect_Level()
 		CScreenTrail::Create(m_pDevice, m_pContext)), E_FAIL);
 
 
+#pragma region 테스트용 ( 프로토타입 모델 생성 ) ( 박준영이 남기고간거 필요없으면 삭제 )
+    CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("Test"), LEVEL::EFFECT), E_FAIL);
+    CHECK_FAILED(Loading_Prototype_MapObject_Inst_From_DAT(TEXT("Test"), LEVEL::EFFECT), E_FAIL);
+
+    // Prototype_GameObject_Prop_Object
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_Prop_Object"),
+        CProp_Object::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    // Prototype_GameObject_Prop_Static
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_Prop_Static"),
+        CProp_Static::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+#pragma endregion
+
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 
 	m_isFinished = true;

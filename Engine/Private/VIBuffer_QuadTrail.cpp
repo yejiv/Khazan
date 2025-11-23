@@ -84,7 +84,7 @@ void CVIBuffer_QuadTrail::Update(deque<QUAD_TRAIL_POINT>& vertices)
 	{
 		VTXPOSTEX* pVertices = reinterpret_cast<VTXPOSTEX*>(SubResource.pData);
 		_uint dataIdx{};
-		for (_uint i = 0; i < NumDrawVertices; i += 2)
+		for (_int i = 0; i < NumDrawVertices; i += 2)
 		{
 			XMStoreFloat3(&pVertices[i].vPosition, XMLoadFloat4(&vertices[dataIdx].vTop));
 			pVertices[i].vTexcoord = _float2((_float)i / (_float)(NumDrawVertices - 2), 0);

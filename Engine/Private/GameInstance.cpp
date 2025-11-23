@@ -229,6 +229,9 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 
 	m_pDecal_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
+    if (m_pJolt_Manager)
+        m_pJolt_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
+
 	m_pObject_Manager->Late_Update(tTimeDelta);
 	m_pEffect_Manager->Late_Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::EFFECT)]);
 
@@ -247,8 +250,7 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 
 	m_pLevel_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
-	if (m_pJolt_Manager)
-		m_pJolt_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
+
 
 	m_pComputeShader_Manager->Execute_Job(COMPUTEJOB::UPDATE);
 
