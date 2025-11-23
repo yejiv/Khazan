@@ -639,11 +639,10 @@ void CVIBuffer_Point_Instance::Free()
 
 	if (false == m_isCloned)
 	{
-		Safe_Delete_Array(m_pParticleParams);
 		//Safe_Release(m_pSRVNoise);
         for (_uint i = 0; i < CS_PASS::END; ++i)
             Safe_Release(m_ComputeShaders[i]);
         Safe_Release(m_pLinearWrapSampler);
-
+        Safe_Delete_Array(m_pParticleParams);
 	}
 }

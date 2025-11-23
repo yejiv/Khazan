@@ -156,7 +156,7 @@ void CEffect_Mesh_Instance::Edit_Element()
     if (m_bIsMaskScrolling)
     {
         ImGui::Indent();
-        const char* MaskTexture[] = { "width0", "width1", "width2",  "width3",  "width4",  "width5",  "length0" ,  "length1",  "length2" ,  "length3",  "length4" ,  "length5" };
+        const char* MaskTexture[] = { "width0", "width1", "width2",  "width3",  "width4",  "width5",  "width6", "width7", "length0" ,  "length1",  "length2" ,  "length3",  "length4" ,  "length5",  "length6" };
         ImGui::Combo("Mask Textures", reinterpret_cast<int*>(&m_sEditingData.iMaskTextureIdx), MaskTexture, IM_ARRAYSIZE(MaskTexture));
         ImGui::InputFloat("Mask Scroll Speed : ", &m_sEditingData.fMaskScrollSpeed);
         ImGui::Checkbox("Is Vecrtical", &IsVerticalScroll);

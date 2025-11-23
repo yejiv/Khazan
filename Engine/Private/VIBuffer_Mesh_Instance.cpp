@@ -289,17 +289,18 @@ HRESULT CVIBuffer_Mesh_Instance::Bind_Resources()
 {
 	__super::Bind_Resources();
 
-	m_pContext->CopyResource(m_pDebugInstanceBuffer, m_pVBInstance);
-	
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	HRESULT hr = m_pContext->Map(m_pDebugInstanceBuffer, 0, D3D11_MAP_READ, 0, &mappedResource);
-	
-	if (SUCCEEDED(hr))
-	{
-		IB_MESHINSTANCE_EFFECT* pParticles = (IB_MESHINSTANCE_EFFECT*)mappedResource.pData;
-	
-		m_pContext->Unmap(m_pDebugInstanceBuffer, 0);
-	}
+    // [Debug]
+	//m_pContext->CopyResource(m_pDebugInstanceBuffer, m_pVBInstance);
+	//
+	//D3D11_MAPPED_SUBRESOURCE mappedResource;
+	//HRESULT hr = m_pContext->Map(m_pDebugInstanceBuffer, 0, D3D11_MAP_READ, 0, &mappedResource);
+	//
+	//if (SUCCEEDED(hr))
+	//{
+	//	IB_MESHINSTANCE_EFFECT* pParticles = (IB_MESHINSTANCE_EFFECT*)mappedResource.pData;
+	//
+	//	m_pContext->Unmap(m_pDebugInstanceBuffer, 0);
+	//}
 
 	return S_OK;;
 }
@@ -387,18 +388,18 @@ HRESULT CVIBuffer_Mesh_Instance::Ready_UAV()
 		return E_FAIL;
 
 	// [Debug]
-	D3D11_BUFFER_DESC DebugBufferDesc{};
-	m_pVBInstance->GetDesc(&DebugBufferDesc);
-	
-	DebugBufferDesc.Usage = D3D11_USAGE_STAGING;     // 용도를 스테이징으로 변경
-	DebugBufferDesc.BindFlags = 0;                   // GPU가 바인딩하지 않음
-	DebugBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ; // CPU가 읽을 수 있게 설정
-	DebugBufferDesc.MiscFlags = 0;
-	
-	D3D11_SUBRESOURCE_DATA DebugInitData{};
-	DebugInitData.pSysMem = m_pInstanceVertices;
-	if (FAILED(m_pDevice->CreateBuffer(&DebugBufferDesc, &DebugInitData, &m_pDebugInstanceBuffer)))
-		return E_FAIL;
+	//D3D11_BUFFER_DESC DebugBufferDesc{};
+	//m_pVBInstance->GetDesc(&DebugBufferDesc);
+	//
+	//DebugBufferDesc.Usage = D3D11_USAGE_STAGING;     // 용도를 스테이징으로 변경
+	//DebugBufferDesc.BindFlags = 0;                   // GPU가 바인딩하지 않음
+	//DebugBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ; // CPU가 읽을 수 있게 설정
+	//DebugBufferDesc.MiscFlags = 0;
+	//
+	//D3D11_SUBRESOURCE_DATA DebugInitData{};
+	//DebugInitData.pSysMem = m_pInstanceVertices;
+	//if (FAILED(m_pDevice->CreateBuffer(&DebugBufferDesc, &DebugInitData, &m_pDebugInstanceBuffer)))
+	//	return E_FAIL;
 	
 	return S_OK;
 }
@@ -569,7 +570,7 @@ void CVIBuffer_Mesh_Instance::Free()
         for (_uint i = 0; i < CS_PASS::END; ++i)
             Safe_Release(m_ComputeShaders[i]);
         Safe_Release(m_pLinearWrapSampler);
-
+        Safe_Delete_Array(m_pParticleParams);
 	}
 }
 
