@@ -81,7 +81,7 @@ void CViper::Priority_Update(_float fTimeDelta)
         HPDesc.pHpValue = &m_fCurrentHP;
         HPDesc.pStaminaMaxValue = &m_fMaxStamina;
         HPDesc.pStaminaCulValue = &m_fCurrentStamina;
-        HPDesc.wstrName = TEXT("¹ÙÀÌÆÛ");
+        HPDesc.wstrName = TEXT("ë°”ì´í¼");
 
         CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &HPDesc);
     }*/
@@ -215,7 +215,7 @@ HRESULT CViper::Ready_Components()
     tCharVirDesc.fPenetrationRecoverySpeed = 1.7f;
 
     m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // ÀÛ¼ºÇÏ±â
+    //pCollDesc.pInfo = ?? // ìž‘ì„±í•˜ê¸°
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),

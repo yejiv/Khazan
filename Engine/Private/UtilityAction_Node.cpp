@@ -24,7 +24,7 @@ void CUtilityAction_Node::Terminate(BTNODESTATE eState, CBlackBoard* BB)
 
 void CUtilityAction_Node::Abort(CBlackBoard* BB)
 {
-    // °­Á¦ Áß´Ü
+    // ê°•ì œ ì¤‘ë‹¨
     if (m_Terminate)
         m_Terminate(BB, BTNODESTATE::FAILURE);
 }

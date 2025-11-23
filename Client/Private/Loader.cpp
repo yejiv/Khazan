@@ -206,18 +206,21 @@ HRESULT CLoader::Loading_For_Test_Level()
 {
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		return Loading_For_Test_Texture();
+        return S_OK;
 		}));
 
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		Loading_For_Test_Model();
 		Loading_For_Test_GameObject();
-		return E_FAIL;
+        return S_OK;
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		return Loading_For_Test_Shader();
+        return S_OK;
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("HeinMach"), LEVEL::TEST), E_FAIL);
+        return S_OK;
 		}));
 
 	

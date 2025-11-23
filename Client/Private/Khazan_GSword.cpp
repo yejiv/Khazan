@@ -144,7 +144,6 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
         m_pCharVirCom->Set_Position(XMVectorSet(516.f, -11.f, 264.f, 1.f));
     }
 
-
 }
 
 void CKhazan_GSword::Update(_float fTimeDelta)

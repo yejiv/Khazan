@@ -1423,6 +1423,10 @@ void CRenderer::Free()
         m_RenderObjects[i].clear();
     }
 
+    for (auto& pCL : m_threadCLs)
+        Safe_Release(pCL);
+    m_threadCLs.clear();
+
     Safe_Release(m_pShader);
     Safe_Release(m_pVIBuffer);
 
