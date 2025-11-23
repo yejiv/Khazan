@@ -32,6 +32,7 @@ private:
 	_int								m_iItemIndex = { -1 };
 
 	_int								m_iSouleCount = {};
+    _bool                               m_isOver = {};
 private:
 	virtual	HRESULT						Ready_Prototype();
 	virtual	HRESULT						Ready_Children();

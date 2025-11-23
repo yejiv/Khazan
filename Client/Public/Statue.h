@@ -13,6 +13,8 @@ private:
     enum class STATUE_TRIGGER { FRONT, RIGHT, BACK, LEFT, END };
     // Position_Ch_F, _R, _B, _L
 
+    // 0번 이벤트 ID ( 첫번째 퍼즐 ) | 1번 이벤트 ID ( 두번째 퍼즐 )
+
 public:
     typedef struct tagStatueRotation
     {
@@ -24,6 +26,8 @@ public:
     typedef struct tagStatueDesc : public CProp_Interactive::PROP_INTERACTIVE_DESC
     {
         STATUE_ROTATION StatueRotation{};
+
+        _uint iStatueIndex{};
 
     }STATUE_DESC;
 
@@ -51,17 +55,19 @@ private:
 
     class CInteraction_Guide* m_pGuide = { nullptr };
 
-    _bool m_iTest = { false };
-
 private:
     ANIM_STATE m_eAnimState = { ANIM_STATE::IDLE_0 };
 
     EventObject m_Event = {};
 
+    EventVerticalGate m_EventVTGate = {};
+
     _float3 m_vCharacterPosition = {};
 
     _int m_iUnLockRotation = {};
     _int m_iRotation = {};
+
+    _uint m_iStatueIndex = {};
 
     _float m_fColTimeAcc = { 0.f };
 

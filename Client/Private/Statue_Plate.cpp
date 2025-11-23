@@ -66,8 +66,6 @@ HRESULT CStatue_Plate::Render()
     {
         Bind_Materials(i);
 
-        m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
-
         CHECK_FAILED_ASSERT(m_pShaderCom->Begin(4), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);

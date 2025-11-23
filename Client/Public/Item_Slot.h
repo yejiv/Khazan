@@ -64,6 +64,8 @@ private:
 
     _int                                m_iRandomEffect_Type = {};
     _int                                m_iRandomEffect_Value = {};
+
+    _bool                               m_isOver = {};
 private:
 	virtual	HRESULT						Ready_Prototype();
 	virtual	HRESULT						Ready_Children();

@@ -109,7 +109,7 @@ void CCreature::Compute_KnockBack(_float fTimeDelta)
 
 void CCreature::Free()
 {
-    Safe_Release(m_pCharVirCom);
-
     __super::Free();
+
+    Safe_Release(m_pCharVirCom);
 }

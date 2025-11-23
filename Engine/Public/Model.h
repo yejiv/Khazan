@@ -126,6 +126,7 @@ public:
     void			Set_AnimationLoop(_bool isLoop);
     _bool			Check_MinAnimationTime();
     void            AnimationSetIndexIncrease(); //애니메이션세트 강제로 다음으로 넘기기
+    void            Set_AnimationBlend(_bool isBlend) { m_isBlendEnable = isBlend; }      // 애니메이션 보간할건지 여부
 
     /* rootBone Combined  */
     void			Update_BoneCombinedMatrices();
@@ -146,7 +147,7 @@ public:
     void			Update_PartLocalBones();
 
 
-public:
+public: 
     /* 모든 뼈 정보 */
     const vector<_float4x4>& Get_CachedBoneMatrices() const { return m_CachedBoneMatrices; }
 
@@ -166,6 +167,7 @@ public:
     void            Cache_CurrentBoneMatrices();
     /* 모든 뼈 정보 복원 */
     void            Restore_CurrentBoneMatrices();
+
 
     /* 임시 */
     void            WarmupAnimations();
@@ -193,8 +195,8 @@ private:
     vector<class CMeshMaterial*>		m_Materials;
     _uint								m_iNumMaterials = {};
 
-    /* 뼈 */
-    vector<class CBone*>				m_Bones;
+	/* 뼈 */
+	vector<class CBone*>				m_Bones;
     vector<_float4x4>                   m_CachedBoneMatrices;  // 캐싱용(애니메이션이 끝난 모든 뼈정보를 저장)
 
     /* 애니메이션 */
@@ -208,6 +210,7 @@ private:
     vector< class CAnimation* >			m_Animations;						/* 애니메이션 클래스 저장  */
     vector<ANIMATION_SETUP_DATA>		m_AnimationsSetup;					/* 애니메이션들 정보 */
     //vector<_bool>						m_AnimationFinished;				/* 애니메이션들이 끝났는지 정보 */
+    _bool                               m_isBlendEnable = { true };         /* 애니메이션 보간할건지 여부 ( 기본값 true ) */
 
     /* 애니메이션 세트 */
     vector< ANIMATION_SET_DATA >		m_AnimationSets;					/* 애니메이션 세트 정보*/
@@ -233,9 +236,9 @@ private:
     _bool								m_isSharedSkeleton = { false };
 
 
-    /* const val */
-    const _float					m_fBaseRootMotionBlendTime = { 0.15f };   /* 만약 블랜딩 시간이 안써져있으면 사용할 기본 블랜딩 시간 */
-    _float3							m_vDelta = {};
+	/* const val */
+	const _float					    m_fBaseRootMotionBlendTime = { 0.15f };   /* 만약 블랜딩 시간이 안써져있으면 사용할 기본 블랜딩 시간 */
+	_float3							    m_vDelta = {};
 
 
     /* 최적화용 */

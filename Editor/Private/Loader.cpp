@@ -271,6 +271,26 @@ HRESULT CLoader::Loading_For_Map_Level()
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Symbol/WP_CTR_Statue_Stone_002/WP_CTR_Statue_Stone_002.dat")), E_FAIL);
 #pragma endregion
 
+#pragma region 수직 차단봉
+    /* Prototype_Component_Model_VerticalGate */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_VerticalGate"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_TDL_Gate_Open_004/WIP_TDL_Gate_Open_004.dat")), E_FAIL);
+#pragma endregion
+
+#pragma region 잠긴 철문
+    /* Prototype_Component_Model_IronGate */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_IronGate"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_Base_MiddleDoor_Open_001_b/WIP_Base_MiddleDoor_Open_001_b.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_IronGate_Lock */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_IronGate_Lock"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_Base_MiddleDoor_Lock_001/WIP_Base_MiddleDoor_Lock_001.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_IronGate_Part */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_IronGate_Part"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Building_B/WP_BTP_Door_Metal_004/WP_BTP_Door_Metal_004.dat")), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 트리거 모델 원형 ( 야매? )
@@ -401,6 +421,30 @@ HRESULT CLoader::Loading_For_Map_Level()
         CStatue_Deco::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
+#pragma region 수직 차단봉
+    /* Prototype_GameObject_Prop_VerticalGate */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_VerticalGate"),
+        CVerticalGate::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 잠긴 철문
+    /* Prototype_GameObject_Prop_IronGate */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_IronGate"),
+        CIronGate::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_IronGate_Lock */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_IronGate_Lock"),
+        CIronGate_Lock::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_IronGate_Part_L */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_IronGate_Part_L"),
+        CIronGate_Part_L::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_IronGate_Part_R */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_IronGate_Part_R"),
+        CIronGate_Part_R::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 게임오브젝트 원형 로딩 ( 트리거 및 몬스터 )
@@ -527,6 +571,21 @@ HRESULT CLoader::Loading_For_Effect_Level()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_ScreenTrail"),
 		CScreenTrail::Create(m_pDevice, m_pContext)), E_FAIL);
 
+
+#pragma region 테스트용 ( 프로토타입 모델 생성 ) ( 박준영이 남기고간거 필요없으면 삭제 )
+    CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("Test"), LEVEL::EFFECT), E_FAIL);
+    CHECK_FAILED(Loading_Prototype_MapObject_Inst_From_DAT(TEXT("Test"), LEVEL::EFFECT), E_FAIL);
+
+    // Prototype_GameObject_Prop_Object
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_Prop_Object"),
+        CProp_Object::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    // Prototype_GameObject_Prop_Static
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_GameObject_Prop_Static"),
+        CProp_Static::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+#pragma endregion
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 

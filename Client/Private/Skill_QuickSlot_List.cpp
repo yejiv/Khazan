@@ -104,12 +104,24 @@ HRESULT CSkill_QuickSlot_List::Initialize_Clone(void* pArg)
 void CSkill_QuickSlot_List::Priority_Update(_float fTimeDelta)
 {
     if (ButtonOver(g_hWnd))
+    {
+        if (!m_isOver)
+        {
+            m_isOver = true;
+            _int iRand = m_pGameInstance->Rand(1, 3);
+            _wstring wstrSound = TEXT("UI_skilllist_select_0") + std::to_wstring(iRand) + TEXT(" (SFX).wav");
+            m_pGameInstance->PlaySoundOnce(wstrSound.c_str());
+        }
         m_pHover->Update_Visible(true);
+    }
     else
+    {
+        m_isOver = false;
         m_pHover->Update_Visible(false);
-
+    }
     if (ButtonClick(g_hWnd, false, true, INPUT_TYPE::POPUP))
     {
+        m_pGameInstance->PlaySoundOnce(TEXT("UI_skill_active_equip_on (SFX).wav"));
         m_iEquipSkillIndex = m_iSkillIndex;
         m_pLineIcon->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_SkillSlot_Bg_SpecialLine_UI.png", 4), 4);
 

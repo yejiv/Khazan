@@ -99,7 +99,7 @@ void CFence::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _fl
             if (m_iLevelIndex == ENUM_CLASS(LEVEL::HEINMACH))
             {
                 CBody_Khazan_Spear* pKhazan = dynamic_cast<CBody_Khazan_Spear*>(pDesc->pGameObject);
-                isAttack = pKhazan->Get_IsAttackCollisionActive();
+                if(pKhazan) isAttack = pKhazan->Get_IsAttackCollisionActive();
             }
 
             if (isAttack)
@@ -112,9 +112,7 @@ void CFence::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _fl
                     Chunk->Destory(vVel, vContactPoint);
                 }
             }
-            
         }
-
     }
 
 }
@@ -228,5 +226,5 @@ CGameObject* CFence::Clone(void* pArg)
 void CFence::Free()
 {
     __super::Free();
-
+    Safe_Release(m_pBodyCom);
 }

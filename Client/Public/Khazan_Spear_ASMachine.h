@@ -53,7 +53,8 @@ public:
     {
         SPEAR = 1 << 0,
         BAREHAND = 1 << 1,
-        NONE = SPEAR | BAREHAND,     //어떤 상태의 무기든 다 가능한 애니메이션
+        GSWORD = 1 << 2, 
+        NONE = SPEAR | BAREHAND | GSWORD,     //어떤 상태의 무기든 다 가능한 애니메이션
     };
 
     enum CATEGORY : _uint

@@ -35,32 +35,8 @@
 #include "LUT.h"
 #include "RadialBlur.h"
 #include "MotionBlur.h"
+#include "Sound_Manager.h"
 
-#ifdef _DEBUG
-#include <crtdbg.h>
-#include <Windows.h>
-
-
-int __cdecl MyCRTReportHook(int reportType, char* message, int* /*returnValue*/)
-{
-    const char* typeStr = "";
-    switch (reportType)
-    {
-    case _CRT_WARN:   typeStr = "WARN";   break;
-    case _CRT_ERROR:  typeStr = "ERROR";  break;
-    case _CRT_ASSERT: typeStr = "ASSERT"; break;
-    default:          typeStr = "INFO";   break;
-    }
-
-    // 여기서 형식 원하는 대로 꾸미면 됨
-    OutputDebugStringA("[CRT][");
-    OutputDebugStringA(typeStr);
-    OutputDebugStringA("] ");
-    OutputDebugStringA(message);
-
-    return TRUE;
-}
-#endif
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -73,21 +49,6 @@ CGameInstance::CGameInstance()
 
 HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext)
 {
-#ifdef _DEBUG
-    // 1) 프로그램 종료 시 자동으로 메모리 릭 리포트
-    int flags = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
-    flags |= _CRTDBG_ALLOC_MEM_DF;    // 할당 추적
-    flags |= _CRTDBG_LEAK_CHECK_DF;   // 종료 시 자동 리크 체크
-    _CrtSetDbgFlag(flags);
-
-    // 2) 출력 대상 : VS Output 창으로
-    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
-    _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
-    _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
-
-    _CrtSetReportHook2(_CRT_RPTHOOK_INSTALL, MyCRTReportHook);
-#endif
-
 	m_pGraphic_Device = CGraphic_Device::Create(EngineDesc.hWnd, EngineDesc.eWinMode, EngineDesc.iWinSizeX, EngineDesc.iWinSizeY, ppDevice, ppContext);
 	if (nullptr == m_pGraphic_Device)
 		return E_FAIL;
@@ -218,6 +179,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pEffect_Manager)
 		return E_FAIL;
 
+    m_pSound_Manager = CSound_Manager::Create();
+    if (nullptr == m_pSound_Manager)
+        return E_FAIL;
+
 	m_iStaticLevel = EngineDesc.iStaticLevel;
 
 #ifdef _DEBUG
@@ -264,6 +229,9 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 
 	m_pDecal_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
+    if (m_pJolt_Manager)
+        m_pJolt_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
+
 	m_pObject_Manager->Late_Update(tTimeDelta);
 	m_pEffect_Manager->Late_Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::EFFECT)]);
 
@@ -282,8 +250,7 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 
 	m_pLevel_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
-	if (m_pJolt_Manager)
-		m_pJolt_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
+
 
 	m_pComputeShader_Manager->Execute_Job(COMPUTEJOB::UPDATE);
 
@@ -1005,6 +972,11 @@ void CGameInstance::Remove_BodyDesc(BodyID id)
 	m_pJolt_Manager->Remove_BodyDesc(id);
 }
 
+void CGameInstance::Destroy_Body(BodyID id)
+{
+    m_pJolt_Manager->Destroy_Body(id);
+}
+
 void CGameInstance::Set_Gravity(_vector vGravity)
 {
 	m_pJolt_Manager->Set_Gravity(vGravity);
@@ -1574,6 +1546,51 @@ void CGameInstance::Update_MotionBlur_PrevMatrices()
     m_pMotionBlur->Update_PrevMatrices();
 }
 
+void CGameInstance::Set_Gloval_Volume(_float fVolume)
+{
+    m_pSound_Manager->Set_Gloval_Volume(fVolume);
+}
+
+void CGameInstance::ADD_Gloval_Volume(_float fVolume)
+{
+    m_pSound_Manager->ADD_Gloval_Volume(fVolume);
+}
+
+void CGameInstance::PlaySoundOnce(const TCHAR* pSoundKey, float fVolume, FMOD_CHANNEL** ppOutChannel)
+{
+    m_pSound_Manager->PlaySoundOnce(pSoundKey, fVolume, ppOutChannel);
+}
+
+void CGameInstance::PlaySoundLoop(const TCHAR* pSoundKey, float fVolume, FMOD_CHANNEL** ppOutChannel)
+{
+    m_pSound_Manager->PlaySoundLoop(pSoundKey, fVolume, ppOutChannel);
+}
+
+void CGameInstance::StopAll()
+{
+    m_pSound_Manager->StopAll();
+}
+
+void CGameInstance::StopByKey(const TCHAR* pSoundKey)
+{
+    m_pSound_Manager->StopByKey(pSoundKey);
+}
+
+void CGameInstance::StopByChannel(FMOD_CHANNEL** ppOutChannel)
+{
+    m_pSound_Manager->StopByChannel(ppOutChannel);
+}
+
+bool CGameInstance::IsPlayingByKey(const TCHAR* pSoundKey)
+{
+    return m_pSound_Manager->IsPlayingByKey(pSoundKey);;
+}
+
+void CGameInstance::SetVolumeByKey(const TCHAR* pSoundKey, float fVolume)
+{
+    m_pSound_Manager->SetVolumeByKey(pSoundKey, fVolume);
+}
+
 #pragma endregion
 
 #pragma region OCTREE
@@ -1611,6 +1628,7 @@ void CGameInstance::Release_Engine()
 #ifdef _DEBUG
 	Safe_Release(m_pImgui_Manager);
 #endif
+    Safe_Release(m_pSound_Manager);
 	Safe_Release(m_pDecal_Manager);
 	Safe_Release(m_pSequence_Manager);
 	Safe_Release(m_pThreadPool);
@@ -1638,8 +1656,7 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pInput_Manager);
 	Safe_Release(m_pResource_Manager);
-	Safe_Release(m_pBlackBoard);
-	Safe_Release(m_pJolt_Manager);
+	Safe_Release(m_pBlackBoard);	
 
 	Safe_Release(m_pPicking);
 	Safe_Release(m_pTimer_Manager);
@@ -1649,6 +1666,7 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pLevel_Manager);
 	Safe_Release(m_pGraphic_Device);
 	Safe_Release(m_pEffect_Manager);
+    Safe_Release(m_pJolt_Manager);
 }
 
 void CGameInstance::Free()

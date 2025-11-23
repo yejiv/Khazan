@@ -170,6 +170,8 @@ void CEquip_Slot::Late_Update(_float fTimeDelta)
 
     if (ButtonClick(g_hWnd, false, true))
     {
+        m_pGameInstance->PlaySoundOnce(TEXT("UI_common_click2 (SFX).wav"));
+
         CUI_Inven::INVENBUBBLE_DESC Desc = {};
         Desc.eBubbleType = CUI_Inven::EVENT_TYPE::SLOT_EQUIP;
         Desc.iIndex = m_iIndex;
@@ -183,9 +185,19 @@ void CEquip_Slot::Late_Update(_float fTimeDelta)
     m_pIcon->Late_Update(fTimeDelta);
     if (ButtonOver(g_hWnd) && m_iIndex != ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::SOUL))
     {
+        if (!m_isOver)
+        {
+            m_isOver = true;
+            _int iRand = m_pGameInstance->Rand(1, 4);
+            _wstring wstrSound = TEXT("UI_common_mouse_over_0") + std::to_wstring(iRand) + TEXT(" (SFX).wav");
+            m_pGameInstance->PlaySoundOnce(wstrSound.c_str());
+        }
         m_pSeleteFx->Late_Update(fTimeDelta);
         Render_ItemInfo();
     }
+    else
+        m_isOver = false;
+
     if (m_iIndex == ENUM_CLASS(CUI_Inven::EQUIPSLOT_TYPE::SOUL))
     {
         m_pTextBox->Set_Text(to_wstring(m_iSouleCount));

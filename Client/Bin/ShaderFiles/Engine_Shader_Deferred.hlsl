@@ -39,6 +39,12 @@ struct PS_OUT_BACKBUFFER
     float4 vColor : SV_TARGET0;
 };
 
+struct PS_OUT_WEIGHTBLEND   //MRT_PostScene의 Diffsue에 원래 Blend에서 그려줘야했던 내용들 합성해서 그려줌.
+{
+    float4 vBackBufferColor : SV_TARGET0;
+    float4 vEmissiveColor : SV_TARGET1;
+};
+
 PS_OUT_BACKBUFFER PS_DEBUG(PS_IN In)
 {
     PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
@@ -738,6 +744,24 @@ PS_OUT_BACKBUFFER PS_STATIC_VELOCITY(PS_IN In)
     return Out;
 }
 
+PS_OUT_WEIGHTBLEND PS_WEIGHT_BLEND(PS_IN In)
+{
+   PS_OUT_WEIGHTBLEND Out;
+   
+   //float4 vColorAccDesc = g_AccumColorTexture.Sample(DefaultSampler, In.vTexcoord);
+   //float vAlphaAccDesc = g_AccumAlphaTexture.Sample(DefaultSampler, In.vTexcoord).r;
+   //Out.vBackBufferColor = vColorAccDesc / (vAlphaAccDesc + 1e-5);
+   //Out.vBackBufferColor.a = saturate(vAlphaAccDesc); //클램핑 
+   
+   
+   float4 vColorAccDesc = g_AccumColorTexture.Sample(DefaultSampler, In.vTexcoord);
+   float vAlphaAccDesc = g_AccumAlphaTexture.Sample(DefaultSampler, In.vTexcoord).r;
+   Out.vBackBufferColor = vColorAccDesc / (vColorAccDesc.a + 1e-5);
+   Out.vBackBufferColor.a = 1.f - saturate(vAlphaAccDesc); 
+   
+   return Out;
+}
+
 technique11 DefaultTechnique
 {
     pass Debug // 0
@@ -914,5 +938,16 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_BRIGHTNESS();
+    }
+
+    pass WeightBlend // 16
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_WEIGHT_BLEND();
     }
 }

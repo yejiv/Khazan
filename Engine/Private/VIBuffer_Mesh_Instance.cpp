@@ -330,7 +330,6 @@ HRESULT CVIBuffer_Mesh_Instance::Ready_SRV(void* pSysmem)
 	if (FAILED(m_pDevice->CreateShaderResourceView(pBuffer, &SRVDesc, &m_pSRV)))
 		return E_FAIL;
 
-	_char fullpath[MAX_PATH];
 	HRESULT     hr = {};
 	_tchar		tpath[MAX_PATH] = {};
 	MultiByteToWideChar(CP_UTF8, 0, m_sData.pNoiseFilePath, -1, tpath, 100);
@@ -560,8 +559,11 @@ void CVIBuffer_Mesh_Instance::Free()
 	Safe_Release(m_pUAV);
 	Safe_Release(m_pUAVSpeed);
 
+    
+
 	if (false == m_isCloned)
 	{
+        Safe_Delete_Array(m_pVertexPositions);
 		Safe_Delete_Array(m_pParticleParams);
 		//Safe_Release(m_pSRVNoise);
         for (_uint i = 0; i < CS_PASS::END; ++i)

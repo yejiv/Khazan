@@ -18,12 +18,17 @@ void CUI_Announce_Talk::ShowUI(_int iTalkIndex)
 	m_fAlpha = 0.f;
 
 	const ANNOUNCE_TALK_DB* TalkDB = CClientInstance::GetInstance()->Get_Data<ANNOUNCE_TALK_DB>(iTalkIndex);
-	m_fDeleyTime = TalkDB->fTime;
 	m_wstrTalkName = TalkDB->wstrName;
+    m_wstrSoundName = TalkDB->wstrSoundName;
+    m_iNextIndex = TalkDB->iNextIndex;
+
+    if (m_iNextIndex == iTalkIndex)
+        m_iNextIndex = 0;
+
 	NameColor();
 
 	m_wstrText_1 = TalkDB->wstrText_1;
-	if (TalkDB->wstrText_2 != TEXT("-\r"))
+	if (TalkDB->wstrText_2 != TEXT("-"))
 	{
 		m_wstrText_2 = TalkDB->wstrText_2;
 		m_isOneLine = false;
@@ -78,13 +83,12 @@ void CUI_Announce_Talk::Late_Update(_float fTimeDelta)
 		{
 			m_fAlpha = 1.f;
 			m_eState = UIAnimeStae::SHOW;
-			m_fDeleyTime = 2.f;
+            m_pGameInstance->PlaySoundOnce(m_wstrSoundName.c_str());
 		}
 	}
 	else if (m_eState == UIAnimeStae::SHOW)
 	{
-		m_fDeleyTime -= fTimeDelta;
-		if (m_fDeleyTime <= 0.f)
+		if (!m_pGameInstance->IsPlayingByKey(m_wstrSoundName.c_str()))
 			m_eState = UIAnimeStae::OFF;
 	}
 	else if (m_eState == UIAnimeStae::OFF)
@@ -94,6 +98,9 @@ void CUI_Announce_Talk::Late_Update(_float fTimeDelta)
 		{
 			m_fAlpha = 0.f;
 			m_eState = UIAnimeStae::END;
+
+            if (m_iNextIndex > 0)
+                ShowUI(m_iNextIndex);
 		}
 	}
 

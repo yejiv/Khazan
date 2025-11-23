@@ -171,6 +171,8 @@ void CUI_Talk_Dangin::Update(_float fTimeDelta)
 
     if (m_pGameInstance->Key_Down(DIK_F, INPUT_TYPE::WORLD_UI))
     {
+        m_pGameInstance->PlaySoundOnce(TEXT("UI_common_click2(SFX).wav"));
+
         if (m_iSelete == 0 && m_eType == TALK_TYPE::START)
         {
             m_eType = TALK_TYPE::TALK_SELETE;
@@ -220,12 +222,15 @@ void CUI_Talk_Dangin::Update(_float fTimeDelta)
             Desc.szName = m_szName;
             m_isUIOpen = true;
             CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Inven"), &Desc);
+            m_pGameInstance->PlaySoundOnce(TEXT("UI_skill_close (SFX).wav"));
             Off_Panel();
         }
         else if (m_iSelete == 3 && m_eType == TALK_TYPE::START)
         {
             Off_Panel();
             m_isUIOpen = false;
+            m_pGameInstance->PlaySoundOnce(TEXT("UI_skill_close (SFX).wav"));
+            m_pGameInstance->StopByChannel(&m_pChannel);
         }
         Setting_Talk();
     }
@@ -399,6 +404,9 @@ void CUI_Talk_Dangin::Update_Selete()
 
 void CUI_Talk_Dangin::Setting_Talk()
 {
+    if (m_eAnimState == UIANIMSTATE::OFF)
+        return;
+
     if (m_eType == TALK_TYPE::START)
     {
         m_BG_Line[4]->Update_Visible(true);
@@ -420,6 +428,8 @@ void CUI_Talk_Dangin::Setting_Talk()
         m_pList[1]->Set_Text(TEXT("구매"));
         m_pList[2]->Set_Text(TEXT("판매"));
         m_pList[3]->Set_Text(TEXT("대화를 마친다."));
+
+        m_pGameInstance->PlaySoundOnce(TEXT("dialogue_sub_06_20640118_dan (Korean(KR)).wav"), 1.f, &m_pChannel);
 
         m_pText1->Set_Text(TEXT("저는 평화주의자랍니다. 항아리를 찾을 때..."));
         m_pText2->Set_Text(TEXT("이걸 매우 애용하죠. 살금, 살금."));
@@ -451,31 +461,43 @@ void CUI_Talk_Dangin::Setting_Talk()
             switch (m_iTalkIndex)
             {
             case 0:
+                m_pGameInstance->PlaySoundOnce(TEXT("dialogue_sub_06_20640105_dan (Korean(KR)).wav"), 1.f, &m_pChannel);
+
                 m_pText1->Set_Text(TEXT("첫 만남부터 아주 직설적이시군요?"));
                 m_pText2->Set_Text(TEXT("당신의 인간 관계 수준을 알만하네요."));
                 m_pText3->Update_Visible(false);
                 break;
             case 1:
+                m_pGameInstance->PlaySoundOnce(TEXT("dialogue_sub_06_20640106_dan (Korean(KR)).wav"), 1.f, &m_pChannel);
+
                 m_pText1->Set_Text(TEXT("분명 나중에 크게 배신 당할 일이..."));
                 m_pText2->Set_Text(TEXT("어라? 이미 당했나요? 아무튼."));
                 m_pText3->Update_Visible(false);
                 break;
             case 2:
+                m_pGameInstance->PlaySoundOnce(TEXT("dialogue_sub_06_20640107_dan (Korean(KR)).wav"), 1.f, &m_pChannel);
+
                 m_pText1->Set_Text(TEXT("힘들게 모은 항아리들이 있었습니다."));
                 m_pText2->Set_Text(TEXT("아주 소장하고 신비한...제 전부나 다름없죠."));
                 m_pText3->Update_Visible(false);
                 break;
             case 3:
+                m_pGameInstance->PlaySoundOnce(TEXT("dialogue_sub_06_20640108_dan (Korean(KR)).wav"), 1.f, &m_pChannel);
+
                 m_pText1->Set_Text(TEXT("웬 괴상한 놈들이 항아리의 요람을 박살내는 바람에"));
                 m_pText2->Set_Text(TEXT("항아리들이 모두 도망쳤답니다."));
                 m_pText3->Update_Visible(false);
                 break;
             case 4:
+                m_pGameInstance->PlaySoundOnce(TEXT("dialogue_sub_06_20640117_dan (Korean(KR)).wav"), 1.f, &m_pChannel);
+
                 m_pText1->Set_Text(TEXT("제 항아리들을 찾아주세요."));
                 m_pText2->Set_Text(TEXT("녀석들은 항아리 속에 숨는 걸 좋아하니."));
                 m_pText3->Update_Visible(false);
                 break;
             case 5:
+                m_pGameInstance->PlaySoundOnce(TEXT("dialogue_sub_06_20640119_dan (Korean(KR)).wav"), 1.f, &m_pChannel);
+
                 m_pText1->Set_Text(TEXT("항아리로 보이는  모든 걸 깨트려 보시길"));
                 m_pText2->Update_Visible(false);
                 m_pText3->Update_Visible(false);
@@ -488,16 +510,22 @@ void CUI_Talk_Dangin::Setting_Talk()
             switch (m_iTalkIndex)
             {
             case 0:
+                m_pGameInstance->PlaySoundOnce(TEXT("dialogue_sub_06_20640109_dan (Korean(KR)).wav"), 1.f, &m_pChannel);
+
                 m_pText1->Set_Text(TEXT("요호! 당신도 항아리 애호가가 되고 싶었군요!"));
                 m_pText2->Update_Visible(false);
                 m_pText3->Update_Visible(false);
                 break;
             case 1:
+                m_pGameInstance->PlaySoundOnce(TEXT("dialogue_sub_06_20640111_dan (Korean(KR)).wav"), 1.f, &m_pChannel);
+
                 m_pText1->Set_Text(TEXT("항아리들은... 생각보다 많은 걸 알고 있죠!"));
                 m_pText2->Update_Visible(true);
                 m_pText2->Set_Text(TEXT("그 녀석들은 제게 여러 가지 이야기를 들려준답니다."));
                 break;
             case 2:
+                m_pGameInstance->PlaySoundOnce(TEXT("dialogue_sub_06_20640112_dan (Korean(KR)).wav"), 1.f, &m_pChannel);
+
                 m_pText1->Set_Text(TEXT("당신의 복수에 도움이 되는 이야기가 있을지도?"));
                 m_pText2->Set_Text(TEXT("어때요? 구미가 조금 당기나요? 요호호호호!"));
                 break;
@@ -509,11 +537,15 @@ void CUI_Talk_Dangin::Setting_Talk()
             switch (m_iTalkIndex)
             {
             case 0:
+                m_pGameInstance->PlaySoundOnce(TEXT("dialogue_sub_06_20640114_dan (Korean(KR)).wav"), 1.f, &m_pChannel);
+
                 m_pText1->Set_Text(TEXT("제가 바로 단진! 이 명칭은... 아무나 가질 수 없죠"));
                 m_pText2->Set_Text(TEXT("항아리를 진심으로 사랑하는 자에게만 주어지는 영광의 이름"));
                 m_pText3->Update_Visible(false);
                 break;
             case 1:
+                m_pGameInstance->PlaySoundOnce(TEXT("dialogue_sub_06_20640115_dan (Korean(KR)).wav"), 1.f, &m_pChannel);
+
                 m_pText1->Set_Text(TEXT("항아리를 모으세요!"));
                 m_pText2->Set_Text(TEXT("그럼 당신도 단진이라 불릴 수 있을지도..."));
                 m_pText3->Update_Visible(false);
@@ -605,7 +637,8 @@ CGameObject* CUI_Talk_Dangin::Clone(void* pArg)
 
 void CUI_Talk_Dangin::Free()
 {
-    CClientInstance::GetInstance()->Release_RootUI(AnsiToWString(m_szName));
+    if(m_szName != "")
+        CClientInstance::GetInstance()->Release_RootUI(AnsiToWString(m_szName));
 
     __super::Free();
     

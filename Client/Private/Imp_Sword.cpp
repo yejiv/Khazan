@@ -232,9 +232,11 @@ CGameObject* CImp_Sword::Clone(void* pArg)
 
 void CImp_Sword::Free()
 {
+    __super::Free();
+
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pOwnerTransform);
-
-    __super::Free();
+    Safe_Release(m_pBodyComp);
+    
 }

@@ -388,9 +388,6 @@
     <Filter Include="01.Utility\94.RenderingResources\Distortion">
       <UniqueIdentifier>{86f561e8-54eb-4786-a8c9-1024f6b5efae}</UniqueIdentifier>
     </Filter>
-    <Filter Include="97.Debug">
-      <UniqueIdentifier>{27f9c5a9-13a4-4499-9cb0-273748af3a76}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\03.Component\VIBuffer\Point">
       <UniqueIdentifier>{2f0b5af1-6645-4008-ad99-8ead4e03e116}</UniqueIdentifier>
     </Filter>
@@ -420,6 +417,15 @@
     </Filter>
     <Filter Include="01.Utility\03.Component\MotionTrail">
       <UniqueIdentifier>{ef19cba2-621d-4127-ac0e-ba0298b07f9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\11.ImGui\Header">
+      <UniqueIdentifier>{26a5f677-6eae-4fa3-9736-461a41aaedc4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97.Debug">
+      <UniqueIdentifier>{a509f79b-074e-4aac-8f06-d9c92b2390e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97.Debug\Header">
+      <UniqueIdentifier>{a1e5c869-0f81-48a6-b1c1-8400f91d244f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -702,19 +708,7 @@
     <ClCompile Include="..\Public\ImGui\imgui_impl_win32.cpp">
       <Filter>01.Utility\11.ImGui\Define</Filter>
     </ClCompile>
-    <ClCompile Include="..\Public\Guizmo\GraphEditor.cpp">
-      <Filter>01.Utility\11.ImGui\Guizmo</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Public\Guizmo\ImCurveEdit.cpp">
-      <Filter>01.Utility\11.ImGui\Guizmo</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Public\Guizmo\ImGradient.cpp">
-      <Filter>01.Utility\11.ImGui\Guizmo</Filter>
-    </ClCompile>
     <ClCompile Include="..\Public\Guizmo\ImGuizmo.cpp">
-      <Filter>01.Utility\11.ImGui\Guizmo</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Public\Guizmo\ImSequencer.cpp">
       <Filter>01.Utility\11.ImGui\Guizmo</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Font_Manager.cpp">
@@ -773,9 +767,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\Distortion.cpp">
       <Filter>01.Utility\94.RenderingResources\Distortion</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\CRTReport.cpp">
-      <Filter>97.Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Point.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Point</Filter>
@@ -1121,22 +1112,7 @@
     <ClInclude Include="..\Public\ImGui\imgui_internal.h">
       <Filter>01.Utility\11.ImGui\Define</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Guizmo\GraphEditor.h">
-      <Filter>01.Utility\11.ImGui\Guizmo</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Guizmo\ImCurveEdit.h">
-      <Filter>01.Utility\11.ImGui\Guizmo</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Guizmo\ImGradient.h">
-      <Filter>01.Utility\11.ImGui\Guizmo</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Guizmo\ImGuizmo.h">
-      <Filter>01.Utility\11.ImGui\Guizmo</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Guizmo\ImSequencer.h">
-      <Filter>01.Utility\11.ImGui\Guizmo</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Guizmo\ImZoomSlider.h">
       <Filter>01.Utility\11.ImGui\Guizmo</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Font_Manager.h">
@@ -1208,9 +1184,6 @@
     <ClInclude Include="..\Public\Distortion.h">
       <Filter>01.Utility\94.RenderingResources\Distortion</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\DebugNew.h">
-      <Filter>97.Debug</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Point.h">
       <Filter>01.Utility\03.Component\VIBuffer\Point</Filter>
     </ClInclude>
@@ -1240,6 +1213,15 @@
     </ClInclude>
     <ClInclude Include="..\Public\UtilityScore.h">
       <Filter>01.Utility\95.AI\BehaviorTree\Node\Utility_Action\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\MotionTrail.h">
+      <Filter>01.Utility\03.Component\MotionTrail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Imgui_Header.h">
+      <Filter>01.Utility\11.ImGui\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Debug_Header.h">
+      <Filter>97.Debug\Header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

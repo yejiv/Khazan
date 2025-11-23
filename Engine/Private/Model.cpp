@@ -349,7 +349,8 @@ _bool CModel::Play_Animation(_float fTimeDelta)
     if (Has_State(CHANGE_ANIMATION))
     {
         /* 애니메이션 블랜딩할 이전 애니메이션 뼈 넘겨주기 */
-        m_Animations[m_iCurrentAnimIndex]->OnAnimationBlend(move(m_Animations[m_iPrevAnimIndex]->Get_ChannelMatrices()));
+        if (true == m_isBlendEnable)
+            m_Animations[m_iCurrentAnimIndex]->OnAnimationBlend(move(m_Animations[m_iPrevAnimIndex]->Get_ChannelMatrices()));
         Remove_State(CHANGE_ANIMATION);
         Add_State(FIRST_FRAME_ANIMATION);
     }
@@ -448,7 +449,6 @@ _bool CModel::Play_Animation(_float fTimeDelta)
 
         Snapshot.vLifeTime.x += fTimeDelta;
     }
-
 
     /* Owner에 Transform 적용 */
     if (m_pOwnerTransform && Has_State(ROOTMOTION))
@@ -1018,101 +1018,6 @@ void CModel::WarmupAnimations()
 #ifdef _DEBUG
 void CModel::Debug_RanderState()
 {
-    ImGui::SeparatorText("Model State");
-
-    // 전체 State 값 표시
-
-    ImGui::Text("State Value: 0x%08X", m_iState);
-    ImGui::Spacing();
-
-    // 각 상태별 표시
-    struct StateInfo {
-        MODEL_STATE flag;
-        const char* name;
-        ImVec4 activeColor;
-    };
-
-    StateInfo states[] = {
-        {ANIM_LOOP,         "ANIM_LOOP",            ImVec4(0.0f, 1.0f, 0.0f, 1.0f)},
-        {USED_ANIM_LOOP,    "USED_ANIM_LOOP",       ImVec4(0.0f, 0.8f, 0.0f, 1.0f)},
-        {CHANGE_ANIMATION,  "CHANGE_ANIMATION",     ImVec4(1.0f, 1.0f, 0.0f, 1.0f)},
-        {ANIMSET_PLAYING,   "ANIMSET_PLAYING",      ImVec4(0.0f, 1.0f, 1.0f, 1.0f)},
-        {ANIMSET_NEXT,      "ANIMSET_NEXT",         ImVec4(0.5f, 0.5f, 1.0f, 1.0f)},
-        {ROOTMOTION,        "ROOTMOTION",           ImVec4(1.0f, 0.5f, 0.0f, 1.0f)},
-        {ROOTMOTION_POSITION, "ROOTMOTION_POSITION", ImVec4(1.0f, 0.3f, 0.0f, 1.0f)},
-        //{ROOTMOTION_ROTATION, "ROOTMOTION_ROTATION", ImVec4(1.0f, 0.3f, 0.3f, 1.0f)},
-        {WAITFORCOMPLETE,   "WAITFORCOMPLETE",      ImVec4(1.0f, 0.0f, 1.0f, 1.0f)}
-    };
-
-    ImGui::BeginChild("StateFlags", ImVec2(0, 200), true);
-    {
-        for (const auto& state : states)
-        {
-            _bool isActive = Has_State(state.flag);
-
-            if (isActive)
-                ImGui::TextColored(state.activeColor, "[ON]  %s", state.name);
-            else
-                ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "[OFF] %s", state.name);
-        }
-    }
-    ImGui::EndChild();
-
-    ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
-
-    // 애니메이션 관련 정보
-    ImGui::SeparatorText("Animation Info");
-    ImGui::Text("Current Anim Index: %d", m_iCurrentAnimIndex);
-    ImGui::Text("Prev Anim Index: %d", m_iPrevAnimIndex);
-    ImGui::Text("Reserve Anim Index: %d", m_iReserveAnimIndex);
-    ImGui::Text("Track Position: %.2f", m_fCurrentTrackPosition);
-    ImGui::Text("Is Finished: %s", m_isFinished ? "YES" : "NO");
-
-    ImGui::Spacing();
-
-    // 애니메이션 세트 정보
-    if (Has_State(ANIMSET_PLAYING))
-    {
-        ImGui::SeparatorText("Animation Set Info");
-        //ImGui::Text("Current Set Index: %d", m_iCurrentAnimSetsIndex);
-        //ImGui::Text("Set Max Index: %d", m_iCurrentAnimSetsMaxIndex);
-        //ImGui::Text("Current Anim in Set: %d", m_iCurrentAnimSetIndex);
-    }
-
-    ImGui::Spacing();
-
-    // 루트 모션 정보
-    //if (Has_State(ROOTMOTION))
-    //{
-    ImGui::SeparatorText("Root Motion Info");
-    ImGui::Text("Root Bone Index: %d", m_iRootBoneIndex);
-    /*        ImGui::Text("Blend Time: %.2f / %.2f",m_fCurrentRootMotionBlendTime, m_fRootMotionBlendTime);
-
-            _float4 scale;
-            XMStoreFloat4(&scale, m_vRootMotionScale);
-            ImGui::Text("Scale: (%.1f, %.1f, %.1f)", scale.x, scale.y, scale.z); */
-            //}
-
-    ImGui::Spacing();
-
-    // 이벤트 정보
-    ImGui::SeparatorText("Event Info");
-    ImGui::Text("Registered Events: %d", (_int)m_EventCallbacks.size());
-    ImGui::Text("Current Events: %d", (_int)m_CurrentEvents.size());
-
-    if (!m_EventCallbacks.empty())
-    {
-        if (ImGui::TreeNode("Registered Event Keys"))
-        {
-            for (const auto& pair : m_EventCallbacks)
-            {
-                ImGui::BulletText("%s", pair.first.c_str());
-            }
-            ImGui::TreePop();
-        }
-    }
 
 }
 #endif
