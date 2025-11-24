@@ -1117,7 +1117,10 @@
     <Filter Include="92.AI\State\Viper\12.SideMove">
       <UniqueIdentifier>{2b13d4b9-d3f4-4d52-81f5-b487c954f472}</UniqueIdentifier>
     </Filter>
-    <Filter Include="92.AI\State\Viper\13.5HitCombo">
+    <Filter Include="92.AI\State\Viper\13.ThrowBlade">
+      <UniqueIdentifier>{884ad459-082d-47b6-a199-7b158249e56e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\14.5HitCombo">
       <UniqueIdentifier>{8ec62639-19b8-4845-94bc-69ab15b162c5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -2153,7 +2156,10 @@
       <Filter>92.AI\State\Viper\12.SideMove</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_5HitCombo_Viper.h">
-      <Filter>92.AI\State\Viper\13.5HitCombo</Filter>
+      <Filter>92.AI\State\Viper\14.5HitCombo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_ThrowBlade_Viper.h">
+      <Filter>92.AI\State\Viper\13.ThrowBlade</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3103,7 +3109,10 @@
       <Filter>92.AI\State\Viper\12.SideMove</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_5HitCombo_Viper.cpp">
-      <Filter>92.AI\State\Viper\13.5HitCombo</Filter>
+      <Filter>92.AI\State\Viper\14.5HitCombo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_ThrowBlade_Viper.cpp">
+      <Filter>92.AI\State\Viper\13.ThrowBlade</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder</Filter>

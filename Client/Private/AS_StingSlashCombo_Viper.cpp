@@ -3,6 +3,7 @@
 #include "Body_Viper.h"
 #include "BlackBoard.h"
 #include "AI_Controller.h"
+#include "GameInstance.h"
 
 
 CAS_StingSlashCombo_Viper::CAS_StingSlashCombo_Viper()

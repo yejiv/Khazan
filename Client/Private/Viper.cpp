@@ -274,15 +274,15 @@ HRESULT CViper::Ready_PartObjects()
     Safe_AddRef(m_pBody);
 
 
-   /* CTwinBlade_Viper::WEAPON_DESC WeaponDesc{};
+    CTwinBlade_Viper::WEAPON_DESC WeaponDesc{};
     WeaponDesc.pOwner = this;
     WeaponDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     WeaponDesc.pOwnerTransform = m_pTransformCom;
-    WeaponDesc.pSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Weapon_R");
+    WeaponDesc.pSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Bone_Wp");
 
     if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Weapon"), ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Weapon_TwinBlade"), &WeaponDesc)))
         return E_FAIL;
-
+  
     CPartObject* pWeapon = Find_PartObject(TEXT("Part_Weapon"));
     if (nullptr == pWeapon)
         return E_FAIL;
@@ -290,7 +290,7 @@ HRESULT CViper::Ready_PartObjects()
     m_pWeapon = dynamic_cast<CTwinBlade_Viper*>(pWeapon);
     Safe_AddRef(m_pWeapon);
     if (nullptr == pWeapon)
-        return E_FAIL;*/
+        return E_FAIL;
 
 
     return S_OK;
@@ -338,17 +338,15 @@ HRESULT CViper::Ready_AnimEvent()
         });
 
 
-   /* pModel->Register_Event("BackJumpAfter", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+    pModel->Register_Event("BackJumpAttack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            _uint iStepCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "WalkStepCount");
-            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "WalkStepCount", iStepCnt + 1);
+          // 콜라이더 키고 
         });
 
-    pModel->Register_Event("BackJumpAfter", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+    pModel->Register_Event("BackJumpAttack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            _uint iStepCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "WalkStepCount");
-            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "WalkStepCount", iStepCnt + 1);
-        });*/
+            // 콜라이더 끄기  
+        });
 
 
 
