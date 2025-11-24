@@ -48,7 +48,7 @@ private:
 
 private:
     class CBody_Viper*              m_pBody = { nullptr };
-    //class CHead_Yetuga*           m_pHead = { nullptr };
+    class CTwinBlade_Viper*         m_pWeapon = { nullptr };
 
     _bool							m_isLookAt = { false };
     _float							m_fTurnSpeed = { 3.f };

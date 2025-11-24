@@ -315,10 +315,10 @@ PS_OUT_EMISSIVE PS_MAIN_DEBUG_EMISSIVE(PS_IN In)
     
     PS_OUT_EMISSIVE Out = (PS_OUT_EMISSIVE) 0;
     
-    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-
-    if (vMtrlDiffuse.a < 0.3f)
-        discard;
+    //  vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    //  
+    //  if (vMtrlDiffuse.a < 0.3f)
+    //      discard;
     
     // Alpha Rim Light Test
     vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);

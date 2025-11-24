@@ -57,13 +57,22 @@
 
 #include "Viper.h"
 #include "Body_Viper.h"
+#include "TwinBlade_Viper.h"
 
+#pragma endregion
+
+#pragma region MONSTER_KBS
+#include "Dragonian_Melee.h"
+
+#include "Dragonian_Rampage.h"
+#include "Body_Dragonian_Rampage.h"
 #pragma endregion
 
 #pragma region UI
 #include "Logo_BG.h"
 #include "UI_Logo.h"
 #pragma endregion
+
 #include "Effect_Prefab.h"
 //static mutex g_GpuGate;
 
@@ -181,13 +190,7 @@ HRESULT CLoader::Loading()
 
 HRESULT CLoader::Loading_For_Title_Level()
 {
-	lstrcpy(m_szLoadingText, TEXT("�ؽ��ĸ� �ε����Դϴ�."));
-
-	lstrcpy(m_szLoadingText, TEXT("���� �ε����Դϴ�."));
-
-	lstrcpy(m_szLoadingText, TEXT("���̴��� �ε����Դϴ�."));
-
-	lstrcpy(m_szLoadingText, TEXT("���ӿ�����Ʈ�� �ε����Դϴ�."));
+	lstrcpy(m_szLoadingText, TEXT("UI 객체 생성 중"));
 
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TITLE), TEXT("Prototype_GameObject_Logo_BG"),
 		CLogo_BG::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::TITLE))), E_FAIL);
@@ -195,7 +198,7 @@ HRESULT CLoader::Loading_For_Title_Level()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TITLE), TEXT("Prototype_GameObject_UI_Logo"),
 		CUI_Logo::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::TITLE))), E_FAIL);
 
-	lstrcpy(m_szLoadingText, TEXT("�ε��� �Ϸ�Ǿ����ϴ�."));
+	lstrcpy(m_szLoadingText, TEXT("탁예지: 다나가!!"));
 	
 	m_isFinished = true;
 
@@ -206,18 +209,21 @@ HRESULT CLoader::Loading_For_Test_Level()
 {
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		return Loading_For_Test_Texture();
+        return S_OK;
 		}));
 
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		Loading_For_Test_Model();
 		Loading_For_Test_GameObject();
-		return E_FAIL;
+        return S_OK;
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		return Loading_For_Test_Shader();
+        return S_OK;
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("HeinMach"), LEVEL::TEST), E_FAIL);
+        return S_OK;
 		}));
 
 	
@@ -580,7 +586,7 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
 
 #pragma endregion
 
-#pragma region �� ���� : ��ȣ �ۿ� �� ������Ʈ
+#pragma region �� ���� : ��ȣ �ۿ� �� ������Ʈ 
 	/* Prototype_Component_Model_BigChest */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_BigChest"),
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_BigChest_Open_003/WIP_COM_BigChest_Open_003.dat")), E_FAIL);
@@ -1597,6 +1603,10 @@ HRESULT CLoader::Loading_For_Viper_Model()
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Viper_Phase1"),
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/Viper_Phase1/Viper_Phase1.dat")), E_FAIL);
 
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_TwinBlade_Viper"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/TwinBlade_R/TwinBlade_R.dat")), E_FAIL);
+
+
 #pragma endregion
 
 
@@ -1769,6 +1779,17 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Body_Viper"),
         CBody_Viper::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Weapon_TwinBlade"),
+        CTwinBlade_Viper::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+#pragma endregion
+#pragma region Dragonian_Melee
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Dragonian_Melee"),
+        CDragonian_Melee::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::VIPER)))))
         return E_FAIL;
 
 #pragma endregion

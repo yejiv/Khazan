@@ -2,6 +2,11 @@
 
 #include "Editor_Defines.h"
 #include "Level.h"
+#include "MotionTrail.h"
+
+NS_BEGIN(Editor)
+class CMotionTrail;
+NS_END
 
 NS_BEGIN(Editor)
 
@@ -52,6 +57,7 @@ private:
     _bool                   m_isEnableMotionBlur = {};
     _bool                   m_isEnableEdge = { true };
     _bool                   m_isEnableRimLight = { true };
+    _bool                   m_isEnableMotionTrail = {};
 
 	// SSAO
 	SSAO_CONFIG				m_SSAOConfig = {};
@@ -93,7 +99,9 @@ private:
     RIM_LIGHT_DESC          m_RimLightDesc = {};
 
     // Motion Trail
-    _float                  m_fGhostAlpha = { 1.f };
+    MOTIONTRAIL_CONFIG      m_MotionTrailConfig = {};
+    _int                    m_iCurrentGameObjectIndex = { -1 };
+    _float                  m_fMotionTrailDuration = {};
 
 private:
 	// 파라미터 ( 1. 등록할 레이어 태그 | 2. 데이터 파일 이름 | 3. 현재 로드할 레벨 | 4. 맵 타입 ( 안넣으면 폴더 내부 X ) )

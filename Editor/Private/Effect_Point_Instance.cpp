@@ -351,6 +351,9 @@ void CEffect_Point_Instance::Apply(void* pArg)
 {
     m_sData = *static_cast<PARTICLE_DESC*>(pArg);
 
+    //юс╫ц
+    m_sData.iTurbulenceTextureIdx = 0;
+
     const char* format = "../../Client/Bin/Resources/Effect/Noise/Noise%d.png";
 
     char finalPathBuffer[MAX_PATH] = {};

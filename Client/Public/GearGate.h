@@ -26,7 +26,7 @@ public:
 
     }GEARGATE_DESC;
 
-    // ÇÃ·¹ÀÌ¾î Æ÷Áö¼Ç Position_Ch or IA_BeginLoc_Open
+    // í”Œë ˆì´ì–´ í¬ì§€ì…˜ Position_Ch or IA_BeginLoc_Open
 
 private:
     CGearGate(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

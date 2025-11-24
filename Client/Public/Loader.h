@@ -87,11 +87,13 @@ private:
 #pragma endregion
 
 #pragma region 바이퍼
+
 	HRESULT Loading_For_Viper_Level();
 	HRESULT Loading_For_Viper_Texture();
 	HRESULT Loading_For_Viper_Model();
 	HRESULT Loading_For_Viper_Shader();
 	HRESULT Loading_For_Viper_GameObject();
+
 #pragma endregion
 
 private:

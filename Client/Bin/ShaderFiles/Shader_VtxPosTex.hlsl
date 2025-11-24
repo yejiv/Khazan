@@ -162,8 +162,8 @@ PS_WEIGHTBLEND_OUT PS_TRAIL(PS_IN In)
     //Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
     
     vector vEffectTexture = g_Texture.Sample(DefaultSampler, In.vTexcoord);
-    //vector vFinalColor = float4(vEffectTexture.rgb, vEffectTexture.r);
-    vector vFinalColor = float4(1.f, 1.f, 1.f, vEffectTexture.r);
+    vector vFinalColor = float4(vEffectTexture.rgb, vEffectTexture.r);
+    //vector vFinalColor = float4(1.f, 1.f, 1.f, vEffectTexture.r);
      vFinalColor *= In.vTexcoord.x;
      
     Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a, vFinalColor.a);
@@ -180,8 +180,8 @@ PS_OUT PS_SCREEN_TRAIL(PS_IN In)
     //Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
     
     vector vEffectTexture = g_Texture.Sample(DefaultSampler, In.vTexcoord);
-    //vector vFinalColor = float4(vEffectTexture.rgb, vEffectTexture.r);
-    vector vFinalColor = float4(1.f, 1.f, 1.f, vEffectTexture.r);
+    vector vFinalColor = float4(vEffectTexture.rgb, vEffectTexture.r);
+    //vector vFinalColor = float4(1.f, 1.f, 1.f, vEffectTexture.r);
     vFinalColor *= In.vTexcoord.x; 
     Out.vColor = vFinalColor;  
     

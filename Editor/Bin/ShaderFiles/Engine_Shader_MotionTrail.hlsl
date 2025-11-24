@@ -92,18 +92,13 @@ PS_OUT PS_MAIN(PS_IN In)
     
     float fRim = 1.f - saturate(dot(float4(vNormal, 0.f), vLook));
     fRim = pow(fRim, g_fRimPower);
+
+    float fLifeRatio = g_vLifeTime.x / g_vLifeTime.y;
     
-    float4 vFinalColor = { 1.f, 0.f, 0.f, 1.f };
-    //  float fStartAlpha = 1.f;
-    
-    // Compute Rim Color
-    // float fStartAlpha = g_vStartColor.a;
-    // float4 vFinalColor = lerp(g_vStartColor, g_vTargetColor, fLifeRatio);
-    
-    Out.vColor = vFinalColor * fRim * g_fRimLightIntensity * g_fEmissiveIntensity;
-    //  Out.vColor.a *= fStartAlpha * (1.f - fLifeRatio);
-    // 아닌가 알파도 그냥 시작과 끝을 보간해야 되는 거 아님? 맞음
-    
+    float3 vFinalColor = lerp(g_vStartColor, g_vTargetColor, fLifeRatio);
+    float fFinalAlpha = 1.f - fLifeRatio;
+
+    Out.vColor = float4(vFinalColor, fFinalAlpha) * fRim * g_fRimLightIntensity * g_fEmissiveIntensity;
     return Out;
 }
 
@@ -112,7 +107,7 @@ technique11 DefaultTechnique
     pass DefaultPass
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_DepthTestOnly, 0);
+        SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;

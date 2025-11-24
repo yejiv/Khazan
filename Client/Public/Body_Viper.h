@@ -25,6 +25,7 @@ public:
     _float3					Get_BonePoint(const _char* BoneName);
     _float4*                Get_BonePointEX(const _char* BoneName);
     _matrix					Get_BoneMatrix(const _char* pBoneName);
+    _float4x4*              Get_BoneMatrix_Ptr(const _char* pBoneName);
     void					Set_OnAttackCollision(_bool isToggle) { m_isOnAttackCollision = isToggle; }
   
 private:

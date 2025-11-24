@@ -7,6 +7,7 @@
 #include "Creature.h"
 #include "Yetuga.h"
 #include "Body_Yetuga.h"
+#include "Spear_Khazan_Spear.h"
 
 CShader_Controller::CShader_Controller()
 	: m_pGameInstance{ CGameInstance::GetInstance() }
@@ -456,6 +457,121 @@ void CShader_Controller::Ready_Shader()
 
 				ImGui::Separator();
 			}
+
+            if (ImGui::CollapsingHeader("Motion Trail"), ImGuiTreeNodeFlags_DefaultOpen)
+            {
+                const _char* ObjectTags[] = { "Khazan_Spear", "Spear", "Viper" };
+                ImGui::Combo("GameObject List", &m_iCurrentGameObjectIndex, ObjectTags, IM_ARRAYSIZE(ObjectTags));
+
+                // 고르면 해당 객체의 모션 트레일 정보 Get해서 띄우기
+                CKhazan_Spear* pKhazan = {};
+                CBody_Khazan_Spear* pBody = {};
+                CSpear_Khazan_Spear* pWeapon = {};
+
+                switch (m_iCurrentGameObjectIndex)
+                {
+                case 0:
+                    pKhazan = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Creature_Player"), 0));
+                    pBody = dynamic_cast<CBody_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
+                    m_MotionTrailConfig = pBody->Get_MotionTrailConfig();
+                    m_isEnableMotionTrail = pBody->isEnableMotionTrail();
+                    break;
+
+                case 1:
+                    pKhazan = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Creature_Player"), 0));
+                    pWeapon = dynamic_cast<CSpear_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Weapon_Spear")));
+                    m_MotionTrailConfig = pWeapon->Get_MotionTrailConfig();
+                    m_isEnableMotionTrail = pWeapon->isEnableMotionTrail();
+                    break;
+
+                default:
+                    m_iCurrentGameObjectIndex = -1;
+                    m_isEnableMotionTrail = false;
+                    break;
+                }
+
+                if (0 <= m_iCurrentGameObjectIndex)
+                {
+                    // 특정 설정이 바뀔 때 Set
+                    _bool isChanged = false;
+
+                    // bool Enable(체크박스)
+                    if (ImGui::Checkbox("Enable Motion Trail", &m_isEnableMotionTrail))
+                    {
+                        switch (m_iCurrentGameObjectIndex)
+                        {
+                        case 0:
+                            pKhazan = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Creature_Player"), 0));
+                            pBody = dynamic_cast<CBody_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
+                            pBody->Set_EnableMotionTrail(m_isEnableMotionTrail);
+                            break;
+
+                        case 1:
+                            pKhazan = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Creature_Player"), 0));
+                            pWeapon = dynamic_cast<CSpear_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Weapon_Spear")));
+                            pWeapon->Set_EnableMotionTrail(m_isEnableMotionTrail);
+                            break;
+                        }
+                    }
+
+                    isChanged |= ImGui::SliderFloat("Motion Trail LifeTime", &m_MotionTrailConfig.vLifeTime.y, 0.f, 10.f, "%.3f");
+
+                    isChanged |= ImGui::ColorEdit3("Motion Trail Start Color", reinterpret_cast<_float*>(&m_MotionTrailConfig.vStartColor));
+                    isChanged |= ImGui::ColorEdit3("Motion Trail Target Color", reinterpret_cast<_float*>(&m_MotionTrailConfig.vTargetColor));
+
+                    isChanged |= ImGui::SliderFloat("Motion Trail Rim Power", &m_MotionTrailConfig.fRimPower, 0.f, 10.f, "%.2f");
+                    isChanged |= ImGui::SliderFloat("Motion Trail Rim Intensity", &m_MotionTrailConfig.fRimIntensity, 0.f, 10.f, "%.2f");
+                    isChanged |= ImGui::SliderFloat("Motion Trail Emissive Intensity", &m_MotionTrailConfig.fEmissiveIntensity, 0.f, 5.f, "%.2f");
+
+                    isChanged |= ImGui::Checkbox("Individual Color", &m_MotionTrailConfig.isIndividualColor);
+
+                    if (false == m_MotionTrailConfig.isIndividualColor)
+                        isChanged |= ImGui::SliderFloat("Motion Trail Color Update Speed", &m_MotionTrailConfig.fColorUpdateSpeed, 1.f, 1000.f, "%.1f");
+
+                    isChanged |= ImGui::SliderFloat("Motion Trail Interval", &m_MotionTrailConfig.fInterval, 0.f, 5.f, "%.3f");
+                    isChanged |= ImGui::SliderInt("Motion Trail Max Frame Snapshot", reinterpret_cast<_int*>(&m_MotionTrailConfig.iMaxFrames), 1, 10);
+
+                    if (true == isChanged)
+                    {
+                        switch (m_iCurrentGameObjectIndex)
+                        {
+                        case 0:
+                            pKhazan = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Creature_Player"), 0));
+                            pBody = dynamic_cast<CBody_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
+                            pBody->Set_MotionTrailConfig(m_MotionTrailConfig);
+                            break;
+
+                        case 1:
+                            pKhazan = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Creature_Player"), 0));
+                            pWeapon = dynamic_cast<CSpear_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Weapon_Spear")));
+                            pWeapon->Set_MotionTrailConfig(m_MotionTrailConfig);
+                            break;
+                        }
+                    }
+
+                    ImGui::SliderFloat("Motion Trail Duration", &m_fMotionTrailDuration, 0.f, 10.f, "%.2f");
+
+                    if (ImGui::Button("Start Motion Trail"))
+                    {
+                        switch (m_iCurrentGameObjectIndex)
+                        {
+                        case 0:
+                            pKhazan = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Creature_Player"), 0));
+                            pBody = dynamic_cast<CBody_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
+                            pBody->Start_MotionTrail(m_fMotionTrailDuration);
+                            break;
+
+                        case 1:
+                            pKhazan = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Creature_Player"), 0));
+                            pWeapon = dynamic_cast<CSpear_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Weapon_Spear")));
+                            pWeapon->Start_MotionTrail(m_fMotionTrailDuration);
+                            break;
+                        }
+                    }
+                }
+
+                ImGui::Separator();
+            }
 
 			ImGui::End();
 		});
